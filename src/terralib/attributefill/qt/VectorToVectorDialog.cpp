@@ -24,7 +24,8 @@
 */
 
 // TerraLib
-#include "../../attributefill/VectorToVector.h"
+#include "../../attributefill/VectorToVectorOp.h"
+#include "../../attributefill/VectorToVectorMemory.h"
 #include "../../common/Exception.h"
 #include "../../common/Logger.h"
 #include "../../common/progress/ProgressManager.h"
@@ -45,6 +46,7 @@
 #include "../../qt/af/Utils.h"
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../../qt/widgets/layer/utils/DataSet2Layer.h"
+#include "../../qt/widgets/progress/ProgressViewerDialog.h"
 #include "../../qt/widgets/Utils.h"
 #include "../../statistics/core/Utils.h"
 #include "../Config.h"
@@ -170,10 +172,6 @@ void te::attributefill::VectorToVectorDialog::onOkPushButtonClicked()
   std::size_t toSpatialPropPos = te::da::GetFirstSpatialPropertyPos(toData.get());
   te::da::DataSourcePtr toSource = te::da::GetDataSource(toLayer->getDataSourceId(), true);
 
-  std::auto_ptr<te::attributefill::VectorToVector> v2v(new te::attributefill::VectorToVector());
-
-  v2v->setInput(fromLayer, toLayer);
-
   std::string outDataSetName = m_ui->m_newLayerNameLineEdit->text().toStdString();
   te::da::DataSourcePtr outSource;
 
@@ -182,12 +180,29 @@ void te::attributefill::VectorToVectorDialog::onOkPushButtonClicked()
     QMessageBox::information(this, tr("VectorToVector"), tr("Define a repository for the result."));
     return;
   }
-       
+
   if(m_ui->m_newLayerNameLineEdit->text().isEmpty())
   {
     QMessageBox::information(this, tr("VectorToVector"), tr("Define a name for the resulting layer."));
     return;
   }
+
+  //progress
+  te::qt::widgets::ProgressViewerDialog v(this);
+  int id = te::common::ProgressManager::getInstance().addViewer(&v);
+
+  std::auto_ptr<te::attributefill::VectorToVectorOp> v2v;
+
+//  if(dsCapabilities.supportsPreparedQueryAPI() && dsCapabilities.getQueryCapabilities().supportsSpatialSQLDialect())
+//  {
+//    v2v.reset(new te::attributefill::VectorToVectorQuery());
+//  }
+//  else
+//  {
+    v2v.reset(new te::attributefill::VectorToVectorMemory());
+//  }
+
+  v2v->setInput(fromLayer, toLayer);
 
   if(m_toFile)
   {
@@ -249,8 +264,18 @@ void te::attributefill::VectorToVectorDialog::onOkPushButtonClicked()
   catch(te::common::Exception& e)
   {
     QMessageBox::warning(this, tr("Vector To Vector"), e.what());
+    te::common::ProgressManager::getInstance().removeViewer(id);
     reject();
   }
+  catch(std::exception& e)
+  {
+    QMessageBox::warning(this, tr("Vector To Vector"), e.what());
+    te::common::ProgressManager::getInstance().removeViewer(id);
+    reject();
+  }
+
+  te::common::ProgressManager::getInstance().removeViewer(id);
+  this->setCursor(Qt::ArrowCursor);
 
   accept();
 }
@@ -585,8 +610,8 @@ void te::attributefill::VectorToVectorDialog::setFunctionsByLayer(te::map::Abstr
   for(std::size_t i = 0; i < props.size(); ++i)
   {
     te::dt::Property* prop = props[i];
-
-    if(prop->getType() != te::dt::GEOMETRY_TYPE)
+    
+    if(isValidPropertyType(prop->getType()))
     {
       int propertyType = prop->getType();
 
@@ -669,7 +694,12 @@ void te::attributefill::VectorToVectorDialog::setFunctionsByLayer(te::map::Abstr
         m_ui->m_statisticsListWidget->addItem(item);
       }
 
-      m_ui->m_statisticsListWidget->addItem(QString(props[i]->getName().c_str()) + " : " + "Major Class");
+      if(isClassType(prop->getType()))
+        m_ui->m_statisticsListWidget->addItem(QString(props[i]->getName().c_str()) + " : " + "Class with highest occurrence");
+
+      if(isClassType(prop->getType()) && isPolygon(geomType))
+        m_ui->m_statisticsListWidget->addItem(QString(props[i]->getName().c_str()) + " : " + "Class with larger intersection area");
+
       m_ui->m_statisticsListWidget->addItem(QString(props[i]->getName().c_str()) + " : " + "Percentage per Class");
       m_ui->m_statisticsListWidget->addItem(QString(props[i]->getName().c_str()) + " : " + "Minimum Distance");
       m_ui->m_statisticsListWidget->addItem(QString(props[i]->getName().c_str()) + " : " + "Presence");
@@ -701,6 +731,60 @@ bool te::attributefill::VectorToVectorDialog::isPolygon(te::gm::GeomType type)
      type == te::gm::MultiPolygonMType ||
      type == te::gm::MultiPolygonZMType)
      return true;
+
+  return false;
+}
+
+bool te::attributefill::VectorToVectorDialog::isPoint(te::gm::GeomType type)
+{
+  if(type == te::gm::PointType ||
+     type == te::gm::PointZType ||
+     type == te::gm::PointMType ||
+     type == te::gm::PointZMType ||
+     type == te::gm::MultiPointType ||
+     type == te::gm::MultiPointZType ||
+     type == te::gm::MultiPointMType ||
+     type == te::gm::MultiPointZMType)
+     return true;
+
+  return false;
+}
+
+bool te::attributefill::VectorToVectorDialog::isValidPropertyType(const int type)
+{
+  if(type == te::dt::CHAR_TYPE ||
+     type == te::dt::UCHAR_TYPE ||
+     type == te::dt::INT16_TYPE ||
+     type == te::dt::UINT16_TYPE ||
+     type == te::dt::INT32_TYPE ||
+     type == te::dt::UINT32_TYPE ||
+     type == te::dt::INT64_TYPE ||
+     type == te::dt::UINT64_TYPE ||
+     type == te::dt::FLOAT_TYPE ||
+     type == te::dt::DOUBLE_TYPE ||
+     type == te::dt::NUMERIC_TYPE ||
+     type == te::dt::STRING_TYPE ||
+     type == te::dt::CINT16_TYPE ||
+     type == te::dt::CINT32_TYPE ||
+     type == te::dt::CFLOAT_TYPE ||
+     type == te::dt::CDOUBLE_TYPE)
+     return true;
+
+  return false;
+}
+
+bool te::attributefill::VectorToVectorDialog::isClassType(const int type)
+{
+  if(type == te::dt::INT16_TYPE ||
+     type == te::dt::UINT16_TYPE ||
+     type == te::dt::INT32_TYPE ||
+     type == te::dt::UINT32_TYPE ||
+     type == te::dt::INT64_TYPE ||
+     type == te::dt::UINT64_TYPE ||
+     type == te::dt::STRING_TYPE)
+  {
+     return true;
+  }
 
   return false;
 }

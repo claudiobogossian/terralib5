@@ -58,8 +58,44 @@ namespace te
 
       VectorToRaster();
 
-      virtual ~VectorToRaster() {}
+      ~VectorToRaster() {}
 
+      void setInput(te::da::DataSourcePtr inVectorDsrc,
+                    std::string inVectorName,
+                    std::auto_ptr<te::da::DataSetType> inVectorDsType);
+
+      void setParams( std::vector<std::string> selectedAttVec,
+                      double resolutionX,
+                      double resolutionY,
+                      int columns,
+                      int rows,
+                      bool useDummy,
+                      int dummy = 0);
+
+      void setOutput(te::da::DataSourcePtr outDsrc, std::string dsName);
+
+      bool paramsAreValid();
+
+      bool run();
+
+    protected:
+
+      bool save(std::auto_ptr<te::mem::DataSet> result, std::auto_ptr<te::da::DataSetType> outputDsType);
+
+      te::da::DataSourcePtr m_inVectorDsrc;
+      std::string m_inVectorName;
+      std::auto_ptr<te::da::DataSetType> m_inVectorDsType;
+
+      std::vector<std::string> m_selectedAttVec;
+      double m_resolutionX;
+      double m_resolutionY;
+      int m_columns;
+      int m_rows;
+      bool m_setDummy;
+      int m_dummy;
+
+      te::da::DataSourcePtr m_outDsrc;
+      std::string m_outDset;
     };
   }
 }

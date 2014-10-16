@@ -18,22 +18,19 @@
  */
 
 /*!
- \file VectorToVector.h
+ \file VectorToVectorOp.h
  
- \brief Vector to Vector processing.
+ \brief Vector To Vector operation.
  
  \ingroup attributefill
  */
 
-#ifndef __TERRALIB_ATTRIBUTEFILL_INTERNAL_VECTORTOVECTOR_H
-#define __TERRALIB_ATTRIBUTEFILL_INTERNAL_VECTORTOVECTOR_H
+#ifndef __TERRALIB_ATTRIBUTEFILL_INTERNAL_VECTORTOVECTOROP_H
+#define __TERRALIB_ATTRIBUTEFILL_INTERNAL_VECTORTOVECTOROP_H
 
 //Terralib
-
-#include "../dataaccess/dataset/DataSet.h"
-#include "../dataaccess/dataset/DataSetType.h"
-#include "../dataaccess/dataset/ObjectIdSet.h"
 #include "../dataaccess/datasource/DataSource.h"
+
 #include "../maptools/AbstractLayer.h"
 
 #include "../datatype/Property.h"
@@ -42,6 +39,7 @@
 #include "../statistics/core/Enums.h"
 
 #include "Config.h"
+//#include "Enums.h"
 
 // STL
 #include <map>
@@ -51,67 +49,30 @@
 
 namespace te
 {
-  namespace dt
-  {
-    class AbstractData;
-  }
-
-  namespace stat
-  {
-    struct NumericStatisticalSummary;
-    struct StringStatisticalSummary;
-  }
-
   namespace attributefill
   {
-    class TEATTRIBUTEFILLEXPORT VectorToVector
+    class TEATTRIBUTEFILLEXPORT VectorToVectorOp
     {
       public:
-
-        VectorToVector();
       
-        ~VectorToVector();
-
+        VectorToVectorOp();
+      
+        virtual ~VectorToVectorOp();
+      
+        virtual bool run() = 0;
+      
+        virtual bool paramsAreValid();
+      
         void setInput(te::map::AbstractLayerPtr fromLayer,
                       te::map::AbstractLayerPtr toLayer);
-
+      
         void setParams(const std::map<te::dt::Property*, std::vector<std::string> >& options);
-
+      
         void setOutput(te::da::DataSourcePtr outDsrc, std::string dsName);
-
-        bool paramsAreValid();
-
-        bool run();
-
+      
       protected:
 
-        te::sam::rtree::Index<size_t, 8>* getRtree(te::da::DataSet* data);
-
         bool save(std::auto_ptr<te::mem::DataSet> result, std::auto_ptr<te::da::DataSetType> outDsType);
-
-        te::da::DataSetType* getOutputDataSetType();
-
-        std::string getPropertyName(te::dt::Property* prop, const std::string& func);
-
-        bool isStatistical(const std::string& funcName);
-
-        std::vector<std::size_t> getIntersections(te::da::DataSet* toDs,
-                                                  te::da::DataSet* fromDs,
-                                                  te::sam::rtree::Index<size_t, 8>* rtree);
-
-        std::vector<te::dt::AbstractData*> getDataValues(te::da::DataSet* fromDs, std::vector<std::size_t> dsPos, const std::string& propertyName);
-
-        std::vector<double> getNumValues(std::vector<te::dt::AbstractData*> data);
-
-        std::vector<std::string> getStrValues(std::vector<te::dt::AbstractData*> data);
-
-        double getValue(te::stat::NumericStatisticalSummary ss, const std::string& function);
-
-        std::string getValue(te::stat::StringStatisticalSummary ss, const std::string& function);
-
-        std::string getModeValue(te::stat::NumericStatisticalSummary ss);
-
-        std::vector<std::string> getSelectedFunctions();
 
       protected:
 
@@ -125,4 +86,4 @@ namespace te
     };
   }
 }
-#endif // __TERRALIB_ATTRIBUTEFILL_INTERNAL_VECTORTOVECTOR_H
+#endif // __TERRALIB_ATTRIBUTEFILL_INTERNAL_VECTORTOVECTOROP_H

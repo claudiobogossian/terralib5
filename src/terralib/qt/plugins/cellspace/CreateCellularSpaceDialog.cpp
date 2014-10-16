@@ -118,14 +118,34 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::setLayers(std::list<
     return;
   }
 
+  std::vector<std::string> nonSridLayers;
+  bool hasNonSridLayer = false;
+
   std::list<te::map::AbstractLayerPtr>::iterator it = layers.begin();
 
   while(it != layers.end())
   {
-    std::auto_ptr<te::da::DataSetType> dsType = it->get()->getSchema();
-    if(dsType->hasGeom())
-      m_ui->m_layersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant::fromValue(*it));
+    if(it->get()->getSRID() > 0)
+    {
+      std::auto_ptr<te::da::DataSetType> dsType = it->get()->getSchema();
+      if(dsType->hasGeom())
+        m_ui->m_layersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant::fromValue(*it));
+    }
+    else
+    {
+      nonSridLayers.push_back(it->get()->getTitle());
+      hasNonSridLayer = true;
+    }
     ++it;
+  }
+
+  if(hasNonSridLayer)
+  {
+    QString w(tr("Some Layers were not added because they have no SRID:"));
+    w.append("\n");
+    for(std::size_t i = 0; i < nonSridLayers.size(); ++i)
+      w.append(nonSridLayers[i].c_str()).append("\n");
+    QMessageBox::warning(this, tr("Cellular Spaces"), w);
   }
 
   te::map::AbstractLayerPtr layer = getReferenceLayer();

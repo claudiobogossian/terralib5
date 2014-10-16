@@ -80,7 +80,7 @@ namespace te
 
         void clearAll();
 
-        bool search(const te::gm::Coord2D& coord, te::gm::Coord2D& result);
+        bool search(const te::gm::Coord2D& coord, int srid, te::gm::Coord2D& result);
 
         void setWorld(const double& llx, const double& lly,
                       const double& urx, const double& ury,
