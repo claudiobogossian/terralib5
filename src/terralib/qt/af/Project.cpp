@@ -95,7 +95,15 @@ std::list<te::map::AbstractLayerPtr> te::qt::af::Project::getAllLayers(bool inva
     {
       std::vector<te::map::AbstractLayer*> children = topLevelLayer->getDescendants();
       for(std::size_t i = 0; i < children.size(); ++i)
+      {
+        if(!invalid && !children[i]->isValid())
+        {
+          continue;
+        }
+
         layers.push_back(te::map::AbstractLayerPtr(children[i]));
+      }
+        
     }
   }
 
