@@ -25,8 +25,7 @@ void ArithmeticOperations()
     te::rp::ArithmeticOperations::InputParameters inputParams;
     inputParams.m_arithmeticString = "R0:0 / R0:0";
     inputParams.m_normalize = false;
-    boost::shared_ptr<te::rst::Raster> rasterVector(rin);
-    inputParams.m_rasterVec.push_back(rasterVector);
+    inputParams.m_inputRasters.push_back(rin.get());
 
 // create output raster info
     std::map<std::string, std::string> orinfo;

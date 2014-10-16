@@ -32,6 +32,7 @@
 #include "../../../qt/widgets/canvas/MapDisplay.h"
 #include "../../../qt/widgets/Utils.h"
 #include "../../RepositoryManager.h"
+#include "../../Utils.h"
 #include "../Renderer.h"
 #include "../Utils.h"
 #include "CreateLineTool.h"
@@ -77,7 +78,12 @@ bool te::edit::CreateLineTool::mousePressEvent(QMouseEvent* e)
   }
 
   QPointF pw = m_display->transform(GetPosition(e));
-  m_coords.push_back(te::gm::Coord2D(pw.x(), pw.y()));
+
+  te::gm::Coord2D coord = te::gm::Coord2D(pw.x(), pw.y());
+
+  TrySnap(coord, m_display->getSRID());
+
+  m_coords.push_back(coord);
 
   return true;
 }
@@ -91,9 +97,13 @@ bool te::edit::CreateLineTool::mouseMoveEvent(QMouseEvent* e)
 
   QPointF pw = m_display->transform(pos);
 
-  m_coords.push_back(te::gm::Coord2D(pw.x(), pw.y()));
+  te::gm::Coord2D coord = te::gm::Coord2D(pw.x(), pw.y());
 
-  m_lastPos = te::gm::Coord2D(pw.x(), pw.y());
+  TrySnap(coord, m_display->getSRID());
+
+  m_coords.push_back(coord);
+
+  m_lastPos = te::gm::Coord2D(coord.x, coord.y);
 
   Qt::KeyboardModifiers keys = e->modifiers();
 

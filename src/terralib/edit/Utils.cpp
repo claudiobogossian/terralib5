@@ -38,6 +38,7 @@
 #include "../srs/Config.h"
 #include "IdGeometry.h"
 #include "RepositoryManager.h"
+#include "SnapManager.h"
 #include "Utils.h"
 
 // STL
@@ -330,5 +331,23 @@ void te::edit::GetCoordinates(te::gm::Geometry* geom, std::vector<te::gm::Coord2
       assert(point);
       coords.push_back(te::gm::Coord2D(point->getX(), point->getY()));
     }
+  }
+}
+
+void te::edit::TrySnap(te::gm::Coord2D& coord, int srid)
+{
+  try
+  {
+    te::gm::Coord2D result;
+
+    if(SnapManager::getInstance().search(coord, srid, result) == false)
+      return;
+
+    coord.x = result.x;
+    coord.y = result.y;
+  }
+  catch(...)
+  {
+    return;
   }
 }

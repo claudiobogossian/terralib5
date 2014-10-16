@@ -28,6 +28,7 @@
 #include <terralib/gdal.h>
 #include <terralib/gdal/Utils.h>
 #include <terralib/raster.h>
+#include <terralib/memory/ExpansibleRaster.h>
 #include <terralib/rp/ArithmeticOperations.h>
 #include "TsArithmeticOperations.h"
 
@@ -36,24 +37,62 @@
 
 CPPUNIT_TEST_SUITE_REGISTRATION( TsArithmeticOperations );
 
-void TsArithmeticOperations::SumSubtraction()
+void TsArithmeticOperations::loadDoubleRaster( const std::string& rasterFileName, std::auto_ptr< te::rst::Raster >& rasterPtr )
 {
 // open input raster
   std::map<std::string, std::string> rinfo;
   rinfo["URI"] = TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
   std::auto_ptr<te::rst::Raster> rin(te::rst::RasterFactory::open(rinfo)); 
+  
+  std::vector< te::rst::BandProperty * > bandsProperties;
+  
+  unsigned int bandIdx = 0;
+  
+  for( bandIdx = 0 ; bandIdx < rin->getNumberOfBands() ; ++bandIdx )
+  {
+    bandsProperties.push_back( new te::rst::BandProperty( 
+      *rin->getBand( bandIdx )->getProperty() ) );
+    bandsProperties[ bandIdx ]->m_type = te::dt::DOUBLE_TYPE;
+  }
+
+  rasterPtr.reset( new te::mem::ExpansibleRaster( 50, new te::rst::Grid(
+    *rin->getGrid() ), bandsProperties ) );  
+  
+  const unsigned int nRows = rin->getNumberOfRows();
+  const unsigned int nCols = rin->getNumberOfColumns();
+  unsigned int row = 0;
+  unsigned int col = 0;
+  double value = 0;
+  for( bandIdx = 0 ; bandIdx < rin->getNumberOfBands() ; ++bandIdx )
+  {
+    for( row = 0 ; row < nRows ; ++row )
+    {
+      for( col = 0 ; col < nCols ; ++col )
+      {
+        rin->getValue( col, row, value, bandIdx );
+        rasterPtr->setValue( col, row, value, bandIdx );
+      }
+    }
+  }  
+}
+
+void TsArithmeticOperations::RasterSum()
+{
+  // load input raster as a doubles raster
+  std::auto_ptr< te::rst::Raster > rin;
+  loadDoubleRaster(  TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif",
+    rin );
 
 // defining input parameters, the arithmetic operation will be 
 // band 0 + band 1 - band 2
   te::rp::ArithmeticOperations::InputParameters inputParams;
-  inputParams.m_arithmeticString = "R0:0 + R0:1 - R0:2";
+  inputParams.m_arithmeticString = "R0:0 + R0:1";
   inputParams.m_normalize = false;
-  boost::shared_ptr<te::rst::Raster> rasterVector(rin);
-  inputParams.m_rasterVec.push_back(rasterVector);
+  inputParams.m_inputRasters.push_back(rin.get());
 
 // create output raster info
   std::map<std::string, std::string> orinfo;
-  orinfo["URI"] = "arithmetic_operations_sum_subtraction_unittest.tif";
+  orinfo["URI"] = "terralib_unittest_arithmetic_RasterSum.tif";
 
 // defining output parameters
   te::rp::ArithmeticOperations::OutputParameters outputParams;
@@ -64,49 +103,39 @@ void TsArithmeticOperations::SumSubtraction()
 
   CPPUNIT_ASSERT(algorithmInstance.initialize(inputParams));
   CPPUNIT_ASSERT(algorithmInstance.execute(outputParams));
-
-  outputParams.reset();
   
 // open output raster
-  rin.reset(te::rst::RasterFactory::open(rinfo)); 
-  std::auto_ptr<te::rst::Raster> rout(te::rst::RasterFactory::open(orinfo));
-  double pixel_value;
-  double pixel_calculator;
-  for (unsigned int r = 0; r < rout->getNumberOfRows(); r++)
-    for (unsigned int c = 0; c < rout->getNumberOfColumns(); c++)
+  double inputValue1 = 0;
+  double inputValue2 = 0;
+  double outputValue = 0;
+  for (unsigned int r = 0; r < rin->getNumberOfRows(); r++)
+    for (unsigned int c = 0; c < rin->getNumberOfColumns(); c++)
     {
-      // comparing the results pixel by pixel
-      rin->getValue(c, r, pixel_value, 0);
-      pixel_calculator = pixel_value;
-      rin->getValue(c, r, pixel_value, 1);
-      pixel_calculator += pixel_value;
-      rin->getValue(c, r, pixel_value, 2);
-      pixel_calculator -= pixel_value;
-
-      rout->getValue(c, r, pixel_value, 0);
-      CPPUNIT_ASSERT(pixel_value == pixel_calculator);
+      rin->getValue(c, r, inputValue1, 0);
+      rin->getValue(c, r, inputValue2, 1);
+      outputParams.m_outputRasterPtr->getValue(c, r, outputValue, 0);
+      CPPUNIT_ASSERT_DOUBLES_EQUAL( inputValue1 + inputValue2, 
+        outputValue, 0.0000001 );
     }
 }
 
-void TsArithmeticOperations::ProductDivision()
+void TsArithmeticOperations::RasterSubtraction()
 {
-// open input raster
-  std::map<std::string, std::string> rinfo;
-  rinfo["URI"] = TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif";
-  std::auto_ptr<te::rst::Raster> rin(te::rst::RasterFactory::open(rinfo)); 
+  // load input raster as a doubles raster
+  std::auto_ptr< te::rst::Raster > rin;
+  loadDoubleRaster(  TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif",
+    rin );
 
 // defining input parameters, the arithmetic operation will be 
-// band / same band, to check if in the final result, the mean 
-// will be 1.0
+// band 0 + band 1 - band 2
   te::rp::ArithmeticOperations::InputParameters inputParams;
-  inputParams.m_arithmeticString = "R0:0 / R0:0 * 2.0";
+  inputParams.m_arithmeticString = "R0:0 - R0:1";
   inputParams.m_normalize = false;
-  boost::shared_ptr<te::rst::Raster> rasterVector(rin);
-  inputParams.m_rasterVec.push_back(rasterVector);
+  inputParams.m_inputRasters.push_back(rin.get());
 
 // create output raster info
   std::map<std::string, std::string> orinfo;
-  orinfo["URI"] = "arithmetic_operations_product_division_unittest.tif";
+  orinfo["URI"] = "terralib_unittest_arithmetic_RasterSubtraction.tif";
 
 // defining output parameters
   te::rp::ArithmeticOperations::OutputParameters outputParams;
@@ -117,18 +146,344 @@ void TsArithmeticOperations::ProductDivision()
 
   CPPUNIT_ASSERT(algorithmInstance.initialize(inputParams));
   CPPUNIT_ASSERT(algorithmInstance.execute(outputParams));
-
-  outputParams.reset();
   
 // open output raster
-  rin.reset(te::rst::RasterFactory::open(rinfo)); 
-  std::auto_ptr<te::rst::Raster> rout(te::rst::RasterFactory::open(orinfo));
-  double pixel_value;
-  for (unsigned int r = 0; r < rout->getNumberOfRows(); r++)
-    for (unsigned int c = 0; c < rout->getNumberOfColumns(); c++)
+  double inputValue1 = 0;
+  double inputValue2 = 0;
+  double outputValue = 0;
+  for (unsigned int r = 0; r < rin->getNumberOfRows(); r++)
+    for (unsigned int c = 0; c < rin->getNumberOfColumns(); c++)
     {
-      // comparing the results pixel by pixel
-      rout->getValue(c, r, pixel_value, 0);
-      CPPUNIT_ASSERT(pixel_value == 2.0);
+      rin->getValue(c, r, inputValue1, 0);
+      rin->getValue(c, r, inputValue2, 1);
+      outputParams.m_outputRasterPtr->getValue(c, r, outputValue, 0);
+      CPPUNIT_ASSERT_DOUBLES_EQUAL( ( inputValue1 - inputValue2 ), 
+        outputValue, 0.0000001 );
     }
 }
+
+void TsArithmeticOperations::RasterProduct()
+{
+  // load input raster as a doubles raster
+  std::auto_ptr< te::rst::Raster > rin;
+  loadDoubleRaster(  TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif",
+    rin );
+
+// defining input parameters, the arithmetic operation will be 
+// band 0 + band 1 - band 2
+  te::rp::ArithmeticOperations::InputParameters inputParams;
+  inputParams.m_arithmeticString = "R0:0 * R0:1";
+  inputParams.m_normalize = false;
+  inputParams.m_inputRasters.push_back(rin.get());
+
+// create output raster info
+  std::map<std::string, std::string> orinfo;
+  orinfo["URI"] = "terralib_unittest_arithmetic_RasterProduct.tif";
+
+// defining output parameters
+  te::rp::ArithmeticOperations::OutputParameters outputParams;
+  outputParams.m_rInfo = orinfo;
+  outputParams.m_rType = "GDAL";
+
+  te::rp::ArithmeticOperations algorithmInstance;
+
+  CPPUNIT_ASSERT(algorithmInstance.initialize(inputParams));
+  CPPUNIT_ASSERT(algorithmInstance.execute(outputParams));
+  
+// open output raster
+  double inputValue1 = 0;
+  double inputValue2 = 0;
+  double outputValue = 0;
+  for (unsigned int r = 0; r < rin->getNumberOfRows(); r++)
+    for (unsigned int c = 0; c < rin->getNumberOfColumns(); c++)
+    {
+      rin->getValue(c, r, inputValue1, 0);
+      rin->getValue(c, r, inputValue2, 1);
+      outputParams.m_outputRasterPtr->getValue(c, r, outputValue, 0);
+      CPPUNIT_ASSERT_DOUBLES_EQUAL( inputValue1 * inputValue2, outputValue, 0.0000001 );
+    }
+}
+
+void TsArithmeticOperations::RasterDivision()
+{
+  // load input raster as a doubles raster
+  std::auto_ptr< te::rst::Raster > rin;
+  loadDoubleRaster(  TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif",
+    rin );
+
+// defining input parameters, the arithmetic operation will be 
+// band 0 + band 1 - band 2
+  te::rp::ArithmeticOperations::InputParameters inputParams;
+  inputParams.m_arithmeticString = "R0:0 / R0:1";
+  inputParams.m_normalize = false;
+  inputParams.m_inputRasters.push_back(rin.get());
+
+// create output raster info
+  std::map<std::string, std::string> orinfo;
+  orinfo["URI"] = "terralib_unittest_arithmetic_RasterDivision.tif";
+
+// defining output parameters
+  te::rp::ArithmeticOperations::OutputParameters outputParams;
+  outputParams.m_rInfo = orinfo;
+  outputParams.m_rType = "GDAL";
+
+  te::rp::ArithmeticOperations algorithmInstance;
+
+  CPPUNIT_ASSERT(algorithmInstance.initialize(inputParams));
+  CPPUNIT_ASSERT(algorithmInstance.execute(outputParams));
+  
+// open output raster
+  double inputValue1 = 0;
+  double inputValue2 = 0;
+  double outputValue = 0;
+  for (unsigned int r = 0; r < rin->getNumberOfRows(); r++)
+    for (unsigned int c = 0; c < rin->getNumberOfColumns(); c++)
+    {
+      rin->getValue(c, r, inputValue1, 0);
+      rin->getValue(c, r, inputValue2, 1);
+      outputParams.m_outputRasterPtr->getValue(c, r, outputValue, 0);
+      CPPUNIT_ASSERT_DOUBLES_EQUAL( inputValue1 / inputValue2, outputValue, 0.0000001 );
+    }
+}
+
+void TsArithmeticOperations::RealSum()
+{
+  // load input raster as a doubles raster
+  std::auto_ptr< te::rst::Raster > rin;
+  loadDoubleRaster(  TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif",
+    rin );
+
+// defining input parameters, the arithmetic operation will be 
+// band 0 + band 1 - band 2
+  te::rp::ArithmeticOperations::InputParameters inputParams;
+  inputParams.m_arithmeticString = "R0:0 + 1";
+  inputParams.m_normalize = false;
+  inputParams.m_inputRasters.push_back(rin.get());
+
+// create output raster info
+  std::map<std::string, std::string> orinfo;
+  orinfo["URI"] = "terralib_unittest_arithmetic_RealSum.tif";
+
+// defining output parameters
+  te::rp::ArithmeticOperations::OutputParameters outputParams;
+  outputParams.m_rInfo = orinfo;
+  outputParams.m_rType = "GDAL";
+
+  te::rp::ArithmeticOperations algorithmInstance;
+
+  CPPUNIT_ASSERT(algorithmInstance.initialize(inputParams));
+  CPPUNIT_ASSERT(algorithmInstance.execute(outputParams));
+  
+// open output raster
+  double inputValue1 = 0;
+  double outputValue = 0;
+  for (unsigned int r = 0; r < rin->getNumberOfRows(); r++)
+    for (unsigned int c = 0; c < rin->getNumberOfColumns(); c++)
+    {
+      rin->getValue(c, r, inputValue1, 0);
+      outputParams.m_outputRasterPtr->getValue(c, r, outputValue, 0);
+      CPPUNIT_ASSERT_DOUBLES_EQUAL( inputValue1 + 1.0, outputValue, 0.0000001 );
+    }
+}
+
+void TsArithmeticOperations::RealSubtraction()
+{
+  // load input raster as a doubles raster
+  std::auto_ptr< te::rst::Raster > rin;
+  loadDoubleRaster(  TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif",
+    rin );
+
+// defining input parameters, the arithmetic operation will be 
+// band 0 + band 1 - band 2
+  te::rp::ArithmeticOperations::InputParameters inputParams;
+  inputParams.m_arithmeticString = "R0:0 - 1";
+  inputParams.m_normalize = false;
+  inputParams.m_inputRasters.push_back(rin.get());
+
+// create output raster info
+  std::map<std::string, std::string> orinfo;
+  orinfo["URI"] = "terralib_unittest_arithmetic_RealSubtraction.tif";
+
+// defining output parameters
+  te::rp::ArithmeticOperations::OutputParameters outputParams;
+  outputParams.m_rInfo = orinfo;
+  outputParams.m_rType = "GDAL";
+
+  te::rp::ArithmeticOperations algorithmInstance;
+
+  CPPUNIT_ASSERT(algorithmInstance.initialize(inputParams));
+  CPPUNIT_ASSERT(algorithmInstance.execute(outputParams));
+  
+// open output raster
+  double inputValue1 = 0;
+  double outputValue = 0;
+  for (unsigned int r = 0; r < rin->getNumberOfRows(); r++)
+    for (unsigned int c = 0; c < rin->getNumberOfColumns(); c++)
+    {
+      rin->getValue(c, r, inputValue1, 0);
+      outputParams.m_outputRasterPtr->getValue(c, r, outputValue, 0);
+      CPPUNIT_ASSERT_DOUBLES_EQUAL( inputValue1 - 1.0, outputValue, 0.0000001 );
+    }
+}
+
+void TsArithmeticOperations::RealSubtractionInverse()
+{
+  // load input raster as a doubles raster
+  std::auto_ptr< te::rst::Raster > rin;
+  loadDoubleRaster(  TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif",
+    rin );
+
+// defining input parameters, the arithmetic operation will be 
+// band 0 + band 1 - band 2
+  te::rp::ArithmeticOperations::InputParameters inputParams;
+  inputParams.m_arithmeticString = "1 - R0:0";
+  inputParams.m_normalize = false;
+  inputParams.m_inputRasters.push_back(rin.get());
+
+// create output raster info
+  std::map<std::string, std::string> orinfo;
+  orinfo["URI"] = "terralib_unittest_arithmetic_RealSubtractionInverse.tif";
+
+// defining output parameters
+  te::rp::ArithmeticOperations::OutputParameters outputParams;
+  outputParams.m_rInfo = orinfo;
+  outputParams.m_rType = "GDAL";
+
+  te::rp::ArithmeticOperations algorithmInstance;
+
+  CPPUNIT_ASSERT(algorithmInstance.initialize(inputParams));
+  CPPUNIT_ASSERT(algorithmInstance.execute(outputParams));
+  
+// open output raster
+  double inputValue1 = 0;
+  double outputValue = 0;
+  for (unsigned int r = 0; r < rin->getNumberOfRows(); r++)
+    for (unsigned int c = 0; c < rin->getNumberOfColumns(); c++)
+    {
+      rin->getValue(c, r, inputValue1, 0);
+      outputParams.m_outputRasterPtr->getValue(c, r, outputValue, 0);
+      CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0 - inputValue1, outputValue, 0.0000001 );
+    }
+}
+
+void TsArithmeticOperations::RealProduct()
+{
+  // load input raster as a doubles raster
+  std::auto_ptr< te::rst::Raster > rin;
+  loadDoubleRaster(  TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif",
+    rin );
+
+// defining input parameters, the arithmetic operation will be 
+// band 0 + band 1 - band 2
+  te::rp::ArithmeticOperations::InputParameters inputParams;
+  inputParams.m_arithmeticString = "R0:0 * 2";
+  inputParams.m_normalize = false;
+  inputParams.m_inputRasters.push_back(rin.get());
+
+// create output raster info
+  std::map<std::string, std::string> orinfo;
+  orinfo["URI"] = "terralib_unittest_arithmetic_RealProduct.tif";
+
+// defining output parameters
+  te::rp::ArithmeticOperations::OutputParameters outputParams;
+  outputParams.m_rInfo = orinfo;
+  outputParams.m_rType = "GDAL";
+
+  te::rp::ArithmeticOperations algorithmInstance;
+
+  CPPUNIT_ASSERT(algorithmInstance.initialize(inputParams));
+  CPPUNIT_ASSERT(algorithmInstance.execute(outputParams));
+  
+// open output raster
+  double inputValue1 = 0;
+  double outputValue = 0;
+  for (unsigned int r = 0; r < rin->getNumberOfRows(); r++)
+    for (unsigned int c = 0; c < rin->getNumberOfColumns(); c++)
+    {
+      rin->getValue(c, r, inputValue1, 0);
+      outputParams.m_outputRasterPtr->getValue(c, r, outputValue, 0);
+      CPPUNIT_ASSERT_DOUBLES_EQUAL( inputValue1 * 2.0, outputValue, 0.0000001 );
+    }
+}
+
+void TsArithmeticOperations::RealDivision()
+{
+  // load input raster as a doubles raster
+  std::auto_ptr< te::rst::Raster > rin;
+  loadDoubleRaster(  TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif",
+    rin );
+
+// defining input parameters, the arithmetic operation will be 
+// band 0 + band 1 - band 2
+  te::rp::ArithmeticOperations::InputParameters inputParams;
+  inputParams.m_arithmeticString = "R0:0 / 2";
+  inputParams.m_normalize = false;
+  inputParams.m_inputRasters.push_back(rin.get());
+
+// create output raster info
+  std::map<std::string, std::string> orinfo;
+  orinfo["URI"] = "terralib_unittest_arithmetic_RealDivision.tif";
+
+// defining output parameters
+  te::rp::ArithmeticOperations::OutputParameters outputParams;
+  outputParams.m_rInfo = orinfo;
+  outputParams.m_rType = "GDAL";
+
+  te::rp::ArithmeticOperations algorithmInstance;
+
+  CPPUNIT_ASSERT(algorithmInstance.initialize(inputParams));
+  CPPUNIT_ASSERT(algorithmInstance.execute(outputParams));
+  
+// open output raster
+  double inputValue1 = 0;
+  double outputValue = 0;
+  for (unsigned int r = 0; r < rin->getNumberOfRows(); r++)
+    for (unsigned int c = 0; c < rin->getNumberOfColumns(); c++)
+    {
+      rin->getValue(c, r, inputValue1, 0);
+      outputParams.m_outputRasterPtr->getValue(c, r, outputValue, 0);
+      CPPUNIT_ASSERT_DOUBLES_EQUAL( inputValue1 / 2.0, outputValue, 0.0000001 );
+    }
+}
+
+void TsArithmeticOperations::RealDivisionInverse()
+{
+  // load input raster as a doubles raster
+  std::auto_ptr< te::rst::Raster > rin;
+  loadDoubleRaster(  TERRALIB_DATA_DIR"/rasters/cbers2b_rgb342_crop.tif",
+    rin );
+
+// defining input parameters, the arithmetic operation will be 
+// band 0 + band 1 - band 2
+  te::rp::ArithmeticOperations::InputParameters inputParams;
+  inputParams.m_arithmeticString = "1 / R0:0";
+  inputParams.m_normalize = false;
+  inputParams.m_inputRasters.push_back(rin.get());
+
+// create output raster info
+  std::map<std::string, std::string> orinfo;
+  orinfo["URI"] = "terralib_unittest_arithmetic_RealDivisionInverse.tif";
+
+// defining output parameters
+  te::rp::ArithmeticOperations::OutputParameters outputParams;
+  outputParams.m_rInfo = orinfo;
+  outputParams.m_rType = "GDAL";
+
+  te::rp::ArithmeticOperations algorithmInstance;
+
+  CPPUNIT_ASSERT(algorithmInstance.initialize(inputParams));
+  CPPUNIT_ASSERT(algorithmInstance.execute(outputParams));
+  
+// open output raster
+  double inputValue1 = 0;
+  double outputValue = 0;
+  for (unsigned int r = 0; r < rin->getNumberOfRows(); r++)
+    for (unsigned int c = 0; c < rin->getNumberOfColumns(); c++)
+    {
+      rin->getValue(c, r, inputValue1, 0);
+      outputParams.m_outputRasterPtr->getValue(c, r, outputValue, 0);
+      CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0 / inputValue1, outputValue, 0.0000001 );
+    }
+}
+
+
