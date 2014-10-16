@@ -30,6 +30,8 @@
 #include "../common/progress/TaskProgress.h"
 #include "../common/StringUtils.h"
 #include "../raster/Raster.h"
+#include "../raster/Band.h"
+#include "../memory/ExpansibleRaster.h"
 
 #include <cfloat>
 
@@ -56,7 +58,7 @@ namespace te
 
     void ArithmeticOperations::InputParameters::reset() throw( te::rp::Exception )
     {
-      m_rasterVec.clear();
+      m_inputRasters.clear();
       m_arithmeticString.clear();
       m_normalize = false;
       m_enableProgress = false;
@@ -67,7 +69,7 @@ namespace te
     {
       reset();
 
-      m_rasterVec = params.m_rasterVec;
+      m_inputRasters = params.m_inputRasters;
       m_arithmeticString = params.m_arithmeticString;
       m_normalize = params.m_normalize;
       m_enableProgress = params.m_enableProgress;
@@ -138,25 +140,6 @@ namespace te
         ArithmeticOperations::OutputParameters* >( &outputParams );
       TERP_TRUE_OR_THROW( outParamsPtr, "Invalid paramters" );
 
-      // Initializing the output raster
-
-     std::vector< te::rst::BandProperty* > bandsProperties;
-        bandsProperties.push_back( new te::rst::BandProperty(
-          *( m_inputParameters.m_rasterVec[0]->getBand(0)->getProperty() ) ) );  
-        bandsProperties[ 0 ]->m_type = te::dt::DOUBLE_TYPE;
-        
-        outParamsPtr->m_outputRasterPtr.reset( 
-          te::rst::RasterFactory::make(
-            outParamsPtr->m_rType, 
-            new te::rst::Grid( *( m_inputParameters.m_rasterVec[0]->getGrid() ) ),
-            bandsProperties,
-            outParamsPtr->m_rInfo,
-            0,
-            0 ) );
-        TERP_TRUE_OR_RETURN_FALSE( outParamsPtr->m_outputRasterPtr.get(),
-          "Output raster creation error" );
-
-
       // Counting the number of operations to be done
       std::string arithmetic_string = m_inputParameters.m_arithmeticString;
 
@@ -185,30 +168,43 @@ namespace te
 
       // Executing the arithmetic string
 
-      std::vector< boost::shared_ptr<te::rst::Raster> > vecRaster = m_inputParameters.m_rasterVec;
-
-      boost::shared_ptr<te::rst::Raster> auxRaster;
-      te::rst::Raster* output_raster = outParamsPtr->m_outputRasterPtr.get();
-      TERP_TRUE_OR_RETURN_FALSE( executeString( arithmetic_string, vecRaster, auxRaster, true ), 
+      std::auto_ptr<te::rst::Raster> auxRasterPtr;
+      TERP_TRUE_OR_RETURN_FALSE( executeString( arithmetic_string, m_inputParameters.m_inputRasters, auxRasterPtr, true ), 
       "Arithmetic string execution error" );
+      
+      // Initializing the output raster
+
+      std::vector< te::rst::BandProperty* > bandsProperties;
+      bandsProperties.push_back( new te::rst::BandProperty(
+        *( m_inputParameters.m_inputRasters[0]->getBand(0)->getProperty() ) ) );  
+        
+      outParamsPtr->m_outputRasterPtr.reset( 
+        te::rst::RasterFactory::make(
+          outParamsPtr->m_rType, 
+          new te::rst::Grid( *( auxRasterPtr->getGrid() ) ),
+          bandsProperties,
+          outParamsPtr->m_rInfo,
+          0,
+          0 ) );
+      TERP_TRUE_OR_RETURN_FALSE( outParamsPtr->m_outputRasterPtr.get(),
+        "Output raster creation error" );      
 
       // Copy result data to output raster
 
-      bool normalize_output = m_inputParameters.m_normalize;
-
-      const unsigned int nLines = (unsigned int)auxRaster->getNumberOfRows();
-      const unsigned int nCols = (unsigned int)auxRaster->getNumberOfColumns();
-      unsigned int line = 0;
+      const unsigned int nRows = (unsigned int)auxRasterPtr->getNumberOfRows();
+      const unsigned int nCols = (unsigned int)auxRasterPtr->getNumberOfColumns();
+      unsigned int row = 0;
       unsigned int col = 0;
       double value = 0;
-      te::rst::Raster& auxRasterRef = *auxRaster;
-      te::rst::Raster& outRasterRef = *output_raster;
+      te::rst::Raster& auxRasterRef = *auxRasterPtr;
+      te::rst::Raster& outRasterRef = *outParamsPtr->m_outputRasterPtr;
   
       double outAllowedMin = 0;
       double outAllowedMax = 0;
-      GetDataTypeRange( te::dt::DOUBLE_TYPE , outAllowedMin, outAllowedMax );
+      GetDataTypeRange( outParamsPtr->m_outputRasterPtr->getBandDataType( 0 ) , 
+        outAllowedMin, outAllowedMax );
   
-      if( normalize_output && ( output_raster->getBand(0)->getProperty()->getType() !=
+      if( m_inputParameters.m_normalize && ( outRasterRef.getBand(0)->getProperty()->getType() !=
         te::dt::DOUBLE_TYPE ) )
       {
         // Calculating the output gain and offset
@@ -216,11 +212,11 @@ namespace te
         double auxMin = DBL_MAX;
         double auxMax = -1.0 * auxMin;  
     
-        for( line = 0 ; line < nLines ; ++line )
+        for( row = 0 ; row < nRows ; ++row )
         {
           for( col = 0 ; col < nCols ; ++col )
           {
-            auxRasterRef.getValue( col, line, value, 0 );
+            auxRasterRef.getValue( col, row, value, 0 );
         
             if( auxMin > value ) auxMin = value;
             if( auxMax < value ) auxMax = value;
@@ -237,11 +233,11 @@ namespace te
           outputGain = ( ( outAllowedMax - outAllowedMin ) / ( auxMax - auxMin ) );       
         }
       
-        for( line = 0 ; line < nLines ; ++line )
+        for( row = 0 ; row < nRows ; ++row )
         {
           for( col = 0 ; col < nCols ; ++col )
           {
-            auxRasterRef.getValue( col, line, value, 0 );
+            auxRasterRef.getValue( col, row, value, 0 );
         
             value += outputOffset;
             value *= outputGain;
@@ -249,7 +245,7 @@ namespace te
             value = MIN( value, outAllowedMax );
             value = MAX( value, outAllowedMin );
         
-            outRasterRef.setValue( col, line, value, 0 );
+            outRasterRef.setValue( col, row, value, 0 );
           }
       
           //TERP_FALSE_OR_RETURN( progress_.Increment(), "Canceled by the user" );
@@ -257,16 +253,16 @@ namespace te
       }
       else
       {
-        for( line = 0 ; line < nLines ; ++line )
+        for( row = 0 ; row < nRows ; ++row )
         {
           for( col = 0 ; col < nCols ; ++col )
           {
-            auxRasterRef.getValue( col, line, value, 0 );
+            auxRasterRef.getValue( col, row, value, 0 );
         
             value = MIN( value, outAllowedMax );
             value = MAX( value, outAllowedMin );        
         
-            outRasterRef.setValue( col, line, value, 0 );
+            outRasterRef.setValue( col, row, value, 0 );
           }
       
           //TERP_FALSE_OR_RETURN( progress_.Increment(), "Canceled by the user" );
@@ -295,20 +291,20 @@ namespace te
 
       // Checking the feeder
 
-      TERP_TRUE_OR_RETURN_FALSE( !m_inputParameters.m_rasterVec.empty(),
+      TERP_TRUE_OR_RETURN_FALSE( !m_inputParameters.m_inputRasters.empty(),
         "Invalid number of rasters" );
 
-      for( std::size_t t = 0; t <  m_inputParameters.m_rasterVec.size(); ++t )
+      for( std::size_t t = 0; t <  m_inputParameters.m_inputRasters.size(); ++t )
       {
-        TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_rasterVec[t] != 0, 
+        TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_inputRasters[t] != 0, 
           "Invalid raster" )
 
-        TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_rasterVec[t]->getNumberOfRows() ==
-          m_inputParameters.m_rasterVec[0]->getNumberOfRows(),
+        TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_inputRasters[t]->getNumberOfRows() ==
+          m_inputParameters.m_inputRasters[0]->getNumberOfRows(),
           "Invalid raster" )
 
-        TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_rasterVec[t]->getNumberOfColumns() ==
-          m_inputParameters.m_rasterVec[0]->getNumberOfColumns(),
+        TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_inputRasters[t]->getNumberOfColumns() ==
+          m_inputParameters.m_inputRasters[0]->getNumberOfColumns(),
           "Invalid raster" )
       }
 
@@ -317,9 +313,9 @@ namespace te
       TERP_TRUE_OR_RETURN_FALSE(!m_inputParameters.m_arithmeticString.empty(),
         "Arithmetic string is empty" )
 
-      boost::shared_ptr<te::rst::Raster> rasterNull;
+      std::auto_ptr<te::rst::Raster> rasterNull;
       TERP_TRUE_OR_RETURN_FALSE(executeString(m_inputParameters.m_arithmeticString, 
-      m_inputParameters.m_rasterVec, rasterNull, false), "Invalid arithmetic string" )
+      m_inputParameters.m_inputRasters, rasterNull, false), "Invalid arithmetic string" )
 
       m_isInitialized = true;
 
@@ -332,8 +328,8 @@ namespace te
     }
 
     bool ArithmeticOperations::executeString( const std::string& aStr, 
-      std::vector< boost::shared_ptr<te::rst::Raster> > inRasters,
-      boost::shared_ptr<te::rst::Raster>& outRaster,
+      const std::vector< te::rst::Raster* >& inRasters,
+      std::auto_ptr<te::rst::Raster>& outRaster,
       bool generateOutput ) const
     {
       std::vector< std::string > infixTokensVec;
@@ -364,7 +360,7 @@ namespace te
       
             ExecStackElement auxEle;
             auxEle.m_isRaster = true;
-            auxEle.m_raster = inRasters[auxRasterIdx];
+            auxEle.m_rasterNPtr = inRasters[auxRasterIdx];
             auxEle.m_rasterBand = auxBandIdx;
           
             execStack.push( auxEle );
@@ -394,9 +390,9 @@ namespace te
         }
     
         TERP_TRUE_OR_RETURN_FALSE( execStack.size() == 1, "Invalid stack size" );
-        TERP_TRUE_OR_RETURN_FALSE( execStack.top().m_raster, "Stack result error" );
+        TERP_TRUE_OR_RETURN_FALSE( execStack.top().m_isRaster, "Stack result error" );
       
-        outRaster = execStack.top().m_raster;
+        outRaster.reset( execStack.top().m_rasterHandler.release() );
       }
   
       return true;
@@ -557,470 +553,204 @@ namespace te
       {
         return false;
       }
+      
+      ExecStackElement sElem1 = execStack.top();
+      execStack.pop();
+  
+      ExecStackElement sElem2 = execStack.top();
+      execStack.pop();   
+      
+      // Choosing the binary operator function
+      
+      BinOpFuncPtrT binOptFunctPtr = 0;
+      
+      if( token == "+" )
+      {
+        binOptFunctPtr = &ArithmeticOperations::additionBinOp;
+      }
+      else if( token == "-" )
+      { 
+        binOptFunctPtr = &ArithmeticOperations::subtractionBinOp;
+      }
+      else if( token == "*" )
+      { 
+        binOptFunctPtr = &ArithmeticOperations::multiplicationBinOp;
+      }
+      else if( token == "/" )
+      {
+        binOptFunctPtr = &ArithmeticOperations::divisionBinOp;
+      }
       else
       {
-        ExecStackElement sElem1 = execStack.top();
-        execStack.pop();
-    
-        ExecStackElement sElem2 = execStack.top();
-        execStack.pop();    
-    
-        if( token == "+" )
+        TERP_LOG_AND_RETURN_FALSE( "Invalid operator" );
+      }
+        
+      // executing the choosen operator
+      
+      ExecStackElement outElement;
+      outElement.m_isRaster = true;
+      outElement.m_rasterBand = 0;        
+      
+      if( generateOutput )
+      {
+        if( ( sElem1.m_isRaster ) && ( sElem2.m_isRaster ) )
         {
-          if( ( sElem1.m_isRaster ) && ( sElem2.m_isRaster ) )
-          {
-            const unsigned int nLines = (unsigned int) sElem1.m_raster->getNumberOfRows();
-            const unsigned int nCols = (unsigned int) sElem1.m_raster->getNumberOfColumns();
-
-            ExecStackElement outElement;
-            outElement.m_isRaster = true;
-            TERP_TRUE_OR_RETURN_FALSE( allocResultRaster( nLines, nCols, outElement.m_raster ), 
-              "Raster allocation error" );
-
-            te::rst::Raster& outRasterRef = *outElement.m_raster;
-            te::rst::Raster& inRaster1Ref = *sElem1.m_raster;
-            te::rst::Raster& inRaster2Ref = *sElem2.m_raster;
-              
-            if( generateOutput )
-            {
-              unsigned int line = 0;
-              unsigned int col = 0;
-              double value1 = 0;
-              double value2 = 0;
-          
-              for( line = 0 ; line < nLines ; ++line )
-              {
-                for( col = 0 ; col < nCols ; ++col )
-                {
-                  inRaster1Ref.getValue( col, line, value1, sElem1.m_rasterBand );
-                  inRaster2Ref.getValue( col, line, value2, sElem2.m_rasterBand );
-              
-                  outRasterRef.setValue( col, line, value1 + value2, 0 );
-                }
-            
-               // TERP_FALSE_OR_RETURN( progress_.Increment(), "Canceled by the user" );
-              }
-            }
-           
-            execStack.push( outElement );
-          }
-          else if( ( sElem1.m_isRaster ) && ( sElem2.m_isRealNumber ) )
-          {
-            const unsigned int nLines = (unsigned int) sElem1.m_raster->getNumberOfRows();
-            const unsigned int nCols = (unsigned int) sElem1.m_raster->getNumberOfColumns();
-        
-            ExecStackElement outElement;
-            outElement.m_isRaster = true;
-            TERP_TRUE_OR_RETURN_FALSE( allocResultRaster( nLines, nCols, outElement.m_raster ), 
-              "Raster allocation error" );
-          
-            te::rst::Raster& outRasterRef = *outElement.m_raster;
-            te::rst::Raster& inRaster1Ref = *sElem1.m_raster;
-              
-            if( generateOutput )
-            {
-              unsigned int line = 0;
-              unsigned int col = 0;
-              double value1 = 0;
-          
-              for( line = 0 ; line < nLines ; ++line )
-              {
-                for( col = 0 ; col < nCols ; ++col )
-                {
-                  inRaster1Ref.getValue( col, line, value1, sElem1.m_rasterBand );
-              
-                  outRasterRef.setValue( col, line, value1 + sElem2.m_realNumberValue, 0 );
-                }
-            
-                //TERP_FALSE_OR_RETURN( progress_.Increment(), "Canceled by the user" );
-              }
-            }
-           
-            execStack.push( outElement );
-          }   
-          else if( ( sElem1.m_isRealNumber ) && ( sElem2.m_isRaster ) )
-          {
-            const unsigned int nLines = (unsigned int) sElem2.m_raster->getNumberOfRows();
-            const unsigned int nCols = (unsigned int) sElem2.m_raster->getNumberOfColumns();
-        
-            ExecStackElement outElement;
-            outElement.m_isRaster = true;
-            TERP_TRUE_OR_RETURN_FALSE( allocResultRaster( nLines, nCols, outElement.m_raster ), 
-              "Raster allocation error" );
-          
-            te::rst::Raster& outRasterRef = *outElement.m_raster;
-            te::rst::Raster& inRaster2Ref = *sElem2.m_raster;
-              
-            if( generateOutput )
-            {
-              unsigned int line = 0;
-              unsigned int col = 0;
-              double value2 = 0;
-          
-              for( line = 0 ; line < nLines ; ++line )
-              {
-                for( col = 0 ; col < nCols ; ++col )
-                {
-                  inRaster2Ref.getValue( col, line, value2, sElem2.m_rasterBand );
-              
-                  outRasterRef.setValue( col, line, value2 + sElem1.m_realNumberValue, 0 );
-                }
-            
-                //TERP_FALSE_OR_RETURN( progress_.Increment(), "Canceled by the user" );
-              }
-            }
-           
-            execStack.push( outElement );
-          }          
-          else
-          {
-            TERP_LOG_AND_RETURN_FALSE( "Invalid operation" );
-          }
+          TERP_TRUE_OR_RETURN_FALSE( execBinaryOperatorRasterXRaster( 
+            *sElem2.m_rasterNPtr, sElem2.m_rasterBand, *sElem1.m_rasterNPtr, 
+            sElem1.m_rasterBand, binOptFunctPtr, outElement.m_rasterHandler ),
+            "Operator execution error" );
+          outElement.m_rasterNPtr = outElement.m_rasterHandler.get();
         }
-        else if( token == "-" )
+        else if( ( sElem1.m_isRaster ) && ( sElem2.m_isRealNumber ) )
         {
-          if( ( sElem1.m_isRaster ) && ( sElem2.m_isRaster ) )
-          {
-            const unsigned int nLines = (unsigned int) sElem1.m_raster->getNumberOfRows();
-            const unsigned int nCols = (unsigned int) sElem1.m_raster->getNumberOfColumns();
-        
-            ExecStackElement outElement;
-            outElement.m_isRaster = true;
-            TERP_TRUE_OR_RETURN_FALSE( allocResultRaster( nLines, nCols, outElement.m_raster ), 
-              "Raster allocation error" );
-          
-            te::rst::Raster& outRasterRef = *outElement.m_raster;
-            te::rst::Raster& inRaster1Ref = *sElem1.m_raster;
-            te::rst::Raster& inRaster2Ref = *sElem2.m_raster;  
-              
-            if( generateOutput )
-            {
-              unsigned int line = 0;
-              unsigned int col = 0;
-              double value1 = 0;
-              double value2 = 0;
-          
-              for( line = 0 ; line < nLines ; ++line )
-              {
-                for( col = 0 ; col < nCols ; ++col )
-                {
-                  inRaster1Ref.getValue( col, line, value1, sElem1.m_rasterBand );
-                  inRaster2Ref.getValue( col, line, value2, sElem2.m_rasterBand );
-              
-                  outRasterRef.setValue( col, line, value2 - value1, 0 );
-                }
-            
-                //TERP_FALSE_OR_RETURN( progress_.Increment(), "Canceled by the user" );
-              }
-            }
-           
-            execStack.push( outElement );
-          }
-          else if( ( sElem1.m_isRaster ) && ( sElem2.m_isRealNumber ) )
-          {
-            const unsigned int nLines = (unsigned int) sElem1.m_raster->getNumberOfRows();
-            const unsigned int nCols = (unsigned int) sElem1.m_raster->getNumberOfColumns();
-        
-            ExecStackElement outElement;
-            outElement.m_isRaster = true;
-            TERP_TRUE_OR_RETURN_FALSE( allocResultRaster( nLines, nCols, outElement.m_raster ), 
-              "Raster allocation error" );
-          
-             te::rst::Raster& outRasterRef = *outElement.m_raster;
-             te::rst::Raster& inRaster1Ref = *sElem1.m_raster;
-              
-            if( generateOutput )
-            {
-              unsigned int line = 0;
-              unsigned int col = 0;
-              double value1 = 0;
-          
-              for( line = 0 ; line < nLines ; ++line )
-              {
-                for( col = 0 ; col < nCols ; ++col )
-                {
-                  inRaster1Ref.getValue( col, line, value1, sElem1.m_rasterBand );
-              
-                  outRasterRef.setValue( col, line, sElem2.m_realNumberValue - value1, 0 );
-                }
-            
-                //TERP_FALSE_OR_RETURN( progress_.Increment(), "Canceled by the user" );
-              }
-            }
-           
-            execStack.push( outElement );
-          }   
-          else if( ( sElem1.m_isRealNumber ) && ( sElem2.m_isRaster ) )
-          {
-            const unsigned int nLines = (unsigned int) sElem2.m_raster->getNumberOfRows();
-            const unsigned int nCols = (unsigned int)sElem2.m_raster->getNumberOfColumns();
-
-            ExecStackElement outElement;
-            outElement.m_isRaster = true;
-            TERP_TRUE_OR_RETURN_FALSE( allocResultRaster( nLines, nCols, outElement.m_raster ), 
-              "Raster allocation error" );
-
-            te::rst::Raster& outRasterRef = *outElement.m_raster;
-            te::rst::Raster& inRaster2Ref = *sElem2.m_raster;
-              
-            if( generateOutput )
-            {
-              unsigned int line = 0;
-              unsigned int col = 0;
-              double value2 = 0;
-
-              for( line = 0 ; line < nLines ; ++line )
-              {
-                for( col = 0 ; col < nCols ; ++col )
-                {
-                  inRaster2Ref.getValue( col, line, value2, sElem2.m_rasterBand );
-
-                  outRasterRef.setValue( col, line, value2 - sElem1.m_realNumberValue, 0 );
-                }
-
-                //TERP_FALSE_OR_RETURN( progress_.Increment(), "Canceled by the user" );
-              }
-            }
-
-            execStack.push( outElement );
-          }
-          else
-          {
-            TERP_LOG_AND_RETURN_FALSE( "Invalid operation" );
-          }
+          TERP_TRUE_OR_RETURN_FALSE( execBinaryOperatorRasterXReal( 
+            *sElem1.m_rasterNPtr, sElem1.m_rasterBand, sElem2.m_realNumberValue,
+            binOptFunctPtr, outElement.m_rasterHandler, false ),
+            "Operator execution error" );            
+          outElement.m_rasterNPtr = outElement.m_rasterHandler.get();
         }
-        else if( token == "*" )
+        else if( ( sElem1.m_isRealNumber ) && ( sElem2.m_isRaster ) )
         {
-          if( ( sElem1.m_isRaster ) && ( sElem2.m_isRaster ) )
-          {
-            const unsigned int nLines = (unsigned int) sElem1.m_raster->getNumberOfRows();
-            const unsigned int nCols = (unsigned int) sElem1.m_raster->getNumberOfColumns();
-        
-            ExecStackElement outElement;
-            outElement.m_isRaster = true;
-            TERP_TRUE_OR_RETURN_FALSE( allocResultRaster( nLines, nCols, outElement.m_raster ), 
-              "Raster allocation error" );
-          
-            te::rst::Raster& outRasterRef = *outElement.m_raster;
-            te::rst::Raster& inRaster1Ref = *sElem1.m_raster;
-            te::rst::Raster& inRaster2Ref = *sElem2.m_raster;  
-              
-            if( generateOutput )
-            {
-              unsigned int line = 0;
-              unsigned int col = 0;
-              double value1 = 0;
-              double value2 = 0;
-          
-              for( line = 0 ; line < nLines ; ++line )
-              {
-                for( col = 0 ; col < nCols ; ++col )
-                {
-                  inRaster1Ref.getValue( col, line, value1, sElem1.m_rasterBand );
-                  inRaster2Ref.getValue( col, line, value2, sElem2.m_rasterBand );
-
-                  outRasterRef.setValue( col, line, value1 * value2, 0 );
-                }
-
-                //TERP_FALSE_OR_RETURN( progress_.Increment(), "Canceled by the user" );
-              }
-            }
-
-            execStack.push( outElement );
-          }
-          else if( ( sElem1.m_isRaster ) && ( sElem2.m_isRealNumber ) )
-          {
-            const unsigned int nLines = (unsigned int) sElem1.m_raster->getNumberOfRows();
-            const unsigned int nCols = (unsigned int) sElem1.m_raster->getNumberOfColumns();
-
-            ExecStackElement outElement;
-            outElement.m_isRaster = true;
-            TERP_TRUE_OR_RETURN_FALSE( allocResultRaster( nLines, nCols, outElement.m_raster ), 
-              "Raster allocation error" );
-
-            te::rst::Raster& outRasterRef = *outElement.m_raster;
-            te::rst::Raster& inRaster1Ref = *sElem1.m_raster;
-
-            if( generateOutput )
-            {
-              unsigned int line = 0;
-              unsigned int col = 0;
-              double value1 = 0;
-
-              for( line = 0 ; line < nLines ; ++line )
-              {
-                for( col = 0 ; col < nCols ; ++col )
-                {
-                  inRaster1Ref.getValue( col, line, value1, sElem1.m_rasterBand );
-
-                  outRasterRef.setValue( col, line, value1 * sElem2.m_realNumberValue, 0 );
-                }
-
-                //TERP_FALSE_OR_RETURN( progress_.Increment(), "Canceled by the user" );
-              }
-            }
-
-            execStack.push( outElement );
-          }   
-          else if( ( sElem1.m_isRealNumber ) && ( sElem2.m_isRaster ) )
-          {
-            const unsigned int nLines = (unsigned int) sElem2.m_raster->getNumberOfRows();
-            const unsigned int nCols = (unsigned int) sElem2.m_raster->getNumberOfColumns();
-
-            ExecStackElement outElement;
-            outElement.m_isRaster = true;
-            TERP_TRUE_OR_RETURN_FALSE( allocResultRaster( nLines, nCols, outElement.m_raster ), 
-              "Raster allocation error" );
-
-            te::rst::Raster& outRasterRef = *outElement.m_raster;
-            te::rst::Raster& inRaster2Ref = *sElem2.m_raster;
-
-            if( generateOutput )
-            {
-              unsigned int line = 0;
-              unsigned int col = 0;
-              double value2 = 0;
-
-              for( line = 0 ; line < nLines ; ++line )
-              {
-                for( col = 0 ; col < nCols ; ++col )
-                {
-                  inRaster2Ref.getValue( col, line, value2, sElem2.m_rasterBand );
-
-                  outRasterRef.setValue( col, line, value2 * sElem1.m_realNumberValue, 0 );
-                }
-
-                //TERP_FALSE_OR_RETURN( progress_.Increment(), "Canceled by the user" );
-              }
-            }
-
-            execStack.push( outElement );
-          }
-          else
-          {
-            TERP_LOG_AND_RETURN_FALSE( "Invalid operation" );
-          }
-        }
-        else if( token == "/" )
-        {
-          if( ( sElem1.m_isRaster ) && ( sElem2.m_isRaster ) )
-          {
-            const unsigned int nLines = (unsigned int) sElem1.m_raster->getNumberOfRows();
-            const unsigned int nCols = (unsigned int) sElem1.m_raster->getNumberOfColumns();
-
-            ExecStackElement outElement;
-            outElement.m_isRaster = true;
-            TERP_TRUE_OR_RETURN_FALSE( allocResultRaster( nLines, nCols, outElement.m_raster ), 
-              "Raster allocation error" );
-
-            te::rst::Raster& outRasterRef = *outElement.m_raster;
-            te::rst::Raster& inRaster1Ref = *sElem1.m_raster;
-            te::rst::Raster& inRaster2Ref = *sElem2.m_raster;
-
-            if( generateOutput )
-            {
-              unsigned int line = 0;
-              unsigned int col = 0;
-              double value1 = 0;
-              double value2 = 0;
-
-              for( line = 0 ; line < nLines ; ++line )
-              {
-                for( col = 0 ; col < nCols ; ++col )
-                {
-                  inRaster1Ref.getValue( col, line, value1, sElem1.m_rasterBand );
-                  inRaster2Ref.getValue( col, line, value2, sElem2.m_rasterBand );
-
-                  outRasterRef.setValue( col, line, value2 / value1, 0 );
-                }
-
-                //TERP_FALSE_OR_RETURN( progress_.Increment(), "Canceled by the user" );
-              }
-            }
-           
-            execStack.push( outElement );
-          }
-          else if( ( sElem1.m_isRaster ) && ( sElem2.m_isRealNumber ) )
-          {
-            const unsigned int nLines = (unsigned int) sElem1.m_raster->getNumberOfRows();
-            const unsigned int nCols = (unsigned int) sElem1.m_raster->getNumberOfColumns();
-
-            ExecStackElement outElement;
-            outElement.m_isRaster = true;
-            TERP_TRUE_OR_RETURN_FALSE( allocResultRaster( nLines, nCols, outElement.m_raster ), 
-              "Raster allocation error" );
-
-            te::rst::Raster& outRasterRef = *outElement.m_raster;
-            te::rst::Raster& inRaster1Ref = *sElem1.m_raster;
-
-            if( generateOutput )
-            {
-              unsigned int line = 0;
-              unsigned int col = 0;
-              double value1 = 0;
-          
-              for( line = 0 ; line < nLines ; ++line )
-              {
-                for( col = 0 ; col < nCols ; ++col )
-                {
-                  inRaster1Ref.getValue( col, line, value1, sElem1.m_rasterBand );
-
-                  outRasterRef.setValue( col, line, sElem2.m_realNumberValue / value1, 0 );
-                }
-
-                //TERP_FALSE_OR_RETURN( progress_.Increment(), "Canceled by the user" );
-              }
-            }
-
-            execStack.push( outElement );
-          }
-          else if( ( sElem1.m_isRealNumber ) && ( sElem2.m_isRaster ) )
-          {
-            const unsigned int nLines = (unsigned int) sElem2.m_raster->getNumberOfRows();
-            const unsigned int nCols = (unsigned int) sElem2.m_raster->getNumberOfColumns();
-
-            ExecStackElement outElement;
-            outElement.m_isRaster = true;
-            TERP_TRUE_OR_RETURN_FALSE( allocResultRaster( nLines, nCols, outElement.m_raster ), 
-              "Raster allocation error" );
-
-            te::rst::Raster& outRasterRef = *outElement.m_raster;
-            te::rst::Raster& inRaster2Ref = *sElem2.m_raster;
-
-            if( generateOutput )
-            {
-              unsigned int line = 0;
-              unsigned int col = 0;
-              double value2 = 0;
-
-              for( line = 0 ; line < nLines ; ++line )
-              {
-                for( col = 0 ; col < nCols ; ++col )
-                {
-                  inRaster2Ref.getValue( col, line, value2, sElem2.m_rasterBand );
-
-                  outRasterRef.setValue( col, line, value2 / sElem1.m_realNumberValue, 0 );
-                }
-
-                //TERP_FALSE_OR_RETURN( progress_.Increment(), "Canceled by the user" );
-              }
-            }
-
-            execStack.push( outElement );
-          }       
-          else
-          {
-            TERP_LOG_AND_RETURN_FALSE( "Invalid operation" );
-          }
+          TERP_TRUE_OR_RETURN_FALSE( execBinaryOperatorRasterXReal( 
+            *sElem2.m_rasterNPtr, sElem2.m_rasterBand, sElem1.m_realNumberValue,
+            binOptFunctPtr, outElement.m_rasterHandler, true ),
+            "Operator execution error" );   
+          outElement.m_rasterNPtr = outElement.m_rasterHandler.get();
         }
         else
         {
-          TERP_LOG_AND_RETURN_FALSE( "Invalid operator" );
+          TERP_LOG_AND_RETURN_FALSE( "Invalid stack elements" );
         }
       }
+      
+      execStack.push( outElement );
   
       return true;
     }
+    
+    bool ArithmeticOperations::execBinaryOperatorRasterXRaster( 
+      const te::rst::Raster& inRaster1, 
+      const unsigned int band1Idx, const te::rst::Raster& inRaster2, 
+      const unsigned int band2Idx,
+      const BinOpFuncPtrT binOptFunctPtr,
+      std::auto_ptr<te::rst::Raster>& outRasterPtr ) const
+    {
+      if( inRaster1.getGrid()->operator==( *inRaster2.getGrid() ) )
+      {
+        if( ! allocResultRaster( *inRaster1.getGrid(), outRasterPtr ) )
+        {
+          return false;
+        }
+        
+        const unsigned int nRows = inRaster1.getNumberOfRows();
+        const unsigned int nCols = inRaster1.getNumberOfColumns();
+        const te::rst::Band& inBand1 = *inRaster1.getBand( band1Idx );
+        const te::rst::Band& inBand2 = *inRaster2.getBand( band2Idx );
+        te::rst::Band& outBand = *outRasterPtr->getBand( 0 );
+        const double inNoData1 = inBand1.getProperty()->m_noDataValue;
+        const double inNoData2 = inBand2.getProperty()->m_noDataValue;
+        const double outNoData = outBand.getProperty()->m_noDataValue;
+        unsigned int row = 0;
+        unsigned int col = 0;
+        double value1 = 0;
+        double value2 = 0;
+        double outValue = 0;
+        
+        for( row = 0 ; row < nRows ; ++row )
+        {
+          for( col = 0 ; col < nCols ; ++col )
+          {
+            inBand1.getValue( col, row, value1 );
+            inBand2.getValue( col, row, value2 );
+            
+            if( ( value1 != inNoData1 ) && ( value2 != inNoData2 ) )
+            {
+              (this->*binOptFunctPtr)( value1, value2, outValue );
+              outBand.setValue( col, row, outValue );
+            }
+            else
+            {
+              outBand.setValue( col, row, outNoData );
+            }
+          }
+        }
+        
+        return true;
+      }
+      else
+      {
+        return false;
+      }
+      
+      return true;
+    }
+    
+    bool ArithmeticOperations::execBinaryOperatorRasterXReal( 
+      const te::rst::Raster& inRaster, 
+      const unsigned int bandIdx, const double value, 
+      const BinOpFuncPtrT binOptFunctPtr,
+      std::auto_ptr<te::rst::Raster>& outRasterPtr,
+      const bool realNumberIsRigthtTerm ) const
+    {
+      if( ! allocResultRaster( *inRaster.getGrid(), outRasterPtr ) )
+      {
+        return false;
+      }
+      
+      const unsigned int nRows = inRaster.getNumberOfRows();
+      const unsigned int nCols = inRaster.getNumberOfColumns();
+      const te::rst::Band& inBand = *inRaster.getBand( bandIdx );
+      te::rst::Band& outBand = *outRasterPtr->getBand( 0 );
+      const double inNoData = inBand.getProperty()->m_noDataValue;
+      const double outNoData = outBand.getProperty()->m_noDataValue;
+      unsigned int row = 0;
+      unsigned int col = 0;
+      double value1 = 0;
+      double outValue = 0;
+      
+      if( realNumberIsRigthtTerm )
+      {
+        for( row = 0 ; row < nRows ; ++row )
+        {
+          for( col = 0 ; col < nCols ; ++col )
+          {
+            inBand.getValue( col, row, value1 );
+            
+            if( value1 != inNoData )
+            {
+              (this->*binOptFunctPtr)( value1, value, outValue );
+              outBand.setValue( col, row, outValue );
+            }
+            else
+            {
+              outBand.setValue( col, row, outNoData );
+            }
+          }
+        }
+      }
+      else
+      {
+        for( row = 0 ; row < nRows ; ++row )
+        {
+          for( col = 0 ; col < nCols ; ++col )
+          {
+            inBand.getValue( col, row, value1 );
+            
+            if( value1 != inNoData )
+            {
+              (this->*binOptFunctPtr)( value, value1, outValue );
+              outBand.setValue( col, row, outValue );
+            }
+            else
+            {
+              outBand.setValue( col, row, outNoData );
+            }
+          }
+        }
+      }
+      
+      return true;
+    }    
 
     bool ArithmeticOperations::execUnaryOperator( const std::string& token, ExecStackT& 
       execStack, bool generateOutput ) const
@@ -1055,20 +785,20 @@ namespace te
       return true;
     }
 
-    bool ArithmeticOperations::allocResultRaster( unsigned int nLines, unsigned int nCols,
-      boost::shared_ptr<te::rst::Raster>& rasterPtr ) const
+    bool ArithmeticOperations::allocResultRaster( const te::rst::Grid& grid,
+      std::auto_ptr<te::rst::Raster>& rasterPtr ) const
     {
       std::map<std::string, std::string> rinfo;
+      
+      std::vector< te::rst::BandProperty * > bandsProperties;
+      bandsProperties.push_back( new te::rst::BandProperty( 0, te::dt::DOUBLE_TYPE, "" ) );
+      bandsProperties[ 0 ]->m_blkw = grid.getNumberOfColumns();
+      bandsProperties[ 0 ]->m_blkh = 1;
+      bandsProperties[ 0 ]->m_nblocksx = 1;
+      bandsProperties[ 0 ]->m_nblocksy = grid.getNumberOfRows();
  
-      rinfo["MEM_RASTER_NROWS"] = boost::lexical_cast<std::string>(nLines);
-      rinfo["MEM_RASTER_NCOLS"] = boost::lexical_cast<std::string>(nCols);
-      rinfo["MEM_RASTER_DATATYPE"] = te::common::Convert2String(te::dt::DOUBLE_TYPE);
-      rinfo["MEM_RASTER_NBANDS"] = "1";
-      rinfo["MEM_TILED_RASTER"] = "TRUE";
-      rinfo["MEM_TILE_WIDTH"] = "512";
-      rinfo["MEM_TILE_HEIGHT"] = "512";
- 
-      rasterPtr.reset(te::rst::RasterFactory::make("MEM", 0, std::vector<te::rst::BandProperty*>(), rinfo));
+      rasterPtr.reset( new te::mem::ExpansibleRaster( 50, new te::rst::Grid(
+        grid ), bandsProperties ) );
 
       return true;
     }

@@ -42,18 +42,52 @@
 class TsArithmeticOperations : public CPPUNIT_NS::TestFixture
 {
   CPPUNIT_TEST_SUITE( TsArithmeticOperations );
+  
+  CPPUNIT_TEST( RasterSum );
+  
+  CPPUNIT_TEST( RasterSubtraction );
+  
+  CPPUNIT_TEST( RasterProduct );
+  
+  CPPUNIT_TEST( RasterDivision );
 
-  CPPUNIT_TEST( SumSubtraction );
+  CPPUNIT_TEST( RealSum );
+  
+  CPPUNIT_TEST( RealSubtraction );
+  
+  CPPUNIT_TEST( RealSubtractionInverse );
 
-  CPPUNIT_TEST( ProductDivision );
-
+  CPPUNIT_TEST( RealProduct );
+  
+  CPPUNIT_TEST( RealDivision );
+  
+  CPPUNIT_TEST( RealDivisionInverse );
+  
   CPPUNIT_TEST_SUITE_END();
 
   protected :
+    
+  void loadDoubleRaster( const std::string& rasterFileName, std::auto_ptr< te::rst::Raster >& rasterPtr );
 
-    void SumSubtraction();
+  void RasterSum();
+  
+  void RasterSubtraction();
+  
+  void RasterProduct();
+  
+  void RasterDivision();
 
-    void ProductDivision();
+  void RealSum();
+  
+  void RealSubtraction();
+  
+  void RealSubtractionInverse();
+
+  void RealProduct();
+  
+  void RealDivision();
+  
+  void RealDivisionInverse();
 
 };
 
