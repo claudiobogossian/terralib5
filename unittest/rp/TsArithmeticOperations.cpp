@@ -486,4 +486,37 @@ void TsArithmeticOperations::RealDivisionInverse()
     }
 }
 
+void TsArithmeticOperations::diffGrid()
+{
+  std::map<std::string, std::string> rinfo1;
+  rinfo1["URI"] = TERRALIB_DATA_DIR"/rasters/cbers_rgb342_crop1.tif";
+  std::auto_ptr<te::rst::Raster> rin1(te::rst::RasterFactory::open(rinfo1));  
+  
+  std::map<std::string, std::string> rinfo2;
+  rinfo2["URI"] = TERRALIB_DATA_DIR"/rasters/cbers_rgb342_crop2.tif";
+  std::auto_ptr<te::rst::Raster> rin2(te::rst::RasterFactory::open(rinfo2));  
+  
+
+// defining input parameters, the arithmetic operation will be 
+// band 0 + band 1 - band 2
+  te::rp::ArithmeticOperations::InputParameters inputParams;
+  inputParams.m_arithmeticString = "R0:0 + R1:0";
+  inputParams.m_normalize = true;
+  inputParams.m_inputRasters.push_back(rin1.get());
+  inputParams.m_inputRasters.push_back(rin2.get());
+
+// create output raster info
+  std::map<std::string, std::string> orinfo;
+  orinfo["URI"] = "terralib_unittest_arithmetic_diffGrid.tif";
+
+// defining output parameters
+  te::rp::ArithmeticOperations::OutputParameters outputParams;
+  outputParams.m_rInfo = orinfo;
+  outputParams.m_rType = "GDAL";
+
+  te::rp::ArithmeticOperations algorithmInstance;
+
+  CPPUNIT_ASSERT(algorithmInstance.initialize(inputParams));
+  CPPUNIT_ASSERT(algorithmInstance.execute(outputParams));
+}
 

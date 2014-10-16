@@ -63,6 +63,8 @@ class TsArithmeticOperations : public CPPUNIT_NS::TestFixture
   
   CPPUNIT_TEST( RealDivisionInverse );
   
+  CPPUNIT_TEST( diffGrid );
+  
   CPPUNIT_TEST_SUITE_END();
 
   protected :
@@ -88,6 +90,8 @@ class TsArithmeticOperations : public CPPUNIT_NS::TestFixture
   void RealDivision();
   
   void RealDivisionInverse();
+  
+  void diffGrid();
 
 };
 

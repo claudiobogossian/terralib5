@@ -27,6 +27,8 @@
 
 #include "Algorithm.h"
 #include "../raster/Grid.h"
+#include "../raster/Interpolator.h"
+#include "../common/progress/TaskProgress.h"
 
 #include <map>
 #include <memory>
@@ -80,6 +82,8 @@ namespace te
             bool m_normalize; //!< Output values normalization will be performed to fit the allowed values range (default:false).
 
             bool m_enableProgress; //!< Enable/Disable the progress interface (default:false).
+            
+            te::rst::Interpolator::Method m_interpMethod; //!< The raster interpolator method (default:NearestNeighbor).
             
             InputParameters();
             
@@ -234,11 +238,13 @@ namespace te
           \param inRasters Input rasters pointers.
           \param outRaster Output raster pointer (pre-initiated).
           \param generateOutput If true, the output raster data will be generated, if false only the automata execution will be performed..
+          \param progressPtr A pointer to a progress interface to be pulsed on each operation or a null pointer.
         */
         bool executeString( const std::string& aStr, 
           const std::vector< te::rst::Raster* >& inRasters,
           std::auto_ptr<te::rst::Raster>& outRaster,
-          bool generateOutput ) const;
+          bool generateOutput,
+          te::common::TaskProgress* const progressPtr ) const;
         
         /*!
           \brief Convert the input tokens vector from the infix notation to postfix notation.

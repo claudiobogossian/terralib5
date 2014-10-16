@@ -32,6 +32,7 @@
 #include "../raster/Raster.h"
 #include "../raster/Band.h"
 #include "../memory/ExpansibleRaster.h"
+#include "../srs/Converter.h"
 
 #include <cfloat>
 
@@ -62,6 +63,7 @@ namespace te
       m_arithmeticString.clear();
       m_normalize = false;
       m_enableProgress = false;
+      m_interpMethod = te::rst::Interpolator::NearestNeighbor;
     }
 
     const ArithmeticOperations::InputParameters& ArithmeticOperations::InputParameters::operator=(
@@ -73,6 +75,7 @@ namespace te
       m_arithmeticString = params.m_arithmeticString;
       m_normalize = params.m_normalize;
       m_enableProgress = params.m_enableProgress;
+      m_interpMethod = params.m_interpMethod;
 
       return *this;
     }
@@ -169,14 +172,20 @@ namespace te
       // Executing the arithmetic string
 
       std::auto_ptr<te::rst::Raster> auxRasterPtr;
-      TERP_TRUE_OR_RETURN_FALSE( executeString( arithmetic_string, m_inputParameters.m_inputRasters, auxRasterPtr, true ), 
+      TERP_TRUE_OR_RETURN_FALSE( executeString( arithmetic_string, 
+        m_inputParameters.m_inputRasters, auxRasterPtr, true, progressPtr.get() ), 
       "Arithmetic string execution error" );
       
       // Initializing the output raster
 
       std::vector< te::rst::BandProperty* > bandsProperties;
       bandsProperties.push_back( new te::rst::BandProperty(
-        *( m_inputParameters.m_inputRasters[0]->getBand(0)->getProperty() ) ) );  
+        *( m_inputParameters.m_inputRasters[0]->getBand(0)->getProperty() ) ) );       
+      if( !m_inputParameters.m_normalize )
+      {
+        bandsProperties[ 0 ]->m_type = te::dt::DOUBLE_TYPE;
+        bandsProperties[ 0 ]->m_noDataValue = std::numeric_limits< double >::max();
+      }
         
       outParamsPtr->m_outputRasterPtr.reset( 
         te::rst::RasterFactory::make(
@@ -209,6 +218,8 @@ namespace te
       {
         // Calculating the output gain and offset
     
+        const double auxNoDataValue = auxRasterRef.getBand( 0 )->getProperty()->m_noDataValue;
+        const double outNoDataValue = outRasterRef.getBand( 0 )->getProperty()->m_noDataValue;
         double auxMin = DBL_MAX;
         double auxMax = -1.0 * auxMin;  
     
@@ -217,17 +228,18 @@ namespace te
           for( col = 0 ; col < nCols ; ++col )
           {
             auxRasterRef.getValue( col, row, value, 0 );
-        
-            if( auxMin > value ) auxMin = value;
-            if( auxMax < value ) auxMax = value;
+            
+            if( auxNoDataValue != value )
+            {
+              if( auxMin > value ) auxMin = value;
+              if( auxMax < value ) auxMax = value;
+            }
           }
-      
-          //TERP_FALSE_OR_RETURN( progress_.Increment(), "Canceled by the user" );
         } 
     
         double outputOffset = 0;  
         double outputGain = 1.0;
-        if( auxMax != auxMin ) 
+        if( ( auxMin != DBL_MAX ) && ( auxMax != ( -1.0 * DBL_MAX ) ) && ( auxMax != auxMin ) )
         {
           outputOffset = -1.0 * auxMin;
           outputGain = ( ( outAllowedMax - outAllowedMin ) / ( auxMax - auxMin ) );       
@@ -238,17 +250,22 @@ namespace te
           for( col = 0 ; col < nCols ; ++col )
           {
             auxRasterRef.getValue( col, row, value, 0 );
-        
-            value += outputOffset;
-            value *= outputGain;
-        
-            value = MIN( value, outAllowedMax );
-            value = MAX( value, outAllowedMin );
-        
-            outRasterRef.setValue( col, row, value, 0 );
+            
+            if( auxNoDataValue == value )
+            {            
+              outRasterRef.setValue( col, row, outNoDataValue, 0 );
+            }
+            else
+            {
+              value += outputOffset;
+              value *= outputGain;
+          
+              value = MIN( value, outAllowedMax );
+              value = MAX( value, outAllowedMin );
+          
+              outRasterRef.setValue( col, row, value, 0 );
+            }
           }
-      
-          //TERP_FALSE_OR_RETURN( progress_.Increment(), "Canceled by the user" );
         }        
       }
       else
@@ -257,15 +274,9 @@ namespace te
         {
           for( col = 0 ; col < nCols ; ++col )
           {
-            auxRasterRef.getValue( col, row, value, 0 );
-        
-            value = MIN( value, outAllowedMax );
-            value = MAX( value, outAllowedMin );        
-        
+            auxRasterRef.getValue( col, row, value, 0 );        
             outRasterRef.setValue( col, row, value, 0 );
           }
-      
-          //TERP_FALSE_OR_RETURN( progress_.Increment(), "Canceled by the user" );
         }  
       }
 
@@ -298,14 +309,8 @@ namespace te
       {
         TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_inputRasters[t] != 0, 
           "Invalid raster" )
-
-        TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_inputRasters[t]->getNumberOfRows() ==
-          m_inputParameters.m_inputRasters[0]->getNumberOfRows(),
-          "Invalid raster" )
-
-        TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_inputRasters[t]->getNumberOfColumns() ==
-          m_inputParameters.m_inputRasters[0]->getNumberOfColumns(),
-          "Invalid raster" )
+        TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_inputRasters[t]->getAccessPolicy()
+          & te::common::RAccess, "Invalid raster access policy" )        
       }
 
       // Checking the expression
@@ -315,7 +320,7 @@ namespace te
 
       std::auto_ptr<te::rst::Raster> rasterNull;
       TERP_TRUE_OR_RETURN_FALSE(executeString(m_inputParameters.m_arithmeticString, 
-      m_inputParameters.m_inputRasters, rasterNull, false), "Invalid arithmetic string" )
+      m_inputParameters.m_inputRasters, rasterNull, false, 0), "Invalid arithmetic string" )
 
       m_isInitialized = true;
 
@@ -330,7 +335,8 @@ namespace te
     bool ArithmeticOperations::executeString( const std::string& aStr, 
       const std::vector< te::rst::Raster* >& inRasters,
       std::auto_ptr<te::rst::Raster>& outRaster,
-      bool generateOutput ) const
+      bool generateOutput,
+      te::common::TaskProgress* const progressPtr ) const
     {
       std::vector< std::string > infixTokensVec;
       getTokensStrs( aStr, infixTokensVec );
@@ -377,11 +383,29 @@ namespace te
           {
             TERP_TRUE_OR_RETURN_FALSE( execBinaryOperator( curToken, execStack, generateOutput ),
             "Operator " + curToken + " execution error" );
+            
+            if( progressPtr )
+            {
+              if( ! progressPtr->isActive() )
+              {
+                return false;
+              }
+              progressPtr->pulse();
+            }
           }
           else if( isUnaryOperator( curToken ) )
           {
             TERP_TRUE_OR_RETURN_FALSE( execUnaryOperator( curToken, execStack, generateOutput ),
             "Operator " + curToken + " execution error" );
+            
+            if( progressPtr )
+            {
+              if( ! progressPtr->isActive() )
+              {
+                return false;
+              }
+              progressPtr->pulse();
+            }            
           }
           else
           {
@@ -635,13 +659,13 @@ namespace te
       const BinOpFuncPtrT binOptFunctPtr,
       std::auto_ptr<te::rst::Raster>& outRasterPtr ) const
     {
-      if( inRaster1.getGrid()->operator==( *inRaster2.getGrid() ) )
+      if( ! allocResultRaster( *inRaster1.getGrid(), outRasterPtr ) )
       {
-        if( ! allocResultRaster( *inRaster1.getGrid(), outRasterPtr ) )
-        {
-          return false;
-        }
-        
+        return false;
+      }      
+      
+      if( inRaster1.getGrid()->operator==( *inRaster2.getGrid() ) ) 
+      {
         const unsigned int nRows = inRaster1.getNumberOfRows();
         const unsigned int nCols = inRaster1.getNumberOfColumns();
         const te::rst::Band& inBand1 = *inRaster1.getBand( band1Idx );
@@ -679,7 +703,87 @@ namespace te
       }
       else
       {
-        return false;
+        te::gm::Envelope extent2( *inRaster2.getGrid()->getExtent() );
+        extent2.transform( inRaster2.getGrid()->getSRID(), inRaster1.getGrid()->getSRID() );
+        
+        double overlapULCol1 = 0;
+        double overpalULRow1 = 0;
+        inRaster1.getGrid()->geoToGrid( extent2.getLowerLeftX(), extent2.getUpperRightY(),
+          overlapULCol1, overpalULRow1 );
+        overlapULCol1 = std::max( 0.0, std::min( (double)( inRaster1.getNumberOfColumns() 
+          - 1 ), overlapULCol1 ) );
+        overpalULRow1 = std::max( 0.0, std::min( (double)( inRaster1.getNumberOfRows() 
+          - 1 ), overpalULRow1 ) );
+        
+        double overlapLRCol1 = 0;
+        double overlapLRRow1 = 0;
+        inRaster1.getGrid()->geoToGrid( extent2.getUpperRightX(), extent2.getLowerLeftY(),
+          overlapLRCol1, overlapLRRow1 );     
+        overlapLRCol1 = std::max( 0.0, std::min( (double)( inRaster1.getNumberOfColumns() 
+          - 1 ), overlapLRCol1 ) );        
+        overlapLRRow1 = std::max( 0.0, std::min( (double)( inRaster1.getNumberOfRows() 
+          - 1 ), overlapLRRow1 ) );        
+        
+        const unsigned int overlapFirstCol1 = (unsigned int)std::floor( overlapULCol1 );
+        const unsigned int overlapFirstRow1 = (unsigned int)std::floor( overpalULRow1 );
+        const unsigned int overlapLastCol1 = (unsigned int)std::ceil( overlapLRCol1 );
+        const unsigned int overlapLastRow1 = (unsigned int)std::ceil( overlapLRRow1 );
+        
+        const unsigned int nRows1 = inRaster1.getNumberOfRows();
+        const unsigned int nCols1 = inRaster1.getNumberOfColumns();
+        const te::rst::Band& inBand1 = *inRaster1.getBand( band1Idx );
+        const te::rst::Grid& grid1 = *inRaster1.getGrid();
+        const te::rst::Grid& grid2 = *inRaster2.getGrid();
+        te::rst::Band& outBand = *outRasterPtr->getBand( 0 );
+        const double inNoData1 = inBand1.getProperty()->m_noDataValue;
+        const double inNoData2 = inRaster2.getBand( band2Idx )->getProperty()->m_noDataValue;
+        const double outNoData = outBand.getProperty()->m_noDataValue;       
+        te::srs::Converter converter( inRaster1.getSRID(), inRaster2.getSRID() );
+        te::rst::Interpolator interpolator2( &inRaster2, m_inputParameters.m_interpMethod );
+        unsigned int row1 = 0;
+        unsigned int col1 = 0;
+        double row2 = 0;
+        double col2 = 0;        
+        double value1 = 0;
+        std::complex< double > value2;
+        double outValue = 0;
+        double currX1 = 0;
+        double currY1 = 0;
+        double currX2 = 0;
+        double currY2 = 0;        
+        
+        for( row1 = 0 ; row1 < nRows1 ; ++row1 )
+        {
+          for( col1 = 0 ; col1 < nCols1 ; ++col1 )
+          {
+            if( ( row1 >= overlapFirstRow1 ) && ( row1 <= overlapLastRow1 ) &&
+              ( col1 >= overlapFirstCol1 ) && ( col1 <= overlapLastCol1 ) )
+            {
+              grid1.gridToGeo( (double)col1, (double)row1, currX1, currY1 );
+              converter.convert( currX1, currY1, currX2, currY2 );
+              grid2.geoToGrid( currX2, currY2, col2, row2 );
+              
+              inBand1.getValue( col1, row1, value1 );
+              interpolator2.getValue( col2, row2, value2, band2Idx );
+              
+              if( ( value1 != inNoData1 ) && ( value2.real() != inNoData2 ) )
+              {
+                (this->*binOptFunctPtr)( value1, value2.real(), outValue );
+                outBand.setValue( col1, row1, outValue );
+              }
+              else
+              {
+                outBand.setValue( col1, row1, outNoData );
+              }
+            }
+            else
+            {
+              outBand.setValue( col1, row1, outNoData );
+            }
+          }
+        }        
+        
+        return true;
       }
       
       return true;
@@ -792,6 +896,7 @@ namespace te
       
       std::vector< te::rst::BandProperty * > bandsProperties;
       bandsProperties.push_back( new te::rst::BandProperty( 0, te::dt::DOUBLE_TYPE, "" ) );
+      bandsProperties[ 0 ]->m_noDataValue = std::numeric_limits< double >::max();
       bandsProperties[ 0 ]->m_blkw = grid.getNumberOfColumns();
       bandsProperties[ 0 ]->m_blkh = 1;
       bandsProperties[ 0 ]->m_nblocksx = 1;
