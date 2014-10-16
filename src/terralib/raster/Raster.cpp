@@ -712,7 +712,7 @@ void te::rst::Raster::rasterize(std::vector<te::gm::Geometry*> g, std::vector<do
 
     while (it != itend)
     {
-      setValue(it.getColumn(), it.getRow(), vp[i]);
+      setValue(it.getColumn(), it.getRow(), vp[i], b);
 
       ++it;
     }
