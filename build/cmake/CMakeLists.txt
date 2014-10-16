@@ -690,7 +690,7 @@ if(TERRALIB_QHELP_ENABLED)
   add_subdirectory(terralib_qhelp)
 endif()
 
-if(Qt5LinguistTools_FOUND)
+if(Qt5LinguistTools_FOUND AND TERRALIB_MOD_QT_WIDGETS_ENABLED)
   add_subdirectory(terralib_qtranslations)
 endif()
 

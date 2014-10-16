@@ -52,6 +52,7 @@ SWIG_LINK_LIBRARIES (terralib_mod_binding_lua terralib_mod_common
                                               terralib_mod_srs
                                               terralib_mod_geometry
                                               terralib_mod_dataaccess
+                                              terralib_mod_plugin
                                               ${Boost_FILESYSTEM_LIBRARY}
                                               ${Boost_SYSTEM_LIBRARY}
                                               ${Boost_THREAD_LIBRARY}
@@ -59,5 +60,5 @@ SWIG_LINK_LIBRARIES (terralib_mod_binding_lua terralib_mod_common
 
 install(TARGETS terralib_mod_binding_lua
         RUNTIME DESTINATION ${TERRALIB_DESTINATION_RUNTIME} COMPONENT runtime
-        LIBRARY DESTINATION ${TERRALIB_DESTINATION_LIBRARY} COMPONENT runtime
-        ARCHIVE DESTINATION ${TERRALIB_DESTINATION_ARCHIVE} COMPONENT runtime)
+        LIBRARY DESTINATION ${TERRALIB_DESTINATION_RUNTIME} COMPONENT runtime
+        ARCHIVE DESTINATION ${TERRALIB_DESTINATION_RUNTIME} COMPONENT runtime)

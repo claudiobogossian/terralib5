@@ -7,20 +7,20 @@
 
 #define TECOMMONEXPORT
 
-%import "terralib/common/Singleton.h"
-
 %include "terralib/common/Singleton.h"
 
-namespace te {
-  namespace common {
+%include stl.i
+%include typemaps.i
+
+namespace te 
+{
+  namespace common 
+  {
     %template(TeSingleton) Singleton < TerraLib >;
   }
 }
 
 typedef te::common::Singleton< TerraLib > TeSingleton;
-
-%include stl.i
-%include typemaps.i
 
 %apply unsigned int *INOUT {std::size_t& size}
 %apply const string& { const std::string& }
@@ -45,3 +45,6 @@ typedef te::common::Singleton< TerraLib > TeSingleton;
 
 /* Include Data Access module to the bind. */
 %include common/DataAccess.i 
+
+/* Include Plugin module to the bind. */
+%include common/Plugin.i 
