@@ -65,10 +65,6 @@ te::layout::MapGridModel::MapGridModel() :
   m_box = te::gm::Envelope(0., 0., 180., 150.);
   setBox(m_box); // Also update m_mapBox
   
-  m_backgroundColor = te::color::RGBAColor(0, 0, 255, 0);
-
-  m_mapbackgroundColor = te::color::RGBAColor(50, 205, 50, 255);
-
   m_properties->setHasWindows(true);
 }
 
@@ -160,16 +156,7 @@ te::layout::Properties* te::layout::MapGridModel::getProperties() const
   MapModel::getProperties();
 
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
-
-  m_properties->removeProperty(m_sharedProps->getBackgroundcolor());
-
-  Property pro_mapbackgroundcolor;
-  pro_mapbackgroundcolor.setName("map_color");
-  pro_mapbackgroundcolor.setId("unknown");
-  pro_mapbackgroundcolor.setValue(m_mapbackgroundColor, dataType->getDataTypeColor());
-  pro_mapbackgroundcolor.setMenu(true);
-  m_properties->addProperty(pro_mapbackgroundcolor);
-
+  
   Property pro_mapBorder;
   pro_mapBorder.setName("map_border");
   pro_mapBorder.setValue(m_mapBorder, dataType->getDataTypeBool());  
@@ -205,13 +192,7 @@ void te::layout::MapGridModel::updateProperties( te::layout::Properties* propert
   MapModel::updateProperties(properties);
 
   Properties* vectorProps = const_cast<Properties*>(properties);
-
-  Property pro_mapbackgroundcolor = vectorProps->contains("map_color");
-  if(!pro_mapbackgroundcolor.isNull())
-  {
-    m_mapbackgroundColor = pro_mapbackgroundcolor.getValue().toColor();
-  }
-
+  
   Property pro_mapBorder = vectorProps->contains("map_border");
   if(!pro_mapBorder.isNull())
   {

@@ -90,8 +90,7 @@ te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
 {
   this->setFlags(QGraphicsItem::ItemIsMovable
     | QGraphicsItem::ItemIsSelectable
-    | QGraphicsItem::ItemSendsGeometryChanges
-    /*| QGraphicsItem::ItemIgnoresTransformations*/);
+    | QGraphicsItem::ItemSendsGeometryChanges);
       
   setAcceptDrops(true);
 
@@ -619,15 +618,15 @@ void te::layout::MapItem::generateMapPixmap()
 {
   QRegion srcRegion( 0, 0, this->widget()->width(), this->widget()->height());
 
-  QColor color(0, 0, 255, 0);
-  QImage img(this->widget()->width(), this->widget()->height(), QImage::Format_RGB32);
-  img.fill(color);
+  QColor color(255, 255, 255, 0);
+  QPixmap img(this->widget()->width(), this->widget()->height());
+  img.fill(Qt::transparent);
 
   QPainter ptr(&img);
   QPoint pt(0, 0);
   this->widget()->render(&ptr, pt, srcRegion);
-
-  m_mapPixmap = QPixmap(QPixmap::fromImage(img));
+  
+  m_mapPixmap = img; 
 }
 
 QRectF te::layout::MapItem::boundingRect() const
