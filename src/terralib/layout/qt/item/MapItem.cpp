@@ -90,11 +90,8 @@ te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
 {
   this->setFlags(QGraphicsItem::ItemIsMovable
     | QGraphicsItem::ItemIsSelectable
-    | QGraphicsItem::ItemSendsGeometryChanges
-    | QGraphicsItem::ItemIgnoresTransformations);
-
-  m_invertedMatrix = true;
-    
+    | QGraphicsItem::ItemSendsGeometryChanges);
+      
   setAcceptDrops(true);
 
   m_nameClass = std::string(this->metaObject()->className());
@@ -194,7 +191,7 @@ void te::layout::MapItem::updateObserver( ContextItem context )
 
     calculateFrameMargin();
   }
-  
+
   te::color::RGBAColor** rgba = context.getPixmap();
 
   if(!rgba)
@@ -219,17 +216,26 @@ void te::layout::MapItem::updateObserver( ContextItem context )
 
 void te::layout::MapItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
 {
-  QGraphicsProxyWidget::paint(painter, option, widget);
-  
-  if(!m_pixmap.isNull())
-  {
-    QRectF boundRect;
-    boundRect = boundingRect();
+  QRectF boundRect;
+  boundRect = boundingRect();
 
-    painter->save();
-    painter->drawPixmap(boundRect, m_pixmap, QRectF( 0, 0, m_pixmap.width(), m_pixmap.height() ));
-    painter->restore(); 
+  QRectF rtTarget(boundRect);
+
+  MapModel* model = dynamic_cast<MapModel*>(m_model);
+  if(model)
+  {
+    double w = model->getMapBox().getWidth();
+    double h = model->getMapBox().getHeight();
+    double wm = model->getDisplacementX();
+    double hm = model->getDisplacementY();
+
+    rtTarget.setRect(boundRect.x() + wm, boundRect.y() + hm, w, h);
   }
+
+  painter->save();
+  painter->drawPixmap(rtTarget, m_mapPixmap, QRectF( 0, 0, m_mapPixmap.width(), m_mapPixmap.height() ));
+  painter->drawPixmap(boundRect, m_pixmap, QRectF( 0, 0, m_pixmap.width(), m_pixmap.height() ));
+  painter->restore(); 
 
   //Draw Selection
   if (option->state & QStyle::State_Selected)
@@ -300,6 +306,19 @@ void te::layout::MapItem::dragMoveEvent( QGraphicsSceneDragDropEvent * event )
 void te::layout::MapItem::setPixmap( const QPixmap& pixmap )
 {
   m_pixmap = pixmap;
+
+  if(m_pixmap.isNull())
+    return;
+
+  QPointF point = pos();
+
+  te::gm::Envelope box = m_model->getBox();
+  
+  //If you modify the boundingRect value, you need to inform Graphics View about it by calling QGraphicsItem::prepareGeometryChange();
+  QGraphicsObject::prepareGeometryChange();
+
+  setRect(QRectF(0, 0, box.getWidth(), box.getHeight()));
+  update();
 }
 
 te::gm::Coord2D te::layout::MapItem::getPosition()
@@ -327,12 +346,7 @@ te::gm::Coord2D te::layout::MapItem::getPosition()
 
 void te::layout::MapItem::setPos( const QPointF &pos )
 {
-  /* The matrix transformation of MapItem object is the inverse of the scene, 
-  so you need to do translate when you change the position, since the coordinate 
-  must be in the world coordinate. */
-  QPointF p1(pos.x() - transform().dx(), pos.y() - transform().dy());
-  
-  QGraphicsItem::setPos(p1);
+  QGraphicsItem::setPos(pos);
   refresh();
 }
 
@@ -463,6 +477,8 @@ void te::layout::MapItem::onDrawLayersFinished( const QMap<QString, QString>& er
       redraw();
     }
   }
+
+  generateMapPixmap();
 }
 
 void te::layout::MapItem::setZValue( qreal z )
@@ -596,7 +612,33 @@ void te::layout::MapItem::calculateFrameMargin()
 
   m_wMargin = (box.getWidth() - mapBox.getWidth()) / 2.;
   m_hMargin = (box.getHeight() - mapBox.getHeight()) / 2.;
+}
 
-  //this also changes the bounding rectangle size.
-  setWindowFrameMargins(m_wMargin, m_hMargin, m_wMargin, m_hMargin);
+void te::layout::MapItem::generateMapPixmap()
+{
+  QRegion srcRegion( 0, 0, this->widget()->width(), this->widget()->height());
+
+  QColor color(255, 255, 255, 0);
+  QPixmap img(this->widget()->width(), this->widget()->height());
+  img.fill(Qt::transparent);
+
+  QPainter ptr(&img);
+  QPoint pt(0, 0);
+  this->widget()->render(&ptr, pt, srcRegion);
+  
+  m_mapPixmap = img; 
+}
+
+QRectF te::layout::MapItem::boundingRect() const
+{
+  return m_rect;
+}
+
+void te::layout::MapItem::setRect( QRectF rect )
+{
+  if (rect.isEmpty() && !rect.isNull())
+    return;
+
+  m_rect = rect;
+  update(rect);
 }

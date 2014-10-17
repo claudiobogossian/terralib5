@@ -81,8 +81,7 @@ te::layout::View::View( QWidget* widget) :
   m_pageSetupOutside(0),
   m_systematicOutside(0),
   m_selectionChange(false),
-  m_menuItem(0),
-  m_image(0)
+  m_menuItem(0)
 {
   setDragMode(RubberBandDrag);
   
@@ -120,12 +119,6 @@ te::layout::View::~View()
   {
     delete m_systematicOutside;
     m_systematicOutside = 0;
-  }
-
-  if(m_image)
-  {
-    delete m_image;
-    m_image = 0;
   }
 }
 
@@ -226,7 +219,6 @@ void te::layout::View::keyPressEvent( QKeyEvent* keyEvent )
     EnumModeType* enumMode = Enums::getInstance().getEnumModeType();
     Context::getInstance().setMode(enumMode->getModePrinter());
     //Apenas redesenhar itens que estão dentro do box do papel.
-    createBackgroundImage();
     sc->printPreview();
     Context::getInstance().setMode(enumMode->getModeNone());
   }
@@ -483,7 +475,6 @@ void te::layout::View::outsideAreaChangeContext( bool change )
   }
   else if(mode == enumMode->getModePrinter()) 
   {
-    createBackgroundImage();
     sc->printPreview();
   }
   else if(mode == enumMode->getModeExit()) 
@@ -604,7 +595,6 @@ void te::layout::View::outsideAreaChangeContext( bool change )
   }
   else if(mode == enumMode->getModeObjectToImage())
   {
-    createBackgroundImage();
     sc->exportItemsToImage();
     resetDefaultConfig();
   }
@@ -754,55 +744,30 @@ bool te::layout::View::intersectionSelectionItem(int x, int y)
 
 void te::layout::View::drawBackground( QPainter * painter, const QRectF & rect )
 {
-  Scene* sc = dynamic_cast<Scene*>(scene());
-  if(!sc)
-    return;
-
-  if(sc->getPreviewState() == Scene::NoPrinter && sc->getStateViewport() != Scene::NoUpdateView)
-  {
-    QGraphicsView::drawBackground(painter, rect);
-  }
+  QGraphicsView::drawBackground(painter, rect);
 }
 
 void te::layout::View::drawForeground( QPainter * painter, const QRectF & rect )
 {
-  Scene* sc = dynamic_cast<Scene*>(scene());
-  if(!sc)
-    return;
-
-  if(sc->getPreviewState() == Scene::NoPrinter && sc->getStateViewport() != Scene::NoUpdateView)
-  {
-    QGraphicsView::drawForeground(painter, rect);
-    return;
-  }
-
-  painter->save();
-  painter->setMatrixEnabled(false);
-  painter->drawPixmap(0, 0, QPixmap::fromImage(*m_image));
-  painter->setMatrixEnabled(true);
-  painter->restore();
+  QGraphicsView::drawForeground(painter, rect);
 }
 
-void te::layout::View::createBackgroundImage()
+QImage te::layout::View::createImage()
 {
-  /* Create temp background */
-  if(m_image)
-  {
-    delete m_image;
-    m_image = 0;
-  }
-
+  QImage ig;
   Scene* sc = dynamic_cast<Scene*>(scene());
   if(!sc)
-    return;
+    return ig;
 
   te::gm::Envelope* env = sc->getWorldBox();
 
   QRectF rtv(0, 0, width(), height());
   QRectF rts(env->m_llx, env->m_lly, env->m_urx, env->m_ury);
 
-  m_image = new QImage(rtv.width(), rtv.height(), QImage::Format_ARGB32);
-  QPainter ptr(m_image);
+  QImage img(rtv.width(), rtv.height(), QImage::Format_ARGB32);
+  QPainter ptr(&img);
   ptr.setRenderHint(QPainter::Antialiasing);
   this->render(&ptr, QRect(), QRect(), Qt::IgnoreAspectRatio);
+
+  return img;
 }
