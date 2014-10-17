@@ -70,11 +70,15 @@ namespace te
 
         void	setZValue ( qreal z );
 
+        virtual QRectF	boundingRect () const;
+
         virtual void changeCurrentTool(EnumType* mode);
 
         void clearCurrentTool();
 
         virtual te::color::RGBAColor** getImage();
+
+        virtual void setRect(QRectF rect);
                                 
       protected slots:
 
@@ -122,9 +126,12 @@ namespace te
 
       virtual void calculateFrameMargin();
 
+      virtual void generateMapPixmap();
+
     protected:
 
       QPixmap m_pixmap;
+      QPixmap m_mapPixmap;
       QRectF  m_rect;//In local coordinate
       QMimeData* m_mime;
       

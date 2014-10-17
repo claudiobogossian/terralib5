@@ -64,9 +64,7 @@ te::layout::MapGridModel::MapGridModel() :
 
   m_box = te::gm::Envelope(0., 0., 180., 150.);
   setBox(m_box); // Also update m_mapBox
-
-  m_border = false;
-
+  
   m_backgroundColor = te::color::RGBAColor(0, 0, 255, 0);
 
   m_mapbackgroundColor = te::color::RGBAColor(50, 205, 50, 255);

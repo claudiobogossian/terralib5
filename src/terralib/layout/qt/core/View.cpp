@@ -754,19 +754,21 @@ bool te::layout::View::intersectionSelectionItem(int x, int y)
 
 void te::layout::View::drawBackground( QPainter * painter, const QRectF & rect )
 {
-  Scene* sc = dynamic_cast<Scene*>(scene());
+  /*Scene* sc = dynamic_cast<Scene*>(scene());
   if(!sc)
     return;
 
   if(sc->getPreviewState() == Scene::NoPrinter && sc->getStateViewport() != Scene::NoUpdateView)
   {
     QGraphicsView::drawBackground(painter, rect);
-  }
+  }*/
+
+  QGraphicsView::drawBackground(painter, rect);
 }
 
 void te::layout::View::drawForeground( QPainter * painter, const QRectF & rect )
 {
-  Scene* sc = dynamic_cast<Scene*>(scene());
+  /*Scene* sc = dynamic_cast<Scene*>(scene());
   if(!sc)
     return;
 
@@ -780,7 +782,9 @@ void te::layout::View::drawForeground( QPainter * painter, const QRectF & rect )
   painter->setMatrixEnabled(false);
   painter->drawPixmap(0, 0, QPixmap::fromImage(*m_image));
   painter->setMatrixEnabled(true);
-  painter->restore();
+  painter->restore();*/
+
+  QGraphicsView::drawForeground(painter, rect);
 }
 
 void te::layout::View::createBackgroundImage()

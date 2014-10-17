@@ -58,7 +58,7 @@ te::layout::MapModel::MapModel() :
   m_box = te::gm::Envelope(0., 0., 150., 120.);
   m_mapBoxMM = m_box;
 
-  m_backgroundColor = te::color::RGBAColor(192, 192, 192, 255);
+  m_backgroundColor = te::color::RGBAColor(192, 192, 192, 0);
 
   m_mapbackgroundColor = te::color::RGBAColor(192, 192, 192, 255);
 }
@@ -78,7 +78,7 @@ void te::layout::MapModel::draw( ContextItem context )
 
   te::map::Canvas* canvas = context.getCanvas();
   Utils* utils = context.getUtils();
-  
+
   if((!canvas) || (!utils))
     return;
 
@@ -86,7 +86,10 @@ void te::layout::MapModel::draw( ContextItem context )
     utils->configCanvas(m_box);
 
   drawBackground(context);
-  
+
+  if(context.isResizeCanvas())
+    pixmap = utils->getImageW(m_box);
+
   context.setPixmap(pixmap);
   notifyAll(context);
 }
