@@ -43,6 +43,9 @@ typedef te::common::Singleton< TerraLib > TeSingleton;
 /* Include Geometry module to the bind. */   
 %include common/Geometry.i
 
+/* Include Raster module to the bind. */   
+%include common/Raster.i
+
 /* Include Data Access module to the bind. */
 %include common/DataAccess.i 
 
