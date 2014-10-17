@@ -1498,7 +1498,7 @@ void te::layout::Scene::exportItemsToImage()
 
   Utils* utils = Context::getInstance().getUtils();
   double zoomFactor = Context::getInstance().getZoomFactor();
-  Context::getInstance().setZoomFactor(1.);
+  //Context::getInstance().setZoomFactor(1.);
       
   QList<QGraphicsItem*> selected = selectedItems();
   foreach(QGraphicsItem *item, selected) 

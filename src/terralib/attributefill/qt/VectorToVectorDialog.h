@@ -99,6 +99,8 @@ namespace te
 
         bool isClassType(const int type);
 
+        te::gm::GeomType getCurrentToLayerGeomType();
+
       protected slots:
 
         void onTargetDatasourceToolButtonPressed();

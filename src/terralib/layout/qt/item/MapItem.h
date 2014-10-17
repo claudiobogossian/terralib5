@@ -120,6 +120,8 @@ namespace te
 
       virtual QImage generateImage();
 
+      virtual void calculateFrameMargin();
+
     protected:
 
       QPixmap m_pixmap;
