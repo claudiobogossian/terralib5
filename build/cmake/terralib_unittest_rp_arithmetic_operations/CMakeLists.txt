@@ -40,7 +40,9 @@ file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/rp/LoadModul
 
 add_executable(terralib_unittest_rp_arithmetic_operations ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
 
-target_link_libraries(terralib_unittest_rp_arithmetic_operations terralib_mod_gdal
+target_link_libraries(terralib_unittest_rp_arithmetic_operations 
+                                                      terralib_mod_memory
+                                                      terralib_mod_gdal
                                                       terralib_mod_rp
                                                       ${GDAL_LIBRARY}
                                                       ${CPPUNIT_LIBRARY})
