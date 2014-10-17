@@ -44,6 +44,9 @@ te::qt::widgets::HorizontalSliderWidget::HorizontalSliderWidget(QWidget* parent,
   m_maxValue = 99;
   m_defaultValue = 0;
 
+  m_ui->m_defaultPushButton->setIcon(QIcon::fromTheme("edit-undo"));
+  m_ui->m_defaultPushButton->setIconSize(QSize(16,16));
+
 // connect signals and slots
   connect(m_ui->m_defaultPushButton, SIGNAL(released()), this, SLOT(onDefaultButtonPressed()));
   connect(m_ui->m_slider, SIGNAL(valueChanged(int)), this, SLOT(onValueChanged(int)));

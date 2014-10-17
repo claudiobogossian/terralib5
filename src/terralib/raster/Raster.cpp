@@ -421,33 +421,78 @@ te::rst::Raster& te::rst::Raster::operator=(const te::rst::Raster& rhs)
 
 te::rst::Raster* te::rst::Raster::trim(const te::gm::Envelope* env, const std::map<std::string, std::string>& rinfo)
 {
-// get input properties
-  const te::gm::Envelope* inex = m_grid->getExtent();
-
 // calculate output properties
+  
   te::gm::Coord2D cllenv(m_grid->geoToGrid(env->getLowerLeftX(), env->getLowerLeftY()));
-
   te::gm::Coord2D curenv(m_grid->geoToGrid(env->getUpperRightX(), env->getUpperRightY()));
-
-  te::gm::Coord2D cllimg(m_grid->geoToGrid(inex->getLowerLeftX(), inex->getLowerLeftY()));
-
-  const unsigned height = static_cast<unsigned>(std::fabs(cllenv.y - curenv.y)) + 1;
-
-  const unsigned width = static_cast<unsigned>(std::fabs(cllenv.x - curenv.x)) + 1;
-
-  const unsigned dxoff = static_cast<unsigned>(std::fabs(cllenv.x - cllimg.x));
-
-  const unsigned dyoff = static_cast<unsigned>(curenv.y);
+  
+  const unsigned int firstInputRow = (unsigned int)
+    std::min( 
+      (double)( m_grid->getNumberOfRows() - 1 )
+      ,
+      std::max( 
+        0.0
+        , 
+        std::floor( curenv.getY() ) 
+      )
+    );
+  const unsigned int firstInputCol = (unsigned int)
+    std::min( 
+      (double)( m_grid->getNumberOfColumns() - 1 )
+      ,
+      std::max( 
+        0.0
+        , 
+        std::floor( cllenv.getX() ) 
+      )
+    );
+  const unsigned int lastInputRow = (unsigned int)
+    std::min( 
+      (double)( m_grid->getNumberOfRows() - 1 )
+      ,
+      std::max( 
+        0.0
+        , 
+        std::ceil( cllenv.getY() ) 
+      )
+    );
+  const unsigned int lastInputCol = (unsigned int)
+    std::min( 
+      (double)( m_grid->getNumberOfColumns() - 1 )
+      ,
+      std::max( 
+        0.0
+        , 
+        std::ceil( curenv.getX() ) 
+      )
+    );    
+    
+  if( ( lastInputRow <= firstInputRow ) || ( lastInputCol <= firstInputCol ) )
+  {
+    return 0;
+  }
+  
+  const unsigned int outputWidth = lastInputCol - firstInputCol + 1;
+  const unsigned int outputHeight = lastInputRow - firstInputRow + 1;
 
 // create output parameters and raster
-  te::gm::Coord2D ulc(env->getLowerLeftX(), env->getUpperRightY());
-  te::rst::Grid* grid = new te::rst::Grid( width, height, getResolutionX(),
+
+  te::gm::Coord2D ulc( m_grid->gridToGeo( ((double)firstInputCol) - 0.5,
+    ((double)firstInputRow) - 0.5 ) );
+  
+  te::rst::Grid* grid = new te::rst::Grid( outputWidth, outputHeight, getResolutionX(),
     getResolutionY(), &ulc, getSRID() );
 
   std::vector<te::rst::BandProperty*> bands;
 
   for (std::size_t b = 0; b < getNumberOfBands(); b++)
+  {
     bands.push_back(new te::rst::BandProperty(*(getBand(b)->getProperty())));
+    bands[ b ]->m_nblocksx = 1;
+    bands[ b ]->m_nblocksy = outputHeight;
+    bands[ b ]->m_blkw = outputWidth;
+    bands[ b ]->m_blkh = 1;
+  }
 
   te::rst::Raster* rout = te::rst::RasterFactory::make(grid, bands, rinfo);
 
@@ -456,10 +501,14 @@ te::rst::Raster* te::rst::Raster::trim(const te::gm::Envelope* env, const std::m
   if( rout )
   {
     std::vector<std::complex<double> > values;
+    unsigned int ci = 0;
+    unsigned int ri = 0;
+    unsigned int co = 0;
+    unsigned int ro = 0;
 
-    for (unsigned ri = dyoff, ro = 0; ro < height; ri++, ro++)
+    for( ri = firstInputRow, ro = 0; ro < outputHeight; ri++, ro++)
     {
-      for (unsigned ci = dxoff, co = 0; co < width; ci++, co++)
+      for( ci = firstInputCol, co = 0; co < outputWidth; ci++, co++)
       {
         getValues(ci, ri, values);
 
@@ -663,7 +712,7 @@ void te::rst::Raster::rasterize(std::vector<te::gm::Geometry*> g, std::vector<do
 
     while (it != itend)
     {
-      setValue(it.getColumn(), it.getRow(), vp[i]);
+      setValue(it.getColumn(), it.getRow(), vp[i], b);
 
       ++it;
     }

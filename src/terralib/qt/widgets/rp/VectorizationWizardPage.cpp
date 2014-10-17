@@ -46,6 +46,8 @@ te::qt::widgets::VectorizationWizardPage::VectorizationWizardPage(QWidget *paren
   this->setTitle(tr("Vectorization"));
   this->setSubTitle(tr("Define the vectorization parameters."));
 
+  m_ui->m_targetDatasourceToolButton->setIcon(QIcon::fromTheme("datasource"));
+
   connect(m_ui->m_targetDatasourceToolButton, SIGNAL(pressed()), this, SLOT(onTargetDatasourceToolButtonPressed()));
   connect(m_ui->m_targetFileToolButton, SIGNAL(pressed()), this,  SLOT(onTargetFileToolButtonPressed()));
 

@@ -58,9 +58,9 @@ te::layout::MapModel::MapModel() :
   m_box = te::gm::Envelope(0., 0., 150., 120.);
   m_mapBoxMM = m_box;
 
-  m_backgroundColor = te::color::RGBAColor(192, 192, 192, 255);
+  m_backgroundColor = te::color::RGBAColor(255, 255, 255, 0);
 
-  m_mapbackgroundColor = te::color::RGBAColor(192, 192, 192, 255);
+  m_mapbackgroundColor = te::color::RGBAColor(255, 255, 255, 0);
 }
 
 te::layout::MapModel::~MapModel()
@@ -86,7 +86,10 @@ void te::layout::MapModel::draw( ContextItem context )
     utils->configCanvas(m_box);
 
   drawBackground(context);
-  
+
+  if(context.isResizeCanvas())
+    pixmap = utils->getImageW(m_box);
+
   context.setPixmap(pixmap);
   notifyAll(context);
 }
@@ -96,6 +99,13 @@ te::layout::Properties* te::layout::MapModel::getProperties() const
   ItemModelObservable::getProperties();
 
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+
+  Property pro_mapbackgroundcolor;
+  pro_mapbackgroundcolor.setName("map_color");
+  pro_mapbackgroundcolor.setId("unknown");
+  pro_mapbackgroundcolor.setValue(m_mapbackgroundColor, dataType->getDataTypeColor());
+  pro_mapbackgroundcolor.setMenu(true);
+  m_properties->addProperty(pro_mapbackgroundcolor);
 
   Property pro_fixed;
   pro_fixed.setName("fixedScale");
@@ -122,6 +132,12 @@ void te::layout::MapModel::updateProperties( te::layout::Properties* properties 
 
   Properties* vectorProps = const_cast<Properties*>(properties);
   
+  Property pro_mapbackgroundcolor = vectorProps->contains("map_color");
+  if(!pro_mapbackgroundcolor.isNull())
+  {
+    m_mapbackgroundColor = pro_mapbackgroundcolor.getValue().toColor();
+  }
+
   Property pro_fixed = vectorProps->contains("fixedScale");
   if(!pro_fixed.isNull())
   {
@@ -164,11 +180,6 @@ void te::layout::MapModel::updateProperties( te::layout::Properties* properties 
       m_mapBoxMM.m_ury = m_mapBoxMM.m_ury - d_differenceY;
     }
     m_mapDisplacementY = pro_mapDisplacementY.getValue().toDouble();
-  }
-
-  if(m_box.equals(m_mapBoxMM))
-  {
-    m_mapbackgroundColor = m_backgroundColor;
   }
     
   updateVisitors();
@@ -527,9 +538,9 @@ te::gm::Envelope te::layout::MapModel::getWorldBox()
   return worldBox;
 }
 
-std::map<te::gm::Coord2D, std::string> te::layout::MapModel::getTextMapAsObjectInfo()
+std::map<te::gm::Point*, std::string> te::layout::MapModel::getTextMapAsObjectInfo()
 {
-  std::map<te::gm::Coord2D, std::string>  map;
+  std::map<te::gm::Point*, std::string>  map;
 
   return map;
 }

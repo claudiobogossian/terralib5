@@ -18,33 +18,32 @@
  */
 
 /*!
-  \file HorizontalRulerItem.h
+  \file LegendChildItem.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_HORIZONTALRULER_ITEM_H
-#define __TERRALIB_LAYOUT_INTERNAL_HORIZONTALRULER_ITEM_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_LEGEND_CHILD_ITEM_H
+#define __TERRALIB_LAYOUT_INTERNAL_LEGEND_CHILD_ITEM_H
 
 // TerraLib
-#include "ObjectItem.h"
+#include "LegendItem.h"
 
 namespace te
 {
   namespace layout
   {
-    class HorizontalRulerItem : public ObjectItem
+    class Observable;
+
+    class LegendChildItem : public LegendItem
     {
       public:
 
-        HorizontalRulerItem(ItemController* controller = 0, Observable* o = 0);
-        virtual ~HorizontalRulerItem();
+        LegendChildItem( ItemController* controller, Observable* o );
 
-        virtual void updateObserver(ContextItem context);
-
-        virtual double getZoomRuler();
+        virtual ~LegendChildItem();
     };
   }
 }

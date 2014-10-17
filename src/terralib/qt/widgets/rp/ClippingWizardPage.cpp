@@ -31,8 +31,13 @@
 #include "../../../geometry/Geometry.h"
 #include "../../../geometry/GeometryProperty.h"
 #include "../../../geometry/GeometryCollection.h"
+#include "../../../geometry/LinearRing.h"
+#include "../../../geometry/Polygon.h"
+#include "../../../geometry/Utils.h"
 #include "../../../raster/Grid.h"
 #include "../../../raster/Raster.h"
+#include "../canvas/Canvas.h"
+#include "../canvas/MapDisplay.h"
 #include "RasterNavigatorWidget.h"
 #include "ClippingWizardPage.h"
 #include "ui_ClippingWizardPageForm.h"
@@ -71,6 +76,7 @@ te::qt::widgets::ClippingWizardPage::ClippingWizardPage(QWidget* parent)
   displayLayout->setContentsMargins(0,0,0,0);
 
   connect(m_navigator.get(), SIGNAL(envelopeAcquired(te::gm::Envelope)), this, SLOT(onEnvelopeAcquired(te::gm::Envelope)));
+  connect(m_navigator.get(), SIGNAL(mapDisplayExtentChanged()), this, SLOT(drawGeom()));
 
 //configure page
   this->setTitle(tr("Clipping"));
@@ -91,7 +97,6 @@ te::qt::widgets::ClippingWizardPage::ClippingWizardPage(QWidget* parent)
   connect(m_ui->m_strategyTypeComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onStrategyTypeComboBoxChanged(int)));
   connect(m_ui->m_layerComboBox, SIGNAL(activated(int)), this, SLOT(onLayerComboBoxActivated(int)));
   connect(m_ui->m_layerComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onLayerComboBoxChanged(int)));
-  
 
   connect(m_ui->m_llxLineEdit, SIGNAL(editingFinished()), this, SIGNAL(completeChanged()));
   connect(m_ui->m_llyLineEdit, SIGNAL(editingFinished()), this, SIGNAL(completeChanged()));
@@ -105,7 +110,7 @@ te::qt::widgets::ClippingWizardPage::ClippingWizardPage(QWidget* parent)
 }
 
 te::qt::widgets::ClippingWizardPage::~ClippingWizardPage()
-{
+{ 
 }
 
 bool te::qt::widgets::ClippingWizardPage::isComplete() const
@@ -365,6 +370,8 @@ void te::qt::widgets::ClippingWizardPage::onStrategyTypeComboBoxChanged(int inde
         break;
       }
   }
+
+  drawGeom();
 }
 
 void te::qt::widgets::ClippingWizardPage::onLayerComboBoxActivated(int index)
@@ -404,15 +411,17 @@ void te::qt::widgets::ClippingWizardPage::onEnvelopeAcquired(te::gm::Envelope en
 
   if(type == CLIPPING_EXTENT)
   {
+    m_envExt = env;
+
     m_ui->m_llxLineEdit->setText(QString::number(env.getLowerLeftX(), 'f', 5));
     m_ui->m_llyLineEdit->setText(QString::number(env.getLowerLeftY(), 'f', 5));
     m_ui->m_urxLineEdit->setText(QString::number(env.getUpperRightX(), 'f', 5));
     m_ui->m_uryLineEdit->setText(QString::number(env.getUpperRightY(), 'f', 5));
-
-    m_navigator->setExtent(env);
   }
   else if(type == CLIPPING_DIMENSION)
   {
+    m_envDim = env;
+
     std::auto_ptr<te::da::DataSet> ds = m_layer->getData();
 
     if(ds.get())
@@ -434,6 +443,8 @@ void te::qt::widgets::ClippingWizardPage::onEnvelopeAcquired(te::gm::Envelope en
     }
   }
 
+  drawGeom();
+
   emit completeChanged();
 }
 
@@ -444,4 +455,45 @@ void te::qt::widgets::ClippingWizardPage::fillClippingTypes()
   m_ui->m_strategyTypeComboBox->addItem(tr("Extent"), CLIPPING_EXTENT);
   m_ui->m_strategyTypeComboBox->addItem(tr("Dimension"), CLIPPING_DIMENSION);
   m_ui->m_strategyTypeComboBox->addItem(tr("Layer"), CLIPPING_LAYER);
+}
+
+void te::qt::widgets::ClippingWizardPage::drawGeom()
+{
+  te::qt::widgets::MapDisplay* mapDisplay = m_navigator->getDisplay();
+
+  mapDisplay->getDraftPixmap()->fill(QColor(0, 0, 0, 0));
+
+  const te::gm::Envelope& mapExt = mapDisplay->getExtent();
+
+  te::qt::widgets::Canvas canvasInstance(mapDisplay->getDraftPixmap());
+  canvasInstance.setWindow(mapExt.m_llx, mapExt.m_lly, mapExt.m_urx, mapExt.m_ury);
+
+  canvasInstance.setPolygonContourWidth(2);
+  canvasInstance.setPolygonContourColor(te::color::RGBAColor(100, 177, 216, TE_OPAQUE));
+  canvasInstance.setPolygonFillColor(te::color::RGBAColor(100, 177, 216, 80));
+
+  te::gm::Geometry* geom = 0;
+
+  int index = m_ui->m_strategyTypeComboBox->currentIndex();
+  int type = m_ui->m_strategyTypeComboBox->itemData(index).toInt();
+
+  if(type == CLIPPING_EXTENT)
+  {
+    if(m_envExt.isValid())
+      geom = te::gm::GetGeomFromEnvelope(&m_envExt, m_layer->getSRID());
+  }
+  else if(type == CLIPPING_DIMENSION)
+  {
+    if(m_envDim.isValid())
+     geom = te::gm::GetGeomFromEnvelope(&m_envDim, m_layer->getSRID());
+  }
+
+  if(geom)
+  {
+    canvasInstance.draw(geom);
+
+    delete geom;
+  }
+
+  mapDisplay->repaint();
 }

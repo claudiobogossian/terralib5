@@ -72,10 +72,6 @@ namespace te
         virtual EnumType* getGridPlanar() const;
         
         virtual EnumType* getGridGeodesic() const;
-        
-        virtual EnumType* getHorizontalRuler() const;
-        
-        virtual EnumType* getVerticalRuler() const;
                 
         virtual EnumType* getItemGroup() const;
         
@@ -104,6 +100,8 @@ namespace te
         virtual EnumType* getMenuItem() const;
         
         virtual EnumType* getTextGridSettings() const;
+
+        virtual EnumType* getLegendChildItem() const;
         
         virtual EnumType* getObjectUnknown() const;
 
@@ -126,8 +124,6 @@ namespace te
         EnumType* m_gridSettings;
         EnumType* m_gridPlanar;
         EnumType* m_gridGeodesic;
-        EnumType* m_horizontalRuler;
-        EnumType* m_verticalRuler;
         EnumType* m_itemGroup;
         EnumType* m_scaleItem;
         EnumType* m_pageSetup;
@@ -142,6 +138,7 @@ namespace te
         EnumType* m_editTemplate;
         EnumType* m_menuItem;
         EnumType* m_textGridSettings;
+        EnumType* m_legendChildItem;
         EnumType* m_objectUnknown;
     };
   }

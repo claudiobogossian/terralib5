@@ -113,6 +113,8 @@ namespace te
 
           void onEnvelopeAcquired(te::gm::Envelope env);
 
+          void drawGeom();
+
         protected:
 
           void fillClippingTypes();
@@ -121,7 +123,11 @@ namespace te
 
           std::auto_ptr<Ui::ClippingWizardPageForm> m_ui;
           std::auto_ptr<te::qt::widgets::RasterNavigatorWidget> m_navigator;
+
           te::map::AbstractLayerPtr m_layer;
+
+          te::gm::Envelope m_envExt;
+          te::gm::Envelope m_envDim;
       };
 
     } // end namespace widgets

@@ -111,6 +111,8 @@ namespace te
       virtual void onRemoveObjectClicked(bool checked);
 
       virtual void onDrawMapClicked(bool checked);
+
+      virtual void onObjectToImageClicked(bool checked);
       
     signals:
 
@@ -162,6 +164,8 @@ namespace te
 
       virtual void createDrawMapToolButton();
 
+      virtual void createObjectToImageButton();
+
       virtual void changeAction(EnumType* mode);
 
       virtual QToolButton* createToolButton(std::string text, std::string tooltip, std::string icon);
@@ -188,6 +192,7 @@ namespace te
       std::string m_optionMapSystematicScale;
       std::string m_optionMapCreateTextGrid;
       std::string m_optionMapCreateMapText;
+      std::string m_optionMapCreateLegendChildAsObject;
 
       /* Geometry Menu */
       std::string m_optionRectangle;
@@ -231,6 +236,8 @@ namespace te
       std::string m_optionRedo;
 
       std::string m_optionDrawMap;
+
+      std::string m_optionObjectToImage;
     };
   }
 }

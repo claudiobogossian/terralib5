@@ -75,6 +75,11 @@ te::layout::DefaultTextItem::DefaultTextItem( ItemController* controller, Observ
     model->setText(name);
   }
 
+  //If enabled is true, this item will accept hover events
+  setAcceptHoverEvents(true);
+
+  m_boxCopy = m_model->getBox();
+
   QTextCursor cursor(document());
   cursor.movePosition(QTextCursor::Start);
   cursor.insertText(name.c_str());
@@ -133,7 +138,7 @@ void te::layout::DefaultTextItem::updateObserver( ContextItem context )
   For these reasons, it is necessary to scale and so accompany the zoom scene. */
   double zoomFactor = Context::getInstance().getZoomFactor();
   setScale(zoomFactor);
-    
+  
   refreshTable();
 
   setPixmap(pixmap);
@@ -439,4 +444,221 @@ void te::layout::DefaultTextItem::applyRotation()
   double centerY = center.y();
 
   setTransform(QTransform().translate(centerX, centerY).rotate(angle).translate(-centerX, -centerY));
+}
+
+bool te::layout::DefaultTextItem::checkTouchesCorner( const double& x, const double& y )
+{
+  bool result = true;
+  QRectF bRect = boundingRect();
+  double margin = 4.; //precision
+
+  QPointF ll = bRect.bottomLeft();
+  QPointF lr = bRect.bottomRight();
+  QPointF tl = bRect.topLeft();
+  QPointF tr = bRect.topRight();
+
+  if((x >= (ll.x() - margin) && x <= (ll.x() + margin))
+    && (y >= (ll.y() - margin) && y <= (ll.y() + margin)))
+  {
+    setCursor(Qt::SizeBDiagCursor);
+    m_enumSides = TPLowerLeft;
+  }
+  else if((x >= (lr.x() - margin) && x <= (lr.x() + margin))
+    && (y >= (lr.y() - margin) && y <= (lr.y() + margin)))
+  {
+    setCursor(Qt::SizeFDiagCursor);
+    m_enumSides = TPLowerRight;
+  }
+  else if((x >= (tl.x() - margin) && x <= (tl.x() + margin))
+    && (y >= (tl.y() - margin) && y <= (tl.y() + margin)))
+  {
+    setCursor(Qt::SizeFDiagCursor);
+    m_enumSides = TPTopLeft;
+  }
+  else if((x >= (tr.x() - margin) && x <= (tr.x() + margin))
+    && (y >= (tr.y() - margin) && y <= (tr.y() + margin)))
+  {
+    setCursor(Qt::SizeBDiagCursor);
+    m_enumSides = TPTopRight;
+  }
+  else
+  {
+    setCursor(Qt::ArrowCursor);
+    m_enumSides = TPNoneSide;
+    result = false;
+  }
+
+  return result;
+}
+
+QPixmap te::layout::DefaultTextItem::calculateNewPixmap( const double& x, const double& y )
+{
+  te::gm::Envelope boxScene = createNewBoxInCoordScene(x, y);
+  QPixmap pix = getPixmap().scaled(boxScene.getWidth(), boxScene.getHeight());
+
+  if(pix.isNull())
+    pix = getPixmap();
+
+  return pix;
+}
+
+te::gm::Envelope te::layout::DefaultTextItem::createNewBoxInCoordScene( const double& x, const double& y )
+{
+  QPointF pointScene = this->scenePos();
+
+  QPointF pbxy1 = mapToScene(boundingRect().bottomLeft());
+  QPointF pbxy2 = mapToScene(boundingRect().topRight());
+
+  double dx = 0;
+  double dy = 0;
+
+  if(m_mousePressedCtrl && m_toResizeItem)
+  {
+    double dx = m_finalCoord.x() - m_initialCoord.x();
+    double dy = m_finalCoord.y() - m_initialCoord.y();
+
+    switch(m_enumSides)
+    {
+    case TPLowerRight :
+      {
+        if(m_finalCoord.x() > pbxy1.x() && m_finalCoord.y() > pbxy2.y())
+        {
+          m_boxCopy = te::gm::Envelope(m_model->getBox().m_llx, 
+            m_model->getBox().m_lly, m_model->getBox().m_urx + dx, m_model->getBox().m_ury + dy);
+
+          //In Parent Coordinates
+          setPos(QPointF(m_model->getBox().m_llx, m_model->getBox().m_lly));
+        }
+        break;
+      }
+    case TPLowerLeft:
+      {
+        if(m_finalCoord.x() < pbxy2.x() && m_finalCoord.y() > pbxy2.y())
+        {
+          m_boxCopy = te::gm::Envelope(m_model->getBox().m_llx + dx, 
+            m_model->getBox().m_lly - dy, m_model->getBox().m_urx, m_model->getBox().m_ury);
+
+          //In Parent Coordinates
+          setPos(QPointF(m_finalCoord.x(), m_model->getBox().m_lly));
+        }
+        break;
+      }
+    case TPTopRight:
+      {
+        if(m_finalCoord.x() > pbxy1.x() && m_finalCoord.y() < pbxy1.y())
+        {
+          m_boxCopy = te::gm::Envelope(m_model->getBox().m_llx, 
+            m_model->getBox().m_lly, m_model->getBox().m_urx + dx, m_model->getBox().m_ury - dy);
+
+          //In Parent Coordinates
+          setPos(QPointF(m_model->getBox().m_llx, m_finalCoord.y()));
+        }
+        break;
+      }
+    case TPTopLeft :
+      {  
+        if(m_finalCoord.x() < pbxy2.x() && m_finalCoord.y() < pbxy1.y())
+        {
+          m_boxCopy = te::gm::Envelope(m_model->getBox().m_llx + dx, 
+            m_model->getBox().m_lly + dy, m_model->getBox().m_urx, m_model->getBox().m_ury);
+
+          //In Parent Coordinates
+          setPos(QPointF(m_finalCoord.x(), m_finalCoord.y()));
+        }
+        break;
+      }
+    default :
+      {
+        m_boxCopy = m_model->getBox();
+        break;
+      }
+    }
+  }
+
+  return m_boxCopy;
+}
+
+void te::layout::DefaultTextItem::mousePressEvent( QGraphicsSceneMouseEvent * event )
+{
+  QGraphicsItem::mousePressEvent(event);
+
+  if(event->modifiers() == Qt::AltModifier && m_toResizeItem)
+  {
+    m_clonePixmap = getPixmap();
+    m_mousePressedCtrl = true;
+    m_initialCoord = event->scenePos();
+  }
+}
+
+void te::layout::DefaultTextItem::mouseReleaseEvent( QGraphicsSceneMouseEvent * event )
+{
+  QGraphicsItem::mouseReleaseEvent(event);
+
+  m_finalCoord = event->scenePos();
+
+  te::gm::Envelope boxScene = createNewBoxInCoordScene(event->scenePos().x(), event->scenePos().y());
+  if(boxScene.isValid() && boxScene.getWidth() > 0 && boxScene.getHeight() > 0)
+    m_controller->setBox(boxScene);
+
+  m_mousePressedCtrl = false;
+
+  if(m_toResizeItem && boxScene.isValid())
+  {
+    m_toResizeItem = false;
+    //Antes é necessário saber se o pixmap continua o mesmo, ou foi modificado.
+    //Só chamará o redraw se foi modificado.
+
+    redraw();
+    setOpacity(1.);
+  }
+
+  refresh();
+}
+
+void te::layout::DefaultTextItem::mouseMoveEvent( QGraphicsSceneMouseEvent * event )
+{
+  if(event->modifiers() == Qt::AltModifier && event->buttons() == Qt::LeftButton && m_toResizeItem)
+  {
+    m_mousePressedCtrl = true;
+    setOpacity(0.5);
+
+    m_finalCoord = event->scenePos();
+
+    QPixmap pix = calculateNewPixmap(event->scenePos().x(), event->scenePos().y());
+    setPixmap(pix);
+    update();
+  }
+  else
+  {
+    if(!m_toResizeItem)
+      setOpacity(1.);
+    m_mousePressedCtrl = false;
+    QGraphicsItem::mouseMoveEvent(event);
+  }
+}
+
+void te::layout::DefaultTextItem::hoverEnterEvent( QGraphicsSceneHoverEvent * event )
+{
+  QGraphicsItem::hoverEnterEvent(event);
+}
+
+void te::layout::DefaultTextItem::hoverLeaveEvent( QGraphicsSceneHoverEvent * event )
+{
+  m_hoverAboveItem = false;
+  setCursor(Qt::ArrowCursor);
+  QGraphicsItem::hoverLeaveEvent(event);
+}
+
+void te::layout::DefaultTextItem::hoverMoveEvent( QGraphicsSceneHoverEvent * event )
+{
+  m_hoverAboveItem = true;
+  m_toResizeItem = checkTouchesCorner(event->pos().x(), event->pos().y());
+  QGraphicsItem::hoverMoveEvent(event);
+}
+
+te::color::RGBAColor** te::layout::DefaultTextItem::getImage()
+{
+  QImage img = m_pixmap.toImage();
+  te::color::RGBAColor** teImg = te::qt::widgets::GetImage(&img);
+  return teImg;
 }

@@ -153,6 +153,7 @@ te::qt::af::BaseApplication::BaseApplication(QWidget* parent)
     m_display(0),
     m_styleExplorer(0),
     m_queryDlg(0),
+    m_compModeMenu(0),
     m_project(0),
     m_progressDockWidget(0),
     m_zoomInDisplaysDockWidget(0),
@@ -214,6 +215,7 @@ te::qt::af::BaseApplication::~BaseApplication()
   delete m_display;
   delete m_styleExplorer;
   delete m_queryDlg;
+  delete m_compModeMenu;
   delete m_project;
   delete m_progressDockWidget;
   delete m_zoomInDisplaysDockWidget;
@@ -1103,7 +1105,7 @@ void te::qt::af::BaseApplication::onLayerSRSTriggered()
 
 void te::qt::af::BaseApplication::onLayerShowTableTriggered()
 {
-  std::list<te::qt::widgets::AbstractTreeItem*> layers = m_explorer->getExplorer()->getSelectedItems();
+  std::list<te::qt::widgets::AbstractTreeItem*> layers = m_explorer->getExplorer()->getSelectedSingleLayerItems();
 
   if(layers.empty())
   {
@@ -2180,7 +2182,7 @@ void te::qt::af::BaseApplication::makeDialog()
   // Initializing well known widgets
 
   // 0. Composition Mode
-  m_compModeMenu = new te::qt::widgets::CompositionModeMenuWidget(this);
+  m_compModeMenu = new te::qt::widgets::CompositionModeMenuWidget();
   m_layerCompositionMode->setMenu(m_compModeMenu->getMenu());
 
   // 1. Layer Explorer

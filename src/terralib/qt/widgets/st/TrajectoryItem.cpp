@@ -78,9 +78,12 @@ void te::qt::widgets::TrajectoryItem::paint(QPainter*, const QStyleOptionGraphic
     double w = e.getWidth();
     double h = e.getHeight();
     QRectF r(e.getLowerLeftX(), e.getLowerLeftY(), w, h);
-    if(r.contains(m_pos) == false)
+    double dist = 200;
+    QRectF rm(e.getLowerLeftX()+w/dist, e.getLowerLeftY()+h/dist, w-2*w/dist, h-2*h/dist);
+    if(rm.contains(m_pos) == false)
     {
-      QPointF cc;
+      w -= w/20;
+      h -= h/20;
       QPointF c = r.center();
       QPointF dif = m_pos - c;
       double dw = fabs(dif.x());
@@ -92,6 +95,7 @@ void te::qt::widgets::TrajectoryItem::paint(QPainter*, const QStyleOptionGraphic
       if(dh >= h/2)
         mh = (dh - h / 2) + h * m_panFactor;
 
+      QPointF cc;
       if(dif.x() >= 0 && dif.y() >= 0)
         cc = c + QPointF(mw, mh);
       else if(dif.x() >= 0 && dif.y() < 0)

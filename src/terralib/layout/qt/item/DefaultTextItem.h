@@ -30,6 +30,8 @@
 
 // TerraLib
 #include "../../core/pattern/mvc/ItemObserver.h"
+#include "../../core/enum/AbstractType.h"
+#include "../../../color/RGBAColor.h"
 
 // Qt
 #include <QGraphicsTextItem>
@@ -52,6 +54,7 @@ namespace te
       public:
 
         DefaultTextItem( ItemController* controller, Observable* o );
+
         virtual ~DefaultTextItem();
         
         virtual void updateObserver(ContextItem context);
@@ -61,11 +64,14 @@ namespace te
         virtual int getZValueItem();
 
         virtual void setPixmap( const QPixmap& pixmap );
+
         virtual QPixmap getPixmap();
 
         //Mandatory implementation methods
         virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
+
         virtual QRectF boundingRect() const;
+
         virtual void setRect(QRectF rect);
 
         //Override 
@@ -80,6 +86,8 @@ namespace te
 
         void setTextInteraction(bool on, bool selectAll = false);
 
+        virtual te::color::RGBAColor** getImage();
+
       protected slots:
 
         virtual void onContentsChange ( int position, int charsRemoved, int charsAdded );
@@ -87,6 +95,18 @@ namespace te
       protected:
 
         virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *evt);
+
+        virtual void	mousePressEvent ( QGraphicsSceneMouseEvent * event );
+
+        virtual void	mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
+
+        virtual void	mouseMoveEvent ( QGraphicsSceneMouseEvent * event );
+
+        virtual void	hoverEnterEvent ( QGraphicsSceneHoverEvent * event );
+
+        virtual void	hoverLeaveEvent ( QGraphicsSceneHoverEvent * event );
+
+        virtual void	hoverMoveEvent ( QGraphicsSceneHoverEvent * event );
 
         virtual QVariant	itemChange ( GraphicsItemChange change, const QVariant & value );
 
@@ -102,11 +122,30 @@ namespace te
 
         virtual void applyRotation();
 
+        virtual bool checkTouchesCorner(const double& x, const double& y);
+
+        virtual QPixmap calculateNewPixmap(const double& x, const double& y);
+
+        virtual te::gm::Envelope createNewBoxInCoordScene(const double& x, const double& y);
+
+      protected:
+
         QPixmap m_pixmap;
         QRectF  m_rect;//In local coordinate
+
         QTextTable*    m_table;
         double         m_oldAdjustSizeW;
         double         m_oldAdjustSizeH;
+
+        //Resize
+        te::gm::Envelope m_boxCopy;
+        QPixmap m_clonePixmap;
+        bool    m_mousePressedCtrl;
+        QPointF m_initialCoord;
+        QPointF m_finalCoord;
+        bool    m_hoverAboveItem;
+        bool    m_toResizeItem;
+        LayoutAlign m_enumSides;
     };
   }
 }

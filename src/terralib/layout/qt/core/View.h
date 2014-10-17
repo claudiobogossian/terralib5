@@ -31,6 +31,7 @@
 // Qt
 #include <QGraphicsView>
 #include <QMenu>
+#include <QImage>
 
 // TerraLib
 #include "../../core/AbstractView.h"
@@ -69,6 +70,8 @@ namespace te
         virtual void config();     
 
         virtual void closeOutsideWindows();
+
+        virtual QImage createImage();
                                 
       public slots:
 
@@ -85,8 +88,11 @@ namespace te
       signals:
 
         void changeSceneCoordMouse(QPointF pos);
+
         void showView();
+
         void closeView();
+
         void hideView();
 
         /* The Properties only load when selection change and mouse release */
@@ -129,7 +135,11 @@ namespace te
         virtual void showSystematicScale();
 
         virtual bool intersectionSelectionItem(int x, int y);
-                        
+
+        virtual void	drawBackground ( QPainter * painter, const QRectF & rect );
+
+        virtual void	drawForeground ( QPainter * painter, const QRectF & rect );
+                                
       protected:
         VisualizationArea*  m_visualizationArea;
         QLineF*             m_lineIntersectHrz;

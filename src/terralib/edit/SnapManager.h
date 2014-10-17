@@ -70,6 +70,8 @@ namespace te
 
         void buildSnap(const std::string& source, int srid, te::da::DataSet* dataset);
 
+        void removeSnap(const std::string& source);
+
         const std::map<std::string, Snap*>& getSnaps() const;
 
         Snap* getSnap(const std::string& source) const;
@@ -78,7 +80,7 @@ namespace te
 
         void clearAll();
 
-        bool search(const te::gm::Coord2D& coord, te::gm::Coord2D& result);
+        bool search(const te::gm::Coord2D& coord, int srid, te::gm::Coord2D& result);
 
         void setWorld(const double& llx, const double& lly,
                       const double& urx, const double& ury,

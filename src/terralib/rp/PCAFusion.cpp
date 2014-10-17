@@ -234,7 +234,8 @@ namespace te
       // Generating the output fused raster
       
       {
-        te::rst::Grid* gridPtr = new te::rst::Grid( *pcaRasterPtr->getGrid() );
+        te::rst::Grid* gridPtr = new te::rst::Grid( *m_inputParameters.m_highResRasterPtr->getGrid() );        
+        
         std::vector< te::rst::BandProperty * > bandProperties;
         std::vector< unsigned int > outputRasterBands;
           
@@ -356,6 +357,10 @@ namespace te
         
         ressampledBandProperties.push_back( new te::rst::BandProperty( 
           *m_inputParameters.m_lowResRasterPtr->getBand( lowResRasterBandIdx )->getProperty() ) );
+        ressampledBandProperties[ lowResRasterBandsIdx ]->m_blkw = outNCols;
+        ressampledBandProperties[ lowResRasterBandsIdx ]->m_blkh = 1;
+        ressampledBandProperties[ lowResRasterBandsIdx ]->m_nblocksx = 1;
+        ressampledBandProperties[ lowResRasterBandsIdx ]->m_nblocksy = outNRows;
       } 
       
       try

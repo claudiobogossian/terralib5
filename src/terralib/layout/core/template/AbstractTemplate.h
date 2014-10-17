@@ -29,7 +29,7 @@
 #define __TERRALIB_LAYOUT_INTERNAL_ABSTRACT_TEMPLATE_H
 
 // TerraLib
-#include "../enum/AbstractType.h"
+
 
 // STL
 #include <vector>
@@ -40,6 +40,7 @@ namespace te
   namespace layout
   {
     class Properties;
+    class EnumType;
 
     class AbstractTemplate
     {
@@ -56,12 +57,14 @@ namespace te
 
         virtual std::string getFileName();
 
-        virtual LayoutTemplateType getType() = 0;
+        virtual EnumType* getType();
 
       protected:
         std::string m_path;
         std::string m_fileName;
         std::string m_version;
+        EnumType* m_type;
+
     };
   }
 }

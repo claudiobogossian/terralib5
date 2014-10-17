@@ -24,7 +24,8 @@
 */
 
 // TerraLib
-#include "../../attributefill/VectorToVector.h"
+#include "../../attributefill/VectorToVectorOp.h"
+#include "../../attributefill/VectorToVectorMemory.h"
 #include "../../common/Exception.h"
 #include "../../common/Logger.h"
 #include "../../common/progress/ProgressManager.h"
@@ -40,10 +41,12 @@
 #include "../../dataaccess/utils/Utils.h"
 #include "../../datatype/Enums.h"
 #include "../../datatype/Property.h"
+#include "../../geometry/GeometryProperty.h"
 #include "../../maptools/AbstractLayer.h"
 #include "../../qt/af/Utils.h"
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../../qt/widgets/layer/utils/DataSet2Layer.h"
+#include "../../qt/widgets/progress/ProgressViewerDialog.h"
 #include "../../qt/widgets/Utils.h"
 #include "../../statistics/core/Utils.h"
 #include "../Config.h"
@@ -136,104 +139,6 @@ te::map::AbstractLayerPtr te::attributefill::VectorToVectorDialog::getLayer()
   return 0;
 }
 
-std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> > te::attributefill::VectorToVectorDialog::getStatisticalSummary()
-{
-  std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> > outputStatisticalSummary;
-
-  QList<QListWidgetItem*> itemList = m_ui->m_statisticsListWidget->selectedItems();
-  
-  te::stat::StatisticalSummary enumStatisticalSummary;
-  std::map<std::string, std::vector<te::stat::StatisticalSummary> >  propname_stat;
-  std::map<std::string, std::vector<te::stat::StatisticalSummary> >::iterator it;
-  
-  for(int i = 0; i < itemList.size(); ++i)
-  {
-    if(itemList[i]->data(Qt::UserRole).toInt() == -1)
-      continue;
-
-    std::vector<std::string> tokens;
-    std::string pname;
-    std::string auxItem = itemList[i]->text().toStdString();
-
-    boost::split(tokens, auxItem, boost::is_any_of(":"));
-    boost::trim(tokens[0]);
-    boost::trim(tokens[1]);
-    if(tokens[0] != "")
-    {
-      pname = tokens[0];
-      enumStatisticalSummary = (te::stat::StatisticalSummary)itemList[i]->data(Qt::UserRole).toInt();
-      it = propname_stat.find(pname);
-      if (it != propname_stat.end())
-        it->second.push_back(enumStatisticalSummary);
-      else
-      {
-        std::vector<te::stat::StatisticalSummary> nvec;
-        nvec.push_back(enumStatisticalSummary);
-        propname_stat.insert(std::make_pair(pname, nvec));
-      }
-    }
-  }
-  
-  it = propname_stat.begin();
-  while (it != propname_stat.end())
-  {
-    te::dt::Property* prop = getSelectedPropertyByName(it->first);
-    outputStatisticalSummary.insert(std::make_pair(prop,it->second));
-    ++it;
-  }
-  
-  return outputStatisticalSummary;
-}
-
-te::dt::Property* te::attributefill::VectorToVectorDialog::getSelectedPropertyByName(std::string propertyName)
-{
-  te::dt::Property* selProperty;
-  if(propertyName == "")
-    return 0;
-
-  te::map::AbstractLayerPtr fromLayer = getCurrentFromLayer();
-
-  std::auto_ptr<te::da::DataSetType> fromSchema = fromLayer->getSchema();
-
-  std::vector<te::dt::Property*> properties = fromSchema->getProperties();
-
-  for(std::size_t i = 0; i < properties.size(); ++i)
-  {
-    if(propertyName == properties[i]->getName())
-    {
-      selProperty = properties[i];
-      return selProperty;
-    }
-  }
-  return 0;
-}
-
-void te::attributefill::VectorToVectorDialog::setOptions()
-{
-  m_ui->m_statisticsListWidget->clear();
-
-  te::map::AbstractLayerPtr fromLayer = getCurrentFromLayer();
-
-  std::auto_ptr<te::da::DataSetType> schema = fromLayer->getSchema();
-
-  std::vector<te::dt::Property*> props = schema->getProperties();
-
-  for(std::size_t i = 0; i < props.size(); ++i)
-  {
-    if(props[i]->getType() != te::dt::GEOMETRY_TYPE)
-    {
-      QListWidgetItem* itemValue = new QListWidgetItem(QString(props[i]->getName().c_str()) + " : " + "Value");
-      itemValue->setData(Qt::UserRole, QVariant(-1));
-      m_ui->m_statisticsListWidget->addItem(itemValue);
-
-      setFunctionsByProperty(props[i]);
-    }
-  }
-
-  int lastRow = m_ui->m_statisticsListWidget->count() - 1;
-  delete m_ui->m_statisticsListWidget->item(lastRow);
-}
-
 void te::attributefill::VectorToVectorDialog::onHelpPushButtonClicked()
 {
   QMessageBox::information(this, "Help", "Under development");
@@ -267,10 +172,6 @@ void te::attributefill::VectorToVectorDialog::onOkPushButtonClicked()
   std::size_t toSpatialPropPos = te::da::GetFirstSpatialPropertyPos(toData.get());
   te::da::DataSourcePtr toSource = te::da::GetDataSource(toLayer->getDataSourceId(), true);
 
-  std::auto_ptr<te::attributefill::VectorToVector> v2v(new te::attributefill::VectorToVector());
-
-  v2v->setInput(fromLayer, toLayer);
-
   std::string outDataSetName = m_ui->m_newLayerNameLineEdit->text().toStdString();
   te::da::DataSourcePtr outSource;
 
@@ -279,12 +180,29 @@ void te::attributefill::VectorToVectorDialog::onOkPushButtonClicked()
     QMessageBox::information(this, tr("VectorToVector"), tr("Define a repository for the result."));
     return;
   }
-       
+
   if(m_ui->m_newLayerNameLineEdit->text().isEmpty())
   {
     QMessageBox::information(this, tr("VectorToVector"), tr("Define a name for the resulting layer."));
     return;
   }
+
+  //progress
+  te::qt::widgets::ProgressViewerDialog v(this);
+  int id = te::common::ProgressManager::getInstance().addViewer(&v);
+
+  std::auto_ptr<te::attributefill::VectorToVectorOp> v2v;
+
+//  if(dsCapabilities.supportsPreparedQueryAPI() && dsCapabilities.getQueryCapabilities().supportsSpatialSQLDialect())
+//  {
+//    v2v.reset(new te::attributefill::VectorToVectorQuery());
+//  }
+//  else
+//  {
+    v2v.reset(new te::attributefill::VectorToVectorMemory());
+//  }
+
+  v2v->setInput(fromLayer, toLayer);
 
   if(m_toFile)
   {
@@ -337,8 +255,6 @@ void te::attributefill::VectorToVectorDialog::onOkPushButtonClicked()
 
   std::map<te::dt::Property*, std::vector<std::string> > selections = getSelections();
 
-  std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> > summary = getStatisticalSummary();
-
   v2v->setParams(getSelections());
 
   try
@@ -348,8 +264,18 @@ void te::attributefill::VectorToVectorDialog::onOkPushButtonClicked()
   catch(te::common::Exception& e)
   {
     QMessageBox::warning(this, tr("Vector To Vector"), e.what());
+    te::common::ProgressManager::getInstance().removeViewer(id);
     reject();
   }
+  catch(std::exception& e)
+  {
+    QMessageBox::warning(this, tr("Vector To Vector"), e.what());
+    te::common::ProgressManager::getInstance().removeViewer(id);
+    reject();
+  }
+
+  te::common::ProgressManager::getInstance().removeViewer(id);
+  this->setCursor(Qt::ArrowCursor);
 
   accept();
 }
@@ -375,22 +301,7 @@ void te::attributefill::VectorToVectorDialog::onFromLayerComboBoxCurrentIndexCha
       m_ui->m_toLayerComboBox->setCurrentIndex(0);
   }
 
-  setOptions();
-
-  /*
-
-  te::map::AbstractLayerPtr fromLayer = getCurrentFromLayer();
-
-  std::auto_ptr<te::da::DataSetType> schema(fromLayer->getSchema());
-
-  std::vector<te::dt::Property*> props = schema->getProperties();
-
-  if(schema->size() == 0)
-    return;
-
-  setFunctionsByLayer(props);
-
-  setFillCellOperations();*/
+  setFunctionsByLayer(getCurrentFromLayer());
 }
 
 void te::attributefill::VectorToVectorDialog::onToLayerComboBoxCurrentIndexChanged(int index)
@@ -407,297 +318,8 @@ void te::attributefill::VectorToVectorDialog::onToLayerComboBoxCurrentIndexChang
     else
       m_ui->m_fromLayerComboBox->setCurrentIndex(0);
   }
-}
 
-void te::attributefill::VectorToVectorDialog::setFunctionsByProperty(te::dt::Property* prop)
-{
-  int propertyType = prop->getType();
-
-  if(propertyType != te::dt::GEOMETRY_TYPE)
-  {
-    if(propertyType == te::dt::STRING_TYPE)
-    {
-      QListWidgetItem* item = new QListWidgetItem(QString(prop->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::MIN_VALUE].c_str());
-      item->setData(Qt::UserRole, QVariant(te::stat::MIN_VALUE));
-      m_ui->m_statisticsListWidget->addItem(item);
-
-      item = new QListWidgetItem(QString(prop->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::MAX_VALUE].c_str());
-      item->setData(Qt::UserRole, QVariant(te::stat::MAX_VALUE));
-      m_ui->m_statisticsListWidget->addItem(item);
-        
-      item = new QListWidgetItem(QString(prop->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::COUNT].c_str());
-      item->setData(Qt::UserRole, QVariant(te::stat::COUNT));
-      m_ui->m_statisticsListWidget->addItem(item);
-
-      item = new QListWidgetItem(QString(prop->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::VALID_COUNT].c_str());
-      item->setData(Qt::UserRole, QVariant(te::stat::VALID_COUNT));
-      m_ui->m_statisticsListWidget->addItem(item);
-
-      //item = new QListWidgetItem("");
-      //m_ui->m_statisticsListWidget->addItem(item);
-    }
-    else
-    {
-      QListWidgetItem* item = new QListWidgetItem(QString(prop->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::MIN_VALUE].c_str());
-      item->setData(Qt::UserRole, QVariant(te::stat::MIN_VALUE));
-      m_ui->m_statisticsListWidget->addItem(item);
-
-      item = new QListWidgetItem(QString(prop->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::MAX_VALUE].c_str());
-      item->setData(Qt::UserRole, QVariant(te::stat::MAX_VALUE));
-      m_ui->m_statisticsListWidget->addItem(item);
-
-      item = new QListWidgetItem(QString(prop->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::MEAN].c_str());
-      item->setData(Qt::UserRole, QVariant(te::stat::MEAN));
-      m_ui->m_statisticsListWidget->addItem(item);
-
-      item = new QListWidgetItem(QString(prop->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::SUM].c_str());
-      item->setData(Qt::UserRole, QVariant(te::stat::SUM));
-      m_ui->m_statisticsListWidget->addItem(item);
-
-      item = new QListWidgetItem(QString(prop->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::COUNT].c_str());
-      item->setData(Qt::UserRole, QVariant(te::stat::COUNT));
-      m_ui->m_statisticsListWidget->addItem(item);
-
-      item = new QListWidgetItem(QString(prop->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::VALID_COUNT].c_str());
-      item->setData(Qt::UserRole, QVariant(te::stat::VALID_COUNT));
-      m_ui->m_statisticsListWidget->addItem(item);
-
-      item = new QListWidgetItem(QString(prop->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::STANDARD_DEVIATION].c_str());
-      item->setData(Qt::UserRole, QVariant(te::stat::STANDARD_DEVIATION));
-      m_ui->m_statisticsListWidget->addItem(item);
-
-      item = new QListWidgetItem(QString(prop->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::VARIANCE].c_str());
-      item->setData(Qt::UserRole, QVariant(te::stat::VARIANCE));
-      m_ui->m_statisticsListWidget->addItem(item);
-
-      item = new QListWidgetItem(QString(prop->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::SKEWNESS].c_str());
-      item->setData(Qt::UserRole, QVariant(te::stat::SKEWNESS));
-      m_ui->m_statisticsListWidget->addItem(item);
-
-      item = new QListWidgetItem(QString(prop->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::KURTOSIS].c_str());
-      item->setData(Qt::UserRole, QVariant(te::stat::KURTOSIS));
-      m_ui->m_statisticsListWidget->addItem(item);
-
-      item = new QListWidgetItem(QString(prop->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::AMPLITUDE].c_str());
-      item->setData(Qt::UserRole, QVariant(te::stat::AMPLITUDE));
-      m_ui->m_statisticsListWidget->addItem(item);
-
-      item = new QListWidgetItem(QString(prop->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::MEDIAN].c_str());
-      item->setData(Qt::UserRole, QVariant(te::stat::MEDIAN));
-      m_ui->m_statisticsListWidget->addItem(item);
-
-      item = new QListWidgetItem(QString(prop->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::VAR_COEFF].c_str());
-      item->setData(Qt::UserRole, QVariant(te::stat::VAR_COEFF));
-      m_ui->m_statisticsListWidget->addItem(item);
-
-      item = new QListWidgetItem(QString(prop->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::MODE].c_str());
-      item->setData(Qt::UserRole, QVariant(te::stat::MODE));
-      m_ui->m_statisticsListWidget->addItem(item);
-
-      //item = new QListWidgetItem("");
-      //m_ui->m_statisticsListWidget->addItem(item);
-    }
-  }
-
-  QListWidgetItem* item1 = new QListWidgetItem(QString(prop->getName().c_str()) + " : " + "Major Class");
-  item1->setData(Qt::UserRole, QVariant(-1));
-  QListWidgetItem* item2 = new QListWidgetItem(QString(prop->getName().c_str()) + " : " + "Percentage per Class");
-  item2->setData(Qt::UserRole, QVariant(-1));
-  QListWidgetItem* item3 = new QListWidgetItem(QString(prop->getName().c_str()) + " : " + "Minimum Distance");
-  item3->setData(Qt::UserRole, QVariant(-1));
-  QListWidgetItem* item4 = new QListWidgetItem(QString(prop->getName().c_str()) + " : " + "Presence");
-  item4->setData(Qt::UserRole, QVariant(-1));
-
-  
-  m_ui->m_statisticsListWidget->addItem(item1);
-  m_ui->m_statisticsListWidget->addItem(item2);
-  m_ui->m_statisticsListWidget->addItem(item3);
-  m_ui->m_statisticsListWidget->addItem(item4);
-
-  m_ui->m_statisticsListWidget->addItem("");
-
-}
-
-void te::attributefill::VectorToVectorDialog::setFunctionsByLayer(std::vector<te::dt::Property*> properties)
-{
-  int propertyType;
-
-  m_ui->m_selectAllComboBox->setCurrentIndex(0);
-  m_ui->m_rejectAllComboBox->setCurrentIndex(0);
-  m_ui->m_statisticsListWidget->clear();
-
-  te::map::AbstractLayerPtr fromLayer = getCurrentFromLayer();
-
-  te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(fromLayer.get());
-  te::da::DataSourcePtr dataSource = te::da::GetDataSource(dsLayer->getDataSourceId(), true);
-  const te::da::DataSourceCapabilities dsCapabilities = dataSource->getCapabilities();
-
-  if(dsCapabilities.supportsPreparedQueryAPI() && dsCapabilities.getQueryCapabilities().supportsSpatialSQLDialect())
-  {
-    for(size_t i=0; i < properties.size(); ++i)
-    {
-      propertyType = properties[i]->getType();
-      if(propertyType != te::dt::GEOMETRY_TYPE)
-      {
-        if(propertyType == te::dt::STRING_TYPE)
-        {  
-          QListWidgetItem* item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::MIN_VALUE].c_str());
-          item->setData(Qt::UserRole, QVariant(te::stat::MIN_VALUE));
-          m_ui->m_statisticsListWidget->addItem(item);
-
-          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::MAX_VALUE].c_str());
-          item->setData(Qt::UserRole, QVariant(te::stat::MAX_VALUE));
-          m_ui->m_statisticsListWidget->addItem(item);
-        
-          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::COUNT].c_str());
-          item->setData(Qt::UserRole, QVariant(te::stat::COUNT));
-          m_ui->m_statisticsListWidget->addItem(item);
-
-          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::VALID_COUNT].c_str());
-          item->setData(Qt::UserRole, QVariant(te::stat::VALID_COUNT));
-          m_ui->m_statisticsListWidget->addItem(item);
-
-          item = new QListWidgetItem("");
-          m_ui->m_statisticsListWidget->addItem(item);
-        }
-        else
-        {
-          QListWidgetItem* item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::MIN_VALUE].c_str());
-          item->setData(Qt::UserRole, QVariant(te::stat::MIN_VALUE));
-          m_ui->m_statisticsListWidget->addItem(item);
-
-          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::MAX_VALUE].c_str());
-          item->setData(Qt::UserRole, QVariant(te::stat::MAX_VALUE));
-          m_ui->m_statisticsListWidget->addItem(item);
-
-          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::MEAN].c_str());
-          item->setData(Qt::UserRole, QVariant(te::stat::MEAN));
-          m_ui->m_statisticsListWidget->addItem(item);
-
-          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::SUM].c_str());
-          item->setData(Qt::UserRole, QVariant(te::stat::SUM));
-          m_ui->m_statisticsListWidget->addItem(item);
-
-          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::COUNT].c_str());
-          item->setData(Qt::UserRole, QVariant(te::stat::COUNT));
-          m_ui->m_statisticsListWidget->addItem(item);
-
-          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::VALID_COUNT].c_str());
-          item->setData(Qt::UserRole, QVariant(te::stat::VALID_COUNT));
-          m_ui->m_statisticsListWidget->addItem(item);
-
-          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::STANDARD_DEVIATION].c_str());
-          item->setData(Qt::UserRole, QVariant(te::stat::STANDARD_DEVIATION));
-          m_ui->m_statisticsListWidget->addItem(item);
-
-          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::VARIANCE].c_str());
-          item->setData(Qt::UserRole, QVariant(te::stat::VARIANCE));
-          m_ui->m_statisticsListWidget->addItem(item);
-
-          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::AMPLITUDE].c_str());
-          item->setData(Qt::UserRole, QVariant(te::stat::AMPLITUDE));
-          m_ui->m_statisticsListWidget->addItem(item);
-
-          item = new QListWidgetItem("");
-          m_ui->m_statisticsListWidget->addItem(item);
-        }
-      }
-    }
-  }
-  else
-  {
-    for(size_t i=0; i < properties.size(); ++i)
-    {
-      propertyType = properties[i]->getType();
-      if(propertyType != te::dt::GEOMETRY_TYPE)
-      {
-        if(propertyType == te::dt::STRING_TYPE)
-        {  
-          QListWidgetItem* item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::MIN_VALUE].c_str());
-          item->setData(Qt::UserRole, QVariant(te::stat::MIN_VALUE));
-          m_ui->m_statisticsListWidget->addItem(item);
-
-          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::MAX_VALUE].c_str());
-          item->setData(Qt::UserRole, QVariant(te::stat::MAX_VALUE));
-          m_ui->m_statisticsListWidget->addItem(item);
-        
-          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::COUNT].c_str());
-          item->setData(Qt::UserRole, QVariant(te::stat::COUNT));
-          m_ui->m_statisticsListWidget->addItem(item);
-
-          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::VALID_COUNT].c_str());
-          item->setData(Qt::UserRole, QVariant(te::stat::VALID_COUNT));
-          m_ui->m_statisticsListWidget->addItem(item);
-
-          item = new QListWidgetItem("");
-          m_ui->m_statisticsListWidget->addItem(item);
-        }
-        else
-        {
-          QListWidgetItem* item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::MIN_VALUE].c_str());
-          item->setData(Qt::UserRole, QVariant(te::stat::MIN_VALUE));
-          m_ui->m_statisticsListWidget->addItem(item);
-
-          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::MAX_VALUE].c_str());
-          item->setData(Qt::UserRole, QVariant(te::stat::MAX_VALUE));
-          m_ui->m_statisticsListWidget->addItem(item);
-
-          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::MEAN].c_str());
-          item->setData(Qt::UserRole, QVariant(te::stat::MEAN));
-          m_ui->m_statisticsListWidget->addItem(item);
-
-          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::SUM].c_str());
-          item->setData(Qt::UserRole, QVariant(te::stat::SUM));
-          m_ui->m_statisticsListWidget->addItem(item);
-
-          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::COUNT].c_str());
-          item->setData(Qt::UserRole, QVariant(te::stat::COUNT));
-          m_ui->m_statisticsListWidget->addItem(item);
-
-          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::VALID_COUNT].c_str());
-          item->setData(Qt::UserRole, QVariant(te::stat::VALID_COUNT));
-          m_ui->m_statisticsListWidget->addItem(item);
-
-          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::STANDARD_DEVIATION].c_str());
-          item->setData(Qt::UserRole, QVariant(te::stat::STANDARD_DEVIATION));
-          m_ui->m_statisticsListWidget->addItem(item);
-
-          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::VARIANCE].c_str());
-          item->setData(Qt::UserRole, QVariant(te::stat::VARIANCE));
-          m_ui->m_statisticsListWidget->addItem(item);
-
-          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::SKEWNESS].c_str());
-          item->setData(Qt::UserRole, QVariant(te::stat::SKEWNESS));
-          m_ui->m_statisticsListWidget->addItem(item);
-
-          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::KURTOSIS].c_str());
-          item->setData(Qt::UserRole, QVariant(te::stat::KURTOSIS));
-          m_ui->m_statisticsListWidget->addItem(item);
-
-          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::AMPLITUDE].c_str());
-          item->setData(Qt::UserRole, QVariant(te::stat::AMPLITUDE));
-          m_ui->m_statisticsListWidget->addItem(item);
-
-          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::MEDIAN].c_str());
-          item->setData(Qt::UserRole, QVariant(te::stat::MEDIAN));
-          m_ui->m_statisticsListWidget->addItem(item);
-
-          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::VAR_COEFF].c_str());
-          item->setData(Qt::UserRole, QVariant(te::stat::VAR_COEFF));
-          m_ui->m_statisticsListWidget->addItem(item);
-
-          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::MODE].c_str());
-          item->setData(Qt::UserRole, QVariant(te::stat::MODE));
-          m_ui->m_statisticsListWidget->addItem(item);
-
-          item = new QListWidgetItem("");
-          m_ui->m_statisticsListWidget->addItem(item);
-        }
-      }
-    }
-  }
-  int lastRow = m_ui->m_statisticsListWidget->count() - 1;
-  delete m_ui->m_statisticsListWidget->item(lastRow);
+  onFromLayerComboBoxCurrentIndexChanged(m_ui->m_fromLayerComboBox->currentIndex());
 }
 
 void te::attributefill::VectorToVectorDialog::setStatisticalSummary()
@@ -722,6 +344,10 @@ void te::attributefill::VectorToVectorDialog::setStatisticalSummary()
     m_ui->m_selectAllComboBox->addItem("Percentage per Class");
     m_ui->m_selectAllComboBox->addItem("Minimum Distance");
     m_ui->m_selectAllComboBox->addItem("Presence");
+    m_ui->m_selectAllComboBox->addItem("Weighted by Area");
+    m_ui->m_selectAllComboBox->addItem("Weighted Sum by Area");
+    m_ui->m_selectAllComboBox->addItem("Percentage of each Class by Area");
+    m_ui->m_selectAllComboBox->addItem("Percentage of Total Area");
 
     m_ui->m_rejectAllComboBox->addItem("");
     m_ui->m_rejectAllComboBox->addItem("Value");
@@ -743,6 +369,10 @@ void te::attributefill::VectorToVectorDialog::setStatisticalSummary()
     m_ui->m_rejectAllComboBox->addItem("Percentage per Class");
     m_ui->m_rejectAllComboBox->addItem("Minimum Distance");
     m_ui->m_rejectAllComboBox->addItem("Presence");
+    m_ui->m_rejectAllComboBox->addItem("Weighted by Area");
+    m_ui->m_rejectAllComboBox->addItem("Weighted Sum by Area");
+    m_ui->m_rejectAllComboBox->addItem("Percentage of each Class by Area");
+    m_ui->m_rejectAllComboBox->addItem("Percentage of Total Area");
 }
 
 void te::attributefill::VectorToVectorDialog::setStatisticalSummaryMap()
@@ -761,85 +391,6 @@ void te::attributefill::VectorToVectorDialog::setStatisticalSummaryMap()
   m_statisticalSummaryMap.insert(StaticalSummaryMap::value_type(te::stat::MEDIAN, te::stat::GetStatSummaryFullName(te::stat::MEDIAN)));
   m_statisticalSummaryMap.insert(StaticalSummaryMap::value_type(te::stat::VAR_COEFF, te::stat::GetStatSummaryFullName(te::stat::VAR_COEFF)));
   m_statisticalSummaryMap.insert(StaticalSummaryMap::value_type(te::stat::MODE, te::stat::GetStatSummaryFullName(te::stat::MODE)));
-}
-
-/*
-void te::attributefill::VectorToVectorDialog::onOperationComboBoxCurrentIndexChanged(int index)
-{
-  m_ui->m_attributeComboBox->clear();
-
-  te::map::AbstractLayerPtr fromLayer = getCurrentFromLayer();
-
-  std::auto_ptr<te::da::DataSetType>schema = fromLayer->getSchema();
-
-  std::vector<te::dt::Property*> props = schema->getProperties();
-
-  for(std::size_t i = 0; i < props.size(); ++i)
-  {
-    std::string operation = m_ui->m_operationComboBox->currentText().toStdString();
-
-    std::string propName = props[i]->getName();
-    int propType = props[i]->getType();
-
-    if(operation == "Major Class" || 
-       operation == "Percentage per Class" ||
-       operation == "Percentage of each Class by Area" )
-    {
-      if(propType == te::dt::STRING_TYPE ||
-         propType == te::dt::INT16_TYPE ||
-         propType == te::dt::INT32_TYPE ||
-         propType == te::dt::INT64_TYPE)
-      {
-        m_ui->m_attributeComboBox->addItem(propName.c_str());
-        m_ui->m_altAttributeComboBox->addItem(propName.c_str());
-      }
-    }
-    else
-    {
-      if(propType == te::dt::DOUBLE_TYPE ||
-         propType == te::dt::FLOAT_TYPE ||
-         propType == te::dt::INT16_TYPE ||
-         propType == te::dt::INT32_TYPE ||
-         propType == te::dt::INT64_TYPE)
-      {
-        m_ui->m_attributeComboBox->addItem(propName.c_str());
-        m_ui->m_altAttributeComboBox->addItem(propName.c_str());
-      }
-    }
-  }
-}
-*/
-
-void te::attributefill::VectorToVectorDialog::setFillCellOperations()
-{
-  /*
-  m_ui->m_operationComboBox->clear();
-
-  te::map::AbstractLayerPtr fromLayer = getCurrentFromLayer();
-
-  std::auto_ptr<te::da::DataSetType> schema = fromLayer->getSchema();
-
-  te::dt::Property* spatialProp = te::da::GetFirstSpatialProperty(schema.get());
-
-  m_ui->m_operationComboBox->addItem("Minimum Value");// - POLYGONS | LINES | POINTS
-  m_ui->m_operationComboBox->addItem("Maximum Value");
-  m_ui->m_operationComboBox->addItem("Average Value");
-  m_ui->m_operationComboBox->addItem("Sum of Values");
-  m_ui->m_operationComboBox->addItem("Standard Deviation");
-  m_ui->m_operationComboBox->addItem("Major Class");
-  m_ui->m_operationComboBox->addItem("Percentage per Class");
-  m_ui->m_operationComboBox->addItem("Minimum Distance");
-  m_ui->m_operationComboBox->addItem("Presence");
-  m_ui->m_operationComboBox->addItem("Count");
-
-  if(spatialProp->getType() == te::gm::PolygonType)
-  {
-    m_ui->m_operationComboBox->addItem("Weighted by Area");// - TePOLYGONS
-    m_ui->m_operationComboBox->addItem("Weighted Sum by Area");
-    m_ui->m_operationComboBox->addItem("Percentage of each Class by Area");
-    m_ui->m_operationComboBox->addItem("Percentage of Total Area");
-  }
-  */
 }
 
 te::map::AbstractLayerPtr te::attributefill::VectorToVectorDialog::getCurrentFromLayer()
@@ -1031,4 +582,223 @@ std::map<te::dt::Property*, std::vector<std::string> > te::attributefill::Vector
   }
 
   return result;
+}
+
+void te::attributefill::VectorToVectorDialog::setFunctionsByLayer(te::map::AbstractLayerPtr layer)
+{
+  m_ui->m_selectAllComboBox->setCurrentIndex(0);
+  m_ui->m_rejectAllComboBox->setCurrentIndex(0);
+  m_ui->m_statisticsListWidget->clear();
+
+  te::gm::GeomType toGeomType = getCurrentToLayerGeomType();
+
+  std::auto_ptr<te::da::DataSetType> dst = layer->getSchema();
+  std::auto_ptr<te::da::DataSet> ds = layer->getData();
+
+  te::gm::GeometryProperty* geomProp = 0;
+
+  if(dst->hasGeom())
+  {
+    std::string geomPropName = layer->getGeomPropertyName();
+
+    if(geomPropName.empty())
+      geomProp = te::da::GetFirstGeomProperty(dst.get());
+    else
+      geomProp = dynamic_cast<te::gm::GeometryProperty*>(dst->getProperty(geomPropName));
+  }
+
+  te::gm::GeomType geomType = geomProp->getGeometryType();
+
+  std::vector<te::dt::Property*> props = dst->getProperties();
+
+  for(std::size_t i = 0; i < props.size(); ++i)
+  {
+    te::dt::Property* prop = props[i];
+    
+    if(isValidPropertyType(prop->getType()))
+    {
+      int propertyType = prop->getType();
+
+      m_ui->m_statisticsListWidget->addItem(QString(props[i]->getName().c_str()) + " : " + "Value");
+
+      if(propertyType == te::dt::STRING_TYPE)
+      {
+        QListWidgetItem* item = new QListWidgetItem(QString(prop->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::MIN_VALUE].c_str());
+        item->setData(Qt::UserRole, QVariant(te::stat::MIN_VALUE));
+        m_ui->m_statisticsListWidget->addItem(item);
+
+        item = new QListWidgetItem(QString(prop->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::MAX_VALUE].c_str());
+        item->setData(Qt::UserRole, QVariant(te::stat::MAX_VALUE));
+        m_ui->m_statisticsListWidget->addItem(item);
+        
+        item = new QListWidgetItem(QString(prop->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::COUNT].c_str());
+        item->setData(Qt::UserRole, QVariant(te::stat::COUNT));
+        m_ui->m_statisticsListWidget->addItem(item);
+
+        item = new QListWidgetItem(QString(prop->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::VALID_COUNT].c_str());
+        item->setData(Qt::UserRole, QVariant(te::stat::VALID_COUNT));
+        m_ui->m_statisticsListWidget->addItem(item);
+      }
+      else
+      {
+        QListWidgetItem* item = new QListWidgetItem(QString(prop->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::MIN_VALUE].c_str());
+        item->setData(Qt::UserRole, QVariant(te::stat::MIN_VALUE));
+        m_ui->m_statisticsListWidget->addItem(item);
+
+        item = new QListWidgetItem(QString(prop->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::MAX_VALUE].c_str());
+        item->setData(Qt::UserRole, QVariant(te::stat::MAX_VALUE));
+        m_ui->m_statisticsListWidget->addItem(item);
+
+        item = new QListWidgetItem(QString(prop->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::MEAN].c_str());
+        item->setData(Qt::UserRole, QVariant(te::stat::MEAN));
+        m_ui->m_statisticsListWidget->addItem(item);
+
+        item = new QListWidgetItem(QString(prop->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::SUM].c_str());
+        item->setData(Qt::UserRole, QVariant(te::stat::SUM));
+        m_ui->m_statisticsListWidget->addItem(item);
+
+        item = new QListWidgetItem(QString(prop->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::COUNT].c_str());
+        item->setData(Qt::UserRole, QVariant(te::stat::COUNT));
+        m_ui->m_statisticsListWidget->addItem(item);
+
+        item = new QListWidgetItem(QString(prop->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::VALID_COUNT].c_str());
+        item->setData(Qt::UserRole, QVariant(te::stat::VALID_COUNT));
+        m_ui->m_statisticsListWidget->addItem(item);
+
+        item = new QListWidgetItem(QString(prop->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::STANDARD_DEVIATION].c_str());
+        item->setData(Qt::UserRole, QVariant(te::stat::STANDARD_DEVIATION));
+        m_ui->m_statisticsListWidget->addItem(item);
+
+        item = new QListWidgetItem(QString(prop->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::VARIANCE].c_str());
+        item->setData(Qt::UserRole, QVariant(te::stat::VARIANCE));
+        m_ui->m_statisticsListWidget->addItem(item);
+
+        item = new QListWidgetItem(QString(prop->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::SKEWNESS].c_str());
+        item->setData(Qt::UserRole, QVariant(te::stat::SKEWNESS));
+        m_ui->m_statisticsListWidget->addItem(item);
+
+        item = new QListWidgetItem(QString(prop->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::KURTOSIS].c_str());
+        item->setData(Qt::UserRole, QVariant(te::stat::KURTOSIS));
+        m_ui->m_statisticsListWidget->addItem(item);
+
+        item = new QListWidgetItem(QString(prop->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::AMPLITUDE].c_str());
+        item->setData(Qt::UserRole, QVariant(te::stat::AMPLITUDE));
+        m_ui->m_statisticsListWidget->addItem(item);
+
+        item = new QListWidgetItem(QString(prop->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::MEDIAN].c_str());
+        item->setData(Qt::UserRole, QVariant(te::stat::MEDIAN));
+        m_ui->m_statisticsListWidget->addItem(item);
+
+        item = new QListWidgetItem(QString(prop->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::VAR_COEFF].c_str());
+        item->setData(Qt::UserRole, QVariant(te::stat::VAR_COEFF));
+        m_ui->m_statisticsListWidget->addItem(item);
+
+        item = new QListWidgetItem(QString(prop->getName().c_str()) + " : " + m_statisticalSummaryMap[te::stat::MODE].c_str());
+        item->setData(Qt::UserRole, QVariant(te::stat::MODE));
+        m_ui->m_statisticsListWidget->addItem(item);
+      }
+
+      if(isClassType(prop->getType()))
+        m_ui->m_statisticsListWidget->addItem(QString(props[i]->getName().c_str()) + " : " + "Class with highest occurrence");
+
+      // This function works only with polygon to polygon
+      if(isClassType(prop->getType()) && isPolygon(geomType) && isPolygon(toGeomType))
+        m_ui->m_statisticsListWidget->addItem(QString(props[i]->getName().c_str()) + " : " + "Class with larger intersection area");
+
+      m_ui->m_statisticsListWidget->addItem(QString(props[i]->getName().c_str()) + " : " + "Percentage per Class");
+      m_ui->m_statisticsListWidget->addItem(QString(props[i]->getName().c_str()) + " : " + "Minimum Distance");
+      m_ui->m_statisticsListWidget->addItem(QString(props[i]->getName().c_str()) + " : " + "Presence");
+
+      if(isPolygon(geomType))
+      {
+        m_ui->m_statisticsListWidget->addItem(QString(props[i]->getName().c_str()) + " : " + "Weighted by Area");
+        m_ui->m_statisticsListWidget->addItem(QString(props[i]->getName().c_str()) + " : " + "Weighted Sum by Area");
+        m_ui->m_statisticsListWidget->addItem(QString(props[i]->getName().c_str()) + " : " + "Percentage of each Class by Area");
+        m_ui->m_statisticsListWidget->addItem(QString(props[i]->getName().c_str()) + " : " + "Percentage of Total Area");
+      }
+    }
+
+    m_ui->m_statisticsListWidget->addItem("");
+  }
+
+  int lastRow = m_ui->m_statisticsListWidget->count() - 1;
+  delete m_ui->m_statisticsListWidget->item(lastRow);
+}
+
+bool te::attributefill::VectorToVectorDialog::isPolygon(te::gm::GeomType type)
+{
+  if(type == te::gm::PolygonType ||
+     type == te::gm::PolygonZType ||
+     type == te::gm::PolygonMType ||
+     type == te::gm::PolygonZMType ||
+     type == te::gm::MultiPolygonType ||
+     type == te::gm::MultiPolygonZType ||
+     type == te::gm::MultiPolygonMType ||
+     type == te::gm::MultiPolygonZMType)
+     return true;
+
+  return false;
+}
+
+bool te::attributefill::VectorToVectorDialog::isPoint(te::gm::GeomType type)
+{
+  if(type == te::gm::PointType ||
+     type == te::gm::PointZType ||
+     type == te::gm::PointMType ||
+     type == te::gm::PointZMType ||
+     type == te::gm::MultiPointType ||
+     type == te::gm::MultiPointZType ||
+     type == te::gm::MultiPointMType ||
+     type == te::gm::MultiPointZMType)
+     return true;
+
+  return false;
+}
+
+bool te::attributefill::VectorToVectorDialog::isValidPropertyType(const int type)
+{
+  if(type == te::dt::CHAR_TYPE ||
+     type == te::dt::UCHAR_TYPE ||
+     type == te::dt::INT16_TYPE ||
+     type == te::dt::UINT16_TYPE ||
+     type == te::dt::INT32_TYPE ||
+     type == te::dt::UINT32_TYPE ||
+     type == te::dt::INT64_TYPE ||
+     type == te::dt::UINT64_TYPE ||
+     type == te::dt::FLOAT_TYPE ||
+     type == te::dt::DOUBLE_TYPE ||
+     type == te::dt::NUMERIC_TYPE ||
+     type == te::dt::STRING_TYPE ||
+     type == te::dt::CINT16_TYPE ||
+     type == te::dt::CINT32_TYPE ||
+     type == te::dt::CFLOAT_TYPE ||
+     type == te::dt::CDOUBLE_TYPE)
+     return true;
+
+  return false;
+}
+
+bool te::attributefill::VectorToVectorDialog::isClassType(const int type)
+{
+  if(type == te::dt::INT16_TYPE ||
+     type == te::dt::UINT16_TYPE ||
+     type == te::dt::INT32_TYPE ||
+     type == te::dt::UINT32_TYPE ||
+     type == te::dt::INT64_TYPE ||
+     type == te::dt::UINT64_TYPE ||
+     type == te::dt::STRING_TYPE)
+  {
+     return true;
+  }
+
+  return false;
+}
+
+te::gm::GeomType te::attributefill::VectorToVectorDialog::getCurrentToLayerGeomType()
+{
+  te::map::AbstractLayerPtr toLayer = getCurrentToLayer();
+  std::string toGeomPropName = toLayer->getGeomPropertyName();
+  std::auto_ptr<te::da::DataSetType> toSchema = toLayer->getSchema();
+  te::gm::GeometryProperty* toGeomProp = dynamic_cast<te::gm::GeometryProperty*>(te::da::GetFirstSpatialProperty(toSchema.get()));
+  return toGeomProp->getGeometryType();
 }

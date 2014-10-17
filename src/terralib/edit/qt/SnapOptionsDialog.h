@@ -27,6 +27,7 @@
 #define __TERRALIB_EDIT_QT_INTERNAL_SNAPOPTIONSWIDGET_H
 
 // TerraLib
+#include "../../maptools/AbstractLayer.h"
 #include "Config.h"
 
 // Qt
@@ -66,9 +67,22 @@ namespace te
 
         //@}
 
+        void setLayers(const std::list<te::map::AbstractLayerPtr>& layers);
+
       private:
 
-        std::auto_ptr<Ui::SnapOptionsDialogForm> m_ui; //!< Widget form.
+        void buildOptions();
+
+        void buildOptions(const te::map::AbstractLayerPtr& layer);
+
+      private slots:
+
+        void onOkPushButtonPressed();
+
+      private:
+
+        std::auto_ptr<Ui::SnapOptionsDialogForm> m_ui;   //!< Widget form.
+        std::list<te::map::AbstractLayerPtr> m_layers;   //!< The layer list.
     };
 
   }   // end namespace edit

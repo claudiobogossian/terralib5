@@ -92,6 +92,8 @@ te::layout::ToolbarOutside::ToolbarOutside( OutsideController* controller, Obser
   m_optionUndo("undo"),
   m_optionRedo("redo"),
   m_optionDrawMap("draw_map"),
+  m_optionMapCreateLegendChildAsObject("legend_child"),
+  m_optionObjectToImage("object_to_image"),
   m_btnMap(0)
 {
 	te::gm::Envelope box = m_model->getBox();	
@@ -180,6 +182,9 @@ void te::layout::ToolbarOutside::createToolbar()
   createAlignCenterVerticalToolButton();
   this->addSeparator();
 
+  createObjectToImageButton();
+  this->addSeparator();
+
   createSceneZoomCombobox();
   this->addSeparator();
 }
@@ -229,6 +234,9 @@ void te::layout::ToolbarOutside::createMapToolsToolButton()
 
   QAction* actionTextMap = createAction("Text Map as Object", m_optionMapCreateMapText, "layout-createmap-text-as-objs");
   menu->addAction(actionTextMap);
+
+  QAction* actionLegend = createAction("Legend as Object", m_optionMapCreateLegendChildAsObject, "layout-legend-child");
+  menu->addAction(actionLegend);
   
   QToolButton *btnMapTools = createToolButton("Map Tools", "Map Tools", "layout-map-pan");
   btnMapTools->setMenu(menu);
@@ -495,6 +503,15 @@ void te::layout::ToolbarOutside::createDrawMapToolButton()
   this->addWidget(btn);
 }
 
+void te::layout::ToolbarOutside::createObjectToImageButton()
+{
+  QToolButton *btn = createToolButton("Object To Image", "Export all selected objects to image", "layout-object-to-image");
+  btn->setCheckable(false);
+  connect(btn, SIGNAL(clicked(bool)), this, SLOT(onObjectToImageClicked(bool)));
+
+  this->addWidget(btn);
+}
+
 void te::layout::ToolbarOutside::onMapTriggered( QAction* action )
 {
   EnumModeType* type = Enums::getInstance().getEnumModeType();
@@ -539,11 +556,15 @@ void te::layout::ToolbarOutside::onMapToolsTriggered( QAction* action )
   }
   else if(action->objectName().compare(m_optionMapCreateTextGrid.c_str()) == 0)
   {
-    changeAction(type->getModeCreateTextGrid());
+    changeAction(type->getModeMapCreateTextGrid());
   }
   else if(action->objectName().compare(m_optionMapCreateMapText.c_str()) == 0)
   {
     changeAction(type->getModeMapCreateTextMap());
+  }
+  else if(action->objectName().compare(m_optionMapCreateLegendChildAsObject.c_str()) == 0)
+  {
+    changeAction(type->getModeLegendChildAsObject());
   }
 }
 
@@ -734,6 +755,12 @@ void te::layout::ToolbarOutside::onDrawMapClicked( bool checked )
 {
   EnumModeType* type = Enums::getInstance().getEnumModeType();
   changeAction(type->getModeDrawSelectionMap());
+}
+
+void te::layout::ToolbarOutside::onObjectToImageClicked( bool checked )
+{
+  EnumModeType* type = Enums::getInstance().getEnumModeType();
+  changeAction(type->getModeObjectToImage());
 }
 
 void te::layout::ToolbarOutside::changeAction( EnumType* mode )

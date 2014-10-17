@@ -37,6 +37,7 @@
 #include "../../core/pattern/mvc/ItemObserver.h"
 #include "../../core/enum/AbstractType.h"
 #include "../../../geometry/Envelope.h"
+#include "../../../color/RGBAColor.h"
 
 class QMouseEvent;
 class QWheelEvent;
@@ -50,19 +51,26 @@ namespace te
     class ItemGroup : public QGraphicsItemGroup, public ItemObserver
     {
       public:
+
         ItemGroup( ItemController* controller, Observable* o );
+
         ~ItemGroup();
 
         virtual void updateObserver(ContextItem context);
+
         virtual te::gm::Coord2D getPosition();
 
         void setPixmap( const QPixmap& pixmap );
+
         virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
 
         virtual void	addToGroup ( QGraphicsItem * item );
+
         virtual bool contains(const QPointF &point) const;
 
         void	setZValue ( qreal z );
+
+        virtual te::color::RGBAColor** getImage();
 
       protected:
 
@@ -73,9 +81,11 @@ namespace te
         void drawSelection( QPainter* painter );
 
         virtual void mouseMoveEvent ( QGraphicsSceneMouseEvent* event );
-        virtual void mousePressEvent ( QGraphicsSceneMouseEvent* event );
-        virtual void mouseReleaseEvent ( QGraphicsSceneMouseEvent* event );
 
+        virtual void mousePressEvent ( QGraphicsSceneMouseEvent* event );
+
+        virtual void mouseReleaseEvent ( QGraphicsSceneMouseEvent* event );
+        
         virtual int getZValueItem();
 
         virtual void applyRotation();
@@ -83,7 +93,6 @@ namespace te
       protected:
 
         QPixmap m_pixmap;
-
     };
   }
 }

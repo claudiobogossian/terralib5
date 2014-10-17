@@ -55,6 +55,17 @@
 #include "pattern/command/ChangePropertyCommand.h"
 #include "pattern/command/MoveCommand.h"
 #include "pattern/command/DeleteCommand.h"
+#include "../../item/DefaultTextModel.h"
+#include "../item/LegendItem.h"
+#include "../../item/LegendModel.h"
+#include "../../core/pattern/derivativevisitor/AbstractVisitor.h"
+#include "../item/LegendChildItem.h"
+#include "../../item/LegendChildModel.h"
+#include "../../core/pattern/derivativevisitor/VisitorUtils.h"
+#include "HorizontalRuler.h"
+#include "VerticalRuler.h"
+#include "../../../qt/widgets/Utils.h"
+#include "./../../../common/STLUtils.h"
 
 // STL
 #include <iostream>
@@ -76,6 +87,7 @@
 #include <QPrinter>
 #include <QUndoStack>
 #include <QUndoCommand>
+#include <QImage>
 
 te::layout::Scene::Scene( QWidget* widget): 
   QGraphicsScene(widget),
@@ -83,18 +95,34 @@ te::layout::Scene::Scene( QWidget* widget):
   m_lineIntersectHrz(0),
   m_lineIntersectVrt(0),
   m_fixedRuler(true),
-  m_previewState(PreviewScene),
+  m_previewState(NoPrinter),
   m_undoStack(0),
   m_undoStackLimit(6),
-  m_moveWatched(false)
+  m_moveWatched(false),
+  m_horizontalRuler(0),
+  m_verticalRuler(0),
+  m_stateViewport(None)
 {
-  setBackgroundBrush(QBrush(QColor(109,109,109)));
+  m_backgroundColor = QColor(109,109,109);
+  setBackgroundBrush(QBrush(m_backgroundColor));
 
   m_undoStack = new QUndoStack(this);
 }
 
 te::layout::Scene::~Scene()
 {
+  if(m_verticalRuler)
+  {
+    delete m_verticalRuler;
+    m_verticalRuler = 0;
+  }
+
+  if(m_horizontalRuler)
+  {
+    delete m_horizontalRuler;
+    m_horizontalRuler = 0;
+  }
+
   if(m_boxW)
   {
     delete m_boxW;
@@ -118,7 +146,7 @@ void te::layout::Scene::init(double screenWMM, double screenHMM, double zoomFact
   double newZoomFactor = 1. / zoomFactor;
   if(zoomFactor < 1.)
     newZoomFactor = zoomFactor;
-
+  
   double w = m_boxW->getWidth() * newZoomFactor;
   double h = m_boxW->getHeight() * newZoomFactor;
 
@@ -138,7 +166,7 @@ void te::layout::Scene::init(double screenWMM, double screenHMM, double zoomFact
   m_boxW->m_lly = env->m_lly;
   m_boxW->m_urx = env->m_urx;
   m_boxW->m_ury = env->m_ury;
-  
+
   calculateMatrixViewScene(zoomFactor);
 }
 
@@ -160,9 +188,6 @@ void te::layout::Scene::insertItem( ItemObserver* item )
         if(obs->isInvertedMatrix())
         {
           QTransform transf = m_matrix.inverted();
-          double scalex = m_matrix.inverted().m11();
-          double scaley = m_matrix.inverted().m22();
-          transf.scale(scalex, scaley);
           qitem->setTransform(transf);
         }
       }
@@ -214,7 +239,7 @@ void te::layout::Scene::redrawItems(bool viewArea)
   foreach( QGraphicsItem *item, graphicsItems) 
   {
     if (item)
-    {			
+    {		
       ItemObserver* lItem = dynamic_cast<ItemObserver*>(item);
       if(lItem)
       {
@@ -349,7 +374,7 @@ void te::layout::Scene::calculateMatrixViewScene(double zoomFactor)
     and informed. All objects are redrawn in millimeters 
     without any change.
   */
-
+  
   double newZoomFactor = (dpiX / 25.4) * zoomFactor;
 
   //mm (inversão do y)
@@ -389,7 +414,18 @@ void te::layout::Scene::printPreview(bool isPdf)
 
   QPrintPreviewDialog preview(printer);
   connect(&preview, SIGNAL(paintRequested(QPrinter*)), SLOT(printPaper(QPrinter*)));
-  preview.exec();
+  
+  if(preview.exec() == QDialog::Rejected || m_previewState == PrintScene)
+  {
+    redrawItems(false);
+    enableUpdateViews();
+    m_previewState = NoPrinter;
+    if(printer)
+    {
+      delete printer;
+      printer = 0;
+    }
+  }
 
   Context::getInstance().setMode(mode->getModeNone());
 }
@@ -408,8 +444,12 @@ void te::layout::Scene::printPaper(QPrinter* printer)
   Context::getInstance().setDpiX(printer->logicalDpiX());
   Context::getInstance().setDpiY(printer->logicalDpiY());
 
+  double zoomFactor = Context::getInstance().getZoomFactor();
+  Context::getInstance().setZoomFactor(1.);
+
   renderScene(&newPainter);
 
+  Context::getInstance().setZoomFactor(zoomFactor);
   Context::getInstance().setDpiX(dpiX);
   Context::getInstance().setDpiY(dpiY);
 }
@@ -445,7 +485,7 @@ void te::layout::Scene::savePaperAsPDF()
 
 QPrinter* te::layout::Scene::createPrinter()
 {
-  QPrinter* printer=new QPrinter(QPrinter::HighResolution);
+  QPrinter* printer = new QPrinter(QPrinter::HighResolution);
   printer->setPageSize(QPrinter::A4);
   
   PaperConfig* conf = Context::getInstance().getPaperConfig();
@@ -465,13 +505,15 @@ QPrinter* te::layout::Scene::createPrinter()
 
 void te::layout::Scene::renderScene( QPainter* newPainter )
 {      
-  if(m_previewState == PreviewScene)
-  {
-    m_previewState = PrintScene;
-  }
-  else
+  if(m_previewState == NoPrinter)
   {
     m_previewState = PreviewScene;
+    disableUpdateViews();
+    redrawItems(false);
+  }
+  else if(m_previewState == PreviewScene)
+  {
+    m_previewState = PrintScene;
   }
 
   changePrintVisibility(false);
@@ -486,20 +528,18 @@ void te::layout::Scene::renderScene( QPainter* newPainter )
   //Box Paper in the Scene (Source)
   QRectF mmSourceRect(env.getLowerLeftX(), env.getLowerLeftY(), 
     env.getWidth(), env.getHeight());
-
+  
   //Paper size using the printer dpi (Target)
   QRect pxTargetRect(0, 0, newPainter->device()->width(), newPainter->device()->height());
 
   /* Print Paper (Scene to Printer)
   draw items with printer painter */
 
-  Utils* utils = Context::getInstance().getUtils();
-    
-  changeFlagsItemForPrint();
+  m_drawRulers = false;
 
   this->render(newPainter, pxTargetRect, mmSourceRect); 
   
-  restoreFlagsItemForPrint();
+  m_drawRulers = true;
 
   changePrintVisibility(true);
 }
@@ -544,7 +584,9 @@ bool te::layout::Scene::exportPropsAsJSON()
   if(props.empty())
     return is_export;
 
-  TemplateEditor editor(TPJSONTemplate, j_name);
+  EnumTemplateType* type = Enums::getInstance().getEnumTemplateType();
+
+  TemplateEditor editor(type->getJsonType(), j_name);
 
   AbstractTemplate* jtemplate = editor.getTemplate();
   
@@ -586,7 +628,9 @@ std::vector<te::layout::Properties*> te::layout::Scene::importJsonAsProps()
 
   std::string j_name = fileName.toStdString();  
   
-  TemplateEditor editor(TPJSONTemplate, j_name);
+  EnumTemplateType* type = Enums::getInstance().getEnumTemplateType();
+
+  TemplateEditor editor(type->getJsonType(), j_name);
 
   AbstractTemplate* jtemplate = editor.getTemplate();
 
@@ -628,61 +672,6 @@ void te::layout::Scene::refresh(QGraphicsView* view, double zoomFactor)
   
   calculateMatrixViewScene(zoomFactor);
   refreshViews(view);
-
-  te::gm::Envelope newBox = *m_boxW;
-  if(view)
-  {
-    /* New box because the zoom factor change the transform(matrix) */
-    QPointF ll = view->mapToScene(0, 0);
-    QPointF ur = view->mapToScene(view->width(), view->height());
-    newBox = te::gm::Envelope(ll.x(), ll.y(), ur.x(), ur.y());
-  } 
-
-  refreshRulers(newBox);
-}
-
-void te::layout::Scene::refreshRulers(te::gm::Envelope newBox)
-{
-  if(!m_fixedRuler)
-    return;
-
-  double llx = newBox.getLowerLeftX();
-  double lly = newBox.getLowerLeftY();
-  double urx = newBox.getUpperRightX();
-  double ury = newBox.getUpperRightY();
-
-  QPointF pt(llx, lly);
-
-  EnumObjectType* type = Enums::getInstance().getEnumObjectType();
-
-  QList<QGraphicsItem*> graphicsItems = items();
-  foreach( QGraphicsItem *item, graphicsItems) 
-  {
-    if (item)
-    {			
-      ItemObserver* lItem = dynamic_cast<ItemObserver*>(item);
-      if(lItem)
-      {       
-        ItemModelObservable* model = dynamic_cast<ItemModelObservable*>(lItem->getModel());
-
-        if(!model)
-          continue;
-
-        if(model->getType() == type->getHorizontalRuler())
-        {
-          te::gm::Envelope boxH(llx, lly, urx, lly + 10);
-          model->setBox(boxH);
-          item->setPos(pt);
-        }
-        if(model->getType() == type->getVerticalRuler())
-        {
-          te::gm::Envelope boxV(llx, lly, llx + 10, ury);
-          model->setBox(boxV);
-          item->setPos(pt);
-        }
-      }
-    }
-  }
 }
 
 void te::layout::Scene::refreshViews( QGraphicsView* view /*= 0*/ )
@@ -700,19 +689,18 @@ void te::layout::Scene::refreshViews( QGraphicsView* view /*= 0*/ )
     view->setTransformationAnchor(QGraphicsView::NoAnchor);	
     view->centerOn(QPointF(llx, ury));
     view->scale(1, -1);
+    return;
   }
-  else
+
+  QList<QGraphicsView*> vws = views();
+  foreach(QGraphicsView* v, vws)
   {
-    QList<QGraphicsView*> vws = views();
-    foreach(QGraphicsView* v, vws)
-    {
-      //Transform calcula automaticamente a matriz inversa
-      v->setTransform(getMatrixViewScene());
-      v->setTransformationAnchor(QGraphicsView::NoAnchor);	
-      v->centerOn(QPointF(llx, ury));
-      v->scale(1, -1);
-    }
-  } 
+    //Transform calcula automaticamente a matriz inversa
+    v->setTransform(getMatrixViewScene());
+    v->setTransformationAnchor(QGraphicsView::NoAnchor);	
+    v->centerOn(QPointF(llx, ury));
+    v->scale(1, -1);
+  }
 }
 
 void te::layout::Scene::reset()
@@ -722,33 +710,40 @@ void te::layout::Scene::reset()
 
 void te::layout::Scene::drawForeground( QPainter *painter, const QRectF &rect )
 {
-  QGraphicsScene::drawForeground(painter, rect);
+  if(m_stateViewport != NoUpdateView)
+  {
+    QGraphicsScene::drawForeground(painter, rect);
+  }
 
-  EnumModeType* mode = Enums::getInstance().getEnumModeType();
-  
-  if(Context::getInstance().getLineIntersectionMouseMode() != mode->getModeActiveLinesIntersectionMouse())
-    return;
+  PaperConfig* cfg = Context::getInstance().getPaperConfig();
 
-  QBrush brush = painter->brush();
+  if(!m_horizontalRuler)
+  {
+    m_horizontalRuler = new HorizontalRuler(cfg);
+  }
 
-  QBrush brushCopy = brush;
-  brush.setColor(QColor(0,0,0,255));
+  if(!m_verticalRuler)
+  {
+    m_verticalRuler = new VerticalRuler(cfg);
+  }
 
-  QPen pen = painter->pen();
+  if(m_drawRulers && m_stateViewport != NoUpdateView)
+  {
+    QList<QGraphicsView*> vws = views();
+    foreach(QGraphicsView* v, vws)
+    {
+      m_horizontalRuler->drawRuler(v, painter);
+      m_verticalRuler->drawRuler(v, painter);
+    }
+  }
+}
 
-  QPen penCopy = pen;
-  penCopy.setStyle(Qt::DashDotLine);
-
-  painter->save();
-  painter->setPen(penCopy);
-  painter->setBrush(brushCopy);
-  painter->drawLines(m_lineIntersectHrz, 1);
-  painter->drawLines(m_lineIntersectVrt, 1);
-  painter->restore();  
-
-  painter->setBrush(brush);
-
-  update();
+void te::layout::Scene::drawBackground( QPainter * painter, const QRectF & rect )
+{
+  if(m_stateViewport != NoUpdateView)
+  {
+    QGraphicsScene::drawBackground(painter, rect);
+  }
 }
 
 void te::layout::Scene::buildTemplate(VisualizationArea* vzArea)
@@ -769,7 +764,6 @@ void te::layout::Scene::buildTemplate(VisualizationArea* vzArea)
 
   te::gm::Envelope* boxW = getWorldBox();
   vzArea->changeBoxArea(boxW);
-  vzArea->rebuildWithoutPaper();
 
   for(it = props.begin() ; it != props.end() ; ++it)
   {
@@ -847,7 +841,7 @@ QGraphicsItem* te::layout::Scene::createItem( const te::gm::Coord2D& coord )
   }
 
   Context::getInstance().setMode(type->getModeNone());
-
+  
   return item;
 }
 
@@ -961,28 +955,6 @@ void te::layout::Scene::sendToBack()
   }
 }
 
-void te::layout::Scene::redrawRulers()
-{
-  EnumObjectType* type = Enums::getInstance().getEnumObjectType();
-
-  QList<QGraphicsItem*> graphicsItems = items();
-  foreach( QGraphicsItem *item, graphicsItems) 
-  {
-    if (item)
-    {			
-      ItemObserver* lItem = dynamic_cast<ItemObserver*>(item);
-      if(lItem)
-      {       
-        if(lItem->getModel()->getType() == type->getHorizontalRuler() ||
-          lItem->getModel()->getType() == type->getVerticalRuler())
-        {
-          lItem->redraw();
-        }
-      }
-    }
-  }
-}
-
 int te::layout::Scene::intersectionMap( te::gm::Coord2D coord, bool &intersection )
 {
   QList<QGraphicsItem *> items = selectedItems();
@@ -1043,12 +1015,13 @@ void te::layout::Scene::createTextGridAsObject()
       if(mt)
       {
         MapGridModel* model = dynamic_cast<MapGridModel*>(mt->getModel());
-
+        
         GridGeodesicModel* gridGeo = dynamic_cast<GridGeodesicModel*>(model->getGridGeodesic());
         if(model->getGridGeodesic()->isVisible())
         {
           model->getGridGeodesic()->setVisibleAllTexts(false);
-          std::map<te::gm::Coord2D, std::string> mapGeo = gridGeo->getGridInfo();
+          std::map<te::gm::Point*, std::string> mapGeo = gridGeo->getGridInfo();
+          gridGeo->setVisibleAllTexts(false);
           createDefaultTextItemFromObject(mapGeo);
         }
 
@@ -1056,10 +1029,12 @@ void te::layout::Scene::createTextGridAsObject()
         if(model->getGridPlanar()->isVisible())
         {
           model->getGridGeodesic()->setVisibleAllTexts(false);
-          std::map<te::gm::Coord2D, std::string> mapPlanar = gridPlanar->getGridInfo();
+          std::map<te::gm::Point*, std::string> mapPlanar = gridPlanar->getGridInfo();
+          gridPlanar->setVisibleAllTexts(false);
           createDefaultTextItemFromObject(mapPlanar);
-        }        
+        }   
       }
+      it->redraw();
     }
   }
 }
@@ -1076,26 +1051,29 @@ void te::layout::Scene::createTextMapAsObject()
       if(mt)
       {
         MapModel* model = dynamic_cast<MapModel*>(mt->getModel());
-        std::map<te::gm::Coord2D, std::string> map = model->getTextMapAsObjectInfo();
+        std::map<te::gm::Point*, std::string> map = model->getTextMapAsObjectInfo();
+        double h = model->getBox().getHeight();
         createDefaultTextItemFromObject(map);
       }
     }
   }
 }
 
-void te::layout::Scene::createDefaultTextItemFromObject( std::map<te::gm::Coord2D, std::string> map )
+void te::layout::Scene::createDefaultTextItemFromObject( std::map<te::gm::Point*, std::string> map)
 {
   EnumModeType* mode = Enums::getInstance().getEnumModeType();
-  Context::getInstance().setMode(mode->getModeCreateText());
 
-  std::map<te::gm::Coord2D, std::string>::iterator it;
-
+  std::map<te::gm::Point*, std::string>::iterator it;
+  
   for (it = map.begin(); it != map.end(); ++it) 
   {
-    te::gm::Coord2D coord = it->first;
+    te::gm::Point* pt = it->first;
     std::string text = it->second;
-   
+
+    Context::getInstance().setMode(mode->getModeCreateText());
+
     QGraphicsItem* item = 0;
+    te::gm::Coord2D coord(pt->getX(), pt->getY());
     item = createItem(coord);
     if(!item)
       continue;
@@ -1103,6 +1081,8 @@ void te::layout::Scene::createDefaultTextItemFromObject( std::map<te::gm::Coord2
     DefaultTextItem* txtItem = dynamic_cast<DefaultTextItem*>(item);
     if(txtItem)
     {
+      DefaultTextModel* model = dynamic_cast<DefaultTextModel*>(txtItem->getModel());
+      model->setText(text);
       txtItem->setPlainText(text.c_str());
     }
   }
@@ -1407,39 +1387,182 @@ void te::layout::Scene::redrawSelectionMap()
   }
 }
 
-void te::layout::Scene::changeFlagsItemForPrint()
+void te::layout::Scene::enableUpdateViews()
 {
-  m_itemFlags.clear();
+  if(m_viewUpdateMode.empty())
+    return;
 
-  QList<QGraphicsItem*> graphicsItems = items();
-  foreach( QGraphicsItem *item, graphicsItems) 
+  if(views().size() != m_viewUpdateMode.size())
+    return;
+
+  QList<QGraphicsView*> vws = views();
+
+  int i = 0;
+
+  std::vector<QGraphicsView::ViewportUpdateMode>::iterator it;
+  for(it = m_viewUpdateMode.begin(); it != m_viewUpdateMode.end(); ++it)
   {
-    if (item)
-    {		
-      ItemObserver* lItem = dynamic_cast<ItemObserver*>(item);
-      if(lItem)
+    QGraphicsView* v = vws.at(i);
+    v->setViewportUpdateMode((*it));
+    ++i;
+  }
+}
+
+void te::layout::Scene::disableUpdateViews()
+{
+  QList<QGraphicsView*> vws = views();
+  foreach(QGraphicsView* v, vws)
+  {
+    m_viewUpdateMode.push_back(v->viewportUpdateMode());
+    v->setViewportUpdateMode(QGraphicsView::NoViewportUpdate);
+  }
+}
+
+void te::layout::Scene::createLegendChildAsObject()
+{
+  QGraphicsItem *item = selectedItems().first();
+  if(item)
+  {
+    ItemObserver* it = dynamic_cast<ItemObserver*>(item);
+    if(it)
+    {
+      LegendItem* lit = dynamic_cast<LegendItem*>(it);
+      if(lit)
       {
-        if(lItem->isInvertedMatrix())
-        {
-          m_itemFlags[item] = item->flags();
-          item->setFlags(QGraphicsItem::ItemSendsGeometryChanges);          
-        }
+        LegendModel* model = dynamic_cast<LegendModel*>(lit->getModel());
+        MapModel* visitable = dynamic_cast<MapModel*>(model->getVisitable());
+
+        std::map<te::gm::Point*, std::string> coord = model->getCoordChildren();
+        createLegendChildItemFromLegend(coord, visitable);
+      }
+      it->redraw();
+    }
+  }
+}
+
+void te::layout::Scene::createLegendChildItemFromLegend( std::map<te::gm::Point*, std::string> map, te::layout::MapModel* visitable )
+{
+  if(!visitable)
+    return;
+
+  EnumModeType* mode = Enums::getInstance().getEnumModeType();
+
+  std::map<te::gm::Point*, std::string>::iterator it;
+
+  for (it = map.begin(); it != map.end(); ++it) 
+  {
+    te::gm::Point* pt = it->first;
+    std::string text = it->second;
+
+    Context::getInstance().setMode(mode->getModeCreateLegendChild());
+
+    QGraphicsItem* item = 0;
+    te::gm::Coord2D coord(pt->getX(), pt->getY());
+    item = createItem(coord);
+    if(!item)
+      continue;
+
+    LegendChildItem* lgItem = dynamic_cast<LegendChildItem*>(item);
+    if(lgItem)
+    {
+      LegendChildModel* model = dynamic_cast<LegendChildModel*>(lgItem->getModel());
+      QList<QGraphicsItem*> legends;
+      legends.push_back(lgItem);
+      te::layout::changeMapVisitable(legends, visitable);
+    }
+  }
+
+  Context::getInstance().setMode(mode->getModeNone());
+}
+
+void te::layout::Scene::setDrawRulers( bool draw )
+{
+  m_drawRulers = draw;
+}
+
+te::layout::Scene::PrinterScene te::layout::Scene::getPreviewState()
+{
+  return m_previewState;
+}
+
+void te::layout::Scene::exportItemsToImage()
+{
+  QWidget* wg = (QWidget*)QApplication::desktop();
+  QFileDialog dialog(wg);
+  dialog.setGeometry(QRect(wg->width()/4, wg->height()/4, wg->width()/2, wg->height()/2));
+  QString dir = dialog.getExistingDirectory(wg, tr("Open Directory"), 
+    QDir::currentPath(), QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+  
+  if(dir.isEmpty())
+    return;
+
+  Utils* utils = Context::getInstance().getUtils();
+  double zoomFactor = Context::getInstance().getZoomFactor();
+  //Context::getInstance().setZoomFactor(1.);
+      
+  QList<QGraphicsItem*> selected = selectedItems();
+  foreach(QGraphicsItem *item, selected) 
+  {
+    if(item)
+    {
+      ItemObserver* it = dynamic_cast<ItemObserver*>(item);
+      if(it)
+      {
+        QImage* img = 0;
+        te::color::RGBAColor** rgba = it->getImage();
+
+        if(!rgba)
+          continue;
+
+        te::gm::Envelope box = utils->viewportBox(it->getModel()->getBox());
+        img = te::qt::widgets::GetImage(rgba, box.getWidth(), box.getHeight());
+        std::string dirName = dir.toStdString() + "/" + it->getName() +".png";
+
+        if(!img)
+          continue;
+
+        img->save(dirName.c_str());
+
+        te::common::Free(rgba, box.getHeight());
+
+        if(img)
+          delete img;        
+      }
+    }
+  }
+  
+  Context::getInstance().setZoomFactor(zoomFactor);
+}
+
+te::layout::Scene::ViewportEnum te::layout::Scene::getStateViewport()
+{
+  return m_stateViewport;
+}
+
+void te::layout::Scene::invisibleExcept( QGraphicsItem* item )
+{
+  item->setVisible(true);
+  QList<QGraphicsItem*> vItems = items();
+  foreach(QGraphicsItem *it, vItems) 
+  {
+    if(it)
+    {
+      if(it != item)
+      {
+        it->setVisible(false);
       }
     }
   }
 }
 
-void te::layout::Scene::restoreFlagsItemForPrint()
+void te::layout::Scene::visibleAllItems()
 {
-  QMapIterator<QGraphicsItem*, QGraphicsItem::GraphicsItemFlags> i(m_itemFlags);
-  while (i.hasNext()) 
+  QList<QGraphicsItem*> vItems = items();
+  foreach(QGraphicsItem *it, vItems) 
   {
-    i.next();
-    QGraphicsItem* item = i.key();
-    QGraphicsItem::GraphicsItemFlags flg = i.value();
-    if(item)
+    if(it)
     {
-      item->setFlags(flg);
+      it->setVisible(true);
     }
   }
 }

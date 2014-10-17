@@ -28,11 +28,10 @@
 // TerraLib
 #include "VisitorUtils.h"
 #include "../../enum/AbstractType.h"
-#include "../../../item/LegendModel.h"
 #include "../mvc/ItemObserver.h"
 #include "../../../item/MapModel.h"
-#include "../../../item/ScaleModel.h"
 #include "../../enum/Enums.h"
+#include "AbstractVisitor.h"
 
 // STL
 #include <stddef.h>  // defines NULL
@@ -42,14 +41,12 @@
 
 TELAYOUTEXPORT bool te::layout::changeMapVisitable( QList<QGraphicsItem*> graphicsItems, te::layout::Visitable* visitable )
 {
+  bool result = true;
   te::layout::MapModel* mpModel = dynamic_cast<te::layout::MapModel*>(visitable);
 
   if(!mpModel)
     return false;
-
-  te::layout::LegendModel* legModel = 0;
-  te::layout::ScaleModel*  scaleModel = 0;
-
+  
   EnumObjectType* type = Enums::getInstance().getEnumObjectType();
 
   foreach( QGraphicsItem *it, graphicsItems) 
@@ -65,19 +62,15 @@ TELAYOUTEXPORT bool te::layout::changeMapVisitable( QList<QGraphicsItem*> graphi
     if(!model)
       continue;
 
-    if(model->getType() == type->getLegendItem())
+    AbstractVisitor* visit = dynamic_cast<AbstractVisitor*>(model);
+    if(!visit)
     {
-      legModel = dynamic_cast<te::layout::LegendModel*>(model);
-      if(legModel)
-        mpModel->acceptVisitor(legModel);
+      result = false;
+      break;
     }
-    else if(model->getType() == type->getScaleItem())
-    {
-      scaleModel = dynamic_cast<te::layout::ScaleModel*>(model);
-      if(scaleModel)
-        mpModel->acceptVisitor(scaleModel);
-    }
+
+    mpModel->acceptVisitor(visit);
   }
 
-  return true;
+  return result;
 }

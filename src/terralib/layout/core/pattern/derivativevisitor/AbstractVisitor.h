@@ -50,6 +50,8 @@ namespace te
 
         virtual void visitDependent(ContextItem context) = 0;
 
+        virtual Visitable* getVisitable();
+
       protected:
 
         ContextItem getContextItem();

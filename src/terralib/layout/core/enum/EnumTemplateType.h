@@ -18,38 +18,48 @@
  */
 
 /*!
-  \file HorizontalRulerController.h
+  \file EnumTemplateType.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_HORIZONTALRULER_CONTROLLER_H 
-#define __TERRALIB_LAYOUT_INTERNAL_HORIZONTALRULER_CONTROLLER_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_ENUM_TEMPLATE_TYPE_H 
+#define __TERRALIB_LAYOUT_INTERNAL_ENUM_TEMPLATE_TYPE_H
 
 // TerraLib
-#include "../core/pattern/mvc/ItemController.h"
+#include "AbstractEnum.h"
+#include "../Config.h"
 
 namespace te
 {
   namespace layout
   {
-    class HorizontalRulerController : public ItemController
+    class EnumType;
+
+    class TELAYOUTEXPORT EnumTemplateType : public AbstractEnum
     {
       public:
 
-        HorizontalRulerController( Observable* o );
-        virtual ~HorizontalRulerController();
+        EnumTemplateType(); 
 
-        virtual void setPosition(const double& x, const double& y);
+        virtual ~EnumTemplateType();
+        
+        virtual EnumType* getJsonType() const;
+
+        virtual EnumType* getNoneType() const;
 
       protected:
 
-        HorizontalRulerController( Observable* o, EnumType* type );
+        virtual void init();
 
-        virtual void create();
+      protected:
+
+        EnumType* m_noneType;
+        EnumType* m_jsonType;
     };
   }
 }
+
 #endif

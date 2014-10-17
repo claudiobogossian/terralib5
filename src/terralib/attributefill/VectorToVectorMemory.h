@@ -18,15 +18,15 @@
  */
 
 /*!
- \file VectorToVector.h
+ \file VectorToVectorMemory.h
  
  \brief Vector to Vector processing.
  
  \ingroup attributefill
  */
 
-#ifndef __TERRALIB_ATTRIBUTEFILL_INTERNAL_VECTORTOVECTOR_H
-#define __TERRALIB_ATTRIBUTEFILL_INTERNAL_VECTORTOVECTOR_H
+#ifndef __TERRALIB_ATTRIBUTEFILL_INTERNAL_VECTORTOVECTORMEMORY_H
+#define __TERRALIB_ATTRIBUTEFILL_INTERNAL_VECTORTOVECTORMEMORY_H
 
 //Terralib
 
@@ -42,6 +42,7 @@
 #include "../statistics/core/Enums.h"
 
 #include "Config.h"
+#include "VectorToVectorOp.h"
 
 // STL
 #include <map>
@@ -56,6 +57,11 @@ namespace te
     class AbstractData;
   }
 
+  namespace gm
+  {
+    class Geometry;
+  }
+
   namespace stat
   {
     struct NumericStatisticalSummary;
@@ -64,30 +70,26 @@ namespace te
 
   namespace attributefill
   {
-    class TEATTRIBUTEFILLEXPORT VectorToVector
+    class TEATTRIBUTEFILLEXPORT VectorToVectorMemory : public VectorToVectorOp
     {
       public:
 
-        VectorToVector();
-      
-        ~VectorToVector();
+        VectorToVectorMemory();
+
+        ~VectorToVectorMemory();
 
         void setInput(te::map::AbstractLayerPtr fromLayer,
                       te::map::AbstractLayerPtr toLayer);
 
-        void setParams(std::map<te::dt::Property*, std::vector<std::string> >& options);
+        void setParams(const std::map<te::dt::Property*, std::vector<std::string> >& options);
 
         void setOutput(te::da::DataSourcePtr outDsrc, std::string dsName);
-
-        bool paramsAreValid();
 
         bool run();
 
       protected:
 
         te::sam::rtree::Index<size_t, 8>* getRtree(te::da::DataSet* data);
-
-        bool save(std::auto_ptr<te::mem::DataSet> result, std::auto_ptr<te::da::DataSetType> outDsType);
 
         te::da::DataSetType* getOutputDataSetType();
 
@@ -101,9 +103,9 @@ namespace te
 
         std::vector<te::dt::AbstractData*> getDataValues(te::da::DataSet* fromDs, std::vector<std::size_t> dsPos, const std::string& propertyName);
 
-        std::vector<double> getNumValues(te::da::DataSet* fromDs, std::vector<std::size_t> dsPos, const std::string& propertyName);
+        std::vector<double> getNumValues(std::vector<te::dt::AbstractData*> data);
 
-        std::vector<std::string> getStrValues(te::da::DataSet* fromDs, std::vector<std::size_t> dsPos, const std::string& propertyName);
+        std::vector<std::string> getStrValues(std::vector<te::dt::AbstractData*> data);
 
         double getValue(te::stat::NumericStatisticalSummary ss, const std::string& function);
 
@@ -113,16 +115,28 @@ namespace te
 
         std::vector<std::string> getSelectedFunctions();
 
-      protected:
+        te::dt::AbstractData* getClassWithHighestOccurrence(te::da::DataSet* fromDs,
+                                                            std::vector<std::size_t> dsPos,
+                                                            const std::string& propertyName);
 
-        te::map::AbstractLayerPtr m_fromLayer;
-        te::map::AbstractLayerPtr m_toLayer;
+        te::dt::AbstractData* getClassWithLargerIntersectionArea(te::da::DataSet* toDs,
+                                                                 std::size_t toSrid,
+                                                                 te::da::DataSet* fromDs,
+                                                                 std::size_t fromSrid,
+                                                                 std::vector<std::size_t> dsPos,
+                                                                 const std::string& propertyName);
 
-        std::map<te::dt::Property*, std::vector<std::string> > m_options;
+        te::dt::AbstractData* getDataBasedOnType(const std::string& strValue, const int type);
 
-        te::da::DataSourcePtr m_outDsrc;
-        std::string m_outDset;
+        bool isPolygon(te::gm::GeomType type);
+        bool isLine(te::gm::GeomType type);
+        bool isPoint(te::gm::GeomType type);
+        bool isMultiPolygon(te::gm::GeomType type);
+        bool isMultiLine(te::gm::GeomType type);
+        bool isMultiPoint(te::gm::GeomType type);
+
+        double getArea(te::gm::Geometry* geom);
     };
   }
 }
-#endif // __TERRALIB_ATTRIBUTEFILL_INTERNAL_VECTORTOVECTOR_H
+#endif // __TERRALIB_ATTRIBUTEFILL_INTERNAL_VECTORTOVECTORMEMORY_H

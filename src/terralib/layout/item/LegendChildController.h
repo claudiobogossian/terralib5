@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,34 +18,38 @@
  */
 
 /*!
-  \file TsGeometricRefining.h
- 
-  \brief A test suit for the GeometricRefining Class.
- */
+  \file LegendChildController.h
+   
+  \brief 
 
-#ifndef __TERRALIB_UNITTEST_RP_REGISTER_INTERNAL_H
-#define __TERRALIB_UNITTEST_RP_REGISTER_INTERNAL_H
+  \ingroup layout
+*/
 
-// cppUnit
-#include <cppunit/extensions/HelperMacros.h>
+#ifndef __TERRALIB_LAYOUT_INTERNAL_LEGEND_CHILD_CONTROLLER_H 
+#define __TERRALIB_LAYOUT_INTERNAL_LEGEND_CHILD_CONTROLLER_H
 
-/*!
-  \class TsGeometricRefining
+// TerraLib
+#include "LegendController.h"
 
-  \brief A test suit for the GeometricRefining class interface.
- */
-class TsGeometricRefining : public CPPUNIT_NS::TestFixture 
+namespace te
 {
-  CPPUNIT_TEST_SUITE( TsGeometricRefining );
-  
-  CPPUNIT_TEST( Test001 );
-  
-  CPPUNIT_TEST_SUITE_END();
+  namespace layout
+  {
+    class LegendChildController : public LegendController
+    {
+      public:
 
-protected :
+        LegendChildController( Observable* o );
 
-  void Test001();
+        virtual ~LegendChildController();
+        
+      protected:
 
-};
+        LegendChildController( Observable* o, EnumType* type );
+
+        virtual void create();
+    };
+  }
+}
 
 #endif

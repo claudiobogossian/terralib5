@@ -30,6 +30,7 @@
 #include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../datatype/Property.h"
 #include "../../maptools/AbstractLayer.h"
+#include "../../qt/widgets/utils/DoubleListWidget.h"
 #include "../../statistics/core/Enums.h"
 #include "../Config.h"
 
@@ -71,20 +72,21 @@ namespace te
         */
         te::map::AbstractLayerPtr getLayer();
 
-        /*!
-          \brief Get the selected properties based on selected QListWidgetItem.
-
-          \return a Vector with selected properties.
-        */
-        std::vector<te::dt::Property*> getSelectedProperties();
-
       private:
 
+        void showSRS();
+
       protected slots:
-        
+
         void onVectorComboBoxChanged(int index);
 
-        void onTargetDatasourceToolButtonPressed();
+        void onResXLineEditEditingFinished();
+
+        void onResYLineEditEditingFinished();
+
+        void onColsLineEditEditingFinished();
+
+        void onRowsLineEditEditingFinished();
 
         void onTargetFileToolButtonPressed();
 
@@ -97,8 +99,10 @@ namespace te
       private:
 
         std::auto_ptr<Ui::VectorToRasterDialogForm> m_ui;
-        te::da::DataSourceInfoPtr m_outputDatasource;                 //!< DataSource information.
         std::list<te::map::AbstractLayerPtr> m_layers;                //!< List of layers.
+        int m_srid;                                                   //!< SRID of selected layer.
+        std::auto_ptr<te::qt::widgets::DoubleListWidget> m_widget;    //!< Double list widget.
+        te::da::DataSourceInfoPtr m_outputDatasource;                 //!< DataSource information.
         std::vector<te::dt::Property*> m_properties;                  //!< Properties related to the selected Layer
         te::map::AbstractLayerPtr m_selectedLayer;                    //!< Selected layer.
         te::map::AbstractLayerPtr m_outLayer;                         //!< Generated Layer.

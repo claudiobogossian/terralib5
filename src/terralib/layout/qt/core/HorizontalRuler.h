@@ -18,44 +18,33 @@
  */
 
 /*!
-  \file HorizontalRulerModel.h
+  \file HorizontalRuler.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_HORIZONTALRULER_MODEL_H
-#define __TERRALIB_LAYOUT_INTERNAL_HORIZONTALRULER_MODEL_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_HORIZONTAL_RULER_H
+#define __TERRALIB_LAYOUT_INTERNAL_HORIZONTAL_RULER_H
 
 // TerraLib
-#include "AbstractRulerModel.h"
-#include "../../color/RGBAColor.h"
-
-// STL
-#include <vector>
-#include <string>
+#include "AbstractRuler.h"
 
 namespace te
 {
   namespace layout
   {
-    class HorizontalRulerModel : public AbstractRulerModel
+    class HorizontalRuler : public AbstractRuler
     {
       public:
 
-        HorizontalRulerModel(PaperConfig* paperConfig);
-        virtual ~HorizontalRulerModel();
-        
-        virtual void draw( ContextItem context );
-        
-        virtual void setBox(te::gm::Envelope box);
-                        
-      protected:
+        HorizontalRuler(PaperConfig* paperConfig);
 
-        virtual void drawHorizontalRuler(te::map::Canvas* canvas, Utils* utils, double zoomFactor);
+        virtual ~HorizontalRuler();
 
-        virtual void drawRuler(te::map::Canvas* canvas, Utils* utils, double zoomFactor);
+        virtual void drawRuler( QGraphicsView* view, QPainter* painter );
+
     };
   }
 }

@@ -35,6 +35,10 @@
 #include "../../maptools/AbstractLayer.h"
 #include "../../maptools/Canvas.h"
 #include "../core/Utils.h"
+#include "../core/Font.h"
+
+// STL
+#include <map>
 
 namespace te
 {
@@ -71,16 +75,24 @@ namespace te
 
         virtual double getDisplacementBetweenSymbolAndText();
 
+        virtual std::map<te::gm::Point*, std::string> getCoordChildren();
+
        protected:
 
         virtual void drawLegend(te::map::Canvas* canvas, Utils* utils);
 
-        std::string m_mapName;
+        virtual void childrenFreeMemory();
+
+        std::string               m_mapName;
         te::map::AbstractLayerPtr m_layer;
-        double m_borderDisplacement;
-        double m_displacementBetweenSymbols;
-        double m_displacementBetweenTitleAndSymbols;
-        double m_displacementBetweenSymbolsAndText;
+        double                    m_borderDisplacement;
+        double                    m_displacementBetweenSymbols;
+        double                    m_displacementBetweenTitleAndSymbols;
+        double                    m_displacementBetweenSymbolsAndText;
+        double                    m_symbolsize;
+        Font                      m_font;
+        te::color::RGBAColor			m_fontColor;
+        std::map<te::gm::Point*, std::string>    m_coordChildren;
     };
   }
 }
