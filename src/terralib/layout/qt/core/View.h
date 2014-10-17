@@ -50,6 +50,7 @@ class QCloseEvent;
 class QGraphicsItemGroup;
 class QLineF;
 class QContextMenuEvent;
+class QImage;
 
 namespace te
 {
@@ -129,6 +130,12 @@ namespace te
         virtual void showSystematicScale();
 
         virtual bool intersectionSelectionItem(int x, int y);
+
+        virtual void	drawBackground ( QPainter * painter, const QRectF & rect );
+
+        virtual void	drawForeground ( QPainter * painter, const QRectF & rect );
+
+        virtual void createBackgroundImage();
                         
       protected:
         VisualizationArea*  m_visualizationArea;
@@ -140,6 +147,7 @@ namespace te
         te::gm::Coord2D       m_coordSystematic;
         bool                m_selectionChange;
         MenuItem*           m_menuItem;
+        QImage*             m_image;
     };
   }
 }

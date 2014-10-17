@@ -31,6 +31,7 @@
 // Qt
 #include <QGraphicsProxyWidget>
 #include <QVariant>
+#include <QPixmap>
 
 // TerraLib
 #include "../../core/pattern/mvc/ItemObserver.h"
@@ -72,7 +73,9 @@ namespace te
         virtual void changeCurrentTool(EnumType* mode);
 
         void clearCurrentTool();
-                        
+
+        virtual te::color::RGBAColor** getImage();
+                                
       protected slots:
 
           void onDrawLayersFinished(const QMap<QString, QString>& errors);
@@ -115,6 +118,10 @@ namespace te
 
       virtual void applyRotation();
 
+      virtual QImage generateImage();
+
+      virtual void calculateFrameMargin();
+
     protected:
 
       QPixmap m_pixmap;
@@ -125,6 +132,8 @@ namespace te
       bool m_grabbedByWidget;
       te::qt::widgets::AbstractTreeItem* m_treeItem;
       te::qt::widgets::AbstractTool* m_tool;
+      double                  m_wMargin;
+      double                  m_hMargin;
     };
   }
 }

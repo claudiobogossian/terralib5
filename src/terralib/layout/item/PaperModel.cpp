@@ -76,10 +76,10 @@ void te::layout::PaperModel::draw( ContextItem context )
   if((!canvas) || (!utils))
     return;
   
+  config();
+
   if(context.isResizeCanvas())
     utils->configCanvas(m_box);
-  
-  config();
 
   double llx = m_box.getLowerLeftX();
   double lly = m_box.getLowerLeftY();
