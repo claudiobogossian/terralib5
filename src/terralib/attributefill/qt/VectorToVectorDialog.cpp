@@ -318,6 +318,8 @@ void te::attributefill::VectorToVectorDialog::onToLayerComboBoxCurrentIndexChang
     else
       m_ui->m_fromLayerComboBox->setCurrentIndex(0);
   }
+
+  onFromLayerComboBoxCurrentIndexChanged(m_ui->m_fromLayerComboBox->currentIndex());
 }
 
 void te::attributefill::VectorToVectorDialog::setStatisticalSummary()
@@ -588,6 +590,8 @@ void te::attributefill::VectorToVectorDialog::setFunctionsByLayer(te::map::Abstr
   m_ui->m_rejectAllComboBox->setCurrentIndex(0);
   m_ui->m_statisticsListWidget->clear();
 
+  te::gm::GeomType toGeomType = getCurrentToLayerGeomType();
+
   std::auto_ptr<te::da::DataSetType> dst = layer->getSchema();
   std::auto_ptr<te::da::DataSet> ds = layer->getData();
 
@@ -697,7 +701,8 @@ void te::attributefill::VectorToVectorDialog::setFunctionsByLayer(te::map::Abstr
       if(isClassType(prop->getType()))
         m_ui->m_statisticsListWidget->addItem(QString(props[i]->getName().c_str()) + " : " + "Class with highest occurrence");
 
-      if(isClassType(prop->getType()) && isPolygon(geomType))
+      // This function works only with polygon to polygon
+      if(isClassType(prop->getType()) && isPolygon(geomType) && isPolygon(toGeomType))
         m_ui->m_statisticsListWidget->addItem(QString(props[i]->getName().c_str()) + " : " + "Class with larger intersection area");
 
       m_ui->m_statisticsListWidget->addItem(QString(props[i]->getName().c_str()) + " : " + "Percentage per Class");
@@ -787,4 +792,13 @@ bool te::attributefill::VectorToVectorDialog::isClassType(const int type)
   }
 
   return false;
+}
+
+te::gm::GeomType te::attributefill::VectorToVectorDialog::getCurrentToLayerGeomType()
+{
+  te::map::AbstractLayerPtr toLayer = getCurrentToLayer();
+  std::string toGeomPropName = toLayer->getGeomPropertyName();
+  std::auto_ptr<te::da::DataSetType> toSchema = toLayer->getSchema();
+  te::gm::GeometryProperty* toGeomProp = dynamic_cast<te::gm::GeometryProperty*>(te::da::GetFirstSpatialProperty(toSchema.get()));
+  return toGeomProp->getGeometryType();
 }

@@ -147,9 +147,10 @@ bool te::attributefill::VectorToVectorMemory::run()
             else
               item->setDouble(outPropName, ssNum.m_minVal);
           }
-          else if(funcs[i] == "Major Class")
+          else if(funcs[i] == "Class with larger intersection area")
           {
-            te::dt::AbstractData* value = getMajorClass(toDs.get(), toSrid, fromDs.get(), fromSrid, intersections, it->first->getName());
+            te::dt::AbstractData* value = getClassWithLargerIntersectionArea(toDs.get(), toSrid, fromDs.get(), fromSrid, intersections, it->first->getName());
+
             item->setValue(outPropName, value);
           }
           else if(funcs[i] == "Class with highest occurrence")
@@ -525,200 +526,6 @@ std::vector<te::dt::AbstractData*> te::attributefill::VectorToVectorMemory::getD
   return result;
 }
 
-te::dt::AbstractData* te::attributefill::VectorToVectorMemory::getMajorClass(te::da::DataSet* toDs,
-                                                                       std::size_t toSrid,
-                                                                       te::da::DataSet* fromDs,
-                                                                       std::size_t fromSrid,
-                                                                       std::vector<std::size_t> dsPos,
-                                                                       const std::string& propertyName)
-{
-  std::size_t toSpatialPos = te::da::GetFirstSpatialPropertyPos(toDs);
-  std::size_t fromSpatialPos = te::da::GetFirstSpatialPropertyPos(fromDs);
-
-  std::auto_ptr<te::gm::Geometry> toGeom = toDs->getGeometry(toSpatialPos);
-  if(toGeom->getSRID() <= 0)
-    toGeom->setSRID(toSrid);
-
-  std::map<std::size_t, double> areaMap; // Position -> Area
-  std::map<std::size_t, std::size_t> pointMap; // Position -> Count
-  std::map<std::string, std::size_t> pointAux; // String -> Position
-  bool isPointOp = false;
-  for(std::size_t i = 0; i < dsPos.size(); ++i)
-  {
-    fromDs->move(dsPos[i]);
-
-    std::auto_ptr<te::gm::Geometry> fromGeom = fromDs->getGeometry(fromSpatialPos);
-    if(fromGeom->getSRID() <= 0)
-      fromGeom->setSRID(fromSrid);
-
-    te::gm::Geometry* intersection = toGeom->intersection(fromGeom.get());
-
-    if(isPolygon(toGeom->getGeomTypeId()) || isMultiPolygon(toGeom->getGeomTypeId()))
-    {
-      if(isPolygon(fromGeom->getGeomTypeId()) || isMultiPolygon(fromGeom->getGeomTypeId()))
-      {
-        te::gm::Polygon* pol = dynamic_cast<te::gm::Polygon*>(intersection);
-        te::gm::MultiPolygon* multiPol = dynamic_cast<te::gm::MultiPolygon*>(intersection);
-
-        if(pol)
-          areaMap[dsPos[i]] = pol->getArea();
-        else if(multiPol)
-          areaMap[dsPos[i]] = multiPol->getArea();
-        else
-        {
-          // Será considerados apenas os poligonos
-          te::gm::GeometryCollection* collection = 0;
-          collection = dynamic_cast<te::gm::GeometryCollection*>(intersection);
-
-          if(!collection)
-          {
-            areaMap[dsPos[i]] = 0;
-          }
-          else
-          {
-            std::vector<te::gm::Polygon*> polsVec;
-
-            for(std::size_t r = 0; r < collection->getNumGeometries(); ++r)
-            {
-              te::gm::Geometry* rg = collection->getGeometryN(r);
-
-              if(rg->getGeomTypeId() == te::gm::PolygonType)
-              {
-                te::gm::Polygon* p = dynamic_cast<te::gm::Polygon*>(rg);
-                polsVec.push_back(p);
-              }
-            }
-
-            if(polsVec.size() == 0)
-            {
-              areaMap[dsPos[i]] = 0;
-            }
-            else if(polsVec.size() == 1)
-            {
-              te::gm::Polygon* auxPol = 0;
-              auxPol = dynamic_cast<te::gm::Polygon*>(polsVec[0]);
-              areaMap[dsPos[i]] = auxPol->getArea();
-            }
-            else
-            {
-              te::gm::MultiPolygon* auxMultiPol = 0;
-              auxMultiPol = new te::gm::MultiPolygon(polsVec.size(), te::gm::MultiPolygonType, fromSrid);
-
-              if(auxMultiPol)
-              {
-                for(std::size_t r = 0; r < polsVec.size(); ++r)
-                {
-                  auxMultiPol->add(polsVec[r]);
-                }
-
-                areaMap[dsPos[i]] = auxMultiPol->getArea();
-              }
-              else
-              {
-                areaMap[dsPos[i]] = 0;
-              }
-            }
-          }
-        }
-      }
-      else if(isLine(fromGeom->getGeomTypeId()) || isMultiLine(fromGeom->getGeomTypeId()))
-      {
-        te::gm::LineString* line = dynamic_cast<te::gm::LineString*>(intersection);
-        te::gm::MultiLineString* multiLine = dynamic_cast<te::gm::MultiLineString*>(intersection);
-
-        if(line)
-          areaMap[dsPos[i]] = line->getLength();
-        else if(multiLine)
-          areaMap[dsPos[i]] = multiLine->getLength();
-      }
-      else if(isPoint(fromGeom->getGeomTypeId()) || isMultiPoint(fromGeom->getGeomTypeId()))
-      {
-        isPointOp = true;
-        te::gm::Point* point = dynamic_cast<te::gm::Point*>(intersection);
-        te::gm::MultiPoint* multiPoint = dynamic_cast<te::gm::MultiPoint*>(intersection);
-
-        std::string v = fromDs->getAsString(propertyName, 9);
-
-        if(pointAux.find(v) == pointAux.end())
-        {
-          pointAux[v] = dsPos[i];
-          pointMap[dsPos[i]] = 1;
-        }
-        else
-        {
-          std::size_t aux = pointMap[pointAux[v]];
-          ++aux;
-          pointMap[pointAux[v]] = aux;
-        }
-      }
-    }
-    else if(isLine(toGeom->getGeomTypeId()) || isMultiLine(toGeom->getGeomTypeId()))
-    {
-      
-    }
-    else if(isPoint(toGeom->getGeomTypeId()) || isMultiPoint(toGeom->getGeomTypeId()))
-    {
-      
-    }
-  }
-
-  std::size_t posAux;
-
-  if(isPointOp)
-  {
-    std::map<std::size_t, std::size_t>::iterator it = pointMap.begin();
-    std::size_t aux;
-    while(it != pointMap.end())
-    {
-      if(it == pointMap.begin())
-      {
-        posAux = it->first;
-        aux = it->second;
-      }
-      else
-      {
-        if(aux < it->second)
-        {
-          aux = it->second;
-          posAux = it->first;
-        }
-      }
-
-      ++it;
-    }
-  }
-  else
-  {
-
-    std::map<std::size_t, double>::iterator it = areaMap.begin();
-
-    double areaAux;
-    
-    while(it != areaMap.end())
-    {
-      if(it == areaMap.begin())
-      {
-        posAux = it->first;
-        areaAux = it->second;
-      }
-      else
-      {
-        if(areaAux < it->second)
-        {
-          areaAux = it->second;
-          posAux = it->first;
-        }
-      }
-
-      ++it;
-    }
-  }
-
-  fromDs->move(posAux);
-
-  return fromDs->getValue(propertyName).release();
-}
-
 te::dt::AbstractData* te::attributefill::VectorToVectorMemory::getClassWithHighestOccurrence(te::da::DataSet* fromDs,
                                                                                              std::vector<std::size_t> dsPos,
                                                                                              const std::string& propertyName)
@@ -758,69 +565,71 @@ te::dt::AbstractData* te::attributefill::VectorToVectorMemory::getClassWithHighe
     ++it;
   }
 
-  te::dt::AbstractData* data = 0;
-
-  switch(propType)
-  {
-    case te::dt::STRING_TYPE:
-    {
-      data = new te::dt::SimpleData<std::string, te::dt::STRING_TYPE>(value);
-      break;
-    }
-    case te::dt::INT16_TYPE:
-    {
-      int16_t v = boost::lexical_cast<int16_t>(value);
-      data = new te::dt::SimpleData<std::string, te::dt::INT16_TYPE>(value);
-      break;
-    }
-    case te::dt::INT32_TYPE:
-    {
-      int32_t v = boost::lexical_cast<int32_t>(value);
-      data = new te::dt::SimpleData<std::string, te::dt::INT32_TYPE>(value);
-      break;
-    }
-    case te::dt::INT64_TYPE:
-    {
-      int64_t v = boost::lexical_cast<int64_t>(value);
-      data = new te::dt::SimpleData<std::string, te::dt::INT64_TYPE>(value);
-      break;
-    }
-    case te::dt::UINT16_TYPE:
-    {
-      uint16_t v = boost::lexical_cast<uint16_t>(value);
-      data = new te::dt::SimpleData<std::string, te::dt::UINT16_TYPE>(value);
-      break;
-    }
-    case te::dt::UINT32_TYPE:
-    {
-      uint32_t v = boost::lexical_cast<uint32_t>(value);
-      data = new te::dt::SimpleData<std::string, te::dt::UINT32_TYPE>(value);
-      break;
-    }
-    case te::dt::UINT64_TYPE:
-    {
-      uint64_t v = boost::lexical_cast<uint64_t>(value);
-      data = new te::dt::SimpleData<std::string, te::dt::UINT64_TYPE>(value);
-      break;
-    }
-    default:
-    {
-      data = new te::dt::SimpleData<std::string, te::dt::STRING_TYPE>(value);
-      break;
-    }
-  }
+  te::dt::AbstractData* data = getDataBasedOnType(value, propType);
 
   return data;
 }
 
-te::dt::AbstractData* getClassWithLargerIntersectionArea(te::da::DataSet* toDs,
-                                                         std::size_t toSrid,
-                                                         te::da::DataSet* fromDs,
-                                                         std::size_t fromSrid,
-                                                         std::vector<std::size_t> dsPos,
-                                                         const std::string& propertyName)
+te::dt::AbstractData* te::attributefill::VectorToVectorMemory::getClassWithLargerIntersectionArea(te::da::DataSet* toDs,
+                                                                                                  std::size_t toSrid,
+                                                                                                  te::da::DataSet* fromDs,
+                                                                                                  std::size_t fromSrid,
+                                                                                                  std::vector<std::size_t> dsPos,
+                                                                                                  const std::string& propertyName)
 {
-  te::dt::AbstractData* data = 0;
+  std::size_t fromGeomPos = te::da::GetFirstSpatialPropertyPos(fromDs);
+  std::size_t toGeomPos =   te::da::GetFirstSpatialPropertyPos(toDs);
+
+  int propIndex = te::da::GetPropertyIndex(fromDs, propertyName);
+  int propType = fromDs->getPropertyDataType(propIndex);
+
+  std::auto_ptr<te::gm::Geometry> toGeom = toDs->getGeometry(toGeomPos);
+  if(toGeom->getSRID() <= 0)
+      toGeom->setSRID(toSrid);
+
+  std::map<std::string, double> classAreaMap;
+  for(std::size_t i = 0; i < dsPos.size(); ++i)
+  {
+    fromDs->move(dsPos[i]);
+
+    std::auto_ptr<te::gm::Geometry> fromGeom = fromDs->getGeometry(fromGeomPos);
+    if(fromGeom->getSRID() <= 0)
+      fromGeom->setSRID(fromSrid);
+
+    std::auto_ptr<te::gm::Geometry> interGeom(toGeom->intersection(fromGeom.get()));
+
+    std::string value = fromDs->getAsString(propIndex);
+
+    te::gm::GeomType interGeomType = interGeom->getGeomTypeId();
+
+    double area = getArea(interGeom.get());
+
+    if(classAreaMap.find(value) == classAreaMap.end())
+    {
+      classAreaMap[value] = area;
+    }
+    else
+    {
+      double aux = classAreaMap[value];
+      classAreaMap[value] = aux + area;
+    }
+  }
+
+  std::map<std::string, double>::iterator it = classAreaMap.begin();
+  std::string value;
+  double aux = 0;
+  while(it != classAreaMap.end())
+  {
+    if(aux < it->second)
+    {
+      aux = it->second;
+      value = it->first;
+    }
+
+    ++it;
+  }
+
+  te::dt::AbstractData* data = getDataBasedOnType(value, propType);
 
   return data;
 }
@@ -895,51 +704,101 @@ double te::attributefill::VectorToVectorMemory::getArea(te::gm::Geometry* geom)
 {
   te::gm::GeomType geomType = geom->getGeomTypeId();
 
+  double area = 0;
+
   switch(geomType)
   {
     case te::gm::PolygonType:
     {
       te::gm::Polygon* g = dynamic_cast<te::gm::Polygon*>(geom);
-      return g->getArea();
-    }
-    case te::gm::PolygonZType:
-    {
-      te::gm::Polygon* g = dynamic_cast<te::gm::Polygon*>(geom);
-      return g->getArea();
-    }
-    case te::gm::PolygonMType:
-    {
-      te::gm::Polygon* g = dynamic_cast<te::gm::Polygon*>(geom);
-      return g->getArea();
-    }
-    case te::gm::PolygonZMType:
-    {
-      te::gm::Polygon* g = dynamic_cast<te::gm::Polygon*>(geom);
-      return g->getArea();
+      area = g->getArea();
+      break;
     }
     case te::gm::MultiPolygonType:
     {
-      te::gm::Polygon* g = dynamic_cast<te::gm::Polygon*>(geom);
-      return g->getArea();
+      te::gm::MultiPolygon* g = dynamic_cast<te::gm::MultiPolygon*>(geom);
+      area = g->getArea();
+      break;
     }
-    case te::gm::MultiPolygonZType:
+    case te::gm::GeometryCollectionType:
     {
-      te::gm::Polygon* g = dynamic_cast<te::gm::Polygon*>(geom);
-      return g->getArea();
-    }
-    case te::gm::MultiPolygonMType:
-    {
-      te::gm::Polygon* g = dynamic_cast<te::gm::Polygon*>(geom);
-      return g->getArea();
-    }
-    case te::gm::MultiPolygonZMType:
-    {
-      te::gm::Polygon* g = dynamic_cast<te::gm::Polygon*>(geom);
-      return g->getArea();
+      te::gm::GeometryCollection* col = dynamic_cast<te::gm::GeometryCollection*>(geom);
+      for(std::size_t j = 0; j < col->getNumGeometries(); ++j)
+      {
+        te::gm::Geometry* auxGeom = col->getGeometryN(j);
+        if(isPolygon(auxGeom->getGeomTypeId()))
+        {
+          area += dynamic_cast<te::gm::Polygon*>(auxGeom)->getArea();
+        }
+        else if(isMultiPolygon(auxGeom->getGeomTypeId()))
+        {
+          area += dynamic_cast<te::gm::MultiPolygon*>(auxGeom)->getArea();
+        }
+      }
+
+      break;
     }
     default:
     {
-      return 0;
+      throw te::common::Exception(TE_TR("Unexpected geometry type!"));
     }
   }
+
+  return area;
+}
+
+te::dt::AbstractData* te::attributefill::VectorToVectorMemory::getDataBasedOnType(const std::string& strValue, const int type)
+{
+  te::dt::AbstractData* data = 0;
+
+  switch(type)
+  {
+    case te::dt::STRING_TYPE:
+    {
+      data = new te::dt::SimpleData<std::string, te::dt::STRING_TYPE>(strValue);
+      break;
+    }
+    case te::dt::INT16_TYPE:
+    {
+      int16_t v = boost::lexical_cast<int16_t>(strValue);
+      data = new te::dt::SimpleData<std::string, te::dt::INT16_TYPE>(strValue);
+      break;
+    }
+    case te::dt::INT32_TYPE:
+    {
+      int32_t v = boost::lexical_cast<int32_t>(strValue);
+      data = new te::dt::SimpleData<std::string, te::dt::INT32_TYPE>(strValue);
+      break;
+    }
+    case te::dt::INT64_TYPE:
+    {
+      int64_t v = boost::lexical_cast<int64_t>(strValue);
+      data = new te::dt::SimpleData<std::string, te::dt::INT64_TYPE>(strValue);
+      break;
+    }
+    case te::dt::UINT16_TYPE:
+    {
+      uint16_t v = boost::lexical_cast<uint16_t>(strValue);
+      data = new te::dt::SimpleData<std::string, te::dt::UINT16_TYPE>(strValue);
+      break;
+    }
+    case te::dt::UINT32_TYPE:
+    {
+      uint32_t v = boost::lexical_cast<uint32_t>(strValue);
+      data = new te::dt::SimpleData<std::string, te::dt::UINT32_TYPE>(strValue);
+      break;
+    }
+    case te::dt::UINT64_TYPE:
+    {
+      uint64_t v = boost::lexical_cast<uint64_t>(strValue);
+      data = new te::dt::SimpleData<std::string, te::dt::UINT64_TYPE>(strValue);
+      break;
+    }
+    default:
+    {
+      throw te::common::Exception(TE_TR("Unexpected data type!"));
+    }
+  }
+
+  return data;
 }

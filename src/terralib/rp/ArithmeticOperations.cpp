@@ -183,8 +183,8 @@ namespace te
         *( m_inputParameters.m_inputRasters[0]->getBand(0)->getProperty() ) ) );       
       if( !m_inputParameters.m_normalize )
       {
-        bandsProperties[ 0 ]->m_type = te::dt::DOUBLE_TYPE;
-        bandsProperties[ 0 ]->m_noDataValue = std::numeric_limits< double >::max();
+        bandsProperties[ 0 ]->m_type = auxRasterPtr->getBand( 0 )->getProperty()->m_type;
+        bandsProperties[ 0 ]->m_noDataValue = auxRasterPtr->getBand( 0 )->getProperty()->m_noDataValue;
       }
         
       outParamsPtr->m_outputRasterPtr.reset( 

@@ -115,13 +115,6 @@ namespace te
 
         std::vector<std::string> getSelectedFunctions();
 
-        te::dt::AbstractData* getMajorClass(te::da::DataSet* toDs,
-                                            std::size_t toSrid,
-                                            te::da::DataSet* fromDs,
-                                            std::size_t fromSrid,
-                                            std::vector<std::size_t> dsPos,
-                                            const std::string& propertyName);
-
         te::dt::AbstractData* getClassWithHighestOccurrence(te::da::DataSet* fromDs,
                                                             std::vector<std::size_t> dsPos,
                                                             const std::string& propertyName);
@@ -132,6 +125,8 @@ namespace te
                                                                  std::size_t fromSrid,
                                                                  std::vector<std::size_t> dsPos,
                                                                  const std::string& propertyName);
+
+        te::dt::AbstractData* getDataBasedOnType(const std::string& strValue, const int type);
 
         bool isPolygon(te::gm::GeomType type);
         bool isLine(te::gm::GeomType type);
