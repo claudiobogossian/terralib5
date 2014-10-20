@@ -705,17 +705,19 @@ void te::attributefill::VectorToVectorDialog::setFunctionsByLayer(te::map::Abstr
 
       // This function works only with polygon to polygon
       if(isClassType(prop->getType()) && isPolygon(geomType) && isPolygon(toGeomType))
+      {
         m_ui->m_statisticsListWidget->addItem(QString(props[i]->getName().c_str()) + " : " + "Class with larger intersection area");
+        m_ui->m_statisticsListWidget->addItem(QString(props[i]->getName().c_str()) + " : " + "Percentage of each Class by Area");
+      }
 
       m_ui->m_statisticsListWidget->addItem(QString(props[i]->getName().c_str()) + " : " + "Percentage per Class");
       m_ui->m_statisticsListWidget->addItem(QString(props[i]->getName().c_str()) + " : " + "Minimum Distance");
       m_ui->m_statisticsListWidget->addItem(QString(props[i]->getName().c_str()) + " : " + "Presence");
 
-      if(isPolygon(geomType))
+      if(isPolygon(geomType) && isPolygon(toGeomType))
       {
         m_ui->m_statisticsListWidget->addItem(QString(props[i]->getName().c_str()) + " : " + "Weighted by Area");
         m_ui->m_statisticsListWidget->addItem(QString(props[i]->getName().c_str()) + " : " + "Weighted Sum by Area");
-        m_ui->m_statisticsListWidget->addItem(QString(props[i]->getName().c_str()) + " : " + "Percentage of each Class by Area");
         m_ui->m_statisticsListWidget->addItem(QString(props[i]->getName().c_str()) + " : " + "Percentage of Total Area");
       }
     }

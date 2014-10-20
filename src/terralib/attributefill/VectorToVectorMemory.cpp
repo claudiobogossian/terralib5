@@ -184,6 +184,12 @@ bool te::attributefill::VectorToVectorMemory::run()
               item->setInt32(outPropName, 0);
             }
           }
+          else if(funcs[i] == "Percentage of Total Area")
+          {
+            double area = getPercentageOfTotalArea(toDs.get(), toSrid, fromDs.get(), fromSrid, intersections, it->first->getName());
+
+            item->setDouble(outPropName, area);
+          }
           else if(it->first->getType() == te::dt::STRING_TYPE)
           {
             std::string value = getValue(ssStr, funcs[i]);
@@ -273,6 +279,10 @@ te::da::DataSetType* te::attributefill::VectorToVectorMemory::getOutputDataSetTy
       else if(funcs[i] == "Presence")
       {
         newProp = new te::dt::SimpleProperty(newName, te::dt::INT32_TYPE);
+      }
+      else if(funcs[i] == "Percentage of Total Area")
+      {
+        newProp = new te::dt::SimpleProperty(newName, te::dt::DOUBLE_TYPE);
       }
       else if(it->first->getType() == te::dt::STRING_TYPE || funcs[i] == "Mode" )
       {
@@ -393,6 +403,8 @@ std::string te::attributefill::VectorToVectorMemory::getPropertyName(te::dt::Pro
     newName += "min_distance";
   else if(func == "Presence")
     newName += "presence";
+  else if(func == "Percentage of Total Area")
+    newName += "percent_of_total_area";
 
   return newName;
 }
@@ -670,8 +682,6 @@ te::dt::AbstractData* te::attributefill::VectorToVectorMemory::getClassWithLarge
 
     std::string value = fromDs->getAsString(propIndex);
 
-    te::gm::GeomType interGeomType = interGeom->getGeomTypeId();
-
     double area = getArea(interGeom.get());
 
     if(classAreaMap.find(value) == classAreaMap.end())
@@ -745,6 +755,42 @@ std::map<std::string, double> te::attributefill::VectorToVectorMemory::getPercen
   }
 
   return result;
+}
+
+double te::attributefill::VectorToVectorMemory::getPercentageOfTotalArea(te::da::DataSet* toDs,
+                                                                         std::size_t toSrid,
+                                                                         te::da::DataSet* fromDs,
+                                                                         std::size_t fromSrid,
+                                                                         std::vector<std::size_t> dsPos,
+                                                                         const std::string& propertyName)
+{
+  std::size_t fromGeomPos = te::da::GetFirstSpatialPropertyPos(fromDs);
+  std::size_t toGeomPos =   te::da::GetFirstSpatialPropertyPos(toDs);
+
+  int propIndex = te::da::GetPropertyIndex(fromDs, propertyName);
+  int propType = fromDs->getPropertyDataType(propIndex);
+
+  std::auto_ptr<te::gm::Geometry> toGeom = toDs->getGeometry(toGeomPos);
+  if(toGeom->getSRID() <= 0)
+      toGeom->setSRID(toSrid);
+
+  double classArea = 0;
+  for(std::size_t i = 0; i < dsPos.size(); ++i)
+  {
+    fromDs->move(dsPos[i]);
+
+    std::auto_ptr<te::gm::Geometry> fromGeom = fromDs->getGeometry(fromGeomPos);
+    if(fromGeom->getSRID() <= 0)
+      fromGeom->setSRID(fromSrid);
+
+    std::auto_ptr<te::gm::Geometry> interGeom(toGeom->intersection(fromGeom.get()));
+
+    classArea += getArea(interGeom.get());
+  }
+
+  double polArea = getArea(toGeom.get());
+
+  return classArea/polArea;
 }
 
 bool te::attributefill::VectorToVectorMemory::isPolygon(te::gm::GeomType type)
