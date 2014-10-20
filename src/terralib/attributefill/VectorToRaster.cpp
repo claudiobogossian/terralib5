@@ -22,6 +22,8 @@
  */
 
 #include "../common.h"
+#include "../common/progress/TaskProgress.h"
+#include "../common/Translator.h"
 
 #include "../dataaccess/dataset/DataSet.h"
 #include "../dataaccess/dataset/DataSetAdapter.h"
@@ -36,9 +38,11 @@
 #include "../datatype/StringProperty.h"
 
 #include "../geometry/GeometryProperty.h"
+#include "../geometry/Polygon.h"
 
 #include "../memory/DataSetItem.h"
 
+#include "../raster.h"
 #include "../raster/BandProperty.h"
 #include "../raster/Grid.h"
 #include "../raster/RasterFactory.h"
@@ -47,6 +51,7 @@
 
 #include "../statistics/core/Utils.h"
 
+#include "Exception.h"
 #include "VectorToRaster.h"
 
 
@@ -77,7 +82,9 @@ void te::attributefill::VectorToRaster::setParams(std::vector<std::string> selec
   m_columns = columns;
   m_rows = rows;
   m_setDummy = setDummy;
-  m_dummy = dummy;
+  
+  if(setDummy == true)
+    m_dummy = dummy;
 }
 
 void te::attributefill::VectorToRaster::setOutput(te::da::DataSourcePtr outDsrc, std::string dsName)
@@ -112,9 +119,9 @@ bool te::attributefill::VectorToRaster::run()
   te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(m_inVectorDsType.get());
   std::size_t propPos = m_inVectorDsType->getPropertyPosition(geomProp->getName());
 
-  std::auto_ptr<te::gm::Envelope> env = inDataSet->getExtent(propPos);
+  te::gm::Envelope* env = inDataSet->getExtent(propPos).release();
   
-  te::rst::Grid* grid = new te::rst::Grid(m_resolutionX, m_resolutionY, env.get(), geomProp->getSRID());
+  te::rst::Grid* grid = new te::rst::Grid(m_resolutionX, m_resolutionY, env, geomProp->getSRID());
 
 // create bands
   std::vector<te::rst::BandProperty*> vecBandProp;
@@ -123,6 +130,10 @@ bool te::attributefill::VectorToRaster::run()
   {
     te::dt::Property* prop =  m_inVectorDsType->getProperty(m_selectedAttVec[i]);
     te::rst::BandProperty* bProp = new te::rst::BandProperty(i, prop->getType(), prop->getName());
+    
+    if(m_setDummy == true)
+      bProp->m_noDataValue = m_dummy;
+
     vecBandProp.push_back(bProp);
   }
 
@@ -134,25 +145,61 @@ bool te::attributefill::VectorToRaster::run()
 
 // get vector data
   std::string geomName = geomProp->getName();
+  std::map<te::gm::Geometry*, std::vector<double> > vectorMap;
+
+  inDataSet->moveBeforeFirst();
+  while(inDataSet->moveNext())
+  {
+    te::gm::Geometry* geom = static_cast<te::gm::Geometry*>(inDataSet->getGeometry(geomName)->clone());
+    std::vector<double> valueVec;
+
+    for(std::size_t b = 0; b < m_selectedAttVec.size(); ++b)
+    {
+      valueVec.push_back(inDataSet->getDouble(m_selectedAttVec[b]));
+    }
+
+    vectorMap.insert(std::pair<te::gm::Geometry*, std::vector<double> >(geom, valueVec));
+  }
+
+
+  te::common::TaskProgress task("Processing aggregation...");
+  task.setTotalSteps(m_selectedAttVec.size());
+  task.useTimer(true);
 
   for(std::size_t i = 0; i < m_selectedAttVec.size(); ++i)
   {
-    std::vector<te::gm::Geometry*> geomVec;
-    std::vector<double> valueVec;
-    
-    inDataSet->moveBeforeFirst();
-    while(inDataSet->moveNext())
+    std::map<te::gm::Geometry*, std::vector<double> >::iterator vectorIt = vectorMap.begin();
+  
+    while(vectorIt != vectorMap.end())
     {
-      geomVec.push_back(static_cast<te::gm::Geometry*>(inDataSet->getGeometry(geomName)->clone()));
-      valueVec.push_back(inDataSet->getDouble(m_selectedAttVec[i]));
-    }
-// rasterize
-    rst->rasterize(geomVec, valueVec, i);
+      te::gm::Polygon* polygon = static_cast<te::gm::Polygon*>(vectorIt->first);
 
-    te::common::FreeContents(geomVec);
+      if(!polygon)
+        continue;
+
+      te::rst::PolygonIterator<double> it = te::rst::PolygonIterator<double>::begin(rst.get(), polygon);
+      te::rst::PolygonIterator<double> itend = te::rst::PolygonIterator<double>::end(rst.get(), polygon);
+      
+      while (it != itend)
+      {
+        rst->setValue(it.getColumn(), it.getRow(), vectorIt->second[i], i);
+
+        ++it;
+      }
+
+      ++vectorIt;
+    }
+
+    if (task.isActive() == false)
+      throw te::attributefill::Exception(TE_TR("Operation canceled!"));
+  
+    task.pulse();
   }
 
+
+
   return true;
+
 }
 
 bool te::attributefill::VectorToRaster::save(std::auto_ptr<te::mem::DataSet> result, std::auto_ptr<te::da::DataSetType> outDsType)
