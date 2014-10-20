@@ -101,6 +101,8 @@ namespace te
 
     TEEDITEXPORT void GetCoordinates(te::gm::Geometry* geom, std::vector<te::gm::Coord2D>& coords);
 
+    TEEDITEXPORT void TrySnap(te::gm::Coord2D& coord, int srid);
+
   } // end namespace edit
 }   // end namespace te
 

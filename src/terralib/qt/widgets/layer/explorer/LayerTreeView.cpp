@@ -322,7 +322,7 @@ std::list<te::qt::widgets::AbstractTreeItem*> te::qt::widgets::LayerTreeView::ge
   {
     te::qt::widgets::AbstractTreeItem* selectedLayerItem = *it;
 
-    if(selectedLayerItem->getLayer() && selectedLayerItem->getItemType() != "FOLDER_ITEM_TYPE")
+    if(selectedLayerItem->getLayer() && selectedLayerItem->getItemType() != "FOLDER_LAYER_ITEM")
       selectedSingleLayerItems.push_back(selectedLayerItem);
   }
 

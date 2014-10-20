@@ -31,6 +31,7 @@
 // TerraLib
 #include "Observer.h"
 #include "../../../../geometry/Coord2D.h"
+#include "../../../../color/RGBAColor.h"
 
 namespace te
 {
@@ -43,7 +44,9 @@ namespace te
     class ItemObserver : Observer
     {
       public:
+
         ItemObserver(ItemController* controller = 0, Observable* o = 0);
+
         virtual ~ItemObserver();
 
         virtual void updateObserver(ContextItem context) = 0;  
@@ -58,16 +61,21 @@ namespace te
         virtual std::string getName();
 
         virtual te::layout::Properties* getProperties() const;	
+
         virtual void updateProperties(te::layout::Properties* properties);
+
         virtual void redraw();
         
         virtual void setPrintable(bool print);
+
         virtual bool isPrintable();
 
         virtual void setCanChangeGraphicOrder(bool canChange);
+
         virtual bool isCanChangeGraphicOrder();
 
         virtual ItemController*	getController();
+
         virtual Observable*	getModel();
         
         virtual void refresh();
@@ -77,6 +85,8 @@ namespace te
         void setCanZoom(bool zoom);
 
         virtual bool isInvertedMatrix();
+
+        virtual te::color::RGBAColor** getImage() = 0;
 
       protected:
 

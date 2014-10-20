@@ -79,7 +79,9 @@ void te::layout::GridPlanarModel::draw( te::map::Canvas* canvas, Utils* utils, t
   te::color::RGBAColor color = te::color::RGBAColor(0, 0, 0, 255);
   canvas->setLineColor(color);
   
-  canvas->setTextPointSize(m_pointTextSize);
+  double zoomFactor = Context::getInstance().getZoomFactor();
+
+  canvas->setTextPointSize(m_pointTextSize * zoomFactor);
   canvas->setFontFamily(m_fontText);
 
   gridTextFreeMemory();
@@ -94,7 +96,7 @@ void te::layout::GridPlanarModel::drawVerticalLines(te::map::Canvas* canvas, Uti
   
   double			y1;
   double			yInit;
-
+  
   WorldTransformer transf = utils->getTransformGeo(box, m_boxMapMM);
   transf.setMirroring(false);
 
@@ -112,6 +114,11 @@ void te::layout::GridPlanarModel::drawVerticalLines(te::map::Canvas* canvas, Uti
       yInit = yInit + (nParts * m_lneVrtGap);
     }
   }
+
+  utils = Context::getInstance().getUtils();
+
+  double wtxt = 0;
+  double htxt = 0;
 
   y1 = yInit;
   for( ; y1 < box.getUpperRightY() ; y1 += m_lneVrtGap)
@@ -136,12 +143,14 @@ void te::layout::GridPlanarModel::drawVerticalLines(te::map::Canvas* canvas, Uti
     double number = y1 / (double)m_unit;
     convert << number;
 
+    utils->textBoundingBox(wtxt, htxt, convert.str());
+
     if(m_visibleAllTexts)
     {
       if(m_leftText)
       {
-        canvas->drawText(llx - m_lneHrzDisplacement, y, convert.str(), 0);
-        te::gm::Point* coordLeft = new te::gm::Point(llx - m_lneHrzDisplacement, y);
+        canvas->drawText(llx - m_lneHrzDisplacement - wtxt, y, convert.str(), 0);
+        te::gm::Point* coordLeft = new te::gm::Point(llx - m_lneHrzDisplacement - wtxt, y);
         m_gridTexts[coordLeft] = convert.str();
       }
 
@@ -186,8 +195,12 @@ void te::layout::GridPlanarModel::drawHorizontalLines(te::map::Canvas* canvas, U
     }
   }
 
-  x1 = xInit;
+  utils = Context::getInstance().getUtils();
 
+  double wtxt = 0;
+  double htxt = 0;
+
+  x1 = xInit;
   for( ; x1 < box.getUpperRightX() ; x1 += m_lneHrzGap)
   {
     if(x1 < box.getLowerLeftX())
@@ -217,19 +230,21 @@ void te::layout::GridPlanarModel::drawHorizontalLines(te::map::Canvas* canvas, U
     double number = x1 / (double)m_unit;
     convert << number;
 
+    utils->textBoundingBox(wtxt, htxt, convert.str());
+
     if(m_visibleAllTexts)
     {
       if(m_bottomText)
       {
-        canvas->drawText(x, lly - m_lneVrtDisplacement, convert.str(), 0);
-        te::gm::Point* coordBottom = new te::gm::Point(x, lly - m_lneVrtDisplacement);
+        canvas->drawText(x - (wtxt/2.), lly - m_lneVrtDisplacement - htxt, convert.str(), 0);
+        te::gm::Point* coordBottom = new te::gm::Point(x - (wtxt/2.), lly - m_lneVrtDisplacement - htxt);
         m_gridTexts[coordBottom] = convert.str();
       }
 
       if(m_topText)
       {
-        canvas->drawText(x, ury + m_lneVrtDisplacement, convert.str(), 0);
-        te::gm::Point* coordTop = new te::gm::Point(x, ury + m_lneVrtDisplacement);
+        canvas->drawText(x - (wtxt/2.), ury + m_lneVrtDisplacement, convert.str(), 0);
+        te::gm::Point* coordTop = new te::gm::Point(x - (wtxt/2.), ury + m_lneVrtDisplacement);
         m_gridTexts[coordTop] = convert.str();
       }
     }

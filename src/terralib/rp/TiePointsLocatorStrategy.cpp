@@ -18,34 +18,32 @@
  */
 
 /*!
-  \file TsGeometricRefining.h
- 
-  \brief A test suit for the GeometricRefining Class.
- */
+  \file terralib/rp/TiePointsLocatorStrategy.cpp
+  \brief Tie-Pointsr locator strategy.
+*/
 
-#ifndef __TERRALIB_UNITTEST_RP_REGISTER_INTERNAL_H
-#define __TERRALIB_UNITTEST_RP_REGISTER_INTERNAL_H
+#include "TiePointsLocatorStrategy.h"
 
-// cppUnit
-#include <cppunit/extensions/HelperMacros.h>
-
-/*!
-  \class TsGeometricRefining
-
-  \brief A test suit for the GeometricRefining class interface.
- */
-class TsGeometricRefining : public CPPUNIT_NS::TestFixture 
+namespace te
 {
-  CPPUNIT_TEST_SUITE( TsGeometricRefining );
-  
-  CPPUNIT_TEST( Test001 );
-  
-  CPPUNIT_TEST_SUITE_END();
+  namespace rp
+  {
+    TiePointsLocatorStrategy::TiePointsLocatorStrategy()
+    {
+    }
+    
+    TiePointsLocatorStrategy::~TiePointsLocatorStrategy()
+    {
+    }
+    
+    TiePointsLocatorStrategy::TiePointsLocatorStrategy( const TiePointsLocatorStrategy& )
+    {
+    }
+    
+    const TiePointsLocatorStrategy& TiePointsLocatorStrategy::operator=( const TiePointsLocatorStrategy& )
+    {
+      return *this;
+    }
+  } // end namespace rp
+}   // end namespace te    
 
-protected :
-
-  void Test001();
-
-};
-
-#endif

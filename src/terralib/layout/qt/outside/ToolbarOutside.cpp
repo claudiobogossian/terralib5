@@ -93,6 +93,7 @@ te::layout::ToolbarOutside::ToolbarOutside( OutsideController* controller, Obser
   m_optionRedo("redo"),
   m_optionDrawMap("draw_map"),
   m_optionMapCreateLegendChildAsObject("legend_child"),
+  m_optionObjectToImage("object_to_image"),
   m_btnMap(0)
 {
 	te::gm::Envelope box = m_model->getBox();	
@@ -179,6 +180,9 @@ void te::layout::ToolbarOutside::createToolbar()
 
   createAlignCenterHorizontalToolButton();
   createAlignCenterVerticalToolButton();
+  this->addSeparator();
+
+  createObjectToImageButton();
   this->addSeparator();
 
   createSceneZoomCombobox();
@@ -499,6 +503,15 @@ void te::layout::ToolbarOutside::createDrawMapToolButton()
   this->addWidget(btn);
 }
 
+void te::layout::ToolbarOutside::createObjectToImageButton()
+{
+  QToolButton *btn = createToolButton("Object To Image", "Export all selected objects to image", "layout-object-to-image");
+  btn->setCheckable(false);
+  connect(btn, SIGNAL(clicked(bool)), this, SLOT(onObjectToImageClicked(bool)));
+
+  this->addWidget(btn);
+}
+
 void te::layout::ToolbarOutside::onMapTriggered( QAction* action )
 {
   EnumModeType* type = Enums::getInstance().getEnumModeType();
@@ -742,6 +755,12 @@ void te::layout::ToolbarOutside::onDrawMapClicked( bool checked )
 {
   EnumModeType* type = Enums::getInstance().getEnumModeType();
   changeAction(type->getModeDrawSelectionMap());
+}
+
+void te::layout::ToolbarOutside::onObjectToImageClicked( bool checked )
+{
+  EnumModeType* type = Enums::getInstance().getEnumModeType();
+  changeAction(type->getModeObjectToImage());
 }
 
 void te::layout::ToolbarOutside::changeAction( EnumType* mode )

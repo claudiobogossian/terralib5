@@ -589,6 +589,15 @@ void te::layout::View::outsideAreaChangeContext( bool change )
     sc->createLegendChildAsObject();
     resetDefaultConfig();
   }
+  else if(mode == enumMode->getModeArrowCursor())
+  {
+    resetDefaultConfig();
+  }
+  else if(mode == enumMode->getModeObjectToImage())
+  {
+    sc->exportItemsToImage();
+    resetDefaultConfig();
+  }
 }
 
 void te::layout::View::configTransform( Scene* sc )
@@ -648,6 +657,9 @@ void te::layout::View::onChangeConfig()
   config();
 
   Scene* sc = dynamic_cast<Scene*>(scene());
+
+  if(!sc)
+    return;
 
   sc->refresh(this, zoomFactor);            
   sc->redrawItems(true);
@@ -728,4 +740,34 @@ bool te::layout::View::intersectionSelectionItem(int x, int y)
   }
 
   return intersection;
+}
+
+void te::layout::View::drawBackground( QPainter * painter, const QRectF & rect )
+{
+  QGraphicsView::drawBackground(painter, rect);
+}
+
+void te::layout::View::drawForeground( QPainter * painter, const QRectF & rect )
+{
+  QGraphicsView::drawForeground(painter, rect);
+}
+
+QImage te::layout::View::createImage()
+{
+  QImage ig;
+  Scene* sc = dynamic_cast<Scene*>(scene());
+  if(!sc)
+    return ig;
+
+  te::gm::Envelope* env = sc->getWorldBox();
+
+  QRectF rtv(0, 0, width(), height());
+  QRectF rts(env->m_llx, env->m_lly, env->m_urx, env->m_ury);
+
+  QImage img(rtv.width(), rtv.height(), QImage::Format_ARGB32);
+  QPainter ptr(&img);
+  ptr.setRenderHint(QPainter::Antialiasing);
+  this->render(&ptr, QRect(), QRect(), Qt::IgnoreAspectRatio);
+
+  return img;
 }

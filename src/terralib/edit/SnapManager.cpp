@@ -111,7 +111,7 @@ void te::edit::SnapManager::clearAll()
   m_snaps.clear();
 }
 
-bool te::edit::SnapManager::search(const te::gm::Coord2D& coord, te::gm::Coord2D& result)
+bool te::edit::SnapManager::search(const te::gm::Coord2D& coord, int /*srid*/, te::gm::Coord2D& result)
 {
   std::map<std::string, Snap*>::const_iterator it;
   for(it = m_snaps.begin(); it != m_snaps.end(); ++it)

@@ -1105,7 +1105,7 @@ void te::qt::af::BaseApplication::onLayerSRSTriggered()
 
 void te::qt::af::BaseApplication::onLayerShowTableTriggered()
 {
-  std::list<te::qt::widgets::AbstractTreeItem*> layers = m_explorer->getExplorer()->getSelectedItems();
+  std::list<te::qt::widgets::AbstractTreeItem*> layers = m_explorer->getExplorer()->getSelectedSingleLayerItems();
 
   if(layers.empty())
   {

@@ -31,6 +31,7 @@
 // TerraLib
 #include "../../core/pattern/mvc/ItemObserver.h"
 #include "../../core/enum/AbstractType.h"
+#include "../../../color/RGBAColor.h"
 
 // Qt
 #include <QGraphicsTextItem>
@@ -53,6 +54,7 @@ namespace te
       public:
 
         DefaultTextItem( ItemController* controller, Observable* o );
+
         virtual ~DefaultTextItem();
         
         virtual void updateObserver(ContextItem context);
@@ -62,11 +64,14 @@ namespace te
         virtual int getZValueItem();
 
         virtual void setPixmap( const QPixmap& pixmap );
+
         virtual QPixmap getPixmap();
 
         //Mandatory implementation methods
         virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
+
         virtual QRectF boundingRect() const;
+
         virtual void setRect(QRectF rect);
 
         //Override 
@@ -80,6 +85,8 @@ namespace te
         virtual void init();
 
         void setTextInteraction(bool on, bool selectAll = false);
+
+        virtual te::color::RGBAColor** getImage();
 
       protected slots:
 
