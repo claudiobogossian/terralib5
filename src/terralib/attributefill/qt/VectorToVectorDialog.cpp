@@ -797,8 +797,8 @@ bool te::attributefill::VectorToVectorDialog::isClassType(const int type)
 te::gm::GeomType te::attributefill::VectorToVectorDialog::getCurrentToLayerGeomType()
 {
   te::map::AbstractLayerPtr toLayer = getCurrentToLayer();
-  std::string toGeomPropName = toLayer->getGeomPropertyName();
   std::auto_ptr<te::da::DataSetType> toSchema = toLayer->getSchema();
-  te::gm::GeometryProperty* toGeomProp = dynamic_cast<te::gm::GeometryProperty*>(te::da::GetFirstSpatialProperty(toSchema.get()));
+  te::dt::Property* p = te::da::GetFirstSpatialProperty(toSchema.get());
+  te::gm::GeometryProperty* toGeomProp = dynamic_cast<te::gm::GeometryProperty*>(p);
   return toGeomProp->getGeometryType();
 }
