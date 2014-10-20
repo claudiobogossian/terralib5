@@ -173,6 +173,17 @@ bool te::attributefill::VectorToVectorMemory::run()
               ++itAux;
             }
           }
+          else if(funcs[i] == "Presence")
+          {
+            if(intersections.size() > 0)
+            {
+              item->setInt32(outPropName, 1);
+            }
+            else
+            {
+              item->setInt32(outPropName, 0);
+            }
+          }
           else if(it->first->getType() == te::dt::STRING_TYPE)
           {
             std::string value = getValue(ssStr, funcs[i]);
@@ -258,6 +269,10 @@ te::da::DataSetType* te::attributefill::VectorToVectorMemory::getOutputDataSetTy
       else if(funcs[i] == "Percentage per Class")
       {
         continue;//Sera feito fora do for
+      }
+      else if(funcs[i] == "Presence")
+      {
+        newProp = new te::dt::SimpleProperty(newName, te::dt::INT32_TYPE);
       }
       else if(it->first->getType() == te::dt::STRING_TYPE || funcs[i] == "Mode" )
       {
@@ -376,6 +391,8 @@ std::string te::attributefill::VectorToVectorMemory::getPropertyName(te::dt::Pro
     newName += "class_high_area";
   else if(func == "Minimum Distance")
     newName += "min_distance";
+  else if(func == "Presence")
+    newName += "presence";
 
   return newName;
 }
