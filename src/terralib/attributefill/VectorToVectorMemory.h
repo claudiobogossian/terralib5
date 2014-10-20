@@ -148,6 +148,20 @@ namespace te
                                                                      std::vector<std::size_t> dsPos,
                                                                      const std::string& propertyName);
 
+        double getWeightedByArea(te::da::DataSet* toDs,
+                                 std::size_t toSrid,
+                                 te::da::DataSet* fromDs,
+                                 std::size_t fromSrid,
+                                 std::vector<std::size_t> dsPos,
+                                 const std::string& propertyName);
+
+        double getWeightedSumByArea(te::da::DataSet* toDs,
+                                    std::size_t toSrid,
+                                    te::da::DataSet* fromDs,
+                                    std::size_t fromSrid,
+                                    std::vector<std::size_t> dsPos,
+                                    const std::string& propertyName);
+
         bool isPolygon(te::gm::GeomType type);
         bool isLine(te::gm::GeomType type);
         bool isPoint(te::gm::GeomType type);
