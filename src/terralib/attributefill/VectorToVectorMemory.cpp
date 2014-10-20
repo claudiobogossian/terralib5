@@ -190,6 +190,21 @@ bool te::attributefill::VectorToVectorMemory::run()
 
             item->setDouble(outPropName, area);
           }
+          else if(funcs[i] == "Percentage of each Class by Area")
+          {
+            std::map<std::string, double> result = getPercentageOfEachClassByArea(toDs.get(), toSrid, fromDs.get(), fromSrid, intersections, it->first->getName());
+
+            std::map<std::string, double>::iterator itAux = result.begin();
+            while(itAux != result.end())
+            {
+              std::string newPropName = it->first->getName() + "_" + itAux->first;
+              std::replace(newPropName.begin(), newPropName.end(), ' ', '_');
+
+              item->setDouble(newPropName, itAux->second);
+
+              ++itAux;
+            }
+          }
           else if(it->first->getType() == te::dt::STRING_TYPE)
           {
             std::string value = getValue(ssStr, funcs[i]);
@@ -272,7 +287,7 @@ te::da::DataSetType* te::attributefill::VectorToVectorMemory::getOutputDataSetTy
         newProp->setRequired(false);
         newProp->setName(newName);
       }
-      else if(funcs[i] == "Percentage per Class")
+      else if(funcs[i] == "Percentage per Class" || funcs[i] == "Percentage of each Class by Area")
       {
         continue;//Sera feito fora do for
       }
@@ -296,7 +311,8 @@ te::da::DataSetType* te::attributefill::VectorToVectorMemory::getOutputDataSetTy
       dst->add(newProp);
     }
 
-    if(std::find(funcs.begin(), funcs.end(), "Percentage per Class") != funcs.end())
+    if(std::find(funcs.begin(), funcs.end(), "Percentage per Class") != funcs.end() || 
+       std::find(funcs.begin(), funcs.end(), "Percentage of each Class by Area") != funcs.end())
     {
       std::vector<std::string> strClasses = getDistinctClasses(fromDs.get(), it->first->getName());
 
@@ -405,6 +421,8 @@ std::string te::attributefill::VectorToVectorMemory::getPropertyName(te::dt::Pro
     newName += "presence";
   else if(func == "Percentage of Total Area")
     newName += "percent_of_total_area";
+  else if(func == "Percentage of each Class by Area")
+    newName += "percent_area_class";
 
   return newName;
 }
@@ -791,6 +809,54 @@ double te::attributefill::VectorToVectorMemory::getPercentageOfTotalArea(te::da:
   double polArea = getArea(toGeom.get());
 
   return classArea/polArea;
+}
+
+std::map<std::string, double> te::attributefill::VectorToVectorMemory::getPercentageOfEachClassByArea(te::da::DataSet* toDs,
+                                                                                                      std::size_t toSrid,
+                                                                                                      te::da::DataSet* fromDs,
+                                                                                                      std::size_t fromSrid,
+                                                                                                      std::vector<std::size_t> dsPos,
+                                                                                                      const std::string& propertyName)
+{
+  std::map<std::string, double> result;
+
+  std::size_t fromGeomPos = te::da::GetFirstSpatialPropertyPos(fromDs);
+  std::size_t toGeomPos =   te::da::GetFirstSpatialPropertyPos(toDs);
+
+  int propIndex = te::da::GetPropertyIndex(fromDs, propertyName);
+  int propType = fromDs->getPropertyDataType(propIndex);
+
+  std::auto_ptr<te::gm::Geometry> toGeom = toDs->getGeometry(toGeomPos);
+  if(toGeom->getSRID() <= 0)
+      toGeom->setSRID(toSrid);
+
+  double toGeomArea = getArea(toGeom.get());
+
+  for(std::size_t i = 0; i < dsPos.size(); ++i)
+  {
+    fromDs->move(dsPos[i]);
+
+    std::auto_ptr<te::gm::Geometry> fromGeom = fromDs->getGeometry(fromGeomPos);
+    if(fromGeom->getSRID() <= 0)
+      fromGeom->setSRID(fromSrid);
+
+    std::auto_ptr<te::gm::Geometry> interGeom(toGeom->intersection(fromGeom.get()));
+
+    std::string value = fromDs->getAsString(propIndex);
+
+    double area = getArea(interGeom.get());
+
+    if(result.find(value) == result.end())
+    {
+      result[value] = area/toGeomArea;
+    }
+    else
+    {
+      result[value] += area/toGeomArea;
+    }
+  }
+
+  return result;
 }
 
 bool te::attributefill::VectorToVectorMemory::isPolygon(te::gm::GeomType type)
