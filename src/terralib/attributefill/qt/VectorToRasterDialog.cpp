@@ -43,6 +43,7 @@
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../../qt/widgets/layer/utils/DataSet2Layer.h"
 #include "../../qt/widgets/progress/ProgressViewerDialog.h"
+#include "../../qt/widgets/rp/Utils.h"
 #include "../../qt/widgets/Utils.h"
 #include "../../qt/widgets/utils/DoubleListWidget.h"
 #include "../../statistics/core/Utils.h"
@@ -378,6 +379,9 @@ void te::attributefill::VectorToRasterDialog::onOkPushButtonClicked()
   
   std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toStdString();
 
+  //progress
+  te::qt::widgets::ProgressViewerDialog v(this);
+  int id = te::common::ProgressManager::getInstance().addViewer(&v);
 
   try
   {
@@ -436,11 +440,11 @@ void te::attributefill::VectorToRasterDialog::onOkPushButtonClicked()
 
     delete vec2rst;
 
-    // let's include the new datasource in the managers
+// let's include the new datasource in the managers
     boost::uuids::basic_random_generator<boost::mt19937> gen;
     boost::uuids::uuid u = gen();
     std::string id_ds = boost::uuids::to_string(u);
-      
+
     te::da::DataSourceInfoPtr ds(new te::da::DataSourceInfo);
     ds->setConnInfo(dsinfo);
     ds->setTitle(uri.stem().string());
@@ -448,7 +452,7 @@ void te::attributefill::VectorToRasterDialog::onOkPushButtonClicked()
     ds->setType("GDAL");
     ds->setDescription(uri.string());
     ds->setId(id_ds);
-      
+
     te::da::DataSourcePtr newds = te::da::DataSourceManager::getInstance().get(id_ds, "GDAL", ds->getConnInfo());
     newds->open();
     te::da::DataSourceInfoManager::getInstance().add(ds);
@@ -461,9 +465,19 @@ void te::attributefill::VectorToRasterDialog::onOkPushButtonClicked()
 
     QMessageBox::information(this, "Fill", e.what());
     te::common::Logger::logDebug("fill", e.what());
+    te::common::ProgressManager::getInstance().removeViewer(id);
 
     return;
   }
+
+  m_outLayer = te::qt::widgets::createLayer("GDAL", 
+                                            m_outputDatasource->getConnInfo());
+
+  te::common::ProgressManager::getInstance().removeViewer(id);
+  this->setCursor(Qt::ArrowCursor);
+
+  accept();
+
 }
 
 void te::attributefill::VectorToRasterDialog::onCancelPushButtonClicked()
