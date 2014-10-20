@@ -158,6 +158,21 @@ bool te::attributefill::VectorToVectorMemory::run()
             te::dt::AbstractData* value = getClassWithHighestOccurrence(fromDs.get(), intersections, it->first->getName());
             item->setValue(outPropName, value);
           }
+          else if(funcs[i] == "Percentage per Class")
+          {
+            std::map<std::string, double> result = getPercentagePerClass(fromDs.get(), intersections, it->first->getName());
+
+            std::map<std::string, double>::iterator itAux = result.begin();
+            while(itAux != result.end())
+            {
+              std::string newPropName = it->first->getName() + "_" + itAux->first;
+              std::replace(newPropName.begin(), newPropName.end(), ' ', '_');
+
+              item->setDouble(newPropName, itAux->second);
+
+              ++itAux;
+            }
+          }
           else if(it->first->getType() == te::dt::STRING_TYPE)
           {
             std::string value = getValue(ssStr, funcs[i]);
@@ -205,6 +220,8 @@ bool te::attributefill::VectorToVectorMemory::run()
 
 te::da::DataSetType* te::attributefill::VectorToVectorMemory::getOutputDataSetType()
 {
+  std::auto_ptr<te::da::DataSet> fromDs = m_fromLayer->getData();
+
   std::auto_ptr<te::da::DataSetType> toScheme = m_toLayer->getSchema();
 
   te::da::DataSetType* dst = new te::da::DataSetType(*toScheme.get());
@@ -231,7 +248,8 @@ te::da::DataSetType* te::attributefill::VectorToVectorMemory::getOutputDataSetTy
         else
           newProp = new te::dt::SimpleProperty(newName, te::dt::DOUBLE_TYPE);
       }
-      else if(funcs[i] == "Major Class")
+      else if(funcs[i] == "Class with highest occurrence" ||
+              funcs[i] == "Class with larger intersection area")
       {
         newProp = dynamic_cast<te::dt::SimpleProperty*>(currentProperty->clone());
         newProp->setRequired(false);
@@ -239,9 +257,9 @@ te::da::DataSetType* te::attributefill::VectorToVectorMemory::getOutputDataSetTy
       }
       else if(funcs[i] == "Percentage per Class")
       {
-        
+        continue;//Sera feito fora do for
       }
-      else if(it->first->getType() == te::dt::STRING_TYPE || funcs[i] == "Mode")
+      else if(it->first->getType() == te::dt::STRING_TYPE || funcs[i] == "Mode" )
       {
         newProp = new te::dt::StringProperty(newName);
       }
@@ -253,10 +271,45 @@ te::da::DataSetType* te::attributefill::VectorToVectorMemory::getOutputDataSetTy
       dst->add(newProp);
     }
 
+    if(std::find(funcs.begin(), funcs.end(), "Percentage per Class") != funcs.end())
+    {
+      std::vector<std::string> strClasses = getDistinctClasses(fromDs.get(), it->first->getName());
+
+      for(std::size_t i = 0; i < strClasses.size(); ++i)
+      {
+        std::string newPropName = it->first->getName() + "_" + strClasses[i];
+        std::replace(newPropName.begin(), newPropName.end(), ' ', '_');
+
+        te::dt::SimpleProperty* newProp = new te::dt::SimpleProperty(newPropName, te::dt::DOUBLE_TYPE);
+
+        dst->add(newProp);
+      }
+    }
+
     ++it;
   }
 
   return dst;
+}
+
+std::vector<std::string> te::attributefill::VectorToVectorMemory::getDistinctClasses(te::da::DataSet* fromDs,
+                                                                                     const std::string& propertyName)
+{
+  std::vector<std::string> result;
+
+  fromDs->moveBeforeFirst();
+
+  while(fromDs->moveNext())
+  {
+    std::string strClass = fromDs->getAsString(propertyName, 9);
+
+    if(std::find(result.begin(), result.end(), strClass) == result.end())
+    {
+      result.push_back(strClass);
+    }
+  }
+
+  return result;
 }
 
 te::sam::rtree::Index<size_t, 8>* te::attributefill::VectorToVectorMemory::getRtree(te::da::DataSet* data)
@@ -317,10 +370,10 @@ std::string te::attributefill::VectorToVectorMemory::getPropertyName(te::dt::Pro
     newName += "coeff_variation";
   else if(func == "Mode")
     newName += "mode";
-  else if(func == "Major Class")
-    newName += "maj_class";
-  else if(func == "Percentage per Class")
-    newName += "percent_class";
+  else if(func == "Class with highest occurrence")
+    newName += "class_high_occurrence";
+  else if(func == "Class with larger intersection area")
+    newName += "class_high_area";
   else if(func == "Minimum Distance")
     newName += "min_distance";
 
@@ -632,6 +685,49 @@ te::dt::AbstractData* te::attributefill::VectorToVectorMemory::getClassWithLarge
   te::dt::AbstractData* data = getDataBasedOnType(value, propType);
 
   return data;
+}
+
+std::map<std::string, double> te::attributefill::VectorToVectorMemory::getPercentagePerClass(te::da::DataSet* fromDs,
+                                                                                             std::vector<std::size_t> dsPos,
+                                                                                             const std::string& propertyName)
+{
+  std::map<std::string, double> result;
+
+  std::map<std::string, std::size_t> aux;
+  for(std::size_t i = 0; i < dsPos.size(); ++i)
+  {
+    fromDs->move(dsPos[i]);
+
+    std::string value = fromDs->getAsString(propertyName);
+
+    if(aux.find(value) == aux.end())
+    {
+      aux[value] = 1;
+    }
+    else
+    {
+      aux[value] += 1;
+    }
+  }
+
+  std::size_t total = 0;
+  std::map<std::string, std::size_t>::iterator it = aux.begin();
+  while(it != aux.end())
+  {
+    total += it->second;
+
+    ++it;
+  }
+
+  it = aux.begin();
+  while(it != aux.end())
+  {
+    result[it->first] = ((double)it->second / total);
+
+    ++it;
+  }
+
+  return result;
 }
 
 bool te::attributefill::VectorToVectorMemory::isPolygon(te::gm::GeomType type)

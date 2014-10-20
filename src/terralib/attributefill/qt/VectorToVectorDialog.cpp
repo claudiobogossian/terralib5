@@ -340,7 +340,8 @@ void te::attributefill::VectorToVectorDialog::setStatisticalSummary()
     m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MEDIAN).c_str()), te::stat::MEDIAN);
     m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::VAR_COEFF).c_str()), te::stat::VAR_COEFF);
     m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MODE).c_str()), te::stat::MODE);
-    m_ui->m_selectAllComboBox->addItem("Major Class");
+    m_ui->m_selectAllComboBox->addItem("Class with highest occurrence");
+    m_ui->m_selectAllComboBox->addItem("Class with larger intersection area");
     m_ui->m_selectAllComboBox->addItem("Percentage per Class");
     m_ui->m_selectAllComboBox->addItem("Minimum Distance");
     m_ui->m_selectAllComboBox->addItem("Presence");
@@ -365,7 +366,8 @@ void te::attributefill::VectorToVectorDialog::setStatisticalSummary()
     m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MEDIAN).c_str()), te::stat::MEDIAN);
     m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::VAR_COEFF).c_str()), te::stat::VAR_COEFF);
     m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MODE).c_str()), te::stat::MODE);
-    m_ui->m_rejectAllComboBox->addItem("Major Class");
+    m_ui->m_rejectAllComboBox->addItem("Class with highest occurrence");
+    m_ui->m_rejectAllComboBox->addItem("Class with larger intersection area");
     m_ui->m_rejectAllComboBox->addItem("Percentage per Class");
     m_ui->m_rejectAllComboBox->addItem("Minimum Distance");
     m_ui->m_rejectAllComboBox->addItem("Presence");
