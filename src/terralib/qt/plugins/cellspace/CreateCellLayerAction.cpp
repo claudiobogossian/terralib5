@@ -57,7 +57,7 @@ void te::qt::plugins::cellspace::CreateCellLayerAction::onActionActivated(bool c
 
   if(prj)
   {
-    dlg.setLayers(prj->getSingleLayers(false));
+    dlg.setLayers(prj->getAllLayers(true));
   }
 
   if(dlg.exec() != QDialog::Accepted)
