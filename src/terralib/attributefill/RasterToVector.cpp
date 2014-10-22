@@ -117,12 +117,12 @@ bool te::attributefill::RasterToVector::run()
   te::gm::GeometryProperty* vectorProp = te::da::GetFirstGeomProperty(m_inVectorDsType.get());
 
   std::auto_ptr<te::da::DataSet> dsVector = m_inVectorDsrc->getDataSet(m_inVectorName);
-  
+
 // Raster Attributes
   te::rp::RasterAttributes* rasterAtt = 0;
 
-  te::common::TaskProgress task("Rasterizing...");
-  task.setTotalSteps(dsVector->size());
+  te::common::TaskProgress task("Processing Operation...");
+  task.setTotalSteps(dsVector->size() * m_statSum.size() * m_bands.size());
   task.useTimer(true);
 
   dsVector->moveBeforeFirst();
@@ -251,6 +251,7 @@ bool te::attributefill::RasterToVector::run()
           default:
             continue;
         }
+        task.pulse();
       }
 
       init_index = current_index;
