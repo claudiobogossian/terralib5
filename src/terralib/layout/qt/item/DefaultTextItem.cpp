@@ -137,7 +137,16 @@ void te::layout::DefaultTextItem::updateObserver( ContextItem context )
   coordinates, and its position can only be given in the scene coordinates(mm). 
   For these reasons, it is necessary to scale and so accompany the zoom scene. */
   double zoomFactor = Context::getInstance().getZoomFactor();
+  double oldZoomFactor = Context::getInstance().getOldZoomFactor();
   setScale(zoomFactor);
+
+  Scene* sc = dynamic_cast<Scene*>(scene());
+
+  if(sc->getPreviewState() != Scene::NoPrinter)
+  {
+    QTransform trf = sc->getMatrixViewScene();
+    setScale(trf.m11());
+  }
   
   refreshTable();
 

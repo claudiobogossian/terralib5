@@ -160,7 +160,9 @@ std::vector<te::layout::Properties*> te::layout::JSON::retrieve()
       {
         prop.setName(valName);
         EnumType* tp = dataType->getEnum(v.second.data());
-        prop.setValue(tree.data(), tp);
+        Variant vt;
+        vt.fromPtree(tree, tp);
+        prop.setValue(vt);
         props->addProperty(prop); 
         prop.clear();
       }

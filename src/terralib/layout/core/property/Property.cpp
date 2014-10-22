@@ -248,3 +248,8 @@ std::string te::layout::Property::getIcon()
 {
   return m_icon;
 }
+
+bool te::layout::Property::isComplex()
+{
+  return m_value.isComplex();
+}

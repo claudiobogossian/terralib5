@@ -267,7 +267,12 @@ QGraphicsItemGroup* te::layout::Scene::createItemGroup( const QList<QGraphicsIte
   EnumModeType* mode = Enums::getInstance().getEnumModeType();
   
   //Create a new group
-  BuildGraphicsItem* build = Context::getInstance().getBuildGraphicsItem();
+  AbstractBuildGraphicsItem* abstractBuild = Context::getInstance().getAbstractBuildGraphicsItem();
+  BuildGraphicsItem* build = dynamic_cast<BuildGraphicsItem*>(abstractBuild);
+
+  if(!build)
+    return p;
+
   te::gm::Coord2D coord(0,0);
   QGraphicsItem* item = build->createItem(mode->getModeCreateItemGroup(), coord, false);
 
@@ -417,9 +422,9 @@ void te::layout::Scene::printPreview(bool isPdf)
   
   if(preview.exec() == QDialog::Rejected || m_previewState == PrintScene)
   {
+    m_previewState = NoPrinter;
     redrawItems(false);
     enableUpdateViews();
-    m_previewState = NoPrinter;
     if(printer)
     {
       delete printer;
@@ -705,6 +710,12 @@ void te::layout::Scene::refreshViews( QGraphicsView* view /*= 0*/ )
 
 void te::layout::Scene::reset()
 {
+  if(!m_undoStack)
+    return;
+
+  if(m_undoStack->count() > 0)
+    m_undoStack->clear();
+  
   clear();
 }
 
@@ -746,20 +757,21 @@ void te::layout::Scene::drawBackground( QPainter * painter, const QRectF & rect 
   }
 }
 
-void te::layout::Scene::buildTemplate(VisualizationArea* vzArea)
+bool te::layout::Scene::buildTemplate(VisualizationArea* vzArea)
 {
-  BuildGraphicsItem* build = Context::getInstance().getBuildGraphicsItem();
+  AbstractBuildGraphicsItem* abstractBuild = Context::getInstance().getAbstractBuildGraphicsItem();
+  BuildGraphicsItem* build = dynamic_cast<BuildGraphicsItem*>(abstractBuild);
 
   if(!build)
-    return;
+    return false;
 
   std::vector<te::layout::Properties*> props = importJsonAsProps();
 
   if(props.empty())
-    return;
+    return false;
 
-  refresh();
-
+  reset();
+  
   std::vector<te::layout::Properties*>::iterator it;
 
   te::gm::Envelope* boxW = getWorldBox();
@@ -774,6 +786,8 @@ void te::layout::Scene::buildTemplate(VisualizationArea* vzArea)
 
     build->rebuildItem(proper);
   }
+
+  return true;
 }
 
 void te::layout::Scene::deleteItems()
@@ -817,7 +831,8 @@ QGraphicsItem* te::layout::Scene::createItem( const te::gm::Coord2D& coord )
 {
   QGraphicsItem* item = 0;
 
-  BuildGraphicsItem* build = Context::getInstance().getBuildGraphicsItem();
+  AbstractBuildGraphicsItem* abstractBuild = Context::getInstance().getAbstractBuildGraphicsItem();
+  BuildGraphicsItem* build = dynamic_cast<BuildGraphicsItem*>(abstractBuild);
 
   if(!build)
     return item;

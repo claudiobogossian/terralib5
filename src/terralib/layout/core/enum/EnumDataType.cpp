@@ -116,40 +116,40 @@ void te::layout::EnumDataType::init()
   m_enums.push_back(m_dataTypeNone);
 
   m_dataTypeInt = new EnumType(1, "Int");
-  m_enums.push_back(m_dataTypeNone);
+  m_enums.push_back(m_dataTypeInt);
 
   m_dataTypeDouble = new EnumType(2, "Double");
-  m_enums.push_back(m_dataTypeNone);
+  m_enums.push_back(m_dataTypeDouble);
 
   m_dataTypeLong = new EnumType(3, "Long");
-  m_enums.push_back(m_dataTypeNone);
+  m_enums.push_back(m_dataTypeLong);
 
   m_dataTypeFloat = new EnumType(4, "Float");
-  m_enums.push_back(m_dataTypeNone);
+  m_enums.push_back(m_dataTypeFloat);
 
   m_dataTypeString = new EnumType(5, "String");
-  m_enums.push_back(m_dataTypeNone);
+  m_enums.push_back(m_dataTypeString);
 
   m_dataTypeBool = new EnumType(6, "Bool");
-  m_enums.push_back(m_dataTypeNone);
+  m_enums.push_back(m_dataTypeBool);
 
   m_dataTypeColor = new EnumType(7, "Color");
-  m_enums.push_back(m_dataTypeNone);
+  m_enums.push_back(m_dataTypeColor);
 
   m_dataTypeGridSettings = new EnumType(8, "GridSettings");
-  m_enums.push_back(m_dataTypeNone);
+  m_enums.push_back(m_dataTypeGridSettings);
 
   m_dataTypeStringList = new EnumType(9, "StringList");
-  m_enums.push_back(m_dataTypeNone);
+  m_enums.push_back(m_dataTypeStringList);
 
   m_dataTypeFont = new EnumType(10, "Font");
-  m_enums.push_back(m_dataTypeNone);
+  m_enums.push_back(m_dataTypeFont);
 
   m_dataTypeImage = new EnumType(11, "Image");
-  m_enums.push_back(m_dataTypeNone);
+  m_enums.push_back(m_dataTypeImage);
 
   m_dataTypeTextGridSettings = new EnumType(12, "TextGridSettings");
-  m_enums.push_back(m_dataTypeNone);
+  m_enums.push_back(m_dataTypeTextGridSettings);
 }
 
 te::layout::EnumType* te::layout::EnumDataType::getDataTypeNone() const

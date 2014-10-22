@@ -52,6 +52,8 @@
 #include "../../item/MapModel.h"
 #include "../../../common/StringUtils.h"
 #include "../../core/enum/Enums.h"
+#include "../core/Scene.h"
+#include "../../core/pattern/proxy/AbstractProxyProject.h"
 
 // STL
 #include <vector>
@@ -76,7 +78,6 @@
 #include <QPoint>
 #include <QMimeData>
 #include <QColor>
-#include "../core/Scene.h"
 
 te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
   QGraphicsProxyWidget(0),
@@ -86,7 +87,8 @@ te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
   m_treeItem(0),
   m_tool(0),
   m_hMargin(0),
-  m_wMargin(0)
+  m_wMargin(0),
+  m_layer(0)
 {
   this->setFlags(QGraphicsItem::ItemIsMovable
     | QGraphicsItem::ItemIsSelectable
@@ -277,6 +279,7 @@ void te::layout::MapItem::dropEvent( QGraphicsSceneDragDropEvent * event )
 
   te::map::AbstractLayerPtr al = m_treeItem->getLayer();
   m_mapDisplay->changeData(al);
+  m_layer = al;
 }
 
 void te::layout::MapItem::dragEnterEvent( QGraphicsSceneDragDropEvent * event )
@@ -641,4 +644,44 @@ void te::layout::MapItem::setRect( QRectF rect )
 
   m_rect = rect;
   update(rect);
+}
+
+void te::layout::MapItem::updateProperties( te::layout::Properties* properties )
+{
+  if(!m_controller)
+    return;
+
+  m_controller->updateProperties(properties);
+
+  MapModel* model = dynamic_cast<MapModel*>(m_model);
+  if(!model)
+    return;
+
+  if(model->isLoadedLayer())
+  {
+    redraw();
+    return;
+  }
+  
+  std::string name = model->getNameLayer();
+
+  if(name.compare("") == 0)
+    return;
+
+  AbstractProxyProject* project = Context::getInstance().getProxyProject();
+  if(!project)
+    return;
+
+  te::map::AbstractLayerPtr layer = project->contains(name);
+  m_mapDisplay->changeData(layer);
+
+  MapController* controller = dynamic_cast<MapController*>(m_controller);
+  if(!controller)
+    return;
+
+  bool result = controller->refreshLayer(layer);
+  if(result)
+  {
+    redraw();
+  }
 }

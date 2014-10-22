@@ -139,7 +139,7 @@ namespace te
 
         virtual void reset();
 
-        virtual void buildTemplate(VisualizationArea* vzArea);
+        virtual bool buildTemplate(VisualizationArea* vzArea);
 
         virtual QGraphicsItem* createItem(const te::gm::Coord2D& coord );
         

@@ -29,14 +29,7 @@
 #define __TERRALIB_LAYOUT_INTERNAL_BUILD_GRAPHICS_ITEM_H
 
 //TerraLib
-#include "../../../geometry/Envelope.h"
-#include "../../../geometry/Coord2D.h"
-#include "../../core/property/Properties.h"
-#include "../../core/enum/AbstractType.h"
-#include "../../core/enum/EnumType.h"
-
-// STL
-#include <string>
+#include "../../core/AbstractBuildGraphicsItem.h"
 
 class QGraphicsItem;
 
@@ -44,54 +37,58 @@ namespace te
 {
   namespace layout
   {
-    class SharedProperties;
-
-    class BuildGraphicsItem 
+    class BuildGraphicsItem : public AbstractBuildGraphicsItem
     {
       public:
 
         BuildGraphicsItem();
+
         virtual ~BuildGraphicsItem();
         
         QGraphicsItem* rebuildItem(te::layout::Properties* props, bool draw = true);
+
         QGraphicsItem* createItem(te::layout::EnumType* mode, const te::gm::Coord2D& coordinate, bool draw = true);
 
       protected:
 
         QGraphicsItem* createPaper();
+
         QGraphicsItem* createMap();
+
         QGraphicsItem* createMapGrid();
+
         QGraphicsItem* createText();
+
         QGraphicsItem* createRectangle();
+
 	      QGraphicsItem* createLegend();
+
         QGraphicsItem* createScale();
+
         QGraphicsItem* createItemGroup();
-        QGraphicsItem* createImage();        
+
+        QGraphicsItem* createImage();  
+
         QGraphicsItem* createArrow();
+
         QGraphicsItem* createEllipse();
+
         QGraphicsItem* createMultiLineText();
+
         QGraphicsItem* createPoint();
+
         QGraphicsItem* createTextGrid();
+
         QGraphicsItem* createTitle();
+
         QGraphicsItem* createLegendChild();
 
-        te::gm::Coord2D findCoordinate(te::layout::Properties* props);
-
-        int findZValue(te::layout::Properties* props);
-
+        QGraphicsItem* createTextItem2();
+        
         std::string nameItem(std::string name, te::layout::EnumType* type);
-
-        void clear();
-
+        
       protected:
 
-        SharedProperties*       m_sharedProps;
-        te::layout::Properties* m_props;
-        te::gm::Coord2D         m_coord;
-        int                     m_zValue;
-        int                     m_id;
-        bool                    m_redraw;
-        std::string             m_name;
         std::string             m_paperItem;
         std::string             m_mapItem;
         std::string             m_mapGridItem;
@@ -110,6 +107,7 @@ namespace te
         std::string             m_textGridItem;
         std::string             m_titleItem;
         std::string             m_legendChildItem;
+        std::string             m_textItem2;
     };
   }
 }

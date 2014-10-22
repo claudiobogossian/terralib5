@@ -18,59 +18,59 @@
  */
 
 /*!
-  \file Serialization.h
+  \file TextModel.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_SERIALIZATION_H 
-#define __TERRALIB_LAYOUT_INTERNAL_SERIALIZATION_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_TEXT_MODEL_H
+#define __TERRALIB_LAYOUT_INTERNAL_TEXT_MODEL_H
 
 // TerraLib
-#include "../property/Properties.h"
+#include "../core/pattern/mvc/ItemModelObservable.h"
+#include "../core/ContextItem.h"
+#include "../core/pattern/derivativevisitor/AbstractVisitor.h"
+#include "../../maptools/Canvas.h"
+#include "../core/Utils.h"
+#include "../core/Font.h"
+
+// STL
+#include <string>
 
 namespace te
 {
   namespace layout
   {
-    class Serialization
+    class TextModel : public ItemModelObservable
     {
       public:
 
-        Serialization();
+        TextModel();
 
-        virtual ~Serialization();
+        virtual ~TextModel();
 
-        virtual void loadFromPath(std::string loadPath) = 0;
+        virtual void draw( ContextItem context );
 
-        virtual void loadFromProperties(std::vector<te::layout::Properties*> properties) = 0;
-
-        virtual void setSerializationPath(std::string path);
-
-        virtual std::string getSerializationPath();
-
-        virtual std::string getLoadPath();
-
-        virtual bool serialize() = 0;
-
-        virtual std::vector<te::layout::Properties*> retrieve() = 0;
-
-        virtual bool isEmpty() = 0;
-
-        virtual void setRootKey(std::string rootKey);
-
-        virtual std::string getRootKey();
+        virtual te::layout::Properties* getProperties() const;
         
+        virtual void updateProperties(te::layout::Properties* properties);     
+
+        virtual void setText(std::string txt);
+
+        virtual std::string getText();
+
+        virtual Font getFont();
+
        protected:
 
-         std::string m_loadPath;
-         std::string m_serializationPath;
-         std::vector<te::layout::Properties*> m_properties;
-         std::string m_rootKey;
+         virtual void drawText(te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box);
+
+         std::string m_text;
+         Font m_font;
     };
   }
 }
 
-#endif
+#endif 

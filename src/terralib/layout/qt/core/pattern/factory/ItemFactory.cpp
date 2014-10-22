@@ -45,6 +45,7 @@
 #include "../../../item/TextGridItem.h"
 #include "../../../../core/enum/Enums.h"
 #include "../../../item/LegendChildItem.h"
+#include "../../../item/TextItem.h"
 
 te::layout::ItemFactory::ItemFactory()
 {
@@ -144,6 +145,11 @@ te::layout::Observer* te::layout::ItemFactory::make( EnumType* type, ItemParamsC
   {
     LegendChildItem* mText = new LegendChildItem(params.getController(), params.getModel());
     item = (Observer*)mText;
+  }
+  else if(type == enumObj->getTextItem())
+  {
+    TextItem* txt = new TextItem(params.getController(), params.getModel());
+    item = (Observer*)txt;
   }
 
   return item;

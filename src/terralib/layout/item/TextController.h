@@ -1,4 +1,4 @@
-/*  Copyright (C) 2014-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,51 +18,40 @@
  */
 
 /*!
-  \file Serialization.cpp
+  \file TextController.h
    
   \brief 
 
   \ingroup layout
 */
 
+#ifndef __TERRALIB_LAYOUT_INTERNAL_TEXT_CONTROLLER_H 
+#define __TERRALIB_LAYOUT_INTERNAL_TEXT_CONTROLLER_H
+
 // TerraLib
-#include "Serialization.h"
+#include "../core/pattern/mvc/ItemController.h"
 
-te::layout::Serialization::Serialization() :
-  m_loadPath(""),
-  m_serializationPath(""),
-  m_rootKey("Unknown")
+namespace te
 {
+  namespace layout
+  {
+    class TextController : public ItemController
+    {
+      public:
 
+        TextController( Observable* o );
+
+        virtual ~TextController();
+        
+        virtual void setPosition(const double& x, const double& y);
+
+      protected:
+
+        TextController( Observable* o, EnumType* type );
+
+        virtual void create();
+    };
+  }
 }
 
-te::layout::Serialization::~Serialization()
-{
-
-}
-
-void te::layout::Serialization::setSerializationPath( std::string path )
-{
-  m_serializationPath = path;
-}
-
-std::string te::layout::Serialization::getSerializationPath()
-{
-  return m_serializationPath;
-}
-
-std::string te::layout::Serialization::getLoadPath()
-{
-  return m_loadPath;
-}
-
-void te::layout::Serialization::setRootKey( std::string rootKey )
-{
-  m_rootKey = rootKey;
-}
-
-std::string te::layout::Serialization::getRootKey()
-{
-  return m_rootKey;
-}
-
+#endif

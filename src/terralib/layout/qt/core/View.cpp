@@ -413,7 +413,11 @@ void te::layout::View::outsideAreaChangeContext( bool change )
   }
   else if(mode == enumMode->getModeImportJSONProps())
   {
-    sc->buildTemplate(m_visualizationArea);
+    bool result = sc->buildTemplate(m_visualizationArea);
+    if(result)
+    {
+      m_visualizationArea->build();
+    }
     resetDefaultConfig();
   }
   else if(mode == enumMode->getModeMapPan())

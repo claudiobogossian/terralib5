@@ -408,7 +408,6 @@ void te::layout::EnumModeType::init()
   m_modeZoomOut = new EnumType(7, "ZoomOut");
   m_enums.push_back(m_modeZoomOut);
 
-  m_modeMapPan;
   m_modeMapPan = new EnumType(8, "MapPan");
   m_enums.push_back(m_modeMapPan);
 

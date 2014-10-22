@@ -47,8 +47,9 @@ namespace te
     class AbstractItemFactory;
     class AbstractOutsideFactory;
     class AbstractTemplateFactory;
-    class BuildGraphicsItem;
+    class AbstractBuildGraphicsItem;
     class EnumType;
+    class AbstractProxyProject;
 
     class TELAYOUTEXPORT Context : public te::common::Singleton<Context>
     {
@@ -62,63 +63,86 @@ namespace te
         virtual ~Context();
 
         EnumType*	 getMode();
+
         void setMode(EnumType* mode);
 
         LayoutUnitsMetrics getUnitMetric();
+
         void setUnitMetric(LayoutUnitsMetrics unit);
 
         AbstractScene* getScene();
+
         void setScene(AbstractScene* scene);
 
         double getZoomFactor();
+
         void  setZoomFactor(double zoomFactor);
 
         double getDefaultZoomFactor();
+
         void  setDefaultZoomFactor(double zoomFactor);
       
         double getOldZoomFactor();
+
         void  setOldZoomFactor(double zoomFactor);
 
         AbstractItemFactory* getItemFactory();
+
         void setItemFactory(AbstractItemFactory* factory);
 
         AbstractOutsideFactory* getOutsideFactory();
+
         void setOutsideFactory(AbstractOutsideFactory* factory);
 
         AbstractTemplateFactory* getTemplateFactory();
+
         void setTemplateFactory(AbstractTemplateFactory* factory);
         
         te::gm::Envelope* getBoxPaper();
+
         void setBoxPaper(te::gm::Envelope* box);
 
         LayoutAbstractPaperType getTypePaper();
+
         void setTypePaper(LayoutAbstractPaperType type);
         
         te::map::Canvas* getCanvas();
+
         void setCanvas(te::map::Canvas* canvas);
 
         Utils* getUtils();
+
         void setUtils(Utils* utils);
 
         double getDpiX();
+
         void setDpiX(double dpiX);
 
         double getDpiY();
+
         void setDpiY(double dpiY);
 
         std::string getVersion();
 
         PaperConfig* getPaperConfig() const;
+
         void setPaperConfig(PaperConfig* config);
 
-        BuildGraphicsItem* getBuildGraphicsItem();
-        void setBuildGraphicsItem(BuildGraphicsItem* build);
+        AbstractBuildGraphicsItem* getAbstractBuildGraphicsItem();
+
+        void setAbstractBuildGraphicsItem(AbstractBuildGraphicsItem* build);
 
         EnumType* getLineIntersectionMouseMode();
+
         void setLineIntersectionMouseMode(EnumType* mode);
 
         SystematicScaleConfig* getSystematicScaleConfig();
+
         void setSystematicScaleConfig(SystematicScaleConfig* scale);
+
+        void setProxyProject(AbstractProxyProject* project);
+
+        AbstractProxyProject* getProxyProject();
 
         private:
       
@@ -140,24 +164,25 @@ namespace te
 
       protected:
         
-        EnumType*						    m_mode;
-        EnumType*						    m_lineIntersectionMouseMode;
-        LayoutUnitsMetrics        m_unitMetric;
-        AbstractScene*					  m_scene;
-        double							      m_zoomFactor;
-        double                    m_defaultZoomFactor;
-        double                    m_oldZoomFactor;
-        te::map::Canvas*	        m_canvas;
-        AbstractItemFactory*		  m_itemFactory;
-        AbstractOutsideFactory*	  m_outsideFactory;
-        AbstractTemplateFactory*  m_templateFactory;
-        Utils*                    m_utils;
-        double                    m_dpiX;
-        double                    m_dpiY;
-        std::string               m_version;
-        PaperConfig*              m_paperConfig;
-        BuildGraphicsItem*        m_buildGraphicsItem;
-        SystematicScaleConfig*    m_systematicConfig;
+        EnumType*						        m_mode;
+        EnumType*						        m_lineIntersectionMouseMode;
+        LayoutUnitsMetrics          m_unitMetric;
+        AbstractScene*					    m_scene;
+        double							        m_zoomFactor;
+        double                      m_defaultZoomFactor;
+        double                      m_oldZoomFactor;
+        te::map::Canvas*	          m_canvas;
+        AbstractItemFactory*		    m_itemFactory;
+        AbstractOutsideFactory*	    m_outsideFactory;
+        AbstractTemplateFactory*    m_templateFactory;
+        Utils*                      m_utils;
+        double                      m_dpiX;
+        double                      m_dpiY;
+        std::string                 m_version;
+        PaperConfig*                m_paperConfig;
+        AbstractBuildGraphicsItem*  m_buildGraphicsItem;
+        SystematicScaleConfig*      m_systematicConfig;
+        AbstractProxyProject*       m_proxyProject;
     };
   }
 }

@@ -18,57 +18,50 @@
  */
 
 /*!
-  \file Serialization.h
+  \file BuildEnums.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_SERIALIZATION_H 
-#define __TERRALIB_LAYOUT_INTERNAL_SERIALIZATION_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_BUILD_ENUM_H 
+#define __TERRALIB_LAYOUT_INTERNAL_BUILD_ENUM_H
 
 // TerraLib
-#include "../property/Properties.h"
+#include "../Config.h"
 
 namespace te
 {
   namespace layout
   {
-    class Serialization
+    class EnumDataType;
+    class EnumObjectType;
+    class EnumGridStyleType;
+    class EnumLineStyleType;
+    class EnumModeType;
+    class EnumTemplateType;
+
+    class TELAYOUTEXPORT BuildEnums
     {
       public:
 
-        Serialization();
+        BuildEnums(); 
 
-        virtual ~Serialization();
-
-        virtual void loadFromPath(std::string loadPath) = 0;
-
-        virtual void loadFromProperties(std::vector<te::layout::Properties*> properties) = 0;
-
-        virtual void setSerializationPath(std::string path);
-
-        virtual std::string getSerializationPath();
-
-        virtual std::string getLoadPath();
-
-        virtual bool serialize() = 0;
-
-        virtual std::vector<te::layout::Properties*> retrieve() = 0;
-
-        virtual bool isEmpty() = 0;
-
-        virtual void setRootKey(std::string rootKey);
-
-        virtual std::string getRootKey();
+        virtual ~BuildEnums();
         
-       protected:
+        virtual void build();
 
-         std::string m_loadPath;
-         std::string m_serializationPath;
-         std::vector<te::layout::Properties*> m_properties;
-         std::string m_rootKey;
+      protected:
+
+    protected:
+
+      EnumDataType* m_dataType;
+      EnumObjectType* m_objType;
+      EnumGridStyleType* m_gridStyleType;
+      EnumLineStyleType* m_lineStyleType;
+      EnumModeType* m_modeType;
+      EnumTemplateType* m_templateType;
     };
   }
 }

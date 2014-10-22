@@ -995,6 +995,12 @@ void te::layout::GridSettingsOutside::on_chkVisibleTextsPlanarText_clicked()
     Variant variant;
     variant.setValue(m_ui->chkVisibleTextsPlanarText->isChecked(), dataType->getDataTypeBool());
     controller->addUpdateProperty(m_planarGridSettings->getVisibleAllTexts(), variant, TypePlanar);
+
+    bool opt = m_ui->chkVisibleTextsPlanarText->isChecked();
+    m_ui->chkBottomPlanarText->setChecked(opt);
+    m_ui->chkLeftPlanarText->setChecked(opt);
+    m_ui->chkRightPlanarText->setChecked(opt);
+    m_ui->chkTopPlanarText->setChecked(opt);
   }
 }
 
@@ -1079,6 +1085,12 @@ void te::layout::GridSettingsOutside::on_chkVisibleTextsGeoText_clicked()
     Variant variant;
     variant.setValue(m_ui->chkVisibleTextsGeoText->isChecked(), dataType->getDataTypeBool());
     controller->addUpdateProperty(m_geodesicGridSettings->getVisibleAllTexts(), variant, TypeGeodesic);
+
+    bool opt = m_ui->chkVisibleTextsGeoText->isChecked();
+    m_ui->chkBottomGeoText->setChecked(opt);
+    m_ui->chkLeftGeoText->setChecked(opt);
+    m_ui->chkRightGeoText->setChecked(opt);
+    m_ui->chkTopGeoText->setChecked(opt);
   }
 }
 

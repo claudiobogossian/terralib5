@@ -28,6 +28,13 @@
 // TerraLib
 #include "Font.h"
 
+// STL
+#include <sstream>
+#include <string> 
+#include <iostream>
+#include <vector>
+#include <stdlib.h>
+
 te::layout::Font::Font() :
 m_family("Arial"),
 m_pointSize(12),
@@ -114,4 +121,67 @@ void te::layout::Font::setKerning( bool kerning )
 bool te::layout::Font::isKerning()
 {
   return m_kerning;
+}
+
+std::string te::layout::Font::toString()
+{
+  std::string s_convert;
+  std::stringstream ss;//create a stringstream
+
+  s_convert = m_family;
+  
+  ss << m_pointSize;
+  s_convert += "," + ss.str();
+  s_convert += ",";
+
+  s_convert += toString(m_bold);
+  s_convert += ",";
+  s_convert += toString(m_italic);
+  s_convert += ",";
+  s_convert += toString(m_underline);
+  s_convert += ",";
+  s_convert += toString(m_strikeout);
+  s_convert += ",";
+  s_convert += toString(m_kerning);
+
+  return s_convert;
+}
+
+void te::layout::Font::fromString( std::string font )
+{
+  std::vector<std::string> strings;
+  std::istringstream f(font);
+  std::string s;    
+  while (std::getline(f, s, ',')) 
+  {
+    strings.push_back(s);
+  }
+
+  if(strings.empty() || strings.size() > 7)
+    return;
+
+  m_family = strings[0];
+  m_pointSize = std::atoi(strings[1].c_str());
+  bool m_bold = toBool(strings[2]);
+  bool m_italic = toBool(strings[3]);;
+  bool m_underline = toBool(strings[4]);;
+  bool m_strikeout = toBool(strings[5]);;
+  bool m_kerning = toBool(strings[6]);;  
+}
+
+std::string te::layout::Font::toString( bool flag )
+{
+  return flag ? "true" : "false"; 
+}
+
+bool te::layout::Font::toBool( std::string str )
+{
+  if(str.compare("true") == 0)
+  {
+    return true;
+  }
+  else
+  {
+    return false;
+  }
 }
