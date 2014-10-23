@@ -339,7 +339,7 @@ namespace te
           
         // applying the noise filter
 
-        if( m_inputParameters.m_moravecGaussianFilterIterations )
+        if( m_inputParameters.m_moravecNoiseFilterIterations )
         {
           boost::shared_ptr< FloatsMatrix > tempMatrix( 
             new FloatsMatrix );
@@ -351,7 +351,7 @@ namespace te
             "Cannot allocate image matrix" );
           
           if( !applyMeanFilter( *(raster1Data[ 0 ]), 
-            *tempMatrix, m_inputParameters.m_moravecGaussianFilterIterations ) )
+            *tempMatrix, m_inputParameters.m_moravecNoiseFilterIterations ) )
           {
             return false;
           }  
@@ -448,7 +448,7 @@ namespace te
           
         // applying the noise filter
         
-        if( m_inputParameters.m_moravecGaussianFilterIterations )
+        if( m_inputParameters.m_moravecNoiseFilterIterations )
         {
           boost::shared_ptr< FloatsMatrix > tempMatrix( 
             new FloatsMatrix );
@@ -462,7 +462,7 @@ namespace te
             "Cannot allocate image matrix" );          
           
           if( !applyMeanFilter( *(raster2Data[ 0 ]), 
-            *tempMatrix, m_inputParameters.m_moravecGaussianFilterIterations ) )
+            *tempMatrix, m_inputParameters.m_moravecNoiseFilterIterations ) )
           {
             return false;
           }

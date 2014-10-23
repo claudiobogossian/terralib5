@@ -27,6 +27,8 @@
 
 #include "TiePointsLocatorStrategy.h"
 
+#include <boost/thread.hpp>
+
 namespace te
 {
   namespace rp
@@ -45,23 +47,192 @@ namespace te
         
       protected :
         
+        /*! 
+          \brief The parameters passed to the moravecLocatorThreadEntry method.
+        */     
+        class MoravecLocatorThreadParams
+        {
+          public :
+            
+            bool* m_returnValuePtr; //! Thread return value pointer.
+            
+            unsigned int m_moravecWindowWidth; //!< The Moravec window width used to locate canditate tie-points (minimum 11, default: 11 ).
+            
+            unsigned int m_maxInterestPointsPerRasterLinesBlock; //!< The maximum number of points to find for each raster lines block.
+            
+            FloatsMatrix const* m_rasterDataPtr; //!< The loaded raster data.
+            
+            UCharsMatrix const* m_maskRasterDataPtr; //!< The loaded mask raster data pointer (or zero if no mask is avaliable).
+            
+            InterestPointsSetT* m_interestPointsPtr; //!< A pointer to a valid interest points container.
+            
+            boost::mutex* m_rastaDataAccessMutexPtr; //!< A pointer to a valid mutex to controle raster data access.
+            
+            boost::mutex* m_interestPointsAccessMutexPtr; //!< A pointer to a valid mutex to control the output interest points container access.
+            
+            unsigned int m_maxRasterLinesBlockMaxSize; //!< The maximum lines number of each raster block to process.
+            
+            unsigned int* m_nextRasterLinesBlockToProcessValuePtr; //!< A pointer to a valid counter to control the blocks processing sequence.
+            
+            MoravecLocatorThreadParams() {};
+            
+            ~MoravecLocatorThreadParams() {};
+        };        
+        
+        /*! 
+          \brief The parameters passed to the matchCorrelationEuclideanThreadEntry method.
+        */     
+        class ExecuteMatchingByCorrelationThreadEntryParams
+        {
+          public :
+            
+            FloatsMatrix const* m_featuresSet1Ptr;
+            
+            FloatsMatrix const* m_featuresSet2Ptr;
+            
+            InterestPointT const* m_interestPointsSet1Ptr;
+
+            InterestPointT const* m_interestPointsSet2Ptr;            
+            
+            unsigned int* m_nextFeatureIdx1ToProcessPtr;
+            
+            FloatsMatrix* m_corrMatrixPtr;
+            
+            boost::mutex* m_syncMutexPtr;
+            
+            unsigned int m_maxPt1ToPt2Distance; //!< Zero (disabled) or the maximum distance between a point from set 1 to a point from set 1 (points beyond this distance will not be correlated and will have zero as correlation value).
+            
+            ExecuteMatchingByCorrelationThreadEntryParams() {};
+            
+            ~ExecuteMatchingByCorrelationThreadEntryParams() {};
+        };         
+        
         bool m_isInitialized; //!< true if this instance is initialized.
         
-        te::rp::TiePointsLocatorInputParameters m_inputParameters; //!< Input parameters
+        te::rp::TiePointsLocatorStrategyParameters m_inputParameters; //!< Input parameters
         
         TiePointsLocatorMoravecStrategy();
             
         //overload
         bool initialize( 
-          const te::rp::TiePointsLocatorInputParameters& inputParameters );
+          const te::rp::TiePointsLocatorStrategyParameters& inputParameters );
           
         //overload
         void reset();
         
         //overload
-        bool findTiePoints( 
-          std::vector< te::gm::GTParameters::TiePoint >& tiePoints,
-          std::vector< double >& tiePointsWeights );
+        bool getMatchedInterestPoints( MatchedInterestPointsSetT& matchedInterestPoints );
+        
+        /*!
+          \brief Mean Filter.
+          
+          \param inputData The input data.
+          
+          \param outputData The output data.
+          
+          \param iterationsNumber The number of filter iterations.
+
+          \return true if ok, false on errors.
+        */             
+        static bool applyMeanFilter( 
+          const FloatsMatrix& inputData,
+          FloatsMatrix& outputData,
+          const unsigned int iterationsNumber );          
+        
+        /*!
+          \brief Moravec interest points locator.
+          
+          \param rasterData The loaded raster data.
+          
+          \param maskRasterDataPtr The loaded mask raster data pointer (or zero if no mask is avaliable).
+          
+          \param moravecWindowWidth Moravec window width.
+          
+          \param maxInterestPoints The maximum number of interest points to find over raster 1.
+          
+          \param enableMultiThread Enable/disable multi-thread.
+          
+          \param interestPoints The found interest points (coords related to rasterData lines/cols).          
+          
+          \note InterestPointT::m_feature1 will be sum of differences between the Moravec filter response of each pixel and its neighborhoods (always a positive value).
+
+          \return true if ok, false on errors.
+        */             
+        static bool locateMoravecInterestPoints( 
+          const FloatsMatrix& rasterData,
+          UCharsMatrix const* maskRasterDataPtr,
+          const unsigned int moravecWindowWidth,
+          const unsigned int maxInterestPoints,
+          const unsigned int enableMultiThread,
+          InterestPointsSetT& interestPoints );      
+        
+        /*! 
+          \brief Movavec locator thread entry.
+          
+          \param paramsPtr A pointer to the thread parameters.
+        */      
+        static void locateMoravecInterestPointsThreadEntry(MoravecLocatorThreadParams* paramsPtr);        
+        
+        /*!
+          \brief Generate correlation features ( normalized - unit vector ) matrix for the given interes points.
+          
+          \param interestPoints The interest points (coords related to rasterData lines/cols).
+          
+          \param correlationWindowWidth The correlation window width used to correlate points between the images.
+          
+          \param rasterData The loaded raster data.
+          
+          \param features The generated features matrix (one feature per line, one feature per interes point).
+          
+          \param validInteresPoints The valid interest pionts related to each feature inside the features matrix (some interest points may be invalid and are removed).
+
+          \return true if ok, false on errors.
+        */             
+        static bool generateCorrelationFeatures( 
+          const InterestPointsSetT& interestPoints,
+          const unsigned int correlationWindowWidth,
+          const FloatsMatrix& rasterData,
+          FloatsMatrix& features,
+          InterestPointsSetT& validInteresPoints );    
+        
+        /*!
+          \brief Match each feature using correlation.
+          
+          \param featuresSet1 Features set 1.
+          
+          \param featuresSet2 Features set 2.
+          
+          \param interestPointsSet1 The interest pionts set 1.
+          
+          \param interestPointsSet2 The interest pionts set 2.
+          
+          \param maxPt1ToPt2PixelDistance Zero (disabled) or the maximum distance (pixels) between a point from set 1 to a point from set 1 (points beyond this distance will not be correlated and will have zero as correlation value).
+          
+          \param enableMultiThread Enable/disable the use of threads.
+          
+          \param minAllowedAbsCorrelation The minimum acceptable absolute correlation value when matching features (when applicable).
+          
+          \param matchedPoints The matched points.
+          
+          \note Each matched point feature value ( MatchedInterestPoint::m_feature ) will be set to the absolute value of the correlation between then.
+        */          
+        static bool executeMatchingByCorrelation( 
+          const FloatsMatrix& featuresSet1,
+          const FloatsMatrix& featuresSet2,
+          const InterestPointsSetT& interestPointsSet1,
+          const InterestPointsSetT& interestPointsSet2,
+          const unsigned int maxPt1ToPt2PixelDistance,
+          const unsigned int enableMultiThread,
+          const double minAllowedAbsCorrelation,
+          MatchedInterestPointsSetT& matchedPoints );
+          
+        /*! 
+          \brief Correlation/Euclidean match thread entry.
+          
+          \param paramsPtr A pointer to the thread parameters.
+        */      
+        static void executeMatchingByCorrelationThreadEntry(
+          ExecuteMatchingByCorrelationThreadEntryParams* paramsPtr);        
     };
 
   } // end namespace rp
