@@ -51,3 +51,6 @@ typedef te::common::Singleton< TerraLib > TeSingleton;
 
 /* Include Plugin module to the bind. */
 %include common/Plugin.i 
+
+/* Include Spatial Temporal module to the bind. */   
+%include common/ST.i

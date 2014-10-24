@@ -54,6 +54,7 @@ SWIG_LINK_LIBRARIES (terralib_mod_binding_lua terralib_mod_common
                                               terralib_mod_raster
                                               terralib_mod_dataaccess
                                               terralib_mod_plugin
+                                              terralib_mod_st
                                               ${Boost_FILESYSTEM_LIBRARY}
                                               ${Boost_SYSTEM_LIBRARY}
                                               ${Boost_THREAD_LIBRARY}
