@@ -131,6 +131,15 @@ namespace te
     TEDATAACCESSEXPORT void GetOIDPropertyNames(const DataSetType* type, std::vector<std::string>& pnames);
 
     /*
+      \brief It returns the name of the base dataset of a linked dataset
+             and how many of it's properties are a part of the objectId
+
+      \param type   A pointer to a valid data set type. Do not pass null.
+      \param pnames The pair that will be filled with the dataset name and the number of properties.
+    */
+    TEDATAACCESSEXPORT void GetOIDDatasetProps(const DataSetType* type, std::pair<std::string, int>& dsProps);
+
+    /*
       \brief It returns the property positions used to generate the object ids.
 
       This method first looks for the primary key properties defined on data set type.
