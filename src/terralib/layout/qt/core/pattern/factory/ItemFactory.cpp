@@ -35,7 +35,6 @@
 #include "../../../item/MapGridItem.h"
 #include "../../../item/LegendItem.h"
 #include "../../../item/ScaleItem.h"
-#include "../../../item/DefaultTextItem.h"
 #include "../../../item/ImageItem.h"
 #include "../../../item/PointItem.h"
 #include "../../../item/ArrowItem.h"
@@ -73,10 +72,9 @@ te::layout::Observer* te::layout::ItemFactory::make( EnumType* type, ItemParamsC
     LegendItem* legend = new LegendItem(params.getController(), params.getModel());
     item = (Observer*)legend;
   }
-  else if(type == enumObj->getDefaultTextItem())
+  else if(type == enumObj->getTextItem())
   {
-    DefaultTextItem* txt = new DefaultTextItem(params.getController(), params.getModel());
-    txt->init();
+    TextItem* txt = new TextItem(params.getController(), params.getModel());
     item = (Observer*)txt;
   }
   else if(type == enumObj->getItemGroup())
@@ -127,13 +125,11 @@ te::layout::Observer* te::layout::ItemFactory::make( EnumType* type, ItemParamsC
   else if(type == enumObj->getTitleItem())
   {
     TitleItem* title = new TitleItem(params.getController(), params.getModel());
-    title->init();
     item = (Observer*)title;
   }
   else if(type == enumObj->getTextGridItem())
   {
     TextGridItem* txtGrid = new TextGridItem(params.getController(), params.getModel());
-    txtGrid->init();
     item = (Observer*)txtGrid;
   }
   else if(type == enumObj->getMultiLineTextItem())
@@ -146,11 +142,6 @@ te::layout::Observer* te::layout::ItemFactory::make( EnumType* type, ItemParamsC
     LegendChildItem* mText = new LegendChildItem(params.getController(), params.getModel());
     item = (Observer*)mText;
   }
-  else if(type == enumObj->getTextItem())
-  {
-    TextItem* txt = new TextItem(params.getController(), params.getModel());
-    item = (Observer*)txt;
-  }
-
+  
   return item;
 }

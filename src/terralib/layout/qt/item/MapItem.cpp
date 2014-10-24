@@ -92,7 +92,8 @@ te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
 {
   this->setFlags(QGraphicsItem::ItemIsMovable
     | QGraphicsItem::ItemIsSelectable
-    | QGraphicsItem::ItemSendsGeometryChanges);
+    | QGraphicsItem::ItemSendsGeometryChanges
+    | QGraphicsItem::ItemIsFocusable);
       
   setAcceptDrops(true);
 

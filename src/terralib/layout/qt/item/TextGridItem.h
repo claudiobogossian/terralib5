@@ -44,12 +44,6 @@ namespace te
         TextGridItem( ItemController* controller, Observable* o );
 
         virtual ~TextGridItem();
-        
-        virtual void init();
-
-      protected:
-        
-        virtual void refreshText();
     };
   }
 }

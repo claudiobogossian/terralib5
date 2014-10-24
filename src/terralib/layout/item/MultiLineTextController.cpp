@@ -38,13 +38,13 @@
 #include "../core/enum/Enums.h"
 
 te::layout::MultiLineTextController::MultiLineTextController( Observable* o ) :
-  DefaultTextController(o)
+  TextController(o)
 {
   create();
 }
 
 te::layout::MultiLineTextController::MultiLineTextController( Observable* o, EnumType* type ) :
-  DefaultTextController(o, type)
+  TextController(o, type)
 {
 
 }

@@ -52,9 +52,6 @@
 #include "../../item/ItemGroupModel.h"
 #include "../../item/ItemGroupController.h"
 #include "../item/ItemGroup.h"
-#include "../../item/DefaultTextModel.h"
-#include "../../item/DefaultTextController.h"
-#include "../item/DefaultTextItem.h"
 #include "../../item/ImageModel.h"
 #include "../../item/ImageController.h"
 #include "../item/ImageItem.h"
@@ -110,8 +107,7 @@ te::layout::BuildGraphicsItem::BuildGraphicsItem() :
   m_pointItem("POINT_"),
   m_textGridItem("TEXT_GRID_"),
   m_titleItem("TITLE_"),
-  m_legendChildItem("LEGEND_CHILD_"),
-  m_textItem2("TEXT_ITEM2")
+  m_legendChildItem("LEGEND_CHILD_")
 {
  
 }
@@ -147,7 +143,7 @@ QGraphicsItem* te::layout::BuildGraphicsItem::rebuildItem( te::layout::Propertie
   {
     item = createMapGrid();
   }
-  else if(type == enumObj->getDefaultTextItem())
+  else if(type == enumObj->getTextItem())
   {
     item = createText();
   }
@@ -203,10 +199,6 @@ QGraphicsItem* te::layout::BuildGraphicsItem::rebuildItem( te::layout::Propertie
   {
     item = createLegendChild();
   }
-  else if(type == enumObj->getTextItem())
-  {
-    item = createText();
-  }
   
   return item;
 }
@@ -234,10 +226,8 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createItem( te::layout::EnumType* 
   }
   else if(mode == enumMode->getModeCreateText())
   {
-    /*m_name = nameItem(m_textItem, enumObj->getDefaultTextItem());
-    item = createText();*/
     m_name = nameItem(m_textItem, enumObj->getTextItem());
-    item = createTextItem2();
+    item = createText();
   }
   else if(mode == enumMode->getModeCreateImage())
   {
@@ -446,17 +436,17 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createText()
 {
   QGraphicsItem* item = 0;
 
-  DefaultTextModel* model = new DefaultTextModel();	
+  TextModel* model = new TextModel();	
   if(!m_props)
   {
     model->setId(m_id);
     model->setName(m_name);
   }
 
-  DefaultTextController* controller = new DefaultTextController(model);
+  TextController* controller = new TextController(model);
   ItemObserver* itemObs = (ItemObserver*)controller->getView();
 
-  DefaultTextItem* txt = dynamic_cast<DefaultTextItem*>(itemObs); 
+  TextItem* txt = dynamic_cast<TextItem*>(itemObs); 
   if(m_props)
   {
     txt->updateProperties(m_props);
@@ -907,41 +897,6 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createLegendChild()
       itemObs->redraw();
     }
     return view;
-  }
-
-  return item;
-}
-
-QGraphicsItem* te::layout::BuildGraphicsItem::createTextItem2()
-{
-  QGraphicsItem* item = 0;
-
-  TextModel* model = new TextModel();	
-  if(!m_props)
-  {
-    model->setId(m_id);
-    model->setName(m_name);
-  }
-
-  TextController* controller = new TextController(model);
-  ItemObserver* itemObs = (ItemObserver*)controller->getView();
-
-  TextItem* txt = dynamic_cast<TextItem*>(itemObs); 
-  if(m_props)
-  {
-    txt->updateProperties(m_props);
-  }
-
-  if(txt)
-  {
-    txt->setPos(QPointF(m_coord.x, m_coord.y));
-    if(m_props)
-    {
-      txt->setZValue(m_zValue);
-    }
-    if(m_redraw)
-      itemObs->redraw();
-    return txt;
   }
 
   return item;

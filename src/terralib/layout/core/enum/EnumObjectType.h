@@ -49,8 +49,6 @@ namespace te
         
         virtual EnumType* getRetangleItem() const;
 
-        virtual EnumType* getDefaultTextItem() const;
-
         virtual EnumType* getMapItem() const;
 
         virtual EnumType* getMapGridItem() const;
@@ -114,7 +112,6 @@ namespace te
       protected:
         
         EnumType* m_retangleItem;
-        EnumType* m_defaultTextItem;
         EnumType* m_mapItem;
         EnumType* m_mapGridItem;
         EnumType* m_paperItem;

@@ -82,8 +82,6 @@ namespace te
         QGraphicsItem* createTitle();
 
         QGraphicsItem* createLegendChild();
-
-        QGraphicsItem* createTextItem2();
         
         std::string nameItem(std::string name, te::layout::EnumType* type);
         
@@ -107,7 +105,6 @@ namespace te
         std::string             m_textGridItem;
         std::string             m_titleItem;
         std::string             m_legendChildItem;
-        std::string             m_textItem2;
     };
   }
 }

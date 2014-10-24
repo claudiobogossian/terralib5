@@ -53,35 +53,9 @@ te::layout::TextModel::~TextModel()
 void te::layout::TextModel::draw( ContextItem context )
 {
   te::color::RGBAColor** pixmap = 0;
-
-  te::map::Canvas* canvas = context.getCanvas();
-  Utils* utils = context.getUtils();
   
-  if((!canvas) || (!utils))
-    return;
-
-  if(context.isResizeCanvas())
-    utils->configCanvas(m_box);
-
-  drawBackground(context);
-
-  drawText(canvas, utils, m_box);
-
-  if(context.isResizeCanvas())
-    pixmap = utils->getImageW(m_box);
-
   context.setPixmap(pixmap);
   notifyAll(context);
-}
-
-void te::layout::TextModel::drawText( te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box )
-{
-  double zoomFactor = Context::getInstance().getZoomFactor();
-
-  canvas->setFontFamily("Arial");
-  canvas->setTextPointSize(12 * zoomFactor);
-  
-  canvas->drawText(m_box.m_llx, m_box.m_lly, "OIIIIIIIIII");
 }
 
 te::layout::Properties* te::layout::TextModel::getProperties() const

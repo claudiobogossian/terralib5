@@ -29,7 +29,7 @@
 #define __TERRALIB_LAYOUT_INTERNAL_TITLE_MODEL_H
 
 // TerraLib
-#include "DefaultTextModel.h"
+#include "TextModel.h"
 
 namespace te
 {
@@ -37,7 +37,7 @@ namespace te
   {
     class TextGridSettingsConfigProperties;
 
-    class TitleModel : public DefaultTextModel
+    class TitleModel : public TextModel
     {
       public:
 

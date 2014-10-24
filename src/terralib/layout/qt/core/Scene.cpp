@@ -43,7 +43,6 @@
 #include "BuildGraphicsItem.h"
 #include "../item/MapItem.h"
 #include "ItemUtils.h"
-#include "../item/DefaultTextItem.h"
 #include "../../core/Systematic.h"
 #include "../../item/MapModel.h"
 #include "../item/MapGridItem.h"
@@ -55,7 +54,6 @@
 #include "pattern/command/ChangePropertyCommand.h"
 #include "pattern/command/MoveCommand.h"
 #include "pattern/command/DeleteCommand.h"
-#include "../../item/DefaultTextModel.h"
 #include "../item/LegendItem.h"
 #include "../../item/LegendModel.h"
 #include "../../core/pattern/derivativevisitor/AbstractVisitor.h"
@@ -66,6 +64,8 @@
 #include "VerticalRuler.h"
 #include "../../../qt/widgets/Utils.h"
 #include "./../../../common/STLUtils.h"
+#include "../item/TextItem.h"
+#include "../../item/TextModel.h"
 
 // STL
 #include <iostream>
@@ -1037,7 +1037,7 @@ void te::layout::Scene::createTextGridAsObject()
           model->getGridGeodesic()->setVisibleAllTexts(false);
           std::map<te::gm::Point*, std::string> mapGeo = gridGeo->getGridInfo();
           gridGeo->setVisibleAllTexts(false);
-          createDefaultTextItemFromObject(mapGeo);
+          createTextItemFromObject(mapGeo);
         }
 
         GridPlanarModel* gridPlanar = dynamic_cast<GridPlanarModel*>(model->getGridPlanar());
@@ -1046,7 +1046,7 @@ void te::layout::Scene::createTextGridAsObject()
           model->getGridGeodesic()->setVisibleAllTexts(false);
           std::map<te::gm::Point*, std::string> mapPlanar = gridPlanar->getGridInfo();
           gridPlanar->setVisibleAllTexts(false);
-          createDefaultTextItemFromObject(mapPlanar);
+          createTextItemFromObject(mapPlanar);
         }   
       }
       it->redraw();
@@ -1068,13 +1068,13 @@ void te::layout::Scene::createTextMapAsObject()
         MapModel* model = dynamic_cast<MapModel*>(mt->getModel());
         std::map<te::gm::Point*, std::string> map = model->getTextMapAsObjectInfo();
         double h = model->getBox().getHeight();
-        createDefaultTextItemFromObject(map);
+        createTextItemFromObject(map);
       }
     }
   }
 }
 
-void te::layout::Scene::createDefaultTextItemFromObject( std::map<te::gm::Point*, std::string> map)
+void te::layout::Scene::createTextItemFromObject( std::map<te::gm::Point*, std::string> map)
 {
   EnumModeType* mode = Enums::getInstance().getEnumModeType();
 
@@ -1093,12 +1093,12 @@ void te::layout::Scene::createDefaultTextItemFromObject( std::map<te::gm::Point*
     if(!item)
       continue;
 
-    DefaultTextItem* txtItem = dynamic_cast<DefaultTextItem*>(item);
+    TextItem* txtItem = dynamic_cast<TextItem*>(item);
     if(txtItem)
     {
-      DefaultTextModel* model = dynamic_cast<DefaultTextModel*>(txtItem->getModel());
+      TextModel* model = dynamic_cast<TextModel*>(txtItem->getModel());
       model->setText(text);
-      txtItem->setPlainText(text.c_str());
+      txtItem->getDocument()->setPlainText(text.c_str());
     }
   }
 

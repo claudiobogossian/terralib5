@@ -284,7 +284,7 @@ void te::layout::JSON::loadFromProperties( std::vector<te::layout::Properties*> 
       Property prop = (*ity);
       childArray.push_back(std::make_pair(prop.getName(), prop.getValue().convertToString())); 
       childArray.push_back(std::make_pair("type", prop.getType()->getName())); 
-      searchProperty(prop, childArray);
+      searchProperty(prop, childArray, childArray);
     }
     if(!childArray.empty())
     {
@@ -299,10 +299,12 @@ void te::layout::JSON::loadFromProperties( std::vector<te::layout::Properties*> 
   m_array.push_back(std::make_pair("template", rootArray));
 }
 
-void te::layout::JSON::searchProperty( Property property, boost::property_tree::ptree array )
+void te::layout::JSON::searchProperty( Property& property, boost::property_tree::ptree& array, boost::property_tree::ptree& child )
 {
   if(!property.getSubProperty().empty())
   {
+    Property propCopy = property;
+
     std::vector<Property> props = property.getSubProperty();
 
     std::vector<Property>::iterator it;
@@ -314,9 +316,16 @@ void te::layout::JSON::searchProperty( Property property, boost::property_tree::
       boost::property_tree::ptree childArray;
       childArray.push_back(std::make_pair(prop.getName(), prop.getValue().convertToString()));
       childArray.push_back(std::make_pair("type", prop.getType()->getName())); 
-      array.push_back(std::make_pair("child",childArray));
+
+      std::string s_name = prop.getName() + "_child";
+
+      child.push_back(std::make_pair(s_name,childArray));
       
-      searchProperty(prop, childArray);
+      searchProperty(prop, array, childArray);
     }
+
+    std::string s_nameChild = propCopy.getName() + "_child";
+    if(array != child)
+      array.push_back(std::make_pair(s_nameChild,child));
   }
 }

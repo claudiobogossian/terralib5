@@ -50,6 +50,9 @@
 #include <QStyleOptionGraphicsItem>
 #include <QWidget>
 
+#include <QGraphicsView>
+#include <QList>
+
 te::layout::TextItem::TextItem( ItemController* controller, Observable* o ) :
   ObjectItem(controller, o),
   m_document(0)
@@ -99,41 +102,36 @@ void te::layout::TextItem::updateObserver( ContextItem context )
   if(!m_model)
     return;
 
-  te::color::RGBAColor** rgba = context.getPixmap();  
-
-  if(!rgba)
+  if(!m_document)
     return;
 
-  Utils* utils = context.getUtils();
+  TextModel* model = dynamic_cast<TextModel*>(m_model);
 
-  if(!utils)
+  if(!model)
     return;
 
-  te::gm::Envelope box = utils->viewportBox(m_model->getBox());
+  te::color::RGBAColor clrBack = model->getBackgroundColor();
+  m_backgroundColor.setRed(clrBack.getRed());
+  m_backgroundColor.setGreen(clrBack.getGreen());
+  m_backgroundColor.setBlue(clrBack.getBlue());
+  m_backgroundColor.setAlpha(clrBack.getAlpha());
 
-  if(!box.isValid())
-    return;
+  Font ft = model->getFont();
 
-  QPixmap pixmp;
-  QImage* img = 0;
+  QFont qft;
+  qft.setFamily(ft.getFamily().c_str());
+  qft.setBold(ft.isBold());
+  qft.setItalic(ft.isItalic());
+  qft.setPointSizeF(ft.getPointSize());
+  qft.setKerning(ft.isKerning());
+  qft.setStrikeOut(ft.isStrikeout());
+  qft.setUnderline(ft.isUnderline());
 
-  if(rgba)
-  {
-    img = te::qt::widgets::GetImage(rgba, box.getWidth(), box.getHeight());
-    pixmp = QPixmap::fromImage(*img);
-  }
+  m_document->setDefaultFont(qft);
+  
+  refreshDocument();
 
-  te::common::Free(rgba, box.getHeight());
-  if(img)
-    delete img;
-
-  setPixmap(pixmp);
   update();
-}
-
-QTextDocument* te::layout::TextItem::getDocument()
-{
-  return m_document;
 }
 
 void te::layout::TextItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
@@ -144,51 +142,72 @@ void te::layout::TextItem::paint( QPainter * painter, const QStyleOptionGraphics
   {
     return;
   }
-
-  if(!m_document)
-    return;
-
+  
   drawBackground( painter );
+  
+  double sizeW = 0;
+  double sizeH = 0;
+
+  if(m_document)
+  {
+    sizeW = m_document->size().width();
+    sizeH = m_document->size().height();
+  }
+
+  if(sizeW != m_pixmap.width() || sizeH != m_pixmap.height())
+  {
+    refreshDocument();
+  }
 
   QRectF boundRect;
   boundRect = boundingRect();
 
-  QSizeF sz = m_document->size();
-
-  /*QPixmap img(sz.width(), sz.height());
-  img.fill(Qt::transparent);
-
-  QPainter ptr(&img);
-  m_document->drawContents(&ptr);*/
-  
   painter->save();
   painter->translate( -boundRect.bottomLeft().x(), -boundRect.topRight().y() );
   painter->drawPixmap(boundRect, m_pixmap, QRectF( 0, 0, m_pixmap.width(), m_pixmap.height() ));
-  painter->restore();  
-  
-  QTransform trm = painter->transform();
-  QPointF pV = trm.map(scenePos());
-  QFont ft = m_document->defaultFont();
-    
-  std::string txt = "TEXT_12345";
-  
-  painter->save();
-
-  QBrush br(Qt::green);
-  QPainter ptr1(painter->device());
-  ptr1.setBrush(br);
-  ptr1.setFont(ft);
-  ptr1.drawText(pV.x(), pV.y(), "TESTE_0980980");
-  m_document->documentLayout()->setPaintDevice(painter->device());
-  QRectF rtf1(pV.x(), pV.y(), sz.width(), sz.height());
-  //m_document->drawContents(&ptr1, rtf1);
-  m_document->drawContents(&ptr1);
-
   painter->restore();
-
+  
   //Draw Selection
   if (option->state & QStyle::State_Selected)
   {
     drawSelection(painter);
   }
+}
+
+QImage te::layout::TextItem::createImage()
+{
+  QImage img(m_document->size().width(), m_document->size().height(), QImage::Format_ARGB32);
+  img.fill(m_backgroundColor);
+
+  QPainter ptr(&img);
+  ptr.setFont(m_document->defaultFont());
+  m_document->drawContents(&ptr);
+
+  return img;
+}
+
+void te::layout::TextItem::refreshDocument()
+{
+  if(!m_model)
+    return;
+
+  TextModel* model = dynamic_cast<TextModel*>(m_model);
+
+  if(!model)
+    return;
+
+  QImage img = createImage();
+  QPointF pp = scenePos();
+  te::gm::Envelope box(pp.x(), pp.y(), pp.x() + img.widthMM(), pp.y() + img.heightMM());
+
+  model->setBox(box);
+  model->setText(m_document->toPlainText().toStdString());
+
+  QPixmap pixmp = QPixmap::fromImage(img);
+  setPixmap(pixmp);
+}
+
+QTextDocument* te::layout::TextItem::getDocument()
+{
+  return m_document;
 }

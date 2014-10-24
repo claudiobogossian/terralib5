@@ -31,7 +31,12 @@
 // TerraLib
 #include "ObjectItem.h"
 
+// Qt
+#include <QImage>
+#include <QColor>
+
 class QTextDocument;
+class QTextTable;
 
 namespace te
 {
@@ -52,12 +57,19 @@ namespace te
         virtual void updateObserver( ContextItem context );
 
         virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
-
+        
         virtual QTextDocument* getDocument();
+
+        virtual void refreshDocument();
 
       protected:
 
+        virtual QImage createImage();
+        
         QTextDocument* m_document;
+        QColor         m_backgroundColor;
+
+        QTextTable*    m_table;
     };
   }
 }

@@ -64,9 +64,7 @@ namespace te
         virtual Font getFont();
 
        protected:
-
-         virtual void drawText(te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box);
-
+         
          std::string m_text;
          Font m_font;
     };

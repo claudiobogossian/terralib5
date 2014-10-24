@@ -234,7 +234,7 @@ namespace te
 
         virtual void refreshViews(QGraphicsView* view = 0);
 
-        virtual void createDefaultTextItemFromObject(std::map<te::gm::Point*, std::string> map);
+        virtual void createTextItemFromObject(std::map<te::gm::Point*, std::string> map);
 
         virtual void createLegendChildItemFromLegend(std::map<te::gm::Point*, std::string> map, te::layout::MapModel* visitable);
 
