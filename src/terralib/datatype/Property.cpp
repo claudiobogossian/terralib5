@@ -29,11 +29,13 @@
 te::dt::Property::Property(const std::string& name,
                            int datatype,
                            unsigned int id,
-                           Property* parent)
+                           Property* parent,
+                           const std::string& dsName)
   : m_parent(parent),
     m_id(id),
     m_type(datatype),
-    m_name(name)
+    m_name(name),
+    m_datasetName(dsName)
 {
 }
 
@@ -41,7 +43,8 @@ te::dt::Property::Property(const Property& rhs)
   : m_parent(0),
     m_id(rhs.m_id),
     m_type(rhs.m_type),
-    m_name(rhs.m_name)
+    m_name(rhs.m_name),
+    m_datasetName(rhs.m_datasetName)
 {  
 }
 
@@ -53,6 +56,7 @@ te::dt::Property& te::dt::Property::operator=(const Property& rhs)
     m_id = rhs.m_id;
     m_type = rhs.m_type;
     m_name = rhs.m_name;
+    m_datasetName = rhs.m_datasetName;
   }
 
   return *this;

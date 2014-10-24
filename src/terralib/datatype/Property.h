@@ -73,7 +73,8 @@ namespace te
         Property(const std::string& name,
                  int datatype,
                  unsigned int id = 0,
-                 Property* parent = 0);
+                 Property* parent = 0,
+                 const std::string& dsName = "");
 
         /*!
           \brief Copy constructor.
@@ -136,6 +137,23 @@ namespace te
         void setName(const std::string& name) { m_name = name; }
 
         /*!
+          \brief It returns the name of the propery's dataset.
+
+          \return The the propery's dataset name.
+        */
+        const std::string& getDatasetName() const { return m_datasetName; }
+
+        /*!
+          \brief It sets the property name.
+
+          \param name The new property name.
+
+          \warning Take care when calling this method for a DataSetType associated to a DataSourceCatalog.
+                   Prefer using the rename method on the DataSourceCatalog API instead of using this method.
+        */
+        void setDatasetName(const std::string& dsName) { m_datasetName = dsName; }
+
+        /*!
           \brief It returns the property data type.
 
           \return The property data type.
@@ -187,6 +205,7 @@ namespace te
         unsigned int m_id;                              //!< An identification number that can be used internally.        
         int m_type;                                     //!< The property data type.
         std::string m_name;                             //!< The property name.
+        std::string m_datasetName;                      //!< The property's dataset name.
     };
 
     /*!
