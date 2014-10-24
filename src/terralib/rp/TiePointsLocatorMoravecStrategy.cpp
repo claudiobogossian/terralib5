@@ -43,9 +43,69 @@ namespace te
     }
     
     bool TiePointsLocatorMoravecStrategy::initialize( 
-      const te::rp::TiePointsLocatorStrategyParameters& inputParameters )
+      const te::rp::TiePointsLocatorInputParameters& inputParameters )
     {
       m_inputParameters = inputParameters;
+      
+      TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_inRaster1Bands.size()
+        == 1, "Invalid number of raster 1 bands" );
+      TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_inRaster2Bands.size()
+        == 1, "Invalid number of raster 2 bands" );
+        
+      // Defining the number of tie points
+      
+      if( m_inputParameters.m_maxTiePoints == 0 )
+      {
+        const unsigned int maxRastersArea = 
+          std::max(
+            ( m_inputParameters.m_raster1TargetAreaWidth *
+              m_inputParameters.m_raster1TargetAreaHeight )
+            ,
+            ( m_inputParameters.m_raster2TargetAreaWidth *
+              m_inputParameters.m_raster2TargetAreaHeight )                       
+          );
+        const unsigned maxWindowSize = std::max( 
+           m_inputParameters.m_moravecCorrelationWindowWidth,
+           m_inputParameters.m_moravecWindowWidth );
+        m_inputParameters.m_maxTiePoints = maxRastersArea / 
+          ( 4 * maxWindowSize * maxWindowSize );
+          
+        // This is because the features and matching matrix are being allocated in RAM
+        const double totalPhysMem = (double)te::common::GetTotalPhysicalMemory();
+        const double usedVMem = (double)te::common::GetUsedVirtualMemory();
+        const double totalVMem = (double)te::common::GetTotalVirtualMemory();
+        const double freeVMem = 0.4 * std::min( totalPhysMem, ( totalVMem - usedVMem ) );                
+        const double featSize = (double)( m_inputParameters.m_moravecCorrelationWindowWidth *
+          m_inputParameters.m_moravecCorrelationWindowWidth );
+        m_inputParameters.m_maxTiePoints = 
+          std::min(
+            m_inputParameters.m_maxTiePoints,
+            (unsigned int)(
+              std::sqrt(
+                ( featSize * featSize )
+                +
+                ( freeVMem / (double)( sizeof( float ) ) )
+              )
+              -
+              featSize
+            )
+          );
+      }
+        
+      m_inputParameters.m_moravecCorrelationWindowWidth += 
+        m_inputParameters.m_moravecCorrelationWindowWidth % 2 ? 0 : 1;
+      TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_moravecCorrelationWindowWidth > 2,
+        "Invalid m_moravecCorrelationWindowWidth" );
+
+      m_inputParameters.m_moravecWindowWidth += 
+        m_inputParameters.m_moravecWindowWidth % 2 ? 0 : 1;
+      TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_moravecWindowWidth > 2,
+        "Invalid m_moravecWindowWidth" );      
+      
+      TERP_TRUE_OR_RETURN_FALSE( ( m_inputParameters.m_moravecMinAbsCorrelation >= 0 ) &&
+        ( m_inputParameters.m_moravecMinAbsCorrelation <= 1.0 ),
+        "Invalid m_moravecMinAbsCorrelation" );        
+      
       m_isInitialized = true;
       return true;
     }
@@ -103,10 +163,10 @@ namespace te
         raster1YRescFact = m_inputParameters.m_pixelSizeYRelation;
       }        
       
-      raster1XRescFact *= m_inputParameters.m_rastersRescaleFactor;
-      raster1YRescFact *= m_inputParameters.m_rastersRescaleFactor;
-      raster2XRescFact *= m_inputParameters.m_rastersRescaleFactor;
-      raster2YRescFact *= m_inputParameters.m_rastersRescaleFactor;      
+      raster1XRescFact *= m_inputParameters.m_subSampleOptimizationRescaleFactor;
+      raster1YRescFact *= m_inputParameters.m_subSampleOptimizationRescaleFactor;
+      raster2XRescFact *= m_inputParameters.m_subSampleOptimizationRescaleFactor;
+      raster2YRescFact *= m_inputParameters.m_subSampleOptimizationRescaleFactor;      
       
       // progress
       

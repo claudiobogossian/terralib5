@@ -23,7 +23,9 @@
 */
 
 #include "TiePointsLocatorSURFStrategy.h"
+#include "Macros.h"
 #include "../common/progress/TaskProgress.h"
+#include "../sam/rtree.h"
 
 #include <memory>
 
@@ -44,9 +46,63 @@ namespace te
     }
     
     bool TiePointsLocatorSURFStrategy::initialize( 
-      const te::rp::TiePointsLocatorStrategyParameters& inputParameters )
+      const te::rp::TiePointsLocatorInputParameters& inputParameters )
     {
       m_inputParameters = inputParameters;
+      
+      TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_inRaster1Bands.size()
+        == 1, "Invalid number of raster 1 bands" );
+      TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_inRaster2Bands.size()
+        == 1, "Invalid number of raster 2 bands" );
+        
+      // Defining the number of tie points
+      
+      if( m_inputParameters.m_maxTiePoints == 0 )
+      {
+        const unsigned int maxRastersArea = 
+          std::max(
+            ( m_inputParameters.m_raster1TargetAreaWidth *
+              m_inputParameters.m_raster1TargetAreaHeight )
+            ,
+            ( m_inputParameters.m_raster2TargetAreaWidth *
+              m_inputParameters.m_raster2TargetAreaHeight )                       
+          );
+        const unsigned int maxWindowSize = getSurfFilterSize( 
+          m_inputParameters.m_surfOctavesNumber - 1, 
+          m_inputParameters.m_surfScalesNumber - 1 );
+        m_inputParameters.m_maxTiePoints = maxRastersArea /            
+          ( 4 * maxWindowSize * maxWindowSize );
+
+        // This is because the features and matching matrix bare eing allocated in RAM
+        const double totalPhysMem = (double)te::common::GetTotalPhysicalMemory();
+        const double usedVMem = (double)te::common::GetUsedVirtualMemory();
+        const double totalVMem = (double)te::common::GetTotalVirtualMemory();
+        const double freeVMem = 0.4 * std::min( totalPhysMem, ( totalVMem - usedVMem ) );                
+        m_inputParameters.m_maxTiePoints = 
+          std::min(
+            m_inputParameters.m_maxTiePoints,
+            (unsigned int)(
+              std::sqrt(
+                ( 65 * 65 )
+                +
+                ( freeVMem / (double)( sizeof( float ) ) )
+              )
+              -
+              65
+            )
+          );         
+      }
+          
+      TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_surfScalesNumber > 2,
+        "Invalid m_surfScalesNumber" );        
+        
+      TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_surfOctavesNumber > 0,
+        "Invalid m_surfOctavesNumber" );           
+        
+      TERP_TRUE_OR_RETURN_FALSE( ( m_inputParameters.m_surfMaxNormEuclideanDist >= 0 ) &&
+        ( m_inputParameters.m_surfMaxNormEuclideanDist <= 1.0 ),
+        "Invalid m_surfMaxNormEuclideanDist" );                
+      
       m_isInitialized = true;
       return true;
     }
@@ -105,10 +161,10 @@ namespace te
         raster1YRescFact = m_inputParameters.m_pixelSizeYRelation;
       }        
       
-      raster1XRescFact *= m_inputParameters.m_rastersRescaleFactor;
-      raster1YRescFact *= m_inputParameters.m_rastersRescaleFactor;
-      raster2XRescFact *= m_inputParameters.m_rastersRescaleFactor;
-      raster2YRescFact *= m_inputParameters.m_rastersRescaleFactor;      
+      raster1XRescFact *= m_inputParameters.m_subSampleOptimizationRescaleFactor;
+      raster1YRescFact *= m_inputParameters.m_subSampleOptimizationRescaleFactor;
+      raster2XRescFact *= m_inputParameters.m_subSampleOptimizationRescaleFactor;
+      raster2YRescFact *= m_inputParameters.m_subSampleOptimizationRescaleFactor;      
       
       // progress
       

@@ -33,6 +33,9 @@ namespace te
 {
   namespace rp
   {
+    // Forwards
+    class TiePointsLocator;
+    
     /*!
       \class TiePointsLocatorMoravecStrategy
       \brief Tie-points locator Moravec strategy.
@@ -109,13 +112,13 @@ namespace te
         
         bool m_isInitialized; //!< true if this instance is initialized.
         
-        te::rp::TiePointsLocatorStrategyParameters m_inputParameters; //!< Input parameters
+        te::rp::TiePointsLocatorInputParameters m_inputParameters; //!< Input parameters
         
         TiePointsLocatorMoravecStrategy();
             
         //overload
         bool initialize( 
-          const te::rp::TiePointsLocatorStrategyParameters& inputParameters );
+          const te::rp::TiePointsLocatorInputParameters& inputParameters );
           
         //overload
         void reset();

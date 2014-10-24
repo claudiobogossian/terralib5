@@ -27,7 +27,7 @@
 
 #include "Config.h"
 #include "Matrix.h"
-#include "TiePointsLocatorStrategyParameters.h"
+#include "TiePointsLocatorInputParameters.h"
 #include "../geometry/GTParameters.h"
 #include "../raster/Raster.h"
 #include "../raster/Interpolator.h"
@@ -41,6 +41,9 @@ namespace te
 {
   namespace rp
   {
+    // Forwards
+    class TiePointsLocator;
+    
     /*!
       \class TiePointsLocatorStrategy
       \brief Tie-points locator strategy.
@@ -173,7 +176,7 @@ namespace te
           \return true if OK, false on errors.
          */
         virtual bool initialize( 
-          const te::rp::TiePointsLocatorStrategyParameters& inputParameters )  = 0;        
+          const te::rp::TiePointsLocatorInputParameters& inputParameters )  = 0;        
           
         /*!
           \brief Clear all internal allocated resources and go back to the initial not-initialized state.

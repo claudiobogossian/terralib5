@@ -35,6 +35,9 @@ namespace te
 {
   namespace rp
   {
+    // Forwards
+    class TiePointsLocator;
+    
     /*!
       \class TiePointsLocatorSURFStrategy
       \brief Tie-points locator SURF strategy.
@@ -113,13 +116,13 @@ namespace te
         
         bool m_isInitialized; //!< true if this instance is initialized.
         
-        te::rp::TiePointsLocatorStrategyParameters m_inputParameters; //!< Input parameters
+        te::rp::TiePointsLocatorInputParameters m_inputParameters; //!< Input parameters
         
         TiePointsLocatorSURFStrategy();
             
         //overload
         bool initialize( 
-          const te::rp::TiePointsLocatorStrategyParameters& inputParameters );
+          const te::rp::TiePointsLocatorInputParameters& inputParameters );
           
         //overload
         void reset();

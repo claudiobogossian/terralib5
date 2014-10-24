@@ -365,7 +365,7 @@ void TsTiePointsLocator::MoravecStrategyRescaleFactor()
   algoInputParams.m_inRaster2Bands.push_back( 0 );
   algoInputParams.m_enableMultiThread = false;
   algoInputParams.m_maxTiePoints = 1000;
-  algoInputParams.m_rastersRescaleFactor = 0.5;
+  algoInputParams.m_subSampleOptimizationRescaleFactor = 0.5;
   algoInputParams.m_geomTransfName = "RST";
 
   te::rp::TiePointsLocator::OutputParameters algoOutputParams;
@@ -634,7 +634,7 @@ void TsTiePointsLocator::SurfStrategyRescaleFactor()
   algoInputParams.m_inRaster2Bands.push_back( 0 );
   algoInputParams.m_enableMultiThread = false;
   algoInputParams.m_maxTiePoints = 1000;
-  algoInputParams.m_rastersRescaleFactor = 0.5;
+  algoInputParams.m_subSampleOptimizationRescaleFactor = 0.5;
   algoInputParams.m_geomTransfName = "RST";
 
   te::rp::TiePointsLocator::OutputParameters algoOutputParams;
