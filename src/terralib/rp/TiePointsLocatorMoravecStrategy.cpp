@@ -116,7 +116,9 @@ namespace te
       m_inputParameters.reset();
     }
     
-    bool TiePointsLocatorMoravecStrategy::getMatchedInterestPoints( MatchedInterestPointsSetT& matchedInterestPoints )
+    bool TiePointsLocatorMoravecStrategy::getMatchedInterestPoints( 
+      te::gm::GeometricTransformation const * const raster1ToRaster2TransfPtr,
+      MatchedInterestPointsSetT& matchedInterestPoints )
     {
       matchedInterestPoints.clear(); 
       
@@ -307,10 +309,31 @@ namespace te
           raster1Features,
           auxInterestPoints ),
           "Error generating raster 1 features" );
-          
-        raster1InterestPoints = auxInterestPoints;        
         
-//      features2Tiff( raster1Features, raster1InterestPoints, "raster1features" );        
+//      features2Tiff( raster1Features, raster1InterestPoints, "raster1features" );                
+        
+        // Bring interest points to full raster indexed coords reference
+      
+        raster1InterestPoints.clear();
+        
+        {
+          InterestPointsSetT::iterator itB = auxInterestPoints.begin();
+          const InterestPointsSetT::iterator itE = auxInterestPoints.end();
+          InterestPointT auxIP;
+          
+          while( itB != itE )
+          {
+            auxIP = *itB;
+            auxIP.m_x = ( auxIP.m_x / raster1XRescFact ) + 
+              (double)m_inputParameters.m_raster1TargetAreaColStart;
+            auxIP.m_y = ( auxIP.m_y / raster1YRescFact ) + 
+              (double)m_inputParameters.m_raster1TargetAreaLineStart;          
+              
+            raster1InterestPoints.insert( auxIP );
+              
+            ++itB;
+          }
+        }
 
         if( m_inputParameters.m_enableProgress )
         {
@@ -418,9 +441,30 @@ namespace te
           auxInterestPoints ),
           "Error generating raster 2 features" );
           
-        raster2InterestPoints = auxInterestPoints;
+//      features2Tiff( raster2Features, raster2InterestPoints, "raster2features" );    
         
-//      features2Tiff( raster2Features, raster2InterestPoints, "raster2features" );        
+        // Bring interest points to full raster indexed coords reference
+      
+        raster2InterestPoints.clear();
+        
+        {
+          InterestPointsSetT::iterator itB = auxInterestPoints.begin();
+          const InterestPointsSetT::iterator itE = auxInterestPoints.end();
+          InterestPointT auxIP;
+          
+          while( itB != itE )
+          {
+            auxIP = *itB;
+            auxIP.m_x = ( auxIP.m_x / raster2XRescFact ) + 
+              (double)m_inputParameters.m_raster2TargetAreaColStart;
+            auxIP.m_y = ( auxIP.m_y / raster2YRescFact ) + 
+              (double)m_inputParameters.m_raster2TargetAreaLineStart;          
+              
+            raster2InterestPoints.insert( auxIP );
+              
+            ++itB;
+          }
+        }        
 
         if( m_inputParameters.m_enableProgress )
         {
@@ -438,9 +482,7 @@ namespace te
         raster2Features,
         raster1InterestPoints,
         raster2InterestPoints,
-        m_inputParameters.m_maxR1ToR2Offset,
-        m_inputParameters.m_enableMultiThread,
-        m_inputParameters.m_moravecMinAbsCorrelation,
+        raster1ToRaster2TransfPtr,
         internalMatchedInterestPoints ),
         "Error matching features" );
       
@@ -506,16 +548,6 @@ namespace te
           while( itB != itE )
           {
             auxMatchedPoints = *itB;
-            
-            auxMatchedPoints.m_point1.m_x = ( auxMatchedPoints.m_point1.m_x / raster1XRescFact ) + 
-              (double)m_inputParameters.m_raster1TargetAreaColStart;
-            auxMatchedPoints.m_point1.m_y = ( auxMatchedPoints.m_point1.m_y / raster1YRescFact ) + 
-              (double)m_inputParameters.m_raster1TargetAreaLineStart;          
-            auxMatchedPoints.m_point2.m_x = ( auxMatchedPoints.m_point2.m_x / raster2XRescFact ) + 
-              (double)m_inputParameters.m_raster2TargetAreaColStart;
-            auxMatchedPoints.m_point2.m_y = ( auxMatchedPoints.m_point2.m_y / raster2YRescFact ) + 
-              (double)m_inputParameters.m_raster2TargetAreaLineStart;  
-              
             auxMatchedPoints.m_feature = 
               (
                 ( 2.0f * auxMatchedPoints.m_feature )
@@ -1341,10 +1373,8 @@ namespace te
       const FloatsMatrix& featuresSet2,
       const InterestPointsSetT& interestPointsSet1,
       const InterestPointsSetT& interestPointsSet2,
-      const unsigned int maxPt1ToPt2Distance,
-      const unsigned int enableMultiThread,
-      const double minAllowedAbsCorrelation,
-      MatchedInterestPointsSetT& matchedPoints )
+      te::gm::GeometricTransformation const * const raster1ToRaster2TransfPtr,
+      MatchedInterestPointsSetT& matchedPoints ) const
     {
       matchedPoints.clear();
       
@@ -1403,7 +1433,6 @@ namespace te
       
       boost::mutex syncMutex;
       unsigned int nextFeatureIdx1ToProcess = 0;
-//      unsigned int nextFeatureIdx2ToProcess = 0;
       
       ExecuteMatchingByCorrelationThreadEntryParams params;
       params.m_featuresSet1Ptr = &featuresSet1;
@@ -1413,9 +1442,11 @@ namespace te
       params.m_nextFeatureIdx1ToProcessPtr = &nextFeatureIdx1ToProcess;
       params.m_corrMatrixPtr = &corrMatrix;
       params.m_syncMutexPtr = &syncMutex;
-      params.m_maxPt1ToPt2Distance = maxPt1ToPt2Distance;
+      params.m_raster1ToRaster2TransfPtr = raster1ToRaster2TransfPtr;
+      params.m_searchOptTreeSearchRadius = m_inputParameters.m_geomTransfMaxError
+        / m_inputParameters.m_subSampleOptimizationRescaleFactor;
       
-      if( enableMultiThread )
+      if( m_inputParameters.m_enableMultiThread )
       {
         TERP_TRUE_OR_RETURN_FALSE( featuresSet1.getMemPolicy() ==
           FloatsMatrix::RAMMemPol, "Invalid memory policy" )
@@ -1461,7 +1492,7 @@ namespace te
         {
           absValue = std::abs( linePtr[ col ] );
           
-          if( absValue >= minAllowedAbsCorrelation )
+          if( absValue >= m_inputParameters.m_moravecMinAbsCorrelation )
           {
             if( absValue > eachLineMaxABSValues[ line ] )
             {
@@ -1512,6 +1543,7 @@ namespace te
         
       // globals
         
+      const double interestPointsSet2RTreeSearchRadius = paramsPtr->m_searchOptTreeSearchRadius;
       const unsigned int featureElementsNmb = paramsPtr->m_featuresSet1Ptr->getColumnsNumber();
       unsigned int feat2Idx = 0;
       float const* feat1Ptr = 0;
@@ -1523,6 +1555,16 @@ namespace te
       float cc_norm = 0;
       float ccorrelation = 0;
       te::gm::Envelope auxEnvelope;        
+      
+      // local transformation copy
+      
+      std::auto_ptr< te::gm::GeometricTransformation > raster1ToRaster2TransfPtr;
+      if( paramsPtr->m_raster1ToRaster2TransfPtr )
+      {
+        paramsPtr->m_syncMutexPtr->lock();
+        raster1ToRaster2TransfPtr.reset( paramsPtr->m_raster1ToRaster2TransfPtr->clone() );        
+        paramsPtr->m_syncMutexPtr->unlock();
+      }
         
       // Indexing tree building
       
@@ -1536,7 +1578,7 @@ namespace te
       std::vector< unsigned int > selectedFeaturesSet2Indexes;
       unsigned int selectedFeaturesSet2IndexesSize = 0;      
         
-      if( paramsPtr->m_maxPt1ToPt2Distance )
+      if( paramsPtr->m_raster1ToRaster2TransfPtr )
       {
         for( unsigned int feat2Idx = 0 ; feat2Idx < featuresSet2Size ; ++feat2Idx )
         {
@@ -1571,16 +1613,21 @@ namespace te
           
           paramsPtr->m_syncMutexPtr->unlock();
           
-          if( paramsPtr->m_maxPt1ToPt2Distance )
+          if( paramsPtr->m_raster1ToRaster2TransfPtr )
           {
-            auxEnvelope.m_llx = auxEnvelope.m_urx = 
-              paramsPtr->m_interestPointsSet1Ptr[ feat1Idx ].m_x;
-            auxEnvelope.m_llx -= (double)paramsPtr->m_maxPt1ToPt2Distance;
-            auxEnvelope.m_urx += (double)paramsPtr->m_maxPt1ToPt2Distance;
-            auxEnvelope.m_lly = auxEnvelope.m_ury = 
-              paramsPtr->m_interestPointsSet1Ptr[ feat1Idx ].m_y;
-            auxEnvelope.m_lly -= (double)paramsPtr->m_maxPt1ToPt2Distance;;
-            auxEnvelope.m_ury += (double)paramsPtr->m_maxPt1ToPt2Distance;;
+            raster1ToRaster2TransfPtr->directMap( 
+              paramsPtr->m_interestPointsSet1Ptr[ feat1Idx ].m_x,
+              paramsPtr->m_interestPointsSet1Ptr[ feat1Idx ].m_y,
+              auxEnvelope.m_llx,
+              auxEnvelope.m_lly );
+            
+            auxEnvelope.m_urx = auxEnvelope.m_llx;
+            auxEnvelope.m_ury = auxEnvelope.m_lly;
+            
+            auxEnvelope.m_llx -= interestPointsSet2RTreeSearchRadius;
+            auxEnvelope.m_lly -= interestPointsSet2RTreeSearchRadius;
+            auxEnvelope.m_urx += interestPointsSet2RTreeSearchRadius;
+            auxEnvelope.m_ury += interestPointsSet2RTreeSearchRadius;
             
             selectedFeaturesSet2Indexes.clear();
             interestPointsSet2RTree.search( auxEnvelope,

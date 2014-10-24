@@ -107,7 +107,9 @@ namespace te
             
             boost::mutex* m_syncMutexPtr;
             
-            unsigned int m_maxPt1ToPt2Distance; //!< Zero (disabled) or the maximum distance between a point from set 1 to a point from set 1 (points beyond this distance will not be correlated and will have zero as correlation value).
+            te::gm::GeometricTransformation const * m_raster1ToRaster2TransfPtr; //!< A pointer to a transformation direct mapping raster 1 indexed coords into raster 2 indexed coords, of an empty pointer if there is no transformation avaliable.
+            
+            double m_searchOptTreeSearchRadius; //!< Optimization tree search radius (pixels).
             
             ExecuteMatchingByEuclideanDistThreadEntryParams() {};
             
@@ -128,7 +130,9 @@ namespace te
         void reset();
         
         //overload
-        bool getMatchedInterestPoints( MatchedInterestPointsSetT& matchedInterestPoints );
+        bool getMatchedInterestPoints( 
+          te::gm::GeometricTransformation const * const raster1ToRaster2TransfPtr,
+          MatchedInterestPointsSetT& matchedInterestPoints );
         
         /*!
           \brief Create an integral image.
@@ -200,29 +204,23 @@ namespace te
           
           \param featuresSet2 Features set 2.
           
-          \param interestPointsSet1 The interest pionts set 1.
+          \param interestPointsSet1 The interest pionts set 1 (full raster 1 indexed coods reference)..
           
-          \param interestPointsSet2 The interest pionts set 2.
+          \param interestPointsSet2 The interest pionts set 2 (full raster 1 indexed coods reference)..
           
-          \param maxPt1ToPt2PixelDistance Zero (disabled) or the maximum distance (pixels) between a point from set 1 to a point from set 1 (points beyond this distance will not be correlated and will have zero as correlation value).
-          
-          \param maxEuclideanDist //!< The maximum acceptable euclidean distance when matching features.
-          
-          \param enableMultiThread Enable/disable the use of threads.
+          \param raster1ToRaster2TransfPtr A pointer to a transformation direct mapping raster 1 indexed coords into raster 2 indexed coords, of an empty pointer if there is no transformation avaliable.
           
           \param matchedPoints The matched points.
           
           \note Each matched point feature value ( MatchedInterestPoint::m_feature ) will be set to the inverse normalized distance in the range (0,1].
         */          
-        static bool executeMatchingByEuclideanDist( 
+        bool executeMatchingByEuclideanDist( 
           const FloatsMatrix& featuresSet1,
           const FloatsMatrix& featuresSet2,
           const InterestPointsSetT& interestPointsSet1,
           const InterestPointsSetT& interestPointsSet2,
-          const unsigned int maxPt1ToPt2PixelDistance,
-          const double maxEuclideanDist,
-          const unsigned int enableMultiThread,
-          MatchedInterestPointsSetT& matchedPoints );           
+          te::gm::GeometricTransformation const * const raster1ToRaster2TransfPtr,
+          MatchedInterestPointsSetT& matchedPoints ) const;           
           
         /*! 
           \brief Correlation/Euclidean match thread entry.

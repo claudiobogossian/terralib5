@@ -29,28 +29,6 @@
 #include "../geometry/GTFactory.h"
 #include "../geometry/GTFilter.h"
 #include "../common/progress/TaskProgress.h"
-// #include "../common/PlatformUtils.h"
-// #include "../common/StringUtils.h"
-// #include "../raster/Band.h"
-// #include "../raster/Grid.h"
-// #include "../raster/BandProperty.h"
-// #include "../raster/RasterFactory.h"
-// #include "../datatype/Enums.h"
-// #include "../geometry/GTFilter.h"
-// 
-// #include <boost/scoped_array.hpp>
-// #include <boost/shared_array.hpp>
-// #include <boost/lexical_cast.hpp>
-// 
-// #include <algorithm>
-// 
-// #include <climits>
-// #include <cfloat>
-// #include <cstdio>
-// #include <cmath>
-// #include <boost/concept_check.hpp>
-// 
-// #include <cstring>
 
 namespace te
 {
@@ -159,17 +137,14 @@ namespace te
           "Tie points locator strategy initialization error" );
         
         
-        TERP_TRUE_OR_RETURN_FALSE( stratPtr->getMatchedInterestPoints( matchedInterestPoints ),
+        TERP_TRUE_OR_RETURN_FALSE( stratPtr->getMatchedInterestPoints( 
+          (te::gm::GeometricTransformation*)0,
+          matchedInterestPoints ),
           "Tie points interest points location error" );        
       }
       else
       {
-      TERP_TRUE_OR_RETURN_FALSE( stratPtr->initialize( m_inputParameters ),
-        "Tie points locator strategy initialization error" );
-      
-      
-      TERP_TRUE_OR_RETURN_FALSE( stratPtr->getMatchedInterestPoints( matchedInterestPoints ),
-        "Tie points interest points location error" );
+        TERP_LOG_AND_THROW( "Not implemented" );
       }
       
       // Generating tie-points

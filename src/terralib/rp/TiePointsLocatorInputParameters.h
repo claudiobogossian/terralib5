@@ -28,11 +28,13 @@
 #include "Config.h"
 #include "Exception.h"
 #include "AlgorithmInputParameters.h"
+#include "../geometry/GeometricTransformation.h"
 #include "../raster/Raster.h"
 #include "../raster/Interpolator.h"
 
 #include <vector>
 #include <string>
+#include <memory>
 
 namespace te
 {
@@ -102,8 +104,6 @@ namespace te
         std::string m_geomTransfName; //!< The name of the geometric transformation used to ensure tie-points consistency (see each te::gm::GTFactory inherited classes to find each factory key/name, default:Affine).
         
         double m_geomTransfMaxError; //!< The maximum allowed transformation error (pixel units, default:2).
-        
-        unsigned int m_maxR1ToR2Offset; //!< The maximum offset (pixels units) between a raster 1 point end the respective raster 2 point (default:0 - no offset restriction).
         
         bool m_enableGeometryFilter; //!< Enable/disable the geometry filter/outliers remotion (default:true).
         

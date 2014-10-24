@@ -70,7 +70,6 @@ namespace te
       m_geomTransfMaxError = 2;
       m_moravecCorrelationWindowWidth = 11;
       m_moravecWindowWidth = 5;
-      m_maxR1ToR2Offset = 0;
       m_enableGeometryFilter = true;
       m_geometryFilterAssurance = 0.1;
       m_moravecNoiseFilterIterations = 1;
@@ -111,7 +110,6 @@ namespace te
       m_geomTransfMaxError = params.m_geomTransfMaxError;
       m_moravecCorrelationWindowWidth = params.m_moravecCorrelationWindowWidth;
       m_moravecWindowWidth = params.m_moravecWindowWidth;
-      m_maxR1ToR2Offset = params.m_maxR1ToR2Offset;
       m_enableGeometryFilter = params.m_enableGeometryFilter;
       m_geometryFilterAssurance = params.m_geometryFilterAssurance;
       m_moravecNoiseFilterIterations = params.m_moravecNoiseFilterIterations;

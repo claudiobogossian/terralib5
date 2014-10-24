@@ -322,7 +322,7 @@ void TsTiePointsLocator::MoravecStrategyMaximumOffset()
   algoInputParams.m_inRaster2Bands.push_back( 0 );
   algoInputParams.m_enableMultiThread = false;
   algoInputParams.m_maxTiePoints = 1000;
-  algoInputParams.m_maxR1ToR2Offset = 20;
+  algoInputParams.m_subSampleOptimizationRescaleFactor = 0.7;
   algoInputParams.m_geomTransfName = "RST";
 
   te::rp::TiePointsLocator::OutputParameters algoOutputParams;
@@ -591,7 +591,7 @@ void TsTiePointsLocator::SurfStrategyMaximumOffset()
   algoInputParams.m_inRaster2Bands.push_back( 0 );
   algoInputParams.m_enableMultiThread = false;
   algoInputParams.m_maxTiePoints = 1000;
-  algoInputParams.m_maxR1ToR2Offset = 20;
+  algoInputParams.m_subSampleOptimizationRescaleFactor = 0.7;
   algoInputParams.m_geomTransfName = "RST";
 
   te::rp::TiePointsLocator::OutputParameters algoOutputParams;

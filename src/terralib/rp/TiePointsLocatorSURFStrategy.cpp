@@ -114,6 +114,7 @@ namespace te
     }
     
     bool TiePointsLocatorSURFStrategy::getMatchedInterestPoints( 
+      te::gm::GeometricTransformation const * const raster1ToRaster2TransfPtr,
       MatchedInterestPointsSetT& matchedInterestPoints )
     {
       matchedInterestPoints.clear();  
@@ -257,7 +258,28 @@ namespace te
           integralRaster, validInterestPoints, raster1Features ),
           "Error generating raster features" );        
           
-        raster1InterestPoints = validInterestPoints;
+        // Bring interest points to full raster indexed coords reference
+      
+        raster1InterestPoints.clear();
+        
+        {
+          InterestPointsSetT::iterator itB = validInterestPoints.begin();
+          const InterestPointsSetT::iterator itE = validInterestPoints.end();
+          InterestPointT auxIP;
+          
+          while( itB != itE )
+          {
+            auxIP = *itB;
+            auxIP.m_x = ( auxIP.m_x / raster1XRescFact ) + 
+              (double)m_inputParameters.m_raster1TargetAreaColStart;
+            auxIP.m_y = ( auxIP.m_y / raster1YRescFact ) + 
+              (double)m_inputParameters.m_raster1TargetAreaLineStart;          
+              
+            raster1InterestPoints.insert( auxIP );
+              
+            ++itB;
+          }
+        }
           
         if( m_inputParameters.m_enableProgress )
         {
@@ -345,7 +367,28 @@ namespace te
           integralRaster, validInterestPoints, raster2Features ),
           "Error generating raster features" );
           
-        raster2InterestPoints = validInterestPoints;
+        // Bring interest points to full raster indexed coords reference
+      
+        raster2InterestPoints.clear();
+        
+        {
+          InterestPointsSetT::iterator itB = validInterestPoints.begin();
+          const InterestPointsSetT::iterator itE = validInterestPoints.end();
+          InterestPointT auxIP;
+          
+          while( itB != itE )
+          {
+            auxIP = *itB;
+            auxIP.m_x = ( auxIP.m_x / raster2XRescFact ) + 
+              (double)m_inputParameters.m_raster2TargetAreaColStart;
+            auxIP.m_y = ( auxIP.m_y / raster2YRescFact ) + 
+              (double)m_inputParameters.m_raster2TargetAreaLineStart;          
+              
+            raster2InterestPoints.insert( auxIP );
+              
+            ++itB;
+          }
+        }
           
         if( m_inputParameters.m_enableProgress )
         {
@@ -366,9 +409,7 @@ namespace te
         raster2Features,
         raster1InterestPoints,
         raster2InterestPoints,
-        m_inputParameters.m_maxR1ToR2Offset,
-        m_inputParameters.m_surfMaxNormEuclideanDist * 2.0, /* since surf feature vectors are unitary verctors */
-        m_inputParameters.m_enableMultiThread,
+        raster1ToRaster2TransfPtr,
         internalMatchedInterestPoints ),
         "Error matching features" );
       
@@ -1540,12 +1581,12 @@ namespace te
       const FloatsMatrix& featuresSet2,
       const InterestPointsSetT& interestPointsSet1,
       const InterestPointsSetT& interestPointsSet2,
-      const unsigned int maxPt1ToPt2PixelDistance,
-      const double maxEuclideanDist,
-      const unsigned int enableMultiThread,
-      MatchedInterestPointsSetT& matchedPoints )
+      te::gm::GeometricTransformation const * const raster1ToRaster2TransfPtr,
+      MatchedInterestPointsSetT& matchedPoints ) const
     {
       matchedPoints.clear();
+      
+      const double maxEuclideanDist = m_inputParameters.m_surfMaxNormEuclideanDist * 2.0; /* since surf feature vectors are unitary verctors */
       
       const unsigned int interestPointsSet1Size = interestPointsSet1.size();
       if( interestPointsSet1Size == 0 ) return true;
@@ -1609,9 +1650,11 @@ namespace te
       params.m_nextFeatureIdx1ToProcessPtr = &nextFeatureIdx1ToProcess;
       params.m_distMatrixPtr = &distMatrix;
       params.m_syncMutexPtr = &syncMutex;
-      params.m_maxPt1ToPt2Distance = maxPt1ToPt2PixelDistance;
+      params.m_raster1ToRaster2TransfPtr = raster1ToRaster2TransfPtr;
+      params.m_searchOptTreeSearchRadius = m_inputParameters.m_geomTransfMaxError
+        / m_inputParameters.m_subSampleOptimizationRescaleFactor;
       
-      if( enableMultiThread )
+      if( m_inputParameters.m_enableMultiThread )
       {
         TERP_TRUE_OR_RETURN_FALSE( featuresSet1.getMemPolicy() ==
           FloatsMatrix::RAMMemPol, "Invalid memory policy" )
@@ -1715,8 +1758,9 @@ namespace te
       assert( paramsPtr->m_featuresSet1Ptr->getColumnsNumber() ==
         paramsPtr->m_featuresSet2Ptr->getColumnsNumber() );
         
-      // Glogals
+      // Globals
       
+      const double interestPointsSet2RTreeSearchRadius = paramsPtr->m_searchOptTreeSearchRadius;
       const unsigned int featureElementsNmb = paramsPtr->m_featuresSet1Ptr->getColumnsNumber();
       unsigned int feat2Idx = 0;
       float const* feat1Ptr = 0;
@@ -1726,6 +1770,16 @@ namespace te
       te::gm::Envelope auxEnvelope;
       float diff = 0;
       float euclideanDist = 0;
+      
+      // local transformation copy
+      
+      std::auto_ptr< te::gm::GeometricTransformation > raster1ToRaster2TransfPtr;
+      if( paramsPtr->m_raster1ToRaster2TransfPtr )
+      {
+        paramsPtr->m_syncMutexPtr->lock();
+        raster1ToRaster2TransfPtr.reset( paramsPtr->m_raster1ToRaster2TransfPtr->clone() );        
+        paramsPtr->m_syncMutexPtr->unlock();
+      }      
       
       // initializing the features 2 indexing
       
@@ -1739,7 +1793,7 @@ namespace te
       std::vector< unsigned int > selectedFeaturesSet2Indexes;
       unsigned int selectedFeaturesSet2IndexesSize = 0;      
         
-      if( paramsPtr->m_maxPt1ToPt2Distance )
+      if( paramsPtr->m_raster1ToRaster2TransfPtr )
       {
         for( unsigned int feat2Idx = 0 ; feat2Idx < featuresSet2Size ; ++feat2Idx )
         {
@@ -1774,16 +1828,21 @@ namespace te
           
           paramsPtr->m_syncMutexPtr->unlock();
           
-          if( paramsPtr->m_maxPt1ToPt2Distance )
+          if( paramsPtr->m_raster1ToRaster2TransfPtr )
           {
-            auxEnvelope.m_llx = auxEnvelope.m_urx = 
-              paramsPtr->m_interestPointsSet1Ptr[ feat1Idx ].m_x;
-            auxEnvelope.m_llx -= (double)paramsPtr->m_maxPt1ToPt2Distance;
-            auxEnvelope.m_urx += (double)paramsPtr->m_maxPt1ToPt2Distance;
-            auxEnvelope.m_lly = auxEnvelope.m_ury = 
-              paramsPtr->m_interestPointsSet1Ptr[ feat1Idx ].m_y;
-            auxEnvelope.m_lly -= (double)paramsPtr->m_maxPt1ToPt2Distance;;
-            auxEnvelope.m_ury += (double)paramsPtr->m_maxPt1ToPt2Distance;;
+            raster1ToRaster2TransfPtr->directMap( 
+              paramsPtr->m_interestPointsSet1Ptr[ feat1Idx ].m_x,
+              paramsPtr->m_interestPointsSet1Ptr[ feat1Idx ].m_y,
+              auxEnvelope.m_llx,
+              auxEnvelope.m_lly );
+            
+            auxEnvelope.m_urx = auxEnvelope.m_llx;
+            auxEnvelope.m_ury = auxEnvelope.m_lly;
+            
+            auxEnvelope.m_llx -= interestPointsSet2RTreeSearchRadius;
+            auxEnvelope.m_lly -= interestPointsSet2RTreeSearchRadius;
+            auxEnvelope.m_urx += interestPointsSet2RTreeSearchRadius;
+            auxEnvelope.m_ury += interestPointsSet2RTreeSearchRadius;
             
             selectedFeaturesSet2Indexes.clear();
             interestPointsSet2RTree.search( auxEnvelope,

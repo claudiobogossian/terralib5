@@ -186,9 +186,12 @@ namespace te
         /*!
           \brief Try to find matched interest points.
           \param matchedInterestPoints The matched interest points.
+          \param raster1ToRaster2TransfPtr A pointer to a transformation direct mapping raster 1 indexed coords into raster 2 indexed coords, of an empty pointer if there is no transformation avaliable.
           \return true if OK, false on errors.
          */        
-        virtual bool getMatchedInterestPoints( MatchedInterestPointsSetT& matchedInterestPoints ) = 0;
+        virtual bool getMatchedInterestPoints( 
+          te::gm::GeometricTransformation const * const raster1ToRaster2TransfPtr,
+          MatchedInterestPointsSetT& matchedInterestPoints ) = 0;
 
         TiePointsLocatorStrategy();
         
