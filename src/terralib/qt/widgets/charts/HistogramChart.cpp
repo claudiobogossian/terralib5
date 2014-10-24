@@ -258,7 +258,6 @@ void te::qt::widgets::HistogramChart::highlight(const te::da::ObjectIdSet* oids)
     m_histogram->getType() == te::dt::FLOAT_TYPE || m_histogram->getType() == te::dt::DOUBLE_TYPE || 
     m_histogram->getType() == te::dt::NUMERIC_TYPE)
   {
-
     std::map<double, unsigned int> highlightedIntervals;
 
     //Acquiring the slected intervals
@@ -272,7 +271,8 @@ void te::qt::widgets::HistogramChart::highlight(const te::da::ObjectIdSet* oids)
     for(itObjSet = oids->begin(); itObjSet != oids->end(); ++itObjSet)
     {
       double interval = static_cast< const te::dt::Double*>(m_histogram->find((*itObjSet)))->getValue();
-      ++highlightedIntervals.at(interval);
+      if( m_histogram->getValues().at(interval) > highlightedIntervals.at(interval))
+        ++highlightedIntervals.at(interval);
     }
 
     QVector<QwtIntervalSample> highlightedSamples(highlightedIntervals.size());
@@ -310,9 +310,9 @@ void te::qt::widgets::HistogramChart::highlight(const te::da::ObjectIdSet* oids)
     for(itObjSet = oids->begin(); itObjSet != oids->end(); ++itObjSet)
     {
       std::string interval = m_histogram->find((*itObjSet))->toString();
-      ++highlightedIntervals.at(interval);
+      if(m_histogram->getStringValues().at(interval) > highlightedIntervals.at(interval))
+        ++highlightedIntervals.at(interval);
     }
-
 
     //A vector containing that will be populated with the samples that match the selected strings
     QVector<QwtIntervalSample> highlightedSamples(highlightedIntervals.size());

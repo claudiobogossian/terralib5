@@ -69,7 +69,7 @@ namespace te
 
         \return a new Scatter
     */
-    TEQTWIDGETSEXPORT Scatter* createScatter(te::da::DataSet* dataset, te::da::DataSetType* dataType, int propX, int propY);
+    TEQTWIDGETSEXPORT Scatter* createScatter(te::da::DataSet* dataset, te::da::DataSetType* dataType, int propX, int propY, int stat);
 
     /*!
         \brief Scatter Creator
@@ -85,7 +85,7 @@ namespace te
         \note The caller will take the ownership of the returned ChartDisplayWidget pointer.
 
     */
-    TEQTWIDGETSEXPORT ChartDisplayWidget* createScatterDisplay(te::da::DataSet* dataset, te::da::DataSetType* dataType, int propX, int propY);
+    TEQTWIDGETSEXPORT ChartDisplayWidget* createScatterDisplay(te::da::DataSet* dataset, te::da::DataSetType* dataType, int propX, int propY, int stat = -1);
 
     /*!
         \brief Histogram Creator
@@ -94,6 +94,7 @@ namespace te
         \param dataType The dataType that will be used to recover the objectIds associated with the given dataset.
         \param propId The id of the property that contains the data
         \param slices The desired number of intervals
+        \param stat The selected satistical function
 
         \note It will traverse the data set, using the moveNext() method
         \note It will not take the ownership of the "dataset" pointer.
@@ -102,7 +103,7 @@ namespace te
 
         \return a new Histogram
     */
-    TEQTWIDGETSEXPORT Histogram* createHistogram(te::da::DataSet* dataset, te::da::DataSetType* dataType, int propId, int slices);
+    TEQTWIDGETSEXPORT Histogram* createHistogram(te::da::DataSet* dataset, te::da::DataSetType* dataType, int propId, int slices, int stat);
 
     /*!
         \brief Histogram Creator
@@ -110,6 +111,7 @@ namespace te
         \param dataset The dataset that will be used to populate the histogram's data
         \param dataType The dataType that will be used to recover the objectIds associated with the given dataset.
         \param propId The id of the property that contains the data
+        \param stat The selected satistical function
 
         \note This version is used to create a histogram based on a set of labels (Strings), therefore there is no user-defined number of intervals, each unique label is an interval
         \note It will traverse the data set, using the moveNext() method
@@ -119,7 +121,7 @@ namespace te
 
         \return a new Histogram
     */
-    TEQTWIDGETSEXPORT Histogram* createHistogram(te::da::DataSet* dataset, te::da::DataSetType* dataType, int propId);
+    TEQTWIDGETSEXPORT Histogram* createHistogram(te::da::DataSet* dataset, te::da::DataSetType* dataType, int propId, int stat);
 
     /*!
         \brief Histogram Creator
@@ -128,6 +130,7 @@ namespace te
         \param dataType The dataType that will be used to recover the objectIds associated with the given dataset.
         \param propId The id of the property that contains the data
         \param slices The desired number of intervals, the default is 10 and this parameter is not used when the preperty is a string
+        \param stat The selected satistical function, defaults to -1 (i.e. none)
 
         \note It will traverse the data set, using the moveNext() method
         \note It will not take the ownership of the "dataset" pointer.
@@ -135,7 +138,7 @@ namespace te
         \note The caller will take the ownership of the returned ChartDisplayWidget pointer.
 
     */
-    TEQTWIDGETSEXPORT ChartDisplayWidget* createHistogramDisplay(te::da::DataSet* dataset, te::da::DataSetType* dataType, int propId, int slices = 10);
+    TEQTWIDGETSEXPORT ChartDisplayWidget* createHistogramDisplay(te::da::DataSet* dataset, te::da::DataSetType* dataType, int propId, int slices = 10, int stat = -1);
 
     /*!
         \function Terralib2Qwt

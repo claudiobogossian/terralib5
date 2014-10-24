@@ -80,8 +80,6 @@ namespace te
 
     protected:
 
-      bool save(std::auto_ptr<te::mem::DataSet> result, std::auto_ptr<te::da::DataSetType> outputDsType);
-
       te::da::DataSourcePtr m_inVectorDsrc;
       std::string m_inVectorName;
       std::auto_ptr<te::da::DataSetType> m_inVectorDsType;

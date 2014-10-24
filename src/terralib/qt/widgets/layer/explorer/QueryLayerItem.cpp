@@ -55,8 +55,8 @@ int te::qt::widgets::QueryLayerItem::columnCount() const
 
 QVariant te::qt::widgets::QueryLayerItem::data(int /*column*/, int role) const
 {
-  //if(role == Qt::DecorationRole)
-  //  return QVariant(QIcon::fromTheme("query-layer"));
+  if(role == Qt::DecorationRole)
+    return QVariant(QIcon::fromTheme("query-layer"));
 
   if(role == Qt::DisplayRole)
     return QVariant(QString::fromUtf8(m_layer->getTitle().c_str()));
