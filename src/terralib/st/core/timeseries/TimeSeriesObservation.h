@@ -57,7 +57,7 @@ namespace te
 
       \sa TimeSeries
     */
-    class TimeSeriesObservation
+    class TESTEXPORT TimeSeriesObservation
     {
        public:
          

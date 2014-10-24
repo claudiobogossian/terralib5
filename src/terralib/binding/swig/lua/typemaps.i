@@ -15,7 +15,7 @@
 
 
 /*
- * Defining a typemap for std::map
+ * Defining a typemap for std::map< std::string, std::string >
  */
 
 %typemap(in) std::map< std::string, std::string >, const std::map< std::string, std::string > & (std::map< std::string, std::string > aux)
