@@ -37,6 +37,33 @@
 
 %ignore te::rst::Raster::callOperator;
 
+%nspace te::rst::SummaryTypes;
+%nspace te::rst::ColorInterp;
+%nspace te::rst::PaletteInterpretation;
+%nspace te::rst::Band;
+%nspace te::rst::BandIterator;
+%nspace te::rst::BandIteratorWindow;
+%nspace te::rst::BandProperty;
+%nspace te::rst::BandSummary;
+%nspace te::rst::Grid;
+%nspace te::rst::Interpolator;
+%nspace te::rst::PositionIterator;
+%nspace te::rst::Raster;
+%nspace te::rst::ProxyRaster;
+%nspace te::rst::RasterFactory;
+%nspace te::rst::RasterIterator;
+%nspace te::rst::RasterProperty;
+%nspace te::rst::RasterSummary;
+%nspace te::rst::RasterSummaryManager;
+%nspace te::rst::RasterSynchronizer;
+%nspace te::rst::Reprojection;
+%nspace te::rst::SynchronizedBand;
+%nspace te::rst::SynchronizedBandBlocksManager;
+%nspace te::rst::SynchronizedRaster;
+%nspace te::rst::TileIndexer;
+%nspace te::rst::Vectorizer;
+%nspace te::rst::VectorizerPolygonStructure;
+
 %include "terralib/raster/Enums.h"
 %include "terralib/raster/Band.h"
 %include "terralib/raster/BandIterator.h"

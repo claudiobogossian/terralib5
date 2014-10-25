@@ -38,6 +38,42 @@
   $1 = &aux;
 }
 
+/*
+ * Defining a typemap for std::vector< std::string >
+ */
+
+%typemap(in) std::vector< std::string >, const std::vector< std::string > & (std::vector< std::string > aux)
+{
+  lua_pushnil(L);
+  
+  while(lua_next(L, -2) != 0)
+  {
+    if(lua_isstring(L, -1))
+    {
+      std::string value(lua_tostring(L, -1)); 
+      aux.push_back(value);
+    }
+    
+    lua_pop(L, 1);
+  }
+  
+  $1 = &aux;
+}
+
+%typemap(out) std::vector<std::string>
+{
+  size_t s = $result.size();
+  
+  lua_createtable(L, 0, 1);
+  
+  for(size_t i = 0; i < s; i++)
+    lua_pushstring(L, $result[i].c_str());
+  
+  return (int) s;
+}
+
+%template (StrVector) std::vector <std::string>;
+
 namespace std 
 {
   template<class T> class auto_ptr { };

@@ -76,7 +76,46 @@ AUTO_PTR_TYPEMAPS(te::st::Trajectory)
 */
 %}
 
+%nspace te::st::SpatioTemporalRelation;
 %nspace te::st::CoverageType;
+%nspace te::st::Observation;
+%nspace te::st::ObservationDataSet;
+%nspace te::st::ObservationDataSetInfo;
+%nspace te::st::ObservationDataSetType;
+%nspace te::st::CoverageSeriesObservation;
+%nspace te::st::CoverageSeriesIterator;
+%nspace te::st::Coverage;
+%nspace te::st::CoverageDataSetInfo;
+%nspace te::st::CoverageSeries;
+%nspace te::st::CoverageSeriesDataSetInfo;
+%nspace te::st::PointCoverageObservation;
+%nspace te::st::PointCoverageIterator;
+%nspace te::st::PointCoverage;
+%nspace te::st::PointCoverageDataSetInfo;
+%nspace te::st::RasterCoverage;
+%nspace te::st::RasterCoverageDataSetInfo;
+%nspace te::st::Event;
+%nspace te::st::Object;
+%nspace te::st::AbstractCoverageSeriesInterp;
+%nspace te::st::AbstractPointCoverageInterp;
+%nspace te::st::AbstractTimeSeriesInterp;
+%nspace te::st::AbstractTrajectoryInterp;
+%nspace te::st::IDWInterpolator;
+%nspace te::st::NearestCoverageAtTimeInterp;
+%nspace te::st::NearestGeometryAtTimeInterp;
+%nspace te::st::NearestValueAtTimeInterp;
+%nspace te::st::TimeSeriesObservation;
+%nspace te::st::TimeSeriesIterator;
+%nspace te::st::TimeSeries;
+%nspace te::st::TimeSeriesDataSetType;
+%nspace te::st::TimeSeriesDataSet;
+%nspace te::st::TimeSeriesDataSetInfo;
+%nspace te::st::TrajectoryObservation;
+%nspace te::st::TrajectoryIterator;
+%nspace te::st::Trajectory;
+%nspace te::st::TrajectoryDataSetType;
+%nspace te::st::TrajectoryDataSet;
+%nspace te::st::TrajectoryDataSetInfo;
 
 %include "terralib\st\Enums.h"
 %include "terralib\st\core\observation\Observation.h"
