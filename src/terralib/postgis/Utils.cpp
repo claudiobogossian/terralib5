@@ -658,8 +658,10 @@ const char* te::pgis::GetPGEncoding(te::common::CharEncoding encoding)
 te::common::CharEncoding te::pgis::GetTeEncoding(const char* const encoding)
 {
   for(std::size_t i = 0; i < sg_n_encoding; ++i)
-    if(sg_pg_encoding[i] == encoding)
+  {
+    if(strcmp(sg_pg_encoding[i],encoding) == 0)
       return (te::common::CharEncoding)i;
+  }
 
   return te::common::UNKNOWN_CHAR_ENCODING;
 }
