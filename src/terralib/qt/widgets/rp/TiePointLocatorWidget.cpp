@@ -483,18 +483,18 @@ void te::qt::widgets::TiePointLocatorWidget::onAutoAcquireTiePointsToolButtonCli
       coordDiffX = itB->second.m_tiePoint.first.x - itB->second.m_tiePoint.second.x;
       coordDiffY = itB->second.m_tiePoint.first.y - itB->second.m_tiePoint.second.y;
 
-      inputParams.m_maxR1ToR2Offset += std::max(inputParams.m_maxR1ToR2Offset, (unsigned int)std::ceil(std::sqrt((coordDiffX * coordDiffX) +  (coordDiffY * coordDiffY))));
+//      inputParams.m_maxR1ToR2Offset += std::max(inputParams.m_maxR1ToR2Offset, (unsigned int)std::ceil(std::sqrt((coordDiffX * coordDiffX) +  (coordDiffY * coordDiffY))));
       ++manualTPNumber;
     }
 
     ++itB;
   }
 
-  if(inputParams.m_maxR1ToR2Offset > 0)
-  {
-    inputParams.m_maxR1ToR2Offset /= manualTPNumber;
-    inputParams.m_maxR1ToR2Offset += ((inputParams.m_maxR1ToR2Offset * 10) / 100);
-  }
+//   if(inputParams.m_maxR1ToR2Offset > 0)
+//   {
+//    inputParams.m_maxR1ToR2Offset /= manualTPNumber;
+//    inputParams.m_maxR1ToR2Offset += ((inputParams.m_maxR1ToR2Offset * 10) / 100);
+//   }
 
   // Executing the algorithm
 
@@ -912,7 +912,7 @@ void te::qt::widgets::TiePointLocatorWidget::startAdvancedOptions()
 
   m_ui->m_correlationWindowWidthLineEdit->setText(QString::number(m_inputParameters.m_moravecCorrelationWindowWidth));
 
-  m_ui->m_gaussianFilterIterationsLineEdit->setText(QString::number(m_inputParameters.m_moravecGaussianFilterIterations));
+  m_ui->m_gaussianFilterIterationsLineEdit->setText(QString::number(m_inputParameters.m_moravecNoiseFilterIterations));
 
   m_ui->m_minAbsCorrelationLineEdit->setText(QString::number(m_inputParameters.m_moravecMinAbsCorrelation));
 
@@ -953,7 +953,7 @@ void te::qt::widgets::TiePointLocatorWidget::updateAdvancedOptions()
 
   m_inputParameters.m_moravecCorrelationWindowWidth = m_ui->m_correlationWindowWidthLineEdit->text().toUInt();
 
-  m_inputParameters.m_moravecGaussianFilterIterations = m_ui->m_gaussianFilterIterationsLineEdit->text().toUInt();
+  m_inputParameters.m_moravecNoiseFilterIterations = m_ui->m_gaussianFilterIterationsLineEdit->text().toUInt();
 
   m_inputParameters.m_moravecMinAbsCorrelation = m_ui->m_minAbsCorrelationLineEdit->text().toDouble();
 

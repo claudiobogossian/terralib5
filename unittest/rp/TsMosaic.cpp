@@ -453,8 +453,6 @@ void TsMosaic::SequenceMosaicTest()
   
   algoInputParams.m_locatorParams.m_maxTiePoints = 500;
   
-  algoInputParams.m_locatorParams.m_maxR1ToR2Offset = 0;
-  
   algoInputParams.m_outDataSetsNamePrefix = 
     "terralib_unittest_rp_Mosaic_SequenceMosaic_Test_";
     

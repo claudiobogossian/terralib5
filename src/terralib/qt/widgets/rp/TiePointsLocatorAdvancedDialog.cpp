@@ -130,7 +130,7 @@ namespace te
           m_inputParameters.m_moravecCorrelationWindowWidth ) );
           
         m_uiPtr->m_gaussianFilterIterationsLineEdit->setText( QString::number(
-          m_inputParameters.m_moravecGaussianFilterIterations ) );
+          m_inputParameters.m_moravecNoiseFilterIterations ) );
           
         m_uiPtr->m_minAbsCorrelationLineEdit->setText( QString::number(
           m_inputParameters.m_moravecMinAbsCorrelation ) );
@@ -196,7 +196,7 @@ namespace te
         m_inputParameters.m_moravecCorrelationWindowWidth = 
           m_uiPtr->m_correlationWindowWidthLineEdit->text().toUInt();
           
-        m_inputParameters.m_moravecGaussianFilterIterations = 
+        m_inputParameters.m_moravecNoiseFilterIterations = 
           m_uiPtr->m_gaussianFilterIterationsLineEdit->text().toUInt();
           
         m_inputParameters.m_moravecMinAbsCorrelation = 

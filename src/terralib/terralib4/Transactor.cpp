@@ -892,7 +892,11 @@ int terralib4::Transactor::getLayerSRID(const std::string & layerName)
   {
     if(it->second->name() == layerName)
     {
-      return it->second->projection()->epsgCode();
+      int srid = it->second->projection()->epsgCode();
+      if(srid == 4979)
+        srid = 4326;
+
+      return srid;
     }
 
     ++it;

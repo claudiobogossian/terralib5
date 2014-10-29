@@ -1929,13 +1929,13 @@ void te::pgis::Transactor::getGeometryInfo(const std::string& datasetName, te::g
 {
   std::string sql = "SELECT g.coord_dimension, g.srid, g.type "
                     "FROM geometry_columns g "
-                    "WHERE g.f_table_name = '";
+                    "WHERE lower(g.f_table_name) = '";
 
   std::string tname, sname;
   
   SplitTableName(datasetName, &(m_ds->getCurrentSchema()), sname, tname);
 
-  sql += tname;
+  sql += te::common::Convert2LCase(tname);
   sql += "' AND g.f_table_schema = '";
   sql += sname;
   sql += "' AND f_geometry_column = '";

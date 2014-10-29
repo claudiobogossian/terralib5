@@ -316,8 +316,8 @@ int  te::qt::widgets::TableLinkDialog::exec()
 {
   if(m_ds->getType() == "OGR")
   {
-    QMessageBox::critical(this, tr("Table link error"),
-                      tr("This function is not available for the selected datasource"));
+    QMessageBox::information(this, tr("Table link error"),
+                             tr("This function is not available for the selected datasource"));
     return QDialog::Rejected;
   }
   else

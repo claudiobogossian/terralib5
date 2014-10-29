@@ -41,6 +41,7 @@
 #include "../../qt/af/Utils.h"
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../../qt/widgets/layer/utils/DataSet2Layer.h"
+#include "../../qt/widgets/progress/ProgressViewerDialog.h"
 #include "../../qt/widgets/Utils.h"
 #include "../../raster/RasterProperty.h"
 #include "../../statistics/core/Utils.h"
@@ -367,6 +368,10 @@ void te::attributefill::RasterToVectorDialog::onOkPushButtonClicked()
   
   std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toStdString();
 
+  //progress
+  te::qt::widgets::ProgressViewerDialog v(this);
+  int id = te::common::ProgressManager::getInstance().addViewer(&v);
+
   try
   {
     bool res;
@@ -485,6 +490,8 @@ void te::attributefill::RasterToVectorDialog::onOkPushButtonClicked()
       {
         this->setCursor(Qt::ArrowCursor);
         QMessageBox::information(this, "Fill", "Error: could not generate the operation.");
+        te::common::ProgressManager::getInstance().removeViewer(id);
+
         reject();
       }
     }
@@ -503,10 +510,12 @@ void te::attributefill::RasterToVectorDialog::onOkPushButtonClicked()
 
     QMessageBox::information(this, "Fill", e.what());
     te::common::Logger::logDebug("fill", e.what());
+    te::common::ProgressManager::getInstance().removeViewer(id);
 
     return;
   }
 
+  te::common::ProgressManager::getInstance().removeViewer(id);
   this->setCursor(Qt::ArrowCursor);
   accept();
 }

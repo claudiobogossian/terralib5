@@ -80,7 +80,7 @@ te::vp::GeometricOpWizard::GeometricOpWizard(QWidget* parent)
 
   this->setButton(QWizard::HelpButton, helpButton);
 
-  //helpButton->setPageReference("../../help.html");
+  helpButton->setPageReference("plugins/vp/vp_geometricOper.html");
 
   addPages();
 }

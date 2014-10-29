@@ -340,7 +340,8 @@ void te::attributefill::VectorToVectorDialog::setStatisticalSummary()
     m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MEDIAN).c_str()), te::stat::MEDIAN);
     m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::VAR_COEFF).c_str()), te::stat::VAR_COEFF);
     m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MODE).c_str()), te::stat::MODE);
-    m_ui->m_selectAllComboBox->addItem("Major Class");
+    m_ui->m_selectAllComboBox->addItem("Class with highest occurrence");
+    m_ui->m_selectAllComboBox->addItem("Class with larger intersection area");
     m_ui->m_selectAllComboBox->addItem("Percentage per Class");
     m_ui->m_selectAllComboBox->addItem("Minimum Distance");
     m_ui->m_selectAllComboBox->addItem("Presence");
@@ -365,7 +366,8 @@ void te::attributefill::VectorToVectorDialog::setStatisticalSummary()
     m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MEDIAN).c_str()), te::stat::MEDIAN);
     m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::VAR_COEFF).c_str()), te::stat::VAR_COEFF);
     m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MODE).c_str()), te::stat::MODE);
-    m_ui->m_rejectAllComboBox->addItem("Major Class");
+    m_ui->m_rejectAllComboBox->addItem("Class with highest occurrence");
+    m_ui->m_rejectAllComboBox->addItem("Class with larger intersection area");
     m_ui->m_rejectAllComboBox->addItem("Percentage per Class");
     m_ui->m_rejectAllComboBox->addItem("Minimum Distance");
     m_ui->m_rejectAllComboBox->addItem("Presence");
@@ -703,17 +705,19 @@ void te::attributefill::VectorToVectorDialog::setFunctionsByLayer(te::map::Abstr
 
       // This function works only with polygon to polygon
       if(isClassType(prop->getType()) && isPolygon(geomType) && isPolygon(toGeomType))
+      {
         m_ui->m_statisticsListWidget->addItem(QString(props[i]->getName().c_str()) + " : " + "Class with larger intersection area");
+        m_ui->m_statisticsListWidget->addItem(QString(props[i]->getName().c_str()) + " : " + "Percentage of each Class by Area");
+      }
 
       m_ui->m_statisticsListWidget->addItem(QString(props[i]->getName().c_str()) + " : " + "Percentage per Class");
       m_ui->m_statisticsListWidget->addItem(QString(props[i]->getName().c_str()) + " : " + "Minimum Distance");
       m_ui->m_statisticsListWidget->addItem(QString(props[i]->getName().c_str()) + " : " + "Presence");
 
-      if(isPolygon(geomType))
+      if(isPolygon(geomType) && isPolygon(toGeomType))
       {
         m_ui->m_statisticsListWidget->addItem(QString(props[i]->getName().c_str()) + " : " + "Weighted by Area");
         m_ui->m_statisticsListWidget->addItem(QString(props[i]->getName().c_str()) + " : " + "Weighted Sum by Area");
-        m_ui->m_statisticsListWidget->addItem(QString(props[i]->getName().c_str()) + " : " + "Percentage of each Class by Area");
         m_ui->m_statisticsListWidget->addItem(QString(props[i]->getName().c_str()) + " : " + "Percentage of Total Area");
       }
     }
@@ -797,8 +801,8 @@ bool te::attributefill::VectorToVectorDialog::isClassType(const int type)
 te::gm::GeomType te::attributefill::VectorToVectorDialog::getCurrentToLayerGeomType()
 {
   te::map::AbstractLayerPtr toLayer = getCurrentToLayer();
-  std::string toGeomPropName = toLayer->getGeomPropertyName();
   std::auto_ptr<te::da::DataSetType> toSchema = toLayer->getSchema();
-  te::gm::GeometryProperty* toGeomProp = dynamic_cast<te::gm::GeometryProperty*>(te::da::GetFirstSpatialProperty(toSchema.get()));
+  te::dt::Property* p = te::da::GetFirstSpatialProperty(toSchema.get());
+  te::gm::GeometryProperty* toGeomProp = dynamic_cast<te::gm::GeometryProperty*>(p);
   return toGeomProp->getGeometryType();
 }

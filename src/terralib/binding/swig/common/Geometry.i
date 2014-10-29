@@ -42,6 +42,10 @@
 
 %}
 
+%nspace te::gm::GeomType;
+%nspace te::gm::SpatialRelation;
+%nspace te::gm::Dimensionality;
+%nspace te::gm::BufferCapStyle;
 %nspace te::gm::Geometry;
 %nspace te::gm::Coord2D;
 %nspace te::gm::AbstractPoint;
@@ -50,7 +54,24 @@
 %nspace te::gm::Curve;
 %nspace te::gm::CircularString;
 %nspace te::gm::CompoundCurve;
+%nspace te::gm::Envelope;
+%nspace te::gm::LineString;
+%nspace te::gm::Line;
+%nspace te::gm::LinearRing;
+%nspace te::gm::Surface;
 %nspace te::gm::CurvePolygon;
+%nspace te::gm::GeometryCollection;
+%nspace te::gm::MultiCurve;
+%nspace te::gm::MultiLineString;
+%nspace te::gm::MultiPoint;
+%nspace te::gm::MultiSurface;
+%nspace te::gm::MultiPolygon;
+%nspace te::gm::PointKd;
+%nspace te::gm::PointM;
+%nspace te::gm::PointZ;
+%nspace te::gm::PointZM;
+%nspace te::gm::Polygon;
+%nspace te::gm::PolyhedralSurface;
   
 %include "terralib/geometry/Enums.h"
 %include "terralib/geometry/Geometry.h"

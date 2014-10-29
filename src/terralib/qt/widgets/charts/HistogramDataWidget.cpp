@@ -30,11 +30,54 @@
 #include "../../../raster.h"
 #include "../../../raster/RasterSummary.h"
 #include "../../../raster/RasterSummaryManager.h"
+#include "../../../statistics/core/Enums.h"
+#include "../../../statistics/core/Utils.h"
 #include "Histogram.h"
 #include "HistogramDataWidget.h"
 #include "ui_HistogramDataWidgetForm.h"
 
 #include <iostream>
+
+void updateSummary(te::da::DataSet* dataSet, Ui::HistogramDataWidgetForm* ui)
+{
+  ui->m_summaryComboBox->clear();
+
+  size_t selectedPropertyIdx = 0;
+  for (size_t i = 0; i < dataSet->getNumProperties(); i++)
+  {
+    if(ui->m_propertyComboBox->currentText().toStdString() == dataSet->getPropertyName(i))
+      selectedPropertyIdx = i;
+  }
+
+  int propType = dataSet->getPropertyDataType(selectedPropertyIdx);
+
+  if(propType == te::dt::DATETIME_TYPE || propType == te::dt::STRING_TYPE)
+  {
+    ui->m_summaryComboBox->addItem(QString::fromStdString("None"), QVariant(-1));
+    ui->m_summaryComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MIN_VALUE).c_str()), QVariant(te::stat::MIN_VALUE));
+    ui->m_summaryComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MAX_VALUE).c_str()), QVariant(te::stat::MAX_VALUE));
+    //ui->m_summaryComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::COUNT).c_str()), QVariant(te::stat::COUNT));
+    //ui->m_summaryComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::VALID_COUNT).c_str()), QVariant(te::stat::VALID_COUNT));
+  }
+  else
+  {
+    ui->m_summaryComboBox->addItem(QString::fromStdString("None"), QVariant(-1));
+    ui->m_summaryComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MIN_VALUE).c_str()), QVariant(te::stat::MIN_VALUE));
+    ui->m_summaryComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MAX_VALUE).c_str()), QVariant(te::stat::MAX_VALUE));
+    //ui->m_summaryComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::COUNT).c_str()), QVariant(te::stat::COUNT));
+    //ui->m_summaryComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::VALID_COUNT).c_str()), QVariant(te::stat::VALID_COUNT));
+    ui->m_summaryComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MEAN).c_str()), QVariant(te::stat::MEAN));
+    ui->m_summaryComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::SUM).c_str()), QVariant(te::stat::SUM));
+    ui->m_summaryComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::STANDARD_DEVIATION).c_str()), QVariant(te::stat::STANDARD_DEVIATION));
+    ui->m_summaryComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::VARIANCE).c_str()), QVariant(te::stat::VARIANCE));
+    ui->m_summaryComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::SKEWNESS).c_str()), QVariant(te::stat::SKEWNESS));
+    ui->m_summaryComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::KURTOSIS).c_str()), QVariant(te::stat::KURTOSIS));
+    ui->m_summaryComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::AMPLITUDE).c_str()), QVariant(te::stat::AMPLITUDE));
+    ui->m_summaryComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MEDIAN).c_str()), QVariant(te::stat::MEDIAN));
+    ui->m_summaryComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::VAR_COEFF).c_str()), QVariant(te::stat::VAR_COEFF));
+    //ui->m_summaryComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MODE).c_str()), QVariant(te::stat::MODE));
+  }
+}
 
 te::qt::widgets::HistogramDataWidget::HistogramDataWidget(te::da::DataSet* dataSet, te::da::DataSetType* dataType, QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f),
@@ -90,6 +133,8 @@ te::qt::widgets::HistogramDataWidget::HistogramDataWidget(te::da::DataSet* dataS
     }
   }
 
+  updateSummary(m_dataSet.get(), getForm());
+
 // connect signal and slots
   connect(m_ui->m_propertyComboBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(onPropertyComboBoxIndexChanged(QString)));
 }
@@ -121,18 +166,21 @@ te::qt::widgets::Histogram* te::qt::widgets::HistogramDataWidget::getHistogram()
     for (size_t i = 0; i < m_dataSet->getNumProperties(); i++)
     {
       if(m_ui->m_propertyComboBox->currentText().toStdString() == m_dataSet.get()->getPropertyName(i))
+      {
         selectedPropertyIdx = i;
+      }
     }
 
     int propType = m_dataSet->getPropertyDataType(selectedPropertyIdx);
+    int stat = m_ui->m_summaryComboBox->itemData(m_ui->m_summaryComboBox->currentIndex()).toInt();
 
     if(propType == te::dt::DATETIME_TYPE || propType == te::dt::STRING_TYPE)
     {
-      histogram = te::qt::widgets::createHistogram(m_dataSet.get(), m_dataType.get(), selectedPropertyIdx);
+      histogram = te::qt::widgets::createHistogram(m_dataSet.get(), m_dataType.get(), selectedPropertyIdx, stat);
     }
     else
     {
-      histogram = te::qt::widgets::createHistogram(m_dataSet.get(), m_dataType.get(), selectedPropertyIdx, m_ui->m_slicesSpinBox->value());
+      histogram = te::qt::widgets::createHistogram(m_dataSet.get(), m_dataType.get(), selectedPropertyIdx, m_ui->m_slicesSpinBox->value(), stat);
     }
   }
   return histogram;
@@ -175,4 +223,7 @@ void te::qt::widgets::HistogramDataWidget::onPropertyComboBoxIndexChanged (QStri
 
     m_ui->m_slicesSpinBox->setValue(0);
   }
+
+  updateSummary(m_dataSet.get(), getForm());
+
 }
