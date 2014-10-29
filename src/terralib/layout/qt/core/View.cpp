@@ -220,6 +220,7 @@ void te::layout::View::keyPressEvent( QKeyEvent* keyEvent )
     Context::getInstance().setMode(enumMode->getModePrinter());
     //Apenas redesenhar itens que estão dentro do box do papel.
     sc->printPreview();
+    resetDefaultConfig();
     Context::getInstance().setMode(enumMode->getModeNone());
   }
   else if(keyEvent->key() == Qt::Key_E)
@@ -480,6 +481,7 @@ void te::layout::View::outsideAreaChangeContext( bool change )
   else if(mode == enumMode->getModePrinter()) 
   {
     sc->printPreview();
+    resetDefaultConfig();
   }
   else if(mode == enumMode->getModeExit()) 
   {
@@ -744,16 +746,6 @@ bool te::layout::View::intersectionSelectionItem(int x, int y)
   }
 
   return intersection;
-}
-
-void te::layout::View::drawBackground( QPainter * painter, const QRectF & rect )
-{
-  QGraphicsView::drawBackground(painter, rect);
-}
-
-void te::layout::View::drawForeground( QPainter * painter, const QRectF & rect )
-{
-  QGraphicsView::drawForeground(painter, rect);
 }
 
 QImage te::layout::View::createImage()

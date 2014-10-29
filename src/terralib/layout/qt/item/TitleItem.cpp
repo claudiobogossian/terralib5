@@ -47,11 +47,12 @@
 #include <QTextTableFormat>
 #include <QTextLength>
 #include <QTextCharFormat>
+#include <QTextList>
 
 te::layout::TitleItem::TitleItem( ItemController* controller, Observable* o ) :
   TextItem(controller, o)
 {
-  
+  m_document->clear();
 }
 
 te::layout::TitleItem::~TitleItem()
@@ -63,211 +64,128 @@ te::layout::TitleItem::~TitleItem()
   }
 }
 
-//void te::layout::TitleItem::init()
-//{
-//  TitleModel* model = dynamic_cast<TitleModel*>(m_model);
-//
-//  if(!model)
-//    return;
-//
-//  QTextDocument* doc = m_document;
-//    
-//  QTextCursor cursor(doc);
-//  cursor.movePosition(QTextCursor::Start);
-//  
-//  QBrush blackBrush(Qt::SolidPattern);
-//
-//  QTextTableFormat tableFormat;
-//  tableFormat.setAlignment(Qt::AlignLeft);
-//  tableFormat.setBorderBrush(blackBrush);
-//
-//  tableFormat.setBorderStyle(QTextFrameFormat::BorderStyle_Solid);
-//  tableFormat.setWidth(QTextLength(QTextLength::PercentageLength, 100));
-//
-//  QVector<QTextLength> constraints;
-//  constraints << QTextLength(QTextLength::PercentageLength, 100);
-//  tableFormat.setColumnWidthConstraints(constraints);
-//
-//  tableFormat.setHeaderRowCount(1);
-//
-//  m_table = cursor.insertTable(2, 1, tableFormat);
-//  
-//  int countRows = m_table->rows();
-//  int countColumns = m_table->columns();
-//
-//  QTextCharFormat format = cursor.charFormat();
-//  format.setFontPointSize(12);
-//
-//  QTextCharFormat boldFormat = format;
-//  boldFormat.setFontWeight(QFont::Bold);
-//
-//  // Header
-//  QTextTableCell cellOne = m_table->cellAt(0, 0);
-//  QTextCharFormat fmtOne = cellOne.format(); 
-//  fmtOne.setBackground(Qt::blue); 
-//  cellOne.setFormat(fmtOne);
-//  QTextCursor cellCursorOne = cellOne.firstCursorPosition();
-//  std::string title = model->getTitle();
-//  cellCursorOne.insertText(title.c_str(), boldFormat);
-//  
-//  //Table
-//  QTextTableCell cellTwo = m_table->cellAt(1, 0);
-//  QTextCursor cellCursorTwo = cellTwo.firstCursorPosition();
-//  std::string txt = model->getText();
-//  cellCursorTwo.insertText(txt.c_str(), format);
-//
-//  refreshTable();
-//
-//  DefaultTextItem::init();
-//  adjustSizeMM();
-//}
-//
-//void te::layout::TitleItem::refreshTable()
-//{
-//  TitleModel* model = dynamic_cast<TitleModel*>(m_model);
-//
-//  if(!model)
-//    return;
-//
-//  Font font = model->getFont();
-//  QFont qfont;
-//  qfont.setFamily(font.getFamily().c_str());
-//  qfont.setPointSize(font.getPointSize());
-//  qfont.setBold(font.isBold());
-//  qfont.setItalic(font.isItalic());
-//  qfont.setUnderline(font.isUnderline());
-//  qfont.setStrikeOut(font.isStrikeout());
-//  qfont.setKerning(font.isKerning());
-//  setFont(qfont);
-//
-//  QTextCursor cursor(document());
-//  cursor.movePosition(QTextCursor::Start);
-//  
-//  double spacing = model->getSpacing();
-//  double padding = model->getPadding();
-//
-//  int numRows = model->getNumberRows();
-//  int numColumns = model->getNumberColumns();
-//
-//  te::color::RGBAColor backColor = model->getTableColor();
-//  QColor qBackColor(backColor.getRed(), backColor.getGreen(),
-//    backColor.getBlue(), backColor.getAlpha());
-//
-//  te::color::RGBAColor borderColor = model->getBorderGridColor();
-//  QColor qBorderColor(borderColor.getRed(), borderColor.getGreen(),
-//    borderColor.getBlue(), borderColor.getAlpha());
-//
-//  double borderWidth = model->getBorderWidth();
-//
-//  QBrush tableBrush(qBackColor);
-//  tableBrush.setStyle(Qt::SolidPattern);
-//
-//  QTextTableFormat tableFormat;
-//  if(m_table)
-//  {
-//    tableFormat = m_table->format();
-//  }
-//  tableFormat.setAlignment(Qt::AlignLeft);
-//  tableFormat.setBorderBrush(tableBrush);
-//  tableFormat.setBorder(borderWidth);
-//
-//  Utils* utils = Context::getInstance().getUtils();
-//
-//  int cellSpacing = utils->mm2pixel(spacing);  
-//  tableFormat.setCellSpacing(cellSpacing); 
-//
-//  int cellPadding = utils->mm2pixel(padding); 
-//  tableFormat.setCellPadding(cellPadding); 
-//
-//  tableFormat.setBorderStyle(QTextFrameFormat::BorderStyle_Solid);
-//  tableFormat.setWidth(QTextLength(QTextLength::PercentageLength, 100));
-//
-//  QVector<QTextLength> constraints;
-//
-//  for(int c = 0 ; c < numColumns ; ++c)
-//  {
-//    constraints << QTextLength(QTextLength::PercentageLength, 100);    
-//  }
-//
-//  tableFormat.setColumnWidthConstraints(constraints);
-//
-//  tableFormat.setHeaderRowCount(1);
-//
-//  if(m_table)
-//  {
-//    m_table->setFormat(tableFormat);
-//    int countRows = m_table->rows();
-//    int countColumns = m_table->columns();
-//
-//    if(countRows != numRows || countColumns != numColumns)
-//    {
-//      m_table->resize(numRows, numColumns);
-//    }
-//  }
-//  else
-//  {
-//    m_table = cursor.insertTable(numRows, numColumns, tableFormat);
-//  }
-//
-//  refreshText();
-//}
-//
-//void te::layout::TitleItem::refreshText()
-//{
-//  TitleModel* model = dynamic_cast<TitleModel*>(m_model);
-//
-//  if(!model)
-//    return;
-//
-//  int numRows = model->getNumberRows();
-//  int numColumns = model->getNumberColumns();
-//
-//  QTextCursor cursor(document());
-//  cursor.movePosition(QTextCursor::Start);
-//
-//  QTextCharFormat format = cursor.charFormat();
-//  format.setFontPointSize(12);
-//
-//  QTextCharFormat boldFormat = format;
-//  boldFormat.setFontWeight(QFont::Bold);
-//
-//  te::color::RGBAColor headerVtrColor = model->getHeaderVerticalColor();
-//  QColor qHeaderVtrColor(headerVtrColor.getRed(), headerVtrColor.getGreen(),
-//    headerVtrColor.getBlue(), headerVtrColor.getAlpha());
-//
-//  te::color::RGBAColor headerHrzColor = model->getHeaderHorizontalColor();
-//  QColor qHeaderHrzColor(headerHrzColor.getRed(), headerHrzColor.getGreen(),
-//    headerHrzColor.getBlue(), headerHrzColor.getAlpha());
-//
-//  te::color::RGBAColor borderColor = model->getBorderGridColor();
-//  QColor qBorderColor(borderColor.getRed(), borderColor.getGreen(),
-//    borderColor.getBlue(), borderColor.getAlpha());
-//
-//  te::color::RGBAColor evenRowColor = model->getEvenRow();
-//  QColor qEvenRowColor(evenRowColor.getRed(), evenRowColor.getGreen(),
-//    evenRowColor.getBlue(), evenRowColor.getAlpha());
-//
-//  te::color::RGBAColor oddRowColor = model->getOddRow();
-//  QColor qOddRowColor(oddRowColor.getRed(), oddRowColor.getGreen(),
-//    oddRowColor.getBlue(), oddRowColor.getAlpha());
-//  
-//  // Header
-//  QBrush headerHrz(qHeaderHrzColor);
-//  QTextTableCell cellOne = m_table->cellAt(0, 0);
-//  QTextCharFormat fmtOne = cellOne.format(); 
-//  fmtOne.setBackground(headerHrz); 
-//  cellOne.setFormat(fmtOne);
-//  QTextCursor cellCursorOne = cellOne.firstCursorPosition();
-//  std::string title = model->getTitle();
-//  cellCursorOne.insertText(title.c_str(), boldFormat);
-//  
-//  //Table
-//  QBrush headerVrt(qHeaderVtrColor);
-//  QTextTableCell cellTwo = m_table->cellAt(1, 0);
-//  QTextCharFormat fmtTwo = cellTwo.format(); 
-//  fmtTwo.setBackground(headerVrt); 
-//  cellTwo.setFormat(fmtTwo);
-//  QTextCursor cellCursorTwo = cellTwo.firstCursorPosition();
-//  std::string txt = model->getText();
-//  cellCursorTwo.insertText(txt.c_str(), format);
-//}
+void te::layout::TitleItem::init()
+{
+  TitleModel* model = dynamic_cast<TitleModel*>(m_model);
+
+  if(!model)
+    return;
+
+  updateDocument();
+}
+
+void te::layout::TitleItem::updateObserver( ContextItem context )
+{
+  if(!m_model)
+    return;
+
+  if(!m_document)
+    return;
+ 
+  updateDocument();
+
+  refreshDocument();
+
+  update();
+}
+
+void te::layout::TitleItem::updateDocument()
+{
+  TitleModel* model = dynamic_cast<TitleModel*>(m_model);
+
+  if(!model)
+    return;
+
+  m_document->clear();
+
+  QTextDocument* doc = m_document;
+
+  QTextCursor cursor(doc);
+  cursor.movePosition(QTextCursor::Start);
+
+  QBrush blackBrush(Qt::SolidPattern);
+
+  QTextTableFormat tableFormat;
+  tableFormat.setAlignment(Qt::AlignLeft);
+  
+  tableFormat.setHeaderRowCount(1);
+
+  m_table = cursor.insertTable(2, 1, tableFormat);
+  
+  QTextCharFormat format = cursor.charFormat();
+  format.setFontPointSize(model->getFont().getPointSize());
+      
+  te::color::RGBAColor headerVtrColor = model->getHeaderVerticalColor();
+  QColor qHeaderVtrColor(headerVtrColor.getRed(), headerVtrColor.getGreen(),
+    headerVtrColor.getBlue(), headerVtrColor.getAlpha());
+
+  te::color::RGBAColor headerHrzColor = model->getHeaderHorizontalColor();
+  QColor qHeaderHrzColor(headerHrzColor.getRed(), headerHrzColor.getGreen(),
+    headerHrzColor.getBlue(), headerHrzColor.getAlpha());
+
+  te::color::RGBAColor borderColor = model->getBorderGridColor();
+  QColor qBorderColor(borderColor.getRed(), borderColor.getGreen(),
+    borderColor.getBlue(), borderColor.getAlpha());
+
+  te::color::RGBAColor evenRowColor = model->getEvenRow();
+  QColor qEvenRowColor(evenRowColor.getRed(), evenRowColor.getGreen(),
+    evenRowColor.getBlue(), evenRowColor.getAlpha());
+
+  te::color::RGBAColor oddRowColor = model->getOddRow();
+  QColor qOddRowColor(oddRowColor.getRed(), oddRowColor.getGreen(),
+    oddRowColor.getBlue(), oddRowColor.getAlpha());
+
+  // Header
+  QBrush headerHrz(qHeaderHrzColor);
+  QTextTableCell cellOne = m_table->cellAt(0, 0);
+  QTextCharFormat fmtOne = cellOne.format(); 
+  fmtOne.setBackground(headerHrz); 
+  cellOne.setFormat(fmtOne);
+  QTextCursor cellCursorOne = cellOne.firstCursorPosition();
+  std::string title = model->getTitle();
+  cellCursorOne.insertText(title.c_str(), format);
+
+  //Table
+  QBrush headerVrt(qHeaderVtrColor);
+  QTextTableCell cellTwo = m_table->cellAt(1, 0);
+  QTextCharFormat fmtTwo = cellTwo.format(); 
+  fmtTwo.setBackground(headerVrt); 
+  cellTwo.setFormat(fmtTwo);
+  QTextCursor cellCursorTwo = cellTwo.firstCursorPosition();
+  std::string txt = model->getText();
+  cellCursorTwo.insertText(txt.c_str(), format);
+}
+
+void te::layout::TitleItem::refreshDocument()
+{
+  if(!m_model)
+    return;
+
+  TitleModel* model = dynamic_cast<TitleModel*>(m_model);
+
+  if(!model)
+    return;
+
+  QImage img = createImage();
+  QPointF pp = scenePos();
+  te::gm::Envelope box(pp.x(), pp.y(), pp.x() + img.widthMM(), pp.y() + img.heightMM());
+
+  model->setBox(box);
+  
+  // Update Model
+
+  // Header
+  QTextTableCell cellOne = m_table->cellAt(0, 0);
+  QTextCursor cellCursorOne = cellOne.firstCursorPosition();
+  std::string txtOne = cellCursorOne.block().text().toStdString();
+  model->setTitle(txtOne);
+
+  // Table
+  QTextTableCell cellTwo = m_table->cellAt(1, 0);
+  QTextCursor cellCursorTwo = cellTwo.firstCursorPosition();
+  std::string txtTwo = cellCursorTwo.block().text().toStdString();
+  model->setText(txtTwo);
+
+  QPixmap pixmp = QPixmap::fromImage(img);
+  setPixmap(pixmp);
+}

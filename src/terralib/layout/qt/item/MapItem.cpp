@@ -236,8 +236,10 @@ void te::layout::MapItem::paint( QPainter * painter, const QStyleOptionGraphicsI
   }
 
   painter->save();
-  painter->drawPixmap(rtTarget, m_mapPixmap, QRectF( 0, 0, m_mapPixmap.width(), m_mapPixmap.height() ));
-  painter->drawPixmap(boundRect, m_pixmap, QRectF( 0, 0, m_pixmap.width(), m_pixmap.height() ));
+  QRectF rtSourceMap( 0, 0, m_mapPixmap.width(), m_mapPixmap.height() );
+  painter->drawPixmap(rtTarget, m_mapPixmap, rtSourceMap);
+  QRectF rtSource( 0, 0, m_pixmap.width(), m_pixmap.height() );
+  painter->drawPixmap(boundRect, m_pixmap, rtSource);
   painter->restore(); 
 
   //Draw Selection

@@ -125,11 +125,13 @@ te::layout::Observer* te::layout::ItemFactory::make( EnumType* type, ItemParamsC
   else if(type == enumObj->getTitleItem())
   {
     TitleItem* title = new TitleItem(params.getController(), params.getModel());
+    title->init();
     item = (Observer*)title;
   }
   else if(type == enumObj->getTextGridItem())
   {
     TextGridItem* txtGrid = new TextGridItem(params.getController(), params.getModel());
+    txtGrid->init();
     item = (Observer*)txtGrid;
   }
   else if(type == enumObj->getMultiLineTextItem())

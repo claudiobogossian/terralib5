@@ -64,7 +64,9 @@ namespace te
       Q_OBJECT //for slots/signals
 
       public:
+
         View(QWidget* widget = (QWidget*)0);
+
         ~View();
 
         virtual void config();     
@@ -135,21 +137,18 @@ namespace te
         virtual void showSystematicScale();
 
         virtual bool intersectionSelectionItem(int x, int y);
-
-        virtual void	drawBackground ( QPainter * painter, const QRectF & rect );
-
-        virtual void	drawForeground ( QPainter * painter, const QRectF & rect );
-                                
+                                        
       protected:
-        VisualizationArea*  m_visualizationArea;
-        QLineF*             m_lineIntersectHrz;
-        QLineF*             m_lineIntersectVrt;
-        AbstractViewTool*   m_currentTool;
-        PageSetupOutside*   m_pageSetupOutside;
+
+        VisualizationArea*      m_visualizationArea;
+        QLineF*                 m_lineIntersectHrz;
+        QLineF*                 m_lineIntersectVrt;
+        AbstractViewTool*       m_currentTool;
+        PageSetupOutside*       m_pageSetupOutside;
         SystematicScaleOutside* m_systematicOutside;
-        te::gm::Coord2D       m_coordSystematic;
-        bool                m_selectionChange;
-        MenuItem*           m_menuItem;
+        te::gm::Coord2D         m_coordSystematic;
+        bool                    m_selectionChange;
+        MenuItem*               m_menuItem;
     };
   }
 }

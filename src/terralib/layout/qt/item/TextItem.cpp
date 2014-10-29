@@ -68,6 +68,8 @@ te::layout::TextItem::TextItem( ItemController* controller, Observable* o ) :
 
   m_document = new QTextDocument;
 
+  m_backgroundColor.setAlpha(0);
+
   QFont ft("Arial", 12);
   m_document->setDefaultFont(ft);
 
@@ -75,17 +77,21 @@ te::layout::TextItem::TextItem( ItemController* controller, Observable* o ) :
   TextModel* model = dynamic_cast<TextModel*>(m_model);
   if(model)
   {
-    model->setText(name);
+    if(model->getText().compare("") == 0)
+    {
+      model->setText(name);
+    }
+
+    QTextCursor cursor(getDocument());
+    cursor.movePosition(QTextCursor::Start);
+    cursor.insertText(name.c_str());
+
+    std::string txt = model->getText();
+    m_document->setPlainText(txt.c_str());
   }
 
   //If enabled is true, this item will accept hover events
   setAcceptHoverEvents(true);
-  
-  QTextCursor cursor(getDocument());
-  cursor.movePosition(QTextCursor::Start);
-  cursor.insertText(name.c_str());
-
-  m_document->setPlainText("TESTANDO!");
 }
 
 te::layout::TextItem::~TextItem()
@@ -164,9 +170,10 @@ void te::layout::TextItem::paint( QPainter * painter, const QStyleOptionGraphics
 
   painter->save();
   painter->translate( -boundRect.bottomLeft().x(), -boundRect.topRight().y() );
-  painter->drawPixmap(boundRect, m_pixmap, QRectF( 0, 0, m_pixmap.width(), m_pixmap.height() ));
+  QRectF rSource( 0, 0, m_pixmap.width(), m_pixmap.height());
+  painter->drawPixmap(boundRect, m_pixmap, rSource);
   painter->restore();
-  
+      
   //Draw Selection
   if (option->state & QStyle::State_Selected)
   {
@@ -176,11 +183,36 @@ void te::layout::TextItem::paint( QPainter * painter, const QStyleOptionGraphics
 
 QImage te::layout::TextItem::createImage()
 {
-  QImage img(m_document->size().width(), m_document->size().height(), QImage::Format_ARGB32);
+  TextModel* model = dynamic_cast<TextModel*>(m_model);
+
+  if(!model)
+  {
+    QImage ig;
+    return ig;
+  }
+
+  double zoomFactor = Context::getInstance().getZoomFactor();
+  QFont ft = m_document->defaultFont();
+
+  if(zoomFactor > 1.)
+  {
+    Font fot = model->getFont();
+
+    int pts = (int)fot.getPointSize() * zoomFactor;
+    ft.setPointSize(pts);
+    m_document->setDefaultFont(ft);
+  }
+
+  double w = m_document->size().width();
+  double h = m_document->size().height();
+  
+  QImage img(w, h, QImage::Format_ARGB32_Premultiplied);
   img.fill(m_backgroundColor);
 
   QPainter ptr(&img);
-  ptr.setFont(m_document->defaultFont());
+  ptr.setFont(ft);
+  ptr.setRenderHint(QPainter::Antialiasing, true);
+
   m_document->drawContents(&ptr);
 
   return img;
@@ -202,6 +234,8 @@ void te::layout::TextItem::refreshDocument()
 
   model->setBox(box);
   model->setText(m_document->toPlainText().toStdString());
+
+  std::string sname = m_document->toPlainText().toStdString();
 
   QPixmap pixmp = QPixmap::fromImage(img);
   setPixmap(pixmp);

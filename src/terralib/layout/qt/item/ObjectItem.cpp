@@ -125,7 +125,8 @@ void te::layout::ObjectItem::paint( QPainter * painter, const QStyleOptionGraphi
   	
   painter->save();
   painter->translate( -boundRect.bottomLeft().x(), -boundRect.topRight().y() );
-  painter->drawPixmap(boundRect, m_pixmap, QRectF( 0, 0, m_pixmap.width(), m_pixmap.height() ));
+  QRectF rtSource( 0, 0, m_pixmap.width(), m_pixmap.height() );
+  painter->drawPixmap(boundRect, m_pixmap, rtSource);
   painter->restore();  
 
   //Draw Selection
@@ -139,10 +140,11 @@ void te::layout::ObjectItem::drawBackground( QPainter * painter )
 {
   if (painter)
   {
-    //painter->setBrush(brush());
+    painter->save();
     painter->setPen(Qt::NoPen);
     painter->setRenderHint( QPainter::Antialiasing, true );
     painter->drawRect(QRectF( 0, 0, boundingRect().width(), boundingRect().height()));
+    painter->restore();
   }
 }
 
@@ -153,19 +155,26 @@ void te::layout::ObjectItem::drawSelection( QPainter* painter )
     return;
   }
 
+  painter->save();
+
   qreal penWidth = painter->pen().widthF();
 
   const qreal adj = penWidth / 2;
   const QColor fgcolor(0,255,0);
   const QColor backgroundColor(0,0,0);
 
-  painter->setPen(QPen(backgroundColor, 0, Qt::SolidLine));
-  painter->setBrush(Qt::NoBrush);
-  painter->drawRect(boundingRect().adjusted(adj, adj, -adj, -adj));
+  QRectF rtAdjusted = boundingRect().adjusted(adj, adj, -adj, -adj);
 
-  painter->setPen(QPen(fgcolor, 0, Qt::DashLine));
+  QPen penBackground(backgroundColor, 0, Qt::SolidLine);
+  painter->setPen(penBackground);
   painter->setBrush(Qt::NoBrush);
-  painter->drawRect(boundingRect().adjusted(adj, adj, -adj, -adj));
+  painter->drawRect(rtAdjusted);
+
+  QPen penForeground(fgcolor, 0, Qt::DashLine);
+  painter->setPen(penForeground);
+  painter->setBrush(Qt::NoBrush);
+  painter->drawRect(rtAdjusted);
+  painter->restore();
 }
 
 QRectF te::layout::ObjectItem::boundingRect() const

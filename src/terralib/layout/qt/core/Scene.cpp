@@ -210,18 +210,6 @@ void te::layout::Scene::insertItem( ItemObserver* item )
   emit addItemFinalized();
 }
 
-void te::layout::Scene::insertOutside( OutsideObserver* widget )
-{
-  QWidget* qWidget = ((QWidget*)widget);
-  this->addWidget(qWidget);
-}
-
-QGraphicsProxyWidget* te::layout::Scene::insertOutsideProxy( OutsideObserver* widget )
-{
-  QWidget* qWidget = ((QWidget*)widget);
-  return this->addWidget(qWidget);
-}
-
 te::gm::Envelope te::layout::Scene::getSceneBox()
 {
   QRectF srect =	sceneRect();
@@ -417,14 +405,15 @@ void te::layout::Scene::printPreview(bool isPdf)
 
   QPrinter* printer = createPrinter();
 
-  QPrintPreviewDialog preview(printer);
-  connect(&preview, SIGNAL(paintRequested(QPrinter*)), SLOT(printPaper(QPrinter*)));
+  QPrintPreviewDialog *preview = new QPrintPreviewDialog(printer);
+  connect(preview, SIGNAL(paintRequested(QPrinter*)), SLOT(printPaper(QPrinter*)));
   
-  if(preview.exec() == QDialog::Rejected || m_previewState == PrintScene)
+  if(preview->exec() == QDialog::Rejected || m_previewState == PrintScene)
   {
     m_previewState = NoPrinter;
     redrawItems(false);
     enableUpdateViews();
+    m_viewUpdateMode.clear();
     if(printer)
     {
       delete printer;
@@ -432,6 +421,12 @@ void te::layout::Scene::printPreview(bool isPdf)
     }
   }
 
+  if(preview)
+  {
+    delete preview;
+    preview = 0;
+  }
+  
   Context::getInstance().setMode(mode->getModeNone());
 }
 

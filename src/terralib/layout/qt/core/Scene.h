@@ -97,11 +97,7 @@ namespace te
         ~Scene();
 
         virtual void insertItem(ItemObserver* item);
-
-        virtual void insertOutside(OutsideObserver* widget);
-
-        virtual QGraphicsProxyWidget* insertOutsideProxy(OutsideObserver* widget);
-        
+                
         virtual te::gm::Envelope getSceneBox();
 
         /* Redraw all items except, if viewArea false, the items than create the Visualization Area */
