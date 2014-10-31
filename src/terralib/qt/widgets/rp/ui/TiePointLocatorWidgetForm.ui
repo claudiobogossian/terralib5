@@ -1335,7 +1335,7 @@
                     <item>
                      <widget class="QLineEdit" name="m_rescaleFactorLineEdit">
                       <property name="toolTip">
-                       <string>The maximum number of tie-points to generate (0 - Automatically found)</string>
+                       <string>Sub-sampled optimization tie-points search rescale factor ( 1 - subsample optimization disabled, valid range: non-zero positive values)</string>
                       </property>
                      </widget>
                     </item>
