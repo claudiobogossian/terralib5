@@ -923,6 +923,8 @@ void te::qt::widgets::TiePointLocatorWidget::startAdvancedOptions()
   m_ui->m_octavesNumberLineEdit->setText(QString::number(m_inputParameters.m_surfOctavesNumber));
 
   m_ui->m_scalesNumberLineEdit->setText(QString::number(m_inputParameters.m_surfScalesNumber));
+
+  m_ui->m_rescaleFactorLineEdit->setText(QString::number(m_inputParameters.m_subSampleOptimizationRescaleFactor));
 }
 
 void te::qt::widgets::TiePointLocatorWidget::updateAdvancedOptions()
@@ -964,6 +966,8 @@ void te::qt::widgets::TiePointLocatorWidget::updateAdvancedOptions()
   m_inputParameters.m_surfOctavesNumber = m_ui->m_octavesNumberLineEdit->text().toUInt();
 
   m_inputParameters.m_surfScalesNumber = m_ui->m_scalesNumberLineEdit->text().toUInt();
+
+  m_inputParameters.m_subSampleOptimizationRescaleFactor = m_ui->m_rescaleFactorLineEdit->text().toDouble();
 }
 
 void te::qt::widgets::TiePointLocatorWidget::startUpNavigators()
