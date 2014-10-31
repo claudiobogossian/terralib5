@@ -80,7 +80,7 @@ void generateHistogram(te::da::DataSet* dataset, te::da::DataSourceTransactor* t
   std::auto_ptr<te::da::DataSetType> dt =  transactor->getDataSetType("mapa_distritos_sp");
 
   //Creating the histogram and it's chart with the given dataset
-  te::qt::widgets::Histogram* histogram = te::qt::widgets::createHistogram(dataset, dt.get(), rendaIdx, 10);
+  te::qt::widgets::Histogram* histogram = te::qt::widgets::createHistogram(dataset, dt.get(), rendaIdx, 10, -1);
   te::qt::widgets::HistogramChart* chart = new te::qt::widgets::HistogramChart(histogram);
 
   //Creating and adjusting the chart Display's style.
@@ -113,7 +113,7 @@ void generateScatter(te::da::DataSet* dataset, te::da::DataSourceTransactor* tra
   std::auto_ptr<te::da::DataSetType> dt =  transactor->getDataSetType("mapa_distritos_sp");
 
   //Creating the scatter and it's chart with the given dataset
-  te::qt::widgets::Scatter* scatter = te::qt::widgets::createScatter(dataset, dt.get(), rendaIdx, anosestIdx);
+  te::qt::widgets::Scatter* scatter = te::qt::widgets::createScatter(dataset, dt.get(), rendaIdx, anosestIdx, -1);
   te::qt::widgets::ScatterChart* chart = new te::qt::widgets::ScatterChart(scatter);
 
   //Creating and adjusting the chart Display's style.

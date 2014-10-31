@@ -255,6 +255,57 @@ std::string getBasePkey(te::da::ObjectId* oid, std::pair<std::string, int>& dsPr
 }
 
 /*
+  Auxiliary function used to a scatter with summarized values
+
+  param stat The selected satistical function, pass -1 if no function is to be used;
+  param oidsToSummarize A map containing all the  objectIds mapped by the oid of the base dataset.
+  param valuesToSummarize A map containing all the  values9points) mapped by the oid of the base dataset.
+  param scatter Output parameter, the scatter to be populated.
+
+  note This function is only going to populate the sacatter's data if it a statistical funcion has been selected,
+         otherwise it will return the scatter as it received it.
+*/
+void buildSummarizedScatter(int stat, std::map<std::string, std::vector<te::da::ObjectId*> > oidsToSummarize,
+                            std::map<std::string, std::vector<std::pair<double, double> > > valuesToSummarize,
+                            te::qt::widgets::Scatter* scatter)
+{
+  //Containers used to hold informations temporarily, used to organize them prior to inserting them on the histogram.
+  std::map<std::string, std::vector<te::da::ObjectId*> >::iterator oidsIt;
+  std::map<std::string, std::vector<std::pair<double, double> > > ::iterator valuesIt;
+  //std::vector<std::pair<double, std::vector<te::da::ObjectId*> > > summarizedValuesToOId;
+  te::stat::NumericStatisticalSummary ss;
+
+  //Acquiring the summarized values
+  for(valuesIt = valuesToSummarize.begin(); valuesIt !=  valuesToSummarize.end(); ++valuesIt)
+  {
+    if((*valuesIt).second.size() > 1 && (stat != -1))
+    {
+      std::vector<double> xValues;
+      std::vector<double> yValues;
+      std::vector<te::da::ObjectId*> oids;
+
+      for(size_t i = 0; i < (*valuesIt).second.size(); ++i)
+      {
+        xValues.push_back((*valuesIt).second[i].first);
+        yValues.push_back((*valuesIt).second[i].second);
+        oids = oidsToSummarize[(*valuesIt).first];
+      }
+
+      double summarizedXValue, summarizedYValue;
+
+      te::stat::GetNumericStatisticalSummary(xValues, ss);
+      summarizedXValue = getStatisticalValue(stat, ss);
+
+      te::stat::GetNumericStatisticalSummary(yValues, ss);
+      summarizedYValue = getStatisticalValue(stat, ss);
+
+      for(size_t j = 0; j < oids.size(); ++j)
+        scatter->addData(summarizedXValue, summarizedYValue, oids[j]);
+    }
+  }
+}
+
+/*
   Auxiliary function used to populate the frequencies, interval and their respective objectIds based on a statistical function
 
   param slices The number of slices for the histogram, used to calculate the number of intervals;
@@ -544,9 +595,21 @@ te::qt::widgets::Scatter* te::qt::widgets::createScatter(te::da::DataSet* datase
       }
 
       //insert values into the vectors
-      newScatter->addData(x_doubleValue, y_doubleValue, getObjectId(dataset, objIdIdx));
+      te::da::ObjectId* currentOid = getObjectId(dataset, objIdIdx);
+
+      if(stat == -1)
+      {
+        newScatter->addData(x_doubleValue, y_doubleValue, currentOid);
+      }
+      else
+      {
+        oidsToSummarize[getBasePkey(currentOid, dsProps)].push_back(currentOid);
+        valuesToSummarize[getBasePkey(currentOid, dsProps)].push_back(std::make_pair(x_doubleValue, y_doubleValue));
+      }
       task.pulse();
     } //end of the data set
+    if(stat != -1)
+      buildSummarizedScatter(stat, oidsToSummarize, valuesToSummarize, newScatter);
   }
   newScatter->calculateMinMaxValues();
   return newScatter;
