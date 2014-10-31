@@ -151,6 +151,8 @@ namespace te
 
           void drawLayerSelection(te::map::AbstractLayerPtr layer);
 
+          void drawSelecteds(te::map::AbstractLayerPtr layer, const te::da::ObjectIdSet* oids);
+
           void drawDataSet(te::da::DataSet* dataset, const std::string& geomPropertyName, int srid, const QColor& color);
 
           void configSRS(const std::list<te::map::AbstractLayerPtr>& layers);
