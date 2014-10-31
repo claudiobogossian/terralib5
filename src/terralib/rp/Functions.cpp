@@ -712,8 +712,8 @@ namespace te
 
       for (unsigned int b = 0; b < inraster.getNumberOfBands(); b++)
       {
-        omins.push_back(inraster.getBand(b)->getMinValue().real());
-        omaxs.push_back(inraster.getBand(b)->getMaxValue().real());
+        omins.push_back(inraster.getBand(b)->getMinValue(true).real());
+        omaxs.push_back(inraster.getBand(b)->getMaxValue(true).real());
 
         bands.push_back(b);
       }

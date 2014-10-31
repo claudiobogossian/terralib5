@@ -115,10 +115,10 @@ const te::rst::RasterSummary* te::rst::RasterSummaryManager::get(const Raster* r
     }
 
     if (types & te::rst::SUMMARY_MIN && bs.m_minVal == 0)
-      bs.m_minVal = new std::complex<double>(raster->getBand(b)->getMinValue());
+      bs.m_minVal = new std::complex<double>(raster->getBand(b)->getMinValue(true));
 
     if (types & te::rst::SUMMARY_MAX && bs.m_maxVal == 0)
-      bs.m_maxVal = new std::complex<double>(raster->getBand(b)->getMaxValue());
+      bs.m_maxVal = new std::complex<double>(raster->getBand(b)->getMaxValue(true));
 
     if (types & te::rst::SUMMARY_STD && bs.m_stdVal == 0)
       bs.m_stdVal = new std::complex<double>(raster->getBand(b)->getStdValue());
