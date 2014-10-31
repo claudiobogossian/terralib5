@@ -78,7 +78,8 @@ te::map::DataSetLayerPtr te::qt::widgets::DataSet2Layer::operator()(const te::da
     te::gm::GeometryProperty* gp = te::da::GetFirstGeomProperty(dataset.get());
     std::auto_ptr<te::gm::Envelope> mbr(te::da::GetExtent(dataset->getName(), gp->getName(), m_datasourceId));
     layer->setSRID(gp->getSRID());
-    layer->setExtent(*mbr);
+    if (mbr.get()!=0) 
+      layer->setExtent(*mbr);
     layer->setStyle(te::se::CreateFeatureTypeStyle(gp->getGeometryType()));
   }
   else if(dataset->hasRaster())
@@ -131,7 +132,8 @@ te::map::DataSetLayerPtr te::qt::widgets::DataSet2Layer::operator()(const te::da
 
     std::auto_ptr<te::gm::Envelope> mbr(te::da::GetExtent(dataset->getName(), gp->getName(), m_datasourceId));
     layer->setSRID(gp->getSRID());
-    layer->setExtent(*mbr);
+    if (mbr.get()!=0) 
+      layer->setExtent(*mbr);
     layer->setStyle(te::se::CreateFeatureTypeStyle(gp->getGeometryType()));
     layer->setGeomPropertytName(geomPropertyName);
   }

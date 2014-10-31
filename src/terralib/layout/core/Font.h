@@ -53,27 +53,42 @@ namespace te
         virtual ~Font();
 
         void setFamily(std::string family);
+
         std::string getFamily();
 
         void setPointSize(int point);
+
         int getPointSize();
 
         void setBold(bool bold);
+
         bool isBold();
 
         void setItalic(bool italic);
+
         bool isItalic();
 
         void setUnderline(bool underline);
+
         bool isUnderline();
 
         void setStrikeout(bool strikeout);
+
         bool isStrikeout();
 
         void setKerning(bool kerning);
+
         bool isKerning();
 
+        virtual std::string toString();
+
+        virtual void fromString(std::string font);
+
       protected:
+
+        virtual std::string toString(bool flag);
+
+        virtual bool toBool(std::string str);
 
         std::string m_family;
         int m_pointSize;

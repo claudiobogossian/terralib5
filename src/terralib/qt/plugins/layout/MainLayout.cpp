@@ -30,6 +30,8 @@
 #include "../../../geometry/Envelope.h"
 #include "OutsideArea.h"
 #include "DisplayDock.h"
+#include "ProxyProject.h"
+#include "../../../layout/core/pattern/singleton/Context.h"
 
 // Qt
 #include <QGraphicsScene>
@@ -43,9 +45,12 @@ te::qt::plugins::layout::MainLayout::MainLayout() :
   m_view(0),
   m_dockLayoutDisplay(0),
   m_buildContext(0),
-  m_outsideArea(0)
+  m_outsideArea(0),
+  m_buildEnums(0),
+  m_proxyProject(0)
 {
   m_buildContext = new te::layout::BuildContext;
+  m_buildEnums = new te::layout::BuildEnums;
 }
 
 te::qt::plugins::layout::MainLayout::~MainLayout()
@@ -68,6 +73,18 @@ te::qt::plugins::layout::MainLayout::~MainLayout()
   {
     delete m_buildContext;
     m_buildContext = 0;
+  }
+
+  if(m_buildEnums)
+  {
+    delete m_buildEnums;
+    m_buildEnums = 0;
+  }
+
+  if(m_proxyProject)
+  {
+    delete m_proxyProject;
+    m_proxyProject = 0;
   }
 }
 
@@ -98,6 +115,7 @@ void te::qt::plugins::layout::MainLayout::init(QWidget* mainWindow, QMenu* mnuLa
   //Resize the dialog and put it in the screen center	
   m_view->move( screen.center() - m_view->rect().center() );
 
+  createEnums();
   createLayoutContext(size.width(), size.height());
   createDockLayoutDisplay(mainWindow, m_view);
     
@@ -152,16 +170,27 @@ void te::qt::plugins::layout::MainLayout::createLayoutContext(int width, int hei
     return;
 
   m_buildContext->createLayoutContext(width, height, m_view);
+  m_proxyProject = new ProxyProject;
+  if(!te::layout::Context::getInstance().getProxyProject())
+  {
+    te::layout::Context::getInstance().setProxyProject(m_proxyProject);
+  }
 }
 
 void te::qt::plugins::layout::MainLayout::finish()
 {
   if(m_dockLayoutDisplay)
   {
-    //m_dockLayoutDisplay->removeDock();
-
     m_dockLayoutDisplay->close();
     delete m_dockLayoutDisplay;
     m_dockLayoutDisplay = 0;
   }
+}
+
+void te::qt::plugins::layout::MainLayout::createEnums()
+{
+  if(!m_buildEnums)
+    return;
+
+  m_buildEnums->build();
 }

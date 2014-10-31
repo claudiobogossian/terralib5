@@ -26,6 +26,7 @@
 // TerraLib
 #include "../../../cellspace/CellSpaceOperations.h"
 #include "../../../common/Exception.h"
+#include "../../../common/progress/ProgressManager.h"
 #include "../../../common/StringUtils.h"
 #include "../../../common/Translator.h"
 #include "../../../common/UnitsOfMeasureManager.h"
@@ -35,6 +36,7 @@
 #include "../../../dataaccess/datasource/DataSourceTransactor.h"
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../qt/widgets/layer/utils/DataSet2Layer.h"
+#include "../../../qt/widgets/progress/ProgressViewerDialog.h"
 #include "../../../qt/widgets/srs/SRSManagerDialog.h"
 #include "../../../srs/SpatialReferenceSystemManager.h"
 #include "../../widgets/datasource/selector/DataSourceSelectorDialog.h"
@@ -354,6 +356,10 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onCreatePushButtonCl
     type = te::cellspace::CellularSpacesOperations::CELLSPACE_POINTS;
   }
 
+  //progress
+  te::qt::widgets::ProgressViewerDialog v(this);
+  int id = te::common::ProgressManager::getInstance().addViewer(&v);
+
   try
   {
     if(isNoReference())
@@ -363,9 +369,15 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onCreatePushButtonCl
   }
   catch(te::common::Exception& e)
   {
+    te::common::ProgressManager::getInstance().removeViewer(id);
+    this->setCursor(Qt::ArrowCursor);
     QMessageBox::warning(this, tr("Cellular Spaces"), e.what());
     reject();
+    return;
   }
+
+  te::common::ProgressManager::getInstance().removeViewer(id);
+  this->setCursor(Qt::ArrowCursor);
 
   accept();
 }

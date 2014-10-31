@@ -29,17 +29,18 @@
 #define __TERRALIB_LAYOUT_INTERNAL_MULTILINETEXT_CONTROLLER_H
 
 // TerraLib
-#include "DefaultTextController.h"
+#include "TextController.h"
 
 namespace te
 {
   namespace layout
   {
-    class MultiLineTextController : public DefaultTextController
+    class MultiLineTextController : public TextController
     {
       public:
 
         MultiLineTextController( Observable* o );
+
         virtual ~MultiLineTextController();
 
         virtual void setPosition(const double& x, const double& y);

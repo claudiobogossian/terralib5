@@ -318,7 +318,11 @@ std::auto_ptr<te::gm::Geometry> terralib4::VectorDataSet::getGeometry(std::size_
 
   std::auto_ptr<te::gm::Geometry> t5g(terralib4::GeomReader::getGeometry(*geoms[0]));
 
-  t5g->setSRID(m_layer->projection()->epsgCode());
+  int srid = m_layer->projection()->epsgCode();
+  if(srid == 4979)
+    srid = 4326;
+
+  t5g->setSRID(srid);
 
   return t5g;
 }

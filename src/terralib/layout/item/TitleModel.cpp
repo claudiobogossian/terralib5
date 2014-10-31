@@ -74,7 +74,7 @@ te::layout::TitleModel::~TitleModel()
 
 te::layout::Properties* te::layout::TitleModel::getProperties() const
 {
-  DefaultTextModel::getProperties();
+  TextModel::getProperties();
 
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
   
@@ -169,7 +169,7 @@ te::layout::Properties* te::layout::TitleModel::getProperties() const
 
 void te::layout::TitleModel::updateProperties( te::layout::Properties* properties )
 {
-  DefaultTextModel::updateProperties(properties);
+  TextModel::updateProperties(properties);
 
   Properties* vectorProps = const_cast<Properties*>(properties);
 

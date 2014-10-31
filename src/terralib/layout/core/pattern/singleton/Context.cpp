@@ -33,6 +33,7 @@
 #include "../../../../maptools/Canvas.h"
 #include "../../../../geometry/Envelope.h"
 #include "../../enum/Enums.h"
+#include "../proxy/AbstractProxyProject.h"
 
 te::layout::Context::Context() :
   m_mode(0),
@@ -50,7 +51,8 @@ te::layout::Context::Context() :
   m_version("TerraPrintQt4_1.0.0"),
   m_paperConfig(0),
   m_buildGraphicsItem(0),
-  m_lineIntersectionMouseMode(0)
+  m_lineIntersectionMouseMode(0),
+  m_proxyProject(0)
 {
   EnumModeType* type = Enums::getInstance().getEnumModeType();
   m_mode = type->getModeNone();
@@ -187,12 +189,12 @@ void te::layout::Context::setPaperConfig( PaperConfig* config )
   m_paperConfig = config;
 }
 
-te::layout::BuildGraphicsItem* te::layout::Context::getBuildGraphicsItem()
+te::layout::AbstractBuildGraphicsItem* te::layout::Context::getAbstractBuildGraphicsItem()
 {
   return m_buildGraphicsItem;
 }
 
-void te::layout::Context::setBuildGraphicsItem( BuildGraphicsItem* build )
+void te::layout::Context::setAbstractBuildGraphicsItem( AbstractBuildGraphicsItem* build )
 {
   m_buildGraphicsItem = build;
 }
@@ -235,4 +237,14 @@ te::layout::SystematicScaleConfig* te::layout::Context::getSystematicScaleConfig
 void te::layout::Context::setSystematicScaleConfig( SystematicScaleConfig* scale )
 {
   m_systematicConfig = scale;
+}
+
+void te::layout::Context::setProxyProject( AbstractProxyProject* project )
+{
+  m_proxyProject = project;
+}
+
+te::layout::AbstractProxyProject* te::layout::Context::getProxyProject()
+{
+  return m_proxyProject;
 }

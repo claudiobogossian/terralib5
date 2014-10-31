@@ -24,6 +24,7 @@
 */
 
 // Terralib
+#include "../common/progress/TaskProgress.h"
 #include "../dataaccess.h"
 #include "../datatype/SimpleProperty.h"
 #include "../datatype/StringProperty.h"
@@ -57,7 +58,7 @@ void te::cellspace::CellularSpacesOperations::createCellSpace(te::da::DataSource
                                                               CellSpaceType type)
 {
   te::gm::Envelope env = layerBase->getExtent();
-  
+
   int srid = layerBase->getSRID();
 
   int maxcols, maxrows;
@@ -94,6 +95,10 @@ void te::cellspace::CellularSpacesOperations::createCellSpace(te::da::DataSource
   std::map<std::string, std::string> op;
 
   t->createDataSet(outputDataSetType.get(), op);
+
+  te::common::TaskProgress task("Processing Cellular Spaces...");
+  task.setTotalSteps(maxrows);
+  task.useTimer(true);
 
   double x, y;
   for(int lin = 0; lin < maxrows; ++lin)
@@ -153,6 +158,14 @@ void te::cellspace::CellularSpacesOperations::createCellSpace(te::da::DataSource
     }
 
     t->add(name, ds.get(), op);
+
+    if (task.isActive() == false)
+    {
+      t->rollBack();
+      throw te::common::Exception(TE_TR("Operation canceled!"));
+    }
+
+    task.pulse();
   }
 
   t->commit();

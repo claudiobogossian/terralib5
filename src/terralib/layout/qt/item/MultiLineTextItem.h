@@ -29,7 +29,7 @@
 #define __TERRALIB_LAYOUT_INTERNAL_MULTILINETEXT_ITEM_H
 
 // TerraLib
-#include "DefaultTextItem.h"
+#include "TextItem.h"
 
 namespace te
 {
@@ -37,11 +37,12 @@ namespace te
   {
     class Observable;
 
-    class MultiLineTextItem : public DefaultTextItem
+    class MultiLineTextItem : public TextItem
     {
       public:
 
         MultiLineTextItem( ItemController* controller, Observable* o );
+
         virtual ~MultiLineTextItem();
     };
   }

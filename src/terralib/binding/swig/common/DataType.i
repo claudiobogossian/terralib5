@@ -5,9 +5,6 @@
  */
 
 #define TEDATATYPEEXPORT 
-
-%nspace te::dt::TemporalRelation;
-%nspace te::dt::Property;
   
 %{
 #include "terralib/datatype/AbstractData.h"
@@ -49,6 +46,43 @@
 #include "terralib/datatype/TimePeriodTZ.h"
 #include "terralib/datatype/Utils.h"
 %}
+
+%nspace te::dt::DateTimeType;
+%nspace te::dt::DateTimeResolution;
+%nspace te::dt::TemporalRelation;
+%nspace te::dt::BasicRelation;
+%nspace te::dt::StringType;
+%nspace te::dt::AbstractData;
+%nspace te::dt::Array;
+%nspace te::dt::Property;
+%nspace te::dt::SimpleProperty;
+%nspace te::dt::ArrayProperty;
+%nspace te::dt::BitProperty;
+%nspace te::dt::ByteArray;
+%nspace te::dt::ByteArrayProperty;
+%nspace te::dt::CompositeData;
+%nspace te::dt::CompositeProperty;
+%nspace te::dt::DataType;
+%nspace te::dt::DataTypeManager;
+%nspace te::dt::DateTime;
+%nspace te::dt::DateTimeInstant;
+%nspace te::dt::DateDuration;
+%nspace te::dt::DateTimePeriod;
+%nspace te::dt::DatePeriod;
+%nspace te::dt::DateTimeProperty;
+%nspace te::dt::DateTimeUtils;
+%nspace te::dt::DataTypeConverter; 
+%nspace te::dt::DataConverterManager;
+%nspace te::dt::NumericProperty;
+%nspace te::dt::SimpleData;
+%nspace te::dt::OrdinalInstant;
+%nspace te::dt::OrdinalPeriod;
+%nspace te::dt::StringProperty;
+%nspace te::dt::TimeDuration;
+%nspace te::dt::TimeInstant;
+%nspace te::dt::TimeInstantTZ;
+%nspace te::dt::TimePeriod;
+%nspace te::dt::TimePeriodTZ;
 
 %include "terralib/datatype/Enums.h"
 %include "terralib/datatype/AbstractData.h"

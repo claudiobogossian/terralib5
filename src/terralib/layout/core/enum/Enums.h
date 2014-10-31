@@ -51,23 +51,33 @@ namespace te
 
         virtual ~Enums();
 
+        virtual void setEnumDataType(EnumDataType* type);
+
         virtual EnumDataType* getEnumDataType();
+
+        virtual void setEnumObjectType(EnumObjectType* type);
 
         virtual EnumObjectType* getEnumObjectType();
 
+        virtual void setEnumGridStyleType(EnumGridStyleType* type);
+
         virtual EnumGridStyleType* getEnumGridStyleType();
+
+        virtual void setEnumLineStyleType(EnumLineStyleType* type);
 
         virtual EnumLineStyleType* getEnumLineStyleType();
 
+        virtual void setEnumModeType(EnumModeType* type);
+
         virtual EnumModeType* getEnumModeType();
+
+        virtual void setEnumTemplateType(EnumTemplateType* type);
 
         virtual EnumTemplateType* getEnumTemplateType();
 
       protected:
 
         Enums();  
-
-        virtual void init();
 
       protected:
 

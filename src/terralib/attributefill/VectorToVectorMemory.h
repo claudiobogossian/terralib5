@@ -39,6 +39,7 @@
 #include "../datatype/Property.h"
 
 #include "../memory/DataSet.h"
+#include "../sam/kdtree.h"
 #include "../statistics/core/Enums.h"
 
 #include "Config.h"
@@ -49,6 +50,9 @@
 #include <memory>
 #include <string>
 #include <vector>
+
+typedef te::sam::kdtree::AdaptativeNode<te::gm::Coord2D, std::vector<te::gm::Point>, te::gm::Point> KD_ADAPTATIVE_NODE;
+typedef te::sam::kdtree::AdaptativeIndex<KD_ADAPTATIVE_NODE> KD_ADAPTATIVE_TREE;
 
 namespace te
 {
@@ -90,6 +94,8 @@ namespace te
       protected:
 
         te::sam::rtree::Index<size_t, 8>* getRtree(te::da::DataSet* data);
+
+        KD_ADAPTATIVE_TREE* getKDtree(te::da::DataSet* data, std::size_t toSrid);
 
         te::da::DataSetType* getOutputDataSetType();
 
@@ -161,6 +167,12 @@ namespace te
                                     std::size_t fromSrid,
                                     std::vector<std::size_t> dsPos,
                                     const std::string& propertyName);
+        
+        double getMinimumDistance(te::da::DataSet* toDs,
+                                  std::size_t toSrid,
+                                  te::da::DataSet* fromDs,
+                                  std::size_t fromSrid,
+                                  KD_ADAPTATIVE_TREE* kdtree);
 
         bool isPolygon(te::gm::GeomType type);
         bool isLine(te::gm::GeomType type);
@@ -170,6 +182,10 @@ namespace te
         bool isMultiPoint(te::gm::GeomType type);
 
         double getArea(te::gm::Geometry* geom);
+
+        std::vector<te::gm::Point*> getAllPointsOfGeometry(te::gm::Geometry* geom);
+
+        bool hasNoIntersectionOperations();
     };
   }
 }

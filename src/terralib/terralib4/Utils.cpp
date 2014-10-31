@@ -382,7 +382,11 @@ te::rst::RasterProperty* terralib4::Convert2T5(TeRasterParams& rparams)
   unsigned int nrows = rparams.nlines_;
   std::auto_ptr<te::gm::Envelope> mbr(Convert2T5(rparams.box()));
 
-  std::auto_ptr<te::rst::Grid> grid(new te::rst::Grid(ncols, nrows, mbr.release(), rparams.projection()->epsgCode()));
+  int srid = rparams.projection()->epsgCode();
+  if(srid == 4979)
+    srid = 4326;
+
+  std::auto_ptr<te::rst::Grid> grid(new te::rst::Grid(ncols, nrows, mbr.release(), srid));
 
   rproperty->set(grid.release());
 

@@ -101,6 +101,8 @@ namespace te
 
         te::gm::GeomType getCurrentToLayerGeomType();
 
+        bool isNumProperty(const int type);
+
       protected slots:
 
         void onTargetDatasourceToolButtonPressed();

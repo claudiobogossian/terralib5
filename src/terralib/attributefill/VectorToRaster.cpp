@@ -161,15 +161,14 @@ bool te::attributefill::VectorToRaster::run()
     vectorMap.insert(std::pair<te::gm::Geometry*, std::vector<double> >(geom, valueVec));
   }
 
-
-  te::common::TaskProgress task("Processing aggregation...");
-  task.setTotalSteps(m_selectedAttVec.size());
+  te::common::TaskProgress task("Rasterizing...");
+  task.setTotalSteps(m_selectedAttVec.size() * vectorMap.size());
   task.useTimer(true);
 
   for(std::size_t i = 0; i < m_selectedAttVec.size(); ++i)
   {
     std::map<te::gm::Geometry*, std::vector<double> >::iterator vectorIt = vectorMap.begin();
-  
+
     while(vectorIt != vectorMap.end())
     {
       te::gm::Polygon* polygon = static_cast<te::gm::Polygon*>(vectorIt->first);
@@ -183,48 +182,15 @@ bool te::attributefill::VectorToRaster::run()
       while (it != itend)
       {
         rst->setValue(it.getColumn(), it.getRow(), vectorIt->second[i], i);
-
         ++it;
       }
 
       ++vectorIt;
+      task.pulse();
     }
 
     if (task.isActive() == false)
       throw te::attributefill::Exception(TE_TR("Operation canceled!"));
-  
-    task.pulse();
   }
-
-
-
-  return true;
-
-}
-
-bool te::attributefill::VectorToRaster::save(std::auto_ptr<te::mem::DataSet> result, std::auto_ptr<te::da::DataSetType> outDsType)
-{
-  // do any adaptation necessary to persist the output dataset
-  te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter(outDsType.get(), m_outDsrc->getCapabilities());
-  te::da::DataSetType* dsTypeResult = converter->getResult();
-  std::auto_ptr<te::da::DataSetAdapter> dsAdapter(te::da::CreateAdapter(result.get(), converter));
-  
-  std::map<std::string, std::string> options;
-  // create the dataset
-  m_outDsrc->createDataSet(dsTypeResult, options);
-  
-  // copy from memory to output datasource
-  result->moveBeforeFirst();
-  m_outDsrc->add(dsTypeResult->getName(),result.get(), options);
-  
-  // create the primary key if it is possible
-  if (m_outDsrc->getCapabilities().getDataSetTypeCapabilities().supportsPrimaryKey())
-  {
-    std::string pk_name = dsTypeResult->getName() + "_pkey";
-    te::da::PrimaryKey* pk = new te::da::PrimaryKey(pk_name, dsTypeResult);
-    pk->add(dsTypeResult->getProperty(0));
-    m_outDsrc->addPrimaryKey(m_outDset,pk);
-  }
-  
   return true;
 }

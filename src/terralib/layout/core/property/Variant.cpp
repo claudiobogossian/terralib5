@@ -35,6 +35,8 @@
 #include <exception>
 #include <stdexcept>
 #include <cctype>
+#include <iostream>
+#include <stdlib.h>
 
 te::layout::Variant::Variant() :
   m_sValue("unknown"),
@@ -44,7 +46,8 @@ te::layout::Variant::Variant() :
   m_fValue(-1000.),
   m_bValue(false),
   m_type(0),
-  m_null(true)
+  m_null(true),
+  m_complex(false)
 {
   m_type = Enums::getInstance().getEnumDataType()->getDataTypeNone();
 }
@@ -57,7 +60,8 @@ te::layout::Variant::Variant(te::layout::EnumType* type, const void* valueCopy) 
   m_fValue(-1000.),
   m_bValue(false),
   m_type(type),
-  m_null(true)
+  m_null(true),
+  m_complex(false)
 {
   if(valueCopy)
   {
@@ -117,90 +121,39 @@ void te::layout::Variant::convertValue( const void* valueCopy )
     }
    else if(m_type == dataType->getDataTypeDouble())
    {
-      if(checkNumberAsString(value))
+      dValue = static_cast<double*>(value);
+      if(dValue)
       {
-        // Cast it back to a string pointer.
-        sp = static_cast<std::string*>(value);
-        if(sp)
-        {
-          m_dValue = string2Double(*sp);
-          null = false;
-        }
-      }
-      else
-      {
-        dValue = static_cast<double*>(value);
-        if(dValue)
-        {
-          null = false;
-          m_dValue = *dValue;
-        }
-      }
+        null = false;
+        m_dValue = *dValue;
+      }      
    }
    else if(m_type == dataType->getDataTypeFloat())
    {
-      if(checkNumberAsString(value))
+      fValue = static_cast<float*>(value);
+      if(fValue)
       {
-        // Cast it back to a string pointer.
-        sp = static_cast<std::string*>(value);
-        if(sp)
-        {
-          m_fValue = string2Float(*sp);
-          null = false;
-        }
-      }
-      else
-      {
-        fValue = static_cast<float*>(value);
-        if(fValue)
-        {
-          null = false;
-          m_fValue = *fValue;
-        }
+        null = false;
+        m_fValue = *fValue;
       }
    }
    else if(m_type == dataType->getDataTypeLong())
    {
-      if(checkNumberAsString(value))
+      lValue = static_cast<long*>(value);
+      if(lValue)
       {
-        // Cast it back to a string pointer.
-        sp = static_cast<std::string*>(value);
-        if(sp)
-        {
-          m_lValue = string2Long(*sp);
-          null = false;
-        }
+        null = false;
+        m_lValue = *lValue;
       }
-      else
-      {
-        lValue = static_cast<long*>(value);
-        if(lValue)
-        {
-          null = false;
-          m_lValue = *lValue;
-        }
-      }
+      
    }
    else if(m_type == dataType->getDataTypeInt())
    {
-      if(checkNumberAsString(value))
+      iValue = static_cast<int*>(value);
+      if(iValue)
       {
-        // Cast it back to a string pointer.
-        sp = static_cast<std::string*>(value);
-        if(sp)
-        {
-          m_iValue = string2Int(*sp);
-          null = false;
-        }
-      }
-      else
-      {
-        iValue = static_cast<int*>(value);
-        if(iValue)
-        {
-          null = false;
-          m_iValue = *iValue;
-        }
+        null = false;
+        m_iValue = *iValue;
       }
    }
    else if(m_type == dataType->getDataTypeBool())
@@ -230,6 +183,7 @@ void te::layout::Variant::convertValue( const void* valueCopy )
       {
         null = false;
         m_colorValue = *colorValue;
+        m_complex = true;
       }
    }
    else if(m_type == dataType->getDataTypeFont())
@@ -240,6 +194,7 @@ void te::layout::Variant::convertValue( const void* valueCopy )
       {
         null = false;
         m_fontValue = *fontValue;
+        m_complex = true;
       }
    }
    else if(m_type == dataType->getDataTypeImage())
@@ -266,6 +221,96 @@ void te::layout::Variant::convertValue( const void* valueCopy )
   catch (std::exception const& e)
   {
     std::string s_type = m_type->getName();
+    std::cerr << e.what() << "Failed - te::layout::Variant: convert to " << s_type << std::endl;
+  }
+
+  m_null = null;
+}
+
+void te::layout::Variant::fromPtree( boost::property_tree::ptree tree, EnumType* type )
+{
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+
+  bool null = true;
+
+  if(!dataType)
+    return;
+
+  try
+  {
+    if(type == dataType->getDataTypeString())
+    {
+      m_sValue = tree.data();
+      null = false;
+    }
+
+    if(type == dataType->getDataTypeDouble())
+    {
+      m_dValue = std::atof(tree.data().c_str());
+      null = false;
+    }
+
+    if(type == dataType->getDataTypeInt())
+    {
+      m_iValue = std::atoi(tree.data().c_str());
+      null = false;
+    }
+
+    if(type == dataType->getDataTypeLong())
+    {
+      m_lValue = std::atol(tree.data().c_str());
+      null = false;
+    }
+
+    if(type == dataType->getDataTypeFloat())
+    {
+      m_fValue = (float)std::atof(tree.data().c_str());
+      null = false;
+    }
+
+    if(type == dataType->getDataTypeBool())
+    {
+      m_bValue = toBool(tree.data());
+      null = false;
+    }
+
+    if(type == dataType->getDataTypeColor())
+    {
+      std::string color = tree.data();
+
+      std::vector<std::string> strings;
+      std::istringstream f(color);
+      std::string s;    
+      while (std::getline(f, s, ',')) 
+      {
+        strings.push_back(s);
+      }
+
+      if(strings.empty() || strings.size() > 4)
+        return;
+
+      int r = std::atoi(strings[0].c_str());
+      int g = std::atoi(strings[1].c_str());
+      int b = std::atoi(strings[2].c_str());
+      int a = std::atoi(strings[3].c_str());
+
+      m_colorValue.setColor(r,g,b,a);
+
+      m_complex = true;
+      null = false;
+    }
+
+    if(type == dataType->getDataTypeFont())
+    {
+      std::string font = tree.data();
+      m_fontValue.fromString(font);
+      m_complex = true;
+      null = false;
+    }
+  }
+  catch (std::exception const& e)
+  {
+    std::string s_type = type->getName();
     std::cerr << e.what() << "Failed - te::layout::Variant: convert to " << s_type << std::endl;
   }
 
@@ -331,8 +376,8 @@ void te::layout::Variant::clear()
 
 std::string te::layout::Variant::convertToString()
 {
-  std::string s_convert;
   std::stringstream ss;//create a stringstream
+  std::string s_convert;
   
   if(m_null)
     return s_convert;
@@ -342,86 +387,47 @@ std::string te::layout::Variant::convertToString()
   if(m_type == dataType->getDataTypeNone())
     return s_convert;
 
-  if(m_sValue.compare("unknown") != 0)
+  if(m_type == dataType->getDataTypeString())
   {
     s_convert = m_sValue;
   }
-  else if(m_dValue != -1000.)
+  else if(m_type == dataType->getDataTypeDouble())
   {
     ss << m_dValue;//add number to the stream
     s_convert = ss.str();
   }
-  else if(m_iValue != -1000)
+  else if(m_type == dataType->getDataTypeInt())
   {
     ss << m_iValue;//add number to the stream
     s_convert = ss.str();
   }
-  else if(m_lValue != -1000)
+  else if(m_type == dataType->getDataTypeLong())
   {
-    ss << m_iValue;//add number to the stream
+    ss << m_lValue;//add number to the stream
     s_convert = ss.str();
   }
-  else if(m_fValue != -1000.)
+  else if(m_type == dataType->getDataTypeFloat())
   {
     ss << m_fValue;//add number to the stream
     s_convert = ss.str();
   }
-  else 
+  else if(m_type == dataType->getDataTypeColor())
   {
-    if(m_bValue)
-    {
-      s_convert = "true";
-    }
-    else
-    {
-      s_convert = "false";
-    }
+    s_convert = toString(m_colorValue.getRed());
+    s_convert += "," + toString(m_colorValue.getGreen());
+    s_convert += "," + toString(m_colorValue.getBlue());
+    s_convert += "," + toString(m_colorValue.getAlpha());
+  }
+  else if(m_type == dataType->getDataTypeFont())
+  {
+    s_convert = m_fontValue.toString();
+  }
+  else if(m_type == dataType->getDataTypeBool()) 
+  {
+    s_convert = m_bValue ? "true" : "false"; 
   }
   
   return s_convert;
-}
-
-bool te::layout::Variant::checkNumberAsString( const void* valueCopy )
-{
-  return false;
-
-  void* value = const_cast<void*>(valueCopy);
-
-  std::string* sp = 0;
-  bool result = true;
-
-  try
-  {
-    // Cast it back to a string pointer.
-    sp = static_cast<std::string*>(value);   
-    
-    if(sp)
-    {
-      std::string res = (std::string)*sp;
-
-      if(res.compare("") == 0)
-        return false;
-
-      /* Verification because the result of static_cast<std::string*> 
-        may be garbage, if the value is not a string. */
-      const char* strValue = res.c_str();
-
-      for(unsigned int i = 0 ; i < res.length() ; ++i)
-      {
-        //if there is a letter in a string then string is not a number
-        if(std::isalpha(strValue[i]))
-        {
-          result = false;
-        }
-      }
-    }
-  }
-  catch(const std::exception& e)
-  {
-    result = false;
-  } 
-
-  return result;
 }
 
 double te::layout::Variant::string2Double( std::string str )
@@ -510,4 +516,29 @@ long te::layout::Variant::string2Long( std::string str )
   }
 
   return result;
+}
+
+bool te::layout::Variant::isComplex()
+{
+  return m_complex;
+}
+
+std::string te::layout::Variant::toString( int value )
+{
+  std::stringstream ss;//create a stringstream
+  ss << value;//add number to the stream
+  
+  return ss.str();
+}
+
+bool te::layout::Variant::toBool( std::string str )
+{
+  if(str.compare("true") == 0)
+  {
+    return true;
+  }
+  else
+  {
+    return false;
+  }
 }

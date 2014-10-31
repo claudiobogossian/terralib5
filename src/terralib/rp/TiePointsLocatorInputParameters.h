@@ -28,11 +28,13 @@
 #include "Config.h"
 #include "Exception.h"
 #include "AlgorithmInputParameters.h"
+#include "../geometry/GeometricTransformation.h"
 #include "../raster/Raster.h"
 #include "../raster/Interpolator.h"
 
 #include <vector>
 #include <string>
+#include <memory>
 
 namespace te
 {
@@ -103,13 +105,11 @@ namespace te
         
         double m_geomTransfMaxError; //!< The maximum allowed transformation error (pixel units, default:2).
         
-        unsigned int m_maxR1ToR2Offset; //!< The maximum offset (pixels units) between a raster 1 point end the respective raster 2 point (default:0 - no offset restriction).
-        
         bool m_enableGeometryFilter; //!< Enable/disable the geometry filter/outliers remotion (default:true).
         
         double m_geometryFilterAssurance; //!< Geometry assurance (the error-free selection percent assurance) - valid range (0-1) - default:0.1 - Use 0-zero to let this number be automatically found.
         
-        double m_rastersRescaleFactor; //!< Global rescale factor to apply to all input rasters (default:1, valid range: non-zero positive values).
+        double m_subSampleOptimizationRescaleFactor; //!< Sub-sampled optimization tie-points search rescale factor (Defaul: 1 - subsample optimization disabled, valid range: non-zero positive values).
         
         te::rst::Interpolator::Method m_interpMethod; //!< The raster interpolator method (default:NearestNeighbor).
         
@@ -124,7 +124,7 @@ namespace te
         
         unsigned int m_moravecWindowWidth; //!< The Moravec window width used to locate canditate tie-points (minimum 3, default: 5 ).
         
-        unsigned int m_moravecGaussianFilterIterations; //!< The number of noise Gaussin iterations, when applicable (used to remove image noise, zero will disable the Gaussian Filter, default:1).
+        unsigned int m_moravecNoiseFilterIterations; //!< The number of noise filter iterations, when applicable (used to remove image noise, zero will disable the noise Filter, default:1).
         
         double m_moravecMinAbsCorrelation; //!< The minimum acceptable absolute correlation value when matching features (when applicable),  default:0.5, valid range: [0,1].
         

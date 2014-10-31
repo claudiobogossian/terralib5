@@ -97,11 +97,7 @@ namespace te
         ~Scene();
 
         virtual void insertItem(ItemObserver* item);
-
-        virtual void insertOutside(OutsideObserver* widget);
-
-        virtual QGraphicsProxyWidget* insertOutsideProxy(OutsideObserver* widget);
-        
+                
         virtual te::gm::Envelope getSceneBox();
 
         /* Redraw all items except, if viewArea false, the items than create the Visualization Area */
@@ -139,7 +135,7 @@ namespace te
 
         virtual void reset();
 
-        virtual void buildTemplate(VisualizationArea* vzArea);
+        virtual bool buildTemplate(VisualizationArea* vzArea);
 
         virtual QGraphicsItem* createItem(const te::gm::Coord2D& coord );
         
@@ -234,7 +230,7 @@ namespace te
 
         virtual void refreshViews(QGraphicsView* view = 0);
 
-        virtual void createDefaultTextItemFromObject(std::map<te::gm::Point*, std::string> map);
+        virtual void createTextItemFromObject(std::map<te::gm::Point*, std::string> map);
 
         virtual void createLegendChildItemFromLegend(std::map<te::gm::Point*, std::string> map, te::layout::MapModel* visitable);
 

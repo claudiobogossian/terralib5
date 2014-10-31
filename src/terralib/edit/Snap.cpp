@@ -29,14 +29,12 @@
 #include "../dataaccess/dataset/DataSet.h"
 #include "../dataaccess/utils/Utils.h"
 #include "../datatype/Enums.h"
-#include "../geometry/Coord2D.h"
 #include "../maptools/WorldDeviceTransformer.h"
 #include "Snap.h"
 #include "Utils.h"
 
 // STL
 #include <cassert>
-#include <limits>
 #include <memory>
 
 te::edit::Snap::Snap(const std::string& source, int srid)
@@ -52,6 +50,44 @@ te::edit::Snap::Snap(const std::string& source, int srid)
 te::edit::Snap::~Snap()
 {
   delete m_transformer;
+}
+
+std::string te::edit::Snap::getSource() const
+{
+  return m_source;
+}
+
+int te::edit::Snap::getSRID() const
+{
+  return m_srid;
+}
+
+std::size_t te::edit::Snap::getNGeometries() const
+{
+  return m_nGeometries;
+}
+
+std::size_t te::edit::Snap::getMaxGeometries() const
+{
+  return m_maxGeometries;
+}
+
+double te::edit::Snap::getTolerance() const
+{
+  return m_tolerance;
+}
+
+void te::edit::Snap::setTolerance(const double& t)
+{
+  m_tolerance = t;
+}
+
+void te::edit::Snap::setWorld(const double& llx, const double& lly,
+                                      const double& urx, const double& ury,
+                                      const std::size_t& width, const std::size_t& height)
+{
+  delete m_transformer;
+  m_transformer = new te::map::WorldDeviceTransformer(llx, lly, urx, ury, width, height);
 }
 
 void te::edit::Snap::build(te::da::DataSet* dataset)
@@ -79,63 +115,11 @@ void te::edit::Snap::add(te::da::DataSet* dataset)
   }
 }
 
-void te::edit::Snap::add(te::gm::Geometry* geom)
-{
-  assert(geom);
-
-  if(m_maxGeometries > 0 && m_nGeometries >= m_maxGeometries)
-    return;
-
-  std::size_t lastPos = m_coords.size();
-
-  // Adding the new coordinates
-  GetCoordinates(geom, m_coords);
-
-  // Indexing...
-  for(std::size_t i = lastPos; i < m_coords.size(); ++i)
-  {
-    te::gm::Envelope e(m_coords[i].x, m_coords[i].y, m_coords[i].x, m_coords[i].y);
-    m_rtree.insert(e, i);
-  }
-
-  ++m_nGeometries;
-}
-
 bool te::edit::Snap::search(const te::gm::Coord2D& coord, te::gm::Coord2D& result)
 {
   te::gm::Envelope e = getSearchEnvelope(coord);
 
   return search(e, result);
-}
-
-std::size_t te::edit::Snap::getNGeometries() const
-{
-  return m_nGeometries;
-}
-
-double te::edit::Snap::getTolerance() const
-{
-  return m_tolerance;
-}
-
-void te::edit::Snap::setTolerance(const double& t)
-{
-  m_tolerance = t;
-}
-
-void te::edit::Snap::clear()
-{
-  m_nGeometries = 0;
-  m_coords.clear();
-  m_rtree.clear();
-}
-
-void te::edit::Snap::setWorld(const double& llx, const double& lly,
-                              const double& urx, const double& ury,
-                              const std::size_t& width, const std::size_t& height)
-{
-  delete m_transformer;
-  m_transformer = new te::map::WorldDeviceTransformer(llx, lly, urx, ury, width, height);
 }
 
 te::gm::Envelope te::edit::Snap::getSearchEnvelope(const te::gm::Coord2D& coord) const
@@ -160,48 +144,4 @@ te::gm::Envelope te::edit::Snap::getSearchEnvelope(const te::gm::Coord2D& coord)
   assert(e.isValid());
 
   return e;
-}
-
-int te::edit::Snap::getSRID() const
-{
-  return m_srid;
-}
-
-bool te::edit::Snap::search(const te::gm::Envelope& e, te::gm::Coord2D& result)
-{
-  std::vector<std::size_t> report;
-  m_rtree.search(e, report);
-
-  if(report.empty())
-    return false;
-
-  std::size_t snappedPos = report[0];
-
-  if(report.size() > 1)
-  {
-    // Finds the nearest coordinate
-    te::gm::Coord2D center = e.getCenter();
-    double minDistance = std::numeric_limits<double>::max();
-    for(std::size_t i = 1; i < report.size(); ++i)
-    {
-      const te::gm::Coord2D& foundCoord = m_coords[report[i]];
-      double distance = GetDistance(center, foundCoord);
-      if(distance < minDistance)
-      {
-        minDistance = distance;
-        snappedPos = report[i];
-      }
-    }
-  }
-
-  assert(snappedPos < m_coords.size());
-
-  // Gets the snapped coordinate
-  const te::gm::Coord2D& snapped = m_coords[snappedPos];
-
-  // Informs the output
-  result.x = snapped.x;
-  result.y = snapped.y;
-
-  return true;
 }

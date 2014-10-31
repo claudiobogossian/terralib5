@@ -349,6 +349,36 @@ void te::da::GetOIDPropertyNames(const te::da::DataSetType* type, std::vector<st
   }
 }
 
+void te::da::GetOIDDatasetProps(const DataSetType* type, std::pair<std::string, int>& dsProps)
+{
+  assert(type);
+  std::map<std::string, std::pair<int, int> > dsNames;
+  std::map<std::string, std::pair<int, int> >::const_iterator dsNamesIt;
+
+  //Acquiring the primary key of the given DataSetType
+  std::vector<te::dt::Property*> props = type->getPrimaryKey()->getProperties();
+
+  //Getting the name and the number of properties of each dataset involved
+  for(size_t i = 0; i < props.size(); ++i)
+  {
+    te::dt::Property* pRef =props[i];
+    assert(pRef);
+    dsNames[pRef->getDatasetName()].first = dsNames.size();
+    dsNames[pRef->getDatasetName()].second++;
+  }
+
+  //Getting the name and the number of properties of the base dataset
+  for(dsNamesIt = dsNames.begin(); dsNamesIt !=  dsNames.end(); ++dsNamesIt)
+  {
+    if((*dsNamesIt).second.first == 0)
+    {
+      dsProps.first = (*dsNamesIt).first;
+      dsProps.second = (*dsNamesIt).second.second;
+      break;
+    }
+  }
+}
+
 void te::da::GetOIDPropertyPos(const te::da::DataSetType* type, std::vector<std::size_t>& ppos)
 {
   assert(type);

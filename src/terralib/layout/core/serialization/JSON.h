@@ -62,7 +62,7 @@ namespace te
 
       protected:
 
-        virtual void searchProperty(Property property, boost::property_tree::ptree array);
+        virtual void searchProperty(Property& property, boost::property_tree::ptree& array, boost::property_tree::ptree& child);
 
         virtual void retrieveSubPTree(boost::property_tree::ptree subTree, Property& prop);
 

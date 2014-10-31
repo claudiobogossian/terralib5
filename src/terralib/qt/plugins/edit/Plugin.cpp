@@ -29,6 +29,7 @@
 #include "../../../common/Logger.h"
 #include "../../af/ApplicationController.h"
 #include "../../af/events/LayerEvents.h"
+#include "ApplicationListener.h"
 #include "Plugin.h"
 #include "ToolBar.h"
 
@@ -48,7 +49,10 @@ void te::qt::plugins::edit::Plugin::startup()
   if(m_initialized)
     return;
 
-  /* Under development!
+  // Register the application framework listener
+  te::qt::af::ApplicationController::getInstance().addListener(&ApplicationListener::getInstance());
+
+  /* Under development
 
   // Create the main toolbar
   m_toolbar = new ToolBar;
@@ -56,14 +60,18 @@ void te::qt::plugins::edit::Plugin::startup()
   // Add plugin toolbar
   te::qt::af::ApplicationController::getInstance().addToolBar("EditToolBar", m_toolbar->get());
 
+  // Get plugins menu
   QMenu* pluginsMenu = te::qt::af::ApplicationController::getInstance().getMenu("Plugins");
 
   // Create the main menu
   m_menu = new QMenu(pluginsMenu);
   m_menu->setTitle(TE_TR("Edit"));
 
-  // Add plugin menu
-  pluginsMenu->addMenu(m_menu); */
+  // Insert menu before plugins last action
+  QAction* lastAction = te::qt::af::ApplicationController::getInstance().findAction("ManagePluginsSeparator");
+  pluginsMenu->insertMenu(lastAction, m_menu);
+
+  */
 
   TE_LOG_TRACE(TE_TR("TerraLib Edit Qt Plugin startup!"));
 

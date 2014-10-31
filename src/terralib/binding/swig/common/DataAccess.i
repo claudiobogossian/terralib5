@@ -45,6 +45,15 @@ AUTO_PTR_TYPEMAPS(te::rst::Raster)
 using namespace te::dt;
 %}
 
+%nspace te::da::DataSetType;
+%nspace te::da::DataSet;
+%nspace te::da::ObjectId;
+%nspace te::da::ObjectIdSet;
+%nspace te::da::DataSource;
+%nspace te::da::DataSourceInfo;
+%nspace te::da::DataSourceManager;
+%nspace te::da::DataSourceFactory;
+
 %include "terralib/dataaccess/dataset/DataSetType.h"
 %include "terralib/dataaccess/dataset/DataSet.h"
 %include "terralib/dataaccess/dataset/ObjectId.h"

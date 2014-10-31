@@ -61,6 +61,9 @@
 #include <QColorDialog>
 #include <QColor>
 #include <QUndoCommand>
+#include <QApplication>
+#include <QRect>
+#include <QDesktopWidget>
 
 te::layout::MenuItem::MenuItem( QObject * parent ) :
 	QObject(parent),
@@ -377,7 +380,14 @@ void te::layout::MenuItem::showImageDlg(Property property)
     filter += "*." + formats[i] + " ";
   filter += ")";
 
-  QString path = QFileDialog::getOpenFileName(wdg, tr("Select an Image File"), "", filter);
+  QDesktopWidget* wg = QApplication::desktop();
+  QFileDialog dialog;
+
+  //Put the dialog in the screen center
+  QRect screen = wg->screenGeometry();
+  dialog.move( screen.center() - dialog.rect().center() );
+  QString path = dialog.getOpenFileName(wdg, tr("Select an Image File"), "", filter);
+
   if(path.isNull())
     return;
 
