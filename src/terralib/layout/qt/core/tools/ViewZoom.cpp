@@ -34,6 +34,7 @@ te::layout::ViewZoom::ViewZoom(View* view, const double& zoomFactor, const ViewZ
   m_zoomFactor(zoomFactor),
   m_zoomType(type)
 {
+
 }
 
 te::layout::ViewZoom::~ViewZoom()
@@ -47,7 +48,7 @@ void te::layout::ViewZoom::setZoomType(const ViewZoomType& type)
 
 void te::layout::ViewZoom::applyZoom(const QPointF& point)
 {
-  // Gets the current display extent
+  ////  Gets the current display extent
   //const te::gm::Envelope& currentExtent = m_display->getExtent();
   //if(!currentExtent.isValid())
   //  return;
