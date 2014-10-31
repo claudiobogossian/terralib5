@@ -302,14 +302,15 @@ void te::qt::widgets::MosaicWizardPage::fillMosaicTypes()
 
   m_ui->m_blenderTypeComboBox->addItem(tr("No blending performed"), te::rp::Blender::NoBlendMethod);
   m_ui->m_blenderTypeComboBox->addItem(tr("Euclidean distance method"), te::rp::Blender::EuclideanDistanceMethod);
-  m_ui->m_blenderTypeComboBox->addItem(tr("Invalid blending method"), te::rp::Blender::InvalidBlendMethod);
+  m_ui->m_blenderTypeComboBox->addItem(tr("Sum method"), te::rp::Blender::SumMethod);
+  //m_ui->m_blenderTypeComboBox->addItem(tr("Invalid blending method"), te::rp::Blender::InvalidBlendMethod);
 
   //tie points link types
   m_ui->m_tpmLinkTypeComboBox->clear();
 
   m_ui->m_tpmLinkTypeComboBox->addItem(tr("Linking adjacent raster pairs"), te::rp::TiePointsMosaic::InputParameters::AdjacentRastersLinkingTiePointsT);
   m_ui->m_tpmLinkTypeComboBox->addItem(tr("Linking any raster to the first raster"), te::rp::TiePointsMosaic::InputParameters::FirstRasterLinkingTiePointsT);
-  m_ui->m_tpmLinkTypeComboBox->addItem(tr("Invalid linking type"), te::rp::TiePointsMosaic::InputParameters::InvalidTiePointsT);
+  //m_ui->m_tpmLinkTypeComboBox->addItem(tr("Invalid linking type"), te::rp::TiePointsMosaic::InputParameters::InvalidTiePointsT);
 
   m_ui->m_tpmLinkTypeComboBox->setEnabled(false);
 
