@@ -49,8 +49,6 @@
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/shared_array.hpp>
-#include <boost/random.hpp>
-#include <boost/random/uniform_int_distribution.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/thread.hpp>
 #include <boost/numeric/ublas/lu.hpp>
@@ -743,26 +741,7 @@ namespace te
 
       return true;
     }
-
-    std::vector<te::gm::Point*> GetRandomPointsInRaster(const te::rst::Raster& inputRaster, unsigned int numberOfPoints)
-    {
-      std::vector<te::gm::Point*> randomPoints;
-      double randX;
-      double randY;
-
-      boost::random::mt19937 generator((boost::random::mt19937::result_type) time(0));
-      boost::random::uniform_int_distribution<> random_rows(0, inputRaster.getNumberOfRows() - 1);
-      boost::random::uniform_int_distribution<> random_columns(0, inputRaster.getNumberOfColumns() - 1);
-
-      for (unsigned int p = 0; p < numberOfPoints; p++)
-      {
-        inputRaster.getGrid()->gridToGeo(random_columns(generator), random_rows(generator), randX, randY);
-        randomPoints.push_back(new te::gm::Point(randX, randY, inputRaster.getSRID()));
-      }
-
-      return randomPoints;
-    }   
-    
+  
     bool ConvertRGB2IHS( const te::rst::Raster& inputRGBRaster, 
       const unsigned int redBandIdx, const unsigned int greenBandIdx,
       const unsigned int blueBandIdx, const double rgbRangeMin, 

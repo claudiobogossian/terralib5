@@ -342,17 +342,6 @@ namespace te
     TERPEXPORT bool NormalizeRaster(te::rst::Raster& inputRaster, double nmin = 0.0, double nmax = 255.0);
 
     /*!
-      \brief Creates a vector of random positions (points) inside the raster.
-
-      \param inputRaster     The given raster.
-      \param numberOfPoints  The number of random positions to be created (default = 1000).
-
-      \return A vector of random positions (points).
-      \ingroup rp_func
-    */
-    TERPEXPORT std::vector<te::gm::Point*> GetRandomPointsInRaster(const te::rst::Raster& inputRaster, unsigned int numberOfPoints = 1000);    
-    
-    /*!
       \brief RGB to IHS conversion.
       \param inputRGBRaster The input raster.
       \param redBandIdx The red band index.
