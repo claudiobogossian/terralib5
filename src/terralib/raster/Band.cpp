@@ -95,7 +95,7 @@ std::complex<double> te::rst::Band::getMinValue(bool readall, unsigned int rs, u
     const unsigned int maxInputPoints = 1000;
     if (readall == false && (rf * cf) > maxInputPoints)
     {
-      std::vector<te::gm::Point*> randomPoints = te::rp::GetRandomPointsInRaster(*getRaster(), maxInputPoints);
+      std::vector<te::gm::Point*> randomPoints = te::rst::GetRandomPointsInRaster(*getRaster(), maxInputPoints);
       te::rst::PointSetIterator<double> pit = te::rst::PointSetIterator<double>::begin(getRaster(), randomPoints);
       te::rst::PointSetIterator<double> pitend = te::rst::PointSetIterator<double>::end(getRaster(), randomPoints);
       while (pit != pitend)
@@ -152,7 +152,7 @@ std::complex<double> te::rst::Band::getMaxValue(bool readall, unsigned int rs, u
     const unsigned int maxInputPoints = 1000;
     if (readall == false && (rf * cf) > maxInputPoints)
     {
-      std::vector<te::gm::Point*> randomPoints = te::rp::GetRandomPointsInRaster(*getRaster(), maxInputPoints);
+      std::vector<te::gm::Point*> randomPoints = te::rst::GetRandomPointsInRaster(*getRaster(), maxInputPoints);
       te::rst::PointSetIterator<double> pit = te::rst::PointSetIterator<double>::begin(getRaster(), randomPoints);
       te::rst::PointSetIterator<double> pitend = te::rst::PointSetIterator<double>::end(getRaster(), randomPoints);
       while (pit != pitend)
