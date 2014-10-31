@@ -431,6 +431,8 @@ void te::qt::widgets::TiePointLocatorWidget::onAutoAcquireTiePointsToolButtonCli
   rpos = te::da::GetFirstPropertyPos(dsAdj.get(), te::dt::RASTER_TYPE);
   std::auto_ptr<te::rst::Raster> inputRstAdj = dsAdj->getRaster(rpos);
 
+  updateAdvancedOptions();
+
   te::rp::TiePointsLocator::InputParameters inputParams = m_inputParameters;
   inputParams.m_enableProgress = true;
 
@@ -466,6 +468,9 @@ void te::qt::widgets::TiePointLocatorWidget::onAutoAcquireTiePointsToolButtonCli
 
   inputParams.m_pixelSizeXRelation = inputRstRef->getGrid()->getResolutionX() / m_ui->m_resXLineEdit->text().toDouble();
   inputParams.m_pixelSizeYRelation = inputRstRef->getGrid()->getResolutionY() / m_ui->m_resYLineEdit->text().toDouble();
+
+  if(inputRstRef->getExtent()->within(auxEnvelope1) && inputRstAdj->getExtent()->within(auxEnvelope2))
+    inputParams.m_subSampleOptimizationRescaleFactor = m_inputParameters.m_subSampleOptimizationRescaleFactor;
 
   te::rp::TiePointsLocator::OutputParameters outputParams;
 
