@@ -30,6 +30,7 @@
 #include "../../../common/Singleton.h"
 #include "../../../layout/qt/core/View.h"
 #include "../../../layout/qt/core/BuildContext.h"
+#include "../../../layout/core/enum/BuildEnums.h"
 
 // Qt
 #include <QStatusBar>
@@ -47,6 +48,8 @@ namespace te
       {   
         class DisplayDock;
         class OutsideArea;
+        class ProxyProject;
+
         /*!
         \class 
      
@@ -74,8 +77,13 @@ namespace te
       
             /*! \brief Constructor. */
             MainLayout();
+
             void createDockLayoutDisplay(QWidget* mainWindow, te::layout::View* view);
+
             void createLayoutContext(int width, int height);
+
+            void createEnums();
+
             void finish();
 
             te::layout::View*         m_view;
@@ -84,7 +92,9 @@ namespace te
             QStatusBar*               m_statusBar;
             te::layout::BuildContext* m_buildContext;
             OutsideArea*              m_outsideArea;  
-        
+            te::layout::BuildEnums*   m_buildEnums;
+            ProxyProject*             m_proxyProject;
+
           private:
       
             /*!

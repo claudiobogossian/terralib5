@@ -40,6 +40,9 @@
 #include <vector>
 #include <iostream>
 
+// Boost
+#include <boost/property_tree/ptree.hpp>
+
 using namespace std;
 
 namespace te
@@ -51,21 +54,35 @@ namespace te
       public:
 
         Variant();
+
         Variant(EnumType* type, const void* valueCopy);
+
         virtual ~Variant();
         
         template <typename ValueType>
         void setValue(ValueType value, EnumType* type);
 
+        /* the ptree boost returns data with string type */
+        virtual void fromPtree(boost::property_tree::ptree tree, EnumType* type);
+
         EnumType* getType();
+
+        virtual bool isComplex();
         
         std::string toString();
+
         double toDouble();
+
         int toInt();
+
         long toLong();
+
         float toFloat();
+
         bool toBool();
-        te::color::RGBAColor toColor();     
+
+        te::color::RGBAColor toColor(); 
+
         Font toFont();
 
         virtual std::string convertToString();
@@ -83,11 +100,7 @@ namespace te
       void variantSetValue(Variant &v, const ValueType& value, EnumType* type);
       
       virtual void convertValue(const void* valueCopy);
-      
-      /* Check if a value passed, of type DataTypeInt and etc, is a std::string. 
-         Ex.: value returned by a json file (boost). */
-      virtual bool checkNumberAsString(const void* valueCopy);
-      
+            
       virtual double string2Double(std::string str);
 
       virtual int string2Int(std::string str);
@@ -95,6 +108,10 @@ namespace te
       virtual float string2Float(std::string str);
 
       virtual long string2Long(std::string str);
+
+      virtual std::string toString(int value);
+
+      virtual bool toBool(std::string str);
 
       std::string m_sValue;
       double m_dValue;
@@ -106,6 +123,7 @@ namespace te
       Font m_fontValue;
       EnumType* m_type;
       bool m_null;
+      bool m_complex;
     };
 
     template<typename ValueType>

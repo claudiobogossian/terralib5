@@ -35,7 +35,6 @@
 #include "../../../item/MapGridItem.h"
 #include "../../../item/LegendItem.h"
 #include "../../../item/ScaleItem.h"
-#include "../../../item/DefaultTextItem.h"
 #include "../../../item/ImageItem.h"
 #include "../../../item/PointItem.h"
 #include "../../../item/ArrowItem.h"
@@ -45,6 +44,7 @@
 #include "../../../item/TextGridItem.h"
 #include "../../../../core/enum/Enums.h"
 #include "../../../item/LegendChildItem.h"
+#include "../../../item/TextItem.h"
 
 te::layout::ItemFactory::ItemFactory()
 {
@@ -72,10 +72,9 @@ te::layout::Observer* te::layout::ItemFactory::make( EnumType* type, ItemParamsC
     LegendItem* legend = new LegendItem(params.getController(), params.getModel());
     item = (Observer*)legend;
   }
-  else if(type == enumObj->getDefaultTextItem())
+  else if(type == enumObj->getTextItem())
   {
-    DefaultTextItem* txt = new DefaultTextItem(params.getController(), params.getModel());
-    txt->init();
+    TextItem* txt = new TextItem(params.getController(), params.getModel());
     item = (Observer*)txt;
   }
   else if(type == enumObj->getItemGroup())
@@ -145,6 +144,6 @@ te::layout::Observer* te::layout::ItemFactory::make( EnumType* type, ItemParamsC
     LegendChildItem* mText = new LegendChildItem(params.getController(), params.getModel());
     item = (Observer*)mText;
   }
-
+  
   return item;
 }

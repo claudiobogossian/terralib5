@@ -30,8 +30,12 @@
 #include "../common/Singleton.h"
 #include "Config.h"
 
+// Boost
+#include <boost/function.hpp>
+
 // STL
 #include <map>
+#include <string>
 #include <vector>
 
 namespace te
@@ -64,6 +68,9 @@ namespace te
 
       public:
 
+        typedef boost::function<Snap* (const std::string& source, int srid)> SnapStrategyFnctType;
+        typedef std::map<std::string, SnapStrategyFnctType> SnapStrategies;
+
         bool hasSnap(const std::string& source) const;
 
         void createSnap(const std::string& source, int srid);
@@ -86,6 +93,8 @@ namespace te
                       const double& urx, const double& ury,
                       const std::size_t& width, const std::size_t& height);
 
+        void reg(const std::string& name, const SnapStrategyFnctType& strategy);
+
       protected:
 
         /*! \brief It initializes the singleton instance of the snap manager. */
@@ -96,6 +105,7 @@ namespace te
 
       private:
 
+        SnapStrategies m_snapStrategies;
         std::map<std::string, Snap*> m_snaps;
     };
 

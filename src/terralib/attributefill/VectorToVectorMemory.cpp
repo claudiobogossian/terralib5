@@ -28,8 +28,9 @@
 //Terralib
 #include "../common/Logger.h"
 #include "../common/progress/TaskProgress.h"
-#include "../common/Translator.h"
+#include "../common/STLUtils.h"
 #include "../common/StringUtils.h"
+#include "../common/Translator.h"
 #include "../dataaccess/utils/Utils.h"
 #include "../datatype/StringProperty.h"
 #include "../datatype/SimpleData.h"
@@ -84,6 +85,7 @@ bool te::attributefill::VectorToVectorMemory::run()
   std::auto_ptr<te::mem::DataSet> outDs(new te::mem::DataSet(outDst.get()));
 
   te::sam::rtree::Index<size_t, 8>* rtree = getRtree(fromDs.get());
+  KD_ADAPTATIVE_TREE* kdtree = 0;
 
   toDs->moveBeforeFirst();
 
@@ -91,6 +93,8 @@ bool te::attributefill::VectorToVectorMemory::run()
   task.setTotalSteps(toDs->size());
   task.useTimer(true);
 
+  std::string logInfo1 = "";
+  std::string logInfo2 = "";
   while(toDs->moveNext())
   {
     try
@@ -104,7 +108,7 @@ bool te::attributefill::VectorToVectorMemory::run()
 
       std::vector<std::size_t> intersections = getIntersections(toDs.get(), fromDs.get(), rtree);
 
-      if(intersections.empty())
+      if(intersections.empty() && !hasNoIntersectionOperations())
       {
         outDs->add(item);
         continue;
@@ -114,6 +118,8 @@ bool te::attributefill::VectorToVectorMemory::run()
 
       while(it != m_options.end())
       {
+        logInfo1 = it->first->getName();
+
         te::stat::NumericStatisticalSummary ssNum;
         te::stat::StringStatisticalSummary ssStr;
 
@@ -138,6 +144,7 @@ bool te::attributefill::VectorToVectorMemory::run()
 
         for(std::size_t i = 0; i < funcs.size(); ++i)
         {
+          logInfo2 = funcs[i];
           std::string outPropName = getPropertyName(it->first, funcs[i]);
 
           if(funcs[i] == "Value")
@@ -217,23 +224,40 @@ bool te::attributefill::VectorToVectorMemory::run()
 
             item->setDouble(outPropName, weigh);
           }
-          else if(it->first->getType() == te::dt::STRING_TYPE)
+          else if(funcs[i] == "Minimum Distance")
           {
-            std::string value = getValue(ssStr, funcs[i]);
-            item->setString(outPropName, value);
+            double result = 0;
+
+            if(intersections.empty())
+            {
+              if(!kdtree)
+                kdtree = getKDtree(fromDs.get(), toSrid);
+
+              result = getMinimumDistance(toDs.get(), toSrid, fromDs.get(), fromSrid, kdtree);
+            }
+
+            item->setDouble(outPropName, result);
           }
-          else
+          else if(isStatistical(funcs[i]))
           {
-            if(funcs[i] == "Mode")
-            {
-              std::string value = getModeValue(ssNum);
-              item->setString(outPropName, value);
-            }
-            else
-            {
-              double value = getValue(ssNum, funcs[i]);
-              item->setDouble(outPropName, value);
-            }
+             if(it->first->getType() == te::dt::STRING_TYPE)
+             {
+               std::string value = getValue(ssStr, funcs[i]);
+               item->setString(outPropName, value);
+             }
+             else
+             {
+                if(funcs[i] == "Mode")
+                {
+                  std::string value = getModeValue(ssNum);
+                  item->setString(outPropName, value);
+                }
+                else
+                {
+                  double value = getValue(ssNum, funcs[i]);
+                  item->setDouble(outPropName, value);
+                }
+             }
           }
         }
 
@@ -249,11 +273,15 @@ bool te::attributefill::VectorToVectorMemory::run()
     }
     catch(te::common::Exception& e)
     {
-      te::common::Logger::logDebug("attributefill", e.what());
+      std::string ex = e.what();
+      ex += " | Ref: " + logInfo1 + " : " + logInfo2;
+      te::common::Logger::logDebug("attributefill", ex.c_str());
     }
     catch(std::exception& e)
     {
-      te::common::Logger::logDebug("attributefill", e.what());
+      std::string ex = e.what();
+      ex += " | Ref: " + logInfo1 + " : " + logInfo2;
+      te::common::Logger::logDebug("attributefill", ex.c_str());
     }
   }
 
@@ -1127,4 +1155,195 @@ te::dt::AbstractData* te::attributefill::VectorToVectorMemory::getDataBasedOnTyp
   }
 
   return data;
+}
+
+KD_ADAPTATIVE_TREE* te::attributefill::VectorToVectorMemory::getKDtree(te::da::DataSet* data, std::size_t toSrid)
+{
+  std::size_t geomPos = te::da::GetFirstSpatialPropertyPos(data);
+
+  KD_ADAPTATIVE_TREE* kdtree = new KD_ADAPTATIVE_TREE(*data->getExtent(geomPos).release(), 5);
+
+  std::vector<std::pair<te::gm::Coord2D, te::gm::Point> > kdset;
+
+  data->moveBeforeFirst();
+
+  while(data->moveNext())
+  {
+    std::auto_ptr<te::gm::Geometry> geom = data->getGeometry(geomPos);
+
+    std::vector<te::gm::Point*> allPoints = getAllPointsOfGeometry(geom.get());
+
+    for(std::size_t i = 0; i < allPoints.size(); ++i)
+    {
+      te::gm::Point* p = allPoints[i];
+
+      if(p->getSRID() != toSrid)
+      {
+        p->transform(toSrid);
+      }
+
+      te::gm::Coord2D coord(p->getX(), p->getY());
+      kdset.push_back(std::pair<te::gm::Coord2D, te::gm::Point>(coord, *p));
+    }
+  }
+
+  kdtree->build(kdset);
+
+  return kdtree;
+}
+
+double te::attributefill::VectorToVectorMemory::getMinimumDistance(te::da::DataSet* toDs,
+                                                                  std::size_t toSrid,
+                                                                  te::da::DataSet* fromDs,
+                                                                  std::size_t fromSrid,
+                                                                  KD_ADAPTATIVE_TREE* kdtree)
+{
+  std::size_t toGeomPos = te::da::GetFirstSpatialPropertyPos(toDs);
+  std::size_t fromGeomPos = te::da::GetFirstSpatialPropertyPos(fromDs);
+
+  std::auto_ptr<te::gm::Geometry> toGeom = toDs->getGeometry(toGeomPos);
+
+  std::vector<te::gm::Point*> allPoints = getAllPointsOfGeometry(toGeom.get());
+
+  std::vector<double> distances;
+
+  for(std::size_t i = 0; i < allPoints.size(); ++i)
+  {
+    te::gm::Point* p = allPoints[i];
+    te::gm::Coord2D key = te::gm::Coord2D(p->getX(), p->getY());
+    std::vector<te::gm::Point> points;
+    points.push_back(te::gm::Point(std::numeric_limits<double>::max(), std::numeric_limits<double>::max()));
+    std::vector<double> sqrDists;
+
+    kdtree->nearestNeighborSearch(key, points, sqrDists, 1);
+
+    distances.push_back(sqrDists[0]);
+  }
+
+  double finalResult = std::numeric_limits<double>::max();
+  for(std::size_t i = 0; i < distances.size(); ++i)
+  {
+    if(distances[i] < finalResult)
+      finalResult = distances[i];
+  }
+
+  return sqrt(finalResult);
+}
+
+std::vector<te::gm::Point*> te::attributefill::VectorToVectorMemory::getAllPointsOfGeometry(te::gm::Geometry* geom)
+{
+  std::size_t geomType = geom->getGeomTypeId();
+
+  std::vector<te::gm::Point*> result;
+
+  switch(geomType)
+  {
+    case te::gm::PointType:
+    {
+      te::gm::Point* g = dynamic_cast<te::gm::Point*>(geom);
+      result.push_back(g);
+      break;
+    }
+    case te::gm::MultiPointType:
+    {
+      te::gm::MultiPoint* g = dynamic_cast<te::gm::MultiPoint*>(geom);
+      for(std::size_t i = 0; i < g->getNumGeometries(); ++i)
+      {
+        te::gm::Geometry* gAux = g->getGeometryN(i);
+
+        std::size_t gAuxType = gAux->getGeomTypeId();
+
+        std::vector<te::gm::Point*> vec = getAllPointsOfGeometry(gAux);
+        result.insert(result.end(), vec.begin(), vec.end());
+      }
+      break;
+    }
+    case te::gm::PolygonType:
+    {
+      te::gm::Polygon* g = dynamic_cast<te::gm::Polygon*>(geom);
+
+      for(std::size_t i = 0; i < g->getNumRings(); ++i)
+      {
+        
+        te::gm::Curve* c = g->getRingN(i);
+
+        te::gm::LinearRing* lr = dynamic_cast<te::gm::LinearRing*>(c);
+
+        for(std::size_t j = 0; j < lr->getNPoints(); ++j)
+        {
+          result.push_back(lr->getPointN(j));
+        }
+      }
+
+      break;
+    }
+    case te::gm::MultiPolygonType:
+    {
+      te::gm::MultiPolygon* g = dynamic_cast<te::gm::MultiPolygon*>(geom);
+
+      for(std::size_t i = 0; i < g->getNumGeometries(); ++i)
+      {
+        te::gm::Geometry* gAux = g->getGeometryN(i);
+
+        std::size_t gAuxType = gAux->getGeomTypeId();
+
+        std::vector<te::gm::Point*> vec = getAllPointsOfGeometry(gAux);
+        result.insert(result.end(), vec.begin(), vec.end());
+      }
+      break;
+    }
+    case te::gm::LineStringType:
+    {
+      te::gm::LineString* g = dynamic_cast<te::gm::LineString*>(geom);
+
+      for(std::size_t i = 0; i < g->getNPoints(); ++i)
+      {
+        result.push_back(g->getPointN(i));
+      }
+
+      break;
+    }
+    case te::gm::MultiLineStringType:
+    {
+      te::gm::MultiLineString* g = dynamic_cast<te::gm::MultiLineString*>(geom);
+
+      for(std::size_t i = 0; i < g->getNumGeometries(); ++i)
+      {
+        te::gm::Geometry* gAux = g->getGeometryN(i);
+
+        std::size_t gAuxType = gAux->getGeomTypeId();
+
+        std::vector<te::gm::Point*> vec = getAllPointsOfGeometry(gAux);
+        result.insert(result.end(), vec.begin(), vec.end());
+      }
+
+      break;
+    }
+    default:
+    {
+      return std::vector<te::gm::Point*>();
+    }
+  }
+
+  return result;
+}
+
+bool te::attributefill::VectorToVectorMemory::hasNoIntersectionOperations()
+{
+  std::map<te::dt::Property*, std::vector<std::string> >::iterator it = m_options.begin();
+
+  while(it != m_options.end())
+  {
+    std::vector<std::string> ops = it->second;
+
+    for(std::size_t i = 0; i < ops.size(); ++i)
+    {
+      if(ops[i] == "Minimum Distance" ||
+         ops[i] == "Presence")
+        return true;
+    }
+    ++it;
+  }
+
+  return false;
 }

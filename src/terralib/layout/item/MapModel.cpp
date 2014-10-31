@@ -51,7 +51,8 @@ te::layout::MapModel::MapModel() :
   m_mapDisplacementX(0),
   m_mapDisplacementY(0),
   m_systematic(0),
-  m_fixedScale(false)
+  m_fixedScale(false),
+  m_loadedLayer(false)
 {
   m_type = Enums::getInstance().getEnumObjectType()->getMapItem();
 
@@ -100,6 +101,19 @@ te::layout::Properties* te::layout::MapModel::getProperties() const
 
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
 
+  std::string name = "";
+  if(m_layer)
+  {
+    name = m_layer->getTitle();
+  }
+
+  Property pro_layer;
+  pro_layer.setName("layer");
+  pro_layer.setId("unknown");
+  pro_layer.setValue(name, dataType->getDataTypeString());
+  pro_layer.setEditable(false);
+  m_properties->addProperty(pro_layer);
+
   Property pro_mapbackgroundcolor;
   pro_mapbackgroundcolor.setName("map_color");
   pro_mapbackgroundcolor.setId("unknown");
@@ -132,6 +146,12 @@ void te::layout::MapModel::updateProperties( te::layout::Properties* properties 
 
   Properties* vectorProps = const_cast<Properties*>(properties);
   
+  Property pro_layer = vectorProps->contains("layer");
+  if(!pro_layer.isNull())
+  {
+    m_nameLayer = pro_layer.getValue().toString();
+  }
+
   Property pro_mapbackgroundcolor = vectorProps->contains("map_color");
   if(!pro_mapbackgroundcolor.isNull())
   {
@@ -187,6 +207,9 @@ void te::layout::MapModel::updateProperties( te::layout::Properties* properties 
 
 bool te::layout::MapModel::refreshLayer( te::map::AbstractLayerPtr layer )
 {
+  if(!layer)
+    return false;
+
   if(m_layer)
   {
     if(m_layer->getId() == layer->getId())
@@ -194,7 +217,9 @@ bool te::layout::MapModel::refreshLayer( te::map::AbstractLayerPtr layer )
   }
 
   m_layer = layer;
-  
+
+  m_loadedLayer = true;
+
   updateVisitors();
 
   return true;
@@ -553,4 +578,14 @@ void te::layout::MapModel::setMapBackgroundColor( te::color::RGBAColor color )
 te::color::RGBAColor te::layout::MapModel::getMapBackgroundColor()
 {
   return m_mapbackgroundColor;
+}
+
+std::string te::layout::MapModel::getNameLayer()
+{
+  return m_nameLayer;
+}
+
+bool te::layout::MapModel::isLoadedLayer()
+{
+  return m_loadedLayer;
 }

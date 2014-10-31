@@ -185,7 +185,8 @@ void te::layout::ItemGroup::paint( QPainter * painter, const QStyleOptionGraphic
   painter->save();
   painter->translate( model->getBox().getWidth() / 2.0, model->getBox().getHeight() / 2.0 );
   painter->translate( -boundRect.width() / 2.0, -boundRect.height() / 2.0 );
-  painter->drawPixmap(boundRect, m_pixmap, QRectF( 0, 0, m_pixmap.width(), m_pixmap.height() ));
+  QRectF rtSource( 0, 0, m_pixmap.width(), m_pixmap.height() );
+  painter->drawPixmap(boundRect, m_pixmap, rtSource);
   painter->restore();
 
   //Draw Selection

@@ -55,50 +55,99 @@ te::layout::TextGridItem::~TextGridItem()
 
 void te::layout::TextGridItem::init()
 {
+  TitleModel* model = dynamic_cast<TitleModel*>(m_model);
+
+  if(!model)
+    return;
+
+  updateDocument();
+}
+
+void te::layout::TextGridItem::refreshDocument()
+{
+  if(!m_model)
+    return;
+
+  TitleModel* model = dynamic_cast<TitleModel*>(m_model);
+
+  if(!model)
+    return;
+
+  QImage img = createImage();
+  QPointF pp = scenePos();
+  te::gm::Envelope box(pp.x(), pp.y(), pp.x() + img.widthMM(), pp.y() + img.heightMM());
+
+  model->setBox(box);
+
+  // Update Model
+  int countRows = m_table->rows();
+  int countColumns = m_table->columns();
+
+  //Table Headers (Hrz)
+  for(int i = 1 ; i < countRows ; ++i)
+  {
+    QTextTableCell cellOne = m_table->cellAt(i, 0);
+    QTextCursor cellCursorOne = cellOne.firstCursorPosition();
+    std::string txtOne = cellCursorOne.block().text().toStdString();
+    //model->setTitle(txtOne);
+  }
+
+  //Table Headers (Vrt)
+  for(int j = 0 ; j < countColumns ; ++j)
+  {
+    QTextTableCell cellTwo = m_table->cellAt(0, j);
+    QTextCursor cellCursorTwo = cellTwo.firstCursorPosition();
+    std::string txtTwo = cellCursorTwo.block().text().toStdString();
+    //model->setText(txtTwo);
+  }
+
+  //Table
+  for (int i = 1 ; i < countRows ; ++i) 
+  {
+    for(int j = 1 ; j < countColumns ; ++j)
+    {
+      QTextTableCell cellThree = m_table->cellAt(i, j);
+      QTextCursor cellCursorThree = cellThree.firstCursorPosition();
+      std::string txtThree = cellCursorThree.block().text().toStdString();
+      //model->setText(txtThree);
+    }
+  }
+
+  QPixmap pixmp = QPixmap::fromImage(img);
+  setPixmap(pixmp);
+}
+
+void te::layout::TextGridItem::updateDocument()
+{
   TextGridModel* model = dynamic_cast<TextGridModel*>(m_model);
 
   if(!model)
     return;
 
-  QTextDocument* doc = new QTextDocument(this);
-  setDocument(doc);
-  
+  m_document->clear();
+
+  QTextDocument* doc = m_document;
+
   QTextCursor cursor(doc);
   cursor.movePosition(QTextCursor::Start);
-  
+
   QBrush blackBrush(Qt::SolidPattern);
 
   QTextTableFormat tableFormat;
   tableFormat.setAlignment(Qt::AlignLeft);
   tableFormat.setBorderBrush(blackBrush);
   tableFormat.setBorder(0.5);
-  
+
   Utils* utils = Context::getInstance().getUtils();
-
-  int cellSpacing = utils->mm2pixel(model->getSpacing());  
-  tableFormat.setCellSpacing(cellSpacing); 
-
-  int cellPadding = utils->mm2pixel(model->getPadding()); 
-  tableFormat.setCellPadding(cellPadding); 
-
-  tableFormat.setBorderStyle(QTextFrameFormat::BorderStyle_Solid);
-  tableFormat.setWidth(QTextLength(QTextLength::PercentageLength, 100));
-
-   QVector<QTextLength> constraints;
-  constraints << QTextLength(QTextLength::PercentageLength, 100)
-  << QTextLength(QTextLength::PercentageLength, 100)
-  << QTextLength(QTextLength::PercentageLength, 100)
-  << QTextLength(QTextLength::PercentageLength, 100)
-  << QTextLength(QTextLength::PercentageLength, 100)
-  << QTextLength(QTextLength::PercentageLength, 100);
-  tableFormat.setColumnWidthConstraints(constraints);
-
+ 
+  tableFormat.setCellSpacing(3);  
+  tableFormat.setCellPadding(3); 
   tableFormat.setHeaderRowCount(1);
 
   int columns = model->getNumberColumns();
   int rows = model->getNumberRows();
   m_table = cursor.insertTable(rows, columns, tableFormat);
-  
+
   int countRows = m_table->rows();
   int countColumns = m_table->columns();
 
@@ -107,7 +156,7 @@ void te::layout::TextGridItem::init()
 
   QTextCharFormat boldFormat = format;
   boldFormat.setFontWeight(QFont::Bold);
- 
+
   //Table Headers (Hrz)
   for(int i = 1 ; i < countRows ; ++i)
   {
@@ -138,110 +187,6 @@ void te::layout::TextGridItem::init()
       QTextTableCell cellThree = m_table->cellAt(i, j);
       QTextCursor cellCursorThree = cellThree.firstCursorPosition();
       cellCursorThree.insertText("Text", format);
-    }
-  }
-
-  DefaultTextItem::init();
-  adjustSizeMM();
-  //TitleItem::init();
-}
-
-void te::layout::TextGridItem::refreshText()
-{
-  return;
-
-  TextGridModel* model = dynamic_cast<TextGridModel*>(m_model);
-
-  if(!model)
-    return;
-
-  int numRows = model->getNumberRows();
-  int numColumns = model->getNumberColumns();
-
-  QTextCursor cursor(document());
-  cursor.movePosition(QTextCursor::Start);
-
-  QTextCharFormat format = cursor.charFormat();
-  format.setFontPointSize(12);
-
-  QTextCharFormat boldFormat = format;
-  boldFormat.setFontWeight(QFont::Bold);
-
-  te::color::RGBAColor headerVtrColor = model->getHeaderVerticalColor();
-  QColor qHeaderVtrColor(headerVtrColor.getRed(), headerVtrColor.getGreen(),
-    headerVtrColor.getBlue(), headerVtrColor.getAlpha());
-
-  te::color::RGBAColor headerHrzColor = model->getHeaderHorizontalColor();
-  QColor qHeaderHrzColor(headerHrzColor.getRed(), headerHrzColor.getGreen(),
-    headerHrzColor.getBlue(), headerHrzColor.getAlpha());
-
-  te::color::RGBAColor borderColor = model->getBorderGridColor();
-  QColor qBorderColor(borderColor.getRed(), borderColor.getGreen(),
-    borderColor.getBlue(), borderColor.getAlpha());
-
-  te::color::RGBAColor evenRowColor = model->getEvenRow();
-  QColor qEvenRowColor(evenRowColor.getRed(), evenRowColor.getGreen(),
-    evenRowColor.getBlue(), evenRowColor.getAlpha());
-
-  te::color::RGBAColor oddRowColor = model->getOddRow();
-  QColor qOddRowColor(oddRowColor.getRed(), oddRowColor.getGreen(),
-    oddRowColor.getBlue(), oddRowColor.getAlpha());
-
-  //Table Headers (Hrz)
-  QBrush headerHrz(qHeaderHrzColor);
-  for(int i = 1 ; i < numRows ; ++i)
-  {
-    QTextTableCell cellOne = m_table->cellAt(i, 0);
-    
-    QTextCharFormat fmtOne = cellOne.format(); 
-    fmtOne.setBackground(headerHrz);
-    cellOne.setFormat(fmtOne);
-
-    QTextCursor cellCursorOne = cellOne.firstCursorPosition();
-    std::string title = model->getTitle();
-    //cellCursorOne.insertText(title.c_str(), fmtOne);
-  }
-
-  //Table Headers (Vrt)
-  QBrush headerVrt(qHeaderVtrColor);
-  for(int j = 0 ; j < numColumns ; ++j)
-  {
-    QTextTableCell cellTwo = m_table->cellAt(0, j);
-
-    QTextCharFormat fmtTwo = cellTwo.format(); 
-    fmtTwo.setBackground(headerVrt); 
-    cellTwo.setFormat(fmtTwo);
-
-    QTextCursor cellCursorTwo = cellTwo.firstCursorPosition();
-    std::string title = model->getTitle();
-    //cellCursorTwo.insertText(title.c_str(), fmtTwo);
-  }
-
-  //Table
-  QBrush evenRw(qEvenRowColor);
-  QBrush oddRw(qOddRowColor);
-  for (int i = 1 ; i < numRows ; ++i) 
-  {
-    for(int j = 1 ; j < numColumns ; ++j)
-    {
-      QTextTableCell cellThree = m_table->cellAt(i, j);
-
-      QTextCharFormat fmtThree = cellThree.format(); 
-
-      if (i % 2)
-      {
-        fmtThree.setBackground(oddRw); 
-      }
-      else
-      {
-        fmtThree.setBackground(evenRw); 
-      }
-
-      cellThree.setFormat(fmtThree);
-
-      /*QTextCursor cellCursorThree = cellThree.firstCursorPosition();
-      std::string text = model->getText();
-      cellCursorThree.insertText(text.c_str(), fmtThree);*/
     }
   }
 }

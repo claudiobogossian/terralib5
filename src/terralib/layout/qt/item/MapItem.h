@@ -38,6 +38,7 @@
 #include "../../../qt/widgets/canvas/MultiThreadMapDisplay.h"
 #include "../../../qt/widgets/layer/explorer/AbstractTreeItem.h"
 #include "../../../qt/widgets/tools/AbstractTool.h"
+#include "../../../maptools/AbstractLayer.h"
 
 class QGraphicsSceneMouseEvent;
 class QMimeData;
@@ -79,6 +80,8 @@ namespace te
         virtual te::color::RGBAColor** getImage();
 
         virtual void setRect(QRectF rect);
+
+        virtual void updateProperties(te::layout::Properties* properties);
                                 
       protected slots:
 
@@ -141,6 +144,7 @@ namespace te
       te::qt::widgets::AbstractTool* m_tool;
       double                  m_wMargin;
       double                  m_hMargin;
+      te::map::AbstractLayerPtr m_layer;
     };
   }
 }

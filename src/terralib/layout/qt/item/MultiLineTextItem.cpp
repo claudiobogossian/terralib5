@@ -36,14 +36,12 @@
 #include "../../../common/STLUtils.h"
 
 te::layout::MultiLineTextItem::MultiLineTextItem( ItemController* controller, Observable* o ) :
-  DefaultTextItem(controller, o)
+  TextItem(controller, o)
 {
   this->setFlags(QGraphicsItem::ItemIsMovable
     | QGraphicsItem::ItemIsSelectable
     | QGraphicsItem::ItemSendsGeometryChanges
     | QGraphicsItem::ItemIsFocusable);
-
-  setTextInteractionFlags(Qt::TextEditable | Qt::TextSelectableByKeyboard);
 
   m_nameClass = std::string(this->metaObject()->className());
 }

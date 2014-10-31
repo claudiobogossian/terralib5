@@ -716,8 +716,12 @@ void te::attributefill::VectorToVectorDialog::setFunctionsByLayer(te::map::Abstr
 
       if(isPolygon(geomType) && isPolygon(toGeomType))
       {
-        m_ui->m_statisticsListWidget->addItem(QString(props[i]->getName().c_str()) + " : " + "Weighted by Area");
-        m_ui->m_statisticsListWidget->addItem(QString(props[i]->getName().c_str()) + " : " + "Weighted Sum by Area");
+        if(isNumProperty(prop->getType()))
+        {
+          m_ui->m_statisticsListWidget->addItem(QString(props[i]->getName().c_str()) + " : " + "Weighted by Area");
+          m_ui->m_statisticsListWidget->addItem(QString(props[i]->getName().c_str()) + " : " + "Weighted Sum by Area");
+        }
+
         m_ui->m_statisticsListWidget->addItem(QString(props[i]->getName().c_str()) + " : " + "Percentage of Total Area");
       }
     }
@@ -805,4 +809,20 @@ te::gm::GeomType te::attributefill::VectorToVectorDialog::getCurrentToLayerGeomT
   te::dt::Property* p = te::da::GetFirstSpatialProperty(toSchema.get());
   te::gm::GeometryProperty* toGeomProp = dynamic_cast<te::gm::GeometryProperty*>(p);
   return toGeomProp->getGeometryType();
+}
+
+bool te::attributefill::VectorToVectorDialog::isNumProperty(const int type)
+{
+  if(type == te::dt::INT16_TYPE ||
+     type == te::dt::INT32_TYPE ||
+     type == te::dt::INT64_TYPE ||
+     type == te::dt::DOUBLE_TYPE ||
+     type == te::dt::FLOAT_TYPE ||
+     type == te::dt::CINT16_TYPE ||
+     type == te::dt::CINT32_TYPE ||
+     type == te::dt::CDOUBLE_TYPE ||
+     type == te::dt::CFLOAT_TYPE)
+     return true;
+
+  return false;
 }

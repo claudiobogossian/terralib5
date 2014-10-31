@@ -106,6 +106,25 @@ namespace te
 
           te::qt::af::MapDisplay* m_display;
         };
+
+         /*!
+          \struct DrawingFinished
+
+          \brief This event is used to inform that drawing is finished.
+        */
+        struct DrawingFinished : public Event
+        {
+          /*!
+            \brief Constructor.
+          */
+          DrawingFinished(te::qt::af::MapDisplay* display)
+            : Event(DRAWING_FINISHED),
+              m_display(display)
+          {
+          }
+
+          te::qt::af::MapDisplay* m_display;
+        };
       }
     }
   }

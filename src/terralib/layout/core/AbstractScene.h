@@ -43,7 +43,6 @@ namespace te
       public:
         virtual ~AbstractScene(void) {};
         virtual void insertItem(ItemObserver* item) = 0;
-        virtual void insertOutside(OutsideObserver* widget) = 0;
         virtual te::gm::Envelope getSceneBox() = 0;
         virtual te::gm::Envelope* getWorldBox() const = 0;
         /*

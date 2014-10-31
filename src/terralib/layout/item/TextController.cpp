@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file DefaultTextController.cpp
+  \file TextController.cpp
    
   \brief 
 
@@ -26,7 +26,7 @@
 */
 
 // TerraLib
-#include "DefaultTextController.h"
+#include "TextController.h"
 #include "../core/ContextItem.h"
 #include "../core/pattern/factory/AbstractItemFactory.h"
 #include "../core/pattern/singleton/Context.h"
@@ -35,31 +35,31 @@
 #include "../core/pattern/mvc/ItemObserver.h"
 #include "../core/enum/Enums.h"
 
-te::layout::DefaultTextController::DefaultTextController( Observable* o ) :
+te::layout::TextController::TextController( Observable* o ) :
   ItemController(o)
 {
   create();
 }
 
-te::layout::DefaultTextController::DefaultTextController( Observable* o, EnumType* type ) :
+te::layout::TextController::TextController( Observable* o, EnumType* type ) :
   ItemController(o, type)
 {
 
 }
 
-te::layout::DefaultTextController::~DefaultTextController()
+te::layout::TextController::~TextController()
 {
 	
 }
 
-void te::layout::DefaultTextController::create()
+void te::layout::TextController::create()
 {
   AbstractItemFactory* factory = Context::getInstance().getItemFactory(); 
   ItemParamsCreate params(this, m_model);
   m_view = (Observer*)factory->make(m_model->getType(), params);
 }
 
-void te::layout::DefaultTextController::setPosition( const double& x, const double& y )
+void te::layout::TextController::setPosition( const double& x, const double& y )
 {
   if(m_model)
   {

@@ -44,31 +44,43 @@ namespace te
     class ItemModelObservable : public Observable
     {
       public:
+        
         ItemModelObservable();
+
         virtual ~ItemModelObservable();
 
         virtual bool addObserver(Observer* o);
+
         virtual bool removeObserver(Observer* o);
+
         virtual Properties* getProperties() const;
 
         virtual EnumType* getType();
+
         virtual void setType(EnumType* type);
 
         virtual te::gm::Envelope getBox();
+
         virtual void setBox(te::gm::Envelope box);
 
         virtual void setBackgroundColor(te::color::RGBAColor color);
+
         virtual te::color::RGBAColor getBackgroundColor();
+
         virtual void setBorderColor(te::color::RGBAColor color);
+
         virtual te::color::RGBAColor getBorderColor();
 
         virtual void setName(std::string name);
+
         virtual std::string getName();
 
         virtual int getId();
+
         virtual void setId(int id);
 
         virtual void setPosition(const double& x, const double& y);
+
         virtual void draw( ContextItem context ) = 0;
 
         virtual bool contains(const te::gm::Coord2D &coord) const;

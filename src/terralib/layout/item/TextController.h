@@ -18,15 +18,15 @@
  */
 
 /*!
-  \file DefaultTextController.h
+  \file TextController.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_DEFAULT_TEXT_CONTROLLER_H 
-#define __TERRALIB_LAYOUT_INTERNAL_DEFAULT_TEXT_CONTROLLER_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_TEXT_CONTROLLER_H 
+#define __TERRALIB_LAYOUT_INTERNAL_TEXT_CONTROLLER_H
 
 // TerraLib
 #include "../core/pattern/mvc/ItemController.h"
@@ -35,18 +35,19 @@ namespace te
 {
   namespace layout
   {
-    class DefaultTextController : public ItemController
+    class TextController : public ItemController
     {
       public:
 
-        DefaultTextController( Observable* o );
-        virtual ~DefaultTextController();
+        TextController( Observable* o );
+
+        virtual ~TextController();
         
         virtual void setPosition(const double& x, const double& y);
 
       protected:
 
-        DefaultTextController( Observable* o, EnumType* type );
+        TextController( Observable* o, EnumType* type );
 
         virtual void create();
     };

@@ -51,6 +51,7 @@ namespace te
       public:
 
         MapModel();
+
         virtual ~MapModel();
 
         virtual void draw( ContextItem context );
@@ -98,7 +99,11 @@ namespace te
         virtual void setMapBackgroundColor(te::color::RGBAColor color);
 
         virtual te::color::RGBAColor getMapBackgroundColor();
-        
+
+        virtual std::string getNameLayer();
+
+        virtual bool isLoadedLayer();
+
       protected:
 
         te::map::AbstractLayerPtr m_layer;
@@ -109,6 +114,8 @@ namespace te
         bool                      m_fixedScale;
         te::gm::Envelope          m_worldBox;
         te::color::RGBAColor			m_mapbackgroundColor;
+        std::string               m_nameLayer;
+        bool                      m_loadedLayer;
     };
   }
 }

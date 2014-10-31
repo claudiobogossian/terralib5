@@ -38,14 +38,19 @@ namespace te
     class Serialization
     {
       public:
+
         Serialization();
+
         virtual ~Serialization();
 
         virtual void loadFromPath(std::string loadPath) = 0;
+
         virtual void loadFromProperties(std::vector<te::layout::Properties*> properties) = 0;
 
         virtual void setSerializationPath(std::string path);
+
         virtual std::string getSerializationPath();
+
         virtual std::string getLoadPath();
 
         virtual bool serialize() = 0;
@@ -57,7 +62,7 @@ namespace te
         virtual void setRootKey(std::string rootKey);
 
         virtual std::string getRootKey();
-
+        
        protected:
 
          std::string m_loadPath;

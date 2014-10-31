@@ -18,58 +18,52 @@
  */
 
 /*!
-  \file ScaleModel.h
+  \file BuildEnums.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_DEFAULT_TEXT_MODEL_H
-#define __TERRALIB_LAYOUT_INTERNAL_DEFAULT_TEXT_MODEL_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_BUILD_ENUM_H 
+#define __TERRALIB_LAYOUT_INTERNAL_BUILD_ENUM_H
 
 // TerraLib
-#include "../core/pattern/mvc/ItemModelObservable.h"
-#include "../core/ContextItem.h"
-#include "../core/pattern/derivativevisitor/AbstractVisitor.h"
-#include "../../maptools/Canvas.h"
-#include "../core/Utils.h"
-#include "../core/Font.h"
-
-// STL
-#include <string>
+#include "../Config.h"
 
 namespace te
 {
   namespace layout
   {
-    class DefaultTextModel : public ItemModelObservable
+    class EnumDataType;
+    class EnumObjectType;
+    class EnumGridStyleType;
+    class EnumLineStyleType;
+    class EnumModeType;
+    class EnumTemplateType;
+
+    class TELAYOUTEXPORT BuildEnums
     {
       public:
 
-        DefaultTextModel();
-        virtual ~DefaultTextModel();
+        BuildEnums(); 
 
-        virtual void draw( ContextItem context );
-
-        virtual te::layout::Properties* getProperties() const;
+        virtual ~BuildEnums();
         
-        virtual void updateProperties(te::layout::Properties* properties);     
+        virtual void build();
 
-        virtual void setText(std::string txt);
+      protected:
 
-        virtual std::string getText();
+    protected:
 
-        virtual Font getFont();
-
-       protected:
-
-         virtual void drawText(te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box);
-
-         std::string m_text;
-         Font m_font;
+      EnumDataType* m_dataType;
+      EnumObjectType* m_objType;
+      EnumGridStyleType* m_gridStyleType;
+      EnumLineStyleType* m_lineStyleType;
+      EnumModeType* m_modeType;
+      EnumTemplateType* m_templateType;
     };
   }
 }
 
-#endif 
+#endif
