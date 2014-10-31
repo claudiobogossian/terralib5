@@ -47,6 +47,8 @@ class TsTiePointsLocator : public CPPUNIT_NS::TestFixture
  
   CPPUNIT_TEST( SurfStrategyUpsampledImage );  
   
+  CPPUNIT_TEST( SurfStrategy90ClkWRotationImage );    
+  
   CPPUNIT_TEST( SurfStrategySameImageDifBoxes );
   
   CPPUNIT_TEST( SurfStrategyHalfRotated90Image );
@@ -57,7 +59,9 @@ class TsTiePointsLocator : public CPPUNIT_NS::TestFixture
 
   CPPUNIT_TEST( MoravecStrategySameImage );
 
-  CPPUNIT_TEST( MoravecStrategyUpsampledImage );   
+  CPPUNIT_TEST( MoravecStrategyUpsampledImage );
+  
+  CPPUNIT_TEST( MoravecStrategy90ClkWRotationImage );   
   
   CPPUNIT_TEST( MoravecStrategySameImageDifBoxes );
   
@@ -75,6 +79,8 @@ protected :
   
   void MoravecStrategyUpsampledImage();
   
+  void MoravecStrategy90ClkWRotationImage();
+  
   void MoravecStrategyHalfRotated90Image();
   
   void MoravecStrategySameImageDifBoxes();
@@ -88,6 +94,8 @@ protected :
   void SurfStrategySameImage();
   
   void SurfStrategyUpsampledImage();
+  
+  void SurfStrategy90ClkWRotationImage();
   
   void SurfStrategySameImageDifBoxes();
   
