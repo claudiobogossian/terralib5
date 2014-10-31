@@ -377,9 +377,59 @@ void te::qt::af::MapDisplay::drawLayerSelection(te::map::AbstractLayerPtr layer)
     return;
 
   const te::da::ObjectIdSet* oids = layer->getSelected();
-  if(oids == 0 || oids->size() == 0)
+  if(oids == 0 || oids->begin() == oids->end())
     return;
 
+  std::auto_ptr<te::da::DataSetType> schema = layer->getSchema();
+  te::da::PrimaryKey* pkey = schema->getPrimaryKey();
+  std::vector<te::dt::Property*> props = pkey->getProperties();
+  std::vector<te::dt::Property*>::iterator it = props.begin();
+
+  bool linked = false;
+  size_t n = 0;
+  while(++n < props.size())
+  {
+    if(props[n-1]->getDatasetName() != props[n]->getDatasetName())
+    {
+      linked = true;
+      break;
+    }
+  }
+
+  if(linked == false)
+    drawSelecteds(layer, oids);
+  else
+  {
+    te::da::ObjectIdSet* ids;
+    ids = new te::da::ObjectIdSet(*oids, false);
+    std::set<te::da::ObjectId*, te::common::LessCmp<te::da::ObjectId*> >::const_iterator it = oids->begin();
+    te::da::ObjectId* oid = (*it)->clone();
+    ids->add(oid);
+    ++it;
+    while(it != oids->end())
+    {
+      std::string value, nvalue;
+      for(size_t i = 0; i < n; ++i)
+      {
+        value += oid->getValue()[i].toString();
+        nvalue += (*it)->getValue()[i].toString();
+      }
+      oid =  (*it)->clone();
+      ++it;
+
+      if(value == nvalue)
+        continue;
+      ids->add(oid);
+    }
+    if(ids->size() == 0)
+      return;
+
+    drawSelecteds(layer, ids);
+  }
+}
+
+void te::qt::af::MapDisplay::drawSelecteds(te::map::AbstractLayerPtr layer, const te::da::ObjectIdSet* oids)
+{
   try
   {
     std::size_t maxOids = 4000;
@@ -390,7 +440,6 @@ void te::qt::af::MapDisplay::drawLayerSelection(te::map::AbstractLayerPtr layer)
       std::auto_ptr<te::da::DataSet> selected(layer->getData(oids));
 
       drawDataSet(selected.get(), layer->getGeomPropertyName(), layer->getSRID(), ApplicationController::getInstance().getSelectionColor());
-
       return;
     }
     

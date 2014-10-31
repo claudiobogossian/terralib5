@@ -101,9 +101,9 @@ namespace te
 
         std::vector<std::string> getDistinctClasses(te::da::DataSet* fromDs, const std::string& propertyName);
 
-        std::string getPropertyName(te::dt::Property* prop, const std::string& func);
+        std::string getPropertyName(te::dt::Property* prop, te::attributefill::OperationType func);
 
-        bool isStatistical(const std::string& funcName);
+        bool isStatistical(te::attributefill::OperationType type);
 
         std::vector<std::size_t> getIntersections(te::da::DataSet* toDs,
                                                   te::da::DataSet* fromDs,
@@ -115,24 +115,24 @@ namespace te
 
         std::vector<std::string> getStrValues(std::vector<te::dt::AbstractData*> data);
 
-        double getValue(te::stat::NumericStatisticalSummary ss, const std::string& function);
+        double getValue(te::stat::NumericStatisticalSummary ss, te::attributefill::OperationType type);
 
-        std::string getValue(te::stat::StringStatisticalSummary ss, const std::string& function);
+        std::string getValue(te::stat::StringStatisticalSummary ss, te::attributefill::OperationType type);
 
         std::string getModeValue(te::stat::NumericStatisticalSummary ss);
 
-        std::vector<std::string> getSelectedFunctions();
+        std::vector<te::attributefill::OperationType> getSelectedFunctions();
 
         te::dt::AbstractData* getClassWithHighestOccurrence(te::da::DataSet* fromDs,
                                                             std::vector<std::size_t> dsPos,
                                                             const std::string& propertyName);
 
-        te::dt::AbstractData* getClassWithLargerIntersectionArea(te::da::DataSet* toDs,
-                                                                 std::size_t toSrid,
-                                                                 te::da::DataSet* fromDs,
-                                                                 std::size_t fromSrid,
-                                                                 std::vector<std::size_t> dsPos,
-                                                                 const std::string& propertyName);
+        te::dt::AbstractData* getClassWithHighestIntersectionArea(te::da::DataSet* toDs,
+                                                                  std::size_t toSrid,
+                                                                  te::da::DataSet* fromDs,
+                                                                  std::size_t fromSrid,
+                                                                  std::vector<std::size_t> dsPos,
+                                                                  const std::string& propertyName);
 
         te::dt::AbstractData* getDataBasedOnType(const std::string& strValue, const int type);
 

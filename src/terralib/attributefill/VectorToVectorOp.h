@@ -39,7 +39,7 @@
 #include "../statistics/core/Enums.h"
 
 #include "Config.h"
-//#include "Enums.h"
+#include "Enums.h"
 
 // STL
 #include <map>
@@ -66,7 +66,7 @@ namespace te
         void setInput(te::map::AbstractLayerPtr fromLayer,
                       te::map::AbstractLayerPtr toLayer);
       
-        void setParams(const std::map<te::dt::Property*, std::vector<std::string> >& options);
+        void setParams(const std::map<std::string, std::vector<te::attributefill::OperationType> >& options);
       
         void setOutput(te::da::DataSourcePtr outDsrc, std::string dsName);
       
@@ -79,7 +79,7 @@ namespace te
         te::map::AbstractLayerPtr m_fromLayer;
         te::map::AbstractLayerPtr m_toLayer;
 
-        std::map<te::dt::Property*, std::vector<std::string> > m_options;
+        std::map<std::string, std::vector<te::attributefill::OperationType> > m_options;
 
         te::da::DataSourcePtr m_outDsrc;
         std::string m_outDset;
