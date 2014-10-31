@@ -27,6 +27,7 @@
 
 #include "Algorithm.h"
 #include "TiePointsLocatorInputParameters.h"
+#include "TiePointsLocatorStrategy.h"
 #include "../geometry/GeometricTransformation.h"
 #include "../geometry/GTParameters.h"
 
@@ -101,6 +102,17 @@ namespace te
         TiePointsLocator::InputParameters m_inputParameters; //!< TiePointsLocator input execution parameters.
         
         bool m_isInitialized; //!< Tells if this instance is initialized.
+        
+        /*!
+          \brief Convert matched interest points to tie-points
+          \param matchedInterestPoints The matched interest points.
+          \param tiePoints The generated tie-points.
+          \param tiePointsWeights The generated tie-points weights.
+         */        
+        void convertMatchedInterestPoints2TiePoints(
+          const te::rp::TiePointsLocatorStrategy::MatchedInterestPointsSetT& matchedInterestPoints,
+          std::vector< te::gm::GTParameters::TiePoint >& tiePoints,
+          std::vector< double >& tiePointsWeights );
 
     };
 
