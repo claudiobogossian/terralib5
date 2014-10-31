@@ -261,7 +261,7 @@ namespace te
 
         private:
 
-          PointToObjectIdSet m_valuesOids;  //!< The intervals and ObjecIds ordered in a boost multi index container
+          PointToObjectIdSet m_valuesOids;  //!< The points and ObjecIds ordered in a boost multi index container
           std::vector<double> m_xValues;    //!< Double values for axis X
           std::vector<double> m_yValues;    //!< Double values for axis Y
 

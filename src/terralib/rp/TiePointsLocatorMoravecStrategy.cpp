@@ -458,7 +458,7 @@ namespace te
             auxIP.m_x = ( auxIP.m_x / raster2XRescFact ) + 
               (double)m_inputParameters.m_raster2TargetAreaColStart;
             auxIP.m_y = ( auxIP.m_y / raster2YRescFact ) + 
-              (double)m_inputParameters.m_raster2TargetAreaLineStart;          
+              (double)m_inputParameters.m_raster2TargetAreaLineStart;       
               
             raster2InterestPoints.insert( auxIP );
               

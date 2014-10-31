@@ -165,6 +165,18 @@ namespace te
                                                  const te::gm::Polygon& pin,
                                                  const std::map<std::string, std::string>& rinfo,
                                                  const std::string& rType = std::string("GDAL"));
+
+    /*!
+      \brief Creates a vector of random positions (points) inside the raster.
+
+      \param inputRaster     The given raster.
+      \param numberOfPoints  The number of random positions to be created (default = 1000).
+
+      \return A vector of random positions (points).
+      \ingroup rp_func
+    */
+    TERASTEREXPORT std::vector<te::gm::Point*> GetRandomPointsInRaster(const te::rst::Raster& inputRaster, unsigned int numberOfPoints = 1000);    
+    
   } // end namespace rst
 }   // end namespace te
 

@@ -273,7 +273,7 @@ namespace te
             auxIP.m_x = ( auxIP.m_x / raster1XRescFact ) + 
               (double)m_inputParameters.m_raster1TargetAreaColStart;
             auxIP.m_y = ( auxIP.m_y / raster1YRescFact ) + 
-              (double)m_inputParameters.m_raster1TargetAreaLineStart;          
+              (double)m_inputParameters.m_raster1TargetAreaLineStart;  
               
             raster1InterestPoints.insert( auxIP );
               
@@ -533,16 +533,6 @@ namespace te
           while( itB != itE )
           {
             auxMatchedPoints = *itB;
-            
-            auxMatchedPoints.m_point1.m_x = ( auxMatchedPoints.m_point1.m_x / raster1XRescFact ) + 
-              (double)m_inputParameters.m_raster1TargetAreaColStart;
-            auxMatchedPoints.m_point1.m_y = ( auxMatchedPoints.m_point1.m_y / raster1YRescFact ) + 
-              (double)m_inputParameters.m_raster1TargetAreaLineStart;          
-            auxMatchedPoints.m_point2.m_x = ( auxMatchedPoints.m_point2.m_x / raster2XRescFact ) + 
-              (double)m_inputParameters.m_raster2TargetAreaColStart;
-            auxMatchedPoints.m_point2.m_y = ( auxMatchedPoints.m_point2.m_y / raster2YRescFact ) + 
-              (double)m_inputParameters.m_raster2TargetAreaLineStart;   
-            
             auxMatchedPoints.m_feature = 
                 (
                   ( 2.0 * auxMatchedPoints.m_feature )
