@@ -31,8 +31,10 @@ if(WIN32)
   add_definitions(-D_SCL_SECURE_NO_WARNINGS -DTERPDLL)
 endif()
 
-file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/rp/*.cpp)
-file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/rp/*.h)
+file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/rp/*.cpp
+  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/rp/radar/*.cpp )
+file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/rp/*.h
+  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/rp/radar/*.h )
 
 set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
 
