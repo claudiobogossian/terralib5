@@ -48,26 +48,52 @@ void te::layout::ViewZoom::setZoomType(const ViewZoomType& type)
 
 void te::layout::ViewZoom::applyZoom(const QPointF& point)
 {
-  ////  Gets the current display extent
-  //const te::gm::Envelope& currentExtent = m_display->getExtent();
-  //if(!currentExtent.isValid())
-  //  return;
+  if(!m_view)
+  {
+    return;
+  }
 
-  //// Adjusting zoom factor based on zoomType
-  //double factor = m_zoomFactor;
-  //if(m_zoomType == In)
-  //  factor = 1 / factor;
+  // Calculates the extent translated
+  Scene* scene = dynamic_cast<Scene*>(m_view->scene());
 
-  //// If point is not null, the zoom extent will be centered on this point. Otherwise, keep the current center.
-  //te::gm::Coord2D center;
-  //point.isNull() ? center = currentExtent.getCenter() : center = te::gm::Coord2D(point.x(), point.y());
+  if(!scene)
+  {
+    return;
+  }
+  
+  QPointF pt = m_view->mapToScene(point.toPoint());
 
-  //// Bulding the zoom extent based on zoom factor value and the given point
-  //double w = currentExtent.getWidth() * factor * 0.5;
-  //double h = currentExtent.getHeight() * factor * 0.5;
+  double zoomFactor = Context::getInstance().getZoomFactor();
+  double defaultZoomFactor = Context::getInstance().getDefaultZoomFactor();
+  double newZoomFactor = zoomFactor;
 
-  //te::gm::Envelope e(center.x - w, center.y - h, center.x + w, center.y + h);
+  if(zoomFactor > defaultZoomFactor)
+  {
+    newZoomFactor = zoomFactor - 0.5;
+    Context::getInstance().setZoomFactor(newZoomFactor);
+  }
+  else
+  {
+    return;
+  }
+    
+  QRect rec(0, 0, m_view->width() * newZoomFactor, m_view->height() * newZoomFactor);
+  rec.moveCenter(point.toPoint());
 
-  //// Updates the map display with the new extent
-  //m_display->setExtent(e);
+  // Conversion to world coordinates
+  QPolygonF poly = m_view->mapToScene(rec);
+
+  // Updates the map display with the new extent
+  QRectF bounding = poly.boundingRect();
+
+  te::gm::Envelope* sceneBox = scene->getWorldBox();
+
+  sceneBox->m_llx = bounding.x();
+  sceneBox->m_lly = bounding.y();
+  sceneBox->m_urx = bounding.x() + bounding.width();
+  sceneBox->m_ury = bounding.y() + bounding.height();
+
+  scene->refresh(m_view, newZoomFactor);
+  scene->redrawItems(true);
+  scene->update();
 }
