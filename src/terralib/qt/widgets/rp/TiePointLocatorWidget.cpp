@@ -284,6 +284,29 @@ void te::qt::widgets::TiePointLocatorWidget::setReferenceLayer(te::map::Abstract
       strResY.setNum(inputRst->getGrid()->getResolutionY());
       m_ui->m_inputResYLineEdit->setText(strResY);
     }
+
+    if(m_adjLayer.get())
+    {
+      std::auto_ptr<te::da::DataSet> dsAdj = m_adjLayer->getData();
+
+      if(dsAdj.get())
+      {
+        rpos = te::da::GetFirstPropertyPos(dsAdj.get(), te::dt::RASTER_TYPE);
+        std::auto_ptr<te::rst::Raster> inputRstAdj = dsAdj->getRaster(rpos);
+
+        if(inputRstAdj.get())
+        {
+          double maxSize1 = std::max(inputRst->getNumberOfColumns(), inputRstAdj->getNumberOfColumns());
+          double maxSize2 = std::max(inputRst->getNumberOfRows(), inputRstAdj->getNumberOfRows());
+          double maxSize = std::max(maxSize1, maxSize2);
+
+          if(maxSize > 1000)
+          {
+            m_ui->m_rescaleFactorLineEdit->setText(QString::number(1000. / maxSize));
+          }
+        }
+      }
+    }
   }
 }
 
@@ -319,6 +342,29 @@ void te::qt::widgets::TiePointLocatorWidget::setAdjustLayer(te::map::AbstractLay
       QString strResY;
       strResY.setNum(inputRst->getGrid()->getResolutionY());
       m_ui->m_resYLineEdit->setText(strResY);
+    }
+
+    if(m_refLayer.get())
+    {
+      std::auto_ptr<te::da::DataSet> dsRef = m_refLayer->getData();
+
+      if(dsRef.get())
+      {
+        rpos = te::da::GetFirstPropertyPos(dsRef.get(), te::dt::RASTER_TYPE);
+        std::auto_ptr<te::rst::Raster> inputRstRef = dsRef->getRaster(rpos);
+
+        if(inputRstRef.get())
+        {
+          double maxSize1 = std::max(inputRst->getNumberOfColumns(), inputRstRef->getNumberOfColumns());
+          double maxSize2 = std::max(inputRst->getNumberOfRows(), inputRstRef->getNumberOfRows());
+          double maxSize = std::max(maxSize1, maxSize2);
+
+          if(maxSize > 1000)
+          {
+            m_ui->m_rescaleFactorLineEdit->setText(QString::number(1000. / maxSize));
+          }
+        }
+      }
     }
   }
 }
