@@ -34,6 +34,8 @@
 
 // Boost
 #include <boost/cstdint.hpp>
+#include <boost/random.hpp>
+#include <boost/random/uniform_int_distribution.hpp>
 
 // STL
 #include <cassert>
@@ -479,3 +481,22 @@ te::rst::RasterPtr te::rst::CropRaster(const te::rst::Raster& rin, const te::gm:
   
   return rout;
 } 
+
+std::vector<te::gm::Point*> te::rst::GetRandomPointsInRaster(const te::rst::Raster& inputRaster, unsigned int numberOfPoints)
+{
+  std::vector<te::gm::Point*> randomPoints;
+  double randX;
+  double randY;
+
+  boost::random::mt19937 generator((boost::random::mt19937::result_type) time(0));
+  boost::random::uniform_int_distribution<> random_rows(0, inputRaster.getNumberOfRows() - 1);
+  boost::random::uniform_int_distribution<> random_columns(0, inputRaster.getNumberOfColumns() - 1);
+
+  for (unsigned int p = 0; p < numberOfPoints; p++)
+  {
+    inputRaster.getGrid()->gridToGeo(random_columns(generator), random_rows(generator), randX, randY);
+    randomPoints.push_back(new te::gm::Point(randX, randY, inputRaster.getSRID()));
+  }
+
+  return randomPoints;
+}   

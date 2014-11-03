@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../common/Exception.h"
 #include "../common/STLUtils.h"
 #include "../common/Translator.h"
 #include "../dataaccess/dataset/DataSet.h"
@@ -46,7 +47,11 @@ void te::edit::SnapManager::createSnap(const std::string& source, int srid)
   if(hasSnap(source))
     return;
 
-  Snap* snap = new Snap(source, srid);
+  SnapStrategies::iterator it = m_snapStrategies.find("vertex");
+
+  assert(it != m_snapStrategies.end());
+
+  Snap* snap = it->second(source, srid);
 
   // Store!
   m_snaps[source] = snap;
@@ -59,7 +64,11 @@ void te::edit::SnapManager::buildSnap(const std::string& source, int srid, te::d
   if(snap == 0)
   {
     // Not found! Create a new snap associated with the given source
-    snap = new Snap(source, srid);
+    SnapStrategies::iterator it = m_snapStrategies.find("vertex");
+
+    assert(it != m_snapStrategies.end());
+
+    snap = it->second(source, srid);
 
     // Build the snap
     snap->build(dataset);
@@ -130,6 +139,16 @@ void te::edit::SnapManager::setWorld(const double& llx, const double& lly,
   std::map<std::string, Snap*>::const_iterator it;
   for(it = m_snaps.begin(); it != m_snaps.end(); ++it)
     it->second->setWorld(llx, lly, urx, ury, width, height);
+}
+
+void te::edit::SnapManager::reg(const std::string& name, const SnapStrategyFnctType& builder)
+{
+  SnapStrategies::iterator it = m_snapStrategies.find(name);
+
+  if(it != m_snapStrategies.end())
+    throw te::common::Exception((boost::format(TE_TR("There is already a snap strategy registered with the given key %1%.")) % name).str());
+
+  m_snapStrategies[name] = builder;
 }
 
 te::edit::SnapManager::SnapManager()

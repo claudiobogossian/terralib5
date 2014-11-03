@@ -39,6 +39,7 @@
 #include "../datatype/Property.h"
 
 #include "../memory/DataSet.h"
+#include "../sam/kdtree.h"
 #include "../statistics/core/Enums.h"
 
 #include "Config.h"
@@ -49,6 +50,9 @@
 #include <memory>
 #include <string>
 #include <vector>
+
+typedef te::sam::kdtree::AdaptativeNode<te::gm::Coord2D, std::vector<te::gm::Point>, te::gm::Point> KD_ADAPTATIVE_NODE;
+typedef te::sam::kdtree::AdaptativeIndex<KD_ADAPTATIVE_NODE> KD_ADAPTATIVE_TREE;
 
 namespace te
 {
@@ -91,13 +95,15 @@ namespace te
 
         te::sam::rtree::Index<size_t, 8>* getRtree(te::da::DataSet* data);
 
+        KD_ADAPTATIVE_TREE* getKDtree(te::da::DataSet* data, std::size_t toSrid);
+
         te::da::DataSetType* getOutputDataSetType();
 
         std::vector<std::string> getDistinctClasses(te::da::DataSet* fromDs, const std::string& propertyName);
 
-        std::string getPropertyName(te::dt::Property* prop, const std::string& func);
+        std::string getPropertyName(te::dt::Property* prop, te::attributefill::OperationType func);
 
-        bool isStatistical(const std::string& funcName);
+        bool isStatistical(te::attributefill::OperationType type);
 
         std::vector<std::size_t> getIntersections(te::da::DataSet* toDs,
                                                   te::da::DataSet* fromDs,
@@ -109,24 +115,24 @@ namespace te
 
         std::vector<std::string> getStrValues(std::vector<te::dt::AbstractData*> data);
 
-        double getValue(te::stat::NumericStatisticalSummary ss, const std::string& function);
+        double getValue(te::stat::NumericStatisticalSummary ss, te::attributefill::OperationType type);
 
-        std::string getValue(te::stat::StringStatisticalSummary ss, const std::string& function);
+        std::string getValue(te::stat::StringStatisticalSummary ss, te::attributefill::OperationType type);
 
         std::string getModeValue(te::stat::NumericStatisticalSummary ss);
 
-        std::vector<std::string> getSelectedFunctions();
+        std::vector<te::attributefill::OperationType> getSelectedFunctions();
 
         te::dt::AbstractData* getClassWithHighestOccurrence(te::da::DataSet* fromDs,
                                                             std::vector<std::size_t> dsPos,
                                                             const std::string& propertyName);
 
-        te::dt::AbstractData* getClassWithLargerIntersectionArea(te::da::DataSet* toDs,
-                                                                 std::size_t toSrid,
-                                                                 te::da::DataSet* fromDs,
-                                                                 std::size_t fromSrid,
-                                                                 std::vector<std::size_t> dsPos,
-                                                                 const std::string& propertyName);
+        te::dt::AbstractData* getClassWithHighestIntersectionArea(te::da::DataSet* toDs,
+                                                                  std::size_t toSrid,
+                                                                  te::da::DataSet* fromDs,
+                                                                  std::size_t fromSrid,
+                                                                  std::vector<std::size_t> dsPos,
+                                                                  const std::string& propertyName);
 
         te::dt::AbstractData* getDataBasedOnType(const std::string& strValue, const int type);
 
@@ -161,6 +167,12 @@ namespace te
                                     std::size_t fromSrid,
                                     std::vector<std::size_t> dsPos,
                                     const std::string& propertyName);
+        
+        double getMinimumDistance(te::da::DataSet* toDs,
+                                  std::size_t toSrid,
+                                  te::da::DataSet* fromDs,
+                                  std::size_t fromSrid,
+                                  KD_ADAPTATIVE_TREE* kdtree);
 
         bool isPolygon(te::gm::GeomType type);
         bool isLine(te::gm::GeomType type);
@@ -170,6 +182,10 @@ namespace te
         bool isMultiPoint(te::gm::GeomType type);
 
         double getArea(te::gm::Geometry* geom);
+
+        std::vector<te::gm::Point*> getAllPointsOfGeometry(te::gm::Geometry* geom);
+
+        bool hasNoIntersectionOperations();
     };
   }
 }

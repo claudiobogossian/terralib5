@@ -21,6 +21,7 @@
  \file VectorToVectorOp.cpp
  */
 
+#include "../common/Logger.h"
 #include "../dataaccess/dataset/DataSet.h"
 #include "../dataaccess/dataset/DataSetAdapter.h"
 #include "../dataaccess/dataset/DataSetType.h"
@@ -55,7 +56,7 @@ void te::attributefill::VectorToVectorOp::setInput(te::map::AbstractLayerPtr fro
   m_toLayer = toLayer;
 }
 
-void te::attributefill::VectorToVectorOp::setParams(const std::map<te::dt::Property*, std::vector<std::string> >& options)
+void te::attributefill::VectorToVectorOp::setParams(const std::map<std::string, std::vector<te::attributefill::OperationType> >& options)
 {
   m_options = options;
 }
@@ -85,27 +86,43 @@ bool te::attributefill::VectorToVectorOp::paramsAreValid()
 
 bool  te::attributefill::VectorToVectorOp::save(std::auto_ptr<te::mem::DataSet> result, std::auto_ptr<te::da::DataSetType> outDsType)
 {
-  // do any adaptation necessary to persist the output dataset
-  te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter(outDsType.get(), m_outDsrc->getCapabilities());
-  te::da::DataSetType* dsTypeResult = converter->getResult();
-  std::auto_ptr<te::da::DataSetAdapter> dsAdapter(te::da::CreateAdapter(result.get(), converter));
 
-  // create the primary key if it is possible
-  if (m_outDsrc->getCapabilities().getDataSetTypeCapabilities().supportsPrimaryKey())
+  try
   {
-    std::string pk_name = dsTypeResult->getName() + "_pkey";
-    te::da::PrimaryKey* pk = new te::da::PrimaryKey(pk_name, dsTypeResult);
-    pk->add(dsTypeResult->getProperty(0));
-    outDsType->setPrimaryKey(pk);
+    // do any adaptation necessary to persist the output dataset
+    te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter(outDsType.get(), m_outDsrc->getCapabilities());
+    te::da::DataSetType* dsTypeResult = converter->getResult();
+    std::auto_ptr<te::da::DataSetAdapter> dsAdapter(te::da::CreateAdapter(result.get(), converter));
+
+    // create the primary key if it is possible
+    if (m_outDsrc->getCapabilities().getDataSetTypeCapabilities().supportsPrimaryKey())
+    {
+      std::string pk_name = dsTypeResult->getName() + "_pkey";
+      te::da::PrimaryKey* pk = new te::da::PrimaryKey(pk_name, dsTypeResult);
+      pk->add(dsTypeResult->getProperty(0));
+      outDsType->setPrimaryKey(pk);
+    }
+
+    std::map<std::string, std::string> options;
+    // create the dataset
+    m_outDsrc->createDataSet(dsTypeResult, options);
+
+    // copy from memory to output datasource
+    result->moveBeforeFirst();
+    m_outDsrc->add(dsTypeResult->getName(),result.get(), options);
   }
-
-  std::map<std::string, std::string> options;
-  // create the dataset
-  m_outDsrc->createDataSet(dsTypeResult, options);
-
-  // copy from memory to output datasource
-  result->moveBeforeFirst();
-  m_outDsrc->add(dsTypeResult->getName(),result.get(), options);
+  catch(te::common::Exception& e)
+  {
+    std::string ex = e.what();
+    ex += " | Ref: SAVE";
+    te::common::Logger::logDebug("attributefill", ex.c_str());
+  }
+  catch(std::exception& e)
+  {
+    std::string ex = e.what();
+    ex += " | Ref: SAVE";
+    te::common::Logger::logDebug("attributefill", ex.c_str());
+  }
 
   return true;
 }

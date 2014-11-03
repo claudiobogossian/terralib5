@@ -29,6 +29,8 @@
 #include "../common/Translator.h"
 #include "Config.h"
 #include "Module.h"
+#include "SnapManager.h"
+#include "SnapVertex.h"
 
 const te::edit::Module& sm_module = te::edit::Module::getInstance();
 
@@ -50,6 +52,8 @@ te::edit::Module::~Module()
 void te::edit::Module::initialize()
 {
   TE_LOG_TRACE(TE_TR("TerraLib Edit module Initialized!"));
+
+  SnapManager::getInstance().reg("vertex", SnapVertex::Builder);
 }
 
 void te::edit::Module::finalize()

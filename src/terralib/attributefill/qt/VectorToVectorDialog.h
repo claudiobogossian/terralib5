@@ -32,6 +32,7 @@
 #include "../../maptools/AbstractLayer.h"
 #include "../../statistics/core/Utils.h"
 #include "../Config.h"
+#include "../Enums.h"
 
 // STL
 #include <list>
@@ -83,13 +84,11 @@ namespace te
 
         void setStatisticalSummary();
 
-        void setStatisticalSummaryMap();
-
         te::map::AbstractLayerPtr getCurrentFromLayer();
 
         te::map::AbstractLayerPtr getCurrentToLayer();
 
-        std::map<te::dt::Property*, std::vector<std::string> > getSelections();
+        std::map<std::string, std::vector<te::attributefill::OperationType> > getSelections();
 
         bool isPolygon(te::gm::GeomType type);
 
@@ -100,6 +99,8 @@ namespace te
         bool isClassType(const int type);
 
         te::gm::GeomType getCurrentToLayerGeomType();
+
+        bool isNumProperty(const int type);
 
       protected slots:
 
@@ -132,8 +133,6 @@ namespace te
         std::list<te::map::AbstractLayerPtr> m_layers;                //!< List of layers.
         std::string m_path;                                           //!< Output layer path;
         bool m_toFile;
-
-        StaticalSummaryMap m_statisticalSummaryMap;                   //!< Maping of Statistical Summary enum
     };
   }   // end namespace attributefill
 }     // end namespace te

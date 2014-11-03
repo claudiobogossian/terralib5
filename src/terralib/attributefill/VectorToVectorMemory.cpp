@@ -28,8 +28,9 @@
 //Terralib
 #include "../common/Logger.h"
 #include "../common/progress/TaskProgress.h"
-#include "../common/Translator.h"
+#include "../common/STLUtils.h"
 #include "../common/StringUtils.h"
+#include "../common/Translator.h"
 #include "../dataaccess/utils/Utils.h"
 #include "../datatype/StringProperty.h"
 #include "../datatype/SimpleData.h"
@@ -84,6 +85,7 @@ bool te::attributefill::VectorToVectorMemory::run()
   std::auto_ptr<te::mem::DataSet> outDs(new te::mem::DataSet(outDst.get()));
 
   te::sam::rtree::Index<size_t, 8>* rtree = getRtree(fromDs.get());
+  KD_ADAPTATIVE_TREE* kdtree = 0;
 
   toDs->moveBeforeFirst();
 
@@ -91,6 +93,8 @@ bool te::attributefill::VectorToVectorMemory::run()
   task.setTotalSteps(toDs->size());
   task.useTimer(true);
 
+  std::string logInfo1 = "";
+  std::string logInfo2 = "";
   while(toDs->moveNext())
   {
     try
@@ -104,16 +108,20 @@ bool te::attributefill::VectorToVectorMemory::run()
 
       std::vector<std::size_t> intersections = getIntersections(toDs.get(), fromDs.get(), rtree);
 
-      if(intersections.empty())
+      if(intersections.empty() && !hasNoIntersectionOperations())
       {
         outDs->add(item);
         continue;
       }
 
-      std::map<te::dt::Property*, std::vector<std::string> >::iterator it = m_options.begin();
+      std::map<std::string, std::vector<te::attributefill::OperationType> >::iterator it = m_options.begin();
 
       while(it != m_options.end())
       {
+        logInfo1 = it->first;
+
+        te::dt::Property* prop = fromSchema->getProperty(it->first);
+
         te::stat::NumericStatisticalSummary ssNum;
         te::stat::StringStatisticalSummary ssStr;
 
@@ -121,9 +129,9 @@ bool te::attributefill::VectorToVectorMemory::run()
         std::vector<std::string> strValues;
         std::vector<te::dt::AbstractData*> dataValues;
 
-        dataValues = getDataValues(fromDs.get(), intersections, it->first->getName());
+        dataValues = getDataValues(fromDs.get(), intersections, prop->getName());
 
-        if(it->first->getType() == te::dt::STRING_TYPE)
+        if(prop->getType() == te::dt::STRING_TYPE)
         {
           strValues = getStrValues(dataValues);
           te::stat::GetStringStatisticalSummary(strValues, ssStr, "");
@@ -134,38 +142,39 @@ bool te::attributefill::VectorToVectorMemory::run()
           te::stat::GetNumericStatisticalSummary(numValues, ssNum);
         }
 
-        std::vector<std::string> funcs = it->second;
+        std::vector<te::attributefill::OperationType> funcs = it->second;
 
         for(std::size_t i = 0; i < funcs.size(); ++i)
         {
-          std::string outPropName = getPropertyName(it->first, funcs[i]);
+          logInfo2 = funcs[i];
+          std::string outPropName = getPropertyName(prop, funcs[i]);
 
-          if(funcs[i] == "Value")
+          if(funcs[i] == te::attributefill::VALUE)
           {
-            if(it->first->getType() == te::dt::STRING_TYPE)
+            if(prop->getType() == te::dt::STRING_TYPE)
               item->setString(outPropName, ssStr.m_minVal);
             else
               item->setDouble(outPropName, ssNum.m_minVal);
           }
-          else if(funcs[i] == "Class with larger intersection area")
+          else if(funcs[i] == te::attributefill::HIGHEST_INTERSECTION)
           {
-            te::dt::AbstractData* value = getClassWithLargerIntersectionArea(toDs.get(), toSrid, fromDs.get(), fromSrid, intersections, it->first->getName());
+            te::dt::AbstractData* value = getClassWithHighestIntersectionArea(toDs.get(), toSrid, fromDs.get(), fromSrid, intersections, prop->getName());
 
             item->setValue(outPropName, value);
           }
-          else if(funcs[i] == "Class with highest occurrence")
+          else if(funcs[i] == te::attributefill::HIGHEST_OCCURRENCE)
           {
-            te::dt::AbstractData* value = getClassWithHighestOccurrence(fromDs.get(), intersections, it->first->getName());
+            te::dt::AbstractData* value = getClassWithHighestOccurrence(fromDs.get(), intersections, prop->getName());
             item->setValue(outPropName, value);
           }
-          else if(funcs[i] == "Percentage per Class")
+          else if(funcs[i] == te::attributefill::PERCENT_CLASS)
           {
-            std::map<std::string, double> result = getPercentagePerClass(fromDs.get(), intersections, it->first->getName());
+            std::map<std::string, double> result = getPercentagePerClass(fromDs.get(), intersections, prop->getName());
 
             std::map<std::string, double>::iterator itAux = result.begin();
             while(itAux != result.end())
             {
-              std::string newPropName = it->first->getName() + "_" + itAux->first;
+              std::string newPropName = prop->getName() + "_" + itAux->first;
               std::replace(newPropName.begin(), newPropName.end(), ' ', '_');
 
               item->setDouble(newPropName, itAux->second);
@@ -173,7 +182,7 @@ bool te::attributefill::VectorToVectorMemory::run()
               ++itAux;
             }
           }
-          else if(funcs[i] == "Presence")
+          else if(funcs[i] == te::attributefill::PRESENCE)
           {
             if(intersections.size() > 0)
             {
@@ -184,20 +193,20 @@ bool te::attributefill::VectorToVectorMemory::run()
               item->setInt32(outPropName, 0);
             }
           }
-          else if(funcs[i] == "Percentage of Total Area")
+          else if(funcs[i] == te::attributefill::PERCENT_TOTAL_AREA)
           {
-            double area = getPercentageOfTotalArea(toDs.get(), toSrid, fromDs.get(), fromSrid, intersections, it->first->getName());
+            double area = getPercentageOfTotalArea(toDs.get(), toSrid, fromDs.get(), fromSrid, intersections, prop->getName());
 
             item->setDouble(outPropName, area);
           }
-          else if(funcs[i] == "Percentage of each Class by Area")
+          else if(funcs[i] == te::attributefill::PERCENT_EACH_CLASS)
           {
-            std::map<std::string, double> result = getPercentageOfEachClassByArea(toDs.get(), toSrid, fromDs.get(), fromSrid, intersections, it->first->getName());
+            std::map<std::string, double> result = getPercentageOfEachClassByArea(toDs.get(), toSrid, fromDs.get(), fromSrid, intersections, prop->getName());
 
             std::map<std::string, double>::iterator itAux = result.begin();
             while(itAux != result.end())
             {
-              std::string newPropName = it->first->getName() + "_" + itAux->first;
+              std::string newPropName = prop->getName() + "_" + itAux->first;
               std::replace(newPropName.begin(), newPropName.end(), ' ', '_');
 
               item->setDouble(newPropName, itAux->second);
@@ -205,35 +214,52 @@ bool te::attributefill::VectorToVectorMemory::run()
               ++itAux;
             }
           }
-          else if(funcs[i] == "Weighted by Area")
+          else if(funcs[i] == te::attributefill::WEIGHTED)
           {
-            double weigh = getWeightedByArea(toDs.get(), toSrid, fromDs.get(), fromSrid, intersections, it->first->getName());
+            double weigh = getWeightedByArea(toDs.get(), toSrid, fromDs.get(), fromSrid, intersections, prop->getName());
 
             item->setDouble(outPropName, weigh);
           }
-          else if(funcs[i] == "Weighted Sum by Area")
+          else if(funcs[i] == te::attributefill::WEIGHTED_SUM)
           {
-            double weigh = getWeightedSumByArea(toDs.get(), toSrid, fromDs.get(), fromSrid, intersections, it->first->getName());
+            double weigh = getWeightedSumByArea(toDs.get(), toSrid, fromDs.get(), fromSrid, intersections, prop->getName());
 
             item->setDouble(outPropName, weigh);
           }
-          else if(it->first->getType() == te::dt::STRING_TYPE)
+          else if(funcs[i] == te::attributefill::MIN_DISTANCE)
           {
-            std::string value = getValue(ssStr, funcs[i]);
-            item->setString(outPropName, value);
+            double result = 0;
+
+            if(intersections.empty())
+            {
+              if(!kdtree)
+                kdtree = getKDtree(fromDs.get(), toSrid);
+
+              result = getMinimumDistance(toDs.get(), toSrid, fromDs.get(), fromSrid, kdtree);
+            }
+
+            item->setDouble(outPropName, result);
           }
-          else
+          else if(isStatistical(funcs[i]))
           {
-            if(funcs[i] == "Mode")
-            {
-              std::string value = getModeValue(ssNum);
-              item->setString(outPropName, value);
-            }
-            else
-            {
-              double value = getValue(ssNum, funcs[i]);
-              item->setDouble(outPropName, value);
-            }
+             if(prop->getType() == te::dt::STRING_TYPE)
+             {
+               std::string value = getValue(ssStr, funcs[i]);
+               item->setString(outPropName, value);
+             }
+             else
+             {
+               if(funcs[i] == te::attributefill::MODE)
+               {
+                 std::string value = getModeValue(ssNum);
+                 item->setString(outPropName, value);
+               }
+               else
+               {
+                 double value = getValue(ssNum, funcs[i]);
+                 item->setDouble(outPropName, value);
+               }
+             }
           }
         }
 
@@ -249,11 +275,15 @@ bool te::attributefill::VectorToVectorMemory::run()
     }
     catch(te::common::Exception& e)
     {
-      te::common::Logger::logDebug("attributefill", e.what());
+      std::string ex = e.what();
+      ex += " | Ref: " + logInfo1 + " : " + logInfo2;
+      te::common::Logger::logDebug("attributefill", ex.c_str());
     }
     catch(std::exception& e)
     {
-      te::common::Logger::logDebug("attributefill", e.what());
+      std::string ex = e.what();
+      ex += " | Ref: " + logInfo1 + " : " + logInfo2;
+      te::common::Logger::logDebug("attributefill", ex.c_str());
     }
   }
 
@@ -265,53 +295,54 @@ bool te::attributefill::VectorToVectorMemory::run()
 te::da::DataSetType* te::attributefill::VectorToVectorMemory::getOutputDataSetType()
 {
   std::auto_ptr<te::da::DataSet> fromDs = m_fromLayer->getData();
+  std::auto_ptr<te::da::DataSetType> fromSchema = m_fromLayer->getSchema();
 
   std::auto_ptr<te::da::DataSetType> toScheme = m_toLayer->getSchema();
 
   te::da::DataSetType* dst = new te::da::DataSetType(*toScheme.get());
   dst->setName(m_outDset);
 
-  std::map<te::dt::Property*, std::vector<std::string> >::iterator it = m_options.begin();
+  std::map<std::string, std::vector<te::attributefill::OperationType> >::iterator it = m_options.begin();
 
   while(it != m_options.end())
   {
-    std::vector<std::string> funcs = it->second;
+    te::dt::Property* currentProperty = fromSchema->getProperty(it->first);
 
-    te::dt::Property* currentProperty = it->first;
+    std::vector<te::attributefill::OperationType> funcs = it->second;
 
     for(std::size_t i = 0; i < funcs.size(); ++i)
     {
       te::dt::SimpleProperty* newProp = 0;
 
-      std::string newName = getPropertyName(it->first, funcs[i]);
+      std::string newName = getPropertyName(currentProperty, (te::attributefill::OperationType)funcs[i]);
 
-      if(funcs[i] == "Value")
+      if(funcs[i] == te::attributefill::VALUE)
       {
-        if(it->first->getType() == te::dt::STRING_TYPE)
+        if(currentProperty->getType() == te::dt::STRING_TYPE)
           newProp = new te::dt::StringProperty(newName);
         else
           newProp = new te::dt::SimpleProperty(newName, te::dt::DOUBLE_TYPE);
       }
-      else if(funcs[i] == "Class with highest occurrence" ||
-              funcs[i] == "Class with larger intersection area")
+      else if(funcs[i] == te::attributefill::HIGHEST_OCCURRENCE ||
+              funcs[i] == te::attributefill::HIGHEST_INTERSECTION)
       {
         newProp = dynamic_cast<te::dt::SimpleProperty*>(currentProperty->clone());
         newProp->setRequired(false);
         newProp->setName(newName);
       }
-      else if(funcs[i] == "Percentage per Class" || funcs[i] == "Percentage of each Class by Area")
+      else if(funcs[i] == te::attributefill::PERCENT_CLASS || funcs[i] == te::attributefill::PERCENT_EACH_CLASS)
       {
         continue;//Sera feito fora do for
       }
-      else if(funcs[i] == "Presence")
+      else if(funcs[i] == te::attributefill::PRESENCE)
       {
         newProp = new te::dt::SimpleProperty(newName, te::dt::INT32_TYPE);
       }
-      else if(funcs[i] == "Percentage of Total Area")
+      else if(funcs[i] == te::attributefill::PERCENT_TOTAL_AREA)
       {
         newProp = new te::dt::SimpleProperty(newName, te::dt::DOUBLE_TYPE);
       }
-      else if(it->first->getType() == te::dt::STRING_TYPE || funcs[i] == "Mode" )
+      else if(currentProperty->getType() == te::dt::STRING_TYPE || funcs[i] == te::attributefill::MODE)
       {
         newProp = new te::dt::StringProperty(newName);
       }
@@ -323,14 +354,14 @@ te::da::DataSetType* te::attributefill::VectorToVectorMemory::getOutputDataSetTy
       dst->add(newProp);
     }
 
-    if(std::find(funcs.begin(), funcs.end(), "Percentage per Class") != funcs.end() || 
-       std::find(funcs.begin(), funcs.end(), "Percentage of each Class by Area") != funcs.end())
+    if(std::find(funcs.begin(), funcs.end(), te::attributefill::PERCENT_CLASS) != funcs.end() || 
+      std::find(funcs.begin(), funcs.end(), te::attributefill::PERCENT_EACH_CLASS) != funcs.end())
     {
-      std::vector<std::string> strClasses = getDistinctClasses(fromDs.get(), it->first->getName());
+      std::vector<std::string> strClasses = getDistinctClasses(fromDs.get(), currentProperty->getName());
 
       for(std::size_t i = 0; i < strClasses.size(); ++i)
       {
-        std::string newPropName = it->first->getName() + "_" + strClasses[i];
+        std::string newPropName = currentProperty->getName() + "_" + strClasses[i];
         std::replace(newPropName.begin(), newPropName.end(), ' ', '_');
 
         te::dt::SimpleProperty* newProp = new te::dt::SimpleProperty(newPropName, te::dt::DOUBLE_TYPE);
@@ -387,57 +418,57 @@ te::sam::rtree::Index<size_t, 8>* te::attributefill::VectorToVectorMemory::getRt
   return rtree;
 }
 
-std::string te::attributefill::VectorToVectorMemory::getPropertyName(te::dt::Property* prop, const std::string& func)
+std::string te::attributefill::VectorToVectorMemory::getPropertyName(te::dt::Property* prop, te::attributefill::OperationType func)
 {
   std::string name = te::common::Convert2LCase(prop->getName());
 
   std::string newName = name + "_";
 
-  if(func == "Value")
+  if(func == te::attributefill::VALUE)
     newName += "value";
-  else if(func == "Minimum value")
+  else if(func == te::attributefill::MIN_VALUE)
     newName += "min_val";
-  else if(func == "Maximum value")
+  else if(func == te::attributefill::MAX_VALUE)
     newName += "max_val";
-  else if(func == "Mean")
+  else if(func == te::attributefill::MEAN)
     newName += "mean";
-  else if(func == "Sum of values")
+  else if(func == te::attributefill::SUM)
     newName += "sum_values";
-  else if(func == "Total number of values")
+  else if(func == te::attributefill::COUNT)
     newName += "total_values";
-  else if(func == "Total not null values")
+  else if(func == te::attributefill::VALID_COUNT)
     newName += "total_notnull_values";
-  else if(func == "Standard deviation")
+  else if(func == te::attributefill::STANDARD_DEVIATION)
     newName += "stand_dev";
-  else if(func == "Variance")
+  else if(func == te::attributefill::VARIANCE)
     newName += "variance";
-  else if(func == "Skewness")
+  else if(func == te::attributefill::SKEWNESS)
     newName += "skewness";
-  else if(func == "Kurtosis")
+  else if(func == te::attributefill::KURTOSIS)
     newName += "kurtosis";
-  else if(func == "Amplitude")
+  else if(func == te::attributefill::AMPLITUDE)
     newName += "amplitude";
-  else if(func == "Median")
+  else if(func == te::attributefill::MEDIAN)
     newName += "median";
-  else if(func == "Coefficient variation")
+  else if(func == te::attributefill::VAR_COEFF)
     newName += "coeff_variation";
-  else if(func == "Mode")
+  else if(func == te::attributefill::MODE)
     newName += "mode";
-  else if(func == "Class with highest occurrence")
+  else if(func == te::attributefill::HIGHEST_OCCURRENCE)
     newName += "class_high_occurrence";
-  else if(func == "Class with larger intersection area")
+  else if(func == te::attributefill::HIGHEST_INTERSECTION)
     newName += "class_high_area";
-  else if(func == "Minimum Distance")
+  else if(func == te::attributefill::MIN_DISTANCE)
     newName += "min_distance";
-  else if(func == "Presence")
+  else if(func == te::attributefill::PRESENCE)
     newName += "presence";
-  else if(func == "Percentage of Total Area")
+  else if(func == te::attributefill::PERCENT_TOTAL_AREA)
     newName += "percent_of_total_area";
-  else if(func == "Percentage of each Class by Area")
+  else if(func == te::attributefill::PERCENT_EACH_CLASS)
     newName += "percent_area_class";
-  else if(func == "Weighted by Area")
+  else if(func == te::attributefill::WEIGHTED)
     newName += "weigh_area";
-  else if(func == "Weighted Sum by Area")
+  else if(func == te::attributefill::WEIGHTED_SUM)
     newName += "Weigh_sum_area";
 
   return newName;
@@ -515,22 +546,22 @@ std::vector<std::string> te::attributefill::VectorToVectorMemory::getStrValues(s
   return result;
 }
 
-bool te::attributefill::VectorToVectorMemory::isStatistical(const std::string& funcName)
+bool te::attributefill::VectorToVectorMemory::isStatistical(te::attributefill::OperationType type)
 {
-  if(funcName == "Minimum value" ||
-     funcName == "Maximum value" ||
-     funcName == "Mean" ||
-     funcName == "Sum of values" ||
-     funcName == "Total number of values" ||
-     funcName == "Total not null values" ||
-     funcName == "Standard deviation" ||
-     funcName == "Variance" ||
-     funcName == "Skewness" ||
-     funcName == "Kurtosis" ||
-     funcName == "Amplitude" ||
-     funcName == "Median" ||
-     funcName == "Coefficient variation" ||
-     funcName == "Mode")
+  if(type == te::attributefill::MIN_VALUE ||
+     type == te::attributefill::MAX_VALUE ||
+     type == te::attributefill::MEAN ||
+     type == te::attributefill::SUM ||
+     type == te::attributefill::COUNT ||
+     type == te::attributefill::VALID_COUNT ||
+     type == te::attributefill::STANDARD_DEVIATION ||
+     type == te::attributefill::VARIANCE ||
+     type == te::attributefill::SKEWNESS ||
+     type == te::attributefill::KURTOSIS ||
+     type == te::attributefill::AMPLITUDE ||
+     type == te::attributefill::MEDIAN ||
+     type == te::attributefill::VAR_COEFF ||
+     type == te::attributefill::MODE)
   {
     return true;
   }
@@ -538,15 +569,15 @@ bool te::attributefill::VectorToVectorMemory::isStatistical(const std::string& f
   return false;
 }
 
-std::vector<std::string> te::attributefill::VectorToVectorMemory::getSelectedFunctions()
+std::vector<te::attributefill::OperationType> te::attributefill::VectorToVectorMemory::getSelectedFunctions()
 {
-  std::vector<std::string> allSelFuncs;
+  std::vector<te::attributefill::OperationType> allSelFuncs;
 
-  std::map<te::dt::Property*, std::vector<std::string> >::iterator it = m_options.begin();
+  std::map<std::string, std::vector<te::attributefill::OperationType> >::iterator it = m_options.begin();
 
   while(it != m_options.end())
   {
-    std::vector<std::string> funcs = it->second;
+    std::vector<te::attributefill::OperationType> funcs = it->second;
 
     for(std::size_t i = 0; i < funcs.size(); ++i)
     {
@@ -560,50 +591,49 @@ std::vector<std::string> te::attributefill::VectorToVectorMemory::getSelectedFun
   return allSelFuncs;
 }
 
-double te::attributefill::VectorToVectorMemory::getValue(te::stat::NumericStatisticalSummary ss, const std::string& function)
+double te::attributefill::VectorToVectorMemory::getValue(te::stat::NumericStatisticalSummary ss, te::attributefill::OperationType type)
 {
-  if(function == "Amplitude")
+  if(type == te::attributefill::AMPLITUDE)
     return ss.m_amplitude;
-  else if(function == "Total number of values")
+  else if(type == te::attributefill::COUNT)
     return ss.m_count;
-  else if(function == "Kurtosis")
+  else if(type == te::attributefill::KURTOSIS)
     return ss.m_kurtosis;
-  else if(function == "Maximum value")
+  else if(type == te::attributefill::MAX_VALUE)
     return ss.m_maxVal;
-  else if(function == "Mean")
+  else if(type == te::attributefill::MEAN)
     return ss.m_mean;
-  else if(function == "Median")
+  else if(type == te::attributefill::MEDIAN)
     return ss.m_median;
-  else if(function == "Minimum value")
+  else if(type == te::attributefill::MIN_VALUE)
     return ss.m_minVal;  
-  else if(function == "Skewness")
+  else if(type == te::attributefill::SKEWNESS)
     return ss.m_skewness;
-  else if(function == "Standard deviation")
+  else if(type == te::attributefill::STANDARD_DEVIATION)
     return ss.m_stdDeviation;
-  else if(function == "Sum of values")
+  else if(type == te::attributefill::SUM)
     return ss.m_sum;
-  else if(function == "Total not null values")
+  else if(type == te::attributefill::VALID_COUNT)
     return ss.m_validCount;
-  else if(function == "Coefficient variation")
+  else if(type == te::attributefill::VAR_COEFF)
     return ss.m_varCoeff;
-  else if(function == "Variance")
+  else if(type == te::attributefill::VARIANCE)
     return ss.m_variance;
   else
     return -1;
-  
 }
 
-std::string te::attributefill::VectorToVectorMemory::getValue(te::stat::StringStatisticalSummary ss, const std::string& function)
+std::string te::attributefill::VectorToVectorMemory::getValue(te::stat::StringStatisticalSummary ss, te::attributefill::OperationType type)
 {
-  if(function == "Maximum value")
+  if(type == te::attributefill::MAX_VALUE)
     return ss.m_maxVal;
-  else if(function == "Minimum value")
+  else if(type == te::attributefill::MIN_VALUE)
     return ss.m_minVal; 
-  else if(function == "Mode")
+  else if(type == te::attributefill::MODE)
     return ss.m_mode;
-  else if(function == "Total number of values")
+  else if(type == te::attributefill::COUNT)
     return boost::lexical_cast<std::string>(ss.m_count);
-  else if(function == "Total not null values")
+  else if(type == te::attributefill::VALID_COUNT)
     return boost::lexical_cast<std::string>(ss.m_validCount);
   else
     return "null";
@@ -686,12 +716,12 @@ te::dt::AbstractData* te::attributefill::VectorToVectorMemory::getClassWithHighe
   return data;
 }
 
-te::dt::AbstractData* te::attributefill::VectorToVectorMemory::getClassWithLargerIntersectionArea(te::da::DataSet* toDs,
-                                                                                                  std::size_t toSrid,
-                                                                                                  te::da::DataSet* fromDs,
-                                                                                                  std::size_t fromSrid,
-                                                                                                  std::vector<std::size_t> dsPos,
-                                                                                                  const std::string& propertyName)
+te::dt::AbstractData* te::attributefill::VectorToVectorMemory::getClassWithHighestIntersectionArea(te::da::DataSet* toDs,
+                                                                                                   std::size_t toSrid,
+                                                                                                   te::da::DataSet* fromDs,
+                                                                                                   std::size_t fromSrid,
+                                                                                                   std::vector<std::size_t> dsPos,
+                                                                                                   const std::string& propertyName)
 {
   std::size_t fromGeomPos = te::da::GetFirstSpatialPropertyPos(fromDs);
   std::size_t toGeomPos =   te::da::GetFirstSpatialPropertyPos(toDs);
@@ -1127,4 +1157,195 @@ te::dt::AbstractData* te::attributefill::VectorToVectorMemory::getDataBasedOnTyp
   }
 
   return data;
+}
+
+KD_ADAPTATIVE_TREE* te::attributefill::VectorToVectorMemory::getKDtree(te::da::DataSet* data, std::size_t toSrid)
+{
+  std::size_t geomPos = te::da::GetFirstSpatialPropertyPos(data);
+
+  KD_ADAPTATIVE_TREE* kdtree = new KD_ADAPTATIVE_TREE(*data->getExtent(geomPos).release(), 5);
+
+  std::vector<std::pair<te::gm::Coord2D, te::gm::Point> > kdset;
+
+  data->moveBeforeFirst();
+
+  while(data->moveNext())
+  {
+    std::auto_ptr<te::gm::Geometry> geom = data->getGeometry(geomPos);
+
+    std::vector<te::gm::Point*> allPoints = getAllPointsOfGeometry(geom.get());
+
+    for(std::size_t i = 0; i < allPoints.size(); ++i)
+    {
+      te::gm::Point* p = allPoints[i];
+
+      if(p->getSRID() != toSrid)
+      {
+        p->transform(toSrid);
+      }
+
+      te::gm::Coord2D coord(p->getX(), p->getY());
+      kdset.push_back(std::pair<te::gm::Coord2D, te::gm::Point>(coord, *p));
+    }
+  }
+
+  kdtree->build(kdset);
+
+  return kdtree;
+}
+
+double te::attributefill::VectorToVectorMemory::getMinimumDistance(te::da::DataSet* toDs,
+                                                                  std::size_t toSrid,
+                                                                  te::da::DataSet* fromDs,
+                                                                  std::size_t fromSrid,
+                                                                  KD_ADAPTATIVE_TREE* kdtree)
+{
+  std::size_t toGeomPos = te::da::GetFirstSpatialPropertyPos(toDs);
+  std::size_t fromGeomPos = te::da::GetFirstSpatialPropertyPos(fromDs);
+
+  std::auto_ptr<te::gm::Geometry> toGeom = toDs->getGeometry(toGeomPos);
+
+  std::vector<te::gm::Point*> allPoints = getAllPointsOfGeometry(toGeom.get());
+
+  std::vector<double> distances;
+
+  for(std::size_t i = 0; i < allPoints.size(); ++i)
+  {
+    te::gm::Point* p = allPoints[i];
+    te::gm::Coord2D key = te::gm::Coord2D(p->getX(), p->getY());
+    std::vector<te::gm::Point> points;
+    points.push_back(te::gm::Point(std::numeric_limits<double>::max(), std::numeric_limits<double>::max()));
+    std::vector<double> sqrDists;
+
+    kdtree->nearestNeighborSearch(key, points, sqrDists, 1);
+
+    distances.push_back(sqrDists[0]);
+  }
+
+  double finalResult = std::numeric_limits<double>::max();
+  for(std::size_t i = 0; i < distances.size(); ++i)
+  {
+    if(distances[i] < finalResult)
+      finalResult = distances[i];
+  }
+
+  return sqrt(finalResult);
+}
+
+std::vector<te::gm::Point*> te::attributefill::VectorToVectorMemory::getAllPointsOfGeometry(te::gm::Geometry* geom)
+{
+  std::size_t geomType = geom->getGeomTypeId();
+
+  std::vector<te::gm::Point*> result;
+
+  switch(geomType)
+  {
+    case te::gm::PointType:
+    {
+      te::gm::Point* g = dynamic_cast<te::gm::Point*>(geom);
+      result.push_back(g);
+      break;
+    }
+    case te::gm::MultiPointType:
+    {
+      te::gm::MultiPoint* g = dynamic_cast<te::gm::MultiPoint*>(geom);
+      for(std::size_t i = 0; i < g->getNumGeometries(); ++i)
+      {
+        te::gm::Geometry* gAux = g->getGeometryN(i);
+
+        std::size_t gAuxType = gAux->getGeomTypeId();
+
+        std::vector<te::gm::Point*> vec = getAllPointsOfGeometry(gAux);
+        result.insert(result.end(), vec.begin(), vec.end());
+      }
+      break;
+    }
+    case te::gm::PolygonType:
+    {
+      te::gm::Polygon* g = dynamic_cast<te::gm::Polygon*>(geom);
+
+      for(std::size_t i = 0; i < g->getNumRings(); ++i)
+      {
+        
+        te::gm::Curve* c = g->getRingN(i);
+
+        te::gm::LinearRing* lr = dynamic_cast<te::gm::LinearRing*>(c);
+
+        for(std::size_t j = 0; j < lr->getNPoints(); ++j)
+        {
+          result.push_back(lr->getPointN(j));
+        }
+      }
+
+      break;
+    }
+    case te::gm::MultiPolygonType:
+    {
+      te::gm::MultiPolygon* g = dynamic_cast<te::gm::MultiPolygon*>(geom);
+
+      for(std::size_t i = 0; i < g->getNumGeometries(); ++i)
+      {
+        te::gm::Geometry* gAux = g->getGeometryN(i);
+
+        std::size_t gAuxType = gAux->getGeomTypeId();
+
+        std::vector<te::gm::Point*> vec = getAllPointsOfGeometry(gAux);
+        result.insert(result.end(), vec.begin(), vec.end());
+      }
+      break;
+    }
+    case te::gm::LineStringType:
+    {
+      te::gm::LineString* g = dynamic_cast<te::gm::LineString*>(geom);
+
+      for(std::size_t i = 0; i < g->getNPoints(); ++i)
+      {
+        result.push_back(g->getPointN(i));
+      }
+
+      break;
+    }
+    case te::gm::MultiLineStringType:
+    {
+      te::gm::MultiLineString* g = dynamic_cast<te::gm::MultiLineString*>(geom);
+
+      for(std::size_t i = 0; i < g->getNumGeometries(); ++i)
+      {
+        te::gm::Geometry* gAux = g->getGeometryN(i);
+
+        std::size_t gAuxType = gAux->getGeomTypeId();
+
+        std::vector<te::gm::Point*> vec = getAllPointsOfGeometry(gAux);
+        result.insert(result.end(), vec.begin(), vec.end());
+      }
+
+      break;
+    }
+    default:
+    {
+      return std::vector<te::gm::Point*>();
+    }
+  }
+
+  return result;
+}
+
+bool te::attributefill::VectorToVectorMemory::hasNoIntersectionOperations()
+{
+  std::map<std::string, std::vector<te::attributefill::OperationType> >::iterator it = m_options.begin();
+
+  while(it != m_options.end())
+  {
+    std::vector<te::attributefill::OperationType> ops = it->second;
+
+    for(std::size_t i = 0; i < ops.size(); ++i)
+    {
+      if(ops[i] == te::attributefill::MIN_DISTANCE ||
+         ops[i] == te::attributefill::PRESENCE)
+        return true;
+    }
+    ++it;
+  }
+
+  return false;
 }
