@@ -422,6 +422,19 @@ void te::qt::widgets::TiePointLocatorWidget::createSelection(int initialId)
 
 void te::qt::widgets::TiePointLocatorWidget::onAutoAcquireTiePointsToolButtonClicked()
 {
+  //check parameters
+  if(m_ui->m_sridLineEdit->text().isEmpty())
+  {
+    QMessageBox::warning(this, tr("Warning"), tr("Output SRID not defined."));
+    return;
+  }
+
+  if(m_ui->m_resXLineEdit->text().isEmpty() || m_ui->m_resYLineEdit->text().isEmpty())
+  {
+    QMessageBox::warning(this, tr("Warning"), tr("Output resolution not defined."));
+    return;
+  }
+
   // creating the algorithm parameters
   std::auto_ptr<te::da::DataSet> dsRef(m_refLayer->getData());
   std::size_t rpos = te::da::GetFirstPropertyPos(dsRef.get(), te::dt::RASTER_TYPE);
@@ -466,8 +479,24 @@ void te::qt::widgets::TiePointLocatorWidget::onAutoAcquireTiePointsToolButtonCli
   inputParams.m_inRaster1Bands.push_back(m_ui->m_referenceBand1ComboBox->currentText().toUInt());
   inputParams.m_inRaster2Bands.push_back(m_ui->m_referenceBand2ComboBox->currentText().toUInt());
 
-  inputParams.m_pixelSizeXRelation = inputRstRef->getGrid()->getResolutionX() / m_ui->m_resXLineEdit->text().toDouble();
-  inputParams.m_pixelSizeYRelation = inputRstRef->getGrid()->getResolutionY() / m_ui->m_resYLineEdit->text().toDouble();
+  if(m_ui->m_inputSRIDLineEdit->text().toInt() != m_ui->m_sridLineEdit->text().toInt())
+  {
+    te::gm::Envelope env(*inputRstAdj->getExtent());
+
+    env.transform(m_ui->m_sridLineEdit->text().toInt(), m_ui->m_inputSRIDLineEdit->text().toInt());
+
+    double resX = env.getWidth() / inputRstAdj->getNumberOfColumns();
+    double resY = env.getHeight() / inputRstAdj->getNumberOfRows();
+
+    inputParams.m_pixelSizeXRelation = inputRstRef->getGrid()->getResolutionX() / resX;
+    inputParams.m_pixelSizeYRelation = inputRstRef->getGrid()->getResolutionY() / resY;
+
+  }
+  else
+  {
+    inputParams.m_pixelSizeXRelation = inputRstRef->getGrid()->getResolutionX() / m_ui->m_resXLineEdit->text().toDouble();
+    inputParams.m_pixelSizeYRelation = inputRstRef->getGrid()->getResolutionY() / m_ui->m_resYLineEdit->text().toDouble();
+  }
 
   if(inputRstRef->getExtent()->within(auxEnvelope1) && inputRstAdj->getExtent()->within(auxEnvelope2))
     inputParams.m_subSampleOptimizationRescaleFactor = m_inputParameters.m_subSampleOptimizationRescaleFactor;
@@ -488,18 +517,11 @@ void te::qt::widgets::TiePointLocatorWidget::onAutoAcquireTiePointsToolButtonCli
       coordDiffX = itB->second.m_tiePoint.first.x - itB->second.m_tiePoint.second.x;
       coordDiffY = itB->second.m_tiePoint.first.y - itB->second.m_tiePoint.second.y;
 
-//      inputParams.m_maxR1ToR2Offset += std::max(inputParams.m_maxR1ToR2Offset, (unsigned int)std::ceil(std::sqrt((coordDiffX * coordDiffX) +  (coordDiffY * coordDiffY))));
       ++manualTPNumber;
     }
 
     ++itB;
   }
-
-//   if(inputParams.m_maxR1ToR2Offset > 0)
-//   {
-//    inputParams.m_maxR1ToR2Offset /= manualTPNumber;
-//    inputParams.m_maxR1ToR2Offset += ((inputParams.m_maxR1ToR2Offset * 10) / 100);
-//   }
 
   // Executing the algorithm
 
@@ -945,8 +967,18 @@ void te::qt::widgets::TiePointLocatorWidget::updateAdvancedOptions()
 
   m_inputParameters.m_geomTransfName = m_ui->m_geomTransfNameComboBox->currentText().toStdString();
 
+  if(m_ui->m_geometryFilterAssuranceLineEdit->text().isEmpty())
+  {
+    QMessageBox::warning(this, tr("Warning"), tr("Geometry assurance not defined."));
+    return;
+  }
   m_inputParameters.m_geometryFilterAssurance = m_ui->m_geometryFilterAssuranceLineEdit->text().toDouble();
 
+  if(m_ui->m_geomTransfMaxErrorLineEdit->text().isEmpty())
+  {
+    QMessageBox::warning(this, tr("Warning"), tr("Transformation error not defined."));
+    return;
+  }
   m_inputParameters.m_geomTransfMaxError = m_ui->m_geomTransfMaxErrorLineEdit->text().toDouble();
 
   if(m_ui->m_interpMethodComboBox->currentText() == "Bilinear")
@@ -956,23 +988,73 @@ void te::qt::widgets::TiePointLocatorWidget::updateAdvancedOptions()
   else
     m_inputParameters.m_interpMethod = te::rst::Interpolator::NearestNeighbor;
 
+  if(m_ui->m_maxTiePointsLineEdit->text().isEmpty())
+  {
+    QMessageBox::warning(this, tr("Warning"), tr("Maximum number of tie-points not defined."));
+    return;
+  }
   m_inputParameters.m_maxTiePoints =  m_ui->m_maxTiePointsLineEdit->text().toUInt();
 
-  m_inputParameters.m_moravecCorrelationWindowWidth = m_ui->m_correlationWindowWidthLineEdit->text().toUInt();
-
-  m_inputParameters.m_moravecNoiseFilterIterations = m_ui->m_gaussianFilterIterationsLineEdit->text().toUInt();
-
-  m_inputParameters.m_moravecMinAbsCorrelation = m_ui->m_minAbsCorrelationLineEdit->text().toDouble();
-
-  m_inputParameters.m_moravecWindowWidth = m_ui->m_moravecWindowWidthLineEdit->text().toUInt();
-
-  m_inputParameters.m_surfMaxNormEuclideanDist = m_ui->m_maxNormEuclideanDistLineEdit->text().toDouble();
-
-  m_inputParameters.m_surfOctavesNumber = m_ui->m_octavesNumberLineEdit->text().toUInt();
-
-  m_inputParameters.m_surfScalesNumber = m_ui->m_scalesNumberLineEdit->text().toUInt();
-
+  if(m_ui->m_rescaleFactorLineEdit->text().isEmpty())
+  {
+    QMessageBox::warning(this, tr("Warning"), tr("Sub-sampled search rescale factor not defined."));
+    return;
+  }
   m_inputParameters.m_subSampleOptimizationRescaleFactor = m_ui->m_rescaleFactorLineEdit->text().toDouble();
+
+  if(m_ui->m_interesPointsLocationStrategyComboBox->currentText() == "Surf")
+  {
+    if(m_ui->m_maxNormEuclideanDistLineEdit->text().isEmpty())
+    {
+      QMessageBox::warning(this, tr("Warning"), tr("Maximum euclidean distance not defined."));
+      return;
+    }
+    m_inputParameters.m_surfMaxNormEuclideanDist = m_ui->m_maxNormEuclideanDistLineEdit->text().toDouble();
+
+    if(m_ui->m_octavesNumberLineEdit->text().isEmpty())
+    {
+      QMessageBox::warning(this, tr("Warning"), tr("Octaves number not defined."));
+      return;
+    }
+    m_inputParameters.m_surfOctavesNumber = m_ui->m_octavesNumberLineEdit->text().toUInt();
+
+    if(m_ui->m_scalesNumberLineEdit->text().isEmpty())
+    {
+      QMessageBox::warning(this, tr("Warning"), tr("Scales number not defined."));
+      return;
+    }
+    m_inputParameters.m_surfScalesNumber = m_ui->m_scalesNumberLineEdit->text().toUInt();
+  }
+  else
+  {
+    if(m_ui->m_correlationWindowWidthLineEdit->text().isEmpty())
+    {
+      QMessageBox::warning(this, tr("Warning"), tr("Correlation window width not defined."));
+      return;
+    }
+    m_inputParameters.m_moravecCorrelationWindowWidth = m_ui->m_correlationWindowWidthLineEdit->text().toUInt();
+
+    if(m_ui->m_gaussianFilterIterationsLineEdit->text().isEmpty())
+    {
+      QMessageBox::warning(this, tr("Warning"), tr("Gaussian filter iterations not defined."));
+      return;
+    }
+    m_inputParameters.m_moravecNoiseFilterIterations = m_ui->m_gaussianFilterIterationsLineEdit->text().toUInt();
+
+    if(m_ui->m_minAbsCorrelationLineEdit->text().isEmpty())
+    {
+      QMessageBox::warning(this, tr("Warning"), tr("Minimum correlation value not defined."));
+      return;
+    }
+    m_inputParameters.m_moravecMinAbsCorrelation = m_ui->m_minAbsCorrelationLineEdit->text().toDouble();
+
+    if(m_ui->m_moravecWindowWidthLineEdit->text().isEmpty())
+    {
+      QMessageBox::warning(this, tr("Warning"), tr("Moravec window width not defined."));
+      return;
+    }
+    m_inputParameters.m_moravecWindowWidth = m_ui->m_moravecWindowWidthLineEdit->text().toUInt();
+  }
 }
 
 void te::qt::widgets::TiePointLocatorWidget::startUpNavigators()
