@@ -53,7 +53,7 @@ void te::rst::RasterSummaryManager::remove(const Raster* raster)
   m_rasterSummaries.erase(raster);
 }
 
-const te::rst::RasterSummary* te::rst::RasterSummaryManager::get(const Raster* raster, const SummaryTypes types)
+const te::rst::RasterSummary* te::rst::RasterSummaryManager::get(const Raster* raster, const SummaryTypes types, bool readall)
 {
   boost::ptr_map<const Raster*, RasterSummary>::iterator it = m_rasterSummaries.find(raster);
 
@@ -115,10 +115,10 @@ const te::rst::RasterSummary* te::rst::RasterSummaryManager::get(const Raster* r
     }
 
     if (types & te::rst::SUMMARY_MIN && bs.m_minVal == 0)
-      bs.m_minVal = new std::complex<double>(raster->getBand(b)->getMinValue(true));
+      bs.m_minVal = new std::complex<double>(raster->getBand(b)->getMinValue(readall));
 
     if (types & te::rst::SUMMARY_MAX && bs.m_maxVal == 0)
-      bs.m_maxVal = new std::complex<double>(raster->getBand(b)->getMaxValue(true));
+      bs.m_maxVal = new std::complex<double>(raster->getBand(b)->getMaxValue(readall));
 
     if (types & te::rst::SUMMARY_STD && bs.m_stdVal == 0)
       bs.m_stdVal = new std::complex<double>(raster->getBand(b)->getStdValue());

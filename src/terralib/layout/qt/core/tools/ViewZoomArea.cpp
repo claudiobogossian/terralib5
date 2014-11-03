@@ -28,6 +28,7 @@
 #include <QtGui/QMouseEvent>
 #include <QtGui/QPainter>
 #include <QtGui/QPixmap>
+#include <QRubberBand>
 
 te::layout::ViewZoomArea::ViewZoomArea(View* view, const QCursor& cursor, QObject* parent) 
   : ViewRubberBand(view, parent),
@@ -77,38 +78,37 @@ bool te::layout::ViewZoomArea::mouseReleaseEvent(QMouseEvent* e)
     return false;
 
   ViewRubberBand::mouseReleaseEvent(e);
+    
+  double zoomFactor = Context::getInstance().getZoomFactor();
+  double newZoomFactor = zoomFactor + 0.5;
+  Context::getInstance().setZoomFactor(newZoomFactor);
 
-  if(m_rect.isNull()) // Zoom by click
+  QRect rec(m_rect.toRect());
+
+  if(m_rect.isNull())
   {
+    QRect rect = m_rubberBand->geometry().normalized();
 
-    QRectF scRct = scene->sceneRect();
-    QPolygonF scRctViewport = m_view->mapFromScene(scRct);
-    m_rect = QRectF(scRctViewport.boundingRect().topLeft() * 0.5, scRctViewport.boundingRect().bottomRight() * 0.5);
-    m_rect.moveCenter(m_origin);
+    rec.setRect(0, 0, m_view->width() * 0.5, m_view->height() * 0.5);
+    rec.moveCenter(m_origin);
   }
 
-  // Converts zoom boundary to world coordinates
-  QPoint ll(m_rect.left(), m_rect.bottom());
-  QPoint ur(m_rect.right(), m_rect.top());
-
-  QPointF llworld = m_view->mapToScene(ll);
-  QPointF urworld = m_view->mapToScene(ur);
+  // Conversion to world coordinates
+  QPolygonF poly = m_view->mapToScene(rec);
 
   // Updates the map display with the new extent
-  te::gm::Envelope envelope(ll.x(), ll.y(), ur.x(), ur.y());
+  QRectF bounding = poly.boundingRect();
 
   te::gm::Envelope* sceneBox = scene->getWorldBox();
 
-  sceneBox->m_llx = ll.x();
-  sceneBox->m_lly = ll.y();
-  sceneBox->m_urx = ur.x();
-  sceneBox->m_ury = ur.y();
+  sceneBox->m_llx = bounding.x();
+  sceneBox->m_lly = bounding.y();
+  sceneBox->m_urx = bounding.x() + bounding.width();
+  sceneBox->m_ury = bounding.y() + bounding.height();
 
-  double zoomFactor = Context::getInstance().getZoomFactor();
-
-  /*scene->refresh(m_view, zoomFactor);
-  scene->redrawRulers();
-  scene->update();*/
+  scene->refresh(m_view, newZoomFactor);
+  scene->redrawItems(true);
+  scene->update();
   
   return true;
 }

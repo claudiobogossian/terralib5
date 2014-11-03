@@ -30,6 +30,8 @@
 #include <QPen>
 #include <QPixmap>
 
+class QRubberBand;
+
 namespace te
 {
   namespace layout
@@ -84,12 +86,13 @@ namespace te
 
         protected:
 
-          QPoint m_origin;  //!< Origin point on mouse pressed.
-          QRectF m_rect;    //!< The boundary rectangle managed by the rubber band.
-          QPen m_pen;       //!< The pen used to draw the rubber band shape.
-          QBrush m_brush;   //!< The brush used to draw the rubber band shape.
-          bool m_started;
-          QPixmap* m_draft;
+          QPoint            m_origin;  //!< Origin point on mouse pressed.
+          QRectF            m_rect;    //!< The boundary rectangle managed by the rubber band.
+          QPen              m_pen;       //!< The pen used to draw the rubber band shape.
+          QBrush            m_brush;   //!< The brush used to draw the rubber band shape.
+          bool              m_started;
+          QPixmap*          m_draft;
+          QRubberBand*      m_rubberBand;
 
       };
   }   // end namespace layout

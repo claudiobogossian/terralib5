@@ -28,17 +28,19 @@
 #include <QtGui/QMouseEvent>
 #include <QtGui/QPainter>
 #include <QtGui/QPixmap>
+#include <QRubberBand>
 
 te::layout::ViewRubberBand::ViewRubberBand(View* view, QObject* parent) : 
     AbstractViewTool(view, parent),
     m_started(false),
-    m_draft(0)
+    m_draft(0),
+    m_rubberBand(0)
 {
   // Setups the rubber band style
   m_pen.setStyle(Qt::DashLine);
   m_pen.setColor(QColor(100, 177, 216));
   m_pen.setWidth(2);
-  m_brush = QColor(100, 177, 216, 80);
+  m_brush.setColor(QColor(100, 177, 216, 80));
 }
 
 te::layout::ViewRubberBand::~ViewRubberBand()
@@ -48,28 +50,34 @@ te::layout::ViewRubberBand::~ViewRubberBand()
 
 bool te::layout::ViewRubberBand::mousePressEvent(QMouseEvent* e)
 {
+  if(!m_view)
+    return false;
+
   if(e->button() != Qt::LeftButton)
     return false;
 
   m_origin = e->pos();
   m_started = true;
+  m_rubberBand = new QRubberBand(QRubberBand::Rectangle, m_view->viewport());
+  m_rubberBand->setGeometry(QRect(m_origin, QSize()));
+  m_rubberBand->show();
   return true;
 }
 
 bool te::layout::ViewRubberBand::mouseMoveEvent(QMouseEvent* e)
 {
+  if(!m_view)
+    return false;
+
   if(!m_started)
     return false;
   
   m_rect = QRect(m_origin, e->pos()).normalized();
 
-  m_draft = new QPixmap(m_rect.width(), m_rect.height());
-  m_draft->fill(Qt::transparent);
-
-  QPainter painter(m_draft);
-  painter.setPen(m_pen);
-  painter.setBrush(m_brush);
-  painter.drawRect(m_rect);
+  if (m_rubberBand)
+  {
+    m_rubberBand->setGeometry(m_rect.toRect());
+  }
 
   return true;
 }
@@ -78,10 +86,20 @@ bool te::layout::ViewRubberBand::mouseReleaseEvent(QMouseEvent* e)
 {
   m_started = false;
 
+  if(!m_view)
+    return false;
+
   if(m_draft)
   {
     delete m_draft;
     m_draft = 0;
+  }
+
+  if(m_rubberBand)
+  {
+    m_rubberBand->hide();
+    delete m_rubberBand;
+    m_rubberBand=  0;
   }
 
   // Roll back the default tool cursor

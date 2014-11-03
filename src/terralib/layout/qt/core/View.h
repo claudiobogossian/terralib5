@@ -32,6 +32,7 @@
 #include <QGraphicsView>
 #include <QMenu>
 #include <QImage>
+#include <QCursor>
 
 // TerraLib
 #include "../../core/AbstractView.h"
@@ -137,6 +138,8 @@ namespace te
         virtual void showSystematicScale();
 
         virtual bool intersectionSelectionItem(int x, int y);
+
+        virtual QCursor createCursor(std::string pathIcon);
                                         
       protected:
 

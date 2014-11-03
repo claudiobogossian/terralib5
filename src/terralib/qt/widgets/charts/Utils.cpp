@@ -658,7 +658,7 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
     {
       newHistogram->insert(std::make_pair(new te::dt::Double(it->first), it->second));
     }
-    newHistogram->setMinValue(rstptr->getBand(propId)->getMinValue().real());
+    newHistogram->setMinValue(rstptr->getBand(propId)->getMinValue(true).real());
   }
   else
   {
@@ -747,7 +747,7 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
       task.pulse();
       newHistogram->insert(std::make_pair(new te::dt::Double(it->first), it->second));
     }
-    newHistogram->setMinValue(rstptr->getBand(propId)->getMinValue().real());
+    newHistogram->setMinValue(rstptr->getBand(propId)->getMinValue(true).real());
   }
   else
   {

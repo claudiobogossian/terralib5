@@ -42,7 +42,8 @@ bool te::layout::ViewZoomClick::mousePressEvent(QMouseEvent* e)
   if(e->button() != Qt::LeftButton)
     return false;
 
-  //applyZoom(m_display->transform(e->posF()));
+  QPointF pt(e->pos());
+  applyZoom(pt);
 
   return true;
 }

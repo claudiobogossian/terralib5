@@ -280,7 +280,7 @@ void te::layout::ToolbarOutside::createViewAreaToolButton()
   QAction* actionZoomIn = createAction("Zoom In", m_optionViewZoomIn, "layout-paper-zoom-in");
   menu->addAction(actionZoomIn);
   
-  QAction* actionZoomOut = createAction("Zoom Out", m_optionRectangle, "layout-paper-zoom-out");
+  QAction* actionZoomOut = createAction("Zoom Out", m_optionViewZoomOut, "layout-paper-zoom-out");
   menu->addAction(actionZoomOut);
 
   QToolButton *btnViewArea = createToolButton("Paper Tools", "Paper Tools", "layout-paper-pan");

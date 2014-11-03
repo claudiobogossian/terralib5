@@ -91,10 +91,11 @@ namespace te
 
           \param raster      The raster to be found.
           \param types       The desired types of summary to be calculated (min, max, ...).
+          \param readall     Force the reading the entire image (can be slow) for computing min and max values.
 
           \return The calculated raster summary.
         */
-        const RasterSummary* get(const Raster* raster, const SummaryTypes st);
+        const RasterSummary* get(const Raster* raster, const SummaryTypes st, bool readall = false);
 
         /*! \brief Destructor. */
         ~RasterSummaryManager();
