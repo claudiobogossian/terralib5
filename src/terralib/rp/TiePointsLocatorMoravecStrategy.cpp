@@ -176,7 +176,7 @@ namespace te
       if( m_inputParameters.m_enableProgress )
       {
         progressPtr.reset( new te::common::TaskProgress );
-        progressPtr->setTotalSteps( 1 );
+        progressPtr->setTotalSteps( 11 );
         progressPtr->setMessage( "Locating tie points" );
         progressPtr->pulse();
         if( ! progressPtr->isActive() ) return false;
@@ -207,11 +207,6 @@ namespace te
             ( rescRaster1Area / ( (double)m_inputParameters.m_maxTiePoints ) ) ); 
         }
       }
-      
-      // Updating the progress interface steps number
-      
-      if( m_inputParameters.m_enableProgress )
-        progressPtr->setTotalSteps( progressPtr->getTotalSteps() + 10 );
       
       // Generating raster 1 features
       

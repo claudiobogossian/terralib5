@@ -173,7 +173,7 @@ namespace te
       if( m_inputParameters.m_enableProgress )
       {
         progressPtr.reset( new te::common::TaskProgress );
-        progressPtr->setTotalSteps( 1 );
+        progressPtr->setTotalSteps( 10 );
         progressPtr->setMessage( "Locating tie points" );
         progressPtr->pulse();
         if( ! progressPtr->isActive() ) return false;
