@@ -105,6 +105,13 @@
           <item>
            <widget class="QComboBox" name="m_toLayerComboBox"/>
           </item>
+          <item>
+           <widget class="QToolButton" name="m_selectAttrToolButton">
+            <property name="text">
+             <string>Select attributes...</string>
+            </property>
+           </widget>
+          </item>
          </layout>
         </item>
        </layout>

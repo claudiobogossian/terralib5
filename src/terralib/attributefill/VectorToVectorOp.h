@@ -54,32 +54,37 @@ namespace te
     class TEATTRIBUTEFILLEXPORT VectorToVectorOp
     {
       public:
-      
+
         VectorToVectorOp();
-      
+
         virtual ~VectorToVectorOp();
-      
+
         virtual bool run() = 0;
-      
+
         virtual bool paramsAreValid();
       
         void setInput(te::map::AbstractLayerPtr fromLayer,
                       te::map::AbstractLayerPtr toLayer);
-      
-        void setParams(const std::map<std::string, std::vector<te::attributefill::OperationType> >& options);
-      
+
+        void setParams(const std::map<std::string, std::vector<te::attributefill::OperationType> >& options, std::vector<std::string> toLayerProps);
+
         void setOutput(te::da::DataSourcePtr outDsrc, std::string dsName);
-      
+
+        bool hasErrors();
+
       protected:
 
         bool save(std::auto_ptr<te::mem::DataSet> result, std::auto_ptr<te::da::DataSetType> outDsType);
 
       protected:
 
+        bool m_hasErrors;
+
         te::map::AbstractLayerPtr m_fromLayer;
         te::map::AbstractLayerPtr m_toLayer;
 
         std::map<std::string, std::vector<te::attributefill::OperationType> > m_options;
+        std::vector<std::string> m_toLayerProps;
 
         te::da::DataSourcePtr m_outDsrc;
         std::string m_outDset;
