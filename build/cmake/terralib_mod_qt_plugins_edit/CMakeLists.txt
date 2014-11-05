@@ -44,7 +44,8 @@ if(Qt5_FOUND)
                                                      terralib_mod_edit_core
                                                      terralib_mod_edit_qt
                                                      terralib_mod_qt_widgets
-                                                     terralib_mod_qt_apf)
+                                                     terralib_mod_qt_apf
+                                                     terralib_mod_memory)
 
   qt5_use_modules(terralib_mod_qt_plugins_edit Widgets)
 
