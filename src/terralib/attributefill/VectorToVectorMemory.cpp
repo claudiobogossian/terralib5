@@ -615,28 +615,6 @@ bool te::attributefill::VectorToVectorMemory::isStatistical(te::attributefill::O
   return false;
 }
 
-std::vector<te::attributefill::OperationType> te::attributefill::VectorToVectorMemory::getSelectedFunctions()
-{
-  std::vector<te::attributefill::OperationType> allSelFuncs;
-
-  std::map<std::string, std::vector<te::attributefill::OperationType> >::iterator it = m_options.begin();
-
-  while(it != m_options.end())
-  {
-    std::vector<te::attributefill::OperationType> funcs = it->second;
-
-    for(std::size_t i = 0; i < funcs.size(); ++i)
-    {
-      if(std::find(allSelFuncs.begin(), allSelFuncs.end(), funcs[i]) == funcs.end())
-      {
-        allSelFuncs.push_back(funcs[i]);
-      }
-    }
-  }
-
-  return allSelFuncs;
-}
-
 double te::attributefill::VectorToVectorMemory::getValue(te::stat::NumericStatisticalSummary ss, te::attributefill::OperationType type)
 {
   if(type == te::attributefill::AMPLITUDE)
