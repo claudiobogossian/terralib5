@@ -81,7 +81,11 @@ namespace te
 
         void clearAll();
 
-        void clearEditedGeometries();
+        void clear(const std::string& source);
+
+        void removeAll();
+
+        void remove(const std::string& source);
 
       protected:
 
