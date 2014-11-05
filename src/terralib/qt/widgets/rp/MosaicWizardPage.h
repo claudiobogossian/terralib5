@@ -50,6 +50,8 @@ namespace te
   {
     namespace widgets
     {
+      class TiePointLocatorParametersWidget;
+
       /*!
         \class MosaicWizardPage
 
@@ -111,6 +113,8 @@ namespace te
         private:
 
           std::auto_ptr<Ui::MosaicWizardPageForm> m_ui;
+
+          te::qt::widgets::TiePointLocatorParametersWidget* m_tiePointParameters;     //!<Tie Point parameters widget
           
           std::list<te::map::AbstractLayerPtr> m_layerList;
 

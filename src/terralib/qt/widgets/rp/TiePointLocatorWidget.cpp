@@ -44,6 +44,7 @@
 #include "../../widgets/Utils.h"
 #include "RasterNavigatorWidget.h"
 #include "TiePointLocatorWidget.h"
+#include "TiePointLocatorParametersWidget.h"
 #include "ui_RasterNavigatorWidgetForm.h"
 #include "ui_TiePointLocatorWidgetForm.h"
 
@@ -110,6 +111,10 @@ te::qt::widgets::TiePointLocatorWidget::TiePointLocatorWidget(QWidget* parent, Q
   m_ui->m_refreshToolButton->setIcon(QIcon::fromTheme("view-refresh"));
   m_ui->m_doneToolButton->setIcon(QIcon::fromTheme("check"));
 
+  //add tie point parameters widget
+  m_tiePointParameters = new te::qt::widgets::TiePointLocatorParametersWidget(m_ui->m_tabWidget);
+  m_ui->m_tabWidget->addTab(m_tiePointParameters, tr("Options"));
+
   //connects
   connect(m_ui->m_autoAcquireTiePointsToolButton, SIGNAL(clicked()), this, SLOT(onAutoAcquireTiePointsToolButtonClicked()));
   connect(m_ui->m_selectAllToolButton, SIGNAL(clicked()), this, SLOT(onSelectAllToolButtonClicked()));
@@ -154,8 +159,6 @@ te::qt::widgets::TiePointLocatorWidget::TiePointLocatorWidget(QWidget* parent, Q
 
   QPixmap markRefPix = getPixmap(m_rgbaMarkRef);
   setReferenceTiePointMarkLegend(markRefPix);
-
-  startAdvancedOptions();
 
   startUpNavigators();
 }
@@ -302,7 +305,8 @@ void te::qt::widgets::TiePointLocatorWidget::setReferenceLayer(te::map::Abstract
 
           if(maxSize > 1000)
           {
-            m_ui->m_rescaleFactorLineEdit->setText(QString::number(1000. / maxSize));
+            double rescaleFactor = 1000. / maxSize;
+            m_tiePointParameters->setRescaleFactor(rescaleFactor);
           }
         }
       }
@@ -361,7 +365,8 @@ void te::qt::widgets::TiePointLocatorWidget::setAdjustLayer(te::map::AbstractLay
 
           if(maxSize > 1000)
           {
-            m_ui->m_rescaleFactorLineEdit->setText(QString::number(1000. / maxSize));
+            double rescaleFactor = 1000. / maxSize;
+            m_tiePointParameters->setRescaleFactor(rescaleFactor);
           }
         }
       }
@@ -490,9 +495,7 @@ void te::qt::widgets::TiePointLocatorWidget::onAutoAcquireTiePointsToolButtonCli
   rpos = te::da::GetFirstPropertyPos(dsAdj.get(), te::dt::RASTER_TYPE);
   std::auto_ptr<te::rst::Raster> inputRstAdj = dsAdj->getRaster(rpos);
 
-  updateAdvancedOptions();
-
-  te::rp::TiePointsLocator::InputParameters inputParams = m_inputParameters;
+  te::rp::TiePointsLocator::InputParameters inputParams = m_tiePointParameters->getTiePointInputParameters();
   inputParams.m_enableProgress = true;
 
   inputParams.m_inRaster1Ptr = inputRstRef.get();
@@ -544,8 +547,8 @@ void te::qt::widgets::TiePointLocatorWidget::onAutoAcquireTiePointsToolButtonCli
     inputParams.m_pixelSizeYRelation = inputRstRef->getGrid()->getResolutionY() / m_ui->m_resYLineEdit->text().toDouble();
   }
 
-  if(inputRstRef->getExtent()->within(auxEnvelope1) && inputRstAdj->getExtent()->within(auxEnvelope2))
-    inputParams.m_subSampleOptimizationRescaleFactor = m_inputParameters.m_subSampleOptimizationRescaleFactor;
+  if(!(inputRstRef->getExtent()->within(auxEnvelope1) && inputRstAdj->getExtent()->within(auxEnvelope2)))
+    inputParams.m_subSampleOptimizationRescaleFactor = 1.;
 
   te::rp::TiePointsLocator::OutputParameters outputParams;
 
@@ -684,8 +687,6 @@ void te::qt::widgets::TiePointLocatorWidget::onTiePointsTableWidgetItemSelection
 
 void te::qt::widgets::TiePointLocatorWidget::onRefreshToolButtonClicked()
 {
-  updateAdvancedOptions();
-
   tiePointsTableUpdate();
 }
 
@@ -752,7 +753,7 @@ void te::qt::widgets::TiePointLocatorWidget::tiePointsTableUpdate()
     ++tPIt;
   }
 
-  std::string geoTransfName = m_ui->m_geomTransfNameComboBox->currentText().toStdString();
+  std::string geoTransfName = m_tiePointParameters->getTransformationName();
 
   std::auto_ptr<te::gm::GeometricTransformation> transfPtr(te::gm::GTFactory::make(geoTransfName));
 
@@ -885,7 +886,7 @@ void te::qt::widgets::TiePointLocatorWidget::transformationInfoUpdate()
   }
 
   // instantiating the transformations
-  std::string geoTransfName = m_ui->m_geomTransfNameComboBox->currentText().toStdString();
+  std::string geoTransfName = m_tiePointParameters->getTransformationName();
 
   std::auto_ptr<te::gm::GeometricTransformation> transfAllTPPtr(te::gm::GTFactory::make(geoTransfName));
   if(transfAllTPPtr.get())
@@ -922,185 +923,6 @@ void te::qt::widgets::TiePointLocatorWidget::transformationInfoUpdate()
 
   //emit signal
   emit tiePointsUpdated();
-}
-
-void te::qt::widgets::TiePointLocatorWidget::startAdvancedOptions()
-{
-  m_ui->m_enableGeometryFilterCheckBox->setChecked(m_inputParameters.m_enableGeometryFilter);
-  m_ui->m_enableMultiThreadCheckBox->setChecked(m_inputParameters.m_enableMultiThread);
-
-  switch( m_inputParameters.m_interesPointsLocationStrategy )
-  {
-    case te::rp::TiePointsLocator::InputParameters::SurfStrategyT :
-    {
-      int idx = m_ui->m_interesPointsLocationStrategyComboBox->findText("Surf");
-      m_ui->m_interesPointsLocationStrategyComboBox->setCurrentIndex(idx);
-      break;
-    }
-    default:
-    {
-      int idx = m_ui->m_interesPointsLocationStrategyComboBox->findText("Moravec");
-      m_ui->m_interesPointsLocationStrategyComboBox->setCurrentIndex(idx);
-    }
-  }
-
-  te::gm::GTFactory::dictionary_type::const_iterator gtItB = te::gm::GTFactory::getDictionary().begin();
-  const te::gm::GTFactory::dictionary_type::const_iterator gtItE = te::gm::GTFactory::getDictionary().end();
-
-  while( gtItB != gtItE )
-  {
-    m_ui->m_geomTransfNameComboBox->addItem(QString(gtItB->first.c_str()));
-    ++gtItB;
-  }
-
-  int idx = m_ui->m_geomTransfNameComboBox->findText(m_inputParameters.m_geomTransfName.c_str());
-  m_ui->m_geomTransfNameComboBox->setCurrentIndex(idx);
-
-  m_ui->m_geometryFilterAssuranceLineEdit->setText(QString::number(m_inputParameters.m_geometryFilterAssurance));
-
-  m_ui->m_geomTransfMaxErrorLineEdit->setText(QString::number(m_inputParameters.m_geomTransfMaxError));
-
-  switch(m_inputParameters.m_interpMethod)
-  {
-    case te::rst::Interpolator::Bilinear :
-    {
-      int idx = m_ui->m_interpMethodComboBox->findText("Bilinear");
-      m_ui->m_interpMethodComboBox->setCurrentIndex(idx);
-      break;
-    }
-    case te::rst::Interpolator::Bicubic :
-    {
-      int idx = m_ui->m_interpMethodComboBox->findText("Bicubic");
-      m_ui->m_interpMethodComboBox->setCurrentIndex(idx);
-      break;
-    }
-    default:
-    {
-      int idx = m_ui->m_interpMethodComboBox->findText("NearestNeighbor");
-      m_ui->m_interpMethodComboBox->setCurrentIndex(idx);
-    }
-  }
-
-  m_ui->m_maxTiePointsLineEdit->setText(QString::number(m_inputParameters.m_maxTiePoints));
-
-  m_ui->m_correlationWindowWidthLineEdit->setText(QString::number(m_inputParameters.m_moravecCorrelationWindowWidth));
-
-  m_ui->m_gaussianFilterIterationsLineEdit->setText(QString::number(m_inputParameters.m_moravecNoiseFilterIterations));
-
-  m_ui->m_minAbsCorrelationLineEdit->setText(QString::number(m_inputParameters.m_moravecMinAbsCorrelation));
-
-  m_ui->m_moravecWindowWidthLineEdit->setText(QString::number(m_inputParameters.m_moravecWindowWidth));
-
-  m_ui->m_maxNormEuclideanDistLineEdit->setText(QString::number(m_inputParameters.m_surfMaxNormEuclideanDist));
-
-  m_ui->m_octavesNumberLineEdit->setText(QString::number(m_inputParameters.m_surfOctavesNumber));
-
-  m_ui->m_scalesNumberLineEdit->setText(QString::number(m_inputParameters.m_surfScalesNumber));
-
-  m_ui->m_rescaleFactorLineEdit->setText(QString::number(m_inputParameters.m_subSampleOptimizationRescaleFactor));
-}
-
-void te::qt::widgets::TiePointLocatorWidget::updateAdvancedOptions()
-{
-  m_inputParameters.m_enableGeometryFilter = m_ui->m_enableGeometryFilterCheckBox->isChecked();
-
-  m_inputParameters.m_enableMultiThread = m_ui->m_enableMultiThreadCheckBox->isChecked();
-
-  if(m_ui->m_interesPointsLocationStrategyComboBox->currentText() == "Surf")
-    m_inputParameters.m_interesPointsLocationStrategy = te::rp::TiePointsLocator::InputParameters::SurfStrategyT;
-  else
-    m_inputParameters.m_interesPointsLocationStrategy = te::rp::TiePointsLocator::InputParameters::MoravecStrategyT;
-
-  m_inputParameters.m_geomTransfName = m_ui->m_geomTransfNameComboBox->currentText().toStdString();
-
-  if(m_ui->m_geometryFilterAssuranceLineEdit->text().isEmpty())
-  {
-    QMessageBox::warning(this, tr("Warning"), tr("Geometry assurance not defined."));
-    return;
-  }
-  m_inputParameters.m_geometryFilterAssurance = m_ui->m_geometryFilterAssuranceLineEdit->text().toDouble();
-
-  if(m_ui->m_geomTransfMaxErrorLineEdit->text().isEmpty())
-  {
-    QMessageBox::warning(this, tr("Warning"), tr("Transformation error not defined."));
-    return;
-  }
-  m_inputParameters.m_geomTransfMaxError = m_ui->m_geomTransfMaxErrorLineEdit->text().toDouble();
-
-  if(m_ui->m_interpMethodComboBox->currentText() == "Bilinear")
-    m_inputParameters.m_interpMethod = te::rst::Interpolator::Bilinear;
-  else if(m_ui->m_interpMethodComboBox->currentText() == "Bicubic")
-    m_inputParameters.m_interpMethod = te::rst::Interpolator::Bicubic;
-  else
-    m_inputParameters.m_interpMethod = te::rst::Interpolator::NearestNeighbor;
-
-  if(m_ui->m_maxTiePointsLineEdit->text().isEmpty())
-  {
-    QMessageBox::warning(this, tr("Warning"), tr("Maximum number of tie-points not defined."));
-    return;
-  }
-  m_inputParameters.m_maxTiePoints =  m_ui->m_maxTiePointsLineEdit->text().toUInt();
-
-  if(m_ui->m_rescaleFactorLineEdit->text().isEmpty())
-  {
-    QMessageBox::warning(this, tr("Warning"), tr("Sub-sampled search rescale factor not defined."));
-    return;
-  }
-  m_inputParameters.m_subSampleOptimizationRescaleFactor = m_ui->m_rescaleFactorLineEdit->text().toDouble();
-
-  if(m_ui->m_interesPointsLocationStrategyComboBox->currentText() == "Surf")
-  {
-    if(m_ui->m_maxNormEuclideanDistLineEdit->text().isEmpty())
-    {
-      QMessageBox::warning(this, tr("Warning"), tr("Maximum euclidean distance not defined."));
-      return;
-    }
-    m_inputParameters.m_surfMaxNormEuclideanDist = m_ui->m_maxNormEuclideanDistLineEdit->text().toDouble();
-
-    if(m_ui->m_octavesNumberLineEdit->text().isEmpty())
-    {
-      QMessageBox::warning(this, tr("Warning"), tr("Octaves number not defined."));
-      return;
-    }
-    m_inputParameters.m_surfOctavesNumber = m_ui->m_octavesNumberLineEdit->text().toUInt();
-
-    if(m_ui->m_scalesNumberLineEdit->text().isEmpty())
-    {
-      QMessageBox::warning(this, tr("Warning"), tr("Scales number not defined."));
-      return;
-    }
-    m_inputParameters.m_surfScalesNumber = m_ui->m_scalesNumberLineEdit->text().toUInt();
-  }
-  else
-  {
-    if(m_ui->m_correlationWindowWidthLineEdit->text().isEmpty())
-    {
-      QMessageBox::warning(this, tr("Warning"), tr("Correlation window width not defined."));
-      return;
-    }
-    m_inputParameters.m_moravecCorrelationWindowWidth = m_ui->m_correlationWindowWidthLineEdit->text().toUInt();
-
-    if(m_ui->m_gaussianFilterIterationsLineEdit->text().isEmpty())
-    {
-      QMessageBox::warning(this, tr("Warning"), tr("Gaussian filter iterations not defined."));
-      return;
-    }
-    m_inputParameters.m_moravecNoiseFilterIterations = m_ui->m_gaussianFilterIterationsLineEdit->text().toUInt();
-
-    if(m_ui->m_minAbsCorrelationLineEdit->text().isEmpty())
-    {
-      QMessageBox::warning(this, tr("Warning"), tr("Minimum correlation value not defined."));
-      return;
-    }
-    m_inputParameters.m_moravecMinAbsCorrelation = m_ui->m_minAbsCorrelationLineEdit->text().toDouble();
-
-    if(m_ui->m_moravecWindowWidthLineEdit->text().isEmpty())
-    {
-      QMessageBox::warning(this, tr("Warning"), tr("Moravec window width not defined."));
-      return;
-    }
-    m_inputParameters.m_moravecWindowWidth = m_ui->m_moravecWindowWidthLineEdit->text().toUInt();
-  }
 }
 
 void te::qt::widgets::TiePointLocatorWidget::startUpNavigators()

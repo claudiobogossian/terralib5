@@ -32,6 +32,7 @@
 #include "TiePointLocatorDialog.h"
 #include "TiePointLocatorWidget.h"
 #include "MosaicWizardPage.h"
+#include "TiePointLocatorParametersWidget.h"
 #include "ui_MosaicWizardPageForm.h"
 
 // Qt
@@ -60,6 +61,13 @@ te::qt::widgets::MosaicWizardPage::MosaicWizardPage(QWidget* parent)
   m_ui->m_noDataValueLineEdit->setValidator(new QDoubleValidator(this));
 
   m_ui->m_tpmAcquireToolButton->setIcon(QIcon::fromTheme("wand"));
+
+  //add tie point locator parameters widget
+  QGridLayout* layout = new QGridLayout(m_ui->m_tplpWidget);
+  m_tiePointParameters = new te::qt::widgets::TiePointLocatorParametersWidget(m_ui->m_tplpWidget);
+  m_tiePointParameters->setMosaicLayout();
+  layout->setContentsMargins(0, 0, 0, 0);
+  layout->addWidget(m_tiePointParameters);
 
   //connects
   connect(m_ui->m_tpmAcquireToolButton, SIGNAL(clicked()), this, SLOT(onTiePointsAcquiredToolButtonClicked()));
@@ -225,7 +233,7 @@ te::rp::SequenceMosaic::InputParameters te::qt::widgets::MosaicWizardPage::getIn
   algoInputParams.m_enableMultiThread = true;
   algoInputParams.m_enableProgress = true;
 
-  // The parameters used by the tie-points locator when processing each rasters pair was leaved untouched to use the default.
+  algoInputParams.m_locatorParams = m_tiePointParameters->getTiePointInputParameters();
 
   return algoInputParams;
 }

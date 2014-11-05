@@ -1,0 +1,642 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>TiePointLocatorParametersWidgetForm</class>
+ <widget class="QWidget" name="TiePointLocatorParametersWidgetForm">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>381</width>
+    <height>285</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>380</width>
+    <height>0</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Tie Point Locator Parameters</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout_4">
+   <item row="0" column="0">
+    <widget class="QTabWidget" name="m_optionsTabWidget">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>340</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <widget class="QWidget" name="tab_4">
+      <attribute name="title">
+       <string>General</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="0" column="0">
+        <widget class="QLabel" name="m_glLabel">
+         <property name="minimumSize">
+          <size>
+           <width>200</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>200</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>Enable/disable the geometry filter/outliers remotion</string>
+         </property>
+         <property name="text">
+          <string>Geometry Filter</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QCheckBox" name="m_enableGeometryFilterCheckBox">
+         <property name="toolTip">
+          <string>Enable/disable the geometry filter/outliers remotion</string>
+         </property>
+         <property name="text">
+          <string>Enabled</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="m_mtLabel">
+         <property name="minimumSize">
+          <size>
+           <width>200</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>200</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>Enable/Disable the use of multi-threads</string>
+         </property>
+         <property name="text">
+          <string>Multi-Thread</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QCheckBox" name="m_enableMultiThreadCheckBox">
+         <property name="toolTip">
+          <string>Enable/Disable the use of multi-threads</string>
+         </property>
+         <property name="text">
+          <string>Enabled</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="m_iplLabel">
+         <property name="minimumSize">
+          <size>
+           <width>200</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>200</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Interest Points Location</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QComboBox" name="m_interesPointsLocationStrategyComboBox">
+         <item>
+          <property name="text">
+           <string>Moravec</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Surf</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="m_gtLabel">
+         <property name="minimumSize">
+          <size>
+           <width>200</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>200</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Geometric Transformation</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QComboBox" name="m_geomTransfNameComboBox"/>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="label_5">
+         <property name="minimumSize">
+          <size>
+           <width>200</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>200</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>Geometry assurance (the error-free selection percent assurance) - valid range (0-1) - Use 0-zero to let this number be automatically found.</string>
+         </property>
+         <property name="text">
+          <string>Geometry Filter Assurance</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QLineEdit" name="m_geometryFilterAssuranceLineEdit">
+         <property name="toolTip">
+          <string>Geometry assurance (the error-free selection percent assurance) - valid range (0-1) - Use 0-zero to let this number be automatically found.</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QLabel" name="label_17">
+         <property name="minimumSize">
+          <size>
+           <width>200</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>200</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>The maximum allowed transformation error (pixel units)</string>
+         </property>
+         <property name="text">
+          <string>Transformation Max Error</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="1">
+        <widget class="QLineEdit" name="m_geomTransfMaxErrorLineEdit">
+         <property name="toolTip">
+          <string>The maximum allowed transformation error (pixel units)</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="0">
+        <widget class="QLabel" name="m_interLabel">
+         <property name="minimumSize">
+          <size>
+           <width>200</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>200</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>The raster interpolator method</string>
+         </property>
+         <property name="text">
+          <string>Interpolator</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="1">
+        <widget class="QComboBox" name="m_interpMethodComboBox">
+         <property name="toolTip">
+          <string>The raster interpolator method</string>
+         </property>
+         <item>
+          <property name="text">
+           <string>NearestNeighbor</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Bilinear</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Bicubic</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="7" column="0">
+        <widget class="QLabel" name="label_19">
+         <property name="minimumSize">
+          <size>
+           <width>200</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>200</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>The maximum number of tie-points to generate (0 - Automatically found)</string>
+         </property>
+         <property name="text">
+          <string>Maximum TiePoints</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="1">
+        <widget class="QLineEdit" name="m_maxTiePointsLineEdit">
+         <property name="toolTip">
+          <string>The maximum number of tie-points to generate (0 - Automatically found)</string>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="0">
+        <widget class="QLabel" name="label_30">
+         <property name="minimumSize">
+          <size>
+           <width>200</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>200</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>The maximum number of tie-points to generate (0 - Automatically found)</string>
+         </property>
+         <property name="text">
+          <string>Sub-sampled Search Rescale Factor</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="1">
+        <widget class="QLineEdit" name="m_rescaleFactorLineEdit">
+         <property name="toolTip">
+          <string>Sub-sampled optimization tie-points search rescale factor ( 1 - subsample optimization disabled, valid range: non-zero positive values)</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_5">
+      <attribute name="title">
+       <string>Moravec</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_3">
+       <item row="3" column="0">
+        <widget class="QLabel" name="label_22">
+         <property name="minimumSize">
+          <size>
+           <width>200</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>200</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>The Moravec window width used to locate canditate tie-points (minimum 3)</string>
+         </property>
+         <property name="text">
+          <string>Moravec Window Width</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="m_gaussianFilterIterationsLineEdit">
+         <property name="toolTip">
+          <string>The number of noise Gaussin iterations, when applicable (used to remove image noise, zero will disable the Gaussian Filter)</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLineEdit" name="m_minAbsCorrelationLineEdit">
+         <property name="toolTip">
+          <string>The minimum acceptable absolute correlation value when matching features (valid range: [0,1])</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QLineEdit" name="m_moravecWindowWidthLineEdit">
+         <property name="toolTip">
+          <string>The Moravec window width used to locate canditate tie-points (minimum 3)</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLineEdit" name="m_correlationWindowWidthLineEdit">
+         <property name="toolTip">
+          <string>The correlation window width used to correlate points between the images (minimum 3)</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_20">
+         <property name="minimumSize">
+          <size>
+           <width>200</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>200</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>The number of noise Gaussin iterations, when applicable (used to remove image noise, zero will disable the Gaussian Filter)</string>
+         </property>
+         <property name="text">
+          <string>Gaussian Filter Iterations</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_21">
+         <property name="minimumSize">
+          <size>
+           <width>200</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>200</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>The minimum acceptable absolute correlation value when matching features (valid range: [0,1])</string>
+         </property>
+         <property name="text">
+          <string>Minimum Correlation</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="label">
+         <property name="minimumSize">
+          <size>
+           <width>200</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>200</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>The correlation window width used to correlate points between the images (minimum 3)</string>
+         </property>
+         <property name="text">
+          <string>Correlation Window Width</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0" colspan="2">
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_6">
+      <attribute name="title">
+       <string>Surf</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_23">
+         <property name="minimumSize">
+          <size>
+           <width>200</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>200</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>The maximum acceptable euclidean distance when matching features (when applicable), valid range: [0,1]</string>
+         </property>
+         <property name="text">
+          <string>Maximum Euclidean Distance</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLineEdit" name="m_maxNormEuclideanDistLineEdit">
+         <property name="toolTip">
+          <string>The maximum acceptable euclidean distance when matching features (when applicable), valid range: [0,1]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_24">
+         <property name="minimumSize">
+          <size>
+           <width>200</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>200</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>The number of octaves to generate (Minimum: 1)</string>
+         </property>
+         <property name="text">
+          <string>Octaves Number</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="m_octavesNumberLineEdit">
+         <property name="toolTip">
+          <string>The number of octaves to generate (Minimum: 1)</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_25">
+         <property name="minimumSize">
+          <size>
+           <width>200</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>200</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>The number of sub-sampling scales to generate (minimum:3)</string>
+         </property>
+         <property name="text">
+          <string>Scales Number</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLineEdit" name="m_scalesNumberLineEdit">
+         <property name="toolTip">
+          <string>The number of sub-sampling scales to generate (minimum:3)</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0" colspan="2">
+        <spacer name="verticalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <tabstops>
+  <tabstop>m_optionsTabWidget</tabstop>
+  <tabstop>m_enableGeometryFilterCheckBox</tabstop>
+  <tabstop>m_enableMultiThreadCheckBox</tabstop>
+  <tabstop>m_interesPointsLocationStrategyComboBox</tabstop>
+  <tabstop>m_geomTransfNameComboBox</tabstop>
+  <tabstop>m_geometryFilterAssuranceLineEdit</tabstop>
+  <tabstop>m_geomTransfMaxErrorLineEdit</tabstop>
+  <tabstop>m_interpMethodComboBox</tabstop>
+  <tabstop>m_maxTiePointsLineEdit</tabstop>
+  <tabstop>m_rescaleFactorLineEdit</tabstop>
+  <tabstop>m_correlationWindowWidthLineEdit</tabstop>
+  <tabstop>m_gaussianFilterIterationsLineEdit</tabstop>
+  <tabstop>m_minAbsCorrelationLineEdit</tabstop>
+  <tabstop>m_moravecWindowWidthLineEdit</tabstop>
+  <tabstop>m_maxNormEuclideanDistLineEdit</tabstop>
+  <tabstop>m_octavesNumberLineEdit</tabstop>
+  <tabstop>m_scalesNumberLineEdit</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>
