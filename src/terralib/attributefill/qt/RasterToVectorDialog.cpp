@@ -180,6 +180,9 @@ std::vector<te::stat::StatisticalSummary> te::attributefill::RasterToVectorDialo
         case 13:
           vecStatistics.push_back(te::stat::MODE);
           break;
+        case 14:
+          m_texture = true;
+          break;
         default:
           continue;
       }
@@ -230,6 +233,7 @@ void te::attributefill::RasterToVectorDialog::onRasterComboBoxChanged(int index)
   m_ui->m_statisticsListWidget->addItem("Median");
   m_ui->m_statisticsListWidget->addItem("Coefficient variation");
   m_ui->m_statisticsListWidget->addItem("Mode");
+  m_ui->m_statisticsListWidget->addItem("Texture");
 
 }
 
@@ -347,6 +351,7 @@ void te::attributefill::RasterToVectorDialog::onOkPushButtonClicked()
     return;
   }
 
+  m_texture = false;
   std::vector<te::stat::StatisticalSummary> vecStatistics = getSelectedStatistics();
   if(vecStatistics.empty())
   {
@@ -359,7 +364,7 @@ void te::attributefill::RasterToVectorDialog::onOkPushButtonClicked()
     QMessageBox::information(this, "Fill", "Define a repository for the result.");
     return;
   }
-       
+
   if(m_ui->m_newLayerNameLineEdit->text().isEmpty())
   {
     QMessageBox::information(this, "Fill", "Define a name for the resulting layer.");
@@ -412,7 +417,7 @@ void te::attributefill::RasterToVectorDialog::onOkPushButtonClicked()
                         dsVectorLayer->getDataSetName(),
                         dsVectorLayer->getSchema());
 
-      rst2vec->setParams(vecBands, vecStatistics);
+      rst2vec->setParams(vecBands, vecStatistics, m_texture);
 
       rst2vec->setOutput(dsOGR, outputdataset);
       
@@ -475,7 +480,7 @@ void te::attributefill::RasterToVectorDialog::onOkPushButtonClicked()
                         dsVectorLayer->getDataSetName(),
                         dsVectorLayer->getSchema());
 
-      rst2vec->setParams(vecBands, vecStatistics);
+      rst2vec->setParams(vecBands, vecStatistics, m_texture);
 
       rst2vec->setOutput(aux, outputdataset);
 

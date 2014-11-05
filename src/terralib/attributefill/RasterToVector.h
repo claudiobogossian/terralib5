@@ -38,7 +38,9 @@
 #include "../datatype/Property.h"
 
 #include "../memory/DataSet.h"
+#include "../rp/Texture.h"
 #include "../statistics/core/Enums.h"
+
 
 #include "Config.h"
 
@@ -68,7 +70,8 @@ namespace te
                     std::auto_ptr<te::da::DataSetType> inVectorDsType);
 
       void setParams(std::vector<unsigned int> bands,
-                     std::vector<te::stat::StatisticalSummary> statSum);
+                     std::vector<te::stat::StatisticalSummary> statSum,
+                     bool texture);
 
       void setOutput(te::da::DataSourcePtr outDsrc, std::string dsName);
 
@@ -79,6 +82,10 @@ namespace te
     protected:
 
       std::auto_ptr<te::da::DataSetType> getDataSetType();
+
+      std::vector<te::rp::Texture> getTexture(te::rst::Raster* rst,
+                                              te::gm::Geometry* geom,
+                                              int bands);
 
       bool save(std::auto_ptr<te::mem::DataSet> result, std::auto_ptr<te::da::DataSetType> outDsType);
 
@@ -91,6 +98,7 @@ namespace te
 
       std::vector<te::stat::StatisticalSummary> m_statSum;
       std::vector<unsigned int> m_bands;
+      bool m_texture;
 
       te::da::DataSourcePtr m_outDsrc;
       std::string m_outDset;
