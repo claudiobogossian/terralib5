@@ -107,7 +107,12 @@ void TsTiePointsLocator::saveImagesAndTiePoints(
   
   while( itB != itE )
   {
+    CPPUNIT_ASSERT( ((unsigned int)(itB->first.x)) <  outputRaster1Ptr->getNumberOfColumns() );   
+    CPPUNIT_ASSERT( ((unsigned int)(itB->first.y)) <  outputRaster1Ptr->getNumberOfRows() );
     outputRaster1Ptr->setValue( (unsigned int)(itB->first.x), (unsigned int)(itB->first.y), 255, 1 );
+    
+    CPPUNIT_ASSERT( ((unsigned int)(itB->second.x)) <  outputRaster2Ptr->getNumberOfColumns() );   
+    CPPUNIT_ASSERT( ((unsigned int)(itB->second.y)) <  outputRaster2Ptr->getNumberOfRows() );    
     outputRaster2Ptr->setValue( (unsigned int)(itB->second.x), (unsigned int)(itB->second.y), 255, 1 );
     
     ++itB;
