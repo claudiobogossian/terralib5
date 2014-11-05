@@ -38,6 +38,7 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <vector>
 
 // Qt
 #include <QDialog>
@@ -77,6 +78,8 @@ namespace te
           \return the generated layer.
         */
         te::map::AbstractLayerPtr getLayer();
+
+        void setLogPath(const std::string& path);
 
       private:
 
@@ -118,6 +121,8 @@ namespace te
 
         void onCancelPushButtonClicked();
 
+        void onSelectAttrToolButtonPressed();
+
         void onSelectAllComboBoxChanged(int index);
 
         void onRejectAllComboBoxChanged(int index);
@@ -131,7 +136,10 @@ namespace te
         std::auto_ptr<Ui::VectorToVectorDialogForm> m_ui;             //!< User interface.
         te::da::DataSourceInfoPtr m_outputDatasource;                 //!< DataSource information.
         std::list<te::map::AbstractLayerPtr> m_layers;                //!< List of layers.
+        std::vector<std::string> m_outputAttributes;
+        te::map::AbstractLayerPtr m_outLayer;
         std::string m_path;                                           //!< Output layer path;
+        std::string m_logPath;
         bool m_toFile;
     };
   }   // end namespace attributefill

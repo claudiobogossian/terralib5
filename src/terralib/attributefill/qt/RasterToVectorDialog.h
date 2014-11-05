@@ -119,6 +119,7 @@ namespace te
         te::map::AbstractLayerPtr m_outLayer;                         //!< Generated Layer.
         std::string m_path;                                           //!< Output layer path;
         bool m_toFile;
+        bool m_texture;
     };
   }   // end namespace attributefill
 }     // end namespace te

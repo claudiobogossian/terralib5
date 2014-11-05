@@ -169,6 +169,21 @@ namespace te
         boost::numeric::ublas::matrix<double> getGLCM(const te::rst::Raster& rin, unsigned int band, int dx, int dy);
         
         /*!
+          \brief Computes the Gray-Level CoOccurrence Matrix (GLCM) from a raster band, inside the polygon.
+
+          \param rin         The input raster.
+          \param band        The input band position.
+          \param dx          The displacement in x direction, to be considered as neighborhood, can be either + or -.
+          \param dy          The displacement in y direction, to be considered as neighborhood, can be either + or -.
+          \param polygon     The input polygon.
+          
+          \return The GLCM from the raster band, inside the polygon.
+          
+          \warning The pixels from the input band will be considered of type unsigned int.
+        */
+        boost::numeric::ublas::matrix<double> getGLCM(const te::rst::Raster& rin, unsigned int band, int dx, int dy, const te::gm::Polygon& polygon);
+        
+        /*!
           \brief Compute texture metrics from GLCM matrix.
           
           \param glcm The input GLCM matrix.

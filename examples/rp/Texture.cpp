@@ -34,7 +34,7 @@ void Texture()
       std::cout << "  homogeneity: " << metrics.m_homogeneity << std::endl;
     }
 
-// create raster crop using a polygon
+// create a polygon inside raster to obtain GLCM metrics
     double xc = (rin->getExtent()->getUpperRightX() + rin->getExtent()->getLowerLeftX()) / 2;
     double yc = (rin->getExtent()->getUpperRightY() + rin->getExtent()->getLowerLeftY()) / 2;
     te::gm::LinearRing* lr = new te::gm::LinearRing(6, te::gm::LineStringType);
@@ -48,14 +48,10 @@ void Texture()
     te::gm::Polygon* polygon = new te::gm::Polygon(0, te::gm::PolygonType);
     polygon->push_back(lr);
   
-    std::map<std::string, std::string> rcropinfo;
-    rcropinfo["URI"] = TERRALIB_DATA_DIR"/rasters/polygon_crop_cbers2b_rgb342_crop.tif";
-    te::rst::RasterPtr rcrop = te::rst::CropRaster(*rin, *polygon, rcropinfo);
-
     {
 // use raster attributes to compute GLCM matrix from band 2, in southeast direction
       te::rp::RasterAttributes rattributes;
-      boost::numeric::ublas::matrix<double> glcm_b2 = rattributes.getGLCM(*rcrop.get(), 2, 1, 1);
+      boost::numeric::ublas::matrix<double> glcm_b2 = rattributes.getGLCM(*rin, 2, 1, 1, *polygon);
       te::rp::Texture metrics = rattributes.getGLCMMetrics(glcm_b2);
 
 // display texture metrics    
@@ -66,7 +62,6 @@ void Texture()
       std::cout << "  entropy: " << metrics.m_entropy << std::endl;
       std::cout << "  homogeneity: " << metrics.m_homogeneity << std::endl;
     }
-
 // clean up
     delete rin;
 

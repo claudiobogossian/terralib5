@@ -49,6 +49,7 @@
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../../qt/widgets/layer/utils/DataSet2Layer.h"
 #include "../../qt/widgets/progress/ProgressViewerDialog.h"
+#include "../../qt/widgets/utils/DoubleListWidget.h"
 #include "../../qt/widgets/Utils.h"
 #include "../../statistics/core/Utils.h"
 #include "../Config.h"
@@ -57,6 +58,7 @@
 #include "ui_VectorToVectorDialogForm.h"
 
 // Qt
+#include <QDialogButtonBox>
 #include <QFileDialog>
 #include <QList>
 #include <QListWidget>
@@ -74,7 +76,9 @@ te::attributefill::VectorToVectorDialog::VectorToVectorDialog(QWidget* parent, Q
   : QDialog(parent, f),
     m_ui(new Ui::VectorToVectorDialogForm),
     m_layers(std::list<te::map::AbstractLayerPtr>()),
+    m_outputAttributes(std::vector<std::string>()),
     m_path(""),
+    m_logPath(""),
     m_toFile(false)
 {
   // add controls
@@ -99,6 +103,8 @@ te::attributefill::VectorToVectorDialog::VectorToVectorDialog(QWidget* parent, Q
 
   connect(m_ui->m_selectAllComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onSelectAllComboBoxChanged(int)));
   connect(m_ui->m_rejectAllComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onRejectAllComboBoxChanged(int)));
+
+  connect(m_ui->m_selectAttrToolButton, SIGNAL(pressed()), this,  SLOT(onSelectAttrToolButtonPressed()));
 }
 
 te::attributefill::VectorToVectorDialog::~VectorToVectorDialog()
@@ -135,7 +141,7 @@ void te::attributefill::VectorToVectorDialog::setLayers(std::list<te::map::Abstr
 
 te::map::AbstractLayerPtr te::attributefill::VectorToVectorDialog::getLayer()
 {
-  return 0;
+  return m_outLayer;
 }
 
 void te::attributefill::VectorToVectorDialog::onHelpPushButtonClicked()
@@ -231,6 +237,23 @@ void te::attributefill::VectorToVectorDialog::onOkPushButtonClicked()
 
     v2v->setOutput(outSource, outDataSetName);
 
+    // let's include the new datasource in the managers
+    boost::uuids::basic_random_generator<boost::mt19937> gen;
+    boost::uuids::uuid u = gen();
+    std::string id_ds = boost::uuids::to_string(u);
+      
+    te::da::DataSourceInfoPtr ds(new te::da::DataSourceInfo);
+    ds->setConnInfo(dsinfo);
+    ds->setTitle(uri.stem().string());
+    ds->setAccessDriver("OGR");
+    ds->setType("OGR");
+    ds->setDescription(uri.string());
+    ds->setId(id_ds);
+      
+    te::da::DataSourcePtr newds = te::da::DataSourceManager::getInstance().get(id_ds, "OGR", ds->getConnInfo());
+    newds->open();
+    te::da::DataSourceInfoManager::getInstance().add(ds);
+    m_outputDatasource = ds;
   }
   else
   {
@@ -254,11 +277,19 @@ void te::attributefill::VectorToVectorDialog::onOkPushButtonClicked()
 
   std::map<std::string, std::vector<te::attributefill::OperationType> > selections = getSelections();
 
-  v2v->setParams(getSelections());
+  v2v->setParams(getSelections(), m_outputAttributes);
 
   try
   {
     v2v->run();
+
+    // creating a layer for the result
+    te::da::DataSourcePtr outDataSource = te::da::GetDataSource(m_outputDatasource->getId());
+
+    te::qt::widgets::DataSet2Layer converter(m_outputDatasource->getId());
+
+    te::da::DataSetTypePtr dt(outDataSource->getDataSetType(outDataSetName).release());
+    m_outLayer = converter(dt);
   }
   catch(te::common::Exception& e)
   {
@@ -275,6 +306,13 @@ void te::attributefill::VectorToVectorDialog::onOkPushButtonClicked()
 
   te::common::ProgressManager::getInstance().removeViewer(id);
   this->setCursor(Qt::ArrowCursor);
+
+  if(v2v->hasErrors())
+  {
+    QString err(tr("Some errors occurred during execution. The error log can be found at: "));
+    err += m_logPath.c_str();
+    QMessageBox::warning(this, tr("Vector to Vector"), err);
+  }
 
   accept();
 }
@@ -316,6 +354,26 @@ void te::attributefill::VectorToVectorDialog::onToLayerComboBoxCurrentIndexChang
       m_ui->m_fromLayerComboBox->setCurrentIndex(1);
     else
       m_ui->m_fromLayerComboBox->setCurrentIndex(0);
+  }
+
+  std::auto_ptr<te::da::DataSetType> toSchema = getCurrentToLayer()->getSchema();
+
+  std::vector<te::dt::Property*> props = toSchema->getProperties();
+  std::vector<te::dt::Property*> pkProps = toSchema->getPrimaryKey()->getProperties();
+  for(std::size_t i = 0; i < props.size(); ++i)
+  {
+    bool isPk = false;
+    for(std::size_t j = 0; j < pkProps.size(); ++j)
+    {
+      if(props[i]->getName() == pkProps[j]->getName())
+      {
+        isPk = true;
+        break;
+      }
+    }
+
+    if((props[i]->getType() != te::dt::GEOMETRY_TYPE) && !isPk)
+      m_outputAttributes.push_back(props[i]->getName());
   }
 
   onFromLayerComboBoxCurrentIndexChanged(m_ui->m_fromLayerComboBox->currentIndex());
@@ -817,4 +875,69 @@ bool te::attributefill::VectorToVectorDialog::isNumProperty(const int type)
      return true;
 
   return false;
+}
+
+void te::attributefill::VectorToVectorDialog::onSelectAttrToolButtonPressed()
+{
+  te::map::AbstractLayerPtr toLayer = getCurrentToLayer();
+  std::auto_ptr<te::da::DataSetType> toSchema = toLayer->getSchema();
+
+  std::vector<te::dt::Property*> props = toSchema->getProperties();
+  std::vector<te::dt::Property*> pkProps = toSchema->getPrimaryKey()->getProperties();
+
+  std::vector<std::string> inputNames;
+  std::vector<std::string> outputNames;
+  for(std::size_t i = 0; i < props.size(); ++i)
+  {
+    bool isPk = false;
+    for(std::size_t j = 0; j < pkProps.size(); ++j)
+    {
+      if(props[i]->getName() == pkProps[j]->getName())
+      {
+        isPk = true;
+        break;
+      }
+    }
+
+    if(props[i]->getType() != te::dt::GEOMETRY_TYPE && !isPk)
+    {
+      if(std::find(m_outputAttributes.begin(), m_outputAttributes.end(), props[i]->getName()) != m_outputAttributes.end())
+      {
+        outputNames.push_back(props[i]->getName());
+      }
+      else
+      {
+        inputNames.push_back(props[i]->getName());
+      }
+    }
+  }
+
+  QDialog* dialog = new QDialog(this);
+
+  QBoxLayout* vLayout = new QBoxLayout(QBoxLayout::TopToBottom, dialog);
+
+  te::qt::widgets::DoubleListWidget* d = new te::qt::widgets::DoubleListWidget(this);
+  d->setInputValues(inputNames);
+  d->setOutputValues(outputNames);
+  d->setLeftLabel("Layer Attributes");
+  d->setRightLabel("Selected Attributes");
+  vLayout->addWidget(d);
+
+  QDialogButtonBox* bbox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, dialog);
+  connect(bbox, SIGNAL(accepted()), dialog, SLOT(accept()));
+  connect(bbox, SIGNAL(rejected()), dialog, SLOT(reject()));
+  vLayout->addWidget(bbox);
+
+  int res = dialog->exec();
+
+  if(res == QDialog::Accepted)
+  {
+    m_outputAttributes.clear();
+    m_outputAttributes = d->getOutputValues();
+  }
+}
+
+void te::attributefill::VectorToVectorDialog::setLogPath(const std::string& path)
+{
+  m_logPath = path;
 }

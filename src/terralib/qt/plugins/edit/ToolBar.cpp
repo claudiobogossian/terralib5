@@ -24,11 +24,21 @@
 */
 
 // Terralib
+#include "../../../common/Exception.h"
+#include "../../../common/Translator.h"
+#include "../../../dataaccess/dataset/ObjectId.h"
+#include "../../../dataaccess/utils/Utils.h"
+#include "../../../edit/IdGeometry.h"
+#include "../../../edit/Repository.h"
+#include "../../../edit/RepositoryManager.h"
 #include "../../../edit/qt/tools/CreateLineTool.h"
 #include "../../../edit/qt/tools/CreatePolygonTool.h"
 #include "../../../edit/qt/tools/MoveGeometryTool.h"
 #include "../../../edit/qt/tools/VertexTool.h"
 #include "../../../edit/qt/SnapOptionsDialog.h"
+#include "../../../maptools/DataSetLayer.h"
+#include "../../../memory/DataSet.h"
+#include "../../../memory/DataSetItem.h"
 #include "../../af/events/LayerEvents.h"
 #include "../../af/events/MapEvents.h"
 #include "../../af/ApplicationController.h"
@@ -39,12 +49,18 @@
 #include <QActionGroup>
 #include <QMessageBox>
 
+// Boost
+#include <boost/ptr_container/ptr_vector.hpp>
+
 // STL
 #include <cassert>
+#include <list>
+#include <vector>
 
 te::qt::plugins::edit::ToolBar::ToolBar()
   : m_toolBar(0),
     m_editAction(0),
+    m_saveAction(0),
     m_vertexToolAction(0),
     m_createPolygonToolAction(0),
     m_createLineToolAction(0),
@@ -74,6 +90,20 @@ te::map::AbstractLayerPtr te::qt::plugins::edit::ToolBar::getSelectedLayer()
   return layer;
 }
 
+te::map::AbstractLayerPtr te::qt::plugins::edit::ToolBar::getLayer(const std::string& id)
+{
+  std::list<te::map::AbstractLayerPtr> layers = te::qt::af::ApplicationController::getInstance().getProject()->getSingleLayers();
+
+  std::list<te::map::AbstractLayerPtr>::iterator it;
+  for(it = layers.begin(); it != layers.end(); ++it)
+  {
+    if((*it)->getId() == id)
+      return *it;
+  }
+
+  throw te::common::Exception(TE_TR("Could not retrieve the layer."));
+}
+
 void te::qt::plugins::edit::ToolBar::initialize()
 {
   // Create the main toolbar
@@ -84,8 +114,15 @@ void te::qt::plugins::edit::ToolBar::initialize()
 
 void te::qt::plugins::edit::ToolBar::initializeActions()
 {
+  // Enable Edition Mode
   createAction(m_editAction, tr("Turn on/off edition mode"), "edit-enable", true, true,  SLOT(onEditActivated(bool)));
   m_toolBar->addAction(m_editAction);
+
+  // Save
+  createAction(m_saveAction, tr("Save edition"), "edit-save", false, false,  SLOT(onSaveActivated()));
+  m_toolBar->addAction(m_saveAction);
+
+  m_toolBar->addSeparator();
 
   // Tools
   createAction(m_vertexToolAction, tr("Vertex Tool - Move, add and remove"), "edit-vertex-tool", true, false,  SLOT(onVertexToolActivated(bool)));
@@ -131,10 +168,102 @@ void te::qt::plugins::edit::ToolBar::createAction(QAction*& action, const QStrin
 
 void te::qt::plugins::edit::ToolBar::onEditActivated(bool checked)
 {
+  m_saveAction->setEnabled(checked);
+
   for(int i = 0; i < m_tools.size(); ++i)
     m_tools[i]->setEnabled(checked);
 
   m_snapOptionsAction->setEnabled(checked);
+}
+
+void te::qt::plugins::edit::ToolBar::onSaveActivated()
+{
+  try
+  {
+    std::map<std::string, te::edit::Repository*> repositories = te::edit::RepositoryManager::getInstance().getRepositories();
+
+    std::map<std::string, te::edit::Repository*>::iterator it;
+    for(it = repositories.begin(); it != repositories.end(); ++it) // for each repository
+    {
+      // The current repository
+      te::edit::Repository* repo = it->second;
+      assert(repo);
+
+      // Retrieve the layer associated with the current repository
+      te::map::AbstractLayerPtr layer = getLayer(it->first);
+      assert(layer.get());
+
+      // Get the layer schema
+      std::auto_ptr<te::map::LayerSchema> schema(layer->getSchema());
+      assert(schema.get());
+
+      // Get the property names that compose the object id
+      std::vector<std::string> oidPropertyNames;
+      te::da::GetOIDPropertyNames(schema.get(), oidPropertyNames);
+
+      // Get the edited geometries
+      const std::vector<te::edit::IdGeometry*>& geoms = repo->getGeometries();
+
+      // Build the DataSet that will be used to update
+      std::auto_ptr<te::mem::DataSet> memds(new te::mem::DataSet(schema.get()));
+
+      // Get the geometry property position
+      std::size_t gpos = te::da::GetFirstSpatialPropertyPos(memds.get());
+      assert(gpos != std::string::npos);
+
+      for(std::size_t i = 0; i < geoms.size(); ++i) // for each edited geometry
+      {
+        // Create the new item
+        te::mem::DataSetItem* item = new te::mem::DataSetItem(memds.get());
+
+        // Get the object id
+        te::da::ObjectId* oid = geoms[i]->getId();
+        assert(oid);
+
+        const boost::ptr_vector<te::dt::AbstractData>& values = oid->getValue();
+        assert(values.size() == oidPropertyNames.size());
+
+        // Get the edited geometry
+        te::gm::Geometry* geom = geoms[i]->getGeometry();
+        assert(geom);
+
+        // Fill the new item
+        for(std::size_t j = 0; j < values.size(); ++j)
+          item->setValue(oidPropertyNames[j], values[j].clone());
+
+        item->setGeometry(gpos, static_cast<te::gm::Geometry*>(geom->clone()));
+
+        memds->add(item);
+      }
+
+      // For while, use DataSetLayer to get the DataSource
+      te::map::DataSetLayer* dslayer = dynamic_cast<te::map::DataSetLayer*>(layer.get());
+      assert(dslayer);
+
+      te::da::DataSourcePtr ds = te::da::GetDataSource(dslayer->getDataSourceId(), true);
+      assert(ds.get());
+
+      std::set<int> gproperty;
+      gproperty.insert(gpos);
+
+      std::vector<std::set<int> > properties;
+      for(std::size_t i = 0; i < memds->size(); ++i)
+        properties.push_back(gproperty);
+
+      std::vector<std::size_t> oidPropertyPosition;
+      for(std::size_t i = 0; i < oidPropertyNames.size(); ++i)
+        oidPropertyPosition.push_back(te::da::GetPropertyPos(memds.get(), oidPropertyNames[i]));
+
+      ds->update(dslayer->getDataSetName(), memds.get(), properties, oidPropertyPosition);
+
+      repo->clear();
+    }
+  }
+  catch(te::common::Exception& e)
+  {
+    QMessageBox::critical(0, tr("TerraLib Edit Qt Plugin"), e.what());
+    return;
+  }
 }
 
 void te::qt::plugins::edit::ToolBar::onVertexToolActivated(bool checked)

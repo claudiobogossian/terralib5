@@ -34,6 +34,19 @@
 #include "VectorToVectorAction.h"
 #include "Plugin.h"
 
+#if defined(TERRALIB_APACHE_LOG4CXX_ENABLED) && defined(TERRALIB_LOGGER_ENABLED)
+//Log4cxx
+#include <log4cxx/basicconfigurator.h>
+#include <log4cxx/consoleappender.h>
+#include <log4cxx/fileappender.h>
+#include <log4cxx/helpers/pool.h>
+#include <log4cxx/helpers/transcoder.h>
+#include <log4cxx/logger.h>
+#include <log4cxx/logmanager.h>
+#include <log4cxx/logstring.h>
+#include <log4cxx/simplelayout.h>
+#endif
+
 // QT
 #include <QMenu>
 #include <QMenuBar>
@@ -73,6 +86,22 @@ void te::qt::plugins::attributefill::Plugin::startup()
   m_popupAction = new QAction(m_attributefillMenu);
   m_popupAction->setText(TE_TR("Attribute Fill"));
 
+  // vp log startup
+  std::string path = te::qt::af::ApplicationController::getInstance().getUserDataDir().toStdString();
+  path += "/log/terralib_attributefill.log";
+
+#if defined(TERRALIB_APACHE_LOG4CXX_ENABLED) && defined(TERRALIB_LOGGER_ENABLED)
+  log4cxx::FileAppender* fileAppender = new log4cxx::FileAppender(log4cxx::LayoutPtr(new log4cxx::SimpleLayout()),
+  log4cxx::helpers::Transcoder::decode(path.c_str()), false);
+
+  log4cxx::helpers::Pool p;
+  fileAppender->activateOptions(p);
+
+  log4cxx::BasicConfigurator::configure(log4cxx::AppenderPtr(fileAppender));
+  log4cxx::Logger::getRootLogger()->setLevel(log4cxx::Level::getDebug());
+  log4cxx::LoggerPtr logger = log4cxx::Logger::getLogger("attributefill");
+#endif
+
   m_initialized = true;
 }
 
@@ -86,6 +115,10 @@ void te::qt::plugins::attributefill::Plugin::shutdown()
 
   // unregister actions
   unRegisterActions();
+
+#if defined(TERRALIB_APACHE_LOG4CXX_ENABLED) && defined(TERRALIB_LOGGER_ENABLED)
+  log4cxx::LogManager::shutdown();
+#endif
 
   TE_LOG_TRACE(TE_TR("TerraLib Qt Attribute Fill Plugin shutdown!"));
 

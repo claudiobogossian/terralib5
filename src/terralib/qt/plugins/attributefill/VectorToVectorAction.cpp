@@ -67,6 +67,11 @@ void te::qt::plugins::attributefill::VectorToVectorAction::onActionActivated(boo
     dlg.setLayers(prj->getSingleLayers(false));
   }
 
+  QString logPath = te::qt::af::ApplicationController::getInstance().getUserDataDir();
+  logPath += "/log/terralib_attributefill.log";
+
+  dlg.setLogPath(logPath.toStdString());
+
   if(dlg.exec() != QDialog::Accepted)
     return;
 

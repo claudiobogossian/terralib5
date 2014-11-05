@@ -122,13 +122,37 @@ te::edit::IdGeometry* te::edit::RepositoryManager::getGeometry(const std::string
 
 void te::edit::RepositoryManager::clearAll()
 {
-  clearEditedGeometries();
+  std::map<std::string, Repository*>::const_iterator it;
+  for(it = m_repositories.begin(); it != m_repositories.end(); ++it)
+    it->second->clear();
 }
 
-void te::edit::RepositoryManager::clearEditedGeometries()
+void te::edit::RepositoryManager::clear(const std::string& source)
+{
+  Repository* repository = getRepository(source);
+
+  if(repository == 0)
+    return;
+
+  repository->clear();
+}
+
+void te::edit::RepositoryManager::removeAll()
 {
   te::common::FreeContents(m_repositories);
   m_repositories.clear();
+}
+
+void te::edit::RepositoryManager::remove(const std::string& source)
+{
+  std::map<std::string, Repository*>::const_iterator it = m_repositories.find(source);
+
+  if(it == m_repositories.end())
+    return;
+
+  m_repositories.erase(it);
+
+  delete it->second;
 }
 
 te::edit::RepositoryManager::RepositoryManager()
@@ -137,5 +161,5 @@ te::edit::RepositoryManager::RepositoryManager()
 
 te::edit::RepositoryManager::~RepositoryManager()
 {
-  clearAll();
+  removeAll();
 }
