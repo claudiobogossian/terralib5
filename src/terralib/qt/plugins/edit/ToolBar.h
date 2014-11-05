@@ -36,6 +36,9 @@
 #include <QList>
 #include <QToolBar>
 
+// STL
+#include <string>
+
 namespace te
 {
   namespace qt
@@ -65,6 +68,8 @@ namespace te
 
             te::map::AbstractLayerPtr getSelectedLayer();
 
+            te::map::AbstractLayerPtr getLayer(const std::string& id);
+
             void initialize();
 
             void initializeActions();
@@ -74,6 +79,8 @@ namespace te
           protected slots:
 
             void onEditActivated(bool checked);
+
+            void onSaveActivated();
 
             void onVertexToolActivated(bool checked);
 
@@ -90,6 +97,7 @@ namespace te
             QToolBar* m_toolBar;
 
             QAction* m_editAction;
+            QAction* m_saveAction;
             QAction* m_vertexToolAction;
             QAction* m_createPolygonToolAction;
             QAction* m_createLineToolAction;
