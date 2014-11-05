@@ -180,9 +180,6 @@ std::vector<te::stat::StatisticalSummary> te::attributefill::RasterToVectorDialo
         case 13:
           vecStatistics.push_back(te::stat::MODE);
           break;
-        case 14:
-          m_texture = true;
-          break;
         default:
           continue;
       }
@@ -233,7 +230,6 @@ void te::attributefill::RasterToVectorDialog::onRasterComboBoxChanged(int index)
   m_ui->m_statisticsListWidget->addItem("Median");
   m_ui->m_statisticsListWidget->addItem("Coefficient variation");
   m_ui->m_statisticsListWidget->addItem("Mode");
-  m_ui->m_statisticsListWidget->addItem("Texture");
 
 }
 
@@ -351,11 +347,13 @@ void te::attributefill::RasterToVectorDialog::onOkPushButtonClicked()
     return;
   }
 
-  m_texture = false;
+
   std::vector<te::stat::StatisticalSummary> vecStatistics = getSelectedStatistics();
-  if(vecStatistics.empty())
+  m_texture = m_ui->m_textureCheckBox->isChecked();
+
+  if(vecStatistics.empty() && m_texture == false)
   {
-    QMessageBox::information(this, "Fill", "Select at least one statistic operation.");
+    QMessageBox::information(this, "Fill", "Select at least one statistic operation or select the texture checkbox.");
     return;
   }
 
