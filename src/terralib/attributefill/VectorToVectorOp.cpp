@@ -41,6 +41,7 @@
 #include "VectorToVectorOp.h"
 
 te::attributefill::VectorToVectorOp::VectorToVectorOp():
+  m_hasErrors(false),
   m_outDset("")
 {
 }
@@ -56,9 +57,10 @@ void te::attributefill::VectorToVectorOp::setInput(te::map::AbstractLayerPtr fro
   m_toLayer = toLayer;
 }
 
-void te::attributefill::VectorToVectorOp::setParams(const std::map<std::string, std::vector<te::attributefill::OperationType> >& options)
+void te::attributefill::VectorToVectorOp::setParams(const std::map<std::string, std::vector<te::attributefill::OperationType> >& options, std::vector<std::string> toLayerProps)
 {
   m_options = options;
+  m_toLayerProps = toLayerProps;
 }
 
 void te::attributefill::VectorToVectorOp::setOutput(te::da::DataSourcePtr outDsrc, std::string dsname)
@@ -116,13 +118,20 @@ bool  te::attributefill::VectorToVectorOp::save(std::auto_ptr<te::mem::DataSet> 
     std::string ex = e.what();
     ex += " | Ref: SAVE";
     te::common::Logger::logDebug("attributefill", ex.c_str());
+    m_hasErrors = true;
   }
   catch(std::exception& e)
   {
     std::string ex = e.what();
     ex += " | Ref: SAVE";
     te::common::Logger::logDebug("attributefill", ex.c_str());
+    m_hasErrors = true;
   }
 
   return true;
+}
+
+bool te::attributefill::VectorToVectorOp::hasErrors()
+{
+  return m_hasErrors;
 }

@@ -206,6 +206,7 @@ boost::numeric::ublas::matrix<double> te::rp::RasterAttributes::getGLCM(const te
   te::rst::GetDataTypeRanges(rin.getBandDataType(band), minPixel, maxPixel);
   
   boost::numeric::ublas::matrix<double> glcm (maxPixel + 1, maxPixel + 1);
+  glcm.clear();
   double pixel;
   double neighborPixel;
   double noDataValue = rin.getBand(band)->getProperty()->m_noDataValue;
