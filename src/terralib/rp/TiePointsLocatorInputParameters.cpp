@@ -76,6 +76,8 @@ namespace te
       m_surfScalesNumber = 4;
       m_surfOctavesNumber = 2;
       m_subSampleOptimizationRescaleFactor = 1.0;
+      m_subSampleOptimizationMinTPAreaCoverage = 25;
+      m_subSampleOptimizationMinTPNumberFactor = 1.5;
       m_surfMaxNormEuclideanDist = 0.5;
       m_moravecMinAbsCorrelation = 0.5;
       m_interpMethod = te::rst::Interpolator::NearestNeighbor;
@@ -116,6 +118,8 @@ namespace te
       m_surfScalesNumber = params.m_surfScalesNumber;
       m_surfOctavesNumber = params.m_surfOctavesNumber;
       m_subSampleOptimizationRescaleFactor = params.m_subSampleOptimizationRescaleFactor;
+      m_subSampleOptimizationMinTPAreaCoverage = params.m_subSampleOptimizationMinTPAreaCoverage;
+      m_subSampleOptimizationMinTPNumberFactor = params.m_subSampleOptimizationMinTPNumberFactor;
       m_surfMaxNormEuclideanDist = params.m_surfMaxNormEuclideanDist;
       m_moravecMinAbsCorrelation = params.m_moravecMinAbsCorrelation;
       m_interpMethod = params.m_interpMethod;

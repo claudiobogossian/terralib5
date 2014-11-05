@@ -26,6 +26,7 @@
 #include "Macros.h"
 #include "TiePointsLocatorMoravecStrategy.h"
 #include "TiePointsLocatorSURFStrategy.h"
+#include "Functions.h"
 #include "../geometry/GTFactory.h"
 #include "../geometry/GTFilter.h"
 #include "../common/progress/TaskProgress.h"
@@ -121,19 +122,19 @@ namespace te
         m_inputParameters.m_pixelSizeYRelation );
       
       double maxDMapError = 0; 
-      double maxIMpaError = 0;
+      double maxIMapError = 0;
       if( pixelSizeRelation >= 1.0 ) 
       {
         // Raster 1 with poor resolution
-        maxIMpaError = m_inputParameters.m_geomTransfMaxError;
+        maxIMapError = m_inputParameters.m_geomTransfMaxError;
         maxDMapError = m_inputParameters.m_geomTransfMaxError * pixelSizeRelation;
       }
       else
       {
         // Raster 2 with poor resolution
-        maxIMpaError = m_inputParameters.m_geomTransfMaxError / pixelSizeRelation;
+        maxIMapError = m_inputParameters.m_geomTransfMaxError / pixelSizeRelation;
         maxDMapError = m_inputParameters.m_geomTransfMaxError;
-      }      
+      }
       
       // Matching
       
@@ -145,7 +146,7 @@ namespace te
           "Tie points locator strategy initialization error" );
         
         TERP_TRUE_OR_RETURN_FALSE( stratPtr->getMatchedInterestPoints( 
-          (te::gm::GeometricTransformation*)0,
+          (te::gm::GeometricTransformation*)0, 0,
           matchedInterestPoints ),
           "Tie points interest points location error" );        
       }
@@ -161,8 +162,8 @@ namespace te
         subSampledinputParameters.m_maxTiePoints = 
             ((unsigned int)( ((double)subSampledinputParameters.m_maxTiePoints)
             * subSampledinputParameters.m_subSampleOptimizationRescaleFactor ) );
-        subSampledinputParameters.m_geomTransfMaxError /=
-          subSampledinputParameters.m_subSampleOptimizationRescaleFactor;
+        subSampledinputParameters.m_geomTransfMaxError = 0;
+        
         switch( subSampledinputParameters.m_interesPointsLocationStrategy )
         {
           case TiePointsLocatorInputParameters::MoravecStrategyT :
@@ -197,10 +198,11 @@ namespace te
         te::rp::TiePointsLocatorStrategy::MatchedInterestPointsSetT subSampledMatchedInterestPoints;
         TERP_TRUE_OR_RETURN_FALSE( stratPtr->initialize( subSampledinputParameters ),
           "Tie points locator strategy initialization error" );
-        TERP_TRUE_OR_RETURN_FALSE( stratPtr->getMatchedInterestPoints( 
-          (te::gm::GeometricTransformation*)0,
-          subSampledMatchedInterestPoints ),
-          "Tie points interest points location error" );           
+        if( ! stratPtr->getMatchedInterestPoints( (te::gm::GeometricTransformation*)0,
+          0, subSampledMatchedInterestPoints ) )
+        {
+          subSampledMatchedInterestPoints.clear();
+        }
         
         // Generating tie-points
         
@@ -215,21 +217,77 @@ namespace te
           te::gm::GTFactory::make( m_inputParameters.m_geomTransfName ) );  
         TERP_TRUE_OR_RETURN_FALSE( transformationPtr.get(), "Invalid geometric transformation" );
         
+        double transformationCoveredAreaPercentR1 = 0;
+        double transformationCoveredAreaPercentR2 = 0;
+        
         if( m_inputParameters.m_enableGeometryFilter )
         {
           std::vector< te::gm::GTParameters::TiePoint > filteredTiePoints;
           te::gm::GTFilter filter;
-          if( !filter.applyRansac( 
+          if( filter.applyRansac( 
             m_inputParameters.m_geomTransfName, 
             subSampledTransParams,
-            maxDMapError / subSampledinputParameters.m_subSampleOptimizationRescaleFactor,
-            maxIMpaError / subSampledinputParameters.m_subSampleOptimizationRescaleFactor,
+            maxDMapError * m_inputParameters.m_subSampleOptimizationRescaleFactor,
+            maxIMapError * m_inputParameters.m_subSampleOptimizationRescaleFactor,
             0,
             m_inputParameters.m_geometryFilterAssurance,
             m_inputParameters.m_enableMultiThread,
             subSampledTiePointsWeights,
             filteredTiePoints,
             transformationPtr  ) )
+          {
+            transformationCoveredAreaPercentR1 =
+              (
+                te::rp::GetTPConvexHullArea( filteredTiePoints, false ) 
+                /
+                (double)(
+                  m_inputParameters.m_raster1TargetAreaWidth 
+                  *
+                  m_inputParameters.m_raster1TargetAreaHeight
+                )
+              );
+              
+            transformationCoveredAreaPercentR2 = 
+              (
+                te::rp::GetTPConvexHullArea( filteredTiePoints, true ) 
+                /
+                (double)(
+                  m_inputParameters.m_raster2TargetAreaWidth 
+                  *
+                  m_inputParameters.m_raster2TargetAreaHeight
+                )
+              );
+            
+            if(
+                ( 
+                  ((double)filteredTiePoints.size())
+                  < 
+                  ( 
+                    m_inputParameters.m_subSampleOptimizationMinTPNumberFactor
+                    *
+                    ((double)transformationPtr->getMinRequiredTiePoints() )
+                  ) 
+                ) 
+                ||
+                (
+                  std::max( 
+                    transformationCoveredAreaPercentR1
+                    ,
+                    transformationCoveredAreaPercentR2
+                  )
+                  < 
+                  (
+                    m_inputParameters.m_subSampleOptimizationMinTPAreaCoverage 
+                    /
+                    100.0
+                  )
+                )
+              )
+            {
+              transformationPtr.reset();
+            }
+          }
+          else
           {
             transformationPtr.reset();
           };
@@ -254,6 +312,7 @@ namespace te
         
         TERP_TRUE_OR_RETURN_FALSE( stratPtr->getMatchedInterestPoints( 
           transformationPtr.get(),
+          maxDMapError / transformationCoveredAreaPercentR2,
           matchedInterestPoints ),
           "Tie points interest points location error" );
       }
@@ -277,7 +336,7 @@ namespace te
           m_inputParameters.m_geomTransfName, 
           transfParams,
           maxDMapError,
-          maxIMpaError,
+          maxIMapError,
           0,
           m_inputParameters.m_geometryFilterAssurance,
           m_inputParameters.m_enableMultiThread,
@@ -522,6 +581,14 @@ namespace te
       TERP_TRUE_OR_RETURN_FALSE( ( m_inputParameters.m_subSampleOptimizationRescaleFactor > 0.0 ) &&
         ( m_inputParameters.m_subSampleOptimizationRescaleFactor <= 1.0 ),
         "Invalid m_subSampleOptimizationRescaleFactor" );        
+      
+      TERP_TRUE_OR_RETURN_FALSE( ( m_inputParameters.m_subSampleOptimizationMinTPAreaCoverage >= 0.0 ) &&
+        ( m_inputParameters.m_subSampleOptimizationMinTPAreaCoverage <= 100.0 ),
+        "Invalid m_subSampleOptimizationMinTPAreaCoverage" );            
+      
+      TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_subSampleOptimizationMinTPNumberFactor >= 1.0,
+        "Invalid m_subSampleOptimizationMinTPNumber" );            
+      
       
       m_isInitialized = true;
 

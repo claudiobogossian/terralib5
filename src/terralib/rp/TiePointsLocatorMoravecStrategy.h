@@ -129,6 +129,7 @@ namespace te
         //overload
         bool getMatchedInterestPoints( 
           te::gm::GeometricTransformation const * const raster1ToRaster2TransfPtr,
+          const double raster1ToRaster2TransfDMapError,
           MatchedInterestPointsSetT& matchedInterestPoints );
         
         /*!
@@ -216,6 +217,8 @@ namespace te
           
           \param raster1ToRaster2TransfPtr A pointer to a transformation direct mapping raster 1 indexed coords into raster 2 indexed coords, of an empty pointer if there is no transformation avaliable.
           
+          \param raster1ToRaster2TransfDMapError The expected transformation error.
+          
           \param matchedPoints The matched points (full raster 1 indexed coods reference).
           
           \note Each matched point feature value ( MatchedInterestPoint::m_feature ) will be set to the absolute value of the correlation between then.
@@ -226,6 +229,7 @@ namespace te
           const InterestPointsSetT& interestPointsSet1,
           const InterestPointsSetT& interestPointsSet2,
           te::gm::GeometricTransformation const * const raster1ToRaster2TransfPtr,
+          const double raster1ToRaster2TransfDMapError,
           MatchedInterestPointsSetT& matchedPoints ) const;
           
         /*! 
