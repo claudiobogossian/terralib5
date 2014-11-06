@@ -118,6 +118,7 @@ namespace te
     
     bool TiePointsLocatorMoravecStrategy::getMatchedInterestPoints( 
       te::gm::GeometricTransformation const * const raster1ToRaster2TransfPtr,
+      const double raster1ToRaster2TransfDMapError,
       MatchedInterestPointsSetT& matchedInterestPoints )
     {
       matchedInterestPoints.clear(); 
@@ -478,6 +479,7 @@ namespace te
         raster1InterestPoints,
         raster2InterestPoints,
         raster1ToRaster2TransfPtr,
+        raster1ToRaster2TransfDMapError,
         internalMatchedInterestPoints ),
         "Error matching features" );
       
@@ -1369,6 +1371,7 @@ namespace te
       const InterestPointsSetT& interestPointsSet1,
       const InterestPointsSetT& interestPointsSet2,
       te::gm::GeometricTransformation const * const raster1ToRaster2TransfPtr,
+      const double raster1ToRaster2TransfDMapError,
       MatchedInterestPointsSetT& matchedPoints ) const
     {
       matchedPoints.clear();
@@ -1438,8 +1441,7 @@ namespace te
       params.m_corrMatrixPtr = &corrMatrix;
       params.m_syncMutexPtr = &syncMutex;
       params.m_raster1ToRaster2TransfPtr = raster1ToRaster2TransfPtr;
-      params.m_searchOptTreeSearchRadius = m_inputParameters.m_geomTransfMaxError
-        / m_inputParameters.m_subSampleOptimizationRescaleFactor;
+      params.m_searchOptTreeSearchRadius = raster1ToRaster2TransfDMapError;
       
       if( m_inputParameters.m_enableMultiThread )
       {
