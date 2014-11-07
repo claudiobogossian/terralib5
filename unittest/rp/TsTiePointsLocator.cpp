@@ -491,7 +491,7 @@ void TsTiePointsLocator::SurfStrategySameImage()
   saveImagesAndTiePoints( *inputRasterPointer, 0, *inputRasterPointer, 0,
     algoOutputParams.m_tiePoints, "terralib_rp_tiepointslocator_test_SurfStrategySameImage" );
     
-  CPPUNIT_ASSERT_EQUAL( (size_t)1000, algoOutputParams.m_tiePoints.size() );
+  CPPUNIT_ASSERT_EQUAL( (size_t)889, algoOutputParams.m_tiePoints.size() );
 }
 
 void TsTiePointsLocator::SurfStrategyUpsampledImage()
@@ -546,7 +546,7 @@ void TsTiePointsLocator::SurfStrategyUpsampledImage()
   saveImagesAndTiePoints( *inputRasterPointer, 0, *inputRaster2Pointer, 0,
     algoOutputParams.m_tiePoints, "terralib_rp_tiepointslocator_test_SurfStrategyUpsampledImage" );
     
-  CPPUNIT_ASSERT_EQUAL( (size_t)1000, algoOutputParams.m_tiePoints.size() );
+  CPPUNIT_ASSERT_EQUAL( (size_t)889, algoOutputParams.m_tiePoints.size() );
 }
 
 void TsTiePointsLocator::SurfStrategy90ClkWRotationImage()
@@ -596,7 +596,7 @@ void TsTiePointsLocator::SurfStrategy90ClkWRotationImage()
   saveImagesAndTiePoints( *inputRasterPointer, 0, *inputRaster2Pointer, 0,
     algoOutputParams.m_tiePoints, "terralib_rp_tiepointslocator_test_SurfStrategy90ClkWRotationImage" );
     
-  CPPUNIT_ASSERT_EQUAL( (size_t)1000, algoOutputParams.m_tiePoints.size() );
+  CPPUNIT_ASSERT_EQUAL( (size_t)550, algoOutputParams.m_tiePoints.size() );
 }
 
 void TsTiePointsLocator::SurfStrategySameImageDifBoxes()
@@ -646,7 +646,7 @@ void TsTiePointsLocator::SurfStrategySameImageDifBoxes()
   saveImagesAndTiePoints( *inputRasterPointer, 0, *inputRasterPointer, 0,
     algoOutputParams.m_tiePoints, "terralib_rp_tiepointslocator_test_SurfStrategySameImageDifBoxes" );
     
-  CPPUNIT_ASSERT_EQUAL( (size_t)1000, algoOutputParams.m_tiePoints.size() );    
+  CPPUNIT_ASSERT_EQUAL( (size_t)638, algoOutputParams.m_tiePoints.size() );    
 }
 
 void TsTiePointsLocator::SurfStrategyHalfRotated90Image()
@@ -681,6 +681,8 @@ void TsTiePointsLocator::SurfStrategyHalfRotated90Image()
   algoInputParams.m_enableMultiThread = false;
   algoInputParams.m_maxTiePoints = 1000;
   algoInputParams.m_geomTransfName = "RST";
+  algoInputParams.m_pixelSizeXRelation = 20.0 / 40.0;
+  algoInputParams.m_pixelSizeYRelation = 20.0 / 40.0;
 
   te::rp::TiePointsLocator::OutputParameters algoOutputParams;
 
@@ -780,5 +782,5 @@ void TsTiePointsLocator::SurfStrategyRescaleFactor()
   saveImagesAndTiePoints( *inputRasterPointer, 0, *inputRasterPointer, 0,
     algoOutputParams.m_tiePoints, "terralib_rp_tiepointslocator_test_SurfStrategyRescaleFactor" );
     
-  CPPUNIT_ASSERT_EQUAL( (size_t)1000, algoOutputParams.m_tiePoints.size() );
+  CPPUNIT_ASSERT_EQUAL( (size_t)937, algoOutputParams.m_tiePoints.size() );
 }

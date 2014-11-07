@@ -752,6 +752,9 @@ namespace te
       const unsigned int nextResponseBufferLineIdx = maxGausFilterRadius + 1;
       const unsigned int buffersLines = maxGausFilterWidth;
       const unsigned int lastBuffersLineIdx = buffersLines - 1;
+      const unsigned int maxInterestPointsPerScale = 
+        paramsPtr->m_maxInterestPointsPerRasterLinesBlock /
+        ( ( paramsPtr->m_scalesNumber - 2 ) * paramsPtr->m_octavesNumber );
 
       paramsPtr->m_rastaDataAccessMutexPtr->lock();
       const unsigned int rasterLines = paramsPtr->m_integralRasterDataPtr->getLinesNumber();
@@ -1284,8 +1287,7 @@ namespace te
                             
                           currScalePointsSet.insert( auxInterestPoint);
                           
-                          if( currScalePointsSet.size() > 
-                            paramsPtr->m_maxInterestPointsPerRasterLinesBlock )
+                          if( currScalePointsSet.size() > maxInterestPointsPerScale )
                           {
                             currScalePointsSet.erase( currScalePointsSet.begin() );
                           }                        
