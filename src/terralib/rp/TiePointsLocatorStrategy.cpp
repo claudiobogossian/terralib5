@@ -215,7 +215,7 @@ namespace te
     }    
     
     void TiePointsLocatorStrategy::createTifFromMatrix( 
-      const DoublesMatrix& rasterData,
+      const FloatsMatrix& rasterData,
       const InterestPointsSetT& interestPoints,
       const std::string& tifFileName )
     {
@@ -249,7 +249,7 @@ namespace te
       for( line = 0 ; line < nLines ; ++line )
         for( col = 0 ; col < nCols ; ++col )
         {
-          value = rasterData[ line ][ col ];
+          value = (double)rasterData[ line ][ col ];
           
           if( rasterDataMin > value )
             rasterDataMin = value;
@@ -266,7 +266,7 @@ namespace te
       for( line = 0 ; line < nLines ; ++line )
         for( col = 0 ; col < nCols ; ++col )
         {
-          value = rasterData[ line ][ col ];
+          value = (double)rasterData[ line ][ col ];
           value = ( value - rasterDataMin ) / ( rasterDataMax - rasterDataMin );
           value *= 255.0;
           value = std::max( 0.0, value );

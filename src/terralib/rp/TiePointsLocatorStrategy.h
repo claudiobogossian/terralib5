@@ -182,6 +182,12 @@ namespace te
           \brief Clear all internal allocated resources and go back to the initial not-initialized state.
          */
         virtual void reset() = 0;
+
+        /*!
+          \brief Returns a automatically calculated optimum maximum amount tie-points following the current parameters.
+          \return Returns a automatically calculated optimum maximum amount tie-points following the current parameters.
+         */
+        virtual unsigned int getAutoMaxTiePointsNumber() const = 0;
         
         /*!
           \brief Try to find matched interest points.
@@ -282,7 +288,7 @@ namespace te
           \param tifFileName Tif file name.
         */             
         static void createTifFromMatrix( 
-          const DoublesMatrix& rasterData,
+          const FloatsMatrix& rasterData,
           const InterestPointsSetT& interestPoints,
           const std::string& tifFileName );         
         

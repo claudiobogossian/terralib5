@@ -135,6 +135,9 @@ namespace te
           const double raster1ToRaster2TransfDMapError,
           MatchedInterestPointsSetT& matchedInterestPoints );
         
+        //overload
+        unsigned int getAutoMaxTiePointsNumber() const;        
+        
         /*!
           \brief Create an integral image.
           
@@ -215,7 +218,7 @@ namespace te
           
           \param matchedPoints The matched points.
           
-          \note Each matched point feature value ( MatchedInterestPoint::m_feature ) will be set to the inverse normalized distance in the range (0,1].
+          \note Each matched point feature value ( MatchedInterestPoint::m_feature ) will be set to the distance value between both features.
         */          
         bool executeMatchingByEuclideanDist( 
           const FloatsMatrix& featuresSet1,

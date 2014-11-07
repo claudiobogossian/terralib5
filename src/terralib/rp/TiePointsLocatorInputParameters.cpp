@@ -63,23 +63,23 @@ namespace te
       m_raster2TargetAreaHeight = 0;
       m_enableMultiThread = true;
       m_enableProgress = false;
-      m_maxTiePoints = 0;
+      m_maxTiePoints = 2500;
       m_pixelSizeXRelation = 1;
       m_pixelSizeYRelation = 1;
       m_geomTransfName = "Affine";
       m_geomTransfMaxError = 2;
-      m_moravecCorrelationWindowWidth = 11;
-      m_moravecWindowWidth = 5;
+      m_moravecCorrelationWindowWidth = 15;
+      m_moravecWindowWidth = 15;
       m_enableGeometryFilter = true;
       m_geometryFilterAssurance = 0.1;
       m_moravecNoiseFilterIterations = 1;
-      m_surfScalesNumber = 4;
+      m_surfScalesNumber = 3;
       m_surfOctavesNumber = 2;
       m_subSampleOptimizationRescaleFactor = 1.0;
       m_subSampleOptimizationMinTPAreaCoverage = 25;
       m_subSampleOptimizationMinTPNumberFactor = 1.5;
-      m_surfMaxNormEuclideanDist = 0.5;
-      m_moravecMinAbsCorrelation = 0.5;
+      m_surfMaxNormEuclideanDist = 0.75;
+      m_moravecMinAbsCorrelation = 0.25;
       m_interpMethod = te::rst::Interpolator::NearestNeighbor;
     }
 

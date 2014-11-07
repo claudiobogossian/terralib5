@@ -132,6 +132,9 @@ namespace te
           const double raster1ToRaster2TransfDMapError,
           MatchedInterestPointsSetT& matchedInterestPoints );
         
+        //overload
+        unsigned int getAutoMaxTiePointsNumber() const;
+        
         /*!
           \brief Mean Filter.
           

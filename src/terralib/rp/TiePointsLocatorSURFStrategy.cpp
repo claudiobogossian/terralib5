@@ -55,44 +55,6 @@ namespace te
       TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_inRaster2Bands.size()
         == 1, "Invalid number of raster 2 bands" );
         
-      // Defining the number of tie points
-      
-      if( m_inputParameters.m_maxTiePoints == 0 )
-      {
-        const unsigned int maxRastersArea = 
-          std::max(
-            ( m_inputParameters.m_raster1TargetAreaWidth *
-              m_inputParameters.m_raster1TargetAreaHeight )
-            ,
-            ( m_inputParameters.m_raster2TargetAreaWidth *
-              m_inputParameters.m_raster2TargetAreaHeight )                       
-          );
-        const unsigned int maxWindowSize = getSurfFilterSize( 
-          m_inputParameters.m_surfOctavesNumber - 1, 
-          m_inputParameters.m_surfScalesNumber - 1 );
-        m_inputParameters.m_maxTiePoints = maxRastersArea /            
-          ( 4 * maxWindowSize * maxWindowSize );
-
-        // This is because the features and matching matrix bare eing allocated in RAM
-        const double totalPhysMem = (double)te::common::GetTotalPhysicalMemory();
-        const double usedVMem = (double)te::common::GetUsedVirtualMemory();
-        const double totalVMem = (double)te::common::GetTotalVirtualMemory();
-        const double freeVMem = 0.4 * std::min( totalPhysMem, ( totalVMem - usedVMem ) );                
-        m_inputParameters.m_maxTiePoints = 
-          std::min(
-            m_inputParameters.m_maxTiePoints,
-            (unsigned int)(
-              std::sqrt(
-                ( 65 * 65 )
-                +
-                ( freeVMem / (double)( sizeof( float ) ) )
-              )
-              -
-              65
-            )
-          );         
-      }
-          
       TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_surfScalesNumber > 2,
         "Invalid m_surfScalesNumber" );        
         
@@ -104,6 +66,14 @@ namespace te
         "Invalid m_surfMaxNormEuclideanDist" );                
       
       m_isInitialized = true;
+      
+      // Defining the number of tie points
+      
+      if( m_inputParameters.m_maxTiePoints == 0 )
+      {
+        m_inputParameters.m_maxTiePoints = getAutoMaxTiePointsNumber();
+      }      
+      
       return true;
     }
     
@@ -494,10 +464,13 @@ namespace te
         MatchedInterestPointsT auxMatchedPoints;
         MatchedInterestPointsSetT::const_iterator itB = internalMatchedInterestPoints.begin();
         const MatchedInterestPointsSetT::const_iterator itE = internalMatchedInterestPoints.end();
+        
         float minFeature1P1 = FLT_MAX;
         float maxFeature1P1 = (-1.0) * FLT_MAX;
         float minFeature1P2 = FLT_MAX;
         float maxFeature1P2 = (-1.0) * FLT_MAX;
+        float minDist = FLT_MAX;
+        float maxDist = (-1.0 ) *FLT_MAX;
         
         while( itB != itE )
         {
@@ -509,21 +482,31 @@ namespace te
           if( minFeature1P2 > itB->m_point2.m_feature1 )
             minFeature1P2 = itB->m_point2.m_feature1;
           if( maxFeature1P2 < itB->m_point2.m_feature1 )
-            maxFeature1P2 = itB->m_point2.m_feature1;          
+            maxFeature1P2 = itB->m_point2.m_feature1;        
+          
+          if( minDist > itB->m_feature )
+            minDist = itB->m_feature;
+          if( maxDist < itB->m_feature )
+            maxDist = itB->m_feature;
           
           ++itB;
         }
         
         float feature1P1Range = maxFeature1P1 - minFeature1P1;
         float feature1P2Range = maxFeature1P2 - minFeature1P2;
+        float distRange = maxDist - minDist;
 
-        if( ( feature1P1Range == 0.0 ) || ( feature1P2Range == 0.0 ) )
+        if( ( feature1P1Range == 0.0 ) || ( feature1P2Range == 0.0 ) ||
+          ( distRange == 0.0 ) )
         {
           itB = internalMatchedInterestPoints.begin();
           
           while( itB != itE )
           {
-            matchedInterestPoints.insert( *itB );
+            auxMatchedPoints = *itB;
+            auxMatchedPoints.m_feature = 1.0;
+            
+            matchedInterestPoints.insert( auxMatchedPoints );
            
             ++itB;
           }
@@ -537,22 +520,26 @@ namespace te
             auxMatchedPoints = *itB;
             auxMatchedPoints.m_feature = 
                 (
-                  ( 2.0 * auxMatchedPoints.m_feature )
-                  +
-                  std::min(
-                    (
-                      ( auxMatchedPoints.m_point1.m_feature1 - minFeature1P1 + feature1P1Range ) 
-                      /
-                      ( 2.0 * feature1P1Range )
-                    )
-                    ,
-                    (
-                      ( auxMatchedPoints.m_point2.m_feature1 - minFeature1P2 + feature1P2Range ) 
-                      /
-                      ( 2.0 * feature1P2Range )
-                    )
+                  (
+                    ( maxDist - auxMatchedPoints.m_feature )
+                    /
+                    distRange
                   )
-                );
+                  +
+                  (
+                    ( auxMatchedPoints.m_point1.m_feature1 - minFeature1P1 ) 
+                    /
+                    feature1P1Range
+                  )
+                  +
+                  (
+                    ( auxMatchedPoints.m_point2.m_feature1 - minFeature1P2 ) 
+                    /
+                    feature1P2Range
+                  )
+                ) 
+                / 
+                3.0;
               
             matchedInterestPoints.insert( auxMatchedPoints );
             
@@ -563,6 +550,85 @@ namespace te
 
       return true;
     }
+    
+    unsigned int TiePointsLocatorSURFStrategy::getAutoMaxTiePointsNumber() const
+    {
+      TERP_TRUE_OR_THROW( m_isInitialized, "Not initialized instance" );
+      
+      unsigned int returnValue = 0;
+      
+      const unsigned int maxRastersArea = (unsigned int)
+          std::max(
+            (
+              ((double)( m_inputParameters.m_raster1TargetAreaWidth)) 
+              *
+              m_inputParameters.m_subSampleOptimizationRescaleFactor
+              *
+              ((double)(m_inputParameters.m_raster1TargetAreaHeight))
+              *
+              m_inputParameters.m_subSampleOptimizationRescaleFactor
+            )
+            ,
+            (
+              ((double)( m_inputParameters.m_raster2TargetAreaWidth)) 
+              *
+              m_inputParameters.m_subSampleOptimizationRescaleFactor
+              *
+              ((double)(m_inputParameters.m_raster2TargetAreaHeight))
+              *
+              m_inputParameters.m_subSampleOptimizationRescaleFactor
+            )
+          );
+            
+      const unsigned int filterWindowSize = ( getSurfOctaveBaseFilterSize( 0 ) +
+        getSurfFilterSize( m_inputParameters.m_surfOctavesNumber - 1,
+        m_inputParameters.m_surfScalesNumber - 1 ) )  / 2;
+        
+      returnValue = maxRastersArea /            
+        ( filterWindowSize * filterWindowSize );
+
+      // This is because the features and matching matrix bare eing allocated in RAM
+        
+      const double totalPhysMem = (double)te::common::GetTotalPhysicalMemory();
+      const double usedVMem = (double)te::common::GetUsedVirtualMemory();
+      const double totalVMem = (double)te::common::GetTotalVirtualMemory();
+      const double freeVMem = 0.4 * std::min( totalPhysMem, ( totalVMem - usedVMem ) );
+      
+      const double featureElementsNumber = 65 * 65;
+      
+      double maxFeaturesMemory =
+        std::max(
+          0.0
+          ,
+          (
+            (-2.0) * featureElementsNumber 
+            +
+            std::sqrt( 
+              ( 4.0 * featureElementsNumber * featureElementsNumber )
+              +
+              ( 4.0 * freeVMem / ((double)sizeof( float ) ) )
+            )
+          )
+        ); 
+      maxFeaturesMemory =
+        std::max(
+          maxFeaturesMemory
+          ,
+          (
+            (-2.0) * featureElementsNumber 
+            -
+            std::sqrt( 
+              ( 4.0 * featureElementsNumber * featureElementsNumber )
+              +
+              ( 4.0 * freeVMem / ((double)sizeof( float ) ) )
+            )
+          )
+        );      
+      
+      returnValue = std::min( returnValue, (unsigned int)maxFeaturesMemory ); 
+        
+      return returnValue;
+    }    
     
     bool TiePointsLocatorSURFStrategy::createIntegralImage( const FloatsMatrix& inputData,
       FloatsMatrix& outputData )
@@ -1682,7 +1748,6 @@ namespace te
         FLT_MAX );
       std::vector< unsigned int > eachColMinIndexes( interestPointsSet2Size,
         interestPointsSet1Size );
-      float maxDistValue = FLT_MAX * (-1.0);
         
       for( line = 0 ; line < interestPointsSet1Size ; ++line )
       {
@@ -1705,13 +1770,9 @@ namespace te
               eachColMinValues[ col ] = value;
               eachColMinIndexes[ col ] = line;
             }
-          
-            if( value > maxDistValue ) maxDistValue = value;
           }
         }
       }
-      
-      if( maxDistValue == 0.0 ) maxDistValue = 1.0;
       
       // Finding tiepoints
       
@@ -1724,12 +1785,9 @@ namespace te
         if( ( col < interestPointsSet2Size ) &&
           ( eachColMinIndexes[ col ] == line ) )
         {
-          const float& distValue = distMatrix( line, col );
-          
           auxMatchedPoints.m_point1 = internalInterestPointsSet1[ line ];
           auxMatchedPoints.m_point2 = internalInterestPointsSet2[ col ],
-          auxMatchedPoints.m_feature = ( maxDistValue - distValue )  / 
-            maxDistValue;
+          auxMatchedPoints.m_feature = distMatrix( line, col );
           
           matchedPoints.insert( auxMatchedPoints );
         }
