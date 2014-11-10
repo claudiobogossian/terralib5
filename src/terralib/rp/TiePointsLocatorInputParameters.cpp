@@ -81,6 +81,7 @@ namespace te
       m_surfMaxNormEuclideanDist = 0.75;
       m_moravecMinAbsCorrelation = 0.25;
       m_interpMethod = te::rst::Interpolator::NearestNeighbor;
+      m_tiePointsSubSectorsSplitFactor = 3;
     }
 
     const TiePointsLocatorInputParameters& TiePointsLocatorInputParameters::operator=(
@@ -123,6 +124,7 @@ namespace te
       m_surfMaxNormEuclideanDist = params.m_surfMaxNormEuclideanDist;
       m_moravecMinAbsCorrelation = params.m_moravecMinAbsCorrelation;
       m_interpMethod = params.m_interpMethod;
+      m_tiePointsSubSectorsSplitFactor = params.m_tiePointsSubSectorsSplitFactor;
 
       return *this;
     }

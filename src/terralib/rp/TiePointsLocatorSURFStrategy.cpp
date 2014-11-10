@@ -159,6 +159,8 @@ namespace te
         
         std::vector< boost::shared_ptr< FloatsMatrix > > rasterData;
         UCharsMatrix maskRasterData;
+        double achievedRescaleFactorX = 0;
+        double achievedRescaleFactorY = 0;
         
         if( !loadRasterData( 
           m_inputParameters.m_inRaster1Ptr,
@@ -174,10 +176,15 @@ namespace te
           m_inputParameters.m_interpMethod,
           20,
           rasterData,
-          maskRasterData ) )
+          maskRasterData,
+          achievedRescaleFactorX,
+          achievedRescaleFactorY ) )
         {
           return false;
         }
+        
+        raster1XRescFact = achievedRescaleFactorX;
+        raster2YRescFact = achievedRescaleFactorY;
           
 //        printMatrix( *(rasterData[ 0 ]) );
 //        createTifFromMatrix( *(rasterData[ 0 ]), InterestPointsSetT(), "loadedRaster1");
@@ -269,6 +276,8 @@ namespace te
         
         std::vector< boost::shared_ptr< FloatsMatrix > > rasterData;
         UCharsMatrix maskRasterData;
+        double achievedRescaleFactorX = 0;
+        double achievedRescaleFactorY = 0;        
         
         if( !loadRasterData( 
           m_inputParameters.m_inRaster2Ptr,
@@ -284,10 +293,15 @@ namespace te
           m_inputParameters.m_interpMethod,
           20,
           rasterData,
-          maskRasterData ) )
+          maskRasterData,
+          achievedRescaleFactorX,
+          achievedRescaleFactorY ) )
         {
           return false;
         }
+        
+        raster2XRescFact = achievedRescaleFactorX;
+        raster2YRescFact = achievedRescaleFactorY;
           
 //        printMatrix( *(rasterData[ 0 ]) );
 //        createTifFromMatrix( *(rasterData[ 0 ]), InterestPointsSetT(), "loadedRaster2");

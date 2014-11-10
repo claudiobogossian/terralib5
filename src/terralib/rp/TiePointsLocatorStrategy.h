@@ -222,9 +222,9 @@ namespace te
           
           \param rasterTargetAreaHeight The raster target area height.
           
-          \param rescaleFactorX Scale factor to be applied on the loaded data.
+          \param desiredRescaleFactorX The desired Scale factor to be applied on the loaded data.
           
-          \param rescaleFactorY Scale factor to be applied on the loaded data.
+          \param desiredRescaleFactorY The desired Scale factor to be applied on the loaded data.
           
           \param rasterInterpMethod The interpolation used when loading the input raster.
           
@@ -233,6 +233,10 @@ namespace te
           \param loadedRasterData The loaded raster data.
           
           \param loadedMaskRasterData The loaded mask raster data.
+          
+          \param desiredRescaleFactorX The real achieved Scale factor.
+          
+          \param desiredRescaleFactorY The real achieved Scale factor.
 
           \return true if ok, false on errors.
         */             
@@ -245,12 +249,14 @@ namespace te
           const unsigned int rasterTargetAreaColStart,
           const unsigned int rasterTargetAreaWidth,
           const unsigned int rasterTargetAreaHeight,
-          const double rescaleFactorX,
-          const double rescaleFactorY,
+          const double desiredRescaleFactorX,
+          const double desiredRescaleFactorY,
           const te::rst::Interpolator::Method rasterInterpMethod,
           const unsigned char maxMemPercentUsage, 
           std::vector< boost::shared_ptr< FloatsMatrix > >& loadedRasterData,
-          UCharsMatrix& loadedMaskRasterData );        
+          UCharsMatrix& loadedMaskRasterData,
+          double& achievedRescaleFactorX,
+          double& achievedRescaleFactorY );
         
         /*! 
           \brief RoolUp a buffer of lines.

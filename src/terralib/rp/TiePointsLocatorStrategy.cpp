@@ -60,19 +60,24 @@ namespace te
       const unsigned int rasterTargetAreaColStart,
       const unsigned int rasterTargetAreaWidth,
       const unsigned int rasterTargetAreaHeight,
-      const double rescaleFactorX,
-      const double rescaleFactorY,
+      const double desiredRescaleFactorX,
+      const double desiredRescaleFactorY,
       const te::rst::Interpolator::Method rasterInterpMethod,
       const unsigned char maxMemPercentUsage, 
       std::vector< boost::shared_ptr< FloatsMatrix > >& loadedRasterData,
-      UCharsMatrix& loadedMaskRasterData )
+      UCharsMatrix& loadedMaskRasterData,
+      double& achievedRescaleFactorX,
+      double& achievedRescaleFactorY )
     {
       // Allocating the output matrixes
       
       const unsigned int rescaledNLines = (unsigned int)(
-        ((double)rasterTargetAreaHeight) * rescaleFactorY );
+        ((double)rasterTargetAreaHeight) * desiredRescaleFactorY );
       const unsigned int rescaledNCols = (unsigned int)(
-        ((double)rasterTargetAreaWidth) * rescaleFactorX );
+        ((double)rasterTargetAreaWidth) * desiredRescaleFactorX );
+      
+      achievedRescaleFactorX = ((double)rescaledNCols) / ((double)rasterTargetAreaWidth);
+      achievedRescaleFactorY = ((double)rescaledNLines) / ((double)rasterTargetAreaHeight);
     
       {
         unsigned char maxMemPercentUsagePerMatrix = MAX( 1u, maxMemPercentUsage / 
@@ -121,14 +126,14 @@ namespace te
         for( outLine = 0 ; outLine < rescaledNLines ; ++outLine ) 
         {
           inLine = (unsigned int)( ( ( (double)outLine ) / 
-            rescaleFactorY ) + ( (double)rasterTargetAreaLineStart ) );      
+            desiredRescaleFactorY ) + ( (double)rasterTargetAreaLineStart ) );      
           
           outMaskLinePtr = loadedMaskRasterData[ outLine ];
           
           for( outCol = 0 ; outCol < rescaledNCols ; ++outCol ) 
           {          
             inCol = (unsigned int)( ( ( (double)outCol ) / 
-                rescaleFactorX ) + ( (double)rasterTargetAreaColStart ) );        
+                desiredRescaleFactorX ) + ( (double)rasterTargetAreaColStart ) );        
                 
             inMaskRasterBand->getValue( inCol, inLine, value );
             
@@ -173,14 +178,14 @@ namespace te
           
           for( outLine = 0 ; outLine < rescaledNLines ; ++outLine ) 
           {
-            inLine = ( ( (double)outLine ) /  rescaleFactorY ) + 
+            inLine = ( ( (double)outLine ) /  desiredRescaleFactorY ) + 
               rasterTargetAreaLineStartDouble;
               
             doubleLinePtr = auxBandData[ outLine ];
             
             for( outCol = 0 ; outCol < rescaledNCols ; ++outCol ) 
             {          
-              inCol = ( ( (double)outCol ) / rescaleFactorX ) + 
+              inCol = ( ( (double)outCol ) / desiredRescaleFactorX ) + 
                 rasterTargetAreaColStartDouble;
 
               interpInstance.getValue( inCol, inLine, interpolatedValue,
