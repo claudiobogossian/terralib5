@@ -28,6 +28,8 @@
 #include "TiePointsLocatorStrategy.h"
 #include "../geometry/GeometricTransformation.h"
 
+#include <vector>
+
 #include <boost/thread.hpp>
 
 namespace te
@@ -62,13 +64,15 @@ namespace te
             
             unsigned int m_moravecWindowWidth; //!< The Moravec window width used to locate canditate tie-points (minimum 11, default: 11 ).
             
-            unsigned int m_maxInterestPointsPerRasterLinesBlock; //!< The maximum number of points to find for each raster lines block.
-            
             FloatsMatrix const* m_rasterDataPtr; //!< The loaded raster data.
             
             UCharsMatrix const* m_maskRasterDataPtr; //!< The loaded mask raster data pointer (or zero if no mask is avaliable).
             
-            InterestPointsSetT* m_interestPointsPtr; //!< A pointer to a valid interest points container.
+            std::vector< InterestPointsSetT >* m_interestPointsSubSectorsPtr; //!< A pointer to a valid interest points container (one element by subsector)..
+            
+            unsigned int m_maxInterestPointsBySubSector; //!< The maximum number of interest points by sub-sector.
+            
+            unsigned int m_tiePointsSubSectorsSplitFactor; //!< The number of sectors along each direction.
             
             boost::mutex* m_rastaDataAccessMutexPtr; //!< A pointer to a valid mutex to controle raster data access.
             
@@ -158,25 +162,16 @@ namespace te
           
           \param maskRasterDataPtr The loaded mask raster data pointer (or zero if no mask is avaliable).
           
-          \param moravecWindowWidth Moravec window width.
-          
-          \param maxInterestPoints The maximum number of interest points to find over raster 1.
-          
-          \param enableMultiThread Enable/disable multi-thread.
-          
           \param interestPoints The found interest points (coords related to rasterData lines/cols).          
           
           \note InterestPointT::m_feature1 will be sum of differences between the Moravec filter response of each pixel and its neighborhoods (always a positive value).
 
           \return true if ok, false on errors.
         */             
-        static bool locateMoravecInterestPoints( 
+        bool locateMoravecInterestPoints( 
           const FloatsMatrix& rasterData,
           UCharsMatrix const* maskRasterDataPtr,
-          const unsigned int moravecWindowWidth,
-          const unsigned int maxInterestPoints,
-          const unsigned int enableMultiThread,
-          InterestPointsSetT& interestPoints );      
+          InterestPointsSetT& interestPoints ) const;      
         
         /*! 
           \brief Movavec locator thread entry.

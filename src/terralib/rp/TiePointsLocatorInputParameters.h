@@ -109,13 +109,15 @@ namespace te
         
         double m_geometryFilterAssurance; //!< Geometry assurance (the error-free selection percent assurance) - Use Lower values for good tie-points sets - Higher values may increase the number of iterations - valid range (0-1) - default:0.1.
         
-        double m_subSampleOptimizationRescaleFactor; //!< Sub-sampled optimization tie-points search rescale factor (Defaul: 1 - subsample optimization disabled, valid range: non-zero positive values).
+        double m_subSampleOptimizationRescaleFactor; //!< Sub-sampled optimization tie-points search rescale factor (Tie-ponts will be searched into a subsabmpled image and refined before using the original image - Defaul: 1 - subsample optimization disabled, valid range: non-zero positive values).
         
         double m_subSampleOptimizationMinTPAreaCoverage; //!< Sub-sampled optimization - mininumum required tie-points covered area percent of each raster area - valid range [0,100] (default:25).
         
         double m_subSampleOptimizationMinTPNumberFactor; //!< Sub-sampled optimization - mininumum required tie-points number factor - valid range [1,inf] (default:1.5).
         
         te::rst::Interpolator::Method m_interpMethod; //!< The raster interpolator method (default:NearestNeighbor).
+        
+        unsigned int m_tiePointsSubSectorsSplitFactor; //!< The algorithm will try to generate tie-points distributed over image sectors ( Default: 3 - 3x3 sub-sectors, minimum: 1).
         
         //@}
         

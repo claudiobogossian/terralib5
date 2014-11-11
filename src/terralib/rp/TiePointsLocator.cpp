@@ -158,6 +158,9 @@ namespace te
         TiePointsLocator::InputParameters subSampledinputParameters = 
           m_inputParameters;
         subSampledinputParameters.m_geomTransfMaxError = 0;        
+        subSampledinputParameters.m_maxTiePoints = std::max( 100u,
+          (unsigned int)( ((double)subSampledinputParameters.m_maxTiePoints) * 
+          subSampledinputParameters.m_subSampleOptimizationRescaleFactor ) );
           
         te::rp::TiePointsLocatorStrategy::MatchedInterestPointsSetT subSampledMatchedInterestPoints;
         TERP_TRUE_OR_RETURN_FALSE( stratPtr->initialize( subSampledinputParameters ),
@@ -558,6 +561,8 @@ namespace te
       TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_subSampleOptimizationMinTPNumberFactor >= 1.0,
         "Invalid m_subSampleOptimizationMinTPNumber" );            
       
+      TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_tiePointsSubSectorsSplitFactor >= 1,
+        "Invalid m_tiePointsSubSectorsSplitFactor" );  
       
       m_isInitialized = true;
 

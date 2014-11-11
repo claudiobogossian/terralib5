@@ -158,7 +158,7 @@ void TsTiePointsLocator::MoravecStrategySameImage()
   saveImagesAndTiePoints( *inputRasterPointer, 0, *inputRasterPointer, 0,
     algoOutputParams.m_tiePoints, "terralib_rp_tiepointslocator_test_MoravecStrategySameImage" );
     
-  CPPUNIT_ASSERT_EQUAL( (size_t)979, algoOutputParams.m_tiePoints.size() );
+  CPPUNIT_ASSERT_EQUAL( (size_t)981, algoOutputParams.m_tiePoints.size() );
 }
 
 void TsTiePointsLocator::MoravecStrategyUpsampledImage()
@@ -213,7 +213,7 @@ void TsTiePointsLocator::MoravecStrategyUpsampledImage()
   saveImagesAndTiePoints( *inputRasterPointer, 0, *inputRaster2Pointer, 0,
     algoOutputParams.m_tiePoints, "terralib_rp_tiepointslocator_test_MoravecStrategyUpsampledImage" );
     
-  CPPUNIT_ASSERT_EQUAL( (size_t)979, algoOutputParams.m_tiePoints.size() );
+  CPPUNIT_ASSERT_EQUAL( (size_t)981, algoOutputParams.m_tiePoints.size() );
 }
 
 void TsTiePointsLocator::MoravecStrategy90ClkWRotationImage()
@@ -263,7 +263,7 @@ void TsTiePointsLocator::MoravecStrategy90ClkWRotationImage()
   saveImagesAndTiePoints( *inputRasterPointer, 0, *inputRaster2Pointer, 0,
     algoOutputParams.m_tiePoints, "terralib_rp_tiepointslocator_test_MoravecStrategy90ClkWRotationImage" );
     
-  CPPUNIT_ASSERT_EQUAL( (size_t)966, algoOutputParams.m_tiePoints.size() );
+  CPPUNIT_ASSERT_EQUAL( (size_t)953, algoOutputParams.m_tiePoints.size() );
 }
 
 void TsTiePointsLocator::MoravecStrategyHalfRotated90Image()
@@ -449,7 +449,7 @@ void TsTiePointsLocator::MoravecStrategyRescaleFactor()
   saveImagesAndTiePoints( *inputRasterPointer, 0, *inputRasterPointer, 0,
     algoOutputParams.m_tiePoints, "terralib_rp_tiepointslocator_test_MoravecStrategyRescaleFactor" );
     
-  CPPUNIT_ASSERT_EQUAL( (size_t)996, algoOutputParams.m_tiePoints.size() );
+  CPPUNIT_ASSERT_EQUAL( (size_t)992, algoOutputParams.m_tiePoints.size() );
 }
 
 void TsTiePointsLocator::SurfStrategySameImage()
