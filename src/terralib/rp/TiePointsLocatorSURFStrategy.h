@@ -65,13 +65,15 @@ namespace te
             
             unsigned int m_octavesNumber; //!< The number of octaves to generate (minimum:1).
             
-            unsigned int m_maxInterestPointsPerRasterLinesBlock; //!< The maximum number of points to find for each raster lines block for each scale.
+            std::vector< InterestPointsSetT >* m_interestPointsSubSectorsPtr; //!< A pointer to a valid interest points container (one element by subsector)..
+            
+            unsigned int m_maxInterestPointsBySubSector; //!< The maximum number of interest points by sub-sector.
+            
+            unsigned int m_tiePointsSubSectorsSplitFactor; //!< The number of sectors along each direction.
             
             FloatsMatrix const* m_integralRasterDataPtr; //!< The integral image raster data.
             
             UCharsMatrix const* m_maskRasterDataPtr; //!< The loaded mask raster data pointer (or zero if no mask is avaliable).
-            
-            InterestPointsSetT* m_interestPointsPtr; //!< A pointer to a valid interest points container.
             
             boost::mutex* m_rastaDataAccessMutexPtr; //!< A pointer to a valid mutex to controle raster data access.
             

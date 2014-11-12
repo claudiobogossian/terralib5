@@ -474,7 +474,7 @@ void TsTiePointsLocator::SurfStrategySameImage()
   algoInputParams.m_inRaster2Ptr = inputRasterPointer.get();
   algoInputParams.m_inRaster2Bands.push_back( 0 );
   algoInputParams.m_enableMultiThread = false;
-  algoInputParams.m_maxTiePoints = 1000;
+  algoInputParams.m_maxTiePoints = 2000;
   algoInputParams.m_geomTransfName = "RST";
 
   te::rp::TiePointsLocator::OutputParameters algoOutputParams;
@@ -491,7 +491,7 @@ void TsTiePointsLocator::SurfStrategySameImage()
   saveImagesAndTiePoints( *inputRasterPointer, 0, *inputRasterPointer, 0,
     algoOutputParams.m_tiePoints, "terralib_rp_tiepointslocator_test_SurfStrategySameImage" );
     
-  CPPUNIT_ASSERT_EQUAL( (size_t)889, algoOutputParams.m_tiePoints.size() );
+  CPPUNIT_ASSERT_EQUAL( (size_t)1807, algoOutputParams.m_tiePoints.size() );
 }
 
 void TsTiePointsLocator::SurfStrategyUpsampledImage()
@@ -524,13 +524,12 @@ void TsTiePointsLocator::SurfStrategyUpsampledImage()
   algoInputParams.m_inRaster2Ptr = inputRaster2Pointer.get();
   algoInputParams.m_inRaster2Bands.push_back( 0 );
   algoInputParams.m_enableMultiThread = false;
-  algoInputParams.m_maxTiePoints = 1000;
+  algoInputParams.m_maxTiePoints = 2000;
+  algoInputParams.m_geomTransfName = "RST";
   algoInputParams.m_pixelSizeXRelation = inputRasterPointer->getResolutionX() /
    inputRaster2Pointer->getResolutionX();
   algoInputParams.m_pixelSizeYRelation = inputRasterPointer->getResolutionY() /
-   inputRaster2Pointer->getResolutionY();
-  algoInputParams.m_geomTransfName = "RST";
-  
+   inputRaster2Pointer->getResolutionY();  
 
   te::rp::TiePointsLocator::OutputParameters algoOutputParams;
   
@@ -546,7 +545,7 @@ void TsTiePointsLocator::SurfStrategyUpsampledImage()
   saveImagesAndTiePoints( *inputRasterPointer, 0, *inputRaster2Pointer, 0,
     algoOutputParams.m_tiePoints, "terralib_rp_tiepointslocator_test_SurfStrategyUpsampledImage" );
     
-  CPPUNIT_ASSERT_EQUAL( (size_t)889, algoOutputParams.m_tiePoints.size() );
+  CPPUNIT_ASSERT_EQUAL( (size_t)1807, algoOutputParams.m_tiePoints.size() );
 }
 
 void TsTiePointsLocator::SurfStrategy90ClkWRotationImage()
@@ -579,7 +578,7 @@ void TsTiePointsLocator::SurfStrategy90ClkWRotationImage()
   algoInputParams.m_inRaster2Ptr = inputRaster2Pointer.get();
   algoInputParams.m_inRaster2Bands.push_back( 0 );
   algoInputParams.m_enableMultiThread = false;
-  algoInputParams.m_maxTiePoints = 1000;
+  algoInputParams.m_maxTiePoints = 2000;
   algoInputParams.m_geomTransfName = "RST";  
 
   te::rp::TiePointsLocator::OutputParameters algoOutputParams;
@@ -596,7 +595,7 @@ void TsTiePointsLocator::SurfStrategy90ClkWRotationImage()
   saveImagesAndTiePoints( *inputRasterPointer, 0, *inputRaster2Pointer, 0,
     algoOutputParams.m_tiePoints, "terralib_rp_tiepointslocator_test_SurfStrategy90ClkWRotationImage" );
     
-  CPPUNIT_ASSERT_EQUAL( (size_t)550, algoOutputParams.m_tiePoints.size() );
+  CPPUNIT_ASSERT_EQUAL( (size_t)1268, algoOutputParams.m_tiePoints.size() );
 }
 
 void TsTiePointsLocator::SurfStrategySameImageDifBoxes()
@@ -629,7 +628,7 @@ void TsTiePointsLocator::SurfStrategySameImageDifBoxes()
   algoInputParams.m_raster2TargetAreaLineStart = 30;
   algoInputParams.m_raster2TargetAreaWidth = 600;
   algoInputParams.m_raster2TargetAreaHeight = 700;
-  algoInputParams.m_maxTiePoints = 1000;
+  algoInputParams.m_maxTiePoints = 2000;
   algoInputParams.m_geomTransfName = "RST";
 
   te::rp::TiePointsLocator::OutputParameters algoOutputParams;
@@ -646,7 +645,7 @@ void TsTiePointsLocator::SurfStrategySameImageDifBoxes()
   saveImagesAndTiePoints( *inputRasterPointer, 0, *inputRasterPointer, 0,
     algoOutputParams.m_tiePoints, "terralib_rp_tiepointslocator_test_SurfStrategySameImageDifBoxes" );
     
-  CPPUNIT_ASSERT_EQUAL( (size_t)638, algoOutputParams.m_tiePoints.size() );    
+  CPPUNIT_ASSERT_EQUAL( (size_t)1081, algoOutputParams.m_tiePoints.size() );    
 }
 
 void TsTiePointsLocator::SurfStrategyHalfRotated90Image()
@@ -679,7 +678,7 @@ void TsTiePointsLocator::SurfStrategyHalfRotated90Image()
   algoInputParams.m_inRaster2Ptr = inputRaster2Pointer.get();
   algoInputParams.m_inRaster2Bands.push_back( 0 );
   algoInputParams.m_enableMultiThread = false;
-  algoInputParams.m_maxTiePoints = 1000;
+  algoInputParams.m_maxTiePoints = 3000;
   algoInputParams.m_geomTransfName = "RST";
   algoInputParams.m_pixelSizeXRelation = 20.0 / 40.0;
   algoInputParams.m_pixelSizeYRelation = 20.0 / 40.0;
@@ -699,7 +698,7 @@ void TsTiePointsLocator::SurfStrategyHalfRotated90Image()
   saveImagesAndTiePoints( *inputRaster1Pointer, 0, *inputRaster2Pointer, 0,
     algoOutputParams.m_tiePoints, "terralib_rp_tiepointslocator_test_SurfStrategyHalfRotated90Image" );
     
-  CPPUNIT_ASSERT( algoOutputParams.m_tiePoints.size() > 2 );    
+  CPPUNIT_ASSERT_EQUAL( (size_t)890, algoOutputParams.m_tiePoints.size() );  
 }
 
 void TsTiePointsLocator::SurfStrategyMultipleThreads()
@@ -724,7 +723,7 @@ void TsTiePointsLocator::SurfStrategyMultipleThreads()
   algoInputParams.m_inRaster2Ptr = inputRasterPointer.get();
   algoInputParams.m_inRaster2Bands.push_back( 0 );
   algoInputParams.m_enableMultiThread = true;
-  algoInputParams.m_maxTiePoints = 1000;
+  algoInputParams.m_maxTiePoints = 2000;
   algoInputParams.m_geomTransfName = "RST";
 
   te::rp::TiePointsLocator::OutputParameters algoOutputParams;
@@ -764,7 +763,7 @@ void TsTiePointsLocator::SurfStrategyRescaleFactor()
   algoInputParams.m_inRaster2Ptr = inputRasterPointer.get();
   algoInputParams.m_inRaster2Bands.push_back( 0 );
   algoInputParams.m_enableMultiThread = false;
-  algoInputParams.m_maxTiePoints = 1000;
+  algoInputParams.m_maxTiePoints = 2000;
   algoInputParams.m_subSampleOptimizationRescaleFactor = 0.5;
   algoInputParams.m_geomTransfName = "RST";
 
@@ -782,5 +781,5 @@ void TsTiePointsLocator::SurfStrategyRescaleFactor()
   saveImagesAndTiePoints( *inputRasterPointer, 0, *inputRasterPointer, 0,
     algoOutputParams.m_tiePoints, "terralib_rp_tiepointslocator_test_SurfStrategyRescaleFactor" );
     
-  CPPUNIT_ASSERT_EQUAL( (size_t)937, algoOutputParams.m_tiePoints.size() );
+  CPPUNIT_ASSERT_EQUAL( (size_t)1940, algoOutputParams.m_tiePoints.size() );
 }
