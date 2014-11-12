@@ -43,6 +43,8 @@ te::layout::TextModel::TextModel() :
   m_type = Enums::getInstance().getEnumObjectType()->getTextItem();
 
   m_box = te::gm::Envelope(0., 0., 40., 20.);
+
+  m_font.setPointSize(5);
 }
 
 te::layout::TextModel::~TextModel()

@@ -85,6 +85,10 @@ namespace te
         virtual void setVisibleAllTexts(bool visible);
 
         virtual bool isVisibleAllTexts();
+
+        virtual void setMapDisplacementX(double displacement);
+
+        virtual void setMapDisplacementY(double displacement);
                         
        protected:
 
@@ -95,7 +99,7 @@ namespace te
          virtual void calculateGaps(te::gm::Envelope box) = 0;
 
          virtual void gridTextFreeMemory();
-
+         
        protected:
 
           te::layout::Property                    m_property;
@@ -103,11 +107,13 @@ namespace te
           std::string                             m_name;
           int                                     m_srid;
           Systematic*                             m_systematic;
-          std::map<te::gm::Point*, std::string>    m_gridTexts;
+          std::map<te::gm::Point*, std::string>   m_gridTexts;
 
           te::gm::Envelope     m_boxMapMM;
           te::gm::Envelope     m_boundingBoxItemMM;
           te::gm::Envelope     m_worldBox;
+          double               m_mapDisplacementX;
+          double               m_mapDisplacementY;
          
           /* Grid */
           bool   m_visible;

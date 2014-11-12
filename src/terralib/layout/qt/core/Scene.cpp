@@ -1072,18 +1072,43 @@ void te::layout::Scene::createTextMapAsObject()
 void te::layout::Scene::createTextItemFromObject( std::map<te::gm::Point*, std::string> map)
 {
   EnumModeType* mode = Enums::getInstance().getEnumModeType();
-
+  
   std::map<te::gm::Point*, std::string>::iterator it;
   
+  double mLow = 0;
+  double displacement = 0;
+
+  QGraphicsItem *item = selectedItems().first();
+  if(item)
+  {
+    ItemObserver* it = dynamic_cast<ItemObserver*>(item);
+    if(it)
+    {
+      MapGridItem* mt = dynamic_cast<MapGridItem*>(it);
+      if(mt)
+      {
+        MapGridModel* model = dynamic_cast<MapGridModel*>(mt->getModel());
+        mLow = model->getMapBox().getHeight();
+        displacement = model->getDisplacementY();
+      }
+    }
+  }
+
+
   for (it = map.begin(); it != map.end(); ++it) 
   {
     te::gm::Point* pt = it->first;
     std::string text = it->second;
-
+    
     Context::getInstance().setMode(mode->getModeCreateText());
 
     QGraphicsItem* item = 0;
-    te::gm::Coord2D coord(pt->getX(), pt->getY());
+
+    // Draw in scene coordinate, but Y-Axis is inverted
+    double y = /*pt->getY();*/ ( m_matrix.inverted().dy() - pt->getY() );
+    y = y + displacement * 2;
+    
+    te::gm::Coord2D coord(pt->getX(), y);
     item = createItem(coord);
     if(!item)
       continue;
