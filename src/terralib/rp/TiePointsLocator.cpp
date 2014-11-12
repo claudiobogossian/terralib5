@@ -155,45 +155,12 @@ namespace te
         // First pass : trying to find mathed points over
         // the sub-sampled raster
         
-        const TiePointsLocator::InputParameters subSampledDefaultinputParameters;
         TiePointsLocator::InputParameters subSampledinputParameters = 
           m_inputParameters;
-        subSampledinputParameters.m_enableMultiThread = false;
-        subSampledinputParameters.m_maxTiePoints = 
-            ((unsigned int)( ((double)subSampledinputParameters.m_maxTiePoints)
-            * subSampledinputParameters.m_subSampleOptimizationRescaleFactor ) );
-        subSampledinputParameters.m_geomTransfMaxError = 0;
-        
-        switch( subSampledinputParameters.m_interesPointsLocationStrategy )
-        {
-          case TiePointsLocatorInputParameters::MoravecStrategyT :
-          {
-            subSampledinputParameters.m_moravecCorrelationWindowWidth =
-              subSampledDefaultinputParameters.m_moravecCorrelationWindowWidth;
-            subSampledinputParameters.m_moravecWindowWidth =
-              subSampledDefaultinputParameters.m_moravecWindowWidth;         
-            subSampledinputParameters.m_moravecNoiseFilterIterations =
-              subSampledDefaultinputParameters.m_moravecNoiseFilterIterations;
-            subSampledinputParameters.m_moravecMinAbsCorrelation =
-              subSampledDefaultinputParameters.m_moravecMinAbsCorrelation;
-            break;
-          } 
-          case TiePointsLocatorInputParameters::SurfStrategyT :
-          {
-            subSampledinputParameters.m_surfScalesNumber =
-              subSampledDefaultinputParameters.m_surfScalesNumber;
-            subSampledinputParameters.m_surfOctavesNumber =
-              subSampledDefaultinputParameters.m_surfOctavesNumber;
-            subSampledinputParameters.m_surfMaxNormEuclideanDist =
-              subSampledDefaultinputParameters.m_surfMaxNormEuclideanDist;
-            break;
-          }          
-          default :
-          {
-            TERP_LOG_AND_THROW( "Invalid interest points location strategy" );
-            break;            
-          }
-        }
+        subSampledinputParameters.m_geomTransfMaxError = 0;        
+        subSampledinputParameters.m_maxTiePoints = std::max( 100u,
+          (unsigned int)( ((double)subSampledinputParameters.m_maxTiePoints) * 
+          subSampledinputParameters.m_subSampleOptimizationRescaleFactor ) );
           
         te::rp::TiePointsLocatorStrategy::MatchedInterestPointsSetT subSampledMatchedInterestPoints;
         TERP_TRUE_OR_RETURN_FALSE( stratPtr->initialize( subSampledinputParameters ),
@@ -209,7 +176,9 @@ namespace te
         te::gm::GTParameters subSampledTransParams;
         std::vector< double > subSampledTiePointsWeights;
         convertMatchedInterestPoints2TiePoints( subSampledMatchedInterestPoints, 
-          subSampledTransParams.m_tiePoints, subSampledTiePointsWeights );        
+          subSampledTransParams.m_tiePoints, subSampledTiePointsWeights );       
+        
+        subSampledMatchedInterestPoints.clear();
         
         // trying to create the global geometric transformation
         
@@ -227,8 +196,8 @@ namespace te
           if( filter.applyRansac( 
             m_inputParameters.m_geomTransfName, 
             subSampledTransParams,
-            maxDMapError * m_inputParameters.m_subSampleOptimizationRescaleFactor,
-            maxIMapError * m_inputParameters.m_subSampleOptimizationRescaleFactor,
+            maxDMapError,
+            maxIMapError,
             0,
             m_inputParameters.m_geometryFilterAssurance,
             m_inputParameters.m_enableMultiThread,
@@ -312,7 +281,8 @@ namespace te
         
         TERP_TRUE_OR_RETURN_FALSE( stratPtr->getMatchedInterestPoints( 
           transformationPtr.get(),
-          maxDMapError / transformationCoveredAreaPercentR2,
+          maxDMapError / ( transformationCoveredAreaPercentR2 *
+            m_inputParameters.m_subSampleOptimizationRescaleFactor ),
           matchedInterestPoints ),
           "Tie points interest points location error" );
       }
@@ -323,6 +293,8 @@ namespace te
       std::vector< double > tiePointsWeights;
       convertMatchedInterestPoints2TiePoints( matchedInterestPoints, tiePoints,
         tiePointsWeights );
+      
+      matchedInterestPoints.clear();
       
       // Execute outliers remotion, if required
       
@@ -589,6 +561,8 @@ namespace te
       TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_subSampleOptimizationMinTPNumberFactor >= 1.0,
         "Invalid m_subSampleOptimizationMinTPNumber" );            
       
+      TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_tiePointsSubSectorsSplitFactor >= 1,
+        "Invalid m_tiePointsSubSectorsSplitFactor" );  
       
       m_isInitialized = true;
 

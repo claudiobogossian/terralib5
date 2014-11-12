@@ -44,7 +44,7 @@ class QwtPlotMagnifier;
 namespace te
 {
   namespace color { class RGBAColor; }
-  namespace da    { class ObjectIdSet; }
+  namespace da    { class ObjectIdSet; class DataSetType;}
   namespace se    { class Stroke; class Fill; class Font; }
 
   namespace qt
@@ -107,7 +107,7 @@ namespace te
 
             \param oids The identifiers of plotitems to be highlighted.
           */
-          void highlightOIds(const te::da::ObjectIdSet* oids);
+          void highlightOIds(const te::da::ObjectIdSet* oids, te::da::DataSetType* dataType);
 
           /*!
             \brief color used to hgihlight selected objects on this display.

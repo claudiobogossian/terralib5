@@ -171,16 +171,11 @@ bool te::attributefill::RasterToVector::run()
     {
       te::gm::Polygon* polygon = dynamic_cast< te::gm::Polygon* >(geom.get());
       valuesFromRaster = rasterAtt->getValuesFromRaster(*raster, *polygon, m_bands);
-      //rasterAtt->getGLCM(*raster, m_bands, 
     }
     else
     {
       return false;
     }
-
-// texture - get values.
-    std::vector<te::rp::Texture> metrics = getTexture(raster.get(), geom.get(), m_bands.size());
-
 
     std::size_t init_index = m_inVectorDsType->getProperties().size();
 
@@ -262,9 +257,12 @@ bool te::attributefill::RasterToVector::run()
       }
 
       // texture
+      std::vector<te::rp::Texture> metrics;
       init_index = current_index;
+
       if(m_texture == true)
       {
+        metrics = getTexture(raster.get(), geom.get(), m_bands.size());
         current_index += 5;
         for(int t = 0, i = init_index; i < current_index; ++t,++i)
         {

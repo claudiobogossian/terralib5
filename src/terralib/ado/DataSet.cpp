@@ -136,7 +136,7 @@ std::string te::ado::DataSet::getPropertyName(std::size_t i) const
 
 te::common::CharEncoding te::ado::DataSet::getPropertyCharEncoding(std::size_t i) const
 {
-  return te::common::UNKNOWN_CHAR_ENCODING; // TODO
+  return te::common::LATIN1; // TODO
 }
 
 std::string te::ado::DataSet::getDatasetNameOfProperty(std::size_t /*i*/) const
