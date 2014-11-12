@@ -111,12 +111,7 @@ void te::qt::widgets::DataSetOptionsWizardPage::set(const std::list<te::da::Data
     //create dataset adapter
     te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter((*it).get(), targetDSPtr->getCapabilities());
 
-    if(converter->getResult() && converter->getResult()->getPrimaryKey())
-    {
-      te::da::PrimaryKey* pk = converter->getResult()->getPrimaryKey();
-      pk->setName(converter->getResult()->getName() + "_" + pk->getName() + "_pk");
-    }
-
+    //fix output dataset name
     std::string name = converter->getResult()->getName();
 
     std::size_t idx = name.find(".");
@@ -126,6 +121,13 @@ void te::qt::widgets::DataSetOptionsWizardPage::set(const std::list<te::da::Data
     }
 
     converter->getResult()->setName(name);
+
+    //fix primary key name
+    if(converter->getResult() && converter->getResult()->getPrimaryKey())
+    {
+      te::da::PrimaryKey* pk = converter->getResult()->getPrimaryKey();
+      pk->setName(converter->getResult()->getName() + "_pk");
+    }
 
     m_datasets.insert(std::map<te::da::DataSetTypePtr, te::da::DataSetTypeConverter*>::value_type((*it), converter));
   }
@@ -194,7 +196,7 @@ void te::qt::widgets::DataSetOptionsWizardPage::applyChanges()
       if(it->second->getResult()->getPrimaryKey())
       {
         te::da::PrimaryKey* pk = it->second->getResult()->getPrimaryKey();
-        pk->setName(it->second->getResult()->getName() + "_" + pk->getName() + "_pk");
+        pk->setName(it->second->getResult()->getName() + "_pk");
 
         // fill constraints
         m_constraintWidget->setDataSetType(it->second->getResult());
