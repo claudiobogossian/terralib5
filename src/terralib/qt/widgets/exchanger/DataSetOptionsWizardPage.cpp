@@ -44,6 +44,7 @@
 #include <algorithm>
 
 // Boost
+#include <boost/algorithm/string/replace.hpp>
 #include <boost/lexical_cast.hpp>
 
 // Qt
@@ -115,6 +116,12 @@ void te::qt::widgets::DataSetOptionsWizardPage::set(const std::list<te::da::Data
       te::da::PrimaryKey* pk = converter->getResult()->getPrimaryKey();
       pk->setName(converter->getResult()->getName() + "_" + pk->getName() + "_pk");
     }
+
+    std::string name = converter->getResult()->getName();
+
+    boost::replace_all(name, ".", "_");
+
+    converter->getResult()->setName(name);
 
     m_datasets.insert(std::map<te::da::DataSetTypePtr, te::da::DataSetTypeConverter*>::value_type((*it), converter));
   }
