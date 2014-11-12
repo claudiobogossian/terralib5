@@ -195,7 +195,7 @@ te::da::ObjectIdSet* te::qt::widgets::Scatter::find(double& xValue, double& yVal
   {
     if(it0->y == yValue)
     {
-      te::da::ObjectId* oid = new te::da::ObjectId(); 
+      te::da::ObjectId* oid = new te::da::ObjectId();
 
       for(boost::ptr_vector<te::dt::AbstractData>::const_iterator it = it0->oid->getValue().begin(); it != it0->oid->getValue().end(); ++it)
       {

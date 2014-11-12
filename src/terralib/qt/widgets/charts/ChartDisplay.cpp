@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../../../color/RGBAColor.h"
+#include "../../../dataaccess/dataset/DataSetType.h"
 #include "../../../dataaccess/dataset/ObjectIdSet.h"
 #include "../../../se.h"
 #include "ChartDisplay.h"
@@ -130,7 +131,7 @@ void te::qt::widgets::ChartDisplay::setStyle(te::qt::widgets::ChartStyle* newSty
   adjustDisplay();
 }
 
-void te::qt::widgets::ChartDisplay::highlightOIds(const te::da::ObjectIdSet* oids)
+void te::qt::widgets::ChartDisplay::highlightOIds(const te::da::ObjectIdSet* oids, te::da::DataSetType* dataType)
 {
   if(oids)
   {
@@ -142,12 +143,12 @@ void te::qt::widgets::ChartDisplay::highlightOIds(const te::da::ObjectIdSet* oid
     {
       if ( ( *it )->rtti() == te::qt::widgets::SCATTER_CHART)
       {
-        static_cast<te::qt::widgets::ScatterChart*>(*it)->highlight( oids);
+        static_cast<te::qt::widgets::ScatterChart*>(*it)->highlight(oids);
         break;
       }
       else if( ( *it )->rtti() == te::qt::widgets::HISTOGRAM_CHART )
       {
-        static_cast<te::qt::widgets::HistogramChart*>(*it)->highlight( oids);
+        static_cast<te::qt::widgets::HistogramChart*>(*it)->highlight(oids, dataType);
         break;
       }
     }

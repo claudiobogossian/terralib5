@@ -121,7 +121,6 @@ te::qt::widgets::HistogramDataWidget::HistogramDataWidget(te::da::DataSet* dataS
     }
   else
   {
-
     for (std::size_t i = 0; i < dataSet->getNumProperties(); i++)
     {
       if(dataSet->getPropertyDataType(i) != te::dt::GEOMETRY_TYPE)
@@ -183,6 +182,12 @@ te::qt::widgets::Histogram* te::qt::widgets::HistogramDataWidget::getHistogram()
     }
   }
   return histogram;
+}
+
+void te::qt::widgets::HistogramDataWidget::setHistogramProperty(int propId)
+{
+  m_ui->m_propertyComboBox->setCurrentIndex(propId);
+  m_ui->m_propertyComboBox->setEnabled(false);
 }
 
 void te::qt::widgets::HistogramDataWidget::onPropertyComboBoxIndexChanged (QString text)

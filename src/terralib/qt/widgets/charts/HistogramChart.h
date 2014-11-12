@@ -35,7 +35,7 @@
 namespace te
 {
 
-  namespace da    { class ObjectIdSet; }
+  namespace da    { class ObjectIdSet;  class DataSetType;}
   namespace qt
   {
     namespace widgets
@@ -134,7 +134,7 @@ namespace te
 
             \param oids The identifiers of plotitems to be highlighted.
           */
-          void highlight(const te::da::ObjectIdSet* oids);
+          void highlight(const te::da::ObjectIdSet* oids, te::da::DataSetType* dataType);
 
           /*!
             \brief Highlights the intervals identified by \a point

@@ -255,7 +255,7 @@ namespace te
             \brief It returns a pair representing the point that contais the secected ObjectId.
 
             \param oid  The ObjectId to be searched.
-
+            \note Returns NULL if no matching point was found
           */
           const std::pair<double, double> find(const te::da::ObjectId* oid);
 
