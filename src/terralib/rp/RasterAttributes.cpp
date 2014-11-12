@@ -206,6 +206,7 @@ boost::numeric::ublas::matrix<double> te::rp::RasterAttributes::getGLCM(const te
   te::rst::GetDataTypeRanges(rin.getBandDataType(band), minPixel, maxPixel);
   
   boost::numeric::ublas::matrix<double> glcm (maxPixel + 1, maxPixel + 1);
+  glcm.clear();
   double pixel;
   double neighborPixel;
   double noDataValue = rin.getBand(band)->getProperty()->m_noDataValue;
@@ -259,6 +260,17 @@ boost::numeric::ublas::matrix<double> te::rp::RasterAttributes::getGLCM(const te
   }
   
   return glcm;
+}
+        
+boost::numeric::ublas::matrix<double> te::rp::RasterAttributes::getGLCM(const te::rst::Raster& rin, unsigned int band, int dx, int dy, const te::gm::Polygon& polygon)
+{
+  // create raster crop with polygon
+  std::map<std::string, std::string> rcropinfo;
+  rcropinfo["FORCE_MEM_DRIVER"] = "TRUE";
+  te::rst::RasterPtr rcrop = te::rst::CropRaster(rin, polygon, rcropinfo, "MEM");
+  
+  // call previous method using crop
+  return getGLCM(*rcrop.get(), band, dx, dy);
 }
         
 te::rp::Texture te::rp::RasterAttributes::getGLCMMetrics(boost::numeric::ublas::matrix<double> glcm)

@@ -101,9 +101,20 @@ bool te::attributefill::VectorToVectorMemory::run()
     {
       te::mem::DataSetItem* item = new te::mem::DataSetItem(outDs.get());
 
-      for(std::size_t i = 0; i < toSchema->size(); ++i)
+      std::vector<te::dt::Property*> outProps = outDst->getProperties();
+      std::vector<te::dt::Property*> toProps = toSchema->getProperties();
+      for(std::size_t i = 0; i < outProps.size(); ++i)
       {
-        item->setValue(i, toDs->getValue(i).release());
+        std::string outPropName = outProps[i]->getName();
+
+        for(std::size_t j = 0; j < toProps.size(); ++j)
+        {
+          if(toProps[j]->getName() == outPropName)
+          {
+            item->setValue(outPropName, toDs->getValue(outPropName).release());
+            break;
+          }
+        }
       }
 
       std::vector<std::size_t> intersections = getIntersections(toDs.get(), fromDs.get(), rtree);
@@ -278,16 +289,24 @@ bool te::attributefill::VectorToVectorMemory::run()
       std::string ex = e.what();
       ex += " | Ref: " + logInfo1 + " : " + logInfo2;
       te::common::Logger::logDebug("attributefill", ex.c_str());
+      m_hasErrors = true;
     }
     catch(std::exception& e)
     {
       std::string ex = e.what();
       ex += " | Ref: " + logInfo1 + " : " + logInfo2;
       te::common::Logger::logDebug("attributefill", ex.c_str());
+      m_hasErrors = true;
     }
   }
 
   save(outDs, outDst);
+
+  if(rtree)
+    delete rtree;
+
+  if(kdtree)
+    delete kdtree;
 
   return true;
 }
@@ -301,6 +320,30 @@ te::da::DataSetType* te::attributefill::VectorToVectorMemory::getOutputDataSetTy
 
   te::da::DataSetType* dst = new te::da::DataSetType(*toScheme.get());
   dst->setName(m_outDset);
+
+  std::vector<te::dt::Property*> outProps = dst->getProperties();
+  std::vector<te::dt::Property*> pkProps = dst->getPrimaryKey()->getProperties();
+
+  // Keep only the properties that the user selected
+  for(std::size_t i = 0; i < outProps.size(); ++i)
+  {
+    bool isPk = false;
+    for(std::size_t j = 0; j < pkProps.size(); ++j)
+    {
+      if(outProps[i]->getName() == pkProps[j]->getName())
+      {
+        isPk = true;
+        break;
+      }
+    }
+
+    if(outProps[i]->getType() != te::dt::GEOMETRY_TYPE && !isPk)
+    {
+      std::string name = outProps[i]->getName();
+      if(std::find(m_toLayerProps.begin(), m_toLayerProps.end(), name) == m_toLayerProps.end())
+        dst->remove(outProps[i]);
+    }
+  }
 
   std::map<std::string, std::vector<te::attributefill::OperationType> >::iterator it = m_options.begin();
 
@@ -338,7 +381,8 @@ te::da::DataSetType* te::attributefill::VectorToVectorMemory::getOutputDataSetTy
       {
         newProp = new te::dt::SimpleProperty(newName, te::dt::INT32_TYPE);
       }
-      else if(funcs[i] == te::attributefill::PERCENT_TOTAL_AREA)
+      else if(funcs[i] == te::attributefill::PERCENT_TOTAL_AREA ||
+              funcs[i] == te::attributefill::MIN_DISTANCE)
       {
         newProp = new te::dt::SimpleProperty(newName, te::dt::DOUBLE_TYPE);
       }
@@ -469,7 +513,9 @@ std::string te::attributefill::VectorToVectorMemory::getPropertyName(te::dt::Pro
   else if(func == te::attributefill::WEIGHTED)
     newName += "weigh_area";
   else if(func == te::attributefill::WEIGHTED_SUM)
-    newName += "Weigh_sum_area";
+    newName += "weigh_sum_area";
+  else if(func == te::attributefill::PERCENT_CLASS)
+    newName += "percent_class";
 
   return newName;
 }
@@ -567,28 +613,6 @@ bool te::attributefill::VectorToVectorMemory::isStatistical(te::attributefill::O
   }
 
   return false;
-}
-
-std::vector<te::attributefill::OperationType> te::attributefill::VectorToVectorMemory::getSelectedFunctions()
-{
-  std::vector<te::attributefill::OperationType> allSelFuncs;
-
-  std::map<std::string, std::vector<te::attributefill::OperationType> >::iterator it = m_options.begin();
-
-  while(it != m_options.end())
-  {
-    std::vector<te::attributefill::OperationType> funcs = it->second;
-
-    for(std::size_t i = 0; i < funcs.size(); ++i)
-    {
-      if(std::find(allSelFuncs.begin(), allSelFuncs.end(), funcs[i]) == funcs.end())
-      {
-        allSelFuncs.push_back(funcs[i]);
-      }
-    }
-  }
-
-  return allSelFuncs;
 }
 
 double te::attributefill::VectorToVectorMemory::getValue(te::stat::NumericStatisticalSummary ss, te::attributefill::OperationType type)

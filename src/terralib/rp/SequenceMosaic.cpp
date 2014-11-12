@@ -87,7 +87,7 @@ namespace te
       m_tiePointsLocationBandIndex = 0;
       m_outDataSetsNamePrefix.clear();
       m_outDataSetsNameSufix.clear();
-      m_minRequiredTiePointsCoveredAreaPercent = 0.0;
+      m_minRequiredTiePointsCoveredAreaPercent = 25.0;
       m_locatorParams.reset();
     }
 
@@ -527,10 +527,24 @@ namespace te
 
             locatorInParams.m_enableProgress = false;
             
-            locatorInParams.m_pixelSizeXRelation = mosaicRasterHandler->getResolutionX() /
-              inputRasterPtr->getResolutionX();
-            locatorInParams.m_pixelSizeYRelation = mosaicRasterHandler->getResolutionY() /
-              inputRasterPtr->getResolutionY();
+            if( mosaicRasterHandler->getSRID() == inputRasterPtr->getSRID() )
+            {
+              locatorInParams.m_pixelSizeXRelation = mosaicRasterHandler->getResolutionX() /
+                inputRasterPtr->getResolutionX();
+              locatorInParams.m_pixelSizeYRelation = mosaicRasterHandler->getResolutionY() /
+                inputRasterPtr->getResolutionY();              
+            }
+            else
+            {
+              te::gm::Envelope inputRasterExtent( *inputRasterPtr->getGrid()->getExtent() );
+              inputRasterExtent.transform( inputRasterPtr->getSRID(),
+                mosaicRasterHandler->getSRID() );
+              
+              locatorInParams.m_pixelSizeXRelation = mosaicRasterHandler->getResolutionX() /
+                ( inputRasterExtent.getWidth() / ((double)inputRasterPtr->getNumberOfColumns()) );
+              locatorInParams.m_pixelSizeYRelation = mosaicRasterHandler->getResolutionY() /
+                ( inputRasterExtent.getHeight() / ((double)inputRasterPtr->getNumberOfRows()) );                
+            }
               
             locatorInParams.m_geomTransfName = m_inputParameters.m_geomTransfName;
               
@@ -541,8 +555,10 @@ namespace te
             te::rp::TiePointsLocator locatorInstance;
             TERP_TRUE_OR_RETURN_FALSE( locatorInstance.initialize( 
               locatorInParams ), "Tie points locator init error" );
-            TERP_TRUE_OR_RETURN_FALSE( locatorInstance.execute( 
-              locatorOutParams ), "Tie points locator exec error" );
+            if( ! locatorInstance.execute( locatorOutParams ) )
+            {
+              locatorInParams.reset();
+            }
           }
           
           // The matching was accomplished successfully ?
@@ -562,7 +578,7 @@ namespace te
               ||
               (
                 (
-                  getTPConvexHullArea( locatorOutParams.m_tiePoints, true ) 
+                  te::rp::GetTPConvexHullArea( locatorOutParams.m_tiePoints, true ) 
                   /
                   (double)(
                     inputRasterPtr->getNumberOfColumns() 
@@ -1131,42 +1147,6 @@ namespace te
       }
       
       return true;
-    }
-    
-    double SequenceMosaic::getTPConvexHullArea( 
-      const std::vector< te::gm::GTParameters::TiePoint >& tiePoints,
-      const bool useTPSecondCoordPair ) const
-    {
-      if( tiePoints.size() < 3 )
-      {
-        return 0;
-      }
-      else
-      {
-        te::gm::MultiPoint points( 0, te::gm::MultiPointType );
-        
-        for( unsigned int tiePointsIdx = 0 ; tiePointsIdx < tiePoints.size() ;
-          ++tiePointsIdx )
-        {
-          if( useTPSecondCoordPair )
-            points.add( new te::gm::Point( tiePoints[ tiePointsIdx ].second.x,
-              tiePoints[ tiePointsIdx ].second.y ) );
-          else
-            points.add( new te::gm::Point( tiePoints[ tiePointsIdx ].first.x,
-              tiePoints[ tiePointsIdx ].first.y ) );
-        }
-        
-        std::auto_ptr< te::gm::Geometry > convexHullPolPtr( points.convexHull() );
-        
-        if( dynamic_cast< te::gm::Surface* >( convexHullPolPtr.get() ) )
-        {
-          return dynamic_cast< te::gm::Surface* >( convexHullPolPtr.get() )->getArea();
-        }
-        else
-        {
-          return 0.0;
-        }
-      }
     }
 
   } // end namespace rp
