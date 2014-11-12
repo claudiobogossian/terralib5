@@ -90,9 +90,9 @@ int te::qt::widgets::ChartDisplayWidget::getType()
 }
 
 
-void te::qt::widgets::ChartDisplayWidget::highlightOIds(const te::da::ObjectIdSet* oids)
+void te::qt::widgets::ChartDisplayWidget::highlightOIds(const te::da::ObjectIdSet* oids, te::da::DataSetType* dataType)
 {
-  m_display->highlightOIds(oids);
+  m_display->highlightOIds(oids, dataType);
 }
 
 void te::qt::widgets::ChartDisplayWidget::onSettingsToolButtonnClicked()

@@ -94,6 +94,14 @@ namespace te
           */
           te::qt::widgets::Histogram* getHistogram();
 
+          /*!
+            \brief Sets the property to be used in order to generate the histogram
+
+            \note This function is intented to prevent the user from selecting a property through this widget in special cases,
+                  if that is not the intended behaviour, do not call this function.
+          */
+          void setHistogramProperty(int propId);
+
         protected slots:
 
           void onPropertyComboBoxIndexChanged(QString text);

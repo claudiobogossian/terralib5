@@ -26,6 +26,7 @@
 //Terralib
 #include "../../../dataaccess/dataset/ObjectId.h"
 #include "../../../dataaccess/dataset/ObjectIdSet.h"
+#include "../../../dataaccess/utils/Utils.h"
 #include "../../../qt/widgets/se/Utils.h"
 #include "../../../se/Stroke.h"
 #include "Enums.h"
@@ -33,6 +34,7 @@
 #include "HistogramChart.h"
 #include "HistogramStyle.h"
 #include "StringScaleDraw.h"
+#include "Utils.h"
 
 
 //QT
@@ -244,7 +246,7 @@ void te::qt::widgets::HistogramChart::setHistogramStyle(te::qt::widgets::Histogr
   setBrush(barBrush);
 }
 
-void te::qt::widgets::HistogramChart::highlight(const te::da::ObjectIdSet* oids)
+void te::qt::widgets::HistogramChart::highlight(const te::da::ObjectIdSet* oids, te::da::DataSetType* dataType)
 {
   //Removing the previous selection, if there was any.
   m_selection->detach();
@@ -255,24 +257,49 @@ void te::qt::widgets::HistogramChart::highlight(const te::da::ObjectIdSet* oids)
   //Acquiring all selected intervals:
 
   if((m_histogram->getType() >= te::dt::INT16_TYPE && m_histogram->getType() <= te::dt::UINT64_TYPE) || 
-    m_histogram->getType() == te::dt::FLOAT_TYPE || m_histogram->getType() == te::dt::DOUBLE_TYPE || 
-    m_histogram->getType() == te::dt::NUMERIC_TYPE)
+     m_histogram->getType() == te::dt::FLOAT_TYPE || m_histogram->getType() == te::dt::DOUBLE_TYPE || 
+     m_histogram->getType() == te::dt::NUMERIC_TYPE)
   {
     std::map<double, unsigned int> highlightedIntervals;
+    std::set<std::string> highlightedPkeys;
 
     //Acquiring the slected intervals
     for(itObjSet = oids->begin(); itObjSet != oids->end(); ++itObjSet)
     {
-      double interval = static_cast< const te::dt::Double*>(m_histogram->find((*itObjSet)))->getValue();
-      highlightedIntervals.insert(std::make_pair(interval, 0));
+      const te::dt::Double* data = static_cast< const te::dt::Double*>(m_histogram->find((*itObjSet)));
+      if(data)
+      {
+        double interval = data->getValue();
+        highlightedIntervals.insert(std::make_pair(interval, 0));
+      }
     }
+
+    //Acquiring the name of the base dataset and how many of it's properties are included in it's primary key
+    std::pair<std::string, int> dsProps;
+    te::da::GetOIDDatasetProps(dataType, dsProps);
 
     //Acquiring the selected values' frequency
     for(itObjSet = oids->begin(); itObjSet != oids->end(); ++itObjSet)
     {
-      double interval = static_cast< const te::dt::Double*>(m_histogram->find((*itObjSet)))->getValue();
-      if( m_histogram->getValues().at(interval) > highlightedIntervals.at(interval))
+      //Acquiring the value of the base primaryKey on the current objectId;
+      std::string pKey = te::qt::widgets::getBasePkey((*itObjSet),dsProps);
+      if(m_histogram->isSummarized())
+      {
+        if(highlightedPkeys.insert(pKey).second)
+        {
+          const te::dt::Double* data = static_cast< const te::dt::Double*>(m_histogram->find((*itObjSet)));
+          if(data)
+          {
+            double interval = data->getValue();
+            ++highlightedIntervals.at(interval);
+          }
+        }
+      }
+      else
+      {
+        double interval = static_cast< const te::dt::Double*>(m_histogram->find((*itObjSet)))->getValue();
         ++highlightedIntervals.at(interval);
+      }
     }
 
     QVector<QwtIntervalSample> highlightedSamples(highlightedIntervals.size());
