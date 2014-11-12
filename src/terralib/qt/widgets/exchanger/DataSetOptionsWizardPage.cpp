@@ -119,7 +119,11 @@ void te::qt::widgets::DataSetOptionsWizardPage::set(const std::list<te::da::Data
 
     std::string name = converter->getResult()->getName();
 
-    boost::replace_all(name, ".", "_");
+    std::size_t idx = name.find(".");
+    if (idx != std::string::npos)
+    {
+        name = name.substr(idx + 1, name.size() - 1);
+    }
 
     converter->getResult()->setName(name);
 
