@@ -50,7 +50,7 @@ namespace te
   namespace edit
   {
 // Forward declaration
-    class IdGeometry;
+    class Feature;
 
     struct VertexIndex
     {
@@ -75,7 +75,7 @@ namespace te
       std::size_t m_pos;
     };
 
-    TEEDITEXPORT IdGeometry* PickGeometry(const te::map::AbstractLayerPtr& layer, const te::gm::Envelope& env, int srid);
+    TEEDITEXPORT Feature* PickFeature(const te::map::AbstractLayerPtr& layer, const te::gm::Envelope& env, int srid);
 
     TEEDITEXPORT void GetLines(te::gm::Geometry* geom, std::vector<te::gm::LineString*>& lines);
 

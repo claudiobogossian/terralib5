@@ -28,7 +28,7 @@
 #include "../../../common/Translator.h"
 #include "../../../dataaccess/dataset/ObjectId.h"
 #include "../../../dataaccess/utils/Utils.h"
-#include "../../../edit/IdGeometry.h"
+#include "../../../edit/Feature.h"
 #include "../../../edit/Repository.h"
 #include "../../../edit/RepositoryManager.h"
 #include "../../../edit/qt/tools/CreateLineTool.h"
@@ -202,7 +202,7 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
       te::da::GetOIDPropertyNames(schema.get(), oidPropertyNames);
 
       // Get the edited geometries
-      const std::vector<te::edit::IdGeometry*>& geoms = repo->getGeometries();
+      const std::vector<te::edit::Feature*>& features = repo->getFeatures();
 
       // Build the DataSet that will be used to update
       std::auto_ptr<te::mem::DataSet> memds(new te::mem::DataSet(schema.get()));
@@ -211,20 +211,20 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
       std::size_t gpos = te::da::GetFirstSpatialPropertyPos(memds.get());
       assert(gpos != std::string::npos);
 
-      for(std::size_t i = 0; i < geoms.size(); ++i) // for each edited geometry
+      for(std::size_t i = 0; i < features.size(); ++i) // for each edited feature
       {
         // Create the new item
         te::mem::DataSetItem* item = new te::mem::DataSetItem(memds.get());
 
         // Get the object id
-        te::da::ObjectId* oid = geoms[i]->getId();
+        te::da::ObjectId* oid = features[i]->getId();
         assert(oid);
 
         const boost::ptr_vector<te::dt::AbstractData>& values = oid->getValue();
         assert(values.size() == oidPropertyNames.size());
 
         // Get the edited geometry
-        te::gm::Geometry* geom = geoms[i]->getGeometry();
+        te::gm::Geometry* geom = features[i]->getGeometry();
         assert(geom);
 
         // Fill the new item

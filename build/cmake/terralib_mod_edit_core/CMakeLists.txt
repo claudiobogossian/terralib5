@@ -42,7 +42,8 @@ add_library(terralib_mod_edit_core SHARED ${TERRALIB_FILES})
 target_link_libraries(terralib_mod_edit_core terralib_mod_common
                                             terralib_mod_dataaccess
                                             terralib_mod_geometry
-                                            terralib_mod_maptools)
+                                            terralib_mod_maptools
+                                            terralib_mod_memory)
 
 set_target_properties(terralib_mod_edit_core
                       PROPERTIES VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}

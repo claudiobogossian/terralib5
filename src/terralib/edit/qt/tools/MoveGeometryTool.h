@@ -49,7 +49,7 @@ namespace te
   namespace edit
   {
 // Forward declaration
-    class IdGeometry;
+    class Feature;
 
     /*!
       \class MoveGeometryTool
@@ -101,7 +101,7 @@ namespace te
 
         void reset();
 
-        void pickGeometry(const te::map::AbstractLayerPtr& layer, const QPointF& pos);
+        void pickFeature(const te::map::AbstractLayerPtr& layer, const QPointF& pos);
 
         te::gm::Envelope buildEnvelope(const QPointF& pos);
 
@@ -109,7 +109,7 @@ namespace te
 
         void updateCursor();
 
-        void storeEditedGeometry();
+        void storeEditedFeature();
 
       private slots:
 
@@ -118,7 +118,7 @@ namespace te
       protected:
 
         te::map::AbstractLayerPtr m_layer;
-        IdGeometry* m_geom;
+        Feature* m_feature;
         bool m_moveStarted;                 //!< Flag that indicates if move operation was started.
         QPointF m_origin;                   //!< Origin point on mouse pressed.
         QPointF m_delta;                    //!< Difference between pressed point and destination point on mouse move.

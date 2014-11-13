@@ -18,64 +18,69 @@
  */
 
 /*!
-  \file terralib/edit/IdGeometry.h
+  \file terralib/edit/Feature.h
 
-  \brief This class represents an identified geometry.
+  \brief This class represents a geographic feature.
 */
 
 // TerraLib
+#include "../common/STLUtils.h"
 #include "../dataaccess/dataset/ObjectId.h"
+#include "../datatype/AbstractData.h"
 #include "../geometry/Geometry.h"
-#include "IdGeometry.h"
+#include "Feature.h"
 
 // STL
 #include <cassert>
 
-te::edit::IdGeometry::IdGeometry(te::da::ObjectId* id, te::gm::Geometry* geom)
-  : m_id(id),
+te::edit::Feature::Feature(te::da::ObjectId* id, te::gm::Geometry* geom, const std::size_t& nproperties)
+  : te::mem::DataSetItem(nproperties),
+    m_id(id),
     m_geom(geom)
 {
   assert(m_id);
   assert(m_geom);
 }
 
-te::edit::IdGeometry::~IdGeometry()
+te::edit::Feature::~Feature()
 {
   delete m_id;
   delete m_geom;
 }
 
-void te::edit::IdGeometry::set(te::da::ObjectId* id, te::gm::Geometry* geom)
+void te::edit::Feature::set(te::da::ObjectId* id, te::gm::Geometry* geom)
 {
   setId(id);
   setGeometry(geom);
 }
 
-void te::edit::IdGeometry::setId(te::da::ObjectId* id)
+void te::edit::Feature::setId(te::da::ObjectId* id)
 {
   assert(id);
+
   delete m_id;
   m_id = id;
 }
 
-void te::edit::IdGeometry::setGeometry(te::gm::Geometry* geom)
+void te::edit::Feature::setGeometry(te::gm::Geometry* geom)
 {
   assert(geom);
+
   delete m_geom;
   m_geom = geom;
 }
 
-te::da::ObjectId* te::edit::IdGeometry::getId() const
+te::da::ObjectId* te::edit::Feature::getId() const
 {
   return m_id;
 }
 
-te::gm::Geometry* te::edit::IdGeometry::getGeometry() const
+te::gm::Geometry* te::edit::Feature::getGeometry() const
 {
   return m_geom;
 }
 
-bool te::edit::IdGeometry::isEquals(te::da::ObjectId* id)
+bool te::edit::Feature::isEquals(te::da::ObjectId* id)
 {
   assert(m_id);
   assert(id);
@@ -83,7 +88,7 @@ bool te::edit::IdGeometry::isEquals(te::da::ObjectId* id)
   return m_id->getValueAsString() == id->getValueAsString();
 }
 
-te::edit::IdGeometry* te::edit::IdGeometry::clone() const
+te::edit::Feature* te::edit::Feature::clone() const
 {
-  return new IdGeometry(m_id->clone(), dynamic_cast<te::gm::Geometry*>(m_geom->clone()));
+  return new Feature(m_id->clone(), dynamic_cast<te::gm::Geometry*>(m_geom->clone()));
 }
