@@ -29,6 +29,7 @@
 // TerraLib
 #include "../color/RGBAColor.h"
 #include "../geometry/Coord2D.h"
+#include "../dataaccess/dataset/PrimaryKey.h"
 #include "../sam/rtree/Index.h"
 #include "AbstractRenderer.h"
 #include "WorldDeviceTransformer.h"
@@ -177,6 +178,7 @@ namespace te
         std::size_t m_index;                               // Unsigned int used as r-Tree index.
         std::vector<te::color::RGBAColor**> m_chartImages; // The generated chart images.
         std::vector<te::gm::Coord2D> m_chartCoordinates;   // The generated chart coordinates.
+        std::vector<std::string> m_oid;
     };
 
   } // end namespace map

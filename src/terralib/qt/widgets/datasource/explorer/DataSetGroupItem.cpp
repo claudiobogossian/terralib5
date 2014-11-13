@@ -121,13 +121,19 @@ void te::qt::widgets::DataSetGroupItem::fetchMore()
   {
     //te::da::DataSetTypePtr dt(new te::da::DataSetType(datasetNames[i].c_str()));
     te::da::DataSetTypePtr dt(ds->getDataSetType(datasetNames[i].c_str()).release());
-
+    bool hasGeom = false;
     for(std::size_t i = 0; i < dt->size(); ++i)
     {
       te::dt::Property* p = dt->getProperty(i);
       if(p->getType() == te::dt::GEOMETRY_TYPE || dt->getProperty(i)->getType() == te::dt::RASTER_TYPE)
+      {
         m_items.push_back(new DataSetItem(dt, p->getName(), ds.get(), this));
+        hasGeom = true;
+      }
     }
+
+    if(!hasGeom)
+      m_items.push_back(new DataSetItem(dt, "Tabular", ds.get(), this));
   }
 
   if(m_items.size() == 1)
