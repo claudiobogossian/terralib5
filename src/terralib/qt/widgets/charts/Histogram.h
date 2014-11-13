@@ -67,10 +67,10 @@ namespace te
           */
           ~Histogram();
 
-            /*!
+          /*!
             \brief It returns the histogram's type.  
 
-            \return And int that represents the histogram's type.  
+            \return An int that represents the histogram's type.  
           */
           int& getType();
       
@@ -80,6 +80,20 @@ namespace te
             \param new_type The new type 
           */
           void setType(int new_type);
+
+          /*!
+            \brief It returns a boolean that holds whether the histogram has been created from summarized values or not
+
+            \return A boolean that holds whether the histogram has been created from summarized values or not
+          */
+          bool isSummarized();
+      
+          /*!
+            \brief It sets the property that holds whether the histogram has been created from summarized values or not
+
+            \param summarized A boolean that holds whether the histogram has been created from summarized values or not
+          */
+          void setSummarized(bool summarized);
 
           /*!
             \brief It returns the map containing the histogram values. 
@@ -219,6 +233,7 @@ namespace te
             \brief It returns an AbstractData representing the interval that contains the given ObjectId
 
             \param oid The ObjectId that will be searched.
+            \note Returns NULL if no matching interval was found
           */
           const te::dt::AbstractData* find(const te::da::ObjectId* oid);
 
@@ -232,12 +247,13 @@ namespace te
 
         private:
 
-          int                                    m_histogramType;    //!< Histogram's type
-          HistogramValues                        m_values;           //!< Histogram's values;
-          double                                 m_minValue;         //!< Histogram's minimum numeric value
-          double                                 m_interval;         //!< Histogram's numeric interval
-          std::set <std::string>                 m_StringIntervals;  //!< Histogram unique strings set, represents string intervals
-          IntervalToObjectIdSet                  m_valuesOids;       //!< The intervals and ObjecIds ordered in a boost multi index container
+          bool                    m_isSummarized;     //!< This property holds whether the histogram has been created from summarized values or not
+          int                     m_histogramType;    //!< Histogram's type
+          double                  m_minValue;         //!< Histogram's minimum numeric value
+          double                  m_interval;         //!< Histogram's numeric interval
+          std::set <std::string>  m_StringIntervals;  //!< Histogram unique strings set, represents string intervals
+          HistogramValues         m_values;           //!< Histogram's values;
+          IntervalToObjectIdSet   m_valuesOids;       //!< The intervals and ObjecIds ordered in a boost multi index container
       };
     } // end namespace widgets
   }   // end namespace qt

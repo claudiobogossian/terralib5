@@ -815,21 +815,13 @@ namespace te
       // transfering sector maximas to output
       
       const unsigned int interestPointsSubSectorsSize = interestPointsSubSectors.size();
-      InterestPointsSetT::const_iterator itB;
-      InterestPointsSetT::const_iterator itE;
       
       for( unsigned int interestPointsSubSectorsIdx = 0 ; interestPointsSubSectorsIdx <
         interestPointsSubSectorsSize ; ++interestPointsSubSectorsIdx )
       {
-        itB = interestPointsSubSectors[ interestPointsSubSectorsIdx ].begin();
-        itE = interestPointsSubSectors[ interestPointsSubSectorsIdx ].end();
-        
-        while( itB != itE )
-        {
-          interestPoints.insert( *itB );
-          
-          ++itB;
-        } 
+        interestPoints.insert( 
+          interestPointsSubSectors[ interestPointsSubSectorsIdx ].begin(),
+          interestPointsSubSectors[ interestPointsSubSectorsIdx ].end() );
       }
      
       return returnValue;

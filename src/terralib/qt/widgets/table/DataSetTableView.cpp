@@ -10,6 +10,7 @@
 #include "AlterDataDialog.h"
 
 // TerraLib include files
+#include "../charts/HistogramDataWidget.h"
 #include "../charts/Utils.h"
 #include "../utils/ScopedCursor.h"
 #include "../Config.h"
@@ -899,39 +900,34 @@ bool te::qt::widgets::DataSetTableView::hasEditions() const
 
 void te::qt::widgets::DataSetTableView::createHistogram(const int& column)
 {
-  int propType = m_dset->getPropertyDataType(column);
+  QDialog* dialog = new QDialog(this);
+  dialog->setFixedSize(160, 75);
 
-  if(propType == te::dt::DATETIME_TYPE || propType == te::dt::STRING_TYPE)
-    emit createChartDisplay(te::qt::widgets::createHistogramDisplay(m_dset, m_layer->getSchema().get(), column));
-  else
-  {
-    QDialog* dialog = new QDialog(this);
-    dialog->setFixedSize(160, 75);
+  const te::map::LayerSchema* schema = m_layer->getSchema().release();
 
-    QBoxLayout* vLayout = new QBoxLayout(QBoxLayout::TopToBottom, dialog);
-    QBoxLayout* hLayout = new QBoxLayout(QBoxLayout::LeftToRight, dialog);
+  te::da::DataSet* dataset = m_layer->getData().release();
+  te::da::DataSetType* dataType = (te::da::DataSetType*) schema;
 
-    QLabel* slicesProp = new QLabel(QString::fromStdString("Number of Slices: "), dialog);
-    hLayout->addWidget(slicesProp);
+  // Histogram data Widget
+  te::qt::widgets::HistogramDataWidget* histogramWidget = new te::qt::widgets::HistogramDataWidget(dataset, dataType, dialog);
+  histogramWidget->setHistogramProperty(column);
 
-    QSpinBox* slicesSB = new QSpinBox(dialog);
-    slicesSB->setValue(5);
-    slicesSB->setMinimum(2);
+  // Adjusting...
+  QGridLayout* layout = new QGridLayout(dialog);
+  layout->addWidget(histogramWidget);
 
-    hLayout->addWidget(slicesSB);
-    vLayout->addLayout(hLayout);
+  QDialogButtonBox* bbox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, dialog);
+  connect(bbox, SIGNAL(accepted()), dialog, SLOT(accept()));
+  connect(bbox, SIGNAL(rejected()), dialog, SLOT(reject()));
 
-    QDialogButtonBox* bbox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, dialog);
-    connect(bbox, SIGNAL(accepted()), dialog, SLOT(accept()));
-    connect(bbox, SIGNAL(rejected()), dialog, SLOT(reject()));
-    vLayout->addWidget(bbox);
+  layout->addWidget(bbox);
+  layout->setSizeConstraint(QLayout::SetFixedSize);
 
-    int res = dialog->exec();
-    if (res == QDialog::Accepted)
-      emit createChartDisplay(te::qt::widgets::createHistogramDisplay(m_dset, m_layer->getSchema().get(), column, slicesSB->value()));
+  int res = dialog->exec();
+  if (res == QDialog::Accepted)
+    emit createChartDisplay(te::qt::widgets::createHistogramDisplay(dataset,dataType, column, histogramWidget->getHistogram()));
 
-    delete dialog;
-  }
+  delete dialog;
 }
 
 void te::qt::widgets::DataSetTableView::hideColumn(const int& column)
