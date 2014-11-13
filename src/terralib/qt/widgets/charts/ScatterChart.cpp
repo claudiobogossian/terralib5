@@ -170,10 +170,12 @@ void te::qt::widgets::ScatterChart::highlight(const te::da::ObjectIdSet* oids)
     for(itObjSet = oids->begin(); itObjSet != oids->end(); ++itObjSet)
     {
       std::pair<double, double> point = m_scatter->find((*itObjSet));
-      highlightedPoints.push_back(QPointF(point.first, point.second));
+      if(this->boundingRect().contains(point.first, point.second))
+        highlightedPoints.push_back(QPointF(point.first, point.second));
     }
 
   m_selection->setSamples(highlightedPoints);
+
   m_selection->attach(plot());
   plot()->replot();
 }
