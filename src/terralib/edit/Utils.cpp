@@ -36,7 +36,7 @@
 #include "../geometry/Polygon.h"
 #include "../geometry/Utils.h"
 #include "../srs/Config.h"
-#include "IdGeometry.h"
+#include "Feature.h"
 #include "RepositoryManager.h"
 #include "SnapManager.h"
 #include "Utils.h"
@@ -46,7 +46,7 @@
 #include <cmath>
 #include <memory>
 
-te::edit::IdGeometry* te::edit::PickGeometry(const te::map::AbstractLayerPtr& layer, const te::gm::Envelope& env, int srid)
+te::edit::Feature* te::edit::PickFeature(const te::map::AbstractLayerPtr& layer, const te::gm::Envelope& env, int srid)
 {
   if(layer->getVisibility() != te::map::VISIBLE || !layer->isValid())
     return 0;
@@ -57,9 +57,9 @@ te::edit::IdGeometry* te::edit::PickGeometry(const te::map::AbstractLayerPtr& la
     reprojectedEnvelope.transform(srid, layer->getSRID());
 
   // Try retrieves from RepositoryManager...
-  IdGeometry* geom = RepositoryManager::getInstance().getGeometry(layer->getId(), env, srid);
-  if(geom)
-    return geom->clone();
+  Feature* f = RepositoryManager::getInstance().getFeature(layer->getId(), env, srid);
+  if(f)
+    return f->clone();
 
   // ...else, retrieve from layer
 
@@ -94,7 +94,7 @@ te::edit::IdGeometry* te::edit::PickGeometry(const te::map::AbstractLayerPtr& la
     std::auto_ptr<te::gm::Geometry> g(dataset->getGeometry(gp->getName()));
 
     if(g->contains(&point) || g->crosses(geometryFromEnvelope.get()) || geometryFromEnvelope->contains(g.get())) // Geometry found!
-      return new IdGeometry(te::da::GenerateOID(dataset.get(), oidPropertyNames), g.release());
+      return new Feature(te::da::GenerateOID(dataset.get(), oidPropertyNames), g.release());
   }
 
   return 0;

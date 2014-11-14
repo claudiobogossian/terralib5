@@ -65,6 +65,10 @@
 #include "GroupingItem.h"
 #include "QueryEncoder.h"
 #include "Utils.h"
+#include "QueryLayer.h"
+#include "../dataaccess/query/OrderBy.h"
+#include "../dataaccess/query/OrderByItem.h"
+#include "../dataaccess/query/Select.h"
 
 // Boost
 #include <boost/format.hpp>
@@ -229,6 +233,44 @@ void te::map::AbstractLayerRenderer::drawLayerGeometries(AbstractLayer* layer,
                                                          int srid)
 {
   assert(!geomPropertyName.empty());
+  bool linked = false;
+  m_oid.clear();
+  te::map::QueryLayer* qlayer = 0;
+  te::da::Select* select = 0;
+
+  if(layer->getType() == "QUERYLAYER")
+  {
+    std::auto_ptr<te::da::DataSetType> schema = layer->getSchema();
+    std::vector<te::dt::Property*> props = schema->getPrimaryKey()->getProperties();
+    if(props.size() > 1)
+    {
+      size_t n = 0;
+      std::vector<te::dt::Property*>::iterator it = props.begin();
+      while(++n < props.size())
+      {
+        m_oid.push_back(props[n-1]->getName());
+        if(props[n-1]->getDatasetName() != props[n]->getDatasetName())
+        {
+          linked = true;
+          break;
+        }
+      }
+
+      if(linked)
+      {
+        qlayer = dynamic_cast<te::map::QueryLayer*>(layer);
+        select = dynamic_cast<te::da::Select*>(qlayer->getQuery()->clone());
+        te::da::Select* selectaux = dynamic_cast<te::da::Select*>(select->clone());
+        te::da::OrderBy* orderBy = new te::da::OrderBy;
+
+        for(size_t i = 0; i < n; ++i)
+          orderBy->push_back(new te::da::OrderByItem(m_oid[i]));
+
+        selectaux->setOrderBy(orderBy);
+        qlayer->setQuery(selectaux);
+      }
+    }
+  }
 
   // Creates a canvas configurer
   CanvasConfigurer cc(canvas);
@@ -256,6 +298,8 @@ void te::map::AbstractLayerRenderer::drawLayerGeometries(AbstractLayer* layer,
       {
         // There isn't a Filter expression. Gets the data using only extent spatial restriction...
         dataset = layer->getData(geomPropertyName, &bbox, te::gm::INTERSECTS);
+        if(linked)
+          qlayer->setQuery(select);
       }
       catch(std::exception& /*e*/)
       {
@@ -286,6 +330,8 @@ void te::map::AbstractLayerRenderer::drawLayerGeometries(AbstractLayer* layer,
 
         /* 2) Calling the layer query method to get the correct restricted data. */
         dataset = layer->getData(restriction);
+        if(linked)
+          qlayer->setQuery(select);
       }
       catch(std::exception& /*e*/)
       {
@@ -693,6 +739,20 @@ void te::map::AbstractLayerRenderer::drawDatSetGeometries(te::da::DataSet* datas
   assert(dataset);
   assert(canvas);
 
+  size_t i;
+  std::string s;
+  std::vector<std::string> pkdata;
+  size_t pksize = 0;
+  std::vector<te::dt::Property*> pk;
+  if(m_oid.empty() == false)
+  {
+    while(pksize < m_oid.size())
+    {
+      pkdata.push_back(dataset->getAsString(m_oid[pksize]));
+      ++pksize;
+    }
+  }
+
   // Verify if is necessary convert the data set geometries to the given srid
   bool needRemap = false;
   if((fromSRID != TE_UNKNOWN_SRS) && (toSRID != TE_UNKNOWN_SRS) && (fromSRID != toSRID))
@@ -700,6 +760,23 @@ void te::map::AbstractLayerRenderer::drawDatSetGeometries(te::da::DataSet* datas
 
   do
   {
+    if(dataset->isAtBegin() == false)
+    {
+      if(pksize)
+      {
+        i = 0;
+        for(i = 0; i < pksize; ++i)
+        {
+          s = pkdata[i];
+          pkdata[i] = dataset->getAsString(m_oid[i]);
+          if(s != pkdata[i])
+            break;
+        }
+        if(i == pksize)
+          continue;
+      }
+    }
+
     if(task)
     {
       if(!task->isActive())

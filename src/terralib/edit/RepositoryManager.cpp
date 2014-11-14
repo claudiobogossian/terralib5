@@ -100,24 +100,24 @@ te::edit::Repository* te::edit::RepositoryManager::getRepository(const std::stri
   return it->second;
 }
 
-std::vector<te::edit::IdGeometry*> te::edit::RepositoryManager::getGeometries(const std::string& source, const te::gm::Envelope& e, int srid) const
+std::vector<te::edit::Feature*> te::edit::RepositoryManager::getFeatures(const std::string& source, const te::gm::Envelope& e, int srid) const
 {
   Repository* repository = getRepository(source);
 
   if(repository == 0)
-    return std::vector<te::edit::IdGeometry*>();
+    return std::vector<te::edit::Feature*>();
 
-  return repository->getGeometries(e, srid);
+  return repository->getFeatures(e, srid);
 }
 
-te::edit::IdGeometry* te::edit::RepositoryManager::getGeometry(const std::string& source, const te::gm::Envelope& e, int srid) const
+te::edit::Feature* te::edit::RepositoryManager::getFeature(const std::string& source, const te::gm::Envelope& e, int srid) const
 {
   Repository* repository = getRepository(source);
 
   if(repository == 0)
     return 0;
 
-  return repository->getGeometry(e, srid);
+  return repository->getFeature(e, srid);
 }
 
 void te::edit::RepositoryManager::clearAll()

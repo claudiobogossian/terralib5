@@ -27,7 +27,7 @@
 #include "../../../dataaccess/dataset/ObjectId.h"
 #include "../../../qt/widgets/canvas/MapDisplay.h"
 #include "../../../qt/widgets/Utils.h"
-#include "../../IdGeometry.h"
+#include "../../Feature.h"
 #include "../../RepositoryManager.h"
 #include "../../Utils.h"
 #include "../Renderer.h"
@@ -47,7 +47,7 @@
 te::edit::MoveGeometryTool::MoveGeometryTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent)
   : AbstractTool(display, parent),
     m_layer(layer),
-    m_geom(0),
+    m_feature(0),
     m_moveStarted(false)
 {
   // Signals & slots
@@ -60,7 +60,7 @@ te::edit::MoveGeometryTool::MoveGeometryTool(te::qt::widgets::MapDisplay* displa
 
 te::edit::MoveGeometryTool::~MoveGeometryTool()
 {
-  delete m_geom;
+  delete m_feature;
 }
 
 bool te::edit::MoveGeometryTool::mousePressEvent(QMouseEvent* e)
@@ -68,9 +68,9 @@ bool te::edit::MoveGeometryTool::mousePressEvent(QMouseEvent* e)
   if(e->button() != Qt::LeftButton)
     return false;
 
-  pickGeometry(m_layer, GetPosition(e));
+  pickFeature(m_layer, GetPosition(e));
 
-  if(m_geom)
+  if(m_feature)
     m_moveStarted = true;
 
   m_origin = m_display->transform(GetPosition(e));
@@ -91,9 +91,9 @@ bool te::edit::MoveGeometryTool::mouseMoveEvent(QMouseEvent* e)
   m_delta = currentPosition - m_origin;
 
   // Move geometry using the current delta
-  MoveGeometry(m_geom->getGeometry(), m_delta.x(), m_delta.y());
+  MoveGeometry(m_feature->getGeometry(), m_delta.x(), m_delta.y());
 
-  storeEditedGeometry();
+  storeEditedFeature();
 
   draw();
 
@@ -116,8 +116,8 @@ bool te::edit::MoveGeometryTool::mouseDoubleClickEvent(QMouseEvent* e)
 
 void te::edit::MoveGeometryTool::reset()
 {
-  delete m_geom;
-  m_geom = 0;
+  delete m_feature;
+  m_feature = 0;
 
   m_moveStarted = false;
 
@@ -125,7 +125,7 @@ void te::edit::MoveGeometryTool::reset()
   m_delta *= 0;
 }
 
-void te::edit::MoveGeometryTool::pickGeometry(const te::map::AbstractLayerPtr& layer, const QPointF& pos)
+void te::edit::MoveGeometryTool::pickFeature(const te::map::AbstractLayerPtr& layer, const QPointF& pos)
 {
   reset();
 
@@ -133,7 +133,7 @@ void te::edit::MoveGeometryTool::pickGeometry(const te::map::AbstractLayerPtr& l
 
   try
   {
-    m_geom = PickGeometry(m_layer, env, m_display->getSRID());
+    m_feature = PickFeature(m_layer, env, m_display->getSRID());
 
     draw();
   }
@@ -177,7 +177,7 @@ void te::edit::MoveGeometryTool::draw()
   // Draw the layer edited geometries
   renderer.drawRepository(m_layer->getId(), env, m_display->getSRID());
 
-  if(m_geom == 0)
+  if(m_feature == 0)
   {
     renderer.end();
     m_display->repaint();
@@ -185,10 +185,10 @@ void te::edit::MoveGeometryTool::draw()
   }
 
   // Draw the vertexes
-  if(RepositoryManager::getInstance().hasIdentify(m_layer->getId(), m_geom->getId()) == false)
-    renderer.draw(m_geom->getGeometry(), true);
+  if(RepositoryManager::getInstance().hasIdentify(m_layer->getId(), m_feature->getId()) == false)
+    renderer.draw(m_feature->getGeometry(), true);
   else
-    renderer.drawVertexes(m_geom->getGeometry());
+    renderer.drawVertexes(m_feature->getGeometry());
 
   renderer.end();
 
@@ -205,7 +205,7 @@ void te::edit::MoveGeometryTool::onExtentChanged()
   draw();
 }
 
-void te::edit::MoveGeometryTool::storeEditedGeometry()
+void te::edit::MoveGeometryTool::storeEditedFeature()
 {
-  RepositoryManager::getInstance().addEditedGeometry(m_layer->getId(), m_geom->getId()->clone(), dynamic_cast<te::gm::Geometry*>(m_geom->getGeometry()->clone()));
+  RepositoryManager::getInstance().addEditedGeometry(m_layer->getId(), m_feature->getId()->clone(), dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone()));
 }
