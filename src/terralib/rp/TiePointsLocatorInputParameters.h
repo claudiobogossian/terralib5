@@ -107,13 +107,13 @@ namespace te
         
         bool m_enableGeometryFilter; //!< Enable/disable the geometry filter/outliers remotion (default:true).
         
-        double m_geometryFilterAssurance; //!< Geometry assurance (the error-free selection percent assurance) - Use Lower values for good tie-points sets - Higher values may increase the number of iterations - valid range (0-1) - default:0.1.
+        double m_geometryFilterAssurance; //!< Geometry assurance (the error-free selection percent assurance) - Use Lower values for good tie-points sets - Higher values may increase the number of iterations - valid range (0-1) - default:0.75.
         
         double m_subSampleOptimizationRescaleFactor; //!< Sub-sampled optimization tie-points search rescale factor (Tie-ponts will be searched into a subsabmpled image and refined before using the original image - Defaul: 1 - subsample optimization disabled, valid range: non-zero positive values).
         
         double m_subSampleOptimizationMinTPAreaCoverage; //!< Sub-sampled optimization - mininumum required tie-points covered area percent of each raster area - valid range [0,100] (default:25).
         
-        double m_subSampleOptimizationMinTPNumberFactor; //!< Sub-sampled optimization - mininumum required tie-points number factor - valid range [1,inf] (default:1.5).
+        double m_subSampleOptimizationMinTPNumberFactor; //!< Sub-sampled optimization - mininumum required tie-points number factor - valid range [1,inf] (default:2).
         
         te::rst::Interpolator::Method m_interpMethod; //!< The raster interpolator method (default:NearestNeighbor).
         
@@ -126,9 +126,9 @@ namespace te
         */
         /**@{*/            
         
-        unsigned int m_moravecCorrelationWindowWidth; //!< The correlation window width used to correlate points between the images (minimum 3, default: 15).
+        unsigned int m_moravecCorrelationWindowWidth; //!< The correlation window width used to correlate points between the images (minimum 3, default: 21).
         
-        unsigned int m_moravecWindowWidth; //!< The Moravec window width used to locate canditate tie-points (minimum 3, default: 15 ).
+        unsigned int m_moravecWindowWidth; //!< The Moravec window width used to locate canditate tie-points (minimum 3, default: 21 ).
         
         unsigned int m_moravecNoiseFilterIterations; //!< The number of noise filter iterations, when applicable (used to remove image noise, zero will disable the noise Filter, default:1).
         
@@ -143,7 +143,7 @@ namespace te
         
         unsigned int m_surfScalesNumber; //!< The number of sub-sampling scales to generate, when applicable (default:3, minimum:3).
         
-        unsigned int m_surfOctavesNumber; //!< The number of octaves to generate, when applicable (default: 2, minimum:1).
+        unsigned int m_surfOctavesNumber; //!< The number of octaves to generate, when applicable (default: 2, minimum:2).
         
         double m_surfMaxNormEuclideanDist; //!< The maximum acceptable euclidean distance when matching features (when applicable),  default:0.75, valid range: [0,1].
         
