@@ -283,7 +283,11 @@ void te::qt::widgets::DataSetSelectorWidget::previewData(const te::da::DataSetTy
     for(std::size_t i = 0; i < feature->getNumProperties(); ++i)
       properties.push_back(i);
 
-    std::auto_ptr<te::mem::DataSet> memFeature((new te::mem::DataSet(*feature.get(), properties, m_nPreviewRows)));
+    std::size_t previewrows = m_nPreviewRows;  //Usually 10
+    std::size_t dsetsize = feature->size();
+    if (dsetsize < previewrows) previewrows = dsetsize;
+
+    std::auto_ptr<te::mem::DataSet> memFeature((new te::mem::DataSet(*feature.get(), properties, previewrows)));
 
     m_tblView->setDataSet(memFeature.release());
   }
