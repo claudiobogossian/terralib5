@@ -61,7 +61,7 @@ namespace te
           SurfStrategyT = 2 /*!<  SURF based image area matching - Reference: SURF: Speeded Up Robust Features, Herbert Bay. */
         };
 
-        InteresPointsLocationStrategyType m_interesPointsLocationStrategy; //!< The strategy used to locate interest points (default:SurfStrategyT).
+        InteresPointsLocationStrategyType m_interesPointsLocationStrategy; //!< The strategy used to locate interest points (default:MoravecStrategyT).
         
         te::rst::Raster const* m_inRaster1Ptr; //!< Input raster 1.
         

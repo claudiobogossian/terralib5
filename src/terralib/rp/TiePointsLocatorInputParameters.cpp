@@ -46,7 +46,7 @@ namespace te
 
     void TiePointsLocatorInputParameters::reset() throw( te::rp::Exception )
     {
-      m_interesPointsLocationStrategy = TiePointsLocatorInputParameters::SurfStrategyT;
+      m_interesPointsLocationStrategy = TiePointsLocatorInputParameters::MoravecStrategyT;
       m_inRaster1Ptr = 0;
       m_inMaskRaster1Ptr = 0;
       m_inRaster1Bands.clear();
