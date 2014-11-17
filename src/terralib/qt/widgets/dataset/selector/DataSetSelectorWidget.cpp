@@ -285,11 +285,14 @@ void te::qt::widgets::DataSetSelectorWidget::previewData(const te::da::DataSetTy
 
     std::size_t previewrows = m_nPreviewRows;  //Usually 10
     std::size_t dsetsize = feature->size();
-    if (dsetsize < previewrows) previewrows = dsetsize;
+
+    if(dsetsize < previewrows) 
+      previewrows = dsetsize;
 
     std::auto_ptr<te::mem::DataSet> memFeature((new te::mem::DataSet(*feature.get(), properties, previewrows)));
 
-    m_tblView->setDataSet(memFeature.release());
+    if(memFeature.get())
+      m_tblView->setDataSet(memFeature.release());
   }
   catch(...)
   {
@@ -368,12 +371,6 @@ void te::qt::widgets::DataSetSelectorWidget::onDataPreviewToggled(bool on)
       return;
 
     previewData(ditem->getDataSet());
-  }
-  else
-  {
-    QAbstractItemModel* oldModel = m_tblView->model();
-    m_tblView->setModel(0);
-    delete oldModel;
   }
 }
 
