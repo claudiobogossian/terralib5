@@ -326,9 +326,8 @@ namespace te
           \param auxSeg2Ptr A pointer to a valid auxiliar segment that will be used by this method.
           \param auxSeg3Ptr A pointer to a valid auxiliar segment that will be used by this method.
           \param minFoundDissimilarity The minimum dissimilarity value found.
-          \return The number of merged segments.
         */           
-        unsigned int mergeSegments( 
+        void mergeSegments( 
           const SegmenterRegionGrowingSegment::FeatureType disimilarityThreshold,
           SegmenterIdsManager& segmenterIdsManager,
           Merger& merger,
@@ -348,9 +347,8 @@ namespace te
           \param merger The merger instance to use.
           \param auxSeg1Ptr A pointer to a valid auxiliar segment that will be used by this method.
           \param auxSeg2Ptr A pointer to a valid auxiliar segment that will be used by this method.
-          \return The number of merged segments.
         */           
-        unsigned int mergeSmallSegments( 
+        void mergeSmallSegments( 
           const unsigned int minSegmentSize,
           SegmenterIdsManager& segmenterIdsManager,
           Merger& merger,
