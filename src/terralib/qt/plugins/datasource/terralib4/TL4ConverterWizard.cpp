@@ -690,6 +690,14 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::commit()
       
       problematicDatasets.push_back(dproblem);
     }
+    catch(std::exception& e)
+    {
+      std::pair<std::string, std::string> dproblem;
+      dproblem.first = sourceName;
+      dproblem.second = e.what();
+      
+      problematicDatasets.push_back(dproblem);
+    }
     catch(...)
     {
       std::pair<std::string, std::string> dproblem;
