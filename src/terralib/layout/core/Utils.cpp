@@ -63,7 +63,7 @@ void te::layout::Utils::drawRectW( te::gm::Envelope box )
   {
     return;
   }
-
+    
   te::gm::Polygon* rect = new te::gm::Polygon(1, te::gm::PolygonType);
   
   te::gm::LinearRing* outRingPtr0 = new te::gm::LinearRing(5, te::gm::LineStringType);
@@ -166,7 +166,9 @@ void te::layout::Utils::changeCanvas( te::gm::Envelope viewport, te::gm::Envelop
 
     canvas->resize(viewport.getWidth(), viewport.getHeight());
   }
-  
+      
+  m_box = world;
+
   canvas->setWindow(world.getLowerLeftX(), world.getLowerLeftY(), 
     world.getUpperRightX(), world.getUpperRightY()); 
 }
@@ -190,7 +192,7 @@ te::gm::Envelope te::layout::Utils::viewportBoxFromMM( te::gm::Envelope box )
   
   if(m_applyZoom)
   {
-    zoomFactor = Context::getInstance().getZoomFactor();
+    //zoomFactor = Context::getInstance().getZoomFactor();
   }
   
   int pxwidth = mm2pixel(box.getWidth() * zoomFactor);
@@ -199,6 +201,9 @@ te::gm::Envelope te::layout::Utils::viewportBoxFromMM( te::gm::Envelope box )
   // Adjust internal renderer transformer
   transf.setTransformationParameters(box.getLowerLeftX(), box.getLowerLeftY(), 
     box.getUpperRightX(), box.getUpperRightY(), pxwidth, pxheight);
+
+  // MM to MM Mirroring
+  m_worldTransform = WorldTransformer(box, box);
 
   te::gm::Envelope boxViewport = transformToViewport(transf, box);
   return boxViewport;

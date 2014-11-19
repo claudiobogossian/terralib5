@@ -84,6 +84,8 @@ namespace te
 
           void changeMenuContext(bool change);
 
+          void exit();
+
         protected:
 
           virtual void init();

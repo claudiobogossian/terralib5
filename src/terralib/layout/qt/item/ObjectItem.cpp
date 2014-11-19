@@ -128,7 +128,7 @@ void te::layout::ObjectItem::paint( QPainter * painter, const QStyleOptionGraphi
   QRectF rtSource( 0, 0, m_pixmap.width(), m_pixmap.height() );
   painter->drawPixmap(boundRect, m_pixmap, rtSource);
   painter->restore();  
-
+  
   //Draw Selection
   if (option->state & QStyle::State_Selected)
   {
@@ -433,6 +433,9 @@ void te::layout::ObjectItem::applyRotation()
     return;
 
   double angle = model->getAngle();
+
+  if(angle == 0)
+    return;
 
   QPointF center = boundingRect().center();
 

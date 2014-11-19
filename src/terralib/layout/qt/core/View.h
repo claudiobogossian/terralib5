@@ -28,12 +28,6 @@
 #ifndef	__TERRALIB_LAYOUT_INTERNAL_VIEW_H 
 #define __TERRALIB_LAYOUT_INTERNAL_VIEW_H
 
-// Qt
-#include <QGraphicsView>
-#include <QMenu>
-#include <QImage>
-#include <QCursor>
-
 // TerraLib
 #include "../../core/AbstractView.h"
 #include "../../../geometry/Envelope.h"
@@ -42,6 +36,12 @@
 #include "../outside/PageSetupOutside.h"
 #include "../outside/SystematicScaleOutside.h"
 #include "MenuItem.h"
+
+// Qt
+#include <QGraphicsView>
+#include <QMenu>
+#include <QImage>
+#include <QCursor>
 
 class QMouseEvent;
 class QWheelEvent;
@@ -59,6 +59,8 @@ namespace te
   {
     class VisualizationArea;
     class AbstractViewTool;
+    class HorizontalRuler;
+    class VerticalRuler;
 
     class TELAYOUTEXPORT View : public QGraphicsView, public AbstractView
     {
@@ -68,13 +70,29 @@ namespace te
 
         View(QWidget* widget = (QWidget*)0);
 
-        ~View();
+        virtual ~View();
 
         virtual void config();     
 
         virtual void closeOutsideWindows();
 
         virtual QImage createImage();
+
+        virtual void resetView();
+
+        virtual void pan();
+
+        virtual void zoomArea();
+
+        virtual void zoomOut();
+
+        virtual void print();
+
+        virtual void recompose();
+
+        virtual void zoomPercentage();
+
+        virtual void changeZoomFactor(double currentZoom);
                                 
       public slots:
 
@@ -101,6 +119,8 @@ namespace te
         /* The Properties only load when selection change and mouse release */
         void reloadProperties(); 
 
+        void changeZoom(double currentFactor);
+
       protected:
         
         virtual void mousePressEvent(QMouseEvent * event);
@@ -122,6 +142,8 @@ namespace te
         virtual void	showEvent ( QShowEvent * event );
 
         virtual void	contextMenuEvent ( QContextMenuEvent * event );
+
+        virtual void	drawForeground ( QPainter * painter, const QRectF & rect );
                 
         virtual void createItemGroup();
 
@@ -130,28 +152,38 @@ namespace te
         virtual void resetDefaultConfig();
 
         virtual void outsideAreaChangeContext(bool change);
-
-        virtual void configTransform(Scene* sc);
         
         virtual void showPageSetup();
 
         virtual void showSystematicScale();
 
         virtual bool intersectionSelectionItem(int x, int y);
-
+        
         virtual QCursor createCursor(std::string pathIcon);
-                                        
+
+        virtual void createRectTest();
+
+        virtual bool exportProperties(EnumType* type);
+
+        virtual bool importTemplate(EnumType* type);
+
+        virtual void exportItemsToImage();
+
+        virtual bool isExceededLimit(double currentScale, double factor, double oldFactor);
+
       protected:
 
         VisualizationArea*      m_visualizationArea;
-        QLineF*                 m_lineIntersectHrz;
-        QLineF*                 m_lineIntersectVrt;
         AbstractViewTool*       m_currentTool;
         PageSetupOutside*       m_pageSetupOutside;
         SystematicScaleOutside* m_systematicOutside;
         te::gm::Coord2D         m_coordSystematic;
         bool                    m_selectionChange;
         MenuItem*               m_menuItem;
+        HorizontalRuler*        m_horizontalRuler;
+        VerticalRuler*          m_verticalRuler;
+        double                  m_maxZoomLimit;
+        double                  m_minZoomLimit;
     };
   }
 }

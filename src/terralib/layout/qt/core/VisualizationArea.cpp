@@ -33,7 +33,7 @@
 #include "../../core/pattern/mvc/ItemObserver.h"
 #include "../../core/pattern/singleton/Context.h"
 
-te::layout::VisualizationArea::VisualizationArea(te::gm::Envelope* boxArea)
+te::layout::VisualizationArea::VisualizationArea(te::gm::Envelope boxArea)
 {
   m_boxArea = boxArea;
 }
@@ -55,27 +55,27 @@ void te::layout::VisualizationArea::init()
 
 void te::layout::VisualizationArea::createPaper()
 {
-  if(!m_boxArea)
+  if(!m_boxArea.isValid())
     return;
 
   double dpiX = te::layout::Context::getInstance().getDpiX();
 
-  double llx = m_boxArea->getLowerLeftX();
-  double lly = m_boxArea->getLowerLeftY();
-  double urx = m_boxArea->getUpperRightX();
-  double ury = m_boxArea->getUpperRightY();
+  double llx = m_boxArea.getLowerLeftX();
+  double lly = m_boxArea.getLowerLeftY();
+  double urx = m_boxArea.getUpperRightX();
+  double ury = m_boxArea.getUpperRightY();
 
   //Paper
   PaperModel* modelPaper = new PaperModel(te::layout::Context::getInstance().getPaperConfig());	
   PaperController* controllerPaper = new PaperController(modelPaper);
   ItemObserver* itemPaper = (ItemObserver*)controllerPaper->getView();
   PaperItem* qPaper = dynamic_cast<PaperItem*>(itemPaper);
-  qPaper->setPos(QPointF(0, 0));
+  qPaper->setPos(QPointF(0,0));
   qPaper->setZValue(0);
   qPaper->redraw();
 }
 
-void te::layout::VisualizationArea::changeBoxArea( te::gm::Envelope* boxArea )
+void te::layout::VisualizationArea::changeBoxArea( te::gm::Envelope boxArea )
 {
   m_boxArea = boxArea;
 }

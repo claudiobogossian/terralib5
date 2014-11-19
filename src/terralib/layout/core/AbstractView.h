@@ -28,14 +28,43 @@
 #ifndef __TERRALIB_LAYOUT_INTERNAL_ABSTRACT_VIEW_H 
 #define __TERRALIB_LAYOUT_INTERNAL_ABSTRACT_VIEW_H
 
+// TerraLib
+#include "Config.h"
+
+// STL
+#include <map>
+#include <string>
+
 namespace te
 {
   namespace layout
   {
-    class AbstractView 
+    class TELAYOUTEXPORT AbstractView 
     {
       public:
-        virtual ~AbstractView(void) {}
+        
+        AbstractView();
+
+        virtual ~AbstractView(void){}
+        
+        virtual bool getVisibleRulers();
+
+        virtual void setVisibleRulers(bool visible);
+
+        virtual void config() = 0; 
+
+        virtual void addZoomFactor(double factor, std::string text);
+
+        virtual void clearZoomFactors();
+
+        virtual double nextFactor(double currentFactor);
+
+        virtual double previousFactor(double currentFactor);
+
+      protected:
+
+        bool                          m_visibleRulers;
+        std::map<double, std::string> m_zoomFactors;
     };
   }
 }

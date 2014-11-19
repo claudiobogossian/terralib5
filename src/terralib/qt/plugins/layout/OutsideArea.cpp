@@ -133,7 +133,10 @@ void te::qt::plugins::layout::OutsideArea::init()
   createEditTemplateDock();
 
   if(m_dockToolbar)
+  {
     connect(m_dockToolbar->getToolbarOutside(), SIGNAL(changeContext(bool)), m_view, SLOT(onToolbarChangeContext(bool)));
+    connect(m_view, SIGNAL(changeZoom(double)), m_dockToolbar->getToolbarOutside(), SLOT(onChangeZoom(double)));
+  }
 }
 
 void te::qt::plugins::layout::OutsideArea::createPropertiesDock()
@@ -250,6 +253,7 @@ void te::qt::plugins::layout::OutsideArea::onMainMenuTriggered( QAction* action 
   else if(action->objectName().compare(m_optionExit.c_str()) == 0)
   {
     changeAction(type->getModeExit());
+    emit exit();
   }
   else if(action->objectName().compare(m_optionDockInspector.c_str()) == 0)
   {

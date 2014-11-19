@@ -57,6 +57,7 @@ namespace te
       public:
 
         Utils();
+
         virtual ~Utils();
 
         virtual void drawRectW(te::gm::Envelope box);
@@ -134,10 +135,12 @@ namespace te
         virtual te::gm::Envelope transformToMM(te::layout::WorldTransformer transf, te::gm::Envelope boxGeo);
 
         virtual te::gm::Envelope viewportBoxFromMM(te::gm::Envelope box);
-
+        
       protected:
 
-        bool m_applyZoom;
+        bool                    m_applyZoom;
+        WorldTransformer        m_worldTransform;
+        te::gm::Envelope        m_box;
     };
   }
 }

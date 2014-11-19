@@ -80,22 +80,25 @@ void te::layout::PaperModel::draw( ContextItem context )
 
   if(context.isResizeCanvas())
     utils->configCanvas(m_box);
-
-  double llx = m_box.getLowerLeftX();
-  double lly = m_box.getLowerLeftY();
-  double urx = m_box.getUpperRightX();
-  double ury = m_box.getUpperRightY();
-
+  
   canvas->setPolygonContourColor(m_borderColor);
   canvas->setPolygonFillColor(m_shadowColor);
+
+  if(!m_paperConfig)
+    return;
+
+  double pw = 0.;
+  double ph = 0.;
+
+  m_paperConfig->getPaperSize(pw, ph);
   
-  m_boxShadow = te::gm::Envelope(llx + m_shadowPadding, lly, urx, ury - m_shadowPadding);
+  m_boxShadow = te::gm::Envelope(m_shadowPadding, - m_shadowPadding, pw + m_shadowPadding, ph - m_shadowPadding);
   utils->drawRectW(m_boxShadow);
 
   canvas->setPolygonContourColor(m_borderColor);
   canvas->setPolygonFillColor(m_backgroundColor);
 
-  m_boxPaper = te::gm::Envelope(llx, lly + m_shadowPadding, urx - m_shadowPadding, ury);
+  m_boxPaper = te::gm::Envelope(0, 0, pw, ph);
   utils->drawRectW(m_boxPaper);
     
   if(context.isResizeCanvas())
@@ -114,13 +117,7 @@ void te::layout::PaperModel::config()
   double ph = 0.;
 
   m_paperConfig->getPaperSize(pw, ph);
-
-  double width = m_shadowPadding + pw;
-  double height = m_shadowPadding + ph;
-
-  m_boxPaper = te::gm::Envelope(0, m_shadowPadding, pw, height);
-  m_boxShadow = te::gm::Envelope(m_shadowPadding, 0, width, ph);
-  m_box = te::gm::Envelope(0., 0., width, height);
+  m_box = te::gm::Envelope(0., - m_shadowPadding, pw + m_shadowPadding, ph);
 }
 
 te::color::RGBAColor te::layout::PaperModel::getShadowColor()
@@ -152,4 +149,16 @@ void te::layout::PaperModel::setShadowPadding( double padding )
 double te::layout::PaperModel::getShadowPadding()
 {
   return m_shadowPadding;
+}
+
+void te::layout::PaperModel::setBox( te::gm::Envelope box )
+{
+  if(!m_paperConfig)
+    return;
+
+  double pw = 0.;
+  double ph = 0.;
+
+  m_paperConfig->getPaperSize(pw, ph);
+  m_box = te::gm::Envelope(box.m_llx, box.m_lly - m_shadowPadding, pw + m_shadowPadding, ph);
 }

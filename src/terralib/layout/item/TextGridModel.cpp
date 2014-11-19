@@ -53,5 +53,42 @@ te::layout::TextGridModel::TextGridModel()
 
 te::layout::TextGridModel::~TextGridModel()
 {
+  clearTextCells();
+}
 
+void te::layout::TextGridModel::addText( te::gm::Point* cell, std::string text )
+{
+  m_textCells[cell] = text;
+}
+
+void te::layout::TextGridModel::removeCell( te::gm::Point* cell )
+{
+  if(!cell)
+    return;
+
+  m_textCells.erase(cell);
+
+  delete cell;
+  cell = 0;
+}
+
+std::map<te::gm::Point*, std::string> te::layout::TextGridModel::getTextCells()
+{
+  return m_textCells;
+}
+
+void te::layout::TextGridModel::clearTextCells()
+{
+  std::map<te::gm::Point*, std::string>::iterator it;
+  for (it = m_textCells.begin(); it != m_textCells.end(); ++it) 
+  {
+    te::gm::Point* pt = it->first;
+    if(pt)
+    {
+      delete pt;
+      pt = 0;
+    }
+  }
+
+  m_textCells.clear();
 }

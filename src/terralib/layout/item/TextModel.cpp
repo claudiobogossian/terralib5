@@ -44,7 +44,7 @@ te::layout::TextModel::TextModel() :
 
   m_box = te::gm::Envelope(0., 0., 40., 20.);
 
-  m_font.setPointSize(5);
+  m_font.setPointSize(12);
 }
 
 te::layout::TextModel::~TextModel()

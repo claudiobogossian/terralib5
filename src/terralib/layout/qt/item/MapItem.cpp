@@ -79,6 +79,8 @@
 #include <QMimeData>
 #include <QColor>
 
+#include <QTextEdit>
+
 te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
   QGraphicsProxyWidget(0),
   ItemObserver(controller, o),
@@ -94,8 +96,10 @@ te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
     | QGraphicsItem::ItemIsSelectable
     | QGraphicsItem::ItemSendsGeometryChanges
     | QGraphicsItem::ItemIsFocusable);
-      
+        
   setAcceptDrops(true);
+
+  m_invertedMatrix = true;
 
   m_nameClass = std::string(this->metaObject()->className());
   
@@ -126,6 +130,9 @@ te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
   
   setWidget(m_mapDisplay);
     
+  QTextEdit* txt = new QTextEdit("MAP_ITEM_EDIT");
+  //setWidget(txt);
+
   QGraphicsItem* item = this;
   Context::getInstance().getScene()->insertItem((ItemObserver*)item);
   
@@ -218,29 +225,16 @@ void te::layout::MapItem::updateObserver( ContextItem context )
 }
 
 void te::layout::MapItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
-{
+{  
   QRectF boundRect;
   boundRect = boundingRect();
 
-  QRectF rtTarget(boundRect);
-
-  MapModel* model = dynamic_cast<MapModel*>(m_model);
-  if(model)
-  {
-    double w = model->getMapBox().getWidth();
-    double h = model->getMapBox().getHeight();
-    double wm = model->getDisplacementX();
-    double hm = model->getDisplacementY();
-
-    rtTarget.setRect(boundRect.x() + wm, boundRect.y() + hm, w, h);
-  }
-
   painter->save();
-  QRectF rtSourceMap( 0, 0, m_mapPixmap.width(), m_mapPixmap.height() );
-  painter->drawPixmap(rtTarget, m_mapPixmap, rtSourceMap);
   QRectF rtSource( 0, 0, m_pixmap.width(), m_pixmap.height() );
   painter->drawPixmap(boundRect, m_pixmap, rtSource);
   painter->restore(); 
+
+  QGraphicsProxyWidget::paint(painter, option, widget);
 
   //Draw Selection
   if (option->state & QStyle::State_Selected)
@@ -352,13 +346,18 @@ te::gm::Coord2D te::layout::MapItem::getPosition()
 
 void te::layout::MapItem::setPos( const QPointF &pos )
 {
-  QGraphicsItem::setPos(pos);
+  QPointF pt(pos.x() - transform().dx(), pos.y() - transform().dy());
+  QGraphicsItem::setPos(pt);
   refresh();
 }
 
 void te::layout::MapItem::mouseMoveEvent( QGraphicsSceneMouseEvent * event )
 {
-  if(!te::layout::isCurrentMapTools())
+  ItemUtils* iUtils = Context::getInstance().getItemUtils();
+  if(!iUtils)
+    return;
+
+  if(!iUtils->isCurrentMapTools())
   {
     clearCurrentTool();
     QGraphicsItem::mouseMoveEvent(event);
@@ -374,7 +373,11 @@ void te::layout::MapItem::mouseMoveEvent( QGraphicsSceneMouseEvent * event )
 
 void te::layout::MapItem::mousePressEvent( QGraphicsSceneMouseEvent * event )
 {
-  if(!te::layout::isCurrentMapTools())
+  ItemUtils* iUtils = Context::getInstance().getItemUtils();
+  if(!iUtils)
+    return;
+
+  if(!iUtils->isCurrentMapTools())
   {
     clearCurrentTool();
     QGraphicsItem::mousePressEvent(event);
@@ -390,7 +393,11 @@ void te::layout::MapItem::mousePressEvent( QGraphicsSceneMouseEvent * event )
 
 void te::layout::MapItem::mouseReleaseEvent( QGraphicsSceneMouseEvent * event )
 {
-  if(!te::layout::isCurrentMapTools())
+  ItemUtils* iUtils = Context::getInstance().getItemUtils();
+  if(!iUtils)
+    return;
+
+  if(!iUtils->isCurrentMapTools())
   {
     clearCurrentTool();
     QGraphicsItem::mouseReleaseEvent(event); 
@@ -562,6 +569,9 @@ void te::layout::MapItem::applyRotation()
 
   double angle = model->getAngle();
 
+  if(angle == 0.)
+    return;
+
   QPointF center = boundingRect().center();
 
   double centerX = center.x();
@@ -637,7 +647,8 @@ void te::layout::MapItem::generateMapPixmap()
 
 QRectF te::layout::MapItem::boundingRect() const
 {
-  return m_rect;
+  return QGraphicsProxyWidget::boundingRect();
+  //return m_rect;
 }
 
 void te::layout::MapItem::setRect( QRectF rect )

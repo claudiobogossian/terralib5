@@ -29,14 +29,19 @@
 #define __TERRALIB_LAYOUT_INTERNAL_TEXT_ITEM_H
 
 // TerraLib
+#include "../../core/pattern/mvc/ItemObserver.h"
 #include "ObjectItem.h"
 
 // Qt
+#include <QGraphicsTextItem>
 #include <QImage>
 #include <QColor>
+#include <QVariant>
 
 class QTextDocument;
 class QTextTable;
+class QGraphicsSceneMouseEvent;
+class QKeyEvent;
 
 namespace te
 {
@@ -44,7 +49,7 @@ namespace te
   {
     class Observable;
 
-    class TextItem : public ObjectItem
+    class TextItem : public QGraphicsTextItem, public ItemObserver
     {
       Q_OBJECT //for slots/signals
 
@@ -62,13 +67,45 @@ namespace te
 
         virtual void refreshDocument();
 
+        virtual void setPos(const QPointF &pos);
+
+        virtual void setPos ( qreal x, qreal y );
+        
+        virtual bool isEditable();
+        
       protected:
 
-        virtual QImage createImage();
+        virtual QVariant	itemChange ( GraphicsItemChange change, const QVariant & value );
+
+        virtual void drawBackground( QPainter* painter );
+
+        virtual void drawSelection(QPainter* painter);
+
+        virtual void	keyPressEvent ( QKeyEvent * event );
+
+        virtual void	mouseDoubleClickEvent ( QGraphicsSceneMouseEvent * event );
+
+        virtual void	mouseMoveEvent ( QGraphicsSceneMouseEvent * event );
+
+        virtual void	mousePressEvent ( QGraphicsSceneMouseEvent * event );
+
+        virtual void	mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
+
+        virtual void init();
         
+        virtual QImage createImage();
+
+        virtual te::gm::Coord2D getPosition();
+
+        virtual te::color::RGBAColor** getImage();
+
+        virtual int getZValueItem();
+
+        virtual void applyRotation();
+
         QTextDocument* m_document;
         QColor         m_backgroundColor;
-
+        bool           m_editable;
         QTextTable*    m_table;
     };
   }

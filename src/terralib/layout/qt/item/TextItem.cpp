@@ -49,27 +49,49 @@
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
 #include <QWidget>
-
+#include <QKeyEvent>
 #include <QGraphicsView>
 #include <QList>
 
 te::layout::TextItem::TextItem( ItemController* controller, Observable* o ) :
-  ObjectItem(controller, o),
-  m_document(0)
+  QGraphicsTextItem(0),
+  ItemObserver(controller, o),
+  m_document(0),
+  m_editable(false)
 {  
   this->setFlags(QGraphicsItem::ItemIsMovable
     | QGraphicsItem::ItemIsSelectable
     | QGraphicsItem::ItemSendsGeometryChanges
     | QGraphicsItem::ItemIsFocusable);
 
+  m_invertedMatrix = true;
+
   QGraphicsItem* item = this;
   m_nameClass = std::string(this->metaObject()->className());
   Context::getInstance().getScene()->insertItem((ItemObserver*)item);
 
   m_document = new QTextDocument;
+  setDocument(m_document);
 
   m_backgroundColor.setAlpha(0);
 
+  init();
+  
+  //If enabled is true, this item will accept hover events
+  setTextInteractionFlags(Qt::TextEditable);
+}
+
+te::layout::TextItem::~TextItem()
+{
+  if(m_document)
+  {
+    delete m_document;
+    m_document = 0;
+  }
+}
+
+void te::layout::TextItem::init()
+{
   QFont ft("Arial", 12);
   m_document->setDefaultFont(ft);
 
@@ -88,18 +110,6 @@ te::layout::TextItem::TextItem( ItemController* controller, Observable* o ) :
 
     std::string txt = model->getText();
     m_document->setPlainText(txt.c_str());
-  }
-
-  //If enabled is true, this item will accept hover events
-  setAcceptHoverEvents(true);
-}
-
-te::layout::TextItem::~TextItem()
-{
-  if(m_document)
-  {
-    delete m_document;
-    m_document = 0;
   }
 }
 
@@ -148,37 +158,57 @@ void te::layout::TextItem::paint( QPainter * painter, const QStyleOptionGraphics
   {
     return;
   }
-  
+
   drawBackground( painter );
   
-  double sizeW = 0;
-  double sizeH = 0;
-
-  if(m_document)
-  {
-    sizeW = m_document->size().width();
-    sizeH = m_document->size().height();
-  }
-
-  if(sizeW != m_pixmap.width() || sizeH != m_pixmap.height())
-  {
-    refreshDocument();
-  }
-
-  QRectF boundRect;
-  boundRect = boundingRect();
-
-  painter->save();
-  painter->translate( -boundRect.bottomLeft().x(), -boundRect.topRight().y() );
-  QRectF rSource( 0, 0, m_pixmap.width(), m_pixmap.height());
-  painter->drawPixmap(boundRect, m_pixmap, rSource);
-  painter->restore();
-      
+  QGraphicsTextItem::paint(painter, option, widget);
+     
   //Draw Selection
   if (option->state & QStyle::State_Selected)
   {
     drawSelection(painter);
   }
+}
+
+void te::layout::TextItem::drawBackground( QPainter* painter )
+{
+  if (painter)
+  {
+    painter->save();
+    painter->setPen(Qt::NoPen);
+    painter->setRenderHint( QPainter::Antialiasing, true );
+    painter->drawRect(QRectF( 0, 0, boundingRect().width(), boundingRect().height()));
+    painter->restore();
+  }
+}
+
+void te::layout::TextItem::drawSelection( QPainter* painter )
+{
+  if(!painter)
+  {
+    return;
+  }
+
+  painter->save();
+
+  qreal penWidth = painter->pen().widthF();
+
+  const qreal adj = penWidth / 2;
+  const QColor fgcolor(0,255,0);
+  const QColor backgroundColor(0,0,0);
+
+  QRectF rtAdjusted = boundingRect().adjusted(adj, adj, -adj, -adj);
+
+  QPen penBackground(backgroundColor, 0, Qt::SolidLine);
+  painter->setPen(penBackground);
+  painter->setBrush(Qt::NoBrush);
+  painter->drawRect(rtAdjusted);
+
+  QPen penForeground(fgcolor, 0, Qt::DashLine);
+  painter->setPen(penForeground);
+  painter->setBrush(Qt::NoBrush);
+  painter->drawRect(rtAdjusted);
+  painter->restore();
 }
 
 QImage te::layout::TextItem::createImage()
@@ -234,14 +264,131 @@ void te::layout::TextItem::refreshDocument()
 
   model->setBox(box);
   model->setText(m_document->toPlainText().toStdString());
-
-  std::string sname = m_document->toPlainText().toStdString();
-
-  QPixmap pixmp = QPixmap::fromImage(img);
-  setPixmap(pixmp);
 }
 
 QTextDocument* te::layout::TextItem::getDocument()
 {
   return m_document;
+}
+
+te::gm::Coord2D te::layout::TextItem::getPosition()
+{
+  QPointF posF = scenePos();
+  qreal valuex = posF.x();
+  qreal valuey = posF.y();
+
+  te::gm::Coord2D coordinate;
+  coordinate.x = valuex;
+  coordinate.y = valuey;
+
+  return coordinate;
+}
+
+te::color::RGBAColor** te::layout::TextItem::getImage()
+{
+  QImage img = createImage();
+  te::color::RGBAColor** teImg = te::qt::widgets::GetImage(&img);
+  return teImg;
+}
+
+int te::layout::TextItem::getZValueItem()
+{
+  return QGraphicsItem::zValue();
+}
+
+void te::layout::TextItem::applyRotation()
+{
+
+}
+
+void te::layout::TextItem::setPos( const QPointF &pos )
+{
+  QPointF pt(pos.x() - transform().dx(), pos.y() - transform().dy());
+  QGraphicsTextItem::setPos(pt);
+  refresh();
+}
+
+void te::layout::TextItem::setPos( qreal x, qreal y )
+{
+  QPointF pt(x - transform().dx(), y - transform().dy());
+  QGraphicsTextItem::setPos(pt.x(), pt.y());
+  refresh();
+}
+
+QVariant te::layout::TextItem::itemChange( GraphicsItemChange change, const QVariant & value )
+{
+  return QGraphicsTextItem::itemChange(change, value);
+}
+
+void te::layout::TextItem::keyPressEvent( QKeyEvent * event )
+{
+  if((event->modifiers() == Qt::AltModifier) & (event->key() == Qt::Key_E))
+  {
+    if(m_editable == false)
+    {
+      m_editable = true;
+    }
+    else
+    {
+      m_editable = false;
+      refreshDocument();
+      /*Necessary clear the selection and focus of the edit 
+      after being completely closed and like this not cause bad behavior.*/
+      QTextCursor cursor(textCursor());
+      cursor.clearSelection();
+      setTextCursor(cursor);
+      clearFocus();     
+      setSelected(true);
+    }
+  }
+  else
+  {
+    if(m_editable == true)
+      QGraphicsTextItem::keyPressEvent(event);
+  }
+}
+
+void te::layout::TextItem::mouseDoubleClickEvent( QGraphicsSceneMouseEvent * event )
+{
+  if(m_editable == false)
+  {
+    QGraphicsItem::mouseDoubleClickEvent(event);
+    return;
+  }
+  QGraphicsTextItem::mouseDoubleClickEvent(event);
+}
+
+void te::layout::TextItem::mouseMoveEvent( QGraphicsSceneMouseEvent * event )
+{
+  if(m_editable == false)
+  {
+    QGraphicsItem::mouseMoveEvent(event);
+    return;
+  }  
+  QGraphicsTextItem::mouseMoveEvent(event);
+}
+
+void te::layout::TextItem::mousePressEvent( QGraphicsSceneMouseEvent * event )
+{
+  if(m_editable == false)
+  {
+    QGraphicsItem::mousePressEvent(event);
+    return;
+  }
+  QGraphicsTextItem::mousePressEvent(event);
+}
+
+void te::layout::TextItem::mouseReleaseEvent( QGraphicsSceneMouseEvent * event )
+{
+  if(m_editable == false)
+  {
+    QGraphicsItem::mouseReleaseEvent(event);
+    return;
+  }
+  QGraphicsTextItem::mouseReleaseEvent(event);
+}
+
+bool te::layout::TextItem::isEditable()
+{
+  return m_editable;
 }
