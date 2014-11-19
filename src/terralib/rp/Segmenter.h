@@ -232,11 +232,11 @@ namespace te
             //! Pointer to the running threads counter - default 0).
             unsigned int volatile* m_runningThreadsCounterPtr;        
             
-            //! A vector of input raster bands gain values.
-            std::vector< double > m_inputRasterGains;
+            //! A vector of input raster bands minimum values.
+            std::vector< double > m_inputRasterBandMinValues;
             
-            //! A vector of input raster bands offset values.
-            std::vector< double > m_inputRasterOffsets;
+            //! A vector of input raster bands maximum values.
+            std::vector< double > m_inputRasterBandMaxValues;
             
             //! A vector of values to be used as input raster no-data values.
             std::vector< double > m_inputRasterNoDataValues; 
