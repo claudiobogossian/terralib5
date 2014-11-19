@@ -372,12 +372,6 @@ void te::qt::widgets::DataSetSelectorWidget::onDataPreviewToggled(bool on)
 
     previewData(ditem->getDataSet());
   }
-  else
-  {
-    QAbstractItemModel* oldModel = m_tblView->model();
-    m_tblView->setModel(0);
-    delete oldModel;
-  }
 }
 
 bool te::qt::widgets::DataSetSelectorWidget::DataSetComparer::operator()(const te::da::DataSetTypePtr& first, const te::da::DataSetTypePtr& second) const

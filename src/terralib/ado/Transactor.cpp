@@ -171,10 +171,10 @@ std::auto_ptr<te::da::DataSet> te::ado::Transactor::getDataSet(const std::string
 
   std::string q("SELECT * FROM " + name + " WHERE ");
 
-  q += "NOT("+ lowerX +" > " + boost::lexical_cast<std::string>(e->m_urx) + " OR ";
-  q += upperX +" < " + boost::lexical_cast<std::string>(e->m_llx) + " OR ";
-  q += lowerY +" > " + boost::lexical_cast<std::string>(e->m_ury) + " OR ";
-  q += upperY +" < " + boost::lexical_cast<std::string>(e->m_lly) + ")";
+  q += "NOT("+ lowerX +" >= " + boost::lexical_cast<std::string>(e->m_urx) + " OR ";
+  q += upperX +" <= " + boost::lexical_cast<std::string>(e->m_llx) + " OR ";
+  q += lowerY +" >= " + boost::lexical_cast<std::string>(e->m_ury) + " OR ";
+  q += upperY +" <= " + boost::lexical_cast<std::string>(e->m_lly) + ")";
 
   return query(q, travType, connected, accessPolicy);
 }

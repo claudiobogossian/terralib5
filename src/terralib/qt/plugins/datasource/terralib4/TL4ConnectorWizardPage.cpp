@@ -43,7 +43,7 @@ te::qt::plugins::terralib4::TL4ConnectorWizardPage::TL4ConnectorWizardPage(QWidg
 #if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
   m_ui->m_databaseTypeComboBox->addItem("Access");
 
-  m_ui->m_databaseTypeComboBox->addItem("SQL Server");
+  //m_ui->m_databaseTypeComboBox->addItem("SQL Server");
 
   //m_ui->m_databaseTypeComboBox->addItem("SQL Server Spatial");
 #endif
