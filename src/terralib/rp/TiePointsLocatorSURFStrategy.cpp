@@ -1451,12 +1451,12 @@ namespace te
         }
       }      
       
-      TERP_TRUE_OR_RETURN_FALSE( features.reset( validInterestPoints.size(), 64 ),
+      TERP_TRUE_OR_RETURN_FALSE( features.reset( validInterestPoints.size(), 128 ),
         "Cannot allocate features matrix" );       
         
       // globals
       
-      float auxFeaturesBuffer[ 65 ];
+      float auxFeaturesBuffer[ 128 ];
       
       // iterating over each input innterest point
       
@@ -1491,7 +1491,7 @@ namespace te
 
         unsigned int currentFeaturePtrStartIdx = 0;
         
-        for( currentFeaturePtrStartIdx = 0; currentFeaturePtrStartIdx < 65 ; 
+        for( currentFeaturePtrStartIdx = 0; currentFeaturePtrStartIdx < 128 ; 
           ++currentFeaturePtrStartIdx )
           auxFeaturesBuffer[ currentFeaturePtrStartIdx ] = 0.0;
           
@@ -1644,7 +1644,7 @@ namespace te
               
             // Generating the related portion inside the output features vector
             
-            assert( currentFeaturePtrStartIdx < 61 );
+            assert( currentFeaturePtrStartIdx < 121 );
             
             auxFeaturesBuffer[ currentFeaturePtrStartIdx ] += 
               featureElementRotatedHaarXIntensity;
@@ -1653,7 +1653,27 @@ namespace te
             auxFeaturesBuffer[ currentFeaturePtrStartIdx + 2 ] += 
               std::abs( featureElementRotatedHaarXIntensity );
             auxFeaturesBuffer[ currentFeaturePtrStartIdx + 3 ] += 
-              std::abs( featureElementRotatedHaarYIntensity );                
+              std::abs( featureElementRotatedHaarYIntensity );
+            if( featureElementRotatedHaarXIntensity < 0.0 )
+            {
+              auxFeaturesBuffer[ currentFeaturePtrStartIdx + 4 ] += 
+                featureElementRotatedHaarXIntensity;
+            }
+            else
+            {
+              auxFeaturesBuffer[ currentFeaturePtrStartIdx + 5 ] += 
+                featureElementRotatedHaarXIntensity;
+            }
+            if( featureElementRotatedHaarYIntensity < 0.0 )
+            {
+              auxFeaturesBuffer[ currentFeaturePtrStartIdx + 6 ] += 
+                featureElementRotatedHaarYIntensity;
+            }
+            else
+            {
+              auxFeaturesBuffer[ currentFeaturePtrStartIdx + 7 ] += 
+                featureElementRotatedHaarYIntensity;
+            }            
           }
         }
         
@@ -1663,7 +1683,7 @@ namespace te
         
         float featureElementsNormalizeFactor = 0.0;
         
-        for( currentFeaturePtrStartIdx = 0 ; currentFeaturePtrStartIdx < 64 ; 
+        for( currentFeaturePtrStartIdx = 0 ; currentFeaturePtrStartIdx < 128 ; 
           ++currentFeaturePtrStartIdx )
         {
           featureElementsNormalizeFactor += ( auxFeaturesBuffer[ currentFeaturePtrStartIdx ]
@@ -1677,7 +1697,7 @@ namespace te
           featureElementsNormalizeFactor = 1.0f / featureElementsNormalizeFactor;
         }
         
-        for( currentFeaturePtrStartIdx = 0 ; currentFeaturePtrStartIdx < 64 ; 
+        for( currentFeaturePtrStartIdx = 0 ; currentFeaturePtrStartIdx < 128 ; 
           ++currentFeaturePtrStartIdx )
         {
           currentFeaturePtr[ currentFeaturePtrStartIdx ] = (
@@ -1705,9 +1725,12 @@ namespace te
       const double raster1ToRaster2TransfDMapError,
       MatchedInterestPointsSetT& matchedPoints ) const
     {
+      assert( featuresSet1.getColumnsNumber() == featuresSet2.getColumnsNumber() );
+      
       matchedPoints.clear();
       
-      const double maxEuclideanDist = m_inputParameters.m_surfMaxNormEuclideanDist * 2.0; /* since surf feature vectors are unitary verctors */
+      const double maxEuclideanDist = m_inputParameters.m_surfMaxNormEuclideanDist 
+        * 2.0; /* since surf feature vectors are unitary verctors */
       
       const unsigned int interestPointsSet1Size = interestPointsSet1.size();
       if( interestPointsSet1Size == 0 ) return true;

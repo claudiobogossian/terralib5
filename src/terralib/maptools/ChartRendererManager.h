@@ -83,6 +83,8 @@ namespace te
         */
         te::color::RGBAColor** render(const Chart* chart, const te::da::DataSet* dataset, std::size_t& width);
 
+        te::color::RGBAColor** render(const Chart* chart, const std::map<std::string, double>& chartValue, std::size_t& width);
+
         /*!
           \brief It sets the chart renderer to the manager.
 
