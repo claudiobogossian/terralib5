@@ -334,7 +334,7 @@ void te::qt::widgets::ChartRenderer::getValues(const te::map::Chart* chart, cons
 void te::qt::widgets::ChartRenderer::getValues(const te::map::Chart* chart, const std::map<std::string, double>& chartValue, std::vector<double>& values)
 {
   std::map<std::string, double>::const_iterator it;
-  for(it = chartValue.cbegin(); it != chartValue.cend(); ++it)
+  for(it = chartValue.begin(); it != chartValue.end(); ++it)
     values.push_back(it->second);
 }
 
