@@ -1,0 +1,172 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html; charset=ISO-8859-1"
+ http-equiv="content-type">
+  <title>Proximity Matrix</title>
+</head>
+<body>
+<div style="text-align: center;">
+<h3 style="text-align: center;"><span
+ style="font-family: Calibri Light;">Proximity Matrix Creator</span></h3>
+</div>
+<font face="Calibri Light"><br>
+</font>
+<font face="Calibri Light"><span style="font-family: Calibri Light;">A
+basic tool to estimate the data spatial variability in an area is the
+Spatial Proximity Matrix, also known as Neighborhood Matrix. <br>
+<br>
+The proximity matrix is used to calculate indicators during the
+exploratory analysis of spatial data for other analysis in TerraView.
+Since the calculation is costly and can be executed with criteria,
+TerraView stores the matrices in a local file, allowing the use of them
+in different analysis to avoid recalculation, thus achieving efficiency.<br>
+<br>
+The <span style="font-weight: bold;">Proximity Matrix Creator</span></span><span
+ style="font-weight: bold; font-family: Calibri Light;">&nbsp;</span><span
+ style="font-family: Calibri Light;"></span></font><font
+ style="font-family: Calibri Light;" face="Calibri Light">it is
+accessible through:</font><font style="font-family: Calibri Light;"
+ face="Calibri Light"><b><br>
+</b></font>
+<font face="Calibri Light"><br>
+</font>
+<font style="font-family: Calibri Light;" face="Calibri Light"><b>&nbsp;&nbsp;
+Plugins &gt; Spatial Analysis</b></font><font
+ style="font-family: Calibri Light;" face="Calibri Light"><b> &gt;
+Proximity Matrix Creator...</b></font><font
+ style="font-family: Calibri Light;" face="Calibri Light"><br>
+<br>
+<span style="font-family: Calibri Light;"></span></font><font
+ style="font-family: Calibri Light;" face="Calibri Light">This
+interface consists of the
+following steps:<br>
+</font><br>
+<span style="font-family: Calibri Light;">&nbsp;&nbsp;&nbsp; 1. Input
+Information:</span>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">Layer Name</span>: Select the
+desired Layer.</li>
+  </ul>
+</ol>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">Attribute Id</span>: Defines
+the attribute that identifies the objects of this layer.</li>
+  </ul>
+</ol>
+<span style="font-family: Calibri Light;">&nbsp;&nbsp;&nbsp; 2.
+Operation Parameters:</span>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">Build Strategy</span>: Select
+one of the available strategies to decide how objects are close to each
+other.</li>
+  </ul>
+</ol>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <ul>
+      <li><span style="font-weight: bold;">Contiguity</span>: An object
+is near to only other ones with shared borders. This characteristic is
+highly dependent on objects geometry and the&nbsp;objects geometries
+must be without digitalization and building errors.</li>
+    </ul>
+  </ul>
+</ol>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <ul>
+      <li><span style="font-weight: bold;">Distance</span>: An object
+is near another one if their area centroids are at a distance d
+specified by the user in the Distance field (enabled when this strategy
+is selected).</li>
+    </ul>
+  </ul>
+</ol>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <ul>
+      <li><span style="font-weight: bold;">Nearest Neighbor</span>: An
+object is near on only the n nearest neighbors (considering centroids),
+where n is defined by the user (enabled when this strategy is selected).</li>
+    </ul>
+  </ul>
+</ol>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">Weight</span>: Assign weights
+to the found proximities.</li>
+  </ul>
+</ol>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <ul>
+      <li><span style="font-weight: bold;">No weight</span>: All
+objects are near with the same weight.</li>
+    </ul>
+  </ul>
+</ol>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <ul style="font-weight: bold;">
+      <li>Inverse Distance</li>
+    </ul>
+  </ul>
+</ol>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <ul style="font-weight: bold;">
+      <li>Square Inverse Distance</li>
+    </ul>
+  </ul>
+</ol>
+<span style="font-family: Calibri Light;">&nbsp;&nbsp;&nbsp; 3. Output
+Information:</span>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">Name</span>: The name of the
+local file to be created.</li>
+  </ul>
+</ol>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">Format</span>: The format of
+the file for save the matrix.</li>
+  </ul>
+</ol>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <ul>
+      <li><span style="font-weight: bold;">GAL</span>: Save the matrix
+without information of weights.</li>
+    </ul>
+  </ul>
+</ol>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <ul>
+      <li><span style="font-weight: bold;">GWT</span>: Save the matrix
+with information of weights.</li>
+    </ul>
+  </ul>
+</ol>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <ul>
+      <li><span style="font-weight: bold;">Data Source</span></li>
+    </ul>
+  </ul>
+</ol>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">Directory</span>: The local to
+save the file.</li>
+  </ul>
+</ol>
+<span style="font-family: Calibri Light;">Click <span
+ style="font-weight: bold;">OK</span> and then the matrix will be built
+and saved at the local defined.</span><br>
+</body>
+</html>

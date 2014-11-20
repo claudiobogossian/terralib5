@@ -1,0 +1,310 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html; charset=ISO-8859-1"
+ http-equiv="content-type">
+  <title>Geostatistical Methods</title>
+</head>
+<body>
+<div style="text-align: center;">
+<h3 style="text-align: center;"><span
+ style="font-family: Calibri Light;">Geostatistical Methods</span></h3>
+</div>
+<font face="Calibri Light"><br>
+</font>
+<font style="font-family: Calibri Light;" face="Calibri Light">The
+<span style="font-weight: bold;">Geostatistical Methods</span><span
+ style="font-weight: bold;">&nbsp;</span>allows the user </font><span
+ class="titi2"><span style="font-family: Calibri Light;">modelling
+spatial data. Providing accurate and reliable estimations of phenomena
+at locations where no measurements are available.<br>
+<br>
+<span style="font-family: Calibri Light;">Terraview uses a </span><span
+ style="font-weight: bold; font-family: Calibri Light;">Semivariogram</span><span
+ style="font-family: Calibri Light;">
+for mapping or estimating the interpolation between the data points. </span></span></span><span
+ style="font-family: Calibri Light;">The </span><i
+ style="font-family: Calibri Light;">empirical variogram</i><span
+ style="font-family: Calibri Light;"> is used in </span><a
+ style="font-family: Calibri Light;"
+ href="http://en.wikipedia.org/wiki/Geostatistics" title="Geostatistics">geostatistics</a><span
+ style="font-family: Calibri Light;"> as a first estimate of the
+(theoretical) variogram needed for spatial interpolation by <span
+ style="text-decoration: underline;">kriging</span>.</span><br>
+<span class="titi2"><span style="font-family: Calibri Light;"><br>
+The semivariogram tries to prove that things nearby tend to be more
+similar than things that are farther apart. Semivariogram measure the
+strength of statistical correlation as a function of distance.<br>
+<br>
+</span></span><span style="font-family: Calibri Light;">The process of
+modeling semivariograms functions fits a semivariogram&nbsp;curve to
+your empirical data. Using your knowledge of the phenomenon, the goal
+is to achieve the best fit. There are certain characteristics that are
+commonly used to describe these models.</span><br>
+<ul style="font-family: Calibri Light;">
+  <li><span style="font-weight: bold;">nugget</span><span
+ style="font-weight: bold;"> </span><span class="MathJax_Preview"></span><span
+ style="" aria-readonly="true" role="textbox"
+ id="MathJax-Element-51-Frame" class="MathJax"><nobr><span
+ style="width: 0.804em;" id="MathJax-Span-960" class="math"><span
+ style="position: relative; width: 0.595em; height: 0px; font-size: 132%;"><span
+ style="position: absolute; clip: rect(1.614em, 1000em, 2.392em, -0.466em); top: -2.219em; left: 0em;"><span
+ id="MathJax-Span-961" class="mrow"><span id="MathJax-Span-962"
+ class="semantics"><span style="font-style: italic;"
+ id="MathJax-Span-963" class="mi">n</span></span></span><span
+ style="width: 0px; height: 2.219em;"></span></span></span><span
+ style="border-left: 0em solid; overflow: hidden; width: 0px; height: 0.741em; vertical-align: -0.086em;"></span></span></nobr></span>:
+The height of the jump of the semivariogram at the discontinuity at the
+origin.</li>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <li><span style="font-weight: bold;">sill</span><span
+ style="font-weight: bold;"> </span><span class="MathJax_Preview"></span><span
+ style="" aria-readonly="true" role="textbox"
+ id="MathJax-Element-52-Frame" class="MathJax"><nobr><span
+ style="width: 0.589em;" id="MathJax-Span-964" class="math"><span
+ style="position: relative; width: 0.433em; height: 0px; font-size: 132%;"><span
+ style="position: absolute; clip: rect(1.614em, 1000em, 2.391em, -0.434em); top: -2.219em; left: 0em;"><span
+ id="MathJax-Span-965" class="mrow"><span id="MathJax-Span-966"
+ class="semantics"><span style="font-style: italic;"
+ id="MathJax-Span-967" class="mi">s</span></span></span><span
+ style="width: 0px; height: 2.219em;"></span></span></span><span
+ style="border-left: 0em solid; overflow: hidden; width: 0px; height: 0.739em; vertical-align: -0.085em;"></span></span></nobr></span>:
+Limit of the variogram tending to infinity lag distances.</li>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <li><span style="font-weight: bold;">range</span><span
+ style="font-weight: bold;"> </span><span class="MathJax_Preview"></span><span
+ style="" aria-readonly="true" role="textbox"
+ id="MathJax-Element-53-Frame" class="MathJax"><nobr><span
+ style="width: 0.589em;" id="MathJax-Span-968" class="math"><span
+ style="position: relative; width: 0.433em; height: 0px; font-size: 132%;"><span
+ style="position: absolute; clip: rect(1.614em, 1000em, 2.392em, -0.466em); top: -2.219em; left: 0em;"><span
+ id="MathJax-Span-969" class="mrow"><span id="MathJax-Span-970"
+ class="semantics"><span style="font-style: italic;"
+ id="MathJax-Span-971" class="mi">r</span></span></span><span
+ style="width: 0px; height: 2.219em;"></span></span></span><span
+ style="border-left: 0em solid; overflow: hidden; width: 0px; height: 0.741em; vertical-align: -0.086em;"></span></span></nobr></span>:
+The distance in which the difference of the variogram from the sill
+becomes negligible. In models with a fixed sill, it is the distance at
+which this is first reached;<br>
+  </li>
+</ul>
+<span style="font-family: Calibri Light;"></span>
+<div style="text-align: center;">
+<div style="text-align: center;"><span
+ style="font-family: Calibri Light;"><img
+ style="width: 332px; height: 213px;" alt="" src="variogram.png"></span><br>
+</div>
+<span style="font-family: Calibri Light;"></span></div>
+<span style="font-family: Calibri Light;"><br>
+<br>
+<span style="font-family: Calibri Light;">TerraView provides the
+following functions to model the empirical semivariogram:</span><br
+ style="font-family: Calibri Light;">
+</span>
+<ul style="font-family: Calibri Light; font-weight: bold;">
+  <li>Spherical</li>
+</ul>
+<div style="margin-left: 40px; font-family: Calibri Light;">The
+spherical model is particularly good for modeling spatial correlation
+which decreases approximately linearly with the separation distance,
+and is assumed to be zero beyond a certain distance. This is probably
+the most commonly used variogram structure in practice.<br>
+<br>
+<div style="text-align: center;"><img
+ style="width: 346px; height: 331px;" alt=""
+ src="variogram_spherical.png"><br>
+</div>
+</div>
+<span style="font-family: Calibri Light;"></span>
+<ul style="font-family: Calibri Light;">
+  <li><span style="font-weight: bold;">Exponential</span></li>
+</ul>
+<div style="margin-left: 40px; font-family: Calibri Light;">The
+exponential model has a similar shape to the spherical model but
+reaches the sill more quickly.<br>
+<br>
+<div style="text-align: center;"><img
+ style="width: 346px; height: 331px;" alt=""
+ src="variogram_exponential.png"><br>
+</div>
+</div>
+<span style="font-family: Calibri Light;"></span>
+<ul style="font-family: Calibri Light;">
+  <li><span style="font-weight: bold;">Gaussian</span></li>
+</ul>
+<div style="margin-left: 40px;"><span
+ style="font-family: Calibri Light;">The Gaussian model is used when
+the data exhibit strong continuity at
+short lag distances (i.e.: when the spatial correlation between two
+nearby points is
+very high).<br>
+<br>
+</span></div>
+<div style="text-align: center;">
+<div style="text-align: center; margin-left: 40px;"><span
+ style="font-family: Calibri Light;"><img
+ style="width: 346px; height: 331px;" alt=""
+ src="variogram_gaussian.png"></span><br>
+</div>
+</div>
+<div style="margin-left: 40px;">
+<div style="text-align: center;"><span
+ style="font-family: Calibri Light;"></span></div>
+<span style="font-family: Calibri Light;"></span></div>
+<span style="font-family: Calibri Light;"><br>
+<span style="font-weight: bold;">Spatial Correlation</span><br>
+<br>
+Spatial autocorrelation measures dependence among nearby values in a
+spatial distribution.<br>
+<br>
+</span>
+<div style="text-align: center;"><span
+ style="font-family: Calibri Light;"><img
+ style="width: 313px; height: 224px;" alt=""
+ src="spatial_correlation.png"></span><br
+ style="font-family: Calibri Light;">
+<span style="font-family: Calibri Light;"></span></div>
+<ul style="font-family: Calibri Light;">
+  <li>The <span style="font-weight: bold;">lag</span> size is the size
+of a distance class into
+which pairs of locations are grouped to reduce the large
+number of possible combinations. A good lag distance can also help
+reveal spatial
+correlations.</li>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <li> The <span style="font-weight: bold;">direction angle</span> is
+measured clockwise from the Y-axis and defines the direction in which
+points should be located relative to each other. When you use a
+direction angle of 90&deg;, it means that only point pairs for which
+the points are located in West-East or in East-West direction will be
+considered (i.e. +90&deg; clockwise from the Y-axis).&nbsp;</li>
+</ul>
+<ul>
+  <li><span style="font-family: Calibri Light;"> The <span
+ style="font-weight: bold;">tolerance angle</span> is a parameter with
+which you can limit the
+number of point pairs. When a tolerance of 45&deg; is used, all point
+pairs
+in the map will contribute to calculated semivariogram values.</span> </li>
+</ul>
+<span style="font-family: Calibri Light;"><span
+ style="font-weight: bold;"><br>
+</span></span><font style="font-family: Calibri Light;"
+ face="Calibri Light">It is
+accessible through:</font><font style="font-family: Calibri Light;"
+ face="Calibri Light"><b><br>
+</b></font>
+<font face="Calibri Light"><br>
+</font>
+<font style="font-family: Calibri Light;" face="Calibri Light"><b>&nbsp;&nbsp;
+Plugins &gt; Spatial Analysis</b></font><font
+ style="font-family: Calibri Light;" face="Calibri Light"><b> &gt;
+Geostatistical Methods...</b></font><font
+ style="font-family: Calibri Light;" face="Calibri Light"><br>
+<br>
+<span style="font-family: Calibri Light;"></span></font><font
+ style="font-family: Calibri Light;" face="Calibri Light">This
+interface consists of the
+following steps:<br>
+<br>
+</font><span style="font-family: Calibri Light;">&nbsp;&nbsp;&nbsp; 1.
+Input Information:</span>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">Layer Name</span>: Select the
+desired Layer.</li>
+  </ul>
+</ol>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">Attribute</span>: The&nbsp;<span
+ id="result_box" class="short_text" lang="en"><span class="hps">attribute</span>
+      <span class="hps">to be analyzed.</span></span></li>
+  </ul>
+</ol>
+<span style="font-family: Calibri Light;">&nbsp;&nbsp;&nbsp;
+2.&nbsp;Parameters:<br>
+</span>
+<ul style="font-family: Calibri Light;">
+  <li>Statistics</li>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">Method: </span>Only
+semivariogram method is available.</li>
+  </ul>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">Number of lags</span></li>
+  </ul>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">Lag Increment</span></li>
+  </ul>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">Angular Direction</span></li>
+  </ul>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">Angular Tolerance<br>
+      </span></li>
+  </ul>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <li>Adjust</li>
+  <ul>
+    <li><span style="font-weight: bold;">Model</span>: Spherical,
+Exponential, Gaussian.</li>
+  </ul>
+</ul>
+<ul style="font-family: Calibri Light; font-weight: bold;">
+  <ul>
+    <li>Nugget</li>
+  </ul>
+</ul>
+<ul style="font-family: Calibri Light; font-weight: bold;">
+  <ul>
+    <li>Sill</li>
+  </ul>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">Range</span></li>
+  </ul>
+</ul>
+<span style="font-family: Calibri Light;">&nbsp;&nbsp;&nbsp; 3. Output
+Information:<span style="font-weight: bold;"><br>
+</span></span><br style="font-family: Calibri Light;">
+<div style="margin-left: 40px; font-family: Calibri Light;"><span
+ id="result_box" class="" lang="en"><span class="hps">A</span> <span
+ class="hps">graph</span> <span class="hps">will be presented</span> <span
+ class="hps">with the</span> <span class="hps">distribution of points
+and</span> <span class="hps">a curve</span> <span class="hps">representing</span>
+<span class="hps">the selected template</span><span>.</span> <span
+ class="hps">Use the</span> <span class="hps">parameters</span> <span
+ class="hps">to adjust the curve</span> <span class="hps">to the points</span><span
+ class="">.</span></span><br>
+</div>
+<br style="font-family: Calibri Light;">
+<span style="font-family: Calibri Light;"><span
+ style="font-weight: bold;"></span>Click <span
+ style="font-weight: bold;">Apply</span> and then the graph with point
+distribution will be calculated.<br>
+<br>
+Note: </span><span style="font-family: Calibri Light;" id="result_box"
+ class="" lang="en"><span class="hps">This component</span> <span
+ class="hps">serves</span> <span class="hps">only to</span> <span
+ class="hps">fit a model</span> <span class="hps">to a distribution of</span>
+<span class="hps">points</span><span>.</span></span><br>
+<font style="font-family: Calibri Light;" face="Calibri Light"><br>
+</font>
+</body>
+</html>

@@ -76,6 +76,17 @@
 					<section title="Register" ref="./plugins/rp/rp_register.html"/>
 					<section title="Segmenter" ref="./plugins/rp/rp_segmenter.html"/>
 				</section>
+				<section title="Spatial Analysis" ref="./plugins/sa/sa.html">
+					<section title="Bayes Global" ref="./plugins/sa/sa_bayesglobal.html"/>
+					<section title="Bayes Local" ref="./plugins/sa/sa_bayeslocal.html"/>
+					<section title="Geostatistical Methods" ref="./plugins/sa/sa_geostatisticalmethods.html"/>
+					<section title="Kernel Map" ref="./plugins/sa/sa_kernelmap.html"/>
+					<section title="Kernel Ratio" ref="./plugins/sa/sa_kernelratio.html"/>
+					<section title="Proximity Matrix Creator" ref="./plugins/sa/sa_proxmatrixcreator.html"/>
+					<section title="Sample Points Generator" ref="./plugins/sa/sa_samplepointsgenerator.html"/>
+					<section title="Skater" ref="./plugins/sa/sa_skater.html"/>
+					<section title="Spatial Statistics" ref="./plugins/sa/sa_spatialstatistics.html"/>
+				</section>
 				<section title="TerraLib 4.x Converter" ref="./plugins/terralib4/Terralib4Converter.html"/>
 		    </section>
        </toc>
@@ -92,6 +103,7 @@
 			<file>./plugins/ogr/*.*</file>
 			<file>./plugins/pgis/*.*</file>
 			<file>./plugins/rp/*.*</file>
+			<file>./plugins/sa/*.*</file>
 			<file>./plugins/terralib4/*.*</file>
 			<file>./plugins/vp/*.*</file>
 			<file>./plugins/*.html</file>
@@ -165,6 +177,7 @@
 			<keyword name="Buffer" ref="./plugins/vp/vp_buffer.html"/>
 			<keyword name="Intersection" ref="./plugins/vp/vp_intersection.html"/>
 			<keyword name="Geometric Operations" ref="./plugins/vp/vp_geometricOper.html"/>
+			
 			<keyword name="Raster Processing" ref="./plugins/rp/rp.html"/>
 			<keyword name="Arithmetic Operations" ref="./plugins/rp/rp_arithOp.html"/>
 			<keyword name="Classifier" ref="./plugins/rp/rp_classifier.html"/>
@@ -177,6 +190,17 @@
 			<keyword name="Mosaic" ref="./plugins/rp/rp_mosaic.html"/>
 			<keyword name="Register" ref="./plugins/rp/rp_register.html"/>
 			<keyword name="Segmenter" ref="./plugins/rp/rp_segmenter.html"/>
+			
+			<keyword name="Spatial Analysis" ref="./plugins/sa/sa.html"/>
+			<keyword name="Bayes Global" ref="./plugins/sa/sa_bayesglobal.html"/>
+			<keyword name="Bayes Local" ref="./plugins/sa/sa_bayeslocal.html"/>
+			<keyword name="Geostatistical Methods" ref="./plugins/sa/sa_geostatisticalmethods.html"/>
+			<keyword name="Kernel Map" ref="./plugins/sa/sa_kernelmap.html"/>
+			<keyword name="Kernel Ratio" ref="./plugins/sa/sa_kernelratio.html"/>
+			<keyword name="Proximity Matrix Creator" ref="./plugins/sa/sa_proxmatrixcreator.html"/>
+			<keyword name="Sample Points Generator" ref="./plugins/sa/sa_samplepointsgenerator.html"/>
+			<keyword name="Skater" ref="./plugins/sa/sa_skater.html"/>
+			<keyword name="Spatial Statistics" ref="./plugins/sa/sa_spatialstatistics.html"/>
 		</keywords>
    </filterSection>
 </QtHelpProject>
