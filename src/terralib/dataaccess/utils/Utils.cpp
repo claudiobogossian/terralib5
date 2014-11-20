@@ -56,10 +56,12 @@
 #include "../query/Where.h"
 #include "../Enums.h"
 #include "../Exception.h"
+#include "../../maptools/QueryLayer.h"
 #include "Utils.h"
 
 // STL
 #include <cassert>
+#include <algorithm>
 
 //BOOST
 #include <boost/algorithm/string.hpp>
@@ -1173,7 +1175,7 @@ bool te::da::HasLinkedTable(te::map::AbstractLayer* layer)
   return false;
 }
 
-double te::da::GetSummarizedValue(const std::vector<double>& values, const std::string& sumary)
+double te::da::GetSummarizedValue(std::vector<double>& values, const std::string& sumary)
 {
   double size = values.size();
   if(size == 0)
@@ -1256,24 +1258,12 @@ double te::da::GetSummarizedValue(const std::vector<double>& values, const std::
       v = *it;
     else
     {
-      std::list<double> list;
-      for(it = values.begin(); it != values.end(); ++it)
-        list.push_back(*it);
-
-      list.sort();
+      std::stable_sort(values.begin(), values.end());
       size_t meio = (size_t)size / 2;
+      v = values[meio];
 
-      std::list<double>::iterator k;
-      size_t i = 0;
-      while(i++ < meio)
-        ++k;
-
-      d = *k;
-      k++;
-      if((size_t)size%2)
-        v = *k;
-      else
-        v = (d + *k) / 2;
+      if((size_t)size%2 == 0)
+        v += values[meio+1] / 2.;
     }
   }
   else if(sumary == "MODE")  // nao dá porque pode gerar nenhum ou vários valores

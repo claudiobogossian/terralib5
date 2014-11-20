@@ -32,7 +32,7 @@
 #include "../query/Expression.h"
 #include "../query/Fields.h"
 #include "../query/Select.h"
-#include "../../maptools.h"
+#include "../../maptools/AbstractLayer.h"
 
 // Boost
 #include <boost/ptr_container/ptr_vector.hpp>
@@ -336,7 +336,7 @@ namespace te
 
       \return The summarized value.
     */
-    TEDATAACCESSEXPORT double GetSummarizedValue(const std::vector<double>& values, const std::string& summary);
+    TEDATAACCESSEXPORT double GetSummarizedValue(std::vector<double>& values, const std::string& summary);
 
     /*!
       \brief It gets the summarized value.
