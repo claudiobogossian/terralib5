@@ -25,16 +25,73 @@
 
 #ifndef __TERRALIB_FW_INTERNAL_RP_FW_H
 #define __TERRALIB_FW_INTERNAL_RP_FW_H
+#include "rp/radar/RadarFunctions.h"
 
 namespace te
 {
   namespace rp
   {    
+    class AbstractFeeder;
     class Algorithm;
+    class AlgorithmInputParameters;
+    class AlgorithmOutputParameters;
+    class ArithmeticOperations;
+    class Blender;
+    class Classifier;
+    class ClassifierDummyStrategy;
+    class ClassifierEMStrategy;
+    class ClassifierISOSegStrategy;
+    class ClassifierKMeansStrategy;
+    class ClassifierMAPStrategy;
+    class ClassifierSAMStrategy;
+    class ClassifierStrategy;
+    class ClassifierStrategyFactory;
     class Contrast;
-    class Exception;
+    class FeederConstRaster;
+    class FeederConstRasterVector;
+    class FeederConstRasterInfo;
+    class FeederConstRasterDirectory;
+    class Filter;
+    class GeoMosaic;
+    class IHSFusion;
+    template< typename TemplateElementType > class Matrix;
+    class MixtureModel;
+    class MixtureModelLinearStrategy;
+    class MixtureModelPCAStrategy;
+    class MixtureModelStrategy;
+    class MixtureModelStrategyFactory;
     class Module;
+    class PCAFusion;
+    class RasterAttributes;
     class RasterHandler;
+    class Register;
+    class Segmenter;
+    class SegmenterDummyStrategy;
+    class SegmenterIdsManager;
+    class SegmenterRegionGrowingSegment;
+    class SegmenterRegionGrowingSegmentsPool;
+    class SegmenterRegionGrowingStrategy;
+    class SegmenterSegmentsBlock;
+    class SegmenterStrategy;
+    class SegmenterStrategyFactory;
+    class SegmenterStrategyParameters;
+    class SequenceMosaic;
+    class Skeleton;
+    class StrategyParameters;
+    struct Texture;
+    class TiePointsLocator;
+    class TiePointsLocatorInputParameters;
+    class TiePointsLocatorMoravecStrategy;
+    class TiePointsLocatorStrategy;
+    class TiePointsLocatorSURFStrategy;
+    class TiePointsMosaic;
+    class WisperFusion;
+    
+    namespace radar
+    {
+      
+      
+    }
   } 
 }
 

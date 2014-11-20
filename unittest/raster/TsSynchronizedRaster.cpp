@@ -26,11 +26,6 @@
 #include "TsSynchronizedRaster.h"
 #include "../Config.h"
 
-#include <terralib/raster/SynchronizedRaster.h>
-#include <terralib/raster/RasterFactory.h>
-#include <terralib/raster/BandProperty.h>
-#include <terralib/raster/Grid.h>
-
 #include <boost/thread.hpp>
 
 #include <memory>
