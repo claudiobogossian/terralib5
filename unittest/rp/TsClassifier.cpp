@@ -29,14 +29,7 @@
 #include <terralib/gdal/Utils.h>
 #include <terralib/geometry.h>
 #include <terralib/raster.h>
-#include <terralib/rp/Classifier.h>
-#include <terralib/rp/ClassifierEMStrategy.h>
-#include <terralib/rp/ClassifierISOSegStrategy.h>
-#include <terralib/rp/ClassifierKMeansStrategy.h>
-#include <terralib/rp/ClassifierMAPStrategy.h>
-#include <terralib/rp/ClassifierSAMStrategy.h>
-#include <terralib/rp/Segmenter.h>
-#include <terralib/rp/SegmenterRegionGrowingStrategy.h>
+
 #include "TsClassifier.h"
 
 // STL

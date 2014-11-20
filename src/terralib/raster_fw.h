@@ -37,6 +37,9 @@ namespace te
     class Raster;
     class RasterFactory;
 	  class RasterProperty;
+    class SynchronizedBand;
+    class SynchronizedBandBlocksManager;
+    class SynchronizedRaster;
     class Platform;
 
   } // end namespace rst

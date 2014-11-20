@@ -26,7 +26,6 @@
 #include "TsBlender.h"
 #include "../Config.h"
 
-#include <terralib/rp/Blender.h>
 #include <terralib/raster/Raster.h>
 #include <terralib/raster/Band.h>
 #include <terralib/raster/BandProperty.h>

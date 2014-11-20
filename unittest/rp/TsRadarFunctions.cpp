@@ -26,7 +26,6 @@
 #include "TsRadarFunctions.h"
 #include "../Config.h"
 
-#include <terralib/rp/radar/RadarFunctions.h>
 #include <terralib/raster/RasterFactory.h>
 
 CPPUNIT_TEST_SUITE_REGISTRATION( TsFunctions );

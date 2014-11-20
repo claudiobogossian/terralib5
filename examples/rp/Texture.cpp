@@ -3,8 +3,7 @@
 // TerraLib
 #include <terralib/geometry.h>
 #include <terralib/raster.h>
-#include <terralib/rp/RasterAttributes.h>
-#include <terralib/rp/Texture.h>
+#include <terralib/rp.h>
 
 #include <boost/numeric/ublas/matrix.hpp>
 

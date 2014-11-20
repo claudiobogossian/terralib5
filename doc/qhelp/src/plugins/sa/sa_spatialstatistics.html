@@ -1,0 +1,385 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html; charset=ISO-8859-1"
+ http-equiv="content-type">
+  <title>Spatial Statistics</title>
+</head>
+<body>
+<div style="text-align: center;">
+<h3 style="text-align: center;"><span
+ style="font-family: Calibri Light;">Spatial Statistics</span></h3>
+</div>
+<br>
+<font face="Calibri Light"></font>
+<font face="Calibri Light"><span style="font-family: Calibri Light;">The
+<span style="font-weight: bold;">Spatial Statistics</span></span><span
+ style="font-weight: bold; font-family: Calibri Light;"> </span><span
+ style="font-family: Calibri Light;">operation allows the user </span>to
+calculate the following statistics:<br>
+<br>
+</font>
+<ul style="font-family: Calibri Light;">
+  <li><span style="font-weight: bold;">Global Moran Index</span>:</li>
+</ul>
+<div style="margin-left: 40px; font-family: Calibri Light;">This index
+is used to identify the spatial correlation structure that best
+describes the data. The basic principle is to characterize the spatial
+dependency by showing how values are spatially correlated.<br>
+<br>
+In a general way, Moran index is useful to test if the null hypothesis
+is that there is spatial dependency; in this case the value is zero.
+Positive values (between 0 and +1) indicate a direct correlation and
+negative values (between 0 and -1) indicate inverse correlation. <br>
+<br>
+Once the index is calculate, it is important to statistically validate
+it. To estimate the index significance, the most common approach is the
+pseudo-significance test.<br>
+</div>
+<br style="font-family: Calibri Light;">
+<ul style="font-family: Calibri Light;">
+  <li><span style="font-weight: bold;">Local Moran Index - LISA</span>:</li>
+</ul>
+<div style="margin-left: 40px; font-family: Calibri Light;">Global
+autocorrelation indicators, such as Moran index, provide one value as
+the measure of spatial association for the whole area dataset. However,
+in many cases it is desirable to analyze patterns in a scale with more
+details to verify if the hypothesis of stationarity of the process is
+valid locally.<br>
+<br>
+To verify, it is necessary to use spatial association indicators that
+can be associated to different location of a spatially distributed
+variable. This methodology uses the Local Moran Index to find spatial
+correlation in these areas. Given that it is a local indicator, there
+is a specific correlation value for each area, which allows the
+identification of spatial clusters and outliers.<br>
+<br>
+This operation creates the following attributes:<br>
+</div>
+<br style="font-family: Calibri Light;">
+<ul style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">Z</span>: Vector with observed
+deviations;</li>
+  </ul>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">Wz</span>: Local weighted
+average vector;</li>
+  </ul>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">MoranIndex</span>: Local Moran
+Index;</li>
+  </ul>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">LISASig</span>: p statistics
+value;</li>
+  </ul>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">BoxMap</span>: Presented
+values correspond to the relation between Z and Wz values in a
+Dispersion Plot divided by quadrants (Q). Values range from 1 to 4,
+where:</li>
+  </ul>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <ul>
+    <ul>
+      <li>&nbsp;1 corresponds to values in Q1 (high-high &ndash; high Z
+and Wz values),&nbsp;</li>
+    </ul>
+  </ul>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <ul>
+    <ul>
+      <li>2 (Q2, low-low),&nbsp;</li>
+    </ul>
+  </ul>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <ul>
+    <ul>
+      <li>3 (Q3, high-low),</li>
+    </ul>
+  </ul>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <ul>
+    <ul>
+      <li>4 (Q4, low-high);</li>
+    </ul>
+  </ul>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">LISAMap</span>: This column
+values, ranging from 0 to 4, are created only if a level of
+significance is selected in the interface. During the creation of a
+LISAMap, local indices are classified as:</li>
+  </ul>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <ul>
+    <ul>
+      <li>Non significant (0);</li>
+    </ul>
+  </ul>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <ul>
+    <ul>
+      <li>With 95% confidence (1, p=0.05);</li>
+    </ul>
+  </ul>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <ul>
+    <ul>
+      <li>With 99% confidence (2, p=0.01);</li>
+    </ul>
+  </ul>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <ul>
+    <ul>
+      <li>With 99.9% confidence (3, p=0.001).</li>
+    </ul>
+  </ul>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">MoranMap</span>: This column
+values are generated only if a level of significance is selected in the
+interface. This result presents only regions where <span
+ style="font-style: italic;">Ii</span> values are significant (interval
+above 95%) while BoxMap does not consider significance. In this case,
+local indices<span style="font-style: italic;"> Ii</span> are
+associated to the Moran dispersion diagram. The values are:&nbsp;</li>
+  </ul>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <ul>
+    <ul>
+      <li>0 (non significant),&nbsp;</li>
+    </ul>
+  </ul>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <ul>
+    <ul>
+      <li>1 &ndash; Q1 (high-high),&nbsp;</li>
+    </ul>
+  </ul>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <ul>
+    <ul>
+      <li>2 &ndash; Q2 (low-low),&nbsp;</li>
+    </ul>
+  </ul>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <ul>
+    <ul>
+      <li>3 &ndash; Q3 (high-low),&nbsp;</li>
+    </ul>
+  </ul>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <ul>
+    <ul>
+      <li>4 &ndash; Q4 (low-high).</li>
+    </ul>
+  </ul>
+</ul>
+<ul style="font-family: Calibri Light; font-weight: bold;">
+  <li>Local Mean</li>
+</ul>
+<div style="margin-left: 40px; font-family: Calibri Light;">Spatial
+Local Mean method examines the mean value <span
+ style="font-style: italic;">mi</span> of an attribute in the study
+region (first order).<br>
+</div>
+<br style="font-family: Calibri Light;">
+<ul style="font-family: Calibri Light; font-weight: bold;">
+  <li>G and G* Functions</li>
+</ul>
+<div style="margin-left: 40px; font-family: Calibri Light;">Local Moran
+Index may present some issues for understanding given that the correct
+statistical distribution being unknown and requiring its estimation
+through simulations. Therefore, G and G* normalizing functions can be
+important for some analysis.<br>
+<br>
+G and G* functions are two local spatial autocorrelation indices that
+allow the test of hypotheses about the spatial clustering of the values
+sum, associated to the neighbors points to the considered one.<br>
+<br>
+Since this indicators are composed by the sum of attributes values, the
+observation of significant high values of Gi and Gi* indicates that
+this attributes occur in high values, and the opposite indicates
+clustering of low values.<br>
+<br>
+The main difference between G and G* functions is that the former
+considers values of all neighbors while the later considers the region
+to calculate the index.<br>
+</div>
+<br>
+<span style="font-family: Calibri Light;"><span
+ style="font-weight: bold;"><br>
+</span></span><font style="font-family: Calibri Light;"
+ face="Calibri Light">It is
+accessible through:</font><font style="font-family: Calibri Light;"
+ face="Calibri Light"><b><br>
+</b></font>
+<font face="Calibri Light"><br>
+</font>
+<font style="font-family: Calibri Light;" face="Calibri Light"><b>&nbsp;&nbsp;
+Plugins &gt; Spatial Analysis</b></font><font
+ style="font-family: Calibri Light;" face="Calibri Light"><b> &gt;
+Spatial Statistics...</b></font><font
+ style="font-family: Calibri Light;" face="Calibri Light"><br>
+<br>
+<span style="font-family: Calibri Light;"></span></font><font
+ style="font-family: Calibri Light;" face="Calibri Light">This
+interface consists of the
+following steps:<br>
+<br>
+</font><span style="font-family: Calibri Light;">&nbsp;&nbsp;&nbsp; 1.
+Input Information:</span>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">Layer Name</span>: Select the
+desired Layer.</li>
+  </ul>
+</ol>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">Attribute Name</span>: Defines
+the attribute from layer used to calculate the statistics.</li>
+  </ul>
+</ol>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">Attribute Link</span>: Defines
+the attribute that identifies the objects of this layer.</li>
+  </ul>
+</ol>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">GPM</span>: Opens a dialog to
+select a file with a desired proximity matrix.</li>
+  </ul>
+</ol>
+<span style="font-family: Calibri Light;">&nbsp;&nbsp;&nbsp; 2.
+Operation Parameters:</span>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">Global</span></li>
+  </ul>
+</ol>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <ul>
+      <li><span style="font-weight: bold;">Moran Index.</span></li>
+    </ul>
+  </ul>
+</ol>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <ul>
+      <li><span style="font-weight: bold;">Index Value: </span>Calculated
+value for global moran index.</li>
+    </ul>
+  </ul>
+</ol>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <ul>
+      <li><span style="font-weight: bold;">P-Value: </span>Calculated
+value for p-value.</li>
+    </ul>
+  </ul>
+</ol>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <ul>
+      <li><span style="font-weight: bold;">Evaluate Significance /
+Number of permutations</span>.</li>
+    </ul>
+  </ul>
+</ol>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">Local</span></li>
+  </ul>
+</ol>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <ul>
+      <li><span style="font-weight: bold;">G Statistics</span>.</li>
+    </ul>
+  </ul>
+</ol>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <ul style="font-weight: bold;">
+      <li>Local Mean.</li>
+    </ul>
+  </ul>
+</ol>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <ul style="font-weight: bold;">
+      <li>Local Moran Index (LISA).</li>
+    </ul>
+  </ul>
+</ol>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <ul>
+      <li><span style="font-weight: bold;">Evaluate Significance /
+Number of permutations</span>.</li>
+    </ul>
+  </ul>
+</ol>
+<span style="font-family: Calibri Light;">&nbsp;&nbsp;&nbsp; 3. Output
+Information:</span>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">Repository:</span> Defines
+where the output data will be saved.</li>
+  </ul>
+</ol>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <ul>
+      <li>Local File.</li>
+    </ul>
+  </ul>
+</ol>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <ul>
+      <li>Data Source.</li>
+    </ul>
+  </ul>
+</ol>
+<ul style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">Layer Name:</span> Defines the
+name to create the output layer.</li>
+  </ul>
+</ul>
+<span style="font-family: Calibri Light;"><br>
+Click <span style="font-weight: bold;">OK</span> and then the spatial
+statistics will be calculated.</span><br>
+</body>
+</html>

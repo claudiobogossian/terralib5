@@ -109,7 +109,8 @@ te::da::Expression* te::da::ObjectIdSet::getExpression(const std::string source)
     {
       if(i > 0)
       {
-        tmp = *ins || *in;
+        tmp = *ins && *in;
+        //tmp = *ins || *in;
         delete ins;
         delete in;
         ins = tmp;

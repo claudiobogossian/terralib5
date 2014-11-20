@@ -26,9 +26,6 @@
 #include "TsFusion.h"
 #include "../Config.h"
 
-#include <terralib/rp/IHSFusion.h>
-#include <terralib/rp/PCAFusion.h>
-#include <terralib/rp/WisperFusion.h>
 #include <terralib/raster/Grid.h>
 #include <terralib/raster/Raster.h>
 #include <terralib/raster/RasterFactory.h>

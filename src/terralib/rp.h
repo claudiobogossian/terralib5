@@ -27,12 +27,64 @@
 #define __TERRALIB_INTERNAL_RP_H
 
 // TerraLib
+#include "rp/AbstractFeeder.h"
 #include "rp/Algorithm.h"
+#include "rp/AlgorithmInputParameters.h"
+#include "rp/AlgorithmOutputParameters.h"
+#include "rp/ArithmeticOperations.h"
+#include "rp/Blender.h"
+#include "rp/ClassifierDummyStrategy.h"
+#include "rp/ClassifierEMStrategy.h"
+#include "rp/Classifier.h"
+#include "rp/ClassifierISOSegStrategy.h"
+#include "rp/ClassifierKMeansStrategy.h"
+#include "rp/ClassifierMAPStrategy.h"
+#include "rp/ClassifierSAMStrategy.h"
+#include "rp/ClassifierStrategyFactory.h"
+#include "rp/ClassifierStrategy.h"
 #include "rp/Config.h"
 #include "rp/Contrast.h"
 #include "rp/Exception.h"
+#include "rp/FeedersRaster.h"
+#include "rp/Filter.h"
+#include "rp/Functions.h"
+#include "rp/GeoMosaic.h"
+#include "rp/IHSFusion.h"
+#include "rp/Macros.h"
+#include "rp/Matrix.h"
+#include "rp/MixtureModel.h"
+#include "rp/MixtureModelLinearStrategy.h"
+#include "rp/MixtureModelPCAStrategy.h"
+#include "rp/MixtureModelStrategyFactory.h"
+#include "rp/MixtureModelStrategy.h"
 #include "rp/Module.h"
+#include "rp/PCAFusion.h"
+#include "rp/RasterAttributes.h"
 #include "rp/RasterHandler.h"
+#include "rp/Register.h"
+#include "rp/SegmenterDummyStrategy.h"
+#include "rp/Segmenter.h"
+#include "rp/SegmenterIdsManager.h"
+#include "rp/SegmenterRegionGrowingSegment.h"
+#include "rp/SegmenterRegionGrowingSegmentsPool.h"
+#include "rp/SegmenterRegionGrowingStrategy.h"
+#include "rp/SegmenterSegmentsBlock.h"
+#include "rp/SegmenterStrategyFactory.h"
+#include "rp/SegmenterStrategy.h"
+#include "rp/SegmenterStrategyParameters.h"
+#include "rp/SequenceMosaic.h"
+#include "rp/Skeleton.h"
+#include "rp/SpectralResponseFunctions.h"
+#include "rp/StrategyParameters.h"
+#include "rp/Texture.h"
+#include "rp/TiePointsLocator.h"
+#include "rp/TiePointsLocatorInputParameters.h"
+#include "rp/TiePointsLocatorMoravecStrategy.h"
+#include "rp/TiePointsLocatorStrategy.h"
+#include "rp/TiePointsLocatorSURFStrategy.h"
+#include "rp/TiePointsMosaic.h"
+#include "rp/WisperFusion.h"
+#include "rp/radar/RadarFunctions.h"
 
 /*!
   \defgroup rp Raster Processing
@@ -51,6 +103,12 @@ namespace te
   */
   namespace rp
   {
+    /*!
+      \brief Namespace for Radar Raster Processing.
+    */
+    namespace radar
+    {
+    } // end namespace radar
   } // end namespace rp
 }   // end namespace te
 

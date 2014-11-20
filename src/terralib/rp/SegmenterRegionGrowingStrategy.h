@@ -114,8 +114,8 @@ namespace te
           const te::rst::Raster& inputRaster,
           const std::vector< unsigned int >& inputRasterBands,
           const std::vector< double >& inputRasterNoDataValues,
-          const std::vector< double >& inputRasterGains,
-          const std::vector< double >& inputRasterOffsets,
+          const std::vector< double >& inputRasterBandMinValues,
+          const std::vector< double >& inputRasterBandMaxValues,
           te::rst::Raster& outputRaster,
           const unsigned int outputRasterBand,
           const bool enableProgressInterface ) throw( te::rp::Exception );
@@ -214,6 +214,7 @@ namespace te
           protected :
             
             unsigned int m_featuresNumber; //!< The number of features (bands).
+            SegmenterRegionGrowingSegment::FeatureType m_dissimilarityNormFactor;
             
             // variables used by the method getDissimilarity
             mutable SegmenterRegionGrowingSegment::FeatureType m_getDissimilarity_dissValue;
@@ -305,7 +306,8 @@ namespace te
           \param inputRaster The input raster.
           \param inputRasterBands Input raster bands to use.
           \param inputRasterNoDataValues A vector of values to be used as input raster no-data values.
-          \param segmentsIds The output segment ids container.
+          \param inputRasterBandMinValues The minimum value present on each band.
+          \param inputRasterBandMinValues The maximum value present on each band.          
           \return true if OK, false on errors.
         */        
         bool initializeSegments( SegmenterIdsManager& segmenterIdsManager,
@@ -313,8 +315,8 @@ namespace te
           const te::rst::Raster& inputRaster,
           const std::vector< unsigned int >& inputRasterBands,
           const std::vector< double >& inputRasterNoDataValues,
-          const std::vector< double >& inputRasterGains,
-          const std::vector< double >& inputRasterOffsets );
+          const std::vector< double >& inputRasterBandMinValues,
+          const std::vector< double >& inputRasterBandMaxValues );
           
         /*!
           \brief Merge closest segments.
@@ -326,9 +328,8 @@ namespace te
           \param auxSeg2Ptr A pointer to a valid auxiliar segment that will be used by this method.
           \param auxSeg3Ptr A pointer to a valid auxiliar segment that will be used by this method.
           \param minFoundDissimilarity The minimum dissimilarity value found.
-          \return The number of merged segments.
         */           
-        unsigned int mergeSegments( 
+        void mergeSegments( 
           const SegmenterRegionGrowingSegment::FeatureType disimilarityThreshold,
           SegmenterIdsManager& segmenterIdsManager,
           Merger& merger,
@@ -348,9 +349,8 @@ namespace te
           \param merger The merger instance to use.
           \param auxSeg1Ptr A pointer to a valid auxiliar segment that will be used by this method.
           \param auxSeg2Ptr A pointer to a valid auxiliar segment that will be used by this method.
-          \return The number of merged segments.
         */           
-        unsigned int mergeSmallSegments( 
+        void mergeSmallSegments( 
           const unsigned int minSegmentSize,
           SegmenterIdsManager& segmenterIdsManager,
           Merger& merger,

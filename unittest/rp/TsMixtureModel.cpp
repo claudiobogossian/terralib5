@@ -26,11 +26,7 @@
 // TerraLib
 #include "../Config.h"
 #include "TsMixtureModel.h"
-//#include <terralib/gdal.h>
 #include <terralib/raster.h>
-#include <terralib/rp/MixtureModel.h>
-#include <terralib/rp/MixtureModelLinearStrategy.h>
-#include <terralib/rp/MixtureModelPCAStrategy.h>
 
 CPPUNIT_TEST_SUITE_REGISTRATION( TsMixtureModel );
 

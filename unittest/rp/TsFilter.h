@@ -29,6 +29,10 @@
 // cppUnit
 #include <cppunit/extensions/HelperMacros.h>
 
+// Terralib
+#include <terralib/rp.h>
+
+
 /*!
   \class TsFilter
 

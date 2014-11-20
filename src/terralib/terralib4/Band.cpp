@@ -30,6 +30,7 @@
 #include "Raster.h"
 
 // TerraLib 4.x
+#include <terralib4/kernel/TeDecoderDatabase.h>
 #include <terralib4/kernel/TeRaster.h>
 
 class terralib4::Band::Impl
@@ -85,7 +86,11 @@ void terralib4::Band::setIValue(unsigned int /*c*/, unsigned int /*r*/, const do
 
 void terralib4::Band::read(int x, int y, void* buffer) const
 {
-  throw;
+  TeDecoderDatabase* decDb = dynamic_cast<TeDecoderDatabase*>(m_pImpl->m_raster->decoder());
+
+  std::string bdIdx = decDb->codifyId(x, y, m_idx, 1, 0);
+
+  decDb->getRasterBlock(bdIdx, buffer);
 }
 
 void* terralib4::Band::read(int x, int y)
