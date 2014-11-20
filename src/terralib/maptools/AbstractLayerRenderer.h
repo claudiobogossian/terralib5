@@ -153,6 +153,12 @@ namespace te
                                   const te::gm::Envelope& bbox,
                                   int srid);
 
+        void drawLayerLinkedGroupingMem(AbstractLayer* layer,
+                                  const std::string& geomPropertyName,
+                                  Canvas* canvas,
+                                  const te::gm::Envelope& bbox,
+                                  int srid);
+
         /*!
           \brief It draws the data set geometries in the given canvas using the informed SRS.
 
@@ -168,6 +174,14 @@ namespace te
                                   Canvas* canvas, int fromSRID, int toSRID, Chart* chart, te::common::TaskProgress* task = 0);
 
         void buildChart(Chart* chart, te::da::DataSet* dataset, te::gm::Geometry* geom);
+
+        void buildChart(const Chart* chart, const std::map<std::string, double>& chartValue, te::gm::Geometry* geom);
+
+        double getSumarizedValue(const std::vector<double>&, const std::string&);
+
+        std::string getSumarizedValue(const std::vector<std::string>& values, const std::string& sumary);
+
+        double round(const double& value, const size_t& precision);
 
         void reset();
 

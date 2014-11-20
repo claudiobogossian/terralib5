@@ -191,8 +191,8 @@ namespace te
       m_segmentsIdsManagerPtr = 0;
       m_blockProcessedSignalPtr = 0;
       m_runningThreadsCounterPtr = 0;
-      m_inputRasterGains.clear();
-      m_inputRasterOffsets.clear();
+      m_inputRasterBandMinValues.clear();
+      m_inputRasterBandMaxValues.clear();
       m_inputRasterNoDataValues.clear();
       m_enableStrategyProgress = false;
       m_progressPtr = 0;
@@ -315,9 +315,9 @@ namespace te
         
         // Finding the input raster normalization parameters
         
-        std::vector< double > inputRasterGains( 
+        std::vector< double > inputRasterBandMinValues( 
           m_inputParameters.m_inputRasterBands.size(), 0.0 );
-        std::vector< double > inputRasterOffsets( 
+        std::vector< double > inputRasterBandMaxValues( 
           m_inputParameters.m_inputRasterBands.size(), 0.0 );
           
         {
@@ -370,16 +370,9 @@ namespace te
                 }
               }
             }
-              
-            if( bandMax == bandMin )
-            {
-              inputRasterGains[ inputRasterBandsIdx ] = 0.0;
-              inputRasterOffsets[ inputRasterBandsIdx ] = 1.0; 
-            }
-            {
-              inputRasterGains[ inputRasterBandsIdx ] = 1.0 / ( bandMax - bandMin );
-              inputRasterOffsets[ inputRasterBandsIdx ] = -1.0 * bandMin;
-            }
+            
+            inputRasterBandMinValues[ inputRasterBandsIdx ] = bandMin;
+            inputRasterBandMaxValues[ inputRasterBandsIdx ] = bandMax;
           }
         }
         
@@ -694,8 +687,8 @@ namespace te
         baseSegThreadParams.m_blockProcessedSignalPtr = &blockProcessedSignal;
         baseSegThreadParams.m_runningThreadsCounterPtr = 
           &runningThreadsCounter;
-        baseSegThreadParams.m_inputRasterGains = inputRasterGains;
-        baseSegThreadParams.m_inputRasterOffsets = inputRasterOffsets;
+        baseSegThreadParams.m_inputRasterBandMinValues = inputRasterBandMinValues;
+        baseSegThreadParams.m_inputRasterBandMaxValues = inputRasterBandMaxValues;
         baseSegThreadParams.m_enableStrategyProgress =  m_inputParameters.m_enableProgress &&
           ( ( vBlocksNumber * hBlocksNumber ) == 1 );
         baseSegThreadParams.m_progressPtr = maxSegThreads ? 0 : progressPtr.get();
@@ -928,9 +921,9 @@ namespace te
         "Invalid parameter" );
       TERP_DEBUG_TRUE_OR_THROW( paramsPtr->m_runningThreadsCounterPtr,
         "Invalid parameter" );
-      TERP_DEBUG_TRUE_OR_THROW( !paramsPtr->m_inputRasterGains.empty(),
+      TERP_DEBUG_TRUE_OR_THROW( !paramsPtr->m_inputRasterBandMinValues.empty(),
         "Invalid parameter" );     
-      TERP_DEBUG_TRUE_OR_THROW( !paramsPtr->m_inputRasterOffsets.empty(),
+      TERP_DEBUG_TRUE_OR_THROW( !paramsPtr->m_inputRasterBandMaxValues.empty(),
         "Invalid parameter" );  
       TERP_DEBUG_TRUE_OR_THROW( paramsPtr->m_maxInputRasterCachedBlocks,
         "Invalid parameter" );        
@@ -1017,8 +1010,8 @@ namespace te
                 inputRaster, 
                 paramsPtr->m_inputParameters.m_inputRasterBands,
                 paramsPtr->m_inputRasterNoDataValues,
-                paramsPtr->m_inputRasterGains,
-                paramsPtr->m_inputRasterOffsets,
+                paramsPtr->m_inputRasterBandMinValues,
+                paramsPtr->m_inputRasterBandMaxValues,
                 outputRaster,
                 0,
                 paramsPtr->m_enableStrategyProgress ) )

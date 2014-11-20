@@ -408,7 +408,7 @@ void TsTiePointsLocator::MoravecStrategyMultipleThreads()
   saveImagesAndTiePoints( *inputRasterPointer, 0, *inputRasterPointer, 0,
     algoOutputParams.m_tiePoints, "terralib_rp_tiepointslocator_test_MoravecStrategyMultipleThreads" );
   
-  CPPUNIT_ASSERT( algoOutputParams.m_tiePoints.size() >= (size_t)785 ); 
+  CPPUNIT_ASSERT( algoOutputParams.m_tiePoints.size() >= (size_t)700 ); 
 }
 
 void TsTiePointsLocator::MoravecStrategyRescaleFactor()

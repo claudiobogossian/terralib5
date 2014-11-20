@@ -70,6 +70,8 @@ namespace te
           \note The caller will take the ownership of the returned pointer.
         */
         virtual te::color::RGBAColor** render(const Chart* chart, const te::da::DataSet* dataset, std::size_t& width) = 0;
+
+        virtual te::color::RGBAColor** render(const Chart* chart, const std::map<std::string, double>& chartValue, std::size_t& width) = 0;
     };
 
   } // end namespace map

@@ -1451,12 +1451,12 @@ namespace te
         }
       }      
       
-      TERP_TRUE_OR_RETURN_FALSE( features.reset( validInterestPoints.size(), 65 ),
+      TERP_TRUE_OR_RETURN_FALSE( features.reset( validInterestPoints.size(), 128 ),
         "Cannot allocate features matrix" );       
         
       // globals
       
-      float auxFeaturesBuffer[ 65 ];
+      float auxFeaturesBuffer[ 128 ];
       
       // iterating over each input innterest point
       
@@ -1491,7 +1491,7 @@ namespace te
 
         unsigned int currentFeaturePtrStartIdx = 0;
         
-        for( currentFeaturePtrStartIdx = 0; currentFeaturePtrStartIdx < 65 ; 
+        for( currentFeaturePtrStartIdx = 0; currentFeaturePtrStartIdx < 128 ; 
           ++currentFeaturePtrStartIdx )
           auxFeaturesBuffer[ currentFeaturePtrStartIdx ] = 0.0;
           
@@ -1644,7 +1644,7 @@ namespace te
               
             // Generating the related portion inside the output features vector
             
-            assert( currentFeaturePtrStartIdx < 61 );
+            assert( currentFeaturePtrStartIdx < 121 );
             
             auxFeaturesBuffer[ currentFeaturePtrStartIdx ] += 
               featureElementRotatedHaarXIntensity;
@@ -1653,7 +1653,27 @@ namespace te
             auxFeaturesBuffer[ currentFeaturePtrStartIdx + 2 ] += 
               std::abs( featureElementRotatedHaarXIntensity );
             auxFeaturesBuffer[ currentFeaturePtrStartIdx + 3 ] += 
-              std::abs( featureElementRotatedHaarYIntensity );                
+              std::abs( featureElementRotatedHaarYIntensity );
+            if( featureElementRotatedHaarXIntensity < 0.0 )
+            {
+              auxFeaturesBuffer[ currentFeaturePtrStartIdx + 4 ] += 
+                featureElementRotatedHaarXIntensity;
+            }
+            else
+            {
+              auxFeaturesBuffer[ currentFeaturePtrStartIdx + 5 ] += 
+                featureElementRotatedHaarXIntensity;
+            }
+            if( featureElementRotatedHaarYIntensity < 0.0 )
+            {
+              auxFeaturesBuffer[ currentFeaturePtrStartIdx + 6 ] += 
+                featureElementRotatedHaarYIntensity;
+            }
+            else
+            {
+              auxFeaturesBuffer[ currentFeaturePtrStartIdx + 7 ] += 
+                featureElementRotatedHaarYIntensity;
+            }            
           }
         }
         
@@ -1663,7 +1683,7 @@ namespace te
         
         float featureElementsNormalizeFactor = 0.0;
         
-        for( currentFeaturePtrStartIdx = 0 ; currentFeaturePtrStartIdx < 64 ; 
+        for( currentFeaturePtrStartIdx = 0 ; currentFeaturePtrStartIdx < 128 ; 
           ++currentFeaturePtrStartIdx )
         {
           featureElementsNormalizeFactor += ( auxFeaturesBuffer[ currentFeaturePtrStartIdx ]
@@ -1677,7 +1697,7 @@ namespace te
           featureElementsNormalizeFactor = 1.0f / featureElementsNormalizeFactor;
         }
         
-        for( currentFeaturePtrStartIdx = 0 ; currentFeaturePtrStartIdx < 64 ; 
+        for( currentFeaturePtrStartIdx = 0 ; currentFeaturePtrStartIdx < 128 ; 
           ++currentFeaturePtrStartIdx )
         {
           currentFeaturePtr[ currentFeaturePtrStartIdx ] = (
@@ -1688,12 +1708,6 @@ namespace te
           TERP_DEBUG_TRUE_OR_THROW( ( currentFeaturePtr[ currentFeaturePtrStartIdx ] >= -1.0 ),
             currentFeaturePtr[ currentFeaturePtrStartIdx ] );
         }
-        
-        // Adding an attribute based on the sign of the Laplacian to 
-        // distinguishes bright blobs 
-        // on dark backgrounds from the reverse situation.
-        
-        currentFeaturePtr[ 64 ] = ( iPointsIt->m_feature3 * 64.0f );
         
         ++interestPointIdx;
         ++iPointsIt;
@@ -1711,9 +1725,12 @@ namespace te
       const double raster1ToRaster2TransfDMapError,
       MatchedInterestPointsSetT& matchedPoints ) const
     {
+      assert( featuresSet1.getColumnsNumber() == featuresSet2.getColumnsNumber() );
+      
       matchedPoints.clear();
       
-      const double maxEuclideanDist = m_inputParameters.m_surfMaxNormEuclideanDist * 2.0; /* since surf feature vectors are unitary verctors */
+      const double maxEuclideanDist = m_inputParameters.m_surfMaxNormEuclideanDist 
+        * 2.0; /* since surf feature vectors are unitary verctors */
       
       const unsigned int interestPointsSet1Size = interestPointsSet1.size();
       if( interestPointsSet1Size == 0 ) return true;
@@ -1751,7 +1768,7 @@ namespace te
       TERP_TRUE_OR_RETURN_FALSE( distMatrix.reset( interestPointsSet1Size,
        interestPointsSet2Size, FloatsMatrix::RAMMemPol ),
         "Error crearting the correlation matrix" );
-        
+      
       unsigned int col = 0;
       unsigned int line = 0;
       float* linePtr = 0;
@@ -1762,9 +1779,11 @@ namespace te
         
         for( col = 0 ; col < interestPointsSet2Size ; ++col )
         {
-          linePtr[ col ] = FLT_MAX;
+          linePtr[ col ] = std::numeric_limits< float >::max();
         }
-      }
+      }      
+        
+      // Getting distances
       
       boost::mutex syncMutex;
       unsigned int nextFeatureIdx1ToProcess = 0;
@@ -1973,24 +1992,34 @@ namespace te
           
           feat1Ptr = paramsPtr->m_featuresSet1Ptr->operator[]( feat1Idx );
           
-          for( unsigned int selectedFSIIdx = 0 ; selectedFSIIdx < 
-            selectedFeaturesSet2IndexesSize ; ++selectedFSIIdx )
+          for( unsigned int selectedFeaturesSet2IndexesIdx = 0 ; 
+            selectedFeaturesSet2IndexesIdx < selectedFeaturesSet2IndexesSize ; 
+            ++selectedFeaturesSet2IndexesIdx )
           {
-            feat2Idx = selectedFeaturesSet2Indexes[ selectedFSIIdx ];
+            feat2Idx = selectedFeaturesSet2Indexes[ selectedFeaturesSet2IndexesIdx ];
             
-            feat2Ptr = paramsPtr->m_featuresSet2Ptr->operator[]( feat2Idx );
-            
-            euclideanDist = 0.0;
-
-            for( featCol = 0 ; featCol < featureElementsNmb ; ++featCol )
+            if( 
+                ( paramsPtr->m_interestPointsSet1Ptr[ feat1Idx ].m_feature2 ==
+                  paramsPtr->m_interestPointsSet2Ptr[ feat2Idx ].m_feature2 )
+                &&
+                ( paramsPtr->m_interestPointsSet1Ptr[ feat1Idx ].m_feature3 ==
+                  paramsPtr->m_interestPointsSet2Ptr[ feat2Idx ].m_feature3 ) 
+              )
             {
-              diff = feat1Ptr[ featCol ] - feat2Ptr[ featCol ];
-              euclideanDist += ( diff * diff );              
+              feat2Ptr = paramsPtr->m_featuresSet2Ptr->operator[]( feat2Idx );
+              
+              euclideanDist = 0.0;
+
+              for( featCol = 0 ; featCol < featureElementsNmb ; ++featCol )
+              {
+                diff = feat1Ptr[ featCol ] - feat2Ptr[ featCol ];
+                euclideanDist += ( diff * diff );              
+              }
+              
+              euclideanDist = std::sqrt( euclideanDist );
+                  
+              corrMatrixLinePtr[ feat2Idx ] = euclideanDist;            
             }
-            
-            euclideanDist = std::sqrt( euclideanDist );
-                
-            corrMatrixLinePtr[ feat2Idx ] = euclideanDist;            
           }
         }
         else
