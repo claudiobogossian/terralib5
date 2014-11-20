@@ -334,8 +334,13 @@ void te::qt::widgets::ChartRenderer::getValues(const te::map::Chart* chart, cons
 void te::qt::widgets::ChartRenderer::getValues(const te::map::Chart* chart, const std::map<std::string, double>& chartValue, std::vector<double>& values)
 {
   std::map<std::string, double>::const_iterator it;
-  for(it = chartValue.begin(); it != chartValue.end(); ++it)
-    values.push_back(it->second);
+  const std::vector<std::string>& properties = chart->getProperties(); 
+  for(std::size_t i = 0; i < properties.size(); ++i)
+  {
+    it = chartValue.find(properties[i]);
+    if(it != chartValue.end())
+      values.push_back(it->second);
+  }
 }
 
 double te::qt::widgets::ChartRenderer::computeSum(const std::vector<double>& values)
