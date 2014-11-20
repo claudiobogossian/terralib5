@@ -121,7 +121,7 @@ void te::layout::Scene::insertItem( ItemObserver* item )
     ItemObserver* obs = dynamic_cast<ItemObserver*>(qitem);
     if(obs)
     {
-      obs->refresh();
+      obs->refresh(false);
     }
   }
 

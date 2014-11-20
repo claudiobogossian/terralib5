@@ -83,8 +83,6 @@ namespace te
 
         virtual void textBoundingBox(double &w, double &h, std::string txt);
         
-        virtual void calculateRulerZoomFactor(double &factor, double &factorView);
-
         te::layout::WorldTransformer getTransformGeo(te::gm::Envelope boxgeo, te::gm::Envelope boxmm);
 
         virtual std::string convertDecimalToDegree(const double& value, bool bDegrees, bool bMinutes, bool bSeconds);
@@ -125,7 +123,7 @@ namespace te
         virtual void setApplyZoom(bool apply);
 
         virtual bool getApplyZoom();
-        
+                
       protected:
         
         virtual void changeCanvas(te::gm::Envelope viewport, te::gm::Envelope world, bool resize = true);
@@ -139,10 +137,8 @@ namespace te
       protected:
 
         bool                    m_applyZoom;
-        WorldTransformer        m_worldTransform;
-        te::gm::Envelope        m_box;
     };
   }
 }
 
-#endif // __TERRALIB_LAYOUT_INTERNAL_LAYOUT_UTILS_H
+#endif 

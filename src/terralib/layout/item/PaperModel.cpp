@@ -91,7 +91,7 @@ void te::layout::PaperModel::draw( ContextItem context )
   double ph = 0.;
 
   m_paperConfig->getPaperSize(pw, ph);
-  
+    
   m_boxShadow = te::gm::Envelope(m_shadowPadding, - m_shadowPadding, pw + m_shadowPadding, ph - m_shadowPadding);
   utils->drawRectW(m_boxShadow);
 

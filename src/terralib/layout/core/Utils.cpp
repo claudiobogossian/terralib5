@@ -63,7 +63,7 @@ void te::layout::Utils::drawRectW( te::gm::Envelope box )
   {
     return;
   }
-    
+      
   te::gm::Polygon* rect = new te::gm::Polygon(1, te::gm::PolygonType);
   
   te::gm::LinearRing* outRingPtr0 = new te::gm::LinearRing(5, te::gm::LineStringType);
@@ -166,8 +166,6 @@ void te::layout::Utils::changeCanvas( te::gm::Envelope viewport, te::gm::Envelop
 
     canvas->resize(viewport.getWidth(), viewport.getHeight());
   }
-      
-  m_box = world;
 
   canvas->setWindow(world.getLowerLeftX(), world.getLowerLeftY(), 
     world.getUpperRightX(), world.getUpperRightY()); 
@@ -201,10 +199,7 @@ te::gm::Envelope te::layout::Utils::viewportBoxFromMM( te::gm::Envelope box )
   // Adjust internal renderer transformer
   transf.setTransformationParameters(box.getLowerLeftX(), box.getLowerLeftY(), 
     box.getUpperRightX(), box.getUpperRightY(), pxwidth, pxheight);
-
-  // MM to MM Mirroring
-  m_worldTransform = WorldTransformer(box, box);
-
+  
   te::gm::Envelope boxViewport = transformToViewport(transf, box);
   return boxViewport;
 }
@@ -305,49 +300,6 @@ void te::layout::Utils::textBoundingBox( double &w, double &h, std::string txt )
       h = box->getHeight();
     }
   }
-}
-
-void te::layout::Utils::calculateRulerZoomFactor(double &factor, double &factorView)
-{
-  int						pageValue=210;
-  double        ury = 0.;
-  double        lly = 0.;
- 
-  factor = 1;
-  factorView = 0.5;
-
-  te::map::Canvas* canvas = Context::getInstance().getCanvas();
-  PaperConfig* pConfig = Context::getInstance().getPaperConfig();
-
-  double paperW = 0.;
-  double paperH = 0.;
-
-  pConfig->getPaperSize(paperW, paperH);
-
-  if(pConfig->getPaperOrientantion() != Portrait)
-  {
-    pageValue=297;	
-  }
-
-  if( paperW > paperH)
-  {
-    factor= (int) (factor * paperW / pageValue);
-  }
-  else
-  {
-    factor= (int) (factor * paperH / pageValue);
-  }
-  if(factor < 1) 
-    factor = 1;
-
-  ury = canvas->getHeight();
-
-  // Viewport - device coordinate system
-  factorView = 1. / (733./(factorView * std::fabs(ury-lly)));
-  factorView = 1. / factorView;
-  
-  if(factorView < 1) 
-    factorView = 1;
 }
 
 te::gm::Envelope te::layout::Utils::transformToMM( te::layout::WorldTransformer transf, te::gm::Envelope boxGeo )

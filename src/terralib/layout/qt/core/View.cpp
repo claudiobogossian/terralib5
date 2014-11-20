@@ -255,7 +255,7 @@ void te::layout::View::config()
 
   te::gm::Envelope box = nscene->getSceneBox();
   centerOn(QPointF(box.m_llx, box.m_ury));
-  
+      
   double zoomFactor = Context::getInstance().getDefaultZoomFactor();
   scale(zoomFactor, zoomFactor); //Initial zoom out
 
@@ -266,9 +266,7 @@ void te::layout::View::config()
     m_visualizationArea = new VisualizationArea(box);
     m_visualizationArea->build();
   }
-
-  createRectTest();
-        
+          
   setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
@@ -716,6 +714,9 @@ void te::layout::View::recompose()
 {
   resetView();
   resetDefaultConfig();
+
+  double defaultZoomFactor = Context::getInstance().getDefaultZoomFactor();
+  changeZoomFactor(defaultZoomFactor);
 }
 
 void te::layout::View::zoomPercentage()
@@ -758,18 +759,6 @@ bool te::layout::View::isExceededLimit(double currentScale, double factor, doubl
   }
 
   return true;
-}
-
-void te::layout::View::createRectTest()
-{
-  QRectF rct(0, 0, 30, 30);
-  QColor color(0,0,255);
-  QBrush br(color);
-
-  QGraphicsRectItem* item = scene()->addRect(rct, QPen(), br);
-  item->setFlag(QGraphicsItem::ItemIsMovable, true);
-  item->setFlag(QGraphicsItem::ItemIsSelectable, true);
-  item->setPos(0,0);
 }
 
 void te::layout::View::drawForeground( QPainter * painter, const QRectF & rect )

@@ -160,9 +160,7 @@ namespace te
         virtual bool intersectionSelectionItem(int x, int y);
         
         virtual QCursor createCursor(std::string pathIcon);
-
-        virtual void createRectTest();
-
+        
         virtual bool exportProperties(EnumType* type);
 
         virtual bool importTemplate(EnumType* type);

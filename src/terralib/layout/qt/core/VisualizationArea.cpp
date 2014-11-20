@@ -55,22 +55,17 @@ void te::layout::VisualizationArea::init()
 
 void te::layout::VisualizationArea::createPaper()
 {
-  if(!m_boxArea.isValid())
-    return;
-
-  double dpiX = te::layout::Context::getInstance().getDpiX();
-
-  double llx = m_boxArea.getLowerLeftX();
-  double lly = m_boxArea.getLowerLeftY();
-  double urx = m_boxArea.getUpperRightX();
-  double ury = m_boxArea.getUpperRightY();
-
   //Paper
   PaperModel* modelPaper = new PaperModel(te::layout::Context::getInstance().getPaperConfig());	
+
+  double x = modelPaper->getBox().getLowerLeftX();
+  double y = modelPaper->getBox().getLowerLeftY();
+
   PaperController* controllerPaper = new PaperController(modelPaper);
   ItemObserver* itemPaper = (ItemObserver*)controllerPaper->getView();
   PaperItem* qPaper = dynamic_cast<PaperItem*>(itemPaper);
-  qPaper->setPos(QPointF(0,0));
+  
+  qPaper->setPos(QPointF(x,y));
   qPaper->setZValue(0);
   qPaper->redraw();
 }

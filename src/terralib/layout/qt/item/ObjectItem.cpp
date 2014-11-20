@@ -88,10 +88,16 @@ void te::layout::ObjectItem::setPos( const QPointF &pos )
 
 void te::layout::ObjectItem::setPixmap( const QPixmap& pixmap )
 {
-  m_pixmap = pixmap;
-
-  if(m_pixmap.isNull())
+  if(pixmap.isNull())
     return;
+
+  /* The model draws on Cartesian coordinates, millimeter. 
+  The canvas of Terralib 5 works with the Y-Axis inverted, 
+  so the pixmap generated is upside down.*/
+  m_pixmap = pixmap;
+  QImage img = m_pixmap.toImage();
+  QImage image = img.mirrored(false, true);
+  m_pixmap = QPixmap::fromImage(image);
 
   QPointF point = pos();
 
@@ -124,7 +130,7 @@ void te::layout::ObjectItem::paint( QPainter * painter, const QStyleOptionGraphi
   boundRect = boundingRect();
   	
   painter->save();
-  painter->translate( -boundRect.bottomLeft().x(), -boundRect.topRight().y() );
+  painter->translate( -boundRect.bottomLeft().x(), -boundRect.topRight().y() );  
   QRectF rtSource( 0, 0, m_pixmap.width(), m_pixmap.height() );
   painter->drawPixmap(boundRect, m_pixmap, rtSource);
   painter->restore();  

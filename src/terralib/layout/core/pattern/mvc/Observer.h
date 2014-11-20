@@ -47,6 +47,7 @@ namespace te
 	    virtual ~Observer(void) {}
 
 	    virtual void updateObserver(ContextItem context) = 0;
+
       virtual te::layout::Properties* getProperties() const = 0;
     };
   }
