@@ -26,7 +26,7 @@
 #ifndef __TERRALIB_UNITTEST_GEOMETRY_INTERNAL_GTFILTER_H
 #define __TERRALIB_UNITTEST_GEOMETRY_INTERNAL_GTFILTER_H
 
-#include <terralib/geometry/GeometricTransformation.h>
+#include <terralib/geometry.h>
 
 // cppUnit
 #include <cppunit/extensions/HelperMacros.h>

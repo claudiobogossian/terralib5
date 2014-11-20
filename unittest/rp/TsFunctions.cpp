@@ -26,7 +26,6 @@
 #include "TsFunctions.h"
 #include "../Config.h"
 
-#include <terralib/rp/Functions.h>
 #include <terralib/raster/Grid.h>
 #include <terralib/raster/Raster.h>
 #include <terralib/raster/RasterFactory.h>

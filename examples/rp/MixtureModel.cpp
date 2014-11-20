@@ -2,8 +2,7 @@
 
 // TerraLib
 #include <terralib/raster.h>
-#include <terralib/rp/MixtureModel.h>
-#include <terralib/rp/MixtureModelLinearStrategy.h>
+#include <terralib/rp.h>
 
 // STL
 #include <iostream>

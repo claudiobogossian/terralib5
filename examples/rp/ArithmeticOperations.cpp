@@ -1,9 +1,9 @@
 #include "RPExamples.h"
 
 // TerraLib
+
+#include <terralib/rp.h>
 #include <terralib/raster.h>
-#include <terralib/rp/ArithmeticOperations.h>
-#include <terralib/raster/RasterFactory.h>
 
 // STL
 #include <string>

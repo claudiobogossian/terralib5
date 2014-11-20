@@ -29,7 +29,7 @@
 #include <terralib/gdal/Utils.h>
 #include <terralib/raster.h>
 #include <terralib/memory/ExpansibleRaster.h>
-#include <terralib/rp/ArithmeticOperations.h>
+
 #include "TsArithmeticOperations.h"
 
 // STL

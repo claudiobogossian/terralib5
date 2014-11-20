@@ -3,14 +3,9 @@
 // TerraLib
 #include <terralib/raster.h>
 #include <terralib/dataaccess.h>
-//#include <terralib/dataaccess/dataset/DataSetPersistence.h>
-#include <terralib/dataaccess/dataset/DataSetType.h>
-#include <terralib/dataaccess/datasource/DataSourceTransactor.h>
-#include <terralib/geometry/GeometryProperty.h>
-#include <terralib/memory/DataSet.h>
-#include <terralib/memory/DataSetItem.h>
-#include <terralib/rp/SegmenterRegionGrowingStrategy.h>
-#include <terralib/rp/Segmenter.h>
+#include <terralib/geometry.h>
+#include <terralib/memory.h>
+#include <terralib/rp.h>
 
 // STL
 #include <string>
