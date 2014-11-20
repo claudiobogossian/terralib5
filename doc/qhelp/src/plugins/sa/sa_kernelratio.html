@@ -1,0 +1,178 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html; charset=ISO-8859-1"
+ http-equiv="content-type">
+  <title>Kernel Ratio</title>
+</head>
+<body>
+<div style="text-align: center;">
+<h3 style="text-align: center;"><span
+ style="font-family: Calibri Light;">Kernel Ratio</span></h3>
+</div>
+<font face="Calibri Light"><br>
+</font><font style="font-family: Calibri Light;" face="Calibri Light">The
+<span style="font-weight: bold;">Kernel Ratio</span><span
+ style="font-weight: bold;"></span></font><font
+ style="font-family: Calibri Light;" face="Calibri Light">&nbsp;</font><span
+ id="result_box" class="" lang="en"><span
+ style="font-family: Calibri Light;" class="hps">is</span><span
+ style="font-family: Calibri Light;"> </span><span
+ style="font-family: Calibri Light;" class="hps">an operation</span><span
+ style="font-family: Calibri Light;"> </span><span
+ style="font-family: Calibri Light;" class="hps">that calculates the</span><span
+ style="font-family: Calibri Light;"> </span><span
+ style="font-family: Calibri Light;" class="hps">kernel map</span><span
+ style="font-family: Calibri Light;"> </span><span
+ style="font-family: Calibri Light;" class="hps">to</span><span
+ style="font-family: Calibri Light;"> </span><span
+ style="font-family: Calibri Light;" class="hps">two distinct</span><span
+ style="font-family: Calibri Light;"> </span><span
+ style="font-family: Calibri Light;" class="hps">attributes</span><span
+ style="font-family: Calibri Light;"> </span><span
+ style="font-family: Calibri Light;" class="hps">and the result is a
+ratio</span><span style="font-family: Calibri Light;"> </span><span
+ style="font-family: Calibri Light;" class="hps">between these</span><span
+ style="font-family: Calibri Light;"> </span><span
+ style="font-family: Calibri Light;" class="hps">two maps</span><span
+ class="">.</span></span><br>
+<font face="Calibri Light"><br>
+<span style="font-weight: bold;"></span></font><span
+ style="font-family: Calibri Light;" id="result_box" class="" lang="en"><span
+ class=""></span></span><font style="font-family: Calibri Light;"
+ face="Calibri Light">It is
+accessible through:</font><font style="font-family: Calibri Light;"
+ face="Calibri Light"><b><br>
+</b></font>
+<font face="Calibri Light"><br>
+</font>
+<font style="font-family: Calibri Light;" face="Calibri Light"><b>&nbsp;&nbsp;
+Plugins &gt; Spatial Analysis</b></font><font
+ style="font-family: Calibri Light;" face="Calibri Light"><b> &gt;
+Kernel Ratio...</b></font><font style="font-family: Calibri Light;"
+ face="Calibri Light"><br>
+<br>
+<span style="font-family: Calibri Light;"></span></font><font
+ style="font-family: Calibri Light;" face="Calibri Light">This
+interface consists of the
+following steps:<br>
+<br>
+</font><span style="font-family: Calibri Light;">&nbsp;&nbsp;&nbsp; 1.
+Input Information:</span>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">Layer Name</span>: Select the
+desired Layer.</li>
+  </ul>
+</ol>
+<span style="font-family: Calibri Light;">&nbsp;&nbsp;&nbsp; 2. Kernel
+Parameters:<br>
+</span>
+<ul style="font-family: Calibri Light;">
+  <li>Kernel Map A</li>
+</ul>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">Attr Name:</span> Attribute
+name that identifies the desired&nbsp;information.</li>
+  </ul>
+</ol>
+<ul style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">Function</span>: Quartic,
+Normal, Triangular, Uniform and Negative Exponential.</li>
+  </ul>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">Estimation:</span>&nbsp;Density,&nbsp;Spatial
+Moving Average and&nbsp;Probability.</li>
+  </ul>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">Use adaptative radius</span>:
+Uses adaptative radius or defines the percentage value of total width.</li>
+  </ul>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <li>Kernel Map B</li>
+</ul>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">Attr Name:</span> Attribute
+name that identifies the desired&nbsp;information.</li>
+  </ul>
+</ol>
+<ul style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">Function</span>: Quartic,
+Normal, Triangular, Uniform and Negative Exponential.</li>
+  </ul>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">Estimation:</span>&nbsp;Density,&nbsp;Spatial
+Moving Average and&nbsp;Probability.</li>
+  </ul>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">Use adaptative radius</span>:
+Uses adaptative radius or defines the percentage value of total width.</li>
+  </ul>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <li><span style="font-weight: bold;">Combination</span>: How the
+kernal ratio is calculated (ratio, log ratio, absolute difference,
+relative difference, absolute sum, relative sum).</li>
+</ul>
+<span style="font-family: Calibri Light;">&nbsp;&nbsp;&nbsp; 3. Output
+Information:</span>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">Support Region:</span> Defines
+how the output data will be created.</li>
+  </ul>
+</ol>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <ul>
+      <li><span style="font-weight: bold;">Grid</span>: &nbsp;The
+output is a grid (image) where the kernel map information is a pixel
+value.</li>
+    </ul>
+  </ul>
+</ol>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <ul>
+      <li><span style="font-weight: bold;">Data Set</span>: The output
+is the input data plus a attribute with kernel map information.</li>
+    </ul>
+  </ul>
+</ol>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">Repository:</span> Defines
+where the output data will be saved.</li>
+  </ul>
+</ol>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <ul>
+      <li>Local File.</li>
+    </ul>
+  </ul>
+</ol>
+<ul style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">Layer Name:</span> Defines the
+name to create the output layer.</li>
+  </ul>
+</ul>
+<span style="font-family: Calibri Light;"><br>
+Click <span style="font-weight: bold;">OK</span> and then the kernel
+map will be calculated.</span><br>
+</body>
+</html>
