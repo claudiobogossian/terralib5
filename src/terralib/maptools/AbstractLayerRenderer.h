@@ -177,12 +177,6 @@ namespace te
 
         void buildChart(const Chart* chart, const std::map<std::string, double>& chartValue, te::gm::Geometry* geom);
 
-        double getSumarizedValue(const std::vector<double>&, const std::string&);
-
-        std::string getSumarizedValue(const std::vector<std::string>& values, const std::string& sumary);
-
-        double round(const double& value, const size_t& precision);
-
         void reset();
 
       private:
