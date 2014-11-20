@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>507</width>
-    <height>384</height>
+    <height>386</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -124,8 +124,14 @@
                            <height>16777215</height>
                           </size>
                          </property>
+                         <property name="alignment">
+                          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                         </property>
+                         <property name="decimals">
+                          <number>3</number>
+                         </property>
                          <property name="maximum">
-                          <double>1.000000000000000</double>
+                          <double>10.000000000000000</double>
                          </property>
                          <property name="singleStep">
                           <double>0.100000000000000</double>
@@ -274,8 +280,14 @@
                          </item>
                          <item row="1" column="0">
                           <widget class="QDoubleSpinBox" name="m_thresholdBaatzDoubleSpinBox">
+                           <property name="alignment">
+                            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                           </property>
+                           <property name="decimals">
+                            <number>3</number>
+                           </property>
                            <property name="maximum">
-                            <double>1.000000000000000</double>
+                            <double>10.000000000000000</double>
                            </property>
                            <property name="singleStep">
                             <double>0.100000000000000</double>
