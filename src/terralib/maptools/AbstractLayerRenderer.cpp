@@ -777,7 +777,7 @@ void te::map::AbstractLayerRenderer::drawLayerLinkedGroupingMem(AbstractLayer* l
   const std::size_t& precision = grouping->getPrecision();
 
   // The grouping sumarization
-  const std::string gfunction = "MIN"; // for testing purposes only. The correct information is in the classification module.
+  const std::string gfunction = grouping->getSummary();
   
   // The grouping items
   const std::vector<GroupingItem*>& items = grouping->getGroupingItems();
@@ -860,13 +860,14 @@ void te::map::AbstractLayerRenderer::drawLayerLinkedGroupingMem(AbstractLayer* l
   Chart* chart = layer->getChart();
 
   // The chart sumarization
-  const std::string cfunction = "MIN"; // for testing purposes only. The correct information is in the chart module.
+  std::string cfunction;
   std::map<std::string, std::vector<double> > chartValues;
   std::map<std::string, double> chartValue;
   bool hasChartNullValue = false;
   size_t csize = 0;
   if(chart)
   {
+    cfunction = chart->getSummary();
     csize = chart->getProperties().size();
     for(std::size_t i = 0; i < csize; ++i)
     {
@@ -999,11 +1000,9 @@ void te::map::AbstractLayerRenderer::drawLayerLinkedGroupingMem(AbstractLayer* l
       if(hasChartNullValue == false)
       {
         for(std::size_t i = 0; i < csize; ++i)
-        {
           chartValue[chart->getProperties()[i]] = te::da::GetSummarizedValue(chartValues[chart->getProperties()[i]], cfunction);
-        }
       }
-          
+
       // store the values of the other object (for next loop).
       try
       {
@@ -1064,7 +1063,7 @@ void te::map::AbstractLayerRenderer::drawLayerLinkedGroupingMem(AbstractLayer* l
 
       canvas->draw(geom);
 
-      if(chart && j == nSymbolizers - 1)
+      if(chart && hasChartNullValue == false && j == nSymbolizers - 1)
         buildChart(chart, chartValue, geom);
     }
   } while(dataset->moveNext());
@@ -1144,7 +1143,7 @@ void te::map::AbstractLayerRenderer::drawLayerLinkedGroupingMem(AbstractLayer* l
 
     canvas->draw(geom);
 
-    if(chart && j == nSymbolizers - 1)
+    if(chart && hasChartNullValue == false && j == nSymbolizers - 1)
       buildChart(chart, chartValue, geom);
   }
   delete geom;
@@ -1179,13 +1178,14 @@ void te::map::AbstractLayerRenderer::drawDatSetGeometries(te::da::DataSet* datas
     needRemap = true;
 
   // The chart sumarization
-  const std::string cfunction = "MIN"; // for testing purposes only. The correct information is in the chart module.
+  std::string cfunction;
   std::map<std::string, std::vector<double> > chartValues;
   std::map<std::string, double> chartValue;
   bool hasChartNullValue = false;
   size_t csize = 0;
   if(chart)
   {
+    cfunction = chart->getSummary();
     csize = chart->getProperties().size();
     for(std::size_t i = 0; i < csize; ++i)
     {
@@ -1311,8 +1311,10 @@ void te::map::AbstractLayerRenderer::drawDatSetGeometries(te::da::DataSet* datas
 
     canvas->draw(geom);
 
-    if(chart)
+    if(chart && hasChartNullValue == false)
       buildChart(chart, chartValue, geom);
+
+    hasChartNullValue = false;
 
   } while(dataset->moveNext()); // next geometry!
 

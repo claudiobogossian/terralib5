@@ -116,6 +116,17 @@ namespace te
 
         bool getAvoidConflicts() const;
 
+        /*! \brief It gets the grouping summary. It is used only in case 1 to n.
+        */
+        std::string getSummary() const;
+
+        /*!
+          \brief It gets the grouping summary. It is used only in case 1 to n.
+
+          \param summary The summary mode. It can be: "MIN", "MAX", "SUM", "AVERAGE", "MEDIAN", "STDDEV" or "VARIANCE"
+        */
+        void setSummary(std::string& summary);
+
       private:
 
         ChartType m_type;                           //!< The chart type.
@@ -128,6 +139,7 @@ namespace te
         bool m_isVisible;                           //!< A flag that indicates if the chart is visible.
         double m_maxValue;                          //!< The max value of the chart.
         bool m_avoidConflicts;                      //!< A flag that indicates if conflicts must be avoided.
+        std::string m_summary;                       //!< The summary used in case 1 to n.
     };
 
   } // end namespace map
