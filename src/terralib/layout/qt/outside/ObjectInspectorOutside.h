@@ -28,14 +28,17 @@
 #ifndef __TERRALIB_LAYOUT_INTERNAL_OBJECTINSPECTOR_OUTSIDE_H 
 #define __TERRALIB_LAYOUT_INTERNAL_OBJECTINSPECTOR_OUTSIDE_H
 
-// Qt
-#include <QWidget>
-
 // TerraLib
 #include "../../core/pattern/mvc/OutsideObserver.h"
 #include "../../../geometry/Envelope.h"
 #include "../../core/Config.h"
 #include "../core/ObjectInspectorPropertyBrowser.h"
+
+// STL
+#include <string>
+
+// Qt
+#include <QWidget>
 
 class QGraphicsItem;
 
@@ -50,17 +53,30 @@ namespace te
     public:
 
 	    ObjectInspectorOutside(OutsideController* controller, Observable* o);
-	    virtual ~ObjectInspectorOutside();
+	    
+      virtual ~ObjectInspectorOutside();
 
 	    virtual void updateObserver(ContextItem context);
-	    virtual void setPosition(const double& x, const double& y);
-	    virtual te::gm::Coord2D getPosition();
+	    
+      virtual void setPosition(const double& x, const double& y);
+	    
+      virtual te::gm::Coord2D getPosition();
 
       virtual void itemsInspector(QList<QGraphicsItem*> graphicsItems);
 
+      virtual void selectItems(QList<QGraphicsItem*> graphicsItems);
+
+    signals:
+
+      void currentItemChanged(Property prop);
+
+      void currentItemChanged(std::string name);
+      
     protected slots:
       
-      virtual void 	onCurrentItemChanged (QtBrowserItem *current);
+      virtual void onCurrentItemChanged (QtBrowserItem *current);
+      
+      virtual void onRemoveProperties(std::vector<std::string> names);
 
     protected:
 

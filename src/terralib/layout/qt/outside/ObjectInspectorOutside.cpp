@@ -60,6 +60,8 @@ te::layout::ObjectInspectorOutside::ObjectInspectorOutside( OutsideController* c
 
   connect(m_layoutPropertyBrowser->getPropertyEditor(), SIGNAL(currentItemChanged (QtBrowserItem *)), 
           this, SLOT(onCurrentItemChanged (QtBrowserItem *)));
+  
+  m_layoutPropertyBrowser->getPropertyEditor()->installEventFilter(this);
 
   QGroupBox* groupBox = new QGroupBox;
   groupBox->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -144,10 +146,9 @@ void te::layout::ObjectInspectorOutside::itemsInspector(QList<QGraphicsItem*> gr
           break;
 
         Property pro_class;
-        pro_class.setName(lItem->getNameClass());
+        pro_class.setName(lItem->getName());
         pro_class.setId("");
-        pro_class.setValue(lItem->getName(), dataType->getDataTypeString());
-        pro_class.setEditable(false);
+        pro_class.setValue(lItem->getNameClass(), dataType->getDataTypeString());
         
         m_layoutPropertyBrowser->addProperty(pro_class);
      
@@ -161,6 +162,44 @@ void te::layout::ObjectInspectorOutside::itemsInspector(QList<QGraphicsItem*> gr
 
 void te::layout::ObjectInspectorOutside::onCurrentItemChanged(QtBrowserItem *current)
 {
+  if(!current)
+    return;
+
   QtProperty* proper = current->property();
+  if(!proper)
+    return;
+
   Property prop = m_layoutPropertyBrowser->getProperty(proper->propertyName().toStdString());
+
+  if(prop.isNull())
+    return;
+
+  emit currentItemChanged(prop);
+  emit currentItemChanged(prop.getName());
+}
+
+void te::layout::ObjectInspectorOutside::onRemoveProperties( std::vector<std::string> names )
+{
+  std::vector<std::string>::iterator it;
+
+  for(it = names.begin() ; it != names.end() ; ++it)
+  {
+    Property prop = m_layoutPropertyBrowser->getProperty(*it);
+    m_layoutPropertyBrowser->removeProperty(prop);
+  }
+}
+
+void te::layout::ObjectInspectorOutside::selectItems( QList<QGraphicsItem*> graphicsItems )
+{
+  foreach( QGraphicsItem *item, graphicsItems) 
+  {
+    if (item)
+    {
+      ItemObserver* iOb = dynamic_cast<ItemObserver*>(item);
+      if(iOb)
+      {
+        m_layoutPropertyBrowser->selectProperty(iOb->getName());
+      }
+    }
+  }
 }

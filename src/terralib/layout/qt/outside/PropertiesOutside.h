@@ -65,50 +65,54 @@ namespace te
     {
 	    Q_OBJECT //for slots/signals
 
-    public:
+      public:
 
-	    PropertiesOutside(OutsideController* controller, Observable* o);
-	    virtual ~PropertiesOutside();
+	      PropertiesOutside(OutsideController* controller, Observable* o);
+	      virtual ~PropertiesOutside();
 
-	    virtual void updateObserver(ContextItem context);
-	    virtual void setPosition(const double& x, const double& y);
-	    virtual te::gm::Coord2D getPosition();
+	      virtual void updateObserver(ContextItem context);
+	      virtual void setPosition(const double& x, const double& y);
+	      virtual te::gm::Coord2D getPosition();
 
-      virtual void itemsSelected(QList<QGraphicsItem*> graphicsItems, QList<QGraphicsItem*> allItems);
+        virtual void itemsSelected(QList<QGraphicsItem*> graphicsItems, QList<QGraphicsItem*> allItems);
 
-      virtual void refreshOutside();
+        virtual void refreshOutside();
+
+      protected slots:
+
+        virtual void onClear(std::vector<std::string> names);
 
       private slots:
 
         void onChangePropertyValue(Property property);
 
-    protected:
+      protected:
 
-      virtual void	closeEvent ( QCloseEvent * event );
-      virtual void createLayout();
-      virtual Properties* intersection(QList<QGraphicsItem*> graphicsItems, bool& window);
-      virtual Properties* sameProperties(QList<QGraphicsItem*> graphicsItems, bool& window);
-      virtual void contains(std::vector<Properties*>::iterator itend, 
-        std::vector<Properties*>::iterator it, std::string name, bool& result);
-      virtual std::vector<Properties*> getAllProperties(QList<QGraphicsItem*> graphicsItems, bool& window);
-      virtual void addDynamicOptions(Property& property, std::vector<std::string> list);
-      virtual void checkDynamicProperty(Property& property, QList<QGraphicsItem*> graphicsItems);
-      virtual void mapNameDynamicProperty(Property& property, QList<QGraphicsItem*> graphicsItems);
-      virtual void changeMapVisitable(Property property);
-      virtual MapModel* getMapModel(std::string nameMap);
+        virtual void	closeEvent ( QCloseEvent * event );
+        virtual void createLayout();
+        virtual Properties* intersection(QList<QGraphicsItem*> graphicsItems, bool& window);
+        virtual Properties* sameProperties(QList<QGraphicsItem*> graphicsItems, bool& window);
+        virtual void contains(std::vector<Properties*>::iterator itend, 
+          std::vector<Properties*>::iterator it, std::string name, bool& result);
+        virtual std::vector<Properties*> getAllProperties(QList<QGraphicsItem*> graphicsItems, bool& window);
+        virtual void addDynamicOptions(Property& property, std::vector<std::string> list);
+        virtual void checkDynamicProperty(Property& property, QList<QGraphicsItem*> graphicsItems);
+        virtual void mapNameDynamicProperty(Property& property, QList<QGraphicsItem*> graphicsItems);
+        virtual void changeMapVisitable(Property property);
+        virtual MapModel* getMapModel(std::string nameMap);
 
-    protected:
+      protected:
 
-      PropertiesItemPropertyBrowser* m_layoutPropertyBrowser;
+        PropertiesItemPropertyBrowser* m_layoutPropertyBrowser;
       
-      QList<QGraphicsItem*> m_graphicsItems;
-      QList<QGraphicsItem*> m_allItems;
-      QLabel* m_nameLabel;
-      QLineEdit* m_propertyFilterEdit;
-      QToolButton* m_configurePropertyEditor;
-      bool m_updatingValues;
-      SharedProperties* m_sharedProps;
-    };
+        QList<QGraphicsItem*> m_graphicsItems;
+        QList<QGraphicsItem*> m_allItems;
+        QLabel* m_nameLabel;
+        QLineEdit* m_propertyFilterEdit;
+        QToolButton* m_configurePropertyEditor;
+        bool m_updatingValues;
+        SharedProperties* m_sharedProps;
+      };
   }
 }
 

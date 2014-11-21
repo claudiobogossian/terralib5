@@ -37,6 +37,9 @@
 #include "../outside/SystematicScaleOutside.h"
 #include "MenuItem.h"
 
+// STL
+#include <string>
+
 // Qt
 #include <QGraphicsView>
 #include <QMenu>
@@ -93,7 +96,7 @@ namespace te
         virtual void zoomPercentage();
 
         virtual void changeZoomFactor(double currentZoom);
-                                
+                                        
       public slots:
 
         virtual void onToolbarChangeContext(bool change);
@@ -105,6 +108,8 @@ namespace te
         virtual void onSystematicApply(double scale, SystematicScaleType type);
 
         virtual void onSelectionChanged();
+        
+        virtual void onSelectionItem(std::string name);
 
       signals:
 

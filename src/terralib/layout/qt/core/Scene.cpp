@@ -209,8 +209,9 @@ QTransform te::layout::Scene::sceneTransform()
 
 void te::layout::Scene::deleteItems()
 {
-  QList<QGraphicsItem*> graphicsItems = selectedItems();
+  std::vector<std::string> names;
 
+  QList<QGraphicsItem*> graphicsItems = selectedItems();
   foreach( QGraphicsItem *item, graphicsItems) 
   {
     if (item)
@@ -218,15 +219,25 @@ void te::layout::Scene::deleteItems()
       removeItem(item);
       if(item)
       {
+        ItemObserver* obs = dynamic_cast<ItemObserver*>(item);
+        if(obs)
+        {
+          names.push_back(obs->getName());
+        }
         delete item;
         item = 0;
       }
     }
   }
+
+  if(!names.empty())
+    emit deleteFinalized(names);
 }
 
 void te::layout::Scene::removeSelectedItems()
 {
+  std::vector<std::string> names;
+
   QList<QGraphicsItem*> graphicsItems = selectedItems();
 
   if(graphicsItems.empty())
@@ -240,8 +251,16 @@ void te::layout::Scene::removeSelectedItems()
     if (item)
     {
       removeItem(item);
+      ItemObserver* obs = dynamic_cast<ItemObserver*>(item);
+      if(obs)
+      {
+        names.push_back(obs->getName());
+      }
     }
   }
+
+  if(!names.empty())
+    emit deleteFinalized(names);
 }
 
 void te::layout::Scene::addUndoStack( QUndoCommand* command )
@@ -578,4 +597,27 @@ bool te::layout::Scene::eventFilter( QObject * watched, QEvent * event )
   }*/
 
   return QGraphicsScene::eventFilter(watched, event);
+}
+
+void te::layout::Scene::selectionItem( std::string name )
+{
+  QList<QGraphicsItem*> allItems = items();
+  foreach(QGraphicsItem *item, allItems) 
+  {
+    if(item)
+    {
+      ItemObserver* it = dynamic_cast<ItemObserver*>(item);
+      if(it)
+      {
+        if(it->getName().compare(name) == 0)
+        {
+          item->setSelected(true);
+        }
+        else
+        {
+          item->setSelected(false);
+        }
+      }
+    }
+  }
 }

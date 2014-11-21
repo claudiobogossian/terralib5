@@ -104,6 +104,7 @@ namespace te
         virtual EnumType* getModeCreateLegendChild() const;
         virtual EnumType* getModeLegendChildAsObject() const;
         virtual EnumType* getModeObjectToImage() const;
+        virtual EnumType* getModeInspectorCurrentItemChanged() const;
 
       protected:
 
@@ -169,6 +170,7 @@ namespace te
         EnumType* m_modeCreateLegendChild;
         EnumType* m_modeLegendChildAsObject;
         EnumType* m_modelObjectToImage;
+        EnumType* m_inspectorCurrentItemChanged;
     };
   }
 }

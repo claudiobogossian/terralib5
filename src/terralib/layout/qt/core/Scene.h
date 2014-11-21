@@ -110,10 +110,14 @@ namespace te
         virtual void exportItemsToImage(std::string dir);
 
         virtual bool	eventFilter ( QObject * watched, QEvent * event );
+
+        virtual void selectionItem(std::string name);
         
       signals:
 
          void addItemFinalized();
+
+         void deleteFinalized(std::vector<std::string> names);
         
       protected:
 
@@ -122,7 +126,7 @@ namespace te
         virtual void calculateWindow(double wMM, double hMM); 
 
         virtual std::vector<te::layout::Properties*> getItemsProperties();
-        
+                
     protected:
 
         QTransform                         m_matrix;

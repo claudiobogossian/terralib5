@@ -200,42 +200,6 @@ void te::layout::AlignItems::alignTop()
     return;
 
   QList<QGraphicsItem *> items = m_scene->selectedItems(); 
-  double dbTop = 0;
-
-  double ww = 0;
-  double hh = 0;
-
-  m_config->getPaperSize(ww, hh);
-
-  if(items.count() == 1)
-  {
-    te::gm::Envelope ppbx(0, 0, ww, hh);
-    dbTop = ppbx.getLowerLeftY();
-    QPointF pot(items.first()->sceneBoundingRect().x(), dbTop);
-    items.first()->setPos(pot);
-    return;
-  }
-
-  dbTop = sourceRect.top();
-
-  foreach (QGraphicsItem *item, items) 
-  {
-    if(item)
-    {
-      QPointF pt(item->scenePos().x(), dbTop);
-      item->setPos(pt);
-    }
-  }
-}
-
-void te::layout::AlignItems::alignBottom()
-{
-  QRectF sourceRect = getSelectionItemsBoundingBox();
-
-  if(!sourceRect.isValid())
-    return;
-
-  QList<QGraphicsItem *> items = m_scene->selectedItems(); 
   double dbBottom = 0;
   double h = 0;
 
@@ -262,6 +226,42 @@ void te::layout::AlignItems::alignBottom()
     {
       h = dbBottom - item->sceneBoundingRect().height();
       QPointF pt(item->scenePos().x(), h);
+      item->setPos(pt);
+    }
+  }
+}
+
+void te::layout::AlignItems::alignBottom()
+{
+  QRectF sourceRect = getSelectionItemsBoundingBox();
+
+  if(!sourceRect.isValid())
+    return;
+
+  QList<QGraphicsItem *> items = m_scene->selectedItems(); 
+  double dbTop = 0;
+
+  double ww = 0;
+  double hh = 0;
+
+  m_config->getPaperSize(ww, hh);
+
+  if(items.count() == 1)
+  {
+    te::gm::Envelope ppbx(0, 0, ww, hh);
+    dbTop = ppbx.getLowerLeftY();
+    QPointF pot(items.first()->sceneBoundingRect().x(), dbTop);
+    items.first()->setPos(pot);
+    return;
+  }
+
+  dbTop = sourceRect.top();
+
+  foreach (QGraphicsItem *item, items) 
+  {
+    if(item)
+    {
+      QPointF pt(item->scenePos().x(), dbTop);
       item->setPos(pt);
     }
   }

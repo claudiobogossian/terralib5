@@ -85,7 +85,8 @@ te::layout::EnumModeType::EnumModeType() :
   m_modeDrawSelectionMap(0),
   m_modeCreateLegendChild(0),
   m_modeLegendChildAsObject(0),
-  m_modelObjectToImage(0)
+  m_modelObjectToImage(0),
+  m_inspectorCurrentItemChanged(0)
 {
   init();
 }
@@ -377,6 +378,11 @@ te::layout::EnumModeType::~EnumModeType()
     delete m_modelObjectToImage;
     m_modelObjectToImage = 0;
   }
+  if(m_inspectorCurrentItemChanged)
+  {
+    delete m_inspectorCurrentItemChanged;
+    m_inspectorCurrentItemChanged = 0;
+  }
 }
 
 void te::layout::EnumModeType::init()
@@ -554,6 +560,9 @@ void te::layout::EnumModeType::init()
 
   m_modelObjectToImage = new EnumType(59, "ObjectToImage");
   m_enums.push_back(m_modelObjectToImage);
+
+  m_inspectorCurrentItemChanged = new EnumType(60, "Inspector Item Changed");
+  m_enums.push_back(m_inspectorCurrentItemChanged);
 }
 
 te::layout::EnumType* te::layout::EnumModeType::getModeSelectByBox() const
@@ -844,4 +853,9 @@ te::layout::EnumType* te::layout::EnumModeType::getModeLegendChildAsObject() con
 te::layout::EnumType* te::layout::EnumModeType::getModeObjectToImage() const
 {
   return m_modelObjectToImage;
+}
+
+te::layout::EnumType* te::layout::EnumModeType::getModeInspectorCurrentItemChanged() const
+{
+  return m_inspectorCurrentItemChanged;
 }

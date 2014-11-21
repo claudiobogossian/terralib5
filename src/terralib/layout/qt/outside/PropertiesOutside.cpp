@@ -458,3 +458,9 @@ void te::layout::PropertiesOutside::refreshOutside()
 {
   itemsSelected(m_graphicsItems, m_allItems);
 }
+
+void te::layout::PropertiesOutside::onClear( std::vector<std::string> names )
+{
+  m_updatingValues = false;
+  m_layoutPropertyBrowser->clearAll();
+}

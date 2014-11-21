@@ -873,3 +873,15 @@ void te::layout::View::changeZoomFactor( double currentZoom )
     emit changeZoom(zoomFactor);
   }
 }
+
+void te::layout::View::onSelectionItem( std::string name )
+{
+  Scene* scne = dynamic_cast<Scene*>(scene());
+  if(!scne)
+    return;
+
+  scne->selectionItem(name);
+
+  emit reloadProperties();
+  m_selectionChange = false;
+}
