@@ -22,9 +22,7 @@
 #include "../Config.h"
 
 // TerraLib
-#include <terralib/geometry/AffineGT.h>
-#include <terralib/geometry/GTParameters.h>
-#include <terralib/geometry/GTFactory.h>
+#include <terralib/geometry.h>
 
 #include <boost/lexical_cast.hpp> 
 

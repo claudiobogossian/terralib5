@@ -26,7 +26,6 @@
 #include "TsContrast.h"
 #include "../Config.h"
 
-#include <terralib/rp/Contrast.h>
 #include <terralib/raster/RasterFactory.h>
 
 #include <terralib/dataaccess/datasource/DataSourceFactory.h>

@@ -26,9 +26,6 @@
 #include "TsMosaic.h"
 #include "../Config.h"
 
-#include <terralib/rp/TiePointsMosaic.h>
-#include <terralib/rp/GeoMosaic.h>
-#include <terralib/rp/SequenceMosaic.h>
 #include <terralib/raster/Raster.h>
 #include <terralib/raster/RasterFactory.h>
 #include <terralib/dataaccess/datasource/DataSourceFactory.h>

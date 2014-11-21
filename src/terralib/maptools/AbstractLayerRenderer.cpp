@@ -82,8 +82,6 @@
 #include <memory>
 #include <utility>
 
-
-
 te::map::AbstractLayerRenderer::AbstractLayerRenderer()
   : m_index(0)
 {
@@ -235,44 +233,34 @@ void te::map::AbstractLayerRenderer::drawLayerGeometries(AbstractLayer* layer,
                                                          int srid)
 {
   assert(!geomPropertyName.empty());
-  bool linked = false;
   m_oid.clear();
   te::map::QueryLayer* qlayer = 0;
   te::da::Select* select = 0;
 
-  if(layer->getType() == "QUERYLAYER")
+  bool linked = te::da::HasLinkedTable(layer);
+  if(linked)
   {
+    // make sorting by object id
+    qlayer = dynamic_cast<te::map::QueryLayer*>(layer);
+    select = dynamic_cast<te::da::Select*>(qlayer->getQuery()->clone());
+    te::da::Select* selectaux = dynamic_cast<te::da::Select*>(select->clone());
+    te::da::OrderBy* orderBy = new te::da::OrderBy;
+
     std::auto_ptr<te::da::DataSetType> schema = layer->getSchema();
     std::vector<te::dt::Property*> props = schema->getPrimaryKey()->getProperties();
-    if(props.size() > 1)
+    size_t pksize = 0;
+    while(++pksize < props.size())
     {
-      size_t n = 0;
-      std::vector<te::dt::Property*>::iterator it = props.begin();
-      while(++n < props.size())
-      {
-        m_oid.push_back(props[n-1]->getName());
-        if(props[n-1]->getDatasetName() != props[n]->getDatasetName())
-        {
-          linked = true;
-          break;
-        }
-      }
-
-      if(linked)
-      {
-        // make sorting by object id
-        qlayer = dynamic_cast<te::map::QueryLayer*>(layer);
-        select = dynamic_cast<te::da::Select*>(qlayer->getQuery()->clone());
-        te::da::Select* selectaux = dynamic_cast<te::da::Select*>(select->clone());
-        te::da::OrderBy* orderBy = new te::da::OrderBy;
-
-        for(size_t i = 0; i < n; ++i)
-          orderBy->push_back(new te::da::OrderByItem(m_oid[i]));
-
-        selectaux->setOrderBy(orderBy);
-        qlayer->setQuery(selectaux);
-      }
+      m_oid.push_back(props[pksize-1]->getName());
+      if(props[pksize-1]->getDatasetName() != props[pksize]->getDatasetName())
+        break;
     }
+
+    for(size_t i = 0; i < pksize; ++i)
+      orderBy->push_back(new te::da::OrderByItem(m_oid[i]));
+
+    selectaux->setOrderBy(orderBy);
+    qlayer->setQuery(selectaux);
   }
 
   // Creates a canvas configurer
@@ -548,35 +536,10 @@ void te::map::AbstractLayerRenderer::drawLayerGroupingMem(AbstractLayer* layer,
 {
   assert(!geomPropertyName.empty());
 
-  size_t pksize = 0;
-  bool linked = false;
-  m_oid.clear();
-  te::map::QueryLayer* qlayer = 0;
-  te::da::Select* select = 0;
-
-  if(layer->getType() == "QUERYLAYER")
+  if(te::da::HasLinkedTable(layer))
   {
-    std::auto_ptr<te::da::DataSetType> schema = layer->getSchema();
-    std::vector<te::dt::Property*> props = schema->getPrimaryKey()->getProperties();
-    if(props.size() > 1)
-    {
-      std::vector<te::dt::Property*>::iterator it = props.begin();
-      while(++pksize < props.size())
-      {
-        m_oid.push_back(props[pksize-1]->getName());
-        if(props[pksize-1]->getDatasetName() != props[pksize]->getDatasetName())
-        {
-          linked = true;
-          break;
-        }
-      }
-
-      if(linked)
-      {
-        drawLayerLinkedGroupingMem(layer, geomPropertyName, canvas, bbox, srid);
-        return;
-      }
-    }
+    drawLayerLinkedGroupingMem(layer, geomPropertyName, canvas, bbox, srid);
+    return;
   }
 
   // Creates a canvas configurer
@@ -774,7 +737,6 @@ void te::map::AbstractLayerRenderer::drawLayerLinkedGroupingMem(AbstractLayer* l
 {
   assert(!geomPropertyName.empty());
 
-  size_t pksize = 0;
   m_oid.clear();
 
   te::map::QueryLayer* qlayer = dynamic_cast<te::map::QueryLayer*>(layer);
@@ -782,6 +744,7 @@ void te::map::AbstractLayerRenderer::drawLayerLinkedGroupingMem(AbstractLayer* l
 
   std::auto_ptr<te::da::DataSetType> schema = layer->getSchema();
   std::vector<te::dt::Property*> props = schema->getPrimaryKey()->getProperties();
+  size_t pksize = 0;
   while(++pksize < props.size())
   {
     m_oid.push_back(props[pksize-1]->getName());
@@ -814,7 +777,7 @@ void te::map::AbstractLayerRenderer::drawLayerLinkedGroupingMem(AbstractLayer* l
   const std::size_t& precision = grouping->getPrecision();
 
   // The grouping sumarization
-  const std::string gfunction = "MIN"; // for testing purposes only. The correct information is in the classification module.
+  const std::string gfunction = grouping->getSummary();
   
   // The grouping items
   const std::vector<GroupingItem*>& items = grouping->getGroupingItems();
@@ -897,13 +860,14 @@ void te::map::AbstractLayerRenderer::drawLayerLinkedGroupingMem(AbstractLayer* l
   Chart* chart = layer->getChart();
 
   // The chart sumarization
-  const std::string cfunction = "MIN"; // for testing purposes only. The correct information is in the chart module.
+  std::string cfunction;
   std::map<std::string, std::vector<double> > chartValues;
   std::map<std::string, double> chartValue;
   bool hasChartNullValue = false;
   size_t csize = 0;
   if(chart)
   {
+    cfunction = chart->getSummary();
     csize = chart->getProperties().size();
     for(std::size_t i = 0; i < csize; ++i)
     {
@@ -992,12 +956,12 @@ void te::map::AbstractLayerRenderer::drawLayerLinkedGroupingMem(AbstractLayer* l
       {
         if(isNumber)
         {
-          value = getSumarizedValue(values, gfunction);
-          value = round(value, precision);
+          value = te::da::GetSummarizedValue(values, gfunction);
+          value = te::da::Round(value, precision);
           svalue = boost::lexical_cast<std::string>(value);
         }
         else
-          svalue = getSumarizedValue(svalues, gfunction);
+          svalue = te::da::GetSummarizedValue(svalues, gfunction);
 
         std::map<std::string, std::vector<te::se::Symbolizer*> >::const_iterator it = uniqueGroupsMap.find(svalue);
         if(it == uniqueGroupsMap.end())
@@ -1006,8 +970,8 @@ void te::map::AbstractLayerRenderer::drawLayerLinkedGroupingMem(AbstractLayer* l
       }
       else
       {
-        value = getSumarizedValue(values, gfunction);
-        value = round(value, precision);
+        value = te::da::GetSummarizedValue(values, gfunction);
+        value = te::da::Round(value, precision);
 
         std::map<std::pair<double, double>, std::vector<te::se::Symbolizer*> >::const_iterator it;
         for(it = othersGroupsMap.begin(); it != othersGroupsMap.end(); ++it)
@@ -1036,11 +1000,9 @@ void te::map::AbstractLayerRenderer::drawLayerLinkedGroupingMem(AbstractLayer* l
       if(hasChartNullValue == false)
       {
         for(std::size_t i = 0; i < csize; ++i)
-        {
-          chartValue[chart->getProperties()[i]] = getSumarizedValue(chartValues[chart->getProperties()[i]], cfunction);
-        }
+          chartValue[chart->getProperties()[i]] = te::da::GetSummarizedValue(chartValues[chart->getProperties()[i]], cfunction);
       }
-          
+
       // store the values of the other object (for next loop).
       try
       {
@@ -1101,7 +1063,7 @@ void te::map::AbstractLayerRenderer::drawLayerLinkedGroupingMem(AbstractLayer* l
 
       canvas->draw(geom);
 
-      if(chart && j == nSymbolizers - 1)
+      if(chart && hasChartNullValue == false && j == nSymbolizers - 1)
         buildChart(chart, chartValue, geom);
     }
   } while(dataset->moveNext());
@@ -1114,12 +1076,12 @@ void te::map::AbstractLayerRenderer::drawLayerLinkedGroupingMem(AbstractLayer* l
   {
     if(isNumber)
     {
-      value = getSumarizedValue(values, gfunction);
-      value = round(value, precision);
+      value = te::da::GetSummarizedValue(values, gfunction);
+      value = te::da::Round(value, precision);
       svalue = boost::lexical_cast<std::string>(value);
     }
     else
-      svalue = getSumarizedValue(svalues, gfunction);
+      svalue = te::da::GetSummarizedValue(svalues, gfunction);
 
     std::map<std::string, std::vector<te::se::Symbolizer*> >::const_iterator it = uniqueGroupsMap.find(svalue);
     if(it != uniqueGroupsMap.end())
@@ -1127,8 +1089,8 @@ void te::map::AbstractLayerRenderer::drawLayerLinkedGroupingMem(AbstractLayer* l
   }
   else
   {
-    value = getSumarizedValue(values, gfunction);
-    value = round(value, precision);
+    value = te::da::GetSummarizedValue(values, gfunction);
+    value = te::da::Round(value, precision);
 
     std::map<std::pair<double, double>, std::vector<te::se::Symbolizer*> >::const_iterator it;
     for(it = othersGroupsMap.begin(); it != othersGroupsMap.end(); ++it)
@@ -1157,7 +1119,7 @@ void te::map::AbstractLayerRenderer::drawLayerLinkedGroupingMem(AbstractLayer* l
   {
     for(std::size_t i = 0; i < csize; ++i)
     {
-      chartValue[chart->getProperties()[i]] = getSumarizedValue(chartValues[chart->getProperties()[i]], cfunction);
+      chartValue[chart->getProperties()[i]] = te::da::GetSummarizedValue(chartValues[chart->getProperties()[i]], cfunction);
     }
   }
 
@@ -1181,7 +1143,7 @@ void te::map::AbstractLayerRenderer::drawLayerLinkedGroupingMem(AbstractLayer* l
 
     canvas->draw(geom);
 
-    if(chart && j == nSymbolizers - 1)
+    if(chart && hasChartNullValue == false && j == nSymbolizers - 1)
       buildChart(chart, chartValue, geom);
   }
   delete geom;
@@ -1216,13 +1178,14 @@ void te::map::AbstractLayerRenderer::drawDatSetGeometries(te::da::DataSet* datas
     needRemap = true;
 
   // The chart sumarization
-  const std::string cfunction = "MIN"; // for testing purposes only. The correct information is in the chart module.
+  std::string cfunction;
   std::map<std::string, std::vector<double> > chartValues;
   std::map<std::string, double> chartValue;
   bool hasChartNullValue = false;
   size_t csize = 0;
   if(chart)
   {
+    cfunction = chart->getSummary();
     csize = chart->getProperties().size();
     for(std::size_t i = 0; i < csize; ++i)
     {
@@ -1291,7 +1254,7 @@ void te::map::AbstractLayerRenderer::drawDatSetGeometries(te::da::DataSet* datas
         if(hasChartNullValue == false)
         {
           for(std::size_t i = 0; i < csize; ++i)
-            chartValue[chart->getProperties()[i]] = getSumarizedValue(chartValues[chart->getProperties()[i]], cfunction);
+            chartValue[chart->getProperties()[i]] = te::da::GetSummarizedValue(chartValues[chart->getProperties()[i]], cfunction);
         }
           
         for(std::size_t i = 0; i < csize; ++i)
@@ -1348,8 +1311,10 @@ void te::map::AbstractLayerRenderer::drawDatSetGeometries(te::da::DataSet* datas
 
     canvas->draw(geom);
 
-    if(chart)
+    if(chart && hasChartNullValue == false)
       buildChart(chart, chartValue, geom);
+
+    hasChartNullValue = false;
 
   } while(dataset->moveNext()); // next geometry!
 
@@ -1369,7 +1334,7 @@ void te::map::AbstractLayerRenderer::drawDatSetGeometries(te::da::DataSet* datas
     {
       for(std::size_t i = 0; i < csize; ++i)
       {
-        chartValue[chart->getProperties()[i]] = getSumarizedValue(chartValues[chart->getProperties()[i]], cfunction);
+        chartValue[chart->getProperties()[i]] = te::da::GetSummarizedValue(chartValues[chart->getProperties()[i]], cfunction);
       }
     }
     buildChart(chart, chartValue, geom);
@@ -1521,155 +1486,174 @@ void te::map::AbstractLayerRenderer::reset()
   m_chartCoordinates.clear();
   m_chartImages.clear();
 }
-
-double te::map::AbstractLayerRenderer::getSumarizedValue(const std::vector<double>& values, const std::string& sumary)
-{
-  double size = values.size();
-  if(size == 0)
-    return 0;
-
-  double d, v;
-  std::vector<double>::const_iterator it;
-
-  if(sumary == "MIN")
-  {
-    it = values.begin();
-    v = *it;
-
-    while(it != values.end())
-    {
-      d = *it++;
-      v = std::min(v, d);    
-    }
-  }
-  else if(sumary == "MAX")
-  {
-    it = values.begin();
-    v = *it;
-
-    while(it != values.end())
-    {
-      d = *it++;
-      v = std::max(v, d);    
-    }
-  }
-  else if(sumary == "SUM")
-  {
-    v = 0;
-    for(it = values.begin(); it != values.end(); ++it)
-      v += *it;
-  }
-  else if(sumary == "AVERAGE")
-  {
-    v = 0;
-    for(it = values.begin(); it != values.end(); ++it)
-      v += *it;
-    v /= size;
-  }
-  else if(sumary == "STDDEV")
-  {
-    double m = 0;
-    v = 0;
-    if(size > 1)
-    {
-      for(it = values.begin(); it != values.end(); ++it)
-      {
-        d = *it;
-        m += d;
-        v += (d * d);
-      }
-      m /= size;
-      v = (v - m) / (size - 1);
-      v = sqrt(v);
-    }
-  }
-  else if(sumary == "VARIANCE")
-  {
-    double m = 0;
-    v = 0;
-    if(size > 1)
-    {
-      for(it = values.begin(); it != values.end(); ++it)
-      {
-        d = *it;
-        m += d;
-        v += (d * d);
-      }
-      m /= size;
-      v = (v - m) / (size - 1);
-    }
-  }
-  else if(sumary == "MEDIAN")
-  {
-    if(size == 1)
-      v = *it;
-    else
-    {
-      std::list<double> list;
-      for(it = values.begin(); it != values.end(); ++it)
-        list.push_back(*it);
-
-      list.sort();
-      size_t meio = (size_t)size / 2;
-
-      std::list<double>::iterator k;
-      size_t i = 0;
-      while(i++ < meio)
-        ++k;
-
-      d = *k;
-      k++;
-      if((size_t)size%2)
-        v = *k;
-      else
-        v = (d + *k) / 2;
-    }
-  }
-  else if(sumary == "MODE")  // nao dá porque pode gerar nenhum ou vários valores
-  {
-  }
-
-  return v;
-}
-
-std::string te::map::AbstractLayerRenderer::getSumarizedValue(const std::vector<std::string>& values, const std::string& sumary)
-{
-  double size = values.size();
-  if(size == 0)
-    return 0;
-
-  std::string v, d;
-  std::vector<std::string>::const_iterator it;
-
-  if(sumary == "MIN")
-  {
-    it = values.begin();
-    v = *it;
-
-    while(it != values.end())
-    {
-      d = *it++;
-      v = std::min(v, d);    
-    }
-  }
-  else if(sumary == "MAX")
-  {
-    it = values.begin();
-    v = *it;
-
-    while(it != values.end())
-    {
-      d = *it++;
-      v = std::max(v, d);    
-    }
-  }
-
-  return v;
-}
-double te::map::AbstractLayerRenderer::round(const double& value, const size_t& precision)
-{
-  double v = pow(10., (int)precision);
-  double ret = boost::math::round(value * v);
-  ret /= v;
-  return ret;
-}
+//
+//bool te::map::AbstractLayerRenderer::hasLinkedTable(te::map::AbstractLayer* layer)
+//{
+//  if(layer->getType() == "QUERYLAYER")
+//  {
+//    std::auto_ptr<te::da::DataSetType> schema = layer->getSchema();
+//    std::vector<te::dt::Property*> props = schema->getPrimaryKey()->getProperties();
+//    if(props.size() > 1)
+//    {
+//      size_t pksize = 0;
+//      while(++pksize < props.size())
+//      {
+//        if(props[pksize-1]->getDatasetName() != props[pksize]->getDatasetName())
+//          return true;
+//      }
+//    }
+//  }
+//  return false;
+//}
+//
+//double te::map::AbstractLayerRenderer::getSumarizedValue(const std::vector<double>& values, const std::string& sumary)
+//{
+//  double size = values.size();
+//  if(size == 0)
+//    return 0;
+//
+//  double d, v;
+//  std::vector<double>::const_iterator it;
+//
+//  if(sumary == "MIN")
+//  {
+//    it = values.begin();
+//    v = *it;
+//
+//    while(it != values.end())
+//    {
+//      d = *it++;
+//      v = std::min(v, d);    
+//    }
+//  }
+//  else if(sumary == "MAX")
+//  {
+//    it = values.begin();
+//    v = *it;
+//
+//    while(it != values.end())
+//    {
+//      d = *it++;
+//      v = std::max(v, d);    
+//    }
+//  }
+//  else if(sumary == "SUM")
+//  {
+//    v = 0;
+//    for(it = values.begin(); it != values.end(); ++it)
+//      v += *it;
+//  }
+//  else if(sumary == "AVERAGE")
+//  {
+//    v = 0;
+//    for(it = values.begin(); it != values.end(); ++it)
+//      v += *it;
+//    v /= size;
+//  }
+//  else if(sumary == "STDDEV")
+//  {
+//    double m = 0;
+//    v = 0;
+//    if(size > 1)
+//    {
+//      for(it = values.begin(); it != values.end(); ++it)
+//      {
+//        d = *it;
+//        m += d;
+//        v += (d * d);
+//      }
+//      m /= size;
+//      v = (v - m) / (size - 1);
+//      v = sqrt(v);
+//    }
+//  }
+//  else if(sumary == "VARIANCE")
+//  {
+//    double m = 0;
+//    v = 0;
+//    if(size > 1)
+//    {
+//      for(it = values.begin(); it != values.end(); ++it)
+//      {
+//        d = *it;
+//        m += d;
+//        v += (d * d);
+//      }
+//      m /= size;
+//      v = (v - m) / (size - 1);
+//    }
+//  }
+//  else if(sumary == "MEDIAN")
+//  {
+//    if(size == 1)
+//      v = *it;
+//    else
+//    {
+//      std::list<double> list;
+//      for(it = values.begin(); it != values.end(); ++it)
+//        list.push_back(*it);
+//
+//      list.sort();
+//      size_t meio = (size_t)size / 2;
+//
+//      std::list<double>::iterator k;
+//      size_t i = 0;
+//      while(i++ < meio)
+//        ++k;
+//
+//      d = *k;
+//      k++;
+//      if((size_t)size%2)
+//        v = *k;
+//      else
+//        v = (d + *k) / 2;
+//    }
+//  }
+//  else if(sumary == "MODE")  // nao dá porque pode gerar nenhum ou vários valores
+//  {
+//  }
+//
+//  return v;
+//}
+//
+//std::string te::map::AbstractLayerRenderer::getSumarizedValue(const std::vector<std::string>& values, const std::string& sumary)
+//{
+//  double size = values.size();
+//  if(size == 0)
+//    return 0;
+//
+//  std::string v, d;
+//  std::vector<std::string>::const_iterator it;
+//
+//  if(sumary == "MIN")
+//  {
+//    it = values.begin();
+//    v = *it;
+//
+//    while(it != values.end())
+//    {
+//      d = *it++;
+//      v = std::min(v, d);    
+//    }
+//  }
+//  else if(sumary == "MAX")
+//  {
+//    it = values.begin();
+//    v = *it;
+//
+//    while(it != values.end())
+//    {
+//      d = *it++;
+//      v = std::max(v, d);    
+//    }
+//  }
+//
+//  return v;
+//}
+//double te::map::AbstractLayerRenderer::round(const double& value, const size_t& precision)
+//{
+//  double v = pow(10., (int)precision);
+//  double ret = boost::math::round(value * v);
+//  ret /= v;
+//  return ret;
+//}

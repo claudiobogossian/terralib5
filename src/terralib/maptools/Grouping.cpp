@@ -34,7 +34,8 @@ te::map::Grouping::Grouping(const std::string& propertyName, te::map::GroupingTy
   : m_propertyName(propertyName),
     m_type(type),
     m_precision(precision),
-    m_isVisible(true)
+    m_isVisible(true),
+    m_summary("AVERAGE")
 {
   m_propertyType = te::dt::UNKNOWN_TYPE;
 }
@@ -43,7 +44,8 @@ te::map::Grouping::Grouping(const Grouping& rhs)
   : m_propertyName(rhs.m_propertyName),
     m_type((te::map::GroupingType)rhs.m_propertyType),
     m_precision(rhs.m_precision),
-    m_isVisible(true)
+    m_isVisible(true),
+    m_summary(rhs.m_summary)
 {
   setNumSlices(rhs.m_numSlices);
   setStdDeviation(rhs.m_stdDeviation);
@@ -145,4 +147,14 @@ bool te::map::Grouping::isVisible() const
 void te::map::Grouping::setVisibility(bool visible)
 {
   m_isVisible = visible;
+}
+
+std::string te::map::Grouping::getSummary() const
+{
+  return m_summary;
+}
+
+void te::map::Grouping::setSummary(std::string& summary)
+{
+  m_summary = summary;
 }

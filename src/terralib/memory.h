@@ -29,8 +29,11 @@
 
 // memory
 #include "memory/Config.h"
+#include "memory/CachedRaster.h"
 #include "memory/DataSet.h"
 #include "memory/DataSetItem.h"
+#include "memory/ExpansibleBandBlocksManager.h"
+#include "memory/ExpansibleRaster.h"
 #include "memory/Raster.h"
 
 namespace te

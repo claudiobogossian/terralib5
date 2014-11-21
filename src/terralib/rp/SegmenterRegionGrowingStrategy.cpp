@@ -862,6 +862,15 @@ namespace te
       for( unsigned int segmentsSimIncreaseStep = 0 ; segmentsSimIncreaseStep <=
         m_parameters.m_segmentsSimIncreaseSteps ; ++segmentsSimIncreaseStep )
       {
+        if( enableProgressInterface )
+        {
+          if( ! progressPtr->isActive() ) 
+          {
+            return false;
+          }   
+          progressPtr->pulse();
+        }
+                
         SegmenterRegionGrowingSegment::FeatureType disimilarityThreshold = 
           ( ((SegmenterRegionGrowingSegment::FeatureType)segmentsSimIncreaseStep) )
           *
@@ -873,15 +882,6 @@ namespace te
         mergeSegments( disimilarityThreshold, segmenterIdsManager, 
           *mergerPtr, enablelocalMutualBestFitting,
           auxSeg1Ptr, auxSeg2Ptr, auxSeg3Ptr, minFoundDissimilarity);
-
-        if( enableProgressInterface )
-        {
-          if( ! progressPtr->isActive() ) 
-          {
-            return false;
-          }   
-          progressPtr->pulse();
-        }
       }
       
       if( m_parameters.m_minSegmentSize > 1 )

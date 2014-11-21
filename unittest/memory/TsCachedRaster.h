@@ -26,7 +26,9 @@
 #ifndef __TERRALIB_UNITTEST_MEMORY_CACHEDRASTER_INTERNAL_H
 #define __TERRALIB_UNITTEST_MEMORY_CACHEDRASTER_INTERNAL_H
 
-#include <terralib/memory/Raster.h>
+#include <terralib/memory.h>
+
+// Boost
 #include <boost/shared_ptr.hpp>
 
 // cppUnit
