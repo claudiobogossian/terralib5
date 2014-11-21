@@ -65,16 +65,8 @@ namespace te
       virtual void itemsInspector(QList<QGraphicsItem*> graphicsItems);
 
       virtual void selectItems(QList<QGraphicsItem*> graphicsItems);
-
-    signals:
-
-      void currentItemChanged(Property prop);
-
-      void currentItemChanged(std::string name);
-      
+            
     protected slots:
-      
-      virtual void onCurrentItemChanged (QtBrowserItem *current);
       
       virtual void onRemoveProperties(std::vector<std::string> names);
 

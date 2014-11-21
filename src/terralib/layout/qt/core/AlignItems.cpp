@@ -128,14 +128,14 @@ void te::layout::AlignItems::alignLeft()
 
   double ww = 0;
   double hh = 0;
-
+  
   m_config->getPaperSize(ww, hh);
 
   if(items.count() == 1)
   {
     te::gm::Envelope ppbx(0, 0, ww, hh);
     dbLeft = ppbx.getLowerLeftX();
-    QPointF pot(dbLeft, items.first()->sceneBoundingRect().y());
+    QPointF pot(dbLeft, items.first()->sceneBoundingRect().y());   
     items.first()->setPos(pot);
     return;
   }

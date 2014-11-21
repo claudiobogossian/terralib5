@@ -134,13 +134,12 @@ void te::qt::plugins::layout::OutsideArea::init()
 
   if(m_dockToolbar)
   {
-    connect(m_dockToolbar->getToolbarOutside(), SIGNAL(currentItemChanged(Property)), m_view, SLOT(onToolbarChangeContext(bool)));
+    connect(m_dockToolbar->getToolbarOutside(), SIGNAL(changeContext(bool)), m_view, SLOT(onToolbarChangeContext(bool)));
     connect(m_view, SIGNAL(changeZoom(double)), m_dockToolbar->getToolbarOutside(), SLOT(onChangeZoom(double)));
   }
 
   if(m_dockInspector)
   {
-    connect(m_dockInspector->getObjectInspectorOutside(), SIGNAL(currentItemChanged(std::string)), m_view, SLOT(onSelectionItem(std::string)));
     connect(m_view->scene(), SIGNAL(deleteFinalized(std::vector<std::string>)), 
       m_dockInspector->getObjectInspectorOutside(), SLOT(onRemoveProperties(std::vector<std::string>)));
   }

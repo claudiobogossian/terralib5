@@ -57,7 +57,8 @@ te::layout::TextItem::TextItem( ItemController* controller, Observable* o ) :
   QGraphicsTextItem(0),
   ItemObserver(controller, o),
   m_document(0),
-  m_editable(false)
+  m_editable(false),
+  m_move(false)
 {  
   this->setFlags(QGraphicsItem::ItemIsMovable
     | QGraphicsItem::ItemIsSelectable
@@ -301,22 +302,23 @@ void te::layout::TextItem::applyRotation()
 
 }
 
-void te::layout::TextItem::setPos( const QPointF &pos )
-{
-  QPointF pt(pos.x() - transform().dx(), pos.y() - transform().dy());
-  QGraphicsTextItem::setPos(pt);
-  refresh();
-}
-
-void te::layout::TextItem::setPos( qreal x, qreal y )
-{
-  QPointF pt(x - transform().dx(), y - transform().dy());
-  QGraphicsTextItem::setPos(pt.x(), pt.y());
-  refresh();
-}
-
 QVariant te::layout::TextItem::itemChange( GraphicsItemChange change, const QVariant & value )
 {
+  if(change == ItemPositionChange && !m_move)
+  {
+    // value is the new position.
+    QPointF newPos = value.toPointF();
+    QRectF bounding = boundingRect();
+    newPos.setX(newPos.x() - transform().dx());
+    newPos.setY(newPos.y() - transform().dy());
+    return newPos;
+  }
+  if(change == QGraphicsItem::ItemPositionHasChanged)
+  {
+    refresh();
+    m_move = false;
+  }
+
   return QGraphicsTextItem::itemChange(change, value);
 }
 
@@ -360,6 +362,7 @@ void te::layout::TextItem::mouseDoubleClickEvent( QGraphicsSceneMouseEvent * eve
 
 void te::layout::TextItem::mouseMoveEvent( QGraphicsSceneMouseEvent * event )
 {
+  m_move = true;
   if(m_editable == false)
   {
     QGraphicsItem::mouseMoveEvent(event);

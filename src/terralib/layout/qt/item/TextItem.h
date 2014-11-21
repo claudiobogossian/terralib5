@@ -66,17 +66,13 @@ namespace te
         virtual QTextDocument* getDocument();
 
         virtual void refreshDocument();
-
-        virtual void setPos(const QPointF &pos);
-
-        virtual void setPos ( qreal x, qreal y );
-        
+                
         virtual bool isEditable();
         
       protected:
 
         virtual QVariant	itemChange ( GraphicsItemChange change, const QVariant & value );
-
+        
         virtual void drawBackground( QPainter* painter );
 
         virtual void drawSelection(QPainter* painter);
@@ -107,6 +103,7 @@ namespace te
         QColor         m_backgroundColor;
         bool           m_editable;
         QTextTable*    m_table;
+        bool           m_move;
     };
   }
 }

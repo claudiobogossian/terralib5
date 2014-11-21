@@ -149,6 +149,7 @@ void te::layout::ObjectInspectorOutside::itemsInspector(QList<QGraphicsItem*> gr
         pro_class.setName(lItem->getName());
         pro_class.setId("");
         pro_class.setValue(lItem->getNameClass(), dataType->getDataTypeString());
+        pro_class.setEditable(false);
         
         m_layoutPropertyBrowser->addProperty(pro_class);
      
@@ -158,24 +159,6 @@ void te::layout::ObjectInspectorOutside::itemsInspector(QList<QGraphicsItem*> gr
   }
 
   update();
-}
-
-void te::layout::ObjectInspectorOutside::onCurrentItemChanged(QtBrowserItem *current)
-{
-  if(!current)
-    return;
-
-  QtProperty* proper = current->property();
-  if(!proper)
-    return;
-
-  Property prop = m_layoutPropertyBrowser->getProperty(proper->propertyName().toStdString());
-
-  if(prop.isNull())
-    return;
-
-  emit currentItemChanged(prop);
-  emit currentItemChanged(prop.getName());
 }
 
 void te::layout::ObjectInspectorOutside::onRemoveProperties( std::vector<std::string> names )
