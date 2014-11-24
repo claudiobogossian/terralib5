@@ -133,6 +133,9 @@ std::auto_ptr<te::map::Grouping> te::qt::widgets::GroupingWidget::getGrouping()
     groupingItems.push_back(gi);
   }
   group->setGroupingItems(groupingItems);
+  
+  // Lauro: para operar com linked table
+  //group->setSummary(m_ui->m_summaryComboBox->currentText());
 
   return group;
 }
@@ -413,6 +416,27 @@ void te::qt::widgets::GroupingWidget::setGrouping(te::map::Grouping* grouping)
 
     m_legend.push_back(gi);
   }
+
+  // Lauro: para operar com linked table
+  //m_ui->m_summaryComboBox->clear();
+  //if(te::da::HasLinkedTable(m_layer.get()))
+  //{
+  //  m_ui->m_summaryComboBox->addItem("MIN");
+  //  m_ui->m_summaryComboBox->addItem("MAX");
+  //  m_ui->m_summaryComboBox->addItem("SUM");
+  //  m_ui->m_summaryComboBox->addItem("AVERAGE");
+  //  m_ui->m_summaryComboBox->addItem("MEDIAN");
+  //  m_ui->m_summaryComboBox->addItem("STDDEV");
+  //  m_ui->m_summaryComboBox->addItem("VARIANCE");
+
+  //  m_ui->m_summaryComboBox->setcurrentText(grouping->getSummary());
+  //  m_ui->m_summaryComboBox->setEnabled(true);
+  //}
+  //else
+  //{
+  //  m_ui->m_summaryComboBox->addItem("NONE");
+  //  m_ui->m_summaryComboBox->setEnabled(false);
+  //}
 
   updateUi(true);
 
