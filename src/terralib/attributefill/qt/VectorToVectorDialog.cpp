@@ -106,6 +106,9 @@ te::attributefill::VectorToVectorDialog::VectorToVectorDialog(QWidget* parent, Q
   connect(m_ui->m_rejectAllComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onRejectAllComboBoxChanged(int)));
 
   connect(m_ui->m_selectAttrToolButton, SIGNAL(pressed()), this,  SLOT(onSelectAttrToolButtonPressed()));
+
+  m_ui->m_helpPushButton->setNameSpace("dpi.inpe.br.plugins"); 
+  m_ui->m_helpPushButton->setPageReference("plugins/attributefill/attrfill_vector_to_vector.html");
 }
 
 te::attributefill::VectorToVectorDialog::~VectorToVectorDialog()

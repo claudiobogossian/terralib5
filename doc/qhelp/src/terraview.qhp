@@ -51,6 +51,9 @@
 		    <section title="How to change the visual presentation of points, lines, polygons, raster data?" ref="./widgets/style/explorer.html"/>
 			<section title="How to Load/Unload, Add/Remove Plugins" ref="./widgets/pluginmanager/PluginManager.html"/>
 			<section title="Using Plugins Available" ref="./plugins/index.html">
+				<section title="Attribute Fill" ref="./plugins/attributefill/attributefill.html">
+				    <section title="Vector To Vector" ref="./plugins/attributefill/attrfill_vector_to_vector.html"/>
+				</section>
 				<section title="PostGIS Connector" ref="./plugins/pgis/pgis.html"/>
 				<section title="PostGIS Creator" ref="./plugins/pgis/pgis_creator.html"/>
 				<section title="GDAL" ref="./plugins/gdal/gdal.html"/>
@@ -99,6 +102,7 @@
 			<file>./apf/settings/generalconfig/*.*</file>
 			<file>./apf/settings/*.html</file>
 			<file>./plugins/ado/*.*</file>
+			<file>./plugins/attributefill/*.*</file>
 			<file>./plugins/gdal/*.*</file>
 			<file>./plugins/ogr/*.*</file>
 			<file>./plugins/pgis/*.*</file>
@@ -201,6 +205,9 @@
 			<keyword name="Sample Points Generator" ref="./plugins/sa/sa_samplepointsgenerator.html"/>
 			<keyword name="Skater" ref="./plugins/sa/sa_skater.html"/>
 			<keyword name="Spatial Statistics" ref="./plugins/sa/sa_spatialstatistics.html"/>
+			
+			<keyword name="Attribute Fill" ref="./plugins/attributefill/attributefill.html"/>
+			<keyword name="Vector To Vector" ref="./plugins/attributefill/attrfill_vector_to_vector.html"/>
 		</keywords>
    </filterSection>
 </QtHelpProject>
