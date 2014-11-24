@@ -4,7 +4,8 @@
  * DataType module
  */
 
-#define TEDATATYPEEXPORT 
+#define TEDATATYPEEXPORT
+#define BOOST_DATE_TIME_DECL 
   
 %{
 #include "terralib/datatype/AbstractData.h"
@@ -62,6 +63,7 @@
 %nspace te::dt::ByteArrayProperty;
 %nspace te::dt::CompositeData;
 %nspace te::dt::CompositeProperty;
+%nspace te::dt::Date;
 %nspace te::dt::DataType;
 %nspace te::dt::DataTypeManager;
 %nspace te::dt::DateTime;
@@ -84,6 +86,14 @@
 %nspace te::dt::TimePeriod;
 %nspace te::dt::TimePeriodTZ;
 
+%nspace boost::gregorian::greg_year;
+%nspace boost::gregorian::greg_month;
+%nspace boost::gregorian::greg_day;
+
+%include "boost/date_time/gregorian/greg_day.hpp"
+%include "boost/date_time/gregorian/greg_month.hpp"
+%include "boost/date_time/gregorian/greg_year.hpp"
+
 %include "terralib/datatype/Enums.h"
 %include "terralib/datatype/AbstractData.h"
 %include "terralib/datatype/Array.h"
@@ -102,10 +112,7 @@
 %include "terralib/datatype/DataTypeManager.h"
 %include "terralib/datatype/DateTime.h"
 %include "terralib/datatype/DateTimeInstant.h"
-
-/* %include "terralib/datatype/Date.h" */
-%import "terralib/datatype/Date.h" 
-
+%include "terralib/datatype/Date.h"
 %include "terralib/datatype/DateDuration.h"
 %include "terralib/datatype/DateTimePeriod.h"
 %include "terralib/datatype/DatePeriod.h"
