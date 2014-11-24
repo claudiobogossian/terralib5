@@ -58,6 +58,7 @@
 #include "ui_VectorToVectorDialogForm.h"
 
 // Qt
+#include <QDialog>
 #include <QDialogButtonBox>
 #include <QFileDialog>
 #include <QList>
@@ -913,14 +914,15 @@ void te::attributefill::VectorToVectorDialog::onSelectAttrToolButtonPressed()
   }
 
   QDialog* dialog = new QDialog(this);
+  dialog->setWindowTitle(tr("Vector To Vector"));
 
   QBoxLayout* vLayout = new QBoxLayout(QBoxLayout::TopToBottom, dialog);
 
   te::qt::widgets::DoubleListWidget* d = new te::qt::widgets::DoubleListWidget(this);
   d->setInputValues(inputNames);
   d->setOutputValues(outputNames);
-  d->setLeftLabel("Layer Attributes");
-  d->setRightLabel("Selected Attributes");
+  d->setLeftLabel(tr("Layer Attributes").toStdString());
+  d->setRightLabel(tr("Selected Attributes").toStdString());
   vLayout->addWidget(d);
 
   QDialogButtonBox* bbox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, dialog);
