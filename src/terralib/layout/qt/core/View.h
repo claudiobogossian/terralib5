@@ -187,6 +187,8 @@ namespace te
         VerticalRuler*          m_verticalRuler;
         double                  m_maxZoomLimit;
         double                  m_minZoomLimit;
+        double                  m_width;
+        double                  m_height;
     };
   }
 }

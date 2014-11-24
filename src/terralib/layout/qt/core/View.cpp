@@ -63,7 +63,9 @@ te::layout::View::View( QWidget* widget) :
   m_selectionChange(false),
   m_menuItem(0),
   m_maxZoomLimit(29.),
-  m_minZoomLimit(0.9)
+  m_minZoomLimit(0.9),
+  m_width(-1),
+  m_height(-1)
 {
   setDragMode(RubberBandDrag);
 
@@ -246,8 +248,14 @@ void te::layout::View::config()
   
   double sw = viewport()->widthMM();
   double sh = viewport()->heightMM();
+
+  if(m_width == -1 || m_height == -1)
+  {
+    m_width = sw;
+    m_height = sh;
+  }
       
-  nscene->init(sw, sh);
+  nscene->init(m_width, m_height);
 
   QTransform mtrx = nscene->sceneTransform();
 
@@ -531,9 +539,21 @@ void te::layout::View::showPageSetup()
 }
 
 void te::layout::View::onChangeConfig()
-{
+{ 
+  Scene* sc = dynamic_cast<Scene*>(scene());
+  if(!sc)
+    return;
+
+  sc->reset();
+
+  config();
+
+  te::gm::Envelope boxW = sc->getSceneBox();
+  m_visualizationArea->changeBoxArea(boxW);
+
+  m_visualizationArea->build();
+
   recompose();
-  //config();
 }
 
 void te::layout::View::showSystematicScale()
