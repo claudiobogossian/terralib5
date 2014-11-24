@@ -244,9 +244,6 @@ namespace te
             //! Enable/Disable the segmentation strategy to use its own progress interface (default:false).
             bool m_enableStrategyProgress;
             
-            //! A pointer to an active task progress tha should be pulsed for each processed block or a null pointer (default:null). */
-            te::common::TaskProgress* m_progressPtr;
-            
             //! The maximum number of input raster cached blocks per-thread.
             unsigned int m_maxInputRasterCachedBlocks;
             

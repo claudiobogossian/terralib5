@@ -65,6 +65,15 @@ namespace te
     */
     TEDATATYPEEXPORT int Convert2Terralib(const std::string& dataType);
 
+    /*!
+      \brief Function used to convert from a int (Data Type Enum) to a string
+
+      \param dataType     Integer value that defines the data type
+
+      \return A string with the data type name.
+    */
+    TEDATATYPEEXPORT std::string ConvertDataTypeToString(const int& dataType);
+
   } // end namespace dt
 }   // end namespace te
 

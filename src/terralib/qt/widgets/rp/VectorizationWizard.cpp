@@ -198,23 +198,38 @@ bool te::qt::widgets::VectorizationWizard::execute()
 
   QApplication::restoreOverrideCursor();
 
-  //save data
-  std::auto_ptr<te::da::DataSetType> dsType = createDataSetType(outputdataset, raster->getSRID());
+  try
+  {
+    //save data
+    std::auto_ptr<te::da::DataSetType> dsType = createDataSetType(outputdataset, raster->getSRID());
 
-  std::auto_ptr<te::mem::DataSet> dsMem = createDataSet(dsType.get(), geomVec);
+    std::auto_ptr<te::mem::DataSet> dsMem = createDataSet(dsType.get(), geomVec);
 
-  te::da::DataSourcePtr ds = te::da::DataSourceManager::getInstance().get(outDSInfo->getId(), outDSInfo->getType(), outDSInfo->getConnInfo());
+    te::da::DataSourcePtr ds = te::da::DataSourceManager::getInstance().get(outDSInfo->getId(), outDSInfo->getType(), outDSInfo->getConnInfo());
 
-  saveDataSet(dsMem.get(), dsType.get(), ds, outputdataset);
+    saveDataSet(dsMem.get(), dsType.get(), ds, outputdataset);
 
-  //create output layer
-  te::da::DataSourcePtr outDataSource = te::da::GetDataSource(outDSInfo->getId());
+    //create output layer
+    te::da::DataSourcePtr outDataSource = te::da::GetDataSource(outDSInfo->getId());
     
-  te::qt::widgets::DataSet2Layer converter(outDSInfo->getId());
+    te::qt::widgets::DataSet2Layer converter(outDSInfo->getId());
       
-  te::da::DataSetTypePtr dt(outDataSource->getDataSetType(outputdataset).release());
+    te::da::DataSetTypePtr dt(outDataSource->getDataSetType(outputdataset).release());
 
-  m_outputLayer = converter(dt);
+    m_outputLayer = converter(dt);
+  }
+  catch(const std::exception& e)
+  {
+    QMessageBox::warning(this, tr("Vectorizer"), e.what());
+
+    return false;
+  }
+  catch(...)
+  {
+    QMessageBox::warning(this, tr("Vectorizer"), tr("An exception has occurred saving geometries!"));
+
+    return false;
+  }
 
   return true;
 }
