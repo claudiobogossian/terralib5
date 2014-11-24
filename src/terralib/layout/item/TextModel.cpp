@@ -65,13 +65,7 @@ te::layout::Properties* te::layout::TextModel::getProperties() const
   ItemModelObservable::getProperties();
 
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
-
-  Property pro_text;
-  pro_text.setName("Text");
-  pro_text.setId("");
-  pro_text.setValue(m_text, dataType->getDataTypeString());
-  m_properties->addProperty(pro_text);
-
+  
   Property pro_font;
   pro_font.setName("Font");
   pro_font.setId("");

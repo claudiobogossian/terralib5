@@ -78,10 +78,10 @@ void te::layout::GridPlanarModel::draw( te::map::Canvas* canvas, Utils* utils, t
   
   te::color::RGBAColor color = te::color::RGBAColor(0, 0, 0, 255);
   canvas->setLineColor(color);
+  canvas->setPolygonFillColor(color);
+  canvas->setPolygonContourColor(color);
   
-  double zoomFactor = Context::getInstance().getZoomFactor();
-
-  canvas->setTextPointSize(m_pointTextSize * zoomFactor);
+  canvas->setTextPointSize(m_pointTextSize);
   canvas->setFontFamily(m_fontText);
 
   gridTextFreeMemory();

@@ -79,12 +79,12 @@ void te::layout::MapGridItem::drawSelection( QPainter* painter )
   QRectF boundRect;
   boundRect = boundingRect();
 
-  double w = model->getMapBox().getWidth();
-  double h = model->getMapBox().getHeight();
-  double wm = model->getDisplacementX();
-  double hm = model->getDisplacementY();
-
-  QRectF bounding(boundRect.x() + wm, boundRect.y() + hm, w, h);
+  double x1 = 0;
+  double y1 = 0;
+  double w = boundRect.width() - (m_wMargin * 2);
+  double h = boundRect.height() - (m_hMargin * 2);
+  
+  QRectF bounding(x1, y1, w, h);
 
   qreal penWidth = painter->pen().widthF();
 

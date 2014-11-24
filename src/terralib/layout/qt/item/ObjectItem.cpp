@@ -79,13 +79,6 @@ te::gm::Coord2D te::layout::ObjectItem::getPosition()
   return coordinate;
 }
 
-void te::layout::ObjectItem::setPos( const QPointF &pos )
-{
-  QGraphicsItem::setPos(pos);
-
-  refresh();
-}
-
 void te::layout::ObjectItem::setPixmap( const QPixmap& pixmap )
 {
   if(pixmap.isNull())
@@ -144,14 +137,16 @@ void te::layout::ObjectItem::paint( QPainter * painter, const QStyleOptionGraphi
 
 void te::layout::ObjectItem::drawBackground( QPainter * painter )
 {
-  if (painter)
+  if ( !painter )
   {
-    painter->save();
-    painter->setPen(Qt::NoPen);
-    painter->setRenderHint( QPainter::Antialiasing, true );
-    painter->drawRect(QRectF( 0, 0, boundingRect().width(), boundingRect().height()));
-    painter->restore();
+    return;
   }
+
+  painter->save();
+  painter->setPen(Qt::NoPen);
+  painter->setRenderHint( QPainter::Antialiasing, true );
+  painter->drawRect(QRectF( 0, 0, boundingRect().width(), boundingRect().height()));
+  painter->restore();
 }
 
 void te::layout::ObjectItem::drawSelection( QPainter* painter )
@@ -456,4 +451,13 @@ te::color::RGBAColor** te::layout::ObjectItem::getImage()
   QImage img = m_pixmap.toImage();
   te::color::RGBAColor** teImg = te::qt::widgets::GetImage(&img);
   return teImg;
+}
+
+QVariant te::layout::ObjectItem::itemChange( GraphicsItemChange change, const QVariant & value )
+{
+  if(change == QGraphicsItem::ItemPositionHasChanged)
+  {
+    refresh();
+  }
+  return QGraphicsItem::itemChange(change, value);
 }

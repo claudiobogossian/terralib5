@@ -58,6 +58,9 @@ te::layout::PrintScene::~PrintScene()
 
 void te::layout::PrintScene::printPreview()
 {
+  if(!m_scene)
+    return;
+
   QPrinter* printer = createPrinter();
 
   QPrintPreviewDialog *preview = new QPrintPreviewDialog(printer);
@@ -81,6 +84,9 @@ void te::layout::PrintScene::printPreview()
 
 void te::layout::PrintScene::printPaper( QPrinter* printer )
 {
+  if(!printer)
+    return;
+
   //Impressão de parte da Cena
   //Não é necessário mudar a escala do View
 
@@ -105,6 +111,9 @@ void te::layout::PrintScene::printPaper( QPrinter* printer )
 
 QPrinter* te::layout::PrintScene::createPrinter()
 {
+  if(!m_scene)
+    return 0;
+
   PaperConfig* conf = Context::getInstance().getPaperConfig();
 
   if(!conf)
@@ -133,6 +142,15 @@ QPrinter* te::layout::PrintScene::createPrinter()
 
 void te::layout::PrintScene::renderScene( QPainter* newPainter, QPrinter* printer )
 {
+  if(!m_scene)
+    return;
+
+  if(!newPainter)
+    return;
+
+  if(!printer)
+    return;
+
   if(m_printState == NoPrinter)
   {
     m_printState = PreviewScene;
@@ -165,6 +183,8 @@ void te::layout::PrintScene::renderScene( QPainter* newPainter, QPrinter* printe
   newPainter->scale( 1, -1 );
   newPainter->translate( -(paperPixelBox.width() / 2), -(paperPixelBox.height() / 2) );
 
+  deselectAllItems();
+
   m_scene->render(newPainter, pxTargetRect, mmSourceRect); 
 }
 
@@ -194,4 +214,19 @@ bool te::layout::PrintScene::savePaperAsPDF()
   } 
 
   return true;
+}
+
+void te::layout::PrintScene::deselectAllItems()
+{
+  if(!m_scene)
+    return;
+
+  QList<QGraphicsItem*> graphicsItems = m_scene->items();
+  foreach( QGraphicsItem *item, graphicsItems) 
+  {
+    if (item)
+    {
+      item->setSelected(false);
+    }
+  }
 }

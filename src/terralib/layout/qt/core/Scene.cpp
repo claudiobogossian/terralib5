@@ -243,14 +243,10 @@ void te::layout::Scene::removeSelectedItems()
   if(graphicsItems.empty())
     return;
 
-  QUndoCommand* command = new DeleteCommand(this);
-  addUndoStack(command);
-
   foreach( QGraphicsItem *item, graphicsItems) 
   {
     if (item)
     {
-      removeItem(item);
       ItemObserver* obs = dynamic_cast<ItemObserver*>(item);
       if(obs)
       {
@@ -258,6 +254,9 @@ void te::layout::Scene::removeSelectedItems()
       }
     }
   }
+
+  QUndoCommand* command = new DeleteCommand(this);
+  addUndoStack(command);
 
   if(!names.empty())
     emit deleteFinalized(names);

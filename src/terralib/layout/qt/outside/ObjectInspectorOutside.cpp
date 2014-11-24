@@ -57,9 +57,6 @@ te::layout::ObjectInspectorOutside::ObjectInspectorOutside( OutsideController* c
   QVBoxLayout* layout = new QVBoxLayout(this);
   layout->setMargin(0);
   layout->addWidget(m_layoutPropertyBrowser->getPropertyEditor());
-
-  connect(m_layoutPropertyBrowser->getPropertyEditor(), SIGNAL(currentItemChanged (QtBrowserItem *)), 
-          this, SLOT(onCurrentItemChanged (QtBrowserItem *)));
   
   m_layoutPropertyBrowser->getPropertyEditor()->installEventFilter(this);
 

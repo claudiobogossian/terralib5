@@ -173,14 +173,16 @@ void te::layout::TextItem::paint( QPainter * painter, const QStyleOptionGraphics
 
 void te::layout::TextItem::drawBackground( QPainter* painter )
 {
-  if (painter)
+  if(!painter)
   {
-    painter->save();
-    painter->setPen(Qt::NoPen);
-    painter->setRenderHint( QPainter::Antialiasing, true );
-    painter->drawRect(QRectF( 0, 0, boundingRect().width(), boundingRect().height()));
-    painter->restore();
+    return;
   }
+
+  painter->save();
+  painter->setPen(Qt::NoPen);
+  painter->setRenderHint( QPainter::Antialiasing, true );
+  painter->drawRect(QRectF( 0, 0, boundingRect().width(), boundingRect().height()));
+  painter->restore();
 }
 
 void te::layout::TextItem::drawSelection( QPainter* painter )
@@ -304,11 +306,10 @@ void te::layout::TextItem::applyRotation()
 
 QVariant te::layout::TextItem::itemChange( GraphicsItemChange change, const QVariant & value )
 {
-  if(change == ItemPositionChange && !m_move)
+  if(change == QGraphicsItem::ItemPositionChange && !m_move)
   {
     // value is the new position.
     QPointF newPos = value.toPointF();
-    QRectF bounding = boundingRect();
     newPos.setX(newPos.x() - transform().dx());
     newPos.setY(newPos.y() - transform().dy());
     return newPos;

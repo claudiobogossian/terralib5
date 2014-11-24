@@ -70,6 +70,8 @@ namespace te
 
         virtual void renderScene( QPainter* newPainter, QPrinter* printer );
 
+        virtual void deselectAllItems();
+
         QGraphicsScene* m_scene;
         PaperConfig*    m_config;
         te::layout::PrinterScene m_printState;

@@ -420,11 +420,6 @@ void te::layout::GridSettingsOutside::on_helpPushButton_clicked()
 
 }
 
-void te::layout::GridSettingsOutside::on_pbCancel_clicked()
-{
-  reject();
-}
-
 void te::layout::GridSettingsOutside::on_cmbUnit_currentIndexChanged( const QString & text )
 {
   GridSettingsController* controller = dynamic_cast<GridSettingsController*>(m_controller);

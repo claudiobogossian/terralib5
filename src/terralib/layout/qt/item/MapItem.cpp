@@ -90,7 +90,8 @@ te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
   m_tool(0),
   m_hMargin(0),
   m_wMargin(0),
-  m_layer(0)
+  m_layer(0),
+  m_move(false)
 {
   this->setFlags(QGraphicsItem::ItemIsMovable
     | QGraphicsItem::ItemIsSelectable
@@ -130,13 +131,12 @@ te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
   
   setWidget(m_mapDisplay);
     
-  QTextEdit* txt = new QTextEdit("MAP_ITEM_EDIT");
-  //setWidget(txt);
-
   QGraphicsItem* item = this;
   Context::getInstance().getScene()->insertItem((ItemObserver*)item);
   
   calculateFrameMargin();
+
+  setWindowFrameMargins(m_wMargin, m_hMargin, m_wMargin, m_hMargin);
       
   m_mapDisplay->show();
 }
@@ -226,15 +226,22 @@ void te::layout::MapItem::updateObserver( ContextItem context )
 
 void te::layout::MapItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
 {  
+  Q_UNUSED( option );
+  Q_UNUSED( widget );
+  if ( !painter )
+  {
+    return;
+  }
+
   QRectF boundRect;
   boundRect = boundingRect();
+
+  QGraphicsProxyWidget::paint(painter, option, widget);
 
   painter->save();
   QRectF rtSource( 0, 0, m_pixmap.width(), m_pixmap.height() );
   painter->drawPixmap(boundRect, m_pixmap, rtSource);
-  painter->restore(); 
-
-  QGraphicsProxyWidget::paint(painter, option, widget);
+  painter->restore();
 
   //Draw Selection
   if (option->state & QStyle::State_Selected)
@@ -251,11 +258,11 @@ void te::layout::MapItem::drawSelection( QPainter* painter)
   }
 
   qreal penWidth = painter->pen().widthF();
-
+  
   const qreal adj = penWidth / 2;
   const QColor fgcolor(0,255,0);
   const QColor backgroundColor(0,0,0);
-
+  
   painter->setPen(QPen(backgroundColor, 0, Qt::SolidLine));
   painter->setBrush(Qt::NoBrush);
   painter->drawRect(boundingRect().adjusted(adj, adj, -adj, -adj));
@@ -306,19 +313,6 @@ void te::layout::MapItem::dragMoveEvent( QGraphicsSceneDragDropEvent * event )
 void te::layout::MapItem::setPixmap( const QPixmap& pixmap )
 {
   m_pixmap = pixmap;
-
-  if(m_pixmap.isNull())
-    return;
-
-  QPointF point = pos();
-
-  te::gm::Envelope box = m_model->getBox();
-  
-  //If you modify the boundingRect value, you need to inform Graphics View about it by calling QGraphicsItem::prepareGeometryChange();
-  QGraphicsObject::prepareGeometryChange();
-
-  setRect(QRectF(0, 0, box.getWidth(), box.getHeight()));
-  update();
 }
 
 te::gm::Coord2D te::layout::MapItem::getPosition()
@@ -344,15 +338,9 @@ te::gm::Coord2D te::layout::MapItem::getPosition()
   return coordinate;
 }
 
-void te::layout::MapItem::setPos( const QPointF &pos )
-{
-  QPointF pt(pos.x() - transform().dx(), pos.y() - transform().dy());
-  QGraphicsItem::setPos(pt);
-  refresh();
-}
-
 void te::layout::MapItem::mouseMoveEvent( QGraphicsSceneMouseEvent * event )
 {
+  m_move = true;
   ItemUtils* iUtils = Context::getInstance().getItemUtils();
   if(!iUtils)
     return;
@@ -555,6 +543,20 @@ void te::layout::MapItem::changeCurrentTool( EnumType* mode )
 
 QVariant te::layout::MapItem::itemChange( GraphicsItemChange change, const QVariant & value )
 {
+  if(change == QGraphicsItem::ItemPositionChange && !m_move)
+  {
+    // value is the new position.
+    QPointF newPos = value.toPointF();
+    newPos.setX(newPos.x() - transform().dx());
+    newPos.setY(newPos.y() - transform().dy());
+    return newPos;
+  }
+  if(change == QGraphicsItem::ItemPositionHasChanged)
+  {
+    refresh();
+    m_move = false;
+  }
+
   return QGraphicsProxyWidget::itemChange(change, value);
 }
 
@@ -645,21 +647,6 @@ void te::layout::MapItem::generateMapPixmap()
   m_mapPixmap = img; 
 }
 
-QRectF te::layout::MapItem::boundingRect() const
-{
-  return QGraphicsProxyWidget::boundingRect();
-  //return m_rect;
-}
-
-void te::layout::MapItem::setRect( QRectF rect )
-{
-  if (rect.isEmpty() && !rect.isNull())
-    return;
-
-  m_rect = rect;
-  update(rect);
-}
-
 void te::layout::MapItem::updateProperties( te::layout::Properties* properties )
 {
   if(!m_controller)
@@ -698,4 +685,26 @@ void te::layout::MapItem::updateProperties( te::layout::Properties* properties )
   {
     redraw();
   }
+}
+
+bool te::layout::MapItem::eventFilter( QObject * object, QEvent * event )
+{
+  /*
+    In the QGraphicsProxyWidget, move and resize, set the position value. 
+    In these cases there is no need to recalculate the position by transformation matrix. 
+    (The matrix is used because this object works with inverted matrix)
+  */
+
+  switch (event->type()) 
+  {
+  case QEvent::Resize:
+    m_move = true;
+    break;
+  case QEvent::Move:
+    m_move = true;
+    break;
+  default:
+    break;
+  }
+  return QGraphicsProxyWidget::eventFilter(object, event);
 }
