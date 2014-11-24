@@ -43,6 +43,7 @@
 					<section title="Chart Display" ref="./widgets/charts/display/display.html"/>
 					<section title="Chart Style" ref="./widgets/charts/style/style.html"/>
 				</section>
+				<section title="Composition Mode" ref="./widgets/layer/compositionMode_dialog.html"/>
 				<section title="Pie Bar" ref="./widgets/charts/pie_bar/pie_bar.html"/>
 				<section title="Query" ref="./widgets/query/query_dialog.html"/>
 				<section title="Tabular File " ref="./widgets/external_table/external_table.html"/>
@@ -68,6 +69,7 @@
 					<section title="Classifier" ref="./plugins/rp/rp_classifier.html"/>
 					<section title="Clipping" ref="./plugins/rp/rp_clipping.html"/>
 					<section title="Color Transform" ref="./plugins/rp/rp_colorTransform.html"/>
+					<section title="Compose/Decompose Bands" ref="./plugins/rp/rp_compose_bands.html"/>
 					<section title="Contrast" ref="./plugins/rp/rp_contrast.html"/>
 					<section title="Filter" ref="./plugins/rp/rp_filter.html"/>
 					<section title="Fusion" ref="./plugins/rp/rp_fusion.html"/>
@@ -75,6 +77,7 @@
 					<section title="Mosaic" ref="./plugins/rp/rp_mosaic.html"/>
 					<section title="Register" ref="./plugins/rp/rp_register.html"/>
 					<section title="Segmenter" ref="./plugins/rp/rp_segmenter.html"/>
+					<section title="Vectorization" ref="./plugins/rp/rp_vectorization.html"/>
 				</section>
 				<section title="Spatial Analysis" ref="./plugins/sa/sa.html">
 					<section title="Bayes Global" ref="./plugins/sa/sa_bayesglobal.html"/>
@@ -183,6 +186,7 @@
 			<keyword name="Classifier" ref="./plugins/rp/rp_classifier.html"/>
 			<keyword name="Clipping" ref="./plugins/rp/rp_clipping.html"/>
 			<keyword name="Color Transform" ref="./plugins/rp/rp_colorTransform.html"/>
+			<keyword name="Compose / Decompose Bands" ref="./plugins/rp/rp_compose_bands.html"/>
 			<keyword name="Contrast" ref="./plugins/rp/rp_contrast.html"/>
 			<keyword name="Filter" ref="./plugins/rp/rp_filter.html"/>
 			<keyword name="Fusion" ref="./plugins/rp/rp_fusion.html"/>
@@ -190,6 +194,7 @@
 			<keyword name="Mosaic" ref="./plugins/rp/rp_mosaic.html"/>
 			<keyword name="Register" ref="./plugins/rp/rp_register.html"/>
 			<keyword name="Segmenter" ref="./plugins/rp/rp_segmenter.html"/>
+			<keyword name="Vectorization" ref="./plugins/rp/rp_vectorization.html"/>
 			
 			<keyword name="Spatial Analysis" ref="./plugins/sa/sa.html"/>
 			<keyword name="Bayes Global" ref="./plugins/sa/sa_bayesglobal.html"/>
