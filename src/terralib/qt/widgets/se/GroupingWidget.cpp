@@ -795,13 +795,13 @@ void te::qt::widgets::GroupingWidget::getLinkedDataAsDouble(std::vector<double>&
   std::auto_ptr<te::da::DataSet> ds(m_layer->getData());
   qlayer->setQuery(select);
 
+  bool nullValue = false;
   std::vector<double> values;
   bool isBegin = true;
   ds->moveBeforeFirst();
 
   while(ds->moveNext())
   {
-    bool nullValue = false;
     if(pksize)
     {
       // it is linked. Remove redundancies.
@@ -861,14 +861,50 @@ void te::qt::widgets::GroupingWidget::getLinkedDataAsDouble(std::vector<double>&
       else // it is other object
       {
         // sumarize value according to the required summarization 
-        if(nullValue == false)
-          vec.push_back(te::da::GetSummarizedValue(values, function));
+        if(nullValue)
+           ++nullValues;
         else
-          ++nullValues;
+         vec.push_back(te::da::GetSummarizedValue(values, function));
+
+        nullValue = false;
         values.clear();
+
+        // get new value
+        if(ds->isNull(idx))
+          nullValue = true;
+        else
+        {
+          if(dataType == te::dt::INT16_TYPE)
+            values.push_back((double)ds->getInt16(idx));
+          else if(dataType == te::dt::INT32_TYPE)
+            values.push_back((double)ds->getInt32(idx));
+          else if(dataType == te::dt::INT64_TYPE)
+            values.push_back((double)ds->getInt64(idx));
+          else if(dataType == te::dt::FLOAT_TYPE)
+            values.push_back((double)ds->getFloat(idx));
+          else if(dataType == te::dt::DOUBLE_TYPE)
+            values.push_back(ds->getDouble(idx));
+          else if(dataType == te::dt::NUMERIC_TYPE)
+          {
+            QString strNum = ds->getNumeric(idx).c_str();
+
+            bool ok = false;
+
+            double value = strNum.toDouble(&ok);
+
+            if(ok)
+              values.push_back(value);
+          }
+        }
       }
     }
   }
+  // sumarize value according to the required summarization 
+  if(nullValue)
+    ++nullValues;
+  else
+    vec.push_back(te::da::GetSummarizedValue(values, function));
+  values.clear();
 }
 
 void te::qt::widgets::GroupingWidget::getDataAsString(std::vector<std::string>& vec, const std::string& attrName, int& nullValues)
@@ -954,13 +990,13 @@ void te::qt::widgets::GroupingWidget::getLinkedDataAsString(std::vector<std::str
   std::auto_ptr<te::da::DataSet> ds(m_layer->getData());
   qlayer->setQuery(select);
 
+  bool nullValue = false;
   std::vector<std::string> values;
   bool isBegin = true;
   ds->moveBeforeFirst();
 
   while(ds->moveNext())
   {
-    bool nullValue = false;
     if(pksize)
     {
       // it is linked. Remove redundancies.
@@ -998,14 +1034,28 @@ void te::qt::widgets::GroupingWidget::getLinkedDataAsString(std::vector<std::str
       else // it is other object
       {
         // sumarize value according to the required summarization 
-        if(nullValue == false)
-          vec.push_back(te::da::GetSummarizedValue(values, function));
-        else
+        if(nullValue)
           ++nullValues;
+        else
+          vec.push_back(te::da::GetSummarizedValue(values, function));
+
+        nullValue = false;
         values.clear();
+
+        // get new value
+        if(ds->isNull(idx))
+          nullValue = true;
+        else
+          values.push_back(ds->getAsString(idx));
       }
     }
   }
+  // sumarize value according to the required summarization 
+  if(nullValue)
+    ++nullValues;
+  else
+    vec.push_back(te::da::GetSummarizedValue(values, function));
+  values.clear();
 }
 
 void te::qt::widgets::GroupingWidget::createDoubleNullGroupingItem(int count)
