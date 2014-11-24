@@ -108,7 +108,11 @@ namespace te
 
           void getDataAsDouble(std::vector<double>& vec, const std::string& attrName, const int& dataType, int& nullValues);
 
+          void getLinkedDataAsDouble(std::vector<double>& vec, const std::string& attrName, const int& dataType, int& nullValues);
+
           void getDataAsString(std::vector<std::string>& vec, const std::string& attrName, int& nullValues);
+
+          void getLinkedDataAsString(std::vector<std::string>& vec, const std::string& attrName, int& nullValues);
 
           void createDoubleNullGroupingItem(int count);
 

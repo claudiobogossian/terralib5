@@ -233,7 +233,6 @@ void te::qt::widgets::Histogram::adjustOids(te::dt::AbstractData* interval, std:
 {
   for(size_t i = 0; i < valuesOIds.size(); ++i)
   {
-    std::cout << valuesOIds.at(i)->getValueAsString() << std::endl;
     m_valuesOids.insert(te::qt::widgets::IntervalToObjectId(interval, valuesOIds.at(i)));
   }
 }

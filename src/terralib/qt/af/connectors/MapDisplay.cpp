@@ -377,59 +377,10 @@ void te::qt::af::MapDisplay::drawLayerSelection(te::map::AbstractLayerPtr layer)
     return;
 
   const te::da::ObjectIdSet* oids = layer->getSelected();
-  if(oids == 0 || oids->begin() == oids->end())
+
+  if(oids == 0 || oids->size() == 0)
     return;
 
-  std::auto_ptr<te::da::DataSetType> schema = layer->getSchema();
-  te::da::PrimaryKey* pkey = schema->getPrimaryKey();
-  std::vector<te::dt::Property*> props = pkey->getProperties();
-  std::vector<te::dt::Property*>::iterator it = props.begin();
-
-  bool linked = false;
-  size_t n = 0;
-  while(++n < props.size())
-  {
-    if(props[n-1]->getDatasetName() != props[n]->getDatasetName())
-    {
-      linked = true;
-      break;
-    }
-  }
-
-  if(linked == false)
-    drawSelecteds(layer, oids);
-  else
-  {
-    te::da::ObjectIdSet* ids;
-    ids = new te::da::ObjectIdSet(*oids, false);
-    std::set<te::da::ObjectId*, te::common::LessCmp<te::da::ObjectId*> >::const_iterator it = oids->begin();
-    te::da::ObjectId* oid = (*it)->clone();
-    ids->add(oid);
-    ++it;
-    while(it != oids->end())
-    {
-      std::string value, nvalue;
-      for(size_t i = 0; i < n; ++i)
-      {
-        value += oid->getValue()[i].toString();
-        nvalue += (*it)->getValue()[i].toString();
-      }
-      oid =  (*it)->clone();
-      ++it;
-
-      if(value == nvalue)
-        continue;
-      ids->add(oid);
-    }
-    if(ids->size() == 0)
-      return;
-
-    drawSelecteds(layer, ids);
-  }
-}
-
-void te::qt::af::MapDisplay::drawSelecteds(te::map::AbstractLayerPtr layer, const te::da::ObjectIdSet* oids)
-{
   try
   {
     std::size_t maxOids = 4000;
@@ -439,7 +390,8 @@ void te::qt::af::MapDisplay::drawSelecteds(te::map::AbstractLayerPtr layer, cons
       // Try to retrieve the layer selection
       std::auto_ptr<te::da::DataSet> selected(layer->getData(oids));
 
-      drawDataSet(selected.get(), layer->getGeomPropertyName(), layer->getSRID(), ApplicationController::getInstance().getSelectionColor());
+      drawDataSet(selected.get(), layer->getGeomPropertyName(), layer->getSRID(), ApplicationController::getInstance().getSelectionColor(), te::da::HasLinkedTable(layer.get()));
+
       return;
     }
     
@@ -455,6 +407,7 @@ void te::qt::af::MapDisplay::drawSelecteds(te::map::AbstractLayerPtr layer, cons
     std::set<te::da::ObjectId*, te::common::LessCmp<te::da::ObjectId*> >::const_iterator it;
     for(it = oids->begin(); it != oids->end(); ++it)
     {
+  
       oidsBatch->add((*it)->clone());
 
       ++nOids;
@@ -465,7 +418,7 @@ void te::qt::af::MapDisplay::drawSelecteds(te::map::AbstractLayerPtr layer, cons
         // Try to retrieve the layer selection batch
         std::auto_ptr<te::da::DataSet> selected(layer->getData(oidsBatch.get()));
 
-        drawDataSet(selected.get(), layer->getGeomPropertyName(), layer->getSRID(), ApplicationController::getInstance().getSelectionColor());
+        drawDataSet(selected.get(), layer->getGeomPropertyName(), layer->getSRID(), ApplicationController::getInstance().getSelectionColor(), te::da::HasLinkedTable(layer.get()));
 
         // Prepares to next batch
         oidsBatch->clear();
@@ -480,7 +433,7 @@ void te::qt::af::MapDisplay::drawSelecteds(te::map::AbstractLayerPtr layer, cons
   }
 }
 
-void te::qt::af::MapDisplay::drawDataSet(te::da::DataSet* dataset, const std::string& geomPropertyName, int srid, const QColor& color)
+void te::qt::af::MapDisplay::drawDataSet(te::da::DataSet* dataset, const std::string& geomPropertyName, int srid, const QColor& color, bool isLinked)
 {
   assert(dataset);
   assert(color.isValid());
@@ -509,10 +462,11 @@ void te::qt::af::MapDisplay::drawDataSet(te::da::DataSet* dataset, const std::st
 
   dataset->moveBeforeFirst();
 
+  std::set<std::string> highlightedGeoms;
+
   while(dataset->moveNext())
   {
     std::auto_ptr<te::gm::Geometry> g(dataset->getGeometry(gpos));
-
     if(needRemap)
     {
       g->setSRID(srid);
@@ -525,7 +479,15 @@ void te::qt::af::MapDisplay::drawDataSet(te::da::DataSet* dataset, const std::st
       te::qt::widgets::Config2DrawLayerSelection(&canvas, color, currentGeomType);
     }
 
-    canvas.draw(g.get());
+    if(isLinked)
+    {
+      if(highlightedGeoms.insert(g->asText()).second)
+      {
+        canvas.draw(g.get());
+      }
+    }
+    else
+      canvas.draw(g.get());
   }
 }
 

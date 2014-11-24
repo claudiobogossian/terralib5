@@ -378,12 +378,23 @@ namespace te
         // defining the number of processing threads
         
         unsigned int maxSegThreads = 0;
+        
         if( m_inputParameters.m_enableBlockProcessing && 
           m_inputParameters.m_enableThreadedProcessing )
         {
-          maxSegThreads = ( m_inputParameters.m_maxSegThreads ? 
-            m_inputParameters.m_maxSegThreads : te::common::GetPhysProcNumber() );
-        }
+          if( m_inputParameters.m_maxSegThreads )
+          {
+            maxSegThreads = m_inputParameters.m_maxSegThreads;
+          }
+          else
+          {
+            maxSegThreads = te::common::GetPhysProcNumber();
+            if( maxSegThreads == 1 )
+            {
+              maxSegThreads = 0;
+            }
+          }
+        }        
         
         // Calc the maximum block width & height
         
@@ -642,6 +653,20 @@ namespace te
         cachedRasterHandler.reset();
         cachedRasterPtr = 0;
         
+         // The progress interface
+
+        const bool enableStrategyProgress =  m_inputParameters.m_enableProgress &&
+          ( ( vBlocksNumber * hBlocksNumber ) == 1 ) && ( maxSegThreads == 0 );
+        
+        std::auto_ptr< te::common::TaskProgress > progressPtr;
+        if( m_inputParameters.m_enableProgress && ( ! enableStrategyProgress ) )
+        {
+          progressPtr.reset( new te::common::TaskProgress );
+          progressPtr->setTotalSteps( 1 + ( vBlocksNumber * hBlocksNumber ) );
+          progressPtr->setMessage( "Segmentation" );
+          progressPtr->pulse();
+        }         
+        
         // Starting the segmentation 
         
         boost::mutex generalMutex;
@@ -679,18 +704,7 @@ namespace te
           &runningThreadsCounter;
         baseSegThreadParams.m_inputRasterBandMinValues = inputRasterBandMinValues;
         baseSegThreadParams.m_inputRasterBandMaxValues = inputRasterBandMaxValues;
-        baseSegThreadParams.m_enableStrategyProgress =  m_inputParameters.m_enableProgress &&
-          ( ( vBlocksNumber * hBlocksNumber ) == 1 ) && ( maxSegThreads == 0 );
-          
-        std::auto_ptr< te::common::TaskProgress > progressPtr;
-        if( m_inputParameters.m_enableProgress &&
-          ( ! baseSegThreadParams.m_enableStrategyProgress ) )
-        {
-          progressPtr.reset( new te::common::TaskProgress );
-          progressPtr->setTotalSteps( 1 + ( vBlocksNumber * hBlocksNumber ) );
-          progressPtr->setMessage( "Segmentation" );
-          progressPtr->pulse();
-        } 
+        baseSegThreadParams.m_enableStrategyProgress = enableStrategyProgress;
           
         if( m_inputParameters.m_inputRasterNoDataValues.empty() )
         {

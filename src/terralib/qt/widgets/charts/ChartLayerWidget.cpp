@@ -77,6 +77,28 @@ void te::qt::widgets::ChartLayerWidget::setLayer(te::map::AbstractLayerPtr layer
   m_layer = layer;
 
   listAttributes();
+
+  // Lauro: para operar com linked table
+  //m_ui->m_summaryComboBox->clear();
+  //if(te::da::HasLinkedTable(m_layer.get()))
+  //{
+  //  m_ui->m_summaryComboBox->addItem("MIN");
+  //  m_ui->m_summaryComboBox->addItem("MAX");
+  //  m_ui->m_summaryComboBox->addItem("SUM");
+  //  m_ui->m_summaryComboBox->addItem("AVERAGE");
+  //  m_ui->m_summaryComboBox->addItem("MEDIAN");
+  //  m_ui->m_summaryComboBox->addItem("STDDEV");
+  //  m_ui->m_summaryComboBox->addItem("VARIANCE");
+
+  //  if(m_layer->getChart())
+  //    m_ui->m_summaryComboBox->setcurrentText(m_layer->getChart()->getSummary());
+  //  m_ui->m_summaryComboBox->setEnabled(true);
+  //}
+  //else
+  //{
+  //  m_ui->m_summaryComboBox->addItem("NONE");
+  //  m_ui->m_summaryComboBox->setEnabled(false);
+  //}
 }
 
 bool te::qt::widgets::ChartLayerWidget::buildChart()
@@ -111,6 +133,9 @@ bool te::qt::widgets::ChartLayerWidget::buildChart()
   chart->setContourWidth((std::size_t)m_ui->m_contourWidthSpinBox->value());
   chart->setContourColor(te::qt::widgets::Convert2TerraLib(m_colorPicker->getColor()));
   chart->setAvoidConflicts(m_ui->m_avoidConflictsCheckBox->isChecked());
+
+  // Lauro: para operar com linked table
+  //chart->setSummary(m_ui->m_summaryComboBox->currentText();
 
    // Is necessary compute the max value?
   if(chart->getType() == te::map::Bar)

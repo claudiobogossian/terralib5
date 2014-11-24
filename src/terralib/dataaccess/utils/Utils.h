@@ -152,6 +152,19 @@ namespace te
     TEDATAACCESSEXPORT void GetOIDPropertyPos(const DataSetType* type, std::vector<std::size_t>& ppos);
 
     /*
+      \function getBasePkey
+      \brief Function used to acquire the string that represents the objectId of the base dataset.
+
+      \param oid The objectId as returned from the dataset;
+      \param dsProps A pair that indicates the name of the base dataset and how many key properties it's got
+
+      \note Will return the whole objectId as a string unless the dataset of interest is based on a linked layer,
+          otherwise it returns a string that represents the objectId of the base Dataset.
+      \note It will not take ownership of the given objectId pointer
+    */
+    TEDATAACCESSEXPORT std::string getBasePkey(te::da::ObjectId* oid, std::pair<std::string, int>& dsProps);
+
+    /*
       \brief It generates the set of object ids for every element of the given dataset.
 
       This method tries to use the primary key properties defined on data set type to generate the object ids.

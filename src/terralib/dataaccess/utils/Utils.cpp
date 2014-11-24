@@ -382,6 +382,18 @@ void te::da::GetOIDDatasetProps(const DataSetType* type, std::pair<std::string, 
   }
 }
 
+std::string te::da::getBasePkey(te::da::ObjectId* oid, std::pair<std::string, int>& dsProps)
+{
+  std::string res;
+  boost::ptr_vector<te::dt::AbstractData> curValues;
+  curValues = oid->getValue();
+  for(int i = 0; i < dsProps.second; ++i)
+  {
+    res = res + curValues[i].toString();
+  }
+  return res;
+}
+
 void te::da::GetOIDPropertyPos(const te::da::DataSetType* type, std::vector<std::size_t>& ppos)
 {
   assert(type);
@@ -1307,6 +1319,7 @@ std::string te::da::GetSummarizedValue(const std::vector<std::string>& values, c
 
   return v;
 }
+
 double te::da::Round(const double& value, const size_t& precision)
 {
   double v = pow(10., (int)precision);
