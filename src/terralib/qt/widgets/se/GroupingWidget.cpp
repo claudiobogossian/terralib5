@@ -29,6 +29,7 @@
 #include "../../../common/STLUtils.h"
 #include "../../../dataaccess/dataset/DataSet.h"
 #include "../../../dataaccess/dataset/DataSetType.h"
+#include "../../../dataaccess/query/OrderByItem.h"
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../geometry/GeometryProperty.h"
 #include "../../../maptools/Enums.h"
@@ -36,6 +37,7 @@
 #include "../../../maptools/GroupingAlgorithms.h"
 #include "../../../maptools/GroupingItem.h"
 #include "../../../maptools/Utils.h"
+#include "../../../maptools/QueryLayer.h"
 #include "../../../se/SymbolizerColorFinder.h"
 #include "../../../se/Utils.h"
 #include "../colorbar/ColorBar.h"
@@ -686,9 +688,16 @@ void te::qt::widgets::GroupingWidget::onTableWidgetItemDoubleClicked(QTableWidge
   }
 }
 
+
 void te::qt::widgets::GroupingWidget::getDataAsDouble(std::vector<double>& vec, const std::string& attrName, const int& dataType, int& nullValues)
 {
   assert(m_layer.get());
+
+  if(te::da::HasLinkedTable(m_layer.get()))
+  {
+    getLinkedDataAsDouble(vec, attrName, dataType, nullValues);
+    return;
+  }
 
   std::auto_ptr<te::map::LayerSchema> dsType(m_layer->getSchema());
 
@@ -739,9 +748,138 @@ void te::qt::widgets::GroupingWidget::getDataAsDouble(std::vector<double>& vec, 
   }
 }
 
+void te::qt::widgets::GroupingWidget::getLinkedDataAsDouble(std::vector<double>& vec, const std::string& attrName, const int& dataType, int& nullValues)
+{
+  assert(m_layer.get());
+
+  std::auto_ptr<te::map::LayerSchema> dsType(m_layer->getSchema());
+
+  std::string function = "AVERAGE";
+  std::vector<std::string> poid;
+  size_t pksize = 0;
+  te::map::QueryLayer* qlayer = 0;
+  te::da::Select* select = 0;
+
+  // make sorting by object id
+  qlayer = dynamic_cast<te::map::QueryLayer*>(m_layer.get());
+  select = dynamic_cast<te::da::Select*>(qlayer->getQuery()->clone());
+  te::da::Select* selectaux = dynamic_cast<te::da::Select*>(select->clone());
+  te::da::OrderBy* orderBy = new te::da::OrderBy;
+
+  std::vector<te::dt::Property*> props = dsType->getPrimaryKey()->getProperties();
+  while(++pksize < props.size())
+  {
+    poid.push_back(props[pksize-1]->getName());
+    if(props[pksize-1]->getDatasetName() != props[pksize]->getDatasetName())
+      break;
+  }
+
+  for(size_t i = 0; i < pksize; ++i)
+    orderBy->push_back(new te::da::OrderByItem(poid[i]));
+
+  selectaux->setOrderBy(orderBy);
+  qlayer->setQuery(selectaux);
+
+  std::size_t idx;
+
+  for(std::size_t t = 0; t < dsType->getProperties().size(); ++t)
+  {
+    if(dsType->getProperty(t)->getName() == attrName)
+    {
+      idx = t;
+      break;
+    }
+  }
+
+  std::vector<std::string> pkdata(pksize), pkdataaux(pksize);  
+  std::auto_ptr<te::da::DataSet> ds(m_layer->getData());
+  qlayer->setQuery(select);
+
+  std::vector<double> values;
+  bool isBegin = true;
+  ds->moveBeforeFirst();
+
+  while(ds->moveNext())
+  {
+    bool nullValue = false;
+    if(pksize)
+    {
+      // it is linked. Remove redundancies.
+      size_t i;
+      for(i = 0; i < pksize; ++i)
+      {
+        pkdata[i] = ds->getAsString(poid[i]);
+        if(isBegin)
+        {
+          isBegin = false;
+          pkdataaux[i] = ds->getAsString(poid[i]);
+        }
+      }
+
+      for(i = 0; i < pksize; ++i)
+      {
+        if(pkdata[i] != pkdataaux[i])
+        {
+          pkdataaux = pkdata;
+          break;
+        }
+      }
+      if(i == pksize) // it is the same object
+      {
+        if(nullValue == false)
+        {
+          if(ds->isNull(idx))
+            nullValue = true;
+          else
+          {
+            if(dataType == te::dt::INT16_TYPE)
+              values.push_back((double)ds->getInt16(idx));
+            else if(dataType == te::dt::INT32_TYPE)
+              values.push_back((double)ds->getInt32(idx));
+            else if(dataType == te::dt::INT64_TYPE)
+              values.push_back((double)ds->getInt64(idx));
+            else if(dataType == te::dt::FLOAT_TYPE)
+              values.push_back((double)ds->getFloat(idx));
+            else if(dataType == te::dt::DOUBLE_TYPE)
+              values.push_back(ds->getDouble(idx));
+            else if(dataType == te::dt::NUMERIC_TYPE)
+            {
+              QString strNum = ds->getNumeric(idx).c_str();
+
+              bool ok = false;
+
+              double value = strNum.toDouble(&ok);
+
+              if(ok)
+                values.push_back(value);
+            }
+          }
+        }
+        continue;
+        // read other values
+      }
+      else // it is other object
+      {
+        // sumarize value according to the required summarization 
+        if(nullValue == false)
+          vec.push_back(te::da::GetSummarizedValue(values, function));
+        else
+          ++nullValues;
+        values.clear();
+      }
+    }
+  }
+}
+
 void te::qt::widgets::GroupingWidget::getDataAsString(std::vector<std::string>& vec, const std::string& attrName, int& nullValues)
 {
   assert(m_layer.get());
+
+  if(te::da::HasLinkedTable(m_layer.get()))
+  {
+    getLinkedDataAsString(vec, attrName,  nullValues);
+    return;
+  }
 
   std::auto_ptr<te::map::LayerSchema> dsType(m_layer->getSchema());
 
@@ -766,6 +904,107 @@ void te::qt::widgets::GroupingWidget::getDataAsString(std::vector<std::string>& 
       vec.push_back(ds->getAsString(idx));
     else
       ++nullValues;
+  }
+}
+
+void te::qt::widgets::GroupingWidget::getLinkedDataAsString(std::vector<std::string>& vec, const std::string& attrName, int& nullValues)
+{
+  assert(m_layer.get());
+
+  std::auto_ptr<te::map::LayerSchema> dsType(m_layer->getSchema());
+
+  std::string function = "MIN";
+  std::vector<std::string> poid;
+  size_t pksize = 0;
+  te::map::QueryLayer* qlayer = 0;
+  te::da::Select* select = 0;
+
+  // make sorting by object id
+  qlayer = dynamic_cast<te::map::QueryLayer*>(m_layer.get());
+  select = dynamic_cast<te::da::Select*>(qlayer->getQuery()->clone());
+  te::da::Select* selectaux = dynamic_cast<te::da::Select*>(select->clone());
+  te::da::OrderBy* orderBy = new te::da::OrderBy;
+
+  std::vector<te::dt::Property*> props = dsType->getPrimaryKey()->getProperties();
+  while(++pksize < props.size())
+  {
+    poid.push_back(props[pksize-1]->getName());
+    if(props[pksize-1]->getDatasetName() != props[pksize]->getDatasetName())
+      break;
+  }
+
+  for(size_t i = 0; i < pksize; ++i)
+    orderBy->push_back(new te::da::OrderByItem(poid[i]));
+
+  selectaux->setOrderBy(orderBy);
+  qlayer->setQuery(selectaux);
+
+  std::size_t idx;
+
+  for(std::size_t t = 0; t < dsType->getProperties().size(); ++t)
+  {
+    if(dsType->getProperty(t)->getName() == attrName)
+    {
+      idx = t;
+      break;
+    }
+  }
+
+  std::vector<std::string> pkdata(pksize), pkdataaux(pksize);  
+  std::auto_ptr<te::da::DataSet> ds(m_layer->getData());
+  qlayer->setQuery(select);
+
+  std::vector<std::string> values;
+  bool isBegin = true;
+  ds->moveBeforeFirst();
+
+  while(ds->moveNext())
+  {
+    bool nullValue = false;
+    if(pksize)
+    {
+      // it is linked. Remove redundancies.
+      size_t i;
+      for(i = 0; i < pksize; ++i)
+      {
+        pkdata[i] = ds->getAsString(poid[i]);
+        if(isBegin)
+        {
+          isBegin = false;
+          pkdataaux[i] = ds->getAsString(poid[i]);
+        }
+      }
+
+      for(i = 0; i < pksize; ++i)
+      {
+        if(pkdata[i] != pkdataaux[i])
+        {
+          pkdataaux = pkdata;
+          break;
+        }
+      }
+      if(i == pksize) // it is the same object
+      {
+        if(nullValue == false)
+        {
+          if(ds->isNull(idx))
+            nullValue = true;
+          else
+            values.push_back(ds->getAsString(idx));
+        }
+        continue;
+        // read other values
+      }
+      else // it is other object
+      {
+        // sumarize value according to the required summarization 
+        if(nullValue == false)
+          vec.push_back(te::da::GetSummarizedValue(values, function));
+        else
+          ++nullValues;
+        values.clear();
+      }
+    }
   }
 }
 
