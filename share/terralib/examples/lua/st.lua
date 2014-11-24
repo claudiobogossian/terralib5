@@ -93,7 +93,7 @@ end
 
 -- Printing time series infos
 function PrintTimeSeriesInfo(ts)
-	if(ts == nil)
+	if(ts == nil) then
 		print("Time series is NULL!\n")
 		return
 	end  
@@ -110,15 +110,14 @@ function PrintTimeSeriesInfo(ts)
 
 	gm = ts:getLocation();
 
-	if(gm != nil)
-		print("Time series location: " .. gm->toString() .. "\n")
+	if(gm ~= nil) then
+		print("Time series location: " .. gm:toString() .. "\n")
 	end
 end
 
 -- Printing time series
 function PrintTimeSeries(ts)
-{
-  if(ts == nill)
+  if(ts == nil) then
     print("Time series is NULL!\n")
     return
   end
@@ -145,12 +144,12 @@ end
 
 -- Printing trajectory distance
 function TrajectoryDistance(tj1, tj2)
-	if(tj1 == nil)
+	if(tj1 == nil) then
 		print("The first trajectory is NULL!\n")
 		return
 	end
 
-	if(tj2 == nill)
+	if(tj2 == nill) then
 	    print("The second trajectory is NULL!\n")
 		return
 	end
