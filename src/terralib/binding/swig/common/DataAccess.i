@@ -8,6 +8,14 @@
 
 %include lua/typemaps.i
 
+namespace te {
+  namespace common {
+    %template(DSMgerSingleton) Singleton < te::da::DataSourceManager >;
+  }
+}
+
+typedef te::common::Singleton< te::da::DataSourceManager > DSMgerSingleton;
+
 AUTO_PTR_TYPEMAPS(te::dt::DateTime)
 AUTO_PTR_TYPEMAPS(te::dt::AbstractData)
 AUTO_PTR_TYPEMAPS(te::dt::ByteArray)
@@ -43,6 +51,12 @@ AUTO_PTR_TYPEMAPS(te::rst::Raster)
 #include "terralib/dataaccess/datasource/DataSourceFactory.h"
 
 using namespace te::dt;
+
+static void OpenDataSource(const te::da::DataSourceInfo& info)
+{
+  te::da::DataSourceManager::getInstance().open(info.getId(), info.getType(), info.getConnInfo());
+}
+
 %}
 
 %nspace te::da::DataSetType;
@@ -64,3 +78,6 @@ using namespace te::dt;
 %include "terralib/dataaccess/datasource/DataSourceFactory.h"
 
 %newobject te::da::DataSourceFactory::make(const std::string& dsType);
+
+//Wrap function
+void OpenDataSource(const te::da::DataSourceInfo& info);

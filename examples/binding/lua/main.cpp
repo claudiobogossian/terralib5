@@ -41,7 +41,7 @@ int main(int /*argc*/, char** /*argv*/)
   luaL_openlibs(L); /* Load Lua libraries */
 
   /* Load the file containing the script we are going to run */
-  std::string f = te::common::FindInTerraLibPath("share/terralib/examples/lua/dataaccess.lua");
+  std::string f = te::common::FindInTerraLibPath("share/terralib/examples/lua/st.lua");
 
   int status = luaL_loadfile(L, f.c_str());
   if (status)

@@ -9,13 +9,18 @@
 %include lua/typemaps.i
 
 #define TESTEXPORT 
- 
+
 AUTO_PTR_TYPEMAPS(te::dt::DateTimePeriod)
 AUTO_PTR_TYPEMAPS(te::st::Coverage)
 AUTO_PTR_TYPEMAPS(te::st::TimeSeries)
 AUTO_PTR_TYPEMAPS(te::st::CoverageSeries)
 AUTO_PTR_TYPEMAPS(te::st::Observation)
 AUTO_PTR_TYPEMAPS(te::st::Trajectory)
+AUTO_PTR_TYPEMAPS(te::st::ObservationDataSet)
+AUTO_PTR_TYPEMAPS(te::st::TrajectoryDataSet)
+AUTO_PTR_TYPEMAPS(te::st::PointCoverage)
+AUTO_PTR_TYPEMAPS(te::st::TimeSeriesDataSet)
+AUTO_PTR_TYPEMAPS(te::st::RasterCoverage)
 
 // Fail to export this operator
 %ignore te::st::CoverageSeriesIterator::operator *;
@@ -59,9 +64,9 @@ AUTO_PTR_TYPEMAPS(te::st::Trajectory)
 #include "terralib\st\core\trajectory\TrajectoryDataSetType.h"
 #include "terralib\st\core\trajectory\TrajectoryIterator.h"
 #include "terralib\st\core\trajectory\TrajectoryObservation.h"
+#include "terralib\st\loader\STDataLoader.h"
 
 /*
-#include "terralib\st\loader\STDataLoader.h"
 #include "terralib\st\loader\STDataLoaderFromDS.h"
 #include "terralib\st\loader\STDataLoaderFromDSFactory.h"
 #include "terralib\st\loader\STDataLoaderFromMemDS.h"
@@ -92,8 +97,10 @@ AUTO_PTR_TYPEMAPS(te::st::Trajectory)
 %nspace te::st::PointCoverageIterator;
 %nspace te::st::PointCoverage;
 %nspace te::st::PointCoverageDataSetInfo;
+%nspace te::st::PointCoverageSeriesDataSetInfo;
 %nspace te::st::RasterCoverage;
 %nspace te::st::RasterCoverageDataSetInfo;
+%nspace te::st::RasterCoverageSeriesDataSetInfo;
 %nspace te::st::Event;
 %nspace te::st::Object;
 %nspace te::st::AbstractCoverageSeriesInterp;
@@ -116,6 +123,7 @@ AUTO_PTR_TYPEMAPS(te::st::Trajectory)
 %nspace te::st::TrajectoryDataSetType;
 %nspace te::st::TrajectoryDataSet;
 %nspace te::st::TrajectoryDataSetInfo;
+%nspace te::st::STDataLoader;
 
 %include "terralib\st\Enums.h"
 %include "terralib\st\core\observation\Observation.h"
@@ -127,13 +135,13 @@ AUTO_PTR_TYPEMAPS(te::st::Trajectory)
 %include "terralib\st\core\coverage\Coverage.h"
 %include "terralib\st\core\coverage\CoverageDataSetInfo.h"
 %include "terralib\st\core\coverage\CoverageSeries.h"
-%include "terralib\st\core\coverage\CoverageSeriesDataSetInfo.h"
 %include "terralib\st\core\coverage\PointCoverageObservation.h"
 %include "terralib\st\core\coverage\PointCoverageIterator.h"
 %include "terralib\st\core\coverage\PointCoverage.h"
 %include "terralib\st\core\coverage\PointCoverageDataSetInfo.h"
 %include "terralib\st\core\coverage\RasterCoverage.h"
 %include "terralib\st\core\coverage\RasterCoverageDataSetInfo.h"
+%include "terralib\st\core\coverage\CoverageSeriesDataSetInfo.h"
 %include "terralib\st\core\event\Event.h"
 %include "terralib\st\core\event\Object.h"
 %include "terralib\st\core\interpolator\AbstractCoverageSeriesInterp.h"
@@ -156,3 +164,4 @@ AUTO_PTR_TYPEMAPS(te::st::Trajectory)
 %include "terralib\st\core\trajectory\TrajectoryDataSetType.h"
 %include "terralib\st\core\trajectory\TrajectoryDataSet.h"
 %include "terralib\st\core\trajectory\TrajectoryDataSetInfo.h"
+%include "terralib\st\loader\STDataLoader.h"
