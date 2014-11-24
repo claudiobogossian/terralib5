@@ -30,8 +30,6 @@
 // STL
 #include <cmath>
 
-// Boost
-#include <boost/numeric/ublas/matrix.hpp>
 
 te::gm::SecondDegreePolynomialGT::SecondDegreePolynomialGT()
 {  
@@ -119,90 +117,88 @@ bool te::gm::SecondDegreePolynomialGT::computeParameters( GTParameters& params )
 
   // Creating the equation system parameters
   
-  const unsigned int tiepointsSize = params.m_tiePoints.size();
-  if( tiepointsSize < getMinRequiredTiePoints() ) return false;
+  m_computeParameters_tiepointsSize = params.m_tiePoints.size();
+  if( m_computeParameters_tiepointsSize < getMinRequiredTiePoints() ) return false;
   
-  boost::numeric::ublas::matrix< double > W( tiepointsSize, 6 );
-  boost::numeric::ublas::matrix< double > WI( tiepointsSize, 6 );
-  boost::numeric::ublas::matrix< double > X( tiepointsSize, 1 );
-  boost::numeric::ublas::matrix< double > XI( tiepointsSize, 1 );
-  boost::numeric::ublas::matrix< double > Y( tiepointsSize, 1 );
-  boost::numeric::ublas::matrix< double > YI( tiepointsSize, 1 );
+  m_computeParameters_W.resize( m_computeParameters_tiepointsSize, 6 );
+  m_computeParameters_WI.resize( m_computeParameters_tiepointsSize, 6 );
+  m_computeParameters_X.resize( m_computeParameters_tiepointsSize, 1 );
+  m_computeParameters_XI.resize( m_computeParameters_tiepointsSize, 1 );
+  m_computeParameters_Y.resize( m_computeParameters_tiepointsSize, 1 );
+  m_computeParameters_YI.resize( m_computeParameters_tiepointsSize, 1 );
   
-  for ( unsigned int tpIdx = 0 ; tpIdx < tiepointsSize ; ++tpIdx ) 
+  for ( m_computeParameters_tpIdx = 0 ; m_computeParameters_tpIdx < m_computeParameters_tiepointsSize ; ++m_computeParameters_tpIdx ) 
   {
-    const Coord2D& pt1 = params.m_tiePoints[ tpIdx ].first;
+    const Coord2D& pt1 = params.m_tiePoints[ m_computeParameters_tpIdx ].first;
     
-    W( tpIdx, 0 ) = 1;
-    W( tpIdx, 1 ) = pt1.x;
-    W( tpIdx, 2 ) = pt1.y;
-    W( tpIdx, 3 ) = pt1.x * pt1.y;
-    W( tpIdx, 4 ) = pt1.x * pt1.x;
-    W( tpIdx, 5 ) = pt1.y * pt1.y;
+    m_computeParameters_W( m_computeParameters_tpIdx, 0 ) = 1;
+    m_computeParameters_W( m_computeParameters_tpIdx, 1 ) = pt1.x;
+    m_computeParameters_W( m_computeParameters_tpIdx, 2 ) = pt1.y;
+    m_computeParameters_W( m_computeParameters_tpIdx, 3 ) = pt1.x * pt1.y;
+    m_computeParameters_W( m_computeParameters_tpIdx, 4 ) = pt1.x * pt1.x;
+    m_computeParameters_W( m_computeParameters_tpIdx, 5 ) = pt1.y * pt1.y;
     
-    const Coord2D& pt2 = params.m_tiePoints[ tpIdx ].second;
+    const Coord2D& pt2 = params.m_tiePoints[ m_computeParameters_tpIdx ].second;
     
-    WI( tpIdx, 0 ) = 1;
-    WI( tpIdx, 1 ) = pt2.x;
-    WI( tpIdx, 2 ) = pt2.y;
-    WI( tpIdx, 3 ) = pt2.x * pt2.y;
-    WI( tpIdx, 4 ) = pt2.x * pt2.x;
-    WI( tpIdx, 5 ) = pt2.y * pt2.y;    
+    m_computeParameters_WI( m_computeParameters_tpIdx, 0 ) = 1;
+    m_computeParameters_WI( m_computeParameters_tpIdx, 1 ) = pt2.x;
+    m_computeParameters_WI( m_computeParameters_tpIdx, 2 ) = pt2.y;
+    m_computeParameters_WI( m_computeParameters_tpIdx, 3 ) = pt2.x * pt2.y;
+    m_computeParameters_WI( m_computeParameters_tpIdx, 4 ) = pt2.x * pt2.x;
+    m_computeParameters_WI( m_computeParameters_tpIdx, 5 ) = pt2.y * pt2.y;    
     
-    X( tpIdx, 0 ) = pt2.x;
+    m_computeParameters_X( m_computeParameters_tpIdx, 0 ) = pt2.x;
     
-    XI( tpIdx, 0 ) = pt1.x;
+    m_computeParameters_XI( m_computeParameters_tpIdx, 0 ) = pt1.x;
     
-    Y( tpIdx, 0 ) = pt2.y;
+    m_computeParameters_Y( m_computeParameters_tpIdx, 0 ) = pt2.y;
     
-    YI( tpIdx, 0 ) = pt1.y;    
+    m_computeParameters_YI( m_computeParameters_tpIdx, 0 ) = pt1.y;    
   }
     
   // Solving...
   
-  boost::numeric::ublas::matrix< double > PinvW;
-  if( ! te::common::GetPseudoInverseMatrix( W, PinvW ) ) return false;
+  if( ! te::common::GetPseudoInverseMatrix( m_computeParameters_W, m_computeParameters_PinvW ) ) return false;
   
-  boost::numeric::ublas::matrix< double > PinvWI;
-  if( ! te::common::GetPseudoInverseMatrix( WI, PinvWI ) ) return false;  
+  if( ! te::common::GetPseudoInverseMatrix( m_computeParameters_WI, m_computeParameters_PinvWI ) ) return false;  
   
-  boost::numeric::ublas::matrix< double > A( boost::numeric::ublas::prod( PinvW, X ) );
+  m_computeParameters_A = boost::numeric::ublas::prod( m_computeParameters_PinvW, m_computeParameters_X );
     
-  boost::numeric::ublas::matrix< double > AI( boost::numeric::ublas::prod( PinvWI, XI ) );
+  m_computeParameters_AI = boost::numeric::ublas::prod( m_computeParameters_PinvWI, m_computeParameters_XI );
         
-  boost::numeric::ublas::matrix< double > B( boost::numeric::ublas::prod( PinvW, Y ) );
+  m_computeParameters_B = boost::numeric::ublas::prod( m_computeParameters_PinvW, m_computeParameters_Y );
     
-  boost::numeric::ublas::matrix< double > BI( boost::numeric::ublas::prod( PinvWI, YI ) );
+  m_computeParameters_BI = boost::numeric::ublas::prod( m_computeParameters_PinvWI, m_computeParameters_YI );
     
   // Copying the parameters to output
   
   params.m_directParameters.resize( 12 );
-  params.m_directParameters[ 0 ] = A( 0, 0 );
-  params.m_directParameters[ 1 ] = A( 1, 0 );
-  params.m_directParameters[ 2 ] = A( 2, 0 );
-  params.m_directParameters[ 3 ] = A( 3, 0 );
-  params.m_directParameters[ 4 ] = A( 4, 0 );
-  params.m_directParameters[ 5 ] = A( 5, 0 );
-  params.m_directParameters[ 6 ] = B( 0, 0 );
-  params.m_directParameters[ 7 ] = B( 1, 0 );
-  params.m_directParameters[ 8 ] = B( 2, 0 );
-  params.m_directParameters[ 9 ] = B( 3, 0 );
-  params.m_directParameters[ 10 ] = B( 4, 0 );
-  params.m_directParameters[ 11 ] = B( 5, 0 );
+  params.m_directParameters[ 0 ] = m_computeParameters_A( 0, 0 );
+  params.m_directParameters[ 1 ] = m_computeParameters_A( 1, 0 );
+  params.m_directParameters[ 2 ] = m_computeParameters_A( 2, 0 );
+  params.m_directParameters[ 3 ] = m_computeParameters_A( 3, 0 );
+  params.m_directParameters[ 4 ] = m_computeParameters_A( 4, 0 );
+  params.m_directParameters[ 5 ] = m_computeParameters_A( 5, 0 );
+  params.m_directParameters[ 6 ] = m_computeParameters_B( 0, 0 );
+  params.m_directParameters[ 7 ] = m_computeParameters_B( 1, 0 );
+  params.m_directParameters[ 8 ] = m_computeParameters_B( 2, 0 );
+  params.m_directParameters[ 9 ] = m_computeParameters_B( 3, 0 );
+  params.m_directParameters[ 10 ] = m_computeParameters_B( 4, 0 );
+  params.m_directParameters[ 11 ] = m_computeParameters_B( 5, 0 );
   
   params.m_inverseParameters.resize( 12 );
-  params.m_inverseParameters[ 0 ] = AI( 0, 0 );
-  params.m_inverseParameters[ 1 ] = AI( 1, 0 );
-  params.m_inverseParameters[ 2 ] = AI( 2, 0 );
-  params.m_inverseParameters[ 3 ] = AI( 3, 0 );
-  params.m_inverseParameters[ 4 ] = AI( 4, 0 );
-  params.m_inverseParameters[ 5 ] = AI( 5, 0 );
-  params.m_inverseParameters[ 6 ] = BI( 0, 0 );
-  params.m_inverseParameters[ 7 ] = BI( 1, 0 );
-  params.m_inverseParameters[ 8 ] = BI( 2, 0 );
-  params.m_inverseParameters[ 9 ] = BI( 3, 0 );
-  params.m_inverseParameters[ 10 ] = BI( 4, 0 );
-  params.m_inverseParameters[ 11 ] = BI( 5, 0 );
+  params.m_inverseParameters[ 0 ] = m_computeParameters_AI( 0, 0 );
+  params.m_inverseParameters[ 1 ] = m_computeParameters_AI( 1, 0 );
+  params.m_inverseParameters[ 2 ] = m_computeParameters_AI( 2, 0 );
+  params.m_inverseParameters[ 3 ] = m_computeParameters_AI( 3, 0 );
+  params.m_inverseParameters[ 4 ] = m_computeParameters_AI( 4, 0 );
+  params.m_inverseParameters[ 5 ] = m_computeParameters_AI( 5, 0 );
+  params.m_inverseParameters[ 6 ] = m_computeParameters_BI( 0, 0 );
+  params.m_inverseParameters[ 7 ] = m_computeParameters_BI( 1, 0 );
+  params.m_inverseParameters[ 8 ] = m_computeParameters_BI( 2, 0 );
+  params.m_inverseParameters[ 9 ] = m_computeParameters_BI( 3, 0 );
+  params.m_inverseParameters[ 10 ] = m_computeParameters_BI( 4, 0 );
+  params.m_inverseParameters[ 11 ] = m_computeParameters_BI( 5, 0 );
   
   return true;
 }

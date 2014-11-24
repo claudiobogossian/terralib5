@@ -151,10 +151,10 @@ void te::layout::BuildContext::createLayoutContext( int width, int height, View*
     if(lScene)
       Context::getInstance().setScene(lScene);
   }  
-  if(!Context::getInstance().getBuildGraphicsItem())
+  if(!Context::getInstance().getAbstractBuildGraphicsItem())
   {
     m_buildGraphicsItem = new BuildGraphicsItem;
-    Context::getInstance().setBuildGraphicsItem(m_buildGraphicsItem);
+    Context::getInstance().setAbstractBuildGraphicsItem(m_buildGraphicsItem);
   }
   if(!Context::getInstance().getSystematicScaleConfig())
   {

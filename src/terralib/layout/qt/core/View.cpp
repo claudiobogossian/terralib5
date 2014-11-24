@@ -67,6 +67,7 @@
 #include <QMessageBox>
 #include <QContextMenuEvent>
 #include <QMenu>
+#include "tools/ViewZoomClick.h"
 
 #define _psPointInMM 0.352777778 //<! 1 PostScript point in millimeters
 #define _inchInPSPoints 72 //<! 1 Inch in PostScript point
@@ -220,6 +221,7 @@ void te::layout::View::keyPressEvent( QKeyEvent* keyEvent )
     Context::getInstance().setMode(enumMode->getModePrinter());
     //Apenas redesenhar itens que estão dentro do box do papel.
     sc->printPreview();
+    resetDefaultConfig();
     Context::getInstance().setMode(enumMode->getModeNone());
   }
   else if(keyEvent->key() == Qt::Key_E)
@@ -372,6 +374,8 @@ void te::layout::View::onMainMenuChangeContext( bool change )
 
 void te::layout::View::outsideAreaChangeContext( bool change )
 {
+  resetDefaultConfig();
+
   Scene* sc = dynamic_cast<Scene*>(scene());
 
   if(!sc)
@@ -404,26 +408,23 @@ void te::layout::View::outsideAreaChangeContext( bool change )
   {
     sc->reset();
     m_visualizationArea->build();
-    resetDefaultConfig();
   }
   else if(mode == enumMode->getModeExportPropsJSON())
   {
     sc->exportPropsAsJSON();
-    resetDefaultConfig();
   }
   else if(mode == enumMode->getModeImportJSONProps())
   {
-    sc->buildTemplate(m_visualizationArea);
-    resetDefaultConfig();
+    bool result = sc->buildTemplate(m_visualizationArea);
+    if(result)
+    {
+      m_visualizationArea->build();
+    }
   }
   else if(mode == enumMode->getModeMapPan())
   {
     graphicsItems = sc->selectedItems();
-    if(te::layout::getMapItemList(graphicsItems).empty())
-    {
-      resetDefaultConfig();
-    }
-    else
+    if(!te::layout::getMapItemList(graphicsItems).empty())
     {
       sc->setCurrentToolInSelectedMapItems(enumMode->getModeMapPan());
     }
@@ -431,11 +432,7 @@ void te::layout::View::outsideAreaChangeContext( bool change )
   else if(mode == enumMode->getModeMapZoomIn())
   {
     graphicsItems = sc->selectedItems();
-    if(te::layout::getMapItemList(graphicsItems).empty())
-    {
-      resetDefaultConfig();
-    }
-    else
+    if(!te::layout::getMapItemList(graphicsItems).empty())
     {
       sc->setCurrentToolInSelectedMapItems(enumMode->getModeMapZoomIn());
     }
@@ -443,11 +440,7 @@ void te::layout::View::outsideAreaChangeContext( bool change )
   else if(mode == enumMode->getModeMapZoomOut()) 
   {
     graphicsItems = sc->selectedItems();
-    if(te::layout::getMapItemList(graphicsItems).empty())
-    {
-      resetDefaultConfig();
-    }
-    else
+    if(!te::layout::getMapItemList(graphicsItems).empty())
     {
       sc->setCurrentToolInSelectedMapItems(enumMode->getModeMapZoomOut());
     }
@@ -466,12 +459,10 @@ void te::layout::View::outsideAreaChangeContext( bool change )
   else if(mode == enumMode->getModeGroup())
   {
     createItemGroup();
-    resetDefaultConfig();
   }
   else if(mode == enumMode->getModeUngroup()) 
   {
     destroyItemGroup();
-    resetDefaultConfig();
   }
   else if(mode == enumMode->getModePrinter()) 
   {
@@ -490,33 +481,38 @@ void te::layout::View::outsideAreaChangeContext( bool change )
             
     sc->refresh(this, zoomFactor);            
     sc->redrawItems(true);
-    resetDefaultConfig();
   }
   else if(mode == enumMode->getModeBringToFront()) 
   {
     sc->bringToFront();
-    resetDefaultConfig();
   }
   else if(mode == enumMode->getModeSendToBack()) 
   {
     sc->sendToBack();
-    resetDefaultConfig();
   }
-  else if(mode == enumMode->getModeMapZoomIn()) 
+  else if(mode == enumMode->getModeZoomIn()) 
   {
-    resetDefaultConfig();
+    /*
+      The QGraphicsView inherits QAbstractScrollArea. 
+      The QAbstractScrollArea on your EventFilter event invokes the viewportEvent instead eventFilter of the son, 
+      so it is necessary to add QAbstractScrollArea for the filter installed can listen to events.       
+      */
+    QCursor curIn = createCursor("layout-paper-zoom-in");
+    setInteractive(false);
+    m_currentTool = new ViewZoomArea(this, curIn);
+    viewport()->installEventFilter(m_currentTool);
+  }
+  else if(mode == enumMode->getModeZoomOut()) 
+  {
     /*
       The QGraphicsView inherits QAbstractScrollArea. 
       The QAbstractScrollArea on your EventFilter event invokes the viewportEvent instead eventFilter of the son, 
       so it is necessary to add QAbstractScrollArea for the filter installed can listen to events.       
     */
+    QCursor curOut = createCursor("layout-paper-zoom-out");
     setInteractive(false);
-    m_currentTool = new ViewZoomArea(this, Qt::CrossCursor);
+    m_currentTool = new ViewZoomClick(this, curOut);
     viewport()->installEventFilter(m_currentTool);
-  }
-  else if(mode == enumMode->getModeZoomOut()) 
-  {
-
   }
   else if(mode == enumMode->getModeRecompose()) 
   {
@@ -527,67 +523,54 @@ void te::layout::View::outsideAreaChangeContext( bool change )
       sc->refresh(this, dZoom);
       sc->redrawItems(true);
     }
-    resetDefaultConfig();
   }
   else if(mode == enumMode->getModePageConfig()) 
   {
     showPageSetup();
-    resetDefaultConfig();
   }
   else if(mode == enumMode->getModeMapCreateTextGrid()) 
   {
     sc->createTextGridAsObject();
-    resetDefaultConfig();
   }
   else if(mode == enumMode->getModeMapCreateTextMap()) 
   {
     sc->createTextMapAsObject();
-    resetDefaultConfig();
   }
   else if(mode == enumMode->getModeAlignLeft()) 
   {
     sc->alignLeft();
-    resetDefaultConfig();
   }
   else if(mode == enumMode->getModeAlignRight()) 
   {
     sc->alignRight();
-    resetDefaultConfig();
   }
   else if(mode == enumMode->getModeAlignTop()) 
   {
     sc->alignTop();
-    resetDefaultConfig();
   }
   else if(mode == enumMode->getModeAlignBottom()) 
   {
     sc->alignBottom();
-    resetDefaultConfig();
   }
   else if(mode == enumMode->getModeAlignCenterHorizontal()) 
   {
     sc->alignCenterHorizontal();
-    resetDefaultConfig();
   }
   else if(mode == enumMode->getModeAlignCenterVertical()) 
   {
     sc->alignCenterVertical();
-    resetDefaultConfig();
   }
   else if(mode == enumMode->getModeRemoveObject()) 
   {
     sc->removeSelectedItems();
-    resetDefaultConfig();
   }
   else if(mode == enumMode->getModeDrawSelectionMap()) 
   {
     sc->redrawSelectionMap();
-    resetDefaultConfig();
   }
   else if(mode == enumMode->getModeLegendChildAsObject()) 
   {
     sc->createLegendChildAsObject();
-    resetDefaultConfig();
   }
   else if(mode == enumMode->getModeArrowCursor())
   {
@@ -596,7 +579,6 @@ void te::layout::View::outsideAreaChangeContext( bool change )
   else if(mode == enumMode->getModeObjectToImage())
   {
     sc->exportItemsToImage();
-    resetDefaultConfig();
   }
 }
 
@@ -742,16 +724,6 @@ bool te::layout::View::intersectionSelectionItem(int x, int y)
   return intersection;
 }
 
-void te::layout::View::drawBackground( QPainter * painter, const QRectF & rect )
-{
-  QGraphicsView::drawBackground(painter, rect);
-}
-
-void te::layout::View::drawForeground( QPainter * painter, const QRectF & rect )
-{
-  QGraphicsView::drawForeground(painter, rect);
-}
-
 QImage te::layout::View::createImage()
 {
   QImage ig;
@@ -770,4 +742,15 @@ QImage te::layout::View::createImage()
   this->render(&ptr, QRect(), QRect(), Qt::IgnoreAspectRatio);
 
   return img;
+}
+
+QCursor te::layout::View::createCursor( std::string pathIcon )
+{
+  QSize sz;
+  QIcon ico(QIcon::fromTheme(pathIcon.c_str()));
+  ico.actualSize(sz);
+  QPixmap pix = ico.pixmap(sz);
+  QCursor cur(pix);
+
+  return cur;
 }

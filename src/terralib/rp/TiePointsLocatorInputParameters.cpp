@@ -46,7 +46,7 @@ namespace te
 
     void TiePointsLocatorInputParameters::reset() throw( te::rp::Exception )
     {
-      m_interesPointsLocationStrategy = TiePointsLocatorInputParameters::SurfStrategyT;
+      m_interesPointsLocationStrategy = TiePointsLocatorInputParameters::MoravecStrategyT;
       m_inRaster1Ptr = 0;
       m_inMaskRaster1Ptr = 0;
       m_inRaster1Bands.clear();
@@ -63,22 +63,25 @@ namespace te
       m_raster2TargetAreaHeight = 0;
       m_enableMultiThread = true;
       m_enableProgress = false;
-      m_maxTiePoints = 0;
+      m_maxTiePoints = 2500;
       m_pixelSizeXRelation = 1;
       m_pixelSizeYRelation = 1;
       m_geomTransfName = "Affine";
       m_geomTransfMaxError = 2;
-      m_moravecCorrelationWindowWidth = 11;
-      m_moravecWindowWidth = 5;
+      m_moravecCorrelationWindowWidth = 21;
+      m_moravecWindowWidth = 21;
       m_enableGeometryFilter = true;
-      m_geometryFilterAssurance = 0.1;
+      m_geometryFilterAssurance = 0.75;
       m_moravecNoiseFilterIterations = 1;
-      m_surfScalesNumber = 4;
+      m_surfScalesNumber = 3;
       m_surfOctavesNumber = 2;
       m_subSampleOptimizationRescaleFactor = 1.0;
-      m_surfMaxNormEuclideanDist = 0.5;
-      m_moravecMinAbsCorrelation = 0.5;
+      m_subSampleOptimizationMinTPAreaCoverage = 25;
+      m_subSampleOptimizationMinTPNumberFactor = 2;
+      m_surfMaxNormEuclideanDist = 0.75;
+      m_moravecMinAbsCorrelation = 0.25;
       m_interpMethod = te::rst::Interpolator::NearestNeighbor;
+      m_tiePointsSubSectorsSplitFactor = 3;
     }
 
     const TiePointsLocatorInputParameters& TiePointsLocatorInputParameters::operator=(
@@ -116,9 +119,12 @@ namespace te
       m_surfScalesNumber = params.m_surfScalesNumber;
       m_surfOctavesNumber = params.m_surfOctavesNumber;
       m_subSampleOptimizationRescaleFactor = params.m_subSampleOptimizationRescaleFactor;
+      m_subSampleOptimizationMinTPAreaCoverage = params.m_subSampleOptimizationMinTPAreaCoverage;
+      m_subSampleOptimizationMinTPNumberFactor = params.m_subSampleOptimizationMinTPNumberFactor;
       m_surfMaxNormEuclideanDist = params.m_surfMaxNormEuclideanDist;
       m_moravecMinAbsCorrelation = params.m_moravecMinAbsCorrelation;
       m_interpMethod = params.m_interpMethod;
+      m_tiePointsSubSectorsSplitFactor = params.m_tiePointsSubSectorsSplitFactor;
 
       return *this;
     }

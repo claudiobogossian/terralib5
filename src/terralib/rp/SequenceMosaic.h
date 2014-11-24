@@ -87,7 +87,7 @@ namespace te
             
             std::string m_outDataSetsNameSufix; //!< The raster output data sets names sufix.
             
-            double m_minRequiredTiePointsCoveredAreaPercent; //!< The mininumum required tie-points covered area percent of each raster area - valid range [0,100] (default:0).
+            double m_minRequiredTiePointsCoveredAreaPercent; //!< The mininumum required tie-points covered area percent of each raster area - valid range [0,100] (default:25).
             
             te::rp::TiePointsLocator::InputParameters m_locatorParams; //!< The parameters used by the tie-points locator when processing each rasters pair (leave untouched to use the default).
             
@@ -221,20 +221,7 @@ namespace te
         */
         bool createDiskRasterCopy( const std::string& fileName,
           const te::rst::Raster& sourceRaster ) const;
-                    
           
-        /*!
-          \brief Returns the tie points converx hull area.
-          
-          \param tiePoints Input tie-points.
-          
-          \param useTPSecondCoordPair If true the sencond tie-point component (te::gm::GTParameters::TiePoint::second) will be used for the area calcule, otherwize the first component will be used.
-          
-          \return Returns the tie points converx hull area.
-        */          
-        double getTPConvexHullArea( 
-          const std::vector< te::gm::GTParameters::TiePoint >& tiePoints,
-          const bool useTPSecondCoordPair ) const;
     };
 
   } // end namespace rp

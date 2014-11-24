@@ -33,7 +33,7 @@
 #include "../../../geometry/Utils.h"
 #include "../../../qt/widgets/canvas/MapDisplay.h"
 #include "../../../qt/widgets/Utils.h"
-#include "../../IdGeometry.h"
+#include "../../Feature.h"
 #include "../../RepositoryManager.h"
 #include "../../Utils.h"
 #include "../Renderer.h"
@@ -54,8 +54,8 @@
 te::edit::VertexTool::VertexTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent)
   : AbstractTool(display, parent),
     m_layer(layer),
-    m_geom(0),
-    m_currentStage(GEOMETRY_SELECTION)
+    m_feature(0),
+    m_currentStage(FEATURE_SELECTION)
 {
   assert(m_layer.get());
 
@@ -71,7 +71,7 @@ te::edit::VertexTool::VertexTool(te::qt::widgets::MapDisplay* display, const te:
 
 te::edit::VertexTool::~VertexTool()
 {
-  delete m_geom;
+  delete m_feature;
 }
 
 bool te::edit::VertexTool::mousePressEvent(QMouseEvent* e)
@@ -92,7 +92,7 @@ bool te::edit::VertexTool::mousePressEvent(QMouseEvent* e)
     {
       RemoveVertex(m_lines, m_currentVertexIndex);
 
-      storeEditedGeometry();
+      storeEditedFeature();
 
       m_currentVertexIndex.makeInvalid();
 
@@ -111,7 +111,7 @@ bool te::edit::VertexTool::mousePressEvent(QMouseEvent* e)
     return false;
 
   // Else...
-  setStage(GEOMETRY_SELECTION);
+  setStage(FEATURE_SELECTION);
 
   return false;
 }
@@ -149,11 +149,11 @@ bool te::edit::VertexTool::mouseMoveEvent(QMouseEvent* e)
 
       std::auto_ptr<te::gm::Point> borderPoint(0);
 
-      if(m_geom != 0)
+      if(m_feature != 0)
       {
         std::auto_ptr<te::gm::Geometry> geometryFromEnvelope(te::gm::GetGeomFromEnvelope(&env, m_display->getSRID()));
 
-        if(m_geom->getGeometry()->intersects(geometryFromEnvelope.get()) && !m_geom->getGeometry()->contains(geometryFromEnvelope.get())) // Mouse over a segment?
+        if(m_feature->getGeometry()->intersects(geometryFromEnvelope.get()) && !m_feature->getGeometry()->contains(geometryFromEnvelope.get())) // Mouse over a segment?
           borderPoint.reset(new te::gm::Point(env.getCenter().x, env.getCenter().y));
       }
 
@@ -171,7 +171,7 @@ bool te::edit::VertexTool::mouseMoveEvent(QMouseEvent* e)
 
       MoveVertex(m_lines, m_currentVertexIndex, point.x(), point.y());
 
-      storeEditedGeometry();
+      storeEditedFeature();
 
       draw();
 
@@ -189,14 +189,14 @@ bool te::edit::VertexTool::mouseReleaseEvent(QMouseEvent* e)
 {
   switch(m_currentStage)
   {
-    case GEOMETRY_SELECTION:
+    case FEATURE_SELECTION:
     {
       if(e->button() != Qt::LeftButton)
         return false;
 
-      pickGeometry(m_layer, GetPosition(e));
+      pickFeature(m_layer, GetPosition(e));
 
-      if(m_geom)
+      if(m_feature)
         setStage(VERTEX_SEARCH);
 
       return true;
@@ -229,7 +229,7 @@ bool te::edit::VertexTool::mouseDoubleClickEvent(QMouseEvent* e)
 
     AddVertex(m_lines, point.x(), point.y(), e, m_display->getSRID());
 
-    storeEditedGeometry();
+    storeEditedFeature();
 
     m_currentVertexIndex.makeInvalid();
 
@@ -247,10 +247,10 @@ bool te::edit::VertexTool::mouseDoubleClickEvent(QMouseEvent* e)
 
 void te::edit::VertexTool::reset()
 {
-  delete m_geom;
-  m_geom = 0;
+  delete m_feature;
+  m_feature = 0;
 
-  setStage(GEOMETRY_SELECTION);
+  setStage(FEATURE_SELECTION);
 
   m_lines.clear();
 
@@ -259,24 +259,24 @@ void te::edit::VertexTool::reset()
   m_rtree.clear();
 }
 
-void te::edit::VertexTool::pickGeometry(const te::map::AbstractLayerPtr& layer, const QPointF& pos)
+void te::edit::VertexTool::pickFeature(const te::map::AbstractLayerPtr& layer, const QPointF& pos)
 {
   te::gm::Envelope env = buildEnvelope(pos);
-  pickGeometry(m_layer, env);
+  pickFeature(m_layer, env);
 }
 
-void te::edit::VertexTool::pickGeometry(const te::map::AbstractLayerPtr& layer, const te::gm::Envelope& env)
+void te::edit::VertexTool::pickFeature(const te::map::AbstractLayerPtr& layer, const te::gm::Envelope& env)
 {
   reset();
 
   try
   {
-    m_geom = PickGeometry(m_layer, env, m_display->getSRID());
+    m_feature = PickFeature(m_layer, env, m_display->getSRID());
 
     m_lines.clear();
 
-    if(m_geom != 0)
-      GetLines(m_geom->getGeometry(), m_lines);
+    if(m_feature != 0)
+      GetLines(m_feature->getGeometry(), m_lines);
 
     updateRTree();
 
@@ -313,10 +313,10 @@ void te::edit::VertexTool::draw(te::gm::Point* virtualVertex)
   }
 
   // Draw the vertexes
-  if(RepositoryManager::getInstance().hasIdentify(m_layer->getId(), m_geom->getId()) == false)
-    renderer.draw(m_geom->getGeometry(), true);
+  if(RepositoryManager::getInstance().hasIdentify(m_layer->getId(), m_feature->getId()) == false)
+    renderer.draw(m_feature->getGeometry(), true);
   else
-    renderer.drawVertexes(m_geom->getGeometry());
+    renderer.drawVertexes(m_feature->getGeometry());
 
   // Draw the current vertex
   if(m_currentVertexIndex.isValid())
@@ -394,7 +394,7 @@ void te::edit::VertexTool::updateCursor()
 {
   switch(m_currentStage)
   {
-    case GEOMETRY_SELECTION:
+    case FEATURE_SELECTION:
     case VERTEX_SEARCH:
        m_display->setCursor(Qt::ArrowCursor);
     break;
@@ -412,7 +412,7 @@ void te::edit::VertexTool::updateCursor()
   }
 }
 
-void te::edit::VertexTool::storeEditedGeometry()
+void te::edit::VertexTool::storeEditedFeature()
 {
-  RepositoryManager::getInstance().addEditedGeometry(m_layer->getId(), m_geom->getId()->clone(), dynamic_cast<te::gm::Geometry*>(m_geom->getGeometry()->clone()));
+  RepositoryManager::getInstance().addEditedGeometry(m_layer->getId(), m_feature->getId()->clone(), dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone()));
 }

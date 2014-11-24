@@ -27,12 +27,10 @@
 #define __TERRALIB_EDIT_INTERNAL_SNAP_H
 
 // TerraLib
-#include "../sam/rtree/Index.h"
 #include "../srs/Config.h"
 #include "Config.h"
 
 // STL
-#include <vector>
 #include <string>
 
 namespace te
@@ -68,45 +66,51 @@ namespace te
 
         Snap(const std::string& source, int srid = TE_UNKNOWN_SRS);
 
-        ~Snap();
+        virtual ~Snap();
 
-        void build(te::da::DataSet* dataset);
+        std::string getSource() const;
 
-        void add(te::da::DataSet* dataset);
-
-        void add(te::gm::Geometry* geom);
-
-        bool search(const te::gm::Coord2D& coord, te::gm::Coord2D& result);
+        int getSRID() const;
 
         std::size_t getNGeometries() const;
+
+        std::size_t getMaxGeometries() const;
 
         double getTolerance() const;
 
         void setTolerance(const double& t);
 
-        void clear();
-
         void setWorld(const double& llx, const double& lly,
                       const double& urx, const double& ury,
                       const std::size_t& width, const std::size_t& height);
 
+        void build(te::da::DataSet* dataset);
+
+        void add(te::da::DataSet* dataset);
+
+        virtual bool search(const te::gm::Coord2D& coord, te::gm::Coord2D& result);
+
+        virtual void add(te::gm::Geometry* geom) = 0;
+
+        virtual void clear() = 0;
+
+        virtual std::string getName() const = 0;
+
+        virtual std::string getDescription() const = 0;
+
+      protected:
+
         te::gm::Envelope getSearchEnvelope(const te::gm::Coord2D& coord) const;
 
-        int getSRID() const;
+        virtual bool search(const te::gm::Envelope& e, te::gm::Coord2D& result) = 0;
 
-      private:
-
-        bool search(const te::gm::Envelope& e, te::gm::Coord2D& result);
-
-      private:
+      protected:
 
         std::string m_source;                           //!< The source of the geometries.
         int m_srid;                                     //!< The SRS of the geometries.
         std::size_t m_nGeometries;                      //!< The current number of geometries added to the snap.
         std::size_t m_maxGeometries;                    //!< The maximum number of geometries that can be added to the snap. If 0, there will be not limit.
         double m_tolerance;                             //!< The tolerance that will be used by the snap. For while, the unit is screen pixels.
-        std::vector<te::gm::Coord2D> m_coords;          //!< The snap coordinates.
-        te::sam::rtree::Index<std::size_t, 8> m_rtree;  //!< Internal index used to retrieve geometries spatially.
         te::map::WorldDeviceTransformer* m_transformer; //!< For transforming from device coordinate to world coordinate and vice-versa.
     }; 
 

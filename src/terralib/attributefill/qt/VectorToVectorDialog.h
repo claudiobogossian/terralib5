@@ -32,11 +32,13 @@
 #include "../../maptools/AbstractLayer.h"
 #include "../../statistics/core/Utils.h"
 #include "../Config.h"
+#include "../Enums.h"
 
 // STL
 #include <list>
 #include <map>
 #include <memory>
+#include <vector>
 
 // Qt
 #include <QDialog>
@@ -77,19 +79,19 @@ namespace te
         */
         te::map::AbstractLayerPtr getLayer();
 
+        void setLogPath(const std::string& path);
+
       private:
 
         void setFunctionsByLayer(te::map::AbstractLayerPtr layer);
 
         void setStatisticalSummary();
 
-        void setStatisticalSummaryMap();
-
         te::map::AbstractLayerPtr getCurrentFromLayer();
 
         te::map::AbstractLayerPtr getCurrentToLayer();
 
-        std::map<te::dt::Property*, std::vector<std::string> > getSelections();
+        std::map<std::string, std::vector<te::attributefill::OperationType> > getSelections();
 
         bool isPolygon(te::gm::GeomType type);
 
@@ -100,6 +102,8 @@ namespace te
         bool isClassType(const int type);
 
         te::gm::GeomType getCurrentToLayerGeomType();
+
+        bool isNumProperty(const int type);
 
       protected slots:
 
@@ -117,6 +121,8 @@ namespace te
 
         void onCancelPushButtonClicked();
 
+        void onSelectAttrToolButtonPressed();
+
         void onSelectAllComboBoxChanged(int index);
 
         void onRejectAllComboBoxChanged(int index);
@@ -130,10 +136,11 @@ namespace te
         std::auto_ptr<Ui::VectorToVectorDialogForm> m_ui;             //!< User interface.
         te::da::DataSourceInfoPtr m_outputDatasource;                 //!< DataSource information.
         std::list<te::map::AbstractLayerPtr> m_layers;                //!< List of layers.
+        std::vector<std::string> m_outputAttributes;
+        te::map::AbstractLayerPtr m_outLayer;
         std::string m_path;                                           //!< Output layer path;
+        std::string m_logPath;
         bool m_toFile;
-
-        StaticalSummaryMap m_statisticalSummaryMap;                   //!< Maping of Statistical Summary enum
     };
   }   // end namespace attributefill
 }     // end namespace te

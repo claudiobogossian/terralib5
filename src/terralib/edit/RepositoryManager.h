@@ -51,7 +51,7 @@ namespace te
   namespace edit
   {
 // Forward declaration
-    class IdGeometry;
+    class Feature;
     class Repository;
 
     /*!
@@ -75,13 +75,17 @@ namespace te
 
         Repository* getRepository(const std::string& source) const;
 
-        std::vector<IdGeometry*> getGeometries(const std::string& source, const te::gm::Envelope& e, int srid) const;
+        std::vector<Feature*> getFeatures(const std::string& source, const te::gm::Envelope& e, int srid) const;
 
-        IdGeometry* getGeometry(const std::string& source, const te::gm::Envelope& e, int srid) const;
+        Feature* getFeature(const std::string& source, const te::gm::Envelope& e, int srid) const;
 
         void clearAll();
 
-        void clearEditedGeometries();
+        void clear(const std::string& source);
+
+        void removeAll();
+
+        void remove(const std::string& source);
 
       protected:
 

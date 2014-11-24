@@ -44,6 +44,7 @@
 #include <algorithm>
 
 // Boost
+#include <boost/algorithm/string/replace.hpp>
 #include <boost/lexical_cast.hpp>
 
 // Qt
@@ -110,10 +111,22 @@ void te::qt::widgets::DataSetOptionsWizardPage::set(const std::list<te::da::Data
     //create dataset adapter
     te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter((*it).get(), targetDSPtr->getCapabilities());
 
+    //fix output dataset name
+    std::string name = converter->getResult()->getName();
+
+    std::size_t idx = name.find(".");
+    if (idx != std::string::npos)
+    {
+        name = name.substr(idx + 1, name.size() - 1);
+    }
+
+    converter->getResult()->setName(name);
+
+    //fix primary key name
     if(converter->getResult() && converter->getResult()->getPrimaryKey())
     {
       te::da::PrimaryKey* pk = converter->getResult()->getPrimaryKey();
-      pk->setName(converter->getResult()->getName() + "_" + pk->getName() + "_pk");
+      pk->setName(converter->getResult()->getName() + "_pk");
     }
 
     m_datasets.insert(std::map<te::da::DataSetTypePtr, te::da::DataSetTypeConverter*>::value_type((*it), converter));
@@ -183,7 +196,7 @@ void te::qt::widgets::DataSetOptionsWizardPage::applyChanges()
       if(it->second->getResult()->getPrimaryKey())
       {
         te::da::PrimaryKey* pk = it->second->getResult()->getPrimaryKey();
-        pk->setName(it->second->getResult()->getName() + "_" + pk->getName() + "_pk");
+        pk->setName(it->second->getResult()->getName() + "_pk");
 
         // fill constraints
         m_constraintWidget->setDataSetType(it->second->getResult());

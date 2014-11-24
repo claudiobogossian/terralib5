@@ -34,7 +34,7 @@
 #include "../geometry/Geometry.h"
 #include "../geometry/Point.h"
 #include "../geometry/Utils.h"
-#include "IdGeometry.h"
+#include "Feature.h"
 #include "Repository.h"
 
 // Boost
@@ -92,9 +92,9 @@ void te::edit::Repository::add(te::da::ObjectId* id, te::gm::Geometry* geom)
 
   if(pos == std::string::npos) // Not found! Insert
   {
-    m_geoms.push_back(new IdGeometry(id, geom));
+    m_features.push_back(new Feature(id, geom));
 
-    buildIndex(m_geoms.size() - 1, geom);
+    buildIndex(m_features.size() - 1, geom);
 
     return;
   }
@@ -128,10 +128,10 @@ void te::edit::Repository::remove(te::da::ObjectId* id)
     throw te::common::Exception(TE_TR("Identifier not found!"));
 
   // Cleaning...
-  delete m_geoms[pos];
+  delete m_features[pos];
 
   // Removing...
-  m_geoms.erase(m_geoms.begin() + pos);
+  m_features.erase(m_features.begin() + pos);
 
   // Indexing...
   buildIndex();
@@ -141,8 +141,8 @@ std::size_t te::edit::Repository::getPosition(te::da::ObjectId* id)
 {
   assert(id);
 
-  for(std::size_t i = 0; i < m_geoms.size(); ++i)
-    if(m_geoms[i]->isEquals(id))
+  for(std::size_t i = 0; i < m_features.size(); ++i)
+    if(m_features[i]->isEquals(id))
       return i;
 
   return std::string::npos;
@@ -158,16 +158,16 @@ const std::string& te::edit::Repository::getSource() const
   return m_source;
 }
 
-const std::vector<te::edit::IdGeometry*>& te::edit::Repository::getGeometries() const
+const std::vector<te::edit::Feature*>& te::edit::Repository::getFeatures() const
 {
-  return m_geoms;
+  return m_features;
 }
 
-std::vector<te::edit::IdGeometry*> te::edit::Repository::getGeometries(const te::gm::Envelope& e, int /*srid*/) const
+std::vector<te::edit::Feature*> te::edit::Repository::getFeatures(const te::gm::Envelope& e, int /*srid*/) const
 {
   assert(e.isValid());
 
-  std::vector<te::edit::IdGeometry*> result;
+  std::vector<te::edit::Feature*> result;
 
   // Search on rtree
   std::vector<std::size_t> report;
@@ -177,17 +177,17 @@ std::vector<te::edit::IdGeometry*> te::edit::Repository::getGeometries(const te:
   {
     std::size_t pos = report[i];
 
-    assert(pos < m_geoms.size());
+    assert(pos < m_features.size());
 
-    result.push_back(m_geoms[pos]);
+    result.push_back(m_features[pos]);
   }
 
   return result;
 }
 
-te::edit::IdGeometry* te::edit::Repository::getGeometry(const te::gm::Envelope& e, int srid) const
+te::edit::Feature* te::edit::Repository::getFeature(const te::gm::Envelope& e, int srid) const
 {
-  std::vector<te::edit::IdGeometry*> candidates = getGeometries(e, srid);
+  std::vector<te::edit::Feature*> candidates = getFeatures(e, srid);
 
   if(candidates.empty())
     return 0;
@@ -199,7 +199,7 @@ te::edit::IdGeometry* te::edit::Repository::getGeometry(const te::gm::Envelope& 
   te::gm::Coord2D center = e.getCenter();
   te::gm::Point point(center.x, center.y, srid);
 
-  IdGeometry* result = 0;
+  Feature* result = 0;
 
   for(std::size_t i = 0; i < candidates.size(); ++i)
   {
@@ -214,7 +214,8 @@ te::edit::IdGeometry* te::edit::Repository::getGeometry(const te::gm::Envelope& 
 
 void te::edit::Repository::clear()
 {
-  te::common::FreeContents(m_geoms);
+  te::common::FreeContents(m_features);
+  m_features.clear();
 
   clearIndex();
 }
@@ -224,13 +225,13 @@ void te::edit::Repository::set(const std::size_t& pos, te::da::ObjectId* id, te:
   assert(pos != std::string::npos);
   assert(id);
   assert(geom);
-  assert(pos < m_geoms.size());
+  assert(pos < m_features.size());
 
   // Cleaning...
-  delete m_geoms[pos];
+  delete m_features[pos];
 
   // Set the new values
-  m_geoms[pos] = new IdGeometry(id, geom);
+  m_features[pos] = new Feature(id, geom);
 
   // Indexing...
   buildIndex();
@@ -245,8 +246,8 @@ void te::edit::Repository::buildIndex()
 {
   clearIndex();
 
-  for(std::size_t i = 0; i < m_geoms.size(); ++i)
-    buildIndex(i, m_geoms[i]->getGeometry());
+  for(std::size_t i = 0; i < m_features.size(); ++i)
+    buildIndex(i, m_features[i]->getGeometry());
 }
 
 void te::edit::Repository::buildIndex(const std::size_t& pos, te::gm::Geometry* geom)

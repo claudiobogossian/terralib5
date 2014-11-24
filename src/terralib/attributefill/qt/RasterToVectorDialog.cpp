@@ -347,10 +347,13 @@ void te::attributefill::RasterToVectorDialog::onOkPushButtonClicked()
     return;
   }
 
+
   std::vector<te::stat::StatisticalSummary> vecStatistics = getSelectedStatistics();
-  if(vecStatistics.empty())
+  m_texture = m_ui->m_textureCheckBox->isChecked();
+
+  if(vecStatistics.empty() && m_texture == false)
   {
-    QMessageBox::information(this, "Fill", "Select at least one statistic operation.");
+    QMessageBox::information(this, "Fill", "Select at least one statistic operation or select the texture checkbox.");
     return;
   }
 
@@ -359,7 +362,7 @@ void te::attributefill::RasterToVectorDialog::onOkPushButtonClicked()
     QMessageBox::information(this, "Fill", "Define a repository for the result.");
     return;
   }
-       
+
   if(m_ui->m_newLayerNameLineEdit->text().isEmpty())
   {
     QMessageBox::information(this, "Fill", "Define a name for the resulting layer.");
@@ -412,7 +415,7 @@ void te::attributefill::RasterToVectorDialog::onOkPushButtonClicked()
                         dsVectorLayer->getDataSetName(),
                         dsVectorLayer->getSchema());
 
-      rst2vec->setParams(vecBands, vecStatistics);
+      rst2vec->setParams(vecBands, vecStatistics, m_texture);
 
       rst2vec->setOutput(dsOGR, outputdataset);
       
@@ -475,7 +478,7 @@ void te::attributefill::RasterToVectorDialog::onOkPushButtonClicked()
                         dsVectorLayer->getDataSetName(),
                         dsVectorLayer->getSchema());
 
-      rst2vec->setParams(vecBands, vecStatistics);
+      rst2vec->setParams(vecBands, vecStatistics, m_texture);
 
       rst2vec->setOutput(aux, outputdataset);
 

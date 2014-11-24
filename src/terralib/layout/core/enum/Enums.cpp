@@ -36,56 +36,17 @@ te::layout::Enums::Enums() :
   m_modeType(0),
   m_templateType(0)
 {
-  init();
+
 }
 
 te::layout::Enums::~Enums()
 {
-  if(m_dataType)
-  {
-    delete m_dataType;
-    m_dataType = 0;
-  }
-
-  if(m_objType)
-  {
-    delete m_objType;
-    m_objType = 0;
-  }
-
-  if(m_gridStyleType)
-  {
-    delete m_gridStyleType;
-    m_gridStyleType = 0;
-  }
-
-  if(m_lineStyleType)
-  {
-    delete m_lineStyleType;
-    m_lineStyleType = 0;
-  }
-
-  if(m_modeType)
-  {
-    delete m_modeType;
-    m_modeType = 0;
-  }
-
-  if(m_templateType)
-  {
-    delete m_templateType;
-    m_templateType = 0;
-  }
+  
 }
 
-void te::layout::Enums::init()
+void te::layout::Enums::setEnumDataType( EnumDataType* type )
 {
-  m_dataType = new EnumDataType;
-  m_objType = new EnumObjectType;
-  m_gridStyleType = new EnumGridStyleType;
-  m_lineStyleType = new EnumLineStyleType;
-  m_modeType = new EnumModeType;
-  m_templateType = new EnumTemplateType;
+  m_dataType = type;
 }
 
 te::layout::EnumDataType* te::layout::Enums::getEnumDataType()
@@ -93,9 +54,19 @@ te::layout::EnumDataType* te::layout::Enums::getEnumDataType()
   return m_dataType;
 }
 
+void te::layout::Enums::setEnumObjectType( EnumObjectType* type )
+{
+  m_objType = type;
+}
+
 te::layout::EnumObjectType* te::layout::Enums::getEnumObjectType()
 {
   return m_objType;
+}
+
+void te::layout::Enums::setEnumGridStyleType( EnumGridStyleType* type )
+{
+  m_gridStyleType = type;
 }
 
 te::layout::EnumGridStyleType* te::layout::Enums::getEnumGridStyleType()
@@ -103,14 +74,29 @@ te::layout::EnumGridStyleType* te::layout::Enums::getEnumGridStyleType()
   return m_gridStyleType;
 }
 
+void te::layout::Enums::setEnumLineStyleType( EnumLineStyleType* type )
+{
+  m_lineStyleType = type;
+}
+
 te::layout::EnumLineStyleType* te::layout::Enums::getEnumLineStyleType()
 {
   return m_lineStyleType;
 }
 
+void te::layout::Enums::setEnumModeType( EnumModeType* type )
+{
+  m_modeType = type;
+}
+
 te::layout::EnumModeType* te::layout::Enums::getEnumModeType()
 {
   return m_modeType;
+}
+
+void te::layout::Enums::setEnumTemplateType( EnumTemplateType* type )
+{
+  m_templateType = type;
 }
 
 te::layout::EnumTemplateType* te::layout::Enums::getEnumTemplateType()

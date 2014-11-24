@@ -26,7 +26,6 @@
 #include "TsFilter.h"
 #include "../Config.h"
 
-#include <terralib/rp/Filter.h>
 #include <terralib/raster/Grid.h>
 #include <terralib/raster/Raster.h>
 #include <terralib/raster/RasterFactory.h>

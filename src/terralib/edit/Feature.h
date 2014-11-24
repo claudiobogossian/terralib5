@@ -18,15 +18,16 @@
  */
 
 /*!
-  \file terralib/edit/IdGeometry.h
+  \file terralib/edit/Feature.h
    
-  \brief This class represents an identified geometry.
+  \brief This class represents a geographic feature.
 */
 
-#ifndef __TERRALIB_EDIT_INTERNAL_IDGEOMETRY_H
-#define __TERRALIB_EDIT_INTERNAL_IDGEOMETRY_H
+#ifndef __TERRALIB_EDIT_INTERNAL_FEATURE_H
+#define __TERRALIB_EDIT_INTERNAL_FEATURE_H
 
 // TerraLib
+#include "../memory/DataSetItem.h"
 #include "Config.h"
 
 namespace te
@@ -44,13 +45,13 @@ namespace te
 
   namespace edit
   {
-    class TEEDITEXPORT IdGeometry
+    class TEEDITEXPORT Feature : public te::mem::DataSetItem
     {
       public:
 
-        IdGeometry(te::da::ObjectId* id, te::gm::Geometry* geom);
+        Feature(te::da::ObjectId* id, te::gm::Geometry* geom, const std::size_t& nproperties = 0);
 
-        ~IdGeometry();
+        ~Feature();
 
         void set(te::da::ObjectId* id, te::gm::Geometry* geom);
 
@@ -64,7 +65,7 @@ namespace te
 
         bool isEquals(te::da::ObjectId* id);
 
-        IdGeometry* clone() const;
+        Feature* clone() const;
 
       private:
 
@@ -75,4 +76,4 @@ namespace te
   } // end namespace edit
 }   // end namespace te
 
-#endif  // __TERRALIB_EDIT_INTERNAL_IDGEOMETRY_H
+#endif  // __TERRALIB_EDIT_INTERNAL_FEATURE_H

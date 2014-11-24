@@ -21,11 +21,6 @@
 #include "TsGTFilter.h"
 #include "../Config.h"
 
-// TerraLib
-#include <terralib/geometry/GTParameters.h>
-#include <terralib/geometry/GTFactory.h>
-#include <terralib/geometry/GTFilter.h>
-
 #include <cmath> 
 
 #define testDirectMapping( transfPtr, pt1, pt2, maxError ) \

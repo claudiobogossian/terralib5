@@ -61,7 +61,7 @@ namespace te
           SurfStrategyT = 2 /*!<  SURF based image area matching - Reference: SURF: Speeded Up Robust Features, Herbert Bay. */
         };
 
-        InteresPointsLocationStrategyType m_interesPointsLocationStrategy; //!< The strategy used to locate interest points (default:SurfStrategyT).
+        InteresPointsLocationStrategyType m_interesPointsLocationStrategy; //!< The strategy used to locate interest points (default:MoravecStrategyT).
         
         te::rst::Raster const* m_inRaster1Ptr; //!< Input raster 1.
         
@@ -95,7 +95,7 @@ namespace te
         
         bool m_enableProgress; //!< Enable/Disable the progress interface (default:false).
         
-        unsigned int m_maxTiePoints; //!< The maximum number of tie-points to generate (default=0 - Automatically found).
+        unsigned int m_maxTiePoints; //!< The maximum number of tie-points to generate (0:Automatically calculated, default:2500).
         
         double m_pixelSizeXRelation; //!< The pixel resolution relation m_pixelSizeXRelation = raster1_pixel_res_x / raster2_pixel_res_x (default=1.0).
         
@@ -107,11 +107,17 @@ namespace te
         
         bool m_enableGeometryFilter; //!< Enable/disable the geometry filter/outliers remotion (default:true).
         
-        double m_geometryFilterAssurance; //!< Geometry assurance (the error-free selection percent assurance) - valid range (0-1) - default:0.1 - Use 0-zero to let this number be automatically found.
+        double m_geometryFilterAssurance; //!< Geometry assurance (the error-free selection percent assurance) - Use Lower values for good tie-points sets - Higher values may increase the number of iterations - valid range (0-1) - default:0.75.
         
-        double m_subSampleOptimizationRescaleFactor; //!< Sub-sampled optimization tie-points search rescale factor (Defaul: 1 - subsample optimization disabled, valid range: non-zero positive values).
+        double m_subSampleOptimizationRescaleFactor; //!< Sub-sampled optimization tie-points search rescale factor (Tie-ponts will be searched into a subsabmpled image and refined before using the original image - Defaul: 1 - subsample optimization disabled, valid range: non-zero positive values).
+        
+        double m_subSampleOptimizationMinTPAreaCoverage; //!< Sub-sampled optimization - mininumum required tie-points covered area percent of each raster area - valid range [0,100] (default:25).
+        
+        double m_subSampleOptimizationMinTPNumberFactor; //!< Sub-sampled optimization - mininumum required tie-points number factor - valid range [1,inf] (default:2).
         
         te::rst::Interpolator::Method m_interpMethod; //!< The raster interpolator method (default:NearestNeighbor).
+        
+        unsigned int m_tiePointsSubSectorsSplitFactor; //!< The algorithm will try to generate tie-points distributed over image sectors ( Default: 3 - 3x3 sub-sectors, minimum: 1).
         
         //@}
         
@@ -120,13 +126,13 @@ namespace te
         */
         /**@{*/            
         
-        unsigned int m_moravecCorrelationWindowWidth; //!< The correlation window width used to correlate points between the images (minimum 3, default: 11).
+        unsigned int m_moravecCorrelationWindowWidth; //!< The correlation window width used to correlate points between the images (minimum 3, default: 21).
         
-        unsigned int m_moravecWindowWidth; //!< The Moravec window width used to locate canditate tie-points (minimum 3, default: 5 ).
+        unsigned int m_moravecWindowWidth; //!< The Moravec window width used to locate canditate tie-points (minimum 3, default: 21 ).
         
         unsigned int m_moravecNoiseFilterIterations; //!< The number of noise filter iterations, when applicable (used to remove image noise, zero will disable the noise Filter, default:1).
         
-        double m_moravecMinAbsCorrelation; //!< The minimum acceptable absolute correlation value when matching features (when applicable),  default:0.5, valid range: [0,1].
+        double m_moravecMinAbsCorrelation; //!< The minimum acceptable absolute correlation value when matching features (when applicable),  default:0.25, valid range: [0,1].
         
         //@}
         
@@ -135,11 +141,11 @@ namespace te
         */
         /**@{*/
         
-        unsigned int m_surfScalesNumber; //!< The number of sub-sampling scales to generate, when applicable (default:4, minimum:3).
+        unsigned int m_surfScalesNumber; //!< The number of sub-sampling scales to generate, when applicable (default:3, minimum:3).
         
-        unsigned int m_surfOctavesNumber; //!< The number of octaves to generate, when applicable (default: 3, minimum:1).
+        unsigned int m_surfOctavesNumber; //!< The number of octaves to generate, when applicable (default: 2, minimum:2).
         
-        double m_surfMaxNormEuclideanDist; //!< The maximum acceptable euclidean distance when matching features (when applicable),  default:0.5, valid range: [0,1].
+        double m_surfMaxNormEuclideanDist; //!< The maximum acceptable euclidean distance when matching features (when applicable),  default:0.75, valid range: [0,1].
         
         //@}
         

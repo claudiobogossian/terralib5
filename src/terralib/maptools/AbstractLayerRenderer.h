@@ -29,6 +29,7 @@
 // TerraLib
 #include "../color/RGBAColor.h"
 #include "../geometry/Coord2D.h"
+#include "../dataaccess/dataset/PrimaryKey.h"
 #include "../sam/rtree/Index.h"
 #include "AbstractRenderer.h"
 #include "WorldDeviceTransformer.h"
@@ -152,6 +153,12 @@ namespace te
                                   const te::gm::Envelope& bbox,
                                   int srid);
 
+        void drawLayerLinkedGroupingMem(AbstractLayer* layer,
+                                  const std::string& geomPropertyName,
+                                  Canvas* canvas,
+                                  const te::gm::Envelope& bbox,
+                                  int srid);
+
         /*!
           \brief It draws the data set geometries in the given canvas using the informed SRS.
 
@@ -168,6 +175,8 @@ namespace te
 
         void buildChart(Chart* chart, te::da::DataSet* dataset, te::gm::Geometry* geom);
 
+        void buildChart(const Chart* chart, const std::map<std::string, double>& chartValue, te::gm::Geometry* geom);
+
         void reset();
 
       private:
@@ -177,6 +186,7 @@ namespace te
         std::size_t m_index;                               // Unsigned int used as r-Tree index.
         std::vector<te::color::RGBAColor**> m_chartImages; // The generated chart images.
         std::vector<te::gm::Coord2D> m_chartCoordinates;   // The generated chart coordinates.
+        std::vector<std::string> m_oid;
     };
 
   } // end namespace map

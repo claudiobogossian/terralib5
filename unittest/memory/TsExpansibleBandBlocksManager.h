@@ -29,7 +29,7 @@
 // cppUnit
 #include <cppunit/extensions/HelperMacros.h>
 
-#include <terralib/memory/ExpansibleBandBlocksManager.h>
+#include <terralib/memory.h>
 
 /*!
   \class TsExpansibleBandBlocksManager
@@ -75,7 +75,7 @@ class TsExpansibleBandBlocksManager : public CPPUNIT_NS::TestFixture
             }
           }
       }
-    };
+    }
     
     template< typename DataType >
     void CheckValues( te::mem::ExpansibleBandBlocksManager& manager )
@@ -104,7 +104,7 @@ class TsExpansibleBandBlocksManager : public CPPUNIT_NS::TestFixture
             }
           }
       }
-    };    
+    }    
     
     void ReadWriteTest();
     

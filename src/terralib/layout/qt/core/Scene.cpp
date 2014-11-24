@@ -43,7 +43,6 @@
 #include "BuildGraphicsItem.h"
 #include "../item/MapItem.h"
 #include "ItemUtils.h"
-#include "../item/DefaultTextItem.h"
 #include "../../core/Systematic.h"
 #include "../../item/MapModel.h"
 #include "../item/MapGridItem.h"
@@ -55,7 +54,6 @@
 #include "pattern/command/ChangePropertyCommand.h"
 #include "pattern/command/MoveCommand.h"
 #include "pattern/command/DeleteCommand.h"
-#include "../../item/DefaultTextModel.h"
 #include "../item/LegendItem.h"
 #include "../../item/LegendModel.h"
 #include "../../core/pattern/derivativevisitor/AbstractVisitor.h"
@@ -66,6 +64,8 @@
 #include "VerticalRuler.h"
 #include "../../../qt/widgets/Utils.h"
 #include "./../../../common/STLUtils.h"
+#include "../item/TextItem.h"
+#include "../../item/TextModel.h"
 
 // STL
 #include <iostream>
@@ -210,18 +210,6 @@ void te::layout::Scene::insertItem( ItemObserver* item )
   emit addItemFinalized();
 }
 
-void te::layout::Scene::insertOutside( OutsideObserver* widget )
-{
-  QWidget* qWidget = ((QWidget*)widget);
-  this->addWidget(qWidget);
-}
-
-QGraphicsProxyWidget* te::layout::Scene::insertOutsideProxy( OutsideObserver* widget )
-{
-  QWidget* qWidget = ((QWidget*)widget);
-  return this->addWidget(qWidget);
-}
-
 te::gm::Envelope te::layout::Scene::getSceneBox()
 {
   QRectF srect =	sceneRect();
@@ -267,7 +255,12 @@ QGraphicsItemGroup* te::layout::Scene::createItemGroup( const QList<QGraphicsIte
   EnumModeType* mode = Enums::getInstance().getEnumModeType();
   
   //Create a new group
-  BuildGraphicsItem* build = Context::getInstance().getBuildGraphicsItem();
+  AbstractBuildGraphicsItem* abstractBuild = Context::getInstance().getAbstractBuildGraphicsItem();
+  BuildGraphicsItem* build = dynamic_cast<BuildGraphicsItem*>(abstractBuild);
+
+  if(!build)
+    return p;
+
   te::gm::Coord2D coord(0,0);
   QGraphicsItem* item = build->createItem(mode->getModeCreateItemGroup(), coord, false);
 
@@ -412,14 +405,15 @@ void te::layout::Scene::printPreview(bool isPdf)
 
   QPrinter* printer = createPrinter();
 
-  QPrintPreviewDialog preview(printer);
-  connect(&preview, SIGNAL(paintRequested(QPrinter*)), SLOT(printPaper(QPrinter*)));
+  QPrintPreviewDialog *preview = new QPrintPreviewDialog(printer);
+  connect(preview, SIGNAL(paintRequested(QPrinter*)), SLOT(printPaper(QPrinter*)));
   
-  if(preview.exec() == QDialog::Rejected || m_previewState == PrintScene)
+  if(preview->exec() == QDialog::Rejected || m_previewState == PrintScene)
   {
+    m_previewState = NoPrinter;
     redrawItems(false);
     enableUpdateViews();
-    m_previewState = NoPrinter;
+    m_viewUpdateMode.clear();
     if(printer)
     {
       delete printer;
@@ -427,6 +421,12 @@ void te::layout::Scene::printPreview(bool isPdf)
     }
   }
 
+  if(preview)
+  {
+    delete preview;
+    preview = 0;
+  }
+  
   Context::getInstance().setMode(mode->getModeNone());
 }
 
@@ -705,6 +705,12 @@ void te::layout::Scene::refreshViews( QGraphicsView* view /*= 0*/ )
 
 void te::layout::Scene::reset()
 {
+  if(!m_undoStack)
+    return;
+
+  if(m_undoStack->count() > 0)
+    m_undoStack->clear();
+  
   clear();
 }
 
@@ -746,20 +752,21 @@ void te::layout::Scene::drawBackground( QPainter * painter, const QRectF & rect 
   }
 }
 
-void te::layout::Scene::buildTemplate(VisualizationArea* vzArea)
+bool te::layout::Scene::buildTemplate(VisualizationArea* vzArea)
 {
-  BuildGraphicsItem* build = Context::getInstance().getBuildGraphicsItem();
+  AbstractBuildGraphicsItem* abstractBuild = Context::getInstance().getAbstractBuildGraphicsItem();
+  BuildGraphicsItem* build = dynamic_cast<BuildGraphicsItem*>(abstractBuild);
 
   if(!build)
-    return;
+    return false;
 
   std::vector<te::layout::Properties*> props = importJsonAsProps();
 
   if(props.empty())
-    return;
+    return false;
 
-  refresh();
-
+  reset();
+  
   std::vector<te::layout::Properties*>::iterator it;
 
   te::gm::Envelope* boxW = getWorldBox();
@@ -774,6 +781,8 @@ void te::layout::Scene::buildTemplate(VisualizationArea* vzArea)
 
     build->rebuildItem(proper);
   }
+
+  return true;
 }
 
 void te::layout::Scene::deleteItems()
@@ -817,7 +826,8 @@ QGraphicsItem* te::layout::Scene::createItem( const te::gm::Coord2D& coord )
 {
   QGraphicsItem* item = 0;
 
-  BuildGraphicsItem* build = Context::getInstance().getBuildGraphicsItem();
+  AbstractBuildGraphicsItem* abstractBuild = Context::getInstance().getAbstractBuildGraphicsItem();
+  BuildGraphicsItem* build = dynamic_cast<BuildGraphicsItem*>(abstractBuild);
 
   if(!build)
     return item;
@@ -1022,7 +1032,7 @@ void te::layout::Scene::createTextGridAsObject()
           model->getGridGeodesic()->setVisibleAllTexts(false);
           std::map<te::gm::Point*, std::string> mapGeo = gridGeo->getGridInfo();
           gridGeo->setVisibleAllTexts(false);
-          createDefaultTextItemFromObject(mapGeo);
+          createTextItemFromObject(mapGeo);
         }
 
         GridPlanarModel* gridPlanar = dynamic_cast<GridPlanarModel*>(model->getGridPlanar());
@@ -1031,7 +1041,7 @@ void te::layout::Scene::createTextGridAsObject()
           model->getGridGeodesic()->setVisibleAllTexts(false);
           std::map<te::gm::Point*, std::string> mapPlanar = gridPlanar->getGridInfo();
           gridPlanar->setVisibleAllTexts(false);
-          createDefaultTextItemFromObject(mapPlanar);
+          createTextItemFromObject(mapPlanar);
         }   
       }
       it->redraw();
@@ -1053,13 +1063,13 @@ void te::layout::Scene::createTextMapAsObject()
         MapModel* model = dynamic_cast<MapModel*>(mt->getModel());
         std::map<te::gm::Point*, std::string> map = model->getTextMapAsObjectInfo();
         double h = model->getBox().getHeight();
-        createDefaultTextItemFromObject(map);
+        createTextItemFromObject(map);
       }
     }
   }
 }
 
-void te::layout::Scene::createDefaultTextItemFromObject( std::map<te::gm::Point*, std::string> map)
+void te::layout::Scene::createTextItemFromObject( std::map<te::gm::Point*, std::string> map)
 {
   EnumModeType* mode = Enums::getInstance().getEnumModeType();
 
@@ -1078,12 +1088,12 @@ void te::layout::Scene::createDefaultTextItemFromObject( std::map<te::gm::Point*
     if(!item)
       continue;
 
-    DefaultTextItem* txtItem = dynamic_cast<DefaultTextItem*>(item);
+    TextItem* txtItem = dynamic_cast<TextItem*>(item);
     if(txtItem)
     {
-      DefaultTextModel* model = dynamic_cast<DefaultTextModel*>(txtItem->getModel());
+      TextModel* model = dynamic_cast<TextModel*>(txtItem->getModel());
       model->setText(text);
-      txtItem->setPlainText(text.c_str());
+      txtItem->getDocument()->setPlainText(text.c_str());
     }
   }
 

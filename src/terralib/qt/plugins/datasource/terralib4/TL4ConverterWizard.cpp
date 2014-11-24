@@ -25,6 +25,8 @@
 
 // TerraLib
 #include "../../../../common/Exception.h"
+#include "../../../../common/progress/ProgressManager.h"
+#include "../../../../common/progress/TaskProgress.h"
 #include "../../../../common/Translator.h"
 #include "../../../../dataaccess.h"
 #include "../../../../geometry/GeometryProperty.h"
@@ -33,6 +35,7 @@
 #include "../../../../qt/widgets/datasource/selector/DataSourceSelectorWizardPage.h"
 #include "../../../../qt/widgets/layer/utils/DataSet2Layer.h"
 #include "../../../../qt/widgets/help/HelpPushButton.h"
+#include "../../../../qt/widgets/progress/ProgressViewerDialog.h"
 #include "../../../../qt/widgets/rp/Utils.h"
 #include "../../../../qt/widgets/utils/ScopedCursor.h"
 #include "../../../../qt/af/ApplicationController.h"
@@ -334,6 +337,8 @@ bool te::qt::plugins::terralib4::TL4ConverterWizard::validateCurrentPage()
 
 bool te::qt::plugins::terralib4::TL4ConverterWizard::validTerraLib4Connection()
 {
+  setCursor(Qt::WaitCursor);
+
   std::map<std::string, std::string> connInfo = m_connectorPage->getConnInfo();
 
   try
@@ -345,14 +350,17 @@ bool te::qt::plugins::terralib4::TL4ConverterWizard::validTerraLib4Connection()
   }
   catch(const te::da::Exception& e)
   {
+    setCursor(Qt::ArrowCursor);
     QMessageBox::warning(this, tr("Warning"), e.what());
     return false;
   }
   catch(...)
   {
+    setCursor(Qt::ArrowCursor);
     QMessageBox::warning(this, tr("Warning"), tr("A connection to the informed Terralib 4.x database could not be established. Please, verify the informed parameters."));
     return false;
   }
+  setCursor(Qt::ArrowCursor);
 
   return true;
 }
@@ -580,6 +588,14 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::commit()
 
   int nrows = m_resolveNameTableWidget->rowCount();
 
+  //progress
+  te::qt::widgets::ProgressViewerDialog v(this);
+  int id = te::common::ProgressManager::getInstance().addViewer(&v);
+
+  te::common::TaskProgress task("TerraLib4 Converter...");
+  task.setTotalSteps(nrows);
+  task.useTimer(true);
+
   for(int i = 0; i != nrows; ++i)
   {
 // get original dataset name
@@ -653,10 +669,7 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::commit()
 
         ::terralib4::DataSource* tl4Ds = dynamic_cast<::terralib4::DataSource*>(m_tl4Database.get());
 
-        int finalSrid = tl4Ds->getLayerSRID(targetName);
-
-        if(finalSrid == 4979)
-          finalSrid = 4326;
+        int finalSrid = tl4Ds->getLayerSRID(sourceName);
 
         ds_adapter->setSRID(finalSrid);
 
@@ -677,6 +690,14 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::commit()
       
       problematicDatasets.push_back(dproblem);
     }
+    catch(std::exception& e)
+    {
+      std::pair<std::string, std::string> dproblem;
+      dproblem.first = sourceName;
+      dproblem.second = e.what();
+      
+      problematicDatasets.push_back(dproblem);
+    }
     catch(...)
     {
       std::pair<std::string, std::string> dproblem;
@@ -685,6 +706,11 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::commit()
       
       problematicDatasets.push_back(dproblem);
     }
+
+    if (task.isActive() == false)
+        throw te::common::Exception(TE_TR("Operation canceled!"));
+
+    task.pulse();
   }
 
 // give a warning

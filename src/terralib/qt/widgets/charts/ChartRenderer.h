@@ -62,6 +62,8 @@ namespace te
 
           te::color::RGBAColor** render(const te::map::Chart* chart, const te::da::DataSet* dataset, std::size_t& width);
 
+          te::color::RGBAColor** render(const te::map::Chart* chart, const std::map<std::string, double>& chartValue, std::size_t& width);
+
         protected:
 
           /** @name Internal methods of Qt4 Chart Renderer.
@@ -78,10 +80,13 @@ namespace te
            //@}
 
           QImage* drawPies(const te::map::Chart* chart, const te::da::DataSet* dataset, std::size_t& width);
+          QImage* drawPies(const te::map::Chart* chart, const std::map<std::string, double>& chartValue, std::size_t& width);
 
           QImage* drawBars(const te::map::Chart* chart, const te::da::DataSet* dataset, std::size_t& width);
+          QImage* drawBars(const te::map::Chart* chart, const std::map<std::string, double>& chartValue, std::size_t& width);
 
           void getValues(const te::map::Chart* chart, const te::da::DataSet* dataset, std::vector<double>& values);
+          void getValues(const te::map::Chart* chart, const std::map<std::string, double>& chartValue, std::vector<double>& values);
 
           double computeSum(const std::vector<double>& values);
 

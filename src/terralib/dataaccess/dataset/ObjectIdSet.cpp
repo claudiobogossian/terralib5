@@ -80,7 +80,7 @@ te::da::Expression* te::da::ObjectIdSet::getExpression(const std::string source)
 
   Expression* ins = 0;
   Expression* tmp = 0;
-  
+
   // for each property used to be part of the object identification builds a IN clause
   for(std::size_t i = 0; i < m_pnames.size(); ++i)
   {
@@ -109,7 +109,7 @@ te::da::Expression* te::da::ObjectIdSet::getExpression(const std::string source)
     {
       if(i > 0)
       {
-        tmp = *ins && *in;
+        tmp = *ins || *in;
         delete ins;
         delete in;
         ins = tmp;

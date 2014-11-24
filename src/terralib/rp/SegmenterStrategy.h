@@ -71,8 +71,8 @@ namespace te
           \param inputRaster Input raster.
           \param inputRasterBands Input raster bands.
           \param inputRasterNoDataValues A vector of values to be used as input raster no-data values.
-          \param inputRasterGains Normalization gain values to be appliet over the respective input raster bands.
-          \param inputRasterOffsets Normalization offset values to be appliet over the respective input raster bands.
+          \param inputRasterBandMinValues The minimum value present on each band.
+          \param inputRasterBandMinValues The maximum value present on each band.
           \param outputRaster Output raster.
           \param outputRasterBand Output raster band.
           \param enableProgressInterface Enable the internal strategy to update
@@ -86,8 +86,8 @@ namespace te
           const te::rst::Raster& inputRaster,
           const std::vector< unsigned int >& inputRasterBands,
           const std::vector< double >& inputRasterNoDataValues,
-          const std::vector< double >& inputRasterGains,
-          const std::vector< double >& inputRasterOffsets,
+          const std::vector< double >& inputRasterBandMinValues,
+          const std::vector< double >& inputRasterBandMaxValues,
           te::rst::Raster& outputRaster,
           const unsigned int outputRasterBand,
           const bool enableProgressInterface ) throw( te::rp::Exception ) = 0;          

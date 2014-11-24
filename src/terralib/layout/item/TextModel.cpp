@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file ScaleModel.cpp
+  \file TextModel.cpp
    
   \brief 
 
@@ -26,60 +26,39 @@
 */
 
 // TerraLib
-#include "DefaultTextModel.h"
+#include "TextModel.h"
 #include "../core/property/Property.h"
 #include "../core/property/Properties.h"
 #include "../core/property/SharedProperties.h"
 #include "../core/enum/Enums.h"
+#include "../core/pattern/singleton/Context.h"
 
 // STL
 #include <string>
 #include <sstream> // std::stringstream
 
-
-te::layout::DefaultTextModel::DefaultTextModel() :
+te::layout::TextModel::TextModel() :
   m_text("")
 {
-  m_type = Enums::getInstance().getEnumObjectType()->getDefaultTextItem();
+  m_type = Enums::getInstance().getEnumObjectType()->getTextItem();
 
   m_box = te::gm::Envelope(0., 0., 40., 20.);
 }
 
-te::layout::DefaultTextModel::~DefaultTextModel()
+te::layout::TextModel::~TextModel()
 {
 
 }
 
-void te::layout::DefaultTextModel::draw( ContextItem context )
+void te::layout::TextModel::draw( ContextItem context )
 {
   te::color::RGBAColor** pixmap = 0;
-
-  te::map::Canvas* canvas = context.getCanvas();
-  Utils* utils = context.getUtils();
   
-  if((!canvas) || (!utils))
-    return;
-
-  if(context.isResizeCanvas())
-    utils->configCanvas(m_box);
-
-  drawBackground(context);
-
-  drawText(canvas, utils, m_box);
-
-  if(context.isResizeCanvas())
-    pixmap = utils->getImageW(m_box);
-
   context.setPixmap(pixmap);
   notifyAll(context);
 }
 
-void te::layout::DefaultTextModel::drawText( te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box )
-{
-
-}
-
-te::layout::Properties* te::layout::DefaultTextModel::getProperties() const
+te::layout::Properties* te::layout::TextModel::getProperties() const
 {
   ItemModelObservable::getProperties();
 
@@ -101,7 +80,7 @@ te::layout::Properties* te::layout::DefaultTextModel::getProperties() const
   return m_properties;
 }
 
-void te::layout::DefaultTextModel::updateProperties( te::layout::Properties* properties )
+void te::layout::TextModel::updateProperties( te::layout::Properties* properties )
 {
   ItemModelObservable::updateProperties(properties);
 
@@ -122,17 +101,17 @@ void te::layout::DefaultTextModel::updateProperties( te::layout::Properties* pro
   }
 }
 
-void te::layout::DefaultTextModel::setText( std::string txt )
+void te::layout::TextModel::setText( std::string txt )
 {
   m_text = txt;
 }
 
-std::string te::layout::DefaultTextModel::getText()
+std::string te::layout::TextModel::getText()
 {
   return m_text;
 }
 
-te::layout::Font te::layout::DefaultTextModel::getFont()
+te::layout::Font te::layout::TextModel::getFont()
 {
   return m_font;
 }

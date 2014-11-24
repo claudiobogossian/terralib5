@@ -28,7 +28,6 @@
 #include "../../../dataaccess.h"
 #include "../../../datatype/Property.h"
 #include "../../../raster.h"
-#include "../../../raster/RasterSummary.h"
 #include "../../../raster/RasterSummaryManager.h"
 #include "../../../statistics/core/Enums.h"
 #include "../../../statistics/core/Utils.h"
@@ -96,8 +95,8 @@ te::qt::widgets::HistogramDataWidget::HistogramDataWidget(te::da::DataSet* dataS
       //Adjusting the widget to work with a raster file.
       std::auto_ptr<te::rst::Raster> raster =  m_dataSet->getRaster(rpos);
 
-      const te::rst::RasterSummary* rsMin = te::rst::RasterSummaryManager::getInstance().get(raster.get(), te::rst::SUMMARY_MIN);
-      const te::rst::RasterSummary* rsMax = te::rst::RasterSummaryManager::getInstance().get(raster.get(), te::rst::SUMMARY_MAX);
+      const te::rst::RasterSummary* rsMin = te::rst::RasterSummaryManager::getInstance().get(raster.get(), te::rst::SUMMARY_MIN, true);
+      const te::rst::RasterSummary* rsMax = te::rst::RasterSummaryManager::getInstance().get(raster.get(), te::rst::SUMMARY_MAX, true);
 
       const std::complex<double>* cmin = rsMin->at(0).m_minVal;
       const std::complex<double>* cmax = rsMax->at(0).m_maxVal;
@@ -122,7 +121,6 @@ te::qt::widgets::HistogramDataWidget::HistogramDataWidget(te::da::DataSet* dataS
     }
   else
   {
-
     for (std::size_t i = 0; i < dataSet->getNumProperties(); i++)
     {
       if(dataSet->getPropertyDataType(i) != te::dt::GEOMETRY_TYPE)
@@ -186,6 +184,12 @@ te::qt::widgets::Histogram* te::qt::widgets::HistogramDataWidget::getHistogram()
   return histogram;
 }
 
+void te::qt::widgets::HistogramDataWidget::setHistogramProperty(int propId)
+{
+  m_ui->m_propertyComboBox->setCurrentIndex(propId);
+  m_ui->m_propertyComboBox->setEnabled(false);
+}
+
 void te::qt::widgets::HistogramDataWidget::onPropertyComboBoxIndexChanged (QString text)
 {
   std::size_t rpos = te::da::GetFirstPropertyPos(m_dataSet.get(), te::dt::RASTER_TYPE);
@@ -207,8 +211,8 @@ void te::qt::widgets::HistogramDataWidget::onPropertyComboBoxIndexChanged (QStri
   {
     std::auto_ptr<te::rst::Raster> raster =  m_dataSet->getRaster(rpos);
 
-    const te::rst::RasterSummary* rsMin = te::rst::RasterSummaryManager::getInstance().get(raster.get(), te::rst::SUMMARY_MIN);
-    const te::rst::RasterSummary* rsMax = te::rst::RasterSummaryManager::getInstance().get(raster.get(), te::rst::SUMMARY_MAX);
+    const te::rst::RasterSummary* rsMin = te::rst::RasterSummaryManager::getInstance().get(raster.get(), te::rst::SUMMARY_MIN, true);
+    const te::rst::RasterSummary* rsMax = te::rst::RasterSummaryManager::getInstance().get(raster.get(), te::rst::SUMMARY_MAX, true);
 
     const std::complex<double>* cmin = rsMin->at(m_ui->m_propertyComboBox->currentIndex()).m_minVal;
     const std::complex<double>* cmax = rsMax->at(m_ui->m_propertyComboBox->currentIndex()).m_maxVal;

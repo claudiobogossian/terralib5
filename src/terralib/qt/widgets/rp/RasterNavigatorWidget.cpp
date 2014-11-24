@@ -404,22 +404,22 @@ void te::qt::widgets::RasterNavigatorWidget::onCoordTrackedChanged(QPointF& coor
     m_zoomInMapDisplay->drawCursorPosition((double) coordinate.rx(), (double)coordinate.ry());
     
 
-    //draw zoom in rectangle
-    te::gm::Envelope ext = m_zoomInMapDisplay->getCurrentExtent();
+    ////draw zoom in rectangle
+    //te::gm::Envelope ext = m_zoomInMapDisplay->getCurrentExtent();
 
-    m_mapDisplay->getDraftPixmap()->fill(QColor(0, 0, 0, 0));
-    const te::gm::Envelope& mapExt = m_mapDisplay->getExtent();
-    te::qt::widgets::Canvas canvasInstance(m_mapDisplay->getDraftPixmap());
+    //m_mapDisplay->getDraftPixmap()->fill(QColor(0, 0, 0, 0));
+    //const te::gm::Envelope& mapExt = m_mapDisplay->getExtent();
+    //te::qt::widgets::Canvas canvasInstance(m_mapDisplay->getDraftPixmap());
 
-    canvasInstance.setWindow(mapExt.m_llx, mapExt.m_lly, mapExt.m_urx, mapExt.m_ury);
-    canvasInstance.setPolygonContourColor(te::color::RGBAColor(255,0,0,TE_OPAQUE));
-    canvasInstance.setPolygonFillColor(te::color::RGBAColor(0,0,0,TE_TRANSPARENT));
+    //canvasInstance.setWindow(mapExt.m_llx, mapExt.m_lly, mapExt.m_urx, mapExt.m_ury);
+    //canvasInstance.setPolygonContourColor(te::color::RGBAColor(255,0,0,TE_OPAQUE));
+    //canvasInstance.setPolygonFillColor(te::color::RGBAColor(0,0,0,TE_TRANSPARENT));
 
-    te::gm::Geometry* geom = te::gm::GetGeomFromEnvelope(&ext, m_layer->getSRID());
-    canvasInstance.draw(geom);
-    delete geom;
+    //te::gm::Geometry* geom = te::gm::GetGeomFromEnvelope(&ext, m_layer->getSRID());
+    //canvasInstance.draw(geom);
+    //delete geom;
 
-    m_mapDisplay->repaint();
+    //m_mapDisplay->repaint();
   }
 
   //get input raster

@@ -141,52 +141,69 @@ namespace te
     TEQTWIDGETSEXPORT ChartDisplayWidget* createHistogramDisplay(te::da::DataSet* dataset, te::da::DataSetType* dataType, int propId, int slices = 10, int stat = -1);
 
     /*!
-        \function Terralib2Qwt
+        \brief Histogram Creator
 
-        This function returns a default QwtText.
+        \param dataset The dataset that will be used to populate the histogram's data
+        \param dataType The dataType that will be used to recover the objectIds associated with the given dataset.
+        \param propId The id of the property that contains the data
+        \param histogram THe histogram that will be displayed by the returned widget
 
-        \param title A text.
+        \note It will traverse the data set, using the moveNext() method
+        \note It will not take the ownership of the "dataset" pointer.
+        \note It will not take the ownership of the "dataType" pointer. 
+        \note It will take ownership of the given histogram pointer and pass it along to the returned ChartDisplay.
+        \note The caller will take the ownership of the returned ChartDisplayWidget pointer.
+
+    */
+    TEQTWIDGETSEXPORT ChartDisplayWidget* createHistogramDisplay(te::da::DataSet* dataset, te::da::DataSetType* dataType, int propId, Histogram* histogram);
+
+    /*!
+      \function Terralib2Qwt
+
+      This function returns a default QwtText.
+
+      \param title A text.
         
-        \return A QwtText
+      \return A QwtText
 
-        \note The caller will take the ownership of the returned pointer.
-      */
-      TEQTWIDGETSEXPORT QwtText* Terralib2Qwt(const std::string& title);
+      \note The caller will take the ownership of the returned pointer.
+    */
+    TEQTWIDGETSEXPORT QwtText* Terralib2Qwt(const std::string& title);
       
       
-      /*!
-        \function Terralib2Qwt
+    /*!
+      \function Terralib2Qwt
 
-        This function translates TerraLib text styles into a QwtText.
+      This function translates TerraLib text styles into a QwtText.
 
-        \param text A text
-        \param color The text's color
-        \param font The text's font
-        \param backFill The text's background fill
-        \param backStroke The text's background stroke
+      \param text A text
+      \param color The text's color
+      \param font The text's font
+      \param backFill The text's background fill
+      \param backStroke The text's background stroke
         
-        \return A QwtText
+      \return A QwtText
 
-        \note The caller will take the ownership of the returned pointer.
-        \note It will not take the ownership of given "font", "backFill" and "backStroke"" pointers.
-      */
-      TEQTWIDGETSEXPORT QwtText* Terralib2Qwt(const std::string& text,  te::color::RGBAColor* color, 
-                   te::se::Font*  font, te::se::Fill* backFill, 
-                   te::se::Stroke* backStroke);
+      \note The caller will take the ownership of the returned pointer.
+      \note It will not take the ownership of given "font", "backFill" and "backStroke"" pointers.
+    */
+    TEQTWIDGETSEXPORT QwtText* Terralib2Qwt(const std::string& text,  te::color::RGBAColor* color, 
+                  te::se::Font*  font, te::se::Fill* backFill, 
+                  te::se::Stroke* backStroke);
 
-      /*!
-        \function Mark2Symbol
+    /*!
+      \function Mark2Symbol
 
-        This function translates a terralib's Graphic object into a QWTSymbol object.
+      This function translates a terralib's Graphic object into a QWTSymbol object.
 
-        \param graphic The graphic that will be used to generate the symbol.
+      \param graphic The graphic that will be used to generate the symbol.
         
-        \return A QwtSymbol
+      \return A QwtSymbol
 
-        \note The caller will take the ownership of the returned pointer.
-        \note It will not take the ownership of the Graphic pointer.
-      */
-      TEQTWIDGETSEXPORT QwtSymbol* Terralib2Qwt(te::se::Graphic* graphic);
+      \note The caller will take the ownership of the returned pointer.
+      \note It will not take the ownership of the Graphic pointer.
+    */
+    TEQTWIDGETSEXPORT QwtSymbol* Terralib2Qwt(te::se::Graphic* graphic);
 
     } // end namespace widgets
   }   // end namespace qt

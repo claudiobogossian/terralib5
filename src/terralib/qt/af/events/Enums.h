@@ -69,6 +69,7 @@ namespace te
           PAN_BUTTON_TOGGLED,
           SELECTION_BUTTON_TOGGLED,
           GET_MAPDISPLAY,
+          DRAWING_FINISHED,
           CUSTOM = 1024
         };
 

@@ -35,7 +35,6 @@
 #include "../geometry/Geometry.h"
 #include "../raster/Grid.h"
 #include "../raster/RasterProperty.h"
-
 #include "DataSet.h"
 #include "DataSetItem.h"
 #include "Exception.h"
@@ -52,6 +51,12 @@ te::mem::DataSetItem::DataSetItem(const te::da::DataSet* parent)
 
   std::size_t nproperties = parent->getNumProperties();
 
+  m_data.resize(nproperties, 0);
+}
+
+te::mem::DataSetItem::DataSetItem(const std::size_t& nproperties)
+  : m_parent(0)
+{
   m_data.resize(nproperties, 0);
 }
 

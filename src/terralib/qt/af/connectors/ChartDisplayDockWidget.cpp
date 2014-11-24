@@ -77,7 +77,7 @@ void te::qt::af::ChartDisplayDockWidget::setLayer(te::map::AbstractLayer* layer)
   cc.config(m_layer);
 
   //Adjusting the selected objectIdSet
-  m_displayWidget->highlightOIds(m_layer->getSelected());
+  m_displayWidget->highlightOIds(m_layer->getSelected(), m_layer->getSchema().get());
 
   if(m_layer==0)
     return;
@@ -105,7 +105,7 @@ void te::qt::af::ChartDisplayDockWidget::onApplicationTriggered(te::qt::af::evt:
 
         if(ev->m_layer->getId() == m_layer->getId())
         {
-          m_displayWidget->highlightOIds(ev->m_layer->getSelected());
+          m_displayWidget->highlightOIds(ev->m_layer->getSelected(), ev->m_layer->getSchema().get());
         }
       }
     break;
@@ -160,7 +160,7 @@ void te::qt::af::ChartDisplayDockWidget::selectionChanged(te::da::ObjectIdSet* o
     added->addProperty(m_layer->getData()->getPropertyName(*it), *it, m_layer->getData()->getPropertyDataType(*it));
 
   //Acquiring the envelope
-  if(added->size() > 0)
+  if(added->size() > 0 && m_layer->getSchema()->hasGeom())
   {
     std::auto_ptr<te::da::DataSet> ds = m_layer->getData(added);
     ds->moveBeforeFirst();

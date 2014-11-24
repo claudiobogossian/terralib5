@@ -258,6 +258,10 @@ void te::qt::af::MapDisplay::onDrawLayersFinished(const QMap<QString, QString>& 
 
   // Draw the layers selection
   drawLayersSelection(ApplicationController::getInstance().getProject()->getSingleLayers(false));
+
+  // Informs the end of drawing
+  te::qt::af::evt::DrawingFinished drawingFinished(this);
+  ApplicationController::getInstance().broadcast(&drawingFinished);
 }
 
 void te::qt::af::MapDisplay::onApplicationTriggered(te::qt::af::evt::Event* e)
@@ -373,6 +377,7 @@ void te::qt::af::MapDisplay::drawLayerSelection(te::map::AbstractLayerPtr layer)
     return;
 
   const te::da::ObjectIdSet* oids = layer->getSelected();
+
   if(oids == 0 || oids->size() == 0)
     return;
 
@@ -385,7 +390,7 @@ void te::qt::af::MapDisplay::drawLayerSelection(te::map::AbstractLayerPtr layer)
       // Try to retrieve the layer selection
       std::auto_ptr<te::da::DataSet> selected(layer->getData(oids));
 
-      drawDataSet(selected.get(), layer->getGeomPropertyName(), layer->getSRID(), ApplicationController::getInstance().getSelectionColor());
+      drawDataSet(selected.get(), layer->getGeomPropertyName(), layer->getSRID(), ApplicationController::getInstance().getSelectionColor(), te::da::HasLinkedTable(layer.get()));
 
       return;
     }
@@ -402,6 +407,7 @@ void te::qt::af::MapDisplay::drawLayerSelection(te::map::AbstractLayerPtr layer)
     std::set<te::da::ObjectId*, te::common::LessCmp<te::da::ObjectId*> >::const_iterator it;
     for(it = oids->begin(); it != oids->end(); ++it)
     {
+  
       oidsBatch->add((*it)->clone());
 
       ++nOids;
@@ -412,7 +418,7 @@ void te::qt::af::MapDisplay::drawLayerSelection(te::map::AbstractLayerPtr layer)
         // Try to retrieve the layer selection batch
         std::auto_ptr<te::da::DataSet> selected(layer->getData(oidsBatch.get()));
 
-        drawDataSet(selected.get(), layer->getGeomPropertyName(), layer->getSRID(), ApplicationController::getInstance().getSelectionColor());
+        drawDataSet(selected.get(), layer->getGeomPropertyName(), layer->getSRID(), ApplicationController::getInstance().getSelectionColor(), te::da::HasLinkedTable(layer.get()));
 
         // Prepares to next batch
         oidsBatch->clear();
@@ -427,7 +433,7 @@ void te::qt::af::MapDisplay::drawLayerSelection(te::map::AbstractLayerPtr layer)
   }
 }
 
-void te::qt::af::MapDisplay::drawDataSet(te::da::DataSet* dataset, const std::string& geomPropertyName, int srid, const QColor& color)
+void te::qt::af::MapDisplay::drawDataSet(te::da::DataSet* dataset, const std::string& geomPropertyName, int srid, const QColor& color, bool isLinked)
 {
   assert(dataset);
   assert(color.isValid());
@@ -456,10 +462,11 @@ void te::qt::af::MapDisplay::drawDataSet(te::da::DataSet* dataset, const std::st
 
   dataset->moveBeforeFirst();
 
+  std::set<std::string> highlightedGeoms;
+
   while(dataset->moveNext())
   {
     std::auto_ptr<te::gm::Geometry> g(dataset->getGeometry(gpos));
-
     if(needRemap)
     {
       g->setSRID(srid);
@@ -472,7 +479,15 @@ void te::qt::af::MapDisplay::drawDataSet(te::da::DataSet* dataset, const std::st
       te::qt::widgets::Config2DrawLayerSelection(&canvas, color, currentGeomType);
     }
 
-    canvas.draw(g.get());
+    if(isLinked)
+    {
+      if(highlightedGeoms.insert(g->asText()).second)
+      {
+        canvas.draw(g.get());
+      }
+    }
+    else
+      canvas.draw(g.get());
   }
 }
 

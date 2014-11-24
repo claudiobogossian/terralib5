@@ -26,7 +26,6 @@
 #include "TsMatrix.h"
 #include "../Config.h"
 
-#include <terralib/rp/Matrix.h>
 #include <terralib/common/PlatformUtils.h>
 
 CPPUNIT_TEST_SUITE_REGISTRATION( TsMatrix );

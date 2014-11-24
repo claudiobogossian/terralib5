@@ -29,17 +29,18 @@
 #define __TERRALIB_LAYOUT_INTERNAL_MULTILINETEXT_MODEL_H
 
 // TerraLib
-#include "DefaultTextModel.h"
+#include "TextModel.h"
 
 namespace te
 {
   namespace layout
   {
-    class MultiLineTextModel : public DefaultTextModel
+    class MultiLineTextModel : public TextModel
     {
       public:
 
         MultiLineTextModel();
+
         virtual ~MultiLineTextModel();
     };
   }

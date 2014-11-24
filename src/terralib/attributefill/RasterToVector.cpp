@@ -45,6 +45,7 @@
 #include "../raster/Utils.h"
 
 #include "../rp/RasterAttributes.h"
+#include "../rp/Texture.h"
 
 #include "../statistics/core/Utils.h"
 
@@ -74,10 +75,12 @@ void te::attributefill::RasterToVector::setInput(te::da::DataSourcePtr inRasterD
 }
 
 void te::attributefill::RasterToVector::setParams(std::vector<unsigned int> bands,
-                                               std::vector<te::stat::StatisticalSummary> statSum)
+                                               std::vector<te::stat::StatisticalSummary> statSum,
+                                               bool texture)
 {
   m_bands = bands;
   m_statSum = statSum;
+  m_texture = texture;
 }
 
 void te::attributefill::RasterToVector::setOutput(te::da::DataSourcePtr outDsrc, std::string dsName)
@@ -174,10 +177,9 @@ bool te::attributefill::RasterToVector::run()
       return false;
     }
 
-
     std::size_t init_index = m_inVectorDsType->getProperties().size();
 
-//Statistics
+// Statistics set value
     for(std::size_t band = 0; band < valuesFromRaster.size(); ++band)
     {
       te::stat::NumericStatisticalSummary summary = rasterAtt->getStatistics(valuesFromRaster[band]);
@@ -252,6 +254,47 @@ bool te::attributefill::RasterToVector::run()
             continue;
         }
         task.pulse();
+      }
+
+      // texture
+      std::vector<te::rp::Texture> metrics;
+      init_index = current_index;
+
+      if(m_texture == true)
+      {
+        metrics = getTexture(raster.get(), geom.get(), m_bands.size());
+        current_index += 5;
+        for(int t = 0, i = init_index; i < current_index; ++t,++i)
+        {
+          switch (t)
+          {
+            case 0:
+            {
+              outDSetItem->setDouble(i, metrics[band].m_contrast);
+              break;
+            }
+            case 1:
+            {
+              outDSetItem->setDouble(i, metrics[band].m_dissimilarity);
+              break;
+            }
+            case 2:
+            {
+              outDSetItem->setDouble(i, metrics[band].m_energy);
+              break;
+            }
+            case 3:
+            {
+              outDSetItem->setDouble(i, metrics[band].m_entropy);
+              break;
+            }
+            case 4:
+            {
+              outDSetItem->setDouble(i, metrics[band].m_homogeneity);
+              break;
+            }
+          }
+        }
       }
 
       init_index = current_index;
@@ -347,9 +390,55 @@ std::auto_ptr<te::da::DataSetType> te::attributefill::RasterToVector::getDataSet
           continue;
       }
     }
+    if(m_texture == true)
+    {
+      te::dt::SimpleProperty* propContrast = new te::dt::SimpleProperty("B"+ boost::lexical_cast<std::string>(m_bands[b]) +"_Contrast", te::dt::DOUBLE_TYPE);
+      outdsType->add(propContrast);
+
+      te::dt::SimpleProperty* propDissimilarity = new te::dt::SimpleProperty("B"+ boost::lexical_cast<std::string>(m_bands[b]) +"_Dissimilarity", te::dt::DOUBLE_TYPE);
+      outdsType->add(propDissimilarity);
+
+      te::dt::SimpleProperty* propEnergy = new te::dt::SimpleProperty("B"+ boost::lexical_cast<std::string>(m_bands[b]) +"_Energy", te::dt::DOUBLE_TYPE);
+      outdsType->add(propEnergy);
+
+      te::dt::SimpleProperty* propEntropy = new te::dt::SimpleProperty("B"+ boost::lexical_cast<std::string>(m_bands[b]) +"_Entropy", te::dt::DOUBLE_TYPE);
+      outdsType->add(propEntropy);
+
+      te::dt::SimpleProperty* propHomogeneity = new te::dt::SimpleProperty("B"+ boost::lexical_cast<std::string>(m_bands[b]) +"_Homogeneity", te::dt::DOUBLE_TYPE);
+      outdsType->add(propHomogeneity);
+    }
   }
 
   return outdsType;
+}
+
+std::vector<te::rp::Texture> te::attributefill::RasterToVector::getTexture( te::rst::Raster* rst,
+                                                                            te::gm::Geometry* geom,
+                                                                            int bands)
+{
+  te::rp::RasterAttributes rattributes;
+  std::vector<te::rp::Texture> textureVec;
+  
+  te::gm::Polygon* polygon;
+
+  if(geom->getGeomTypeId() == te::gm::MultiPolygonType)
+  {
+    te::gm::MultiPolygon* mPolygon = dynamic_cast< te::gm::MultiPolygon* >(geom);
+    polygon = dynamic_cast< te::gm::Polygon* >(mPolygon->getGeometryN(0));
+  }
+  else
+  {
+    polygon = dynamic_cast< te::gm::Polygon* >(geom);
+  }
+
+  for(std::size_t i = 0; i < bands; ++i)
+  {
+    boost::numeric::ublas::matrix<double> glcm = rattributes.getGLCM(*rst, i, 1, 1, *polygon);
+    te::rp::Texture metrics = rattributes.getGLCMMetrics(glcm);
+    textureVec.push_back(metrics);
+  }
+
+  return textureVec;
 }
 
 bool te::attributefill::RasterToVector::save(std::auto_ptr<te::mem::DataSet> result, std::auto_ptr<te::da::DataSetType> outDsType)

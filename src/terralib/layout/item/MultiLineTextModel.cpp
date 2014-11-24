@@ -34,7 +34,7 @@
 #include "../core/enum/Enums.h"
 
 te::layout::MultiLineTextModel::MultiLineTextModel() :
-  DefaultTextModel()
+  TextModel()
 {
   m_type = Enums::getInstance().getEnumObjectType()->getMultiLineTextItem();
 

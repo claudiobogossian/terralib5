@@ -191,11 +191,10 @@ namespace te
       m_segmentsIdsManagerPtr = 0;
       m_blockProcessedSignalPtr = 0;
       m_runningThreadsCounterPtr = 0;
-      m_inputRasterGains.clear();
-      m_inputRasterOffsets.clear();
+      m_inputRasterBandMinValues.clear();
+      m_inputRasterBandMaxValues.clear();
       m_inputRasterNoDataValues.clear();
       m_enableStrategyProgress = false;
-      m_progressPtr = 0;
       m_maxInputRasterCachedBlocks = 0;
     }
     
@@ -315,9 +314,9 @@ namespace te
         
         // Finding the input raster normalization parameters
         
-        std::vector< double > inputRasterGains( 
+        std::vector< double > inputRasterBandMinValues( 
           m_inputParameters.m_inputRasterBands.size(), 0.0 );
-        std::vector< double > inputRasterOffsets( 
+        std::vector< double > inputRasterBandMaxValues( 
           m_inputParameters.m_inputRasterBands.size(), 0.0 );
           
         {
@@ -370,28 +369,32 @@ namespace te
                 }
               }
             }
-              
-            if( bandMax == bandMin )
-            {
-              inputRasterGains[ inputRasterBandsIdx ] = 0.0;
-              inputRasterOffsets[ inputRasterBandsIdx ] = 1.0; 
-            }
-            {
-              inputRasterGains[ inputRasterBandsIdx ] = 1.0 / ( bandMax - bandMin );
-              inputRasterOffsets[ inputRasterBandsIdx ] = -1.0 * bandMin;
-            }
+            
+            inputRasterBandMinValues[ inputRasterBandsIdx ] = bandMin;
+            inputRasterBandMaxValues[ inputRasterBandsIdx ] = bandMax;
           }
         }
         
         // defining the number of processing threads
         
         unsigned int maxSegThreads = 0;
+        
         if( m_inputParameters.m_enableBlockProcessing && 
           m_inputParameters.m_enableThreadedProcessing )
         {
-          maxSegThreads = ( m_inputParameters.m_maxSegThreads ? 
-            m_inputParameters.m_maxSegThreads : te::common::GetPhysProcNumber() );
-        }
+          if( m_inputParameters.m_maxSegThreads )
+          {
+            maxSegThreads = m_inputParameters.m_maxSegThreads;
+          }
+          else
+          {
+            maxSegThreads = te::common::GetPhysProcNumber();
+            if( maxSegThreads == 1 )
+            {
+              maxSegThreads = 0;
+            }
+          }
+        }        
         
         // Calc the maximum block width & height
         
@@ -650,6 +653,20 @@ namespace te
         cachedRasterHandler.reset();
         cachedRasterPtr = 0;
         
+         // The progress interface
+
+        const bool enableStrategyProgress =  m_inputParameters.m_enableProgress &&
+          ( ( vBlocksNumber * hBlocksNumber ) == 1 ) && ( maxSegThreads == 0 );
+        
+        std::auto_ptr< te::common::TaskProgress > progressPtr;
+        if( m_inputParameters.m_enableProgress && ( ! enableStrategyProgress ) )
+        {
+          progressPtr.reset( new te::common::TaskProgress );
+          progressPtr->setTotalSteps( 1 + ( vBlocksNumber * hBlocksNumber ) );
+          progressPtr->setMessage( "Segmentation" );
+          progressPtr->pulse();
+        }         
+        
         // Starting the segmentation 
         
         boost::mutex generalMutex;
@@ -667,16 +684,7 @@ namespace te
         
         boost::condition_variable blockProcessedSignal;
         
-        volatile unsigned int runningThreadsCounter = 0;
-        
-        std::auto_ptr< te::common::TaskProgress > progressPtr;
-        if( m_inputParameters.m_enableProgress &&
-          ( ( vBlocksNumber * hBlocksNumber ) > 1 ) )
-        {
-          progressPtr.reset( new te::common::TaskProgress );
-          progressPtr->setTotalSteps( vBlocksNumber * hBlocksNumber );
-          progressPtr->setMessage( "Segmentation" );
-        }        
+        volatile unsigned int runningThreadsCounter = 0;       
         
         SegmenterThreadEntryParams baseSegThreadParams;
         baseSegThreadParams.m_inputParameters = m_inputParameters;
@@ -694,11 +702,10 @@ namespace te
         baseSegThreadParams.m_blockProcessedSignalPtr = &blockProcessedSignal;
         baseSegThreadParams.m_runningThreadsCounterPtr = 
           &runningThreadsCounter;
-        baseSegThreadParams.m_inputRasterGains = inputRasterGains;
-        baseSegThreadParams.m_inputRasterOffsets = inputRasterOffsets;
-        baseSegThreadParams.m_enableStrategyProgress =  m_inputParameters.m_enableProgress &&
-          ( ( vBlocksNumber * hBlocksNumber ) == 1 );
-        baseSegThreadParams.m_progressPtr = maxSegThreads ? 0 : progressPtr.get();
+        baseSegThreadParams.m_inputRasterBandMinValues = inputRasterBandMinValues;
+        baseSegThreadParams.m_inputRasterBandMaxValues = inputRasterBandMaxValues;
+        baseSegThreadParams.m_enableStrategyProgress = enableStrategyProgress;
+          
         if( m_inputParameters.m_inputRasterNoDataValues.empty() )
         {
           for( unsigned int inputRasterBandsIdx = 0 ; inputRasterBandsIdx < 
@@ -738,7 +745,7 @@ namespace te
           baseSegThreadParams.m_maxInputRasterCachedBlocks = 1;
         }
         
-        if( maxSegThreads )
+        if( maxSegThreads && ( ( vBlocksNumber * hBlocksNumber ) > 1 ) )
         { // threaded segmentation mode
           
           // spawning the segmentation threads
@@ -759,11 +766,15 @@ namespace te
           
           // waiting all threads to finish
           
+          int prevSegmentedBlocksNmb = 0;
+          
           while( (!abortSegmentationFlag) && (runningThreadsCounter > 0 ) )
           {
             boost::unique_lock<boost::mutex> lock( blockProcessedSignalMutex );
             blockProcessedSignal.timed_wait( lock, 
               boost::posix_time::seconds( 1 ) );
+            
+//            std::cout << std::endl << "Woke up" << std::endl;
               
             if( progressPtr.get() )
             {
@@ -782,20 +793,19 @@ namespace te
                 }
               }
               
-              if( segmentedBlocksNmb != progressPtr->getCurrentStep() )
+              if( segmentedBlocksNmb != prevSegmentedBlocksNmb )
               {
                 progressPtr->pulse();
+                prevSegmentedBlocksNmb = segmentedBlocksNmb;
               }
               
               if( ! progressPtr->isActive() ) 
               {
                 abortSegmentationFlag = true;
               }
-            }              
               
-//            globalMutex.lock();  
-//            std::cout << std::endl << "Waiting threads..." << std::endl;
-//            globalMutex.unlock();
+//              std::cout << std::endl << "segmentedBlocksNmb:" << segmentedBlocksNmb << std::endl;
+            }
           }
           
           // joining all threads
@@ -928,9 +938,9 @@ namespace te
         "Invalid parameter" );
       TERP_DEBUG_TRUE_OR_THROW( paramsPtr->m_runningThreadsCounterPtr,
         "Invalid parameter" );
-      TERP_DEBUG_TRUE_OR_THROW( !paramsPtr->m_inputRasterGains.empty(),
+      TERP_DEBUG_TRUE_OR_THROW( !paramsPtr->m_inputRasterBandMinValues.empty(),
         "Invalid parameter" );     
-      TERP_DEBUG_TRUE_OR_THROW( !paramsPtr->m_inputRasterOffsets.empty(),
+      TERP_DEBUG_TRUE_OR_THROW( !paramsPtr->m_inputRasterBandMaxValues.empty(),
         "Invalid parameter" );  
       TERP_DEBUG_TRUE_OR_THROW( paramsPtr->m_maxInputRasterCachedBlocks,
         "Invalid parameter" );        
@@ -1017,8 +1027,8 @@ namespace te
                 inputRaster, 
                 paramsPtr->m_inputParameters.m_inputRasterBands,
                 paramsPtr->m_inputRasterNoDataValues,
-                paramsPtr->m_inputRasterGains,
-                paramsPtr->m_inputRasterOffsets,
+                paramsPtr->m_inputRasterBandMinValues,
+                paramsPtr->m_inputRasterBandMaxValues,
                 outputRaster,
                 0,
                 paramsPtr->m_enableStrategyProgress ) )
@@ -1049,31 +1059,6 @@ namespace te
                 << std::endl;
 */              
               paramsPtr->m_generalMutexPtr->unlock();
-              
-              // pulsing the progress
-              
-              if( paramsPtr->m_progressPtr )
-              {
-                paramsPtr->m_generalMutexPtr->lock();
-                
-                if( paramsPtr->m_progressPtr->isActive() )
-                {
-                  paramsPtr->m_progressPtr->pulse();
-                  paramsPtr->m_generalMutexPtr->unlock();
-                }
-                else
-                {
-                  --( *(paramsPtr->m_runningThreadsCounterPtr) );
-                  *(paramsPtr->m_abortSegmentationFlagPtr) = true;
-                  
-//                    std::cout << std::endl<< "Thread exit (error)"
-//                      << std::endl;                    
-                  
-                  paramsPtr->m_generalMutexPtr->unlock();
-                  
-                  return;
-                }
-              }              
               
               // notifying the main thread with the block processed signal
               

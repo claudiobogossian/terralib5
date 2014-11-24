@@ -49,8 +49,6 @@ namespace te
         
         virtual EnumType* getRetangleItem() const;
 
-        virtual EnumType* getDefaultTextItem() const;
-
         virtual EnumType* getMapItem() const;
 
         virtual EnumType* getMapGridItem() const;
@@ -103,6 +101,8 @@ namespace te
 
         virtual EnumType* getLegendChildItem() const;
         
+        virtual EnumType* getTextItem() const;
+
         virtual EnumType* getObjectUnknown() const;
 
       protected:
@@ -112,7 +112,6 @@ namespace te
       protected:
         
         EnumType* m_retangleItem;
-        EnumType* m_defaultTextItem;
         EnumType* m_mapItem;
         EnumType* m_mapGridItem;
         EnumType* m_paperItem;
@@ -139,6 +138,7 @@ namespace te
         EnumType* m_menuItem;
         EnumType* m_textGridSettings;
         EnumType* m_legendChildItem;
+        EnumType* m_textItem;
         EnumType* m_objectUnknown;
     };
   }

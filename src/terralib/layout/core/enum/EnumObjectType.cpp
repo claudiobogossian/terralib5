@@ -42,7 +42,6 @@ te::layout::EnumObjectType::EnumObjectType() :
   m_gridSettings(0),
   m_gridPlanar(0),
   m_gridGeodesic(0),
-  m_defaultTextItem(0),
   m_itemGroup(0),
   m_scaleItem(0),
   m_pageSetup(0),
@@ -225,17 +224,17 @@ te::layout::EnumObjectType::~EnumObjectType()
     delete m_objectUnknown;
     m_objectUnknown = 0;
   }
-
-  if(m_defaultTextItem)
-  {
-    delete m_defaultTextItem;
-    m_defaultTextItem = 0;
-  }
-
+  
   if(m_legendChildItem)
   {
     delete m_legendChildItem;
     m_legendChildItem = 0;
+  }
+
+  if(m_textItem)
+  {
+    delete m_textItem;
+    m_textItem = 0;
   }
 }
 
@@ -280,8 +279,8 @@ void te::layout::EnumObjectType::init()
   m_gridGeodesic = new EnumType(12, "Grid_Geodesic");
   m_enums.push_back(m_gridGeodesic);
 
-  m_defaultTextItem = new EnumType(15, "Text_Item");
-  m_enums.push_back(m_defaultTextItem);
+  m_textItem = new EnumType(15, "Text_Item");
+  m_enums.push_back(m_textItem);
 
   m_itemGroup = new EnumType(16, "Item_Group");
   m_enums.push_back(m_itemGroup);
@@ -332,11 +331,6 @@ void te::layout::EnumObjectType::init()
 te::layout::EnumType* te::layout::EnumObjectType::getRetangleItem() const
 {
   return m_retangleItem;
-}
-
-te::layout::EnumType* te::layout::EnumObjectType::getDefaultTextItem() const
-{
-  return m_defaultTextItem;
 }
 
 te::layout::EnumType* te::layout::EnumObjectType::getMapItem() const
@@ -467,6 +461,11 @@ te::layout::EnumType* te::layout::EnumObjectType::getTextGridSettings() const
 te::layout::EnumType* te::layout::EnumObjectType::getLegendChildItem() const
 {
   return m_legendChildItem;
+}
+
+te::layout::EnumType* te::layout::EnumObjectType::getTextItem() const
+{
+  return m_textItem;
 }
 
 te::layout::EnumType* te::layout::EnumObjectType::getObjectUnknown() const

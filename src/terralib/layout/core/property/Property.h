@@ -100,6 +100,8 @@ namespace te
 
         virtual std::string getIcon();
 
+        virtual bool isComplex();
+
         bool operator ==(const Property& other); 
 
     protected:

@@ -165,6 +165,36 @@ namespace te
                                                  const te::gm::Polygon& pin,
                                                  const std::map<std::string, std::string>& rinfo,
                                                  const std::string& rType = std::string("GDAL"));
+
+    /*!
+      \brief Creates a vector of random positions (points) inside the raster.
+
+      \param inputRaster     The given raster.
+      \param numberOfPoints  The number of random positions to be created (default = 1000).
+
+      \return A vector of random positions (points).
+      \ingroup rp_func
+    */
+    TERASTEREXPORT std::vector<te::gm::Point*> GetRandomPointsInRaster(const te::rst::Raster& inputRaster, unsigned int numberOfPoints = 1000);
+
+    /*!
+      \brief Function used to convert from a Color Interp Enum to a string
+
+      \param ci     The color interpretation enum
+
+      \return A string with the color interpreation name.
+    */
+    TERASTEREXPORT std::string ConvertColorInterpTypeToString(const te::rst::ColorInterp& ci);
+
+    /*!
+      \brief Function used to convert from a Pallete Interp Enum to a string
+
+      \param pi     The pallete interpretation enum
+
+      \return A string with the pallete interpreation name.
+    */
+    TERASTEREXPORT std::string ConvertPalleteInterpTypeToString(const te::rst::PaletteInterpretation& pi);
+
   } // end namespace rst
 }   // end namespace te
 

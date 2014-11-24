@@ -255,13 +255,13 @@ namespace te
             \brief It returns a pair representing the point that contais the secected ObjectId.
 
             \param oid  The ObjectId to be searched.
-
+            \note Returns NULL if no matching point was found
           */
           const std::pair<double, double> find(const te::da::ObjectId* oid);
 
         private:
 
-          PointToObjectIdSet m_valuesOids;  //!< The intervals and ObjecIds ordered in a boost multi index container
+          PointToObjectIdSet m_valuesOids;  //!< The points and ObjecIds ordered in a boost multi index container
           std::vector<double> m_xValues;    //!< Double values for axis X
           std::vector<double> m_yValues;    //!< Double values for axis Y
 

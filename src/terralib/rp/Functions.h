@@ -40,6 +40,9 @@
 #include "../raster/Utils.h"
 #include "../srs/Converter.h"
 #include "../geometry/LinearRing.h"
+#include "../geometry/GTParameters.h"
+#include "../geometry/MultiPoint.h"
+#include "../geometry/Surface.h"
 
 // STL
 #include <memory>
@@ -342,17 +345,6 @@ namespace te
     TERPEXPORT bool NormalizeRaster(te::rst::Raster& inputRaster, double nmin = 0.0, double nmax = 255.0);
 
     /*!
-      \brief Creates a vector of random positions (points) inside the raster.
-
-      \param inputRaster     The given raster.
-      \param numberOfPoints  The number of random positions to be created (default = 1000).
-
-      \return A vector of random positions (points).
-      \ingroup rp_func
-    */
-    TERPEXPORT std::vector<te::gm::Point*> GetRandomPointsInRaster(const te::rst::Raster& inputRaster, unsigned int numberOfPoints = 1000);    
-    
-    /*!
       \brief RGB to IHS conversion.
       \param inputRGBRaster The input raster.
       \param redBandIdx The red band index.
@@ -624,7 +616,53 @@ namespace te
       const unsigned int newwidth, 
       const std::map<std::string, std::string>& rinfo,
       const std::string& dataSourceType,
-      std::auto_ptr< te::rst::Raster >& resampledRasterPtr );    
+      std::auto_ptr< te::rst::Raster >& resampledRasterPtr ); 
+    
+    /*!
+      \brief Returns the tie points converx hull area.
+      \param tiePoints Input tie-points (container of te::gm::GTParameters::TiePoint).
+      \param useTPSecondCoordPair If true the sencond tie-point component (te::gm::GTParameters::TiePoint::second) will be used for the area calcule, otherwize the first component will be used.
+      \return Returns the tie points converx hull area.
+    */          
+    template< typename ContainerT >
+    double GetTPConvexHullArea( const ContainerT& tiePoints,
+      const bool useTPSecondCoordPair )
+    {
+      if( tiePoints.size() < 3 )
+      {
+        return 0;
+      }
+      else
+      {
+        te::gm::MultiPoint points( 0, te::gm::MultiPointType );
+        
+        typename ContainerT::const_iterator it =
+          tiePoints.begin();
+        const typename ContainerT::const_iterator itE =
+          tiePoints.end();        
+        
+        while( it != itE )
+        {
+          if( useTPSecondCoordPair )
+            points.add( new te::gm::Point( it->second.x, it->second.y ) );
+          else
+            points.add( new te::gm::Point(  it->first.x, it->first.y ) );
+            
+          ++it;
+        }
+        
+        std::auto_ptr< te::gm::Geometry > convexHullPolPtr( points.convexHull() );
+        
+        if( dynamic_cast< te::gm::Surface* >( convexHullPolPtr.get() ) )
+        {
+          return ( (te::gm::Surface*)( convexHullPolPtr.get() ) )->getArea();
+        }
+        else
+        {
+          return 0.0;
+        }
+      }
+    }
     
   } // end namespace rp
 }   // end namespace te
