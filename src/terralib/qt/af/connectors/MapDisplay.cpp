@@ -390,7 +390,7 @@ void te::qt::af::MapDisplay::drawLayerSelection(te::map::AbstractLayerPtr layer)
       // Try to retrieve the layer selection
       std::auto_ptr<te::da::DataSet> selected(layer->getData(oids));
 
-      drawDataSet(selected.get(), layer->getGeomPropertyName(), layer->getSRID(), ApplicationController::getInstance().getSelectionColor(), te::da::HasLinkedTable(layer.get()));
+      drawDataSet(selected.get(), layer->getGeomPropertyName(), layer->getSRID(), ApplicationController::getInstance().getSelectionColor(), te::da::HasLinkedTable(layer->getSchema().get()));
 
       return;
     }
@@ -418,7 +418,7 @@ void te::qt::af::MapDisplay::drawLayerSelection(te::map::AbstractLayerPtr layer)
         // Try to retrieve the layer selection batch
         std::auto_ptr<te::da::DataSet> selected(layer->getData(oidsBatch.get()));
 
-        drawDataSet(selected.get(), layer->getGeomPropertyName(), layer->getSRID(), ApplicationController::getInstance().getSelectionColor(), te::da::HasLinkedTable(layer.get()));
+        drawDataSet(selected.get(), layer->getGeomPropertyName(), layer->getSRID(), ApplicationController::getInstance().getSelectionColor(), te::da::HasLinkedTable(layer->getSchema().get()));
 
         // Prepares to next batch
         oidsBatch->clear();
