@@ -99,6 +99,8 @@ namespace te
 
         virtual void applyRotation();
 
+        virtual void getDocumentSizeMM(double &w, double &h);
+
         QTextDocument* m_document;
         QColor         m_backgroundColor;
         bool           m_editable;

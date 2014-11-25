@@ -161,3 +161,13 @@ void te::layout::GridModel::setMapDisplacementY( double displacement )
 {
   m_mapDisplacementY = displacement;
 }
+
+int te::layout::GridModel::getPointSize()
+{
+  return m_pointTextSize;
+}
+
+std::string te::layout::GridModel::getFontFamily()
+{
+  return m_fontText;
+}

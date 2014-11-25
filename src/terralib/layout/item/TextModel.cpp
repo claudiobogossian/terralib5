@@ -111,3 +111,8 @@ te::layout::Font te::layout::TextModel::getFont()
 {
   return m_font;
 }
+
+void te::layout::TextModel::setFont( Font ft )
+{
+  m_font = ft;
+}

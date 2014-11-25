@@ -89,6 +89,10 @@ namespace te
         virtual void setMapDisplacementX(double displacement);
 
         virtual void setMapDisplacementY(double displacement);
+
+        virtual int getPointSize();
+
+        virtual std::string getFontFamily();
                         
        protected:
 

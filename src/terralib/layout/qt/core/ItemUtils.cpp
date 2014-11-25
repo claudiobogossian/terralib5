@@ -55,6 +55,7 @@
 #include <QGraphicsItem>
 #include <QGraphicsScene>
 #include <QTextDocument>
+#include <QFont>
 
 te::layout::ItemUtils::ItemUtils( QGraphicsScene* scene ) :
   m_scene(scene)
@@ -274,6 +275,7 @@ void te::layout::ItemUtils::setCurrentToolInSelectedMapItems( EnumType* mode )
 
 void te::layout::ItemUtils::createTextGridAsObject()
 {
+  QFont* ft = new QFont;
   QGraphicsItem *item = m_scene->selectedItems().first();
   if(item)
   {
@@ -291,7 +293,9 @@ void te::layout::ItemUtils::createTextGridAsObject()
           model->getGridGeodesic()->setVisibleAllTexts(false);
           std::map<te::gm::Point*, std::string> mapGeo = gridGeo->getGridInfo();
           gridGeo->setVisibleAllTexts(false);
-          createTextItemFromObject(mapGeo);
+          ft->setFamily(gridGeo->getFontFamily().c_str());
+          ft->setPointSize(gridGeo->getPointSize());
+          createTextItemFromObject(mapGeo, ft);
         }
 
         GridPlanarModel* gridPlanar = dynamic_cast<GridPlanarModel*>(model->getGridPlanar());
@@ -300,7 +304,9 @@ void te::layout::ItemUtils::createTextGridAsObject()
           model->getGridGeodesic()->setVisibleAllTexts(false);
           std::map<te::gm::Point*, std::string> mapPlanar = gridPlanar->getGridInfo();
           gridPlanar->setVisibleAllTexts(false);
-          createTextItemFromObject(mapPlanar);
+          ft->setFamily(gridPlanar->getFontFamily().c_str());
+          ft->setPointSize(gridPlanar->getPointSize());
+          createTextItemFromObject(mapPlanar, ft);
         }   
       }
       it->redraw();
@@ -350,7 +356,7 @@ void te::layout::ItemUtils::createLegendChildAsObject()
   }
 }
 
-void te::layout::ItemUtils::createTextItemFromObject( std::map<te::gm::Point*, std::string> map )
+void te::layout::ItemUtils::createTextItemFromObject( std::map<te::gm::Point*, std::string> map, QFont* ft )
 {
   Scene* scne = dynamic_cast<Scene*>(m_scene);
 
@@ -360,27 +366,7 @@ void te::layout::ItemUtils::createTextItemFromObject( std::map<te::gm::Point*, s
   EnumModeType* mode = Enums::getInstance().getEnumModeType();
 
   std::map<te::gm::Point*, std::string>::iterator it;
-
-  double mLow = 0;
-  double displacement = 0;
-
-  QGraphicsItem *item = m_scene->selectedItems().first();
-  if(item)
-  {
-    ItemObserver* it = dynamic_cast<ItemObserver*>(item);
-    if(it)
-    {
-      MapGridItem* mt = dynamic_cast<MapGridItem*>(it);
-      if(mt)
-      {
-        MapGridModel* model = dynamic_cast<MapGridModel*>(mt->getModel());
-        mLow = model->getMapBox().getHeight();
-        displacement = model->getDisplacementY();
-      }
-    }
-  }
-
-
+  
   for (it = map.begin(); it != map.end(); ++it) 
   {
     te::gm::Point* pt = it->first;
@@ -395,12 +381,25 @@ void te::layout::ItemUtils::createTextItemFromObject( std::map<te::gm::Point*, s
     if(!item)
       continue;
 
+    QPointF pos = item->scenePos();
+
     TextItem* txtItem = dynamic_cast<TextItem*>(item);
     if(txtItem)
     {
       TextModel* model = dynamic_cast<TextModel*>(txtItem->getModel());
-      model->setText(text);
-      txtItem->getDocument()->setPlainText(text.c_str());
+      if(model)
+      {
+        if(ft)
+        {
+          txtItem->setFont(*ft);
+          Font fnt = model->getFont();
+          fnt.setFamily(ft->family().toStdString());
+          fnt.setPointSize(ft->pointSize());
+          model->setFont(fnt);
+        }        
+        model->setText(text);
+        txtItem->getDocument()->setPlainText(text.c_str());
+      }
     }
   }
 

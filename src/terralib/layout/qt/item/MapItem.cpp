@@ -317,19 +317,27 @@ void te::layout::MapItem::setPixmap( const QPixmap& pixmap )
 
 te::gm::Coord2D te::layout::MapItem::getPosition()
 {
+  /* Correctly position the object and change the origin for bottomLeft */
   double x = 0;
   double y = 0;
-  
   MapModel* model = dynamic_cast<MapModel*>(m_model);
+  te::gm::Envelope box;
   if(model)
   {
-    x = model->getDisplacementX();
-    y = model->getDisplacementY();
+    box = model->getMapBox();
+    x = model->getDisplacementX() * 2;
+    y = model->getDisplacementY() * 2;
+  }
+  else
+  {
+    box = m_model->getBox();
   }
 
   QPointF posF = scenePos();
   qreal valuex = posF.x() - x;
   qreal valuey = posF.y() - y;
+
+  valuey = valuey - box.getHeight();
       
   te::gm::Coord2D coordinate;
   coordinate.x = valuex;
@@ -547,8 +555,21 @@ QVariant te::layout::MapItem::itemChange( GraphicsItemChange change, const QVari
   {
     // value is the new position.
     QPointF newPos = value.toPointF();
+
+    MapModel* model = dynamic_cast<MapModel*>(m_model);
+    te::gm::Envelope box;
+    if(model)
+    {
+      box = model->getMapBox();
+    }
+    else
+    {
+      box = m_model->getBox();
+    }
+
+    /* Correctly position the object and change the origin for bottomLeft */
     newPos.setX(newPos.x() - transform().dx());
-    newPos.setY(newPos.y() - transform().dy());
+    newPos.setY(newPos.y() - transform().dy() + box.getHeight());
     return newPos;
   }
   if(change == QGraphicsItem::ItemPositionHasChanged)

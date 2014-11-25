@@ -42,6 +42,7 @@
 
 class QGraphicsItem;
 class QGraphicsScene;
+class QFont;
 
 namespace te
 {
@@ -83,7 +84,7 @@ namespace te
 
         virtual QList<QGraphicsItem*> getItems(bool selected = false);
 
-        virtual void createTextItemFromObject(std::map<te::gm::Point*, std::string> map);
+        virtual void createTextItemFromObject(std::map<te::gm::Point*, std::string> map, QFont* ft = 0);
 
         virtual void createLegendChildItemFromLegend(std::map<te::gm::Point*, std::string> map, MapModel* visitable);
 

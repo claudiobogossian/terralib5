@@ -163,7 +163,7 @@ void te::layout::TextItem::paint( QPainter * painter, const QStyleOptionGraphics
   drawBackground( painter );
   
   QGraphicsTextItem::paint(painter, option, widget);
-     
+       
   //Draw Selection
   if (option->state & QStyle::State_Selected)
   {
@@ -261,9 +261,19 @@ void te::layout::TextItem::refreshDocument()
   if(!model)
     return;
 
-  QImage img = createImage();
+  double w = 0;
+  double h = 0;
+
+  getDocumentSizeMM(w, h);
+
   QPointF pp = scenePos();
-  te::gm::Envelope box(pp.x(), pp.y(), pp.x() + img.widthMM(), pp.y() + img.heightMM());
+  
+  double x1 = pp.x();
+  double y1 = pp.y() - h;
+  double x2 = x1 + w;
+  double y2 = y1 + h;
+  
+  te::gm::Envelope box(x1, y1, x2, y2);
 
   model->setBox(box);
   model->setText(m_document->toPlainText().toStdString());
@@ -277,8 +287,13 @@ QTextDocument* te::layout::TextItem::getDocument()
 te::gm::Coord2D te::layout::TextItem::getPosition()
 {
   QPointF posF = scenePos();
+
+  double w = 0;
+  double h = 0;
+
+  getDocumentSizeMM(w, h);  
   qreal valuex = posF.x();
-  qreal valuey = posF.y();
+  qreal valuey = posF.y() - h;
 
   te::gm::Coord2D coordinate;
   coordinate.x = valuex;
@@ -310,8 +325,12 @@ QVariant te::layout::TextItem::itemChange( GraphicsItemChange change, const QVar
   {
     // value is the new position.
     QPointF newPos = value.toPointF();
+    double w = 0;
+    double h = 0;
+    getDocumentSizeMM(w, h);
+
     newPos.setX(newPos.x() - transform().dx());
-    newPos.setY(newPos.y() - transform().dy());
+    newPos.setY(newPos.y() - transform().dy() + h);
     return newPos;
   }
   if(change == QGraphicsItem::ItemPositionHasChanged)
@@ -395,4 +414,12 @@ void te::layout::TextItem::mouseReleaseEvent( QGraphicsSceneMouseEvent * event )
 bool te::layout::TextItem::isEditable()
 {
   return m_editable;
+}
+
+void te::layout::TextItem::getDocumentSizeMM( double &w, double &h )
+{
+  QImage img = createImage();
+  QPointF pp = scenePos();
+  w = img.widthMM();
+  h = img.heightMM();
 }
