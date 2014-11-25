@@ -17,12 +17,11 @@ visual quality of the image represented by a raster file. </span><span
 available methods in TerraLib
 are:<br style="font-family: Calibri Light;">
 </font>
+<br>
 <ul style="font-family: Calibri Light;">
-  <li><font face="Calibri Light"><span style="font-weight: bold;">Linear</span>:
-The user defines
-a new minimum and maximum values for the pixels in the image. The
-algorithm then applies a linear function over the pixels using this 2
-values.</font></li>
+  <li><font face="Calibri Light"><span style="font-weight: bold;">Decorrelation
+Enhancement</span>: &nbsp;Uses the principal components to contrast the
+raster.</font></li>
 </ul>
 <ul style="font-family: Calibri Light;">
   <li><font face="Calibri Light"><span style="font-weight: bold;">Histogram
@@ -30,13 +29,33 @@ Equalization</span>:&nbsp;
 Using this method, the histogram of the image will be equalized
 automatically.</font></li>
 </ul>
-<ul style="font-family: Calibri Light;">
-  <li><font face="Calibri Light"><span style="font-weight: bold;">Set
-Mean and Standard Deviation</span>:
+<ul>
+  <li><font face="Calibri Light"><span style="font-weight: bold;">Linear</span>:
+The user defines
+a new minimum and maximum values for the pixels in the image. The
+algorithm then applies a linear function over the pixels using this 2
+values.</font></li>
+</ul>
+<ul>
+  <li><font face="Calibri Light"><span style="font-weight: bold;">Mean
+and Standard Deviation</span>:
 The contrasted image will have a predefined mean and standard
 deviation, defined by the user.</font></li>
 </ul>
-<font style="font-family: Calibri Light;" face="Calibri Light"><br>
+<ul style="font-family: Calibri Light;">
+  <li><font face="Calibri Light"><span style="font-weight: bold;">Log</span>:
+The contrasted image will be created by using a log function.</font></li>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <li><font face="Calibri Light"><span style="font-weight: bold;">Square</span>:
+The contrasted image will be created by using a square function.</font></li>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <li><font face="Calibri Light"><span style="font-weight: bold;">Square
+Root</span>: he contrasted image will be created by using a square root
+function.</font></li>
+</ul>
+<font style="font-family: Calibri Light;" face="Calibri Light">
 It is
 accessible through:</font><font style="font-family: Calibri Light;"
  face="Calibri Light"><b><br>
@@ -92,17 +111,43 @@ specific parameters which will varies depending on the contrast type
 chosen. &nbsp;<i>Double Click</i> over the cell of each parameter to
 make the cell editable and then change the value and press enter:</font></li>
   <ol>
-    <li>If&nbsp; <font face="Calibri Light"><i>Linear: </i>set the
+    <li>If&nbsp; <font face="Calibri Light"><i>Linear, Square, Square
+Root or Log: </i>set the
 new value for&nbsp;<i>Minimum</i> and/or <i>Maximum,</i></font></li>
     <li><font face="Calibri Light">If <i>Histogram Equalization</i>:
 set the new value for&nbsp; <i>Maximum,</i></font></li>
     <li>If <font face="Calibri Light"><i>Mean and Standard Deviation</i>:
 set the new value for <i>Mean</i> and/or <i>Std Dev.</i></font></li>
+    <li><font face="Calibri Light">If <span style="font-style: italic;">Decorrelation
+Enhancement</span>: none extra parameters will be necessary.<br>
+      </font></li>
   </ol>
-  <li><font face="Calibri Light">On the <i>Preview </i>&nbsp;section
+  <li><font face="Calibri Light">On the <i><span
+ style="font-weight: bold;">Preview</span> </i>&nbsp;tab
 click on <img alt="" src="../../gen_icones/ic_check.PNG" height="22"
  width="25"> to have a preview of the contrast with the parameters
 informed.</font></li>
+  <li><font face="Calibri Light">The <span
+ style="font-style: italic; font-weight: bold;">Histogram</span><span
+ style="font-weight: bold;"> </span>tab presents the histogram to help
+in the contrast operation.</font></li>
+  <ul>
+    <li><font face="Calibri Light">The&nbsp;<span
+ style="font-style: italic;">Input</span> histogram represents the
+histogram of the selected band.</font></li>
+    <li><span id="result_box" class="" lang="en"><span class="hps">The<span
+ style="font-style: italic;"> Output</span></span> <span class="hps">is</span>
+      <span class="hps">as</span> <span class="hps">the histogram</span>
+      <span class="hps">would be if</span> <span class="hps">the
+contrast</span> <span class="hps">was applied</span><span class="">.</span></span></li>
+    <li><span id="result_box" class="" lang="en"><span class="hps">Using</span>
+      <span class="hps">the mouse buttons</span> <span class="hps">you
+can purchase</span> <span class="hps">the pixel value</span> <span
+ class="hps">from</span> <span class="hps">the histogram,&nbsp;</span></span><span
+ id="result_box" class="" lang="en"><span class="hps">helping to define</span>
+      <span class="hps">the</span> <span class="hps">parameters</span>
+      <span class="hps">of each type of</span> <span class="hps">contrast.</span></span></li>
+  </ul>
   <li><font face="Calibri Light">Press <b>Next</b></font> to apply the
 contrast or <b>Back</b> to go to the previous wizard page.</li>
 </ol>

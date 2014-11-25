@@ -1,0 +1,174 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html; charset=ISO-8859-1"
+ http-equiv="content-type">
+  <title>Kernal Map</title>
+</head>
+<body>
+<div style="text-align: center;">
+<h3 style="text-align: center;"><span
+ style="font-family: Calibri Light;">Kernel Map</span></h3>
+</div>
+<font face="Calibri Light"><br>
+</font><font face="Calibri Light"><span
+ style="font-family: Calibri Light;">The <span
+ style="font-weight: bold;">Kernel Map</span></span><span
+ style="font-weight: bold; font-family: Calibri Light;"></span></font><font
+ face="Calibri Light">&nbsp;is a simple operation to analyze the
+behavior of point pattern and it is an easy to use and understand
+indicator. Essentially the Kernel map provides the punctual density of
+the process in the study region through interpolation. As a result, a
+general view of the process intensity in the study region is obtained.<br>
+<br>
+<span style="font-weight: bold;"><br>
+About the Algorithm<br>
+<br>
+</span>In the algorithm fields, the user selects the function to be
+used in the calculation, what will be calculated, and the radius to be
+used. Typical options in Kernel maps, and TerraView defaults, are
+Quartic Function and Compute Density.<br>
+<br>
+The three Compute options are:<br>
+</font>
+<ul>
+  <li><font face="Calibri Light"><span style="font-weight: bold;">Density</span>:
+calculates density of crimes per area unit.</font></li>
+</ul>
+<ul>
+  <li><font face="Calibri Light"><span style="font-weight: bold;">Spatial
+Moving Average</span>: calculates the expected number of crimes per
+area unit.</font></li>
+</ul>
+<ul>
+  <li><font face="Calibri Light"><span style="font-weight: bold;">Probability</span>:
+calculates the probability of an already executed crime to be located
+in a given area.</font></li>
+</ul>
+<font face="Calibri Light"><br>
+<span style="font-weight: bold;">About Radius<br>
+<br>
+</span>Radius is an important parameter to create a Kernel map and
+requires the user to understand&nbsp;the study region.<br>
+TerraView facilitates the definition task by allowing the creation of
+Adaptive Kernel map. Adaptive option calculates a radius automatically
+based on the number of events and the area. Results of maps created
+with adaptive radius are reasonably good.<br>
+However, Adaptive option can be unselected and the user&nbsp;</font><span
+ style="font-family: Calibri Light;" id="result_box" class="" lang="en"><span
+ class="hps">can</span> <span class="hps">set the radius</span> <span
+ class="hps">based on the width</span> <span class="hps">of the study
+area</span><span>.</span> <span class="hps">This value is set</span> <span
+ class="hps">using</span> <span class="hps">percentage</span> <span
+ class="hps">compared to</span> <span class="hps">the total</span> <span
+ class="hps">width</span><span class="">.<br>
+<br>
+<span style="font-weight: bold;"></span></span></span><font
+ face="Calibri Light"></font><font face="Calibri Light"><span
+ style="font-family: Calibri Light;"></span><span
+ style="font-weight: bold; font-family: Calibri Light;"></span></font><span
+ style="font-family: Calibri Light;"><span style="font-weight: bold;"></span></span><font
+ style="font-family: Calibri Light;" face="Calibri Light"><br>
+It is
+accessible through:</font><font style="font-family: Calibri Light;"
+ face="Calibri Light"><b><br>
+</b></font>
+<font face="Calibri Light"><br>
+</font>
+<font style="font-family: Calibri Light;" face="Calibri Light"><b>&nbsp;&nbsp;
+Plugins &gt; Spatial Analysis</b></font><font
+ style="font-family: Calibri Light;" face="Calibri Light"><b> &gt;
+Kernel Map...</b></font><font style="font-family: Calibri Light;"
+ face="Calibri Light"><br>
+<br>
+<span style="font-family: Calibri Light;"></span></font><font
+ style="font-family: Calibri Light;" face="Calibri Light">This
+interface consists of the
+following steps:<br>
+<br>
+</font><span style="font-family: Calibri Light;">&nbsp;&nbsp;&nbsp; 1.
+Input Information:</span>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">Layer Name</span>: Select the
+desired Layer.</li>
+  </ul>
+</ol>
+<span style="font-family: Calibri Light;">&nbsp;&nbsp;&nbsp; 2. Kernel
+Parameters:</span>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">Attr Name:</span> Attribute
+name that identifies the desired&nbsp;information.</li>
+  </ul>
+</ol>
+<ul style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">Function</span>: Quartic,
+Normal, Triangular, Uniform and Negative Exponential.</li>
+  </ul>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">Estimation:</span>&nbsp;<font
+ face="Calibri Light">Density,&nbsp;</font><font face="Calibri Light">Spatial
+Moving Average and&nbsp;</font><font face="Calibri Light">Probability.</font></li>
+  </ul>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <ul>
+    <li><font face="Calibri Light"><span style="font-weight: bold;">Use
+adaptative radius</span>: Uses adaptative radius or defines the
+percentage value of total width.<br>
+      </font></li>
+  </ul>
+</ul>
+<span style="font-family: Calibri Light;">&nbsp;&nbsp;&nbsp; 3. Output
+Information:</span>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">Support Region:</span> Defines
+how the output data will be created.</li>
+  </ul>
+</ol>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <ul>
+      <li><span style="font-weight: bold;">Grid</span>: &nbsp;The
+output is a grid (image) where the kernel map information is a pixel
+value.</li>
+    </ul>
+  </ul>
+</ol>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <ul>
+      <li><span style="font-weight: bold;">Data Set</span>: The output
+is the input data plus a attribute with kernel map information.</li>
+    </ul>
+  </ul>
+</ol>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">Repository:</span> Defines
+where the output data will be saved.</li>
+  </ul>
+</ol>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <ul>
+      <li>Local File.</li>
+    </ul>
+  </ul>
+</ol>
+<ul style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">Layer Name:</span> Defines the
+name to create the output layer.</li>
+  </ul>
+</ul>
+<span style="font-family: Calibri Light;"><br>
+Click <span style="font-weight: bold;">OK</span> and then the kernel
+map will be calculated.</span><br>
+</body>
+</html>

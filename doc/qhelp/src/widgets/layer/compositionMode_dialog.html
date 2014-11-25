@@ -1,0 +1,348 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html; charset=ISO-8859-1"
+ http-equiv="content-type">
+  <title>Composition Mode</title>
+</head>
+<body>
+<div style="text-align: center;">
+<h3 style="text-align: center;"><span
+ style="font-family: Calibri Light;">Composition
+Mode</span></h3>
+</div>
+<font face="Calibri Light"><br>
+Compositing is the process by which the colors of objects are combined
+together. Besides its regular color values (red, green, and blue), an
+object may contain a channel to represent the transparency of the
+color. Commonly known as alpha channel, is used to represent
+the&nbsp;<span style="font-style: italic;">opacity</span>
+of an object. In effect the opacity of an object controls how much of
+the object's color is used when compositing.<br>
+<br>
+</font><span style="font-family: Calibri Light;" id="result_box"
+ class="" lang="en"><span class="hps">Terraview</span>
+<span class="hps">has the
+following types</span> <span class="hps">of</span>
+<span class="hps">composition
+modes:<br>
+<br>
+</span></span>
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2"
+ cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="text-align: center;"><img
+ style="width: 32px; height: 32px;" alt=""
+ src="composition-mode-clear.png"><br>
+clear</td>
+      <td style="text-align: center;"><img
+ style="width: 32px; height: 32px;" alt=""
+ src="composition-mode-src.png"><br>
+source</td>
+      <td style="text-align: center;"><img
+ style="width: 32px; height: 32px;" alt=""
+ src="composition-mode-dst.png"><br>
+destiny</td>
+      <td style="text-align: center;"><img
+ style="width: 32px; height: 32px;" alt=""
+ src="composition-mode-src-over.png"><br>
+source over</td>
+      <td style="text-align: center;"><img
+ style="width: 32px; height: 32px;" alt=""
+ src="composition-mode-dst-over.png"><br>
+destiny over</td>
+      <td style="text-align: center;"><img
+ style="width: 32px; height: 32px;" alt=""
+ src="composition-mode-src-in.png"><br>
+source in</td>
+    </tr>
+    <tr>
+      <td style="text-align: center;"><img
+ style="width: 32px; height: 32px;" alt=""
+ src="composition-mode-dst-in.png"><br>
+destiny in</td>
+      <td style="text-align: center;"><img
+ style="width: 32px; height: 32px;" alt=""
+ src="composition-mode-src-out.png"><br>
+source out</td>
+      <td style="text-align: center;"><img
+ style="width: 32px; height: 32px;" alt=""
+ src="composition-mode-dst-out.png"><br>
+destiny out</td>
+      <td style="text-align: center;"><img
+ style="width: 32px; height: 32px;" alt=""
+ src="composition-mode-src-atop.png"><br>
+source a top</td>
+      <td style="text-align: center;"><img
+ style="width: 32px; height: 32px;" alt=""
+ src="composition-mode-dst-atop.png"><br>
+destiny a top</td>
+      <td style="text-align: center;"><img
+ style="width: 32px; height: 32px;" alt=""
+ src="composition-mode-xor.png"><br>
+xor</td>
+    </tr>
+    <tr>
+      <td style="text-align: center;"><img
+ style="width: 32px; height: 32px;" alt=""
+ src="composition-mode-mix.png"><br>
+plus</td>
+      <td style="text-align: center;"><img
+ style="width: 32px; height: 32px;" alt=""
+ src="composition-mode-mix.png"><br>
+multiply</td>
+      <td style="text-align: center;"><img
+ style="width: 32px; height: 32px;" alt=""
+ src="composition-mode-mix.png"><br>
+screen</td>
+      <td style="text-align: center;"><img
+ style="width: 32px; height: 32px;" alt=""
+ src="composition-mode-mix.png"><br>
+overlay</td>
+      <td style="text-align: center;"><img
+ style="width: 32px; height: 32px;" alt=""
+ src="composition-mode-mix.png"><br>
+darken</td>
+      <td style="text-align: center;"><img
+ style="width: 32px; height: 32px;" alt=""
+ src="composition-mode-mix.png"><br>
+lighten</td>
+    </tr>
+    <tr>
+      <td style="text-align: center;"><img
+ style="width: 32px; height: 32px;" alt=""
+ src="composition-mode-mix.png"><br>
+color doge</td>
+      <td style="text-align: center;"><img
+ style="width: 32px; height: 32px;" alt=""
+ src="composition-mode-mix.png"><br>
+color burn</td>
+      <td style="text-align: center;"><img
+ style="width: 32px; height: 32px;" alt=""
+ src="composition-mode-mix.png"><br>
+hard light</td>
+      <td style="text-align: center;"><img
+ style="width: 32px; height: 32px;" alt=""
+ src="composition-mode-mix.png"><br>
+soft light</td>
+      <td style="text-align: center;"><img
+ style="width: 32px; height: 32px;" alt=""
+ src="composition-mode-mix.png"><br>
+difference</td>
+      <td style="text-align: center;"><img
+ style="width: 32px; height: 32px;" alt=""
+ src="composition-mode-mix.png"><br>
+exclusion</td>
+    </tr>
+  </tbody>
+</table>
+<span style="font-family: Calibri Light;" id="result_box" class=""
+ lang="en"><span class="hps"><br>
+</span></span>
+<ul style="font-family: Calibri Light;">
+  <li><span style="font-weight: bold;">Clear</span>: Both the color and
+the alpha of the destination are cleared. Neither the source nor the
+destination are used as input.</li>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <li><span style="font-weight: bold;">Source</span>: The source is
+copied to the destination. The destination is not used as input.</li>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <li><span style="font-weight: bold;">Destination</span>: The
+destination is left untouched.</li>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <li><span style="font-weight: bold;">Source Over</span>: The source
+is composited over the destination (default).</li>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <li><span style="font-weight: bold;">Destination Over</span>: The
+destination is composited over the source and the result replaces the
+destination.</li>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <li><span style="font-weight: bold;">Source In</span>: The part of
+the source lying inside of the destination replaces the destination.</li>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <li><span style="font-weight: bold;">Destination In</span>: The part
+of the destination lying inside of the source replaces the destination.</li>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <li><span style="font-weight: bold;">Source Out</span>: The part of
+the source lying outside of the destination replaces the destination.</li>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <li><span style="font-weight: bold;">Destination Out</span>: The part
+of the destination lying outside of the source replaces the destination.</li>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <li><span style="font-weight: bold;">Source a Top</span>: The part of
+the source lying inside of the destination is composited onto the
+destination.</li>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <li><span style="font-weight: bold;">Destination a Top</span>:&nbsp;The
+part of the destination lying inside of the source is composited over
+the source and replaces the destination.</li>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <li><span style="font-weight: bold;">XOR</span>: The part of the
+source that lies outside of the destination is combined with the part
+of the destination that lies outside of the source.</li>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <li><span style="font-weight: bold;">Plus</span>: The source is added
+to the destination and replaces the destination. This operator is
+useful for animating a dissolve between two images.</li>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <li><span style="font-weight: bold;">Multiply</span>: The source
+color is multiplied by the destination color and replaces the
+destination. The resultant color is always at least as dark as either
+the source or destination color.</li>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <li><span style="font-weight: bold;">Screen</span>: The source and
+destination colors are complemented, multiplied and the resultant color
+replaces the destination.</li>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <li><span style="font-weight: bold;">Overlay</span>: The destination
+color is used to determine if the resultant is either a multiplication
+or screening of the colors.</li>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <li><span style="font-weight: bold;">Darken</span>: The resultant
+color is the darker of source or destination colors.</li>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <li><span style="font-weight: bold;">Lighten</span>: The resultant
+color is the lighter of source or destination colors.</li>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <li><span style="font-weight: bold;">Color Dodge</span>: The
+destination color is brightened to reflect the source color.</li>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <li><span style="font-weight: bold;">Color Burn</span>: The
+destination color is darkened to reflect the source color.</li>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <li><span style="font-weight: bold;">Hard Light</span>: The source
+color is used to determine if the resultant is either a multiplication
+or screening of the colors.</li>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <li><span style="font-weight: bold;">Soft Light</span>: The source
+color is used to determine if the resultant color is darkened or
+lightened.</li>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <li><span style="font-weight: bold;">Difference</span>: The resultant
+color is the absolute difference between the source and destination
+colors.</li>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <li><span style="font-weight: bold;">Exclusion</span>:&nbsp;The
+resultant color is similar to that of the <span class="prop-value">difference</span>
+operation. However, the <span class="prop-value">exclusion</span>
+resultant color appears as a lower contrast than that of of the <span
+ class="prop-value">difference</span> resultant color.</li>
+</ul>
+<span style="font-family: Calibri Light;" id="result_box" class=""
+ lang="en"><span class="hps"></span></span><font face="Calibri Light"><br>
+</font>
+<font style="font-family: Calibri Light;" face="Calibri Light">The <span
+ style="font-weight: bold;">Composition Mode</span><span
+ style="font-weight: bold;"> </span>component&nbsp;</font><span
+ style="font-family: Calibri Light;" id="result_box" class="" lang="en"><span
+ class="hps">allows the</span>
+<span class="hps">user</span>
+<span class="hps">to define
+how</span> <span class="hps">the layer will be</span>
+<span class="hps">composed</span>
+<span class="hps">with</span>
+<span class="hps">other
+layers</span> <span class="hps">when they are</span>
+<span class="hps">drawn.</span></span><br>
+<font style="font-family: Calibri Light;" face="Calibri Light"><br>
+</font><font style="font-family: Calibri Light;" face="Calibri Light">It
+is
+accessible through:</font><font style="font-family: Calibri Light;"
+ face="Calibri Light"><b><br>
+</b></font>
+<font face="Calibri Light"><br>
+</font>
+<font style="font-family: Calibri Light;" face="Calibri Light"><b>&nbsp;&nbsp;
+Layer pop up &gt; </b></font><font style="font-family: Calibri Light;"
+ face="Calibri Light"><b>Composition
+Mode<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &gt; Default </b>(this is the
+default composition mode - source over)<br>
+<b>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &gt; Plus<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &gt; Advanced...<br>
+</b></font><font style="font-family: Calibri Light;"
+ face="Calibri Light"></font><br>
+<div style="font-family: Calibri Light;" dir="ltr">
+<div style="font-family: Calibri Light;" id="gt-res-content"
+ class="almost_half_cell"><span id="result_box" class="" lang="en"><span
+ class="hps">The <span style="font-weight: bold;">advanced</span>
+option show a dialog&nbsp;for composition mode selection. This</span> <span
+ class="hps">interface</span> <span class="hps">consists only</span> <span
+ class="hps">in choosing</span> <span class="hps">the composition mode
+desired. </span></span><span style="font-family: Calibri Light;">Click
+</span><span style="font-weight: bold; font-family: Calibri Light;">Apply</span><span
+ style="font-family: Calibri Light;"> to set the composition mode to
+selected layer.</span><br style="font-family: Calibri Light;">
+</div>
+</div>
+<span style="font-family: Calibri Light;"><br>
+<br style="font-family: Calibri Light;">
+<span style="font-weight: bold;">Raster Color Composition</span><br>
+<br>
+</span><span style="font-family: Calibri Light;" id="result_box"
+ class="" lang="en"><span class="hps">One of the most</span> <span
+ class="hps">practical applications</span> <span class="hps">for use</span>&nbsp;<span
+ class="hps"></span><span class="hps">composition mode is</span> <span
+ class="hps">to display</span> <span class="hps">rasters</span> <span
+ class="hps">in</span> <span class="hps">different layers</span> <span
+ class="hps">resulting in</span> <span class="hps">a colored
+composition</span><span class="">. Such as:<br>
+<br>
+Layer A - Using the <a href="../style/explorer.html">Style Explorer</a>,
+the user associate the raster to channel Red.<br>
+<br>
+</span></span><span style="font-family: Calibri Light;" id="result_box"
+ class="" lang="en"><span class="">Layer B - Using the <a
+ href="../style/explorer.html">Style Explorer</a>, the user associate
+the raster to channel Green.<br>
+<br>
+</span></span><span style="font-family: Calibri Light;" id="result_box"
+ class="" lang="en"><span class="">Layer C - Using the <a
+ href="../style/explorer.html">Style Explorer</a>, the user associate
+the raster to channel Blue.<br>
+<br>
+After this step, the user must set the composition mode for Layers B
+and
+C to "<span style="font-weight: bold;">Plus</span>". &nbsp;When drawing
+the layers, the result will be a </span></span><span
+ style="font-family: Calibri Light;" id="result_box" class="short_text"
+ lang="en"><span class="hps">color composite</span> <span class="hps">image.</span></span><br>
+<span style="font-family: Calibri Light;"> </span>
+</body>
+</html>

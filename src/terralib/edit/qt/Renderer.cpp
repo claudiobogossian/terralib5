@@ -30,7 +30,7 @@
 #include "../../qt/widgets/canvas/Canvas.h"
 #include "../../qt/widgets/Utils.h"
 #include "../../srs/Config.h"
-#include "../IdGeometry.h"
+#include "../Feature.h"
 #include "../Repository.h"
 #include "../RepositoryManager.h"
 #include "../Utils.h"
@@ -77,10 +77,10 @@ void te::edit::Renderer::drawRepository(const std::string& source, const te::gm:
   if(repository == 0)
     return;
 
-  std::vector<IdGeometry*> geoms = repository->getGeometries(e, srid);
+  std::vector<Feature*> features = repository->getFeatures(e, srid);
 
-  for(std::size_t i = 0; i < geoms.size(); ++i)
-    draw(geoms[i]->getGeometry());
+  for(std::size_t i = 0; i < features.size(); ++i)
+    draw(features[i]->getGeometry());
 }
 
 void te::edit::Renderer::prepare(te::gm::GeomType type)

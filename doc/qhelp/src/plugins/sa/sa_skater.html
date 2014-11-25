@@ -1,0 +1,203 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html; charset=ISO-8859-1"
+ http-equiv="content-type">
+  <title>Skater</title>
+</head>
+<body>
+<div style="text-align: center;">
+<h3 style="text-align: center;"><span
+ style="font-family: Calibri Light;">Skater</span></h3>
+</div>
+<font face="Calibri Light"><br>
+TerraView provides a tool for area regionalization to group small areas
+(such as municipalities and neighborhoods) in larger contiguous areas
+where associated attributes are similar to the small areas (such as
+homicides and kidnappings). TerraView tool for this task is the SKATER
+tool.<br>
+<br>
+</font>
+<font face="Calibri Light"><span style="font-family: Calibri Light;">The
+<span style="font-weight: bold;">Skater</span></span><span
+ style="font-weight: bold; font-family: Calibri Light;"> </span><span
+ style="font-family: Calibri Light;">(Spatial "k"luster Analysis by
+Tree Edge Removal) method is a cluster analysis that considers the
+spatial localization of objects. It is applied when a map is
+partitioned in areas, each one with a given geographic localization,
+and areas with similar characteristics must be part of the same spatial
+grouping. The characteristics are obtained by values of measured
+variables.<br>
+<br>
+The variables are standardized due to the impact different scales may
+have in the dissimilarity function and in the sum of squares in the
+clusters. Therefore, variables to be used for regionalization have a
+standard scale with mean zero and standard deviation one. The
+standardization was obtained by subtracting the average from the
+original value and dividing by the standard deviation.<br>
+<br>
+<br>
+<span style="font-weight: bold;">Aggregation Method</span><br>
+<br>
+Choose the criteria to define the number of larger regions (groups) to
+be created. <span style="font-weight: bold;">Clusters</span> option
+allows the definition of a fixed number and <span
+ style="font-weight: bold;">Population</span> option allows the
+definition of a minimum population for each group. <br>
+<br>
+<br>
+<span style="font-weight: bold;">Attribute Selection</span><br>
+<br>
+Select the information to be used to calculate similarity among areas. <span
+ style="font-weight: bold;">Layer Attributes</span> list displays all
+allowed (numeric) attributes and <span style="font-weight: bold;">Selected
+Attributes</span> list displays the attributes selected for clustering.<br
+ style="font-family: Calibri Light;">
+</span></font><span style="font-family: Calibri Light;"><span
+ style="font-weight: bold;"><br>
+</span></span><font style="font-family: Calibri Light;"
+ face="Calibri Light">It is
+accessible through:</font><font style="font-family: Calibri Light;"
+ face="Calibri Light"><b><br>
+</b></font>
+<font face="Calibri Light"><br>
+</font>
+<font style="font-family: Calibri Light;" face="Calibri Light"><b>&nbsp;&nbsp;
+Plugins &gt; Spatial Analysis</b></font><font
+ style="font-family: Calibri Light;" face="Calibri Light"><b> &gt;
+Skater...</b></font><font style="font-family: Calibri Light;"
+ face="Calibri Light"><br>
+<br>
+<span style="font-family: Calibri Light;"></span></font><font
+ style="font-family: Calibri Light;" face="Calibri Light">This
+interface consists of the
+following steps:<br>
+<br>
+</font><span style="font-family: Calibri Light;">&nbsp;&nbsp;&nbsp; 1.
+Input Information:</span>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">Layer Name</span>: Select the
+desired Layer.</li>
+  </ul>
+</ol>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">Load GPM</span>: Loads a gpm
+from file, if not, creates a new one.</li>
+  </ul>
+</ol>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <ul>
+      <li><span style="font-weight: bold;">Attribute Link</span>:
+Defines the attribute that identifies the objects of this layer.</li>
+    </ul>
+  </ul>
+</ol>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <ul>
+      <li><span style="font-weight: bold;">GPM</span>: Opens a dialog
+to select a file with a desired proximity matrix.</li>
+    </ul>
+  </ul>
+</ol>
+<span style="font-family: Calibri Light;">&nbsp;&nbsp;&nbsp; 2.
+Operation Parameters:<br>
+</span>
+<ul style="font-family: Calibri Light; font-weight: bold;">
+  <li>Aggregation</li>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">Clusters</span></li>
+  </ul>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <ul>
+    <ul>
+      <li><span style="font-weight: bold;">Number of Clusters</span>:
+Value that defines the total number of clusters generated in skater
+operation.</li>
+    </ul>
+  </ul>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">Population</span></li>
+  </ul>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <ul>
+    <ul>
+      <li><span style="font-weight: bold;">Minimum Population:</span>
+Value used to define the minimum population in each cluster.</li>
+    </ul>
+  </ul>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <ul>
+    <ul>
+      <li><span style="font-weight: bold;">Population Attribute</span>:
+Attribute from input data that represents the population information.</li>
+    </ul>
+  </ul>
+</ul>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">Skater By Groups:</span>&nbsp;<span
+ id="result_box" class="short_text" lang="en"><span class="hps">Uses</span>
+      <span class="hps">an attribute</span> <span class="hps">for</span>
+      <span class="hps">grouping</span> <span class="hps">the</span> <span
+ class="hps">clusters</span></span>.</li>
+  </ul>
+</ol>
+<ul style="font-family: Calibri Light; font-weight: bold;">
+  <li>Attributes</li>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">Layer Attributes:</span> List
+of all valid attributes that could be used to compute the skater.</li>
+  </ul>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">Selected Attributes:</span>
+List of selected attributes used to compute the skater.</li>
+  </ul>
+</ul>
+<span style="font-family: Calibri Light;">&nbsp;&nbsp;&nbsp; 3. Output
+Information:</span>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">Repository:</span> Defines
+where the output data will be saved.</li>
+  </ul>
+</ol>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <ul>
+      <li>Local File.</li>
+    </ul>
+  </ul>
+</ol>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <ul>
+      <li>Data Source.</li>
+    </ul>
+  </ul>
+</ol>
+<ul style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">Layer Name:</span> Defines the
+name to create the output layer.</li>
+  </ul>
+</ul>
+<span style="font-family: Calibri Light;"><br>
+Click <span style="font-weight: bold;">OK</span> and then the skater
+will be calculated.</span><br>
+</body>
+</html>

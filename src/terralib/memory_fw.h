@@ -30,7 +30,9 @@ namespace te
 {
   namespace mem
   {
-
+    class CachedRaster;
+    class ExpansibleBandBlocksManager;
+    class ExpansibleRaster;
   }
 }
 #endif // __TERRALIB_FW_INTERNAL_MEMORY_FW_H

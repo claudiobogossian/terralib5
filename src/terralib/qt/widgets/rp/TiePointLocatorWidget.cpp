@@ -33,6 +33,7 @@
 #include "../../../geometry/Point.h"
 #include "../../../raster/Grid.h"
 #include "../../../raster/Raster.h"
+#include "../../../rp/Functions.h"
 #include "../../../se/Fill.h"
 #include "../../../se/Mark.h"
 #include "../../../se/Stroke.h"
@@ -609,6 +610,14 @@ void te::qt::widgets::TiePointLocatorWidget::onAutoAcquireTiePointsToolButtonCli
           QMessageBox::warning(this, tr("Warning"), tr("None tie points was located."));
         }
       }
+      else
+      {
+        QMessageBox::warning(this, tr("Warning"), te::rp::Module::getLastLogStr().c_str());
+      }
+    }
+    else
+    {
+      QMessageBox::warning(this, tr("Warning"), te::rp::Module::getLastLogStr().c_str());
     }
   }
   catch(...)
@@ -1007,8 +1016,8 @@ void te::qt::widgets::TiePointLocatorWidget::drawTiePoints()
 
     te::qt::widgets::TiePointData tpd = it->second;
 
-    refCanvasInstance.setPointColor(te::color::RGBAColor(0,0,0, TE_TRANSPARENT)); //GAMBI
-    adjCanvasInstance.setPointColor(te::color::RGBAColor(0,0,0, TE_TRANSPARENT)); //GAMBI
+    refCanvasInstance.setPointColor(te::color::RGBAColor(0,0,0, TE_TRANSPARENT)); 
+    adjCanvasInstance.setPointColor(te::color::RGBAColor(0,0,0, TE_TRANSPARENT));
 
     //configure mark
     if(tpd.m_selected)
@@ -1063,7 +1072,7 @@ void te::qt::widgets::TiePointLocatorWidget::drawTiePoints()
   te::gm::Coord2D refCoord;
   if(getReferenceTiePointCoord(refCoord))
   {
-    refCanvasInstance.setPointColor(te::color::RGBAColor(0,0,0, TE_TRANSPARENT)); //GAMBI
+    refCanvasInstance.setPointColor(te::color::RGBAColor(0,0,0, TE_TRANSPARENT)); 
     refCanvasInstance.setPointPattern(m_rgbaMarkRef, PATTERN_SIZE, PATTERN_SIZE);
 
     te::gm::Coord2D refGeoCoord;

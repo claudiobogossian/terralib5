@@ -1,8 +1,8 @@
 #include "RPExamples.h"
 
 // TerraLib
-#include <terralib/rp/GeoMosaic.h>
-#include <terralib/raster/RasterFactory.h>
+#include <terralib/rp.h>
+#include <terralib/raster.h>
 
 // STL
 #include <vector>

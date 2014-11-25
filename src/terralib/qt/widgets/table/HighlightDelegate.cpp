@@ -50,7 +50,10 @@ bool ToHighlight(te::da::DataSet* dset, const std::vector<size_t>& cols, const s
   std::string pkey;
 
   for(size_t i=0; i<cols.size(); i++)
-    pkey += dset->getAsString(cols[i]) + ";";
+  {
+    if(dset->isNull(cols[i]) == false)
+      pkey += dset->getAsString(cols[i]) + ";";
+  }
 
   return (data.find(pkey) != data.end());
 }

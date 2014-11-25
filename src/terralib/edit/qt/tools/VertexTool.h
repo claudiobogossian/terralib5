@@ -60,7 +60,7 @@ namespace te
   namespace edit
   {
 // Forward declaration
-    class IdGeometry;
+    class Feature;
 
     /*!
       \class VertexTool
@@ -80,7 +80,7 @@ namespace te
         */
         enum StageType
         {
-          GEOMETRY_SELECTION,   /*!< Selection of geometry.  */
+          FEATURE_SELECTION,    /*!< Selection of feature.  */
           VERTEX_SEARCH,        /*!< Search of vertex.       */
           VERTEX_FOUND,         /*!< Vertex found.           */
           VERTEX_MOVING,        /*!< Vertex movement.        */
@@ -126,9 +126,9 @@ namespace te
 
         void reset();
 
-        void pickGeometry(const te::map::AbstractLayerPtr& layer, const QPointF& pos);
+        void pickFeature(const te::map::AbstractLayerPtr& layer, const QPointF& pos);
 
-        void pickGeometry(const te::map::AbstractLayerPtr& layer, const te::gm::Envelope& env);
+        void pickFeature(const te::map::AbstractLayerPtr& layer, const te::gm::Envelope& env);
 
         void draw(te::gm::Point* virtualVertex = 0);
 
@@ -140,7 +140,7 @@ namespace te
 
         void updateCursor();
 
-        void storeEditedGeometry();
+        void storeEditedFeature();
 
       private slots:
 
@@ -149,7 +149,7 @@ namespace te
       private:
 
           te::map::AbstractLayerPtr m_layer;
-          IdGeometry* m_geom;
+          Feature* m_feature;
           std::vector<te::gm::LineString*> m_lines;
           VertexIndex m_currentVertexIndex;
           te::sam::rtree::Index<VertexIndex, 8> m_rtree;

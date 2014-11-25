@@ -52,7 +52,7 @@ namespace te
   namespace edit
   {
 // Forward declaration
-    class IdGeometry;
+    class Feature;
 
     /*!
       \class Repository
@@ -83,11 +83,11 @@ namespace te
 
         const std::string& getSource() const;
 
-        const std::vector<IdGeometry*>& getGeometries() const;
+        const std::vector<Feature*>& getFeatures() const;
 
-        std::vector<IdGeometry*> getGeometries(const te::gm::Envelope& e, int srid) const;
+        std::vector<Feature*> getFeatures(const te::gm::Envelope& e, int srid) const;
 
-        IdGeometry* getGeometry(const te::gm::Envelope& e, int srid) const;
+        Feature* getFeature(const te::gm::Envelope& e, int srid) const;
 
         void clear();
 
@@ -103,9 +103,9 @@ namespace te
 
       private:
 
-        std::string m_source;                          //!< The source of the identified geometries.
-        int m_srid;                                    //!< The SRS of the identified geometries.
-        std::vector<IdGeometry*> m_geoms;              //!< The identified geometries.
+        std::string m_source;                          //!< The source of the features.
+        int m_srid;                                    //!< The SRS of the features.
+        std::vector<Feature*> m_features;              //!< The repository features.
         te::sam::rtree::Index<std::size_t, 8> m_rtree; //!< Internal index used to retrieve geometries spatially.
     };
 

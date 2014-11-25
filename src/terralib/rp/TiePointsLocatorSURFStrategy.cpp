@@ -184,7 +184,7 @@ namespace te
         }
         
         raster1XRescFact = achievedRescaleFactorX;
-        raster2YRescFact = achievedRescaleFactorY;
+        raster1YRescFact = achievedRescaleFactorY;
           
 //        printMatrix( *(rasterData[ 0 ]) );
 //        createTifFromMatrix( *(rasterData[ 0 ]), InterestPointsSetT(), "loadedRaster1");
@@ -221,7 +221,7 @@ namespace te
           raster1InterestPoints ),
           "Error locating raster 1 interest points" );
           
-//        createTifFromMatrix( *(rasterData[ 0 ]), candidateInterestPoints, "surfInterestPoints1");
+//        createTifFromMatrix( *(rasterData[ 0 ]), raster1InterestPoints, "surfInterestPoints1");
 
         if( m_inputParameters.m_enableProgress )
         {
@@ -338,7 +338,7 @@ namespace te
           raster2InterestPoints ),
           "Error locating raster interest points" );
           
-//        createTifFromMatrix( *(rasterData[ 0 ]), candidateInterestPoints, "surfInterestPoints2");
+//        createTifFromMatrix( *(rasterData[ 0 ]), raster2InterestPoints, "surfInterestPoints2");
 
         if( m_inputParameters.m_enableProgress )
         {
@@ -687,6 +687,9 @@ namespace te
       boost::mutex rastaDataAccessMutex;
       boost::mutex interestPointsAccessMutex;
       unsigned int nextRasterLinesBlockToProcess = 0;
+      std::vector< InterestPointsSetT > interestPointsSubSectors(
+        m_inputParameters.m_tiePointsSubSectorsSplitFactor *
+        m_inputParameters.m_tiePointsSubSectorsSplitFactor );      
       
       SurfLocatorThreadParams threadParams;
       threadParams.m_returnValuePtr = &returnValue;
@@ -694,11 +697,15 @@ namespace te
       threadParams.m_interestPointsAccessMutexPtr = &interestPointsAccessMutex;
       threadParams.m_nextRasterLinesBlockToProcessValuePtr = 
         &nextRasterLinesBlockToProcess;
-      threadParams.m_interestPointsPtr = &interestPoints;
       threadParams.m_integralRasterDataPtr = &integralRasterData;
       threadParams.m_maskRasterDataPtr = maskRasterDataPtr;
       threadParams.m_scalesNumber = m_inputParameters.m_surfScalesNumber;
       threadParams.m_octavesNumber = m_inputParameters.m_surfOctavesNumber;
+      threadParams.m_interestPointsSubSectorsPtr = &interestPointsSubSectors;
+      threadParams.m_maxInterestPointsBySubSector = m_inputParameters.m_maxTiePoints /
+        ( m_inputParameters.m_tiePointsSubSectorsSplitFactor *
+        m_inputParameters.m_tiePointsSubSectorsSplitFactor );
+      threadParams.m_tiePointsSubSectorsSplitFactor = m_inputParameters.m_tiePointsSubSectorsSplitFactor;      
       
       if( m_inputParameters.m_enableMultiThread )
       {
@@ -711,13 +718,6 @@ namespace te
         threadParams.m_maxRasterLinesBlockMaxSize = std::min(
           threadParams.m_maxRasterLinesBlockMaxSize, 
           integralRasterData.getLinesNumber() );          
-          
-        const unsigned int rasterLinesBlocksNumber = 
-          ( integralRasterData.getLinesNumber() / threadParams.m_maxRasterLinesBlockMaxSize ) +
-          ( ( integralRasterData.getLinesNumber() % threadParams.m_maxRasterLinesBlockMaxSize ) ? 1 : 0 );
-
-        threadParams.m_maxInterestPointsPerRasterLinesBlock =
-          m_inputParameters.m_maxTiePoints / rasterLinesBlocksNumber;
         
         boost::thread_group threads;
         
@@ -734,10 +734,21 @@ namespace te
       else
       {
         threadParams.m_maxRasterLinesBlockMaxSize = integralRasterData.getLinesNumber();
-        threadParams.m_maxInterestPointsPerRasterLinesBlock = m_inputParameters.m_maxTiePoints;
         
         locateSurfInterestPointsThreadEntry( &threadParams );
       }
+      
+      // transfering sector maximas to output
+      
+      const unsigned int interestPointsSubSectorsSize = interestPointsSubSectors.size();
+      
+      for( unsigned int interestPointsSubSectorsIdx = 0 ; interestPointsSubSectorsIdx <
+        interestPointsSubSectorsSize ; ++interestPointsSubSectorsIdx )
+      {
+        interestPoints.insert( 
+          interestPointsSubSectors[ interestPointsSubSectorsIdx ].begin(),
+          interestPointsSubSectors[ interestPointsSubSectorsIdx ].end() );
+      }      
      
       return returnValue;
     }
@@ -749,7 +760,7 @@ namespace te
       assert( paramsPtr );
       assert( paramsPtr->m_returnValuePtr );
       assert( paramsPtr->m_integralRasterDataPtr );
-      assert( paramsPtr->m_interestPointsPtr );
+      assert( paramsPtr->m_interestPointsSubSectorsPtr );
       assert( paramsPtr->m_rastaDataAccessMutexPtr );
       assert( paramsPtr->m_interestPointsAccessMutexPtr );
       assert( paramsPtr->m_maxRasterLinesBlockMaxSize > 2 );
@@ -759,6 +770,8 @@ namespace te
       
       // Globals
       
+      paramsPtr->m_rastaDataAccessMutexPtr->lock();
+      
       const unsigned int maxGausFilterWidth = getSurfFilterSize( 
         paramsPtr->m_octavesNumber - 1, paramsPtr->m_scalesNumber - 1 );
       const unsigned int maxGausFilterRadius = maxGausFilterWidth / 2;
@@ -766,11 +779,14 @@ namespace te
       const unsigned int nextResponseBufferLineIdx = maxGausFilterRadius + 1;
       const unsigned int buffersLines = maxGausFilterWidth;
       const unsigned int lastBuffersLineIdx = buffersLines - 1;
-      const unsigned int maxInterestPointsPerScale = 
-        paramsPtr->m_maxInterestPointsPerRasterLinesBlock /
-        ( ( paramsPtr->m_scalesNumber - 2 ) * paramsPtr->m_octavesNumber );
-
-      paramsPtr->m_rastaDataAccessMutexPtr->lock();
+      const unsigned int tiePointsSubSectorsSplitFactor = paramsPtr->m_tiePointsSubSectorsSplitFactor;
+      const unsigned int rowsBySubSector = paramsPtr->m_integralRasterDataPtr->getLinesNumber()
+        / tiePointsSubSectorsSplitFactor;
+      const unsigned int colsBySubSector = paramsPtr->m_integralRasterDataPtr->getColumnsNumber()
+        / tiePointsSubSectorsSplitFactor;      
+      const unsigned int maxInterestPointsBySubSector = paramsPtr->m_maxInterestPointsBySubSector;
+      const unsigned int maxInterestPointsByScaleSubSector = maxInterestPointsBySubSector
+        / ( paramsPtr->m_octavesNumber * ( paramsPtr->m_scalesNumber - 2 ) );
       const unsigned int rasterLines = paramsPtr->m_integralRasterDataPtr->getLinesNumber();
       const unsigned int buffersCols = paramsPtr->m_integralRasterDataPtr->getColumnsNumber();
       const unsigned int rasterBufferLineSizeBytes = sizeof( float ) * 
@@ -778,12 +794,6 @@ namespace te
       const unsigned int maskRasterBufferLineSizeBytes = sizeof( UCharsMatrix::ElementTypeT ) * 
         buffersCols;
       paramsPtr->m_rastaDataAccessMutexPtr->unlock();  
-      
-      const unsigned maxGausFilterCenterBufferColBound = buffersCols - 
-        maxGausFilterRadius;
-      
-      unsigned int scaleIdx = 0 ;
-      unsigned int octaveIdx = 0 ;
       
       // Allocating the internal raster data buffer
       // and the mask raster buffer
@@ -872,6 +882,8 @@ namespace te
         }
         
         octavesBufferDataHandlerLine = 0;
+        unsigned int scaleIdx = 0 ;
+        unsigned int octaveIdx = 0 ;        
         for( octaveIdx = 0 ; octaveIdx < paramsPtr->m_octavesNumber ; ++octaveIdx )
         {
           octavesBufferHandlers.push_back( std::vector< boost::shared_array< float* > >() );
@@ -934,6 +946,8 @@ namespace te
         }
         
         laplacianSignBufferDataHandlerLine = 0;
+        unsigned int scaleIdx = 0 ;
+        unsigned int octaveIdx = 0 ;          
         for( octaveIdx = 0 ; octaveIdx < paramsPtr->m_octavesNumber ; ++octaveIdx )
         {
           laplacianSignBufferHandlers.push_back( std::vector< boost::shared_array< unsigned char* > >() );
@@ -961,11 +975,27 @@ namespace te
         }
       }      
       
-      // Pick the next block to process
+      // Locating interest points on each scale/octave
       
+      const unsigned maxGausFilterCenterBufferColBound = buffersCols - 
+        maxGausFilterRadius;      
       const unsigned int rasterLinesBlocksNumber = 
         ( rasterLines / paramsPtr->m_maxRasterLinesBlockMaxSize ) +
         ( ( rasterLines % paramsPtr->m_maxRasterLinesBlockMaxSize ) ? 1 : 0 );
+        
+      unsigned int scaleIdx = 0 ;
+      unsigned int octaveIdx = 0 ;  
+      unsigned int subSectorIndex = 0;
+      unsigned int scaleGlobalIndex = 0;
+      
+      std::vector< std::vector< InterestPointsSetT > > interestPointsSubSectors;
+      {
+        std::vector< InterestPointsSetT > dummyIPointsContainer( 
+          paramsPtr->m_tiePointsSubSectorsSplitFactor *
+          paramsPtr->m_tiePointsSubSectorsSplitFactor );
+        interestPointsSubSectors.resize( paramsPtr->m_octavesNumber *
+          paramsPtr->m_scalesNumber, dummyIPointsContainer );
+      } 
         
       for( unsigned int rasterLinesBlockIdx = 0; rasterLinesBlockIdx <
         rasterLinesBlocksNumber ; ++rasterLinesBlockIdx )
@@ -1292,18 +1322,25 @@ namespace te
                           assert( auxInterestPoint.m_x < 
                             paramsPtr->m_integralRasterDataPtr->getColumnsNumber() );
                           assert( auxInterestPoint.m_y < 
-                            paramsPtr->m_integralRasterDataPtr->getLinesNumber() );                          
-                            
-                          assert( ( ( octaveIdx * paramsPtr->m_scalesNumber ) + 
-                            scaleIdx ) < blockMaximas.size() );
-                          InterestPointsSetT& currScalePointsSet = blockMaximas[
-                            ( octaveIdx * paramsPtr->m_scalesNumber ) + scaleIdx ];
-                            
-                          currScalePointsSet.insert( auxInterestPoint);
+                            paramsPtr->m_integralRasterDataPtr->getLinesNumber() );   
                           
-                          if( currScalePointsSet.size() > maxInterestPointsPerScale )
+                          scaleGlobalIndex = ( octaveIdx * 
+                            paramsPtr->m_scalesNumber ) + scaleIdx;
+                          subSectorIndex = ( ( auxInterestPoint.m_y / 
+                            rowsBySubSector ) * tiePointsSubSectorsSplitFactor ) + 
+                            ( auxInterestPoint.m_x / colsBySubSector );
+                          assert( scaleGlobalIndex < interestPointsSubSectors.size() );                          
+                          assert( subSectorIndex < interestPointsSubSectors[ scaleGlobalIndex ].size() );
+                            
+                          interestPointsSubSectors[ scaleGlobalIndex ][ 
+                            subSectorIndex ].insert( auxInterestPoint);
+                            
+                          if( interestPointsSubSectors[ scaleGlobalIndex ][ 
+                            subSectorIndex ].size() > maxInterestPointsByScaleSubSector )
                           {
-                            currScalePointsSet.erase( currScalePointsSet.begin() );
+                            interestPointsSubSectors[ scaleGlobalIndex ][ 
+                            subSectorIndex ].erase( interestPointsSubSectors[ 
+                            scaleGlobalIndex ][ subSectorIndex ].begin() );
                           }                        
                         }
                       }
@@ -1323,12 +1360,27 @@ namespace te
         
         paramsPtr->m_interestPointsAccessMutexPtr->lock();
         
-        for( unsigned int blockMaximasIdx = 0 ; blockMaximasIdx <
-          blockMaximas.size() ; ++blockMaximasIdx )
+        for( scaleGlobalIndex = 0 ; scaleGlobalIndex < interestPointsSubSectors.size() ;
+          ++scaleGlobalIndex )
         {
-          paramsPtr->m_interestPointsPtr->insert( 
-            blockMaximas[ blockMaximasIdx ].begin(),
-            blockMaximas[ blockMaximasIdx ].end() );
+          for( subSectorIndex = 0 ; subSectorIndex < interestPointsSubSectors[ 
+            scaleGlobalIndex ].size() ; ++subSectorIndex )
+          {
+            paramsPtr->m_interestPointsSubSectorsPtr->operator[]( 
+              subSectorIndex ).insert( interestPointsSubSectors[ 
+              scaleGlobalIndex ][ subSectorIndex ].begin(),
+              interestPointsSubSectors[ scaleGlobalIndex ][ subSectorIndex ].end() );
+            
+            while( paramsPtr->m_interestPointsSubSectorsPtr->operator[]( 
+              subSectorIndex ).size() > 
+              maxInterestPointsBySubSector )
+            {
+              paramsPtr->m_interestPointsSubSectorsPtr->operator[]( 
+                subSectorIndex ).erase( 
+                paramsPtr->m_interestPointsSubSectorsPtr->operator[]( 
+                subSectorIndex ).begin() );
+            }
+          }
         }
         
         paramsPtr->m_interestPointsAccessMutexPtr->unlock();         
@@ -1399,12 +1451,12 @@ namespace te
         }
       }      
       
-      TERP_TRUE_OR_RETURN_FALSE( features.reset( validInterestPoints.size(), 65 ),
+      TERP_TRUE_OR_RETURN_FALSE( features.reset( validInterestPoints.size(), 128 ),
         "Cannot allocate features matrix" );       
         
       // globals
       
-      float auxFeaturesBuffer[ 65 ];
+      float auxFeaturesBuffer[ 128 ];
       
       // iterating over each input innterest point
       
@@ -1439,7 +1491,7 @@ namespace te
 
         unsigned int currentFeaturePtrStartIdx = 0;
         
-        for( currentFeaturePtrStartIdx = 0; currentFeaturePtrStartIdx < 65 ; 
+        for( currentFeaturePtrStartIdx = 0; currentFeaturePtrStartIdx < 128 ; 
           ++currentFeaturePtrStartIdx )
           auxFeaturesBuffer[ currentFeaturePtrStartIdx ] = 0.0;
           
@@ -1592,7 +1644,7 @@ namespace te
               
             // Generating the related portion inside the output features vector
             
-            assert( currentFeaturePtrStartIdx < 61 );
+            assert( currentFeaturePtrStartIdx < 121 );
             
             auxFeaturesBuffer[ currentFeaturePtrStartIdx ] += 
               featureElementRotatedHaarXIntensity;
@@ -1601,7 +1653,27 @@ namespace te
             auxFeaturesBuffer[ currentFeaturePtrStartIdx + 2 ] += 
               std::abs( featureElementRotatedHaarXIntensity );
             auxFeaturesBuffer[ currentFeaturePtrStartIdx + 3 ] += 
-              std::abs( featureElementRotatedHaarYIntensity );                
+              std::abs( featureElementRotatedHaarYIntensity );
+            if( featureElementRotatedHaarXIntensity < 0.0 )
+            {
+              auxFeaturesBuffer[ currentFeaturePtrStartIdx + 4 ] += 
+                featureElementRotatedHaarXIntensity;
+            }
+            else
+            {
+              auxFeaturesBuffer[ currentFeaturePtrStartIdx + 5 ] += 
+                featureElementRotatedHaarXIntensity;
+            }
+            if( featureElementRotatedHaarYIntensity < 0.0 )
+            {
+              auxFeaturesBuffer[ currentFeaturePtrStartIdx + 6 ] += 
+                featureElementRotatedHaarYIntensity;
+            }
+            else
+            {
+              auxFeaturesBuffer[ currentFeaturePtrStartIdx + 7 ] += 
+                featureElementRotatedHaarYIntensity;
+            }            
           }
         }
         
@@ -1611,7 +1683,7 @@ namespace te
         
         float featureElementsNormalizeFactor = 0.0;
         
-        for( currentFeaturePtrStartIdx = 0 ; currentFeaturePtrStartIdx < 64 ; 
+        for( currentFeaturePtrStartIdx = 0 ; currentFeaturePtrStartIdx < 128 ; 
           ++currentFeaturePtrStartIdx )
         {
           featureElementsNormalizeFactor += ( auxFeaturesBuffer[ currentFeaturePtrStartIdx ]
@@ -1625,7 +1697,7 @@ namespace te
           featureElementsNormalizeFactor = 1.0f / featureElementsNormalizeFactor;
         }
         
-        for( currentFeaturePtrStartIdx = 0 ; currentFeaturePtrStartIdx < 64 ; 
+        for( currentFeaturePtrStartIdx = 0 ; currentFeaturePtrStartIdx < 128 ; 
           ++currentFeaturePtrStartIdx )
         {
           currentFeaturePtr[ currentFeaturePtrStartIdx ] = (
@@ -1636,12 +1708,6 @@ namespace te
           TERP_DEBUG_TRUE_OR_THROW( ( currentFeaturePtr[ currentFeaturePtrStartIdx ] >= -1.0 ),
             currentFeaturePtr[ currentFeaturePtrStartIdx ] );
         }
-        
-        // Adding an attribute based on the sign of the Laplacian to 
-        // distinguishes bright blobs 
-        // on dark backgrounds from the reverse situation.
-        
-        currentFeaturePtr[ 64 ] = ( iPointsIt->m_feature3 * 64.0f );
         
         ++interestPointIdx;
         ++iPointsIt;
@@ -1659,9 +1725,12 @@ namespace te
       const double raster1ToRaster2TransfDMapError,
       MatchedInterestPointsSetT& matchedPoints ) const
     {
+      assert( featuresSet1.getColumnsNumber() == featuresSet2.getColumnsNumber() );
+      
       matchedPoints.clear();
       
-      const double maxEuclideanDist = m_inputParameters.m_surfMaxNormEuclideanDist * 2.0; /* since surf feature vectors are unitary verctors */
+      const double maxEuclideanDist = m_inputParameters.m_surfMaxNormEuclideanDist 
+        * 2.0; /* since surf feature vectors are unitary verctors */
       
       const unsigned int interestPointsSet1Size = interestPointsSet1.size();
       if( interestPointsSet1Size == 0 ) return true;
@@ -1699,7 +1768,7 @@ namespace te
       TERP_TRUE_OR_RETURN_FALSE( distMatrix.reset( interestPointsSet1Size,
        interestPointsSet2Size, FloatsMatrix::RAMMemPol ),
         "Error crearting the correlation matrix" );
-        
+      
       unsigned int col = 0;
       unsigned int line = 0;
       float* linePtr = 0;
@@ -1710,9 +1779,11 @@ namespace te
         
         for( col = 0 ; col < interestPointsSet2Size ; ++col )
         {
-          linePtr[ col ] = FLT_MAX;
+          linePtr[ col ] = std::numeric_limits< float >::max();
         }
-      }
+      }      
+        
+      // Getting distances
       
       boost::mutex syncMutex;
       unsigned int nextFeatureIdx1ToProcess = 0;
@@ -1921,24 +1992,34 @@ namespace te
           
           feat1Ptr = paramsPtr->m_featuresSet1Ptr->operator[]( feat1Idx );
           
-          for( unsigned int selectedFSIIdx = 0 ; selectedFSIIdx < 
-            selectedFeaturesSet2IndexesSize ; ++selectedFSIIdx )
+          for( unsigned int selectedFeaturesSet2IndexesIdx = 0 ; 
+            selectedFeaturesSet2IndexesIdx < selectedFeaturesSet2IndexesSize ; 
+            ++selectedFeaturesSet2IndexesIdx )
           {
-            feat2Idx = selectedFeaturesSet2Indexes[ selectedFSIIdx ];
+            feat2Idx = selectedFeaturesSet2Indexes[ selectedFeaturesSet2IndexesIdx ];
             
-            feat2Ptr = paramsPtr->m_featuresSet2Ptr->operator[]( feat2Idx );
-            
-            euclideanDist = 0.0;
-
-            for( featCol = 0 ; featCol < featureElementsNmb ; ++featCol )
+            if( 
+                ( paramsPtr->m_interestPointsSet1Ptr[ feat1Idx ].m_feature2 ==
+                  paramsPtr->m_interestPointsSet2Ptr[ feat2Idx ].m_feature2 )
+                &&
+                ( paramsPtr->m_interestPointsSet1Ptr[ feat1Idx ].m_feature3 ==
+                  paramsPtr->m_interestPointsSet2Ptr[ feat2Idx ].m_feature3 ) 
+              )
             {
-              diff = feat1Ptr[ featCol ] - feat2Ptr[ featCol ];
-              euclideanDist += ( diff * diff );              
+              feat2Ptr = paramsPtr->m_featuresSet2Ptr->operator[]( feat2Idx );
+              
+              euclideanDist = 0.0;
+
+              for( featCol = 0 ; featCol < featureElementsNmb ; ++featCol )
+              {
+                diff = feat1Ptr[ featCol ] - feat2Ptr[ featCol ];
+                euclideanDist += ( diff * diff );              
+              }
+              
+              euclideanDist = std::sqrt( euclideanDist );
+                  
+              corrMatrixLinePtr[ feat2Idx ] = euclideanDist;            
             }
-            
-            euclideanDist = std::sqrt( euclideanDist );
-                
-            corrMatrixLinePtr[ feat2Idx ] = euclideanDist;            
           }
         }
         else

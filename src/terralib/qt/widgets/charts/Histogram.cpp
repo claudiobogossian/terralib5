@@ -48,6 +48,17 @@ void te::qt::widgets::Histogram::setType(int new_type)
  m_histogramType = new_type;
 }
 
+bool te::qt::widgets::Histogram::isSummarized()
+{
+  return m_isSummarized;
+}
+
+void te::qt::widgets::Histogram::setSummarized(bool summarized)
+{
+ m_isSummarized = summarized;
+}
+
+
 std::map<double, unsigned int> te::qt::widgets::Histogram::getValues()
 { 
   std::map<double, unsigned int> res;
@@ -212,7 +223,10 @@ const te::dt::AbstractData* te::qt::widgets::Histogram::find(const te::da::Objec
 {
   te::qt::widgets::IntervalToObjectIdSet::nth_index<1>::type::iterator it= m_valuesOids.get<1>().find(oid->getValueAsString());
   te::dt::AbstractData* interval = it->interval;
-  return interval;
+  if(it != m_valuesOids.get<1>().end())
+    return interval;
+  else
+    return NULL;
 }
 
 void te::qt::widgets::Histogram::adjustOids(te::dt::AbstractData* interval, std::vector<te::da::ObjectId*> valuesOIds)

@@ -1,0 +1,170 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html; charset=ISO-8859-1"
+ http-equiv="content-type">
+  <title>Bayes Local</title>
+</head>
+<body>
+<div style="text-align: center;">
+<h3 style="text-align: center;"><span
+ style="font-family: Calibri Light;">Local Empirical Bayes</span></h3>
+</div>
+<font face="Calibri Light"><br>
+</font><span style="font-family: Calibri Light;" id="result_box"
+ class="" lang="en"><span class="hps">Empirical</span> <span
+ class="hps">Bayes</span> <span class="hps">estimators</span> <span
+ class="hps">consider the </span><span class="hps">"real"</span> <span
+ class="hps">rate</span> <span class="hps">associated with each</span>
+<span class="hps">area is not</span> <span class="hps">known</span><span>,
+and that </span><span class="hps">observed</span> <span class="hps">rate</span>
+<span class="hps">is</span> <span class="hps">available. </span></span><span
+ style="font-family: Calibri Light;" id="result_box" class="" lang="en"><span
+ class="hps">The idea</span> <span class="hps">of</span> <span
+ class="hps">Bayesian</span> <span class="hps">estimators</span> <span
+ class="hps">is</span> <span class="hps">assumed that </span><span
+ class="hps">the actual rate</span> <span class="hps">is</span> <span
+ class="hps">a random variable</span> <span class="hps">having</span> <span
+ class="hps">a mean and</span> <span class="hps">a</span> <span
+ class="hps">known</span> <span class="hps">variance.<br>
+<br>
+</span></span><span style="font-family: Calibri Light;" id="result_box"
+ class="" lang="en"><span class="hps">The</span> <span class="hps">best</span>
+<span class="hps">estimator</span> <span class="hps">in this rate</span>
+<span class="hps">is a</span> <span class="hps">linear</span> <span
+ class="hps">combination of</span> <span class="hps">the observed rate</span>
+<span class="hps atn">(</span><span class="">events</span> <span
+ class="hps">/</span> <span class="hps">population)</span> <span
+ class="hps">in area <span style="font-style: italic;">A</span></span>
+<span class="hps">and</span>&nbsp;<span class="hps"></span><span
+ class="hps">an average value</span> <span style="font-style: italic;">B</span>
+<span class="hps">weighted</span> <span class="hps">by a</span> <span
+ class="hps">factor</span> <span class="hps"><span
+ style="font-style: italic;">C</span>.<br>
+<br>
+</span></span><span style="font-family: Calibri Light;" id="result_box"
+ class="" lang="en"><span class="hps"></span><span class="hps"></span></span><span
+ style="font-family: Calibri Light;" id="result_box" class="" lang="en"><span
+ class="hps">The average</span> <span class="hps">weight</span> <span
+ class="hps">may be</span> <span class="hps">used in</span> <span
+ class="hps">the</span><span class="hps"> average</span> <span
+ class="hps">rate of the surrounding areas</span><span>,</span>&nbsp;<span
+ class="hps"></span></span><span style="font-family: Calibri Light;"
+ id="result_box" class="" lang="en">in this case, the&nbsp; <span
+ class="hps">method is</span> <span class="hps">called</span><span
+ style="font-weight: bold;"> </span><span style="font-weight: bold;"
+ class="hps">Local</span><span style="font-weight: bold;"> </span><span
+ class="hps"><span style="font-weight: bold;">Empirical Baye</span><span
+ style="font-weight: bold;">s</span>.</span></span><font
+ face="Calibri Light"><span style="font-family: Calibri Light;"></span><br
+ style="font-family: Calibri Light;">
+</font><span style="font-family: Calibri Light;"><span
+ style="font-weight: bold;"><br>
+</span></span><font style="font-family: Calibri Light;"
+ face="Calibri Light">It is
+accessible through:</font><font style="font-family: Calibri Light;"
+ face="Calibri Light"><b><br>
+</b></font>
+<font face="Calibri Light"><br>
+</font>
+<font style="font-family: Calibri Light;" face="Calibri Light"><b>&nbsp;&nbsp;
+Plugins &gt; Spatial Analysis</b></font><font
+ style="font-family: Calibri Light;" face="Calibri Light"><b> &gt;&nbsp;</b></font><font
+ face="Calibri Light"><span style="font-family: Calibri Light;"><span
+ style="font-weight: bold;">Local Empirical Bayes</span></span></font><font
+ style="font-family: Calibri Light;" face="Calibri Light"><b>...</b></font><font
+ style="font-family: Calibri Light;" face="Calibri Light"><br>
+<br>
+<span style="font-family: Calibri Light;"></span></font><font
+ style="font-family: Calibri Light;" face="Calibri Light">This
+interface consists of the
+following steps:<br>
+<br>
+</font><span style="font-family: Calibri Light;">&nbsp;&nbsp;&nbsp; 1.
+Input Information:</span>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">Layer Name</span>: Select the
+desired Layer.</li>
+  </ul>
+</ol>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">Load GPM</span>: Loads a gpm
+from file, if not, creates a new one.</li>
+  </ul>
+</ol>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <ul>
+      <li><span style="font-weight: bold;">Attribute Link</span>:
+Defines the attribute that identifies the objects of this layer.</li>
+    </ul>
+  </ul>
+</ol>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <ul>
+      <li><span style="font-weight: bold;">GPM</span>: Opens a dialog
+to select a file with a desired proximity matrix.</li>
+    </ul>
+  </ul>
+</ol>
+<span style="font-family: Calibri Light;">&nbsp;&nbsp;&nbsp; 2.
+Operation Parameters:</span>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">Event Attr Name:</span>
+Attribute name that identifies the desired event information.</li>
+  </ul>
+</ol>
+<ul style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">Population Attr Name:&nbsp;</span>Attribute
+name that identifies the population information.</li>
+  </ul>
+</ul>
+<ul style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">Rate Correction</span>: This
+is the multiplicative rate correction value.</li>
+  </ul>
+</ul>
+<span style="font-family: Calibri Light;">&nbsp;&nbsp;&nbsp; 3. Output
+Information:</span>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">Repository:</span> Defines
+where the output data will be saved.</li>
+  </ul>
+</ol>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <ul>
+      <li>Local File.</li>
+    </ul>
+  </ul>
+</ol>
+<ol style="font-family: Calibri Light;">
+  <ul>
+    <ul>
+      <li>Data Source.</li>
+    </ul>
+  </ul>
+</ol>
+<ul style="font-family: Calibri Light;">
+  <ul>
+    <li><span style="font-weight: bold;">Layer Name:</span> Defines the
+name to create the output layer.</li>
+  </ul>
+</ul>
+<span style="font-family: Calibri Light;"><br>
+Click <span style="font-weight: bold;">OK</span> and then the local
+bayes rate will be calculated.<br>
+<br>
+</span><span style="font-family: Calibri Light;">Note: To calculate
+Bayesian Rates, the denominator (population at risk) does not have
+values equal or smaller than zero.</span><br>
+<font style="font-family: Calibri Light;" face="Calibri Light"></font>
+</body>
+</html>

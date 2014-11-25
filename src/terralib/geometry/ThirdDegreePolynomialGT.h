@@ -32,6 +32,7 @@
 
 // Boost
 #include <boost/concept_check.hpp>
+#include <boost/numeric/ublas/matrix.hpp>
 
 namespace te
 {
@@ -76,6 +77,22 @@ namespace te
         GeometricTransformation* clone() const;
 
       protected:
+        
+        // Variables used by computeParameters
+        mutable unsigned int m_computeParameters_tiepointsSize;
+        mutable unsigned int m_computeParameters_tpIdx;
+        mutable boost::numeric::ublas::matrix< double > m_computeParameters_W;
+        mutable boost::numeric::ublas::matrix< double > m_computeParameters_WI;
+        mutable boost::numeric::ublas::matrix< double > m_computeParameters_X;
+        mutable boost::numeric::ublas::matrix< double > m_computeParameters_XI;
+        mutable boost::numeric::ublas::matrix< double > m_computeParameters_Y;
+        mutable boost::numeric::ublas::matrix< double > m_computeParameters_YI;   
+        mutable boost::numeric::ublas::matrix< double > m_computeParameters_PinvW;
+        mutable boost::numeric::ublas::matrix< double > m_computeParameters_PinvWI;
+        mutable boost::numeric::ublas::matrix< double > m_computeParameters_A;
+        mutable boost::numeric::ublas::matrix< double > m_computeParameters_AI;
+        mutable boost::numeric::ublas::matrix< double > m_computeParameters_B;
+        mutable boost::numeric::ublas::matrix< double > m_computeParameters_BI;  
 
         bool computeParameters( GTParameters& params ) const;
     };

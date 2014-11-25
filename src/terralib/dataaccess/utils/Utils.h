@@ -32,6 +32,7 @@
 #include "../query/Expression.h"
 #include "../query/Fields.h"
 #include "../query/Select.h"
+#include "../../maptools/AbstractLayer.h"
 
 // Boost
 #include <boost/ptr_container/ptr_vector.hpp>
@@ -149,6 +150,19 @@ namespace te
       \param pnames The vector that will be filled with the property names.
     */
     TEDATAACCESSEXPORT void GetOIDPropertyPos(const DataSetType* type, std::vector<std::size_t>& ppos);
+
+    /*
+      \function getBasePkey
+      \brief Function used to acquire the string that represents the objectId of the base dataset.
+
+      \param oid The objectId as returned from the dataset;
+      \param dsProps A pair that indicates the name of the base dataset and how many key properties it's got
+
+      \note Will return the whole objectId as a string unless the dataset of interest is based on a linked layer,
+          otherwise it returns a string that represents the objectId of the base Dataset.
+      \note It will not take ownership of the given objectId pointer
+    */
+    TEDATAACCESSEXPORT std::string getBasePkey(te::da::ObjectId* oid, std::pair<std::string, int>& dsProps);
 
     /*
       \brief It generates the set of object ids for every element of the given dataset.
@@ -317,6 +331,44 @@ namespace te
       \return If the name is valid.
     */
     TEDATAACCESSEXPORT bool IsValidName(const std::string& name, std::string& invalidChar);
+
+    /*!
+      \brief It checks if the layer has linked table.
+
+      \param layer        The layer.
+
+      \return True if has linked table.
+    */
+    TEDATAACCESSEXPORT bool HasLinkedTable(te::map::AbstractLayer* layer);
+
+    /*!
+      \brief It gets the summarized value.
+
+      \param values The input values.
+      \param summary The summary mode. It can be: "MIN", "MAX", "SUM", "AVERAGE", "MEDIAN", "STDDEV" or "VARIANCE"
+
+      \return The summarized value.
+    */
+    TEDATAACCESSEXPORT double GetSummarizedValue(std::vector<double>& values, const std::string& summary);
+
+    /*!
+      \brief It gets the summarized value.
+
+      \param values The input values.
+      \param summary The summary mode. It can be: "MIN" or "MAX"
+
+      \return The summarized value.
+    */
+    TEDATAACCESSEXPORT std::string GetSummarizedValue(const std::vector<std::string>& values, const std::string& sumary);
+
+    /*!
+      \brief It gets the round value.
+
+      \param value The input value.
+
+      \return The rounded value.
+    */
+    TEDATAACCESSEXPORT double Round(const double& value, const size_t& precision);
 
   } // end namespace da
 }   // end namespace te

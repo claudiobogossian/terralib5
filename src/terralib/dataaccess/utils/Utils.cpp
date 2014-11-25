@@ -56,13 +56,16 @@
 #include "../query/Where.h"
 #include "../Enums.h"
 #include "../Exception.h"
+#include "../../maptools/QueryLayer.h"
 #include "Utils.h"
 
 // STL
 #include <cassert>
+#include <algorithm>
 
 //BOOST
 #include <boost/algorithm/string.hpp>
+#include <boost/math/special_functions/round.hpp>
 
 void te::da::LoadFull(te::da::DataSetType* dataset, const std::string& datasourceId)
 {
@@ -377,6 +380,18 @@ void te::da::GetOIDDatasetProps(const DataSetType* type, std::pair<std::string, 
       break;
     }
   }
+}
+
+std::string te::da::getBasePkey(te::da::ObjectId* oid, std::pair<std::string, int>& dsProps)
+{
+  std::string res;
+  boost::ptr_vector<te::dt::AbstractData> curValues;
+  curValues = oid->getValue();
+  for(int i = 0; i < dsProps.second; ++i)
+  {
+    res = res + curValues[i].toString();
+  }
+  return res;
 }
 
 void te::da::GetOIDPropertyPos(const te::da::DataSetType* type, std::vector<std::size_t>& ppos)
@@ -1150,4 +1165,165 @@ bool te::da::IsValidName(const std::string& name, std::string& invalidChar)
   }
 
   return true;
+}
+
+
+bool te::da::HasLinkedTable(te::map::AbstractLayer* layer)
+{
+  if(layer->getType() == "QUERYLAYER")
+  {
+    std::auto_ptr<te::da::DataSetType> schema = layer->getSchema();
+    std::vector<te::dt::Property*> props = schema->getPrimaryKey()->getProperties();
+    if(props.size() > 1)
+    {
+      size_t pksize = 0;
+      while(++pksize < props.size())
+      {
+        if(props[pksize-1]->getDatasetName() != props[pksize]->getDatasetName())
+          return true;
+      }
+    }
+  }
+  return false;
+}
+
+double te::da::GetSummarizedValue(std::vector<double>& values, const std::string& sumary)
+{
+  double size = values.size();
+  if(size == 0)
+    return 0;
+
+  double d, v;
+  std::vector<double>::const_iterator it;
+
+  if(sumary == "MIN")
+  {
+    it = values.begin();
+    v = *it;
+
+    while(it != values.end())
+    {
+      d = *it++;
+      v = std::min(v, d);    
+    }
+  }
+  else if(sumary == "MAX")
+  {
+    it = values.begin();
+    v = *it;
+
+    while(it != values.end())
+    {
+      d = *it++;
+      v = std::max(v, d);    
+    }
+  }
+  else if(sumary == "SUM")
+  {
+    v = 0;
+    for(it = values.begin(); it != values.end(); ++it)
+      v += *it;
+  }
+  else if(sumary == "AVERAGE")
+  {
+    v = 0;
+    for(it = values.begin(); it != values.end(); ++it)
+      v += *it;
+    v /= size;
+  }
+  else if(sumary == "STDDEV")
+  {
+    double m = 0;
+    v = 0;
+    if(size > 1)
+    {
+      for(it = values.begin(); it != values.end(); ++it)
+      {
+        d = *it;
+        m += d;
+        v += (d * d);
+      }
+      m /= size;
+      v = (v - m) / (size - 1);
+      v = sqrt(v);
+    }
+  }
+  else if(sumary == "VARIANCE")
+  {
+    double m = 0;
+    v = 0;
+    if(size > 1)
+    {
+      for(it = values.begin(); it != values.end(); ++it)
+      {
+        d = *it;
+        m += d;
+        v += (d * d);
+      }
+      m /= size;
+      v = (v - m) / (size - 1);
+    }
+  }
+  else if(sumary == "MEDIAN")
+  {
+    if(size == 1)
+      v = *it;
+    else
+    {
+      std::stable_sort(values.begin(), values.end());
+      size_t meio = (size_t)size / 2;
+      v = values[meio];
+
+      if((size_t)size%2 == 0)
+        v += values[meio+1] / 2.;
+    }
+  }
+  else if(sumary == "MODE")  // nao dá porque pode gerar nenhum ou vários valores
+  {
+  }
+
+  return v;
+}
+
+std::string te::da::GetSummarizedValue(const std::vector<std::string>& values, const std::string& sumary)
+{
+  double size = values.size();
+  if(size == 0)
+    return 0;
+
+  std::string v, d;
+  std::vector<std::string>::const_iterator it;
+
+  if(sumary == "MIN")
+  {
+    it = values.begin();
+    v = *it;
+
+    while(it != values.end())
+    {
+      d = *it++;
+      v = std::min(v, d);    
+    }
+  }
+  else if(sumary == "MAX")
+  {
+    it = values.begin();
+    v = *it;
+
+    while(it != values.end())
+    {
+      d = *it++;
+      v = std::max(v, d);    
+    }
+  }
+
+  return v;
+}
+
+double te::da::Round(const double& value, const size_t& precision)
+{
+  double v = pow(10., (int)precision);
+  double ret = boost::math::round(value * v);
+  ret /= v;
+  return ret;
 }

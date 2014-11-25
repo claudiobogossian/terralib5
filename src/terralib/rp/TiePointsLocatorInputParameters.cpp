@@ -46,7 +46,7 @@ namespace te
 
     void TiePointsLocatorInputParameters::reset() throw( te::rp::Exception )
     {
-      m_interesPointsLocationStrategy = TiePointsLocatorInputParameters::SurfStrategyT;
+      m_interesPointsLocationStrategy = TiePointsLocatorInputParameters::MoravecStrategyT;
       m_inRaster1Ptr = 0;
       m_inMaskRaster1Ptr = 0;
       m_inRaster1Bands.clear();
@@ -68,16 +68,16 @@ namespace te
       m_pixelSizeYRelation = 1;
       m_geomTransfName = "Affine";
       m_geomTransfMaxError = 2;
-      m_moravecCorrelationWindowWidth = 15;
-      m_moravecWindowWidth = 15;
+      m_moravecCorrelationWindowWidth = 21;
+      m_moravecWindowWidth = 21;
       m_enableGeometryFilter = true;
-      m_geometryFilterAssurance = 0.1;
+      m_geometryFilterAssurance = 0.75;
       m_moravecNoiseFilterIterations = 1;
       m_surfScalesNumber = 3;
       m_surfOctavesNumber = 2;
       m_subSampleOptimizationRescaleFactor = 1.0;
       m_subSampleOptimizationMinTPAreaCoverage = 25;
-      m_subSampleOptimizationMinTPNumberFactor = 1.5;
+      m_subSampleOptimizationMinTPNumberFactor = 2;
       m_surfMaxNormEuclideanDist = 0.75;
       m_moravecMinAbsCorrelation = 0.25;
       m_interpMethod = te::rst::Interpolator::NearestNeighbor;

@@ -499,4 +499,60 @@ std::vector<te::gm::Point*> te::rst::GetRandomPointsInRaster(const te::rst::Rast
   }
 
   return randomPoints;
-}   
+}
+
+std::string te::rst::ConvertColorInterpTypeToString(const te::rst::ColorInterp& ci)
+{
+  if(ci == te::rst::UndefCInt)
+    return TE_TR("Undefined");
+  else if(ci == te::rst::GrayIdxCInt)
+    return TE_TR("Gray");
+  else if(ci == te::rst::PaletteIdxCInt)
+    return TE_TR("Palette");
+  else if(ci == te::rst::RedCInt)
+    return TE_TR("Red");
+  else if(ci == te::rst::GreenCInt)
+    return TE_TR("Green");
+  else if(ci == te::rst::BlueCInt)
+    return TE_TR("Blue");
+  else if(ci == te::rst::AlphaCInt)
+    return TE_TR("Alpha");
+  else if(ci == te::rst::HueCInt)
+    return TE_TR("Hue");
+  else if(ci == te::rst::SatCInt)
+    return TE_TR("Saturation");
+  else if(ci == te::rst::LigCInt)
+    return TE_TR("Lightness");
+  else if(ci == te::rst::CyanCInt)
+    return TE_TR("Cyan");
+  else if(ci == te::rst::MagentaCInt)
+    return TE_TR("Magenta");
+  else if(ci == te::rst::YellowCInt)
+    return TE_TR("Yellow");
+  else if(ci == te::rst::KeyCInt)
+    return TE_TR("Key");
+  else if(ci == te::rst::YCInt)
+    return TE_TR("Y");
+  else if(ci == te::rst::CbCInt)
+    return TE_TR("Cb");
+  else if(ci == te::rst::CrCInt)
+    return TE_TR("Cr");
+
+  return "";
+}
+
+std::string te::rst::ConvertPalleteInterpTypeToString(const te::rst::PaletteInterpretation& pi)
+{
+  if(pi == te::rst::UndefPalInt)
+    return TE_TR("Undefined");
+  else if(pi == te::rst::GrayPalInt)
+    return TE_TR("Gray");
+  else if(pi == te::rst::RGBPalInt)
+    return TE_TR("RGB");
+  else if(pi == te::rst::CMYKPalInt)
+    return TE_TR("CMYK");
+  else if(pi == te::rst::HSLPalInt)
+    return TE_TR("HSL");
+
+  return "";
+}

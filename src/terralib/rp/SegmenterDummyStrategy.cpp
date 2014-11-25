@@ -61,16 +61,16 @@ namespace te
       const te::rst::Raster& inputRaster,
       const std::vector< unsigned int >& inputRasterBands,
       const std::vector< double >& inputRasterNoDataValues,
-      const std::vector< double >& inputRasterGains,
-      const std::vector< double >& inputRasterOffsets,
+      const std::vector< double >& inputRasterBandMinValues,
+      const std::vector< double >& inputRasterBandMaxValues,
       te::rst::Raster& outputRaster,
       const unsigned int outputRasterBand,
       const bool enableProgressInterface )
       throw( te::rp::Exception )
     {
       assert( inputRasterBands.size() == inputRasterNoDataValues.size() );
-      assert( inputRasterNoDataValues.size() == inputRasterGains.size() );
-      assert( inputRasterGains.size() == inputRasterOffsets.size() );      
+      assert( inputRasterNoDataValues.size() == inputRasterBandMinValues.size() );
+      assert( inputRasterBandMinValues.size() == inputRasterBandMaxValues.size() );      
       assert( block2ProcessInfo.m_topCutOffProfile.size() == block2ProcessInfo.m_width );
       assert( block2ProcessInfo.m_bottomCutOffProfile.size() == block2ProcessInfo.m_width );
       assert( block2ProcessInfo.m_leftCutOffProfile.size() == block2ProcessInfo.m_height );

@@ -41,7 +41,8 @@ te::map::Chart::Chart(ChartType type, const std::vector<std::string>& properties
     m_barWidth(16),
     m_isVisible(true),
     m_maxValue(0.0),
-    m_avoidConflicts(true)
+    m_avoidConflicts(true),
+    m_summary("AVERAGE")
 {
   assert(!properties.empty());
 
@@ -63,7 +64,8 @@ te::map::Chart::Chart(ChartType type, const std::vector<std::string>& properties
     m_barWidth(16),
     m_isVisible(true),
     m_maxValue(0.0),
-    m_avoidConflicts(true)
+    m_avoidConflicts(true),
+    m_summary("AVERAGE")
 {
   assert(!properties.empty());
   assert(properties.size() == colors.size());
@@ -180,4 +182,14 @@ void te::map::Chart::setAvoidConflicts(bool on)
 bool te::map::Chart::getAvoidConflicts() const
 {
   return m_avoidConflicts;
+}
+
+std::string te::map::Chart::getSummary() const
+{
+  return m_summary;
+}
+
+void te::map::Chart::setSummary(std::string& summary)
+{
+  m_summary = summary;
 }

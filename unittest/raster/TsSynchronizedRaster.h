@@ -26,9 +26,10 @@
 #ifndef __TERRALIB_UNITTEST_RASTER_INTERNAL_SYNCHRONIZEDRASTER_H
 #define __TERRALIB_UNITTEST_RASTER_INTERNAL_SYNCHRONIZEDRASTER_H
 
+// terralib
 #include <terralib/raster.h>
-#include <terralib/raster/RasterSynchronizer.h>
 
+// boost
 #include <boost/shared_ptr.hpp>
 
 // cppUnit

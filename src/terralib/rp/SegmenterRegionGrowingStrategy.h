@@ -69,13 +69,13 @@ namespace te
             
             unsigned int m_minSegmentSize; //!< A positive minimum segment size (pixels number - default: 100).
             
-            double m_segmentsSimilarityThreshold; //!< Segments similarity treshold - Use lower values to merge only those segments that are more similar - Higher values will allow more segments to be merged - valid values range: positive values - default: 0.1 ).
+            double m_segmentsSimilarityThreshold; //!< Segments similarity treshold - Use lower values to merge only those segments that are more similar - Higher values will allow more segments to be merged - valid values range: positive values - default: 0.03 ).
             
             SegmentFeaturesType m_segmentFeatures; //!< What segment features will be used on the segmentation process (default:InvalidFeaturesType).
             
             std::vector< double > m_bandsWeights; //!< The weight given to each band, when applicable (note: the bands weights sum must always be 1) or an empty vector indicating that all bands have the same weight.
             
-            double m_colorWeight; //!< The weight given to the color component, deafult:0.75, valid range: [0,1].
+            double m_colorWeight; //!< The weight given to the color component, deafult:0.9, valid range: [0,1].
             
             double m_compactnessWeight; //!< The weight given to the compactness component, deafult:0.5, valid range: [0,1].
             
@@ -114,8 +114,8 @@ namespace te
           const te::rst::Raster& inputRaster,
           const std::vector< unsigned int >& inputRasterBands,
           const std::vector< double >& inputRasterNoDataValues,
-          const std::vector< double >& inputRasterGains,
-          const std::vector< double >& inputRasterOffsets,
+          const std::vector< double >& inputRasterBandMinValues,
+          const std::vector< double >& inputRasterBandMaxValues,
           te::rst::Raster& outputRaster,
           const unsigned int outputRasterBand,
           const bool enableProgressInterface ) throw( te::rp::Exception );
@@ -214,6 +214,7 @@ namespace te
           protected :
             
             unsigned int m_featuresNumber; //!< The number of features (bands).
+            SegmenterRegionGrowingSegment::FeatureType m_dissimilarityNormFactor;
             
             // variables used by the method getDissimilarity
             mutable SegmenterRegionGrowingSegment::FeatureType m_getDissimilarity_dissValue;
@@ -305,7 +306,8 @@ namespace te
           \param inputRaster The input raster.
           \param inputRasterBands Input raster bands to use.
           \param inputRasterNoDataValues A vector of values to be used as input raster no-data values.
-          \param segmentsIds The output segment ids container.
+          \param inputRasterBandMinValues The minimum value present on each band.
+          \param inputRasterBandMinValues The maximum value present on each band.          
           \return true if OK, false on errors.
         */        
         bool initializeSegments( SegmenterIdsManager& segmenterIdsManager,
@@ -313,12 +315,13 @@ namespace te
           const te::rst::Raster& inputRaster,
           const std::vector< unsigned int >& inputRasterBands,
           const std::vector< double >& inputRasterNoDataValues,
-          const std::vector< double >& inputRasterGains,
-          const std::vector< double >& inputRasterOffsets );
+          const std::vector< double >& inputRasterBandMinValues,
+          const std::vector< double >& inputRasterBandMaxValues );
           
         /*!
           \brief Merge closest segments.
           \param disimilarityThreshold The maximum similarity value allowed when deciding when to merge two segments.
+          \param maxSegSizeThreshold Segments with sizes smaller then this value will allways be merged with the closest segment (disimilarityThreshold will be ignored).
           \param segmenterIdsManager A segments ids manager to acquire unique segments ids.
           \param merger The merger instance to use.
           \param enablelocalMutualBestFitting If enabled, a merge only occurs between two segments if the minimum dissimilarity criteria is best fulfilled mutually.
@@ -326,36 +329,21 @@ namespace te
           \param auxSeg2Ptr A pointer to a valid auxiliar segment that will be used by this method.
           \param auxSeg3Ptr A pointer to a valid auxiliar segment that will be used by this method.
           \param minFoundDissimilarity The minimum dissimilarity value found.
-          \return The number of merged segments.
+          \param maxFoundDissimilarity The maximum dissimilarity value found.
+          \param totalMergesNumber The total number of merges.
         */           
-        unsigned int mergeSegments( 
+        void mergeSegments( 
           const SegmenterRegionGrowingSegment::FeatureType disimilarityThreshold,
+          const unsigned int maxSegSizeThreshold,
           SegmenterIdsManager& segmenterIdsManager,
           Merger& merger,
           const bool enablelocalMutualBestFitting,
           SegmenterRegionGrowingSegment* auxSeg1Ptr,
           SegmenterRegionGrowingSegment* auxSeg2Ptr,
           SegmenterRegionGrowingSegment* auxSeg3Ptr,
-          SegmenterRegionGrowingSegment::FeatureType& minFoundDissimilarity );
-          
-        /*!
-          \brief Merge only small segments to their closest segment.
-          \param minSegmentSize The minimum segment size (pixels)
-          \param similarityThreshold The minimum similarity value used
-          when deciding when to merge two segments.
-          \param segmenterIdsManager A segments ids manager to acquire
-          unique segments ids.
-          \param merger The merger instance to use.
-          \param auxSeg1Ptr A pointer to a valid auxiliar segment that will be used by this method.
-          \param auxSeg2Ptr A pointer to a valid auxiliar segment that will be used by this method.
-          \return The number of merged segments.
-        */           
-        unsigned int mergeSmallSegments( 
-          const unsigned int minSegmentSize,
-          SegmenterIdsManager& segmenterIdsManager,
-          Merger& merger,
-          SegmenterRegionGrowingSegment* auxSeg1Ptr,
-          SegmenterRegionGrowingSegment* auxSeg2Ptr);          
+          SegmenterRegionGrowingSegment::FeatureType& minFoundDissimilarity,
+          SegmenterRegionGrowingSegment::FeatureType& maxFoundDissimilarity,
+          unsigned int& totalMergesNumber );
           
         /*!
           \brief Export the segments IDs to a tif file.

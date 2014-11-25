@@ -28,7 +28,6 @@
 #include "../../../common/progress/TaskProgress.h"
 #include "../../../dataaccess/dataset/DataSet.h"
 #include "../../../dataaccess/dataset/DataSetType.h"
-#include "../../../dataaccess/dataset/ObjectId.h"
 #include "../../../dataaccess/dataset/ObjectIdSet.h"
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../datatype.h"
@@ -224,32 +223,11 @@ double getStatisticalValue(int stat, te::stat::NumericStatisticalSummary& nss)
       res = nss.m_varCoeff;
       break;
     //case(te::stat::MODE):
-    //  res = 0.0;
-    //  break;
+    //  res = nss.m_mode[0];
+      break;
     default:
       res = 0.0;
       break;
-  }
-  return res;
-}
-
-/*
-  Auxiliary function used to acquire the string that represents the objectId of the base dataset.
-
-  param oid The objectId as returned from the dataset;
-  param dsProps A pair that indicates the name of the base dataset and how many key properties it's got
-
-  note Will return the whole objectId as a string unless the dataset of interes is based on a linked layer
-      otherwise it returns a string that represents the objectId of the base Dataset.
-*/
-std::string getBasePkey(te::da::ObjectId* oid, std::pair<std::string, int>& dsProps)
-{
-  std::string res;
-  boost::ptr_vector<te::dt::AbstractData> curValues;
-  curValues = oid->getValue();
-  for(int i = 0; i < dsProps.second; ++i)
-  {
-    res = res + curValues[i].toString();
   }
   return res;
 }
@@ -316,10 +294,11 @@ void buildSummarizedScatter(int stat, std::map<std::string, std::vector<te::da::
   param intervalToOIds Output parameter, the map that associates every interval to their objectIds.
   param frequencies Output parameter, the vector containing the frequencies.
   param minValue Output parameter, the minimum value of the histogram.
+  param interval Output parameter, the interval of the histogram.
 */
 void buildNumericFrequencies(int slices, int stat, std::map<std::string, std::vector<std::pair<double, te::da::ObjectId*> > > valuestoSummarize,
                              std::vector<double>& intervals, std::map<double, std::vector<te::da::ObjectId*> >& intervalToOIds,
-                             std::vector< unsigned int>& frequencies, double& minValue)
+                             std::vector< unsigned int>& frequencies, double& minValue, double& interval)
 {
   //Containers used to hold informations temporarily, used to organize them prior to inserting them on the histogram.
   std::map<std::string, std::vector<std::pair<double, te::da::ObjectId*> > >::iterator valuesIt;
@@ -329,7 +308,7 @@ void buildNumericFrequencies(int slices, int stat, std::map<std::string, std::ve
   //Acquiring the summarized values
   for(valuesIt = valuestoSummarize.begin(); valuesIt !=  valuestoSummarize.end(); ++valuesIt)
   {
-    if((*valuesIt).second.size() > 1 && (stat != -1))
+    if((*valuesIt).second.size() > 1 && stat != -1)
     {
       std::vector<double> values;
       std::vector<te::da::ObjectId*> oids;
@@ -355,8 +334,7 @@ void buildNumericFrequencies(int slices, int stat, std::map<std::string, std::ve
     }
   }
 
-  double interval, maxValue;
-  maxValue = -std::numeric_limits<double>::max();
+  double maxValue = -std::numeric_limits<double>::max();
 
   for(size_t i = 0; i < summarizedValuesToOId.size(); ++i)
   {
@@ -474,7 +452,7 @@ void buildStringFrequencies(int stat, std::map<std::string, std::vector<std::pai
   param dataset The dataset being used, must be given at the position of interest;
   param pkeys A vector containing all the properties that form the primaryKey of the given dataset
 */
-te::da::ObjectId* getObjectId (te::da::DataSet* dataset, std::vector<std::size_t> pkeys)
+te::da::ObjectId* getObjectId(te::da::DataSet* dataset, std::vector<std::size_t> pkeys)
 {
   std::vector<size_t>::iterator it;
   std::vector<std::string> propNames;
@@ -485,6 +463,12 @@ te::da::ObjectId* getObjectId (te::da::DataSet* dataset, std::vector<std::size_t
   //The caller will take ownership of the generated pointer.
   te::da::ObjectId* oid = te::da::GenerateOID(dataset, propNames);
   return oid;
+}
+
+void getObjectIds (te::da::DataSet* dataset, std::vector<std::size_t> pkeys, std::vector<te::da::ObjectId*>& valuesOIDs)
+{
+  te::da::ObjectId* oid = getObjectId(dataset,pkeys); 
+  valuesOIDs.push_back(oid);
 }
 
 te::qt::widgets::Scatter* te::qt::widgets::createScatter(te::da::DataSet* dataset, te::da::DataSetType* dataType, int propX, int propY, int stat)
@@ -603,8 +587,8 @@ te::qt::widgets::Scatter* te::qt::widgets::createScatter(te::da::DataSet* datase
       }
       else
       {
-        oidsToSummarize[getBasePkey(currentOid, dsProps)].push_back(currentOid);
-        valuesToSummarize[getBasePkey(currentOid, dsProps)].push_back(std::make_pair(x_doubleValue, y_doubleValue));
+        oidsToSummarize[te::da::getBasePkey(currentOid, dsProps)].push_back(currentOid);
+        valuesToSummarize[te::da::getBasePkey(currentOid, dsProps)].push_back(std::make_pair(x_doubleValue, y_doubleValue));
       }
       task.pulse();
     } //end of the data set
@@ -668,7 +652,7 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
      if((propType >= te::dt::INT16_TYPE && propType <= te::dt::UINT64_TYPE) || 
        propType == te::dt::FLOAT_TYPE || propType == te::dt::DOUBLE_TYPE || propType == te::dt::NUMERIC_TYPE)
      {
-      //Acquiring the name of the base dataset and how many properties are included in it's primary key
+      //Acquiring the name of the base dataset and how many of it's properties are included in it's primary key
       std::pair<std::string, int> dsProps;
       te::da::GetOIDDatasetProps(dataType, dsProps);
 
@@ -684,6 +668,10 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
      //Adjusting the Histogram's values
       while(dataset->moveNext())
       {
+
+        if(dataset->isNull(propId))
+          continue;
+
         if(!task.isActive())
         {
           break;
@@ -691,13 +679,16 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
 
         double currentValue = getDouble(dataset, propId);
         te::da::ObjectId* currentOid = getObjectId(dataset, objIdIdx);
-        valuesToSummarize[getBasePkey(currentOid, dsProps)].push_back(std::make_pair(currentValue, currentOid));
+        valuesToSummarize[te::da::getBasePkey(currentOid, dsProps)].push_back(std::make_pair(currentValue, currentOid));
 
         task.pulse();
       }
 
       //The minimum value
       double minValue = std::numeric_limits<double>::max();
+
+      //The interval (testing)
+      double interval = std::numeric_limits<double>::max();
 
       //A vector containing the intervals
       std::vector<double> intervals;
@@ -709,7 +700,7 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
       std::map<double, std::vector<te::da::ObjectId*> > intervalToOIds;
 
       //Populating the frequencies, intervals and their respective objectIds with the results of the chosen summary function
-      buildNumericFrequencies(slices, stat, valuesToSummarize, intervals, intervalToOIds, frequencies, minValue);
+      buildNumericFrequencies(slices, stat, valuesToSummarize, intervals, intervalToOIds, frequencies, minValue, interval);
 
        //With both the intervals and frequencies ready, the map can be populated
       for (unsigned int i= 0; i<intervals.size(); ++i)
@@ -719,7 +710,8 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
       }
 
       newHistogram->setMinValue(minValue);
-      newHistogram->setInterval(intervals[1] - intervals[0]);
+      newHistogram->setInterval(interval);
+      newHistogram->setSummarized(stat != -1);
       dataset->moveBeforeFirst();
     }
   }
@@ -768,13 +760,16 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
       std::pair<std::string, int> dsProps;
       te::da::GetOIDDatasetProps(dataType, dsProps);
 
-      //A map containg the summarized values used to buil d the histogram
+      //A map containg the summarized values used to build the histogram
       std::map<std::string, std::vector<std::pair<std::string, te::da::ObjectId*> > > valuesToSummarize;
 
       //Adjusting the histogram's intervals
       dataset->moveBeforeFirst();
       while(dataset->moveNext())
       {
+
+        if(dataset->isNull(propId))
+          continue;
 
         if(!task.isActive())
         {
@@ -801,6 +796,9 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
       while(dataset->moveNext())
       {
 
+        if(dataset->isNull(propId))
+          continue;
+
         if(!task.isActive())
         {
           break;
@@ -808,7 +806,7 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
 
         std::string currentValue = dataset->getString(propId);
         te::da::ObjectId* currentOid = getObjectId(dataset, objIdIdx);
-        valuesToSummarize[getBasePkey(currentOid, dsProps)].push_back(std::make_pair(currentValue, currentOid));
+        valuesToSummarize[te::da::getBasePkey(currentOid, dsProps)].push_back(std::make_pair(currentValue, currentOid));
 
         task.pulse();
       }
@@ -826,6 +824,7 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
       dataset->moveBeforeFirst();
     }
   }
+  newHistogram->setSummarized(stat != -1);
   return newHistogram;
 }
 
@@ -842,6 +841,29 @@ te::qt::widgets::ChartDisplayWidget* te::qt::widgets::createHistogramDisplay(te:
     chart =  new te::qt::widgets::HistogramChart(te::qt::widgets::createHistogram(dataset, dataType, propId, stat));
   else
     chart =  new te::qt::widgets::HistogramChart(te::qt::widgets::createHistogram(dataset, dataType, propId, slices, stat));
+
+  //Creating and adjusting the chart Display's style.
+  te::qt::widgets::ChartStyle* chartStyle = new te::qt::widgets::ChartStyle();
+  chartStyle->setTitle(QString::fromStdString("Histogram"));
+  chartStyle->setAxisX(QString::fromStdString(dataset->getPropertyName(propId)));
+  chartStyle->setAxisY(QString::fromStdString("Frequency"));
+
+  //Creating and adjusting the chart Display
+  te::qt::widgets::ChartDisplay* chartDisplay = new te::qt::widgets::ChartDisplay(0, QString::fromStdString("Histogram"), chartStyle);
+  chartDisplay->adjustDisplay();
+  chart->attach(chartDisplay);
+
+  //Adjusting the chart widget
+  te::qt::widgets::ChartDisplayWidget* displayWidget = new te::qt::widgets::ChartDisplayWidget(chart, te::qt::widgets::HISTOGRAM_CHART, chartDisplay);
+  displayWidget->show();
+  displayWidget->setWindowTitle("Histogram");
+  return displayWidget;
+}
+
+te::qt::widgets::ChartDisplayWidget* te::qt::widgets::createHistogramDisplay(te::da::DataSet* dataset, te::da::DataSetType* dataType, int propId, Histogram* histogram)
+{
+  te::qt::widgets::HistogramChart* chart;
+  chart =  new te::qt::widgets::HistogramChart(histogram);
 
   //Creating and adjusting the chart Display's style.
   te::qt::widgets::ChartStyle* chartStyle = new te::qt::widgets::ChartStyle();
