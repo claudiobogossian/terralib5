@@ -84,7 +84,8 @@ namespace te
       m_blockProcessedSignalPtr( 0 ), m_runningThreadsCounterPtr( 0 ),
       m_blendMethod( te::rp::Blender::InvalidBlendMethod ),
       m_interpMethod2( te::rst::Interpolator::NearestNeighbor ),
-      m_noDataValue( 0.0 ), m_forceInputNoDataValue( false ), 
+      m_noDataValue( 0.0 ), m_forceRaster1NoDataValue( false ),
+      m_forceRaster2NoDataValue( false ),  
       m_maxRasterCachedBlocks( 0 ), m_useProgress( false )
     {
     }
@@ -116,7 +117,8 @@ namespace te
       m_blendMethod = rhs.m_blendMethod;
       m_interpMethod2 = rhs.m_interpMethod2;
       m_noDataValue = rhs.m_noDataValue;
-      m_forceInputNoDataValue = rhs.m_forceInputNoDataValue;
+      m_forceRaster1NoDataValue = rhs.m_forceRaster1NoDataValue;
+      m_forceRaster2NoDataValue = rhs.m_forceRaster2NoDataValue;
       m_maxRasterCachedBlocks = rhs.m_maxRasterCachedBlocks;
       m_pixelOffsets1 = rhs.m_pixelOffsets1;
       m_pixelScales1 = rhs.m_pixelScales1;
@@ -173,7 +175,8 @@ namespace te
       const te::rst::Interpolator::Method& interpMethod1,
       const te::rst::Interpolator::Method& interpMethod2,
       const double& noDataValue,
-      const bool forceInputNoDataValue,
+      const bool forceRaster1NoDataValue,
+      const bool forceRaster2NoDataValue,
       const std::vector< double >& pixelOffsets1,
       const std::vector< double >& pixelScales1,
       const std::vector< double >& pixelOffsets2,
@@ -532,13 +535,37 @@ namespace te
       
       // defining the interpolators
       
-      m_interp1Ptr.reset( new te::rst::Interpolator( &raster1, interpMethod1 ) );
-      m_interp2Ptr.reset( new te::rst::Interpolator( &raster2, interpMethod2 ) );
+      if( forceRaster1NoDataValue )
+      {
+        std::vector< std::complex<double> > noDataValues1( raster1.getNumberOfBands(),
+          std::complex<double>( noDataValue, 0.0 ) ); 
+        m_interp1Ptr.reset( new te::rst::Interpolator( &raster1, interpMethod1,
+          noDataValues1 ) );
+      }
+      else
+      {
+        m_interp1Ptr.reset( new te::rst::Interpolator( &raster1, interpMethod1 ) );
+      }      
+      
+      if( forceRaster2NoDataValue )
+      {
+        std::vector< std::complex<double> > noDataValues2( raster2.getNumberOfBands(),
+          std::complex<double>( noDataValue, 0.0 ) );
+        m_interp2Ptr.reset( new te::rst::Interpolator( &raster2, interpMethod2,
+          noDataValues2 ) );
+      }
+      else
+      {
+        m_interp2Ptr.reset( new te::rst::Interpolator( &raster2, interpMethod2 ) );
+      }
         
       m_interpMethod1 = interpMethod1;
       m_interpMethod2 = interpMethod2;
       
       // defining dummy values
+      
+      m_forceRaster1NoDataValue = forceRaster1NoDataValue;
+      m_forceRaster2NoDataValue = forceRaster2NoDataValue;
       
       for( std::vector< unsigned int >::size_type rasterBandsIdx = 0 ; 
         rasterBandsIdx < raster1Bands.size() ; ++rasterBandsIdx )
@@ -548,19 +575,25 @@ namespace te
         TERP_TRUE_OR_RETURN_FALSE( raster2Bands[ rasterBandsIdx ] <
           raster2.getNumberOfBands(), "Invalid band" );            
         
-        m_forceInputNoDataValue = forceInputNoDataValue;
-        if( forceInputNoDataValue )
+        if( forceRaster1NoDataValue )
         {
           m_raster1NoDataValues.push_back( noDataValue );
-          m_raster2NoDataValues.push_back( noDataValue );
         }
         else
         {
           m_raster1NoDataValues.push_back( raster1.getBand( raster1Bands[ 
             rasterBandsIdx ] )->getProperty()->m_noDataValue );
+        }
+        
+        if( forceRaster2NoDataValue )
+        {
+          m_raster2NoDataValues.push_back( noDataValue );
+        }
+        else
+        {
           m_raster2NoDataValues.push_back( raster2.getBand( raster2Bands[ 
             rasterBandsIdx ] )->getProperty()->m_noDataValue );
-        }
+        }        
       }
       
       m_outputNoDataValue = noDataValue;
@@ -599,7 +632,8 @@ namespace te
     void Blender::initState()
     {
       m_enableProgressInterface = false;
-      m_forceInputNoDataValue = false;
+      m_forceRaster1NoDataValue = false;
+      m_forceRaster2NoDataValue = false;
       m_threadsNumber = 0;
       m_blendMethod = InvalidBlendMethod;
       m_blendFuncPtr = 0;
@@ -1261,7 +1295,8 @@ namespace te
         auxThreadParams.m_blendMethod = m_blendMethod;
         auxThreadParams.m_interpMethod2 = m_interpMethod2;
         auxThreadParams.m_noDataValue = m_outputNoDataValue;
-        auxThreadParams.m_forceInputNoDataValue = m_forceInputNoDataValue;
+        auxThreadParams.m_forceRaster1NoDataValue = m_forceRaster1NoDataValue;
+        auxThreadParams.m_forceRaster2NoDataValue = m_forceRaster2NoDataValue;
         auxThreadParams.m_pixelOffsets1 = m_pixelOffsets1;
         auxThreadParams.m_pixelScales1 = m_pixelScales1;
         auxThreadParams.m_pixelOffsets2 = m_pixelOffsets2;
@@ -1427,7 +1462,8 @@ namespace te
         te::rst::Interpolator::NearestNeighbor,
         paramsPtr->m_interpMethod2,
         paramsPtr->m_noDataValue,
-        paramsPtr->m_forceInputNoDataValue,
+        paramsPtr->m_forceRaster1NoDataValue,
+        paramsPtr->m_forceRaster2NoDataValue,
         paramsPtr->m_pixelOffsets1,
         paramsPtr->m_pixelScales1,
         paramsPtr->m_pixelOffsets2,

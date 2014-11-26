@@ -84,7 +84,8 @@ namespace te
           \param interpMethod1 The interpolation method to use when reading raster 1 data.
           \param interpMethod2 The interpolation method to use when reading raster 2 data.
           \param noDataValue The value returned where there is no pixel data bo blend.
-          \param forceInputNoDataValue Use noDataValue as the input rasters no-data value (The original rasters no-data values will be ignored) 
+          \param forceRaster1NoDataValue Use noDataValue as the input raster 1 no-data value (The original rasters no-data values will be ignored)
+          \param forceRaster2NoDataValue Use noDataValue as the input raster 1 no-data value (The original rasters no-data values will be ignored)  
           \param pixelOffsets1 The values offset to be applied to raster 1 pixel values before the blended value calcule (one element for each used raster channel/band).
           \param pixelScales1 The values scale to be applied to raster 1 pixel values before the blended value calcule (one element for each used raster channel/band).
           \param pixelOffsets2 The values offset to be applied to raster 2 pixel values before the blended value calcule (one element for each used raster channel/band).
@@ -106,7 +107,8 @@ namespace te
           const te::rst::Interpolator::Method& interpMethod1,
           const te::rst::Interpolator::Method& interpMethod2,
           const double& noDataValue,
-          const bool forceInputNoDataValue,
+          const bool forceRaster1NoDataValue,
+          const bool forceRaster2NoDataValue,
           const std::vector< double >& pixelOffsets1,
           const std::vector< double >& pixelScales1,
           const std::vector< double >& pixelOffsets2,
@@ -188,7 +190,8 @@ namespace te
             BlendMethod m_blendMethod; //!<  The blend method to apply.
             te::rst::Interpolator::Method m_interpMethod2; //!< The interpolation method to use when reading raster 2 data.
             double m_noDataValue; //!< The value returned where there is no pixel data bo blend.
-            bool m_forceInputNoDataValue; //!< Use noDataValue as the input rasters no-data value (The original rasters no-data values will be ignored) 
+            bool m_forceRaster1NoDataValue; //!< Use noDataValue as the input rasters no-data value (The original rasters no-data values will be ignored)
+            bool m_forceRaster2NoDataValue; //!< Use noDataValue as the input rasters no-data value (The original rasters no-data values will be ignored)  
             std::vector< double > m_pixelOffsets1; //!< The values offset to be applied to raster 1 pixel values before the blended value calcule (one element for each used raster channel/band).
             std::vector< double > m_pixelScales1; //!< The values scale to be applied to raster 1 pixel values before the blended value calcule (one element for each used raster channel/band).
             std::vector< double > m_pixelOffsets2; //!< The values offset to be applied to raster 2 pixel values before the blended value calcule (one element for each used raster channel/band).
@@ -209,7 +212,8 @@ namespace te
         };           
 
         bool m_enableProgressInterface; //!< Enable progress interface.
-        bool m_forceInputNoDataValue; //!<  Use noDataValue as the input rasters no-data value (The original rasters no-data values will be ignored) 
+        bool m_forceRaster1NoDataValue; //!<  Use noDataValue as the input raster 1 no-data value (The original rasters no-data values will be ignored)
+        bool m_forceRaster2NoDataValue; //!<  Use noDataValue as the input raster 2 no-data value (The original rasters no-data values will be ignored)  
         unsigned int m_threadsNumber; //!< The number of threads to use (0:automatic , 1:disabled, any other integer dictates the number of threads)..
         BlendMethod m_blendMethod; //!< The blend method to apply.
         BlendFunctPtr m_blendFuncPtr; //!< The current blend function.

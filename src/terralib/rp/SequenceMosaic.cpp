@@ -780,6 +780,7 @@ namespace te
                 te::rst::Interpolator::NearestNeighbor,
                 m_inputParameters.m_interpMethod,
                 m_inputParameters.m_noDataValue,
+                false,
                 m_inputParameters.m_forceInputNoDataValue,
                 dummyRasterOffsets,
                 dummyRasterScales,                                                                    
