@@ -36,6 +36,9 @@
 #include "../../../common/STLUtils.h"
 #include "../../item/MapGridModel.h"
 
+// Qt
+#include <QPainter>
+
 te::layout::MapGridItem::MapGridItem( ItemController* controller, Observable* o ) :
   MapItem(controller, o)
 {
@@ -58,4 +61,42 @@ te::layout::MapGridItem::MapGridItem( ItemController* controller, Observable* o 
 te::layout::MapGridItem::~MapGridItem()
 {
 
+}
+
+void te::layout::MapGridItem::drawSelection( QPainter* painter )
+{
+  if(!painter)
+  {
+    return;
+  }
+
+  MapGridModel* model = dynamic_cast<MapGridModel*>(m_model);
+  if(!model)
+  {
+    return;
+  }
+
+  QRectF boundRect;
+  boundRect = boundingRect();
+
+  double x1 = 0;
+  double y1 = 0;
+  double w = boundRect.width() - (m_wMargin * 2);
+  double h = boundRect.height() - (m_hMargin * 2);
+  
+  QRectF bounding(x1, y1, w, h);
+
+  qreal penWidth = painter->pen().widthF();
+
+  const qreal adj = penWidth / 2;
+  const QColor fgcolor(0,255,0);
+  const QColor backgroundColor(0,0,0);
+  
+  painter->setPen(QPen(backgroundColor, 0, Qt::SolidLine));
+  painter->setBrush(Qt::NoBrush);
+  painter->drawRect(bounding.adjusted(adj, adj, -adj, -adj));
+
+  painter->setPen(QPen(fgcolor, 0, Qt::DashLine));
+  painter->setBrush(Qt::NoBrush);
+  painter->drawRect(bounding.adjusted(adj, adj, -adj, -adj));
 }

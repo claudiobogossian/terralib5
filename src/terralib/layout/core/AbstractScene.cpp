@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2013-2014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file MultiLineTextModel.cpp
+  \file AbstractScene.cpp
    
   \brief 
 
@@ -26,22 +26,14 @@
 */
 
 // TerraLib
-#include "MultiLineTextModel.h"
-#include "../core/ContextItem.h"
-#include "../../geometry/Envelope.h"
-#include "../../color/RGBAColor.h"
-#include "../../maptools/Canvas.h"
-#include "../core/enum/Enums.h"
+#include "AbstractScene.h"
 
-te::layout::MultiLineTextModel::MultiLineTextModel() :
-  TextModel()
+te::layout::AbstractScene::AbstractScene()
 {
-  m_type = Enums::getInstance().getEnumObjectType()->getMultiLineTextItem();
 
-  m_box = te::gm::Envelope(0., 0., 170., 30.);
 }
 
-te::layout::MultiLineTextModel::~MultiLineTextModel()
+te::gm::Envelope te::layout::AbstractScene::getSceneBox()
 {
-
+  return m_box;
 }

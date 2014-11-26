@@ -18,34 +18,61 @@
  */
 
 /*!
-  \file MultiLineTextItem.h
+  \file AlignItems.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_MULTILINETEXT_ITEM_H 
-#define __TERRALIB_LAYOUT_INTERNAL_MULTILINETEXT_ITEM_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_ALIGN_ITEMS_H
+#define __TERRALIB_LAYOUT_INTERNAL_ALIGN_ITEMS_H
 
 // TerraLib
-#include "TextItem.h"
+#include "../../core/Config.h"
+#include "../../core/PaperConfig.h"
+
+// Qt
+#include <QRectF>
+
+class QGraphicsScene;
 
 namespace te
 {
   namespace layout
   {
-    class Observable;
-
-    class MultiLineTextItem : public TextItem
+    class TELAYOUTEXPORT AlignItems
     {
       public:
 
-        MultiLineTextItem( ItemController* controller, Observable* o );
+        AlignItems( QGraphicsScene* scene, PaperConfig* config );
 
-        virtual ~MultiLineTextItem();
+        virtual ~AlignItems();
+
+        virtual void bringToFront();
+
+        virtual void sendToBack();
+
+        virtual void alignLeft();
+
+        virtual void alignRight();
+
+        virtual void alignTop();
+
+        virtual void alignBottom();
+
+        virtual void alignCenterHorizontal();
+
+        virtual void alignCenterVertical();
+
+        virtual QRectF getSelectionItemsBoundingBox();
+
+      protected:
+
+        QGraphicsScene* m_scene;
+        PaperConfig*    m_config;
     };
   }
 }
 
-#endif
+#endif 

@@ -84,7 +84,6 @@ namespace te
         virtual EnumType* getModeCreateEllipse() const;
         virtual EnumType* getModeCreateTitle() const;
         virtual EnumType* getModeCreateTextGrid() const;
-        virtual EnumType* getModeCreateMultiLineText() const;
         virtual EnumType* getModeWidgetView() const;
         virtual EnumType* getModeWidgetInspector() const;
         virtual EnumType* getModeWidgetProperties() const;
@@ -105,6 +104,7 @@ namespace te
         virtual EnumType* getModeCreateLegendChild() const;
         virtual EnumType* getModeLegendChildAsObject() const;
         virtual EnumType* getModeObjectToImage() const;
+        virtual EnumType* getModeInspectorCurrentItemChanged() const;
 
       protected:
 
@@ -151,7 +151,6 @@ namespace te
         EnumType* m_modeCreateEllipse;
         EnumType* m_modeCreateTitle;
         EnumType* m_modeCreateTextGrid;
-        EnumType* m_modeCreateMultiLineText;
         EnumType* m_modeWidgetView;
         EnumType* m_modeWidgetInspector;
         EnumType* m_modeWidgetProperties;
@@ -171,6 +170,7 @@ namespace te
         EnumType* m_modeCreateLegendChild;
         EnumType* m_modeLegendChildAsObject;
         EnumType* m_modelObjectToImage;
+        EnumType* m_inspectorCurrentItemChanged;
     };
   }
 }

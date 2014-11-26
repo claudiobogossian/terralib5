@@ -28,238 +28,115 @@
 #ifndef	__TERRALIB_LAYOUT_INTERNAL_SCENE_H 
 #define __TERRALIB_LAYOUT_INTERNAL_SCENE_H
 
+// TerraLib
+#include "../../core/AbstractScene.h"
+#include "../../core/Config.h"
+#include "PrintScene.h"
+#include "AlignItems.h"
+
+// STL
+#include <string>
+#include <vector>
+#include <map>
+
 // Qt
 #include <QGraphicsScene>
 #include <QTransform>
-#include <QGraphicsItem>
-#include <QMap>
-#include <QGraphicsView>
 #include <QColor>
+#include <QPointF>
 
-// TerraLib
-#include "../../core/AbstractScene.h"
-#include "../../core/enum/AbstractType.h"
-#include "../../core/Config.h"
-#include "../../../geometry/Coord2D.h"
-#include "../../../geometry/Point.h"
-#include "../../item/MapModel.h"
-
-// STL
-#include <map>
-#include <string>
-#include <vector>
-
-class QGraphicsSceneMouseEvent;
-class QGraphicsItemGroup;
-class QGraphicsProxyWidget;
-class QPrinter;
-class QPainter;
-class QLine;
-class QUndoStack;
 class QUndoCommand;
+class QUndoStack;
+class QGraphicsItemGroup;
 
 namespace te
 {
   namespace layout
   {
-    class ItemObserver;
+    class EnumType;
     class Properties;
     class VisualizationArea;
-    class Systematic;
-    class EnumType;
-    class AddCommand;
-    class ChangePropertyCommand;
-    class MoveCommand;
-    class DeleteCommand;
-    class VerticalRuler;
-    class HorizontalRuler;
 
     class TELAYOUTEXPORT Scene : public QGraphicsScene, public AbstractScene
     {
       Q_OBJECT //for slots/signals
 
       public:
-        
-        enum PrinterScene
-        {
-          PreviewScene,
-          PrintScene,
-          NoPrinter
-        };
 
-        enum ViewportEnum
-        {
-          None,
-          NoUpdateView
-        };
-        
-        Scene(QWidget* widget = (QWidget*)0);
-        ~Scene();
+        Scene(QObject* object = (QObject*)0);
+
+        virtual ~Scene();
 
         virtual void insertItem(ItemObserver* item);
                 
-        virtual te::gm::Envelope getSceneBox();
+        virtual void init(double screenWMM, double screenHMM);
 
-        /* Redraw all items except, if viewArea false, the items than create the Visualization Area */
-        virtual void redrawItems(bool viewArea = false);
-
-        QGraphicsItemGroup*	createItemGroup ( const QList<QGraphicsItem *> & items );
-
-        void destroyItemGroup(QGraphicsItemGroup *group);
-
-        /*
-          params widthMM width of physical screen in millimeters
-          params heightMM height of physical screen in millimeters
-        */
-        virtual void init(double screenWMM, double screenHMM, double zoomFactor = 1.0);
-        
-        /* World coordinates (mm) */
-        virtual te::gm::Envelope* getWorldBox() const;
-
-        /* World coordinates (mm) */
-        virtual te::gm::Envelope getPaperBox() const;
-                
-        virtual QTransform getMatrixViewScene();
-
-        virtual void printPreview(bool isPdf = false);
-
-        virtual void savePaperAsImage();
-
-        virtual void savePaperAsPDF();
-        
-        virtual bool exportPropsAsJSON();
-
-        virtual std::vector<te::layout::Properties*> importJsonAsProps();
-
-        virtual void refresh(QGraphicsView* view = 0, double zoomFactor = 1.0);
-
-        virtual void reset();
-
-        virtual bool buildTemplate(VisualizationArea* vzArea);
-
-        virtual QGraphicsItem* createItem(const te::gm::Coord2D& coord );
+        virtual QTransform sceneTransform();
         
         virtual void deleteItems();
 
         virtual void removeSelectedItems();
 
-        virtual void setCurrentToolInSelectedMapItems(EnumType* mode);
+        virtual QGraphicsItemGroup* createItemGroup( const QList<QGraphicsItem *> & items );
 
-        void setLineIntersectionHzr(QLineF* line);
+        virtual void destroyItemGroup( QGraphicsItemGroup *group );
 
-        void setLineIntersectionVrt(QLineF* line);
+        virtual QGraphicsItem* createItem( const te::gm::Coord2D& coord );
 
-        virtual void bringToFront();
+        virtual void addUndoStack( QUndoCommand* command );
 
-        virtual void sendToBack();
-        
-        /*! \brief Get the number of map items that intersection the coordinate */
-        virtual int intersectionMap(te::gm::Coord2D coord, bool &intersection);
-
-        virtual void setCurrentMapSystematic(Systematic* systematic, te::gm::Coord2D coord);
-
-        virtual void createTextGridAsObject();
-
-        virtual void createTextMapAsObject();
-
-        virtual void createLegendChildAsObject();
-
-        virtual void alignLeft();
-
-        virtual void alignRight();
-
-        virtual void alignTop();
-
-        virtual void alignBottom();
-
-        virtual void alignCenterHorizontal();
-
-        virtual void alignCenterVertical();
-
-        virtual QRectF getSelectionItemsBoundingBox();
-
-        /* Part of undo/redo framework */
-
-        virtual void addUndoStack(QUndoCommand* command);
-
-        virtual QUndoStack* getUndoStack();
-
-        virtual void setUndoStackLimit(int limit);
+        virtual void setUndoStackLimit( int limit );
 
         virtual int getUndoStackLimit();
 
-        virtual bool	eventFilter ( QObject * watched, QEvent * event );
+        virtual QUndoStack* getUndoStack();
+
+        virtual void calculateSceneMeasures(double widthMM, double heightMM);
+
+        virtual PrintScene* getPrintScene();
+
+        virtual AlignItems* getAlignItems();
+
+        virtual bool exportPropertiesToTemplate(EnumType* type, std::string fileName);
+
+        virtual std::vector<te::layout::Properties*> importTemplateToProperties(EnumType* type, std::string fileName);
+        
+        virtual void reset();
+
+        virtual bool buildTemplate(VisualizationArea* vzArea, EnumType* type, std::string fileName);
 
         virtual void redrawSelectionMap();
 
-        virtual PrinterScene getPreviewState();
+        virtual void exportItemsToImage(std::string dir);
 
-        virtual void exportItemsToImage();
+        virtual bool	eventFilter ( QObject * watched, QEvent * event );
 
-        virtual ViewportEnum getStateViewport();
-
-        virtual void invisibleExcept(QGraphicsItem* item);
-
-        virtual void visibleAllItems();
+        virtual void selectionItem(std::string name);
         
-      protected slots:
-
-        virtual void printPaper(QPrinter* printer);
-
       signals:
 
-        void addItemFinalized();
+         void addItemFinalized();
 
-      protected:
-
-        virtual te::gm::Envelope* calculateWindow(double wMM, double hMM);
-
-        virtual void calculateMatrixViewScene(double zoomFactor = 1.);
-
-        virtual QPrinter* createPrinter();
-
-        virtual void renderScene( QPainter* newPainter );
-
-        virtual void changePrintVisibility(bool change);
-
-        virtual std::vector<te::layout::Properties*> getItemsProperties();
-
-        virtual void drawForeground(QPainter *painter, const QRectF &rect);
-
-        virtual void	drawBackground ( QPainter * painter, const QRectF & rect );
-
-        virtual void refreshViews(QGraphicsView* view = 0);
-
-        virtual void createTextItemFromObject(std::map<te::gm::Point*, std::string> map);
-
-        virtual void createLegendChildItemFromLegend(std::map<te::gm::Point*, std::string> map, te::layout::MapModel* visitable);
-
-        virtual void enableUpdateViews();
-
-        virtual void disableUpdateViews();
-
-        virtual void setDrawRulers(bool draw);
+         void deleteFinalized(std::vector<std::string> names);
         
       protected:
 
-        VerticalRuler*     m_verticalRuler;
-        HorizontalRuler*   m_horizontalRuler;
-        te::gm::Envelope*  m_boxW;
-        QTransform         m_matrix;
-        double             m_screenWidthMM;
-        double             m_screenHeightMM;
-        QLineF*            m_lineIntersectHrz;
-        QLineF*            m_lineIntersectVrt;
-        bool               m_fixedRuler;
-        PrinterScene       m_previewState;
-        QUndoStack*        m_undoStack;
-        int                m_undoStackLimit;
-        bool               m_moveWatched;
-        std::map<QGraphicsItem*, QPointF> m_moveWatches;
-        std::vector<QGraphicsView::ViewportUpdateMode> m_viewUpdateMode;
-        bool               m_drawRulers;
-        ViewportEnum       m_stateViewport;
-        QColor             m_backgroundColor;
+        virtual void calculateMatrixViewScene();
+
+        virtual void calculateWindow(double wMM, double hMM); 
+
+        virtual std::vector<te::layout::Properties*> getItemsProperties();
+                
+    protected:
+
+        QTransform                         m_matrix;
+        QColor                             m_backgroundColor;
+        QUndoStack*                        m_undoStack;
+        int                                m_undoStackLimit;
+        AlignItems*                        m_align;
+        PrintScene*                        m_print;
+        bool                               m_moveWatched;
+        std::map<QGraphicsItem*, QPointF>  m_moveWatches;
     };
   }
 }

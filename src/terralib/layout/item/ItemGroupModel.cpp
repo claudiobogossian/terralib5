@@ -58,7 +58,7 @@ void te::layout::ItemGroupModel::draw( ContextItem context )
   if(context.isResizeCanvas())
     utils->configCanvas(m_box);
   
-  canvas->setPolygonContourWidth(2);
+  canvas->setPolygonContourWidth(1);
   canvas->setPolygonContourColor(te::color::RGBAColor(0, 0, 255, 255));
   canvas->setPolygonFillColor(m_backgroundColor);
   canvas->setBackgroundColor(m_backgroundColor);

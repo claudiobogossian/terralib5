@@ -57,7 +57,9 @@ namespace te
 
         virtual void setShadowPadding(double padding);
         virtual double getShadowPadding();
-        
+
+        virtual void setBox(te::gm::Envelope box);
+                
     protected:
 
       virtual void config();

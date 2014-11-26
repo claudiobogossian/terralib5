@@ -78,10 +78,10 @@ void te::layout::GridPlanarModel::draw( te::map::Canvas* canvas, Utils* utils, t
   
   te::color::RGBAColor color = te::color::RGBAColor(0, 0, 0, 255);
   canvas->setLineColor(color);
+  canvas->setPolygonFillColor(color);
+  canvas->setPolygonContourColor(color);
   
-  double zoomFactor = Context::getInstance().getZoomFactor();
-
-  canvas->setTextPointSize(m_pointTextSize * zoomFactor);
+  canvas->setTextPointSize(m_pointTextSize);
   canvas->setFontFamily(m_fontText);
 
   gridTextFreeMemory();
@@ -150,14 +150,14 @@ void te::layout::GridPlanarModel::drawVerticalLines(te::map::Canvas* canvas, Uti
       if(m_leftText)
       {
         canvas->drawText(llx - m_lneHrzDisplacement - wtxt, y, convert.str(), 0);
-        te::gm::Point* coordLeft = new te::gm::Point(llx - m_lneHrzDisplacement - wtxt, y);
+        te::gm::Point* coordLeft = new te::gm::Point(m_mapDisplacementX + llx - m_lneHrzDisplacement - wtxt, m_mapDisplacementY + y);
         m_gridTexts[coordLeft] = convert.str();
       }
 
       if(m_rightText)
       {
         canvas->drawText(urx + m_lneHrzDisplacement, y, convert.str(), 0);
-        te::gm::Point* coordRight = new te::gm::Point(urx + m_lneHrzDisplacement, y);
+        te::gm::Point* coordRight = new te::gm::Point(m_mapDisplacementX + urx + m_lneHrzDisplacement, m_mapDisplacementY + y);
         m_gridTexts[coordRight] = convert.str();
       }
     }
@@ -237,14 +237,14 @@ void te::layout::GridPlanarModel::drawHorizontalLines(te::map::Canvas* canvas, U
       if(m_bottomText)
       {
         canvas->drawText(x - (wtxt/2.), lly - m_lneVrtDisplacement - htxt, convert.str(), 0);
-        te::gm::Point* coordBottom = new te::gm::Point(x - (wtxt/2.), lly - m_lneVrtDisplacement - htxt);
+        te::gm::Point* coordBottom = new te::gm::Point(m_mapDisplacementX + x - (wtxt/2.), m_mapDisplacementY + lly - m_lneVrtDisplacement - htxt);
         m_gridTexts[coordBottom] = convert.str();
       }
 
       if(m_topText)
       {
         canvas->drawText(x - (wtxt/2.), ury + m_lneVrtDisplacement, convert.str(), 0);
-        te::gm::Point* coordTop = new te::gm::Point(x - (wtxt/2.), ury + m_lneVrtDisplacement);
+        te::gm::Point* coordTop = new te::gm::Point(m_mapDisplacementX + x - (wtxt/2.), m_mapDisplacementY + ury + m_lneVrtDisplacement);
         m_gridTexts[coordTop] = convert.str();
       }
     }

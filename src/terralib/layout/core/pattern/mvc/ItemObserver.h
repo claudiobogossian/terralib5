@@ -78,7 +78,7 @@ namespace te
 
         virtual Observable*	getModel();
         
-        virtual void refresh();
+        virtual void refresh(bool pos = true);
 
         bool isCanZoom();
 

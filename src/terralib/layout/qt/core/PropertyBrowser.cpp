@@ -272,6 +272,30 @@ void te::layout::PropertyBrowser::addAttribute( QtVariantProperty* vproperty, Pr
 
 bool te::layout::PropertyBrowser::removeProperty( Property property )
 {
+  QtProperty* removeProp = 0;
+  QList<QtProperty*> list = m_propertyEditor->properties();
+  foreach( QtProperty* prop, list) 
+  {
+    if(property.getName().compare(prop->propertyName().toStdString()) == 0)
+    {
+      removeProp = prop;
+    }
+  }
+  
+  if(!removeProp)
+    return false;
+
+  m_propertyToId.remove(removeProp);
+  m_idToProperty.remove(removeProp->propertyName());
+
+  m_propertyEditor->removeProperty(removeProp);
+
+  if(removeProp)
+  {
+    delete removeProp;
+    removeProp = 0;
+  }
+
   return true;
 }
 
@@ -520,4 +544,24 @@ void te::layout::PropertyBrowser::setHasWindows( bool hasWindows )
 void te::layout::PropertyBrowser::blockOpenWindows( bool block )
 {
 
+}
+
+void te::layout::PropertyBrowser::selectProperty( std::string name )
+{
+  QList<QtProperty*> props = m_propertyEditor->properties();
+  foreach( QtProperty* prop, props) 
+  {
+    if(prop)
+    {
+      if(name.compare(prop->propertyName().toStdString()) == 0)
+      {
+        QList<QtBrowserItem *> list = m_propertyEditor->items(prop);
+        QtBrowserItem* item = list.first();
+        if(item)
+        {
+          m_propertyEditor->setCurrentItem(item);
+        }
+      }
+    }
+  }
 }
