@@ -112,6 +112,8 @@ void te::layout::HorizontalRuler::drawRuler( QGraphicsView* view, QPainter* pain
   painter->drawRect(rfPaperH);
 
   painter->setBrush(brush);
+
+  pen.setWidth(0.1);
   painter->setPen(pen);
 
   painter->drawLine(rfLineH);

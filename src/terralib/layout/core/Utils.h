@@ -123,6 +123,8 @@ namespace te
         virtual void setApplyZoom(bool apply);
 
         virtual bool getApplyZoom();
+
+        virtual void resetCanvas();
                 
       protected:
         

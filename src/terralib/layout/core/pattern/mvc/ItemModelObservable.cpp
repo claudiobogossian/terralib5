@@ -405,7 +405,7 @@ void te::layout::ItemModelObservable::drawBackground( ContextItem context )
 
   if(m_border)
   {
-    canvas->setPolygonContourWidth(2);
+    canvas->setPolygonContourWidth(1);
     canvas->setPolygonContourColor(m_borderColor);
   }
   else

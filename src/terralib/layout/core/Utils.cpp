@@ -654,3 +654,20 @@ bool te::layout::Utils::getApplyZoom()
 {
   return m_applyZoom;
 }
+
+void te::layout::Utils::resetCanvas()
+{
+  te::map::Canvas* canvas = Context::getInstance().getCanvas();
+
+  if(!canvas)
+  {
+    return;
+  }
+
+  canvas->clear();
+  canvas->setLineWidth(1);
+  canvas->setPointWidth(1);
+  canvas->setPolygonContourWidth(1);
+  canvas->setPolygonPatternWidth(1);
+  canvas->setTextContourWidth(1);
+}

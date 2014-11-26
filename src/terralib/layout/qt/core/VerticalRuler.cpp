@@ -114,6 +114,8 @@ void te::layout::VerticalRuler::drawRuler( QGraphicsView* view, QPainter* painte
   painter->drawRect(rfPaperV);
 
   painter->setBrush(brush);
+
+  pen.setWidth(0.1);
   painter->setPen(pen);
 
   painter->drawLine(rfLineV);
