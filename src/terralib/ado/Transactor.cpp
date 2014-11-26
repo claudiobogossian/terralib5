@@ -78,6 +78,16 @@ inline void TESTHR(HRESULT hr)
     _com_issue_error(hr);
 }
 
+bool isEnvelopeProperty(const std::string& name)
+{
+  if(name == "lower_x" ||
+    name == "lower_y" ||
+    name == "upper_x" ||
+    name == "upper_y")
+    return true;
+  return false;
+}
+
 te::ado::Transactor::Transactor(DataSource* ds)
   : m_ds(ds),
     m_conn(0),
@@ -449,6 +459,9 @@ void te::ado::Transactor::addProperty(const std::string& datasetName, te::dt::Pr
 {
   const std::string& propertyName = p->getName();
 
+  if(isEnvelopeProperty(propertyName) && propertyExists(datasetName, propertyName))
+    return;
+
   if(propertyExists(datasetName, propertyName))
     throw Exception((boost::format(TE_TR("The dataset already \"%1%\" has a property with this name \"%2%\"!")) % datasetName % propertyName).str());
 
@@ -520,6 +533,10 @@ void te::ado::Transactor::addProperty(const std::string& datasetName, te::dt::Pr
 
       case te::dt::GEOMETRY_TYPE:
       {
+        // verify if already exist envelope properties
+        if(propertyExists(datasetName, "lower_x"))
+          break;
+
         const te::dt::SimpleProperty* simple = static_cast<const te::dt::SimpleProperty*>(p);
 
         if(!simple->isRequired())

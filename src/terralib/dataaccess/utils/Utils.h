@@ -32,7 +32,6 @@
 #include "../query/Expression.h"
 #include "../query/Fields.h"
 #include "../query/Select.h"
-#include "../../maptools/AbstractLayer.h"
 
 // Boost
 #include <boost/ptr_container/ptr_vector.hpp>
@@ -333,13 +332,13 @@ namespace te
     TEDATAACCESSEXPORT bool IsValidName(const std::string& name, std::string& invalidChar);
 
     /*!
-      \brief It checks if the layer has linked table.
+      \brief It checks if the datasettype has a linked table.
 
-      \param layer        The layer.
+      \param type The Datasettype.
 
       \return True if has linked table.
     */
-    TEDATAACCESSEXPORT bool HasLinkedTable(te::map::AbstractLayer* layer);
+    TEDATAACCESSEXPORT bool HasLinkedTable(te::da::DataSetType* type);
 
     /*!
       \brief It gets the summarized value.
