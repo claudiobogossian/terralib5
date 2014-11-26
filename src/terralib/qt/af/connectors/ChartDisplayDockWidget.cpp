@@ -160,7 +160,7 @@ void te::qt::af::ChartDisplayDockWidget::selectionChanged(te::da::ObjectIdSet* o
     added->addProperty(m_layer->getData()->getPropertyName(*it), *it, m_layer->getData()->getPropertyDataType(*it));
 
   //Acquiring the envelope
-  if(added->size() > 0)
+  if(added->size() > 0 && m_layer->getSchema()->hasGeom())
   {
     std::auto_ptr<te::da::DataSet> ds = m_layer->getData(added);
     ds->moveBeforeFirst();

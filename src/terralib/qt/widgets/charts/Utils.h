@@ -205,19 +205,6 @@ namespace te
     */
     TEQTWIDGETSEXPORT QwtSymbol* Terralib2Qwt(te::se::Graphic* graphic);
 
-    /*
-      \function getBasePkey
-      \brief Function used to acquire the string that represents the objectId of the base dataset.
-
-      \param oid The objectId as returned from the dataset;
-      \param dsProps A pair that indicates the name of the base dataset and how many key properties it's got
-
-      \note Will return the whole objectId as a string unless the dataset of interest is based on a linked layer,
-          otherwise it returns a string that represents the objectId of the base Dataset.
-      \note It will not take ownership of the given objectId pointer
-    */
-    TEQTWIDGETSEXPORT std::string getBasePkey(te::da::ObjectId* oid, std::pair<std::string, int>& dsProps);
-
     } // end namespace widgets
   }   // end namespace qt
 }     // end namespace te

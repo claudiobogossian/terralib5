@@ -26,6 +26,7 @@
 // TerraLib
 #include "../../../color/RGBAColor.h"
 #include "../../../common/STLUtils.h"
+#include "../../../dataaccess/utils/Utils.h"
 #include "../../../maptools/Chart.h"
 #include "../../../maptools/Enums.h"
 #include "../utils/ColorPickerToolButton.h"
@@ -77,6 +78,33 @@ void te::qt::widgets::ChartLayerWidget::setLayer(te::map::AbstractLayerPtr layer
   m_layer = layer;
 
   listAttributes();
+
+  m_ui->m_summaryComboBox->clear();
+  if(te::da::HasLinkedTable(layer->getSchema().get()))
+  {
+
+    m_ui->m_summaryComboBox->addItem("MIN");
+    m_ui->m_summaryComboBox->addItem("MAX");
+    m_ui->m_summaryComboBox->addItem("SUM");
+    m_ui->m_summaryComboBox->addItem("AVERAGE");
+    m_ui->m_summaryComboBox->addItem("MEDIAN");
+    m_ui->m_summaryComboBox->addItem("STDDEV");
+    m_ui->m_summaryComboBox->addItem("VARIANCE");
+
+    if(m_layer->getChart())
+      m_ui->m_summaryComboBox->setCurrentText(QString::fromStdString(m_layer->getChart()->getSummary()));
+
+    m_ui->m_summaryComboBox->setEnabled(true);
+    m_ui->m_summaryComboBox->show();
+    m_ui->m_summaryLabel->show();
+  }
+  else
+  {
+    m_ui->m_summaryComboBox->addItem("NONE");
+    m_ui->m_summaryComboBox->setEnabled(false);
+    m_ui->m_summaryComboBox->hide();
+    m_ui->m_summaryLabel->hide();
+  }
 }
 
 bool te::qt::widgets::ChartLayerWidget::buildChart()
@@ -111,6 +139,7 @@ bool te::qt::widgets::ChartLayerWidget::buildChart()
   chart->setContourWidth((std::size_t)m_ui->m_contourWidthSpinBox->value());
   chart->setContourColor(te::qt::widgets::Convert2TerraLib(m_colorPicker->getColor()));
   chart->setAvoidConflicts(m_ui->m_avoidConflictsCheckBox->isChecked());
+  chart->setSummary(m_ui->m_summaryComboBox->currentText().toStdString());
 
    // Is necessary compute the max value?
   if(chart->getType() == te::map::Bar)

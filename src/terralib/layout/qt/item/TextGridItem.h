@@ -45,11 +45,11 @@ namespace te
 
         virtual ~TextGridItem();
 
-        virtual void init();
-
         virtual void refreshDocument();
 
       protected:
+
+        virtual void init();
 
         virtual void updateDocument();
     };

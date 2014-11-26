@@ -82,7 +82,7 @@ void te::layout::ItemController::redraw()
   contxt.setDpiX(dpiX);
   contxt.setDpiY(dpiY);
 
-  canvas->clear();
+  utils->resetCanvas();
   model->draw(contxt);
   canvas->clear();
 }

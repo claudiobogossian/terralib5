@@ -43,6 +43,13 @@ namespace te
       TypeRulerHorizontal = 90
     } LayoutRulerOrientation;
 
+    typedef TELAYOUTEXPORT enum
+    {
+      PreviewScene,
+      PrintingScene,
+      NoPrinter
+    } PrinterScene;
+
     /*!
     \brief Enum LayoutGridType. This is the enumeration of the grid types
     */

@@ -18,40 +18,65 @@
  */
 
 /*!
-  \file MultiLineTextController.h
+  \file PrintScene.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_MULTILINETEXT_CONTROLLER_H 
-#define __TERRALIB_LAYOUT_INTERNAL_MULTILINETEXT_CONTROLLER_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_PRINT_SCENE_H
+#define __TERRALIB_LAYOUT_INTERNAL_PRINT_SCENE_H
 
 // TerraLib
-#include "TextController.h"
+#include "../../core/Config.h"
+#include "../../core/enum/AbstractType.h"
+
+// Qt
+#include <QObject>
+#include <QRectF>
+
+class QGraphicsScene;
+class QPrinter;
+class QPainter;
 
 namespace te
 {
   namespace layout
   {
-    class MultiLineTextController : public TextController
+    class PaperConfig;
+
+    class TELAYOUTEXPORT PrintScene : public QObject
     {
+      Q_OBJECT //for slots/signals
+        
       public:
 
-        MultiLineTextController( Observable* o );
+        PrintScene( QGraphicsScene* scene, PaperConfig* config );
 
-        virtual ~MultiLineTextController();
+        virtual ~PrintScene();
 
-        virtual void setPosition(const double& x, const double& y);
+        virtual void printPreview();
+
+        virtual bool savePaperAsPDF();
+
+      protected slots:
+
+        virtual void printPaper(QPrinter* printer);
 
       protected:
 
-        MultiLineTextController( Observable* o, EnumType* type );
+        virtual QPrinter* createPrinter();
 
-        virtual void create();
+        virtual void renderScene( QPainter* newPainter, QPrinter* printer );
+
+        virtual void deselectAllItems();
+
+        QGraphicsScene* m_scene;
+        PaperConfig*    m_config;
+        te::layout::PrinterScene m_printState;
     };
   }
 }
 
-#endif
+#endif 

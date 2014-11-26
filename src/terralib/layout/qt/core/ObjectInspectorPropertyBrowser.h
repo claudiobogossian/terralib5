@@ -51,6 +51,7 @@ namespace te
     public:
 
 	    ObjectInspectorPropertyBrowser(QObject *parent = 0);
+
 	    virtual ~ObjectInspectorPropertyBrowser();
 
     private slots:

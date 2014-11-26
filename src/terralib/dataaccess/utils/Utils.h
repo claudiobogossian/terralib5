@@ -32,7 +32,6 @@
 #include "../query/Expression.h"
 #include "../query/Fields.h"
 #include "../query/Select.h"
-#include "../../maptools/AbstractLayer.h"
 
 // Boost
 #include <boost/ptr_container/ptr_vector.hpp>
@@ -150,6 +149,19 @@ namespace te
       \param pnames The vector that will be filled with the property names.
     */
     TEDATAACCESSEXPORT void GetOIDPropertyPos(const DataSetType* type, std::vector<std::size_t>& ppos);
+
+    /*
+      \function getBasePkey
+      \brief Function used to acquire the string that represents the objectId of the base dataset.
+
+      \param oid The objectId as returned from the dataset;
+      \param dsProps A pair that indicates the name of the base dataset and how many key properties it's got
+
+      \note Will return the whole objectId as a string unless the dataset of interest is based on a linked layer,
+          otherwise it returns a string that represents the objectId of the base Dataset.
+      \note It will not take ownership of the given objectId pointer
+    */
+    TEDATAACCESSEXPORT std::string getBasePkey(te::da::ObjectId* oid, std::pair<std::string, int>& dsProps);
 
     /*
       \brief It generates the set of object ids for every element of the given dataset.
@@ -320,13 +332,13 @@ namespace te
     TEDATAACCESSEXPORT bool IsValidName(const std::string& name, std::string& invalidChar);
 
     /*!
-      \brief It checks if the layer has linked table.
+      \brief It checks if the datasettype has a linked table.
 
-      \param layer        The layer.
+      \param type The Datasettype.
 
       \return True if has linked table.
     */
-    TEDATAACCESSEXPORT bool HasLinkedTable(te::map::AbstractLayer* layer);
+    TEDATAACCESSEXPORT bool HasLinkedTable(te::da::DataSetType* type);
 
     /*!
       \brief It gets the summarized value.

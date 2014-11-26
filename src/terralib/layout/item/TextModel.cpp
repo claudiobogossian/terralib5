@@ -43,6 +43,8 @@ te::layout::TextModel::TextModel() :
   m_type = Enums::getInstance().getEnumObjectType()->getTextItem();
 
   m_box = te::gm::Envelope(0., 0., 40., 20.);
+
+  m_font.setPointSize(12);
 }
 
 te::layout::TextModel::~TextModel()
@@ -63,13 +65,7 @@ te::layout::Properties* te::layout::TextModel::getProperties() const
   ItemModelObservable::getProperties();
 
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
-
-  Property pro_text;
-  pro_text.setName("Text");
-  pro_text.setId("");
-  pro_text.setValue(m_text, dataType->getDataTypeString());
-  m_properties->addProperty(pro_text);
-
+  
   Property pro_font;
   pro_font.setName("Font");
   pro_font.setId("");
@@ -114,4 +110,9 @@ std::string te::layout::TextModel::getText()
 te::layout::Font te::layout::TextModel::getFont()
 {
   return m_font;
+}
+
+void te::layout::TextModel::setFont( Font ft )
+{
+  m_font = ft;
 }

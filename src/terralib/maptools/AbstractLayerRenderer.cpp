@@ -237,7 +237,7 @@ void te::map::AbstractLayerRenderer::drawLayerGeometries(AbstractLayer* layer,
   te::map::QueryLayer* qlayer = 0;
   te::da::Select* select = 0;
 
-  bool linked = te::da::HasLinkedTable(layer);
+  bool linked = te::da::HasLinkedTable(layer->getSchema().get());
   if(linked)
   {
     // make sorting by object id
@@ -536,7 +536,7 @@ void te::map::AbstractLayerRenderer::drawLayerGroupingMem(AbstractLayer* layer,
 {
   assert(!geomPropertyName.empty());
 
-  if(te::da::HasLinkedTable(layer))
+  if(te::da::HasLinkedTable(layer->getSchema().get()))
   {
     drawLayerLinkedGroupingMem(layer, geomPropertyName, canvas, bbox, srid);
     return;

@@ -30,33 +30,67 @@
 
 // TerraLib
 #include "../../core/Config.h"
-#include "../item/MapItem.h"
-#include "../../core/enum/AbstractType.h"
-#include "../../core/enum/EnumType.h"
-
-// Qt
-#include <QGraphicsItem>
-#include <QList>
+#include "../../../geometry/Point.h"
 
 // STL
 #include <vector>
+#include <string>
+#include <map>
+
+// Qt
+#include <QList>
+
+class QGraphicsItem;
+class QGraphicsScene;
+class QFont;
 
 namespace te
 {
   namespace layout
   {
-    TELAYOUTEXPORT std::vector<MapItem*> getMapItemList(QList<QGraphicsItem*> graphicsItems);
+    class MapItem;
+    class EnumType;
+    class MapModel;
 
-    TELAYOUTEXPORT MapItem* getMapItem(QList<QGraphicsItem*> graphicsItems, std::string name);
+    class TELAYOUTEXPORT ItemUtils
+    {
+      public:
 
-    TELAYOUTEXPORT std::vector<std::string> mapNameList(QList<QGraphicsItem*> graphicsItems);
+        ItemUtils( QGraphicsScene* scene );
 
-    TELAYOUTEXPORT int countType(QList<QGraphicsItem*> graphicsItems, te::layout::EnumType* type);
+        virtual ~ItemUtils();
 
-    TELAYOUTEXPORT int maxTypeId(QList<QGraphicsItem*> graphicsItems, te::layout::EnumType* type);
+        virtual std::vector<MapItem*> getMapItemList(bool selected = false);
 
-    TELAYOUTEXPORT bool isCurrentMapTools();
+        virtual MapItem* getMapItem(std::string name);
+
+        virtual std::vector<std::string> mapNameList(bool selected = false);
+
+        virtual int countType(te::layout::EnumType* type);
+
+        virtual int maxTypeId(te::layout::EnumType* type);
+
+        virtual bool isCurrentMapTools();
+
+        virtual void setCurrentToolInSelectedMapItems(EnumType* mode);
+
+        virtual void createTextGridAsObject();
+
+        virtual void createTextMapAsObject();
+
+        virtual void createLegendChildAsObject();
+
+      protected:
+
+        virtual QList<QGraphicsItem*> getItems(bool selected = false);
+
+        virtual void createTextItemFromObject(std::map<te::gm::Point*, std::string> map, QFont* ft = 0);
+
+        virtual void createLegendChildItemFromLegend(std::map<te::gm::Point*, std::string> map, MapModel* visitable);
+
+        QGraphicsScene* m_scene;
+    };
   }
 }
 
-#endif
+#endif 

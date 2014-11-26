@@ -56,7 +56,6 @@
 #include "../query/Where.h"
 #include "../Enums.h"
 #include "../Exception.h"
-#include "../../maptools/QueryLayer.h"
 #include "Utils.h"
 
 // STL
@@ -380,6 +379,19 @@ void te::da::GetOIDDatasetProps(const DataSetType* type, std::pair<std::string, 
       break;
     }
   }
+}
+
+std::string te::da::getBasePkey(te::da::ObjectId* oid, std::pair<std::string, int>& dsProps)
+{
+  assert(oid);
+  std::string res;
+  boost::ptr_vector<te::dt::AbstractData> curValues;
+  curValues = oid->getValue();
+  for(int i = 0; i < dsProps.second; ++i)
+  {
+    res = res + curValues[i].toString();
+  }
+  return res;
 }
 
 void te::da::GetOIDPropertyPos(const te::da::DataSetType* type, std::vector<std::size_t>& ppos)
@@ -1156,22 +1168,20 @@ bool te::da::IsValidName(const std::string& name, std::string& invalidChar)
 }
 
 
-bool te::da::HasLinkedTable(te::map::AbstractLayer* layer)
+bool te::da::HasLinkedTable(te::da::DataSetType* type)
 {
-  if(layer->getType() == "QUERYLAYER")
+  assert(type);
+  std::vector<te::dt::Property*> props = type->getPrimaryKey()->getProperties();
+  if(props.size() > 1)
   {
-    std::auto_ptr<te::da::DataSetType> schema = layer->getSchema();
-    std::vector<te::dt::Property*> props = schema->getPrimaryKey()->getProperties();
-    if(props.size() > 1)
+    size_t pksize = 0;
+    while(++pksize < props.size())
     {
-      size_t pksize = 0;
-      while(++pksize < props.size())
-      {
-        if(props[pksize-1]->getDatasetName() != props[pksize]->getDatasetName())
-          return true;
-      }
+      if(props[pksize-1]->getDatasetName() != props[pksize]->getDatasetName())
+        return true;
     }
   }
+
   return false;
 }
 
@@ -1307,6 +1317,7 @@ std::string te::da::GetSummarizedValue(const std::vector<std::string>& values, c
 
   return v;
 }
+
 double te::da::Round(const double& value, const size_t& precision)
 {
   double v = pow(10., (int)precision);

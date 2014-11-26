@@ -32,6 +32,20 @@ typedef te::common::Singleton< TerraLib > TeSingleton;
 #include <terralib/Config.h>
 #include <terralib/common/Enums.h>  
 #include <terralib/common/TerraLib.h>
+
+// Boost
+#include <boost/uuid/random_generator.hpp>
+#include <boost/uuid/uuid_io.hpp>
+
+/* Defining a function for generating randomic ids. */
+static std::string GetRandomicId()
+{
+  //Generates a randon id to the data source
+  boost::uuids::basic_random_generator<boost::mt19937> gen;
+  boost::uuids::uuid u = gen();
+  return boost::uuids::to_string(u);
+}
+
 %}
 
 /* Include SRS module to the bind. */
@@ -54,3 +68,6 @@ typedef te::common::Singleton< TerraLib > TeSingleton;
 
 /* Include Spatial Temporal module to the bind. */   
 %include common/ST.i
+
+// Wrap function
+std::string GetRandomicId();

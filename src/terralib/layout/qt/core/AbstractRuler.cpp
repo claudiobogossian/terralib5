@@ -29,7 +29,7 @@
 #include "AbstractRuler.h"
 #include "../../core/PaperConfig.h"
 
-te::layout::AbstractRuler::AbstractRuler(PaperConfig* paperConfig) :
+te::layout::AbstractRuler::AbstractRuler() :
   m_visible(true),
   m_blockSize(10),
   m_middleBlockSize(5),
@@ -37,7 +37,6 @@ te::layout::AbstractRuler::AbstractRuler(PaperConfig* paperConfig) :
   m_longLine(3.),
   m_mediumLine(2.5),
   m_smallLine(1.5),
-  m_paperConfig(paperConfig),
   m_height(7),
   m_cornerSize(7),
   m_spacingLineText(3.5)

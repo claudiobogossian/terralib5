@@ -63,6 +63,8 @@ namespace te
 
         virtual Font getFont();
 
+        virtual void setFont(Font ft);
+
        protected:
          
          std::string m_text;

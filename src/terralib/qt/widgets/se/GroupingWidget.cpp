@@ -134,6 +134,8 @@ std::auto_ptr<te::map::Grouping> te::qt::widgets::GroupingWidget::getGrouping()
   }
   group->setGroupingItems(groupingItems);
 
+  group->setSummary(m_ui->m_summaryComboBox->currentText().toStdString());
+
   return group;
 }
 
@@ -693,7 +695,7 @@ void te::qt::widgets::GroupingWidget::getDataAsDouble(std::vector<double>& vec, 
 {
   assert(m_layer.get());
 
-  if(te::da::HasLinkedTable(m_layer.get()))
+  if(te::da::HasLinkedTable(m_layer->getSchema().get()))
   {
     getLinkedDataAsDouble(vec, attrName, dataType, nullValues);
     return;
@@ -754,7 +756,7 @@ void te::qt::widgets::GroupingWidget::getLinkedDataAsDouble(std::vector<double>&
 
   std::auto_ptr<te::map::LayerSchema> dsType(m_layer->getSchema());
 
-  std::string function = "AVERAGE";
+  std::string function = m_ui->m_summaryComboBox->currentText().toStdString();
   std::vector<std::string> poid;
   size_t pksize = 0;
   te::map::QueryLayer* qlayer = 0;
@@ -795,13 +797,13 @@ void te::qt::widgets::GroupingWidget::getLinkedDataAsDouble(std::vector<double>&
   std::auto_ptr<te::da::DataSet> ds(m_layer->getData());
   qlayer->setQuery(select);
 
+  bool nullValue = false;
   std::vector<double> values;
   bool isBegin = true;
   ds->moveBeforeFirst();
 
   while(ds->moveNext())
   {
-    bool nullValue = false;
     if(pksize)
     {
       // it is linked. Remove redundancies.
@@ -861,21 +863,57 @@ void te::qt::widgets::GroupingWidget::getLinkedDataAsDouble(std::vector<double>&
       else // it is other object
       {
         // sumarize value according to the required summarization 
-        if(nullValue == false)
-          vec.push_back(te::da::GetSummarizedValue(values, function));
+        if(nullValue)
+           ++nullValues;
         else
-          ++nullValues;
+         vec.push_back(te::da::GetSummarizedValue(values, function));
+
+        nullValue = false;
         values.clear();
+
+        // get new value
+        if(ds->isNull(idx))
+          nullValue = true;
+        else
+        {
+          if(dataType == te::dt::INT16_TYPE)
+            values.push_back((double)ds->getInt16(idx));
+          else if(dataType == te::dt::INT32_TYPE)
+            values.push_back((double)ds->getInt32(idx));
+          else if(dataType == te::dt::INT64_TYPE)
+            values.push_back((double)ds->getInt64(idx));
+          else if(dataType == te::dt::FLOAT_TYPE)
+            values.push_back((double)ds->getFloat(idx));
+          else if(dataType == te::dt::DOUBLE_TYPE)
+            values.push_back(ds->getDouble(idx));
+          else if(dataType == te::dt::NUMERIC_TYPE)
+          {
+            QString strNum = ds->getNumeric(idx).c_str();
+
+            bool ok = false;
+
+            double value = strNum.toDouble(&ok);
+
+            if(ok)
+              values.push_back(value);
+          }
+        }
       }
     }
   }
+  // sumarize value according to the required summarization 
+  if(nullValue)
+    ++nullValues;
+  else
+    vec.push_back(te::da::GetSummarizedValue(values, function));
+  values.clear();
 }
 
 void te::qt::widgets::GroupingWidget::getDataAsString(std::vector<std::string>& vec, const std::string& attrName, int& nullValues)
 {
   assert(m_layer.get());
 
-  if(te::da::HasLinkedTable(m_layer.get()))
+  if(te::da::HasLinkedTable(m_layer->getSchema().get()))
   {
     getLinkedDataAsString(vec, attrName,  nullValues);
     return;
@@ -913,7 +951,7 @@ void te::qt::widgets::GroupingWidget::getLinkedDataAsString(std::vector<std::str
 
   std::auto_ptr<te::map::LayerSchema> dsType(m_layer->getSchema());
 
-  std::string function = "MIN";
+  std::string function = m_ui->m_summaryComboBox->currentText().toStdString();
   std::vector<std::string> poid;
   size_t pksize = 0;
   te::map::QueryLayer* qlayer = 0;
@@ -954,13 +992,13 @@ void te::qt::widgets::GroupingWidget::getLinkedDataAsString(std::vector<std::str
   std::auto_ptr<te::da::DataSet> ds(m_layer->getData());
   qlayer->setQuery(select);
 
+  bool nullValue = false;
   std::vector<std::string> values;
   bool isBegin = true;
   ds->moveBeforeFirst();
 
   while(ds->moveNext())
   {
-    bool nullValue = false;
     if(pksize)
     {
       // it is linked. Remove redundancies.
@@ -998,14 +1036,28 @@ void te::qt::widgets::GroupingWidget::getLinkedDataAsString(std::vector<std::str
       else // it is other object
       {
         // sumarize value according to the required summarization 
-        if(nullValue == false)
-          vec.push_back(te::da::GetSummarizedValue(values, function));
-        else
+        if(nullValue)
           ++nullValues;
+        else
+          vec.push_back(te::da::GetSummarizedValue(values, function));
+
+        nullValue = false;
         values.clear();
+
+        // get new value
+        if(ds->isNull(idx))
+          nullValue = true;
+        else
+          values.push_back(ds->getAsString(idx));
       }
     }
   }
+  // sumarize value according to the required summarization 
+  if(nullValue)
+    ++nullValues;
+  else
+    vec.push_back(te::da::GetSummarizedValue(values, function));
+  values.clear();
 }
 
 void te::qt::widgets::GroupingWidget::createDoubleNullGroupingItem(int count)
@@ -1196,6 +1248,33 @@ void te::qt::widgets::GroupingWidget::setLayers(te::map::AbstractLayerPtr select
 
   //set grouping
   setGrouping();
+
+  //Adjusting summary options
+  m_ui->m_summaryComboBox->clear();
+  if(te::da::HasLinkedTable(m_layer->getSchema().get()))
+  {
+    m_ui->m_summaryComboBox->addItem("MIN");
+    m_ui->m_summaryComboBox->addItem("MAX");
+    m_ui->m_summaryComboBox->addItem("SUM");
+    m_ui->m_summaryComboBox->addItem("AVERAGE");
+    m_ui->m_summaryComboBox->addItem("MEDIAN");
+    m_ui->m_summaryComboBox->addItem("STDDEV");
+    m_ui->m_summaryComboBox->addItem("VARIANCE");
+
+    if(m_layer->getGrouping())
+      m_ui->m_summaryComboBox->setCurrentText(QString::fromStdString(m_layer->getGrouping()->getSummary()));
+
+    m_ui->m_summaryComboBox->setEnabled(true);
+    m_ui->m_summaryComboBox->show();
+    m_ui->m_summaryLabel->show();
+  }
+  else
+  {
+    m_ui->m_summaryComboBox->addItem("NONE");
+    m_ui->m_summaryComboBox->setEnabled(false);
+    m_ui->m_summaryComboBox->hide();
+    m_ui->m_summaryLabel->hide();
+  }
 
   for(std::size_t i = 0; i < allLayers.size(); ++i)
   {

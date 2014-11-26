@@ -386,7 +386,8 @@ void te::layout::PropertiesOutside::mapNameDynamicProperty( Property& property, 
     currentName = property.getOptionByCurrentChoice().toString();
   }
 
-  std::vector<std::string> strList = te::layout::mapNameList(m_allItems);
+  ItemUtils* iUtils = Context::getInstance().getItemUtils();
+  std::vector<std::string> strList = iUtils->mapNameList();
 
   if(std::find(strList.begin(), strList.end(), currentName) != strList.end())
   {
@@ -411,7 +412,11 @@ void te::layout::PropertiesOutside::changeMapVisitable( Property property )
   if(name.compare("") == 0)
     return;
 
-  MapItem* item = te::layout::getMapItem(m_allItems, name);
+  ItemUtils* iUtils = Context::getInstance().getItemUtils();
+  if(!iUtils)
+    return;
+
+  MapItem* item = iUtils->getMapItem(name);
   if(!item)
     return;
 
@@ -431,7 +436,11 @@ te::layout::MapModel* te::layout::PropertiesOutside::getMapModel( std::string na
 {
   MapModel* map = 0;
 
-  MapItem* item = te::layout::getMapItem(m_allItems, nameMap);
+  ItemUtils* iUtils = Context::getInstance().getItemUtils();
+  if(!iUtils)
+    return map;
+
+  MapItem* item = iUtils->getMapItem(nameMap);
   if(!item)
     return map;
 
@@ -448,4 +457,10 @@ te::layout::MapModel* te::layout::PropertiesOutside::getMapModel( std::string na
 void te::layout::PropertiesOutside::refreshOutside()
 {
   itemsSelected(m_graphicsItems, m_allItems);
+}
+
+void te::layout::PropertiesOutside::onClear( std::vector<std::string> names )
+{
+  m_updatingValues = false;
+  m_layoutPropertyBrowser->clearAll();
 }

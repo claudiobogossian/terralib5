@@ -58,6 +58,7 @@
 #include "ui_VectorToVectorDialogForm.h"
 
 // Qt
+#include <QDialog>
 #include <QDialogButtonBox>
 #include <QFileDialog>
 #include <QList>
@@ -105,6 +106,9 @@ te::attributefill::VectorToVectorDialog::VectorToVectorDialog(QWidget* parent, Q
   connect(m_ui->m_rejectAllComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onRejectAllComboBoxChanged(int)));
 
   connect(m_ui->m_selectAttrToolButton, SIGNAL(pressed()), this,  SLOT(onSelectAttrToolButtonPressed()));
+
+  m_ui->m_helpPushButton->setNameSpace("dpi.inpe.br.plugins"); 
+  m_ui->m_helpPushButton->setPageReference("plugins/attributefill/attrfill_vector_to_vector.html");
 }
 
 te::attributefill::VectorToVectorDialog::~VectorToVectorDialog()
@@ -913,14 +917,15 @@ void te::attributefill::VectorToVectorDialog::onSelectAttrToolButtonPressed()
   }
 
   QDialog* dialog = new QDialog(this);
+  dialog->setWindowTitle(tr("Vector To Vector"));
 
   QBoxLayout* vLayout = new QBoxLayout(QBoxLayout::TopToBottom, dialog);
 
   te::qt::widgets::DoubleListWidget* d = new te::qt::widgets::DoubleListWidget(this);
   d->setInputValues(inputNames);
   d->setOutputValues(outputNames);
-  d->setLeftLabel("Layer Attributes");
-  d->setRightLabel("Selected Attributes");
+  d->setLeftLabel(tr("Layer Attributes").toStdString());
+  d->setRightLabel(tr("Selected Attributes").toStdString());
   vLayout->addWidget(d);
 
   QDialogButtonBox* bbox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, dialog);
