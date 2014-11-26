@@ -756,7 +756,7 @@ void te::qt::widgets::GroupingWidget::getLinkedDataAsDouble(std::vector<double>&
 
   std::auto_ptr<te::map::LayerSchema> dsType(m_layer->getSchema());
 
-  std::string function = "AVERAGE";
+  std::string function = m_ui->m_summaryComboBox->currentText().toStdString();
   std::vector<std::string> poid;
   size_t pksize = 0;
   te::map::QueryLayer* qlayer = 0;
@@ -951,7 +951,7 @@ void te::qt::widgets::GroupingWidget::getLinkedDataAsString(std::vector<std::str
 
   std::auto_ptr<te::map::LayerSchema> dsType(m_layer->getSchema());
 
-  std::string function = "MIN";
+  std::string function = m_ui->m_summaryComboBox->currentText().toStdString();
   std::vector<std::string> poid;
   size_t pksize = 0;
   te::map::QueryLayer* qlayer = 0;
