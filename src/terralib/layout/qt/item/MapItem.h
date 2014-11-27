@@ -59,6 +59,7 @@ namespace te
       public:
 
         MapItem( ItemController* controller, Observable* o );
+
         virtual ~MapItem();
         
         virtual void updateObserver(ContextItem context);
@@ -67,20 +68,14 @@ namespace te
 
         virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem* option, QWidget * widget = 0 );
         
-        virtual void setPos(const QPointF &pos);
-
         void	setZValue ( qreal z );
-
-        virtual QRectF	boundingRect () const;
-
+        
         virtual void changeCurrentTool(EnumType* mode);
 
         void clearCurrentTool();
 
         virtual te::color::RGBAColor** getImage();
-
-        virtual void setRect(QRectF rect);
-
+        
         virtual void updateProperties(te::layout::Properties* properties);
                                 
       protected slots:
@@ -108,6 +103,8 @@ namespace te
       virtual void resizeEvent ( QGraphicsSceneResizeEvent * event );
 
       virtual QVariant	itemChange ( GraphicsItemChange change, const QVariant & value );
+
+      virtual bool	eventFilter ( QObject * object, QEvent * event );
       
       virtual te::gm::Coord2D getPosition();
             
@@ -133,18 +130,18 @@ namespace te
 
     protected:
 
-      QPixmap m_pixmap;
-      QPixmap m_mapPixmap;
-      QRectF  m_rect;//In local coordinate
-      QMimeData* m_mime;
-      
+      QPixmap                                 m_pixmap;
+      QPixmap                                 m_mapPixmap;
+      QRectF                                  m_rect;//In local coordinate
+      QMimeData*                              m_mime;      
       te::qt::widgets::MultiThreadMapDisplay* m_mapDisplay;
-      bool m_grabbedByWidget;
-      te::qt::widgets::AbstractTreeItem* m_treeItem;
-      te::qt::widgets::AbstractTool* m_tool;
-      double                  m_wMargin;
-      double                  m_hMargin;
-      te::map::AbstractLayerPtr m_layer;
+      bool                                    m_grabbedByWidget;
+      te::qt::widgets::AbstractTreeItem*      m_treeItem;
+      te::qt::widgets::AbstractTool*          m_tool;
+      double                                  m_wMargin;
+      double                                  m_hMargin;
+      te::map::AbstractLayerPtr               m_layer;
+      bool                                    m_move;
     };
   }
 }

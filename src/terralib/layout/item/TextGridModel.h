@@ -30,6 +30,11 @@
 
 // TerraLib
 #include "TitleModel.h"
+#include "../../geometry/Point.h"
+
+// STL
+#include <map>
+#include <string>
 
 namespace te
 {
@@ -40,7 +45,20 @@ namespace te
       public:
 
         TextGridModel();
+
         virtual ~TextGridModel();
+
+        virtual void addText(te::gm::Point* cell, std::string text);
+
+        virtual void removeCell(te::gm::Point* cell);
+        
+        virtual std::map<te::gm::Point*, std::string> getTextCells();
+
+        virtual void clearTextCells();
+
+      protected:
+
+        std::map<te::gm::Point*, std::string> m_textCells;
     };
   }
 }

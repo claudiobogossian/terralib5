@@ -71,10 +71,11 @@ void te::layout::ArrowModel::draw( ContextItem context )
 
 void te::layout::ArrowModel::drawArrow( te::map::Canvas* canvas, Utils* utils )
 {
-  canvas->setPolygonContourWidth(2);
+  canvas->setPolygonContourWidth(1);
   canvas->setPolygonContourColor(te::color::RGBAColor(0, 0, 0, 255));
   canvas->setPolygonFillColor(te::color::RGBAColor(0, 0, 0, 255));
   canvas->setLineColor(te::color::RGBAColor(0, 0, 0, 255));
+  canvas->setLineWidth(1);
 
   double y = m_box.getCenter().y;
 

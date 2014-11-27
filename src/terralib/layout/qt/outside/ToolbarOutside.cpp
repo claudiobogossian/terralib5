@@ -77,7 +77,6 @@ te::layout::ToolbarOutside::ToolbarOutside( OutsideController* controller, Obser
   m_optionPoint("geometry_point"),
   m_optionEllipse("geometry_ellipse"),
   m_optionArrow("geometry_arrow"),
-  m_optionMultiLineText("text_multiLineText"),
   m_optionStringGrid("text_stringGrid"),
   m_optionTitle("text_title"),
   m_optionMapCreateTextGrid("map_text_grid"),
@@ -94,7 +93,7 @@ te::layout::ToolbarOutside::ToolbarOutside( OutsideController* controller, Obser
   m_optionDrawMap("draw_map"),
   m_optionMapCreateLegendChildAsObject("legend_child"),
   m_optionObjectToImage("object_to_image"),
-  m_btnMap(0)
+  m_comboZoom(0)
 {
 	te::gm::Envelope box = m_model->getBox();	
 
@@ -149,10 +148,7 @@ void te::layout::ToolbarOutside::createToolbar()
 
   createUndoToolButton();
   this->addSeparator();
-
-  /*createLineIntersectionToolButton();
-  this->addSeparator();*/
-
+  
   createViewAreaToolButton();
   createMapToolsToolButton();
   this->addSeparator();
@@ -328,23 +324,22 @@ void te::layout::ToolbarOutside::createLineIntersectionToolButton()
 
 void te::layout::ToolbarOutside::createSceneZoomCombobox()
 {
-  m_comboSceneZoom = new QComboBox();
-  m_comboSceneZoom->setObjectName(m_optionSceneZoom.c_str());
+  m_comboZoom = new QComboBox();
+  m_comboZoom->setObjectName(m_optionSceneZoom.c_str());
 
-  m_comboSceneZoom->addItem("42%", 0.42);
-  m_comboSceneZoom->addItem("50%", 0.5);
-  m_comboSceneZoom->addItem("70%", 0.7);
-  m_comboSceneZoom->addItem("100%", 1.);
-  m_comboSceneZoom->addItem("150%", 1.5);
-  m_comboSceneZoom->addItem("200%", 2.);
-  m_comboSceneZoom->addItem("300%", 3.);
-  m_comboSceneZoom->addItem("400%", 4.); 
+  m_comboZoom->addItem("42%", 0.42);
+  m_comboZoom->addItem("50%", 0.5);
+  m_comboZoom->addItem("70%", 0.7);
+  m_comboZoom->addItem("100%", 1.);
+  m_comboZoom->addItem("150%", 1.5);
+  m_comboZoom->addItem("200%", 2.);
+  m_comboZoom->addItem("300%", 3.); 
 
-  connect(m_comboSceneZoom, SIGNAL(currentIndexChanged(int)), this, SLOT(onSceneZoomCurrentIndexChanged(int)));
-  m_comboSceneZoom->setCurrentIndex(1);
-  Context::getInstance().setDefaultZoomFactor(m_comboSceneZoom->itemData(1).toDouble());
+  connect(m_comboZoom, SIGNAL(currentIndexChanged(int)), this, SLOT(onSceneZoomCurrentIndexChanged(int)));
+  m_comboZoom->setCurrentIndex(1);
+  Context::getInstance().setDefaultZoomFactor(m_comboZoom->itemData(1).toDouble());
   
-  this->addWidget(m_comboSceneZoom);
+  this->addWidget(m_comboZoom);
 }
 
 void te::layout::ToolbarOutside::createBringToFrontToolButton()
@@ -381,10 +376,7 @@ void te::layout::ToolbarOutside::createTextToolButton()
 
   QAction* actionTxtDefault = createAction("Default Text Object", m_optionTextDefault, "layout-default-text");
   menu->addAction(actionTxtDefault);
-
-  QAction* actionMultiLineText = createAction("MultiLine Text Object", m_optionMultiLineText, "layout-multiline-text");
-  menu->addAction(actionMultiLineText);
-
+  
   QAction* actionTitle = createAction("Title Object", m_optionTitle, "layout-title");
   menu->addAction(actionTitle);
 
@@ -472,6 +464,9 @@ void te::layout::ToolbarOutside::createUndoToolButton()
   Scene* lScene = dynamic_cast<Scene*>(Context::getInstance().getScene());
 
   QUndoStack* undoStack = lScene->getUndoStack();
+
+  if(!undoStack)
+    return;
 
   QAction* actionUndo = undoStack->createUndoAction(this, tr("&Undo"));
   actionUndo->setShortcuts(QKeySequence::Undo);
@@ -654,7 +649,7 @@ void te::layout::ToolbarOutside::onLineIntersectionMouse( bool checked )
 
 void te::layout::ToolbarOutside::onSceneZoomCurrentIndexChanged( int index )
 {
-  QVariant variant = m_comboSceneZoom->itemData(index);
+  QVariant variant = m_comboZoom->itemData(index);
   double zoomFactor = Context::getInstance().getZoomFactor();
   if(variant.toDouble() != zoomFactor)
   {
@@ -680,7 +675,7 @@ void te::layout::ToolbarOutside::onSendToBackClicked( bool checked )
 void te::layout::ToolbarOutside::onRecomposeClicked( bool checked )
 {
   EnumModeType* type = Enums::getInstance().getEnumModeType();
-  m_comboSceneZoom->setCurrentIndex(1);
+  m_comboZoom->setCurrentIndex(1);
   changeAction(type->getModeRecompose());
 }
 
@@ -690,10 +685,6 @@ void te::layout::ToolbarOutside::onTextToolsTriggered( QAction* action )
   if(action->objectName().compare(m_optionTextDefault.c_str()) == 0)
   {
     changeAction(type->getModeCreateText());
-  }
-  else if(action->objectName().compare(m_optionMultiLineText.c_str()) == 0)
-  {
-    changeAction(type->getModeCreateMultiLineText());
   }
   else if(action->objectName().compare(m_optionStringGrid.c_str()) == 0)
   {
@@ -815,4 +806,18 @@ QAction* te::layout::ToolbarOutside::createAction( std::string text, std::string
   actionMenu->setToolTip(tooltip.c_str());
 
   return actionMenu;
+}
+
+QComboBox* te::layout::ToolbarOutside::getComboBoxZoom()
+{
+  return m_comboZoom;
+}
+
+void te::layout::ToolbarOutside::onChangeZoom( double factor )
+{
+  int index = m_comboZoom->findData(factor);
+  
+  if ( index != -1 ) { // -1 for not found
+    m_comboZoom->setCurrentIndex(index);
+  }
 }

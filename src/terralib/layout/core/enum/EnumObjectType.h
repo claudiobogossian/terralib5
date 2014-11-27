@@ -90,9 +90,7 @@ namespace te
         virtual EnumType* getTitleItem() const;
         
         virtual EnumType* getTextGridItem() const;
-        
-        virtual EnumType* getMultiLineTextItem() const;
-        
+                
         virtual EnumType* getEditTemplate() const;
         
         virtual EnumType* getMenuItem() const;
@@ -133,7 +131,6 @@ namespace te
         EnumType* m_ellipseItem;
         EnumType* m_titleItem;
         EnumType* m_textGridItem;
-        EnumType* m_multiLineTextItem;
         EnumType* m_editTemplate;
         EnumType* m_menuItem;
         EnumType* m_textGridSettings;

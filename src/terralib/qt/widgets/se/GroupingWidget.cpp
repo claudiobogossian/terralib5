@@ -756,7 +756,7 @@ void te::qt::widgets::GroupingWidget::getLinkedDataAsDouble(std::vector<double>&
 
   std::auto_ptr<te::map::LayerSchema> dsType(m_layer->getSchema());
 
-  std::string function = "AVERAGE";
+  std::string function = m_ui->m_summaryComboBox->currentText().toStdString();
   std::vector<std::string> poid;
   size_t pksize = 0;
   te::map::QueryLayer* qlayer = 0;
@@ -951,7 +951,7 @@ void te::qt::widgets::GroupingWidget::getLinkedDataAsString(std::vector<std::str
 
   std::auto_ptr<te::map::LayerSchema> dsType(m_layer->getSchema());
 
-  std::string function = "MIN";
+  std::string function = m_ui->m_summaryComboBox->currentText().toStdString();
   std::vector<std::string> poid;
   size_t pksize = 0;
   te::map::QueryLayer* qlayer = 0;
@@ -1262,7 +1262,10 @@ void te::qt::widgets::GroupingWidget::setLayers(te::map::AbstractLayerPtr select
     m_ui->m_summaryComboBox->addItem("VARIANCE");
 
     if(m_layer->getGrouping())
-      m_ui->m_summaryComboBox->setCurrentText(QString::fromStdString(m_layer->getGrouping()->getSummary()));
+    {
+      int index = m_ui->m_summaryComboBox->findText(QString::fromStdString(m_layer->getGrouping()->getSummary()));
+      m_ui->m_summaryComboBox->setCurrentIndex(index);
+    }
 
     m_ui->m_summaryComboBox->setEnabled(true);
     m_ui->m_summaryComboBox->show();

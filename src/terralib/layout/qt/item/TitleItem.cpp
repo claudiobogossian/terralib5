@@ -52,7 +52,7 @@
 te::layout::TitleItem::TitleItem( ItemController* controller, Observable* o ) :
   TextItem(controller, o)
 {
-  m_document->clear();
+  init();
 }
 
 te::layout::TitleItem::~TitleItem()
@@ -107,6 +107,15 @@ void te::layout::TitleItem::updateDocument()
 
   QTextTableFormat tableFormat;
   tableFormat.setAlignment(Qt::AlignLeft);
+
+  QVector<QTextLength> constraints;
+
+  for(int c = 0 ; c < 2 ; ++c)
+  {
+    constraints << QTextLength(QTextLength::PercentageLength, 100);    
+  }
+
+  tableFormat.setColumnWidthConstraints(constraints);
   
   tableFormat.setHeaderRowCount(1);
 
@@ -154,6 +163,8 @@ void te::layout::TitleItem::updateDocument()
   QTextCursor cellCursorTwo = cellTwo.firstCursorPosition();
   std::string txt = model->getText();
   cellCursorTwo.insertText(txt.c_str(), format);
+
+  adjustSize();
 }
 
 void te::layout::TitleItem::refreshDocument()
@@ -185,7 +196,4 @@ void te::layout::TitleItem::refreshDocument()
   QTextCursor cellCursorTwo = cellTwo.firstCursorPosition();
   std::string txtTwo = cellCursorTwo.block().text().toStdString();
   model->setText(txtTwo);
-
-  QPixmap pixmp = QPixmap::fromImage(img);
-  setPixmap(pixmp);
 }

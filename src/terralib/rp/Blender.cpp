@@ -84,7 +84,8 @@ namespace te
       m_blockProcessedSignalPtr( 0 ), m_runningThreadsCounterPtr( 0 ),
       m_blendMethod( te::rp::Blender::InvalidBlendMethod ),
       m_interpMethod2( te::rst::Interpolator::NearestNeighbor ),
-      m_noDataValue( 0.0 ), m_forceInputNoDataValue( false ), 
+      m_noDataValue( 0.0 ), m_forceRaster1NoDataValue( false ),
+      m_forceRaster2NoDataValue( false ),  
       m_maxRasterCachedBlocks( 0 ), m_useProgress( false )
     {
     }
@@ -116,13 +117,12 @@ namespace te
       m_blendMethod = rhs.m_blendMethod;
       m_interpMethod2 = rhs.m_interpMethod2;
       m_noDataValue = rhs.m_noDataValue;
-      m_forceInputNoDataValue = rhs.m_forceInputNoDataValue;
+      m_forceRaster1NoDataValue = rhs.m_forceRaster1NoDataValue;
+      m_forceRaster2NoDataValue = rhs.m_forceRaster2NoDataValue;
       m_maxRasterCachedBlocks = rhs.m_maxRasterCachedBlocks;
-      m_pixelOffsetsA1 = rhs.m_pixelOffsetsA1;
-      m_pixelOffsetsB1 = rhs.m_pixelOffsetsB1;
+      m_pixelOffsets1 = rhs.m_pixelOffsets1;
       m_pixelScales1 = rhs.m_pixelScales1;
-      m_pixelOffsetsA2 = rhs.m_pixelOffsetsA2;
-      m_pixelOffsetsB2 = rhs.m_pixelOffsetsB2;
+      m_pixelOffsets2 = rhs.m_pixelOffsets2;
       m_pixelScales2 = rhs.m_pixelScales2;
       m_useProgress = rhs.m_useProgress;
       
@@ -175,12 +175,11 @@ namespace te
       const te::rst::Interpolator::Method& interpMethod1,
       const te::rst::Interpolator::Method& interpMethod2,
       const double& noDataValue,
-      const bool forceInputNoDataValue,
-      const std::vector< double >& pixelOffsetsA1,
-      const std::vector< double >& pixelOffsetsB1,
+      const bool forceRaster1NoDataValue,
+      const bool forceRaster2NoDataValue,
+      const std::vector< double >& pixelOffsets1,
       const std::vector< double >& pixelScales1,
-      const std::vector< double >& pixelOffsetsA2,
-      const std::vector< double >& pixelOffsetsB2,
+      const std::vector< double >& pixelOffsets2,
       const std::vector< double >& pixelScales2,
       te::gm::MultiPolygon const * const r1ValidDataDelimiterPtr,
       te::gm::MultiPolygon const * const r2ValidDataDelimiterPtr,
@@ -198,16 +197,12 @@ namespace te
         "Invalid raster bands vector" );      
       TERP_TRUE_OR_RETURN_FALSE( raster1Bands.size() ==
         raster2Bands.size(), "Invalid raster bands vector" );
-      TERP_TRUE_OR_RETURN_FALSE( pixelOffsetsA1.size() ==  
+      TERP_TRUE_OR_RETURN_FALSE( pixelOffsets1.size() ==  
         raster1Bands.size(), "Invalid pixel offsets" );
-      TERP_TRUE_OR_RETURN_FALSE( pixelOffsetsB1.size() ==  
-        raster1Bands.size(), "Invalid pixel offsets" );      
       TERP_TRUE_OR_RETURN_FALSE( pixelScales1.size() ==  
         raster1Bands.size(), "Invalid pixel scales" );        
-      TERP_TRUE_OR_RETURN_FALSE( pixelOffsetsA2.size() ==  
+      TERP_TRUE_OR_RETURN_FALSE( pixelOffsets2.size() ==  
         raster2Bands.size(), "Invalid pixel offsets" );
-      TERP_TRUE_OR_RETURN_FALSE( pixelOffsetsB2.size() ==  
-        raster2Bands.size(), "Invalid pixel offsets" );      
       TERP_TRUE_OR_RETURN_FALSE( pixelScales2.size() ==  
         raster2Bands.size(), "Invalid pixel scales" );        
       TERP_TRUE_OR_RETURN_FALSE( ( r1ValidDataDelimiterPtr ?
@@ -540,13 +535,37 @@ namespace te
       
       // defining the interpolators
       
-      m_interp1Ptr.reset( new te::rst::Interpolator( &raster1, interpMethod1 ) );
-      m_interp2Ptr.reset( new te::rst::Interpolator( &raster2, interpMethod2 ) );
+      if( forceRaster1NoDataValue )
+      {
+        std::vector< std::complex<double> > noDataValues1( raster1.getNumberOfBands(),
+          std::complex<double>( noDataValue, 0.0 ) ); 
+        m_interp1Ptr.reset( new te::rst::Interpolator( &raster1, interpMethod1,
+          noDataValues1 ) );
+      }
+      else
+      {
+        m_interp1Ptr.reset( new te::rst::Interpolator( &raster1, interpMethod1 ) );
+      }      
+      
+      if( forceRaster2NoDataValue )
+      {
+        std::vector< std::complex<double> > noDataValues2( raster2.getNumberOfBands(),
+          std::complex<double>( noDataValue, 0.0 ) );
+        m_interp2Ptr.reset( new te::rst::Interpolator( &raster2, interpMethod2,
+          noDataValues2 ) );
+      }
+      else
+      {
+        m_interp2Ptr.reset( new te::rst::Interpolator( &raster2, interpMethod2 ) );
+      }
         
       m_interpMethod1 = interpMethod1;
       m_interpMethod2 = interpMethod2;
       
       // defining dummy values
+      
+      m_forceRaster1NoDataValue = forceRaster1NoDataValue;
+      m_forceRaster2NoDataValue = forceRaster2NoDataValue;
       
       for( std::vector< unsigned int >::size_type rasterBandsIdx = 0 ; 
         rasterBandsIdx < raster1Bands.size() ; ++rasterBandsIdx )
@@ -556,19 +575,25 @@ namespace te
         TERP_TRUE_OR_RETURN_FALSE( raster2Bands[ rasterBandsIdx ] <
           raster2.getNumberOfBands(), "Invalid band" );            
         
-        m_forceInputNoDataValue = forceInputNoDataValue;
-        if( forceInputNoDataValue )
+        if( forceRaster1NoDataValue )
         {
           m_raster1NoDataValues.push_back( noDataValue );
-          m_raster2NoDataValues.push_back( noDataValue );
         }
         else
         {
           m_raster1NoDataValues.push_back( raster1.getBand( raster1Bands[ 
             rasterBandsIdx ] )->getProperty()->m_noDataValue );
+        }
+        
+        if( forceRaster2NoDataValue )
+        {
+          m_raster2NoDataValues.push_back( noDataValue );
+        }
+        else
+        {
           m_raster2NoDataValues.push_back( raster2.getBand( raster2Bands[ 
             rasterBandsIdx ] )->getProperty()->m_noDataValue );
-        }
+        }        
       }
       
       m_outputNoDataValue = noDataValue;
@@ -580,12 +605,10 @@ namespace te
       
       // defining pixel offsets
       
-      m_pixelOffsetsA1 = pixelOffsetsA1;
-      m_pixelOffsetsB1 = pixelOffsetsB1;
+      m_pixelOffsets1 = pixelOffsets1;
       m_pixelScales1 = pixelScales1;
       
-      m_pixelOffsetsA2 = pixelOffsetsA2;
-      m_pixelOffsetsB2 = pixelOffsetsB2;
+      m_pixelOffsets2 = pixelOffsets2;
       m_pixelScales2 = pixelScales2;
       
       // threads
@@ -609,7 +632,8 @@ namespace te
     void Blender::initState()
     {
       m_enableProgressInterface = false;
-      m_forceInputNoDataValue = false;
+      m_forceRaster1NoDataValue = false;
+      m_forceRaster2NoDataValue = false;
       m_threadsNumber = 0;
       m_blendMethod = InvalidBlendMethod;
       m_blendFuncPtr = 0;
@@ -635,11 +659,9 @@ namespace te
       m_interp2Ptr.reset();
       m_raster1Bands.clear();
       m_raster2Bands.clear();
-      m_pixelOffsetsA1.clear();
-      m_pixelOffsetsB1.clear();
+      m_pixelOffsets1.clear();
       m_pixelScales1.clear();
-      m_pixelOffsetsA2.clear();
-      m_pixelOffsetsB2.clear();
+      m_pixelOffsets2.clear();
       m_pixelScales2.clear();
       m_raster1NoDataValues.clear();
       m_raster2NoDataValues.clear();
@@ -705,19 +727,18 @@ namespace te
           }
           else
           {
-            m_noBlendMethodImp_Value += m_pixelOffsetsA2[ m_noBlendMethodImp_BandIdx ];
+            
             m_noBlendMethodImp_Value *= m_pixelScales2[ m_noBlendMethodImp_BandIdx ];
-            m_noBlendMethodImp_Value += m_pixelOffsetsB2[ m_noBlendMethodImp_BandIdx ];
+            m_noBlendMethodImp_Value += m_pixelOffsets2[ m_noBlendMethodImp_BandIdx ];
             
             values[ m_noBlendMethodImp_BandIdx ] = m_noBlendMethodImp_Value;
-               
           }
         }
         else
         {
-          m_noBlendMethodImp_Value += m_pixelOffsetsA1[ m_noBlendMethodImp_BandIdx ]; 
+          
           m_noBlendMethodImp_Value *= m_pixelScales1[ m_noBlendMethodImp_BandIdx ];
-          m_noBlendMethodImp_Value += m_pixelOffsetsB1[ m_noBlendMethodImp_BandIdx ]; 
+          m_noBlendMethodImp_Value += m_pixelOffsets1[ m_noBlendMethodImp_BandIdx ]; 
           
           values[ m_noBlendMethodImp_BandIdx ] = m_noBlendMethodImp_Value;            
         }      
@@ -827,17 +848,13 @@ namespace te
             else
             {
               values[ m_euclideanDistanceMethodImp_BandIdx ] = 
-                (
-                  ( 
-                    m_euclideanDistanceMethodImp_cValue2.real() 
-                    +
-                    m_pixelOffsetsA2[ m_euclideanDistanceMethodImp_BandIdx ]
-                  )
+                ( 
+                  m_euclideanDistanceMethodImp_cValue2.real() 
                   *
                   m_pixelScales2[ m_euclideanDistanceMethodImp_BandIdx ]
                 )
                 +
-                m_pixelOffsetsB2[ m_euclideanDistanceMethodImp_BandIdx ]; 
+                m_pixelOffsets2[ m_euclideanDistanceMethodImp_BandIdx ];
             }
           }
           else
@@ -845,51 +862,39 @@ namespace te
             if( m_euclideanDistanceMethodImp_cValue2.real() == m_raster2NoDataValues[ m_euclideanDistanceMethodImp_BandIdx ] )
             {
               values[ m_euclideanDistanceMethodImp_BandIdx ] =
-                (
-                  (
-                    ( 
-                      m_euclideanDistanceMethodImp_cValue1.real()  
-                      +
-                      m_pixelOffsetsA1[ m_euclideanDistanceMethodImp_BandIdx ]
-                    )
-                  )
+                ( 
+                  m_euclideanDistanceMethodImp_cValue1.real()  
                   *
                   m_pixelScales1[ m_euclideanDistanceMethodImp_BandIdx ]
+                  
                 )
                 +
-                m_pixelOffsetsB1[ m_euclideanDistanceMethodImp_BandIdx ];
+                m_pixelOffsets1[ m_euclideanDistanceMethodImp_BandIdx ];
             }
             else
             {
               if( m_euclideanDistanceMethodImp_dist2 == 0.0 )
               {
                 values[ m_euclideanDistanceMethodImp_BandIdx ] =
-                  (
-                    ( 
-                      m_euclideanDistanceMethodImp_cValue1.real()  
-                      +
-                      m_pixelOffsetsA1[ m_euclideanDistanceMethodImp_BandIdx ]
-                    )
+                  ( 
+                    m_euclideanDistanceMethodImp_cValue1.real()  
                     *
                     m_pixelScales1[ m_euclideanDistanceMethodImp_BandIdx ]
                   )
                   +
-                  m_pixelOffsetsB1[ m_euclideanDistanceMethodImp_BandIdx ]; 
+                  m_pixelOffsets1[ m_euclideanDistanceMethodImp_BandIdx ]; 
               }
               else if( m_euclideanDistanceMethodImp_dist1 == 0.0 )
               {
                 values[ m_euclideanDistanceMethodImp_BandIdx ] =  
-                  (
-                    ( 
-                      m_euclideanDistanceMethodImp_cValue2.real()
-                      +
-                      m_pixelOffsetsA2[ m_euclideanDistanceMethodImp_BandIdx ]
-                    )
+                  ( 
+                    m_euclideanDistanceMethodImp_cValue2.real()
                     *
                     m_pixelScales2[ m_euclideanDistanceMethodImp_BandIdx ]
+                    
                   )
                   +
-                  m_pixelOffsetsB2[ m_euclideanDistanceMethodImp_BandIdx ]; 
+                  m_pixelOffsets2[ m_euclideanDistanceMethodImp_BandIdx ]; 
               }            
               else
               {
@@ -897,17 +902,14 @@ namespace te
                   (
                     (
                       (
-                        ( 
-                          (
-                            m_euclideanDistanceMethodImp_cValue1.real()  
-                            +
-                            m_pixelOffsetsA1[ m_euclideanDistanceMethodImp_BandIdx ]
-                          )
+                        (
+                          m_euclideanDistanceMethodImp_cValue1.real()  
                           *
                           m_pixelScales1[ m_euclideanDistanceMethodImp_BandIdx ] 
-                        ) 
+                          
+                        )
                         +
-                        m_pixelOffsetsB1[ m_euclideanDistanceMethodImp_BandIdx ]
+                        m_pixelOffsets1[ m_euclideanDistanceMethodImp_BandIdx ]
                       )
                       *
                       m_euclideanDistanceMethodImp_dist1
@@ -915,17 +917,13 @@ namespace te
                     +
                     (
                       (
-                        ( 
-                          (
-                            m_euclideanDistanceMethodImp_cValue2.real()
-                            +
-                            m_pixelOffsetsA2[ m_euclideanDistanceMethodImp_BandIdx ]
-                          )
+                        (
+                          m_euclideanDistanceMethodImp_cValue2.real()
                           * 
                           m_pixelScales2[ m_euclideanDistanceMethodImp_BandIdx ] 
-                        ) 
-                        + 
-                        m_pixelOffsetsB2[ m_euclideanDistanceMethodImp_BandIdx ]
+                        )
+                        +
+                        m_pixelOffsets2[ m_euclideanDistanceMethodImp_BandIdx ]
                       )
                       *
                       m_euclideanDistanceMethodImp_dist2
@@ -1003,17 +1001,13 @@ namespace te
             else
             {
               values[ m_sumMethodImp_BandIdx ] = 
-                (
-                  ( 
-                    m_sumMethodImp_cValue2.real()
-                    +
-                    m_pixelOffsetsA2[ m_sumMethodImp_BandIdx ]
-                  )
+                ( 
+                  m_sumMethodImp_cValue2.real()
                   *
                   m_pixelScales2[ m_sumMethodImp_BandIdx ]
                 )
                 +
-                m_pixelOffsetsB2[ m_sumMethodImp_BandIdx ]; 
+                m_pixelOffsets2[ m_sumMethodImp_BandIdx ]; 
             }
           }
           else
@@ -1021,51 +1015,36 @@ namespace te
             if( m_sumMethodImp_cValue2.real() == m_raster2NoDataValues[ m_sumMethodImp_BandIdx ] )
             {
               values[ m_sumMethodImp_BandIdx ] =  
-                (
-                  ( 
-                    m_sumMethodImp_cValue1.real()
-                    +
-                    m_pixelOffsetsA1[ m_sumMethodImp_BandIdx ]
-                  )
+                ( 
+                  m_sumMethodImp_cValue1.real()
+                  
                   *
                   m_pixelScales1[ m_sumMethodImp_BandIdx ]
                 )
                 +
-                m_pixelOffsetsB1[ m_sumMethodImp_BandIdx ]; 
+                m_pixelOffsets1[ m_sumMethodImp_BandIdx ]; 
             }
             else
             {
               values[ m_sumMethodImp_BandIdx ] =
                 (
                   (
-                    ( 
-                      (
-                        m_sumMethodImp_cValue1.real()  
-                        +
-                        m_pixelOffsetsA1[ m_sumMethodImp_BandIdx ]
-                      )
-                      * 
-                      m_pixelScales1[ m_sumMethodImp_BandIdx ] 
-                    ) 
-                    +
-                    m_pixelOffsetsB1[ m_sumMethodImp_BandIdx ]
+                    m_sumMethodImp_cValue1.real()  
+                    * 
+                    m_pixelScales1[ m_sumMethodImp_BandIdx ] 
                   )
+                  +
+                  m_pixelOffsets1[ m_sumMethodImp_BandIdx ]
                 )
                 +
                 (
                   (
-                    ( 
-                      (
-                        m_sumMethodImp_cValue2.real()
-                        +
-                        m_pixelOffsetsA2[ m_sumMethodImp_BandIdx ]
-                      )
-                      * 
-                      m_pixelScales2[ m_sumMethodImp_BandIdx ] 
-                    ) 
-                    + 
-                    m_pixelOffsetsB2[ m_sumMethodImp_BandIdx ]
+                    m_sumMethodImp_cValue2.real()
+                    * 
+                    m_pixelScales2[ m_sumMethodImp_BandIdx ]
                   )
+                  +
+                  m_pixelOffsets2[ m_sumMethodImp_BandIdx ]
                 );
             }          
           }      
@@ -1316,12 +1295,11 @@ namespace te
         auxThreadParams.m_blendMethod = m_blendMethod;
         auxThreadParams.m_interpMethod2 = m_interpMethod2;
         auxThreadParams.m_noDataValue = m_outputNoDataValue;
-        auxThreadParams.m_forceInputNoDataValue = m_forceInputNoDataValue;
-        auxThreadParams.m_pixelOffsetsA1 = m_pixelOffsetsA1;
-        auxThreadParams.m_pixelOffsetsB1 = m_pixelOffsetsB1;
+        auxThreadParams.m_forceRaster1NoDataValue = m_forceRaster1NoDataValue;
+        auxThreadParams.m_forceRaster2NoDataValue = m_forceRaster2NoDataValue;
+        auxThreadParams.m_pixelOffsets1 = m_pixelOffsets1;
         auxThreadParams.m_pixelScales1 = m_pixelScales1;
-        auxThreadParams.m_pixelOffsetsA2 = m_pixelOffsetsA2;
-        auxThreadParams.m_pixelOffsetsB2 = m_pixelOffsetsB2;
+        auxThreadParams.m_pixelOffsets2 = m_pixelOffsets2;
         auxThreadParams.m_pixelScales2 = m_pixelScales2;          
         
         std::vector< BlendIntoRaster1ThreadParams > allThreadsParams( m_threadsNumber,
@@ -1484,12 +1462,11 @@ namespace te
         te::rst::Interpolator::NearestNeighbor,
         paramsPtr->m_interpMethod2,
         paramsPtr->m_noDataValue,
-        paramsPtr->m_forceInputNoDataValue,
-        paramsPtr->m_pixelOffsetsA1,
-        paramsPtr->m_pixelOffsetsB1,
+        paramsPtr->m_forceRaster1NoDataValue,
+        paramsPtr->m_forceRaster2NoDataValue,
+        paramsPtr->m_pixelOffsets1,
         paramsPtr->m_pixelScales1,
-        paramsPtr->m_pixelOffsetsA2,
-        paramsPtr->m_pixelOffsetsB2,
+        paramsPtr->m_pixelOffsets2,
         paramsPtr->m_pixelScales2,
         paramsPtr->m_r1ValidDataDelimiterPtr.get(),
         paramsPtr->m_r2ValidDataDelimiterPtr.get(),

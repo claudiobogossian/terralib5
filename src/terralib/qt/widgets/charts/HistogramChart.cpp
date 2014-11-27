@@ -297,8 +297,12 @@ void te::qt::widgets::HistogramChart::highlight(const te::da::ObjectIdSet* oids,
       }
       else
       {
-        double interval = static_cast< const te::dt::Double*>(m_histogram->find((*itObjSet)))->getValue();
-        ++highlightedIntervals.at(interval);
+        const te::dt::Double* data = static_cast< const te::dt::Double*>(m_histogram->find((*itObjSet)));
+        if(data)
+        {
+          double interval = data->getValue();
+          ++highlightedIntervals.at(interval);
+        }
       }
     }
 

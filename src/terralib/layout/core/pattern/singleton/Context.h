@@ -50,6 +50,7 @@ namespace te
     class AbstractBuildGraphicsItem;
     class EnumType;
     class AbstractProxyProject;
+    class ItemUtils;
 
     class TELAYOUTEXPORT Context : public te::common::Singleton<Context>
     {
@@ -143,6 +144,10 @@ namespace te
         void setProxyProject(AbstractProxyProject* project);
 
         AbstractProxyProject* getProxyProject();
+        
+        void setItemUtils(ItemUtils* utils);
+
+        ItemUtils* getItemUtils();
 
         private:
       
@@ -183,6 +188,7 @@ namespace te
         AbstractBuildGraphicsItem*  m_buildGraphicsItem;
         SystematicScaleConfig*      m_systematicConfig;
         AbstractProxyProject*       m_proxyProject;
+        ItemUtils*                  m_itemUtils;
     };
   }
 }

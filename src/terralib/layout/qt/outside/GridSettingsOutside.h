@@ -75,9 +75,7 @@ namespace te
 
         /* Grid */
         virtual void on_pbClose_clicked();
-
-        virtual void on_pbCancel_clicked();
-
+        
         virtual void on_pbApply_clicked();
 
         virtual void on_helpPushButton_clicked();

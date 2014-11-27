@@ -65,50 +65,37 @@ bool te::layout::ViewZoomArea::mouseReleaseEvent(QMouseEvent* e)
 {
   m_zoomStarted = false;
 
-  // Roll back the default tool cursor
+  if(!m_view)
+    return false;
+
+  //Roll back the default tool cursor
   m_view->viewport()->setCursor(m_cursor);
 
   if(e->button() != Qt::LeftButton)
     return false;
 
-  // Calculates the extent translated
-  Scene* scene = dynamic_cast<Scene*>(m_view->scene());
+  Scene* scne = dynamic_cast<Scene*>(m_view->scene());
 
-  if(!scene)
+  if(!scne)
     return false;
 
+  QRect rect = m_rubberBand->geometry().normalized();
+
   ViewRubberBand::mouseReleaseEvent(e);
-    
-  double zoomFactor = Context::getInstance().getZoomFactor();
-  double newZoomFactor = zoomFactor + 0.5;
-  Context::getInstance().setZoomFactor(newZoomFactor);
 
-  QRect rec(m_rect.toRect());
+  //Conversion to world coordinates
+  QPolygonF poly = m_view->mapToScene(rect);
 
-  if(m_rect.isNull())
-  {
-    QRect rect = m_rubberBand->geometry().normalized();
-
-    rec.setRect(0, 0, m_view->width() * 0.5, m_view->height() * 0.5);
-    rec.moveCenter(m_origin);
-  }
-
-  // Conversion to world coordinates
-  QPolygonF poly = m_view->mapToScene(rec);
-
-  // Updates the map display with the new extent
+  //Updates 
   QRectF bounding = poly.boundingRect();
+  /*
+  Zoom In Area:
+  Scales the view matrix. The view is scaled according to aspectRatioMode.
+  Ensure that the scene rectangle rect fits inside the viewport
+  */
+  m_view->fitInView(bounding, Qt::KeepAspectRatio);
 
-  te::gm::Envelope* sceneBox = scene->getWorldBox();
+  scne->update();
 
-  sceneBox->m_llx = bounding.x();
-  sceneBox->m_lly = bounding.y();
-  sceneBox->m_urx = bounding.x() + bounding.width();
-  sceneBox->m_ury = bounding.y() + bounding.height();
-
-  scene->refresh(m_view, newZoomFactor);
-  scene->redrawItems(true);
-  scene->update();
-  
   return true;
 }

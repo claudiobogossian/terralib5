@@ -34,8 +34,7 @@
 // STL
 #include <sstream>
 
-te::layout::HorizontalRuler::HorizontalRuler(PaperConfig* paperConfig) :
-  AbstractRuler(paperConfig)
+te::layout::HorizontalRuler::HorizontalRuler() 
 {
  
 }
@@ -45,7 +44,7 @@ te::layout::HorizontalRuler::~HorizontalRuler()
 
 }
 
-void te::layout::HorizontalRuler::drawRuler( QGraphicsView* view, QPainter* painter )
+void te::layout::HorizontalRuler::drawRuler( QGraphicsView* view, QPainter* painter, double scale )
 {
   if(!painter)
     return;
@@ -56,7 +55,18 @@ void te::layout::HorizontalRuler::drawRuler( QGraphicsView* view, QPainter* pain
   if(!m_visible)
     return;
 
-  if(!m_paperConfig)
+  m_blockSize = 10;
+  m_middleBlockSize = 5;
+  m_smallBlockSize = 1;
+  m_longLine = 7.;
+  m_mediumLine = 6.5;
+  m_smallLine = 4.5;
+  m_height = 20;
+  m_cornerSize = 20;
+  m_spacingLineText = 9.5;
+
+  PaperConfig* paperConfig = Context::getInstance().getPaperConfig();
+  if(!paperConfig)
     return;
 
   QBrush brush = painter->brush();
@@ -69,24 +79,24 @@ void te::layout::HorizontalRuler::drawRuler( QGraphicsView* view, QPainter* pain
   
   double zoomFactor = Context::getInstance().getZoomFactor();
   double zoom = Context::getInstance().getZoomFactor();
-  zoomFactor = 1. / zoomFactor; //Keeps the appearance of the ruler to 100%
+  zoomFactor = 1. / scale; //Keeps the appearance of the ruler to 100%
 
-  QPointF ll = view->mapToScene(0, 0);
-  QPointF ur = view->mapToScene(view->width(), view->height());
+  QPointF ll = view->mapToScene(0, view->height());
+  QPointF ur = view->mapToScene(view->width(), 0);
   
   double h = 0;
   double w = 0;
 
-  m_paperConfig->getPaperSize(w, h);
+  paperConfig->getPaperSize(w, h);
 
   //Horizontal Ruler
-  QRectF rfH(QPointF(ll.x(), ll.y()), QPointF(ur.x(), ll.y() + m_height * zoomFactor));
-  QRectF rfBackH(QPointF(ll.x() + (m_cornerSize * zoomFactor), ll.y()), QPointF(ur.x(), ll.y() + (m_height - 1.5) * zoomFactor));
-  QRectF rfPaperH(QPointF(0, ll.y()), QPointF(w, ll.y() + (m_height - 1.5) * zoomFactor));
-  QLineF rfLineH(QPointF(ll.x() + (m_cornerSize * zoomFactor), ll.y() + m_height * zoomFactor), QPointF(ur.x(), ll.y() + m_height * zoomFactor));
+  QRectF rfH(QPointF(ll.x(), ur.y()), QPointF(ur.x(), ur.y() - m_height * zoomFactor));
+  QRectF rfBackH(QPointF(ll.x() + (m_cornerSize * zoomFactor), ur.y()), QPointF(ur.x(), ur.y() - (m_height - 1.5) * zoomFactor));
+  QRectF rfPaperH(QPointF(0, ur.y()), QPointF(w, ur.y() - (m_height - 1.5) * zoomFactor));
+  QLineF rfLineH(QPointF(ll.x() + (m_cornerSize * zoomFactor), ur.y() - m_height * zoomFactor), QPointF(ur.x(), ur.y() - m_height * zoomFactor));
   
   //Rect corner
-  QRectF rfRectCorner(QPointF(ll.x(), ll.y()), QPointF(ll.x() + m_cornerSize * zoomFactor, ll.y() + m_height * zoomFactor));
+  QRectF rfRectCorner(QPointF(ll.x(), ur.y()), QPointF(ll.x() + m_cornerSize * zoomFactor, ur.y() - m_height * zoomFactor));
 
   painter->save();
   painter->setPen(Qt::NoPen);
@@ -102,6 +112,8 @@ void te::layout::HorizontalRuler::drawRuler( QGraphicsView* view, QPainter* pain
   painter->drawRect(rfPaperH);
 
   painter->setBrush(brush);
+
+  pen.setWidth(0.1);
   painter->setPen(pen);
 
   painter->drawLine(rfLineH);
@@ -130,14 +142,14 @@ void te::layout::HorizontalRuler::drawRuler( QGraphicsView* view, QPainter* pain
   {
     if((i % (int)(m_blockSize)) == 0)
     {
-      box = QLineF(QPointF(i, y), QPointF(i, y - m_longLine * zoomFactor));  
+      box = QLineF(QPointF(i, y), QPointF(i, y + m_longLine * zoomFactor));  
 
       std::stringstream ss;//create a stringstream
       ss << i;//add number to the stream
 
       utils->textBoundingBox(wtxt, htxt, ss.str());
 
-      QPoint p = view->mapFromScene(QPointF((double)i - (wtxt/2.), y - m_spacingLineText * zoomFactor));
+      QPoint p = view->mapFromScene(QPointF((double)i - (wtxt/2.), y + m_spacingLineText * zoomFactor));
 
       //Keeps the size of the text.(Aspect)
       painter->setMatrixEnabled(false);
@@ -146,11 +158,11 @@ void te::layout::HorizontalRuler::drawRuler( QGraphicsView* view, QPainter* pain
     }
     else if((i % (int)(m_middleBlockSize)) == 0)
     {
-      box = QLineF(QPointF(i, y), QPointF(i, y - m_mediumLine * zoomFactor)); 
+      box = QLineF(QPointF(i, y), QPointF(i, y + m_mediumLine * zoomFactor)); 
     }
     else if((i % (int)(m_smallBlockSize)) == 0)
     {
-      box = QLineF(QPointF(i, y), QPointF(i, y - m_smallLine * zoomFactor));  
+      box = QLineF(QPointF(i, y), QPointF(i, y + m_smallLine * zoomFactor));  
     }
 
     painter->drawLine(box);
