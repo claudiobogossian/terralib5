@@ -1262,7 +1262,10 @@ void te::qt::widgets::GroupingWidget::setLayers(te::map::AbstractLayerPtr select
     m_ui->m_summaryComboBox->addItem("VARIANCE");
 
     if(m_layer->getGrouping())
-      m_ui->m_summaryComboBox->setCurrentText(QString::fromStdString(m_layer->getGrouping()->getSummary()));
+    {
+      int index = m_ui->m_summaryComboBox->findText(QString::fromStdString(m_layer->getGrouping()->getSummary()));
+      m_ui->m_summaryComboBox->setCurrentIndex(index);
+    }
 
     m_ui->m_summaryComboBox->setEnabled(true);
     m_ui->m_summaryComboBox->show();

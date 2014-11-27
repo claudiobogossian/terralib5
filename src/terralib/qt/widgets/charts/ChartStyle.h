@@ -224,7 +224,7 @@ namespace te
           QColor           m_backColor;     //!< The chart's background color.
 
       };
-    }; //end namespace widgets
+    }  //end namespace widgets
   }    //end namespace qt
 }      // end namespace te
 
