@@ -1191,7 +1191,7 @@ double te::da::GetSummarizedValue(std::vector<double>& values, const std::string
   if(size == 0)
     return 0;
 
-  double d, v;
+  double d = 0, v = 0;
   std::vector<double>::const_iterator it;
 
   if(sumary == "MIN")
