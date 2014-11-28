@@ -41,12 +41,12 @@ namespace te
 
     public:
 
-	    VisualizationArea(te::gm::Envelope* boxArea);
+	    VisualizationArea(te::gm::Envelope boxArea);
 
 	    virtual ~VisualizationArea();
 
       virtual void build();
-      virtual void changeBoxArea(te::gm::Envelope* boxArea);
+      virtual void changeBoxArea(te::gm::Envelope boxArea);
 
     protected:
 
@@ -55,7 +55,7 @@ namespace te
     protected:
 
       virtual void init();
-      te::gm::Envelope* m_boxArea;
+      te::gm::Envelope m_boxArea;
 
     };
   }

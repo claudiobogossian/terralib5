@@ -54,46 +54,25 @@ void te::layout::ViewZoom::applyZoom(const QPointF& point)
   }
 
   // Calculates the extent translated
-  Scene* scene = dynamic_cast<Scene*>(m_view->scene());
+  Scene* scne = dynamic_cast<Scene*>(m_view->scene());
 
-  if(!scene)
+  if(!scne)
   {
     return;
   }
   
+  //Conversion to world coordinates
   QPointF pt = m_view->mapToScene(point.toPoint());
 
-  double zoomFactor = Context::getInstance().getZoomFactor();
-  double defaultZoomFactor = Context::getInstance().getDefaultZoomFactor();
-  double newZoomFactor = zoomFactor;
+  double currentZoomFactor = Context::getInstance().getZoomFactor();
+  double factor = m_view->previousFactor(currentZoomFactor);
 
-  if(zoomFactor > defaultZoomFactor)
+  if(factor > 0)
   {
-    newZoomFactor = zoomFactor - 0.5;
-    Context::getInstance().setZoomFactor(newZoomFactor);
+    //Zoom Out
+    m_view->changeZoomFactor(factor);
+    m_view->centerOn(pt);
   }
-  else
-  {
-    return;
-  }
-    
-  QRect rec(0, 0, m_view->width() * newZoomFactor, m_view->height() * newZoomFactor);
-  rec.moveCenter(point.toPoint());
 
-  // Conversion to world coordinates
-  QPolygonF poly = m_view->mapToScene(rec);
-
-  // Updates the map display with the new extent
-  QRectF bounding = poly.boundingRect();
-
-  te::gm::Envelope* sceneBox = scene->getWorldBox();
-
-  sceneBox->m_llx = bounding.x();
-  sceneBox->m_lly = bounding.y();
-  sceneBox->m_urx = bounding.x() + bounding.width();
-  sceneBox->m_ury = bounding.y() + bounding.height();
-
-  scene->refresh(m_view, newZoomFactor);
-  scene->redrawItems(true);
-  scene->update();
+  scne->update();
 }

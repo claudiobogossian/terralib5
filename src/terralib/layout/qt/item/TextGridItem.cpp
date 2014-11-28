@@ -45,7 +45,7 @@
 te::layout::TextGridItem::TextGridItem( ItemController* controller, Observable* o ) :
   TitleItem(controller, o)
 {
-
+  init();
 }
 
 te::layout::TextGridItem::~TextGridItem()
@@ -113,8 +113,8 @@ void te::layout::TextGridItem::refreshDocument()
     }
   }
 
-  QPixmap pixmp = QPixmap::fromImage(img);
-  setPixmap(pixmp);
+  /*QPixmap pixmp = QPixmap::fromImage(img);
+  setPixmap(pixmp);*/
 }
 
 void te::layout::TextGridItem::updateDocument()
@@ -139,13 +139,21 @@ void te::layout::TextGridItem::updateDocument()
   tableFormat.setBorder(0.5);
 
   Utils* utils = Context::getInstance().getUtils();
+
+  int columns = model->getNumberColumns();
+  int rows = model->getNumberRows();
  
   tableFormat.setCellSpacing(3);  
   tableFormat.setCellPadding(3); 
   tableFormat.setHeaderRowCount(1);
 
-  int columns = model->getNumberColumns();
-  int rows = model->getNumberRows();
+  /*QVector<QTextLength> constraints;
+  constraints << QTextLength(QTextLength::VariableLength, 50),
+    constraints << QTextLength(QTextLength::VariableLength, 50),
+    constraints << QTextLength(QTextLength::VariableLength, 50);
+
+  tableFormat.setColumnWidthConstraints(constraints);*/
+
   m_table = cursor.insertTable(rows, columns, tableFormat);
 
   int countRows = m_table->rows();

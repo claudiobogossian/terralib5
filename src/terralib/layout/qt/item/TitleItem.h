@@ -48,10 +48,10 @@ namespace te
         virtual void updateObserver( ContextItem context );
 
         virtual void refreshDocument();
+        
+      protected:
 
         virtual void init();
-
-      protected:
 
         virtual void updateDocument();
     };

@@ -31,6 +31,8 @@
 // TerraLib
 #include "MapItem.h"
 
+class QPainter;
+
 namespace te
 {
   namespace layout
@@ -45,7 +47,12 @@ namespace te
       public:
 
         MapGridItem( ItemController* controller, Observable* o );
+
         virtual ~MapGridItem();            
+
+      protected:
+
+        virtual void drawSelection( QPainter* painter );
     };
   }
 }

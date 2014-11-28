@@ -53,6 +53,10 @@ namespace te
           void setPreviousCentralWidget(QWidget* previous);
       
           virtual void removeDock();
+
+        protected slots:
+
+          virtual void onExit();
       
         protected:
 

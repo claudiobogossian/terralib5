@@ -93,7 +93,7 @@ void te::qt::plugins::layout::MainLayout::init(QWidget* mainWindow, QMenu* mnuLa
   bool create = false;
 
   QSize size(800, 600);
-  QRect screen = QApplication::desktop()->screenGeometry();
+  QRect screen = QApplication::desktop()->screen()->rect();
 
   if(mainWindow)
   {
@@ -117,17 +117,21 @@ void te::qt::plugins::layout::MainLayout::init(QWidget* mainWindow, QMenu* mnuLa
 
   createEnums();
   createLayoutContext(size.width(), size.height());
-  createDockLayoutDisplay(mainWindow, m_view);
-    
-  if(!m_outsideArea)
-    m_outsideArea = new OutsideArea(m_view, mainWindow, mnuLayout);
 
   if(create)
   {
-    //Set a new window size
+    //Calculate matrix and centralizes the scene
     m_view->config();
   }
-  
+
+  createDockLayoutDisplay(mainWindow, m_view);
+    
+  if(!m_outsideArea)
+  {
+    m_outsideArea = new OutsideArea(m_view, mainWindow, mnuLayout);
+    m_outsideArea->connect(m_outsideArea, SIGNAL(exit()), m_dockLayoutDisplay, SLOT(onExit()));
+  }
+
   m_view->show();
   m_outsideArea->openMainMenu();
   m_outsideArea->openAllDocks();

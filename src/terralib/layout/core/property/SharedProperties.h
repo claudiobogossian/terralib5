@@ -54,6 +54,8 @@ namespace te
         std::string getBackgroundcolor();
         std::string getBordercolor();
         std::string getAngle();
+        std::string getWidth();
+        std::string getHeight();
 
       protected:
 
@@ -69,6 +71,8 @@ namespace te
         std::string m_backgroundcolor;
         std::string m_bordercolor;
         std::string m_angle;
+        std::string m_width;
+        std::string m_height;
     };
   }
 }

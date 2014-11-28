@@ -80,3 +80,8 @@ void te::qt::plugins::layout::DisplayDock::removeDock()
     }
   }
 }
+
+void te::qt::plugins::layout::DisplayDock::onExit()
+{
+  close();
+}

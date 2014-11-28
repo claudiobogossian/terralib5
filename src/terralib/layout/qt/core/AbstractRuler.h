@@ -36,13 +36,11 @@ namespace te
 {
   namespace layout
   {
-    class PaperConfig;
-
     class AbstractRuler
     {
       public:
 
-        AbstractRuler(PaperConfig* paperConfig);
+        AbstractRuler();
 
         virtual ~AbstractRuler(void);
         
@@ -88,7 +86,7 @@ namespace te
 
       protected:
 
-        virtual void drawRuler(QGraphicsView* view, QPainter* painter) = 0;
+        virtual void drawRuler(QGraphicsView* view, QPainter* painter, double scale) = 0;
 
         virtual void drawText(QPoint p, std::string txt, double angle, QPainter* painter);
         
@@ -96,7 +94,6 @@ namespace te
 
         bool                m_visible;
 
-        PaperConfig*        m_paperConfig;
         double	            m_longLine;
         double	            m_mediumLine;
         double              m_smallLine;

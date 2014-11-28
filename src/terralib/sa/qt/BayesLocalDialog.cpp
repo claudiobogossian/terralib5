@@ -215,8 +215,8 @@ void te::sa::BayesLocalDialog::onOkPushButtonClicked()
   inParams->m_eventAttrName = m_ui->m_attrEventComboBox->currentText().toStdString();
   inParams->m_populationAttrName = m_ui->m_attrPopComboBox->currentText().toStdString();
   inParams->m_rate = m_ui->m_rateComboBox->currentText().toDouble();
+  inParams->m_gpmAttrLink = gpm->getAttributeName();
   inParams->m_gpm = gpm;
-  inParams->m_gpmAttrLink = m_ui->m_attrLinkComboBox->currentText().toStdString();
 
   te::sa::BayesOutputParams* outParams = new te::sa::BayesOutputParams();
 
@@ -389,7 +389,14 @@ std::auto_ptr<te::sa::GeneralizedProximityMatrix> te::sa::BayesLocalDialog::load
 
     //get attrlink
     std::auto_ptr<te::da::DataSetType> dsType = dsLayer->getSchema();
-    std::string attrLink = dsType->getPrimaryKey()->getName();
+
+    if(!dsType->getPrimaryKey() || dsType->getPrimaryKey()->getProperties().empty())
+    {
+      QMessageBox::warning(this, tr("Warning"), tr("Invalid Data Set Primary Key."));
+      return gpm;
+    }
+
+    std::string attrLink = dsType->getPrimaryKey()->getProperties()[0]->getName();
 
     //create default gpm
     te::sa::GPMConstructorAbstractStrategy* constructor = new te::sa::GPMConstructorAdjacencyStrategy(true);

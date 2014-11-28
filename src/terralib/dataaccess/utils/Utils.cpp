@@ -56,7 +56,6 @@
 #include "../query/Where.h"
 #include "../Enums.h"
 #include "../Exception.h"
-#include "../../maptools/QueryLayer.h"
 #include "Utils.h"
 
 // STL
@@ -384,6 +383,7 @@ void te::da::GetOIDDatasetProps(const DataSetType* type, std::pair<std::string, 
 
 std::string te::da::getBasePkey(te::da::ObjectId* oid, std::pair<std::string, int>& dsProps)
 {
+  assert(oid);
   std::string res;
   boost::ptr_vector<te::dt::AbstractData> curValues;
   curValues = oid->getValue();
@@ -1168,22 +1168,20 @@ bool te::da::IsValidName(const std::string& name, std::string& invalidChar)
 }
 
 
-bool te::da::HasLinkedTable(te::map::AbstractLayer* layer)
+bool te::da::HasLinkedTable(te::da::DataSetType* type)
 {
-  if(layer->getType() == "QUERYLAYER")
+  assert(type);
+  std::vector<te::dt::Property*> props = type->getPrimaryKey()->getProperties();
+  if(props.size() > 1)
   {
-    std::auto_ptr<te::da::DataSetType> schema = layer->getSchema();
-    std::vector<te::dt::Property*> props = schema->getPrimaryKey()->getProperties();
-    if(props.size() > 1)
+    size_t pksize = 0;
+    while(++pksize < props.size())
     {
-      size_t pksize = 0;
-      while(++pksize < props.size())
-      {
-        if(props[pksize-1]->getDatasetName() != props[pksize]->getDatasetName())
-          return true;
-      }
+      if(props[pksize-1]->getDatasetName() != props[pksize]->getDatasetName())
+        return true;
     }
   }
+
   return false;
 }
 
@@ -1193,7 +1191,7 @@ double te::da::GetSummarizedValue(std::vector<double>& values, const std::string
   if(size == 0)
     return 0;
 
-  double d, v;
+  double d = 0, v = 0;
   std::vector<double>::const_iterator it;
 
   if(sumary == "MIN")
@@ -1267,7 +1265,7 @@ double te::da::GetSummarizedValue(std::vector<double>& values, const std::string
   else if(sumary == "MEDIAN")
   {
     if(size == 1)
-      v = *it;
+      v = values[0];
     else
     {
       std::stable_sort(values.begin(), values.end());
@@ -1275,7 +1273,7 @@ double te::da::GetSummarizedValue(std::vector<double>& values, const std::string
       v = values[meio];
 
       if((size_t)size%2 == 0)
-        v += values[meio+1] / 2.;
+        v = (v + values[meio-1]) / 2.;
     }
   }
   else if(sumary == "MODE")  // nao dá porque pode gerar nenhum ou vários valores

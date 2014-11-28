@@ -104,10 +104,9 @@ void TsBlender::PixelByPixelNoBlendTest()
     te::rst::Interpolator::NearestNeighbor,
     0.0,
     false,
-    pixelOffsets,
+    false,
     pixelOffsets,
     pixelScales,
-    pixelOffsets,
     pixelOffsets,
     pixelScales,
     0,
@@ -120,6 +119,150 @@ void TsBlender::PixelByPixelNoBlendTest()
   
   std::map<std::string, std::string> outputRasterInfo;
   outputRasterInfo["URI"] = "terralib_unittest_rp_Blender_PixelByPixelNoBlendTest_Test.tif";
+  
+  std::vector< te::rst::BandProperty* > bandsProperties;
+  for( unsigned int inRasterBandsIdx = 0 ; inRasterBandsIdx <
+    raster1Bands.size() ; ++inRasterBandsIdx )
+  {
+    bandsProperties.push_back( new te::rst::BandProperty(
+      *( inputRaster1Pointer->getBand( raster1Bands[ inRasterBandsIdx ] )->getProperty() ) ) );
+  }
+  
+  te::rst::Grid* gridPtr = new te::rst::Grid( *( inputRaster1Pointer->getGrid() ) );
+  gridPtr->setNumberOfColumns( gridPtr->getNumberOfColumns() * 2 );
+  gridPtr->setNumberOfRows( gridPtr->getNumberOfRows() * 2 );
+  
+  std::auto_ptr< te::rst::Raster > outRasterPtr( te::rst::RasterFactory::make(
+    "GDAL",
+    gridPtr,
+    bandsProperties,
+    outputRasterInfo,
+    0,
+    0 ) );
+    
+  CPPUNIT_ASSERT( outRasterPtr.get() );
+  
+  boost::scoped_array< double > values( new double[ outRasterPtr->getNumberOfBands() ] );
+  for( unsigned int row = 0 ; row < outRasterPtr->getNumberOfRows() ; ++row )
+  {
+    for( unsigned int col = 0 ; col < outRasterPtr->getNumberOfColumns() ; ++col )
+    {
+      blender.getBlendedValues( row, col, values.get() );
+      
+      for( unsigned int band = 0 ; band < outRasterPtr->getNumberOfBands() ; ++band )
+      {
+        outRasterPtr->setValue( col, row, values[ band ], band );
+      }
+    }
+  }
+}
+
+void TsBlender::EqualizationTest()
+{
+  // openning input rasters
+  
+  std::map<std::string, std::string> auxRasterInfo;
+  
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop2.tif";
+  std::auto_ptr< te::rst::Raster > inputRaster1Pointer ( te::rst::RasterFactory::open(
+    auxRasterInfo ) );
+  CPPUNIT_ASSERT( inputRaster1Pointer.get() );    
+  
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop1.tif";
+  std::auto_ptr< te::rst::Raster > inputRaster2Pointer ( te::rst::RasterFactory::open(
+    auxRasterInfo ) );
+  CPPUNIT_ASSERT( inputRaster2Pointer.get() );
+  
+  // Creating blender parameters
+  
+  std::vector< unsigned int > raster1Bands;
+  raster1Bands.push_back( 0 );
+  raster1Bands.push_back( 1 );
+  raster1Bands.push_back( 2 );
+  
+  std::vector< unsigned int > raster2Bands;
+  raster2Bands.push_back( 1 );
+  raster2Bands.push_back( 2 );
+  raster2Bands.push_back( 0 );
+  
+  std::vector< double > pixelOffsets1( raster1Bands.size(), 0.0 );
+  std::vector< double > pixelScales1( raster1Bands.size(), 1.0 );
+  std::vector< double > pixelOffsets2( raster1Bands.size(), 0.0 );
+  std::vector< double > pixelScales2( raster1Bands.size(), 1.0 );
+  std::vector< double > means1( raster1Bands.size() );
+  std::vector< double > stddevs1( raster1Bands.size() );
+  std::vector< double > means2( raster1Bands.size() );
+  std::vector< double > stddevs2( raster1Bands.size() );
+  
+  for( unsigned int raster1BandsIdx = 0 ; raster1BandsIdx < raster1Bands.size() ;
+    ++raster1BandsIdx )
+  {
+    unsigned int band1Idx = raster1Bands[ raster1BandsIdx ];
+    unsigned int band2Idx = raster2Bands[ raster1BandsIdx ];
+    
+    te::rp::GetMeanValue( *inputRaster1Pointer->getBand( band1Idx ), 4, 
+      means1[ raster1BandsIdx ] );
+    te::rp::GetStdDevValue( *inputRaster1Pointer->getBand( band1Idx ), 4, 
+      &means1[ raster1BandsIdx ], stddevs1[ raster1BandsIdx ] );
+    
+    te::rp::GetMeanValue( *inputRaster2Pointer->getBand( band2Idx ), 4, 
+      means2[ raster1BandsIdx ] );
+    te::rp::GetStdDevValue( *inputRaster2Pointer->getBand( band2Idx ), 4, 
+      &means2[ raster1BandsIdx ], stddevs2[ raster1BandsIdx ] );    
+    
+    pixelScales2[ raster1BandsIdx ] = stddevs1[ raster1BandsIdx ] / 
+      stddevs2[ raster1BandsIdx ];
+    pixelOffsets2[ raster1BandsIdx ] = means1[ raster1BandsIdx ] - 
+      ( pixelScales2[ raster1BandsIdx ] * means2[ raster1BandsIdx ] );        
+  }
+  
+  te::gm::GTParameters transParams;
+  transParams.m_tiePoints.push_back( te::gm::GTParameters::TiePoint( 
+     te::gm::Coord2D( 292, 538 ), te::gm::Coord2D( 0, 0 ) ) );
+  transParams.m_tiePoints.push_back( 
+    te::gm::GTParameters::TiePoint( 
+      te::gm::Coord2D( 
+        transParams.m_tiePoints[ 0 ].first.x + inputRaster2Pointer->getNumberOfColumns() - 1, 
+        transParams.m_tiePoints[ 0 ].first.y + inputRaster2Pointer->getNumberOfRows() - 1
+      ), 
+      te::gm::Coord2D( 
+        inputRaster2Pointer->getNumberOfColumns() - 1,
+        inputRaster2Pointer->getNumberOfRows() - 1 ) 
+      ) 
+    );        
+  std::auto_ptr< te::gm::GeometricTransformation > transPtr( 
+    te::gm::GTFactory::make( "RST" ) );
+  CPPUNIT_ASSERT( transPtr->initialize( transParams ) );    
+  
+  // Initiating the blender instance
+    
+  te::rp::Blender blender;
+  
+  CPPUNIT_ASSERT( blender.initialize(
+    *inputRaster1Pointer,
+    raster1Bands,
+    *inputRaster2Pointer,
+    raster2Bands,
+    te::rp::Blender::NoBlendMethod,
+    te::rst::Interpolator::NearestNeighbor,
+    te::rst::Interpolator::NearestNeighbor,
+    0.0,
+    false,
+    false,
+    pixelOffsets1,
+    pixelScales1,
+    pixelOffsets2,
+    pixelScales2,
+    0,
+    0,
+    *transPtr,
+    1,
+    false ) );
+  
+  // Creating the output image
+  
+  std::map<std::string, std::string> outputRasterInfo;
+  outputRasterInfo["URI"] = "terralib_unittest_rp_Blender_EqualizationTest_Test.tif";
   
   std::vector< te::rst::BandProperty* > bandsProperties;
   for( unsigned int inRasterBandsIdx = 0 ; inRasterBandsIdx <
@@ -221,10 +364,9 @@ void TsBlender::PixelByPixelEucBlendTest()
     te::rst::Interpolator::NearestNeighbor,
     0.0,
     false,
-    pixelOffsets,
+    false,
     pixelOffsets,
     pixelScales,
-    pixelOffsets,
     pixelOffsets,
     pixelScales,
     0,
@@ -338,10 +480,9 @@ void TsBlender::PixelByPixelSumBlendTest()
     te::rst::Interpolator::NearestNeighbor,
     0.0,
     false,
-    pixelOffsets,
+    false,
     pixelOffsets,
     pixelScales,
-    pixelOffsets,
     pixelOffsets,
     pixelScales,
     0,
@@ -587,10 +728,9 @@ void TsBlender::FullRasterBlendTest()
     te::rst::Interpolator::NearestNeighbor,
     0.0,
     false,
-    pixelOffsets,
+    false,
     pixelOffsets,
     pixelScales,
-    pixelOffsets,
     pixelOffsets,
     pixelScales,
     r1ValidDataDelimiterPtr.get(),
@@ -798,10 +938,9 @@ void TsBlender::ThreadedFullRasterBlendTest()
     te::rst::Interpolator::NearestNeighbor,
     0.0,
     false,
-    pixelOffsets,
+    false,
     pixelOffsets,
     pixelScales,
-    pixelOffsets,
     pixelOffsets,
     pixelScales,
     r1ValidDataDelimiterPtr.get(),

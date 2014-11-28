@@ -72,7 +72,10 @@ void te::sa::GPMConstructorDistanceStrategy::constructStrategy()
 
   while(dataSet->moveNext())
   {
-    int id = dataSet->getInt32(m_gpm->getAttributeName());
+    std::string strId = dataSet->getAsString(m_gpm->getAttributeName());
+
+    int id = atoi(strId.c_str());
+
     te::gm::Geometry* g = dataSet->getGeometry(geomPos).release();
     const te::gm::Envelope* box = g->getMBR();
 
@@ -92,7 +95,9 @@ void te::sa::GPMConstructorDistanceStrategy::constructStrategy()
 
   while(dataSet->moveNext())
   {
-    int vFromId = dataSet->getInt32(m_gpm->getAttributeName());
+    std::string strIdFrom = dataSet->getAsString(m_gpm->getAttributeName());
+
+    int vFromId = atoi(strIdFrom.c_str());
 
     std::auto_ptr<te::gm::Geometry> g = dataSet->getGeometry(geomPos);
 

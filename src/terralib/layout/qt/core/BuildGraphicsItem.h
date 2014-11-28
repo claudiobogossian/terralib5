@@ -72,9 +72,7 @@ namespace te
         QGraphicsItem* createArrow();
 
         QGraphicsItem* createEllipse();
-
-        QGraphicsItem* createMultiLineText();
-
+        
         QGraphicsItem* createPoint();
 
         QGraphicsItem* createTextGrid();
@@ -100,7 +98,6 @@ namespace te
         std::string             m_imageItem;
         std::string             m_arrowItem;
         std::string             m_ellipseItem;
-        std::string             m_multiLineTextItem;
         std::string             m_pointItem;
         std::string             m_textGridItem;
         std::string             m_titleItem;

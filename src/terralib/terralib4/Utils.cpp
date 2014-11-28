@@ -76,7 +76,7 @@ std::auto_ptr<te::dt::Property> terralib4::Convert2T5(const TeAttributeRep& attR
       return std::auto_ptr<te::dt::Property>(new te::dt::SimpleProperty(attRep.name_, te::dt::UINT32_TYPE, isRequired, defaultValue));
 
     case TeREAL:
-      return std::auto_ptr<te::dt::Property>(new te::dt::NumericProperty(attRep.name_, 0, 0, isRequired, defaultValue));
+      return std::auto_ptr<te::dt::Property>(new te::dt::SimpleProperty(attRep.name_, te::dt::DOUBLE_TYPE, isRequired, defaultValue));
 
     case TeDATETIME:
       return std::auto_ptr<te::dt::Property>(new te::dt::SimpleProperty(attRep.name_, te::dt::TIME_INSTANT, isRequired, defaultValue));

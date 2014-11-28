@@ -259,8 +259,9 @@ void te::sa::SkaterDialog::onOkPushButtonClicked()
 
   inParams->m_ds = dataSet;
   inParams->m_dsType = dataSetType;
+  inParams->m_gpmAttrLink = gpm->getAttributeName();
   inParams->m_gpm = gpm;
-  inParams->m_gpmAttrLink = m_ui->m_attrLinkComboBox->currentText().toStdString();
+  
 
   if(m_ui->m_clustersCheckBox->isChecked() && m_ui->m_popCheckBox->isChecked())
   {
@@ -446,7 +447,14 @@ std::auto_ptr<te::sa::GeneralizedProximityMatrix> te::sa::SkaterDialog::loadGPM(
 
     //get attrlink
     std::auto_ptr<te::da::DataSetType> dsType = dsLayer->getSchema();
-    std::string attrLink = dsType->getPrimaryKey()->getName();
+
+    if(!dsType->getPrimaryKey() || dsType->getPrimaryKey()->getProperties().empty())
+    {
+      QMessageBox::warning(this, tr("Warning"), tr("Invalid Data Set Primary Key."));
+      return gpm;
+    }
+
+    std::string attrLink = dsType->getPrimaryKey()->getProperties()[0]->getName();
 
     //create default gpm
     te::sa::GPMConstructorAbstractStrategy* constructor = new te::sa::GPMConstructorAdjacencyStrategy(true);

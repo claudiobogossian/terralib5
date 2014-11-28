@@ -63,10 +63,13 @@ void te::layout::ItemObserver::redraw()
   m_controller->redraw();
 }
 
-void te::layout::ItemObserver::refresh()
+void te::layout::ItemObserver::refresh(bool pos)
 {
-  te::gm::Coord2D coord = getPosition();
-  m_controller->setPosition(coord.x, coord.y);
+  if(pos)
+  {
+    te::gm::Coord2D coord = getPosition();
+    m_controller->setPosition(coord.x, coord.y);
+  }
   setZValueItem(getZValueItem());
   applyRotation();
 }
