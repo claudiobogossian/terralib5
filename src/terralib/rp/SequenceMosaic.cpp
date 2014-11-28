@@ -618,8 +618,7 @@ namespace te
           {
             // Generating the offset and gain info for eath band from the current raster
 
-            std::vector< double > currentRasterBandsOffsetsA;
-            std::vector< double > currentRasterBandsOffsetsB;
+            std::vector< double > currentRasterBandsOffsets;
             std::vector< double > currentRasterBandsScales;
 
             if( m_inputParameters.m_autoEqualize )
@@ -639,17 +638,18 @@ namespace te
                   m_inputParameters.m_noDataValue,
                   currentRasterMean,
                   currentRasterVariance );
-
-                currentRasterBandsScales.push_back( std::sqrt( mosaicTargetVariances[ inputRastersBandsIdx ] /
-                  currentRasterVariance ) );
-                currentRasterBandsOffsetsA.push_back( -1.0 * currentRasterMean );
-                currentRasterBandsOffsetsB.push_back( mosaicTargetMeans[ inputRastersBandsIdx ] );                
+                
+                currentRasterBandsScales.push_back( 
+                    std::sqrt( mosaicTargetVariances[ inputRastersBandsIdx ] )
+                     /
+                    std::sqrt( currentRasterVariance ) );
+                currentRasterBandsOffsets.push_back( mosaicTargetMeans[ inputRastersBandsIdx ]
+                   - ( currentRasterBandsScales[ inputRastersBandsIdx ] * currentRasterMean ) );                
               }
             }
             else
             {
-              currentRasterBandsOffsetsA = dummyRasterOffsets;
-              currentRasterBandsOffsetsB = dummyRasterOffsets;
+              currentRasterBandsOffsets = dummyRasterOffsets;
               currentRasterBandsScales = dummyRasterScales;
             }
             
@@ -780,12 +780,11 @@ namespace te
                 te::rst::Interpolator::NearestNeighbor,
                 m_inputParameters.m_interpMethod,
                 m_inputParameters.m_noDataValue,
+                false,
                 m_inputParameters.m_forceInputNoDataValue,
                 dummyRasterOffsets,
-                dummyRasterOffsets,
                 dummyRasterScales,                                                                    
-                currentRasterBandsOffsetsA,
-                currentRasterBandsOffsetsB,
+                currentRasterBandsOffsets,
                 currentRasterBandsScales,  
                 &mosaicValidAreaPols,
                 0,                

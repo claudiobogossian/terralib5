@@ -92,7 +92,10 @@ void te::qt::widgets::ChartLayerWidget::setLayer(te::map::AbstractLayerPtr layer
     m_ui->m_summaryComboBox->addItem("VARIANCE");
 
     if(m_layer->getChart())
-      m_ui->m_summaryComboBox->setCurrentText(QString::fromStdString(m_layer->getChart()->getSummary()));
+    {
+      int index = m_ui->m_summaryComboBox->findText(QString::fromStdString(m_layer->getChart()->getSummary()));
+      m_ui->m_summaryComboBox->setCurrentIndex(index);
+    }
 
     m_ui->m_summaryComboBox->setEnabled(true);
     m_ui->m_summaryComboBox->show();

@@ -77,9 +77,7 @@ namespace te
         //Override 
         /*World coordinates(mm)*/
         virtual bool contains(const QPointF &point) const;
-
-        virtual void setPos(const QPointF &pos);
-
+        
         void	setZValue ( qreal z );
 
         virtual te::color::RGBAColor** getImage();
@@ -102,6 +100,8 @@ namespace te
         virtual void	hoverLeaveEvent ( QGraphicsSceneHoverEvent * event );
 
         virtual void	hoverMoveEvent ( QGraphicsSceneHoverEvent * event );
+
+        virtual QVariant	itemChange ( GraphicsItemChange change, const QVariant & value );
 
         virtual bool checkTouchesCorner(const double& x, const double& y);
 

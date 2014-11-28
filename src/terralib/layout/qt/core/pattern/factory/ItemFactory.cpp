@@ -40,7 +40,6 @@
 #include "../../../item/ArrowItem.h"
 #include "../../../item/EllipseItem.h"
 #include "../../../item/TitleItem.h"
-#include "../../../item/MultiLineTextItem.h"
 #include "../../../item/TextGridItem.h"
 #include "../../../../core/enum/Enums.h"
 #include "../../../item/LegendChildItem.h"
@@ -125,19 +124,12 @@ te::layout::Observer* te::layout::ItemFactory::make( EnumType* type, ItemParamsC
   else if(type == enumObj->getTitleItem())
   {
     TitleItem* title = new TitleItem(params.getController(), params.getModel());
-    title->init();
     item = (Observer*)title;
   }
   else if(type == enumObj->getTextGridItem())
   {
     TextGridItem* txtGrid = new TextGridItem(params.getController(), params.getModel());
-    txtGrid->init();
     item = (Observer*)txtGrid;
-  }
-  else if(type == enumObj->getMultiLineTextItem())
-  {
-    MultiLineTextItem* mText = new MultiLineTextItem(params.getController(), params.getModel());
-    item = (Observer*)mText;
   }
   else if(type == enumObj->getLegendChildItem())
   {

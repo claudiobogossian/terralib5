@@ -154,7 +154,7 @@ std::string te::map::Grouping::getSummary() const
   return m_summary;
 }
 
-void te::map::Grouping::setSummary(std::string& summary)
+void te::map::Grouping::setSummary(const std::string& summary)
 {
   m_summary = summary;
 }

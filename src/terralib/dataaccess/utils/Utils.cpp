@@ -1191,7 +1191,7 @@ double te::da::GetSummarizedValue(std::vector<double>& values, const std::string
   if(size == 0)
     return 0;
 
-  double d, v;
+  double d = 0, v = 0;
   std::vector<double>::const_iterator it;
 
   if(sumary == "MIN")
@@ -1265,7 +1265,7 @@ double te::da::GetSummarizedValue(std::vector<double>& values, const std::string
   else if(sumary == "MEDIAN")
   {
     if(size == 1)
-      v = *it;
+      v = values[0];
     else
     {
       std::stable_sort(values.begin(), values.end());
@@ -1273,7 +1273,7 @@ double te::da::GetSummarizedValue(std::vector<double>& values, const std::string
       v = values[meio];
 
       if((size_t)size%2 == 0)
-        v += values[meio+1] / 2.;
+        v = (v + values[meio-1]) / 2.;
     }
   }
   else if(sumary == "MODE")  // nao dá porque pode gerar nenhum ou vários valores

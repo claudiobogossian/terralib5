@@ -133,7 +133,22 @@ void te::qt::plugins::layout::OutsideArea::init()
   createEditTemplateDock();
 
   if(m_dockToolbar)
+  {
     connect(m_dockToolbar->getToolbarOutside(), SIGNAL(changeContext(bool)), m_view, SLOT(onToolbarChangeContext(bool)));
+    connect(m_view, SIGNAL(changeZoom(double)), m_dockToolbar->getToolbarOutside(), SLOT(onChangeZoom(double)));
+  }
+
+  if(m_dockInspector)
+  {
+    connect(m_view->scene(), SIGNAL(deleteFinalized(std::vector<std::string>)), 
+      m_dockInspector->getObjectInspectorOutside(), SLOT(onRemoveProperties(std::vector<std::string>)));
+  }
+
+  if(m_dockProperties)
+  {
+    connect(m_view->scene(), SIGNAL(deleteFinalized(std::vector<std::string>)), 
+      m_dockProperties->getPropertiesOutside(), SLOT(onClear(std::vector<std::string>)));
+  }
 }
 
 void te::qt::plugins::layout::OutsideArea::createPropertiesDock()
@@ -250,6 +265,7 @@ void te::qt::plugins::layout::OutsideArea::onMainMenuTriggered( QAction* action 
   else if(action->objectName().compare(m_optionExit.c_str()) == 0)
   {
     changeAction(type->getModeExit());
+    emit exit();
   }
   else if(action->objectName().compare(m_optionDockInspector.c_str()) == 0)
   {
@@ -474,9 +490,13 @@ void te::qt::plugins::layout::OutsideArea::onSelectionChanged()
 {
   QList<QGraphicsItem*> graphicsItems = m_view->scene()->selectedItems();
   QList<QGraphicsItem*> allItems = m_view->scene()->items();
+
   //Refresh Property window   
   if(m_dockProperties)
     m_dockProperties->getPropertiesOutside()->itemsSelected(graphicsItems, allItems);
+
+  if(m_dockInspector)
+    m_dockInspector->getObjectInspectorOutside()->selectItems(graphicsItems);
 }
 
 void te::qt::plugins::layout::OutsideArea::onAddItemFinalized()

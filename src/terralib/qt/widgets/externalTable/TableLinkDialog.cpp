@@ -81,10 +81,13 @@ te::qt::widgets::TableLinkDialog::TableLinkDialog(QWidget* parent, Qt::WindowFla
   m_ui->m_tabularFrame->hide();
   m_ui->m_helpPushButton->setPageReference("widgets/external_table/table_link_dialog.html");
 
+  //Currently, this function is disabled, further enhancements to the linking functions are required to make such options available
+  m_ui->m_advancedToolButton->hide();
+
   //Connecting signals and slots
   connect(m_ui->m_dataSet2ComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onDataCBIndexChanged(int)));
   connect(m_ui->m_dataToolButton, SIGNAL(clicked()), this, SLOT(onDataToolButtonnClicked()));
-  connect(m_ui->m_advancedToolButton, SIGNAL(clicked()), this, SLOT(onAdvancedToolButtonnClicked()));
+//  connect(m_ui->m_advancedToolButton, SIGNAL(clicked()), this, SLOT(onAdvancedToolButtonnClicked()));
   connect(m_ui->m_OkPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
 }
 

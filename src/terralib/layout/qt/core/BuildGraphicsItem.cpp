@@ -61,9 +61,6 @@
 #include "../../item/EllipseModel.h"
 #include "../../item/EllipseController.h"
 #include "../item/EllipseItem.h"
-#include "../../item/MultiLineTextModel.h"
-#include "../../item/MultiLineTextController.h"
-#include "../item/MultiLineTextItem.h"
 #include "../../item/PointModel.h"
 #include "../../item/PointController.h"
 #include "../item/PointItem.h"
@@ -103,7 +100,6 @@ te::layout::BuildGraphicsItem::BuildGraphicsItem() :
   m_imageItem("IMAGE_"),
   m_arrowItem("ARROW_"),
   m_ellipseItem("ELLIPSE_"),
-  m_multiLineTextItem("MULTILINE_TEXT_"),
   m_pointItem("POINT_"),
   m_textGridItem("TEXT_GRID_"),
   m_titleItem("TITLE_"),
@@ -178,10 +174,6 @@ QGraphicsItem* te::layout::BuildGraphicsItem::rebuildItem( te::layout::Propertie
   else if(type == enumObj->getEllipseItem())
   {
     item = createEllipse();
-  }
-  else if(type == enumObj->getMultiLineTextItem())
-  {
-    item = createMultiLineText();
   }
   else if(type == enumObj->getPointItem())
   {
@@ -279,11 +271,6 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createItem( te::layout::EnumType* 
     m_name = nameItem(m_textGridItem, enumObj->getTextGridItem());
     item = createTextGrid();
   }
-  else if(mode == enumMode->getModeCreateMultiLineText())
-  {
-    m_name = nameItem(m_multiLineTextItem, enumObj->getMultiLineTextItem());
-    item = createMultiLineText();
-  }
   else if(mode == enumMode->getModeCreateLegendChild())
   {
     m_name = nameItem(m_legendChildItem, enumObj->getLegendChildItem());
@@ -309,7 +296,8 @@ std::string te::layout::BuildGraphicsItem::nameItem( std::string name, te::layou
     }
   }  
 
-  m_id = te::layout::maxTypeId(graphicsItems, type);
+  ItemUtils* iUtils = Context::getInstance().getItemUtils();
+  m_id = iUtils->maxTypeId(type);
 
   if(m_id < 0)
     m_id = 0;
@@ -695,43 +683,6 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createEllipse()
   ItemObserver* itemObs = (ItemObserver*)controller->getView();
 
   EllipseItem* view = dynamic_cast<EllipseItem*>(itemObs); 
-  if(m_props)
-  {
-    view->updateProperties(m_props);
-  }
-
-  if(view)
-  {
-    view->setPos(QPointF(m_coord.x, m_coord.y));
-    if(m_props)
-    {
-      view->setZValue(m_zValue);
-    }
-    if(m_redraw)
-    {
-      itemObs->redraw();
-    }
-    return view;
-  }
-
-  return item;
-}
-
-QGraphicsItem* te::layout::BuildGraphicsItem::createMultiLineText()
-{
-  QGraphicsItem* item = 0;
-
-  MultiLineTextModel* model = new MultiLineTextModel();	
-  if(!m_props)
-  {
-    model->setId(m_id);
-    model->setName(m_name);
-  }
-
-  MultiLineTextController* controller = new MultiLineTextController(model);
-  ItemObserver* itemObs = (ItemObserver*)controller->getView();
-
-  MultiLineTextItem* view = dynamic_cast<MultiLineTextItem*>(itemObs); 
   if(m_props)
   {
     view->updateProperties(m_props);

@@ -189,7 +189,7 @@ std::string te::map::Chart::getSummary() const
   return m_summary;
 }
 
-void te::map::Chart::setSummary(std::string& summary)
+void te::map::Chart::setSummary(const std::string& summary)
 {
   m_summary = summary;
 }

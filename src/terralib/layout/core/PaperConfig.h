@@ -40,17 +40,21 @@ namespace te
       public:
 
         PaperConfig();
+
         PaperConfig(LayoutAbstractPaperType paperType);
+
         virtual ~PaperConfig();
 
         virtual void setPaperSizeCustom(double w, double h);
 
         virtual void setPaperType(LayoutAbstractPaperType paperType);
+
         virtual LayoutAbstractPaperType getPaperType();
 
         virtual void getPaperSize(double &w, double &h);
 
         virtual void setPaperOrientation(LayoutOrientationType orientation);
+
         virtual LayoutOrientationType getPaperOrientantion();
         
       protected:
