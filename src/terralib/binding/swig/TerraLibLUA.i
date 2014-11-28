@@ -48,6 +48,9 @@ static std::string GetRandomicId()
 
 %}
 
+/* Include Common module to the bind. */
+%include common/Common.i
+
 /* Include SRS module to the bind. */
 %include common/SRS.i
 

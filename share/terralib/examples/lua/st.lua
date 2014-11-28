@@ -33,29 +33,29 @@ end
 
 -- Getting the data sets
 function GetTrajectoryDataSets(fileLocation)
-	dsInfo = OpenDataSource(fileLocation)
+	local dsInfo = OpenDataSource(fileLocation)
 
     local phTimeIdx = 3
     local geomIdx = 12
 
-    tjinfo40 = terralib_mod_binding_lua.te.st.TrajectoryDataSetInfo (dsInfo, "40: locations", phTimeIdx, geomIdx, -1, "40")
-    tjDS40 = terralib_mod_binding_lua.te.st.STDataLoader.getDataSet(tjinfo40)
+    local tjinfo40 = terralib_mod_binding_lua.te.st.TrajectoryDataSetInfo (dsInfo, "40: locations", phTimeIdx, geomIdx, -1, "40")
+    local tjDS40 = terralib_mod_binding_lua.te.st.STDataLoader.getDataSet(tjinfo40)
 		
-    tjinfo41 = terralib_mod_binding_lua.te.st.TrajectoryDataSetInfo(dsInfo, "41: locations", phTimeIdx, geomIdx, -1, "41")
-    tjDS41 = terralib_mod_binding_lua.te.st.STDataLoader.getDataSet(tjinfo41);
+    local tjinfo41 = terralib_mod_binding_lua.te.st.TrajectoryDataSetInfo(dsInfo, "41: locations", phTimeIdx, geomIdx, -1, "41")
+    local tjDS41 = terralib_mod_binding_lua.te.st.STDataLoader.getDataSet(tjinfo41);
 		
 	tjDS40:moveBeforeFirst();
 	tjDS41:moveBeforeFirst();
 
-	dI = terralib_mod_binding_lua.te.dt.Date(terralib_mod_binding_lua.boost.gregorian.greg_year(2008), terralib_mod_binding_lua.boost.gregorian.greg_month(01), terralib_mod_binding_lua.boost.gregorian.greg_day(01))
-	dF = terralib_mod_binding_lua.te.dt.Date(terralib_mod_binding_lua.boost.gregorian.greg_year(2008), terralib_mod_binding_lua.boost.gregorian.greg_month(03), terralib_mod_binding_lua.boost.gregorian.greg_day(31))
+	local dI = terralib_mod_binding_lua.te.dt.Date(terralib_mod_binding_lua.boost.gregorian.greg_year(2008), terralib_mod_binding_lua.boost.gregorian.greg_month(01), terralib_mod_binding_lua.boost.gregorian.greg_day(01))
+	local dF = terralib_mod_binding_lua.te.dt.Date(terralib_mod_binding_lua.boost.gregorian.greg_year(2008), terralib_mod_binding_lua.boost.gregorian.greg_month(03), terralib_mod_binding_lua.boost.gregorian.greg_day(31))
 	
-    time1 = terralib_mod_binding_lua.te.dt.TimeInstant(dI, terralib_mod_binding_lua.te.dt.TimeDuration(0,0,0))
-    time2 = terralib_mod_binding_lua.te.dt.TimeInstant(dF, terralib_mod_binding_lua.te.dt.TimeDuration(23,59,59))
-    period = terralib_mod_binding_lua.te.dt.TimePeriod(time1, time2) 
+    local time1 = terralib_mod_binding_lua.te.dt.TimeInstant(dI, terralib_mod_binding_lua.te.dt.TimeDuration(0,0,0))
+    local time2 = terralib_mod_binding_lua.te.dt.TimeInstant(dF, terralib_mod_binding_lua.te.dt.TimeDuration(23,59,59))
+    local period = terralib_mod_binding_lua.te.dt.TimePeriod(time1, time2) 
 
-    tjDS40period = terralib_mod_binding_lua.te.st.STDataLoader.getDataSet(tjinfo40, period, terralib_mod_binding_lua.te.dt.DURING)
-	tjDS41period = terralib_mod_binding_lua.te.st.STDataLoader.getDataSet(tjinfo41, period, terralib_mod_binding_lua.te.dt.DURING)
+    local tjDS40period = terralib_mod_binding_lua.te.st.STDataLoader.getDataSet(tjinfo40, period, terralib_mod_binding_lua.te.dt.DURING)
+	local tjDS41period = terralib_mod_binding_lua.te.st.STDataLoader.getDataSet(tjinfo41, period, terralib_mod_binding_lua.te.dt.DURING)
 
 	tjDS40period:moveBeforeFirst()
 	tjDS41period:moveBeforeFirst()
