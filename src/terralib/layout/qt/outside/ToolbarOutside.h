@@ -113,10 +113,16 @@ namespace te
       virtual void onDrawMapClicked(bool checked);
 
       virtual void onObjectToImageClicked(bool checked);
+
+      virtual QComboBox* getComboBoxZoom();
       
     signals:
 
       void changeContext(bool change);
+
+    protected slots:
+
+      virtual void onChangeZoom(double factor);
       
     protected:
 
@@ -176,8 +182,7 @@ namespace te
 
     protected:
 
-      QToolButton* m_btnMap;
-      QComboBox* m_comboSceneZoom;
+      QComboBox* m_comboZoom;
 
       /* Map Menu */
       std::string m_optionMapDefault;
@@ -219,7 +224,6 @@ namespace te
       /* Text Tools */
       std::string m_optionTextDefault;
       std::string m_optionImage;
-      std::string m_optionMultiLineText;
       std::string m_optionStringGrid;
       std::string m_optionTitle;
 

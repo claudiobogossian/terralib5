@@ -28,11 +28,14 @@
 #ifndef __TE_QT_PLUGINS_LAYOUT_INTERNAL_OUTSIDE_AREA_H 
 #define __TE_QT_PLUGINS_LAYOUT_INTERNAL_OUTSIDE_AREA_H
 
-// Qt
-#include <QObject>
-
 // TerraLib
 #include "../../../layout/qt/core/View.h"
+
+// STL
+#include <string>
+
+// Qt
+#include <QObject>
 
 class QWidget;
 class QMenu;
@@ -83,6 +86,8 @@ namespace te
         signals:
 
           void changeMenuContext(bool change);
+
+          void exit();
 
         protected:
 

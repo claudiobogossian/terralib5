@@ -30,31 +30,41 @@
 
 // TerraLib
 #include "../../geometry/Envelope.h"
+#include "Config.h"
 
 namespace te
 {
   namespace layout
   {
     class ItemObserver;
-    class OutsideObserver;
 
-    class AbstractScene
+    class TELAYOUTEXPORT AbstractScene
     {
       public:
+
+        AbstractScene();
+
         virtual ~AbstractScene(void) {};
+
         virtual void insertItem(ItemObserver* item) = 0;
-        virtual te::gm::Envelope getSceneBox() = 0;
-        virtual te::gm::Envelope* getWorldBox() const = 0;
+        
+        virtual te::gm::Envelope getSceneBox();
+        
         /*
           params widthMM width of physical screen in millimeters
           params heightMM height of physical screen in millimeters
         */
-        virtual void init(double screenWMM, double screenHMM, double zoomFactor = 1.0) = 0;
-
+        virtual void init(double screenWMM, double screenHMM) = 0;
+                
       protected:
         
-        virtual te::gm::Envelope* calculateWindow(double wMM, double hMM) = 0;
-        virtual void calculateMatrixViewScene(double zoomFactor = 1.) = 0;     
+        virtual void calculateMatrixViewScene() = 0;
+
+        virtual void calculateWindow(double wMM, double hMM) = 0;
+        
+      protected:
+
+        te::gm::Envelope  m_box;
     };
   }
 }

@@ -43,26 +43,29 @@ namespace te
     class PaperConfig;
     class BuildGraphicsItem;
     class SystematicScaleConfig;
+    class ItemUtils;
 
     class TELAYOUTEXPORT BuildContext 
     {
       public:
 
         BuildContext();
+
         virtual ~BuildContext();
 
         void createLayoutContext(int width, int height, View* view);
 
       protected:
    
-        ItemFactory*    m_itemFactory;
-        OutsideFactory* m_outsideFactory;
-        TemplateFactory* m_templateFactory;
-        Utils* m_utils;
-        PaperConfig* m_paperConfig;
-        te::qt::widgets::Canvas* m_canvas;
-        BuildGraphicsItem* m_buildGraphicsItem;
-        SystematicScaleConfig* m_systematicConfig;
+        ItemFactory*              m_itemFactory;
+        OutsideFactory*           m_outsideFactory;
+        TemplateFactory*          m_templateFactory;
+        Utils*                    m_utils;
+        PaperConfig*              m_paperConfig;
+        te::qt::widgets::Canvas*  m_canvas;
+        BuildGraphicsItem*        m_buildGraphicsItem;
+        SystematicScaleConfig*    m_systematicConfig;
+        ItemUtils*                m_itemUtils;
     };
   }
 }

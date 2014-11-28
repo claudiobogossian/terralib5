@@ -34,6 +34,7 @@
 #include "../../core/Utils.h"
 #include "Scene.h"
 #include "BuildGraphicsItem.h"
+#include "ItemUtils.h"
 
 
 te::layout::BuildContext::BuildContext() :
@@ -43,7 +44,8 @@ te::layout::BuildContext::BuildContext() :
   m_utils(0),
   m_paperConfig(0),
   m_canvas(0),
-  m_buildGraphicsItem(0)
+  m_buildGraphicsItem(0),
+  m_itemUtils(0)
 {
 
 }
@@ -91,6 +93,12 @@ te::layout::BuildContext::~BuildContext()
     delete m_canvas;
     m_canvas = 0;
   }
+
+  if(m_itemUtils)
+  {
+    delete m_itemUtils;
+    m_itemUtils = 0;
+  }
 }
 
 void te::layout::BuildContext::createLayoutContext( int width, int height, View* view )
@@ -131,15 +139,12 @@ void te::layout::BuildContext::createLayoutContext( int width, int height, View*
 
     if(lScene)
     {
-      te::gm::Envelope* worldbox = lScene->getWorldBox();
-
-      if(!worldbox)
-        worldbox = new te::gm::Envelope;
+      te::gm::Envelope worldbox = lScene->getSceneBox();
 
       //Create Canvas
       m_canvas = new te::qt::widgets::Canvas(width, height);    
-      m_canvas->setWindow(worldbox->getLowerLeftX(), worldbox->getLowerLeftY(), 
-        worldbox->getUpperRightX(), worldbox->getUpperRightY());
+      m_canvas->setWindow(worldbox.getLowerLeftX(), worldbox.getLowerLeftY(), 
+        worldbox.getUpperRightX(), worldbox.getUpperRightY());
       m_canvas->clear();
       Context::getInstance().setCanvas(m_canvas);
     }
@@ -160,6 +165,15 @@ void te::layout::BuildContext::createLayoutContext( int width, int height, View*
   {
     m_systematicConfig = new SystematicScaleConfig;
     Context::getInstance().setSystematicScaleConfig(m_systematicConfig);
+  }
+  if(!Context::getInstance().getItemUtils())
+  {
+    Scene* lScene = dynamic_cast<Scene*>(view->scene());
+    if(lScene)
+    {
+      m_itemUtils = new ItemUtils(view->scene());
+      Context::getInstance().setItemUtils(m_itemUtils);
+    }
   }
 }
 

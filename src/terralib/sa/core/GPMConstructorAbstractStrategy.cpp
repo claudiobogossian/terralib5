@@ -105,7 +105,9 @@ void te::sa::GPMConstructorAbstractStrategy::createVertexObjects()
 
   while(dataSet->moveNext())
   {
-    int id = dataSet->getInt32(m_gpm->getAttributeName());
+    std::string strId = dataSet->getAsString(m_gpm->getAttributeName());
+
+    int id = atoi(strId.c_str());
 
     te::graph::Vertex* v = new te::graph::Vertex(id);
     

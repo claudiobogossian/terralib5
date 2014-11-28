@@ -79,19 +79,18 @@ te::gm::Coord2D te::layout::ObjectItem::getPosition()
   return coordinate;
 }
 
-void te::layout::ObjectItem::setPos( const QPointF &pos )
-{
-  QGraphicsItem::setPos(pos);
-
-  refresh();
-}
-
 void te::layout::ObjectItem::setPixmap( const QPixmap& pixmap )
 {
-  m_pixmap = pixmap;
-
-  if(m_pixmap.isNull())
+  if(pixmap.isNull())
     return;
+
+  /* The model draws on Cartesian coordinates, millimeter. 
+  The canvas of Terralib 5 works with the Y-Axis inverted, 
+  so the pixmap generated is upside down.*/
+  m_pixmap = pixmap;
+  QImage img = m_pixmap.toImage();
+  QImage image = img.mirrored(false, true);
+  m_pixmap = QPixmap::fromImage(image);
 
   QPointF point = pos();
 
@@ -124,11 +123,11 @@ void te::layout::ObjectItem::paint( QPainter * painter, const QStyleOptionGraphi
   boundRect = boundingRect();
   	
   painter->save();
-  painter->translate( -boundRect.bottomLeft().x(), -boundRect.topRight().y() );
+  painter->translate( -boundRect.bottomLeft().x(), -boundRect.topRight().y() );  
   QRectF rtSource( 0, 0, m_pixmap.width(), m_pixmap.height() );
   painter->drawPixmap(boundRect, m_pixmap, rtSource);
   painter->restore();  
-
+  
   //Draw Selection
   if (option->state & QStyle::State_Selected)
   {
@@ -138,14 +137,16 @@ void te::layout::ObjectItem::paint( QPainter * painter, const QStyleOptionGraphi
 
 void te::layout::ObjectItem::drawBackground( QPainter * painter )
 {
-  if (painter)
+  if ( !painter )
   {
-    painter->save();
-    painter->setPen(Qt::NoPen);
-    painter->setRenderHint( QPainter::Antialiasing, true );
-    painter->drawRect(QRectF( 0, 0, boundingRect().width(), boundingRect().height()));
-    painter->restore();
+    return;
   }
+
+  painter->save();
+  painter->setPen(Qt::NoPen);
+  painter->setRenderHint( QPainter::Antialiasing, true );
+  painter->drawRect(QRectF( 0, 0, boundingRect().width(), boundingRect().height()));
+  painter->restore();
 }
 
 void te::layout::ObjectItem::drawSelection( QPainter* painter )
@@ -434,6 +435,9 @@ void te::layout::ObjectItem::applyRotation()
 
   double angle = model->getAngle();
 
+  if(angle == 0)
+    return;
+
   QPointF center = boundingRect().center();
 
   double centerX = center.x();
@@ -447,4 +451,13 @@ te::color::RGBAColor** te::layout::ObjectItem::getImage()
   QImage img = m_pixmap.toImage();
   te::color::RGBAColor** teImg = te::qt::widgets::GetImage(&img);
   return teImg;
+}
+
+QVariant te::layout::ObjectItem::itemChange( GraphicsItemChange change, const QVariant & value )
+{
+  if(change == QGraphicsItem::ItemPositionHasChanged)
+  {
+    refresh();
+  }
+  return QGraphicsItem::itemChange(change, value);
 }

@@ -88,7 +88,19 @@ te::qt::widgets::ScatterDataWidget::ScatterDataWidget(te::da::DataSet* dataSet, 
       }
     }
   }
+
   updateSummary(m_dataSet.get(), getForm());
+
+  if(te::da::HasLinkedTable(dataType))
+  {
+    m_ui->m_summaryComboBox->show();
+    m_ui->m_summaryLabel->show();
+  }
+  else
+  {
+    m_ui->m_summaryComboBox->hide();
+    m_ui->m_summaryLabel->hide();
+  }
 }
 
 Ui::ScatterDataWidgetForm* te::qt::widgets::ScatterDataWidget::getForm()

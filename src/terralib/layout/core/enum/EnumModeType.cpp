@@ -66,7 +66,6 @@ te::layout::EnumModeType::EnumModeType() :
   m_modeCreateEllipse(0),
   m_modeCreateTitle(0),
   m_modeCreateTextGrid(0),
-  m_modeCreateMultiLineText(0),
   m_modeWidgetView(0),
   m_modeWidgetInspector(0),
   m_modeWidgetProperties(0),
@@ -86,7 +85,8 @@ te::layout::EnumModeType::EnumModeType() :
   m_modeDrawSelectionMap(0),
   m_modeCreateLegendChild(0),
   m_modeLegendChildAsObject(0),
-  m_modelObjectToImage(0)
+  m_modelObjectToImage(0),
+  m_inspectorCurrentItemChanged(0)
 {
   init();
 }
@@ -278,11 +278,6 @@ te::layout::EnumModeType::~EnumModeType()
     delete m_modeCreateTextGrid;
     m_modeCreateTextGrid = 0;
   }
-  if(m_modeCreateMultiLineText)
-  {
-    delete m_modeCreateMultiLineText;
-    m_modeCreateMultiLineText = 0;
-  }
   if(m_modeWidgetView)
   {
     delete m_modeWidgetView;
@@ -382,6 +377,11 @@ te::layout::EnumModeType::~EnumModeType()
   {
     delete m_modelObjectToImage;
     m_modelObjectToImage = 0;
+  }
+  if(m_inspectorCurrentItemChanged)
+  {
+    delete m_inspectorCurrentItemChanged;
+    m_inspectorCurrentItemChanged = 0;
   }
 }
 
@@ -503,10 +503,7 @@ void te::layout::EnumModeType::init()
 
   m_modeCreateTextGrid = new EnumType(39, "CreateTextGrid");
   m_enums.push_back(m_modeCreateTextGrid);
-
-  m_modeCreateMultiLineText = new EnumType(40, "CreateMultiLineText");
-  m_enums.push_back(m_modeCreateMultiLineText);
-
+  
   m_modeWidgetView = new EnumType(41, "WidgetView");
   m_enums.push_back(m_modeWidgetView);
 
@@ -563,6 +560,9 @@ void te::layout::EnumModeType::init()
 
   m_modelObjectToImage = new EnumType(59, "ObjectToImage");
   m_enums.push_back(m_modelObjectToImage);
+
+  m_inspectorCurrentItemChanged = new EnumType(60, "Inspector Item Changed");
+  m_enums.push_back(m_inspectorCurrentItemChanged);
 }
 
 te::layout::EnumType* te::layout::EnumModeType::getModeSelectByBox() const
@@ -755,11 +755,6 @@ te::layout::EnumType* te::layout::EnumModeType::getModeCreateTextGrid() const
   return m_modeCreateTextGrid;
 }
 
-te::layout::EnumType* te::layout::EnumModeType::getModeCreateMultiLineText() const
-{
-  return m_modeCreateMultiLineText;
-}
-
 te::layout::EnumType* te::layout::EnumModeType::getModeWidgetView() const
 {
   return m_modeWidgetView;
@@ -858,4 +853,9 @@ te::layout::EnumType* te::layout::EnumModeType::getModeLegendChildAsObject() con
 te::layout::EnumType* te::layout::EnumModeType::getModeObjectToImage() const
 {
   return m_modelObjectToImage;
+}
+
+te::layout::EnumType* te::layout::EnumModeType::getModeInspectorCurrentItemChanged() const
+{
+  return m_inspectorCurrentItemChanged;
 }

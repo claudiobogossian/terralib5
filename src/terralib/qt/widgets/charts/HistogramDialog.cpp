@@ -78,7 +78,12 @@ void te::qt::widgets::HistogramDialog::onOkPushButtonClicked()
   //Creating and adjusting the chart Display's style.
   te::qt::widgets::ChartStyle* chartStyle = new te::qt::widgets::ChartStyle();
   chartStyle->setTitle(QString::fromStdString("Histogram"));
-  chartStyle->setAxisX(m_histogramDataWidget->getForm()->m_propertyComboBox->currentText());
+
+  if(m_histogramDataWidget->getForm()->m_summaryComboBox->currentText() != "None")
+    chartStyle->setAxisX(m_histogramDataWidget->getForm()->m_summaryComboBox->currentText() + ": " + m_histogramDataWidget->getForm()->m_propertyComboBox->currentText());
+  else
+    chartStyle->setAxisX(m_histogramDataWidget->getForm()->m_propertyComboBox->currentText());
+
   chartStyle->setAxisY(QString::fromStdString("Frequency"));
 
   //Creating and adjusting the chart Display

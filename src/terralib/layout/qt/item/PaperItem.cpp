@@ -87,4 +87,3 @@ void te::layout::PaperItem::updateObserver( ContextItem context )
   setPixmap(pixmap);
   update();
 }
-

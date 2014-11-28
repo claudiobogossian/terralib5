@@ -237,7 +237,7 @@ void te::map::AbstractLayerRenderer::drawLayerGeometries(AbstractLayer* layer,
   te::map::QueryLayer* qlayer = 0;
   te::da::Select* select = 0;
 
-  bool linked = te::da::HasLinkedTable(layer);
+  bool linked = te::da::HasLinkedTable(layer->getSchema().get());
   if(linked)
   {
     // make sorting by object id
@@ -536,7 +536,7 @@ void te::map::AbstractLayerRenderer::drawLayerGroupingMem(AbstractLayer* layer,
 {
   assert(!geomPropertyName.empty());
 
-  if(te::da::HasLinkedTable(layer))
+  if(te::da::HasLinkedTable(layer->getSchema().get()))
   {
     drawLayerLinkedGroupingMem(layer, geomPropertyName, canvas, bbox, srid);
     return;
@@ -863,7 +863,10 @@ void te::map::AbstractLayerRenderer::drawLayerLinkedGroupingMem(AbstractLayer* l
   std::string cfunction;
   std::map<std::string, std::vector<double> > chartValues;
   std::map<std::string, double> chartValue;
+  bool hasGroupNullValue = false;
+  bool hasGroupNullValueAux = false;
   bool hasChartNullValue = false;
+  bool hasChartNullValueAux = false;
   size_t csize = 0;
   if(chart)
   {
@@ -914,7 +917,7 @@ void te::map::AbstractLayerRenderer::drawLayerLinkedGroupingMem(AbstractLayer* l
     if(i == pksize) // it is the same object
     {
       // read value
-      if(dataset->isNull(propertyPos) == false)
+      if(hasGroupNullValue == false && dataset->isNull(propertyPos) == false)
       {
         if(type == UNIQUE_VALUE)
         {
@@ -925,21 +928,27 @@ void te::map::AbstractLayerRenderer::drawLayerLinkedGroupingMem(AbstractLayer* l
         }
         else
           values.push_back(boost::lexical_cast<double>(dataset->getAsString(propertyPos, precision)));
+      }
+      else
+        hasGroupNullValue = true;
 
+      if(hasChartNullValue == false)
+      {
+        for(std::size_t i = 0; i < csize; ++i)
+        {
+          if(dataset->isNull(chart->getProperties()[i]))
+          {
+            hasChartNullValue = true;
+            break;
+          }
+        }
         if(hasChartNullValue == false)
         {
           for(std::size_t i = 0; i < csize; ++i)
-          {
-            if(dataset->isNull(chart->getProperties()[i]) == false)
-              chartValues[chart->getProperties()[i]].push_back(boost::lexical_cast<double>(dataset->getAsString(chart->getProperties()[i])));
-            else
-            {
-              hasChartNullValue = true;
-              break;
-            }
-          }
+            chartValues[chart->getProperties()[i]].push_back(boost::lexical_cast<double>(dataset->getAsString(chart->getProperties()[i])));
         }
       }
+
       // read other values
       continue;
     }
@@ -951,50 +960,52 @@ void te::map::AbstractLayerRenderer::drawLayerLinkedGroupingMem(AbstractLayer* l
       // sumarize value
       // computing a value according to the required summarization 
       // get symbolizers
-
-      if(type == UNIQUE_VALUE)
+      if(hasGroupNullValue == false)
       {
-        if(isNumber)
+        if(type == UNIQUE_VALUE)
+        {
+          if(isNumber)
+          {
+            value = te::da::GetSummarizedValue(values, gfunction);
+            value = te::da::Round(value, precision);
+            svalue = boost::lexical_cast<std::string>(value);
+          }
+          else
+            svalue = te::da::GetSummarizedValue(svalues, gfunction);
+
+          std::map<std::string, std::vector<te::se::Symbolizer*> >::const_iterator it = uniqueGroupsMap.find(svalue);
+          if(it == uniqueGroupsMap.end())
+            continue;
+          symbolizers = it->second;
+        }
+        else
         {
           value = te::da::GetSummarizedValue(values, gfunction);
           value = te::da::Round(value, precision);
-          svalue = boost::lexical_cast<std::string>(value);
-        }
-        else
-          svalue = te::da::GetSummarizedValue(svalues, gfunction);
 
-        std::map<std::string, std::vector<te::se::Symbolizer*> >::const_iterator it = uniqueGroupsMap.find(svalue);
-        if(it == uniqueGroupsMap.end())
-          continue;
-        symbolizers = it->second;
-      }
-      else
-      {
-        value = te::da::GetSummarizedValue(values, gfunction);
-        value = te::da::Round(value, precision);
-
-        std::map<std::pair<double, double>, std::vector<te::se::Symbolizer*> >::const_iterator it;
-        for(it = othersGroupsMap.begin(); it != othersGroupsMap.end(); ++it)
-        {
-          if(value >= it->first.first && value <= it->first.second)
-            break;
-        }
-      
-        if(it == othersGroupsMap.end())
-        {
-          te::se::Style* style = layer->getStyle();
-          if(style)
+          std::map<std::pair<double, double>, std::vector<te::se::Symbolizer*> >::const_iterator it;
+          for(it = othersGroupsMap.begin(); it != othersGroupsMap.end(); ++it)
           {
-            if(!style->getRules().empty())
+            if(value >= it->first.first && value <= it->first.second)
+              break;
+          }
+      
+          if(it == othersGroupsMap.end())
+          {
+            te::se::Style* style = layer->getStyle();
+            if(style)
             {
-              te::se::Rule* rule = style->getRule(0);
+              if(!style->getRules().empty())
+              {
+                te::se::Rule* rule = style->getRule(0);
 
-              symbolizers = rule->getSymbolizers();
+                symbolizers = rule->getSymbolizers();
+              }
             }
           }
+          else
+            symbolizers = it->second;
         }
-        else
-          symbolizers = it->second;
       }
 
       if(hasChartNullValue == false)
@@ -1014,37 +1025,139 @@ void te::map::AbstractLayerRenderer::drawLayerLinkedGroupingMem(AbstractLayer* l
         continue;
       }
 
-      if(type == UNIQUE_VALUE)
+      for(std::size_t i = 0; i < csize; ++i)
+        chartValues[chart->getProperties()[i]].clear();
+      values.clear();
+      svalues.clear();
+
+      if(dataset->isNull(propertyPos) == false)
       {
-        if(isNumber)
+        if(type == UNIQUE_VALUE)
         {
-          values.clear();
-          values.push_back(boost::lexical_cast<double>(dataset->getAsString(propertyPos, precision)));
+            if(isNumber)
+              values.push_back(boost::lexical_cast<double>(dataset->getAsString(propertyPos, precision)));
+            else
+              svalues.push_back(dataset->getAsString(propertyPos, precision));
         }
         else
-        {
-          svalues.clear();
-          svalues.push_back(dataset->getAsString(propertyPos, precision));
-        }
+          values.push_back(boost::lexical_cast<double>(dataset->getAsString(propertyPos, precision)));
       }
       else
-      {
-        values.clear();
-        values.push_back(boost::lexical_cast<double>(dataset->getAsString(propertyPos, precision)));
-      }
+        hasGroupNullValueAux = true;
 
       for(std::size_t i = 0; i < csize; ++i)
       {
-        chartValues[chart->getProperties()[i]].clear();
-        chartValues[chart->getProperties()[i]].push_back(boost::lexical_cast<double>(dataset->getAsString(propertyPos, precision)));
+        if(dataset->isNull(chart->getProperties()[i]))
+        {
+          hasChartNullValueAux = true;
+          break;
+        }
       }
+      if(hasChartNullValueAux == false)
+      {
+        for(std::size_t i = 0; i < csize; ++i)
+          chartValues[chart->getProperties()[i]].push_back(boost::lexical_cast<double>(dataset->getAsString(chart->getProperties()[i])));
+      }  
     }
-   
-    if(symbolizers.empty())
-      continue;
 
     // Gets the set of symbolizers defined on group item
     std::size_t nSymbolizers = symbolizers.size();
+
+    if(hasGroupNullValue == false)
+    {
+      for(std::size_t j = 0; j < nSymbolizers; ++j) // for each <Symbolizer>
+      {
+        // The current symbolizer
+        te::se::Symbolizer* symb = symbolizers[j];
+
+        // Let's config the canvas based on the current symbolizer
+        cc.config(symb);
+
+        // If necessary, geometry remap
+        if(needRemap)
+        {
+          geom->setSRID(layer->getSRID());
+          geom->transform(srid);
+        }
+
+        canvas->draw(geom);
+
+        if(chart && hasChartNullValue == false && j == nSymbolizers - 1)
+          buildChart(chart, chartValue, geom);
+      }
+    }
+    if(nSymbolizers == 0 && chart && hasChartNullValue == false)
+      buildChart(chart, chartValue, geom);
+
+    hasChartNullValue = hasChartNullValueAux;
+    hasGroupNullValue = hasGroupNullValueAux;
+    hasChartNullValueAux = false;
+    hasGroupNullValueAux = false;
+  } while(dataset->moveNext());
+
+  delete geom;
+  geom = geomaux;
+
+  std::vector<te::se::Symbolizer*> symbolizers;
+  if(hasGroupNullValue == false)
+  {
+    if(type == UNIQUE_VALUE)
+    {
+      if(isNumber)
+      {
+        value = te::da::GetSummarizedValue(values, gfunction);
+        value = te::da::Round(value, precision);
+        svalue = boost::lexical_cast<std::string>(value);
+      }
+      else
+        svalue = te::da::GetSummarizedValue(svalues, gfunction);
+
+      std::map<std::string, std::vector<te::se::Symbolizer*> >::const_iterator it = uniqueGroupsMap.find(svalue);
+      if(it != uniqueGroupsMap.end())
+        symbolizers = it->second;
+    }
+    else
+    {
+      value = te::da::GetSummarizedValue(values, gfunction);
+      value = te::da::Round(value, precision);
+
+      std::map<std::pair<double, double>, std::vector<te::se::Symbolizer*> >::const_iterator it;
+      for(it = othersGroupsMap.begin(); it != othersGroupsMap.end(); ++it)
+      {
+        if(value >= it->first.first && value <= it->first.second)
+          break;
+      }
+      
+      if(it == othersGroupsMap.end())
+      {
+        te::se::Style* style = layer->getStyle();
+        if(style)
+        {
+          if(!style->getRules().empty())
+          {
+            te::se::Rule* rule = style->getRule(0);
+            symbolizers = rule->getSymbolizers();
+          }
+        }
+      }
+      else
+        symbolizers = it->second;
+    }
+  }
+
+  if(hasChartNullValue == false)
+  {
+    for(std::size_t i = 0; i < csize; ++i)
+    {
+      chartValue[chart->getProperties()[i]] = te::da::GetSummarizedValue(chartValues[chart->getProperties()[i]], cfunction);
+    }
+  }
+
+  // Gets the set of symbolizers defined on group item
+  std::size_t nSymbolizers = symbolizers.size();
+
+  if(hasGroupNullValue == false)
+  {
 
     for(std::size_t j = 0; j < nSymbolizers; ++j) // for each <Symbolizer>
     {
@@ -1066,86 +1179,10 @@ void te::map::AbstractLayerRenderer::drawLayerLinkedGroupingMem(AbstractLayer* l
       if(chart && hasChartNullValue == false && j == nSymbolizers - 1)
         buildChart(chart, chartValue, geom);
     }
-  } while(dataset->moveNext());
-
-  delete geom;
-  geom = geomaux;
-
-  std::vector<te::se::Symbolizer*> symbolizers;
-  if(type == UNIQUE_VALUE)
-  {
-    if(isNumber)
-    {
-      value = te::da::GetSummarizedValue(values, gfunction);
-      value = te::da::Round(value, precision);
-      svalue = boost::lexical_cast<std::string>(value);
-    }
-    else
-      svalue = te::da::GetSummarizedValue(svalues, gfunction);
-
-    std::map<std::string, std::vector<te::se::Symbolizer*> >::const_iterator it = uniqueGroupsMap.find(svalue);
-    if(it != uniqueGroupsMap.end())
-      symbolizers = it->second;
   }
-  else
-  {
-    value = te::da::GetSummarizedValue(values, gfunction);
-    value = te::da::Round(value, precision);
+  if(nSymbolizers == 0 && chart && hasChartNullValue == false)
+    buildChart(chart, chartValue, geom);
 
-    std::map<std::pair<double, double>, std::vector<te::se::Symbolizer*> >::const_iterator it;
-    for(it = othersGroupsMap.begin(); it != othersGroupsMap.end(); ++it)
-    {
-      if(value >= it->first.first && value <= it->first.second)
-        break;
-    }
-      
-    if(it == othersGroupsMap.end())
-    {
-      te::se::Style* style = layer->getStyle();
-      if(style)
-      {
-        if(!style->getRules().empty())
-        {
-          te::se::Rule* rule = style->getRule(0);
-          symbolizers = rule->getSymbolizers();
-        }
-      }
-    }
-    else
-      symbolizers = it->second;
-  }
-
-  if(hasChartNullValue == false)
-  {
-    for(std::size_t i = 0; i < csize; ++i)
-    {
-      chartValue[chart->getProperties()[i]] = te::da::GetSummarizedValue(chartValues[chart->getProperties()[i]], cfunction);
-    }
-  }
-
-  // Gets the set of symbolizers defined on group item
-  std::size_t nSymbolizers = symbolizers.size();
-
-  for(std::size_t j = 0; j < nSymbolizers; ++j) // for each <Symbolizer>
-  {
-    // The current symbolizer
-    te::se::Symbolizer* symb = symbolizers[j];
-
-    // Let's config the canvas based on the current symbolizer
-    cc.config(symb);
-
-    // If necessary, geometry remap
-    if(needRemap)
-    {
-      geom->setSRID(layer->getSRID());
-      geom->transform(srid);
-    }
-
-    canvas->draw(geom);
-
-    if(chart && hasChartNullValue == false && j == nSymbolizers - 1)
-      buildChart(chart, chartValue, geom);
-  }
   delete geom;
 
   // Let's draw the generated charts
@@ -1182,6 +1219,7 @@ void te::map::AbstractLayerRenderer::drawDatSetGeometries(te::da::DataSet* datas
   std::map<std::string, std::vector<double> > chartValues;
   std::map<std::string, double> chartValue;
   bool hasChartNullValue = false;
+  bool hasChartNullValueAux = false;
   size_t csize = 0;
   if(chart)
   {
@@ -1209,7 +1247,7 @@ void te::map::AbstractLayerRenderer::drawDatSetGeometries(te::da::DataSet* datas
       continue;
     }
 
-    if(pksize)
+    if(pksize) // if linked
     {
       // it is linked. Remove redundancies.
       size_t i;
@@ -1256,15 +1294,28 @@ void te::map::AbstractLayerRenderer::drawDatSetGeometries(te::da::DataSet* datas
           for(std::size_t i = 0; i < csize; ++i)
             chartValue[chart->getProperties()[i]] = te::da::GetSummarizedValue(chartValues[chart->getProperties()[i]], cfunction);
         }
-          
+
+        // prepare the next loop
+        for(std::size_t i = 0; i < csize; ++i)
+          chartValues[chart->getProperties()[i]].clear();
+
+        hasChartNullValueAux = false;
         for(std::size_t i = 0; i < csize; ++i)
         {
-          chartValues[chart->getProperties()[i]].clear();
-          chartValues[chart->getProperties()[i]].push_back(boost::lexical_cast<double>(dataset->getAsString(chart->getProperties()[i])));
+          if(dataset->isNull(chart->getProperties()[i]))
+          {
+            hasChartNullValueAux = true;
+            break;
+          }
+        }
+        if(hasChartNullValueAux == false)
+        {
+          for(std::size_t i = 0; i < csize; ++i)
+            chartValues[chart->getProperties()[i]].push_back(boost::lexical_cast<double>(dataset->getAsString(chart->getProperties()[i])));
         }
       }
     }
-    else
+    else // if not linked
     {
       // read chart value
       for(std::size_t i = 0; i < csize; ++i)
@@ -1273,6 +1324,7 @@ void te::map::AbstractLayerRenderer::drawDatSetGeometries(te::da::DataSet* datas
           chartValue[chart->getProperties()[i]] = boost::lexical_cast<double>(dataset->getAsString(chart->getProperties()[i]));
         else
         {
+          chartValue.clear();
           hasChartNullValue = true;
           break;
         }
@@ -1314,7 +1366,8 @@ void te::map::AbstractLayerRenderer::drawDatSetGeometries(te::da::DataSet* datas
     if(chart && hasChartNullValue == false)
       buildChart(chart, chartValue, geom);
 
-    hasChartNullValue = false;
+    hasChartNullValue = hasChartNullValueAux;
+    hasChartNullValueAux = false;
 
   } while(dataset->moveNext()); // next geometry!
 

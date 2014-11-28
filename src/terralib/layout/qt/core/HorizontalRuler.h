@@ -39,11 +39,11 @@ namespace te
     {
       public:
 
-        HorizontalRuler(PaperConfig* paperConfig);
+        HorizontalRuler();
 
         virtual ~HorizontalRuler();
 
-        virtual void drawRuler( QGraphicsView* view, QPainter* painter );
+        virtual void drawRuler( QGraphicsView* view, QPainter* painter, double scale );
 
     };
   }

@@ -383,7 +383,7 @@
                   <item row="0" column="0">
                    <widget class="QLabel" name="label_4">
                     <property name="text">
-                     <string>Mininumum Required Tie-Points</string>
+                     <string>Mininumum Required Tie-Points Covered Area Percent</string>
                     </property>
                    </widget>
                   </item>
@@ -394,6 +394,9 @@
                     </property>
                     <property name="maximum">
                      <number>100</number>
+                    </property>
+                    <property name="value">
+                     <number>25</number>
                     </property>
                    </widget>
                   </item>

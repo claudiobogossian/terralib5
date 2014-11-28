@@ -131,7 +131,14 @@ te::qt::widgets::HistogramDataWidget::HistogramDataWidget(te::da::DataSet* dataS
     }
   }
 
-  updateSummary(m_dataSet.get(), getForm());
+  if(te::da::HasLinkedTable(dataType))
+    updateSummary(m_dataSet.get(), getForm());
+  else
+  {
+    m_ui->m_summaryComboBox->clear();
+    m_ui->m_summaryComboBox->hide();
+    m_ui->m_summaryLabel->hide();
+  }
 
 // connect signal and slots
   connect(m_ui->m_propertyComboBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(onPropertyComboBoxIndexChanged(QString)));
@@ -228,6 +235,12 @@ void te::qt::widgets::HistogramDataWidget::onPropertyComboBoxIndexChanged (QStri
     m_ui->m_slicesSpinBox->setValue(0);
   }
 
-  updateSummary(m_dataSet.get(), getForm());
-
+  if(te::da::HasLinkedTable(m_dataType.get()))
+    updateSummary(m_dataSet.get(), getForm());
+  else
+  {
+    m_ui->m_summaryComboBox->clear();
+    m_ui->m_summaryComboBox->hide();
+    m_ui->m_summaryLabel->hide();
+  }
 }

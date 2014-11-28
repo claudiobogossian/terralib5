@@ -40,7 +40,7 @@ te::layout::Context::Context() :
   m_scene(0),
   m_canvas(0),
   m_zoomFactor(1.),
-  m_defaultZoomFactor(0.7),
+  m_defaultZoomFactor(0.5),
   m_oldZoomFactor(1.),
   m_itemFactory(0),
   m_outsideFactory(0),
@@ -52,7 +52,8 @@ te::layout::Context::Context() :
   m_paperConfig(0),
   m_buildGraphicsItem(0),
   m_lineIntersectionMouseMode(0),
-  m_proxyProject(0)
+  m_proxyProject(0),
+  m_itemUtils(0)
 {
   EnumModeType* type = Enums::getInstance().getEnumModeType();
   m_mode = type->getModeNone();
@@ -247,4 +248,14 @@ void te::layout::Context::setProxyProject( AbstractProxyProject* project )
 te::layout::AbstractProxyProject* te::layout::Context::getProxyProject()
 {
   return m_proxyProject;
+}
+
+void te::layout::Context::setItemUtils( ItemUtils* utils )
+{
+  m_itemUtils = utils;
+}
+
+te::layout::ItemUtils* te::layout::Context::getItemUtils()
+{
+  return m_itemUtils;
 }

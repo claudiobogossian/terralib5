@@ -133,9 +133,8 @@ std::auto_ptr<te::map::Grouping> te::qt::widgets::GroupingWidget::getGrouping()
     groupingItems.push_back(gi);
   }
   group->setGroupingItems(groupingItems);
-  
-  // Lauro: para operar com linked table
-  //group->setSummary(m_ui->m_summaryComboBox->currentText());
+
+  group->setSummary(m_ui->m_summaryComboBox->currentText().toStdString());
 
   return group;
 }
@@ -417,27 +416,6 @@ void te::qt::widgets::GroupingWidget::setGrouping(te::map::Grouping* grouping)
     m_legend.push_back(gi);
   }
 
-  // Lauro: para operar com linked table
-  //m_ui->m_summaryComboBox->clear();
-  //if(te::da::HasLinkedTable(m_layer.get()))
-  //{
-  //  m_ui->m_summaryComboBox->addItem("MIN");
-  //  m_ui->m_summaryComboBox->addItem("MAX");
-  //  m_ui->m_summaryComboBox->addItem("SUM");
-  //  m_ui->m_summaryComboBox->addItem("AVERAGE");
-  //  m_ui->m_summaryComboBox->addItem("MEDIAN");
-  //  m_ui->m_summaryComboBox->addItem("STDDEV");
-  //  m_ui->m_summaryComboBox->addItem("VARIANCE");
-
-  //  m_ui->m_summaryComboBox->setcurrentText(grouping->getSummary());
-  //  m_ui->m_summaryComboBox->setEnabled(true);
-  //}
-  //else
-  //{
-  //  m_ui->m_summaryComboBox->addItem("NONE");
-  //  m_ui->m_summaryComboBox->setEnabled(false);
-  //}
-
   updateUi(true);
 
   onApplyPushButtonClicked();
@@ -717,7 +695,7 @@ void te::qt::widgets::GroupingWidget::getDataAsDouble(std::vector<double>& vec, 
 {
   assert(m_layer.get());
 
-  if(te::da::HasLinkedTable(m_layer.get()))
+  if(te::da::HasLinkedTable(m_layer->getSchema().get()))
   {
     getLinkedDataAsDouble(vec, attrName, dataType, nullValues);
     return;
@@ -778,7 +756,7 @@ void te::qt::widgets::GroupingWidget::getLinkedDataAsDouble(std::vector<double>&
 
   std::auto_ptr<te::map::LayerSchema> dsType(m_layer->getSchema());
 
-  std::string function = "AVERAGE";
+  std::string function = m_ui->m_summaryComboBox->currentText().toStdString();
   std::vector<std::string> poid;
   size_t pksize = 0;
   te::map::QueryLayer* qlayer = 0;
@@ -935,7 +913,7 @@ void te::qt::widgets::GroupingWidget::getDataAsString(std::vector<std::string>& 
 {
   assert(m_layer.get());
 
-  if(te::da::HasLinkedTable(m_layer.get()))
+  if(te::da::HasLinkedTable(m_layer->getSchema().get()))
   {
     getLinkedDataAsString(vec, attrName,  nullValues);
     return;
@@ -973,7 +951,7 @@ void te::qt::widgets::GroupingWidget::getLinkedDataAsString(std::vector<std::str
 
   std::auto_ptr<te::map::LayerSchema> dsType(m_layer->getSchema());
 
-  std::string function = "MIN";
+  std::string function = m_ui->m_summaryComboBox->currentText().toStdString();
   std::vector<std::string> poid;
   size_t pksize = 0;
   te::map::QueryLayer* qlayer = 0;
@@ -1270,6 +1248,36 @@ void te::qt::widgets::GroupingWidget::setLayers(te::map::AbstractLayerPtr select
 
   //set grouping
   setGrouping();
+
+  //Adjusting summary options
+  m_ui->m_summaryComboBox->clear();
+  if(te::da::HasLinkedTable(m_layer->getSchema().get()))
+  {
+    m_ui->m_summaryComboBox->addItem("MIN");
+    m_ui->m_summaryComboBox->addItem("MAX");
+    m_ui->m_summaryComboBox->addItem("SUM");
+    m_ui->m_summaryComboBox->addItem("AVERAGE");
+    m_ui->m_summaryComboBox->addItem("MEDIAN");
+    m_ui->m_summaryComboBox->addItem("STDDEV");
+    m_ui->m_summaryComboBox->addItem("VARIANCE");
+
+    if(m_layer->getGrouping())
+    {
+      int index = m_ui->m_summaryComboBox->findText(QString::fromStdString(m_layer->getGrouping()->getSummary()));
+      m_ui->m_summaryComboBox->setCurrentIndex(index);
+    }
+
+    m_ui->m_summaryComboBox->setEnabled(true);
+    m_ui->m_summaryComboBox->show();
+    m_ui->m_summaryLabel->show();
+  }
+  else
+  {
+    m_ui->m_summaryComboBox->addItem("NONE");
+    m_ui->m_summaryComboBox->setEnabled(false);
+    m_ui->m_summaryComboBox->hide();
+    m_ui->m_summaryLabel->hide();
+  }
 
   for(std::size_t i = 0; i < allLayers.size(); ++i)
   {
