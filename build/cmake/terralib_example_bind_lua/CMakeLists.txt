@@ -31,9 +31,13 @@ include_directories( ${LUA_INCLUDE_DIR} )
 #  add_definitions(-DLUA_BUILD_AS_DLL)
 #endif()
 
-file(GLOB TERRALIB_SRC_FILES "${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/binding/lua/*.cpp" "${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/examples/lua/*.lua")
+file(GLOB LUA_FILES "${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/examples/lua/*.lua")
 
-add_executable(terralib_example_bind_lua ${TERRALIB_SRC_FILES})
+source_group("Lua Files"  FILES ${LUA_FILES})
+
+file(GLOB TERRALIB_SRC_FILES "${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/binding/lua/*.cpp")
+
+add_executable(terralib_example_bind_lua ${TERRALIB_SRC_FILES} ${LUA_FILES})
 
 target_link_libraries(terralib_example_bind_lua  terralib_mod_common ${LUA_LIBRARIES})
 

@@ -84,7 +84,9 @@ int te::sa::AssociateGPMVertexAttribute(te::sa::GeneralizedProximityMatrix* gpm,
   {
     te::dt::AbstractData* ad = dataSet->getValue(attr).release();
 
-    int idx = dataSet->getInt32(attrLink);
+    std::string strIdx = dataSet->getAsString(attrLink);
+
+    int idx = atoi(strIdx.c_str());
 
     te::graph::Vertex* v = graph->getVertex(idx);
 

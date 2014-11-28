@@ -28,8 +28,11 @@
 #include "../../../../maptools/QueryLayer.h"
 #include "../../../../se/Style.h"
 #include "../../Exception.h"
+#include "ChartItem.h"
+#include "GroupingItem.h"
 #include "LegendItem.h"
 #include "QueryLayerItem.h"
+
 
 // STL
 #include <cassert>
@@ -81,7 +84,7 @@ QMenu* te::qt::widgets::QueryLayerItem::getMenu(QWidget* /*parent*/) const
 
 bool te::qt::widgets::QueryLayerItem::canFetchMore() const
 {
-  return (m_layer->getStyle() != 0) && (m_layer->getStyle()->getRules().empty() == false) && children().isEmpty();
+  return (((m_layer->getStyle() != 0) && (!m_layer->getStyle()->getRules().empty())) || m_layer->getGrouping() != 0 || m_layer->getChart() != 0);
 }
 
 Qt::ItemFlags te::qt::widgets::QueryLayerItem::flags() const
@@ -91,16 +94,19 @@ Qt::ItemFlags te::qt::widgets::QueryLayerItem::flags() const
 
 void te::qt::widgets::QueryLayerItem::fetchMore()
 {
-  if(!children().isEmpty())
-    return;
-
-  if(m_layer->getStyle())
+  if(m_layer->getStyle() && children().empty())
   {
     const std::vector<te::se::Rule*>& rules = m_layer->getStyle()->getRules();
 
     for(std::size_t i = 0; i != rules.size(); ++i)
       new LegendItem(rules[i], this);
   }
+
+  if(m_layer->getGrouping() && !hasGroupingItem())
+    new GroupingItem(m_layer->getGrouping(), this);
+
+  if(m_layer->getChart() && !hasChartItem())
+    new ChartItem(m_layer->getChart(), this);
 }
 
 bool te::qt::widgets::QueryLayerItem::hasChildren() const
@@ -135,3 +141,20 @@ const std::string te::qt::widgets::QueryLayerItem::getItemType() const
 {
   return "QUERY_LAYER_ITEM";
 }
+
+bool te::qt::widgets::QueryLayerItem::hasGroupingItem() const
+{
+  GroupingItem* groupingItem = findChild<GroupingItem*>();
+
+  return groupingItem != 0;
+}
+
+bool te::qt::widgets::QueryLayerItem::hasChartItem() const
+{
+  ChartItem* chartItem = findChild<ChartItem*>();
+
+  return chartItem != 0;
+}
+
+
+
