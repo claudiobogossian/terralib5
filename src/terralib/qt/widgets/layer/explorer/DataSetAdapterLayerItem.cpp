@@ -55,7 +55,7 @@ int te::qt::widgets::DataSetAdapterLayerItem::columnCount() const
 QVariant te::qt::widgets::DataSetAdapterLayerItem::data(int /*column*/, int role) const
 {
   if(role == Qt::DecorationRole)
-    return QVariant(QIcon::fromTheme("dataset-layer"));
+    return QVariant(QIcon::fromTheme("view-data-table"));
 
   if(role == Qt::DisplayRole)
     return QVariant(QString::fromStdString(m_layer->getTitle()));
