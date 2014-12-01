@@ -125,7 +125,7 @@ namespace te
 
           \param summary The summary mode. It can be: "MIN", "MAX", "SUM", "AVERAGE", "MEDIAN", "STDDEV" or "VARIANCE"
         */
-        void setSummary(std::string& summary);
+        void setSummary(const std::string& summary);
 
       private:
 

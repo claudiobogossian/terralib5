@@ -1171,14 +1171,18 @@ bool te::da::IsValidName(const std::string& name, std::string& invalidChar)
 bool te::da::HasLinkedTable(te::da::DataSetType* type)
 {
   assert(type);
-  std::vector<te::dt::Property*> props = type->getPrimaryKey()->getProperties();
-  if(props.size() > 1)
+  te::da::PrimaryKey* pk = type->getPrimaryKey();
+  if(pk)
   {
-    size_t pksize = 0;
-    while(++pksize < props.size())
+    std::vector<te::dt::Property*> props = pk->getProperties();
+    if(props.size() > 1)
     {
-      if(props[pksize-1]->getDatasetName() != props[pksize]->getDatasetName())
-        return true;
+      size_t pksize = 0;
+      while(++pksize < props.size())
+      {
+        if(props[pksize-1]->getDatasetName() != props[pksize]->getDatasetName())
+          return true;
+      }
     }
   }
 
@@ -1191,7 +1195,7 @@ double te::da::GetSummarizedValue(std::vector<double>& values, const std::string
   if(size == 0)
     return 0;
 
-  double d, v;
+  double d = 0, v = 0;
   std::vector<double>::const_iterator it;
 
   if(sumary == "MIN")
@@ -1265,7 +1269,7 @@ double te::da::GetSummarizedValue(std::vector<double>& values, const std::string
   else if(sumary == "MEDIAN")
   {
     if(size == 1)
-      v = *it;
+      v = values[0];
     else
     {
       std::stable_sort(values.begin(), values.end());
@@ -1273,7 +1277,7 @@ double te::da::GetSummarizedValue(std::vector<double>& values, const std::string
       v = values[meio];
 
       if((size_t)size%2 == 0)
-        v += values[meio+1] / 2.;
+        v = (v + values[meio-1]) / 2.;
     }
   }
   else if(sumary == "MODE")  // nao dá porque pode gerar nenhum ou vários valores

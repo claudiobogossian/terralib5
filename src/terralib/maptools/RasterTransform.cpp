@@ -30,6 +30,9 @@
 #include "../raster/RasterProperty.h"
 #include "../se/RasterSymbolizer.h"
 
+// Boost
+#include <boost/math/special_functions/fpclassify.hpp>
+
 // STL
 #include <limits>
 
@@ -86,17 +89,24 @@ void te::map::RasterTransform::setLinearTransfParameters(double vmin, double vma
 {
   m_rstMinValue = rmin;
   m_rstMaxValue = rmax;
-  
-  if( vmax == vmin )
+
+  if(vmax == vmin)
   {
-    m_gain = 0.0;
+    m_gain = 1.0;
     m_offset = 0.0;
+    return;
   }
-  else
+
+  m_gain = (double)(rmax-rmin)/(vmax-vmin);
+
+  if(boost::math::isnan(m_gain) || boost::math::isinf(m_gain))
   {
-    m_gain = (double)(rmax-rmin)/(vmax-vmin);
-    m_offset = -1*m_gain*vmin+rmin;
+    m_gain = 1.0;
+    m_offset = 0.0;
+    return;
   }
+
+  m_offset = -1*m_gain*vmin+rmin;
 }
 
 te::map::RasterTransform::RasterTransfFunctions te::map::RasterTransform::getTransfFunction()

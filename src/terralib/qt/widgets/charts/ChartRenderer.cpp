@@ -122,6 +122,9 @@ QImage* te::qt::widgets::ChartRenderer::drawPies(const te::map::Chart* chart, co
   std::vector<double> values;
   getValues(chart, dataset, values);
 
+  if(values.empty())
+    return img;
+
   double sum = computeSum(values);
 
   int lastAngle = 0;
@@ -167,6 +170,9 @@ QImage* te::qt::widgets::ChartRenderer::drawPies(const te::map::Chart* chart, co
 
   std::vector<double> values;
   getValues(chart, chartValue, values);
+
+  if(values.empty())
+    return img;
 
   double sum = computeSum(values);
 
@@ -214,6 +220,9 @@ QImage* te::qt::widgets::ChartRenderer::drawBars(const te::map::Chart* chart, co
 
   std::vector<double> values;
   getValues(chart, dataset, values);
+
+  if(values.empty())
+    return img;
 
   // Gets the previous computed max value
   double maxValue = chart->getMaxValue();
@@ -274,6 +283,9 @@ QImage* te::qt::widgets::ChartRenderer::drawBars(const te::map::Chart* chart, co
   std::vector<double> values;
   getValues(chart, chartValue, values);
 
+  if(values.empty())
+    return img;
+
   // Gets the previous computed max value
   double maxValue = chart->getMaxValue();
   assert(maxValue > 0.0);
@@ -326,6 +338,12 @@ void te::qt::widgets::ChartRenderer::getValues(const te::map::Chart* chart, cons
   
   for(std::size_t i = 0; i < properties.size(); ++i)
   {
+    if(dataset->isNull(properties[i]))
+    {
+      values.clear();
+      break;
+    }
+
     std::string value = dataset->getAsString(properties[i], precision);
     values.push_back(boost::lexical_cast<double>(value));
   }
@@ -340,6 +358,11 @@ void te::qt::widgets::ChartRenderer::getValues(const te::map::Chart* chart, cons
     it = chartValue.find(properties[i]);
     if(it != chartValue.end())
       values.push_back(it->second);
+    else
+    {
+      values.clear();
+      break;
+    }
   }
 }
 

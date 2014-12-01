@@ -116,7 +116,9 @@ void te::sa::KernelMapOperation::buildTree()
   //create tree and kernel map
   while(dataSet->moveNext())
   {
-    int id = dataSet->getInt32(idxName);
+    std::string strId = dataSet->getAsString(idxName);
+
+    int id = atoi(strId.c_str());
 
     te::gm::Geometry* g = dataSet->getGeometry(gmProp->getName()).release();
 

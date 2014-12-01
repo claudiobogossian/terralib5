@@ -610,7 +610,9 @@ void te::sa::SpatialWeightsExchanger::associateGeometry(te::sa::GeneralizedProxi
 
   while(dataSet->moveNext())
   {
-    int id = dataSet->getInt32(gpm->getAttributeName());
+    std::string strId = dataSet->getAsString(gpm->getAttributeName());
+
+    int id = atoi(strId.c_str());
 
     te::graph::Vertex* v = g->getVertex(id);
 
