@@ -243,8 +243,6 @@ void te::layout::View::config()
 
   if(!nscene)
     return;
-
-  PaperConfig* pConfig =  Context::getInstance().getPaperConfig();
   
   double sw = viewport()->widthMM();
   double sh = viewport()->heightMM();

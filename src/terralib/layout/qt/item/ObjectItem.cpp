@@ -92,8 +92,6 @@ void te::layout::ObjectItem::setPixmap( const QPixmap& pixmap )
   QImage image = img.mirrored(false, true);
   m_pixmap = QPixmap::fromImage(image);
 
-  QPointF point = pos();
-
   te::gm::Envelope box = m_model->getBox();
 
   if(m_mousePressedCtrl)
@@ -328,8 +326,6 @@ QPixmap te::layout::ObjectItem::calculateNewPixmap( const double& x, const doubl
 
 te::gm::Envelope te::layout::ObjectItem::createNewBoxInCoordScene( const double& x, const double& y )
 {
-  QPointF pointScene = this->scenePos();
-
   QPointF pbxy1 = mapToScene(boundingRect().bottomLeft());
   QPointF pbxy2 = mapToScene(boundingRect().topRight());
 
@@ -338,8 +334,8 @@ te::gm::Envelope te::layout::ObjectItem::createNewBoxInCoordScene( const double&
 
   if(m_mousePressedCtrl && m_toResizeItem)
   {
-    double dx = m_finalCoord.x() - m_initialCoord.x();
-    double dy = m_finalCoord.y() - m_initialCoord.y();
+    dx = m_finalCoord.x() - m_initialCoord.x();
+    dy = m_finalCoord.y() - m_initialCoord.y();
 
     switch(m_enumSides)
     {

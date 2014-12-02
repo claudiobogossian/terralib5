@@ -142,8 +142,6 @@ void te::layout::ItemGroup::mousePressEvent( QGraphicsSceneMouseEvent* event )
 {
   QGraphicsItem::mousePressEvent(event);
 
-  int indexItem = -1;
-
   QList<QGraphicsItem*> graphicsItems = childItems();
   foreach( QGraphicsItem *item, graphicsItems) 
   {
@@ -151,7 +149,7 @@ void te::layout::ItemGroup::mousePressEvent( QGraphicsSceneMouseEvent* event )
     {
       if(item->contains(event->scenePos()))
       {
-        int a = 0;
+
       }
     }
   }

@@ -79,6 +79,10 @@ te::layout::Systematic* te::layout::SystematicScaleConfig::getSystematic( System
     planarGap = 10000;
     geoGap = 2.5;//minutes
     break;
+  case S0:
+      break;
+  default:
+      break;
   }
 
   systematic->setWidth(w);

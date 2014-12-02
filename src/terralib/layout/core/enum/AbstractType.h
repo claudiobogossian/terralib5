@@ -37,32 +37,32 @@ namespace te
     /*!
     \brief Enum LayoutRulerOrientation. This is the enumeration of the ruler orientation types
     */
-    typedef TELAYOUTEXPORT enum
+    enum TELAYOUTEXPORT LayoutRulerOrientation
     {
       TypeRulerVertical = 0,
       TypeRulerHorizontal = 90
-    } LayoutRulerOrientation;
+    };
 
-    typedef TELAYOUTEXPORT enum
+    enum TELAYOUTEXPORT PrinterScene
     {
       PreviewScene,
       PrintingScene,
       NoPrinter
-    } PrinterScene;
+    };
 
     /*!
     \brief Enum LayoutGridType. This is the enumeration of the grid types
     */
-    typedef TELAYOUTEXPORT enum
+    enum TELAYOUTEXPORT LayoutGridType
     {
       TypePlanar = 0,
       TypeGeodesic = 1
-    } LayoutGridType;
+    };
 
     /*!
     \brief Enum TdkAbstractComponentType. This is the enumeration of the components types
     */
-    typedef enum
+    enum LayoutAbstractPaperType
     {     
       A0,
       A1,
@@ -78,33 +78,18 @@ namespace te
       Legal,
       Executive,
       Custom
-    } LayoutAbstractPaperType;
+    };
 
-    typedef enum _TdkOrientation
+    enum LayoutOrientationType
     {
       Portrait,	//!< portrait orientation
       Landscape	//!< landScape orientation
-    } LayoutOrientationType;
-
-    typedef enum AlignmentFlags
-    {
-      AlignFlagsAuto             = 0x0000,      // text alignment
-      AlignFlagsLeft             = 0x0001,
-      AlignFlagsRight            = 0x0002,
-      AlignFlagsHCenter          = 0x0004,
-      AlignFlagsJustify          = 0x0008,
-      AlignFlagsHorizontal_Mask   = AlignFlagsLeft | AlignFlagsRight | AlignFlagsHCenter | AlignFlagsJustify,
-      AlignFlagsTop              = 0x0010,
-      AlignFlagsBottom           = 0x0020,
-      AlignFlagsVCenter          = 0x0040,
-      AlignFlagsVertical_Mask     = AlignFlagsTop | AlignFlagsBottom | AlignFlagsVCenter,
-      AlignFlagsCenter           = AlignFlagsVCenter | AlignFlagsHCenter
-    } LayoutAlignmentType;
+    };
 
     /*!
     \brief Enum TdkAbstractComponentType. This is the enumeration of the components types
     */
-    typedef enum
+    enum LayoutAlign
     {
       TPTopLeft,
       TPTopRight,
@@ -114,16 +99,16 @@ namespace te
       TPCenterRight,
       TPCenterLeft,
       TPNoneSide
-    } LayoutAlign;
+    };
 
     /*!
     \brief Enum TdkAbstractComponentType. This is the enumeration of the components types
     */
-    typedef TELAYOUTEXPORT enum
+    enum TELAYOUTEXPORT LayoutUnitsMetrics
     {
       TPMillimeter = 0,
       TPInch = 1
-    } LayoutUnitsMetrics;
+    };
     
     //typedef enum
     //{
@@ -132,13 +117,13 @@ namespace te
     //  StyleCross = 3				//! cross grid
     //} LayoutGridStyle;
 
-    typedef enum
+    enum LayoutUnit
     {
       StyleMeter=1,
       StyleKilometer=1000
-    } LayoutUnit;
+    };
 
-    typedef enum SystematicScaleType
+    enum SystematicScaleType
     {
       S250000,		
       S100000,
