@@ -186,7 +186,7 @@ namespace te
         std::size_t m_index;                               // Unsigned int used as r-Tree index.
         std::vector<te::color::RGBAColor**> m_chartImages; // The generated chart images.
         std::vector<te::gm::Coord2D> m_chartCoordinates;   // The generated chart coordinates.
-        std::vector<std::string> m_oid;
+        std::vector<std::string> m_oid;                    // It has the name of the fields that form the primary key of the base table. It is empty when there is no link table.
     };
 
   } // end namespace map

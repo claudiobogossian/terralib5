@@ -133,6 +133,8 @@ namespace te
           */
           void onItemClicked(int row, int column);
 
+          double getMaxValue(te::map::Chart* chart);
+
         private:
 
           std::auto_ptr<Ui::ChartLayerWidgetForm> m_ui;             //!< Widget form.
