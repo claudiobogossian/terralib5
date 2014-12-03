@@ -1171,14 +1171,18 @@ bool te::da::IsValidName(const std::string& name, std::string& invalidChar)
 bool te::da::HasLinkedTable(te::da::DataSetType* type)
 {
   assert(type);
-  std::vector<te::dt::Property*> props = type->getPrimaryKey()->getProperties();
-  if(props.size() > 1)
+  te::da::PrimaryKey* pk = type->getPrimaryKey();
+  if(pk)
   {
-    size_t pksize = 0;
-    while(++pksize < props.size())
+    std::vector<te::dt::Property*> props = pk->getProperties();
+    if(props.size() > 1)
     {
-      if(props[pksize-1]->getDatasetName() != props[pksize]->getDatasetName())
-        return true;
+      size_t pksize = 0;
+      while(++pksize < props.size())
+      {
+        if(props[pksize-1]->getDatasetName() != props[pksize]->getDatasetName())
+          return true;
+      }
     }
   }
 

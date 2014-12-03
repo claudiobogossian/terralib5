@@ -20,7 +20,7 @@
 /*!
   \file SharedProperties.h
    
-  \brief 
+  \brief Default properties of all graphics objects.
 
   \ingroup layout
 */

@@ -197,6 +197,12 @@ void te::sa::SpatialStatisticsDialog::onOkPushButtonClicked()
     return;
   }
 
+  if(m_ui->m_attrIdComboBox->currentText().isEmpty())
+  {
+    QMessageBox::information(this, tr("Warning"), tr("Attribute Name not defined."));
+    return;
+  }
+
   //get GPM
   std::auto_ptr<te::sa::GeneralizedProximityMatrix> gpm;
 
@@ -210,6 +216,9 @@ void te::sa::SpatialStatisticsDialog::onOkPushButtonClicked()
     return;
   }
 
+  if(!gpm.get())
+    return;
+
   //get selected layer
   QVariant varLayer = m_ui->m_inputLayerComboBox->itemData(m_ui->m_inputLayerComboBox->currentIndex(), Qt::UserRole);
   te::map::AbstractLayerPtr l = varLayer.value<te::map::AbstractLayerPtr>();
@@ -220,7 +229,7 @@ void te::sa::SpatialStatisticsDialog::onOkPushButtonClicked()
 
   std::auto_ptr<te::da::DataSetType> dataSetType = l->getSchema();
 
-  std::string attrLink = m_ui->m_attrLinkComboBox->currentText().toStdString();
+  std::string attrLink = gpm->getAttributeName();
 
   std::string attrName = m_ui->m_attrIdComboBox->currentText().toStdString();
 
@@ -443,9 +452,7 @@ std::auto_ptr<te::sa::GeneralizedProximityMatrix> te::sa::SpatialStatisticsDialo
 
   std::string dataSetName = dsLayer->getDataSetName();
 
-  std::string attrName = m_ui->m_attrIdComboBox->currentText().toStdString();
-
-  if(m_ui->m_gpmLineEdit->text().isEmpty())
+  if(!m_ui->m_gpmGroupBox->isChecked())
   {
     //create gpm
     if(QMessageBox::question(this, tr("Spatial Analysis"), tr("GPM not selected. Create default GPM?"), QMessageBox::No, QMessageBox::Yes) == QMessageBox::No)
@@ -453,7 +460,14 @@ std::auto_ptr<te::sa::GeneralizedProximityMatrix> te::sa::SpatialStatisticsDialo
 
     //get attrlink
     std::auto_ptr<te::da::DataSetType> dsType = dsLayer->getSchema();
-    std::string attrLink = dsType->getPrimaryKey()->getName();
+
+    if(!dsType->getPrimaryKey() || dsType->getPrimaryKey()->getProperties().empty())
+    {
+      QMessageBox::warning(this, tr("Warning"), tr("Invalid Data Set Primary Key."));
+      return gpm;
+    }
+
+    std::string attrLink = dsType->getPrimaryKey()->getProperties()[0]->getName();
 
     //create default gpm
     te::sa::GPMConstructorAbstractStrategy* constructor = new te::sa::GPMConstructorAdjacencyStrategy(true);
@@ -467,6 +481,12 @@ std::auto_ptr<te::sa::GeneralizedProximityMatrix> te::sa::SpatialStatisticsDialo
   }
   else
   {
+    if(m_ui->m_gpmLineEdit->text().isEmpty())
+    {
+      QMessageBox::warning(this, tr("Warning"), tr("GPM File not selected."));
+      return gpm;
+    }
+
     //load gpm
     QFileInfo file(m_ui->m_gpmLineEdit->text());
 

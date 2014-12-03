@@ -194,7 +194,9 @@ void te::sa::BayesLocalOperation::runBayesLocal(te::mem::DataSet* ds, std::size_
 
     while(ds->moveNext())
     {
-      int id = ds->getInt32(idIdx);
+      std::string strId = ds->getAsString(idIdx);
+
+      int id = atoi(strId.c_str());
 
       double totEvent = ds->getDouble(eventIdx);
       double totPop = ds->getDouble(popIdx);
@@ -255,7 +257,9 @@ void te::sa::BayesLocalOperation::runBayesLocal(te::mem::DataSet* ds, std::size_
 
     while(ds->moveNext())
     {
-      int id = ds->getInt32(idIdx);
+      std::string strId = ds->getAsString(idIdx);
+
+      int id = atoi(strId.c_str());
 
       double myEvent = ds->getDouble(eventIdx);
       double myPop = ds->getDouble(popIdx);

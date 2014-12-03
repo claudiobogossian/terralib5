@@ -162,7 +162,9 @@ void te::sa::KernelRatioOperation::buildTree()
   //create tree and kernel map
   while(dataSet->moveNext())
   {
-    int id = dataSet->getInt32(idxName);
+    std::string strId = dataSet->getAsString(idxName);
+
+    int id = atoi(strId.c_str());
 
     std::auto_ptr<te::gm::Geometry> g = dataSet->getGeometry(gmProp->getName());
 

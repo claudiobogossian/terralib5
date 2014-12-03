@@ -46,8 +46,6 @@ TELAYOUTEXPORT bool te::layout::changeMapVisitable( QList<QGraphicsItem*> graphi
 
   if(!mpModel)
     return false;
-  
-  EnumObjectType* type = Enums::getInstance().getEnumObjectType();
 
   foreach( QGraphicsItem *it, graphicsItems) 
   {

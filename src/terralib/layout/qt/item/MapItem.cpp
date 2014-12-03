@@ -88,8 +88,8 @@ te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
   m_grabbedByWidget(false),
   m_treeItem(0),
   m_tool(0),
-  m_hMargin(0),
   m_wMargin(0),
+  m_hMargin(0),
   m_layer(0),
   m_move(false)
 {
