@@ -138,8 +138,6 @@ void te::layout::TextGridItem::updateDocument()
   tableFormat.setBorderBrush(blackBrush);
   tableFormat.setBorder(0.5);
 
-  Utils* utils = Context::getInstance().getUtils();
-
   int columns = model->getNumberColumns();
   int rows = model->getNumberRows();
  

@@ -32,12 +32,12 @@
 #include "property/Properties.h"
 
 te::layout::AbstractBuildGraphicsItem::AbstractBuildGraphicsItem() :
+  m_sharedProps(0),
+  m_props(0),
   m_zValue(0),
   m_id(0),
-  m_props(0),
   m_redraw(true),
-  m_name("Unknown"),
-  m_sharedProps(0)
+  m_name("Unknown")
 {
   m_sharedProps = new SharedProperties;
 }

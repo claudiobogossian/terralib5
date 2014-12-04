@@ -24,6 +24,7 @@
 #
 
 include_directories(${Boost_INCLUDE_DIR})
+include_directories(${QTPROPERTYBROWSER_INCLUDE_DIR})
 
 if(WIN32)
   add_definitions(-DTEQTPLUGINLAYOUTDLL)
@@ -49,7 +50,8 @@ if(Qt5_FOUND)
                                                        terralib_mod_datatype
                                                        terralib_mod_geometry
                                                        terralib_mod_maptools
-                                                       terralib_mod_qt_widgets)
+                                                       terralib_mod_qt_widgets
+													   ${QTPROPERTYBROWSER_LIBRARY})
 
   qt5_use_modules(terralib_mod_qt_plugins_layout Widgets)
 
@@ -79,7 +81,8 @@ else()
   target_link_libraries(terralib_mod_qt_plugins_layout terralib_mod_layout
                                                        terralib_mod_plugin
                                                        terralib_mod_qt_apf
-                                                       ${QT_LIBRARIES})
+                                                       ${QT_LIBRARIES}
+													   ${QTPROPERTYBROWSER_LIBRARY})
 
 endif()
 

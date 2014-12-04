@@ -36,18 +36,22 @@
 
 te::layout::GridModel::GridModel() :
   m_name("GRID_MODEL"),
-  m_visible(false),
+  m_srid(TE_UNKNOWN_SRS),
+  m_systematic(0),
+  m_mapDisplacementX(0),
+  m_mapDisplacementY(0),
+  m_visible(false),  
   m_lneHrzGap(0),
   m_lneVrtGap(0),
   m_initialGridPointX(0),
   m_initialGridPointY(0),
   m_gridStyle(0),
   m_lineStyle(0),
-  m_lineWidth(1),
+  m_lineWidth(1),  
   m_pointTextSize(12),
   m_fontText("Arial"),
-  m_textColor(),
   m_visibleAllTexts(true),
+
   m_superscriptText(false),
   m_lneVrtDisplacement(7),
   m_lneHrzDisplacement(7),
@@ -58,10 +62,7 @@ te::layout::GridModel::GridModel() :
   m_bottomRotateText(false),
   m_leftRotateText(false),
   m_rightRotateText(false),
-  m_topRotateText(false),
-  m_srid(TE_UNKNOWN_SRS),
-  m_mapDisplacementX(0),
-  m_mapDisplacementY(0)
+  m_topRotateText(false)
 {
   m_gridStyle = Enums::getInstance().getEnumGridStyleType()->getStyleNone();
   m_lineStyle = Enums::getInstance().getEnumLineStyleType()->getStyleNone();
