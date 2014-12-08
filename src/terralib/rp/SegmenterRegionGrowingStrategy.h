@@ -379,6 +379,7 @@ namespace te
           \param minFoundDissimilarity The minimum dissimilarity value found.
           \param maxFoundDissimilarity The maximum dissimilarity value found.
           \param totalMergesNumber The total number of merges.
+          \param mergeIterationCounter A reference to a iteration number counter (this variable will be only incremented, never zeroed. It never must be reset. ).
         */           
         void mergeSegments( 
           const SegmenterRegionGrowingSegment::FeatureType disimilarityThreshold,
@@ -391,7 +392,8 @@ namespace te
           SegmenterRegionGrowingSegment* auxSeg3Ptr,
           SegmenterRegionGrowingSegment::FeatureType& minFoundDissimilarity,
           SegmenterRegionGrowingSegment::FeatureType& maxFoundDissimilarity,
-          unsigned int& totalMergesNumber );
+          unsigned int& totalMergesNumber,
+          SegmenterRegionGrowingSegment::IterationCounterType& globalMergeIterationsCounter );
           
         /*!
           \brief Export the segments IDs to a tif file.

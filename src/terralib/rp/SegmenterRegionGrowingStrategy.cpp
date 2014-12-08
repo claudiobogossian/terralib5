@@ -896,6 +896,7 @@ namespace te
       SegmenterRegionGrowingSegment::FeatureType maxFoundDissimilarity = 0.0;
       unsigned int totalMergesNumber = 0;      
       SegmenterRegionGrowingSegment::FeatureType disimilarityThreshold = 0;
+      SegmenterRegionGrowingSegment::IterationCounterType globalMergeIterationsCounter = 1;
       
       // Segmentation loop with enablelocalMutualBestFitting
       
@@ -930,7 +931,8 @@ namespace te
           auxSeg3Ptr, 
           minFoundDissimilarity, 
           maxFoundDissimilarity,
-          totalMergesNumber );
+          totalMergesNumber,
+          globalMergeIterationsCounter );
       }
       
       // Segmentation loop without enablelocalMutualBestFitting
@@ -965,7 +967,8 @@ namespace te
           auxSeg3Ptr, 
           minFoundDissimilarity, 
           maxFoundDissimilarity,
-          totalMergesNumber );
+          totalMergesNumber,
+          globalMergeIterationsCounter );
       }      
       
       // Forcing the merge of too small segments
@@ -983,7 +986,8 @@ namespace te
           auxSeg3Ptr, 
           minFoundDissimilarity, 
           maxFoundDissimilarity,
-          totalMergesNumber );        
+          totalMergesNumber,
+          globalMergeIterationsCounter );        
       }
       
       if( enableProgressInterface )
@@ -1272,6 +1276,7 @@ namespace te
             segmentPtr->m_xBound = blkCol + 1;
             segmentPtr->m_yStart = blkLine;
             segmentPtr->m_yBound = blkLine + 1;
+            segmentPtr->m_mergetIteration = 0;
             
             m_segmentsIdsMatrix( blkLine, blkCol ) = segmentPtr->m_id;
               
@@ -1347,7 +1352,8 @@ namespace te
       SegmenterRegionGrowingSegment* auxSeg3Ptr,
       SegmenterRegionGrowingSegment::FeatureType& minFoundDissimilarity,
       SegmenterRegionGrowingSegment::FeatureType& maxFoundDissimilarity,
-      unsigned int& totalMergesNumber )
+      unsigned int& totalMergesNumber,
+      SegmenterRegionGrowingSegment::IterationCounterType& globalMergeIterationsCounter )
     {
       minFoundDissimilarity =
         std::numeric_limits< SegmenterRegionGrowingSegment::FeatureType >::max();      
@@ -1367,7 +1373,6 @@ namespace te
       }
       
       unsigned int iterationMergedSegmentsNumber = 0;
-      unsigned int iterationNumber = 0;
       
       do
       {
@@ -1412,10 +1417,12 @@ namespace te
           {
             currSegPtr = segmentsMatrixLinePtr + col;
             
-            if( ( currSegPtr->m_status ) && ( currSegPtr->m_size <= internalMaxSegSizeThreshold ) )
+            if( ( currSegPtr->m_status ) && ( currSegPtr->m_mergetIteration !=
+              globalMergeIterationsCounter ) && ( currSegPtr->m_size <= 
+              internalMaxSegSizeThreshold ) )
             {
               // finding the neighbor segment with minimum dissimilary value
-              // related to the current sement
+              // related to the current sement 
               
               minForwardDissimilaritySegmentPtr = 0;
               minForwardDissimilarityValue = 
@@ -1479,7 +1486,8 @@ namespace te
               
               // if the min forward dissimilarity segment was found
               
-              if( minForwardDissimilaritySegmentPtr )
+              if( ( minForwardDissimilaritySegmentPtr != 0 ) &&
+                ( minForwardDissimilaritySegmentPtr->m_mergetIteration != globalMergeIterationsCounter ) )
               {
                 if( minFoundDissimilarity > minForwardDissimilarityValue )
                 {
@@ -1496,6 +1504,8 @@ namespace te
                 
                 merger.mergeFeatures( currSegPtr, minForwardDissimilaritySegmentPtr,
                   auxSeg3Ptr );
+                
+                currSegPtr->m_mergetIteration = globalMergeIterationsCounter;
                   
                 currSegPtr->removeNeighborSegment( minForwardDissimilaritySegmentPtr );
                   
@@ -1564,7 +1574,6 @@ namespace te
                 freeSegmentIds.push_back( minForwardDissimilaritySegmentPtr->m_id );
                 
                 ++iterationMergedSegmentsNumber;
-                ++totalMergesNumber;
               }
             }
           }
@@ -1577,10 +1586,12 @@ namespace te
           segmenterIdsManager.addFreeIDs( freeSegmentIds );
         }
         
+        totalMergesNumber += iterationMergedSegmentsNumber;
+        
 //         std::cout << std::endl << "Iteration Number: " << iterationNumber <<
 //           "  Merged segments number:" << iterationMergedSegmentsNumber << std::endl;
         
-        ++iterationNumber;
+        ++globalMergeIterationsCounter;
       }
       while( iterationMergedSegmentsNumber );
     }
