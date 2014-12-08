@@ -1007,6 +1007,19 @@ void te::map::AbstractLayerRenderer::drawLayerLinkedGroupingMem(AbstractLayer* l
             symbolizers = it->second;
         }
       }
+      else
+      {
+        te::se::Style* style = layer->getStyle();
+        if(style)
+        {
+          if(!style->getRules().empty())
+          {
+            te::se::Rule* rule = style->getRule(0);
+
+            symbolizers = rule->getSymbolizers();
+          }
+        }
+      }
 
       if(hasChartNullValue == false)
       {
@@ -1063,31 +1076,26 @@ void te::map::AbstractLayerRenderer::drawLayerLinkedGroupingMem(AbstractLayer* l
     // Gets the set of symbolizers defined on group item
     std::size_t nSymbolizers = symbolizers.size();
 
-    if(hasGroupNullValue == false)
+    for(std::size_t j = 0; j < nSymbolizers; ++j) // for each <Symbolizer>
     {
-      for(std::size_t j = 0; j < nSymbolizers; ++j) // for each <Symbolizer>
+      // The current symbolizer
+      te::se::Symbolizer* symb = symbolizers[j];
+
+      // Let's config the canvas based on the current symbolizer
+      cc.config(symb);
+
+      // If necessary, geometry remap
+      if(needRemap)
       {
-        // The current symbolizer
-        te::se::Symbolizer* symb = symbolizers[j];
-
-        // Let's config the canvas based on the current symbolizer
-        cc.config(symb);
-
-        // If necessary, geometry remap
-        if(needRemap)
-        {
-          geom->setSRID(layer->getSRID());
-          geom->transform(srid);
-        }
-
-        canvas->draw(geom);
-
-        if(chart && hasChartNullValue == false && j == nSymbolizers - 1)
-          buildChart(chart, chartValue, geom);
+        geom->setSRID(layer->getSRID());
+        geom->transform(srid);
       }
+
+      canvas->draw(geom);
+
+      if(chart && hasChartNullValue == false && j == nSymbolizers - 1)
+        buildChart(chart, chartValue, geom);
     }
-    if(nSymbolizers == 0 && chart && hasChartNullValue == false)
-      buildChart(chart, chartValue, geom);
 
     hasChartNullValue = hasChartNullValueAux;
     hasGroupNullValue = hasGroupNullValueAux;
