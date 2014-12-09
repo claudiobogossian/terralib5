@@ -44,6 +44,9 @@ void LoadModules();
 /*! \brief Creates a LDD GRAPH. */
 void CreateLDDGraph(bool draw);
 
+/*! \brief Creates a MST GRAPH. */
+void CreateMSTGraph(bool draw);
+
 /*! \brief Auxiliar functions for load a raster. */
 std::auto_ptr<te::rst::Raster> OpenRaster(const std::string& pathName, const int& srid);
 
