@@ -73,6 +73,12 @@ namespace te
 
         private:
 
+          bool hasGroupingItem() const;
+
+          bool hasChartItem() const;
+
+        private:
+
           te::map::QueryLayerPtr m_layer;
       }; 
     } // end namespace widgets

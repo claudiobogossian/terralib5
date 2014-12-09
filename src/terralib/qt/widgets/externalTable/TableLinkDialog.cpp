@@ -81,10 +81,13 @@ te::qt::widgets::TableLinkDialog::TableLinkDialog(QWidget* parent, Qt::WindowFla
   m_ui->m_tabularFrame->hide();
   m_ui->m_helpPushButton->setPageReference("widgets/external_table/table_link_dialog.html");
 
+  //Currently, this function is disabled, further enhancements to the linking functions are required to make such options available
+  m_ui->m_advancedToolButton->hide();
+
   //Connecting signals and slots
   connect(m_ui->m_dataSet2ComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onDataCBIndexChanged(int)));
   connect(m_ui->m_dataToolButton, SIGNAL(clicked()), this, SLOT(onDataToolButtonnClicked()));
-  connect(m_ui->m_advancedToolButton, SIGNAL(clicked()), this, SLOT(onAdvancedToolButtonnClicked()));
+//  connect(m_ui->m_advancedToolButton, SIGNAL(clicked()), this, SLOT(onAdvancedToolButtonnClicked()));
   connect(m_ui->m_OkPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
 }
 
@@ -248,6 +251,9 @@ void te::qt::widgets::TableLinkDialog::getProperties()
       //Acquiring the primary key's properties
       te::da::PrimaryKey* pk = dsType->getPrimaryKey();
 
+      if(!pk)
+        return;
+
       for(size_t i = 0; i < dsType->size(); ++i)
       {
         std::string propName = dsType->getProperty(i)->getName();
@@ -318,6 +324,12 @@ int  te::qt::widgets::TableLinkDialog::exec()
   {
     QMessageBox::information(this, tr("Table link error"),
                              tr("This function is not available for the selected datasource"));
+    return QDialog::Rejected;
+  }
+  else if(!m_ds->getDataSetType(m_inputLayer->getDataSetName())->getPrimaryKey())
+  {
+    QMessageBox::information(this, tr("Table link error"),
+                             tr("This function is not available for datasets without a primary key"));
     return QDialog::Rejected;
   }
   else

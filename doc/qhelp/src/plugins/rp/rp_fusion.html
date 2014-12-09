@@ -25,7 +25,9 @@ spectral information and
 increase detail information in the hybrid product produced by fusion
 process. The available methods in TerraLib are:<br>
 <ul>
-  <li><span style="font-weight: bold;">IHS:</span>&nbsp;IHS method
+  <li><span style="font-weight: bold;">IHS:</span> Fusion of a
+low-resolution multi-band image with a high resolution image using the
+IHS method. The IHS method
 consists on transforming the R,G and B bands of the multispectral image
 into
 IHS components, replacing the intensity component by the panchromatic
@@ -35,8 +37,16 @@ resolution multispectral
 image.</li>
 </ul>
 <ul>
-  <li><span style="font-weight: bold;">PCA:</span> &nbsp;<span
- id="result_box" class="" lang="en"></span></li>
+  <li><span style="font-weight: bold;">PCA:</span> &nbsp;Fusion of a
+low-resolution multi-band image with a high resolution image using the
+PCA (Principal components analysis) method. The PCA performs image
+fusion where the first principal component of the multi-spectral image
+is replaced by the histogram matched panchromatic imagery.</li>
+</ul>
+<ul>
+  <li><span style="font-weight: bold;">WISPER</span>: &nbsp;Fusion of a
+low-resolution multi-band image with a high resolution image using the
+WiSpeR method.</li>
 </ul>
 </div>
 <font style="font-family: Calibri Light;" face="Calibri Light">
@@ -106,7 +116,6 @@ specific parameters.&nbsp;</li>
     <ul>
       <li>Select the raster&nbsp;band index to process from the high
 resolution raster..</li>
-      <li>Select the interpolator method to be used.</li>
       <li>Select the raster&nbsp;band index from the lower resolution
 raster&nbsp; for &nbsp;the red channel.</li>
       <li>Select the raster&nbsp;band index from the lower resolution
@@ -119,14 +128,31 @@ raster&nbsp; for &nbsp;the blue channel.</li>
     <ul>
       <li>Select the raster&nbsp;band index to process from the high
 resolution raster..</li>
-      <li>Select the interpolator method to be used.</li>
       <li>Select each raster&nbsp;band index from the lower resolution
 raster&nbsp; will be part of the process.</li>
     </ul>
+    <li>WISPER</li>
+    <ul>
+      <li>Select the raster&nbsp;band index to process from the high
+resolution raster.</li>
+      <li>Set the sensor type for the selected band.</li>
+      <li>Select and set the sensor type to each band of the lower
+resolution raster.</li>
+      <li>Select the filter type (wavelet parameter).</li>
+      <li>Define the number of decomposition levels &nbsp;(wavelet
+parameter).</li>
+    </ul>
   </ul>
-  <li>A common option for both methods is to crop rasters to overlap
+  <li>The common options for all methods is:</li>
+  <ul>
+    <li>Select the <span style="font-weight: bold;">interpolator</span>
+method to be used.</li>
+  </ul>
+  <ul>
+    <li>&nbsp;Crop rasters to overlap
 area. This is necessary if the input rasters has different extents.<br>
-  </li>
+    </li>
+  </ul>
   <li>Press <b>Next</b> to apply the contrast or <b>Back</b> to go to
 the previous wizard page.</li>
 </ol>

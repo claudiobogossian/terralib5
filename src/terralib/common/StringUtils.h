@@ -148,7 +148,7 @@ namespace te
      */
     inline std::string Convert2String(double value, int precision)
     {
-      char name[64];
+      char name[256];
       sprintf(name, "%.*f", precision, value );
       return name;
     }

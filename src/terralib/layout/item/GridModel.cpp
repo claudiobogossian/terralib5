@@ -36,18 +36,22 @@
 
 te::layout::GridModel::GridModel() :
   m_name("GRID_MODEL"),
-  m_visible(false),
+  m_srid(TE_UNKNOWN_SRS),
+  m_systematic(0),
+  m_mapDisplacementX(0),
+  m_mapDisplacementY(0),
+  m_visible(false),  
   m_lneHrzGap(0),
   m_lneVrtGap(0),
   m_initialGridPointX(0),
   m_initialGridPointY(0),
   m_gridStyle(0),
   m_lineStyle(0),
-  m_lineWidth(1),
+  m_lineWidth(1),  
   m_pointTextSize(12),
   m_fontText("Arial"),
-  m_textColor(),
   m_visibleAllTexts(true),
+
   m_superscriptText(false),
   m_lneVrtDisplacement(7),
   m_lneHrzDisplacement(7),
@@ -58,8 +62,7 @@ te::layout::GridModel::GridModel() :
   m_bottomRotateText(false),
   m_leftRotateText(false),
   m_rightRotateText(false),
-  m_topRotateText(false),
-  m_srid(TE_UNKNOWN_SRS)
+  m_topRotateText(false)
 {
   m_gridStyle = Enums::getInstance().getEnumGridStyleType()->getStyleNone();
   m_lineStyle = Enums::getInstance().getEnumLineStyleType()->getStyleNone();
@@ -67,7 +70,7 @@ te::layout::GridModel::GridModel() :
 
 te::layout::GridModel::~GridModel()
 {
-
+  gridTextFreeMemory();
 }
 
 std::string te::layout::GridModel::getName()
@@ -148,4 +151,24 @@ void te::layout::GridModel::gridTextFreeMemory()
 std::map<te::gm::Point*, std::string> te::layout::GridModel::getGridInfo()
 {
   return m_gridTexts;
+}
+
+void te::layout::GridModel::setMapDisplacementX( double displacement )
+{
+  m_mapDisplacementX = displacement;
+}
+
+void te::layout::GridModel::setMapDisplacementY( double displacement )
+{
+  m_mapDisplacementY = displacement;
+}
+
+int te::layout::GridModel::getPointSize()
+{
+  return m_pointTextSize;
+}
+
+std::string te::layout::GridModel::getFontFamily()
+{
+  return m_fontText;
 }

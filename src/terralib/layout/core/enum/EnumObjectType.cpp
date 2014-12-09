@@ -52,7 +52,6 @@ te::layout::EnumObjectType::EnumObjectType() :
   m_ellipseItem(0),
   m_titleItem(0),
   m_textGridItem(0),
-  m_multiLineTextItem(0),
   m_editTemplate(0),
   m_menuItem(0),
   m_textGridSettings(0),
@@ -195,12 +194,6 @@ te::layout::EnumObjectType::~EnumObjectType()
     m_textGridItem = 0;
   }
 
-  if(m_multiLineTextItem)
-  {
-    delete m_multiLineTextItem;
-    m_multiLineTextItem = 0;
-  }
-
   if(m_editTemplate)
   {
     delete m_editTemplate;
@@ -311,10 +304,7 @@ void te::layout::EnumObjectType::init()
 
   m_textGridItem = new EnumType(25, "TextGrid_Item");
   m_enums.push_back(m_textGridItem);
-
-  m_multiLineTextItem = new EnumType(26, "MultiLineText_Item");
-  m_enums.push_back(m_multiLineTextItem);
-
+  
   m_editTemplate = new EnumType(27, "Edit_Template");
   m_enums.push_back(m_editTemplate);
 
@@ -436,11 +426,6 @@ te::layout::EnumType* te::layout::EnumObjectType::getTitleItem() const
 te::layout::EnumType* te::layout::EnumObjectType::getTextGridItem() const
 {
   return m_textGridItem;
-}
-
-te::layout::EnumType* te::layout::EnumObjectType::getMultiLineTextItem() const
-{
-  return m_multiLineTextItem;
 }
 
 te::layout::EnumType* te::layout::EnumObjectType::getEditTemplate() const

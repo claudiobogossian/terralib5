@@ -20,7 +20,8 @@
 /*!
   \file BuildGraphicsItem.h
    
-  \brief 
+  \brief Class responsible for creating or building graphics objects. All objects are children of QGraphicsItem and ItemObserver.
+  An object of a type is created from a coordinated. Also An object of a type can be built from the properties saved in a template.
 
   \ingroup layout
 */
@@ -37,74 +38,183 @@ namespace te
 {
   namespace layout
   {
+	/*!
+    \brief Class responsible for creating or building graphics objects. All objects are children of QGraphicsItem and ItemObserver.
+    An object of a type is created from a coordinated. Also An object of a type can be built from the properties saved in a template.
+	  
+	  \ingroup layout
+
+	  \sa te::layout::AbstractBuildGraphicsItem
+	*/
     class BuildGraphicsItem : public AbstractBuildGraphicsItem
     {
       public:
 
+		/*!
+          \brief Constructor
+        */
         BuildGraphicsItem();
 
+		/*!
+          \brief Destructor
+        */
         virtual ~BuildGraphicsItem();
         
+		/*!
+          \brief Method to build a graphics object from the properties.
+		  
+		  \param props properties
+		  \param draw graphics object has or not to be drawing
+		  
+		  \return z value
+        */
         QGraphicsItem* rebuildItem(te::layout::Properties* props, bool draw = true);
-
+		
+		/*!
+          \brief Method to create a graphic object from the properties.
+		  
+		  \param mode type of the object will created
+		  \param coordinate represent the x,y coordinate
+		  \param draw graphics object has or not to be drawing
+		  
+		  \return z value
+        */
         QGraphicsItem* createItem(te::layout::EnumType* mode, const te::gm::Coord2D& coordinate, bool draw = true);
 
       protected:
-
+	  
+		/*!
+          \brief Create graphic object of type PaperItem
+		  		  
+		  \return new object 
+        */
         QGraphicsItem* createPaper();
 
+		/*!
+          \brief Create graphic object of type MapItem
+		  		  
+		  \return new object 
+        */
         QGraphicsItem* createMap();
 
+		/*!
+          \brief Create graphic object of type MapGridItem
+		  		  
+		  \return new object 
+        */
         QGraphicsItem* createMapGrid();
 
+		/*!
+          \brief Create graphic object of type TextItem
+		  		  
+		  \return new object 
+        */
         QGraphicsItem* createText();
 
+		/*!
+          \brief Create graphic object of type RectangleItem
+		  		  
+		  \return new object 
+        */
         QGraphicsItem* createRectangle();
 
-	      QGraphicsItem* createLegend();
-
+		/*!
+          \brief Create graphic object of type LegendItem
+		  		  
+		  \return new object 
+        */
+	    QGraphicsItem* createLegend();
+		
+		/*!
+          \brief Create graphic object of type ScaleItem
+		  		  
+		  \return new object 
+        */
         QGraphicsItem* createScale();
-
+		
+		/*!
+          \brief Create graphic object of type PaperItem
+		  		  
+		  \return new object 
+        */
         QGraphicsItem* createItemGroup();
 
+		/*!
+          \brief Create graphic object of type ImageItem
+		  		  
+		  \return new object 
+        */
         QGraphicsItem* createImage();  
-
+		
+		/*!
+          \brief Create graphic object of type ArrowItem
+		  		  
+		  \return new object 
+        */
         QGraphicsItem* createArrow();
-
+		
+		/*!
+          \brief Create graphic object of type EllipseItem
+		  		  
+		  \return new object 
+        */
         QGraphicsItem* createEllipse();
-
-        QGraphicsItem* createMultiLineText();
-
+		
+		/*!
+          \brief Create graphic object of type PointItem
+		  		  
+		  \return new object 
+        */        
         QGraphicsItem* createPoint();
 
+		/*!
+          \brief Create graphic object of type TextGridItem
+		  		  
+		  \return new object 
+        */
         QGraphicsItem* createTextGrid();
-
+		
+		/*!
+          \brief Create graphic object of type TitleItem
+		  		  
+		  \return new object 
+        */
         QGraphicsItem* createTitle();
-
+		
+		/*!
+          \brief Create graphic object of type LegendChildItem
+		  		  
+		  \return new object 
+        */
         QGraphicsItem* createLegendChild();
         
+		/*!
+          \brief Creates the name of the new graphic object. Adds the number that corresponds to how many objects of this type have already been created.
+
+          \param name of the class type of the graphic object
+		  \param type of the object
+
+          \return name
+        */
         std::string nameItem(std::string name, te::layout::EnumType* type);
         
       protected:
 
-        std::string             m_paperItem;
-        std::string             m_mapItem;
-        std::string             m_mapGridItem;
-        std::string             m_textItem;
-        std::string             m_rectangleItem;
-        std::string             m_legendItem;
-        std::string             m_scaleItem;
-        std::string             m_horizontalRuler;
-        std::string             m_verticalRuler;
-        std::string             m_groupItem;
-        std::string             m_imageItem;
-        std::string             m_arrowItem;
-        std::string             m_ellipseItem;
-        std::string             m_multiLineTextItem;
-        std::string             m_pointItem;
-        std::string             m_textGridItem;
-        std::string             m_titleItem;
-        std::string             m_legendChildItem;
+        std::string             m_paperItem; //!< Part of the name that will be set to a new object of type PaperItem.
+        std::string             m_mapItem; //!< Part of the name that will be set to a new object of type MapItem. 
+        std::string             m_mapGridItem; //!< Part of the name that will be set to a new object of type MapGridItem.
+        std::string             m_textItem; //!< Part of the name that will be set to a new object of type TextItem.
+        std::string             m_rectangleItem; //!< Part of the name that will be set to a new object of type RectangleItem.
+        std::string             m_legendItem; //!< Part of the name that will be set to a new object of type LegendItem.
+        std::string             m_scaleItem; //!< Part of the name that will be set to a new object of type ScaleItem.
+        std::string             m_groupItem; //!< Part of the name that will be set to a new object of type ItemGroup.
+        std::string             m_imageItem; //!< Part of the name that will be set to a new object of type ImageItem.
+        std::string             m_arrowItem; //!< Part of the name that will be set to a new object of type ArrowItem.
+        std::string             m_ellipseItem; //!< Part of the name that will be set to a new object of type EllipseItem.
+        std::string             m_pointItem; //!< Part of the name that will be set to a new object of type PointItem.
+        std::string             m_textGridItem; //!< Part of the name that will be set to a new object of type TextGridItem.
+        std::string             m_titleItem; //!< Part of the name that will be set to a new object of type TitleItem.
+        std::string             m_legendChildItem; //!< Part of the name that will be set to a new object of type LegendChildItem.
     };
   }
 }

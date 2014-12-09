@@ -189,7 +189,6 @@ bool te::layout::GridSettingsOutside::checkValidDegreeValue(const QString &value
   int									status = 0;
   std::basic_string <char>::size_type		index;
   std::string							strDegree = "";
-  double								ret = 0;
 
   strDegree = std::string(value.toLatin1());
   if((index=strDegree.find("º")) !=std::string::npos)	
@@ -418,11 +417,6 @@ void te::layout::GridSettingsOutside::on_pbClose_clicked()
 void te::layout::GridSettingsOutside::on_helpPushButton_clicked()
 {
 
-}
-
-void te::layout::GridSettingsOutside::on_pbCancel_clicked()
-{
-  reject();
 }
 
 void te::layout::GridSettingsOutside::on_cmbUnit_currentIndexChanged( const QString & text )

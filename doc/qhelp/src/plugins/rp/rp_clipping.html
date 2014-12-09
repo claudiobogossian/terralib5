@@ -47,11 +47,32 @@ to crop the raster.</span></li>
     <li><span id="result_box" class="" lang="en">Initial Row</span></li>
     <li><span id="result_box" class="" lang="en">Initial Column</span></li>
     <li><span id="result_box" class="" lang="en">Height</span></li>
-    <li><span id="result_box" class="" lang="en">Width<br>
-      </span></li>
+    <li><span id="result_box" class="" lang="en">Width</span></li>
   </ul>
 </ul>
-<br>
+<ul>
+  <li style="font-family: Calibri Light;"><span
+ style="font-weight: bold;">Layer</span>: The user uses geometries from
+a vectorial layer to crop the raster.</li>
+  <ul>
+    <li style="font-family: Calibri Light;"><span
+ style="font-weight: bold;">Layer</span>: Combo with all available
+vectorial layers.</li>
+    <li style="font-family: Calibri Light;">Crop Type:</li>
+    <ul>
+      <li style="font-family: Calibri Light;"><span
+ style="font-weight: bold;">Aggregate all geometries</span>: Use all
+geometries from layer to crop the raster, generating only one raster.</li>
+      <li style="font-family: Calibri Light;"><span
+ style="font-weight: bold;">Group by Attribute</span>: Uses a specific
+attribute from layer to group the geometries to crop the raster,
+generating one raster for each group.</li>
+      <li><span style="font-family: Calibri Light;"><span
+ style="font-weight: bold;">Use selected geometries</span>: Uses only
+the selected geometries to crop the raster.</span></li>
+    </ul>
+  </ul>
+</ul>
 <font style="font-family: Calibri Light;" face="Calibri Light">It is
 accessible through:</font><font style="font-family: Calibri Light;"
  face="Calibri Light"><b><br>
@@ -97,7 +118,8 @@ Wizard Page 2 - Clipping</font><font face="Calibri Light"><span
 </div>
 <ol style="font-family: Calibri Light;">
   <li><font face="Calibri Light">Select the <i>Type</i> of clipping to
-be used (Extent or Dimension) and set the their specific parameters.</font></li>
+be used (Extent, Dimension or Layer) and set the their specific
+parameters.</font></li>
   <li><span style="font-family: Calibri Light;">The acquisition of the
 extent is possible&nbsp;through the interface <a
  href="../../widgets/rp/raster_navigator.html">Raster

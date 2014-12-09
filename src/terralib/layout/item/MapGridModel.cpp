@@ -62,6 +62,8 @@ te::layout::MapGridModel::MapGridModel() :
   m_mapDisplacementX = 30;
   m_mapDisplacementY = 30;
 
+  m_border = false;
+
   m_box = te::gm::Envelope(0., 0., 180., 150.);
   setBox(m_box); // Also update m_mapBox
   
@@ -137,16 +139,23 @@ void te::layout::MapGridModel::drawGrid(te::map::Canvas* canvas, Utils* utils)
   te::gm::Envelope planarBox = getWorldInMeters();
   m_gridPlanar->setMapScale(scale);
   m_gridPlanar->setBoxMapMM(m_mapBoxMM);
+  m_gridPlanar->setMapDisplacementX(m_mapDisplacementX);
+  m_gridPlanar->setMapDisplacementY(m_mapDisplacementY);
   m_gridPlanar->draw(canvas, utils, planarBox, srid);
 
   // Geodesic Grid
   te::gm::Envelope geoBox = getWorldInDegrees();
   m_gridGeodesic->setMapScale(scale);
   m_gridGeodesic->setBoxMapMM(m_mapBoxMM);
+  m_gridGeodesic->setMapDisplacementX(m_mapDisplacementX);
+  m_gridGeodesic->setMapDisplacementY(m_mapDisplacementY);
+
   /* Box necessário para desenhar a curvatura */
   te::gm::Envelope planarBoxGeodesic = geoBox;
+
   int zone = utils->calculatePlanarZone(geoBox);
   utils->remapToPlanar(&planarBoxGeodesic, zone);
+
   m_gridGeodesic->setPlanarBox(planarBoxGeodesic);
   m_gridGeodesic->draw(canvas, utils, geoBox, srid);
 }
@@ -156,6 +165,8 @@ te::layout::Properties* te::layout::MapGridModel::getProperties() const
   MapModel::getProperties();
 
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+
+  m_properties->removeProperty(m_sharedProps->getBorder());
   
   Property pro_mapBorder;
   pro_mapBorder.setName("map_border");

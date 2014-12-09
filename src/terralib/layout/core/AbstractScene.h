@@ -20,7 +20,7 @@
 /*!
   \file AbstractScene.h
    
-  \brief 
+  \brief This is the abstract scene for Scene.
 
   \ingroup layout
 */
@@ -30,31 +30,75 @@
 
 // TerraLib
 #include "../../geometry/Envelope.h"
+#include "Config.h"
 
 namespace te
 {
   namespace layout
   {
     class ItemObserver;
-    class OutsideObserver;
 
-    class AbstractScene
+	/*!
+      \class AbstractScene
+
+      \brief This is the abstract scene for scene.
+
+      \ingroup layout
+     */
+    class TELAYOUTEXPORT AbstractScene
     {
       public:
-        virtual ~AbstractScene(void) {};
-        virtual void insertItem(ItemObserver* item) = 0;
-        virtual te::gm::Envelope getSceneBox() = 0;
-        virtual te::gm::Envelope* getWorldBox() const = 0;
-        /*
-          params widthMM width of physical screen in millimeters
-          params heightMM height of physical screen in millimeters
-        */
-        virtual void init(double screenWMM, double screenHMM, double zoomFactor = 1.0) = 0;
 
+		/*!
+          \brief Constructor
+        */ 
+        AbstractScene();
+		
+		/*!
+          \brief Destructor
+        */ 
+        virtual ~AbstractScene(void) {};
+		
+		/*!
+          \brief Method that inserts a graphic object in the scene. Inverts the matrix of the object if necessary, ex.: TextItem.
+		  
+		  \param item graphic object		  
+        */ 
+        virtual void insertItem(ItemObserver* item) = 0;
+        
+		/*!
+          \brief Method that return the scene box.
+		  
+		  \param graphic object		  
+        */
+        virtual te::gm::Envelope getSceneBox();
+        
+		/*!
+          \brief Method that starts the scene and configures. Calculates the transformation matrix of the scene and calculates the ratio of the size of the scene with the paper size.
+		  
+		  \param screenWMM width of physical screen in millimeters
+		  \param screenHMM height of physical screen in millimeters
+        */
+        virtual void init(double screenWMM, double screenHMM) = 0;
+                
       protected:
         
-        virtual te::gm::Envelope* calculateWindow(double wMM, double hMM) = 0;
-        virtual void calculateMatrixViewScene(double zoomFactor = 1.) = 0;     
+		/*!
+          \brief Method that calculates the transformation matrix of the scene. This matrix will be set in each QGraphicsView class that watches this scene.
+        */
+        virtual void calculateMatrixViewScene() = 0;
+
+		/*!
+          \brief Method that calculates the ratio of the size of the scene with the paper size. This calculation is necessary so that the paper always is centered in the scene.
+		  
+		  \param wMM width of physical screen in millimeters
+		  \param hMM height of physical screen in millimeters
+        */
+        virtual void calculateWindow(double wMM, double hMM) = 0;
+        
+      protected:
+
+        te::gm::Envelope  m_box; //!< scene box.
     };
   }
 }

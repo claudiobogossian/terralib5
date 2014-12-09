@@ -26,8 +26,11 @@
 // TerraLib
 #include "../../../color/RGBAColor.h"
 #include "../../../common/STLUtils.h"
+#include "../../../dataaccess/utils/Utils.h"
+#include "../../../dataaccess/query/OrderByItem.h"
 #include "../../../maptools/Chart.h"
 #include "../../../maptools/Enums.h"
+#include "../../../maptools/QueryLayer.h"
 #include "../utils/ColorPickerToolButton.h"
 #include "../Utils.h"
 #include "ChartLayerWidget.h"
@@ -41,6 +44,10 @@
 
 // STL
 #include <memory>
+
+//Boost
+#include <boost/lexical_cast.hpp>
+
 
 te::qt::widgets::ChartLayerWidget::ChartLayerWidget(QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f),
@@ -77,6 +84,36 @@ void te::qt::widgets::ChartLayerWidget::setLayer(te::map::AbstractLayerPtr layer
   m_layer = layer;
 
   listAttributes();
+
+  m_ui->m_summaryComboBox->clear();
+  if(te::da::HasLinkedTable(layer->getSchema().get()))
+  {
+
+    m_ui->m_summaryComboBox->addItem("MIN");
+    m_ui->m_summaryComboBox->addItem("MAX");
+    m_ui->m_summaryComboBox->addItem("SUM");
+    m_ui->m_summaryComboBox->addItem("AVERAGE");
+    m_ui->m_summaryComboBox->addItem("MEDIAN");
+    m_ui->m_summaryComboBox->addItem("STDDEV");
+    m_ui->m_summaryComboBox->addItem("VARIANCE");
+
+    if(m_layer->getChart())
+    {
+      int index = m_ui->m_summaryComboBox->findText(QString::fromStdString(m_layer->getChart()->getSummary()));
+      m_ui->m_summaryComboBox->setCurrentIndex(index);
+    }
+
+    m_ui->m_summaryComboBox->setEnabled(true);
+    m_ui->m_summaryComboBox->show();
+    m_ui->m_summaryLabel->show();
+  }
+  else
+  {
+    m_ui->m_summaryComboBox->addItem("NONE");
+    m_ui->m_summaryComboBox->setEnabled(false);
+    m_ui->m_summaryComboBox->hide();
+    m_ui->m_summaryLabel->hide();
+  }
 }
 
 bool te::qt::widgets::ChartLayerWidget::buildChart()
@@ -111,32 +148,12 @@ bool te::qt::widgets::ChartLayerWidget::buildChart()
   chart->setContourWidth((std::size_t)m_ui->m_contourWidthSpinBox->value());
   chart->setContourColor(te::qt::widgets::Convert2TerraLib(m_colorPicker->getColor()));
   chart->setAvoidConflicts(m_ui->m_avoidConflictsCheckBox->isChecked());
+  chart->setSummary(m_ui->m_summaryComboBox->currentText().toStdString());
 
    // Is necessary compute the max value?
   if(chart->getType() == te::map::Bar)
   {
-    double maxValue = 0.0;
-    std::size_t precision = 5;
-
-    // Gets the chart properties
-    const std::vector<std::string>& properties = chart->getProperties();
-
-    // Gets the dataset
-    std::auto_ptr<te::da::DataSet> dataset(m_layer->getData());
-
-    while(dataset->moveNext())
-    {
-      for(std::size_t i = 0; i < properties.size(); ++i)
-      {
-        QString qvalue(dataset->getAsString(properties[i], precision).c_str());
-
-        double value = qvalue.toDouble();
-
-        if(value > maxValue)
-          maxValue = value;
-      }
-    }
-
+    double maxValue = getMaxValue(chart);
     chart->setMaxValue(maxValue);
   }
 
@@ -295,4 +312,171 @@ void te::qt::widgets::ChartLayerWidget::listAttributes()
         continue;
     }
   }
+}
+
+double te::qt::widgets::ChartLayerWidget::getMaxValue(te::map::Chart* chart)
+{
+  double maxValue = std::numeric_limits<double>::min();
+  std::size_t precision = 5;
+
+  // Gets the chart properties
+  const std::vector<std::string>& properties = chart->getProperties();
+
+  std::auto_ptr<te::da::DataSetType> schema = m_layer->getSchema();
+  if(te::da::HasLinkedTable(schema.get()) == false)
+  {
+    // Gets the dataset
+    std::auto_ptr<te::da::DataSet> dataset(m_layer->getData());
+
+    while(dataset->moveNext())
+    {
+      for(std::size_t i = 0; i < properties.size(); ++i)
+      {
+        QString qvalue(dataset->getAsString(properties[i], precision).c_str());
+
+        double value = qvalue.toDouble();
+
+        if(value > maxValue)
+          maxValue = value;
+      }
+    }
+    return maxValue;
+  }
+
+  te::da::PrimaryKey* pk = schema->getPrimaryKey();
+  std::vector<te::dt::Property*> props = pk->getProperties();
+  std::vector<std::string> boid;
+  size_t pksize = 0;
+  while(++pksize < props.size())
+  {
+    boid.push_back(props[pksize-1]->getName());
+    if(props[pksize-1]->getDatasetName() != props[pksize]->getDatasetName())
+      break;
+  }
+
+  // make sorting by object id
+  te::map::QueryLayer* qlayer = dynamic_cast<te::map::QueryLayer*>(m_layer.get());
+  te::da::Select* select = dynamic_cast<te::da::Select*>(qlayer->getQuery()->clone());
+  te::da::Select* selectaux = dynamic_cast<te::da::Select*>(select->clone());
+  te::da::OrderBy* orderBy = new te::da::OrderBy;
+
+  for(size_t i = 0; i < pksize; ++i)
+    orderBy->push_back(new te::da::OrderByItem(boid[i]));
+
+  selectaux->setOrderBy(orderBy);
+  qlayer->setQuery(selectaux);
+  std::auto_ptr<te::da::DataSet> dataset(qlayer->getData());
+  qlayer->setQuery(select);
+
+  std::vector<std::string> pkdata(pksize), pkdataaux(pksize);
+  std::string cfunction = chart->getSummary();
+  std::map<std::string, std::vector<double> > chartValues;
+  std::map<std::string, double> chartValue;
+  bool hasChartNullValue = false;
+  bool hasChartNullValueAux = false;
+  size_t csize = properties.size();
+  for(std::size_t i = 0; i < csize; ++i)
+  {
+    std::vector<double> v;
+    chartValues[properties[i]] = v;
+  }
+
+  dataset->moveFirst();
+  do
+  {
+    // calculate summarized value
+    size_t i;
+    for(i = 0; i < pksize; ++i)
+      pkdata[i] = dataset->getAsString(boid[i]);
+      
+    for(i = 0; i < pksize; ++i)
+    {
+      if(dataset->isAtBegin())
+        pkdataaux[i] = dataset->getAsString(boid[i]);
+      else
+      {
+        if(pkdata[i] != pkdataaux[i])
+        {
+          pkdataaux = pkdata;
+          break;
+        }
+      }      
+    }
+    if(i == pksize) // it is the same object
+    {
+      if(hasChartNullValue == false)
+      {
+        // read value chart value
+        for(std::size_t i = 0; i < csize; ++i)
+        {
+          if(dataset->isNull(chart->getProperties()[i]) == false)
+            chartValues[properties[i]].push_back(boost::lexical_cast<double>(dataset->getAsString(properties[i])));
+          else
+          {
+            hasChartNullValue = true;
+            break;
+          }
+        }
+      }
+      // read other values
+      continue;
+    }
+    else // it is other object
+    {
+      // sumarize chart value according to the required summarization 
+      if(hasChartNullValue == false)
+      {
+        for(std::size_t i = 0; i < csize; ++i)
+          chartValue[properties[i]] = te::da::GetSummarizedValue(chartValues[properties[i]], cfunction);
+      }
+
+      // prepare the next loop
+      for(std::size_t i = 0; i < csize; ++i)
+        chartValues[properties[i]].clear();
+
+      hasChartNullValueAux = false;
+      for(std::size_t i = 0; i < csize; ++i)
+      {
+        if(dataset->isNull(properties[i]))
+        {
+          hasChartNullValueAux = true;
+          break;
+        }
+      }
+      if(hasChartNullValueAux == false)
+      {
+        for(std::size_t i = 0; i < csize; ++i)
+          chartValues[properties[i]].push_back(boost::lexical_cast<double>(dataset->getAsString(properties[i])));
+      }
+    }
+
+    if(hasChartNullValue == false)
+    {
+      // get max value
+      std::map<std::string, double>::iterator it = chartValue.begin();
+      while(it != chartValue.end())
+      {
+        maxValue = std::max(maxValue, it->second); 
+        ++it;
+      }
+    }
+
+    hasChartNullValue = hasChartNullValueAux;
+    hasChartNullValueAux = false;
+  } while(dataset->moveNext());
+
+  if(hasChartNullValue == false)
+  {
+    for(std::size_t i = 0; i < csize; ++i)
+      chartValue[properties[i]] = te::da::GetSummarizedValue(chartValues[properties[i]], cfunction);
+
+    // get max value
+    std::map<std::string, double>::iterator it = chartValue.begin();
+    while(it != chartValue.end())
+    {
+      maxValue = std::max(maxValue, it->second); 
+      ++it;
+    }
+  }
+  return maxValue;
 }

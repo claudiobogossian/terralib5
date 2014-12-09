@@ -38,11 +38,11 @@
 
 te::layout::ItemModelObservable::ItemModelObservable() :
   m_id(0),
-  m_name("unknown"),
   m_type(0),
-  m_sharedProps(0),
   m_zValue(0),
+  m_sharedProps(0),
   m_border(true),
+  m_name("unknown"),
   m_resizable(true),
   m_angle(0)
 {
@@ -145,9 +145,9 @@ te::layout::Properties* te::layout::ItemModelObservable::getProperties() const
   /* Box */
 
   double x1 = m_box.getLowerLeftX();
-  double x2 = m_box.getUpperRightX();
   double y1 = m_box.getLowerLeftY();
-  double y2 = m_box.getUpperRightY();
+  double width = m_box.getWidth();
+  double height = m_box.getHeight();
 
   Property pro_x1;
   pro_x1.setName(m_sharedProps->getX1());
@@ -156,13 +156,6 @@ te::layout::Properties* te::layout::ItemModelObservable::getProperties() const
   pro_x1.setEditable(false);
   m_properties->addProperty(pro_x1);
 
-  Property pro_x2;
-  pro_x2.setName(m_sharedProps->getX2());
-  pro_x2.setId("unknown");
-  pro_x2.setValue(x2, dataType->getDataTypeDouble());
-  pro_x2.setEditable(false);
-  m_properties->addProperty(pro_x2);
-
   Property pro_y1;
   pro_y1.setName(m_sharedProps->getY1());
   pro_y1.setId("unknown");
@@ -170,12 +163,19 @@ te::layout::Properties* te::layout::ItemModelObservable::getProperties() const
   pro_y1.setEditable(false);
   m_properties->addProperty(pro_y1);
 
-  Property pro_y2;
-  pro_y2.setName(m_sharedProps->getY2());
-  pro_y2.setId("unknown");
-  pro_y2.setValue(y2, dataType->getDataTypeDouble());
-  pro_y2.setEditable(false);
-  m_properties->addProperty(pro_y2);
+  Property pro_width;
+  pro_width.setName(m_sharedProps->getWidth());
+  pro_width.setId("unknown");
+  pro_width.setValue(width, dataType->getDataTypeDouble());
+  pro_width.setEditable(false);
+  m_properties->addProperty(pro_width);
+
+  Property pro_height;
+  pro_height.setName(m_sharedProps->getHeight());
+  pro_height.setId("unknown");
+  pro_height.setValue(height, dataType->getDataTypeDouble());
+  pro_height.setEditable(false);
+  m_properties->addProperty(pro_height);
 
   /* ---------- */
 
@@ -302,22 +302,22 @@ void te::layout::ItemModelObservable::updateProperties( te::layout::Properties* 
     m_box.m_llx = pro_x1.getValue().toDouble();
   }
 
-  Property pro_x2 = vectorProps->contains(m_sharedProps->getX2());
-  if(!pro_x2.isNull())
-  {
-    m_box.m_urx = pro_x2.getValue().toDouble();
-  }
-
   Property pro_y1 = vectorProps->contains(m_sharedProps->getY1());
   if(!pro_y1.isNull())
   {
     m_box.m_lly = pro_y1.getValue().toDouble();
   }
 
-  Property pro_y2 = vectorProps->contains(m_sharedProps->getY2());
-  if(!pro_y2.isNull())
+  Property pro_width = vectorProps->contains(m_sharedProps->getWidth());
+  if(!pro_width.isNull())
   {
-    m_box.m_ury = pro_y2.getValue().toDouble();
+    m_box.m_urx = m_box.m_llx + pro_width.getValue().toDouble();
+  }
+
+  Property pro_height = vectorProps->contains(m_sharedProps->getHeight());
+  if(!pro_height.isNull())
+  {
+    m_box.m_ury = m_box.m_lly + pro_height.getValue().toDouble();
   }
 
   Property pro_zValue = vectorProps->contains(m_sharedProps->getZValue());
@@ -405,7 +405,7 @@ void te::layout::ItemModelObservable::drawBackground( ContextItem context )
 
   if(m_border)
   {
-    canvas->setPolygonContourWidth(2);
+    canvas->setPolygonContourWidth(1);
     canvas->setPolygonContourColor(m_borderColor);
   }
   else

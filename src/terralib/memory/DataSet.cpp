@@ -96,8 +96,12 @@ te::mem::DataSet::DataSet(te::da::DataSet& rhs, const std::vector<std::size_t>& 
 {
   for(std::size_t i = 0; i != properties.size(); ++i)
   {
+    int ptype = rhs.getPropertyDataType(properties[i]);
+
     m_pnames.push_back(rhs.getPropertyName(properties[i]));
-    m_ptypes.push_back(rhs.getPropertyDataType(properties[i]));
+    m_ptypes.push_back(ptype);
+    if(ptype == te::dt::STRING_TYPE)
+      m_encodings[properties[i]] = rhs.getPropertyCharEncoding(properties[i]);
   }
 
   copy(rhs, properties, limit);

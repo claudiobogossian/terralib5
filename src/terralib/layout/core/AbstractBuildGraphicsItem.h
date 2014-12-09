@@ -43,33 +43,72 @@ namespace te
     class EnumType;
     class SharedProperties;
 
+	/*!
+      \class AbstractBuildGraphicsItem
+
+      \brief This is the abstract build graphics item for build graphics.
+
+      \ingroup layout
+     */
+
     class AbstractBuildGraphicsItem
     {
       public:
-       
+	  
+	  /*!
+          \brief Constructor
+        */       
         AbstractBuildGraphicsItem();
-
+		
+		/*!
+          \brief Destructor
+        */
         virtual ~AbstractBuildGraphicsItem();
 
       protected:
         
+		/*!
+          \brief Search for property of a graphic object that represent the x,y coordinate.
+
+          \param props properties
+
+          \return coordinate
+        */
         virtual te::gm::Coord2D findCoordinate(te::layout::Properties* props);
 
+		/*!
+          \brief Search for property of a graphic object that represent Z Value.
+
+          \param props properties
+
+          \return z value
+        */
         virtual int findZValue(te::layout::Properties* props);
 
+		/*!
+          \brief Creates the name of the new graphic object. Adds the number that corresponds to how many objects of this type have already been created.
+
+          \param name name of the class type of the graphic object
+		  \param type type of the object
+
+          \return name
+        */
         virtual std::string nameItem(std::string name, te::layout::EnumType* type) = 0;
 
+		/*!
+          \brief Clear all configuration for create or build a graphic object. 
+        */
         virtual void clear();
 
       protected:
 
-        SharedProperties*       m_sharedProps;
-        te::layout::Properties* m_props;
-        te::gm::Coord2D         m_coord;
-        int                     m_zValue;
-        int                     m_id;
-        bool                    m_redraw;
-        std::string             m_name;
+        SharedProperties*       m_sharedProps; //!< Default properties of all graphics objects.
+        te::layout::Properties* m_props; //!< Properties of a graphic object.
+        te::gm::Coord2D         m_coord; //!< Coordinate of a graphic object.
+        int                     m_zValue; //!< Z Value of a graphic object.
+        int                     m_id; //!< Id of a graphic object.
+        bool                    m_redraw; //!< Information about the graphic object created or built has to be redrawing.
+        std::string             m_name; //!< graphic object name.
     };
   }
 }

@@ -20,7 +20,7 @@
 /*!
   \file AbstractView.h
    
-  \brief 
+  \brief This is the abstract view for View.
 
   \ingroup layout
 */
@@ -28,14 +28,88 @@
 #ifndef __TERRALIB_LAYOUT_INTERNAL_ABSTRACT_VIEW_H 
 #define __TERRALIB_LAYOUT_INTERNAL_ABSTRACT_VIEW_H
 
+// TerraLib
+#include "Config.h"
+
+// STL
+#include <map>
+#include <string>
+
 namespace te
 {
   namespace layout
   {
-    class AbstractView 
+  /*!
+      \class AbstractView
+
+      \brief This is the abstract view for View.
+
+      \ingroup layout
+     */
+    class TELAYOUTEXPORT AbstractView 
     {
       public:
-        virtual ~AbstractView(void) {}
+        
+		/*!
+          \brief Constructor
+        */ 
+        AbstractView();
+
+		/*!
+          \brief Destructor
+        */ 
+        virtual ~AbstractView(void){}
+        
+		/*!
+          \brief Method that return rulers visibility state.
+		  
+		  \return true if visible, false otherwise	  
+        */
+        virtual bool isVisibleRulers();
+
+		/*!
+          \brief Method that change rulers visibility state.
+		  
+		  \param visible visibility state	  
+        */
+        virtual void setVisibleRulers(bool visible);
+
+		/*!
+          \brief Initialization method that configures the View and sets the transformation matrix of the scene in the View object.	  
+        */
+        virtual void config() = 0; 
+
+		/*!
+          \brief Method that adds new zoom factor. Ex.: 0.5 - 50%.
+		  
+		  \param factor factor  
+		  \param text percentage
+        */
+        virtual void addZoomFactor(double factor, std::string text);
+
+		/*!
+          \brief Method that clears the zoom factor list.	  
+        */
+        virtual void clearZoomFactors();
+
+		/*!
+          \brief Method that returns the next zoom factor in the list.
+		  
+		  \param currentFactor current factor	  
+        */
+        virtual double nextFactor(double currentFactor);
+
+		/*!
+          \brief Method that returns the previous zoom factor in the list.
+		  
+		  \param currentFactor current factor	  
+        */
+        virtual double previousFactor(double currentFactor);
+
+      protected:
+
+        bool                          m_visibleRulers; //!< rulers visibility state
+        std::map<double, std::string> m_zoomFactors; //!< zoom factor list
     };
   }
 }

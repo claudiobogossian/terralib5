@@ -41,7 +41,9 @@ te::layout::SharedProperties::SharedProperties() :
   m_border("border"),
   m_backgroundcolor("backgroundcolor"),
   m_bordercolor("bordercolor"),
-  m_angle("angle")
+  m_angle("angle"),
+  m_width("width"),
+  m_height("height")
 {
 
 }
@@ -109,4 +111,14 @@ std::string te::layout::SharedProperties::getBordercolor()
 std::string te::layout::SharedProperties::getAngle()
 {
   return m_angle;
+}
+
+std::string te::layout::SharedProperties::getWidth()
+{
+  return m_width;
+}
+
+std::string te::layout::SharedProperties::getHeight()
+{
+  return m_height;
 }

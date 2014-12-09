@@ -282,7 +282,7 @@ void te::qt::widgets::HistogramChart::highlight(const te::da::ObjectIdSet* oids,
     for(itObjSet = oids->begin(); itObjSet != oids->end(); ++itObjSet)
     {
       //Acquiring the value of the base primaryKey on the current objectId;
-      std::string pKey = te::qt::widgets::getBasePkey((*itObjSet),dsProps);
+      std::string pKey = te::da::getBasePkey((*itObjSet),dsProps);
       if(m_histogram->isSummarized())
       {
         if(highlightedPkeys.insert(pKey).second)
@@ -297,8 +297,12 @@ void te::qt::widgets::HistogramChart::highlight(const te::da::ObjectIdSet* oids,
       }
       else
       {
-        double interval = static_cast< const te::dt::Double*>(m_histogram->find((*itObjSet)))->getValue();
-        ++highlightedIntervals.at(interval);
+        const te::dt::Double* data = static_cast< const te::dt::Double*>(m_histogram->find((*itObjSet)));
+        if(data)
+        {
+          double interval = data->getValue();
+          ++highlightedIntervals.at(interval);
+        }
       }
     }
 

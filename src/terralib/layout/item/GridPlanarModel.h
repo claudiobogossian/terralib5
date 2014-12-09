@@ -62,6 +62,7 @@ namespace te
        protected:
 
          LayoutUnit m_unit;
+
          PlanarGridSettingsConfigProperties* m_settingsConfig;
     };
   }

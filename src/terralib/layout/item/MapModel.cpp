@@ -240,7 +240,6 @@ double te::layout::MapModel::getScale()
 
   // World box: coordinates in the same SRS as the layer
   te::gm::Envelope worldBox = m_layer->getExtent();
-  int srid = m_layer->getSRID();
   
   //About units names (SI): terralib5\resources\json\uom.json 
   te::common::UnitOfMeasurePtr unitPtr = unitMeasureLayer();

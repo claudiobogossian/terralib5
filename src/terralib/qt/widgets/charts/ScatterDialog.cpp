@@ -88,7 +88,12 @@ void te::qt::widgets::ScatterDialog::onOkPushButtonClicked()
   //Creating and adjusting the chart Display's style.
   te::qt::widgets::ChartStyle* chartStyle = new te::qt::widgets::ChartStyle();
   chartStyle->setTitle(QString::fromStdString("Scatter"));
-  chartStyle->setAxisX(m_scatterDataWidget->getForm()->m_propertyXComboBox->currentText());
+
+  if(m_scatterDataWidget->getForm()->m_summaryComboBox->currentText() != "None")
+    chartStyle->setAxisX(m_scatterDataWidget->getForm()->m_summaryComboBox->currentText() + ": " + m_scatterDataWidget->getForm()->m_propertyXComboBox->currentText());
+  else
+    chartStyle->setAxisX(m_scatterDataWidget->getForm()->m_propertyXComboBox->currentText());
+
   chartStyle->setAxisY(m_scatterDataWidget->getForm()->m_propertyYComboBox->currentText());
 
   //Adjusting the chart Display

@@ -64,9 +64,18 @@ QVariant te::qt::widgets::DataSetLayerItem::data(int /*column*/, int role) const
   if(role == Qt::DecorationRole)
   {
     if(m_layer->isValid())
-      return QVariant(QIcon::fromTheme("dataset-layer"));
+    {
+      std::auto_ptr<te::da::DataSetType> schema = m_layer->getSchema();
+
+      if(!schema->hasGeom())
+        return QVariant(QIcon::fromTheme("dataset-layer-tabular"));
+      else
+        return QVariant(QIcon::fromTheme("dataset-layer"));
+    }
     else
+    {
       return QVariant(QIcon::fromTheme("dataset-layer-invalid"));
+    }
   }
 
   if(role == Qt::DisplayRole)

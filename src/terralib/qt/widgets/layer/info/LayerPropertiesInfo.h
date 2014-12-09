@@ -61,6 +61,10 @@ namespace te
 
         protected:
 
+          void setLayerRasterProperties(te::map::AbstractLayer* rasterLayer);
+
+        protected:
+
           te::map::AbstractLayer* m_layer;
       };
     }

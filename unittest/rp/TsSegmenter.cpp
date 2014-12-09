@@ -225,7 +225,7 @@ void TsSegmenter::RegionGrowingMeanStrategy()
   te::rp::SegmenterRegionGrowingStrategy::Parameters strategyParameters;
   strategyParameters.m_segmentFeatures = te::rp::SegmenterRegionGrowingStrategy::Parameters::MeanFeaturesType;
   strategyParameters.m_minSegmentSize = 100;
-  strategyParameters.m_segmentsSimilarityThreshold = 0.1;
+  strategyParameters.m_segmentsSimilarityThreshold = 0.03;
   
   
   te::rp::Segmenter::InputParameters algoInputParams;
@@ -336,12 +336,12 @@ void TsSegmenter::RegionGrowingBaatzStrategy()
   
   te::rp::SegmenterRegionGrowingStrategy::Parameters strategyParameters;
   strategyParameters.m_minSegmentSize = 100;
-  strategyParameters.m_segmentsSimilarityThreshold = 0.1;
+  strategyParameters.m_segmentsSimilarityThreshold = 0.5;
   strategyParameters.m_segmentFeatures = te::rp::SegmenterRegionGrowingStrategy::Parameters::BaatzFeaturesType;
    strategyParameters.m_bandsWeights.resize( 
      (unsigned int)inputRasterPointer->getNumberOfBands(),
      1.0 / ((double)inputRasterPointer->getNumberOfBands()) );
-   strategyParameters.m_colorWeight = 0.75;
+   strategyParameters.m_colorWeight = 0.9;
    strategyParameters.m_compactnessWeight = 0.5;
    strategyParameters.m_segmentsSimIncreaseSteps = 10;
   
@@ -397,12 +397,12 @@ void TsSegmenter::RegionGrowingBaatzStrategyBlockProcessing()
   
   te::rp::SegmenterRegionGrowingStrategy::Parameters strategyParameters;
   strategyParameters.m_minSegmentSize = 100;
-  strategyParameters.m_segmentsSimilarityThreshold = 0.1;
+  strategyParameters.m_segmentsSimilarityThreshold = 0.03;
   strategyParameters.m_segmentFeatures = te::rp::SegmenterRegionGrowingStrategy::Parameters::BaatzFeaturesType;
    strategyParameters.m_bandsWeights.resize( 
      (unsigned int)inputRasterPointer->getNumberOfBands(),
      1.0 / ((double)inputRasterPointer->getNumberOfBands()) );
-   strategyParameters.m_colorWeight = 0.75;
+   strategyParameters.m_colorWeight = 1.0;
    strategyParameters.m_compactnessWeight = 0.5;
    strategyParameters.m_segmentsSimIncreaseSteps = 10;
   

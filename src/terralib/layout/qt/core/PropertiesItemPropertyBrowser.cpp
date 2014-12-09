@@ -73,8 +73,7 @@ bool te::layout::PropertiesItemPropertyBrowser::addProperty( Property property )
 
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
   
-  QtProperty* qproperty = 0;  
-  QtVariantProperty* vproperty = 0;
+  QtProperty* qproperty = 0;
 
   if(property.getType() == dataType->getDataTypeGridSettings()
     || property.getType() == dataType->getDataTypeImage())

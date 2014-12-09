@@ -65,7 +65,7 @@ te::qt::widgets::CompositionModeDialog::CompositionModeDialog(QWidget* parent, Q
 
 // help info
   m_ui->m_helpPushButton->setNameSpace("dpi.inpe.br.plugins"); 
-  m_ui->m_helpPushButton->setPageReference("widgets/utils/composeMode_dialog.html");
+  m_ui->m_helpPushButton->setPageReference("widgets/layer/compositionMode_dialog.html");
 }
 
 te::qt::widgets::CompositionModeDialog::~CompositionModeDialog()
