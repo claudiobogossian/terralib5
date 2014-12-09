@@ -81,8 +81,8 @@ te::addressgeocoding::MainWindowDialog::MainWindowDialog(QWidget* parent, Qt::Wi
 //  connect(m_ui->m_targetDatasourceToolButton, SIGNAL(pressed()), this, SLOT(onTargetDatasourceToolButtonPressed()));
 //  connect(m_ui->m_targetFileToolButton, SIGNAL(pressed()), this,  SLOT(onTargetFileToolButtonPressed()));
 
-	connect(m_ui->m_configureLayerPushButton, SIGNAL(clicked()), this, SLOT(onConfigureLayerPressed()));
-	connect(m_ui->m_configureAddressPushButton, SIGNAL(clicked()), this, SLOT(onConfigureAddressPressed()));
+	connect(m_ui->m_configureLayerPushButton, SIGNAL(clicked()), this, SLOT(onConfigureLayerClicked()));
+	connect(m_ui->m_configureAddressPushButton, SIGNAL(clicked()), this, SLOT(onConfigureAddressClicked()));
 
 	connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));
   connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
@@ -110,7 +110,7 @@ te::map::AbstractLayerPtr te::addressgeocoding::MainWindowDialog::getLayer()
 }
 
 
-void te::addressgeocoding::MainWindowDialog::onConfigureLayerPressed()
+void te::addressgeocoding::MainWindowDialog::onConfigureLayerClicked()
 {
 	te::addressgeocoding::ConfigInputLayerDialog dlg(this);
 	dlg.setLayers(m_layers);
@@ -119,7 +119,7 @@ void te::addressgeocoding::MainWindowDialog::onConfigureLayerPressed()
   return;
 }
 
-void te::addressgeocoding::MainWindowDialog::onConfigureAddressPressed()
+void te::addressgeocoding::MainWindowDialog::onConfigureAddressClicked()
 {
 	te::addressgeocoding::ConfigInputAddressDialog dlg(this);
 	

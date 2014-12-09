@@ -47,6 +47,7 @@
 #include "../Config.h"
 #include "../Exception.h"
 #include "ConfigInputAddressDialog.h"
+#include "ImportTableDialog.h"
 #include "ui_ConfigInputAddressDialogForm.h"
 
 // Qt
@@ -68,26 +69,24 @@ te::addressgeocoding::ConfigInputAddressDialog::ConfigInputAddressDialog(QWidget
 // add controls
   m_ui->setupUi(this);
 
-//  m_ui->m_outputStatisticsGroupBox->setVisible(false);
+  connect(m_ui->m_importTablePushButton, SIGNAL(clicked()), this, SLOT(onImportTableClicked()));
 
-// add icons
-  //m_ui->m_targetDatasourceToolButton->setIcon(QIcon::fromTheme("datasource"));
+  connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));
+  connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
+  connect(m_ui->m_cancelPushButton, SIGNAL(clicked()), this, SLOT(onCancelPushButtonClicked()));
 
-  //connect(m_ui->m_targetFileToolButton, SIGNAL(pressed()), this,  SLOT(onTargetFileToolButtonPressed()));
-
-  ////connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));
-  //connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
-  //connect(m_ui->m_cancelPushButton, SIGNAL(clicked()), this, SLOT(onCancelPushButtonClicked()));
-
-  //m_ui->m_helpPushButton->setNameSpace("dpi.inpe.br.plugins"); 
-  //m_ui->m_helpPushButton->setPageReference("plugins/vp/vp_aggregation.html");
-
-  //m_outputDatasource = te::da::DataSourceInfoPtr();
-  //m_ui->m_newLayerNameLineEdit->setEnabled(true);
 }
 
 te::addressgeocoding::ConfigInputAddressDialog::~ConfigInputAddressDialog()
 {
+}
+
+void te::addressgeocoding::ConfigInputAddressDialog::onImportTableClicked()
+{
+  te::addressgeocoding::ImportTableDialog dlg(this);
+	
+	if(dlg.exec() != QDialog::Accepted)
+  return;
 }
 
 void te::addressgeocoding::ConfigInputAddressDialog::onHelpPushButtonClicked()

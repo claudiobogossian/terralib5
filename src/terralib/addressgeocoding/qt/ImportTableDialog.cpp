@@ -68,6 +68,10 @@ te::addressgeocoding::ImportTableDialog::ImportTableDialog(QWidget* parent, Qt::
 // add controls
   m_ui->setupUi(this);
 
+  connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));
+  connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
+  connect(m_ui->m_cancelPushButton, SIGNAL(clicked()), this, SLOT(onCancelPushButtonClicked()));
+
 }
 
 te::addressgeocoding::ImportTableDialog::~ImportTableDialog()

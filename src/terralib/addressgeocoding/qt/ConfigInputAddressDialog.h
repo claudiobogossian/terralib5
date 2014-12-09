@@ -62,6 +62,8 @@ namespace te
 
       protected slots:
 
+        void onImportTableClicked();
+
         void onHelpPushButtonClicked();
 
         void onOkPushButtonClicked();

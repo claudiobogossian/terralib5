@@ -77,9 +77,9 @@ namespace te
 
       protected slots:
 
-				void onConfigureLayerPressed();
+				void onConfigureLayerClicked();
 
-				void onConfigureAddressPressed();
+				void onConfigureAddressClicked();
 
         void onTargetDatasourceToolButtonPressed();
 
