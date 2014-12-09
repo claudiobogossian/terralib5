@@ -128,8 +128,8 @@ void te::graph::Layer::setGraph(te::graph::AbstractGraph* g)
   //set graph parameters
   if(m_graph->getMetadata())
   {
-    //this->setSRID(m_graph->getMetadata()->getSRID());
-    //this->setExtent(m_graph->getMetadata()->getEnvelope());
+    this->setSRID(m_graph->getMetadata()->getSRID());
+    this->setExtent(*m_graph->getMetadata()->getEnvelope());
   }
 }
 
