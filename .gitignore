@@ -3,3 +3,5 @@
 /share/terralib/icons/terralib/scalable/processing-icon.svg
 /share/terralib/icons/terralib/scalable/processing-raster2vector-icon.svg
 /share/terralib/icons/terralib/scalable/processing-vector2raster-icon.svg
+/src/terralib/qt/plugins/addressgeocoding/AddressGeocodingAction.cpp
+/src/terralib/qt/plugins/addressgeocoding/AddressGeocodingAction.h
