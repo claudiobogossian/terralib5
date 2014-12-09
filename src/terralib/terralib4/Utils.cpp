@@ -146,7 +146,7 @@ int terralib4::Convert2T5(TeAttrDataType type)
       return te::dt::STRING_TYPE;
 
     case TeREAL:
-      return te::dt::DOUBLE;
+      return te::dt::DOUBLE_TYPE;
 
     case TeINT:
       return te::dt::INT32_TYPE;
