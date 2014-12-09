@@ -37,21 +37,22 @@
 
 te::layout::Context::Context() :
   m_mode(0),
+  m_lineIntersectionMouseMode(0),
   m_scene(0),
-  m_canvas(0),
   m_zoomFactor(1.),
   m_defaultZoomFactor(0.5),
   m_oldZoomFactor(1.),
+  m_canvas(0),
   m_itemFactory(0),
   m_outsideFactory(0),
+  m_templateFactory(0),
   m_utils(0),
   m_dpiX(96),
   m_dpiY(96),
-  m_templateFactory(0),
   m_version("TerraPrintQt4_1.0.0"),
   m_paperConfig(0),
   m_buildGraphicsItem(0),
-  m_lineIntersectionMouseMode(0),
+  m_systematicConfig(0),
   m_proxyProject(0),
   m_itemUtils(0)
 {

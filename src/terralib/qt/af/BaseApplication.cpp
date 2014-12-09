@@ -2057,13 +2057,19 @@ void te::qt::af::BaseApplication::onDataSourceExplorerTriggered()
 
 void te::qt::af::BaseApplication::openProject(const QString& projectFileName)
 {
+  setCursor(Qt::WaitCursor);
+
   try
   {
     if(checkProjectSave() == QMessageBox::Cancel)
+    {
+      setCursor(Qt::ArrowCursor);
       return;
+    }
 
     if(!boost::filesystem::exists(projectFileName.toStdString()))
     {
+      setCursor(Qt::ArrowCursor);
       QMessageBox::critical(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), (boost::format(TE_TR("This project could not be found: %1%.")) % projectFileName.toStdString()).str().c_str());
       return;
     }
@@ -2101,16 +2107,19 @@ void te::qt::af::BaseApplication::openProject(const QString& projectFileName)
   }
   catch(const te::common::Exception& e)
   {
+    setCursor(Qt::ArrowCursor);
     throw e;
   }
   catch(...)
   {
+    setCursor(Qt::ArrowCursor);
     QString msg(tr("Fail to open project: %1"));
     
     msg = msg.arg(projectFileName);
     
     throw Exception(TE_TR(msg.toStdString()));
   }
+  setCursor(Qt::ArrowCursor);
 }
 
 QMessageBox::StandardButton te::qt::af::BaseApplication::checkProjectSave()

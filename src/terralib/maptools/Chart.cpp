@@ -85,6 +85,16 @@ const std::vector<std::string>& te::map::Chart::getProperties() const
   return m_properties;
 }
 
+const std::vector<size_t>& te::map::Chart::getPropertiesPos() const
+{
+  return m_propertiesPos;
+}
+
+void te::map::Chart::setPropertiesPos(const std::vector<size_t>& proPos)
+{
+  m_propertiesPos = proPos;
+}
+
 const te::color::RGBAColor& te::map::Chart::getColor(std::size_t i) const
 {
    assert(i < m_colors.size());

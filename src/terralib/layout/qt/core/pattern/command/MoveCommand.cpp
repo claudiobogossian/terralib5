@@ -48,8 +48,8 @@ te::layout::MoveCommand::MoveCommand( QGraphicsItem* item, const QPointF oldPos,
 te::layout::MoveCommand::MoveCommand( std::map<QGraphicsItem*, QPointF> items, 
   QUndoCommand *parent /*= 0*/ ) :
   QUndoCommand(parent),
-  m_moveItems(items),
-  m_item(0)
+  m_item(0),
+  m_moveItems(items)
 {
   std::map<QGraphicsItem*, QPointF>::iterator it;
   for (it = m_moveItems.begin(); it != m_moveItems.end(); ++it)

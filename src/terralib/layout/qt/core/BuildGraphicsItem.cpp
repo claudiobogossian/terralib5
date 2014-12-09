@@ -94,8 +94,6 @@ te::layout::BuildGraphicsItem::BuildGraphicsItem() :
   m_rectangleItem("RECTANGLE_"),
   m_legendItem("LEGEND_"),
   m_scaleItem("SCALE_"),
-  m_horizontalRuler("HORIZONTAL_RULER_"),
-  m_verticalRuler("VERTICAL_RULER_"),
   m_groupItem("ITEM_GROUP_"),
   m_imageItem("IMAGE_"),
   m_arrowItem("ARROW_"),

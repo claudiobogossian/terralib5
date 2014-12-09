@@ -419,7 +419,6 @@ bool te::layout::TextItem::isEditable()
 void te::layout::TextItem::getDocumentSizeMM( double &w, double &h )
 {
   QImage img = createImage();
-  QPointF pp = scenePos();
   w = img.widthMM();
   h = img.heightMM();
 }

@@ -235,7 +235,6 @@ void te::layout::MenuItem::contains( std::vector<Properties*>::iterator itend, s
 
 std::vector<te::layout::Properties*> te::layout::MenuItem::getAllProperties( QList<QGraphicsItem*> graphicsItems, bool& window )
 {
-  Properties* props = 0;
   std::vector<Properties*> propsVec;
   bool result = true;
 

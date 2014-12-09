@@ -41,6 +41,11 @@
           \brief Feature type definition.
          */          
         typedef float FeatureType;
+        
+        /*!
+          \brief Feature type definition.
+         */          
+        typedef unsigned int IterationCounterType;        
           
         /*!
           \brief Segment ID.
@@ -98,6 +103,11 @@
           \brief The current size of m_features.
         */                     
         unsigned int m_featuresSize;
+
+        /*!
+          \brief The current merge iteration.
+        */                             
+        IterationCounterType m_mergetIteration;
         
         //overload
         SegmenterRegionGrowingSegment& operator=( const SegmenterRegionGrowingSegment& other );

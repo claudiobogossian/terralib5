@@ -172,6 +172,12 @@ namespace te
               \brief Update the internal state.
             */    
             virtual void update() = 0;
+
+            /*!
+              \brief Return the required segments features vector size (numer of elements).
+              \return Return the required segments features vector size (numer of elements).
+            */                
+            virtual unsigned int getSegmentFeaturesSize() const = 0;
             
           protected :
             
@@ -209,7 +215,10 @@ namespace te
               SegmenterRegionGrowingSegment const * const mergePreviewSegPtr ) const;
               
             //overload
-            void update() {};    
+            void update() {};  
+            
+            //overload
+            inline unsigned int getSegmentFeaturesSize() const { return m_featuresNumber; };
             
           protected :
             
@@ -259,6 +268,9 @@ namespace te
               
             //overload
             void update();
+            
+            //overload
+            inline unsigned int getSegmentFeaturesSize() const { return 3 + ( 3 * m_bandsNumber ); };            
               
           protected :
 
@@ -276,11 +288,47 @@ namespace te
             
             SegmenterRegionGrowingSegment::FeatureType m_allSegsSmoothnessGain; //!< The gains applied to normalize the smoothness value.            
             
+            SegmenterRegionGrowingSegment::FeatureType m_allSegsStdDevOffset; //!< The offsets applied to normalize the standard deviation value.
+            
+            SegmenterRegionGrowingSegment::FeatureType m_allSegsStdDevGain; //!< The gains applied to normalize the standard deviation value.            
+            
             SegmenterRegionGrowingSegment::FeatureType m_colorWeight; //!< The weight given to the color component, deafult:0.5, valid range: [0,1].
             
             SegmenterRegionGrowingSegment::FeatureType m_compactnessWeight; //!< The weight given to the compactness component, deafult:0.5, valid range: [0,1].
             
             std::vector< SegmenterRegionGrowingSegment::FeatureType > m_bandsWeights; //!< A vector where each bands weight are stored.
+            
+            // Variables used by the method getDissimilarity            
+            mutable SegmenterRegionGrowingSegment::FeatureType m_getDissimilarity_sizeUnionD;            
+            mutable SegmenterRegionGrowingSegment::FeatureType m_getDissimilarity_sizeSeg1D;
+            mutable SegmenterRegionGrowingSegment::FeatureType m_getDissimilarity_sizeSeg2D;
+            mutable unsigned int m_getDissimilarity_touchingEdgeLength1;
+            mutable unsigned int m_getDissimilarity_touchingEdgeLength2;               
+            mutable SegmenterRegionGrowingSegment::FeatureType m_getDissimilarity_hCompact; 
+            mutable SegmenterRegionGrowingSegment::FeatureType m_getDissimilarity_hSmooth;
+            mutable SegmenterRegionGrowingSegment::FeatureType m_getDissimilarity_hForm;
+            mutable SegmenterRegionGrowingSegment::FeatureType m_getDissimilarity_hColor;
+            mutable SegmenterRegionGrowingSegment::FeatureType m_getDissimilarity_sumUnion;
+            mutable SegmenterRegionGrowingSegment::FeatureType m_getDissimilarity_squaresSumUnion;
+            mutable SegmenterRegionGrowingSegment::FeatureType m_getDissimilarity_meanUnion;
+            mutable SegmenterRegionGrowingSegment::FeatureType m_getDissimilarity_stdDevUnion;
+            mutable unsigned int m_getDissimilarity_sumsIdx;
+            
+            // Variables used by the method update
+            mutable SegmenterRegionGrowingSegment::FeatureType m_update_compactnessMin;
+            mutable SegmenterRegionGrowingSegment::FeatureType m_update_compactnessMax;
+            mutable SegmenterRegionGrowingSegment::FeatureType m_update_smoothnessMin;
+            mutable SegmenterRegionGrowingSegment::FeatureType m_update_smoothnessMax;              
+            mutable SegmenterRegionGrowingSegment::FeatureType m_update_stdDevMin;
+            mutable SegmenterRegionGrowingSegment::FeatureType m_update_stdDevMax;              
+            mutable SegmenterRegionGrowingSegment::FeatureType* m_update_featuresPtr;
+            mutable unsigned int m_update_nRows;
+            mutable unsigned int m_update_nCols;      
+            mutable SegmenterRegionGrowingSegment* m_update_segsRowPtr;     
+            mutable unsigned int m_update_col;
+            mutable unsigned int m_update_row;
+            mutable unsigned int m_update_band;
+            mutable SegmenterRegionGrowingSegment::FeatureType const* m_update_stdDevPtr;
         };          
         
         /*!
@@ -331,6 +379,7 @@ namespace te
           \param minFoundDissimilarity The minimum dissimilarity value found.
           \param maxFoundDissimilarity The maximum dissimilarity value found.
           \param totalMergesNumber The total number of merges.
+          \param mergeIterationCounter A reference to a iteration number counter (this variable will be only incremented, never zeroed. It never must be reset. ).
         */           
         void mergeSegments( 
           const SegmenterRegionGrowingSegment::FeatureType disimilarityThreshold,
@@ -343,7 +392,8 @@ namespace te
           SegmenterRegionGrowingSegment* auxSeg3Ptr,
           SegmenterRegionGrowingSegment::FeatureType& minFoundDissimilarity,
           SegmenterRegionGrowingSegment::FeatureType& maxFoundDissimilarity,
-          unsigned int& totalMergesNumber );
+          unsigned int& totalMergesNumber,
+          SegmenterRegionGrowingSegment::IterationCounterType& globalMergeIterationsCounter );
           
         /*!
           \brief Export the segments IDs to a tif file.

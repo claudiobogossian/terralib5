@@ -34,11 +34,11 @@
 #include "../../enum/Enums.h"
 
 te::layout::OutsideModelObservable::OutsideModelObservable() :
-	m_color(0),
+  m_color(0),
   m_type(0),
-  m_name("unknown"),
   m_id(0),
-  m_resizable(true)
+  m_resizable(true),
+  m_name("unknown")
 {
   EnumObjectType* type = Enums::getInstance().getEnumObjectType();
   m_type = type->getObjectUnknown();
