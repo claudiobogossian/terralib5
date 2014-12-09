@@ -30,33 +30,33 @@
 #include "Config.h"
 #include "Module.h"
 
-const te::vp::Module& sm_module = te::vp::Module::getInstance();
+const te::addressgeocoding::Module& sm_module = te::addressgeocoding::Module::getInstance();
 
 
-te::vp::Module::Module()
+te::addressgeocoding::Module::Module()
 {
-  TerraLib::Module m = { TE_VP_MODULE_NAME,
-                         te::vp::Module::initialize,
-                         te::vp::Module::finalize
+  TerraLib::Module m = { TE_ADDRESSGEOCODING_MODULE_NAME,
+                         te::addressgeocoding::Module::initialize,
+                         te::addressgeocoding::Module::finalize
                        };
 
 // initialize TerraLib singleton
   TerraLib::getInstance().add(m);
 }
 
-te::vp::Module::~Module()
+te::addressgeocoding::Module::~Module()
 {
-  TerraLib::getInstance().remove(TE_VP_MODULE_NAME);
+  TerraLib::getInstance().remove(TE_ADDRESSGEOCODING_MODULE_NAME);
 }
 
-void te::vp::Module::initialize()
+void te::addressgeocoding::Module::initialize()
 {
-  TE_LOG_TRACE(TE_TR("TerraLib Vector Processing initialized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Address Geocoding initialized!"));
 }
 
-void te::vp::Module::finalize()
+void te::addressgeocoding::Module::finalize()
 {
 
-  TE_LOG_TRACE(TE_TR("TerraLib Vector Processing finalized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Address Geocoding finalized!"));
 }
 
