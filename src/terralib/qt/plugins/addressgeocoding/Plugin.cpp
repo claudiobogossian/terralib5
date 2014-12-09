@@ -47,7 +47,7 @@
 #endif
 
 // QT
-#include <QAction.h>
+#include <QAction>
 #include <QtCore/QObject>
 #include <QMenu>
 #include <QMenuBar>
