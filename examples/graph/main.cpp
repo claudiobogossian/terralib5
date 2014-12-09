@@ -33,7 +33,7 @@ int main()
     bool draw = true;
 
     //create ldd graph
-    CreateLDDGraph(draw);
+    CreateMSTGraph(draw);
 
     //-----------------------------------------------------------------------------------------------------
 

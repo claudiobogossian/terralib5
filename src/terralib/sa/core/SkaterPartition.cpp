@@ -266,16 +266,27 @@ bool te::sa::SkaterPartition::edgeToRemove(int startVertex, double& diffA, doubl
             std::size_t popA = 0;
             std::size_t popB = 0;
 
-            double diff = calculateEdgeDifference(vertex->getId(), vTo->getId(), diffVFrom, diffVTo, popA, popB);
+            double ssdi = calculateEdgeDifference(vertex->getId(), vTo->getId(), diffVFrom, diffVTo, popA, popB);
 
-            double ssdi = deviationStart - diff;
+            double l = deviationStart - ssdi;
 
             EdgeRemovalInfo eri;
             eri.m_edgeId = e->getId();
-            eri.m_SSDT = diff;
+            eri.m_SSDT = deviationStart;
             eri.m_SSDi = ssdi;
-            eri.m_SSDTa = diffVFrom;
-            eri.m_SSDTb = diffVTo;
+            eri.m_l = l;
+
+            if(e->getIdFrom() == vertex->getId())
+            {
+              eri.m_SSDTa = diffVFrom;
+              eri.m_SSDTb = diffVTo;
+            }
+            else
+            {
+              eri.m_SSDTa = diffVTo;
+              eri.m_SSDTb = diffVFrom;
+            }
+
             eri.m_popa = popA;
             eri.m_popb = popB;
 
@@ -291,13 +302,13 @@ bool te::sa::SkaterPartition::edgeToRemove(int startVertex, double& diffA, doubl
   //get the edge with maximum SSDi
   bool found = false;
 
-  double minDiff = std::numeric_limits<double>::max();
+  double maxDiff = -std::numeric_limits<double>::max();
 
   for(std::size_t t = 0; t < edgeRemovalVec.size(); ++t)
   {
-    if(edgeRemovalVec[t].m_SSDi < minDiff && edgeRemovalVec[t].m_popa >= m_popMin && edgeRemovalVec[t].m_popb >= m_popMin)
+    if(edgeRemovalVec[t].m_l > maxDiff && edgeRemovalVec[t].m_popa >= m_popMin && edgeRemovalVec[t].m_popb >= m_popMin)
     {
-      minDiff = edgeRemovalVec[t].m_SSDi;
+      maxDiff = edgeRemovalVec[t].m_l;
 
       edgeToRemoveId = edgeRemovalVec[t].m_edgeId;
 
@@ -309,7 +320,7 @@ bool te::sa::SkaterPartition::edgeToRemove(int startVertex, double& diffA, doubl
   }
 
   if(found)
-    m_SSDiValues.push_back(minDiff);
+    m_SSDiValues.push_back(maxDiff);
 
   edgeRemovalVec.clear();
 
