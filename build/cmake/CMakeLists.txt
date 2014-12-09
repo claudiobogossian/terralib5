@@ -224,7 +224,7 @@ find_package(Log4cxx)
 
 find_package(Lua)
 
-find_package(R)
+#find_package(R)
 
 find_package(LibPQ)
 
