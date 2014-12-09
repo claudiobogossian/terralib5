@@ -224,7 +224,7 @@ find_package(Log4cxx)
 
 find_package(Lua)
 
-find_package(R)
+#find_package(R)
 
 find_package(LibPQ)
 
@@ -730,7 +730,7 @@ if(TERRALIB_MOD_BINDING_LUA_ENABLED)
 endif()
 
 #if(TERRALIB_MOD_BINDING_R_ENABLED)
-  add_subdirectory(terralib_mod_binding_r)
+#  add_subdirectory(terralib_mod_binding_r)
 #endif()
 
 if(TERRALIB_MOD_CELLSPACE_ENABLED)
