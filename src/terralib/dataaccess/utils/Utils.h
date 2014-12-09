@@ -369,6 +369,16 @@ namespace te
     */
     TEDATAACCESSEXPORT double Round(const double& value, const size_t& precision);
 
+    /*!
+      \brief It gets the value as double.
+
+      \param ds The input dataset.
+      \param pos The column position.
+
+      \return The double value. Default value is 0.
+    */
+    TEDATAACCESSEXPORT double GetValueAsDouble(const te::da::DataSet* ds, const size_t pos);
+
   } // end namespace da
 }   // end namespace te
 

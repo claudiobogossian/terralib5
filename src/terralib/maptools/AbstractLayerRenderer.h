@@ -173,7 +173,7 @@ namespace te
         void drawDatSetGeometries(te::da::DataSet* dataset, const std::size_t& gpos,
                                   Canvas* canvas, int fromSRID, int toSRID, Chart* chart, te::common::TaskProgress* task = 0);
 
-        void buildChart(Chart* chart, te::da::DataSet* dataset, te::gm::Geometry* geom);
+        void buildChart(const Chart* chart, te::da::DataSet* dataset, te::gm::Geometry* geom);
 
         void buildChart(const Chart* chart, const std::map<std::string, double>& chartValue, te::gm::Geometry* geom);
 
