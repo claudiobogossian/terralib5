@@ -40,7 +40,7 @@ te::layout::AbstractView::AbstractView():
   m_zoomFactors[3.] = "300%";
 }
 
-bool te::layout::AbstractView::getVisibleRulers()
+bool te::layout::AbstractView::isVisibleRulers()
 {
   return m_visibleRulers;
 }

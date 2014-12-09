@@ -42,6 +42,7 @@
 #include <cmath>
 
 te::layout::GridGeodesicModel::GridGeodesicModel() :
+  m_pointTextSizeCorner(12),
   m_degreesText(true),
   m_minutesText(false),
   m_secondsText(false),
@@ -52,7 +53,6 @@ te::layout::GridGeodesicModel::GridGeodesicModel() :
   m_lowerLeftCornerText(false),
   m_upperLeftCornerText(false),
   m_visibleCornerTextsText(false),
-  m_pointTextSizeCorner(12),
 
   /* Geodesic: Topographic Map */
 
@@ -155,9 +155,7 @@ void te::layout::GridGeodesicModel::drawVerticalLines(te::map::Canvas* canvas, U
     // Curvatura da linha: de latlong para planar;
     // Desenhar linha: de planar para milimetro
 
-    const te::gm::Envelope* t1 = line->getMBR();
     utils->remapToPlanar(line, zone);
-    const te::gm::Envelope* t2 = line->getMBR();
     utils->convertToMillimeter(transf, line);
 
     utils->drawLineW(line);
@@ -224,10 +222,6 @@ void te::layout::GridGeodesicModel::drawHorizontalLines(te::map::Canvas* canvas,
   {
     if(x1 < box.getLowerLeftX())
       continue;
-
-    double lly = 0;
-    double ury = 0;
-    double x = 0;
 
     te::gm::Envelope env(x1, box.getLowerLeftY(), x1, box.getUpperRightY());
     te::gm::LinearRing* line = 0;

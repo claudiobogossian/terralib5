@@ -454,7 +454,6 @@ te::layout::EnumType* te::layout::PropertyBrowser::getLayoutType( QVariant::Type
   EnumType* dataType = dtType->getDataTypeNone();
   QVariant variant;
   QtVariantProperty* vproperty = 0;
-  int i = 0;
 
   switch(type)
   {

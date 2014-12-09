@@ -38,11 +38,11 @@
 
 te::layout::ItemModelObservable::ItemModelObservable() :
   m_id(0),
-  m_name("unknown"),
   m_type(0),
-  m_sharedProps(0),
   m_zValue(0),
+  m_sharedProps(0),
   m_border(true),
+  m_name("unknown"),
   m_resizable(true),
   m_angle(0)
 {

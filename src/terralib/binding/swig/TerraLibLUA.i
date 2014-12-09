@@ -5,6 +5,8 @@
  
 %module terralib_mod_binding_lua 
 
+%include lua/typemaps.i
+
 #define TECOMMONEXPORT
 
 %include "terralib/common/Singleton.h"
@@ -47,6 +49,9 @@ static std::string GetRandomicId()
 }
 
 %}
+
+/* Include Common module to the bind. */
+%include common/Common.i
 
 /* Include SRS module to the bind. */
 %include common/SRS.i

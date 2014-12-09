@@ -78,7 +78,6 @@ void te::layout::HorizontalRuler::drawRuler( QGraphicsView* view, QPainter* pain
   QPen pen(QColor(0,0,0,255));
   
   double zoomFactor = Context::getInstance().getZoomFactor();
-  double zoom = Context::getInstance().getZoomFactor();
   zoomFactor = 1. / scale; //Keeps the appearance of the ruler to 100%
 
   QPointF ll = view->mapToScene(0, view->height());

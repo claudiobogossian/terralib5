@@ -327,7 +327,6 @@ void te::layout::ItemUtils::createTextMapAsObject()
       {
         MapModel* model = dynamic_cast<MapModel*>(mt->getModel());
         std::map<te::gm::Point*, std::string> map = model->getTextMapAsObjectInfo();
-        double h = model->getBox().getHeight();
         createTextItemFromObject(map);
       }
     }
@@ -380,8 +379,6 @@ void te::layout::ItemUtils::createTextItemFromObject( std::map<te::gm::Point*, s
     item = scne->createItem(coord);
     if(!item)
       continue;
-
-    QPointF pos = item->scenePos();
 
     TextItem* txtItem = dynamic_cast<TextItem*>(item);
     if(txtItem)
@@ -436,7 +433,6 @@ void te::layout::ItemUtils::createLegendChildItemFromLegend( std::map<te::gm::Po
     LegendChildItem* lgItem = dynamic_cast<LegendChildItem*>(item);
     if(lgItem)
     {
-      LegendChildModel* model = dynamic_cast<LegendChildModel*>(lgItem->getModel());
       QList<QGraphicsItem*> legends;
       legends.push_back(lgItem);
       te::layout::changeMapVisitable(legends, visitable);

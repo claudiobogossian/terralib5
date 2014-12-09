@@ -6,8 +6,6 @@
 
 %include std_pair.i 
  
-%include lua/typemaps.i
-
 #define TESTEXPORT 
 
 AUTO_PTR_TYPEMAPS(te::dt::DateTimePeriod)

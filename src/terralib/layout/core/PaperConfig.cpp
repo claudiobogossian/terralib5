@@ -29,8 +29,8 @@
 #include "PaperConfig.h"
 
 te::layout::PaperConfig::PaperConfig() :
-  m_paperOrientationType(Portrait),
   m_paperType(te::layout::A4),
+  m_paperOrientationType(Portrait),
   m_customW(0),
   m_customH(0)
 {

@@ -146,7 +146,7 @@ int terralib4::Convert2T5(TeAttrDataType type)
       return te::dt::STRING_TYPE;
 
     case TeREAL:
-      return te::dt::NUMERIC_TYPE;
+      return te::dt::DOUBLE_TYPE;
 
     case TeINT:
       return te::dt::INT32_TYPE;
@@ -380,7 +380,7 @@ te::rst::RasterProperty* terralib4::Convert2T5(TeRasterParams& rparams)
 
   unsigned int ncols = rparams.ncols_;
   unsigned int nrows = rparams.nlines_;
-  std::auto_ptr<te::gm::Envelope> mbr(Convert2T5(rparams.box()));
+  std::auto_ptr<te::gm::Envelope> mbr(Convert2T5(rparams.boundingBox()));
 
   int srid = rparams.projection()->epsgCode();
   if(srid == 4979)

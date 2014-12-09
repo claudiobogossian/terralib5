@@ -340,6 +340,17 @@ te::map::Grouping* ReadLayerGrouping(te::xml::Reader& reader)
   std::auto_ptr<te::map::Grouping> g(new te::map::Grouping(propertyName, GetGroupingType(type), precision));
   g->setPropertyType(propertyType);
 
+  /* Smmary */
+  reader.next();
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "Summary");
+  reader.next();
+  assert(reader.getNodeType() == te::xml::VALUE);
+  std::string summary = reader.getElementValue();
+  reader.next();
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  g->setSummary(summary);
+
   reader.next();
   if(reader.getElementLocalName() == "StandardDeviation")
   {
@@ -495,6 +506,21 @@ std::auto_ptr<te::map::Chart> ReadLayerChart(te::xml::Reader& reader)
     reader.next();
   }
 
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "Summary");
+
+  reader.next();
+
+  assert(reader.getNodeType() == te::xml::VALUE);
+
+  std::string summary = reader.getElementValue();
+
+  reader.next();
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT); //Summary
+
+  reader.next();
+
   std::vector<std::string> properties;
   std::vector<te::color::RGBAColor> colors;
 
@@ -549,6 +575,7 @@ std::auto_ptr<te::map::Chart> ReadLayerChart(te::xml::Reader& reader)
   chart->setContourWidth(contourWidth);
   chart->setHeight(height);
   chart->setVisibility(isVisible);
+  chart->setSummary(summary);
   if(barWidth != -1)
     chart->setBarWidth(barWidth);
   if(type == te::map::Bar)
@@ -579,6 +606,8 @@ void WriteLayerChart(te::map::Chart* chart, te::xml::Writer& writer)
   if(chart->getType() == te::map::Bar)
     writer.writeElement("te_map:MaxValue", chart->getMaxValue());
 
+  writer.writeElement("te_map:Summary", chart->getSummary());
+
   std::vector<std::string> properties = chart->getProperties();
 
   for(std::size_t i = 0; i < properties.size(); ++i)
@@ -605,7 +634,8 @@ void WriteLayerGrouping(te::map::Grouping* g, te::xml::Writer& writer)
   writer.writeElement("te_map:PropertyDataType", g->getPropertyType());
   writer.writeElement("te_map:Type", GetGroupingType(type));
   writer.writeElement("te_map:Precision", static_cast<unsigned int>(g->getPrecision()));
-  
+  writer.writeElement("te_map:Summary", g->getSummary());
+
   if(type == te::map::STD_DEVIATION)
     writer.writeElement("te_map:StandardDeviation", g->getStdDeviation());
 
@@ -853,6 +883,9 @@ te::map::AbstractLayer* QueryLayerReader(te::xml::Reader& reader)
   /* Grouping */
   te::map::Grouping* grouping = ReadLayerGrouping(reader);
 
+  /* Chart */
+  std::auto_ptr<te::map::Chart> chart(ReadLayerChart(reader));
+
   /* Query Element */
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "Select");
@@ -939,6 +972,9 @@ te::map::AbstractLayer* QueryLayerReader(te::xml::Reader& reader)
 
   if(grouping)
     layer->setGrouping(grouping);
+
+  if(chart.get())
+    layer->setChart(chart.release());
 
   return layer.release();
 }

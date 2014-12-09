@@ -183,7 +183,8 @@ target_link_libraries(terralib_mod_layout  terralib_mod_color
                                            terralib_mod_plugin
                                            terralib_mod_qt_widgets
                                            terralib_mod_srs
-                                           terralib_mod_symbology)
+                                           terralib_mod_symbology
+										   ${QTPROPERTYBROWSER_LIBRARY})
 
 set_target_properties(terralib_mod_layout
                       PROPERTIES VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}

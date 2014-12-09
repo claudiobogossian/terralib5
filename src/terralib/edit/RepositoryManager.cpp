@@ -145,7 +145,7 @@ void te::edit::RepositoryManager::removeAll()
 
 void te::edit::RepositoryManager::remove(const std::string& source)
 {
-  std::map<std::string, Repository*>::const_iterator it = m_repositories.find(source);
+  std::map<std::string, Repository*>::iterator it = m_repositories.find(source);
 
   if(it == m_repositories.end())
     return;
