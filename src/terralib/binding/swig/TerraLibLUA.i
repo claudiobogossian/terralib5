@@ -5,6 +5,8 @@
  
 %module terralib_mod_binding_lua 
 
+%include lua/typemaps.i
+
 #define TECOMMONEXPORT
 
 %include "terralib/common/Singleton.h"
