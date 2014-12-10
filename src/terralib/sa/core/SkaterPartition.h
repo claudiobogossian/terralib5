@@ -65,7 +65,8 @@ namespace te
       double m_SSDT;        //!< Sum of Square Difference for Tree
       double m_SSDTa;       //!< Sum of Square Difference for Tree A
       double m_SSDTb;       //!< Sum of Square Difference for Tree B
-      double m_SSDi;        //!< Difference between m_SSDa and m_SSDb
+      double m_SSDi;        //!< Sum of m_SSDa and m_SSDb
+      double m_l;           //!< Difference between m_SSDT and m_SSDi;
       std::size_t m_popa;   //!< Sum of population for Tree A
       std::size_t m_popb;   //!< Sum of population for Tree B
     };

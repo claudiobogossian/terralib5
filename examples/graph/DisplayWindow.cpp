@@ -45,6 +45,12 @@
 #include <terralib/qt/widgets/tools/ZoomArea.h>
 #include <terralib/qt/widgets/tools/ZoomWheel.h>
 
+// BOOST
+#include <boost/algorithm/string.hpp>
+#include <boost/filesystem.hpp>
+#include <boost/lexical_cast.hpp>
+#include <boost/uuid/random_generator.hpp>
+#include <boost/uuid/uuid_io.hpp>
 
 // Qt
 #include <QAction>
@@ -73,7 +79,7 @@ DisplayWindow::DisplayWindow(QWidget* parent, Qt::WindowFlags f)
   setupActions();
 
   // Creates the Map Display
-  QSize size(400, 400);
+  QSize size(600, 600);
   m_display = new te::qt::widgets::MapDisplay(size, this);
   m_display->setResizePolicy(te::qt::widgets::MapDisplay::Center);
   setCentralWidget(m_display);
@@ -126,15 +132,10 @@ void DisplayWindow::setupActions()
 
 void DisplayWindow::addGraph(te::graph::AbstractGraph* graph, te::gm::Envelope extent, te::se::Style* s)
 {
-  graph->getMetadata()->setSRID(m_display->getSRID());
-  graph->getMetadata()->setEnvelope(extent);
-
   //creates a layer
   te::graph::Layer* layer = new te::graph::Layer(te::common::Convert2String(0), graph->getMetadata()->getName());
 
   layer->setGraph(graph);
-  layer->setExtent(extent);
-  layer->setSRID(m_display->getSRID());
   layer->setVisibility(te::map::VISIBLE);
   layer->setStyle(s);
 
@@ -147,7 +148,7 @@ void DisplayWindow::addGraph(te::graph::AbstractGraph* graph, te::gm::Envelope e
 
   // Updates MapDisplay layer list and extent
   m_display->setLayerList(m_layers);
-  m_display->setSRID(m_display->getSRID());
+  m_display->setSRID(layer->getSRID());
   m_display->setExtent(extent);
 }
 
@@ -199,69 +200,74 @@ void DisplayWindow::addRasterLayer(std::string path, std::string name)
 
 void DisplayWindow::addVectorialLayer(std::string path, int srid)
 {
-  //// Creates and connects data source
-  //std::map<std::string, std::string> connInfo;
-  //connInfo["path"] = path;
-  //te::da::DataSource* ds = te::da::DataSourceFactory::make("OGR");
-  //ds->open(connInfo);
+  // Creates and connects data source
+  std::map<std::string, std::string> connInfo;
+  connInfo["URI"] = path;
 
-  //// Transactor and catalog loader
-  //te::da::DataSourceTransactor* transactor = ds->getTransactor();
-  //te::da::DataSourceCatalogLoader* cl = transactor->getCatalogLoader();
-  //cl->loadCatalog();
+  std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("OGR");
+  ds->setConnectionInfo(connInfo);
+  ds->open();
 
-  //// Get the number of data set types that belongs to the data source
-  //boost::ptr_vector<std::string> datasets;
-  //transactor->getCatalogLoader()->getDataSets(datasets);
-  //assert(!datasets.empty());
+  // let's include the new datasource in the managers
+  boost::uuids::basic_random_generator<boost::mt19937> gen;
+  boost::uuids::uuid u = gen();
+  std::string id = boost::uuids::to_string(u);
 
-  //// Gets DataSet Type
-  //std::string dsName = datasets[0];
-  //te::da::DataSetType* dt = cl->getDataSetType(dsName);
+  te::da::DataSourceInfoPtr dsInfo(new te::da::DataSourceInfo);
+  dsInfo->setConnInfo(connInfo);
+  dsInfo->setTitle("DS");
+  dsInfo->setAccessDriver("OGR");
+  dsInfo->setType("OGR");
+  dsInfo->setDescription("");
+  dsInfo->setId(id);
+ 
+  te::da::DataSourceInfoManager::getInstance().add(dsInfo);
 
-  //// Default geometry property
-  //te::gm::GeometryProperty* geomProperty = dt->getDefaultGeomProperty();
 
-  //// Creates a Layer
-  //te::map::Layer* layer = new te::map::Layer(te::common::Convert2String(ms_id++), dsName);
-  //layer->setDataSource(ds);
-  //layer->setDataSetName(dsName);
-  //layer->setVisibility(te::map::VISIBLE);
-  //layer->setSRID(srid);
+  std::vector<std::string> datasets = ds->getDataSetNames();
 
-  //// Creates a hard-coded style
-  //te::se::PolygonSymbolizer* symbolizer = new te::se::PolygonSymbolizer;
-  //symbolizer->setFill(te::se::CreateFill("#FFE4E1", "1.0"));
-  //symbolizer->setStroke(te::se::CreateStroke("#000000", "2", "1.0"));
+  // Gets DataSet Type
+  std::string dsName = datasets[0];
+  std::auto_ptr<te::da::DataSetType> dt = ds->getDataSetType(dsName);
 
-  //te::se::Rule* rule = new te::se::Rule;
-  //rule->push_back(symbolizer);
+  // Default geometry property
+  std::auto_ptr<te::da::DataSet> dataSet = ds->getDataSet(dsName);
 
-  //te::se::FeatureTypeStyle* style = new te::se::FeatureTypeStyle;
-  //style->push_back(rule);
+  std::size_t geomPos = te::da::GetFirstSpatialPropertyPos(dataSet.get());
 
-  //layer->setStyle(style);
+  te::gm::GeometryProperty* geomProperty = te::da::GetFirstGeomProperty(dt.get());
 
-  //// Creates a Layer Renderer
-  //te::map::LayerRenderer* r = new te::map::LayerRenderer();
-  //layer->setRenderer(r);
+  std::auto_ptr<te::gm::Envelope> extent = dataSet->getExtent(geomPos);
 
-  //// Adding layer to layer list
-  //m_layers.push_back(layer);
-  //// Storing the data source
-  //m_ds.push_back(ds);
+  // Creates a Layer
+  te::map::DataSetLayer* layer = new te::map::DataSetLayer(te::common::Convert2String(ms_id++), dsName);
+  layer->setDataSetName(dsName);
+  layer->setVisibility(te::map::VISIBLE);
+  layer->setSRID(srid);
+  layer->setExtent(*extent.get());
+  layer->setDataSourceId(id);
 
-  //// Calculates new extent to MapDisplay
-  //te::gm::Envelope* extent = cl->getExtent(geomProperty);
+  // Creates a hard-coded style
+  te::se::PolygonSymbolizer* symbolizer = new te::se::PolygonSymbolizer;
+  symbolizer->setFill(te::se::CreateFill("#FFE4E1", "1.0"));
+  symbolizer->setStroke(te::se::CreateStroke("#000000", "2", "1.0"));
 
-  //// No more necessary
-  //delete cl;
-  //delete transactor;
+  te::se::Rule* rule = new te::se::Rule;
+  rule->push_back(symbolizer);
 
-  //// Updates MapDisplay layer list and extent
-  //m_display->setLayerList(m_layers);
-  //m_display->setSRID(srid);
-  //m_display->setExtent(*extent);
+  te::se::FeatureTypeStyle* style = new te::se::FeatureTypeStyle;
+  style->push_back(rule);
+
+  layer->setStyle(style);
+  layer->setRendererType("ABSTRACT_LAYER_RENDERER");
+
+  // Adding layer to layer list
+  m_layers.push_back(layer);
+
+  // Updates MapDisplay layer list and extent
+  m_display->setLayerList(m_layers);
+  m_display->setSRID(srid);
+  m_display->setExtent(*extent.get());
 }
 
 void DisplayWindow::setPNGPrefix(std::string prefix)

@@ -386,7 +386,8 @@ te::rst::RasterProperty* terralib4::Convert2T5(TeRasterParams& rparams)
   if(srid == 4979)
     srid = 4326;
 
-  std::auto_ptr<te::rst::Grid> grid(new te::rst::Grid(ncols, nrows, mbr.release(), srid));
+  te::gm::Coord2D* cord = new te::gm::Coord2D(rparams.boundingBox().x1_-(rparams.resx_/2), rparams.boundingBox().y2_+(rparams.resy_/2));
+  std::auto_ptr<te::rst::Grid> grid(new te::rst::Grid(ncols, nrows, rparams.resx_, rparams.resy_, cord, srid));
 
   rproperty->set(grid.release());
 
