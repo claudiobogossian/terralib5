@@ -240,7 +240,7 @@ void DisplayWindow::addVectorialLayer(std::string path, int srid)
   std::auto_ptr<te::gm::Envelope> extent = dataSet->getExtent(geomPos);
 
   // Creates a Layer
-  te::map::DataSetLayer* layer = new te::map::DataSetLayer(te::common::Convert2String(ms_id++), dsName);
+  te::map::DataSetLayer* layer = new te::map::DataSetLayer(boost::lexical_cast<std::string>(ms_id++), dsName);
   layer->setDataSetName(dsName);
   layer->setVisibility(te::map::VISIBLE);
   layer->setSRID(srid);
