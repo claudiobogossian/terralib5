@@ -629,51 +629,64 @@ void te::map::AbstractLayerRenderer::drawLayerGroupingMem(AbstractLayer* layer,
 
   do
   {
-    if(dataset->isNull(propertyPos))
-      continue;
-
     std::vector<te::se::Symbolizer*> symbolizers;
 
-    // Finds the current data set item on group map
-
-    if(type == UNIQUE_VALUE)
+    if(dataset->isNull(propertyPos) == false)
     {
-      std::string svalue = dataset->getAsString(propertyPos, precision);
-      std::map<std::string, std::vector<te::se::Symbolizer*> >::const_iterator it = uniqueGroupsMap.find(svalue);
-      if(it == uniqueGroupsMap.end())
-        continue;
-      symbolizers = it->second;
-    }
-    else
-    {
-      double dvalue = te::da::GetValueAsDouble(dataset.get(), propertyPos);
-      std::map<std::pair< double, double>, std::vector<te::se::Symbolizer*> >::const_iterator it;
-      for(it = othersGroupsMap.begin(); it != othersGroupsMap.end(); ++it)
-      {
-        if(dvalue >= it->first.first && dvalue <= it->first.second)
-          break;
-      }
-      
-      if(it == othersGroupsMap.end())
-      {
-        te::se::Style* style = layer->getStyle();
-        if(style)
-        {
-          if(!style->getRules().empty())
-          {
-            te::se::Rule* rule = style->getRule(0);
+      // Finds the current data set item on group map
 
-            symbolizers = rule->getSymbolizers();
-          }
-        }
+      if(type == UNIQUE_VALUE)
+      {
+        std::string svalue = dataset->getAsString(propertyPos, precision);
+        std::map<std::string, std::vector<te::se::Symbolizer*> >::const_iterator it = uniqueGroupsMap.find(svalue);
+        if(it == uniqueGroupsMap.end())
+          continue;
+        symbolizers = it->second;
       }
       else
       {
-        symbolizers = it->second;
-      }
+        double dvalue = te::da::GetValueAsDouble(dataset.get(), propertyPos);
+        std::map<std::pair< double, double>, std::vector<te::se::Symbolizer*> >::const_iterator it;
+        for(it = othersGroupsMap.begin(); it != othersGroupsMap.end(); ++it)
+        {
+          if(dvalue >= it->first.first && dvalue <= it->first.second)
+            break;
+        }
+      
+        if(it == othersGroupsMap.end())
+        {
+          te::se::Style* style = layer->getStyle();
+          if(style)
+          {
+            if(!style->getRules().empty())
+            {
+              te::se::Rule* rule = style->getRule(0);
 
-      if(symbolizers.empty())
-        continue;
+              symbolizers = rule->getSymbolizers();
+            }
+          }
+        }
+        else
+        {
+          symbolizers = it->second;
+        }
+
+        if(symbolizers.empty())
+          continue;
+      }
+    }
+    else
+    {
+      te::se::Style* style = layer->getStyle();
+      if(style)
+      {
+        if(!style->getRules().empty())
+        {
+          te::se::Rule* rule = style->getRule(0);
+
+          symbolizers = rule->getSymbolizers();
+        }
+      }
     }
 
     std::auto_ptr<te::gm::Geometry> geom;
