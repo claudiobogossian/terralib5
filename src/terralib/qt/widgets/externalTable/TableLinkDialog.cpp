@@ -308,7 +308,7 @@ void te::qt::widgets::TableLinkDialog::done(int r)
         QMessageBox::warning(this, tr("Tabular File"), "The types of the selected columns do not match.");
         return;
       }
-      else if(dsv1 != te::dt::STRING_TYPE && (dsv1 < te::dt::INT16_TYPE || dsv1 > te::dt::UINT64_TYPE))
+      else if(dsv1.toInt() != te::dt::STRING_TYPE && (dsv1.toInt() < te::dt::INT16_TYPE || dsv1.toInt() > te::dt::UINT64_TYPE))
       {
         QMessageBox::warning(this, tr("Tabular File"), "The types of the selected columns must be either an integer or a string.");
         return;
