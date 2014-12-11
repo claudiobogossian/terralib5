@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../../../../common/Exception.h"
+#include "../../../../common/StringUtils.h"
 #include "../../../../common/progress/ProgressManager.h"
 #include "../../../../common/progress/TaskProgress.h"
 #include "../../../../common/Translator.h"
@@ -282,8 +283,15 @@ bool te::qt::plugins::terralib4::TL4ConverterWizard::validateCurrentPage()
         {
   // non-raster
           QTableWidgetItem *conflictItem = 0;
-        
-          if(tl5ds->dataSetExists(targetDatasetName))
+
+          std::string targetDatasetNameAux = targetDatasetName;
+
+          if(tl5ds->getType() == "POSTGIS")
+          {
+            targetDatasetNameAux = te::common::Convert2LCase(targetDatasetName);
+          }
+
+          if(tl5ds->dataSetExists(targetDatasetNameAux))
           {
             hasConflicts = true;
 
@@ -466,6 +474,7 @@ bool te::qt::plugins::terralib4::TL4ConverterWizard::validLayerNames()
         if(boost::filesystem::exists(m_rasterFolderPath + "/" + targetName + ".tif"))
         {
           hasConflict = true;
+          QTableWidgetItem *nonconflictItem = new QTableWidgetItem(QIcon::fromTheme("delete"), "");
         }
         else
         {
@@ -477,9 +486,17 @@ bool te::qt::plugins::terralib4::TL4ConverterWizard::validLayerNames()
       else
       {
 // no!
-        if(tl5ds->dataSetExists(targetName))
+        std::string targetDatasetNameAux = targetName;
+
+        if(tl5ds->getType() == "POSTGIS")
+        {
+          targetDatasetNameAux = te::common::Convert2LCase(targetName);
+        }
+
+        if(tl5ds->dataSetExists(targetDatasetNameAux))
         {
           hasConflict = true;
+          QTableWidgetItem *nonconflictItem = new QTableWidgetItem(QIcon::fromTheme("delete"), "");
         }
         else
         {
@@ -649,6 +666,9 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::commit()
         const std::vector<te::da::AttributeConverter>& funcs = dt_adapter->getConverters();
 
         te::da::DataSetType* type = dt_adapter->getResult();
+
+        te::da::PrimaryKey* pk = type->getPrimaryKey();
+        pk->setName(te::common::Convert2LCase(targetName) + "_pk");
 
         te::common::CharEncoding encTo = tl5ds->getEncoding();
 
