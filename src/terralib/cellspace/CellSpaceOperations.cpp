@@ -82,30 +82,17 @@ void te::cellspace::CellularSpacesOperations::createCellSpace(te::da::DataSource
     rtree.reset(getRtree(layerBase));
   }
 
-  // Output
-  std::auto_ptr<te::da::DataSource> source = te::da::DataSourceFactory::make(outputSource->getAccessDriver());
-  source->setConnectionInfo(outputSource->getConnInfo());
-
-  source->open();
-
-  std::auto_ptr<te::da::DataSourceTransactor> t = source->getTransactor();
-
-  t->begin();
-
-  std::map<std::string, std::string> op;
-
-  t->createDataSet(outputDataSetType.get(), op);
-
   te::common::TaskProgress task("Processing Cellular Spaces...");
   task.setTotalSteps(maxrows);
   task.useTimer(true);
 
+  std::auto_ptr<te::da::DataSet> outputDataSet(new te::mem::DataSet(outputDataSetType.get()));
+
+  std::auto_ptr<te::mem::DataSet> ds(dynamic_cast<te::mem::DataSet*>(outputDataSet.release()));
+
   double x, y;
   for(int lin = 0; lin < maxrows; ++lin)
   {
-    std::auto_ptr<te::da::DataSet> outputDataSet(new te::mem::DataSet(outputDataSetType.get()));
-
-    std::auto_ptr<te::mem::DataSet> ds(dynamic_cast<te::mem::DataSet*>(outputDataSet.release()));
 
     y = env.m_lly+(lin*resY);
     for(int col = 0; col < maxcols; ++col)
@@ -157,18 +144,21 @@ void te::cellspace::CellularSpacesOperations::createCellSpace(te::da::DataSource
       }
     }
 
-    t->add(name, ds.get(), op);
-
-    if (task.isActive() == false)
-    {
-      t->rollBack();
-      throw te::common::Exception(TE_TR("Operation canceled!"));
-    }
-
     task.pulse();
   }
 
-  t->commit();
+  // Output
+  std::auto_ptr<te::da::DataSource> source = te::da::DataSourceFactory::make(outputSource->getAccessDriver());
+  source->setConnectionInfo(outputSource->getConnInfo());
+  source->open();
+
+  std::map<std::string, std::string> options;
+  // create the dataset
+  source->createDataSet(outputDataSetType.get(), options);
+
+  // copy from memory to output datasource
+  ds->moveBeforeFirst();
+  source->add(outputDataSetType->getName(),ds.get(), options);
 }
 
 void te::cellspace::CellularSpacesOperations::createCellSpace(te::da::DataSourceInfoPtr outputSource,

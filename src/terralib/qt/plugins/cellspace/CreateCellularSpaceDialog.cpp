@@ -34,6 +34,7 @@
 #include "../../../dataaccess/datasource/DataSourceFactory.h"
 #include "../../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../../dataaccess/datasource/DataSourceTransactor.h"
+#include "../../../dataaccess/datasource/DataSourceManager.h"
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../qt/widgets/layer/utils/DataSet2Layer.h"
 #include "../../../qt/widgets/progress/ProgressViewerDialog.h"
@@ -148,6 +149,15 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::setLayers(std::list<
     for(std::size_t i = 0; i < nonSridLayers.size(); ++i)
       w.append(nonSridLayers[i].c_str()).append("\n");
     QMessageBox::warning(this, tr("Cellular Spaces"), w);
+  }
+
+  if(nonSridLayers.size() == layers.size())
+  {
+    m_ui->m_srsToolButton->setEnabled(true);
+    m_ui->m_referenceGroupBox->setChecked(false);
+    m_ui->m_referenceGroupBox->setEnabled(false);
+    showSRS();
+    return;
   }
 
   te::map::AbstractLayerPtr layer = getReferenceLayer();
@@ -619,15 +629,27 @@ te::map::AbstractLayerPtr te::qt::plugins::cellspace::CreateCellularSpaceDialog:
 {
   if(m_isFile)
   {
+    // let's include the new datasource in the managers
     boost::uuids::basic_random_generator<boost::mt19937> gen;
     boost::uuids::uuid u = gen();
-    std::string id = boost::uuids::to_string(u);
+    std::string id_ds = boost::uuids::to_string(u);
+    
+    boost::filesystem::path uri(m_outDataSourceInfo->getConnInfo()["URI"]);
 
-    m_outDataSourceInfo->setTitle(m_outDataSourceInfo->getConnInfo()["URI"]);
-    m_outDataSourceInfo->setType(m_outDataSourceInfo->getAccessDriver());
-    m_outDataSourceInfo->setId(id);
+    te::da::DataSourceInfoPtr ds(new te::da::DataSourceInfo);
+    ds->setConnInfo(m_outDataSourceInfo->getConnInfo());
+    ds->setTitle(uri.stem().string());
+    ds->setAccessDriver("OGR");
+    ds->setType("OGR");
+    ds->setDescription(uri.string());
+    ds->setId(id_ds);
+      
+    te::da::DataSourcePtr newds = te::da::DataSourceManager::getInstance().get(id_ds, "OGR", ds->getConnInfo());
+    newds->open();
+    te::da::DataSourceInfoManager::getInstance().add(ds);
+    m_outDataSourceInfo = ds;
 
-    te::da::DataSourceInfoManager::getInstance().add(m_outDataSourceInfo);
+    m_outputDataSetName = uri.stem().string();
   }
 
   te::da::DataSourcePtr outDataSource = te::da::GetDataSource(m_outDataSourceInfo->getId());
