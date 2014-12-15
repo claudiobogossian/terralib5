@@ -181,6 +181,12 @@ std::string te::qt::widgets::RasterInfoWidget::getShortName() const
   if(m_ui->m_nameLineEdit->text().isEmpty() == false)
     name = m_ui->m_nameLineEdit->text().toStdString();
 
+  std::size_t pos = name.find(".");
+  if(pos != std::string::npos)
+  {
+    name = name.substr(0, pos);
+  }
+
   return name;
 }
 

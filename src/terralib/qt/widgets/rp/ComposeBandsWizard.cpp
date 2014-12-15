@@ -136,10 +136,8 @@ bool te::qt::widgets::ComposeBandsWizard::execute()
 bool te::qt::widgets::ComposeBandsWizard::executeCompose()
 {
   //get output parameters
-  std::string outputDataSetNamePrefix = m_rasterInfoPage->getWidget()->getShortName();
-  std::string outputDataSetNameExt = m_rasterInfoPage->getWidget()->getExtension();
-  std::string outputDataSetName = outputDataSetNamePrefix + outputDataSetNameExt;
-  std::auto_ptr<te::da::DataSource> outputDataSource = m_rasterInfoPage->getWidget()->getDataSource();
+  std::map<std::string, std::string> rinfo = m_rasterInfoPage->getWidget()->getInfo();
+  std::string type = m_rasterInfoPage->getWidget()->getType();
 
   //get input parameters
   std::vector<const te::rst::Raster*> inputRasters;
@@ -152,13 +150,14 @@ bool te::qt::widgets::ComposeBandsWizard::executeCompose()
   te::rp::FeederConstRasterVector feeder(inputRasters);
 
   //execute
-  bool res = te::rp::ComposeBands(feeder, inputRasterBands, outputDataSetName, interpMethod, *outputDataSource.get());
+  std::auto_ptr<te::rst::Raster> outputRaster;
+
+  bool res = te::rp::ComposeBands(feeder, inputRasterBands, interpMethod, rinfo, type, outputRaster);
 
   //create layer
   if(res)
   {
-    std::map<std::string, std::string> rinfo = m_rasterInfoPage->getWidget()->getInfo();
-    std::string type = m_rasterInfoPage->getWidget()->getType();
+    outputRaster.reset();
 
     te::map::AbstractLayerPtr layer = te::qt::widgets::createLayer(type, rinfo);
 
@@ -177,8 +176,8 @@ bool te::qt::widgets::ComposeBandsWizard::executeDecompose()
   std::string outputDataSetNamePath = m_rasterInfoPage->getWidget()->getPath();
   std::string outputDataSetNamePrefix = m_rasterInfoPage->getWidget()->getShortName();
   std::string outputDataSetNameExt = m_rasterInfoPage->getWidget()->getExtension();
-
-  std::auto_ptr<te::da::DataSource> outputDataSource = m_rasterInfoPage->getWidget()->getDataSource();
+  std::string type = m_rasterInfoPage->getWidget()->getType();
+  std::vector< std::map<std::string, std::string> > outputRastersInfos;
 
   //get input parameters
   te::rst::Raster* inputRaster;
@@ -197,14 +196,20 @@ bool te::qt::widgets::ComposeBandsWizard::executeDecompose()
                 name += outputDataSetNameExt;
 
     outputDataSetNames.push_back(name);
+
+    outputRastersInfos.push_back(m_rasterInfoPage->getWidget()->getInfo((int)t));
   }
+  
+  std::vector< boost::shared_ptr< te::rst::Raster > > outputRastersPtrs;
 
   //execute
-  bool res = te::rp::DecomposeBands(*inputRaster, inputRasterBands, outputDataSetNames, *outputDataSource.get());
+  bool res = te::rp::DecomposeBands(*inputRaster, inputRasterBands, outputRastersInfos, type, outputRastersPtrs);
 
   //create layer
   if(res)
   {
+    outputRastersPtrs.clear();
+
     std::string type = m_rasterInfoPage->getWidget()->getType();
 
     for(std::size_t t = 0; t < outputDataSetNames.size(); ++t)
