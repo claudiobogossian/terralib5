@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/edit/qt/SnapOptionsWidget.h
+  \file terralib/edit/qt/SnapOptionsDialog.h
 
-  \brief A widget used to configure geometry snap options.
+  \brief A dialog used to configure geometry snap options.
 */
 
-#ifndef __TERRALIB_EDIT_QT_INTERNAL_SNAPOPTIONSWIDGET_H
-#define __TERRALIB_EDIT_QT_INTERNAL_SNAPOPTIONSWIDGET_H
+#ifndef __TERRALIB_EDIT_QT_INTERNAL_SNAPOPTIONSDIALOG_H
+#define __TERRALIB_EDIT_QT_INTERNAL_SNAPOPTIONSDIALOG_H
 
 // TerraLib
 #include "../../maptools/AbstractLayer.h"
@@ -44,11 +44,11 @@ namespace te
   namespace edit
   {
     /*!
-      \class SnapOptionsWidget
+      \class SnapOptionsDialog
 
-      \brief A widget used to configure geometry snap options.
+      \brief A dialog used to configure geometry snap options.
     */
-    class TEEDITQTEXPORT SnapOptionsWidget : public QDialog
+    class TEEDITQTEXPORT SnapOptionsDialog : public QDialog
     {
       Q_OBJECT
 
@@ -59,11 +59,11 @@ namespace te
           */
         //@{
 
-        /*! \brief Constructs the snap options widget which is a child of parent, with widget flags set to f. */
-        SnapOptionsWidget(QWidget* parent = 0, Qt::WindowFlags f = 0);
+        /*! \brief Constructs the snap options dialog which is a child of parent, with widget flags set to f. */
+        SnapOptionsDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
         /*! \brief Destructor. */
-        ~SnapOptionsWidget();
+        ~SnapOptionsDialog();
 
         //@}
 
@@ -81,7 +81,7 @@ namespace te
 
       private:
 
-        std::auto_ptr<Ui::SnapOptionsDialogForm> m_ui;   //!< Widget form.
+        std::auto_ptr<Ui::SnapOptionsDialogForm> m_ui;   //!< Dialog form.
         std::list<te::map::AbstractLayerPtr> m_layers;   //!< The layer list.
     };
 

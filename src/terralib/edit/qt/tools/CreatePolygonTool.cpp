@@ -243,7 +243,7 @@ te::gm::Geometry* te::edit::CreatePolygonTool::buildLine()
 
 void te::edit::CreatePolygonTool::storeNewGeometry()
 {
-  RepositoryManager::getInstance().addNewGeometry(m_layer->getId(), buildPolygon());
+  RepositoryManager::getInstance().addGeometry(m_layer->getId(), buildPolygon());
 }
 
 void te::edit::CreatePolygonTool::onExtentChanged()

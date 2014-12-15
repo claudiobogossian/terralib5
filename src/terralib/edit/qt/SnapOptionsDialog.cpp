@@ -20,7 +20,7 @@
 /*!
   \file terralib/edit/qt/SnapOptionsWidget.cpp
 
-  \brief A widget used to configure geometry snap options.
+  \brief A dialog used to configure geometry snap options.
 */
 
 // TerraLib
@@ -40,7 +40,7 @@
 
 Q_DECLARE_METATYPE(te::map::AbstractLayerPtr);
 
-te::edit::SnapOptionsWidget::SnapOptionsWidget(QWidget* parent, Qt::WindowFlags f)
+te::edit::SnapOptionsDialog::SnapOptionsDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
     m_ui(new Ui::SnapOptionsDialogForm)
 {
@@ -50,24 +50,24 @@ te::edit::SnapOptionsWidget::SnapOptionsWidget(QWidget* parent, Qt::WindowFlags 
   connect(m_ui->m_okPushButton, SIGNAL(pressed()), this, SLOT(onOkPushButtonPressed()));
 }
 
-te::edit::SnapOptionsWidget::~SnapOptionsWidget()
+te::edit::SnapOptionsDialog::~SnapOptionsDialog()
 {
 }
 
-void te::edit::SnapOptionsWidget::setLayers(const std::list<te::map::AbstractLayerPtr>& layers)
+void te::edit::SnapOptionsDialog::setLayers(const std::list<te::map::AbstractLayerPtr>& layers)
 {
   m_layers = layers;
 
   buildOptions();
 }
 
-void te::edit::SnapOptionsWidget::buildOptions()
+void te::edit::SnapOptionsDialog::buildOptions()
 {
   for(std::list<te::map::AbstractLayerPtr>::const_iterator it = m_layers.begin(); it != m_layers.end(); ++it)
     buildOptions(*it);
 }
 
-void te::edit::SnapOptionsWidget::buildOptions(const te::map::AbstractLayerPtr& layer)
+void te::edit::SnapOptionsDialog::buildOptions(const te::map::AbstractLayerPtr& layer)
 {
   for(std::size_t i = 0; i < layer->getChildrenCount(); ++i)
   {
@@ -122,7 +122,7 @@ void te::edit::SnapOptionsWidget::buildOptions(const te::map::AbstractLayerPtr& 
   m_ui->m_tableOptionsWidget->setCellWidget(currentRow, currentCollumn++, unitsComboBox);
 }
 
-void te::edit::SnapOptionsWidget::onOkPushButtonPressed()
+void te::edit::SnapOptionsDialog::onOkPushButtonPressed()
 {
   for(int i = 0; i < m_ui->m_tableOptionsWidget->rowCount(); ++i) // for each option
   {
