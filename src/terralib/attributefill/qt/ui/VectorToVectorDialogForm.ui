@@ -64,7 +64,7 @@
          </font>
         </property>
         <property name="text">
-         <string>Apply Collect or Distribute function from a vector to vector.</string>
+         <string>Spatial operations between two layers</string>
         </property>
        </widget>
       </item>
