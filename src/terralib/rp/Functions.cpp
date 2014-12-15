@@ -2062,21 +2062,26 @@ namespace te
     bool DecomposeBands( 
       const te::rst::Raster& inputRaster,
       const std::vector< unsigned int >& inputRasterBands,
-      const std::vector< std::string >& outputDataSetNames,
-      te::da::DataSource& outputDataSource )
+      const std::vector< std::map<std::string, std::string> > & outputRastersInfos,
+      const std::string& outputDataSourceType,
+      std::vector< boost::shared_ptr< te::rst::Raster > > & outputRastersPtrs )
     {
+      outputRastersPtrs.clear();
+      
       if( !( inputRaster.getAccessPolicy() & te::common::RAccess ) )
       {
         return false;
       }
-      if( ! outputDataSource.isValid() )
+      if( outputRastersInfos.size() != inputRasterBands.size() )
       {
         return false;
       }
-      if( outputDataSetNames.size() != inputRasterBands.size() )
+      if( outputDataSourceType.empty() )
       {
         return false;
       }
+      
+      outputRastersPtrs.resize( inputRasterBands.size() );
       
       const unsigned int nRows = inputRaster.getNumberOfRows();
       const unsigned int nCols = inputRaster.getNumberOfColumns();
@@ -2095,24 +2100,17 @@ namespace te
         bandsProperties.push_back( new te::rst::BandProperty( 
           *( inputRaster.getBand( bandIdx )->getProperty()) ) );
         
-        if( outputDataSetNames[ inputRasterBandsIdx ].empty() )
-        {
-          return false;
-        }
-        
-        te::rp::RasterHandler outRasterHandler;
-        if( ! te::rp::CreateNewRaster( *( inputRaster.getGrid() ),
-          bandsProperties, outputDataSetNames[ inputRasterBandsIdx ], 
-          outputDataSource, outRasterHandler) )
-        {
-          return false;      
-        }
+        outputRastersPtrs[ inputRasterBandsIdx].reset( 
+          te::rst::RasterFactory::make( outputDataSourceType,
+          new te::rst::Grid( *inputRaster.getGrid() ), bandsProperties, 
+          outputRastersInfos[ inputRasterBandsIdx ], 0, 0 ) );
+        if( outputRastersPtrs[ inputRasterBandsIdx].get() == 0 ) return false;        
         
         unsigned int col = 0;
         unsigned int row = 0;
         double value = 0;
         const te::rst::Band& inBand = *(inputRaster.getBand( bandIdx ));
-        te::rst::Band& outBand = *(outRasterHandler.getRasterPtr()->getBand( 0 ));
+        te::rst::Band& outBand = *(outputRastersPtrs[ inputRasterBandsIdx]->getBand( 0 ));
         
         for( row = 0 ; row < nRows ; ++row )
         {
@@ -2130,30 +2128,27 @@ namespace te
     bool ComposeBands( 
       te::rp::FeederConstRaster& feeder,
       const std::vector< unsigned int >& inputRasterBands,
-      const std::string& outputDataSetName,
       const te::rst::Interpolator::Method& interpMethod,
-      te::da::DataSource& outputDataSource )
+      const std::map<std::string, std::string>& outputRasterInfo,
+      const std::string& outputDataSourceType,
+      std::auto_ptr< te::rst::Raster >& outputRasterPtr )
     {
+      outputRasterPtr.reset();
+      
       if( inputRasterBands.size() != feeder.getObjsCount() )
       {
         return false;
       }
-      if( outputDataSetName.empty() )
+      if( outputDataSourceType.empty() )
       {
         return false;
       }
-      if( ! outputDataSource.isValid() )
-      {
-        return false;
-      }      
       
       // creating the output raster
       
-      te::rp::RasterHandler outRasterHandler;
-      
       {
         te::rst::Raster const * inputRasterPtr = 0;
-        te::rst::Grid outputGrid;
+        std::auto_ptr< te::rst::Grid > outputGridPtr;
         std::vector< te::rst::BandProperty* > bandsProperties;
         
         feeder.reset();
@@ -2167,7 +2162,7 @@ namespace te
           
           if( feeder.getCurrentOffset() == 0 )
           {
-            outputGrid = ( *inputRasterPtr->getGrid() );
+            outputGridPtr.reset( new te::rst::Grid( *inputRasterPtr->getGrid() ) );
           }          
 
           bandsProperties.push_back( new te::rst::BandProperty( 
@@ -2177,12 +2172,9 @@ namespace te
           feeder.moveNext();
         }
         
-        if( ! te::rp::CreateNewRaster( outputGrid,
-          bandsProperties, outputDataSetName, 
-          outputDataSource, outRasterHandler) )
-        {
-          return false;      
-        }        
+        outputRasterPtr.reset( te::rst::RasterFactory::make( outputDataSourceType,
+          outputGridPtr.release(), bandsProperties, outputRasterInfo, 0, 0 ) );
+        if( outputRasterPtr.get() == 0 ) return false;
       }
       
       // copying data from each input band
@@ -2198,12 +2190,12 @@ namespace te
           te::rst::Interpolator interp( inputRasterPtr, interpMethod );
           unsigned int outRow = 0;
           unsigned int outCol = 0;
-          const unsigned int nOutRows = outRasterHandler.getRasterPtr()->getNumberOfRows();
-          const unsigned int nOutCols = outRasterHandler.getRasterPtr()->getNumberOfColumns();
-          te::rst::Band& outBand = *outRasterHandler.getRasterPtr()->getBand( 
+          const unsigned int nOutRows = outputRasterPtr->getNumberOfRows();
+          const unsigned int nOutCols = outputRasterPtr->getNumberOfColumns();
+          te::rst::Band& outBand = *outputRasterPtr->getBand( 
             feeder.getCurrentOffset() );
           const te::rst::Grid& inGrid = *inputRasterPtr->getGrid();
-          const te::rst::Grid& outGrid = * outRasterHandler.getRasterPtr()->getGrid();
+          const te::rst::Grid& outGrid = *outputRasterPtr->getGrid();
           double xOutCoord = 0;
           double yOutCoord = 0;
           double xInCoord = 0;
@@ -2211,10 +2203,10 @@ namespace te
           double inRow = 0;
           double inCol = 0;
           std::complex< double > value = 0;
-          te::srs::Converter conv( outRasterHandler.getRasterPtr()->getSRID(),
+          te::srs::Converter conv( outputRasterPtr->getSRID(),
             inputRasterPtr->getSRID() );
           
-          if( inputRasterPtr->getSRID() == outRasterHandler.getRasterPtr()->getSRID() )
+          if( inputRasterPtr->getSRID() == outputRasterPtr->getSRID() )
           {
             for( outRow = 0 ; outRow < nOutRows ; ++outRow )
             {
