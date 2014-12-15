@@ -202,7 +202,7 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
       te::da::GetOIDPropertyNames(schema.get(), oidPropertyNames);
 
       // Get the edited geometries
-      const std::vector<te::edit::Feature*>& features = repo->getFeatures();
+      const std::vector<te::edit::Feature*>& features = repo->getAllFeatures();
 
       // Build the DataSet that will be used to update
       std::auto_ptr<te::mem::DataSet> memds(new te::mem::DataSet(schema.get()));
@@ -340,7 +340,7 @@ void te::qt::plugins::edit::ToolBar::onMoveGeometryToolActivated(bool checked)
 
 void te::qt::plugins::edit::ToolBar::onSnapOptionsActivated()
 {
-  te::edit::SnapOptionsWidget options(m_toolBar);
+  te::edit::SnapOptionsDialog options(m_toolBar);
   options.setLayers(te::qt::af::ApplicationController::getInstance().getProject()->getAllLayers(false));
   options.exec();
 }

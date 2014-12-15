@@ -65,9 +65,11 @@ namespace te
 
       public:
 
-        void addNewGeometry(const std::string& source, te::gm::Geometry* geom);
+        void addGeometry(const std::string& source, te::gm::Geometry* geom);
 
-        void addEditedGeometry(const std::string& source, te::da::ObjectId* id, te::gm::Geometry* geom);
+        void addGeometry(const std::string& source, te::da::ObjectId* id, te::gm::Geometry* geom);
+
+        void addFeature(const std::string& source, Feature* f);
 
         bool hasIdentify(const std::string& source, te::da::ObjectId* id);
 

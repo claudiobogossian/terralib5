@@ -31,6 +31,8 @@
 
 #define TE_EDIT_MODULE_NAME "te.edit"
 
+#define NEW_FEATURE_ID_SUFFIX "-new"
+
 /** @name DLL/LIB Module
  *  Flags for building TerraLib as a DLL or as a Static Library
  */

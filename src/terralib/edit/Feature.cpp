@@ -29,13 +29,26 @@
 #include "../datatype/AbstractData.h"
 #include "../geometry/Geometry.h"
 #include "Feature.h"
+#include "Utils.h"
 
 // STL
 #include <cassert>
 
-te::edit::Feature::Feature(te::da::ObjectId* id, te::gm::Geometry* geom, const std::size_t& nproperties)
-  : te::mem::DataSetItem(nproperties),
-    m_id(id),
+te::edit::Feature::Feature()
+  : m_geom(0)
+{
+  m_id = GenerateId();
+}
+
+te::edit::Feature::Feature(te::da::ObjectId* id)
+  : m_id(id),
+    m_geom(0)
+{
+  assert(m_id);
+}
+
+te::edit::Feature::Feature(te::da::ObjectId* id, te::gm::Geometry* geom)
+  : m_id(id),
     m_geom(geom)
 {
   assert(m_id);
@@ -46,6 +59,7 @@ te::edit::Feature::~Feature()
 {
   delete m_id;
   delete m_geom;
+  te::common::FreeContents(m_data);
 }
 
 void te::edit::Feature::set(te::da::ObjectId* id, te::gm::Geometry* geom)
@@ -70,6 +84,12 @@ void te::edit::Feature::setGeometry(te::gm::Geometry* geom)
   m_geom = geom;
 }
 
+void te::edit::Feature::setData(const std::map<std::size_t, te::dt::AbstractData*>& data)
+{
+  te::common::FreeContents(m_data);
+  m_data = data;
+}
+
 te::da::ObjectId* te::edit::Feature::getId() const
 {
   return m_id;
@@ -78,6 +98,11 @@ te::da::ObjectId* te::edit::Feature::getId() const
 te::gm::Geometry* te::edit::Feature::getGeometry() const
 {
   return m_geom;
+}
+
+const std::map<std::size_t, te::dt::AbstractData*>& te::edit::Feature::getData() const
+{
+  return m_data;
 }
 
 bool te::edit::Feature::isEquals(te::da::ObjectId* id)
@@ -90,5 +115,24 @@ bool te::edit::Feature::isEquals(te::da::ObjectId* id)
 
 te::edit::Feature* te::edit::Feature::clone() const
 {
-  return new Feature(m_id->clone(), dynamic_cast<te::gm::Geometry*>(m_geom->clone()));
+  assert(m_id);
+
+  // The clone
+  Feature* f = new Feature(m_id->clone());
+
+  // Clone geometry
+  if(m_geom)
+    f->setGeometry(dynamic_cast<te::gm::Geometry*>(m_geom->clone()));
+
+  // Clone data
+  std::map<std::size_t, te::dt::AbstractData*> data;
+  for(std::map<std::size_t, te::dt::AbstractData*>::const_iterator it = m_data.begin(); it != m_data.end(); ++it)
+  {
+    assert(it->second);
+    data[it->first] = it->second->clone();
+  }
+
+  f->setData(data);
+
+  return f;
 }

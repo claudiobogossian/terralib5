@@ -190,7 +190,7 @@ te::gm::Geometry* te::edit::CreateLineTool::buildLine()
 
 void te::edit::CreateLineTool::storeNewGeometry()
 {
-  RepositoryManager::getInstance().addNewGeometry(m_layer->getId(), buildLine());
+  RepositoryManager::getInstance().addGeometry(m_layer->getId(), buildLine());
 }
 
 void te::edit::CreateLineTool::onExtentChanged()

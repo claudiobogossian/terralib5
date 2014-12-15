@@ -35,7 +35,7 @@
 // STL
 #include <cassert>
 
-void te::edit::RepositoryManager::addNewGeometry(const std::string& source, te::gm::Geometry* geom)
+void te::edit::RepositoryManager::addGeometry(const std::string& source, te::gm::Geometry* geom)
 {
   Repository* repository = getRepository(source);
 
@@ -44,7 +44,7 @@ void te::edit::RepositoryManager::addNewGeometry(const std::string& source, te::
     // Not found! Create a new repository associated with the given source
     repository = new Repository(source);
 
-    // Add the new geometry
+    // Add the geometry
     repository->add(geom);
 
     // Store!
@@ -54,7 +54,7 @@ void te::edit::RepositoryManager::addNewGeometry(const std::string& source, te::
     repository->add(geom);
 }
 
-void te::edit::RepositoryManager::addEditedGeometry(const std::string& source, te::da::ObjectId* id, te::gm::Geometry* geom)
+void te::edit::RepositoryManager::addGeometry(const std::string& source, te::da::ObjectId* id, te::gm::Geometry* geom)
 {
   Repository* repository = getRepository(source);
 
@@ -63,7 +63,7 @@ void te::edit::RepositoryManager::addEditedGeometry(const std::string& source, t
     // Not found! Create a new repository associated with the given source
     repository = new Repository(source);
 
-    // Add the edited geometry
+    // Add the geometry
     repository->add(id, geom);
 
     // Store!
@@ -71,6 +71,25 @@ void te::edit::RepositoryManager::addEditedGeometry(const std::string& source, t
   }
   else
     repository->add(id, geom);
+}
+
+void te::edit::RepositoryManager::addFeature(const std::string& source, Feature* f)
+{
+   Repository* repository = getRepository(source);
+
+  if(repository == 0)
+  {
+    // Not found! Create a new repository associated with the given source
+    repository = new Repository(source);
+
+    // Add the feature
+    repository->add(f);
+
+    // Store!
+    m_repositories[source] = repository;
+  }
+  else
+    repository->add(f);
 }
 
 bool te::edit::RepositoryManager::hasIdentify(const std::string& source, te::da::ObjectId* id)
