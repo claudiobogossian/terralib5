@@ -24,7 +24,7 @@
 */
 
 // TerraLib
-#include "../rp/Functions.h"
+
 #include "Band.h"
 #include "BandProperty.h"
 #include "PositionIterator.h"
