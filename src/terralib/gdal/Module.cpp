@@ -82,6 +82,36 @@ void te::gdal::Module::startup()
   capabilities.setDataSetCapabilities(dataSetCapabilities);
   capabilities.setQueryCapabilities(queryCapabilities);
   capabilities.setAccessPolicy(te::common::RWAccess);
+  
+  // Supported file extensions capability
+  
+  std::set< std::string > supportedExtensionsSet;
+  for( std::map< std::string, DriverMetadata >::const_iterator it = 
+    GetGDALDriversMetadata().begin() ; it != 
+    GetGDALDriversMetadata().end() ; ++it )
+  {
+    if( !it->second.m_extension.empty() )
+    {
+      if( supportedExtensionsSet.find( it->second.m_extension ) ==
+        supportedExtensionsSet.end() )
+      {
+        supportedExtensionsSet.insert( it->second.m_extension );
+      }
+    }
+  }
+  
+  std::string supportedExtensionsStr;
+  for( std::set< std::string >::const_iterator it = supportedExtensionsSet.begin() ; 
+    it != supportedExtensionsSet.end() ; ++it )
+  {
+    if( !supportedExtensionsStr.empty() )
+    {
+      supportedExtensionsStr.append( ";" );
+    }
+    supportedExtensionsStr.append( *it );
+  }  
+
+  capabilities.addSpecificCapability( "SUPPORTED_EXTENSIONS", supportedExtensionsStr );
 
   te::gdal::DataSource::setCapabilities(capabilities);
   
