@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../../../dataaccess/dataset/DataSet.h"
+#include "../../../dataaccess/utils/Utils.h"
 #include "../../../maptools/Chart.h"
 #include "../Utils.h"
 #include "ChartRenderer.h"
@@ -335,8 +336,9 @@ void te::qt::widgets::ChartRenderer::getValues(const te::map::Chart* chart, cons
   std::size_t precision = 5;
 
   const std::vector<std::string>& properties = chart->getProperties();
-  
-  for(std::size_t i = 0; i < properties.size(); ++i)
+  size_t psize = properties.size();
+  size_t ppsize = chart->getPropertiesPos().size();
+  for(std::size_t i = 0; i < psize; ++i)
   {
     if(dataset->isNull(properties[i]))
     {
@@ -344,8 +346,13 @@ void te::qt::widgets::ChartRenderer::getValues(const te::map::Chart* chart, cons
       break;
     }
 
-    std::string value = dataset->getAsString(properties[i], precision);
-    values.push_back(boost::lexical_cast<double>(value));
+    if(ppsize == psize)
+      values.push_back(te::da::GetValueAsDouble(dataset, chart->getPropertiesPos()[i]));
+    else
+    {
+      size_t pos = te::da::GetPropertyPos(dataset, properties[i]);
+      values.push_back(te::da::GetValueAsDouble(dataset, pos));
+    }
   }
 }
 

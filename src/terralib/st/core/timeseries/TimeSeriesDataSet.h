@@ -219,7 +219,7 @@ namespace te
         bool isAfterEnd() const;
         //@}
 
-        /*! \name Methods to get values pointed by the internal cursor.
+        /*! \name Methods to get values pointed by the internal cursor. */
         //@{
         
         /*! 

@@ -299,15 +299,23 @@ void te::qt::widgets::TableLinkDialog::done(int r)
 {
   if(QDialog::Accepted == r)
   {
-     if(m_ui->m_dataset1ColumnComboBox->itemData(m_ui->m_dataset1ColumnComboBox->currentIndex())
-       == m_ui->m_dataset2ColumnComboBox->itemData(m_ui->m_dataset2ColumnComboBox->currentIndex()))
+    QVariant dsv1, dsv2;
+    dsv1 = m_ui->m_dataset1ColumnComboBox->itemData(m_ui->m_dataset1ColumnComboBox->currentIndex());
+    dsv2 = m_ui->m_dataset2ColumnComboBox->itemData(m_ui->m_dataset2ColumnComboBox->currentIndex());
+
+     if(dsv1 != dsv2)
       {
-          QDialog::done(r);
-          return;
+        QMessageBox::warning(this, tr("Tabular File"), "The types of the selected columns do not match.");
+        return;
+      }
+      else if(dsv1.toInt() != te::dt::STRING_TYPE && (dsv1.toInt() < te::dt::INT16_TYPE || dsv1.toInt() > te::dt::UINT64_TYPE))
+      {
+        QMessageBox::warning(this, tr("Tabular File"), "The types of the selected columns must be either an integer or a string.");
+        return;
       }
       else
       {
-        QMessageBox::warning(this, tr("Tabular File"), "The types of the selected columns do not match.");
+        QDialog::done(r);
         return;
       }
   }

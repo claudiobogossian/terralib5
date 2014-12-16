@@ -5,12 +5,15 @@
  
 %module terralib_mod_binding_lua 
 
+%include stl.i
+
+%include lua/typemaps.i
+
+%include typemaps.i
+
 #define TECOMMONEXPORT
 
 %include "terralib/common/Singleton.h"
-
-%include stl.i
-%include typemaps.i
 
 namespace te 
 {

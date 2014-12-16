@@ -67,7 +67,7 @@ QVariant te::qt::widgets::DataSetLayerItem::data(int /*column*/, int role) const
     {
       std::auto_ptr<te::da::DataSetType> schema = m_layer->getSchema();
 
-      if(!schema->hasGeom())
+      if(!schema->hasGeom() && !schema->hasRaster())
         return QVariant(QIcon::fromTheme("dataset-layer-tabular"));
       else
         return QVariant(QIcon::fromTheme("dataset-layer"));

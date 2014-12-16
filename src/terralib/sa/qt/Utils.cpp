@@ -424,22 +424,22 @@ void te::sa::CreateSkaterGrouping(te::map::AbstractLayerPtr layer, int nClasses)
 
   te::map::GroupingByUniqueValues(strVec, attrType, legend, prec);
 
-  std::auto_ptr<te::color::ColorBar> cb(GetColorBar("Default", "Classification", "Circular"));
+  //std::auto_ptr<te::color::ColorBar> cb(GetColorBar("Default", "Classification", "Circular"));
 
-  int legendSize = legend.size();
+  //int legendSize = legend.size();
 
-  std::vector<te::color::RGBAColor> colorVec;
+  //std::vector<te::color::RGBAColor> colorVec;
 
-  colorVec = cb->getSlices(legendSize);
+  //colorVec = cb->getSlices(legendSize);
 
   //create symbolizer
   int geomType = te::map::GetGeomType(layer);
 
-  for(size_t t = 0; t < colorVec.size(); ++t)
+  for(size_t t = 0; t < legend.size(); ++t)
   {
     std::vector<te::se::Symbolizer*> symbVec;
 
-    te::se::Symbolizer* s = te::se::CreateSymbolizer((te::gm::GeomType)geomType, colorVec[t].getColor());
+    te::se::Symbolizer* s = te::se::CreateSymbolizer((te::gm::GeomType)geomType, te::se::GenerateRandomColor());
 
     symbVec.push_back(s);
 

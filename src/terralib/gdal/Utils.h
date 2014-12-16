@@ -40,6 +40,8 @@
 // STL
 #include <map>
 #include <string>
+#include <vector>
+#include <set>
 
 #include <boost/filesystem.hpp>
 #include <boost/thread/mutex.hpp>
@@ -52,6 +54,17 @@ namespace te
   
   namespace gdal
   {
+    /*!
+     \brief GDAL driver metadata.
+     */    
+    struct DriverMetadata
+    {
+      std::string m_driverName;  //!< Driver name (driver description).
+      std::string m_extension; //!< File extension (DMD_EXTENSION).
+      std::string m_longName; //!< File long name (DMD_LONGNAME).
+      bool m_subDatasetsSupport; //!< true if the driver has support for sub-datasets (DMD_SUBDATASETS).
+    };
+    
     /*!
      \brief It translates a GDAL DataType to a TerraLib DataType.
      */
@@ -345,7 +358,19 @@ namespace te
      \brief Returns a reference to a static mutex initialized when this module is initialized.
      \return Returns a reference to a static mutex initialized when this module is initialized.
      */
-    TEGDALEXPORT boost::mutex& getStaticMutex();    
+    TEGDALEXPORT boost::mutex& getStaticMutex();   
+    
+    /*!
+     \brief Returns metadata from all registered GDAL drivers (key: driver name).
+     \return Metadata from all registered GDAL drivers (key: driver name).
+     */    
+    const std::map< std::string, DriverMetadata >& GetGDALDriversMetadata();
+    
+    /*!
+     \brief Returns a map all GDAL supported Upper-case extensions to their respective driver names.
+     \return Returns a map all GDAL supported Upper-case extensions to their respective driver names.
+     */    
+    const std::multimap< std::string, std::string >& GetGDALDriversUCaseExt2DriversMap();    
         
   } // end namespace gdal
 } // end namespace te

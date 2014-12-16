@@ -65,6 +65,7 @@
 //BOOST
 #include <boost/algorithm/string.hpp>
 #include <boost/math/special_functions/round.hpp>
+#include <boost/lexical_cast.hpp>
 
 void te::da::LoadFull(te::da::DataSetType* dataset, const std::string& datasourceId)
 {
@@ -1328,4 +1329,47 @@ double te::da::Round(const double& value, const size_t& precision)
   double ret = boost::math::round(value * v);
   ret /= v;
   return ret;
+}
+
+double te::da::GetValueAsDouble(const te::da::DataSet* ds, const size_t idx)
+{
+  size_t dataType = ds->getPropertyDataType(idx);
+  switch(dataType)
+  {
+    case te::dt::CHAR_TYPE:
+      return (double)ds->getChar(idx);
+
+    case te::dt::UCHAR_TYPE:
+      return (double)ds->getUChar(idx);
+
+    case te::dt::INT16_TYPE:
+      return (double)ds->getInt16(idx);
+
+    case te::dt::UINT16_TYPE:
+      return (double)ds->getInt16(idx);
+
+    case te::dt::INT32_TYPE:
+      return (double)ds->getInt32(idx);
+
+    case te::dt::UINT32_TYPE:
+      return (double)ds->getInt32(idx);
+
+    case te::dt::INT64_TYPE:
+      return (double)ds->getInt64(idx);
+
+    case te::dt::UINT64_TYPE:
+      return (double)ds->getInt64(idx);
+
+    case te::dt::FLOAT_TYPE:
+      return (double)ds->getFloat(idx);
+
+    case te::dt::DOUBLE_TYPE:
+      return (double)ds->getDouble(idx);
+
+    case te::dt::NUMERIC_TYPE:
+      return boost::lexical_cast<double>(ds->getNumeric(idx));
+
+    default:
+      return 0.;
+  }
 }

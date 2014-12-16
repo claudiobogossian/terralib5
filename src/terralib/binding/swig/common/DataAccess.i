@@ -6,8 +6,6 @@
 
 #define TEDATAACCESSEXPORT
 
-%include lua/typemaps.i
-
 namespace te {
   namespace common {
     %template(DSMgerSingleton) Singleton < te::da::DataSourceManager >;

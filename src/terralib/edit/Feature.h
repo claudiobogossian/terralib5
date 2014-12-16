@@ -27,8 +27,10 @@
 #define __TERRALIB_EDIT_INTERNAL_FEATURE_H
 
 // TerraLib
-#include "../memory/DataSetItem.h"
 #include "Config.h"
+
+// STL
+#include <map>
 
 namespace te
 {
@@ -38,6 +40,11 @@ namespace te
     class ObjectId;
   }
 
+  namespace dt
+  {
+    class AbstractData;
+  }
+
   namespace gm
   {
     class Geometry;
@@ -45,11 +52,15 @@ namespace te
 
   namespace edit
   {
-    class TEEDITEXPORT Feature : public te::mem::DataSetItem
+    class TEEDITEXPORT Feature
     {
       public:
 
-        Feature(te::da::ObjectId* id, te::gm::Geometry* geom, const std::size_t& nproperties = 0);
+        Feature();
+
+        Feature(te::da::ObjectId* id);
+
+        Feature(te::da::ObjectId* id, te::gm::Geometry* geom);
 
         ~Feature();
 
@@ -59,9 +70,13 @@ namespace te
 
         void setGeometry(te::gm::Geometry* geom);
 
+        void setData(const std::map<std::size_t, te::dt::AbstractData*>& data);
+
         te::da::ObjectId* getId() const;
 
         te::gm::Geometry* getGeometry() const;
+
+        const std::map<std::size_t, te::dt::AbstractData*>& getData() const;
 
         bool isEquals(te::da::ObjectId* id);
 
@@ -71,6 +86,7 @@ namespace te
 
         te::da::ObjectId* m_id;
         te::gm::Geometry* m_geom;
+        std::map<std::size_t, te::dt::AbstractData*> m_data;
     };
 
   } // end namespace edit

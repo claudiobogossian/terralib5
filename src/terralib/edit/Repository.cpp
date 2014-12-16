@@ -36,10 +36,7 @@
 #include "../geometry/Utils.h"
 #include "Feature.h"
 #include "Repository.h"
-
-// Boost
-#include <boost/uuid/random_generator.hpp>
-#include <boost/uuid/uuid_io.hpp>
+#include "Utils.h"
 
 // STL
 #include <cassert>
@@ -56,26 +53,11 @@ te::edit::Repository::~Repository()
   clear();
 }
 
-te::da::ObjectId* te::edit::Repository::generateId() const
-{
-  static boost::uuids::basic_random_generator<boost::mt19937> gen;
-
-  boost::uuids::uuid u = gen();
-  std::string id = boost::uuids::to_string(u);
-
-  te::dt::String* data = new te::dt::String(id);
-
-  te::da::ObjectId* oid = new te::da::ObjectId;
-  oid->addValue(data);
-
-  return oid;
-}
-
 void te::edit::Repository::add(te::gm::Geometry* geom)
 {
   assert(geom);
 
-  te::da::ObjectId* id = generateId();
+  te::da::ObjectId* id = GenerateId();
 
   assert(!hasIdentifier(id));
 
@@ -87,20 +69,29 @@ void te::edit::Repository::add(te::da::ObjectId* id, te::gm::Geometry* geom)
   assert(id);
   assert(geom);
 
-  // Try find the given identifier
-  std::size_t pos = getPosition(id);
+  Feature* f = new Feature(id, geom);
+
+  add(f);
+}
+
+void te::edit::Repository::add(Feature* f)
+{
+  assert(f);
+
+  // Try find the given feature
+  std::size_t pos = getPosition(f->getId());
 
   if(pos == std::string::npos) // Not found! Insert
   {
-    m_features.push_back(new Feature(id, geom));
+    m_features.push_back(f);
 
-    buildIndex(m_features.size() - 1, geom);
+    buildIndex(m_features.size() - 1, f->getGeometry());
 
     return;
   }
 
   // Else, set the new values
-  set(pos, id, geom);
+  set(pos, f);
 }
 
 void te::edit::Repository::set(te::da::ObjectId* id, te::gm::Geometry* geom)
@@ -108,13 +99,22 @@ void te::edit::Repository::set(te::da::ObjectId* id, te::gm::Geometry* geom)
   assert(id);
   assert(geom);
 
-  // Try find the given identifier
-  std::size_t pos = getPosition(id);
+  Feature* f = new Feature(id, geom);
+
+  set(f);
+}
+
+void te::edit::Repository::set(Feature* f)
+{
+  assert(f);
+
+  // Try find the given feature
+  std::size_t pos = getPosition(f->getId());
 
   if(pos == std::string::npos)
     throw te::common::Exception(TE_TR("Identifier not found!"));
 
-  set(pos, id, geom);
+  set(pos, f);
 }
 
 void te::edit::Repository::remove(te::da::ObjectId* id)
@@ -158,9 +158,26 @@ const std::string& te::edit::Repository::getSource() const
   return m_source;
 }
 
-const std::vector<te::edit::Feature*>& te::edit::Repository::getFeatures() const
+const std::vector<te::edit::Feature*>& te::edit::Repository::getAllFeatures() const
 {
   return m_features;
+}
+
+std::vector<te::edit::Feature*> te::edit::Repository::getNewFeatures() const
+{
+  std::vector<te::edit::Feature*> result;
+
+  for(std::size_t i = 0; i < m_features.size(); ++i)
+  {
+    Feature* f = m_features[i];
+    assert(f);
+    assert(f->getId());
+
+    if(f->getId()->getValueAsString().find(NEW_FEATURE_ID_SUFFIX) != std::string::npos)
+      result.push_back(f);
+  }
+
+  return result;
 }
 
 std::vector<te::edit::Feature*> te::edit::Repository::getFeatures(const te::gm::Envelope& e, int /*srid*/) const
@@ -220,18 +237,17 @@ void te::edit::Repository::clear()
   clearIndex();
 }
 
-void te::edit::Repository::set(const std::size_t& pos, te::da::ObjectId* id, te::gm::Geometry* geom)
+void te::edit::Repository::set(const std::size_t& pos, Feature* f)
 {
   assert(pos != std::string::npos);
-  assert(id);
-  assert(geom);
+  assert(f);
   assert(pos < m_features.size());
 
   // Cleaning...
   delete m_features[pos];
 
   // Set the new values
-  m_features[pos] = new Feature(id, geom);
+  m_features[pos] = f;
 
   // Indexing...
   buildIndex();

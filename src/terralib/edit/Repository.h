@@ -67,13 +67,15 @@ namespace te
 
         ~Repository();
 
-        te::da::ObjectId* generateId() const;
-
         void add(te::gm::Geometry* geom);
 
         void add(te::da::ObjectId* id, te::gm::Geometry* geom);
 
+        void add(Feature* f);
+
         void set(te::da::ObjectId* id, te::gm::Geometry* geom);
+
+        void set(Feature* f);
 
         void remove(te::da::ObjectId* id);
 
@@ -83,7 +85,9 @@ namespace te
 
         const std::string& getSource() const;
 
-        const std::vector<Feature*>& getFeatures() const;
+        const std::vector<Feature*>& getAllFeatures() const;
+
+        std::vector<Feature*> getNewFeatures() const;
 
         std::vector<Feature*> getFeatures(const te::gm::Envelope& e, int srid) const;
 
@@ -93,7 +97,7 @@ namespace te
 
       private:
 
-        void set(const std::size_t& pos, te::da::ObjectId* id, te::gm::Geometry* geom);
+        void set(const std::size_t& pos, Feature* f);
 
         void clearIndex();
 

@@ -53,6 +53,7 @@
 
 // Boost
 #include <boost/numeric/ublas/matrix.hpp>
+#include <boost/shared_ptr.hpp>
 
 namespace te
 {
@@ -493,24 +494,27 @@ namespace te
       \brief Decompose a multi-band raster into a set of one-band rasters.
       \param inputRaster Input raster.
       \param inputRasterBands Input raster bands.
-      \param outputDataSetNames The generated output datasets names (one name for each decomposed band).
-      \param outputDataSource The output data source.
+      \param outputRastersInfos Output rasters connections infos. (one info for each decomposed band).
+      \param outputDataSourceType Output raster datasource type.
+      \param outputRastersPtrs Pointers to the generated outputs rasters.
       \return true if OK, false on errors.
       \ingroup rp_func
     */
     TERPEXPORT bool DecomposeBands( 
       const te::rst::Raster& inputRaster,
       const std::vector< unsigned int >& inputRasterBands,
-      const std::vector< std::string >& outputDataSetNames,
-      te::da::DataSource& outputDataSource );   
+      const std::vector< std::map<std::string, std::string> > & outputRastersInfos,
+      const std::string& outputDataSourceType,
+      std::vector< boost::shared_ptr< te::rst::Raster > > & outputRastersPtrs );   
     
     /*!
       \brief Compose a set of bands into one multi-band raster.
       \param feeder Input rasters feeder.
       \param inputRasterBands Input raster bands (one band for each input raster).
-      \param outputDataSetName The generated output dataset name.
       \param interpMethod The interpolator method to use.
-      \param outputDataSource The output data source.
+      \param outputRasterInfo Output raster connection info.
+      \param outputDataSourceType Output raster datasource type.
+      \param outputRasterPtr A pointer to the generated output raster.
       \return true if OK, false on errors.
       \note The first raster Grid will be taken as reference for the composed raster.
       \ingroup rp_func
@@ -518,9 +522,10 @@ namespace te
     TERPEXPORT bool ComposeBands( 
       te::rp::FeederConstRaster& feeder,
       const std::vector< unsigned int >& inputRasterBands,
-      const std::string& outputDataSetName,
       const te::rst::Interpolator::Method& interpMethod,
-      te::da::DataSource& outputDataSource );     
+      const std::map<std::string, std::string>& outputRasterInfo,
+      const std::string& outputDataSourceType,
+      std::auto_ptr< te::rst::Raster >& outputRasterPtr );     
     
     /*!
       \brief Create a datailed extent from the given grid.

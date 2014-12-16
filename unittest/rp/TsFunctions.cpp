@@ -382,20 +382,14 @@ void TsFunctions::DecomposeBands()
   inputRasterBands.push_back( 2 );
   inputRasterBands.push_back( 0 );
   
-  std::vector< std::string > outputDataSetNames;
-  outputDataSetNames.push_back( "terralib_unittest_rp_functions_DecomposeBands_2.tif" );
-  outputDataSetNames.push_back( "terralib_unittest_rp_functions_DecomposeBands_0.tif" );
-  
-  std::map<std::string, std::string> connInfoRaster;
-  connInfoRaster["SOURCE"] = ".";
-  std::auto_ptr< te::da::DataSource > dsPtr( te::da::DataSourceFactory::make("GDAL") );
-  CPPUNIT_ASSERT( dsPtr.get() );
-  dsPtr->setConnectionInfo( connInfoRaster );
-  dsPtr->open();
-  CPPUNIT_ASSERT( dsPtr->isOpened() );
+  std::vector< std::map<std::string, std::string> > outputRastersInfos( 2 );
+  outputRastersInfos[ 0 ][ "URI" ] = "terralib_unittest_rp_functions_DecomposeBands_2.tif";
+  outputRastersInfos[ 1 ][ "URI" ] = "terralib_unittest_rp_functions_DecomposeBands_0.tif";
+
+  std::vector< boost::shared_ptr< te::rst::Raster > > outputRastersPtrs;
   
   CPPUNIT_ASSERT( te::rp::DecomposeBands( *diskRasterPtr, inputRasterBands,
-    outputDataSetNames, *dsPtr ) );
+    outputRastersInfos, "GDAL", outputRastersPtrs ) );  
 }
 
 void TsFunctions::ComposeBandsSameSRID()
@@ -424,18 +418,14 @@ void TsFunctions::ComposeBandsSameSRID()
   inputRasterBands.push_back( 2 );
   inputRasterBands.push_back( 0 );
   
-  std::string outputDataSetName = "terralib_unittest_rp_functions_ComposeBandsSameSRID.tif";
+  std::map<std::string, std::string> outputRasterInfo;
+  outputRasterInfo["URI"] = "terralib_unittest_rp_functions_ComposeBandsSameSRID.tif";
   
-  std::map<std::string, std::string> connInfoRaster;
-  connInfoRaster["SOURCE"] = ".";
-  std::auto_ptr< te::da::DataSource > dsPtr( te::da::DataSourceFactory::make("GDAL") );
-  CPPUNIT_ASSERT( dsPtr.get() );
-  dsPtr->setConnectionInfo( connInfoRaster );
-  dsPtr->open();
-  CPPUNIT_ASSERT( dsPtr->isOpened() );
+  std::auto_ptr< te::rst::Raster > outputRasterPtr;
   
   CPPUNIT_ASSERT( te::rp::ComposeBands( feeder, inputRasterBands,
-    outputDataSetName, te::rst::Interpolator::NearestNeighbor, *dsPtr ) );
+    te::rst::Interpolator::NearestNeighbor, outputRasterInfo,
+    "GDAL", outputRasterPtr ) );
 }
 
 void TsFunctions::ComposeBandsDifSRID()
@@ -464,18 +454,14 @@ void TsFunctions::ComposeBandsDifSRID()
   inputRasterBands.push_back( 2 );
   inputRasterBands.push_back( 0 );
   
-  std::string outputDataSetName = "terralib_unittest_rp_functions_ComposeBandsDifSRID.tif";
+  std::map<std::string, std::string> outputRasterInfo;
+  outputRasterInfo["URI"] = "terralib_unittest_rp_functions_ComposeBandsDifSRID.tif";
   
-  std::map<std::string, std::string> connInfoRaster;
-  connInfoRaster["SOURCE"] = ".";
-  std::auto_ptr< te::da::DataSource > dsPtr( te::da::DataSourceFactory::make("GDAL") );
-  CPPUNIT_ASSERT( dsPtr.get() );
-  dsPtr->setConnectionInfo( connInfoRaster );
-  dsPtr->open();
-  CPPUNIT_ASSERT( dsPtr->isOpened() );
+  std::auto_ptr< te::rst::Raster > outputRasterPtr;
   
   CPPUNIT_ASSERT( te::rp::ComposeBands( feeder, inputRasterBands,
-    outputDataSetName, te::rst::Interpolator::NearestNeighbor, *dsPtr ) );
+    te::rst::Interpolator::NearestNeighbor, outputRasterInfo,
+    "GDAL", outputRasterPtr ) );  
 }
 
 void TsFunctions::GetDetailedExtent()

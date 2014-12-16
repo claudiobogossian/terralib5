@@ -25,7 +25,9 @@
 
 // TerraLib
 #include "../dataaccess/dataset/DataSet.h"
+#include "../dataaccess/dataset/ObjectId.h"
 #include "../dataaccess/utils/Utils.h"
+#include "../datatype/SimpleData.h"
 #include "../geometry/Coord2D.h"
 #include "../geometry/Envelope.h"
 #include "../geometry/GeometryCollection.h"
@@ -40,6 +42,10 @@
 #include "RepositoryManager.h"
 #include "SnapManager.h"
 #include "Utils.h"
+
+// Boost
+#include <boost/uuid/random_generator.hpp>
+#include <boost/uuid/uuid_io.hpp>
 
 // STL
 #include <cassert>
@@ -350,4 +356,19 @@ void te::edit::TrySnap(te::gm::Coord2D& coord, int srid)
   {
     return;
   }
+}
+
+te::da::ObjectId* te::edit::GenerateId()
+{
+  static boost::uuids::basic_random_generator<boost::mt19937> gen;
+
+  boost::uuids::uuid u = gen();
+  std::string id = boost::uuids::to_string(u);
+
+  te::dt::String* data = new te::dt::String(id);
+
+  te::da::ObjectId* oid = new te::da::ObjectId;
+  oid->addValue(data);
+
+  return oid;
 }

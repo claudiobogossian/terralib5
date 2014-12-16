@@ -62,7 +62,6 @@ namespace te
     TESAEXPORT void CreateSkaterGrouping(te::map::AbstractLayerPtr layer, int nClasses);
 
     TESAEXPORT te::color::ColorBar* GetColorBar(std::string catalog, std::string group, std::string schema);
-
   } // end namespace sa
 }   // end namespace te
 

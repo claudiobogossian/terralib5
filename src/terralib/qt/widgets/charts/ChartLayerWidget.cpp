@@ -321,23 +321,37 @@ double te::qt::widgets::ChartLayerWidget::getMaxValue(te::map::Chart* chart)
 
   // Gets the chart properties
   const std::vector<std::string>& properties = chart->getProperties();
+  bool hasChartNullValue = false;
 
   std::auto_ptr<te::da::DataSetType> schema = m_layer->getSchema();
   if(te::da::HasLinkedTable(schema.get()) == false)
   {
     // Gets the dataset
     std::auto_ptr<te::da::DataSet> dataset(m_layer->getData());
+    std::vector<size_t> chartPropPos;
+    size_t csize = properties.size();
+    for(std::size_t i = 0; i < csize; ++i)
+      chartPropPos.push_back(te::da::GetPropertyPos(dataset.get(), properties[i]));
+    chart->setPropertiesPos(chartPropPos);
 
     while(dataset->moveNext())
     {
-      for(std::size_t i = 0; i < properties.size(); ++i)
+      for(std::size_t i = 0; i < csize; ++i)
       {
-        QString qvalue(dataset->getAsString(properties[i], precision).c_str());
+        if(dataset->isNull(chart->getPropertiesPos()[i]))
+        {
+          hasChartNullValue = true;
+          break;
+        }
+      }
 
-        double value = qvalue.toDouble();
-
-        if(value > maxValue)
-          maxValue = value;
+      if(hasChartNullValue == false)
+      {
+        for(std::size_t i = 0; i < csize; ++i)
+        {
+          double value = te::da::GetValueAsDouble(dataset.get(), chart->getPropertiesPos()[i]);
+          maxValue = std::max(maxValue, value); 
+        }
       }
     }
     return maxValue;
@@ -372,14 +386,16 @@ double te::qt::widgets::ChartLayerWidget::getMaxValue(te::map::Chart* chart)
   std::string cfunction = chart->getSummary();
   std::map<std::string, std::vector<double> > chartValues;
   std::map<std::string, double> chartValue;
-  bool hasChartNullValue = false;
+  std::vector<size_t> chartPropPos;
   bool hasChartNullValueAux = false;
   size_t csize = properties.size();
   for(std::size_t i = 0; i < csize; ++i)
   {
     std::vector<double> v;
     chartValues[properties[i]] = v;
+    chartPropPos.push_back(te::da::GetPropertyPos(dataset.get(), properties[i]));
   }
+  chart->setPropertiesPos(chartPropPos);
 
   dataset->moveFirst();
   do
@@ -410,7 +426,8 @@ double te::qt::widgets::ChartLayerWidget::getMaxValue(te::map::Chart* chart)
         for(std::size_t i = 0; i < csize; ++i)
         {
           if(dataset->isNull(chart->getProperties()[i]) == false)
-            chartValues[properties[i]].push_back(boost::lexical_cast<double>(dataset->getAsString(properties[i])));
+            chartValues[properties[i]].push_back(te::da::GetValueAsDouble(dataset.get(), chart->getPropertiesPos()[i]));
+            //chartValues[properties[i]].push_back(boost::lexical_cast<double>(dataset->getAsString(properties[i])));
           else
           {
             hasChartNullValue = true;

@@ -224,6 +224,8 @@ find_package(Log4cxx)
 
 find_package(Lua)
 
+#find_package(R)
+
 find_package(LibPQ)
 
 find_package(SWIG)
@@ -726,6 +728,10 @@ endif()
 if(TERRALIB_MOD_BINDING_LUA_ENABLED)
   add_subdirectory(terralib_mod_binding_lua)
 endif()
+
+#if(TERRALIB_MOD_BINDING_R_ENABLED)
+#  add_subdirectory(terralib_mod_binding_r)
+#endif()
 
 if(TERRALIB_MOD_CELLSPACE_ENABLED)
   add_subdirectory(terralib_mod_cellspace)
