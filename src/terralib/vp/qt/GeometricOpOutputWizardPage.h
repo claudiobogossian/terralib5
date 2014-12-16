@@ -104,10 +104,6 @@ namespace te
 
         void onTargetFileToolButtonPressed();
 
-      protected:
-
-       // void loadAttributes();
-
       private:
 
         std::auto_ptr<Ui::GeometricOpOutputWizardPageForm> m_ui;

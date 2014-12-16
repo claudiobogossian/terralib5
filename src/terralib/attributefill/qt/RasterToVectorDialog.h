@@ -91,7 +91,6 @@ namespace te
         */
         std::vector<te::stat::StatisticalSummary> getSelectedStatistics();
 
-      private:
 
       protected slots:
 

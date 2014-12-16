@@ -71,8 +71,6 @@ namespace te
         */
         void setLayers(std::list<te::map::AbstractLayerPtr> layers);
 
-      private:
-
       protected slots:
         
         void onHelpPushButtonClicked();
