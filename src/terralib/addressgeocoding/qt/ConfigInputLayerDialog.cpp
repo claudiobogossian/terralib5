@@ -40,6 +40,7 @@
 #include "../../datatype/Property.h"
 #include "../../geometry/GeometryProperty.h"
 #include "../../maptools/AbstractLayer.h"
+#include "../../postgis/Transactor.h"
 #include "../../qt/af/Utils.h"
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../../qt/widgets/layer/utils/DataSet2Layer.h"
@@ -76,8 +77,8 @@ te::addressgeocoding::ConfigInputLayerDialog::ConfigInputLayerDialog(QWidget* pa
   QGridLayout* displayLayout = new QGridLayout(m_ui->m_widget);
   displayLayout->addWidget(m_widget.get());
 
-  m_widget->setLeftLabel("Available Properties");
-  m_widget->setRightLabel("Used Properties");
+  m_widget->setLeftLabel("Available Attributes");
+  m_widget->setRightLabel("Selected Attributes");
 
   connect(m_ui->m_inputLayerComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onInputLayerComboBoxChanged(int)));
   connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));
@@ -110,6 +111,16 @@ void te::addressgeocoding::ConfigInputLayerDialog::setLayers(std::list<te::map::
       
     ++it;
   }
+}
+
+te::map::AbstractLayerPtr te::addressgeocoding::ConfigInputLayerDialog::getLayer()
+{
+  return m_selectedLayer;
+}
+
+te::da::DataSourcePtr te::addressgeocoding::ConfigInputLayerDialog::getDataSource()
+{
+  return m_dataSource;
 }
 
 void te::addressgeocoding::ConfigInputLayerDialog::onInputLayerComboBoxChanged(int index)
@@ -148,7 +159,57 @@ void te::addressgeocoding::ConfigInputLayerDialog::onHelpPushButtonClicked()
 
 void te::addressgeocoding::ConfigInputLayerDialog::onOkPushButtonClicked()
 {
+  te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(m_selectedLayer.get());
+  if(!dsLayer)
+  {
+    QMessageBox::information(this, "Address Geocoding", "Can not execute this operation on this type of layer.");
+    return;
+  }
+
+  m_dataSource = te::da::GetDataSource(dsLayer->getDataSourceId(), true);
+  if(!m_dataSource.get())
+  {
+    QMessageBox::information(this, "Address Geocoding", "The selected input data source can not be accessed.");
+  }
+
   m_selectedProps = m_widget->getOutputValues();
+  if(m_selectedProps.empty())
+  {
+    QMessageBox::information(this, "Address Geocoding", "Select at least one attribute.");
+    return;
+  }
+  
+//Checks whether the table already contains a column called tsvector.
+  std::auto_ptr<te::da::DataSetType> schema = m_selectedLayer->getSchema();
+  const std::vector<te::dt::Property*>& properties = schema->getProperties();
+
+  bool addNewColumn = true;
+  for(std::size_t i = 0; i < properties.size(); ++i)
+  {
+    std::string name = properties[i]->getName();
+    if(name == "tsvector")
+      addNewColumn = false;
+  }
+
+// ALTER TABLE adding a new columns of tsvector type.  
+  if(addNewColumn == true)
+  {
+    std::string alterTable = "ALTER TABLE "+ m_selectedLayer->getTitle() + " ADD tsvector tsvector";
+    m_dataSource->execute(alterTable);
+  }
+
+// UPDATE values in tsvector column.
+  std::string updateTable = "UPDATE " + m_selectedLayer->getTitle() + " SET tsvector = to_tsvector('english', ";
+
+  for(std::size_t selProps = 0; selProps < m_selectedProps.size(); ++selProps)
+  {
+    if(selProps == m_selectedProps.size()-1)
+      updateTable += m_selectedProps[selProps]+");";
+    else
+      updateTable += m_selectedProps[selProps] + "||";
+  }
+  m_dataSource->execute(updateTable);
+
   this->close();
 }
 

@@ -81,8 +81,6 @@ namespace te
 
         te::map::AbstractLayerPtr getLayer();
 
-      private:
-
       protected slots:
 
         void onLayerComboBoxChanged(int index);

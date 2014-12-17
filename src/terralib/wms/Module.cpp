@@ -28,10 +28,15 @@
 #include "../common/Translator.h"
 #include "../dataaccess/datasource/DataSourceFactory.h"
 #include "../dataaccess/datasource/DataSourceManager.h"
+#include "../maptools/serialization/xml/Layer.h"
 #include "../plugin/PluginInfo.h"
 #include "Config.h"
 #include "DataSourceFactory.h"
 #include "Module.h"
+
+#ifdef TERRALIB_MOD_XML_ENABLED
+  #include "./serialization/xml/Layer.h"
+#endif
 
 // GDAL
 #include <gdal_priv.h>
@@ -57,6 +62,12 @@ void te::wms::Module::startup()
   te::da::DataSourceFactory::add(TE_WMS_DRIVER_IDENTIFIER, te::wms::Build);
 
   GDALAllRegister();
+
+#ifdef TERRALIB_MOD_XML_ENABLED
+  // Register serializer methods
+  te::map::serialize::Layer::getInstance().reg("WMSLAYER", std::make_pair(te::map::serialize::Layer::LayerReadFnctType(&te::wms::serialize::LayerReader),
+                                                                          te::map::serialize::Layer::LayerWriteFnctType(&te::wms::serialize::LayerWriter)));
+#endif
 
   TE_LOG_TRACE(TE_TR("TerraLib WMS driver startup!"));
 

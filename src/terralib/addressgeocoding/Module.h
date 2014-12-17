@@ -52,22 +52,21 @@ namespace te
 
       private:
 
-      /*!
-        \brief This is the startup function for the TerraLib Qt Widgets module.
+        /*!
+          \brief This is the startup function for the TerraLib Qt Widgets module.
 
-        \note This method doesn't perform operations for this module.
-      */
-      static void initialize();
+          \note This method doesn't perform operations for this module.
+        */
+        static void initialize();
 
-      /*!
-        \brief This is the cleanup function for the TerraLib Qt Widgets module.
+        /*!
+          \brief This is the cleanup function for the TerraLib Qt Widgets module.
 
-        \note This method doesn't perform operations for this module.
-      */
-      static void finalize();
+          \note This method doesn't perform operations for this module.
+        */
+        static void finalize();
+
       
-      private:
-
         static const Module& sm_module; //!< Just to make a static initialization.
     };
   }   // end namespace qt

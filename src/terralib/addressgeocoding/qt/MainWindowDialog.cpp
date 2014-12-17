@@ -68,8 +68,7 @@ te::addressgeocoding::MainWindowDialog::MainWindowDialog(QWidget* parent, Qt::Wi
   : QDialog(parent, f),
     m_ui(new Ui::MainWindowDialogForm),
     m_layers(std::list<te::map::AbstractLayerPtr>()),
-		m_selectedLayer(0),
-    m_toFile(false)
+		m_newColumnLayer(0)
 {
 // add controls
   m_ui->setupUi(this);
@@ -77,6 +76,8 @@ te::addressgeocoding::MainWindowDialog::MainWindowDialog(QWidget* parent, Qt::Wi
 // add icons
   m_ui->m_imgLabel->setPixmap(QIcon::fromTheme("addressgeocoding-hint").pixmap(112,48));
   m_ui->m_targetDatasourceToolButton->setIcon(QIcon::fromTheme("datasource"));
+
+  connect(m_ui->m_inputLayerComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onLayerComboBoxChanged(int)));
 
 //  connect(m_ui->m_targetDatasourceToolButton, SIGNAL(pressed()), this, SLOT(onTargetDatasourceToolButtonPressed()));
 //  connect(m_ui->m_targetFileToolButton, SIGNAL(pressed()), this,  SLOT(onTargetFileToolButtonPressed()));
@@ -93,6 +94,8 @@ te::addressgeocoding::MainWindowDialog::MainWindowDialog(QWidget* parent, Qt::Wi
 
 //  m_outputDatasource = te::da::DataSourceInfoPtr();
  // m_ui->m_newLayerNameLineEdit->setEnabled(true);
+
+
 }
 
 te::addressgeocoding::MainWindowDialog::~MainWindowDialog()
@@ -102,13 +105,47 @@ te::addressgeocoding::MainWindowDialog::~MainWindowDialog()
 void te::addressgeocoding::MainWindowDialog::setLayers(std::list<te::map::AbstractLayerPtr> layers)
 {
   m_layers = layers;
+
+  std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
+
+  while(it != m_layers.end())
+  {
+    std::auto_ptr<te::da::DataSetType> dsType = it->get()->getSchema();
+    std::vector<te::dt::Property*> properties = dsType->getProperties();
+    for(std::size_t i = 0; i < properties.size(); ++i)
+    {
+      std::string name = properties[i]->getName();
+      if(name == "tsvector")
+        m_ui->m_inputLayerComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
+    }
+      
+    ++it;
+  }
 }
 
 te::map::AbstractLayerPtr te::addressgeocoding::MainWindowDialog::getLayer()
 {
-  return m_layer;
+  return m_resultLayer;
 }
 
+void te::addressgeocoding::MainWindowDialog::onLayerComboBoxChanged(int index)
+{
+  std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
+  
+  std::string layerID = m_ui->m_inputLayerComboBox->itemData(index, Qt::UserRole).toString().toStdString();
+  
+  while(it != m_layers.end())
+  {
+    if(layerID == it->get()->getId().c_str())
+    {
+      std::size_t type;
+      te::map::AbstractLayerPtr selectedLayer = it->get();
+      m_selectedLayer = selectedLayer;
+      return;
+    }
+    ++it;
+  }
+}
 
 void te::addressgeocoding::MainWindowDialog::onConfigureLayerClicked()
 {
@@ -116,6 +153,12 @@ void te::addressgeocoding::MainWindowDialog::onConfigureLayerClicked()
 	dlg.setLayers(m_layers);
 
 	if(dlg.exec() != QDialog::Accepted)
+  {
+     m_newColumnLayer = dlg.getLayer();
+     m_layerDataSource = dlg.getDataSource();
+     m_ui->m_inputLayerComboBox->clear();
+     setLayers(m_layers);
+  }
   return;
 }
 
@@ -124,6 +167,20 @@ void te::addressgeocoding::MainWindowDialog::onConfigureAddressClicked()
 	te::addressgeocoding::ConfigInputAddressDialog dlg(this);
 	
 	if(dlg.exec() != QDialog::Accepted)
+  {
+    m_ui->m_inputAddressComboBox->clear();
+
+    m_addressDataSource = dlg.getDataSource();
+    m_addressFile = dlg.getAddressFileName();
+    m_streetType = dlg.getStreetType();
+    m_streetTitle = dlg.getStreetTitle();
+    m_streetName = dlg.getStreetName();
+    m_streetNumber = dlg.getStreetNumber();
+    m_streetNeighborhood = dlg.getStreetNeighborhood();
+    m_streetPostalCode = dlg.getStreetPostalCode();
+
+    m_ui->m_inputAddressComboBox->addItem(QString(m_addressFile.c_str()));
+  }
   return;
 }
 
@@ -176,7 +233,18 @@ void te::addressgeocoding::MainWindowDialog::onHelpPushButtonClicked()
 
 void te::addressgeocoding::MainWindowDialog::onOkPushButtonClicked()
 {
-  
+  //SELECT * FROM taubate_sp WHERE nome_tsvector @@ plainto_tsquery('english', 'jardim francisco');
+
+  std::string query = "SELECT * FROM";
+
+  if(!m_selectedLayer)
+  {
+    QMessageBox::information(this, "Address Geocoding", "Configure an input layer.");
+    return;
+  }
+  query += m_selectedLayer->getTitle() + " WHERE tsvector @@ plainto_tsquery('english', 'jardim francisco'";
+
+//  m_layerDataSource->execute(query);
 }
 
 void te::addressgeocoding::MainWindowDialog::onCancelPushButtonClicked()

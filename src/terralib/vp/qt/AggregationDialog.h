@@ -116,8 +116,6 @@ namespace te
         */
         void setFunctionsByLayer(std::vector<te::dt::Property*> properties);
 
-      private:
-
       protected slots:
 
         void onLayerComboBoxChanged(int index);

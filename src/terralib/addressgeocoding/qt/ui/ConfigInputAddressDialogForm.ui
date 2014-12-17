@@ -25,7 +25,7 @@
         <item row="0" column="0">
          <layout class="QGridLayout" name="gridLayout_9">
           <item row="0" column="0">
-           <widget class="QLabel" name="m_inputLayerLabel">
+           <widget class="QLabel" name="m_inputAddressLabel">
             <property name="text">
              <string>Table to be geocoded</string>
             </property>
@@ -34,7 +34,7 @@
           <item row="1" column="0">
            <layout class="QGridLayout" name="gridLayout_8">
             <item row="0" column="0">
-             <widget class="QComboBox" name="m_inputLayerComboBox">
+             <widget class="QComboBox" name="m_inputAddressComboBox">
               <property name="minimumSize">
                <size>
                 <width>180</width>
@@ -85,10 +85,10 @@
                 </widget>
                </item>
                <item row="1" column="0">
-                <widget class="QComboBox" name="comboBox"/>
+                <widget class="QComboBox" name="m_sTypeComboBox"/>
                </item>
                <item row="1" column="1">
-                <widget class="QComboBox" name="comboBox_2"/>
+                <widget class="QComboBox" name="m_sTitleComboBox"/>
                </item>
               </layout>
              </item>
@@ -122,10 +122,10 @@
                 </widget>
                </item>
                <item row="1" column="0">
-                <widget class="QComboBox" name="comboBox_3"/>
+                <widget class="QComboBox" name="m_sNameComboBox"/>
                </item>
                <item row="1" column="1">
-                <widget class="QComboBox" name="comboBox_4"/>
+                <widget class="QComboBox" name="m_sNumberComboBox"/>
                </item>
               </layout>
              </item>
@@ -159,10 +159,10 @@
                 </widget>
                </item>
                <item row="1" column="0">
-                <widget class="QComboBox" name="comboBox_8"/>
+                <widget class="QComboBox" name="m_sNeighborhoodComboBox"/>
                </item>
                <item row="1" column="1">
-                <widget class="QComboBox" name="comboBox_9"/>
+                <widget class="QComboBox" name="m_sPostalCodeComboBox"/>
                </item>
               </layout>
              </item>
