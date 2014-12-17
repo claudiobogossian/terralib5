@@ -49,6 +49,10 @@
 // Qt
 #include <QMessageBox>
 
+// Boost
+#include <boost/timer.hpp>
+#include <boost/format.hpp>
+
 
 te::qt::widgets::SegmenterWizard::SegmenterWizard(QWidget* parent)
   : QWizard(parent)
@@ -179,6 +183,8 @@ bool te::qt::widgets::SegmenterWizard::execute()
   {
     if(algorithmInstance.initialize(algoInputParams))
     {
+      boost::timer timer;
+      
       if(algorithmInstance.execute(algoOutputParams))
       {
         algoOutputParams.reset();
@@ -186,8 +192,8 @@ bool te::qt::widgets::SegmenterWizard::execute()
         //set output layer
         m_outputLayer = te::qt::widgets::createLayer(m_rasterInfoPage->getWidget()->getType(), 
                                                      m_rasterInfoPage->getWidget()->getInfo());
-
-        QMessageBox::information(this, tr("Segmenter"), tr("Segmenter ended sucessfully"));
+        std::string elapsedTimeStr = boost::str( boost::format( "%.2f" ) % timer.elapsed() );
+        QMessageBox::information(this, tr("Segmenter"), tr("Segmenter ended sucessfully") + ( " (" + elapsedTimeStr + " " ).c_str() + tr("seconds") + ")" );
       }
       else
       {
