@@ -27,9 +27,13 @@
 #define __TERRALIB_ADDRESSGEOCODING_INTERNAL_IMPORTTABLEDIALOG_H
 
 // TerraLib
+#include "../../dataaccess/dataset/DataSetTypeConverter.h"
+#include "../../dataaccess/datasource/DataSource.h"
 #include "../../dataaccess/datasource/DataSourceInfo.h"
+#include "../../memory/DataSet.h"
 #include "../../datatype/Property.h"
 #include "../../maptools/AbstractLayer.h"
+#include "../../qt/widgets/table/DataSetTableView.h"
 #include "../Config.h"
 
 // STL
@@ -38,6 +42,7 @@
 
 // Qt
 #include <QDialog>
+#include <QWidget>
 
 namespace Ui { class ImportTableDialogForm; }
 
@@ -57,10 +62,14 @@ namespace te
         ImportTableDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
         ~ImportTableDialog();
+        
+        te::da::DataSourcePtr getDataSource();
 
-      private:
+        std::auto_ptr<te::da::DataSet> getDataSet();
 
       protected slots:
+
+        void onInputDataToolButtonTriggered();
 
         void onHelpPushButtonClicked();
 
@@ -70,13 +79,13 @@ namespace te
 
       private:
 
-        std::auto_ptr<Ui::ImportTableDialogForm> m_ui;
-        te::da::DataSourceInfoPtr m_outputDatasource;                 //!< DataSource information.
-        std::list<te::map::AbstractLayerPtr> m_layers;                //!< List of layers.
-        te::map::AbstractLayerPtr m_selectedLayer;                    //!< Layer used for aggregation
-        std::vector<te::dt::Property*> m_properties;                  //!< Properties related to the selected Layer
-        te::map::AbstractLayerPtr m_layer;                            //!< Generated Layer.
-        bool m_toFile;
+        std::auto_ptr<Ui::ImportTableDialogForm>  m_ui;
+        std::auto_ptr<te::qt::widgets::DataSetTableView>  m_tblView;
+        std::auto_ptr<te::da::DataSetTypeConverter> m_dsConverter;
+        std::auto_ptr<te::da::DataSet>  m_dataSet;
+        //te::mem::DataSet* m_dataSetMem;
+        std::auto_ptr<te::da::DataSetType>  m_dataType;
+        te::da::DataSourcePtr m_dataSource;
     };
   }   // end namespace addressgeocoding
 }     // end namespace te

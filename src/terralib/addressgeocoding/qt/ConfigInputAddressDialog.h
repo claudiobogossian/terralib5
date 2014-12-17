@@ -27,6 +27,7 @@
 #define __TERRALIB_ADDRESSGEOCODING_INTERNAL_CONFIGINPUTADDRESSDIALOG_H
 
 // TerraLib
+#include "../../dataaccess/datasource/DataSource.h"
 #include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../datatype/Property.h"
 #include "../../maptools/AbstractLayer.h"
@@ -58,7 +59,21 @@ namespace te
 
         ~ConfigInputAddressDialog();
 
-      private:
+        te::da::DataSourcePtr getDataSource();
+
+        std::string getAddressFileName();
+
+        std::string getStreetType();
+
+        std::string getStreetTitle();
+
+        std::string getStreetName();
+
+        std::string getStreetNumber();
+
+        std::string getStreetNeighborhood();
+
+        std::string getStreetPostalCode();
 
       protected slots:
 
@@ -73,12 +88,9 @@ namespace te
       private:
 
         std::auto_ptr<Ui::ConfigInputAddressDialogForm> m_ui;
-        te::da::DataSourceInfoPtr m_outputDatasource;                 //!< DataSource information.
-        std::list<te::map::AbstractLayerPtr> m_layers;                //!< List of layers.
-        te::map::AbstractLayerPtr m_selectedLayer;                    //!< Layer used for aggregation
+        te::da::DataSourcePtr m_dataSource;
+        std::auto_ptr<te::da::DataSet> m_dataSet;
         std::vector<te::dt::Property*> m_properties;                  //!< Properties related to the selected Layer
-        te::map::AbstractLayerPtr m_layer;                            //!< Generated Layer.
-        bool m_toFile;
     };
   }   // end namespace addressgeocoding
 }     // end namespace te

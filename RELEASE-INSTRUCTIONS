@@ -123,9 +123,30 @@ Note: If you are in CMake-GUI, remember to turn on only the CPACK_BINARY_DRAGNDR
 ------
 
 
-7. Release Packages
--------------------
+7. Wiki documentation updates
+---------------
+a) Copy the installers to http://www.dpi.inpe.br/terralib5/
 
+Ex: Installer names: terraview-5.0.0-win32-msvc-2010.exe
+					 terraview-5.0.0-win64-msvc-2010.exe
+                     terraview-5.0.0-win32-macosx.exe
+
+b) Copy the doxygen files located at C:\terralib_build\terralib_doxygen\doc\html*  to
+	to http://www.dpi.inpe.br/terralib5/codedocs_XXXX/ 
+
+		where XXXX is the release number ex: alpha, beta, 5.0.0
+
+c) Copy the help files located at C:\terralib\codebase\terralib5\doc\qhelp\src\* 
+	to http://www.dpi.inpe.br/terralib5/help/help_XXXX/ 
+	
+	where XXXX is the release number ex: alpha, beta, 5.0.0
+   
+Note: The new directories codedocs_XXXX and help_XXXX, created at www.dpi.inpe.br/terralib5,
+  will be referenced by the  http://www.dpi.inpe.br/terralib5/wiki .
+
+
+8. Release Packages
+-------------------
 
 For more information on TerraLib, please, visit its main web page at:
 http://www.terralib.org

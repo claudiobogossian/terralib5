@@ -27,6 +27,7 @@
 #define __TERRALIB_ADDRESSGEOCODING_INTERNAL_MAINWINDOWDIALOG_H
 
 // TerraLib
+#include "../../dataaccess/datasource/DataSource.h"
 #include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../datatype/Property.h"
 #include "../../maptools/AbstractLayer.h"
@@ -73,9 +74,9 @@ namespace te
         */
         te::map::AbstractLayerPtr getLayer();
 
-      private:
-
       protected slots:
+
+        void onLayerComboBoxChanged(int index);
 
 				void onConfigureLayerClicked();
 
@@ -94,12 +95,23 @@ namespace te
       private:
 
         std::auto_ptr<Ui::MainWindowDialogForm> m_ui;
-        te::da::DataSourceInfoPtr m_outputDatasource;                 //!< DataSource information.
         std::list<te::map::AbstractLayerPtr> m_layers;                //!< List of layers.
-        te::map::AbstractLayerPtr m_selectedLayer;                    //!< Layer used for aggregation
+        te::map::AbstractLayerPtr m_selectedLayer;                    //!< List of layers.
+        te::da::DataSourcePtr m_layerDataSource;
+        te::map::AbstractLayerPtr m_newColumnLayer;                   //!< Layer used for tsVector column.
         std::vector<te::dt::Property*> m_properties;                  //!< Properties related to the selected Layer
-        te::map::AbstractLayerPtr m_layer;                            //!< Generated Layer.
-        bool m_toFile;
+        te::da::DataSourceInfoPtr m_outputDatasource;                 //!< DataSource information.
+        te::map::AbstractLayerPtr m_resultLayer;                      //!< Generated Layer.
+
+        te::da::DataSourcePtr m_addressDataSource;
+        std::string m_addressFile;
+        std::string m_streetType;
+        std::string m_streetTitle;
+        std::string m_streetName;
+        std::string m_streetNumber;
+        std::string m_streetNeighborhood;
+        std::string m_streetPostalCode;
+
     };
   }   // end namespace addressgeocoding
 }     // end namespace te

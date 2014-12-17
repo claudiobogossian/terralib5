@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "../../dataaccess/datasource/DataSourceInfo.h"
+#include "../../dataaccess/datasource/DataSource.h"
 #include "../../datatype/Property.h"
 #include "../../qt/widgets/utils/DoubleListWidget.h"
 #include "../../maptools/AbstractLayer.h"
@@ -66,7 +67,9 @@ namespace te
         */
         void setLayers(std::list<te::map::AbstractLayerPtr> layers);
 
-      private:
+        te::map::AbstractLayerPtr getLayer();
+
+        te::da::DataSourcePtr getDataSource();
 
       protected slots:
 
@@ -83,9 +86,9 @@ namespace te
         std::auto_ptr<Ui::ConfigInputLayerDialogForm> m_ui;
         std::auto_ptr<te::qt::widgets::DoubleListWidget> m_widget;
         std::list<te::map::AbstractLayerPtr> m_layers;  //!< List of layers.
-        te::map::AbstractLayerPtr m_selectedLayer;  //!< Layer used for aggregation
+        te::da::DataSourcePtr m_dataSource;
+        te::map::AbstractLayerPtr m_selectedLayer;  //!< Layer used for address geocoding
         std::vector<std::string> m_selectedProps; //!< Selected properties related to the selected Layer
-        te::map::AbstractLayerPtr m_layer;  //!< Generated Layer.
         bool m_toFile;
     };
   }   // end namespace addressgeocoding

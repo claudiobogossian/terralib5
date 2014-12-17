@@ -58,10 +58,10 @@ te::qt::widgets::ScatterChart::ScatterChart(Scatter* data) :
 
   //Adjusting the symbol
   m_scatterStyle =  new te::qt::widgets::ScatterStyle();
-  if(m_scatter->sizeX() > 100 || m_scatter->sizeY() > 100)
+  if(dataSize() > 500)
   {
     QwtSymbol* newSymbol =  m_scatterStyle->getSymbol(); 
-    newSymbol->setSize(QSize( 1, 1 ));
+    newSymbol->setSize(QSize(2 , 2));
     setSymbol(newSymbol);
   }
   else

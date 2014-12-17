@@ -44,6 +44,7 @@
 
 // STL
 #include <cmath>
+#include <cstring>
 #include <vector>
 
 // GDAL
@@ -57,6 +58,7 @@
 #include <boost/format.hpp>
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
+#include <boost/graph/graph_concepts.hpp>
 
 std::string te::gdal::GetSubDataSetName(const std::string& name, const std::string& driverName)
 {
@@ -656,29 +658,19 @@ std::string te::gdal::GetDriverName(const std::string& name)
   boost::filesystem::path mpath(name.c_str());
 
   std::string ext = te::common::Convert2UCase(mpath.extension().string());
-
-  if(ext == ".TIF" || ext == ".TIFF")
-    return std::string("GTiff");
-
-  if(ext == ".JPG")
-    return std::string("JPEG");
-
-  if(ext == ".NTF")
-    return std::string("NITF");
+  if( ext[ 0 ] == '.' ) ext = ext.substr( 1, ext.size() - 1);
   
-  if(ext == ".NC")
-    return std::string("netCDF");
-
-  if(ext == ".GRB")
-    return std::string("GRIB");
-
-  if(ext == ".PNG")
-    return std::string("PNG");
-  
-  if(ext == ".HDF")
-     return std::string("HDF4");
-
-  return "";
+  std::multimap< std::string, std::string >::const_iterator exttMapIt =
+    GetGDALDriversUCaseExt2DriversMap().find( ext );
+    
+  if( exttMapIt == GetGDALDriversUCaseExt2DriversMap().end() )
+  {
+    return std::string();
+  }
+  else
+  {
+    return exttMapIt->second;
+  }
 }
 
 std::string te::gdal::GetGDALConnectionInfo(const std::map<std::string, std::string>& connInfo)
@@ -801,3 +793,76 @@ boost::mutex& te::gdal::getStaticMutex()
   static boost::mutex getStaticMutexStaticMutex;
   return getStaticMutexStaticMutex;
 }
+
+const std::map< std::string, te::gdal::DriverMetadata >&  te::gdal::GetGDALDriversMetadata()
+{
+  static std::map< std::string, DriverMetadata > driversMetadata;
+  
+  if( driversMetadata.empty() )
+  {
+    GDALDriverManager* driverManagerPtr = GetGDALDriverManager();
+    
+    int driversCount = driverManagerPtr->GetDriverCount();
+    char** metaInfoPtr = 0;
+    const char* valuePtr = 0;
+    
+    for( int driverIndex = 0 ; driverIndex < driversCount ; ++driverIndex )
+    {
+      GDALDriver* driverPtr = driverManagerPtr->GetDriver(driverIndex);
+      
+      if( driverPtr )
+      {
+        DriverMetadata auxMD;
+        auxMD.m_driverName = driverPtr->GetDescription();
+        
+        metaInfoPtr = driverPtr->GetMetadata();
+        
+        if( metaInfoPtr )
+        {
+          valuePtr = CSLFetchNameValue( metaInfoPtr, "DMD_EXTENSION" );
+          if( valuePtr ) auxMD.m_extension = valuePtr;
+          
+          valuePtr = CSLFetchNameValue( metaInfoPtr, "DMD_LONGNAME" );
+          if( valuePtr ) auxMD.m_longName = valuePtr;    
+          
+          valuePtr = CSLFetchNameValue( metaInfoPtr, "DMD_SUBDATASETS" );
+          if( ( valuePtr != 0 ) && ( std::strcmp( "YES", valuePtr ) == 0 ) )
+          {
+            auxMD.m_subDatasetsSupport = true;
+          }
+          else
+          {
+            auxMD.m_subDatasetsSupport = false;
+          }
+        }
+        
+        driversMetadata[ auxMD.m_driverName ] = auxMD;
+      }
+    }
+  }
+  
+  return driversMetadata;
+}
+
+const std::multimap< std::string, std::string >& te::gdal::GetGDALDriversUCaseExt2DriversMap()
+{
+  static std::multimap< std::string, std::string > extensions;
+  
+  if( extensions.empty() )
+  {
+    const std::map< std::string, DriverMetadata >& driversMetadata = GetGDALDriversMetadata();
+    
+    for( std::map< std::string, DriverMetadata >::const_iterator it = driversMetadata.begin() ;
+      it != driversMetadata.end() ; ++it )
+    {
+      if( ! it->second.m_extension.empty() )
+      {
+        extensions.insert( std::pair< std::string, std::string >( 
+          te::common::Convert2UCase( it->second.m_extension ), it->first ) );;
+      }
+    }
+  }
+  
+  return extensions;
+}
+
