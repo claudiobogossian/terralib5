@@ -174,6 +174,8 @@ te::map::AbstractLayerPtr te::qt::widgets::TableLinkDialog::getQueryLayer()
 
 void te::qt::widgets::TableLinkDialog::getDataSets()
 {
+  QApplication::setOverrideCursor(Qt::WaitCursor);
+
   std::string dsId = m_ds->getId();
 
   std::vector<std::string> datasetNames;
@@ -192,6 +194,8 @@ void te::qt::widgets::TableLinkDialog::getDataSets()
     m_ui->m_dataSetAliasLineEdit->setText(QString::fromStdString(DsName.substr(pos + 1, DsName.size() - 1)));
   else
     m_ui->m_dataSetAliasLineEdit->setText(QString::fromStdString(DsName));
+
+  QApplication::restoreOverrideCursor();
 }
 
 void te::qt::widgets::TableLinkDialog::getProperties()
