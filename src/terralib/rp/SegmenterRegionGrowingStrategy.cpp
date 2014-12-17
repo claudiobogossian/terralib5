@@ -110,7 +110,7 @@ namespace te
       m_bandsWeights.clear();
       m_colorWeight = 0.9;
       m_compactnessWeight = 0.5;
-      m_segmentsSimIncreaseSteps = 10;
+      m_segmentsSimIncreaseSteps = 2;
     }
     
     te::common::AbstractParameters* SegmenterRegionGrowingStrategy::Parameters::clone() const
