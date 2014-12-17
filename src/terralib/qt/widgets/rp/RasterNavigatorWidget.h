@@ -173,6 +173,10 @@ namespace te
 
           void onPreviewClicked();
 
+          void onVSliderChanged(int value);
+
+          void onHSliderChanged(int value);
+
         signals:
 
           void previewClicked();
@@ -195,6 +199,8 @@ namespace te
 
           void setComboBoxText(QComboBox* cb, std::string value);
 
+          void drawOverlay();
+
         private:
 
           std::auto_ptr<Ui::RasterNavigatorWidgetForm> m_ui;
@@ -216,6 +222,8 @@ namespace te
           te::map::Visibility m_visibility;
 
           QCursor m_pointCursor;
+
+          QPixmap* m_draftOriginal;
       };
 
     } // end namespace widgets
