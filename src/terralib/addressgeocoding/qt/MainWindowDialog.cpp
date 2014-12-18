@@ -233,18 +233,31 @@ void te::addressgeocoding::MainWindowDialog::onHelpPushButtonClicked()
 
 void te::addressgeocoding::MainWindowDialog::onOkPushButtonClicked()
 {
-  //SELECT * FROM taubate_sp WHERE nome_tsvector @@ plainto_tsquery('english', 'jardim francisco');
+  std::auto_ptr<te::da::DataSet> dsAddress = m_addressDataSource->getDataSet(m_addressFile);
+  std::auto_ptr<te::da::DataSetType> dsTypeAddress = m_addressDataSource->getDataSetType(m_addressFile);
+  std::vector<te::dt::Property*> props =  dsTypeAddress->getProperties();
 
-  std::string query = "SELECT * FROM";
-
-  if(!m_selectedLayer)
+  dsAddress->moveBeforeFirst();
+  while(dsAddress->moveNext())
   {
-    QMessageBox::information(this, "Address Geocoding", "Configure an input layer.");
-    return;
-  }
-  query += m_selectedLayer->getTitle() + " WHERE tsvector @@ plainto_tsquery('english', 'jardim francisco'";
+    std::string query = "SELECT * FROM ";
 
-//  m_layerDataSource->execute(query);
+    if(!m_selectedLayer)
+    {
+      QMessageBox::information(this, "Address Geocoding", "Configure an input layer.");
+      return;
+    }
+    query += m_selectedLayer->getTitle() + " WHERE tsvector @@ plainto_tsquery('english', ";
+
+    for(std::size_t i = 0; i < props.size(); ++i)
+    {
+        query+= "'"+dsAddress->getAsString(i)+"'";
+    }
+    
+    query+= ")";
+
+    std::auto_ptr<te::da::DataSet> dsQuery = m_layerDataSource->query(query);
+  }
 }
 
 void te::addressgeocoding::MainWindowDialog::onCancelPushButtonClicked()
