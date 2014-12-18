@@ -250,7 +250,6 @@ void buildSummarizedScatter(int stat, std::map<std::string, std::vector<te::da::
   //Containers used to hold informations temporarily, used to organize them prior to inserting them on the histogram.
   std::map<std::string, std::vector<te::da::ObjectId*> >::iterator oidsIt;
   std::map<std::string, std::vector<std::pair<double, double> > > ::iterator valuesIt;
-  //std::vector<std::pair<double, std::vector<te::da::ObjectId*> > > summarizedValuesToOId;
   te::stat::NumericStatisticalSummary ss;
 
   //Acquiring the summarized values
@@ -279,6 +278,18 @@ void buildSummarizedScatter(int stat, std::map<std::string, std::vector<te::da::
 
       for(size_t j = 0; j < oids.size(); ++j)
         scatter->addData(summarizedXValue, summarizedYValue, oids[j]);
+    }
+    else
+    {
+      //A summary was requested, but it was not needed due to the fact the there is only one value for each base oid
+
+      double xValue = (*valuesIt).second[0].first;
+      double yValue =  (*valuesIt).second[0].second;
+
+      std::vector<te::da::ObjectId*> oids;
+      oids = oidsToSummarize[(*valuesIt).first];
+
+      scatter->addData(xValue, yValue, oids[0]);
     }
   }
 }
