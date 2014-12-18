@@ -945,11 +945,10 @@ namespace te
       TERP_DEBUG_TRUE_OR_THROW( paramsPtr->m_maxInputRasterCachedBlocks,
         "Invalid parameter" );        
       
-      // Creating the rasters instances
+      // Creating the input raster instance
       
       te::rst::SynchronizedRaster inputRaster( paramsPtr->m_maxInputRasterCachedBlocks, 
-        *(paramsPtr->m_inputRasterSyncPtr) );
-      te::rst::SynchronizedRaster outputRaster( 1, *(paramsPtr->m_outputRasterSyncPtr) );
+        *(paramsPtr->m_inputRasterSyncPtr) );      
         
       // Creating the segmentation strategy instance
       
@@ -1018,6 +1017,10 @@ namespace te
                 << std::endl;              
 */              
               paramsPtr->m_generalMutexPtr->unlock();
+              
+              // Creating the output raster instance
+              
+              te::rst::SynchronizedRaster outputRaster( 1, *(paramsPtr->m_outputRasterSyncPtr) );
               
               // Executing the strategy
               
