@@ -109,7 +109,7 @@ void te::qt::widgets::TableLinkDialog::setInputLayer(te::map::AbstractLayerPtr i
 
 te::da::Join* te::qt::widgets::TableLinkDialog::getJoin()
 {
-  int pos = m_inputLayer->getDataSetName().find(".");
+  size_t pos = m_inputLayer->getDataSetName().find(".");
   std::string inputAlias = m_inputLayer->getDataSetName().substr(pos + 1, m_inputLayer->getDataSetName().size() - 1);
 
   if(pos != std::string::npos)
@@ -174,6 +174,8 @@ te::map::AbstractLayerPtr te::qt::widgets::TableLinkDialog::getQueryLayer()
 
 void te::qt::widgets::TableLinkDialog::getDataSets()
 {
+  QApplication::setOverrideCursor(Qt::WaitCursor);
+
   std::string dsId = m_ds->getId();
 
   std::vector<std::string> datasetNames;
@@ -187,11 +189,13 @@ void te::qt::widgets::TableLinkDialog::getDataSets()
   }
 
   std::string DsName = m_ui->m_dataSet2ComboBox->currentText().toStdString();
-  int pos = DsName.find(".");
+  size_t pos = DsName.find(".");
   if(pos != std::string::npos)
     m_ui->m_dataSetAliasLineEdit->setText(QString::fromStdString(DsName.substr(pos + 1, DsName.size() - 1)));
   else
     m_ui->m_dataSetAliasLineEdit->setText(QString::fromStdString(DsName));
+
+  QApplication::restoreOverrideCursor();
 }
 
 void te::qt::widgets::TableLinkDialog::getProperties()
@@ -208,7 +212,7 @@ void te::qt::widgets::TableLinkDialog::getProperties()
   std::vector<std::string> datasetNames = m_ds->getDataSetNames();
   std::vector<std::pair<std::string, std::string> > dataSetSelecteds;
   std::string inputAlias;
-  int pos = m_inputLayer->getDataSetName().find(".");
+  size_t pos = m_inputLayer->getDataSetName().find(".");
 
   if(pos != std::string::npos)
     inputAlias = m_inputLayer->getDataSetName().substr(pos + 1, m_inputLayer->getDataSetName().size() - 1);
@@ -347,7 +351,7 @@ int  te::qt::widgets::TableLinkDialog::exec()
 void te::qt::widgets::TableLinkDialog::onDataCBIndexChanged(int index)
 {
   std::string DsName = m_ui->m_dataSet2ComboBox->currentText().toStdString();
-  int pos = DsName.find(".");
+  size_t pos = DsName.find(".");
   if(pos != std::string::npos)
     m_ui->m_dataSetAliasLineEdit->setText(QString::fromStdString(DsName.substr(pos + 1, DsName.size() - 1)));
   else

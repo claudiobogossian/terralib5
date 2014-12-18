@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "../../dataaccess/datasource/DataSourceInfo.h"
+#include "../../dataaccess/datasource/DataSource.h"
 #include "../../datatype/Property.h"
 #include "../../qt/widgets/utils/DoubleListWidget.h"
 #include "../../maptools/AbstractLayer.h"

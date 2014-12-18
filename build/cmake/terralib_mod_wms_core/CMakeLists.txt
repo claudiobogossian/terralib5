@@ -35,14 +35,36 @@ endif()
 file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/wms/*.cpp)
 file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/wms/*.h)
 
-set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
+if(TERRALIB_MOD_XML_ENABLED)
+
+  file(GLOB TERRALIB_XML_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/wms/serialization/xml/*.cpp)
+  file(GLOB TERRALIB_XML_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/wms/serialization/xml/*.h)
+
+  source_group("Source Files\\serialization\\xml"  FILES ${TERRALIB_XML_SRC_FILES})
+  source_group("Header Files\\serialization\\xml"  FILES ${TERRALIB_XML_HDR_FILES})
+
+  set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES} ${TERRALIB_XML_SRC_FILES} ${TERRALIB_XML_HDR_FILES})
+
+else()
+
+  set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
+
+endif()
 
 add_library(terralib_mod_wms_core SHARED ${TERRALIB_FILES})
 
-target_link_libraries(terralib_mod_wms_core terralib_mod_common
-                                       terralib_mod_dataaccess
-                                       terralib_mod_gdal
-                                       terralib_mod_maptools)
+if(TERRALIB_MOD_XML_ENABLED)
+  target_link_libraries(terralib_mod_wms_core terralib_mod_common
+                                              terralib_mod_dataaccess
+                                              terralib_mod_gdal
+                                              terralib_mod_maptools
+                                              terralib_mod_xml)
+else()
+  target_link_libraries(terralib_mod_wms_core terralib_mod_common
+                                              terralib_mod_dataaccess
+                                              terralib_mod_gdal
+                                              terralib_mod_maptools)
+endif()
 
 set_target_properties(terralib_mod_wms_core
                       PROPERTIES VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}
@@ -57,6 +79,11 @@ install(TARGETS terralib_mod_wms_core
 
 install(FILES ${TERRALIB_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/wms COMPONENT devel)
+
+if(TERRALIB_MOD_XML_ENABLED)
+  install(FILES ${TERRALIB_XML_HDR_FILES}
+          DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/wms/serialization/xml COMPONENT devel)
+endif()
 
 install(FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/plugins/te.da.wms.teplg
         DESTINATION ${TERRALIB_DESTINATION_PLUGINS} COMPONENT runtime)
