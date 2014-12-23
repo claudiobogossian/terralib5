@@ -55,7 +55,7 @@
             \param featuresNumber The number of features for each created segment.
             \return true if ok, false on errors.
             \note The segments pool will initiate just SegmenterRegionGrowingSegment::m_features vector and take the ownership of it.
-            \note The segments pool will initiate just SegmenterRegionGrowingSegment::m_status to false.
+            \note The segments pool will initiate just SegmenterRegionGrowingSegment::m_mergetIteration to std::numeric_limits< SegmenterRegionGrowingSegment::IterationCounterType>::max().
           */            
           bool initialize( const SegmenterSegmentsBlock::SegmentIdDataType segsNumber,
             const unsigned int featuresNumber );            

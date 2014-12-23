@@ -11,12 +11,12 @@ namespace te
       const SegmenterRegionGrowingSegment& other )
     {
       m_id = other.m_id;
-      m_status = other.m_status;
       m_size = other.m_size;
       m_xStart = other.m_xStart;
       m_xBound = other.m_xBound;
       m_yStart = other.m_yStart;
       m_yBound = other.m_yBound;
+      m_mergetIteration = other.m_mergetIteration;
       
       free( m_neighborSegments );
       if( other.m_neighborSegmentsSize )

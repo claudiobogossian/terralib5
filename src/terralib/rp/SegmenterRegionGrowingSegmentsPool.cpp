@@ -58,11 +58,11 @@ namespace te
             {
               for( col = 0 ; col < nCols ; ++col )
               {
-                m_segments[ row ][ col ].m_status = false;
                 m_segments[ row ][ col ].m_neighborSegments = 0;
                 m_segments[ row ][ col ].m_neighborSegmentsSize = 0;
                 m_segments[ row ][ col ].m_features = m_segmentsFeatures[ row ] + ( col * featuresNumber );
                 m_segments[ row ][ col ].m_featuresSize = featuresNumber;
+                m_segments[ row ][ col ].disable();
               }
             }
           }
@@ -73,11 +73,11 @@ namespace te
             {
               for( col = 0 ; col < nCols ; ++col )
               {
-                m_segments[ row ][ col ].m_status = false;
                 m_segments[ row ][ col ].m_neighborSegments = 0;
                 m_segments[ row ][ col ].m_neighborSegmentsSize = 0;
                 m_segments[ row ][ col ].m_features = 0;
                 m_segments[ row ][ col ].m_featuresSize = 0;
+                m_segments[ row ][ col ].disable();
               }
             }
           }
@@ -93,7 +93,7 @@ namespace te
         {
           for( col = 0 ; col < nCols ; ++col )
           {
-            m_segments[ row ][ col ].m_status = false;
+            m_segments[ row ][ col ].disable();
             m_segments[ row ][ col ].clearNeighborSegments();
           }
         }

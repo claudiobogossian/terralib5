@@ -601,7 +601,7 @@ namespace te
         
         for( m_update_col = 0 ; m_update_col < m_update_nCols ; ++m_update_col )
         {
-          if( m_update_segsRowPtr[ m_update_col ].m_status )
+          if( m_update_segsRowPtr[ m_update_col ].isEnabled() )
           {
             m_update_featuresPtr = m_update_segsRowPtr[ m_update_col ].m_features;
             
@@ -855,11 +855,8 @@ namespace te
 //       }
         
       SegmenterRegionGrowingSegment* auxSeg1Ptr = m_segmentsPool.getNextSegment();
-      auxSeg1Ptr->m_status = false;
       SegmenterRegionGrowingSegment* auxSeg2Ptr = m_segmentsPool.getNextSegment();
-      auxSeg2Ptr->m_status = false;
       SegmenterRegionGrowingSegment* auxSeg3Ptr = m_segmentsPool.getNextSegment();
-      auxSeg3Ptr->m_status = false;
       
       // Allocating the ids matrix
       
@@ -1270,7 +1267,6 @@ namespace te
             currLineSegsPtrs->operator[]( blkCol ) = segmentPtr;
             
             segmentPtr->m_id = lineSegmentIds[ blkCol ];
-            segmentPtr->m_status = true;
             segmentPtr->m_size = 1;
             segmentPtr->m_xStart = blkCol;
             segmentPtr->m_xBound = blkCol + 1;
@@ -1417,9 +1413,11 @@ namespace te
           {
             currSegPtr = segmentsMatrixLinePtr + col;
             
-            if( ( currSegPtr->m_status ) && ( currSegPtr->m_mergetIteration !=
-              globalMergeIterationsCounter ) && ( currSegPtr->m_size <= 
-              internalMaxSegSizeThreshold ) )
+            if( 
+                ( currSegPtr->m_mergetIteration < globalMergeIterationsCounter ) 
+                && 
+                ( currSegPtr->m_size <= internalMaxSegSizeThreshold ) 
+              )
             {
               // finding the neighbor segment with minimum dissimilary value
               // related to the current sement 
@@ -1486,8 +1484,11 @@ namespace te
               
               // if the min forward dissimilarity segment was found
               
-              if( ( minForwardDissimilaritySegmentPtr != 0 ) &&
-                ( minForwardDissimilaritySegmentPtr->m_mergetIteration != globalMergeIterationsCounter ) )
+              if( 
+                  ( minForwardDissimilaritySegmentPtr != 0 ) 
+                  &&
+                  ( minForwardDissimilaritySegmentPtr->m_mergetIteration < globalMergeIterationsCounter ) 
+                )
               {
                 if( minFoundDissimilarity > minForwardDissimilarityValue )
                 {
@@ -1567,7 +1568,7 @@ namespace te
                 // disabling the  merged segment
                 // The merged segment id will be given back to ids manager
                 
-                minForwardDissimilaritySegmentPtr->m_status = false;
+                minForwardDissimilaritySegmentPtr->disable();
                 
                 minForwardDissimilaritySegmentPtr->clearNeighborSegments();
                   
@@ -1593,7 +1594,8 @@ namespace te
         
         ++globalMergeIterationsCounter;
       }
-      while( iterationMergedSegmentsNumber );
+      while( iterationMergedSegmentsNumber && ( globalMergeIterationsCounter <
+        std::numeric_limits< SegmenterRegionGrowingSegment::IterationCounterType>::max() ) );
     }
     
     void  SegmenterRegionGrowingStrategy::exportSegs2Tif( 
