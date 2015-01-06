@@ -391,7 +391,7 @@ namespace te
           SegmenterRegionGrowingSegment::FeatureType& maxFoundDissimilarity,
           unsigned int& totalMergesNumber,
           SegmenterRegionGrowingSegment::IterationCounterType& globalMergeIterationsCounter,
-          SegmenterRegionGrowingSegment* const actSegsListHeadPtr );
+          SegmenterRegionGrowingSegment** const actSegsListHeadPtrPtr );
           
         /*!
           \brief Export the segments IDs to a tif file.
