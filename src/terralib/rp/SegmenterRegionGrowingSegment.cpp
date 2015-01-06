@@ -17,6 +17,8 @@ namespace te
       m_yStart = other.m_yStart;
       m_yBound = other.m_yBound;
       m_mergetIteration = other.m_mergetIteration;
+      m_prevActiveSegment = other.m_prevActiveSegment;
+      m_nextActiveSegment = other.m_nextActiveSegment;
       
       free( m_neighborSegments );
       if( other.m_neighborSegmentsSize )

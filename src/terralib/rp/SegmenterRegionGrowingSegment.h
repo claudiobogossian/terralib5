@@ -89,6 +89,16 @@
           \brief The current size of m_neighborSegments.
         */             
         unsigned int m_neighborSegmentsSize;  
+        
+        /*!
+          \brief A pointer to the previous active segment.
+        */             
+        SegmenterRegionGrowingSegment* m_prevActiveSegment;
+        
+        /*!
+          \brief A pointer to the next active segment.
+        */             
+        SegmenterRegionGrowingSegment* m_nextActiveSegment;                 
 
         /*!
           \brief A pionter to a fixed size vector of segment features.
