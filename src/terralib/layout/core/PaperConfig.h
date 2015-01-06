@@ -31,11 +31,13 @@
 // TerraLib
 #include "../core/enum/AbstractType.h"
 #include "../../geometry/Envelope.h"
+#include "Config.h"
+
 namespace te
 {
   namespace layout
   {
-    class PaperConfig
+    class TELAYOUTEXPORT PaperConfig
     {
       public:
 

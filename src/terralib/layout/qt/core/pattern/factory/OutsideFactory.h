@@ -30,12 +30,13 @@
 
 // TerraLib
 #include "../../../../core/pattern/factory/AbstractOutsideFactory.h"
+#include "../../../../core/Config.h"
 
 namespace te
 {
   namespace layout
   {
-    class OutsideFactory : public AbstractOutsideFactory
+    class TELAYOUTEXPORT OutsideFactory : public AbstractOutsideFactory
     {
     public:
 	    OutsideFactory();

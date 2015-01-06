@@ -30,6 +30,7 @@
 
 // TerraLib
 #include "../../geometry/Coord2D.h"
+#include "Config.h"
 
 // STL
 #include <string>
@@ -51,7 +52,7 @@ namespace te
       \ingroup layout
      */
 
-    class AbstractBuildGraphicsItem
+    class TELAYOUTEXPORT AbstractBuildGraphicsItem
     {
       public:
 	  

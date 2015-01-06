@@ -25,11 +25,8 @@
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_BUILD_ENUM_H 
-#define __TERRALIB_LAYOUT_INTERNAL_BUILD_ENUM_H
-
-// TerraLib
-#include "../Config.h"
+#ifndef __TE_QT_PLUGINS_LAYOUT_INTERNAL_BUILD_ENUM_H
+#define __TE_QT_PLUGINS_LAYOUT_INTERNAL_BUILD_ENUM_H
 
 namespace te
 {
@@ -42,7 +39,7 @@ namespace te
     class EnumModeType;
     class EnumTemplateType;
 
-    class TELAYOUTEXPORT BuildEnums
+    class BuildEnums
     {
       public:
 
