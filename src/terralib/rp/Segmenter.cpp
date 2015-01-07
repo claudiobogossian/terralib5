@@ -49,6 +49,9 @@
 #include <cmath>
 #include <cfloat>
 
+#include <boost/thread.hpp>
+#include <boost/lexical_cast.hpp>
+
 namespace te
 {
   namespace rp
@@ -1009,6 +1012,11 @@ namespace te
             
             if( segsBlk.m_status == SegmenterSegmentsBlock::BlockNotProcessed )
             {
+//               TERP_LOGMSG( "Thread:" + boost::lexical_cast< std::string >( 
+//                 boost::this_thread::get_id() ) + " - Processing block:[" +
+//                 boost::lexical_cast< std::string >( sBMLine ) + "," +
+//                 boost::lexical_cast< std::string >( sBMCol ) + "]" );
+              
               segsBlk.m_status = SegmenterSegmentsBlock::BlockUnderSegmentation;
 /*              
               std::cout << std::endl<< "Start block processing [" + 
