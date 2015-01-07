@@ -369,6 +369,7 @@ namespace te
           \param segmenterIdsManager A segments ids manager to acquire unique segments ids.
           \param merger The merger instance to use.
           \param enablelocalMutualBestFitting If enabled, a merge only occurs between two segments if the minimum dissimilarity criteria is best fulfilled mutually.
+          \param enableSameIterationMerges If enabled, a merged segment could be merged with another under the same iteration.
           \param auxSeg1Ptr A pointer to a valid auxiliar segment that will be used by this method.
           \param auxSeg2Ptr A pointer to a valid auxiliar segment that will be used by this method.
           \param auxSeg3Ptr A pointer to a valid auxiliar segment that will be used by this method.
@@ -384,6 +385,7 @@ namespace te
           SegmenterIdsManager& segmenterIdsManager,
           Merger& merger,
           const bool enablelocalMutualBestFitting,
+          const bool enableSameIterationMerges,
           SegmenterRegionGrowingSegment* auxSeg1Ptr,
           SegmenterRegionGrowingSegment* auxSeg2Ptr,
           SegmenterRegionGrowingSegment* auxSeg3Ptr,
@@ -422,6 +424,13 @@ namespace te
           const SegmenterSegmentsBlock::SegmentIdDataType& id2,
           unsigned int& edgeLength1,
           unsigned int& edgeLength2 );
+        
+        /*!
+          \brief Returns the number of active segments.
+          \param actSegsListHeadPtr A pointer the the active segments list head.
+          \return Returns the number of active segments.
+        */           
+        unsigned int getActiveSegmentsNumber( SegmenterRegionGrowingSegment* const actSegsListHeadPtr ) const;        
     };
     
     /*!
