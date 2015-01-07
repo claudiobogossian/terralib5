@@ -20,7 +20,9 @@
 /*!
   \file ArrowModel.h
    
-  \brief 
+   \brief Class that represents a "Model" part of Arrow MVC component. 
+      Its coordinate system is the same of scene (millimeters). 
+      He is also the son of ItemModelObservable, so it can become observable.
 
   \ingroup layout
 */
@@ -39,19 +41,51 @@ namespace te
 {
   namespace layout
   {
+    /*!
+      \brief Class that represents a "Model" part of Arrow MVC component. 
+          Its coordinate system is the same of scene (millimeters). 
+          He is also the son of ItemModelObservable, so it can become observable.
+      	  
+	    \ingroup layout
+
+      \sa te::layout::ItemModelObservable
+	  */
     class ArrowModel : public ItemModelObservable
     {
       public:
-
+           
+        /*!
+          \brief Constructor
+        */
         ArrowModel();
+
+        /*!
+          \brief Destructor
+        */ 
         virtual ~ArrowModel();
 
+        /*!
+          \brief Reimplemented from ItemModelObservable
+         */
         virtual void draw( ContextItem context );
 
       protected:
 
+        /*!
+          \brief Drawing method of a Arrow
+
+          \param canvas
+          \param utils
+         */
         virtual void drawArrow(te::map::Canvas* canvas, Utils* utils);
 
+        /*!
+          \brief Drawing method of a Head Arrow
+
+          \param canvas
+          \param utils
+          \param box
+         */
         virtual void drawHeadArrow(te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box);
     };
   }

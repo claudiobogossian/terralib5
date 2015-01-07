@@ -20,7 +20,9 @@
 /*!
   \file ImageItem.h
    
-  \brief 
+   \brief Class that represents a graphic Image. 
+      Its coordinate system is the same of scene (millimeters). 
+      He is also the son of ItemObserver and ObjectItem, so it can become observer of a model (Observable).  
 
   \ingroup layout
 */
@@ -40,13 +42,35 @@ namespace te
   {
     class Observable;
 
+    /*!
+    \brief Class that represents a graphic Image. 
+        Its coordinate system is the same of scene (millimeters). 
+        He is also the son of ItemObserver and ObjectItem, so it can become observer of a model (Observable).  
+	  
+	    \ingroup layout
+
+	    \sa te::layout::ObjectItem
+	  */
     class ImageItem : public ObjectItem
     {
       public:
 
+        /*!
+          \brief Constructor
+
+          \param controller "Controller" part of MVC component
+          \param o "Model" part of MVC component
+        */ 
         ImageItem( ItemController* controller, Observable* o );
+
+        /*!
+          \brief Destructor
+         */
         virtual ~ImageItem();
         
+        /*!
+          \brief Reimplemented from ObjectItem
+         */
         virtual void updateObserver(ContextItem context);
     };
   }

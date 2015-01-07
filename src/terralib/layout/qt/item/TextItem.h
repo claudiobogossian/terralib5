@@ -20,7 +20,10 @@
 /*!
   \file TextItem.h
    
-  \brief 
+  \brief Class that represents text. This object is of type QGraphicsTextItem. He is directly editable via user interaction. 
+  His transformation matrix is inverted, that is, the inverse of the matrix of the scene, so its coordinate system is screen (pixel), 
+  but its position in the scene remains in millimeters.
+  He is also the son of ItemObserver, so it can become observer of a model (Observable). "View" part of MVC component.
 
   \ingroup layout
 */
@@ -31,6 +34,7 @@
 // TerraLib
 #include "../../core/pattern/mvc/ItemObserver.h"
 #include "ObjectItem.h"
+#include "../../core/Config.h"
 
 // Qt
 #include <QGraphicsTextItem>
@@ -49,18 +53,44 @@ namespace te
   {
     class Observable;
 
-    class TextItem : public QGraphicsTextItem, public ItemObserver
+    /*!
+    \brief Class that represents text. This object is of type QGraphicsTextItem. He is directly editable via user interaction. 
+    His transformation matrix is inverted, that is, the inverse of the matrix of the scene, so its coordinate system is screen (pixel), 
+    but its position in the scene remains in millimeters.
+    Drawing starting point is llx, lly.
+    He is also the son of ItemObserver, so it can become observer of a model (Observable). "View" part of MVC component.
+	  
+	  \ingroup layout
+
+	  \sa te::layout::ItemObserver
+	*/
+    class TELAYOUTEXPORT TextItem : public QGraphicsTextItem, public ItemObserver
     {
       Q_OBJECT //for slots/signals
 
       public:
 
+        /*!
+          \brief Constructor
+
+          \param controller "Controller" part of MVC component
+          \param o "Model" part of MVC component
+        */ 
         TextItem( ItemController* controller, Observable* o );
 
+        /*!
+          \brief Destructor
+        */ 
         virtual ~TextItem();
 
+        /*!
+          \brief Reimplemented from ItemObserver
+         */
         virtual void updateObserver( ContextItem context );
 
+        /*!
+          \brief Reimplemented from QGraphicsTextItem
+         */
         virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
         
         virtual QTextDocument* getDocument();
@@ -71,32 +101,62 @@ namespace te
         
       protected:
 
+        /*!
+          \brief Reimplemented from QGraphicsTextItem
+         */
         virtual QVariant	itemChange ( GraphicsItemChange change, const QVariant & value );
         
         virtual void drawBackground( QPainter* painter );
 
         virtual void drawSelection(QPainter* painter);
 
+        /*!
+          \brief Reimplemented from QGraphicsTextItem
+         */
         virtual void	keyPressEvent ( QKeyEvent * event );
 
+        /*!
+          \brief Reimplemented from QGraphicsTextItem
+         */
         virtual void	mouseDoubleClickEvent ( QGraphicsSceneMouseEvent * event );
 
+        /*!
+          \brief Reimplemented from QGraphicsTextItem
+         */
         virtual void	mouseMoveEvent ( QGraphicsSceneMouseEvent * event );
 
+        /*!
+          \brief Reimplemented from QGraphicsTextItem
+         */
         virtual void	mousePressEvent ( QGraphicsSceneMouseEvent * event );
 
+        /*!
+          \brief Reimplemented from QGraphicsTextItem
+         */
         virtual void	mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
 
         virtual void init();
         
         virtual QImage createImage();
 
+        /*!
+          \brief Reimplemented from ItemObserver
+         */
         virtual te::gm::Coord2D getPosition();
 
+        /*!
+          \brief Reimplemented from ItemObserver
+         */
         virtual te::color::RGBAColor** getImage();
 
+        /*!
+          \brief Reimplemented from ItemObserver
+         */
         virtual int getZValueItem();
 
+        /*!
+          \brief Reimplemented from ItemObserver
+         */
         virtual void applyRotation();
 
         virtual void getDocumentSizeMM(double &w, double &h);

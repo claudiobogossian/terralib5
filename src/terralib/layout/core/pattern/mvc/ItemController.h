@@ -20,7 +20,7 @@
 /*!
   \file ItemController.h
    
-  \brief 
+  \brief Abstract class to represent a controller. "Controller" part of MVC component. All classes representing the controller of a component must inherit from this class.
 
   \ingroup layout
 */
@@ -34,6 +34,7 @@
 #include "../../../../color/RGBAColor.h"
 #include "../../enum/AbstractType.h"
 #include "../../enum/EnumType.h"
+#include "../../Config.h"
 
 namespace te
 {
@@ -43,36 +44,96 @@ namespace te
     class Observer;
     class Properties;
 
-    class ItemController 
+    /*!
+      \brief Abstract class to represent a controller. "Controller" part of MVC component. All classes representing the controller of a component must inherit from this class.
+	  
+	    \ingroup layout
+	  */
+    class TELAYOUTEXPORT ItemController 
     {
       public:
 
+        /*!
+          \brief Constructor
+
+          \param o "Model" part of MVC component
+        */
         ItemController(Observable* o);
 
+        /*!
+          \brief Constructor
+
+          \param o "Model" part of MVC component
+          \param type type of the MVC component.
+        */
         ItemController(Observable* o, EnumType* type);
 
+        /*!
+          \brief Destructor
+        */ 
         virtual ~ItemController();
 
+        /*!
+          \brief Change coordinate llx,lly of the MVC component.
+            Reimplement this function in a ItemController subclass to provide the controller's create implementation.
+
+          \param x llx
+          \param y lly
+         */
         virtual void setPosition(const double& x, const double& y) = 0;
 
+        /*!
+          \brief Redraws the MVC component. 
+            Creates the ContextItem object and configures it. Calls the draw method of the model.
+        */
         virtual void redraw();
 
+        /*!
+          \brief Returns the "Model" part of the MVC component.
+
+          \return model
+        */
         const Observable* getModel();
 
+        /*!
+          \brief Returns the "View" part of the MVC component.
+
+          \return view 
+        */
         const Observer* getView();
 
+        /*!
+          \brief Change the bounding rectangle.
+
+          \param bounding rectangle
+         */
         virtual void setBox(te::gm::Envelope box);
 
+        /*!
+          \brief Updated model state with properties.
+
+          \param properties
+         */
         virtual void updateProperties(te::layout::Properties* properties);
 
+        /*!
+          \brief Checks if the coordinate is contained within the bounding rectangle.
+
+          \param coord coordinated to be verified
+          \return true if contains, false otherwise
+         */
         virtual bool contains(const te::gm::Coord2D &coord) const;
 
       protected:
 
+        /*!
+          \brief Call factory to create the "View" part of the MVC component and passes the model and himself as controller.
+            Reimplement this function in a ItemController subclass to provide the controller's create implementation.
+         */
         virtual void create() = 0;
 
-        Observable* m_model;
-        Observer* m_view;
+        Observable* m_model; //!< "Model" part of the MVC component.
+        Observer* m_view; //!< "View" part of the MVC component.
     };
   }
 }

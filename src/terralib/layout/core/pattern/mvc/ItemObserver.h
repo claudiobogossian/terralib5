@@ -20,7 +20,7 @@
 /*!
   \file ItemObserver.h
    
-  \brief 
+  \brief Abstract class to represent an observer. "View" part of MVC component. All classes representing the graphics component must inherit from this class.
 
   \ingroup layout
 */
@@ -32,6 +32,7 @@
 #include "Observer.h"
 #include "../../../../geometry/Coord2D.h"
 #include "../../../../color/RGBAColor.h"
+#include "../../Config.h"
 
 namespace te
 {
@@ -41,69 +42,167 @@ namespace te
     class ItemController;
     class Properties;
 
-    class ItemObserver : Observer
+    /*!
+      \brief Abstract class to represent an observer. "View" part of MVC component. All classes representing the graphics component must inherit from this class.
+	  
+	    \ingroup layout
+
+	    \sa te::layout::Observer
+	  */
+    class TELAYOUTEXPORT ItemObserver : Observer
     {
       public:
 
+        /*!
+          \brief Constructor
+
+          \param controller "Controller" part of MVC component
+          \param o "Model" part of MVC component
+        */ 
         ItemObserver(ItemController* controller = 0, Observable* o = 0);
 
+        /*!
+          \brief Destructor
+        */ 
         virtual ~ItemObserver();
 
+        /*!
+          \brief Reimplemented from Observer
+         */
         virtual void updateObserver(ContextItem context) = 0;  
 
+        /*!
+          \brief Method that returns the class name.
+
+          \return class name
+        */ 
         virtual std::string getNameClass();
 
-        /*
-          return coordinates llx, ury
-        */
+        /*!
+          \brief Method that returns the position llx, lly
+            Reimplement this function in a ItemObserver subclass to provide the item's getPosition implementation.
+
+          \return coordinate
+        */ 
         virtual te::gm::Coord2D getPosition() = 0;
 
+        /*!
+          \brief Method that returns the name of the MVC component.
+
+          \return name of the graphic item
+        */
         virtual std::string getName();
 
+        /*!
+          \brief Reimplemented from Observer
+         */
         virtual te::layout::Properties* getProperties() const;	
 
+        /*!
+          \brief Updated model state with properties.
+
+          \param properties
+        */
         virtual void updateProperties(te::layout::Properties* properties);
 
+        /*!
+          \brief Redraws the graphic component.
+        */
         virtual void redraw();
         
+        /*!
+          \brief Modifies the state of the graphic component to be or not printable.
+
+          \param print true if printable, false otherwise
+        */
         virtual void setPrintable(bool print);
 
+        /*!
+          \brief Returns whether the graphic component is printable.
+
+          \return true if printable, false otherwise
+        */
         virtual bool isPrintable();
 
+        /*!
+          \brief Change the state of the graphic component to be or not send to back or bring to front.
+
+          \param canChange true if send to back or bring to front, false otherwise
+        */
         virtual void setCanChangeGraphicOrder(bool canChange);
 
+        /*!
+          \brief Returns whether the graphic component to be or not send to back or bring to front.
+
+          \return true if send to back or bring to front, false otherwise
+        */
         virtual bool isCanChangeGraphicOrder();
 
+        /*!
+          \brief Returns the "Controller" part of the MVC.
+
+          \return controller
+        */
         virtual ItemController*	getController();
 
+        /*!
+          \brief Returns the "Model" part of the MVC.
+
+          \return model
+        */
         virtual Observable*	getModel();
         
+        /*!
+          \brief Updated model state.
+
+          \param true if refresh the current position, false otherwise
+        */
         virtual void refresh(bool pos = true);
+        
+        /*!
+          \brief Returns whether the graph component has the inverted matrix, otherwise the matrix scene.
 
-        bool isCanZoom();
-
-        void setCanZoom(bool zoom);
-
+          \return true if inverted, false otherwise
+        */
         virtual bool isInvertedMatrix();
 
+        /*!
+          \brief Returns a image of the graphic component.
+            Reimplement this function in a ItemObserver subclass to provide the item's getImage implementation.
+
+          \return image
+        */
         virtual te::color::RGBAColor** getImage() = 0;
 
       protected:
 
+        /*!
+          \brief The Z value decides the stacking order of drawing.
+
+          \param drawing order
+        */
         virtual void setZValueItem(int z);
 
+        /*!
+          \brief Return the Z value.
+            Reimplement this function in a ItemObserver subclass to provide the item's getZValueItem implementation.
+
+          \return Z value
+        */
         virtual int getZValueItem() = 0;
 
+        /*!
+          \brief Rotates the graphic component.
+            Reimplement this function in a ItemObserver subclass to provide the item's applyImage implementation.
+        */
         virtual void applyRotation() = 0;
 
-        te::layout::ItemController*	m_controller;
-        te::layout::Observable*		m_model;
-        double					m_ppi;
-        bool            m_printable;
-        bool            m_canChangeGraphicOrder; //!< Define if item can send to back ou bring to front
-        bool            m_canZoom;
-        std::string     m_nameClass;
-        bool            m_invertedMatrix;
+        te::layout::ItemController*	m_controller; //!< "Controller" part of MVC component.
+        te::layout::Observable*		m_model; //!< "Model" part of MVC component.
+        bool            m_printable; //!< State of the graphic component to be or not printable.
+        bool            m_canChangeGraphicOrder; //!< Define if item can send to back or bring to front
+        std::string     m_nameClass; //!< Class name
+        bool            m_invertedMatrix; //!< true if inverted, false otherwise the matrix scene
     };
   }
 }

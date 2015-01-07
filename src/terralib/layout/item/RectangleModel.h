@@ -20,7 +20,9 @@
 /*!
   \file RectangleModel.h
    
-  \brief 
+   \brief Class that represents a "Model" part of Rectangle MVC component. 
+      Its coordinate system is the same of scene (millimeters). 
+      He is also the son of ItemModelObservable, so it can become observable.
 
   \ingroup layout
 */
@@ -36,16 +38,36 @@ namespace te
 {
   namespace layout
   {
+
+    /*!
+      \brief Class that represents a "Model" part of Rectangle MVC component. 
+          Its coordinate system is the same of scene (millimeters). 
+          He is also the son of ItemModelObservable, so it can become observable.
+      	  
+	    \ingroup layout
+
+      \sa te::layout::ItemModelObservable
+	  */
     class RectangleModel : public ItemModelObservable
     {
       public:
 
+        /*!
+          \brief Constructor
+        */
         RectangleModel();
+
+        /*!
+          \brief Destructor
+        */ 
         virtual ~RectangleModel();
 
+        /*!
+          \brief Reimplemented from ItemModelObservable
+         */
         virtual void draw( ContextItem context );
     };
   }
 }
 
-#endif //__TERRALIB_LAYOUT_INTERNAL_RECTANGLELAYOUT_MODEL_H
+#endif

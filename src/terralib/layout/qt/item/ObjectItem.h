@@ -20,7 +20,10 @@
 /*!
   \file ObjectItem.h
    
-  \brief 
+   \brief Abstract class that represents a graphic item. This object is of type QGraphicsObject. 
+   Its coordinate system is the same of scene (millimeters). Knows rotate and resize. Stores a pixmap drawn by model.
+   He is also the son of ItemObserver, so it can become observer of a model (Observable). 
+   This class will be inherited and will became the view part of the MVC component.
 
   \ingroup layout
 */
@@ -39,6 +42,7 @@
 #include "../../../geometry/Envelope.h"
 #include "../../core/enum/AbstractType.h"
 #include "../../../color/RGBAColor.h"
+#include "../../core/Config.h"
 
 class QGraphicsSceneMouseEvent;
 class QGraphicsSceneHoverEvent;
@@ -49,25 +53,54 @@ namespace te
 {
   namespace layout
   {
-    class ObjectItem : public QGraphicsObject, public ItemObserver
+    /*!
+    \brief Abstract class that represents a graphic item. This object is of type QGraphicsObject. 
+    Its coordinate system is the same of scene (millimeters). Knows rotate and resize. Stores a pixmap drawn by model.
+    He is also the son of ItemObserver, so it can become observer of a model (Observable). 
+    This class will be inherited and will became the view part of the MVC component.
+    Who inherits it is required the implementation of updateObserver(ContextItem context) method.
+    Drawing starting point is llx, lly.
+	  
+	  \ingroup layout
+
+	  \sa te::layout::ItemObserver
+	*/
+    class TELAYOUTEXPORT ObjectItem : public QGraphicsObject, public ItemObserver
     {
       Q_OBJECT //for slots/signals
 
       public:
 
+        /*!
+          \brief Constructor
+
+          \param controller "Controller" part of MVC component
+          \param o "Model" part of MVC component
+        */
         ObjectItem(ItemController* controller = 0, Observable* o = 0);
 
+        /*!
+          \brief Destructor
+        */
         virtual ~ObjectItem();
 
+        /*!
+          \brief Reimplemented from ItemObserver
+         */
         virtual void updateObserver(ContextItem context) = 0;
 
+        /*!
+          \brief Reimplemented from ItemObserver
+         */
         virtual te::gm::Coord2D getPosition();
 
         virtual void setPixmap( const QPixmap& pixmap );
 
         virtual QPixmap getPixmap();
 
-        //Mandatory implementation methods
+        /*!
+          \brief Mandatory implementation from QGraphicsObject
+         */
         virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
 
         virtual QRectF boundingRect() const;
@@ -78,8 +111,16 @@ namespace te
         /*World coordinates(mm)*/
         virtual bool contains(const QPointF &point) const;
         
+        /*!
+          \brief The Z value decides the stacking order of drawing.
+
+          \param drawing order
+        */
         void	setZValue ( qreal z );
 
+        /*!
+          \brief Reimplemented from ItemObserver
+         */
         virtual te::color::RGBAColor** getImage();
 
       protected:
@@ -88,19 +129,39 @@ namespace te
 
         virtual void drawSelection(QPainter* painter);
 
-        //Resize
+        /*!
+          \brief Reimplemented from QGraphicsObject
+         */
         virtual void	mousePressEvent ( QGraphicsSceneMouseEvent * event );
 
+        /*!
+          \brief Reimplemented from QGraphicsObject
+         */
         virtual void	mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
 
+        /*!
+          \brief Reimplemented from QGraphicsObject
+         */
         virtual void	mouseMoveEvent ( QGraphicsSceneMouseEvent * event );
 
+        /*!
+          \brief Reimplemented from QGraphicsObject
+         */
         virtual void	hoverEnterEvent ( QGraphicsSceneHoverEvent * event );
 
+        /*!
+          \brief Reimplemented from QGraphicsObject
+         */
         virtual void	hoverLeaveEvent ( QGraphicsSceneHoverEvent * event );
 
+        /*!
+          \brief Reimplemented from QGraphicsObject
+         */
         virtual void	hoverMoveEvent ( QGraphicsSceneHoverEvent * event );
 
+        /*!
+          \brief Reimplemented from QGraphicsObject
+         */
         virtual QVariant	itemChange ( GraphicsItemChange change, const QVariant & value );
 
         virtual bool checkTouchesCorner(const double& x, const double& y);
@@ -109,8 +170,14 @@ namespace te
 
         virtual te::gm::Envelope createNewBoxInCoordScene(const double& x, const double& y);
         
+        /*!
+          \brief Reimplemented from ItemObserver
+         */
         virtual int getZValueItem();
 
+        /*!
+          \brief Reimplemented from ItemObserver
+         */
         virtual void applyRotation();
 
       protected:
@@ -131,4 +198,4 @@ namespace te
   }
 }
 
-#endif //QRECT_LAYOUTITEM_H
+#endif

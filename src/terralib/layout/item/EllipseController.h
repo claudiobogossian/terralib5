@@ -20,7 +20,9 @@
 /*!
   \file EllipseController.h
    
-  \brief 
+   \brief Class that represents a "Controller" part of Ellipse MVC component. 
+      Its coordinate system is the same of scene (millimeters).
+      He is also the son of ItemController, so it can become a controller.
 
   \ingroup layout
 */
@@ -35,19 +37,49 @@ namespace te
 {
   namespace layout
   {
+    /*!
+      \brief Class that represents a "Controller" part of Ellipse MVC component. 
+          Its coordinate system is the same of scene (millimeters). 
+          He is also the son of ItemController, so it can become a controller.
+      	  
+	    \ingroup layout
+
+      \sa te::layout::ItemController
+	  */
     class EllipseController : public ItemController
     {
       public:
 
+        /*!
+          \brief Constructor
+
+          \param o "Model" part of MVC component
+        */
         EllipseController( Observable* o );
+
+        /*!
+          \brief Destructor
+        */ 
         virtual ~EllipseController();
 
+        /*!
+          \brief Reimplemented from ItemController
+         */
         virtual void setPosition(const double& x, const double& y);
 
       protected:
 
+        /*!
+          \brief Constructor.
+
+          \param o "Model" part of MVC component
+          \param type type of the MVC component
+        */
         EllipseController( Observable* o, EnumType* type );
 
+        /*!
+          \brief Reimplemented from ItemController
+         */
         virtual void create();
     };
   }
