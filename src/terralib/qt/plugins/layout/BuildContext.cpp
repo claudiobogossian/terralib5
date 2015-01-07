@@ -27,14 +27,14 @@
 
 // TerraLib
 #include "BuildContext.h"
-#include "../../core/pattern/singleton/Context.h"
-#include "pattern/factory/ItemFactory.h"
-#include "pattern/factory/OutsideFactory.h"
-#include "../../core/template/TemplateFactory.h"
-#include "../../core/Utils.h"
-#include "Scene.h"
-#include "BuildGraphicsItem.h"
-#include "ItemUtils.h"
+#include "../../../layout/core/pattern/singleton/Context.h"
+#include "../../../layout/qt/core/pattern/factory/ItemFactory.h"
+#include "../../../layout/qt/core/pattern/factory/OutsideFactory.h"
+#include "../../../layout/core/template/TemplateFactory.h"
+#include "../../../layout/core/Utils.h"
+#include "../../../layout/qt/core/Scene.h"
+#include "../../../layout/qt/core/BuildGraphicsItem.h"
+#include "../../../layout/qt/core/ItemUtils.h"
 
 
 te::layout::BuildContext::BuildContext() :

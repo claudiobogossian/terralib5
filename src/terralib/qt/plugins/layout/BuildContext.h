@@ -25,11 +25,11 @@
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_BUILD_CONTEXT_H
-#define __TERRALIB_LAYOUT_INTERNAL_BUILD_CONTEXT_H
+#ifndef __TE_QT_PLUGINS_LAYOUT_INTERNAL_BUILD_CONTEXT_H
+#define __TE_QT_PLUGINS_LAYOUT_INTERNAL_BUILD_CONTEXT_H
 
 //TerraLib
-#include "View.h"
+#include "../../../layout/qt/core/View.h"
 #include "../../../qt/widgets/canvas/Canvas.h"
 
 namespace te
@@ -45,7 +45,7 @@ namespace te
     class SystematicScaleConfig;
     class ItemUtils;
 
-    class TELAYOUTEXPORT BuildContext 
+    class BuildContext 
     {
       public:
 

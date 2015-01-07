@@ -30,6 +30,7 @@
 
 // TerraLib
 #include "../pattern/factory/AbstractTemplateFactory.h"
+#include "../Config.h"
 
 namespace te
 {
@@ -37,7 +38,7 @@ namespace te
   {
     class EnumType;
 
-    class TemplateFactory : public AbstractTemplateFactory
+    class TELAYOUTEXPORT TemplateFactory : public AbstractTemplateFactory
     {
       public:
         TemplateFactory();

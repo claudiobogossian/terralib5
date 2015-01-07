@@ -30,6 +30,7 @@
 
 // TerraLib
 #include "EnumType.h"
+#include "../Config.h"
 
 // STL
 #include <string>
@@ -39,7 +40,7 @@ namespace te
 {
   namespace layout
   {
-    class AbstractEnum
+    class TELAYOUTEXPORT AbstractEnum
     {
       public:
        

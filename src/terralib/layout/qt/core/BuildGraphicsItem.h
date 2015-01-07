@@ -31,6 +31,7 @@
 
 //TerraLib
 #include "../../core/AbstractBuildGraphicsItem.h"
+#include "../../core/Config.h"
 
 class QGraphicsItem;
 
@@ -46,7 +47,7 @@ namespace te
 
 	  \sa te::layout::AbstractBuildGraphicsItem
 	*/
-    class BuildGraphicsItem : public AbstractBuildGraphicsItem
+    class TELAYOUTEXPORT BuildGraphicsItem : public AbstractBuildGraphicsItem
     {
       public:
 

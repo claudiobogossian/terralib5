@@ -39,6 +39,7 @@
 #include "../../maptools/Enums.h"
 #include "../../geometry/Point.h"
 #include "../../geometry/Polygon.h"
+#include "Config.h"
 
 // STL
 #include <string>
@@ -52,7 +53,7 @@ namespace te
 {
   namespace layout
   {
-    class Utils
+    class TELAYOUTEXPORT Utils
     {
       public:
 
