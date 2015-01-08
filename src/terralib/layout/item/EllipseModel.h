@@ -20,7 +20,9 @@
 /*!
   \file EllipseModel.h
    
-  \brief 
+   \brief Class that represents a "Model" part of Ellipse MVC component. 
+      Its coordinate system is the same of scene (millimeters). 
+      He is also the son of ItemModelObservable, so it can become observable.
 
   \ingroup layout
 */
@@ -36,17 +38,42 @@ namespace te
 {
   namespace layout
   {
+    /*!
+      \brief Class that represents a "Model" part of Ellipse MVC component. 
+          Its coordinate system is the same of scene (millimeters). 
+          He is also the son of ItemModelObservable, so it can become observable.
+      	  
+	    \ingroup layout
+
+      \sa te::layout::ItemModelObservable
+	  */
     class EllipseModel : public ItemModelObservable
     {
       public:
 
+        /*!
+          \brief Constructor
+        */
         EllipseModel();
+
+        /*!
+          \brief Destructor
+        */ 
         virtual ~EllipseModel();
 
+        /*!
+          \brief Reimplemented from ItemModelObservable
+         */
         virtual void draw( ContextItem context );
 
       protected:
 
+        /*!
+          \brief Drawing method of a ellipse
+
+          \param canvas
+          \param utils
+         */
         virtual void drawEllipse(te::map::Canvas* canvas, Utils* utils);
     };
   }

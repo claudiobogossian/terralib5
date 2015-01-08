@@ -114,8 +114,8 @@ void te::layout::GridSettingsOutside::init()
 
 void te::layout::GridSettingsOutside::updateObserver( ContextItem context )
 {
-  setVisible(context.getShow());
-  if(context.getShow() == true)
+  setVisible(context.isShow());
+  if(context.isShow() == true)
     show();
   else
     hide();

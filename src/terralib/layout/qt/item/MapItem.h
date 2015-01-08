@@ -20,7 +20,11 @@
 /*!
   \file MapItem.h
    
-  \brief 
+   \brief This class is a proxy MapDisplay. This makes it possible to add a MapDisplay as item of a scene. 
+   This object is of type QGraphicsProxyWidget. He have a directly interaction by user. 
+   His transformation matrix is inverted, that is, the inverse of the matrix of the scene, so its coordinate system is screen (pixel), 
+   but its position in the scene remains in millimeters.
+   He is also the son of ItemObserver, so it can become observer of a model (Observable). "View" part of MVC component.
 
   \ingroup layout
 */
@@ -39,6 +43,7 @@
 #include "../../../qt/widgets/layer/explorer/AbstractTreeItem.h"
 #include "../../../qt/widgets/tools/AbstractTool.h"
 #include "../../../maptools/AbstractLayer.h"
+#include "../../core/Config.h"
 
 class QGraphicsSceneMouseEvent;
 class QMimeData;
@@ -52,30 +57,68 @@ namespace te
     class ItemController;
     class EnumType;
 
-    class MapItem : public QGraphicsProxyWidget, public ItemObserver
+    /*!
+    \brief This class is a proxy MapDisplay. This makes it possible to add a MapDisplay as item of a scene. 
+    This object is of type QGraphicsProxyWidget. He have a directly interaction by user. 
+    His transformation matrix is inverted, that is, the inverse of the matrix of the scene, so its coordinate system is screen (pixel), 
+    but its position in the scene remains in millimeters.
+    Drawing starting point is llx, lly.
+    He is also the son of ItemObserver, so it can become observer of a model (Observable). "View" part of MVC component.
+	  
+	  \ingroup layout
+
+	  \sa te::layout::ItemObserver
+	*/
+    class TELAYOUTEXPORT MapItem : public QGraphicsProxyWidget, public ItemObserver
     {
       Q_OBJECT //for slots/signals
 
       public:
 
+        /*!
+          \brief Constructor
+
+          \param controller "Controller" part of MVC component
+          \param o "Model" part of MVC component
+        */
         MapItem( ItemController* controller, Observable* o );
 
+        /*!
+          \brief Destructor
+        */ 
         virtual ~MapItem();
         
+        /*!
+          \brief Reimplemented from ItemObserver
+         */
         virtual void updateObserver(ContextItem context);
 
         void setPixmap( const QPixmap& pixmap );
 
+        /*!
+          \brief Reimplemented from QGraphicsProxyWidget
+         */
         virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem* option, QWidget * widget = 0 );
         
+        /*!
+          \brief The Z value decides the stacking order of drawing.
+
+          \param drawing order
+        */
         void	setZValue ( qreal z );
         
         virtual void changeCurrentTool(EnumType* mode);
 
         void clearCurrentTool();
 
+        /*!
+          \brief Reimplemented from ItemObserver
+         */
         virtual te::color::RGBAColor** getImage();
         
+        /*!
+          \brief Reimplemented from ItemObserver
+         */
         virtual void updateProperties(te::layout::Properties* properties);
                                 
       protected slots:
@@ -84,28 +127,59 @@ namespace te
           
     protected:
       
+      /*!
+          \brief Reimplemented from QGraphicsProxyWidget
+       */
       virtual void	dropEvent ( QGraphicsSceneDragDropEvent * event );
 
-      //Override method for using moves, selected, etc., 
-      //which are implemented by default in QGraphicsItem
+      /*!
+          \brief Reimplemented from QGraphicsProxyWidget
+       */
       virtual void	mouseMoveEvent ( QGraphicsSceneMouseEvent * event );
 
+      /*!
+          \brief Reimplemented from QGraphicsProxyWidget
+       */
       virtual void	mousePressEvent ( QGraphicsSceneMouseEvent * event );
 
+      /*!
+          \brief Reimplemented from QGraphicsProxyWidget
+       */
       virtual void	mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
 
+      /*!
+          \brief Reimplemented from QGraphicsProxyWidget
+       */
       virtual void	dragEnterEvent ( QGraphicsSceneDragDropEvent * event );
 
+      /*!
+          \brief Reimplemented from QGraphicsProxyWidget
+       */
       virtual void	dragLeaveEvent ( QGraphicsSceneDragDropEvent * event );
 
+      /*!
+          \brief Reimplemented from QGraphicsProxyWidget
+       */
       virtual void	dragMoveEvent ( QGraphicsSceneDragDropEvent * event );
 
+      /*!
+          \brief Reimplemented from QGraphicsProxyWidget
+       */
       virtual void resizeEvent ( QGraphicsSceneResizeEvent * event );
 
+      /*!
+          \brief Reimplemented from QGraphicsProxyWidget
+       */
       virtual QVariant	itemChange ( GraphicsItemChange change, const QVariant & value );
 
+      /*!
+          \brief Reimplemented from QGraphicsProxyWidget
+       */
       virtual bool	eventFilter ( QObject * object, QEvent * event );
       
+      /*!
+          \brief Reimplemented from ItemObserver
+       */
       virtual te::gm::Coord2D getPosition();
             
       virtual void drawSelection( QPainter* painter );
@@ -116,10 +190,16 @@ namespace te
 
       te::map::AbstractLayerPtr getLayer();
 
+      /*!
+          \brief Reimplemented from ItemObserver
+       */
       virtual int getZValueItem();
 
       void setCurrentTool(te::qt::widgets::AbstractTool* tool);
 
+      /*!
+          \brief Reimplemented from ItemObserver
+       */
       virtual void applyRotation();
 
       virtual QImage generateImage();

@@ -31,13 +31,15 @@
 // TerraLib
 #include "../core/enum/AbstractType.h"
 #include "../../geometry/Envelope.h"
+#include "Config.h"
+
 namespace te
 {
   namespace layout
   {
     class Systematic;
 
-    class SystematicScaleConfig
+    class TELAYOUTEXPORT SystematicScaleConfig
     {
       public:
 

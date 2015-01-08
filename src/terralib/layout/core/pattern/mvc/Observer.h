@@ -20,7 +20,7 @@
 /*!
   \file Observer.h
    
-  \brief 
+  \brief Abstract class to represent an observer. "View" part of MVC component.
 
   \ingroup layout
 */
@@ -40,14 +40,34 @@ namespace te
     class ItemController;
     class Observable;
 
+    /*!
+      \brief Abstract class to represent an observer. "View" part of MVC component.
+	  
+	    \ingroup layout
+	  */
     class TELAYOUTEXPORT Observer
     {
     public:
 
+      /*!
+          \brief Destructor
+       */ 
 	    virtual ~Observer(void) {}
 
+      /*!
+          \brief This method is called when a change has occurred in the state of the observable.
+            Reimplement this function in a ItemObserver subclass to provide the item's updateObserver implementation.
+
+          \param context maintaining the drawing context of a MVC component.
+       */ 
 	    virtual void updateObserver(ContextItem context) = 0;
 
+      /*!
+          \brief Returns the model state as properties.
+            Reimplement this function in a ItemObserver subclass to provide the item's getProperties implementation.
+
+          \return properties
+       */
       virtual te::layout::Properties* getProperties() const = 0;
     };
   }
