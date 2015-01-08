@@ -883,7 +883,7 @@ namespace te
       if( enableProgressInterface )
       {
         progressPtr.reset( new te::common::TaskProgress );
-        progressPtr->setTotalSteps( 2 * ( m_parameters.m_segmentsSimIncreaseSteps + 1 ) + 1 /* plus merge small segments step */ );
+        progressPtr->setTotalSteps( 3 + m_parameters.m_segmentsSimIncreaseSteps );
         progressPtr->setMessage( "Segmentation" );
       }          
       
@@ -892,7 +892,6 @@ namespace te
       SegmenterRegionGrowingSegment::FeatureType minFoundDissimilarity = 0.0;
       SegmenterRegionGrowingSegment::FeatureType maxFoundDissimilarity = 0.0;
       unsigned int totalMergesNumber = 0;      
-      SegmenterRegionGrowingSegment::FeatureType disimilarityThreshold = 0;
       SegmenterRegionGrowingSegment::IterationCounterType globalMergeIterationsCounter = 1;
       
       // Initial merge of equal segments
@@ -906,11 +905,74 @@ namespace te
         progressPtr->pulse();
       }      
       
+//      TERP_LOGMSG( getActiveSegmentsNumber( actSegsListHeadPtr ) );
+      
       mergeSegments( 
         0.0, 
         0, 
         segmenterIdsManager, 
         *mergerPtr, 
+        false,
+        true,
+        auxSeg1Ptr, 
+        auxSeg2Ptr, 
+        auxSeg3Ptr, 
+        minFoundDissimilarity, 
+        maxFoundDissimilarity,
+        totalMergesNumber,
+        globalMergeIterationsCounter,
+        &actSegsListHeadPtr );
+      
+//      TERP_LOGMSG( getActiveSegmentsNumber( actSegsListHeadPtr ) );
+      
+      // Segmentation loop with enablelocalMutualBestFitting
+      
+      for( unsigned int segmentsSimIncreaseStep = 1 ; segmentsSimIncreaseStep <=
+        m_parameters.m_segmentsSimIncreaseSteps ; ++segmentsSimIncreaseStep )
+      {
+        const SegmenterRegionGrowingSegment::FeatureType disimilarityThreshold = 
+          ( ((SegmenterRegionGrowingSegment::FeatureType)segmentsSimIncreaseStep) )
+          *
+          ( ((SegmenterRegionGrowingSegment::FeatureType)m_parameters.m_segmentsSimilarityThreshold) )
+          /
+          ( (SegmenterRegionGrowingSegment::FeatureType)( m_parameters.m_segmentsSimIncreaseSteps ) );
+        
+        mergeSegments( 
+          disimilarityThreshold, 
+          0, 
+          segmenterIdsManager, 
+          *mergerPtr, 
+          true,
+          false,
+          auxSeg1Ptr, 
+          auxSeg2Ptr, 
+          auxSeg3Ptr, 
+          minFoundDissimilarity, 
+          maxFoundDissimilarity,
+          totalMergesNumber,
+          globalMergeIterationsCounter,
+          &actSegsListHeadPtr );
+        
+//        TERP_LOGMSG( getActiveSegmentsNumber( actSegsListHeadPtr ) );
+        
+        if( enableProgressInterface )
+        {
+          if( ! progressPtr->isActive() ) 
+          {
+            return false;
+          }   
+          progressPtr->pulse();
+        }        
+      }
+      
+      // Segmentation without enablelocalMutualBestFitting
+              
+      mergeSegments( 
+        (SegmenterRegionGrowingSegment::FeatureType)m_parameters.m_segmentsSimilarityThreshold, 
+        0, 
+        segmenterIdsManager, 
+        *mergerPtr, 
+        false,
         false,
         auxSeg1Ptr, 
         auxSeg2Ptr, 
@@ -921,79 +983,15 @@ namespace te
         globalMergeIterationsCounter,
         &actSegsListHeadPtr );
       
-      // Segmentation loop with enablelocalMutualBestFitting
+//      TERP_LOGMSG( getActiveSegmentsNumber( actSegsListHeadPtr ) );
       
-      for( unsigned int segmentsSimIncreaseStep = 1 ; segmentsSimIncreaseStep <=
-        m_parameters.m_segmentsSimIncreaseSteps ; ++segmentsSimIncreaseStep )
+      if( enableProgressInterface )
       {
-        if( enableProgressInterface )
+        if( ! progressPtr->isActive() ) 
         {
-          if( ! progressPtr->isActive() ) 
-          {
-            return false;
-          }   
-          progressPtr->pulse();
-        }
-                
-        disimilarityThreshold = 
-          ( ((SegmenterRegionGrowingSegment::FeatureType)segmentsSimIncreaseStep) )
-          *
-          ( ((SegmenterRegionGrowingSegment::FeatureType)m_parameters.m_segmentsSimilarityThreshold) )
-          /
-          ( (SegmenterRegionGrowingSegment::FeatureType)( m_parameters.m_segmentsSimIncreaseSteps ) );
-
-        
-        mergeSegments( 
-          disimilarityThreshold, 
-          0, 
-          segmenterIdsManager, 
-          *mergerPtr, 
-          true,
-          auxSeg1Ptr, 
-          auxSeg2Ptr, 
-          auxSeg3Ptr, 
-          minFoundDissimilarity, 
-          maxFoundDissimilarity,
-          totalMergesNumber,
-          globalMergeIterationsCounter,
-          &actSegsListHeadPtr );
-      }
-      
-      // Segmentation loop without enablelocalMutualBestFitting
-      
-      for( unsigned int segmentsSimIncreaseStep = 0 ; segmentsSimIncreaseStep <=
-        m_parameters.m_segmentsSimIncreaseSteps ; ++segmentsSimIncreaseStep )
-      {
-        if( enableProgressInterface )
-        {
-          if( ! progressPtr->isActive() ) 
-          {
-            return false;
-          }   
-          progressPtr->pulse();
-        }
-                
-        disimilarityThreshold = 
-          ( ((SegmenterRegionGrowingSegment::FeatureType)segmentsSimIncreaseStep) )
-          *
-          ( ((SegmenterRegionGrowingSegment::FeatureType)m_parameters.m_segmentsSimilarityThreshold) )
-          /
-          ( (SegmenterRegionGrowingSegment::FeatureType)( m_parameters.m_segmentsSimIncreaseSteps ) );
-        
-        mergeSegments( 
-          disimilarityThreshold, 
-          0, 
-          segmenterIdsManager, 
-          *mergerPtr, 
-          false,
-          auxSeg1Ptr, 
-          auxSeg2Ptr, 
-          auxSeg3Ptr, 
-          minFoundDissimilarity, 
-          maxFoundDissimilarity,
-          totalMergesNumber,
-          globalMergeIterationsCounter,
-          &actSegsListHeadPtr );
+          return false;
+        }   
+        progressPtr->pulse();
       }      
       
       // Forcing the merge of too small segments
@@ -1006,6 +1004,7 @@ namespace te
           segmenterIdsManager, 
           *mergerPtr, 
           false,
+          false,
           auxSeg1Ptr, 
           auxSeg2Ptr, 
           auxSeg3Ptr, 
@@ -1013,7 +1012,9 @@ namespace te
           maxFoundDissimilarity,
           totalMergesNumber,
           globalMergeIterationsCounter,
-          &actSegsListHeadPtr );        
+          &actSegsListHeadPtr );    
+        
+//        TERP_LOGMSG( getActiveSegmentsNumber( actSegsListHeadPtr ) );
       }
       
       if( enableProgressInterface )
@@ -1395,6 +1396,7 @@ namespace te
       SegmenterIdsManager& segmenterIdsManager,
       Merger& merger,
       const bool enablelocalMutualBestFitting,
+      const bool enableSameIterationMerges,
       SegmenterRegionGrowingSegment* auxSeg1Ptr,
       SegmenterRegionGrowingSegment* auxSeg2Ptr,
       SegmenterRegionGrowingSegment* auxSeg3Ptr,
@@ -1412,6 +1414,8 @@ namespace te
       maxFoundDissimilarity = -1.0 * minFoundDissimilarity;
       totalMergesNumber = 0;
       
+      // Globals
+      
       SegmenterRegionGrowingSegment::FeatureType internalDisimilarityThreshold =
         disimilarityThreshold;
       unsigned int internalMaxSegSizeThreshold = maxSegSizeThreshold;
@@ -1423,31 +1427,30 @@ namespace te
       {
         internalMaxSegSizeThreshold = std::numeric_limits< unsigned int >::max();
       }
-      
       unsigned int iterationMergedSegmentsNumber = 0;
+      unsigned int segmentsLine = 0;
+      unsigned int segmentsLineBound = 0;
+      unsigned int segmentCol = 0;
+      unsigned int segmentColStart = 0;
+      unsigned int segmentColBound = 0;
+      SegmenterRegionGrowingSegment* minForwardDissimilaritySegmentPtr = 0;
+      SegmenterRegionGrowingSegment::FeatureType forwardDissimilarityValue = 0;
+      SegmenterRegionGrowingSegment::FeatureType minForwardDissimilarityValue = 0;  
+      SegmenterRegionGrowingSegment* minBackwardDissimilaritySegmentPtr = 0;
+      SegmenterRegionGrowingSegment::FeatureType backwardDissimilarityValue = 0;
+      SegmenterRegionGrowingSegment::FeatureType minBackwardDissimilarityValue = 0;             
+      SegmenterSegmentsBlock::SegmentIdDataType* segmentsIdsLinePtr = 0;      
+      SegmenterSegmentsBlock::SegmentIdDataType currentSegmentId = 0;      
+      std::list< SegmenterSegmentsBlock::SegmentIdDataType > freeSegmentIds;
+      unsigned int neighborSegIdx = 0;
+      SegmenterRegionGrowingSegment* currActSegPtr = (*actSegsListHeadPtrPtr);      
+      
+      // Main iterations loop
       
       do
       {
         iterationMergedSegmentsNumber = 0;
-        
-        // Globals
-        
-        unsigned int segmentsLine = 0;
-        unsigned int segmentsLineBound = 0;
-        unsigned int segmentCol = 0;
-        unsigned int segmentColStart = 0;
-        unsigned int segmentColBound = 0;
-        SegmenterRegionGrowingSegment* minForwardDissimilaritySegmentPtr = 0;
-        SegmenterRegionGrowingSegment::FeatureType forwardDissimilarityValue = 0;
-        SegmenterRegionGrowingSegment::FeatureType minForwardDissimilarityValue = 0;  
-        SegmenterRegionGrowingSegment* minBackwardDissimilaritySegmentPtr = 0;
-        SegmenterRegionGrowingSegment::FeatureType backwardDissimilarityValue = 0;
-        SegmenterRegionGrowingSegment::FeatureType minBackwardDissimilarityValue = 0;             
-        SegmenterSegmentsBlock::SegmentIdDataType* segmentsIdsLinePtr = 0;      
-        SegmenterSegmentsBlock::SegmentIdDataType currentSegmentId = 0;      
-        std::list< SegmenterSegmentsBlock::SegmentIdDataType > freeSegmentIds;
-        unsigned int neighborSegIdx = 0;
-        SegmenterRegionGrowingSegment* currActSegPtr = (*actSegsListHeadPtrPtr);
+        currActSegPtr = (*actSegsListHeadPtrPtr);
         
         // Updating the merger state
         
@@ -1458,7 +1461,11 @@ namespace te
         do
         {
           if( 
-              ( currActSegPtr->m_mergetIteration < globalMergeIterationsCounter ) 
+              (
+                enableSameIterationMerges
+                ||
+                ( currActSegPtr->m_mergetIteration < globalMergeIterationsCounter ) 
+              )
               && 
               ( currActSegPtr->m_size <= internalMaxSegSizeThreshold ) 
             )
@@ -1531,7 +1538,15 @@ namespace te
             if( 
                 ( minForwardDissimilaritySegmentPtr != 0 ) 
                 &&
-                ( minForwardDissimilaritySegmentPtr->m_mergetIteration < globalMergeIterationsCounter ) 
+                ( 
+                  enableSameIterationMerges
+                  ||
+                  (
+                    minForwardDissimilaritySegmentPtr->m_mergetIteration 
+                    < 
+                    globalMergeIterationsCounter 
+                  ) 
+                )
               )
             {
               if( minFoundDissimilarity > minForwardDissimilarityValue )
@@ -1650,6 +1665,7 @@ namespace te
         if( ! freeSegmentIds.empty() )
         {
           segmenterIdsManager.addFreeIDs( freeSegmentIds );
+          freeSegmentIds.clear();
         }
         
         totalMergesNumber += iterationMergedSegmentsNumber;
@@ -1819,6 +1835,22 @@ namespace te
           }            
         }
       }
+    }
+    
+    unsigned int SegmenterRegionGrowingStrategy::getActiveSegmentsNumber( 
+      SegmenterRegionGrowingSegment* const actSegsListHeadPtr ) const
+    {
+      unsigned int returnValue = 0;
+      
+      SegmenterRegionGrowingSegment* currSegPtr = actSegsListHeadPtr;
+      
+      while( currSegPtr )
+      {
+        ++returnValue;
+        currSegPtr = currSegPtr->m_nextActiveSegment;
+      }
+      
+      return returnValue;
     }
     
     //-------------------------------------------------------------------------
