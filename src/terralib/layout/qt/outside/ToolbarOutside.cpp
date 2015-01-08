@@ -111,8 +111,8 @@ te::layout::ToolbarOutside::~ToolbarOutside()
 
 void te::layout::ToolbarOutside::updateObserver( ContextItem context )
 {
-	setVisible(context.getShow());
-	if(context.getShow() == true)
+	setVisible(context.isShow());
+	if(context.isShow() == true)
 		show();
 	else
 		hide();

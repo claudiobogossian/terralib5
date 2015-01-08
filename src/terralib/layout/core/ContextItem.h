@@ -165,12 +165,12 @@ namespace te
         /*
          \brief 
         */
-        void setShow( bool show );
+        virtual void setShow( bool show );
         
         /*!
          \brief 
         */
-        bool getShow();
+        virtual bool isShow();
 
       protected:
         ParamsCreate            m_params; //!<

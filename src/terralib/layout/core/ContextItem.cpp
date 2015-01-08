@@ -145,7 +145,7 @@ void te::layout::ContextItem::setShow( bool show )
   m_show = show;
 }
 
-bool te::layout::ContextItem::getShow()
+bool te::layout::ContextItem::isShow()
 {
   return m_show;
 }
