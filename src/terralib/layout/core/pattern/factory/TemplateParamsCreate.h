@@ -20,7 +20,7 @@
 /*!
   \file TemplateParamsCreate.h
    
-  \brief 
+  \brief Parameters to creation new template object. 
 
   \ingroup layout
 */
@@ -36,19 +36,44 @@ namespace te
 {
   namespace layout
   {
+    /*!
+	   \brief Parameters to creation new template object. 
+	  
+	   \ingroup layout
+
+	   \sa te::layout::ParamsCreate
+	  */
     class TemplateParamsCreate : public ParamsCreate 
     {
       public:
 
+        /*!
+          \brief Constructor
+        */ 
         TemplateParamsCreate();
+
+        /*!
+          \brief Constructor
+
+          \param path full file path
+        */
         TemplateParamsCreate(std::string path);
+
+        /*!
+          \brief Destructor
+        */ 
         virtual ~TemplateParamsCreate();
 
+        /*!
+          \brief Returns full file path.
+
+          \param full file path
+        */
         virtual std::string getPath();
 
       protected:
 
-        std::string m_path;
+        std::string m_path; //!< full file path
     };
 
     /*

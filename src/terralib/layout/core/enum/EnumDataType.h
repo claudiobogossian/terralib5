@@ -20,7 +20,7 @@
 /*!
   \file EnumDataType.h
    
-  \brief 
+  \brief Class to represent a data type enumeration. Ex.: int, double, bool, te::color::RGBAColor** (color), etc.
 
   \ingroup layout
 */
@@ -38,59 +38,140 @@ namespace te
   {
     class EnumType;
 
+    /*!
+      \brief Class to represent a data type enumeration. Ex.: int, double, bool, te::color::RGBAColor** (color), etc.
+	  
+	    \ingroup layout
+
+	    \sa te::layout::AbstractEnum
+	  */
     class TELAYOUTEXPORT EnumDataType : public AbstractEnum
     {
       public:
 
+        /*!
+          \brief Constructor
+        */
         EnumDataType(); 
 
+        /*!
+          \brief Destructor
+        */ 
         virtual ~EnumDataType();
         
+        /*!
+          \brief Returns value that represents type none belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
         virtual EnumType* getDataTypeNone() const;
 
+        /*!
+          \brief Returns value that represents type integer belonging to enumeration.
+		  
+		      \return enum value   	  
+        */
         virtual EnumType* getDataTypeInt() const;
 
+        /*!
+          \brief Returns value that represents type double belonging to enumeration. 
+		  
+		      \return enum value  	  
+        */
         virtual EnumType* getDataTypeDouble() const;
 
+        /*!
+          \brief Returns value that represents type long belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
         virtual EnumType* getDataTypeLong() const;
 
+        /*!
+          \brief Returns value that represents type float belonging to enumeration.
+		  
+		      \return enum value   	  
+        */
         virtual EnumType* getDataTypeFloat() const;
 
+        /*!
+          \brief Returns value that represents type string belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
         virtual EnumType* getDataTypeString() const;
 
+        /*!
+          \brief Returns value that represents type bool belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
         virtual EnumType* getDataTypeBool() const;
 
+        /*!
+          \brief Returns value that represents type te::color::RGBAColor** (color) belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
         virtual EnumType* getDataTypeColor() const;
 
+        /*!
+          \brief Returns value that represents type GridSettings (string) belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
         virtual EnumType* getDataTypeGridSettings() const;
 
+        /*!
+          \brief Returns value that represents type StringList (string) belonging to enumeration.
+		  
+		      \return enum value   	  
+        */
         virtual EnumType* getDataTypeStringList() const;
 
+        /*!
+          \brief Returns value that represents type Font belonging to enumeration.
+		  
+		      \return enum value   	  
+        */
         virtual EnumType* getDataTypeFont() const;
 
+        /*!
+          \brief Returns value that represents type image (string) belonging to enumeration.
+		  
+		      \return enum value   	  
+        */
         virtual EnumType* getDataTypeImage() const;
 
+        /*!
+          \brief Returns value that represents type TextGridSettings (string) belonging to enumeration.
+		  
+		      \return enum value   	  
+        */
         virtual EnumType* getDataTypeTextGridSettings() const;
 
       protected:
 
+        /*!
+          \brief Reimplemented from AbstractEnum
+        */
         virtual void init();
 
       protected:
 
-        EnumType* m_dataTypeNone;
-        EnumType* m_dataTypeInt;
-        EnumType* m_dataTypeDouble;
-        EnumType* m_dataTypeLong;
-        EnumType* m_dataTypeFloat;
-        EnumType* m_dataTypeString;
-        EnumType* m_dataTypeBool;
-        EnumType* m_dataTypeColor;
-        EnumType* m_dataTypeGridSettings;
-        EnumType* m_dataTypeStringList;
-        EnumType* m_dataTypeFont;
-        EnumType* m_dataTypeImage;
-        EnumType* m_dataTypeTextGridSettings;
+        EnumType* m_dataTypeNone; //!< value that represents type none belonging to enumeration
+        EnumType* m_dataTypeInt; //!< value that represents type integer belonging to enumeration
+        EnumType* m_dataTypeDouble; //!< value that represents type double belonging to enumeration
+        EnumType* m_dataTypeLong; //!< value that represents type long belonging to enumeration
+        EnumType* m_dataTypeFloat; //!< value that represents type float belonging to enumeration
+        EnumType* m_dataTypeString; //!< value that represents type string belonging to enumeration
+        EnumType* m_dataTypeBool; //!< value that represents type bool belonging to enumeration
+        EnumType* m_dataTypeColor; //!< value that represents type te::color::RGBAColor** (color) belonging to enumeration
+        EnumType* m_dataTypeGridSettings; //!< value that represents type GridSettings (string) belonging to enumeration
+        EnumType* m_dataTypeStringList; //!< value that represents type StringList (string) belonging to enumeration.
+        EnumType* m_dataTypeFont; //!< value that represents type Font belonging to enumeration
+        EnumType* m_dataTypeImage; //!< value that represents type image (string) belonging to enumeration
+        EnumType* m_dataTypeTextGridSettings; //!< value that represents type TextGridSettings (string) belonging to enumeration
     };
   }
 }

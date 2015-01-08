@@ -20,7 +20,7 @@
 /*!
   \file ItemParamsCreate.h
    
-  \brief 
+  \brief Parameters to creation new object. Ex.: "Model" and "Controller" of the new object (MVC component).
 
   \ingroup layout
 */
@@ -38,19 +38,52 @@ namespace te
     class ItemController;
     class Observable;
 
+    /*!
+	  \brief Parameters to creation new object. Ex.: "Model" and "Controller" of the new object (MVC component).
+	  
+	  \ingroup layout
+
+	  \sa te::layout::ParamsCreate
+	  */
     class ItemParamsCreate : public ParamsCreate 
     {
       public:
+
+        /*!
+          \brief Constructor
+        */ 
         ItemParamsCreate();
+
+        /*!
+          \brief Constructor
+
+          \param controller "Controller" part of MVC component
+          \param o "Model" part of MVC component
+        */ 
         ItemParamsCreate(ItemController* controller, Observable* model);
+
+        /*!
+          \brief Destructor
+        */ 
         virtual ~ItemParamsCreate();
 
+        /*!
+          \brief Returns the "Controller" part of the MVC.
+
+          \return controller
+        */
         ItemController*	getController();
+
+        /*!
+          \brief Returns the "Model" part of the MVC.
+
+          \return model
+        */
         Observable*		getModel();
         
         protected:
-        ItemController*	m_controller;
-        Observable*		m_model;
+        ItemController*	m_controller; //!< "Controller" part of MVC component.
+        Observable*		m_model; //!< "Model" part of MVC component.
     };
 
     /*

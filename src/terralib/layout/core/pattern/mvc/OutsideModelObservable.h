@@ -20,7 +20,7 @@
 /*!
   \file OutsideModelObservable.h
    
-  \brief 
+  \brief Abstract class to represent an observable. "Model" part of MVC widget. All classes representing the model of a widget must inherit from this class.
 
   \ingroup layout
 */
@@ -45,61 +45,148 @@ namespace te
   {
     class Observer;
 
+    /*!
+      \brief Abstract class to represent an observable. "Model" part of MVC widget. All classes representing the model of a widget must inherit from this class.
+	  
+	    \ingroup layout
+
+      \sa te::layout::Observable
+	  */
     class TELAYOUTEXPORT OutsideModelObservable : public Observable
     {
     public:
 
+      /*!
+          \brief Constructor
+       */ 
       OutsideModelObservable();
+
+      /*!
+          \brief Destructor
+       */ 
       virtual ~OutsideModelObservable();
 
+      /*!
+          \brief Reimplemented from Observable
+       */
       virtual bool addObserver(Observer* o);
+
+      /*!
+          \brief Reimplemented from Observable
+       */
       virtual bool removeObserver(Observer* o);
 
+      /*!
+          \brief Reimplemented from Observable
+       */
       virtual te::gm::Envelope getBox();
+      
+      /*!
+          \brief Change the bounding rectangle.
+
+          \param bounding rectangle
+       */
       virtual void setBox(te::gm::Envelope box);
 
+      /*!
+          \brief Returns the background color of the MVC widget.
+
+          \return background color
+       */
       virtual int getColor();
+      
+      /*!
+          \brief Change the background color of the MVC widget.
+
+          \param color background color
+       */
       virtual void setColor(int color);
 
+      /*!
+          \brief Change coordinate llx,lly of the MVC widget.
+
+          \param x llx
+          \param y lly
+       */
       virtual void setPosition(const double& x, const double& y);
+      
+      /*!
+          \brief Reimplemented from Observable
+       */
       virtual EnumType* getType();
+      
+      /*!
+          \brief Reimplemented from Observable
+       */
       virtual void setType(EnumType* type);
 
+      /*!
+          \brief Reimplemented from Observable
+       */
       virtual std::string getName();
 
+      /*!
+          \brief Reimplemented from Observable
+       */
       virtual int getZValue();
+      
+      /*!
+          \brief Reimplemented from Observable
+       */
       virtual void setZValue(int zValue);
 
+      /*!
+          \brief Reimplemented from Observable
+       */
       virtual void updateProperties(te::layout::Properties* properties);
 
+      /*!
+          \brief Reimplemented from Observable
+       */
       virtual Properties* getProperties() const;
 
+      /*!
+          \brief Reimplemented from Observable
+       */
       virtual int getId();
 
+      /*!
+          \brief Reimplemented from Observable
+       */
       virtual void setId( int id );
 
+      /*!
+          \brief Reimplemented from Observable
+       */
       virtual void setResizable(bool resize);
 
+      /*!
+          \brief Reimplemented from Observable
+       */
       virtual bool isResizable();
 
     protected:
 
+      /*!
+          \brief Reimplemented from Observable
+       */
       virtual void notifyAll(ContextItem context);
 
     protected:
 
-      std::set<Observer*>	m_observers;
-      te::gm::Envelope		m_box;
-      te::gm::Coord2D 		m_centerCoordinate;
-      int							    m_color;
-      Properties*         m_properties;
-      EnumType*           m_type;
-      int                 m_zValue;
-      int                 m_id;
-      bool                m_resizable;
+      std::set<Observer*>	m_observers; //!< set of observers of this object
+      te::gm::Envelope		m_box; //!< bounding rectangle 
+      te::gm::Coord2D 		m_centerCoordinate; //!< center coordinate of the bounding rectangle
+      int							    m_color; //!< background color
+      Properties*         m_properties; //!< properties
+      EnumType*           m_type; //!< type of the MVC widget
+      int                 m_zValue; //!< The Z value decides the stacking order of drawing
+      int                 m_id; //!< hashcode
+      bool                m_resizable; //!< true if resizable, false otherwise
 
     private:
-      std::string m_name;
+
+      std::string m_name; //!< name of the MVC widget
     };
   }
 }

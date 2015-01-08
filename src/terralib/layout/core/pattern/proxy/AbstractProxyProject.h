@@ -20,7 +20,9 @@
 /*!
   \file AbstractProxyProject.h
    
-  \brief 
+  \brief Abstract class to provide a surrogate or placeholder for te::qt::af::Project to control access to it. 
+    A wrapper to access without complexity. This abstract proxy is required because module not must have dependence te::qt::af.
+    Useful to access the Layers belonging to the project.
 
   \ingroup layout
 */
@@ -38,15 +40,28 @@ namespace te
 {
   namespace layout
   {
+    /*!
+    \brief Abstract class to provide a surrogate or placeholder for te::qt::af::Project to control access to it. 
+      A wrapper to access without complexity. This abstract proxy is required because module not must have dependence te::qt::af.
+      Useful to access the Layers belonging to the project.
+	  
+	  \ingroup layout
+	  */
     class TELAYOUTEXPORT AbstractProxyProject
     {
       public:
        
+        /*!
+          \brief Constructor
+        */
         AbstractProxyProject();
 
+        /*!
+          \brief Destructor
+        */
         virtual ~AbstractProxyProject();
 
-      /*!
+        /*!
           \brief It gets all the layers (single and folder layers) of the project.
 
           \param invalid If including invalid layers.
@@ -64,6 +79,13 @@ namespace te
         */
         virtual const std::list<te::map::AbstractLayerPtr> getSelectedLayers(bool invalid = true) const = 0;
 
+        /*!
+            \brief Checks whether the layer is in the project.
+
+            \param name layer name to check
+
+            \return pointer to the layer found or null
+         */
         virtual te::map::AbstractLayerPtr contains(std::string name) = 0;
     };
   }

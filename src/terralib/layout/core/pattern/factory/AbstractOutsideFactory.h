@@ -20,7 +20,7 @@
 /*!
   \file AbstractOutsideFactory.h
    
-  \brief 
+  \brief Abstract Factory provide an interface for creating families of related or dependent graphic widgets (MVC widgets) without specifying their concrete classes.
 
   \ingroup layout
 */
@@ -39,12 +39,26 @@ namespace te
   {
     class Observer;
 
+    /*!
+	  \brief Abstract Factory provide an interface for creating families of related or dependent graphic widgets (MVC widgets) without specifying their concrete classes.
+	  
+	  \ingroup layout
+	  */
     class AbstractOutsideFactory 
     {
     public:
 
+      /*!
+          \brief Constructor
+       */
       virtual ~AbstractOutsideFactory(void) {}
 
+      /*!
+          \brief Method that builds and returns a new widget (MVC widget) of the type defined as parameter.
+
+          \param type type of the new object
+          \param params parameters to creation new object. Ex.: "Model" and "Controller" of the new object (MVC widget).
+       */
       virtual Observer* make(EnumType* type, OutsideParamsCreate params = OutsideParamsCreate()) = 0;
     };
   }

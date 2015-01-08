@@ -20,7 +20,9 @@
 /*!
   \file ProxyProject.h
    
-  \brief 
+   \brief Provide a surrogate or placeholder for te::qt::af::Project to control access to it. 
+    A wrapper to access without complexity. This proxy is required because module not must have dependence te::qt::af.
+    Useful to access the Layers belonging to the project.
 
   \ingroup layout
 */
@@ -45,35 +47,45 @@ namespace te
     {
       namespace layout
       {
+        /*!
+        \brief Provide a surrogate or placeholder for te::qt::af::Project to control access to it. 
+          A wrapper to access without complexity. This proxy is required because module not must have dependence te::qt::af.
+          Useful to access the Layers belonging to the project.
+	  
+	      \ingroup layout
+
+        \sa te::layout::AbstractProxyProject
+	      */
         class ProxyProject : public QObject, public te::layout::AbstractProxyProject
         {
           Q_OBJECT //for slots/signals
 
           public:
 
+            /*!
+              \brief Constructor
+            */
             ProxyProject();
 
+            /*!
+              \brief Destructor
+            */
             virtual ~ProxyProject();
 
-          /*!
-            \brief It gets all the layers (single and folder layers) of the project.
+            /*!
+              \brief Reimplemented from AbstractProxyProject
+            */
+            std::list<te::map::AbstractLayerPtr> getAllLayers(bool invalid = true);
 
-            \param invalid If including invalid layers.
+            /*!
+              \brief Reimplemented from AbstractProxyProject
+            */
+            const std::list<te::map::AbstractLayerPtr> getSelectedLayers(bool invalid = true) const;
 
-            \return The list of all the layers (single and folder layers) of the project.
-          */
-          std::list<te::map::AbstractLayerPtr> getAllLayers(bool invalid = true);
-
-          /*!
-            \brief It gets all the layers that are selected.
-
-            \param invalid If including invalid layers.
-
-            \return The list of all the layers that are selected.
-          */
-          const std::list<te::map::AbstractLayerPtr> getSelectedLayers(bool invalid = true) const;
-
-          te::map::AbstractLayerPtr contains(std::string name);
+            /*!
+              \brief Reimplemented from AbstractProxyProject
+            */
+            te::map::AbstractLayerPtr contains(std::string name);
          };
        }
     }

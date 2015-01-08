@@ -20,7 +20,7 @@
 /*!
   \file AbstractEnum.h
    
-  \brief 
+  \brief Abstract class to represent an enumeration.
 
   \ingroup layout
 */
@@ -40,25 +40,52 @@ namespace te
 {
   namespace layout
   {
+    /*!
+      \brief Abstract class to represent an enumeration.
+	  
+	    \ingroup layout
+	  */
     class TELAYOUTEXPORT AbstractEnum
     {
       public:
        
+        /*!
+          \brief Constructor
+        */
         AbstractEnum();
 
+        /*!
+          \brief Destructor
+        */ 
         virtual ~AbstractEnum();
 
+        /*!
+          \brief Searching for a value of the enumeration by id
+
+          \param enumId id
+          \return value found in the enumeration or null 
+        */ 
         virtual EnumType* getEnum(int enumId) const;
 
+        /*!
+          \brief Searching for an enumeration value by name
+
+          \param name 
+          \return value found in the enumeration or null 
+        */ 
         virtual EnumType* getEnum(std::string name) const;
 
       protected:
         
+          /*!
+            \brief Creates the enumeration values and adds the list
+              Reimplement this function in a AbstractEnum subclass to provide the enum's init implementation.
+          */ 
           virtual void init() = 0;
 
       protected:
 
-        std::vector<EnumType*> m_enums;
+        std::vector<EnumType*> m_enums; //!< list of enumeration values
     };
   }
 }

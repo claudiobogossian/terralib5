@@ -20,8 +20,8 @@
 /*!
   \file AbstractBuildGraphicsItem.h
    
-  \brief This is the abstract build graphics item for build graphics.
-
+  \brief Abstract class for build graphics MVC components. 
+    
   \ingroup layout
 */
 
@@ -47,7 +47,7 @@ namespace te
 	/*!
       \class AbstractBuildGraphicsItem
 
-      \brief This is the abstract build graphics item for build graphics.
+      \brief Abstract class for build graphics MVC components. 
 
       \ingroup layout
      */
