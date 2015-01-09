@@ -472,9 +472,9 @@ te::rst::RasterPtr te::rst::CropRaster(const te::rst::Raster& rin, const te::gm:
     gridCoord = rout->getGrid()->geoToGrid(geoCoord.x, geoCoord.y);
     gridColumn = (unsigned int) gridCoord.x;
     gridRow = (unsigned int) gridCoord.y;
-    if (gridColumn < 0 || gridColumn >= rout->getNumberOfColumns())
+    if (gridColumn >= rout->getNumberOfColumns())
       continue;
-    if (gridRow < 0 || gridRow >= rout->getNumberOfRows())
+    if (gridRow >= rout->getNumberOfRows())
       continue;
     rout->setValues(gridColumn, gridRow, pixels);
   }
