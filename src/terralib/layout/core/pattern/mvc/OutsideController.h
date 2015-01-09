@@ -20,7 +20,7 @@
 /*!
   \file OutsideController.h
    
-  \brief 
+  \brief Abstract class to represent a controller. "Controller" part of MVC widget. All classes representing the controller of a widget must inherit from this class.
 
   \ingroup layout
 */
@@ -40,21 +40,61 @@ namespace te
     class Observer;
     class EnumType;
 
+    /*!
+      \brief Abstract class to represent a controller. "Controller" part of MVC widget. All classes representing the controller of a widget must inherit from this class.
+	  
+	    \ingroup layout
+	  */
     class TELAYOUTEXPORT OutsideController 
     {
     public:
 
+      /*!
+          \brief Constructor
+
+          \param o "Model" part of MVC widget
+       */
       OutsideController(Observable* o);
+
+      /*!
+          \brief Constructor
+
+          \param o "Model" part of MVC widget
+          \param type type of the MVC widget.
+       */
       OutsideController(Observable* o, EnumType* type);
+
+      /*!
+          \brief Destructor
+       */ 
       virtual ~OutsideController();
 
+      /*!
+          \brief Change coordinate llx,lly of the MVC widget.
+            Reimplement this function in a ItemController subclass to provide the controller's create implementation.
+
+          \param x llx
+          \param y lly
+        */
       virtual void setPosition(const double& x, const double& y) = 0;
+
+      /*!
+          \brief Returns the "Model" part of the MVC widget.
+
+          \return model
+       */
       const Observable* getModel();
+
+      /*!
+          \brief Returns the "View" part of the MVC widget.
+
+          \return view 
+       */
       const Observer* getView();
 
     protected:
-      Observable* m_model;
-      Observer* m_view;
+      Observable* m_model; //!< "Model" part of the MVC widget.
+      Observer* m_view; //!< "View" part of the MVC widget.
     };
   }
 }

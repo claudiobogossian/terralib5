@@ -20,7 +20,7 @@
 /*!
   \file EnumTemplateType.h
    
-  \brief 
+  \brief Class to represent a template type enumeration. Ex.: json, etc.
 
   \ingroup layout
 */
@@ -38,26 +38,52 @@ namespace te
   {
     class EnumType;
 
+    /*!
+      \brief Class to represent a template type enumeration. Ex.: json, etc.
+	  
+	    \ingroup layout
+
+	    \sa te::layout::AbstractEnum
+	  */
     class TELAYOUTEXPORT EnumTemplateType : public AbstractEnum
     {
       public:
 
+        /*!
+          \brief Constructor
+        */
         EnumTemplateType(); 
 
+        /*!
+          \brief Destructor
+        */ 
         virtual ~EnumTemplateType();
         
+        /*!
+          \brief Returns value that represents json type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
         virtual EnumType* getJsonType() const;
 
+        /*!
+          \brief Returns value that represents none type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
         virtual EnumType* getNoneType() const;
 
       protected:
 
+        /*!
+          \brief Reimplemented from AbstractEnum
+        */
         virtual void init();
 
       protected:
 
-        EnumType* m_noneType;
-        EnumType* m_jsonType;
+        EnumType* m_noneType; //!< value that represents none type belonging to enumeration
+        EnumType* m_jsonType; //!< value that represents json type belonging to enumeration
     };
   }
 }

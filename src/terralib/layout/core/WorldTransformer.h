@@ -432,4 +432,4 @@ namespace te
   }   // end namespace layout
 }     // end namespace te
 
-#endif  // __TERRALIB_MAPTOOLS_INTERNAL_WORLDTRANSFORMER_H
+#endif 

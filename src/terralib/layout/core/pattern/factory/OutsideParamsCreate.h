@@ -20,7 +20,7 @@
 /*!
   \file OutsideParamsCreate.h
    
-  \brief 
+  \brief Parameters to creation new object. Ex.: "Model" and "Controller" of the new object (MVC widget).
 
   \ingroup layout
 */
@@ -38,20 +38,52 @@ namespace te
     class OutsideController;
     class Observable;
 
+    /*!
+	  \brief Parameters to creation new object. Ex.: "Model" and "Controller" of the new object (MVC widget).
+	  
+	  \ingroup layout
+
+	  \sa te::layout::ParamsCreate
+	  */
     class OutsideParamsCreate : public ParamsCreate 
     {
     public:
 
+      /*!
+          \brief Constructor
+       */ 
       OutsideParamsCreate();
+
+      /*!
+          \brief Constructor
+
+          \param controller "Controller" part of MVC widget
+          \param o "Model" part of MVC widget
+       */ 
       OutsideParamsCreate(OutsideController* controller, Observable* model);
+
+      /*!
+          \brief Destructor
+       */ 
       virtual ~OutsideParamsCreate();
 
+      /*!
+          \brief Returns the "Controller" part of the MVC.
+
+          \return controller
+       */
       OutsideController*	getController();
+
+      /*!
+          \brief Returns the "Model" part of the MVC.
+
+          \return model
+       */
       Observable*		getModel();
 
     protected:
-      OutsideController*	m_controller;
-      Observable*		m_model;
+      OutsideController*	m_controller; //!< "Controller" part of MVC widget.
+      Observable*		m_model; //!< "Model" part of MVC widget.
     };
 
     /*

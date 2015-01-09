@@ -20,7 +20,7 @@
 /*!
   \file EnumGridStyleType.h
    
-  \brief 
+  \brief Class to represent a grid style type enumeration. Ex.: continuous, cross, etc.
 
   \ingroup layout
 */
@@ -38,29 +38,60 @@ namespace te
   {
     class EnumType;
 
+    /*!
+      \brief Class to represent a grid style type enumeration. Ex.: continuous, cross, etc.
+	  
+	    \ingroup layout
+
+	    \sa te::layout::AbstractEnum
+	  */
     class TELAYOUTEXPORT EnumGridStyleType : public AbstractEnum
     {
       public:
 
+        /*!
+          \brief Constructor
+        */
         EnumGridStyleType(); 
 
+        /*!
+          \brief Destructor
+        */ 
         virtual ~EnumGridStyleType();
         
+        /*!
+          \brief Returns value that represents none style type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
         virtual EnumType* getStyleNone() const;
 
+        /*!
+          \brief Returns value that represents continuous style type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
         virtual EnumType* getStyleContinuous() const;
 
+        /*!
+          \brief Returns value that represents cross style type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
         virtual EnumType* getStyleCross() const;
 
       protected:
 
+        /*!
+          \brief Reimplemented from AbstractEnum
+        */
         virtual void init();
 
       protected:
 
-        EnumType* m_styleNone;
-        EnumType* m_styleContinuous;
-        EnumType* m_styleCross;
+        EnumType* m_styleNone; //!< value that represents none style type belonging to enumeration
+        EnumType* m_styleContinuous; //!< value that represents continuous style type belonging to enumeration
+        EnumType* m_styleCross; //!< value that represents cross style type belonging to enumeration
     };
   }
 }

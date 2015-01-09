@@ -20,7 +20,7 @@
 /*!
   \file TemplateFactory.h
    
-  \brief 
+  \brief Factory for creating families of related or dependent templates.
 
   \ingroup layout
 */
@@ -38,12 +38,30 @@ namespace te
   {
     class EnumType;
 
+    /*!
+	  \brief Factory for creating families of related or dependent templates.
+	  
+	  \ingroup layout
+
+    \sa te::layout::AbstractItemFactory
+	  */
     class TELAYOUTEXPORT TemplateFactory : public AbstractTemplateFactory
     {
       public:
+
+        /*!
+          \brief Constructor
+         */
         TemplateFactory();
+
+        /*!
+          \brief Destructor
+         */
         virtual ~TemplateFactory();
 
+        /*!
+          \brief Reimplemented from AbstractItemFactory
+         */
         virtual AbstractTemplate* make(EnumType* type, TemplateParamsCreate params = TemplateParamsCreate());
     };
   }
