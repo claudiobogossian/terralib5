@@ -64,7 +64,7 @@ void te::vp::GeometricOp::setParams(std::vector<std::string> selectedProps,
   m_operations = operations;
   m_objStrategy = objStrategy;
   m_attribute = attribute;
-  m_outputLayer = m_outputLayer;
+  m_outputLayer = outputLayer;
 }
 
 void te::vp::GeometricOp::setOutput(std::auto_ptr<te::da::DataSource> outDsrc, std::string dsname)
@@ -243,6 +243,8 @@ te::da::DataSetType* te::vp::GeometricOp::GetDataSetType( te::vp::GeometricOpObj
             dsType->add(mbrGeom);
             flagGeom = true;
           }
+          break;
+        default:
           break;
       }
     }
