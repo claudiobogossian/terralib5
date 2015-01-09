@@ -60,7 +60,6 @@ te::md::MD_Metadata* te::md::Extract(const te::da::DataSet* d)
   int pos = static_cast<int>(te::da::GetFirstPropertyPos(d, te::dt::GEOMETRY_TYPE));
 
   std::auto_ptr<te::gm::Geometry> g = d->getGeometry(pos);
-  int srid = g->getSRID();
   std::auto_ptr<te::gm::Envelope> env = const_cast<te::da::DataSet*>(d)->getExtent(pos); 
   md->setReferenceSystem(g->getSRID());
   id->addGeographicBBoxExt(env.get());
