@@ -72,7 +72,7 @@ void TsSegmenter::BlockProcessingWithoutMerging()
   algoInputParams.m_enableThreadedProcessing = false;
   algoInputParams.m_maxSegThreads = 0;
   algoInputParams.m_enableBlockProcessing = true;
-  algoInputParams.m_enableBlockMerging = false;
+  algoInputParams.m_blocksOverlapPercent = 0;
   algoInputParams.m_maxBlockSize = 100;
   algoInputParams.m_strategyName = "Dummy";
   algoInputParams.setSegStrategyParams( strategyParameters );
@@ -126,7 +126,7 @@ void TsSegmenter::BlockProcessingWithMerging()
   algoInputParams.m_enableThreadedProcessing = false;
   algoInputParams.m_maxSegThreads = 0;
   algoInputParams.m_enableBlockProcessing = true;
-  algoInputParams.m_enableBlockMerging = true;
+  algoInputParams.m_blocksOverlapPercent = 20;
   algoInputParams.m_maxBlockSize = 100;
   algoInputParams.m_strategyName = "Dummy";
   algoInputParams.setSegStrategyParams( strategyParameters );
@@ -180,7 +180,7 @@ void TsSegmenter::ThreadedProcessing()
   algoInputParams.m_enableThreadedProcessing = true;
   algoInputParams.m_maxSegThreads = 4;
   algoInputParams.m_enableBlockProcessing = true;
-  algoInputParams.m_enableBlockMerging = true;
+  algoInputParams.m_blocksOverlapPercent = 20;
   algoInputParams.m_maxBlockSize = 100;
   algoInputParams.m_strategyName = "Dummy";
   algoInputParams.setSegStrategyParams( strategyParameters );
@@ -236,7 +236,7 @@ void TsSegmenter::RegionGrowingMeanStrategy()
   algoInputParams.m_enableThreadedProcessing = false;
   algoInputParams.m_maxSegThreads = 0;
   algoInputParams.m_enableBlockProcessing = false;
-  algoInputParams.m_enableBlockMerging = false;
+  algoInputParams.m_blocksOverlapPercent = 0;
   algoInputParams.m_maxBlockSize = 0;
   algoInputParams.m_strategyName = "RegionGrowing";
   algoInputParams.setSegStrategyParams( strategyParameters );
@@ -292,7 +292,7 @@ void TsSegmenter::RegionGrowingMeanStrategyBlockProcessing()
   algoInputParams.m_enableThreadedProcessing = false;
   algoInputParams.m_maxSegThreads = 0;
   algoInputParams.m_enableBlockProcessing = true;
-  algoInputParams.m_enableBlockMerging = true;
+  algoInputParams.m_blocksOverlapPercent = 20;
   algoInputParams.m_maxBlockSize = 100;
   algoInputParams.m_strategyName = "RegionGrowing";
   algoInputParams.setSegStrategyParams( strategyParameters );
@@ -353,7 +353,7 @@ void TsSegmenter::RegionGrowingBaatzStrategy()
   algoInputParams.m_enableThreadedProcessing = false;
   algoInputParams.m_maxSegThreads = 0;
   algoInputParams.m_enableBlockProcessing = false;
-  algoInputParams.m_enableBlockMerging = false;
+  algoInputParams.m_blocksOverlapPercent = 0;
   algoInputParams.m_maxBlockSize = 0;
   algoInputParams.m_strategyName = "RegionGrowing";
   algoInputParams.setSegStrategyParams( strategyParameters );
@@ -414,7 +414,7 @@ void TsSegmenter::RegionGrowingBaatzStrategyBlockProcessing()
   algoInputParams.m_enableThreadedProcessing = false;
   algoInputParams.m_maxSegThreads = 0;
   algoInputParams.m_enableBlockProcessing = true;
-  algoInputParams.m_enableBlockMerging = true;
+  algoInputParams.m_blocksOverlapPercent = 20;
   algoInputParams.m_maxBlockSize = 100;
   algoInputParams.m_strategyName = "RegionGrowing";
   algoInputParams.setSegStrategyParams( strategyParameters );

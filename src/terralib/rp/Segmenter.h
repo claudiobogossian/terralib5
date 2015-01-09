@@ -94,9 +94,9 @@ namespace te
             
             bool m_enableBlockProcessing; //!< If true, the original raster will be splitted into small blocks, each one will be segmented independently and the result will be merged (if possible) at the end (default:true).
             
-            bool m_enableBlockMerging; //!< If true, a block merging procedure will be performed (default:true).
-            
             unsigned int m_maxBlockSize; //!< The input image will be split into blocks with this width for processing, this parameter tells the maximum block lateral size (width or height), the default: 0 - the size will be defined following the current system resources and physical processors number).
+            
+            unsigned char m_blocksOverlapPercent; //!< The percentage of blocks overlapped area (valid range:0-25, defaul:10).
             
             std::string m_strategyName; //!< The segmenter strategy name see each te::rp::SegmenterStrategyFactory inherited classes documentation for reference.
             
@@ -259,25 +259,25 @@ namespace te
         /*! 
           \brief Calc the best sub-image block size for each thread to
           process.
-          \param totalImageLines The total original full image lines.
-          \param totalImageCols The total original full image columns.
           \param minBlockPixels The minimun allowed pixels number for each block (expanded block).
           \param maxBlockPixels The maximum allowed pixels number for each block (expanded block).
           \param blocksHOverlapSize The blocks horizontal overlap size (number of columns).
           \param blocksVOverlapSize The blocks vertical overlap size (number of rows).
-          \param blockWidth The calculated block width (non-expanded block).
-          \param blockHeight The calculated block height (non-expanded block).
+          \param nonExpandedBlockWidth The calculated non-expanded block width (non-expanded block).
+          \param nonExpandedBlockHeight The calculated non-expanded block height (non-expanded block).
+          \param expandedBlockWidth The calculated expanded block width (non-expanded block).
+          \param expandedBlockHeight The calculated expanded block height (non-expanded block).          
           \return true if OK, false on errors.
         */                
         bool calcBestBlockSize( 
-          const unsigned int totalImageLines, 
-          const unsigned int totalImageCols, 
           const unsigned int minExapandedBlockPixels,
           const unsigned int maxExapandedBlockPixels, 
-          const unsigned int blocksHOverlapSize,
-          const unsigned int blocksVOverlapSize, 
+          unsigned int& blocksHOverlapSize,
+          unsigned int& blocksVOverlapSize, 
           unsigned int& nonExpandedBlockWidth,
-          unsigned int& nonExpandedBlockHeight ) const;        
+          unsigned int& nonExpandedBlockHeight,
+          unsigned int& expandedBlockWidth,
+          unsigned int& expandedBlockHeight ) const;        
           
         /*! 
           \brief Segmenter thread entry.
