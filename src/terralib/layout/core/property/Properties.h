@@ -20,7 +20,8 @@
 /*!
   \file Properties.h
    
-  \brief 
+  \brief The Properties class represents a persistent set of properties. The Properties can be saved to a file (Ex.: .json) or loaded from a file (Ex.: .json).
+    Also used for interaction, with user or other classes of this module, to change state of a MVC Component.
 
   \ingroup layout
 */
@@ -42,38 +43,123 @@ namespace te
 {
   namespace layout
   {
+    /*!
+      \brief The Properties class represents a persistent set of properties. The Properties can be saved to a file (Ex.: .json) or loaded from a file (Ex.: .json).
+        Also used for interaction, with user or other classes of this module, to change state of a MVC Component.
+	  
+	    \ingroup layout
+	  */
     class TELAYOUTEXPORT Properties
     {
       public:
+
+        /*!
+          \brief Constructor
+
+          \param objectName Object name that owns these properties
+          \param type Object type that owns these properties
+        */ 
         Properties(std::string objectName, EnumType* type = 0);
+
+        /*!
+          \brief Destructor
+        */
         virtual ~Properties(void);
 
+        /*!
+          \brief Adds the specified property to the set of properties for this object.
+
+          \param property specified property
+          \return true if add, false otherwise 
+        */
         virtual bool addProperty(Property property);
+
+        /*!
+          \brief Removes a property from the set of properties of this object.
+
+          \param property specified property
+          \return true if remove, false otherwise 
+        */
         virtual bool removeProperty(std::string name);
+
+        /*!
+          \brief Clear set of properties of this object.
+
+          \return true if clear, false otherwise
+        */
         virtual bool clear();
+
+        /*!
+          \brief Returns set of all properties
+
+          \return set of all properties
+        */
         virtual std::vector<Property> getProperties();
 
+        /*!
+          \brief Returns object name that owns these properties.
+
+          \return object name that owns these properties
+        */
         virtual std::string getObjectName();
 
+        /*!
+          \brief Sets object name that owns these properties.
+
+          \param object name that owns these properties
+        */
         virtual void setObjectName(std::string name);
 
+        /*!
+          \brief Returns object type that owns these properties.
+
+          \return object type that owns these properties
+        */
         virtual EnumType* getTypeObj();
 
+        /*!
+          \brief Sets object type that owns these properties.
+
+          \param object type that owns these properties
+        */
         virtual void setTypeObj(EnumType* type);
 
+        /*!
+          \brief 
+
+          \param 
+        */
         virtual void setHasWindows(bool windows);
 
+        /*!
+          \brief 
+
+          \return 
+        */
         virtual bool hasWindows();
 
+        /*!
+          \brief Checks if the property is contained within the set of properties.
+
+          \param property
+          \return true if contained, false otherwise
+        */
         virtual bool contains(Property property);
 
+        /*!
+          \brief Checks if the name is contained within the set of properties.
+
+          \param name name of the property
+          \return true if contained, false otherwise
+        */
         virtual Property contains(std::string name);
 
       protected:
-        std::vector<Property> m_properties;
-        std::string m_objName;
-        EnumType* m_typeObj;
-        bool m_hasWindows;
+
+        std::vector<Property> m_properties; //!< set of properties for this object
+        std::string m_objName; //!< Object name that owns these properties
+        EnumType* m_typeObj; //!< Object type that owns these properties
+        bool m_hasWindows; //!<
 
     };
 

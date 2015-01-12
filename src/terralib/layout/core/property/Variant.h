@@ -20,7 +20,7 @@
 /*!
   \file Variant.h
    
-  \brief 
+  \brief Class acts like a union for some C++/TerraLib5 data types. Responsible for storing the value.
 
   \ingroup layout
 */
@@ -49,46 +49,132 @@ namespace te
 {
   namespace layout
   {
+    /*!
+	    \brief Class acts like a union for some C++/TerraLib5 data types. Responsible for storing the value.
+	  
+	    \ingroup layout
+	  */
     class Variant
     {
       public:
 
+        /*!
+          \brief Constructor
+        */ 
         Variant();
 
+        /*!
+          \brief Constructor
+
+          \type data type
+          \valueCopy value pointer (real data)
+        */
         Variant(EnumType* type, const void* valueCopy);
 
+        /*!
+          \brief Destructor
+        */ 
         virtual ~Variant();
         
+        /*!
+          \brief Stores a copy of value.
+
+          \param value copies the value to be stored
+          \param type data type
+        */
         template <typename ValueType>
         void setValue(ValueType value, EnumType* type);
 
-        /* the ptree boost returns data with string type */
+        /*!
+          \brief 
+        */ 
         virtual void fromPtree(boost::property_tree::ptree tree, EnumType* type);
 
+        /*!
+          \brief Returns data type of this object.
+        */ 
         EnumType* getType();
 
+        /*!
+          \brief Return true if value is not of common C++ data type, false otherwise.
+
+          \param true if value is not of common C++ data type, false otherwise
+        */ 
         virtual bool isComplex();
         
+        /*!
+          \brief Returns the value of string type. (The setValue method received a string)
+
+          \return value of string type
+        */
         std::string toString();
 
+        /*!
+          \brief Returns the value of double type. (The setValue method received a double)
+
+          \return value of double type
+        */
         double toDouble();
 
+        /*!
+          \brief Returns the value of int type. (The setValue method received a int)
+
+          \return value of int type
+        */
         int toInt();
 
+        /*!
+          \brief Returns the value of long type. (The setValue method received a long)
+
+          \return value of long type
+        */
         long toLong();
 
+        /*!
+          \brief Returns the value of float type. (The setValue method received a float)
+
+          \return value of float type
+        */
         float toFloat();
 
+        /*!
+          \brief Returns the value of boolean type. (The setValue method received a boolean)
+
+          \return value of boolean type
+        */
         bool toBool();
 
+        /*!
+          \brief Returns the value of te::color::RGBAColor type. (The setValue method received a te::color::RGBAColor). Complex type.
+
+          \return value of te::color::RGBAColor type
+        */
         te::color::RGBAColor toColor(); 
 
+        /*!
+          \brief Returns the value of te::layout::Font type. (The setValue method received a te::layout::Font). Complex type.
+
+          \return value of te::layout::Font type
+        */
         Font toFont();
 
+        /*!
+          \brief Converts the value to a string.
+
+          \return Value as a string
+        */
         virtual std::string convertToString();
 
+        /*!
+          \brief Returns true if no value has been set, false otherwise.
+
+          \return true if no value has been set, false otherwise
+        */
         bool isNull();
 
+        /*!
+          \brief Reset state of object. Null state.
+        */
         virtual void clear();
                 
         bool operator ==(const Variant& other); 
@@ -96,34 +182,82 @@ namespace te
 
     protected:
 
+      /*!
+          \brief Stores a copy of value.
+
+          \param v this object
+          \param value copies the value to be stored
+          \param type data type
+        */
       template <typename ValueType>
       void variantSetValue(Variant &v, const ValueType& value, EnumType* type);
       
+      /*!
+          \brief Discovers the type of the value and sets for the corresponding attribute (storage).
+
+          \param valueCopy pointer of the value to be stored 
+       */
       virtual void convertValue(const void* valueCopy);
-            
+      
+      /*!
+          \brief Convert a string representation of a number into a double value.
+
+          \param str string representation of a number
+          \return double value
+       */
       virtual double string2Double(std::string str);
 
+      /*!
+          \brief Convert a string representation of a number into a int value.
+
+          \param str string representation of a number
+          \return int value
+       */
       virtual int string2Int(std::string str);
 
+      /*!
+          \brief Convert a string representation of a number into a float value.
+
+          \param str string representation of a number
+          \return float value
+       */
       virtual float string2Float(std::string str);
 
+      /*!
+          \brief Convert a string representation of a number into a long value.
+
+          \param str string representation of a number
+          \return long value
+       */
       virtual long string2Long(std::string str);
 
+      /*!
+          \brief Convert a int value into a string representation of a number.
+
+          \param value int value
+          \return string representation of a number
+       */
       virtual std::string toString(int value);
 
+      /*!
+          \brief Convert a string value into a boolean representation of a string. Ex.: true, false.
+
+          \param str string value
+          \return boolean representation of a string. Ex.: true, false
+       */
       virtual bool toBool(std::string str);
 
-      std::string m_sValue;
-      double m_dValue;
-      int m_iValue;
-      long m_lValue;
-      float m_fValue;
-      bool m_bValue;
-      te::color::RGBAColor m_colorValue;
-      Font m_fontValue;
-      EnumType* m_type;
-      bool m_null;
-      bool m_complex;
+      std::string m_sValue; //!< value of string type
+      double m_dValue; //!< value of double type
+      int m_iValue; //!< value of int type
+      long m_lValue; //!< value of long type
+      float m_fValue; //!< value of float type
+      bool m_bValue; //!< value of boolean type 
+      te::color::RGBAColor m_colorValue; //!< value of te::color::RGBAColor type
+      Font m_fontValue; //!< value of te::layout::Font type
+      EnumType* m_type; //!< data type of this object
+      bool m_null; //!< true if no value has been set, false otherwise
+      bool m_complex; //!< true if value is not of common C++ data type, false otherwise
     };
 
     template<typename ValueType>

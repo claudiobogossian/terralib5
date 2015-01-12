@@ -57,8 +57,6 @@ namespace te
         
         virtual void updateProperties(te::layout::Properties* properties);
 
-        virtual void visitDependent(ContextItem context);
-
         virtual void setBorderDisplacement(double value);
         
         virtual double getBorderDisplacement();
@@ -78,6 +76,8 @@ namespace te
         virtual std::map<te::gm::Point*, std::string> getCoordChildren();
 
        protected:
+
+        virtual void visitDependent(ContextItem context);
 
         virtual void drawLegend(te::map::Canvas* canvas, Utils* utils);
 

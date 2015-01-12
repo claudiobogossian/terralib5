@@ -20,7 +20,7 @@
 /*!
   \file PaperConfig.h
    
-  \brief 
+  \brief Class responsible for paper setting. Size, orientation, custom size, etc.
 
   \ingroup layout
 */
@@ -37,34 +37,82 @@ namespace te
 {
   namespace layout
   {
+    /*!
+      \brief Class responsible for paper setting. Size, orientation, custom size, etc.
+	  
+	    \ingroup layout
+	  */
     class TELAYOUTEXPORT PaperConfig
     {
       public:
 
+        /*!
+          \brief Constructor
+        */
         PaperConfig();
 
+        /*!
+          \brief Constructor
+
+          \param paperType paper type. Ex.: A4
+        */ 
         PaperConfig(LayoutAbstractPaperType paperType);
 
+        /*!
+          \brief Destructor
+        */
         virtual ~PaperConfig();
 
+        /*!
+          \brief Custom paper size.
+		  
+		      \param w width
+          \param h height
+        */
         virtual void setPaperSizeCustom(double w, double h);
 
+        /*!
+          \brief Sets paper type enum. Ex.: A4.
+		  
+		      \param paperType paper type enum
+        */
         virtual void setPaperType(LayoutAbstractPaperType paperType);
 
+        /*!
+          \brief Returns paper type.
+		  
+		      \param paper type enum 	  
+        */
         virtual LayoutAbstractPaperType getPaperType();
 
+        /*!
+          \brief Returns paper size. Height and Width.
+		  
+		      \param w returns width
+          \param h returns height
+        */
         virtual void getPaperSize(double &w, double &h);
 
+        /*!
+          \brief Sets paper orientation type enum. Ex.: Portrait.
+		  
+		      \param paper orientation type enum
+        */
         virtual void setPaperOrientation(LayoutOrientationType orientation);
 
+        /*!
+          \brief Returns paper orientation type enum.
+		  
+		      \param paper orientation type enum
+        */
         virtual LayoutOrientationType getPaperOrientantion();
         
       protected:
 
-        LayoutAbstractPaperType m_paperType;
-        LayoutOrientationType   m_paperOrientationType;
-        double                  m_customW;
-        double                  m_customH;
+        LayoutAbstractPaperType m_paperType; //!< paper type enum. Ex.: A4
+        LayoutOrientationType   m_paperOrientationType; //!< paper orientation type enum. Ex.: Portrait
+        double                  m_customW; //!< custom paper size width
+        double                  m_customH; //!< custom paper size height
     };
   }
 }

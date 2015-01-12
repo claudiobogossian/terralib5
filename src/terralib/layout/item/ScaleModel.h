@@ -52,8 +52,6 @@ namespace te
         
         virtual void updateProperties(te::layout::Properties* properties);
 
-        virtual void visitDependent(ContextItem context);
-
         virtual void setScaleGapX(double x);
 
         virtual double getScaleGapX();
@@ -63,6 +61,8 @@ namespace te
         virtual double getScaleGapY();
 
        protected:
+
+         virtual void visitDependent(ContextItem context);
 
          virtual void drawScale(te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box);
 
