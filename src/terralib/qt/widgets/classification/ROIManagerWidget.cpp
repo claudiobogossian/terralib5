@@ -299,8 +299,6 @@ void te::qt::widgets::ROIManagerWidget::onOpenLayerROIToolButtonClicked()
 
     while(itPoly != polyMap.end())
     {
-      te::gm::Polygon* poly = itPoly->second;
-
       //update tree
       m_sampleCounter ++;
 

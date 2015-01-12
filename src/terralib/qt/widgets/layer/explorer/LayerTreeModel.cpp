@@ -539,7 +539,6 @@ bool te::qt::widgets::LayerTreeModel::removeRows(int row, int count, const QMode
 
     // Finally, remove the item from the tree
     const QList<QObject*>& childrenList = parentItem->children();
-    int numChildren = childrenList.count();
 
     std::vector<QObject*> items;
     for(int i = row; i < row + count; ++i)
