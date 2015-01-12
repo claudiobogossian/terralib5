@@ -49,11 +49,11 @@
 // STL Includes
 #include <cassert>
 
-te::graph::Graph::Graph() : AbstractGraph(), 
-  m_graphData(0),
+te::graph::Graph::Graph() : AbstractGraph(),
   m_dataManager(0),
   m_graphCache(0), 
-  m_metadata(0)
+  m_metadata(0),
+  m_graphData(0)
 {
 }
 
@@ -70,11 +70,11 @@ te::graph::Graph::Graph(GraphMetadata* metadata):
 }
 
 te::graph::Graph::Graph(AbstractCachePolicy* cp, AbstractGraphLoaderStrategy* ls): 
-  AbstractGraph(), 
-  m_graphData(0),
+  AbstractGraph(),
   m_dataManager(0),
   m_graphCache(0), 
-  m_metadata(0)
+  m_metadata(0),
+  m_graphData(0)
 {
   assert(ls);
 

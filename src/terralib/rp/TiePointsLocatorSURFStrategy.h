@@ -158,6 +158,8 @@ namespace te
         /*!
           \brief SURF interest points locator.
           
+          \param maxInterestPoints The maximum number of interest points to find.
+          
           \param integralRasterData Integral image raster data.
           
           \param maskRasterDataPtr The loaded mask raster data pointer (or zero if no mask is avaliable).
@@ -173,6 +175,7 @@ namespace te
           \note InterestPointT::m_feature3 will 1 if the laplacian sign is positive, or zero if negative.
         */             
         bool locateSurfInterestPoints( 
+          const unsigned int maxInterestPoints,
           const FloatsMatrix& integralRasterData,
           UCharsMatrix const* maskRasterDataPtr,
           InterestPointsSetT& interestPoints ) const;   

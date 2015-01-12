@@ -43,13 +43,13 @@
 #include <QGroupBox>
 
 te::layout::ObjectInspectorOutside::ObjectInspectorOutside( OutsideController* controller, Observable* o ) :
-	QWidget(0),
-	OutsideObserver(controller, o)
+  QWidget(0),
+  OutsideObserver(controller, o)
 {
-	te::gm::Envelope box = m_model->getBox();	
-	setBaseSize(box.getWidth(), box.getHeight());
-	setVisible(false);
-	setWindowTitle("Layout - Inspetor de Objetos");
+  te::gm::Envelope box = m_model->getBox();
+  setBaseSize(box.getWidth(), box.getHeight());
+  setVisible(false);
+  setWindowTitle("Layout - Inspetor de Objetos");
   setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
   
   m_layoutPropertyBrowser = new ObjectInspectorPropertyBrowser;
@@ -79,17 +79,17 @@ te::layout::ObjectInspectorOutside::~ObjectInspectorOutside()
 
 void te::layout::ObjectInspectorOutside::updateObserver( ContextItem context )
 {
-	setVisible(context.isShow());
-	if(context.isShow() == true)
-		show();
-	else
-		hide();
+  setVisible(context.isShow());
+  if(context.isShow() == true)
+    show();
+  else
+    hide();
 }
 
 void te::layout::ObjectInspectorOutside::setPosition( const double& x, const double& y )
 {
-	move(x,y);
-	refresh();
+  move(x,y);
+  refresh();
 }
 
 te::gm::Coord2D te::layout::ObjectInspectorOutside::getPosition()
@@ -122,10 +122,9 @@ void te::layout::ObjectInspectorOutside::itemsInspector(QList<QGraphicsItem*> gr
   foreach( QGraphicsItem *item, graphicsItems) 
   {
     if (item)
-    {			
+    {
       zValue = 0;
 
-      QGraphicsItem* parentItem = item->parentItem();          
       zValue = item->zValue();
 
       ItemObserver* lItem = dynamic_cast<ItemObserver*>(item);

@@ -166,8 +166,8 @@ bool te::qt::widgets::SegmenterWizard::execute()
   algoInputParams.m_enableThreadedProcessing = m_segmenterAdvOptPage->getForm()->m_enableThreadedProcessingcheckBox->isChecked();
   algoInputParams.m_maxSegThreads = m_segmenterAdvOptPage->getForm()->m_maximumThreadsNumberLineEdit->text().toUInt();
   algoInputParams.m_enableBlockProcessing = m_segmenterAdvOptPage->getForm()->m_enableBlockProcessingcheckBox->isChecked();
-  algoInputParams.m_enableBlockMerging = m_segmenterAdvOptPage->getForm()->m_enableBlockMergingCheckBox->isChecked();
   algoInputParams.m_maxBlockSize = m_segmenterAdvOptPage->getForm()->m_maximumBlockSizeLineEdit->text().toUInt();
+  algoInputParams.m_blocksOverlapPercent = m_segmenterAdvOptPage->getForm()->m_blockOverlapPercentSpinBox->value();
 
   te::rp::Segmenter::OutputParameters algoOutputParams;
   algoOutputParams.m_rType = m_rasterInfoPage->getWidget()->getType();

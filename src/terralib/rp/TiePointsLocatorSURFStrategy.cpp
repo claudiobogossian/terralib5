@@ -136,7 +136,36 @@ namespace te
       raster1XRescFact *= m_inputParameters.m_subSampleOptimizationRescaleFactor;
       raster1YRescFact *= m_inputParameters.m_subSampleOptimizationRescaleFactor;
       raster2XRescFact *= m_inputParameters.m_subSampleOptimizationRescaleFactor;
-      raster2YRescFact *= m_inputParameters.m_subSampleOptimizationRescaleFactor;      
+      raster2YRescFact *= m_inputParameters.m_subSampleOptimizationRescaleFactor;     
+      
+      // Defining the maximum number of interest points 
+      
+      unsigned int maxInterestPoints1 = m_inputParameters.m_maxTiePoints;
+      unsigned int maxInterestPoints2 = m_inputParameters.m_maxTiePoints;
+      
+      {
+        const double width1 = ((double)m_inputParameters.m_raster1TargetAreaWidth)
+          * raster1XRescFact;
+        const double height1 = ((double)m_inputParameters.m_raster1TargetAreaHeight)
+          * raster1YRescFact;
+
+        const double width2 = ((double)m_inputParameters.m_raster2TargetAreaWidth)
+          * raster2XRescFact;
+        const double height2 = ((double)m_inputParameters.m_raster2TargetAreaHeight)
+          * raster2YRescFact;
+          
+        const double area1 = width1 * height1;
+        const double area2 = width2 * height2;
+        
+         if( area1 > area2 )
+         {
+           maxInterestPoints1 = (unsigned int)( ((double)maxInterestPoints1)*( area1 / area2 ) );
+         }
+         else
+         {
+           maxInterestPoints2 = (unsigned int)( ((double)maxInterestPoints2)*( area2 / area1 ) );
+         }
+      }      
       
       // progress
       
@@ -216,6 +245,7 @@ namespace te
         // locating interest points        
         
         TERP_TRUE_OR_RETURN_FALSE( locateSurfInterestPoints( 
+          maxInterestPoints1,
           integralRaster, 
           maskRasterData.getLinesNumber() ? (&maskRasterData) : 0, 
           raster1InterestPoints ),
@@ -333,6 +363,7 @@ namespace te
         // locating interest points        
         
         TERP_TRUE_OR_RETURN_FALSE( locateSurfInterestPoints( 
+          maxInterestPoints2,
           integralRaster, 
           maskRasterData.getLinesNumber() ? (&maskRasterData) : 0, 
           raster2InterestPoints ),
@@ -675,6 +706,7 @@ namespace te
     }    
     
     bool TiePointsLocatorSURFStrategy::locateSurfInterestPoints( 
+      const unsigned int maxInterestPoints,
       const FloatsMatrix& integralRasterData,
       UCharsMatrix const* maskRasterDataPtr,
       InterestPointsSetT& interestPoints ) const
@@ -702,7 +734,7 @@ namespace te
       threadParams.m_scalesNumber = m_inputParameters.m_surfScalesNumber;
       threadParams.m_octavesNumber = m_inputParameters.m_surfOctavesNumber;
       threadParams.m_interestPointsSubSectorsPtr = &interestPointsSubSectors;
-      threadParams.m_maxInterestPointsBySubSector = m_inputParameters.m_maxTiePoints /
+      threadParams.m_maxInterestPointsBySubSector = maxInterestPoints /
         ( m_inputParameters.m_tiePointsSubSectorsSplitFactor *
         m_inputParameters.m_tiePointsSubSectorsSplitFactor );
       threadParams.m_tiePointsSubSectorsSplitFactor = m_inputParameters.m_tiePointsSubSectorsSplitFactor;      
