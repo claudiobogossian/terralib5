@@ -338,8 +338,6 @@ std::list<te::map::AbstractLayerPtr> te::qt::widgets::LayerTreeView::getSelected
   std::list<te::qt::widgets::AbstractTreeItem*>::const_iterator it;
   for(it = selectedItems.begin(); it != selectedItems.end(); ++it)
   {
-    AbstractTreeItem* item = *it;
-
     te::map::AbstractLayerPtr layer = (*it)->getLayer();
 
     if(layer && layer->getType() != "FOLDERLAYER")

@@ -317,7 +317,6 @@ void te::qt::widgets::ChartLayerWidget::listAttributes()
 double te::qt::widgets::ChartLayerWidget::getMaxValue(te::map::Chart* chart)
 {
   double maxValue = std::numeric_limits<double>::min();
-  std::size_t precision = 5;
 
   // Gets the chart properties
   const std::vector<std::string>& properties = chart->getProperties();

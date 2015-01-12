@@ -333,8 +333,6 @@ QImage* te::qt::widgets::ChartRenderer::drawBars(const te::map::Chart* chart, co
 
 void te::qt::widgets::ChartRenderer::getValues(const te::map::Chart* chart, const te::da::DataSet* dataset, std::vector<double>& values)
 {
-  std::size_t precision = 5;
-
   const std::vector<std::string>& properties = chart->getProperties();
   size_t psize = properties.size();
   size_t ppsize = chart->getPropertiesPos().size();

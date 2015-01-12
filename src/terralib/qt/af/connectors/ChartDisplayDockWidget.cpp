@@ -126,7 +126,7 @@ void te::qt::af::ChartDisplayDockWidget::onApplicationTriggered(te::qt::af::evt:
 
 void te::qt::af::ChartDisplayDockWidget::selectionChanged(te::da::ObjectIdSet* oids, const bool& add)
 {
-    te::da::ObjectIdSet* added = oids->clone();
+  te::da::ObjectIdSet* added = oids->clone();
 
   if(m_layer->getSelected())
   {
@@ -165,8 +165,8 @@ void te::qt::af::ChartDisplayDockWidget::selectionChanged(te::da::ObjectIdSet* o
     std::auto_ptr<te::da::DataSet> ds = m_layer->getData(added);
     ds->moveBeforeFirst();
 
-    size_t numProp, geomPos;
-    numProp =  ds->getNumProperties();
+    size_t numProp = ds->getNumProperties();
+    size_t geomPos = 0;
 
     for(size_t i=0; i<numProp; i++)
     {
