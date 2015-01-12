@@ -59,7 +59,7 @@ namespace te
 
       void FileChooser::setInitialPath(const QString& path)
       {
-        bool blocked = blockSignals(true);
+        blockSignals(true);
 
         m_fp_model->setRootPath(path);
         m_ui->m_fileName->setText(path);
