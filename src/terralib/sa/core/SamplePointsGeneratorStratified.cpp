@@ -130,8 +130,6 @@ std::auto_ptr<te::mem::DataSet> te::sa::SamplePointsGeneratorStratified::generat
   //create the class map
   createClassMap();
 
-  std::size_t nClass = m_classMap.size();
-
   std::map<std::string, int> nPointsPerClass;
 
   //define the number of samples for each class using the area of the polygons 
