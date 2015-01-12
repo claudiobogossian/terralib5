@@ -582,7 +582,7 @@ QModelIndex te::qt::widgets::LayerTreeModel::getIndex(AbstractTreeItem* item)
   if(!item)
     return QModelIndex();
 
-  int itemRow;              // The item row
+  int itemRow = 0;              // The item row
   QModelIndex parentIndex;  // The parent index of the item
 
   AbstractTreeItem* parentItem = static_cast<AbstractTreeItem*>(item->parent());
