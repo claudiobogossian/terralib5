@@ -158,6 +158,8 @@ namespace te
         /*!
           \brief Moravec interest points locator.
           
+          \param maxInterestPoints The maximum number of interest points to find.
+          
           \param rasterData The loaded raster data.
           
           \param maskRasterDataPtr The loaded mask raster data pointer (or zero if no mask is avaliable).
@@ -169,6 +171,7 @@ namespace te
           \return true if ok, false on errors.
         */             
         bool locateMoravecInterestPoints( 
+          const unsigned int maxInterestPoints,
           const FloatsMatrix& rasterData,
           UCharsMatrix const* maskRasterDataPtr,
           InterestPointsSetT& interestPoints ) const;      

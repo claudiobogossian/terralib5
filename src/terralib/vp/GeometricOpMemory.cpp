@@ -552,7 +552,6 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAggregByAttribute(te::da::DataSe
   // move first to take a seed geom.
   inDset->moveFirst();
   std::auto_ptr<te::gm::Geometry> seedGeom = inDset->getGeometry(geom_pos);
-  int srid = seedGeom->getSRID();
 
   if(inDset->size() > 1)
   {

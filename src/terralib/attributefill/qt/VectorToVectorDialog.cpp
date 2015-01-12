@@ -165,7 +165,6 @@ void te::attributefill::VectorToVectorDialog::onOkPushButtonClicked()
   std::string fromDataSetName = fromLayer->getDataSetName();
   std::auto_ptr<te::da::DataSetType> fromSchema = fromLayer->getSchema();
   std::auto_ptr<te::da::DataSet> fromData = fromLayer->getData();
-  std::size_t fromSpatialPropPos = te::da::GetFirstSpatialPropertyPos(fromData.get());
   te::da::DataSourcePtr fromSource = te::da::GetDataSource(fromLayer->getDataSourceId(), true);
 
   te::map::DataSetLayerPtr toLayer(dynamic_cast<te::map::DataSetLayer*>(getCurrentToLayer().get()));
@@ -178,7 +177,6 @@ void te::attributefill::VectorToVectorDialog::onOkPushButtonClicked()
   std::string toDataSetName = toLayer->getDataSetName();
   std::auto_ptr<te::da::DataSetType> toSchema = fromLayer->getSchema();
   std::auto_ptr<te::da::DataSet> toData = toLayer->getData();
-  std::size_t toSpatialPropPos = te::da::GetFirstSpatialPropertyPos(toData.get());
   te::da::DataSourcePtr toSource = te::da::GetDataSource(toLayer->getDataSourceId(), true);
 
   std::string outDataSetName = m_ui->m_newLayerNameLineEdit->text().toStdString();

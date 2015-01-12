@@ -329,7 +329,6 @@ void te::layout::PropertiesOutside::contains( std::vector<Properties*>::iterator
 std::vector<te::layout::Properties*> 
   te::layout::PropertiesOutside::getAllProperties( QList<QGraphicsItem*> graphicsItems, bool& window )
 {
-  Properties* props = 0;
   std::vector<Properties*> propsVec;
   bool result = true;
 

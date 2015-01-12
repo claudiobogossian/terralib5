@@ -603,9 +603,6 @@ void  te::qt::widgets::GroupingWidget::onTableWidgetItemChanged(QTableWidgetItem
 
 void te::qt::widgets::GroupingWidget::onTableWidgetItemDoubleClicked(QTableWidgetItem* item)
 {
-  int index = m_ui->m_typeComboBox->currentIndex();
-  int type = m_ui->m_typeComboBox->itemData(index).toInt();
-
   int curRow = m_ui->m_tableWidget->currentRow();
   int curCol = m_ui->m_tableWidget->currentColumn();
 

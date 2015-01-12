@@ -32,9 +32,9 @@ te::layout::ContextItem::ContextItem() :
   m_zoomFactor(1.),
   m_pixmap(0),
   m_resizeCanvas(true),
-  m_canvas(0),
   m_show(false),
   m_utils(0),
+  m_canvas(0),
   m_dpiX(96),
   m_dpiY(96)
 {
@@ -46,9 +46,9 @@ te::layout::ContextItem::ContextItem( ParamsCreate params, double zoomFactor ) :
   m_zoomFactor(zoomFactor),
   m_pixmap(0),
   m_resizeCanvas(true),
-  m_canvas(0),
   m_show(false),
   m_utils(0),
+  m_canvas(0),
   m_dpiX(96),
   m_dpiY(96)
 {

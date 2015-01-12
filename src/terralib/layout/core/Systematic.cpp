@@ -30,8 +30,8 @@
 
 
 te::layout::Systematic::Systematic() :
-  m_height(0.),
   m_width(0.),
+  m_height(0.),
   m_scale(0),
   m_planarGap(0.),
   m_geoGap(0.)

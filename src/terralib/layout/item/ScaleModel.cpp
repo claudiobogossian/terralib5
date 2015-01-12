@@ -144,7 +144,6 @@ void te::layout::ScaleModel::drawScale( te::map::Canvas* canvas, Utils* utils, t
   //middle
   // Canvas - Necessário saber o tamanho do box do texto em mm: pendente;
   double centerX = m_box.getCenter().x;
-  double centerY = m_box.getCenter().y;
 
   canvas->drawText(centerX, newBoxSecond.getLowerLeftY() - 15, strUnit, 0);
 

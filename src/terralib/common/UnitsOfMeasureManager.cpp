@@ -174,6 +174,21 @@ double te::common::UnitsOfMeasureManager::getConversion(const std::string& unitF
   throw Exception(TE_TR("There is no known conversion."));
 }
 
+bool te::common::UnitsOfMeasureManager::areConvertible(const std::string& unitFromName, const std::string& unitToName) const
+{
+  UnitOfMeasurePtr uFrom = this->find(unitFromName);
+  UnitOfMeasurePtr uTo = this->find(unitToName);
+  
+  if (uFrom->getType() != uTo->getType())
+    return false;
+  
+  if ((uFrom->getBaseUnitId() == uTo->getId()) ||
+      (uTo->getBaseUnitId() == uFrom->getId()))
+    return true;
+  
+  return false;
+}
+
 void te::common::UnitsOfMeasureManager::init()
 {
   if(!m_uoms.empty())

@@ -163,8 +163,6 @@ void te::sa::SamplePointsGeneratorDialog::onOkPushButtonClicked()
       QMessageBox::information(this, tr("Warning"), tr("Number of points not defined."));
       return;
     }
-
-    int nPoints = m_ui->m_nPointsRandomLineEdit->text().toInt();
   }
   else if(spgt == te::sa::Stratified)
   {
@@ -173,8 +171,6 @@ void te::sa::SamplePointsGeneratorDialog::onOkPushButtonClicked()
       QMessageBox::information(this, tr("Warning"), tr("Number of points not defined."));
       return;
     }
-
-    int nPoints = m_ui->m_nPointsStratifiedLineEdit->text().toInt();
   }
 
   //get selected layer
@@ -222,7 +218,7 @@ void te::sa::SamplePointsGeneratorDialog::onOkPushButtonClicked()
 
   try
   {
-    te::sa::SamplePointsGeneratorAbstract* spga;
+    te::sa::SamplePointsGeneratorAbstract* spga = 0;
 
     if(spgt == te::sa::Random)
     {

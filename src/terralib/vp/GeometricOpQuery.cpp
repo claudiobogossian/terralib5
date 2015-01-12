@@ -268,8 +268,6 @@ te::mem::DataSet* te::vp::GeometricOpQuery::SetAllObjects(te::da::DataSetType* d
   {
     for(std::size_t tabPos = 0; tabPos < tabVec.size(); ++tabPos)
     {
-      te::gm::GeometryProperty* geom = te::da::GetFirstGeomProperty(m_inDsetType.get());
-
       te::da::Expression* ex;
       te::da::Field* f;
 
@@ -387,8 +385,6 @@ te::mem::DataSet* te::vp::GeometricOpQuery::SetAggregObj( te::da::DataSetType* d
   {
     for(std::size_t tabPos = 0; tabPos < tabVec.size(); ++tabPos)
     {
-      te::gm::GeometryProperty* geom = te::da::GetFirstGeomProperty(m_inDsetType.get());
-
       te::da::Expression* ex;
       te::da::Field* f;
 
@@ -515,8 +511,6 @@ te::mem::DataSet* te::vp::GeometricOpQuery::SetAggregByAttribute( te::da::DataSe
   {
     for(std::size_t tabPos = 0; tabPos < tabVec.size(); ++tabPos)
     {
-      te::gm::GeometryProperty* geom = te::da::GetFirstGeomProperty(m_inDsetType.get());
-
       te::da::Expression* ex;
       te::da::Field* f;
 
@@ -645,7 +639,6 @@ void te::vp::GeometricOpQuery::SetOutputDSet( te::da::DataSet* inDataSet,
     geomFlag = true;
 
     te::mem::DataSetItem* dItem = new te::mem::DataSetItem(outDataSet);
-    std::size_t size = dItem->getNumProperties();
 
     dItem->setInt32(0, pk);
 
