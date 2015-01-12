@@ -31,7 +31,6 @@
 #include "../raster/RasterFactory.h"
 #include "../raster/Grid.h"
 #include "../datatype/Enums.h"
-#include "../common/StringUtils.h"
 #include "../common/progress/TaskProgress.h"
 
 #include <algorithm>
@@ -97,6 +96,8 @@ namespace te
       m_colorWeight = params.m_colorWeight;
       m_compactnessWeight = params.m_compactnessWeight;
       m_segmentsSimIncreaseSteps = params.m_segmentsSimIncreaseSteps;
+      m_enableLocalMutualBestFitting = params.m_enableLocalMutualBestFitting;
+      m_enableSameIterationMerges = params.m_enableSameIterationMerges;
       
       return *this;      
     }
@@ -111,6 +112,8 @@ namespace te
       m_colorWeight = 0.9;
       m_compactnessWeight = 0.5;
       m_segmentsSimIncreaseSteps = 2;
+      m_enableLocalMutualBestFitting = false;
+      m_enableSameIterationMerges = false;
     }
     
     te::common::AbstractParameters* SegmenterRegionGrowingStrategy::Parameters::clone() const
@@ -883,7 +886,7 @@ namespace te
       if( enableProgressInterface )
       {
         progressPtr.reset( new te::common::TaskProgress );
-        progressPtr->setTotalSteps( 3 + m_parameters.m_segmentsSimIncreaseSteps );
+        progressPtr->setTotalSteps( 2 + m_parameters.m_segmentsSimIncreaseSteps );
         progressPtr->setMessage( "Segmentation" );
       }          
       
@@ -905,6 +908,8 @@ namespace te
         progressPtr->pulse();
       }      
       
+      // Merging the segments that are equal
+      
 //      TERP_LOGMSG( getActiveSegmentsNumber( actSegsListHeadPtr ) );
       
       mergeSegments( 
@@ -925,7 +930,7 @@ namespace te
       
 //      TERP_LOGMSG( getActiveSegmentsNumber( actSegsListHeadPtr ) );
       
-      // Segmentation loop with enablelocalMutualBestFitting
+      // Main Segmentation loop
       
       for( unsigned int segmentsSimIncreaseStep = 1 ; segmentsSimIncreaseStep <=
         m_parameters.m_segmentsSimIncreaseSteps ; ++segmentsSimIncreaseStep )
@@ -936,14 +941,14 @@ namespace te
           ( ((SegmenterRegionGrowingSegment::FeatureType)m_parameters.m_segmentsSimilarityThreshold) )
           /
           ( (SegmenterRegionGrowingSegment::FeatureType)( m_parameters.m_segmentsSimIncreaseSteps ) );
-        
+          
         mergeSegments( 
           disimilarityThreshold, 
           0, 
           segmenterIdsManager, 
           *mergerPtr, 
-          true,
-          false,
+          m_parameters.m_enableLocalMutualBestFitting,
+          m_parameters.m_enableSameIterationMerges,
           auxSeg1Ptr, 
           auxSeg2Ptr, 
           auxSeg3Ptr, 
@@ -965,35 +970,6 @@ namespace te
         }        
       }
       
-      // Segmentation without enablelocalMutualBestFitting
-              
-      mergeSegments( 
-        (SegmenterRegionGrowingSegment::FeatureType)m_parameters.m_segmentsSimilarityThreshold, 
-        0, 
-        segmenterIdsManager, 
-        *mergerPtr, 
-        false,
-        false,
-        auxSeg1Ptr, 
-        auxSeg2Ptr, 
-        auxSeg3Ptr, 
-        minFoundDissimilarity, 
-        maxFoundDissimilarity,
-        totalMergesNumber,
-        globalMergeIterationsCounter,
-        &actSegsListHeadPtr );
-      
-//      TERP_LOGMSG( getActiveSegmentsNumber( actSegsListHeadPtr ) );
-      
-      if( enableProgressInterface )
-      {
-        if( ! progressPtr->isActive() ) 
-        {
-          return false;
-        }   
-        progressPtr->pulse();
-      }      
-      
       // Forcing the merge of too small segments
       
       if( m_parameters.m_minSegmentSize > 1 )
@@ -1004,7 +980,7 @@ namespace te
           segmenterIdsManager, 
           *mergerPtr, 
           false,
-          false,
+          true,
           auxSeg1Ptr, 
           auxSeg2Ptr, 
           auxSeg3Ptr, 
