@@ -82,8 +82,10 @@ void te::sa::SkaterOperation::execute()
   if(m_inputParams->m_attrPop != "")
   {
     std::size_t idx = m_inputParams->m_dsType->getPropertyPosition(m_inputParams->m_attrPop);
+
     int type = m_inputParams->m_ds->getPropertyDataType(idx);
-    int gpmIdx = te::sa::AssociateGPMVertexAttribute(m_inputParams->m_gpm.get(), m_inputParams->m_ds.get(), m_inputParams->m_gpmAttrLink, m_inputParams->m_attrPop, type);
+    
+    te::sa::AssociateGPMVertexAttribute(m_inputParams->m_gpm.get(), m_inputParams->m_ds.get(), m_inputParams->m_gpmAttrLink, m_inputParams->m_attrPop, type);
   }
 
   //calculate gpm edge attribute

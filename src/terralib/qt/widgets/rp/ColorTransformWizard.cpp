@@ -187,6 +187,9 @@ bool te::qt::widgets::ColorTransformWizard::executeRGB2IHS()
   te::rst::Raster* inputRaster = m_colorTransformPage->getRGBRaster();
   te::rst::Raster* outputRaster = buildOutputRaster();
 
+  if(!outputRaster)
+    return false;
+
   unsigned int rBand = m_colorTransformPage->getRGBRBand();
   unsigned int gBand = m_colorTransformPage->getRGBGBand();
   unsigned int bBand = m_colorTransformPage->getRGBBBand();
@@ -245,6 +248,8 @@ te::rst::Raster* te::qt::widgets::ColorTransformWizard::buildOutputRaster()
     inputRaster = m_colorTransformPage->getRGBRaster();
   else if(m_colorTransformPage->isIHS2RGB())
     inputRaster = m_colorTransformPage->getIHSRaster();
+  else
+    return 0;
 
   //get input bands info
   std::vector<te::rst::BandProperty*> bands;
