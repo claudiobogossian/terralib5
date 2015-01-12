@@ -201,9 +201,6 @@ void te::attributefill::VectorToRasterDialog::onResXLineEditEditingFinished()
     return;
   }
 
-  double lWidth = env.getWidth();
-  double lHeight = env.getHeight();
-
   int maxCols = (int)ceil((env.m_urx - env.m_llx)/resX);
 
   m_ui->m_colsLineEdit->setText(QString::number(maxCols));
@@ -220,9 +217,6 @@ void te::attributefill::VectorToRasterDialog::onResYLineEditEditingFinished()
     QMessageBox::warning(this, tr("Attribute Fill"), tr("Invalid envelope!"));
     return;
   }
-
-  double lWidth = env.getWidth();
-  double lHeight = env.getHeight();
 
   int maxRows = (int)ceil((env.m_ury - env.m_lly)/resY);
 
@@ -241,9 +235,6 @@ void te::attributefill::VectorToRasterDialog::onColsLineEditEditingFinished()
     return;
   }
 
-  double lWidth = env.getWidth();
-  double lHeight = env.getHeight();
-
   double resX = (env.m_urx - env.m_llx)/cols;
 
   m_ui->m_resXLineEdit->setText(QString::number(resX));
@@ -260,9 +251,6 @@ void te::attributefill::VectorToRasterDialog::onRowsLineEditEditingFinished()
     QMessageBox::warning(this, tr("Attribute Fill"), tr("Invalid envelope!"));
     return;
   }
-
-  double lWidth = env.getWidth();
-  double lHeight = env.getHeight();
 
   double resY = (env.m_ury - env.m_lly)/rows;
 
