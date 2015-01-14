@@ -314,7 +314,8 @@ void te::qt::widgets::DataSetTableModel::setDataSet(te::da::DataSet* dset, const
 
   m_dataset = dset;
 
-  m_dataset->moveFirst();
+  if(m_dataset)
+    m_dataset->moveFirst();
 
   if(clearEditor)
     m_editor->clear();
