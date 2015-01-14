@@ -29,6 +29,8 @@
 #include "EnumModeType.h"
 
 te::layout::EnumModeType::EnumModeType() :
+  m_modeNone(0),
+  m_modeSelectByBox(0),
   m_modeSelect(0),
   m_modeArrowCursor(0),
   m_modePan(0),
@@ -79,7 +81,6 @@ te::layout::EnumModeType::EnumModeType() :
   m_modeAlignTop(0),
   m_modeAlignBottom(0),
   m_modeRemoveObject(0),
-  m_modeNone(0),
   m_modeUndo(0),
   m_modeRedo(0),
   m_modeDrawSelectionMap(0),

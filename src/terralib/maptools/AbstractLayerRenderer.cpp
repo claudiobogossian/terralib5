@@ -1435,29 +1435,19 @@ void te::map::AbstractLayerRenderer::buildChart(const Chart* chart, const std::m
     return;
 
   // World coordinates
-  std::auto_ptr<te::gm::Coord2D> worldCoord;
+  const te::gm::Envelope* e = geom->getMBR();
+  std::auto_ptr<te::gm::Coord2D> worldCoord(new te::gm::Coord2D(e->getCenter().x, e->getCenter().y));
 
   // Try finds the geometry centroid
-  switch(geom->getGeomTypeId())
+  if(geom->getGeomTypeId() == te::gm::PolygonType)
   {
-    case te::gm::PolygonType:
-    {
       te::gm::Polygon* p = dynamic_cast<te::gm::Polygon*>(geom);
       worldCoord.reset(p->getCentroidCoord());
-    }
-
-    case te::gm::MultiPolygonType:
-    {
+  }
+  else if (geom->getGeomTypeId() ==  te::gm::MultiPolygonType)
+  {
       te::gm::MultiPolygon* mp = dynamic_cast<te::gm::MultiPolygon*>(geom);
       worldCoord.reset(mp->getCentroidCoord());
-    }
-  }
-
-  // Case not find, use the center of the MBR
-  if(worldCoord.get() == 0)
-  {
-    const te::gm::Envelope* e = geom->getMBR();
-    worldCoord.reset(new te::gm::Coord2D(e->getCenter().x, e->getCenter().y));
   }
 
   // Device coordinates
@@ -1498,29 +1488,19 @@ void te::map::AbstractLayerRenderer::buildChart(const Chart* chart, te::da::Data
     return;
 
   // World coordinates
-  std::auto_ptr<te::gm::Coord2D> worldCoord;
+  const te::gm::Envelope* e = geom->getMBR();
+  std::auto_ptr<te::gm::Coord2D> worldCoord(new te::gm::Coord2D(e->getCenter().x, e->getCenter().y));
 
   // Try finds the geometry centroid
-  switch(geom->getGeomTypeId())
+  if (geom->getGeomTypeId() == te::gm::PolygonType)
   {
-    case te::gm::PolygonType:
-    {
-      te::gm::Polygon* p = dynamic_cast<te::gm::Polygon*>(geom);
-      worldCoord.reset(p->getCentroidCoord());
-    }
-
-    case te::gm::MultiPolygonType:
-    {
-      te::gm::MultiPolygon* mp = dynamic_cast<te::gm::MultiPolygon*>(geom);
-      worldCoord.reset(mp->getCentroidCoord());
-    }
+    te::gm::Polygon* p = dynamic_cast<te::gm::Polygon*>(geom);
+    worldCoord.reset(p->getCentroidCoord());
   }
-
-  // Case not find, use the center of the MBR
-  if(worldCoord.get() == 0)
+  else if (geom->getGeomTypeId() == te::gm::MultiPolygonType)
   {
-    const te::gm::Envelope* e = geom->getMBR();
-    worldCoord.reset(new te::gm::Coord2D(e->getCenter().x, e->getCenter().y));
+    te::gm::MultiPolygon* mp = dynamic_cast<te::gm::MultiPolygon*>(geom);
+    worldCoord.reset(mp->getCentroidCoord());
   }
 
   // Device coordinates

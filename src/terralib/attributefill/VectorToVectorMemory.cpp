@@ -65,13 +65,11 @@ bool te::attributefill::VectorToVectorMemory::run()
 {
   te::gm::Envelope fromEnv = m_fromLayer->getExtent();
   std::auto_ptr<te::da::DataSet> fromDs = m_fromLayer->getData();
-  std::size_t fromSpatialPos = te::da::GetFirstSpatialPropertyPos(fromDs.get());
   int fromSrid = m_fromLayer->getSRID();
   std::auto_ptr<te::da::DataSetType> fromSchema = m_fromLayer->getSchema();
 
   te::gm::Envelope toEnv = m_toLayer->getExtent();
   std::auto_ptr<te::da::DataSet> toDs = m_toLayer->getData();
-  std::size_t toSpatialPos = te::da::GetFirstSpatialPropertyPos(toDs.get());
   std::auto_ptr<te::da::DataSetType> toSchema = m_toLayer->getSchema();
   int toSrid = m_toLayer->getSRID();
 
@@ -684,8 +682,6 @@ std::vector<te::dt::AbstractData*> te::attributefill::VectorToVectorMemory::getD
 {
   std::vector<te::dt::AbstractData*> result;
 
-  std::size_t spatialPos = te::da::GetFirstSpatialPropertyPos(fromDs);
-
   for(std::size_t i = 0; i < dsPos.size(); ++i)
   {
     fromDs->move(dsPos[i]);
@@ -977,9 +973,6 @@ double te::attributefill::VectorToVectorMemory::getWeightedSumByArea(te::da::Dat
   std::size_t fromGeomPos = te::da::GetFirstSpatialPropertyPos(fromDs);
   std::size_t toGeomPos =   te::da::GetFirstSpatialPropertyPos(toDs);
 
-  int propIndex = te::da::GetPropertyIndex(fromDs, propertyName);
-  int propType = fromDs->getPropertyDataType(propIndex);
-
   std::auto_ptr<te::gm::Geometry> toGeom = toDs->getGeometry(toGeomPos);
   if(toGeom->getSRID() <= 0)
       toGeom->setSRID(toSrid);
@@ -1140,37 +1133,31 @@ te::dt::AbstractData* te::attributefill::VectorToVectorMemory::getDataBasedOnTyp
     }
     case te::dt::INT16_TYPE:
     {
-      int16_t v = boost::lexical_cast<int16_t>(strValue);
       data = new te::dt::SimpleData<std::string, te::dt::INT16_TYPE>(strValue);
       break;
     }
     case te::dt::INT32_TYPE:
     {
-      int32_t v = boost::lexical_cast<int32_t>(strValue);
       data = new te::dt::SimpleData<std::string, te::dt::INT32_TYPE>(strValue);
       break;
     }
     case te::dt::INT64_TYPE:
     {
-      int64_t v = boost::lexical_cast<int64_t>(strValue);
       data = new te::dt::SimpleData<std::string, te::dt::INT64_TYPE>(strValue);
       break;
     }
     case te::dt::UINT16_TYPE:
     {
-      uint16_t v = boost::lexical_cast<uint16_t>(strValue);
       data = new te::dt::SimpleData<std::string, te::dt::UINT16_TYPE>(strValue);
       break;
     }
     case te::dt::UINT32_TYPE:
     {
-      uint32_t v = boost::lexical_cast<uint32_t>(strValue);
       data = new te::dt::SimpleData<std::string, te::dt::UINT32_TYPE>(strValue);
       break;
     }
     case te::dt::UINT64_TYPE:
     {
-      uint64_t v = boost::lexical_cast<uint64_t>(strValue);
       data = new te::dt::SimpleData<std::string, te::dt::UINT64_TYPE>(strValue);
       break;
     }
@@ -1225,8 +1212,6 @@ double te::attributefill::VectorToVectorMemory::getMinimumDistance(te::da::DataS
                                                                   KD_ADAPTATIVE_TREE* kdtree)
 {
   std::size_t toGeomPos = te::da::GetFirstSpatialPropertyPos(toDs);
-  std::size_t fromGeomPos = te::da::GetFirstSpatialPropertyPos(fromDs);
-
   std::auto_ptr<te::gm::Geometry> toGeom = toDs->getGeometry(toGeomPos);
 
   std::vector<te::gm::Point*> allPoints = getAllPointsOfGeometry(toGeom.get());
@@ -1277,8 +1262,6 @@ std::vector<te::gm::Point*> te::attributefill::VectorToVectorMemory::getAllPoint
       {
         te::gm::Geometry* gAux = g->getGeometryN(i);
 
-        std::size_t gAuxType = gAux->getGeomTypeId();
-
         std::vector<te::gm::Point*> vec = getAllPointsOfGeometry(gAux);
         result.insert(result.end(), vec.begin(), vec.end());
       }
@@ -1311,8 +1294,6 @@ std::vector<te::gm::Point*> te::attributefill::VectorToVectorMemory::getAllPoint
       {
         te::gm::Geometry* gAux = g->getGeometryN(i);
 
-        std::size_t gAuxType = gAux->getGeomTypeId();
-
         std::vector<te::gm::Point*> vec = getAllPointsOfGeometry(gAux);
         result.insert(result.end(), vec.begin(), vec.end());
       }
@@ -1336,8 +1317,6 @@ std::vector<te::gm::Point*> te::attributefill::VectorToVectorMemory::getAllPoint
       for(std::size_t i = 0; i < g->getNumGeometries(); ++i)
       {
         te::gm::Geometry* gAux = g->getGeometryN(i);
-
-        std::size_t gAuxType = gAux->getGeomTypeId();
 
         std::vector<te::gm::Point*> vec = getAllPointsOfGeometry(gAux);
         result.insert(result.end(), vec.begin(), vec.end());

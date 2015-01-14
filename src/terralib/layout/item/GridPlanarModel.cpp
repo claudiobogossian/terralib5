@@ -218,7 +218,7 @@ void te::layout::GridPlanarModel::drawHorizontalLines(te::map::Canvas* canvas, U
     {
       double ycopy = lly;
       lly = ury;
-      ury = lly;
+      ury = ycopy;
     }
 
     te::gm::LinearRing* line = 0;

@@ -162,7 +162,6 @@ void te::sa::BayesGlobalDialog::onOkPushButtonClicked()
 //get selected layer
   QVariant varLayer = m_ui->m_inputLayerComboBox->itemData(m_ui->m_inputLayerComboBox->currentIndex(), Qt::UserRole);
   te::map::AbstractLayerPtr l = varLayer.value<te::map::AbstractLayerPtr>();
-  te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(l.get());
 
   std::auto_ptr<te::da::DataSetType> dataSetType = l->getSchema();
   std::auto_ptr<te::da::DataSet> dataSet = l->getData();

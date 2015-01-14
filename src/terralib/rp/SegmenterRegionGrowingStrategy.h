@@ -58,6 +58,11 @@ namespace te
         class TERPEXPORT Parameters : public SegmenterStrategyParameters
         {
           public:
+
+            /**
+            * \name Global parameters
+            */
+            /**@{*/              
             
             /*! \enum SegmentFeaturesType Segment features types. */
             enum SegmentFeaturesType
@@ -73,13 +78,26 @@ namespace te
             
             SegmentFeaturesType m_segmentFeatures; //!< What segment features will be used on the segmentation process (default:InvalidFeaturesType).
             
+            unsigned int m_segmentsSimIncreaseSteps; //!< The maximum number of steps to increment the similarity threshold value for the cases where no segment merge occurred - zero will disable segment similarity threshold increments - defaul: 2.
+            
+            bool m_enableLocalMutualBestFitting; //!< If enabled, a merge only occurs between two segments if the minimum dissimilarity criteria is best fulfilled mutually (default: false).
+            
+            bool m_enableSameIterationMerges; //!< If enabled, a merged segment could be merged with another within the same iteration (default:false).            
+            
+            //@} 
+            
+            /**
+            * \name Baatz specific parameters
+            */
+            /**@{*/                       
+            
             std::vector< double > m_bandsWeights; //!< The weight given to each band, when applicable (note: the bands weights sum must always be 1) or an empty vector indicating that all bands have the same weight.
             
             double m_colorWeight; //!< The weight given to the color component, deafult:0.9, valid range: [0,1].
             
             double m_compactnessWeight; //!< The weight given to the compactness component, deafult:0.5, valid range: [0,1].
             
-            unsigned int m_segmentsSimIncreaseSteps; //!< The maximum number of steps to increment the similarity threshold value for the cases where no segment merge occurred - zero will disable segment similarity threshold increments - defaul: 2.
+            //@}
             
             Parameters();
             

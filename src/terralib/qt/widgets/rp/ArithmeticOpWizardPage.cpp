@@ -302,7 +302,7 @@ void te::qt::widgets::ArithmeticOpWizardPage::undoToolButtonClicked()
 {
   --m_expressionHistoryCounter;
 
-  if(m_expressionHistoryCounter >= m_expressionHistory.size() || m_expressionHistoryCounter < 0)
+  if(m_expressionHistoryCounter >= (int)m_expressionHistory.size() || m_expressionHistoryCounter < 0)
   {
     m_expressionHistoryCounter = 0;
 
@@ -330,9 +330,9 @@ void te::qt::widgets::ArithmeticOpWizardPage::redoToolButtonClicked()
 {
   ++m_expressionHistoryCounter;
 
-  if(m_expressionHistoryCounter >= m_expressionHistory.size() || m_expressionHistoryCounter < 0)
+  if(m_expressionHistoryCounter >= (int)m_expressionHistory.size() || m_expressionHistoryCounter < 0)
   {
-    m_expressionHistoryCounter = m_expressionHistory.size() - 1;
+    m_expressionHistoryCounter = (int)m_expressionHistory.size() - 1;
 
     m_ui->m_redoToolButton->setEnabled(false);
 
@@ -343,7 +343,7 @@ void te::qt::widgets::ArithmeticOpWizardPage::redoToolButtonClicked()
 
   m_ui->m_expressionLineEdit->setText(expression.c_str());
 
-  if(m_expressionHistoryCounter >=  m_expressionHistory.size() - 1)
+  if(m_expressionHistoryCounter >=  (int)m_expressionHistory.size() - 1)
     m_ui->m_redoToolButton->setEnabled(false);
 
   m_ui->m_undoToolButton->setEnabled(true);
@@ -393,5 +393,5 @@ void te::qt::widgets::ArithmeticOpWizardPage::updateExpressionHistory()
   m_ui->m_undoToolButton->setEnabled(true);
   m_ui->m_redoToolButton->setEnabled(false);
 
-  m_expressionHistoryCounter = m_expressionHistory.size() - 1;
+  m_expressionHistoryCounter = (int)m_expressionHistory.size() - 1;
 }

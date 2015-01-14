@@ -207,8 +207,6 @@ void te::sa::BayesLocalOperation::runBayesLocal(te::mem::DataSet* ds, std::size_
       {
         std::set<int> neighbours = v->getSuccessors();
         std::set<int>::iterator itNeighbours = neighbours.begin();
-        int nNeighbours = (int)neighbours.size();
-
         while(itNeighbours != neighbours.end())
         {
           te::graph::Edge* e = graph->getEdge(*itNeighbours);

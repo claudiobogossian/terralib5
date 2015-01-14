@@ -205,7 +205,6 @@ void te::sa::KernelRatioDialog::onOkPushButtonClicked()
   //get selected layer
   QVariant varLayer = m_ui->m_inputLayerComboBox->itemData(m_ui->m_inputLayerComboBox->currentIndex(), Qt::UserRole);
   te::map::AbstractLayerPtr l = varLayer.value<te::map::AbstractLayerPtr>();
-  te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(l.get());
 
   //set input kernel parameters A
   te::sa::KernelInputParams* kInParamsA = new te::sa::KernelInputParams();

@@ -128,6 +128,18 @@ namespace te
       void getNames(UnitOfMeasurePtr& uom,std::vector<std::string>& names) const;
       
       /*!
+       \brief Check if two units of measure are compatible. 
+       
+       Check if a unit can be converted to another.
+       
+       \param unitFromName  A unit of measure name.
+       \param unitToName    The name of unit to be converted to.
+       
+       \return True if the UnitFrom can be converted to UnitTo false otherwise.
+       */
+      bool areConvertible(const std::string& unitFromName, const std::string& unitToName) const;
+      
+      /*!
        \brief Calculates a multiplicative factor to convert from a given unit to its base unit and vice-versa.
        
        \param unitFromName  A unit of measure name.

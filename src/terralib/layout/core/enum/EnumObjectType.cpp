@@ -29,7 +29,6 @@
 #include "EnumObjectType.h"
 
 te::layout::EnumObjectType::EnumObjectType() :
-  m_objectUnknown(0),
   m_retangleItem(0),
   m_mapItem(0),
   m_mapGridItem(0),
@@ -54,7 +53,8 @@ te::layout::EnumObjectType::EnumObjectType() :
   m_textGridItem(0),
   m_editTemplate(0),
   m_textGridSettings(0),
-  m_legendChildItem(0)
+  m_legendChildItem(0),
+  m_objectUnknown(0)
 {
   init();
 }
