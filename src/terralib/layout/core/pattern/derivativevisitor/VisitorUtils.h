@@ -31,6 +31,7 @@
 // TerraLib
 #include "../../Config.h"
 #include "Visitable.h"
+#include "../../../../common/Singleton.h"
 
 // Qt
 #include <QGraphicsItem>
@@ -40,7 +41,44 @@ namespace te
 {
   namespace layout
   {
-    TELAYOUTEXPORT bool changeMapVisitable(QList<QGraphicsItem*> graphicsItems, Visitable* visitable);
+    class TELAYOUTEXPORT VisitorUtils : public te::common::Singleton<VisitorUtils>
+    {
+      friend class te::common::Singleton<VisitorUtils>;
+
+      public:
+
+        /*!
+          \brief Destructor
+        */
+        virtual ~VisitorUtils();
+
+        bool changeMapVisitable(QList<QGraphicsItem*> graphicsItems, Visitable* visitable);
+
+      protected:
+
+        /*!
+          \brief Constructor
+        */ 
+        VisitorUtils(); 
+
+      private:
+      
+        /*!
+        \brief Copy constructor not allowed.
+       
+        \param rhs The right-hand-side copy that would be used to copy from.
+        */
+        VisitorUtils(const VisitorUtils& rhs);
+      
+        /*!
+        \brief Assignment operator not allowed.
+       
+        \param rhs The right-hand-side copy that would be used to copy from.
+       
+        \return A reference to this object.
+        */
+        VisitorUtils& operator=(const VisitorUtils& rhs);  
+    };
   }
 }
 

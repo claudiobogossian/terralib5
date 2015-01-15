@@ -428,7 +428,7 @@ void te::layout::PropertiesOutside::changeMapVisitable( Property property )
   if(!model)
     return;
 
-  te::layout::changeMapVisitable(m_graphicsItems, model);
+  te::layout::VisitorUtils::getInstance().changeMapVisitable(m_graphicsItems, model);
 }
 
 te::layout::MapModel* te::layout::PropertiesOutside::getMapModel( std::string nameMap )
