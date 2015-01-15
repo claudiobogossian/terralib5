@@ -207,19 +207,24 @@ void te::addressgeocoding::ConfigInputLayerDialog::onOkPushButtonClicked()
   for(std::size_t selProps = 0; selProps < m_selectedProps.size(); ++selProps)
   {
     if(selProps == 0)
-      updateTable += m_selectedProps[selProps] + "||' ";
-    else if(selProps == m_selectedProps.size()-1)
-      updateTable += "'||"+ m_selectedProps[selProps]+");";
+      updateTable += "'"+ m_selectedProps[selProps];
     else
-      updateTable += "'||"+ m_selectedProps[selProps] + "||' ";
+      updateTable += "' || '"+ m_selectedProps[selProps];
   }
+  
+  updateTable += "')";
+
   m_dataSource->execute(updateTable);
 
-
-//CREATE INDEX to speed up the text search.
+  
   unsigned dot = m_selectedLayer->getTitle().find_last_of(".");
   std::string table = m_selectedLayer->getTitle().substr(dot+1);
 
+//DROP INDEX if exists.
+  std::string dropIndex = "DROP INDEX IF EXISTS " + table +"_idx";
+  m_dataSource->execute(dropIndex);
+
+//CREATE INDEX to speed up the text search.
   std::string createIndex = "CREATE INDEX "+ table +"_idx ON "+ m_selectedLayer->getTitle() + "  USING GIN(tsvector)";
 
   m_dataSource->execute(createIndex);

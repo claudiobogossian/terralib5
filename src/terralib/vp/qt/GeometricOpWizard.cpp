@@ -382,7 +382,7 @@ bool te::vp::GeometricOpWizard::execute()
   catch(const std::exception& e)
   {
     this->setCursor(Qt::ArrowCursor);
-    QMessageBox::information(this, "Basic Greographic Operation", e.what());
+    QMessageBox::information(this, "Greographic Operation", e.what());
 
     te::common::Logger::logDebug("vp", e.what());
     te::common::ProgressManager::getInstance().removeViewer(id);

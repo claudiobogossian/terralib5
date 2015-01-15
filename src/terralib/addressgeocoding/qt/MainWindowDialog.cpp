@@ -251,10 +251,12 @@ void te::addressgeocoding::MainWindowDialog::onOkPushButtonClicked()
 
     for(std::size_t i = 0; i < props.size(); ++i)
     {
-        query+= "'"+dsAddress->getAsString(i)+"'";
+      if(i == 0)
+        query+= "'"+dsAddress->getAsString(i);
+      else
+        query+= " | "+dsAddress->getAsString(i);
     }
-    
-    query+= ")";
+    query+= "')";
 
     std::auto_ptr<te::da::DataSet> dsQuery = m_layerDataSource->query(query);
   }
