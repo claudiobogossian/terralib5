@@ -43,6 +43,7 @@ namespace te
     public:
 
       ToolbarModel();
+
       virtual ~ToolbarModel();
     };
   }

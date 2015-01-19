@@ -20,7 +20,7 @@
 /*!
   \file EnumDataType.h
    
-  \brief Class to represent a data type enumeration. Ex.: int, double, bool, te::color::RGBAColor** (color), etc.
+  \brief Class to represent a data type enumeration. Ex.: int, double, bool, te::color::RGBAColor (color), etc.
 
   \ingroup layout
 */
@@ -39,7 +39,7 @@ namespace te
     class EnumType;
 
     /*!
-      \brief Class to represent a data type enumeration. Ex.: int, double, bool, te::color::RGBAColor** (color), etc.
+      \brief Class to represent a data type enumeration. Ex.: int, double, bool, te::color::RGBAColor (color), etc.
 	  
 	    \ingroup layout
 

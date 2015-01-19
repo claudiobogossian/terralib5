@@ -20,7 +20,7 @@
 /*!
   \file HorizontalRuler.h
    
-  \brief 
+  \brief Class that represents a horizontal ruler with the coordinate system in mm.
 
   \ingroup layout
 */
@@ -35,6 +35,11 @@ namespace te
 {
   namespace layout
   {
+    /*!
+	  \brief Class that represents a horizontal ruler with the coordinate system in mm.
+	  
+	  \ingroup layout
+	  */
     class HorizontalRuler : public AbstractRuler
     {
       public:

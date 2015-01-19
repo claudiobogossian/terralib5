@@ -20,7 +20,8 @@
 /*!
   \file PropertyBrowser.h
    
-  \brief 
+   \brief Manage properties variants values. Maps the QProperty properties (Qt) and Property (Layout) and add to a tree (QtTreePropertyBrowser) for presentation to the user, 
+   allowing the modification and interactive update.
 
   \ingroup layout
 */
@@ -51,6 +52,12 @@ namespace te
     class Properties;
     class EnumType;
 
+    /*!
+    \brief Manage properties variants values. Maps the QProperty properties (Qt) and Property (Layout) and add to a tree (QtTreePropertyBrowser) for presentation to the user, 
+    allowing the modification and interactive update. 
+	  
+	  \ingroup layout
+	  */
     class PropertyBrowser : public QObject
     {
 	    Q_OBJECT //for slots/signals

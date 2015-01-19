@@ -43,6 +43,7 @@ namespace te
     public:
 
       PropertiesModel();
+
       virtual ~PropertiesModel();
     };
   }

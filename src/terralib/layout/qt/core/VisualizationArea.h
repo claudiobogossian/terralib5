@@ -20,7 +20,7 @@
 /*!
   \file VisualizationArea.h
    
-  \brief 
+  \brief Creates the viewing area. Ex.: creation of the sheet of paper.
 
   \ingroup layout
 */
@@ -35,6 +35,11 @@ namespace te
 {
   namespace layout
   {
+    /*!
+	  \brief Creates the viewing area. Ex.: creation of the sheet of paper.
+	  
+	  \ingroup layout
+	  */
     class VisualizationArea : public QObject
     {
 	    Q_OBJECT //for slots/signals
@@ -46,6 +51,7 @@ namespace te
 	    virtual ~VisualizationArea();
 
       virtual void build();
+
       virtual void changeBoxArea(te::gm::Envelope boxArea);
 
     protected:
@@ -55,11 +61,11 @@ namespace te
     protected:
 
       virtual void init();
+
       te::gm::Envelope m_boxArea;
 
     };
   }
 }
-
 
 #endif

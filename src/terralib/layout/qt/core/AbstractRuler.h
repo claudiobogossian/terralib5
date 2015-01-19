@@ -20,7 +20,7 @@
 /*!
   \file AbstractRuler.h
    
-  \brief 
+  \brief Abstract class representing a ruler.
 
   \ingroup layout
 */
@@ -36,6 +36,11 @@ namespace te
 {
   namespace layout
   {
+    /*!
+	  \brief Abstract class representing a ruler.
+	  
+	  \ingroup layout
+	  */
     class AbstractRuler
     {
       public:

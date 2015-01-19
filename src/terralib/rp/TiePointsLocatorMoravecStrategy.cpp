@@ -267,7 +267,12 @@ namespace te
           return false;
         }
         
-//        createTifFromMatrix( *(raster1Data[ 0 ]), raster1InterestPoints, "raster1InterestPoints");          
+/*        double x, y;
+        TERP_TRUE_OR_THROW( checkForDuplicatedInterestPoints( raster1InterestPoints, x, y ),
+          "Duplicated point " + boost::lexical_cast< std::string >( x ) + "," +
+          boost::lexical_cast< std::string >( y ) );           
+        
+        createTifFromMatrix( *(raster1Data[ 0 ]), raster1InterestPoints, "raster1InterestPoints");  */        
           
         if( m_inputParameters.m_enableProgress )
         {
@@ -404,8 +409,13 @@ namespace te
         {
           return false;
         }
+
+/*        double x, y;
+        TERP_TRUE_OR_THROW( checkForDuplicatedInterestPoints( raster2InterestPoints, x, y ),
+          "Duplicated point " + boost::lexical_cast< std::string >( x ) + "," +
+          boost::lexical_cast< std::string >( y ) );         
         
-//        createTifFromMatrix( *(raster2Data[ 0 ]), raster2InterestPoints, "raster2InterestPoints");          
+        createTifFromMatrix( *(raster2Data[ 0 ]), raster2InterestPoints, "raster2InterestPoints");*/          
           
         if( m_inputParameters.m_enableProgress )
         {
@@ -425,6 +435,7 @@ namespace te
           raster2Features,
           auxInterestPoints ),
           "Error generating raster 2 features" );
+
           
 //      features2Tiff( raster2Features, raster2InterestPoints, "raster2features" );    
         
@@ -789,8 +800,8 @@ namespace te
     {
       interestPoints.clear();
 
-      const unsigned int minRasterWidthAndHeight = 2 * ( ( 2 * 
-        m_inputParameters.m_moravecWindowWidth ) - 1 );
+      const unsigned int minRasterWidthAndHeight = 
+        ( 4 * ( ( m_inputParameters.m_moravecWindowWidth ) / 2 ) ) + 1;
       // There is not enough data to look for interest points!
       if( rasterData.getColumnsNumber() < minRasterWidthAndHeight ) return true;
       if( rasterData.getLinesNumber() < minRasterWidthAndHeight ) return true;
@@ -820,14 +831,11 @@ namespace te
       
       if( m_inputParameters.m_enableMultiThread )
       {
-        const unsigned int procsNumber = te::common::GetPhysProcNumber();
-        
-        threadParams.m_maxRasterLinesBlockMaxSize = std::max(
-          minRasterWidthAndHeight, rasterData.getLinesNumber() / procsNumber );
+        threadParams.m_processingBlocksNumber = te::common::GetPhysProcNumber();
           
         boost::thread_group threads;
         
-        for( unsigned int threadIdx = 0 ; threadIdx < procsNumber ;
+        for( unsigned int threadIdx = 0 ; threadIdx < threadParams.m_processingBlocksNumber ;
           ++threadIdx )
         {
           threads.add_thread( new boost::thread( 
@@ -839,8 +847,7 @@ namespace te
       }
       else
       {
-        threadParams.m_maxRasterLinesBlockMaxSize = rasterData.getLinesNumber();
-        
+        threadParams.m_processingBlocksNumber = 1;        
         locateMoravecInterestPointsThreadEntry( &threadParams );
       }
       
@@ -868,7 +875,7 @@ namespace te
       assert( paramsPtr->m_interestPointsSubSectorsPtr );
       assert( paramsPtr->m_rastaDataAccessMutexPtr );
       assert( paramsPtr->m_interestPointsAccessMutexPtr );
-      assert( paramsPtr->m_maxRasterLinesBlockMaxSize > 2 );
+      assert( paramsPtr->m_processingBlocksNumber > 0 );
       assert( paramsPtr->m_nextRasterLinesBlockToProcessValuePtr );
       
       // globals
@@ -892,6 +899,13 @@ namespace te
       const unsigned int maskRasterBufferLineSizeBytes = sizeof(
         UCharsMatrix::ElementTypeT ) * 
         bufferCols;
+      const unsigned int processingBlocksNumber = paramsPtr->m_processingBlocksNumber;
+      const unsigned int maxLinesPerProcessingBlock = (unsigned int)
+        std::ceil(
+          ((double)rasterLines)
+          /
+          ((double)processingBlocksNumber)
+        );
       
       paramsPtr->m_rastaDataAccessMutexPtr->unlock();
       
@@ -978,16 +992,10 @@ namespace te
       std::vector< InterestPointsSetT > interestPointsSubSectors(
         paramsPtr->m_tiePointsSubSectorsSplitFactor *
         paramsPtr->m_tiePointsSubSectorsSplitFactor );       
-      
-      const unsigned int rasterLinesBlocksNumber = 
-        ( rasterLines / paramsPtr->m_maxRasterLinesBlockMaxSize ) +
-        ( ( rasterLines % paramsPtr->m_maxRasterLinesBlockMaxSize ) ? 1 : 0 );        
         
       for( unsigned int rasterLinesBlockIdx = 0; rasterLinesBlockIdx <
-        rasterLinesBlocksNumber ; ++rasterLinesBlockIdx )
+        processingBlocksNumber ; ++rasterLinesBlockIdx )
       {
-        InterestPointsSetT blockMaximas; // the maxima points found inside the current raster block
-        
         paramsPtr->m_rastaDataAccessMutexPtr->lock();
          
         if( rasterLinesBlockIdx == ( *(paramsPtr->m_nextRasterLinesBlockToProcessValuePtr ) ) )
@@ -998,17 +1006,35 @@ namespace te
           
           // Processing each raster line from the current block
           
-          const unsigned int rasterLinesStart = (unsigned int)std::max( 0,
-            (int)(rasterLinesBlockIdx * paramsPtr->m_maxRasterLinesBlockMaxSize ) - 
-            (int)( 2 * moravecWindowRadius ) ); 
-          const unsigned int rasterLinesEndBound = std::min( 1 +
-            (rasterLinesBlockIdx * paramsPtr->m_maxRasterLinesBlockMaxSize ) + 
-            paramsPtr->m_maxRasterLinesBlockMaxSize + 
-            ( 2 * moravecWindowRadius ), rasterLines );
+          const unsigned int rasterLinesStart = 
+            (unsigned int)
+            std::max( 
+              0
+              ,
+              (
+                (int)(rasterLinesBlockIdx * maxLinesPerProcessingBlock ) 
+                - 
+                (int)( 2 * moravecWindowRadius ) 
+              )
+            ); 
+          const unsigned int rasterLinesEndBound = 
+            std::min( 
+                rasterLines
+                ,
+                (
+                  (
+                    ( rasterLinesBlockIdx + 1 )
+                    * 
+                    maxLinesPerProcessingBlock
+                  )
+                  +
+                  ( 2 * moravecWindowRadius )
+                )
+            );
           const unsigned int varianceCalcStartRasterLineStart = rasterLinesStart + 
-            moravecWindowWidth - 1;
-          const unsigned int maximasLocationStartRasterLineStart = 
-            varianceCalcStartRasterLineStart + moravecWindowWidth - 1;            
+            moravecWindowRadius;
+          const unsigned int maximasLocationStartRasterLineStart = rasterLinesStart +
+            4 * moravecWindowRadius;            
           unsigned int windowStartBufCol = 0;
           const unsigned int windowEndBufColsBound = bufferCols - 
             moravecWindowWidth;
@@ -1029,6 +1055,7 @@ namespace te
             ++rasterLine )
           {
             // read a new raster line into the last raster buffer line
+            
             paramsPtr->m_rastaDataAccessMutexPtr->lock();
             
             roolUpBuffer( rasterBufferPtr, bufferLines );             
@@ -1132,7 +1159,7 @@ namespace te
                 {
                   auxInterestPoint.m_x = windowStartBufCol + 
                     moravecWindowRadius;
-                  auxInterestPoint.m_y = rasterLine - moravecWindowWidth + 1;
+                  auxInterestPoint.m_y = rasterLine - ( 2 * moravecWindowRadius );
                   assert( auxInterestPoint.m_x < 
                     paramsPtr->m_rasterDataPtr->getColumnsNumber() );
                   assert( auxInterestPoint.m_y < 
@@ -1163,40 +1190,41 @@ namespace te
               }
             }
           }
-          
-          // Copying the best found maximas to the external sector maximas container
-          
-          paramsPtr->m_interestPointsAccessMutexPtr->lock();
-          
-          assert( interestPointsSubSectors.size() == paramsPtr->m_interestPointsSubSectorsPtr->size() );
-          
-          for( unsigned int interestPointsSubSectorsIdx = 0 ; interestPointsSubSectorsIdx <
-            interestPointsSubSectors.size() ; ++interestPointsSubSectorsIdx )
-          {
-            paramsPtr->m_interestPointsSubSectorsPtr->operator[]( 
-              interestPointsSubSectorsIdx ).insert( 
-              interestPointsSubSectors[ interestPointsSubSectorsIdx ].begin(),
-              interestPointsSubSectors[ interestPointsSubSectorsIdx ].end() );
-            
-            while( paramsPtr->m_interestPointsSubSectorsPtr->operator[]( 
-              interestPointsSubSectorsIdx ).size() > 
-              maxInterestPointsBySubSector )
-            {
-              paramsPtr->m_interestPointsSubSectorsPtr->operator[]( 
-              interestPointsSubSectorsIdx ).erase( 
-                paramsPtr->m_interestPointsSubSectorsPtr->operator[]( 
-              interestPointsSubSectorsIdx ).begin() );
-            }
-          }          
-          
-          paramsPtr->m_interestPointsAccessMutexPtr->unlock();          
         }
         else
         {
           paramsPtr->m_rastaDataAccessMutexPtr->unlock();
         }
       }
-    }  
+          
+      // Copying the best found maximas to the external sector maximas container
+      
+      paramsPtr->m_interestPointsAccessMutexPtr->lock();
+      
+      assert( interestPointsSubSectors.size() == paramsPtr->m_interestPointsSubSectorsPtr->size() );
+      
+      for( unsigned int interestPointsSubSectorsIdx = 0 ; interestPointsSubSectorsIdx <
+        interestPointsSubSectors.size() ; ++interestPointsSubSectorsIdx )
+      {
+        paramsPtr->m_interestPointsSubSectorsPtr->operator[]( 
+          interestPointsSubSectorsIdx ).insert( 
+          interestPointsSubSectors[ interestPointsSubSectorsIdx ].begin(),
+          interestPointsSubSectors[ interestPointsSubSectorsIdx ].end() );
+        
+        while( paramsPtr->m_interestPointsSubSectorsPtr->operator[]( 
+          interestPointsSubSectorsIdx ).size() > 
+          maxInterestPointsBySubSector )
+        {
+          paramsPtr->m_interestPointsSubSectorsPtr->operator[]( 
+          interestPointsSubSectorsIdx ).erase( 
+            paramsPtr->m_interestPointsSubSectorsPtr->operator[]( 
+          interestPointsSubSectorsIdx ).begin() );
+        }
+      }          
+      
+      paramsPtr->m_interestPointsAccessMutexPtr->unlock();        
+      
+    }
     
     bool TiePointsLocatorMoravecStrategy::generateCorrelationFeatures( 
       const InterestPointsSetT& interestPoints,

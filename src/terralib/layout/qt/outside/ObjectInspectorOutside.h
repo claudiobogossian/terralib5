@@ -20,7 +20,7 @@
 /*!
   \file ObjectInspectorOutside.h
    
-  \brief 
+  \brief Tree of names of all the items entered on the scene, MVC components, using Qt to present the name of each item and its class. Object Inspector.
 
   \ingroup layout
 */
@@ -46,6 +46,13 @@ namespace te
 {
   namespace layout
   {
+    /*!
+    \brief Tree of names of all the items entered on the scene, MVC components, using Qt to present the name of each item and its class. Object Inspector.
+	  
+	    \ingroup layout
+
+	    \sa te::layout::OutsideObserver
+	  */
     class TELAYOUTEXPORT ObjectInspectorOutside : public QWidget, public OutsideObserver
     {
 	    Q_OBJECT //for slots/signals
@@ -79,4 +86,3 @@ namespace te
 }
 
 #endif
-

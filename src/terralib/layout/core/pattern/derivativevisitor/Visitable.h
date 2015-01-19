@@ -20,7 +20,7 @@
 /*!
   \file Visitable.h
    
-  \brief 
+  \brief Class to represent a visitable. All classes representing a visitable must inherit from this class.
 
   \ingroup layout
 */
@@ -37,22 +37,52 @@ namespace te
   {
     class AbstractVisitor;
 
+    /*!
+	    \brief Class to represent a visitable. All classes representing a visitable must inherit from this class.
+	  
+	    \ingroup layout
+	  */
     class Visitable
     {
       public:
+        
+        /*!
+          \brief Destructor
+        */ 
+        ~Visitable(void)
+        {
+          unacceptAllVisitor();
+        }
 
-        Visitable();
-        ~Visitable(void);
+        /*!
+          \brief Adds the specified visitor to the set of visitors for this object.
 
+          \param visitor specified visitor
+        */
         virtual void acceptVisitor(AbstractVisitor* visitor);
+
+        /*!
+          \brief Removes a visitor from the set of visitors of this object. Dissociate the visitor of this object.
+
+          \param visitor specified visitor
+        */
         virtual void unacceptVisitor(AbstractVisitor* visitor);
+
+        /*!
+          \brief Removes all visitors from the set of visitors of this object. Dissociate the visitors of this object.
+        */
         virtual void unacceptAllVisitor();
 
       protected:
+
+        /*!
+          \brief Notifies all set of visitors that the state of this object changed
+        */
         virtual void updateVisitors();
 
       protected:
-        std::set<AbstractVisitor*>	m_visitors;
+
+        std::set<AbstractVisitor*>	m_visitors; //!< set of visitors of this object
     };
   }
 }

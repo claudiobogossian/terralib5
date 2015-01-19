@@ -20,13 +20,16 @@
 /*!
   \file EnumType.h
    
-  \brief 
+  \brief Class that represents the value of an enumeration. An enumeration is made of "1..n" objects EnumType.
 
   \ingroup layout
 */
 
 #ifndef __TERRALIB_LAYOUT_INTERNAL_ENUM_TYPE_H 
 #define __TERRALIB_LAYOUT_INTERNAL_ENUM_TYPE_H
+
+// TerraLib
+#include "../Config.h"
 
 // STL
 #include <string>
@@ -35,37 +38,68 @@ namespace te
 {
   namespace layout
   {
-    class EnumType 
+    /*!
+      \brief Class that represents the value of an enumeration. An enumeration is made of "1..n" objects EnumType.
+	  
+	    \ingroup layout
+	  */
+    class TELAYOUTEXPORT EnumType 
     {
       public:
 
         /*!
-         \brief 
+         \brief Constructor
+
+         \param id numeric value assigned
+         \param name  
         */
         EnumType(int id, std::string name);
 
         /*!
-         \brief 
+         \brief Destructor
         */
         virtual ~EnumType();
 
+        /*!
+          \brief Returns numeric value assigned
+		  
+		      \return numeric value assigned 		  
+        */
         int getId();
 
+        /*!
+          \brief Returns name
+		  
+		      \return name 		  
+        */
         std::string getName();
 
+        /*!
+          \brief Change name
+		  
+		      \return new name 		  
+        */
         void setName(std::string name); 
 
+        /*!
+          \brief Returns label
+		  
+		      \return label 		  
+        */
         std::string getLabel();
         
+        /*!
+          \brief Change label 
+		  
+		      \return new label 		  
+        */
         void setLabel(std::string label);
-
-      public:
-        
+                
       protected:
 
-        int         m_id;
-        std::string m_name;
-        std::string m_label;
+        int         m_id; //!< numeric value assigned
+        std::string m_name; //!< name
+        std::string m_label; //!< label
     };
   }
 }

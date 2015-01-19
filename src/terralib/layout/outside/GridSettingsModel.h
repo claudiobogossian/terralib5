@@ -46,6 +46,7 @@ namespace te
     public:
 
       GridSettingsModel();
+
       virtual ~GridSettingsModel();
 
       virtual void updateProperties(te::layout::Properties* properties);

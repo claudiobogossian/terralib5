@@ -20,7 +20,7 @@
 /*!
   \file PropertiesOutside.h
    
-  \brief 
+  \brief Properties tree for any item, MVC component, using Qt for presentation and editing.
 
   \ingroup layout
 */
@@ -61,6 +61,13 @@ namespace te
     class MapItem;
     class MapModel;
 
+    /*!
+    \brief Properties tree for any item, MVC component, using Qt for presentation and editing.
+	  
+	    \ingroup layout
+
+	    \sa te::layout::OutsideObserver
+	  */
     class TELAYOUTEXPORT PropertiesOutside : public QWidget, public OutsideObserver
     {
 	    Q_OBJECT //for slots/signals
