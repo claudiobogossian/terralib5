@@ -336,6 +336,18 @@ void HideGeometryColumns(te::da::DataSet* dset, te::qt::widgets::DataSetTableVie
   }
 }
 
+void HideTsVectorColumn(te::da::DataSet* dset, te::qt::widgets::DataSetTableView* view)
+{
+  if(dset != 0)
+  {
+    size_t nProps = dset->getNumProperties();
+   
+    for(std::size_t i = 0; i < nProps; ++i)
+      if(dset->getPropertyName(i) == "tsvector")
+        view->hideColumn(i);
+  }
+}
+
 /*!
   \class Filter for popup menus
 */
@@ -845,6 +857,7 @@ void te::qt::widgets::DataSetTableView::setDataSet(te::da::DataSet* dset, const 
   hheader->setDataSet(dset);
 
   HideGeometryColumns(dset, this);
+  HideTsVectorColumn(dset, this);
 
   m_popupFilter->setDataSet(dset);
   m_delegate->setDataSet(dset);

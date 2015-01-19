@@ -94,6 +94,10 @@ namespace te
         TiePointsLocator::OutputParameters* >( &outputParams );
       TERP_TRUE_OR_THROW( outParamsPtr, "Invalid paramters" );
       
+      outParamsPtr->m_tiePoints.clear();
+      outParamsPtr->m_tiePointsWeights.clear();
+      outParamsPtr->m_transformationPtr.reset();
+      
       // creating the choosed strategy
       
       std::auto_ptr< TiePointsLocatorStrategy > stratPtr;
@@ -323,7 +327,7 @@ namespace te
           "Tie points interest points location error" );
       }
       
-      // Generating tie-points
+      // Converting to tie-points
       
       std::vector< te::gm::GTParameters::TiePoint > tiePoints;
       std::vector< double > tiePointsWeights;
@@ -372,6 +376,26 @@ namespace te
           outParamsPtr->m_transformationPtr.reset();
         }
       }
+      
+      // tie-points weights
+      
+      unsigned int tiePointsIdx = 0;
+      
+      for( unsigned int outTiePointdx = 0 ; outTiePointdx < outParamsPtr->m_tiePoints.size() ;
+        ++outTiePointdx )
+      {
+        for( tiePointsIdx = 0 ; tiePointsIdx < tiePoints.size() ; ++tiePointsIdx )
+        {
+          if( tiePoints[ tiePointsIdx ] == outParamsPtr->m_tiePoints[ outTiePointdx ] )
+          {
+            outParamsPtr->m_tiePointsWeights.push_back( tiePointsWeights[ tiePointsIdx ] );
+            break;
+          }
+        }
+      }
+      
+      TERP_TRUE_OR_THROW( outParamsPtr->m_tiePoints.size() ==
+        outParamsPtr->m_tiePointsWeights.size(), "Internal error" );
       
       return true;
     }

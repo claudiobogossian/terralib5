@@ -64,6 +64,8 @@ namespace te
             
             std::vector< te::gm::GTParameters::TiePoint > m_tiePoints; //!< The generated tie-points (te::gm::GTParameters::TiePoint::first are raster 1 line/column indexes, te::gm::GTParameters::TiePoint::second are raster 2 line/column indexes).
             
+            std::vector< double > m_tiePointsWeights; //!< The generated tie-points weights.
+            
             std::auto_ptr< te::gm::GeometricTransformation > m_transformationPtr; //!< The generated geometric transformation with the base mininum required tie-points set ( depending on the tie-points, a valid transformation may not exist, in this case, this pointer will be null).
             
             OutputParameters();

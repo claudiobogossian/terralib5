@@ -226,13 +226,51 @@ bool te::vp::GeometricOpWizard::execute()
     if(m_geomOpOutputPage->getToFile())
     {
       boost::filesystem::path uri(m_geomOpOutputPage->getPath());
-      //boost::filesystem::path uri_file(m_geomOpOutputPage->getPath() + "/" + outputdataset + ".shp");
 
-      //if (boost::filesystem::exists(uri_file))
-      //{
-      //  QMessageBox::information(this, "Basic Geographic Operation", "Output file already exists. Remove it or select a new name and try again.");
-      //  return false;
-      //}
+      bool ops_selected = false;
+
+      if(m_geomOpOutputPage->hasConvexHull())
+      {
+        boost::filesystem::path uri_file(m_geomOpOutputPage->getPath() + "/" + outputdataset + "_convex_hull.shp");
+        if (boost::filesystem::exists(uri_file))
+        {
+          QMessageBox::information(this, "Geographic Operation", "The convex hull output file already exists. Remove it or select a new name and try again.");
+          return false;
+        }
+
+        ops_selected = true;
+      }
+      if(m_geomOpOutputPage->hasCentroid())
+      {
+        boost::filesystem::path uri_file(m_geomOpOutputPage->getPath() + "/" + outputdataset + "_centroid.shp");
+        if (boost::filesystem::exists(uri_file))
+        {
+          QMessageBox::information(this, "Geographic Operation", "The centroid output file already exists. Remove it or select a new name and try again.");
+          return false;
+        }
+
+        ops_selected = true;
+      }
+      if(m_geomOpOutputPage->hasMBR())
+      {
+        boost::filesystem::path uri_file(m_geomOpOutputPage->getPath() + "/" + outputdataset + "_mbr.shp");
+        if (boost::filesystem::exists(uri_file))
+        {
+          QMessageBox::information(this, "Geographic Operation", "The mbr output file already exists. Remove it or select a new name and try again.");
+          return false;
+        }
+
+        ops_selected = true;
+      }
+      if(!ops_selected)
+      {
+        boost::filesystem::path uri_file(m_geomOpOutputPage->getPath() + "/" + outputdataset + ".shp");
+        if (boost::filesystem::exists(uri_file))
+        {
+          QMessageBox::information(this, "Geographic Operation", "Output file already exists. Remove it or select a new name and try again.");
+          return false;
+        }
+      }
 
       std::size_t idx = outputdataset.find(".");
 
@@ -241,6 +279,7 @@ bool te::vp::GeometricOpWizard::execute()
       
       std::map<std::string, std::string> dsinfo;
       dsinfo["URI"] = uri.string();
+      dsinfo["DRIVER"] = "ESRI Shapefile";
 
       std::auto_ptr<te::da::DataSource> dsOGR = te::da::DataSourceFactory::make("OGR");
       dsOGR->setConnectionInfo(dsinfo);
@@ -382,7 +421,7 @@ bool te::vp::GeometricOpWizard::execute()
   catch(const std::exception& e)
   {
     this->setCursor(Qt::ArrowCursor);
-    QMessageBox::information(this, "Basic Greographic Operation", e.what());
+    QMessageBox::information(this, "Greographic Operation", e.what());
 
     te::common::Logger::logDebug("vp", e.what());
     te::common::ProgressManager::getInstance().removeViewer(id);
