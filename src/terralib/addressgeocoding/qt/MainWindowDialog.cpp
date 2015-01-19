@@ -128,7 +128,6 @@ void te::addressgeocoding::MainWindowDialog::onLayerComboBoxChanged(int index)
   {
     if(layerID == it->get()->getId().c_str())
     {
-      std::size_t type;
       te::map::AbstractLayerPtr selectedLayer = it->get();
       m_selectedLayer = selectedLayer;
       return;
@@ -162,12 +161,23 @@ void te::addressgeocoding::MainWindowDialog::onConfigureAddressClicked()
 
     m_addressDataSource = dlg.getDataSource();
     m_addressFile = dlg.getAddressFileName();
-    m_streetType = dlg.getStreetType();
-    m_streetTitle = dlg.getStreetTitle();
-    m_streetName = dlg.getStreetName();
+
+    if(dlg.getStreetType() != "")
+      m_associatedProps.push_back(dlg.getStreetType());
+
+    if(dlg.getStreetTitle() != "")
+      m_associatedProps.push_back(dlg.getStreetTitle());
+
+    if(dlg.getStreetName() != "")
+      m_associatedProps.push_back(dlg.getStreetName());
+
+    if(dlg.getStreetNeighborhood() != "")
+      m_associatedProps.push_back(dlg.getStreetNeighborhood());
+
+    if(dlg.getStreetPostalCode() != "")
+      m_associatedProps.push_back(dlg.getStreetPostalCode());
+
     m_streetNumber = dlg.getStreetNumber();
-    m_streetNeighborhood = dlg.getStreetNeighborhood();
-    m_streetPostalCode = dlg.getStreetPostalCode();
 
     m_ui->m_inputAddressComboBox->addItem(QString(m_addressFile.c_str()));
   }
@@ -254,35 +264,21 @@ void te::addressgeocoding::MainWindowDialog::onOkPushButtonClicked()
 
     query += m_selectedLayer->getTitle() + " WHERE tsvector @@ plainto_tsquery('english', ";
 
-    for(std::size_t i = 0; i < props.size(); ++i)
+    for(std::size_t i = 0; i < m_associatedProps.size(); ++i)
     {
-      if(m_streetNumber != dsAddress->getPropertyName(i))
-      {
-        int type = dsAddress->getPropertyDataType(i);
-        if(type == te::dt::STRING_TYPE)
-        {
-          //te::common::CharEncoding addressEncoding = dsAddress->getPropertyCharEncoding(i);
-          te::common::CharEncoding addressEncoding = te::common::CP1252;
-          std::string value;
+      //te::common::CharEncoding addressEncoding = dsAddress->getPropertyCharEncoding(i);
+      te::common::CharEncoding addressEncoding = te::common::CP1252;
+      std::string value;
 
-          if(dSourceEncoding == addressEncoding)
-            value = dsAddress->getAsString(i);
-          else
-            value = te::common::CharEncodingConv::convert(dsAddress->getAsString(i), addressEncoding, dSourceEncoding);
+      if(dSourceEncoding == addressEncoding)
+        value = dsAddress->getAsString(m_associatedProps[i]);
+      else
+        value = te::common::CharEncodingConv::convert(dsAddress->getAsString(m_associatedProps[i]), addressEncoding, dSourceEncoding);
 
-          if(i == 0)
-            query+= "'"+value;
-          else
-            query+= " | "+value;
-        }
-        else
-        {
-          if(i == 0)
-            query+= "'"+dsAddress->getAsString(i);
-          else
-            query+= " | "+dsAddress->getAsString(i);
-        }
-      }
+      if(i == 0)
+        query+= "'"+value;
+      else
+        query+= " | "+value;
     }
     query+= "')";
 
