@@ -20,7 +20,9 @@
 /*!
   \file ItemGroupModel.h
    
-  \brief 
+   \brief Class that represents a "Model" part of ItemGroup MVC component.  
+   Its coordinate system is the same of scene (millimeters). 
+   This is also son of ItemModelObservable, so it can become observable.
 
   \ingroup layout
 */
@@ -36,11 +38,27 @@ namespace te
 {
   namespace layout
   {
+    /*!
+    \brief Class that represents a "Model" part of ItemGroup MVC component.  
+    Its coordinate system is the same of scene (millimeters). 
+    This is also son of ItemModelObservable, so it can become observable.
+      	  
+	    \ingroup layout
+
+      \sa te::layout::ItemModelObservable
+	  */
     class ItemGroupModel : public ItemModelObservable
     {
       public:
 
+        /*!
+          \brief Constructor
+        */
         ItemGroupModel();
+
+        /*!
+          \brief Destructor
+        */ 
         virtual ~ItemGroupModel();
 
         virtual void draw( ContextItem context );
@@ -48,4 +66,4 @@ namespace te
   }
 }
 
-#endif //__TERRALIB_LAYOUT_INTERNAL_ITEMGROUPLAYOUTMODEL_H
+#endif 

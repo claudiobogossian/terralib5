@@ -20,7 +20,10 @@
 /*!
   \file LegendModel.h
    
-  \brief 
+   \brief Class that represents a "Model" part of Legend MVC component.  
+   Its coordinate system is the same of scene (millimeters). 
+   This is also son of ItemModelObservable, so it can become observable, and son of AbstractVisitor, so it can become visitor.
+   It is must visit the map, via te::layout::Visitable*, to get the layers.
 
   \ingroup layout
 */
@@ -44,11 +47,28 @@ namespace te
 {
   namespace layout
   {
+    /*!
+    \brief Class that represents a "Model" part of Legend MVC component.  
+    Its coordinate system is the same of scene (millimeters). 
+    This is also son of ItemModelObservable, so it can become observable, and son of AbstractVisitor, so it can become visitor.
+    It is must visit the map, via te::layout::Visitable*, to get the layers.
+      	  
+	    \ingroup layout
+
+      \sa te::layout::ItemModelObservable , te::layout::AbstractVisitor
+	  */
     class LegendModel : public ItemModelObservable, public AbstractVisitor
     {
       public:
 
+        /*!
+          \brief Constructor
+        */
         LegendModel();
+
+        /*!
+          \brief Destructor
+        */ 
         virtual ~LegendModel();
 
         virtual void draw( ContextItem context );
@@ -97,4 +117,4 @@ namespace te
   }
 }
 
-#endif //__TERRALIB_LAYOUT_INTERNAL_MAPLAYOUT_MODEL_H
+#endif 

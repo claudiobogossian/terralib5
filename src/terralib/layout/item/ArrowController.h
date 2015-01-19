@@ -40,7 +40,7 @@ namespace te
     /*!
       \brief Class that represents a "Controller" part of Arrow MVC component. 
           Its coordinate system is the same of scene (millimeters). 
-          He is also the son of ItemController, so it can become a controller.
+          This is also the son of ItemController, so it can become a controller.
       	  
 	    \ingroup layout
 

@@ -20,7 +20,10 @@
 /*!
   \file ScaleModel.h
    
-  \brief 
+   \brief Class that represents a "Model" part of Scale MVC component.  
+   Its coordinate system is the same of scene (millimeters). 
+   This is also son of ItemModelObservable, so it can become observable, and son of AbstractVisitor, so it can become visitor.
+   It is must visit the map, via te::layout::Visitable*, to get the scale value.
 
   \ingroup layout
 */
@@ -39,11 +42,28 @@ namespace te
 {
   namespace layout
   {
+    /*!
+    \brief Class that represents a "Model" part of Scale MVC component.  
+    Its coordinate system is the same of scene (millimeters). 
+    This is also son of ItemModelObservable, so it can become observable, and son of AbstractVisitor, so it can become visitor.
+    It is must visit the map, via te::layout::Visitable*, to get the scale value.
+      	  
+	    \ingroup layout
+
+      \sa te::layout::ItemModelObservable , te::layout::AbstractVisitor
+	  */
     class ScaleModel : public ItemModelObservable, public AbstractVisitor
     {
       public:
 
+        /*!
+          \brief Constructor
+        */
         ScaleModel();
+
+        /*!
+          \brief Destructor
+        */ 
         virtual ~ScaleModel();
 
         virtual void draw( ContextItem context );

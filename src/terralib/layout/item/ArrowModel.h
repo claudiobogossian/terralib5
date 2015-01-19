@@ -44,7 +44,7 @@ namespace te
     /*!
       \brief Class that represents a "Model" part of Arrow MVC component. 
           Its coordinate system is the same of scene (millimeters). 
-          He is also the son of ItemModelObservable, so it can become observable.
+          This is also son of ItemModelObservable, so it can become observable.
       	  
 	    \ingroup layout
 
