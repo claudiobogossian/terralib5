@@ -78,9 +78,9 @@ namespace te
 
         void onLayerComboBoxChanged(int index);
 
-				void onConfigureLayerClicked();
+        void onConfigureLayerClicked();
 
-				void onConfigureAddressClicked();
+        void onConfigureAddressClicked();
 
         void onTargetDatasourceToolButtonPressed();
 
