@@ -20,7 +20,7 @@
 /*!
   \file TitleItem.h
    
-  \brief 
+  \brief Class daughter of te::layout::TextItem representing a grid with two cells which can be inserted texts.
 
   \ingroup layout
 */
@@ -37,14 +37,33 @@ namespace te
   {
     class Observable;
 
+    /*!
+      \brief Class daughter of te::layout::TextItem representing a grid with two cells which can be inserted texts.
+	  
+	    \ingroup layout
+
+	    \sa te::layout::TextItem
+	  */
     class TitleItem : public TextItem
     {
       public:
 
+        /*!
+          \brief Constructor
+
+          \param controller "Controller" part of MVC component
+          \param o "Model" part of MVC component
+        */
         TitleItem( ItemController* controller, Observable* o );
 
+        /*!
+          \brief Destructor
+         */
         virtual ~TitleItem();
 
+        /*!
+          \brief Reimplemented from TextItem
+         */
         virtual void updateObserver( ContextItem context );
 
         virtual void refreshDocument();

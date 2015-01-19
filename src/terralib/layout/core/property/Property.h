@@ -20,7 +20,7 @@
 /*!
   \file Property.h
    
-  \brief 
+   \brief A property acts like a attribute member of a object and stores the state of this attribute. A set of properties stores the state of an object.
 
   \ingroup layout
 */
@@ -36,21 +36,60 @@ namespace te
 {
   namespace layout
   {
+    /*!
+      \brief A property acts like a attribute member of a object and stores the state of this attribute. A set of properties stores the state of an object.
+	  
+	    \ingroup layout
+	  */
     class Property
     {
       public:
 
+        /*!
+          \brief Constructor
+        */ 
         Property();
+
+        /*!
+          \brief Destructor
+        */ 
         virtual ~Property();
 
+        /*!
+          \brief Method that returns the name of this property.
+
+          \return name of this property
+        */
         std::string getName();
+
+        /*!
+          \brief Sets the name of this property.
+
+          \param name of this property
+        */
         void setName(std::string name); 
         
+        /*!
+          \brief Returns the type of this property 
+
+          \return type of this property
+        */
         EnumType* getType();
 
 	      std::vector<te::layout::Property> getSubProperty();
         
+        /*!
+          \brief Returns the hashcode of the object that owns this property.
+
+          \return hashcode
+        */
         std::string getId();
+
+        /*!
+          \brief Sets the hashcode of the object that owns this property. 
+
+          \param hashcode
+        */
         void setId(std::string id);
 
         /*
@@ -58,65 +97,132 @@ namespace te
           corresponding type and pass it as the method parameter.
         */
 
+        /*!
+          \brief Stores a copy of value.
+
+          \param value copies the value to be stored
+          \param type data type
+        */
         template <typename ValueType>
         void setValue(ValueType value, EnumType* type);
 
+        /*!
+          \brief Stores a copy of value.
+
+          \param te::layout::Variant object
+        */
         void setValue(Variant variant);
 
+        /*!
+          \brief Returns stored value
+
+          \return te::layout::Variant object
+        */
         Variant getValue();
 
+        /*!
+          \brief Returns true if property is editable, false otherwise. 
+
+          \return true if property is editable, false otherwise 
+        */
         bool isEditable();
+
+        /*!
+          \brief Sets true if property is editable, false otherwise 
+
+          \param true if property is editable, false otherwise 
+        */
         void setEditable(bool editable);
 
         /*Property Options*/
 
         void addOption(Variant variant);
+
         void removeOption(Variant variant);
+
         void setOptionChoice(Variant variant);
+
         void setOptionChoice(int numberOption);
-        Variant getOptionByCurrentChoice();        
+
+        Variant getOptionByCurrentChoice();   
+
         std::vector<Variant> getOptionChoices();  
         
         //Ex.: For font information
         void addSubProperty( Property property );
+
         void removeSubProperty( Property property );
 
+        /*!
+          \brief Returns true if no value has been set, false otherwise.
+
+          \return true if no value has been set, false otherwise 
+        */
         bool isNull();
 
+        /*!
+          \brief Reset state of this object. Null state.  
+        */
         void clear();
 
+        /*!
+          \brief Sets the label of this property.
+
+          \param label of this property
+        */
         virtual void setLabel(std::string label);
+
+        /*!
+          \brief Returns the label of this property.
+
+          \return label of this property
+        */
         virtual std::string getLabel();
 
         virtual bool containsSubProperty(Property subProperty);
 
         virtual Property containsSubProperty(std::string name);
         
+        /*!
+          \brief Sets true if property will be used in a menu, false otherwise.
+
+          \param true if property will be used in a menu, false otherwise 
+        */
         virtual void setMenu(bool menu);
 
+        /*!
+          \brief Returns true if property will be used in a menu, false otherwise.
+
+          \return true if property will be used in a menu, false otherwise  
+        */
         virtual bool isMenu();
 
         virtual void setIcon(std::string icon);
 
         virtual std::string getIcon();
 
+        /*!
+          \brief Return true if value is not of common C++ data type, false otherwise.
+
+          \return true if value is not of common C++ data type, false otherwise  
+        */
         virtual bool isComplex();
 
         bool operator ==(const Property& other); 
 
     protected:
 
-      std::string m_name;
-      EnumType* m_type;
-      std::string m_id;
-      Variant m_value;
-      Variant m_currentChoice;
-      bool m_editable;
-      std::vector<Variant> m_options;
-      std::vector<te::layout::Property> m_subProperty;
-      std::string m_label;
-      bool m_menu; /* The property will be used in a menu.  */
-      std::string m_icon;
+      std::string m_name; //!< name of this property
+      EnumType* m_type; //!< data type of this property
+      std::string m_id; //!< hashcode of the object that owns this property
+      Variant m_value; //!<
+      Variant m_currentChoice; //!<
+      bool m_editable; //!<
+      std::vector<Variant> m_options; //!<
+      std::vector<te::layout::Property> m_subProperty; //!<
+      std::string m_label; //!<
+      bool m_menu; //!< /* The property will be used in a menu.  */
+      std::string m_icon; //!<
     };
 
     template <typename ValueType>

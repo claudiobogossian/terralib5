@@ -20,7 +20,9 @@
 /*!
   \file MapController.h
    
-  \brief 
+   \brief Class that represents a "Controller" part of MapGrid MVC component. 
+   Its coordinate system is the same of scene (millimeters).
+   This is also son of ItemController, so it can become a controller.
 
   \ingroup layout
 */
@@ -35,17 +37,44 @@ namespace te
 {
   namespace layout
   {
+    /*!
+      \brief Class that represents a "Controller" part of MapGrid MVC component. 
+          Its coordinate system is the same of scene (millimeters). 
+          This is also the son of ItemController, so it can become a controller.
+      	  
+	    \ingroup layout
+
+      \sa te::layout::MapController
+	  */
     class MapGridController : public MapController
     {
       public:
 
+        /*!
+          \brief Constructor
+
+          \param o "Model" part of MVC component
+        */
         MapGridController( Observable* o );
+
+        /*!
+          \brief Destructor
+        */
         virtual ~MapGridController();
 
       protected:
 
+        /*!
+          \brief Constructor.
+
+          \param o "Model" part of MVC component
+          \param type type of the MVC component
+        */
         MapGridController( Observable* o, EnumType* type );
 
+        /*!
+          \brief Reimplemented from ItemController
+         */
         virtual void create();
     };
   }

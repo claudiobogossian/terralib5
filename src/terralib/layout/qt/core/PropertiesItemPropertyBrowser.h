@@ -20,7 +20,7 @@
 /*!
   \file PropertyBrowser.h
    
-  \brief 
+  \brief Class daughter of PropertyBrowser used by the Property Browser widget.
 
   \ingroup layout
 */
@@ -51,6 +51,13 @@ namespace te
   {
     class GridSettingsOutside;
 
+    /*!
+	  \brief Class daughter of PropertyBrowser used by the Property Browser widget.
+	  
+	  \ingroup layout
+
+    \sa te::layout::PropertyBrowser
+	  */
     class PropertiesItemPropertyBrowser : public PropertyBrowser
     {
 	    Q_OBJECT //for slots/signals

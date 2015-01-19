@@ -204,6 +204,8 @@ te::da::DataSetType* te::vp::GeometricOp::GetDataSetType( te::vp::GeometricOpObj
           dsType->add(perimeter);
         }
         break;
+      default:
+        break;
     }
   }
   
@@ -243,6 +245,8 @@ te::da::DataSetType* te::vp::GeometricOp::GetDataSetType( te::vp::GeometricOpObj
             dsType->add(mbrGeom);
             flagGeom = true;
           }
+          break;
+        default:
           break;
       }
     }
@@ -302,6 +306,9 @@ te::da::DataSetType* te::vp::GeometricOp::GetDataSetType( te::vp::GeometricOpObj
           flagGeom = true;
         }
         break;
+      default:
+        break;
+
     }
 
     if(!flagGeom)

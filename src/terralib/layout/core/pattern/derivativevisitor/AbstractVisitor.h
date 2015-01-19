@@ -20,7 +20,7 @@
 /*!
   \file AbstractVisitor.h
    
-  \brief 
+  \brief Abstract class to represent a visitor. All classes representing a visitor must inherit from this class.
 
   \ingroup layout
 */
@@ -37,26 +37,57 @@ namespace te
   {
     class Visitable;
 
+    /*!
+	    \brief Abstract class to represent a visitor. All classes representing a visitor must inherit from this class.
+	  
+	    \ingroup layout
+	  */
     class AbstractVisitor
     {
       public:
 
+        /*!
+          \brief Constructor
+        */ 
         AbstractVisitor();
+
+        /*!
+          \brief Destructor
+        */ 
         ~AbstractVisitor(void);
 
+        /*!
+          \brief Constructor
+        */ 
         virtual void visit(Visitable* visitable);
 
+        /*!
+          \brief Separate this object from visitable.
+        */
         virtual void disassociate();
 
-        virtual void visitDependent(ContextItem context) = 0;
+        /*!
+          \brief Return the object to be visited. 
 
+          \param
+        */
         virtual Visitable* getVisitable();
 
       protected:
 
-        ContextItem getContextItem();
+        /*!
+          \brief visit and if necessary redraw
+        */
+        virtual void visitDependent(ContextItem context) = 0;
 
-        Visitable* m_visitable;
+        /*!
+          \brief Returns context maintaining the drawing context of a MVC component.
+
+          \param context maintaining the drawing context of a MVC component
+        */
+        virtual ContextItem getContextItem();
+
+        Visitable* m_visitable; //!< object to be visited
     };
   }
 }

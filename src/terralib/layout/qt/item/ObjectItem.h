@@ -22,7 +22,7 @@
    
    \brief Abstract class that represents a graphic item. This object is of type QGraphicsObject. 
    Its coordinate system is the same of scene (millimeters). Knows rotate and resize. Stores a pixmap drawn by model.
-   He is also the son of ItemObserver, so it can become observer of a model (Observable). 
+   This is also son of ItemObserver, so it can become observer of a model (Observable). 
    This class will be inherited and will became the view part of the MVC component.
 
   \ingroup layout

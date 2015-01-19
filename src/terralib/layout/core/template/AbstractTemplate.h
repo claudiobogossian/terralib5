@@ -20,7 +20,7 @@
 /*!
   \file AbstractTemplate.h
    
-  \brief 
+  \brief Abstract class that represents a Template.
 
   \ingroup layout
 */
@@ -42,11 +42,17 @@ namespace te
     class Properties;
     class EnumType;
 
+    /*!
+      \brief Abstract class that represents a Template.
+	  
+	    \ingroup layout
+	  */
     class AbstractTemplate
     {
       public:
 
         AbstractTemplate(std::string path);
+
         virtual ~AbstractTemplate();
 
         virtual bool exportTemplate(std::vector<te::layout::Properties*> properties) = 0;

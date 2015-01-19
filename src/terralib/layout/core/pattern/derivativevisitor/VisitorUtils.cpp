@@ -39,7 +39,17 @@
 // Boost
 #include <boost/foreach.hpp>
 
-TELAYOUTEXPORT bool te::layout::changeMapVisitable( QList<QGraphicsItem*> graphicsItems, te::layout::Visitable* visitable )
+te::layout::VisitorUtils::VisitorUtils()
+{
+
+}
+
+te::layout::VisitorUtils::~VisitorUtils()
+{
+
+}
+
+bool te::layout::VisitorUtils::changeMapVisitable( QList<QGraphicsItem*> graphicsItems, Visitable* visitable )
 {
   bool result = true;
   te::layout::MapModel* mpModel = dynamic_cast<te::layout::MapModel*>(visitable);

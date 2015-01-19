@@ -236,6 +236,8 @@ void te::layout::Variant::fromPtree( boost::property_tree::ptree tree, EnumType*
   if(!dataType)
     return;
 
+  /* the ptree boost returns data with string type */
+
   try
   {
     if(type == dataType->getDataTypeString())

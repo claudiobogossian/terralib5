@@ -20,7 +20,9 @@
 /*!
   \file TextGridModel.h
    
-  \brief 
+   \brief Class that represents a "Model" part of TextGrid MVC component.  
+   Its coordinate system is the same of scene (millimeters). 
+   This is also son of ItemModelObservable, so it can become observable.
 
   \ingroup layout
 */
@@ -40,12 +42,27 @@ namespace te
 {
   namespace layout
   {
+    /*!
+    \brief Class that represents a "Model" part of TextGrid MVC component.  
+    Its coordinate system is the same of scene (millimeters). 
+    This is also son of ItemModelObservable, so it can become observable.
+      	  
+	    \ingroup layout
+
+      \sa te::layout::TitleModel
+	  */
     class TextGridModel : public TitleModel
     {
       public:
 
+        /*!
+          \brief Constructor
+        */
         TextGridModel();
 
+        /*!
+          \brief Destructor
+        */ 
         virtual ~TextGridModel();
 
         virtual void addText(te::gm::Point* cell, std::string text);

@@ -142,13 +142,6 @@ void te::layout::Utils::configCanvas( te::gm::Envelope box, bool resize, bool ap
   changeCanvas(boxViewport, box, resize); 
 }
 
-void te::layout::Utils::configGeoCanvas( te::gm::Envelope boxgeo, te::gm::Envelope boxmm, bool resize, bool applyZoom )
-{
-  m_applyZoom = applyZoom;
-  te::gm::Envelope boxViewport = viewportBox(boxmm);
-  changeCanvas(boxViewport, boxgeo, resize);
-}
-
 void te::layout::Utils::changeCanvas( te::gm::Envelope viewport, te::gm::Envelope world, bool resize /*= true*/ )
 {
   te::map::Canvas* canvas = Context::getInstance().getCanvas();
@@ -300,27 +293,6 @@ void te::layout::Utils::textBoundingBox( double &w, double &h, std::string txt )
       h = box->getHeight();
     }
   }
-}
-
-te::gm::Envelope te::layout::Utils::transformToMM( te::layout::WorldTransformer transf, te::gm::Envelope boxGeo )
-{
-  double px1 = 0;
-  double py1 = 0;
-  double px2 = 0;
-  double py2 = 0;
-  double pycopy = 0;
-  transf.system1Tosystem2(boxGeo.getLowerLeftX(), boxGeo.getLowerLeftY(), px1, py1);
-  transf.system1Tosystem2(boxGeo.getUpperRightX(), boxGeo.getUpperRightY(), px2, py2);
-
-  if(py1 > py2 )
-  {
-    pycopy = py1;
-    py1 = py2;
-    py2 = pycopy;
-  }
-
-  te::gm::Envelope boxMM(px1, py1, px2, py2);
-  return boxMM;
 }
 
 te::layout::WorldTransformer te::layout::Utils::getTransformGeo(te::gm::Envelope boxgeo, te::gm::Envelope boxmm)

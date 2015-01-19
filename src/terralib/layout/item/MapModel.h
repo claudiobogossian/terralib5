@@ -20,7 +20,9 @@
 /*!
   \file MapModel.h
    
-  \brief 
+   \brief Class that represents a "Model" part of Map MVC component.  
+   Its coordinate system is the same of scene (millimeters). 
+   This is also son of ItemModelObservable, so it can become observable, and son of Visitable, so it can become visitable.
 
   \ingroup layout
 */
@@ -46,12 +48,27 @@ namespace te
   {
     class Systematic;
 
+    /*!
+    \brief Class that represents a "Model" part of Map MVC component.  
+    Its coordinate system is the same of scene (millimeters). 
+    This is also son of ItemModelObservable, so it can become observable, and son of Visitable, so it can become visitable.
+      	  
+	    \ingroup layout
+
+      \sa te::layout::ItemModelObservable , te::layout::Visitable
+	  */
     class MapModel : public ItemModelObservable, public Visitable
     {
       public:
 
+        /*!
+          \brief Constructor
+        */
         MapModel();
 
+        /*!
+          \brief Destructor
+        */ 
         virtual ~MapModel();
 
         virtual void draw( ContextItem context );

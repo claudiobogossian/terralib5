@@ -43,6 +43,7 @@ namespace te
     public:
 
       PageSetupModel();
+
       virtual ~PageSetupModel();
 
       virtual void updateProperties(te::layout::Properties* properties);
