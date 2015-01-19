@@ -20,7 +20,7 @@
 /*!
   \file ObjectInspectorPropertyBrowser.h
    
-  \brief 
+  \brief Class daughter of te::layout::PropertyBrowser used by the Object Inspector widget.
 
   \ingroup layout
 */
@@ -44,6 +44,13 @@ namespace te
 {
   namespace layout
   {
+    /*!
+	  \brief Class daughter of te::layout::PropertyBrowser used by the Object Inspector widget.
+	  
+	  \ingroup layout
+
+    \sa te::layout::PropertyBrowser
+	  */
     class ObjectInspectorPropertyBrowser : public PropertyBrowser
     {
 	    Q_OBJECT //for slots/signals

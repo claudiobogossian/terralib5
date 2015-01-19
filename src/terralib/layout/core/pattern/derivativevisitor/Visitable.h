@@ -45,16 +45,14 @@ namespace te
     class Visitable
     {
       public:
-
-        /*!
-          \brief Constructor
-        */ 
-        Visitable();
-
+        
         /*!
           \brief Destructor
         */ 
-        ~Visitable(void);
+        ~Visitable(void)
+        {
+          unacceptAllVisitor();
+        }
 
         /*!
           \brief Adds the specified visitor to the set of visitors for this object.

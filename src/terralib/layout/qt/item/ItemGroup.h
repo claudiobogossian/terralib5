@@ -20,7 +20,9 @@
 /*!
   \file ItemGroup.h
    
-  \brief 
+   \brief Class that represents the grouping of objects of type QGraphicsItem, MVC components.
+   Its coordinate system is the same of scene (millimeters). 
+   He is also the son of ItemObserver and ObjectItem, so it can become observer of a model (Observable). 
 
   \ingroup layout
 */
@@ -48,6 +50,15 @@ namespace te
 {
   namespace layout
   {
+    /*!
+    \brief Class that represents the grouping of objects of type QGraphicsItem, MVC components.
+        Its coordinate system is the same of scene (millimeters). 
+        He is also the son of ItemObserver and ObjectItem, so it can become observer of a model (Observable).  
+	  
+	    \ingroup layout
+
+	    \sa te::layout::ItemObserver
+	  */
     class ItemGroup : public QGraphicsItemGroup, public ItemObserver
     {
       public:

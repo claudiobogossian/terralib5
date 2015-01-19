@@ -20,7 +20,7 @@
 /*!
   \file TemplateEditor.h
    
-  \brief 
+  \brief Calls the factory to create a template of the specified type and keep. Responsible for delete the created template.
 
   \ingroup layout
 */
@@ -38,11 +38,17 @@ namespace te
     class AbstractTemplate;
     class EnumType;
 
+    /*!
+      \brief Calls the factory to create a template of the specified type and keep. Responsible for delete the created template.
+	  
+	    \ingroup layout
+	  */
     class TemplateEditor
     {
       public:
 
         TemplateEditor(EnumType* type, std::string path);
+
         virtual ~TemplateEditor();
 
         virtual te::layout::AbstractTemplate* getTemplate();

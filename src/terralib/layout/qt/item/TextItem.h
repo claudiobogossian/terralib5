@@ -23,7 +23,7 @@
   \brief Class that represents text. This object is of type QGraphicsTextItem. He is directly editable via user interaction. 
   His transformation matrix is inverted, that is, the inverse of the matrix of the scene, so its coordinate system is screen (pixel), 
   but its position in the scene remains in millimeters.
-  He is also the son of ItemObserver, so it can become observer of a model (Observable). "View" part of MVC component.
+  This is also son of ItemObserver, so it can become observer of a model (Observable). "View" part of MVC component.
 
   \ingroup layout
 */

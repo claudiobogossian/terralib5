@@ -20,7 +20,9 @@
 /*!
   \file ToolbarOutside.h
    
-  \brief 
+  \brief Standard Toolbar for Layout. Includes Qt components for interaction between the user and the plugin/app, via events, made from the Layout module. 
+    Ex .: button for create Map, activate ZoomOut function, align selected components to the left, etc. 
+    He is also the son of OutsideObserver, so it can become observer of a model (Observable). "View" part of widget.
 
   \ingroup layout
 */
@@ -54,6 +56,15 @@ namespace te
   {
     class EnumType;
 
+    /*!
+    \brief Standard Toolbar for Layout. Includes Qt components for interaction between the user and the plugin/app, via events, made from the Layout module. 
+       Ex .: button for create Map, activate ZoomOut function, align selected components to the left, etc. 
+       This is also son of OutsideObserver, so it can become observer of a model (Observable). "View" part of widget.
+	  
+	    \ingroup layout
+
+	    \sa te::layout::OutsideObserver
+	  */
     class TELAYOUTEXPORT ToolbarOutside : public QToolBar, public OutsideObserver
     {
 	    Q_OBJECT //for slots/signals

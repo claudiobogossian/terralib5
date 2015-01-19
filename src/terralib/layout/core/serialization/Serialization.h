@@ -20,7 +20,7 @@
 /*!
   \file Serialization.h
    
-  \brief 
+  \brief Abstract class for serialization properties in any file extension.
 
   \ingroup layout
 */
@@ -35,6 +35,11 @@ namespace te
 {
   namespace layout
   {
+    /*!
+      \brief Abstract class for serialization properties in any file extension.
+	  
+	    \ingroup layout
+	  */
     class Serialization
     {
       public:

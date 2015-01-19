@@ -20,7 +20,7 @@
 /*!
   \file VisitorUtils.h
    
-  \brief 
+  \brief Utility class for visitor.
 
   \ingroup layout
 */
@@ -41,6 +41,11 @@ namespace te
 {
   namespace layout
   {
+    /*!
+	    \brief Utility class for visitor.
+	  
+	    \ingroup layout
+	  */
     class TELAYOUTEXPORT VisitorUtils : public te::common::Singleton<VisitorUtils>
     {
       friend class te::common::Singleton<VisitorUtils>;
@@ -52,6 +57,13 @@ namespace te
         */
         virtual ~VisitorUtils();
 
+        /*!
+          \brief Sets the other map (MapModel) for visitable.
+
+          \param graphicsItems items that are visitors
+          \param visitable other map (MapModel)
+          \return true if changed, false otherwise
+        */
         bool changeMapVisitable(QList<QGraphicsItem*> graphicsItems, Visitable* visitable);
 
       protected:

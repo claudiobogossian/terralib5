@@ -43,6 +43,7 @@ namespace te
     public:
 
       ObjectInspectorModel();
+
       virtual ~ObjectInspectorModel();
     };
   }

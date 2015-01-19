@@ -22,7 +22,7 @@
    
    \brief Class that represents a graphic Image. 
       Its coordinate system is the same of scene (millimeters). 
-      He is also the son of ItemObserver and ObjectItem, so it can become observer of a model (Observable).  
+      This is also son of ItemObserver and ObjectItem, so it can become observer of a model (Observable).  
 
   \ingroup layout
 */
