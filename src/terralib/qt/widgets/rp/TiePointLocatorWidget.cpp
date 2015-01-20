@@ -456,19 +456,18 @@ void te::qt::widgets::TiePointLocatorWidget::setReferenceTiePointMarkLegend(QPix
   m_ui->m_refTiePointLabel->setPixmap(p);
 }
 
-void te::qt::widgets::TiePointLocatorWidget::createSelection(int initialId)
+void te::qt::widgets::TiePointLocatorWidget::createSelection(int initialIdx, int nPos)
 {
   m_ui->m_tiePointsTableWidget->clearSelection();
 
-  for(int i = 0; i < m_ui->m_tiePointsTableWidget->rowCount(); ++i)
+  QModelIndex idxStart = m_ui->m_tiePointsTableWidget->model()->index(initialIdx, 0);
+  QModelIndex idxEnd = m_ui->m_tiePointsTableWidget->model()->index(initialIdx + nPos - 1, 6);
+
+  if(idxStart.isValid() && idxEnd.isValid())
   {
-    QTableWidgetItem* item = m_ui->m_tiePointsTableWidget->item(i, 0);
+    QItemSelection itemSel(idxStart, idxEnd);
 
-    int curId = item->text().toInt();
-
-    
-    if(curId >= initialId)
-      m_ui->m_tiePointsTableWidget->selectRow(i);
+    m_ui->m_tiePointsTableWidget->selectionModel()->select(itemSel, QItemSelectionModel::Select);
   }
 }
 
@@ -592,7 +591,7 @@ void te::qt::widgets::TiePointLocatorWidget::onAutoAcquireTiePointsToolButtonCli
           TiePointData auxTpData;
           auxTpData.m_acqType = TiePointData::AutomaticAcquisitionT;
 
-          int initialId = m_tiePointIdCounter + 1;
+          int initialId = (int)m_tiePoints.size();
 
           for(unsigned int tpIdx = 0; tpIdx < tpsNmb; ++tpIdx)
           {
@@ -603,7 +602,13 @@ void te::qt::widgets::TiePointLocatorWidget::onAutoAcquireTiePointsToolButtonCli
 
           tiePointsTableUpdate();
 
-          createSelection(initialId);
+          disconnect(m_ui->m_tiePointsTableWidget, SIGNAL(itemSelectionChanged()), this, SLOT(onTiePointsTableWidgetItemSelectionChanged()));
+
+          createSelection(initialId, (int)tpsNmb);
+
+          connect(m_ui->m_tiePointsTableWidget, SIGNAL(itemSelectionChanged()), this, SLOT(onTiePointsTableWidgetItemSelectionChanged()));
+
+          transformationInfoUpdate();
         }
         else
         {
