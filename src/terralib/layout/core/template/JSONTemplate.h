@@ -20,7 +20,7 @@
 /*!
   \file JSONTemplate.h
    
-  \brief 
+  \brief Implementation of AbstractTemplate. Template that creates, saves, or change a .json file.
 
   \ingroup layout
 */
@@ -37,11 +37,19 @@ namespace te
   {
     class Properties;
 
+    /*!
+      \brief Implementation of AbstractTemplate. Template that creates, saves, or change a .json file.
+	  
+	    \ingroup layout
+
+      \sa te::layout::AbstractTemplate
+	  */
     class JSONTemplate : AbstractTemplate
     {
       public:
 
         JSONTemplate(std::string path);
+
         virtual ~JSONTemplate();
 
         virtual bool exportTemplate(std::vector<te::layout::Properties*> properties);

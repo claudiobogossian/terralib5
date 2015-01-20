@@ -435,7 +435,7 @@ void te::layout::ItemUtils::createLegendChildItemFromLegend( std::map<te::gm::Po
     {
       QList<QGraphicsItem*> legends;
       legends.push_back(lgItem);
-      te::layout::changeMapVisitable(legends, visitable);
+      te::layout::VisitorUtils::getInstance().changeMapVisitable(legends, visitable);
     }
   }
 

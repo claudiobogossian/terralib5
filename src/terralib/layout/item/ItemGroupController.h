@@ -20,7 +20,9 @@
 /*!
   \file ItemGroupController.h
    
-  \brief 
+   \brief Class that represents a "Controller" part of ItemGroup MVC component. 
+   Its coordinate system is the same of scene (millimeters).
+   This is also son of ItemController, so it can become a controller.
 
   \ingroup layout
 */
@@ -35,22 +37,52 @@ namespace te
 {
   namespace layout
   {
+    /*!
+      \brief Class that represents a "Controller" part of ItemGroup MVC component. 
+          Its coordinate system is the same of scene (millimeters). 
+          This is also the son of ItemController, so it can become a controller.
+      	  
+	    \ingroup layout
+
+      \sa te::layout::ItemController
+	  */
     class ItemGroupController : public ItemController
     {
       public:
 
+        /*!
+          \brief Constructor
+
+          \param o "Model" part of MVC component
+        */
         ItemGroupController( Observable* o );
+
+        /*!
+          \brief Destructor
+        */
         virtual ~ItemGroupController();
 
+        /*!
+          \brief Reimplemented from ItemController
+         */
         virtual void setPosition(const double& x, const double& y);
 
       protected:
 
+        /*!
+          \brief Constructor.
+
+          \param o "Model" part of MVC component
+          \param type type of the MVC component
+        */
         ItemGroupController( Observable* o, EnumType* type );
 
+        /*!
+          \brief Reimplemented from ItemController
+         */
         virtual void create();
     };
   }
 }
 
-#endif // __TERRALIB_LAYOUT_INTERNAL_ITEMGROUP_LAYOUTCONTROLLER_H
+#endif 

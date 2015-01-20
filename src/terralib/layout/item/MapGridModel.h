@@ -20,7 +20,9 @@
 /*!
   \file MapGridModel.h
    
-  \brief 
+   \brief Class that represents a "Model" part of MapGrid MVC component.  
+   Its coordinate system is the same of scene (millimeters). 
+   This is also son of MapModel, so it can become observable and visitable.
 
   \ingroup layout
 */
@@ -41,16 +43,33 @@ namespace te
     class GeodesicGridSettingsConfigProperties;
     class PlanarGridSettingsConfigProperties;
 
+    /*!
+    \brief Class that represents a "Model" part of MapGrid MVC component.  
+    Its coordinate system is the same of scene (millimeters). 
+    This is also son of MapModel, so it can become observable and visitable.
+      	  
+	    \ingroup layout
+
+      \sa te::layout::MapModel
+	  */
     class MapGridModel : public MapModel
     {
       public:
 
+        /*!
+          \brief Constructor
+        */
         MapGridModel();
+
+        /*!
+          \brief Destructor
+        */ 
         virtual ~MapGridModel();
 
         virtual void draw( ContextItem context );
 
         virtual te::layout::Properties* getProperties() const;
+
         virtual void updateProperties(te::layout::Properties* properties);
 
         virtual void generateSystematic(te::gm::Coord2D coord);

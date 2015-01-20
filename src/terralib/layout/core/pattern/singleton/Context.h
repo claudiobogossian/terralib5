@@ -212,8 +212,18 @@ namespace te
         */
         void setCanvas(te::map::Canvas* canvas);
 
+        /*!
+          \brief Returns pointer with functions to manipulate the canvas and conversion between projections.
+		  
+		      \return A te::layout::Utils pointer		  
+        */
         Utils* getUtils();
 
+        /*!
+          \brief Change pointer with functions to manipulate the canvas and conversion between projections.
+		  
+		      \param A te::layout::Utils pointer		  
+        */
         void setUtils(Utils* utils);
 
         double getDpiX();
@@ -224,14 +234,39 @@ namespace te
 
         void setDpiY(double dpiY);
 
+        /*!
+          \brief Template structure version.
+		  
+		      \param version		  
+        */
         std::string getVersion();
 
+        /*!
+          \brief Returns paper setting. 
+		  
+		      \return A te::layout::PaperConfig pointer		  
+        */
         PaperConfig* getPaperConfig() const;
 
+        /*!
+          \brief Change paper setting. 
+		  
+		      \param A te::layout::PaperConfig pointer		  
+        */
         void setPaperConfig(PaperConfig* config);
 
+        /*!
+          \brief Returns pointer for build graphics MVC components. 
+		  
+		      \return a AbstractBuildGraphicsItem pointer 		  
+        */
         AbstractBuildGraphicsItem* getAbstractBuildGraphicsItem();
 
+        /*!
+          \brief Change a pointer for build graphics MVC components. 
+		  
+		      \param a AbstractBuildGraphicsItem pointer		  
+        */
         void setAbstractBuildGraphicsItem(AbstractBuildGraphicsItem* build);
 
         EnumType* getLineIntersectionMouseMode();
@@ -256,8 +291,18 @@ namespace te
         */
         AbstractProxyProject* getProxyProject();
         
+        /*!
+          \brief Change pointer for manipulating items in the scene and vectorization of text and legend.
+		  
+		      \param A te::layout::ItemUtils pointer		  
+        */
         void setItemUtils(ItemUtils* utils);
 
+        /*!
+          \brief Returns pointer for manipulating items in the scene and vectorization of text and legend.
+		  
+		      \return A te::layout::ItemUtils pointer		  
+        */
         ItemUtils* getItemUtils();
 
         private:
@@ -291,15 +336,15 @@ namespace te
         AbstractItemFactory*		    m_itemFactory; //!< factory that provide an interface for creating families of related or dependent graphic objects (MVC components)
         AbstractOutsideFactory*	    m_outsideFactory; //!< factory provide an interface for creating families of related or dependent graphic widgets (MVC widgets)
         AbstractTemplateFactory*    m_templateFactory; //!< factory provide an interface for creating families of related or dependent templates
-        Utils*                      m_utils; //!<
+        Utils*                      m_utils; //!< pointer with functions to manipulate the canvas and conversion between projections
         double                      m_dpiX; //!<
         double                      m_dpiY; //!<
-        std::string                 m_version; //!<
-        PaperConfig*                m_paperConfig; //!<
+        std::string                 m_version; //!< template structure version
+        PaperConfig*                m_paperConfig; //!< paper settings
         AbstractBuildGraphicsItem*  m_buildGraphicsItem; //!< build graphics MVC components. 
         SystematicScaleConfig*      m_systematicConfig; //!<
         AbstractProxyProject*       m_proxyProject; //!< provide a surrogate or placeholder for te::qt::af::Project to control access to it
-        ItemUtils*                  m_itemUtils; //!<
+        ItemUtils*                  m_itemUtils; //!< pointer for manipulating items in the scene and vectorization of text and legend
     };
   }
 }

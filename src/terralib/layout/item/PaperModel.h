@@ -20,7 +20,9 @@
 /*!
   \file PaperModel.h
    
-  \brief 
+   \brief Class that represents a "Model" part of Paper MVC component. 
+   Its coordinate system is the same of scene (millimeters). 
+   This is also son of ItemModelObservable, so it can become observable. 
 
   \ingroup layout
 */
@@ -39,23 +41,43 @@ namespace te
   {
     class PaperConfig;
 
+    /*!
+      \brief Class that represents a "Model" part of Paper MVC component. 
+          Its coordinate system is the same of scene (millimeters). 
+          This is also son of ItemModelObservable, so it can become observable.
+      	  
+	    \ingroup layout
+
+      \sa te::layout::ItemModelObservable
+	  */
     class PaperModel : public ItemModelObservable
     {
       public:
 
+        /*!
+          \brief Constructor
+        */
         PaperModel();
+
         PaperModel(PaperConfig* paperConfig);
+
+        /*!
+          \brief Destructor
+        */
         virtual ~PaperModel();
 
         virtual void draw( ContextItem context );
 
         virtual te::color::RGBAColor getShadowColor();
+
         virtual void setShadowColor(te::color::RGBAColor color);
 
         virtual void setPaperConfig(PaperConfig* pConfig );
+
         virtual PaperConfig* getPaperConfig() const;
 
         virtual void setShadowPadding(double padding);
+
         virtual double getShadowPadding();
 
         virtual void setBox(te::gm::Envelope box);
@@ -73,4 +95,4 @@ namespace te
   }
 }
 
-#endif // __TERRALIB_LAYOUT_INTERNAL_PAPERLAYOUT_MODEL_H
+#endif 

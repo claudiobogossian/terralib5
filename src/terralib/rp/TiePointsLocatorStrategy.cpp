@@ -359,6 +359,37 @@ namespace te
       }
     }    
     
+        
+    bool TiePointsLocatorStrategy::checkForDuplicatedInterestPoints( 
+      const InterestPointsSetT& interestPoints, double& x, double& y )
+    {
+      InterestPointsSetT::const_iterator it1 = interestPoints.begin();
+      InterestPointsSetT::const_iterator it2;
+      const InterestPointsSetT::const_iterator itE = interestPoints.end();
+      
+      while( it1 != itE )
+      {
+        it2 = it1;
+        ++it2;
+        
+        while( it2 != itE )
+        {
+          if( ( it1->m_x == it2->m_x ) && ( it1->m_y == it2->m_y ) )
+          {
+            x = it1->m_x;
+            y = it1->m_y;
+            return false;
+          }
+          
+          ++it2;
+        }
+        
+        ++it1;
+      }
+      
+      return true;
+    }
+    
   } // end namespace rp
 }   // end namespace te    
 

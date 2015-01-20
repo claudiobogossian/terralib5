@@ -20,7 +20,9 @@
 /*!
   \file TextModel.h
    
-  \brief 
+   \brief Class that represents a "Model" part of Text MVC component.  
+   Its coordinate system is the same of scene (millimeters). 
+   This is also son of ItemModelObservable, so it can become observable. 
 
   \ingroup layout
 */
@@ -43,12 +45,27 @@ namespace te
 {
   namespace layout
   {
+    /*!
+    \brief Class that represents a "Model" part of Text MVC component.  
+    Its coordinate system is the same of scene (millimeters). 
+    This is also son of ItemModelObservable, so it can become observable.
+      	  
+	    \ingroup layout
+
+      \sa te::layout::ItemModelObservable
+	  */
     class TextModel : public ItemModelObservable
     {
       public:
 
+        /*!
+          \brief Constructor
+        */
         TextModel();
 
+        /*!
+          \brief Destructor
+        */ 
         virtual ~TextModel();
 
         virtual void draw( ContextItem context );

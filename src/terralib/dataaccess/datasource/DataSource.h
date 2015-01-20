@@ -1220,7 +1220,7 @@ namespace te
                          std::size_t limit = 0);
 
         /*!
-          \brief It return the DataOurce current encoding.
+          \brief It return the DataSource current encoding.
 
           \return The DataSource current encoding.
         */

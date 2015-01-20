@@ -20,7 +20,7 @@
 /*!
   \file MapGridItem.h
    
-  \brief 
+  \brief Class daughter of te::layout::MapItem that contains a grid that can be viewed on the map.
 
   \ingroup layout
 */
@@ -40,18 +40,37 @@ namespace te
     class Observable;
     class ItemController;
 
+    /*!
+      \brief Class daughter of te::layout::MapItem that contains a grid that can be viewed on the map.
+	  
+	    \ingroup layout
+
+	    \sa te::layout::MapItem
+	  */
     class MapGridItem : public MapItem
     {
       Q_OBJECT //for slots/signals
 
       public:
 
+        /*!
+          \brief Constructor
+
+          \param controller "Controller" part of MVC component
+          \param o "Model" part of MVC component
+        */ 
         MapGridItem( ItemController* controller, Observable* o );
 
+        /*!
+          \brief Destructor
+         */
         virtual ~MapGridItem();            
 
       protected:
 
+        /*!
+          \brief Reimplemented from MapItem
+         */
         virtual void drawSelection( QPainter* painter );
     };
   }

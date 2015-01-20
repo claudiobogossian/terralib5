@@ -20,7 +20,7 @@
 /*!
   \file ItemUtils.h
    
-  \brief 
+  \brief Utility class for manipulating items in the scene and vectorization of text and legend.
 
   \ingroup layout
 */
@@ -52,43 +52,123 @@ namespace te
     class EnumType;
     class MapModel;
 
+    /*!
+      \brief Utility class for manipulating items in the scene and vectorization of text and legend.
+	  
+	    \ingroup layout
+	  */
     class TELAYOUTEXPORT ItemUtils
     {
       public:
 
+        /*!
+          \brief Constructor
+        */ 
         ItemUtils( QGraphicsScene* scene );
 
+        /*!
+          \brief Destructor
+        */
         virtual ~ItemUtils();
 
+        /*!
+          \brief MVC components list of type te::layout::MapItem
+		  
+		      \param selected true if only selected te::layout::MapItem, false otherwise.
+          \return MVC components list of type te::layout::MapItem
+        */
         virtual std::vector<MapItem*> getMapItemList(bool selected = false);
 
+        /*!
+          \brief Search for te::layout::MapItem by name
+		  
+		      \param name of te::layout::MapItem
+          \return MapItem found
+        */
         virtual MapItem* getMapItem(std::string name);
 
+        /*!
+          \brief List of names te::layout::MapItem
+		  
+		      \param selected true if only selected te::layout::MapItem, false otherwise.
+          \return list of names
+        */
         virtual std::vector<std::string> mapNameList(bool selected = false);
 
+        /*!
+          \brief Returns the number of items added to the scene with the type
+		  
+		      \param type type to search
+          \return number of items
+        */
         virtual int countType(te::layout::EnumType* type);
 
+        /*!
+          \brief Search max id for a type.
+		  
+		      \param type type to search
+          \return max id
+        */
         virtual int maxTypeId(te::layout::EnumType* type);
 
+        /*!
+          \brief Indicates whether there is a tool active for object te::layout::MapItem.
+		  
+		      \return true if tool active, false otherwise 
+        */
         virtual bool isCurrentMapTools();
 
+        /*!
+          \brief Changes the active tool of te::layout::MapItem.
+		  
+		      \param type of tool
+        */
         virtual void setCurrentToolInSelectedMapItems(EnumType* mode);
 
+        /*!
+          \brief Vectorizes grid text of selected MapItem. (generates te::layout::TextItem objects)
+        */
         virtual void createTextGridAsObject();
 
+        /*!
+          \brief Vectorizes inside text of selected MapItem. (generates te::layout::TextItem objects)
+        */
         virtual void createTextMapAsObject();
 
+        /*!
+          \brief Vectorizes selected LegendItem. (generates te::layout::TextItem objects)
+        */
         virtual void createLegendChildAsObject();
 
       protected:
 
+        /*!
+          \brief Returns the list of items added to a scene.
+
+          \param selected true if only selected items, false otherwise.
+          \return list of items
+        */
         virtual QList<QGraphicsItem*> getItems(bool selected = false);
 
+        /*!
+          \brief Vectorizes grid text of selected MapItem. (generates te::layout::TextItem objects)
+		  
+		      \param map coordinate and text
+          \param ft font
+        */
         virtual void createTextItemFromObject(std::map<te::gm::Point*, std::string> map, QFont* ft = 0);
 
+        /*!
+          \brief Vectorizes grid text of selected MapItem. (generates te::layout::TextItem objects)
+		  
+          \param map coordinate and text
+		      \param visitable MapItem model associated
+        */
         virtual void createLegendChildItemFromLegend(std::map<te::gm::Point*, std::string> map, MapModel* visitable);
 
-        QGraphicsScene* m_scene;
+      protected:
+
+        QGraphicsScene* m_scene; //!< A pointer to scene
     };
   }
 }

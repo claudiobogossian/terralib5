@@ -20,7 +20,7 @@
 /*!
   \file GridSettingsOutside.h
    
-  \brief 
+  \brief Window (QDialog) map grid setting (MapItem).
 
   \ingroup layout
 */
@@ -49,6 +49,13 @@ namespace te
     class PlanarGridSettingsConfigProperties;
     class GeodesicGridSettingsConfigProperties;
 
+    /*!
+    \brief Window (QDialog) map grid setting (MapItem).
+	  
+	    \ingroup layout
+
+	    \sa te::layout::OutsideObserver
+	  */
     class TELAYOUTEXPORT GridSettingsOutside : public QDialog, public OutsideObserver 
     {
 	    Q_OBJECT

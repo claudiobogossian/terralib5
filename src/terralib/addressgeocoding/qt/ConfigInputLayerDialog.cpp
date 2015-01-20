@@ -204,15 +204,17 @@ void te::addressgeocoding::ConfigInputLayerDialog::onOkPushButtonClicked()
 // UPDATE values in tsvector column.
   std::string updateTable = "UPDATE " + m_selectedLayer->getTitle() + " SET tsvector = to_tsvector('english', ";
 
+
+  //UPDATE taubate_sp SET tsvector = to_tsvector('english', nome||' '||bairro_le||' '||num_ie||' '||num_fe);
   for(std::size_t selProps = 0; selProps < m_selectedProps.size(); ++selProps)
   {
     if(selProps == 0)
-      updateTable += "'"+ m_selectedProps[selProps];
+      updateTable += " "+ m_selectedProps[selProps];
     else
-      updateTable += "' || '"+ m_selectedProps[selProps];
+      updateTable += "||' '||"+ m_selectedProps[selProps];
   }
   
-  updateTable += "')";
+  updateTable += ")";
 
   m_dataSource->execute(updateTable);
 

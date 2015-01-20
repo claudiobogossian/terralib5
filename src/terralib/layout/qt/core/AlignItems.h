@@ -20,7 +20,7 @@
 /*!
   \file AlignItems.h
    
-  \brief 
+  \brief Class applying the alignment of one or more objects. Ex .: send to back, bring to front, align right, align bottom.
 
   \ingroup layout
 */
@@ -41,6 +41,11 @@ namespace te
 {
   namespace layout
   {
+    /*!
+	  \brief Class applying the alignment of one or more objects. Ex .: send to back, bring to front, align right, align bottom.
+	  
+	  \ingroup layout
+	  */
     class TELAYOUTEXPORT AlignItems
     {
       public:
