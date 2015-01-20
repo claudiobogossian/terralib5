@@ -79,7 +79,7 @@ namespace te
             
             boost::mutex* m_interestPointsAccessMutexPtr; //!< A pointer to a valid mutex to control the output interest points container access.
             
-            unsigned int m_maxRasterLinesBlockMaxSize; //!< The maximum lines number of each raster block to process.
+            unsigned int m_processingBlocksNumber; //!< The raster data will be splitted into this number of blocks for processing.
             
             unsigned int* m_nextRasterLinesBlockToProcessValuePtr; //!< A pointer to a valid counter to control the blocks processing sequence.
             
