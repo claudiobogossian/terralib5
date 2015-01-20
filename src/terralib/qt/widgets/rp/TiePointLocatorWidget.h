@@ -169,7 +169,7 @@ namespace te
 
           void setReferenceTiePointMarkLegend(QPixmap p);
 
-          void createSelection(int initialId);
+          void createSelection(int initialIdx, int nPos);
 
         protected slots:
 
