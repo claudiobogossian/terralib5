@@ -447,7 +447,6 @@ std::auto_ptr<te::gm::Envelope> te::stmem::Transactor::getExtent(const std::stri
 std::auto_ptr<te::gm::Envelope> te::stmem::Transactor::getExtent(const std::string& datasetName,
                                                 std::size_t propertyPos)
 {
-   te::da::DataSetType* type = getType(datasetName);
    DataSet* ds = getData(datasetName);
    if(propertyPos != ds->getGeomPropIdx())
      throw Exception("Not supported by ST In-Memory driver!");
