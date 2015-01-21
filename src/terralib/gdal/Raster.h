@@ -134,7 +134,21 @@ namespace te
                   const std::vector<te::rst::BandProperty*> bands,
                   const std::map<std::string, std::string>& rinfo,
                   void* h, void (*deleter)(void*));
-
+      
+      bool createMultiResolution( const unsigned int levels, const te::rst::InterpolationMethod interpMethod )
+      {
+        return false;
+      };
+      
+      unsigned int getMultiResLevelsCount() const
+      {
+        return 0;        
+      }
+      
+      te::rst::Raster* getMultiResLevel( const unsigned int level ) const
+      {
+        return 0;         
+      }
 
     private:
 

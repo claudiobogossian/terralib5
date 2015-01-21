@@ -59,7 +59,7 @@ void TsFusion::ihs()
   algoInputParams.m_highResRasterPtr = highResRasterPtr.get();
   algoInputParams.m_highResRasterBand = 0;
   algoInputParams.m_enableProgress = false;
-  algoInputParams.m_interpMethod = te::rst::Interpolator::NearestNeighbor;
+  algoInputParams.m_interpMethod = te::rst::NearestNeighbor;
   algoInputParams.m_RGBMin = 0;
   algoInputParams.m_RGBMax = 0;
 
@@ -105,7 +105,7 @@ void TsFusion::pca()
   algoInputParams.m_highResRasterBand = 0;
   algoInputParams.m_enableProgress = true;
   algoInputParams.m_enableThreadedProcessing = false;
-  algoInputParams.m_interpMethod = te::rst::Interpolator::NearestNeighbor;
+  algoInputParams.m_interpMethod = te::rst::NearestNeighbor;
 
   te::rp::PCAFusion::OutputParameters algoOutputParams;
   
@@ -153,7 +153,7 @@ void TsFusion::wisper()
   algoInputParams.m_hiResRasterBandSensor = te::rp::srf::CBERS2BCCDB5PANSensor;
   algoInputParams.m_hiResRasterWaveletLevels = 0;
   algoInputParams.m_enableProgress = true;
-  algoInputParams.m_interpMethod = te::rst::Interpolator::NearestNeighbor;
+  algoInputParams.m_interpMethod = te::rst::NearestNeighbor;
   algoInputParams.m_waveletFilterType = te::rp::TriangleWAFilter;
 
   te::rp::WisperFusion::OutputParameters algoOutputParams;

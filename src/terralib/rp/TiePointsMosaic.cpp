@@ -78,7 +78,7 @@ namespace te
       m_inputRastersBands.clear();
       m_tiePoints.clear();
       m_geomTransfName = "Affine";
-      m_interpMethod = te::rst::Interpolator::NearestNeighbor;
+      m_interpMethod = te::rst::NearestNeighbor;
       m_noDataValue = 0.0;
       m_forceInputNoDataValue = false;
       m_blendMethod = te::rp::Blender::NoBlendMethod;
@@ -715,7 +715,7 @@ namespace te
           *inputRasterPtr,
           m_inputParameters.m_inputRastersBands[ inputRasterIdx ],
           m_inputParameters.m_blendMethod,
-          te::rst::Interpolator::NearestNeighbor,
+          te::rst::NearestNeighbor,
           m_inputParameters.m_interpMethod,
           m_inputParameters.m_noDataValue,
           false,
