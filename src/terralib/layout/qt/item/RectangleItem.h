@@ -32,6 +32,7 @@
 
 // TerraLib
 #include "ObjectItem.h"
+#include "../../core/Config.h"
 
 namespace te
 {
@@ -48,7 +49,7 @@ namespace te
 
 	    \sa te::layout::ObjectItem
 	  */
-    class RectangleItem : public ObjectItem
+    class TELAYOUTEXPORT RectangleItem : public ObjectItem
     {
       public:
 

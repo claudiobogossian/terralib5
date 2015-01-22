@@ -220,7 +220,7 @@ namespace te
       protected:
 
 		/*!
-          \brief Reimplemented from QGraphicsView
+          \brief Reimplemented from QGraphicsView. Call method createItem() of the scene.
         */
         virtual void mousePressEvent(QMouseEvent * event);
 

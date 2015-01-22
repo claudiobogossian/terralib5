@@ -32,6 +32,7 @@
 
 // TerraLib
 #include "../core/pattern/mvc/ItemController.h"
+#include "../core/Config.h"
 
 namespace te
 {
@@ -46,7 +47,7 @@ namespace te
 
       \sa te::layout::ItemController
 	  */
-    class ScaleController : public ItemController
+    class TELAYOUTEXPORT ScaleController : public ItemController
     {
       public:
 

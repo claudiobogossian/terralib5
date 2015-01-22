@@ -30,6 +30,7 @@
 
 // TerraLib
 #include "LegendItem.h"
+#include "../../core/Config.h"
 
 namespace te
 {
@@ -37,7 +38,7 @@ namespace te
   {
     class Observable;
 
-    class LegendChildItem : public LegendItem
+    class TELAYOUTEXPORT LegendChildItem : public LegendItem
     {
       public:
 

@@ -93,13 +93,32 @@ te::layout::ToolbarOutside::ToolbarOutside( OutsideController* controller, Obser
   m_optionUndo("undo"),
   m_optionRedo("redo"),
   m_optionDrawMap("draw_map"),
-  m_optionObjectToImage("object_to_image")
+  m_optionObjectToImage("object_to_image"),
+  m_mapToolButton(0),
+  m_mapToolsToolButton(0),
+  m_geometryToolButton(0),
+  m_viewAreaToolButton(0),
+  m_arrowCursorButton(0),
+  m_itemTools(0),
+  m_lineIntersectionToolButton(0),
+  m_bringToFrontToolButton(0),
+  m_sendToBackToolButton(0),
+  m_recomposeToolButton(0),
+  m_textToolButton(0),
+  m_alignLeftToolButton(0),
+  m_alignRightToolButton(0),
+  m_alignTopToolButton(0),
+  m_alignBottomToolButton(0),
+  m_alignCenterHorizontalToolButton(0),
+  m_alignCenterVerticalToolButton(0),
+  m_removeObjectToolButton(0),
+  m_undoToolButton(0),
+  m_drawMapToolButton(0),
+  m_objectToImageButton(0)
 {
 	setVisible(false);
 	setWindowTitle("Layout - Toolbar");
   setMinimumSize(200, 10);
-
-  createToolbar();
 }
 
 te::layout::ToolbarOutside::~ToolbarOutside()
@@ -183,7 +202,7 @@ void te::layout::ToolbarOutside::createToolbar()
   this->addSeparator();
 }
 
-void te::layout::ToolbarOutside::createMapToolButton()
+QToolButton* te::layout::ToolbarOutside::createMapToolButton()
 {
   QMenu* menu = new QMenu();
 
@@ -205,9 +224,13 @@ void te::layout::ToolbarOutside::createMapToolButton()
 
   connect(menu, SIGNAL(triggered(QAction*)), this, SLOT(onMapTriggered(QAction*)));
   this->addWidget(btnMap);
+
+  m_mapToolButton = btnMap;
+
+  return btnMap;
 }
 
-void te::layout::ToolbarOutside::createMapToolsToolButton()
+QToolButton* te::layout::ToolbarOutside::createMapToolsToolButton()
 {
   QMenu* menu = new QMenu();
 
@@ -238,9 +261,13 @@ void te::layout::ToolbarOutside::createMapToolsToolButton()
 
   connect(menu, SIGNAL(triggered(QAction*)), this, SLOT(onMapToolsTriggered(QAction*)));
   this->addWidget(btnMapTools);
+
+  m_mapToolsToolButton = btnMapTools;
+
+  return btnMapTools;
 }
 
-void te::layout::ToolbarOutside::createGeometryToolButton()
+QToolButton* te::layout::ToolbarOutside::createGeometryToolButton()
 {
   QMenu* menu = new QMenu();
 
@@ -262,9 +289,13 @@ void te::layout::ToolbarOutside::createGeometryToolButton()
 
   connect(menu, SIGNAL(triggered(QAction*)), this, SLOT(onGeometryTriggered(QAction*)));
   this->addWidget(btnGeometry);
+
+  m_geometryToolButton = btnGeometry;
+
+  return btnGeometry;
 }
 
-void te::layout::ToolbarOutside::createViewAreaToolButton()
+QToolButton* te::layout::ToolbarOutside::createViewAreaToolButton()
 {
   QMenu* menu = new QMenu();
 
@@ -283,18 +314,26 @@ void te::layout::ToolbarOutside::createViewAreaToolButton()
 
   connect(menu, SIGNAL(triggered(QAction*)), this, SLOT(onViewAreaTriggered(QAction*)));
   this->addWidget(btnViewArea);
+
+  m_viewAreaToolButton = btnViewArea;
+
+  return btnViewArea;
 }
 
-void te::layout::ToolbarOutside::createArrowCursorButton()
+QToolButton* te::layout::ToolbarOutside::createArrowCursorButton()
 {
   QToolButton *btnArrowCursor = createToolButton("Arrow Cursor", "Arrow Cursor", "layout-default-cursor");
   btnArrowCursor->setCheckable(false);
   connect(btnArrowCursor, SIGNAL(clicked(bool)), this, SLOT(onArrowCursorClicked(bool)));
 
   this->addWidget(btnArrowCursor);
+
+  m_arrowCursorButton = btnArrowCursor;
+
+  return btnArrowCursor;
 }
 
-void te::layout::ToolbarOutside::createItemTools()
+QToolButton* te::layout::ToolbarOutside::createItemTools()
 {
   QMenu* menu = new QMenu();
 
@@ -310,17 +349,25 @@ void te::layout::ToolbarOutside::createItemTools()
 
   connect(menu, SIGNAL(triggered(QAction*)), this, SLOT(onItemToolsTriggered(QAction*)));
   this->addWidget(btnTools);
+
+  m_itemTools = btnTools;
+
+  return btnTools;
 }
 
-void te::layout::ToolbarOutside::createLineIntersectionToolButton()
+QToolButton* te::layout::ToolbarOutside::createLineIntersectionToolButton()
 {
   QToolButton *btnLineMouse = createToolButton("Draw Line Intersection Mouse", "Draw Line Intersection Mouse", "layout-draw-line-mouse-intersection");
   connect(btnLineMouse, SIGNAL(toggled(bool)), this, SLOT(onLineIntersectionMouse(bool)));
 
   this->addWidget(btnLineMouse);
+
+  m_lineIntersectionToolButton = btnLineMouse;
+
+  return btnLineMouse;
 }
 
-void te::layout::ToolbarOutside::createSceneZoomCombobox()
+QComboBox* te::layout::ToolbarOutside::createSceneZoomCombobox()
 {
   m_comboZoom = new QComboBox();
   m_comboZoom->setObjectName(m_optionSceneZoom.c_str());
@@ -338,37 +385,51 @@ void te::layout::ToolbarOutside::createSceneZoomCombobox()
   Context::getInstance().setDefaultZoomFactor(m_comboZoom->itemData(1).toDouble());
   
   this->addWidget(m_comboZoom);
+  
+  return m_comboZoom;
 }
 
-void te::layout::ToolbarOutside::createBringToFrontToolButton()
+QToolButton* te::layout::ToolbarOutside::createBringToFrontToolButton()
 {
   QToolButton *btn = createToolButton("Bring to front", "Bring to front", "layout-in-front");
   btn->setCheckable(false);
   connect(btn, SIGNAL(clicked(bool)), this, SLOT(onBringToFrontClicked(bool)));
 
   this->addWidget(btn);
+
+  m_bringToFrontToolButton = btn;
+
+  return btn;
 }
 
-void te::layout::ToolbarOutside::createSendToBackToolButton()
+QToolButton* te::layout::ToolbarOutside::createSendToBackToolButton()
 {
   QToolButton *btn = createToolButton("Send to back", "Send to back", "layout-to-back");
   btn->setCheckable(false);
   connect(btn, SIGNAL(clicked(bool)), this, SLOT(onSendToBackClicked(bool)));
 
   this->addWidget(btn);
+
+  m_sendToBackToolButton = btn;
+
+  return btn;
 }
 
 
-void te::layout::ToolbarOutside::createRecomposeToolButton()
+QToolButton* te::layout::ToolbarOutside::createRecomposeToolButton()
 {
   QToolButton *btn = createToolButton("Recompose", "Recompose", "layout-recompose");
   btn->setCheckable(false);
   connect(btn, SIGNAL(clicked(bool)), this, SLOT(onRecomposeClicked(bool)));
 
   this->addWidget(btn);
+
+  m_recomposeToolButton = btn;
+
+  return btn;
 }
 
-void te::layout::ToolbarOutside::createTextToolButton()
+QToolButton* te::layout::ToolbarOutside::createTextToolButton()
 {
   QMenu* menu = new QMenu();
 
@@ -390,72 +451,104 @@ void te::layout::ToolbarOutside::createTextToolButton()
 
   connect(menu, SIGNAL(triggered(QAction*)), this, SLOT(onTextToolsTriggered(QAction*)));
   this->addWidget(btn);
+
+  m_textToolButton = btn;
+
+  return btn;
 }
 
-void te::layout::ToolbarOutside::createAlignLeftToolButton()
+QToolButton* te::layout::ToolbarOutside::createAlignLeftToolButton()
 {
   QToolButton *btn = createToolButton("Align Left", "Align Left", "layout-alignleft");
   btn->setCheckable(false);
   connect(btn, SIGNAL(clicked(bool)), this, SLOT(onAlignLeftClicked(bool)));
 
   this->addWidget(btn);
+
+  m_alignLeftToolButton = btn;
+
+  return btn;
 }
 
-void te::layout::ToolbarOutside::createAlignRightToolButton()
+QToolButton* te::layout::ToolbarOutside::createAlignRightToolButton()
 {
   QToolButton *btn = createToolButton("Align Right", "Align Right", "layout-alignright");
   btn->setCheckable(false);
   connect(btn, SIGNAL(clicked(bool)), this, SLOT(onAlignRightClicked(bool)));
 
   this->addWidget(btn);
+
+  m_alignRightToolButton = btn;
+
+  return btn;
 }
 
-void te::layout::ToolbarOutside::createAlignTopToolButton()
+QToolButton* te::layout::ToolbarOutside::createAlignTopToolButton()
 {
   QToolButton *btn = createToolButton("Align Top", "Align Top", "layout-aligntop");
   btn->setCheckable(false);
   connect(btn, SIGNAL(clicked(bool)), this, SLOT(onAlignTopClicked(bool)));
 
   this->addWidget(btn);
+
+  m_alignTopToolButton = btn;
+
+  return btn;
 }
 
-void te::layout::ToolbarOutside::createAlignBottomToolButton()
+QToolButton* te::layout::ToolbarOutside::createAlignBottomToolButton()
 {
   QToolButton *btn = createToolButton("Align Bottom", "Align Bottom", "layout-alignbottom");
   btn->setCheckable(false);
   connect(btn, SIGNAL(clicked(bool)), this, SLOT(onAlignBottomClicked(bool)));
 
   this->addWidget(btn);
+
+  m_alignBottomToolButton = btn;
+
+  return btn;
 }
 
-void te::layout::ToolbarOutside::createAlignCenterHorizontalToolButton()
+QToolButton* te::layout::ToolbarOutside::createAlignCenterHorizontalToolButton()
 {
   QToolButton *btn = createToolButton("Align Center Horizontal", "Align Center Horizontal", "layout-alignhrzcenter");
   btn->setCheckable(false);
   connect(btn, SIGNAL(clicked(bool)), this, SLOT(onAlignCenterHorizontalClicked(bool)));
 
   this->addWidget(btn);
+
+  m_alignCenterHorizontalToolButton = btn;
+
+  return btn;
 }
 
-void te::layout::ToolbarOutside::createAlignCenterVerticalToolButton()
+QToolButton* te::layout::ToolbarOutside::createAlignCenterVerticalToolButton()
 {
   QToolButton *btn = createToolButton("Align Center Vertical", "Align Center Vertical", "layout-alignvrtcenter");
   btn->setCheckable(false);
   connect(btn, SIGNAL(clicked(bool)), this, SLOT(onAlignCenterVerticalClicked(bool)));
 
   this->addWidget(btn);
+
+  m_alignCenterVerticalToolButton = btn;
+
+  return btn;
 }
 
-void te::layout::ToolbarOutside::createRemoveObjectToolButton()
+QToolButton* te::layout::ToolbarOutside::createRemoveObjectToolButton()
 {
   QToolButton *btn = createToolButton("Remove Object", "Remove Object", "layout-empty-trash");
   btn->setCheckable(false);
   connect(btn, SIGNAL(clicked(bool)), this, SLOT(onRemoveObjectClicked(bool)));
 
   this->addWidget(btn);
+
+  m_removeObjectToolButton = btn;
+
+  return btn;
 }
 
-void te::layout::ToolbarOutside::createUndoToolButton()
+QToolButton* te::layout::ToolbarOutside::createUndoToolButton()
 {
   QMenu* menu = new QMenu();
   
@@ -464,7 +557,7 @@ void te::layout::ToolbarOutside::createUndoToolButton()
   QUndoStack* undoStack = lScene->getUndoStack();
 
   if(!undoStack)
-    return;
+    return 0;
 
   QAction* actionUndo = undoStack->createUndoAction(this, tr("&Undo"));
   actionUndo->setShortcuts(QKeySequence::Undo);
@@ -485,24 +578,36 @@ void te::layout::ToolbarOutside::createUndoToolButton()
   btn->setPopupMode(QToolButton::InstantPopup);
 
   this->addWidget(btn);
+
+  m_undoToolButton = btn;
+
+  return btn;
 }
 
-void te::layout::ToolbarOutside::createDrawMapToolButton()
+QToolButton* te::layout::ToolbarOutside::createDrawMapToolButton()
 {
   QToolButton *btn = createToolButton("Redraw Selection Map", "Redraw Selection Map", "layout-draw-map");
   btn->setCheckable(false);
   connect(btn, SIGNAL(clicked(bool)), this, SLOT(onDrawMapClicked(bool)));
 
   this->addWidget(btn);
+
+  m_drawMapToolButton = btn;
+
+  return btn;
 }
 
-void te::layout::ToolbarOutside::createObjectToImageButton()
+QToolButton* te::layout::ToolbarOutside::createObjectToImageButton()
 {
   QToolButton *btn = createToolButton("Object To Image", "Export all selected objects to image", "layout-object-to-image");
   btn->setCheckable(false);
   connect(btn, SIGNAL(clicked(bool)), this, SLOT(onObjectToImageClicked(bool)));
 
   this->addWidget(btn);
+
+  m_objectToImageButton = btn;
+
+  return btn;
 }
 
 void te::layout::ToolbarOutside::onMapTriggered( QAction* action )
@@ -818,4 +923,109 @@ void te::layout::ToolbarOutside::onChangeZoom( double factor )
   if ( index != -1 ) { // -1 for not found
     m_comboZoom->setCurrentIndex(index);
   }
+}
+
+QToolButton* te::layout::ToolbarOutside::getMapToolButton()
+{
+  return m_mapToolButton;
+}
+
+QToolButton* te::layout::ToolbarOutside::getMapToolsToolButton()
+{
+  return m_mapToolsToolButton;
+}
+
+QToolButton* te::layout::ToolbarOutside::getGeometryToolButton()
+{
+  return m_geometryToolButton;
+}
+
+QToolButton* te::layout::ToolbarOutside::getViewAreaToolButton()
+{
+  return m_viewAreaToolButton;
+}
+
+QToolButton* te::layout::ToolbarOutside::getArrowCursorButton()
+{
+  return m_arrowCursorButton;
+}
+
+QToolButton* te::layout::ToolbarOutside::getItemTools()
+{
+  return m_itemTools;
+}
+
+QToolButton* te::layout::ToolbarOutside::getLineIntersectionToolButton()
+{
+  return m_lineIntersectionToolButton;
+}
+
+QToolButton* te::layout::ToolbarOutside::getBringToFrontToolButton()
+{
+  return m_bringToFrontToolButton;
+}
+
+QToolButton* te::layout::ToolbarOutside::getSendToBackToolButton()
+{
+  return m_sendToBackToolButton;
+}
+
+QToolButton* te::layout::ToolbarOutside::getRecomposeToolButton()
+{
+  return m_recomposeToolButton;
+}
+
+QToolButton* te::layout::ToolbarOutside::getTextToolButton()
+{
+  return m_textToolButton;
+}
+
+QToolButton* te::layout::ToolbarOutside::getAlignLeftToolButton()
+{
+  return m_alignLeftToolButton;
+}
+
+QToolButton* te::layout::ToolbarOutside::getAlignRightToolButton()
+{
+  return m_alignRightToolButton;
+}
+
+QToolButton* te::layout::ToolbarOutside::getAlignTopToolButton()
+{
+  return m_alignTopToolButton;
+}
+
+QToolButton* te::layout::ToolbarOutside::getAlignBottomToolButton()
+{
+  return m_alignBottomToolButton;
+}
+
+QToolButton* te::layout::ToolbarOutside::getAlignCenterHorizontalToolButton()
+{
+  return m_alignCenterHorizontalToolButton;
+}
+
+QToolButton* te::layout::ToolbarOutside::getAlignCenterVerticalToolButton()
+{
+  return m_alignCenterVerticalToolButton;
+}
+
+QToolButton* te::layout::ToolbarOutside::getRemoveObjectToolButton()
+{
+  return m_removeObjectToolButton;
+}
+
+QToolButton* te::layout::ToolbarOutside::getUndoToolButton()
+{
+  return m_undoToolButton;
+}
+
+QToolButton* te::layout::ToolbarOutside::getDrawMapToolButton()
+{
+  return m_drawMapToolButton;
+}
+
+QToolButton* te::layout::ToolbarOutside::getObjectToImageButton()
+{
+  return m_objectToImageButton;
 }

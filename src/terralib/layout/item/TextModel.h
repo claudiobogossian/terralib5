@@ -37,6 +37,7 @@
 #include "../../maptools/Canvas.h"
 #include "../core/Utils.h"
 #include "../core/Font.h"
+#include "../core/Config.h"
 
 // STL
 #include <string>
@@ -54,7 +55,7 @@ namespace te
 
       \sa te::layout::ItemModelObservable
 	  */
-    class TextModel : public ItemModelObservable
+    class TELAYOUTEXPORT TextModel : public ItemModelObservable
     {
       public:
 

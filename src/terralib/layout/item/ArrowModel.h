@@ -36,6 +36,7 @@
 #include "../../geometry/Envelope.h"
 #include "../../color/RGBAColor.h"
 #include "../../maptools/Canvas.h"
+#include "../core/Config.h"
 
 namespace te
 {
@@ -50,7 +51,7 @@ namespace te
 
       \sa te::layout::ItemModelObservable
 	  */
-    class ArrowModel : public ItemModelObservable
+    class TELAYOUTEXPORT ArrowModel : public ItemModelObservable
     {
       public:
            

@@ -53,7 +53,7 @@
 #include <QLabel>
 #include <QUndoCommand>
 
-te::layout::PropertiesOutside::PropertiesOutside( OutsideController* controller, Observable* o ) :
+te::layout::PropertiesOutside::PropertiesOutside( OutsideController* controller, Observable* o, PropertiesItemPropertyBrowser* propertyBrowser ) :
 	QWidget(0),
 	OutsideObserver(controller, o),
   m_updatingValues(false),
@@ -65,7 +65,10 @@ te::layout::PropertiesOutside::PropertiesOutside( OutsideController* controller,
 	setWindowTitle("Layout - Propriedades");
   setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
   
-  m_layoutPropertyBrowser = new PropertiesItemPropertyBrowser;
+  if(!propertyBrowser)
+    m_layoutPropertyBrowser = new PropertiesItemPropertyBrowser;
+  else
+    m_layoutPropertyBrowser = propertyBrowser;
 
   connect(m_layoutPropertyBrowser, SIGNAL(updateOutside(Property)), 
     this, SLOT(onChangePropertyValue(Property)));

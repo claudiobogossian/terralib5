@@ -37,6 +37,7 @@
 #include "../core/pattern/derivativevisitor/AbstractVisitor.h"
 #include "../../maptools/Canvas.h"
 #include "../core/Utils.h"
+#include "../core/Config.h"
 
 namespace te
 {
@@ -52,7 +53,7 @@ namespace te
 
       \sa te::layout::ItemModelObservable , te::layout::AbstractVisitor
 	  */
-    class ScaleModel : public ItemModelObservable, public AbstractVisitor
+    class TELAYOUTEXPORT ScaleModel : public ItemModelObservable, public AbstractVisitor
     {
       public:
 

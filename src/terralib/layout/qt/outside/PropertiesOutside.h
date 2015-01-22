@@ -74,7 +74,8 @@ namespace te
 
       public:
 
-	      PropertiesOutside(OutsideController* controller, Observable* o);
+	      PropertiesOutside(OutsideController* controller, Observable* o, PropertiesItemPropertyBrowser* propertyBrowser = 0);
+
 	      virtual ~PropertiesOutside();
 
 	      virtual void updateObserver(ContextItem context);
