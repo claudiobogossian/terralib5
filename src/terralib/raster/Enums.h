@@ -85,6 +85,17 @@ namespace te
       CMYKPalInt,                 //!< CMYK indexed palette interpretation.
       HSLPalInt                   //!< HSL indexed palette interpretation. 
     };
+    
+    /*!
+      \brief Allowed interpolation methods.
+    */
+    enum InterpolationMethod
+    {
+      UndefInterpMethod = 0,  //!< Undefined interpolation method.
+      NearestNeighbor = 1,    //!< Near neighborhood interpolation method.
+      Bilinear = 2,           //!< Bilinear interpolation method.
+      Bicubic = 3             //!< Bicubic interpolation method.
+    };    
 
   } // end namespace rst
 }   // end namespace te

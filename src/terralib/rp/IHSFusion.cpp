@@ -70,7 +70,7 @@ namespace te
       m_highResRasterPtr = 0;
       m_highResRasterBand = 0;
       m_enableProgress = false;
-      m_interpMethod = te::rst::Interpolator::NearestNeighbor;
+      m_interpMethod = te::rst::NearestNeighbor;
       m_RGBMin = 0.0;
       m_RGBMax = 0.0;
     }

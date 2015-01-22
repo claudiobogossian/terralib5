@@ -344,7 +344,7 @@ void te::qt::widgets::ComposeBandsWizardPage::fillInterpolatorTypes()
 {
   m_ui->m_interpolatorComboBox->clear();
 
-  m_ui->m_interpolatorComboBox->addItem(tr("Nearest Neighbor"), te::rst::Interpolator::NearestNeighbor);
-  m_ui->m_interpolatorComboBox->addItem(tr("Bilinear"), te::rst::Interpolator::Bilinear);
-  m_ui->m_interpolatorComboBox->addItem(tr("Bicubic"), te::rst::Interpolator::Bicubic);
+  m_ui->m_interpolatorComboBox->addItem(tr("Nearest Neighbor"), te::rst::NearestNeighbor);
+  m_ui->m_interpolatorComboBox->addItem(tr("Bilinear"), te::rst::Bilinear);
+  m_ui->m_interpolatorComboBox->addItem(tr("Bicubic"), te::rst::Bicubic);
 }

@@ -63,7 +63,7 @@ namespace te
       m_arithmeticString.clear();
       m_normalize = false;
       m_enableProgress = false;
-      m_interpMethod = te::rst::Interpolator::NearestNeighbor;
+      m_interpMethod = te::rst::NearestNeighbor;
     }
 
     const ArithmeticOperations::InputParameters& ArithmeticOperations::InputParameters::operator=(

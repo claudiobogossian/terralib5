@@ -891,8 +891,7 @@ namespace te
         / tiePointsSubSectorsSplitFactor;      
       const unsigned int maxInterestPointsBySubSector = paramsPtr->m_maxInterestPointsBySubSector;
       const unsigned int rasterLines = paramsPtr->m_rasterDataPtr->getLinesNumber();
-      const unsigned int bufferLines = moravecWindowWidth;
-      const unsigned int lastBufferLineIdx = bufferLines - 1;
+      const unsigned int lastBufferLineIdx = moravecWindowWidth - 1;
       const unsigned int bufferCols = paramsPtr->m_rasterDataPtr->getColumnsNumber();
       const unsigned int rasterBufferLineSizeBytes = sizeof( 
         FloatsMatrix::ElementTypeT ) * bufferCols;
@@ -913,7 +912,7 @@ namespace te
       // and the mask raster buffer      
         
       FloatsMatrix rasterBufferDataHandler;
-      if( ! rasterBufferDataHandler.reset( bufferLines, bufferCols, 
+      if( ! rasterBufferDataHandler.reset( moravecWindowWidth, bufferCols, 
         FloatsMatrix::RAMMemPol ) )
       {
         paramsPtr->m_rastaDataAccessMutexPtr->lock();
@@ -922,9 +921,9 @@ namespace te
         return;
       }
       
-      boost::scoped_array< float* > rasterBufferHandler( new float*[ bufferLines ] );
+      boost::scoped_array< float* > rasterBufferHandler( new float*[ moravecWindowWidth ] );
       for( unsigned int rasterBufferDataHandlerLine = 0 ; rasterBufferDataHandlerLine < 
-        bufferLines ; ++rasterBufferDataHandlerLine )
+        moravecWindowWidth ; ++rasterBufferDataHandlerLine )
       {
         rasterBufferHandler[ rasterBufferDataHandlerLine ] = rasterBufferDataHandler[ 
           rasterBufferDataHandlerLine ];
@@ -936,13 +935,13 @@ namespace te
       
       UCharsMatrix maskRasterBufferDataHandler;
       
-      boost::scoped_array< unsigned char* > maskRasterBufferHandler( new unsigned char*[ bufferLines ] );
+      boost::scoped_array< unsigned char* > maskRasterBufferHandler( new unsigned char*[ moravecWindowWidth ] );
       
       unsigned char** maskRasterBufferPtr = 0;
       
       if( paramsPtr->m_maskRasterDataPtr )
       {
-        if( ! maskRasterBufferDataHandler.reset( bufferLines, bufferCols, 
+        if( ! maskRasterBufferDataHandler.reset( moravecWindowWidth, bufferCols, 
           UCharsMatrix::RAMMemPol ) )
         {
           paramsPtr->m_rastaDataAccessMutexPtr->lock();
@@ -952,7 +951,7 @@ namespace te
         }        
         
         for( unsigned int maskRasterBufferDataHandlerLine = 0 ; maskRasterBufferDataHandlerLine < 
-          bufferLines ; ++maskRasterBufferDataHandlerLine )
+          moravecWindowWidth ; ++maskRasterBufferDataHandlerLine )
         {
           maskRasterBufferHandler[ maskRasterBufferDataHandlerLine ] = maskRasterBufferDataHandler[ 
             maskRasterBufferDataHandlerLine ];
@@ -964,7 +963,7 @@ namespace te
       // Allocating the internal maximas values data buffer
         
       FloatsMatrix maximasBufferDataHandler;
-      if( ! maximasBufferDataHandler.reset( bufferLines, bufferCols, 
+      if( ! maximasBufferDataHandler.reset( moravecWindowWidth, bufferCols, 
         FloatsMatrix::RAMMemPol ) )
       {
         paramsPtr->m_rastaDataAccessMutexPtr->lock();
@@ -973,11 +972,11 @@ namespace te
         return;
       }
       
-      boost::scoped_array< float* > maximasBufferHandler( new float*[ bufferLines ] );
+      boost::scoped_array< float* > maximasBufferHandler( new float*[ moravecWindowWidth ] );
       float** maximasBufferPtr = maximasBufferHandler.get();      
       unsigned int bufferCol = 0;
       for( unsigned int maximasBufferDataHandlerLine = 0 ; maximasBufferDataHandlerLine < 
-        bufferLines ; ++maximasBufferDataHandlerLine )
+        moravecWindowWidth ; ++maximasBufferDataHandlerLine )
       {
         maximasBufferHandler[ maximasBufferDataHandlerLine ] = maximasBufferDataHandler[ 
           maximasBufferDataHandlerLine ];
@@ -1058,7 +1057,7 @@ namespace te
             
             paramsPtr->m_rastaDataAccessMutexPtr->lock();
             
-            roolUpBuffer( rasterBufferPtr, bufferLines );             
+            roolUpBuffer( rasterBufferPtr, moravecWindowWidth );             
             memcpy( rasterBufferPtr[ lastBufferLineIdx ], 
               paramsPtr->m_rasterDataPtr->operator[]( rasterLine ),
               rasterBufferLineSizeBytes );
@@ -1066,7 +1065,7 @@ namespace te
             // read a new mask raster line into the last mask raster buffer line
             if( paramsPtr->m_maskRasterDataPtr )
             {
-              roolUpBuffer( maskRasterBufferPtr, bufferLines );
+              roolUpBuffer( maskRasterBufferPtr, moravecWindowWidth );
               memcpy( maskRasterBufferPtr[ lastBufferLineIdx ], 
                 paramsPtr->m_maskRasterDataPtr->operator[]( rasterLine ),
                 maskRasterBufferLineSizeBytes );
@@ -1078,7 +1077,7 @@ namespace te
             // diretional variances buffer
             if( rasterLine >= varianceCalcStartRasterLineStart )
             {
-              roolUpBuffer( maximasBufferPtr, bufferLines );
+              roolUpBuffer( maximasBufferPtr, moravecWindowWidth );
               
               for( windowStartBufCol = 0 ; windowStartBufCol < windowEndBufColsBound ; 
                 ++windowStartBufCol )

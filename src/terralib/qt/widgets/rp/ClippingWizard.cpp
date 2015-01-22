@@ -256,7 +256,7 @@ bool te::qt::widgets::ClippingWizard::executeDimensionClipping()
   }
   
   //execute clipping
-  te::rst::Raster* outputRst = inputRst->resample(te::rst::Interpolator::NearestNeighbor, y, x, height, width, height, width, info);
+  te::rst::Raster* outputRst = inputRst->resample(te::rst::NearestNeighbor, y, x, height, width, height, width, info);
 
   if(outputRst)
   {

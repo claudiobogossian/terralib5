@@ -48,7 +48,7 @@ void TsSkeleton::Pattern1Test()
   auxRasterInfo["MEM_SRC_RASTER_DRIVER_TYPE"] = "MEM";  
   auxRasterInfo["FORCE_MEM_DRIVER"] = "TRUE";
   inputRasterPtrPointer.reset( inputRasterPtrPointer->resample( 
-    te::rst::Interpolator::NearestNeighbor, -2, auxRasterInfo ) );
+    te::rst::NearestNeighbor, -2, auxRasterInfo ) );
   CPPUNIT_ASSERT( inputRasterPtrPointer.get() );  
   
   // Creating the algorithm parameters

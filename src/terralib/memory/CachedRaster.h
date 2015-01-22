@@ -121,6 +121,21 @@ namespace te
         };
 
         te::dt::AbstractData* clone() const;
+        
+        bool createMultiResolution( const unsigned int levels, const te::rst::InterpolationMethod interpMethod )
+        {
+          return false;
+        };
+        
+        unsigned int getMultiResLevelsCount() const
+        {
+          return 0;        
+        }
+        
+        te::rst::Raster* getMultiResLevel( const unsigned int level ) const
+        {
+          return 0;         
+        }        
 
       protected:
 

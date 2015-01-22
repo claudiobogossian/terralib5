@@ -316,7 +316,7 @@ void TsTiePointsLocator::MoravecStrategyHalfRotated90Image()
   saveImagesAndTiePoints( *inputRaster1Pointer, 0, *inputRaster2Pointer, 0,
     algoOutputParams.m_tiePoints, "terralib_rp_tiepointslocator_test_MoravecStrategyHalfRotated90Image" );
     
-  CPPUNIT_ASSERT( algoOutputParams.m_tiePoints.size() >= (size_t)218 ); 
+  CPPUNIT_ASSERT( algoOutputParams.m_tiePoints.size() >= (size_t)200 ); 
 }
 
 void TsTiePointsLocator::MoravecStrategySameImageDifBoxes()
@@ -547,7 +547,7 @@ void TsTiePointsLocator::SurfStrategyUpsampledImage()
   saveImagesAndTiePoints( *inputRasterPointer, 0, *inputRaster2Pointer, 0,
     algoOutputParams.m_tiePoints, "terralib_rp_tiepointslocator_test_SurfStrategyUpsampledImage" );
     
-  CPPUNIT_ASSERT( algoOutputParams.m_tiePoints.size() >= (size_t)1807 ); 
+  CPPUNIT_ASSERT( algoOutputParams.m_tiePoints.size() >= (size_t)1700 ); 
 }
 
 void TsTiePointsLocator::SurfStrategy90ClkWRotationImage()
