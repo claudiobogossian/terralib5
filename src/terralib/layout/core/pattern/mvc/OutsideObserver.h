@@ -33,6 +33,7 @@
 #include "../../property/Properties.h"
 #include "../../ContextItem.h"
 #include "../../../../geometry/Coord2D.h"
+#include "../../Config.h"
 
 namespace te
 {
@@ -48,7 +49,7 @@ namespace te
 
 	    \sa te::layout::Observer
 	  */
-    class OutsideObserver : public Observer
+    class TELAYOUTEXPORT OutsideObserver : public Observer
     {
     public:
 

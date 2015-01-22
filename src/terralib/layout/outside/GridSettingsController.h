@@ -41,31 +41,44 @@ namespace te
 
     class TELAYOUTEXPORT GridSettingsController : public OutsideController
     {
-    public:
+      public:
 
-	    GridSettingsController( Observable* o );
+	      GridSettingsController( Observable* o );
 
-	    virtual ~GridSettingsController();
+	      virtual ~GridSettingsController();
 
-	    virtual void setPosition(const double& x, const double& y);
+	      virtual void setPosition(const double& x, const double& y);
 
-      virtual Property updateProperty();
+        virtual Property updateProperty();
 
-      virtual void addUpdateProperty(std::string name, Variant variant, LayoutGridType gridType);
+        virtual void addUpdateProperty(std::string name, Variant variant, LayoutGridType gridType);
 
-      virtual void addUpdateGeodesicProperty(GridSettingsModel* outsideModel, Property subProperty, LayoutGridType gridType);
+        virtual void addUpdateGeodesicProperty(GridSettingsModel* outsideModel, Property subProperty, LayoutGridType gridType);
 
-      virtual void addUpdatePlanarProperty(GridSettingsModel* outsideModel, Property subProperty, LayoutGridType gridType);
+        virtual void addUpdatePlanarProperty(GridSettingsModel* outsideModel, Property subProperty, LayoutGridType gridType);
 
-      virtual void clearUpdate();
+        virtual void clearUpdate();
 
-      virtual Property getProperty(std::string name, LayoutGridType gridType);
+        virtual Property getProperty(std::string name, LayoutGridType gridType);
 
-    protected:
+      protected:
+      
+        /*!
+          \brief Constructor.
 
-      Property m_update;
-      Property m_gridPlanar;
-      Property m_gridGeodesic;
+          \param o "Model" part of MVC component
+          \param type type of the MVC component
+        */
+        GridSettingsController( Observable* o, EnumType* type );
+
+        /*!
+            \brief Reimplemented from ItemController
+           */
+        virtual void create();
+
+        Property m_update;
+        Property m_gridPlanar;
+        Property m_gridGeodesic;
     };
   }
 }

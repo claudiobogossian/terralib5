@@ -38,13 +38,13 @@
 te::layout::GridSettingsController::GridSettingsController( Observable* o ) :
 	OutsideController(o)
 {
-  EnumType* type = Enums::getInstance().getEnumObjectType()->getGridSettings();
-  o->setType(type);
+  create();
+}
 
-	AbstractOutsideFactory* factory = Context::getInstance().getOutsideFactory(); 
-	OutsideParamsCreate params(this, m_model);
-  if(factory)
-	  m_view = (Observer*)factory->make(m_model->getType(), params);
+te::layout::GridSettingsController::GridSettingsController( Observable* o, EnumType* type ):
+  OutsideController(o, type)
+{
+
 }
 
 te::layout::GridSettingsController::~GridSettingsController()
@@ -213,4 +213,15 @@ te::layout::Property te::layout::GridSettingsController::getProperty( std::strin
   prop = outsideModel->containsOutsideSubProperty(name, gridType);
 
   return prop;
+}
+
+void te::layout::GridSettingsController::create()
+{
+  EnumType* type = Enums::getInstance().getEnumObjectType()->getGridSettings();
+  m_model->setType(type);
+
+  AbstractOutsideFactory* factory = Context::getInstance().getOutsideFactory(); 
+  OutsideParamsCreate params(this, m_model);
+  if(factory)
+    m_view = (Observer*)factory->make(m_model->getType(), params);
 }

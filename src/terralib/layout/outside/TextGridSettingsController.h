@@ -42,6 +42,7 @@ namespace te
       public:
 
 	      TextGridSettingsController( Observable* o );
+
 	      virtual ~TextGridSettingsController();
 
 	      virtual void setPosition(const double& x, const double& y);
@@ -57,6 +58,19 @@ namespace te
         virtual Property getProperty(std::string name);
 
       protected:
+
+        /*!
+          \brief Constructor.
+
+          \param o "Model" part of MVC component
+          \param type type of the MVC component
+        */
+        TextGridSettingsController( Observable* o, EnumType* type );
+
+        /*!
+            \brief Reimplemented from ItemController
+           */
+        virtual void create();
 
         Property m_update;
         Property m_textGridSettings;

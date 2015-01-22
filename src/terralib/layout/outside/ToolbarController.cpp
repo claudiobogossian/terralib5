@@ -36,13 +36,13 @@
 te::layout::ToolbarController::ToolbarController( Observable* o ) :
 	OutsideController(o)
 {
-  EnumType* type = Enums::getInstance().getEnumObjectType()->getToolbar();
-  o->setType(type);
+  create();
+}
 
-	AbstractOutsideFactory* factory = Context::getInstance().getOutsideFactory(); 
-	OutsideParamsCreate params(this, m_model);
-  if(factory)
-	  m_view = (Observer*)factory->make(m_model->getType(), params);
+te::layout::ToolbarController::ToolbarController( Observable* o, EnumType* type ):
+  OutsideController(o, type)
+{
+
 }
 
 te::layout::ToolbarController::~ToolbarController()
@@ -58,4 +58,15 @@ void te::layout::ToolbarController::setPosition( const double& x, const double& 
     if(model)
       return model->setPosition(x, y);
   }
+}
+
+void te::layout::ToolbarController::create()
+{
+  EnumType* type = Enums::getInstance().getEnumObjectType()->getToolbar();
+  m_model->setType(type);
+
+  AbstractOutsideFactory* factory = Context::getInstance().getOutsideFactory(); 
+  OutsideParamsCreate params(this, m_model);
+  if(factory)
+    m_view = (Observer*)factory->make(m_model->getType(), params);
 }

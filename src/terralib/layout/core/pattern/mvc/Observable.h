@@ -36,6 +36,7 @@
 #include "../../enum/AbstractType.h"
 #include "../../Utils.h"
 #include "../../enum/EnumType.h"
+#include "../../Config.h"
 
 namespace te
 {
@@ -49,7 +50,7 @@ namespace te
 	  
 	    \ingroup layout
 	  */
-    class Observable 
+    class TELAYOUTEXPORT Observable 
     {
       public:
 

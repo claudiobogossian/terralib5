@@ -37,13 +37,13 @@
 te::layout::PageSetupController::PageSetupController( Observable* o ) :
 	OutsideController(o)
 {
-  EnumType* type = Enums::getInstance().getEnumObjectType()->getPageSetup();
-  o->setType(type);
+  create();
+}
 
-	AbstractOutsideFactory* factory = Context::getInstance().getOutsideFactory(); 
-	OutsideParamsCreate params(this, m_model);
-  if(factory)
-	  m_view = (Observer*)factory->make(m_model->getType(), params);
+te::layout::PageSetupController::PageSetupController( Observable* o, EnumType* type ):
+  OutsideController(o, type)
+{
+
 }
 
 te::layout::PageSetupController::~PageSetupController()
@@ -59,4 +59,15 @@ void te::layout::PageSetupController::setPosition( const double& x, const double
     if(model)
       return model->setPosition(x, y);
   }
+}
+
+void te::layout::PageSetupController::create()
+{
+  EnumType* type = Enums::getInstance().getEnumObjectType()->getPageSetup();
+  m_model->setType(type);
+
+  AbstractOutsideFactory* factory = Context::getInstance().getOutsideFactory(); 
+  OutsideParamsCreate params(this, m_model);
+  if(factory)
+    m_view = (Observer*)factory->make(m_model->getType(), params);
 }

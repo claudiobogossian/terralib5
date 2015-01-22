@@ -38,13 +38,13 @@
 te::layout::TextGridSettingsController::TextGridSettingsController( Observable* o ) :
 	OutsideController(o)
 {
-  EnumType* type = Enums::getInstance().getEnumObjectType()->getTextGridSettings();
-  o->setType(type);
+  create();
+}
 
-	AbstractOutsideFactory* factory = Context::getInstance().getOutsideFactory(); 
-	OutsideParamsCreate params(this, m_model);
-  if(factory)
-	  m_view = (Observer*)factory->make(m_model->getType(), params);
+te::layout::TextGridSettingsController::TextGridSettingsController( Observable* o, EnumType* type ):
+  OutsideController(o, type)
+{
+
 }
 
 te::layout::TextGridSettingsController::~TextGridSettingsController()
@@ -186,4 +186,15 @@ te::layout::Property te::layout::TextGridSettingsController::getProperty( std::s
   prop = outsideModel->containsOutsideSubProperty(name);
 
   return prop;
+}
+
+void te::layout::TextGridSettingsController::create()
+{
+  EnumType* type = Enums::getInstance().getEnumObjectType()->getTextGridSettings();
+  m_model->setType(type);
+
+  AbstractOutsideFactory* factory = Context::getInstance().getOutsideFactory(); 
+  OutsideParamsCreate params(this, m_model);
+  if(factory)
+    m_view = (Observer*)factory->make(m_model->getType(), params);
 }
