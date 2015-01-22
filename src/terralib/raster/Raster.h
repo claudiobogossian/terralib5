@@ -645,8 +645,12 @@ namespace te
         
         /*!
           \brief Returns the required level of a multi-resolution pyramid or NULL if that level does not exists.
+          
+          \param level Level of a multi-resolution pyramid.
 
           \return Returns the required level of a multi-resolution pyramid or NULL if that level does not exists.
+          
+          \note The caller must take the ownership of the returned pointer.
         */        
         virtual Raster* getMultiResLevel( const unsigned int level ) const = 0;         
 

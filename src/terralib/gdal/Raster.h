@@ -35,6 +35,8 @@
 #include <string>
 #include <memory>
 
+#include <gdal_priv.h>
+
 // Forward declaration
 class GDALDataset;
 class GDALRasterBand;
@@ -135,20 +137,23 @@ namespace te
                   const std::map<std::string, std::string>& rinfo,
                   void* h, void (*deleter)(void*));
       
-      bool createMultiResolution( const unsigned int levels, const te::rst::InterpolationMethod interpMethod )
-      {
-        return false;
-      };
+      bool createMultiResolution( const unsigned int levels, const te::rst::InterpolationMethod interpMethod );
       
-      unsigned int getMultiResLevelsCount() const
-      {
-        return 0;        
-      }
+      unsigned int getMultiResLevelsCount() const;
       
-      te::rst::Raster* getMultiResLevel( const unsigned int level ) const
-      {
-        return 0;         
-      }
+      te::rst::Raster* getMultiResLevel( const unsigned int level ) const;
+      
+    protected :
+      
+      /*!
+       \brief Constructor.
+
+       \param multiResolutionLevel Level of a multi-resolution pyramid.
+       \param uRI         The raster URI.
+       \param policy      The raster access policy. 
+       */
+      Raster( const unsigned int multiResolutionLevel, const std::string& uRI, 
+              const te::common::AccessPolicy& policy );
 
     private:
 

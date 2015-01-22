@@ -31,7 +31,7 @@
 te::gdal::DataSetUseCounter::DataSetUseCounter( const std::string& uri,
   const DataSetsManager::AccessType aType )
   throw( te::gdal::Exception )
-  : m_uri( uri )
+  : m_aType( aType ), m_uri( uri )
 {
   if( !DataSetsManager::getInstance().incrementUseCounter( m_uri, aType ) )
   {
@@ -42,5 +42,33 @@ te::gdal::DataSetUseCounter::DataSetUseCounter( const std::string& uri,
 te::gdal::DataSetUseCounter::~DataSetUseCounter()
 {
   DataSetsManager::getInstance().decrementUseCounter( m_uri );
+}
+
+bool te::gdal::DataSetUseCounter::changeAccessType( const DataSetsManager::AccessType aType)
+  throw( te::gdal::Exception )
+{
+  if( m_aType == aType )
+  {
+    return true;
+  }
+  else
+  {
+    DataSetsManager::getInstance().decrementUseCounter( m_uri );
+    
+    if( DataSetsManager::getInstance().incrementUseCounter( m_uri, aType ) )
+    {
+      m_aType = aType;
+      return true;
+    }    
+    else
+    {
+      if( !DataSetsManager::getInstance().incrementUseCounter( m_uri, m_aType ) )
+      {
+        throw Exception(TE_TR("Maximum number of concurrent dataset instances reached"), te::common::NO_CONNECTION_AVAILABLE);
+      }  
+      
+      return false;
+    }
+  }
 }
 
