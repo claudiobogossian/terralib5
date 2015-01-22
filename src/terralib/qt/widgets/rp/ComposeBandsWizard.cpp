@@ -152,7 +152,34 @@ bool te::qt::widgets::ComposeBandsWizard::executeCompose()
   //execute
   std::auto_ptr<te::rst::Raster> outputRaster;
 
-  bool res = te::rp::ComposeBands(feeder, inputRasterBands, interpMethod, rinfo, type, outputRaster);
+  QApplication::setOverrideCursor(Qt::WaitCursor);
+
+  bool res = false;
+
+  try
+  {
+    res = te::rp::ComposeBands(feeder, inputRasterBands, interpMethod, rinfo, type, outputRaster);
+  }
+  catch(const std::exception& e)
+  {
+    QMessageBox::warning(this, tr("Compose"), e.what());
+
+    QApplication::restoreOverrideCursor();
+
+    te::common::FreeContents(inputRasters);
+
+    return false;
+  }
+  catch(...)
+  {
+    QMessageBox::warning(this, tr("Compose"), tr("An exception has occurred!"));
+
+    QApplication::restoreOverrideCursor();
+
+    te::common::FreeContents(inputRasters);
+
+    return false;
+  }
 
   //create layer
   if(res)
@@ -203,7 +230,32 @@ bool te::qt::widgets::ComposeBandsWizard::executeDecompose()
   std::vector< boost::shared_ptr< te::rst::Raster > > outputRastersPtrs;
 
   //execute
-  bool res = te::rp::DecomposeBands(*inputRaster, inputRasterBands, outputRastersInfos, type, outputRastersPtrs);
+  bool res = false;
+
+  try
+  {
+    res = te::rp::DecomposeBands(*inputRaster, inputRasterBands, outputRastersInfos, type, outputRastersPtrs);
+  }
+  catch(const std::exception& e)
+  {
+    QMessageBox::warning(this, tr("Decompose"), e.what());
+
+    QApplication::restoreOverrideCursor();
+
+    outputRastersPtrs.clear();
+
+    return false;
+  }
+  catch(...)
+  {
+    QMessageBox::warning(this, tr("Decompose"), tr("An exception has occurred!"));
+
+    QApplication::restoreOverrideCursor();
+
+    outputRastersPtrs.clear();
+
+    return false;
+  }
 
   //create layer
   if(res)
