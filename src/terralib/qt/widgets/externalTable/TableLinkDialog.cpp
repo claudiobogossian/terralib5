@@ -157,7 +157,7 @@ te::map::AbstractLayerPtr te::qt::widgets::TableLinkDialog::getQueryLayer()
 
   te::map::QueryLayerPtr layer(new te::map::QueryLayer(id, title));
   layer->setDataSourceId(m_ds->getId());
-  layer->setRendererType("ABSTRACT_LAYER_RENDERER");
+  layer->setRendererType("QUERY_LAYER_RENDERER");
   layer->setQuery(new te::da::Select(getSelectQuery()));
   layer->computeExtent();
 

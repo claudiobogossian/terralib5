@@ -206,7 +206,7 @@ te::map::AbstractLayerPtr te::qt::widgets::QueryLayerBuilderWizard::getQueryLaye
 
   te::map::QueryLayerPtr layer(new te::map::QueryLayer(id, title));
   layer->setDataSourceId(m_ds->getId());
-  layer->setRendererType("ABSTRACT_LAYER_RENDERER");
+  layer->setRendererType("QUERY_LAYER_RENDERER");
   layer->setQuery(s);
   layer->computeExtent();
 
