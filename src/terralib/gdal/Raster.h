@@ -139,6 +139,8 @@ namespace te
       
       bool createMultiResolution( const unsigned int levels, const te::rst::InterpolationMethod interpMethod );
       
+      bool removeMultiResolution(); 
+      
       unsigned int getMultiResLevelsCount() const;
       
       te::rst::Raster* getMultiResLevel( const unsigned int level ) const;

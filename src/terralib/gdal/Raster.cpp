@@ -561,6 +561,50 @@ bool te::gdal::Raster::createMultiResolution( const unsigned int levels,
   }
 }
 
+bool te::gdal::Raster::removeMultiResolution()
+{
+  if( m_gdataset == 0 )
+  {
+    return true;
+  }
+  else
+  {
+    if( m_gdataset->GetRasterCount() > 0 )
+    {
+      if( m_gdataset->GetRasterBand( 1 )->GetOverviewCount() > 0 )
+      {
+         CPLErr returnValue = m_gdataset->BuildOverviews( 
+           GetGDALRessamplingMethod( te::rst::NearestNeighbor ).c_str(),
+           (int)0,
+           0,
+           0,
+           NULL, 
+           NULL,
+           NULL );      
+         
+         m_gdataset->FlushCache();
+         
+         if( returnValue == CE_Failure )
+         {
+           return false;
+         }
+         else
+         {
+           return true;
+         }         
+      }
+      else
+      {
+        return true;
+      }
+    }
+    else
+    {
+      return true;
+    }
+  }
+}
+
 unsigned int te::gdal::Raster::getMultiResLevelsCount() const
 {
   if( m_gdataset == 0 )

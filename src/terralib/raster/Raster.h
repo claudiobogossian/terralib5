@@ -637,6 +637,13 @@ namespace te
         virtual bool createMultiResolution( const unsigned int levels, const InterpolationMethod interpMethod ) = 0;
         
         /*!
+          \brief Remove/Destroy a sub-sampled multi-resolution pyramid, if there is one.
+          
+          \return true if OK, false if errors ocurred.
+        */        
+        virtual bool removeMultiResolution() = 0;        
+        
+        /*!
           \brief Returns the current number of multi-resolution pyramid levels.
 
           \return Returns the current number of multi-resolution pyramid levels.

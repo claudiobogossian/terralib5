@@ -87,6 +87,8 @@ namespace te
           return false;
         };
         
+        bool removeMultiResolution() { return false; }; 
+        
         unsigned int getMultiResLevelsCount() const
         {
           return 0;        
