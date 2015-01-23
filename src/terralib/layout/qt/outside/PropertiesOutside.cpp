@@ -120,7 +120,7 @@ void te::layout::PropertiesOutside::createLayout()
   filterLayout->addWidget(m_configurePropertyEditor);
 
   layout->addLayout(filterLayout);
-  m_nameLabel = new QLabel(tr("QObject::unknown"), this);
+  m_nameLabel = new QLabel(tr("Component::"), this);
   layout->addWidget(m_nameLabel);
   layout->addWidget(m_layoutPropertyBrowser->getPropertyEditor());
 
@@ -169,6 +169,7 @@ void te::layout::PropertiesOutside::itemsSelected(QList<QGraphicsItem*> graphics
   m_updatingValues = false;
 
   m_layoutPropertyBrowser->clearAll();
+  m_nameLabel->setText(tr("Component::"));
 
   m_graphicsItems = graphicsItems;
 
@@ -183,6 +184,8 @@ void te::layout::PropertiesOutside::itemsSelected(QList<QGraphicsItem*> graphics
 
   if(!props)
     return;
+
+  m_nameLabel->setText(tr("Component::") + props->getObjectName().c_str());
   
   foreach( Property prop, props->getProperties()) 
   {
@@ -464,5 +467,6 @@ void te::layout::PropertiesOutside::refreshOutside()
 void te::layout::PropertiesOutside::onClear( std::vector<std::string> names )
 {
   m_updatingValues = false;
+  m_nameLabel->setText(tr("Component::"));
   m_layoutPropertyBrowser->clearAll();
 }
