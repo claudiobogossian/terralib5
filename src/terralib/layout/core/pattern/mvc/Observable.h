@@ -143,7 +143,8 @@ namespace te
         virtual std::string getName() = 0;
 
         /*!
-          \brief Returns the hashcode of a MVC component.
+          \brief Returns the id of a MVC component. Id is calculated as the number of components of the same type already created. 
+           The Id to be created is the amount at the time + 1. This number is used to create the object name.
             Reimplement this function in a Observable subclass to provide the model's getId implementation.
 
           \return hashCode
@@ -151,13 +152,22 @@ namespace te
         virtual int getId() = 0;
         
         /*!
-          \brief Change the hashcode of a MVC component.
+          \brief Change the id of a MVC component. Id is calculated as the number of components of the same type already created. 
+          The Id to be created is the amount at the time + 1. This number is used to create the object name.
             Reimplement this function in a Observable subclass to provide the model's setId implementation.
 
           \param id hashCode
         */
         virtual void setId(int id) = 0;
 
+        /*!
+          \brief Returns the hashcode of a MVC component.
+            Reimplement this function in a Observable subclass to provide the model's getHashCode implementation.
+
+          \return hashCode
+        */
+        virtual int getHashCode() = 0;
+        
         /*!
           \brief Change the component state for resizable or not
             Reimplement this function in a Observable subclass to provide the model's setResizable implementation.
@@ -183,8 +193,14 @@ namespace te
           \param context maintaining the drawing context of a MVC component.
         */
         virtual void notifyAll(ContextItem context) = 0;
-    };
 
+        /*!
+          \brief Returns a new hashcode.
+
+          \return hashCode
+        */
+        virtual int calculateHashCode() = 0;
+    };
   }
 }
 

@@ -36,6 +36,10 @@
 #include "../singleton/Context.h"
 #include "../../enum/Enums.h"
 
+// STL
+#include <ctime>
+#include <iostream>
+
 te::layout::ItemModelObservable::ItemModelObservable() :
   m_id(0),
   m_type(0),
@@ -44,7 +48,8 @@ te::layout::ItemModelObservable::ItemModelObservable() :
   m_border(true),
   m_name("unknown"),
   m_resizable(true),
-  m_angle(0)
+  m_angle(0),
+  m_hashCode(0)
 {
   EnumObjectType* type = Enums::getInstance().getEnumObjectType();
   m_type = type->getObjectUnknown();
@@ -58,6 +63,8 @@ te::layout::ItemModelObservable::ItemModelObservable() :
   m_properties = new Properties(m_name);
 
   m_sharedProps = new SharedProperties;
+
+  m_hashCode = calculateHashCode();
 }
 
 te::layout::ItemModelObservable::~ItemModelObservable()
@@ -424,4 +431,55 @@ void te::layout::ItemModelObservable::setAngle( double angle )
 double te::layout::ItemModelObservable::getAngle()
 {
   return m_angle;
+}
+
+int te::layout::ItemModelObservable::getHashCode()
+{
+  return m_hashCode;
+}
+
+int te::layout::ItemModelObservable::calculateHashCode()
+{
+  int nameLength = m_name.length();
+  int id = m_id;
+  int type = 0;
+  if(m_type)
+  {
+    type = m_type->getId();
+  }
+
+  int propertiesLength = 0;
+
+  if(m_properties)
+  {
+    Properties* props = getProperties();
+
+    if(props)
+    {
+      propertiesLength = getProperties()->getProperties().size();
+    }
+  }
+
+  int hashcode = (nameLength + id + type + propertiesLength) * 5;
+
+  // current date/time based on current system
+  std::time_t now = std::time(0);
+  
+  std::tm *ltm = localtime(&now);
+
+  if(!ltm)
+    return hashcode;
+
+  // print various components of tm structure.
+  int year = 1900 + ltm->tm_year;
+  int month = 1 + ltm->tm_mon;
+  int day = ltm->tm_mday;
+  int hour = 1 + ltm->tm_hour;
+  int numberSecond = 1 + ltm->tm_min;
+  int numberMilliseconds =  1 + ltm->tm_sec;
+
+  hashcode *= year + month + day;
+  hashcode *= hour + numberSecond + numberMilliseconds;
+
+  return hashcode;
 }
