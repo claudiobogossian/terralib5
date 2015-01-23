@@ -67,6 +67,8 @@ namespace terralib4
         return false;
       };
       
+      bool removeMultiResolution() { return false; };
+      
       unsigned int getMultiResLevelsCount() const
       {
         return 0;        
