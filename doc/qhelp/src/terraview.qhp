@@ -94,6 +94,7 @@
 					<section title="Spatial Statistics" ref="./plugins/sa/sa_spatialstatistics.html"/>
 				</section>
 				<section title="TerraLib 4.x Converter" ref="./plugins/terralib4/Terralib4Converter.html"/>
+				<section title="Cellular Spaces" ref="./plugins/cellspace/cellspace.html"/>
 		    </section>
        </toc>
        <files>
@@ -106,6 +107,7 @@
 			<file>./apf/settings/*.html</file>
 			<file>./plugins/ado/*.*</file>
 			<file>./plugins/attributefill/*.*</file>
+			<file>./plugins/cellspace/*.*</file>
 			<file>./plugins/gdal/*.*</file>
 			<file>./plugins/ogr/*.*</file>
 			<file>./plugins/pgis/*.*</file>

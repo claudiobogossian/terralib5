@@ -37,6 +37,7 @@
 #include "../../../dataaccess/datasource/DataSourceManager.h"
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../qt/widgets/layer/utils/DataSet2Layer.h"
+#include "../../../qt/widgets/help/HelpPushButton.h"
 #include "../../../qt/widgets/progress/ProgressViewerDialog.h"
 #include "../../../qt/widgets/srs/SRSManagerDialog.h"
 #include "../../../srs/SpatialReferenceSystemManager.h"
@@ -104,6 +105,9 @@ te::qt::plugins::cellspace::CreateCellularSpaceDialog::CreateCellularSpaceDialog
   connect(m_ui->m_createPushButton, SIGNAL(clicked()), this, SLOT(onCreatePushButtonClicked()));
   connect(m_ui->m_referenceGroupBox, SIGNAL(toggled(bool)), this, SLOT(onReferenceGroupBoxToggled(bool)));
   connect(m_ui->m_srsToolButton, SIGNAL(clicked()), this, SLOT(onSrsToolButtonClicked()));
+
+  m_ui->m_helpPushButton->setNameSpace("dpi.inpe.br.plugins");
+  m_ui->m_helpPushButton->setPageReference("plugins/cellspace/cellspace.html");
 }
 
 te::qt::plugins::cellspace::CreateCellularSpaceDialog::~CreateCellularSpaceDialog()
