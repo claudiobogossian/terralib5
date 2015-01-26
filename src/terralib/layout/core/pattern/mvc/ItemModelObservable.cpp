@@ -420,7 +420,13 @@ void te::layout::ItemModelObservable::drawBackground( ContextItem context )
     canvas->setPolygonContourColor(te::color::RGBAColor(255,255,255, 0));
   }
   canvas->setPolygonFillColor(m_backgroundColor);
-  utils->drawRectW(m_box);
+
+  te::gm::Envelope box(m_box);
+  box.m_llx += 0.4;
+  box.m_lly += 0.4;
+  box.m_urx -= 0.2;
+
+  utils->drawRectW(box);
 }
 
 void te::layout::ItemModelObservable::setAngle( double angle )
