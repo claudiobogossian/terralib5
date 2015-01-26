@@ -20,7 +20,7 @@
 /*!
   \file ContextItem.h
    
-  \brief 
+  \brief Class responsible for maintaining the drawing context of a graphic component.
 
   \ingroup layout
 */
@@ -38,114 +38,150 @@ namespace te
 {
   namespace layout
   {
-    class LayoutPixmap;
-
+    /*!
+      \brief Class responsible for maintaining the drawing context of a MVC component.
+       It is always used by the "Model" part of the MVC in draw method, as well as the part "View" in updateObserver method.
+	  
+	    \ingroup layout
+	  */
     class ContextItem 
     {
       public:
 
         /*!
-         \brief 
-        */
+          \brief Constructor
+        */ 
         ContextItem();
 
         /*!
-         \brief 
-        */
+          \brief Constructor
+
+          \param params
+          \param zoomFactor zoom factor
+        */ 
         ContextItem(ParamsCreate params, double zoomFactor);
 
         /*!
-         \brief 
-        */
+          \brief Destructor
+        */ 
         virtual ~ContextItem();
 
         /*!
          \brief 
         */
-        void setParams(ParamsCreate params);
+        virtual void setParams(ParamsCreate params);
         
         /*!
          \brief 
         */
-        ParamsCreate getParams();
+        virtual ParamsCreate getParams();
+
+        /*!
+         \brief Change current zoom factor.
+
+         \param zoomFactor current zoom factor
+        */
+        virtual void setZoomFactor(double zoomFactor);
+        
+        /*!
+         \brief Returns current zoom factor.
+
+         \return current zoom factor
+        */
+        virtual double getZoomFactor();
+
+        /*!
+        \brief Stores pixmap generated after drawing.
+
+        \param pixmap generated after drawing
+        */
+        virtual void setPixmap(te::color::RGBAColor** pixmap);
+        
+        /*!
+         \brief Returns pixmap generated after drawing.
+
+         \return pixmap
+        */
+        virtual te::color::RGBAColor** getPixmap();
+        
+        /*!
+         \brief Returns whether the canvas should or should not be resized.
+
+         \return true if canvas should be resized, false otherwise
+        */
+        virtual bool isResizeCanvas();
+        
+        /*!
+         \brief Change whether the canvas should or should not be resized.
+
+         \param clear true if canvas should be resized, false otherwise.
+        */
+        virtual void setResizeCanvas(bool clear);
+
+        /*!
+         \brief Return canvas.
+
+         \return canvas
+        */
+        virtual te::map::Canvas* getCanvas();
+
+        /*!
+         \brief Change canvas.
+
+         \param canvas
+        */
+        virtual void setCanvas(te::map::Canvas* canvas);
 
         /*!
          \brief 
         */
-        void setZoomFactor(double zoomFactor);
+        virtual Utils* getUtils();
+
+        /*!
+         \brief 
+        */
+        virtual void setUtils(Utils* utils);
+
+        /*!
+         \brief 
+        */
+        virtual double getDpiX();
+
+        /*!
+         \brief 
+        */
+        virtual void setDpiX(double dpi);
+
+        /*!
+         \brief 
+        */
+        virtual double getDpiY();
+
+        /*!
+         \brief 
+        */
+        virtual void setDpiY(double dpi);
+
+        /*
+         \brief 
+        */
+        virtual void setShow( bool show );
         
         /*!
          \brief 
         */
-        double getZoomFactor();
-
-        /*!
-         \brief 
-        */
-        void setPixmap(te::color::RGBAColor** pixmap);
-        
-        /*!
-         \brief 
-        */
-        te::color::RGBAColor** getPixmap();
-
-        /*!
-         \brief 
-        */
-        void setShow( bool show );
-        
-        /*!
-         \brief 
-        */
-        bool getShow();
-
-        /*!
-         \brief 
-        */
-        void setWait(bool wait);
-        
-        /*!
-         \brief 
-        */
-        bool getWait();
-
-        /*!
-         \brief 
-        */
-        bool isResizeCanvas();
-        
-        /*!
-         \brief 
-        */
-        void setResizeCanvas(bool clear);
-
-        te::map::Canvas* getCanvas();
-
-        void setCanvas(te::map::Canvas* canvas);
-
-        Utils* getUtils();
-
-        void setUtils(Utils* utils);
-
-        double getDpiX();
-
-        void setDpiX(double dpi);
-
-        double getDpiY();
-
-        void setDpiY(double dpi);
+        virtual bool isShow();
 
       protected:
         ParamsCreate            m_params; //!<
         double                  m_zoomFactor; //!<
         te::color::RGBAColor**  m_pixmap; //!<
-        bool		                m_show; //!<
-        bool		                m_wait; //!<
         bool                    m_resizeCanvas; //!<
-        Utils*                  m_utils;
-        te::map::Canvas*        m_canvas;
-        double                  m_dpiX;
-        double                  m_dpiY;
+        bool		                m_show; //!<
+        Utils*                  m_utils; //!<
+        te::map::Canvas*        m_canvas; //!<
+        double                  m_dpiX; //!<
+        double                  m_dpiY; //!<
     };
   }
 }

@@ -151,11 +151,11 @@ te::rp::Segmenter::InputParameters te::qt::widgets::SegmenterWizardPage::getInpu
     if(checkBox->isChecked())
     {
       algoInputParams.m_inputRasterBands.push_back(i);
-    }
-
-    if(m_ui->m_noDataValueCheckBox->isChecked() && !m_ui->m_noDataValueLineEdit->text().isEmpty())
-    {
-      algoInputParams.m_inputRasterNoDataValues.push_back(m_ui->m_noDataValueLineEdit->text().toDouble());
+      
+      if(m_ui->m_noDataValueCheckBox->isChecked() && !m_ui->m_noDataValueLineEdit->text().isEmpty())
+      {
+        algoInputParams.m_inputRasterNoDataValues.push_back(m_ui->m_noDataValueLineEdit->text().toDouble());
+      }      
     }
   }
 
@@ -169,6 +169,8 @@ te::rp::Segmenter::InputParameters te::qt::widgets::SegmenterWizardPage::getInpu
     strategyParameters.m_minSegmentSize = m_ui->m_minimumSegmentSizeRGLineEdit->text().toUInt();
     strategyParameters.m_segmentsSimilarityThreshold = m_ui->m_thresholdRGDoubleSpinBox->value();
     strategyParameters.m_segmentFeatures = te::rp::SegmenterRegionGrowingStrategy::Parameters::MeanFeaturesType;
+    strategyParameters.m_enableLocalMutualBestFitting = m_ui->m_localMutualBestFittingCheckBox->isChecked();
+    strategyParameters.m_enableSameIterationMerges = m_ui->m_sameIterationMergeCheckBox->isChecked();
 
     algoInputParams.m_strategyName = "RegionGrowing";
     algoInputParams.setSegStrategyParams( strategyParameters );
@@ -179,6 +181,8 @@ te::rp::Segmenter::InputParameters te::qt::widgets::SegmenterWizardPage::getInpu
     strategyParameters.m_minSegmentSize = m_ui->m_minimumSegmentSizeRGLineEdit->text().toUInt();
     strategyParameters.m_segmentsSimilarityThreshold = m_ui->m_thresholdBaatzDoubleSpinBox->value();
     strategyParameters.m_segmentFeatures = te::rp::SegmenterRegionGrowingStrategy::Parameters::BaatzFeaturesType;
+    strategyParameters.m_enableLocalMutualBestFitting = m_ui->m_localMutualBestFittingCheckBox->isChecked();
+    strategyParameters.m_enableSameIterationMerges = m_ui->m_sameIterationMergeCheckBox->isChecked();    
 
     for(int i = 0; i < nBands; ++i)
     {
@@ -260,7 +264,6 @@ void te::qt::widgets::SegmenterWizardPage::apply()
   algoInputParams.m_inputRasterPtr = inputRst;
   algoInputParams.m_enableThreadedProcessing = false;
   algoInputParams.m_enableBlockProcessing = false;
-  algoInputParams.m_enableBlockMerging = false;
 
   te::rp::Segmenter::OutputParameters algoOutputParams;
 

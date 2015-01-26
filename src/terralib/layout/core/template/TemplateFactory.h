@@ -20,7 +20,7 @@
 /*!
   \file TemplateFactory.h
    
-  \brief 
+  \brief Factory for creating families of related or dependent templates.
 
   \ingroup layout
 */
@@ -30,6 +30,7 @@
 
 // TerraLib
 #include "../pattern/factory/AbstractTemplateFactory.h"
+#include "../Config.h"
 
 namespace te
 {
@@ -37,12 +38,30 @@ namespace te
   {
     class EnumType;
 
-    class TemplateFactory : public AbstractTemplateFactory
+    /*!
+	  \brief Factory for creating families of related or dependent templates.
+	  
+	  \ingroup layout
+
+    \sa te::layout::AbstractItemFactory
+	  */
+    class TELAYOUTEXPORT TemplateFactory : public AbstractTemplateFactory
     {
       public:
+
+        /*!
+          \brief Constructor
+         */
         TemplateFactory();
+
+        /*!
+          \brief Destructor
+         */
         virtual ~TemplateFactory();
 
+        /*!
+          \brief Reimplemented from AbstractItemFactory
+         */
         virtual AbstractTemplate* make(EnumType* type, TemplateParamsCreate params = TemplateParamsCreate());
     };
   }

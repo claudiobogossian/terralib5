@@ -473,8 +473,6 @@ te::rp::ArithmeticOperations::InputParameters te::qt::widgets::ArithmeticOpWizar
 {
   te::rp::ArithmeticOperations::InputParameters params;
 
-  double gain = m_arithmeticOpPage->getGainValue();
-  double offSet = m_arithmeticOpPage->getOffSetValue();
   bool normalize = m_arithmeticOpPage->normalize();
   std::string arithExpStr = m_arithmeticOpPage->getUserDefinedExpression();
 

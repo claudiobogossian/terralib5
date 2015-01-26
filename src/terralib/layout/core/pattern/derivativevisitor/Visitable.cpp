@@ -29,17 +29,6 @@
 #include "Visitable.h"
 #include "AbstractVisitor.h"
 
-
-te::layout::Visitable::Visitable()
-{
-
-}
-
-te::layout::Visitable::~Visitable( void )
-{
-  unacceptAllVisitor();
-}
-
 void te::layout::Visitable::acceptVisitor( AbstractVisitor* visitor )
 {
   m_visitors.insert(visitor);

@@ -29,7 +29,6 @@
 #include "EnumObjectType.h"
 
 te::layout::EnumObjectType::EnumObjectType() :
-  m_objectUnknown(0),
   m_retangleItem(0),
   m_mapItem(0),
   m_mapGridItem(0),
@@ -53,9 +52,9 @@ te::layout::EnumObjectType::EnumObjectType() :
   m_titleItem(0),
   m_textGridItem(0),
   m_editTemplate(0),
-  m_menuItem(0),
   m_textGridSettings(0),
-  m_legendChildItem(0)
+  m_legendChildItem(0),
+  m_objectUnknown(0)
 {
   init();
 }
@@ -199,13 +198,7 @@ te::layout::EnumObjectType::~EnumObjectType()
     delete m_editTemplate;
     m_editTemplate = 0;
   }
-
-  if(m_menuItem)
-  {
-    delete m_menuItem;
-    m_menuItem = 0;
-  }
-
+  
   if(m_textGridSettings)
   {
     delete m_textGridSettings;
@@ -307,10 +300,7 @@ void te::layout::EnumObjectType::init()
   
   m_editTemplate = new EnumType(27, "Edit_Template");
   m_enums.push_back(m_editTemplate);
-
-  m_menuItem = new EnumType(28, "Menu_Item");
-  m_enums.push_back(m_menuItem);
-
+  
   m_textGridSettings = new EnumType(29, "Text_Grid_Settings");
   m_enums.push_back(m_textGridSettings);
 
@@ -431,11 +421,6 @@ te::layout::EnumType* te::layout::EnumObjectType::getTextGridItem() const
 te::layout::EnumType* te::layout::EnumObjectType::getEditTemplate() const
 {
   return m_editTemplate;
-}
-
-te::layout::EnumType* te::layout::EnumObjectType::getMenuItem() const
-{
-  return m_menuItem;
 }
 
 te::layout::EnumType* te::layout::EnumObjectType::getTextGridSettings() const

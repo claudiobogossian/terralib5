@@ -59,123 +59,123 @@ te::sa::GPMConstructorNearestNeighborStrategy::~GPMConstructorNearestNeighborStr
 
 void te::sa::GPMConstructorNearestNeighborStrategy::constructStrategy()
 {
-  //get input information
-  std::auto_ptr<te::da::DataSet> dataSet = m_ds->getDataSet(m_gpm->getDataSetName());
+  ////get input information
+  //std::auto_ptr<te::da::DataSet> dataSet = m_ds->getDataSet(m_gpm->getDataSetName());
 
-  std::size_t geomPos = te::da::GetFirstSpatialPropertyPos(dataSet.get());
+  //std::size_t geomPos = te::da::GetFirstSpatialPropertyPos(dataSet.get());
 
-  std::auto_ptr<te::da::DataSetType> dsType = m_ds->getDataSetType(m_gpm->getDataSetName());
+  //std::auto_ptr<te::da::DataSetType> dsType = m_ds->getDataSetType(m_gpm->getDataSetName());
 
-  te::gm::GeometryProperty* gmProp = dynamic_cast<te::gm::GeometryProperty*>(dsType->getProperty(geomPos));
+  //te::gm::GeometryProperty* gmProp = dynamic_cast<te::gm::GeometryProperty*>(dsType->getProperty(geomPos));
 
-  //create distance attribute
-  createDistanceAttribute(m_gpm);
+  ////create distance attribute
+  //createDistanceAttribute(m_gpm);
 
-  //create dataset of points
-  te::gm::Envelope e;
-  std::vector<std::pair<te::gm::Coord2D, te::gm::Point> > dataset;
-  std::map<int, te::gm::Geometry*> geomMap;
+  ////create dataset of points
+  //te::gm::Envelope e;
+  //std::vector<std::pair<te::gm::Coord2D, te::gm::Point> > dataset;
+  //std::map<int, te::gm::Geometry*> geomMap;
 
-  dataSet->moveBeforeFirst();
+  //dataSet->moveBeforeFirst();
 
-  while(dataSet->moveNext())
-  {
-    std::string strId = dataSet->getAsString(m_gpm->getAttributeName());
+  //while(dataSet->moveNext())
+  //{
+  //  std::string strId = dataSet->getAsString(m_gpm->getAttributeName());
 
-    int id = atoi(strId.c_str());
+  //  int id = atoi(strId.c_str());
 
-    te::gm::Geometry* g = dataSet->getGeometry(geomPos).release();
+  //  te::gm::Geometry* g = dataSet->getGeometry(geomPos).release();
 
-    te::gm::Coord2D coord = te::sa::GetCentroidCoord(g);
-    te::gm::Point point = te::gm::Point(coord.x, coord.y, gmProp->getSRID());
+  //  te::gm::Coord2D coord = te::sa::GetCentroidCoord(g);
+  //  te::gm::Point point = te::gm::Point(coord.x, coord.y, gmProp->getSRID());
 
-    e.Union(*point.getMBR());
+  //  e.Union(*point.getMBR());
 
-    dataset.push_back(std::pair<te::gm::Coord2D, te::gm::Point>(coord, point));
+  //  dataset.push_back(std::pair<te::gm::Coord2D, te::gm::Point>(coord, point));
 
-    geomMap.insert(std::map<int, te::gm::Geometry*>::value_type(id, g));
-  }
+  //  geomMap.insert(std::map<int, te::gm::Geometry*>::value_type(id, g));
+  //}
 
-  // K-d Tree
-  typedef te::sam::kdtree::AdaptativeNode<te::gm::Coord2D, std::vector<te::gm::Point>, te::gm::Point> kdNode;
-  typedef te::sam::kdtree::AdaptativeIndex<kdNode> kdTree;
+  //// K-d Tree
+  //typedef te::sam::kdtree::AdaptativeNode<te::gm::Coord2D, std::vector<te::gm::Point>, te::gm::Point> kdNode;
+  //typedef te::sam::kdtree::AdaptativeIndex<kdNode> kdTree;
 
-  kdTree tree(e, m_nNeighbors);
-  tree.build(dataset);
+  //kdTree tree(e, m_nNeighbors);
+  //tree.build(dataset);
 
-  //create task
-  te::common::TaskProgress task;
+  ////create task
+  //te::common::TaskProgress task;
 
-  task.setTotalSteps(dataSet->size());
-  task.setMessage(TE_TR("Creating Edge Objects."));
+  //task.setTotalSteps(dataSet->size());
+  //task.setMessage(TE_TR("Creating Edge Objects."));
 
-  //create edges objects
-  dataSet->moveBeforeFirst();
+  ////create edges objects
+  //dataSet->moveBeforeFirst();
 
-  while(dataSet->moveNext())
-  {
-    std::string strIdFrom = dataSet->getAsString(m_gpm->getAttributeName());
+  //while(dataSet->moveNext())
+  //{
+  //  std::string strIdFrom = dataSet->getAsString(m_gpm->getAttributeName());
 
-    int vFromId = atoi(strIdFrom.c_str());
+  //  int vFromId = atoi(strIdFrom.c_str());
 
-    std::auto_ptr<te::gm::Geometry> g = dataSet->getGeometry(geomPos);
+  //  std::auto_ptr<te::gm::Geometry> g = dataSet->getGeometry(geomPos);
 
-    te::gm::Coord2D coord = te::sa::GetCentroidCoord(g.get());
+  //  te::gm::Coord2D coord = te::sa::GetCentroidCoord(g.get());
 
-    std::vector<double> distances;
+  //  std::vector<double> distances;
 
-    std::vector<te::gm::Point> points;
+  //  std::vector<te::gm::Point> points;
 
-    for(std::size_t t = 0; t < m_nNeighbors; ++t)
-      points.push_back(te::gm::Point(std::numeric_limits<double>::max(), std::numeric_limits<double>::max()));
+  //  for(std::size_t t = 0; t < m_nNeighbors; ++t)
+  //    points.push_back(te::gm::Point(std::numeric_limits<double>::max(), std::numeric_limits<double>::max()));
 
-    tree.nearestNeighborSearch(coord, points, distances, m_nNeighbors);
+  //  tree.nearestNeighborSearch(coord, points, distances, m_nNeighbors);
 
-    for(size_t t = 0; t < points.size(); ++t)
-    {
-      int id;
+  //  for(size_t t = 0; t < points.size(); ++t)
+  //  {
+  //    int id;
 
-      std::map<int, te::gm::Geometry*>::iterator it = geomMap.find(id);
+  //    std::map<int, te::gm::Geometry*>::iterator it = geomMap.find(id);
 
-      if(it != geomMap.end())
-      {
+  //    if(it != geomMap.end())
+  //    {
 
-        int edgeId = getEdgeId();
+  //      int edgeId = getEdgeId();
 
-        int vToId = id;
+  //      int vToId = id;
 
-        te::graph::Edge* e = new te::graph::Edge(edgeId, vFromId, vToId);
+  //      te::graph::Edge* e = new te::graph::Edge(edgeId, vFromId, vToId);
 
-        //caculate distance
-        te::graph::Vertex* vFrom = m_gpm->getGraph()->getVertex(vFromId);
-        te::gm::Point* pFrom = dynamic_cast<te::gm::Point*>(vFrom->getAttributes()[0]);
+  //      //caculate distance
+  //      te::graph::Vertex* vFrom = m_gpm->getGraph()->getVertex(vFromId);
+  //      te::gm::Point* pFrom = dynamic_cast<te::gm::Point*>(vFrom->getAttributes()[0]);
 
-        te::graph::Vertex* vTo = m_gpm->getGraph()->getVertex(vToId);
-        te::gm::Point* pTo = dynamic_cast<te::gm::Point*>(vTo->getAttributes()[0]);
+  //      te::graph::Vertex* vTo = m_gpm->getGraph()->getVertex(vToId);
+  //      te::gm::Point* pTo = dynamic_cast<te::gm::Point*>(vTo->getAttributes()[0]);
 
-        double dist = pFrom->distance(pTo);
+  //      double dist = pFrom->distance(pTo);
 
-        te::dt::SimpleData<double, te::dt::DOUBLE_TYPE>* sd = new te::dt::SimpleData<double, te::dt::DOUBLE_TYPE>(dist);
-            
-        e->setAttributeVecSize(1);
-        e->addAttribute(0, sd);
+  //      te::dt::SimpleData<double, te::dt::DOUBLE_TYPE>* sd = new te::dt::SimpleData<double, te::dt::DOUBLE_TYPE>(dist);
+  //          
+  //      e->setAttributeVecSize(1);
+  //      e->addAttribute(0, sd);
 
-        m_gpm->getGraph()->add(e);
-      }
-    }
+  //      m_gpm->getGraph()->add(e);
+  //    }
+  //  }
 
-    if(!task.isActive())
-    {
-      te::common::FreeContents(geomMap);
-      geomMap.clear();
+  //  if(!task.isActive())
+  //  {
+  //    te::common::FreeContents(geomMap);
+  //    geomMap.clear();
 
-      throw te::common::Exception(TE_TR("Operation canceled by the user."));
-    }
-      
+  //    throw te::common::Exception(TE_TR("Operation canceled by the user."));
+  //  }
+  //    
 
-    task.pulse();
-  }
+  //  task.pulse();
+  //}
 
-  te::common::FreeContents(geomMap);
-  geomMap.clear();
+  //te::common::FreeContents(geomMap);
+  //geomMap.clear();
 }

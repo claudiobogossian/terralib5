@@ -57,6 +57,8 @@ int te::dt::Convert2Terralib(const std::string& dataType)
     return te::dt::UINT32_TYPE;
   else if(dataType == "INT64_TYPE")
     return te::dt::INT64_TYPE;
+    else if(dataType == "UINT16_TYPE")
+    return te::dt::UINT16_TYPE;
   else if(dataType == "UINT64_TYPE")
     return te::dt::UINT64_TYPE;
   else if(dataType == "BOOLEAN_TYPE")
@@ -125,6 +127,8 @@ std::string te::dt::ConvertDataTypeToString(const int& dataType)
     return TE_TR("Unsigned Integer 32");
   else if(dataType == te::dt::INT64_TYPE)
     return TE_TR("Integer 64");
+  else if(dataType == te::dt::UINT16_TYPE)
+    return TE_TR("Unsigned Integer 16");
   else if(dataType == te::dt::UINT64_TYPE)
     return TE_TR("Unsigned Integer 64");
   else if(dataType == te::dt::BOOLEAN_TYPE)

@@ -20,7 +20,7 @@
 /*!
   \file OutsideObserver.h
    
-  \brief 
+  \brief Abstract class to represent an observer. "View" part of MVC widget. All classes representing the graphics widget must inherit from this class.
 
   \ingroup layout
 */
@@ -41,22 +41,82 @@ namespace te
     class OutsideController;
     class Observable;
 
+    /*!
+      \brief Abstract class to represent an observer. "View" part of MVC widget. All classes representing the graphics component must inherit from this class.
+	  
+	    \ingroup layout
+
+	    \sa te::layout::Observer
+	  */
     class OutsideObserver : public Observer
     {
     public:
+
+      /*!
+          \brief Constructor
+
+          \param controller "Controller" part of MVC widget
+          \param o "Model" part of MVC widget
+      */ 
       OutsideObserver(OutsideController* controller, Observable* o);
+
+      /*!
+          \brief Destructor
+       */
       virtual ~OutsideObserver();
+
+      /*!
+          \brief Reimplemented from Observer
+       */
       virtual void updateObserver(ContextItem context) = 0;
+
+      /*!
+          \brief Change coordinate llx,lly of the MVC widget.
+            Reimplement this function in a ItemController subclass to provide the controller's create implementation.
+
+          \param x llx
+          \param y lly
+       */
       virtual void setPosition(const double& x, const double& y) = 0;
+
+      /*!
+          \brief Method that returns the position llx, lly
+            Reimplement this function in a ItemObserver subclass to provide the item's getPosition implementation.
+
+          \return coordinate
+       */ 
       virtual te::gm::Coord2D getPosition() = 0;
+
+      /*!
+          \brief Updated model state.
+
+          \param true if refresh the current position, false otherwise
+       */
       virtual void refresh();
+
+      /*!
+          \brief Reimplemented from Observer
+       */
       virtual Properties* getProperties() const;
+
+      /*!
+          \brief Returns the "Controller" part of the MVC.
+
+          \return controller
+       */
       virtual OutsideController* getController();
+
+      /*!
+          \brief Returns the "Model" part of the MVC.
+
+          \return model
+       */
       virtual Observable* getModel();
 
     protected:
-      OutsideController*	m_controller;
-      Observable*		m_model;
+
+      OutsideController*	m_controller; //!< "Controller" part of MVC widget.
+      Observable*		m_model; //!< "Model" part of MVC widget.
     };
   }
 }

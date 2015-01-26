@@ -117,7 +117,7 @@ namespace te
 
           std::vector<std::string> m_expressionHistory;
 
-          std::size_t m_expressionHistoryCounter;
+          int m_expressionHistoryCounter;
 
           std::auto_ptr<Ui::ArithmeticOpWizardPageForm> m_ui;
           

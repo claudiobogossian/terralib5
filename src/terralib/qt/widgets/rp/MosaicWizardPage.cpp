@@ -301,9 +301,9 @@ void te::qt::widgets::MosaicWizardPage::fillMosaicTypes()
   //interpolator types
   m_ui->m_interpolatorTypeComboBox->clear();
 
-  m_ui->m_interpolatorTypeComboBox->addItem(tr("Nearest Neighbor"), te::rst::Interpolator::NearestNeighbor);
-  m_ui->m_interpolatorTypeComboBox->addItem(tr("Bilinear"), te::rst::Interpolator::Bilinear);
-  m_ui->m_interpolatorTypeComboBox->addItem(tr("Bicubic"), te::rst::Interpolator::Bicubic);
+  m_ui->m_interpolatorTypeComboBox->addItem(tr("Nearest Neighbor"), te::rst::NearestNeighbor);
+  m_ui->m_interpolatorTypeComboBox->addItem(tr("Bilinear"), te::rst::Bilinear);
+  m_ui->m_interpolatorTypeComboBox->addItem(tr("Bicubic"), te::rst::Bicubic);
 
   //blender types
   m_ui->m_blenderTypeComboBox->clear();

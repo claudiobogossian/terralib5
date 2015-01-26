@@ -11,12 +11,14 @@ namespace te
       const SegmenterRegionGrowingSegment& other )
     {
       m_id = other.m_id;
-      m_status = other.m_status;
       m_size = other.m_size;
       m_xStart = other.m_xStart;
       m_xBound = other.m_xBound;
       m_yStart = other.m_yStart;
       m_yBound = other.m_yBound;
+      m_mergetIteration = other.m_mergetIteration;
+      m_prevActiveSegment = other.m_prevActiveSegment;
+      m_nextActiveSegment = other.m_nextActiveSegment;
       
       free( m_neighborSegments );
       if( other.m_neighborSegmentsSize )
@@ -69,13 +71,22 @@ namespace te
           }
         }
         
+        unsigned int newNeighborSegmentsSize = m_neighborSegmentsSize + 1 +
+          ( ( 25u * m_neighborSegmentsSize ) / 100u );
+        
         m_neighborSegments = (SegmenterRegionGrowingSegment**)realloc( 
-          m_neighborSegments, ( m_neighborSegmentsSize + 1 ) * sizeof( 
+          m_neighborSegments, newNeighborSegmentsSize * sizeof( 
           SegmenterRegionGrowingSegment* ) );
           
         m_neighborSegments[ m_neighborSegmentsSize ] = nSegPtr;
+        
+        for( idx = m_neighborSegmentsSize + 1 ; idx < newNeighborSegmentsSize ;
+          ++idx )
+        {
+          m_neighborSegments[ idx ] = 0;
+        }
           
-        ++m_neighborSegmentsSize;
+        m_neighborSegmentsSize = newNeighborSegmentsSize;
       }
     }
     

@@ -72,7 +72,7 @@ void TsInterpolator::tcNearestNeighbor()
   noDataValues.resize( rasterPointer->getNumberOfBands(), std::complex<double>(
     0.0, 0.0 ) );
   
-  te::rst::Interpolator interp( rasterPointer.get(), te::rst::Interpolator::NearestNeighbor,
+  te::rst::Interpolator interp( rasterPointer.get(), te::rst::NearestNeighbor,
    noDataValues );
   
   std::complex<double> v;
@@ -113,7 +113,7 @@ void TsInterpolator::tcBilinear()
   noDataValues.resize( rasterPointer->getNumberOfBands(), std::complex<double>(
     0.0, 0.0 ) );
   
-  te::rst::Interpolator interp( rasterPointer.get(), te::rst::Interpolator::Bilinear,
+  te::rst::Interpolator interp( rasterPointer.get(), te::rst::Bilinear,
    noDataValues );
   
   std::complex<double> v;
@@ -154,7 +154,7 @@ void TsInterpolator::tcBicubic()
   noDataValues.resize( rasterPointer->getNumberOfBands(), std::complex<double>(
     0.0, 0.0 ) );
   
-  te::rst::Interpolator interp( rasterPointer.get(), te::rst::Interpolator::Bicubic,
+  te::rst::Interpolator interp( rasterPointer.get(), te::rst::Bicubic,
    noDataValues );
   
   std::complex<double> v;

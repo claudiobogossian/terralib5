@@ -29,8 +29,8 @@
 // TerraLib
 #include "../../../common/Singleton.h"
 #include "../../../layout/qt/core/View.h"
-#include "../../../layout/qt/core/BuildContext.h"
-#include "../../../layout/core/enum/BuildEnums.h"
+#include "BuildContext.h"
+#include "BuildEnums.h"
 
 // Qt
 #include <QStatusBar>

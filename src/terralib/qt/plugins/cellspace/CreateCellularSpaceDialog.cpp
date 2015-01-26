@@ -210,10 +210,7 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onResXLineEditEditin
     return;
   }
 
-  double lWidth = env.getWidth();
-  double lHeight = env.getHeight();
-
-  int maxCols = (int)ceil((env.m_urx - env.m_llx)/resX);
+int maxCols = (int)ceil((env.m_urx - env.m_llx)/resX);
 
   m_ui->m_colsLineEdit->setText(QString::number(maxCols));
 }
@@ -229,9 +226,6 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onResYLineEditEditin
     QMessageBox::warning(this, tr("Cellular Spaces"), tr("Invalid envelope!"));
     return;
   }
-
-  double lWidth = env.getWidth();
-  double lHeight = env.getHeight();
 
   int maxRows = (int)ceil((env.m_ury - env.m_lly)/resY);
 
@@ -249,9 +243,6 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onColsLineEditEditin
     QMessageBox::warning(this, tr("Cellular Spaces"), tr("Invalid envelope!"));
     return;
   }
-
-  double lWidth = env.getWidth();
-  double lHeight = env.getHeight();
 
   double resX = (env.m_urx - env.m_llx)/cols;
 
@@ -296,9 +287,6 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onRowsLineEditEditin
     QMessageBox::warning(this, tr("Cellular Spaces"), tr("Invalid envelope!"));
     return;
   }
-
-  double lWidth = env.getWidth();
-  double lHeight = env.getHeight();
 
   double resY = (env.m_ury - env.m_lly)/rows;
 
@@ -459,8 +447,6 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onTargetDatasourceTo
 
 void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onUnitComboBoxChanged(int index)
 {
-  double resX = m_ui->m_resXLineEdit->text().toDouble();
-
   te::map::AbstractLayerPtr layer = getReferenceLayer();
 
   te::common::UnitOfMeasurePtr layerUnit;
@@ -477,11 +463,7 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onUnitComboBoxChange
 
   if(layerUnit != currentUnit)
   {
-    try
-    {
-      double factorX = te::common::UnitsOfMeasureManager::getInstance().getConversion(layerUnit->getName(), currentUnit->getName());
-    }
-    catch(te::common::Exception& /*e*/)
+    if (!te::common::UnitsOfMeasureManager::getInstance().areConvertible(layerUnit->getName(), currentUnit->getName()))
     {
       QMessageBox::warning(this, tr("Cellular Spaces"), tr("Unable to convert between the measuring unit of the layer projection and the selected!"));
       clearResolution();

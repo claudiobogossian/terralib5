@@ -20,7 +20,7 @@
 /*!
   \file EnumLineStyleType.h
    
-  \brief 
+  \brief Class to represent a line style type enumeration. Ex.: solid, dash, dot, etc.
 
   \ingroup layout
 */
@@ -38,41 +38,92 @@ namespace te
   {
     class EnumType;
 
+    /*!
+      \brief Class to represent a line style type enumeration. Ex.: solid, dash, dot, etc.
+	  
+	    \ingroup layout
+
+	    \sa te::layout::AbstractEnum
+	  */
     class TELAYOUTEXPORT EnumLineStyleType : public AbstractEnum
     {
       public:
 
+        /*!
+          \brief Constructor
+        */
         EnumLineStyleType(); 
 
+        /*!
+          \brief Destructor
+        */ 
         virtual ~EnumLineStyleType();
         
+        /*!
+          \brief Returns value that represents none style type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
         virtual EnumType* getStyleNone() const;
 
+        /*!
+          \brief Returns value that represents solid style type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
         virtual EnumType* getStyleSolid() const;
 
+        /*!
+          \brief Returns value that represents dash style type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
         virtual EnumType* getStyleDash() const;
 
+        /*!
+          \brief Returns value that represents dot style type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
         virtual EnumType* getStyleDot() const;
 
+        /*!
+          \brief Returns value that represents dash dot style type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
         virtual EnumType* getStyleDashDot() const;
 
+        /*!
+          \brief Returns value that represents dash dot dot style type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
         virtual EnumType* getStyleDashDotDot() const;
 
+        /*!
+          \brief Returns value that represents custom dash style type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
         virtual EnumType* getStyleCustomDash() const;
 
       protected:
 
+        /*!
+          \brief Reimplemented from AbstractEnum
+        */
         virtual void init();
 
       protected:
 
-        EnumType* m_styleNone;
-        EnumType* m_styleSolid;
-        EnumType* m_styleDash;
-        EnumType* m_styleDot;
-        EnumType* m_styleDashDot;
-        EnumType* m_styleDashDotDot;
-        EnumType* m_styleCustomDash;
+        EnumType* m_styleNone; //!< value that represents none style type belonging to enumeration
+        EnumType* m_styleSolid; //!< value that represents solid style type belonging to enumeration
+        EnumType* m_styleDash; //!< value that represents dash style type belonging to enumeration
+        EnumType* m_styleDot; //!< value that represents dot style type belonging to enumeration
+        EnumType* m_styleDashDot; //!< value that represents dash dot style type belonging to enumeration
+        EnumType* m_styleDashDotDot; //!< value that represents dash dot dot style type belonging to enumeration
+        EnumType* m_styleCustomDash; //!< value that represents custom dash style type belonging to enumeration
     };
   }
 }

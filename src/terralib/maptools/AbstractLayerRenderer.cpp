@@ -28,7 +28,6 @@
 #include "../common/progress/TaskProgress.h"
 #include "../common/Globals.h"
 #include "../common/STLUtils.h"
-#include "../common/StringUtils.h"
 #include "../common/Translator.h"
 #include "../dataaccess/dataset/DataSet.h"
 #include "../dataaccess/dataset/DataSetType.h"
@@ -66,21 +65,18 @@
 #include "GroupingItem.h"
 #include "QueryEncoder.h"
 #include "Utils.h"
-#include "QueryLayer.h"
-#include "../dataaccess/query/OrderBy.h"
-#include "../dataaccess/query/OrderByItem.h"
-#include "../dataaccess/query/Select.h"
 
 // Boost
 #include <boost/format.hpp>
 #include <boost/lexical_cast.hpp>
-#include <boost/math/special_functions/round.hpp>
 
 // STL
 #include <cassert>
 #include <cstdlib>
 #include <memory>
 #include <utility>
+
+
 
 te::map::AbstractLayerRenderer::AbstractLayerRenderer()
   : m_index(0)
@@ -233,35 +229,6 @@ void te::map::AbstractLayerRenderer::drawLayerGeometries(AbstractLayer* layer,
                                                          int srid)
 {
   assert(!geomPropertyName.empty());
-  m_oid.clear();
-  te::map::QueryLayer* qlayer = 0;
-  te::da::Select* select = 0;
-
-  bool linked = te::da::HasLinkedTable(layer->getSchema().get());
-  if(linked)
-  {
-    // make sorting by object id
-    qlayer = dynamic_cast<te::map::QueryLayer*>(layer);
-    select = dynamic_cast<te::da::Select*>(qlayer->getQuery()->clone());
-    te::da::Select* selectaux = dynamic_cast<te::da::Select*>(select->clone());
-    te::da::OrderBy* orderBy = new te::da::OrderBy;
-
-    std::auto_ptr<te::da::DataSetType> schema = layer->getSchema();
-    std::vector<te::dt::Property*> props = schema->getPrimaryKey()->getProperties();
-    size_t pksize = 0;
-    while(++pksize < props.size())
-    {
-      m_oid.push_back(props[pksize-1]->getName());
-      if(props[pksize-1]->getDatasetName() != props[pksize]->getDatasetName())
-        break;
-    }
-
-    for(size_t i = 0; i < pksize; ++i)
-      orderBy->push_back(new te::da::OrderByItem(m_oid[i]));
-
-    selectaux->setOrderBy(orderBy);
-    qlayer->setQuery(selectaux);
-  }
 
   // Creates a canvas configurer
   CanvasConfigurer cc(canvas);
@@ -289,8 +256,6 @@ void te::map::AbstractLayerRenderer::drawLayerGeometries(AbstractLayer* layer,
       {
         // There isn't a Filter expression. Gets the data using only extent spatial restriction...
         dataset = layer->getData(geomPropertyName, &bbox, te::gm::INTERSECTS);
-        if(linked)
-          qlayer->setQuery(select);
       }
       catch(std::exception& /*e*/)
       {
@@ -321,8 +286,6 @@ void te::map::AbstractLayerRenderer::drawLayerGeometries(AbstractLayer* layer,
 
         /* 2) Calling the layer query method to get the correct restricted data. */
         dataset = layer->getData(restriction);
-        if(linked)
-          qlayer->setQuery(select);
       }
       catch(std::exception& /*e*/)
       {
@@ -397,135 +360,135 @@ void te::map::AbstractLayerRenderer::drawLayerGrouping(AbstractLayer* layer,
                                                        const te::gm::Envelope& bbox,
                                                        int srid)
 {
-  //assert(!geomPropertyName.empty());
+  assert(!geomPropertyName.empty());
 
-  //// Creates a canvas configurer
-  //te::map::CanvasConfigurer cc(canvas);
+  // Creates a canvas configurer
+  te::map::CanvasConfigurer cc(canvas);
 
-  //// The layer grouping
-  //Grouping* grouping = layer->getGrouping();
+  // The layer grouping
+  Grouping* grouping = layer->getGrouping();
 
-  //// The referenced property name
-  //std::string propertyName = grouping->getPropertyName();
-  //assert(!propertyName.empty());
+  // The referenced property name
+  std::string propertyName = grouping->getPropertyName();
+  assert(!propertyName.empty());
 
-  //// The referenced property type
-  //int propertyType = grouping->getPropertyType();
+  // The referenced property type
+  int propertyType = grouping->getPropertyType();
 
-  //// The grouping type
-  //GroupingType type = grouping->getType();
+  // The grouping type
+  GroupingType type = grouping->getType();
 
-  //// The grouping items
-  //const std::vector<GroupingItem*>& items = grouping->getGroupingItems();
-  //
-  //std::size_t nGroupItems = items.size();
+  // The grouping items
+  const std::vector<GroupingItem*>& items = grouping->getGroupingItems();
+  
+  std::size_t nGroupItems = items.size();
 
-  //// Builds the task message; e.g. ("Drawing the grouping of layer Countries.")
-  //std::string message = TE_TR("Drawing the grouping of layer");
-  //message += " " + layer->getTitle() + ".";
+  // Builds the task message; e.g. ("Drawing the grouping of layer Countries.")
+  std::string message = TE_TR("Drawing the grouping of layer");
+  message += " " + layer->getTitle() + ".";
 
-  //// Creates the draw task
-  //te::common::TaskProgress task(message, te::common::TaskProgress::DRAW, nGroupItems);
+  // Creates the draw task
+  te::common::TaskProgress task(message, te::common::TaskProgress::DRAW, nGroupItems);
 
-  //for(std::size_t i = 0; i < nGroupItems; ++i) // for each GroupingItem
-  //{
-  //  // The current group item
-  //  GroupingItem* item = items[i];
-  //  assert(item);
+  for(std::size_t i = 0; i < nGroupItems; ++i) // for each GroupingItem
+  {
+    // The current group item
+    GroupingItem* item = items[i];
+    assert(item);
 
-  //  /* 1) Creating te::da::Where object with the group item restriction expression + extent spatial restriction */
+    /* 1) Creating te::da::Where object with the group item restriction expression + extent spatial restriction */
 
-  //  te::da::PropertyName* groupingPropertyName = new te::da::PropertyName(propertyName);
+    te::da::PropertyName* groupingPropertyName = new te::da::PropertyName(propertyName);
 
-  //  // Grouping item restriction
-  //  te::da::Expression* exp = 0;
+    // Grouping item restriction
+    te::da::Expression* exp = 0;
 
-  //  if(type == UNIQUE_VALUE)
-  //  {
-  //    te::da::LiteralString* value = new te::da::LiteralString(item->getValue());
-  //    exp = new te::da::EqualTo(groupingPropertyName, value);
-  //  }
-  //  else
-  //  {
-  //    te::da::Expression* lowerValue = 0;
-  //    te::da::Expression* upperrValue = 0; 
+    if(type == UNIQUE_VALUE)
+    {
+      te::da::LiteralString* value = new te::da::LiteralString(item->getValue());
+      exp = new te::da::EqualTo(groupingPropertyName, value);
+    }
+    else
+    {
+      te::da::Expression* lowerValue = 0;
+      te::da::Expression* upperrValue = 0; 
 
-  //    switch(propertyType)
-  //    {
-  //      case te::dt::STRING_TYPE:
-  //        lowerValue = new te::da::LiteralString(item->getLowerLimit());
-  //        upperrValue = new te::da::LiteralString(item->getUpperLimit());
-  //      break;
+      switch(propertyType)
+      {
+        case te::dt::STRING_TYPE:
+          lowerValue = new te::da::LiteralString(item->getLowerLimit());
+          upperrValue = new te::da::LiteralString(item->getUpperLimit());
+        break;
 
-  //      default:
-  //        lowerValue = new te::da::LiteralDouble(boost::lexical_cast<double>(item->getLowerLimit()));
-  //        upperrValue = new te::da::LiteralDouble(boost::lexical_cast<double>(item->getUpperLimit()));
-  //    }
+        default:
+          lowerValue = new te::da::LiteralDouble(boost::lexical_cast<double>(item->getLowerLimit()));
+          upperrValue = new te::da::LiteralDouble(boost::lexical_cast<double>(item->getUpperLimit()));
+      }
 
-  //    te::da::GreaterThanOrEqualTo* gte = new te::da::GreaterThanOrEqualTo(groupingPropertyName, lowerValue);
-  //    te::da::LessThanOrEqualTo* lte = new te::da::LessThanOrEqualTo(groupingPropertyName->clone(), upperrValue);
+      te::da::GreaterThanOrEqualTo* gte = new te::da::GreaterThanOrEqualTo(groupingPropertyName, lowerValue);
+      te::da::LessThanOrEqualTo* lte = new te::da::LessThanOrEqualTo(groupingPropertyName->clone(), upperrValue);
 
-  //    exp = new te::da::And(gte, lte);
-  //  }
+      exp = new te::da::And(gte, lte);
+    }
 
-  //  // The extent spatial restriction
-  //  te::da::LiteralEnvelope* lenv = new te::da::LiteralEnvelope(bbox, layer->getSRID());
-  //  te::da::PropertyName* geometryPropertyName = new te::da::PropertyName(geomPropertyName);
-  //  te::da::ST_Intersects* intersects = new te::da::ST_Intersects(geometryPropertyName, lenv);
+    // The extent spatial restriction
+    te::da::LiteralEnvelope* lenv = new te::da::LiteralEnvelope(bbox, layer->getSRID());
+    te::da::PropertyName* geometryPropertyName = new te::da::PropertyName(geomPropertyName);
+    te::da::ST_Intersects* intersects = new te::da::ST_Intersects(geometryPropertyName, lenv);
 
-  //  // Combining the expressions (group item restriction expression + extent spatial restriction)
-  //  te::da::And* restriction = new te::da::And(exp, intersects);
+    // Combining the expressions (group item restriction expression + extent spatial restriction)
+    te::da::And* restriction = new te::da::And(exp, intersects);
 
-  //  /* 2) Calling the layer query method to get the correct restricted data. */
+    /* 2) Calling the layer query method to get the correct restricted data. */
 
-  //  std::auto_ptr<te::da::DataSet> dataset(0);
-  //  try
-  //  {
-  //    dataset = layer->getData(restriction);
-  //  }
-  //  catch(std::exception& /*e*/)
-  //  {
-  //    continue; // TODO: deal the exceptions!
-  //  }
+    std::auto_ptr<te::da::DataSet> dataset(0);
+    try
+    {
+      dataset = layer->getData(restriction);
+    }
+    catch(std::exception& /*e*/)
+    {
+      continue; // TODO: deal the exceptions!
+    }
 
-  //  if(dataset.get() == 0)
-  //    throw Exception((boost::format(TE_TR("Could not retrieve the data set from the layer %1%.")) % layer->getTitle()).str());
+    if(dataset.get() == 0)
+      throw Exception((boost::format(TE_TR("Could not retrieve the data set from the layer %1%.")) % layer->getTitle()).str());
 
-  //  if(dataset->moveNext() == false)
-  //    continue;
+    if(dataset->moveNext() == false)
+      continue;
 
-  //  // Gets the set of symbolizers defined on group item
-  //  const std::vector<te::se::Symbolizer*>& symbolizers = item->getSymbolizers();
-  //  std::size_t nSymbolizers = symbolizers.size();
+    // Gets the set of symbolizers defined on group item
+    const std::vector<te::se::Symbolizer*>& symbolizers = item->getSymbolizers();
+    std::size_t nSymbolizers = symbolizers.size();
 
-  //  // For while, first geometry property. TODO: get which geometry property the symbolizer references
-  //  std::size_t gpos = te::da::GetPropertyPos(dataset.get(), geomPropertyName);
+    // For while, first geometry property. TODO: get which geometry property the symbolizer references
+    std::size_t gpos = te::da::GetPropertyPos(dataset.get(), geomPropertyName);
 
-  //  for(std::size_t j = 0; j < nSymbolizers; ++j) // for each <Symbolizer>
-  //  {
-  //    // The current symbolizer
-  //    te::se::Symbolizer* symb = symbolizers[j];
+    for(std::size_t j = 0; j < nSymbolizers; ++j) // for each <Symbolizer>
+    {
+      // The current symbolizer
+      te::se::Symbolizer* symb = symbolizers[j];
 
-  //    // Let's config the canvas based on the current symbolizer
-  //    cc.config(symb);
+      // Let's config the canvas based on the current symbolizer
+      cc.config(symb);
 
-  //    // Let's draw! for each data set geometry...
-  //     if(j != nSymbolizers - 1)
-  //      drawDatSetGeometries(dataset.get(), gpos, canvas, layer->getSRID(), srid, 0, &task);
-  //    else
-  //      drawDatSetGeometries(dataset.get(), gpos, canvas, layer->getSRID(), srid, layer->getChart(), &task); // Here, produces the chart if exists
+      // Let's draw! for each data set geometry...
+       if(j != nSymbolizers - 1)
+        drawDatSetGeometries(dataset.get(), gpos, canvas, layer->getSRID(), srid, 0, &task);
+      else
+        drawDatSetGeometries(dataset.get(), gpos, canvas, layer->getSRID(), srid, layer->getChart(), &task); // Here, produces the chart if exists
 
-  //    // Prepares to draw the other symbolizer
-  //    dataset->moveFirst();
+      // Prepares to draw the other symbolizer
+      dataset->moveFirst();
 
-  //  } // end for each <Symbolizer>
+    } // end for each <Symbolizer>
 
-  //  if(!task.isActive())
-  //    return;
+    if(!task.isActive())
+      return;
 
-  //  task.pulse();
+    task.pulse();
 
-  //} // end for each GroupItem
+  } // end for each GroupItem
 }
 
 void te::map::AbstractLayerRenderer::drawLayerGroupingMem(AbstractLayer* layer,
@@ -535,12 +498,6 @@ void te::map::AbstractLayerRenderer::drawLayerGroupingMem(AbstractLayer* layer,
                                                           int srid)
 {
   assert(!geomPropertyName.empty());
-
-  if(te::da::HasLinkedTable(layer->getSchema().get()))
-  {
-    drawLayerLinkedGroupingMem(layer, geomPropertyName, canvas, bbox, srid);
-    return;
-  }
 
   // Creates a canvas configurer
   te::map::CanvasConfigurer cc(canvas);
@@ -631,62 +588,51 @@ void te::map::AbstractLayerRenderer::drawLayerGroupingMem(AbstractLayer* layer,
   {
     std::vector<te::se::Symbolizer*> symbolizers;
 
-    if(dataset->isNull(propertyPos) == false)
+    // Finds the current data set item on group map
+    std::string value;
+    
+    if(dataset->isNull(propertyPos))
+      value = te::common::Globals::sm_nanStr;
+    else
+      value = dataset->getAsString(propertyPos, precision);
+
+    if(type == UNIQUE_VALUE)
     {
-      // Finds the current data set item on group map
-
-      if(type == UNIQUE_VALUE)
-      {
-        std::string svalue = dataset->getAsString(propertyPos, precision);
-        std::map<std::string, std::vector<te::se::Symbolizer*> >::const_iterator it = uniqueGroupsMap.find(svalue);
-        if(it == uniqueGroupsMap.end())
-          continue;
-        symbolizers = it->second;
-      }
-      else
-      {
-        double dvalue = te::da::GetValueAsDouble(dataset.get(), propertyPos);
-        std::map<std::pair< double, double>, std::vector<te::se::Symbolizer*> >::const_iterator it;
-        for(it = othersGroupsMap.begin(); it != othersGroupsMap.end(); ++it)
-        {
-          if(dvalue >= it->first.first && dvalue <= it->first.second)
-            break;
-        }
-      
-        if(it == othersGroupsMap.end())
-        {
-          te::se::Style* style = layer->getStyle();
-          if(style)
-          {
-            if(!style->getRules().empty())
-            {
-              te::se::Rule* rule = style->getRule(0);
-
-              symbolizers = rule->getSymbolizers();
-            }
-          }
-        }
-        else
-        {
-          symbolizers = it->second;
-        }
-
-        if(symbolizers.empty())
-          continue;
-      }
+      std::map<std::string, std::vector<te::se::Symbolizer*> >::const_iterator it = uniqueGroupsMap.find(value);
+      if(it == uniqueGroupsMap.end())
+        continue;
+      symbolizers = it->second;
     }
     else
     {
-      te::se::Style* style = layer->getStyle();
-      if(style)
+      double dvalue = atof(value.c_str());
+      std::map<std::pair< double, double>, std::vector<te::se::Symbolizer*> >::const_iterator it;
+      for(it = othersGroupsMap.begin(); it != othersGroupsMap.end(); ++it)
       {
-        if(!style->getRules().empty())
+        if(dvalue >= it->first.first && dvalue <= it->first.second)
+          break;
+      }
+      
+      if(it == othersGroupsMap.end())
+      {
+        te::se::Style* style = layer->getStyle();
+        if(style)
         {
-          te::se::Rule* rule = style->getRule(0);
+          if(!style->getRules().empty())
+          {
+            te::se::Rule* rule = style->getRule(0);
 
-          symbolizers = rule->getSymbolizers();
+            symbolizers = rule->getSymbolizers();
+          }
         }
       }
+      else
+      {
+        symbolizers = it->second;
+      }
+
+      if(symbolizers.empty())
+        continue;
     }
 
     std::auto_ptr<te::gm::Geometry> geom;
@@ -740,483 +686,6 @@ void te::map::AbstractLayerRenderer::drawLayerGroupingMem(AbstractLayer* layer,
   }
 }
 
-void te::map::AbstractLayerRenderer::drawLayerLinkedGroupingMem(AbstractLayer* layer,
-                                                          const std::string& geomPropertyName,
-                                                          Canvas* canvas,
-                                                          const te::gm::Envelope& bbox,
-                                                          int srid)
-{
-  assert(!geomPropertyName.empty());
-
-  m_oid.clear();
-
-  te::map::QueryLayer* qlayer = dynamic_cast<te::map::QueryLayer*>(layer);
-  te::da::Select* select = dynamic_cast<te::da::Select*>(qlayer->getQuery()->clone());
-
-  std::auto_ptr<te::da::DataSetType> schema = layer->getSchema();
-  std::vector<te::dt::Property*> props = schema->getPrimaryKey()->getProperties();
-  size_t pksize = 0;
-  while(++pksize < props.size())
-  {
-    m_oid.push_back(props[pksize-1]->getName());
-    if(props[pksize-1]->getDatasetName() != props[pksize]->getDatasetName())
-      break;
-  }
-
-  te::da::OrderBy* orderBy = new te::da::OrderBy;
-  for(size_t i = 0; i < pksize; ++i)
-    orderBy->push_back(new te::da::OrderByItem(m_oid[i]));
-
-  te::da::Select* selectaux = dynamic_cast<te::da::Select*>(select->clone());
-  selectaux->setOrderBy(orderBy);
-  qlayer->setQuery(selectaux);
-
-  // Creates a canvas configurer
-  te::map::CanvasConfigurer cc(canvas);
-
-  // The layer grouping
-  Grouping* grouping = layer->getGrouping();
-
-  // The referenced property name
-  std::string propertyName = grouping->getPropertyName();
-  assert(!propertyName.empty());
-
-  // The grouping type
-  GroupingType type = grouping->getType();
-
-  // The grouping precision
-  const std::size_t& precision = grouping->getPrecision();
-
-  // The grouping sumarization
-  const std::string gfunction = grouping->getSummary();
-  
-  // The grouping items
-  const std::vector<GroupingItem*>& items = grouping->getGroupingItems();
-
-  std::size_t nGroupItems = items.size();
-
-  // case UNIQUE_VALUE: for each GroupingItem, builds a map [item value] -> [symbolizers]
-  std::map<std::string, std::vector<te::se::Symbolizer*> > uniqueGroupsMap;
-
-  // case (NOT) UNIQUE_VALUE: for each GroupingItem, builds a map [item upper limit] -> [symbolizers]
-  std::map<std::pair< double, double>, std::vector<te::se::Symbolizer*> > othersGroupsMap;
-
-  for(std::size_t i = 0; i < nGroupItems; ++i)
-  {
-    // The current group item
-    GroupingItem* item = items[i];
-    assert(item);
-
-    if(type == UNIQUE_VALUE)
-    {
-      uniqueGroupsMap[item->getValue()] = item->getSymbolizers();
-    }
-    else
-    {
-      double lowerLimit = atof(item->getLowerLimit().c_str());
-      double upperLimit = atof(item->getUpperLimit().c_str());
-      std::pair<double, double> range(lowerLimit, upperLimit);
-
-      othersGroupsMap[range] = item->getSymbolizers();
-    }
-  }
-
-  // Builds the task message; e.g. ("Drawing the grouping of layer Countries.")
-  std::string message = TE_TR("Drawing the grouping of layer");
-  message += " " + layer->getTitle() + ".";
-
-  // Creates the draw task
-  te::common::TaskProgress task(message, te::common::TaskProgress::DRAW);
-
-  std::auto_ptr<te::da::DataSet> dataset(0);
-  try
-  {
-    dataset = layer->getData(geomPropertyName, &bbox, te::gm::INTERSECTS);
-    qlayer->setQuery(select);
-  }
-  catch(std::exception& /*e*/)
-  {
-    return; // TODO: deal the exceptions!
-  }
-
-  if(dataset.get() == 0)
-    throw Exception((boost::format(TE_TR("Could not retrieve the data set from the layer %1%.")) % layer->getTitle()).str());
-
-  if(dataset->moveNext() == false)
-    return;
-
-  // Gets the first geometry property
-  std::size_t gpos = te::da::GetPropertyPos(dataset.get(), geomPropertyName);
-
-  // Gets the property position
-  std::auto_ptr<te::map::LayerSchema> dt(layer->getSchema());
-  std::size_t propertyPos = te::da::GetPropertyPos(dt.get(), propertyName);
-  size_t ptype = dataset->getPropertyDataType(te::da::GetPropertyPos(dataset.get(), propertyName));
- 
-    // Verifies if is necessary convert the data set geometries to the given srid
-  bool needRemap = false;
-  if((layer->getSRID() != TE_UNKNOWN_SRS) && (srid != TE_UNKNOWN_SRS) && (layer->getSRID() != srid))
-    needRemap = true;
-
-  std::vector<std::string> pkdata(pksize), pkdataaux(pksize);
-  std::vector<double> values;
-  double value;
-  std::vector<std::string> svalues;
-  std::string svalue;
-
-  // The layer chart
-  Chart* chart = layer->getChart();
-
-  // The chart sumarization
-  std::string cfunction;
-  std::map<std::string, std::vector<double> > chartValues;
-  std::map<std::string, double> chartValue;
-  bool hasGroupNullValue = false;
-  bool hasGroupNullValueAux = false;
-  bool hasChartNullValue = false;
-  bool hasChartNullValueAux = false;
-  size_t csize = 0;
-  if(chart)
-  {
-    cfunction = chart->getSummary();
-    csize = chart->getProperties().size();
-    std::vector<size_t> propPos;
-    for(std::size_t i = 0; i < csize; ++i)
-    {
-      std::vector<double> v;
-      chartValues[chart->getProperties()[i]] = v;
-      propPos.push_back(te::da::GetPropertyPos(dataset.get(), chart->getProperties()[i]));
-    }
-    chart->setPropertiesPos(propPos);
-  }
-
-  te::gm::Geometry  *geom = 0, *geomaux = 0;
-  do
-  {
-    try
-    {
-      if(geomaux == 0)
-        geomaux = dataset->getGeometry(gpos).release();
-      if(geomaux == 0)
-        continue;
-    }
-    catch(std::exception& /*e*/)
-    {
-      continue;
-    }
-
-    std::vector<te::se::Symbolizer*> symbolizers;
-
-    // Finds the current data set item on group map   
-    size_t i;
-    for(i = 0; i < pksize; ++i)
-      pkdata[i] = dataset->getAsString(m_oid[i]);
-      
-    for(i = 0; i < pksize; ++i)
-    {
-      if(dataset->isAtBegin())
-        pkdataaux[i] = dataset->getAsString(m_oid[i]);
-      else
-      {
-        if(pkdata[i] != pkdataaux[i])
-        {
-          pkdataaux = pkdata;
-          break;
-        }
-      }      
-    }
-    if(i == pksize) // it is the same object
-    {
-      // read value
-      if(hasGroupNullValue == false && dataset->isNull(propertyPos) == false)
-      {
-        if(type == UNIQUE_VALUE)
-        {
-          if(ptype == te::dt::STRING_TYPE)
-            svalues.push_back(dataset->getAsString(propertyPos, precision));
-          else
-            values.push_back(te::da::GetValueAsDouble(dataset.get(), propertyPos));
-        }
-        else
-          values.push_back(te::da::GetValueAsDouble(dataset.get(), propertyPos));
-      }
-      else
-        hasGroupNullValue = true;
-
-      if(hasChartNullValue == false)
-      {
-        for(std::size_t i = 0; i < csize; ++i)
-        {
-          if(dataset->isNull(chart->getProperties()[i]))
-          {
-            hasChartNullValue = true;
-            break;
-          }
-        }
-        if(hasChartNullValue == false)
-        {
-          for(std::size_t i = 0; i < csize; ++i)
-            chartValues[chart->getProperties()[i]].push_back(te::da::GetValueAsDouble(dataset.get(), chart->getPropertiesPos()[i]));
-        }
-      }
-
-      // read other values
-      continue;
-    }
-    else // it is other object
-    {
-      delete geom;
-      geom = geomaux;
-
-      // sumarize value
-      // computing a value according to the required summarization 
-      // get symbolizers
-      if(hasGroupNullValue == false)
-      {
-        if(type == UNIQUE_VALUE)
-        {
-          if(ptype == te::dt::STRING_TYPE)
-          {
-            value = te::da::GetSummarizedValue(values, gfunction);
-            value = te::da::Round(value, precision);
-            svalue = boost::lexical_cast<std::string>(value);
-          }
-          else
-            svalue = te::da::GetSummarizedValue(svalues, gfunction);
-
-          std::map<std::string, std::vector<te::se::Symbolizer*> >::const_iterator it = uniqueGroupsMap.find(svalue);
-          if(it == uniqueGroupsMap.end())
-            continue;
-          symbolizers = it->second;
-        }
-        else
-        {
-          value = te::da::GetSummarizedValue(values, gfunction);
-          value = te::da::Round(value, precision);
-
-          std::map<std::pair<double, double>, std::vector<te::se::Symbolizer*> >::const_iterator it;
-          for(it = othersGroupsMap.begin(); it != othersGroupsMap.end(); ++it)
-          {
-            if(value >= it->first.first && value <= it->first.second)
-              break;
-          }
-      
-          if(it == othersGroupsMap.end())
-          {
-            te::se::Style* style = layer->getStyle();
-            if(style)
-            {
-              if(!style->getRules().empty())
-              {
-                te::se::Rule* rule = style->getRule(0);
-
-                symbolizers = rule->getSymbolizers();
-              }
-            }
-          }
-          else
-            symbolizers = it->second;
-        }
-      }
-      else
-      {
-        te::se::Style* style = layer->getStyle();
-        if(style)
-        {
-          if(!style->getRules().empty())
-          {
-            te::se::Rule* rule = style->getRule(0);
-
-            symbolizers = rule->getSymbolizers();
-          }
-        }
-      }
-
-      if(hasChartNullValue == false)
-      {
-        for(std::size_t i = 0; i < csize; ++i)
-          chartValue[chart->getProperties()[i]] = te::da::GetSummarizedValue(chartValues[chart->getProperties()[i]], cfunction);
-      }
-
-      // store the values of the other object (for next loop).
-      try
-      {
-        geomaux = dataset->getGeometry(gpos).release();
-      }
-      catch(std::exception& /*e*/)
-      {
-        geomaux = 0;
-        continue;
-      }
-
-      for(std::size_t i = 0; i < csize; ++i)
-        chartValues[chart->getProperties()[i]].clear();
-      values.clear();
-      svalues.clear();
-
-      if(dataset->isNull(propertyPos) == false)
-      {
-        if(type == UNIQUE_VALUE)
-        {
-          if(ptype == te::dt::STRING_TYPE)
-            svalues.push_back(dataset->getAsString(propertyPos, precision));
-          else
-            values.push_back(te::da::GetValueAsDouble(dataset.get(), propertyPos));
-        }
-        else
-          values.push_back(te::da::GetValueAsDouble(dataset.get(), propertyPos));
-      }
-      else
-        hasGroupNullValueAux = true;
-
-      for(std::size_t i = 0; i < csize; ++i)
-      {
-        if(dataset->isNull(chart->getProperties()[i]))
-        {
-          hasChartNullValueAux = true;
-          break;
-        }
-      }
-      if(hasChartNullValueAux == false)
-      {
-        for(std::size_t i = 0; i < csize; ++i)
-          chartValues[chart->getProperties()[i]].push_back(te::da::GetValueAsDouble(dataset.get(), chart->getPropertiesPos()[i]));
-      }  
-    }
-
-    // Gets the set of symbolizers defined on group item
-    std::size_t nSymbolizers = symbolizers.size();
-
-    for(std::size_t j = 0; j < nSymbolizers; ++j) // for each <Symbolizer>
-    {
-      // The current symbolizer
-      te::se::Symbolizer* symb = symbolizers[j];
-
-      // Let's config the canvas based on the current symbolizer
-      cc.config(symb);
-
-      // If necessary, geometry remap
-      if(needRemap)
-      {
-        geom->setSRID(layer->getSRID());
-        geom->transform(srid);
-      }
-
-      canvas->draw(geom);
-
-      if(chart && hasChartNullValue == false && j == nSymbolizers - 1)
-        buildChart(chart, chartValue, geom);
-    }
-
-    hasChartNullValue = hasChartNullValueAux;
-    hasGroupNullValue = hasGroupNullValueAux;
-    hasChartNullValueAux = false;
-    hasGroupNullValueAux = false;
-  } while(dataset->moveNext());
-
-  delete geom;
-  geom = geomaux;
-
-  std::vector<te::se::Symbolizer*> symbolizers;
-  if(hasGroupNullValue == false)
-  {
-    if(type == UNIQUE_VALUE)
-    {
-      if(ptype == te::dt::STRING_TYPE)
-      {
-        value = te::da::GetSummarizedValue(values, gfunction);
-        value = te::da::Round(value, precision);
-        svalue = boost::lexical_cast<std::string>(value);
-      }
-      else
-        svalue = te::da::GetSummarizedValue(svalues, gfunction);
-
-      std::map<std::string, std::vector<te::se::Symbolizer*> >::const_iterator it = uniqueGroupsMap.find(svalue);
-      if(it != uniqueGroupsMap.end())
-        symbolizers = it->second;
-    }
-    else
-    {
-      value = te::da::GetSummarizedValue(values, gfunction);
-      value = te::da::Round(value, precision);
-
-      std::map<std::pair<double, double>, std::vector<te::se::Symbolizer*> >::const_iterator it;
-      for(it = othersGroupsMap.begin(); it != othersGroupsMap.end(); ++it)
-      {
-        if(value >= it->first.first && value <= it->first.second)
-          break;
-      }
-      
-      if(it == othersGroupsMap.end())
-      {
-        te::se::Style* style = layer->getStyle();
-        if(style)
-        {
-          if(!style->getRules().empty())
-          {
-            te::se::Rule* rule = style->getRule(0);
-            symbolizers = rule->getSymbolizers();
-          }
-        }
-      }
-      else
-        symbolizers = it->second;
-    }
-  }
-
-  if(hasChartNullValue == false)
-  {
-    for(std::size_t i = 0; i < csize; ++i)
-    {
-      chartValue[chart->getProperties()[i]] = te::da::GetSummarizedValue(chartValues[chart->getProperties()[i]], cfunction);
-    }
-  }
-
-  // Gets the set of symbolizers defined on group item
-  std::size_t nSymbolizers = symbolizers.size();
-
-  if(hasGroupNullValue == false)
-  {
-
-    for(std::size_t j = 0; j < nSymbolizers; ++j) // for each <Symbolizer>
-    {
-      // The current symbolizer
-      te::se::Symbolizer* symb = symbolizers[j];
-
-      // Let's config the canvas based on the current symbolizer
-      cc.config(symb);
-
-      // If necessary, geometry remap
-      if(needRemap)
-      {
-        geom->setSRID(layer->getSRID());
-        geom->transform(srid);
-      }
-
-      canvas->draw(geom);
-
-      if(chart && hasChartNullValue == false && j == nSymbolizers - 1)
-        buildChart(chart, chartValue, geom);
-    }
-  }
-  if(nSymbolizers == 0 && chart && hasChartNullValue == false)
-    buildChart(chart, chartValue, geom);
-
-  delete geom;
-
-  // Let's draw the generated charts
-  for(std::size_t i = 0; i < m_chartCoordinates.size(); ++i)
-  {
-    canvas->drawImage(static_cast<int>(m_chartCoordinates[i].x),
-                      static_cast<int>(m_chartCoordinates[i].y),
-                      m_chartImages[i],
-                      chart->getWidth(),
-                      chart->getHeight());
-
-    te::common::Free(m_chartImages[i], chart->getHeight());
-  }
-}
-
 void te::map::AbstractLayerRenderer::drawDatSetGeometries(te::da::DataSet* dataset, const std::size_t& gpos, Canvas* canvas,
                                                           int fromSRID, int toSRID,
                                                           Chart* chart, te::common::TaskProgress* task)
@@ -1224,149 +693,13 @@ void te::map::AbstractLayerRenderer::drawDatSetGeometries(te::da::DataSet* datas
   assert(dataset);
   assert(canvas);
 
-  std::string s;
-  size_t pksize = m_oid.size();
-  std::vector<std::string> pkdata(pksize), pkdataaux(pksize);
-
   // Verify if is necessary convert the data set geometries to the given srid
   bool needRemap = false;
   if((fromSRID != TE_UNKNOWN_SRS) && (toSRID != TE_UNKNOWN_SRS) && (fromSRID != toSRID))
     needRemap = true;
 
-  // The chart sumarization
-  std::string cfunction;
-  std::map<std::string, std::vector<double> > chartValues;
-  std::map<std::string, double> chartValue;
-  bool hasChartNullValue = false;
-  bool hasChartNullValueAux = false;
-  size_t csize = 0;
-  if(chart)
-  {
-    cfunction = chart->getSummary();
-    csize = chart->getProperties().size();
-    std::vector<size_t> propPos;
-    for(std::size_t i = 0; i < csize; ++i)
-    {
-      std::vector<double> v;
-      chartValues[chart->getProperties()[i]] = v;
-      propPos.push_back(te::da::GetPropertyPos(dataset, chart->getProperties()[i]));
-    }
-    chart->setPropertiesPos(propPos);
-  }
-
-  te::gm::Geometry  *geom = 0, *geomaux = 0;
   do
   {
-    try
-    {
-      if(geomaux == 0)
-        geomaux = dataset->getGeometry(gpos).release();
-      if(geomaux == 0)
-        continue;
-    }
-    catch(std::exception& /*e*/)
-    {
-      continue;
-    }
-
-    if(pksize) // if linked
-    {
-      // it is linked. Remove redundancies.
-      size_t i;
-      for(i = 0; i < pksize; ++i)
-        pkdata[i] = dataset->getAsString(m_oid[i]);
-      
-      for(i = 0; i < pksize; ++i)
-      {
-        if(dataset->isAtBegin())
-          pkdataaux[i] = dataset->getAsString(m_oid[i]);
-        else
-        {
-          if(pkdata[i] != pkdataaux[i])
-          {
-            pkdataaux = pkdata;
-            break;
-          }
-        }      
-      }
-      if(i == pksize) // it is the same object
-      {
-        if(hasChartNullValue == false)
-        {
-          // read value chart value
-          for(std::size_t i = 0; i < csize; ++i)
-          {
-            if(dataset->isNull(chart->getProperties()[i]) == false)
-              chartValues[chart->getProperties()[i]].push_back(te::da::GetValueAsDouble(dataset, chart->getPropertiesPos()[i]));
-            else
-            {
-              hasChartNullValue = true;
-              break;
-            }
-          }
-        }
-        // read other values
-        continue;
-      }
-      else // it is other object
-      {
-        // sumarize chart value according to the required summarization 
-        if(hasChartNullValue == false)
-        {
-          for(std::size_t i = 0; i < csize; ++i)
-            chartValue[chart->getProperties()[i]] = te::da::GetSummarizedValue(chartValues[chart->getProperties()[i]], cfunction);
-        }
-
-        // prepare the next loop
-        for(std::size_t i = 0; i < csize; ++i)
-          chartValues[chart->getProperties()[i]].clear();
-
-        hasChartNullValueAux = false;
-        for(std::size_t i = 0; i < csize; ++i)
-        {
-          if(dataset->isNull(chart->getProperties()[i]))
-          {
-            hasChartNullValueAux = true;
-            break;
-          }
-        }
-        if(hasChartNullValueAux == false)
-        {
-          for(std::size_t i = 0; i < csize; ++i)
-            chartValues[chart->getProperties()[i]].push_back(te::da::GetValueAsDouble(dataset, chart->getPropertiesPos()[i]));
-        }
-      }
-    }
-    else // if not linked
-    {
-      // read chart value
-      for(std::size_t i = 0; i < csize; ++i)
-      {
-        if(dataset->isNull(chart->getProperties()[i]) == false)
-          chartValue[chart->getProperties()[i]] = te::da::GetValueAsDouble(dataset, chart->getPropertiesPos()[i]);
-        else
-        {
-          chartValue.clear();
-          hasChartNullValue = true;
-          break;
-        }
-      }
-    }
-
-    delete geom;
-    geom = geomaux;
-
-    // store the values of the other object (for next loop).
-    try
-    {
-      geomaux = dataset->getGeometry(gpos).release();
-    }
-    catch(std::exception& /*e*/)
-    {
-      geomaux = 0;
-      continue;
-    }
-
     if(task)
     {
       if(!task->isActive())
@@ -1376,6 +709,18 @@ void te::map::AbstractLayerRenderer::drawDatSetGeometries(te::da::DataSet* datas
       task->pulse();
     }
 
+    std::auto_ptr<te::gm::Geometry> geom(0);
+    try
+    {
+      geom = dataset->getGeometry(gpos);
+      if(geom.get() == 0)
+        continue;
+    }
+    catch(std::exception& /*e*/)
+    {
+      continue;
+    }
+
     // If necessary, geometry remap
     if(needRemap)
     {
@@ -1383,38 +728,12 @@ void te::map::AbstractLayerRenderer::drawDatSetGeometries(te::da::DataSet* datas
       geom->transform(toSRID);
     }
 
-    canvas->draw(geom);
+    canvas->draw(geom.get());
 
-    if(chart && hasChartNullValue == false)
-      buildChart(chart, chartValue, geom);
-
-    hasChartNullValue = hasChartNullValueAux;
-    hasChartNullValueAux = false;
+    if(chart)
+      buildChart(chart, dataset, geom.get());
 
   } while(dataset->moveNext()); // next geometry!
-
-  delete geom;
-  geom = geomaux;
-
-  if(needRemap)
-  {
-    geom->setSRID(fromSRID);
-    geom->transform(toSRID);
-  }
-
-  canvas->draw(geom);
-  if(chart && hasChartNullValue == false)
-  {
-    if(chartValues.empty() == false)
-    {
-      for(std::size_t i = 0; i < csize; ++i)
-      {
-        chartValue[chart->getProperties()[i]] = te::da::GetSummarizedValue(chartValues[chart->getProperties()[i]], cfunction);
-      }
-    }
-    buildChart(chart, chartValue, geom);
-  }
-  delete geom;
 
   // Let's draw the generated charts
   for(std::size_t i = 0; i < m_chartCoordinates.size(); ++i)
@@ -1429,7 +748,7 @@ void te::map::AbstractLayerRenderer::drawDatSetGeometries(te::da::DataSet* datas
   }
 }
 
-void te::map::AbstractLayerRenderer::buildChart(const Chart* chart, const std::map<std::string, double>& chartValue, te::gm::Geometry* geom)
+void te::map::AbstractLayerRenderer::buildChart(Chart* chart, te::da::DataSet* dataset, te::gm::Geometry* geom)
 {
   if(!chart->isVisible())
     return;
@@ -1445,75 +764,17 @@ void te::map::AbstractLayerRenderer::buildChart(const Chart* chart, const std::m
       te::gm::Polygon* p = dynamic_cast<te::gm::Polygon*>(geom);
       worldCoord.reset(p->getCentroidCoord());
     }
+    break;
 
     case te::gm::MultiPolygonType:
     {
       te::gm::MultiPolygon* mp = dynamic_cast<te::gm::MultiPolygon*>(geom);
       worldCoord.reset(mp->getCentroidCoord());
     }
-  }
+    break;
 
-  // Case not find, use the center of the MBR
-  if(worldCoord.get() == 0)
-  {
-    const te::gm::Envelope* e = geom->getMBR();
-    worldCoord.reset(new te::gm::Coord2D(e->getCenter().x, e->getCenter().y));
-  }
-
-  // Device coordinates
-  double dx = 0.0; double dy = 0.0;
-  m_transformer.world2Device(worldCoord->x, worldCoord->y, dx, dy);
-
-  double dw = dx + chart->getWidth();
-  double dh = dy + chart->getHeight();
-
-  // Builds the chart envelope
-  te::gm::Envelope chartEnvelope(dx, dy, dw, dh);
-
-  if(chart->getAvoidConflicts())
-  {
-    // Search on rtree
-    std::vector<std::size_t> report;
-    m_rtree.search(chartEnvelope, report);
-
-    if(!report.empty())
-      return;
-
-    // Here, no intersections considering the current chart envelope
-    m_rtree.insert(chartEnvelope, ++m_index);
-  }
-
-  // Stores the chart coordinate
-  m_chartCoordinates.push_back(te::gm::Coord2D(dx, dy));
-
-  // Builds the chart image
-  std::size_t width = 0;
-  te::color::RGBAColor** rgba = ChartRendererManager::getInstance().render(chart, chartValue, width);
-  m_chartImages.push_back(rgba);
-}
-
-void te::map::AbstractLayerRenderer::buildChart(const Chart* chart, te::da::DataSet* dataset, te::gm::Geometry* geom)
-{
-  if(!chart->isVisible())
-    return;
-
-  // World coordinates
-  std::auto_ptr<te::gm::Coord2D> worldCoord;
-
-  // Try finds the geometry centroid
-  switch(geom->getGeomTypeId())
-  {
-    case te::gm::PolygonType:
-    {
-      te::gm::Polygon* p = dynamic_cast<te::gm::Polygon*>(geom);
-      worldCoord.reset(p->getCentroidCoord());
-    }
-
-    case te::gm::MultiPolygonType:
-    {
-      te::gm::MultiPolygon* mp = dynamic_cast<te::gm::MultiPolygon*>(geom);
-      worldCoord.reset(mp->getCentroidCoord());
-    }
+    default:
+      break;
   }
 
   // Case not find, use the center of the MBR

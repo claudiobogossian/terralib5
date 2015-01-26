@@ -83,7 +83,7 @@ namespace te
       m_raster1BlocksInfosPtr( 0 ), m_mutexPtr( 0 ), m_blockProcessedSignalMutexPtr( 0 ),
       m_blockProcessedSignalPtr( 0 ), m_runningThreadsCounterPtr( 0 ),
       m_blendMethod( te::rp::Blender::InvalidBlendMethod ),
-      m_interpMethod2( te::rst::Interpolator::NearestNeighbor ),
+      m_interpMethod2( te::rst::NearestNeighbor ),
       m_noDataValue( 0.0 ), m_forceRaster1NoDataValue( false ),
       m_forceRaster2NoDataValue( false ),  
       m_maxRasterCachedBlocks( 0 ), m_useProgress( false )
@@ -642,8 +642,8 @@ namespace te
       m_r1IntersectionSegmentsPointsSize = 0;
       m_r2IntersectionSegmentsPointsSize = 0;
       m_geomTransformationPtr = 0;
-      m_interpMethod1 = te::rst::Interpolator::NearestNeighbor;
-      m_interpMethod2 = te::rst::Interpolator::NearestNeighbor;
+      m_interpMethod1 = te::rst::NearestNeighbor;
+      m_interpMethod2 = te::rst::NearestNeighbor;
       m_outputNoDataValue = 0;
     }
     
@@ -1459,7 +1459,7 @@ namespace te
         raster2,
         paramsPtr->m_raster2Bands,
         paramsPtr->m_blendMethod,
-        te::rst::Interpolator::NearestNeighbor,
+        te::rst::NearestNeighbor,
         paramsPtr->m_interpMethod2,
         paramsPtr->m_noDataValue,
         paramsPtr->m_forceRaster1NoDataValue,

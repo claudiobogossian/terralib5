@@ -66,7 +66,7 @@ namespace te
       m_outputSRID = 0;
       m_outputResolutionX = 1.0;
       m_outputResolutionY = 1.0;
-      m_interpMethod = te::rst::Interpolator::NearestNeighbor;
+      m_interpMethod = te::rst::NearestNeighbor;
       m_noDataValue = 0;
       m_geomTransfName = "Affine";
       m_geomTransfPtr = 0;

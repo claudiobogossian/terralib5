@@ -146,6 +146,8 @@ void te::qt::widgets::LayerPropertiesInfo::setLayerRasterProperties(te::map::Abs
   QtProperty* nResXProp = te::qt::widgets::AbstractPropertyManager::getInstance().m_doubleManager->addProperty(tr("Resolution X"));
   QtProperty* nResYProp = te::qt::widgets::AbstractPropertyManager::getInstance().m_doubleManager->addProperty(tr("Resolution Y"));
   QtProperty* nAccessProp = te::qt::widgets::AbstractPropertyManager::getInstance().m_stringManager->addProperty(tr("Access Policy"));
+  QtProperty* nMultiResProp = te::qt::widgets::AbstractPropertyManager::getInstance().m_intManager->addProperty(tr("Multi Resolution Levels"));
+
 
   //add properties to parent property
   rasterInfoProp->addSubProperty(nLinesProp);
@@ -154,6 +156,7 @@ void te::qt::widgets::LayerPropertiesInfo::setLayerRasterProperties(te::map::Abs
   rasterInfoProp->addSubProperty(nResXProp);
   rasterInfoProp->addSubProperty(nResYProp);
   rasterInfoProp->addSubProperty(nAccessProp);
+  rasterInfoProp->addSubProperty(nMultiResProp);
 
   //set the property state
   nLinesProp->setEnabled(false);
@@ -162,6 +165,7 @@ void te::qt::widgets::LayerPropertiesInfo::setLayerRasterProperties(te::map::Abs
   nResXProp->setEnabled(false);
   nResYProp->setEnabled(false);
   nAccessProp->setEnabled(false);
+  nMultiResProp->setEnabled(false);
 
   //set properties values
   te::qt::widgets::AbstractPropertyManager::getInstance().m_intManager->setValue(nLinesProp, (int)raster->getNumberOfRows());
@@ -169,6 +173,8 @@ void te::qt::widgets::LayerPropertiesInfo::setLayerRasterProperties(te::map::Abs
   te::qt::widgets::AbstractPropertyManager::getInstance().m_intManager->setValue(nBandsProp, (int)raster->getNumberOfBands());
   te::qt::widgets::AbstractPropertyManager::getInstance().m_doubleManager->setValue(nResXProp, raster->getResolutionX());
   te::qt::widgets::AbstractPropertyManager::getInstance().m_doubleManager->setValue(nResYProp, raster->getResolutionY());
+  te::qt::widgets::AbstractPropertyManager::getInstance().m_intManager->setValue(nMultiResProp, (int)raster->getMultiResLevelsCount());
+  
 
   if(raster->getAccessPolicy() == te::common::NoAccess)
     te::qt::widgets::AbstractPropertyManager::getInstance().m_stringManager->setValue(nAccessProp, tr("No Access"));

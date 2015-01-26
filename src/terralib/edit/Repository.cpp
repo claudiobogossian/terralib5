@@ -216,8 +216,6 @@ te::edit::Feature* te::edit::Repository::getFeature(const te::gm::Envelope& e, i
   te::gm::Coord2D center = e.getCenter();
   te::gm::Point point(center.x, center.y, srid);
 
-  Feature* result = 0;
-
   for(std::size_t i = 0; i < candidates.size(); ++i)
   {
     te::gm::Geometry* g = candidates[i]->getGeometry();

@@ -20,7 +20,7 @@
 /*!
   \file ItemFactory.h
    
-  \brief 
+  \brief Factory for creating families of related or dependent graphic objects (MVC components).
 
   \ingroup layout
 */
@@ -30,17 +30,36 @@
 
 // TerraLib
 #include "../../../../core/pattern/factory/AbstractItemFactory.h"
+#include "../../../../core/Config.h"
 
 namespace te
 {
   namespace layout
   {
-    class ItemFactory : public AbstractItemFactory
+    /*!
+	  \brief Factory for creating families of related or dependent graphic objects (MVC components).
+	  
+	  \ingroup layout
+
+    \sa te::layout::AbstractItemFactory
+	  */
+    class TELAYOUTEXPORT ItemFactory : public AbstractItemFactory
     {
       public:
+
+        /*!
+          \brief Constructor
+        */
         ItemFactory();
+
+        /*!
+          \brief Destructor
+        */
         virtual ~ItemFactory();
 
+        /*!
+          \brief Reimplemented from AbstractItemFactory
+        */
         virtual Observer* make(EnumType* type, ItemParamsCreate params = ItemParamsCreate());
     };
   }

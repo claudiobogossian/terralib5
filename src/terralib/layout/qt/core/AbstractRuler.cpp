@@ -106,7 +106,7 @@ double te::layout::AbstractRuler::getMiddleBlockSize()
 
 void te::layout::AbstractRuler::setMiddleBlockSize( double size )
 {
-  m_middleBlockSize = m_middleBlockSize;
+  m_middleBlockSize = size;
 }
 
 double te::layout::AbstractRuler::getSmallBlockSize()

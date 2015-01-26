@@ -49,9 +49,9 @@
 te::layout::PageSetupOutside::PageSetupOutside( OutsideController* controller, Observable* o ) :
   QDialog(0),
   OutsideObserver(controller, o),
-  m_ui(new Ui::PageSetup),
   m_orientation(te::layout::Portrait),
-  m_paperType(te::layout::A4)
+  m_paperType(te::layout::A4),
+  m_ui(new Ui::PageSetup)
 {
   m_ui->setupUi(this);
 
@@ -74,8 +74,8 @@ void te::layout::PageSetupOutside::init()
 
 void te::layout::PageSetupOutside::updateObserver( ContextItem context )
 {
-  setVisible(context.getShow());
-  if(context.getShow() == true)
+  setVisible(context.isShow());
+  if(context.isShow() == true)
     show();
   else
     hide();

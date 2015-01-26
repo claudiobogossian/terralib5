@@ -20,7 +20,7 @@
 /*!
   \file OutsideFactory.h
    
-  \brief 
+  \brief Factory for creating families of related or dependent widgets (MVC widgets).
 
   \ingroup layout
 */
@@ -30,17 +30,37 @@
 
 // TerraLib
 #include "../../../../core/pattern/factory/AbstractOutsideFactory.h"
+#include "../../../../core/Config.h"
 
 namespace te
 {
   namespace layout
   {
-    class OutsideFactory : public AbstractOutsideFactory
+
+    /*!
+	  \brief Factory for creating families of related or dependent widgets (MVC widgets).
+	  
+	  \ingroup layout
+
+    \sa te::layout::AbstractItemFactory
+	  */
+    class TELAYOUTEXPORT OutsideFactory : public AbstractOutsideFactory
     {
     public:
+
+      /*!
+          \brief Constructor
+       */
 	    OutsideFactory();
+
+      /*!
+          \brief Destructor
+       */
 	    virtual ~OutsideFactory();
 
+      /*!
+          \brief Reimplemented from AbstractItemFactory
+       */
 	    virtual Observer* make(EnumType* type, OutsideParamsCreate params = OutsideParamsCreate());
     };
   }

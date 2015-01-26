@@ -49,6 +49,9 @@
 #include <cmath>
 #include <cfloat>
 
+#include <boost/thread.hpp>
+#include <boost/lexical_cast.hpp>
+
 namespace te
 {
   namespace rp
@@ -79,8 +82,8 @@ namespace te
       m_enableThreadedProcessing = true;
       m_maxSegThreads = 0;
       m_enableBlockProcessing = true;
-      m_enableBlockMerging = true;
       m_maxBlockSize = 0;
+      m_blocksOverlapPercent = 10;
       m_strategyName.clear();
       m_enableProgress = false;
       m_enableRasterCache = true;
@@ -103,8 +106,8 @@ namespace te
       m_enableThreadedProcessing = params.m_enableThreadedProcessing;
       m_maxSegThreads = params.m_maxSegThreads;
       m_enableBlockProcessing = params.m_enableBlockProcessing;
-      m_enableBlockMerging = params.m_enableBlockMerging;
       m_maxBlockSize = params.m_maxBlockSize;
+      m_blocksOverlapPercent = params.m_blocksOverlapPercent;
       m_strategyName = params.m_strategyName;
       m_enableProgress = params.m_enableProgress;
       m_enableRasterCache = params.m_enableRasterCache;
@@ -276,9 +279,6 @@ namespace te
           m_inputParameters.m_inputRasterPtr->getNumberOfColumns() );  
         TERP_DEBUG_TRUE_OR_THROW( stratMemUsageEstimation > 0.0,
           "Invalid strategy memory usage factorMemUsageFactor" );       
-          
-        const unsigned stratBlocksOverlapSize = 
-          strategyPtr->getOptimalBlocksOverlapSize();        
         
         // Guessing memory limits
         
@@ -402,6 +402,8 @@ namespace te
         unsigned int maxNonExpandedBlockHeight = 0;
         unsigned int maxExpandedBlockWidth = 0;
         unsigned int maxExpandedBlockHeight = 0;
+        unsigned int blocksHOverlapSize = 0;
+        unsigned int blocksVOverlapSize = 0;        
         
         if( m_inputParameters.m_enableBlockProcessing 
             &&
@@ -441,48 +443,16 @@ namespace te
 
           // updating maxBlockPixels considering the blocks overlap size
           
-          if( m_inputParameters.m_enableBlockMerging )
-          {
-            // Adjusting the block sizes
-            
-            TERP_TRUE_OR_RETURN_FALSE( calcBestBlockSize( 
-              cachedRasterPtr->getNumberOfRows(),
-              cachedRasterPtr->getNumberOfColumns(), 
-              ( 
-                ( stratBlocksOverlapSize + stratBlocksOverlapSize + 1 ) 
-                *
-                ( stratBlocksOverlapSize + stratBlocksOverlapSize + 1 )
-              ),
-              maxBlockPixels, 
-              stratBlocksOverlapSize,
-              stratBlocksOverlapSize,
-              maxNonExpandedBlockWidth, 
-              maxNonExpandedBlockHeight ), 
-              "Error calculating best block size" );   
-            
-            maxExpandedBlockWidth = maxNonExpandedBlockWidth + 
-              stratBlocksOverlapSize + stratBlocksOverlapSize;
-            maxExpandedBlockHeight = maxNonExpandedBlockHeight +
-              stratBlocksOverlapSize + stratBlocksOverlapSize;
-          }
-          else
-          {
-            // Adjusting the block sizes
-           
-            TERP_TRUE_OR_RETURN_FALSE( calcBestBlockSize( 
-              cachedRasterPtr->getNumberOfRows(),
-              cachedRasterPtr->getNumberOfColumns(), 
-              stratBlocksOverlapSize * stratBlocksOverlapSize,
-              maxBlockPixels, 
-              0,
-              0,
-              maxNonExpandedBlockWidth, 
-              maxNonExpandedBlockHeight ), 
-              "Error calculating best block size" );  
-              
-            maxExpandedBlockWidth = maxNonExpandedBlockWidth;
-            maxExpandedBlockHeight = maxNonExpandedBlockHeight;
-          }
+          TERP_TRUE_OR_RETURN_FALSE( calcBestBlockSize( 
+            200,
+            maxBlockPixels, 
+            blocksHOverlapSize,
+            blocksVOverlapSize,
+            maxNonExpandedBlockWidth, 
+            maxNonExpandedBlockHeight,
+            maxExpandedBlockWidth,
+            maxExpandedBlockHeight ), 
+            "Error calculating best block size" );          
         }
         else
         {
@@ -491,11 +461,6 @@ namespace te
           maxNonExpandedBlockHeight = maxExpandedBlockHeight =
             cachedRasterPtr->getNumberOfRows();
         }
-        
-        const unsigned int blocksHOverlapSize = ( maxExpandedBlockWidth -
-           maxNonExpandedBlockWidth );
-        const unsigned int blocksVOverlapSize = ( maxExpandedBlockHeight -
-           maxNonExpandedBlockHeight );         
 
         // Defining number of blocks
           
@@ -513,7 +478,7 @@ namespace te
         std::vector< std::vector< unsigned int> > imageVerticalProfiles;
         
         if( m_inputParameters.m_enableBlockProcessing &&
-          m_inputParameters.m_enableBlockMerging )
+          ( m_inputParameters.m_blocksOverlapPercent > 0 ) )
         {
 //          std::cout << std::endl << "Starting CutOff profiles generation" << std::endl;
           
@@ -626,7 +591,7 @@ namespace te
               // transfering cutoff profiles
               
               if( m_inputParameters.m_enableBlockProcessing &&
-                m_inputParameters.m_enableBlockMerging )
+                ( m_inputParameters.m_blocksOverlapPercent > 0 ) )
               {
                 TERP_TRUE_OR_RETURN_FALSE( updateBlockCutOffProfiles( 
                   imageHorizontalProfiles, imageVerticalProfiles, 
@@ -865,7 +830,10 @@ namespace te
       TERP_TRUE_OR_RETURN_FALSE( ( inputParamsPtr->m_inputRasterNoDataValues.empty() ?
         true : ( inputParamsPtr->m_inputRasterNoDataValues.size() ==
         inputParamsPtr->m_inputRasterBands.size() ) ),
-        "Invalid no-data values" );      
+        "Invalid no-data values" );  
+      
+      TERP_TRUE_OR_RETURN_FALSE( inputParamsPtr->m_blocksOverlapPercent <= 25,
+        "Invalid blocks overlapped area percentage" );      
           
       m_inputParameters = *inputParamsPtr;
       m_instanceInitialized = true;
@@ -879,23 +847,25 @@ namespace te
     }    
     
     bool Segmenter::calcBestBlockSize( 
-      const unsigned int totalImageLines, 
-      const unsigned int totalImageCols, 
       const unsigned int minExapandedBlockPixels,
       const unsigned int maxExapandedBlockPixels, 
-      const unsigned int blocksHOverlapSize,
-      const unsigned int blocksVOverlapSize, 
+      unsigned int& blocksHOverlapSize,
+      unsigned int& blocksVOverlapSize, 
       unsigned int& nonExpandedBlockWidth,
-      unsigned int& nonExpandedBlockHeight ) const
+      unsigned int& nonExpandedBlockHeight,
+      unsigned int& expandedBlockWidth,
+      unsigned int& expandedBlockHeight ) const
     {
-      if( minExapandedBlockPixels > maxExapandedBlockPixels ) return false;
+      TERP_TRUE_OR_THROW( minExapandedBlockPixels <= maxExapandedBlockPixels,
+        "Invalid min and mas block pixels number" );
         
-      const double maxScaleFactor = 
-        ((double)(totalImageLines * totalImageCols)) 
-        / 
+      const double totalImageLines = (double)m_inputParameters.m_inputRasterPtr->getNumberOfRows();
+      const double totalImageCols = (double)m_inputParameters.m_inputRasterPtr->getNumberOfColumns();
+      
+      const double maxScaleFactor = (totalImageLines * totalImageCols) / 
         ((double)minExapandedBlockPixels);
         
-      unsigned int rescaledAndExtendedBlockPixelsNmb = 0;
+      unsigned int rescaledAndExpandedBlockPixelsNmb = 0;
         
       for( double scaleFactor = 1.0 ; scaleFactor <= maxScaleFactor ;
         scaleFactor += 1.0 )
@@ -903,10 +873,19 @@ namespace te
         nonExpandedBlockHeight = (unsigned int)std::ceil( ((double)totalImageLines) / scaleFactor );
         nonExpandedBlockWidth = (unsigned int)std::ceil( ((double)totalImageCols) / scaleFactor );
         
-        rescaledAndExtendedBlockPixelsNmb = ( nonExpandedBlockHeight + blocksVOverlapSize +
-          blocksVOverlapSize ) * ( nonExpandedBlockWidth + blocksHOverlapSize + blocksHOverlapSize );
+        blocksHOverlapSize = (unsigned int)( ((double)m_inputParameters.m_blocksOverlapPercent) *
+          ((double)nonExpandedBlockWidth) / 100.0 );
+        blocksVOverlapSize = (unsigned int)( ((double)m_inputParameters.m_blocksOverlapPercent) *
+          ((double)nonExpandedBlockHeight) / 100.0 );          
+        
+        expandedBlockHeight = nonExpandedBlockHeight +  blocksVOverlapSize +
+          blocksVOverlapSize;
+        expandedBlockWidth = nonExpandedBlockWidth + blocksHOverlapSize +
+          blocksHOverlapSize;
           
-        if( rescaledAndExtendedBlockPixelsNmb <= maxExapandedBlockPixels )
+        rescaledAndExpandedBlockPixelsNmb = expandedBlockHeight * expandedBlockWidth;
+          
+        if( rescaledAndExpandedBlockPixelsNmb <= maxExapandedBlockPixels )
         {
           return true;
         }
@@ -1009,6 +988,11 @@ namespace te
             
             if( segsBlk.m_status == SegmenterSegmentsBlock::BlockNotProcessed )
             {
+//               TERP_LOGMSG( "Thread:" + boost::lexical_cast< std::string >( 
+//                 boost::this_thread::get_id() ) + " - Processing block:[" +
+//                 boost::lexical_cast< std::string >( sBMLine ) + "," +
+//                 boost::lexical_cast< std::string >( sBMCol ) + "]" );
+              
               segsBlk.m_status = SegmenterSegmentsBlock::BlockUnderSegmentation;
 /*              
               std::cout << std::endl<< "Start block processing [" + 
@@ -1078,6 +1062,10 @@ namespace te
           }
         }
       }
+      
+      // Destroying the strategy object
+      
+      strategyPtr.reset();
       
       // ending tasks
       

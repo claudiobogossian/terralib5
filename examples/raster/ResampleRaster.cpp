@@ -35,15 +35,15 @@ void ResampleRaster()
     bicname["URI"] = ""TERRALIB_DATA_DIR"/rasters/resampled_bic_scale_minus3.tif";
 
 // applies the interpolation
-    te::rst::Raster* nnraster = inraster->resample(te::rst::Interpolator::NearestNeighbor, 2, nnname);
+    te::rst::Raster* nnraster = inraster->resample(te::rst::NearestNeighbor, 2, nnname);
     delete nnraster;
     std::cout << "   Raster " << nnname["URI"] << " created!" << std::endl;
 
-    te::rst::Raster* biliraster = inraster->resample(te::rst::Interpolator::Bilinear, -2, biliname);
+    te::rst::Raster* biliraster = inraster->resample(te::rst::Bilinear, -2, biliname);
     delete biliraster;
     std::cout << "   Raster " << biliname["URI"] << " created!" << std::endl;
 
-    te::rst::Raster* bicraster = inraster->resample(te::rst::Interpolator::Bicubic, -3, bicname);
+    te::rst::Raster* bicraster = inraster->resample(te::rst::Bicubic, -3, bicname);
     delete bicraster;
     std::cout << "   Raster " << bicname["URI"] << " created!" << std::endl;
 

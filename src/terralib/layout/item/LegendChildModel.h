@@ -50,13 +50,13 @@ namespace te
         
         virtual void updateProperties(te::layout::Properties* properties);
 
-        virtual void visitDependent(ContextItem context);
-
         virtual te::se::Rule* getRule();
 
         virtual void setRule(te::se::Rule* rule);
         
        protected:
+
+        virtual void visitDependent(ContextItem context);
 
         virtual void drawLegend(te::map::Canvas* canvas, Utils* utils);
 

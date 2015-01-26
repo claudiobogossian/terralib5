@@ -20,7 +20,9 @@
 /*!
   \file ArrowItem.h
    
-  \brief 
+   \brief Class that represents a graphic Arrow. 
+      Its coordinate system is the same of scene (millimeters). 
+      This class is also son of ItemObserver and ObjectItem, so it can become observer of a model (Observable). 
 
   \ingroup layout
 */
@@ -37,13 +39,35 @@ namespace te
   {
     class Observable;
 
+    /*!
+    \brief Class that represents a graphic Arrow. 
+        Its coordinate system is the same of scene (millimeters). 
+        He is also the son of ItemObserver and ObjectItem, so it can become observer of a model (Observable). 
+	  
+	    \ingroup layout
+
+	    \sa te::layout::ObjectItem
+	  */
     class ArrowItem : public ObjectItem
     {
       public:
 
+        /*!
+          \brief Constructor
+
+          \param controller "Controller" part of MVC component
+          \param o "Model" part of MVC component
+        */ 
         ArrowItem( ItemController* controller, Observable* o );
+        
+        /*!
+          \brief Destructor
+         */
         virtual ~ArrowItem();
         
+        /*!
+          \brief Reimplemented from ObjectItem
+         */
         virtual void updateObserver(ContextItem context);
     };
   }

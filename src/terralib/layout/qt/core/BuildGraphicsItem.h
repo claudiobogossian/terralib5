@@ -21,7 +21,8 @@
   \file BuildGraphicsItem.h
    
   \brief Class responsible for creating or building graphics objects. All objects are children of QGraphicsItem and ItemObserver.
-  An object of a type is created from a coordinated. Also An object of a type can be built from the properties saved in a template.
+    An object of a type is created from a coordinated. Also an object of a type can be built from the properties saved in a template.
+    Only place where the model and the controller is instantiated and the MVC component is created.
 
   \ingroup layout
 */
@@ -31,6 +32,7 @@
 
 //TerraLib
 #include "../../core/AbstractBuildGraphicsItem.h"
+#include "../../core/Config.h"
 
 class QGraphicsItem;
 
@@ -39,14 +41,15 @@ namespace te
   namespace layout
   {
 	/*!
-    \brief Class responsible for creating or building graphics objects. All objects are children of QGraphicsItem and ItemObserver.
-    An object of a type is created from a coordinated. Also An object of a type can be built from the properties saved in a template.
+  \brief Class responsible for creating or building graphics objects. All objects are children of QGraphicsItem and ItemObserver.
+    An object of a type is created from a coordinated. Also an object of a type can be built from the properties saved in a template.
+    Only place where the model and the controller is instantiated and the MVC component is created.
 	  
 	  \ingroup layout
 
 	  \sa te::layout::AbstractBuildGraphicsItem
 	*/
-    class BuildGraphicsItem : public AbstractBuildGraphicsItem
+    class TELAYOUTEXPORT BuildGraphicsItem : public AbstractBuildGraphicsItem
     {
       public:
 

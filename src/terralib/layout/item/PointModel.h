@@ -20,7 +20,9 @@
 /*!
   \file PointModel.h
    
-  \brief 
+   \brief Class that represents a "Model" part of Point MVC component. 
+      Its coordinate system is the same of scene (millimeters). 
+      This is also son of ItemModelObservable, so it can become observable.
 
   \ingroup layout
 */
@@ -36,13 +38,32 @@ namespace te
 {
   namespace layout
   {
+    /*!
+      \brief Class that represents a "Model" part of Point MVC component. 
+          Its coordinate system is the same of scene (millimeters). 
+          He is also the son of ItemModelObservable, so it can become observable.
+      	  
+	    \ingroup layout
+
+      \sa te::layout::ItemModelObservable
+	  */
     class PointModel : public ItemModelObservable
     {
       public:
 
+        /*!
+          \brief Constructor
+        */
         PointModel();
+
+        /*!
+          \brief Destructor
+        */ 
         virtual ~PointModel();
 
+        /*!
+          \brief Reimplemented from ItemModelObservable
+         */
         virtual void draw( ContextItem context );
     };
   }

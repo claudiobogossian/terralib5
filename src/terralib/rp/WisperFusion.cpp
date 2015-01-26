@@ -72,7 +72,7 @@ namespace te
       m_hiResRasterBandsSRFs.clear();
       m_hiResRasterWaveletLevels = 0;
       m_enableProgress = false;
-      m_interpMethod = te::rst::Interpolator::NearestNeighbor;
+      m_interpMethod = te::rst::NearestNeighbor;
       m_waveletFilterType = te::rp::TriangleWAFilter;
       m_userWaveletFilterPtr = 0;
       m_enableMultiThread = true;

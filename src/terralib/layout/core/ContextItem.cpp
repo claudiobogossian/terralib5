@@ -31,11 +31,10 @@
 te::layout::ContextItem::ContextItem() :
   m_zoomFactor(1.),
   m_pixmap(0),
-  m_show(false),
-  m_wait(false),
   m_resizeCanvas(true),
-  m_canvas(0),
+  m_show(false),
   m_utils(0),
+  m_canvas(0),
   m_dpiX(96),
   m_dpiY(96)
 {
@@ -46,11 +45,10 @@ te::layout::ContextItem::ContextItem( ParamsCreate params, double zoomFactor ) :
   m_params(params),
   m_zoomFactor(zoomFactor),
   m_pixmap(0),
-  m_show(false),
-  m_wait(false),
   m_resizeCanvas(true),
-  m_canvas(0),
+  m_show(false),
   m_utils(0),
+  m_canvas(0),
   m_dpiX(96),
   m_dpiY(96)
 {
@@ -90,26 +88,6 @@ void te::layout::ContextItem::setPixmap( te::color::RGBAColor** pixmap )
 te::color::RGBAColor** te::layout::ContextItem::getPixmap()
 {
   return m_pixmap;
-}
-
-void te::layout::ContextItem::setShow( bool show )
-{
-  m_show = show;
-}
-
-bool te::layout::ContextItem::getShow()
-{
-  return m_show;
-}
-
-void te::layout::ContextItem::setWait( bool wait )
-{
-  m_wait = wait;
-}
-
-bool te::layout::ContextItem::getWait()
-{
-  return m_wait;
 }
 
 bool te::layout::ContextItem::isResizeCanvas()
@@ -160,4 +138,14 @@ double te::layout::ContextItem::getDpiY()
 void te::layout::ContextItem::setDpiY( double dpi )
 {
   m_dpiY = dpi;
+}
+
+void te::layout::ContextItem::setShow( bool show )
+{
+  m_show = show;
+}
+
+bool te::layout::ContextItem::isShow()
+{
+  return m_show;
 }

@@ -20,7 +20,9 @@
 /*!
   \file ImageModel.h
    
-  \brief 
+   \brief Class that represents a "Model" part of Image MVC component. 
+      Its coordinate system is the same of scene (millimeters). 
+      This is also son of ItemModelObservable, so it can become observable.
 
   \ingroup layout
 */
@@ -40,34 +42,79 @@ namespace te
 {
   namespace layout
   {
+    /*!
+      \brief Class that represents a "Model" part of Image MVC component. 
+          Its coordinate system is the same of scene (millimeters). 
+          This is also son of ItemModelObservable, so it can become observable.
+      	  
+	    \ingroup layout
+
+      \sa te::layout::ItemModelObservable
+	  */
     class ImageModel : public ItemModelObservable
     {
       public:
 
+        /*!
+          \brief Constructor
+        */
         ImageModel();
+
+        /*!
+          \brief Destructor
+        */ 
         virtual ~ImageModel();
 
+        /*!
+          \brief Reimplemented from ItemModelObservable
+         */
         virtual te::layout::Properties* getProperties() const;
 
+        /*!
+          \brief Reimplemented from ItemModelObservable
+         */
         virtual void updateProperties(te::layout::Properties* properties);   
 
+        /*!
+          \brief Reimplemented from ItemModelObservable
+         */
         virtual void draw( ContextItem context );
 
+        /*!
+          \brief Change file name
+
+          \param fileName file name
+         */
         virtual void setFileName(std::string fileName);
 
+        /*!
+          \brief Change file name
+
+          \param fileName file name
+         */
         virtual std::string getFileName();
         
+        /*!
+          \brief Returns the file extension.
+
+          \param file extension
+         */
         virtual std::string getFileExtension();
 
+        /*!
+          \brief Returns the type of the image.
+
+          \return type of the image
+         */
         virtual te::map::ImageType getFileType();
 
       protected:
         
-        std::string m_fileName;
-        std::string m_fileExtension;
-        te::map::ImageType m_imgType;
+        std::string m_fileName; //!< full path where the file is
+        std::string m_fileExtension; //!< file extension
+        te::map::ImageType m_imgType; //!< image type
     };
   }
 }
 
-#endif //__TERRALIB_LAYOUT_INTERNAL_IMAGE_MODEL_H
+#endif 

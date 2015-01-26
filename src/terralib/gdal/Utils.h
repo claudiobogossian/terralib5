@@ -30,6 +30,7 @@
 #include "../raster/BandProperty.h"
 #include "../raster/Enums.h"
 #include "../raster/Raster.h"
+#include "../common/Translator.h"
 #include "Config.h"
 #include "Band.h"
 #include "Raster.h"
@@ -182,12 +183,35 @@ namespace te
         default : return te::rst::UndefPalInt;
       }
     }
+    
+    /*!
+     \brief It translates a TerraLib interpolation method into a GDAL ressampling method name string.
+     */
+    inline std::string GetGDALRessamplingMethod(te::rst::InterpolationMethod interpolationMethod )
+    {
+      switch(interpolationMethod)
+      {
+        case te::rst::NearestNeighbor : return std::string( "NEAREST" );
+        case te::rst::Bilinear : return std::string( "AVERAGE" );
+        case te::rst::Bicubic : return std::string( "CUBIC" );
+        default : throw Exception(TE_TR("Invalid interpolation method"));
+      }
+    }    
+    
     /*!
      \brief Gets the grid definition from a GDAL dataset.
      \param gds A pointer to a GDAL dataset.
      \return A pointer to the grid definition from a GDAL dataset. Caller takes its ownership.
      */
     TEGDALEXPORT te::rst::Grid* GetGrid(GDALDataset* gds);
+    
+    /*!
+     \brief Gets the grid definition from a GDAL dataset.
+     \param gds A pointer to a GDAL dataset.
+     \param multiResLevel Multi resolution level (use -1 to use the original resolution).
+     \return A pointer to the grid definition from a GDAL dataset. Caller takes its ownership.
+     */
+    TEGDALEXPORT te::rst::Grid* GetGrid(GDALDataset* gds, const int multiResLevel );    
     
     /*!
      \brief Gets the list of bands definition from a GDAL dataset.
@@ -218,6 +242,16 @@ namespace te
      \note The caller of this method must take the ownership of the returned properties.
      */
     void GetBands(te::gdal::Raster* rst, std::vector<te::gdal::Band*>& bands);
+    
+    /*!
+     \brief Gets the list of bands from a GDAL dataset.
+     
+     \param rst    A pointer to the raster.
+     \param multiResLevel Multi-resolution pyramid level (value -1 -> overviews disabled).
+     \param bands  A reference to a vector to be filled with the bands extracted from a dataset.
+     \note The caller of this method must take the ownership of the returned properties.
+     */
+    bool GetBands(te::gdal::Raster* rst, int multiResLevel, std::vector<te::gdal::Band*>& bands);    
     
     /*!
      \brief Gets the complete description from a GDAL dataset.

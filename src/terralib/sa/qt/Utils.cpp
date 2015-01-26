@@ -367,7 +367,6 @@ void te::sa::CreateSampleGeneratorStratifiedGrouping(te::map::AbstractLayerPtr l
   std::string stratifiedAttr = TE_SA_SPG_ATTR_CLASS_NAME;
   int attrType = te::dt::STRING_TYPE;
   int prec = 0;
-  int nullValues = 0;
 
   //create grouping items
   std::vector<te::map::GroupingItem*> legend;

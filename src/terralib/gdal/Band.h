@@ -65,7 +65,16 @@ namespace te
     {
     public:
       
-      Band(Raster* rst, std::size_t idx);
+      /*!
+       \brief Constructor
+       
+       \param rstPtr A pointer to the parent raster.
+       \param idx This band index.
+       \param gdalRasterBandPtr The GDAL band related to this terralib band.
+       
+       \warning The caller is responsible for providing correct values for the range [c x r].
+       */      
+      Band( Raster* rstPtr, std::size_t idx, GDALRasterBand* gdalRasterBandPtr );
       
       Band(const Band& rhs);
       

@@ -68,8 +68,8 @@ te::qt::widgets::TimeSliderWidget::TimeSliderWidget(te::qt::widgets::MapDisplay*
   : QWidget((QWidget*)md->parent(), f),
     m_display(md),
     m_erasePerfectly(false),
-    m_maxSliderValue(1000000000),
     m_ui(new Ui::TimeSliderWidgetForm),
+    m_maxSliderValue(1000000000),
     m_finished(false)
 {
   te::qt::widgets::ScopedCursor scopedCursor(Qt::WaitCursor);
@@ -137,7 +137,6 @@ te::qt::widgets::TimeSliderWidget::TimeSliderWidget(te::qt::widgets::MapDisplay*
 
   m_spd->m_ui->m_forwardRadioButton->setCheckable(true);
 
-  QWidget* w = (QWidget*)m_display->parent();
   m_animationView = new AnimationView(m_display);
   m_animationView->setWindowFlags(Qt::Widget);
   QBrush brush(Qt::transparent);
@@ -718,7 +717,6 @@ void te::qt::widgets::TimeSliderWidget::addTrajectory(te::st::TrajectoryDataSetL
     while(dset->moveNext())
     {
       std::auto_ptr<te::dt::DateTime> time = dset->getTime();
-      te::dt::DateTimeType type = time->getDateTimeType();
       te::dt::TimeInstant* tinstant = static_cast<te::dt::TimeInstant*>(time.get());
       if(tiraRepetido == *tinstant)
         continue;
@@ -1720,7 +1718,6 @@ void te::qt::widgets::TimeSliderWidget::onStopToolButtonnClicked()
   if(m_animationScene->items().isEmpty())
     return;
 
-  int state = m_parallelAnimation->state();
   m_parallelAnimation->stop();
   m_ui->m_dateTimeEdit->setEnabled(false);
   m_ui->m_playToolButton->setIcon(QIcon::fromTheme("media-playback-start"));

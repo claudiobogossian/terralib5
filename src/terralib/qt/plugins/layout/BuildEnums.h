@@ -18,33 +18,47 @@
  */
 
 /*!
-  \file VerticalRulerItem.h
+  \file BuildEnums.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_VERTICALRULER_ITEM_H 
-#define __TERRALIB_LAYOUT_INTERNAL_VERTICALRULER_ITEM_H
-
-// TerraLib
-#include "ObjectItem.h"
+#ifndef __TE_QT_PLUGINS_LAYOUT_INTERNAL_BUILD_ENUM_H
+#define __TE_QT_PLUGINS_LAYOUT_INTERNAL_BUILD_ENUM_H
 
 namespace te
 {
   namespace layout
   {
-    class VerticalRulerItem : public ObjectItem
+    class EnumDataType;
+    class EnumObjectType;
+    class EnumGridStyleType;
+    class EnumLineStyleType;
+    class EnumModeType;
+    class EnumTemplateType;
+
+    class BuildEnums
     {
       public:
 
-        VerticalRulerItem(ItemController* controller = 0, Observable* o = 0);
-        virtual ~VerticalRulerItem();
+        BuildEnums(); 
 
-        virtual void updateObserver(ContextItem context);
+        virtual ~BuildEnums();
+        
+        virtual void build();
 
-        virtual double getZoomRuler();
+      protected:
+
+    protected:
+
+      EnumDataType* m_dataType;
+      EnumObjectType* m_objType;
+      EnumGridStyleType* m_gridStyleType;
+      EnumLineStyleType* m_lineStyleType;
+      EnumModeType* m_modeType;
+      EnumTemplateType* m_templateType;
     };
   }
 }

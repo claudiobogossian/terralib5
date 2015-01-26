@@ -50,11 +50,11 @@
 #include <map>
 
 // GDAL
-#include <gdal_priv.h>
 #include <ogr_spatialref.h>
 
 // Boost
 #include <boost/lexical_cast.hpp>
+#include <boost/scoped_array.hpp>
 
 te::gdal::Raster::Raster()
   : te::rst::Raster(0),
@@ -135,6 +135,29 @@ te::gdal::Raster::Raster(const Raster& rhs)
 
     GetBands(this, m_bands);
   }
+}
+
+te::gdal::Raster::Raster( const unsigned int multiResolutionLevel, 
+  const std::string& uRI, const te::common::AccessPolicy& policy )
+  : te::rst::Raster( 0, policy ),
+    m_myURI( uRI ),
+    m_deleter( 0 )
+{
+  GDALAllRegister();
+  
+  m_dsUseCounterPtr.reset( new DataSetUseCounter( GetParentDataSetName( m_myURI ),  
+    ( IsSubDataSet( m_myURI ) || ( policy & te::common::WAccess ) ) ? 
+    DataSetsManager::SingleAccessType : 
+    DataSetsManager::MultipleAccessType ) );
+  
+  m_gdataset = te::gdal::GetRasterHandle(m_myURI, m_policy);
+
+  if(m_gdataset == 0)
+    throw Exception(TE_TR("Data file can not be accessed.")); 
+  
+  m_grid = GetGrid(m_gdataset, multiResolutionLevel);
+  
+  GetBands(this, multiResolutionLevel, m_bands );
 }
 
 te::gdal::Raster::~Raster()
@@ -472,5 +495,157 @@ void te::gdal::Raster::create(te::rst::Grid* g,
     }
 
     GetBands(this, m_bands);
+  }
+}
+
+bool te::gdal::Raster::createMultiResolution( const unsigned int levels, 
+  const te::rst::InterpolationMethod interpMethod )
+{
+  if( m_gdataset == 0 )
+  {
+    return false;
+  }
+  else
+  {
+    const DataSetsManager::AccessType oldAccessType = m_dsUseCounterPtr->getAccessType();
+    
+    if( m_dsUseCounterPtr->changeAccessType( te::gdal::DataSetsManager::SingleAccessType ) )
+    {
+     boost::scoped_array< int > overviewsIndexes( new int[ levels ] );
+      for( unsigned int overViewIdx = 0 ; overViewIdx < levels ; ++overViewIdx )
+      {
+        overviewsIndexes[ overViewIdx ] = overViewIdx + 1;
+      }
+      
+     // Clean old overviews
+     
+     m_gdataset->FlushCache();
+     
+     CPLErr returnValue = m_gdataset->BuildOverviews( 
+       GetGDALRessamplingMethod( interpMethod ).c_str(),
+       (int)0,
+       0,
+       0,
+       NULL, 
+       NULL,
+       NULL );      
+     
+     m_gdataset->FlushCache();
+     
+     returnValue = m_gdataset->BuildOverviews( 
+       GetGDALRessamplingMethod( interpMethod ).c_str(),
+       (int)levels,
+       overviewsIndexes.get(),
+       0,
+       NULL, 
+       NULL,
+       NULL );
+     
+     m_gdataset->FlushCache();
+     
+     m_dsUseCounterPtr->changeAccessType( oldAccessType );
+     
+     if( returnValue == CE_Failure )
+     {
+       return false;
+     }
+     else
+     {
+       return true;
+     }
+    }
+    else
+    {
+      return false;
+    }
+  }
+}
+
+bool te::gdal::Raster::removeMultiResolution()
+{
+  if( m_gdataset == 0 )
+  {
+    return true;
+  }
+  else
+  {
+    if( m_gdataset->GetRasterCount() > 0 )
+    {
+      if( m_gdataset->GetRasterBand( 1 )->GetOverviewCount() > 0 )
+      {
+         CPLErr returnValue = m_gdataset->BuildOverviews( 
+           GetGDALRessamplingMethod( te::rst::NearestNeighbor ).c_str(),
+           (int)0,
+           0,
+           0,
+           NULL, 
+           NULL,
+           NULL );      
+         
+         m_gdataset->FlushCache();
+         
+         if( returnValue == CE_Failure )
+         {
+           return false;
+         }
+         else
+         {
+           return true;
+         }         
+      }
+      else
+      {
+        return true;
+      }
+    }
+    else
+    {
+      return true;
+    }
+  }
+}
+
+unsigned int te::gdal::Raster::getMultiResLevelsCount() const
+{
+  if( m_gdataset == 0 )
+  {
+    return 0;
+  }
+  else
+  {
+    if( m_gdataset->GetRasterCount() > 0 )
+    {
+      return (unsigned int)m_gdataset->GetRasterBand( 1 )->GetOverviewCount();
+    }
+    else
+    {
+      return 0;
+    }
+  }
+}
+
+te::rst::Raster* te::gdal::Raster::getMultiResLevel( const unsigned int level ) const
+{
+  if( m_gdataset == 0 )
+  {
+    return 0;
+  }
+  else
+  {
+    if( m_gdataset->GetRasterCount() > 0 )
+    {
+      if( level <= ((unsigned int)m_gdataset->GetRasterBand( 1 )->GetOverviewCount()) )
+      {
+        return new Raster( level, m_myURI, m_policy );
+      }
+      else
+      {
+        return 0;
+      }
+    }
+    else
+    {
+      return 0;
+    }
   }
 }

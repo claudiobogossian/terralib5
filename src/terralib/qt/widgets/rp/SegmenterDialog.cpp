@@ -109,8 +109,8 @@ void te::qt::widgets::SegmenterDialog::on_okPushButton_clicked()
       algoInputParams.m_maxSegThreads = m_uiPtr->m_maximumThreadsNumberLineEdit->text().toUInt();
       algoInputParams.m_enableBlockProcessing = 
         m_uiPtr->m_enableBlockProcessingcheckBox->isChecked();
-      algoInputParams.m_enableBlockMerging = 
-        m_uiPtr->m_enableBlockMergingCheckBox->isChecked();
+//      algoInputParams.m_enableBlockMerging = 
+//        m_uiPtr->m_enableBlockMergingCheckBox->isChecked();
       algoInputParams.m_maxBlockSize = m_uiPtr->m_maximumBlockSizeLineEdit->text().toUInt();
       
       

@@ -43,14 +43,14 @@
 #include <QAction>
 
 te::qt::plugins::layout::OutsideArea::OutsideArea( te::layout::View* view, QWidget* dockParent, QMenu* mnuLayout) :
-  m_view(view),
   m_dockParent(dockParent),
-  m_parentMenu(mnuLayout),
-  m_mainMenu(0),
-  m_dockInspector(0),
   m_dockProperties(0),
+  m_dockInspector(0),
   m_dockToolbar(0),
   m_dockEditTemplate(0),
+  m_mainMenu(0),
+  m_parentMenu(mnuLayout),
+  m_view(view),
   m_optionNew("mnu_main_new"),
   m_optionUpdate("mnu_main_update"),
   m_optionImport("mnu_main_import"),

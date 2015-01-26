@@ -20,8 +20,8 @@
 /*!
   \file AbstractBuildGraphicsItem.h
    
-  \brief 
-
+  \brief Abstract class for build graphics MVC components. 
+    
   \ingroup layout
 */
 
@@ -30,6 +30,7 @@
 
 // TerraLib
 #include "../../geometry/Coord2D.h"
+#include "Config.h"
 
 // STL
 #include <string>
@@ -46,28 +47,28 @@ namespace te
 	/*!
       \class AbstractBuildGraphicsItem
 
-      \brief This is the abstract build graphics item for build graphics.
+      \brief Abstract class for build graphics MVC components. 
 
       \ingroup layout
      */
 
-    class AbstractBuildGraphicsItem
+    class TELAYOUTEXPORT AbstractBuildGraphicsItem
     {
       public:
 	  
-	  /*!
+	      /*!
           \brief Constructor
         */       
         AbstractBuildGraphicsItem();
 		
-		/*!
+		    /*!
           \brief Destructor
         */
         virtual ~AbstractBuildGraphicsItem();
 
       protected:
         
-		/*!
+		    /*!
           \brief Search for property of a graphic object that represent the x,y coordinate.
 
           \param props properties
@@ -76,7 +77,7 @@ namespace te
         */
         virtual te::gm::Coord2D findCoordinate(te::layout::Properties* props);
 
-		/*!
+		    /*!
           \brief Search for property of a graphic object that represent Z Value.
 
           \param props properties
@@ -85,17 +86,17 @@ namespace te
         */
         virtual int findZValue(te::layout::Properties* props);
 
-		/*!
+		    /*!
           \brief Creates the name of the new graphic object. Adds the number that corresponds to how many objects of this type have already been created.
 
           \param name name of the class type of the graphic object
-		  \param type type of the object
+		      \param type type of the object
 
           \return name
         */
         virtual std::string nameItem(std::string name, te::layout::EnumType* type) = 0;
 
-		/*!
+		    /*!
           \brief Clear all configuration for create or build a graphic object. 
         */
         virtual void clear();

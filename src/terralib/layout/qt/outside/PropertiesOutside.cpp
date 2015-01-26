@@ -135,8 +135,8 @@ void te::layout::PropertiesOutside::createLayout()
 
 void te::layout::PropertiesOutside::updateObserver( ContextItem context )
 {
-	setVisible(context.getShow());
-	if(context.getShow() == true)
+	setVisible(context.isShow());
+	if(context.isShow() == true)
 		show();
 	else
 		hide();
@@ -329,7 +329,6 @@ void te::layout::PropertiesOutside::contains( std::vector<Properties*>::iterator
 std::vector<te::layout::Properties*> 
   te::layout::PropertiesOutside::getAllProperties( QList<QGraphicsItem*> graphicsItems, bool& window )
 {
-  Properties* props = 0;
   std::vector<Properties*> propsVec;
   bool result = true;
 
@@ -429,7 +428,7 @@ void te::layout::PropertiesOutside::changeMapVisitable( Property property )
   if(!model)
     return;
 
-  te::layout::changeMapVisitable(m_graphicsItems, model);
+  te::layout::VisitorUtils::getInstance().changeMapVisitable(m_graphicsItems, model);
 }
 
 te::layout::MapModel* te::layout::PropertiesOutside::getMapModel( std::string nameMap )

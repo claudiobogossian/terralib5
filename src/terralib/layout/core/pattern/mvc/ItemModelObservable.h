@@ -20,7 +20,7 @@
 /*!
   \file ItemModelObservable.h
    
-  \brief 
+  \brief Abstract class to represent an observable. "Model" part of MVC component. All classes representing the model of a component must inherit from this class.
 
   \ingroup layout
 */
@@ -30,6 +30,7 @@
 
 // TerraLib
 #include "Observable.h"
+#include "../../Config.h"
 
 // STL
 #include <set>
@@ -41,93 +42,226 @@ namespace te
     class Observer;
     class SharedProperties;
 
-    class ItemModelObservable : public Observable
+    /*!
+      \brief Abstract class to represent an observable. "Model" part of MVC component. All classes representing the model of a component must inherit from this class.
+	  
+	    \ingroup layout
+
+      \sa te::layout::Observable
+	  */
+    class TELAYOUTEXPORT ItemModelObservable : public Observable
     {
       public:
         
+        /*!
+          \brief Constructor
+        */ 
         ItemModelObservable();
 
+        /*!
+          \brief Destructor
+        */ 
         virtual ~ItemModelObservable();
 
+        /*!
+          \brief Reimplemented from Observable
+         */
         virtual bool addObserver(Observer* o);
 
+        /*!
+          \brief Reimplemented from Observable
+         */
         virtual bool removeObserver(Observer* o);
 
+        /*!
+          \brief Reimplemented from Observable
+         */
         virtual Properties* getProperties() const;
 
+        /*!
+          \brief Reimplemented from Observable
+         */
         virtual EnumType* getType();
 
+        /*!
+          \brief Reimplemented from Observable
+         */
         virtual void setType(EnumType* type);
 
+        /*!
+          \brief Reimplemented from Observable
+         */
         virtual te::gm::Envelope getBox();
 
+        /*!
+          \brief Change the bounding rectangle.
+
+          \param bounding rectangle
+         */
         virtual void setBox(te::gm::Envelope box);
 
+        /*!
+          \brief Change the background color of the MVC component.
+
+          \param color background color
+         */
         virtual void setBackgroundColor(te::color::RGBAColor color);
 
+        /*!
+          \brief Returns the background color of the MVC component.
+
+          \return background color
+         */
         virtual te::color::RGBAColor getBackgroundColor();
 
+        /*!
+          \brief Change the background color of the MVC component.
+
+          \param color border color
+         */
         virtual void setBorderColor(te::color::RGBAColor color);
 
+        /*!
+          \brief Returns the border color of the MVC component.
+
+          \return border color
+         */
         virtual te::color::RGBAColor getBorderColor();
 
+        /*!
+          \brief Change the name of the MVC component.
+
+          \param name name of the MVC component.
+         */
         virtual void setName(std::string name);
 
+        /*!
+          \brief Reimplemented from Observable
+         */
         virtual std::string getName();
 
+        /*!
+          \brief Reimplemented from Observable
+         */
         virtual int getId();
 
+        /*!
+          \brief Reimplemented from Observable
+         */
         virtual void setId(int id);
 
+        /*!
+          \brief Change coordinate llx,lly of the MVC component.
+
+          \param x llx
+          \param y lly
+         */
         virtual void setPosition(const double& x, const double& y);
 
+        /*!
+          \brief Drawing method of the MVC component.
+
+          \param context maintaining the drawing context of a MVC component
+         */
         virtual void draw( ContextItem context ) = 0;
 
+        /*!
+          \brief Checks if the coordinate is contained within the bounding rectangle.
+
+          \param coord coordinated to be verified
+          \return true if contains, false otherwise
+         */
         virtual bool contains(const te::gm::Coord2D &coord) const;
 
+        /*!
+          \brief Reimplemented from Observable
+         */
         virtual void updateProperties(te::layout::Properties* properties);
 
+        /*!
+          \brief Reimplemented from Observable
+         */
         virtual int getZValue();
 
+        /*!
+          \brief Reimplemented from Observable
+         */
         virtual void setZValue(int zValue);
 
+        /*!
+          \brief Returns whether the border should be drawn or not.
+
+          \return true if should be drawn, false otherwise
+         */
         virtual bool isBorder();
 
+        /*!
+          \brief Change whether the border should be drawn or not.
+
+          \param true if should be drawn, false otherwise
+         */
         virtual void setBorder(bool value);
 
-        /* Resize Box */
+        /*!
+          \brief Resize the bounding rectangle of the MVC component.
+
+          \param true if should be drawn, false otherwise
+         */
         virtual void resize(double w, double h);
 
+        /*!
+          \brief Reimplemented from Observable
+         */
         virtual void setResizable(bool resize);
 
-        /* Systematic scale is for UTM projection */
+        /*!
+          \brief Reimplemented from Observable
+         */
         virtual bool isResizable();
 
+        /*!
+          \brief Change the value of rotation of the MVC component.
+
+          \param value of rotation
+         */
         virtual void setAngle(double angle);
 
+        /*!
+          \brief Returns the value of rotation.
+
+          \return value of rotation
+         */
         virtual double getAngle();
                 
       protected:
 
+        /*!
+          \brief Reimplemented from Observable
+         */
         virtual void notifyAll(ContextItem context);
 
+        /*!
+          \brief Draws the background of the MVC component.
+
+          \param context maintaining the drawing context of a MVC component
+         */
         virtual void drawBackground(ContextItem context);
 
       protected:
-        std::set<Observer*>	      m_observers;
-        int							          m_id;
-        te::gm::Envelope					m_box;
-        te::gm::Coord2D			      m_centerCoordinate;
-        te::color::RGBAColor			m_backgroundColor;
-        te::color::RGBAColor			m_borderColor;
-        Properties*               m_properties;
-        EnumType*  m_type;
-        int                       m_zValue;
-        SharedProperties*         m_sharedProps;
-        bool                      m_border;
-        std::string               m_name;
-        bool                      m_resizable;
-        double                    m_angle;
+        std::set<Observer*>	      m_observers; //!< set of observers of this object
+        int							          m_id; //!< hashcode
+        te::gm::Envelope					m_box; //!< bounding rectangle 
+        te::gm::Coord2D			      m_centerCoordinate; //!< center coordinate of the bounding rectangle
+        te::color::RGBAColor			m_backgroundColor; //!< background color
+        te::color::RGBAColor			m_borderColor; //!< border color
+        Properties*               m_properties; //!< properties
+        EnumType*                 m_type; //!< type of the MVC component
+        int                       m_zValue; //!< The Z value decides the stacking order of drawing
+        SharedProperties*         m_sharedProps; //!< Names of common properties among all MVC components
+        bool                      m_border; //!< true if should be drawn border, false otherwise
+        std::string               m_name; //!< name of the MVC component
+        bool                      m_resizable; //!< true if resizable, false otherwise
+        double                    m_angle; //!< value of rotation
     };
   }
 }

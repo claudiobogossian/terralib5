@@ -274,8 +274,6 @@ te::da::ObjectIdSet* te::da::SpatialQueryProcessor::getOIDSet(DataSourceTransact
   // The property names that compose the oid set
   const std::vector<std::string>& pnames = oids->getPropertyNames();
 
-  std::size_t size = dataset->size();
-
   while(dataset->moveNext())
   {
     std::auto_ptr<te::gm::Geometry> currentGeom(0);

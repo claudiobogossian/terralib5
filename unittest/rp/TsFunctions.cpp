@@ -424,7 +424,7 @@ void TsFunctions::ComposeBandsSameSRID()
   std::auto_ptr< te::rst::Raster > outputRasterPtr;
   
   CPPUNIT_ASSERT( te::rp::ComposeBands( feeder, inputRasterBands,
-    te::rst::Interpolator::NearestNeighbor, outputRasterInfo,
+    te::rst::NearestNeighbor, outputRasterInfo,
     "GDAL", outputRasterPtr ) );
 }
 
@@ -460,7 +460,7 @@ void TsFunctions::ComposeBandsDifSRID()
   std::auto_ptr< te::rst::Raster > outputRasterPtr;
   
   CPPUNIT_ASSERT( te::rp::ComposeBands( feeder, inputRasterBands,
-    te::rst::Interpolator::NearestNeighbor, outputRasterInfo,
+    te::rst::NearestNeighbor, outputRasterInfo,
     "GDAL", outputRasterPtr ) );  
 }
 

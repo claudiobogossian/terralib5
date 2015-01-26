@@ -591,8 +591,6 @@ te::se::ColorMap* getLayerColorMap(te::map::AbstractLayerPtr layer)
 
 te::rst::Raster* getLayerRaster(te::map::AbstractLayerPtr layer)
 {
-  te::rst::Raster* raster = 0;
-
   if(layer->getType() == "DATASETLAYER")
   {
     te::map::DataSetLayer* l = dynamic_cast<te::map::DataSetLayer*>(layer.get());

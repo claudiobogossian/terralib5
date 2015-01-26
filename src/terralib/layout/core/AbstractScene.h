@@ -20,7 +20,7 @@
 /*!
   \file AbstractScene.h
    
-  \brief This is the abstract scene for Scene.
+  \brief Abstract scene for Scene, a QGraphicsScene class, part of Graphics View Framework.
 
   \ingroup layout
 */
@@ -41,7 +41,7 @@ namespace te
 	/*!
       \class AbstractScene
 
-      \brief This is the abstract scene for scene.
+      \brief Abstract scene for Scene, a QGraphicsScene class, part of Graphics View Framework.
 
       \ingroup layout
      */

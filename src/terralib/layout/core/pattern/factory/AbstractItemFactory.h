@@ -20,7 +20,7 @@
 /*!
   \file AbstractItemFactory.h
    
-  \brief 
+  \brief Abstract Factory provide an interface for creating families of related or dependent graphic objects (MVC components) without specifying their concrete classes.
 
   \ingroup layout
 */
@@ -38,10 +38,26 @@ namespace te
   {
     class Observer;
 
+    /*!
+	  \brief Abstract Factory provide an interface for creating families of related or dependent graphic objects (MVC components) without specifying their concrete classes.
+	  
+	  \ingroup layout
+	  */
     class AbstractItemFactory 
     {
       public:
+
+        /*!
+          \brief Constructor
+        */
         virtual ~AbstractItemFactory(void) {}
+
+        /*!
+          \brief Method that builds and returns a new object (MVC component) of the type defined as parameter.
+
+          \param type type of the new object
+          \param params parameters to creation new object. Ex.: "Model" and "Controller" of the new object (MVC component).
+        */
         virtual Observer* make(EnumType* type, ItemParamsCreate params = ItemParamsCreate()) = 0;
       };
   }

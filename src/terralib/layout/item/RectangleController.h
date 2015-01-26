@@ -20,7 +20,9 @@
 /*!
   \file RectangleController.h
    
-  \brief 
+   \brief Class that represents a "Controller" part of Rectangle MVC component. 
+      Its coordinate system is the same of scene (millimeters).
+      This is also son of ItemController, so it can become a controller.
 
   \ingroup layout
 */
@@ -35,19 +37,50 @@ namespace te
 {
   namespace layout
   {
+
+    /*!
+      \brief Class that represents a "Controller" part of Rectangle MVC component. 
+          Its coordinate system is the same of scene (millimeters). 
+          He is also the son of ItemController, so it can become a controller.
+      	  
+	    \ingroup layout
+
+      \sa te::layout::ItemController
+	  */
     class RectangleController : public ItemController
     {
       public:
 
+        /*!
+          \brief Constructor
+
+          \param o "Model" part of MVC component
+        */
         RectangleController( Observable* o );
+
+        /*!
+          \brief Destructor
+        */ 
         virtual ~RectangleController();
 
+        /*!
+          \brief Reimplemented from ItemController
+         */
         virtual void setPosition(const double& x, const double& y);
 
       protected:
 
+        /*!
+          \brief Constructor.
+
+          \param o "Model" part of MVC component
+          \param type type of the MVC component
+        */
         RectangleController( Observable* o, EnumType* type );
 
+        /*!
+          \brief Reimplemented from ItemController
+         */
         virtual void create();
     };
   }

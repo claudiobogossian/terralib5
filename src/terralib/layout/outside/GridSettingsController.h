@@ -44,6 +44,7 @@ namespace te
     public:
 
 	    GridSettingsController( Observable* o );
+
 	    virtual ~GridSettingsController();
 
 	    virtual void setPosition(const double& x, const double& y);

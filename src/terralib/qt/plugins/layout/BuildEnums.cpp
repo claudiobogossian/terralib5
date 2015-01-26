@@ -27,13 +27,13 @@
 
 // TerraLib
 #include "BuildEnums.h"
-#include "EnumDataType.h"
-#include "EnumObjectType.h"
-#include "EnumGridStyleType.h"
-#include "EnumLineStyleType.h"
-#include "EnumModeType.h"
-#include "EnumTemplateType.h"
-#include "Enums.h"
+#include "../../../layout/core/enum/EnumDataType.h"
+#include "../../../layout/core/enum/EnumObjectType.h"
+#include "../../../layout/core/enum/EnumGridStyleType.h"
+#include "../../../layout/core/enum/EnumLineStyleType.h"
+#include "../../../layout/core/enum/EnumModeType.h"
+#include "../../../layout/core/enum/EnumTemplateType.h"
+#include "../../../layout/core/enum/Enums.h"
 
 te::layout::BuildEnums::BuildEnums() :
   m_dataType(0),

@@ -20,7 +20,7 @@
 /*!
   \file View.h
    
-  \brief Class representing the view. This scene is child of QGraphicsView, part of Graphics View Framework. 
+  \brief Class representing the view. This view is child of QGraphicsView, part of Graphics View Framework. 
   The View object is a widget where the items in the scene are drawn. 
   It is responsible for presentation and interaction between the screen events and the scene. 
   Manages interactive functions and intercepts all mouse or keyboard events. 
@@ -71,7 +71,7 @@ namespace te
     class VerticalRuler;
 
 	/*!
-    \brief Class representing the view. This scene is child of QGraphicsView, part of Graphics View Framework. 
+    \brief Class representing the view. This view is child of QGraphicsView, part of Graphics View Framework. 
     The View object is a widget where the items in the scene are drawn. 
     It is responsible for presentation and interaction between the screen events and the scene. 
     Manages interactive functions and intercepts all mouse or keyboard events. 

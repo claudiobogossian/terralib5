@@ -20,7 +20,7 @@
 /*!
   \file PrintScene.h
    
-  \brief 
+  \brief Class responsible for printing the entire content or part of the scene. As the scene is upside down, it is necessary to invert the y of the painter before printing.
 
   \ingroup layout
 */
@@ -46,6 +46,11 @@ namespace te
   {
     class PaperConfig;
 
+    /*!
+	  \brief Class responsible for printing the entire content or part of the scene. As the scene is upside down, it is necessary to invert the y of the painter before printing.
+	  
+	  \ingroup layout
+	  */
     class TELAYOUTEXPORT PrintScene : public QObject
     {
       Q_OBJECT //for slots/signals

@@ -20,7 +20,7 @@
 /*!
   \file MenuItem.h
    
-  \brief 
+  \brief Class responsible for creating the menu, right mouse button, and dynamically add menu options.
 
   \ingroup layout
 */
@@ -52,6 +52,11 @@ namespace te
     class EnumType;
     class TextGridSettingsOutside;
 
+    /*!
+	  \brief Class responsible for creating the menu, right mouse button, and dynamically add menu options.
+	  
+	  \ingroup layout
+	  */
     class TELAYOUTEXPORT MenuItem : public QObject
     {
 	    Q_OBJECT //for slots/signals

@@ -20,7 +20,7 @@
 /*!
   \file AbstractTemplateFactory.h
    
-  \brief 
+  \brief Abstract Factory provide an interface for creating families of related or dependent templates without specifying their concrete classes.
 
   \ingroup layout
 */
@@ -39,10 +39,26 @@ namespace te
     class AbstractTemplate;
     class EnumType;
 
+    /*!
+	  \brief Abstract Factory provide an interface for creating families of related or dependent templates without specifying their concrete classes.
+	  
+	  \ingroup layout
+	  */
     class AbstractTemplateFactory 
     {
       public:
+
+        /*!
+          \brief Constructor
+       */
         virtual ~AbstractTemplateFactory(void) {}
+
+        /*!
+          \brief Method that builds and returns a new template of the type defined as parameter.
+
+          \param type type of the new object
+          \param params 
+       */
         virtual AbstractTemplate* make(EnumType* type, TemplateParamsCreate params = TemplateParamsCreate()) = 0;
       };
   }

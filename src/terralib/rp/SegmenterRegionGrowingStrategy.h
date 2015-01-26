@@ -58,6 +58,11 @@ namespace te
         class TERPEXPORT Parameters : public SegmenterStrategyParameters
         {
           public:
+
+            /**
+            * \name Global parameters
+            */
+            /**@{*/              
             
             /*! \enum SegmentFeaturesType Segment features types. */
             enum SegmentFeaturesType
@@ -73,13 +78,26 @@ namespace te
             
             SegmentFeaturesType m_segmentFeatures; //!< What segment features will be used on the segmentation process (default:InvalidFeaturesType).
             
+            unsigned int m_segmentsSimIncreaseSteps; //!< The maximum number of steps to increment the similarity threshold value for the cases where no segment merge occurred - zero will disable segment similarity threshold increments - defaul: 2.
+            
+            bool m_enableLocalMutualBestFitting; //!< If enabled, a merge only occurs between two segments if the minimum dissimilarity criteria is best fulfilled mutually (default: false).
+            
+            bool m_enableSameIterationMerges; //!< If enabled, a merged segment could be merged with another within the same iteration (default:false).            
+            
+            //@} 
+            
+            /**
+            * \name Baatz specific parameters
+            */
+            /**@{*/                       
+            
             std::vector< double > m_bandsWeights; //!< The weight given to each band, when applicable (note: the bands weights sum must always be 1) or an empty vector indicating that all bands have the same weight.
             
             double m_colorWeight; //!< The weight given to the color component, deafult:0.9, valid range: [0,1].
             
             double m_compactnessWeight; //!< The weight given to the compactness component, deafult:0.5, valid range: [0,1].
             
-            unsigned int m_segmentsSimIncreaseSteps; //!< The maximum number of steps to increment the similarity threshold value for the cases where no segment merge occurred - zero will disable segment similarity threshold increments - defaul: 2.
+            //@}
             
             Parameters();
             
@@ -170,8 +188,9 @@ namespace te
               
             /*!
               \brief Update the internal state.
+              \param actSegsListHeadPtr A pointer the the active segments list head.
             */    
-            virtual void update() = 0;
+            virtual void update( SegmenterRegionGrowingSegment* const actSegsListHeadPtr ) = 0;
 
             /*!
               \brief Return the required segments features vector size (numer of elements).
@@ -215,7 +234,7 @@ namespace te
               SegmenterRegionGrowingSegment const * const mergePreviewSegPtr ) const;
               
             //overload
-            void update() {};  
+            void update( SegmenterRegionGrowingSegment* const ) {};  
             
             //overload
             inline unsigned int getSegmentFeaturesSize() const { return m_featuresNumber; };
@@ -249,8 +268,7 @@ namespace te
             */
             BaatzMerger( const double& colorWeight, const double& compactnessWeight,
               const std::vector< double >& bandsWeights,
-              const SegmentsIdsMatrixT& segmentsIds,
-              Matrix< SegmenterRegionGrowingSegment >& segmentsMatrix );
+              const SegmentsIdsMatrixT& segmentsIds );
             
             ~BaatzMerger();
             
@@ -267,7 +285,7 @@ namespace te
               SegmenterRegionGrowingSegment const * const mergePreviewSegPtr ) const;
               
             //overload
-            void update();
+            void update( SegmenterRegionGrowingSegment* const actSegsListHeadPtr );
             
             //overload
             inline unsigned int getSegmentFeaturesSize() const { return 3 + ( 3 * m_bandsNumber ); };            
@@ -275,8 +293,6 @@ namespace te
           protected :
 
             const SegmentsIdsMatrixT& m_segmentsIds; //!< A reference to an external valid structure where each all segments IDs are stored.
-            
-            Matrix< SegmenterRegionGrowingSegment >& m_segmentsMatrix; //!< A reference to an external valid segments matrix..
             
             unsigned int m_bandsNumber; //!< The number of features (bands).
             
@@ -322,11 +338,7 @@ namespace te
             mutable SegmenterRegionGrowingSegment::FeatureType m_update_stdDevMin;
             mutable SegmenterRegionGrowingSegment::FeatureType m_update_stdDevMax;              
             mutable SegmenterRegionGrowingSegment::FeatureType* m_update_featuresPtr;
-            mutable unsigned int m_update_nRows;
-            mutable unsigned int m_update_nCols;      
-            mutable SegmenterRegionGrowingSegment* m_update_segsRowPtr;     
-            mutable unsigned int m_update_col;
-            mutable unsigned int m_update_row;
+            mutable SegmenterRegionGrowingSegment* m_update_currentActSegPtr;
             mutable unsigned int m_update_band;
             mutable SegmenterRegionGrowingSegment::FeatureType const* m_update_stdDevPtr;
         };          
@@ -356,6 +368,7 @@ namespace te
           \param inputRasterNoDataValues A vector of values to be used as input raster no-data values.
           \param inputRasterBandMinValues The minimum value present on each band.
           \param inputRasterBandMinValues The maximum value present on each band.          
+          \param actSegsListHeadPtr A pointer the the active segments list head.
           \return true if OK, false on errors.
         */        
         bool initializeSegments( SegmenterIdsManager& segmenterIdsManager,
@@ -364,7 +377,8 @@ namespace te
           const std::vector< unsigned int >& inputRasterBands,
           const std::vector< double >& inputRasterNoDataValues,
           const std::vector< double >& inputRasterBandMinValues,
-          const std::vector< double >& inputRasterBandMaxValues );
+          const std::vector< double >& inputRasterBandMaxValues,
+          SegmenterRegionGrowingSegment** actSegsListHeadPtr );
           
         /*!
           \brief Merge closest segments.
@@ -373,6 +387,7 @@ namespace te
           \param segmenterIdsManager A segments ids manager to acquire unique segments ids.
           \param merger The merger instance to use.
           \param enablelocalMutualBestFitting If enabled, a merge only occurs between two segments if the minimum dissimilarity criteria is best fulfilled mutually.
+          \param enableSameIterationMerges If enabled, a merged segment could be merged with another under the same iteration.
           \param auxSeg1Ptr A pointer to a valid auxiliar segment that will be used by this method.
           \param auxSeg2Ptr A pointer to a valid auxiliar segment that will be used by this method.
           \param auxSeg3Ptr A pointer to a valid auxiliar segment that will be used by this method.
@@ -380,6 +395,7 @@ namespace te
           \param maxFoundDissimilarity The maximum dissimilarity value found.
           \param totalMergesNumber The total number of merges.
           \param mergeIterationCounter A reference to a iteration number counter (this variable will be only incremented, never zeroed. It never must be reset. ).
+          \param actSegsListHeadPtr A pointer the the active segments list head.
         */           
         void mergeSegments( 
           const SegmenterRegionGrowingSegment::FeatureType disimilarityThreshold,
@@ -387,13 +403,15 @@ namespace te
           SegmenterIdsManager& segmenterIdsManager,
           Merger& merger,
           const bool enablelocalMutualBestFitting,
+          const bool enableSameIterationMerges,
           SegmenterRegionGrowingSegment* auxSeg1Ptr,
           SegmenterRegionGrowingSegment* auxSeg2Ptr,
           SegmenterRegionGrowingSegment* auxSeg3Ptr,
           SegmenterRegionGrowingSegment::FeatureType& minFoundDissimilarity,
           SegmenterRegionGrowingSegment::FeatureType& maxFoundDissimilarity,
           unsigned int& totalMergesNumber,
-          SegmenterRegionGrowingSegment::IterationCounterType& globalMergeIterationsCounter );
+          SegmenterRegionGrowingSegment::IterationCounterType& globalMergeIterationsCounter,
+          SegmenterRegionGrowingSegment** const actSegsListHeadPtrPtr );
           
         /*!
           \brief Export the segments IDs to a tif file.
@@ -424,6 +442,13 @@ namespace te
           const SegmenterSegmentsBlock::SegmentIdDataType& id2,
           unsigned int& edgeLength1,
           unsigned int& edgeLength2 );
+        
+        /*!
+          \brief Returns the number of active segments.
+          \param actSegsListHeadPtr A pointer the the active segments list head.
+          \return Returns the number of active segments.
+        */           
+        unsigned int getActiveSegmentsNumber( SegmenterRegionGrowingSegment* const actSegsListHeadPtr ) const;        
     };
     
     /*!

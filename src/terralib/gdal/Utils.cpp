@@ -25,7 +25,6 @@
 
 // TerraLib
 #include "../common/StringUtils.h"
-#include "../common/Translator.h"
 #include "../common/UnitOfMeasure.h"
 #include "../common/UnitsOfMeasureManager.h"
 #include "../dataaccess/dataset/DataSetType.h"
@@ -103,9 +102,20 @@ std::string te::gdal::GetSubDataSetName(const std::string& name, const std::stri
 
 te::rst::Grid* te::gdal::GetGrid(GDALDataset* gds)
 {
-  if (!gds)
-    return 0;
+  return GetGrid( gds, -1 );
+}
 
+te::rst::Grid* te::gdal::GetGrid(GDALDataset* gds, const int multiResLevel)
+{
+  if (!gds) return 0;
+  if( multiResLevel != -1 )
+  {
+    if( gds->GetRasterCount() <= 0 ) return 0;
+    if( multiResLevel >= gds->GetRasterBand( 1 )->GetOverviewCount() ) return 0;
+  }
+  
+  // Defining SRID
+  
   int srid = TE_UNKNOWN_SRS;
   
   // The calling of GetProjectionRef isn't thread safe, even for distinct datasets
@@ -125,14 +135,31 @@ te::rst::Grid* te::gdal::GetGrid(GDALDataset* gds)
     if (srsAuth)
       srid = atoi(srsAuth);
   }
+  
+  // Defining the number of rows / lines
+  
+  unsigned int NRows = 0;
+  unsigned int nCols = 0;
+  
+  if( multiResLevel == -1 )
+  {
+    nCols = (unsigned int)gds->GetRasterXSize();
+    NRows = (unsigned int)gds->GetRasterYSize();
+  }
+  else
+  {
+    nCols = (unsigned int)gds->GetRasterBand( 1 )->GetOverview( multiResLevel )->GetXSize();
+    NRows = (unsigned int)gds->GetRasterBand( 1 )->GetOverview( multiResLevel )->GetYSize();
+  }
+  
+  // Defining bounding box
 
   double gtp[6];
-  
   te::rst::Grid* grid = 0;
   
   if( gds->GetGeoTransform(gtp) == CE_Failure )
   {
-    grid = new te::rst::Grid(gds->GetRasterXSize(), gds->GetRasterYSize(), 1.0, 1.0, (te::gm::Envelope*)0, srid);    
+    grid = new te::rst::Grid(nCols, NRows, 1.0, 1.0, (te::gm::Envelope*)0, srid);    
   }
   else
   {
@@ -142,10 +169,18 @@ te::rst::Grid* te::gdal::GetGrid(GDALDataset* gds)
     gridAffineParams[ 2 ] = gtp[ 0 ];
     gridAffineParams[ 3 ] = gtp[ 4 ];
     gridAffineParams[ 4 ] = gtp[ 5 ];
-    gridAffineParams[ 5 ] = gtp[ 3 ];
+    gridAffineParams[ 5 ] = gtp[ 3 ];     
     
-    grid = new te::rst::Grid(gridAffineParams, gds->GetRasterXSize(),
-      gds->GetRasterYSize(), srid);    
+    if( multiResLevel == -1 )
+    {
+      grid = new te::rst::Grid(gridAffineParams, nCols, NRows, srid);
+    }
+    else
+    {
+      te::rst::Grid tempGrid(gridAffineParams, (unsigned int)gds->GetRasterXSize(),
+        (unsigned int)gds->GetRasterYSize(), srid);
+      grid = new te::rst::Grid( nCols, NRows, new te::gm::Envelope( *tempGrid.getExtent() ), srid );
+    }
   }
   
   return grid;    
@@ -313,32 +348,51 @@ te::rst::BandProperty* te::gdal::GetBandProperty(GDALRasterBand* gband,
 
 void te::gdal::GetBands(te::gdal::Raster* rst, std::vector<te::gdal::Band*>& bands)
 {
+  if( !GetBands( rst, -1, bands )  )
+  {
+    throw Exception(TE_TR("Internal error"));
+  }
+}
+
+bool te::gdal::GetBands(te::gdal::Raster* rst, int multiResLevel, std::vector<te::gdal::Band*>& bands)
+{
   bands.clear();
   
-  int nBands = 0;
+  if( rst == 0 ) return false;
   
-  if( rst->getGDALDataset()->GetRasterCount() > 0 )
+  GDALDataset* gds = rst->getGDALDataset();
+  
+  if( gds == 0 ) return false;
+  
+  if( ( gds->GetAccess() != GA_ReadOnly ) && ( gds->GetAccess() != GA_Update ) )
+    return false;
+  
+  // Defining the number of bands
+  
+  int terralibBandsNumber = 0;
+  
+  if( gds->GetRasterCount() > 0 )
   {
-    if( rst->getGDALDataset()->GetRasterBand(1)->GetColorInterpretation() == GCI_PaletteIndex )
+    if( gds->GetRasterBand(1)->GetColorInterpretation() == GCI_PaletteIndex )
     {
-      if( rst->getGDALDataset()->GetRasterBand(1)->GetColorTable() == 0 )
+      if( gds->GetRasterBand(1)->GetColorTable() == 0 )
       {
         throw Exception(TE_TR("invalid color table"));
       }
       
-      switch( rst->getGDALDataset()->GetRasterBand(1)->GetColorTable()->GetPaletteInterpretation() )
+      switch( gds->GetRasterBand(1)->GetColorTable()->GetPaletteInterpretation() )
       {
         case GPI_Gray : 
-          nBands = 1;
+          terralibBandsNumber = 1;
           break;
         case GPI_RGB : // RGBA
-          nBands = 4;
+          terralibBandsNumber = 4;
           break;
         case GPI_CMYK :
-          nBands = 4;
+          terralibBandsNumber = 4;
           break;          
         case GPI_HLS :
-          nBands = 3;
+          terralibBandsNumber = 3;
           break;
         default :
           throw Exception(TE_TR("invalid palette interpretation"));
@@ -347,12 +401,57 @@ void te::gdal::GetBands(te::gdal::Raster* rst, std::vector<te::gdal::Band*>& ban
     }
     else
     {
-      nBands = rst->getGDALDataset()->GetRasterCount();
+      terralibBandsNumber = rst->getGDALDataset()->GetRasterCount();
     }
   }  
   
-  for (int b = 0; b < nBands; b++)
-    bands.push_back( new te::gdal::Band(rst, b) );
+  // Creating terralib bands
+  
+  int gdalBandIndex = 1;
+  for (int terralibBandIndex = 0; terralibBandIndex < terralibBandsNumber; terralibBandIndex++)
+  {
+    if( multiResLevel == -1 )
+    {
+      bands.push_back( 
+        new te::gdal::Band(
+          rst, 
+          terralibBandIndex,
+          rst->getGDALDataset()->GetRasterBand( gdalBandIndex )
+        ) 
+      );
+    }
+    else
+    {
+      if( multiResLevel < gds->GetRasterBand( gdalBandIndex )->GetOverviewCount() )
+      {
+        bands.push_back( 
+          new te::gdal::Band(
+            rst, 
+            terralibBandIndex,
+            gds->GetRasterBand( gdalBandIndex )->GetOverview( multiResLevel )
+          ) 
+        );        
+      }
+      else
+      {
+        while( ! bands.empty() )
+        {
+          delete( bands.back() );
+          bands.pop_back();
+        }
+        
+        return false;
+      }
+    }   
+    
+    if( rst->getGDALDataset()->GetRasterBand(1)->GetColorInterpretation() !=
+      GCI_PaletteIndex )     
+    {
+      ++gdalBandIndex;
+    }
+  }
+  
+  return true;
 }
 
 te::rst::RasterProperty* te::gdal::GetRasterProperty(std::string strAccessInfo)

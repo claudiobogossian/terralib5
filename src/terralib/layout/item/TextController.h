@@ -20,7 +20,9 @@
 /*!
   \file TextController.h
    
-  \brief 
+   \brief Class that represents a "Controller" part of Text MVC component. 
+      Its coordinate system is the same of scene (millimeters).
+      He is also the son of ItemController, so it can become a controller.
 
   \ingroup layout
 */
@@ -35,20 +37,49 @@ namespace te
 {
   namespace layout
   {
+    /*!
+      \brief Class that represents a "Controller" part of Text MVC component. 
+          Its coordinate system is the same of scene (millimeters). 
+          He is also the son of ItemController, so it can become a controller.
+      	  
+	    \ingroup layout
+
+      \sa te::layout::ItemController
+	  */
     class TextController : public ItemController
     {
       public:
 
+        /*!
+          \brief Constructor
+
+          \param o "Model" part of MVC component
+        */
         TextController( Observable* o );
 
+        /*!
+          \brief Destructor
+        */ 
         virtual ~TextController();
         
+        /*!
+          \brief Reimplemented from ItemController
+         */
         virtual void setPosition(const double& x, const double& y);
 
       protected:
 
+        /*!
+          \brief Constructor.
+
+          \param o "Model" part of MVC component
+          \param type type of the MVC component
+        */
         TextController( Observable* o, EnumType* type );
 
+        /*!
+          \brief Reimplemented from ItemController
+         */
         virtual void create();
     };
   }

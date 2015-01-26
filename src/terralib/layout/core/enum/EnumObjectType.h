@@ -20,7 +20,9 @@
 /*!
   \file EnumObjectType.h
    
-  \brief 
+   \brief Class to represent a graphic object (MVC component) and widget object (MVC widget) type enumeration. 
+      Ex. component: map, legend, scale, rectangle, text, etc.
+      Ex. widget: object inspector, toolbar, etc.
 
   \ingroup layout
 */
@@ -39,104 +41,254 @@ namespace te
 {
   namespace layout
   {
+    /*!
+      \brief Class to represent a graphic object (MVC component) and widget object (MVC widget) type enumeration. 
+        Ex. component: map, legend, scale, rectangle, text, etc.
+        Ex. widget: object inspector, toolbar, etc.
+	  
+	    \ingroup layout
+
+	    \sa te::layout::AbstractEnum
+	  */
     class TELAYOUTEXPORT EnumObjectType : public AbstractEnum
     {
       public:
 
+        /*!
+          \brief Constructor
+        */
         EnumObjectType(); 
 
+        /*!
+          \brief Destructor
+        */ 
         virtual ~EnumObjectType();
         
+        /*!
+          \brief Returns value that represents rectangle (MVC Component) type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
         virtual EnumType* getRetangleItem() const;
 
+        /*!
+          \brief Returns value that represents map (MVC Component) type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
         virtual EnumType* getMapItem() const;
 
+        /*!
+          \brief Returns value that represents map grid (MVC Component) type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
         virtual EnumType* getMapGridItem() const;
         
+        /*!
+          \brief Returns value that represents paper (MVC Component) type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
         virtual EnumType* getPaperItem() const;
         
+        /*!
+          \brief Returns value that represents legend (MVC Component) type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
         virtual EnumType* getLegendItem() const;
         
+        /*!
+          \brief Returns value that represents properties widget (MVC widget) type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
         virtual EnumType* getPropertiesWindow() const;
         
+        /*!
+          \brief Returns value that represents QGraphicsView widget (MVC widget) type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
         virtual EnumType* getDisplayWindow() const;
         
+        /*!
+          \brief Returns value that represents object inspector widget (MVC widget) type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
         virtual EnumType* getObjectInspectorWindow() const;
         
+        /*!
+          \brief Returns value that represents toolbar widget (MVC widget) type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
         virtual EnumType* getToolbar() const;
         
+        /*!
+          \brief Returns value that represents GridSettings window (MVC dialog) type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
         virtual EnumType* getGridSettings() const;
         
+        /*!
+          \brief Returns value that represents grid planar type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
         virtual EnumType* getGridPlanar() const;
         
+        /*!
+          \brief Returns value that represents grid geodesic type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
         virtual EnumType* getGridGeodesic() const;
                 
+        /*!
+          \brief Returns value that represents item group (MVC Component) type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
         virtual EnumType* getItemGroup() const;
         
+        /*!
+          \brief Returns value that represents scale (MVC Component) type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
         virtual EnumType* getScaleItem() const;
         
+        /*!
+          \brief Returns value that represents page setup window (MVC dialog) type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
         virtual EnumType* getPageSetup() const;
         
+        /*!
+          \brief Returns value that represents image (MVC Component) type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
         virtual EnumType* getImageItem() const;
         
+        /*!
+          \brief Returns value that represents systematic scale window (MVC dialog) type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
         virtual EnumType* getSystematicScale() const;
         
+        /*!
+          \brief Returns value that represents point (MVC Component) type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
         virtual EnumType* getPointItem() const;
         
+        /*!
+          \brief Returns value that represents arrow (MVC Component) type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
         virtual EnumType* getArrowItem() const;
         
+        /*!
+          \brief Returns value that represents ellipse (MVC Component) type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
         virtual EnumType* getEllipseItem() const;
         
+        /*!
+          \brief Returns value that represents title (MVC Component) type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
         virtual EnumType* getTitleItem() const;
         
+        /*!
+          \brief Returns value that represents text grid (MVC Component) type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
         virtual EnumType* getTextGridItem() const;
-                
+          
+        /*!
+          \brief Returns value that represents edit template widget (MVC widget) type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
         virtual EnumType* getEditTemplate() const;
-        
-        virtual EnumType* getMenuItem() const;
-        
+                
+        /*!
+          \brief Returns value that represents text grid settings (MVC widget) type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
         virtual EnumType* getTextGridSettings() const;
 
+        /*!
+          \brief Returns value that represents legend child (MVC Component) type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
         virtual EnumType* getLegendChildItem() const;
         
+        /*!
+          \brief Returns value that represents text (MVC Component) type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
         virtual EnumType* getTextItem() const;
 
+        /*!
+          \brief Returns value that represents unknown type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
         virtual EnumType* getObjectUnknown() const;
 
       protected:
 
+        /*!
+          \brief Reimplemented from AbstractEnum
+        */
         virtual void init();
 
       protected:
         
-        EnumType* m_retangleItem;
-        EnumType* m_mapItem;
-        EnumType* m_mapGridItem;
-        EnumType* m_paperItem;
-        EnumType* m_legendItem;
-        EnumType* m_propertiesWindow;
-        EnumType* m_displayWindow;
-        EnumType* m_objectInspectorWindow;
-        EnumType* m_toolbar;
-        EnumType* m_gridSettings;
-        EnumType* m_gridPlanar;
-        EnumType* m_gridGeodesic;
-        EnumType* m_itemGroup;
-        EnumType* m_scaleItem;
-        EnumType* m_pageSetup;
-        EnumType* m_imageItem;
-        EnumType* m_systematicScale;
-        EnumType* m_pointItem;
-        EnumType* m_arrowItem;
-        EnumType* m_ellipseItem;
-        EnumType* m_titleItem;
-        EnumType* m_textGridItem;
-        EnumType* m_editTemplate;
-        EnumType* m_menuItem;
-        EnumType* m_textGridSettings;
-        EnumType* m_legendChildItem;
-        EnumType* m_textItem;
-        EnumType* m_objectUnknown;
+        EnumType* m_retangleItem; //!< value that represents rectangle (MVC Component) type belonging to enumeration
+        EnumType* m_mapItem; //!< value that represents map (MVC Component) type belonging to enumeration
+        EnumType* m_mapGridItem; //!< value that represents map grid (MVC Component) type belonging to enumeration
+        EnumType* m_paperItem; //!< value that represents paper (MVC Component) type belonging to enumeration
+        EnumType* m_legendItem; //!< value that represents legend (MVC Component) type belonging to enumeration
+        EnumType* m_propertiesWindow; //!< value that represents properties widget (MVC widget) type belonging to enumeration
+        EnumType* m_displayWindow; //!< value that represents QGraphicsView widget (MVC widget) type belonging to enumeration
+        EnumType* m_objectInspectorWindow; //!< value that represents object inspector widget (MVC widget) type belonging to enumeration
+        EnumType* m_toolbar; //!< value that represents toolbar widget (MVC widget) type belonging to enumeration
+        EnumType* m_gridSettings; //!< value that represents GridSettings window (MVC dialog) type belonging to enumeration
+        EnumType* m_gridPlanar; //!< value that represents grid planar type belonging to enumeration
+        EnumType* m_gridGeodesic; //!< value that represents grid geodesic type belonging to enumeration
+        EnumType* m_itemGroup; //!< value that represents item group (MVC Component) type belonging to enumeration
+        EnumType* m_scaleItem; //!< value that represents scale (MVC Component) type belonging to enumeration
+        EnumType* m_pageSetup; //!< value that represents page setup window (MVC dialog) type belonging to enumeration
+        EnumType* m_imageItem; //!< value that represents image (MVC Component) type belonging to enumeration
+        EnumType* m_systematicScale; //!< value that represents systematic scale window (MVC dialog) type belonging to enumeration
+        EnumType* m_pointItem; //!< value that represents point (MVC Component) type belonging to enumeration
+        EnumType* m_arrowItem; //!< value that represents arrow (MVC Component) type belonging to enumeration
+        EnumType* m_ellipseItem; //!< value that represents ellipse (MVC Component) type belonging to enumeration
+        EnumType* m_titleItem; //!< value that represents title (MVC Component) type belonging to enumeration
+        EnumType* m_textGridItem; //!< value that represents text grid (MVC Component) type belonging to enumeration
+        EnumType* m_editTemplate; //!< value that represents edit template widget (MVC widget) type belonging to enumeration
+        EnumType* m_textGridSettings; //!< value that represents text grid settings (MVC widget) type belonging to enumeration
+        EnumType* m_legendChildItem; //!< value that represents legend child (MVC Component) type belonging to enumeration
+        EnumType* m_textItem; //!< value that represents text (MVC Component) type belonging to enumeration
+        EnumType* m_objectUnknown; //!< value that represents unknown type belonging to enumeration
     };
   }
 }

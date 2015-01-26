@@ -622,7 +622,6 @@ void te::qt::widgets::WhereClauseWidget::onRemoveWhereClausePushButtonClicked()
     for(int i = 0; i < m_ui->m_whereClauseTableWidget->rowCount(); ++i)
     {
       QWidget* w = m_ui->m_whereClauseTableWidget->cellWidget(i, 0);
-      QToolButton* btn = dynamic_cast<QToolButton*>(w);
       if(button == w)
       {
         row = i;
@@ -819,8 +818,6 @@ QStringList te::qt::widgets::WhereClauseWidget::getPropertyValues(std::string pr
   te::da::Field* f = new te::da::Field(new te::da::PropertyName(propertyName));
   fields->push_back(f);
 
-  te::da::PropertyName* name = new te::da::PropertyName(propertyName);
-
   te::da::From* from = new te::da::From;
 
   for(size_t t = 0; t < m_fromItems.size(); ++t)
@@ -870,14 +867,21 @@ QStringList te::qt::widgets::WhereClauseWidget::getPropertyValues(std::string pr
   std::set<double> valuesDouble;
   std::set<int> valuesInt;
 
+  bool found = false;
   std::size_t propertyPos;
   for(std::size_t t = 0; t < dataset->getNumProperties(); ++t)
   {
     if(dataset->getPropertyName(t) == propertyName)
     {
       propertyPos = t;
+      found = true;
       break;
     }
+  }
+
+  if(!found)
+  {
+    return list;
   }
 
   int propertyType = dataset->getPropertyDataType(propertyPos);

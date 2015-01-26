@@ -20,7 +20,9 @@
 /*!
   \file TitleModel.h
    
-  \brief 
+   \brief Class that represents a "Model" part of Title MVC component.  
+   Its coordinate system is the same of scene (millimeters). 
+   This is also son of ItemModelObservable, so it can become observable.
 
   \ingroup layout
 */
@@ -37,11 +39,27 @@ namespace te
   {
     class TextGridSettingsConfigProperties;
 
+    /*!
+    \brief Class that represents a "Model" part of Title MVC component.  
+    Its coordinate system is the same of scene (millimeters). 
+    This is also son of ItemModelObservable, so it can become observable.
+      	  
+	    \ingroup layout
+
+      \sa te::layout::TextModel
+	  */
     class TitleModel : public TextModel
     {
       public:
 
+        /*!
+          \brief Constructor
+        */
         TitleModel();
+
+        /*!
+          \brief Destructor
+        */ 
         virtual ~TitleModel();
 
         virtual te::layout::Properties* getProperties() const;
