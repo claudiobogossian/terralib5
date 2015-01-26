@@ -667,8 +667,13 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::commit()
 
         te::da::DataSetType* type = dt_adapter->getResult();
 
-        te::da::PrimaryKey* pk = type->getPrimaryKey();
-        pk->setName(te::common::Convert2LCase(targetName) + "_pk");
+        te::da::PrimaryKey* pk = 0;
+        pk = type->getPrimaryKey();
+
+        if(pk)
+        {
+          pk->setName(te::common::Convert2LCase(targetName) + "_pk");
+        }
 
         te::common::CharEncoding encTo = tl5ds->getEncoding();
 
