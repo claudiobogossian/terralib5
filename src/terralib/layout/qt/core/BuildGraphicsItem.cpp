@@ -145,7 +145,7 @@ QGraphicsItem* te::layout::BuildGraphicsItem::rebuildItem( te::layout::Propertie
   {
     item = createImage();
   }
-  else if(type == enumObj->getRetangleItem())
+  else if(type == enumObj->getRectangleItem())
   {
     item = createRectangle();
   }
@@ -226,7 +226,7 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createItem( te::layout::EnumType* 
   }
   else if(mode == enumMode->getModeCreateRectangle())
   {
-    m_name = nameItem(m_rectangleItem, enumObj->getRetangleItem());
+    m_name = nameItem(m_rectangleItem, enumObj->getRectangleItem());
     item = createRectangle();
   }
   else if(mode == enumMode->getModeCreateLegend())
