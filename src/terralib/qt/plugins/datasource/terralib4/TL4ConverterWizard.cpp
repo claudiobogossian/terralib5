@@ -619,7 +619,10 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::commit()
     QTableWidgetItem* item_source = m_resolveNameTableWidget->item(i, 1);
 
     if(item_source == 0)
+    {
+      te::common::ProgressManager::getInstance().removeViewer(id);
       throw te::common::Exception(TE_TR("Invalid source table item!"));
+    }
 
     std::string sourceName = item_source->text().toStdString();
 
@@ -627,7 +630,10 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::commit()
     QTableWidgetItem* item_target = m_resolveNameTableWidget->item(i, 2);
 
     if(item_target == 0)
+    {
+      te::common::ProgressManager::getInstance().removeViewer(id);
       throw te::common::Exception(TE_TR("Invalid target table item!"));
+    }
 
     std::string targetName = item_target->text().toStdString();
 
@@ -733,7 +739,10 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::commit()
     }
 
     if (task.isActive() == false)
-        throw te::common::Exception(TE_TR("Operation canceled!"));
+    {
+      te::common::ProgressManager::getInstance().removeViewer(id);
+      throw te::common::Exception(TE_TR("Operation canceled!"));
+    }
 
     task.pulse();
   }
@@ -779,6 +788,8 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::commit()
   m_themeSelection->setThemes(convertedThemes);
 
   m_rollback = false;
+
+  te::common::ProgressManager::getInstance().removeViewer(id);
 }
 
 void te::qt::plugins::terralib4::TL4ConverterWizard::finish()
