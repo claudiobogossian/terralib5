@@ -105,12 +105,8 @@ namespace te
 
         te::da::DataSourcePtr m_addressDataSource;
         std::string m_addressFile;
-        std::string m_streetType;
-        std::string m_streetTitle;
-        std::string m_streetName;
+        std::vector<std::string> m_associatedProps;
         std::string m_streetNumber;
-        std::string m_streetNeighborhood;
-        std::string m_streetPostalCode;
 
     };
   }   // end namespace addressgeocoding

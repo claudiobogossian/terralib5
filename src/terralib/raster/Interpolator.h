@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "Raster.h"
+#include "Enums.h"
 
 // STL
 #include <complex>
@@ -58,12 +59,7 @@ namespace te
         /*!
           \brief Allowed interpolation methods.
         */
-        enum Method
-        {
-          NearestNeighbor = 1,    //!< Near neighborhood interpolation method.
-          Bilinear = 2,           //!< Bilinear interpolation method.
-          Bicubic = 3             //!< Bicubic interpolation method.
-        };
+        typedef InterpolationMethod Method;
 
         /*!
           \brief Constructor.

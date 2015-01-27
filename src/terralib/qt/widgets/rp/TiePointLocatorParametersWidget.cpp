@@ -116,13 +116,13 @@ void te::qt::widgets::TiePointLocatorParametersWidget::startAdvancedOptions()
 
   switch(m_inputParameters.m_interpMethod)
   {
-    case te::rst::Interpolator::Bilinear :
+    case te::rst::Bilinear :
     {
       int idx = m_ui->m_interpMethodComboBox->findText("Bilinear");
       m_ui->m_interpMethodComboBox->setCurrentIndex(idx);
       break;
     }
-    case te::rst::Interpolator::Bicubic :
+    case te::rst::Bicubic :
     {
       int idx = m_ui->m_interpMethodComboBox->findText("Bicubic");
       m_ui->m_interpMethodComboBox->setCurrentIndex(idx);
@@ -182,11 +182,11 @@ void te::qt::widgets::TiePointLocatorParametersWidget::updateAdvancedOptions()
   m_inputParameters.m_geomTransfMaxError = m_ui->m_geomTransfMaxErrorLineEdit->text().toDouble();
 
   if(m_ui->m_interpMethodComboBox->currentText() == "Bilinear")
-    m_inputParameters.m_interpMethod = te::rst::Interpolator::Bilinear;
+    m_inputParameters.m_interpMethod = te::rst::Bilinear;
   else if(m_ui->m_interpMethodComboBox->currentText() == "Bicubic")
-    m_inputParameters.m_interpMethod = te::rst::Interpolator::Bicubic;
+    m_inputParameters.m_interpMethod = te::rst::Bicubic;
   else
-    m_inputParameters.m_interpMethod = te::rst::Interpolator::NearestNeighbor;
+    m_inputParameters.m_interpMethod = te::rst::NearestNeighbor;
 
   if(m_ui->m_maxTiePointsLineEdit->text().isEmpty())
   {

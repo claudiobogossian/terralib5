@@ -60,9 +60,24 @@ namespace te
         
         ~DataSetUseCounter();
         
+        /*!
+         \brief Change the acces type.
+         \param aType Access type.
+         \return true if OK, false on errors:
+         */         
+        bool changeAccessType( const DataSetsManager::AccessType aType ) throw( te::gdal::Exception );
+        
+        /*!
+         \brief Returns the current access type.
+         \return Returns the current access type.
+         */                 
+        inline DataSetsManager::AccessType getAccessType() const { return m_aType; };
+        
       private :
         
+        DataSetsManager::AccessType m_aType; //!< Access type
         std::string m_uri; //!< Data set uri.
+        
     };
   } // end namespace gdal
 }   // end namespace te

@@ -108,14 +108,14 @@ namespace te
               return ( m_feature1 < other.m_feature1 );
             };
             
-            const InterestPointT& operator=( const InterestPointT& other )
+            InterestPointT& operator=( const InterestPointT& other )
             {
               m_x = other.m_x;
               m_y = other.m_y;
               m_feature1 = other.m_feature1;
               m_feature2 = other.m_feature2;
               m_feature3 = other.m_feature3;
-              return other;
+              return *this;
             };            
         };
         
@@ -310,7 +310,17 @@ namespace te
         static void features2Tiff( 
           const DoublesMatrix& features,
           const InterestPointsSetT& interestPoints,
-          const std::string& fileNameBeginning );        
+          const std::string& fileNameBeginning ); 
+        
+        
+        /*!
+          \brief Check for duplicated interest points.
+          \param x The duplicated tie-points X coord.
+          \param y The duplicated tie-points Y coord.
+          \return false if duplicated interest points were found.
+        */             
+        static bool checkForDuplicatedInterestPoints( const InterestPointsSetT& interestPoints,
+          double& x, double& y );         
         
       private:
         

@@ -100,7 +100,7 @@ void TsRegister::Test001()
   algoInputParams.m_outputResolutionX = inputRasterPtrPointer->getResolutionX();
   algoInputParams.m_outputResolutionY = inputRasterPtrPointer->getResolutionY();
   
-  algoInputParams.m_interpMethod = te::rst::Interpolator::NearestNeighbor;
+  algoInputParams.m_interpMethod = te::rst::NearestNeighbor;
   
   algoInputParams.m_noDataValue = 0;
   

@@ -66,7 +66,7 @@ namespace te
       m_highResRasterBand = 0;
       m_enableProgress = false;
       m_enableThreadedProcessing = true;
-      m_interpMethod = te::rst::Interpolator::NearestNeighbor;
+      m_interpMethod = te::rst::NearestNeighbor;
     }
 
     const PCAFusion::InputParameters& PCAFusion::InputParameters::operator=(

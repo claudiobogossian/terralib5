@@ -80,7 +80,7 @@ namespace te
       m_subSampleOptimizationMinTPNumberFactor = 2;
       m_surfMaxNormEuclideanDist = 0.75;
       m_moravecMinAbsCorrelation = 0.25;
-      m_interpMethod = te::rst::Interpolator::NearestNeighbor;
+      m_interpMethod = te::rst::NearestNeighbor;
       m_tiePointsSubSectorsSplitFactor = 3;
     }
 

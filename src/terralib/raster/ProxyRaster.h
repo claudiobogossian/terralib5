@@ -84,6 +84,23 @@ namespace te
         Band& operator[](std::size_t i);
 
         te::dt::AbstractData* clone() const { return 0; }
+        
+        bool createMultiResolution( const unsigned int levels, const InterpolationMethod interpMethod )
+        {
+          return false;
+        };
+        
+        bool removeMultiResolution() { return false; }; 
+        
+        unsigned int getMultiResLevelsCount() const
+        {
+          return 0;        
+        }
+        
+        Raster* getMultiResLevel( const unsigned int level ) const
+        {
+          return 0;         
+        }        
 
       protected:
 

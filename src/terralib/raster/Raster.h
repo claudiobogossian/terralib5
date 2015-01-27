@@ -625,6 +625,41 @@ namespace te
           \param b           The band index to rasterize.
         */
         virtual void rasterize(std::vector<te::gm::Geometry*> g, std::vector<double> vp, std::size_t b = 0);
+        
+        /*!
+          \brief Create a sub-sampled multi-resolution pyramid.
+
+          \param levels The number of pyramid levels to generate.
+          \param interpMethod The used interpolation method.
+          
+          \return true if OK, false if errors ocurred.
+        */        
+        virtual bool createMultiResolution( const unsigned int levels, const InterpolationMethod interpMethod ) = 0;
+        
+        /*!
+          \brief Remove/Destroy a sub-sampled multi-resolution pyramid, if there is one.
+          
+          \return true if OK, false if errors ocurred.
+        */        
+        virtual bool removeMultiResolution() = 0;        
+        
+        /*!
+          \brief Returns the current number of multi-resolution pyramid levels.
+
+          \return Returns the current number of multi-resolution pyramid levels.
+        */        
+        virtual unsigned int getMultiResLevelsCount() const = 0;        
+        
+        /*!
+          \brief Returns the required level of a multi-resolution pyramid or NULL if that level does not exists.
+          
+          \param level Level of a multi-resolution pyramid.
+
+          \return Returns the required level of a multi-resolution pyramid or NULL if that level does not exists.
+          
+          \note The caller must take the ownership of the returned pointer.
+        */        
+        virtual Raster* getMultiResLevel( const unsigned int level ) const = 0;         
 
       protected:
 
