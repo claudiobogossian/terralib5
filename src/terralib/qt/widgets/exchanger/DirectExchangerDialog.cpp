@@ -181,7 +181,7 @@ bool te::qt::widgets::DirectExchangerDialog::exchangeToFile()
     dsOGR->setConnectionInfo(connInfo);
     dsOGR->open();
 
-    te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter(dsType.get(), dsOGR->getCapabilities());
+    te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter(dsType.get(), dsOGR->getCapabilities(), dsOGR->getEncoding());
 
     te::da::DataSetType* dsTypeResult = converter->getResult();
 
@@ -280,7 +280,7 @@ bool te::qt::widgets::DirectExchangerDialog::exchangeToDatabase()
 
     te::da::DataSourcePtr targetDSPtr = te::da::DataSourceManager::getInstance().get(dsInfo->getId(), dsInfo->getType(), dsInfo->getConnInfo()); 
 
-    te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter(dsType.get(), targetDSPtr->getCapabilities());
+    te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter(dsType.get(), targetDSPtr->getCapabilities(), targetDSPtr->getEncoding());
 
     te::da::DataSetType* dsTypeResult = converter->getResult();
     
