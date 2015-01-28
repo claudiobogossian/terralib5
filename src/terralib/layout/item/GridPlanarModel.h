@@ -31,6 +31,7 @@
 // TerraLib
 #include "GridModel.h"
 #include "../core/enum/AbstractType.h"
+#include "../core/Config.h"
 
 namespace te
 {
@@ -38,7 +39,7 @@ namespace te
   {
     class PlanarGridSettingsConfigProperties;
 
-    class GridPlanarModel: public GridModel 
+    class TELAYOUTEXPORT GridPlanarModel: public GridModel 
     {
       public:
 

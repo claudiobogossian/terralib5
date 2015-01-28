@@ -39,12 +39,28 @@ namespace te
   {
     class TELAYOUTEXPORT SystematicScaleController : public OutsideController
     {
-    public:
+      public:
 
-	    SystematicScaleController( Observable* o );
-	    virtual ~SystematicScaleController();
+	      SystematicScaleController( Observable* o );
 
-	    virtual void setPosition(const double& x, const double& y);
+	      virtual ~SystematicScaleController();
+
+	      virtual void setPosition(const double& x, const double& y);
+
+      protected:
+
+        /*!
+          \brief Constructor.
+
+          \param o "Model" part of MVC component
+          \param type type of the MVC component
+        */
+        SystematicScaleController( Observable* o, EnumType* type );
+
+        /*!
+            \brief Reimplemented from ItemController
+           */
+        virtual void create();
 
     };
   }

@@ -220,7 +220,7 @@ namespace te
       protected:
 
 		/*!
-          \brief Reimplemented from QGraphicsView
+          \brief Reimplemented from QGraphicsView. Call method createItem() of the scene.
         */
         virtual void mousePressEvent(QMouseEvent * event);
 
@@ -287,7 +287,8 @@ namespace te
         virtual void resetDefaultConfig();
 
 		/*!
-          \brief Responsible method for verifying changes made in Context outside the View object and call corresponding actions. Ex.: Action Pan called in toolbar changed Context to Pan mode, then View object call method to do it.
+          \brief Responsible method for verifying changes made in Context outside the View object and call corresponding actions. 
+          Ex.: Action Pan called in toolbar changed Context to Pan mode, then View object call method to do it.
         */
         virtual void outsideAreaChangeContext(bool change);
         

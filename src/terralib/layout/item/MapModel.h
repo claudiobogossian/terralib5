@@ -37,6 +37,7 @@
 #include "../../maptools/AbstractLayer.h"
 #include "../../common/UnitOfMeasure.h"
 #include "../../geometry/Point.h"
+#include "../core/Config.h"
 
 // STL
 #include <map>
@@ -57,7 +58,7 @@ namespace te
 
       \sa te::layout::ItemModelObservable , te::layout::Visitable
 	  */
-    class MapModel : public ItemModelObservable, public Visitable
+    class TELAYOUTEXPORT MapModel : public ItemModelObservable, public Visitable
     {
       public:
 

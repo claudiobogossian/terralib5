@@ -157,6 +157,11 @@ namespace te
 
       /*!
           \brief Reimplemented from Observable
+         */
+      virtual int getHashCode();
+
+      /*!
+          \brief Reimplemented from Observable
        */
       virtual void setResizable(bool resize);
 
@@ -172,6 +177,8 @@ namespace te
        */
       virtual void notifyAll(ContextItem context);
 
+      virtual int calculateHashCode();
+
     protected:
 
       std::set<Observer*>	m_observers; //!< set of observers of this object
@@ -183,6 +190,7 @@ namespace te
       int                 m_zValue; //!< The Z value decides the stacking order of drawing
       int                 m_id; //!< hashcode
       bool                m_resizable; //!< true if resizable, false otherwise
+      int                 m_hashCode;
 
     private:
 

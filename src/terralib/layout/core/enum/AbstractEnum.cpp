@@ -70,3 +70,41 @@ te::layout::EnumType* te::layout::AbstractEnum::getEnum( std::string name ) cons
 
   return enumTp;
 }
+
+int te::layout::AbstractEnum::maxId()
+{
+  int max = -1;
+
+  if(m_enums.empty())
+    return max;
+
+  for(std::vector<EnumType*>::const_iterator it = m_enums.begin(); it != m_enums.end(); it++)
+  {
+    if((*it)->getId() > max)
+    {
+      max = (*it)->getId();
+    }
+  }
+
+  return max;
+}
+
+int te::layout::AbstractEnum::minId()
+{
+  int min = -1;
+
+  if(m_enums.empty())
+    return min;
+
+  min = m_enums[0]->getId();
+
+  for(std::vector<EnumType*>::const_iterator it = m_enums.begin(); it != m_enums.end(); it++)
+  {
+    if((*it)->getId() < min)
+    {
+      min = (*it)->getId();
+    }
+  }
+
+  return min;
+}

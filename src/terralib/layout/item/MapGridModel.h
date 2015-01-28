@@ -32,6 +32,7 @@
 
 // TerraLib
 #include "MapModel.h"
+#include "../core/Config.h"
 
 namespace te
 {
@@ -52,7 +53,7 @@ namespace te
 
       \sa te::layout::MapModel
 	  */
-    class MapGridModel : public MapModel
+    class TELAYOUTEXPORT MapGridModel : public MapModel
     {
       public:
 

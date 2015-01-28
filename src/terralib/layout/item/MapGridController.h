@@ -32,6 +32,7 @@
 
 // TerraLib
 #include "MapController.h"
+#include "../core/Config.h"
 
 namespace te
 {
@@ -46,7 +47,7 @@ namespace te
 
       \sa te::layout::MapController
 	  */
-    class MapGridController : public MapController
+    class TELAYOUTEXPORT MapGridController : public MapController
     {
       public:
 

@@ -39,12 +39,28 @@ namespace te
   {
     class TELAYOUTEXPORT EditTemplateController : public OutsideController
     {
-    public:
+      public:
 
-	    EditTemplateController( Observable* o );
-	    virtual ~EditTemplateController();
+	      EditTemplateController( Observable* o );
 
-	    virtual void setPosition(const double& x, const double& y);
+	      virtual ~EditTemplateController();
+
+	      virtual void setPosition(const double& x, const double& y);
+
+      protected:
+
+        /*!
+          \brief Constructor.
+
+          \param o "Model" part of MVC component
+          \param type type of the MVC component
+        */
+        EditTemplateController( Observable* o, EnumType* type );
+
+        /*!
+            \brief Reimplemented from ItemController
+           */
+        virtual void create();
 
     };
   }

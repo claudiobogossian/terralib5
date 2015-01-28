@@ -30,6 +30,7 @@
 
 // TerraLib
 #include "GridModel.h"
+#include "../core/Config.h"
 
 namespace te
 {
@@ -37,7 +38,7 @@ namespace te
   {
     class GeodesicGridSettingsConfigProperties;
 
-    class GridGeodesicModel: public GridModel 
+    class TELAYOUTEXPORT GridGeodesicModel: public GridModel 
     {
       public:
 

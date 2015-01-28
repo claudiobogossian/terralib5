@@ -28,6 +28,9 @@
 #ifndef __TERRALIB_LAYOUT_INTERNAL_CHANGE_PROPERTY_COMMAND_ITEM_H 
 #define __TERRALIB_LAYOUT_INTERNAL_CHANGE_PROPERTY_COMMAND_ITEM_H
 
+// TerraLib
+#include "../../../../core/Config.h"
+
 // Qt
 #include <QUndoCommand>
 
@@ -40,7 +43,7 @@ namespace te
     class Properties;
     class PropertiesOutside;
 
-    class ChangePropertyCommand : public QUndoCommand
+    class TELAYOUTEXPORT ChangePropertyCommand : public QUndoCommand
     {
       public:
 
