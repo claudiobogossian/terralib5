@@ -42,6 +42,8 @@ namespace te
       \class ExpansibleRaster
 
       \brief A raster (stored in memory and eventually swapped to disk) where it is possible to dynamically add lines/columns/bands.
+      
+      \ingroup mem
 
       \note The first band blocking scheme will be taken as reference for the other bands.
 
