@@ -246,7 +246,15 @@ te::dt::Property* te::ogr::Convert2TerraLib(OGRFieldDefn* fieldDef)
       else
         sp = new te::dt::StringProperty(name, te::dt::VAR_STRING, fieldDef->GetWidth());
 
-      sp->setCharEncoding(te::common::UTF8); // GDAL/OGR handles strings internally in UTF-8
+      //sp->setCharEncoding(te::common::UTF8); // GDAL/OGR handles strings internally in UTF-8 - *** Need review! ***
+
+      /* The original DBF standard defines to use ISO8859-1, and only ISO8859-1.
+         So, when you get a Shapefile that is really standards conform, it should be ISO8859-1.
+         Of course, this (very old) restriction is a not really usable nowadays.
+         ISO8859-1 - also called "Latin 1"
+         From: http://gis.stackexchange.com/questions/3529/which-character-encoding-is-used-by-the-dbf-file-in-shapefiles */
+      // for while...
+      sp->setCharEncoding(te::common::LATIN1);
 
       p = sp;
     }
