@@ -241,12 +241,6 @@
                         <layout class="QGridLayout" name="gridLayout_3">
                          <item row="0" column="0">
                           <widget class="QLabel" name="inputDataSetLabel_8">
-                           <property name="maximumSize">
-                            <size>
-                             <width>150</width>
-                             <height>16777215</height>
-                            </size>
-                           </property>
                            <property name="text">
                             <string>Minimum segment size:</string>
                            </property>
@@ -257,12 +251,6 @@
                          </item>
                          <item row="1" column="0">
                           <widget class="QLabel" name="inputDataSetLabel_9">
-                           <property name="maximumSize">
-                            <size>
-                             <width>150</width>
-                             <height>16777215</height>
-                            </size>
-                           </property>
                            <property name="text">
                             <string>Similarity Threshold:</string>
                            </property>
