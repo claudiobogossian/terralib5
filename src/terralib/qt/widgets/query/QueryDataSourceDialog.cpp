@@ -71,6 +71,8 @@ te::qt::widgets::QueryDataSourceDialog::QueryDataSourceDialog(QWidget* parent, Q
   //dataset display
   m_dataSetDisplay = new te::qt::widgets::DataSetDisplay(this);
 
+  m_appMapDisplay = 0;
+
   QGridLayout* displayGridLayout = new QGridLayout(m_ui->m_displayWidget);
   displayGridLayout->setContentsMargins(0, 0, 0, 0);
   displayGridLayout->addWidget(m_dataSetDisplay);
@@ -101,6 +103,11 @@ void te::qt::widgets::QueryDataSourceDialog::setLayerList(std::list<te::map::Abs
 
   if(m_ui->m_baseDataSetComboBox->count() > 0)
     onBaseDataSetSelected(0);
+}
+
+void te::qt::widgets::QueryDataSourceDialog::setAppMapDisplay(te::qt::widgets::MapDisplay* appMapDisplay)
+{
+  m_appMapDisplay = appMapDisplay;
 }
 
 void te::qt::widgets::QueryDataSourceDialog::loadDataSourcesInformation()
@@ -515,6 +522,11 @@ void te::qt::widgets::QueryDataSourceDialog::onApplySelToolButtonClicked()
       te::da::ObjectIdSet* oids = te::da::GenerateOIDSet(dataSet.get(), dsType.get());
 
       layer->select(oids);
+    }
+
+    if(m_appMapDisplay)
+    {
+      m_appMapDisplay->refresh();
     }
   }
   catch(te::common::Exception& e)
