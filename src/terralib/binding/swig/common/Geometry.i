@@ -14,7 +14,6 @@
 #include "terralib/geometry/Config.h"
 #include "terralib/geometry/Envelope.h"
 #include "terralib/geometry/Enums.h"
-#include "terralib/geometry/Exception.h"
 #include "terralib/geometry/AbstractPoint.h"
 #include "terralib/geometry/CircularString.h"
 #include "terralib/geometry/CompoundCurve.h"

@@ -6,6 +6,14 @@
 
 #define TEDATATYPEEXPORT
 #define BOOST_DATE_TIME_DECL 
+
+namespace te {
+  namespace common {
+    %template(DTCONMgerSingleton) Singleton < te::dt::DataConverterManager >;
+  }
+}
+
+%nodefaultctor te::dt::DataConverterManager;
   
 %{
 #include "terralib/datatype/AbstractData.h"
@@ -30,7 +38,6 @@
 #include "terralib/datatype/DateTimeProperty.h"
 #include "terralib/datatype/DateTimeUtils.h"
 #include "terralib/datatype/Enums.h"
-#include "terralib/datatype/Exception.h"
 #include "terralib/datatype/IntegerConverters.h"
 #include "terralib/datatype/NumericProperty.h"
 #include "terralib/datatype/OrdinalInstant.h"
@@ -119,9 +126,10 @@
 %include "terralib/datatype/DateTimeProperty.h"
 %include "terralib/datatype/DateTimeUtils.h"
 %include "terralib/datatype/DataTypeConverter.h" 
-%include "terralib/datatype/DataConverterManager.h"
 
-/* %include "terralib/datatype/IntegerConverters.h" */
+/* %include "terralib/datatype/DataConverterManager.h"
+
+ %include "terralib/datatype/IntegerConverters.h" */
 
 %include "terralib/datatype/NumericProperty.h"
 %include "terralib/datatype/SimpleData.h"
