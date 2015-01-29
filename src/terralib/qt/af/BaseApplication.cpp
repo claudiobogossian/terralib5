@@ -1748,7 +1748,10 @@ void te::qt::af::BaseApplication::onQueryLayerTriggered()
   }
 
   if(m_project)
-    m_queryDlg->setLayerList(m_project->getTopLayers());
+  {
+    std::list<te::map::AbstractLayerPtr> allLayersList = ApplicationController::getInstance().getProject()->getSingleLayers(false);
+    m_queryDlg->setLayerList(allLayersList);
+  }
 
   std::list<te::qt::widgets::AbstractTreeItem*> selectedLayerItems = m_explorer->getExplorer()->getSelectedSingleLayerItems();
 
