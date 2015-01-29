@@ -778,6 +778,9 @@ void te::qt::af::BaseApplication::onSaveProjectTriggered()
 
     if(!fileName.isEmpty())
     {
+      if(m_project->getTitle() == "New Project")
+        m_project->setTitle(boost::filesystem::basename(fileName.toStdString()));
+
       QFileInfo info(fileName);
 
       if(info.suffix() != "xml")
@@ -829,6 +832,11 @@ void te::qt::af::BaseApplication::onSaveProjectAsTriggered()
   std::string fName = fileName.toStdString();
 
   m_project->setFileName(fName);
+
+  if(!boost::filesystem::exists(fName) && m_project->getTitle() == "New Project")
+  {
+    m_project->setTitle(boost::filesystem::basename(fName));
+  }
 
   te::qt::af::Save(*m_project, fName);
 
