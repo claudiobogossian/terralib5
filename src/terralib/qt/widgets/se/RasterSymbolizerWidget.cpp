@@ -37,7 +37,7 @@
 // STL
 #include <cassert>
 
-#define GAIN_CONSTANT_VALUE 0.2
+#define GAIN_CONSTANT_VALUE 0.1
 #define OFFSET_CONSTANT_VALUE 10
 
 te::qt::widgets::RasterSymbolizerWidget::RasterSymbolizerWidget(QWidget* parent, Qt::WindowFlags f)
