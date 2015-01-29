@@ -65,6 +65,8 @@ void te::qt::widgets::GroupingDialog::setLayers(te::map::AbstractLayerPtr select
   m_layer = selectedLayer;
   m_allLayers = allLayers;
 
+  setWindowTitle(windowTitle() + " (" + tr("Layer") + ":" + selectedLayer->getTitle().c_str() +")");
+
   //VERIFY LATER
   std::auto_ptr<te::map::LayerSchema> dsType(selectedLayer->getSchema());
 

@@ -20,13 +20,12 @@
 #
 #  Description: CMake script for the TerraLib R binding.
 #
-#  Author: Gilberto Ribeiro de Queiroz <gribeiro@dpi.inpe.br>
-#          Frederico Augusto T. Bede <frederico.bede@funcate.org.br>
+#  Author: Frederico Augusto T. Bede <frederico.bede@funcate.org.br>
 #
 
 include(${SWIG_USE_FILE})
 
-file(GLOB TERRALIB_SWIG_SCRIPT_FILE ${CMAKE_CURRENT_SOURCE_DIR}/../../../src/terralib/binding/swig/TerraLibR.i)
+file(GLOB TERRALIB_SWIG_SCRIPT_FILE ${CMAKE_CURRENT_SOURCE_DIR}/../../../src/terralib/binding/swig/TerraLibPYTHON.i)
 
 set (CMAKE_SWIG_FLAGS "-c++")
 
@@ -36,14 +35,14 @@ include_directories (
   "${TERRALIB_ABSOLUTE_ROOT_DIR}/src"
   "${CMAKE_BINARY_DIR}"
   "${Boost_INCLUDE_DIR}"
-  "${R_INCLUDE_DIR}"
+  "${PYTHON_INCLUDE_DIRS}"
 )
 
 set (CMAKE_SWIG_OUTDIR "${CMAKE_CURRENT_BINARY_DIR}/src" CACHE PATH "Directory for swig output.")
 
-SWIG_ADD_MODULE(terralib_mod_binding_r r ${TERRALIB_SWIG_SCRIPT_FILE})
+SWIG_ADD_MODULE(terralib_mod_binding_python python ${TERRALIB_SWIG_SCRIPT_FILE})
 
-SWIG_LINK_LIBRARIES (terralib_mod_binding_r terralib_mod_common
+SWIG_LINK_LIBRARIES (terralib_mod_binding_python terralib_mod_common
                                               terralib_mod_datatype
                                               terralib_mod_srs
                                               terralib_mod_geometry
@@ -53,9 +52,10 @@ SWIG_LINK_LIBRARIES (terralib_mod_binding_r terralib_mod_common
                                               terralib_mod_st
                                               ${Boost_FILESYSTEM_LIBRARY}
                                               ${Boost_SYSTEM_LIBRARY}
-                                              ${Boost_THREAD_LIBRARY})
+                                              ${Boost_THREAD_LIBRARY}
+                                              ${PYTHON_LIBRARIES})
 
-install(TARGETS terralib_mod_binding_r
+install(TARGETS _terralib_mod_binding_python
         RUNTIME DESTINATION ${TERRALIB_DESTINATION_RUNTIME} COMPONENT runtime
         LIBRARY DESTINATION ${TERRALIB_DESTINATION_RUNTIME} COMPONENT runtime
         ARCHIVE DESTINATION ${TERRALIB_DESTINATION_RUNTIME} COMPONENT runtime)
