@@ -116,7 +116,7 @@ void te::gdal::Module::startup()
   te::gdal::DataSource::setCapabilities(capabilities);
   
   // initializing the static mutex
-  boost::mutex& staticMutex = getStaticMutex();
+  getStaticMutex();
   
   TE_LOG_TRACE(TE_TR("TerraLib GDAL driver startup!"));
 
