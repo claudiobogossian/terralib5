@@ -956,6 +956,7 @@ void te::qt::af::BaseApplication::onToolsQueryDataSourceTriggered()
 
     std::list<te::map::AbstractLayerPtr> layers = te::qt::af::ApplicationController::getInstance().getProject()->getAllLayers(false);
     dlg.setLayerList(layers);
+    dlg.setAppMapDisplay(m_display->getDisplay());
 
     dlg.exec();
   }
