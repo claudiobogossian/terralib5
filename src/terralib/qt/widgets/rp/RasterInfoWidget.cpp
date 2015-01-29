@@ -267,12 +267,17 @@ void te::qt::widgets::RasterInfoWidget::fillExtensions()
   Tokenizer tok(exts, sep);
   extVec.assign(tok.begin(), tok.end());
 
+  int curIdx = 0;
+
   for(std::size_t t = 0; t < extVec.size(); ++t)
   {
     m_ui->m_extComboBox->addItem(extVec[t].c_str());
+
+    if(extVec[t] == "tif")
+      curIdx = (int)t;
   }
 
-  m_ui->m_extComboBox->setCurrentText("tif");
+  m_ui->m_extComboBox->setCurrentIndex(curIdx);
 }
 
 void te::qt::widgets::RasterInfoWidget::onOpenFileDlgToolButtonClicked()
