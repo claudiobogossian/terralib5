@@ -93,6 +93,13 @@ namespace te
       const Observer* getView();
 
     protected:
+
+      /*!
+          \brief Call factory to create the "View" part of the MVC widget and passes the model and himself as controller.
+            Reimplement this function in a OutsideController subclass to provide the controller's create implementation.
+         */
+      virtual void create() = 0;
+
       Observable* m_model; //!< "Model" part of the MVC widget.
       Observer* m_view; //!< "View" part of the MVC widget.
     };

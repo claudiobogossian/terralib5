@@ -37,13 +37,13 @@
 te::layout::EditTemplateController::EditTemplateController( Observable* o ) :
 	OutsideController(o)
 {
-  EnumType* type = Enums::getInstance().getEnumObjectType()->getEditTemplate();
-  o->setType(type);
+  create();
+}
 
-	AbstractOutsideFactory* factory = Context::getInstance().getOutsideFactory(); 
-	OutsideParamsCreate params(this, m_model);
-  if(factory)
-	  m_view = (Observer*)factory->make(m_model->getType(), params);
+te::layout::EditTemplateController::EditTemplateController( Observable* o, EnumType* type ):
+  OutsideController(o, type)
+{
+
 }
 
 te::layout::EditTemplateController::~EditTemplateController()
@@ -59,4 +59,15 @@ void te::layout::EditTemplateController::setPosition( const double& x, const dou
     if(model)
       return model->setPosition(x, y);
   }
+}
+
+void te::layout::EditTemplateController::create()
+{
+  EnumType* type = Enums::getInstance().getEnumObjectType()->getEditTemplate();
+  m_model->setType(type);
+
+  AbstractOutsideFactory* factory = Context::getInstance().getOutsideFactory(); 
+  OutsideParamsCreate params(this, m_model);
+  if(factory)
+    m_view = (Observer*)factory->make(m_model->getType(), params);
 }

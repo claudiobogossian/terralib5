@@ -30,6 +30,7 @@
 
 #include <QObject>
 #include "../../../geometry/Envelope.h"
+#include "../../core/Config.h"
 
 namespace te
 {
@@ -40,7 +41,7 @@ namespace te
 	  
 	  \ingroup layout
 	  */
-    class VisualizationArea : public QObject
+    class TELAYOUTEXPORT VisualizationArea : public QObject
     {
 	    Q_OBJECT //for slots/signals
 

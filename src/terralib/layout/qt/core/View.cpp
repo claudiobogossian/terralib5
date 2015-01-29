@@ -425,13 +425,13 @@ void te::layout::View::outsideAreaChangeContext( bool change )
   }
   else if(mode == enumMode->getModeExportPropsJSON())
   {
-    EnumTemplateType* enumMode = Enums::getInstance().getEnumTemplateType();
-    exportProperties(enumMode->getJsonType());
+    EnumTemplateType* enumTemplate = Enums::getInstance().getEnumTemplateType();
+    exportProperties(enumTemplate->getJsonType());
   }
   else if(mode == enumMode->getModeImportJSONProps())
   {
-    EnumTemplateType* enumMode = Enums::getInstance().getEnumTemplateType();
-    importTemplate(enumMode->getJsonType());
+    EnumTemplateType* enumTemplate = Enums::getInstance().getEnumTemplateType();
+    importTemplate(enumTemplate->getJsonType());
   }
   else if(mode == enumMode->getModeMapPan())
   {

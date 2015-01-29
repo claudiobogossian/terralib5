@@ -29,7 +29,7 @@
 #define __TERRALIB_LAYOUT_INTERNAL_ABSTRACT_TEMPLATE_H
 
 // TerraLib
-
+#include "../Config.h"
 
 // STL
 #include <vector>
@@ -47,7 +47,7 @@ namespace te
 	  
 	    \ingroup layout
 	  */
-    class AbstractTemplate
+    class TELAYOUTEXPORT AbstractTemplate
     {
       public:
 

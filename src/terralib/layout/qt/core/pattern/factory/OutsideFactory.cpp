@@ -58,6 +58,7 @@ te::layout::Observer* te::layout::OutsideFactory::make( EnumType* type, OutsideP
   if(type == enumObj->getToolbar())
   {
     ToolbarOutside* toolbar = new ToolbarOutside(params.getController(), params.getModel());		
+    toolbar->createToolbar();
     outside = (Observer*)toolbar;
   }
   else if(type == enumObj->getPropertiesWindow())

@@ -30,6 +30,7 @@
 
 // TerraLib
 #include "TextItem.h"
+#include "../../core/Config.h"
 
 namespace te
 {
@@ -44,7 +45,7 @@ namespace te
 
 	    \sa te::layout::TextItem
 	  */
-    class TitleItem : public TextItem
+    class TELAYOUTEXPORT TitleItem : public TextItem
     {
       public:
 

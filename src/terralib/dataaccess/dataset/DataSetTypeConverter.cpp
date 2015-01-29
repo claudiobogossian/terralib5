@@ -49,7 +49,7 @@ te::da::DataSetTypeConverter::DataSetTypeConverter(DataSetType* type)
   m_outDataSetType->setTitle(type->getName());
 }
 
-te::da::DataSetTypeConverter::DataSetTypeConverter(DataSetType* type, const DataSourceCapabilities& capabilities)
+te::da::DataSetTypeConverter::DataSetTypeConverter(DataSetType* type, const DataSourceCapabilities& capabilities, const te::common::CharEncoding& ce)
   : m_inDataSetType(dynamic_cast<DataSetType*>(type->clone()))
 {
   assert(type);
@@ -73,7 +73,13 @@ te::da::DataSetTypeConverter::DataSetTypeConverter(DataSetType* type, const Data
 
     if(dtCapabilities.supports(p->getType()))
     {
-      add(i, p->clone());
+      if(p->getType() == te::dt::STRING_TYPE)
+      {
+        CharEncodingConverter cec(ce);
+        add(i, p->clone(), cec);
+      }
+      else
+        add(i, p->clone());
     }
     else
     {
@@ -196,6 +202,13 @@ void te::da::DataSetTypeConverter::add(std::size_t propertyPos, te::dt::Property
   add(indexes, p, attributeConverterName);
 }
 
+void te::da::DataSetTypeConverter::add(std::size_t propertyPos, te::dt::Property* p, AttributeConverter conv)
+{
+  std::vector<std::size_t> indexes;
+  indexes.push_back(propertyPos);
+  add(indexes, p, conv);
+}
+
 void te::da::DataSetTypeConverter::add(const std::vector<std::string>& propertyNames, te::dt::Property* p, const std::string& attributeConverterName)
 {
   std::vector<std::size_t> indexes;
@@ -228,6 +241,28 @@ void te::da::DataSetTypeConverter::add(const std::vector<std::size_t>& propertyP
 
   m_functionsNames.push_back(attributeConverterName);
 }
+
+void te::da::DataSetTypeConverter::add(const std::vector<std::size_t>& propertyPos, te::dt::Property* p, AttributeConverter conv)
+{
+  assert(!propertyPos.empty());
+  assert(p);
+
+  // Adding given property on out data set type
+  m_outDataSetType->add(p);
+
+  // Storing the converted properties indexes
+  m_propertyIndexes.push_back(propertyPos);
+
+  // Indexing the AttributeConverter functions
+  m_converters.push_back(conv);
+
+  // Counting reference to converted properties
+  for(std::size_t i = 0; i < propertyPos.size(); ++i)
+    m_convertedProperties[propertyPos[i]]++;
+
+  m_functionsNames.push_back("UnknownAttributeConverter");
+}
+
 
 bool te::da::DataSetTypeConverter::needConverter(DataSetType* type, const DataSourceCapabilities& capabilities)
 {

@@ -77,6 +77,8 @@ te::qt::widgets::WhereClauseWidget::WhereClauseWidget(QWidget* parent, Qt::Windo
   connect(m_ui->m_valueValueRadioButton, SIGNAL(clicked()), this, SLOT(onValuePropertyRadioButtonClicked()));
   connect(m_ui->m_restrictValueComboBox, SIGNAL(activated(QString)), this, SLOT(onRestrictValueComboBoxActivated(QString)));
 
+  m_ui->m_sqlTextEdit->setReadOnly(true);
+
   m_count = 0;
   m_srid = 0;
 }
@@ -653,6 +655,11 @@ void te::qt::widgets::WhereClauseWidget::onClearAllPushButtonClicked()
 {
   m_ui->m_whereClauseTableWidget->setRowCount(0);
   m_ui->m_whereClauseTableWidget->resizeColumnsToContents();
+
+  //get string sql
+  std::string sql = getWhereString();
+
+  m_ui->m_sqlTextEdit->setText(sql.c_str());
 }
 
 void te::qt::widgets::WhereClauseWidget::onRestrictValueComboBoxActivated(QString value)

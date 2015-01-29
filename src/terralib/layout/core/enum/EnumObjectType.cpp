@@ -29,7 +29,7 @@
 #include "EnumObjectType.h"
 
 te::layout::EnumObjectType::EnumObjectType() :
-  m_retangleItem(0),
+  m_rectangleItem(0),
   m_mapItem(0),
   m_mapGridItem(0),
   m_paperItem(0),
@@ -67,10 +67,10 @@ te::layout::EnumObjectType::~EnumObjectType()
     m_objectUnknown = 0;
   }
 
-  if(m_retangleItem)
+  if(m_rectangleItem)
   {
-    delete m_retangleItem;
-    m_retangleItem = 0;
+    delete m_rectangleItem;
+    m_rectangleItem = 0;
   }
    
   if(m_mapItem)
@@ -229,8 +229,8 @@ void te::layout::EnumObjectType::init()
   m_objectUnknown = new EnumType(0, "None");
   m_enums.push_back(m_objectUnknown);
 
-  m_retangleItem = new EnumType(1, "Retangle_Item");
-  m_enums.push_back(m_retangleItem);
+  m_rectangleItem = new EnumType(1, "Rectangle_Item");
+  m_enums.push_back(m_rectangleItem);
 
   m_mapItem = new EnumType(2, "Map_Item");
   m_enums.push_back(m_mapItem);
@@ -308,9 +308,9 @@ void te::layout::EnumObjectType::init()
   m_enums.push_back(m_legendChildItem);
 }
 
-te::layout::EnumType* te::layout::EnumObjectType::getRetangleItem() const
+te::layout::EnumType* te::layout::EnumObjectType::getRectangleItem() const
 {
-  return m_retangleItem;
+  return m_rectangleItem;
 }
 
 te::layout::EnumType* te::layout::EnumObjectType::getMapItem() const

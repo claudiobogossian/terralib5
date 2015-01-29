@@ -37,13 +37,13 @@
 te::layout::PropertiesController::PropertiesController( Observable* o ) :
 	OutsideController(o)
 {
-  EnumType* type = Enums::getInstance().getEnumObjectType()->getPropertiesWindow();
-  o->setType(type);
+  create();
+}
 
-	AbstractOutsideFactory* factory = Context::getInstance().getOutsideFactory(); 
-	OutsideParamsCreate params(this, m_model);
-  if(factory)
-	  m_view = (Observer*)factory->make(m_model->getType(), params);
+te::layout::PropertiesController::PropertiesController( Observable* o, EnumType* type ):
+  OutsideController(o, type)
+{
+
 }
 
 te::layout::PropertiesController::~PropertiesController()
@@ -59,4 +59,15 @@ void te::layout::PropertiesController::setPosition( const double& x, const doubl
     if(model)
       return model->setPosition(x, y);
   }
+}
+
+void te::layout::PropertiesController::create()
+{
+  EnumType* type = Enums::getInstance().getEnumObjectType()->getPropertiesWindow();
+  m_model->setType(type);
+
+  AbstractOutsideFactory* factory = Context::getInstance().getOutsideFactory(); 
+  OutsideParamsCreate params(this, m_model);
+  if(factory)
+    m_view = (Observer*)factory->make(m_model->getType(), params);
 }

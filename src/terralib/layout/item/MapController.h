@@ -33,6 +33,7 @@
 // TerraLib
 #include "../core/pattern/mvc/ItemController.h"
 #include "../../maptools/AbstractLayer.h"
+#include "../core/Config.h"
 
 namespace te
 {
@@ -47,7 +48,7 @@ namespace te
 
       \sa te::layout::ItemController
 	  */
-    class MapController : public ItemController
+    class TELAYOUTEXPORT MapController : public ItemController
     {
       public:
 

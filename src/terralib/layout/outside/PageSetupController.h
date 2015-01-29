@@ -39,12 +39,28 @@ namespace te
   {
     class TELAYOUTEXPORT PageSetupController : public OutsideController
     {
-    public:
+      public:
 
-	    PageSetupController( Observable* o );
-	    virtual ~PageSetupController();
+	      PageSetupController( Observable* o );
 
-	    virtual void setPosition(const double& x, const double& y);
+	      virtual ~PageSetupController();
+
+	      virtual void setPosition(const double& x, const double& y);
+
+      protected:
+
+        /*!
+          \brief Constructor.
+
+          \param o "Model" part of MVC component
+          \param type type of the MVC component
+        */
+        PageSetupController( Observable* o, EnumType* type );
+
+        /*!
+            \brief Reimplemented from ItemController
+           */
+        virtual void create();
 
     };
   }

@@ -30,6 +30,7 @@
 
 // TerraLib
 #include "AbstractTemplate.h"
+#include "../Config.h"
 
 namespace te
 {
@@ -44,7 +45,7 @@ namespace te
 
       \sa te::layout::AbstractTemplate
 	  */
-    class JSONTemplate : AbstractTemplate
+    class TELAYOUTEXPORT JSONTemplate : AbstractTemplate
     {
       public:
 

@@ -28,6 +28,9 @@
 #ifndef __TERRALIB_LAYOUT_INTERNAL_TEMPLATE_EDITOR_H 
 #define __TERRALIB_LAYOUT_INTERNAL_TEMPLATE_EDITOR_H
 
+// TerraLib
+#include "../Config.h"
+
 // STL
 #include <string>
 
@@ -43,7 +46,7 @@ namespace te
 	  
 	    \ingroup layout
 	  */
-    class TemplateEditor
+    class TELAYOUTEXPORT TemplateEditor
     {
       public:
 

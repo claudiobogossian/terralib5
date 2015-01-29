@@ -33,6 +33,7 @@
 #include "../../color/RGBAColor.h"
 #include "Utils.h"
 #include "../../maptools/Canvas.h"
+#include "Config.h"
 
 namespace te
 {
@@ -44,7 +45,7 @@ namespace te
 	  
 	    \ingroup layout
 	  */
-    class ContextItem 
+    class TELAYOUTEXPORT ContextItem 
     {
       public:
 

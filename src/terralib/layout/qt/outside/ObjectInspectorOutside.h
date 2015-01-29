@@ -59,7 +59,7 @@ namespace te
 
     public:
 
-	    ObjectInspectorOutside(OutsideController* controller, Observable* o);
+	    ObjectInspectorOutside(OutsideController* controller, Observable* o, ObjectInspectorPropertyBrowser* propertyBrowser = 0);
 	    
       virtual ~ObjectInspectorOutside();
 

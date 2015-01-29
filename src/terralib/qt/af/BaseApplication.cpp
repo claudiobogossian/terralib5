@@ -956,6 +956,7 @@ void te::qt::af::BaseApplication::onToolsQueryDataSourceTriggered()
 
     std::list<te::map::AbstractLayerPtr> layers = te::qt::af::ApplicationController::getInstance().getProject()->getAllLayers(false);
     dlg.setLayerList(layers);
+    dlg.setAppMapDisplay(m_display->getDisplay());
 
     dlg.exec();
   }
@@ -1203,6 +1204,8 @@ void te::qt::af::BaseApplication::onLayerHistogramTriggered()
 
     te::qt::widgets::HistogramDialog dlg(dataset, dataType, this);
 
+    dlg.setWindowTitle(dlg.windowTitle() + " (" + tr("Layer") + ":" + selectedLayer->getTitle().c_str() +")");
+
     int res = dlg.exec();
     if (res == QDialog::Accepted)
     {
@@ -1334,6 +1337,9 @@ void te::qt::af::BaseApplication::onLayerScatterTriggered()
     te::da::DataSetType* dataType = (te::da::DataSetType*) schema;
 
     te::qt::widgets::ScatterDialog dlg(dataset, dataType, this);
+
+    dlg.setWindowTitle(dlg.windowTitle() + " (" + tr("Layer") + ":" + selectedLayer->getTitle().c_str() +")");
+
     int res = dlg.exec();
     if (res == QDialog::Accepted)
     {
@@ -1389,6 +1395,9 @@ void te::qt::af::BaseApplication::onLayerChartTriggered()
     te::map::AbstractLayerPtr selectedLayer = selectedLayerItem->getLayer();
 
     te::qt::widgets::ChartLayerDialog dlg(this);
+
+    dlg.setWindowTitle(dlg.windowTitle() + " (" + tr("Layer") + ":" + selectedLayer->getTitle().c_str() +")");
+
     dlg.setLayer(selectedLayer);
 
     // If the selected layer has a chart associated to it, set the chart layer
@@ -1747,7 +1756,10 @@ void te::qt::af::BaseApplication::onQueryLayerTriggered()
   }
 
   if(m_project)
-    m_queryDlg->setLayerList(m_project->getTopLayers());
+  {
+    std::list<te::map::AbstractLayerPtr> allLayersList = ApplicationController::getInstance().getProject()->getSingleLayers(false);
+    m_queryDlg->setLayerList(allLayersList);
+  }
 
   std::list<te::qt::widgets::AbstractTreeItem*> selectedLayerItems = m_explorer->getExplorer()->getSelectedSingleLayerItems();
 

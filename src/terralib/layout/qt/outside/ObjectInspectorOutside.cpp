@@ -42,7 +42,7 @@
 #include <QVBoxLayout>
 #include <QGroupBox>
 
-te::layout::ObjectInspectorOutside::ObjectInspectorOutside( OutsideController* controller, Observable* o ) :
+te::layout::ObjectInspectorOutside::ObjectInspectorOutside( OutsideController* controller, Observable* o, ObjectInspectorPropertyBrowser* propertyBrowser ) :
   QWidget(0),
   OutsideObserver(controller, o)
 {
@@ -52,8 +52,11 @@ te::layout::ObjectInspectorOutside::ObjectInspectorOutside( OutsideController* c
   setWindowTitle("Layout - Inspetor de Objetos");
   setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
   
-  m_layoutPropertyBrowser = new ObjectInspectorPropertyBrowser;
-    
+  if(!propertyBrowser)
+    m_layoutPropertyBrowser = new ObjectInspectorPropertyBrowser;
+  else
+    m_layoutPropertyBrowser = propertyBrowser;
+
   QVBoxLayout* layout = new QVBoxLayout(this);
   layout->setMargin(0);
   layout->addWidget(m_layoutPropertyBrowser->getPropertyEditor());

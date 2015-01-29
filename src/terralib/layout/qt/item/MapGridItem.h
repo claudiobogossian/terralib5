@@ -30,6 +30,7 @@
 
 // TerraLib
 #include "MapItem.h"
+#include "../../core/Config.h"
 
 class QPainter;
 
@@ -47,7 +48,7 @@ namespace te
 
 	    \sa te::layout::MapItem
 	  */
-    class MapGridItem : public MapItem
+    class TELAYOUTEXPORT MapGridItem : public MapItem
     {
       Q_OBJECT //for slots/signals
 
