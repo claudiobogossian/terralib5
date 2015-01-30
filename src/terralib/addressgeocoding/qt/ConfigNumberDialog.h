@@ -18,19 +18,18 @@
  */
 
 /*!
-  \file terralib/addressgeocoding/qt/ConfigInputLayerDialog.h
+  \file terralib/addressgeocoding/qt/ConfigNumberDialog.h
 
-  \brief A dialog configure the input layer to address geocoding operation
+  \brief Associates address number.
 */
 
-#ifndef __TERRALIB_ADDRESSGEOCODING_INTERNAL_CONFIGINPUTLAYERDIALOG_H
-#define __TERRALIB_ADDRESSGEOCODING_INTERNAL_CONFIGINPUTLAYERDIALOG_H
+#ifndef __TERRALIB_ADDRESSGEOCODING_INTERNAL_CONFIGNUMBERDIALOG_H
+#define __TERRALIB_ADDRESSGEOCODING_INTERNAL_CONFIGNUMBERDIALOG_H
 
 // TerraLib
-#include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../dataaccess/datasource/DataSource.h"
+#include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../datatype/Property.h"
-#include "../../qt/widgets/utils/DoubleListWidget.h"
 #include "../../maptools/AbstractLayer.h"
 #include "../Config.h"
 
@@ -41,7 +40,7 @@
 // Qt
 #include <QDialog>
 
-namespace Ui { class ConfigInputLayerDialogForm; }
+namespace Ui { class ConfigNumberDialogForm; }
 
 // Forward declarations
 class QModelIndex;
@@ -50,32 +49,27 @@ namespace te
 {
   namespace addressgeocoding
   {
-    class TEADDRESSGEOCODINGEXPORT ConfigInputLayerDialog : public QDialog
+    class TEADDRESSGEOCODINGEXPORT ConfigNumberDialog : public QDialog
     {
       Q_OBJECT
 
       public:
 
-        ConfigInputLayerDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
+        ConfigNumberDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
-        ~ConfigInputLayerDialog();
+        ~ConfigNumberDialog();
 
-        /*!
-          \brief Set the layer that can be used
+        void setLayer(te::map::AbstractLayerPtr layer);
 
-          \param layers   List of AbstractLayerPtr
-        */
-        void setLayers(std::list<te::map::AbstractLayerPtr> layers);
+        std::string getInitialLeft();
 
-        te::map::AbstractLayerPtr getLayer();
+        std::string getFinalLeft();
 
-        te::da::DataSourcePtr getDataSource();
+        std::string getInitialRight();
+
+        std::string getFinalRight();
 
       protected slots:
-
-        void onInputLayerComboBoxChanged(int index);
-
-        void onNumberPushButtonClicked();
 
         void onHelpPushButtonClicked();
 
@@ -85,15 +79,13 @@ namespace te
 
       private:
 
-        std::auto_ptr<Ui::ConfigInputLayerDialogForm> m_ui;
-        std::auto_ptr<te::qt::widgets::DoubleListWidget> m_widget;
-        std::list<te::map::AbstractLayerPtr> m_layers;  //!< List of layers.
+        std::auto_ptr<Ui::ConfigNumberDialogForm> m_ui;
         te::da::DataSourcePtr m_dataSource;
-        te::map::AbstractLayerPtr m_selectedLayer;  //!< Layer used for address geocoding
-        std::vector<std::string> m_selectedProps; //!< Selected properties related to the selected Layer
-
+        std::auto_ptr<te::da::DataSet> m_dataSet;
+        te::map::AbstractLayerPtr m_selectedLayer;
+        std::vector<te::dt::Property*> m_properties;
     };
   }   // end namespace addressgeocoding
 }     // end namespace te
 
-#endif  // __TERRALIB_ADDRESSGEOCODING_INTERNAL_CONFIGINPUTLAYERDIALOG_H
+#endif  // __TERRALIB_ADDRESSGEOCODING_INTERNAL_CONFIGNUMBERDIALOG_H

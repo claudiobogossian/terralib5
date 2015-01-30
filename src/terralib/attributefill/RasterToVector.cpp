@@ -431,7 +431,7 @@ std::vector<te::rp::Texture> te::attributefill::RasterToVector::getTexture( te::
     polygon = dynamic_cast< te::gm::Polygon* >(geom);
   }
 
-  for(std::size_t i = 0; i < bands; ++i)
+  for(int i = 0; i < bands; ++i)
   {
     boost::numeric::ublas::matrix<double> glcm = rattributes.getGLCM(*rst, i, 1, 1, *polygon);
     te::rp::Texture metrics = rattributes.getGLCMMetrics(glcm);
