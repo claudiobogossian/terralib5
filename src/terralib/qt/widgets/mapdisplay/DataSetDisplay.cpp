@@ -33,6 +33,9 @@
 #include "../../../geometry/Envelope.h"
 #include "../../../geometry/Geometry.h"
 #include "../../../geometry/GeometryProperty.h"
+#include "../../../maptools/Utils.h"
+#include "../../../se/CoverageStyle.h"
+#include "../../../se/Utils.h"
 #include "../canvas/Canvas.h"
 #include "../Utils.h"
 #include "DataSetDisplay.h"
@@ -62,7 +65,15 @@ void te::qt::widgets::DataSetDisplay::draw(const te::da::DataSetTypePtr& dataset
   {
     te::da::DataSourcePtr auxDs = te::da::DataSourceManager::getInstance().get(ds->getId(), ds->getType(), ds->getConnInfo());
 
-    draw(dataset, auxDs);
+    if(dataset->hasRaster())
+    {
+      std::auto_ptr<te::da::DataSourceTransactor> t = auxDs->getTransactor();
+
+      draw(dataset, auxDs, t->getDataSet(dataset->getName()).get());
+    }
+    else
+      draw(dataset, auxDs);
+    
   }
   catch(const std::exception& e)
   {
@@ -89,90 +100,105 @@ void te::qt::widgets::DataSetDisplay::draw(const te::da::DataSetTypePtr& dataset
   if(dataset->size() == 0)
     te::da::LoadProperties(dataset.get(), ds->getId());
 
-  if(!dataset->hasGeom())
+  if(dataset->hasRaster())
   {
-    m_canvas->setBackgroundColor(te::color::RGBAColor(0, 0, 0, 255)); //  fill black
-    repaint();
-    return;
+    std::size_t rpos = te::da::GetFirstPropertyPos(datasetData, te::dt::RASTER_TYPE);
+
+    std::auto_ptr<te::rst::Raster> rst = datasetData->getRaster(rpos);
+
+    te::se::Style* style = te::se::CreateCoverageStyle(rst->getNumberOfBands());
+    te::se::CoverageStyle* cs = dynamic_cast<te::se::CoverageStyle*>(style);
+
+    te::gm::Envelope* rstEnv = rst->getExtent();
+    int rstSrid = rst->getSRID();
+
+    te::map::DrawRaster(rst.get(), m_canvas.get(), *rstEnv, rstSrid, *rstEnv, rstSrid, cs);
   }
-
-  te::gm::GeometryProperty* gp = te::da::GetFirstGeomProperty(dataset.get());
-
-  std::auto_ptr<te::gm::Envelope> mbr(te::da::GetExtent(dataset->getName(), gp->getName(), ds->getId()));
-
-  if(mbr.get() == 0)
-    return;
-
-  m_canvas->calcAspectRatio(mbr.get());
-
-  m_canvas->setWindow(mbr->getLowerLeftX(), mbr->getLowerLeftY(), mbr->getUpperRightX(), mbr->getUpperRightY());
-
-  switch(gp->getGeometryType())
+  else if(dataset->hasGeom())
   {
-    case te::gm::PolygonType:
-    case te::gm::PolygonZType:
-    case te::gm::PolygonMType:
-    case te::gm::PolygonZMType:
-    case te::gm::MultiPolygonType:
-    case te::gm::MultiPolygonZType:
-    case te::gm::MultiPolygonMType:
-    case te::gm::MultiPolygonZMType:
-    {
-      Config2DrawPolygons(m_canvas.get(), Qt::red, Qt::black);
-    }
-    break;
 
-    case te::gm::LineStringType:
-    case te::gm::LineStringZType:
-    case te::gm::LineStringMType:
-    case te::gm::LineStringZMType:
-    case te::gm::MultiLineStringType:
-    case te::gm::MultiLineStringZType:
-    case te::gm::MultiLineStringMType:
-    case te::gm::MultiLineStringZMType:
-    {
-      Config2DrawLines(m_canvas.get(), Qt::black);
-    }
-    break;
+    te::gm::GeometryProperty* gp = te::da::GetFirstGeomProperty(dataset.get());
 
-    case te::gm::PointType:
-    case te::gm::PointZType:
-    case te::gm::PointMType:
-    case te::gm::PointZMType:
-    case te::gm::MultiPointType:
-    case te::gm::MultiPointZType:
-    case te::gm::MultiPointMType:
-    case te::gm::MultiPointZMType:
-    {
-      Config2DrawPoints(m_canvas.get(), "circle", 1, Qt::black, Qt::transparent, 1);
-    }
-    break;
+    std::auto_ptr<te::gm::Envelope> mbr(te::da::GetExtent(dataset->getName(), gp->getName(), ds->getId()));
 
-    default:
+    if(mbr.get() == 0)
+      return;
+
+    m_canvas->calcAspectRatio(mbr.get());
+
+    m_canvas->setWindow(mbr->getLowerLeftX(), mbr->getLowerLeftY(), mbr->getUpperRightX(), mbr->getUpperRightY());
+
+    switch(gp->getGeometryType())
+    {
+      case te::gm::PolygonType:
+      case te::gm::PolygonZType:
+      case te::gm::PolygonMType:
+      case te::gm::PolygonZMType:
+      case te::gm::MultiPolygonType:
+      case te::gm::MultiPolygonZType:
+      case te::gm::MultiPolygonMType:
+      case te::gm::MultiPolygonZMType:
+      {
+        Config2DrawPolygons(m_canvas.get(), Qt::red, Qt::black);
+      }
       break;
-  }
 
-  if(datasetData)
-  {
-    std::size_t gpos = te::da::GetFirstPropertyPos(datasetData, te::dt::GEOMETRY_TYPE);
+      case te::gm::LineStringType:
+      case te::gm::LineStringZType:
+      case te::gm::LineStringMType:
+      case te::gm::LineStringZMType:
+      case te::gm::MultiLineStringType:
+      case te::gm::MultiLineStringZType:
+      case te::gm::MultiLineStringMType:
+      case te::gm::MultiLineStringZMType:
+      {
+        Config2DrawLines(m_canvas.get(), Qt::black);
+      }
+      break;
 
-    while(datasetData->moveNext())
+      case te::gm::PointType:
+      case te::gm::PointZType:
+      case te::gm::PointMType:
+      case te::gm::PointZMType:
+      case te::gm::MultiPointType:
+      case te::gm::MultiPointZType:
+      case te::gm::MultiPointMType:
+      case te::gm::MultiPointZMType:
+      {
+        Config2DrawPoints(m_canvas.get(), "circle", 1, Qt::black, Qt::transparent, 1);
+      }
+      break;
+
+      default:
+        break;
+    }
+
+    if(datasetData)
     {
-      std::auto_ptr<te::gm::Geometry> g(datasetData->getGeometry(gpos));
-      m_canvas->draw(g.get());
+      std::size_t gpos = te::da::GetFirstPropertyPos(datasetData, te::dt::GEOMETRY_TYPE);
+
+      while(datasetData->moveNext())
+      {
+        std::auto_ptr<te::gm::Geometry> g(datasetData->getGeometry(gpos));
+        m_canvas->draw(g.get());
+      }
+    }
+    else
+    {
+      std::auto_ptr<te::da::DataSet> feature(ds->getDataSet(dataset->getName()));
+
+      std::size_t gpos = te::da::GetFirstPropertyPos(feature.get(), te::dt::GEOMETRY_TYPE);
+
+      while(feature->moveNext())
+      {
+        std::auto_ptr<te::gm::Geometry> g(feature->getGeometry(gpos));
+        m_canvas->draw(g.get());
+      }
     }
   }
   else
   {
-    std::auto_ptr<te::da::DataSet> feature(ds->getDataSet(dataset->getName()));
-
-    std::size_t gpos = te::da::GetFirstPropertyPos(feature.get(), te::dt::GEOMETRY_TYPE);
-
-    while(feature->moveNext())
-    {
-      std::auto_ptr<te::gm::Geometry> g(feature->getGeometry(gpos));
-      m_canvas->draw(g.get());
-    }
+    m_canvas->setBackgroundColor(te::color::RGBAColor(0, 0, 0, 255)); //  fill black
   }
 
   repaint();

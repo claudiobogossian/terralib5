@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../../../dataaccess/datasource/DataSource.h"
+#include "../../../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../../../dataaccess/datasource/DataSourceFactory.h"
 #include "../utils/ParameterTableWidget.h"
 #include "../Utils.h"
@@ -35,6 +36,8 @@
 // QT
 #include <QFileDialog>
 
+// BOOST Includes
+#include <boost/tokenizer.hpp>
 #include <boost/lexical_cast.hpp>
 
 
@@ -55,7 +58,7 @@ te::qt::widgets::RasterInfoWidget::RasterInfoWidget(QWidget* parent, Qt::WindowF
   //connects
   connect(m_ui->m_openFileDlgToolButton, SIGNAL(clicked()), this, SLOT(onOpenFileDlgToolButtonClicked()));
 
-
+  fillExtensions();
 }
 
 te::qt::widgets::RasterInfoWidget::~RasterInfoWidget()
@@ -93,7 +96,7 @@ std::map<std::string, std::string> te::qt::widgets::RasterInfoWidget::getInfo() 
 
   if(m_ui->m_fileRadioButton->isChecked())
   {
-    std::string fileName = m_dir + "/" + name + ".tif";
+    std::string fileName = m_dir + "/" + name + getExtension();
 
     rinfo["URI"] = fileName;
   }
@@ -126,7 +129,7 @@ std::map<std::string, std::string> te::qt::widgets::RasterInfoWidget::getInfo(in
   if(m_ui->m_fileRadioButton->isChecked())
   {
     std::string str = boost::lexical_cast< std::string >( count );
-    std::string fileName = m_dir + "/" + name + "_" + str + ".tif";
+    std::string fileName = m_dir + "/" + name + "_" + str + getExtension();
 
     rinfo["URI"] = fileName;
   }
@@ -168,7 +171,7 @@ std::string te::qt::widgets::RasterInfoWidget::getName() const
 
   if(m_ui->m_fileRadioButton->isChecked())
   {
-     name += ".tif";
+     name += getExtension();
   }
 
   return name;
@@ -192,7 +195,9 @@ std::string te::qt::widgets::RasterInfoWidget::getShortName() const
 
 std::string te::qt::widgets::RasterInfoWidget::getExtension() const
 {
-  return ".tif";
+  std::string ext = "." + m_ui->m_extComboBox->currentText().toStdString();
+
+  return ext;
 }
 
 std::string te::qt::widgets::RasterInfoWidget::getPath() const
@@ -211,7 +216,7 @@ bool te::qt::widgets::RasterInfoWidget::fileExists() const
   {
     std::string name = getBaseName();
 
-    std::string fileName = m_dir + "/" + name + ".tif";
+    std::string fileName = m_dir + "/" + name + getExtension();
 
     QFile file(fileName.c_str());
 
@@ -235,6 +240,44 @@ std::string te::qt::widgets::RasterInfoWidget::getBaseName() const
   }
 
   return name;
+}
+
+void te::qt::widgets::RasterInfoWidget::fillExtensions()
+{
+  //fill extensions
+  m_ui->m_extComboBox->clear();
+
+  std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL");
+
+  if(!ds.get())
+    return;
+
+  te::da::DataSourceCapabilities dsCap = ds->getCapabilities();
+
+  std::map<std::string, std::string> mapSpecCap = dsCap.getSpecificCapabilities();
+
+  std::string exts = mapSpecCap["SUPPORTED_EXTENSIONS"];
+
+//create boost tokenizer
+  typedef boost::tokenizer< boost::escaped_list_separator<char> > Tokenizer;
+  boost::escaped_list_separator<char> sep('\\', ';', '\"');
+  
+  std::vector<std::string> extVec;
+
+  Tokenizer tok(exts, sep);
+  extVec.assign(tok.begin(), tok.end());
+
+  int curIdx = 0;
+
+  for(std::size_t t = 0; t < extVec.size(); ++t)
+  {
+    m_ui->m_extComboBox->addItem(extVec[t].c_str());
+
+    if(extVec[t] == "tif")
+      curIdx = (int)t;
+  }
+
+  m_ui->m_extComboBox->setCurrentIndex(curIdx);
 }
 
 void te::qt::widgets::RasterInfoWidget::onOpenFileDlgToolButtonClicked()

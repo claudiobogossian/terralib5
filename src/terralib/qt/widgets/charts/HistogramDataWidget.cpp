@@ -76,6 +76,7 @@ void updateSummary(te::da::DataSet* dataSet, Ui::HistogramDataWidgetForm* ui)
     ui->m_summaryComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::VAR_COEFF).c_str()), QVariant(te::stat::VAR_COEFF));
     //ui->m_summaryComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MODE).c_str()), QVariant(te::stat::MODE));
   }
+  ui->m_summaryComboBox->setCurrentIndex(0);
 }
 
 te::qt::widgets::HistogramDataWidget::HistogramDataWidget(te::da::DataSet* dataSet, te::da::DataSetType* dataType, QWidget* parent, Qt::WindowFlags f)
@@ -116,7 +117,7 @@ te::qt::widgets::HistogramDataWidget::HistogramDataWidget(te::da::DataSet* dataS
       for (size_t i = 0; i < size; i++)
       {
         item = QString::number(i);
-        m_ui->m_propertyComboBox->addItem((QString::fromStdString("Band: ") + item));
+        m_ui->m_propertyComboBox->addItem((QString::fromStdString("Band: ") + item), QVariant(i));
       }
     }
   else
@@ -126,16 +127,20 @@ te::qt::widgets::HistogramDataWidget::HistogramDataWidget(te::da::DataSet* dataS
       if(dataSet->getPropertyDataType(i) != te::dt::GEOMETRY_TYPE)
       {
         item = QString::fromStdString(dataSet->getPropertyName(i));
-        m_ui->m_propertyComboBox->addItem(item);
+        m_ui->m_propertyComboBox->addItem(item, QVariant(i));
       }
     }
   }
 
+  updateSummary(m_dataSet.get(), getForm());
+
   if(te::da::HasLinkedTable(dataType))
-    updateSummary(m_dataSet.get(), getForm());
+  {
+    m_ui->m_summaryComboBox->show();
+    m_ui->m_summaryLabel->show();
+  }
   else
   {
-    m_ui->m_summaryComboBox->clear();
     m_ui->m_summaryComboBox->hide();
     m_ui->m_summaryLabel->hide();
   }
@@ -160,7 +165,7 @@ te::qt::widgets::Histogram* te::qt::widgets::HistogramDataWidget::getHistogram()
 
   if(rpos != std::string::npos)
   {
-    histogram = te::qt::widgets::createHistogram(m_dataSet.get(), m_dataType.get(), m_ui->m_propertyComboBox->currentIndex(), m_ui->m_slicesSpinBox->value());
+    histogram = te::qt::widgets::createHistogram(m_dataSet.get(), m_dataType.get(), m_ui->m_propertyComboBox->itemData(m_ui->m_propertyComboBox->currentIndex()).toInt(), m_ui->m_slicesSpinBox->value());
   }
   else
   {
@@ -193,7 +198,7 @@ te::qt::widgets::Histogram* te::qt::widgets::HistogramDataWidget::getHistogram()
 
 void te::qt::widgets::HistogramDataWidget::setHistogramProperty(int propId)
 {
-  m_ui->m_propertyComboBox->setCurrentIndex(propId);
+  m_ui->m_propertyComboBox->setCurrentIndex(m_ui->m_propertyComboBox->findData(propId));
   m_ui->m_propertyComboBox->setEnabled(false);
 }
 
@@ -235,11 +240,15 @@ void te::qt::widgets::HistogramDataWidget::onPropertyComboBoxIndexChanged (QStri
     m_ui->m_slicesSpinBox->setValue(0);
   }
 
+  updateSummary(m_dataSet.get(), getForm());
+
   if(te::da::HasLinkedTable(m_dataType.get()))
-    updateSummary(m_dataSet.get(), getForm());
+  {
+    m_ui->m_summaryComboBox->show();
+    m_ui->m_summaryLabel->show();
+  }
   else
   {
-    m_ui->m_summaryComboBox->clear();
     m_ui->m_summaryComboBox->hide();
     m_ui->m_summaryLabel->hide();
   }

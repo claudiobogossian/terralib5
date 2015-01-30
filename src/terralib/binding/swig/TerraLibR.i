@@ -1,19 +1,18 @@
 /* 
-* File: TerraLibLUA.i 
+* File: TerraLibR.i 
 * 
 */ 
  
-%module terralib_mod_binding_lua 
-
-%include stl.i
-
-%include lua/typemaps.i
-
-%include typemaps.i
+%module terralib_mod_binding_r 
 
 #define TECOMMONEXPORT
 
 %include "terralib/common/Singleton.h"
+
+%include stl.i
+%include typemaps.i
+
+%include r/typemaps.i
 
 namespace te 
 {
@@ -27,21 +26,23 @@ typedef te::common::Singleton< TerraLib > TeSingleton;
 
 %apply unsigned int *INOUT {std::size_t& size}
 %apply const string& { const std::string& }
+%apply te::common::Exception { Exception }
 
-%include "terralib/common/Enums.h"  
-%include "terralib/common/TerraLib.h"
+%ignore as_long_string;
+%ignore as_short_string;
+%ignore get(const std::pair<int, int>& typeMap);
+
+%feature("compactdefaultargs") te::rst::RasterSummaryManager::get;
 
 %{  
 #include <terralib/Config.h>
 #include <terralib/common/Enums.h>  
-#include <terralib/common/Exception.h>
 #include <terralib/common/TerraLib.h>
+#include <terralib/common/Exception.h>
 
 // Boost
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
-
-using te::common::Exception;
 
 /* Defining a function for generating randomic ids. */
 static std::string GetRandomicId()
@@ -53,6 +54,10 @@ static std::string GetRandomicId()
 }
 
 %}
+
+%include "terralib/common/Enums.h"  
+%include "terralib/common/TerraLib.h"
+
 
 /* Include Common module to the bind. */
 %include common/Common.i
@@ -75,7 +80,7 @@ static std::string GetRandomicId()
 /* Include Plugin module to the bind. */
 %include common/Plugin.i 
 
-/* Include Spatial Temporal module to the bind. */   
+/* Include Spatial Temporal module to the bind. */
 %include common/ST.i
 
 // Wrap function

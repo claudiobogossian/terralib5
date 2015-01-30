@@ -51,6 +51,8 @@ namespace te
       \class RasterSynchronizer
 
       \brief An access synchronizer to be used in SynchronizedRaster raster instances.
+      
+      \ingroup rst
     */
     class TERASTEREXPORT RasterSynchronizer: public boost::noncopyable
     {

@@ -24,6 +24,7 @@
 */
 
 // TerraLib 
+#include "../../../common/progress/ProgressManager.h"
 #include "../../../dataaccess/dataset/DataSet.h"
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../raster/Raster.h"
@@ -32,6 +33,7 @@
 #include "../help/HelpPushButton.h"
 #include "../layer/search/LayerSearchWidget.h"
 #include "../layer/search/LayerSearchWizardPage.h"
+#include "../progress/ProgressViewerDialog.h"
 #include "ContrastWizard.h"
 #include "ContrastWizardPage.h"
 #include "RasterInfoWidget.h"
@@ -163,39 +165,68 @@ bool te::qt::widgets::ContrastWizard::execute()
   algoOutputParams.m_createdOutRasterInfo = m_rasterInfoPage->getWidget()->getInfo();
   algoOutputParams.m_outRasterBands = algoInputParams.m_inRasterBands;
 
+  //progress
+  te::qt::widgets::ProgressViewerDialog v(this);
+  int id = te::common::ProgressManager::getInstance().addViewer(&v);
+
   QApplication::setOverrideCursor(Qt::WaitCursor);
 
-  if(algorithmInstance.initialize(algoInputParams))
+  try
   {
-    if(algorithmInstance.execute(algoOutputParams))
+    if(algorithmInstance.initialize(algoInputParams))
     {
-      algoOutputParams.reset();
+      if(algorithmInstance.execute(algoOutputParams))
+      {
+        algoOutputParams.reset();
 
-      //set output layer
-      m_outputLayer = te::qt::widgets::createLayer(m_rasterInfoPage->getWidget()->getType(), 
-                                                   m_rasterInfoPage->getWidget()->getInfo());
+        //set output layer
+        m_outputLayer = te::qt::widgets::createLayer(m_rasterInfoPage->getWidget()->getType(), 
+                                                     m_rasterInfoPage->getWidget()->getInfo());
 
-      QMessageBox::information(this, tr("Contrast"), tr("Contrast enhencement ended sucessfully"));
+        QMessageBox::information(this, tr("Contrast"), tr("Contrast enhencement ended sucessfully"));
+      }
+      else
+      {
+        QMessageBox::critical(this, tr("Contrast"), tr("Contrast enhencement execution error.") +
+          ( " " + te::rp::Module::getLastLogStr() ).c_str());
+
+        QApplication::restoreOverrideCursor();
+
+        return false;
+      }
     }
     else
     {
-      QMessageBox::critical(this, tr("Contrast"), tr("Contrast enhencement execution error.") +
-        ( " " + te::rp::Module::getLastLogStr() ).c_str());
+      QMessageBox::critical(this, tr("Contrast"), tr("Contrast enhencement initialization error.") +
+        ( " " + te::rp::Module::getLastLogStr() ).c_str() );
 
       QApplication::restoreOverrideCursor();
 
       return false;
     }
   }
-  else
+  catch(const std::exception& e)
   {
-    QMessageBox::critical(this, tr("Contrast"), tr("Contrast enhencement initialization error.") +
-      ( " " + te::rp::Module::getLastLogStr() ).c_str() );
+    QMessageBox::warning(this, tr("Contrast"), e.what());
+
+    te::common::ProgressManager::getInstance().removeViewer(id);
 
     QApplication::restoreOverrideCursor();
 
     return false;
   }
+  catch(...)
+  {
+    QMessageBox::warning(this, tr("Contrast"), tr("An exception has occurred!"));
+
+    te::common::ProgressManager::getInstance().removeViewer(id);
+
+    QApplication::restoreOverrideCursor();
+
+    return false;
+  }
+
+  te::common::ProgressManager::getInstance().removeViewer(id);
 
   QApplication::restoreOverrideCursor();
 

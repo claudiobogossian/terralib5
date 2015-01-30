@@ -44,6 +44,7 @@
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../../qt/widgets/layer/utils/DataSet2Layer.h"
 #include "../../qt/widgets/progress/ProgressViewerDialog.h"
+#include "../AddressGeocodingOp.h"
 #include "../Config.h"
 #include "../Exception.h"
 #include "MainWindowDialog.h"
@@ -79,6 +80,13 @@ te::addressgeocoding::MainWindowDialog::MainWindowDialog(QWidget* parent, Qt::Wi
   m_ui->m_targetDatasourceToolButton->setIcon(QIcon::fromTheme("datasource"));
 
   connect(m_ui->m_inputLayerComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onLayerComboBoxChanged(int)));
+  connect(m_ui->m_iLeftComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onInitialLeftComboBoxChanged(int)));
+  connect(m_ui->m_fLeftComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onFinalLeftComboBoxChanged(int)));
+  connect(m_ui->m_iRightComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onInitialRightComboBoxChanged(int)));
+  connect(m_ui->m_fRightComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onFinalRightComboBoxChanged(int)));
+
+  connect(m_ui->m_targetDatasourceToolButton, SIGNAL(pressed()), this, SLOT(onTargetDatasourceToolButtonPressed()));
+  connect(m_ui->m_targetFileToolButton, SIGNAL(pressed()), this,  SLOT(onTargetFileToolButtonPressed()));
 
   connect(m_ui->m_configureLayerPushButton, SIGNAL(clicked()), this, SLOT(onConfigureLayerClicked()));
   connect(m_ui->m_configureAddressPushButton, SIGNAL(clicked()), this, SLOT(onConfigureAddressClicked()));
@@ -130,10 +138,62 @@ void te::addressgeocoding::MainWindowDialog::onLayerComboBoxChanged(int index)
     {
       te::map::AbstractLayerPtr selectedLayer = it->get();
       m_selectedLayer = selectedLayer;
+
+      std::auto_ptr<te::da::DataSetType> dsType = m_selectedLayer->getSchema();
+      std::vector<te::dt::Property*> propVec = dsType->getProperties();
+
+      m_ui->m_iLeftComboBox->clear();
+      m_ui->m_fLeftComboBox->clear();
+      m_ui->m_iRightComboBox->clear();
+      m_ui->m_fRightComboBox->clear();
+
+      m_ui->m_iLeftComboBox->addItem("");
+      m_ui->m_fLeftComboBox->addItem("");
+      m_ui->m_iRightComboBox->addItem("");
+      m_ui->m_fRightComboBox->addItem("");
+
+      int type;
+
+      for(std::size_t i = 0; i < propVec.size(); ++i)
+      {
+        type = propVec[i]->getType();
+        if(type == te::dt::INT16_TYPE || 
+          type == te::dt::INT32_TYPE || 
+          type == te::dt::INT64_TYPE || 
+          type == te::dt::DOUBLE_TYPE || 
+          type == te::dt::NUMERIC_TYPE)
+        {
+          m_ui->m_iLeftComboBox->addItem(QString(propVec[i]->getName().c_str()));
+          m_ui->m_fLeftComboBox->addItem(QString(propVec[i]->getName().c_str()));
+          m_ui->m_iRightComboBox->addItem(QString(propVec[i]->getName().c_str()));
+          m_ui->m_fRightComboBox->addItem(QString(propVec[i]->getName().c_str()));
+        }
+      }
+
       return;
     }
     ++it;
   }
+}
+
+void te::addressgeocoding::MainWindowDialog::onInitialLeftComboBoxChanged(int index)
+{
+  m_initialLeft = m_ui->m_iLeftComboBox->itemText(index).toStdString();
+}
+
+void te::addressgeocoding::MainWindowDialog::onFinalLeftComboBoxChanged(int index)
+{
+  m_finalLeft = m_ui->m_fLeftComboBox->itemText(index).toStdString();
+}
+
+void te::addressgeocoding::MainWindowDialog::onInitialRightComboBoxChanged(int index)
+{
+  m_initialRight = m_ui->m_iRightComboBox->itemText(index).toStdString();
+}
+
+void te::addressgeocoding::MainWindowDialog::onFinalRightComboBoxChanged(int index)
+{
+  m_finalRight = m_ui->m_fRightComboBox->itemText(index).toStdString();
 }
 
 void te::addressgeocoding::MainWindowDialog::onConfigureLayerClicked()
@@ -186,44 +246,44 @@ void te::addressgeocoding::MainWindowDialog::onConfigureAddressClicked()
 
 void te::addressgeocoding::MainWindowDialog::onTargetDatasourceToolButtonPressed()
 {
-  //m_ui->m_newLayerNameLineEdit->clear();
-  //m_ui->m_newLayerNameLineEdit->setEnabled(true);
-  //te::qt::widgets::DataSourceSelectorDialog dlg(this);
-  //dlg.exec();
+  m_ui->m_newLayerNameLineEdit->clear();
+  m_ui->m_newLayerNameLineEdit->setEnabled(true);
+  te::qt::widgets::DataSourceSelectorDialog dlg(this);
+  dlg.exec();
 
-  //std::list<te::da::DataSourceInfoPtr> dsPtrList = dlg.getSelecteds();
+  std::list<te::da::DataSourceInfoPtr> dsPtrList = dlg.getSelecteds();
 
-  //if(dsPtrList.size() <= 0)
-  //  return;
+  if(dsPtrList.size() <= 0)
+    return;
 
-  //std::list<te::da::DataSourceInfoPtr>::iterator it = dsPtrList.begin();
+  std::list<te::da::DataSourceInfoPtr>::iterator it = dsPtrList.begin();
 
-  //m_ui->m_repositoryLineEdit->setText(QString(it->get()->getTitle().c_str()));
+  m_ui->m_repositoryLineEdit->setText(QString(it->get()->getTitle().c_str()));
 
-  //m_outputDatasource = *it;
-  //
-  //m_toFile = false;
+  m_outputDatasource = *it;
+  
+  m_toFile = false;
 }
 
 void te::addressgeocoding::MainWindowDialog::onTargetFileToolButtonPressed()
 {
-  //m_ui->m_newLayerNameLineEdit->clear();
-  //m_ui->m_repositoryLineEdit->clear();
-  //
-  //QString fileName = QFileDialog::getSaveFileName(this, tr("Save as..."),
-  //                                                      QString(), tr("Shapefile (*.shp *.SHP);;"),0, QFileDialog::DontConfirmOverwrite);
+  m_ui->m_newLayerNameLineEdit->clear();
+  m_ui->m_repositoryLineEdit->clear();
+  
+  QString fileName = QFileDialog::getSaveFileName(this, tr("Save as..."),
+                                                        QString(), tr("Shapefile (*.shp *.SHP);;"),0, QFileDialog::DontConfirmOverwrite);
 
-  //if (fileName.isEmpty())
-  //  return;
-  //
-  //boost::filesystem::path outfile(fileName.toStdString());
-  //std::string aux = outfile.leaf().string();
-  //m_ui->m_newLayerNameLineEdit->setText(aux.c_str());
-  //aux = outfile.string();
-  //m_ui->m_repositoryLineEdit->setText(aux.c_str());
-  //
-  //m_toFile = true;
-  //m_ui->m_newLayerNameLineEdit->setEnabled(false);
+  if (fileName.isEmpty())
+    return;
+  
+  boost::filesystem::path outfile(fileName.toStdString());
+  std::string aux = outfile.leaf().string();
+  m_ui->m_newLayerNameLineEdit->setText(aux.c_str());
+  aux = outfile.string();
+  m_ui->m_repositoryLineEdit->setText(aux.c_str());
+  
+  m_toFile = true;
+  m_ui->m_newLayerNameLineEdit->setEnabled(false);
 }
 
 void te::addressgeocoding::MainWindowDialog::onHelpPushButtonClicked()
@@ -239,6 +299,12 @@ void te::addressgeocoding::MainWindowDialog::onOkPushButtonClicked()
     return;
   }
 
+  if((m_initialLeft == "" || m_finalLeft == "")&&(m_initialRight == "" || m_finalRight == ""))
+  {
+    QMessageBox::information(this, "Address Geocoding", "Associates the number fields with attributes of input layer.");
+    return;
+  }
+
   if(m_addressFile == "")
   {
     QMessageBox::information(this, "Address Geocoding", "Configure an input address.");
@@ -251,39 +317,147 @@ void te::addressgeocoding::MainWindowDialog::onOkPushButtonClicked()
     m_layerDataSource = te::da::GetDataSource(dsLayer->getDataSourceId());
   }
 
-  std::auto_ptr<te::da::DataSet> dsAddress = m_addressDataSource->getDataSet(m_addressFile);
-  std::auto_ptr<te::da::DataSetType> dsTypeAddress = m_addressDataSource->getDataSetType(m_addressFile);
-  std::vector<te::dt::Property*> props =  dsTypeAddress->getProperties();
+  te::addressgeocoding::AddressGeocodingOp* addGeoOp = new te::addressgeocoding::AddressGeocodingOp();
 
-  te::common::CharEncoding dSourceEncoding = m_layerDataSource->getEncoding();
+  addGeoOp->setInput( m_layerDataSource,
+                      m_selectedLayer->getTitle(),
+                      m_selectedLayer->getSRID(),
+                      m_addressDataSource,
+                      m_addressFile);
 
-  dsAddress->moveBeforeFirst();
-  while(dsAddress->moveNext())
+  addGeoOp->setParams(m_associatedProps,
+                      m_streetNumber);
+
+  addGeoOp->setNumAttributes( m_initialLeft,
+                              m_finalLeft,
+                              m_initialRight,
+                              m_finalRight);
+
+  std::string outputdataset = m_ui->m_repositoryLineEdit->text().toStdString();
+  
+  te::da::DataSourcePtr dsOGR;
+  bool res;
+  
+  try
   {
-    std::string query = "SELECT * FROM ";
-
-    query += m_selectedLayer->getTitle() + " WHERE tsvector @@ plainto_tsquery('english', ";
-
-    for(std::size_t i = 0; i < m_associatedProps.size(); ++i)
+    if(m_toFile)
     {
-      //te::common::CharEncoding addressEncoding = dsAddress->getPropertyCharEncoding(i);
-      te::common::CharEncoding addressEncoding = te::common::CP1252;
-      std::string value;
+      boost::filesystem::path uri(outputdataset);
 
-      if(dSourceEncoding == addressEncoding)
-        value = dsAddress->getAsString(m_associatedProps[i]);
-      else
-        value = te::common::CharEncodingConv::convert(dsAddress->getAsString(m_associatedProps[i]), addressEncoding, dSourceEncoding);
+      if (boost::filesystem::exists(uri))
+      {
+        QMessageBox::information(this, "Address Geocoding", "Output file already exists. Remove it or select a new name and try again.");
+        return;
+      }
 
-      if(i == 0)
-        query+= "'"+value;
+      std::size_t idx = outputdataset.find(".");
+      if (idx != std::string::npos)
+        outputdataset=outputdataset.substr(0,idx);
+
+      std::map<std::string, std::string> dsinfo;
+      dsinfo["URI"] = uri.string();
+      
+      dsOGR.reset(te::da::DataSourceFactory::make("OGR").release());
+      dsOGR->setConnectionInfo(dsinfo);
+      dsOGR->open();
+      if (dsOGR->dataSetExists(outputdataset))
+      {
+        QMessageBox::information(this, "Address Geocoding", "There is already a dataset with the requested name in the output data source. Remove it or select a new name and try again.");
+        return;
+      }
+
+      this->setCursor(Qt::WaitCursor);
+
+      addGeoOp->setOutput(dsOGR,
+                          outputdataset);
+
+      if (!addGeoOp->paramsAreValid())
+        res = false;
       else
-        query+= " | "+value;
+        res = addGeoOp->run();
+
+      if (!res)
+      {
+        this->setCursor(Qt::ArrowCursor);
+        dsOGR->close();
+        QMessageBox::information(this, "Address Geocoding", "Error: could not generate the address geocoding.");
+        reject();
+      }
+      dsOGR->close();
+
+      delete addGeoOp;
+
+// let's include the new datasource in the managers
+      boost::uuids::basic_random_generator<boost::mt19937> gen;
+      boost::uuids::uuid u = gen();
+      std::string id_ds = boost::uuids::to_string(u);
+      
+      te::da::DataSourceInfoPtr ds(new te::da::DataSourceInfo);
+      ds->setConnInfo(dsinfo);
+      ds->setTitle(uri.stem().string());
+      ds->setAccessDriver("OGR");
+      ds->setType("OGR");
+      ds->setDescription(uri.string());
+      ds->setId(id_ds);
+      
+      te::da::DataSourcePtr newds = te::da::DataSourceManager::getInstance().get(id_ds, "OGR", ds->getConnInfo());
+      newds->open();
+      te::da::DataSourceInfoManager::getInstance().add(ds);
+      m_outputDatasource = ds;
+
     }
-    query+= "')";
+    else
+    {
+      dsOGR = te::da::GetDataSource(m_outputDatasource->getId());
+      if (!dsOGR)
+      {
+        QMessageBox::information(this, "Address Geocoding", "The selected output datasource can not be accessed.");
+        return;
+      }
+      
+      if (dsOGR->dataSetExists(outputdataset))
+      {
+        QMessageBox::information(this, "Address Geocoding", "Dataset already exists. Remove it or select a new name and try again.");
+        return;
+      }
+      this->setCursor(Qt::WaitCursor);
 
-    std::auto_ptr<te::da::DataSet> dsQuery = m_layerDataSource->query(query);
+      addGeoOp->setOutput(dsOGR,
+                          outputdataset);
+
+      if (!addGeoOp->paramsAreValid())
+        res = false;
+      else
+        res = addGeoOp->run();
+
+      delete addGeoOp;
+
+      if (!res)
+      {
+        this->setCursor(Qt::ArrowCursor);
+        dsOGR->close();
+        QMessageBox::information(this, "Address Geocoding", "Error: could not generate the address geocoding.");
+        reject();
+      }
+      dsOGR->close();
+
+    }
+
   }
+  catch(const std::exception& e)
+  {
+    this->setCursor(Qt::ArrowCursor);
+
+    QMessageBox::information(this, "Address Geocoding", e.what());
+    
+    //te::common::Logger::logDebug("addressgeocoding", e.what());
+    //te::common::ProgressManager::getInstance().removeViewer(id);
+    return;
+  }
+
+  this->setCursor(Qt::ArrowCursor);
+
+  accept();
 }
 
 void te::addressgeocoding::MainWindowDialog::onCancelPushButtonClicked()
