@@ -65,7 +65,7 @@ namespace te
 
         ItemGroup( ItemController* controller, Observable* o );
 
-        ~ItemGroup();
+        virtual ~ItemGroup();
 
         virtual void updateObserver(ContextItem context);
 

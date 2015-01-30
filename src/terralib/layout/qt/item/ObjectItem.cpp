@@ -282,25 +282,25 @@ bool te::layout::ObjectItem::checkTouchesCorner( const double& x, const double& 
   if((x >= (ll.x() - margin) && x <= (ll.x() + margin))
     && (y >= (ll.y() - margin) && y <= (ll.y() + margin)))
   {
-    setCursor(Qt::SizeBDiagCursor);
+	setCursor(Qt::SizeFDiagCursor);
     m_enumSides = TPLowerLeft;
   }
   else if((x >= (lr.x() - margin) && x <= (lr.x() + margin))
     && (y >= (lr.y() - margin) && y <= (lr.y() + margin)))
   {
-    setCursor(Qt::SizeFDiagCursor);
+	setCursor(Qt::SizeBDiagCursor);
     m_enumSides = TPLowerRight;
   }
   else if((x >= (tl.x() - margin) && x <= (tl.x() + margin))
     && (y >= (tl.y() - margin) && y <= (tl.y() + margin)))
   {
-    setCursor(Qt::SizeFDiagCursor);
+	setCursor(Qt::SizeBDiagCursor);
     m_enumSides = TPTopLeft;
   }
   else if((x >= (tr.x() - margin) && x <= (tr.x() + margin))
     && (y >= (tr.y() - margin) && y <= (tr.y() + margin)))
   {
-    setCursor(Qt::SizeBDiagCursor);
+	setCursor(Qt::SizeFDiagCursor);
     m_enumSides = TPTopRight;
   }
   else
