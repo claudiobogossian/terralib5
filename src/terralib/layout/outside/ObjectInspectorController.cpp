@@ -27,46 +27,14 @@
 
 // TerraLib
 #include "ObjectInspectorController.h"
-#include "../core/pattern/factory/OutsideParamsCreate.h"
-#include "../core/pattern/mvc/OutsideModelObservable.h"
-#include "../core/pattern/factory/AbstractOutsideFactory.h"
-#include "../core/pattern/singleton/Context.h"
-#include "../core/enum/Enums.h"
 
 te::layout::ObjectInspectorController::ObjectInspectorController( Observable* o ) :
 	OutsideController(o)
 {
-  create();
-}
-
-te::layout::ObjectInspectorController::ObjectInspectorController( Observable* o, EnumType* type ) :
-  OutsideController(o, type)
-{
-
+  
 }
 
 te::layout::ObjectInspectorController::~ObjectInspectorController()
 {
 
-}
-
-void te::layout::ObjectInspectorController::setPosition( const double& x, const double& y )
-{
-  if(m_model)
-  {
-    OutsideModelObservable* model = dynamic_cast<OutsideModelObservable*>(m_model);
-    if(model)
-      return model->setPosition(x, y);
-  }
-}
-
-void te::layout::ObjectInspectorController::create()
-{
-  EnumType* type = Enums::getInstance().getEnumObjectType()->getObjectInspectorWindow();
-  m_model->setType(type);
-
-  AbstractOutsideFactory* factory = Context::getInstance().getOutsideFactory(); 
-  OutsideParamsCreate params(this, m_model);
-  if(factory)
-    m_view = (Observer*)factory->make(m_model->getType(), params);
 }

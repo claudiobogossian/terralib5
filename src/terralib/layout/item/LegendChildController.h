@@ -43,12 +43,6 @@ namespace te
         LegendChildController( Observable* o );
 
         virtual ~LegendChildController();
-        
-      protected:
-
-        LegendChildController( Observable* o, EnumType* type );
-
-        virtual void create();
     };
   }
 }

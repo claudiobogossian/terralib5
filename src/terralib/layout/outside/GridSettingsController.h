@@ -46,9 +46,7 @@ namespace te
 	      GridSettingsController( Observable* o );
 
 	      virtual ~GridSettingsController();
-
-	      virtual void setPosition(const double& x, const double& y);
-
+        
         virtual Property updateProperty();
 
         virtual void addUpdateProperty(std::string name, Variant variant, LayoutGridType gridType);
@@ -62,19 +60,6 @@ namespace te
         virtual Property getProperty(std::string name, LayoutGridType gridType);
 
       protected:
-      
-        /*!
-          \brief Constructor.
-
-          \param o "Model" part of MVC component
-          \param type type of the MVC component
-        */
-        GridSettingsController( Observable* o, EnumType* type );
-
-        /*!
-            \brief Reimplemented from ItemController
-           */
-        virtual void create();
 
         Property m_update;
         Property m_gridPlanar;

@@ -29,9 +29,11 @@
 #include "SystematicScaleModel.h"
 #include "../core/property/Property.h"
 #include "../core/property/Properties.h"
+#include "../core/enum/Enums.h"
 
 te::layout::SystematicScaleModel::SystematicScaleModel() 
 {
+  m_type = Enums::getInstance().getEnumObjectType()->getSystematicScale();
   m_box = te::gm::Envelope(0., 0., 200., 200.);
 }
 
