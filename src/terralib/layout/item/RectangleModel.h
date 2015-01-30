@@ -33,6 +33,7 @@
 // TerraLib
 #include "../core/pattern/mvc/ItemModelObservable.h"
 #include "../core/ContextItem.h"
+#include "../core/Config.h"
 
 namespace te
 {
@@ -48,7 +49,7 @@ namespace te
 
       \sa te::layout::ItemModelObservable
 	  */
-    class RectangleModel : public ItemModelObservable
+    class TELAYOUTEXPORT RectangleModel : public ItemModelObservable
     {
       public:
 

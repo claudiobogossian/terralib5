@@ -45,6 +45,8 @@ namespace te
       \class TileIndexer
 
       \brief Polygon tile indexing class for optmized geometrical relational tests.
+      
+      \ingroup rst
 
       \note The related polygon instance must always be valid (only the polygon
             reference is stored internally).

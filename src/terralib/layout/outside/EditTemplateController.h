@@ -39,13 +39,11 @@ namespace te
   {
     class TELAYOUTEXPORT EditTemplateController : public OutsideController
     {
-    public:
+      public:
 
-	    EditTemplateController( Observable* o );
-	    virtual ~EditTemplateController();
+	      EditTemplateController( Observable* o );
 
-	    virtual void setPosition(const double& x, const double& y);
-
+	      virtual ~EditTemplateController();
     };
   }
 }

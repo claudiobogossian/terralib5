@@ -30,24 +30,19 @@
 
 // TerraLib
 #include "LegendController.h"
+#include "../core/Config.h"
 
 namespace te
 {
   namespace layout
   {
-    class LegendChildController : public LegendController
+    class TELAYOUTEXPORT LegendChildController : public LegendController
     {
       public:
 
         LegendChildController( Observable* o );
 
         virtual ~LegendChildController();
-        
-      protected:
-
-        LegendChildController( Observable* o, EnumType* type );
-
-        virtual void create();
     };
   }
 }

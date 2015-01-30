@@ -48,7 +48,7 @@ AUTO_PTR_TYPEMAPS(te::rst::Raster)
 #include "terralib/dataaccess/datasource/DataSourceManager.h"
 #include "terralib/dataaccess/datasource/DataSourceFactory.h"
 
-using namespace te::dt;
+using te::dt::Property;
 
 static void OpenDataSource(const te::da::DataSourceInfo& info)
 {

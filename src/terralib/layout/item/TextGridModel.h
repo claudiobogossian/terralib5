@@ -33,6 +33,7 @@
 // TerraLib
 #include "TitleModel.h"
 #include "../../geometry/Point.h"
+#include "../core/Config.h"
 
 // STL
 #include <map>
@@ -51,7 +52,7 @@ namespace te
 
       \sa te::layout::TitleModel
 	  */
-    class TextGridModel : public TitleModel
+    class TELAYOUTEXPORT TextGridModel : public TitleModel
     {
       public:
 

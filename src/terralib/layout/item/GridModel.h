@@ -38,6 +38,7 @@
 #include "../core/Systematic.h"
 #include "../../geometry/Coord2D.h"
 #include "../../geometry/Point.h"
+#include "../core/Config.h"
 
 // STL
 #include <map>
@@ -49,7 +50,7 @@ namespace te
   {
     class EnumType;
 
-    class GridModel 
+    class TELAYOUTEXPORT GridModel 
     {
       public:
 

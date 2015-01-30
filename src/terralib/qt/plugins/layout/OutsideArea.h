@@ -117,8 +117,8 @@ namespace te
       
           std::string m_optionNew;
           std::string m_optionUpdate;
-          std::string m_optionImport;
-          std::string m_optionExport;
+          std::string m_optionImportJSON;
+          std::string m_optionExportJSON;
           std::string m_optionPageConfig;
           std::string m_optionPrint;
           std::string m_optionExit;

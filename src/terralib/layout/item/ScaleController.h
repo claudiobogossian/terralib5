@@ -32,6 +32,7 @@
 
 // TerraLib
 #include "../core/pattern/mvc/ItemController.h"
+#include "../core/Config.h"
 
 namespace te
 {
@@ -46,7 +47,7 @@ namespace te
 
       \sa te::layout::ItemController
 	  */
-    class ScaleController : public ItemController
+    class TELAYOUTEXPORT ScaleController : public ItemController
     {
       public:
 
@@ -61,26 +62,6 @@ namespace te
           \brief Destructor
         */
         virtual ~ScaleController();
-
-        /*!
-          \brief Reimplemented from ItemController
-         */
-        virtual void setPosition(const double& x, const double& y);
-
-      protected:
-
-        /*!
-          \brief Constructor.
-
-          \param o "Model" part of MVC component
-          \param type type of the MVC component
-        */
-        ScaleController( Observable* o, EnumType* type );
-
-        /*!
-          \brief Reimplemented from ItemController
-         */
-        virtual void create();
     };
   }
 }

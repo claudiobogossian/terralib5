@@ -38,12 +38,11 @@ namespace te
   {
     class TELAYOUTEXPORT ObjectInspectorController : public OutsideController
     {
-    public:
+      public:
 
-	    ObjectInspectorController( Observable* o );
-	    virtual ~ObjectInspectorController();
+	      ObjectInspectorController( Observable* o );
 
-	    virtual void setPosition(const double& x, const double& y);
+	      virtual ~ObjectInspectorController();
     };
   }
 }

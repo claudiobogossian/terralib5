@@ -61,7 +61,7 @@ te::layout::Observer* te::layout::ItemFactory::make( EnumType* type, ItemParamsC
 
   EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
 
-  if(type == enumObj->getRetangleItem())
+  if(type == enumObj->getRectangleItem())
   {
     RectangleItem* rectangle = new RectangleItem(params.getController(), params.getModel());
     item = (Observer*)rectangle;

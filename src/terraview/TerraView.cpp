@@ -41,7 +41,8 @@
 #include <QMenu>
 
 TerraView::TerraView(QWidget* parent)
-  : te::qt::af::BaseApplication(parent)
+  : te::qt::af::BaseApplication(parent),
+    m_helpManager(0)
 {
 }
 

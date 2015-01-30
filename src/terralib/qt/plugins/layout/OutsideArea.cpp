@@ -53,8 +53,8 @@ te::qt::plugins::layout::OutsideArea::OutsideArea( te::layout::View* view, QWidg
   m_view(view),
   m_optionNew("mnu_main_new"),
   m_optionUpdate("mnu_main_update"),
-  m_optionImport("mnu_main_import"),
-  m_optionExport("mnu_main_export"),
+  m_optionImportJSON("mnu_main_import_json"),
+  m_optionExportJSON("mnu_main_export_json"),
   m_optionPageConfig("mnu_main_page_config"),
   m_optionPrint("mnu_main_print"),
   m_optionExit("mnu_main_exit"),
@@ -191,13 +191,16 @@ void te::qt::plugins::layout::OutsideArea::createMainMenu()
   m_mainMenu->addAction(actionSave);
 
   m_mainMenu->addSeparator();
+  
+  QMenu* mnuImport = m_mainMenu->addMenu("Import Template");
+  QMenu* mnuExport = m_mainMenu->addMenu("Export Template");
 
-  QAction* actionImport = createAction("Import Template", m_optionImport, "layout-import");
-  m_mainMenu->addAction(actionImport);
+  QAction* actionImportJSON = createAction("Import JSON Template", m_optionImportJSON, "layout-import");
+  mnuImport->addAction(actionImportJSON);
 
-  QAction* actionExport = createAction("Export Template", m_optionExport, "layout-export");
-  m_mainMenu->addAction(actionExport);
-
+  QAction* actionExportJSON = createAction("Export JSON Template", m_optionExportJSON, "layout-export");
+  mnuExport->addAction(actionExportJSON);
+  
   m_mainMenu->addSeparator();
   
   QAction* actionDockInspector = createAction("Dock Inspector", m_optionDockInspector, "");
@@ -246,11 +249,11 @@ void te::qt::plugins::layout::OutsideArea::onMainMenuTriggered( QAction* action 
   {
     //changeAction(TypeSaveCurrentTemplate);
   }
-  else if(action->objectName().compare(m_optionImport.c_str()) == 0)
+  else if(action->objectName().compare(m_optionImportJSON.c_str()) == 0)
   {
     changeAction(type->getModeImportJSONProps());
   }
-  else if(action->objectName().compare(m_optionExport.c_str()) == 0)
+  else if(action->objectName().compare(m_optionExportJSON.c_str()) == 0)
   {
     changeAction(type->getModeExportPropsJSON());
   }

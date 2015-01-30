@@ -42,6 +42,8 @@ namespace te
 
       \brief An adapter class to allow concurrent access to raster data by multiple threads.
       
+      \ingroup rst
+      
       \note One unique RasterSynchronizer must be instantiated on the main process. That RasterSynchronizer is used by each thread to instantiate multiple SynchronizedRaster instances.
       
       \note More efficient access can be achieved by following the bands internal blocking scheme.

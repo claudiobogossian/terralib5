@@ -1319,7 +1319,7 @@ void te::qt::widgets::GroupingWidget::onImportPushButtonClicked()
   for(std::size_t i = 0; i < props.size(); ++i)
   {
     te::dt::Property* prop = props[i];
-    if((prop->getName() == ref->getPropertyName()) && (prop->getType() == ref->getPropertyType()))
+    if((te::common::Convert2UCase(prop->getName()) == te::common::Convert2UCase(ref->getPropertyName())) && (prop->getType() == ref->getPropertyType()))
     {
       isValid = true;
       break;
@@ -1328,7 +1328,9 @@ void te::qt::widgets::GroupingWidget::onImportPushButtonClicked()
 
   if(!isValid)
   {
-    QMessageBox::warning(this, tr("Grouping"), tr("In existing layers, there is no grouping that can be imported!"));
+    QString err = tr("There is no grouping that can be imported!\nThe layer must have an attribute with the same name of the attribute used to make the reference layer grouping: ");
+    err.append(ref->getPropertyName().c_str());
+    QMessageBox::warning(this, tr("Grouping"), err);
     return;
   }
 
