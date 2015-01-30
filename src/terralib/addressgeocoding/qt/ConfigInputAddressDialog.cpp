@@ -123,8 +123,8 @@ std::string te::addressgeocoding::ConfigInputAddressDialog::getStreetPostalCode(
 void te::addressgeocoding::ConfigInputAddressDialog::onImportTableClicked()
 {
   te::addressgeocoding::ImportTableDialog dlg(this);
-	
-	if(dlg.exec() != QDialog::Accepted)
+
+  if(dlg.exec() != QDialog::Accepted)
   {
     m_ui->m_inputAddressComboBox->clear();
     m_ui->m_sTypeComboBox->clear();

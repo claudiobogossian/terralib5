@@ -38,12 +38,6 @@
 te::layout::TextController::TextController( Observable* o ) :
   ItemController(o)
 {
-  create();
-}
-
-te::layout::TextController::TextController( Observable* o, EnumType* type ) :
-  ItemController(o, type)
-{
 
 }
 
@@ -52,19 +46,3 @@ te::layout::TextController::~TextController()
 	
 }
 
-void te::layout::TextController::create()
-{
-  AbstractItemFactory* factory = Context::getInstance().getItemFactory(); 
-  ItemParamsCreate params(this, m_model);
-  m_view = (Observer*)factory->make(m_model->getType(), params);
-}
-
-void te::layout::TextController::setPosition( const double& x, const double& y )
-{
-  if(m_model)
-  {
-    ItemModelObservable* model = dynamic_cast<ItemModelObservable*>(m_model);
-    if(model)
-      return model->setPosition(x, y);
-  }
-}

@@ -27,9 +27,11 @@
 
 // TerraLib
 #include "ObjectInspectorModel.h"
+#include "../core/enum/Enums.h"
 
 te::layout::ObjectInspectorModel::ObjectInspectorModel()
 {
+  m_type = Enums::getInstance().getEnumObjectType()->getObjectInspectorWindow();
   m_box = te::gm::Envelope(0., 0., 200., 200.);
 }
 

@@ -32,20 +32,14 @@
 #include "../../ContextItem.h"
 #include "../singleton/Context.h"
 #include "../../../../maptools/Canvas.h"
+#include "../factory/ItemParamsCreate.h"
+#include "../factory/AbstractItemFactory.h"
+#include "Observer.h"
 
 te::layout::ItemController::ItemController( Observable* o ) :
   m_model(o)
 {
-  
-}
-
-te::layout::ItemController::ItemController( Observable* o, EnumType* type ) :
-  m_model(o)
-{
-  if(!m_model || !type)
-    return;
-  
-  m_model->setType(type);
+  create();
 }
 
 te::layout::ItemController::~ItemController()
@@ -132,4 +126,21 @@ bool te::layout::ItemController::contains( const te::gm::Coord2D &coord ) const
       return model->contains(coord);
   }
   return false;
+}
+
+void te::layout::ItemController::create()
+{
+  AbstractItemFactory* factory = Context::getInstance().getItemFactory(); 
+  ItemParamsCreate params(this, m_model);
+  m_view = (Observer*)factory->make(m_model->getType(), params);
+}
+
+void te::layout::ItemController::setPosition( const double& x, const double& y )
+{
+  if(m_model)
+  {
+    ItemModelObservable* model = dynamic_cast<ItemModelObservable*>(m_model);
+    if(model)
+      return model->setPosition(x, y);
+  }
 }
