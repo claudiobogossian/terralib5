@@ -37,6 +37,8 @@ namespace te
       \class ProxyRaster
 
       \brief A proxy class for bands of several rasters over the same region.
+      
+      \ingroup rst
     */
     class TERASTEREXPORT ProxyRaster: public Raster
     {

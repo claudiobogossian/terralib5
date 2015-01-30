@@ -36,13 +36,13 @@
 te::layout::ObjectInspectorController::ObjectInspectorController( Observable* o ) :
 	OutsideController(o)
 {
-  EnumType* type = Enums::getInstance().getEnumObjectType()->getObjectInspectorWindow();
-  o->setType(type);
+  create();
+}
 
-	AbstractOutsideFactory* factory = Context::getInstance().getOutsideFactory(); 
-	OutsideParamsCreate params(this, m_model);
-  if(factory)
-	  m_view = (Observer*)factory->make(m_model->getType(), params);
+te::layout::ObjectInspectorController::ObjectInspectorController( Observable* o, EnumType* type ) :
+  OutsideController(o, type)
+{
+
 }
 
 te::layout::ObjectInspectorController::~ObjectInspectorController()
@@ -58,4 +58,15 @@ void te::layout::ObjectInspectorController::setPosition( const double& x, const 
     if(model)
       return model->setPosition(x, y);
   }
+}
+
+void te::layout::ObjectInspectorController::create()
+{
+  EnumType* type = Enums::getInstance().getEnumObjectType()->getObjectInspectorWindow();
+  m_model->setType(type);
+
+  AbstractOutsideFactory* factory = Context::getInstance().getOutsideFactory(); 
+  OutsideParamsCreate params(this, m_model);
+  if(factory)
+    m_view = (Observer*)factory->make(m_model->getType(), params);
 }

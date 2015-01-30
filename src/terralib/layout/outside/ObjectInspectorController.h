@@ -38,12 +38,28 @@ namespace te
   {
     class TELAYOUTEXPORT ObjectInspectorController : public OutsideController
     {
-    public:
+      public:
 
-	    ObjectInspectorController( Observable* o );
-	    virtual ~ObjectInspectorController();
+	      ObjectInspectorController( Observable* o );
 
-	    virtual void setPosition(const double& x, const double& y);
+	      virtual ~ObjectInspectorController();
+
+	      virtual void setPosition(const double& x, const double& y);
+
+      protected:
+
+        /*!
+          \brief Constructor.
+
+          \param o "Model" part of MVC component
+          \param type type of the MVC component
+        */
+        ObjectInspectorController( Observable* o, EnumType* type );
+
+        /*!
+            \brief Reimplemented from ItemController
+           */
+        virtual void create();
     };
   }
 }

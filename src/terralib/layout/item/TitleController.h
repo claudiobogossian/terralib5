@@ -32,6 +32,7 @@
 
 // TerraLib
 #include "TextController.h"
+#include "../core/Config.h"
 
 namespace te
 {
@@ -46,7 +47,7 @@ namespace te
 
       \sa te::layout::TextController
 	  */
-    class TitleController : public TextController
+    class TELAYOUTEXPORT TitleController : public TextController
     {
       public:
 

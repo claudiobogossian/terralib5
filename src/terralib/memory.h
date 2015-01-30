@@ -36,6 +36,12 @@
 #include "memory/ExpansibleRaster.h"
 #include "memory/Raster.h"
 
+/*!
+  \defgroup mem Memory
+
+  \brief This module can be used to manage geographical data with a representation stored in RAM memory.
+*/
+
 namespace te
 {
   /*!

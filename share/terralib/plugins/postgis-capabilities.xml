@@ -226,6 +226,12 @@
       <Function name="&#60;=">
         <BinaryOpEncoder alias="&#60;="/>
       </Function>
+	  <Function name="LIKE">
+        <BinaryOpEncoder alias="LIKE"/>
+      </Function>
+      <Function name="NOT LIKE">
+        <BinaryOpEncoder alias="NOT LIKE"/>
+      </Function>
     </ComparsionOperators>
     <ArithmeticOperators>
       <Function name="+">

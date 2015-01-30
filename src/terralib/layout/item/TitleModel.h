@@ -32,6 +32,7 @@
 
 // TerraLib
 #include "TextModel.h"
+#include "../core/Config.h"
 
 namespace te
 {
@@ -48,7 +49,7 @@ namespace te
 
       \sa te::layout::TextModel
 	  */
-    class TitleModel : public TextModel
+    class TELAYOUTEXPORT TitleModel : public TextModel
     {
       public:
 

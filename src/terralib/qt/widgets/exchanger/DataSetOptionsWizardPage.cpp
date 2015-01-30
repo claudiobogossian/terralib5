@@ -109,7 +109,7 @@ void te::qt::widgets::DataSetOptionsWizardPage::set(const std::list<te::da::Data
       te::da::LoadProperties((*it).get(), datasource->getId());
 
     //create dataset adapter
-    te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter((*it).get(), targetDSPtr->getCapabilities());
+    te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter((*it).get(), targetDSPtr->getCapabilities(), targetDSPtr->getEncoding());
 
     //fix output dataset name
     std::string name = converter->getResult()->getName();

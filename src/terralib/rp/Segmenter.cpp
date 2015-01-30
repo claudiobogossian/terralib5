@@ -285,20 +285,17 @@ namespace te
         const unsigned int totalRasterPixels = 
           m_inputParameters.m_inputRasterPtr->getNumberOfRows() * 
           m_inputParameters.m_inputRasterPtr->getNumberOfColumns();
-        const double originalRasterDataMemUsageEstimation = (double)(
-          totalRasterPixels *
-          ((unsigned int)m_inputParameters.m_inputRasterBands.size()) *
-          ( (unsigned int)te::rst::GetPixelSize( m_inputParameters.m_inputRasterPtr->getBandDataType( 0 ) ) ) );          
+//        const double originalRasterDataMemUsageEstimation = (double)(
+//          totalRasterPixels *
+//          ((unsigned int)m_inputParameters.m_inputRasterBands.size()) *
+//          ( (unsigned int)te::rst::GetPixelSize( m_inputParameters.m_inputRasterPtr->getBandDataType( 0 ) ) ) );          
         const double totalPhysMem = (double)te::common::GetTotalPhysicalMemory();
         const double usedVMem = (double)te::common::GetUsedVirtualMemory();
         const double totalVMem = ( (double)te::common::GetTotalVirtualMemory() );
         const double freeVMem = MIN( totalPhysMem, ( totalVMem - usedVMem ) );
-        const double pixelRequiredRam = 
-          ( originalRasterDataMemUsageEstimation + stratMemUsageEstimation )
-          / ((double)totalRasterPixels);
-        const double maxSimultaneousMemoryPixels = 0.7 * MIN( 
-          ((double)totalRasterPixels), 
-          freeVMem / pixelRequiredRam );         
+        const double pixelRequiredRam = stratMemUsageEstimation / ((double)totalRasterPixels);
+        const double maxSimultaneousMemoryPixels = std::min( ((double)totalRasterPixels), 
+          0.75 * freeVMem / pixelRequiredRam );         
         
         // Cache issues
         
@@ -701,7 +698,7 @@ namespace te
           }
           else
           {
-            baseSegThreadParams.m_maxInputRasterCachedBlocks = 
+            baseSegThreadParams.m_maxInputRasterCachedBlocks = (unsigned int)
               maxSimultaneousCacheBlocks;
           }          
         }

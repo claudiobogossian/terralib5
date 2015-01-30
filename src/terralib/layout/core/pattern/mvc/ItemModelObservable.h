@@ -151,6 +151,11 @@ namespace te
         virtual void setId(int id);
 
         /*!
+          \brief Reimplemented from Observable
+         */
+        virtual int getHashCode();
+
+        /*!
           \brief Change coordinate llx,lly of the MVC component.
 
           \param x llx
@@ -240,13 +245,15 @@ namespace te
          */
         virtual void notifyAll(ContextItem context);
 
+        virtual int calculateHashCode();
+
         /*!
           \brief Draws the background of the MVC component.
 
           \param context maintaining the drawing context of a MVC component
          */
         virtual void drawBackground(ContextItem context);
-
+                
       protected:
         std::set<Observer*>	      m_observers; //!< set of observers of this object
         int							          m_id; //!< hashcode
@@ -262,6 +269,7 @@ namespace te
         std::string               m_name; //!< name of the MVC component
         bool                      m_resizable; //!< true if resizable, false otherwise
         double                    m_angle; //!< value of rotation
+        int                       m_hashCode;
     };
   }
 }

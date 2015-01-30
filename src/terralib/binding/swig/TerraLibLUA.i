@@ -34,11 +34,14 @@ typedef te::common::Singleton< TerraLib > TeSingleton;
 %{  
 #include <terralib/Config.h>
 #include <terralib/common/Enums.h>  
+#include <terralib/common/Exception.h>
 #include <terralib/common/TerraLib.h>
 
 // Boost
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
+
+using te::common::Exception;
 
 /* Defining a function for generating randomic ids. */
 static std::string GetRandomicId()

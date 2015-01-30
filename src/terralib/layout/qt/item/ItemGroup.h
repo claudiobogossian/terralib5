@@ -40,6 +40,7 @@
 #include "../../core/enum/AbstractType.h"
 #include "../../../geometry/Envelope.h"
 #include "../../../color/RGBAColor.h"
+#include "../../core/Config.h"
 
 class QMouseEvent;
 class QWheelEvent;
@@ -59,7 +60,7 @@ namespace te
 
 	    \sa te::layout::ItemObserver
 	  */
-    class ItemGroup : public QGraphicsItemGroup, public ItemObserver
+    class TELAYOUTEXPORT ItemGroup : public QGraphicsItemGroup, public ItemObserver
     {
       public:
 

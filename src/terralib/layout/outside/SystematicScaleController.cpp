@@ -37,14 +37,15 @@
 te::layout::SystematicScaleController::SystematicScaleController( Observable* o ) :
 	OutsideController(o)
 {
-  EnumType* type = Enums::getInstance().getEnumObjectType()->getSystematicScale();
-  o->setType(type);
-
-	AbstractOutsideFactory* factory = Context::getInstance().getOutsideFactory(); 
-	OutsideParamsCreate params(this, m_model);
-  if(factory)
-	  m_view = (Observer*)factory->make(m_model->getType(), params);
+  create();
 }
+
+te::layout::SystematicScaleController::SystematicScaleController( Observable* o, EnumType* type ):
+  OutsideController(o, type)
+{
+
+}
+
 
 te::layout::SystematicScaleController::~SystematicScaleController()
 {
@@ -59,4 +60,15 @@ void te::layout::SystematicScaleController::setPosition( const double& x, const 
     if(model)
       return model->setPosition(x, y);
   }
+}
+
+void te::layout::SystematicScaleController::create()
+{
+  EnumType* type = Enums::getInstance().getEnumObjectType()->getSystematicScale();
+  m_model->setType(type);
+
+  AbstractOutsideFactory* factory = Context::getInstance().getOutsideFactory(); 
+  OutsideParamsCreate params(this, m_model);
+  if(factory)
+    m_view = (Observer*)factory->make(m_model->getType(), params);
 }

@@ -69,7 +69,7 @@ namespace te
 		  
 		      \return enum value  	  
         */
-        virtual EnumType* getRetangleItem() const;
+        virtual EnumType* getRectangleItem() const;
 
         /*!
           \brief Returns value that represents map (MVC Component) type belonging to enumeration.
@@ -262,7 +262,7 @@ namespace te
 
       protected:
         
-        EnumType* m_retangleItem; //!< value that represents rectangle (MVC Component) type belonging to enumeration
+        EnumType* m_rectangleItem; //!< value that represents rectangle (MVC Component) type belonging to enumeration
         EnumType* m_mapItem; //!< value that represents map (MVC Component) type belonging to enumeration
         EnumType* m_mapGridItem; //!< value that represents map grid (MVC Component) type belonging to enumeration
         EnumType* m_paperItem; //!< value that represents paper (MVC Component) type belonging to enumeration

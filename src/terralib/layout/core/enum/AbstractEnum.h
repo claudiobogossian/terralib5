@@ -75,6 +75,20 @@ namespace te
         */ 
         virtual EnumType* getEnum(std::string name) const;
 
+        /*!
+          \brief Searching for a max value of the id
+
+          \return -1 if no found, otherwise the id
+        */ 
+        virtual int maxId();
+
+        /*!
+          \brief Searching for a min value of the id
+
+          \return -1 if no found, otherwise the id
+        */ 
+        virtual int minId();
+
       protected:
         
           /*!

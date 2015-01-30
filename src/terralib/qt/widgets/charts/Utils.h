@@ -30,8 +30,8 @@
 #include "../Config.h"
 
 //QWT
-#include <qwt_text.h>
 #include <qwt_symbol.h>
+#include <qwt_text.h>
 
 //STL
 #include <vector>
@@ -69,7 +69,7 @@ namespace te
 
         \return a new Scatter
     */
-    TEQTWIDGETSEXPORT Scatter* createScatter(te::da::DataSet* dataset, te::da::DataSetType* dataType, int propX, int propY, int stat);
+    TEQTWIDGETSEXPORT Scatter* createScatter(te::da::DataSet* dataset, te::da::DataSetType* dataType, int propX, int propY, int stat, bool readall = true);
 
     /*!
         \brief Scatter Creator
@@ -204,7 +204,6 @@ namespace te
       \note It will not take the ownership of the Graphic pointer.
     */
     TEQTWIDGETSEXPORT QwtSymbol* Terralib2Qwt(te::se::Graphic* graphic);
-
     } // end namespace widgets
   }   // end namespace qt
 }     // end namespace te

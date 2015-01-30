@@ -44,6 +44,8 @@ namespace te
       \class CachedRaster
 
       \brief A RAM cache adaptor to an external existent raster that must always be avaliable.
+      
+      \ingroup mem
 
       \details A RAM cache adaptor to an external existent raster that must always be avaliable.
     */

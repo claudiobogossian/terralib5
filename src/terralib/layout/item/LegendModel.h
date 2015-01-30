@@ -39,6 +39,7 @@
 #include "../../maptools/Canvas.h"
 #include "../core/Utils.h"
 #include "../core/Font.h"
+#include "../core/Config.h"
 
 // STL
 #include <map>
@@ -57,7 +58,7 @@ namespace te
 
       \sa te::layout::ItemModelObservable , te::layout::AbstractVisitor
 	  */
-    class LegendModel : public ItemModelObservable, public AbstractVisitor
+    class TELAYOUTEXPORT LegendModel : public ItemModelObservable, public AbstractVisitor
     {
       public:
 

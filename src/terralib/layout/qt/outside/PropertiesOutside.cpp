@@ -53,7 +53,7 @@
 #include <QLabel>
 #include <QUndoCommand>
 
-te::layout::PropertiesOutside::PropertiesOutside( OutsideController* controller, Observable* o ) :
+te::layout::PropertiesOutside::PropertiesOutside( OutsideController* controller, Observable* o, PropertiesItemPropertyBrowser* propertyBrowser ) :
 	QWidget(0),
 	OutsideObserver(controller, o),
   m_updatingValues(false),
@@ -65,7 +65,10 @@ te::layout::PropertiesOutside::PropertiesOutside( OutsideController* controller,
 	setWindowTitle("Layout - Propriedades");
   setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
   
-  m_layoutPropertyBrowser = new PropertiesItemPropertyBrowser;
+  if(!propertyBrowser)
+    m_layoutPropertyBrowser = new PropertiesItemPropertyBrowser;
+  else
+    m_layoutPropertyBrowser = propertyBrowser;
 
   connect(m_layoutPropertyBrowser, SIGNAL(updateOutside(Property)), 
     this, SLOT(onChangePropertyValue(Property)));
@@ -117,7 +120,7 @@ void te::layout::PropertiesOutside::createLayout()
   filterLayout->addWidget(m_configurePropertyEditor);
 
   layout->addLayout(filterLayout);
-  m_nameLabel = new QLabel(tr("QObject::unknown"), this);
+  m_nameLabel = new QLabel(tr("Component::"), this);
   layout->addWidget(m_nameLabel);
   layout->addWidget(m_layoutPropertyBrowser->getPropertyEditor());
 
@@ -166,6 +169,7 @@ void te::layout::PropertiesOutside::itemsSelected(QList<QGraphicsItem*> graphics
   m_updatingValues = false;
 
   m_layoutPropertyBrowser->clearAll();
+  m_nameLabel->setText(tr("Component::"));
 
   m_graphicsItems = graphicsItems;
 
@@ -180,6 +184,8 @@ void te::layout::PropertiesOutside::itemsSelected(QList<QGraphicsItem*> graphics
 
   if(!props)
     return;
+
+  m_nameLabel->setText(tr("Component::") + props->getObjectName().c_str());
   
   foreach( Property prop, props->getProperties()) 
   {
@@ -461,5 +467,6 @@ void te::layout::PropertiesOutside::refreshOutside()
 void te::layout::PropertiesOutside::onClear( std::vector<std::string> names )
 {
   m_updatingValues = false;
+  m_nameLabel->setText(tr("Component::"));
   m_layoutPropertyBrowser->clearAll();
 }
