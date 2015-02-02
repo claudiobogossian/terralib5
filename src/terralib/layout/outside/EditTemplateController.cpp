@@ -27,47 +27,14 @@
 
 // TerraLib
 #include "EditTemplateController.h"
-#include "../core/pattern/factory/OutsideParamsCreate.h"
-#include "../core/pattern/mvc/OutsideModelObservable.h"
-#include "../core/pattern/factory/AbstractOutsideFactory.h"
-#include "../core/pattern/singleton/Context.h"
-#include "../core/pattern/mvc/Observable.h"
-#include "../core/enum/Enums.h"
 
 te::layout::EditTemplateController::EditTemplateController( Observable* o ) :
 	OutsideController(o)
 {
-  create();
-}
-
-te::layout::EditTemplateController::EditTemplateController( Observable* o, EnumType* type ):
-  OutsideController(o, type)
-{
-
+  
 }
 
 te::layout::EditTemplateController::~EditTemplateController()
 {
 
-}
-
-void te::layout::EditTemplateController::setPosition( const double& x, const double& y )
-{
-  if(m_model)
-  {
-    OutsideModelObservable* model = dynamic_cast<OutsideModelObservable*>(m_model);
-    if(model)
-      return model->setPosition(x, y);
-  }
-}
-
-void te::layout::EditTemplateController::create()
-{
-  EnumType* type = Enums::getInstance().getEnumObjectType()->getEditTemplate();
-  m_model->setType(type);
-
-  AbstractOutsideFactory* factory = Context::getInstance().getOutsideFactory(); 
-  OutsideParamsCreate params(this, m_model);
-  if(factory)
-    m_view = (Observer*)factory->make(m_model->getType(), params);
 }

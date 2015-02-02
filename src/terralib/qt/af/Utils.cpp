@@ -787,3 +787,20 @@ QString te::qt::af::GetGenerationDate()
 
   return s;
 }
+
+QString te::qt::af::GetWindowTitle(const te::qt::af::Project& project)
+{
+  QString title = te::qt::af::ApplicationController::getInstance().getAppTitle() + " - ";
+  title += TE_TR("Project:");
+  title += " ";
+  title += project.getTitle().c_str();
+  title += " - ";
+
+  boost::filesystem::path p(project.getFileName());
+
+  std::string filename = p.filename().string();
+
+  title += filename.c_str();
+
+  return title;
+}
