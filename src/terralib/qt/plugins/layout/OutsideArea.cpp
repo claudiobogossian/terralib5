@@ -181,7 +181,7 @@ void te::qt::plugins::layout::OutsideArea::createEditTemplateDock()
 
 void te::qt::plugins::layout::OutsideArea::createMainMenu()
 {
-  m_mainMenu = new QMenu("Print Model");
+  m_mainMenu = new QMenu("Print Model", m_parentMenu);
   connect(m_mainMenu, SIGNAL(triggered(QAction*)), this, SLOT(onMainMenuTriggered(QAction*)));
 
   QAction* actionNew = createAction("New", m_optionNew, "layout-new");
@@ -315,7 +315,7 @@ void te::qt::plugins::layout::OutsideArea::onMainMenuTriggered( QAction* action 
 
 QAction* te::qt::plugins::layout::OutsideArea::createAction( std::string text, std::string objName, std::string icon, std::string tooltip )
 {
-  QAction *actionMenu = new QAction(text.c_str(), this);
+  QAction *actionMenu = new QAction(text.c_str(), m_mainMenu);
   actionMenu->setObjectName(objName.c_str());
 
   actionMenu->setIcon(QIcon::fromTheme(icon.c_str()));

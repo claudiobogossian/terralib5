@@ -185,103 +185,111 @@ void te::layout::ToolbarOutside::createToolbar()
 
 void te::layout::ToolbarOutside::createMapToolButton()
 {
-  QMenu* menu = new QMenu();
+  QToolButton *btnMap = createToolButton("Map", "Map Objects", "");
 
-  QAction* actionDefaultMenu = createAction("Default Map Object", m_optionMapDefault, "layout-default-map");
+  QMenu* menu = new QMenu(btnMap);
+
+  QAction* actionDefaultMenu = createAction("Default Map Object", m_optionMapDefault, "layout-default-map", "", menu);
   menu->addAction(actionDefaultMenu);
   
-  QAction* actionMapGrid = createAction("Map Grid", m_optionMapGrid, "layout-map-grid");
+  QAction* actionMapGrid = createAction("Map Grid", m_optionMapGrid, "layout-map-grid", "", menu);
   menu->addAction(actionMapGrid);
 
-  QAction* actionLegend = createAction("Default Legend", m_optionLegendDefault, "layout-default-legend");
+  QAction* actionLegend = createAction("Default Legend", m_optionLegendDefault, "layout-default-legend", "", menu);
   menu->addAction(actionLegend);
 
-  QAction* actionScale = createAction("Scale Object", m_optionScale, "layout-scale");
+  QAction* actionScale = createAction("Scale Object", m_optionScale, "layout-scale", "", menu);
   menu->addAction(actionScale);
   
-  QToolButton *btnMap = createToolButton("Map", "Map Objects", "layout-default-map");
   btnMap->setMenu(menu);
-  btnMap->setPopupMode(QToolButton::InstantPopup);
+  btnMap->setPopupMode(QToolButton::MenuButtonPopup);
+  btnMap->setDefaultAction(actionDefaultMenu);
 
-  connect(menu, SIGNAL(triggered(QAction*)), this, SLOT(onMapTriggered(QAction*)));
+  connect(btnMap, SIGNAL(triggered(QAction*)), this, SLOT(onMapTriggered(QAction*)));
   this->addWidget(btnMap);
 }
 
 void te::layout::ToolbarOutside::createMapToolsToolButton()
 {
-  QMenu* menu = new QMenu();
+  QToolButton *btnMapTools = createToolButton("Map Tools", "Map Tools", "");
 
-  QAction* actionPan = createAction("Pan Tool", m_optionMapPan, "layout-map-pan");
+  QMenu* menu = new QMenu(btnMapTools);
+
+  QAction* actionPan = createAction("Pan Tool", m_optionMapPan, "layout-map-pan", "", menu);
   menu->addAction(actionPan);
 
-  QAction* actionZoomIn = createAction("Zoom In", m_optionMapZoomIn, "layout-map-zoom-in");
+  QAction* actionZoomIn = createAction("Zoom In", m_optionMapZoomIn, "layout-map-zoom-in", "", menu);
   menu->addAction(actionZoomIn);
 
-  QAction* actionZoomOut = createAction("Zoom Out", m_optionMapZoomOut, "layout-map-zoom-out");
+  QAction* actionZoomOut = createAction("Zoom Out", m_optionMapZoomOut, "layout-map-zoom-out", "", menu);
   menu->addAction(actionZoomOut);
 
-  QAction* actionSystematic = createAction("Systematic Scale", m_optionMapSystematicScale, "layout-systematic-map");
+  QAction* actionSystematic = createAction("Systematic Scale", m_optionMapSystematicScale, "layout-systematic-map", "", menu);
   menu->addAction(actionSystematic);
 
-  QAction* actionTextGrid = createAction("Text Grid as Object", m_optionMapCreateTextGrid, "layout-createtext-as-obj");
+  QAction* actionTextGrid = createAction("Text Grid as Object", m_optionMapCreateTextGrid, "layout-createtext-as-obj", "", menu);
   menu->addAction(actionTextGrid);
 
-  QAction* actionTextMap = createAction("Text Map as Object", m_optionMapCreateMapText, "layout-createmap-text-as-objs");
+  QAction* actionTextMap = createAction("Text Map as Object", m_optionMapCreateMapText, "layout-createmap-text-as-objs", "", menu);
   menu->addAction(actionTextMap);
 
-  QAction* actionLegend = createAction("Legend as Object", m_optionMapCreateLegendChildAsObject, "layout-legend-child");
+  QAction* actionLegend = createAction("Legend as Object", m_optionMapCreateLegendChildAsObject, "layout-legend-child", "", menu);
   menu->addAction(actionLegend);
-  
-  QToolButton *btnMapTools = createToolButton("Map Tools", "Map Tools", "layout-map-pan");
-  btnMapTools->setMenu(menu);
-  btnMapTools->setPopupMode(QToolButton::InstantPopup);
 
-  connect(menu, SIGNAL(triggered(QAction*)), this, SLOT(onMapToolsTriggered(QAction*)));
+  btnMapTools->setMenu(menu);
+  btnMapTools->setPopupMode(QToolButton::MenuButtonPopup);
+  btnMapTools->setDefaultAction(actionPan);
+
+  connect(btnMapTools, SIGNAL(triggered(QAction*)), this, SLOT(onMapToolsTriggered(QAction*)));
   this->addWidget(btnMapTools);
 }
 
 void te::layout::ToolbarOutside::createGeometryToolButton()
 {
-  QMenu* menu = new QMenu();
+  QToolButton *btnGeometry = createToolButton("Geometry Tools", "Geometries Objects", "");
 
-  QAction* actionRectagle = createAction("Rectangle Object", m_optionRectangle, "layout-square");
+  QMenu* menu = new QMenu(btnGeometry);
+
+  QAction* actionRectagle = createAction("Rectangle Object", m_optionRectangle, "layout-square", "", menu);
   menu->addAction(actionRectagle);
 
-  QAction* actionArrow = createAction("Arrow Object", m_optionArrow, "layout-arrow");
+  QAction* actionArrow = createAction("Arrow Object", m_optionArrow, "layout-arrow", "", menu);
   menu->addAction(actionArrow);
 
-  QAction* actionEllipse = createAction("Ellipse Object", m_optionEllipse, "layout-ellipse");
+  QAction* actionEllipse = createAction("Ellipse Object", m_optionEllipse, "layout-ellipse", "", menu);
   menu->addAction(actionEllipse);
 
-  QAction* actionPoint = createAction("Point Object", m_optionPoint, "layout-point");
+  QAction* actionPoint = createAction("Point Object", m_optionPoint, "layout-point", "", menu);
   menu->addAction(actionPoint);
 
-  QToolButton *btnGeometry = createToolButton("Geometry Tools", "Geometries Objects", "layout-square");
   btnGeometry->setMenu(menu);
-  btnGeometry->setPopupMode(QToolButton::InstantPopup);
+  btnGeometry->setPopupMode(QToolButton::MenuButtonPopup);
+  btnGeometry->setDefaultAction(actionRectagle);
 
-  connect(menu, SIGNAL(triggered(QAction*)), this, SLOT(onGeometryTriggered(QAction*)));
+  connect(btnGeometry, SIGNAL(triggered(QAction*)), this, SLOT(onGeometryTriggered(QAction*)));
   this->addWidget(btnGeometry);
 }
 
 void te::layout::ToolbarOutside::createViewAreaToolButton()
 {
-  QMenu* menu = new QMenu();
+  QToolButton *btnViewArea = createToolButton("Paper Tools", "Paper Tools", "");
 
-  QAction* actionPan = createAction("Pan Tool", m_optionViewPan, "layout-paper-pan");
+  QMenu* menu = new QMenu(btnViewArea);
+
+  QAction* actionPan = createAction("Pan Tool", m_optionViewPan, "layout-paper-pan", "", menu);
   menu->addAction(actionPan);
   
-  QAction* actionZoomIn = createAction("Zoom In", m_optionViewZoomIn, "layout-paper-zoom-in");
+  QAction* actionZoomIn = createAction("Zoom In", m_optionViewZoomIn, "layout-paper-zoom-in", "", menu);
   menu->addAction(actionZoomIn);
   
-  QAction* actionZoomOut = createAction("Zoom Out", m_optionViewZoomOut, "layout-paper-zoom-out");
+  QAction* actionZoomOut = createAction("Zoom Out", m_optionViewZoomOut, "layout-paper-zoom-out", "", menu);
   menu->addAction(actionZoomOut);
 
-  QToolButton *btnViewArea = createToolButton("Paper Tools", "Paper Tools", "layout-paper-pan");
   btnViewArea->setMenu(menu);
-  btnViewArea->setPopupMode(QToolButton::InstantPopup);
+  btnViewArea->setPopupMode(QToolButton::MenuButtonPopup);
+  btnViewArea->setDefaultAction(actionPan);
 
-  connect(menu, SIGNAL(triggered(QAction*)), this, SLOT(onViewAreaTriggered(QAction*)));
+  connect(btnViewArea, SIGNAL(triggered(QAction*)), this, SLOT(onViewAreaTriggered(QAction*)));
   this->addWidget(btnViewArea);
 }
 
@@ -296,19 +304,21 @@ void te::layout::ToolbarOutside::createArrowCursorButton()
 
 void te::layout::ToolbarOutside::createItemTools()
 {
-  QMenu* menu = new QMenu();
+  QToolButton *btnTools = createToolButton("Item Tools", "Item Tools", "");
 
-  QAction* actionGroup = createAction("Group", m_optionGroup, "layout-group");
+  QMenu* menu = new QMenu(btnTools);
+
+  QAction* actionGroup = createAction("Group", m_optionGroup, "layout-group", "", menu);
   menu->addAction(actionGroup);
 
-  QAction* actionUngroup = createAction("Ungroup", m_optionUngroup, "layout-ungroup");
+  QAction* actionUngroup = createAction("Ungroup", m_optionUngroup, "layout-ungroup", "", menu);
   menu->addAction(actionUngroup);
-  
-  QToolButton *btnTools = createToolButton("Item Tools", "Item Tools", "layout-group");
-  btnTools->setMenu(menu);
-  btnTools->setPopupMode(QToolButton::InstantPopup);
 
-  connect(menu, SIGNAL(triggered(QAction*)), this, SLOT(onItemToolsTriggered(QAction*)));
+  btnTools->setMenu(menu);
+  btnTools->setPopupMode(QToolButton::MenuButtonPopup);
+  btnTools->setDefaultAction(actionGroup);
+
+  connect(btnTools, SIGNAL(triggered(QAction*)), this, SLOT(onItemToolsTriggered(QAction*)));
   this->addWidget(btnTools);
 }
 
@@ -322,7 +332,7 @@ void te::layout::ToolbarOutside::createLineIntersectionToolButton()
 
 void te::layout::ToolbarOutside::createSceneZoomCombobox()
 {
-  m_comboZoom = new QComboBox();
+  m_comboZoom = new QComboBox(this);
   m_comboZoom->setObjectName(m_optionSceneZoom.c_str());
 
   m_comboZoom->addItem("42%", 0.42);
@@ -370,25 +380,27 @@ void te::layout::ToolbarOutside::createRecomposeToolButton()
 
 void te::layout::ToolbarOutside::createTextToolButton()
 {
-  QMenu* menu = new QMenu();
+  QToolButton *btn = createToolButton("Text Tools", "Text Tools", "");
 
-  QAction* actionTxtDefault = createAction("Default Text Object", m_optionTextDefault, "layout-default-text");
+  QMenu* menu = new QMenu(btn);
+
+  QAction* actionTxtDefault = createAction("Default Text Object", m_optionTextDefault, "layout-default-text", "", menu);
   menu->addAction(actionTxtDefault);
   
-  QAction* actionTitle = createAction("Title Object", m_optionTitle, "layout-title");
+  QAction* actionTitle = createAction("Title Object", m_optionTitle, "layout-title", "", menu);
   menu->addAction(actionTitle);
 
-  QAction* actionStringGrid = createAction("Grid Object", m_optionStringGrid, "layout-grid");
+  QAction* actionStringGrid = createAction("Grid Object", m_optionStringGrid, "layout-grid", "", menu);
   menu->addAction(actionStringGrid);
 
-  QAction* actionImage = createAction("Image Object", m_optionImage, "layout-image");
+  QAction* actionImage = createAction("Image Object", m_optionImage, "layout-image", "", menu);
   menu->addAction(actionImage);
 
-  QToolButton *btn = createToolButton("Text Tools", "Text Tools", "layout-default-text");
   btn->setMenu(menu);
-  btn->setPopupMode(QToolButton::InstantPopup);
+  btn->setPopupMode(QToolButton::MenuButtonPopup);
+  btn->setDefaultAction(actionTxtDefault);
 
-  connect(menu, SIGNAL(triggered(QAction*)), this, SLOT(onTextToolsTriggered(QAction*)));
+  connect(btn, SIGNAL(triggered(QAction*)), this, SLOT(onTextToolsTriggered(QAction*)));
   this->addWidget(btn);
 }
 
@@ -457,7 +469,9 @@ void te::layout::ToolbarOutside::createRemoveObjectToolButton()
 
 void te::layout::ToolbarOutside::createUndoToolButton()
 {
-  QMenu* menu = new QMenu();
+  QToolButton *btn = createToolButton("Undo/Redo", "Undo/Redo", "");
+
+  QMenu* menu = new QMenu(btn);
   
   Scene* lScene = dynamic_cast<Scene*>(Context::getInstance().getScene());
 
@@ -466,23 +480,23 @@ void te::layout::ToolbarOutside::createUndoToolButton()
   if(!undoStack)
     return;
 
-  QAction* actionUndo = undoStack->createUndoAction(this, tr("&Undo"));
+  QAction* actionUndo = undoStack->createUndoAction(menu, tr("&Undo"));
   actionUndo->setShortcuts(QKeySequence::Undo);
   actionUndo->setObjectName(m_optionUndo.c_str());
   actionUndo->setIcon(QIcon::fromTheme("layout-undo"));
   actionUndo->setToolTip("Undo Action");
   menu->addAction(actionUndo);
 
-  QAction* actionRedo  = undoStack->createRedoAction(this, tr("&Redo"));
+  QAction* actionRedo  = undoStack->createRedoAction(menu, tr("&Redo"));
   actionRedo->setShortcuts(QKeySequence::Redo);
   actionRedo->setObjectName(m_optionRedo.c_str());
   actionRedo->setIcon(QIcon::fromTheme("layout-redo"));
   actionRedo->setToolTip("Redo Action");
   menu->addAction(actionRedo);
-  
-  QToolButton *btn = createToolButton("Undo/Redo", "Undo/Redo", "layout-undo");
+    
   btn->setMenu(menu);
-  btn->setPopupMode(QToolButton::InstantPopup);
+  btn->setPopupMode(QToolButton::MenuButtonPopup);
+  btn->setDefaultAction(actionUndo);
 
   this->addWidget(btn);
 }
@@ -507,6 +521,12 @@ void te::layout::ToolbarOutside::createObjectToImageButton()
 
 void te::layout::ToolbarOutside::onMapTriggered( QAction* action )
 {
+  QToolButton* button = dynamic_cast<QToolButton*>(sender());
+  if(button)
+  {
+    button->setDefaultAction(action);
+  }
+
   EnumModeType* type = Enums::getInstance().getEnumModeType();
 
   if(action->objectName().compare(m_optionMapDefault.c_str()) == 0)
@@ -529,6 +549,12 @@ void te::layout::ToolbarOutside::onMapTriggered( QAction* action )
 
 void te::layout::ToolbarOutside::onMapToolsTriggered( QAction* action )
 {
+  QToolButton* button = dynamic_cast<QToolButton*>(sender());
+  if(button)
+  {
+    button->setDefaultAction(action);
+  }
+
   EnumModeType* type = Enums::getInstance().getEnumModeType();
 
   if(action->objectName().compare(m_optionMapPan.c_str()) == 0)
@@ -563,6 +589,12 @@ void te::layout::ToolbarOutside::onMapToolsTriggered( QAction* action )
 
 void te::layout::ToolbarOutside::onGeometryTriggered( QAction* action )
 {
+  QToolButton* button = dynamic_cast<QToolButton*>(sender());
+  if(button)
+  {
+    button->setDefaultAction(action);
+  }
+
   EnumModeType* type = Enums::getInstance().getEnumModeType();
 
   if(action->objectName().compare(m_optionRectangle.c_str()) == 0)
@@ -585,6 +617,12 @@ void te::layout::ToolbarOutside::onGeometryTriggered( QAction* action )
 
 void te::layout::ToolbarOutside::onViewAreaTriggered( QAction* action )
 {
+  QToolButton* button = dynamic_cast<QToolButton*>(sender());
+  if(button)
+  {
+    button->setDefaultAction(action);
+  }
+
   EnumModeType* type = Enums::getInstance().getEnumModeType();
 
   if(action->objectName().compare(m_optionViewPan.c_str()) == 0)
@@ -609,6 +647,12 @@ void te::layout::ToolbarOutside::onArrowCursorClicked(bool checked)
 
 void te::layout::ToolbarOutside::onItemToolsTriggered( QAction* action )
 {
+  QToolButton* button = dynamic_cast<QToolButton*>(sender());
+  if(button)
+  {
+    button->setDefaultAction(action);
+  }
+
   EnumModeType* type = Enums::getInstance().getEnumModeType();
 
   if(action->objectName().compare(m_optionGroup.c_str()) == 0)
@@ -679,6 +723,12 @@ void te::layout::ToolbarOutside::onRecomposeClicked( bool checked )
 
 void te::layout::ToolbarOutside::onTextToolsTriggered( QAction* action )
 {
+  QToolButton* button = dynamic_cast<QToolButton*>(sender());
+  if(button)
+  {
+    button->setDefaultAction(action);
+  }
+
   EnumModeType* type = Enums::getInstance().getEnumModeType();
   if(action->objectName().compare(m_optionTextDefault.c_str()) == 0)
   {
@@ -771,20 +821,21 @@ void te::layout::ToolbarOutside::changeAction( EnumType* mode )
 
 QToolButton* te::layout::ToolbarOutside::createToolButton( std::string text, std::string tooltip, std::string icon )
 {
-  QToolButton *btn = new QToolButton;
+  QToolButton *btn = new QToolButton(this);
   btn->setText(text.c_str());
   btn->setGeometry(0,0,10,10);
   btn->setCheckable(true);
   btn->setToolTip(tooltip.c_str());
   
-  btn->setIcon(QIcon::fromTheme(icon.c_str()));
+  if(!icon.empty())
+	btn->setIcon(QIcon::fromTheme(icon.c_str()));
 
   return btn;
 }
 
 QPushButton* te::layout::ToolbarOutside::createPushButton( std::string text, std::string tooltip, std::string icon )
 {
-  QPushButton *btn = new QPushButton;
+  QPushButton *btn = new QPushButton(this);
   btn->setText(text.c_str());
   btn->setGeometry(0,0,10,10);
   btn->setCheckable(true);
@@ -795,9 +846,15 @@ QPushButton* te::layout::ToolbarOutside::createPushButton( std::string text, std
   return btn;
 }
 
-QAction* te::layout::ToolbarOutside::createAction( std::string text, std::string objName, std::string icon, std::string tooltip )
+QAction* te::layout::ToolbarOutside::createAction( std::string text, std::string objName, std::string icon, std::string tooltip, QWidget* parent )
 {
-  QAction *actionMenu = new QAction(text.c_str(), this);
+  QWidget* parentToUse = parent;
+  if(parentToUse == 0)
+  {
+	parentToUse = this;
+  }
+
+  QAction *actionMenu = new QAction(text.c_str(), parentToUse);
   actionMenu->setObjectName(objName.c_str());
 
   actionMenu->setIcon(QIcon::fromTheme(icon.c_str()));

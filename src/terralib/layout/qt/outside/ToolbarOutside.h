@@ -189,7 +189,7 @@ namespace te
 
       virtual QPushButton* createPushButton(std::string text, std::string tooltip, std::string icon);
       
-      virtual QAction* createAction(std::string text, std::string objName, std::string icon, std::string tooltip = "");
+      virtual QAction* createAction(std::string text, std::string objName, std::string icon, std::string tooltip = "", QWidget* parent = 0);
 
     protected:
 
