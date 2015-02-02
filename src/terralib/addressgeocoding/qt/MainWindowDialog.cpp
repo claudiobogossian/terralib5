@@ -44,6 +44,7 @@
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../../qt/widgets/layer/utils/DataSet2Layer.h"
 #include "../../qt/widgets/progress/ProgressViewerDialog.h"
+#include "../../qt/widgets/Utils.h"
 #include "../AddressGeocodingOp.h"
 #include "../Config.h"
 #include "../Exception.h"
@@ -78,6 +79,9 @@ te::addressgeocoding::MainWindowDialog::MainWindowDialog(QWidget* parent, Qt::Wi
 // add icons
   m_ui->m_imgLabel->setPixmap(QIcon::fromTheme("addressgeocoding-hint").pixmap(112,48));
   m_ui->m_targetDatasourceToolButton->setIcon(QIcon::fromTheme("datasource"));
+  m_ui->m_targetDataSourceAddressToolButton->setIcon(QIcon::fromTheme("datasource"));
+  m_ui->m_editAddressFileToolButton->setIcon(QIcon::fromTheme("preferences-system"));
+  m_ui->m_removeAddressFileToolButton->setIcon(QIcon::fromTheme("delete"));
 
   connect(m_ui->m_inputLayerComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onLayerComboBoxChanged(int)));
   connect(m_ui->m_iLeftComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onInitialLeftComboBoxChanged(int)));
@@ -89,7 +93,8 @@ te::addressgeocoding::MainWindowDialog::MainWindowDialog(QWidget* parent, Qt::Wi
   connect(m_ui->m_targetFileToolButton, SIGNAL(pressed()), this,  SLOT(onTargetFileToolButtonPressed()));
 
   connect(m_ui->m_configureLayerPushButton, SIGNAL(clicked()), this, SLOT(onConfigureLayerClicked()));
-  connect(m_ui->m_configureAddressPushButton, SIGNAL(clicked()), this, SLOT(onConfigureAddressClicked()));
+  connect(m_ui->m_targetFileAddressToolButton, SIGNAL(clicked()), this, SLOT(onTargetFileAddressToolButtonPressed()));
+//  connect(m_ui->m_configureAddressPushButton, SIGNAL(clicked()), this, SLOT(onConfigureAddressClicked()));
 
   connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));
   connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
@@ -209,6 +214,86 @@ void te::addressgeocoding::MainWindowDialog::onConfigureLayerClicked()
      setLayers(m_layers);
   }
   return;
+}
+
+void te::addressgeocoding::MainWindowDialog::onTargetFileAddressToolButtonPressed()
+{
+try
+  {
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Textual File"), te::qt::widgets::GetFilePathFromSettings("tabular"), tr("dBASE (*.dbf *.DBF);; Comma Separated Value (*.csv *.CSV)"), 
+      0, QFileDialog::ReadOnly);
+
+    if(fileName.isEmpty())
+      return;
+
+    QFileInfo info(fileName);
+    te::qt::widgets::AddFilePathToSettings(info.absolutePath(), "tabular");
+
+    //Getting the connection info
+    std::string ogrInfo("connection_string=" + fileName.toStdString());
+    std::map<std::string, std::string> connInfo;
+    connInfo["URI"] = fileName.toStdString();
+
+    boost::filesystem::path uri(fileName.toStdString());
+    std::string file = uri.stem().string();
+
+    //Creating a DataSource
+    static boost::uuids::basic_random_generator<boost::mt19937> gen;
+    boost::uuids::uuid u = gen();
+
+    te::da::DataSourceInfoPtr dsInfo(new te::da::DataSourceInfo);
+    dsInfo->setConnInfo(connInfo);
+    dsInfo->setId(boost::uuids::to_string(u));
+    dsInfo->setTitle(fileName.toStdString());
+    dsInfo->setDescription("");
+    dsInfo->setAccessDriver("OGR");
+    dsInfo->setType("OGR");
+
+    te::da::DataSourceInfoManager::getInstance().add(dsInfo);
+
+    m_addressDataSource = te::da::DataSourceFactory::make(dsInfo->getAccessDriver());
+    m_addressDataSource->setConnectionInfo(dsInfo->getConnInfo());
+
+    m_addressDataSource->setId(boost::uuids::to_string(u));
+    m_addressDataSource->open();
+
+    te::addressgeocoding::ConfigInputAddressDialog dlg(this);
+    
+    if(m_addressDataSource)
+      dlg.setDataSource(m_addressDataSource);
+
+    if(dlg.exec() != QDialog::Accepted)
+    {
+      m_ui->m_inputAddressComboBox->clear();
+
+      m_addressDataSource = dlg.getDataSource();
+      m_addressFile = dlg.getAddressFileName();
+
+      if(dlg.getStreetType() != "")
+        m_associatedProps.push_back(dlg.getStreetType());
+
+      if(dlg.getStreetTitle() != "")
+        m_associatedProps.push_back(dlg.getStreetTitle());
+
+      if(dlg.getStreetName() != "")
+        m_associatedProps.push_back(dlg.getStreetName());
+
+      if(dlg.getStreetNeighborhood() != "")
+        m_associatedProps.push_back(dlg.getStreetNeighborhood());
+
+      if(dlg.getStreetPostalCode() != "")
+        m_associatedProps.push_back(dlg.getStreetPostalCode());
+
+      m_streetNumber = dlg.getStreetNumber();
+
+      m_ui->m_inputAddressComboBox->addItem(QString(m_addressFile.c_str()));
+    }
+    return;
+  }
+  catch(const std::exception& e)
+  {
+    QMessageBox::warning(this, tr("Address Geocoding"), e.what());
+  }
 }
 
 void te::addressgeocoding::MainWindowDialog::onConfigureAddressClicked()
