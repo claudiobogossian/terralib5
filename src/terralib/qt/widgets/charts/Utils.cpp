@@ -504,8 +504,7 @@ te::qt::widgets::Scatter* te::qt::widgets::createScatter(te::da::DataSet* datase
     task.setTotalSteps(nCol);
     task.setMessage("Scatter creation");
 
-    // read up to 1000 pixels in random positions
-    const unsigned int maxInputPoints = 1000;
+    const unsigned int maxInputPoints = (nCol * nLin * 10 / 100);
     if (readall == false && (nCol * nLin) > maxInputPoints)
     {
       std::vector<te::gm::Point*> randomPoints = te::rst::GetRandomPointsInRaster(*raster, maxInputPoints);
