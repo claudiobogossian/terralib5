@@ -29,10 +29,11 @@
 #include "TextGridSettingsModel.h"
 #include "../core/property/Property.h"
 #include "../core/property/Properties.h"
+#include "../core/enum/Enums.h"
 
 te::layout::TextGridSettingsModel::TextGridSettingsModel() 
 {
-  //m_box = te::gm::Envelope(0., 0., 200., 200.);
+  m_type = Enums::getInstance().getEnumObjectType()->getTextGridSettings();
 }
 
 te::layout::TextGridSettingsModel::~TextGridSettingsModel()

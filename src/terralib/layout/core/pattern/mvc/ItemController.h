@@ -59,15 +59,7 @@ namespace te
           \param o "Model" part of MVC component
         */
         ItemController(Observable* o);
-
-        /*!
-          \brief Constructor
-
-          \param o "Model" part of MVC component
-          \param type type of the MVC component.
-        */
-        ItemController(Observable* o, EnumType* type);
-
+        
         /*!
           \brief Destructor
         */ 
@@ -75,12 +67,11 @@ namespace te
 
         /*!
           \brief Change coordinate llx,lly of the MVC component.
-            Reimplement this function in a ItemController subclass to provide the controller's create implementation.
 
           \param x llx
           \param y lly
          */
-        virtual void setPosition(const double& x, const double& y) = 0;
+        virtual void setPosition(const double& x, const double& y);
 
         /*!
           \brief Redraws the MVC component. 
@@ -128,9 +119,8 @@ namespace te
 
         /*!
           \brief Call factory to create the "View" part of the MVC component and passes the model and himself as controller.
-            Reimplement this function in a ItemController subclass to provide the controller's create implementation.
          */
-        virtual void create() = 0;
+        virtual void create();
 
         Observable* m_model; //!< "Model" part of the MVC component.
         Observer* m_view; //!< "View" part of the MVC component.

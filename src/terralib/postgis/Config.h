@@ -90,6 +90,17 @@
 #define PGIS_DRIVER_IDENTIFIER "POSTGIS"
 
 /*!
+  \def PGIS_UNKNOWN_SRS
+
+  \brief A numeric value to represent a unknown SRS identification in PostGIS.
+
+  \note PostGIS 1.x version uses -1 and only -1 as unknown SRS identifier.
+        PostGIS 2.x version uses 0 and handles negative values as unknown SRS identifier.
+        So -1 value will be handled as unknown SRS identifier in both versions.
+ */
+#define PGIS_UNKNOWN_SRS -1
+
+/*!
   \def TERRALIB_RASTER_DRIVER_IDENTIFIER
 
   \brief The TerraLib Raster driver identifier string.
