@@ -50,6 +50,7 @@
 #include "../Config.h"
 #include "../Exception.h"
 #include "ConfigInputLayerDialog.h"
+#include "ConfigNumberDialog.h"
 #include "ui_ConfigInputLayerDialogForm.h"
 
 // Qt
@@ -69,8 +70,7 @@
 te::addressgeocoding::ConfigInputLayerDialog::ConfigInputLayerDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
     m_ui(new Ui::ConfigInputLayerDialogForm),
-    m_layers(std::list<te::map::AbstractLayerPtr>()),
-    m_toFile(false)
+    m_layers(std::list<te::map::AbstractLayerPtr>())
 {
 // add controls
   m_ui->setupUi(this);
@@ -84,6 +84,9 @@ te::addressgeocoding::ConfigInputLayerDialog::ConfigInputLayerDialog(QWidget* pa
   m_widget->setRightLabel("Selected Attributes");
 
   connect(m_ui->m_inputLayerComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onInputLayerComboBoxChanged(int)));
+
+//  connect(m_ui->m_numberPushButton, SIGNAL(clicked()), this, SLOT(onNumberPushButtonClicked()));
+
   connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));
   connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
   connect(m_ui->m_cancelPushButton, SIGNAL(clicked()), this, SLOT(onCancelPushButtonClicked()));
@@ -104,13 +107,13 @@ void te::addressgeocoding::ConfigInputLayerDialog::setLayers(std::list<te::map::
   {
     std::auto_ptr<te::da::DataSetType> dsType = it->get()->getSchema();
     if(dsType->hasGeom())
-		{
+    {
       te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(dsType.get());
       int type = geomProp->getGeometryType();
 
       if((type == te::gm::LineStringType) || (type == te::gm::MultiLineStringType))
-			  m_ui->m_inputLayerComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
-		}
+        m_ui->m_inputLayerComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
+    }
       
     ++it;
   }
@@ -155,6 +158,22 @@ void te::addressgeocoding::ConfigInputLayerDialog::onInputLayerComboBoxChanged(i
   }
 }
 
+void te::addressgeocoding::ConfigInputLayerDialog::onNumberPushButtonClicked()
+{
+  te::addressgeocoding::ConfigNumberDialog dlg(this);
+  dlg.setLayer(m_selectedLayer);
+
+  if(dlg.exec()!=QDialog::Accepted)
+  {
+    //m_initialLeft = dlg.getInitialLeft();
+    //m_finalLeft = dlg.getFinalLeft();
+    //m_initialRight = dlg.getInitialRight();
+    //m_finalRight = dlg.getFinalRight();
+  }
+
+  return;
+}
+
 void te::addressgeocoding::ConfigInputLayerDialog::onHelpPushButtonClicked()
 {
   QMessageBox::information(this, "Help", "Under development");
@@ -197,15 +216,16 @@ void te::addressgeocoding::ConfigInputLayerDialog::onOkPushButtonClicked()
 // ALTER TABLE adding a new columns of tsvector type.  
   if(addNewColumn == true)
   {
+    std::auto_ptr<te::da::DataSourceTransactor> trans = m_dataSource->getTransactor();
     std::string alterTable = "ALTER TABLE "+ m_selectedLayer->getTitle() + " ADD tsvector tsvector";
-    m_dataSource->execute(alterTable);
+    trans->execute(alterTable);
   }
 
+
+  
 // UPDATE values in tsvector column.
   std::string updateTable = "UPDATE " + m_selectedLayer->getTitle() + " SET tsvector = to_tsvector('english', ";
 
-
-  //UPDATE taubate_sp SET tsvector = to_tsvector('english', nome||' '||bairro_le||' '||num_ie||' '||num_fe);
   for(std::size_t selProps = 0; selProps < m_selectedProps.size(); ++selProps)
   {
     if(selProps == 0)

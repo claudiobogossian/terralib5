@@ -41,31 +41,29 @@ namespace te
 
     class TELAYOUTEXPORT GridSettingsController : public OutsideController
     {
-    public:
+      public:
 
-	    GridSettingsController( Observable* o );
+	      GridSettingsController( Observable* o );
 
-	    virtual ~GridSettingsController();
+	      virtual ~GridSettingsController();
+        
+        virtual Property updateProperty();
 
-	    virtual void setPosition(const double& x, const double& y);
+        virtual void addUpdateProperty(std::string name, Variant variant, LayoutGridType gridType);
 
-      virtual Property updateProperty();
+        virtual void addUpdateGeodesicProperty(GridSettingsModel* outsideModel, Property subProperty, LayoutGridType gridType);
 
-      virtual void addUpdateProperty(std::string name, Variant variant, LayoutGridType gridType);
+        virtual void addUpdatePlanarProperty(GridSettingsModel* outsideModel, Property subProperty, LayoutGridType gridType);
 
-      virtual void addUpdateGeodesicProperty(GridSettingsModel* outsideModel, Property subProperty, LayoutGridType gridType);
+        virtual void clearUpdate();
 
-      virtual void addUpdatePlanarProperty(GridSettingsModel* outsideModel, Property subProperty, LayoutGridType gridType);
+        virtual Property getProperty(std::string name, LayoutGridType gridType);
 
-      virtual void clearUpdate();
+      protected:
 
-      virtual Property getProperty(std::string name, LayoutGridType gridType);
-
-    protected:
-
-      Property m_update;
-      Property m_gridPlanar;
-      Property m_gridGeodesic;
+        Property m_update;
+        Property m_gridPlanar;
+        Property m_gridGeodesic;
     };
   }
 }

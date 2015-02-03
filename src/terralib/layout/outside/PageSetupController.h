@@ -39,13 +39,11 @@ namespace te
   {
     class TELAYOUTEXPORT PageSetupController : public OutsideController
     {
-    public:
+      public:
 
-	    PageSetupController( Observable* o );
-	    virtual ~PageSetupController();
+	      PageSetupController( Observable* o );
 
-	    virtual void setPosition(const double& x, const double& y);
-
+	      virtual ~PageSetupController();
     };
   }
 }

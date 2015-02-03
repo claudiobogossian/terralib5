@@ -32,6 +32,7 @@
 
 // TerraLib
 #include "MapController.h"
+#include "../core/Config.h"
 
 namespace te
 {
@@ -46,7 +47,7 @@ namespace te
 
       \sa te::layout::MapController
 	  */
-    class MapGridController : public MapController
+    class TELAYOUTEXPORT MapGridController : public MapController
     {
       public:
 
@@ -61,21 +62,6 @@ namespace te
           \brief Destructor
         */
         virtual ~MapGridController();
-
-      protected:
-
-        /*!
-          \brief Constructor.
-
-          \param o "Model" part of MVC component
-          \param type type of the MVC component
-        */
-        MapGridController( Observable* o, EnumType* type );
-
-        /*!
-          \brief Reimplemented from ItemController
-         */
-        virtual void create();
     };
   }
 }

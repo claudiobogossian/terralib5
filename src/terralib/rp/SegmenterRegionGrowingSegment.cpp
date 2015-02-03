@@ -71,22 +71,13 @@ namespace te
           }
         }
         
-        unsigned int newNeighborSegmentsSize = m_neighborSegmentsSize + 1 +
-          ( ( 25u * m_neighborSegmentsSize ) / 100u );
-        
         m_neighborSegments = (SegmenterRegionGrowingSegment**)realloc( 
-          m_neighborSegments, newNeighborSegmentsSize * sizeof( 
+          m_neighborSegments, ( m_neighborSegmentsSize + 1 ) * sizeof( 
           SegmenterRegionGrowingSegment* ) );
           
         m_neighborSegments[ m_neighborSegmentsSize ] = nSegPtr;
-        
-        for( idx = m_neighborSegmentsSize + 1 ; idx < newNeighborSegmentsSize ;
-          ++idx )
-        {
-          m_neighborSegments[ idx ] = 0;
-        }
           
-        m_neighborSegmentsSize = newNeighborSegmentsSize;
+        m_neighborSegmentsSize = m_neighborSegmentsSize + 1;
       }
     }
     

@@ -80,6 +80,50 @@ namespace te
 	    virtual void setPosition(const double& x, const double& y);
 
 	    virtual te::gm::Coord2D getPosition();
+
+      virtual void createToolbar();
+
+      virtual QToolButton* getMapToolButton();
+
+      virtual QToolButton* getMapToolsToolButton();
+
+      virtual QToolButton* getGeometryToolButton();
+
+      virtual QToolButton* getViewAreaToolButton();
+
+      virtual QToolButton* getArrowCursorButton();
+
+      virtual QToolButton* getItemTools();
+
+      virtual QToolButton* getLineIntersectionToolButton();
+      
+      virtual QToolButton* getBringToFrontToolButton();
+
+      virtual QToolButton* getSendToBackToolButton();
+
+      virtual QToolButton* getRecomposeToolButton();
+
+      virtual QToolButton* getTextToolButton();
+
+      virtual QToolButton* getAlignLeftToolButton();
+
+      virtual QToolButton* getAlignRightToolButton();
+
+      virtual QToolButton* getAlignTopToolButton();
+
+      virtual QToolButton* getAlignBottomToolButton();
+
+      virtual QToolButton* getAlignCenterHorizontalToolButton();
+
+      virtual QToolButton* getAlignCenterVerticalToolButton();
+
+      virtual QToolButton* getRemoveObjectToolButton();
+
+      virtual QToolButton* getUndoToolButton();
+
+      virtual QToolButton* getDrawMapToolButton();
+
+      virtual QToolButton* getObjectToImageButton();
       
     public slots:
       
@@ -137,51 +181,49 @@ namespace te
       
     protected:
 
-      virtual void createToolbar();
+      virtual QToolButton* createMapToolButton();
 
-      virtual void createMapToolButton();
+      virtual QToolButton* createMapToolsToolButton();
 
-      virtual void createMapToolsToolButton();
+      virtual QToolButton* createGeometryToolButton();
 
-      virtual void createGeometryToolButton();
+      virtual QToolButton* createViewAreaToolButton();
 
-      virtual void createViewAreaToolButton();
+      virtual QToolButton* createArrowCursorButton();
 
-      virtual void createArrowCursorButton();
+      virtual QToolButton* createItemTools();
 
-      virtual void createItemTools();
+      virtual QToolButton* createLineIntersectionToolButton();
+      
+      virtual QToolButton* createBringToFrontToolButton();
 
-      virtual void createLineIntersectionToolButton();
+      virtual QComboBox* createSceneZoomCombobox();
 
-      virtual void createSceneZoomCombobox();
+      virtual QToolButton* createSendToBackToolButton();
 
-      virtual void createBringToFrontToolButton();
+      virtual QToolButton* createRecomposeToolButton();
 
-      virtual void createSendToBackToolButton();
+      virtual QToolButton* createTextToolButton();
 
-      virtual void createRecomposeToolButton();
+      virtual QToolButton* createAlignLeftToolButton();
 
-      virtual void createTextToolButton();
+      virtual QToolButton* createAlignRightToolButton();
 
-      virtual void createAlignLeftToolButton();
+      virtual QToolButton* createAlignTopToolButton();
 
-      virtual void createAlignRightToolButton();
+      virtual QToolButton* createAlignBottomToolButton();
 
-      virtual void createAlignTopToolButton();
+      virtual QToolButton* createAlignCenterHorizontalToolButton();
 
-      virtual void createAlignBottomToolButton();
+      virtual QToolButton* createAlignCenterVerticalToolButton();
 
-      virtual void createAlignCenterHorizontalToolButton();
+      virtual QToolButton* createRemoveObjectToolButton();
 
-      virtual void createAlignCenterVerticalToolButton();
+      virtual QToolButton* createUndoToolButton();
 
-      virtual void createRemoveObjectToolButton();
+      virtual QToolButton* createDrawMapToolButton();
 
-      virtual void createUndoToolButton();
-
-      virtual void createDrawMapToolButton();
-
-      virtual void createObjectToImageButton();
+      virtual QToolButton* createObjectToImageButton();
 
       virtual void changeAction(EnumType* mode);
 
@@ -253,6 +295,29 @@ namespace te
       std::string m_optionDrawMap;
 
       std::string m_optionObjectToImage;
+
+      /* ToolButton */
+      QToolButton* m_mapToolButton;
+      QToolButton* m_mapToolsToolButton;
+      QToolButton* m_geometryToolButton;
+      QToolButton* m_viewAreaToolButton;
+      QToolButton* m_arrowCursorButton;
+      QToolButton* m_itemTools;
+      QToolButton* m_lineIntersectionToolButton;
+      QToolButton* m_bringToFrontToolButton;
+      QToolButton* m_sendToBackToolButton;
+      QToolButton* m_recomposeToolButton;
+      QToolButton* m_textToolButton;
+      QToolButton* m_alignLeftToolButton;
+      QToolButton* m_alignRightToolButton;
+      QToolButton* m_alignTopToolButton;
+      QToolButton* m_alignBottomToolButton;
+      QToolButton* m_alignCenterHorizontalToolButton;
+      QToolButton* m_alignCenterVerticalToolButton;
+      QToolButton* m_removeObjectToolButton;
+      QToolButton* m_undoToolButton;
+      QToolButton* m_drawMapToolButton;
+      QToolButton* m_objectToImageButton;
     };
   }
 }

@@ -27,39 +27,20 @@
 
 // TerraLib
 #include "GridSettingsController.h"
-#include "../core/pattern/factory/OutsideParamsCreate.h"
 #include "../core/pattern/mvc/OutsideModelObservable.h"
-#include "../core/pattern/factory/AbstractOutsideFactory.h"
 #include "../core/pattern/singleton/Context.h"
 #include "../core/pattern/mvc/Observable.h"
 #include "GridSettingsModel.h"
-#include "../core/enum/Enums.h"
 
 te::layout::GridSettingsController::GridSettingsController( Observable* o ) :
 	OutsideController(o)
 {
-  EnumType* type = Enums::getInstance().getEnumObjectType()->getGridSettings();
-  o->setType(type);
-
-	AbstractOutsideFactory* factory = Context::getInstance().getOutsideFactory(); 
-	OutsideParamsCreate params(this, m_model);
-  if(factory)
-	  m_view = (Observer*)factory->make(m_model->getType(), params);
+  
 }
 
 te::layout::GridSettingsController::~GridSettingsController()
 {
 
-}
-
-void te::layout::GridSettingsController::setPosition( const double& x, const double& y )
-{
-  if(m_model)
-  {
-    OutsideModelObservable* model = dynamic_cast<OutsideModelObservable*>(m_model);
-    if(model)
-      return model->setPosition(x, y);
-  }
 }
 
 te::layout::Property te::layout::GridSettingsController::updateProperty()

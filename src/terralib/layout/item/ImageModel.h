@@ -34,6 +34,7 @@
 #include "../core/pattern/mvc/ItemModelObservable.h"
 #include "../core/ContextItem.h"
 #include "../../maptools/Enums.h"
+#include "../core/Config.h"
 
 // STL
 #include <string>
@@ -51,7 +52,7 @@ namespace te
 
       \sa te::layout::ItemModelObservable
 	  */
-    class ImageModel : public ItemModelObservable
+    class TELAYOUTEXPORT ImageModel : public ItemModelObservable
     {
       public:
 

@@ -30,6 +30,7 @@
 #include "../../../dataaccess/query/Where.h"
 #include "../../../maptools/AbstractLayer.h"
 #include "../table/DataSetTableModel.h"
+#include "../canvas/MapDisplay.h"
 #include "../mapdisplay/DataSetDisplay.h"
 #include "../Config.h"
 
@@ -78,6 +79,8 @@ namespace te
           */
           void setLayerList(std::list<te::map::AbstractLayerPtr> layerList);
 
+          void setAppMapDisplay(te::qt::widgets::MapDisplay* appMapDisplay);
+
         protected:
 
           void loadDataSourcesInformation();
@@ -118,6 +121,8 @@ namespace te
           te::qt::widgets::DataSetTableModel* m_tableModel;
 
           te::qt::widgets::DataSetDisplay* m_dataSetDisplay;
+
+          te::qt::widgets::MapDisplay* m_appMapDisplay;
 
           std::map<std::string, Qt::GlobalColor> m_keyWords;
       };

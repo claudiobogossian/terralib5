@@ -36,7 +36,7 @@
 te::layout::RectangleModel::RectangleModel() 
 {
 
-  m_type = Enums::getInstance().getEnumObjectType()->getRetangleItem();
+  m_type = Enums::getInstance().getEnumObjectType()->getRectangleItem();
 
   m_borderColor = te::color::RGBAColor(0, 0, 0, 255);
   m_box = te::gm::Envelope(0., 0., 20., 20.);

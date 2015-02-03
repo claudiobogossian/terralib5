@@ -32,6 +32,7 @@
 
 // TerraLib
 #include "ObjectItem.h"
+#include "../../core/Config.h"
 
 // Qt
 #include <QPixmap>
@@ -51,7 +52,7 @@ namespace te
 
 	    \sa te::layout::ObjectItem
 	  */
-    class ImageItem : public ObjectItem
+    class TELAYOUTEXPORT ImageItem : public ObjectItem
     {
       public:
 

@@ -31,6 +31,7 @@
 //TerraLib
 #include "Serialization.h"
 #include "../property/Property.h"
+#include "../Config.h"
 
 // Boost
 #include <boost/property_tree/ptree.hpp>
@@ -49,7 +50,7 @@ namespace te
 
       \sa te::layout::Serialization
 	  */
-    class JSON : public Serialization
+    class TELAYOUTEXPORT JSON : public Serialization
     {
       public:
         JSON();

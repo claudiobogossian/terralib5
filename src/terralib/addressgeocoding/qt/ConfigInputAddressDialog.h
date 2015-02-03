@@ -61,6 +61,8 @@ namespace te
 
         te::da::DataSourcePtr getDataSource();
 
+        void setDataSource(te::da::DataSourcePtr dataSource);
+
         std::string getAddressFileName();
 
         std::string getStreetType();

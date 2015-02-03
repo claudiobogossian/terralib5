@@ -28,6 +28,9 @@
 #ifndef __TERRALIB_LAYOUT_INTERNAL_DELETE_COMMAND_H 
 #define __TERRALIB_LAYOUT_INTERNAL_DELETE_COMMAND_H
 
+// TerraLib
+#include "../../../../core/Config.h"
+
 // Qt
 #include <QUndoCommand>
 #include <QString>
@@ -40,7 +43,7 @@ namespace te
 {
   namespace layout
   {
-    class DeleteCommand : public QUndoCommand
+    class TELAYOUTEXPORT DeleteCommand : public QUndoCommand
     {
       public:
 

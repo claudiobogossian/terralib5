@@ -34,6 +34,7 @@
 #include "../core/pattern/mvc/ItemModelObservable.h"
 #include "../core/ContextItem.h"
 #include "../core/PaperConfig.h"
+#include "../core/Config.h"
 
 namespace te
 {
@@ -50,7 +51,7 @@ namespace te
 
       \sa te::layout::ItemModelObservable
 	  */
-    class PaperModel : public ItemModelObservable
+    class TELAYOUTEXPORT PaperModel : public ItemModelObservable
     {
       public:
 

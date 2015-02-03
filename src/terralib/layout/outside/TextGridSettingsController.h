@@ -42,9 +42,8 @@ namespace te
       public:
 
 	      TextGridSettingsController( Observable* o );
-	      virtual ~TextGridSettingsController();
 
-	      virtual void setPosition(const double& x, const double& y);
+	      virtual ~TextGridSettingsController();
 
         virtual Property updateProperty();
 

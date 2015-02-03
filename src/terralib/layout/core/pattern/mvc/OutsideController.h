@@ -71,12 +71,11 @@ namespace te
 
       /*!
           \brief Change coordinate llx,lly of the MVC widget.
-            Reimplement this function in a ItemController subclass to provide the controller's create implementation.
 
           \param x llx
           \param y lly
         */
-      virtual void setPosition(const double& x, const double& y) = 0;
+      virtual void setPosition(const double& x, const double& y);
 
       /*!
           \brief Returns the "Model" part of the MVC widget.
@@ -93,6 +92,12 @@ namespace te
       const Observer* getView();
 
     protected:
+
+      /*!
+          \brief Call factory to create the "View" part of the MVC widget and passes the model and himself as controller.
+         */
+      virtual void create();
+
       Observable* m_model; //!< "Model" part of the MVC widget.
       Observer* m_view; //!< "View" part of the MVC widget.
     };

@@ -94,6 +94,8 @@ namespace te
 
           std::string getBaseName() const;
 
+          void fillExtensions();
+
         protected slots:
 
           void onOpenFileDlgToolButtonClicked();

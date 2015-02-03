@@ -28,6 +28,9 @@
 #ifndef __TERRALIB_LAYOUT_INTERNAL_MOVE_COMMAND_H 
 #define __TERRALIB_LAYOUT_INTERNAL_MOVE_COMMAND_H
 
+// TerraLib
+#include "../../../../core/Config.h"
+
 // Qt
 #include <QUndoCommand>
 #include <QString>
@@ -43,7 +46,7 @@ namespace te
 {
   namespace layout
   {
-    class MoveCommand : public QUndoCommand
+    class TELAYOUTEXPORT MoveCommand : public QUndoCommand
     {
       public:
         

@@ -36,25 +36,12 @@
 #include "../core/enum/Enums.h"
 
 te::layout::MapGridController::MapGridController( Observable* o ) :
-  MapController(o, 0)
+  MapController(o)
 {
-  create();
-}
-
-te::layout::MapGridController::MapGridController( Observable* o, EnumType* type ) :
-  MapController(o, type)
-{
-
+  
 }
 
 te::layout::MapGridController::~MapGridController()
 {
 	
-}
-
-void te::layout::MapGridController::create()
-{
-  AbstractItemFactory* factory = Context::getInstance().getItemFactory(); 
-  ItemParamsCreate params(this, m_model);
-  m_view = (Observer*)factory->make(m_model->getType(), params);
 }

@@ -26,10 +26,6 @@
 
 include(${SWIG_USE_FILE})
 
-if(WIN32)
-  add_definitions(-DLUA_BUILD_AS_DLL)
-endif()
-
 file(GLOB TERRALIB_SWIG_SCRIPT_FILE ${CMAKE_CURRENT_SOURCE_DIR}/../../../src/terralib/binding/swig/TerraLibR.i)
 
 set (CMAKE_SWIG_FLAGS "-c++")
@@ -40,7 +36,6 @@ include_directories (
   "${TERRALIB_ABSOLUTE_ROOT_DIR}/src"
   "${CMAKE_BINARY_DIR}"
   "${Boost_INCLUDE_DIR}"
-  "${LUA_INCLUDE_DIR}"
   "${R_INCLUDE_DIR}"
 )
 
@@ -58,8 +53,7 @@ SWIG_LINK_LIBRARIES (terralib_mod_binding_r terralib_mod_common
                                               terralib_mod_st
                                               ${Boost_FILESYSTEM_LIBRARY}
                                               ${Boost_SYSTEM_LIBRARY}
-                                              ${Boost_THREAD_LIBRARY}
-                                              ${LUA_LIBRARIES})
+                                              ${Boost_THREAD_LIBRARY})
 
 install(TARGETS terralib_mod_binding_r
         RUNTIME DESTINATION ${TERRALIB_DESTINATION_RUNTIME} COMPONENT runtime

@@ -30,6 +30,7 @@
 
 // TerraLib
 #include "../property/Properties.h"
+#include "../Config.h"
 
 namespace te
 {
@@ -40,7 +41,7 @@ namespace te
 	  
 	    \ingroup layout
 	  */
-    class Serialization
+    class TELAYOUTEXPORT Serialization
     {
       public:
 

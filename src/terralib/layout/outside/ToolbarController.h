@@ -38,12 +38,11 @@ namespace te
   {
     class TELAYOUTEXPORT ToolbarController : public OutsideController
     {
-    public:
+      public:
 
-	    ToolbarController( Observable* o );
-	    virtual ~ToolbarController();
+	      ToolbarController( Observable* o );
 
-	    virtual void setPosition(const double& x, const double& y);
+	      virtual ~ToolbarController();
     };
   }
 }

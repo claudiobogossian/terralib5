@@ -32,6 +32,7 @@
 
 // TerraLib
 #include "TitleController.h"
+#include "../core/Config.h"
 
 namespace te
 {
@@ -46,7 +47,7 @@ namespace te
 
       \sa te::layout::TitleController
 	  */
-    class TextGridController : public TitleController
+    class TELAYOUTEXPORT TextGridController : public TitleController
     {
       public:
 
@@ -61,26 +62,6 @@ namespace te
           \brief Destructor
         */
         virtual ~TextGridController();
-
-        /*!
-          \brief Reimplemented from TitleController
-         */
-        virtual void setPosition(const double& x, const double& y);
-
-      protected:
-
-        /*!
-          \brief Constructor.
-
-          \param o "Model" part of MVC component
-          \param type type of the MVC component
-        */
-        TextGridController( Observable* o, EnumType* type );
-
-        /*!
-          \brief Reimplemented from ItemController
-         */
-        virtual void create();
     };
   }
 }

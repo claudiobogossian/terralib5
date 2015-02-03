@@ -31,12 +31,13 @@
 // TerraLib
 #include "LegendModel.h"
 #include "../../se/Rule.h"
+#include "../core/Config.h"
 
 namespace te
 {
   namespace layout
   {
-    class LegendChildModel : public LegendModel
+    class TELAYOUTEXPORT LegendChildModel : public LegendModel
     {
       public:
 

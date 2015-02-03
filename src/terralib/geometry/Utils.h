@@ -38,6 +38,8 @@ namespace te
     class Envelope;
     class Geometry;
     class Point;
+    struct Coord2D;
+    class LineString;
     
     /*!
       \brief It returns the number of measurements or axes needed to describe a position in a coordinate system.
@@ -107,6 +109,18 @@ namespace te
 
     /* \brief Specialized function that checks if point intersects envelope. */
     template<> TEGEOMEXPORT bool Intersects(const te::gm::Point& point, const te::gm::Envelope& e);
+
+    /*!
+      \brief Make the line interpolation to find a target
+     
+      \param line LineString to make the interpolation
+      \param initial Initial value
+      \param final Final value
+      \param target Target value
+      
+      \return It returns a target Coord2D in the line.
+    */
+    TEGEOMEXPORT Coord2D* locateAlong(const LineString* line, int initial, int final, int target);
 
   } // end namespace gm
 }   // end namespace te

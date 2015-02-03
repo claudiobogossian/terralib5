@@ -60,7 +60,7 @@ namespace te
 
         ~ConfigInputLayerDialog();
 
-				/*!
+        /*!
           \brief Set the layer that can be used
 
           \param layers   List of AbstractLayerPtr
@@ -74,6 +74,8 @@ namespace te
       protected slots:
 
         void onInputLayerComboBoxChanged(int index);
+
+        void onNumberPushButtonClicked();
 
         void onHelpPushButtonClicked();
 
@@ -89,7 +91,7 @@ namespace te
         te::da::DataSourcePtr m_dataSource;
         te::map::AbstractLayerPtr m_selectedLayer;  //!< Layer used for address geocoding
         std::vector<std::string> m_selectedProps; //!< Selected properties related to the selected Layer
-        bool m_toFile;
+
     };
   }   // end namespace addressgeocoding
 }     // end namespace te

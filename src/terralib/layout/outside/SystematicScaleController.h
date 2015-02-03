@@ -39,13 +39,11 @@ namespace te
   {
     class TELAYOUTEXPORT SystematicScaleController : public OutsideController
     {
-    public:
+      public:
 
-	    SystematicScaleController( Observable* o );
-	    virtual ~SystematicScaleController();
+	      SystematicScaleController( Observable* o );
 
-	    virtual void setPosition(const double& x, const double& y);
-
+	      virtual ~SystematicScaleController();
     };
   }
 }
