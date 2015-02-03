@@ -92,34 +92,6 @@ std::vector<std::string> te::vp::GeometricOp::GetOutputDSetNames()
   return m_outDsetNameVec;
 }
 
-bool  te::vp::GeometricOp::save(std::auto_ptr<te::mem::DataSet> result, std::auto_ptr<te::da::DataSetType> outDsType)
-{
-  // do any adaptation necessary to persist the output dataset
-  te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter(outDsType.get(), m_outDsrc->getCapabilities());
-  te::da::DataSetType* dsTypeResult = converter->getResult();
-  std::auto_ptr<te::da::DataSetAdapter> dsAdapter(te::da::CreateAdapter(result.get(), converter));
-  
-  std::map<std::string, std::string> options;
-  // create the dataset
-  m_outDsrc->createDataSet(dsTypeResult, options);
-  
-  // copy from memory to output datasource
-  result->moveBeforeFirst();
-  std::string name = dsTypeResult->getName();
-  m_outDsrc->add(dsTypeResult->getName(),result.get(), options);
-  
-  // create the primary key if it is possible
-  if (m_outDsrc->getCapabilities().getDataSetTypeCapabilities().supportsPrimaryKey())
-  {
-    std::string pk_name = dsTypeResult->getName() + "_pkey";
-    te::da::PrimaryKey* pk = new te::da::PrimaryKey(pk_name, dsTypeResult);
-    pk->add(dsTypeResult->getProperty(0));
-    m_outDsrc->addPrimaryKey(outDsType->getName(), pk);
-  }
-  
-  return true;
-}
-
 te::da::DataSetType* te::vp::GeometricOp::GetDataSetType( te::vp::GeometricOpObjStrategy geomOpStrategy,
                                                           bool multiGeomColumns,
                                                           int geomOp)

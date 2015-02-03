@@ -189,7 +189,15 @@ bool te::vp::BufferMemory::run()
     dissolveMemory(outDSet.get(), m_levels);
   }
 
-  return save(outDSet,outDSType);
+  try
+  {
+    te::vp::Save(m_outDsrc.get(), outDSet.get(), outDSType.get());
+    return true;
+  }
+  catch(...)
+  {
+    return false;
+  }
 }
 
 

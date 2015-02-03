@@ -216,15 +216,16 @@ void te::addressgeocoding::ConfigInputLayerDialog::onOkPushButtonClicked()
 // ALTER TABLE adding a new columns of tsvector type.  
   if(addNewColumn == true)
   {
+    std::auto_ptr<te::da::DataSourceTransactor> trans = m_dataSource->getTransactor();
     std::string alterTable = "ALTER TABLE "+ m_selectedLayer->getTitle() + " ADD tsvector tsvector";
-    m_dataSource->execute(alterTable);
+    trans->execute(alterTable);
   }
 
+
+  
 // UPDATE values in tsvector column.
   std::string updateTable = "UPDATE " + m_selectedLayer->getTitle() + " SET tsvector = to_tsvector('english', ";
 
-
-  //UPDATE taubate_sp SET tsvector = to_tsvector('english', nome||' '||bairro_le||' '||num_ie||' '||num_fe);
   for(std::size_t selProps = 0; selProps < m_selectedProps.size(); ++selProps)
   {
     if(selProps == 0)

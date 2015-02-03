@@ -88,6 +88,8 @@ namespace te
 
         void onConfigureLayerClicked();
 
+        void onTargetFileAddressToolButtonPressed();
+
         void onConfigureAddressClicked();
 
         void onTargetDatasourceToolButtonPressed();

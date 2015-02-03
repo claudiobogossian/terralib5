@@ -61,6 +61,8 @@ namespace te
     
     te::gm::GeomType GeomOpResultType(te::gm::GeomType firstGeom);
 
+    void Save(te::da::DataSource* source, te::da::DataSet* result, te::da::DataSetType* outDsType);
+
   } // end namespace vp
 }   // end namespace te
 

@@ -107,7 +107,7 @@ te::qt::widgets::HistogramDataWidget::HistogramDataWidget(te::da::DataSet* dataS
 
       size_t size = raster->getNumberOfBands();
       m_ui->m_slicesSpinBox->setMinimum(0);
-      m_ui->m_slicesSpinBox->setValue(0);
+      m_ui->m_slicesSpinBox->setValue(30);
 
       if (min >= 0 && max <= 255)
         m_ui->m_slicesSpinBox->setMaximum(255);
@@ -117,7 +117,7 @@ te::qt::widgets::HistogramDataWidget::HistogramDataWidget(te::da::DataSet* dataS
       for (size_t i = 0; i < size; i++)
       {
         item = QString::number(i);
-        m_ui->m_propertyComboBox->addItem((QString::fromStdString("Band: ") + item), QVariant(i));
+        m_ui->m_propertyComboBox->addItem((QString::fromStdString("Band: ") + item), QVariant::fromValue(i));
       }
     }
   else
@@ -127,7 +127,7 @@ te::qt::widgets::HistogramDataWidget::HistogramDataWidget(te::da::DataSet* dataS
       if(dataSet->getPropertyDataType(i) != te::dt::GEOMETRY_TYPE)
       {
         item = QString::fromStdString(dataSet->getPropertyName(i));
-        m_ui->m_propertyComboBox->addItem(item, QVariant(i));
+        m_ui->m_propertyComboBox->addItem(item, QVariant::fromValue(i));
       }
     }
   }
@@ -165,7 +165,7 @@ te::qt::widgets::Histogram* te::qt::widgets::HistogramDataWidget::getHistogram()
 
   if(rpos != std::string::npos)
   {
-    histogram = te::qt::widgets::createHistogram(m_dataSet.get(), m_dataType.get(), m_ui->m_propertyComboBox->itemData(m_ui->m_propertyComboBox->currentIndex()).toInt(), m_ui->m_slicesSpinBox->value());
+    histogram = te::qt::widgets::createHistogram(m_dataSet.get(), m_dataType.get(), m_ui->m_propertyComboBox->itemData(m_ui->m_propertyComboBox->currentIndex()).toInt(), m_ui->m_slicesSpinBox->value(), -1);
   }
   else
   {
@@ -237,7 +237,7 @@ void te::qt::widgets::HistogramDataWidget::onPropertyComboBoxIndexChanged (QStri
     else
       m_ui->m_slicesSpinBox->setMaximum(max);
 
-    m_ui->m_slicesSpinBox->setValue(0);
+    m_ui->m_slicesSpinBox->setValue(30);
   }
 
   updateSummary(m_dataSet.get(), getForm());
