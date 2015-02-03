@@ -419,7 +419,7 @@ te::rst::Raster& te::rst::Raster::operator=(const te::rst::Raster& rhs)
   return *this;
 }
 
-te::rst::Raster* te::rst::Raster::trim(const te::gm::Envelope* env, const std::map<std::string, std::string>& rinfo)
+te::rst::Raster* te::rst::Raster::trim(const te::gm::Envelope* env, const std::map<std::string, std::string>& rinfo) const
 {
 // calculate output properties
   
