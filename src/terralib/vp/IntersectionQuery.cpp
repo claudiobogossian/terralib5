@@ -193,7 +193,15 @@ bool te::vp::IntersectionQuery::run()
 
   outDset->moveBeforeFirst();
 
-  return save(outDset, outDataSetType);
+  try
+  {
+    te::vp::Save(m_outDsrc.get(), outDset.get(), outDataSetType.get());
+    return true;
+  }
+  catch(...)
+  {
+    return false;
+  }
 }
 
 te::da::DataSet* te::vp::IntersectionQuery::updateGeomType(te::da::DataSetType* dsType, te::da::DataSet* ds)
