@@ -174,7 +174,15 @@ bool te::vp::BufferQuery::run()
     prepareDataSet(outDSType.get(), dsQuery.get(), outDSet.get(), m_distance);
   }
 
-  return save(outDSet,outDSType);
+  try
+  {
+    te::vp::Save(m_outDsrc.get(), outDSet.get(), outDSType.get());
+    return true;
+  }
+  catch(...)
+  {
+    return false;
+  }
 }
 
 std::vector<std::vector<te::gm::Geometry*> > te::vp::BufferQuery::dissolveQuery(te::da::DataSet* dsQuery,

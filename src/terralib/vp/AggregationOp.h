@@ -77,8 +77,6 @@ namespace te
       
     protected:
       
-      bool save(std::auto_ptr<te::mem::DataSet> result, std::auto_ptr<te::da::DataSetType> outDsType);
-      
       // it defines the type of the result considering the input geometries being aggregated
       te::gm::GeomType getGeomResultType(te::gm::GeomType geom);
       

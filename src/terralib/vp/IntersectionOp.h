@@ -79,8 +79,6 @@ namespace te
 
     protected:
 
-      bool save(std::auto_ptr<te::da::DataSet> result, std::auto_ptr<te::da::DataSetType> outDsType);
-
       std::vector<te::dt::Property*> getTabularProps(te::da::DataSetType* dsType);
 
 

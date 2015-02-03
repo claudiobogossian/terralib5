@@ -200,6 +200,7 @@ void  te::qt::widgets::ChartDisplay::adjustDisplay()
 
     canvas()->setPalette(m_chartStyle->getColor());
   }
+  updateLayout();
 }
 
 void te::qt::widgets::ChartDisplay::onRectPicked(const QRectF &rect)

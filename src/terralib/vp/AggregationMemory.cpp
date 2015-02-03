@@ -356,6 +356,13 @@ bool te::vp::AggregationMemory::run()
     task.pulse();
   }
   
-  // save the result
-  return save(outDataset,outDsType);
+  try
+  {
+    te::vp::Save(m_outDsrc.get(), outDataset.get(), outDsType.get());
+    return true;
+  }
+  catch(...)
+  {
+    return false;
+  }
 }

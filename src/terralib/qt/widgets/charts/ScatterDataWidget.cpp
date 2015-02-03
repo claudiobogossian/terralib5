@@ -78,6 +78,7 @@ te::qt::widgets::ScatterDataWidget::ScatterDataWidget(te::da::DataSet* dataSet, 
     }
   else
   {
+    m_ui->m_readAllCheckBox->hide();
     for (std::size_t i = 0; i < dataSet->getNumProperties(); i++)
     {
       if((dataSet->getPropertyDataType(i) != te::dt::GEOMETRY_TYPE) & (dataSet->getPropertyDataType(i) != te::dt::STRING_TYPE))

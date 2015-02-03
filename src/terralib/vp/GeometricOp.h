@@ -79,8 +79,6 @@ namespace te
       std::vector<std::string> GetOutputDSetNames();
       
     protected:
-      
-      bool save(std::auto_ptr<te::mem::DataSet> result, std::auto_ptr<te::da::DataSetType> outDsType);
 
       te::da::DataSetType* GetDataSetType(te::vp::GeometricOpObjStrategy,
                                           bool MultiGeomColumns,
