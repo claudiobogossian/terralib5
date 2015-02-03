@@ -885,10 +885,14 @@ namespace te
       const unsigned int moravecWindowWidth = paramsPtr->m_moravecWindowWidth;
       const unsigned int moravecWindowRadius = moravecWindowWidth / 2;        
       const unsigned int tiePointsSubSectorsSplitFactor = paramsPtr->m_tiePointsSubSectorsSplitFactor;
-      const unsigned int rowsBySubSector = paramsPtr->m_rasterDataPtr->getLinesNumber()
-        / tiePointsSubSectorsSplitFactor;
-      const unsigned int colsBySubSector = paramsPtr->m_rasterDataPtr->getColumnsNumber()
-        / tiePointsSubSectorsSplitFactor;      
+      const unsigned int rowsBySubSector = (unsigned int)std::ceil(
+        ((double)paramsPtr->m_rasterDataPtr->getLinesNumber())
+        / 
+        ((double)tiePointsSubSectorsSplitFactor) );
+      const unsigned int colsBySubSector = (unsigned int)std::ceil(
+        ((double)paramsPtr->m_rasterDataPtr->getColumnsNumber())
+        / 
+        ((double)tiePointsSubSectorsSplitFactor) );      
       const unsigned int maxInterestPointsBySubSector = paramsPtr->m_maxInterestPointsBySubSector;
       const unsigned int rasterLines = paramsPtr->m_rasterDataPtr->getLinesNumber();
       const unsigned int lastBufferLineIdx = moravecWindowWidth - 1;

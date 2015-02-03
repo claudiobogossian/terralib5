@@ -38,15 +38,9 @@
 #include "../core/enum/Enums.h"
 
 te::layout::TextGridController::TextGridController( Observable* o ) :
-  TitleController(o, 0)
+  TitleController(o)
 {
-  create();
-}
-
-te::layout::TextGridController::TextGridController( Observable* o, EnumType* type ) :
-  TitleController(o, type)
-{
-
+  
 }
 
 te::layout::TextGridController::~TextGridController()
@@ -54,19 +48,3 @@ te::layout::TextGridController::~TextGridController()
 	
 }
 
-void te::layout::TextGridController::setPosition( const double& x, const double& y )
-{
-  if(m_model)
-  {
-    ItemModelObservable* model = dynamic_cast<ItemModelObservable*>(m_model);
-    if(model)
-      return model->setPosition(x, y);
-  }
-}
-
-void te::layout::TextGridController::create()
-{
-  AbstractItemFactory* factory = Context::getInstance().getItemFactory(); 
-  ItemParamsCreate params(this, m_model);
-  m_view = (Observer*)factory->make(m_model->getType(), params);
-}

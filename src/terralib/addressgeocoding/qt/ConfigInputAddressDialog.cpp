@@ -47,7 +47,6 @@
 #include "../Config.h"
 #include "../Exception.h"
 #include "ConfigInputAddressDialog.h"
-#include "ImportTableDialog.h"
 #include "ui_ConfigInputAddressDialogForm.h"
 
 // Qt
@@ -67,8 +66,6 @@ te::addressgeocoding::ConfigInputAddressDialog::ConfigInputAddressDialog(QWidget
 // add controls
   m_ui->setupUi(this);
 
-  connect(m_ui->m_importTablePushButton, SIGNAL(clicked()), this, SLOT(onImportTableClicked()));
-
   connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));
   connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
   connect(m_ui->m_cancelPushButton, SIGNAL(clicked()), this, SLOT(onCancelPushButtonClicked()));
@@ -84,9 +81,52 @@ te::da::DataSourcePtr te::addressgeocoding::ConfigInputAddressDialog::getDataSou
   return m_dataSource;
 }
 
+void te::addressgeocoding::ConfigInputAddressDialog::setDataSource(te::da::DataSourcePtr dataSource)
+{
+  m_dataSource = dataSource;
+  std::vector<std::string> names = m_dataSource->getDataSetNames();
+  
+  m_ui->m_inputAddressLineEdit->clear();
+  m_ui->m_inputAddressLineEdit->setText(QString(names[0].c_str()));
+
+  m_ui->m_sTypeComboBox->clear();
+  m_ui->m_sTitleComboBox->clear();
+  m_ui->m_sNameComboBox->clear();
+  m_ui->m_sNumberComboBox->clear();
+  m_ui->m_sNeighborhoodComboBox->clear();
+  m_ui->m_sPostalCodeComboBox->clear();
+
+  m_ui->m_sTypeComboBox->addItem("");
+  m_ui->m_sTitleComboBox->addItem("");
+  m_ui->m_sNameComboBox->addItem("");
+  m_ui->m_sNumberComboBox->addItem("");
+  m_ui->m_sNeighborhoodComboBox->addItem("");
+  m_ui->m_sPostalCodeComboBox->addItem("");
+
+  std::auto_ptr<te::da::DataSetType> dsType = m_dataSource->getDataSetType(names[0]);
+  std::vector<te::dt::Property*> propsVec = dsType->getProperties();
+
+  for(std::size_t i = 0; i < propsVec.size(); ++i)
+  {
+    int type = propsVec[i]->getType();
+    if(type == te::dt::INT16_TYPE || type == te::dt::INT32_TYPE || type == te::dt::INT64_TYPE || type == te::dt::DOUBLE_TYPE )
+    {
+      m_ui->m_sNumberComboBox->addItem(QString(propsVec[i]->getName().c_str()));
+    }
+    else
+    {
+      m_ui->m_sTypeComboBox->addItem(QString(propsVec[i]->getName().c_str()));
+      m_ui->m_sTitleComboBox->addItem(QString(propsVec[i]->getName().c_str()));
+      m_ui->m_sNameComboBox->addItem(QString(propsVec[i]->getName().c_str()));
+      m_ui->m_sNeighborhoodComboBox->addItem(QString(propsVec[i]->getName().c_str()));
+      m_ui->m_sPostalCodeComboBox->addItem(QString(propsVec[i]->getName().c_str()));
+    }
+  }
+}
+
 std::string te::addressgeocoding::ConfigInputAddressDialog::getAddressFileName()
 {
-  return m_ui->m_inputAddressComboBox->currentText().toStdString();
+  return m_ui->m_inputAddressLineEdit->text().toStdString();
 }
 
 std::string te::addressgeocoding::ConfigInputAddressDialog::getStreetType()
@@ -119,58 +159,57 @@ std::string te::addressgeocoding::ConfigInputAddressDialog::getStreetPostalCode(
   return m_ui->m_sPostalCodeComboBox->currentText().toStdString();
 }
 
-
 void te::addressgeocoding::ConfigInputAddressDialog::onImportTableClicked()
 {
-  te::addressgeocoding::ImportTableDialog dlg(this);
-	
-	if(dlg.exec() != QDialog::Accepted)
-  {
-    m_ui->m_inputAddressComboBox->clear();
-    m_ui->m_sTypeComboBox->clear();
-    m_ui->m_sTitleComboBox->clear();
-    m_ui->m_sNameComboBox->clear();
-    m_ui->m_sNumberComboBox->clear();
-    m_ui->m_sNeighborhoodComboBox->clear();
-    m_ui->m_sPostalCodeComboBox->clear();
+  //te::addressgeocoding::ImportTableDialog dlg(this);
 
-    m_dataSource = dlg.getDataSource();
-    m_dataSet = dlg.getDataSet();
+  //if(dlg.exec() != QDialog::Accepted)
+  //{
+  //  m_ui->m_inputAddressLineEdit->clear();
+  //  m_ui->m_sTypeComboBox->clear();
+  //  m_ui->m_sTitleComboBox->clear();
+  //  m_ui->m_sNameComboBox->clear();
+  //  m_ui->m_sNumberComboBox->clear();
+  //  m_ui->m_sNeighborhoodComboBox->clear();
+  //  m_ui->m_sPostalCodeComboBox->clear();
 
-    if(m_dataSource)
-    {
-      std::vector<std::string> names = m_dataSource->getDataSetNames();
-      m_ui->m_inputAddressComboBox->addItem(QString(names[0].c_str()));
+  //  m_dataSource = dlg.getDataSource();
+  //  m_dataSet = dlg.getDataSet();
 
-      m_ui->m_sTypeComboBox->addItem("");
-      m_ui->m_sTitleComboBox->addItem("");
-      m_ui->m_sNameComboBox->addItem("");
-      m_ui->m_sNumberComboBox->addItem("");
-      m_ui->m_sNeighborhoodComboBox->addItem("");
-      m_ui->m_sPostalCodeComboBox->addItem("");
+  //  if(m_dataSource)
+  //  {
+  //    std::vector<std::string> names = m_dataSource->getDataSetNames();
+  //    m_ui->m_inputAddressLineEdit->setText(QString(names[0].c_str()));
 
-      std::auto_ptr<te::da::DataSetType> dsType = m_dataSource->getDataSetType(names[0]);
-      std::vector<te::dt::Property*> propsVec = dsType->getProperties();
+  //    m_ui->m_sTypeComboBox->addItem("");
+  //    m_ui->m_sTitleComboBox->addItem("");
+  //    m_ui->m_sNameComboBox->addItem("");
+  //    m_ui->m_sNumberComboBox->addItem("");
+  //    m_ui->m_sNeighborhoodComboBox->addItem("");
+  //    m_ui->m_sPostalCodeComboBox->addItem("");
 
-      for(std::size_t i = 0; i < propsVec.size(); ++i)
-      {
-        int type = propsVec[i]->getType();
-        if(type == te::dt::INT16_TYPE || type == te::dt::INT32_TYPE || type == te::dt::INT64_TYPE || type == te::dt::DOUBLE_TYPE )
-        {
-          m_ui->m_sNumberComboBox->addItem(QString(propsVec[i]->getName().c_str()));
-        }
-        else
-        {
-          m_ui->m_sTypeComboBox->addItem(QString(propsVec[i]->getName().c_str()));
-          m_ui->m_sTitleComboBox->addItem(QString(propsVec[i]->getName().c_str()));
-          m_ui->m_sNameComboBox->addItem(QString(propsVec[i]->getName().c_str()));
-          m_ui->m_sNeighborhoodComboBox->addItem(QString(propsVec[i]->getName().c_str()));
-          m_ui->m_sPostalCodeComboBox->addItem(QString(propsVec[i]->getName().c_str()));
-        }
-      }
-    }
-  }
-  return;
+  //    std::auto_ptr<te::da::DataSetType> dsType = m_dataSource->getDataSetType(names[0]);
+  //    std::vector<te::dt::Property*> propsVec = dsType->getProperties();
+
+  //    for(std::size_t i = 0; i < propsVec.size(); ++i)
+  //    {
+  //      int type = propsVec[i]->getType();
+  //      if(type == te::dt::INT16_TYPE || type == te::dt::INT32_TYPE || type == te::dt::INT64_TYPE || type == te::dt::DOUBLE_TYPE )
+  //      {
+  //        m_ui->m_sNumberComboBox->addItem(QString(propsVec[i]->getName().c_str()));
+  //      }
+  //      else
+  //      {
+  //        m_ui->m_sTypeComboBox->addItem(QString(propsVec[i]->getName().c_str()));
+  //        m_ui->m_sTitleComboBox->addItem(QString(propsVec[i]->getName().c_str()));
+  //        m_ui->m_sNameComboBox->addItem(QString(propsVec[i]->getName().c_str()));
+  //        m_ui->m_sNeighborhoodComboBox->addItem(QString(propsVec[i]->getName().c_str()));
+  //        m_ui->m_sPostalCodeComboBox->addItem(QString(propsVec[i]->getName().c_str()));
+  //      }
+  //    }
+  //  }
+  //}
+  //return;
 }
 
 void te::addressgeocoding::ConfigInputAddressDialog::onHelpPushButtonClicked()

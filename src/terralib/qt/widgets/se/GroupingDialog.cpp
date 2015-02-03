@@ -73,8 +73,6 @@ void te::qt::widgets::GroupingDialog::setLayers(te::map::AbstractLayerPtr select
   if(dsType->hasGeom())
   {
     buildVectorialGroupingInteface();
-
-    m_groupingWidget->setLayers(selectedLayer, allLayers);
   }
   else if(dsType->hasRaster())
   {

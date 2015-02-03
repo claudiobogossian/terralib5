@@ -47,7 +47,7 @@ namespace te
 
         class Plugin : public QObject, public te::plugin::Plugin
         {
-					Q_OBJECT
+          Q_OBJECT
 
           public:
 
@@ -59,17 +59,17 @@ namespace te
 
             void shutdown();
 
-					protected slots:
-							/*!
-								\brief Slot function used when a action was selected.
+          protected slots:
+              /*!
+                \brief Slot function used when a action was selected.
 
-								\param checked Flag used in case a toggle action.
-							*/
-							void onActionActivated(bool checked);
+                \param checked Flag used in case a toggle action.
+              */
+              void onActionActivated(bool checked);
 
           protected:
 
-					  /*!
+            /*!
               \brief Get the list of layers from app
 
               \return The list pf layer auto pointers

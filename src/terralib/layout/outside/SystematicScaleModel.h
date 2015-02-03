@@ -43,6 +43,7 @@ namespace te
     public:
 
       SystematicScaleModel();
+
       virtual ~SystematicScaleModel();
 
       virtual void updateProperties(te::layout::Properties* properties);

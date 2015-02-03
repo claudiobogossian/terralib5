@@ -78,7 +78,17 @@ namespace te
 
         void onLayerComboBoxChanged(int index);
 
+        void onInitialLeftComboBoxChanged(int index);
+
+        void onFinalLeftComboBoxChanged(int index);
+
+        void onInitialRightComboBoxChanged(int index);
+
+        void onFinalRightComboBoxChanged(int index);
+
         void onConfigureLayerClicked();
+
+        void onTargetFileAddressToolButtonPressed();
 
         void onConfigureAddressClicked();
 
@@ -103,10 +113,17 @@ namespace te
         te::da::DataSourceInfoPtr m_outputDatasource;                 //!< DataSource information.
         te::map::AbstractLayerPtr m_resultLayer;                      //!< Generated Layer.
 
+        std::string m_initialLeft;
+        std::string m_finalLeft;
+        std::string m_initialRight;
+        std::string m_finalRight;
+
         te::da::DataSourcePtr m_addressDataSource;
         std::string m_addressFile;
         std::vector<std::string> m_associatedProps;
         std::string m_streetNumber;
+        
+        bool m_toFile;
 
     };
   }   // end namespace addressgeocoding

@@ -62,26 +62,6 @@ namespace te
           \brief Destructor
         */ 
         virtual ~EllipseController();
-
-        /*!
-          \brief Reimplemented from ItemController
-         */
-        virtual void setPosition(const double& x, const double& y);
-
-      protected:
-
-        /*!
-          \brief Constructor.
-
-          \param o "Model" part of MVC component
-          \param type type of the MVC component
-        */
-        EllipseController( Observable* o, EnumType* type );
-
-        /*!
-          \brief Reimplemented from ItemController
-         */
-        virtual void create();
     };
   }
 }

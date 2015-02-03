@@ -31,9 +31,12 @@
 #include "../core/property/Properties.h"
 #include "../core/property/PlanarGridSettingsConfigProperties.h"
 #include "../core/property/GeodesicGridSettingsConfigProperties.h"
+#include "../core/enum/Enums.h"
 
 te::layout::GridSettingsModel::GridSettingsModel() 
 {
+  m_type = Enums::getInstance().getEnumObjectType()->getGridSettings();
+
   m_box = te::gm::Envelope(0., 0., 200., 200.);
 
   m_planarGridSettings = new PlanarGridSettingsConfigProperties;

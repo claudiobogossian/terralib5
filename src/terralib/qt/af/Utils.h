@@ -325,6 +325,11 @@ namespace te
       TEQTAFEXPORT void WriteDefaultProjectFile(const QString& fileName);
 
       /*!
+        \brief Return a QString with the new window title based on the project informations.
+      */
+      TEQTAFEXPORT QString GetWindowTitle(const Project& project);
+
+      /*!
         \brief Returns the date and time of generated binary.
       */
       TEQTAFEXPORT QString GetGenerationDate();

@@ -27,48 +27,15 @@
 
 // TerraLib
 #include "SystematicScaleController.h"
-#include "../core/pattern/factory/OutsideParamsCreate.h"
-#include "../core/pattern/factory/AbstractOutsideFactory.h"
-#include "../core/pattern/singleton/Context.h"
-#include "../core/pattern/mvc/Observable.h"
-#include "../core/pattern/mvc/OutsideModelObservable.h"
-#include "../core/enum/Enums.h"
 
 te::layout::SystematicScaleController::SystematicScaleController( Observable* o ) :
 	OutsideController(o)
 {
-  create();
+  
 }
-
-te::layout::SystematicScaleController::SystematicScaleController( Observable* o, EnumType* type ):
-  OutsideController(o, type)
-{
-
-}
-
 
 te::layout::SystematicScaleController::~SystematicScaleController()
 {
 
 }
 
-void te::layout::SystematicScaleController::setPosition( const double& x, const double& y )
-{
-  if(m_model)
-  {
-    OutsideModelObservable* model = dynamic_cast<OutsideModelObservable*>(m_model);
-    if(model)
-      return model->setPosition(x, y);
-  }
-}
-
-void te::layout::SystematicScaleController::create()
-{
-  EnumType* type = Enums::getInstance().getEnumObjectType()->getSystematicScale();
-  m_model->setType(type);
-
-  AbstractOutsideFactory* factory = Context::getInstance().getOutsideFactory(); 
-  OutsideParamsCreate params(this, m_model);
-  if(factory)
-    m_view = (Observer*)factory->make(m_model->getType(), params);
-}
