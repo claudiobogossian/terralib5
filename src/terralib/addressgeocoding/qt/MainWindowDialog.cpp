@@ -60,6 +60,7 @@
 #include <QListWidgetItem>
 #include <QMessageBox>
 #include <QTreeWidget>
+#include <QSettings>
 
 // Boost
 #include <boost/algorithm/string.hpp>
@@ -94,11 +95,53 @@ te::addressgeocoding::MainWindowDialog::MainWindowDialog(QWidget* parent, Qt::Wi
 
   connect(m_ui->m_configureLayerPushButton, SIGNAL(clicked()), this, SLOT(onConfigureLayerClicked()));
   connect(m_ui->m_targetFileAddressToolButton, SIGNAL(clicked()), this, SLOT(onTargetFileAddressToolButtonPressed()));
-//  connect(m_ui->m_configureAddressPushButton, SIGNAL(clicked()), this, SLOT(onConfigureAddressClicked()));
 
   connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));
   connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
   connect(m_ui->m_cancelPushButton, SIGNAL(clicked()), this, SLOT(onCancelPushButtonClicked()));
+
+// Load the Address file path.
+  std::string filePath;
+  GetAddressFilePathToSettings(filePath);
+
+// Load the Address Data Source.
+  GetDataSourceAddress(filePath);
+  
+  std::vector<std::string>vecNames;
+  if(m_addressDataSource)
+  {
+    vecNames = m_addressDataSource->getDataSetNames();
+    m_addressFile = vecNames[0];
+    m_ui->m_inputAddressComboBox->addItem(QString(m_addressFile.c_str()));
+  }
+
+// Load the Address parameters.
+  std::string streetType;
+  std::string streetTitle;
+  std::string streetName;
+  std::string number;
+  std::string neighborhood;
+  std::string postalCode;
+
+  GetAddressConfigToSettings(streetType, streetTitle, streetName, number, neighborhood, postalCode);
+
+  if(streetType != "")
+    m_associatedProps.push_back(streetType);
+
+  if(streetTitle != "")
+    m_associatedProps.push_back(streetTitle);
+
+  if(streetName != "")
+    m_associatedProps.push_back(streetName);
+
+  if(neighborhood != "")
+    m_associatedProps.push_back(neighborhood);
+
+  if(postalCode != "")
+    m_associatedProps.push_back(postalCode);
+
+  m_streetNumber = number;
+
 }
 
 te::addressgeocoding::MainWindowDialog::~MainWindowDialog()
@@ -216,6 +259,11 @@ void te::addressgeocoding::MainWindowDialog::onConfigureLayerClicked()
   return;
 }
 
+void te::addressgeocoding::MainWindowDialog::onAddressComboBoxChanged(int index)
+{
+
+}
+
 void te::addressgeocoding::MainWindowDialog::onTargetFileAddressToolButtonPressed()
 {
 try
@@ -223,39 +271,7 @@ try
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open Textual File"), te::qt::widgets::GetFilePathFromSettings("tabular"), tr("dBASE (*.dbf *.DBF);; Comma Separated Value (*.csv *.CSV)"), 
       0, QFileDialog::ReadOnly);
 
-    if(fileName.isEmpty())
-      return;
-
-    QFileInfo info(fileName);
-    te::qt::widgets::AddFilePathToSettings(info.absolutePath(), "tabular");
-
-    //Getting the connection info
-    std::string ogrInfo("connection_string=" + fileName.toStdString());
-    std::map<std::string, std::string> connInfo;
-    connInfo["URI"] = fileName.toStdString();
-
-    boost::filesystem::path uri(fileName.toStdString());
-    std::string file = uri.stem().string();
-
-    //Creating a DataSource
-    static boost::uuids::basic_random_generator<boost::mt19937> gen;
-    boost::uuids::uuid u = gen();
-
-    te::da::DataSourceInfoPtr dsInfo(new te::da::DataSourceInfo);
-    dsInfo->setConnInfo(connInfo);
-    dsInfo->setId(boost::uuids::to_string(u));
-    dsInfo->setTitle(fileName.toStdString());
-    dsInfo->setDescription("");
-    dsInfo->setAccessDriver("OGR");
-    dsInfo->setType("OGR");
-
-    te::da::DataSourceInfoManager::getInstance().add(dsInfo);
-
-    m_addressDataSource = te::da::DataSourceFactory::make(dsInfo->getAccessDriver());
-    m_addressDataSource->setConnectionInfo(dsInfo->getConnInfo());
-
-    m_addressDataSource->setId(boost::uuids::to_string(u));
-    m_addressDataSource->open();
+    GetDataSourceAddress(fileName.toStdString());
 
     te::addressgeocoding::ConfigInputAddressDialog dlg(this);
     
@@ -296,37 +312,14 @@ try
   }
 }
 
-void te::addressgeocoding::MainWindowDialog::onConfigureAddressClicked()
+void te::addressgeocoding::MainWindowDialog::onEditAddressToolButtonPressed()
 {
-  te::addressgeocoding::ConfigInputAddressDialog dlg(this);
 
-  if(dlg.exec() != QDialog::Accepted)
-  {
-    m_ui->m_inputAddressComboBox->clear();
+}
 
-    m_addressDataSource = dlg.getDataSource();
-    m_addressFile = dlg.getAddressFileName();
+void te::addressgeocoding::MainWindowDialog::onRemoveAddressToolButtonPressed()
+{
 
-    if(dlg.getStreetType() != "")
-      m_associatedProps.push_back(dlg.getStreetType());
-
-    if(dlg.getStreetTitle() != "")
-      m_associatedProps.push_back(dlg.getStreetTitle());
-
-    if(dlg.getStreetName() != "")
-      m_associatedProps.push_back(dlg.getStreetName());
-
-    if(dlg.getStreetNeighborhood() != "")
-      m_associatedProps.push_back(dlg.getStreetNeighborhood());
-
-    if(dlg.getStreetPostalCode() != "")
-      m_associatedProps.push_back(dlg.getStreetPostalCode());
-
-    m_streetNumber = dlg.getStreetNumber();
-
-    m_ui->m_inputAddressComboBox->addItem(QString(m_addressFile.c_str()));
-  }
-  return;
 }
 
 void te::addressgeocoding::MainWindowDialog::onTargetDatasourceToolButtonPressed()
@@ -550,3 +543,73 @@ void te::addressgeocoding::MainWindowDialog::onCancelPushButtonClicked()
   reject();
 }
 
+void te::addressgeocoding::MainWindowDialog::GetAddressFilePathToSettings(std::string& filePath)
+{
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+
+  std::string key1 = "Address Geocoding/filePath";
+
+  filePath = sett.value(key1.c_str()).toString().toStdString();
+}
+
+void te::addressgeocoding::MainWindowDialog::GetAddressConfigToSettings(std::string& streetType,
+                                                                        std::string& streetTitle,
+                                                                        std::string& streetName,
+                                                                        std::string& number,
+                                                                        std::string& neighborhood,
+                                                                        std::string& postalCode)
+{
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+
+  std::string key1 = "Address Geocoding/streetType";
+  std::string key2 = "Address Geocoding/streetTitle";
+  std::string key3 = "Address Geocoding/streetName";
+  std::string key4 = "Address Geocoding/number";
+  std::string key5 = "Address Geocoding/neighborhood";
+  std::string key6 = "Address Geocoding/postalCode";
+
+  streetType = sett.value(key1.c_str()).toString().toStdString();
+  streetTitle = sett.value(key2.c_str()).toString().toStdString();
+  streetName = sett.value(key3.c_str()).toString().toStdString();
+  number = sett.value(key4.c_str()).toString().toStdString();
+  neighborhood = sett.value(key5.c_str()).toString().toStdString();
+  postalCode = sett.value(key6.c_str()).toString().toStdString();
+
+}
+
+void te::addressgeocoding::MainWindowDialog::GetDataSourceAddress(std::string filePath)
+{
+  if(QString(filePath.c_str()).isEmpty())
+    return;
+
+  QFileInfo info(QString(filePath.c_str()));
+  te::qt::widgets::AddFilePathToSettings(info.absolutePath(), "tabular");
+
+  //Getting the connection info
+  std::string ogrInfo("connection_string=" + filePath);
+  std::map<std::string, std::string> connInfo;
+  connInfo["URI"] = filePath;
+
+  boost::filesystem::path uri(filePath);
+  std::string file = uri.stem().string();
+
+  //Creating a DataSource
+  static boost::uuids::basic_random_generator<boost::mt19937> gen;
+  boost::uuids::uuid u = gen();
+
+  te::da::DataSourceInfoPtr dsInfo(new te::da::DataSourceInfo);
+  dsInfo->setConnInfo(connInfo);
+  dsInfo->setId(boost::uuids::to_string(u));
+  dsInfo->setTitle(filePath);
+  dsInfo->setDescription("");
+  dsInfo->setAccessDriver("OGR");
+  dsInfo->setType("OGR");
+
+  te::da::DataSourceInfoManager::getInstance().add(dsInfo);
+
+  m_addressDataSource = te::da::DataSourceFactory::make(dsInfo->getAccessDriver());
+  m_addressDataSource->setConnectionInfo(dsInfo->getConnInfo());
+
+  m_addressDataSource->setId(boost::uuids::to_string(u));
+  m_addressDataSource->open();
+}

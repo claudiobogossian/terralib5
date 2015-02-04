@@ -79,8 +79,6 @@ namespace te
 
       protected slots:
 
-        void onImportTableClicked();
-
         void onHelpPushButtonClicked();
 
         void onOkPushButtonClicked();
@@ -88,6 +86,24 @@ namespace te
         void onCancelPushButtonClicked();
 
       private:
+
+        void AddAddressConfigToSettings(std::string filePath,
+                                        std::string streetType,
+                                        std::string streetTitle,
+                                        std::string streetName,
+                                        std::string number,
+                                        std::string neighborhood,
+                                        std::string postalCode);
+
+        void GetAddressConfigToSettings(std::string& filePath,
+                                        std::string& streetType,
+                                        std::string& streetTitle,
+                                        std::string& streetName,
+                                        std::string& number,
+                                        std::string& neighborhood,
+                                        std::string& postalCode);
+
+        void RemoveAddressConfigFromSettings(const QString& path, const QString& typeFile);
 
         std::auto_ptr<Ui::ConfigInputAddressDialogForm> m_ui;
         te::da::DataSourcePtr m_dataSource;
