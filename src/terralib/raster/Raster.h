@@ -501,7 +501,7 @@ namespace te
 
           \note The caller will take the ownership of the returned pointer.
         */
-        virtual Raster* trim(const te::gm::Envelope* env, const std::map<std::string, std::string>& rinfo);
+        virtual Raster* trim(const te::gm::Envelope* env, const std::map<std::string, std::string>& rinfo) const;
 
         /*!
           \brief Resample a subset of the raster, given a box.

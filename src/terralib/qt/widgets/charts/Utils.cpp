@@ -504,9 +504,9 @@ te::qt::widgets::Scatter* te::qt::widgets::createScatter(te::da::DataSet* datase
     task.setTotalSteps(nCol);
     task.setMessage("Scatter creation");
 
-    const unsigned int maxInputPoints = (nCol * nLin * 10 / 100);
-    if (readall == false && (nCol * nLin) > maxInputPoints)
+    if (!readall)
     {
+      unsigned int maxInputPoints = (nCol * nLin) * 0.10;
       std::vector<te::gm::Point*> randomPoints = te::rst::GetRandomPointsInRaster(*raster, maxInputPoints);
       te::rst::PointSetIterator<double> pit = te::rst::PointSetIterator<double>::begin(raster.get(), randomPoints);
       te::rst::PointSetIterator<double> pitend = te::rst::PointSetIterator<double>::end(raster.get(), randomPoints);

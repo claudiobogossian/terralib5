@@ -448,6 +448,7 @@ void te::qt::widgets::WhereClauseWidget::onAddWhereClausePushButtonClicked()
     }
     m_ui->m_whereClauseTableWidget->setCellWidget(newrow, 3, cmbValue);
     ep->m_valuesComboBox = cmbValue;
+    ep->m_valuesComboBox->setCurrentText(valueStr.c_str());
 
     //connector information
     QComboBox* connectorCmbBox = new QComboBox(m_ui->m_whereClauseTableWidget);

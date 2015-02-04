@@ -145,7 +145,6 @@ void te::qt::widgets::HistogramChart::setData()
       LabelInterval++;
        it++;
     }
-
     setSamples(samples);
   }
   else
@@ -169,7 +168,6 @@ void te::qt::widgets::HistogramChart::setData()
     te::se::Stroke* blankStroke = new te::se::Stroke();
     blankStroke->setOpacity(QString::number(0, 'g', 2).toStdString());
     m_histogramStyle->setStroke(blankStroke);
-
     setSamples(samples);
   }
 }

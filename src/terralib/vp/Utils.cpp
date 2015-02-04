@@ -24,8 +24,13 @@
 */
 
 // TerraLib
+#include "../dataaccess/dataset/DataSetTypeConverter.h"
+#include "../dataaccess/dataset/DataSetTypeCapabilities.h"
+#include "../dataaccess/datasource/DataSource.h"
+#include "../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../dataaccess/datasource/DataSourceInfo.h"
 #include "../dataaccess/datasource/DataSourceManager.h"
+#include "../dataaccess/datasource/DataSourceTransactor.h"
 #include "../dataaccess/utils/Utils.h"
 #include "../geometry/Geometry.h"
 #include "../geometry/GeometryCollection.h"
@@ -203,4 +208,86 @@ te::gm::GeomType te::vp::GeomOpResultType(te::gm::GeomType firstGeom)
     return te::gm::MultiPointType;
   
   return firstGeom;
+}
+
+void te::vp::Save(te::da::DataSource* source, te::da::DataSet* result, te::da::DataSetType* outDsType)
+{
+  // do any adaptation necessary to persist the output dataset
+  te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter(outDsType, source->getCapabilities());
+  te::da::DataSetType* dsTypeResult = converter->getResult();
+
+  std::auto_ptr<te::da::DataSourceTransactor> t = source->getTransactor();
+
+  std::map<std::string, std::string> options;
+
+  try
+  {
+    if(source->getType() == "OGR")
+    {
+      // create the dataset
+      source->createDataSet(dsTypeResult, options);
+  
+      // copy from memory to output datasource
+      result->moveBeforeFirst();
+      std::string name = dsTypeResult->getName();
+      source->add(dsTypeResult->getName(),result, options);
+  
+      // create the primary key if it is possible
+      if (source->getCapabilities().getDataSetTypeCapabilities().supportsPrimaryKey())
+      {
+        std::string pk_name = dsTypeResult->getName() + "_pkey";
+        te::da::PrimaryKey* pk = new te::da::PrimaryKey(pk_name, dsTypeResult);
+        pk->add(dsTypeResult->getProperty(0));
+        source->addPrimaryKey(outDsType->getName(), pk);
+      }
+    }
+    else
+    {
+      t->begin();
+
+      // create the dataset
+      t->createDataSet(dsTypeResult, options);
+  
+      // copy from memory to output datasource
+      result->moveBeforeFirst();
+      std::string name = dsTypeResult->getName();
+      t->add(dsTypeResult->getName(),result, options);
+  
+      // create the primary key if it is possible
+      if (source->getCapabilities().getDataSetTypeCapabilities().supportsPrimaryKey())
+      {
+        std::string pk_name = dsTypeResult->getName() + "_pkey";
+        te::da::PrimaryKey* pk = new te::da::PrimaryKey(pk_name, dsTypeResult);
+        pk->add(dsTypeResult->getProperty(0));
+        t->addPrimaryKey(outDsType->getName(), pk);
+      }
+
+      t->commit();
+    }
+
+  }
+  catch(std::exception& e)
+  {
+    if(source->getType() != "OGR")
+    {
+      t->rollBack();
+    }
+    else
+    {
+      //TODO: Deletar possivel shp gerado
+    }
+    throw e;
+  }
+  catch(te::common::Exception& e)
+  {
+    if(source->getType() != "OGR")
+    {
+      t->rollBack();
+    }
+    else
+    {
+      //TODO: Deletar possivel shp gerado
+    }
+    throw e;
+  }
 }
