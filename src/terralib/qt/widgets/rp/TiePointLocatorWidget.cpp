@@ -511,7 +511,7 @@ void te::qt::widgets::TiePointLocatorWidget::onAutoAcquireTiePointsToolButtonCli
   inputParams.m_raster1TargetAreaColStart = (unsigned int)std::max( 0.0, r1LLX);
   inputParams.m_raster1TargetAreaLineStart = (unsigned int)std::max( 0.0, r1URY);
   inputParams.m_raster1TargetAreaWidth = ((unsigned int)std::min((double)inputParams.m_inRaster1Ptr->getNumberOfColumns(), r1URX)) - inputParams.m_raster1TargetAreaColStart + 1;
-  inputParams.m_raster1TargetAreaHeight = ((unsigned int)std::min((double)inputParams.m_inRaster1Ptr->getNumberOfRows(), r1LLY)) - inputParams.m_raster1TargetAreaColStart + 1;
+  inputParams.m_raster1TargetAreaHeight = ((unsigned int)std::min((double)inputParams.m_inRaster1Ptr->getNumberOfRows(), r1LLY)) - inputParams.m_raster1TargetAreaLineStart + 1;
 
   te::gm::Envelope auxEnvelope2(m_adjNavigator->getCurrentExtent());
   double r2LLX = 0;
@@ -523,7 +523,7 @@ void te::qt::widgets::TiePointLocatorWidget::onAutoAcquireTiePointsToolButtonCli
   inputParams.m_raster2TargetAreaColStart = (unsigned int)std::max( 0.0, r2LLX);
   inputParams.m_raster2TargetAreaLineStart = (unsigned int)std::max( 0.0, r2URY);
   inputParams.m_raster2TargetAreaWidth = ((unsigned int)std::min((double)inputParams.m_inRaster2Ptr->getNumberOfColumns(), r2URX)) - inputParams.m_raster2TargetAreaColStart + 1;
-  inputParams.m_raster2TargetAreaHeight = ((unsigned int)std::min((double)inputParams.m_inRaster2Ptr->getNumberOfRows(), r2LLY)) - inputParams.m_raster2TargetAreaColStart + 1;
+  inputParams.m_raster2TargetAreaHeight = ((unsigned int)std::min((double)inputParams.m_inRaster2Ptr->getNumberOfRows(), r2LLY)) - inputParams.m_raster2TargetAreaLineStart + 1;
 
   inputParams.m_inRaster1Bands.push_back(m_ui->m_referenceBand1ComboBox->currentText().toUInt());
   inputParams.m_inRaster2Bands.push_back(m_ui->m_referenceBand2ComboBox->currentText().toUInt());
