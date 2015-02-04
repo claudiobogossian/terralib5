@@ -78,6 +78,9 @@
 #include "../item/TextItem.h"
 #include "../../item/TextModel.h"
 #include "../../core/property/Properties.h"
+#include "../item/MovingItemGroup.h"
+#include "../../item/MovingItemGroupController.h"
+#include "../../item/MovingItemGroupModel.h"
 
 // Qt
 #include <QGraphicsItem>
@@ -101,7 +104,8 @@ te::layout::BuildGraphicsItem::BuildGraphicsItem() :
   m_pointItem("POINT_"),
   m_textGridItem("TEXT_GRID_"),
   m_titleItem("TITLE_"),
-  m_legendChildItem("LEGEND_CHILD_")
+  m_legendChildItem("LEGEND_CHILD_"),
+  m_movingGroupItem("MOVING_ITEM_GROUP_")
 {
  
 }
@@ -189,7 +193,7 @@ QGraphicsItem* te::layout::BuildGraphicsItem::rebuildItem( te::layout::Propertie
   {
     item = createLegendChild();
   }
-  
+
   return item;
 }
 
@@ -273,6 +277,20 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createItem( te::layout::EnumType* 
   {
     m_name = nameItem(m_legendChildItem, enumObj->getLegendChildItem());
     item = createLegendChild();
+  }
+
+  return item;
+}
+
+QGraphicsItem* te::layout::BuildGraphicsItem::createItem( te::layout::EnumType* type )
+{
+  QGraphicsItem* item = 0;
+
+  EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
+
+  if (type == enumObj->getMovingItemGroup())
+  {
+    item = createMovingItemGroup();
   }
 
   return item;
@@ -573,6 +591,42 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createItemGroup()
   ItemObserver* itemObs = (ItemObserver*)controller->getView();
 
   ItemGroup* view = dynamic_cast<ItemGroup*>(itemObs); 
+  if(m_props)
+  {
+    view->updateProperties(m_props);
+  }
+
+  if(view)
+  {
+    if(m_props)
+    {
+      view->setZValue(m_zValue);
+    }
+    if(m_redraw)
+    {
+      itemObs->redraw();
+    }
+    return view;
+  }
+
+  return item;
+}
+
+QGraphicsItem* te::layout::BuildGraphicsItem::createMovingItemGroup()
+{
+  QGraphicsItem* item = 0;
+
+  MovingItemGroupModel* model = new MovingItemGroupModel();	
+  if(!m_props)
+  {
+    model->setId(m_id);
+    model->setName(m_name);
+  }
+
+  MovingItemGroupController* controller = new MovingItemGroupController(model);
+  ItemObserver* itemObs = (ItemObserver*)controller->getView();
+
+  MovingItemGroup* view = dynamic_cast<MovingItemGroup*>(itemObs); 
   if(m_props)
   {
     view->updateProperties(m_props);

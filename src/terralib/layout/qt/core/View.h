@@ -41,6 +41,7 @@
 #include "../outside/PageSetupOutside.h"
 #include "../outside/SystematicScaleOutside.h"
 #include "MenuItem.h"
+#include "../item/MovingItemGroup.h"
 
 // STL
 #include <string>
@@ -341,6 +342,8 @@ namespace te
         double                  m_minZoomLimit;
         double                  m_width;
         double                  m_height;
+        bool                    m_isMoving;
+        te::layout::MovingItemGroup* m_movingItemGroup;
     };
   }
 }

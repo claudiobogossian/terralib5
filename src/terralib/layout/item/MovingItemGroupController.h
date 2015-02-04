@@ -32,6 +32,7 @@
 #define __TERRALIB_LAYOUT_INTERNAL_MOVINGITEMGROUP_CONTROLLER_H
 
 //TerraLib
+#include "../core/Config.h"
 #include "ItemGroupController.h"
 
 namespace te
@@ -48,7 +49,7 @@ namespace te
 
       \ingroup layout
     */
-    class MovingItemGroupController : public ItemGroupController
+    class TELAYOUTEXPORT MovingItemGroupController : public ItemGroupController
     {
     public:
       /*!
@@ -56,23 +57,13 @@ namespace te
 
         \param o "Model" part of MVC component
       */
-      MovingItemGroupController(Observable* o);
+      MovingItemGroupController(te::layout::Observable* o);
 
 
       /*!
         \brief Destructor
       */
       virtual ~MovingItemGroupController();
-
-    protected:
-
-      /*!
-        \brief Constructor.
-
-        \param o "Model" part of MVC component
-        \param type type of the MVC component
-      */
-      MovingItemGroupController(Observable* o, EnumType* type);
 
     };
   }

@@ -37,6 +37,7 @@
 #include "../../core/Config.h"
 #include "PrintScene.h"
 #include "AlignItems.h"
+#include "../item/MovingItemGroup.h"
 
 // STL
 #include <string>
@@ -128,6 +129,9 @@ namespace te
 		  \return items group of objects
         */
         virtual QGraphicsItemGroup* createItemGroup( const QList<QGraphicsItem *> & items );
+
+        
+        virtual te::layout::MovingItemGroup* createMovingItemGroup( const QList<QGraphicsItem*>& items);
 
 		/*!
           \brief Method that delete object grouping, but the individual objects continue to exist.

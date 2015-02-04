@@ -2,14 +2,8 @@
 
 #include "ItemGroupController.h"
 
-te::layout::MovingItemGroupController::MovingItemGroupController( Observable* o )
+te::layout::MovingItemGroupController::MovingItemGroupController( te::layout::Observable* o )
   : ItemGroupController(o)
-{
-
-}
-
-te::layout::MovingItemGroupController::MovingItemGroupController( Observable* o, EnumType* type )
-  : ItemGroupController(o, type)
 {
 
 }

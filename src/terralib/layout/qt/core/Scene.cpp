@@ -330,6 +330,33 @@ void te::layout::Scene::destroyItemGroup( QGraphicsItemGroup *group )
   QGraphicsScene::destroyItemGroup(group);
 }
 
+te::layout::MovingItemGroup* te::layout::Scene::createMovingItemGroup( const QList<QGraphicsItem*>& items )
+{
+  //Create a new group
+  AbstractBuildGraphicsItem* abstractBuild = Context::getInstance().getAbstractBuildGraphicsItem();
+  BuildGraphicsItem* build = dynamic_cast<BuildGraphicsItem*>(abstractBuild);
+
+  EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
+
+  QGraphicsItem* item = 0;
+  
+  item = build->createItem(enumObj->getMovingItemGroup());
+
+  te::layout::MovingItemGroup* movingItem = dynamic_cast<MovingItemGroup*>(item);
+
+  if (movingItem)
+  {
+    foreach(QGraphicsItem* i, items)
+    {
+      movingItem->addToGroup(i);
+    }
+
+    movingItem->setHandlesChildEvents(true);
+  }
+
+  return movingItem;
+}
+
 QGraphicsItem* te::layout::Scene::createItem( const te::gm::Coord2D& coord )
 {
   QGraphicsItem* item = 0;

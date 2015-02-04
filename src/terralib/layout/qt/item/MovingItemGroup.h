@@ -32,6 +32,7 @@
 #define __TERRALIB_LAYOUT_INTERNAL_MOVINGITEMGROUP_H
 
 //TerraLib
+#include "../../core/Config.h"
 #include "ItemGroup.h"
 
 namespace te
@@ -49,13 +50,14 @@ namespace te
 
       \ingroup layout
     */
-    class MovingItemGroup : public ItemGroup
+    class TELAYOUTEXPORT MovingItemGroup : public ItemGroup
     {
     public:
 
-      MovingItemGroup();
+      MovingItemGroup(te::layout::ItemController* controller, te::layout::Observable* o);
+      virtual ~MovingItemGroup();
 
-
+      virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
     protected:
     private:
     };
