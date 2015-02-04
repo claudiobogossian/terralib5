@@ -83,7 +83,6 @@ namespace te
         std::auto_ptr<te::qt::widgets::DataSetTableView>  m_tblView;
         std::auto_ptr<te::da::DataSetTypeConverter> m_dsConverter;
         std::auto_ptr<te::da::DataSet>  m_dataSet;
-        //te::mem::DataSet* m_dataSetMem;
         std::auto_ptr<te::da::DataSetType>  m_dataType;
         te::da::DataSourcePtr m_dataSource;
     };

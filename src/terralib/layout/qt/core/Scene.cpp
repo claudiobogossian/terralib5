@@ -43,6 +43,8 @@
 #include "../../../qt/widgets/Utils.h"
 #include "../../core/Utils.h"
 #include "../../../common/STLUtils.h"
+#include "../item/MapItem.h"
+#include "pattern/command/MoveCommand.h"
 
 // STL
 #include <algorithm>
@@ -51,8 +53,10 @@
 #include <QUndoCommand>
 #include <QUndoStack>
 #include <QGraphicsItem>
-#include "../item/MapItem.h"
-#include "pattern/command/MoveCommand.h"
+#include <QPainter>
+#include <QStyleOptionGraphicsItem>
+#include <QPrinter>
+#include <QGraphicsTextItem>
 
 te::layout::Scene::Scene( QObject* object): 
   QGraphicsScene(object),
@@ -642,6 +646,76 @@ void te::layout::Scene::selectionItem( std::string name )
         else
         {
           item->setSelected(false);
+        }
+      }
+    }
+  }
+}
+
+void te::layout::Scene::drawItems( QPainter *painter, int numItems, QGraphicsItem *items[], const QStyleOptionGraphicsItem options[], QWidget *widget /*= 0*/ )
+{
+  QGraphicsScene::drawItems(painter, numItems, items, options, widget);
+  return;
+
+  QPaintDevice* device = painter->device();
+  if (dynamic_cast<QPrinter*>(device) == NULL)
+  {
+    QGraphicsScene::drawItems(painter, numItems, items, options, widget);
+    return;
+  }
+
+  //Just called in print mode
+  // If item is the type QGraphicsTextItem, don't change.
+  
+  redrawItems();
+
+  for (int i = 0; i < numItems; ++i) 
+  {
+    // Draw the text item
+    QGraphicsTextItem* txtItem = dynamic_cast<QGraphicsTextItem*>(items[i]);
+    if(txtItem)
+    {
+      QGraphicsItem* its[1];
+      its[0] = items[i];
+      QGraphicsScene::drawItems(painter, 1, its, options, widget);
+      continue;
+    }
+
+    // Draw the item
+    painter->save();
+
+    // Check item with inverted matrix. Ex.: MapItem
+    ItemObserver* itemObs = dynamic_cast<ItemObserver*>(items[i]);
+    if(itemObs)
+    {
+      if(itemObs->isInvertedMatrix())
+      {
+        painter->setMatrix(items[i]->sceneMatrix());
+      }
+      else
+      {
+        painter->setMatrix(items[i]->sceneMatrix(), true);
+      }
+    }
+    
+    items[i]->paint(painter, &options[i], widget);
+    painter->restore();
+  }
+}
+
+void te::layout::Scene::redrawItems()
+{
+  QList<QGraphicsItem*> allItems = items();
+  foreach(QGraphicsItem *item, allItems) 
+  {
+    if(item)
+    {
+      ItemObserver* it = dynamic_cast<ItemObserver*>(item);
+      if(it)
+      {
+        if(it->isPrintable())
+        {
+          it->redraw();
         }
       }
     }

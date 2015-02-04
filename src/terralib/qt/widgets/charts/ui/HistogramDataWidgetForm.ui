@@ -71,6 +71,9 @@
      </item>
      <item row="1" column="0">
       <widget class="QSpinBox" name="m_slicesSpinBox">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Calibri Light';&quot;&gt;When the histogram is based on a raster file, setting the number of slices to 0 means all the of the pixel values will be used to generate the histogram.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <property name="minimum">
         <number>2</number>
        </property>

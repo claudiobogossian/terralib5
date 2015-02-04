@@ -811,10 +811,14 @@ namespace te
       const unsigned int rasterBuffersLinesNumber = maxGausFilterWidth;
       const unsigned int lastRasterBuffersLineIdx = rasterBuffersLinesNumber - 1;
       const unsigned int tiePointsSubSectorsSplitFactor = paramsPtr->m_tiePointsSubSectorsSplitFactor;
-      const unsigned int rowsBySubSector = paramsPtr->m_integralRasterDataPtr->getLinesNumber()
-        / tiePointsSubSectorsSplitFactor;
-      const unsigned int colsBySubSector = paramsPtr->m_integralRasterDataPtr->getColumnsNumber()
-        / tiePointsSubSectorsSplitFactor;      
+      const unsigned int rowsBySubSector = (unsigned int)std::ceil(
+        ((double)paramsPtr->m_integralRasterDataPtr->getLinesNumber())
+        / 
+        ((double)tiePointsSubSectorsSplitFactor) );
+      const unsigned int colsBySubSector = (unsigned int)std::ceil(
+        ((double)paramsPtr->m_integralRasterDataPtr->getColumnsNumber())
+        /
+        ((double)tiePointsSubSectorsSplitFactor) );      
       const unsigned int maxInterestPointsBySubSector = paramsPtr->m_maxInterestPointsBySubSector;
       const unsigned int maxInterestPointsByScaleSubSector = maxInterestPointsBySubSector
         / ( paramsPtr->m_octavesNumber * ( paramsPtr->m_scalesNumber - 2 ) );

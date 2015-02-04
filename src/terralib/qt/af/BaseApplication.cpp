@@ -806,13 +806,7 @@ void te::qt::af::BaseApplication::onSaveProjectTriggered()
   te::qt::af::Save(*m_project, m_project->getFileName());
 
   // Set the window title
-  QString wTitle = te::qt::af::ApplicationController::getInstance().getAppTitle() + " - ";
-  wTitle += tr("Project:");
-  wTitle += " ";
-  //wTitle += projectTitle.c_str();
-  wTitle += m_project->getTitle().c_str();
-  
-  setWindowTitle(wTitle);
+  setWindowTitle(te::qt::af::GetWindowTitle(*m_project));
 
   te::qt::af::ApplicationController::getInstance().updateRecentProjects(m_project->getFileName().c_str(), m_project->getTitle().c_str());
 
@@ -849,13 +843,7 @@ void te::qt::af::BaseApplication::onSaveProjectAsTriggered()
   m_project->setProjectAsChanged(false);
 
   // Set the window title
-  QString wTitle = te::qt::af::ApplicationController::getInstance().getAppTitle() + " - ";
-  wTitle += tr("Project:");
-  wTitle += " ";
-  //wTitle += projectTitle.c_str();
-  wTitle += m_project->getTitle().c_str();
-  
-  setWindowTitle(wTitle);
+  setWindowTitle(te::qt::af::GetWindowTitle(*m_project));
   
   te::qt::af::SaveDataSourcesFile();
 }
@@ -988,12 +976,7 @@ void te::qt::af::BaseApplication::onProjectPropertiesTriggered()
   if(editor.exec() == QDialog::Accepted)
   {
     // Set window title
-    QString title = te::qt::af::ApplicationController::getInstance().getAppTitle() + " - ";
-    title += tr("Project:");
-    title += " ";
-    title += m_project->getTitle().c_str();
-  
-    setWindowTitle(title);
+    setWindowTitle(te::qt::af::GetWindowTitle(*m_project));
   }
 }
 
@@ -2111,13 +2094,7 @@ void te::qt::af::BaseApplication::openProject(const QString& projectFileName)
     ApplicationController::getInstance().updateRecentProjects(projectFileName, m_project->getTitle().c_str());
   
     // Set the window title
-    QString wTitle = te::qt::af::ApplicationController::getInstance().getAppTitle() + " - ";
-    wTitle += tr("Project:");
-    wTitle += " ";
-    //wTitle += projectTitle.c_str();
-    wTitle += m_project->getTitle().c_str();
-    
-    setWindowTitle(wTitle);
+    setWindowTitle(te::qt::af::GetWindowTitle(*m_project));
 
     te::qt::af::ApplicationController::getInstance().set(m_project);
 
@@ -2177,18 +2154,10 @@ void te::qt::af::BaseApplication::newProject()
   m_project->setTitle(tr("New Project").toStdString());
 
   m_project->setAuthor(author.toStdString());
-  
-  //setWindowTitle(te::qt::af::ApplicationController::getInstance().getAppTitle());
 
   // Set the window title
-  QString wTitle = te::qt::af::ApplicationController::getInstance().getAppTitle() + " - ";
-  wTitle += tr("Project:");
-  wTitle += " ";
-  //wTitle += projectTitle.c_str();
-  wTitle += m_project->getTitle().c_str();
+  setWindowTitle(te::qt::af::GetWindowTitle(*m_project));
 
-  setWindowTitle(wTitle);
-  
   te::qt::af::ApplicationController::getInstance().set(m_project);
 
   m_project->setProjectAsChanged(false);

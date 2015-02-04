@@ -49,10 +49,14 @@
 #include <QTransform>
 #include <QColor>
 #include <QPointF>
+#include <QRectF>
 
 class QUndoCommand;
 class QUndoStack;
 class QGraphicsItemGroup;
+class QPainter;
+class QWidget;
+class QStyleOptionGraphicsItem;
 
 namespace te
 {
@@ -255,6 +259,22 @@ namespace te
 		  \param name graphic object name
         */
         virtual void selectionItem(std::string name);
+
+        /*!
+          \brief Reimplemented from QGraphicsScene.
+          The difference to the original scene drawItems is that it does not use the ratio, 
+          so the component will not be scaled, keeping the size it was redraw for printing.
+
+          Since Qt 4.6, this function is not called anymore unless
+          the QGraphicsView::IndirectPainting flag is given as an Optimization
+          flag.
+        */
+        virtual void drawItems(QPainter *painter, int numItems,
+          QGraphicsItem *items[],
+          const QStyleOptionGraphicsItem options[],
+          QWidget *widget = 0);
+
+        virtual void redrawItems();
         
       signals:
 

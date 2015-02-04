@@ -78,8 +78,6 @@ namespace te
       void setOutput(te::da::DataSourcePtr outDsrc, std::string dsname);
 
     protected:
-
-      bool save(std::auto_ptr<te::mem::DataSet> result, std::auto_ptr<te::da::DataSetType> outDsType);
       
       te::da::DataSetType* GetDataSetType();
 

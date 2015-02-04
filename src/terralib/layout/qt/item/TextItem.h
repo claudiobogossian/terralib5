@@ -41,11 +41,13 @@
 #include <QImage>
 #include <QColor>
 #include <QVariant>
+#include <QPointF>
 
 class QTextDocument;
 class QTextTable;
 class QGraphicsSceneMouseEvent;
 class QKeyEvent;
+class QGraphicsSceneContextMenuEvent;
 
 namespace te
 {
@@ -97,7 +99,24 @@ namespace te
 
         virtual void refreshDocument();
                 
+        /*!
+          \brief 
+
+          \return
+         */
         virtual bool isEditable();
+
+        /*!
+          \brief 
+
+          \param
+         */
+        virtual void setEditable(bool editable);
+
+        /*!
+          \brief Reimplemented from QGraphicsTextItem
+         */
+        virtual bool	contains ( const QPointF & point ) const;
         
       protected:
 
@@ -134,7 +153,7 @@ namespace te
           \brief Reimplemented from QGraphicsTextItem
          */
         virtual void	mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
-
+        
         virtual void init();
         
         virtual QImage createImage();
@@ -160,6 +179,8 @@ namespace te
         virtual void applyRotation();
 
         virtual void getDocumentSizeMM(double &w, double &h);
+
+        virtual void resetEdit();
 
         QTextDocument* m_document;
         QColor         m_backgroundColor;

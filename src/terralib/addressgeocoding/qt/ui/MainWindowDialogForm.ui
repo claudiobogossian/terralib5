@@ -7,15 +7,15 @@
     <x>0</x>
     <y>0</y>
     <width>665</width>
-    <height>371</height>
+    <height>400</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Adress Geocoding</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_19">
+  <layout class="QGridLayout" name="gridLayout_21">
    <item row="0" column="0">
-    <layout class="QGridLayout" name="gridLayout_18">
+    <layout class="QGridLayout" name="gridLayout_20">
      <item row="0" column="0">
       <widget class="QFrame" name="frame_2">
        <property name="styleSheet">
@@ -71,9 +71,9 @@
       </widget>
      </item>
      <item row="1" column="0">
-      <layout class="QGridLayout" name="gridLayout_17">
+      <layout class="QGridLayout" name="gridLayout_19">
        <item row="0" column="0">
-        <layout class="QGridLayout" name="gridLayout_16">
+        <layout class="QGridLayout" name="gridLayout_18">
          <item row="0" column="0">
           <widget class="QGroupBox" name="m_inputLayerGroupBox">
            <property name="title">
@@ -110,17 +110,17 @@
             <string>Relate the address number attributes</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_8">
-            <item row="0" column="0">
-             <layout class="QGridLayout" name="gridLayout_9">
+            <item row="1" column="0">
+             <layout class="QGridLayout" name="gridLayout_11">
               <item row="0" column="0">
-               <widget class="QLabel" name="m_iLeftLabel">
+               <widget class="QLabel" name="m_fLeftLabel">
                 <property name="text">
-                 <string>Initial Left:</string>
+                 <string>Final Left</string>
                 </property>
                </widget>
               </item>
               <item row="1" column="0">
-               <widget class="QComboBox" name="m_iLeftComboBox">
+               <widget class="QComboBox" name="m_fLeftComboBox">
                 <property name="minimumSize">
                  <size>
                   <width>160</width>
@@ -152,17 +152,17 @@
               </item>
              </layout>
             </item>
-            <item row="1" column="0">
-             <layout class="QGridLayout" name="gridLayout_11">
+            <item row="0" column="0">
+             <layout class="QGridLayout" name="gridLayout_9">
               <item row="0" column="0">
-               <widget class="QLabel" name="m_fLeftLabel">
+               <widget class="QLabel" name="m_iLeftLabel">
                 <property name="text">
-                 <string>Final Left</string>
+                 <string>Initial Left:</string>
                 </property>
                </widget>
               </item>
               <item row="1" column="0">
-               <widget class="QComboBox" name="m_fLeftComboBox">
+               <widget class="QComboBox" name="m_iLeftComboBox">
                 <property name="minimumSize">
                  <size>
                   <width>160</width>
@@ -202,25 +202,91 @@
            <property name="title">
             <string>Input Address</string>
            </property>
-           <layout class="QGridLayout" name="gridLayout_7">
+           <layout class="QGridLayout" name="gridLayout_17">
             <item row="0" column="0">
-             <layout class="QGridLayout" name="gridLayout_6">
+             <layout class="QGridLayout" name="gridLayout_16">
               <item row="0" column="0">
-               <widget class="QComboBox" name="m_inputAddressComboBox">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-               </widget>
+               <layout class="QGridLayout" name="gridLayout_6">
+                <item row="0" column="0">
+                 <widget class="QComboBox" name="m_inputAddressComboBox">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="1">
+                 <widget class="QToolButton" name="m_targetFileAddressToolButton">
+                  <property name="minimumSize">
+                   <size>
+                    <width>0</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string>...</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="2">
+                 <widget class="QToolButton" name="m_targetDataSourceAddressToolButton">
+                  <property name="minimumSize">
+                   <size>
+                    <width>0</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string>DB</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
               </item>
-              <item row="0" column="1">
-               <widget class="QPushButton" name="m_configureAddressPushButton">
-                <property name="text">
-                 <string>Configure</string>
-                </property>
-               </widget>
+              <item row="1" column="0">
+               <layout class="QGridLayout" name="gridLayout_7">
+                <item row="0" column="0">
+                 <widget class="QToolButton" name="m_editAddressFileToolButton">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
+                  <property name="toolTip">
+                   <string>Edit data source information</string>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="1">
+                 <widget class="QToolButton" name="m_removeAddressFileToolButton">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
+                  <property name="toolTip">
+                   <string>Remove data source information</string>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="2">
+                 <spacer name="horizontalSpacer_2">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>68</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
               </item>
              </layout>
             </item>
