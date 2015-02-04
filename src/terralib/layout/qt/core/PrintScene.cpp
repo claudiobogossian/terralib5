@@ -30,6 +30,7 @@
 #include "../../core/pattern/mvc/ItemObserver.h"
 #include "../../core/PaperConfig.h"
 #include "../../core/pattern/singleton/Context.h"
+#include "Scene.h"
 
 // STL
 #include <sstream>
@@ -79,6 +80,12 @@ void te::layout::PrintScene::printPreview()
   {
     delete preview;
     preview = 0;
+
+    Scene* sc = dynamic_cast<Scene*>(m_scene);
+    if(sc)
+    {
+      sc->redrawItems();
+    }
   }
 }
 
