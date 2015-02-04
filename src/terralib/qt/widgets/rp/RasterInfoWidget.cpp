@@ -53,6 +53,9 @@ te::qt::widgets::RasterInfoWidget::RasterInfoWidget(QWidget* parent, Qt::WindowF
   layout->addWidget(m_table.get());
   layout->setContentsMargins(0,0,0,0);
 
+  m_ui->m_openFileDlgToolButton->setIcon(QIcon::fromTheme("folder"));
+  m_ui->m_openDSDlgToolButton->setIcon(QIcon::fromTheme("datasource"));
+
   m_table->getForm()->m_parameterTitle->setText(tr("Extra parameters"));
 
   //connects
