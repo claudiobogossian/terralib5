@@ -315,7 +315,19 @@ int te::layout::TextItem::getZValueItem()
 
 void te::layout::TextItem::applyRotation()
 {
+  if(!m_model)
+    return;
 
+  ItemModelObservable* model = dynamic_cast<ItemModelObservable*>(m_model);
+  if(!model)
+    return;
+
+  double angle = model->getAngle();
+
+  if(angle == model->getOldAngle())
+    return;
+
+  setRotation(angle);
 }
 
 QVariant te::layout::TextItem::itemChange( GraphicsItemChange change, const QVariant & value )

@@ -431,7 +431,7 @@ void te::layout::ObjectItem::applyRotation()
 
   double angle = model->getAngle();
 
-  if(angle == 0)
+  if(angle == model->getOldAngle())
     return;
 
   QPointF center = boundingRect().center();
