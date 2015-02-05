@@ -27,9 +27,11 @@
 #include "../common/Logger.h"
 #include "../common/TerraLib.h"
 #include "../common/Translator.h"
+#include "AbstractLayerRendererFactory.h"
 #include "Config.h"
 #include "Module.h"
 #include "QueryEncoder.h"
+#include "QueryLayerRendererFactory.h"
 
 const te::map::Module& sm_module = te::map::Module::getInstance();
 
@@ -51,6 +53,10 @@ te::map::Module::~Module()
 
 void te::map::Module::initialize()
 {
+// initialize renderers
+  AbstractLayerRendererFactory::initialize();
+  QueryLayerRendererFactory::initialize();
+
   QueryEncoder::initialize();
 
   TE_LOG_TRACE(TE_TR("TerraLib Map Tools module initialized!"));
@@ -58,6 +64,10 @@ void te::map::Module::initialize()
 
 void te::map::Module::finalize()
 {
+// finalize renderers
+  AbstractLayerRendererFactory::finalize();
+  QueryLayerRendererFactory::finalize();
+
   TE_LOG_TRACE(TE_TR("TerraLib Map Tools module finalized!"));
 }
 

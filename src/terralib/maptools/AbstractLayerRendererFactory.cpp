@@ -27,7 +27,19 @@
 #include "AbstractLayerRenderer.h"
 #include "AbstractLayerRendererFactory.h"
 
-te::map::AbstractLayerRendererFactory te::map::AbstractLayerRendererFactory::sm_factory;
+te::map::AbstractLayerRendererFactory* te::map::AbstractLayerRendererFactory::sm_factory(0);
+
+void te::map::AbstractLayerRendererFactory::initialize()
+{
+  finalize();
+  sm_factory = new AbstractLayerRendererFactory;
+}
+
+void te::map::AbstractLayerRendererFactory::finalize()
+{
+  delete sm_factory;
+  sm_factory = 0;
+}
 
 te::map::AbstractLayerRendererFactory::~AbstractLayerRendererFactory()
 {

@@ -45,6 +45,10 @@ namespace te
     {
       public:
 
+        static void initialize();
+
+        static void finalize();
+
         ~QueryLayerRendererFactory();
 
       protected:
@@ -55,7 +59,7 @@ namespace te
 
       private:
 
-        static QueryLayerRendererFactory sm_factory; //!< A pointer to the global renderer factory.
+        static QueryLayerRendererFactory* sm_factory; //!< A pointer to the global renderer factory.
     };
 
   } // end namespace map
