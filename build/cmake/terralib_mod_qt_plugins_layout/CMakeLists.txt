@@ -68,7 +68,6 @@ else()
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/layout/DisplayDock.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/layout/ObjectInspectorDock.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/layout/PropertiesDock.h
-                                 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/layout/ToolbarDock.h
 								 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/layout/EditTemplateDock.h
 								 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/layout/ProxyProject.h)
 

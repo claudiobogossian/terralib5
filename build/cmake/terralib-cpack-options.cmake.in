@@ -116,6 +116,18 @@ if(CPACK_GENERATOR MATCHES "NSIS")
   list (APPEND CPACK_NSIS_DELETE_ICONS_EXTRA "
   Delete \"$SMPROGRAMS\\$MUI_TEMP\\${shortCutName}.lnk\";
   Delete \"$DESKTOP\\${shortCutName}.lnk\"")
+
+  # Creating GDAL_DIR enviroment variable.
+  list (APPEND CPACK_NSIS_EXTRA_INSTALL_COMMANDS "
+  WriteRegExpandStr HKLM \"SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment\" \"GDAL_DATA\" \"$INSTDIR\\share\\gdal-data\";
+  SendMessage \${HWND_BROADCAST} \${WM_WININICHANGE} 0 \"STR:Environment\" /TIMEOUT=5000"
+  )
+
+  # Removing GDAL_DIR from enviroment variables.
+  set (CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS " 
+  DeleteRegValue HKLM \"SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment\" \"GDAL_DATA\";
+  SendMessage \${HWND_BROADCAST} \${WM_WININICHANGE} 0 \"STR:Environment\" /TIMEOUT=5000"
+  )
   
 endif()
 

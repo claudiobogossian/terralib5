@@ -30,6 +30,7 @@
 
 // TerraLib
 #include "../../../layout/qt/core/View.h"
+#include "../../../layout/qt/outside/ToolbarOutside.h"
 
 // STL
 #include <string>
@@ -51,7 +52,6 @@ namespace te
       {
         class PropertiesDock;
         class ObjectInspectorDock;
-        class ToolbarDock;
         class EditTemplateDock;
         class EnumType;
 
@@ -66,7 +66,7 @@ namespace te
 
           PropertiesDock* getPropertiesDock();
           ObjectInspectorDock* getObjectInspectorDock();
-          ToolbarDock* getToolbarDock();
+          te::layout::ToolbarOutside* getToolbar();
 
           virtual void openAllDocks();
           virtual void closeAllDocks();
@@ -94,7 +94,7 @@ namespace te
           virtual void init();
           virtual void createPropertiesDock();
           virtual void createInspectorDock();
-          virtual void createToolbarDock();
+          virtual void createToolbar();
           virtual void createMainMenu();
           virtual void createEditTemplateDock();
 
@@ -107,11 +107,11 @@ namespace te
           QWidget* m_dockParent;
           PropertiesDock* m_dockProperties;
           ObjectInspectorDock* m_dockInspector;
-          ToolbarDock* m_dockToolbar;
           EditTemplateDock* m_dockEditTemplate;
           QMenu* m_mainMenu;
           QMenu* m_parentMenu;
           te::layout::View* m_view;
+          te::layout::ToolbarOutside* m_toolbar;
 
           /* Menu options */
       

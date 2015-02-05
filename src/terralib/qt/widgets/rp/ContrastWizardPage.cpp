@@ -403,6 +403,15 @@ void te::qt::widgets::ContrastWizardPage::onContrastTypeComboBoxActivated(int in
       }
     }
 
+    m_histogramWidget->setMinimumValueEnabled(true);
+    m_histogramWidget->setMaximumValueEnabled(true);
+
+    m_histogramWidget->updateMinimumValueLabel(tr("Minimum"));
+    m_histogramWidget->updateMaximumValueLabel(tr("Maximum"));
+
+    m_histogramWidget->updateMinimumValueLine(0, false);
+    m_histogramWidget->updateMaximumValueLine(255, false);
+
     m_ui->m_tipLabel->setText(tr("Use left button to set minimum value and right button to define maximum value over the histogram."));
   }
   else if(contrastType == te::rp::Contrast::InputParameters::HistogramEqualizationContrastT)
@@ -422,6 +431,13 @@ void te::qt::widgets::ContrastWizardPage::onContrastTypeComboBoxActivated(int in
       itemMax->setFlags(Qt::ItemIsEnabled | Qt::ItemIsEditable | Qt::ItemIsSelectable);
       m_ui->m_bandTableWidget->setItem(i, 1, itemMax);
     }
+
+    m_histogramWidget->setMinimumValueEnabled(true);
+    m_histogramWidget->setMaximumValueEnabled(false);
+
+    m_histogramWidget->updateMinimumValueLabel(tr("Maximum"));
+
+    m_histogramWidget->updateMinimumValueLine(255, false);
 
     m_ui->m_tipLabel->setText(tr("Use left button to set maximum value over the histogram."));
   }
@@ -448,6 +464,15 @@ void te::qt::widgets::ContrastWizardPage::onContrastTypeComboBoxActivated(int in
       m_ui->m_bandTableWidget->setItem(i, 2, itemStdDev);
     }
 
+    m_histogramWidget->setMinimumValueEnabled(true);
+    m_histogramWidget->setMaximumValueEnabled(true);
+
+    m_histogramWidget->updateMinimumValueLabel(tr("Mean"));
+    m_histogramWidget->updateMaximumValueLabel(tr("Std Dev"));
+
+    m_histogramWidget->updateMinimumValueLine(127, false);
+    m_histogramWidget->updateMaximumValueLine(50, false);
+
     m_ui->m_tipLabel->setText(tr("Use left button to set Mean value and right button to define Std Dev value over the histogram."));
   }
   else if(contrastType == te::rp::Contrast::InputParameters::DecorrelationEnhancementT)
@@ -457,7 +482,14 @@ void te::qt::widgets::ContrastWizardPage::onContrastTypeComboBoxActivated(int in
 
     m_ui->m_bandTableWidget->setColumnCount(1);
     m_ui->m_bandTableWidget->setHorizontalHeaderLabels(list);
+
+    m_histogramWidget->setMinimumValueEnabled(false);
+    m_histogramWidget->setMaximumValueEnabled(false);
+
+    m_ui->m_tipLabel->setText(tr(""));
   }
+
+  drawHistogram();
 
   m_ui->m_bandTableWidget->resizeColumnsToContents();
 #if (QT_VERSION >= 0x050000)
@@ -488,16 +520,22 @@ void te::qt::widgets::ContrastWizardPage::onMinValueSelected(int value, int band
   {
       m_ui->m_bandTableWidget->item(band, 1)->setText(QString::number(value));
       m_ui->m_bandTableWidget->setCurrentCell(band, 1);
+
+      m_histogramWidget->updateMinimumValueLine(value, true);
   }
   else if(contrastType == te::rp::Contrast::InputParameters::HistogramEqualizationContrastT)
   {
     m_ui->m_bandTableWidget->item(band, 1)->setText(QString::number(value));
     m_ui->m_bandTableWidget->setCurrentCell(band, 1);
+
+    m_histogramWidget->updateMinimumValueLine(value, true);
   }
   else if(contrastType == te::rp::Contrast::InputParameters::MeanAndStdContrastT)
   {
     m_ui->m_bandTableWidget->item(band, 1)->setText(QString::number(value));
     m_ui->m_bandTableWidget->setCurrentCell(band, 1);
+
+    m_histogramWidget->updateMinimumValueLine(value, true);
   }
   else
   {
@@ -518,6 +556,8 @@ void te::qt::widgets::ContrastWizardPage::onMaxValueSelected(int value, int band
   {
     m_ui->m_bandTableWidget->item(band, 2)->setText(QString::number(value));
     m_ui->m_bandTableWidget->setCurrentCell(band, 2);
+
+    m_histogramWidget->updateMaximumValueLine(value, true);
   }
   else if(contrastType == te::rp::Contrast::InputParameters::MeanAndStdContrastT)
   {
@@ -529,6 +569,8 @@ void te::qt::widgets::ContrastWizardPage::onMaxValueSelected(int value, int band
 
       m_ui->m_bandTableWidget->item(band, 2)->setText(QString::number(stdDev));
       m_ui->m_bandTableWidget->setCurrentCell(band, 2);
+
+      m_histogramWidget->updateMaximumValueLine(value, true);
     }
   }
   else
@@ -548,11 +590,6 @@ void te::qt::widgets::ContrastWizardPage::onPreviewChanged()
 
 void te::qt::widgets::ContrastWizardPage::drawHistogram()
 {
-  int curRow = 0;
-  
-  if(m_ui->m_bandTableWidget->currentRow() >= 0)
-    curRow = m_ui->m_bandTableWidget->currentRow();
-
   int bandIdx = -1;
 
   for(int i = 0; i <= m_ui->m_bandTableWidget->currentRow(); ++i)
@@ -565,6 +602,38 @@ void te::qt::widgets::ContrastWizardPage::drawHistogram()
     }
   }
 
-  if(bandIdx != -1)
-    m_histogramWidget->drawHistogram(bandIdx);
+  if(bandIdx == -1)
+    return;
+
+  int index = m_ui->m_contrastTypeComboBox->currentIndex();
+
+  int contrastType = m_ui->m_contrastTypeComboBox->itemData(index).toInt();
+
+  if(contrastType == te::rp::Contrast::InputParameters::LinearContrastT ||
+     contrastType == te::rp::Contrast::InputParameters::SquareContrastT ||
+     contrastType == te::rp::Contrast::InputParameters::SquareRootContrastT ||
+     contrastType == te::rp::Contrast::InputParameters::LogContrastT)
+  {
+    int min = m_ui->m_bandTableWidget->item(bandIdx, 1)->text().toInt();
+    int max = m_ui->m_bandTableWidget->item(bandIdx, 2)->text().toInt();
+
+    m_histogramWidget->updateMinimumValueLine(min, false);
+    m_histogramWidget->updateMaximumValueLine(max, false);
+  }
+  else if(contrastType == te::rp::Contrast::InputParameters::HistogramEqualizationContrastT)
+  {
+    int min = m_ui->m_bandTableWidget->item(bandIdx, 1)->text().toInt();
+
+    m_histogramWidget->updateMinimumValueLine(min, false);
+  }
+  else if(contrastType == te::rp::Contrast::InputParameters::MeanAndStdContrastT)
+  {
+    int min = m_ui->m_bandTableWidget->item(bandIdx, 1)->text().toInt();
+    int max = m_ui->m_bandTableWidget->item(bandIdx, 2)->text().toInt();
+
+    m_histogramWidget->updateMinimumValueLine(min, false);
+    m_histogramWidget->updateMaximumValueLine(max, false);
+  }
+
+  m_histogramWidget->drawHistogram(bandIdx);
 }

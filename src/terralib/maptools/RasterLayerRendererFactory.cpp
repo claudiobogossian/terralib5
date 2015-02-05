@@ -27,12 +27,24 @@
 #include "RasterLayerRenderer.h"
 #include "RasterLayerRendererFactory.h"
 
-te::map::RasterLayerRendererFactory te::map::RasterLayerRendererFactory::sm_factory;
+te::map::RasterLayerRendererFactory* te::map::RasterLayerRendererFactory::sm_factory(0);
+
+void te::map::RasterLayerRendererFactory::initialize()
+{
+  finalize();
+  sm_factory = new RasterLayerRendererFactory;
+}
+
+void te::map::RasterLayerRendererFactory::finalize()
+{
+  delete sm_factory;
+  sm_factory = 0;
+}
+
 
 te::map::RasterLayerRendererFactory::~RasterLayerRendererFactory()
 {
 }
-
 
 te::map::AbstractRenderer* te::map::RasterLayerRendererFactory::build()
 {
@@ -43,5 +55,3 @@ te::map::RasterLayerRendererFactory::RasterLayerRendererFactory()
   : RendererFactory("RASTER_LAYER_RENDERER")
 {
 }
-
-
