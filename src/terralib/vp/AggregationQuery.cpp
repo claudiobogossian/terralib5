@@ -293,5 +293,14 @@ bool te::vp::AggregationQuery::run()
     outDSet->add(outDSetItem);
     ++key;
   }
-  return save(outDSet,outDSetType);
+
+  try
+  {
+    te::vp::Save(m_outDsrc.get(), outDSet.get(), outDSetType.get());
+    return true;
+  }
+  catch(...)
+  {
+    return false;
+  }
 }

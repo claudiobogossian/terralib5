@@ -40,7 +40,7 @@ te::qt::widgets::SRSManagerDialog::SRSManagerDialog(QWidget* parent, Qt::WindowF
   m_ui(new Ui::SRSManagerDialogForm)
 {
   m_ui->setupUi(this);
-  m_selSrsId.first = -1;  
+  m_selSrsId.first = -1;
   m_selSrsId.second = "";
   
   // Assign the edit/add/remove button icons

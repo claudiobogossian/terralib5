@@ -109,7 +109,15 @@ bool te::vp::IntersectionMemory::run()
   std::auto_ptr<te::da::DataSet> outDataSet(resultPair.second);
   std::auto_ptr<te::da::DataSetType> outDataSetType(resultPair.first);
 
-  return save(outDataSet, outDataSetType);
+  try
+  {
+    te::vp::Save(m_outDsrc.get(), outDataSet.get(), outDataSetType.get());
+    return true;
+  }
+  catch(...)
+  {
+    return false;
+  }
 }
 
 std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionMemory::pairwiseIntersection(std::string newName, 

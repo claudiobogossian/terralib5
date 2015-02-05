@@ -482,7 +482,7 @@ void getObjectIds (te::da::DataSet* dataset, std::vector<std::size_t> pkeys, std
   valuesOIDs.push_back(oid);
 }
 
-te::qt::widgets::Scatter* te::qt::widgets::createScatter(te::da::DataSet* dataset, te::da::DataSetType* dataType, int propX, int propY, int stat)
+te::qt::widgets::Scatter* te::qt::widgets::createScatter(te::da::DataSet* dataset, te::da::DataSetType* dataType, int propX, int propY, int stat, bool readall)
 {
   te::qt::widgets::Scatter* newScatter = new te::qt::widgets::Scatter();
 
@@ -497,33 +497,58 @@ te::qt::widgets::Scatter* te::qt::widgets::createScatter(te::da::DataSet* datase
   {
     std::auto_ptr<te::rst::Raster> raster(dataset->getRaster(rpos));
 
-     unsigned int nCol = raster->getNumberOfColumns();
-     unsigned int nLin = raster->getNumberOfRows();
+    unsigned int nCol = raster->getNumberOfColumns();
+    unsigned int nLin = raster->getNumberOfRows();
 
     te::common::TaskProgress task;
     task.setTotalSteps(nCol);
     task.setMessage("Scatter creation");
 
+    if (!readall)
+    {
+      unsigned int maxInputPoints = (nCol * nLin) * 0.10;
+      std::vector<te::gm::Point*> randomPoints = te::rst::GetRandomPointsInRaster(*raster, maxInputPoints);
+      te::rst::PointSetIterator<double> pit = te::rst::PointSetIterator<double>::begin(raster.get(), randomPoints);
+      te::rst::PointSetIterator<double> pitend = te::rst::PointSetIterator<double>::end(raster.get(), randomPoints);
+
+      while (pit != pitend)
+      {
+        if(!task.isActive())
+        {
+          break;
+        }
+        double val1, val2;
+
+        raster->getValue(pit.getColumn(), pit.getRow(), val1, propX);
+        raster->getValue(pit.getColumn(), pit.getRow(), val2, propY);
+
+        newScatter->addX(val1);
+        newScatter->addY(val2);
+        ++pit;
+        task.pulse();
+      }
+    }
+    else
+    {
       for (unsigned int c=0; c < nCol; ++c)
       {
         if(!task.isActive())
         {
           break;
         }
-
         for (unsigned int r=0;  r <nLin; ++r)
         {
-              double val1, val2;
+          double val1, val2;
+          raster->getValue(c, r, val1, propX);
+          raster->getValue(c, r, val2, propY);
 
-              raster->getValue(c, r, val1, propX);
-              raster->getValue(c, r, val2, propY);
-
-              newScatter->addX(val1);
-              newScatter->addY(val2);
-        }
-
-        task.pulse();
+          newScatter->addX(val1);
+          newScatter->addY(val2);
       }
+
+      task.pulse();
+      }
+    }
   }
   else
   {
@@ -635,9 +660,6 @@ te::qt::widgets::ChartDisplayWidget* te::qt::widgets::createScatterDisplay(te::d
 
 te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* dataset, te::da::DataSetType* dataType, int propId, int slices, int stat)
 {
-  if(slices <=1)
-    slices = 2;
-
   te::qt::widgets::Histogram* newHistogram = new te::qt::widgets::Histogram();
 
   std::size_t rpos = te::da::GetFirstPropertyPos(dataset, te::dt::RASTER_TYPE);
@@ -657,6 +679,10 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
   }
   else
   {
+
+    if(slices <=1)
+      slices = 2;
+
     int propType = dataset->getPropertyDataType(propId);
     newHistogram->setType(propType);
 

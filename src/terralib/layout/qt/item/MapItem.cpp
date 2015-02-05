@@ -148,13 +148,6 @@ te::layout::MapItem::~MapItem()
     delete m_tool;
     m_tool = 0;
   }
-
-  if(m_mapDisplay)
-  {
-    setWidget(0);
-    delete m_mapDisplay;
-    m_mapDisplay = 0;
-  }
 }
 
 void te::layout::MapItem::updateObserver( ContextItem context )
@@ -592,15 +585,10 @@ void te::layout::MapItem::applyRotation()
 
   double angle = model->getAngle();
 
-  if(angle == 0.)
+  if(angle == model->getOldAngle())
     return;
 
-  QPointF center = boundingRect().center();
-
-  double centerX = center.x();
-  double centerY = center.y();
-  
-  setTransform(QTransform().translate(centerX, centerY).rotate(angle).translate(-centerX, -centerY));
+  setRotation(angle);
 }
 
 te::color::RGBAColor** te::layout::MapItem::getImage()

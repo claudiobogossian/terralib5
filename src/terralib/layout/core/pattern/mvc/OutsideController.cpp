@@ -30,11 +30,14 @@
 #include "OutsideObserver.h"
 #include "OutsideModelObservable.h"
 #include "../../enum/EnumType.h"
+#include "../factory/AbstractOutsideFactory.h"
+#include "../factory/OutsideParamsCreate.h"
+#include "../singleton/Context.h"
 
 te::layout::OutsideController::OutsideController( Observable* o ) :
   m_model(o)
 {
-	
+	create();
 }
 
 te::layout::OutsideController::OutsideController( Observable* o, EnumType* type ) :
@@ -67,3 +70,20 @@ const te::layout::Observer* te::layout::OutsideController::getView()
 	return m_view;
 }
 
+void te::layout::OutsideController::create()
+{
+  AbstractOutsideFactory* factory = Context::getInstance().getOutsideFactory(); 
+  OutsideParamsCreate params(this, m_model);
+  if(factory)
+    m_view = (Observer*)factory->make(m_model->getType(), params);
+}
+
+void te::layout::OutsideController::setPosition( const double& x, const double& y )
+{
+  if(m_model)
+  {
+    OutsideModelObservable* model = dynamic_cast<OutsideModelObservable*>(m_model);
+    if(model)
+      return model->setPosition(x, y);
+  }
+}

@@ -69,6 +69,7 @@ void te::qt::plugins::layout::DisplayDock::removeDock()
   if(mw)
   {
     mw->removeDockWidget(this);
+	this->setParent(0);
     if(m_previousCentralWidget)
     {
       QDockWidget* dock = dynamic_cast<QDockWidget*>(m_previousCentralWidget);

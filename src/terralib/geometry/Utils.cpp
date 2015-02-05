@@ -25,10 +25,12 @@
 
 // TerraLib
 #include "../common/Translator.h"
+#include "Coord2D.h"
 #include "Envelope.h"
 #include "Exception.h"
 #include "Geometry.h"
 #include "LinearRing.h"
+#include "LineString.h"
 #include "Point.h"
 #include "Polygon.h"
 #include "Utils.h"
@@ -162,4 +164,66 @@ template<> bool te::gm::Intersects(const te::gm::Point& point, const te::gm::Env
     return false;
 
   return true;
+}
+
+te::gm::Coord2D* te::gm::locateAlong(const LineString* line, int initial, int final, int target)
+{
+  double tTof; // Distance of target to fist point
+
+  std::map<int, double> pointLenghtFromFirst;
+
+  double fullLineLenght = 0;
+  
+  pointLenghtFromFirst[0] = 0;
+  for(std::size_t i = 1; i < line->getNPoints(); i++)
+  {
+    fullLineLenght += line->getPointN(i)->distance(line->getPointN(i-1));
+    pointLenghtFromFirst[i] = fullLineLenght;
+  }
+
+  int diference = final-initial;
+  
+  tTof = ((target-initial)*fullLineLenght)/diference;
+
+  int onTheFly = -1;
+
+  int pointBeforeTarget;
+  for(std::size_t i = 0; i < pointLenghtFromFirst.size(); i++)
+  {
+    if(pointLenghtFromFirst[i] == tTof)
+    {
+      onTheFly = i;
+      break;
+    }
+    if(tTof >= pointLenghtFromFirst[i] && tTof < pointLenghtFromFirst[i+1])
+    {
+      pointBeforeTarget = i;
+      break;
+    }
+  }
+
+  te::gm::Coord2D* targetCoord = new te::gm::Coord2D();
+
+  if(onTheFly >= 0)
+  {
+    targetCoord->x = line->getPointN(onTheFly)->getX();
+    targetCoord->y = line->getPointN(onTheFly)->getY();
+
+    return targetCoord;
+  }
+
+  Point* p1 = line->getPointN(pointBeforeTarget);
+  Point* p2 = line->getPointN(pointBeforeTarget+1);
+
+  // Partial distance: target to p1
+  double pd = tTof - pointLenghtFromFirst[pointBeforeTarget];
+  
+  // Total distance: p2 to p1
+  double td = pointLenghtFromFirst[pointBeforeTarget+1] - pointLenghtFromFirst[pointBeforeTarget];
+  
+  targetCoord->x = ((pd*(p2->getX()-p1->getX()))/td)+p1->getX();  
+
+  targetCoord->y = ((pd*(p2->getY()-p1->getY()))/td)+p1->getY();
+
+  return targetCoord;
 }

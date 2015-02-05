@@ -70,19 +70,19 @@ void te::qt::plugins::addressgeocoding::Plugin::startup()
   TE_LOG_TRACE(TE_TR("TerraLib Qt Address Geocoding Plugin startup!"));
 
 // add plugin menu
-	QMenu* pluginMenu = te::qt::af::ApplicationController::getInstance().getMenu("Plugins");
+  QMenu* pluginMenu = te::qt::af::ApplicationController::getInstance().getMenu("Plugins");
 
-	m_action = new QAction(pluginMenu);
-	m_action->setText("Address Geocoding...");
+  m_action = new QAction(pluginMenu);
+  m_action->setText("Address Geocoding...");
   m_action->setIcon(QIcon::fromTheme("addressgeocoding-icon"));
 
-	connect(m_action, SIGNAL(triggered(bool)), this, SLOT(onActionActivated(bool)));
+  connect(m_action, SIGNAL(triggered(bool)), this, SLOT(onActionActivated(bool)));
 
-	// Insert action before plugin manager action
+// Insert action before plugin manager action
   QAction* pluginsSeparator = te::qt::af::ApplicationController::getInstance().findAction("ManagePluginsSeparator");
-	pluginMenu->insertAction(pluginsSeparator, m_action);
+  pluginMenu->insertAction(pluginsSeparator, m_action);
 
-  // address geocoding log startup
+// address geocoding log startup
   std::string path = te::qt::af::ApplicationController::getInstance().getUserDataDir().toStdString();
   path += "/log/terralib_addressgeocoding.log";
 
@@ -121,7 +121,7 @@ void te::qt::plugins::addressgeocoding::Plugin::shutdown()
 void te::qt::plugins::addressgeocoding::Plugin::onActionActivated(bool checked)
 {
   QWidget* parent = te::qt::af::ApplicationController::getInstance().getMainWindow();
-	te::addressgeocoding::MainWindowDialog dlg(parent);
+  te::addressgeocoding::MainWindowDialog dlg(parent);
 
   // get the list of layers from current project
   te::qt::af::Project* prj = te::qt::af::ApplicationController::getInstance().getProject();
@@ -164,7 +164,7 @@ std::list<te::map::AbstractLayerPtr> te::qt::plugins::addressgeocoding::Plugin::
 
 void te::qt::plugins::addressgeocoding::Plugin::unRegisterActions()
 {
-	delete m_action;
+  delete m_action;
 }
 
 PLUGIN_CALL_BACK_IMPL(te::qt::plugins::addressgeocoding::Plugin)

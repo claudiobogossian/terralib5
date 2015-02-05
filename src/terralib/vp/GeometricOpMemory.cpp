@@ -136,7 +136,16 @@ bool te::vp::GeometricOpMemory::run()
 
             std::auto_ptr<te::da::DataSetType> outDataSetType(dsTypeVec[dsTypePos]);
             std::auto_ptr<te::mem::DataSet> outDataSet(SetAllObjects(dsTypeVec[dsTypePos], opTab, opGeom));
-            result = save(outDataSet, outDataSetType);
+
+            try
+            {
+              te::vp::Save(m_outDsrc.get(), outDataSet.get(), outDataSetType.get());
+              result = true;
+            }
+            catch(...)
+            {
+              result = false;
+            }
 
             if(!result)
               return result;
@@ -169,7 +178,16 @@ bool te::vp::GeometricOpMemory::run()
 
             std::auto_ptr<te::da::DataSetType> outDataSetType(dsTypeVec[dsTypePos]);
             std::auto_ptr<te::mem::DataSet> outDataSet(SetAggregObj(dsTypeVec[dsTypePos], opTab, opGeom));
-            result = save(outDataSet, outDataSetType);
+
+            try
+            {
+              te::vp::Save(m_outDsrc.get(), outDataSet.get(), outDataSetType.get());
+              result = true;
+            }
+            catch(...)
+            {
+              result = false;
+            }
 
             if(!result)
               return result;
@@ -202,7 +220,15 @@ bool te::vp::GeometricOpMemory::run()
 
             std::auto_ptr<te::da::DataSetType> outDataSetType(dsTypeVec[dsTypePos]);
             std::auto_ptr<te::mem::DataSet> outDataSet(SetAggregByAttribute(dsTypeVec[dsTypePos], opTab, opGeom));
-            result = save(outDataSet, outDataSetType);
+            try
+            {
+              te::vp::Save(m_outDsrc.get(), outDataSet.get(), outDataSetType.get());
+              result = true;
+            }
+            catch(...)
+            {
+              result = false;
+            }
 
             if(!result)
               return result;

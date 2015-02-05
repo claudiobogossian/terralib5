@@ -636,10 +636,12 @@ void te::layout::Utils::resetCanvas()
     return;
   }
 
+  int size = 1;
+
   canvas->clear();
-  canvas->setLineWidth(1);
-  canvas->setPointWidth(1);
-  canvas->setPolygonContourWidth(1);
-  canvas->setPolygonPatternWidth(1);
-  canvas->setTextContourWidth(1);
+  canvas->setLineWidth(size);
+  canvas->setPointWidth(size);
+  canvas->setPolygonContourWidth(size);
+  canvas->setPolygonPatternWidth(size);
+  canvas->setTextContourWidth(size);
 }

@@ -36,25 +36,12 @@
 #include "../core/enum/Enums.h"
 
 te::layout::LegendChildController::LegendChildController( Observable* o ) :
-  LegendController(o, 0)
+  LegendController(o)
 {
-  create();
-}
-
-te::layout::LegendChildController::LegendChildController( Observable* o, EnumType* type ) :
-  LegendController(o, type)
-{
-
+  
 }
 
 te::layout::LegendChildController::~LegendChildController()
 {
 	
-}
-
-void te::layout::LegendChildController::create()
-{
-  AbstractItemFactory* factory = Context::getInstance().getItemFactory(); 
-  ItemParamsCreate params(this, m_model);
-  m_view = (Observer*)factory->make(m_model->getType(), params);
 }

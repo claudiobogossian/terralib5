@@ -78,9 +78,23 @@ namespace te
 
         void onLayerComboBoxChanged(int index);
 
+        void onInitialLeftComboBoxChanged(int index);
+
+        void onFinalLeftComboBoxChanged(int index);
+
+        void onInitialRightComboBoxChanged(int index);
+
+        void onFinalRightComboBoxChanged(int index);
+
         void onConfigureLayerClicked();
 
-        void onConfigureAddressClicked();
+        void onAddressComboBoxChanged(int index);
+
+        void onTargetFileAddressToolButtonPressed();
+
+        void onEditAddressToolButtonPressed();
+
+        void onRemoveAddressToolButtonPressed();
 
         void onTargetDatasourceToolButtonPressed();
 
@@ -94,6 +108,17 @@ namespace te
 
       private:
 
+        void GetAddressFilePathToSettings(std::string& filePath);
+
+        void GetAddressConfigToSettings(std::string& streetType,
+                                        std::string& streetTitle,
+                                        std::string& streetName,
+                                        std::string& number,
+                                        std::string& neighborhood,
+                                        std::string& postalCode);
+
+        void GetDataSourceAddress(std::string fileName);
+
         std::auto_ptr<Ui::MainWindowDialogForm> m_ui;
         std::list<te::map::AbstractLayerPtr> m_layers;                //!< List of layers.
         te::map::AbstractLayerPtr m_selectedLayer;                    //!< List of layers.
@@ -103,10 +128,17 @@ namespace te
         te::da::DataSourceInfoPtr m_outputDatasource;                 //!< DataSource information.
         te::map::AbstractLayerPtr m_resultLayer;                      //!< Generated Layer.
 
+        std::string m_initialLeft;
+        std::string m_finalLeft;
+        std::string m_initialRight;
+        std::string m_finalRight;
+
         te::da::DataSourcePtr m_addressDataSource;
         std::string m_addressFile;
         std::vector<std::string> m_associatedProps;
         std::string m_streetNumber;
+        
+        bool m_toFile;
 
     };
   }   // end namespace addressgeocoding

@@ -78,6 +78,7 @@ te::qt::widgets::ScatterDataWidget::ScatterDataWidget(te::da::DataSet* dataSet, 
     }
   else
   {
+    m_ui->m_readAllCheckBox->hide();
     for (std::size_t i = 0; i < dataSet->getNumProperties(); i++)
     {
       if((dataSet->getPropertyDataType(i) != te::dt::GEOMETRY_TYPE) & (dataSet->getPropertyDataType(i) != te::dt::STRING_TYPE))
@@ -115,7 +116,7 @@ te::qt::widgets::Scatter* te::qt::widgets::ScatterDataWidget::getScatter()
   int stat = m_ui->m_summaryComboBox->itemData(m_ui->m_summaryComboBox->currentIndex()).toInt();
 
   if(rpos != std::string::npos)
-    return te::qt::widgets::createScatter(m_dataSet.get(), m_dataType.get(), m_ui->m_propertyXComboBox->currentIndex(), m_ui->m_propertyYComboBox->currentIndex(), stat);
+    return te::qt::widgets::createScatter(m_dataSet.get(), m_dataType.get(), m_ui->m_propertyXComboBox->currentIndex(), m_ui->m_propertyYComboBox->currentIndex(), stat,  m_ui->m_readAllCheckBox->isChecked());
   else
   {
 
