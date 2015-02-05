@@ -49,7 +49,8 @@ te::layout::ItemModelObservable::ItemModelObservable() :
   m_name("unknown"),
   m_resizable(true),
   m_angle(0),
-  m_hashCode(0)
+  m_hashCode(0),
+  m_oldAngle(0)
 {
   EnumObjectType* type = Enums::getInstance().getEnumObjectType();
   m_type = type->getObjectUnknown();
@@ -286,6 +287,7 @@ void te::layout::ItemModelObservable::updateProperties( te::layout::Properties* 
   Property pro_angle = vectorProps->contains(m_sharedProps->getAngle());
   if(!pro_angle.isNull())
   {
+    m_oldAngle = m_angle;
     m_angle = pro_angle.getValue().toDouble();
   }
 
@@ -431,6 +433,7 @@ void te::layout::ItemModelObservable::drawBackground( ContextItem context )
 
 void te::layout::ItemModelObservable::setAngle( double angle )
 {
+  m_oldAngle = m_angle;
   m_angle = angle;
 }
 
@@ -488,4 +491,9 @@ int te::layout::ItemModelObservable::calculateHashCode()
   hashcode *= hour + numberSecond + numberMilliseconds;
 
   return hashcode;
+}
+
+double te::layout::ItemModelObservable::getOldAngle()
+{
+  return m_oldAngle;
 }
