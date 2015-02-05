@@ -27,12 +27,23 @@
 #include "DataSetLayerRenderer.h"
 #include "DataSetLayerRendererFactory.h"
 
-te::map::DataSetLayerRendererFactory te::map::DataSetLayerRendererFactory::sm_factory;
+te::map::DataSetLayerRendererFactory* te::map::DataSetLayerRendererFactory::sm_factory(0);
+
+void te::map::DataSetLayerRendererFactory::initialize()
+{
+  finalize();
+  sm_factory = new DataSetLayerRendererFactory;
+}
+
+void te::map::DataSetLayerRendererFactory::finalize()
+{
+  delete sm_factory;
+  sm_factory = 0;
+}
 
 te::map::DataSetLayerRendererFactory::~DataSetLayerRendererFactory()
 {
 }
-
 
 te::map::AbstractRenderer* te::map::DataSetLayerRendererFactory::build()
 {
@@ -43,5 +54,3 @@ te::map::DataSetLayerRendererFactory::DataSetLayerRendererFactory()
   : RendererFactory("DATASET_LAYER_RENDERER")
 {
 }
-
-
