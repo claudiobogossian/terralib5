@@ -76,7 +76,7 @@ te::qt::widgets::ChartLayerWidget::ChartLayerWidget(QWidget* parent, Qt::WindowF
 
 te::qt::widgets::ChartLayerWidget::~ChartLayerWidget()
 {
-  m_chartMap.clear();
+  m_chartVec.clear();
 }
 
 void te::qt::widgets::ChartLayerWidget::setLayer(te::map::AbstractLayerPtr layer)
@@ -118,7 +118,7 @@ void te::qt::widgets::ChartLayerWidget::setLayer(te::map::AbstractLayerPtr layer
 
 bool te::qt::widgets::ChartLayerWidget::buildChart()
 {
-  if(m_chartMap.empty())
+  if(m_chartVec.empty())
   {
     QMessageBox::warning(this, tr("Warning"), tr("No attribute selected."));
     return false;
@@ -132,15 +132,11 @@ bool te::qt::widgets::ChartLayerWidget::buildChart()
   std::vector<std::string> attrs;
   std::vector<te::color::RGBAColor> colors;
 
-  std::map<std::string, QColor>::iterator it = m_chartMap.begin();
-
-  while(it != m_chartMap.end())
+  for(std::size_t t = 0; t < m_chartVec.size(); ++t)
   {
-    attrs.push_back(it->first);
-    te::color::RGBAColor c = te::qt::widgets::Convert2TerraLib(it->second);
+    attrs.push_back(m_chartVec[t].first);
+    te::color::RGBAColor c = te::qt::widgets::Convert2TerraLib(m_chartVec[t].second);
     colors.push_back(c);
-
-    ++it;
   }
 
   te::map::Chart* chart = new te::map::Chart((te::map::ChartType)chartType, attrs, colors);
@@ -164,7 +160,7 @@ bool te::qt::widgets::ChartLayerWidget::buildChart()
 
 void te::qt::widgets::ChartLayerWidget::setChart(te::map::Chart* chart)
 {
-  m_chartMap.clear();
+  m_chartVec.clear();
 
   int type = (int)chart->getType();
 
@@ -188,7 +184,8 @@ void te::qt::widgets::ChartLayerWidget::setChart(te::map::Chart* chart)
   {
     std::string value = chart->getProperties()[t];
     QColor c = te::qt::widgets::Convert2Qt(chart->getColor(t));
-    m_chartMap.insert(std::map<std::string, QColor>::value_type(value, c));
+    std::pair<std::string, QColor> pair(value, c);
+    m_chartVec.push_back(pair);
   }
 
   updateUi();
@@ -211,25 +208,21 @@ void te::qt::widgets::ChartLayerWidget::updateUi()
 {
   m_ui->m_tableWidget->setRowCount(0);
 
-  std::map<std::string, QColor>::iterator it = m_chartMap.begin();
-
-  while(it != m_chartMap.end())
+  for(std::size_t t = 0; t < m_chartVec.size(); ++t)
   {
     int newrow = m_ui->m_tableWidget->rowCount();
     m_ui->m_tableWidget->insertRow(newrow);
 
-    QIcon icon(te::qt::widgets::CreatePixmapIcon(28, m_colorPicker->getColor(), it->second, m_ui->m_contourWidthSpinBox->value()));
+    QIcon icon(te::qt::widgets::CreatePixmapIcon(28, m_colorPicker->getColor(), m_chartVec[t].second, m_ui->m_contourWidthSpinBox->value()));
 
     QTableWidgetItem* item = new QTableWidgetItem(icon, "");
     item->setFlags(Qt::ItemIsEnabled);
     m_ui->m_tableWidget->setItem(newrow, 0, item);
 
     //attr name
-    QTableWidgetItem* itemAttr = new QTableWidgetItem(it->first.c_str());
+    QTableWidgetItem* itemAttr = new QTableWidgetItem(m_chartVec[t].first.c_str());
     itemAttr->setFlags(Qt::ItemIsEnabled);
     m_ui->m_tableWidget->setItem(newrow, 1, itemAttr);
-
-    ++it;
   }
 }
 
@@ -237,9 +230,18 @@ void te::qt::widgets::ChartLayerWidget::onAddToolButtonClicked()
 {
   std::string value = m_ui->m_attrComboBox->currentText().toStdString();
 
-  std::map<std::string, QColor>::iterator it = m_chartMap.find(value);
+  bool found = false;
 
-  if(it != m_chartMap.end())
+  for(std::size_t t = 0; t < m_chartVec.size(); ++t)
+  {
+    if(m_chartVec[t].first == value)
+    {
+      found = true;
+      break;
+    }
+  }
+
+  if(found)
   {
     QMessageBox::warning(this, tr("Warning"), tr("Attribute already selected."));
     return;
@@ -247,7 +249,9 @@ void te::qt::widgets::ChartLayerWidget::onAddToolButtonClicked()
 
   QColor c(rand() % 255,rand() % 255,rand() % 255);
 
-  m_chartMap.insert(std::map<std::string, QColor>::value_type(value, c));
+  std::pair<std::string, QColor> pair(value, c);
+
+  m_chartVec.push_back(pair);
 
   updateUi();
 }
@@ -257,12 +261,7 @@ void te::qt::widgets::ChartLayerWidget::onRemoveToolButtonClicked()
   if(m_ui->m_tableWidget->currentRow() == -1)
     return;
 
-  std::string value = m_ui->m_tableWidget->item(m_ui->m_tableWidget->currentRow(), 1)->text().toStdString();
-
-  std::map<std::string, QColor>::iterator it = m_chartMap.find(value);
-
-  if(it != m_chartMap.end())
-    m_chartMap.erase(it);
+  m_chartVec.erase(m_chartVec.begin() + m_ui->m_tableWidget->currentRow());
 
   updateUi();
 }
@@ -272,18 +271,18 @@ void te::qt::widgets::ChartLayerWidget::onItemClicked(int row, int column)
   if(column != 0)
     return;
 
-  std::string attr = m_ui->m_tableWidget->item(row, 1)->text().toStdString();
+  QColor curColor = m_chartVec[row].second;
 
-  std::map<std::string, QColor>::iterator it = m_chartMap.find(attr);
+  QColor c = QColorDialog::getColor(curColor, this);
 
-  if(it != m_chartMap.end())
+  if(c.isValid())
   {
-    QColor c = QColorDialog::getColor(it->second, this);
-
-    it->second = c;
-
-    updateUi();
+    curColor = c;
   }
+
+  m_chartVec[row].second = curColor;
+
+  updateUi();
 }
 
 void te::qt::widgets::ChartLayerWidget::listAttributes()

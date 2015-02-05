@@ -14,6 +14,7 @@
 #    GDAL_FOUND - True if libgdal is found
 #    GDAL_LIBRARY - A variable pointing to the GDAL library
 #    GDAL_INCLUDE_DIR - Where to find the headers
+#    GDAL_DATA_DIR - Where to find GDAL data.
 
 #=============================================================================
 # Copyright 2007-2009 Kitware, Inc.
@@ -61,6 +62,19 @@ find_path(GDAL_INCLUDE_DIR gdal.h
       /opt/csw # Blastwave
       /opt
 )
+
+if(WIN32)
+  find_path(GDAL_DATA_DIR gdal_datum.csv
+    HINTS
+      ENV GDAL_DIR
+      ENV GDAL_ROOT
+    PATH_SUFFIXES
+      data
+    PATHS
+      /opt
+      /opt/local
+  )
+endif()
 
 if(UNIX)
     # Use gdal-config to obtain the library version (this should hopefully
@@ -123,7 +137,12 @@ elseif(WIN32)
 endif()
 
 include(FindPackageHandleStandardArgs)
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(GDAL DEFAULT_MSG GDAL_LIBRARY GDAL_INCLUDE_DIR)
+
+if (WIN32)
+  FIND_PACKAGE_HANDLE_STANDARD_ARGS(GDAL DEFAULT_MSG GDAL_LIBRARY GDAL_INCLUDE_DIR GDAL_DATA)
+else()
+  FIND_PACKAGE_HANDLE_STANDARD_ARGS(GDAL DEFAULT_MSG GDAL_LIBRARY GDAL_INCLUDE_DIR)
+endif()
 
 set(GDAL_LIBRARIES ${GDAL_LIBRARY})
 set(GDAL_INCLUDE_DIRS ${GDAL_INCLUDE_DIR})

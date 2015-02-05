@@ -46,6 +46,10 @@ namespace te
     {
       public:
 
+        static void initialize();
+
+        static void finalize();
+
         ~AbstractLayerRendererFactory();
 
       protected:
@@ -56,7 +60,7 @@ namespace te
 
       private:
 
-        static AbstractLayerRendererFactory sm_factory; //!< A pointer to the global renderer factory.
+        static AbstractLayerRendererFactory* sm_factory; //!< A pointer to the global renderer factory.
     };
 
   } // end namespace map
