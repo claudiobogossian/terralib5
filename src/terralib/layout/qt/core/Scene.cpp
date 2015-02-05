@@ -629,7 +629,7 @@ bool te::layout::Scene::eventFilter( QObject * watched, QEvent * event )
   return QGraphicsScene::eventFilter(watched, event);
 }
 
-void te::layout::Scene::selectionItem( std::string name )
+void te::layout::Scene::selectItem( std::string name )
 {
   QList<QGraphicsItem*> allItems = items();
   foreach(QGraphicsItem *item, allItems) 
@@ -649,6 +649,30 @@ void te::layout::Scene::selectionItem( std::string name )
         }
       }
     }
+  }
+}
+
+void te::layout::Scene::selectItem( QGraphicsItem* item )
+{
+  if (item)
+  {
+    item->setSelected(true);
+  }
+}
+
+void te::layout::Scene::selectItems( std::vector<std::string> names )
+{
+  foreach(std::string name, names)
+  {
+    this->selectItem(name);
+  }
+}
+
+void te::layout::Scene::selectItems( QList<QGraphicsItem*> items )
+{
+  foreach(QGraphicsItem* item, items)
+  {
+    this->selectItem(item);
   }
 }
 

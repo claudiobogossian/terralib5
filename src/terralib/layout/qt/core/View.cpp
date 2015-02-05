@@ -186,28 +186,21 @@ void te::layout::View::mouseReleaseEvent( QMouseEvent * event )
 
     QList<QGraphicsItem*> selectedItems = m_movingItemGroup->childItems();
 
-    QRectF selectionArea = m_movingItemGroup->sceneBoundingRect();
-
     sc->destroyItemGroup(m_movingItemGroup);
     m_movingItemGroup = 0;
     m_isMoving = false;
 
     sc->clearSelection();
 
-    QPainterPath selectionPath;
-    selectionPath.addRect(selectionArea);
-
     foreach (QGraphicsItem* item, selectedItems)
     {
       if (item->isSelected())
       {
         item->setSelected(false);
-        int a = 0;
       }
     }
 
-    sc->setSelectionArea(selectionPath);
-
+    sc->selectItems(selectedItems);
   }
 
   /* The Properties only load when selection change and mouse release */
@@ -965,7 +958,7 @@ void te::layout::View::onSelectionItem( std::string name )
   if(!scne)
     return;
 
-  scne->selectionItem(name);
+  scne->selectItem(name);
 
   emit reloadProperties();
   m_selectionChange = false;
