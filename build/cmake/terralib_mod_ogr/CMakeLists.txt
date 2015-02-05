@@ -63,5 +63,9 @@ install(FILES ${TERRALIB_HDR_FILES}
 
 install(FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/plugins/te.da.ogr.teplg
         DESTINATION ${TERRALIB_DESTINATION_PLUGINS} COMPONENT runtime)
+        
+install(DIRECTORY ${GDAL_DATA_DIR}/ 
+        DESTINATION ${TERRALIB_DESTINATION_SHARE}/gdal-data 
+        COMPONENT devel)        
 
 export(TARGETS terralib_mod_ogr APPEND FILE ${CMAKE_BINARY_DIR}/terralib-exports.cmake)
