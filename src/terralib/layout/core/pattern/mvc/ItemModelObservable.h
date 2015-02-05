@@ -237,6 +237,13 @@ namespace te
           \return value of rotation
          */
         virtual double getAngle();
+
+        /*!
+          \brief Returns the value of old rotation.
+
+          \return value of old rotation
+         */
+        virtual double getOldAngle();
                 
       protected:
 
@@ -270,6 +277,7 @@ namespace te
         bool                      m_resizable; //!< true if resizable, false otherwise
         double                    m_angle; //!< value of rotation
         int                       m_hashCode;
+        double                    m_oldAngle; //!< value of old rotation
     };
   }
 }

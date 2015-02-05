@@ -109,7 +109,7 @@ void te::qt::plugins::layout::MainLayout::init(QWidget* mainWindow, QMenu* mnuLa
   {
     create = true;
     m_view = new te::layout::View;
-    m_view->setScene(new te::layout::Scene());
+    m_view->setScene(new te::layout::Scene(m_view));
   }
       
   //Resize the dialog and put it in the screen center	
