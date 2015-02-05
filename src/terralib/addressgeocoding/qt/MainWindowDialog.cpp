@@ -411,15 +411,16 @@ void te::addressgeocoding::MainWindowDialog::onOkPushButtonClicked()
                               m_initialRight,
                               m_finalRight);
 
-  std::string outputdataset = m_ui->m_repositoryLineEdit->text().toStdString();
+  std::string outputdataset;
   
-  te::da::DataSourcePtr dsOGR;
+  te::da::DataSourcePtr outputDataSource;
   bool res;
   
   try
   {
     if(m_toFile)
     {
+      outputdataset = m_ui->m_repositoryLineEdit->text().toStdString();
       boost::filesystem::path uri(outputdataset);
 
       if (boost::filesystem::exists(uri))
@@ -435,10 +436,10 @@ void te::addressgeocoding::MainWindowDialog::onOkPushButtonClicked()
       std::map<std::string, std::string> dsinfo;
       dsinfo["URI"] = uri.string();
       
-      dsOGR.reset(te::da::DataSourceFactory::make("OGR").release());
-      dsOGR->setConnectionInfo(dsinfo);
-      dsOGR->open();
-      if (dsOGR->dataSetExists(outputdataset))
+      outputDataSource.reset(te::da::DataSourceFactory::make("OGR").release());
+      outputDataSource->setConnectionInfo(dsinfo);
+      outputDataSource->open();
+      if (outputDataSource->dataSetExists(outputdataset))
       {
         QMessageBox::information(this, "Address Geocoding", "There is already a dataset with the requested name in the output data source. Remove it or select a new name and try again.");
         return;
@@ -446,7 +447,7 @@ void te::addressgeocoding::MainWindowDialog::onOkPushButtonClicked()
 
       this->setCursor(Qt::WaitCursor);
 
-      addGeoOp->setOutput(dsOGR,
+      addGeoOp->setOutput(outputDataSource,
                           outputdataset);
 
       if (!addGeoOp->paramsAreValid())
@@ -457,11 +458,11 @@ void te::addressgeocoding::MainWindowDialog::onOkPushButtonClicked()
       if (!res)
       {
         this->setCursor(Qt::ArrowCursor);
-        dsOGR->close();
+        outputDataSource->close();
         QMessageBox::information(this, "Address Geocoding", "Error: could not generate the address geocoding.");
         reject();
       }
-      dsOGR->close();
+      outputDataSource->close();
 
       delete addGeoOp;
 
@@ -486,21 +487,22 @@ void te::addressgeocoding::MainWindowDialog::onOkPushButtonClicked()
     }
     else
     {
-      dsOGR = te::da::GetDataSource(m_outputDatasource->getId());
-      if (!dsOGR)
+      outputdataset = m_ui->m_newLayerNameLineEdit->text().toStdString();
+      outputDataSource = te::da::GetDataSource(m_outputDatasource->getId());
+      if (!outputDataSource)
       {
         QMessageBox::information(this, "Address Geocoding", "The selected output datasource can not be accessed.");
         return;
       }
       
-      if (dsOGR->dataSetExists(outputdataset))
+      if (outputDataSource->dataSetExists(outputdataset))
       {
         QMessageBox::information(this, "Address Geocoding", "Dataset already exists. Remove it or select a new name and try again.");
         return;
       }
       this->setCursor(Qt::WaitCursor);
 
-      addGeoOp->setOutput(dsOGR,
+      addGeoOp->setOutput(outputDataSource,
                           outputdataset);
 
       if (!addGeoOp->paramsAreValid())
@@ -513,11 +515,11 @@ void te::addressgeocoding::MainWindowDialog::onOkPushButtonClicked()
       if (!res)
       {
         this->setCursor(Qt::ArrowCursor);
-        dsOGR->close();
+        outputDataSource->close();
         QMessageBox::information(this, "Address Geocoding", "Error: could not generate the address geocoding.");
         reject();
       }
-      dsOGR->close();
+      outputDataSource->close();
 
     }
 
