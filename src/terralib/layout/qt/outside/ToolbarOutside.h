@@ -124,6 +124,8 @@ namespace te
       virtual QToolButton* getDrawMapToolButton();
 
       virtual QToolButton* getObjectToImageButton();
+
+      virtual QToolButton* getExitButton();
       
     public slots:
       
@@ -168,6 +170,8 @@ namespace te
       virtual void onDrawMapClicked(bool checked);
 
       virtual void onObjectToImageClicked(bool checked);
+
+      virtual void onExitClicked(bool checked);
 
       virtual QComboBox* getComboBoxZoom();
       
@@ -224,6 +228,8 @@ namespace te
       virtual QToolButton* createDrawMapToolButton();
 
       virtual QToolButton* createObjectToImageButton();
+
+      virtual QToolButton* createExitButton();
 
       virtual void changeAction(EnumType* mode);
 
@@ -295,6 +301,7 @@ namespace te
       std::string m_optionDrawMap;
 
       std::string m_optionObjectToImage;
+      std::string m_optionExit;
 
       /* ToolButton */
       QToolButton* m_mapToolButton;
@@ -318,6 +325,7 @@ namespace te
       QToolButton* m_undoToolButton;
       QToolButton* m_drawMapToolButton;
       QToolButton* m_objectToImageButton;
+      QToolButton* m_exitButton;
     };
   }
 }

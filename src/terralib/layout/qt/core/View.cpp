@@ -501,6 +501,10 @@ void te::layout::View::outsideAreaChangeContext( bool change )
   {
     exportItemsToImage();
   }
+  else if(mode == enumMode->getModeExit())
+  {
+    close();
+  }
 }
 
 void te::layout::View::hideEvent( QHideEvent * event )
