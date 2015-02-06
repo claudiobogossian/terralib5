@@ -78,6 +78,9 @@
 #include "../item/TextItem.h"
 #include "../../item/TextModel.h"
 #include "../../core/property/Properties.h"
+#include "../item/MovingItemGroup.h"
+#include "../../item/MovingItemGroupController.h"
+#include "../../item/MovingItemGroupModel.h"
 
 // Qt
 #include <QGraphicsItem>
@@ -101,7 +104,8 @@ te::layout::BuildGraphicsItem::BuildGraphicsItem() :
   m_pointItem("POINT_"),
   m_textGridItem("TEXT_GRID_"),
   m_titleItem("TITLE_"),
-  m_legendChildItem("LEGEND_CHILD_")
+  m_legendChildItem("LEGEND_CHILD_"),
+  m_movingGroupItem("MOVING_ITEM_GROUP_")
 {
  
 }
@@ -189,7 +193,7 @@ QGraphicsItem* te::layout::BuildGraphicsItem::rebuildItem( te::layout::Propertie
   {
     item = createLegendChild();
   }
-  
+
   return item;
 }
 
@@ -272,6 +276,80 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createItem( te::layout::EnumType* 
   else if(mode == enumMode->getModeCreateLegendChild())
   {
     m_name = nameItem(m_legendChildItem, enumObj->getLegendChildItem());
+    item = createLegendChild();
+  }
+
+  return item;
+}
+
+QGraphicsItem* te::layout::BuildGraphicsItem::createItem( te::layout::EnumType* type )
+{
+  QGraphicsItem* item = 0;
+
+  EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
+
+  if (type == enumObj->getMovingItemGroup())
+  {
+    item = createMovingItemGroup();
+  }
+  else if(type == enumObj->getMapItem())
+  {
+    item = createMap();
+  }
+  else if(type == enumObj->getMapGridItem())
+  {
+    item = createMapGrid();
+  }
+  else if(type == enumObj->getTextItem())
+  {
+    item = createText();
+  }
+  else if(type == enumObj->getImageItem())
+  {
+    item = createImage();
+  }
+  else if(type == enumObj->getRectangleItem())
+  {
+    item = createRectangle();
+  }
+  else if(type == enumObj->getLegendItem())
+  {
+    item = createLegend();
+  }
+  else if(type == enumObj->getPaperItem())
+  {
+    item = createPaper();
+  }
+  else if(type == enumObj->getScaleItem())
+  {
+    item = createScale();
+  }
+  else if(type == enumObj->getItemGroup())
+  {
+    item = createItemGroup();
+  }
+  else if(type == enumObj->getArrowItem())
+  {
+    item = createArrow();
+  }
+  else if(type == enumObj->getEllipseItem())
+  {
+    item = createEllipse();
+  }
+  else if(type == enumObj->getPointItem())
+  {
+    item = createPoint();
+  }
+  else if(type == enumObj->getTextGridItem())
+  {
+    item = createTextGrid();
+  }
+  else if(type == enumObj->getTitleItem())
+  {
+    item = createTitle();
+  }
+  else if(type == enumObj->getLegendChildItem())
+  {
     item = createLegendChild();
   }
 
@@ -573,6 +651,42 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createItemGroup()
   ItemObserver* itemObs = (ItemObserver*)controller->getView();
 
   ItemGroup* view = dynamic_cast<ItemGroup*>(itemObs); 
+  if(m_props)
+  {
+    view->updateProperties(m_props);
+  }
+
+  if(view)
+  {
+    if(m_props)
+    {
+      view->setZValue(m_zValue);
+    }
+    if(m_redraw)
+    {
+      itemObs->redraw();
+    }
+    return view;
+  }
+
+  return item;
+}
+
+QGraphicsItem* te::layout::BuildGraphicsItem::createMovingItemGroup()
+{
+  QGraphicsItem* item = 0;
+
+  MovingItemGroupModel* model = new MovingItemGroupModel();	
+  if(!m_props)
+  {
+    model->setId(m_id);
+    model->setName(m_name);
+  }
+
+  MovingItemGroupController* controller = new MovingItemGroupController(model);
+  ItemObserver* itemObs = (ItemObserver*)controller->getView();
+
+  MovingItemGroup* view = dynamic_cast<MovingItemGroup*>(itemObs); 
   if(m_props)
   {
     view->updateProperties(m_props);

@@ -53,6 +53,7 @@
 #include <QDebug>
 #include <QMessageBox>
 #include <QFileDialog>
+#include <QPainterPath>
 
 te::layout::View::View( QWidget* widget) : 
   QGraphicsView(new QGraphicsScene, widget),
@@ -65,7 +66,9 @@ te::layout::View::View( QWidget* widget) :
   m_maxZoomLimit(29.),
   m_minZoomLimit(0.9),
   m_width(-1),
-  m_height(-1)
+  m_height(-1),
+  m_isMoving(false),
+  m_movingItemGroup(0)
 {
   setDragMode(RubberBandDrag);
 
@@ -117,6 +120,35 @@ void te::layout::View::mousePressEvent( QMouseEvent * event )
   if(!sc)
     return;
 
+  if (m_isMoving == false)
+  {
+    QList<QGraphicsItem*> selectedItems = sc->selectedItems();
+
+    int size = selectedItems.size();
+
+    if (selectedItems.size() > 1)
+    {
+      bool isInvertedMatrix = false;
+      foreach(QGraphicsItem* item, selectedItems)
+      {
+        ItemObserver* observer = dynamic_cast<ItemObserver*> (item);
+        if (observer)
+        {
+          if (observer->isInvertedMatrix() == true)
+          {
+            isInvertedMatrix = true;
+          }
+        }
+      }
+
+      if (isInvertedMatrix == true)
+      {
+        m_movingItemGroup = sc->createMovingItemGroup(selectedItems);
+        m_isMoving = true;
+      }
+    }
+  }
+
   EnumModeType* mode = Enums::getInstance().getEnumModeType();
 
   if(Context::getInstance().getMode() == mode->getModeNone())
@@ -127,6 +159,11 @@ void te::layout::View::mousePressEvent( QMouseEvent * event )
 
 void te::layout::View::mouseMoveEvent( QMouseEvent * event )
 {
+  if (event->modifiers() & Qt::ControlModifier)
+  {
+    return;
+  }
+
   QGraphicsView::mouseMoveEvent(event);
 
   Scene* sc = dynamic_cast<Scene*>(scene());
@@ -134,14 +171,37 @@ void te::layout::View::mouseMoveEvent( QMouseEvent * event )
   if(!sc)
     return;
 
-   QPointF pt = mapToScene(event->pos());
+  QPointF pt = mapToScene(event->pos());
    
-   emit changeSceneCoordMouse(pt);
+  emit changeSceneCoordMouse(pt);
 }
 
 void te::layout::View::mouseReleaseEvent( QMouseEvent * event )
 {
   QGraphicsView::mouseReleaseEvent(event);
+
+  if (m_isMoving == true)
+  {
+    Scene* sc = dynamic_cast<Scene*>(scene());
+
+    QList<QGraphicsItem*> selectedItems = m_movingItemGroup->childItems();
+
+    sc->destroyItemGroup(m_movingItemGroup);
+    m_movingItemGroup = 0;
+    m_isMoving = false;
+
+    sc->clearSelection();
+
+    foreach (QGraphicsItem* item, selectedItems)
+    {
+      if (item->isSelected())
+      {
+        item->setSelected(false);
+      }
+    }
+
+    sc->selectItems(selectedItems);
+  }
 
   /* The Properties only load when selection change and mouse release */
   if(!m_selectionChange)
@@ -937,7 +997,7 @@ void te::layout::View::onSelectionItem( std::string name )
   if(!scne)
     return;
 
-  scne->selectionItem(name);
+  scne->selectItem(name);
 
   emit reloadProperties();
   m_selectionChange = false;
