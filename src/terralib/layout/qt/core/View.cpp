@@ -917,6 +917,20 @@ bool te::layout::View::importTemplate( EnumType* type )
 
 void te::layout::View::exportItemsToImage()
 {
+  Scene* scne = dynamic_cast<Scene*>(scene());
+  if(!scne)
+    return;
+
+  QMessageBox msgBox;
+
+  if(scne->selectedItems().empty())
+  {
+    msgBox.setIcon(QMessageBox::Warning);
+    msgBox.setText("Select at least one component!"); 
+    msgBox.exec();
+    return;
+  }
+
   QFileDialog dialog(this);
   dialog.setGeometry(QRect(this->width()/4, this->height()/4, this->width()/2, this->height()/2));
   QString dir = dialog.getExistingDirectory(this, tr("Open Directory"), 
@@ -927,11 +941,11 @@ void te::layout::View::exportItemsToImage()
 
   std::string dirName = dir.toStdString();
 
-  Scene* scne = dynamic_cast<Scene*>(scene());
-  if(!scne)
-    return;
-
   scne->exportItemsToImage(dirName);
+
+  msgBox.setIcon(QMessageBox::Information);
+  msgBox.setText("Successfully exported images!"); 
+  msgBox.exec();
 }
 
 void te::layout::View::changeZoomFactor( double currentZoom )

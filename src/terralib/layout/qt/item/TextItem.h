@@ -153,7 +153,7 @@ namespace te
           \brief Reimplemented from QGraphicsTextItem
          */
         virtual void	mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
-        
+                
         virtual void init();
         
         virtual QImage createImage();
