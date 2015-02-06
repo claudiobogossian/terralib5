@@ -505,6 +505,10 @@ void te::layout::View::outsideAreaChangeContext( bool change )
   {
     close();
   }
+  else if(mode == enumMode->getModeExportToPDF())
+  {
+    exportToPDF();
+  }
 }
 
 void te::layout::View::hideEvent( QHideEvent * event )
@@ -763,6 +767,23 @@ void te::layout::View::zoomPercentage()
   
   mtrx.scale(factor, factor);
   setTransform(mtrx);
+}
+
+void te::layout::View::exportToPDF()
+{
+  Scene* scne = dynamic_cast<Scene*>(scene());
+
+  resetDefaultConfig();
+
+  // No update Widget while print is running
+  setUpdatesEnabled(false);
+
+  // Rulers aren't print
+  m_visibleRulers = false;
+  scne->getPrintScene()->exportToPDF();
+  m_visibleRulers = true;
+
+  setUpdatesEnabled(true);
 }
 
 bool te::layout::View::isExceededLimit(double currentScale, double factor, double oldFactor)

@@ -156,6 +156,11 @@ namespace te
 		  \param visible visibility state	  
         */
         virtual void changeZoomFactor(double currentZoom);
+
+        /*!
+          \brief Method that sets View object for the Print function.  
+        */
+        virtual void exportToPDF();
                                         
       public slots:
 	  
