@@ -292,6 +292,66 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createItem( te::layout::EnumType* 
   {
     item = createMovingItemGroup();
   }
+  else if(type == enumObj->getMapItem())
+  {
+    item = createMap();
+  }
+  else if(type == enumObj->getMapGridItem())
+  {
+    item = createMapGrid();
+  }
+  else if(type == enumObj->getTextItem())
+  {
+    item = createText();
+  }
+  else if(type == enumObj->getImageItem())
+  {
+    item = createImage();
+  }
+  else if(type == enumObj->getRectangleItem())
+  {
+    item = createRectangle();
+  }
+  else if(type == enumObj->getLegendItem())
+  {
+    item = createLegend();
+  }
+  else if(type == enumObj->getPaperItem())
+  {
+    item = createPaper();
+  }
+  else if(type == enumObj->getScaleItem())
+  {
+    item = createScale();
+  }
+  else if(type == enumObj->getItemGroup())
+  {
+    item = createItemGroup();
+  }
+  else if(type == enumObj->getArrowItem())
+  {
+    item = createArrow();
+  }
+  else if(type == enumObj->getEllipseItem())
+  {
+    item = createEllipse();
+  }
+  else if(type == enumObj->getPointItem())
+  {
+    item = createPoint();
+  }
+  else if(type == enumObj->getTextGridItem())
+  {
+    item = createTextGrid();
+  }
+  else if(type == enumObj->getTitleItem())
+  {
+    item = createTitle();
+  }
+  else if(type == enumObj->getLegendChildItem())
+  {
+    item = createLegendChild();
+  }
 
   return item;
 }
