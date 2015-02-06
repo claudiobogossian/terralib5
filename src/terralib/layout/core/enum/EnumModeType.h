@@ -474,6 +474,13 @@ namespace te
         */
         virtual EnumType* getModeInspectorCurrentItemChanged() const;
 
+        /*!
+          \brief Returns value that represents export to PDF mode type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
+        virtual EnumType* getModeExportToPDF() const;
+
       protected:
 
         /*!
@@ -542,6 +549,7 @@ namespace te
         EnumType* m_modeLegendChildAsObject; //!< value that represents legend child as object (vectorize) mode type belonging to enumeration
         EnumType* m_modelObjectToImage; //!< value that represents object to image (MVC Component to image. Ex.: .png) mode type belonging to enumeration
         EnumType* m_inspectorCurrentItemChanged;//!< value that represents object inspector current item changed type belonging to enumeration
+        EnumType* m_modelExportToPDF; //!< value that represents export to PDF mode type belonging to enumeration
     };
   }
 }

@@ -87,7 +87,8 @@ te::layout::EnumModeType::EnumModeType() :
   m_modeCreateLegendChild(0),
   m_modeLegendChildAsObject(0),
   m_modelObjectToImage(0),
-  m_inspectorCurrentItemChanged(0)
+  m_inspectorCurrentItemChanged(0),
+  m_modelExportToPDF(0)
 {
   init();
 }
@@ -384,6 +385,11 @@ te::layout::EnumModeType::~EnumModeType()
     delete m_inspectorCurrentItemChanged;
     m_inspectorCurrentItemChanged = 0;
   }
+  if(m_modelExportToPDF)
+  {
+    delete m_modelExportToPDF;
+    m_modelExportToPDF = 0;
+  }
 }
 
 void te::layout::EnumModeType::init()
@@ -550,7 +556,7 @@ void te::layout::EnumModeType::init()
   m_modeRedo = new EnumType(55, "Redo");
   m_enums.push_back(m_modeRedo);
 
-  m_modeDrawSelectionMap = new EnumType(56, "Draw Selection Map");
+  m_modeDrawSelectionMap = new EnumType(56, "DrawSelectionMap");
   m_enums.push_back(m_modeDrawSelectionMap);
 
   m_modeCreateLegendChild = new EnumType(57, "CreateLegendChild");
@@ -562,8 +568,11 @@ void te::layout::EnumModeType::init()
   m_modelObjectToImage = new EnumType(59, "ObjectToImage");
   m_enums.push_back(m_modelObjectToImage);
 
-  m_inspectorCurrentItemChanged = new EnumType(60, "Inspector Item Changed");
+  m_inspectorCurrentItemChanged = new EnumType(60, "InspectorItemChanged");
   m_enums.push_back(m_inspectorCurrentItemChanged);
+
+  m_modelExportToPDF = new EnumType(61, "ExporttoPDF");
+  m_enums.push_back(m_modelExportToPDF);
 }
 
 te::layout::EnumType* te::layout::EnumModeType::getModeSelectByBox() const
@@ -859,4 +868,9 @@ te::layout::EnumType* te::layout::EnumModeType::getModeObjectToImage() const
 te::layout::EnumType* te::layout::EnumModeType::getModeInspectorCurrentItemChanged() const
 {
   return m_inspectorCurrentItemChanged;
+}
+
+te::layout::EnumType* te::layout::EnumModeType::getModeExportToPDF() const
+{
+  return m_modelExportToPDF;
 }
