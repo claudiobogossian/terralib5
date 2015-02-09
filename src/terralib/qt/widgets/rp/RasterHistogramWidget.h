@@ -36,6 +36,9 @@
 // Qt
 #include <QWidget>
 
+//QWT
+#include <qwt/qwt_plot_marker.h>
+
 namespace Ui { class RasterHistogramWidgetForm; }
 
 namespace te
@@ -73,6 +76,18 @@ namespace te
 
           void drawHistogram(int band);
 
+          void setMinimumValueEnabled(bool enable);
+
+          void updateMinimumValueLine(int value, bool replot = false);
+
+          void updateMinimumValueLabel(QString value);
+
+          void setMaximumValueEnabled(bool enable);
+
+          void updateMaximumValueLine(int value, bool replot = false);
+
+          void updateMaximumValueLabel(QString value);
+
 
         protected slots:
 
@@ -104,6 +119,9 @@ namespace te
 
          te::qt::widgets::Histogram* m_histogramOutput;
          te::qt::widgets::HistogramChart* m_histogramChartOutput;
+
+         QwtPlotMarker* m_minValueLine;
+         QwtPlotMarker* m_maxValueLine;
       }; 
 
     } // end namespace widgets

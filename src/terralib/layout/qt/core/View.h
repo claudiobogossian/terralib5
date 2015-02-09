@@ -41,6 +41,7 @@
 #include "../outside/PageSetupOutside.h"
 #include "../outside/SystematicScaleOutside.h"
 #include "MenuItem.h"
+#include "../item/MovingItemGroup.h"
 
 // STL
 #include <string>
@@ -156,6 +157,11 @@ namespace te
 		  \param visible visibility state	  
         */
         virtual void changeZoomFactor(double currentZoom);
+
+        /*!
+          \brief Method that sets View object for the Print function.  
+        */
+        virtual void exportToPDF();
                                         
       public slots:
 	  
@@ -341,6 +347,8 @@ namespace te
         double                  m_minZoomLimit;
         double                  m_width;
         double                  m_height;
+        bool                    m_isMoving;
+        te::layout::MovingItemGroup* m_movingItemGroup;
     };
   }
 }

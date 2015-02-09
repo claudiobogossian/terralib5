@@ -71,24 +71,17 @@ te::layout::TextItem::TextItem( ItemController* controller, Observable* o ) :
   m_nameClass = std::string(this->metaObject()->className());
   Context::getInstance().getScene()->insertItem((ItemObserver*)item);
 
-  m_document = new QTextDocument;
+  m_document = new QTextDocument(this);
   setDocument(m_document);
 
   m_backgroundColor.setAlpha(0);
 
   init();
-  
-  //If enabled is true, this item will accept hover events
-  setTextInteractionFlags(Qt::TextEditable);
 }
 
 te::layout::TextItem::~TextItem()
 {
-  if(m_document)
-  {
-    delete m_document;
-    m_document = 0;
-  }
+
 }
 
 void te::layout::TextItem::init()
@@ -371,6 +364,20 @@ void te::layout::TextItem::mouseDoubleClickEvent( QGraphicsSceneMouseEvent * eve
   if(event->button() == Qt::LeftButton)
   {
     m_editable = !m_editable;
+    if(m_editable)
+    {
+      //If enabled is true, this item will accept hover events
+      setTextInteractionFlags(Qt::TextEditable);
+      setFocus();
+      setCursor(QCursor(Qt::IBeamCursor));
+      QTextCursor cursor(textCursor());
+      cursor.clearSelection();
+      setTextCursor(cursor);
+    }
+    else
+    {
+      setCursor(Qt::ArrowCursor);
+    }
   }
 }
 
@@ -430,7 +437,8 @@ void te::layout::TextItem::resetEdit()
   after being completely closed and like this not cause bad behavior.*/
   QTextCursor cursor(textCursor());
   cursor.clearSelection();
-  setTextCursor(cursor);
+  setTextInteractionFlags(Qt::NoTextInteraction);
+  unsetCursor();
   clearFocus();     
 }
 

@@ -523,4 +523,5 @@ void te::qt::plugins::layout::OutsideArea::onCloseView()
   closeAllDocks();
   closeMainMenu();
   m_view->closeOutsideWindows();
+  emit exit();
 }
