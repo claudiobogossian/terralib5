@@ -39,6 +39,7 @@
 
 // Qt
 #include <QDialog>
+#include <QSettings>
 
 namespace Ui { class ConfigInputAddressDialogForm; }
 
@@ -67,15 +68,27 @@ namespace te
 
         std::string getStreetType();
 
+        void setStreetType(std::string streetType);
+
         std::string getStreetTitle();
+        
+        void setStreetTitle(std::string streetTitle);
 
         std::string getStreetName();
 
+        void setStreetName(std::string streetName);
+
         std::string getStreetNumber();
+
+        void setStreetNumber(std::string streetNumber);
 
         std::string getStreetNeighborhood();
 
+        void setStreetNeighborhood(std::string streetNeighborhood);
+
         std::string getStreetPostalCode();
+
+        void setStreetPostalCode(std::string streetPostalCode);
 
       protected slots:
 
@@ -86,6 +99,10 @@ namespace te
         void onCancelPushButtonClicked();
 
       private:
+
+        void AddAddressConfigToSettings(std::map<std::string, std::string> addressConfig);
+
+        void AddAddressConfigItens(std::map<std::string, std::string> addressConfig, QSettings& sett);
 
         void AddAddressConfigToSettings(std::string filePath,
                                         std::string streetType,

@@ -108,16 +108,9 @@ namespace te
 
       private:
 
-        void GetAddressFilePathToSettings(std::string& filePath);
+        void GetAddressFilePathToSettings(std::map<std::string, std::vector<std::string> >& mapFields);
 
-        void GetAddressConfigToSettings(std::string& streetType,
-                                        std::string& streetTitle,
-                                        std::string& streetName,
-                                        std::string& number,
-                                        std::string& neighborhood,
-                                        std::string& postalCode);
-
-        void GetDataSourceAddress(std::string fileName);
+        void GetAddressDataSource(std::string fileName);
 
         std::auto_ptr<Ui::MainWindowDialogForm> m_ui;
         std::list<te::map::AbstractLayerPtr> m_layers;                //!< List of layers.
