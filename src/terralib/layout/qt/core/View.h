@@ -61,6 +61,7 @@ class QCloseEvent;
 class QGraphicsItemGroup;
 class QLineF;
 class QContextMenuEvent;
+class QEvent;
 
 namespace te
 {
@@ -70,6 +71,7 @@ namespace te
     class AbstractViewTool;
     class HorizontalRuler;
     class VerticalRuler;
+    class EnumType;
 
 	/*!
     \brief Class representing the view. This view is child of QGraphicsView, part of Graphics View Framework. 
@@ -223,6 +225,11 @@ namespace te
         */
         void changeZoom(double currentFactor);
 
+        /*!
+          \brief This signal is emitted when context change.
+        */
+        void changeContext();
+
       protected:
 
 		/*!
@@ -279,6 +286,11 @@ namespace te
           \brief Reimplemented from QGraphicsView
         */
         virtual void drawForeground ( QPainter * painter, const QRectF & rect );
+
+        /*!
+          \brief Reimplemented from QGraphicsView
+        */
+        virtual bool	event ( QEvent * e );
 		
 		/*!
           \brief Groups selected objects
@@ -349,6 +361,7 @@ namespace te
         double                  m_height;
         bool                    m_isMoving;
         te::layout::MovingItemGroup* m_movingItemGroup;
+        EnumType*               m_oldMode;
     };
   }
 }

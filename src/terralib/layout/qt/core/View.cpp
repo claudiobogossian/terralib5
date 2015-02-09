@@ -54,6 +54,7 @@
 #include <QMessageBox>
 #include <QFileDialog>
 #include <QPainterPath>
+#include <QEvent>
 
 te::layout::View::View( QWidget* widget) : 
   QGraphicsView(new QGraphicsScene, widget),
@@ -68,12 +69,18 @@ te::layout::View::View( QWidget* widget) :
   m_width(-1),
   m_height(-1),
   m_isMoving(false),
-  m_movingItemGroup(0)
+  m_movingItemGroup(0),
+  m_oldMode(0)
 {
   setDragMode(RubberBandDrag);
 
   m_horizontalRuler = new HorizontalRuler;
   m_verticalRuler = new VerticalRuler;
+
+  if(Enums::getInstance().getEnumModeType())
+  {
+    m_oldMode = Enums::getInstance().getEnumModeType()->getModeNone();
+  }
 }
 
 te::layout::View::~View()
@@ -875,6 +882,17 @@ void te::layout::View::drawForeground( QPainter * painter, const QRectF & rect )
 
   m_horizontalRuler->drawRuler(this, painter, scale);
   m_verticalRuler->drawRuler(this, painter, scale); 
+}
+
+bool	te::layout::View::event ( QEvent * e )
+{
+  if(m_oldMode != Context::getInstance().getMode())
+  {
+    m_oldMode = Context::getInstance().getMode();
+    emit changeContext();
+  }
+
+  return QGraphicsView::event(e);
 }
 
 bool te::layout::View::exportProperties( EnumType* type )
