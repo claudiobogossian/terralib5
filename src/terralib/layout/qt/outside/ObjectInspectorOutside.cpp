@@ -71,6 +71,8 @@ te::layout::ObjectInspectorOutside::ObjectInspectorOutside( OutsideController* c
   layoutAll->addWidget(groupBox);
 
   setLayout(layoutAll);
+
+  m_layoutPropertyBrowser->getPropertyEditor()->setAlternatingRowColors(false);
 }
 
 te::layout::ObjectInspectorOutside::~ObjectInspectorOutside()
