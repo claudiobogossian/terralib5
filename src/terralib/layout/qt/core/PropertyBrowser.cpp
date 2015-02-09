@@ -81,7 +81,7 @@ void te::layout::PropertyBrowser::createManager()
 {
   //Qt - The Property Browser
   m_propertyEditor = new QtTreePropertyBrowser;
-
+  
   m_variantPropertyEditorManager = new QtVariantPropertyManager;
   connect(m_variantPropertyEditorManager, SIGNAL(valueChanged(QtProperty*, const QVariant &)),
     this, SLOT(propertyEditorValueChanged(QtProperty *, const QVariant &)));
@@ -249,7 +249,8 @@ bool te::layout::PropertyBrowser::addProperty( Property property )
 
   if(vproperty)
   {
-    vproperty->setEnabled(property.isEditable());
+    bool is_readOnly = !property.isEditable();
+    vproperty->setAttribute(QLatin1String("readOnly"), is_readOnly);
     addPropertyItem(vproperty, QLatin1String(property.getName().c_str()));
     return true;
   }

@@ -70,6 +70,7 @@ te::layout::View::View( QWidget* widget) :
   m_height(-1),
   m_isMoving(false),
   m_movingItemGroup(0),
+  m_updateItemPos(false),
   m_oldMode(0)
 {
   setDragMode(RubberBandDrag);
@@ -178,19 +179,37 @@ void te::layout::View::mouseMoveEvent( QMouseEvent * event )
   if(!sc)
     return;
 
+  if(!scene()->selectedItems().empty())
+  {
+    m_updateItemPos = true;
+  }
+  else
+  {
+    m_updateItemPos = false;
+  }
+
   QPointF pt = mapToScene(event->pos());
    
   emit changeSceneCoordMouse(pt);
+
+  if(m_oldMode != Context::getInstance().getMode())
+  {
+    m_oldMode = Context::getInstance().getMode();
+    emit changeContext();
+  }
 }
 
 void te::layout::View::mouseReleaseEvent( QMouseEvent * event )
 {
   QGraphicsView::mouseReleaseEvent(event);
 
+  Scene* sc = dynamic_cast<Scene*>(scene());
+
+  if(!sc)
+    return;
+
   if (m_isMoving == true)
   {
-    Scene* sc = dynamic_cast<Scene*>(scene());
-
     QList<QGraphicsItem*> selectedItems = m_movingItemGroup->childItems();
 
     sc->destroyItemGroup(m_movingItemGroup);
@@ -209,10 +228,15 @@ void te::layout::View::mouseReleaseEvent( QMouseEvent * event )
 
     sc->selectItems(selectedItems);
   }
-
+  
   /* The Properties only load when selection change and mouse release */
-  if(!m_selectionChange)
+  if(!m_selectionChange && !m_updateItemPos)
     return;
+
+  if(m_updateItemPos)
+  {
+    sc->updateSelectedItemsPositions();
+  }
 
   emit reloadProperties();
   m_selectionChange = false;
@@ -882,17 +906,6 @@ void te::layout::View::drawForeground( QPainter * painter, const QRectF & rect )
 
   m_horizontalRuler->drawRuler(this, painter, scale);
   m_verticalRuler->drawRuler(this, painter, scale); 
-}
-
-bool	te::layout::View::event ( QEvent * e )
-{
-  if(m_oldMode != Context::getInstance().getMode())
-  {
-    m_oldMode = Context::getInstance().getMode();
-    emit changeContext();
-  }
-
-  return QGraphicsView::event(e);
 }
 
 bool te::layout::View::exportProperties( EnumType* type )

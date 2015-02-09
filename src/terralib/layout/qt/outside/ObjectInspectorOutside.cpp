@@ -49,7 +49,7 @@ te::layout::ObjectInspectorOutside::ObjectInspectorOutside( OutsideController* c
   te::gm::Envelope box = m_model->getBox();
   setBaseSize(box.getWidth(), box.getHeight());
   setVisible(false);
-  setWindowTitle("Layout - Inspetor de Objetos");
+  setWindowTitle("Object Inspector");
   setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
   
   if(!propertyBrowser)
@@ -61,8 +61,6 @@ te::layout::ObjectInspectorOutside::ObjectInspectorOutside( OutsideController* c
   layout->setMargin(0);
   layout->addWidget(m_layoutPropertyBrowser->getPropertyEditor());
   
-  m_layoutPropertyBrowser->getPropertyEditor()->installEventFilter(this);
-
   QGroupBox* groupBox = new QGroupBox;
   groupBox->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
   groupBox->setLayout(layout);
@@ -116,8 +114,6 @@ void te::layout::ObjectInspectorOutside::itemsInspector(QList<QGraphicsItem*> gr
 
   if(m_graphicsItems.empty())
     return;
-    
-  int zValue = 0;
 
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
   EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
@@ -126,10 +122,6 @@ void te::layout::ObjectInspectorOutside::itemsInspector(QList<QGraphicsItem*> gr
   {
     if (item)
     {
-      zValue = 0;
-
-      zValue = item->zValue();
-
       ItemObserver* lItem = dynamic_cast<ItemObserver*>(item);
       if(lItem)
       {        
@@ -150,9 +142,7 @@ void te::layout::ObjectInspectorOutside::itemsInspector(QList<QGraphicsItem*> gr
         pro_class.setValue(lItem->getNameClass(), dataType->getDataTypeString());
         pro_class.setEditable(false);
         
-        m_layoutPropertyBrowser->addProperty(pro_class);
-     
-        zValue = itemObj->zValue();        
+        m_layoutPropertyBrowser->addProperty(pro_class);     
       }
     }
   }
@@ -184,4 +174,9 @@ void te::layout::ObjectInspectorOutside::selectItems( QList<QGraphicsItem*> grap
       }
     }
   }
+}
+
+te::layout::ObjectInspectorPropertyBrowser* te::layout::ObjectInspectorOutside::getObjectInspector()
+{
+  return m_layoutPropertyBrowser;
 }

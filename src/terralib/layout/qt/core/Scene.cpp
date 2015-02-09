@@ -745,3 +745,19 @@ void te::layout::Scene::redrawItems()
     }
   }
 }
+
+void te::layout::Scene::updateSelectedItemsPositions()
+{
+  QList<QGraphicsItem*> allItems = selectedItems();
+  foreach(QGraphicsItem *item, allItems) 
+  {
+    if(item)
+    {
+      ItemObserver* it = dynamic_cast<ItemObserver*>(item);
+      if(it)
+      {
+        it->refresh(); 
+      }
+    }
+  }
+}

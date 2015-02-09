@@ -286,12 +286,7 @@ namespace te
           \brief Reimplemented from QGraphicsView
         */
         virtual void drawForeground ( QPainter * painter, const QRectF & rect );
-
-        /*!
-          \brief Reimplemented from QGraphicsView
-        */
-        virtual bool	event ( QEvent * e );
-		
+        		
 		/*!
           \brief Groups selected objects
         */
@@ -301,7 +296,7 @@ namespace te
           \brief Method that delete Grouping object selected, but the individual objects continue to exist.
         */
         virtual void destroyItemGroup();
-        
+                
         virtual void resetDefaultConfig();
 
 		/*!
@@ -361,6 +356,7 @@ namespace te
         double                  m_height;
         bool                    m_isMoving;
         te::layout::MovingItemGroup* m_movingItemGroup;
+        bool                    m_updateItemPos;
         EnumType*               m_oldMode;
     };
   }
