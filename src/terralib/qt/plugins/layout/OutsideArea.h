@@ -41,6 +41,7 @@
 class QWidget;
 class QMenu;
 class QAction;
+class QStatusBar;
 
 namespace te
 {
@@ -61,7 +62,7 @@ namespace te
 
         public:
 
-	        OutsideArea(te::layout::View* view, QWidget* dockParent = 0, QMenu* mnuLayout = 0);
+	        OutsideArea(te::layout::View* view, QWidget* dockParent = 0, QMenu* mnuLayout = 0, QStatusBar* status = 0);
 	        virtual ~OutsideArea();
 
           PropertiesDock* getPropertiesDock();
@@ -82,6 +83,7 @@ namespace te
           virtual void onShowView();
           virtual void onHideView();
           virtual void onCloseView();
+          virtual void onRefreshStatusBar();
 
         signals:
 
@@ -112,6 +114,7 @@ namespace te
           QMenu* m_parentMenu;
           te::layout::View* m_view;
           te::layout::ToolbarOutside* m_toolbar;
+          QStatusBar* m_statusBar;
 
           /* Menu options */
       

@@ -73,6 +73,8 @@ te::layout::Scene::Scene( QObject* object):
 
 te::layout::Scene::~Scene()
 {
+  m_moveWatches.clear();
+
   if(m_undoStack)
   {
     delete m_undoStack;
@@ -588,13 +590,18 @@ void te::layout::Scene::exportItemsToImage(std::string dir)
 
 bool te::layout::Scene::eventFilter( QObject * watched, QEvent * event )
 {
-  /*if(event->type() == QEvent::GraphicsSceneMousePress)
+  if(event->type() == QEvent::GraphicsSceneMousePress)
   {
     QGraphicsItem* item = dynamic_cast<QGraphicsItem*>(watched);
     if(item)
     {
       QList<QGraphicsItem*> its = selectedItems();
       m_moveWatches.clear();
+      if(its.empty())
+      {
+        QPointF pt = item->scenePos();
+        m_moveWatches[item] = pt;
+      }
       foreach(QGraphicsItem *item, its) 
       {
         QPointF pt = item->scenePos();
@@ -608,6 +615,23 @@ bool te::layout::Scene::eventFilter( QObject * watched, QEvent * event )
     QGraphicsItem* item = dynamic_cast<QGraphicsItem*>(watched);
     if(item)
     {
+      bool resultFound = false;
+      std::map<QGraphicsItem*, QPointF>::iterator it;
+      for(it = m_moveWatches.begin() ; it != m_moveWatches.end() ; ++it)
+      {
+        if(it->first == item)
+        {
+          resultFound = true;
+        }
+      }
+
+      if(!resultFound)
+      {
+        m_moveWatches.clear();
+        QPointF pt = item->scenePos();
+        m_moveWatches[item] = pt;
+      }
+
       m_moveWatched = true;
     }
   }
@@ -624,7 +648,7 @@ bool te::layout::Scene::eventFilter( QObject * watched, QEvent * event )
         m_moveWatched = false;
       }
     }
-  }*/
+  }
 
   return QGraphicsScene::eventFilter(watched, event);
 }
@@ -741,6 +765,22 @@ void te::layout::Scene::redrawItems()
         {
           it->redraw();
         }
+      }
+    }
+  }
+}
+
+void te::layout::Scene::updateSelectedItemsPositions()
+{
+  QList<QGraphicsItem*> allItems = selectedItems();
+  foreach(QGraphicsItem *item, allItems) 
+  {
+    if(item)
+    {
+      ItemObserver* it = dynamic_cast<ItemObserver*>(item);
+      if(it)
+      {
+        it->refresh(); 
       }
     }
   }

@@ -44,6 +44,8 @@
 te::qt::plugins::layout::MainLayout::MainLayout() :
   m_view(0),
   m_dockLayoutDisplay(0),
+  m_groupBox(0),
+  m_statusBar(0),
   m_buildContext(0),
   m_outsideArea(0),
   m_buildEnums(0),
@@ -128,7 +130,7 @@ void te::qt::plugins::layout::MainLayout::init(QWidget* mainWindow, QMenu* mnuLa
     
   if(!m_outsideArea)
   {
-    m_outsideArea = new OutsideArea(m_view, mainWindow, mnuLayout);
+    m_outsideArea = new OutsideArea(m_view, mainWindow, mnuLayout, m_statusBar);
     m_outsideArea->connect(m_outsideArea, SIGNAL(exit()), m_dockLayoutDisplay, SLOT(onExit()));
   }
 
@@ -148,7 +150,7 @@ void te::qt::plugins::layout::MainLayout::createDockLayoutDisplay(QWidget* mainW
 
       m_statusBar = new QStatusBar;
       m_statusBar->setMinimumSize(200, 10);
-      m_statusBar->showMessage("TerraPrint. Terralib 5 - Ready...");
+      m_statusBar->showMessage("Map Layout - TerraLib 5");
 
       QVBoxLayout* vLayout = new QVBoxLayout;
       vLayout->addWidget(view);

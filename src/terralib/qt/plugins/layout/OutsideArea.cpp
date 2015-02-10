@@ -39,12 +39,16 @@
 #include "../../../layout/outside/ToolbarController.h"
 #include "../../../layout/core/pattern/mvc/OutsideObserver.h"
 
+// STL
+#include <string>
+
 // Qt
 #include <QMainWindow>
 #include <QMenu>
 #include <QAction>
+#include <QStatusBar>
 
-te::qt::plugins::layout::OutsideArea::OutsideArea( te::layout::View* view, QWidget* dockParent, QMenu* mnuLayout) :
+te::qt::plugins::layout::OutsideArea::OutsideArea( te::layout::View* view, QWidget* dockParent, QMenu* mnuLayout, QStatusBar* status) :
   m_dockParent(dockParent),
   m_dockProperties(0),
   m_dockInspector(0),
@@ -53,6 +57,7 @@ te::qt::plugins::layout::OutsideArea::OutsideArea( te::layout::View* view, QWidg
   m_parentMenu(mnuLayout),
   m_view(view),
   m_toolbar(0),
+  m_statusBar(status),
   m_optionNew("mnu_main_new"),
   m_optionUpdate("mnu_main_update"),
   m_optionImportJSON("mnu_main_import_json"),
@@ -122,6 +127,7 @@ void te::qt::plugins::layout::OutsideArea::init()
     connect(m_view, SIGNAL(closeView()), this, SLOT(onCloseView()));
     connect(m_view, SIGNAL(showView()), this, SLOT(onShowView()));
     connect(this, SIGNAL(changeMenuContext(bool)), m_view, SLOT(onMainMenuChangeContext(bool)));
+    connect(m_view, SIGNAL(changeContext()), this, SLOT(onRefreshStatusBar()));
   }
 
   createPropertiesDock();
@@ -524,4 +530,33 @@ void te::qt::plugins::layout::OutsideArea::onCloseView()
   closeMainMenu();
   m_view->closeOutsideWindows();
   emit exit();
+}
+
+void te::qt::plugins::layout::OutsideArea::onRefreshStatusBar()
+{
+  if(!m_statusBar)
+  {
+    return;
+  }
+
+  te::layout::EnumType* mode = te::layout::Context::getInstance().getMode();
+
+  std::string msg;
+
+  if(mode == te::layout::Enums::getInstance().getEnumModeType()->getModeNone())
+  {
+    msg = "Map Layout - TerraLib 5";
+    m_statusBar->showMessage(msg.c_str());
+    return;
+  }
+  
+  msg = "Map Layout - TerraLib 5 | Context: ";
+  
+  std::string s_mode = mode->getLabel();
+  if(s_mode.compare("") == 0)
+  {
+    s_mode = mode->getName();
+  }
+  msg += s_mode;
+  m_statusBar->showMessage(msg.c_str());
 }
