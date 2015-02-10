@@ -105,11 +105,11 @@ te::addressgeocoding::MainWindowDialog::MainWindowDialog(QWidget* parent, Qt::Wi
   connect(m_ui->m_cancelPushButton, SIGNAL(clicked()), this, SLOT(onCancelPushButtonClicked()));
 
 // Load the Address file Name.
-  std::map<std::string, std::vector<std::string> > mapFields;
-  GetAddressFilePathToSettings(mapFields);
-  std::map<std::string, std::vector<std::string> >::iterator it = mapFields.begin();
+  //std::map<std::string, std::vector<std::string> > mapFields;
+  GetAddressFilePathToSettings(m_mapFields);
+  std::map<std::string, std::vector<std::string> >::iterator it = m_mapFields.begin();
 
-  while(it != mapFields.end())
+  while(it != m_mapFields.end())
   {
     m_ui->m_inputAddressComboBox->addItem(QString(it->first.c_str()));
     ++it;
@@ -242,15 +242,15 @@ void te::addressgeocoding::MainWindowDialog::onAddressComboBoxChanged(int index)
     return;
   }
 
-  std::map<std::string, std::vector<std::string> > mapFields;
-  GetAddressFilePathToSettings(mapFields);
   std::map<std::string, std::vector<std::string> >::iterator it;
 
   std::string value = m_ui->m_inputAddressComboBox->itemText(index).toStdString();
 
-  it = mapFields.find(value);
+  it = m_mapFields.find(value);
   m_addressFile = it->first;
   std::vector<std::string> vecFields = it->second;
+
+  m_associatedProps.clear();
 
   for(std::size_t i = 0; i < vecFields.size(); ++i)
   {
@@ -259,7 +259,7 @@ void te::addressgeocoding::MainWindowDialog::onAddressComboBoxChanged(int index)
     if(i == 0)
       GetAddressDataSource(vecFields[i]);
     if(i == 2)
-      m_streetNumber = mapFields.begin()->second[i];
+      m_streetNumber = m_mapFields.begin()->second[i];
   }
 
   m_ui->m_editAddressFileToolButton->setEnabled(true);
@@ -469,7 +469,7 @@ void te::addressgeocoding::MainWindowDialog::onOkPushButtonClicked()
                               m_initialRight,
                               m_finalRight);
 
-  std::string outputdataset;
+  std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toStdString();
   
   te::da::DataSourcePtr outputDataSource;
   bool res;
@@ -478,8 +478,7 @@ void te::addressgeocoding::MainWindowDialog::onOkPushButtonClicked()
   {
     if(m_toFile)
     {
-      outputdataset = m_ui->m_repositoryLineEdit->text().toStdString();
-      boost::filesystem::path uri(outputdataset);
+      boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toStdString());
 
       if (boost::filesystem::exists(uri))
       {
@@ -545,7 +544,6 @@ void te::addressgeocoding::MainWindowDialog::onOkPushButtonClicked()
     }
     else
     {
-      outputdataset = m_ui->m_newLayerNameLineEdit->text().toStdString();
       outputDataSource = te::da::GetDataSource(m_outputDatasource->getId());
       if (!outputDataSource)
       {
@@ -580,6 +578,14 @@ void te::addressgeocoding::MainWindowDialog::onOkPushButtonClicked()
       outputDataSource->close();
 
     }
+
+// creating a layer for the result
+    te::da::DataSourcePtr outDataSource = te::da::GetDataSource(m_outputDatasource->getId());
+    
+    te::qt::widgets::DataSet2Layer converter(m_outputDatasource->getId());
+      
+    te::da::DataSetTypePtr dt(outDataSource->getDataSetType(outputdataset).release());
+    m_resultLayer = converter(dt);
 
   }
   catch(const std::exception& e)
