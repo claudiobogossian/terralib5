@@ -189,7 +189,7 @@ void te::layout::PropertiesOutside::itemsSelected(QList<QGraphicsItem*> graphics
   
   foreach( Property prop, props->getProperties()) 
   {
-    if(prop.isMenu())
+    if(prop.isMenu() || !prop.isVisible())
       continue;
 
     checkDynamicProperty(prop, allItems);
@@ -233,9 +233,6 @@ void te::layout::PropertiesOutside::onChangePropertyValue( Property property )
             QUndoCommand* command = new ChangePropertyCommand(item, oldCommand, newCommand, this);
             lScene->addUndoStack(command);
           }
-
-          delete props;
-          props = 0;
         }       
       }
     }

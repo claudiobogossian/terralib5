@@ -123,7 +123,7 @@ void te::layout::MenuItem::createMenu( QList<QGraphicsItem*> items )
 
   foreach(Property prop, m_properties->getProperties()) 
   {
-    if(!prop.isMenu())
+    if(!prop.isMenu() || !prop.isVisible())
       continue;
 
     std::string label = prop.getLabel();
@@ -595,9 +595,6 @@ void te::layout::MenuItem::changePropertyValue( Property property )
             QUndoCommand* command = new ChangePropertyCommand(item, oldCommand, newCommand);
             lScene->addUndoStack(command);
           }
-
-          delete props;
-          props = 0;
         }       
       }
     }

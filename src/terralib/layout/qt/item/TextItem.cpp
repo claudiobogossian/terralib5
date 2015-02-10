@@ -36,6 +36,8 @@
 #include "../../../common/STLUtils.h"
 #include "../../core/pattern/singleton/Context.h"
 #include "../../item/TextModel.h"
+#include "../../core/property/Properties.h"
+#include "../core/pattern/command/ChangePropertyCommand.h"
 
 // STL
 #include <string>
@@ -139,7 +141,8 @@ void te::layout::TextItem::updateObserver( ContextItem context )
 
   m_document->setDefaultFont(qft);
   
-  refreshDocument();
+  std::string txt = model->getText();
+  m_document->setPlainText(txt.c_str());
 
   update();
 }
@@ -432,7 +435,30 @@ void te::layout::TextItem::setEditable( bool editable )
 void te::layout::TextItem::resetEdit()
 {
   m_editable = false;
-  refreshDocument();
+
+  TextModel* model = dynamic_cast<TextModel*>(m_model);
+  if(model)
+  {
+    if(model->getText().compare(m_document->toPlainText().toStdString()) != 0)
+    {
+      Properties* beforeProps = getProperties();
+      Properties* oldCommand = new Properties(*beforeProps);
+
+      refreshDocument();
+
+      beforeProps = getProperties();
+      Properties* newCommand = new Properties(*beforeProps);
+
+      QUndoCommand* command = new ChangePropertyCommand(this, oldCommand, newCommand);
+
+      Scene* sc = dynamic_cast<Scene*>(scene());
+      if(sc)
+      {
+        sc->addUndoStack(command);
+      }
+    }
+  }
+
   /*Necessary clear the selection and focus of the edit 
   after being completely closed and like this not cause bad behavior.*/
   QTextCursor cursor(textCursor());
