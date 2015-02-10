@@ -36,7 +36,7 @@
 te::qt::plugins::layout::ObjectInspectorDock::ObjectInspectorDock( QWidget * parent /*= 0*/, Qt::WindowFlags flags /*= 0*/ ) :
   QDockWidget(parent, flags)
 {
-  setWindowTitle("Layout - Object Inspector");
+  setWindowTitle("Object Inspector");
   setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
 
   create();

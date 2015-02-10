@@ -36,7 +36,7 @@ te::qt::plugins::layout::PropertiesDock::PropertiesDock( QWidget * parent, Qt::W
 	QDockWidget(parent, flags)
 {
   setVisible(false);
-  setWindowTitle("Layout - Propriedades");
+  setWindowTitle("Properties");
   setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
 
 	create();
