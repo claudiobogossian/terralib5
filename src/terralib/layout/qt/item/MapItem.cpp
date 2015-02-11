@@ -90,8 +90,7 @@ te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
   m_tool(0),
   m_wMargin(0),
   m_hMargin(0),
-  m_layer(0),
-  m_move(false)
+  m_layer(0)
 {
   this->setFlags(QGraphicsItem::ItemIsMovable
     | QGraphicsItem::ItemIsSelectable
@@ -119,6 +118,7 @@ te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
 
   m_mapSize = QSize(box.getWidth(), box.getHeight());
   m_mapDisplay = new te::qt::widgets::MultiThreadMapDisplay(m_mapSize, true);
+  m_mapDisplay->setSynchronous(true);
   m_mapDisplay->setAcceptDrops(true);
   m_mapDisplay->setBackgroundColor(Qt::gray);
   m_mapDisplay->setResizeInterval(0);
@@ -225,19 +225,15 @@ void te::layout::MapItem::updateObserver( ContextItem context )
 
 QPointF remapPointToViewport(const QPointF& point, const QRectF& item, const QRectF& widget)
 {
-	QMatrix matrix;
-    double resX = widget.width() / item.width();
-    double resY = widget.height() / item.height();
+  double resX = widget.width() / item.width();
+  double resY = widget.height() / item.height();
 
-	double mappedX = point.x() - item.x();
-	mappedX *= resX;
+  QMatrix matrix;
+  matrix.scale(resX, -resY);
+  matrix.translate(-item.bottomLeft().x(), -item.bottomLeft().y());
 
-	double mappedY = point.y() - item.y();
-	mappedY *= resY;
-	mappedY = widget.height() - mappedY;
-	
-	QPointF remappedPoint(mappedX, mappedY);
-	return remappedPoint;
+  QPointF remappedPoint = matrix.map(point);
+  return remappedPoint;
 }
 
 void te::layout::MapItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
@@ -397,7 +393,6 @@ te::gm::Coord2D te::layout::MapItem::getPosition()
 
 void te::layout::MapItem::mouseMoveEvent( QGraphicsSceneMouseEvent * event )
 {
-  m_move = true;
   ItemUtils* iUtils = Context::getInstance().getItemUtils();
   if(!iUtils)
     return;
@@ -618,22 +613,6 @@ void te::layout::MapItem::changeCurrentTool( EnumType* mode )
   }
 }
 
-QVariant te::layout::MapItem::itemChange( GraphicsItemChange change, const QVariant & value )
-{
-  if(change == QGraphicsItem::ItemPositionChange/* && !m_move */)
-  {
-    // value is the new position.
-  }
-  if(change == QGraphicsItem::ItemPositionHasChanged)
-  {
-    // value is the new position.
-    refresh();
-    m_move = false;
-  }
-
-  return QGraphicsProxyWidget::itemChange(change, value);
-}
-
 void te::layout::MapItem::applyRotation()
 {
   if(!m_model)
@@ -754,28 +733,6 @@ void te::layout::MapItem::updateProperties( te::layout::Properties* properties )
   {
     redraw();
   }
-}
-
-bool te::layout::MapItem::eventFilter( QObject * object, QEvent * event )
-{
-  /*
-    In the QGraphicsProxyWidget, move and resize, set the position value. 
-    In these cases there is no need to recalculate the position by transformation matrix. 
-    (The matrix is used because this object works with inverted matrix)
-  */
-
-  switch (event->type()) 
-  {
-  case QEvent::Resize:
-    m_move = true;
-    break;
-  case QEvent::Move:
-    m_move = true;
-    break;
-  default:
-    break;
-  }
-  return QGraphicsProxyWidget::eventFilter(object, event);
 }
 
 QRectF te::layout::MapItem::boundingRect() const

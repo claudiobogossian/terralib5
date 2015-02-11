@@ -36,7 +36,8 @@
 
 te::qt::widgets::MultiThreadMapDisplay::MultiThreadMapDisplay(const QSize& size, const bool& showFeedback, QWidget* parent, Qt::WindowFlags f)
   : te::qt::widgets::MapDisplay(size, parent, f),
-    m_showFeedback(showFeedback)
+    m_showFeedback(showFeedback),
+    m_synchronous(false)
 {
   setAttribute(Qt::WA_OpaquePaintEvent, true);
 }
@@ -106,6 +107,13 @@ void te::qt::widgets::MultiThreadMapDisplay::refresh()
     m_threads[i]->draw(it->get(), m_extent, m_srid, size(), i);
     i++;
   }
+
+  if(m_synchronous)
+  {
+    QEventLoop wait;
+    connect(this, SIGNAL(drawLayersFinished(const QMap<QString, QString>&)), &wait, SLOT(quit()));
+    wait.exec();
+  }
 }
 
 QPointF te::qt::widgets::MultiThreadMapDisplay::transform(const QPointF& p)
@@ -114,6 +122,11 @@ QPointF te::qt::widgets::MultiThreadMapDisplay::transform(const QPointF& p)
     return QPointF();
 
   return m_matrix.inverted().map(p);
+}
+
+void te::qt::widgets::MultiThreadMapDisplay::setSynchronous(bool on)
+{
+  m_synchronous = on;
 }
 
 void te::qt::widgets::MultiThreadMapDisplay::updateTransform()
@@ -154,8 +167,8 @@ void te::qt::widgets::MultiThreadMapDisplay::showFeedback(const QImage& image)
 {
   QPainter painter(m_displayPixmap);
   painter.setOpacity(0.1); // To improve user visual experience!
-  //painter.drawImage(0, 0, image);
-  painter.drawPixmap(0, 0, QPixmap::fromImage(image));
+  painter.drawImage(0, 0, image);
+  //painter.drawPixmap(0, 0, QPixmap::fromImage(image));
   repaint(); // or update()? Which is the best here?!
 }
 
@@ -165,8 +178,8 @@ void te::qt::widgets::MultiThreadMapDisplay::onDrawLayerFinished(const int& inde
   if(m_images.size() != m_visibleLayers.size())
   {
     QPainter painter(m_displayPixmap);
-    //painter.drawImage(0, 0, image);
-    painter.drawPixmap(0, 0, QPixmap::fromImage(image));
+    painter.drawImage(0, 0, image);
+    //painter.drawPixmap(0, 0, QPixmap::fromImage(image));
     painter.end();
 
     repaint();
@@ -184,8 +197,8 @@ void te::qt::widgets::MultiThreadMapDisplay::onDrawLayerFinished(const int& inde
   {
     painter.setCompositionMode((QPainter::CompositionMode)itLayer->get()->getCompositionMode());
 
-    painter.drawPixmap(0, 0, QPixmap::fromImage(it->second));
-    //painter.drawImage(0, 0, it->second);
+    painter.drawImage(0, 0, it->second);
+    //painter.drawPixmap(0, 0, QPixmap::fromImage(it->second));
 
     ++itLayer;
   }
