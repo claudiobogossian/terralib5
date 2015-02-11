@@ -251,7 +251,7 @@ void te::addressgeocoding::ConfigInputLayerDialog::onOkPushButtonClicked()
 
   m_dataSource->execute(createIndex);
 
-  this->close();
+  this->accept();
 }
 
 void te::addressgeocoding::ConfigInputLayerDialog::onCancelPushButtonClicked()
