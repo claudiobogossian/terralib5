@@ -178,16 +178,6 @@ namespace te
       virtual void resizeEvent ( QGraphicsSceneResizeEvent * event );
 
       /*!
-          \brief Reimplemented from QGraphicsProxyWidget
-       */
-      virtual QVariant	itemChange ( GraphicsItemChange change, const QVariant & value );
-
-      /*!
-          \brief Reimplemented from QGraphicsProxyWidget
-       */
-      virtual bool	eventFilter ( QObject * object, QEvent * event );
-      
-      /*!
           \brief Reimplemented from ItemObserver
        */
       virtual te::gm::Coord2D getPosition();
@@ -232,7 +222,6 @@ namespace te
       double                                  m_wMargin;
       double                                  m_hMargin;
       te::map::AbstractLayerPtr               m_layer;
-      bool                                    m_move;
     };
   }
 }
