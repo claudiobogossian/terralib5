@@ -139,7 +139,7 @@ std::string te::addressgeocoding::ConfigInputAddressDialog::getStreetType()
 
 void te::addressgeocoding::ConfigInputAddressDialog::setStreetType(std::string streetType)
 {
-  m_ui->m_sTypeComboBox->setCurrentText(streetType.c_str());
+  m_ui->m_sTypeComboBox->setCurrentIndex(m_ui->m_sTypeComboBox->findText(streetType.c_str()));
 }
 
 std::string te::addressgeocoding::ConfigInputAddressDialog::getStreetTitle()
@@ -149,7 +149,7 @@ std::string te::addressgeocoding::ConfigInputAddressDialog::getStreetTitle()
 
 void te::addressgeocoding::ConfigInputAddressDialog::setStreetTitle(std::string streetTitle)
 {
-  m_ui->m_sTitleComboBox->setCurrentText(streetTitle.c_str());
+  m_ui->m_sTitleComboBox->setCurrentIndex(m_ui->m_sTitleComboBox->findText(streetTitle.c_str()));
 }
 
 std::string te::addressgeocoding::ConfigInputAddressDialog::getStreetName()
@@ -159,7 +159,7 @@ std::string te::addressgeocoding::ConfigInputAddressDialog::getStreetName()
 
 void te::addressgeocoding::ConfigInputAddressDialog::setStreetName(std::string streetName)
 {
-  m_ui->m_sNameComboBox->setCurrentText(streetName.c_str());
+  m_ui->m_sNameComboBox->setCurrentIndex(m_ui->m_sNameComboBox->findText(streetName.c_str()));
 }
 
 std::string te::addressgeocoding::ConfigInputAddressDialog::getStreetNumber()
@@ -169,7 +169,7 @@ std::string te::addressgeocoding::ConfigInputAddressDialog::getStreetNumber()
 
 void te::addressgeocoding::ConfigInputAddressDialog::setStreetNumber(std::string streetNumber)
 {
-  m_ui->m_sNumberComboBox->setCurrentText(streetNumber.c_str());
+  m_ui->m_sNumberComboBox->setCurrentIndex(m_ui->m_sNumberComboBox->findText(streetNumber.c_str()));
 }
 
 std::string te::addressgeocoding::ConfigInputAddressDialog::getStreetNeighborhood()
@@ -179,7 +179,7 @@ std::string te::addressgeocoding::ConfigInputAddressDialog::getStreetNeighborhoo
 
 void te::addressgeocoding::ConfigInputAddressDialog::setStreetNeighborhood(std::string streetNeighborhood)
 {
-  m_ui->m_sNeighborhoodComboBox->setCurrentText(streetNeighborhood.c_str());
+  m_ui->m_sNeighborhoodComboBox->setCurrentIndex(m_ui->m_sNeighborhoodComboBox->findText(streetNeighborhood.c_str()));
 }
 
 std::string te::addressgeocoding::ConfigInputAddressDialog::getStreetPostalCode()
@@ -189,7 +189,7 @@ std::string te::addressgeocoding::ConfigInputAddressDialog::getStreetPostalCode(
 
 void te::addressgeocoding::ConfigInputAddressDialog::setStreetPostalCode(std::string streetPostalCode)
 {
-  m_ui->m_sPostalCodeComboBox->setCurrentText(streetPostalCode.c_str());
+  m_ui->m_sPostalCodeComboBox->setCurrentIndex(m_ui->m_sPostalCodeComboBox->findText(streetPostalCode.c_str()));
 }
 
 void te::addressgeocoding::ConfigInputAddressDialog::onHelpPushButtonClicked()

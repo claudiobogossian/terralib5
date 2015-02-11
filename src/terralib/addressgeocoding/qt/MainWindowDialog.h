@@ -127,7 +127,7 @@ namespace te
         std::string m_finalRight;
 
         te::da::DataSourcePtr m_addressDataSource;
-        std::map<std::string, std::vector<std::string>> m_mapFields;
+        std::map<std::string, std::vector<std::string> > m_mapFields;
         std::string m_addressFile;
         std::vector<std::string> m_associatedProps;
         std::string m_streetNumber;

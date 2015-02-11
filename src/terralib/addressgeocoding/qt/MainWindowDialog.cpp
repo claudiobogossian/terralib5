@@ -55,11 +55,7 @@
 
 // Qt
 #include <QFileDialog>
-#include <QList>
-#include <QListWidget>
-#include <QListWidgetItem>
 #include <QMessageBox>
-#include <QTreeWidget>
 #include <QSettings>
 
 // Boost
@@ -105,7 +101,6 @@ te::addressgeocoding::MainWindowDialog::MainWindowDialog(QWidget* parent, Qt::Wi
   connect(m_ui->m_cancelPushButton, SIGNAL(clicked()), this, SLOT(onCancelPushButtonClicked()));
 
 // Load the Address file Name.
-  //std::map<std::string, std::vector<std::string> > mapFields;
   GetAddressFilePathToSettings(m_mapFields);
   std::map<std::string, std::vector<std::string> >::iterator it = m_mapFields.begin();
 
