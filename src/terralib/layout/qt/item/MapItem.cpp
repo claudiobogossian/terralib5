@@ -225,18 +225,14 @@ void te::layout::MapItem::updateObserver( ContextItem context )
 
 QPointF remapPointToViewport(const QPointF& point, const QRectF& item, const QRectF& widget)
 {
-  QMatrix matrix;
   double resX = widget.width() / item.width();
   double resY = widget.height() / item.height();
 
-  double mappedX = point.x() - item.x();
-  mappedX *= resX;
+  QMatrix matrix;
+  matrix.scale(resX, -resY);
+  matrix.translate(-item.bottomLeft().x(), -item.bottomLeft().y());
 
-  double mappedY = point.y() - item.y();
-  mappedY *= resY;
-  mappedY = widget.height() - mappedY;
-
-  QPointF remappedPoint(mappedX, mappedY);
+  QPointF remappedPoint = matrix.map(point);
   return remappedPoint;
 }
 
