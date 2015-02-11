@@ -102,6 +102,8 @@ namespace te
           */
           virtual QPointF transform(const QPointF& p);
 
+          void setSynchronous(bool on);
+
         private:
 
           void updateTransform();
@@ -157,6 +159,7 @@ namespace te
           std::map<int, QImage> m_images;                       //!< The set of images built by each thread. It will be used to compose the final result, keeping the layer list order.
           bool m_showFeedback;                                  //!< A flag that indicates if the map display will show drawing feedback.
           QMatrix m_matrix;                                     //!<  Used to convert screen coordinates to world coordinates.
+          bool m_synchronous;                                   //!< A flag that indicates if the map display is  synchronous or asynchronous.
       };
 
     } // end namespace widgets
