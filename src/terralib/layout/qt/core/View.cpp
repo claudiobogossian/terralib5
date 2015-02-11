@@ -53,6 +53,8 @@
 #include <QDebug>
 #include <QMessageBox>
 #include <QFileDialog>
+#include <QPainterPath>
+#include <QEvent>
 
 te::layout::View::View( QWidget* widget) : 
   QGraphicsView(new QGraphicsScene, widget),
@@ -65,12 +67,21 @@ te::layout::View::View( QWidget* widget) :
   m_maxZoomLimit(29.),
   m_minZoomLimit(0.9),
   m_width(-1),
-  m_height(-1)
+  m_height(-1),
+  m_isMoving(false),
+  m_movingItemGroup(0),
+  m_updateItemPos(false),
+  m_oldMode(0)
 {
   setDragMode(RubberBandDrag);
 
   m_horizontalRuler = new HorizontalRuler;
   m_verticalRuler = new VerticalRuler;
+
+  if(Enums::getInstance().getEnumModeType())
+  {
+    m_oldMode = Enums::getInstance().getEnumModeType()->getModeNone();
+  }
 }
 
 te::layout::View::~View()
@@ -117,6 +128,35 @@ void te::layout::View::mousePressEvent( QMouseEvent * event )
   if(!sc)
     return;
 
+  if (m_isMoving == false)
+  {
+    QList<QGraphicsItem*> selectedItems = sc->selectedItems();
+
+    int size = selectedItems.size();
+
+    if (selectedItems.size() > 1)
+    {
+      bool isInvertedMatrix = false;
+      foreach(QGraphicsItem* item, selectedItems)
+      {
+        ItemObserver* observer = dynamic_cast<ItemObserver*> (item);
+        if (observer)
+        {
+          if (observer->isInvertedMatrix() == true)
+          {
+            isInvertedMatrix = true;
+          }
+        }
+      }
+
+      if (isInvertedMatrix == true)
+      {
+        m_movingItemGroup = sc->createMovingItemGroup(selectedItems);
+        m_isMoving = true;
+      }
+    }
+  }
+
   EnumModeType* mode = Enums::getInstance().getEnumModeType();
 
   if(Context::getInstance().getMode() == mode->getModeNone())
@@ -127,6 +167,11 @@ void te::layout::View::mousePressEvent( QMouseEvent * event )
 
 void te::layout::View::mouseMoveEvent( QMouseEvent * event )
 {
+  if (event->modifiers() & Qt::ControlModifier)
+  {
+    return;
+  }
+
   QGraphicsView::mouseMoveEvent(event);
 
   Scene* sc = dynamic_cast<Scene*>(scene());
@@ -134,18 +179,64 @@ void te::layout::View::mouseMoveEvent( QMouseEvent * event )
   if(!sc)
     return;
 
-   QPointF pt = mapToScene(event->pos());
+  if(!scene()->selectedItems().empty())
+  {
+    m_updateItemPos = true;
+  }
+  else
+  {
+    m_updateItemPos = false;
+  }
+
+  QPointF pt = mapToScene(event->pos());
    
-   emit changeSceneCoordMouse(pt);
+  emit changeSceneCoordMouse(pt);
+
+  if(m_oldMode != Context::getInstance().getMode())
+  {
+    m_oldMode = Context::getInstance().getMode();
+    emit changeContext();
+  }
 }
 
 void te::layout::View::mouseReleaseEvent( QMouseEvent * event )
 {
   QGraphicsView::mouseReleaseEvent(event);
 
-  /* The Properties only load when selection change and mouse release */
-  if(!m_selectionChange)
+  Scene* sc = dynamic_cast<Scene*>(scene());
+
+  if(!sc)
     return;
+
+  if (m_isMoving == true)
+  {
+    QList<QGraphicsItem*> selectedItems = m_movingItemGroup->childItems();
+
+    sc->destroyItemGroup(m_movingItemGroup);
+    m_movingItemGroup = 0;
+    m_isMoving = false;
+
+    sc->clearSelection();
+
+    foreach (QGraphicsItem* item, selectedItems)
+    {
+      if (item->isSelected())
+      {
+        item->setSelected(false);
+      }
+    }
+
+    sc->selectItems(selectedItems);
+  }
+  
+  /* The Properties only load when selection change and mouse release */
+  if(!m_selectionChange && !m_updateItemPos)
+    return;
+
+  if(m_updateItemPos)
+  {
+    sc->updateSelectedItemsPositions();
+  }
 
   emit reloadProperties();
   m_selectionChange = false;
@@ -501,6 +592,14 @@ void te::layout::View::outsideAreaChangeContext( bool change )
   {
     exportItemsToImage();
   }
+  else if(mode == enumMode->getModeExit())
+  {
+    close();
+  }
+  else if(mode == enumMode->getModeExportToPDF())
+  {
+    exportToPDF();
+  }
 }
 
 void te::layout::View::hideEvent( QHideEvent * event )
@@ -761,6 +860,23 @@ void te::layout::View::zoomPercentage()
   setTransform(mtrx);
 }
 
+void te::layout::View::exportToPDF()
+{
+  Scene* scne = dynamic_cast<Scene*>(scene());
+
+  resetDefaultConfig();
+
+  // No update Widget while print is running
+  setUpdatesEnabled(false);
+
+  // Rulers aren't print
+  m_visibleRulers = false;
+  scne->getPrintScene()->exportToPDF();
+  m_visibleRulers = true;
+
+  setUpdatesEnabled(true);
+}
+
 bool te::layout::View::isExceededLimit(double currentScale, double factor, double oldFactor)
 {
   // Zoom in / Zoom Out
@@ -857,6 +973,20 @@ bool te::layout::View::importTemplate( EnumType* type )
 
 void te::layout::View::exportItemsToImage()
 {
+  Scene* scne = dynamic_cast<Scene*>(scene());
+  if(!scne)
+    return;
+
+  QMessageBox msgBox;
+
+  if(scne->selectedItems().empty())
+  {
+    msgBox.setIcon(QMessageBox::Warning);
+    msgBox.setText("Select at least one component!"); 
+    msgBox.exec();
+    return;
+  }
+
   QFileDialog dialog(this);
   dialog.setGeometry(QRect(this->width()/4, this->height()/4, this->width()/2, this->height()/2));
   QString dir = dialog.getExistingDirectory(this, tr("Open Directory"), 
@@ -867,11 +997,11 @@ void te::layout::View::exportItemsToImage()
 
   std::string dirName = dir.toStdString();
 
-  Scene* scne = dynamic_cast<Scene*>(scene());
-  if(!scne)
-    return;
-
   scne->exportItemsToImage(dirName);
+
+  msgBox.setIcon(QMessageBox::Information);
+  msgBox.setText("Successfully exported images!"); 
+  msgBox.exec();
 }
 
 void te::layout::View::changeZoomFactor( double currentZoom )
@@ -898,7 +1028,7 @@ void te::layout::View::onSelectionItem( std::string name )
   if(!scne)
     return;
 
-  scne->selectionItem(name);
+  scne->selectItem(name);
 
   emit reloadProperties();
   m_selectionChange = false;

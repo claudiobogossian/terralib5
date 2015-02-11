@@ -71,24 +71,17 @@ te::layout::TextItem::TextItem( ItemController* controller, Observable* o ) :
   m_nameClass = std::string(this->metaObject()->className());
   Context::getInstance().getScene()->insertItem((ItemObserver*)item);
 
-  m_document = new QTextDocument;
+  m_document = new QTextDocument(this);
   setDocument(m_document);
 
   m_backgroundColor.setAlpha(0);
 
   init();
-  
-  //If enabled is true, this item will accept hover events
-  setTextInteractionFlags(Qt::TextEditable);
 }
 
 te::layout::TextItem::~TextItem()
 {
-  if(m_document)
-  {
-    delete m_document;
-    m_document = 0;
-  }
+
 }
 
 void te::layout::TextItem::init()
@@ -180,6 +173,8 @@ void te::layout::TextItem::drawBackground( QPainter* painter )
 
   painter->save();
   painter->setPen(Qt::NoPen);
+  painter->setBrush(QBrush(m_backgroundColor));
+  painter->setBackground(QBrush(m_backgroundColor));
   painter->setRenderHint( QPainter::Antialiasing, true );
   painter->drawRect(QRectF( 0, 0, boundingRect().width(), boundingRect().height()));
   painter->restore();
@@ -224,17 +219,14 @@ QImage te::layout::TextItem::createImage()
     return ig;
   }
 
-  double zoomFactor = Context::getInstance().getZoomFactor();
+  //The text size automatically resized by QGraphicsTextItem 
+  //depending on the zoom level
+  // So it is not necessary to calculate a new value for the font size
   QFont ft = m_document->defaultFont();
-
-  if(zoomFactor > 1.)
-  {
-    Font fot = model->getFont();
-
-    int pts = (int)fot.getPointSize() * zoomFactor;
-    ft.setPointSize(pts);
-    m_document->setDefaultFont(ft);
-  }
+  Font fot = model->getFont();
+  int pts = (int)fot.getPointSize();
+  ft.setPointSize(pts);
+  m_document->setDefaultFont(ft);
 
   double w = m_document->size().width();
   double h = m_document->size().height();
@@ -316,7 +308,19 @@ int te::layout::TextItem::getZValueItem()
 
 void te::layout::TextItem::applyRotation()
 {
+  if(!m_model)
+    return;
 
+  ItemModelObservable* model = dynamic_cast<ItemModelObservable*>(m_model);
+  if(!model)
+    return;
+
+  double angle = model->getAngle();
+
+  if(angle == model->getOldAngle())
+    return;
+
+  setRotation(angle);
 }
 
 QVariant te::layout::TextItem::itemChange( GraphicsItemChange change, const QVariant & value )
@@ -333,10 +337,17 @@ QVariant te::layout::TextItem::itemChange( GraphicsItemChange change, const QVar
     newPos.setY(newPos.y() - transform().dy() + h);
     return newPos;
   }
-  if(change == QGraphicsItem::ItemPositionHasChanged)
+  else if(change == QGraphicsItem::ItemPositionHasChanged)
   {
     refresh();
     m_move = false;
+  }
+  else if(change == QGraphicsItem::ItemSelectedHasChanged)
+  {
+    if(m_editable && isSelected() == false)
+    {
+      resetEdit();
+    }
   }
 
   return QGraphicsTextItem::itemChange(change, value);
@@ -344,40 +355,30 @@ QVariant te::layout::TextItem::itemChange( GraphicsItemChange change, const QVar
 
 void te::layout::TextItem::keyPressEvent( QKeyEvent * event )
 {
-  if((event->modifiers() == Qt::AltModifier) & (event->key() == Qt::Key_E))
-  {
-    if(m_editable == false)
-    {
-      m_editable = true;
-    }
-    else
-    {
-      m_editable = false;
-      refreshDocument();
-      /*Necessary clear the selection and focus of the edit 
-      after being completely closed and like this not cause bad behavior.*/
-      QTextCursor cursor(textCursor());
-      cursor.clearSelection();
-      setTextCursor(cursor);
-      clearFocus();     
-      setSelected(true);
-    }
-  }
-  else
-  {
-    if(m_editable == true)
-      QGraphicsTextItem::keyPressEvent(event);
-  }
+  if(m_editable == true)
+    QGraphicsTextItem::keyPressEvent(event);
 }
 
 void te::layout::TextItem::mouseDoubleClickEvent( QGraphicsSceneMouseEvent * event )
 {
-  if(m_editable == false)
+  if(event->button() == Qt::LeftButton)
   {
-    QGraphicsItem::mouseDoubleClickEvent(event);
-    return;
+    m_editable = !m_editable;
+    if(m_editable)
+    {
+      //If enabled is true, this item will accept hover events
+      setTextInteractionFlags(Qt::TextEditable);
+      setFocus();
+      setCursor(QCursor(Qt::IBeamCursor));
+      QTextCursor cursor(textCursor());
+      cursor.clearSelection();
+      setTextCursor(cursor);
+    }
+    else
+    {
+      setCursor(Qt::ArrowCursor);
+    }
   }
-  QGraphicsTextItem::mouseDoubleClickEvent(event);
 }
 
 void te::layout::TextItem::mouseMoveEvent( QGraphicsSceneMouseEvent * event )
@@ -421,4 +422,28 @@ void te::layout::TextItem::getDocumentSizeMM( double &w, double &h )
   QImage img = createImage();
   w = img.widthMM();
   h = img.heightMM();
+}
+
+void te::layout::TextItem::setEditable( bool editable )
+{
+  m_editable = editable;
+}
+
+void te::layout::TextItem::resetEdit()
+{
+  m_editable = false;
+  refreshDocument();
+  /*Necessary clear the selection and focus of the edit 
+  after being completely closed and like this not cause bad behavior.*/
+  QTextCursor cursor(textCursor());
+  cursor.clearSelection();
+  setTextInteractionFlags(Qt::NoTextInteraction);
+  unsetCursor();
+  clearFocus();     
+}
+
+bool te::layout::TextItem::contains( const QPointF & point ) const
+{
+  te::gm::Envelope box(point.x(), point.y(), point.x(), point.y());
+  return m_model->getBox().contains(box);
 }

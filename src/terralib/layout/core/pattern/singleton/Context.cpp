@@ -49,7 +49,7 @@ te::layout::Context::Context() :
   m_utils(0),
   m_dpiX(96),
   m_dpiY(96),
-  m_version("TerraPrintQt4_1.0.0"),
+  m_version("MAPLayoutQt5_1.0.0"),
   m_paperConfig(0),
   m_buildGraphicsItem(0),
   m_systematicConfig(0),
@@ -57,8 +57,11 @@ te::layout::Context::Context() :
   m_itemUtils(0)
 {
   EnumModeType* type = Enums::getInstance().getEnumModeType();
-  m_mode = type->getModeNone();
-  m_lineIntersectionMouseMode = type->getModeOffLinesIntersectionMouse();
+  if(type)
+  {
+    m_mode = type->getModeNone();
+    m_lineIntersectionMouseMode = type->getModeOffLinesIntersectionMouse();
+  }
 }
 
 te::layout::Context::~Context()
@@ -68,6 +71,14 @@ te::layout::Context::~Context()
 
 te::layout::EnumType* te::layout::Context::getMode()
 {
+  if(!m_mode)
+  {
+    EnumModeType* type = Enums::getInstance().getEnumModeType();
+    if(type)
+    {
+      m_mode = type->getModeNone();
+    }
+  }
   return m_mode;
 }
 

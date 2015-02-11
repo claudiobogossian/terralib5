@@ -49,12 +49,16 @@ te::layout::ItemModelObservable::ItemModelObservable() :
   m_name("unknown"),
   m_resizable(true),
   m_angle(0),
-  m_hashCode(0)
+  m_hashCode(0),
+  m_oldAngle(0)
 {
   EnumObjectType* type = Enums::getInstance().getEnumObjectType();
   m_type = type->getObjectUnknown();
 
   m_box = te::gm::Envelope(0,0,0,0);
+
+  m_oldPos.x = 0.;
+  m_oldPos.y = 0.;
 
   m_backgroundColor = te::color::RGBAColor(255, 255, 255, 0);
 
@@ -247,6 +251,9 @@ std::string te::layout::ItemModelObservable::getName()
 
 void te::layout::ItemModelObservable::setPosition( const double& x, const double& y )
 {
+  m_oldPos.x = m_box.m_llx;
+  m_oldPos.y = m_box.m_lly;
+
   //Initial point to draw is : x1, y1, that corresponds 0,0 of local coordinate of a item  
   double x1 = x; 
   double x2 = x + m_box.getWidth();
@@ -286,6 +293,7 @@ void te::layout::ItemModelObservable::updateProperties( te::layout::Properties* 
   Property pro_angle = vectorProps->contains(m_sharedProps->getAngle());
   if(!pro_angle.isNull())
   {
+    m_oldAngle = m_angle;
     m_angle = pro_angle.getValue().toDouble();
   }
 
@@ -306,12 +314,14 @@ void te::layout::ItemModelObservable::updateProperties( te::layout::Properties* 
   Property pro_x1 = vectorProps->contains(m_sharedProps->getX1());
   if(!pro_x1.isNull())
   {
+    m_oldPos.x = m_box.m_llx;
     m_box.m_llx = pro_x1.getValue().toDouble();
   }
 
   Property pro_y1 = vectorProps->contains(m_sharedProps->getY1());
   if(!pro_y1.isNull())
   {
+    m_oldPos.y = m_box.m_lly;
     m_box.m_lly = pro_y1.getValue().toDouble();
   }
 
@@ -431,6 +441,7 @@ void te::layout::ItemModelObservable::drawBackground( ContextItem context )
 
 void te::layout::ItemModelObservable::setAngle( double angle )
 {
+  m_oldAngle = m_angle;
   m_angle = angle;
 }
 
@@ -489,3 +500,14 @@ int te::layout::ItemModelObservable::calculateHashCode()
 
   return hashcode;
 }
+
+double te::layout::ItemModelObservable::getOldAngle()
+{
+  return m_oldAngle;
+}
+
+te::gm::Coord2D te::layout::ItemModelObservable::getOldPos()
+{
+  return m_oldPos;
+}
+

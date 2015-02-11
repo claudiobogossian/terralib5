@@ -124,6 +124,10 @@ namespace te
       virtual QToolButton* getDrawMapToolButton();
 
       virtual QToolButton* getObjectToImageButton();
+
+      virtual QToolButton* getExitButton();
+
+      virtual QComboBox* getComboBoxZoom();
       
     public slots:
       
@@ -169,7 +173,9 @@ namespace te
 
       virtual void onObjectToImageClicked(bool checked);
 
-      virtual QComboBox* getComboBoxZoom();
+      virtual void onExitClicked(bool checked);
+
+      virtual void onExportToPDFClicked(bool checked);
       
     signals:
 
@@ -224,6 +230,10 @@ namespace te
       virtual QToolButton* createDrawMapToolButton();
 
       virtual QToolButton* createObjectToImageButton();
+
+      virtual QToolButton* createExitButton();
+
+      virtual QToolButton* createExportToPDFButton();
 
       virtual void changeAction(EnumType* mode);
 
@@ -295,6 +305,8 @@ namespace te
       std::string m_optionDrawMap;
 
       std::string m_optionObjectToImage;
+      std::string m_optionExit;
+      std::string m_optionExportToPDF;
 
       /* ToolButton */
       QToolButton* m_mapToolButton;
@@ -318,6 +330,8 @@ namespace te
       QToolButton* m_undoToolButton;
       QToolButton* m_drawMapToolButton;
       QToolButton* m_objectToImageButton;
+      QToolButton* m_exitButton;
+      QToolButton* m_exportToPDFButton;
     };
   }
 }

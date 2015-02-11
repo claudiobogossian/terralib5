@@ -73,6 +73,8 @@ te::layout::Scene::Scene( QObject* object):
 
 te::layout::Scene::~Scene()
 {
+  m_moveWatches.clear();
+
   if(m_undoStack)
   {
     delete m_undoStack;
@@ -334,6 +336,33 @@ void te::layout::Scene::destroyItemGroup( QGraphicsItemGroup *group )
   QGraphicsScene::destroyItemGroup(group);
 }
 
+te::layout::MovingItemGroup* te::layout::Scene::createMovingItemGroup( const QList<QGraphicsItem*>& items )
+{
+  //Create a new group
+  AbstractBuildGraphicsItem* abstractBuild = Context::getInstance().getAbstractBuildGraphicsItem();
+  BuildGraphicsItem* build = dynamic_cast<BuildGraphicsItem*>(abstractBuild);
+
+  EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
+
+  QGraphicsItem* item = 0;
+  
+  item = build->createItem(enumObj->getMovingItemGroup());
+
+  te::layout::MovingItemGroup* movingItem = dynamic_cast<MovingItemGroup*>(item);
+
+  if (movingItem)
+  {
+    foreach(QGraphicsItem* i, items)
+    {
+      movingItem->addToGroup(i);
+    }
+
+    movingItem->setHandlesChildEvents(true);
+  }
+
+  return movingItem;
+}
+
 QGraphicsItem* te::layout::Scene::createItem( const te::gm::Coord2D& coord )
 {
   QGraphicsItem* item = 0;
@@ -561,13 +590,18 @@ void te::layout::Scene::exportItemsToImage(std::string dir)
 
 bool te::layout::Scene::eventFilter( QObject * watched, QEvent * event )
 {
-  /*if(event->type() == QEvent::GraphicsSceneMousePress)
+  if(event->type() == QEvent::GraphicsSceneMousePress)
   {
     QGraphicsItem* item = dynamic_cast<QGraphicsItem*>(watched);
     if(item)
     {
       QList<QGraphicsItem*> its = selectedItems();
       m_moveWatches.clear();
+      if(its.empty())
+      {
+        QPointF pt = item->scenePos();
+        m_moveWatches[item] = pt;
+      }
       foreach(QGraphicsItem *item, its) 
       {
         QPointF pt = item->scenePos();
@@ -581,6 +615,23 @@ bool te::layout::Scene::eventFilter( QObject * watched, QEvent * event )
     QGraphicsItem* item = dynamic_cast<QGraphicsItem*>(watched);
     if(item)
     {
+      bool resultFound = false;
+      std::map<QGraphicsItem*, QPointF>::iterator it;
+      for(it = m_moveWatches.begin() ; it != m_moveWatches.end() ; ++it)
+      {
+        if(it->first == item)
+        {
+          resultFound = true;
+        }
+      }
+
+      if(!resultFound)
+      {
+        m_moveWatches.clear();
+        QPointF pt = item->scenePos();
+        m_moveWatches[item] = pt;
+      }
+
       m_moveWatched = true;
     }
   }
@@ -597,12 +648,12 @@ bool te::layout::Scene::eventFilter( QObject * watched, QEvent * event )
         m_moveWatched = false;
       }
     }
-  }*/
+  }
 
   return QGraphicsScene::eventFilter(watched, event);
 }
 
-void te::layout::Scene::selectionItem( std::string name )
+void te::layout::Scene::selectItem( std::string name )
 {
   QList<QGraphicsItem*> allItems = items();
   foreach(QGraphicsItem *item, allItems) 
@@ -622,6 +673,30 @@ void te::layout::Scene::selectionItem( std::string name )
         }
       }
     }
+  }
+}
+
+void te::layout::Scene::selectItem( QGraphicsItem* item )
+{
+  if (item)
+  {
+    item->setSelected(true);
+  }
+}
+
+void te::layout::Scene::selectItems( std::vector<std::string> names )
+{
+  foreach(std::string name, names)
+  {
+    this->selectItem(name);
+  }
+}
+
+void te::layout::Scene::selectItems( QList<QGraphicsItem*> items )
+{
+  foreach(QGraphicsItem* item, items)
+  {
+    this->selectItem(item);
   }
 }
 
@@ -690,6 +765,22 @@ void te::layout::Scene::redrawItems()
         {
           it->redraw();
         }
+      }
+    }
+  }
+}
+
+void te::layout::Scene::updateSelectedItemsPositions()
+{
+  QList<QGraphicsItem*> allItems = selectedItems();
+  foreach(QGraphicsItem *item, allItems) 
+  {
+    if(item)
+    {
+      ItemObserver* it = dynamic_cast<ItemObserver*>(item);
+      if(it)
+      {
+        it->refresh(); 
       }
     }
   }

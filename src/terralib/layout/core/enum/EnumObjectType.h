@@ -154,6 +154,13 @@ namespace te
 		      \return enum value  	  
         */
         virtual EnumType* getItemGroup() const;
+
+        /*!
+          \brief Returns value that represents moving item group (MVC Component) type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
+        virtual EnumType* getMovingItemGroup() const;
         
         /*!
           \brief Returns value that represents scale (MVC Component) type belonging to enumeration.
@@ -275,6 +282,7 @@ namespace te
         EnumType* m_gridPlanar; //!< value that represents grid planar type belonging to enumeration
         EnumType* m_gridGeodesic; //!< value that represents grid geodesic type belonging to enumeration
         EnumType* m_itemGroup; //!< value that represents item group (MVC Component) type belonging to enumeration
+        EnumType* m_movingItemGroup; //!< value that represents moving item group (MVC Component) type belonging to enumeration
         EnumType* m_scaleItem; //!< value that represents scale (MVC Component) type belonging to enumeration
         EnumType* m_pageSetup; //!< value that represents page setup window (MVC dialog) type belonging to enumeration
         EnumType* m_imageItem; //!< value that represents image (MVC Component) type belonging to enumeration

@@ -62,7 +62,7 @@ te::layout::PropertiesOutside::PropertiesOutside( OutsideController* controller,
 	te::gm::Envelope box = m_model->getBox();	
 	setBaseSize(box.getWidth(), box.getHeight());
 	setVisible(false);
-	setWindowTitle("Layout - Propriedades");
+	setWindowTitle("Properties");
   setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
   
   if(!propertyBrowser)

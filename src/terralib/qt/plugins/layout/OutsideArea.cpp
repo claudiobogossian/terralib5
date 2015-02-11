@@ -28,7 +28,6 @@
 // TerraLib
 #include "OutsideArea.h"
 #include "PropertiesDock.h"
-#include "ToolbarDock.h"
 #include "ObjectInspectorDock.h"
 #include "EditTemplateDock.h"
 #include "../../../layout/core/pattern/singleton/Context.h"
@@ -36,21 +35,29 @@
 #include "../../../layout/qt/outside/ObjectInspectorOutside.h"
 #include "../../../layout/qt/outside/ToolbarOutside.h"
 #include "../../../layout/core/enum/Enums.h"
+#include "../../../layout/outside/ToolbarModel.h"
+#include "../../../layout/outside/ToolbarController.h"
+#include "../../../layout/core/pattern/mvc/OutsideObserver.h"
+
+// STL
+#include <string>
 
 // Qt
 #include <QMainWindow>
 #include <QMenu>
 #include <QAction>
+#include <QStatusBar>
 
-te::qt::plugins::layout::OutsideArea::OutsideArea( te::layout::View* view, QWidget* dockParent, QMenu* mnuLayout) :
+te::qt::plugins::layout::OutsideArea::OutsideArea( te::layout::View* view, QWidget* dockParent, QMenu* mnuLayout, QStatusBar* status) :
   m_dockParent(dockParent),
   m_dockProperties(0),
   m_dockInspector(0),
-  m_dockToolbar(0),
   m_dockEditTemplate(0),
   m_mainMenu(0),
   m_parentMenu(mnuLayout),
   m_view(view),
+  m_toolbar(0),
+  m_statusBar(status),
   m_optionNew("mnu_main_new"),
   m_optionUpdate("mnu_main_update"),
   m_optionImportJSON("mnu_main_import_json"),
@@ -91,13 +98,13 @@ te::qt::plugins::layout::OutsideArea::~OutsideArea()
     m_dockInspector = 0;
   }
 
-  if(m_dockToolbar)
+  if(m_toolbar)
   {
-    win->removeDockWidget(m_dockToolbar);
-    m_dockToolbar->close();
-    m_dockToolbar->setParent(0);
-    delete m_dockToolbar;
-    m_dockToolbar = 0;
+    win->removeToolBar(m_toolbar);
+    m_toolbar->close();
+    m_toolbar->setParent(0);
+    delete m_toolbar;
+    m_toolbar = 0;
   }
 
   if(m_dockEditTemplate)
@@ -120,22 +127,23 @@ void te::qt::plugins::layout::OutsideArea::init()
     connect(m_view, SIGNAL(closeView()), this, SLOT(onCloseView()));
     connect(m_view, SIGNAL(showView()), this, SLOT(onShowView()));
     connect(this, SIGNAL(changeMenuContext(bool)), m_view, SLOT(onMainMenuChangeContext(bool)));
+    connect(m_view, SIGNAL(changeContext()), this, SLOT(onRefreshStatusBar()));
   }
 
   createPropertiesDock();
 
   createInspectorDock();
   
-  createToolbarDock();
+  createToolbar();
 
   createMainMenu();
 
   createEditTemplateDock();
 
-  if(m_dockToolbar)
+  if(m_toolbar)
   {
-    connect(m_dockToolbar->getToolbarOutside(), SIGNAL(changeContext(bool)), m_view, SLOT(onToolbarChangeContext(bool)));
-    connect(m_view, SIGNAL(changeZoom(double)), m_dockToolbar->getToolbarOutside(), SLOT(onChangeZoom(double)));
+    connect(m_toolbar, SIGNAL(changeContext(bool)), m_view, SLOT(onToolbarChangeContext(bool)));
+    connect(m_view, SIGNAL(changeZoom(double)), m_toolbar, SLOT(onChangeZoom(double)));
   }
 
   if(m_dockInspector)
@@ -165,11 +173,20 @@ void te::qt::plugins::layout::OutsideArea::createInspectorDock()
     QDockWidget::DockWidgetFloatable);
 }
 
-void te::qt::plugins::layout::OutsideArea::createToolbarDock()
+void te::qt::plugins::layout::OutsideArea::createToolbar()
 {
-  m_dockToolbar = new ToolbarDock;
-  m_dockToolbar->setFeatures(QDockWidget::DockWidgetMovable |	
-    QDockWidget::DockWidgetFloatable);
+  QMainWindow* win = (QMainWindow*)m_dockParent;
+
+  if(!win)
+    return;
+
+  //Use the Property Browser Framework for create Object Inspector Window
+  te::layout::ToolbarModel* dockToolbarModel = new te::layout::ToolbarModel();		 
+  te::layout::ToolbarController* dockToolbarController = new te::layout::ToolbarController(dockToolbarModel);
+  te::layout::OutsideObserver* itemDockToolbar = (te::layout::OutsideObserver*)dockToolbarController->getView();
+  m_toolbar = dynamic_cast<te::layout::ToolbarOutside*>(itemDockToolbar); 
+
+  win->addToolBar(m_toolbar);
 }
 
 void te::qt::plugins::layout::OutsideArea::createEditTemplateDock()
@@ -212,12 +229,7 @@ void te::qt::plugins::layout::OutsideArea::createMainMenu()
   actionDockProperties->setCheckable(true);
   actionDockProperties->setChecked(true);
   m_mainMenu->addAction(actionDockProperties);
-
-  QAction* actionDockToolbar = createAction("Dock Toolbar", m_optionDockToolbar, "");
-  actionDockToolbar->setCheckable(true);
-  actionDockToolbar->setChecked(true);
-  m_mainMenu->addAction(actionDockToolbar);
-
+  
   QAction* actionDockEditTemplate = createAction("Dock Edit Template", m_optionDockEditTemplate, "");
   actionDockEditTemplate->setCheckable(true);
   actionDockEditTemplate->setChecked(false);
@@ -292,17 +304,6 @@ void te::qt::plugins::layout::OutsideArea::onMainMenuTriggered( QAction* action 
       m_dockProperties->setVisible(true);
     }
   }
-  else if(action->objectName().compare(m_optionDockToolbar.c_str()) == 0)
-  {
-    if(m_dockToolbar->isVisible())
-    {
-      m_dockToolbar->setVisible(false);
-    }
-    else
-    {
-      m_dockToolbar->setVisible(true);
-    }
-  }
   else if(action->objectName().compare(m_optionDockEditTemplate.c_str()) == 0)
   {
     if(m_dockEditTemplate->isVisible())
@@ -354,9 +355,9 @@ te::qt::plugins::layout::ObjectInspectorDock* te::qt::plugins::layout::OutsideAr
   return m_dockInspector;
 }
 
-te::qt::plugins::layout::ToolbarDock* te::qt::plugins::layout::OutsideArea::getToolbarDock()
+te::layout::ToolbarOutside* te::qt::plugins::layout::OutsideArea::getToolbar()
 {
-  return m_dockToolbar;
+  return m_toolbar;
 }
 
 void te::qt::plugins::layout::OutsideArea::openAllDocks()
@@ -378,11 +379,11 @@ void te::qt::plugins::layout::OutsideArea::openAllDocks()
     win->addDockWidget(Qt::LeftDockWidgetArea, m_dockInspector);
     m_dockInspector->setVisible(true);
   }
-  if(m_dockToolbar)
+  if(m_toolbar)
   {
-    m_dockToolbar->setParent(m_dockParent); 
-    win->addDockWidget(Qt::TopDockWidgetArea, m_dockToolbar);
-    m_dockToolbar->setVisible(true);
+    m_toolbar->setParent(m_dockParent);
+    win->addToolBar(m_toolbar);
+    m_toolbar->setVisible(true);
   }
   if(m_dockEditTemplate)
   {
@@ -410,10 +411,10 @@ void te::qt::plugins::layout::OutsideArea::closeAllDocks()
     win->removeDockWidget(m_dockInspector);
     m_dockInspector->close();
   }
-  if(m_dockToolbar)
+  if(m_toolbar)
   {
-    win->removeDockWidget(m_dockToolbar);
-    m_dockToolbar->close();
+    win->removeToolBar(m_toolbar);
+    m_toolbar->close();
   }
   if(m_dockEditTemplate)
   {
@@ -528,4 +529,34 @@ void te::qt::plugins::layout::OutsideArea::onCloseView()
   closeAllDocks();
   closeMainMenu();
   m_view->closeOutsideWindows();
+  emit exit();
+}
+
+void te::qt::plugins::layout::OutsideArea::onRefreshStatusBar()
+{
+  if(!m_statusBar)
+  {
+    return;
+  }
+
+  te::layout::EnumType* mode = te::layout::Context::getInstance().getMode();
+
+  std::string msg;
+
+  if(mode == te::layout::Enums::getInstance().getEnumModeType()->getModeNone())
+  {
+    msg = "Map Layout - TerraLib 5";
+    m_statusBar->showMessage(msg.c_str());
+    return;
+  }
+  
+  msg = "Map Layout - TerraLib 5 | Context: ";
+  
+  std::string s_mode = mode->getLabel();
+  if(s_mode.compare("") == 0)
+  {
+    s_mode = mode->getName();
+  }
+  msg += s_mode;
+  m_statusBar->showMessage(msg.c_str());
 }

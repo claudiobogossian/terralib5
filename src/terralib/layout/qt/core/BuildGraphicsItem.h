@@ -84,6 +84,15 @@ namespace te
         */
         QGraphicsItem* createItem(te::layout::EnumType* mode, const te::gm::Coord2D& coordinate, bool draw = true);
 
+        /*!
+          \brief Method to create a graphic object from the type.
+		  
+		      \param mode type of the object will created
+		  
+		      \return item value
+        */
+        QGraphicsItem* createItem(te::layout::EnumType* type);
+
       protected:
 	  
 		/*!
@@ -136,11 +145,18 @@ namespace te
         QGraphicsItem* createScale();
 		
 		/*!
-          \brief Create graphic object of type PaperItem
+          \brief Create graphic object of type ItemGroup
 		  		  
 		  \return new object 
         */
         QGraphicsItem* createItemGroup();
+
+    /*!
+          \brief Create graphic object of type MovingItemGroup
+		  		  
+		  \return new object 
+        */
+        QGraphicsItem* createMovingItemGroup();
 
 		/*!
           \brief Create graphic object of type ImageItem
@@ -211,6 +227,7 @@ namespace te
         std::string             m_legendItem; //!< Part of the name that will be set to a new object of type LegendItem.
         std::string             m_scaleItem; //!< Part of the name that will be set to a new object of type ScaleItem.
         std::string             m_groupItem; //!< Part of the name that will be set to a new object of type ItemGroup.
+        std::string             m_movingGroupItem; //!< Part of the name that will be set to a new object of type MovingItemGroup.
         std::string             m_imageItem; //!< Part of the name that will be set to a new object of type ImageItem.
         std::string             m_arrowItem; //!< Part of the name that will be set to a new object of type ArrowItem.
         std::string             m_ellipseItem; //!< Part of the name that will be set to a new object of type EllipseItem.

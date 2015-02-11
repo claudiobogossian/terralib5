@@ -6,15 +6,24 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>582</width>
-    <height>402</height>
+    <width>585</width>
+    <height>404</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Mixture Model</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_5">
-   <property name="margin">
+   <property name="leftMargin">
+    <number>9</number>
+   </property>
+   <property name="topMargin">
+    <number>9</number>
+   </property>
+   <property name="rightMargin">
+    <number>9</number>
+   </property>
+   <property name="bottomMargin">
     <number>9</number>
    </property>
    <item row="0" column="0">
@@ -185,7 +194,14 @@
           </item>
           <item row="1" column="0">
            <layout class="QGridLayout" name="gridLayout_6">
-            <item row="0" column="0">
+            <item row="0" column="1">
+             <widget class="QToolButton" name="m_saveToolButton">
+              <property name="text">
+               <string>...</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="2">
              <widget class="QToolButton" name="m_acquireToolButton">
               <property name="toolTip">
                <string>Acquire samples</string>
@@ -198,7 +214,7 @@
               </property>
              </widget>
             </item>
-            <item row="0" column="1">
+            <item row="0" column="3">
              <spacer name="horizontalSpacer">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
@@ -211,13 +227,20 @@
               </property>
              </spacer>
             </item>
-            <item row="0" column="2">
+            <item row="0" column="4">
              <widget class="QToolButton" name="m_removeToolButton">
               <property name="toolTip">
                <string>Remove the selected sample</string>
               </property>
               <property name="text">
                <string/>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QToolButton" name="m_loadToolButton">
+              <property name="text">
+               <string>...</string>
               </property>
              </widget>
             </item>

@@ -306,6 +306,9 @@ void te::layout::EnumObjectType::init()
 
   m_legendChildItem = new EnumType(30, "Legend_Child_Item");
   m_enums.push_back(m_legendChildItem);
+
+  m_movingItemGroup = new EnumType(31, "Moving_Item_Group");
+  m_enums.push_back(m_movingItemGroup);
 }
 
 te::layout::EnumType* te::layout::EnumObjectType::getRectangleItem() const
@@ -372,6 +375,12 @@ te::layout::EnumType* te::layout::EnumObjectType::getItemGroup() const
 {
   return m_itemGroup;
 }
+
+te::layout::EnumType* te::layout::EnumObjectType::getMovingItemGroup() const
+{
+  return m_movingItemGroup;
+}
+
 
 te::layout::EnumType* te::layout::EnumObjectType::getScaleItem() const
 {

@@ -140,7 +140,7 @@ namespace te
           std::auto_ptr<Ui::ChartLayerWidgetForm> m_ui;             //!< Widget form.
           ColorPickerToolButton* m_colorPicker;                     //!< The color picker used to customise the color of several chart parameters.
           te::map::AbstractLayerPtr m_layer;                        //!< TerraLib layer auto ptr
-          std::map<std::string, QColor> m_chartMap;                 //!< Chart Map
+          std::vector<std::pair<std::string, QColor> > m_chartVec;  //!< Chart Vec
       };
 
     } // end namespace widgets

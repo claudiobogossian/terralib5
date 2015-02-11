@@ -54,6 +54,9 @@ te::qt::widgets::RasterHistogramWidget::RasterHistogramWidget(QWidget* parent, Q
 
   m_ui->m_applyToolButton->setIcon(QIcon::fromTheme("chart-bar"));
 
+  m_minValueLine = 0;
+  m_maxValueLine = 0;
+
   //Creating and adjusting the chart Display's style.
   m_chartStyle = new te::qt::widgets::ChartStyle();
   m_chartStyle->setTitle(tr(""));
@@ -175,6 +178,86 @@ void te::qt::widgets::RasterHistogramWidget::drawHistogram(int band)
   m_chartDisplay->updateLayout();
 
   m_chartDisplay->replot();
+}
+
+void te::qt::widgets::RasterHistogramWidget::setMinimumValueEnabled(bool enable)
+{
+  if(m_minValueLine)
+  {
+    if(enable)
+      m_minValueLine->attach(m_chartDisplay);
+    else
+      m_minValueLine->detach();
+  }
+}
+
+void te::qt::widgets::RasterHistogramWidget::updateMinimumValueLine(int value, bool replot)
+{
+  if(!m_minValueLine)
+  {
+    m_minValueLine = new QwtPlotMarker();
+    m_minValueLine->setLabel(QString::fromLatin1("Minimum"));
+    m_minValueLine->setLabelAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    m_minValueLine->setLabelOrientation(Qt::Vertical);
+    m_minValueLine->setLineStyle(QwtPlotMarker::VLine);
+    m_minValueLine->setLinePen(Qt::darkRed, 2, Qt::DashDotLine);
+    m_minValueLine->attach(m_chartDisplay);
+  }
+
+  m_minValueLine->setXValue(value);
+
+  if(replot)
+  {
+    m_chartDisplay->updateLayout();
+
+    m_chartDisplay->replot();
+  }
+}
+
+void te::qt::widgets::RasterHistogramWidget::updateMinimumValueLabel(QString value)
+{
+  if(m_minValueLine)
+    m_minValueLine->setLabel(value);
+}
+
+void te::qt::widgets::RasterHistogramWidget::setMaximumValueEnabled(bool enable)
+{
+  if(m_maxValueLine)
+  {
+    if(enable)
+      m_maxValueLine->attach(m_chartDisplay);
+    else
+      m_maxValueLine->detach();
+  }
+}
+
+void te::qt::widgets::RasterHistogramWidget::updateMaximumValueLine(int value, bool replot)
+{
+  if(!m_maxValueLine)
+  {
+    m_maxValueLine = new QwtPlotMarker();
+    m_maxValueLine->setLabel(QString::fromLatin1("Maximum"));
+    m_maxValueLine->setLabelAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    m_maxValueLine->setLabelOrientation(Qt::Vertical);
+    m_maxValueLine->setLineStyle(QwtPlotMarker::VLine);
+    m_maxValueLine->setLinePen(Qt::darkRed, 2, Qt::DashDotLine);
+    m_maxValueLine->attach(m_chartDisplay);
+  }
+
+  m_maxValueLine->setXValue(value);
+
+  if(replot)
+  {
+    m_chartDisplay->updateLayout();
+
+    m_chartDisplay->replot();
+  }
+}
+
+void te::qt::widgets::RasterHistogramWidget::updateMaximumValueLabel(QString value)
+{
+  if(m_maxValueLine)
+    m_maxValueLine->setLabel(value);
 }
 
 void te::qt::widgets::RasterHistogramWidget::onApplyToolButtonClicked()

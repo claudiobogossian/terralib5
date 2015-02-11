@@ -31,6 +31,7 @@
 #include "../../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../../dataaccess/datasource/DataSourceManager.h"
+#include "../../../dataaccess/datasource/DataSourceTransactor.h"
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../geometry/GeometryProperty.h"
 #include "../../../maptools/DataSetLayer.h"
@@ -273,12 +274,16 @@ bool te::qt::widgets::DirectExchangerDialog::exchangeToDatabase()
     return false;
   }
 
+  std::auto_ptr<te::da::DataSourceTransactor> transactor;
+
   try
   {
     //create adapter
     std::auto_ptr<te::da::DataSetType> dsType = layer->getSchema();
 
     te::da::DataSourcePtr targetDSPtr = te::da::DataSourceManager::getInstance().get(dsInfo->getId(), dsInfo->getType(), dsInfo->getConnInfo()); 
+
+    transactor = targetDSPtr->getTransactor();
 
     te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter(dsType.get(), targetDSPtr->getCapabilities(), targetDSPtr->getEncoding());
 
@@ -340,19 +345,25 @@ bool te::qt::widgets::DirectExchangerDialog::exchangeToDatabase()
 
     std::auto_ptr<te::da::DataSet> dataset = layer->getData();
 
-    targetDSPtr->createDataSet(dsTypeResult, nopt);
+    transactor->begin();
+
+    transactor->createDataSet(dsTypeResult, nopt);
 
     std::auto_ptr<te::da::DataSetAdapter> dsAdapter(te::da::CreateAdapter(dataset.get(), converter));
 
     dsAdapter->setSRID(layer->getSRID());
 
      if(dataset->moveBeforeFirst())
-       targetDSPtr->add(dsTypeResult->getName(), dsAdapter.get(), targetDSPtr->getConnectionInfo());
+       transactor->add(dsTypeResult->getName(), dsAdapter.get(), targetDSPtr->getConnectionInfo());
+
+     transactor->commit();
 
     QMessageBox::information(this, tr("Exchanger"), tr("Layer exported successfully."));
   }
   catch(const std::exception& e)
   {
+    transactor->rollBack();
+
     QString errMsg(tr("Error during exchanger. The reported error is: %1"));
 
     errMsg = errMsg.arg(e.what());

@@ -37,6 +37,7 @@
 #include "../../core/Config.h"
 #include "PrintScene.h"
 #include "AlignItems.h"
+#include "../item/MovingItemGroup.h"
 
 // STL
 #include <string>
@@ -132,6 +133,9 @@ namespace te
 		  \return items group of objects
         */
         virtual QGraphicsItemGroup* createItemGroup( const QList<QGraphicsItem *> & items );
+
+        
+        virtual te::layout::MovingItemGroup* createMovingItemGroup( const QList<QGraphicsItem*>& items);
 
 		/*!
           \brief Method that delete object grouping, but the individual objects continue to exist.
@@ -250,11 +254,31 @@ namespace te
         virtual bool eventFilter ( QObject * watched, QEvent * event );
 
 		/*!
-          \brief Select an item and deselect all other.
+       \brief Select an item an item by name.
 		  
 		  \param name graphic object name
         */
-        virtual void selectionItem(std::string name);
+        virtual void selectItem(std::string name);
+    /*!
+      \brief Select items by name.
+		  
+		  \param names vector with object names
+        */
+        virtual void selectItems(std::vector<std::string> names);
+
+    /*!
+      \brief Select items.
+		  
+		  \param items vector with QGraphicsItems
+        */
+        virtual void selectItems(QList<QGraphicsItem*> items);
+
+   /*!
+      \brief Select specified item.
+		  
+		  \param item instance of QGraphicsItem
+        */
+        virtual void selectItem(QGraphicsItem* item);
 
         /*!
           \brief Reimplemented from QGraphicsScene.
@@ -271,6 +295,8 @@ namespace te
           QWidget *widget = 0);
 
         virtual void redrawItems();
+
+        virtual void updateSelectedItemsPositions();
         
       signals:
 

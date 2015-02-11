@@ -232,6 +232,9 @@
                 </item>
                 <item row="0" column="2">
                  <widget class="QToolButton" name="m_targetDataSourceAddressToolButton">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
                   <property name="minimumSize">
                    <size>
                     <width>0</width>
@@ -266,7 +269,7 @@
                    <bool>false</bool>
                   </property>
                   <property name="toolTip">
-                   <string>Edit data source information</string>
+                   <string>Remove data source information</string>
                   </property>
                   <property name="text">
                    <string/>

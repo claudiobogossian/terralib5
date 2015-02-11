@@ -39,6 +39,7 @@
 
 // Qt
 #include <QDialog>
+#include <QSettings>
 
 namespace Ui { class ConfigInputAddressDialogForm; }
 
@@ -67,19 +68,29 @@ namespace te
 
         std::string getStreetType();
 
+        void setStreetType(std::string streetType);
+
         std::string getStreetTitle();
+        
+        void setStreetTitle(std::string streetTitle);
 
         std::string getStreetName();
 
+        void setStreetName(std::string streetName);
+
         std::string getStreetNumber();
+
+        void setStreetNumber(std::string streetNumber);
 
         std::string getStreetNeighborhood();
 
+        void setStreetNeighborhood(std::string streetNeighborhood);
+
         std::string getStreetPostalCode();
 
-      protected slots:
+        void setStreetPostalCode(std::string streetPostalCode);
 
-        void onImportTableClicked();
+      protected slots:
 
         void onHelpPushButtonClicked();
 
@@ -88,6 +99,28 @@ namespace te
         void onCancelPushButtonClicked();
 
       private:
+
+        void AddAddressConfigToSettings(std::map<std::string, std::string> addressConfig);
+
+        void AddAddressConfigItens(std::map<std::string, std::string> addressConfig, QSettings& sett);
+
+        void AddAddressConfigToSettings(std::string filePath,
+                                        std::string streetType,
+                                        std::string streetTitle,
+                                        std::string streetName,
+                                        std::string number,
+                                        std::string neighborhood,
+                                        std::string postalCode);
+
+        void GetAddressConfigToSettings(std::string& filePath,
+                                        std::string& streetType,
+                                        std::string& streetTitle,
+                                        std::string& streetName,
+                                        std::string& number,
+                                        std::string& neighborhood,
+                                        std::string& postalCode);
+
+        void RemoveAddressConfigFromSettings(const QString& path, const QString& typeFile);
 
         std::auto_ptr<Ui::ConfigInputAddressDialogForm> m_ui;
         te::da::DataSourcePtr m_dataSource;
