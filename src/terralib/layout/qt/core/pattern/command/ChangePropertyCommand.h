@@ -20,7 +20,7 @@
 /*!
   \file ChangePropertyCommand.h
    
-  \brief 
+  \brief Undo/Redo for changes in component properties.
 
   \ingroup layout
 */
@@ -30,6 +30,9 @@
 
 // TerraLib
 #include "../../../../core/Config.h"
+
+// STL
+#include <vector>
 
 // Qt
 #include <QUndoCommand>
@@ -43,17 +46,52 @@ namespace te
     class Properties;
     class PropertiesOutside;
 
+    /*!
+      \brief Undo/Redo for changes in component properties.
+	  
+	    \ingroup layout
+	  */
     class TELAYOUTEXPORT ChangePropertyCommand : public QUndoCommand
     {
       public:
 
+        /*!
+          \brief Constructor
+
+          \param item
+          \param oldProperties
+          \param newProperties
+          \param outside
+          \param parent
+        */
         ChangePropertyCommand( QGraphicsItem* item, Properties* oldProperties, 
                           Properties* newProperties, PropertiesOutside* outside = 0, QUndoCommand *parent = 0 );
 
+        /*!
+          \brief Constructor
+
+          \param items
+          \param oldProperties
+          \param newProperties
+          \param outside
+          \param parent
+        */
+        ChangePropertyCommand( std::vector<QGraphicsItem*> items, std::vector<Properties*> allOld, 
+                    std::vector<Properties*> allNew, PropertiesOutside* outside = 0, QUndoCommand *parent = 0 );
+
+        /*!
+          \brief Destructor. Delete all properties.
+        */
         virtual ~ChangePropertyCommand();   
 
+        /*!
+          \brief Reimplemented from QUndoCommand
+        */
         virtual void undo();
 
+        /*!
+          \brief Reimplemented from QUndoCommand
+        */
         virtual void redo();
 
       protected:
@@ -62,10 +100,17 @@ namespace te
 
         virtual bool equals(Properties*  props1, Properties* props2);
 
-        QGraphicsItem*     m_item;
-        Properties*        m_oldProperties;
-        Properties*        m_newProperties;
-        PropertiesOutside* m_outside;
+        virtual bool checkItem(QGraphicsItem* item, Properties* props); 
+
+        virtual bool checkVectors();
+
+        QGraphicsItem*                  m_item;
+        Properties*                     m_oldProperties;
+        Properties*                     m_newProperties;
+        PropertiesOutside*              m_outside;
+        std::vector<QGraphicsItem*>     m_items;
+        std::vector<Properties*>        m_allOldProperties;
+        std::vector<Properties*>        m_allNewProperties;
     };
   }
 }
