@@ -120,6 +120,16 @@ namespace te
           \brief Reimplemented from ItemObserver
          */
         virtual void updateProperties(te::layout::Properties* properties);
+
+        /*!
+          \brief Reimplemented from QGraphicsProxyWidget
+         */
+        QRectF boundingRect() const;
+
+        /*!
+          \brief Reimplemented from QGraphicsProxyWidget
+         */
+        virtual bool contains( const QPointF &point ) const;
                                 
       protected slots:
 
@@ -210,6 +220,7 @@ namespace te
 
     protected:
 
+      QSize                                   m_mapSize; //!< The size of the map display in a zoom of 100%. This size is in pixels and is calculated based on the size of the GraphicItem in millimeters.
       QPixmap                                 m_pixmap;
       QPixmap                                 m_mapPixmap;
       QRectF                                  m_rect;//In local coordinate
