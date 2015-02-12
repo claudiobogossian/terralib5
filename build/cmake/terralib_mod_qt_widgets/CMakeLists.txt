@@ -143,6 +143,11 @@ file(GLOB TERRALIB_QUERY_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt
 file(GLOB TERRALIB_QUERY_UI_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/query/ui/*.ui)
 
 # rp
+file(GLOB TERRALIB_RASTER_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/raster/*.cpp)
+file(GLOB TERRALIB_RASTER_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/raster/*.h)
+file(GLOB TERRALIB_RASTER_UI_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/raster/ui/*.ui)
+
+# rp
 file(GLOB TERRALIB_RP_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/*.cpp)
 file(GLOB TERRALIB_RP_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/*.h)
 file(GLOB TERRALIB_RP_UI_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/ui/*.ui)
@@ -284,6 +289,11 @@ source_group("Header Files\\propertybrowser"  FILES ${TERRALIB_PROPERTY_BROWSER_
 source_group("Source Files\\query"  FILES ${TERRALIB_QUERY_SRC_FILES})
 source_group("Header Files\\query"  FILES ${TERRALIB_QUERY_HDR_FILES})
 source_group("UI Files\\query"      FILES ${TERRALIB_QUERY_UI_FILES})
+
+# raster
+source_group("Source Files\\raster"  FILES ${TERRALIB_RASTER_SRC_FILES})
+source_group("Header Files\\raster"  FILES ${TERRALIB_RASTER_HDR_FILES})
+source_group("UI Files\\raster"      FILES ${TERRALIB_RASTER_UI_FILES})
 
 # rp
 source_group("Source Files\\rp"  FILES ${TERRALIB_RP_SRC_FILES})
@@ -446,6 +456,10 @@ if(Qt5_FOUND)
   QT5_WRAP_UI(TERRALIB_QUERY_GEN_HDR_FILES ${TERRALIB_QUERY_UI_FILES})
   list(APPEND TERRALIB_FILES ${TERRALIB_QUERY_SRC_FILES} ${TERRALIB_QUERY_HDR_FILES} ${TERRALIB_QUERY_GEN_HDR_FILES})
 
+  # raster
+  QT5_WRAP_UI(TERRALIB_RASTER_GEN_HDR_FILES ${TERRALIB_RASTER_UI_FILES})
+  list(APPEND TERRALIB_FILES ${TERRALIB_RASTER_SRC_FILES} ${TERRALIB_RASTER_HDR_FILES} ${TERRALIB_RASTER_GEN_HDR_FILES})
+
   # raster Processing
   QT5_WRAP_UI(TERRALIB_RP_GEN_HDR_FILES ${TERRALIB_RP_UI_FILES})
   list(APPEND TERRALIB_FILES ${TERRALIB_RP_SRC_FILES} ${TERRALIB_RP_HDR_FILES} ${TERRALIB_RP_GEN_HDR_FILES})
@@ -588,6 +602,10 @@ else() # QT4_FOUND
   QT4_WRAP_UI(TERRALIB_QUERY_GEN_HDR_FILES ${TERRALIB_QUERY_UI_FILES})
   list(APPEND TERRALIB_FILES ${TERRALIB_QUERY_SRC_FILES} ${TERRALIB_QUERY_HDR_FILES} ${TERRALIB_QUERY_GEN_HDR_FILES})
 
+  # raster
+  QT4_WRAP_UI(TERRALIB_RASTER_GEN_HDR_FILES ${TERRALIB_RASTER_UI_FILES})
+  list(APPEND TERRALIB_FILES ${TERRALIB_RASTER_SRC_FILES} ${TERRALIB_RASTER_HDR_FILES} ${TERRALIB_RASTER_GEN_HDR_FILES})
+  
   # rp
   QT4_WRAP_UI(TERRALIB_RP_GEN_HDR_FILES ${TERRALIB_RP_UI_FILES})
   list(APPEND TERRALIB_FILES ${TERRALIB_RP_SRC_FILES} ${TERRALIB_RP_HDR_FILES} ${TERRALIB_RP_GEN_HDR_FILES})
@@ -787,6 +805,10 @@ else() # QT4_FOUND
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/query/WhereClauseWidget.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/query/WhereClauseWizardPage.h)
 
+  # rp
+  list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/raster/MultiResolutionDialog.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/raster/MultiResolutionWidget.h)
+  
   # rp
   list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/ArithmeticOpWizardPage.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/rp/ClassifierDialog.h
@@ -1017,6 +1039,9 @@ install(FILES ${TERRALIB_PROPERTY_BROWSER_HDR_FILES}
 
 install(FILES ${TERRALIB_QUERY_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/query COMPONENT devel)
+
+install(FILES ${TERRALIB_RASTER_HDR_FILES}
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/raster COMPONENT devel)
 
 install(FILES ${TERRALIB_RP_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/rp COMPONENT devel)
