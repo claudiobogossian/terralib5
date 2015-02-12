@@ -90,17 +90,16 @@ te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
   m_tool(0),
   m_wMargin(0),
   m_hMargin(0),
-  m_layer(0),
-  m_move(false)
+  m_layer(0)
 {
   this->setFlags(QGraphicsItem::ItemIsMovable
     | QGraphicsItem::ItemIsSelectable
     | QGraphicsItem::ItemSendsGeometryChanges
     | QGraphicsItem::ItemIsFocusable);
-        
+
   setAcceptDrops(true);
 
-  m_invertedMatrix = true;
+  m_invertedMatrix = false;
 
   m_nameClass = std::string(this->metaObject()->className());
   
@@ -116,8 +115,10 @@ te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
   {
     box = utils->viewportBox(m_model->getBox());
   }
-    
-  m_mapDisplay = new te::qt::widgets::MultiThreadMapDisplay(QSize(box.getWidth(), box.getHeight()), true);
+
+  m_mapSize = QSize(box.getWidth(), box.getHeight());
+  m_mapDisplay = new te::qt::widgets::MultiThreadMapDisplay(m_mapSize, true);
+  m_mapDisplay->setSynchronous(true);
   m_mapDisplay->setAcceptDrops(true);
   m_mapDisplay->setBackgroundColor(Qt::gray);
   m_mapDisplay->setResizeInterval(0);
@@ -125,19 +126,19 @@ te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
 
   connect(m_mapDisplay,SIGNAL(drawLayersFinished(const QMap<QString, QString>&)),
     this,SLOT(onDrawLayersFinished(const QMap<QString, QString>&)));
-      
+
   te::qt::widgets::ZoomWheel* zoom = new te::qt::widgets::ZoomWheel(m_mapDisplay);
   m_mapDisplay->installEventFilter(zoom);
-  
+
   setWidget(m_mapDisplay);
-    
+
   QGraphicsItem* item = this;
   Context::getInstance().getScene()->insertItem((ItemObserver*)item);
   
   calculateFrameMargin();
 
   setWindowFrameMargins(m_wMargin, m_hMargin, m_wMargin, m_hMargin);
-      
+
   m_mapDisplay->show();
 }
 
@@ -160,6 +161,9 @@ void te::layout::MapItem::updateObserver( ContextItem context )
   if(!utils)
     return;
 
+  QRectF boundRect;
+  boundRect = boundingRect();
+
   te::gm::Envelope box = utils->viewportBox(m_model->getBox());
   
   if(!box.isValid())
@@ -168,9 +172,11 @@ void te::layout::MapItem::updateObserver( ContextItem context )
   MapModel* model = dynamic_cast<MapModel*>(m_model);
   if(model)
   {
+    double zoomFactor = Context::getInstance().getZoomFactor();
+
     te::gm::Envelope mapBox = utils->viewportBox(model->getMapBox());
-    double w = mapBox.getWidth();
-    double h = mapBox.getHeight();
+    double w = mapBox.getWidth() * zoomFactor;
+    double h = mapBox.getHeight() * zoomFactor;
 
     /* This item ignores the transformations of the scene, so comes with no zoom. 
     His transformation matrix is the inverse scene, understanding the pixel 
@@ -217,6 +223,19 @@ void te::layout::MapItem::updateObserver( ContextItem context )
   update();
 }
 
+QPointF remapPointToViewport(const QPointF& point, const QRectF& item, const QRectF& widget)
+{
+  double resX = widget.width() / item.width();
+  double resY = widget.height() / item.height();
+
+  QMatrix matrix;
+  matrix.scale(resX, -resY);
+  matrix.translate(-item.bottomLeft().x(), -item.bottomLeft().y());
+
+  QPointF remappedPoint = matrix.map(point);
+  return remappedPoint;
+}
+
 void te::layout::MapItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
 {  
   Q_UNUSED( option );
@@ -229,11 +248,37 @@ void te::layout::MapItem::paint( QPainter * painter, const QStyleOptionGraphicsI
   QRectF boundRect;
   boundRect = boundingRect();
 
-  QGraphicsProxyWidget::paint(painter, option, widget);
+  double newZoomFactor = Context::getInstance().getZoomFactor();
+
+  QSize currentSize = m_mapDisplay->size();
+  QSize newSize = m_mapSize * newZoomFactor;
+  if(currentSize != newSize)
+  {
+    m_mapDisplay->resize(m_mapSize * newZoomFactor);
+  }
+
+  m_pixmap = QPixmap(m_mapDisplay->width(), m_mapDisplay->height());
+  m_pixmap.fill(Qt::transparent);
+
+  QPainter localPainter(&m_pixmap);
+  m_mapDisplay->render(&localPainter);
+  localPainter.end();
+
+  QImage image = m_pixmap.toImage();
+  image = image.mirrored();
+
+  m_pixmap = QPixmap::fromImage(image);
 
   painter->save();
-  QRectF rtSource( 0, 0, m_pixmap.width(), m_pixmap.height() );
-  painter->drawPixmap(boundRect, m_pixmap, rtSource);
+  painter->setClipRect(boundRect);
+  painter->drawPixmap(boundRect, m_pixmap, m_pixmap.rect());
+
+  QPen pen;
+  pen.setWidth(1);
+
+  painter->setPen(pen);
+  painter->drawRect(boundRect);
+
   painter->restore();
 
   //Draw Selection
@@ -275,8 +320,16 @@ void te::layout::MapItem::dropEvent( QGraphicsSceneDragDropEvent * event )
   getMimeData(event->mimeData());
 
   te::map::AbstractLayerPtr al = m_treeItem->getLayer();
-  m_mapDisplay->changeData(al);
+  te::gm::Envelope e = al->getExtent();
+
+  std::list<te::map::AbstractLayerPtr> layerList;
+  layerList.push_back(al);
+
   m_layer = al;
+
+  m_mapDisplay->setLayerList(layerList);
+  m_mapDisplay->setSRID(al->getSRID(), false);
+  m_mapDisplay->setExtent(e, true);
 }
 
 void te::layout::MapItem::dragEnterEvent( QGraphicsSceneDragDropEvent * event )
@@ -327,11 +380,10 @@ te::gm::Coord2D te::layout::MapItem::getPosition()
   }
 
   QPointF posF = scenePos();
+
   qreal valuex = posF.x() - x;
   qreal valuey = posF.y() - y;
 
-  valuey = valuey - box.getHeight();
-      
   te::gm::Coord2D coordinate;
   coordinate.x = valuex;
   coordinate.y = valuey;
@@ -341,7 +393,6 @@ te::gm::Coord2D te::layout::MapItem::getPosition()
 
 void te::layout::MapItem::mouseMoveEvent( QGraphicsSceneMouseEvent * event )
 {
-  m_move = true;
   ItemUtils* iUtils = Context::getInstance().getItemUtils();
   if(!iUtils)
     return;
@@ -353,10 +404,16 @@ void te::layout::MapItem::mouseMoveEvent( QGraphicsSceneMouseEvent * event )
   }
   else
   {
-    QMouseEvent mouseEvent(QEvent::MouseMove,QPoint(event->pos().x(), event->pos().y()),
-      event->button(),event->buttons(), event->modifiers());
+    QRectF rect = boundingRect();
+    QPointF point = event->pos();
+    QPointF remappedPoint = remapPointToViewport(point, rect, m_mapDisplay->rect());
+
+    QMouseEvent mouseEvent(QEvent::MouseMove, remappedPoint,
+    event->button(),event->buttons(), event->modifiers());
     QApplication::sendEvent(m_mapDisplay, &mouseEvent);
     event->setAccepted(mouseEvent.isAccepted());
+
+    this->update();
   }
 }
 
@@ -373,10 +430,16 @@ void te::layout::MapItem::mousePressEvent( QGraphicsSceneMouseEvent * event )
   }
   else
   {
-    QMouseEvent mouseEvent(QEvent::MouseButtonPress,QPoint(event->pos().x(), event->pos().y()),
+    QRectF rect = boundingRect();
+    QPointF point = event->pos();
+    QPointF remappedPoint = remapPointToViewport(point, rect, m_mapDisplay->rect());
+
+    QMouseEvent mouseEvent(QEvent::MouseButtonPress, remappedPoint,
     event->button(),event->buttons(), event->modifiers());
     QApplication::sendEvent(m_mapDisplay, &mouseEvent);
     event->setAccepted(mouseEvent.isAccepted());
+
+    this->update();
   }
 }
 
@@ -393,12 +456,17 @@ void te::layout::MapItem::mouseReleaseEvent( QGraphicsSceneMouseEvent * event )
   }
   else
   {
-    QMouseEvent mouseEvent(QEvent::MouseButtonRelease,QPoint(event->pos().x(), event->pos().y()),
+    QRectF rect = boundingRect();
+    QPointF point = event->pos();
+    QPointF remappedPoint = remapPointToViewport(point, rect, m_mapDisplay->rect());
+
+    QMouseEvent mouseEvent(QEvent::MouseButtonRelease, remappedPoint,
     event->button(),event->buttons(), event->modifiers());
     QApplication::sendEvent(m_mapDisplay, &mouseEvent);
     event->setAccepted(mouseEvent.isAccepted());
+
+    this->update();
   }
-  
   refresh();
 }
 
@@ -481,6 +549,8 @@ void te::layout::MapItem::onDrawLayersFinished( const QMap<QString, QString>& er
   }
 
   generateMapPixmap();
+
+  update();
 }
 
 void te::layout::MapItem::setZValue( qreal z )
@@ -498,7 +568,7 @@ int te::layout::MapItem::getZValueItem()
 void te::layout::MapItem::setCurrentTool( te::qt::widgets::AbstractTool* tool )
 {
   m_tool = tool;
-  
+
   m_mapDisplay->installEventFilter(m_tool);
 }
 
@@ -519,9 +589,10 @@ void te::layout::MapItem::changeCurrentTool( EnumType* mode )
 
   EnumModeType* type = Enums::getInstance().getEnumModeType();
 
+  te::layout::Context::getInstance().setMode(mode);
   if(mode == type->getModeMapPan())
   {
-    te::qt::widgets::Pan* pan = new te::qt::widgets::Pan(m_mapDisplay, Qt::OpenHandCursor, Qt::ClosedHandCursor);
+    te::qt::widgets::Pan* pan = new te::qt::widgets::Pan(m_mapDisplay, Qt::OpenHandCursor, Qt::ClosedHandCursor);	 
     setCurrentTool(pan);
   }
   if(mode == type->getModeMapZoomIn())
@@ -540,38 +611,6 @@ void te::layout::MapItem::changeCurrentTool( EnumType* mode )
     te::qt::widgets::ZoomClick* zoomOut = new te::qt::widgets::ZoomClick(m_mapDisplay, zoomOutCursor, 2.0, te::qt::widgets::Zoom::Out);
     setCurrentTool(zoomOut);
   }
-}
-
-QVariant te::layout::MapItem::itemChange( GraphicsItemChange change, const QVariant & value )
-{
-  if(change == QGraphicsItem::ItemPositionChange && !m_move)
-  {
-    // value is the new position.
-    QPointF newPos = value.toPointF();
-
-    MapModel* model = dynamic_cast<MapModel*>(m_model);
-    te::gm::Envelope box;
-    if(model)
-    {
-      box = model->getMapBox();
-    }
-    else
-    {
-      box = m_model->getBox();
-    }
-
-    /* Correctly position the object and change the origin for bottomLeft */
-    newPos.setX(newPos.x() - transform().dx());
-    newPos.setY(newPos.y() - transform().dy() + box.getHeight());
-    return newPos;
-  }
-  if(change == QGraphicsItem::ItemPositionHasChanged)
-  {
-    refresh();
-    m_move = false;
-  }
-
-  return QGraphicsProxyWidget::itemChange(change, value);
 }
 
 void te::layout::MapItem::applyRotation()
@@ -618,7 +657,7 @@ QImage te::layout::MapItem::generateImage()
     painter.drawPixmap(rectF, m_pixmap, rectF);
     painter.restore(); 
   }
-  
+
   painter.end();
   return generator;
 }
@@ -652,7 +691,7 @@ void te::layout::MapItem::generateMapPixmap()
   QPainter ptr(&img);
   QPoint pt(0, 0);
   this->widget()->render(&ptr, pt, srcRegion);
-  
+
   m_mapPixmap = img; 
 }
 
@@ -672,7 +711,7 @@ void te::layout::MapItem::updateProperties( te::layout::Properties* properties )
     redraw();
     return;
   }
-  
+
   std::string name = model->getNameLayer();
 
   if(name.compare("") == 0)
@@ -696,24 +735,20 @@ void te::layout::MapItem::updateProperties( te::layout::Properties* properties )
   }
 }
 
-bool te::layout::MapItem::eventFilter( QObject * object, QEvent * event )
+QRectF te::layout::MapItem::boundingRect() const
 {
-  /*
-    In the QGraphicsProxyWidget, move and resize, set the position value. 
-    In these cases there is no need to recalculate the position by transformation matrix. 
-    (The matrix is used because this object works with inverted matrix)
-  */
+  MapModel* model = dynamic_cast<MapModel*>(m_model);
+  te::gm::Envelope box = model->getBox();
 
-  switch (event->type()) 
-  {
-  case QEvent::Resize:
-    m_move = true;
-    break;
-  case QEvent::Move:
-    m_move = true;
-    break;
-  default:
-    break;
-  }
-  return QGraphicsProxyWidget::eventFilter(object, event);
+  QPointF currentPos = pos();
+  QPointF currentScenePos = scenePos();
+
+  QRectF rect(0., 0., box.getWidth(), box.getHeight());
+  return rect;
+}
+
+bool te::layout::MapItem::contains( const QPointF &point ) const
+{
+  te::gm::Coord2D coord(point.x(), point.y());
+  return m_controller->contains(coord);
 }

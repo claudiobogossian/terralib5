@@ -162,7 +162,10 @@ void te::layout::View::mousePressEvent( QMouseEvent * event )
   if(Context::getInstance().getMode() == mode->getModeNone())
     return;
 
-  sc->createItem(coord);
+  if(Context::getInstance().getMode()->getType() == te::layout::EnumCreate)
+  {
+    sc->createItem(coord);
+  }
 }
 
 void te::layout::View::mouseMoveEvent( QMouseEvent * event )

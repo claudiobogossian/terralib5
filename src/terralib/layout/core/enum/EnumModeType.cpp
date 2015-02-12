@@ -394,244 +394,301 @@ te::layout::EnumModeType::~EnumModeType()
 
 void te::layout::EnumModeType::init()
 {
-  m_modeNone = new EnumType(0, "None");
+  m_modeNone = new EnumType(0, "None", this);
   m_modeNone->setLabel("None");
   m_enums.push_back(m_modeNone);
 
-  m_modeSelectByBox = new EnumType(1, "SelectByBox");
+  m_modeSelectByBox = new EnumType(1, "SelectByBox", this);
   m_modeSelectByBox->setLabel("Select By Box");
+  m_modeSelectByBox->setType(te::layout::EnumTool);
   m_enums.push_back(m_modeSelectByBox);
 
-  m_modeSelect = new EnumType(2, "Select");
+  m_modeSelect = new EnumType(2, "Select", this);
   m_modeSelect->setLabel("Select");
   m_enums.push_back(m_modeSelect);
 
-  m_modeArrowCursor = new EnumType(3, "ArrowCursor");
+  m_modeArrowCursor = new EnumType(3, "ArrowCursor", this);
   m_modeArrowCursor->setLabel("Arrow Cursor");
+  m_modeArrowCursor->setType(te::layout::EnumAction);
   m_enums.push_back(m_modeArrowCursor);
   
-  m_modePan = new EnumType(4, "Pan");
+  m_modePan = new EnumType(4, "Pan", this);
   m_modePan->setLabel("Pan");
+  m_modePan->setType(te::layout::EnumTool);
   m_enums.push_back(m_modePan);
 
-  m_modeZoomIn = new EnumType(5, "ZoomIn");
+  m_modeZoomIn = new EnumType(5, "ZoomIn", this);
   m_modeZoomIn->setLabel("Zoom In");
+  m_modeZoomIn->setType(te::layout::EnumTool);
   m_enums.push_back(m_modeZoomIn);
 
-  m_modeZoomOut = new EnumType(7, "ZoomOut");
+  m_modeZoomOut = new EnumType(7, "ZoomOut", this);
   m_modeZoomOut->setLabel("ZoomOut");
+  m_modeZoomOut->setType(te::layout::EnumTool);
   m_enums.push_back(m_modeZoomOut);
 
-  m_modeMapPan = new EnumType(8, "MapPan");
+  m_modeMapPan = new EnumType(8, "MapPan", this);
   m_modeMapPan->setLabel("Map Pan");
+  m_modeMapPan->setType(te::layout::EnumTool);
   m_enums.push_back(m_modeMapPan);
 
-  m_modeMapZoomIn = new EnumType(9, "MapZoomIn");
+  m_modeMapZoomIn = new EnumType(9, "MapZoomIn", this);
   m_modeMapZoomIn->setLabel("Map Zoom In");
+  m_modeMapZoomIn->setType(te::layout::EnumTool);
   m_enums.push_back(m_modeMapZoomIn);
 
-  m_modeMapZoomOut = new EnumType(10, "MapZoomOut");
+  m_modeMapZoomOut = new EnumType(10, "MapZoomOut", this);
   m_modeMapZoomOut->setLabel("Map Zoom Out");
+  m_modeMapZoomOut->setType(te::layout::EnumTool);
   m_enums.push_back(m_modeMapZoomOut);
 
-  m_modeCreateMap = new EnumType(11, "CreateMap");
+  m_modeCreateMap = new EnumType(11, "CreateMap", this);
   m_modeCreateMap->setLabel("Create Map Component");
+  m_modeCreateMap->setType(te::layout::EnumCreate);
   m_enums.push_back(m_modeCreateMap);
 
-  m_modeCreateMapGrid = new EnumType(12, "CreateMapGrid");
+  m_modeCreateMapGrid = new EnumType(12, "CreateMapGrid", this);
   m_modeCreateMapGrid->setLabel("Create MapGrid Component");
+  m_modeCreateMapGrid->setType(te::layout::EnumCreate);
   m_enums.push_back(m_modeCreateMapGrid);
 
-  m_modeCreateLegend = new EnumType(13, "CreateLegend");
+  m_modeCreateLegend = new EnumType(13, "CreateLegend", this);
   m_modeCreateLegend->setLabel("Create Legend Component");
+  m_modeCreateLegend->setType(te::layout::EnumCreate);
   m_enums.push_back(m_modeCreateLegend);
 
-  m_modeCreateRectangle = new EnumType(14, "CreateRectangle");
+  m_modeCreateRectangle = new EnumType(14, "CreateRectangle", this);
   m_modeCreateRectangle->setLabel("Create Rectangle Component");
+  m_modeCreateRectangle->setType(te::layout::EnumCreate);
   m_enums.push_back(m_modeCreateRectangle);
 
-  m_modeCreateText = new EnumType(15, "CreateText");
+  m_modeCreateText = new EnumType(15, "CreateText", this);
   m_modeCreateText->setLabel("Create Text Component");
+  m_modeCreateText->setType(te::layout::EnumCreate);
   m_enums.push_back(m_modeCreateText);
 
-  m_modeCreateItemGroup = new EnumType(16, "CreateItemGroup");
+  m_modeCreateItemGroup = new EnumType(16, "CreateItemGroup", this);
   m_modeCreateItemGroup->setLabel("Create Item Group Component");
+  m_modeCreateItemGroup->setType(te::layout::EnumCreate);
   m_enums.push_back(m_modeCreateItemGroup);
 
-  m_modeUnitsMetricsChange = new EnumType(17, "UnitsMetricsChange");
+  m_modeUnitsMetricsChange = new EnumType(17, "UnitsMetricsChange", this);
   m_modeUnitsMetricsChange->setLabel("Unit Metric Change");
+  m_modeUnitsMetricsChange->setType(te::layout::EnumAction);
   m_enums.push_back(m_modeUnitsMetricsChange);
 
-  m_modeExportPropsJSON = new EnumType(18, "ExportPropsJSON");
+  m_modeExportPropsJSON = new EnumType(18, "ExportPropsJSON", this);
   m_modeExportPropsJSON->setLabel("Export Properties To JSON");
+  m_modeExportPropsJSON->setType(te::layout::EnumDialog);
   m_enums.push_back(m_modeExportPropsJSON);
 
-  m_modeImportJSONProps = new EnumType(19, "ImportJSONProps");
+  m_modeImportJSONProps = new EnumType(19, "ImportJSONProps", this);
   m_modeImportJSONProps->setLabel("Import JSON To Properties");
+  m_modeImportJSONProps->setType(te::layout::EnumDialog);
   m_enums.push_back(m_modeImportJSONProps);
 
-  m_modeNewTemplate = new EnumType(20, "NewTemplate");
+  m_modeNewTemplate = new EnumType(20, "NewTemplate", this);
   m_modeNewTemplate->setLabel("New Template");
+  m_modeNewTemplate->setType(te::layout::EnumAction);
   m_enums.push_back(m_modeNewTemplate);
 
-  m_modeCreateScale = new EnumType(21, "CreateScale");
+  m_modeCreateScale = new EnumType(21, "CreateScale", this);
   m_modeCreateScale->setLabel("Create Scale Component");
+  m_modeCreateScale->setType(te::layout::EnumCreate);
   m_enums.push_back(m_modeCreateScale);
 
-  m_modeGroup = new EnumType(22, "Group");
+  m_modeGroup = new EnumType(22, "Group", this);
   m_modeGroup->setLabel("Group");
+  m_modeGroup->setType(te::layout::EnumAction);
   m_enums.push_back(m_modeGroup);
 
-  m_modeUngroup = new EnumType(23, "Ungroup");
+  m_modeUngroup = new EnumType(23, "Ungroup", this);
   m_modeUngroup->setLabel("Ungroup");
+  m_modeUngroup->setType(te::layout::EnumAction);
   m_enums.push_back(m_modeUngroup);
 
-  m_modeActiveLinesIntersectionMouse = new EnumType(24, "ActiveLinesIntersectionMouse");
+  m_modeActiveLinesIntersectionMouse = new EnumType(24, "ActiveLinesIntersectionMouse", this);
   m_modeActiveLinesIntersectionMouse->setLabel("Active Lines That Intersection Mouse");
+  m_modeActiveLinesIntersectionMouse->setType(te::layout::EnumTool);
   m_enums.push_back(m_modeActiveLinesIntersectionMouse);
 
-  m_modeOffLinesIntersectionMouse = new EnumType(25, "OffLinesIntersectionMouse");
+  m_modeOffLinesIntersectionMouse = new EnumType(25, "OffLinesIntersectionMouse", this);
   m_modeOffLinesIntersectionMouse->setLabel("Off Lines That Intersection Mouse");
+  m_modeOffLinesIntersectionMouse->setType(te::layout::EnumTool);
   m_enums.push_back(m_modeOffLinesIntersectionMouse);
 
-  m_modePrinter = new EnumType(26, "Printer");
+  m_modePrinter = new EnumType(26, "Printer", this);
   m_modePrinter->setLabel("Printer");
+  m_modePrinter->setType(te::layout::EnumDialog);
   m_enums.push_back(m_modePrinter);
 
-  m_modeExit = new EnumType(27, "Exit");
+  m_modeExit = new EnumType(27, "Exit", this);
   m_modeExit->setLabel("Exit");
+  m_modeExit->setType(te::layout::EnumAction);
   m_enums.push_back(m_modeExit);
 
-  m_modeSceneZoom = new EnumType(28, "SceneZoom");
+  m_modeSceneZoom = new EnumType(28, "SceneZoom", this);
   m_modeSceneZoom->setLabel("Scene Zoom");
+  m_modeSceneZoom->setType(te::layout::EnumAction);
   m_enums.push_back(m_modeSceneZoom);
 
-  m_modeBringToFront = new EnumType(29, "BringToFront");
+  m_modeBringToFront = new EnumType(29, "BringToFront", this);
   m_modeBringToFront->setLabel("Bring To Front");
+  m_modeBringToFront->setType(te::layout::EnumAction);
   m_enums.push_back(m_modeBringToFront);
 
-  m_modeSendToBack = new EnumType(30, "SendToBack");
+  m_modeSendToBack = new EnumType(30, "SendToBack", this);
   m_modeSendToBack->setLabel("Send To Back");
+  m_modeSendToBack->setType(te::layout::EnumAction);
   m_enums.push_back(m_modeSendToBack);
 
-  m_modeRecompose = new EnumType(31, "Recompose");
+  m_modeRecompose = new EnumType(31, "Recompose", this);
   m_modeRecompose->setLabel("Recompose");
+  m_modeRecompose->setType(te::layout::EnumAction);
   m_enums.push_back(m_modeRecompose);
 
-  m_modeCreateImage = new EnumType(32, "CreateImage");
+  m_modeCreateImage = new EnumType(32, "CreateImage", this);
   m_modeCreateImage->setLabel("Create Image Component");
+  m_modeCreateImage->setType(te::layout::EnumCreate);
   m_enums.push_back(m_modeCreateImage);
 
-  m_modePageConfig = new EnumType(33, "PageConfig");
+  m_modePageConfig = new EnumType(33, "PageConfig", this);
   m_modePageConfig->setLabel("Open Page Config");
+  m_modePageConfig->setType(te::layout::EnumDialog);
   m_enums.push_back(m_modePageConfig);
 
-  m_modeSystematicScale = new EnumType(34, "SystematicScale");
+  m_modeSystematicScale = new EnumType(34, "SystematicScale", this);
   m_modeSystematicScale->setLabel("Systematic Scale");
+  m_modeSystematicScale->setType(te::layout::EnumDialog);
   m_enums.push_back(m_modeSystematicScale);
 
-  m_modeCreatePoint = new EnumType(35, "CreatePoint");
+  m_modeCreatePoint = new EnumType(35, "CreatePoint", this);
   m_modeCreatePoint->setLabel("Create Point Component");
+  m_modeCreatePoint->setType(te::layout::EnumCreate);
   m_enums.push_back(m_modeCreatePoint);
 
-  m_modeCreateArrow = new EnumType(36, "CreateArrow");
+  m_modeCreateArrow = new EnumType(36, "CreateArrow", this);
   m_modeCreateArrow->setLabel("Create Arrow Component");
+  m_modeCreateArrow->setType(te::layout::EnumCreate);
   m_enums.push_back(m_modeCreateArrow);
 
-  m_modeCreateEllipse = new EnumType(37, "CreateEllipse");
+  m_modeCreateEllipse = new EnumType(37, "CreateEllipse", this);
   m_modeCreateEllipse->setLabel("Create Ellipse Component");
+  m_modeCreateEllipse->setType(te::layout::EnumCreate);
   m_enums.push_back(m_modeCreateEllipse);
 
-  m_modeCreateTitle = new EnumType(38, "CreateTitle");
+  m_modeCreateTitle = new EnumType(38, "CreateTitle", this);
   m_modeCreateTitle->setLabel("Create Title Component");
+  m_modeCreateTitle->setType(te::layout::EnumCreate);
   m_enums.push_back(m_modeCreateTitle);
 
-  m_modeCreateTextGrid = new EnumType(39, "CreateTextGrid");
+  m_modeCreateTextGrid = new EnumType(39, "CreateTextGrid", this);
   m_modeCreateTextGrid->setLabel("Create Text Grid");
+  m_modeCreateTextGrid->setType(te::layout::EnumCreate);
   m_enums.push_back(m_modeCreateTextGrid);
   
-  m_modeWidgetView = new EnumType(41, "WidgetView");
+  m_modeWidgetView = new EnumType(41, "WidgetView", this);
   m_modeWidgetView->setLabel("Widget View");
+  m_modeWidgetView->setType(te::layout::EnumDialog);
   m_enums.push_back(m_modeWidgetView);
 
-  m_modeWidgetInspector = new EnumType(42, "WidgetInspector");
+  m_modeWidgetInspector = new EnumType(42, "WidgetInspector", this);
   m_modeWidgetInspector->setLabel("Widget Inspector");
+  m_modeWidgetInspector->setType(te::layout::EnumDialog);
   m_enums.push_back(m_modeWidgetInspector);
 
-  m_modeWidgetProperties = new EnumType(43, "WidgetProperties");
+  m_modeWidgetProperties = new EnumType(43, "WidgetProperties", this);
   m_modeWidgetProperties->setLabel("Widget Properties");
+  m_modeWidgetProperties->setType(te::layout::EnumDialog);
   m_enums.push_back(m_modeWidgetProperties);
 
-  m_modeWidgetToolbar = new EnumType(44, "WidgetToolbar");
+  m_modeWidgetToolbar = new EnumType(44, "WidgetToolbar", this);
   m_modeWidgetToolbar->setLabel("Widget Toolbar");
   m_enums.push_back(m_modeWidgetToolbar);
 
-  m_modeMapCreateTextGrid = new EnumType(45, "CreateTextGrid");
+  m_modeMapCreateTextGrid = new EnumType(45, "CreateTextGrid", this);
   m_modeMapCreateTextGrid->setLabel("Create TextGrid Component");
+  m_modeMapCreateTextGrid->setType(te::layout::EnumCreate);
   m_enums.push_back(m_modeMapCreateTextGrid);
 
-  m_modeMapCreateTextMap = new EnumType(46, "CreateTextMap");
+  m_modeMapCreateTextMap = new EnumType(46, "CreateTextMap", this);
   m_modeMapCreateTextMap->setLabel("Create Text of a Map");
+  m_modeMapCreateTextMap->setType(te::layout::EnumCreate);
   m_enums.push_back(m_modeMapCreateTextMap);
 
-  m_modeAlignCenterHorizontal = new EnumType(47, "AlignCenterHorizontal");
+  m_modeAlignCenterHorizontal = new EnumType(47, "AlignCenterHorizontal", this);
   m_modeAlignCenterHorizontal->setLabel("Align center horizontal");
+  m_modeAlignCenterHorizontal->setType(te::layout::EnumAction);
   m_enums.push_back(m_modeAlignCenterHorizontal);
 
-  m_modeAlignCenterVertical = new EnumType(48, "AlignCenterVertical");
+  m_modeAlignCenterVertical = new EnumType(48, "AlignCenterVertical", this);
   m_modeAlignCenterVertical->setLabel("Align center vertical");
+  m_modeAlignCenterVertical->setType(te::layout::EnumAction);
   m_enums.push_back(m_modeAlignCenterVertical);
 
-  m_modeAlignLeft = new EnumType(49, "AlignLeft");
+  m_modeAlignLeft = new EnumType(49, "AlignLeft", this);
   m_modeAlignLeft->setLabel("Align Left");
+  m_modeAlignLeft->setType(te::layout::EnumAction);
   m_enums.push_back(m_modeAlignLeft);
 
-  m_modeAlignRight = new EnumType(50, "AlignRight");
+  m_modeAlignRight = new EnumType(50, "AlignRight", this);
   m_modeAlignRight->setLabel("Align Right");
+  m_modeAlignRight->setType(te::layout::EnumAction);
   m_enums.push_back(m_modeAlignRight);
 
-  m_modeAlignTop = new EnumType(51, "AlignTop");
+  m_modeAlignTop = new EnumType(51, "AlignTop", this);
   m_modeAlignTop->setLabel("Align Top");
+  m_modeAlignTop->setType(te::layout::EnumAction);
   m_enums.push_back(m_modeAlignTop);
 
-  m_modeAlignBottom = new EnumType(52, "AlignBottom");
+  m_modeAlignBottom = new EnumType(52, "AlignBottom", this);
   m_modeAlignBottom->setLabel("Align Bottom");
+  m_modeAlignBottom->setType(te::layout::EnumAction);
   m_enums.push_back(m_modeAlignBottom);
 
-  m_modeRemoveObject = new EnumType(53, "RemoveObject");
+  m_modeRemoveObject = new EnumType(53, "RemoveObject", this);
   m_modeRemoveObject->setLabel("Remove Component");
+  m_modeRemoveObject->setType(te::layout::EnumAction);
   m_enums.push_back(m_modeRemoveObject);
 
-  m_modeUndo = new EnumType(54, "Undo");
+  m_modeUndo = new EnumType(54, "Undo", this);
   m_modeUndo->setLabel("Undo");
+  m_modeUndo->setType(te::layout::EnumAction);
   m_enums.push_back(m_modeUndo);
 
-  m_modeRedo = new EnumType(55, "Redo");
+  m_modeRedo = new EnumType(55, "Redo", this);
   m_modeRedo->setLabel("Redo");
+  m_modeRedo->setType(te::layout::EnumAction);
   m_enums.push_back(m_modeRedo);
 
-  m_modeDrawSelectionMap = new EnumType(56, "DrawSelectionMap");
+  m_modeDrawSelectionMap = new EnumType(56, "DrawSelectionMap", this);
   m_modeDrawSelectionMap->setLabel("Draw Selection Map");
+  m_modeDrawSelectionMap->setType(te::layout::EnumAction);
   m_enums.push_back(m_modeDrawSelectionMap);
 
-  m_modeCreateLegendChild = new EnumType(57, "CreateLegendChild");
+  m_modeCreateLegendChild = new EnumType(57, "CreateLegendChild", this);
   m_modeCreateLegendChild->setLabel("Create Legend Child Component");
+  m_modeCreateLegendChild->setType(te::layout::EnumCreate);
   m_enums.push_back(m_modeCreateLegendChild);
 
-  m_modeLegendChildAsObject = new EnumType(58, "LegendChildAsObject");
+  m_modeLegendChildAsObject = new EnumType(58, "LegendChildAsObject", this);
   m_modeLegendChildAsObject->setLabel("Create Legend Child As Text Component");
+  m_modeLegendChildAsObject->setType(te::layout::EnumTool);
   m_enums.push_back(m_modeLegendChildAsObject);
 
-  m_modelObjectToImage = new EnumType(59, "ObjectToImage");
+  m_modelObjectToImage = new EnumType(59, "ObjectToImage", this);
   m_modelObjectToImage->setLabel("Selected Component To Image");
+  m_modelObjectToImage->setType(te::layout::EnumDialog);
   m_enums.push_back(m_modelObjectToImage);
 
-  m_inspectorCurrentItemChanged = new EnumType(60, "InspectorItemChanged");
+  m_inspectorCurrentItemChanged = new EnumType(60, "InspectorItemChanged", this);
   m_inspectorCurrentItemChanged->setLabel("Inspector Item Changed");
+  m_inspectorCurrentItemChanged->setType(te::layout::EnumAction);
   m_enums.push_back(m_inspectorCurrentItemChanged);
 
-  m_modelExportToPDF = new EnumType(61, "ExporttoPDF");
+  m_modelExportToPDF = new EnumType(61, "ExporttoPDF", this);
   m_modelExportToPDF->setLabel("Export To PDF");
+  m_modelExportToPDF->setType(te::layout::EnumDialog);
   m_enums.push_back(m_modelExportToPDF);
 }
 

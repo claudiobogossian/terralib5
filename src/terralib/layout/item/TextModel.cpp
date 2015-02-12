@@ -73,6 +73,13 @@ te::layout::Properties* te::layout::TextModel::getProperties() const
   pro_font.setMenu(true);
   m_properties->addProperty(pro_font);
 
+  Property pro_text;
+  pro_text.setName("Text");
+  pro_text.setId("");
+  pro_text.setValue(m_text, dataType->getDataTypeString());
+  pro_text.setVisible(false);
+  m_properties->addProperty(pro_text);
+
   return m_properties;
 }
 

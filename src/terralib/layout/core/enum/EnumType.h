@@ -30,6 +30,7 @@
 
 // TerraLib
 #include "../Config.h"
+#include "AbstractType.h"
 
 // STL
 #include <string>
@@ -38,6 +39,7 @@ namespace te
 {
   namespace layout
   {
+    class AbstractEnum;
     /*!
       \brief Class that represents the value of an enumeration. An enumeration is made of "1..n" objects EnumType.
 	  
@@ -53,7 +55,7 @@ namespace te
          \param id numeric value assigned
          \param name  
         */
-        EnumType(int id, std::string name);
+        EnumType(int id, std::string name, AbstractEnum* type);
 
         /*!
          \brief Destructor
@@ -94,12 +96,35 @@ namespace te
 		      \return new label 		  
         */
         void setLabel(std::string label);
+
+        /*!
+          \brief Returns enum type
+		  
+		      \return enum type	  
+        */
+        AbstractEnum* getParent();
+
+        /*!
+          \brief Returns enum type
+		  
+		      \return enum type	  
+        */
+        te::layout::EnumTypeFlags getType();
+
+        /*!
+          \brief Sets enum type
+		  
+		      \return enum type	  
+        */
+        void setType(te::layout::EnumTypeFlags type);
                 
       protected:
 
         int         m_id; //!< numeric value assigned
         std::string m_name; //!< name
         std::string m_label; //!< label
+        AbstractEnum* m_parent;
+        te::layout::EnumTypeFlags m_type;
     };
   }
 }

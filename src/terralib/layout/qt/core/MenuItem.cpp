@@ -123,7 +123,7 @@ void te::layout::MenuItem::createMenu( QList<QGraphicsItem*> items )
 
   foreach(Property prop, m_properties->getProperties()) 
   {
-    if(!prop.isMenu())
+    if(!prop.isMenu() || !prop.isVisible())
       continue;
 
     std::string label = prop.getLabel();
@@ -570,6 +570,10 @@ void te::layout::MenuItem::changePropertyValue( Property property )
 
   Scene* lScene = dynamic_cast<Scene*>(Context::getInstance().getScene()); 
 
+  std::vector<QGraphicsItem*> commandItems;
+  std::vector<Properties*> commandOld;
+  std::vector<Properties*> commandNew;
+
   foreach(QGraphicsItem* item, m_graphicsItems) 
   {
     if (item)
@@ -592,15 +596,19 @@ void te::layout::MenuItem::changePropertyValue( Property property )
           {
             beforeProps = lItem->getProperties();
             Properties* newCommand = new Properties(*beforeProps);
-            QUndoCommand* command = new ChangePropertyCommand(item, oldCommand, newCommand);
-            lScene->addUndoStack(command);
+            commandItems.push_back(item);
+            commandOld.push_back(oldCommand);
+            commandNew.push_back(newCommand);
           }
-
-          delete props;
-          props = 0;
         }       
       }
     }
+  }
+
+  if(!m_graphicsItems.isEmpty())
+  {
+    QUndoCommand* command = new ChangePropertyCommand(commandItems, commandOld, commandNew);
+    lScene->addUndoStack(command);
   }
 }
 

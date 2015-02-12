@@ -120,6 +120,16 @@ namespace te
           \brief Reimplemented from ItemObserver
          */
         virtual void updateProperties(te::layout::Properties* properties);
+
+        /*!
+          \brief Reimplemented from QGraphicsProxyWidget
+         */
+        QRectF boundingRect() const;
+
+        /*!
+          \brief Reimplemented from QGraphicsProxyWidget
+         */
+        virtual bool contains( const QPointF &point ) const;
                                 
       protected slots:
 
@@ -168,16 +178,6 @@ namespace te
       virtual void resizeEvent ( QGraphicsSceneResizeEvent * event );
 
       /*!
-          \brief Reimplemented from QGraphicsProxyWidget
-       */
-      virtual QVariant	itemChange ( GraphicsItemChange change, const QVariant & value );
-
-      /*!
-          \brief Reimplemented from QGraphicsProxyWidget
-       */
-      virtual bool	eventFilter ( QObject * object, QEvent * event );
-      
-      /*!
           \brief Reimplemented from ItemObserver
        */
       virtual te::gm::Coord2D getPosition();
@@ -210,6 +210,7 @@ namespace te
 
     protected:
 
+      QSize                                   m_mapSize; //!< The size of the map display in a zoom of 100%. This size is in pixels and is calculated based on the size of the GraphicItem in millimeters.
       QPixmap                                 m_pixmap;
       QPixmap                                 m_mapPixmap;
       QRectF                                  m_rect;//In local coordinate
@@ -221,7 +222,6 @@ namespace te
       double                                  m_wMargin;
       double                                  m_hMargin;
       te::map::AbstractLayerPtr               m_layer;
-      bool                                    m_move;
     };
   }
 }

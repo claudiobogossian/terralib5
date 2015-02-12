@@ -110,26 +110,31 @@ namespace te
       TPInch = 1
     };
     
-    //typedef enum
-    //{
-    //  StyleNone = 1,
-    //  StyleContinuous = 2,	//! continuos line grid
-    //  StyleCross = 3				//! cross grid
-    //} LayoutGridStyle;
-
     enum LayoutUnit
     {
       StyleMeter=1,
       StyleKilometer=1000
     };
 
-    enum SystematicScaleType
+    enum TELAYOUTEXPORT SystematicScaleType
     {
       S250000,		
       S100000,
       S50000,
       S25000,
       S0
+    };
+
+    /*!
+    \brief Enum EnumTypeFlags. This is the type of the EnumTypes.
+    */
+    enum TELAYOUTEXPORT EnumTypeFlags
+    {
+      EnumNone = 0,
+      EnumCreate = 1,
+      EnumTool = 2,
+      EnumAction = 3,
+      EnumDialog = 4
     };
   }
 }

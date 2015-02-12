@@ -20,7 +20,7 @@
 /*!
   \file DeleteCommand.h
    
-  \brief 
+  \brief Undo/Redo for delete one or more components.
 
   \ingroup layout
 */
@@ -43,16 +43,36 @@ namespace te
 {
   namespace layout
   {
+    /*!
+      \brief Undo/Redo for delete one or more components.
+	  
+	    \ingroup layout
+	  */
     class TELAYOUTEXPORT DeleteCommand : public QUndoCommand
     {
       public:
 
+        /*!
+          \brief Constructor
+
+          \param scene
+          \param parent
+        */
         DeleteCommand(QGraphicsScene* scene, QUndoCommand *parent = 0);
 
+        /*!
+          \brief Destructor
+        */
         virtual ~DeleteCommand();           
 
+        /*!
+          \brief Reimplemented from QUndoCommand
+        */
         virtual void undo();
 
+        /*!
+          \brief Reimplemented from QUndoCommand
+        */
         virtual void redo();
 
       protected:
