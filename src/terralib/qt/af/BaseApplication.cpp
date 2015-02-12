@@ -1202,7 +1202,7 @@ void te::qt::af::BaseApplication::onLayerHistogramTriggered()
     {
       ChartDisplayDockWidget* doc = new ChartDisplayDockWidget(dlg.getDisplayWidget(), this);
       doc->setSelectionColor(ApplicationController::getInstance().getSelectionColor());
-      doc->setWindowTitle("Histogram");
+      doc->setWindowTitle(tr("Histogram"));
       doc->setWindowIcon(QIcon::fromTheme("chart-bar"));
       doc->setLayer(selectedLayer.get());
 
@@ -1337,7 +1337,7 @@ void te::qt::af::BaseApplication::onLayerScatterTriggered()
       ChartDisplayDockWidget* doc = new ChartDisplayDockWidget(dlg.getDisplayWidget(), this);
 
       doc->setSelectionColor(ApplicationController::getInstance().getSelectionColor());
-      doc->setWindowTitle("Scatter");
+      doc->setWindowTitle(tr("Scatter"));
       doc->setWindowIcon(QIcon::fromTheme("chart-scatter"));
       ApplicationController::getInstance().addListener(doc);
       doc->setLayer(selectedLayer.get());
