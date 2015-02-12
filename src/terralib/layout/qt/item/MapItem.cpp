@@ -408,7 +408,7 @@ void te::layout::MapItem::mouseMoveEvent( QGraphicsSceneMouseEvent * event )
     QPointF point = event->pos();
     QPointF remappedPoint = remapPointToViewport(point, rect, m_mapDisplay->rect());
 
-    QMouseEvent mouseEvent(QEvent::MouseMove, remappedPoint,
+    QMouseEvent mouseEvent(QEvent::MouseMove, remappedPoint.toPoint(),
     event->button(),event->buttons(), event->modifiers());
     QApplication::sendEvent(m_mapDisplay, &mouseEvent);
     event->setAccepted(mouseEvent.isAccepted());
@@ -434,7 +434,7 @@ void te::layout::MapItem::mousePressEvent( QGraphicsSceneMouseEvent * event )
     QPointF point = event->pos();
     QPointF remappedPoint = remapPointToViewport(point, rect, m_mapDisplay->rect());
 
-    QMouseEvent mouseEvent(QEvent::MouseButtonPress, remappedPoint,
+    QMouseEvent mouseEvent(QEvent::MouseButtonPress, remappedPoint.toPoint(),
     event->button(),event->buttons(), event->modifiers());
     QApplication::sendEvent(m_mapDisplay, &mouseEvent);
     event->setAccepted(mouseEvent.isAccepted());
@@ -460,7 +460,7 @@ void te::layout::MapItem::mouseReleaseEvent( QGraphicsSceneMouseEvent * event )
     QPointF point = event->pos();
     QPointF remappedPoint = remapPointToViewport(point, rect, m_mapDisplay->rect());
 
-    QMouseEvent mouseEvent(QEvent::MouseButtonRelease, remappedPoint,
+    QMouseEvent mouseEvent(QEvent::MouseButtonRelease, remappedPoint.toPoint(),
     event->button(),event->buttons(), event->modifiers());
     QApplication::sendEvent(m_mapDisplay, &mouseEvent);
     event->setAccepted(mouseEvent.isAccepted());
