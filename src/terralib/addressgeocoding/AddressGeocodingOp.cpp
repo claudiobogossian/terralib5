@@ -92,18 +92,17 @@ void te::addressgeocoding::AddressGeocodingOp::setOutput(te::da::DataSourcePtr o
 
 bool te::addressgeocoding::AddressGeocodingOp::paramsAreValid()
 {
-  //if (!m_inDsetType.get())
-  //  return false;
-  //
-  //if (!m_inDsetType->hasGeom())
-  //  return false;
-  
-  //if (m_groupProps.empty())
-    //return false;
+  if (!m_inDsrc.get() || !m_inAddressDsrc.get())
+    return false;
+  if (m_inDsetName.empty() || m_inAddressDsetName.empty())
+    return false;
+  if (m_associatedProps.empty())
+    return false;
+  if (!m_outDsrc.get())
+    return false;
+  if (m_outDsetName.empty())
+    return false;
 
-  //if (m_outDsetName.empty() || !m_outDsrc.get())
-  //  return false;
-  
   return true;
 }
 
