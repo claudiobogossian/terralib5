@@ -105,6 +105,8 @@ namespace te
           \brief Returns true if current algorithm implementation runs ok, false otherwise.
 
           \param polygons    The vector of polygons (will be cleared) to get the result of the vectorization.
+          
+          \note The caller of this method must take the ownership of the returned geometries and must delete them when necessary.
         */
         bool run(std::vector<te::gm::Geometry*>& polygons);
 
