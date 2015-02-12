@@ -94,6 +94,8 @@ te::layout::ToolbarOutside::ToolbarOutside( OutsideController* controller, Obser
   m_optionRedo("redo"),
   m_optionDrawMap("draw_map"),
   m_optionObjectToImage("object_to_image"),
+  m_optionExit("exit"),
+  m_optionExportToPDF("export_to_pdf"),
   m_mapToolButton(0),
   m_mapToolsToolButton(0),
   m_geometryToolButton(0),
@@ -114,7 +116,9 @@ te::layout::ToolbarOutside::ToolbarOutside( OutsideController* controller, Obser
   m_removeObjectToolButton(0),
   m_undoToolButton(0),
   m_drawMapToolButton(0),
-  m_objectToImageButton(0)
+  m_objectToImageButton(0),
+  m_exitButton(0),
+  m_exportToPDFButton(0)
 {
 	setVisible(false);
 	setWindowTitle("Layout - Toolbar");
@@ -198,7 +202,13 @@ void te::layout::ToolbarOutside::createToolbar()
   createObjectToImageButton();
   this->addSeparator();
 
+  createExportToPDFButton();
+  this->addSeparator();
+
   createSceneZoomCombobox();
+  this->addSeparator();
+
+  createExitButton();
   this->addSeparator();
 }
 
@@ -624,6 +634,32 @@ QToolButton* te::layout::ToolbarOutside::createObjectToImageButton()
   return btn;
 }
 
+QToolButton* te::layout::ToolbarOutside::createExitButton()
+{
+  QToolButton *btn = createToolButton("Exit", "Exit", "layout-close");
+  btn->setCheckable(false);
+  connect(btn, SIGNAL(clicked(bool)), this, SLOT(onExitClicked(bool)));
+
+  this->addWidget(btn);
+
+  m_exitButton = btn;
+
+  return btn;
+}
+
+QToolButton* te::layout::ToolbarOutside::createExportToPDFButton()
+{
+  QToolButton *btn = createToolButton("Export To PDF", "Export to PDF", "layout-pdf");
+  btn->setCheckable(false);
+  connect(btn, SIGNAL(clicked(bool)), this, SLOT(onExportToPDFClicked(bool)));
+
+  this->addWidget(btn);
+
+  m_exportToPDFButton = btn;
+
+  return btn;
+}
+
 void te::layout::ToolbarOutside::onMapTriggered( QAction* action )
 {
   QToolButton* button = dynamic_cast<QToolButton*>(sender());
@@ -907,6 +943,18 @@ void te::layout::ToolbarOutside::onObjectToImageClicked( bool checked )
   changeAction(type->getModeObjectToImage());
 }
 
+void te::layout::ToolbarOutside::onExitClicked( bool checked )
+{
+  EnumModeType* type = Enums::getInstance().getEnumModeType();
+  changeAction(type->getModeExit());
+}
+
+void te::layout::ToolbarOutside::onExportToPDFClicked( bool checked )
+{
+  EnumModeType* type = Enums::getInstance().getEnumModeType();
+  changeAction(type->getModeExportToPDF());
+}
+
 void te::layout::ToolbarOutside::changeAction( EnumType* mode )
 {
   bool result = true;
@@ -1085,4 +1133,9 @@ QToolButton* te::layout::ToolbarOutside::getDrawMapToolButton()
 QToolButton* te::layout::ToolbarOutside::getObjectToImageButton()
 {
   return m_objectToImageButton;
+}
+
+QToolButton* te::layout::ToolbarOutside::getExitButton()
+{
+  return m_exitButton;
 }

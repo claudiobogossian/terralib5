@@ -62,7 +62,7 @@ te::layout::PropertiesOutside::PropertiesOutside( OutsideController* controller,
 	te::gm::Envelope box = m_model->getBox();	
 	setBaseSize(box.getWidth(), box.getHeight());
 	setVisible(false);
-	setWindowTitle("Layout - Propriedades");
+	setWindowTitle("Properties");
   setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
   
   if(!propertyBrowser)
@@ -189,7 +189,7 @@ void te::layout::PropertiesOutside::itemsSelected(QList<QGraphicsItem*> graphics
   
   foreach( Property prop, props->getProperties()) 
   {
-    if(prop.isMenu())
+    if(prop.isMenu() || !prop.isVisible())
       continue;
 
     checkDynamicProperty(prop, allItems);
@@ -207,6 +207,10 @@ void te::layout::PropertiesOutside::onChangePropertyValue( Property property )
     return;
 
   Scene* lScene = dynamic_cast<Scene*>(Context::getInstance().getScene()); 
+
+  std::vector<QGraphicsItem*> commandItems;
+  std::vector<Properties*> commandOld;
+  std::vector<Properties*> commandNew;
 
   foreach( QGraphicsItem *item, m_graphicsItems) 
   {
@@ -230,15 +234,19 @@ void te::layout::PropertiesOutside::onChangePropertyValue( Property property )
           {
             beforeProps = lItem->getProperties();
             Properties* newCommand = new Properties(*beforeProps);
-            QUndoCommand* command = new ChangePropertyCommand(item, oldCommand, newCommand, this);
-            lScene->addUndoStack(command);
+            commandItems.push_back(item);
+            commandOld.push_back(oldCommand);
+            commandNew.push_back(newCommand);
           }
-
-          delete props;
-          props = 0;
         }       
       }
     }
+  }
+
+  if(!m_graphicsItems.isEmpty())
+  {
+    QUndoCommand* command = new ChangePropertyCommand(commandItems, commandOld, commandNew, this);
+    lScene->addUndoStack(command);
   }
 
   changeMapVisitable(property);

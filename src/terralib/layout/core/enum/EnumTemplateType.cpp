@@ -51,10 +51,10 @@ te::layout::EnumTemplateType::~EnumTemplateType()
 
 void te::layout::EnumTemplateType::init()
 {
-  m_noneType = new EnumType(1, "NoneTemplate");
+  m_noneType = new EnumType(1, "NoneTemplate", this);
   m_enums.push_back(m_noneType);
 
-  m_jsonType = new EnumType(0, "JsonTemplate");
+  m_jsonType = new EnumType(0, "JsonTemplate", this);
   m_enums.push_back(m_jsonType);
 }
 

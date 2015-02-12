@@ -32,9 +32,11 @@
 #include "../../../common/StringUtils.h"
 
 
-te::layout::EnumType::EnumType( int id, std::string name ) :
+te::layout::EnumType::EnumType( int id, std::string name, te::layout::AbstractEnum* parent ) :
   m_id(id),
-  m_label("")
+  m_label(""),
+  m_parent(parent),
+  m_type(te::layout::EnumNone)
 {
   m_name = te::common::Convert2UCase(name);
 }
@@ -67,4 +69,19 @@ std::string te::layout::EnumType::getLabel()
 void te::layout::EnumType::setLabel( std::string label )
 {
   m_label = label;
+}
+
+te::layout::AbstractEnum* te::layout::EnumType::getParent()
+{
+  return m_parent;
+}
+
+te::layout::EnumTypeFlags te::layout::EnumType::getType()
+{
+  return m_type;
+}
+
+void te::layout::EnumType::setType( te::layout::EnumTypeFlags type )
+{
+  m_type = type;
 }

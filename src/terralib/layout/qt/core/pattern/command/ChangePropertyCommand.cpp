@@ -48,12 +48,29 @@ te::layout::ChangePropertyCommand::ChangePropertyCommand( QGraphicsItem* item, P
 
 }
 
+te::layout::ChangePropertyCommand::ChangePropertyCommand( std::vector<QGraphicsItem*> items, std::vector<Properties*> allOld, 
+  std::vector<Properties*> allNew, PropertiesOutside* outside /*= 0*/, QUndoCommand *parent /*= 0 */ ) :
+  QUndoCommand(parent),
+  m_item(0),
+  m_oldProperties(0),
+  m_newProperties(0),
+  m_outside(outside),
+  m_items(items),
+  m_allOldProperties(allOld),
+  m_allNewProperties(allNew)
+{
+
+}
+
 te::layout::ChangePropertyCommand::~ChangePropertyCommand()
 {
-  if(!m_item->scene())
+  if(m_item)
   {
-    delete m_item;
-    m_item = 0;
+    if(!m_item->scene())
+    {
+      delete m_item;
+      m_item = 0;
+    }
   }
 
   if(m_oldProperties)
@@ -67,29 +84,69 @@ te::layout::ChangePropertyCommand::~ChangePropertyCommand()
     delete m_newProperties;
     m_newProperties = 0;
   }
+
+  if(!m_allOldProperties.empty())
+  {
+    std::vector<Properties*>::iterator ito;
+    for(ito = m_allOldProperties.begin() ; ito != m_allOldProperties.end() ; ++ito)
+    { 
+      if(*ito)
+      {
+        Properties* props = *ito;
+        if(props)
+        {
+          delete props;
+          props = 0;
+        }
+      }
+    }
+    m_allOldProperties.clear();
+  }
+
+  if(!m_allNewProperties.empty())
+  {
+    std::vector<Properties*>::iterator itn;
+    for(itn = m_allNewProperties.begin() ; itn != m_allNewProperties.end() ; ++itn)
+    { 
+      if(*itn)
+      {
+        Properties* props = *itn;
+        if(props)
+        {
+          delete props;
+          props = 0;
+        }
+      }
+    }
+    m_allNewProperties.clear();
+  }
 }
 
 void te::layout::ChangePropertyCommand::undo()
 {
-  if(!m_item)
+  if(m_item)
+  {
+    if(!checkItem(m_item, m_oldProperties))
+    {
+      return;
+    }
+  }
+
+  if(!checkVectors())
+  {
     return;
-
-  ItemObserver* obs = dynamic_cast<ItemObserver*>(m_item);
-
-  if(!obs)
-    return;
-
-  ItemModelObservable* model = dynamic_cast<ItemModelObservable*>(obs->getModel());
-
-  if(!model)
-    return;
-
-  Properties* props = model->getProperties();  
-  if(equals(m_oldProperties, props))
-    return;
-
-  obs->updateProperties(m_oldProperties);
-
+  }
+  
+  for(unsigned int i = 0 ; i < m_items.size() ; ++i)
+  {
+    QGraphicsItem* item = m_items[i];
+    Properties* props = m_allOldProperties[i];
+    if (item)
+    {
+      checkItem(item, props);
+    }
+  }
+    
   if(m_outside)
   {
     m_outside->refreshOutside();
@@ -101,24 +158,28 @@ void te::layout::ChangePropertyCommand::undo()
 
 void te::layout::ChangePropertyCommand::redo()
 {
-  if(!m_item)
+  if(m_item)
+  {
+    if(!checkItem(m_item, m_newProperties))
+    {
+      return;
+    }
+  }
+  
+  if(!checkVectors())
+  {
     return;
+  }
 
-  ItemObserver* obs = dynamic_cast<ItemObserver*>(m_item);
-
-  if(!obs)
-    return;
-
-  ItemModelObservable* model = dynamic_cast<ItemModelObservable*>(obs->getModel());
-
-  if(!model)
-    return;
-
-  Properties* props = model->getProperties();  
-  if(equals(m_newProperties, props))
-    return;
-
-  obs->updateProperties(m_newProperties);
+  for(unsigned int i = 0 ; i < m_items.size() ; ++i)
+  {
+    QGraphicsItem* item = m_items[i];
+    Properties* props = m_allNewProperties[i];
+    if (item)
+    {
+      checkItem(item, props);
+    }
+  }
   
   if(m_outside)
   {
@@ -132,8 +193,14 @@ void te::layout::ChangePropertyCommand::redo()
 QString te::layout::ChangePropertyCommand::createCommandString( QGraphicsItem* item )
 {
   if(!m_item)
+  {
+    if(!m_items.empty())
+    {
+       return QObject::tr("%1 %2").arg(m_items.size()).arg("items");
+    }
     return QObject::tr("%1");
-
+  }
+    
   ItemObserver* obs = dynamic_cast<ItemObserver*>(item);
 
   if(!obs)
@@ -175,4 +242,38 @@ bool te::layout::ChangePropertyCommand::equals( Properties* props1, Properties* 
     }
   }
   return result;
+}
+
+bool te::layout::ChangePropertyCommand::checkItem( QGraphicsItem* item, Properties* props )
+{
+  if(!item)
+    return false;
+
+  ItemObserver* obs = dynamic_cast<ItemObserver*>(item);
+
+  if(!obs)
+    return false;
+
+  ItemModelObservable* model = dynamic_cast<ItemModelObservable*>(obs->getModel());
+
+  if(!model)
+    return false;
+
+  Properties* propsModel = model->getProperties();  
+  if(equals(props, propsModel))
+    return false;
+
+  obs->updateProperties(props);
+  return true;
+}
+
+bool te::layout::ChangePropertyCommand::checkVectors()
+{
+  if(m_allNewProperties.size() != m_items.size() ||
+    m_allOldProperties.size() != m_items.size())
+  {
+    return false;
+  }
+
+  return true;
 }

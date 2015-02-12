@@ -149,6 +149,8 @@ namespace te
 
           void onToolsQueryDataSourceTriggered();
 
+          void onToolsRasterMultiResolutionTriggered();
+
           void onProjectPropertiesTriggered();
 
           void onAddFolderLayerTriggered();
@@ -288,6 +290,7 @@ namespace te
           QAction* m_toolsDataExchangerDirectPopUp;
           QAction* m_toolsDataSourceExplorer;
           QAction* m_toolsQueryDataSource;
+          QAction* m_toolsRasterMultiResolution;
           QAction* m_pluginsManager;
           QAction* m_helpContents;
           QAction* m_helpUpdate;

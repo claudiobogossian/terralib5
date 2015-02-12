@@ -63,7 +63,7 @@ namespace te
 
         virtual void printPreview();
 
-        virtual bool savePaperAsPDF();
+        virtual bool exportToPDF();
 
       protected slots:
 

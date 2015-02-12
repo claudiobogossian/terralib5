@@ -226,88 +226,88 @@ te::layout::EnumObjectType::~EnumObjectType()
 
 void te::layout::EnumObjectType::init()
 {
-  m_objectUnknown = new EnumType(0, "None");
+  m_objectUnknown = new EnumType(0, "None", this);
   m_enums.push_back(m_objectUnknown);
 
-  m_rectangleItem = new EnumType(1, "Rectangle_Item");
+  m_rectangleItem = new EnumType(1, "Rectangle_Item", this);
   m_enums.push_back(m_rectangleItem);
 
-  m_mapItem = new EnumType(2, "Map_Item");
+  m_mapItem = new EnumType(2, "Map_Item", this);
   m_enums.push_back(m_mapItem);
 
-  m_mapGridItem = new EnumType(3, "MapGrid_Item");
+  m_mapGridItem = new EnumType(3, "MapGrid_Item", this);
   m_enums.push_back(m_mapGridItem);
 
-  m_paperItem = new EnumType(4, "Paper_Item");
+  m_paperItem = new EnumType(4, "Paper_Item", this);
   m_enums.push_back(m_paperItem);
 
-  m_legendItem = new EnumType(5, "Legend_Item");
+  m_legendItem = new EnumType(5, "Legend_Item", this);
   m_enums.push_back(m_legendItem);
 
-  m_propertiesWindow = new EnumType(6, "Properties_Window");
+  m_propertiesWindow = new EnumType(6, "Properties_Window", this);
   m_enums.push_back(m_propertiesWindow);
 
-  m_displayWindow = new EnumType(7, "Display_Window");
+  m_displayWindow = new EnumType(7, "Display_Window", this);
   m_enums.push_back(m_displayWindow);
 
-  m_objectInspectorWindow = new EnumType(8, "ObjectInspector_Window");
+  m_objectInspectorWindow = new EnumType(8, "ObjectInspector_Window", this);
   m_enums.push_back(m_objectInspectorWindow);
 
-  m_toolbar = new EnumType(9, "Toolbar");
+  m_toolbar = new EnumType(9, "Toolbar", this);
   m_enums.push_back(m_toolbar);
 
-  m_gridSettings  = new EnumType(10, "Grid_Settings");
+  m_gridSettings  = new EnumType(10, "Grid_Settings", this);
   m_enums.push_back(m_gridSettings);
 
-  m_gridPlanar = new EnumType(11, "Grid_Planar");
+  m_gridPlanar = new EnumType(11, "Grid_Planar", this);
   m_enums.push_back(m_gridPlanar);
 
-  m_gridGeodesic = new EnumType(12, "Grid_Geodesic");
+  m_gridGeodesic = new EnumType(12, "Grid_Geodesic", this);
   m_enums.push_back(m_gridGeodesic);
 
-  m_textItem = new EnumType(15, "Text_Item");
+  m_textItem = new EnumType(15, "Text_Item", this);
   m_enums.push_back(m_textItem);
 
-  m_itemGroup = new EnumType(16, "Item_Group");
+  m_itemGroup = new EnumType(16, "Item_Group", this);
   m_enums.push_back(m_itemGroup);
 
-  m_scaleItem = new EnumType(17, "Scale_Item");
+  m_scaleItem = new EnumType(17, "Scale_Item", this);
   m_enums.push_back(m_scaleItem);
 
-  m_pageSetup = new EnumType(18, "Page_Setup");
+  m_pageSetup = new EnumType(18, "Page_Setup", this);
   m_enums.push_back(m_pageSetup);
 
-  m_imageItem = new EnumType(19, "Image_Item");
+  m_imageItem = new EnumType(19, "Image_Item", this);
   m_enums.push_back(m_imageItem);
 
-  m_systematicScale = new EnumType(20, "Systematic_Scale");
+  m_systematicScale = new EnumType(20, "Systematic_Scale", this);
   m_enums.push_back(m_systematicScale);
 
-  m_pointItem = new EnumType(21, "Point_Item");
+  m_pointItem = new EnumType(21, "Point_Item", this);
   m_enums.push_back(m_pointItem);
 
-  m_arrowItem = new EnumType(22, "Arrow_Item");
+  m_arrowItem = new EnumType(22, "Arrow_Item", this);
   m_enums.push_back(m_arrowItem);
 
-  m_ellipseItem = new EnumType(23, "Ellipse_Item");
+  m_ellipseItem = new EnumType(23, "Ellipse_Item", this);
   m_enums.push_back(m_ellipseItem);
 
-  m_titleItem = new EnumType(24, "Title_Item");
+  m_titleItem = new EnumType(24, "Title_Item", this);
   m_enums.push_back(m_titleItem);
 
-  m_textGridItem = new EnumType(25, "TextGrid_Item");
+  m_textGridItem = new EnumType(25, "TextGrid_Item", this);
   m_enums.push_back(m_textGridItem);
   
-  m_editTemplate = new EnumType(27, "Edit_Template");
+  m_editTemplate = new EnumType(27, "Edit_Template", this);
   m_enums.push_back(m_editTemplate);
   
-  m_textGridSettings = new EnumType(29, "Text_Grid_Settings");
+  m_textGridSettings = new EnumType(29, "Text_Grid_Settings", this);
   m_enums.push_back(m_textGridSettings);
 
-  m_legendChildItem = new EnumType(30, "Legend_Child_Item");
+  m_legendChildItem = new EnumType(30, "Legend_Child_Item", this);
   m_enums.push_back(m_legendChildItem);
 
-  m_movingItemGroup = new EnumType(31, "Moving_Item_Group");
+  m_movingItemGroup = new EnumType(31, "Moving_Item_Group", this);
   m_enums.push_back(m_movingItemGroup);
 }
 

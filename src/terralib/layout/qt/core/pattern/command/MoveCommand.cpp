@@ -108,19 +108,41 @@ void te::layout::MoveCommand::redo()
   if(m_moveItems.size() != m_itemsPoints.size())
     return;
 
-  int size = m_moveItems.size();
-  int index = 0;
+  Scene* sc = dynamic_cast<Scene*>(Context::getInstance().getScene());
+  if(!sc)
+    return;
 
-  std::map<QGraphicsItem*, QPointF>::iterator it;
-  for (it = m_moveItems.begin(); it != m_moveItems.end(); ++it)
+  if(!sc->getUndoStack())
+    return;
+
+  bool resultFound = false;
+  
+  for(int i = 0 ; i < sc->getUndoStack()->count() ; ++i)
   {
-    QGraphicsItem* item = it->first;
-    QPointF ptNew = m_itemsPoints[index];
-    item->setPos(ptNew);
-    index++;
+    const QUndoCommand* cmd = sc->getUndoStack()->command(i);
+    if(cmd == this)
+    {
+      resultFound = true; 
+    }
   }
 
-  Scene* sc = dynamic_cast<Scene*>(Context::getInstance().getScene());
+  int size = m_moveItems.size();
+
+  //no makes redo while the command is not on the stack
+  if(resultFound)
+  {
+    int index = 0;
+
+    std::map<QGraphicsItem*, QPointF>::iterator it;
+    for (it = m_moveItems.begin(); it != m_moveItems.end(); ++it)
+    {
+      QGraphicsItem* item = it->first;
+      QPointF ptNew = m_itemsPoints[index];
+      item->setPos(ptNew);
+      index++;
+    }
+  }
+
   sc->update();
   setText(QObject::tr("Move %1").arg(size));
 }

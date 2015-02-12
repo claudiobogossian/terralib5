@@ -61,6 +61,7 @@ class QCloseEvent;
 class QGraphicsItemGroup;
 class QLineF;
 class QContextMenuEvent;
+class QEvent;
 
 namespace te
 {
@@ -70,6 +71,7 @@ namespace te
     class AbstractViewTool;
     class HorizontalRuler;
     class VerticalRuler;
+    class EnumType;
 
 	/*!
     \brief Class representing the view. This view is child of QGraphicsView, part of Graphics View Framework. 
@@ -157,6 +159,11 @@ namespace te
 		  \param visible visibility state	  
         */
         virtual void changeZoomFactor(double currentZoom);
+
+        /*!
+          \brief Method that sets View object for the Print function.  
+        */
+        virtual void exportToPDF();
                                         
       public slots:
 	  
@@ -218,6 +225,11 @@ namespace te
         */
         void changeZoom(double currentFactor);
 
+        /*!
+          \brief This signal is emitted when context change.
+        */
+        void changeContext();
+
       protected:
 
 		/*!
@@ -274,7 +286,7 @@ namespace te
           \brief Reimplemented from QGraphicsView
         */
         virtual void drawForeground ( QPainter * painter, const QRectF & rect );
-		
+        		
 		/*!
           \brief Groups selected objects
         */
@@ -284,7 +296,7 @@ namespace te
           \brief Method that delete Grouping object selected, but the individual objects continue to exist.
         */
         virtual void destroyItemGroup();
-        
+                
         virtual void resetDefaultConfig();
 
 		/*!
@@ -344,6 +356,8 @@ namespace te
         double                  m_height;
         bool                    m_isMoving;
         te::layout::MovingItemGroup* m_movingItemGroup;
+        bool                    m_updateItemPos;
+        EnumType*               m_oldMode;
     };
   }
 }

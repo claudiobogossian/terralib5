@@ -295,6 +295,8 @@ namespace te
           QWidget *widget = 0);
 
         virtual void redrawItems();
+
+        virtual void updateSelectedItemsPositions();
         
       signals:
 

@@ -244,6 +244,13 @@ namespace te
           \return value of old rotation
          */
         virtual double getOldAngle();
+
+        /*!
+          \brief Returns the value of old position.
+
+          \return value of old position
+         */
+        virtual te::gm::Coord2D getOldPos();
                 
       protected:
 
@@ -278,6 +285,7 @@ namespace te
         double                    m_angle; //!< value of rotation
         int                       m_hashCode;
         double                    m_oldAngle; //!< value of old rotation
+        te::gm::Coord2D           m_oldPos; //!< value of old position
     };
   }
 }

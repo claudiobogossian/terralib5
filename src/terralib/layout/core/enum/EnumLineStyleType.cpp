@@ -81,25 +81,25 @@ te::layout::EnumLineStyleType::~EnumLineStyleType()
 
 void te::layout::EnumLineStyleType::init()
 {
-  m_styleNone = new EnumType(0, "No Line");
+  m_styleNone = new EnumType(0, "No Line", this);
   m_enums.push_back(m_styleNone);
 
-  m_styleSolid = new EnumType(0, "Solid Line");
+  m_styleSolid = new EnumType(0, "Solid Line", this);
   m_enums.push_back(m_styleSolid);
 
-  m_styleDash = new EnumType(0, "Dash Line");
+  m_styleDash = new EnumType(0, "Dash Line", this);
   m_enums.push_back(m_styleDash);
 
-  m_styleDot = new EnumType(0, "Dot Line");
+  m_styleDot = new EnumType(0, "Dot Line", this);
   m_enums.push_back(m_styleDot);
 
-  m_styleDashDot = new EnumType(0, "Dash Dot Line");
+  m_styleDashDot = new EnumType(0, "Dash Dot Line", this);
   m_enums.push_back(m_styleDashDot);
 
-  m_styleDashDotDot = new EnumType(0, "Dash Dot Dot Line");
+  m_styleDashDotDot = new EnumType(0, "Dash Dot Dot Line", this);
   m_enums.push_back(m_styleDashDotDot);
 
-  m_styleCustomDash = new EnumType(0, "Custom Dash Line");
+  m_styleCustomDash = new EnumType(0, "Custom Dash Line", this);
   m_enums.push_back(m_styleCustomDash);
 }
 

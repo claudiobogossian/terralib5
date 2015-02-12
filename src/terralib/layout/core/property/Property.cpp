@@ -40,7 +40,8 @@ te::layout::Property::Property() :
   m_editable(true),
   m_label(""),
   m_menu(false),
-  m_icon("")
+  m_icon(""),
+  m_visible(true)
 {
   m_type = Enums::getInstance().getEnumDataType()->getDataTypeNone();
 }
@@ -252,4 +253,14 @@ std::string te::layout::Property::getIcon()
 bool te::layout::Property::isComplex()
 {
   return m_value.isComplex();
+}
+
+void te::layout::Property::setVisible( bool visible )
+{
+  m_visible = visible;
+}
+
+bool te::layout::Property::isVisible()
+{
+  return m_visible;
 }
