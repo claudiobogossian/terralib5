@@ -60,7 +60,6 @@
 
 //STL
 #include <memory>
-#include <cmath>
 
 float gammln( float xx )
 {
