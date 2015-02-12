@@ -377,6 +377,7 @@ class TablePopupFilter : public QObject
       m_view->viewport()->installEventFilter(this);
 
       m_view->connect(this, SIGNAL(createHistogram(const int&)), SLOT(createHistogram(const int&)));
+      m_view->connect(this, SIGNAL(createNormalDistribution(const int&)), SLOT(createNormalDistribution(const int&)));
       m_view->connect(this, SIGNAL(hideColumn(const int&)), SLOT(hideColumn(const int&)));
       m_view->connect(this, SIGNAL(showColumn(const int&)), SLOT(showColumn(const int&)));
       m_view->connect(this, SIGNAL(removeColumn(const int&)), SLOT(removeColumn(const int&)));
@@ -467,6 +468,11 @@ class TablePopupFilter : public QObject
               act4->setToolTip(tr("Creates a new histogram based on the data of the selected colunm."));
               m_hMenu->addAction(act4);
 
+              QAction* act10 = new QAction(m_hMenu);
+              act10->setText(tr("Normal Probability"));
+              act10->setToolTip(tr("Show a chart that displays the normal probability curve."));
+              m_hMenu->addAction(act10);
+
               QAction* act6 = new QAction(m_hMenu);
               act6->setText(tr("Statistics"));
               act6->setToolTip(tr("Show the statistics summary of the selected colunm."));
@@ -485,9 +491,9 @@ class TablePopupFilter : public QObject
               
             
               connect(act6, SIGNAL(triggered()), SLOT(showStatistics()));
-              connect (act5, SIGNAL(triggered()), SLOT(sortDataAsc()));
-              connect (act9, SIGNAL(triggered()), SLOT(sortDataDesc()));
-              
+              connect(act5, SIGNAL(triggered()), SLOT(sortDataAsc()));
+              connect(act9, SIGNAL(triggered()), SLOT(sortDataDesc()));
+              connect(act10, SIGNAL(triggered()), SLOT(createNormalDistribution()));
 
               if(m_caps.get())
               {
@@ -615,6 +621,11 @@ class TablePopupFilter : public QObject
       emit createHistogram(m_columnPressed);
     }
 
+    void createNormalDistribution()
+    {
+      emit createNormalDistribution(m_columnPressed);
+    }
+
     void hideColumn()
     {
       emit hideColumn(m_columnPressed);
@@ -682,6 +693,8 @@ class TablePopupFilter : public QObject
   signals:
 
     void createHistogram(const int&);
+
+    void createNormalDistribution(const int&);
 
     void hideColumn(const int&);
 
@@ -941,6 +954,11 @@ void te::qt::widgets::DataSetTableView::createHistogram(const int& column)
     emit createChartDisplay(te::qt::widgets::createHistogramDisplay(dataset,dataType, column, histogramWidget->getHistogram()));
 
   delete dialog;
+}
+
+void te::qt::widgets::DataSetTableView::createNormalDistribution(const int& column)
+{
+  emit createChartDisplay(te::qt::widgets::createNormalDistribution(m_layer->getData().get(), column));
 }
 
 void te::qt::widgets::DataSetTableView::hideColumn(const int& column)
