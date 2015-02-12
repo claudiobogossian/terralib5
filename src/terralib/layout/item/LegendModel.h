@@ -37,6 +37,7 @@
 #include "../core/pattern/derivativevisitor/AbstractVisitor.h"
 #include "../../maptools/AbstractLayer.h"
 #include "../../maptools/Canvas.h"
+#include "../../maptools/Grouping.h"
 #include "../core/Utils.h"
 #include "../core/Font.h"
 #include "../core/Config.h"
@@ -96,7 +97,13 @@ namespace te
 
         virtual std::map<te::gm::Point*, std::string> getCoordChildren();
 
-       protected:
+    private:
+        
+        virtual void drawGroupingLegend(te::map::Grouping* grouping, te::map::Canvas* canvas, Utils* utils);
+
+        virtual void drawStyleLegend(te::se::Style* style, te::map::Canvas* canvas, Utils* utils);
+
+    protected:
 
         virtual void visitDependent(ContextItem context);
 

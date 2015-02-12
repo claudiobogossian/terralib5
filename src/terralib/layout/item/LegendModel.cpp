@@ -39,10 +39,14 @@
 #include "../../geometry/Geometry.h"
 #include "../../geometry/Envelope.h"
 #include "../core/enum/Enums.h"
+#include "../../maptools/GroupingItem.h"
+#include "../../maptools/Enums.h"
 
 // STL
 #include <string>
 #include <sstream> 
+
+
 
 te::layout::LegendModel::LegendModel() :
   m_mapName(""),
@@ -97,12 +101,6 @@ void te::layout::LegendModel::drawLegend( te::map::Canvas* canvas, Utils* utils 
   if(!m_layer)
     return;
 
-  if(!m_layer->getStyle())
-    return;
-  
-  // Number of rules defined on feature type style
-  std::size_t nRules = m_layer->getStyle()->getRules().size();
-
   //Header
   std::string layerName = m_layer->getTitle();
   
@@ -120,20 +118,104 @@ void te::layout::LegendModel::drawLegend( te::map::Canvas* canvas, Utils* utils 
   double y1 = m_box.getUpperRightY() - m_borderDisplacement - htxt;
   canvas->drawText(x1, y1, layerName, 0);
 
-  //Line between title and symbols
-  /*canvas->setLineColor(te::color::RGBAColor(0,0,0,255));
-  te::gm::Envelope newBox(m_box.getLowerLeftX(), y1, m_box.getUpperRightX(), y1);
-  te::gm::LinearRing* line = utils->createSimpleLine(newBox);
-  utils->drawLineW(line);
-  if(line) delete line;*/
+  te::map::Grouping* grouping = m_layer->getGrouping();
+
+  if (grouping != 0 && grouping->isVisible() == true)
+  {
+    this->drawGroupingLegend(grouping, canvas, utils);
+  }
+  else if (m_layer->getStyle() != 0)
+  {
+    this->drawStyleLegend(m_layer->getStyle(), canvas, utils);
+  }
+
+}
+
+void te::layout::LegendModel::drawGroupingLegend( te::map::Grouping* grouping, te::map::Canvas* canvas, Utils* utils )
+{
+  std::string propertyName = grouping->getPropertyName();
+
+  std::vector<te::map::GroupingItem*> items = grouping->getGroupingItems();
+
+  te::map::GroupingType type = grouping->getType();
+
+  std::string layerName = m_layer->getTitle();
+
+  double wtxt = 0;
+  double htxt = 0;
+
+  utils->textBoundingBox(wtxt, htxt, layerName);
+
+  double x1 = m_box.getLowerLeftX() + m_borderDisplacement;
+  double y1 = m_box.getUpperRightY() - m_borderDisplacement - htxt;
+
+  for (unsigned int i = 0; i < items.size(); ++i)
+  {
+    std::string label = propertyName;
+    label += ": ";
+
+    te::map::GroupingItem* item = items[i];
+
+    if (type == te::map::UNIQUE_VALUE)
+    {
+      label += item->getValue();
+    }
+    else
+    {
+      std::string upperLimit = item->getUpperLimit();
+      std::string lowerLimit = item->getLowerLimit();
+
+      label += lowerLimit;
+      label += " ~ ";
+      label += upperLimit;
+    }
+
+    const std::vector<te::se::Symbolizer*>& symbolizers = item->getSymbolizers();
+
+
+    //Test
+    te::gm::Envelope box(x1, y1 - m_displacementBetweenTitleAndSymbols - (m_displacementBetweenSymbols * i), 
+      x1 + m_symbolsize, y1 - m_displacementBetweenTitleAndSymbols - (m_displacementBetweenSymbols * i) - m_symbolsize);
+    utils->drawRectW(box);
+
+    canvas->setTextPointSize(m_font.getPointSize());
+    canvas->setTextUnderline(m_font.isUnderline());
+    canvas->setTextStrikeOut(m_font.isStrikeout());
+    canvas->setTextColor(m_fontColor);
+
+    utils->textBoundingBox(wtxt, htxt, label);
+    canvas->drawText(box.getLowerLeftX() + m_symbolsize + m_displacementBetweenSymbolsAndText, box.m_ury, label, 0);
+  }
+}
+
+void te::layout::LegendModel::drawStyleLegend( te::se::Style* style, te::map::Canvas* canvas, Utils* utils )
+{
+  // Number of rules defined on feature type style
+  std::size_t nRules = m_layer->getStyle()->getRules().size();
   
   // Creates a canvas configurer
   te::map::CanvasConfigurer cc(canvas);
 
+  //Header
+  std::string layerName = m_layer->getTitle();
+
+  double wtxt = 0;
+  double htxt = 0;
+
+  canvas->setTextPointSize(m_font.getPointSize());
+  canvas->setTextUnderline(m_font.isUnderline());
+  canvas->setTextStrikeOut(m_font.isStrikeout());
+  canvas->setTextColor(m_fontColor);
+
+  utils->textBoundingBox(wtxt, htxt, layerName);
+
+  double x1 = m_box.getLowerLeftX() + m_borderDisplacement;
+  double y1 = m_box.getUpperRightY() - m_borderDisplacement - htxt;
+
   for(std::size_t i = 0; i < nRules; ++i) // for each <Rule>
   {
     // The current rule
-    te::se::Rule* rule = m_layer->getStyle()->getRule(i);
+    te::se::Rule* rule = style->getRule(i);
     assert(rule);
         
     // Gets the set of symbolizers defined on current rule
@@ -185,7 +267,6 @@ void te::layout::LegendModel::drawLegend( te::map::Canvas* canvas, Utils* utils 
     } // end for each <Symbolizer>
 
   }   // end for each <Rule>
-
 }
 
 te::layout::Properties* te::layout::LegendModel::getProperties() const
