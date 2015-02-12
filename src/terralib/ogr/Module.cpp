@@ -28,19 +28,18 @@
 #include "../common/Translator.h"
 #include "../dataaccess/datasource/DataSourceManager.h"
 #include "../dataaccess/datasource/DataSourceFactory.h"
-
 #include "../dataaccess/query/BinaryOpEncoder.h"
 #include "../dataaccess/query/FunctionEncoder.h"
 #include "../dataaccess/query/SQLDialect.h"
 #include "../dataaccess/query/SQLFunctionEncoder.h"
 #include "../dataaccess/query/TemplateEncoder.h"
 #include "../dataaccess/query/UnaryOpEncoder.h"
-
 #include "DataSource.h"
 #include "Globals.h"
 #include "Module.h"
 
 // OGR
+#include <cpl_conv.h>
 #include <ogr_api.h>
 
 te::ogr::Module::Module(const te::plugin::PluginInfo& pluginInfo)
@@ -64,6 +63,12 @@ void te::ogr::Module::startup()
   te::da::DataSourceFactory::add(OGR_DRIVER_IDENTIFIER, te::ogr::Build);
 
   #include "OGRDialect.h"
+
+#if GDAL_VERSION_NUM >= 1900
+  const char* currentValue = CPLGetConfigOption("GDAL_FIX_ESRI_WKT", "");
+  if(strcmp(currentValue, "") == 0) // to avoid override
+    CPLSetConfigOption("GDAL_FIX_ESRI_WKT", "GEOGCS");
+#endif
 
   TE_LOG_TRACE(TE_TR("TerraLib OGR driver startup!"));
 
