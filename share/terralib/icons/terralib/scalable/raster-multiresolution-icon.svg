@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="48px"
+   height="48px"
+   id="svg35730"
+   version="1.1"
+   inkscape:version="0.48.4 r9939"
+   sodipodi:docname="Novo documento 39">
+  <defs
+     id="defs35732">
+    <filter
+       color-interpolation-filters="sRGB"
+       id="d">
+      <!--  donkerder -->
+      <feColorMatrix
+         id="feColorMatrix35273"
+         values=".5"
+         type="saturate" />
+    </filter>
+    <filter
+       color-interpolation-filters="sRGB"
+       id="l">
+      <!-- licht donkerder -->
+      <feColorMatrix
+         id="feColorMatrix35270"
+         values=".65"
+         type="saturate" />
+    </filter>
+    <filter
+       color-interpolation-filters="sRGB"
+       id="filter35752">
+      <!--  donkerder -->
+      <feColorMatrix
+         id="feColorMatrix35754"
+         values=".5"
+         type="saturate" />
+    </filter>
+    <filter
+       color-interpolation-filters="sRGB"
+       id="filter35756">
+      <!-- licht donkerder -->
+      <feColorMatrix
+         id="feColorMatrix35758"
+         values=".65"
+         type="saturate" />
+    </filter>
+    <filter
+       color-interpolation-filters="sRGB"
+       id="filter35760">
+      <!--  donkerder -->
+      <feColorMatrix
+         id="feColorMatrix35762"
+         values=".5"
+         type="saturate" />
+    </filter>
+    <filter
+       color-interpolation-filters="sRGB"
+       id="filter35764">
+      <!-- licht donkerder -->
+      <feColorMatrix
+         id="feColorMatrix35766"
+         values=".65"
+         type="saturate" />
+    </filter>
+    <filter
+       color-interpolation-filters="sRGB"
+       id="filter35768">
+      <!--  donkerder -->
+      <feColorMatrix
+         id="feColorMatrix35770"
+         values=".5"
+         type="saturate" />
+    </filter>
+    <filter
+       color-interpolation-filters="sRGB"
+       id="filter35772">
+      <!-- licht donkerder -->
+      <feColorMatrix
+         id="feColorMatrix35774"
+         values=".65"
+         type="saturate" />
+    </filter>
+    <filter
+       color-interpolation-filters="sRGB"
+       id="filter35776">
+      <!-- licht donkerder -->
+      <feColorMatrix
+         id="feColorMatrix35778"
+         values=".65"
+         type="saturate" />
+    </filter>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="7"
+     inkscape:cx="24"
+     inkscape:cy="24"
+     inkscape:current-layer="layer1"
+     showgrid="true"
+     inkscape:grid-bbox="true"
+     inkscape:document-units="px"
+     inkscape:window-width="1920"
+     inkscape:window-height="1028"
+     inkscape:window-x="-8"
+     inkscape:window-y="1192"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata35735">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     id="layer1"
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer">
+    <g
+       style="stroke:#000000;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;overflow:visible;font-family:Times New Roman"
+       id="g35315"
+       transform="matrix(0.06804346,0,0,0.12625014,-1.0641205,-8.6352336)">
+      <g
+         id="piramide">
+        <g
+           style="fill:#4169e1"
+           id="laag5">
+          <polygon
+             id="polygon35277"
+             points="91,377 575,377 626,330 160,330 "
+             style="filter:url(#d)" />
+          <polygon
+             id="polygon35279"
+             points="629,440 575,377 626,330 690,384 "
+             style="opacity:0.8;filter:url(#l)" />
+          <polygon
+             id="polygon35281"
+             points="91,377 575,377 629,440 40,440 " />
+        </g>
+        <g
+           style="fill:#6495ed"
+           id="laag4">
+          <polygon
+             id="polygon35284"
+             points="152,302 515,302 554,267 224,267 "
+             style="filter:url(#d)" />
+          <polygon
+             id="polygon35286"
+             points="567,367 515,302 554,267 617,322 "
+             style="opacity:0.8;filter:url(#l)" />
+          <polygon
+             id="polygon35288"
+             points="101,367 567,367 515,302 152,302 " />
+        </g>
+        <g
+           style="fill:#00bfff"
+           id="laag3">
+          <polygon
+             id="polygon35291"
+             points="212,229 455,229 480,206 280,206 "
+             style="filter:url(#d)" />
+          <polygon
+             id="polygon35293"
+             points="455,229 508,292 544,260 481,206 "
+             style="opacity:0.8;filter:url(#l)" />
+          <polygon
+             id="polygon35295"
+             points="161,292 508,292 455,229 212,228 " />
+        </g>
+        <g
+           style="fill:#87cefa"
+           id="laag2">
+          <polygon
+             id="polygon35298"
+             points="274,154 395,154 408,142 316,142 "
+             style="filter:url(#d)" />
+          <polygon
+             id="polygon35300"
+             points="447,218 471,196 408,142 395,154 "
+             style="opacity:0.8;filter:url(#l)" />
+          <polygon
+             id="polygon35302"
+             points="221,218 447,218 395,154 274,154 " />
+        </g>
+        <g
+           style="fill:#b0e0e6"
+           id="laag1">
+          <polygon
+             id="polygon35305"
+             points="281,143 386,143 334,79 " />
+          <polygon
+             id="polygon35307"
+             points="386,143 398,133 334,79 "
+             style="opacity:0.8;filter:url(#l)" />
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>
