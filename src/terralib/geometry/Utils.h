@@ -120,7 +120,7 @@ namespace te
       
       \return It returns a target Coord2D in the line.
     */
-    TEGEOMEXPORT Coord2D* locateAlong(const LineString* line, int initial, int final, int target);
+    TEGEOMEXPORT Coord2D* locateAlong(const LineString* line, double initial, double final, double target);
 
   } // end namespace gm
 }   // end namespace te
