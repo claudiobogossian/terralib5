@@ -1109,8 +1109,7 @@ te::qt::widgets::ChartDisplayWidget* te::qt::widgets::createNormalDistribution(t
   normalCurve->setOrientation( Qt::Horizontal );
 
   int propType = dataset->getPropertyDataType(propId);
-  if((propType >= te::dt::INT16_TYPE && propType <= te::dt::UINT64_TYPE) || 
-    propType == te::dt::FLOAT_TYPE || propType == te::dt::DOUBLE_TYPE || propType == te::dt::NUMERIC_TYPE)
+  if(propType >= te::dt::INT16_TYPE && propType <= te::dt::NUMERIC_TYPE)
   {
     te::stat::NumericStatisticalSummary nss;
     std::vector<double> xValues = te::stat::GetNumericData(dataset, dataset->getPropertyName(propId)); 
