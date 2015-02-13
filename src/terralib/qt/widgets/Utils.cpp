@@ -31,6 +31,10 @@
 #include "../../se/Mark.h"
 #include "../../se/Stroke.h"
 #include "../../se/Utils.h"
+#include "../../dataaccess/datasource/DataSourceCapabilities.h"
+#include "../../dataaccess/datasource/DataSourceFactory.h"
+#include "../../dataaccess/datasource/DataSource.h"
+#include "../../common/StringUtils.h"
 #include "Utils.h"
 
 // Qt
@@ -45,6 +49,7 @@
 #include <QSettings>
 #include <QTreeWidgetItem>
 #include <QTreeWidgetItemIterator>
+#include <QString>
 
 void te::qt::widgets::SetChildrenCheckState(QTreeWidgetItem* item, int column, Qt::CheckState state)
 {
@@ -410,3 +415,51 @@ QString te::qt::widgets::Convert2Qt(const std::string& text, const te::common::C
     return text.c_str();
   }
 }
+
+QString te::qt::widgets::GetDiskRasterFileSelFilter()
+{
+  QString filter;
+  
+  if( te::da::DataSourceFactory::find( "GDAL" ) )
+  {
+    std::auto_ptr< te::da::DataSource > dsPtr = te::da::DataSourceFactory::make( "GDAL" );
+    
+    if( dsPtr.get() )
+    {
+      std::map< std::string, std::string > specCap = dsPtr->getCapabilities().getSpecificCapabilities();
+      
+      if( specCap.find( "SUPPORTED_EXTENSIONS" ) != specCap.end() )
+      {
+        std::string fileExtensions = specCap[ "SUPPORTED_EXTENSIONS" ];
+        std::string extFilter;
+        std::string uCaseToken;
+        std::string lCaseToken;
+        std::vector< std::string > tokens;
+        te::common::Tokenize( fileExtensions, tokens, ";" );
+        
+        for( unsigned int tokensIdx = 0 ; tokensIdx < tokens.size() ; ++tokensIdx )
+        {
+          uCaseToken = te::common::Convert2UCase( tokens[ tokensIdx ] );
+          lCaseToken = te::common::Convert2LCase( tokens[ tokensIdx ] );
+          extFilter = uCaseToken + " Raster File (" + "*." + lCaseToken + " *." +
+            uCaseToken + ")";
+          
+          if( uCaseToken == "TIF" )
+          {
+            filter = QString( extFilter.c_str() ) + ( filter.isEmpty() ? "" : ";;" ) + filter;
+          }
+          else
+          {
+            filter += ( filter.isEmpty() ? "" : ";;" ) + QString( extFilter.c_str() );
+          }
+        }
+      }
+    }
+  }
+  
+  filter += QString( ( filter.isEmpty() ? "" : ";;" ) ) + 
+    "Web Map Service - WMS (*.xml *.wms);;Web Coverage Service - WCS (*.xml *.wcs);;All Files (*.*)";
+  
+  return filter;
+}
+
