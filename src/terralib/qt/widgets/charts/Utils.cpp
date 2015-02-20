@@ -191,7 +191,7 @@ double getDouble(const std::string& value, std::vector<std::string>& sVector)
 
 double getDouble(te::dt::DateTime* dateTime)
 {
-  if(dateTime->getTypeCode() == te::dt::TIME_INSTANT)
+  if(dateTime->getDateTimeType() == te::dt::TIME_INSTANT)
   {
     std::auto_ptr<te::dt::TimeInstant> ti ((te::dt::TimeInstant*)dateTime);
     boost::gregorian::date basedate(1400, 01, 01);
@@ -201,7 +201,7 @@ double getDouble(te::dt::DateTime* dateTime)
     double v = (double) dias * 86400 + seconds;
     return v;
   }
-  else if(dateTime->getTypeCode() == te::dt::DATE)
+  else if(dateTime->getDateTimeType() == te::dt::DATE)
   {
     std::auto_ptr<te::dt::Date> d ((te::dt::Date*)dateTime);
     boost::gregorian::date basedate(1400, 01, 01);
@@ -694,9 +694,7 @@ te::qt::widgets::Scatter* te::qt::widgets::createScatter(te::da::DataSet* datase
       double x_doubleValue = 0.;
       double y_doubleValue = 0.;
 
-      if((xType >= te::dt::INT16_TYPE && xType <= te::dt::UINT64_TYPE) || 
-        xType == te::dt::FLOAT_TYPE || xType == te::dt::DOUBLE_TYPE || 
-        xType == te::dt::NUMERIC_TYPE)
+      if(xType >= te::dt::INT16_TYPE && xType <= te::dt::NUMERIC_TYPE)
       {
         if(dataset->isNull(propX))
           continue;
@@ -709,13 +707,11 @@ te::qt::widgets::Scatter* te::qt::widgets::createScatter(te::da::DataSet* datase
           continue;
 
         std::auto_ptr<te::dt::DateTime> dateTime = dataset->getDateTime(propX);
-        x_doubleValue = getDouble(dateTime.get());
+        x_doubleValue = getDouble(dateTime.release());
       }
 
       //======treat the Y value
-      if((yType >= te::dt::INT16_TYPE && yType <= te::dt::UINT64_TYPE) || 
-        yType == te::dt::FLOAT_TYPE || yType == te::dt::DOUBLE_TYPE || 
-        yType == te::dt::NUMERIC_TYPE)
+      if(yType >= te::dt::INT16_TYPE && yType <= te::dt::NUMERIC_TYPE)
       {
         if(dataset->isNull(propY))
           continue;
@@ -727,7 +723,7 @@ te::qt::widgets::Scatter* te::qt::widgets::createScatter(te::da::DataSet* datase
           continue;
 
         std::auto_ptr<te::dt::DateTime> dateTime = dataset->getDateTime(propY);
-        y_doubleValue = getDouble(dateTime.get());
+        y_doubleValue = getDouble(dateTime.release());
       }
 
       //insert values into the vectors
