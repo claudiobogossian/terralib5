@@ -171,7 +171,7 @@ float gammp( float a, float x )
   }
 }
 
-float erf( float x )
+float errFunction( float x )
 {
   return x < 0.0 ? -gammp(0.5, x*x) : gammp(0.5,x*x);
 }
@@ -1126,11 +1126,11 @@ te::qt::widgets::ChartDisplayWidget* te::qt::widgets::createNormalDistribution(t
     {
       double curYValue = xValues[i];
       if (curYValue > 0.)
-        curYValue = 0.5 + (erf ((float)(curYValue/std::sqrt(2.)))/2.);
+        curYValue = 0.5 + (errFunction ((float)(curYValue/std::sqrt(2.)))/2.);
       else
       {
         curYValue = -curYValue;
-        curYValue = 0.5 - (erf ((float)(curYValue/std::sqrt(2.)))/2.);
+        curYValue = 0.5 - (errFunction ((float)(curYValue/std::sqrt(2.)))/2.);
       }
       yValues.push_back(curYValue);
     }
