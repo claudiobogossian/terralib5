@@ -311,6 +311,13 @@ namespace te
         \return The converted string.
       */
       TEQTWIDGETSEXPORT QString Convert2Qt(const std::string& text, const te::common::CharEncoding& encoding);
+      
+      /*!
+        \brief Returns a disk raster file selection filter base on current supported formats.
+
+        \return Returns a disk raster file selection filter base on current supported formats.
+      */
+      TEQTWIDGETSEXPORT QString GetDiskRasterFileSelFilter();      
 
     } // end namespace widgets
   }   // end namespace qt

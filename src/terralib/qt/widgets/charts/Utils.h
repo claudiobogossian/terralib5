@@ -32,6 +32,7 @@
 //QWT
 #include <qwt_symbol.h>
 #include <qwt_text.h>
+#include <qwt_plot_curve.h>
 
 //STL
 #include <vector>
@@ -137,6 +138,8 @@ namespace te
         \note It will not take the ownership of the "dataType" pointer. 
         \note The caller will take the ownership of the returned ChartDisplayWidget pointer.
 
+        \return A pointer to a new ChartDisplayWidget that contains the generated chart
+
     */
     TEQTWIDGETSEXPORT ChartDisplayWidget* createHistogramDisplay(te::da::DataSet* dataset, te::da::DataSetType* dataType, int propId, int slices = 10, int stat = -1);
 
@@ -154,6 +157,7 @@ namespace te
         \note It will take ownership of the given histogram pointer and pass it along to the returned ChartDisplay.
         \note The caller will take the ownership of the returned ChartDisplayWidget pointer.
 
+        \return A pointer to a new ChartDisplayWidget that contains the generated chart
     */
     TEQTWIDGETSEXPORT ChartDisplayWidget* createHistogramDisplay(te::da::DataSet* dataset, te::da::DataSetType* dataType, int propId, Histogram* histogram);
 
@@ -192,7 +196,7 @@ namespace te
                   te::se::Stroke* backStroke);
 
     /*!
-      \function Mark2Symbol
+      \function Terralib2Qwt
 
       This function translates a terralib's Graphic object into a QWTSymbol object.
 
@@ -204,6 +208,22 @@ namespace te
       \note It will not take the ownership of the Graphic pointer.
     */
     TEQTWIDGETSEXPORT QwtSymbol* Terralib2Qwt(te::se::Graphic* graphic);
+
+    /*!
+      \function createNormalDistribution
+
+      This function translates a terralib's Graphic object into a QWTSymbol object.
+
+      \param dataset The dataset that will be used calculate the normal distribution.
+      \param propId The id of the property that contains the data.
+
+      \note The caller will take the ownership of the returned pointer.
+      \note It will not take the ownership of the "dataset" pointer.
+
+      \return A pointer to a new ChartDisplayWidget that contains the generated chart
+    */
+    TEQTWIDGETSEXPORT ChartDisplayWidget* createNormalDistribution(te::da::DataSet* dataset, int propId);
+
     } // end namespace widgets
   }   // end namespace qt
 }     // end namespace te
