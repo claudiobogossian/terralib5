@@ -71,8 +71,16 @@ namespace te
         */
         void setLayers(std::list<te::map::AbstractLayerPtr> layers);
 
+        te::map::AbstractLayerPtr getLayer();
+
       protected slots:
-        
+
+        void onLayerComboBoxChanged(int index);
+
+        void onTargetDatasourceToolButtonPressed();
+
+        void onTargetFileToolButtonPressed();
+
         void onHelpPushButtonClicked();
 
         void onOkPushButtonClicked();
@@ -82,9 +90,11 @@ namespace te
       private:
 
         std::auto_ptr<Ui::PolygonToLineDialogForm> m_ui;
-        te::da::DataSourceInfoPtr m_outputDatasource;                                     //!< DataSource information.
-        std::list<te::map::AbstractLayerPtr> m_layers;                                    //!< List of layers.
-        te::map::AbstractLayerPtr m_selectedLayer;                                        //!< Layer used for buffer
+        te::da::DataSourceInfoPtr m_outputDatasource;     //!< DataSource information.
+        std::list<te::map::AbstractLayerPtr> m_layers;    //!< List of layers.
+        te::map::AbstractLayerPtr m_selectedLayer;        //!< Layer used for operation.
+        te::map::AbstractLayerPtr m_outLayer;             //!< Resulting layer.
+        bool m_toFile;
     };
   }   // end namespace vp
 }     // end namespace te
