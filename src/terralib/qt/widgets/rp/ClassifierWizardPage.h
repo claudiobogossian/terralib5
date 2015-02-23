@@ -98,6 +98,8 @@ namespace te
 
           te::rp::Classifier::OutputParameters getOutputParams();
 
+          te::cl::ROISet* getROISet();
+
         protected:
 
           void fillClassifierTypes();
