@@ -958,7 +958,17 @@ void te::qt::widgets::DataSetTableView::createHistogram(const int& column)
 
 void te::qt::widgets::DataSetTableView::createNormalDistribution(const int& column)
 {
-  emit createChartDisplay(te::qt::widgets::createNormalDistribution(m_layer->getData().get(), column));
+  int propType = m_layer->getData()->getPropertyDataType(column);
+  if(propType >= te::dt::INT16_TYPE && propType <= te::dt::NUMERIC_TYPE)
+  {
+    emit createChartDisplay(te::qt::widgets::createNormalDistribution(m_layer->getData().get(), column));
+  }
+  else
+  {
+    QString msgErr(tr("This operation is not available for this type of data"));
+    QString msgTitle(tr("TNormal Probability"));
+    QMessageBox::warning(this, msgTitle, msgErr);
+  }
 }
 
 void te::qt::widgets::DataSetTableView::hideColumn(const int& column)

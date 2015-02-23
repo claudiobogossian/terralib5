@@ -613,6 +613,8 @@ namespace te
           \param g           A reference to a vector of geometries.
                              Will be filled with geometries found in band.
           \param b           The band index to vectorize.
+          
+          \note The caller of this method must take the ownership of the returned geometries and must delete them when necessary.
         */
         virtual void vectorize(std::vector<te::gm::Geometry*>& g, std::size_t b, unsigned int mp = 0);
 

@@ -299,6 +299,8 @@ te::gm::Coord2D te::layout::TextItem::getPosition()
 
 te::color::RGBAColor** te::layout::TextItem::getImage()
 {
+  refreshDocument();
+
   QImage img = createImage();
   te::color::RGBAColor** teImg = te::qt::widgets::GetImage(&img);
   return teImg;
