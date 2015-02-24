@@ -555,6 +555,12 @@ std::vector<double> te::attributefill::VectorToVectorMemory::getNumValues(std::v
 
   for(std::size_t i = 0; i < data.size(); ++i)
   {
+    if(!data[i])
+    {
+      result.push_back(0.0f);
+      continue;
+    }
+
     if(data[i]->getTypeCode() == te::dt::INT16_TYPE || 
        data[i]->getTypeCode() == te::dt::UINT16_TYPE || 
        data[i]->getTypeCode() == te::dt::INT32_TYPE || 
@@ -583,6 +589,12 @@ std::vector<std::string> te::attributefill::VectorToVectorMemory::getStrValues(s
 
   for(std::size_t i = 0; i < data.size(); ++i)
   {
+    if(!data[i])
+    {
+      result.push_back("");
+      continue;
+    }
+
     if(data[i]->getTypeCode() == te::dt::STRING_TYPE)
       result.push_back(data[i]->toString());
   }
@@ -685,8 +697,10 @@ std::vector<te::dt::AbstractData*> te::attributefill::VectorToVectorMemory::getD
   for(std::size_t i = 0; i < dsPos.size(); ++i)
   {
     fromDs->move(dsPos[i]);
-
-    result.push_back(fromDs->getValue(propertyName).release());
+    if(fromDs->isNull(propertyName))
+      result.push_back(0);
+    else
+      result.push_back(fromDs->getValue(propertyName).release());
   }
 
   return result;
