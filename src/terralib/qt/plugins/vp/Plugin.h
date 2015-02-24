@@ -45,6 +45,7 @@ namespace te
         class BufferAction;
         class GeometricOpAction;
         class IntersectionAction;
+        class MultipartToSinglepartAction;
         //class PolygonToLineAction;
         //class SummarizationAction;
         //class TransformationAction;
@@ -83,6 +84,7 @@ namespace te
             BufferAction* m_buffer;    //!< Buffer Operation Action
             GeometricOpAction* m_geometricOp;    //!< Geometric Operation
             IntersectionAction* m_intersection;    //!< Intersection Operation Action
+            MultipartToSinglepartAction* m_multipart2singlepart;    //!< Intersection Operation Action
             //PolygonToLineAction* m_polygonToLine;    //!< Polygon to Line Operation Action
             //SummarizationAction* m_summarization;    //!< Summarization Operation Action
             //TransformationAction* m_transformation;    //!< Transformation Operation Action
