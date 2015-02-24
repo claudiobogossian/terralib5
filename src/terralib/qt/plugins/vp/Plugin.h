@@ -46,8 +46,7 @@ namespace te
         class GeometricOpAction;
         class IntersectionAction;
         class MultipartToSinglepartAction;
-        //class PolygonToLineAction;
-        //class SummarizationAction;
+        class PolygonToLineAction;        //class SummarizationAction;
         //class TransformationAction;
 
         class Plugin : public te::plugin::Plugin
@@ -85,8 +84,7 @@ namespace te
             GeometricOpAction* m_geometricOp;    //!< Geometric Operation
             IntersectionAction* m_intersection;    //!< Intersection Operation Action
             MultipartToSinglepartAction* m_multipart2singlepart;    //!< Intersection Operation Action
-            //PolygonToLineAction* m_polygonToLine;    //!< Polygon to Line Operation Action
-            //SummarizationAction* m_summarization;    //!< Summarization Operation Action
+            PolygonToLineAction* m_polygonToLine;    //!< Polygon to Line Operation Action            //SummarizationAction* m_summarization;    //!< Summarization Operation Action
             //TransformationAction* m_transformation;    //!< Transformation Operation Action
 
         };
