@@ -43,6 +43,8 @@
 #include "PrintScene.h"
 #include "../../core/enum/EnumTemplateType.h"
 #include "ItemUtils.h"
+#include "../../item/LineModel.h"
+#include "WaitView.h"
 
 // Qt
 #include <QMouseEvent>
@@ -71,12 +73,15 @@ te::layout::View::View( QWidget* widget) :
   m_isMoving(false),
   m_movingItemGroup(0),
   m_updateItemPos(false),
-  m_oldMode(0)
+  m_oldMode(0),
+  m_wait(0),
+  m_flag(false)
 {
   setDragMode(RubberBandDrag);
 
   m_horizontalRuler = new HorizontalRuler;
   m_verticalRuler = new VerticalRuler;
+  m_wait = new WaitView(this);
 
   if(Enums::getInstance().getEnumModeType())
   {
@@ -159,13 +164,50 @@ void te::layout::View::mousePressEvent( QMouseEvent * event )
 
   EnumModeType* mode = Enums::getInstance().getEnumModeType();
 
+  if(m_flag && Context::getInstance().getWait() == mode->getModeCoordWait())
+  {
+    QPointF posPixel = event->pos();
+    m_wait->addCoord(posPixel);
+  } 
+  else
+  {
+    if(Context::getInstance().getWait() == mode->getModeCoordWait())
+    {
+      ItemObserver* oItem = Context::getInstance().getItem();
+
+      if (oItem)
+      {
+        LineModel* lm = dynamic_cast<LineModel*>(oItem->getModel());
+        lm->setCoords(m_wait->getCoordsW());
+        oItem->redraw( false );
+        m_wait->clear();
+        Context::getInstance().setItem(0);
+        Context::getInstance().setWait(mode->getModeNone());
+        m_flag = false;
+      }		  
+    }
+  }
+  
   if(Context::getInstance().getMode() == mode->getModeNone())
     return;
 
+  QGraphicsItem* it = 0;
+
   if(Context::getInstance().getMode()->getType() == te::layout::EnumCreate)
   {
-    sc->createItem(coord);
+    it = sc->createItem(coord);
   }
+
+  if(Context::getInstance().getWait() == mode->getModeCoordWait())
+  {
+    ItemObserver* iob = dynamic_cast<ItemObserver*>(it);
+
+    if (!iob)
+      return;
+
+    Context::getInstance().setItem(iob);
+    m_flag = true;
+  } 
 }
 
 void te::layout::View::mouseMoveEvent( QMouseEvent * event )
@@ -324,6 +366,10 @@ void te::layout::View::keyPressEvent( QKeyEvent* keyEvent )
   else if(keyEvent->key() == Qt::Key_Delete)
   {
     scne->removeSelectedItems();
+  }
+  else if(keyEvent->key() == Qt::Key_Escape)
+  {
+    m_flag = false;
   }
 
   QGraphicsView::keyPressEvent(keyEvent);
@@ -900,11 +946,35 @@ bool te::layout::View::isExceededLimit(double currentScale, double factor, doubl
 
 void te::layout::View::drawForeground( QPainter * painter, const QRectF & rect )
 {
-  if(!m_visibleRulers)
+  if ( !painter )
     return;
 
   QGraphicsView::drawForeground(painter, rect);
+  
+  painter->save();
+  painter->setMatrixEnabled(false);
+  painter->setPen(Qt::SolidLine);
 
+  QPainterPath path;
+
+  if(!m_wait->getCoords().empty())
+  {
+    QPainterPath pathZero (m_wait->getCoords()[0]);
+    path = pathZero;
+  }
+
+  for(int i = 0; i < m_wait->getCoords().size() ; ++i)
+  {
+    path.lineTo(m_wait->getCoords()[i]);
+  }
+
+  painter->drawPath(path);
+  painter->setMatrixEnabled(true);
+  painter->restore();
+
+  if(!m_visibleRulers)
+    return;
+    
   double scale = transform().m11();
 
   m_horizontalRuler->drawRuler(this, painter, scale);

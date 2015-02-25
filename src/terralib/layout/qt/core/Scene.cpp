@@ -714,6 +714,8 @@ void te::layout::Scene::drawItems( QPainter *painter, int numItems, QGraphicsIte
 
   //Just called in print mode
   // If item is the type QGraphicsTextItem, don't change.
+
+  // Paper don't have to change
   
   redrawItems();
 
@@ -729,23 +731,19 @@ void te::layout::Scene::drawItems( QPainter *painter, int numItems, QGraphicsIte
       continue;
     }
 
-    // Draw the item
-    painter->save();
-
-    // Check item with inverted matrix. Ex.: MapItem
+    // Check item with inverted matrix. 
     ItemObserver* itemObs = dynamic_cast<ItemObserver*>(items[i]);
     if(itemObs)
     {
-      if(itemObs->isInvertedMatrix())
+      if(!itemObs->isPrintable())
       {
-        painter->setMatrix(items[i]->sceneMatrix());
-      }
-      else
-      {
-        painter->setMatrix(items[i]->sceneMatrix(), true);
+        continue;
       }
     }
-    
+
+    // Draw the item
+    painter->save();
+    painter->setMatrix(items[i]->sceneMatrix(), true);    
     items[i]->paint(painter, &options[i], widget);
     painter->restore();
   }

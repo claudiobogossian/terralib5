@@ -108,7 +108,7 @@ namespace te
         /*!
           \brief Redraws the graphic component.
         */
-        virtual void redraw();
+        virtual void redraw(bool bRefresh = true);
         
         /*!
           \brief Modifies the state of the graphic component to be or not printable.
