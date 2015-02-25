@@ -200,14 +200,35 @@ namespace te
         */
         QGraphicsItem* createTitle();
 		
-		/*!
+		    /*!
           \brief Create graphic object of type LegendChildItem
 		  		  
-		  \return new object 
+		      \return new object 
         */
         QGraphicsItem* createLegendChild();
+
+        /*!
+          \brief Create graphic object of type LineItem
+		  		  
+		      \return new object 
+        */
+        QGraphicsItem* createLine();
+
+       /*!
+          \brief Create graphic object of type PolygonItem
+		  		  
+		      \return new object 
+        */
+        QGraphicsItem* createPolygon();
+
+       /*!
+          \brief Create graphic object of type Balloon
+		  		  
+		      \return new object 
+        */
+        QGraphicsItem* createBalloon();
         
-		/*!
+		   /*!
           \brief Creates the name of the new graphic object. Adds the number that corresponds to how many objects of this type have already been created.
 
           \param name of the class type of the graphic object
@@ -235,6 +256,9 @@ namespace te
         std::string             m_textGridItem; //!< Part of the name that will be set to a new object of type TextGridItem.
         std::string             m_titleItem; //!< Part of the name that will be set to a new object of type TitleItem.
         std::string             m_legendChildItem; //!< Part of the name that will be set to a new object of type LegendChildItem.
+        std::string				      m_lineItem; //!< Part of the name that will be set to a new object of type LineItem.
+        std::string             m_polygonItem; //!< Part of the name that will be set to a new object of type PolygonItem.
+        std::string             m_balloonItem; //!< Part of the name that will be set to a new object of type BalloonItem.
     };
   }
 }

@@ -40,6 +40,7 @@
 #include "../../../../common/Singleton.h"
 #include "../../SystematicScaleConfig.h"
 #include "../../PaperConfig.h"
+#include "../mvc/ItemObserver.h"
 
 namespace te
 {
@@ -305,6 +306,14 @@ namespace te
         */
         ItemUtils* getItemUtils();
 
+        virtual EnumType* getWait();
+
+        virtual void setWait(EnumType* wait);
+
+        virtual ItemObserver* getItem();
+
+        virtual void setItem(ItemObserver* item);
+
         private:
       
             /*!
@@ -345,6 +354,8 @@ namespace te
         SystematicScaleConfig*      m_systematicConfig; //!<
         AbstractProxyProject*       m_proxyProject; //!< provide a surrogate or placeholder for te::qt::af::Project to control access to it
         ItemUtils*                  m_itemUtils; //!< pointer for manipulating items in the scene and vectorization of text and legend
+        EnumType*				            m_wait;
+        ItemObserver*			          m_item;
     };
   }
 }

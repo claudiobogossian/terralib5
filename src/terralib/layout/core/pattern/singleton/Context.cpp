@@ -54,7 +54,9 @@ te::layout::Context::Context() :
   m_buildGraphicsItem(0),
   m_systematicConfig(0),
   m_proxyProject(0),
-  m_itemUtils(0)
+  m_itemUtils(0),
+  m_wait(0),
+  m_item(0)
 {
   EnumModeType* type = Enums::getInstance().getEnumModeType();
   if(type)
@@ -270,4 +272,24 @@ void te::layout::Context::setItemUtils( ItemUtils* utils )
 te::layout::ItemUtils* te::layout::Context::getItemUtils()
 {
   return m_itemUtils;
+}
+
+te::layout::EnumType* te::layout::Context::getWait()
+{
+  return m_wait;
+}
+
+void te::layout::Context::setWait( EnumType* wait )
+{
+  m_wait = wait;
+}
+
+te::layout::ItemObserver* te::layout::Context::getItem()
+{
+  return m_item;
+}
+
+void te::layout::Context::setItem( ItemObserver* item )
+{
+  m_item = item;
 }

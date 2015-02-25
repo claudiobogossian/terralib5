@@ -72,6 +72,8 @@ te::layout::ToolbarOutside::ToolbarOutside( OutsideController* controller, Obser
   m_optionPoint("geometry_point"),
   m_optionEllipse("geometry_ellipse"),
   m_optionArrow("geometry_arrow"),
+  m_optionLine("geometry_line"),
+  m_optionPolygon("geometry_polygon"),
   m_optionViewPan("view_pan"),
   m_optionViewZoomIn("view_zoom_in"),
   m_optionViewZoomOut("view_zoom_out"),
@@ -84,6 +86,7 @@ te::layout::ToolbarOutside::ToolbarOutside( OutsideController* controller, Obser
   m_optionImage("text_image"),
   m_optionStringGrid("text_stringGrid"),
   m_optionTitle("text_title"),
+  m_optionBalloon("text_balloon"),
   m_optionAlignLeft("align_left"),
   m_optionAlignRight("align_right"),
   m_optionAlignTop("align_top"),
@@ -299,6 +302,12 @@ QToolButton* te::layout::ToolbarOutside::createGeometryToolButton()
   QAction* actionPoint = createAction("Point Object", m_optionPoint, "layout-point", "", menu);
   menu->addAction(actionPoint);
 
+  QAction* actionLine = createAction("Line Object", m_optionLine, "layout-drawline", "", menu); 
+  menu->addAction(actionLine);
+
+  QAction* actionPolygon = createAction("Polygon Object", m_optionPolygon, "layout-polygon", "", menu); 
+  menu->addAction(actionPolygon);
+
   btnGeometry->setMenu(menu);
   btnGeometry->setPopupMode(QToolButton::MenuButtonPopup);
   btnGeometry->setDefaultAction(actionRectagle);
@@ -466,6 +475,9 @@ QToolButton* te::layout::ToolbarOutside::createTextToolButton()
 
   QAction* actionImage = createAction("Image Object", m_optionImage, "layout-image", "", menu);
   menu->addAction(actionImage);
+
+  QAction* actionBalloon = createAction("Balloon Object", m_optionBalloon, "layout-ballon", "", menu); 
+  menu->addAction(actionBalloon);
 
   btn->setMenu(menu);
   btn->setPopupMode(QToolButton::MenuButtonPopup);
@@ -754,6 +766,16 @@ void te::layout::ToolbarOutside::onGeometryTriggered( QAction* action )
   {
     changeAction(type->getModeCreatePoint());
   }
+  else if (action->objectName().compare(m_optionLine.c_str()) == 0) 
+  {
+    changeAction(type->getModeCreateLine());
+    Context::getInstance().setWait(type->getModeCoordWait());
+  }
+  else if (action->objectName().compare(m_optionPolygon.c_str()) == 0) 
+  {
+    changeAction(type->getModeCreatePolygon());
+    Context::getInstance().setWait(type->getModeCoordWait());
+  }
 }
 
 void te::layout::ToolbarOutside::onViewAreaTriggered( QAction* action )
@@ -886,6 +908,10 @@ void te::layout::ToolbarOutside::onTextToolsTriggered( QAction* action )
   else if(action->objectName().compare(m_optionImage.c_str()) == 0)
   {
     changeAction(type->getModeCreateImage());
+  }
+  else if(action->objectName().compare(m_optionBalloon.c_str()) == 0)
+  {
+    changeAction(type->getModeCreateBalloon());
   }
 }
 
