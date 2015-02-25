@@ -20,7 +20,7 @@
 /*!
   \file AggregationMemory.h
 
-  \brief Aggregation Vector Processing functions.
+  \brief Polygon to Line Vector Processing functions.
 */
 
 //Terralib
@@ -127,32 +127,6 @@ bool te::vp::PolygonToLineMemory::run()
   te::vp::Save(m_outDsrc.get(), outDSet.get(), outDsType.get());
 
   return true;
-}
-
-
-std::auto_ptr<te::da::DataSetType> te::vp::PolygonToLineMemory::buildOutDataSetType()
-{
-  std::auto_ptr<te::da::DataSetType> inDsType = m_inDsrc->getDataSetType(m_inDsetName);
-  std::auto_ptr<te::da::DataSetType> outDsType(new te::da::DataSetType(m_outDset));
-
-  std::vector<te::dt::Property*> vecProps = inDsType->getProperties();
-  for(std::size_t i = 0; i < vecProps.size(); ++i)
-  {
-    if(vecProps[i]->getType() != te::dt::GEOMETRY_TYPE)
-    {
-      outDsType->add(vecProps[i]->clone());
-    }
-    else
-    {
-      te::gm::GeometryProperty* inGeom = static_cast<te::gm::GeometryProperty*>(vecProps[i]);
-      te::gm::GeometryProperty* outGeom = new te::gm::GeometryProperty(inGeom->getName());
-      outGeom->setGeometryType(te::gm::MultiLineStringType);
-      outGeom->setSRID(inGeom->getSRID());
-      outDsType->add(outGeom);
-    }
-  }
-
-  return outDsType;
 }
 
 std::auto_ptr<te::gm::MultiLineString> te::vp::PolygonToLineMemory::polygon2Line(te::gm::Geometry* geom)

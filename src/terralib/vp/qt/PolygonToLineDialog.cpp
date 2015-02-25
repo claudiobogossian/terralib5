@@ -261,7 +261,7 @@ void te::vp::PolygonToLineDialog::onOkPushButtonClicked()
       dsOGR->open();
       if (dsOGR->dataSetExists(outputDataSet))
       {
-        QMessageBox::information(this, "Aggregation", "There is already a dataset with the requested name in the output data source. Remove it or select a new name and try again.");
+        QMessageBox::information(this, "Polygon to Line", "There is already a dataset with the requested name in the output data source. Remove it or select a new name and try again.");
         return;
       }
 
@@ -289,7 +289,7 @@ void te::vp::PolygonToLineDialog::onOkPushButtonClicked()
       {
         this->setCursor(Qt::ArrowCursor);
         dsOGR->close();
-        QMessageBox::information(this, "Polygon to Line", "Error: could not generate the aggregation.");
+        QMessageBox::information(this, "Polygon to Line", "Error: Error in operation.");
         reject();
       }
       dsOGR->close();
