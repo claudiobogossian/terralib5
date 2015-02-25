@@ -91,8 +91,6 @@ te::vp::MultipartToSinglepartDialog::MultipartToSinglepartDialog(QWidget* parent
 
   m_outputDatasource = te::da::DataSourceInfoPtr();
   m_ui->m_newLayerNameLineEdit->setEnabled(true);
-
-  m_ui->m_onlySelectedCheckBox->setVisible(false); // Não desenvolvido ainda
 }
 
 te::vp::MultipartToSinglepartDialog::~MultipartToSinglepartDialog()

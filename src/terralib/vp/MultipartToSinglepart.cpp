@@ -39,6 +39,9 @@
 
 #include "../geometry/Geometry.h"
 #include "../geometry/GeometryProperty.h"
+#include "../geometry/MultiLineString.h"
+#include "../geometry/MultiPoint.h"
+#include "../geometry/MultiPolygon.h"
 #include "../geometry/Utils.h"
 
 #include "../memory/DataSet.h"
@@ -158,7 +161,7 @@ bool te::vp::MultipartToSinglepart::runAll()
 
 bool te::vp::MultipartToSinglepart::runSelected()
 {
-  /*std::auto_ptr<te::da::DataSet> inDs;
+  std::auto_ptr<te::da::DataSet> inDs;
 
   inDs = m_inDsrc->getDataSet(m_inDsName);
 
@@ -179,16 +182,20 @@ bool te::vp::MultipartToSinglepart::runSelected()
     te::da::ObjectId* geomOid = te::da::GenerateOID(inDs.get(), m_oidSet->getPropertyNames());
 
     std::vector<te::gm::Geometry*> geoms;
+    std::vector<te::gm::Geometry*> multiGeoms;
 
     if(m_oidSet->contains(geomOid))
     {
       te::vp::Multi2Single(geom.release(), geoms);
 
-
+      for(std::size_t i = 0; i < geoms.size(); ++i)
+      {
+        multiGeoms.push_back(single2multi(geoms[i]));
+      }
     }
     else
     {
-      geoms.push_back(geom.get());
+      geoms.push_back(geom.release());
     }
 
     if(geoms.size() == 1)
@@ -213,7 +220,7 @@ bool te::vp::MultipartToSinglepart::runSelected()
     }
     else
     {
-      for(std::size_t g = 0; g < geoms.size(); ++g)
+      for(std::size_t g = 0; g < multiGeoms.size(); ++g)
       {
         te::mem::DataSetItem* item = new te::mem::DataSetItem(outDs.get());
 
@@ -228,7 +235,7 @@ bool te::vp::MultipartToSinglepart::runSelected()
           else if(i != geomPos)
             item->setValue((i+1), inDs->getValue(i).release());
           else
-            item->setGeometry((i+1), geoms[g]);
+            item->setGeometry((i+1), multiGeoms[g]);
         }
 
         outDs->add(item);
@@ -236,7 +243,7 @@ bool te::vp::MultipartToSinglepart::runSelected()
     }
   }
 
-  te::vp::Save(m_outDsrc.get(), outDs.get(), outDst.get());*/
+  te::vp::Save(m_outDsrc.get(), outDs.get(), outDst.get());
   return true;
 }
 
@@ -284,4 +291,85 @@ std::auto_ptr<te::da::DataSetType> te::vp::MultipartToSinglepart::getOutDst(bool
   }
 
   return outDst;
+}
+
+te::gm::Geometry* te::vp::MultipartToSinglepart::single2multi(te::gm::Geometry* geom)
+{
+  switch(geom->getGeomTypeId())
+  {
+    case te::gm::LineStringType:
+    {
+      te::gm::MultiLineString* g = new te::gm::MultiLineString(0, te::gm::MultiLineStringType);
+      g->add(geom);
+      return g;
+    }
+    case te::gm::LineStringMType:
+    {
+      te::gm::MultiLineString* g = new te::gm::MultiLineString(0, te::gm::MultiLineStringMType);
+      g->add(geom);
+      return g;
+    }
+    case te::gm::LineStringZType:
+    {
+      te::gm::MultiLineString* g = new te::gm::MultiLineString(0, te::gm::MultiLineStringZType);
+      g->add(geom);
+      return g;
+    }
+    case te::gm::LineStringZMType:
+    {
+      te::gm::MultiLineString* g = new te::gm::MultiLineString(0, te::gm::MultiLineStringZMType);
+      g->add(geom);
+      return g;
+    }
+    case te::gm::PointType:
+    {
+      te::gm::MultiPoint* g = new te::gm::MultiPoint(0, te::gm::MultiPointType);
+      g->add(geom);
+      return g;
+    }
+    case te::gm::PointMType:
+    {
+      te::gm::MultiPoint* g = new te::gm::MultiPoint(0, te::gm::MultiPointMType);
+      g->add(geom);
+      return g;
+    }
+    case te::gm::PointZType:
+    {
+      te::gm::MultiPoint* g = new te::gm::MultiPoint(0, te::gm::MultiPointZType);
+      g->add(geom);
+      return g;
+    }
+    case te::gm::PointZMType:
+    {
+      te::gm::MultiPoint* g = new te::gm::MultiPoint(0, te::gm::MultiPointZMType);
+      g->add(geom);
+      return g;
+    }
+    case te::gm::PolygonType:
+    {
+      te::gm::MultiPolygon* g = new te::gm::MultiPolygon(0, te::gm::MultiPolygonType);
+      g->add(geom);
+      return g;
+    }
+    case te::gm::PolygonMType:
+    {
+      te::gm::MultiPolygon* g = new te::gm::MultiPolygon(0, te::gm::MultiPolygonMType);
+      g->add(geom);
+      return g;
+    }
+    case te::gm::PolygonZType:
+    {
+      te::gm::MultiPolygon* g = new te::gm::MultiPolygon(0, te::gm::MultiPolygonZType);
+      g->add(geom);
+      return g;
+    }
+    case te::gm::PolygonZMType:
+    {
+      te::gm::MultiPolygon* g = new te::gm::MultiPolygon(0, te::gm::MultiPolygonZMType);
+      g->add(geom);
+      return g;
+    }
+    default:
+      return 0;
+  }
 }
