@@ -64,8 +64,6 @@ namespace te
 
     private:
 
-      std::auto_ptr<te::da::DataSetType> buildOutDataSetType();
-
       std::auto_ptr<te::gm::MultiLineString> polygon2Line(te::gm::Geometry* geom);
 
       void getLines(te::gm::Geometry* geom, std::vector<te::gm::LineString*>& lines);

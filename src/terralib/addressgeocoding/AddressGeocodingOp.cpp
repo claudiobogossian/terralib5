@@ -193,7 +193,7 @@ std::auto_ptr<te::mem::DataSet> dataSetMemory(new te::mem::DataSet(outDsType.get
         if(vecProps[i]->getType() != te::dt::GEOMETRY_TYPE && vecProps[i]->getName() != "tsvector")
         {
           if(dsQuery->isNull(i) == false)
-            itemMemory->setValue(i, dsQuery->getValue(i).release());
+            itemMemory->setValue(vecProps[i]->getName(), dsQuery->getValue(i).release());
 
           if(vecProps[i]->getName() == m_initialLeft || vecProps[i]->getName() == m_initialRight)
           {

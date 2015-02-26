@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file AggregationQuery.h
+  \file PolygonToLineQuery.h
    
   \brief 
  

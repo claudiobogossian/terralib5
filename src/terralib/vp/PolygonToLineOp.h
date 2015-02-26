@@ -73,6 +73,8 @@ namespace te
       
     protected:
 
+      std::auto_ptr<te::da::DataSetType> buildOutDataSetType();
+
       te::gm::GeomType getGeomResultType(te::gm::GeomType geom);
       
       te::da::DataSourcePtr m_inDsrc;

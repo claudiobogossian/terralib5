@@ -59,6 +59,31 @@ void te::vp::PolygonToLineOp::setOutput(te::da::DataSourcePtr outDsrc, std::stri
   m_outDset = dsname;
 }
 
+std::auto_ptr<te::da::DataSetType> te::vp::PolygonToLineOp::buildOutDataSetType()
+{
+  std::auto_ptr<te::da::DataSetType> inDsType = m_inDsrc->getDataSetType(m_inDsetName);
+  std::auto_ptr<te::da::DataSetType> outDsType(new te::da::DataSetType(m_outDset));
+
+  std::vector<te::dt::Property*> vecProps = inDsType->getProperties();
+  for(std::size_t i = 0; i < vecProps.size(); ++i)
+  {
+    if(vecProps[i]->getType() != te::dt::GEOMETRY_TYPE)
+    {
+      outDsType->add(vecProps[i]->clone());
+    }
+    else
+    {
+      te::gm::GeometryProperty* inGeom = static_cast<te::gm::GeometryProperty*>(vecProps[i]);
+      te::gm::GeometryProperty* outGeom = new te::gm::GeometryProperty(inGeom->getName());
+      outGeom->setGeometryType(te::gm::MultiLineStringType);
+      outGeom->setSRID(inGeom->getSRID());
+      outDsType->add(outGeom);
+    }
+  }
+
+  return outDsType;
+}
+
 te::gm::GeomType te::vp::PolygonToLineOp::getGeomResultType(te::gm::GeomType geom)
 {
   if (geom == te::gm::PolygonType)
