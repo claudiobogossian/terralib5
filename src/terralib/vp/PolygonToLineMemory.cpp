@@ -88,6 +88,10 @@ bool te::vp::PolygonToLineMemory::run()
 
   std::auto_ptr<te::mem::DataSet> outDSet(new te::mem::DataSet(outDsType.get()));
 
+  te::common::TaskProgress task("Processing...");
+  task.setTotalSteps(inDset->size());
+  task.useTimer(true);
+
   inDset->moveBeforeFirst();
   while(inDset->moveNext())
   {
@@ -122,6 +126,11 @@ bool te::vp::PolygonToLineMemory::run()
       continue;
 
     outDSet->add(outDsItem);
+
+    if (task.isActive() == false)
+      throw te::vp::Exception(TE_TR("Operation canceled!"));
+  
+    task.pulse();
   }
 
   te::vp::Save(m_outDsrc.get(), outDSet.get(), outDsType.get());

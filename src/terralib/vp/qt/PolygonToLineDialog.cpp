@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../../common/progress/ProgressManager.h"
 #include "../../common/Translator.h"
 #include "../../common/STLUtils.h"
 #include "../../dataaccess/dataset/DataSetType.h"
@@ -41,6 +42,7 @@
 #include "../../qt/af/Utils.h"
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../../qt/widgets/layer/utils/DataSet2Layer.h"
+#include "../../qt/widgets/progress/ProgressViewerDialog.h"
 #include "../Config.h"
 #include "../Exception.h"
 #include "../PolygonToLineMemory.h"
@@ -238,6 +240,10 @@ void te::vp::PolygonToLineDialog::onOkPushButtonClicked()
 
   bool res;
 
+  //progress
+  te::qt::widgets::ProgressViewerDialog v(this);
+  int id = te::common::ProgressManager::getInstance().addViewer(&v);
+
   try
   {
     if(m_toFile)
@@ -372,11 +378,11 @@ void te::vp::PolygonToLineDialog::onOkPushButtonClicked()
     QMessageBox::information(this, "Polygon to Line", e.what());
     
 //    te::common::Logger::logDebug("vp", e.what());
-//    te::common::ProgressManager::getInstance().removeViewer(id);
+    te::common::ProgressManager::getInstance().removeViewer(id);
     return;
   }
 
-//  te::common::ProgressManager::getInstance().removeViewer(id);
+  te::common::ProgressManager::getInstance().removeViewer(id);
   this->setCursor(Qt::ArrowCursor);
 
   accept();

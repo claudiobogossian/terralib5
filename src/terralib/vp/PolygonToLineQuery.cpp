@@ -147,7 +147,7 @@ bool te::vp::PolygonToLineQuery::run()
   te::da::Select select_Line(line_fields, fromLine);
   te::da::SubSelect subSelect_Line(select_Line, "line");
 
-// Union the lines by register
+// Collect the lines by register
   te::da::Fields* union_fields = new te::da::Fields;
   for(std::size_t i = 0; i < props.size(); ++i)
   {
