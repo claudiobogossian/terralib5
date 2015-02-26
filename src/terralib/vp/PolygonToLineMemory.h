@@ -35,7 +35,7 @@
 #include "../memory/DataSet.h"
 #include "../statistics/core/Enums.h"
 
-#include "PolygonTolineOp.h"
+#include "PolygonToLineOp.h"
 #include "Config.h"
 #include "Enums.h"
 #include "Exception.h"

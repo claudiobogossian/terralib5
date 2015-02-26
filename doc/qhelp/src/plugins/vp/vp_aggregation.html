@@ -1,224 +1,138 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-
-
-
-
-    
-  
-  
-  
-  <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
-
-
-
-
-    
-  
-  
-  
+  <meta content="text/html; charset=ISO-8859-1"
+ http-equiv="content-type">
   <title>Aggregation</title>
 </head>
-
-
 <body>
-
-
-
-
-    <font face="Calibri Light"><span style="font-family: Calibri Light;"><span style="font-weight: bold;"></span></span></font>
-    
-<h3 style="text-align: center;"><font face="Calibri Light"><span style="font-family: Calibri Light;">Aggregation</span></font></h3>
-
-
-
-
-    
+<font face="Calibri Light"><span style="font-family: Calibri Light;"><span
+ style="font-weight: bold;"></span></span></font>
+<h3 style="text-align: center;"><font face="Calibri Light"><span
+ style="font-family: Calibri Light;">Aggregation</span></font></h3>
 <div style="text-align: justify;">
-      
 <div style="text-align: left;">
-        
-<p><font face="Calibri Light">This operation aggregates objects of a layer based on specified attributes. Objects with
-        the same value for the specified attributes will be part of the same group.&nbsp;</font></p>
-
-
-
+<p><font face="Calibri Light">This operation aggregates objects of a
+layer based on specified attributes. Objects with the same value for
+the specified attributes will be part of the same group.&nbsp;</font></p>
 <p><font face="Calibri Light">The output is a new layer that contains
 an object for each group identified in the input layer.&nbsp;</font></p>
-
-
-<p><font face="Calibri Light">The geometry of each group is the
-        result of the spatial UNION of all objects geometry aggregated to that group.&nbsp;</font></p>
-
-
-<p><font face="Calibri Light">The attributes of each group are composed at least by all attributes used to aggregate, an <i>ID</i>, and a new one called&nbsp;<i>NUM_OBJ</i> to register the number of objects used to generate the group.&nbsp;<font face="Calibri Light">Besides that, some attributes can be chosen to be&nbsp;summarized using the following </font></font><font face="Calibri Light"><font face="Calibri Light">statistical parameter: 
-            
+<p><font face="Calibri Light">The geometry of each group is the result
+of the spatial UNION of all objects geometry aggregated to that
+group.&nbsp;</font></p>
+<p><font face="Calibri Light">The attributes of each group are composed
+at least by all attributes used to aggregate, an <i>ID</i>, and a new
+one called&nbsp;<i>NUM_OBJ</i> to register the number of objects used
+to generate the group.&nbsp;<font face="Calibri Light">Besides that,
+some attributes can be chosen to be&nbsp;summarized using the following
+</font></font><font face="Calibri Light"><font face="Calibri Light">statistical
+parameter:
 <ul>
-
-
-
-
-            	<li>for numerical properties: MINIMUN VALUE, MAXIMUM VALUE, MEAN, SUM, TOTAL NUMBER OF VALUES, 
-            	TOTAL NUMBER OF NOT NULL VALUES, STANDARD DEVIATION, VARIANCE, SKEWNESS, KURTOSIS, AMPLITUDE, MEDIAN, 
-            	COEFFICIENT OF VARIATION and MODE;</li>
-
-
-
+  <li>for numerical properties: MINIMUN VALUE, MAXIMUM VALUE, MEAN,
+SUM, TOTAL NUMBER OF VALUES, TOTAL NUMBER OF NOT NULL VALUES, STANDARD
+DEVIATION, VARIANCE, SKEWNESS, KURTOSIS, AMPLITUDE, MEDIAN, COEFFICIENT
+OF VARIATION and MODE;</li>
   <br>
-
-
-
-
-            	<li>for text properties: MINIMUN VALUE (lexicographical), MAXIMUM VALUE (lexicographical), TOTAL NUMBER OF VALUES and 
-            	TOTAL NUMBER OF NOT NULL VALUES</li>
-
-
+  <li>for text properties: MINIMUN VALUE (lexicographical), MAXIMUM
+VALUE (lexicographical), TOTAL NUMBER OF VALUES and TOTAL NUMBER OF NOT
+NULL VALUES</li>
 </ul>
-
-
 </font></font></p>
-
-
 <p><font face="Calibri Light">It is
 accessed through:</font></p>
-
-
-<p><font face="Calibri Light"><font face="Calibri Light"><b>&nbsp;&nbsp;&nbsp; Vector Processing
-              &gt;&nbsp;</b></font><font face="Calibri Light"><b>Aggregation...</b></font></font><font face="Calibri Light"><br>
-
-
-
-
-
+<p><font face="Calibri Light"><font face="Calibri Light"><b>&nbsp;&nbsp;&nbsp;</b></font></font><font
+ face="Calibri Light"><font face="Calibri Light"><b>Plugins &gt; </b></font></font><font
+ face="Calibri Light"><font face="Calibri Light"><b> Vector Processing
+&gt;&nbsp;</b></font><font face="Calibri Light"><b>Aggregation...</b></font></font><font
+ face="Calibri Light"><br>
 </font>
-
-
-
 </p>
-
-
 <ol>
-
-
-  <li><font face="Calibri Light"><font>Select the <i>Input layer</i> to apply the aggregation. Optionally use <i>Filter </i></font></font>with part of the layer name to filter the input layers displayed.</li>
-
-
-  <li><font face="Calibri Light">Select one or more <i>attributes</i>&nbsp;</font><font face="Calibri Light"><font>that will be used to aggregate&nbsp;objects with the same value.</font></font></li>
-
-
-  <li><font face="Calibri Light"><font>Optionally, check the option&nbsp;<i>Calculate Statistics</i> if you wish to calculate some statistical summarization
-            over other attributes not used in the aggregation.</font></font></li>
-
-
-  
-  
+  <li><font face="Calibri Light"><font>Select the <i>Input layer</i>
+to apply the aggregation.</font></font></li>
+  <li><font face="Calibri Light">Select one or more <i>attributes</i>&nbsp;</font><font
+ face="Calibri Light"><font>that will be used to aggregate&nbsp;objects
+with the same value.</font></font></li>
+  <li><font face="Calibri Light"><font>Optionally use <i>Filter </i>with
+part of the attribute name to filter the attributes displayed</font></font>.</li>
+  <li><font face="Calibri Light"><font>Optionally, check the option <span
+ style="font-style: italic;">Only selected </span>if you wish to
+process only the objects that are selected in the map display.</font></font></li>
+  <li><font face="Calibri Light"><font>Optionally, check the
+option&nbsp;<i>Calculate Statistics</i> if you wish to calculate some
+statistical summarization over other attributes not used in the
+aggregation.</font></font></li>
   <ul>
-
-
-    <li><font face="Calibri Light"><font>For each attribute select </font></font><font face="Calibri Light"><font>the statistical summarization wished (<i>Mean, Sum, Max, Min</i>, ...)</font></font></li>
-
-
-  
-  
+    <li><font face="Calibri Light"><font>For each attribute select </font></font><font
+ face="Calibri Light"><font>the statistical summarization wished (<i>Mean,
+Sum, Max, Min</i>, ...)</font></font></li>
   </ul>
-
-
-  <li><font face="Calibri Light">Inform the <i>Output Repository</i> by clicking on:</font></li>
+  <li><font face="Calibri Light">Inform the <i>Output Repository</i>
+by clicking on:</font></li>
   <ol>
-    <li><font face="Calibri Light">&nbsp;(...) to select the output directory and also inform the new layer name to store the result, or</font></li>
+    <li><font face="Calibri Light">&nbsp;(...) to select the output
+directory and also inform the new layer name to store the result, or</font></li>
     <li><font face="Calibri Light">(icon) to select the Data Source.</font></li>
   </ol>
-
-
-  <li><font face="Calibri Light">Inform the&nbsp;new&nbsp;<i>Layer Name</i> to store the aggregation result, if the repository is a data source.</font></li>
-
-
-  
-  <li><font face="Calibri Light">Click&nbsp;<b>OK</b> to perform the operation or&nbsp;<b>Cancel</b> to close the interface.</font></li>
-
-
+  <li><font face="Calibri Light">Inform the&nbsp;new&nbsp;<i>Layer Name</i>
+to store the aggregation result, if the repository is a data source.</font></li>
+  <li><font face="Calibri Light">Click&nbsp;<b>OK</b> to perform the
+operation or&nbsp;<b>Cancel</b> to close the interface.</font></li>
 </ol>
-
-
 <font face="Calibri Light"><b>Usage Tips:</b></font>
-
-<font face="Calibri Light">        </font>
-
-<font face="Calibri Light">         </font>
-<p><font face="Calibri Light"><font face="Calibri Light">The Aggregation result can be stored in different TerraLib data sources. Check <a style="font-family: Calibri Light;" href="../../widgets/datasource_selector/datasource_selector.html">data
-source
-              selector</a><span style="font-family: Calibri Light;"> for more details on how to
-              select a data source.</span></font></font></p>
-
-
-
-
-<font face="Calibri Light">        </font>
+<font face="Calibri Light"> </font><font face="Calibri Light"> </font>
+<p><font face="Calibri Light"><font face="Calibri Light">The
+Aggregation result can be stored in different TerraLib data sources.
+Check <a style="font-family: Calibri Light;"
+ href="../../widgets/datasource_selector/datasource_selector.html">data
+source selector</a><span style="font-family: Calibri Light;"> for more
+details on how to select a data source.</span></font></font></p>
+<font face="Calibri Light"> </font>
 <p><font face="Calibri Light"><font face="Calibri Light">The request
 for summarization statistics generates attributes for the groups. Its
 names are the input attribute name combined with the statistic
 parameter name used. For example, suppose that the input data has an
-attribute called&nbsp;<i>population</i> that will be summarized by the parameter
+attribute called&nbsp;<i>population</i> that will be summarized by the
+parameter
 sum. In this case the attribute of the group will be called<i>&nbsp;population_SUM</i>.&nbsp;</font></font></p>
-
-
 <p><font face="Calibri Light"><font face="Calibri Light">The
-output data source is also responsible for validating the&nbsp;attribute
-names in each group. If they are not acceptable they might be modified. For example,
+output data source is also responsible for validating
+the&nbsp;attribute
+names in each group. If they are not acceptable they might be modified.
+For example,
 in DBFs (part of Esri Shapefiles) attribute names can not be more than
-10 characters long, then in the example above the attribute name would be <i>populac_S </i>instead of <i>population_SUM</i>.</font></font></p>
-
-
-<p><font face="Calibri Light"><font face="Calibri Light">The attributes used to perform the aggregation can generate only one attribute column called <i>AGG_PROP</i> or as much as the attributes involved, depending on the input layer source.</font></font></p>
-
-
-<p><font face="Calibri Light"><font face="Calibri Light">As an example suppose the aggregation applied in a shape file using&nbsp;</font></font><font face="Calibri Light"><font face="Calibri Light">the
+10 characters long, then in the example above the attribute name would
+be <i>populac_S </i>instead of <i>population_SUM</i>.</font></font></p>
+<p><font face="Calibri Light"><font face="Calibri Light">The attributes
+used to perform the aggregation can generate only one attribute column
+called <i>AGG_PROP</i> or as much as the attributes involved,
+depending on the input layer source.</font></font></p>
+<p><font face="Calibri Light"><font face="Calibri Light">As an example
+suppose the aggregation applied in a shape file using&nbsp;</font></font><font
+ face="Calibri Light"><font face="Calibri Light">the
 following attributes: CODUF, NOMEUF, SIGLAUF, CODMESO, NOMEMESO, and
 using the statistical parameter SUM over POPULACA, POPHOMEN, POPMULHE.
 The input data is showed bellow:</font></font></p>
-
-
-<p><font face="Calibri Light"><font face="Calibri Light"><img alt="" src="aggregation_shp_input.PNG" height="114" width="728"></font></font></p>
-
-
-<p><font face="Calibri Light"><font face="Calibri Light">The resulting table associated with the aggregation is:</font></font></p>
-
-
-<p><font face="Calibri Light"><font face="Calibri Light"><img alt="" src="aggregation_attr_shp.PNG" height="111" width="808"></font></font></p>
-
-
-<p><font face="Calibri Light">Note that the <i>AGG_PROP</i> attribute is a concatenation of the values separated by "_" , the <i>NUM_OBJ</i>
+<p><font face="Calibri Light"><font face="Calibri Light"><img alt=""
+ src="aggregation_shp_input.PNG" height="114" width="728"></font></font></p>
+<p><font face="Calibri Light"><font face="Calibri Light">The resulting
+table associated with the aggregation is:</font></font></p>
+<p><font face="Calibri Light"><font face="Calibri Light"><img alt=""
+ src="aggregation_attr_shp.PNG" height="111" width="808"></font></font></p>
+<p><font face="Calibri Light">Note that the <i>AGG_PROP</i> attribute
+is a concatenation of the values separated by "_" , the <i>NUM_OBJ</i>
 contains the number of objects aggregated, and the name of summarized
 attributes (POPULA_S) changed a bit because of the way OGR treat names
 greater than 10 characters. </font></p>
-
-
-<p><font face="Calibri Light"><font face="Calibri Light">If the aggregation above is applied in a PostGIS layer the resulting table is:</font></font></p>
-
-
-<p><font face="Calibri Light"><font face="Calibri Light"><img alt="" src="aggregation_attr_pgis.PNG" height="114" width="726"></font></font></p>
-
-
-<p><font face="Calibri Light">Note that beside <i>NUM_OBJ</i>, exists an attribute for each one used to aggregate (5) and an attribute for each one used to summarize data (3).</font></p>
-
-
-<p><font face="Calibri Light"><font face="Calibri Light">The option to use only selected objects from the Input layer is under development.</font></font></p>
-
-
-
-
-<font face="Calibri Light"><font face="Calibri Light">                </font></font></div>
-
-
-
-
-<font face="Calibri Light"><font face="Calibri Light">      </font></font></div>
-
-
-
-
-<font face="Calibri Light"><font face="Calibri Light">    
-  </font></font>
+<p><font face="Calibri Light"><font face="Calibri Light">If the
+aggregation above is applied in a PostGIS layer the resulting table is:</font></font></p>
+<p><font face="Calibri Light"><font face="Calibri Light"><img alt=""
+ src="aggregation_attr_pgis.PNG" height="114" width="726"></font></font></p>
+<p><font face="Calibri Light">Note that beside <i>NUM_OBJ</i>, exists
+an attribute for each one used to aggregate (5) and an attribute for
+each one used to summarize data (3).</font></p>
+<font face="Calibri Light"><font face="Calibri Light"> </font></font></div>
+<font face="Calibri Light"><font face="Calibri Light"> </font></font></div>
+<font face="Calibri Light"><font face="Calibri Light"> </font></font>
 </body>
 </html>
