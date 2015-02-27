@@ -29,14 +29,14 @@
 #define __TERRALIB_LAYOUT_INTERNAL_BARCODE_MODEL_H
 
 // TerraLib
-#include "../core/pattern/mvc/ItemModelObservable.h"
 #include "../core/ContextItem.h"
+#include "TextModel.h"
 
 namespace te
 {
   namespace layout
   {
-    class BarCodeModel : public ItemModelObservable
+    class BarCodeModel : public TextModel
     {
       public:
 

@@ -27,18 +27,9 @@
 
 // TerraLib
 #include "BarCodeController.h"
-#include "../core/pattern/mvc/ItemController.h"
-#include "../core/ContextItem.h"
-#include "../core/pattern/factory/AbstractItemFactory.h"
-#include "../core/pattern/singleton/Context.h"
-#include "../core/pattern/mvc/ItemModelObservable.h"
-#include "../core/pattern/factory/ItemParamsCreate.h"
-#include "../core/pattern/mvc/ItemObserver.h"
-#include "../core/pattern/mvc/Observer.h"
-#include "../core/enum/Enums.h"
 
 te::layout::BarCodeController::BarCodeController( Observable* o ) :
-  ItemController(o)
+  TextController(o)
 {
   
 }

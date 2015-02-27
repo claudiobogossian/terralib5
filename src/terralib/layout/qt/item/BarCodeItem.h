@@ -31,12 +31,10 @@
 // TerraLib
 #include "TextItem.h"
 #include <vector>
-#define _fontName "Free 3 of 9 Extended"
 
 // Qt
 #include <QGraphicsSceneMouseEvent>
 #include <QPointF>
-#include <QGraphicsTextItem>
 
 namespace te
 {
@@ -53,9 +51,6 @@ namespace te
         
         virtual void paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
                 
-    protected:
-        QPolygonF m_barCodePolygon; //Propriedade que guardará o valor do bound invertido
-        
     };
   }
 }

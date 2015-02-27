@@ -29,13 +29,13 @@
 #define __TERRALIB_LAYOUT_INTERNAL_BARCODE_CONTROLLER_H
 
 // TerraLib
-#include "../core/pattern/mvc/ItemController.h"
+#include "TextController.h"
 
 namespace te
 {
   namespace layout
   {
-    class BarCodeController : public ItemController
+    class BarCodeController : public TextController
     {
       public:
 

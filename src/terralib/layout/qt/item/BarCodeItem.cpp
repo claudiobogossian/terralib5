@@ -34,6 +34,8 @@
 #include "../../../qt/widgets/Utils.h"
 #include "../../../geometry/Envelope.h"
 #include "../../../common/STLUtils.h"
+#include "../../item/BarCodeModel.h"
+#include "../../core/Font.h"
 
 // Qt
 #include <QTextDocument>
@@ -53,9 +55,14 @@ te::layout::BarCodeItem::BarCodeItem( ItemController* controller, Observable* o 
   m_invertedMatrix = true;
   m_nameClass = std::string(this->metaObject()->className());
 
-  QFont ft(_fontName, 12);
-  m_document->setDefaultFont(ft);
-  m_document->setPlainText("Teste BarCode");
+  BarCodeModel* model = dynamic_cast<BarCodeModel*>(m_model);
+  if(model)
+  {
+    Font font = model->getFont();
+    QFont ft(font.getFamily().c_str(), font.getPointSize());
+    m_document->setDefaultFont(ft);
+    m_document->setPlainText("Teste BarCode");
+  }  
 }
 
 te::layout::BarCodeItem::~BarCodeItem()
