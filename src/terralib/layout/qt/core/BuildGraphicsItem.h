@@ -228,6 +228,13 @@ namespace te
         */
         QGraphicsItem* createBalloon();
         
+        /*!
+          \brief Create graphic object of type BarCode
+		  		  
+		      \return new object 
+        */
+        QGraphicsItem* createBarCode();
+
 		   /*!
           \brief Creates the name of the new graphic object. Adds the number that corresponds to how many objects of this type have already been created.
 
@@ -259,6 +266,7 @@ namespace te
         std::string				      m_lineItem; //!< Part of the name that will be set to a new object of type LineItem.
         std::string             m_polygonItem; //!< Part of the name that will be set to a new object of type PolygonItem.
         std::string             m_balloonItem; //!< Part of the name that will be set to a new object of type BalloonItem.
+        std::string             m_barCodeItem; //!< Part of the name that will be set to a new object of type BarCode.
     };
   }
 }

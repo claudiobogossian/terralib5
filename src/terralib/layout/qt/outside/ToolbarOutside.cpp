@@ -87,6 +87,7 @@ te::layout::ToolbarOutside::ToolbarOutside( OutsideController* controller, Obser
   m_optionStringGrid("text_stringGrid"),
   m_optionTitle("text_title"),
   m_optionBalloon("text_balloon"),
+  m_optionBarCode("text_barCode"),
   m_optionAlignLeft("align_left"),
   m_optionAlignRight("align_right"),
   m_optionAlignTop("align_top"),
@@ -478,6 +479,9 @@ QToolButton* te::layout::ToolbarOutside::createTextToolButton()
 
   QAction* actionBalloon = createAction("Balloon Object", m_optionBalloon, "layout-ballon", "", menu); 
   menu->addAction(actionBalloon);
+
+  QAction* actionBarCode = createAction("BarCode Object", m_optionBarCode, "layout-barcode", "", menu);
+  menu->addAction(actionBarCode);
 
   btn->setMenu(menu);
   btn->setPopupMode(QToolButton::MenuButtonPopup);
@@ -912,6 +916,10 @@ void te::layout::ToolbarOutside::onTextToolsTriggered( QAction* action )
   else if(action->objectName().compare(m_optionBalloon.c_str()) == 0)
   {
     changeAction(type->getModeCreateBalloon());
+  }
+  else if(action->objectName().compare(m_optionBarCode.c_str()) == 0)
+  {
+    changeAction(type->getModeCreateBarCode());
   }
 }
 

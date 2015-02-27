@@ -90,6 +90,9 @@
 #include "../../item/BalloonModel.h"
 #include "../../item/BalloonController.h"
 #include "../item/BalloonItem.h"
+#include "../../item/BarCodeModel.h"
+#include "../../item/BarCodeController.h"
+#include "../item/BarCodeItem.h"
 
 // Qt
 #include <QGraphicsItem>
@@ -117,7 +120,8 @@ te::layout::BuildGraphicsItem::BuildGraphicsItem() :
   m_movingGroupItem("MOVING_ITEM_GROUP_"),
   m_lineItem("LINE_"), 
   m_polygonItem("POLYGON_"), 
-  m_balloonItem("BALLOON_")
+  m_balloonItem("BALLOON_"),
+  m_barCodeItem("BARCODE_")
 {
  
 }
@@ -216,6 +220,10 @@ QGraphicsItem* te::layout::BuildGraphicsItem::rebuildItem( te::layout::Propertie
   else if(type == enumObj->getBalloonItem())
   {
     item = createBalloon();
+  }
+  else if(type == enumObj->getBarCodeItem())
+  {
+    item = createBarCode();
   }
 
   return item;
@@ -317,6 +325,11 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createItem( te::layout::EnumType* 
     m_name = nameItem(m_balloonItem, enumObj->getBalloonItem());
     item = createBalloon();
   }
+  else if (mode == enumMode->getModeCreateBarCode())
+  {
+    m_name = nameItem(m_barCodeItem, enumObj->getBarCodeItem());
+    item = createBarCode();
+  }
 
   return item;
 }
@@ -402,6 +415,10 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createItem( te::layout::EnumType* 
   else if(type == enumObj->getBalloonItem())
   {
     item = createBalloon();
+  }
+  else if(type == enumObj->getBarCodeItem())
+  {
+    item = createBarCode();
   }
 
   return item;
@@ -1116,6 +1133,37 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createBalloon()
     if(m_redraw)
       itemObs->redraw();
     return balloon;
+  }
+
+  return item;
+}
+
+QGraphicsItem* te::layout::BuildGraphicsItem::createBarCode()
+{
+  QGraphicsItem* item = 0;
+
+  BarCodeModel* model = new BarCodeModel;
+  if(m_props)
+  {
+    model->updateProperties(m_props);
+  }
+  else
+  {
+    model->setId(m_id);
+    model->setName(m_name);
+  }
+
+  BarCodeController* controller = new BarCodeController(model);
+  ItemObserver* itemObs = (ItemObserver*)controller->getView();
+
+  BarCodeItem* barCode = dynamic_cast<BarCodeItem*>(itemObs);
+
+  if(barCode)
+  {
+    barCode->setPos(QPointF(m_coord.x, m_coord.y));
+    if(m_redraw)
+      itemObs->redraw();
+    return barCode;
   }
 
   return item;

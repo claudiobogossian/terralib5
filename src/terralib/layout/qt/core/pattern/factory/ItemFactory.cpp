@@ -48,6 +48,7 @@
 #include "../../../item/LineItem.h"
 #include "../../../item/PolygonItem.h"
 #include "../../../item/BalloonItem.h"
+#include "../../../item/BarCodeItem.h"
 
 te::layout::ItemFactory::ItemFactory()
 {
@@ -159,6 +160,11 @@ te::layout::Observer* te::layout::ItemFactory::make( EnumType* type, ItemParamsC
   {
     BalloonItem* balloon = new BalloonItem(params.getController(), params.getModel());
     item = (Observer*)balloon;
+  }
+  else if(type == enumObj->getBarCodeItem())
+  {
+    BarCodeItem* barCode = new BarCodeItem(params.getController(), params.getModel());
+    item = (Observer*)barCode;
   }
 
   return item;

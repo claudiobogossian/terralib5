@@ -280,6 +280,13 @@ namespace te
 		      \return enum value  	  
         */
         virtual EnumType* getBalloonItem() const; 
+        
+        /*!
+          \brief Returns value that represents balloon (MVC Component) type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
+        virtual EnumType* getBarCodeItem() const;
 
       protected:
 
@@ -320,6 +327,7 @@ namespace te
         EnumType* m_lineItem; //!< value that represents line (MVC Component) type belonging to enumeration
         EnumType* m_polygonItem; //!< value that represents polygon (MVC Component) type belonging to enumeration
         EnumType* m_balloonItem; //!< value that represents balloon (MVC Component) type belonging to enumeration
+        EnumType* m_barCodeItem; //!< value that represents barcode (MVC Component) type belonging to enumeration
         EnumType* m_objectUnknown; //!< value that represents unknown type belonging to enumeration
     };
   }
