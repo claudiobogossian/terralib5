@@ -111,11 +111,20 @@
 	  <Function name="st_boundary">
         <FunctionEncoder alias="st_boundary"/>
       </Function>
+	  <Function name="st_collect">
+        <FunctionEncoder alias="st_collect"/>
+      </Function>
 	  <Function name="st_coorddim">
         <FunctionEncoder alias="st_coorddim"/>
       </Function>
 	  <Function name="st_dimension">
-        <FunctionEncoder alias="st_coorddim"/>
+        <FunctionEncoder alias="st_dimension"/>
+      </Function>
+	  <Function name="st_dump">
+        <FunctionEncoder alias="st_dump"/>
+      </Function>
+	  <Function name="st_dumprings">
+        <FunctionEncoder alias="st_dumprings"/>
       </Function>
 	  <Function name="st_endpoint">
         <FunctionEncoder alias="st_endpoint"/>

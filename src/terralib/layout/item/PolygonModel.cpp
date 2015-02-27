@@ -39,8 +39,6 @@
 
 te::layout::PolygonModel::PolygonModel()
 {
-  LineModel::LineModel();
-
   m_type = Enums::getInstance().getEnumObjectType()->getPolygonItem();
 
   m_borderColor = te::color::RGBAColor(255, 255, 255, 0);

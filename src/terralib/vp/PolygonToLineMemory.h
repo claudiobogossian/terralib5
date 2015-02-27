@@ -35,7 +35,7 @@
 #include "../memory/DataSet.h"
 #include "../statistics/core/Enums.h"
 
-#include "PolygonTolineOp.h"
+#include "PolygonToLineOp.h"
 #include "Config.h"
 #include "Enums.h"
 #include "Exception.h"
@@ -63,8 +63,6 @@ namespace te
       bool run();
 
     private:
-
-      std::auto_ptr<te::da::DataSetType> buildOutDataSetType();
 
       std::auto_ptr<te::gm::MultiLineString> polygon2Line(te::gm::Geometry* geom);
 
