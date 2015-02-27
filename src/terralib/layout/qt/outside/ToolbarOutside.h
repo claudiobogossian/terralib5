@@ -292,6 +292,7 @@ namespace te
       std::string m_optionStringGrid;
       std::string m_optionTitle;
       std::string m_optionBalloon;
+      std::string m_optionBarCode;
 
       /* Align */
       std::string m_optionAlignLeft;

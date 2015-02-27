@@ -57,6 +57,7 @@ te::layout::EnumObjectType::EnumObjectType() :
   m_lineItem(0),
   m_polygonItem(0),
   m_balloonItem(0),
+  m_barCodeItem(0),
   m_objectUnknown(0)
 {
   init();
@@ -243,6 +244,12 @@ te::layout::EnumObjectType::~EnumObjectType()
     delete m_balloonItem;
     m_balloonItem = 0;
   }
+
+  if(m_barCodeItem)
+  {
+    delete m_barCodeItem;
+    m_barCodeItem = 0;
+  }
 }
 
 void te::layout::EnumObjectType::init()
@@ -339,6 +346,9 @@ void te::layout::EnumObjectType::init()
 
   m_balloonItem = new EnumType(34, "Balloon_Item", this); 
   m_enums.push_back(m_balloonItem);
+
+  m_barCodeItem = new EnumType(35, "BarCode_Item", this);
+  m_enums.push_back(m_barCodeItem);
 }
 
 te::layout::EnumType* te::layout::EnumObjectType::getRectangleItem() const
@@ -359,6 +369,11 @@ te::layout::EnumType* te::layout::EnumObjectType::getPolygonItem() const
 te::layout::EnumType* te::layout::EnumObjectType::getBalloonItem() const 
 {
   return m_balloonItem;
+}
+
+te::layout::EnumType* te::layout::EnumObjectType::getBarCodeItem() const
+{
+  return m_barCodeItem;
 }
 
 te::layout::EnumType* te::layout::EnumObjectType::getMapItem() const
