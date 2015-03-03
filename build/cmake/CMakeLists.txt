@@ -147,8 +147,10 @@ if("${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION}" VERSIO
 endif()
 
 if(${CMAKE_MAJOR_VERSION} GREATER 2)
+  cmake_policy(SET CMP0026 OLD)
   cmake_policy(SET CMP0042 NEW)  
   cmake_policy(SET CMP0043 NEW)  
+  cmake_policy(SET CMP0053 OLD)  
 endif()
 
 
