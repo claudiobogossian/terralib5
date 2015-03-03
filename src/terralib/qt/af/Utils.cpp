@@ -740,7 +740,7 @@ void te::qt::af::UpdateUserSettingsFile(const QString& fileName, const bool& rem
 
   if(!info.exists())
   {
-    boost::property_tree::xml_writer_settings<char> settings('\t', 1);
+    boost::property_tree::xml_writer_settings<std::string> settings('\t', 1);
     boost::property_tree::write_xml(fileName.toStdString(), usrSett.getAllSettings(), std::locale(), settings);
   }
 
@@ -768,7 +768,7 @@ void te::qt::af::WriteDefaultProjectFile(const QString& fileName)
   p.add("Project.te_map:LayerList", "");
 
   //Store file
-  boost::property_tree::xml_writer_settings<char> settings('\t', 1);
+  boost::property_tree::xml_writer_settings<std::string> settings('\t', 1);
   boost::property_tree::write_xml(fileName.toStdString(), p, std::locale(), settings);
 }
 
