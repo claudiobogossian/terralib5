@@ -112,43 +112,43 @@ te::layout::EnumDataType::~EnumDataType()
 
 void te::layout::EnumDataType::init()
 {
-  m_dataTypeNone = new EnumType(0, "None");
+  m_dataTypeNone = new EnumType(0, "None", this);
   m_enums.push_back(m_dataTypeNone);
 
-  m_dataTypeInt = new EnumType(1, "Int");
+  m_dataTypeInt = new EnumType(1, "Int", this);
   m_enums.push_back(m_dataTypeInt);
 
-  m_dataTypeDouble = new EnumType(2, "Double");
+  m_dataTypeDouble = new EnumType(2, "Double", this);
   m_enums.push_back(m_dataTypeDouble);
 
-  m_dataTypeLong = new EnumType(3, "Long");
+  m_dataTypeLong = new EnumType(3, "Long", this);
   m_enums.push_back(m_dataTypeLong);
 
-  m_dataTypeFloat = new EnumType(4, "Float");
+  m_dataTypeFloat = new EnumType(4, "Float", this);
   m_enums.push_back(m_dataTypeFloat);
 
-  m_dataTypeString = new EnumType(5, "String");
+  m_dataTypeString = new EnumType(5, "String", this);
   m_enums.push_back(m_dataTypeString);
 
-  m_dataTypeBool = new EnumType(6, "Bool");
+  m_dataTypeBool = new EnumType(6, "Bool", this);
   m_enums.push_back(m_dataTypeBool);
 
-  m_dataTypeColor = new EnumType(7, "Color");
+  m_dataTypeColor = new EnumType(7, "Color", this);
   m_enums.push_back(m_dataTypeColor);
 
-  m_dataTypeGridSettings = new EnumType(8, "GridSettings");
+  m_dataTypeGridSettings = new EnumType(8, "GridSettings", this);
   m_enums.push_back(m_dataTypeGridSettings);
 
-  m_dataTypeStringList = new EnumType(9, "StringList");
+  m_dataTypeStringList = new EnumType(9, "StringList", this);
   m_enums.push_back(m_dataTypeStringList);
 
-  m_dataTypeFont = new EnumType(10, "Font");
+  m_dataTypeFont = new EnumType(10, "Font", this);
   m_enums.push_back(m_dataTypeFont);
 
-  m_dataTypeImage = new EnumType(11, "Image");
+  m_dataTypeImage = new EnumType(11, "Image", this);
   m_enums.push_back(m_dataTypeImage);
 
-  m_dataTypeTextGridSettings = new EnumType(12, "TextGridSettings");
+  m_dataTypeTextGridSettings = new EnumType(12, "TextGridSettings", this);
   m_enums.push_back(m_dataTypeTextGridSettings);
 }
 

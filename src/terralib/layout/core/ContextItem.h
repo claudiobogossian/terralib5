@@ -173,6 +173,14 @@ namespace te
         */
         virtual bool isShow();
 
+        void setPos (te::gm::Coord2D pos);
+
+        te::gm::Coord2D getPos ();
+
+        void setChangePos (bool change);
+
+        bool isChangePos ();
+
       protected:
         ParamsCreate            m_params; //!<
         double                  m_zoomFactor; //!<
@@ -183,6 +191,8 @@ namespace te
         te::map::Canvas*        m_canvas; //!<
         double                  m_dpiX; //!<
         double                  m_dpiY; //!<
+        te::gm::Coord2D         m_pos;
+        bool                    m_changePos;
     };
   }
 }

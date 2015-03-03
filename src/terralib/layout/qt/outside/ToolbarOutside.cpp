@@ -72,6 +72,8 @@ te::layout::ToolbarOutside::ToolbarOutside( OutsideController* controller, Obser
   m_optionPoint("geometry_point"),
   m_optionEllipse("geometry_ellipse"),
   m_optionArrow("geometry_arrow"),
+  m_optionLine("geometry_line"),
+  m_optionPolygon("geometry_polygon"),
   m_optionViewPan("view_pan"),
   m_optionViewZoomIn("view_zoom_in"),
   m_optionViewZoomOut("view_zoom_out"),
@@ -84,6 +86,8 @@ te::layout::ToolbarOutside::ToolbarOutside( OutsideController* controller, Obser
   m_optionImage("text_image"),
   m_optionStringGrid("text_stringGrid"),
   m_optionTitle("text_title"),
+  m_optionBalloon("text_balloon"),
+  m_optionBarCode("text_barCode"),
   m_optionAlignLeft("align_left"),
   m_optionAlignRight("align_right"),
   m_optionAlignTop("align_top"),
@@ -94,6 +98,8 @@ te::layout::ToolbarOutside::ToolbarOutside( OutsideController* controller, Obser
   m_optionRedo("redo"),
   m_optionDrawMap("draw_map"),
   m_optionObjectToImage("object_to_image"),
+  m_optionExit("exit"),
+  m_optionExportToPDF("export_to_pdf"),
   m_mapToolButton(0),
   m_mapToolsToolButton(0),
   m_geometryToolButton(0),
@@ -114,7 +120,9 @@ te::layout::ToolbarOutside::ToolbarOutside( OutsideController* controller, Obser
   m_removeObjectToolButton(0),
   m_undoToolButton(0),
   m_drawMapToolButton(0),
-  m_objectToImageButton(0)
+  m_objectToImageButton(0),
+  m_exitButton(0),
+  m_exportToPDFButton(0)
 {
 	setVisible(false);
 	setWindowTitle("Layout - Toolbar");
@@ -198,7 +206,13 @@ void te::layout::ToolbarOutside::createToolbar()
   createObjectToImageButton();
   this->addSeparator();
 
+  createExportToPDFButton();
+  this->addSeparator();
+
   createSceneZoomCombobox();
+  this->addSeparator();
+
+  createExitButton();
   this->addSeparator();
 }
 
@@ -288,6 +302,12 @@ QToolButton* te::layout::ToolbarOutside::createGeometryToolButton()
 
   QAction* actionPoint = createAction("Point Object", m_optionPoint, "layout-point", "", menu);
   menu->addAction(actionPoint);
+
+  QAction* actionLine = createAction("Line Object", m_optionLine, "layout-drawline", "", menu); 
+  menu->addAction(actionLine);
+
+  QAction* actionPolygon = createAction("Polygon Object", m_optionPolygon, "layout-polygon", "", menu); 
+  menu->addAction(actionPolygon);
 
   btnGeometry->setMenu(menu);
   btnGeometry->setPopupMode(QToolButton::MenuButtonPopup);
@@ -457,6 +477,12 @@ QToolButton* te::layout::ToolbarOutside::createTextToolButton()
   QAction* actionImage = createAction("Image Object", m_optionImage, "layout-image", "", menu);
   menu->addAction(actionImage);
 
+  QAction* actionBalloon = createAction("Balloon Object", m_optionBalloon, "layout-ballon", "", menu); 
+  menu->addAction(actionBalloon);
+
+  QAction* actionBarCode = createAction("BarCode Object", m_optionBarCode, "layout-barcode", "", menu);
+  menu->addAction(actionBarCode);
+
   btn->setMenu(menu);
   btn->setPopupMode(QToolButton::MenuButtonPopup);
   btn->setDefaultAction(actionTxtDefault);
@@ -624,6 +650,32 @@ QToolButton* te::layout::ToolbarOutside::createObjectToImageButton()
   return btn;
 }
 
+QToolButton* te::layout::ToolbarOutside::createExitButton()
+{
+  QToolButton *btn = createToolButton("Exit", "Exit", "layout-close");
+  btn->setCheckable(false);
+  connect(btn, SIGNAL(clicked(bool)), this, SLOT(onExitClicked(bool)));
+
+  this->addWidget(btn);
+
+  m_exitButton = btn;
+
+  return btn;
+}
+
+QToolButton* te::layout::ToolbarOutside::createExportToPDFButton()
+{
+  QToolButton *btn = createToolButton("Export To PDF", "Export to PDF", "layout-pdf");
+  btn->setCheckable(false);
+  connect(btn, SIGNAL(clicked(bool)), this, SLOT(onExportToPDFClicked(bool)));
+
+  this->addWidget(btn);
+
+  m_exportToPDFButton = btn;
+
+  return btn;
+}
+
 void te::layout::ToolbarOutside::onMapTriggered( QAction* action )
 {
   QToolButton* button = dynamic_cast<QToolButton*>(sender());
@@ -717,6 +769,16 @@ void te::layout::ToolbarOutside::onGeometryTriggered( QAction* action )
   else if(action->objectName().compare(m_optionPoint.c_str()) == 0)
   {
     changeAction(type->getModeCreatePoint());
+  }
+  else if (action->objectName().compare(m_optionLine.c_str()) == 0) 
+  {
+    changeAction(type->getModeCreateLine());
+    Context::getInstance().setWait(type->getModeCoordWait());
+  }
+  else if (action->objectName().compare(m_optionPolygon.c_str()) == 0) 
+  {
+    changeAction(type->getModeCreatePolygon());
+    Context::getInstance().setWait(type->getModeCoordWait());
   }
 }
 
@@ -851,6 +913,14 @@ void te::layout::ToolbarOutside::onTextToolsTriggered( QAction* action )
   {
     changeAction(type->getModeCreateImage());
   }
+  else if(action->objectName().compare(m_optionBalloon.c_str()) == 0)
+  {
+    changeAction(type->getModeCreateBalloon());
+  }
+  else if(action->objectName().compare(m_optionBarCode.c_str()) == 0)
+  {
+    changeAction(type->getModeCreateBarCode());
+  }
 }
 
 void te::layout::ToolbarOutside::onAlignLeftClicked( bool checked )
@@ -905,6 +975,18 @@ void te::layout::ToolbarOutside::onObjectToImageClicked( bool checked )
 {
   EnumModeType* type = Enums::getInstance().getEnumModeType();
   changeAction(type->getModeObjectToImage());
+}
+
+void te::layout::ToolbarOutside::onExitClicked( bool checked )
+{
+  EnumModeType* type = Enums::getInstance().getEnumModeType();
+  changeAction(type->getModeExit());
+}
+
+void te::layout::ToolbarOutside::onExportToPDFClicked( bool checked )
+{
+  EnumModeType* type = Enums::getInstance().getEnumModeType();
+  changeAction(type->getModeExportToPDF());
 }
 
 void te::layout::ToolbarOutside::changeAction( EnumType* mode )
@@ -1085,4 +1167,9 @@ QToolButton* te::layout::ToolbarOutside::getDrawMapToolButton()
 QToolButton* te::layout::ToolbarOutside::getObjectToImageButton()
 {
   return m_objectToImageButton;
+}
+
+QToolButton* te::layout::ToolbarOutside::getExitButton()
+{
+  return m_exitButton;
 }

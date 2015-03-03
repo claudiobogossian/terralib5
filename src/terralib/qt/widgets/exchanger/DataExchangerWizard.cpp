@@ -224,7 +224,7 @@ void te::qt::widgets::DataExchangerWizard::commit()
     te::da::DataSetType* odset = it->second->getResult();
     te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(odset);
 
-    std::auto_ptr<te::da::DataSourceTransactor> t(0);
+    std::auto_ptr<te::da::DataSourceTransactor> t;
 
     try
     {

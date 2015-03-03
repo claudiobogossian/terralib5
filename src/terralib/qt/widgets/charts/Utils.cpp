@@ -41,6 +41,7 @@
 #include "../../../statistics/core/NumericStatisticalSummary.h"
 #include "../../../statistics/core/StringStatisticalSummary.h"
 #include "../../../statistics/core/SummaryFunctions.h"
+#include "../../../statistics/core/Utils.h"
 #include "ChartDisplay.h"
 #include "ChartDisplayWidget.h"
 #include "ChartStyle.h"
@@ -60,6 +61,121 @@
 //STL
 #include <memory>
 
+float gammln( float xx )
+{
+  double x, tmp, ser;
+  static double cof[6]= {76.18009173, -86.50532033, 24.01409822,
+    -1.231739516, 0.120858003e-2, -0.536382e-5};
+  int j;
+
+  x = xx - 1.0;
+  tmp = x + 5.5;
+  tmp -= (x+0.5)*log(tmp);
+  ser = 1.0;
+
+  for (j=0; j<=5; j++)
+  {
+    x += 1.0;
+    ser += cof[j]/x;
+  }
+  return (float)(-tmp + log(2.50662827465*ser));
+}
+
+void gser( float * gamser, float a, float x, float * gln )
+{
+  double ITMAX = 100;
+  double EPS = 3.0e-7;
+
+  int n;
+  float sum, del,ap;
+
+  *gln = gammln(a);
+
+  if (x <= 0.0)
+  {
+    if ( x < 0.0)
+      printf ("x less than 0 in the GSER routine");
+
+    *gamser = 0.0;
+    return;
+  }
+
+  else
+  {
+    ap = a;
+    del= sum = (float)(1.0/a);
+    for (n=1; n <= ITMAX; n++)
+    {
+      ap += 1.0;
+      del *= x/ap;
+      sum += del;
+      if (fabs (del) < fabs (sum)*EPS)
+      {
+        *gamser = (float)(sum*exp(-x+a*log(x)-(*gln)));
+        return;
+      }
+    }
+    return;
+  }
+}
+
+void gcf( float * gammcf, float a, float x, float * gln )
+{
+  double ITMAX = 100;
+  double EPS = 3.0e-7;
+
+  int n;
+  float gold=0.0, g, fac=1.0, b1=1.0;
+  float b0=0.0, anf, ana, an, a1, a0=1.0;
+  
+  *gln=gammln(a);
+
+  a1=x;
+
+  for(n=1; n<= ITMAX; n++)
+  {
+    an = (float) n;
+    ana = an - a;
+    a0 = (a1+a0*ana)*fac;
+    b0 = (b1+b0*ana)*fac;
+    anf = an*fac;
+    a1 = x*a0+anf*a1;
+    b1 = x*b0+anf*b1;
+    if (a1)
+    {
+      fac = (float)(1.0/a1);
+      g = b1*fac;
+      if (fabs((g-gold)/g) < EPS)
+      {
+        *gammcf = (float)(exp (-x+a*log(x)-(*gln))*g);
+        return;
+      }
+      gold = g;
+    }
+  }
+}
+
+float gammp( float a, float x )
+{
+  float gamser, gammcf, gln;
+
+  if (x < (a+1.0))
+  {
+    gser (&gamser, a, x, &gln);
+    return gamser;
+  }
+  else
+  {
+    gcf (&gammcf, a, x, &gln);
+    return (float)(1.0 - gammcf);
+  }
+}
+
+float errFunction( float x )
+{
+  return x < 0.0 ? -gammp(0.5, x*x) : gammp(0.5,x*x);
+}
+
 double getDouble(const std::string& value, std::vector<std::string>& sVector)
 {
   //verify if it exists 
@@ -75,7 +191,7 @@ double getDouble(const std::string& value, std::vector<std::string>& sVector)
 
 double getDouble(te::dt::DateTime* dateTime)
 {
-  if(dateTime->getTypeCode() == te::dt::TIME_INSTANT)
+  if(dateTime->getDateTimeType() == te::dt::TIME_INSTANT)
   {
     std::auto_ptr<te::dt::TimeInstant> ti ((te::dt::TimeInstant*)dateTime);
     boost::gregorian::date basedate(1400, 01, 01);
@@ -85,7 +201,7 @@ double getDouble(te::dt::DateTime* dateTime)
     double v = (double) dias * 86400 + seconds;
     return v;
   }
-  else if(dateTime->getTypeCode() == te::dt::DATE)
+  else if(dateTime->getDateTimeType() == te::dt::DATE)
   {
     std::auto_ptr<te::dt::Date> d ((te::dt::Date*)dateTime);
     boost::gregorian::date basedate(1400, 01, 01);
@@ -578,9 +694,7 @@ te::qt::widgets::Scatter* te::qt::widgets::createScatter(te::da::DataSet* datase
       double x_doubleValue = 0.;
       double y_doubleValue = 0.;
 
-      if((xType >= te::dt::INT16_TYPE && xType <= te::dt::UINT64_TYPE) || 
-        xType == te::dt::FLOAT_TYPE || xType == te::dt::DOUBLE_TYPE || 
-        xType == te::dt::NUMERIC_TYPE)
+      if(xType >= te::dt::INT16_TYPE && xType <= te::dt::NUMERIC_TYPE)
       {
         if(dataset->isNull(propX))
           continue;
@@ -593,13 +707,11 @@ te::qt::widgets::Scatter* te::qt::widgets::createScatter(te::da::DataSet* datase
           continue;
 
         std::auto_ptr<te::dt::DateTime> dateTime = dataset->getDateTime(propX);
-        x_doubleValue = getDouble(dateTime.get());
+        x_doubleValue = getDouble(dateTime.release());
       }
 
       //======treat the Y value
-      if((yType >= te::dt::INT16_TYPE && yType <= te::dt::UINT64_TYPE) || 
-        yType == te::dt::FLOAT_TYPE || yType == te::dt::DOUBLE_TYPE || 
-        yType == te::dt::NUMERIC_TYPE)
+      if(yType >= te::dt::INT16_TYPE && yType <= te::dt::NUMERIC_TYPE)
       {
         if(dataset->isNull(propY))
           continue;
@@ -611,7 +723,7 @@ te::qt::widgets::Scatter* te::qt::widgets::createScatter(te::da::DataSet* datase
           continue;
 
         std::auto_ptr<te::dt::DateTime> dateTime = dataset->getDateTime(propY);
-        y_doubleValue = getDouble(dateTime.get());
+        y_doubleValue = getDouble(dateTime.release());
       }
 
       //insert values into the vectors
@@ -928,8 +1040,8 @@ QwtText* te::qt::widgets::Terralib2Qwt(const std::string& text)
   return result;
 }
 
-QwtText* te::qt::widgets::Terralib2Qwt(const std::string& text,  te::color::RGBAColor* color, 
-                   te::se::Font*  font, te::se::Fill* backFill, 
+QwtText* te::qt::widgets::Terralib2Qwt(const std::string& text,  te::color::RGBAColor* color,
+                   te::se::Font*  font, te::se::Fill* backFill,
                    te::se::Stroke* backStroke)
 {
   QwtText* result = new QwtText(QString(text.c_str()));
@@ -978,4 +1090,90 @@ QwtSymbol* te::qt::widgets::Terralib2Qwt(te::se::Graphic* graphic)
   delete qimg;
 
   return symbol;
+}
+
+te::qt::widgets::ChartDisplayWidget* te::qt::widgets::createNormalDistribution(te::da::DataSet* dataset, int propId)
+{
+  te::common::TaskProgress task;
+  task.setMessage("Histogram creation");
+  task.setTotalSteps(dataset->getNumProperties());
+
+  QwtPlotCurve *baseCurve = new QwtPlotCurve("Base Values");
+  baseCurve->setOrientation( Qt::Horizontal );
+
+  QwtPlotCurve *normalCurve = new QwtPlotCurve("Normalizeed Values");
+  normalCurve->setOrientation( Qt::Horizontal );
+
+  int propType = dataset->getPropertyDataType(propId);
+  if(propType >= te::dt::INT16_TYPE && propType <= te::dt::NUMERIC_TYPE)
+  {
+    te::stat::NumericStatisticalSummary nss;
+    std::vector<double> xValues = te::stat::GetNumericData(dataset, dataset->getPropertyName(propId)); 
+    std::vector<double> yValues;
+    te::stat::GetNumericStatisticalSummary(xValues, nss);
+
+    // Normalize the selected variable 
+    for(int i = 0; i < nss.m_count; ++i)
+    {
+      double curXValue = xValues[i];
+      curXValue = (curXValue - nss.m_mean) / nss.m_stdDeviation;
+      xValues[i] = curXValue;
+    }
+    std::sort(xValues.begin(), xValues.end());
+
+    //// Fill the vector of the probability
+    for(int i = 0; i < nss.m_count; ++i)
+    {
+      double curYValue = xValues[i];
+      if (curYValue > 0.)
+        curYValue = 0.5 + (errFunction ((float)(curYValue/std::sqrt(2.)))/2.);
+      else
+      {
+        curYValue = -curYValue;
+        curYValue = 0.5 - (errFunction ((float)(curYValue/std::sqrt(2.)))/2.);
+      }
+      yValues.push_back(curYValue);
+    }
+
+    QVector<QPointF> samples, normalSamples;
+    for (int i = 0; i < nss.m_count; ++i)
+    {
+      double val = ((double)i+(double)1.0)/(double)nss.m_count;
+      normalSamples += QPointF( val, val);
+      samples += QPointF( val, yValues[i]);
+    }
+
+  baseCurve->setSamples(samples);
+  normalCurve->setSamples(normalSamples);
+  }
+
+  QPen normalCurvePen;
+  normalCurvePen.setColor(QColor(Qt::green));
+  normalCurvePen.setStyle(Qt::SolidLine);
+  normalCurvePen.setWidth(0);
+  baseCurve->setPen(normalCurvePen);
+
+  QPen normalProbCurvePen;
+  normalProbCurvePen.setColor(QColor(Qt::red));
+  normalProbCurvePen.setStyle(Qt::SolidLine);
+  normalProbCurvePen.setWidth(0);
+  normalCurve->setPen(normalProbCurvePen);
+
+  //Creating and adjusting the chart Display's style.
+  te::qt::widgets::ChartStyle* chartStyle = new te::qt::widgets::ChartStyle();
+  chartStyle->setTitle(QString::fromStdString("Normal Probability: " + dataset->getPropertyName(propId)));
+  chartStyle->setAxisX( QString::fromStdString(dataset->getPropertyName(propId)));
+  chartStyle->setAxisY(QString::fromStdString("Probability"));
+  chartStyle->setGridChecked(true);
+
+  //Creating and adjusting the chart Display
+  te::qt::widgets::ChartDisplay* chartDisplay = new te::qt::widgets::ChartDisplay(0, QString::fromStdString("Normal Distribution"), chartStyle);
+  chartDisplay->adjustDisplay();
+  baseCurve->attach(chartDisplay);
+  normalCurve->attach(chartDisplay);
+
+  //Adjusting the chart widget
+  te::qt::widgets::ChartDisplayWidget* displayWidget = new te::qt::widgets::ChartDisplayWidget(normalCurve, normalCurve->rtti(), chartDisplay);
+  displayWidget->setWindowTitle("Normal Distribution");
+  return displayWidget;
 }

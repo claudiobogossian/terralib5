@@ -31,6 +31,9 @@
 #include "Exception.h"
 #include "Utils.h"
 
+//Boost
+#include <boost/lexical_cast.hpp>
+
 std::string te::stat::GetStatSummaryShortName(const int& e)
 {
   switch(e)
@@ -178,6 +181,8 @@ std::vector<double> te::stat::GetNumericData(te::da::DataSet* dataSet, const std
         numval = dataSet->getFloat(index);
       else if (type == te::dt::DOUBLE_TYPE)
         numval = dataSet->getDouble(index);
+      else if(type ==  te::dt::NUMERIC_TYPE)
+        numval = boost::lexical_cast<double>(dataSet->getNumeric(index));
       result.push_back(numval);
     }
   }while(dataSet->moveNext());

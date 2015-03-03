@@ -166,7 +166,7 @@ template<> bool te::gm::Intersects(const te::gm::Point& point, const te::gm::Env
   return true;
 }
 
-te::gm::Coord2D* te::gm::locateAlong(const LineString* line, int initial, int final, int target)
+te::gm::Coord2D* te::gm::locateAlong(const LineString* line, double initial, double final, double target)
 {
   double tTof; // Distance of target to fist point
 
@@ -181,7 +181,7 @@ te::gm::Coord2D* te::gm::locateAlong(const LineString* line, int initial, int fi
     pointLenghtFromFirst[i] = fullLineLenght;
   }
 
-  int diference = final-initial;
+  double diference = final-initial;
   
   tTof = ((target-initial)*fullLineLenght)/diference;
 

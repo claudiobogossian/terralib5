@@ -49,16 +49,21 @@ te::layout::Context::Context() :
   m_utils(0),
   m_dpiX(96),
   m_dpiY(96),
-  m_version("TerraPrintQt4_1.0.0"),
+  m_version("MAPLayoutQt5_1.0.0"),
   m_paperConfig(0),
   m_buildGraphicsItem(0),
   m_systematicConfig(0),
   m_proxyProject(0),
-  m_itemUtils(0)
+  m_itemUtils(0),
+  m_wait(0),
+  m_item(0)
 {
   EnumModeType* type = Enums::getInstance().getEnumModeType();
-  m_mode = type->getModeNone();
-  m_lineIntersectionMouseMode = type->getModeOffLinesIntersectionMouse();
+  if(type)
+  {
+    m_mode = type->getModeNone();
+    m_lineIntersectionMouseMode = type->getModeOffLinesIntersectionMouse();
+  }
 }
 
 te::layout::Context::~Context()
@@ -68,6 +73,14 @@ te::layout::Context::~Context()
 
 te::layout::EnumType* te::layout::Context::getMode()
 {
+  if(!m_mode)
+  {
+    EnumModeType* type = Enums::getInstance().getEnumModeType();
+    if(type)
+    {
+      m_mode = type->getModeNone();
+    }
+  }
   return m_mode;
 }
 
@@ -259,4 +272,24 @@ void te::layout::Context::setItemUtils( ItemUtils* utils )
 te::layout::ItemUtils* te::layout::Context::getItemUtils()
 {
   return m_itemUtils;
+}
+
+te::layout::EnumType* te::layout::Context::getWait()
+{
+  return m_wait;
+}
+
+void te::layout::Context::setWait( EnumType* wait )
+{
+  m_wait = wait;
+}
+
+te::layout::ItemObserver* te::layout::Context::getItem()
+{
+  return m_item;
+}
+
+void te::layout::Context::setItem( ItemObserver* item )
+{
+  m_item = item;
 }

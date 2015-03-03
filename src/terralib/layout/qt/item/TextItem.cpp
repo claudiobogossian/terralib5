@@ -36,6 +36,8 @@
 #include "../../../common/STLUtils.h"
 #include "../../core/pattern/singleton/Context.h"
 #include "../../item/TextModel.h"
+#include "../../core/property/Properties.h"
+#include "../core/pattern/command/ChangePropertyCommand.h"
 
 // STL
 #include <string>
@@ -71,24 +73,17 @@ te::layout::TextItem::TextItem( ItemController* controller, Observable* o ) :
   m_nameClass = std::string(this->metaObject()->className());
   Context::getInstance().getScene()->insertItem((ItemObserver*)item);
 
-  m_document = new QTextDocument;
+  m_document = new QTextDocument(this);
   setDocument(m_document);
 
   m_backgroundColor.setAlpha(0);
 
   init();
-  
-  //If enabled is true, this item will accept hover events
-  setTextInteractionFlags(Qt::TextEditable);
 }
 
 te::layout::TextItem::~TextItem()
 {
-  if(m_document)
-  {
-    delete m_document;
-    m_document = 0;
-  }
+
 }
 
 void te::layout::TextItem::init()
@@ -146,7 +141,8 @@ void te::layout::TextItem::updateObserver( ContextItem context )
 
   m_document->setDefaultFont(qft);
   
-  refreshDocument();
+  std::string txt = model->getText();
+  m_document->setPlainText(txt.c_str());
 
   update();
 }
@@ -303,6 +299,8 @@ te::gm::Coord2D te::layout::TextItem::getPosition()
 
 te::color::RGBAColor** te::layout::TextItem::getImage()
 {
+  refreshDocument();
+
   QImage img = createImage();
   te::color::RGBAColor** teImg = te::qt::widgets::GetImage(&img);
   return teImg;
@@ -371,6 +369,20 @@ void te::layout::TextItem::mouseDoubleClickEvent( QGraphicsSceneMouseEvent * eve
   if(event->button() == Qt::LeftButton)
   {
     m_editable = !m_editable;
+    if(m_editable)
+    {
+      //If enabled is true, this item will accept hover events
+      setTextInteractionFlags(Qt::TextEditable);
+      setFocus();
+      setCursor(QCursor(Qt::IBeamCursor));
+      QTextCursor cursor(textCursor());
+      cursor.clearSelection();
+      setTextCursor(cursor);
+    }
+    else
+    {
+      setCursor(Qt::ArrowCursor);
+    }
   }
 }
 
@@ -425,12 +437,36 @@ void te::layout::TextItem::setEditable( bool editable )
 void te::layout::TextItem::resetEdit()
 {
   m_editable = false;
-  refreshDocument();
+
+  TextModel* model = dynamic_cast<TextModel*>(m_model);
+  if(model)
+  {
+    if(model->getText().compare(m_document->toPlainText().toStdString()) != 0)
+    {
+      Properties* beforeProps = getProperties();
+      Properties* oldCommand = new Properties(*beforeProps);
+
+      refreshDocument();
+
+      beforeProps = getProperties();
+      Properties* newCommand = new Properties(*beforeProps);
+
+      QUndoCommand* command = new ChangePropertyCommand(this, oldCommand, newCommand);
+
+      Scene* sc = dynamic_cast<Scene*>(scene());
+      if(sc)
+      {
+        sc->addUndoStack(command);
+      }
+    }
+  }
+
   /*Necessary clear the selection and focus of the edit 
   after being completely closed and like this not cause bad behavior.*/
   QTextCursor cursor(textCursor());
   cursor.clearSelection();
-  setTextCursor(cursor);
+  setTextInteractionFlags(Qt::NoTextInteraction);
+  unsetCursor();
   clearFocus();     
 }
 

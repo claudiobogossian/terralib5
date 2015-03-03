@@ -27,9 +27,12 @@
 #include "../../../../common/Config.h"
 #include "../../../../common/Translator.h"
 #include "../../../../common/Logger.h"
+
 #include "../../../../dataaccess/dataset/DataSetType.h"
 #include "../../../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../../../dataaccess/datasource/DataSourceManager.h"
+
+#include "../../../../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../../../../maptools/AbstractLayer.h"
 #include "../../../widgets/datasource/core/DataSourceTypeManager.h"
 #include "../../../widgets/layer/utils/DataSet2Layer.h"
@@ -42,6 +45,7 @@
 
 #include "GDALType.h"
 #include "Plugin.h"
+#include "../../../../cellspace/CellSpaceOperations.h"
 
 // Boost
 #include <boost/uuid/random_generator.hpp>
@@ -137,9 +141,10 @@ void te::qt::plugins::gdal::Plugin::shutdown()
 
 void te::qt::plugins::gdal::Plugin::openFileDialog()
 {
-  QString filter = tr("Image File (*.png *.jpg *.jpeg *.tif *.tiff *.geotif *.geotiff);; Web Map Service - WMS (*.xml *.wms);; Web Coverage Service - WCS (*.xml *.wcs);; All Files (*.*)");
-
-  QStringList fileNames = QFileDialog::getOpenFileNames(te::qt::af::ApplicationController::getInstance().getMainWindow(), tr("Open Raster File"), te::qt::widgets::GetFilePathFromSettings("raster"), filter);
+  QStringList fileNames = QFileDialog::getOpenFileNames(
+    te::qt::af::ApplicationController::getInstance().getMainWindow(), 
+    tr("Open Raster File"), te::qt::widgets::GetFilePathFromSettings("raster"), 
+    te::qt::widgets::GetDiskRasterFileSelFilter());
 
   if(fileNames.isEmpty())
     return;

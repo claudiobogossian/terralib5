@@ -86,6 +86,9 @@ te::attributefill::RasterToVectorDialog::RasterToVectorDialog(QWidget* parent, Q
   connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
   connect(m_ui->m_cancelPushButton, SIGNAL(clicked()), this, SLOT(onCancelPushButtonClicked()));
 
+  m_ui->m_helpPushButton->setNameSpace("dpi.inpe.br.plugins"); 
+  m_ui->m_helpPushButton->setPageReference("plugins/attributefill/attrfill_raster_to_vector.html");
+
 }
 
 te::attributefill::RasterToVectorDialog::~RasterToVectorDialog()

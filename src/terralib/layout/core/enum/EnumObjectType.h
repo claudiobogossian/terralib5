@@ -154,6 +154,13 @@ namespace te
 		      \return enum value  	  
         */
         virtual EnumType* getItemGroup() const;
+
+        /*!
+          \brief Returns value that represents moving item group (MVC Component) type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
+        virtual EnumType* getMovingItemGroup() const;
         
         /*!
           \brief Returns value that represents scale (MVC Component) type belonging to enumeration.
@@ -253,6 +260,34 @@ namespace te
         */
         virtual EnumType* getObjectUnknown() const;
 
+        /*!
+          \brief Returns value that represents line (MVC Component) type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
+		    virtual EnumType* getLineItem() const; 
+        
+        /*!
+          \brief Returns value that represents polygon (MVC Component) type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
+        virtual EnumType* getPolygonItem() const; 
+
+        /*!
+          \brief Returns value that represents balloon (MVC Component) type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
+        virtual EnumType* getBalloonItem() const; 
+        
+        /*!
+          \brief Returns value that represents balloon (MVC Component) type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
+        virtual EnumType* getBarCodeItem() const;
+
       protected:
 
         /*!
@@ -275,6 +310,7 @@ namespace te
         EnumType* m_gridPlanar; //!< value that represents grid planar type belonging to enumeration
         EnumType* m_gridGeodesic; //!< value that represents grid geodesic type belonging to enumeration
         EnumType* m_itemGroup; //!< value that represents item group (MVC Component) type belonging to enumeration
+        EnumType* m_movingItemGroup; //!< value that represents moving item group (MVC Component) type belonging to enumeration
         EnumType* m_scaleItem; //!< value that represents scale (MVC Component) type belonging to enumeration
         EnumType* m_pageSetup; //!< value that represents page setup window (MVC dialog) type belonging to enumeration
         EnumType* m_imageItem; //!< value that represents image (MVC Component) type belonging to enumeration
@@ -288,6 +324,10 @@ namespace te
         EnumType* m_textGridSettings; //!< value that represents text grid settings (MVC widget) type belonging to enumeration
         EnumType* m_legendChildItem; //!< value that represents legend child (MVC Component) type belonging to enumeration
         EnumType* m_textItem; //!< value that represents text (MVC Component) type belonging to enumeration
+        EnumType* m_lineItem; //!< value that represents line (MVC Component) type belonging to enumeration
+        EnumType* m_polygonItem; //!< value that represents polygon (MVC Component) type belonging to enumeration
+        EnumType* m_balloonItem; //!< value that represents balloon (MVC Component) type belonging to enumeration
+        EnumType* m_barCodeItem; //!< value that represents barcode (MVC Component) type belonging to enumeration
         EnumType* m_objectUnknown; //!< value that represents unknown type belonging to enumeration
     };
   }

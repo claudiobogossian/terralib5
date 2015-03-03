@@ -208,6 +208,20 @@ namespace te
         */
         virtual bool isComplex();
 
+        /*!
+          \brief Sets the visibility of this property.
+
+          \param visibility of this property
+        */
+        virtual void setVisible(bool visible);
+
+        /*!
+          \brief Return true if visible, false otherwise.
+
+          \return true if visible, false otherwise
+        */
+        virtual bool isVisible();
+
         bool operator ==(const Property& other); 
 
     protected:
@@ -223,6 +237,7 @@ namespace te
       std::string m_label; //!<
       bool m_menu; //!< /* The property will be used in a menu.  */
       std::string m_icon; //!<
+      bool m_visible; //!< visibility
     };
 
     template <typename ValueType>

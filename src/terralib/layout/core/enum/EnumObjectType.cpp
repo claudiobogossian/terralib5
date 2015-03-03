@@ -54,6 +54,10 @@ te::layout::EnumObjectType::EnumObjectType() :
   m_editTemplate(0),
   m_textGridSettings(0),
   m_legendChildItem(0),
+  m_lineItem(0),
+  m_polygonItem(0),
+  m_balloonItem(0),
+  m_barCodeItem(0),
   m_objectUnknown(0)
 {
   init();
@@ -72,7 +76,7 @@ te::layout::EnumObjectType::~EnumObjectType()
     delete m_rectangleItem;
     m_rectangleItem = 0;
   }
-   
+
   if(m_mapItem)
   {
     delete m_mapGridItem;
@@ -90,7 +94,7 @@ te::layout::EnumObjectType::~EnumObjectType()
     delete m_legendItem;
     m_legendItem = 0;
   }
-    
+
   if(m_propertiesWindow)
   {
     delete m_propertiesWindow;
@@ -120,19 +124,19 @@ te::layout::EnumObjectType::~EnumObjectType()
     delete m_gridSettings;
     m_gridSettings = 0;
   }
-    
+
   if(m_gridPlanar)
   {
     delete m_gridPlanar;
     m_gridPlanar = 0;
   }
-    
+
   if(m_gridGeodesic)
   {
     delete m_gridGeodesic;
     m_gridGeodesic = 0;
   }
-      
+
   if(m_itemGroup)
   {
     delete m_itemGroup;
@@ -144,7 +148,7 @@ te::layout::EnumObjectType::~EnumObjectType()
     delete m_scaleItem;
     m_scaleItem = 0;
   }
-    
+
   if(m_pageSetup)
   {
     delete m_pageSetup;
@@ -180,7 +184,7 @@ te::layout::EnumObjectType::~EnumObjectType()
     delete m_ellipseItem;
     m_ellipseItem = 0;
   }
-    
+
   if(m_titleItem)
   {
     delete m_titleItem;
@@ -198,7 +202,7 @@ te::layout::EnumObjectType::~EnumObjectType()
     delete m_editTemplate;
     m_editTemplate = 0;
   }
-  
+
   if(m_textGridSettings)
   {
     delete m_textGridSettings;
@@ -210,7 +214,7 @@ te::layout::EnumObjectType::~EnumObjectType()
     delete m_objectUnknown;
     m_objectUnknown = 0;
   }
-  
+
   if(m_legendChildItem)
   {
     delete m_legendChildItem;
@@ -222,95 +226,154 @@ te::layout::EnumObjectType::~EnumObjectType()
     delete m_textItem;
     m_textItem = 0;
   }
+
+  if(m_lineItem)
+  {
+    delete m_lineItem;
+    m_lineItem = 0;
+  }
+
+  if(m_polygonItem)
+  {
+    delete m_polygonItem;
+    m_polygonItem = 0;
+  }
+
+  if(m_balloonItem)
+  {
+    delete m_balloonItem;
+    m_balloonItem = 0;
+  }
+
+  if(m_barCodeItem)
+  {
+    delete m_barCodeItem;
+    m_barCodeItem = 0;
+  }
 }
 
 void te::layout::EnumObjectType::init()
 {
-  m_objectUnknown = new EnumType(0, "None");
+  m_objectUnknown = new EnumType(0, "None", this);
   m_enums.push_back(m_objectUnknown);
 
-  m_rectangleItem = new EnumType(1, "Rectangle_Item");
+  m_rectangleItem = new EnumType(1, "Rectangle_Item", this);
   m_enums.push_back(m_rectangleItem);
 
-  m_mapItem = new EnumType(2, "Map_Item");
+  m_mapItem = new EnumType(2, "Map_Item", this);
   m_enums.push_back(m_mapItem);
 
-  m_mapGridItem = new EnumType(3, "MapGrid_Item");
+  m_mapGridItem = new EnumType(3, "MapGrid_Item", this);
   m_enums.push_back(m_mapGridItem);
 
-  m_paperItem = new EnumType(4, "Paper_Item");
+  m_paperItem = new EnumType(4, "Paper_Item", this);
   m_enums.push_back(m_paperItem);
 
-  m_legendItem = new EnumType(5, "Legend_Item");
+  m_legendItem = new EnumType(5, "Legend_Item", this);
   m_enums.push_back(m_legendItem);
 
-  m_propertiesWindow = new EnumType(6, "Properties_Window");
+  m_propertiesWindow = new EnumType(6, "Properties_Window", this);
   m_enums.push_back(m_propertiesWindow);
 
-  m_displayWindow = new EnumType(7, "Display_Window");
+  m_displayWindow = new EnumType(7, "Display_Window", this);
   m_enums.push_back(m_displayWindow);
 
-  m_objectInspectorWindow = new EnumType(8, "ObjectInspector_Window");
+  m_objectInspectorWindow = new EnumType(8, "ObjectInspector_Window", this);
   m_enums.push_back(m_objectInspectorWindow);
 
-  m_toolbar = new EnumType(9, "Toolbar");
+  m_toolbar = new EnumType(9, "Toolbar", this);
   m_enums.push_back(m_toolbar);
 
-  m_gridSettings  = new EnumType(10, "Grid_Settings");
+  m_gridSettings  = new EnumType(10, "Grid_Settings", this);
   m_enums.push_back(m_gridSettings);
 
-  m_gridPlanar = new EnumType(11, "Grid_Planar");
+  m_gridPlanar = new EnumType(11, "Grid_Planar", this);
   m_enums.push_back(m_gridPlanar);
 
-  m_gridGeodesic = new EnumType(12, "Grid_Geodesic");
+  m_gridGeodesic = new EnumType(12, "Grid_Geodesic", this);
   m_enums.push_back(m_gridGeodesic);
 
-  m_textItem = new EnumType(15, "Text_Item");
+  m_textItem = new EnumType(15, "Text_Item", this);
   m_enums.push_back(m_textItem);
 
-  m_itemGroup = new EnumType(16, "Item_Group");
+  m_itemGroup = new EnumType(16, "Item_Group", this);
   m_enums.push_back(m_itemGroup);
 
-  m_scaleItem = new EnumType(17, "Scale_Item");
+  m_scaleItem = new EnumType(17, "Scale_Item", this);
   m_enums.push_back(m_scaleItem);
 
-  m_pageSetup = new EnumType(18, "Page_Setup");
+  m_pageSetup = new EnumType(18, "Page_Setup", this);
   m_enums.push_back(m_pageSetup);
 
-  m_imageItem = new EnumType(19, "Image_Item");
+  m_imageItem = new EnumType(19, "Image_Item", this);
   m_enums.push_back(m_imageItem);
 
-  m_systematicScale = new EnumType(20, "Systematic_Scale");
+  m_systematicScale = new EnumType(20, "Systematic_Scale", this);
   m_enums.push_back(m_systematicScale);
 
-  m_pointItem = new EnumType(21, "Point_Item");
+  m_pointItem = new EnumType(21, "Point_Item", this);
   m_enums.push_back(m_pointItem);
 
-  m_arrowItem = new EnumType(22, "Arrow_Item");
+  m_arrowItem = new EnumType(22, "Arrow_Item", this);
   m_enums.push_back(m_arrowItem);
 
-  m_ellipseItem = new EnumType(23, "Ellipse_Item");
+  m_ellipseItem = new EnumType(23, "Ellipse_Item", this);
   m_enums.push_back(m_ellipseItem);
 
-  m_titleItem = new EnumType(24, "Title_Item");
+  m_titleItem = new EnumType(24, "Title_Item", this);
   m_enums.push_back(m_titleItem);
 
-  m_textGridItem = new EnumType(25, "TextGrid_Item");
+  m_textGridItem = new EnumType(25, "TextGrid_Item", this);
   m_enums.push_back(m_textGridItem);
-  
-  m_editTemplate = new EnumType(27, "Edit_Template");
+
+  m_editTemplate = new EnumType(27, "Edit_Template", this);
   m_enums.push_back(m_editTemplate);
-  
-  m_textGridSettings = new EnumType(29, "Text_Grid_Settings");
+
+  m_textGridSettings = new EnumType(29, "Text_Grid_Settings", this);
   m_enums.push_back(m_textGridSettings);
 
-  m_legendChildItem = new EnumType(30, "Legend_Child_Item");
+  m_legendChildItem = new EnumType(30, "Legend_Child_Item", this);
   m_enums.push_back(m_legendChildItem);
+
+  m_movingItemGroup = new EnumType(31, "Moving_Item_Group", this);
+  m_enums.push_back(m_movingItemGroup);
+
+  m_lineItem = new EnumType(32, "Line_Item", this); 
+  m_enums.push_back(m_lineItem);
+
+  m_polygonItem = new EnumType(33, "Polygon_Item", this); 
+  m_enums.push_back(m_polygonItem);
+
+  m_balloonItem = new EnumType(34, "Balloon_Item", this); 
+  m_enums.push_back(m_balloonItem);
+
+  m_barCodeItem = new EnumType(35, "BarCode_Item", this);
+  m_enums.push_back(m_barCodeItem);
 }
 
 te::layout::EnumType* te::layout::EnumObjectType::getRectangleItem() const
 {
   return m_rectangleItem;
+}
+
+te::layout::EnumType* te::layout::EnumObjectType::getLineItem() const 
+{
+	return m_lineItem;
+}
+
+te::layout::EnumType* te::layout::EnumObjectType::getPolygonItem() const 
+{
+  return m_polygonItem;
+}
+
+te::layout::EnumType* te::layout::EnumObjectType::getBalloonItem() const 
+{
+  return m_balloonItem;
+}
+
+te::layout::EnumType* te::layout::EnumObjectType::getBarCodeItem() const
+{
+  return m_barCodeItem;
 }
 
 te::layout::EnumType* te::layout::EnumObjectType::getMapItem() const
@@ -372,6 +435,12 @@ te::layout::EnumType* te::layout::EnumObjectType::getItemGroup() const
 {
   return m_itemGroup;
 }
+
+te::layout::EnumType* te::layout::EnumObjectType::getMovingItemGroup() const
+{
+  return m_movingItemGroup;
+}
+
 
 te::layout::EnumType* te::layout::EnumObjectType::getScaleItem() const
 {

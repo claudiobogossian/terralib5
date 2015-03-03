@@ -745,11 +745,11 @@ void te::attributefill::VectorToVectorDialog::setFunctionsByLayer(te::map::Abstr
         item = new QListWidgetItem(QString(prop->getName().c_str()) + " : " + te::attributefill::GetOperationFullName(te::attributefill::PERCENT_EACH_CLASS).c_str());
         item->setData(Qt::UserRole, QVariant(te::attributefill::PERCENT_EACH_CLASS));
         m_ui->m_statisticsListWidget->addItem(item);
-      }
 
-      item = new QListWidgetItem(QString(prop->getName().c_str()) + " : " + te::attributefill::GetOperationFullName(te::attributefill::PERCENT_CLASS).c_str());
-      item->setData(Qt::UserRole, QVariant(te::attributefill::PERCENT_CLASS));
-      m_ui->m_statisticsListWidget->addItem(item);
+        item = new QListWidgetItem(QString(prop->getName().c_str()) + " : " + te::attributefill::GetOperationFullName(te::attributefill::PERCENT_CLASS).c_str());
+        item->setData(Qt::UserRole, QVariant(te::attributefill::PERCENT_CLASS));
+        m_ui->m_statisticsListWidget->addItem(item);
+      }
 
       item = new QListWidgetItem(QString(prop->getName().c_str()) + " : " + te::attributefill::GetOperationFullName(te::attributefill::MIN_DISTANCE).c_str());
       item->setData(Qt::UserRole, QVariant(te::attributefill::MIN_DISTANCE));

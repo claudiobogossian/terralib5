@@ -186,6 +186,13 @@ namespace te
           void createHistogram(const int& column);
 
           /*!
+            \brief Creates a new chart that displays the normal distribution based on the data at position \a column
+
+            \param column Column that provides the data used to calculate the normal distribution.
+          */
+          void createNormalDistribution(const int& column);
+
+          /*!
             \brief Hides the column at position \a column
 
             \param column Column to be hidden.

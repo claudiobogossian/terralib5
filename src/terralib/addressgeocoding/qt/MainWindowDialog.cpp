@@ -55,11 +55,7 @@
 
 // Qt
 #include <QFileDialog>
-#include <QList>
-#include <QListWidget>
-#include <QListWidgetItem>
 #include <QMessageBox>
-#include <QTreeWidget>
 #include <QSettings>
 
 // Boost
@@ -89,59 +85,30 @@ te::addressgeocoding::MainWindowDialog::MainWindowDialog(QWidget* parent, Qt::Wi
   connect(m_ui->m_fLeftComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onFinalLeftComboBoxChanged(int)));
   connect(m_ui->m_iRightComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onInitialRightComboBoxChanged(int)));
   connect(m_ui->m_fRightComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onFinalRightComboBoxChanged(int)));
+  connect(m_ui->m_inputAddressComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onAddressComboBoxChanged(int)));
 
-  connect(m_ui->m_targetDatasourceToolButton, SIGNAL(pressed()), this, SLOT(onTargetDatasourceToolButtonPressed()));
   connect(m_ui->m_targetFileToolButton, SIGNAL(pressed()), this,  SLOT(onTargetFileToolButtonPressed()));
+  connect(m_ui->m_targetDatasourceToolButton, SIGNAL(pressed()), this, SLOT(onTargetDatasourceToolButtonPressed()));
 
   connect(m_ui->m_configureLayerPushButton, SIGNAL(clicked()), this, SLOT(onConfigureLayerClicked()));
   connect(m_ui->m_targetFileAddressToolButton, SIGNAL(clicked()), this, SLOT(onTargetFileAddressToolButtonPressed()));
+
+  connect(m_ui->m_removeAddressFileToolButton, SIGNAL(clicked()), this, SLOT(onRemoveAddressToolButtonPressed()));
+  connect(m_ui->m_editAddressFileToolButton, SIGNAL(clicked()), this, SLOT(onEditAddressToolButtonPressed()));
 
   connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));
   connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
   connect(m_ui->m_cancelPushButton, SIGNAL(clicked()), this, SLOT(onCancelPushButtonClicked()));
 
-// Load the Address file path.
-  std::string filePath;
-  GetAddressFilePathToSettings(filePath);
+// Load the Address file Name.
+  GetAddressFilePathToSettings(m_mapFields);
+  std::map<std::string, std::vector<std::string> >::iterator it = m_mapFields.begin();
 
-// Load the Address Data Source.
-  GetDataSourceAddress(filePath);
-  
-  std::vector<std::string>vecNames;
-  if(m_addressDataSource)
+  while(it != m_mapFields.end())
   {
-    vecNames = m_addressDataSource->getDataSetNames();
-    m_addressFile = vecNames[0];
-    m_ui->m_inputAddressComboBox->addItem(QString(m_addressFile.c_str()));
+    m_ui->m_inputAddressComboBox->addItem(QString(it->first.c_str()));
+    ++it;
   }
-
-// Load the Address parameters.
-  std::string streetType;
-  std::string streetTitle;
-  std::string streetName;
-  std::string number;
-  std::string neighborhood;
-  std::string postalCode;
-
-  GetAddressConfigToSettings(streetType, streetTitle, streetName, number, neighborhood, postalCode);
-
-  if(streetType != "")
-    m_associatedProps.push_back(streetType);
-
-  if(streetTitle != "")
-    m_associatedProps.push_back(streetTitle);
-
-  if(streetName != "")
-    m_associatedProps.push_back(streetName);
-
-  if(neighborhood != "")
-    m_associatedProps.push_back(neighborhood);
-
-  if(postalCode != "")
-    m_associatedProps.push_back(postalCode);
-
-  m_streetNumber = number;
-
 }
 
 te::addressgeocoding::MainWindowDialog::~MainWindowDialog()
@@ -249,7 +216,7 @@ void te::addressgeocoding::MainWindowDialog::onConfigureLayerClicked()
   te::addressgeocoding::ConfigInputLayerDialog dlg(this);
   dlg.setLayers(m_layers);
 
-  if(dlg.exec() != QDialog::Accepted)
+  if(dlg.exec() == QDialog::Accepted)
   {
      m_newColumnLayer = dlg.getLayer();
      m_layerDataSource = dlg.getDataSource();
@@ -261,27 +228,58 @@ void te::addressgeocoding::MainWindowDialog::onConfigureLayerClicked()
 
 void te::addressgeocoding::MainWindowDialog::onAddressComboBoxChanged(int index)
 {
+  // Load the Address file Name.
 
+  if(index == -1)
+  {
+    m_ui->m_editAddressFileToolButton->setEnabled(false);
+    m_ui->m_removeAddressFileToolButton->setEnabled(false);
+    return;
+  }
+
+  std::map<std::string, std::vector<std::string> >::iterator it;
+
+  std::string value = m_ui->m_inputAddressComboBox->itemText(index).toStdString();
+
+  it = m_mapFields.find(value);
+  m_addressFile = it->first;
+  std::vector<std::string> vecFields = it->second;
+
+  m_associatedProps.clear();
+
+  for(std::size_t i = 0; i < vecFields.size(); ++i)
+  {
+    if(i != 0 && i != 2 && vecFields[i] != "")
+      m_associatedProps.push_back(vecFields[i]);
+    if(i == 0)
+      GetAddressDataSource(vecFields[i]);
+    if(i == 2)
+      m_streetNumber = m_mapFields.begin()->second[i];
+  }
+
+  m_ui->m_editAddressFileToolButton->setEnabled(true);
+  m_ui->m_removeAddressFileToolButton->setEnabled(true);
 }
 
 void te::addressgeocoding::MainWindowDialog::onTargetFileAddressToolButtonPressed()
 {
-try
+  try
   {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open Textual File"), te::qt::widgets::GetFilePathFromSettings("tabular"), tr("dBASE (*.dbf *.DBF);; Comma Separated Value (*.csv *.CSV)"), 
       0, QFileDialog::ReadOnly);
 
-    GetDataSourceAddress(fileName.toStdString());
+    GetAddressDataSource(fileName.toStdString());
+
+    if (fileName.isEmpty())
+      return;
 
     te::addressgeocoding::ConfigInputAddressDialog dlg(this);
     
     if(m_addressDataSource)
       dlg.setDataSource(m_addressDataSource);
 
-    if(dlg.exec() != QDialog::Accepted)
+    if(dlg.exec() == QDialog::Accepted)
     {
-      m_ui->m_inputAddressComboBox->clear();
-
       m_addressDataSource = dlg.getDataSource();
       m_addressFile = dlg.getAddressFileName();
 
@@ -304,6 +302,7 @@ try
 
       m_ui->m_inputAddressComboBox->addItem(QString(m_addressFile.c_str()));
     }
+
     return;
   }
   catch(const std::exception& e)
@@ -314,12 +313,66 @@ try
 
 void te::addressgeocoding::MainWindowDialog::onEditAddressToolButtonPressed()
 {
+  te::addressgeocoding::ConfigInputAddressDialog dlg(this);
 
+  if(m_addressDataSource)
+    dlg.setDataSource(m_addressDataSource);
+
+  std::map<std::string, std::vector<std::string> > mapFields;
+  GetAddressFilePathToSettings(mapFields);
+  std::map<std::string, std::vector<std::string> >::iterator it;
+
+  std::string value = m_ui->m_inputAddressComboBox->currentText().toStdString();
+
+  it = mapFields.find(value);
+  m_addressFile = it->first;
+  std::vector<std::string> vecFields = it->second;
+
+  dlg.setStreetNeighborhood(vecFields[1]);
+  dlg.setStreetNumber(vecFields[2]);
+  dlg.setStreetPostalCode(vecFields[3]);
+  dlg.setStreetName(vecFields[4]);
+  dlg.setStreetTitle(vecFields[5]);
+  dlg.setStreetType(vecFields[6]);
+
+  if(dlg.exec() == QDialog::Accepted)
+  {
+    m_addressDataSource = dlg.getDataSource();
+    m_addressFile = dlg.getAddressFileName();
+
+    if(dlg.getStreetType() != "")
+      m_associatedProps.push_back(dlg.getStreetType());
+
+    if(dlg.getStreetTitle() != "")
+      m_associatedProps.push_back(dlg.getStreetTitle());
+
+    if(dlg.getStreetName() != "")
+      m_associatedProps.push_back(dlg.getStreetName());
+
+    if(dlg.getStreetNeighborhood() != "")
+      m_associatedProps.push_back(dlg.getStreetNeighborhood());
+
+    if(dlg.getStreetPostalCode() != "")
+      m_associatedProps.push_back(dlg.getStreetPostalCode());
+
+    m_streetNumber = dlg.getStreetNumber();
+
+    m_ui->m_inputAddressComboBox->addItem(QString(m_addressFile.c_str()));
+  }
+
+  return;
 }
 
 void te::addressgeocoding::MainWindowDialog::onRemoveAddressToolButtonPressed()
 {
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
 
+  sett.beginGroup("Address Geocoding");
+  
+  sett.remove(m_ui->m_inputAddressComboBox->currentText());
+  m_ui->m_inputAddressComboBox->removeItem(m_ui->m_inputAddressComboBox->currentIndex());
+
+  sett.endGroup();
 }
 
 void te::addressgeocoding::MainWindowDialog::onTargetDatasourceToolButtonPressed()
@@ -411,7 +464,7 @@ void te::addressgeocoding::MainWindowDialog::onOkPushButtonClicked()
                               m_initialRight,
                               m_finalRight);
 
-  std::string outputdataset;
+  std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toStdString();
   
   te::da::DataSourcePtr outputDataSource;
   bool res;
@@ -420,8 +473,7 @@ void te::addressgeocoding::MainWindowDialog::onOkPushButtonClicked()
   {
     if(m_toFile)
     {
-      outputdataset = m_ui->m_repositoryLineEdit->text().toStdString();
-      boost::filesystem::path uri(outputdataset);
+      boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toStdString());
 
       if (boost::filesystem::exists(uri))
       {
@@ -487,7 +539,6 @@ void te::addressgeocoding::MainWindowDialog::onOkPushButtonClicked()
     }
     else
     {
-      outputdataset = m_ui->m_newLayerNameLineEdit->text().toStdString();
       outputDataSource = te::da::GetDataSource(m_outputDatasource->getId());
       if (!outputDataSource)
       {
@@ -523,6 +574,14 @@ void te::addressgeocoding::MainWindowDialog::onOkPushButtonClicked()
 
     }
 
+// creating a layer for the result
+    te::da::DataSourcePtr outDataSource = te::da::GetDataSource(m_outputDatasource->getId());
+    
+    te::qt::widgets::DataSet2Layer converter(m_outputDatasource->getId());
+      
+    te::da::DataSetTypePtr dt(outDataSource->getDataSetType(outputdataset).release());
+    m_resultLayer = converter(dt);
+
   }
   catch(const std::exception& e)
   {
@@ -545,41 +604,40 @@ void te::addressgeocoding::MainWindowDialog::onCancelPushButtonClicked()
   reject();
 }
 
-void te::addressgeocoding::MainWindowDialog::GetAddressFilePathToSettings(std::string& filePath)
+void te::addressgeocoding::MainWindowDialog::GetAddressFilePathToSettings(std::map<std::string, std::vector<std::string> >& mapFields)
 {
   QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
 
-  std::string key1 = "Address Geocoding/filePath";
+  sett.beginGroup("Address Geocoding");
+  QStringList lst = sett.childGroups();
 
-  filePath = sett.value(key1.c_str()).toString().toStdString();
+  QStringList::iterator it;
+  
+  for(it=lst.begin(); it != lst.end(); ++it)
+  {
+    QString gr = *it;
+
+    sett.beginGroup(gr);
+
+    std::vector<std::string> vecFields;
+
+    std::string fileName = sett.value("fileName").toString().toStdString();
+    vecFields.push_back(sett.value("filePath").toString().toStdString());
+    vecFields.push_back(sett.value("neighborhood").toString().toStdString());
+    vecFields.push_back(sett.value("number").toString().toStdString());
+    vecFields.push_back(sett.value("postalCode").toString().toStdString());
+    vecFields.push_back(sett.value("streetName").toString().toStdString());
+    vecFields.push_back(sett.value("streetTitle").toString().toStdString());
+    vecFields.push_back(sett.value("streetType").toString().toStdString());
+
+    mapFields.insert(std::pair<std::string, std::vector<std::string> >(fileName, vecFields));
+
+    sett.endGroup();
+  }
+  sett.endGroup();
 }
 
-void te::addressgeocoding::MainWindowDialog::GetAddressConfigToSettings(std::string& streetType,
-                                                                        std::string& streetTitle,
-                                                                        std::string& streetName,
-                                                                        std::string& number,
-                                                                        std::string& neighborhood,
-                                                                        std::string& postalCode)
-{
-  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
-
-  std::string key1 = "Address Geocoding/streetType";
-  std::string key2 = "Address Geocoding/streetTitle";
-  std::string key3 = "Address Geocoding/streetName";
-  std::string key4 = "Address Geocoding/number";
-  std::string key5 = "Address Geocoding/neighborhood";
-  std::string key6 = "Address Geocoding/postalCode";
-
-  streetType = sett.value(key1.c_str()).toString().toStdString();
-  streetTitle = sett.value(key2.c_str()).toString().toStdString();
-  streetName = sett.value(key3.c_str()).toString().toStdString();
-  number = sett.value(key4.c_str()).toString().toStdString();
-  neighborhood = sett.value(key5.c_str()).toString().toStdString();
-  postalCode = sett.value(key6.c_str()).toString().toStdString();
-
-}
-
-void te::addressgeocoding::MainWindowDialog::GetDataSourceAddress(std::string filePath)
+void te::addressgeocoding::MainWindowDialog::GetAddressDataSource(std::string filePath)
 {
   if(QString(filePath.c_str()).isEmpty())
     return;

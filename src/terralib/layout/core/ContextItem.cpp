@@ -36,7 +36,8 @@ te::layout::ContextItem::ContextItem() :
   m_utils(0),
   m_canvas(0),
   m_dpiX(96),
-  m_dpiY(96)
+  m_dpiY(96),
+  m_changePos(false)
 {
 
 }
@@ -50,7 +51,8 @@ te::layout::ContextItem::ContextItem( ParamsCreate params, double zoomFactor ) :
   m_utils(0),
   m_canvas(0),
   m_dpiX(96),
-  m_dpiY(96)
+  m_dpiY(96),
+  m_changePos(false)
 {
 
 }
@@ -148,4 +150,24 @@ void te::layout::ContextItem::setShow( bool show )
 bool te::layout::ContextItem::isShow()
 {
   return m_show;
+}
+
+void te::layout::ContextItem::setPos( te::gm::Coord2D pos )
+{
+  m_pos = pos;
+}
+
+te::gm::Coord2D te::layout::ContextItem::getPos()
+{
+  return m_pos;
+}
+
+void te::layout::ContextItem::setChangePos( bool change )
+{
+  m_changePos = change;
+}
+
+bool te::layout::ContextItem::isChangePos()
+{
+  return m_changePos;
 }

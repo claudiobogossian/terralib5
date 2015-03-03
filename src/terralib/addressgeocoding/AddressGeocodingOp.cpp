@@ -92,18 +92,17 @@ void te::addressgeocoding::AddressGeocodingOp::setOutput(te::da::DataSourcePtr o
 
 bool te::addressgeocoding::AddressGeocodingOp::paramsAreValid()
 {
-  //if (!m_inDsetType.get())
-  //  return false;
-  //
-  //if (!m_inDsetType->hasGeom())
-  //  return false;
-  
-  //if (m_groupProps.empty())
-    //return false;
+  if (!m_inDsrc.get() || !m_inAddressDsrc.get())
+    return false;
+  if (m_inDsetName.empty() || m_inAddressDsetName.empty())
+    return false;
+  if (m_associatedProps.empty())
+    return false;
+  if (!m_outDsrc.get())
+    return false;
+  if (m_outDsetName.empty())
+    return false;
 
-  //if (m_outDsetName.empty() || !m_outDsrc.get())
-  //  return false;
-  
   return true;
 }
 
@@ -194,7 +193,7 @@ std::auto_ptr<te::mem::DataSet> dataSetMemory(new te::mem::DataSet(outDsType.get
         if(vecProps[i]->getType() != te::dt::GEOMETRY_TYPE && vecProps[i]->getName() != "tsvector")
         {
           if(dsQuery->isNull(i) == false)
-            itemMemory->setValue(i, dsQuery->getValue(i).release());
+            itemMemory->setValue(vecProps[i]->getName(), dsQuery->getValue(i).release());
 
           if(vecProps[i]->getName() == m_initialLeft || vecProps[i]->getName() == m_initialRight)
           {

@@ -72,6 +72,8 @@ namespace te
       virtual void itemsInspector(QList<QGraphicsItem*> graphicsItems);
 
       virtual void selectItems(QList<QGraphicsItem*> graphicsItems);
+
+      virtual ObjectInspectorPropertyBrowser* getObjectInspector();
             
     protected slots:
       

@@ -20,7 +20,7 @@
 /*!
   \file MoveCommand.h
    
-  \brief 
+  \brief Undo/Redo for moving components.
 
   \ingroup layout
 */
@@ -46,19 +46,46 @@ namespace te
 {
   namespace layout
   {
+    /*!
+      \brief Undo/Redo for moving components.
+	  
+	    \ingroup layout
+	  */
     class TELAYOUTEXPORT MoveCommand : public QUndoCommand
     {
       public:
         
+        /*!
+          \brief Constructor
+
+          \param item
+          \param oldPos
+          \param parent
+        */
         MoveCommand(QGraphicsItem* item, const QPointF oldPos,
           QUndoCommand *parent = 0);
 
+        /*!
+          \brief Constructor
+
+          \param items
+          \param parent
+        */
         MoveCommand(std::map<QGraphicsItem*, QPointF> items, QUndoCommand *parent = 0);
 
+        /*!
+          \brief Destructor
+        */
         virtual ~MoveCommand();       
 
+        /*!
+          \brief Reimplemented from QUndoCommand
+        */
         virtual void undo();
 
+        /*!
+          \brief Reimplemented from QUndoCommand
+        */
         virtual void redo();
         
       protected:

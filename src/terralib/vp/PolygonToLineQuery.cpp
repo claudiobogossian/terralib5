@@ -1,0 +1,198 @@
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License,
+    or (at your option) any later version.
+
+    TerraLib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
+ */
+
+/*!
+  \file PolygonToLineQuery.h
+
+  \brief Polygon To Line Vector Processing functions.
+*/
+
+//Terralib
+
+#include "../common/progress/TaskProgress.h"
+#include "../common/Logger.h"
+#include "../common/Translator.h"
+
+#include "../dataaccess/dataset/DataSet.h"
+
+#include "../datatype/Property.h"
+
+#include "../dataaccess/dataset/ObjectIdSet.h"
+
+#include "../dataaccess/query/DataSetName.h"
+#include "../dataaccess/query/Expression.h"
+#include "../dataaccess/query/Field.h"
+#include "../dataaccess/query/Fields.h"
+#include "../dataaccess/query/From.h"
+#include "../dataaccess/query/FromItem.h"
+#include "../dataaccess/query/GroupBy.h"
+#include "../dataaccess/query/GroupByItem.h"
+#include "../dataaccess/query/PropertyName.h"
+#include "../dataaccess/query/Select.h"
+#include "../dataaccess/query/ST_Boundary.h"
+#include "../dataaccess/query/ST_Dump.h"
+#include "../dataaccess/query/ST_DumpRings.h"
+#include "../dataaccess/query/ST_Collect.h"
+#include "../dataaccess/query/ST_NumGeometries.h"
+#include "../dataaccess/query/ST_Union.h"
+#include "../dataaccess/query/SubSelect.h"
+#include "../dataaccess/query/Where.h"
+#include "../dataaccess/utils/Utils.h"
+
+#include "../geometry/Geometry.h"
+#include "../geometry/GeometryCollection.h"
+#include "../geometry/GeometryProperty.h"
+#include "../geometry/Utils.h"
+
+#include "../memory/DataSet.h"
+#include "../memory/DataSetItem.h"
+
+#include "PolygonToLineQuery.h"
+#include "Config.h"
+#include "Exception.h"
+#include "Utils.h"
+
+// STL
+#include <map>
+#include <math.h>
+#include <string>
+#include <vector>
+
+// BOOST
+#include <boost/lexical_cast.hpp>
+#include <boost/algorithm/string.hpp>
+
+te::vp::PolygonToLineQuery::PolygonToLineQuery()
+{}
+
+te::vp::PolygonToLineQuery::~PolygonToLineQuery()
+{}
+
+bool te::vp::PolygonToLineQuery::run()
+{
+  std::auto_ptr<te::da::DataSetType> outDsType = buildOutDataSetType();
+  std::vector<te::dt::Property*> props = outDsType->getProperties();
+
+// Subselect that apply the ST_Dump function in geometric column to separate multi polygons.
+  te::da::Fields* pol_fields = new te::da::Fields;
+  for(std::size_t i = 0; i < props.size(); ++i)
+  {
+    if(props[i]->getType() != te::dt::GEOMETRY_TYPE)
+    {
+      te::da::PropertyName* pName = new te::da::PropertyName(props[i]->getName());
+      te::da::Field* field = new te::da::Field(pName);
+      pol_fields->push_back(field);
+    }
+    else
+    {
+      te::da::PropertyName* gName = new te::da::PropertyName(props[i]->getName());
+      te::da::Expression* e_dump = new te::da::ST_Dump(gName);
+      te::da::Field* f_dump = new te::da::Field(*e_dump, " polygon");
+      pol_fields->push_back(f_dump);
+    }
+  }
+
+  te::da::FromItem* fromItemPol = new te::da::DataSetName(m_inDsetName);
+  te::da::From* fromPol = new te::da::From;
+  fromPol->push_back(fromItemPol);
+
+  te::da::Where* w_oid = 0;
+
+  if(m_oidSet)
+  w_oid = new te::da::Where(m_oidSet->getExpression());
+
+  te::da::Select select_Pol(pol_fields, fromPol, w_oid);
+  te::da::SubSelect subSelect_Pol(select_Pol, "pol");
+
+// Subselect that apply the ST_DumpRings function in geometric column to get polygon as linestring.
+  te::da::Fields* line_fields = new te::da::Fields;
+  for(std::size_t i = 0; i < props.size(); ++i)
+  {
+    if(props[i]->getType() != te::dt::GEOMETRY_TYPE)
+    {
+      te::da::PropertyName* pName = new te::da::PropertyName(props[i]->getName());
+      te::da::Field* field = new te::da::Field(pName);
+      line_fields->push_back(field);
+    }
+    else
+    {
+      te::da::PropertyName* polName = new te::da::PropertyName("polygon");
+      te::da::Expression* e_dumpRings = new te::da::ST_DumpRings(polName);
+      te::da::Expression* e_boundary = new te::da::ST_Boundary(e_dumpRings);
+      te::da::Field* f_boundary = new te::da::Field(*e_boundary, " linestring");
+      line_fields->push_back(f_boundary);
+    }
+  }
+
+  te::da::FromItem* fromItemLine = new te::da::SubSelect(subSelect_Pol);
+  te::da::From* fromLine = new te::da::From;
+  fromLine->push_back(fromItemLine);
+
+  te::da::Select select_Line(line_fields, fromLine);
+  te::da::SubSelect subSelect_Line(select_Line, "line");
+
+// Collect the lines by register
+  te::da::Fields* union_fields = new te::da::Fields;
+  for(std::size_t i = 0; i < props.size(); ++i)
+  {
+    if(props[i]->getType() != te::dt::GEOMETRY_TYPE)
+    {
+      te::da::PropertyName* pName = new te::da::PropertyName(props[i]->getName());
+      te::da::Field* field = new te::da::Field(pName);
+      union_fields->push_back(field);
+    }
+    else
+    {
+      te::da::PropertyName* lineName = new te::da::PropertyName("linestring");
+      te::da::Expression* e_union = new te::da::ST_Collect(lineName);
+      te::da::Field* f_union = new te::da::Field(*e_union, props[i]->getName());
+      union_fields->push_back(f_union);
+    }
+  }
+
+  te::da::FromItem* fromItem = new te::da::SubSelect(subSelect_Line);
+  te::da::From* from = new te::da::From;
+  from->push_back(fromItem);
+
+  te::da::Select select(union_fields, from);
+
+// Group by
+  te::da::GroupBy* groupBy = new te::da::GroupBy();
+  for(std::size_t i = 0; i < props.size(); ++i)
+  {
+    if(props[i]->getType() != te::dt::GEOMETRY_TYPE)
+    {
+      te::da::GroupByItem* e_groupBy = new te::da::GroupByItem(props[i]->getName());
+      groupBy->push_back(e_groupBy);
+    }
+  }
+  select.setGroupBy(groupBy);
+
+  std::auto_ptr<te::da::DataSet> dsQuery(m_inDsrc->query(select));
+
+  try
+  {
+    te::vp::Save(m_outDsrc.get(), dsQuery.get(), outDsType.get());
+    return true;
+  }
+  catch(...)
+  {
+    return false;
+  }
+}

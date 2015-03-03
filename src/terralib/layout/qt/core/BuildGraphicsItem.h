@@ -84,6 +84,15 @@ namespace te
         */
         QGraphicsItem* createItem(te::layout::EnumType* mode, const te::gm::Coord2D& coordinate, bool draw = true);
 
+        /*!
+          \brief Method to create a graphic object from the type.
+		  
+		      \param mode type of the object will created
+		  
+		      \return item value
+        */
+        QGraphicsItem* createItem(te::layout::EnumType* type);
+
       protected:
 	  
 		/*!
@@ -136,11 +145,18 @@ namespace te
         QGraphicsItem* createScale();
 		
 		/*!
-          \brief Create graphic object of type PaperItem
+          \brief Create graphic object of type ItemGroup
 		  		  
 		  \return new object 
         */
         QGraphicsItem* createItemGroup();
+
+    /*!
+          \brief Create graphic object of type MovingItemGroup
+		  		  
+		  \return new object 
+        */
+        QGraphicsItem* createMovingItemGroup();
 
 		/*!
           \brief Create graphic object of type ImageItem
@@ -184,14 +200,42 @@ namespace te
         */
         QGraphicsItem* createTitle();
 		
-		/*!
+		    /*!
           \brief Create graphic object of type LegendChildItem
 		  		  
-		  \return new object 
+		      \return new object 
         */
         QGraphicsItem* createLegendChild();
+
+        /*!
+          \brief Create graphic object of type LineItem
+		  		  
+		      \return new object 
+        */
+        QGraphicsItem* createLine();
+
+       /*!
+          \brief Create graphic object of type PolygonItem
+		  		  
+		      \return new object 
+        */
+        QGraphicsItem* createPolygon();
+
+       /*!
+          \brief Create graphic object of type Balloon
+		  		  
+		      \return new object 
+        */
+        QGraphicsItem* createBalloon();
         
-		/*!
+        /*!
+          \brief Create graphic object of type BarCode
+		  		  
+		      \return new object 
+        */
+        QGraphicsItem* createBarCode();
+
+		   /*!
           \brief Creates the name of the new graphic object. Adds the number that corresponds to how many objects of this type have already been created.
 
           \param name of the class type of the graphic object
@@ -211,6 +255,7 @@ namespace te
         std::string             m_legendItem; //!< Part of the name that will be set to a new object of type LegendItem.
         std::string             m_scaleItem; //!< Part of the name that will be set to a new object of type ScaleItem.
         std::string             m_groupItem; //!< Part of the name that will be set to a new object of type ItemGroup.
+        std::string             m_movingGroupItem; //!< Part of the name that will be set to a new object of type MovingItemGroup.
         std::string             m_imageItem; //!< Part of the name that will be set to a new object of type ImageItem.
         std::string             m_arrowItem; //!< Part of the name that will be set to a new object of type ArrowItem.
         std::string             m_ellipseItem; //!< Part of the name that will be set to a new object of type EllipseItem.
@@ -218,6 +263,10 @@ namespace te
         std::string             m_textGridItem; //!< Part of the name that will be set to a new object of type TextGridItem.
         std::string             m_titleItem; //!< Part of the name that will be set to a new object of type TitleItem.
         std::string             m_legendChildItem; //!< Part of the name that will be set to a new object of type LegendChildItem.
+        std::string				      m_lineItem; //!< Part of the name that will be set to a new object of type LineItem.
+        std::string             m_polygonItem; //!< Part of the name that will be set to a new object of type PolygonItem.
+        std::string             m_balloonItem; //!< Part of the name that will be set to a new object of type BalloonItem.
+        std::string             m_barCodeItem; //!< Part of the name that will be set to a new object of type BarCode.
     };
   }
 }

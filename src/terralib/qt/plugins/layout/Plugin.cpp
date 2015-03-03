@@ -30,6 +30,19 @@
 #include "../../af/ApplicationController.h"
 #include "Plugin.h"
 
+#if defined(TERRALIB_APACHE_LOG4CXX_ENABLED) && defined(TERRALIB_LOGGER_ENABLED)
+//Log4cxx
+#include <log4cxx/basicconfigurator.h>
+#include <log4cxx/consoleappender.h>
+#include <log4cxx/fileappender.h>
+#include <log4cxx/helpers/pool.h>
+#include <log4cxx/helpers/transcoder.h>
+#include <log4cxx/logger.h>
+#include <log4cxx/logmanager.h>
+#include <log4cxx/logstring.h>
+#include <log4cxx/simplelayout.h>
+#endif
+
 #ifdef TE_QT_PLUGIN_LAYOUT_HAVE_LAYOUTEDITOR
   #include "LayoutEditorAction.h"
 #endif
@@ -55,16 +68,45 @@ void te::qt::plugins::layout::Plugin::startup()
 // it initializes the Translator support for the TerraLib LayoutEditor Qt Plugin
   TE_ADD_TEXT_DOMAIN(TE_QT_PLUGIN_LAYOUT_TEXT_DOMAIN, TE_QT_PLUGIN_LAYOUT_TEXT_DOMAIN_DIR, "UTF-8");
 
-  TE_LOG_TRACE(TE_TR("TerraLib Qt LAYOUT Plugin startup!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Qt Map Layout Plugin startup!"));
+  
+  // add plugin menu
+  QMenu* pluginMenu = te::qt::af::ApplicationController::getInstance().getMenu("Plugins");
 
-// add plugin menu
-  m_layoutMenu = te::qt::af::ApplicationController::getInstance().getMenu("LAYOUT");
+  if(!pluginMenu)
+    return;
 
-  m_layoutMenu->setTitle(TE_TR("Layout"));
+  // Insert action before plugin manager action
+  QAction* pluginsSeparator = te::qt::af::ApplicationController::getInstance().findAction("ManagePluginsSeparator");
 
-// register actions
+  if(!pluginsSeparator)
+    return;
+
+  m_layoutMenu = new QMenu(pluginMenu);
+  m_layoutMenu->setIcon(QIcon::fromTheme("map-layout-icon"));
+
+  pluginMenu->insertMenu(pluginsSeparator, m_layoutMenu);
+
+  m_layoutMenu->setTitle(TE_TR("Map Layout"));
+
+  // register actions
   registerActions();
 
+  // vp log startup
+  std::string path = te::qt::af::ApplicationController::getInstance().getUserDataDir().toStdString();
+  path += "/log/terralib_map_layout.log";
+
+#if defined(TERRALIB_APACHE_LOG4CXX_ENABLED) && defined(TERRALIB_LOGGER_ENABLED)
+  log4cxx::FileAppender* fileAppender = new log4cxx::FileAppender(log4cxx::LayoutPtr(new log4cxx::SimpleLayout()),
+    log4cxx::helpers::Transcoder::decode(path.c_str()), false);
+
+  log4cxx::helpers::Pool p;
+  fileAppender->activateOptions(p);
+
+  log4cxx::BasicConfigurator::configure(log4cxx::AppenderPtr(fileAppender));
+  log4cxx::Logger::getRootLogger()->setLevel(log4cxx::Level::getDebug());
+  log4cxx::LoggerPtr logger = log4cxx::Logger::getLogger("maplayout");
+#endif
   m_initialized = true;
 }
 
@@ -72,14 +114,22 @@ void te::qt::plugins::layout::Plugin::shutdown()
 {
   if(!m_initialized)
     return;
-
-// remove menu
-  delete m_layoutMenu;
-
-// unregister actions
+  
+  // unregister actions
   unRegisterActions();
 
-  TE_LOG_TRACE(TE_TR("TerraLib Qt LAYOUT Plugin 2 shutdown!"));
+  // remove menu
+  if(m_layoutMenu)
+  {
+    delete m_layoutMenu;
+    m_layoutMenu = 0;
+  }
+
+#if defined(TERRALIB_APACHE_LOG4CXX_ENABLED) && defined(TERRALIB_LOGGER_ENABLED)
+  log4cxx::LogManager::shutdown();
+#endif
+
+  TE_LOG_TRACE(TE_TR("TerraLib Qt Map Layout Plugin shutdown!"));
 
   m_initialized = false;
 }
@@ -94,7 +144,11 @@ void te::qt::plugins::layout::Plugin::registerActions()
 void  te::qt::plugins::layout::Plugin::unRegisterActions()
 {
 #ifdef TE_QT_PLUGIN_LAYOUT_HAVE_LAYOUTEDITOR
-    delete m_layout;
+    if(m_layout)
+    {
+      delete m_layout;
+      m_layout = 0;
+    }
 #endif
 }
 

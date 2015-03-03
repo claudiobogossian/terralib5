@@ -53,6 +53,8 @@
 			<section title="How to Load/Unload, Add/Remove Plugins" ref="./widgets/pluginmanager/PluginManager.html"/>
 			<section title="Using Plugins Available" ref="./plugins/index.html">
 				<section title="Attribute Fill" ref="./plugins/attributefill/attributefill.html">
+					<section title="Raster To Vector" ref="./plugins/attributefill/attrfill_raster_to_vector.html"/>
+					<section title="Vector To Raster" ref="./plugins/attributefill/attrfill_vector_to_raster.html"/>
 				    <section title="Vector To Vector" ref="./plugins/attributefill/attrfill_vector_to_vector.html"/>
 				</section>
 				<section title="PostGIS Connector" ref="./plugins/pgis/pgis.html"/>
@@ -65,7 +67,8 @@
 					<section title="Aggregation" ref="./plugins/vp/vp_aggregation.html"/>
 					<section title="Buffer" ref="./plugins/vp/vp_buffer.html"/>
 					<section title="Intersection" ref="./plugins/vp/vp_intersection.html"/>
-					<section title="Geometric Operations" ref="./plugins/vp/vp_geometricOper.html"/>					
+					<section title="Geometric Operations" ref="./plugins/vp/vp_geometricOper.html"/>
+					<section title="Polygon to File" ref="./plugins/vp/vp_polygonToLine.html"/>
 				</section>
 				<section title="Raster Processing" ref="./plugins/rp/rp.html">
 					<section title="Arithmetic Operations" ref="./plugins/rp/rp_arithOp.html"/>
@@ -186,6 +189,7 @@
 			<keyword name="Buffer" ref="./plugins/vp/vp_buffer.html"/>
 			<keyword name="Intersection" ref="./plugins/vp/vp_intersection.html"/>
 			<keyword name="Geometric Operations" ref="./plugins/vp/vp_geometricOper.html"/>
+			<keyword name="Polygon to Line" ref="./plugins/vp/vp_polygonToLine.html"/>
 			
 			<keyword name="Raster Processing" ref="./plugins/rp/rp.html"/>
 			<keyword name="Arithmetic Operations" ref="./plugins/rp/rp_arithOp.html"/>
@@ -214,6 +218,8 @@
 			<keyword name="Spatial Statistics" ref="./plugins/sa/sa_spatialstatistics.html"/>
 			
 			<keyword name="Attribute Fill" ref="./plugins/attributefill/attributefill.html"/>
+			<keyword name="Raster To Vector" ref="./plugins/attributefill/attrfill_raster_to_vector.html"/>
+			<keyword name="Vector To Raster" ref="./plugins/attributefill/attrfill_vector_to_raster.html"/>
 			<keyword name="Vector To Vector" ref="./plugins/attributefill/attrfill_vector_to_vector.html"/>
 		</keywords>
    </filterSection>

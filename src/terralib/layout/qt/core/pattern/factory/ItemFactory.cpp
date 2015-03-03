@@ -44,6 +44,11 @@
 #include "../../../../core/enum/Enums.h"
 #include "../../../item/LegendChildItem.h"
 #include "../../../item/TextItem.h"
+#include "../../../item/MovingItemGroup.h"
+#include "../../../item/LineItem.h"
+#include "../../../item/PolygonItem.h"
+#include "../../../item/BalloonItem.h"
+#include "../../../item/BarCodeItem.h"
 
 te::layout::ItemFactory::ItemFactory()
 {
@@ -136,6 +141,31 @@ te::layout::Observer* te::layout::ItemFactory::make( EnumType* type, ItemParamsC
     LegendChildItem* mText = new LegendChildItem(params.getController(), params.getModel());
     item = (Observer*)mText;
   }
-  
+  else if (type == enumObj->getMovingItemGroup())
+  {
+    MovingItemGroup* mItemGroup = new MovingItemGroup(params.getController(), params.getModel());
+    item = (Observer*) mItemGroup;
+  }
+  else if(type == enumObj->getLineItem())
+  {
+    LineItem* line = new LineItem(params.getController(), params.getModel());
+    item = (Observer*)line;
+  }
+  else if(type == enumObj->getPolygonItem())
+  {
+    PolygonItem* polygon = new PolygonItem(params.getController(), params.getModel());
+    item = (Observer*)polygon;
+  }
+  else if(type == enumObj->getBalloonItem())
+  {
+    BalloonItem* balloon = new BalloonItem(params.getController(), params.getModel());
+    item = (Observer*)balloon;
+  }
+  else if(type == enumObj->getBarCodeItem())
+  {
+    BarCodeItem* barCode = new BarCodeItem(params.getController(), params.getModel());
+    item = (Observer*)barCode;
+  }
+
   return item;
 }

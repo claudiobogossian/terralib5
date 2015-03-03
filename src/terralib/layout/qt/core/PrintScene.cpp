@@ -43,6 +43,7 @@
 #include <QPrintPreviewDialog>
 #include <QFileDialog>
 #include <QApplication>
+#include <QMessageBox>
 
 te::layout::PrintScene::PrintScene( QGraphicsScene* scene, PaperConfig* config ):
   m_scene(scene),
@@ -195,21 +196,18 @@ void te::layout::PrintScene::renderScene( QPainter* newPainter, QPrinter* printe
   m_scene->render(newPainter, pxTargetRect, mmSourceRect); 
 }
 
-bool te::layout::PrintScene::savePaperAsPDF()
-{
-  QPrinter* printer= createPrinter();
+bool te::layout::PrintScene::exportToPDF()
+{ 
   QWidget* wg = (QWidget*)QApplication::desktop();
   QString fileName = QFileDialog::getSaveFileName(wg, tr("Save Image File"), QDir::currentPath(), tr("PDF Files (*.pdf)"));
 
   if(fileName.isEmpty())
   {
-    if(printer)
-    {
-      delete printer;
-      printer = 0;
-    }
     return false;
   }
+
+  QPrinter* printer= createPrinter();
+
   printer->setOutputFormat(QPrinter::PdfFormat);
   printer->setOutputFileName(fileName); 
   printPaper(printer);
@@ -219,6 +217,11 @@ bool te::layout::PrintScene::savePaperAsPDF()
     delete printer;
     printer = 0;
   } 
+
+  QMessageBox msgBox;
+  msgBox.setIcon(QMessageBox::Information);
+  msgBox.setText("PDF exported successfully!");    
+  msgBox.exec();
 
   return true;
 }

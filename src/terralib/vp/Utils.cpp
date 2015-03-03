@@ -266,6 +266,18 @@ void te::vp::Save(te::da::DataSource* source, te::da::DataSet* result, te::da::D
     }
 
   }
+  catch(te::common::Exception& e)
+  {
+    if(source->getType() != "OGR")
+    {
+      t->rollBack();
+    }
+    else
+    {
+      //TODO: Deletar possivel shp gerado
+    }
+    throw e;
+  }
   catch(std::exception& e)
   {
     if(source->getType() != "OGR")
@@ -278,16 +290,71 @@ void te::vp::Save(te::da::DataSource* source, te::da::DataSet* result, te::da::D
     }
     throw e;
   }
-  catch(te::common::Exception& e)
+}
+
+void te::vp::Multi2Single(te::gm::Geometry* g, std::vector<te::gm::Geometry*>& geoms)
+{
+  te::gm::GeometryCollection* gc = dynamic_cast<te::gm::GeometryCollection*>(g);
+  if(gc)
   {
-    if(source->getType() != "OGR")
-    {
-      t->rollBack();
-    }
-    else
-    {
-      //TODO: Deletar possivel shp gerado
-    }
-    throw e;
+    for(std::size_t i = 0; i < gc->getNumGeometries(); ++i)
+      Multi2Single(gc->getGeometryN(i), geoms);
+  }
+  else
+    geoms.push_back(g);
+}
+
+bool te::vp::IsMultiType(te::gm::GeomType geomType)
+{
+  switch(geomType)
+  {
+    case te::gm::MultiLineStringType:
+    case te::gm::MultiLineStringMType:
+    case te::gm::MultiLineStringZType:
+    case te::gm::MultiLineStringZMType:
+    case te::gm::MultiPointType:
+    case te::gm::MultiPointMType:
+    case te::gm::MultiPointZType:
+    case te::gm::MultiPointZMType:
+    case te::gm::MultiPolygonType:
+    case te::gm::MultiPolygonMType:
+    case te::gm::MultiPolygonZType:
+    case te::gm::MultiPolygonZMType:
+      return true;
+    default:
+      return false;
+  }
+}
+
+te::gm::GeomType te::vp::GetSimpleType(te::gm::GeomType geomType)
+{
+  switch(geomType)
+  {
+    case te::gm::MultiLineStringType:
+      return te::gm::LineStringType;
+    case te::gm::MultiLineStringMType:
+      return te::gm::LineStringMType;
+    case te::gm::MultiLineStringZType:
+      return te::gm::LineStringZType;
+    case te::gm::MultiLineStringZMType:
+      return te::gm::LineStringZMType;
+    case te::gm::MultiPointType:
+      return te::gm::PointType;
+    case te::gm::MultiPointMType:
+      return te::gm::PointMType;
+    case te::gm::MultiPointZType:
+      return te::gm::PointZType;
+    case te::gm::MultiPointZMType:
+      return te::gm::PointZMType;
+    case te::gm::MultiPolygonType:
+      return te::gm::PolygonType;
+    case te::gm::MultiPolygonMType:
+      return te::gm::PolygonMType;
+    case te::gm::MultiPolygonZType:
+      return te::gm::PolygonZType;
+    case te::gm::MultiPolygonZMType:
+      return te::gm::PolygonZMType;
+    default:
+      return te::gm::UnknownGeometryType;
   }
 }
