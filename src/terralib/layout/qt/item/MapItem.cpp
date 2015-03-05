@@ -82,8 +82,7 @@
 #include <QTextEdit>
 
 te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
-  QGraphicsProxyWidget(0),
-  ItemObserver(controller, o),
+  ParentItem(controller, o),
   m_mapDisplay(0),
   m_grabbedByWidget(false),
   m_treeItem(0),
@@ -96,11 +95,7 @@ te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
     | QGraphicsItem::ItemIsSelectable
     | QGraphicsItem::ItemSendsGeometryChanges
     | QGraphicsItem::ItemIsFocusable);
-
-  setAcceptDrops(true);
-
-  m_invertedMatrix = false;
-
+    
   m_nameClass = std::string(this->metaObject()->className());
   
   Utils* utils = Context::getInstance().getUtils();
@@ -131,10 +126,7 @@ te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
   m_mapDisplay->installEventFilter(zoom);
 
   setWidget(m_mapDisplay);
-
-  QGraphicsItem* item = this;
-  Context::getInstance().getScene()->insertItem((ItemObserver*)item);
-  
+    
   calculateFrameMargin();
 
   setWindowFrameMargins(m_wMargin, m_hMargin, m_wMargin, m_hMargin);
@@ -185,8 +177,8 @@ void te::layout::MapItem::updateObserver( ContextItem context )
     if(w != m_mapDisplay->getWidth() 
       || h != m_mapDisplay->getHeight())
     {
-      QRect rectGeom = m_mapDisplay->geometry();
-      m_mapDisplay->setGeometry(rectGeom.x(), rectGeom.y(), w, h);
+      QPointF pt = scenePos();
+      m_mapDisplay->setGeometry(pt.x(), pt.y(), w, h);
     }
 
     te::color::RGBAColor clr = model->getMapBackgroundColor();
@@ -286,28 +278,6 @@ void te::layout::MapItem::paint( QPainter * painter, const QStyleOptionGraphicsI
   {
     drawSelection(painter);
   }
-}
-
-void te::layout::MapItem::drawSelection( QPainter* painter)
-{
-  if(!painter)
-  {
-    return;
-  }
-
-  qreal penWidth = painter->pen().widthF();
-  
-  const qreal adj = penWidth / 2;
-  const QColor fgcolor(0,255,0);
-  const QColor backgroundColor(0,0,0);
-  
-  painter->setPen(QPen(backgroundColor, 0, Qt::SolidLine));
-  painter->setBrush(Qt::NoBrush);
-  painter->drawRect(boundingRect().adjusted(adj, adj, -adj, -adj));
-
-  painter->setPen(QPen(fgcolor, 0, Qt::DashLine));
-  painter->setBrush(Qt::NoBrush);
-  painter->drawRect(boundingRect().adjusted(adj, adj, -adj, -adj));
 }
 
 void te::layout::MapItem::dropEvent( QGraphicsSceneDragDropEvent * event )
@@ -553,18 +523,6 @@ void te::layout::MapItem::onDrawLayersFinished( const QMap<QString, QString>& er
   update();
 }
 
-void te::layout::MapItem::setZValue( qreal z )
-{
-  QGraphicsItem::setZValue(z);
-  setZValueItem(z);
-
-}
-
-int te::layout::MapItem::getZValueItem()
-{
-  return QGraphicsItem::zValue();
-}
-
 void te::layout::MapItem::setCurrentTool( te::qt::widgets::AbstractTool* tool )
 {
   m_tool = tool;
@@ -611,23 +569,6 @@ void te::layout::MapItem::changeCurrentTool( EnumType* mode )
     te::qt::widgets::ZoomClick* zoomOut = new te::qt::widgets::ZoomClick(m_mapDisplay, zoomOutCursor, 2.0, te::qt::widgets::Zoom::Out);
     setCurrentTool(zoomOut);
   }
-}
-
-void te::layout::MapItem::applyRotation()
-{
-  if(!m_model)
-    return;
-
-  ItemModelObservable* model = dynamic_cast<ItemModelObservable*>(m_model);
-  if(!model)
-    return;
-
-  double angle = model->getAngle();
-
-  if(angle == model->getOldAngle())
-    return;
-
-  setRotation(angle);
 }
 
 te::color::RGBAColor** te::layout::MapItem::getImage()
@@ -739,16 +680,9 @@ QRectF te::layout::MapItem::boundingRect() const
 {
   MapModel* model = dynamic_cast<MapModel*>(m_model);
   te::gm::Envelope box = model->getBox();
-
-  QPointF currentPos = pos();
-  QPointF currentScenePos = scenePos();
-
+  
   QRectF rect(0., 0., box.getWidth(), box.getHeight());
+ 
   return rect;
 }
 
-bool te::layout::MapItem::contains( const QPointF &point ) const
-{
-  te::gm::Coord2D coord(point.x(), point.y());
-  return m_controller->contains(coord);
-}

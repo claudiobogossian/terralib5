@@ -35,6 +35,7 @@
 #include "../../core/pattern/mvc/ItemObserver.h"
 #include "ObjectItem.h"
 #include "../../core/Config.h"
+#include "ParentItem.h"
 
 // Qt
 #include <QGraphicsTextItem>
@@ -66,7 +67,7 @@ namespace te
 
 	  \sa te::layout::ItemObserver
 	*/
-    class TELAYOUTEXPORT TextItem : public QGraphicsTextItem, public ItemObserver
+    class TELAYOUTEXPORT TextItem : public ParentItem<QGraphicsTextItem>
     {
       Q_OBJECT //for slots/signals
 
@@ -94,6 +95,8 @@ namespace te
           \brief Reimplemented from QGraphicsTextItem
          */
         virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
+
+        virtual QRectF boundingRect() const;
         
         virtual QTextDocument* getDocument();
 
@@ -112,12 +115,7 @@ namespace te
           \param
          */
         virtual void setEditable(bool editable);
-
-        /*!
-          \brief Reimplemented from QGraphicsTextItem
-         */
-        virtual bool	contains ( const QPointF & point ) const;
-        
+                
       protected:
 
         /*!
@@ -167,17 +165,7 @@ namespace te
           \brief Reimplemented from ItemObserver
          */
         virtual te::color::RGBAColor** getImage();
-
-        /*!
-          \brief Reimplemented from ItemObserver
-         */
-        virtual int getZValueItem();
-
-        /*!
-          \brief Reimplemented from ItemObserver
-         */
-        virtual void applyRotation();
-
+        
         virtual void getDocumentSizeMM(double &w, double &h);
 
         virtual void resetEdit();

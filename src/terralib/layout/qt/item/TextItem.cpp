@@ -56,8 +56,7 @@
 #include <QList>
 
 te::layout::TextItem::TextItem( ItemController* controller, Observable* o ) :
-  QGraphicsTextItem(0),
-  ItemObserver(controller, o),
+  ParentItem(controller, o, true),
   m_document(0),
   m_editable(false),
   m_move(false)
@@ -66,15 +65,14 @@ te::layout::TextItem::TextItem( ItemController* controller, Observable* o ) :
     | QGraphicsItem::ItemIsSelectable
     | QGraphicsItem::ItemSendsGeometryChanges
     | QGraphicsItem::ItemIsFocusable);
-
-  m_invertedMatrix = true;
-
-  QGraphicsItem* item = this;
+  
   m_nameClass = std::string(this->metaObject()->className());
-  Context::getInstance().getScene()->insertItem((ItemObserver*)item);
-
+  
   m_document = new QTextDocument(this);
   setDocument(m_document);
+
+  //If enabled is true, this item will accept hover events
+  setAcceptHoverEvents(false);
 
   m_backgroundColor.setAlpha(0);
 
@@ -306,28 +304,6 @@ te::color::RGBAColor** te::layout::TextItem::getImage()
   return teImg;
 }
 
-int te::layout::TextItem::getZValueItem()
-{
-  return QGraphicsItem::zValue();
-}
-
-void te::layout::TextItem::applyRotation()
-{
-  if(!m_model)
-    return;
-
-  ItemModelObservable* model = dynamic_cast<ItemModelObservable*>(m_model);
-  if(!model)
-    return;
-
-  double angle = model->getAngle();
-
-  if(angle == model->getOldAngle())
-    return;
-
-  setRotation(angle);
-}
-
 QVariant te::layout::TextItem::itemChange( GraphicsItemChange change, const QVariant & value )
 {
   if(change == QGraphicsItem::ItemPositionChange && !m_move)
@@ -470,8 +446,8 @@ void te::layout::TextItem::resetEdit()
   clearFocus();     
 }
 
-bool te::layout::TextItem::contains( const QPointF & point ) const
+QRectF te::layout::TextItem::boundingRect() const
 {
-  te::gm::Envelope box(point.x(), point.y(), point.x(), point.y());
-  return m_model->getBox().contains(box);
+  return QGraphicsTextItem::boundingRect();
 }
+
