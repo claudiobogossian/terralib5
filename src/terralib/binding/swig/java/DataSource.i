@@ -129,6 +129,19 @@ namespace std {
  */
  public";
 
+%javaexception("java.io.IOException") open {
+  try {
+     $action
+  } catch (te::common::Exception &e) {
+    jclass clazz = jenv->FindClass("java/io/IOException");
+    
+	if(clazz)
+		jenv->ThrowNew(clazz, e.what());
+		
+    return $null;
+   }
+}
+
 %javamethodmodifiers te::da::DataSource::open() "
 /** 
  * It opens the data source and makes it ready for using.
@@ -145,6 +158,20 @@ namespace std {
  */
  public";
 
+ 
+%javaexception("java.io.IOException") close {
+  try {
+     $action
+  } catch (te::common::Exception &e) {
+    jclass clazz = jenv->FindClass("java/io/IOException");
+    
+	if(clazz)
+		jenv->ThrowNew(clazz, e.what());
+		
+    return $null;
+   }
+}
+ 
 %javamethodmodifiers te::da::DataSource::close() "
 /** 
  * It closes the data source and clears all the resources used by its internal communication channel.
@@ -210,6 +237,19 @@ namespace std {
  */
  public";
 
+%javaexception("java.io.IOException") getDataSetNames {
+  try {
+     $action
+  } catch (te::common::Exception &e) {
+    jclass clazz = jenv->FindClass("java/io/IOException");
+    
+	if(clazz)
+		jenv->ThrowNew(clazz, e.what());
+		
+    return $null;
+   }
+}
+ 
 %javamethodmodifiers te::da::DataSource::getDataSetNames() "
 /** 
  * It gets the dataset names available in the data source.
@@ -225,6 +265,20 @@ namespace std {
  */
  public";
 
+ 
+ %javaexception("java.io.IOException") getNumberOfDataSets {
+  try {
+     $action
+  } catch (te::common::Exception &e) {
+    jclass clazz = jenv->FindClass("java/io/IOException");
+    
+	if(clazz)
+		jenv->ThrowNew(clazz, e.what());
+		
+    return $null;
+   }
+}
+
 %javamethodmodifiers te::da::DataSource::getNumberOfDataSets() "
 /** 
  * It retrieves the number of data sets available in the data source.
@@ -236,6 +290,20 @@ namespace std {
  * @return The number of data sets available in the data source.
  */
  public";
+
+ 
+ %javaexception("java.io.IOException") getPropertyNames {
+  try {
+     $action
+  } catch (te::common::Exception &e) {
+    jclass clazz = jenv->FindClass("java/io/IOException");
+    
+	if(clazz)
+		jenv->ThrowNew(clazz, e.what());
+		
+    return $null;
+   }
+}
 
 %javamethodmodifiers te::da::DataSource::getPropertyNames(const std::string& datasetName) "
 /** 
@@ -254,6 +322,20 @@ namespace std {
  */
  public";
 
+ 
+ %javaexception("java.io.IOException") getNumberOfProperties {
+  try {
+     $action
+  } catch (te::common::Exception &e) {
+    jclass clazz = jenv->FindClass("java/io/IOException");
+    
+	if(clazz)
+		jenv->ThrowNew(clazz, e.what());
+		
+    return $null;
+   }
+}
+
 %javamethodmodifiers te::da::DataSource::getNumberOfProperties(const std::string& datasetName) "
 /** 
  * It gets the number of properties of the given dataset.
@@ -267,6 +349,20 @@ namespace std {
  * @return The number of dataset properties.
  */
  public";
+
+ 
+ %javaexception("java.io.IOException") propertyExists {
+  try {
+     $action
+  } catch (te::common::Exception &e) {
+    jclass clazz = jenv->FindClass("java/io/IOException");
+    
+	if(clazz)
+		jenv->ThrowNew(clazz, e.what());
+		
+    return $null;
+   }
+}
 
 %javamethodmodifiers te::da::DataSource::propertyExists(const std::string& datasetName, const std::string& name) "
 /** 
@@ -284,6 +380,20 @@ namespace std {
  */
  public";
 
+ 
+ %javaexception("java.io.IOException") dropProperty {
+  try {
+     $action
+  } catch (te::common::Exception &e) {
+    jclass clazz = jenv->FindClass("java/io/IOException");
+    
+	if(clazz)
+		jenv->ThrowNew(clazz, e.what());
+		
+    return $null;
+   }
+}
+
 %javamethodmodifiers te::da::DataSource::dropProperty(const std::string& datasetName, const std::string& name) "
 /** 
  * It removes a property from the given dataset.
@@ -297,6 +407,19 @@ namespace std {
  * @throws java.io.IOException An exception can be thrown, if the dataset property could not be removed.
  */
  public";
+
+ %javaexception("java.io.IOException") renameProperty {
+  try {
+     $action
+  } catch (te::common::Exception &e) {
+    jclass clazz = jenv->FindClass("java/io/IOException");
+    
+	if(clazz)
+		jenv->ThrowNew(clazz, e.what());
+		
+    return $null;
+   }
+}
 
 %javamethodmodifiers te::da::DataSource::renameProperty(const std::string& datasetName, const std::string& propertyName, const std::string& newPropertyName) "
 /** 
@@ -314,6 +437,19 @@ namespace std {
  */
  public";
 
+  %javaexception("java.io.IOException") primaryKeyExists {
+  try {
+     $action
+  } catch (te::common::Exception &e) {
+    jclass clazz = jenv->FindClass("java/io/IOException");
+    
+	if(clazz)
+		jenv->ThrowNew(clazz, e.what());
+		
+    return $null;
+   }
+}
+
 %javamethodmodifiers te::da::DataSource::primaryKeyExists(const std::string& datasetName, const std::string& name) "
 /** 
  * It checks if a primary key exists in the dataset.
@@ -330,6 +466,20 @@ namespace std {
  */
  public";
 
+ %javaexception("java.io.IOException") dropPrimaryKey {
+  try {
+     $action
+  } catch (te::common::Exception &e) {
+    jclass clazz = jenv->FindClass("java/io/IOException");
+    
+	if(clazz)
+		jenv->ThrowNew(clazz, e.what());
+		
+    return $null;
+   }
+}
+ 
+ 
 %javamethodmodifiers te::da::DataSource::dropPrimaryKey(const std::string& datasetName) "
 /** 
  * It removes the primary key constraint from the dataset schema.
@@ -342,6 +492,20 @@ namespace std {
  */
  public";
 
+ 
+ %javaexception("java.io.IOException") getForeignKeyNames {
+  try {
+     $action
+  } catch (te::common::Exception &e) {
+    jclass clazz = jenv->FindClass("java/io/IOException");
+    
+	if(clazz)
+		jenv->ThrowNew(clazz, e.what());
+		
+    return $null;
+   }
+}
+ 
 %javamethodmodifiers te::da::DataSource::getForeignKeyNames(const std::string& datasetName) "
 /** 
  * It gets the foreign key names of the given dataset.
@@ -355,6 +519,20 @@ namespace std {
  * @return The foreign key names of the dataset.
  */
  public";
+
+ 
+  %javaexception("java.io.IOException") foreignKeyExists {
+  try {
+     $action
+  } catch (te::common::Exception &e) {
+    jclass clazz = jenv->FindClass("java/io/IOException");
+    
+	if(clazz)
+		jenv->ThrowNew(clazz, e.what());
+		
+    return $null;
+   }
+}
 
 %javamethodmodifiers te::da::DataSource::foreignKeyExists(const std::string& datasetName, const std::string& name) "
 /** 
@@ -370,6 +548,20 @@ namespace std {
  */
  public";
 
+ 
+  %javaexception("java.io.IOException") dropForeignKey {
+  try {
+     $action
+  } catch (te::common::Exception &e) {
+    jclass clazz = jenv->FindClass("java/io/IOException");
+    
+	if(clazz)
+		jenv->ThrowNew(clazz, e.what());
+		
+    return $null;
+   }
+}
+
 %javamethodmodifiers te::da::DataSource::dropForeignKey(const std::string& datasetName, const std::string& fkName) "
 /** 
  * It removes the foreign key constraint from the dataset schema.
@@ -384,6 +576,20 @@ namespace std {
  */
  public";
 
+ 
+  %javaexception("java.io.IOException") getUniqueKeyNames {
+  try {
+     $action
+  } catch (te::common::Exception &e) {
+    jclass clazz = jenv->FindClass("java/io/IOException");
+    
+	if(clazz)
+		jenv->ThrowNew(clazz, e.what());
+		
+    return $null;
+   }
+}
+
 %javamethodmodifiers te::da::DataSource::getUniqueKeyNames(const std::string& datasetName) "
 /** 
  * It gets the unique key names of the given dataset.
@@ -397,6 +603,20 @@ namespace std {
  * @return The unique key names of the dataset.
  */
  public";
+
+ 
+  %javaexception("java.io.IOException") uniqueKeyExists {
+  try {
+     $action
+  } catch (te::common::Exception &e) {
+    jclass clazz = jenv->FindClass("java/io/IOException");
+    
+	if(clazz)
+		jenv->ThrowNew(clazz, e.what());
+		
+    return $null;
+   }
+}
 
 %javamethodmodifiers te::da::DataSource::uniqueKeyExists(const std::string& datasetName, const std::string& name) "
 /** 
@@ -414,6 +634,20 @@ namespace std {
  */
  public";
 
+ 
+  %javaexception("java.io.IOException") dropUniqueKey {
+  try {
+     $action
+  } catch (te::common::Exception &e) {
+    jclass clazz = jenv->FindClass("java/io/IOException");
+    
+	if(clazz)
+		jenv->ThrowNew(clazz, e.what());
+		
+    return $null;
+   }
+}
+
 %javamethodmodifiers te::da::DataSource::dropUniqueKey(const std::string& datasetName, const std::string& name) "
 /** 
  * It removes the unique key constraint from the dataset.
@@ -428,6 +662,20 @@ namespace std {
  */
  public";
 
+ 
+  %javaexception("java.io.IOException") getCheckConstraintNames {
+  try {
+     $action
+  } catch (te::common::Exception &e) {
+    jclass clazz = jenv->FindClass("java/io/IOException");
+    
+	if(clazz)
+		jenv->ThrowNew(clazz, e.what());
+		
+    return $null;
+   }
+}
+
 %javamethodmodifiers te::da::DataSource::getCheckConstraintNames(const std::string& datasetName) "
 /** 
  * It gets the check constraint names of the given dataset.
@@ -441,6 +689,20 @@ namespace std {
  * @return The check constraint names of the dataset.
  */
  public";
+
+ 
+  %javaexception("java.io.IOException") checkConstraintExists {
+  try {
+     $action
+  } catch (te::common::Exception &e) {
+    jclass clazz = jenv->FindClass("java/io/IOException");
+    
+	if(clazz)
+		jenv->ThrowNew(clazz, e.what());
+		
+    return $null;
+   }
+}
 
 %javamethodmodifiers te::da::DataSource::checkConstraintExists(const std::string& datasetName, const std::string& name) "
 /** 
@@ -458,6 +720,20 @@ namespace std {
  */
  public";
 
+ 
+  %javaexception("java.io.IOException") dropCheckConstraint {
+  try {
+     $action
+  } catch (te::common::Exception &e) {
+    jclass clazz = jenv->FindClass("java/io/IOException");
+    
+	if(clazz)
+		jenv->ThrowNew(clazz, e.what());
+		
+    return $null;
+   }
+}
+
 %javamethodmodifiers te::da::DataSource::dropCheckConstraint(const std::string& datasetName, const std::string& name) "
 /** 
  * It removes the check constraint from the dataset.
@@ -472,6 +748,20 @@ namespace std {
  */
  public";
 
+ 
+  %javaexception("java.io.IOException") getIndexNames {
+  try {
+     $action
+  } catch (te::common::Exception &e) {
+    jclass clazz = jenv->FindClass("java/io/IOException");
+    
+	if(clazz)
+		jenv->ThrowNew(clazz, e.what());
+		
+    return $null;
+   }
+}
+
 %javamethodmodifiers te::da::DataSource::getIndexNames(const std::string& datasetName) "
 /** 
  * It gets the index names of the given dataset.
@@ -485,6 +775,20 @@ namespace std {
  * @return The index names of the given dataset.
  */
  public";
+
+ 
+  %javaexception("java.io.IOException") indexExists {
+  try {
+     $action
+  } catch (te::common::Exception &e) {
+    jclass clazz = jenv->FindClass("java/io/IOException");
+    
+	if(clazz)
+		jenv->ThrowNew(clazz, e.what());
+		
+    return $null;
+   }
+}
 
 %javamethodmodifiers te::da::DataSource::indexExists(const std::string& datasetName, const std::string& name) "
 /** 
@@ -502,6 +806,20 @@ namespace std {
  */
  public";
 
+ 
+  %javaexception("java.io.IOException") dropIndex {
+  try {
+     $action
+  } catch (te::common::Exception &e) {
+    jclass clazz = jenv->FindClass("java/io/IOException");
+    
+	if(clazz)
+		jenv->ThrowNew(clazz, e.what());
+		
+    return $null;
+   }
+}
+
 %javamethodmodifiers te::da::DataSource::dropIndex(const std::string& datasetName, const std::string& idxName) "
 /** 
  * It removes the index from the given dataset.
@@ -515,6 +833,20 @@ namespace std {
  * @throws java.io.IOException An exception can be thrown, if the index could not be removed from the dataset schema.
  */
  public";
+
+ 
+  %javaexception("java.io.IOException") getSequenceNames {
+  try {
+     $action
+  } catch (te::common::Exception &e) {
+    jclass clazz = jenv->FindClass("java/io/IOException");
+    
+	if(clazz)
+		jenv->ThrowNew(clazz, e.what());
+		
+    return $null;
+   }
+}
 
 %javamethodmodifiers te::da::DataSource::getSequenceNames() "
 /** 
@@ -531,6 +863,20 @@ namespace std {
  */
  public";
 
+ 
+  %javaexception("java.io.IOException") sequenceExists {
+  try {
+     $action
+  } catch (te::common::Exception &e) {
+    jclass clazz = jenv->FindClass("java/io/IOException");
+    
+	if(clazz)
+		jenv->ThrowNew(clazz, e.what());
+		
+    return $null;
+   }
+}
+
 %javamethodmodifiers te::da::DataSource::sequenceExists(const std::string& name) "
 /** 
  * It checks if a sequence with the given name exists in the data source.
@@ -545,6 +891,20 @@ namespace std {
  */
  public";
 
+ 
+  %javaexception("java.io.IOException") dropSequence {
+  try {
+     $action
+  } catch (te::common::Exception &e) {
+    jclass clazz = jenv->FindClass("java/io/IOException");
+    
+	if(clazz)
+		jenv->ThrowNew(clazz, e.what());
+		
+    return $null;
+   }
+}
+
 %javamethodmodifiers te::da::DataSource::dropSequence(const std::string& name) "
 /** 
  * It removes the sequence from the data source.
@@ -556,6 +916,20 @@ namespace std {
  * @throws java.io.IOException An exception can be thrown, if the sequence could not be removed from the data source.
  */
  public";
+
+ 
+  %javaexception("java.io.IOException") getNumberOfItems {
+  try {
+     $action
+  } catch (te::common::Exception &e) {
+    jclass clazz = jenv->FindClass("java/io/IOException");
+    
+	if(clazz)
+		jenv->ThrowNew(clazz, e.what());
+		
+    return $null;
+   }
+}
 
 %javamethodmodifiers te::da::DataSource::getNumberOfItems(const std::string& datasetName) "
 /** 
@@ -571,6 +945,19 @@ namespace std {
  */
  public";
 
+  %javaexception("java.io.IOException") hasDataSets {
+  try {
+     $action
+  } catch (te::common::Exception &e) {
+    jclass clazz = jenv->FindClass("java/io/IOException");
+    
+	if(clazz)
+		jenv->ThrowNew(clazz, e.what());
+		
+    return $null;
+   }
+}
+
 %javamethodmodifiers te::da::DataSource::hasDataSets() "
 /** 
  * It checks if the data source has any dataset.
@@ -582,6 +969,20 @@ namespace std {
  * @return True, if the data source has datasets; otherwise, it returns false.
  */
  public";
+
+ 
+  %javaexception("java.io.IOException") dataSetExists {
+  try {
+     $action
+  } catch (te::common::Exception &e) {
+    jclass clazz = jenv->FindClass("java/io/IOException");
+    
+	if(clazz)
+		jenv->ThrowNew(clazz, e.what());
+		
+    return $null;
+   }
+}
 
 %javamethodmodifiers te::da::DataSource::dataSetExists(const std::string& name) "
 /** 
@@ -596,6 +997,20 @@ namespace std {
  * @return True, if the dataset exists in the data source; otherwise, it returns false.
  */
  public";
+
+ 
+  %javaexception("java.io.IOException") cloneDataSet {
+  try {
+     $action
+  } catch (te::common::Exception &e) {
+    jclass clazz = jenv->FindClass("java/io/IOException");
+    
+	if(clazz)
+		jenv->ThrowNew(clazz, e.what());
+		
+    return $null;
+   }
+}
 
 %javamethodmodifiers te::da::DataSource::cloneDataSet(const std::string& name, const std::string& cloneName, const std::map<std::string, std::string>& options) "
 /** 
@@ -613,6 +1028,20 @@ namespace std {
  */
  public";
 
+ 
+  %javaexception("java.io.IOException") dropDataSet {
+  try {
+     $action
+  } catch (te::common::Exception &e) {
+    jclass clazz = jenv->FindClass("java/io/IOException");
+    
+	if(clazz)
+		jenv->ThrowNew(clazz, e.what());
+		
+    return $null;
+   }
+}
+
 %javamethodmodifiers te::da::DataSource::dropDataSet(const std::string& name) "
 /** 
  * It removes the dataset schema from the data source.
@@ -624,6 +1053,20 @@ namespace std {
  * @throws java.io.IOException An exception can be thrown, if the dataset could not be removed from the data source.
  */
  public";
+
+ 
+  %javaexception("java.io.IOException") renameDataSet {
+  try {
+     $action
+  } catch (te::common::Exception &e) {
+    jclass clazz = jenv->FindClass("java/io/IOException");
+    
+	if(clazz)
+		jenv->ThrowNew(clazz, e.what());
+		
+    return $null;
+   }
+}
 
 %javamethodmodifiers te::da::DataSource::renameDataSet(const std::string& name, const std::string& newName) "
 /** 
@@ -647,6 +1090,20 @@ namespace std {
  */
  public";
 
+ 
+  %javaexception("java.io.IOException") drop {
+  try {
+     $action
+  } catch (te::common::Exception &e) {
+    jclass clazz = jenv->FindClass("java/io/IOException");
+    
+	if(clazz)
+		jenv->ThrowNew(clazz, e.what());
+		
+    return $null;
+   }
+}
+
 %javamethodmodifiers te::da::DataSource::drop(const std::string& dsType, const std::map<std::string, std::string>& dsInfo) "
 /** 
  * It removes a data source identified by its connection information and the driver type.
@@ -662,6 +1119,20 @@ namespace std {
  * @throws java.io.IOException An exception can be thrown, if the data source could not be removed.
  */
  public";
+
+ 
+  %javaexception("java.io.IOException") exists {
+  try {
+     $action
+  } catch (te::common::Exception &e) {
+    jclass clazz = jenv->FindClass("java/io/IOException");
+    
+	if(clazz)
+		jenv->ThrowNew(clazz, e.what());
+		
+    return $null;
+   }
+}
 
 %javamethodmodifiers te::da::DataSource::exists(const std::string& dsType, const std::map<std::string, std::string>& dsInfo) "
 /** 
@@ -679,13 +1150,27 @@ namespace std {
  */
  public";
 
+ 
+  %javaexception("java.io.IOException") getDataSourceNames {
+  try {
+     $action
+  } catch (te::common::Exception &e) {
+    jclass clazz = jenv->FindClass("java/io/IOException");
+    
+	if(clazz)
+		jenv->ThrowNew(clazz, e.what());
+		
+    return $null;
+   }
+}
+
 %javamethodmodifiers te::da::DataSource::getDataSourceNames(const std::string& dsType, const std::map<std::string, std::string>& info) "
 /** 
  * It returns the data source names available in the driver.
  *
  * @param dsType The type name of the data source(example: PostGIS, Oracle, WFS).
  *
- * @param dsInfo The information about the data sources.
+ * @param info The information about the data sources.
  *
  * @return The data source names available.
  * 
@@ -693,13 +1178,27 @@ namespace std {
  */
  public";
 
+ 
+  %javaexception("java.io.IOException") getEncodings {
+  try {
+     $action
+  } catch (te::common::Exception &e) {
+    jclass clazz = jenv->FindClass("java/io/IOException");
+    
+	if(clazz)
+		jenv->ThrowNew(clazz, e.what());
+		
+    return $null;
+   }
+}
+
 %javamethodmodifiers te::da::DataSource::getEncodings(const std::string& dsType, const std::map<std::string, std::string>& info) "
 /** 
  * It gets the encoding names of the data source.
  * 
  * @param dsType The data source type name (example: PostGIS, Oracle, WFS).
  *
- * @param dsInfo The data source information.
+ * @param info The data source information.
  *
  * @throws java.io.IOException An exception can be thrown, if the encoding names could not be retrieved.
  * 
@@ -726,6 +1225,8 @@ namespace std {
  * @param dsType Name of the driver of the data source. 
  *
  * @param connInfo Information about the data source.
+ *
+ * @return An opened DataSource.
  */
  public";
 

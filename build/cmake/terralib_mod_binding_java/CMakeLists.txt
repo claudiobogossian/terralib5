@@ -61,7 +61,22 @@ set (CMAKE_SWIG_OUTDIR "${CMAKE_CURRENT_BINARY_DIR}/br/inpe/terralib5" CACHE PAT
 
 set (CMAKE_SWIG_FLAGS -package "br.inpe.terralib5")
 
-SWIG_ADD_MODULE (terralib_mod_binding_java java ${TERRALIB_SWIG_SCRIPT_FILE} ${TERRALIB_CHDR} ${TERRALIB_CSRC})
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/qt.conf.in ${CMAKE_CURRENT_BINARY_DIR}/qt.conf COPYONLY)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/tlib.qrc.in ${CMAKE_CURRENT_BINARY_DIR}/tlib.qrc COPYONLY)
+
+if(WIN32)
+	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/netbeans.bat.in ${CMAKE_CURRENT_BINARY_DIR}/netbeans.bat COPYONLY)
+
+	install (
+	  FILES ${CMAKE_CURRENT_BINARY_DIR}/netbeans.bat 
+	  DESTINATION .
+	  COMPONENT devel
+	)
+endif()
+
+qt5_add_resources(_RESOURCES ${CMAKE_CURRENT_BINARY_DIR}/tlib.qrc)
+
+SWIG_ADD_MODULE (terralib_mod_binding_java java ${TERRALIB_SWIG_SCRIPT_FILE} ${TERRALIB_CHDR} ${TERRALIB_CSRC} ${_RESOURCES})
   
 SWIG_LINK_LIBRARIES (terralib_mod_binding_java
   terralib_mod_annotationtext
@@ -105,7 +120,7 @@ add_custom_command(
 )
 
 install (
-  FILES ${CMAKE_CURRENT_BINARY_DIR}/terralib5.jar
+  FILES ${CMAKE_CURRENT_BINARY_DIR}/terralib5.jar 
   DESTINATION ${TERRALIB_DESTINATION_SHARE}/terralib/java
   COMPONENT devel
 )

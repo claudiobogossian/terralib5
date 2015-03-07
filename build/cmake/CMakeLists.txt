@@ -155,7 +155,7 @@ endif()
 
 
 include_directories(${CMAKE_BINARY_DIR})
-include_directories(${TERRALIB_ABSOLUTE_ROOT_DIR}/src)
+include_directories(${TERRALIB_ABSOLUTE_ROOT_DIR}/src ${CMAKE_INSTALL_PREFIX}/include)
 
 #
 # Build will generate files into a single folder
