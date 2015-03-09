@@ -26,7 +26,7 @@
 #          Frederico Augusto T. Bede <frederico.bede@funcate.org.br>
 #
 
-include_directories(${Boost_INCLUDE_DIR})
+include_directories(${Boost_INCLUDE_DIR} ${LOG4CXX_INCLUDE_DIR})
 
 if(WIN32)
   add_definitions(-DTEQTPLUGINATTRIBUTEFILLDLL)
