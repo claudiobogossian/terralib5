@@ -30,10 +30,13 @@
 #include "../../../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../../dataaccess/datasource/DataSourceInfo.h"
+#include "../../../dataaccess/datasource/DataSourceManager.h"
 #include "../../../dataaccess/query/SQLDialect.h"
 #include "../../../dataaccess/query/SQLFunctionEncoder.h"
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../maptools/DataSetLayer.h"
+#include "../datasource/selector/DataSourceSelectorDialog.h"
+#include "../layer/utils/DataSet2Layer.h"
 #include "QueryDataSourceDialog.h"
 #include "ui_QueryDataSourceDialogForm.h"
 
@@ -48,6 +51,11 @@
 #include <cassert>
 #include <memory>
 
+// Boost
+#include <boost/filesystem.hpp>
+#include <boost/uuid/random_generator.hpp>
+#include <boost/uuid/uuid_io.hpp>
+
 Q_DECLARE_METATYPE(te::map::AbstractLayerPtr);
 
 te::qt::widgets::QueryDataSourceDialog::QueryDataSourceDialog(QWidget* parent, Qt::WindowFlags f)
@@ -58,8 +66,10 @@ te::qt::widgets::QueryDataSourceDialog::QueryDataSourceDialog(QWidget* parent, Q
 
   m_ui->m_applyToolButton->setIcon(QIcon::fromTheme("media-playback-start-green"));
   m_ui->m_clearToolButton->setIcon(QIcon::fromTheme("edit-clear"));
-  m_ui->m_applySelToolButton->setIcon(QIcon::fromTheme("check"));
-  m_ui->m_applyQueryLayerToolButton->setIcon(QIcon::fromTheme("check"));
+  m_ui->m_applySelToolButton->setIcon(QIcon::fromTheme("pointer-selection"));
+  m_ui->m_targetDatasourceToolButton->setIcon(QIcon::fromTheme("datasource"));
+  m_ui->m_createLayerlToolButton->setIcon(QIcon::fromTheme("layer-new"));
+  
 
   m_ui->m_saveSqlToolButton->setIcon(QIcon::fromTheme("document-save-as"));
   m_ui->m_openSqlToolButton->setIcon(QIcon::fromTheme("document-open"));
@@ -87,6 +97,9 @@ te::qt::widgets::QueryDataSourceDialog::QueryDataSourceDialog(QWidget* parent, Q
   connect(m_ui->m_openSqlToolButton, SIGNAL(clicked()), this, SLOT(onOpenSqlToolButtonClicked()));
   connect(m_ui->m_sqlEditorTextEdit, SIGNAL(textChanged()), this, SLOT(onSQLEditorTextChanged()));
   connect(m_ui->m_applySelToolButton, SIGNAL(clicked()), this, SLOT(onApplySelToolButtonClicked()));
+  connect(m_ui->m_createLayerlToolButton, SIGNAL(pressed()), this, SLOT(onCreateLayerToolButtonClicked()));
+  connect(m_ui->m_targetDatasourceToolButton, SIGNAL(pressed()), this, SLOT(onTargetDatasourceToolButtonPressed()));
+  connect(m_ui->m_targetFileToolButton, SIGNAL(pressed()), this,  SLOT(onTargetFileToolButtonPressed()));
 
   //load data sources information
   loadDataSourcesInformation();
@@ -465,7 +478,10 @@ void te::qt::widgets::QueryDataSourceDialog::onOpenSqlToolButtonClicked()
 void te::qt::widgets::QueryDataSourceDialog::onApplySelToolButtonClicked()
 {
   if(m_ui->m_sqlEditorTextEdit->toPlainText().isEmpty())
+  {
+    QMessageBox::information(this, tr("Warning"), tr("SQL not defined."));
     return;
+  }
 
   QVariant varLayer = m_ui->m_layerComboBox->itemData(m_ui->m_layerComboBox->currentIndex(), Qt::UserRole);
   te::map::AbstractLayerPtr layer = varLayer.value<te::map::AbstractLayerPtr>();
@@ -536,4 +552,196 @@ void te::qt::widgets::QueryDataSourceDialog::onApplySelToolButtonClicked()
   }
 
   QMessageBox::information(this, tr("Query DataSource"), tr("Selection done."));
+}
+
+
+void te::qt::widgets::QueryDataSourceDialog::onCreateLayerToolButtonClicked()
+{
+  // check input parameters
+  if(m_ui->m_sqlEditorTextEdit->toPlainText().isEmpty())
+  {
+    QMessageBox::information(this, tr("Warning"), tr("SQL not defined."));
+    return;
+  }
+
+  if(m_ui->m_repositoryLineEdit->text().isEmpty())
+  {
+    QMessageBox::information(this, tr("Warning"), tr("Define a repository for the result."));
+    return;
+  }
+       
+  if(m_ui->m_newLayerNameLineEdit->text().isEmpty())
+  {
+    QMessageBox::information(this, tr("Warning"), tr("Define a name for the resulting layer."));
+    return;
+  }
+
+  //create dataset
+  std::string dataSourceId = m_ui->m_dataSourceComboBox->itemData(m_ui->m_dataSourceComboBox->currentIndex()).toString().toStdString();
+
+  te::da::DataSourcePtr ds = te::da::GetDataSource(dataSourceId);
+
+  std::string inputDataSetName = m_ui->m_baseDataSetComboBox->currentText().toStdString();
+
+  te::da::DataSetTypePtr inputDataSetType(te::da::GetDataSetType(inputDataSetName, dataSourceId));
+
+  std::string sql = "";
+
+  if(m_ui->m_sqlEditorTextEdit->textCursor().selectedText().isEmpty())
+    sql = m_ui->m_sqlEditorTextEdit->toPlainText().toStdString();
+  else
+    sql = m_ui->m_sqlEditorTextEdit->textCursor().selectedText().toStdString();
+
+  std::auto_ptr<te::da::DataSet> dataSet;
+
+  try
+  {
+    dataSet = ds->query(sql);
+  }
+  catch(...)
+  {
+    QMessageBox::warning(this, tr("Query DataSource"), tr("Error executing SQL."));
+    return;
+  }
+
+  //create / get data source
+  te::da::DataSourcePtr outputDataSource;
+
+  if(m_toFile)
+  {
+    //create new data source
+    boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toStdString());
+
+    std::map<std::string, std::string> dsInfo;
+    dsInfo["URI"] = uri.string();
+
+    boost::uuids::basic_random_generator<boost::mt19937> gen;
+    boost::uuids::uuid u = gen();
+    std::string id_ds = boost::uuids::to_string(u);
+
+    te::da::DataSourceInfoPtr dsInfoPtr(new te::da::DataSourceInfo);
+    dsInfoPtr->setConnInfo(dsInfo);
+    dsInfoPtr->setTitle(uri.stem().string());
+    dsInfoPtr->setAccessDriver("OGR");
+    dsInfoPtr->setType("OGR");
+    dsInfoPtr->setDescription(uri.string());
+    dsInfoPtr->setId(id_ds);
+
+    te::da::DataSourceInfoManager::getInstance().add(dsInfoPtr);
+
+    outputDataSource = te::da::DataSourceManager::getInstance().get(id_ds, "OGR", dsInfoPtr->getConnInfo());
+  }
+  else
+  {
+    outputDataSource = te::da::GetDataSource(m_outputDatasource->getId());
+  }
+
+  //get output dataset name
+  std::string dataSetName = m_ui->m_newLayerNameLineEdit->text().toStdString();
+
+  std::size_t idx = dataSetName.find(".");
+  if (idx != std::string::npos)
+        dataSetName=dataSetName.substr(0,idx);
+
+  //save data
+  std::auto_ptr<te::da::DataSetType> dsType(new te::da::DataSetType(dataSetName));
+
+  for(std::size_t t = 0; t < dataSet->getNumProperties(); ++t)
+  {
+    std::string name = dataSet->getPropertyName(t);
+
+    if(inputDataSetType->getProperty(name))
+      dsType->add(inputDataSetType->getProperty(name)->clone());
+    else
+    {
+      QMessageBox::warning(this, tr("Query DataSource"), tr("Error creating output dataset."));
+      return;
+    }
+
+    /*
+    std::string name = dataSet->getPropertyName(t);
+
+    std::string dsName = dataSet->getDatasetNameOfProperty(t);
+
+    std::auto_ptr<te::da::DataSetType> dsTypeItem = ds->getDataSetType(dsName);
+
+    if(dsTypeItem->getProperty(name))
+      dsType->add(dsTypeItem->getProperty(name)->clone());
+    else
+    {
+      QMessageBox::warning(this, tr("Query DataSource"), tr("Error creating output dataset."));
+      return;
+    }
+    */
+  }
+
+  dataSet->moveBeforeFirst();
+
+  std::map<std::string, std::string> options;
+
+  outputDataSource->createDataSet(dsType.get(), options);
+
+  outputDataSource->add(dataSetName, dataSet.get(), options);
+
+  //create layer
+  try
+  {
+    te::qt::widgets::DataSet2Layer converter(outputDataSource->getId());
+      
+    te::da::DataSetTypePtr dt(outputDataSource->getDataSetType(dataSetName).release());
+
+    te::map::AbstractLayerPtr layer = converter(dt);
+
+    emit createNewLayer(layer);
+  }
+  catch(te::common::Exception& e)
+  {
+    QMessageBox::warning(this, tr("Query DataSource"), tr("Error creating layer. ") + e.what());
+    return;
+  }
+
+  QMessageBox::information(this, tr("Query DataSource"), tr("Layer created."));
+}
+
+void te::qt::widgets::QueryDataSourceDialog::onTargetDatasourceToolButtonPressed()
+{
+  m_ui->m_newLayerNameLineEdit->clear();
+  m_ui->m_newLayerNameLineEdit->setEnabled(true);
+
+  te::qt::widgets::DataSourceSelectorDialog dlg(this);
+  dlg.exec();
+
+  std::list<te::da::DataSourceInfoPtr> dsPtrList = dlg.getSelecteds();
+
+  if(dsPtrList.size() <= 0)
+    return;
+
+  std::list<te::da::DataSourceInfoPtr>::iterator it = dsPtrList.begin();
+
+  m_ui->m_repositoryLineEdit->setText(QString(it->get()->getTitle().c_str()));
+
+  m_outputDatasource = *it;
+  
+  m_toFile = false;
+}
+
+void te::qt::widgets::QueryDataSourceDialog::onTargetFileToolButtonPressed()
+{
+  m_ui->m_newLayerNameLineEdit->clear();
+  m_ui->m_repositoryLineEdit->clear();
+  
+  QString fileName = QFileDialog::getSaveFileName(this, tr("Save as..."), QString(), tr("Shapefile (*.shp *.SHP);;"),0, QFileDialog::DontConfirmOverwrite);
+  
+  if (fileName.isEmpty())
+    return;
+  
+  boost::filesystem::path outfile(fileName.toStdString());
+
+  m_ui->m_repositoryLineEdit->setText(outfile.string().c_str());
+
+  m_ui->m_newLayerNameLineEdit->setText(outfile.leaf().string().c_str());
+
+  m_ui->m_newLayerNameLineEdit->setEnabled(false);
+  
+  m_toFile = true;
 }
