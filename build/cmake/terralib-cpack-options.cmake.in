@@ -39,6 +39,7 @@ set(CPACK_RESOURCE_FILE_LICENSE @CMAKE_BINARY_DIR@/COPYING.txt)
 # getting some variables from CMake
 #
 set(MSVC10 @MSVC10@)
+set(MSVC12 @MSVC12@)
 set(CMAKE_CL_64 @CMAKE_CL_64@)
 set(APPLE @APPLE@)
 set(UNIX @UNIX@)
@@ -47,10 +48,18 @@ set(UNIX @UNIX@)
 # determining the binary package name depending on toolset used in the build
 #
 if(NOT DEFINED CPACK_SOURCE_PACKAGE_FILE_NAME)
-  if(MSVC10 AND CMAKE_CL_64)
-    set(CPACK_PACKAGE_FILE_NAME "terralib-@TERRALIB_VERSION_STRING@-win64-msvc-2010")
-  elseif(MSVC10)
-    set(CPACK_PACKAGE_FILE_NAME "terralib-@TERRALIB_VERSION_STRING@-win32-msvc-2010")
+  if(MSVC10)
+    if(CMAKE_CL_64)
+      set(CPACK_PACKAGE_FILE_NAME "terralib-@TERRALIB_VERSION_STRING@-win64-msvc-2010")
+    else()
+      set(CPACK_PACKAGE_FILE_NAME "terralib-@TERRALIB_VERSION_STRING@-win32-msvc-2010")
+	endif()
+  elseif(MSVC12)
+    if(CMAKE_CL_64)
+      set(CPACK_PACKAGE_FILE_NAME "terralib-@TERRALIB_VERSION_STRING@-win64-msvc-2013")
+    else()
+      set(CPACK_PACKAGE_FILE_NAME "terralib-@TERRALIB_VERSION_STRING@-win32-msvc-2013")
+	endif()
   elseif(APPLE)
     set(CPACK_PACKAGE_FILE_NAME "terralib-@TERRALIB_VERSION_STRING@-macosx")
   elseif(UNIX)
@@ -120,12 +129,14 @@ if(CPACK_GENERATOR MATCHES "NSIS")
   # Creating GDAL_DIR enviroment variable.
   list (APPEND CPACK_NSIS_EXTRA_INSTALL_COMMANDS "
   WriteRegExpandStr HKLM \"SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment\" \"GDAL_DATA\" \"$INSTDIR\\share\\gdal-data\";
+  WriteRegExpandStr HKLM \"SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment\" \"TERRALIB_HOME\" \"$INSTDIR\";
   SendMessage \${HWND_BROADCAST} \${WM_WININICHANGE} 0 \"STR:Environment\" /TIMEOUT=5000"
   )
 
   # Removing GDAL_DIR from enviroment variables.
   set (CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS " 
   DeleteRegValue HKLM \"SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment\" \"GDAL_DATA\";
+  DeleteRegValue HKLM \"SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment\" \"TERRALIB_HOME\";
   SendMessage \${HWND_BROADCAST} \${WM_WININICHANGE} 0 \"STR:Environment\" /TIMEOUT=5000"
   )
   
