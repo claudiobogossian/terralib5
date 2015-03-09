@@ -475,6 +475,8 @@ namespace te
           \return True if has.
         */
         bool hasNoIntersectionOperations();
+
+        void normalizeClassName(std::string& name);
     };
   }
 }
