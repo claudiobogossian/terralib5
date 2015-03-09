@@ -951,6 +951,8 @@ void te::qt::af::BaseApplication::onToolsQueryDataSourceTriggered()
   {
     te::qt::widgets::QueryDataSourceDialog dlg(this);
 
+    connect(&dlg, SIGNAL(createNewLayer(te::map::AbstractLayerPtr)), this, SLOT(onCreateNewLayer(te::map::AbstractLayerPtr)));
+
     std::list<te::map::AbstractLayerPtr> layers = te::qt::af::ApplicationController::getInstance().getProject()->getAllLayers(false);
     dlg.setLayerList(layers);
     dlg.setAppMapDisplay(m_display->getDisplay());
@@ -2051,6 +2053,12 @@ void te::qt::af::BaseApplication::onDataSourceExplorerTriggered()
                          te::qt::af::ApplicationController::getInstance().getAppTitle(),
                          tr("DataSetExplorer Error!"));
   }
+}
+
+void te::qt::af::BaseApplication::onCreateNewLayer(te::map::AbstractLayerPtr layer)
+{
+  te::qt::af::evt::LayerAdded evt(layer);
+  te::qt::af::ApplicationController::getInstance().broadcast(&evt);
 }
 
 //void te::qt::af::BaseApplication::onTrajectoryAnimationTriggered() // Lauro

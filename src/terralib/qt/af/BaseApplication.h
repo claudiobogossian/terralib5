@@ -235,6 +235,8 @@ namespace te
 
           void onDataSourceExplorerTriggered();
 
+          void onCreateNewLayer(te::map::AbstractLayerPtr layer);
+
           //void onTrajectoryAnimationTriggered(); // Lauro
 
         protected:
