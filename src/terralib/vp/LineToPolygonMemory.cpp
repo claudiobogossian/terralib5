@@ -18,9 +18,9 @@
  */
 
 /*!
-  \file PolygonToLineMemory.h
+  \file LineToPolygonMemory.h
 
-  \brief Polygon to Line Vector Processing functions.
+  \brief Line to Polygon Vector Processing functions.
 */
 
 //Terralib
@@ -35,11 +35,14 @@
 #include "../datatype/SimpleProperty.h"
 #include "../datatype/StringProperty.h"
 
+#include "../geometry/Envelope.h"
 #include "../geometry/Geometry.h"
 #include "../geometry/GeometryCollection.h"
 #include "../geometry/GeometryProperty.h"
-#include "../geometry/LineString.h"
+#include "../geometry/LinearRing.h"
+#include "../geometry/Polygon.h"
 #include "../geometry/MultiLineString.h"
+#include "../geometry/MultiPolygon.h"
 #include "../geometry/Utils.h"
 
 #include "../memory/DataSet.h"
@@ -50,12 +53,13 @@
 #include "../statistics/core/NumericStatisticalSummary.h"
 #include "../statistics/core/Utils.h"
 
-#include "PolygonToLineMemory.h"
+#include "LineToPolygonMemory.h"
 #include "Config.h"
 #include "Exception.h"
 #include "Utils.h"
 
 // STL
+#include <iostream>
 #include <map>
 #include <math.h>
 #include <string>
@@ -65,13 +69,13 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string.hpp>
 
-te::vp::PolygonToLineMemory::PolygonToLineMemory()
+te::vp::LineToPolygonMemory::LineToPolygonMemory()
 {}
 
-te::vp::PolygonToLineMemory::~PolygonToLineMemory()
+te::vp::LineToPolygonMemory::~LineToPolygonMemory()
 {}
 
-bool te::vp::PolygonToLineMemory::run()
+bool te::vp::LineToPolygonMemory::run()
 {
   std::auto_ptr<te::da::DataSetType> outDsType = buildOutDataSetType();
 
@@ -113,11 +117,11 @@ bool te::vp::PolygonToLineMemory::run()
           continue;
         }
 
-        std::auto_ptr<te::gm::MultiLineString> lineResult = polygon2Line(geom.get());
-        if(!lineResult->isValid())
+        std::auto_ptr<te::gm::MultiPolygon> polygonResult = line2Polygon(geom.get());
+        if(!polygonResult->isValid() || polygonResult->isEmpty())
           geomState = false;
-        
-        outDsItem->setGeometry(i, lineResult.release());
+
+        outDsItem->setGeometry(i, polygonResult.release());
       }
     }
     if(!geomState)
@@ -136,75 +140,75 @@ bool te::vp::PolygonToLineMemory::run()
   return true;
 }
 
-std::auto_ptr<te::gm::MultiLineString> te::vp::PolygonToLineMemory::polygon2Line(te::gm::Geometry* geom)
+std::auto_ptr<te::gm::MultiPolygon> te::vp::LineToPolygonMemory::line2Polygon(te::gm::Geometry* geom)
 {
-  std::vector<te::gm::LineString*> lines;
-  std::auto_ptr<te::gm::MultiLineString> lineResult(new te::gm::MultiLineString(0, te::gm::MultiLineStringType, geom->getSRID()));
+  std::vector<te::gm::Polygon*> polygons;
+  std::auto_ptr<te::gm::MultiPolygon> polygonResult(new te::gm::MultiPolygon(0, te::gm::MultiPolygonType, geom->getSRID()));
 
-  getLines(geom, lines);
+  getPolygons(geom, polygons);
 
-  if(lines.size() > 1)
+  if(polygons.size() > 1)
   {
-    for(size_t i = 0; i < lines.size(); ++i)
-      lineResult->Union(lines[i]);
+    for(std::size_t i = 0; i < polygons.size(); ++i)
+      polygonResult->add(polygons[i]);
   }
   else
   {
-    lineResult->add(lines[0]);
+    polygonResult->add(polygons[0]);
   }
 
-  return lineResult;
+  return polygonResult;
 }
 
-void te::vp::PolygonToLineMemory::getLines(te::gm::Geometry* geom, std::vector<te::gm::LineString*>& lines)
+void te::vp::LineToPolygonMemory::getPolygons(te::gm::Geometry* geom, std::vector<te::gm::Polygon*>& polygons)
 {
   if(geom == 0)
     return;
 
   switch(geom->getGeomTypeId())
   {
-    case te::gm::MultiPolygonType:
-      getLines(dynamic_cast<te::gm::GeometryCollection*>(geom), lines);
-    break;
-
-    case te::gm::PolygonType:
-      getLines(dynamic_cast<te::gm::Polygon*>(geom), lines);
+    case te::gm::MultiLineStringType:
+      getPolygons(dynamic_cast<te::gm::GeometryCollection*>(geom), polygons);
     break;
 
     case te::gm::LineStringType:
-      getLines(dynamic_cast<te::gm::LineString*>(geom), lines);
+      getPolygons(dynamic_cast<te::gm::LineString*>(geom), polygons);
     break;
 
     default:
-      return;
+      break;
   }
 }
 
-void te::vp::PolygonToLineMemory::getLines(te::gm::GeometryCollection* gc, std::vector<te::gm::LineString*>& lines)
+void te::vp::LineToPolygonMemory::getPolygons(te::gm::GeometryCollection* gc, std::vector<te::gm::Polygon*>& polygons)
 {
   assert(gc);
 
   for(std::size_t i = 0; i < gc->getNumGeometries(); ++i)
-    getLines(gc->getGeometryN(i), lines);
+    getPolygons(gc->getGeometryN(i), polygons);
 }
 
-void te::vp::PolygonToLineMemory::getLines(te::gm::Polygon* p, std::vector<te::gm::LineString*>& lines)
+void te::vp::LineToPolygonMemory::getPolygons(te::gm::LineString* l, std::vector<te::gm::Polygon*>& polygons)
 {
-  assert(p);
+  assert(l);
 
-  std::vector<te::gm::Curve*>& rings = p->getRings();
-
-  for(std::size_t i = 0; i < rings.size(); ++i)
+  if(l->isClosed())
   {
-    te::gm::LineString* lsCurve = dynamic_cast<te::gm::LineString*>(rings[i]);
-    te::gm::LineString* ls = new te::gm::LineString(*lsCurve);
-    
-    getLines(ls, lines);
+    te::gm::Polygon* p = new te::gm::Polygon(0, te::gm::PolygonType, l->getSRID());
+
+    te::gm::LinearRing* ring = new te::gm::LinearRing(l->getNPoints(), te::gm::LineStringType);
+
+    for(std::size_t i = 0; i < l->getNPoints(); ++i)
+      ring->setPoint(i, l->getX(i), l->getY(i));
+
+    p->add(ring);
+
+    getPolygons(p, polygons);
   }
 }
 
-void te::vp::PolygonToLineMemory::getLines(te::gm::LineString* l, std::vector<te::gm::LineString*>& lines)
+void te::vp::LineToPolygonMemory::getPolygons(te::gm::Polygon* p, std::vector<te::gm::Polygon*>& polygons)
 {
-  assert(l);
-  lines.push_back(l);
+  assert(p);
+  polygons.push_back(p);
 }

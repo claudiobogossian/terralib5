@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/vp/qt/PolygonToLineDialog.h
+  \file terralib/vp/qt/LineToPolygonDialog.h
 
-  \brief A dialog for polygon to line operation
+  \brief A dialog for line to polygon operation
 */
 
-#ifndef __TERRALIB_VP_INTERNAL_POLYGONTOLINEDIALOG_H
-#define __TERRALIB_VP_INTERNAL_POLYGONTOLINEDIALOG_H
+#ifndef __TERRALIB_VP_INTERNAL_LINETOPOLYGONDIALOG_H
+#define __TERRALIB_VP_INTERNAL_LINETOPOLYGONDIALOG_H
 
 // TerraLib
 #include "../../dataaccess/datasource/DataSourceInfo.h"
@@ -41,7 +41,7 @@
 // Qt
 #include <QDialog>
 
-namespace Ui { class PolygonToLineDialogForm; }
+namespace Ui { class LineToPolygonDialogForm; }
 
 // Forward declarations
 class QModelIndex;
@@ -50,15 +50,15 @@ namespace te
 {
   namespace vp
   {
-    class TEVPEXPORT PolygonToLineDialog : public QDialog
+    class TEVPEXPORT LineToPolygonDialog : public QDialog
     {
       Q_OBJECT
 
       public:
 
-        PolygonToLineDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
+        LineToPolygonDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
-        ~PolygonToLineDialog();
+        ~LineToPolygonDialog();
 
         /*!
           \brief Set the layer that can be used
@@ -83,7 +83,7 @@ namespace te
 
       private:
 
-        std::auto_ptr<Ui::PolygonToLineDialogForm> m_ui;
+        std::auto_ptr<Ui::LineToPolygonDialogForm> m_ui;
         te::da::DataSourceInfoPtr m_outputDatasource;     //!< DataSource information.
         std::list<te::map::AbstractLayerPtr> m_layers;    //!< List of layers.
         te::map::AbstractLayerPtr m_selectedLayer;        //!< Layer used for operation.
@@ -93,4 +93,4 @@ namespace te
   }   // end namespace vp
 }     // end namespace te
 
-#endif  // __TERRALIB_VP_INTERNAL_POLYGONTOLINEDIALOG_H
+#endif  // __TERRALIB_VP_INTERNAL_LINETOPOLYGONDIALOG_H

@@ -18,9 +18,9 @@
  */
 
 /*!
-  \file terralib/vp/PolygonToLineDialog.cpp
+  \file terralib/vp/LineToPolygonDialog.cpp
 
-  \brief A dialog for polygon to line operation
+  \brief A dialog for line to polygon operation
 */
 
 // TerraLib
@@ -45,11 +45,11 @@
 #include "../../qt/widgets/progress/ProgressViewerDialog.h"
 #include "../Config.h"
 #include "../Exception.h"
-#include "../PolygonToLineMemory.h"
-#include "../PolygonToLineOp.h"
-#include "../PolygonToLineQuery.h"
-#include "PolygonToLineDialog.h"
-#include "ui_PolygonToLineDialogForm.h"
+#include "../LineToPolygonMemory.h"
+#include "../LineToPolygonOp.h"
+#include "../LineToPolygonQuery.h"
+#include "LineToPolygonDialog.h"
+#include "ui_LineToPolygonDialogForm.h"
 
 // Qt
 #include <QFileDialog>
@@ -62,9 +62,9 @@
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
-te::vp::PolygonToLineDialog::PolygonToLineDialog(QWidget* parent, Qt::WindowFlags f)
+te::vp::LineToPolygonDialog::LineToPolygonDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
-    m_ui(new Ui::PolygonToLineDialogForm),
+    m_ui(new Ui::LineToPolygonDialogForm),
     m_layers(std::list<te::map::AbstractLayerPtr>()),
     m_selectedLayer(0),
     m_toFile(false)
@@ -73,7 +73,7 @@ te::vp::PolygonToLineDialog::PolygonToLineDialog(QWidget* parent, Qt::WindowFlag
   m_ui->setupUi(this);
 
 // add icons
-  m_ui->m_imgLabel->setPixmap(QIcon::fromTheme("vp-polygon-line-hint").pixmap(112,48));
+  m_ui->m_imgLabel->setPixmap(QIcon::fromTheme("vp-line-polygon-hint").pixmap(112,48));
   m_ui->m_targetDatasourceToolButton->setIcon(QIcon::fromTheme("datasource"));
 
 //signals
@@ -87,14 +87,14 @@ te::vp::PolygonToLineDialog::PolygonToLineDialog(QWidget* parent, Qt::WindowFlag
   connect(m_ui->m_cancelPushButton, SIGNAL(clicked()), this, SLOT(onCancelPushButtonClicked()));
 
   m_ui->m_helpPushButton->setNameSpace("dpi.inpe.br.plugins"); 
-  m_ui->m_helpPushButton->setPageReference("plugins/vp/vp_polygonToLine.html");
+  //m_ui->m_helpPushButton->setPageReference("plugins/vp/vp_lineToPolygon.html");
 }
 
-te::vp::PolygonToLineDialog::~PolygonToLineDialog()
+te::vp::LineToPolygonDialog::~LineToPolygonDialog()
 {
 }
 
-void te::vp::PolygonToLineDialog::setLayers(std::list<te::map::AbstractLayerPtr> layers)
+void te::vp::LineToPolygonDialog::setLayers(std::list<te::map::AbstractLayerPtr> layers)
 {
   m_layers = layers;
 
@@ -113,20 +113,20 @@ void te::vp::PolygonToLineDialog::setLayers(std::list<te::map::AbstractLayerPtr>
 
     te::gm::GeomType geomType = prop->getGeometryType();
 
-    if( geomType == te::gm::PolygonMType || geomType == te::gm::PolygonType || geomType == te::gm::PolygonZMType || geomType == te::gm::PolygonZType ||
-      geomType == te::gm::MultiPolygonMType || geomType == te::gm::MultiPolygonType || geomType == te::gm::MultiPolygonZMType || geomType == te::gm::MultiPolygonZType)
+    if( geomType == te::gm::LineStringMType || geomType == te::gm::LineStringType || geomType == te::gm::LineStringZMType || geomType == te::gm::LineStringZType ||
+      geomType == te::gm::MultiLineStringMType || geomType == te::gm::MultiLineStringType || geomType == te::gm::MultiLineStringZMType || geomType == te::gm::MultiLineStringZType)
       m_ui->m_layersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
 
     ++it;
   }
 }
 
-te::map::AbstractLayerPtr te::vp::PolygonToLineDialog::getLayer()
+te::map::AbstractLayerPtr te::vp::LineToPolygonDialog::getLayer()
 {
   return m_outLayer;
 }
 
-void te::vp::PolygonToLineDialog::onLayerComboBoxChanged(int index)
+void te::vp::LineToPolygonDialog::onLayerComboBoxChanged(int index)
 {
   std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
   
@@ -145,7 +145,7 @@ void te::vp::PolygonToLineDialog::onLayerComboBoxChanged(int index)
   }
 }
 
-void te::vp::PolygonToLineDialog::onTargetDatasourceToolButtonPressed()
+void te::vp::LineToPolygonDialog::onTargetDatasourceToolButtonPressed()
 {
   m_ui->m_newLayerNameLineEdit->clear();
   m_ui->m_newLayerNameLineEdit->setEnabled(true);
@@ -166,7 +166,7 @@ void te::vp::PolygonToLineDialog::onTargetDatasourceToolButtonPressed()
   m_toFile = false;
 }
 
-void te::vp::PolygonToLineDialog::onTargetFileToolButtonPressed()
+void te::vp::LineToPolygonDialog::onTargetFileToolButtonPressed()
 {
   m_ui->m_newLayerNameLineEdit->clear();
   m_ui->m_repositoryLineEdit->clear();
@@ -187,18 +187,18 @@ void te::vp::PolygonToLineDialog::onTargetFileToolButtonPressed()
   m_ui->m_newLayerNameLineEdit->setEnabled(false);
 }
 
-void te::vp::PolygonToLineDialog::onOkPushButtonClicked()
+void te::vp::LineToPolygonDialog::onOkPushButtonClicked()
 {
   if(m_ui->m_layersComboBox->count() == 0)
   {
-    QMessageBox::information(this, "Polygon to line", "Select input layer.");
+    QMessageBox::information(this, "Line to polygon", "Select input layer.");
     return;
   }
 
   te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(m_selectedLayer.get());
   if(!dsLayer)
   {
-    QMessageBox::information(this, "Polygon to line", "Can not execute this operation on this type of layer.");
+    QMessageBox::information(this, "Line to polygon", "Can not execute this operation on this type of layer.");
   }
 
   const te::da::ObjectIdSet* oidSet = 0;
@@ -207,7 +207,7 @@ void te::vp::PolygonToLineDialog::onOkPushButtonClicked()
     oidSet = m_selectedLayer->getSelected();
     if(!oidSet)
     {
-      QMessageBox::information(this, "Polygon to line", "Select the layer objects to perform the polygon to line operation.");
+      QMessageBox::information(this, "Line to polygon", "Select the layer objects to perform the polygon to line operation.");
       return;
     }
   }
@@ -215,20 +215,20 @@ void te::vp::PolygonToLineDialog::onOkPushButtonClicked()
   te::da::DataSourcePtr inDataSource = te::da::GetDataSource(dsLayer->getDataSourceId(), true);
   if(!inDataSource.get())
   {
-    QMessageBox::information(this, "Polygon to line", "The selected input data source can not be accessed.");
+    QMessageBox::information(this, "Line to polygon", "The selected input data source can not be accessed.");
     return;
   }
 
   if(m_ui->m_repositoryLineEdit->text().isEmpty())
   {
-    QMessageBox::information(this, "Polygon to line", "Define a repository for the result.");
+    QMessageBox::information(this, "Line to polygon", "Define a repository for the result.");
     return;
   }
 
   std::string outputDataSet = m_ui->m_newLayerNameLineEdit->text().toStdString();
   if(outputDataSet.empty())
   {
-    QMessageBox::information(this, "Polygon to line", "Define a name for the resulting layer.");
+    QMessageBox::information(this, "Line to polygon", "Define a name for the resulting layer.");
     return;
   }
 
@@ -245,7 +245,7 @@ void te::vp::PolygonToLineDialog::onOkPushButtonClicked()
       boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toStdString());
       if (boost::filesystem::exists(uri))
       {
-        QMessageBox::information(this, "Polygon to line", "Output file already exists. Remove it or select a new name and try again.");
+        QMessageBox::information(this, "Line to polygon", "Output file already exists. Remove it or select a new name and try again.");
         return;
       }
 
@@ -261,40 +261,40 @@ void te::vp::PolygonToLineDialog::onOkPushButtonClicked()
       dsOGR->open();
       if (dsOGR->dataSetExists(outputDataSet))
       {
-        QMessageBox::information(this, "Polygon to Line", "There is already a dataset with the requested name in the output data source. Remove it or select a new name and try again.");
+        QMessageBox::information(this, "Line to polygon", "There is already a dataset with the requested name in the output data source. Remove it or select a new name and try again.");
         return;
       }
 
       this->setCursor(Qt::WaitCursor);
 
-      te::vp::PolygonToLineOp* pol2LineOp = 0;
+      te::vp::LineToPolygonOp* line2polygonOp = 0;
 
       // select a strategy based on the capabilities of the input datasource
       const te::da::DataSourceCapabilities dsCapabilities = inDataSource->getCapabilities();
 
       if(dsCapabilities.supportsPreparedQueryAPI() && dsCapabilities.getQueryCapabilities().supportsSpatialSQLDialect())
-        pol2LineOp = new te::vp::PolygonToLineQuery();
+        line2polygonOp = new te::vp::LineToPolygonQuery();
       else
-        pol2LineOp = new te::vp::PolygonToLineMemory();
+        line2polygonOp = new te::vp::LineToPolygonMemory();
 
-      pol2LineOp->setInput(inDataSource, dsLayer->getDataSetName(), oidSet);
-      pol2LineOp->setOutput(dsOGR, outputDataSet);
+      line2polygonOp->setInput(inDataSource, dsLayer->getDataSetName(), oidSet);
+      line2polygonOp->setOutput(dsOGR, outputDataSet);
 
-      if(!pol2LineOp->paramsAreValid())
+      if(!line2polygonOp->paramsAreValid())
         res = false;
       else
-        res = pol2LineOp->run();
+        res = line2polygonOp->run();
 
       if(!res)
       {
         this->setCursor(Qt::ArrowCursor);
         dsOGR->close();
-        QMessageBox::information(this, "Polygon to Line", "Error: Error in operation.");
+        QMessageBox::information(this, "Line to polygon", "Error: Error in operation.");
         reject();
       }
       dsOGR->close();
 
-      delete pol2LineOp;
+      delete line2polygonOp;
 
       // let's include the new datasource in the managers
       boost::uuids::basic_random_generator<boost::mt19937> gen;
@@ -313,48 +313,47 @@ void te::vp::PolygonToLineDialog::onOkPushButtonClicked()
       newds->open();
       te::da::DataSourceInfoManager::getInstance().add(ds);
       m_outputDatasource = ds;
-
     }
     else
     {
       te::da::DataSourcePtr dsOGR = te::da::GetDataSource(m_outputDatasource->getId());
       if(!dsOGR)
       {
-        QMessageBox::information(this, "Polygon to Line", "The selected output datasource can not be accessed.");
+        QMessageBox::information(this, "Line to polygon", "The selected output datasource can not be accessed.");
         return;
       }
 
       if(dsOGR->dataSetExists(outputDataSet))
       {
-        QMessageBox::information(this, "Polygon to Line", "Dataset already exists. Remove ir or select a new name and try again.");
+        QMessageBox::information(this, "Line to polygon", "Dataset already exists. Remove ir or select a new name and try again.");
         return;
       }
 
       this->setCursor(Qt::WaitCursor);
 
-      te::vp::PolygonToLineOp* pol2LineOp = 0;
+      te::vp::LineToPolygonOp* line2polygonOp = 0;
 
       const te::da::DataSourceCapabilities dsCapabilities = inDataSource->getCapabilities();
 
       if(dsCapabilities.supportsPreparedQueryAPI() && dsCapabilities.getQueryCapabilities().supportsSpatialSQLDialect())
-        pol2LineOp = new te::vp::PolygonToLineQuery();
+        line2polygonOp = new te::vp::LineToPolygonQuery();
       else
-        pol2LineOp = new te::vp::PolygonToLineMemory();
+        line2polygonOp = new te::vp::LineToPolygonMemory();
 
-      pol2LineOp->setInput(inDataSource, dsLayer->getDataSetName(), oidSet);
-      pol2LineOp->setOutput(dsOGR, outputDataSet);
+      line2polygonOp->setInput(inDataSource, dsLayer->getDataSetName(), oidSet);
+      line2polygonOp->setOutput(dsOGR, outputDataSet);
 
-      if(!pol2LineOp->paramsAreValid())
+      if(!line2polygonOp->paramsAreValid())
         res = false;
       else
-        res = pol2LineOp->run();
+        res = line2polygonOp->run();
 
-      delete pol2LineOp;
+      delete line2polygonOp;
 
       if(!res)
       {
         this->setCursor(Qt::ArrowCursor);
-        QMessageBox::information(this, "Polygon to Line", "Error in operation.");
+        QMessageBox::information(this, "Line to polygon", "Error in operation.");
         reject();
       }
     }
@@ -369,7 +368,7 @@ void te::vp::PolygonToLineDialog::onOkPushButtonClicked()
   {
     this->setCursor(Qt::ArrowCursor);
 
-    QMessageBox::information(this, "Polygon to Line", e.what());
+    QMessageBox::information(this, "Line to polygon", e.what());
     
 //    te::common::Logger::logDebug("vp", e.what());
     te::common::ProgressManager::getInstance().removeViewer(id);
@@ -382,7 +381,7 @@ void te::vp::PolygonToLineDialog::onOkPushButtonClicked()
   accept();
 }
 
-void te::vp::PolygonToLineDialog::onCancelPushButtonClicked()
+void te::vp::LineToPolygonDialog::onCancelPushButtonClicked()
 {
   reject();
 }
