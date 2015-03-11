@@ -278,6 +278,8 @@ bool te::qt::widgets::DirectExchangerDialog::exchangeToDatabase()
 
   try
   {
+    setCursor(Qt::WaitCursor);
+
     //create adapter
     std::auto_ptr<te::da::DataSetType> dsType = layer->getSchema();
 
@@ -358,10 +360,13 @@ bool te::qt::widgets::DirectExchangerDialog::exchangeToDatabase()
 
      transactor->commit();
 
-    QMessageBox::information(this, tr("Exchanger"), tr("Layer exported successfully."));
+     setCursor(Qt::ArrowCursor);
+     QMessageBox::information(this, tr("Exchanger"), tr("Layer exported successfully."));
   }
   catch(const std::exception& e)
   {
+    setCursor(Qt::ArrowCursor);
+
     transactor->rollBack();
 
     QString errMsg(tr("Error during exchanger. The reported error is: %1"));

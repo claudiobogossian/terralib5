@@ -194,6 +194,8 @@ void te::qt::plugins::ogr::Plugin::showWindow()
   if(fileNames.isEmpty())
     return;
 
+  QApplication::setOverrideCursor(Qt::WaitCursor);
+
   QFileInfo info(fileNames.value(0));
 
   te::qt::widgets::AddFilePathToSettings(info.absolutePath(), "vector");
@@ -243,6 +245,8 @@ void te::qt::plugins::ogr::Plugin::showWindow()
 
     GetLayers(ds, layers);
   }
+
+  QApplication::restoreOverrideCursor();
 
   if(!shpWithoutSpatialIndex.empty())
   {
