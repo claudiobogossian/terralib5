@@ -157,6 +157,8 @@ void te::layout::TextItem::paint( QPainter * painter, const QStyleOptionGraphics
   drawBackground( painter );
   
   QGraphicsTextItem::paint(painter, option, widget);
+
+  drawBorder(painter);
        
   //Draw Selection
   if (option->state & QStyle::State_Selected)
@@ -178,35 +180,6 @@ void te::layout::TextItem::drawBackground( QPainter* painter )
   painter->setBackground(QBrush(m_backgroundColor));
   painter->setRenderHint( QPainter::Antialiasing, true );
   painter->drawRect(QRectF( 0, 0, boundingRect().width(), boundingRect().height()));
-  painter->restore();
-}
-
-void te::layout::TextItem::drawSelection( QPainter* painter )
-{
-  if(!painter)
-  {
-    return;
-  }
-
-  painter->save();
-
-  qreal penWidth = painter->pen().widthF();
-
-  const qreal adj = penWidth / 2;
-  const QColor fgcolor(0,255,0);
-  const QColor backgroundColor(0,0,0);
-
-  QRectF rtAdjusted = boundingRect().adjusted(adj, adj, -adj, -adj);
-
-  QPen penBackground(backgroundColor, 0, Qt::SolidLine);
-  painter->setPen(penBackground);
-  painter->setBrush(Qt::NoBrush);
-  painter->drawRect(rtAdjusted);
-
-  QPen penForeground(fgcolor, 0, Qt::DashLine);
-  painter->setPen(penForeground);
-  painter->setBrush(Qt::NoBrush);
-  painter->drawRect(rtAdjusted);
   painter->restore();
 }
 

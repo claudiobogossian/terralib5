@@ -38,6 +38,13 @@
 #include "../../maptools/Canvas.h"
 #include "../core/Utils.h"
 #include "../core/Config.h"
+#include "../core/enum/EnumScaleType.h"
+#include "../core/enum/EnumType.h"
+#include "../core/property/Property.h"
+
+// STL
+#include <string>
+#include <vector>
 
 namespace te
 {
@@ -78,19 +85,27 @@ namespace te
         virtual double getScaleGapX();
 
         virtual void setScaleGapY(double y);
-
+        
         virtual double getScaleGapY();
+
+        virtual double getMapScale();
+
+        virtual EnumScaleType* getEnumScaleType();
+
+        virtual EnumType* getCurrentScaleType();
 
        protected:
 
          virtual void visitDependent(ContextItem context);
 
-         virtual void drawScale(te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box);
-
-        std::string m_mapName;
-        double m_mapScale;
-        double m_scaleGapX;
-        double m_scaleGapY;
+         virtual Property scaleProperty() const;
+         
+         std::string              m_mapName;
+         double                   m_mapScale;
+         double                   m_scaleGapX;
+         double                   m_scaleGapY;
+         EnumScaleType*           m_enumScaleType;
+         EnumType*                m_currentScaleType;
     };
   }
 }

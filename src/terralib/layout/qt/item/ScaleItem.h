@@ -70,6 +70,19 @@ namespace te
           \brief Reimplemented from ObjectItem
          */
         virtual void updateObserver(ContextItem context);
+
+        /*!
+          \brief Reimplemented from QGraphicsItem
+         */
+        virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
+
+      protected:
+
+        virtual void drawDoubleAlternatingScaleBar(QPainter * painter);
+
+        virtual void drawAlternatingScaleBar(QPainter * painter);
+
+        virtual void drawHollowScaleBar(QPainter * painter);
     };
   }
 }

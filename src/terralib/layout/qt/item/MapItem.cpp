@@ -273,6 +273,8 @@ void te::layout::MapItem::paint( QPainter * painter, const QStyleOptionGraphicsI
 
   painter->restore();
 
+  drawBorder(painter);
+
   //Draw Selection
   if (option->state & QStyle::State_Selected)
   {

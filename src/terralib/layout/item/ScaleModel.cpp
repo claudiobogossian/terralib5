@@ -43,109 +43,32 @@ te::layout::ScaleModel::ScaleModel() :
   m_mapName(""),
   m_mapScale(0),
   m_scaleGapX(20),
-  m_scaleGapY(5)
+  m_scaleGapY(5),
+  m_enumScaleType(0),
+  m_currentScaleType(0)
 {
 
   m_type = Enums::getInstance().getEnumObjectType()->getScaleItem();
 
   m_box = te::gm::Envelope(0., 0., 70., 30.);
+
+  m_border = false;
+
+  m_enumScaleType = new EnumScaleType();
+  m_currentScaleType = m_enumScaleType->getDoubleAlternatingScaleBarType();
 }
 
 te::layout::ScaleModel::~ScaleModel()
 {
-
+  if(m_enumScaleType)
+  {
+    delete m_enumScaleType;
+    m_enumScaleType = 0;
+  }
 }
 
 void te::layout::ScaleModel::draw( ContextItem context )
 {
-  te::color::RGBAColor** pixmap = 0;
-
-  te::map::Canvas* canvas = context.getCanvas();
-  Utils* utils = context.getUtils();
-  
-  if((!canvas) || (!utils))
-    return;
-
-  if(context.isResizeCanvas())
-    utils->configCanvas(m_box);
-
-  drawBackground(context);
-
-  drawScale(canvas, utils, m_box);
-
-  if(context.isResizeCanvas())
-    pixmap = utils->getImageW(m_box);
-
-  context.setPixmap(pixmap);
-  notifyAll(context);
-}
-
-void te::layout::ScaleModel::drawScale( te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box )
-{
-  double			unit=1000.0;
-  std::string strUnit="(Km)";
-
-  if(m_mapScale < 1000)
-  {
-    unit = 1.0;
-    strUnit="(m)";
-  }
-  else 
-  {
-    unit = 1000.0;
-  }
-  
-  //convert millimeters to centimeters
-  double mmToCm = m_scaleGapX/10;
-
-  double spacing = m_mapScale/100;
-  
-  double value = 0.;
-  double width = 0.;
-  double x1 = box.getLowerLeftX();
-  te::color::RGBAColor black(0, 0, 0, 255);
-  te::color::RGBAColor white(255, 255, 255, 255);
-  te::color::RGBAColor firstRect = black;
-  te::color::RGBAColor secondRect = white;
-  te::color::RGBAColor changeColor;
-  te::gm::Envelope newBoxFirst;
-  te::gm::Envelope newBoxSecond;
-  canvas->setPolygonContourWidth(1);
-  canvas->setPolygonContourColor(te::color::RGBAColor(0, 0, 0, 255));
-  canvas->setTextColor(te::color::RGBAColor(0, 0, 0, 255));
-  for( ; x1 < box.getUpperRightX() ; x1 += width)
-  {
-    //Up rect
-    canvas->setPolygonFillColor(firstRect);
-    newBoxFirst = te::gm::Envelope(x1, box.getUpperRightY(), x1 + m_scaleGapX, box.getUpperRightY() - m_scaleGapY);
-    utils->drawRectW(newBoxFirst);
-
-    //Down rect
-    canvas->setPolygonFillColor(secondRect);
-    newBoxSecond = te::gm::Envelope(x1, box.getUpperRightY() - (m_scaleGapY*2), x1 + m_scaleGapX, box.getUpperRightY() - m_scaleGapY);
-    utils->drawRectW(newBoxSecond);
-
-    if(width == 0)
-      width = m_scaleGapX;
-    else
-      value += (spacing * mmToCm)/unit;
-
-    std::stringstream ss_value;
-    ss_value << value;
-
-    std::string s_value = ss_value.str();
-    canvas->drawText(x1, newBoxSecond.getLowerLeftY() - 5, s_value, 0);
-
-    changeColor = firstRect;
-    firstRect = secondRect;
-    secondRect = changeColor;
-  }
-
-  //middle
-  // Canvas - Necessário saber o tamanho do box do texto em mm: pendente;
-  double centerX = m_box.getCenter().x;
-
-  canvas->drawText(centerX, newBoxSecond.getLowerLeftY() - 15, strUnit, 0);
 
 }
 
@@ -176,6 +99,12 @@ te::layout::Properties* te::layout::ScaleModel::getProperties() const
   pro_mapName.addOption(v);
   m_properties->addProperty(pro_mapName);
 
+  Property pro_scaleName = scaleProperty();
+  if(!pro_scaleName.isNull())
+  {
+    m_properties->addProperty(pro_scaleName);
+  }
+
   return m_properties;
 }
 
@@ -205,6 +134,18 @@ void te::layout::ScaleModel::updateProperties( te::layout::Properties* propertie
   {
     m_scaleGapY = pro_heightRectGap.getValue().toDouble();
   }
+
+  Property pro_scaleName = vectorProps->contains("scale_type");
+
+  if(!pro_scaleName.isNull())
+  {
+    std::string label = pro_scaleName.getOptionByCurrentChoice().toString();
+    EnumType* enumType = m_enumScaleType->searchLabel(label);
+    if(enumType)
+    {
+      m_currentScaleType = enumType;
+    }
+  }
 }
 
 void te::layout::ScaleModel::visitDependent(ContextItem context)
@@ -215,7 +156,7 @@ void te::layout::ScaleModel::visitDependent(ContextItem context)
   {
     m_mapScale = map->getScale();
 
-    draw(context);
+    notifyAll(context);
   }	
 }
 
@@ -238,3 +179,56 @@ double te::layout::ScaleModel::getScaleGapY()
 {
   return m_scaleGapY;
 }
+
+double te::layout::ScaleModel::getMapScale()
+{
+  return m_mapScale;
+}
+
+te::layout::EnumScaleType* te::layout::ScaleModel::getEnumScaleType()
+{
+  return m_enumScaleType;
+}
+
+te::layout::Property te::layout::ScaleModel::scaleProperty() const
+{
+  Property pro_scaleName;
+
+  if(!m_currentScaleType)
+    return pro_scaleName;
+
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+
+  if(!dataType)
+    return pro_scaleName;
+
+  pro_scaleName.setName("scale_type");
+  pro_scaleName.setLabel("graphic type");
+  pro_scaleName.setId("");
+  pro_scaleName.setValue(m_currentScaleType->getLabel(), dataType->getDataTypeStringList());
+
+  Variant v;
+  v.setValue(m_currentScaleType->getLabel(), dataType->getDataTypeString());
+  pro_scaleName.addOption(v);
+  pro_scaleName.setOptionChoice(v);
+
+  for(int i = 0 ; i < m_enumScaleType->size() ; ++i)
+  {
+    EnumType* enumType = m_enumScaleType->getEnum(i);
+
+    if(enumType == m_enumScaleType->getNoneType() || enumType == m_currentScaleType)
+      continue;
+
+    Variant v;
+    v.setValue(enumType->getLabel(), dataType->getDataTypeString());
+    pro_scaleName.addOption(v);
+  }
+
+  return pro_scaleName;
+}
+
+te::layout::EnumType* te::layout::ScaleModel::getCurrentScaleType()
+{
+  return m_currentScaleType;
+}
+

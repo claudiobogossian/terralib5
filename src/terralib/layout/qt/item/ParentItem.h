@@ -59,6 +59,10 @@
 #include "../../../geometry/Envelope.h"
 #include "../../../common/STLUtils.h"
 
+// STL
+
+#include <string>
+
 namespace te
 {
   namespace layout
@@ -109,7 +113,7 @@ namespace te
         virtual QPixmap getPixmap();
 
         /*!
-          \brief Mandatory implementation from QGraphicsObject
+          \brief Mandatory implementation from QGraphicsItem
          */
         virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
 
@@ -139,38 +143,40 @@ namespace te
 
         virtual void drawSelection(QPainter* painter);
 
+        virtual void drawBorder(QPainter* painter);
+
         /*!
-          \brief Reimplemented from QGraphicsObject
+          \brief Reimplemented from QGraphicsItem
          */
         virtual void	mousePressEvent ( QGraphicsSceneMouseEvent * event );
 
         /*!
-          \brief Reimplemented from QGraphicsObject
+          \brief Reimplemented from QGraphicsItem
          */
         virtual void	mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
 
         /*!
-          \brief Reimplemented from QGraphicsObject
+          \brief Reimplemented from QGraphicsItem
          */
         virtual void	mouseMoveEvent ( QGraphicsSceneMouseEvent * event );
 
         /*!
-          \brief Reimplemented from QGraphicsObject
+          \brief Reimplemented from QGraphicsItem
          */
         virtual void	hoverEnterEvent ( QGraphicsSceneHoverEvent * event );
 
         /*!
-          \brief Reimplemented from QGraphicsObject
+          \brief Reimplemented from QGraphicsItem
          */
         virtual void	hoverLeaveEvent ( QGraphicsSceneHoverEvent * event );
 
         /*!
-          \brief Reimplemented from QGraphicsObject
+          \brief Reimplemented from QGraphicsItem
          */
         virtual void	hoverMoveEvent ( QGraphicsSceneHoverEvent * event );
 
         /*!
-          \brief Reimplemented from QGraphicsObject
+          \brief Reimplemented from QGraphicsItem
          */
         virtual QVariant	itemChange ( QGraphicsItem::GraphicsItemChange change, const QVariant & value );
 
@@ -190,6 +196,15 @@ namespace te
          */
         virtual void applyRotation();
 
+        /*!
+          \brief Draw a text. Converts boundingRect item coordinates (local coordinates) in pixel coordinates (screen coordinates) of the current device.
+
+          \param point initial text coordinate (local coordinates from boundingRect)
+          \param painter low-level painting on widgets and other paint devices
+          \param text 
+         */
+        virtual void drawText(QPointF point, QPainter* painter, std::string text);
+
       protected:
 
         QPixmap m_pixmap;
@@ -206,6 +221,28 @@ namespace te
         LayoutAlign m_enumSides;
     };
 
+    template <class T>
+    void te::layout::ParentItem<T>::drawText( QPointF point, QPainter* painter, std::string text )
+    {
+      painter->save();
+
+      QTransform t = painter->transform();
+      QPointF p = t.map(point);
+
+      double zoomFactor = Context::getInstance().getZoomFactor();
+
+      QFont ft = painter->font();
+      ft.setPointSize(ft.pointSize() * zoomFactor);
+      painter->setFont(ft);
+
+      //Keeps the size of the text.(Aspect)
+      painter->setMatrixEnabled(false);
+      painter->drawText(p, text.c_str());
+      painter->setMatrixEnabled(true);
+
+      painter->restore();
+    }
+    
     template <class T>
     inline te::layout::ParentItem<T>::ParentItem( ItemController* controller, Observable* o, bool inverted ) :
       T(0),
@@ -291,6 +328,8 @@ namespace te
       QRectF rtSource( 0, 0, m_pixmap.width(), m_pixmap.height() );
       painter->drawPixmap(boundRect, m_pixmap, rtSource);
       painter->restore();  
+
+      drawBorder(painter);
   
       //Draw Selection
       if (option->state & QStyle::State_Selected)
@@ -341,6 +380,50 @@ namespace te
       painter->setPen(penForeground);
       painter->setBrush(Qt::NoBrush);
       painter->drawRect(rtAdjusted);
+
+      painter->setPen(Qt::NoPen);
+      QBrush brushEllipse(fgcolor);
+      painter->setBrush(fgcolor);
+
+      double w = 2.0;
+      double h = 2.0;
+      double half = 1.0;
+
+      painter->drawRect(rtAdjusted.center().x() - half, rtAdjusted.center().y() - half, w, h); // center
+      painter->drawRect(rtAdjusted.bottomLeft().x() - half, rtAdjusted.bottomLeft().y() - half, w, h); // left-top
+      painter->drawRect(rtAdjusted.bottomRight().x() - half, rtAdjusted.bottomRight().y() - half, w, h); // right-top
+      painter->drawRect(rtAdjusted.topLeft().x() - half, rtAdjusted.topLeft().y() - half, w, h); // left-bottom
+      painter->drawRect(rtAdjusted.topRight().x() - half, rtAdjusted.topRight().y() - half, w, h); // right-bottom
+
+      painter->restore();
+    }
+
+    template <class T>
+    inline void te::layout::ParentItem<T>::drawBorder( QPainter * painter )
+    {
+      if ( !painter )
+      {
+        return;
+      }
+
+      if(!m_model)
+        return;
+
+      ItemModelObservable* model = dynamic_cast<ItemModelObservable*>(m_model);
+      if(!model)
+        return;
+
+      if(!model->isBorder())
+        return;
+
+      const QColor backgroundColor(0,0,0);
+
+      painter->save();
+      QPen penBackground(backgroundColor, 0, Qt::SolidLine);
+      painter->setPen(penBackground);
+      painter->setBrush(Qt::NoBrush);
+      painter->setRenderHint( QPainter::Antialiasing, true );
+      painter->drawRect(QRectF( 0, 0, boundingRect().width(), boundingRect().height()));
       painter->restore();
     }
 

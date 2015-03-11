@@ -124,9 +124,7 @@ namespace te
         virtual QVariant	itemChange ( GraphicsItemChange change, const QVariant & value );
         
         virtual void drawBackground( QPainter* painter );
-
-        virtual void drawSelection(QPainter* painter);
-
+        
         /*!
           \brief Reimplemented from QGraphicsTextItem
          */

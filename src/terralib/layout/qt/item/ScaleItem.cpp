@@ -34,6 +34,11 @@
 #include "../../../qt/widgets/Utils.h"
 #include "../../../geometry/Envelope.h"
 #include "../../../common/STLUtils.h"
+#include "../../item/ScaleModel.h"
+
+// STL
+#include <string>
+#include <sstream> // std::stringstream
 
 // Qt
 #include <QPixmap>
@@ -47,6 +52,9 @@ te::layout::ScaleItem::ScaleItem( ItemController* controller, Observable* o ) :
     | QGraphicsItem::ItemIsFocusable);
 
   m_nameClass = std::string(this->metaObject()->className());
+
+  QRectF rect(0, 0, m_model->getBox().getWidth(), m_model->getBox().getHeight());
+  setRect(rect);
 }
 
 te::layout::ScaleItem::~ScaleItem()
@@ -59,35 +67,372 @@ void te::layout::ScaleItem::updateObserver( ContextItem context )
   if(!m_model)
     return;
 
-  te::color::RGBAColor** rgba = context.getPixmap();
-
-  if(!rgba)
-    return;
-
-  Utils* utils = context.getUtils();
-
-  if(!utils)
-    return;
-
-  te::gm::Envelope box = utils->viewportBox(m_model->getBox());
-
-  if(!box.isValid())
-    return;
-
-  QPixmap pixmap;
-  QImage* img = 0;
-
-  if(rgba)
-  {
-    img = te::qt::widgets::GetImage(rgba, box.getWidth(), box.getHeight());
-    pixmap = QPixmap::fromImage(*img);
-  }
-
-  te::common::Free(rgba, box.getHeight());
-  if(img)
-    delete img;
-
-  setPixmap(pixmap);
   update();
 }
+
+void te::layout::ScaleItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
+{
+  Q_UNUSED( option );
+  Q_UNUSED( widget );
+  if ( !painter )
+  {
+    return;
+  }
+
+  drawBackground(painter);
+
+  ScaleModel* model = dynamic_cast<ScaleModel*>(m_model);
+
+  if(model)
+  {
+    EnumScaleType* enumScale = model->getEnumScaleType();
+
+    if(model->getCurrentScaleType() == enumScale->getDoubleAlternatingScaleBarType())
+    {
+      drawDoubleAlternatingScaleBar(painter);
+    }
+    if(model->getCurrentScaleType() == enumScale->getAlternatingScaleBarType())
+    {
+      drawAlternatingScaleBar(painter);
+    }
+    if(model->getCurrentScaleType() == enumScale->getHollowScaleBarType())
+    {
+      drawHollowScaleBar(painter);
+    }
+  }
+
+  drawBorder(painter);
+
+  //Draw Selection
+  if (option->state & QStyle::State_Selected)
+  {
+    drawSelection(painter);
+  }
+}
+
+void te::layout::ScaleItem::drawDoubleAlternatingScaleBar( QPainter * painter )
+{
+  QRectF boundRect = boundingRect();
+  
+  painter->save();
+
+  double			unit=1000.0;
+  std::string strUnit="(Km)";
+
+  ScaleModel* model = dynamic_cast<ScaleModel*>(m_model);
+
+  if(model->getMapScale() < 1000)
+  {
+    unit = 1.0;
+    strUnit="(m)";
+  }
+  else 
+  {
+    unit = 1000.0;
+  }
+
+  double half = boundRect.height() / 2.;
+
+  //convert millimeters to centimeters
+  double mmToCm = model->getScaleGapX()/10;
+
+  double spacing = model->getMapScale()/100;
+  
+  double value = 0.;
+  double width = 0.;
+  double x1 = boundRect.bottomLeft().x();
+
+  QColor black(0, 0, 0, 255);
+  QColor white(255, 255, 255, 255);
+  QColor firstRect = black;
+  QColor secondRect = white;
+  QColor changeColor;
+  QColor textColor(0, 0, 0, 255);
+
+  QRectF newBoxFirst;
+  QRectF newBoxSecond;
+
+  double gapX = model->getScaleGapX();
+  double gapY = model->getScaleGapY();
+    
+  for( ; x1 < boundRect.topRight().x(); x1 += width)
+  {
+    if(x1+gapX >= boundRect.topRight().x())
+    {
+      //Draw the remaining rects, near the end
+      double dx = boundRect.width() - x1;
+      gapX = dx;
+    }
+
+    painter->setPen(Qt::NoPen);
+
+    //Down rect
+    painter->setBrush(QBrush(secondRect));
+    newBoxSecond = QRectF(x1, boundRect.center().y() - gapY, gapX, gapY);
+    painter->drawRect(newBoxSecond);
+
+    //Up rect
+    painter->setBrush(QBrush(firstRect));
+    newBoxFirst = QRectF(x1, boundRect.center().y(), gapX, gapY);
+    painter->drawRect(newBoxFirst);
+
+    if(width == 0)
+      width = gapX;
+    else
+      value += (spacing * mmToCm)/unit;
+
+    std::stringstream ss_value;
+    ss_value << value;
+
+    std::string s_value = ss_value.str();
+
+    painter->setPen(QPen(textColor));
+    QPointF coordText(x1, newBoxSecond.topLeft().y() - 5);
+
+    drawText(coordText, painter, ss_value.str());
+    
+    changeColor = firstRect;
+    firstRect = secondRect;
+    secondRect = changeColor;
+  }
+
+  qreal penWidth = painter->pen().widthF();
+  const qreal adj = penWidth / 2;
+
+  newBoxSecond = QRectF(boundRect.x(), boundRect.center().y() - gapY, boundRect.width(), gapY*2);
+  QRectF rtAdjusted = newBoxSecond.adjusted(adj, adj, -adj, -adj);
+
+  //Rect around scale
+  QPen penBackground(black, 0, Qt::SolidLine);
+  //penBackground.setWidthF(0);
+  painter->setBrush(Qt::NoBrush);
+  painter->setPen(penBackground);
+  painter->drawRect(rtAdjusted);
+
+  //middle-bottom text
+  double centerX = rtAdjusted.center().x();  
+  painter->setPen(QPen(textColor));
+    
+  QPointF coordText(centerX, boundRect.topLeft().y() + 1); 
+  drawText(coordText, painter, strUnit);
+
+  painter->restore();
+}
+
+void te::layout::ScaleItem::drawAlternatingScaleBar( QPainter * painter )
+{
+  QRectF boundRect = boundingRect();
+
+  painter->save();
+
+  double			unit=1000.0;
+  std::string strUnit="(Km)";
+
+  ScaleModel* model = dynamic_cast<ScaleModel*>(m_model);
+
+  if(model->getMapScale() < 1000)
+  {
+    unit = 1.0;
+    strUnit="(m)";
+  }
+  else 
+  {
+    unit = 1000.0;
+  }
+
+  double half = boundRect.height() / 2.;
+
+  //convert millimeters to centimeters
+  double mmToCm = model->getScaleGapX()/10;
+
+  double spacing = model->getMapScale()/100;
+
+  double value = 0.;
+  double width = 0.;
+  double x1 = boundRect.bottomLeft().x();
+
+  QColor black(0, 0, 0, 255);
+  QColor white(255, 255, 255, 255);
+  QColor firstRect = black;
+  QColor secondRect = white;
+  QColor changeColor;
+  QColor textColor(0, 0, 0, 255);
+
+  QRectF newBoxFirst;
+  QRectF newBoxSecond;
+
+  double gapX = model->getScaleGapX();
+  double gapY = model->getScaleGapY();
+
+  for( ; x1 < boundRect.topRight().x(); x1 += width)
+  {
+    if(x1+gapX >= boundRect.topRight().x())
+    {
+      //Draw the remaining rects, near the end
+      double dx = boundRect.width() - x1;
+      gapX = dx;
+    }
+
+    painter->setPen(Qt::NoPen);
+
+    painter->setBrush(QBrush(secondRect));
+    newBoxSecond = QRectF(x1, boundRect.center().y() - gapY/2, gapX, gapY);
+    painter->drawRect(newBoxSecond);
+
+
+    if(width == 0)
+      width = gapX;
+    else
+      value += (spacing * mmToCm)/unit;
+
+    std::stringstream ss_value;
+    ss_value << value;
+
+    std::string s_value = ss_value.str();
+
+    QPen pn(textColor);
+    pn.setWidthF(0.5);
+    painter->setPen(pn);
+    QPointF coordText(x1, newBoxSecond.topLeft().y() - 5);
+
+    drawText(coordText, painter, ss_value.str());
+
+    changeColor = firstRect;
+    firstRect = secondRect;
+    secondRect = changeColor;
+  }
+
+  qreal penWidth = painter->pen().widthF();
+  const qreal adj = penWidth / 2;
+
+  newBoxSecond = QRectF(boundRect.x(), boundRect.center().y() - gapY/2, boundRect.width(), gapY);
+  QRectF rtAdjusted = newBoxSecond.adjusted(adj, adj, -adj, -adj);
+
+  //Rect around scale
+  QPen penBackground(black, 0, Qt::SolidLine);
+  penBackground.setWidthF(0.5);
+  painter->setBrush(Qt::NoBrush);
+  painter->setPen(QPen(black));
+  painter->drawRect(rtAdjusted);
+
+  //middle-bottom text
+  double centerX = rtAdjusted.center().x();  
+  painter->setPen(QPen(textColor));
+  
+  QPointF coordText(centerX, boundRect.topLeft().y() + 1); 
+  drawText(coordText, painter, strUnit);
+
+  painter->restore();
+}
+
+void te::layout::ScaleItem::drawHollowScaleBar( QPainter * painter )
+{
+  QRectF boundRect = boundingRect();
+
+  painter->save();
+
+  double			unit=1000.0;
+  std::string strUnit="(Km)";
+
+  ScaleModel* model = dynamic_cast<ScaleModel*>(m_model);
+
+  if(model->getMapScale() < 1000)
+  {
+    unit = 1.0;
+    strUnit="(m)";
+  }
+  else 
+  {
+    unit = 1000.0;
+  }
+
+  double half = boundRect.height() / 2.;
+
+  //convert millimeters to centimeters
+  double mmToCm = model->getScaleGapX()/10;
+
+  double spacing = model->getMapScale()/100;
+
+  double value = 0.;
+  double width = 0.;
+  double x1 = boundRect.bottomLeft().x();
+
+  QColor black(0, 0, 0, 255);
+  QColor white(255, 255, 255, 255);
+  QColor firstRect = black;
+  QColor secondRect = white;
+  QColor changeColor;
+  QColor textColor(0, 0, 0, 255);
+
+  QRectF newBoxFirst;
+  QRectF newBoxSecond;
+
+  double gapX = model->getScaleGapX();
+  double gapY = model->getScaleGapY();
+  
+  //Rect around scale
+  QPen pn(black, 0, Qt::SolidLine);
+
+  for( ; x1 < boundRect.topRight().x(); x1 += width)
+  {
+    if(x1+gapX >= boundRect.topRight().x())
+    {
+      //Draw the remaining rects, near the end
+      double dx = boundRect.width() - x1;
+      gapX = dx;
+    }
+
+    painter->setPen(Qt::NoPen);
+
+    painter->setBrush(QBrush(white));
+    newBoxSecond = QRectF(x1, boundRect.center().y() - gapY/2, gapX, gapY);
+    painter->drawRect(newBoxSecond);
+
+    painter->setPen(pn);
+
+    QLineF lne(x1, boundRect.center().y(), gapX, boundRect.center().y());
+    painter->drawLine(lne);
+
+    if(width == 0)
+      width = gapX;
+    else
+      value += (spacing * mmToCm)/unit;
+
+    std::stringstream ss_value;
+    ss_value << value;
+
+    std::string s_value = ss_value.str();
+
+    painter->setPen(QPen(textColor));
+    QPointF coordText(x1, newBoxSecond.topLeft().y() - 5);
+
+    drawText(coordText, painter, ss_value.str());
+
+    changeColor = firstRect;
+    firstRect = secondRect;
+    secondRect = changeColor;
+  }
+
+  qreal penWidth = painter->pen().widthF();
+  const qreal adj = penWidth / 2;
+
+  newBoxSecond = QRectF(boundRect.x(), boundRect.center().y() - gapY/2, boundRect.width(), gapY);
+  QRectF rtAdjusted = newBoxSecond.adjusted(adj, adj, -adj, -adj);
+
+  painter->setBrush(Qt::NoBrush);
+  painter->setPen(pn);
+  painter->drawRect(rtAdjusted);
+
+  //middle-bottom text
+  double centerX = rtAdjusted.center().x();  
+  painter->setPen(QPen(textColor));
+
+  QPointF coordText(centerX, boundRect.topLeft().y() + 1); 
+  drawText(coordText, painter, strUnit);
+
+  painter->restore();
+}
+
+
+
 
