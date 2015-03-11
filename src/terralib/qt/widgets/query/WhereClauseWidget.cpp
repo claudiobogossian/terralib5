@@ -336,12 +336,15 @@ void te::qt::widgets::WhereClauseWidget::onAddWhereClausePushButtonClicked()
   std::string operatorStr = "";
   std::string valueStr = "";
 
+  setCursor(Qt::WaitCursor);
+
   if(m_ui->m_criteriaTabWidget->currentIndex() == 0) // criteria by attribute restriction
   {
     int expId = ++m_count;
 
     if(m_ui->m_restrictValueComboBox->currentText().isEmpty())
     {
+      setCursor(Qt::ArrowCursor);
       QMessageBox::warning(this, tr("Query Builder"), tr("Restrict value not defined."));
       return;
     }
@@ -351,6 +354,7 @@ void te::qt::widgets::WhereClauseWidget::onAddWhereClausePushButtonClicked()
     {
        if(m_ui->m_valueValueComboBox->currentText().isEmpty())
       {
+        setCursor(Qt::ArrowCursor);
         QMessageBox::warning(this, tr("Query Builder"), tr("Value not defined."));
         return;
       }
@@ -360,6 +364,7 @@ void te::qt::widgets::WhereClauseWidget::onAddWhereClausePushButtonClicked()
     {
       if(m_ui->m_valueValueComboBox->currentText().isEmpty())
       {
+        setCursor(Qt::ArrowCursor);
         QMessageBox::warning(this, tr("Query Builder"), tr("Value not defined."));
         return;
       }
@@ -369,6 +374,7 @@ void te::qt::widgets::WhereClauseWidget::onAddWhereClausePushButtonClicked()
 
     if(m_ui->m_OperatorComboBox->currentText().isEmpty())
     {
+      setCursor(Qt::ArrowCursor);
       QMessageBox::warning(this, tr("Query Builder"), tr("Operator not defined."));
       return;
     }
@@ -477,6 +483,7 @@ void te::qt::widgets::WhereClauseWidget::onAddWhereClausePushButtonClicked()
   {
     if(m_ui->m_SpatialOperatorComboBox->currentText().isEmpty())
     {
+      setCursor(Qt::ArrowCursor);
       QMessageBox::warning(this, tr("Query Builder"), tr("Operator not defined."));
       return;
     }
@@ -495,6 +502,7 @@ void te::qt::widgets::WhereClauseWidget::onAddWhereClausePushButtonClicked()
 
     if(!prop)
     {
+      setCursor(Qt::ArrowCursor);
       QMessageBox::warning(this, tr("Query Builder"), tr("Selected layer has no geometry property."));
       return;
     }
@@ -507,6 +515,7 @@ void te::qt::widgets::WhereClauseWidget::onAddWhereClausePushButtonClicked()
 
       if(!selecteds || selecteds->size() == 0)
       {
+        setCursor(Qt::ArrowCursor);
         QMessageBox::warning(this, tr("Query Builder"), tr("Selected layer has no selected geometries."));
         return;
       }
@@ -619,6 +628,8 @@ void te::qt::widgets::WhereClauseWidget::onAddWhereClausePushButtonClicked()
   std::string sql = getWhereString();
 
   m_ui->m_sqlTextEdit->setText(sql.c_str());
+
+  setCursor(Qt::ArrowCursor);
 }
 
 void te::qt::widgets::WhereClauseWidget::onRemoveWhereClausePushButtonClicked()

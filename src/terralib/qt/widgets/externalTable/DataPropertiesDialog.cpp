@@ -32,6 +32,7 @@
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../geometry/GeometryProperty.h"
 #include "../../../maptools/DataSetAdapterLayer.h"
+#include "../../../qt/widgets/utils/ScopedCursor.h"
 #include "../../../se/FeatureTypeStyle.h"
 #include "../../../se/Utils.h"
 #include "DataPropertiesDialog.h"
@@ -86,6 +87,8 @@ te::qt::widgets::DataPropertiesDialog::~DataPropertiesDialog()
 
 void te::qt::widgets::DataPropertiesDialog::onOkPushButtonClicked()
 {
+  te::qt::widgets::ScopedCursor c(Qt::WaitCursor);
+
   static boost::uuids::basic_random_generator<boost::mt19937> gen;
   boost::uuids::uuid u = gen();
   std::string id = boost::uuids::to_string(u);
