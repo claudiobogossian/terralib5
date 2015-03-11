@@ -80,7 +80,9 @@ namespace te
 
           void next();
 
-          void commit();
+        protected:
+
+          void exchange();
 
         private:
 

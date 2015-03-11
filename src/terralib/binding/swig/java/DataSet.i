@@ -100,7 +100,7 @@
  *
  * @return The property character encoding.
  *
- * @throws java.io.IOException It throws an exception if the property at position pos is not a textual property.
+ * @exception java.io.IOException It throws an exception if the property at position pos is not a textual property.
  */
   public";
 
@@ -488,6 +488,8 @@
  *
  * @param colsNames Names of the columns that compose the ObjectId.
  *
+ * @return a vector of ObjectId.
+ *
  * @see br.inpe.terralib5.ObjectId
  */
   public";
@@ -525,6 +527,19 @@
 %ignore te::dt::TemporalRelation;
 %ignore te::dt::BasicRelation;
 %ignore te::dt::StringType;
+
+%javaexception("java.io.IOException") getPropertyCharEncoding {
+  try {
+     $action
+  } catch (te::common::Exception &e) {
+    jclass clazz = jenv->FindClass("java/io/IOException");
+    
+	if(clazz)
+		jenv->ThrowNew(clazz, e.what());
+		
+    return $null;
+   }
+}
 
 %include "terralib/dataaccess/dataset/DataSet.h"
 %include "terralib/datatype/Enums.h"
