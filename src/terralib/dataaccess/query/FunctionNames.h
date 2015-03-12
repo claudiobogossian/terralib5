@@ -85,6 +85,7 @@ namespace te
         static const std::string sm_ST_Intersection;
         static const std::string sm_ST_Intersects;
         static const std::string sm_ST_Length;
+        static const std::string sm_ST_MakePolygon;
         static const std::string sm_ST_NumGeometries;
         static const std::string sm_ST_Overlaps;
         static const std::string sm_ST_Perimeter;

@@ -49,6 +49,7 @@
 #include "../dataaccess/query/ST_Dump.h"
 #include "../dataaccess/query/ST_DumpRings.h"
 #include "../dataaccess/query/ST_Collect.h"
+#include "../dataaccess/query/ST_MakePolygon.h"
 #include "../dataaccess/query/ST_NumGeometries.h"
 #include "../dataaccess/query/ST_Union.h"
 #include "../dataaccess/query/SubSelect.h"
@@ -101,10 +102,11 @@ bool te::vp::LineToPolygonQuery::run()
     }
     else
     {
-      te::da::PropertyName* gName = new te::da::PropertyName(props[i]->getName());
-      te::da::Expression* e_dump = new te::da::ST_Dump(gName);
-      te::da::Field* f_dump = new te::da::Field(*e_dump, " polygon");
-      pol_fields->push_back(f_dump);
+      te::da::PropertyName* polName = new te::da::PropertyName(props[i]->getName());
+      te::da::Expression* e_dump = new te::da::ST_Dump(polName);
+      te::da::Expression* e_makePolygon = new te::da::ST_MakePolygon(e_dump);
+      te::da::Field* f_makePolygon = new te::da::Field(*e_makePolygon, " polygon");
+      pol_fields->push_back(f_makePolygon);
     }
   }
 
@@ -132,45 +134,18 @@ bool te::vp::LineToPolygonQuery::run()
     }
     else
     {
-      te::da::PropertyName* polName = new te::da::PropertyName("polygon");
-      te::da::Expression* e_dumpRings = new te::da::ST_DumpRings(polName);
-      te::da::Expression* e_boundary = new te::da::ST_Boundary(e_dumpRings);
-      te::da::Field* f_boundary = new te::da::Field(*e_boundary, " linestring");
-      line_fields->push_back(f_boundary);
+      te::da::PropertyName* gName = new te::da::PropertyName("polygon");
+      te::da::Expression* e_collect = new te::da::ST_Collect(gName);
+      te::da::Field* f_collect = new te::da::Field(*e_collect, " result");
+      line_fields->push_back(f_collect);
     }
   }
 
-  te::da::FromItem* fromItemLine = new te::da::SubSelect(subSelect_Pol);
-  te::da::From* fromLine = new te::da::From;
-  fromLine->push_back(fromItemLine);
-
-  te::da::Select select_Line(line_fields, fromLine);
-  te::da::SubSelect subSelect_Line(select_Line, "line");
-
-// Collect the lines by register
-  te::da::Fields* union_fields = new te::da::Fields;
-  for(std::size_t i = 0; i < props.size(); ++i)
-  {
-    if(props[i]->getType() != te::dt::GEOMETRY_TYPE)
-    {
-      te::da::PropertyName* pName = new te::da::PropertyName(props[i]->getName());
-      te::da::Field* field = new te::da::Field(pName);
-      union_fields->push_back(field);
-    }
-    else
-    {
-      te::da::PropertyName* lineName = new te::da::PropertyName("linestring");
-      te::da::Expression* e_union = new te::da::ST_Collect(lineName);
-      te::da::Field* f_union = new te::da::Field(*e_union, props[i]->getName());
-      union_fields->push_back(f_union);
-    }
-  }
-
-  te::da::FromItem* fromItem = new te::da::SubSelect(subSelect_Line);
+  te::da::FromItem* fromItem = new te::da::SubSelect(subSelect_Pol);
   te::da::From* from = new te::da::From;
   from->push_back(fromItem);
 
-  te::da::Select select(union_fields, from);
+  te::da::Select select(line_fields, from);
 
 // Group by
   te::da::GroupBy* groupBy = new te::da::GroupBy();
