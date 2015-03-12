@@ -78,12 +78,12 @@ te::qt::widgets::TimeSliderWidget::TimeSliderWidget(te::qt::widgets::MapDisplay*
   setMouseTracking(true);
   setAcceptDrops(true);
 
-  QColor wc(50, 50, 200, 80);
-  QBrush wbrush(wc);
-  QPalette wpalette(wbrush, wbrush, wbrush, wbrush, wbrush, wbrush, wbrush, wbrush, wbrush);
-  setPalette(wpalette);
-  setAutoFillBackground(true);
-  setBackgroundRole(QPalette::Window);
+  //QColor wc(50, 50, 200, 80);
+  //QBrush wbrush(wc);
+  //QPalette wpalette(wbrush, wbrush, wbrush, wbrush, wbrush, wbrush, wbrush, wbrush, wbrush);
+  //setPalette(wpalette);
+  //setAutoFillBackground(true);
+  //setBackgroundRole(QPalette::Window);
 
   m_spd = new SliderPropertiesDialog(this);
 

@@ -18,9 +18,9 @@
  */
 
 /*!
-  \file terralib/qt/widgets/st/TrajectoryWizard.cpp
+  \file terralib/qt/widgets/st/ObservationWizard.cpp
 
-  \brief  A wizard used to generate a new Trajectorylayer.
+  \brief  A wizard used to generate a new Observationlayer.
 */
 
 //Terralib
@@ -31,37 +31,37 @@
 #include "../../../qt/widgets/datasource/selector/DataSourceSelectorWizardPage.h"
 #include "../../../qt/widgets/help/HelpPushButton.h"
 #include "../../../se/Utils.h"
-#include "../../../st/core/trajectory/TrajectoryDataSetInfo.h"
-#include "TrajectoryPropertiesWizardPage.h"
-#include "TrajectoryWizard.h"
-#include "ui_TrajectoryWizardForm.h"
+#include "../../../st/core/observation/ObservationDataSetInfo.h"
+#include "ObservationPropertiesWizardPage.h"
+#include "ObservationWizard.h"
+#include "ui_ObservationWizardForm.h"
 
 //Boost
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
-te::st::TrajectoryDataSetLayerPtr generateLayer(te::da::DataSetTypePtr dataType, te::st::TrajectoryDataSetInfo* trajInfo, te::da::DataSourceInfoPtr dataInfo, te::map::AbstractLayer* parent = 0)
+te::st::ObservationDataSetLayerPtr generateLayer(te::da::DataSetTypePtr dataType, te::st::ObservationDataSetInfo* obsInfo, te::da::DataSourceInfoPtr dataInfo, te::map::AbstractLayer* parent = 0)
 {
   static boost::uuids::basic_random_generator<boost::mt19937> gen;
   boost::uuids::uuid u = gen();
   std::string id = boost::uuids::to_string(u);
   std::string title = dataType->getTitle().empty() ? dataType->getName() : dataType->getTitle();
 
-  te::st::TrajectoryDataSetLayerPtr trajectoryLayer = new te::st::TrajectoryDataSetLayer(id, title, parent, trajInfo);
-  trajectoryLayer->setVisibility(te::map::NOT_VISIBLE);
-  trajectoryLayer->setRendererType("ABSTRACT_LAYER_RENDERER");
+  te::st::ObservationDataSetLayerPtr observationLayer = new te::st::ObservationDataSetLayer(id, title, parent, obsInfo);
+  observationLayer->setVisibility(te::map::NOT_VISIBLE);
+  observationLayer->setRendererType("ABSTRACT_LAYER_RENDERER");
 
   te::gm::GeometryProperty* gp = te::da::GetFirstGeomProperty(dataType.get());
   std::auto_ptr<te::gm::Envelope> mbr(te::da::GetExtent(dataType->getName(), gp->getName(), dataInfo->getId()));
-  trajectoryLayer->setSRID(gp->getSRID());
-  trajectoryLayer->setExtent(*mbr);
-  trajectoryLayer->setStyle(te::se::CreateFeatureTypeStyle(gp->getGeometryType()));
-  return trajectoryLayer;
+  observationLayer->setSRID(gp->getSRID());
+  observationLayer->setExtent(*mbr);
+  observationLayer->setStyle(te::se::CreateFeatureTypeStyle(gp->getGeometryType()));
+  return observationLayer;
 }
 
-te::qt::widgets::TrajectoryWizard::TrajectoryWizard(QWidget* parent, Qt::WindowFlags f)
+te::qt::widgets::ObservationWizard::ObservationWizard(QWidget* parent, Qt::WindowFlags f)
   : QWizard(parent, f),
-    m_ui(new Ui::TrajectoryWizardForm)
+    m_ui(new Ui::ObservationWizardForm)
 {
   m_ui->setupUi(this);
 
@@ -79,11 +79,11 @@ te::qt::widgets::TrajectoryWizard::TrajectoryWizard(QWidget* parent, Qt::WindowF
   m_datasetSelectorPage->setSubTitle(tr("Please, select the datasets you want to transfer to another data source"));
   setPage(PAGE_DATASET_SELECTION, m_datasetSelectorPage.get());
 
-  //Trajectory Properties
-  m_PropWidgetPage.reset(new TrajectoryPropertiesWizardPage(this));
-  m_PropWidgetPage->setTitle(tr("Trajectory Properties"));
-  m_PropWidgetPage->setSubTitle(tr("Please, adjust the temporal properties of the new Trajectory Layer"));
-  setPage(PAGE_TRAJECTORY_PROPERTIES_SELECTION, m_PropWidgetPage.get());
+  //Observation Properties
+  m_PropWidgetPage.reset(new ObservationPropertiesWizardPage(this));
+  m_PropWidgetPage->setTitle(tr("Observation Properties"));
+  m_PropWidgetPage->setSubTitle(tr("Please, adjust the temporal properties of the new Observation Layer"));
+  setPage(PAGE_OBSERVATION_PROPERTIES_SELECTION, m_PropWidgetPage.get());
 
   // connect signals and slots
   connect(this->button(QWizard::NextButton), SIGNAL(pressed()), this, SLOT(next()));
@@ -95,11 +95,11 @@ te::qt::widgets::TrajectoryWizard::TrajectoryWizard(QWidget* parent, Qt::WindowF
   //helpButton->setPageReference("widgets/exchanger_all/exchanger_all.html");
 }
 
-te::qt::widgets::TrajectoryWizard::~TrajectoryWizard()
+te::qt::widgets::ObservationWizard::~ObservationWizard()
 {
 }
 
-te::da::DataSourceInfoPtr te::qt::widgets::TrajectoryWizard::getDataSource() const
+te::da::DataSourceInfoPtr te::qt::widgets::ObservationWizard::getDataSource() const
 {
   std::list<te::da::DataSourceInfoPtr> datasources = m_datasourceSelectorPage->getSelectorWidget()->getSelecteds();
 
@@ -109,17 +109,17 @@ te::da::DataSourceInfoPtr te::qt::widgets::TrajectoryWizard::getDataSource() con
     return datasources.front();
 }
 
-std::list<te::st::TrajectoryDataSetLayerPtr> te::qt::widgets::TrajectoryWizard::getTrajectoryLayers()
+std::list<te::st::ObservationDataSetLayerPtr> te::qt::widgets::ObservationWizard::getObservationLayers()
 {
-  return m_trajectoryLayers;
+  return m_observationLayers;
 }
 
-void te::qt::widgets::TrajectoryWizard::back()
+void te::qt::widgets::ObservationWizard::back()
 {
   QWizard::back();
 }
 
-void te::qt::widgets::TrajectoryWizard::next()
+void te::qt::widgets::ObservationWizard::next()
 {
   if(currentId() == PAGE_DATASOURCE_SELECTION)
   {
@@ -132,7 +132,7 @@ void te::qt::widgets::TrajectoryWizard::next()
   QWizard::next();
 }
 
-void te::qt::widgets::TrajectoryWizard::finish()
+void te::qt::widgets::ObservationWizard::finish()
 {
   QApplication::setOverrideCursor(Qt::WaitCursor);
   te::da::DataSourceInfoPtr dataInfo = getDataSource();
@@ -162,30 +162,24 @@ void te::qt::widgets::TrajectoryWizard::finish()
 
   try
   {
-
-    std::list<te::st::TrajectoryDataSetInfo*> infos = m_PropWidgetPage->getInfo(dataInfo);
-    std::list<te::st::TrajectoryDataSetInfo*>::const_iterator infosBegin = infos.begin();
-    std::list<te::st::TrajectoryDataSetInfo*>::const_iterator infosEnd = infos.end();
+    std::list<te::st::ObservationDataSetInfo*> infos = m_PropWidgetPage->getInfo(dataInfo);
+    std::list<te::st::ObservationDataSetInfo*>::const_iterator infosBegin = infos.begin();
+    std::list<te::st::ObservationDataSetInfo*>::const_iterator infosEnd = infos.end();
     std::list<te::da::DataSetTypePtr>::const_iterator typesItBegin = dataTypes.begin();
 
     if (infos.size() == 1)
     {
-      m_trajectoryLayers.push_back(generateLayer(*typesItBegin, *infosBegin, dataInfo));
+      m_observationLayers.push_back(generateLayer(*typesItBegin, *infosBegin, dataInfo));
     }
     else
     {
-
       static boost::uuids::basic_random_generator<boost::mt19937> gen;
       boost::uuids::uuid u = gen();
       std::string id = boost::uuids::to_string(u);
 
-      te::st::TrajectoryDataSetLayerPtr testParent(new te::st::TrajectoryDataSetLayer());
-      testParent->setId(id);
-
-      m_trajectoryLayers.push_back(testParent);
       while(infosBegin != infosEnd)
       {
-        m_trajectoryLayers.push_back(generateLayer(*typesItBegin, *infosBegin, dataInfo, testParent.get()));
+        m_observationLayers.push_back(generateLayer(*typesItBegin, *infosBegin, dataInfo));
         infosBegin++;
         typesItBegin++;
       }

@@ -18,13 +18,13 @@
  */
 
 /*! 
-  \file terralib/qt/widgets/st/TrajectoryPropertiesWIzardPage.h
+  \file terralib/qt/widgets/st/ObservationPropertiesWIzardPage.h
 
   \brief  A wizardPage used to configure the general properties of a new trajectory layer.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_INTERNAL_TRAJECOTORYPROPERTIESWIZARDPAGE_H
-#define __TERRALIB_QT_WIDGETS_INTERNAL_TRAJECOTORYPROPERTIESWIZARDPAGE_H
+#ifndef __TERRALIB_QT_WIDGETS_INTERNAL_OBSERVATIONPROPERTIESWIZARDPAGE_H
+#define __TERRALIB_QT_WIDGETS_INTERNAL_OBSERVATIONPROPERTIESWIZARDPAGE_H
 
 // TerraLib
 #include "../../../maptools/AbstractLayer.h"
@@ -39,43 +39,41 @@
 
 namespace te
 {
-  namespace st { class TrajectoryDataSetInfo; }
+  namespace st { class ObservationDataSetInfo; }
 
   namespace qt
   {
     namespace widgets
     {
     //Forward declarations
-    class TemporalPropertiesWidget;
-    class TrajectoryPropertiesWidget;
+    class ObservationPropertiesWidget;
 
     /*!
-        \class TrajectoryPropertiesWizardPage
+        \class ObservationPropertiesWizardPage
 
         \brief A WizardPage used to configure the general properties of a new spatio-temporal layer.
       */
-      class TEQTWIDGETSEXPORT TrajectoryPropertiesWizardPage : public QWizardPage
+      class TEQTWIDGETSEXPORT ObservationPropertiesWizardPage : public QWizardPage
       {
       Q_OBJECT
 
         public:
-          TrajectoryPropertiesWizardPage(QWidget* parent = 0);
+          ObservationPropertiesWizardPage(QWidget* parent = 0);
 
-          ~TrajectoryPropertiesWizardPage();
+          ~ObservationPropertiesWizardPage();
 
-          std::list<te::st::TrajectoryDataSetInfo*> getInfo(const te::da::DataSourceInfoPtr dsInfo);
+          std::list<te::st::ObservationDataSetInfo*> getInfo(const te::da::DataSourceInfoPtr dsInfo);
 
           bool isComplete() const;
 
           void set(const std::list<te::da::DataSetTypePtr> dataTypes);
 
         private:
-          std::list<te::da::DataSetTypePtr>          m_dataTypes;      //!< The list of datasettypes used to configure the trajectory(ies)
-          std::auto_ptr<TrajectoryPropertiesWidget>  m_propWidget;     //!< The widget used to configure the unique TrajectoryLayer's properties
-          std::auto_ptr<TemporalPropertiesWidget>    m_genPropWidget;  //!< The widget used to configure the general TrajectoryLayer's properties
+          std::list<te::da::DataSetTypePtr>           m_dataTypes;      //!< The list of datasettypes used to configure the trajectory(ies)
+          std::auto_ptr<ObservationPropertiesWidget>  m_propWidget;     //!< The widget used to configure the unique ObservationLayer's properties
       };
     } // end namespace widgets
   }   // end namespace qt
 }     // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_INTERNAL_TRAJECOTORYPROPERTIESWIZARDPAGE_H
+#endif  // __TERRALIB_QT_WIDGETS_INTERNAL_OBSERVATIONPROPERTIESWIZARDPAGE_H

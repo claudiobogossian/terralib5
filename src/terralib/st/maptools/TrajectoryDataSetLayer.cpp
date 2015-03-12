@@ -48,6 +48,11 @@
 
 const std::string te::st::TrajectoryDataSetLayer::sm_type("TRAJECTORYDATASETLAYER");
 
+te::st::TrajectoryDataSetLayer::TrajectoryDataSetLayer(AbstractLayer* parent)
+  : AbstractSTDataSetLayer(parent)
+{
+}
+
 te::st::TrajectoryDataSetLayer::TrajectoryDataSetLayer(AbstractLayer* parent, TrajectoryDataSetInfo* info)
   : AbstractSTDataSetLayer(parent),
     m_info(info)
