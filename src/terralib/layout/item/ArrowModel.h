@@ -65,29 +65,6 @@ namespace te
         */ 
         virtual ~ArrowModel();
 
-        /*!
-          \brief Reimplemented from ItemModelObservable
-         */
-        virtual void draw( ContextItem context );
-
-      protected:
-
-        /*!
-          \brief Drawing method of a Arrow
-
-          \param canvas
-          \param utils
-         */
-        virtual void drawArrow(te::map::Canvas* canvas, Utils* utils);
-
-        /*!
-          \brief Drawing method of a Head Arrow
-
-          \param canvas
-          \param utils
-          \param box
-         */
-        virtual void drawHeadArrow(te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box);
     };
   }
 }

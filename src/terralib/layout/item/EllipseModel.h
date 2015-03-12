@@ -61,21 +61,6 @@ namespace te
           \brief Destructor
         */ 
         virtual ~EllipseModel();
-
-        /*!
-          \brief Reimplemented from ItemModelObservable
-         */
-        virtual void draw( ContextItem context );
-
-      protected:
-
-        /*!
-          \brief Drawing method of a ellipse
-
-          \param canvas
-          \param utils
-         */
-        virtual void drawEllipse(te::map::Canvas* canvas, Utils* utils);
     };
   }
 }

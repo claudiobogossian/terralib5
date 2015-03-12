@@ -30,7 +30,9 @@
 
 // TerraLib
 #include "../core/pattern/mvc/ItemModelObservable.h"
-#include "../core/ContextItem.h"
+
+// STL
+#include <vector>
 
 namespace te
 {
@@ -42,15 +44,23 @@ namespace te
       public:
 
         LineModel();
+
         virtual ~LineModel();
+
 		    virtual void setCoords(std::vector<te::gm::Point*> coords);
-        virtual void draw( ContextItem context );
-        virtual void drawCoords( te::map::Canvas* canvas, Utils* utils );
+
+        virtual std::vector<te::gm::Point*> getCoords();
+
+        virtual te::color::RGBAColor getLineColor();
+
+        virtual te::layout::Properties* getProperties() const;
+
+        virtual void updateProperties(te::layout::Properties* properties);
 			 
 	    protected:
 		
 		    std::vector<te::gm::Point*> m_coords;
-		    ContextItem m_context;
+        te::color::RGBAColor			  m_lineColor; //!< line color
     };
   }
 }

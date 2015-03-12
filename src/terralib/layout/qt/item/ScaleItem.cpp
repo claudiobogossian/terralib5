@@ -46,28 +46,12 @@
 te::layout::ScaleItem::ScaleItem( ItemController* controller, Observable* o ) :
   ObjectItem(controller, o)
 {  
-  this->setFlags(QGraphicsItem::ItemIsMovable
-    | QGraphicsItem::ItemIsSelectable
-    | QGraphicsItem::ItemSendsGeometryChanges
-    | QGraphicsItem::ItemIsFocusable);
-
   m_nameClass = std::string(this->metaObject()->className());
-
-  QRectF rect(0, 0, m_model->getBox().getWidth(), m_model->getBox().getHeight());
-  setRect(rect);
 }
 
 te::layout::ScaleItem::~ScaleItem()
 {
 
-}
-
-void te::layout::ScaleItem::updateObserver( ContextItem context )
-{
-  if(!m_model)
-    return;
-
-  update();
 }
 
 void te::layout::ScaleItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )

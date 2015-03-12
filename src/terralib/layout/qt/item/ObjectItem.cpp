@@ -46,14 +46,7 @@
 te::layout::ObjectItem::ObjectItem( ItemController* controller, Observable* o ) :
   ParentItem(controller, o)
 {
-  QGraphicsItem* item = this;
-  m_nameClass = std::string(this->metaObject()->className());
-  Context::getInstance().getScene()->insertItem((ItemObserver*)item);
 
-  //If enabled is true, this item will accept hover events
-  setAcceptHoverEvents(true);
-
-  m_boxCopy = m_model->getBox();
 }
 
 te::layout::ObjectItem::~ObjectItem()

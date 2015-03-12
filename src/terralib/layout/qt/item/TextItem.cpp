@@ -60,12 +60,7 @@ te::layout::TextItem::TextItem( ItemController* controller, Observable* o ) :
   m_document(0),
   m_editable(false),
   m_move(false)
-{  
-  this->setFlags(QGraphicsItem::ItemIsMovable
-    | QGraphicsItem::ItemIsSelectable
-    | QGraphicsItem::ItemSendsGeometryChanges
-    | QGraphicsItem::ItemIsFocusable);
-  
+{    
   m_nameClass = std::string(this->metaObject()->className());
   
   m_document = new QTextDocument(this);

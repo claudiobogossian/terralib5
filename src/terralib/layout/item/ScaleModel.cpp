@@ -67,11 +67,6 @@ te::layout::ScaleModel::~ScaleModel()
   }
 }
 
-void te::layout::ScaleModel::draw( ContextItem context )
-{
-
-}
-
 te::layout::Properties* te::layout::ScaleModel::getProperties() const
 {
   ItemModelObservable::getProperties();

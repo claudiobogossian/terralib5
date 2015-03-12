@@ -34,6 +34,7 @@
 #include "../../../qt/widgets/Utils.h"
 #include "../../../geometry/Envelope.h"
 #include "../../../common/STLUtils.h"
+#include "../../item/PolygonModel.h"
 
 // Qt
 #include <QPointF>
@@ -41,18 +42,9 @@
 #include <QStyleOptionGraphicsItem>
 #include <QObject>
 
-//#include "../src/gui/painting/qpainter.h"
-//#include "../src/gui/kernel/qevent.h"
-//#include "../src/gui/graphicsview/qgraphicsview.h"
-
 te::layout::PolygonItem::PolygonItem( ItemController* controller, Observable* o ) :
   LineItem(controller, o)
-{
-  this->setFlags(QGraphicsItem::ItemIsMovable
-    | QGraphicsItem::ItemIsSelectable
-    | QGraphicsItem::ItemSendsGeometryChanges
-    | QGraphicsItem::ItemIsFocusable);
-  
+{ 
   m_nameClass = std::string(this->metaObject()->className());
 }
 
@@ -61,45 +53,52 @@ te::layout::PolygonItem::~PolygonItem()
 
 }
 
-void te::layout::PolygonItem::updateObserver( ContextItem context )
+void te::layout::PolygonItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
 {
-  if(!m_model)
-    return;
-
-  if ( context.isChangePos() )
+  Q_UNUSED( option );
+  Q_UNUSED( widget );
+  if ( !painter )
   {
-    QPointF p ( context.getPos().getX(), context.getPos().getY() );
-    setPos(p);
-  }
-  
-  te::color::RGBAColor** rgba = context.getPixmap();  
-
-  if(!rgba)
     return;
-
-  Utils* utils = context.getUtils();
-
-  if(!utils)
-    return;
-
-  te::gm::Envelope box = utils->viewportBox(m_model->getBox());
-
-  if(!box.isValid())
-    return;
-
-  QPixmap pixmp;
-  QImage* img = 0;
-  
-  if(rgba)
-  {
-    img = te::qt::widgets::GetImage(rgba, box.getWidth(), box.getHeight());
-    pixmp = QPixmap::fromImage(*img);
   }
 
-  te::common::Free(rgba, box.getHeight());
-  if(img)
-    delete img;
-  
-  setPixmap(pixmp);
-  update();
+  drawBackground(painter);
+
+  drawPolygon(painter);
+
+  drawBorder(painter);
+
+  //Draw Selection
+  if (option->state & QStyle::State_Selected)
+  {
+    drawSelection(painter);
+  }
 }
+
+void te::layout::PolygonItem::drawPolygon( QPainter * painter )
+{
+  LineModel* model = dynamic_cast<LineModel*>(m_model);
+  if(!model)
+  {
+    return;
+  }
+
+  if(m_poly.empty())
+    return;
+
+  te::color::RGBAColor clrLne = model->getLineColor();
+
+  QColor cpen;
+  cpen.setRed(clrLne.getRed());
+  cpen.setGreen(clrLne.getGreen());
+  cpen.setBlue(clrLne.getBlue());
+  cpen.setAlpha(clrLne.getAlpha());
+
+  QPen pn(cpen, 0, Qt::SolidLine);
+  painter->setPen(pn);
+
+  painter->save();
+  painter->drawPolygon(m_poly);
+  painter->restore();
+}
+

@@ -73,9 +73,7 @@ namespace te
           \brief Destructor
         */ 
         virtual ~ScaleModel();
-
-        virtual void draw( ContextItem context );
-
+        
         virtual Properties* getProperties() const;
         
         virtual void updateProperties(te::layout::Properties* properties);

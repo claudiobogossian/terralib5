@@ -60,28 +60,28 @@ namespace te
         virtual ~EnumScaleType();
 
         /*!
-          \brief Returns value that represents json type belonging to enumeration.
+          \brief Returns value that represents none type belonging to enumeration.
 		  
 		      \return enum value  	  
         */
         virtual EnumType* getNoneType() const;
         
         /*!
-          \brief Returns value that represents json type belonging to enumeration.
+          \brief Returns value that represents alternating scale bar type belonging to enumeration.
 		  
 		      \return enum value  	  
         */
         virtual EnumType* getAlternatingScaleBarType() const;
 
         /*!
-          \brief Returns value that represents none type belonging to enumeration.
+          \brief Returns value that represents double alternating scale bar type belonging to enumeration.
 		  
 		      \return enum value  	  
         */
         virtual EnumType* getDoubleAlternatingScaleBarType() const;
 
         /*!
-          \brief Returns value that represents none type belonging to enumeration.
+          \brief Returns value that represents hollow scale bar type belonging to enumeration.
 		  
 		      \return enum value  	  
         */

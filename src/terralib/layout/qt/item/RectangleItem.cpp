@@ -34,15 +34,11 @@
 #include "../../../qt/widgets/Utils.h"
 #include "../../../geometry/Envelope.h"
 #include "../../../common/STLUtils.h"
+#include "../../item/RectangleModel.h"
 
 te::layout::RectangleItem::RectangleItem( ItemController* controller, Observable* o ) :
   ObjectItem(controller, o)
-{
-  this->setFlags(QGraphicsItem::ItemIsMovable
-    | QGraphicsItem::ItemIsSelectable
-    | QGraphicsItem::ItemSendsGeometryChanges
-    | QGraphicsItem::ItemIsFocusable);
-  
+{  
   m_nameClass = std::string(this->metaObject()->className());
 }
 
@@ -51,39 +47,55 @@ te::layout::RectangleItem::~RectangleItem()
 
 }
 
-void te::layout::RectangleItem::updateObserver( ContextItem context )
+void te::layout::RectangleItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
 {
-  if(!m_model)
-    return;
-
-  te::color::RGBAColor** rgba = context.getPixmap();  
-
-  if(!rgba)
-    return;
-
-  Utils* utils = context.getUtils();
-
-  if(!utils)
-    return;
-
-  te::gm::Envelope box = utils->viewportBox(m_model->getBox());
-
-  if(!box.isValid())
-    return;
-
-  QPixmap pixmp;
-  QImage* img = 0;
-  
-  if(rgba)
+  Q_UNUSED( option );
+  Q_UNUSED( widget );
+  if ( !painter )
   {
-    img = te::qt::widgets::GetImage(rgba, box.getWidth(), box.getHeight());
-    pixmp = QPixmap::fromImage(*img);
+    return;
   }
 
-  te::common::Free(rgba, box.getHeight());
-  if(img)
-    delete img;
-  
-  setPixmap(pixmp);
-  update();
+  drawBackground(painter);
+
+  drawRectangle(painter);
+
+  drawBorder(painter);
+
+  //Draw Selection
+  if (option->state & QStyle::State_Selected)
+  {
+    drawSelection(painter);
+  }
+}
+
+void te::layout::RectangleItem::drawRectangle( QPainter * painter )
+{
+  RectangleModel* model = dynamic_cast<RectangleModel*>(m_model);
+  if(!model)
+  {
+    return;
+  }
+
+  painter->save();
+
+  QPainterPath rect_path;
+  rect_path.addRect(boundingRect());
+
+  QColor cpen(0,0,0);
+  QPen pn(cpen, 0, Qt::SolidLine);
+  painter->setPen(pn);
+
+  te::color::RGBAColor clrBack = model->getBackgroundColor();
+
+  QColor cbrush;
+  cbrush.setRed(clrBack.getRed());
+  cbrush.setGreen(clrBack.getGreen());
+  cbrush.setBlue(clrBack.getBlue());
+  cbrush.setAlpha(clrBack.getAlpha());
+
+  painter->setBrush(cbrush);
+  painter->drawPath(rect_path);
+
+  painter->restore();
 }

@@ -41,6 +41,8 @@ te::layout::EllipseModel::EllipseModel()
   m_type = Enums::getInstance().getEnumObjectType()->getEllipseItem();
 
   m_box = te::gm::Envelope(0., 0., 22., 20.);
+
+  m_border = false;
 }
 
 te::layout::EllipseModel::~EllipseModel()
@@ -48,59 +50,3 @@ te::layout::EllipseModel::~EllipseModel()
 
 }
 
-void te::layout::EllipseModel::draw( ContextItem context )
-{
-  te::color::RGBAColor** pixmap = 0;
-  
-  te::map::Canvas* canvas = context.getCanvas();
-  Utils* utils = context.getUtils();
-
-  if((!canvas) || (!utils))
-    return;
-
-  if(context.isResizeCanvas())
-    utils->configCanvas(m_box);
-  
-  drawBackground(context);
-  
-  drawEllipse(canvas, utils);
-    
-  if(context.isResizeCanvas())
-    pixmap = utils->getImageW(m_box);
-  
-  context.setPixmap(pixmap);
-  notifyAll(context);
-}
-
-void te::layout::EllipseModel::drawEllipse( te::map::Canvas* canvas, Utils* utils)
-{
-    double rx = (m_box.m_urx - m_box.m_llx) / 2.;
-    double ry = (m_box.m_ury - m_box.m_lly) / 2.;
-    double cx = (m_box.m_urx + m_box.m_llx) / 2.;
-    double cy = (m_box.m_ury + m_box.m_lly) / 2.;
-
-    double lastX = m_box.m_llx;
-    double lastY = m_box.m_lly;
-
-    double x = 0;
-    double y = 0;
-    double angle = 0;
-
-    for(int i = 0 ; i < 360 ; ++i)
-    {
-      angle = i;
-      x = cx + std::cos(angle) * rx;
-      y = cy + std::sin(angle) * ry;
-
-      if (angle > 0) 
-      {
-        te::gm::Envelope box(lastX, lastY, x, y);
-        te::gm::LinearRing* line = utils->createSimpleLine(box);
-        utils->drawLineW(line);
-        if(line) delete line;        
-      }
-
-      lastX = x;
-      lastY = y;
-    }
-}

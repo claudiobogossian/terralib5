@@ -40,9 +40,6 @@
 te::layout::PolygonModel::PolygonModel()
 {
   m_type = Enums::getInstance().getEnumObjectType()->getPolygonItem();
-
-  m_borderColor = te::color::RGBAColor(255, 255, 255, 0);
-  m_box = te::gm::Envelope(0., 0., 20., 20.);
 }
 
 te::layout::PolygonModel::~PolygonModel()
@@ -50,83 +47,3 @@ te::layout::PolygonModel::~PolygonModel()
 
 }
 
-void te::layout::PolygonModel::draw( ContextItem context )
-{
-  te::color::RGBAColor** pixmap = 0;
-  m_context = context;
-  
-  te::map::Canvas* canvas = context.getCanvas();
-  Utils* utils = context.getUtils();
-    
-  if((!canvas) || (!utils))
-    return;
-
-  if(context.isResizeCanvas())
-    utils->configCanvas(m_box);
-  
-  drawBackground(context);
-  drawCoords(canvas, utils);
-
- if(context.isResizeCanvas())
-  pixmap = utils->getImageW(m_box);
-    
- context.setPixmap(pixmap);
- notifyAll(context);
-}
-
-void te::layout::PolygonModel::setCoords( std::vector<te::gm::Point*> coords )
-{
-  m_coords = coords;
-  te::gm::Point* p = new te::gm::Point(m_coords[0]->getX(), m_coords[0]->getY());
-  m_coords.push_back(p);
-
-  int sizeMCoords = 0;
-  sizeMCoords = m_coords.size();
-
-  te::gm::LinearRing *lineOfPoints = new te::gm::LinearRing(sizeMCoords, te::gm::LineStringType);
-  
-  for(int i = 0; i < sizeMCoords; ++i)
-  {
-    lineOfPoints->setPointN( i, te::gm::Point(m_coords[i]->getX(), m_coords[i]->getY())); 
-  }
-  
-  const te::gm::Envelope *returnBox = lineOfPoints->getMBR();
-  double x1 = 0;
-  double y1 = 0;
-  double x2 = 0;
-  double y2 = 0;
-  x1 = returnBox->getLowerLeftX();
-  y1 = returnBox->getLowerLeftY();
-  x2 = returnBox->getUpperRightX();
-  y2 = returnBox->getUpperRightY();
-
-  m_box = te::gm::Envelope (x1-1, y1-1, x2+1, y2+1);
-
-  if (lineOfPoints)
-  {
-    delete lineOfPoints;
-    lineOfPoints = 0;
-  }  
-}
-
-void te::layout::PolygonModel::drawCoords( te::map::Canvas* canvas, Utils* utils )
-{
-  if (m_coords.empty())
-    return;
-
-  te::gm::LinearRing *lineOfPoints = new te::gm::LinearRing(m_coords.size(), te::gm::LineStringType);
-  
-  for (unsigned int i = 0; m_coords.size() > i; ++i)
-  {
-    lineOfPoints->setPointN( i, te::gm::Point( m_coords[i]->getX(), m_coords[i]->getY() ) );   
-  }
-
-  canvas->setLineColor(te::color::RGBAColor(0, 0, 0, 255));
-  canvas->draw(lineOfPoints);
-
-  if (lineOfPoints)
-  {
-    delete lineOfPoints;
-    lineOfPoints = 0;
-  }
-}

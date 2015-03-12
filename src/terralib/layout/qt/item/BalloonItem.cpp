@@ -67,55 +67,13 @@ te::layout::BalloonItem::BalloonItem( ItemController* controller, Observable* o 
     m_initialRect(0),
     m_boundDeltaX(0),
     m_boundDeltaY(0)
-{
-  this->setFlags(QGraphicsItem::ItemIsMovable
-    | QGraphicsItem::ItemIsSelectable
-    | QGraphicsItem::ItemSendsGeometryChanges
-    | QGraphicsItem::ItemIsFocusable);
-      
+{      
   m_nameClass = std::string(this->metaObject()->className());
 }
 
 te::layout::BalloonItem::~BalloonItem()
 {
 
-}
-
-void te::layout::BalloonItem::updateObserver( ContextItem context )
-{
-  if(!m_model)
-    return;
-
-  te::color::RGBAColor** rgba = context.getPixmap();  
-
-  if(!rgba)
-    return;
-
-  Utils* utils = context.getUtils();
-
-  if(!utils)
-    return;
-
-  te::gm::Envelope box = utils->viewportBox(m_model->getBox());
-
-  if(!box.isValid())
-    return;
-
-  QPixmap pixmp;
-  QImage* img = 0;
-  
-  if(rgba)
-  {
-    img = te::qt::widgets::GetImage(rgba, box.getWidth(), box.getHeight());
-    pixmp = QPixmap::fromImage(*img);
-  }
-
-  te::common::Free(rgba, box.getHeight());
-  if(img)
-    delete img;
-  
-  setPixmap(pixmp);
-  update();       
 }
 
 void te::layout::BalloonItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /* = 0 */ )

@@ -90,12 +90,7 @@ te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
   m_wMargin(0),
   m_hMargin(0),
   m_layer(0)
-{
-  this->setFlags(QGraphicsItem::ItemIsMovable
-    | QGraphicsItem::ItemIsSelectable
-    | QGraphicsItem::ItemSendsGeometryChanges
-    | QGraphicsItem::ItemIsFocusable);
-    
+{    
   m_nameClass = std::string(this->metaObject()->className());
   
   Utils* utils = Context::getInstance().getUtils();

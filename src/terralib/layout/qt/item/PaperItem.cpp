@@ -41,6 +41,9 @@
 te::layout::PaperItem::PaperItem( ItemController* controller, Observable* o ) :
   ObjectItem(controller, o)
 {  
+
+  this->setFlags(QGraphicsItem::ItemSendsGeometryChanges);
+
   m_canChangeGraphicOrder = false;
 
   m_nameClass = std::string(this->metaObject()->className());

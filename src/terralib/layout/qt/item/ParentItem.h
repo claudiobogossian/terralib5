@@ -58,6 +58,8 @@
 #include "../../../qt/widgets/Utils.h"
 #include "../../../geometry/Envelope.h"
 #include "../../../common/STLUtils.h"
+#include "../../core/ContextItem.h"
+#include "../../../geometry/Coord2D.h"
 
 // STL
 
@@ -101,7 +103,7 @@ namespace te
         /*!
           \brief Reimplemented from ItemObserver
          */
-        virtual void updateObserver(ContextItem context) = 0;
+        virtual void updateObserver(te::layout::ContextItem context);
 
         /*!
           \brief Reimplemented from ItemObserver
@@ -222,7 +224,64 @@ namespace te
     };
 
     template <class T>
-    void te::layout::ParentItem<T>::drawText( QPointF point, QPainter* painter, std::string text )
+    inline te::layout::ParentItem<T>::ParentItem( ItemController* controller, Observable* o, bool inverted ) :
+      T(0),
+      ItemObserver(controller, o),
+      m_mousePressedCtrl(false),
+      m_hoverAboveItem(false),
+      m_toResizeItem(false),
+      m_enumSides(TPNoneSide)
+    {
+
+      m_invertedMatrix = inverted;
+
+      QGraphicsItem* item = this;
+      Context::getInstance().getScene()->insertItem((ItemObserver*)item);
+
+      this->setFlags(QGraphicsItem::ItemIsMovable
+        | QGraphicsItem::ItemIsSelectable
+        | QGraphicsItem::ItemSendsGeometryChanges
+        | QGraphicsItem::ItemIsFocusable);
+
+      //If enabled is true, this item will accept hover events
+      setAcceptHoverEvents(true);
+
+      m_boxCopy = m_model->getBox();
+
+      QRectF rect(0, 0, m_model->getBox().getWidth(), m_model->getBox().getHeight());
+      setRect(rect);
+    }
+
+    template <class T>
+    inline te::layout::ParentItem<T>::~ParentItem()
+    {
+
+    }
+    
+    template <class T>
+    inline void te::layout::ParentItem<T>::updateObserver( te::layout::ContextItem context )
+    {
+      if(m_model)
+      {
+        if(m_rect.width() != m_model->getBox().getWidth() || 
+          m_rect.height() != m_model->getBox().getHeight())
+        {
+          setRect(QRectF(0, 0, m_model->getBox().getWidth(), m_model->getBox().getHeight()));
+        }
+      }
+
+      if(context.isChangePos())
+      {
+        double x = context.getPos().x;
+        double y = context.getPos().y;
+        setPos(x, y);
+      }
+
+      update();
+    }
+
+    template <class T>
+    inline void te::layout::ParentItem<T>::drawText( QPointF point, QPainter* painter, std::string text )
     {
       painter->save();
 
@@ -241,33 +300,6 @@ namespace te
       painter->setMatrixEnabled(true);
 
       painter->restore();
-    }
-    
-    template <class T>
-    inline te::layout::ParentItem<T>::ParentItem( ItemController* controller, Observable* o, bool inverted ) :
-      T(0),
-      ItemObserver(controller, o),
-      m_mousePressedCtrl(false),
-      m_hoverAboveItem(false),
-      m_toResizeItem(false),
-      m_enumSides(TPNoneSide)
-    {
-
-      m_invertedMatrix = inverted;
-
-      QGraphicsItem* item = this;
-      Context::getInstance().getScene()->insertItem((ItemObserver*)item);
-
-      //If enabled is true, this item will accept hover events
-      setAcceptHoverEvents(true);
-
-      m_boxCopy = m_model->getBox();
-    }
-
-    template <class T>
-    inline te::layout::ParentItem<T>::~ParentItem()
-    {
-
     }
 
     template <class T>
