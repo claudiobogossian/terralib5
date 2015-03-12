@@ -37,7 +37,7 @@
 #include <QWidget>
 
 //QWT
-#include <qwt/qwt_plot_marker.h>
+#include <qwt_plot_marker.h>
 
 namespace Ui { class RasterHistogramWidgetForm; }
 
