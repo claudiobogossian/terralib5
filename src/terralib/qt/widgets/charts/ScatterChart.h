@@ -30,7 +30,7 @@
 #include "../Config.h"
 
 //QWT
-#include <qwt/qwt_plot_curve.h>
+#include <qwt_plot_curve.h>
 
 //STL
 #include <vector>

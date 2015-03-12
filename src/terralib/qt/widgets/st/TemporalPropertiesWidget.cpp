@@ -94,7 +94,3 @@ void te::qt::widgets::TemporalPropertiesWidget::setUp (const te::da::DataSetType
   }
 }
 
-void te::qt::widgets::TemporalPropertiesWidget::onPropertyComboBoxIndexChanged (QString text)
-{
-
-}
