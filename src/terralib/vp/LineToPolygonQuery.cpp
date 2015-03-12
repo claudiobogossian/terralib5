@@ -136,7 +136,7 @@ bool te::vp::LineToPolygonQuery::run()
     {
       te::da::PropertyName* gName = new te::da::PropertyName("polygon");
       te::da::Expression* e_collect = new te::da::ST_Collect(gName);
-      te::da::Field* f_collect = new te::da::Field(*e_collect, " result");
+      te::da::Field* f_collect = new te::da::Field(*e_collect, props[i]->getName());
       line_fields->push_back(f_collect);
     }
   }

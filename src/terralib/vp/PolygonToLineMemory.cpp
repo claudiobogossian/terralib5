@@ -102,7 +102,7 @@ bool te::vp::PolygonToLineMemory::run()
     {
       if(outDsItem->getPropertyDataType(i) != te::dt::GEOMETRY_TYPE)
       {
-        outDsItem->setValue(i, inDset->getValue(i).get()->clone());
+        outDsItem->setValue(i, inDset->getValue(outDsItem->getPropertyName(i)).get()->clone());
       }
       else
       {
