@@ -200,6 +200,33 @@ bool te::qt::widgets::DirectExchangerDialog::exchangeToFile()
 
     dsTypeResult->setName(val);
 
+    // Check dataset name
+    if(!dsOGR->isDataSetNameValid(dsTypeResult->getName()))
+      throw te::common::Exception(tr("Layer name invalid for output datasource!").toStdString());
+
+    // Check properties names
+    std::vector<te::dt::Property* > props = dsTypeResult->getProperties();
+    std::vector<std::string> invalidNames;
+    for(std::size_t i = 0; i < props.size(); ++i)
+    {
+      if(!dsOGR->isPropertyNameValid(props[i]->getName()))
+      {
+        invalidNames.push_back(props[i]->getName());
+      }
+    }
+
+    if(!invalidNames.empty())
+    {
+      QString err(tr("Some property name is invalid for output datasource:\n\n"));
+      for(std::size_t i = 0; i < invalidNames.size(); ++i)
+      {
+        err.append(" - ");
+        err.append(invalidNames[i].c_str());
+      }
+
+      throw te::common::Exception(err.toStdString());
+    }
+
     //exchange
     std::map<std::string,std::string> nopt;
 
@@ -292,6 +319,32 @@ bool te::qt::widgets::DirectExchangerDialog::exchangeToDatabase()
     te::da::DataSetType* dsTypeResult = converter->getResult();
     
     dsTypeResult->setName(m_ui->m_dataSetLineEdit->text().toStdString());
+
+    // Check dataset name
+    if(!targetDSPtr->isDataSetNameValid(dsTypeResult->getName()))
+      throw te::common::Exception(tr("Layer name invalid for output datasource!").toStdString());
+
+    // Check properties names
+    std::vector<te::dt::Property* > props = dsTypeResult->getProperties();
+    std::vector<std::string> invalidNames;
+    for(std::size_t i = 0; i < props.size(); ++i)
+    {
+      if(!targetDSPtr->isPropertyNameValid(props[i]->getName()))
+      {
+        invalidNames.push_back(props[i]->getName());
+      }
+    }
+
+    if(!invalidNames.empty())
+    {
+      QString err(tr("Some property name is invalid for output datasource:\n\n"));
+      for(std::size_t i = 0; i < invalidNames.size(); ++i)
+      {
+        err.append(invalidNames[i].c_str());
+      }
+
+      throw te::common::Exception(err.toStdString());
+    }
 
     //create index
     if(m_ui->m_spatialIndexCheckBox->isChecked())
