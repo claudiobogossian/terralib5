@@ -102,37 +102,46 @@ unsigned long int te::common::GetFreePhysicalMemory()
 
 unsigned long int te::common::GetTotalPhysicalMemory()
 {
-      unsigned long int totalmem = 0;
+  unsigned long int totalmem = 0;
 
-#if TE_PLATFORM == TE_PLATFORMCODE_FREEBSD || TE_PLATFORM == TE_PLATFORMCODE_OPENBSD || TE_PLATFORM == TE_PLATFORMCODE_APPLE
+  #if TE_PLATFORM == TE_PLATFORMCODE_FREEBSD || TE_PLATFORM == TE_PLATFORMCODE_OPENBSD || TE_PLATFORM == TE_PLATFORMCODE_APPLE
+    #ifdef HW_MEMSIZE /* OSX. --------------------- */
+      int64_t physmem = 0;
+      int mib[2] = { CTL_HW, HW_MEMSIZE };
+    #elif defined(HW_PHYSMEM) /* FreeBSD. ----------------- */
       unsigned int physmem = 0;
-
-      std::size_t physmem_len = sizeof(physmem);
-
       int mib[2] = { CTL_HW, HW_PHYSMEM };
-        
-      if(sysctl(mib, (2 * sizeof(int)), &physmem, &physmem_len, NULL, 0) == 0)
-      {
-        totalmem = static_cast<unsigned long int>(physmem); 
-      }
-      else
-      {
-        throw Exception("Could not get total physical memory!");
-      }
+    #elif defined(HW_PHYSMEM64) /* DragonFly BSD. ----------- */
+      int64_t physmem = 0;
+      int mib[2] = { CTL_HW, HW_PHYSMEM64 };
+    #elif defined(HW_REALMEM) /* FreeBSD. ----------------- */
+      unsigned int physmem = 0;
+      int mib[2] = { CTL_HW, HW_REALMEM };
+    #endif
 
-#elif TE_PLATFORM == TE_PLATFORMCODE_LINUX
-      totalmem = static_cast<unsigned long int>( sysconf(_SC_PAGESIZE) * sysconf(_SC_PHYS_PAGES) );
+    std::size_t physmem_len = sizeof(physmem);
 
-#elif TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
-      LPMEMORYSTATUS status_buffer = new MEMORYSTATUS;
-      GlobalMemoryStatus(status_buffer);
-      totalmem = static_cast<unsigned long int>(status_buffer->dwTotalPhys);
-      delete status_buffer;
-#else
+    if(sysctl(mib, 2, &physmem, &physmem_len, NULL, 0) == 0)
+    {
+      totalmem = static_cast<unsigned long int>(physmem); 
+    }
+    else
+    {
+      throw Exception("Could not get total physical memory!");
+    }
+  #elif TE_PLATFORM == TE_PLATFORMCODE_LINUX
+    totalmem = static_cast<unsigned long int>( sysconf(_SC_PAGESIZE) * sysconf(_SC_PHYS_PAGES) );
+
+  #elif TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
+    LPMEMORYSTATUS status_buffer = new MEMORYSTATUS;
+    GlobalMemoryStatus(status_buffer);
+    totalmem = static_cast<unsigned long int>(status_buffer->dwTotalPhys);
+    delete status_buffer;
+  #else
   #error "Unsuported plataform for physical memory checking"
-#endif
+  #endif
 
-      return totalmem;
+  return totalmem;
 }
 
 unsigned long int te::common::GetUsedVirtualMemory()
