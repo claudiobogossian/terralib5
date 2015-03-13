@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../../../common/StringUtils.h"
 #include "../../../dataaccess/dataset/DataSetAdapter.h"
 #include "../../../dataaccess/dataset/PrimaryKey.h"
 #include "../../../dataaccess/dataset/DataSetTypeConverter.h"
@@ -202,29 +203,66 @@ bool te::qt::widgets::DirectExchangerDialog::exchangeToFile()
 
     // Check dataset name
     if(!dsOGR->isDataSetNameValid(dsTypeResult->getName()))
-      throw te::common::Exception(tr("Layer name invalid for output datasource!").toStdString());
+    {
+      int r = QMessageBox::question(this, tr("Exchanger"), tr("Layer name invalid for output datasource. Would you like to normalize the name?"), QMessageBox::Yes, QMessageBox::No);
+
+      if(r == QMessageBox::Yes)
+      {
+        bool aux;
+        std::string newName = te::common::ReplaceSpecialChars(dsTypeResult->getName(), aux);
+        dsTypeResult->setName(newName);
+      }
+      else
+      {
+        throw te::common::Exception(tr("Layer name invalid for output datasource!").toStdString());
+      }
+    }
 
     // Check properties names
     std::vector<te::dt::Property* > props = dsTypeResult->getProperties();
-    std::vector<std::string> invalidNames;
+    std::map<std::size_t, std::string> invalidNames;
     for(std::size_t i = 0; i < props.size(); ++i)
     {
       if(!dsOGR->isPropertyNameValid(props[i]->getName()))
       {
-        invalidNames.push_back(props[i]->getName());
+        invalidNames[i] = props[i]->getName();
       }
     }
 
     if(!invalidNames.empty())
     {
-      QString err(tr("Some property name is invalid for output datasource:\n\n"));
-      for(std::size_t i = 0; i < invalidNames.size(); ++i)
-      {
-        err.append(" - ");
-        err.append(invalidNames[i].c_str());
-      }
+      int r = QMessageBox::question(this, tr("Exchanger"), tr("Some property name is invalid for output datasource. Would you like to normalize the name?"), QMessageBox::Yes, QMessageBox::No);
 
-      throw te::common::Exception(err.toStdString());
+      if(r == QMessageBox::Yes)
+      {
+        std::map<std::size_t, std::string>::iterator it = invalidNames.begin();
+
+        while(it != invalidNames.end())
+        {
+          bool aux;
+          std::string newName = te::common::ReplaceSpecialChars(it->second, aux);
+
+          props[it->first]->setName(newName);
+
+          ++it;
+        }
+      }
+      else
+      {
+        QString err(tr("Some property name is invalid for output datasource:\n\n"));
+
+        std::map<std::size_t, std::string>::iterator it = invalidNames.begin();
+
+        while(it != invalidNames.end())
+        {
+          err.append(" - ");
+          err.append(it->second.c_str());
+
+          ++it;
+        }
+
+        throw te::common::Exception(err.toStdString());
+      }
     }
 
     //exchange
@@ -322,28 +360,66 @@ bool te::qt::widgets::DirectExchangerDialog::exchangeToDatabase()
 
     // Check dataset name
     if(!targetDSPtr->isDataSetNameValid(dsTypeResult->getName()))
-      throw te::common::Exception(tr("Layer name invalid for output datasource!").toStdString());
+    {
+      int r = QMessageBox::question(this, tr("Exchanger"), tr("Layer name invalid for output datasource. Would you like to normalize the name?"), QMessageBox::Yes, QMessageBox::No);
+
+      if(r == QMessageBox::Yes)
+      {
+        bool aux;
+        std::string newName = te::common::ReplaceSpecialChars(dsTypeResult->getName(), aux);
+        dsTypeResult->setName(newName);
+      }
+      else
+      {
+        throw te::common::Exception(tr("Layer name invalid for output datasource!").toStdString());
+      }
+    }
 
     // Check properties names
     std::vector<te::dt::Property* > props = dsTypeResult->getProperties();
-    std::vector<std::string> invalidNames;
+    std::map<std::size_t, std::string> invalidNames;
     for(std::size_t i = 0; i < props.size(); ++i)
     {
       if(!targetDSPtr->isPropertyNameValid(props[i]->getName()))
       {
-        invalidNames.push_back(props[i]->getName());
+        invalidNames[i] = props[i]->getName();
       }
     }
 
     if(!invalidNames.empty())
     {
-      QString err(tr("Some property name is invalid for output datasource:\n\n"));
-      for(std::size_t i = 0; i < invalidNames.size(); ++i)
-      {
-        err.append(invalidNames[i].c_str());
-      }
+      int r = QMessageBox::question(this, tr("Exchanger"), tr("Some property name is invalid for output datasource. Would you like to normalize the name?"), QMessageBox::Yes, QMessageBox::No);
 
-      throw te::common::Exception(err.toStdString());
+      if(r == QMessageBox::Yes)
+      {
+        std::map<std::size_t, std::string>::iterator it = invalidNames.begin();
+
+        while(it != invalidNames.end())
+        {
+          bool aux;
+          std::string newName = te::common::ReplaceSpecialChars(it->second, aux);
+
+          props[it->first]->setName(newName);
+
+          ++it;
+        }
+      }
+      else
+      {
+        QString err(tr("Some property name is invalid for output datasource:\n\n"));
+
+        std::map<std::size_t, std::string>::iterator it = invalidNames.begin();
+
+        while(it != invalidNames.end())
+        {
+          err.append(" - ");
+          err.append(it->second.c_str());
+
+          ++it;
+        }
+
+        throw te::common::Exception(err.toStdString());
+      }
     }
 
     //create index
