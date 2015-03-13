@@ -100,6 +100,9 @@
 	  <Function name="st_intersection">
         <FunctionEncoder alias="st_intersection"/>
       </Function>
+	  <Function name="st_makepolygon">
+        <FunctionEncoder alias="st_makepolygon"/>
+      </Function>	 
 	  <Function name="st_symdifference">
         <FunctionEncoder alias="st_symdifference"/>
       </Function>
@@ -158,7 +161,7 @@
       </Function>
 	  <Function name="st_isvalid">
         <FunctionEncoder alias="st_isvalid"/>
-      </Function>	  
+      </Function> 
 	  <Function name="st_ndims">
         <FunctionEncoder alias="st_ndims"/>
       </Function>

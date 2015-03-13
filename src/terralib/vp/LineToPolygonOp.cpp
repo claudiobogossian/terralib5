@@ -78,20 +78,45 @@ std::auto_ptr<te::da::DataSetType> te::vp::LineToPolygonOp::buildOutDataSetType(
   std::auto_ptr<te::da::DataSetType> inDsType = m_inDsrc->getDataSetType(m_inDsetName);
   std::auto_ptr<te::da::DataSetType> outDsType(new te::da::DataSetType(m_outDset));
 
+  std::string dSourceType = m_outDsrc->getType();
+
   std::vector<te::dt::Property*> vecProps = inDsType->getProperties();
-  for(std::size_t i = 0; i < vecProps.size(); ++i)
+  
+  if(dSourceType == "OGR")
   {
-    if(vecProps[i]->getType() != te::dt::GEOMETRY_TYPE)
+    for(std::size_t i = 0; i < vecProps.size(); ++i)
     {
-      outDsType->add(vecProps[i]->clone());
+      if(vecProps[i]->getType() != te::dt::GEOMETRY_TYPE && vecProps[i]->getName() != "FID")
+      {
+        outDsType->add(vecProps[i]->clone());
+      }
+      else
+      if(vecProps[i]->getType() == te::dt::GEOMETRY_TYPE)
+      {
+        te::gm::GeometryProperty* inGeom = static_cast<te::gm::GeometryProperty*>(vecProps[i]);
+        te::gm::GeometryProperty* outGeom = new te::gm::GeometryProperty(inGeom->getName());
+        outGeom->setGeometryType(te::gm::MultiPolygonType);
+        outGeom->setSRID(inGeom->getSRID());
+        outDsType->add(outGeom);
+      }
     }
-    else
+  }
+  else
+  {
+    for(std::size_t i = 0; i < vecProps.size(); ++i)
     {
-      te::gm::GeometryProperty* inGeom = static_cast<te::gm::GeometryProperty*>(vecProps[i]);
-      te::gm::GeometryProperty* outGeom = new te::gm::GeometryProperty(inGeom->getName());
-      outGeom->setGeometryType(te::gm::MultiPolygonType);
-      outGeom->setSRID(inGeom->getSRID());
-      outDsType->add(outGeom);
+      if(vecProps[i]->getType() != te::dt::GEOMETRY_TYPE)
+      {
+        outDsType->add(vecProps[i]->clone());
+      }
+      else
+      {
+        te::gm::GeometryProperty* inGeom = static_cast<te::gm::GeometryProperty*>(vecProps[i]);
+        te::gm::GeometryProperty* outGeom = new te::gm::GeometryProperty(inGeom->getName());
+        outGeom->setGeometryType(te::gm::MultiPolygonType);
+        outGeom->setSRID(inGeom->getSRID());
+        outDsType->add(outGeom);
+      }
     }
   }
 
