@@ -292,7 +292,7 @@ void te::qt::widgets::DataSetSelectorWidget::previewData(const te::da::DataSetTy
     std::auto_ptr<te::mem::DataSet> memFeature((new te::mem::DataSet(*feature.get(), properties, previewrows)));
 
     if(memFeature.get())
-      m_tblView->setDataSet(memFeature.release());
+      m_tblView->setDataSet(memFeature.release(), ds->getEncoding());
   }
   catch(...)
   {

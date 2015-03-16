@@ -320,7 +320,7 @@ void te::qt::widgets::DatapPropertiesWidget::onInputDataToolButtonTriggered()
     //The table will display 5 rows of the data for previewing purposes
     std::auto_ptr<te::mem::DataSet> memFeature((new te::mem::DataSet(*m_dataSet.get(), properties, 5)));
 
-    m_tblView->setDataSet(memFeature.release());
+    m_tblView->setDataSet(memFeature.release(), m_dataSource->getEncoding());
     m_tblView->resizeColumnsToContents();
     m_tblView->show();
 
