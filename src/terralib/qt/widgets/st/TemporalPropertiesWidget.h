@@ -113,10 +113,6 @@ namespace te
           */
           void setUp(const te::da::DataSetTypePtr dataType);
 
-        protected slots:
-
-          void onPropertyComboBoxIndexChanged(QString text);
-
         private:
 
           std::auto_ptr<Ui::TemporalPropertiesWidgetForm>  m_ui;        //!< The widget's form.

@@ -25,6 +25,56 @@
 #          Frederico Augusto T. Bede <frederico.bede@funcate.org.br>
 #
 
+MACRO(TeInstallPlugins plugins location)
+
+  set(_files )
+  
+  foreach(plugin ${plugins})
+    get_target_property(_loc ${plugin} LOCATION)
+	list(APPEND _files ${_loc})
+  endforeach()
+  
+  install (FILES ${_files}
+	DESTINATION qtplugins/${location}
+	CONFIGURATIONS Release
+	COMPONENT runtime
+  )
+  
+ENDMACRO(TeInstallPlugins)
+
+
+MACRO(TeInstallQt5Plugins)
+  find_package(Qt5 COMPONENTS Sql Svg)
+
+# Installing image plugins
+  set(_plugins Qt5::QGifPlugin Qt5::QICOPlugin Qt5::QJpegPlugin Qt5::QMngPlugin Qt5::QTiffPlugin)
+  TeInstallPlugins("${_plugins}" "imageformats")
+  
+# Installing svg plugins
+  set(_plugins Qt5::QSvgPlugin Qt5::QSvgIconPlugin)
+  TeInstallPlugins("${_plugins}" "iconengines")
+    
+# Installing sql plugins
+  set(_plugins Qt5::QSQLiteDriverPlugin)
+  TeInstallPlugins("${_plugins}" "sqldrivers")
+  
+# Installing platform plugins
+  if(WIN32)
+    set(_plugins Qt5::QWindowsIntegrationPlugin)
+    TeInstallPlugins("${_plugins}" "platforms")
+  endif()
+
+#  if(APPLE)
+#    install (TARGETS
+#      Qt5::QWindowsIntegrationPlugin
+#  	  RUNTIME
+#	  DESTINATION qtplugins/platforms
+#	  COMPONENT runtime
+#    )
+ # endif()
+  
+ENDMACRO(TeInstallQt5Plugins)
+
 #
 # Macro installQtPlugins
 #

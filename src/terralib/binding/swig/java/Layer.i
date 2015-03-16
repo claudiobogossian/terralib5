@@ -242,9 +242,14 @@ namespace std {
 		std::auto_ptr<te::qt::widgets::DataSourceSelectorDialog> dselector(new te::qt::widgets::DataSourceSelectorDialog());
 
     dselector->activateWindow();
-    dselector->raise();
 
-		int retval = dselector->exec();
+    qApp->connect(dselector.get(), SIGNAL(hide()), SLOT(quit()));
+    
+    dselector->setVisible(true);
+    
+    qApp->exec();
+
+		int retval = dselector->result();
 
 		if(retval == QDialog::Rejected)
 		  return layers;

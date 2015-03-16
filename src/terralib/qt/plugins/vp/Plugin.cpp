@@ -32,6 +32,7 @@
 #include "GeometricOpAction.h"
 #include "BufferAction.h"
 #include "IntersectionAction.h"
+#include "LineToPolygonAction.h"
 #include "MultipartToSinglepartAction.h"
 #include "Plugin.h"
 #include "PolygonToLineAction.h"
@@ -76,7 +77,7 @@ void te::qt::plugins::vp::Plugin::startup()
   TE_LOG_TRACE(TE_TR("TerraLib Qt VP Plugin startup!"));
 
 // add plugin menu
-  QMenu* pluginMenu = te::qt::af::ApplicationController::getInstance().getMenu("Plugins");
+  QMenu* pluginMenu = te::qt::af::ApplicationController::getInstance().getMenu("Processing");
   m_vpMenu = new QMenu(pluginMenu);
   m_vpMenu->setIcon(QIcon::fromTheme("vp-vectorprocessing-icon"));
 
@@ -135,7 +136,9 @@ void te::qt::plugins::vp::Plugin::registerActions()
   m_geometricOp = new te::qt::plugins::vp::GeometricOpAction(m_vpMenu);
   m_intersection = new te::qt::plugins::vp::IntersectionAction(m_vpMenu);
   m_multipart2singlepart = new te::qt::plugins::vp::MultipartToSinglepartAction(m_vpMenu);
-  m_polygonToLine = new te::qt::plugins::vp::PolygonToLineAction(m_vpMenu);  //m_summarization = new te::qt::plugins::vp::SummarizationAction(m_vpMenu);
+  m_lineToPolygon = new te::qt::plugins::vp::LineToPolygonAction(m_vpMenu);
+  m_polygonToLine = new te::qt::plugins::vp::PolygonToLineAction(m_vpMenu);
+  //m_summarization = new te::qt::plugins::vp::SummarizationAction(m_vpMenu);
   //m_transformation = new te::qt::plugins::vp::TransformationAction(m_vpMenu);
 }
 
@@ -146,7 +149,9 @@ void  te::qt::plugins::vp::Plugin::unRegisterActions()
   delete m_geometricOp;
   delete m_intersection;
   delete m_multipart2singlepart;
-  delete m_polygonToLine;  //delete m_summarization;
+  delete m_lineToPolygon;
+  delete m_polygonToLine;
+  //delete m_summarization;
   //delete m_transformation;
 }
 

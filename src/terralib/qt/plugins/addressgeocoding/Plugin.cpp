@@ -70,7 +70,7 @@ void te::qt::plugins::addressgeocoding::Plugin::startup()
   TE_LOG_TRACE(TE_TR("TerraLib Qt Address Geocoding Plugin startup!"));
 
 // add plugin menu
-  QMenu* pluginMenu = te::qt::af::ApplicationController::getInstance().getMenu("Plugins");
+  QMenu* pluginMenu = te::qt::af::ApplicationController::getInstance().getMenu("Processing");
 
   m_action = new QAction(pluginMenu);
   m_action->setText("Address Geocoding...");

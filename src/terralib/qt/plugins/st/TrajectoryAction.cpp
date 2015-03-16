@@ -50,7 +50,7 @@
 te::qt::plugins::st::TrajectoryAction::TrajectoryAction(QMenu* menu)
 : te::qt::plugins::st::AbstractAction(menu)
 {
-  createAction(tr("Trajectory...").toStdString());
+  createAction(tr("Trajectory...").toStdString(), "trajectory-layer");
   te::qt::widgets::AbstractTreeItemFactory::reg("TRAJECTORYDATASETLAYER", boost::bind(boost::factory<TrajectoryLayerItem*>(),_1, _2));
 }
 

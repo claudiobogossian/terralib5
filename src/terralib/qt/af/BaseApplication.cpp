@@ -393,6 +393,8 @@ void te::qt::af::BaseApplication::onAddDataSetLayerTriggered()
 {
   try
   {
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+
     // Get the parent layer where the dataset layer(s) will be added.
     te::map::AbstractLayerPtr parentLayer(0);
 
@@ -409,15 +411,25 @@ void te::qt::af::BaseApplication::onAddDataSetLayerTriggered()
     if(!dsTypeSett.isNull() && !dsTypeSett.isEmpty())
       dselector->setDataSourceToUse(dsTypeSett);
 
+    QApplication::restoreOverrideCursor();
+
     int retval = dselector->exec();
 
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+
     if(retval == QDialog::Rejected)
+    {
+      QApplication::restoreOverrideCursor();
       return;
+    }
 
     std::list<te::da::DataSourceInfoPtr> selectedDatasources = dselector->getSelecteds();
 
     if(selectedDatasources.empty())
+    {
+      QApplication::restoreOverrideCursor();
       return;
+    }
 
     dselector.reset(0);
 
@@ -428,21 +440,34 @@ void te::qt::af::BaseApplication::onAddDataSetLayerTriggered()
     std::auto_ptr<QWidget> lselectorw(dsType->getWidget(te::qt::widgets::DataSourceType::WIDGET_LAYER_SELECTOR, this));
 
     if(lselectorw.get() == 0)
+    {
+      QApplication::restoreOverrideCursor();
       throw Exception((boost::format(TE_TR("No layer selector widget found for this type of data source: %1%!")) % dsTypeId).str());
+    }
 
     te::qt::widgets::AbstractLayerSelector* lselector = dynamic_cast<te::qt::widgets::AbstractLayerSelector*>(lselectorw.get());
 
     if(lselector == 0)
+    {
+      QApplication::restoreOverrideCursor();
       throw Exception(TE_TR("Wrong type of object for layer selection!"));
+    }
 
     lselector->set(selectedDatasources);
 
+    QApplication::restoreOverrideCursor();
+
     std::list<te::map::AbstractLayerPtr> layers = lselector->getLayers();
+
+    QApplication::setOverrideCursor(Qt::WaitCursor);
 
     lselectorw.reset(0);
 
     if(m_project == 0)
+    {
+      QApplication::restoreOverrideCursor();
       throw Exception(TE_TR("Error: there is no opened project!"));
+    }
 
     std::list<te::map::AbstractLayerPtr>::const_iterator it = layers.begin();
     std::list<te::map::AbstractLayerPtr>::const_iterator itend = layers.end();
@@ -464,14 +489,17 @@ void te::qt::af::BaseApplication::onAddDataSetLayerTriggered()
   }
   catch(const std::exception& e)
   {
+    QApplication::restoreOverrideCursor();
     QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), e.what());
   }
   catch(...)
   {
+    QApplication::restoreOverrideCursor();
     QMessageBox::warning(this,
                          te::qt::af::ApplicationController::getInstance().getAppTitle(),
                          tr("Unknown error while trying to add a layer from a dataset!"));
   }
+  QApplication::restoreOverrideCursor();
 }
 
 void te::qt::af::BaseApplication::onAddQueryLayerTriggered()
@@ -950,6 +978,8 @@ void te::qt::af::BaseApplication::onToolsQueryDataSourceTriggered()
   try
   {
     te::qt::widgets::QueryDataSourceDialog dlg(this);
+
+    connect(&dlg, SIGNAL(createNewLayer(te::map::AbstractLayerPtr)), this, SLOT(onCreateNewLayer(te::map::AbstractLayerPtr)));
 
     std::list<te::map::AbstractLayerPtr> layers = te::qt::af::ApplicationController::getInstance().getProject()->getAllLayers(false);
     dlg.setLayerList(layers);
@@ -2053,6 +2083,12 @@ void te::qt::af::BaseApplication::onDataSourceExplorerTriggered()
   }
 }
 
+void te::qt::af::BaseApplication::onCreateNewLayer(te::map::AbstractLayerPtr layer)
+{
+  te::qt::af::evt::LayerAdded evt(layer);
+  te::qt::af::ApplicationController::getInstance().broadcast(&evt);
+}
+
 //void te::qt::af::BaseApplication::onTrajectoryAnimationTriggered() // Lauro
 //{
 //  std::list<te::map::AbstractLayerPtr> layers =  m_explorer->getExplorer()->getSelectedSingleLayers();
@@ -2078,19 +2114,18 @@ void te::qt::af::BaseApplication::onDataSourceExplorerTriggered()
 
 void te::qt::af::BaseApplication::openProject(const QString& projectFileName)
 {
-  setCursor(Qt::WaitCursor);
-
+  QApplication::setOverrideCursor(Qt::WaitCursor);
   try
   {
     if(checkProjectSave() == QMessageBox::Cancel)
     {
-      setCursor(Qt::ArrowCursor);
+      QApplication::restoreOverrideCursor();
       return;
     }
 
     if(!boost::filesystem::exists(projectFileName.toStdString()))
     {
-      setCursor(Qt::ArrowCursor);
+      QApplication::restoreOverrideCursor();
       QMessageBox::critical(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), (boost::format(TE_TR("This project could not be found: %1%.")) % projectFileName.toStdString()).str().c_str());
       return;
     }
@@ -2122,19 +2157,19 @@ void te::qt::af::BaseApplication::openProject(const QString& projectFileName)
   }
   catch(const te::common::Exception& e)
   {
-    setCursor(Qt::ArrowCursor);
+    QApplication::restoreOverrideCursor();
     throw e;
   }
   catch(...)
   {
-    setCursor(Qt::ArrowCursor);
+    QApplication::restoreOverrideCursor();
     QString msg(tr("Fail to open project: %1"));
     
     msg = msg.arg(projectFileName);
     
     throw Exception(TE_TR(msg.toStdString()));
   }
-  setCursor(Qt::ArrowCursor);
+  QApplication::restoreOverrideCursor();
 }
 
 QMessageBox::StandardButton te::qt::af::BaseApplication::checkProjectSave()

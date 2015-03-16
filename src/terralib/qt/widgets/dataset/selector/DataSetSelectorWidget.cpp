@@ -305,7 +305,8 @@ void te::qt::widgets::DataSetSelectorWidget::onDataSetToggled(DataSetItem* item)
     return;
 
   if(item->isChecked())
-    m_checkedDatasets.insert(std::make_pair<te::da::DataSetTypePtr, std::string>(item->getDataSet(), item->getGeomPropertyName()));
+    //m_checkedDatasets.insert(std::make_pair<te::da::DataSetTypePtr, std::string>(item->getDataSet(), item->getGeomPropertyName()));
+    m_checkedDatasets.insert(std::make_pair(item->getDataSet(), item->getGeomPropertyName()));
   else
     m_checkedDatasets.erase(item->getDataSet());
 }

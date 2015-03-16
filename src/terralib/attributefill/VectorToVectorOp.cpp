@@ -92,7 +92,7 @@ bool  te::attributefill::VectorToVectorOp::save(std::auto_ptr<te::mem::DataSet> 
   try
   {
     // do any adaptation necessary to persist the output dataset
-    te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter(outDsType.get(), m_outDsrc->getCapabilities());
+    te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter(outDsType.get(), m_outDsrc->getCapabilities(), m_outDsrc->getEncoding());
     te::da::DataSetType* dsTypeResult = converter->getResult();
     std::auto_ptr<te::da::DataSetAdapter> dsAdapter(te::da::CreateAdapter(result.get(), converter));
 

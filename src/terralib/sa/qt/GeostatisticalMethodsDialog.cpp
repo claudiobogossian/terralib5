@@ -49,9 +49,9 @@
 #include <QValidator>
 
 //QWT
-#include <qwt/qwt_legend.h>
-#include <qwt/qwt_plot.h>
-#include <qwt/qwt_symbol.h>
+#include <qwt_legend.h>
+#include <qwt_plot.h>
+#include <qwt_symbol.h>
 
 // STL
 #include <memory>

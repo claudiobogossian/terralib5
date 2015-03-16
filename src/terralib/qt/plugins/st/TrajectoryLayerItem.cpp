@@ -54,7 +54,7 @@ int te::qt::plugins::st::TrajectoryLayerItem::columnCount() const
 QVariant te::qt::plugins::st::TrajectoryLayerItem::data(int /*column*/, int role) const
 {
   if(role == Qt::DecorationRole)
-    return QVariant(QIcon::fromTheme("dataset-layer"));
+    return QVariant(QIcon::fromTheme("trajectory-layer"));
 
   if(role == Qt::DisplayRole)
     return QVariant(QString::fromStdString(m_layer->getTitle()));
@@ -99,7 +99,7 @@ void te::qt::plugins::st::TrajectoryLayerItem::fetchMore()
 
 bool te::qt::plugins::st::TrajectoryLayerItem::hasChildren() const
 {
-  return ((m_layer->getStyle() != 0) && (!m_layer->getStyle()->getRules().empty())) || m_layer->getGrouping() != 0 || m_layer->getChart() != 0;
+  return m_layer->hasChildren();
 }
 
 bool te::qt::plugins::st::TrajectoryLayerItem::setData(int column, const QVariant& value, int role)

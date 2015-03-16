@@ -53,7 +53,7 @@ void te::qt::plugins::cellspace::Plugin::startup()
   TE_LOG_TRACE(TE_TR("TerraLib Qt Cellular Spaces Plugin startup!"));
 
 // add plugin menu
-  QMenu* pluginMenu = te::qt::af::ApplicationController::getInstance().getMenu("Plugins");
+  QMenu* pluginMenu = te::qt::af::ApplicationController::getInstance().getMenu("Processing");
   m_cellSpaceMenu = new QMenu(pluginMenu);
 
   // Insert action before plugin manager action
