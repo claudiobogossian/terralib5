@@ -770,7 +770,26 @@ te::dt::AbstractData* te::attributefill::VectorToVectorMemory::getClassWithHighe
     ++it;
   }
 
-  te::dt::AbstractData* data = getDataBasedOnType(value, propType);
+  // Checks if there is a tie between classes
+  std::size_t aux2 = 0;
+  it = counter.begin();
+  while(it != counter.end())
+  {
+    if(it->second == aux)
+      ++aux2;
+
+    ++it;
+  }
+
+  te::dt::AbstractData* data = 0;
+  if(aux2 == 1)
+  {
+    data = getDataBasedOnType(value, propType);
+  }
+  else
+  {
+    data = new te::dt::SimpleData<std::string, te::dt::STRING_TYPE>("");
+  }
 
   return data;
 }
