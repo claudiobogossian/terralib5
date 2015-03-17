@@ -36,6 +36,8 @@
 #include "../core/pattern/singleton/Context.h"
 #include "../core/Utils.h"
 #include "../core/pattern/mvc/ItemObserver.h"
+#include "../core/property/Property.h"
+#include "../core/property/Properties.h"
 
 te::layout::LineModel::LineModel() 
 {
@@ -43,47 +45,44 @@ te::layout::LineModel::LineModel()
 
   m_borderColor = te::color::RGBAColor(255, 255, 255, 0);
   m_box = te::gm::Envelope(0., 0., 20., 20.);
+
+  m_lineColor = te::color::RGBAColor(0, 0, 0, 255);
+
+  m_border = false;
 }
 
 te::layout::LineModel::~LineModel()
 {
+  if(!m_coords.empty())
+  {
+    std::vector<te::gm::Point*>::iterator ito;
 
-}
+    for(ito = m_coords.begin() ; ito != m_coords.end() ; ++ito)
+    { 
+      if(*ito)
+      {
+        te::gm::Point* pt = *ito;
+        if(pt)
+        {
+          delete pt;
+          pt = 0;
+        }
+      }
+    }
 
-void te::layout::LineModel::draw( ContextItem context )
-{
-  te::color::RGBAColor** pixmap = 0;
-  m_context = context;
-  
-  te::map::Canvas* canvas = context.getCanvas();
-  Utils* utils = context.getUtils();
-    
-  if((!canvas) || (!utils))
-    return;
-
-  if(context.isResizeCanvas())
-    utils->configCanvas(m_box);
-  
-  drawBackground(context);
-  drawCoords(canvas, utils);
-
- if(context.isResizeCanvas())
-  pixmap = utils->getImageW(m_box);
-    
- context.setPixmap(pixmap);
- notifyAll(context);
+    m_coords.clear();
+  }
 }
 
 void te::layout::LineModel::setCoords( std::vector<te::gm::Point*> coords )
 {
   m_coords = coords;
 
-  int sizeMCoords = 0;
-  sizeMCoords = m_coords.size();
+  int sizeMCoords = m_coords.size();
 
   te::gm::LinearRing *lineOfPoints = new te::gm::LinearRing(sizeMCoords, te::gm::LineStringType);
   
-  for(int i = 0; i < sizeMCoords; ++i)
+  for(int i = 0; i < sizeMCoords ; ++i)
   {
     lineOfPoints->setPointN( i, te::gm::Point(m_coords[i]->getX(), m_coords[i]->getY()));    
   }
@@ -98,33 +97,63 @@ void te::layout::LineModel::setCoords( std::vector<te::gm::Point*> coords )
   x2 = returnBox->getUpperRightX();
   y2 = returnBox->getUpperRightY();
 
-  m_box = te::gm::Envelope (x1-1, y1-1, x2+1, y2+1);
+  m_box = te::gm::Envelope(x1, y1, x2, y2);
 
   if (lineOfPoints)
   {
     delete lineOfPoints;
     lineOfPoints = 0;
   }  
+
+  double x = m_box.getLowerLeftX();
+  double y = m_box.getLowerLeftY();
+
+  te::gm::Coord2D coord (x, y);
+
+  ContextItem context;
+  context.setPos(coord);
+  context.setChangePos(true);
+
+  notifyAll(context);
 }
 
-void te::layout::LineModel::drawCoords( te::map::Canvas* canvas, Utils* utils )
+std::vector<te::gm::Point*> te::layout::LineModel::getCoords()
 {
-  if (m_coords.empty())
-    return;
+  return m_coords;
+}
 
-  te::gm::LinearRing *lineOfPoints = new te::gm::LinearRing(m_coords.size(), te::gm::LineStringType);
-  
-  for (unsigned int i = 0; m_coords.size() > i; ++i)
+te::color::RGBAColor te::layout::LineModel::getLineColor()
+{
+  return m_lineColor;
+}
+
+te::layout::Properties* te::layout::LineModel::getProperties() const
+{
+  ItemModelObservable::getProperties();
+
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+
+  Property pro_linecolor;
+  pro_linecolor.setName("line_color");
+  pro_linecolor.setLabel("line color");
+  pro_linecolor.setId("");
+  pro_linecolor.setValue(pro_linecolor, dataType->getDataTypeColor());
+  pro_linecolor.setMenu(true);
+  m_properties->addProperty(pro_linecolor);
+
+  return m_properties;
+}
+
+void te::layout::LineModel::updateProperties( te::layout::Properties* properties )
+{
+  ItemModelObservable::updateProperties(properties);
+
+  Properties* vectorProps = const_cast<Properties*>(properties);
+
+  Property pro_linecolor = vectorProps->contains("line_color");
+  if(!pro_linecolor.isNull())
   {
-    lineOfPoints->setPointN( i, te::gm::Point( m_coords[i]->getX(), m_coords[i]->getY() ) );   
-  }
-
-  canvas->setLineColor(te::color::RGBAColor(0, 0, 0, 255));
-  canvas->draw(lineOfPoints);
-
-  if (lineOfPoints)
-  {
-    delete lineOfPoints;
-    lineOfPoints = 0;
+    m_lineColor = pro_linecolor.getValue().toColor();
   }
 }
+

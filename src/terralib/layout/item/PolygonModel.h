@@ -38,20 +38,14 @@ namespace te
   namespace layout
   {
     class Utils;
+
     class PolygonModel : public LineModel
     {
       public:
 
         PolygonModel();
+
         virtual ~PolygonModel();
-		    virtual void setCoords(std::vector<te::gm::Point*> coords);
-        virtual void draw( ContextItem context );
-        virtual void drawCoords( te::map::Canvas* canvas, Utils* utils );
-			 
-	    protected:
-		
-		    std::vector<te::gm::Point*> m_coords;
-		    ContextItem m_context;
     };
   }
 }

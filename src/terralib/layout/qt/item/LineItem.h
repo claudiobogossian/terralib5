@@ -34,6 +34,7 @@
 
 // Qt 
 #include <QVector>
+#include <QPolygonF>
 
 class QGraphicsSceneMouseEvent;
 
@@ -48,14 +49,24 @@ namespace te
       public:
 
         LineItem ( ItemController* controller, Observable* o );
+
         virtual ~LineItem ();
-        
+
+        /*!
+          \brief Reimplemented from ItemObserver
+         */
         virtual void updateObserver(ContextItem context);
-		
-	    protected:
-			
-		    std::vector<te::gm::Point*> m_coords;
-		    QVector<QPoint> m_points;
+
+        /*!
+          \brief Reimplemented from QGraphicsItem
+         */
+        virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
+      
+      protected:
+
+        virtual void drawLine(QPainter * painter);
+
+        QPolygonF   m_poly;
 	  };
   }
 }

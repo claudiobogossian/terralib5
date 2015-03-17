@@ -67,9 +67,23 @@ namespace te
         virtual ~PointItem();
         
         /*!
-          \brief Reimplemented from ObjectItem
+          \brief Reimplemented from QGraphicsItem
          */
-        virtual void updateObserver(ContextItem context);
+        virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
+
+      protected:
+
+        virtual void drawStar(QPainter * painter);
+
+        virtual void drawCircle(QPainter * painter);
+
+        virtual void drawX(QPainter * painter);
+
+        virtual void drawSquare(QPainter * painter);
+
+        virtual void drawRhombus(QPainter * painter);
+
+        virtual void drawCross(QPainter * painter);
     };
   }
 }

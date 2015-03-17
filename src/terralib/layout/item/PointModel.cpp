@@ -33,7 +33,10 @@
 #include "../../maptools/Canvas.h"
 #include "../core/enum/Enums.h"
 
-te::layout::PointModel::PointModel() 
+te::layout::PointModel::PointModel():
+  m_enumPointType(0),
+  m_currentPointType(0),
+  m_shapeSize(4)
 {
   m_type = Enums::getInstance().getEnumObjectType()->getPointItem();
 
@@ -41,32 +44,104 @@ te::layout::PointModel::PointModel()
   m_backgroundColor = te::color::RGBAColor(0, 255, 0, 100);
 
   m_box = te::gm::Envelope(0., 0., 10., 10.);
+
+  m_enumPointType = new EnumPointType();
+  m_currentPointType = m_enumPointType->getCircleType();
 }
 
 te::layout::PointModel::~PointModel()
 {
-
+  if(m_enumPointType)
+  {
+    delete m_enumPointType;
+    m_enumPointType = 0;
+  }
 }
 
-void te::layout::PointModel::draw( ContextItem context )
+te::layout::Properties* te::layout::PointModel::getProperties() const
 {
-  te::color::RGBAColor** pixmap = 0;
-  
-  te::map::Canvas* canvas = context.getCanvas();
-  Utils* utils = context.getUtils();
+  ItemModelObservable::getProperties();
 
-  if((!canvas) || (!utils))
-    return;
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
 
-  if(context.isResizeCanvas())
-    utils->configCanvas(m_box);
-  
-  drawBackground(context);
-  
-  if(context.isResizeCanvas())
-    pixmap = utils->getImageW(m_box);
-  
-  context.setPixmap(pixmap);
-  notifyAll(context);
+  Property pro_pointName = pointProperty();
+  if(!pro_pointName.isNull())
+  {
+    m_properties->addProperty(pro_pointName);
+  }
+
+  return m_properties;
 }
+
+void te::layout::PointModel::updateProperties( te::layout::Properties* properties )
+{
+  ItemModelObservable::updateProperties(properties);
+
+  Properties* vectorProps = const_cast<Properties*>(properties);
+
+  Property pro_pointName = vectorProps->contains("point_type");
+
+  if(!pro_pointName.isNull())
+  {
+    std::string label = pro_pointName.getOptionByCurrentChoice().toString();
+    EnumType* enumType = m_enumPointType->searchLabel(label);
+    if(enumType)
+    {
+      m_currentPointType = enumType;
+    }
+  }
+}
+
+te::layout::EnumPointType* te::layout::PointModel::getEnumPointType()
+{
+  return m_enumPointType;
+}
+
+te::layout::EnumType* te::layout::PointModel::getCurrentPointType()
+{
+  return m_currentPointType;
+}
+
+te::layout::Property te::layout::PointModel::pointProperty() const
+{
+  Property pro_pointName;
+
+  if(!m_currentPointType)
+    return pro_pointName;
+
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+
+  if(!dataType)
+    return pro_pointName;
+
+  pro_pointName.setName("point_type");
+  pro_pointName.setLabel("graphic type");
+  pro_pointName.setId("");
+  pro_pointName.setValue(m_currentPointType->getLabel(), dataType->getDataTypeStringList());
+
+  Variant v;
+  v.setValue(m_currentPointType->getLabel(), dataType->getDataTypeString());
+  pro_pointName.addOption(v);
+  pro_pointName.setOptionChoice(v);
+
+  for(int i = 0 ; i < m_enumPointType->size() ; ++i)
+  {
+    EnumType* enumType = m_enumPointType->getEnum(i);
+
+    if(enumType == m_enumPointType->getNoneType() || enumType == m_currentPointType)
+      continue;
+
+    Variant v;
+    v.setValue(enumType->getLabel(), dataType->getDataTypeString());
+    pro_pointName.addOption(v);
+  }
+
+  return pro_pointName;
+}
+
+double te::layout::PointModel::getShapeSize()
+{
+  return m_shapeSize;
+}
+
 

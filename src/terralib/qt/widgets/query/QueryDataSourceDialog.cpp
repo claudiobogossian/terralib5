@@ -282,7 +282,7 @@ void te::qt::widgets::QueryDataSourceDialog::onApplyPushButtonClicked()
   catch(const std::exception& e)
   {
     m_dataSetDisplay->clear();
-    m_tableModel->setDataSet(0);
+    m_tableModel->setDataSet(0, ds->getEncoding());
 
     std::string errorMessage = "SQL Error: ";
     errorMessage += e.what();
@@ -324,7 +324,7 @@ void te::qt::widgets::QueryDataSourceDialog::onApplyPushButtonClicked()
     m_dataSetDisplay->clear();
 
   //show dataset on table
-  m_tableModel->setDataSet(dataSet.release());
+  m_tableModel->setDataSet(dataSet.release(), ds->getEncoding());
 
   m_ui->m_tabWidget->setCurrentIndex(0);
 }
@@ -335,7 +335,7 @@ void te::qt::widgets::QueryDataSourceDialog::onClearPushButtonClicked()
 
   m_dataSetDisplay->clear();
 
-  m_tableModel->setDataSet(0);
+  m_tableModel->setDataSet(0, te::common::LATIN1);
 }
 
 void te::qt::widgets::QueryDataSourceDialog::onSQLEditorTextChanged()

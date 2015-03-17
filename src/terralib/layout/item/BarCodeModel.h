@@ -41,11 +41,10 @@ namespace te
       public:
 
         BarCodeModel();
-        virtual ~BarCodeModel();
 
-        virtual void draw( ContextItem context );
+        virtual ~BarCodeModel();
     };
   }
 }
 
-#endif //__TERRALIB_LAYOUT_INTERNAL_BALLOONLAYOUT_MODEL_H
+#endif 

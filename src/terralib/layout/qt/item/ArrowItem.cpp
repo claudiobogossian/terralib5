@@ -34,15 +34,11 @@
 #include "../../../qt/widgets/Utils.h"
 #include "../../../geometry/Envelope.h"
 #include "../../../common/STLUtils.h"
+#include "../../item/ArrowModel.h"
 
 te::layout::ArrowItem::ArrowItem( ItemController* controller, Observable* o ) :
   ObjectItem(controller, o)
 {
-  this->setFlags(QGraphicsItem::ItemIsMovable
-    | QGraphicsItem::ItemIsSelectable
-    | QGraphicsItem::ItemSendsGeometryChanges
-    | QGraphicsItem::ItemIsFocusable);
-
   m_nameClass = std::string(this->metaObject()->className());
 }
 
@@ -51,39 +47,90 @@ te::layout::ArrowItem::~ArrowItem()
 
 }
 
-void te::layout::ArrowItem::updateObserver( ContextItem context )
+void te::layout::ArrowItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
 {
-  if(!m_model)
-    return;
-
-  te::color::RGBAColor** rgba = context.getPixmap();  
-
-  if(!rgba)
-    return;
-
-  Utils* utils = context.getUtils();
-
-  if(!utils)
-    return;
-
-  te::gm::Envelope box = utils->viewportBox(m_model->getBox());
-
-  if(!box.isValid())
-    return;
-
-  QPixmap pixmp;
-  QImage* img = 0;
-  
-  if(rgba)
+  Q_UNUSED( option );
+  Q_UNUSED( widget );
+  if ( !painter )
   {
-    img = te::qt::widgets::GetImage(rgba, box.getWidth(), box.getHeight());
-    pixmp = QPixmap::fromImage(*img);
+    return;
   }
 
-  te::common::Free(rgba, box.getHeight());
-  if(img)
-    delete img;
-  
-  setPixmap(pixmp);
-  update();
+  drawBackground(painter);
+
+  drawArrow(painter);
+
+  drawBorder(painter);
+
+  //Draw Selection
+  if (option->state & QStyle::State_Selected)
+  {
+    drawSelection(painter);
+  }
 }
+
+void te::layout::ArrowItem::drawArrow( QPainter * painter )
+{
+  ArrowModel* model = dynamic_cast<ArrowModel*>(m_model);
+  if(!model)
+  {
+    return;
+  }
+
+  painter->save();
+
+  QRectF boundRect = boundingRect();
+
+  QColor cblack(0,0,0);
+  QPen pn(cblack, 0, Qt::SolidLine);
+  painter->setPen(pn);
+
+  double centerY = boundRect.center().y();
+  
+  QLineF lne(boundRect.bottomLeft().x(), centerY, boundRect.width(), centerY);
+
+  painter->drawLine(lne);
+
+  painter->restore();
+
+  /* Draw Arrow Head */
+  drawHeadArrow(painter);
+}
+
+void te::layout::ArrowItem::drawHeadArrow( QPainter * painter )
+{
+  painter->save();
+
+  QBrush bsh(Qt::black);
+  painter->setBrush(bsh);
+  painter->setPen(Qt::NoPen);
+
+  QRectF boundRect = boundingRect();
+
+  double w = boundRect.width();
+  double h = boundRect.height();
+
+  double centerY = boundRect.center().y();
+  QLineF lne(boundRect.bottomLeft().x(), centerY, boundRect.width(), centerY);
+
+  double Pi = 3.14;
+  double sizeHead = (h / 5.);
+
+  double angle = ::acos(lne.dx() / lne.length());
+  if (lne.dy() >= 0)
+    angle = (Pi * 2) - angle;
+
+  QPointF arrowP1 = lne.p1() + QPointF(sin(angle + Pi / 3) * sizeHead,
+    cos(angle + Pi / 3) * sizeHead);
+  QPointF arrowP2 = lne.p1() + QPointF(sin(angle + Pi - Pi / 3) * sizeHead,
+    cos(angle + Pi - Pi / 3) * sizeHead);
+
+  QPolygonF trianglePolygon;
+  trianglePolygon << lne.p1() << arrowP1 << arrowP2;
+
+  painter->drawPolygon(trianglePolygon);
+
+  painter->restore();
+}
+
+

@@ -65,11 +65,15 @@ namespace te
           \brief Destructor
          */
         virtual ~RectangleItem();
-        
+
         /*!
-          \brief Reimplemented from ObjectItem
+          \brief Reimplemented from QGraphicsItem
          */
-        virtual void updateObserver(ContextItem context);
+        virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
+        
+      protected:
+
+        virtual void drawRectangle(QPainter * painter);
     };
   }
 }

@@ -179,7 +179,6 @@ void te::layout::View::mousePressEvent( QMouseEvent * event )
       {
         LineModel* lm = dynamic_cast<LineModel*>(oItem->getModel());
         lm->setCoords(m_wait->getCoordsW());
-        oItem->redraw( false );
         m_wait->clear();
         Context::getInstance().setItem(0);
         Context::getInstance().setWait(mode->getModeNone());

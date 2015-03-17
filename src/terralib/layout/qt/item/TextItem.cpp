@@ -56,25 +56,18 @@
 #include <QList>
 
 te::layout::TextItem::TextItem( ItemController* controller, Observable* o ) :
-  QGraphicsTextItem(0),
-  ItemObserver(controller, o),
+  ParentItem(controller, o, true),
   m_document(0),
   m_editable(false),
   m_move(false)
-{  
-  this->setFlags(QGraphicsItem::ItemIsMovable
-    | QGraphicsItem::ItemIsSelectable
-    | QGraphicsItem::ItemSendsGeometryChanges
-    | QGraphicsItem::ItemIsFocusable);
-
-  m_invertedMatrix = true;
-
-  QGraphicsItem* item = this;
+{    
   m_nameClass = std::string(this->metaObject()->className());
-  Context::getInstance().getScene()->insertItem((ItemObserver*)item);
-
+  
   m_document = new QTextDocument(this);
   setDocument(m_document);
+
+  //If enabled is true, this item will accept hover events
+  setAcceptHoverEvents(false);
 
   m_backgroundColor.setAlpha(0);
 
@@ -159,6 +152,8 @@ void te::layout::TextItem::paint( QPainter * painter, const QStyleOptionGraphics
   drawBackground( painter );
   
   QGraphicsTextItem::paint(painter, option, widget);
+
+  drawBorder(painter);
        
   //Draw Selection
   if (option->state & QStyle::State_Selected)
@@ -180,35 +175,6 @@ void te::layout::TextItem::drawBackground( QPainter* painter )
   painter->setBackground(QBrush(m_backgroundColor));
   painter->setRenderHint( QPainter::Antialiasing, true );
   painter->drawRect(QRectF( 0, 0, boundingRect().width(), boundingRect().height()));
-  painter->restore();
-}
-
-void te::layout::TextItem::drawSelection( QPainter* painter )
-{
-  if(!painter)
-  {
-    return;
-  }
-
-  painter->save();
-
-  qreal penWidth = painter->pen().widthF();
-
-  const qreal adj = penWidth / 2;
-  const QColor fgcolor(0,255,0);
-  const QColor backgroundColor(0,0,0);
-
-  QRectF rtAdjusted = boundingRect().adjusted(adj, adj, -adj, -adj);
-
-  QPen penBackground(backgroundColor, 0, Qt::SolidLine);
-  painter->setPen(penBackground);
-  painter->setBrush(Qt::NoBrush);
-  painter->drawRect(rtAdjusted);
-
-  QPen penForeground(fgcolor, 0, Qt::DashLine);
-  painter->setPen(penForeground);
-  painter->setBrush(Qt::NoBrush);
-  painter->drawRect(rtAdjusted);
   painter->restore();
 }
 
@@ -304,28 +270,6 @@ te::color::RGBAColor** te::layout::TextItem::getImage()
   QImage img = createImage();
   te::color::RGBAColor** teImg = te::qt::widgets::GetImage(&img);
   return teImg;
-}
-
-int te::layout::TextItem::getZValueItem()
-{
-  return QGraphicsItem::zValue();
-}
-
-void te::layout::TextItem::applyRotation()
-{
-  if(!m_model)
-    return;
-
-  ItemModelObservable* model = dynamic_cast<ItemModelObservable*>(m_model);
-  if(!model)
-    return;
-
-  double angle = model->getAngle();
-
-  if(angle == model->getOldAngle())
-    return;
-
-  setRotation(angle);
 }
 
 QVariant te::layout::TextItem::itemChange( GraphicsItemChange change, const QVariant & value )
@@ -470,8 +414,8 @@ void te::layout::TextItem::resetEdit()
   clearFocus();     
 }
 
-bool te::layout::TextItem::contains( const QPointF & point ) const
+QRectF te::layout::TextItem::boundingRect() const
 {
-  te::gm::Envelope box(point.x(), point.y(), point.x(), point.y());
-  return m_model->getBox().contains(box);
+  return QGraphicsTextItem::boundingRect();
 }
+

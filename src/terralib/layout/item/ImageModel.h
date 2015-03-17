@@ -75,12 +75,7 @@ namespace te
           \brief Reimplemented from ItemModelObservable
          */
         virtual void updateProperties(te::layout::Properties* properties);   
-
-        /*!
-          \brief Reimplemented from ItemModelObservable
-         */
-        virtual void draw( ContextItem context );
-
+        
         /*!
           \brief Change file name
 

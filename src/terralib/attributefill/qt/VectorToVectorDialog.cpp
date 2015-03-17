@@ -29,10 +29,8 @@
 #include "../../attributefill/VectorToVectorOp.h"
 #include "../../attributefill/VectorToVectorMemory.h"
 #include "../../common/Exception.h"
-#include "../../common/Logger.h"
 #include "../../common/progress/ProgressManager.h"
 #include "../../common/Translator.h"
-#include "../../common/STLUtils.h"
 #include "../../common/StringUtils.h"
 #include "../../dataaccess/dataset/DataSetType.h"
 #include "../../dataaccess/datasource/DataSourceCapabilities.h"
@@ -53,7 +51,6 @@
 #include "../../qt/widgets/Utils.h"
 #include "../../statistics/core/Utils.h"
 #include "../Config.h"
-#include "../Exception.h"
 #include "VectorToVectorDialog.h"
 #include "ui_VectorToVectorDialogForm.h"
 
@@ -159,81 +156,75 @@ void te::attributefill::VectorToVectorDialog::onOkPushButtonClicked()
 
   if(!fromLayer)
   {
-    // TODO
+    QMessageBox::warning(this, tr("VectorToVector"), tr("\"From\" layer invalid!"));
+    return;
   }
-
-  std::string fromDataSetName = fromLayer->getDataSetName();
-  std::auto_ptr<te::da::DataSetType> fromSchema = fromLayer->getSchema();
-  std::auto_ptr<te::da::DataSet> fromData = fromLayer->getData();
-  te::da::DataSourcePtr fromSource = te::da::GetDataSource(fromLayer->getDataSourceId(), true);
 
   te::map::DataSetLayerPtr toLayer(dynamic_cast<te::map::DataSetLayer*>(getCurrentToLayer().get()));
 
   if(!toLayer)
   {
-    // TODO
+    QMessageBox::warning(this, tr("VectorToVector"), tr("\"To\" layer invalid!"));
+    return;
   }
-
-  std::string toDataSetName = toLayer->getDataSetName();
-  std::auto_ptr<te::da::DataSetType> toSchema = fromLayer->getSchema();
-  std::auto_ptr<te::da::DataSet> toData = toLayer->getData();
-  te::da::DataSourcePtr toSource = te::da::GetDataSource(toLayer->getDataSourceId(), true);
-
-  std::string outDataSetName = m_ui->m_newLayerNameLineEdit->text().toStdString();
-  te::da::DataSourcePtr outSource;
 
   if(m_ui->m_repositoryLineEdit->text().isEmpty())
   {
-    QMessageBox::information(this, tr("VectorToVector"), tr("Define a repository for the result."));
+    QMessageBox::warning(this, tr("VectorToVector"), tr("Define a repository for the result."));
     return;
   }
 
   if(m_ui->m_newLayerNameLineEdit->text().isEmpty())
   {
-    QMessageBox::information(this, tr("VectorToVector"), tr("Define a name for the resulting layer."));
+    QMessageBox::warning(this, tr("VectorToVector"), tr("Define a name for the resulting layer."));
     return;
   }
+
+  std::string                        fromDataSetName = fromLayer->getDataSetName();
+  std::auto_ptr<te::da::DataSetType> fromSchema = fromLayer->getSchema();
+  std::auto_ptr<te::da::DataSet>     fromData = fromLayer->getData();
+  te::da::DataSourcePtr              fromSource = te::da::GetDataSource(fromLayer->getDataSourceId(), true);
+
+  std::string                        toDataSetName = toLayer->getDataSetName();
+  std::auto_ptr<te::da::DataSetType> toSchema = fromLayer->getSchema();
+  std::auto_ptr<te::da::DataSet>     toData = toLayer->getData();
+  te::da::DataSourcePtr              toSource = te::da::GetDataSource(toLayer->getDataSourceId(), true);
+
+  std::string           outDataSetName = m_ui->m_newLayerNameLineEdit->text().toStdString();
+  te::da::DataSourcePtr outSource;
 
   //progress
   te::qt::widgets::ProgressViewerDialog v(this);
   int id = te::common::ProgressManager::getInstance().addViewer(&v);
 
-  std::auto_ptr<te::attributefill::VectorToVectorOp> v2v;
-
-//  if(dsCapabilities.supportsPreparedQueryAPI() && dsCapabilities.getQueryCapabilities().supportsSpatialSQLDialect())
-//  {
-//    v2v.reset(new te::attributefill::VectorToVectorQuery());
-//  }
-//  else
-//  {
-    v2v.reset(new te::attributefill::VectorToVectorMemory());
-//  }
+  std::auto_ptr<te::attributefill::VectorToVectorOp> v2v (new te::attributefill::VectorToVectorMemory());
 
   v2v->setInput(fromLayer, toLayer);
 
   if(m_toFile)
   {
     boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toStdString());
-      
+
     if (boost::filesystem::exists(uri))
     {
-      QMessageBox::information(this, tr("VectorToVector"), tr("Output file already exists. Remove it or select a new name and try again."));
+      QMessageBox::warning(this, tr("VectorToVector"), tr("Output file already exists. Remove it or select a new name and try again."));
       return;
     }
-      
+
     std::size_t idx = outDataSetName.find(".");
     if (idx != std::string::npos)
       outDataSetName=outDataSetName.substr(0,idx);
 
     std::map<std::string, std::string> dsinfo;
     dsinfo["URI"] = uri.string();
-      
+
     outSource.reset(te::da::DataSourceFactory::make("OGR").release());
     outSource->setConnectionInfo(dsinfo);
     outSource->open();
+
     if (outSource->dataSetExists(outDataSetName))
     {
-      QMessageBox::information(this, tr("VectorToVector"), tr("There is already a dataset with the requested name in the output data source. Remove it or select a new name and try again."));
+      QMessageBox::warning(this, tr("VectorToVector"), tr("There is already a dataset with the requested name in the output data source. Remove it or select a new name and try again."));
       return;
     }
 
@@ -262,13 +253,13 @@ void te::attributefill::VectorToVectorDialog::onOkPushButtonClicked()
     te::da::DataSourcePtr aux = te::da::GetDataSource(m_outputDatasource->getId());
     if (!aux)
     {
-      QMessageBox::information(this, tr("VectorToVector"), tr("The selected output datasource can not be accessed."));
+      QMessageBox::warning(this, tr("VectorToVector"), tr("The selected output datasource can not be accessed."));
       return;
     }
       
     if (aux->dataSetExists(outDataSetName))
     {
-      QMessageBox::information(this, tr("VectorToVector"), tr("Dataset already exists. Remove it or select a new name and try again."));
+      QMessageBox::warning(this, tr("VectorToVector"), tr("Dataset already exists. Remove it or select a new name and try again."));
       return;
     }
     this->setCursor(Qt::WaitCursor);

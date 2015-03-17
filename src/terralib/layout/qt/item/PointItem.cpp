@@ -34,15 +34,12 @@
 #include "../../../qt/widgets/Utils.h"
 #include "../../../geometry/Envelope.h"
 #include "../../../common/STLUtils.h"
+#include "../../item/PointModel.h"
+#include "../../core/enum/EnumPointType.h"
 
 te::layout::PointItem::PointItem( ItemController* controller, Observable* o ) :
   ObjectItem(controller, o)
 {
-  this->setFlags(QGraphicsItem::ItemIsMovable
-    | QGraphicsItem::ItemIsSelectable
-    | QGraphicsItem::ItemSendsGeometryChanges
-    | QGraphicsItem::ItemIsFocusable);
-
   m_nameClass = std::string(this->metaObject()->className());
 }
 
@@ -51,39 +48,322 @@ te::layout::PointItem::~PointItem()
 
 }
 
-void te::layout::PointItem::updateObserver( ContextItem context )
+void te::layout::PointItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
 {
-  if(!m_model)
-    return;
-
-  te::color::RGBAColor** rgba = context.getPixmap();  
-
-  if(!rgba)
-    return;
-
-  Utils* utils = context.getUtils();
-
-  if(!utils)
-    return;
-
-  te::gm::Envelope box = utils->viewportBox(m_model->getBox());
-
-  if(!box.isValid())
-    return;
-
-  QPixmap pixmp;
-  QImage* img = 0;
-  
-  if(rgba)
+  Q_UNUSED( option );
+  Q_UNUSED( widget );
+  if ( !painter )
   {
-    img = te::qt::widgets::GetImage(rgba, box.getWidth(), box.getHeight());
-    pixmp = QPixmap::fromImage(*img);
+    return;
   }
 
-  te::common::Free(rgba, box.getHeight());
-  if(img)
-    delete img;
-  
-  setPixmap(pixmp);
-  update();
+  drawBackground(painter);
+
+  PointModel* model = dynamic_cast<PointModel*>(m_model);
+
+  if(model)
+  {
+    EnumPointType* enumScale = model->getEnumPointType();
+
+    if(model->getCurrentPointType() == enumScale->getStarType())
+    {
+      drawStar(painter);
+    }
+    if(model->getCurrentPointType() == enumScale->getCircleType())
+    {
+      drawCircle(painter);
+    }
+    if(model->getCurrentPointType() == enumScale->getXType())
+    {
+      drawX(painter);
+    }
+    if(model->getCurrentPointType() == enumScale->getSquareType())
+    {
+      drawSquare(painter);
+    }
+    if(model->getCurrentPointType() == enumScale->getRhombusType())
+    {
+      drawRhombus(painter);
+    }
+    if(model->getCurrentPointType() == enumScale->getCrossType())
+    {
+      drawCross(painter);
+    }
+  }
+
+  drawBorder(painter);
+
+  //Draw Selection
+  if (option->state & QStyle::State_Selected)
+  {
+    drawSelection(painter);
+  }
 }
+
+void te::layout::PointItem::drawStar( QPainter * painter )
+{
+  PointModel* model = dynamic_cast<PointModel*>(m_model);
+  if(!model)
+  {
+    return;
+  }
+
+  painter->save();
+
+  double half = model->getShapeSize() / 2.;
+
+  double centerX = boundingRect().center().x();
+  double centerY = boundingRect().center().y();
+
+  double x = centerX - half;
+  double y = centerY + half;
+  double w = model->getShapeSize();
+  double h = model->getShapeSize();
+  
+  QPainterPath rhombus_path;
+
+  QPolygonF poly;
+  qreal const c = half;
+  qreal const d = w;
+  bool inner = true;
+  QPointF pUnion;
+  for ( qreal i = 0 ; i < 2*3.14; i += 3.14/5.0, inner=!inner ) {
+    qreal const f = inner ? c : d;
+    poly << QPointF( f * cos(i), f * sin(i) );
+    if(i == 0)
+    {
+      pUnion = QPointF( f * cos(i), f * sin(i) );
+    }
+  }
+  poly << pUnion;
+  poly.translate(boundingRect().center());
+
+  rhombus_path.addPolygon(poly);
+
+  QColor cpen(0,0,0);
+  QPen pn(cpen, 0, Qt::SolidLine);
+  painter->setPen(pn);
+
+  te::color::RGBAColor clrBack = model->getBackgroundColor();
+
+  QColor cbrush;
+  cbrush.setRed(clrBack.getRed());
+  cbrush.setGreen(clrBack.getGreen());
+  cbrush.setBlue(clrBack.getBlue());
+  cbrush.setAlpha(clrBack.getAlpha());
+
+  painter->setBrush(cbrush);
+  painter->drawPath(rhombus_path);
+
+  painter->restore();
+}
+
+void te::layout::PointItem::drawCircle( QPainter * painter )
+{
+  PointModel* model = dynamic_cast<PointModel*>(m_model);
+  if(!model)
+  {
+    return;
+  }
+
+  painter->save();
+
+  double half = model->getShapeSize() / 2.;
+
+  double x = boundingRect().center().x() - half;
+  double y = boundingRect().center().y() - half;
+  double w = model->getShapeSize();
+  double h = model->getShapeSize();
+
+  QRectF pointRect(x, y, w, h);
+
+  QPainterPath circle_path;
+  circle_path.addEllipse(pointRect);
+
+  QColor cpen(0,0,0);
+  QPen pn(cpen, 0, Qt::SolidLine);
+  painter->setPen(pn);
+
+  te::color::RGBAColor clrBack = model->getBackgroundColor();
+
+  QColor cbrush;
+  cbrush.setRed(clrBack.getRed());
+  cbrush.setGreen(clrBack.getGreen());
+  cbrush.setBlue(clrBack.getBlue());
+  cbrush.setAlpha(clrBack.getAlpha());
+
+  painter->setBrush(cbrush);
+  painter->drawPath(circle_path);
+
+  painter->restore();
+}
+
+void te::layout::PointItem::drawX( QPainter * painter )
+{
+  PointModel* model = dynamic_cast<PointModel*>(m_model);
+  if(!model)
+  {
+    return;
+  }
+
+  painter->save();
+
+  double half = model->getShapeSize() / 2.;
+
+  double x = boundingRect().center().x() - half;
+  double y = boundingRect().center().y() + half;
+  double w = model->getShapeSize();
+  double h = model->getShapeSize();
+  
+  QFont ft = painter->font();
+  ft.setPointSizeF(w);
+
+  QPainterPath rect_path;
+  rect_path.addText(x, y, ft, "X");
+
+  QColor cpen(0,0,0);
+  QPen pn(cpen, 0, Qt::SolidLine);
+  painter->setPen(pn);
+
+  te::color::RGBAColor clrBack = model->getBackgroundColor();
+
+  QColor cbrush;
+  cbrush.setRed(clrBack.getRed());
+  cbrush.setGreen(clrBack.getGreen());
+  cbrush.setBlue(clrBack.getBlue());
+  cbrush.setAlpha(clrBack.getAlpha());
+
+  painter->setBrush(cbrush);
+  painter->drawPath(rect_path);
+
+  painter->restore();
+}
+
+void te::layout::PointItem::drawSquare( QPainter * painter )
+{
+  PointModel* model = dynamic_cast<PointModel*>(m_model);
+  if(!model)
+  {
+    return;
+  }
+
+  painter->save();
+
+  double half = model->getShapeSize() / 2.;
+
+  double x = boundingRect().center().x() - half;
+  double y = boundingRect().center().y() - half;
+  double w = model->getShapeSize();
+  double h = model->getShapeSize();
+
+  QRectF pointRect(x, y, w, h);
+
+  QPainterPath rect_path;
+  rect_path.addRect(pointRect);
+
+  QColor cpen(0,0,0);
+  QPen pn(cpen, 0, Qt::SolidLine);
+  painter->setPen(pn);
+
+  te::color::RGBAColor clrBack = model->getBackgroundColor();
+
+  QColor cbrush;
+  cbrush.setRed(clrBack.getRed());
+  cbrush.setGreen(clrBack.getGreen());
+  cbrush.setBlue(clrBack.getBlue());
+  cbrush.setAlpha(clrBack.getAlpha());
+
+  painter->setBrush(cbrush);
+  painter->drawPath(rect_path);
+
+  painter->restore();
+}
+
+void te::layout::PointItem::drawRhombus( QPainter * painter )
+{
+  PointModel* model = dynamic_cast<PointModel*>(m_model);
+  if(!model)
+  {
+    return;
+  }
+
+  painter->save();
+
+  double half = model->getShapeSize() / 2.;
+
+  double centerX = boundingRect().center().x();
+  double centerY = boundingRect().center().y();
+
+  double x = centerX - half;
+  double y = centerY + half;
+  double w = model->getShapeSize();
+  double h = model->getShapeSize();
+  
+  QPolygonF poly;
+  poly.push_back(QPoint(centerX, y));
+  poly.push_back(QPoint(centerX + half, centerY));
+  poly.push_back(QPoint(centerX, centerY - half));
+  poly.push_back(QPoint(x, centerY));
+  poly.push_back(QPoint(centerX, y));
+
+  QPainterPath rhombus_path;
+  rhombus_path.addPolygon(poly);
+
+  QColor cpen(0,0,0);
+  QPen pn(cpen, 0, Qt::SolidLine);
+  painter->setPen(pn);
+
+  te::color::RGBAColor clrBack = model->getBackgroundColor();
+
+  QColor cbrush;
+  cbrush.setRed(clrBack.getRed());
+  cbrush.setGreen(clrBack.getGreen());
+  cbrush.setBlue(clrBack.getBlue());
+  cbrush.setAlpha(clrBack.getAlpha());
+
+  painter->setBrush(cbrush);
+  painter->drawPath(rhombus_path);
+
+  painter->restore();
+}
+
+void te::layout::PointItem::drawCross( QPainter * painter )
+{
+  PointModel* model = dynamic_cast<PointModel*>(m_model);
+  if(!model)
+  {
+    return;
+  }
+
+  painter->save();
+
+  double half = model->getShapeSize() / 2.;
+
+  double centerX = boundingRect().center().x();
+  double centerY = boundingRect().center().y();
+
+  double x = centerX - half;
+  double y = centerY + half;
+  double w = model->getShapeSize();
+  double h = model->getShapeSize();
+    
+  QColor cpen(0,0,0);
+  QPen pn(cpen);
+  painter->setPen(pn);
+
+  te::color::RGBAColor clrBack = model->getBackgroundColor();
+
+  QColor cbrush;
+  cbrush.setRed(clrBack.getRed());
+  cbrush.setGreen(clrBack.getGreen());
+  cbrush.setBlue(clrBack.getBlue());
+  cbrush.setAlpha(clrBack.getAlpha());
+
+  painter->setBrush(cbrush);
+  painter->drawLine(x, centerY, x + w, centerY);
+  painter->drawLine(centerX, y, centerX, y - h);
+
+  painter->restore();
+}
+
+

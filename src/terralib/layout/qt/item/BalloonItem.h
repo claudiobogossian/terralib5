@@ -47,13 +47,12 @@ namespace te
       public:
 
         BalloonItem( ItemController* controller, Observable* o );
+
         virtual ~BalloonItem();
 
         virtual void paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
         
-        virtual void updateObserver(ContextItem context);
-
-    protected:
+      protected:
 
         virtual void	mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
         

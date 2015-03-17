@@ -840,7 +840,9 @@ void te::qt::widgets::DataSetTableView::setLayer(te::map::AbstractLayer* layer, 
       m_orderby.push_back((*it)->getName());
   }
 
-  setDataSet(GetDataSet(m_layer, m_orderby, m_orderAsc).release(), clearEditor);
+  te::da::DataSourcePtr dsc = GetDataSource(m_layer);
+
+  setDataSet(GetDataSet(m_layer, m_orderby, m_orderAsc).release(), dsc->getEncoding(), clearEditor);
   setLayerSchema(sch.get());
 
   te::da::DataSetTypeCapabilities* caps = GetCapabilities(m_layer);
@@ -849,8 +851,6 @@ void te::qt::widgets::DataSetTableView::setLayer(te::map::AbstractLayer* layer, 
 
   if(caps)
     m_model->setEditable(caps->supportsDataEdition());
-
-  te::da::DataSourcePtr dsc = GetDataSource(m_layer);
 
   if(dsc.get() != 0)
   {
@@ -861,11 +861,13 @@ void te::qt::widgets::DataSetTableView::setLayer(te::map::AbstractLayer* layer, 
   highlightOIds(m_layer->getSelected());
 }
 
-void te::qt::widgets::DataSetTableView::setDataSet(te::da::DataSet* dset, const bool& clearEditor)
+void te::qt::widgets::DataSetTableView::setDataSet(te::da::DataSet* dset, te::common::CharEncoding enc, const bool& clearEditor)
 {
   reset();
 
-  m_model->setDataSet(dset, clearEditor);
+  m_encoding = enc;
+
+  m_model->setDataSet(dset, enc, clearEditor);
   DataSetTableHorizontalHeader* hheader = static_cast<DataSetTableHorizontalHeader*>(horizontalHeader());
   hheader->setDataSet(dset);
 
@@ -1034,7 +1036,7 @@ void te::qt::widgets::DataSetTableView::retypeColumn(const int& column)
     if(dsrc.get() == 0)
       throw Exception(tr("Fail to get data source.").toStdString());
 
-    setDataSet(0);
+    setDataSet(0, te::common::LATIN1);
 
     dsrc->changePropertyDefinition(dsetName, columnName, dlg.getProperty().release());
 
@@ -1234,7 +1236,7 @@ void te::qt::widgets::DataSetTableView::sortByColumns(const bool& asc)
     if(dset.get() == 0)
       throw te::common::Exception(tr("Sort operation not supported by the source of data.").toStdString());
 
-    setDataSet(dset.release());
+    setDataSet(dset.release(), m_encoding);
 
     viewport()->repaint();
 

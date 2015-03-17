@@ -281,7 +281,7 @@ void te::qt::widgets::TableLinkDialog::getProperties()
           if(i == dsType->size() - 1)
           {
             //Adjusting the table that will display the tabular dataset
-            m_tabularView->setDataSet(new te::mem::DataSet(*dataSet.get(), dataSetProperties, 5));
+            m_tabularView->setDataSet(new te::mem::DataSet(*dataSet.get(), dataSetProperties, 5), m_ds->getEncoding());
             m_tabularView->resizeColumnsToContents();
           }
         }

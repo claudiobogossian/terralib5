@@ -38,6 +38,8 @@ te::layout::ArrowModel::ArrowModel()
   m_type = Enums::getInstance().getEnumObjectType()->getArrowItem();
 
   m_box = te::gm::Envelope(0., 0., 20., 20.);
+
+  m_border = false;
 }
 
 te::layout::ArrowModel::~ArrowModel()
@@ -45,75 +47,3 @@ te::layout::ArrowModel::~ArrowModel()
 
 }
 
-void te::layout::ArrowModel::draw( ContextItem context )
-{
-  te::color::RGBAColor** pixmap = 0;
-  
-  te::map::Canvas* canvas = context.getCanvas();
-  Utils* utils = context.getUtils();
-
-  if((!canvas) || (!utils))
-    return;
-
-  if(context.isResizeCanvas())
-    utils->configCanvas(m_box);
-  
-  drawBackground(context);
-
-  drawArrow(canvas, utils);
-    
-  if(context.isResizeCanvas())
-    pixmap = utils->getImageW(m_box);
-  
-  context.setPixmap(pixmap);
-  notifyAll(context);
-}
-
-void te::layout::ArrowModel::drawArrow( te::map::Canvas* canvas, Utils* utils )
-{
-  canvas->setPolygonContourWidth(1);
-  canvas->setPolygonContourColor(te::color::RGBAColor(0, 0, 0, 255));
-  canvas->setPolygonFillColor(te::color::RGBAColor(0, 0, 0, 255));
-  canvas->setLineColor(te::color::RGBAColor(0, 0, 0, 255));
-  canvas->setLineWidth(1);
-
-  double y = m_box.getCenter().y;
-
-  /* Draw Arrow */
-  te::gm::Envelope box(m_box.m_llx, y, m_box.m_urx, y);
-  
-  te::gm::LinearRing* line = utils->createSimpleLine(box);
-  utils->drawLineW(line);
-  if(line) delete line;
-
-  /* Draw Arrow Head */
-  drawHeadArrow(canvas, utils, box);
-}
-
-void te::layout::ArrowModel::drawHeadArrow( te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box )
-{
-  double w = m_box.getWidth();
-  double h = m_box.getHeight();
-
-  double initHead = box.m_urx - (w / 5.);
-  double sizeHead = (h / 5.);
-
-  te::gm::Polygon* rect = new te::gm::Polygon(1, te::gm::PolygonType);
-
-  te::gm::LinearRing* outRingPtr0 = new te::gm::LinearRing(5, te::gm::LineStringType);
-  outRingPtr0->setPointN( 0, te::gm::Point(initHead, box.getLowerLeftY()));
-  outRingPtr0->setPointN( 1, te::gm::Point(initHead, box.getLowerLeftY() - sizeHead)); 
-  outRingPtr0->setPointN( 2, te::gm::Point(box.getUpperRightX(), box.getUpperRightY()));
-  outRingPtr0->setPointN( 3, te::gm::Point(initHead, box.getUpperRightY() + sizeHead)); 
-  outRingPtr0->setPointN( 4, te::gm::Point(initHead, box.getLowerLeftY()));
-
-  rect->setRingN(0, outRingPtr0);
-
-  canvas->draw(rect);
-
-  if(rect)
-  {
-    delete rect;
-    rect = 0;
-  }
-}

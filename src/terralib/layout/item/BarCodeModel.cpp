@@ -50,24 +50,3 @@ te::layout::BarCodeModel::~BarCodeModel()
 
 }
 
-void te::layout::BarCodeModel::draw( ContextItem context )
-{
-  te::color::RGBAColor** pixmap = 0;
-  
-  te::map::Canvas* canvas = context.getCanvas();
-  Utils* utils = context.getUtils();
-
-  if((!canvas) || (!utils))
-    return;
-
-  if(context.isResizeCanvas())
-    utils->configCanvas(m_box);
-  
-  drawBackground(context);
-  
-  if(context.isResizeCanvas())
-    pixmap = utils->getImageW(m_box);
-  
-  context.setPixmap(pixmap);
-  notifyAll(context);
-}
