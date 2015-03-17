@@ -115,6 +115,13 @@ namespace te
 		  \return new object 
         */
         QGraphicsItem* createMapGrid();
+    
+    /*!
+          \brief Create graphic object of type GridMapItem
+		  		  
+		  \return new object 
+        */
+        QGraphicsItem* createGridMap();
 
 		/*!
           \brief Create graphic object of type TextItem
@@ -122,7 +129,7 @@ namespace te
 		  \return new object 
         */
         QGraphicsItem* createText();
-
+    
 		/*!
           \brief Create graphic object of type RectangleItem
 		  		  
@@ -267,6 +274,7 @@ namespace te
         std::string             m_polygonItem; //!< Part of the name that will be set to a new object of type PolygonItem.
         std::string             m_balloonItem; //!< Part of the name that will be set to a new object of type BalloonItem.
         std::string             m_barCodeItem; //!< Part of the name that will be set to a new object of type BarCode.
+        std::string             m_gridMapItem; //!< Part of the name that will be set to a new object of type GridMapItem.
     };
   }
 }

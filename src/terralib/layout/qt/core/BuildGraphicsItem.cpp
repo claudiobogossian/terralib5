@@ -93,6 +93,9 @@
 #include "../../item/BarCodeModel.h"
 #include "../../item/BarCodeController.h"
 #include "../item/BarCodeItem.h"
+#include "../../item/GridMapModel.h"
+#include "../../item/GridMapController.h"
+#include "../item/GridMapItem.h"
 
 // Qt
 #include <QGraphicsItem>
@@ -121,7 +124,8 @@ te::layout::BuildGraphicsItem::BuildGraphicsItem() :
   m_lineItem("LINE_"), 
   m_polygonItem("POLYGON_"), 
   m_balloonItem("BALLOON_"),
-  m_barCodeItem("BARCODE_")
+  m_barCodeItem("BARCODE_"),
+  m_gridMapItem("GRIDMAP_")
 {
  
 }
@@ -156,6 +160,10 @@ QGraphicsItem* te::layout::BuildGraphicsItem::rebuildItem( te::layout::Propertie
   else if(type == enumObj->getMapGridItem())
   {
     item = createMapGrid();
+  }
+  else if(type == enumObj->getGridMapItem())
+  {
+    item = createGridMap();
   }
   else if(type == enumObj->getTextItem())
   {
@@ -249,6 +257,11 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createItem( te::layout::EnumType* 
   {
     m_name = nameItem(m_mapGridItem, enumObj->getMapGridItem());
     item = createMapGrid();
+  }
+  else if(mode == enumMode->getModeCreateGridMap())
+  {
+    m_name = nameItem(m_gridMapItem, enumObj->getGridMapItem());
+    item = createGridMap();
   }
   else if(mode == enumMode->getModeCreateText())
   {
@@ -351,6 +364,10 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createItem( te::layout::EnumType* 
   else if(type == enumObj->getMapGridItem())
   {
     item = createMapGrid();
+  }
+  else if(type == enumObj->getGridMapItem())
+  {
+    item = createGridMap();
   }
   else if(type == enumObj->getTextItem())
   {
@@ -559,6 +576,55 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createMapGrid()
     if(m_redraw)
       itemObs->redraw();
     return qrectMapGrid;
+  }
+
+  return item;
+}
+
+QGraphicsItem* te::layout::BuildGraphicsItem::createGridMap()
+{
+  QGraphicsItem* item = 0;
+
+  GridMapModel* model = new GridMapModel();
+  if(!m_props)
+  {
+    model->setId(m_id);
+    model->setName(m_name);
+  }
+
+  GridMapController* controllerGridMap = new GridMapController(model);
+  ItemObserver* itemObs = (ItemObserver*)controllerGridMap->getView();
+
+  GridMapItem* qrectGridMap = dynamic_cast<GridMapItem*>(itemObs);
+
+  if(m_props)
+  {
+    qrectGridMap->updateProperties(m_props);
+  }
+
+  if(qrectGridMap)
+  {
+    AbstractScene* abstractGrid = Context::getInstance().getScene();
+    Scene* scene = dynamic_cast<Scene*> (abstractGrid);
+    if (scene)
+    {
+      ItemUtils* iUtils = Context::getInstance().getItemUtils();
+      if(iUtils)
+      {
+        std::vector<te::layout::MapItem*> mapList = iUtils->getMapItemList(true);
+        if(mapList.size() == 1)
+        {
+          qrectGridMap->setParentItem(mapList[0]);          
+        }
+        else
+        {
+          qrectGridMap->setPos(QPointF(m_coord.x, m_coord.y));
+        }
+      }
+    }
+    if(m_redraw)
+      itemObs->redraw();
+    return qrectGridMap;
   }
 
   return item;
