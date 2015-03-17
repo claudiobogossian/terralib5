@@ -62,11 +62,6 @@ namespace te
           \brief Destructor
         */ 
         virtual ~RectangleModel();
-
-        /*!
-          \brief Reimplemented from ItemModelObservable
-         */
-        virtual void draw( ContextItem context );
     };
   }
 }

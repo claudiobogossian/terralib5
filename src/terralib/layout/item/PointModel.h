@@ -34,6 +34,9 @@
 #include "../core/pattern/mvc/ItemModelObservable.h"
 #include "../core/ContextItem.h"
 #include "../core/Config.h"
+#include "../core/enum/EnumPointType.h"
+#include "../core/property/Property.h"
+#include "../core/property/Properties.h"
 
 namespace te
 {
@@ -62,10 +65,23 @@ namespace te
         */ 
         virtual ~PointModel();
 
-        /*!
-          \brief Reimplemented from ItemModelObservable
-         */
-        virtual void draw( ContextItem context );
+        virtual Properties* getProperties() const;
+
+        virtual void updateProperties(te::layout::Properties* properties);
+
+        virtual EnumPointType* getEnumPointType();
+
+        virtual EnumType* getCurrentPointType();
+
+        virtual double getShapeSize();
+
+      protected:
+
+        virtual Property pointProperty() const;
+
+        EnumPointType* m_enumPointType;
+        EnumType*      m_currentPointType;
+        double         m_shapeSize;
     };
   }
 }

@@ -34,6 +34,7 @@
 #include "Utils.h"
 #include "../../maptools/Canvas.h"
 #include "Config.h"
+#include "../../geometry/Coord2D.h"
 
 namespace te
 {

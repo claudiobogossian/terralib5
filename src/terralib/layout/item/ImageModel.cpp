@@ -35,6 +35,7 @@
 #include "../core/pattern/mvc/ItemModelObservable.h"
 #include "../core/property/Properties.h"
 #include "../core/enum/Enums.h"
+#include "../core/pattern/singleton/Context.h"
 
 te::layout::ImageModel::ImageModel() :
   m_fileName(""),
@@ -48,40 +49,13 @@ te::layout::ImageModel::ImageModel() :
   m_box = te::gm::Envelope(0., 0., 90., 90.);
 
   m_properties->setHasWindows(true);
+
+  m_border = false;
 }
 
 te::layout::ImageModel::~ImageModel()
 {
 
-}
-
-void te::layout::ImageModel::draw( ContextItem context )
-{
-  te::color::RGBAColor** pixmap = 0;
-  
-  te::map::Canvas* canvas = context.getCanvas();
-  Utils* utils = context.getUtils();
-
-  if((!canvas) || (!utils))
-    return;
-
-  if(context.isResizeCanvas())
-    utils->configCanvas(m_box);
-  
-  drawBackground(context);
-
-  if(m_fileName.compare("") != 0)
-  {
-    m_imgType = utils->getFileExtensionType(m_fileName);
-    m_fileExtension = utils->getFileExtension(m_fileName);
-    utils->drawImage(m_fileName, m_box);
-  }
-  
-  if(context.isResizeCanvas())
-    pixmap = utils->getImageW(m_box);
-  
-  context.setPixmap(pixmap);
-  notifyAll(context);
 }
 
 void te::layout::ImageModel::setFileName( std::string fileName )
@@ -121,6 +95,14 @@ void te::layout::ImageModel::updateProperties( te::layout::Properties* propertie
   if(!pro_fileName.isNull())
   {
     m_fileName = pro_fileName.getValue().toString();
+
+    Utils* utils = Context::getInstance().getUtils();
+
+    if(utils)
+    {
+      m_imgType = utils->getFileExtensionType(m_fileName);
+      m_fileExtension = utils->getFileExtension(m_fileName);
+    }
   }
 }
 
@@ -133,3 +115,4 @@ te::map::ImageType te::layout::ImageModel::getFileType()
 {
   return m_imgType;
 }
+

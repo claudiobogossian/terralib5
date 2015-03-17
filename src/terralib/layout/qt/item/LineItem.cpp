@@ -34,8 +34,10 @@
 #include "../../../qt/widgets/Utils.h"
 #include "../../../geometry/Envelope.h"
 #include "../../../common/STLUtils.h"
-//teste tecla atalho
-/*#include "../core/Scene.h"*/
+#include "../../item/LineModel.h"
+
+// STL
+#include <vector>
 
 // Qt
 #include <QPointF>
@@ -43,20 +45,9 @@
 #include <QStyleOptionGraphicsItem>
 #include <QObject>
 
-//#include "../src/gui/painting/qpainter.h"
-//#include "../src/gui/kernel/qevent.h"
-//#include "../src/gui/graphicsview/qgraphicsview.h"
-
-
-
 te::layout::LineItem::LineItem( ItemController* controller, Observable* o ) :
   ObjectItem(controller, o)
-{
-  this->setFlags(QGraphicsItem::ItemIsMovable
-    | QGraphicsItem::ItemIsSelectable
-    | QGraphicsItem::ItemSendsGeometryChanges
-    | QGraphicsItem::ItemIsFocusable);
-  
+{  
   m_nameClass = std::string(this->metaObject()->className());
 }
 
@@ -67,43 +58,85 @@ te::layout::LineItem::~LineItem()
 
 void te::layout::LineItem::updateObserver( ContextItem context )
 {
-  if(!m_model)
-    return;
+  ObjectItem::updateObserver(context);
 
-  if ( context.isChangePos() )
+  LineModel* model = dynamic_cast<LineModel*>(m_model);
+  if(!model)
   {
-    QPointF p ( context.getPos().getX(), context.getPos().getY() );
-    setPos(p);
-  }
-  
-  te::color::RGBAColor** rgba = context.getPixmap();  
-
-  if(!rgba)
     return;
-
-  Utils* utils = context.getUtils();
-
-  if(!utils)
-    return;
-
-  te::gm::Envelope box = utils->viewportBox(m_model->getBox());
-
-  if(!box.isValid())
-    return;
-
-  QPixmap pixmp;
-  QImage* img = 0;
-  
-  if(rgba)
-  {
-    img = te::qt::widgets::GetImage(rgba, box.getWidth(), box.getHeight());
-    pixmp = QPixmap::fromImage(*img);
   }
 
-  te::common::Free(rgba, box.getHeight());
-  if(img)
-    delete img;
-  
-  setPixmap(pixmp);
-  update();
+  if(!m_poly.empty())
+    return;
+
+  std::vector<te::gm::Point*> coords = model->getCoords();
+
+  if (coords.empty())
+    return;
+
+  for (unsigned int i = 0; i < coords.size(); ++i)
+  {
+    QPointF pt(coords[i]->getX(), coords[i]->getY());
+
+    QPointF mlocal = mapFromScene(pt);
+    m_poly.push_back(mlocal);   
+  }
 }
+
+void te::layout::LineItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
+{
+  Q_UNUSED( option );
+  Q_UNUSED( widget );
+  if ( !painter )
+  {
+    return;
+  }
+
+  drawBackground(painter);
+
+  drawLine(painter);
+
+  drawBorder(painter);
+
+  //Draw Selection
+  if (option->state & QStyle::State_Selected)
+  {
+    drawSelection(painter);
+  }
+}
+
+void te::layout::LineItem::drawLine( QPainter * painter )
+{
+  LineModel* model = dynamic_cast<LineModel*>(m_model);
+  if(!model)
+  {
+    return;
+  }
+
+  if(m_poly.empty())
+    return;
+  
+  te::color::RGBAColor clrLne = model->getLineColor();
+
+  QColor cpen;
+  cpen.setRed(clrLne.getRed());
+  cpen.setGreen(clrLne.getGreen());
+  cpen.setBlue(clrLne.getBlue());
+  cpen.setAlpha(clrLne.getAlpha());
+
+  QPainterPath path (m_poly[0]);
+
+  for(int i = 0; i < m_poly.size() ; ++i)
+  {
+    path.lineTo(m_poly[i]);
+  }
+
+  QPen pn(cpen, 0, Qt::SolidLine);
+  painter->setPen(pn);
+
+  painter->save();
+  painter->drawPath(path);
+  painter->restore();
+}
+
+

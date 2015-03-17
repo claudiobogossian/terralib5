@@ -70,9 +70,18 @@ namespace te
         virtual ~ImageItem();
         
         /*!
-          \brief Reimplemented from ObjectItem
+          \brief Reimplemented from QGraphicsItem
          */
-        virtual void updateObserver(ContextItem context);
+        virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
+
+      protected:
+      
+        /*!
+          \brief Drawing method of a ellipse
+
+          \param 
+         */
+        virtual void drawImage(QPainter * painter);
     };
   }
 }

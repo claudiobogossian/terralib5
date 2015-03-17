@@ -67,9 +67,17 @@ namespace te
         virtual ~ScaleItem();
         
         /*!
-          \brief Reimplemented from ObjectItem
+          \brief Reimplemented from QGraphicsItem
          */
-        virtual void updateObserver(ContextItem context);
+        virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
+
+      protected:
+
+        virtual void drawDoubleAlternatingScaleBar(QPainter * painter);
+
+        virtual void drawAlternatingScaleBar(QPainter * painter);
+
+        virtual void drawHollowScaleBar(QPainter * painter);
     };
   }
 }

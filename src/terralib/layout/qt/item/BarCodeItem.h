@@ -47,6 +47,7 @@ namespace te
       public:
 
         BarCodeItem( ItemController* controller, Observable* o );
+
         virtual ~BarCodeItem();
         
         virtual void paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );

@@ -42,6 +42,11 @@ class Editor;
 namespace te
 {
   // Forward declarations
+  namespace common
+  {
+    enum CharEncoding;
+  }
+  
   namespace da
   {
     class DataSet;
@@ -87,7 +92,7 @@ namespace te
 
             \note This method DOES TAKE the ownership of \a dset.
           */
-          void setDataSet(te::da::DataSet* dset, const bool& clearEditor = true);
+          void setDataSet(te::da::DataSet* dset, te::common::CharEncoding enc, const bool& clearEditor = true);
 
           /*!
             \brief Sets the columns used as pkeys, for presentation purposes.
@@ -192,6 +197,8 @@ namespace te
         protected:
 
           te::da::DataSet* m_dataset;         //!< The dataset being used.
+
+          te::common::CharEncoding m_encoding;
 
           mutable int m_currentRow;           //!< An internal row pointer.
 

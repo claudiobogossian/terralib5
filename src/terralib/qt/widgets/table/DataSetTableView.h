@@ -39,6 +39,11 @@ class TablePopupFilter;
 namespace te
 {
   // Forward declarations
+  namespace common
+  {
+    enum CharEncoding;
+  }
+
   namespace da
   {
     class DataSet;
@@ -128,7 +133,7 @@ namespace te
 
             \param clearEditor True for reset editions, false to maintain it.
           */
-          void setLayer(const te::map::AbstractLayer* layer, const bool& clearEditor = true);
+          void setLayer(te::map::AbstractLayer* layer, const bool& clearEditor = true);
 
           /*!
             \brief Updates the data set being visualized.
@@ -139,7 +144,7 @@ namespace te
 
             \param clearEditor True for reset editions, false to maintain it.
           */
-          void setDataSet(te::da::DataSet* dset, const bool& clearEditor = true);
+          void setDataSet(te::da::DataSet* dset, te::common::CharEncoding enc, const bool& clearEditor = true);
 
           /*!
             \brief Sets the schema of the data set. It is used to define the primary keys and create the ObjectIdSet.
@@ -330,7 +335,7 @@ namespace te
           DataSetTableModel* m_model;       //!< The model to be used.
           TablePopupFilter*  m_popupFilter; //!< The menus popup filter.
           HighlightDelegate* m_delegate;    //!< Delegate used for rendering selected rows.
-          const te::map::AbstractLayer* m_layer;  //!< Pointer to the layer being presented.
+          te::map::AbstractLayer* m_layer;  //!< Pointer to the layer being presented.
           bool m_autoScrollEnabled;         //!< Auto scroll enabling.
           bool m_doScroll;                  //!< Flag to force or not scrolling.
           bool m_promotionEnabled;          //!< Promotion enabled.
@@ -338,6 +343,7 @@ namespace te
           std::vector<std::string> m_orderby;          //!< Order by columns.
           bool m_orderAsc;                       //!< Flag that sinalizes if the it is sorted in ascending sorting.
           bool m_resetOrder;                //!< Flag that sinalizes if there's is no sort.
+          te::common::CharEncoding m_encoding;
       };
     }
   }

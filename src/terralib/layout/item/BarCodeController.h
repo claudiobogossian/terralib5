@@ -40,6 +40,7 @@ namespace te
       public:
 
         BarCodeController( Observable* o );
+
         virtual ~BarCodeController();
          
     };

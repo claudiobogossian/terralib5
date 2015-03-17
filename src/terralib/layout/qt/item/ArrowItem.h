@@ -67,9 +67,28 @@ namespace te
         virtual ~ArrowItem();
         
         /*!
-          \brief Reimplemented from ObjectItem
+          \brief Reimplemented from QGraphicsItem
          */
-        virtual void updateObserver(ContextItem context);
+        virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
+
+       protected:
+
+        /*!
+          \brief Drawing method of a Arrow
+
+          \param canvas
+          \param utils
+         */
+        virtual void drawArrow(QPainter * painter);
+
+        /*!
+          \brief Drawing method of a Head Arrow
+
+          \param canvas
+          \param utils
+          \param box
+         */
+        virtual void drawHeadArrow(QPainter * painter);
     };
   }
 }

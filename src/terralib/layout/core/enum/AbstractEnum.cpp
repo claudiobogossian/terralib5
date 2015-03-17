@@ -71,6 +71,22 @@ te::layout::EnumType* te::layout::AbstractEnum::getEnum( std::string name ) cons
   return enumTp;
 }
 
+te::layout::EnumType* te::layout::AbstractEnum::searchLabel( std::string label ) const
+{
+  EnumType* enumTp = 0;
+
+  for(std::vector<EnumType*>::const_iterator it = m_enums.begin(); it != m_enums.end(); it++)
+  {
+    if((*it)->getLabel().compare(label) == 0)
+    {
+      enumTp = (*it);
+      break;
+    }
+  }
+
+  return enumTp;
+}
+
 int te::layout::AbstractEnum::maxId()
 {
   int max = -1;
@@ -108,3 +124,9 @@ int te::layout::AbstractEnum::minId()
 
   return min;
 }
+
+int te::layout::AbstractEnum::size()
+{
+  return m_enums.size();
+}
+

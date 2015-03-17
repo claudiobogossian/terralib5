@@ -41,9 +41,8 @@ namespace te
       public:
 
         BalloonModel();
-        virtual ~BalloonModel();
 
-        virtual void draw( ContextItem context );
+        virtual ~BalloonModel();
     };
   }
 }
