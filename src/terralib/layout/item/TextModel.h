@@ -68,9 +68,7 @@ namespace te
           \brief Destructor
         */ 
         virtual ~TextModel();
-
-        virtual void draw( ContextItem context );
-
+        
         virtual te::layout::Properties* getProperties() const;
         
         virtual void updateProperties(te::layout::Properties* properties);     

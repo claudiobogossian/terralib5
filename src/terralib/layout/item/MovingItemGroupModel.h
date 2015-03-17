@@ -60,8 +60,6 @@ namespace te
         \brief Destructor
       */ 
       virtual ~MovingItemGroupModel();
-
-      virtual void draw( te::layout::ContextItem context );
     };
   }
 }

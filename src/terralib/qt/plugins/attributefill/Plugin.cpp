@@ -68,7 +68,7 @@ void te::qt::plugins::attributefill::Plugin::startup()
   TE_LOG_TRACE(TE_TR("TerraLib Qt Attribute Fill Plugin startup!"));
 
 // add plugin menu
-  QMenu* pluginMenu = te::qt::af::ApplicationController::getInstance().getMenu("Plugins");
+  QMenu* pluginMenu = te::qt::af::ApplicationController::getInstance().getMenu("Processing");
   m_attributefillMenu = new QMenu(pluginMenu);
   m_attributefillMenu->setIcon(QIcon::fromTheme("attributefill-icon"));
 

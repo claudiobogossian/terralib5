@@ -34,15 +34,11 @@
 #include "../../../qt/widgets/Utils.h"
 #include "../../../geometry/Envelope.h"
 #include "../../../common/STLUtils.h"
+#include "../../item/EllipseModel.h"
 
 te::layout::EllipseItem::EllipseItem( ItemController* controller, Observable* o ) :
   ObjectItem(controller, o)
 {
-  this->setFlags(QGraphicsItem::ItemIsMovable
-    | QGraphicsItem::ItemIsSelectable
-    | QGraphicsItem::ItemSendsGeometryChanges
-    | QGraphicsItem::ItemIsFocusable);
-
   m_nameClass = std::string(this->metaObject()->className());
 }
 
@@ -51,39 +47,56 @@ te::layout::EllipseItem::~EllipseItem()
 
 }
 
-void te::layout::EllipseItem::updateObserver( ContextItem context )
+void te::layout::EllipseItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
 {
-  if(!m_model)
-    return;
-
-  te::color::RGBAColor** rgba = context.getPixmap();  
-
-  if(!rgba)
-    return;
-
-  Utils* utils = context.getUtils();
-
-  if(!utils)
-    return;
-
-  te::gm::Envelope box = utils->viewportBox(m_model->getBox());
-
-  if(!box.isValid())
-    return;
-
-  QPixmap pixmp;
-  QImage* img = 0;
-  
-  if(rgba)
+  Q_UNUSED( option );
+  Q_UNUSED( widget );
+  if ( !painter )
   {
-    img = te::qt::widgets::GetImage(rgba, box.getWidth(), box.getHeight());
-    pixmp = QPixmap::fromImage(*img);
+    return;
   }
 
-  te::common::Free(rgba, box.getHeight());
-  if(img)
-    delete img;
-  
-  setPixmap(pixmp);
-  update();
+  drawBackground(painter);
+
+  drawEllipse(painter);
+
+  drawBorder(painter);
+
+  //Draw Selection
+  if (option->state & QStyle::State_Selected)
+  {
+    drawSelection(painter);
+  }
 }
+
+void te::layout::EllipseItem::drawEllipse( QPainter * painter )
+{
+  EllipseModel* model = dynamic_cast<EllipseModel*>(m_model);
+  if(!model)
+  {
+    return;
+  }
+
+  painter->save();
+
+  QPainterPath circle_path;
+  circle_path.addEllipse(boundingRect());
+
+  QColor cpen(0,0,0);
+  QPen pn(cpen, 0, Qt::SolidLine);
+  painter->setPen(pn);
+
+  te::color::RGBAColor clrBack = model->getBackgroundColor();
+
+  QColor cbrush;
+  cbrush.setRed(clrBack.getRed());
+  cbrush.setGreen(clrBack.getGreen());
+  cbrush.setBlue(clrBack.getBlue());
+  cbrush.setAlpha(clrBack.getAlpha());
+
+  painter->setBrush(cbrush);
+  painter->drawPath(circle_path);
+
+  painter->restore();
+}
+

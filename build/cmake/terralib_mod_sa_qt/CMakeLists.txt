@@ -24,7 +24,7 @@
 #
 
 include_directories(${Boost_INCLUDE_DIR})
-include_directories(${QWT_INCLUDE_DIR})
+include_directories(${QWT_INCLUDE_DIR} ${QWT_INCLUDE_DIR})
 
 if(WIN32)
   add_definitions(-D_SCL_SECURE_NO_WARNINGS -DTESADLL)

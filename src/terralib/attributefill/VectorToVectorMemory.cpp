@@ -49,7 +49,23 @@
 #include <memory>
 
 // Boost
+#include <boost/algorithm/string/replace.hpp>
 #include <boost/lexical_cast.hpp>
+
+void te::attributefill::VectorToVectorMemory::normalizeClassName(std::string& name)
+{
+  std::string invalidChar;
+  bool changed;
+  if(!te::da::IsValidName(name, invalidChar))
+  {
+    name = te::common::ReplaceSpecialChars(name, changed);
+
+    boost::replace_all(name, "/", "_");
+    boost::replace_all(name, " ", "_");
+    boost::replace_all(name, ".", "");
+    boost::replace_all(name, "'", "");
+  }
+}
 
 te::attributefill::VectorToVectorMemory::VectorToVectorMemory()
 {
@@ -183,8 +199,9 @@ bool te::attributefill::VectorToVectorMemory::run()
             std::map<std::string, double>::iterator itAux = result.begin();
             while(itAux != result.end())
             {
-              std::string newPropName = prop->getName() + "_" + itAux->first;
-              std::replace(newPropName.begin(), newPropName.end(), ' ', '_');
+              std::string className = itAux->first;
+              normalizeClassName(className);
+              std::string newPropName = prop->getName() + "_" + className;
 
               item->setDouble(newPropName, itAux->second);
 
@@ -215,8 +232,9 @@ bool te::attributefill::VectorToVectorMemory::run()
             std::map<std::string, double>::iterator itAux = result.begin();
             while(itAux != result.end())
             {
-              std::string newPropName = prop->getName() + "_" + itAux->first;
-              std::replace(newPropName.begin(), newPropName.end(), ' ', '_');
+              std::string className = itAux->first;
+              normalizeClassName(className);
+              std::string newPropName = prop->getName() + "_" + className;
 
               item->setDouble(newPropName, itAux->second);
 
@@ -278,12 +296,16 @@ bool te::attributefill::VectorToVectorMemory::run()
       outDs->add(item);
 
       if (task.isActive() == false)
-        throw te::common::Exception(TE_TR("Operation canceled!"));
+        throw te::common::Exception(TE_TR("Operation canceled!"), 1);
 
       task.pulse();
     }
     catch(te::common::Exception& e)
     {
+      if(e.code() == 1)
+      {
+        throw e;
+      }
       std::string ex = e.what();
       ex += " | Ref: " + logInfo1 + " : " + logInfo2;
       te::common::Logger::logDebug("attributefill", ex.c_str());
@@ -403,8 +425,11 @@ te::da::DataSetType* te::attributefill::VectorToVectorMemory::getOutputDataSetTy
 
       for(std::size_t i = 0; i < strClasses.size(); ++i)
       {
-        std::string newPropName = currentProperty->getName() + "_" + strClasses[i];
-        std::replace(newPropName.begin(), newPropName.end(), ' ', '_');
+        std::string className = strClasses[i];
+
+        normalizeClassName(className);
+
+        std::string newPropName = currentProperty->getName() + "_" + className;
 
         te::dt::SimpleProperty* newProp = new te::dt::SimpleProperty(newPropName, te::dt::DOUBLE_TYPE);
 
@@ -555,6 +580,12 @@ std::vector<double> te::attributefill::VectorToVectorMemory::getNumValues(std::v
 
   for(std::size_t i = 0; i < data.size(); ++i)
   {
+    if(!data[i])
+    {
+      result.push_back(0.0f);
+      continue;
+    }
+
     if(data[i]->getTypeCode() == te::dt::INT16_TYPE || 
        data[i]->getTypeCode() == te::dt::UINT16_TYPE || 
        data[i]->getTypeCode() == te::dt::INT32_TYPE || 
@@ -583,6 +614,12 @@ std::vector<std::string> te::attributefill::VectorToVectorMemory::getStrValues(s
 
   for(std::size_t i = 0; i < data.size(); ++i)
   {
+    if(!data[i])
+    {
+      result.push_back("");
+      continue;
+    }
+
     if(data[i]->getTypeCode() == te::dt::STRING_TYPE)
       result.push_back(data[i]->toString());
   }
@@ -685,8 +722,10 @@ std::vector<te::dt::AbstractData*> te::attributefill::VectorToVectorMemory::getD
   for(std::size_t i = 0; i < dsPos.size(); ++i)
   {
     fromDs->move(dsPos[i]);
-
-    result.push_back(fromDs->getValue(propertyName).release());
+    if(fromDs->isNull(propertyName))
+      result.push_back(0);
+    else
+      result.push_back(fromDs->getValue(propertyName).release());
   }
 
   return result;
@@ -731,7 +770,26 @@ te::dt::AbstractData* te::attributefill::VectorToVectorMemory::getClassWithHighe
     ++it;
   }
 
-  te::dt::AbstractData* data = getDataBasedOnType(value, propType);
+  // Checks if there is a tie between classes
+  std::size_t aux2 = 0;
+  it = counter.begin();
+  while(it != counter.end())
+  {
+    if(it->second == aux)
+      ++aux2;
+
+    ++it;
+  }
+
+  te::dt::AbstractData* data = 0;
+  if(aux2 == 1)
+  {
+    data = getDataBasedOnType(value, propType);
+  }
+  else
+  {
+    data = new te::dt::SimpleData<std::string, te::dt::STRING_TYPE>("");
+  }
 
   return data;
 }
@@ -833,7 +891,9 @@ std::map<std::string, double> te::attributefill::VectorToVectorMemory::getPercen
   it = aux.begin();
   while(it != aux.end())
   {
-    result[it->first] = ((double)it->second / total);
+    std::string normName = it->first;
+    normalizeClassName(normName);
+    result[normName] = ((double)it->second / total);
 
     ++it;
   }
@@ -1352,3 +1412,4 @@ bool te::attributefill::VectorToVectorMemory::hasNoIntersectionOperations()
 
   return false;
 }
+

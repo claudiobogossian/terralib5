@@ -43,8 +43,8 @@ namespace te
     class TimeSeriesDataSetInfo;
 
     typedef te::da::DataSetType LayerSchema;
-	
-	/*!
+
+  /*!
       \class TimeSeriesDataSetLayer
 
       \brief A layer with reference to a dataset that contains trajectories.
@@ -54,8 +54,8 @@ namespace te
     class TESTEXPORT TimeSeriesDataSetLayer : public AbstractSTDataSetLayer
     {
       public:
-	  
-	  /*!
+    
+    /*!
           \brief It initializes a new layer.
 
           \param parent The parent layer (NULL if it has no parent).

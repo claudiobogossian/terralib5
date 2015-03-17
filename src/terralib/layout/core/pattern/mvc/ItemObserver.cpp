@@ -56,9 +56,27 @@ te::layout::Properties* te::layout::ItemObserver::getProperties() const
   return m_model->getProperties();
 }
 
-void te::layout::ItemObserver::redraw()
+void te::layout::ItemObserver::redraw( bool bRefresh )
 {
-  refresh();
+  if (bRefresh)
+  {
+    refresh();
+  } 
+  else
+  {
+    double x = 0;
+    double y = 0;
+    x = m_model->getBox().getLowerLeftX();
+    y = m_model->getBox().getLowerLeftY();
+
+    te::gm::Coord2D coord (x, y);
+
+    ContextItem context;
+    context.setPos(coord);
+    context.setChangePos(true);
+    updateObserver(context);
+  }
+
   m_controller->redraw();
 }
 

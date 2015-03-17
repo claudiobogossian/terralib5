@@ -54,7 +54,7 @@ int te::qt::plugins::st::ObservationLayerItem::columnCount() const
 QVariant te::qt::plugins::st::ObservationLayerItem::data(int /*column*/, int role) const
 {
   if(role == Qt::DecorationRole)
-    return QVariant(QIcon::fromTheme("dataset-layer"));
+    return QVariant(QIcon::fromTheme("observation-layer"));
 
   if(role == Qt::DisplayRole)
     return QVariant(QString::fromStdString(m_layer->getTitle()));

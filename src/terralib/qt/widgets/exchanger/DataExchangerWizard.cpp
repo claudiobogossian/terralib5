@@ -97,13 +97,14 @@ te::qt::widgets::DataExchangerWizard::DataExchangerWizard(QWidget* parent, Qt::W
   m_datasetOptionsPage.reset(new DataSetOptionsWizardPage(this));
   //m_datasetOptionsPage->showSimpleMode(true); // USED TO HIDE ADVANCED OPTIONS
   //m_datasetOptionsPage->setFinalPage(true);
-  m_datasetOptionsPage->setCommitPage(true);
+  //m_datasetOptionsPage->setCommitPage(true);
   //m_datasetOptionsPage->setTitle(tr("Transfer Options"));
   //m_datasetOptionsPage->setSubTitle(tr("You can provide more information on how the datasets will be transferred and mapped to the target data source"));
   setPage(PAGE_DATASET_OPTIONS, m_datasetOptionsPage.get());
 
 
   m_summaryPage.reset(new DataExchangeSummaryWizardPage(this));
+  m_summaryPage->setFinalPage(true);
   setPage(PAGE_SUMMARY, m_summaryPage.get());
 
 // connect signals and slots
@@ -181,11 +182,15 @@ void te::qt::widgets::DataExchangerWizard::next()
 
     connect(this->button(QWizard::CustomButton1), SIGNAL(clicked()), m_datasetOptionsPage.get(), SLOT(applyChanges()));
   }
+  else if(currentId() == PAGE_DATASET_OPTIONS)
+  {
+    exchange();
+  }
 
   QWizard::next();
 }
 
-void te::qt::widgets::DataExchangerWizard::commit()
+void te::qt::widgets::DataExchangerWizard::exchange()
 {
   ScopedCursor wcursor(Qt::WaitCursor);
 
@@ -286,8 +291,6 @@ void te::qt::widgets::DataExchangerWizard::commit()
   }
 
   m_summaryPage->set(result);
-
-  next();
 }
 
 

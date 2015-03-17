@@ -481,6 +481,41 @@ namespace te
         */
         virtual EnumType* getModeExportToPDF() const;
 
+        /*!
+          \brief Returns value that represents create line mode type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
+        virtual EnumType* getModeCreateLine() const; 
+
+        /*!
+          \brief Returns value that represents create polygon mode type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
+        virtual EnumType* getModeCreatePolygon() const; 
+
+        /*!
+          \brief Returns value that represents create balloon mode type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
+        virtual EnumType* getModeCreateBalloon() const; 
+
+        /*!
+          \brief Returns value that represents wait coordinate mode type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
+        virtual EnumType* getModeCreateBarCode() const; 
+
+        /*!
+          \brief Returns value that represents wait coordinate mode type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
+        virtual EnumType* getModeCoordWait() const;
+
       protected:
 
         /*!
@@ -550,6 +585,11 @@ namespace te
         EnumType* m_modelObjectToImage; //!< value that represents object to image (MVC Component to image. Ex.: .png) mode type belonging to enumeration
         EnumType* m_inspectorCurrentItemChanged;//!< value that represents object inspector current item changed type belonging to enumeration
         EnumType* m_modelExportToPDF; //!< value that represents export to PDF mode type belonging to enumeration
+        EnumType* m_modeCreateLine; //!< value that represents create line mode type belonging to enumeration
+        EnumType* m_modeCreatePolygon; //!< value that represents create polygon mode type belonging to enumeration
+        EnumType* m_modeCreateBalloon; //!< value that represents create balloon mode type belonging to enumeration
+        EnumType* m_modeCreateBarCode; //!< value that represents create barcode mode type belonging to enumeration
+        EnumType* m_coordWait; //!< value that represents wait coordinate mode type belonging to enumeration
     };
   }
 }

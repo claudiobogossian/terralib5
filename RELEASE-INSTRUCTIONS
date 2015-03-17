@@ -47,7 +47,7 @@ g) After that generate a tag to finish the release branch.
 h) Use the following git command to generate a zip file with the latest source code   
    $git branch -a 
    *master
-   $git archive -o terralib5.0.0.zip HEAD  (the latest update)
+   $git archive -o terralib-5.0.0.zip HEAD  (the latest update)
    
 i) Update the wiki documentation according to item 7.
 
@@ -139,14 +139,16 @@ Note: If you are in CMake-GUI, remember to turn on only the CPACK_BINARY_DRAGNDR
 
 7. Wiki documentation updates
 ---------------
-a) Copy the installers to http://www.dpi.inpe.br/terralib5/
-
+) Copy the installers to http://www.dpi.inpe.br/terralib5/download/  
+  under the controlled dir called "files<number>" (used to count the downloads)
+                         
 Ex: Installer names: terraview-5.0.0-win32-msvc-2010.exe
 					 terraview-5.0.0-win64-msvc-2010.exe
                      terraview-5.0.0-win32-macosx.exe					 
 
 b) Copy the zip file terralib_5.0.0.zip containing the source code (generated at item 1.h )
-    to  http://www.dpi.inpe.br/terralib5/
+    to  http://www.dpi.inpe.br/terralib5/download/download/
+    under the controlled dir called "files<number>" (used to count the downloads)
 					 
 c) Copy the doxygen files located at C:\terralib_build\terralib_doxygen\doc\html\*  to
 	to http://www.dpi.inpe.br/terralib5/codedocs_XXXX/ 
@@ -169,4 +171,4 @@ For more information on TerraLib, please, visit its main web page at:
 http://www.terralib.org
 
 
-  August 2014, TerraLib Team <terralib-team@dpi.inpe.br>
+  March 2015, TerraLib Team <terralib-team@dpi.inpe.br>

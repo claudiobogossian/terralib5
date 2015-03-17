@@ -267,6 +267,8 @@ namespace te
       std::string m_optionPoint;
       std::string m_optionEllipse;
       std::string m_optionArrow;
+      std::string m_optionLine; 
+      std::string m_optionPolygon; 
 
       /* View Area */
       std::string m_optionViewPan;
@@ -289,6 +291,8 @@ namespace te
       std::string m_optionImage;
       std::string m_optionStringGrid;
       std::string m_optionTitle;
+      std::string m_optionBalloon;
+      std::string m_optionBarCode;
 
       /* Align */
       std::string m_optionAlignLeft;

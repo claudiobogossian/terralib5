@@ -72,6 +72,7 @@ namespace te
     class HorizontalRuler;
     class VerticalRuler;
     class EnumType;
+    class WaitView;
 
 	/*!
     \brief Class representing the view. This view is child of QGraphicsView, part of Graphics View Framework. 
@@ -358,6 +359,8 @@ namespace te
         te::layout::MovingItemGroup* m_movingItemGroup;
         bool                    m_updateItemPos;
         EnumType*               m_oldMode;
+        WaitView*               m_wait;
+        bool                    m_flag;
     };
   }
 }

@@ -377,6 +377,7 @@ class TablePopupFilter : public QObject
       m_view->viewport()->installEventFilter(this);
 
       m_view->connect(this, SIGNAL(createHistogram(const int&)), SLOT(createHistogram(const int&)));
+      m_view->connect(this, SIGNAL(createNormalDistribution(const int&)), SLOT(createNormalDistribution(const int&)));
       m_view->connect(this, SIGNAL(hideColumn(const int&)), SLOT(hideColumn(const int&)));
       m_view->connect(this, SIGNAL(showColumn(const int&)), SLOT(showColumn(const int&)));
       m_view->connect(this, SIGNAL(removeColumn(const int&)), SLOT(removeColumn(const int&)));
@@ -467,6 +468,11 @@ class TablePopupFilter : public QObject
               act4->setToolTip(tr("Creates a new histogram based on the data of the selected colunm."));
               m_hMenu->addAction(act4);
 
+              QAction* act10 = new QAction(m_hMenu);
+              act10->setText(tr("Normal Probability"));
+              act10->setToolTip(tr("Show a chart that displays the normal probability curve."));
+              m_hMenu->addAction(act10);
+
               QAction* act6 = new QAction(m_hMenu);
               act6->setText(tr("Statistics"));
               act6->setToolTip(tr("Show the statistics summary of the selected colunm."));
@@ -485,9 +491,9 @@ class TablePopupFilter : public QObject
               
             
               connect(act6, SIGNAL(triggered()), SLOT(showStatistics()));
-              connect (act5, SIGNAL(triggered()), SLOT(sortDataAsc()));
-              connect (act9, SIGNAL(triggered()), SLOT(sortDataDesc()));
-              
+              connect(act5, SIGNAL(triggered()), SLOT(sortDataAsc()));
+              connect(act9, SIGNAL(triggered()), SLOT(sortDataDesc()));
+              connect(act10, SIGNAL(triggered()), SLOT(createNormalDistribution()));
 
               if(m_caps.get())
               {
@@ -615,6 +621,11 @@ class TablePopupFilter : public QObject
       emit createHistogram(m_columnPressed);
     }
 
+    void createNormalDistribution()
+    {
+      emit createNormalDistribution(m_columnPressed);
+    }
+
     void hideColumn()
     {
       emit hideColumn(m_columnPressed);
@@ -682,6 +693,8 @@ class TablePopupFilter : public QObject
   signals:
 
     void createHistogram(const int&);
+
+    void createNormalDistribution(const int&);
 
     void hideColumn(const int&);
 
@@ -802,7 +815,7 @@ bool te::qt::widgets::DataSetTableView::getAcceptDrop()
   return hheader->getAcceptDrop();
 }
 
-void te::qt::widgets::DataSetTableView::setLayer(const te::map::AbstractLayer* layer, const bool& clearEditor)
+void te::qt::widgets::DataSetTableView::setLayer(te::map::AbstractLayer* layer, const bool& clearEditor)
 {
   ScopedCursor cursor(Qt::WaitCursor);
 
@@ -827,7 +840,9 @@ void te::qt::widgets::DataSetTableView::setLayer(const te::map::AbstractLayer* l
       m_orderby.push_back((*it)->getName());
   }
 
-  setDataSet(GetDataSet(m_layer, m_orderby, m_orderAsc).release(), clearEditor);
+  te::da::DataSourcePtr dsc = GetDataSource(m_layer);
+
+  setDataSet(GetDataSet(m_layer, m_orderby, m_orderAsc).release(), dsc->getEncoding(), clearEditor);
   setLayerSchema(sch.get());
 
   te::da::DataSetTypeCapabilities* caps = GetCapabilities(m_layer);
@@ -836,8 +851,6 @@ void te::qt::widgets::DataSetTableView::setLayer(const te::map::AbstractLayer* l
 
   if(caps)
     m_model->setEditable(caps->supportsDataEdition());
-
-  te::da::DataSourcePtr dsc = GetDataSource(m_layer);
 
   if(dsc.get() != 0)
   {
@@ -848,11 +861,13 @@ void te::qt::widgets::DataSetTableView::setLayer(const te::map::AbstractLayer* l
   highlightOIds(m_layer->getSelected());
 }
 
-void te::qt::widgets::DataSetTableView::setDataSet(te::da::DataSet* dset, const bool& clearEditor)
+void te::qt::widgets::DataSetTableView::setDataSet(te::da::DataSet* dset, te::common::CharEncoding enc, const bool& clearEditor)
 {
   reset();
 
-  m_model->setDataSet(dset, clearEditor);
+  m_encoding = enc;
+
+  m_model->setDataSet(dset, enc, clearEditor);
   DataSetTableHorizontalHeader* hheader = static_cast<DataSetTableHorizontalHeader*>(horizontalHeader());
   hheader->setDataSet(dset);
 
@@ -943,6 +958,21 @@ void te::qt::widgets::DataSetTableView::createHistogram(const int& column)
   delete dialog;
 }
 
+void te::qt::widgets::DataSetTableView::createNormalDistribution(const int& column)
+{
+  int propType = m_layer->getData()->getPropertyDataType(column);
+  if(propType >= te::dt::INT16_TYPE && propType <= te::dt::NUMERIC_TYPE)
+  {
+    emit createChartDisplay(te::qt::widgets::createNormalDistribution(m_layer->getData().get(), column));
+  }
+  else
+  {
+    QString msgErr(tr("This operation is not available for this type of data"));
+    QString msgTitle(tr("TNormal Probability"));
+    QMessageBox::warning(this, msgTitle, msgErr);
+  }
+}
+
 void te::qt::widgets::DataSetTableView::hideColumn(const int& column)
 {
   horizontalHeader()->hideSection(column);
@@ -972,6 +1002,8 @@ void te::qt::widgets::DataSetTableView::renameColumn(const int& column)
       throw Exception(tr("Invalid column name. Choose another.").toStdString());
 
     dsrc->renameProperty(m_layer->getSchema()->getName(), oldName, newName);
+
+    m_layer->setOutOfDate();
 
     setLayer(m_layer);
   }
@@ -1004,9 +1036,11 @@ void te::qt::widgets::DataSetTableView::retypeColumn(const int& column)
     if(dsrc.get() == 0)
       throw Exception(tr("Fail to get data source.").toStdString());
 
-    setDataSet(0);
+    setDataSet(0, te::common::LATIN1);
 
     dsrc->changePropertyDefinition(dsetName, columnName, dlg.getProperty().release());
+
+    m_layer->setOutOfDate();
 
     setLayer(m_layer);
   }
@@ -1041,6 +1075,9 @@ void te::qt::widgets::DataSetTableView::changeColumnData(const int& column)
     try
     {
       dsrc->execute(sql);
+
+      m_layer->setOutOfDate();
+
       setLayer(m_layer);
     }
     catch(te::common::Exception& e)
@@ -1199,7 +1236,7 @@ void te::qt::widgets::DataSetTableView::sortByColumns(const bool& asc)
     if(dset.get() == 0)
       throw te::common::Exception(tr("Sort operation not supported by the source of data.").toStdString());
 
-    setDataSet(dset.release());
+    setDataSet(dset.release(), m_encoding);
 
     viewport()->repaint();
 
@@ -1263,6 +1300,8 @@ void te::qt::widgets::DataSetTableView::addColumn()
       if(ds->getType().compare("OGR") == 0)
         m_model->insertColumns(((int)n_prop-1), 0);
 
+      m_layer->setOutOfDate();
+
       setLayer(m_layer, false);
     }
   }
@@ -1291,6 +1330,8 @@ void te::qt::widgets::DataSetTableView::removeColumn(const int& column)
       ds->dropProperty(dsName, pName);
 
       m_model->removeColumns(column, 0);
+
+      m_layer->setOutOfDate();
 
       setLayer(m_layer, false);
     }

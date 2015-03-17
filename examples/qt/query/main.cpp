@@ -94,7 +94,7 @@ int main(int argc, char** argv)
       tv.show();
 
       //show result
-      tv.setDataSet(dataSet);
+      tv.setDataSet(dataSet, ds->getEncoding());
 
       dlg.exec();
 

@@ -41,7 +41,7 @@
 #include <QGridLayout>
 
 //Qwt
-#include <qwt/qwt_legend.h>
+#include <qwt_legend.h>
 
 //STL
 #include <memory>

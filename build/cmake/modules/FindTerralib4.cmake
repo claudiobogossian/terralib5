@@ -56,6 +56,7 @@ find_path(TERRALIB4_UTILS_INCLUDE_DIR
                         include/terralib4/utils)
 
 set(TERRALIB4_INCLUDE_DIRS ${TERRALIB4_KERNEL_INCLUDE_DIR}
+                           ${TERRALIB4_KERNEL_INCLUDE_DIR}/../..
                            ${TERRALIB4_ADO_INCLUDE_DIR}
                            ${TERRALIB4_UTILS_INCLUDE_DIR})
 

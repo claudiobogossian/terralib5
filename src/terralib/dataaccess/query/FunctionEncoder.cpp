@@ -30,24 +30,46 @@
 
 // STL
 #include <cassert>
+#include <string>
 
 void te::da::FunctionEncoder::toSQL(const Function& f,
                                     std::string& buff,
                                     SQLVisitor& v) const
 {
   size_t size = f.getNumArgs();
-  buff += m_name;
-  buff += "(";
 
-  for(size_t i = 0; i < size; ++i)
+  if(m_name.compare("st_dump") != 0 && m_name.compare("st_dumprings") != 0)
   {
-    if(i != 0)
-      buff += ", ";
+    buff += m_name;
+    buff += "(";
 
-    assert(f[i]);
-    f[i]->accept(v);
+    for(size_t i = 0; i < size; ++i)
+    {
+      if(i != 0)
+        buff += ", ";
+
+      assert(f[i]);
+      f[i]->accept(v);
+    }
+
+    buff += ")";
   }
+  else
+  {
+    buff += "(";
+    buff += m_name;
+    buff += "(";
 
-  buff += ")";
+    for(size_t i = 0; i < size; ++i)
+    {
+      if(i != 0)
+        buff += ", ";
+
+      assert(f[i]);
+      f[i]->accept(v);
+    }
+
+    buff += ")).geom";
+  }
 }
 

@@ -818,7 +818,8 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::finish()
 
   try
   {
-    te::qt::widgets::ScopedCursor sc(Qt::WaitCursor);
+    //te::qt::widgets::ScopedCursor sc(Qt::WaitCursor);
+    setCursor(Qt::WaitCursor);
 
     for(std::size_t i = 0; i < selected.size(); ++i)
     {
@@ -937,12 +938,14 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::finish()
   }
   catch(const te::da::Exception& e)
   {
+    setCursor(Qt::ArrowCursor);
     m_rollback = true;
     QMessageBox::warning(this, tr("Warning"), e.what());
     return;
   }
   catch(...)
   {
+    setCursor(Qt::ArrowCursor);
     m_rollback = true;
     QMessageBox::warning(this, tr("Warning"), tr("Automatic layer creation failed!"));
     return;

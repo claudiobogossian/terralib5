@@ -24,7 +24,12 @@
 */
 
 //Terralib
+#include "../../../qt/af/events/LayerEvents.h"
+#include "../../../qt/widgets/dataset/selector/DataSetSelectorWizardPage.h"
+#include "../../../qt/widgets/datasource/selector/DataSourceSelectorWizardPage.h"
 #include "../../../qt/widgets/layer/explorer/AbstractTreeItemFactory.h"
+#include "../../../qt/widgets/st/ObservationWizard.h"
+#include "../../../st/loader/STDataLoader.h"
 #include "../../af/ApplicationController.h"
 #include "ObservationAction.h"
 #include "ObservationLayerItem.h"
@@ -42,7 +47,7 @@
 te::qt::plugins::st::ObservationAction::ObservationAction(QMenu* menu)
 : te::qt::plugins::st::AbstractAction(menu)
 {
-  createAction(tr("Observation...").toStdString());
+  createAction(tr("Observation...").toStdString(), "observation-layer");
   te::qt::widgets::AbstractTreeItemFactory::reg("OBSERVATIONDATASETLAYER", boost::bind(boost::factory<ObservationLayerItem*>(),_1, _2));
 }
 
@@ -52,4 +57,26 @@ te::qt::plugins::st::ObservationAction::ObservationAction(QMenu* menu)
 
 void te::qt::plugins::st::ObservationAction::onActionActivated(bool checked)
 {
+  QWidget* parent = te::qt::af::ApplicationController::getInstance().getMainWindow();
+
+  std::auto_ptr<te::qt::widgets::ObservationWizard> obsWiz;
+  obsWiz.reset( new te::qt::widgets::ObservationWizard(parent));
+
+  int res = obsWiz->exec();
+  if (res == QDialog::Accepted)
+  {
+    //Initialize STDataLoader support
+    te::st::STDataLoader::initialize();
+
+    std::list<te::st::ObservationDataSetLayerPtr> layers = obsWiz->getObservationLayers();
+    std::list<te::st::ObservationDataSetLayerPtr>::const_iterator layerItB = layers.begin();
+    std::list<te::st::ObservationDataSetLayerPtr>::const_iterator layerItE = layers.end();
+
+    while(layerItB != layerItE)
+    {
+      te::qt::af::evt::LayerAdded evt(*layerItB, 0);
+      te::qt::af::ApplicationController::getInstance().broadcast(&evt);
+      layerItB++;
+    }
+  }
 }

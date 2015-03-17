@@ -147,13 +147,15 @@ if("${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION}" VERSIO
 endif()
 
 if(${CMAKE_MAJOR_VERSION} GREATER 2)
+  cmake_policy(SET CMP0026 OLD)
   cmake_policy(SET CMP0042 NEW)  
   cmake_policy(SET CMP0043 NEW)  
+  cmake_policy(SET CMP0053 OLD)  
 endif()
 
 
 include_directories(${CMAKE_BINARY_DIR})
-include_directories(${TERRALIB_ABSOLUTE_ROOT_DIR}/src)
+include_directories(${TERRALIB_ABSOLUTE_ROOT_DIR}/src ${CMAKE_INSTALL_PREFIX}/include)
 
 #
 # Build will generate files into a single folder
@@ -198,7 +200,7 @@ include(terralib_macros.cmake)
 # first check of libraries
 #
 
-find_package(Boost 1.54.0 REQUIRED system date_time chrono timer filesystem thread unit_test_framework)
+find_package(Boost 1.57.0 REQUIRED system date_time chrono timer filesystem thread unit_test_framework)
 
 if(NOT Boost_FOUND)
   message(FATAL_ERROR "TerraLib: could not find required Boost libraries!")
@@ -512,7 +514,7 @@ CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_QT_PLUGINS_RP_ENABLED "Build Raster Processi
 
 CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_QT_PLUGINS_SA_ENABLED "Build Spatial Analysis Driver Qt plugin?" ON "TERRALIB_MOD_SA_QT_ENABLED;TERRALIB_MOD_PLUGIN_ENABLED;TERRALIB_MOD_QT_APF_ENABLED" OFF)
 
-CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_QT_PLUGINS_ST_ENABLED "Build Spatio-Temporal Driver Qt plugin?" ON "TERRALIB_MOD_PLUGIN_ENABLED;TERRALIB_MOD_QT_WIDGETS_ENABLED;TERRALIB_MOD_QT_APF_ENABLED" OFF)
+CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_QT_PLUGINS_ST_ENABLED "Build Spatio-Temporal Driver Qt plugin?" OFF "TERRALIB_MOD_PLUGIN_ENABLED;TERRALIB_MOD_QT_WIDGETS_ENABLED;TERRALIB_MOD_QT_APF_ENABLED" OFF)
 
 CMAKE_DEPENDENT_OPTION(TERRALIB_TERRAVIEW_ENABLED "Build TerraView?" ON "TERRALIB_MOD_QT_APF_ENABLED" OFF)
 

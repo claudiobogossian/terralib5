@@ -42,11 +42,6 @@
 te::layout::ImageItem::ImageItem( ItemController* controller, Observable* o ) :
   ObjectItem(controller, o)
 {
-  this->setFlags(QGraphicsItem::ItemIsMovable
-    | QGraphicsItem::ItemIsSelectable
-    | QGraphicsItem::ItemSendsGeometryChanges
-    | QGraphicsItem::ItemIsFocusable);
-
   m_nameClass = std::string(this->metaObject()->className());
 }
 
@@ -55,39 +50,51 @@ te::layout::ImageItem::~ImageItem()
 
 }
 
-void te::layout::ImageItem::updateObserver( ContextItem context )
+void te::layout::ImageItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
 {
-  if(!m_model)
-    return;
-
-  te::color::RGBAColor** rgba = context.getPixmap();  
-
-  if(!rgba)
-    return;
-
-  Utils* utils = context.getUtils();
-
-  if(!utils)
-    return;
-
-  te::gm::Envelope box = utils->viewportBox(m_model->getBox());
-
-  if(!box.isValid())
-    return;
-
-  QPixmap pixmp;
-  QImage* img = 0;
-  
-  if(rgba)
+  Q_UNUSED( option );
+  Q_UNUSED( widget );
+  if ( !painter )
   {
-    img = te::qt::widgets::GetImage(rgba, box.getWidth(), box.getHeight());
-    pixmp = QPixmap::fromImage(*img);
+    return;
   }
 
-  te::common::Free(rgba, box.getHeight());
-  if(img)
-    delete img;
-  
-  setPixmap(pixmp);
-  update();
+  drawBackground(painter);
+
+  drawImage(painter);
+
+  drawBorder(painter);
+
+  //Draw Selection
+  if (option->state & QStyle::State_Selected)
+  {
+    drawSelection(painter);
+  }
 }
+
+void te::layout::ImageItem::drawImage( QPainter * painter )
+{
+  ImageModel* model = dynamic_cast<ImageModel*>(m_model);
+  if(!model)
+  {
+    return;
+  }
+
+  QRectF boundRect = boundingRect();
+  std::string fileName = model->getFileName();
+
+  if(fileName.compare("") == 0)
+    return;
+
+  painter->save();
+
+  QImage img(fileName.c_str());
+  img = img.mirrored();
+
+  QRectF sourceRect(0, 0, img.width(), img.height());
+
+  painter->drawImage(boundRect, img, sourceRect);
+
+  painter->restore();
+}
+

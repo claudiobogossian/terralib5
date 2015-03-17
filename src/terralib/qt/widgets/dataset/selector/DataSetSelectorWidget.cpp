@@ -292,7 +292,7 @@ void te::qt::widgets::DataSetSelectorWidget::previewData(const te::da::DataSetTy
     std::auto_ptr<te::mem::DataSet> memFeature((new te::mem::DataSet(*feature.get(), properties, previewrows)));
 
     if(memFeature.get())
-      m_tblView->setDataSet(memFeature.release());
+      m_tblView->setDataSet(memFeature.release(), ds->getEncoding());
   }
   catch(...)
   {
@@ -305,7 +305,8 @@ void te::qt::widgets::DataSetSelectorWidget::onDataSetToggled(DataSetItem* item)
     return;
 
   if(item->isChecked())
-    m_checkedDatasets.insert(std::make_pair<te::da::DataSetTypePtr, std::string>(item->getDataSet(), item->getGeomPropertyName()));
+    //m_checkedDatasets.insert(std::make_pair<te::da::DataSetTypePtr, std::string>(item->getDataSet(), item->getGeomPropertyName()));
+    m_checkedDatasets.insert(std::make_pair(item->getDataSet(), item->getGeomPropertyName()));
   else
     m_checkedDatasets.erase(item->getDataSet());
 }

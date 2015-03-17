@@ -1,0 +1,25 @@
+:: ------------------------------------------------------------------------------------------------------
+:: Esse é um programa batch e serve para setar algumas variáveis de ambiente antes de iniciar o netbeans.
+:: Fazemos isso para não precisarmos alterar variáveis de ambiente do sistema.
+:: ------------------------------------------------------------------------------------------------------
+
+:: Desligando o envio de mensagens para a tela
+@echo off
+
+:: Setando a variável TERRALIB_HOME para o diretório raiz onde se encontra a TerraLib.
+:: Altere esse valor para refletir a localização na sua máquina.
+set TERRALIB_HOME=%~dp0
+
+:: Outra variável de ambiente necessária.
+:: Não precisa alterar esse valor, pois ele é calculado a partir da definição da variável anterior.
+set GDAL_DATA=%TERRALIB_HOME%/share/gdal-data
+
+:: Atualizando a variável de ambiente PATH.
+:: Fazemos isso para que o netbeans encontre as dll's necessárias da TerraLib.
+:: Não é preciso alterar nada nessa variável.
+set PATH=%TERRALIB_HOME%/bin
+
+:: Executa o netbeans. Altere o caminho para refletir a sua instalação do netbeans.
+:: Dica: se algum dos caminhos contiver espaçoes em branco, lembre-se de colocá-los entre aspas duplas,
+:: como feito a seguir.
+start C:/"Program Files"/"NetBeans 8.0.1"/bin/netbeans64.exe --console suppress

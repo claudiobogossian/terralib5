@@ -272,6 +272,11 @@ te::rp::Classifier::OutputParameters te::qt::widgets::ClassifierWizardPage::getO
   return algoOutputParams;
 }
 
+te::cl::ROISet* te::qt::widgets::ClassifierWizardPage::getROISet()
+{
+  return m_roiMngDlg->getWidget()->getROISet();
+}
+
 void te::qt::widgets::ClassifierWizardPage::fillClassifierTypes()
 {
   m_ui->m_classifierTypeComboBox->clear();

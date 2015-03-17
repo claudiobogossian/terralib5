@@ -81,6 +81,18 @@
 #include "../item/MovingItemGroup.h"
 #include "../../item/MovingItemGroupController.h"
 #include "../../item/MovingItemGroupModel.h"
+#include "../../item/LineModel.h"
+#include "../../item/LineController.h"
+#include "../item/LineItem.h"
+#include "../../item/PolygonModel.h"
+#include "../../item/PolygonController.h"
+#include "../item/PolygonItem.h"
+#include "../../item/BalloonModel.h"
+#include "../../item/BalloonController.h"
+#include "../item/BalloonItem.h"
+#include "../../item/BarCodeModel.h"
+#include "../../item/BarCodeController.h"
+#include "../item/BarCodeItem.h"
 
 // Qt
 #include <QGraphicsItem>
@@ -105,7 +117,11 @@ te::layout::BuildGraphicsItem::BuildGraphicsItem() :
   m_textGridItem("TEXT_GRID_"),
   m_titleItem("TITLE_"),
   m_legendChildItem("LEGEND_CHILD_"),
-  m_movingGroupItem("MOVING_ITEM_GROUP_")
+  m_movingGroupItem("MOVING_ITEM_GROUP_"),
+  m_lineItem("LINE_"), 
+  m_polygonItem("POLYGON_"), 
+  m_balloonItem("BALLOON_"),
+  m_barCodeItem("BARCODE_")
 {
  
 }
@@ -193,6 +209,22 @@ QGraphicsItem* te::layout::BuildGraphicsItem::rebuildItem( te::layout::Propertie
   {
     item = createLegendChild();
   }
+  else if(type == enumObj->getLineItem())
+  {
+    item = createLine();
+  }
+  else if(type == enumObj->getPolygonItem())
+  {
+    item = createPolygon();
+  }
+  else if(type == enumObj->getBalloonItem())
+  {
+    item = createBalloon();
+  }
+  else if(type == enumObj->getBarCodeItem())
+  {
+    item = createBarCode();
+  }
 
   return item;
 }
@@ -278,6 +310,26 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createItem( te::layout::EnumType* 
     m_name = nameItem(m_legendChildItem, enumObj->getLegendChildItem());
     item = createLegendChild();
   }
+  else if (mode == enumMode->getModeCreateLine()) 
+  {
+    m_name = nameItem(m_lineItem, enumObj->getLineItem());
+    item = createLine();
+  }
+  else if (mode == enumMode->getModeCreatePolygon()) 
+  {
+    m_name = nameItem(m_polygonItem, enumObj->getPolygonItem());
+    item = createPolygon();
+  }
+  else if (mode == enumMode->getModeCreateBalloon()) 
+  {
+    m_name = nameItem(m_balloonItem, enumObj->getBalloonItem());
+    item = createBalloon();
+  }
+  else if (mode == enumMode->getModeCreateBarCode())
+  {
+    m_name = nameItem(m_barCodeItem, enumObj->getBarCodeItem());
+    item = createBarCode();
+  }
 
   return item;
 }
@@ -351,6 +403,22 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createItem( te::layout::EnumType* 
   else if(type == enumObj->getLegendChildItem())
   {
     item = createLegendChild();
+  }
+  else if(type == enumObj->getLineItem())
+  {
+    item = createLine();
+  }
+  else if(type == enumObj->getPolygonItem())
+  {
+    item = createPolygon();
+  }
+  else if(type == enumObj->getBalloonItem())
+  {
+    item = createBalloon();
+  }
+  else if(type == enumObj->getBarCodeItem())
+  {
+    item = createBarCode();
   }
 
   return item;
@@ -960,6 +1028,142 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createLegendChild()
       itemObs->redraw();
     }
     return view;
+  }
+
+  return item;
+}
+
+QGraphicsItem* te::layout::BuildGraphicsItem::createLine() 
+{
+  QGraphicsItem* item = 0;
+
+  LineModel* model = new LineModel();	
+  if(m_props)
+  {
+    model->updateProperties(m_props);
+  }
+  else
+  {
+    model->setId(m_id);
+    model->setName(m_name);
+  }
+
+  LineController* controller = new LineController(model);
+  ItemObserver* itemObs = (ItemObserver*)controller->getView();
+
+  LineItem* line = dynamic_cast<LineItem*>(itemObs); 
+
+  if(line)
+  {
+    line->setPos(QPointF(m_coord.x, m_coord.y));
+    if(m_props)
+    {
+      line->setZValue(m_zValue);
+    }
+    if(m_redraw)
+      itemObs->redraw();
+    return line;
+  }
+
+  return item;
+}
+
+QGraphicsItem* te::layout::BuildGraphicsItem::createPolygon() 
+{
+  QGraphicsItem* item = 0;
+
+  PolygonModel* model = new PolygonModel();	
+  if(m_props)
+  {
+    model->updateProperties(m_props);
+  }
+  else
+  {
+    model->setId(m_id);
+    model->setName(m_name);
+  }
+
+  PolygonController* controller = new PolygonController(model);
+  ItemObserver* itemObs = (ItemObserver*)controller->getView();
+
+  PolygonItem* polygon = dynamic_cast<PolygonItem*>(itemObs); 
+
+  if(polygon)
+  {
+    polygon->setPos(QPointF(m_coord.x, m_coord.y));
+    if(m_props)
+    {
+      polygon->setZValue(m_zValue);
+    }
+    if(m_redraw)
+      itemObs->redraw();
+    return polygon;
+  }
+
+  return item;
+}
+
+QGraphicsItem* te::layout::BuildGraphicsItem::createBalloon() 
+{
+  QGraphicsItem* item = 0;
+
+  BalloonModel* model = new BalloonModel();	
+  if(m_props)
+  {
+    model->updateProperties(m_props);
+  }
+  else
+  {
+    model->setId(m_id);
+    model->setName(m_name);
+  }
+
+  BalloonController* controller = new BalloonController(model);
+  ItemObserver* itemObs = (ItemObserver*)controller->getView();
+
+  BalloonItem* balloon = dynamic_cast<BalloonItem*>(itemObs); 
+
+  if(balloon)
+  {
+    balloon->setPos(QPointF(m_coord.x, m_coord.y));
+    if(m_props)
+    {
+      balloon->setZValue(m_zValue);
+    }
+    if(m_redraw)
+      itemObs->redraw();
+    return balloon;
+  }
+
+  return item;
+}
+
+QGraphicsItem* te::layout::BuildGraphicsItem::createBarCode()
+{
+  QGraphicsItem* item = 0;
+
+  BarCodeModel* model = new BarCodeModel;
+  if(m_props)
+  {
+    model->updateProperties(m_props);
+  }
+  else
+  {
+    model->setId(m_id);
+    model->setName(m_name);
+  }
+
+  BarCodeController* controller = new BarCodeController(model);
+  ItemObserver* itemObs = (ItemObserver*)controller->getView();
+
+  BarCodeItem* barCode = dynamic_cast<BarCodeItem*>(itemObs);
+
+  if(barCode)
+  {
+    barCode->setPos(QPointF(m_coord.x, m_coord.y));
+    if(m_redraw)
+      itemObs->redraw();
+    return barCode;
   }
 
   return item;
