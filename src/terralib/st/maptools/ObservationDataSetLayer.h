@@ -90,6 +90,13 @@ namespace te
 
         std::auto_ptr<LayerSchema> getSchema() const;
 
+        /*!
+          \brief It returns the layer temporal extent.
+
+          \return The layer temporal extent.
+        */
+        te::dt::DateTimePeriod* getTemporalExtent() const;
+
         std::auto_ptr<te::da::DataSet> getData(te::common::TraverseType travType = te::common::FORWARDONLY,
                                                const te::common::AccessPolicy accessPolicy = te::common::RAccess) const;
 
@@ -99,14 +106,17 @@ namespace te
                                                te::common::TraverseType travType = te::common::FORWARDONLY,
                                                const te::common::AccessPolicy accessPolicy = te::common::RAccess) const;
 
-        std::auto_ptr<te::da::DataSet> getData( const te::dt::DateTime& dt, te::dt::TemporalRelation tr,
-                                                const te::gm::Envelope& e, te::gm::SpatialRelation sr = te::gm::INTERSECTS,
-                                                te::common::TraverseType travType = te::common::FORWARDONLY,
-                                                te::common::AccessPolicy rwRole = te::common::RAccess) const;
-
         std::auto_ptr<te::da::DataSet> getData(const std::string& propertyName,
                                                const te::gm::Geometry* g,
                                                te::gm::SpatialRelation r,
+                                               te::common::TraverseType travType = te::common::FORWARDONLY,
+                                               const te::common::AccessPolicy accessPolicy = te::common::RAccess) const;
+
+        std::auto_ptr<te::da::DataSet> getData(te::da::Expression* restriction,
+                                               te::common::TraverseType travType = te::common::FORWARDONLY,
+                                               const te::common::AccessPolicy accessPolicy = te::common::RAccess) const;
+
+        std::auto_ptr<te::da::DataSet> getData(const te::da::ObjectIdSet* oids,
                                                te::common::TraverseType travType = te::common::FORWARDONLY,
                                                const te::common::AccessPolicy accessPolicy = te::common::RAccess) const;
 
@@ -123,6 +133,11 @@ namespace te
         std::auto_ptr<te::da::DataSet> getData( const te::dt::DateTime& dt, te::dt::TemporalRelation r = te::dt::DURING,
                                                te::common::TraverseType travType = te::common::FORWARDONLY, 
                                                te::common::AccessPolicy rwRole = te::common::RAccess) const;
+
+        std::auto_ptr<te::da::DataSet> getData( const te::dt::DateTime& dt, te::dt::TemporalRelation tr,
+                                                const te::gm::Envelope& e, te::gm::SpatialRelation sr = te::gm::INTERSECTS,
+                                                te::common::TraverseType travType = te::common::FORWARDONLY,
+                                                te::common::AccessPolicy rwRole = te::common::RAccess) const;
 
          std::auto_ptr<te::da::DataSet> getData( const te::dt::DateTime& dt, te::dt::TemporalRelation tr,
                                                  const te::gm::Geometry& g, te::gm::SpatialRelation sr = te::gm::INTERSECTS,

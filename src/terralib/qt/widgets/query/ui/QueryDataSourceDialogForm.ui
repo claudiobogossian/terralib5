@@ -295,9 +295,9 @@ p, li { white-space: pre-wrap; }
                <attribute name="title">
                 <string>Layer</string>
                </attribute>
-               <layout class="QGridLayout" name="gridLayout_31">
+               <layout class="QGridLayout" name="gridLayout_32">
                 <item row="0" column="0">
-                 <layout class="QGridLayout" name="gridLayout_30">
+                 <layout class="QGridLayout" name="gridLayout_31">
                   <item row="0" column="0">
                    <widget class="QGroupBox" name="m_optionsGroupBox">
                     <property name="enabled">
@@ -440,6 +440,9 @@ p, li { white-space: pre-wrap; }
                        </item>
                        <item row="0" column="2">
                         <widget class="QToolButton" name="m_applySelToolButton">
+                         <property name="toolTip">
+                          <string>Layer Selection...</string>
+                         </property>
                          <property name="text">
                           <string>...</string>
                          </property>
@@ -451,80 +454,121 @@ p, li { white-space: pre-wrap; }
                    </widget>
                   </item>
                   <item row="1" column="0">
-                   <widget class="QGroupBox" name="m_optionsGroupBox_2">
-                    <property name="enabled">
-                     <bool>false</bool>
-                    </property>
+                   <widget class="QGroupBox" name="groupBox_3">
                     <property name="sizePolicy">
-                     <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                     <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                       <horstretch>0</horstretch>
                       <verstretch>0</verstretch>
                      </sizepolicy>
                     </property>
                     <property name="title">
-                     <string>Query Layer</string>
+                     <string>New Layer</string>
                     </property>
                     <property name="flat">
                      <bool>true</bool>
                     </property>
-                    <property name="checkable">
-                     <bool>false</bool>
-                    </property>
-                    <property name="checked">
-                     <bool>false</bool>
-                    </property>
-                    <layout class="QGridLayout" name="gridLayout_23">
+                    <layout class="QGridLayout" name="gridLayout_22">
                      <item row="0" column="0">
-                      <layout class="QGridLayout" name="gridLayout_22">
-                       <item row="0" column="1">
-                        <widget class="QLineEdit" name="m_queryLayerNameLineEdit"/>
-                       </item>
-                       <item row="0" column="2">
-                        <spacer name="horizontalSpacer_3">
-                         <property name="orientation">
-                          <enum>Qt::Horizontal</enum>
-                         </property>
-                         <property name="sizeType">
-                          <enum>QSizePolicy::Fixed</enum>
-                         </property>
-                         <property name="sizeHint" stdset="0">
-                          <size>
-                           <width>40</width>
-                           <height>20</height>
-                          </size>
-                         </property>
-                        </spacer>
-                       </item>
-                       <item row="0" column="3">
-                        <widget class="QToolButton" name="m_applyQueryLayerToolButton">
-                         <property name="text">
-                          <string>...</string>
-                         </property>
-                        </widget>
-                       </item>
+                      <layout class="QGridLayout" name="gridLayout_23">
                        <item row="0" column="0">
-                        <widget class="QLabel" name="label_7">
-                         <property name="sizePolicy">
-                          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                           <horstretch>0</horstretch>
-                           <verstretch>0</verstretch>
-                          </sizepolicy>
-                         </property>
-                         <property name="maximumSize">
-                          <size>
-                           <width>80</width>
-                           <height>16777215</height>
-                          </size>
-                         </property>
-                         <property name="text">
-                          <string>Layer Name:</string>
-                         </property>
-                         <property name="alignment">
-                          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                         </property>
-                        </widget>
+                        <layout class="QGridLayout" name="gridLayout_28">
+                         <item row="0" column="0">
+                          <widget class="QLabel" name="label_7">
+                           <property name="text">
+                            <string>Repository:</string>
+                           </property>
+                           <property name="alignment">
+                            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                           </property>
+                          </widget>
+                         </item>
+                         <item row="1" column="0">
+                          <widget class="QLabel" name="label_8">
+                           <property name="text">
+                            <string>Layer Name:</string>
+                           </property>
+                           <property name="alignment">
+                            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                           </property>
+                          </widget>
+                         </item>
+                        </layout>
+                       </item>
+                       <item row="0" column="1">
+                        <layout class="QGridLayout" name="gridLayout_29">
+                         <item row="0" column="0">
+                          <layout class="QGridLayout" name="gridLayout_30">
+                           <item row="0" column="0">
+                            <widget class="QLineEdit" name="m_repositoryLineEdit">
+                             <property name="enabled">
+                              <bool>false</bool>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="0" column="1">
+                            <widget class="QToolButton" name="m_targetFileToolButton">
+                             <property name="minimumSize">
+                              <size>
+                               <width>0</width>
+                               <height>0</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string>...</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="0" column="2">
+                            <widget class="QToolButton" name="m_targetDatasourceToolButton">
+                             <property name="minimumSize">
+                              <size>
+                               <width>0</width>
+                               <height>0</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string>BD</string>
+                             </property>
+                            </widget>
+                           </item>
+                          </layout>
+                         </item>
+                         <item row="1" column="0">
+                          <widget class="QLineEdit" name="m_newLayerNameLineEdit">
+                           <property name="readOnly">
+                            <bool>false</bool>
+                           </property>
+                          </widget>
+                         </item>
+                        </layout>
                        </item>
                       </layout>
+                     </item>
+                     <item row="0" column="2">
+                      <widget class="QToolButton" name="m_createLayerlToolButton">
+                       <property name="toolTip">
+                        <string>Create new layer...</string>
+                       </property>
+                       <property name="text">
+                        <string>...</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="0" column="1">
+                      <spacer name="horizontalSpacer_3">
+                       <property name="orientation">
+                        <enum>Qt::Horizontal</enum>
+                       </property>
+                       <property name="sizeType">
+                        <enum>QSizePolicy::Fixed</enum>
+                       </property>
+                       <property name="sizeHint" stdset="0">
+                        <size>
+                         <width>40</width>
+                         <height>20</height>
+                        </size>
+                       </property>
+                      </spacer>
                      </item>
                     </layout>
                    </widget>
@@ -628,8 +672,6 @@ p, li { white-space: pre-wrap; }
  <tabstops>
   <tabstop>m_dataSourceComboBox</tabstop>
   <tabstop>m_baseDataSetComboBox</tabstop>
-  <tabstop>m_dataSetListWidget</tabstop>
-  <tabstop>m_attrDataSetListWidget</tabstop>
   <tabstop>m_sqlEditorTextEdit</tabstop>
   <tabstop>m_applyToolButton</tabstop>
   <tabstop>m_clearToolButton</tabstop>
@@ -638,13 +680,19 @@ p, li { white-space: pre-wrap; }
   <tabstop>m_tabWidget</tabstop>
   <tabstop>m_tableView</tabstop>
   <tabstop>m_logPlainTextEdit</tabstop>
+  <tabstop>m_dataSetListWidget</tabstop>
+  <tabstop>m_attrDataSetListWidget</tabstop>
   <tabstop>m_layerComboBox</tabstop>
   <tabstop>m_addSelRadioButton</tabstop>
   <tabstop>m_newSelRadioButton</tabstop>
   <tabstop>m_applySelToolButton</tabstop>
-  <tabstop>m_applyQueryLayerToolButton</tabstop>
-  <tabstop>m_helpPushButton</tabstop>
+  <tabstop>m_repositoryLineEdit</tabstop>
+  <tabstop>m_targetFileToolButton</tabstop>
+  <tabstop>m_targetDatasourceToolButton</tabstop>
+  <tabstop>m_newLayerNameLineEdit</tabstop>
+  <tabstop>m_createLayerlToolButton</tabstop>
   <tabstop>m_cancelPushButton</tabstop>
+  <tabstop>m_helpPushButton</tabstop>
  </tabstops>
  <resources/>
  <connections>

@@ -53,9 +53,6 @@
 
 // Qt
 #include <QFileDialog>
-#include <QList>
-#include <QListWidget>
-#include <QListWidgetItem>
 #include <QMessageBox>
 #include <QSize>
 
@@ -86,9 +83,11 @@ te::vp::PolygonToLineDialog::PolygonToLineDialog(QWidget* parent, Qt::WindowFlag
   connect(m_ui->m_targetDatasourceToolButton, SIGNAL(pressed()), this, SLOT(onTargetDatasourceToolButtonPressed()));
   connect(m_ui->m_targetFileToolButton, SIGNAL(pressed()), this,  SLOT(onTargetFileToolButtonPressed()));
 
-  connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));
   connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
   connect(m_ui->m_cancelPushButton, SIGNAL(clicked()), this, SLOT(onCancelPushButtonClicked()));
+
+  m_ui->m_helpPushButton->setNameSpace("dpi.inpe.br.plugins"); 
+  m_ui->m_helpPushButton->setPageReference("plugins/vp/vp_polygonToLine.html");
 }
 
 te::vp::PolygonToLineDialog::~PolygonToLineDialog()
@@ -186,11 +185,6 @@ void te::vp::PolygonToLineDialog::onTargetFileToolButtonPressed()
   
   m_toFile = true;
   m_ui->m_newLayerNameLineEdit->setEnabled(false);
-}
-
-void te::vp::PolygonToLineDialog::onHelpPushButtonClicked()
-{
-  QMessageBox::information(this, "Help", "Under development");
 }
 
 void te::vp::PolygonToLineDialog::onOkPushButtonClicked()

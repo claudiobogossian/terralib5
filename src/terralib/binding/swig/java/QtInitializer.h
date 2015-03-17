@@ -24,10 +24,12 @@
 */
 
 #include <terralib/common/PlatformUtils.h>
+#include <terralib/common/Exception.h>
 
 // Qt
 #include <QApplication>
 #include <QIcon>
+#include <qresource.h>
 
 class QtInitializer
 {
@@ -35,30 +37,24 @@ class QtInitializer
 
     QtInitializer() { }
 
-    void begin();
+    void begin() throw (te::common::Exception);
 
     void end();
 
-  protected:
-
-    QApplication* m_app;
-
-    int m_argc;
-
-    char* m_argv[1];
 };
 
-inline void QtInitializer::begin()
+inline void QtInitializer::begin() throw (te::common::Exception)
 {
-  m_argc = 1;
+  char* argv[] = {"JAVA", NULL};
+  int argc = 1;
 
-  m_argv[0] = "Java";
-
-  m_app = new QApplication(m_argc, m_argv);
-
-  QStringList ithemes = QIcon::themeSearchPaths();
+  QApplication* app = new QApplication(argc, argv);
 
   std::string th_path = te::common::FindInTerraLibPath("share/terralib/icons");
+
+  Q_INIT_RESOURCE(tlib);
+
+  QStringList ithemes = QIcon::themeSearchPaths();
 
   ithemes.push_back(th_path.c_str());
 
@@ -69,5 +65,5 @@ inline void QtInitializer::begin()
 
 inline void QtInitializer::end()
 {
-  delete m_app;
+  delete qApp;
 }

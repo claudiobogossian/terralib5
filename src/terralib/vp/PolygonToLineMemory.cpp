@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file AggregationMemory.h
+  \file PolygonToLineMemory.h
 
   \brief Polygon to Line Vector Processing functions.
 */
@@ -102,7 +102,7 @@ bool te::vp::PolygonToLineMemory::run()
     {
       if(outDsItem->getPropertyDataType(i) != te::dt::GEOMETRY_TYPE)
       {
-        outDsItem->setValue(i, inDset->getValue(i).get()->clone());
+        outDsItem->setValue(i, inDset->getValue(outDsItem->getPropertyName(i)).get()->clone());
       }
       else
       {
@@ -115,10 +115,8 @@ bool te::vp::PolygonToLineMemory::run()
 
         std::auto_ptr<te::gm::MultiLineString> lineResult = polygon2Line(geom.get());
         if(!lineResult->isValid())
-        {
           geomState = false;
-          continue;
-        }
+        
         outDsItem->setGeometry(i, lineResult.release());
       }
     }

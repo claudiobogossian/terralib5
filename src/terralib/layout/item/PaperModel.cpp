@@ -43,6 +43,8 @@ te::layout::PaperModel::PaperModel() :
 
   m_borderColor = te::color::RGBAColor(255, 255, 255, 0);
 
+  m_border = false;
+
   config();
 }
 
@@ -57,6 +59,8 @@ te::layout::PaperModel::PaperModel( PaperConfig* paperConfig ) :
   m_shadowColor = te::color::RGBAColor(0, 0, 0, 255);
 
   m_borderColor = te::color::RGBAColor(255, 255, 255, 0);
+
+  m_border = false;
 
   config();
 }

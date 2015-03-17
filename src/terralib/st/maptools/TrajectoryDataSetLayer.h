@@ -43,8 +43,8 @@ namespace te
     class TrajectoryDataSetInfo;
 
     typedef te::da::DataSetType LayerSchema;
-	
-	/*!
+
+  /*!
       \class TrajectoryDataSetLayer
 
       \brief A layer with reference to a dataset that contains trajectories.
@@ -54,8 +54,16 @@ namespace te
     class TESTEXPORT TrajectoryDataSetLayer : public AbstractSTDataSetLayer
     {
       public:
-	  
-	  /*!
+
+
+        /*!
+          \brief It initializes a new layer.
+
+          \param parent The parent layer (NULL if it has no parent).
+        */
+        TrajectoryDataSetLayer(AbstractLayer* parent = 0);
+
+       /*!
           \brief It initializes a new layer.
 
           \param parent The parent layer (NULL if it has no parent).

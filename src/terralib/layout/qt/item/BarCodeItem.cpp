@@ -47,11 +47,6 @@
 te::layout::BarCodeItem::BarCodeItem( ItemController* controller, Observable* o ) :
   TextItem(controller, o)
 {
-  this->setFlags(QGraphicsItem::ItemIsMovable
-    | QGraphicsItem::ItemIsSelectable
-    | QGraphicsItem::ItemSendsGeometryChanges
-    | QGraphicsItem::ItemIsFocusable);
-
   m_invertedMatrix = true;
   m_nameClass = std::string(this->metaObject()->className());
 
@@ -73,5 +68,4 @@ te::layout::BarCodeItem::~BarCodeItem()
 void te::layout::BarCodeItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /* = 0 */ )
 {
   QGraphicsTextItem::paint(painter, option, widget);
-
 }

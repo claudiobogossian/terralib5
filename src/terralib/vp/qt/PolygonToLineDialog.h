@@ -20,7 +20,7 @@
 /*!
   \file terralib/vp/qt/PolygonToLineDialog.h
 
-  \brief A dialog polygon to line operation
+  \brief A dialog for polygon to line operation
 */
 
 #ifndef __TERRALIB_VP_INTERNAL_POLYGONTOLINEDIALOG_H
@@ -44,16 +44,12 @@
 namespace Ui { class PolygonToLineDialogForm; }
 
 // Forward declarations
-class QListWidgetItem;
 class QModelIndex;
 
 namespace te
 {
   namespace vp
   {
-// Forward declarations
-    class LayerTreeModel;
-
     class TEVPEXPORT PolygonToLineDialog : public QDialog
     {
       Q_OBJECT
@@ -80,8 +76,6 @@ namespace te
         void onTargetDatasourceToolButtonPressed();
 
         void onTargetFileToolButtonPressed();
-
-        void onHelpPushButtonClicked();
 
         void onOkPushButtonClicked();
 

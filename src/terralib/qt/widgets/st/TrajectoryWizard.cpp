@@ -40,14 +40,14 @@
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
-te::st::TrajectoryDataSetLayerPtr generateLayer(te::da::DataSetTypePtr dataType, te::st::TrajectoryDataSetInfo* trajInfo, te::da::DataSourceInfoPtr dataInfo)
+te::st::TrajectoryDataSetLayerPtr generateLayer(te::da::DataSetTypePtr dataType, te::st::TrajectoryDataSetInfo* trajInfo, te::da::DataSourceInfoPtr dataInfo, te::map::AbstractLayer* parent = 0)
 {
   static boost::uuids::basic_random_generator<boost::mt19937> gen;
   boost::uuids::uuid u = gen();
   std::string id = boost::uuids::to_string(u);
   std::string title = dataType->getTitle().empty() ? dataType->getName() : dataType->getTitle();
 
-  te::st::TrajectoryDataSetLayerPtr trajectoryLayer = new te::st::TrajectoryDataSetLayer(id, title, 0, trajInfo);
+  te::st::TrajectoryDataSetLayerPtr trajectoryLayer = new te::st::TrajectoryDataSetLayer(id, title, parent, trajInfo);
   trajectoryLayer->setVisibility(te::map::NOT_VISIBLE);
   trajectoryLayer->setRendererType("ABSTRACT_LAYER_RENDERER");
 
@@ -140,7 +140,7 @@ void te::qt::widgets::TrajectoryWizard::finish()
 
   try
   {
-    //Generates a randon id to the data source
+    //Generates a random id to the data source
     boost::uuids::basic_random_generator<boost::mt19937> gen;
     boost::uuids::uuid u = gen();
     std::string id = boost::uuids::to_string(u);
@@ -156,7 +156,7 @@ void te::qt::widgets::TrajectoryWizard::finish()
   }
   catch(...)
   {
-    std::cout << std::endl << "Failed to create a new data source and put it into the manager: unknow exception!" << std::endl;
+    std::cout << std::endl << "Failed to create a new data source and put it into the manager: unknown exception!" << std::endl;
     QWizard::finished(1);
   }
 
@@ -174,9 +174,18 @@ void te::qt::widgets::TrajectoryWizard::finish()
     }
     else
     {
+
+      static boost::uuids::basic_random_generator<boost::mt19937> gen;
+      boost::uuids::uuid u = gen();
+      std::string id = boost::uuids::to_string(u);
+
+      te::st::TrajectoryDataSetLayerPtr testParent(new te::st::TrajectoryDataSetLayer());
+      testParent->setId(id);
+
+      m_trajectoryLayers.push_back(testParent);
       while(infosBegin != infosEnd)
       {
-        m_trajectoryLayers.push_back(generateLayer(*typesItBegin, *infosBegin, dataInfo));
+        m_trajectoryLayers.push_back(generateLayer(*typesItBegin, *infosBegin, dataInfo, testParent.get()));
         infosBegin++;
         typesItBegin++;
       }
@@ -189,7 +198,7 @@ void te::qt::widgets::TrajectoryWizard::finish()
   }
   catch(...)
   {
-    std::cout << std::endl << "Failed to create a new layer and insert it into the application: unknow exception!" << std::endl;
+    std::cout << std::endl << "Failed to create a new layer and insert it into the application: unknown exception!" << std::endl;
     QWizard::finished(1);
   }
 

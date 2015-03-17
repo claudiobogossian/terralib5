@@ -511,3 +511,8 @@ te::gm::Coord2D te::layout::ItemModelObservable::getOldPos()
   return m_oldPos;
 }
 
+void te::layout::ItemModelObservable::draw( ContextItem context )
+{
+
+}
+

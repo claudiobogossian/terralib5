@@ -168,7 +168,7 @@ namespace te
 
           \param context maintaining the drawing context of a MVC component
          */
-        virtual void draw( ContextItem context ) = 0;
+        virtual void draw( ContextItem context );
 
         /*!
           \brief Checks if the coordinate is contained within the bounding rectangle.

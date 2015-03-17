@@ -30,13 +30,12 @@
 #include "../../../maptools/AbstractLayer.h"
 #include "../Config.h"
 #include "../../../dataaccess/datasource/DataSourceInfo.h"
+
 // Qt
 #include <QWizardPage>
 
 // STL
 #include <memory>
-
-//namespace Ui { class TrajectoryWizardPageForm; }
 
 namespace te
 {

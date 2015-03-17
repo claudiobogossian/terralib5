@@ -52,14 +52,6 @@ te::layout::TextModel::~TextModel()
 
 }
 
-void te::layout::TextModel::draw( ContextItem context )
-{
-  te::color::RGBAColor** pixmap = 0;
-  
-  context.setPixmap(pixmap);
-  notifyAll(context);
-}
-
 te::layout::Properties* te::layout::TextModel::getProperties() const
 {
   ItemModelObservable::getProperties();

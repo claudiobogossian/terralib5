@@ -14,7 +14,3 @@ te::layout::MovingItemGroupModel::~MovingItemGroupModel()
 
 }
 
-void te::layout::MovingItemGroupModel::draw( te::layout::ContextItem context )
-{
-
-}

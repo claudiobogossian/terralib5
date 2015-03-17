@@ -498,6 +498,11 @@ namespace te
         */
         void setCompositionMode(te::map::CompositionMode mode);
 
+        /*!
+          \brief Its indicate that the layer schema is out of date.
+        */
+        virtual void setOutOfDate();
+
       protected:
 
         std::string m_id;                 //!< Layer id.

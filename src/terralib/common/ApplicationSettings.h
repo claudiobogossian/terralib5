@@ -223,7 +223,7 @@ namespace te
         boost::filesystem::remove(m_file);
       else
       {
-        boost::property_tree::xml_writer_settings<char> settings('\t', 1);
+        boost::property_tree::xml_writer_settings<std::string> settings('\t', 1);
         boost::property_tree::write_xml(m_file, m_settings, std::locale(), settings);
       }
 

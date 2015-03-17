@@ -44,6 +44,7 @@
 #include "../../../qt/widgets/tools/AbstractTool.h"
 #include "../../../maptools/AbstractLayer.h"
 #include "../../core/Config.h"
+#include "ParentItem.h"
 
 class QGraphicsSceneMouseEvent;
 class QMimeData;
@@ -69,7 +70,7 @@ namespace te
 
 	  \sa te::layout::ItemObserver
 	*/
-    class TELAYOUTEXPORT MapItem : public QGraphicsProxyWidget, public ItemObserver
+    class TELAYOUTEXPORT MapItem : public ParentItem<QGraphicsProxyWidget>
     {
       Q_OBJECT //for slots/signals
 
@@ -99,14 +100,7 @@ namespace te
           \brief Reimplemented from QGraphicsProxyWidget
          */
         virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem* option, QWidget * widget = 0 );
-        
-        /*!
-          \brief The Z value decides the stacking order of drawing.
-
-          \param drawing order
-        */
-        void	setZValue ( qreal z );
-        
+                
         virtual void changeCurrentTool(EnumType* mode);
 
         void clearCurrentTool();
@@ -125,12 +119,7 @@ namespace te
           \brief Reimplemented from QGraphicsProxyWidget
          */
         QRectF boundingRect() const;
-
-        /*!
-          \brief Reimplemented from QGraphicsProxyWidget
-         */
-        virtual bool contains( const QPointF &point ) const;
-                                
+                                        
       protected slots:
 
           void onDrawLayersFinished(const QMap<QString, QString>& errors);
@@ -181,27 +170,15 @@ namespace te
           \brief Reimplemented from ItemObserver
        */
       virtual te::gm::Coord2D getPosition();
-            
-      virtual void drawSelection( QPainter* painter );
 
       virtual void getMimeData(const QMimeData* mime);
 
       std::list<te::map::AbstractLayerPtr>  getVisibleLayers();
 
       te::map::AbstractLayerPtr getLayer();
-
-      /*!
-          \brief Reimplemented from ItemObserver
-       */
-      virtual int getZValueItem();
-
+      
       void setCurrentTool(te::qt::widgets::AbstractTool* tool);
-
-      /*!
-          \brief Reimplemented from ItemObserver
-       */
-      virtual void applyRotation();
-
+      
       virtual QImage generateImage();
 
       virtual void calculateFrameMargin();
@@ -211,9 +188,7 @@ namespace te
     protected:
 
       QSize                                   m_mapSize; //!< The size of the map display in a zoom of 100%. This size is in pixels and is calculated based on the size of the GraphicItem in millimeters.
-      QPixmap                                 m_pixmap;
       QPixmap                                 m_mapPixmap;
-      QRectF                                  m_rect;//In local coordinate
       QMimeData*                              m_mime;      
       te::qt::widgets::MultiThreadMapDisplay* m_mapDisplay;
       bool                                    m_grabbedByWidget;

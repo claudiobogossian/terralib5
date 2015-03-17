@@ -1,0 +1,5 @@
+[Paths]
+Prefix = $(TERRALIB_HOME)
+Binaries = bin
+Plugins = qtplugins
+Translations = share/terralib/translations
