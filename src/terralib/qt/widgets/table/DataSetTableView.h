@@ -133,7 +133,7 @@ namespace te
 
             \param clearEditor True for reset editions, false to maintain it.
           */
-          void setLayer(const te::map::AbstractLayer* layer, const bool& clearEditor = true);
+          void setLayer(te::map::AbstractLayer* layer, const bool& clearEditor = true);
 
           /*!
             \brief Updates the data set being visualized.
@@ -335,7 +335,7 @@ namespace te
           DataSetTableModel* m_model;       //!< The model to be used.
           TablePopupFilter*  m_popupFilter; //!< The menus popup filter.
           HighlightDelegate* m_delegate;    //!< Delegate used for rendering selected rows.
-          const te::map::AbstractLayer* m_layer;  //!< Pointer to the layer being presented.
+          te::map::AbstractLayer* m_layer;  //!< Pointer to the layer being presented.
           bool m_autoScrollEnabled;         //!< Auto scroll enabling.
           bool m_doScroll;                  //!< Flag to force or not scrolling.
           bool m_promotionEnabled;          //!< Promotion enabled.

@@ -234,3 +234,9 @@ void te::map::DataSetLayer::setRendererType(const std::string& t)
 {
   m_rendererType = t;
 }
+
+void te::map::DataSetLayer::setOutOfDate()
+{
+  delete m_schema;
+  m_schema = 0;
+}

@@ -153,6 +153,11 @@ namespace te
         */
         void setRendererType(const std::string& t);
 
+        /*!
+          \brief Its indicate that the layer schema is out of date.
+        */
+        virtual void setOutOfDate();
+
       private:
 
         std::string m_datasetName;         //!< The dataset name where we will retrieve the layer objects.
