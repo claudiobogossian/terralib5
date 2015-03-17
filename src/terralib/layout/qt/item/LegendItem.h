@@ -30,6 +30,8 @@
 #ifndef __TERRALIB_LAYOUT_INTERNAL_LEGEND_ITEM_H
 #define __TERRALIB_LAYOUT_INTERNAL_LEGEND_ITEM_H
 
+#include <QVariant>
+
 // TerraLib
 #include "ObjectItem.h"
 #include "../../core/Config.h"
@@ -70,6 +72,25 @@ namespace te
           \brief Reimplemented from ObjectItem
          */
         virtual void updateObserver(ContextItem context);
+
+         /*!
+          \brief Mandatory implementation from QGraphicsObject
+         */
+        virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
+
+         /*!
+          \brief Reimplemented from QGraphicsItem
+         */
+        virtual QVariant	itemChange ( GraphicsItemChange change, const QVariant & value );
+
+         /*!
+          \brief Reimplemented from QGraphicsItem
+         */
+        virtual void	mouseMoveEvent ( QGraphicsSceneMouseEvent * event );
+
+    private:
+
+        bool m_move;
     };
   }
 }

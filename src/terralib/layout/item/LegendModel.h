@@ -95,13 +95,25 @@ namespace te
 
         virtual double getDisplacementBetweenSymbolAndText();
 
+        virtual double getSymbolSize();
+
+        virtual void setSymbolSize(const double& value);
+
         virtual std::map<te::gm::Point*, std::string> getCoordChildren();
+
+        virtual te::map::AbstractLayerPtr getLayer();
+
+        virtual Font getFont();
+
+        virtual te::color::RGBAColor getFontColor();
 
     private:
         
         virtual void drawGroupingLegend(te::map::Grouping* grouping, te::map::Canvas* canvas, Utils* utils);
 
         virtual void drawStyleLegend(te::se::Style* style, te::map::Canvas* canvas, Utils* utils);
+
+        virtual void updateBox(ContextItem context);
 
     protected:
 

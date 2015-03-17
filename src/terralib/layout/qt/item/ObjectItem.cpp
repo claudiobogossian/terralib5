@@ -43,7 +43,7 @@
 #include <QCursor>
 #include <QStyleOptionGraphicsItem>
 
-te::layout::ObjectItem::ObjectItem( ItemController* controller, Observable* o ) :
+te::layout::ObjectItem::ObjectItem( ItemController* controller, Observable* o,  bool invertedMatrix ) :
   QGraphicsObject(0),
   ItemObserver(controller, o),
   m_mousePressedCtrl(false),
@@ -51,6 +51,8 @@ te::layout::ObjectItem::ObjectItem( ItemController* controller, Observable* o ) 
   m_toResizeItem(false),
   m_enumSides(TPNoneSide)
 {
+  m_invertedMatrix = invertedMatrix;
+
   QGraphicsItem* item = this;
   m_nameClass = std::string(this->metaObject()->className());
   Context::getInstance().getScene()->insertItem((ItemObserver*)item);

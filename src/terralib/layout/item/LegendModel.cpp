@@ -51,11 +51,11 @@
 te::layout::LegendModel::LegendModel() :
   m_mapName(""),
   m_layer(0),
-  m_borderDisplacement(2),
-  m_displacementBetweenSymbols(2),
-  m_displacementBetweenTitleAndSymbols(5),
-  m_displacementBetweenSymbolsAndText(3),
-  m_symbolsize(10)
+  m_borderDisplacement(1),
+  m_displacementBetweenSymbols(1),
+  m_displacementBetweenTitleAndSymbols(3),
+  m_displacementBetweenSymbolsAndText(2),
+  m_symbolsize(5)
 {
   m_type = Enums::getInstance().getEnumObjectType()->getLegendItem();
 
@@ -76,6 +76,22 @@ void te::layout::LegendModel::draw( ContextItem context )
 
   te::map::Canvas* canvas = context.getCanvas();
   Utils* utils = context.getUtils();
+
+  if(context.isResizeCanvas())
+    utils->configCanvas(m_box);
+
+  if(context.isResizeCanvas())
+    pixmap = utils->getImageW(m_box);
+
+  context.setPixmap(pixmap);
+
+  notifyAll(context);
+  return;
+  
+  //te::color::RGBAColor** pixmap = 0;
+
+  //te::map::Canvas* canvas = context.getCanvas();
+  //Utils* utils = context.getUtils();
 
   if((!canvas) || (!utils))
     return;
@@ -338,6 +354,8 @@ void te::layout::LegendModel::visitDependent(ContextItem context)
   {
     m_layer = map->getLayer();
 
+    this->updateBox(context);
+
     draw(context);
   }	
 }
@@ -400,4 +418,140 @@ void te::layout::LegendModel::childrenFreeMemory()
     }
   }
   m_coordChildren.clear();
+}
+
+te::map::AbstractLayerPtr te::layout::LegendModel::getLayer()
+{
+  return m_layer;
+}
+
+te::layout::Font te::layout::LegendModel::getFont()
+{
+  return m_font;
+}
+
+void te::layout::LegendModel::updateBox(ContextItem context)
+{
+  if (!m_layer)
+  {
+    return;
+  }
+
+  te::map::Canvas* canvas = context.getCanvas();
+  te::layout::Utils* utils = context.getUtils();
+
+  canvas->setTextPointSize(m_font.getPointSize());
+  canvas->setTextUnderline(m_font.isUnderline());
+  canvas->setTextStrikeOut(m_font.isStrikeout());
+  canvas->setTextColor(m_fontColor);
+
+  double wtxt = 0.;
+  double htxt = 0.;
+
+  std::string title = m_layer->getTitle();
+  
+  utils->textBoundingBox(wtxt, htxt, title);
+
+  te::gm::Envelope box = m_box;
+
+  double newWidth = 0.;
+  double newHeight = 0.;
+
+  double boxWidth = box.getWidth();
+  double boxHeight = box.getHeight();
+
+  double sumWidth = (double) (m_borderDisplacement + wtxt + m_borderDisplacement);
+
+  if (boxWidth < sumWidth)
+  {
+    box = te::gm::Envelope(box.getLowerLeftX(), box.getLowerLeftY(), sumWidth, boxHeight);  
+
+    boxWidth = sumWidth;
+  }
+
+  double sumHeight = (double) (m_borderDisplacement + htxt + m_displacementBetweenTitleAndSymbols);
+
+  if (boxHeight < sumHeight)
+  {
+    box = te::gm::Envelope(box.getLowerLeftX(), box.getLowerLeftY(), boxWidth, sumHeight);  
+
+    boxHeight = sumHeight;
+  }
+
+  te::map::Grouping* grouping = m_layer->getGrouping();
+
+  if (grouping != 0 && grouping->isVisible() == true)
+  {
+    std::string propertyName = grouping->getPropertyName();
+
+    std::vector<te::map::GroupingItem*> items = grouping->getGroupingItems();
+
+    te::map::GroupingType type = grouping->getType();
+
+    for (unsigned int i = 0; i < items.size(); ++i)
+    {
+      std::string label = propertyName;
+      label += ": ";
+
+      te::map::GroupingItem* item = items[i];
+
+      if (type == te::map::UNIQUE_VALUE)
+      {
+        label += item->getValue();
+      }
+      else
+      {
+        std::string upperLimit = item->getUpperLimit();
+        std::string lowerLimit = item->getLowerLimit();
+
+        label += lowerLimit;
+        label += " ~ ";
+        label += upperLimit;
+      }
+
+      utils->textBoundingBox(wtxt, htxt, label);
+
+      sumWidth = (double) (m_borderDisplacement + m_symbolsize + m_displacementBetweenSymbolsAndText + wtxt + m_borderDisplacement);
+
+      if (boxWidth < sumWidth)
+      {
+        box = te::gm::Envelope(box.getLowerLeftX(), box.getLowerLeftY(), sumWidth, boxHeight);  
+
+        boxWidth = sumWidth;
+      }
+
+      sumHeight += (double) (htxt + m_displacementBetweenSymbols);
+      
+      if (boxHeight < sumHeight)
+      {
+        box = te::gm::Envelope(box.getLowerLeftX(), box.getLowerLeftY(), boxWidth, sumHeight);  
+
+        boxHeight =  sumHeight;
+      }
+    }
+  }
+  else if (m_layer->getStyle() != 0)
+  {
+
+  }
+
+  m_box = box;
+
+  this->notifyAll(context);
+
+}
+
+double te::layout::LegendModel::getSymbolSize()
+{
+  return m_symbolsize;
+}
+
+void te::layout::LegendModel::setSymbolSize( const double& value )
+{
+  m_symbolsize = value;
+}
+
+te::color::RGBAColor te::layout::LegendModel::getFontColor()
+{
+  return m_fontColor;
 }
