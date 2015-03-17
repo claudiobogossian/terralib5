@@ -106,6 +106,11 @@ namespace te
         virtual void updateObserver(te::layout::ContextItem context);
 
         /*!
+          \brief Reimplemented from QGraphicsItem
+         */
+        virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
+
+        /*!
           \brief Reimplemented from ItemObserver
          */
         virtual te::gm::Coord2D getPosition();
@@ -113,11 +118,6 @@ namespace te
         virtual void setPixmap( const QPixmap& pixmap );
 
         virtual QPixmap getPixmap();
-
-        /*!
-          \brief Mandatory implementation from QGraphicsItem
-         */
-        virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
 
         virtual QRectF boundingRect() const;
 
@@ -138,6 +138,20 @@ namespace te
           \brief Reimplemented from ItemObserver
          */
         virtual te::color::RGBAColor** getImage();
+
+        /*!
+          \brief Sets if component is resizable or not.
+
+          \param resize if true resizable, otherwise false
+        */
+        virtual void setResizable(bool resize);
+
+        /*!
+          \brief Return if component is resizable or not.
+
+          \return if true resizable, otherwise false
+        */
+        virtual bool isResizable();
 
       protected:
 
@@ -207,30 +221,34 @@ namespace te
          */
         virtual void drawText(QPointF point, QPainter* painter, std::string text);
 
+        virtual void createResizePixmap();
+        
       protected:
 
         QPixmap m_pixmap;
         QRectF  m_rect;//In local coordinate
         
         //Resize
-        te::gm::Envelope m_boxCopy;
-        QPixmap m_clonePixmap;
-        bool    m_mousePressedCtrl;
-        QPointF m_initialCoord;
-        QPointF m_finalCoord;
-        bool    m_hoverAboveItem;
-        bool    m_toResizeItem;
-        LayoutAlign m_enumSides;
+        te::gm::Envelope    m_boxCopy; //!< box with resize
+        QPixmap             m_clonePixmap;
+        bool                m_mousePressedAlt; //!< mouse and active alt key
+        QPointF             m_initialCoord;
+        QPointF             m_finalCoord;
+        bool                m_toResizeItem; //!< pixmap to perform the resize is not yet built
+        LayoutAlign         m_enumSides;
+        bool                m_resizeMode; //!< pixmap to perform the resize is already built 
+        bool                m_resizable; //!< the component is resizable
     };
 
     template <class T>
     inline te::layout::ParentItem<T>::ParentItem( ItemController* controller, Observable* o, bool inverted ) :
       T(0),
       ItemObserver(controller, o),
-      m_mousePressedCtrl(false),
-      m_hoverAboveItem(false),
+      m_mousePressedAlt(false),
       m_toResizeItem(false),
-      m_enumSides(TPNoneSide)
+      m_enumSides(TPNoneSide),
+      m_resizeMode(false),
+      m_resizable(true)
     {
 
       m_invertedMatrix = inverted;
@@ -278,6 +296,36 @@ namespace te
       }
 
       update();
+    }
+
+    template <class T>
+    inline void te::layout::ParentItem<T>::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
+    {
+      Q_UNUSED( option );
+      Q_UNUSED( widget );
+      if ( !painter || !m_toResizeItem )
+      {
+        return;
+      }
+      
+      drawBackground( painter );
+
+      QRectF boundRect;
+      boundRect = boundingRect();
+
+      painter->save();
+      painter->translate( -boundRect.bottomLeft().x(), -boundRect.topRight().y() );  
+      QRectF rtSource( 0, 0, m_clonePixmap.width(), m_clonePixmap.height() );
+      painter->drawPixmap(boundRect, m_clonePixmap, rtSource);
+      painter->restore();  
+
+      drawBorder(painter);
+
+      //Draw Selection
+      if (option->state & QStyle::State_Selected)
+      {
+        drawSelection(painter);
+      }
     }
 
     template <class T>
@@ -332,42 +380,12 @@ namespace te
 
       te::gm::Envelope box = m_model->getBox();
 
-      if(m_mousePressedCtrl)
+      if(m_mousePressedAlt)
         box = m_boxCopy;
 
       QGraphicsObject::prepareGeometryChange();
       setRect(QRectF(0, 0, box.getWidth(), box.getHeight()));
       update();
-    }
-
-    template <class T>
-    inline void te::layout::ParentItem<T>::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
-    {
-      Q_UNUSED( option );
-      Q_UNUSED( widget );
-      if ( !painter )
-      {
-        return;
-      }
-
-      drawBackground( painter );
-
-      QRectF boundRect;
-      boundRect = boundingRect();
-  	
-      painter->save();
-      painter->translate( -boundRect.bottomLeft().x(), -boundRect.topRight().y() );  
-      QRectF rtSource( 0, 0, m_pixmap.width(), m_pixmap.height() );
-      painter->drawPixmap(boundRect, m_pixmap, rtSource);
-      painter->restore();  
-
-      drawBorder(painter);
-  
-      //Draw Selection
-      if (option->state & QStyle::State_Selected)
-      {
-        drawSelection(painter);
-      }
     }
 
     template <class T>
@@ -480,10 +498,11 @@ namespace te
     {  
       QGraphicsItem::mousePressEvent(event);
 
-      if(event->modifiers() == Qt::AltModifier && m_toResizeItem)
+      if(event->modifiers() == Qt::AltModifier && m_toResizeItem && m_resizable)
       {
         m_clonePixmap = getPixmap();
-        m_mousePressedCtrl = true;
+        createResizePixmap();
+        m_mousePressedAlt = true;
         m_initialCoord = event->scenePos();
       }
     }
@@ -499,14 +518,13 @@ namespace te
       if(boxScene.isValid() && boxScene.getWidth() > 0 && boxScene.getHeight() > 0)
         m_controller->setBox(boxScene);
 
-      m_mousePressedCtrl = false;
+      m_mousePressedAlt = false;
 
-      if(m_toResizeItem && boxScene.isValid())
+      if(m_resizable && m_toResizeItem && boxScene.isValid())
       {
+        m_clonePixmap = QPixmap();
         m_toResizeItem = false;
-        //Antes é necessário saber se o pixmap continua o mesmo, ou foi modificado.
-        //Só chamará o redraw se foi modificado.
-
+        m_resizeMode = false;
         redraw();
         setOpacity(1.);
       }
@@ -517,9 +535,9 @@ namespace te
     template <class T>
     inline void te::layout::ParentItem<T>::mouseMoveEvent( QGraphicsSceneMouseEvent * event )
     {
-      if(event->modifiers() == Qt::AltModifier && event->buttons() == Qt::LeftButton && m_toResizeItem)
+      if(event->modifiers() == Qt::AltModifier && event->buttons() == Qt::LeftButton && m_toResizeItem && m_resizable)
       {
-        m_mousePressedCtrl = true;
+        m_mousePressedAlt = true;
         setOpacity(0.5);
 
         m_finalCoord = event->scenePos();
@@ -532,7 +550,7 @@ namespace te
       {
         if(!m_toResizeItem)
           setOpacity(1.);
-        m_mousePressedCtrl = false;
+        m_mousePressedAlt = false;
         QGraphicsItem::mouseMoveEvent(event);
       }
     }
@@ -546,7 +564,6 @@ namespace te
     template <class T>
     inline void te::layout::ParentItem<T>::hoverLeaveEvent( QGraphicsSceneHoverEvent * event )
     {
-      m_hoverAboveItem = false;
       setCursor(Qt::ArrowCursor);
       QGraphicsItem::hoverLeaveEvent(event);
     }
@@ -554,8 +571,10 @@ namespace te
     template <class T>
     inline void te::layout::ParentItem<T>::hoverMoveEvent( QGraphicsSceneHoverEvent * event )
     {
-      m_hoverAboveItem = true;
-      m_toResizeItem = checkTouchesCorner(event->pos().x(), event->pos().y());
+      if(m_resizable)
+      {
+        m_toResizeItem = checkTouchesCorner(event->pos().x(), event->pos().y());
+      }
       QGraphicsItem::hoverMoveEvent(event);
     }
 
@@ -609,10 +628,10 @@ namespace te
     inline QPixmap te::layout::ParentItem<T>::calculateNewPixmap( const double& x, const double& y )
     {    
       te::gm::Envelope boxScene = createNewBoxInCoordScene(x, y);
-      QPixmap pix = getPixmap().scaled(boxScene.getWidth(), boxScene.getHeight());
+      QPixmap pix = m_clonePixmap.scaled(boxScene.getWidth(), boxScene.getHeight());
 
       if(pix.isNull())
-        pix = getPixmap();
+        pix = m_clonePixmap;
 
       return pix;
     }
@@ -626,7 +645,7 @@ namespace te
       double dx = 0;
       double dy = 0;
 
-      if(m_mousePressedCtrl && m_toResizeItem)
+      if(m_mousePressedAlt && m_toResizeItem)
       {
         dx = m_finalCoord.x() - m_initialCoord.x();
         dy = m_finalCoord.y() - m_initialCoord.y();
@@ -752,6 +771,32 @@ namespace te
         refresh();
       }
       return QGraphicsItem::itemChange(change, value);
+    }
+
+    template <class T>
+    inline void te::layout::ParentItem<T>::createResizePixmap()
+    {
+      QStyleOptionGraphicsItem opt;
+      m_clonePixmap = QPixmap(m_rect.width(), m_rect.height());
+      QPainter p(&m_clonePixmap);
+      this->paint(&p, &opt, 0);
+
+      if(!m_clonePixmap.isNull())
+      {
+        m_resizeMode = true;
+      }
+    }
+
+    template <class T>
+    void te::layout::ParentItem<T>::setResizable( bool resize )
+    {
+      m_resizable = resize;
+    }
+
+    template <class T>
+    bool te::layout::ParentItem<T>::isResizable()
+    {
+      return m_resizable;
     }
   }
 }

@@ -57,6 +57,12 @@ void te::layout::PointItem::paint( QPainter * painter, const QStyleOptionGraphic
     return;
   }
 
+  if(m_resizeMode)
+  {
+    ObjectItem::paint(painter, option, widget);
+    return;
+  }
+
   drawBackground(painter);
 
   PointModel* model = dynamic_cast<PointModel*>(m_model);

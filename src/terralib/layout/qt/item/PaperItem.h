@@ -70,6 +70,11 @@ namespace te
           \brief Reimplemented from ObjectItem
          */
         virtual void updateObserver(ContextItem context);
+
+        /*!
+          \brief Mandatory implementation from QGraphicsItem
+         */
+        virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
     };
   }
 }

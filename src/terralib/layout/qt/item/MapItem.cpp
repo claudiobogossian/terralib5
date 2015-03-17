@@ -367,7 +367,7 @@ void te::layout::MapItem::mouseMoveEvent( QGraphicsSceneMouseEvent * event )
   if(!iUtils->isCurrentMapTools())
   {
     clearCurrentTool();
-    QGraphicsItem::mouseMoveEvent(event);
+    ParentItem::mouseMoveEvent(event);
   }
   else
   {
@@ -393,7 +393,7 @@ void te::layout::MapItem::mousePressEvent( QGraphicsSceneMouseEvent * event )
   if(!iUtils->isCurrentMapTools())
   {
     clearCurrentTool();
-    QGraphicsItem::mousePressEvent(event);
+    ParentItem::mousePressEvent(event);
   }
   else
   {
@@ -419,7 +419,7 @@ void te::layout::MapItem::mouseReleaseEvent( QGraphicsSceneMouseEvent * event )
   if(!iUtils->isCurrentMapTools())
   {
     clearCurrentTool();
-    QGraphicsItem::mouseReleaseEvent(event); 
+    ParentItem::mouseReleaseEvent(event); 
   }
   else
   {
@@ -435,11 +435,6 @@ void te::layout::MapItem::mouseReleaseEvent( QGraphicsSceneMouseEvent * event )
     this->update();
   }
   refresh();
-}
-
-void te::layout::MapItem::resizeEvent( QGraphicsSceneResizeEvent * event )
-{
-  QGraphicsProxyWidget::resizeEvent(event);
 }
 
 void te::layout::MapItem::getMimeData( const QMimeData* mime )
