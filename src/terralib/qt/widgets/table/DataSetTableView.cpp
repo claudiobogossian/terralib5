@@ -815,7 +815,7 @@ bool te::qt::widgets::DataSetTableView::getAcceptDrop()
   return hheader->getAcceptDrop();
 }
 
-void te::qt::widgets::DataSetTableView::setLayer(const te::map::AbstractLayer* layer, const bool& clearEditor)
+void te::qt::widgets::DataSetTableView::setLayer(te::map::AbstractLayer* layer, const bool& clearEditor)
 {
   ScopedCursor cursor(Qt::WaitCursor);
 
@@ -1001,6 +1001,8 @@ void te::qt::widgets::DataSetTableView::renameColumn(const int& column)
 
     dsrc->renameProperty(m_layer->getSchema()->getName(), oldName, newName);
 
+    m_layer->setOutOfDate();
+
     setLayer(m_layer);
   }
 }
@@ -1036,6 +1038,8 @@ void te::qt::widgets::DataSetTableView::retypeColumn(const int& column)
 
     dsrc->changePropertyDefinition(dsetName, columnName, dlg.getProperty().release());
 
+    m_layer->setOutOfDate();
+
     setLayer(m_layer);
   }
 }
@@ -1069,6 +1073,9 @@ void te::qt::widgets::DataSetTableView::changeColumnData(const int& column)
     try
     {
       dsrc->execute(sql);
+
+      m_layer->setOutOfDate();
+
       setLayer(m_layer);
     }
     catch(te::common::Exception& e)
@@ -1291,6 +1298,8 @@ void te::qt::widgets::DataSetTableView::addColumn()
       if(ds->getType().compare("OGR") == 0)
         m_model->insertColumns(((int)n_prop-1), 0);
 
+      m_layer->setOutOfDate();
+
       setLayer(m_layer, false);
     }
   }
@@ -1319,6 +1328,8 @@ void te::qt::widgets::DataSetTableView::removeColumn(const int& column)
       ds->dropProperty(dsName, pName);
 
       m_model->removeColumns(column, 0);
+
+      m_layer->setOutOfDate();
 
       setLayer(m_layer, false);
     }
