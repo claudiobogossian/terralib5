@@ -237,6 +237,8 @@ void te::addressgeocoding::MainWindowDialog::onAddressComboBoxChanged(int index)
     return;
   }
 
+  GetAddressFilePathToSettings(m_mapFields);
+
   std::map<std::string, std::vector<std::string> >::iterator it;
 
   std::string value = m_ui->m_inputAddressComboBox->itemText(index).toStdString();
