@@ -34,9 +34,7 @@
 #include "../../../qt/widgets/Utils.h"
 #include "../../../geometry/Envelope.h"
 #include "../../../common/STLUtils.h"
-
-// Qt
-#include <QPixmap>
+#include "../../item/PaperModel.h"
 
 te::layout::PaperItem::PaperItem( ItemController* controller, Observable* o ) :
   ObjectItem(controller, o)
@@ -54,43 +52,6 @@ te::layout::PaperItem::~PaperItem()
 
 }
 
-void te::layout::PaperItem::updateObserver( ContextItem context )
-{
-  if(!m_model)
-    return;
-
-  te::color::RGBAColor** rgba = context.getPixmap();
-
-  if(!rgba)
-    return;
-
-  Utils* utils = context.getUtils();
-
-  if(!utils)
-    return;
-
-  te::gm::Envelope box = utils->viewportBox(m_model->getBox());
-
-  if(!box.isValid())
-    return;
-
-  QPixmap pixmap;
-  QImage* img = 0;
-
-  if(rgba)
-  {
-    img = te::qt::widgets::GetImage(rgba, box.getWidth(), box.getHeight());
-    pixmap = QPixmap::fromImage(*img);
-  }
-
-  te::common::Free(rgba, box.getHeight());
-  if(img)
-    delete img;
-
-  setPixmap(pixmap);
-  update();
-}
-
 void te::layout::PaperItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
 {
   Q_UNUSED( option );
@@ -102,14 +63,7 @@ void te::layout::PaperItem::paint( QPainter * painter, const QStyleOptionGraphic
 
   drawBackground( painter );
 
-  QRectF boundRect;
-  boundRect = boundingRect();
-
-  painter->save();
-  painter->translate( -boundRect.bottomLeft().x(), -boundRect.topRight().y() );  
-  QRectF rtSource( 0, 0, m_pixmap.width(), m_pixmap.height() );
-  painter->drawPixmap(boundRect, m_pixmap, rtSource);
-  painter->restore();  
+  drawPaper(painter);
 
   drawBorder(painter);
 
@@ -118,4 +72,65 @@ void te::layout::PaperItem::paint( QPainter * painter, const QStyleOptionGraphic
   {
     drawSelection(painter);
   }
+}
+
+void te::layout::PaperItem::drawPaper( QPainter * painter )
+{
+  PaperModel* model = dynamic_cast<PaperModel*>(m_model);
+  if(!model)
+  {
+    return;
+  }
+
+  QRectF boundRect;
+  boundRect = boundingRect();
+
+  painter->save();
+
+  te::color::RGBAColor clrBack = model->getBackgroundColor();
+  QColor cback;
+  cback.setRed(clrBack.getRed());
+  cback.setGreen(clrBack.getGreen());
+  cback.setBlue(clrBack.getBlue());
+  cback.setAlpha(clrBack.getAlpha());
+
+  te::color::RGBAColor clrShadow = model->getShadowColor();
+  QColor cShadow;
+  cShadow.setRed(clrShadow.getRed());
+  cShadow.setGreen(clrShadow.getGreen());
+  cShadow.setBlue(clrShadow.getBlue());
+  cShadow.setAlpha(clrShadow.getAlpha());
+
+  te::color::RGBAColor clrBorder = model->getBorderColor();
+  QColor cBorder;
+  cBorder.setRed(clrBorder.getRed());
+  cBorder.setGreen(clrBorder.getGreen());
+  cBorder.setBlue(clrBorder.getBlue());
+  cBorder.setAlpha(clrBorder.getAlpha());
+
+  QBrush bsh(cShadow);
+  painter->setBrush(bsh);
+  QPen pen(cBorder);
+  painter->setPen(pen);
+  
+  if(!model->getPaperConfig())
+    return;
+
+  double pw = 0.;
+  double ph = 0.;
+
+  model->getPaperConfig()->getPaperSize(pw, ph);
+
+  double shadowPadding = model->getShadowPadding();
+
+  QRectF boxShadow(boundRect.x() + shadowPadding, boundRect.y(), boundRect.width() - shadowPadding, boundRect.height() - shadowPadding);
+  painter->drawRect(boxShadow);
+  
+  bsh.setColor(cback);
+  painter->setBrush(bsh);
+
+  QRectF boxPaper = QRectF(boundRect.x(), boundRect.y() + shadowPadding, boundRect.width() - shadowPadding, boundRect.height() - shadowPadding);
+  painter->drawRect(boxPaper);
+
+  painter->restore();  
 }
