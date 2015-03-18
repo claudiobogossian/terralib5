@@ -21,6 +21,8 @@
  \file AddressGeocodingOp.cpp
  */
 
+#include "../common/StringUtils.h"
+
 #include "../dataaccess/dataset/DataSet.h"
 #include "../dataaccess/dataset/DataSetAdapter.h"
 #include "../dataaccess/dataset/DataSetType.h"
@@ -128,14 +130,10 @@ std::auto_ptr<te::mem::DataSet> dataSetMemory(new te::mem::DataSet(outDsType.get
 
     for(std::size_t i = 0; i < m_associatedProps.size(); ++i)
     {
-      //te::common::CharEncoding addressEncoding = dsAddress->getPropertyCharEncoding(i);
-      te::common::CharEncoding addressEncoding = te::common::CP1252;
-      std::string value;
+      std::string value = dsAddress->getAsString(m_associatedProps[i]);
 
-      if(dSourceEncoding == addressEncoding)
-        value = dsAddress->getAsString(m_associatedProps[i]);
-      else
-        value = te::common::CharEncodingConv::convert(dsAddress->getAsString(m_associatedProps[i]), addressEncoding, dSourceEncoding);
+      bool changed = false;
+      value = te::common::ReplaceSpecialChars(value, changed);
 
       if(i == 0)
         query+= "'"+value;

@@ -1851,5 +1851,5 @@ void te::ado::Transactor::insertIntoGeometryColumns(const std::string& datasetNa
 
 te::common::CharEncoding te::ado::Transactor::getEncoding()
 {
-  return te::common::UNKNOWN_CHAR_ENCODING;
+  return te::common::LATIN1; // TODO
 }

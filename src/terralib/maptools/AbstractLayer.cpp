@@ -330,3 +330,7 @@ void te::map::AbstractLayer::setCompositionMode(te::map::CompositionMode mode)
 {
   m_compositionMode = mode;
 }
+
+void te::map::AbstractLayer::setOutOfDate()
+{
+}
