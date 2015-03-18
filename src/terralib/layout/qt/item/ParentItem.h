@@ -139,20 +139,6 @@ namespace te
          */
         virtual te::color::RGBAColor** getImage();
 
-        /*!
-          \brief Sets if component is resizable or not.
-
-          \param resize if true resizable, otherwise false
-        */
-        virtual void setResizable(bool resize);
-
-        /*!
-          \brief Return if component is resizable or not.
-
-          \return if true resizable, otherwise false
-        */
-        virtual bool isResizable();
-
       protected:
 
         virtual void drawBackground( QPainter* painter );
@@ -237,7 +223,6 @@ namespace te
         bool                m_toResizeItem; //!< pixmap to perform the resize is not yet built
         LayoutAlign         m_enumSides;
         bool                m_resizeMode; //!< pixmap to perform the resize is already built 
-        bool                m_resizable; //!< the component is resizable
     };
 
     template <class T>
@@ -247,8 +232,7 @@ namespace te
       m_mousePressedAlt(false),
       m_toResizeItem(false),
       m_enumSides(TPNoneSide),
-      m_resizeMode(false),
-      m_resizable(true)
+      m_resizeMode(false)
     {
 
       m_invertedMatrix = inverted;
@@ -498,7 +482,7 @@ namespace te
     {  
       QGraphicsItem::mousePressEvent(event);
 
-      if(event->modifiers() == Qt::AltModifier && m_toResizeItem && m_resizable)
+      if(event->modifiers() == Qt::AltModifier && m_toResizeItem && m_model->isResizable())
       {
         m_clonePixmap = getPixmap();
         createResizePixmap();
@@ -520,7 +504,7 @@ namespace te
 
       m_mousePressedAlt = false;
 
-      if(m_resizable && m_toResizeItem && boxScene.isValid())
+      if(m_model->isResizable() && m_toResizeItem && boxScene.isValid())
       {
         m_clonePixmap = QPixmap();
         m_toResizeItem = false;
@@ -535,7 +519,7 @@ namespace te
     template <class T>
     inline void te::layout::ParentItem<T>::mouseMoveEvent( QGraphicsSceneMouseEvent * event )
     {
-      if(event->modifiers() == Qt::AltModifier && event->buttons() == Qt::LeftButton && m_toResizeItem && m_resizable)
+      if(event->modifiers() == Qt::AltModifier && event->buttons() == Qt::LeftButton && m_toResizeItem && m_model->isResizable())
       {
         m_mousePressedAlt = true;
         setOpacity(0.5);
@@ -571,7 +555,7 @@ namespace te
     template <class T>
     inline void te::layout::ParentItem<T>::hoverMoveEvent( QGraphicsSceneHoverEvent * event )
     {
-      if(m_resizable)
+      if(m_model->isResizable())
       {
         m_toResizeItem = checkTouchesCorner(event->pos().x(), event->pos().y());
       }
@@ -785,18 +769,6 @@ namespace te
       {
         m_resizeMode = true;
       }
-    }
-
-    template <class T>
-    void te::layout::ParentItem<T>::setResizable( bool resize )
-    {
-      m_resizable = resize;
-    }
-
-    template <class T>
-    bool te::layout::ParentItem<T>::isResizable()
-    {
-      return m_resizable;
     }
   }
 }

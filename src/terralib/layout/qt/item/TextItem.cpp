@@ -64,9 +64,7 @@ te::layout::TextItem::TextItem( ItemController* controller, Observable* o ) :
   
   //If enabled is true, this item will accept hover events
   setAcceptHoverEvents(false);
-
-  m_resizable = false;
-
+  
   m_backgroundColor.setAlpha(0);
 
   init();
