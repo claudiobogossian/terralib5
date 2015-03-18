@@ -246,7 +246,7 @@ namespace te
         | QGraphicsItem::ItemIsFocusable);
 
       //If enabled is true, this item will accept hover events
-      setAcceptHoverEvents(true);
+      QGraphicsItem::setAcceptHoverEvents(true);
 
       m_boxCopy = m_model->getBox();
 
@@ -276,10 +276,10 @@ namespace te
       {
         double x = context.getPos().x;
         double y = context.getPos().y;
-        setPos(x, y);
+        QGraphicsItem::setPos(x, y);
       }
 
-      update();
+      QGraphicsItem::update();
     }
 
     template <class T>
@@ -337,7 +337,7 @@ namespace te
     template <class T>
     inline te::gm::Coord2D te::layout::ParentItem<T>::getPosition()
     {
-      QPointF posF = scenePos();
+      QPointF posF = QGraphicsItem::scenePos();
       qreal valuex = posF.x();
       qreal valuey = posF.y();
 
@@ -367,9 +367,9 @@ namespace te
       if(m_mousePressedAlt)
         box = m_boxCopy;
 
-      QGraphicsObject::prepareGeometryChange();
+      QGraphicsItem::prepareGeometryChange();
       setRect(QRectF(0, 0, box.getWidth(), box.getHeight()));
-      update();
+      QGraphicsItem::update();
     }
 
     template <class T>
