@@ -474,7 +474,7 @@ namespace te
         return;
 
       m_rect = rect;
-      update(rect);
+      T::update(rect);
     }
 
     template <class T>
@@ -510,7 +510,7 @@ namespace te
         m_toResizeItem = false;
         m_resizeMode = false;
         redraw();
-        setOpacity(1.);
+        T::setOpacity(1.);
       }
 
       refresh();
@@ -522,18 +522,18 @@ namespace te
       if(event->modifiers() == Qt::AltModifier && event->buttons() == Qt::LeftButton && m_toResizeItem && m_model->isResizable())
       {
         m_mousePressedAlt = true;
-        setOpacity(0.5);
+        T::setOpacity(0.5);
 
         m_finalCoord = event->scenePos();
 
         QPixmap pix = calculateNewPixmap(event->scenePos().x(), event->scenePos().y());
         setPixmap(pix);
-        update();
+        T::update();
       }
       else
       {
         if(!m_toResizeItem)
-          setOpacity(1.);
+          T::setOpacity(1.);
         m_mousePressedAlt = false;
         QGraphicsItem::mouseMoveEvent(event);
       }
@@ -548,7 +548,7 @@ namespace te
     template <class T>
     inline void te::layout::ParentItem<T>::hoverLeaveEvent( QGraphicsSceneHoverEvent * event )
     {
-      setCursor(Qt::ArrowCursor);
+      T::setCursor(Qt::ArrowCursor);
       QGraphicsItem::hoverLeaveEvent(event);
     }
 
@@ -577,30 +577,30 @@ namespace te
       if((x >= (ll.x() - margin) && x <= (ll.x() + margin))
         && (y >= (ll.y() - margin) && y <= (ll.y() + margin)))
       {
-	    setCursor(Qt::SizeFDiagCursor);
+        T::setCursor(Qt::SizeFDiagCursor);
         m_enumSides = TPLowerLeft;
       }
       else if((x >= (lr.x() - margin) && x <= (lr.x() + margin))
         && (y >= (lr.y() - margin) && y <= (lr.y() + margin)))
       {
-	    setCursor(Qt::SizeBDiagCursor);
+        T::setCursor(Qt::SizeBDiagCursor);
         m_enumSides = TPLowerRight;
       }
       else if((x >= (tl.x() - margin) && x <= (tl.x() + margin))
         && (y >= (tl.y() - margin) && y <= (tl.y() + margin)))
       {
-	    setCursor(Qt::SizeBDiagCursor);
+        T::setCursor(Qt::SizeBDiagCursor);
         m_enumSides = TPTopLeft;
       }
       else if((x >= (tr.x() - margin) && x <= (tr.x() + margin))
         && (y >= (tr.y() - margin) && y <= (tr.y() + margin)))
       {
-	    setCursor(Qt::SizeFDiagCursor);
+        T::setCursor(Qt::SizeFDiagCursor);
         m_enumSides = TPTopRight;
       }
       else
       {
-        setCursor(Qt::ArrowCursor);
+        T::setCursor(Qt::ArrowCursor);
         m_enumSides = TPNoneSide;
         result = false;
       }
@@ -623,8 +623,8 @@ namespace te
     template <class T>
     inline te::gm::Envelope te::layout::ParentItem<T>::createNewBoxInCoordScene( const double& x, const double& y )
     {
-      QPointF pbxy1 = mapToScene(boundingRect().bottomLeft());
-      QPointF pbxy2 = mapToScene(boundingRect().topRight());
+      QPointF pbxy1 = T::mapToScene(boundingRect().bottomLeft());
+      QPointF pbxy2 = T::mapToScene(boundingRect().topRight());
 
       double dx = 0;
       double dy = 0;
@@ -644,7 +644,7 @@ namespace te
                 m_model->getBox().m_lly, m_model->getBox().m_urx + dx, m_model->getBox().m_ury + dy);
 
               //In Parent Coordinates
-              setPos(QPointF(m_model->getBox().m_llx, m_model->getBox().m_lly));
+              T::setPos(QPointF(m_model->getBox().m_llx, m_model->getBox().m_lly));
             }
             break;
           }
@@ -656,7 +656,7 @@ namespace te
                 m_model->getBox().m_lly - dy, m_model->getBox().m_urx, m_model->getBox().m_ury);
 
               //In Parent Coordinates
-              setPos(QPointF(m_finalCoord.x(), m_model->getBox().m_lly));
+              T::setPos(QPointF(m_finalCoord.x(), m_model->getBox().m_lly));
             }
             break;
           }
@@ -668,7 +668,7 @@ namespace te
                 m_model->getBox().m_lly, m_model->getBox().m_urx + dx, m_model->getBox().m_ury - dy);
 
               //In Parent Coordinates
-              setPos(QPointF(m_model->getBox().m_llx, m_finalCoord.y()));
+              T::setPos(QPointF(m_model->getBox().m_llx, m_finalCoord.y()));
             }
             break;
           }
@@ -680,7 +680,7 @@ namespace te
                 m_model->getBox().m_lly + dy, m_model->getBox().m_urx, m_model->getBox().m_ury);
 
               //In Parent Coordinates
-              setPos(QPointF(m_finalCoord.x(), m_finalCoord.y()));
+              T::setPos(QPointF(m_finalCoord.x(), m_finalCoord.y()));
             }
             break;
           }
@@ -736,7 +736,7 @@ namespace te
       if(angle == model->getOldAngle())
         return;
 
-      setRotation(angle);
+      T::setRotation(angle);
     }
 
     template <class T>
