@@ -387,6 +387,25 @@ std::auto_ptr<te::da::DataSetType> terralib4::Transactor::getDataSetType(const s
 
     pk->setProperties(pkProps);
   }
+  else
+  {
+    TeAttribute attLink;
+    table.attrLink(attLink);
+
+    std::string attLinkName = attLink.rep_.name_;
+
+    if(!attLinkName.empty())
+    {
+      pk = new te::da::PrimaryKey(table.name() + "_pk", mainDst.get());
+
+      te::dt::Property* p = mainDst->getProperty(attLinkName);
+
+      std::vector<te::dt::Property*> pkProps;
+      pkProps.push_back(p);
+
+      pk->setProperties(pkProps);
+    }
+  }
 
   if(layer)
   {
