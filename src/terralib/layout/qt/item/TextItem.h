@@ -44,7 +44,6 @@
 #include <QVariant>
 #include <QPointF>
 
-class QTextDocument;
 class QTextTable;
 class QGraphicsSceneMouseEvent;
 class QKeyEvent;
@@ -98,8 +97,6 @@ namespace te
 
         virtual QRectF boundingRect() const;
         
-        virtual QTextDocument* getDocument();
-
         virtual void refreshDocument();
                 
         /*!
@@ -168,7 +165,6 @@ namespace te
 
         virtual void resetEdit();
 
-        QTextDocument* m_document;
         QColor         m_backgroundColor;
         bool           m_editable;
         QTextTable*    m_table;

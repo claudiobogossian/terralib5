@@ -70,48 +70,6 @@ te::layout::PaperModel::~PaperModel()
 
 }
 
-void te::layout::PaperModel::draw( ContextItem context )
-{
-  te::color::RGBAColor** pixmap = 0;
-  
-  te::map::Canvas* canvas = context.getCanvas();
-  Utils* utils = context.getUtils();
-
-  if((!canvas) || (!utils))
-    return;
-  
-  config();
-
-  if(context.isResizeCanvas())
-    utils->configCanvas(m_box);
-  
-  canvas->setPolygonContourColor(m_borderColor);
-  canvas->setPolygonFillColor(m_shadowColor);
-
-  if(!m_paperConfig)
-    return;
-
-  double pw = 0.;
-  double ph = 0.;
-
-  m_paperConfig->getPaperSize(pw, ph);
-    
-  m_boxShadow = te::gm::Envelope(m_shadowPadding, - m_shadowPadding, pw + m_shadowPadding, ph - m_shadowPadding);
-  utils->drawRectW(m_boxShadow);
-
-  canvas->setPolygonContourColor(m_borderColor);
-  canvas->setPolygonFillColor(m_backgroundColor);
-
-  m_boxPaper = te::gm::Envelope(0, 0, pw, ph);
-  utils->drawRectW(m_boxPaper);
-    
-  if(context.isResizeCanvas())
-    pixmap = utils->getImageW(m_box);
-  
-  context.setPixmap(pixmap);
-  notifyAll(context);
-}
-
 void te::layout::PaperModel::config()
 {
   if(!m_paperConfig)
@@ -122,6 +80,14 @@ void te::layout::PaperModel::config()
 
   m_paperConfig->getPaperSize(pw, ph);
   m_box = te::gm::Envelope(0., - m_shadowPadding, pw + m_shadowPadding, ph);
+
+  ContextItem context;
+  context.setChangePos(true);
+  
+  te::gm::Coord2D coord(m_box.m_llx, m_box.m_lly);
+  context.setPos(coord);
+
+  notifyAll(context);
 }
 
 te::color::RGBAColor te::layout::PaperModel::getShadowColor()

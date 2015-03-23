@@ -213,9 +213,10 @@ bool te::qt::plugins::terralib4::TL4ConverterWizard::validateCurrentPage()
     ::terralib4::DataSource* tl4Ds = dynamic_cast<::terralib4::DataSource*>(m_tl4Database.get());
 
     std::vector<std::string> layers = tl4Ds->getTL4Layers();
+    std::vector<std::string> rasters = tl4Ds->getTL4Rasters();
     std::vector<std::string> tables = tl4Ds->getTL4Tables();
 
-    m_layerSelectionPage->setDatasets(layers, tables);
+    m_layerSelectionPage->setDatasets(layers, tables, rasters);
 
   }
   else if(current_page_id == PAGE_LAYER_SELECTION)

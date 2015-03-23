@@ -36,6 +36,8 @@
 #include "../../../common/STLUtils.h"
 #include "../../item/ArrowModel.h"
 
+#include <cmath>
+
 te::layout::ArrowItem::ArrowItem( ItemController* controller, Observable* o ) :
   ObjectItem(controller, o)
 {
@@ -116,7 +118,7 @@ void te::layout::ArrowItem::drawHeadArrow( QPainter * painter )
   double Pi = 3.14;
   double sizeHead = (h / 5.);
 
-  double angle = ::acos(lne.dx() / lne.length());
+  double angle = std::acos(lne.dx() / lne.length());
   if (lne.dy() >= 0)
     angle = (Pi * 2) - angle;
 

@@ -124,9 +124,9 @@ void te::layout::TextGridItem::updateDocument()
   if(!model)
     return;
 
-  m_document->clear();
+  document()->clear();
 
-  QTextDocument* doc = m_document;
+  QTextDocument* doc = document();
 
   QTextCursor cursor(doc);
   cursor.movePosition(QTextCursor::Start);

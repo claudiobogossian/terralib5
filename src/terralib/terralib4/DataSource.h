@@ -72,6 +72,8 @@ namespace terralib4
 
       std::vector<std::string> getTL4Tables();
 
+      std::vector<std::string> getTL4Rasters();
+
       std::vector<::terralib4::ThemeInfo> getTL4Themes();
 
       TeTheme* getTL4Theme(const ::terralib4::ThemeInfo theme);

@@ -56,6 +56,12 @@ void te::layout::RectangleItem::paint( QPainter * painter, const QStyleOptionGra
     return;
   }
 
+  if(m_resizeMode)
+  {
+    ObjectItem::paint(painter, option, widget);
+    return;
+  }
+
   drawBackground(painter);
 
   drawRectangle(painter);

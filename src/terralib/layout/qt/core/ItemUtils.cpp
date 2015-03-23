@@ -395,7 +395,7 @@ void te::layout::ItemUtils::createTextItemFromObject( std::map<te::gm::Point*, s
           model->setFont(fnt);
         }        
         model->setText(text);
-        txtItem->getDocument()->setPlainText(text.c_str());
+        txtItem->document()->setPlainText(text.c_str());
       }
     }
   }

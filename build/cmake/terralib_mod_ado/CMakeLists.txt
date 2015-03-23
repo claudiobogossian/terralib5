@@ -35,7 +35,8 @@ file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/ado/*.h)
 
 add_library(terralib_mod_ado SHARED ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
 
-target_link_libraries(terralib_mod_ado terralib_mod_dataaccess
+target_link_libraries(terralib_mod_ado terralib_mod_common
+									   terralib_mod_dataaccess
                                        terralib_mod_datatype
                                        terralib_mod_plugin
                                        terralib_mod_geometry

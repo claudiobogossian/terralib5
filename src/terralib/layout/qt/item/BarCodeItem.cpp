@@ -55,8 +55,8 @@ te::layout::BarCodeItem::BarCodeItem( ItemController* controller, Observable* o 
   {
     Font font = model->getFont();
     QFont ft(font.getFamily().c_str(), font.getPointSize());
-    m_document->setDefaultFont(ft);
-    m_document->setPlainText("Teste BarCode");
+    document()->setDefaultFont(ft);
+    document()->setPlainText("Teste BarCode");
   }  
 }
 
