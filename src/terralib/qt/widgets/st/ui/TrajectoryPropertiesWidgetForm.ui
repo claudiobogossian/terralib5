@@ -17,11 +17,11 @@
    <item row="0" column="0">
     <widget class="QGroupBox" name="m_temporalPropertiesGroupBox">
      <property name="title">
-      <string>General Properties</string>
+      <string>Temporal  Properties</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
       <item row="0" column="0">
-       <widget class="QFrame" name="m_generalPropertiesFrame">
+       <widget class="QFrame" name="m_temporalPropertiesFrame">
         <property name="frameShape">
          <enum>QFrame::StyledPanel</enum>
         </property>

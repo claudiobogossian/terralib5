@@ -107,11 +107,61 @@ namespace te
           int getValidTime();
 
           /*!
+            \brief Returns the index of the datetime type
+
+            \return The index of the datetime type.
+          */
+          int getDateType();
+
+          /*!
+            \brief Returns the selected ordinal type 
+
+            \return The selected Ordinal Type.
+          */
+          int getOrdinalType();
+
+          /*!
+            \brief Returns the selected temporal unit
+
+            \return The selected temporal unit.
+          */
+          int getTemporalUnit();
+
+          /*!
+            \brief Returns a custom (user-defined) temporal unit
+
+            \return A custom (user-defined) temporal unit
+          */
+          std::string getTemporalValue();
+
+          /*!
+            \brief Returns a custom (user-defined) Ordinal Type 
+
+            \return A custom (user-defined) Ordinal Type.
+          */
+          std::string getUserOrdinalType();
+
+          /*!
+            \brief Returns the format that the indicates how the date will be displayed
+
+            \return The format that the indicates how the date will be displayed.
+          */
+          std::string getDateFormat();
+
+          /*!
             \brief Adjusts the widget values according to the given datasettype
 
             \param dataType The datasetType that will be used to configure the widget.
           */
           void setUp(const te::da::DataSetTypePtr dataType);
+
+        protected slots:
+
+        void onTypeCBCurrentIndexChanged(int index);
+
+        void onOrdTypeCBCurrentIndexChanged(int index);
+
+        void onUnitTypeCBCurrentIndexChanged(int index);
 
         private:
 
