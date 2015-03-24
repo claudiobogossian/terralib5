@@ -700,55 +700,6 @@ void te::layout::Scene::selectItems( QList<QGraphicsItem*> items )
   }
 }
 
-void te::layout::Scene::drawItems( QPainter *painter, int numItems, QGraphicsItem *items[], const QStyleOptionGraphicsItem options[], QWidget *widget /*= 0*/ )
-{
-  QGraphicsScene::drawItems(painter, numItems, items, options, widget);
-  return;
-
-  QPaintDevice* device = painter->device();
-  if (dynamic_cast<QPrinter*>(device) == NULL)
-  {
-    QGraphicsScene::drawItems(painter, numItems, items, options, widget);
-    return;
-  }
-
-  //Just called in print mode
-  // If item is the type QGraphicsTextItem, don't change.
-
-  // Paper don't have to change
-  
-  redrawItems();
-
-  for (int i = 0; i < numItems; ++i) 
-  {
-    // Draw the text item
-    QGraphicsTextItem* txtItem = dynamic_cast<QGraphicsTextItem*>(items[i]);
-    if(txtItem)
-    {
-      QGraphicsItem* its[1];
-      its[0] = items[i];
-      QGraphicsScene::drawItems(painter, 1, its, options, widget);
-      continue;
-    }
-
-    // Check item with inverted matrix. 
-    ItemObserver* itemObs = dynamic_cast<ItemObserver*>(items[i]);
-    if(itemObs)
-    {
-      if(!itemObs->isPrintable())
-      {
-        continue;
-      }
-    }
-
-    // Draw the item
-    painter->save();
-    painter->setMatrix(items[i]->sceneMatrix(), true);    
-    items[i]->paint(painter, &options[i], widget);
-    painter->restore();
-  }
-}
-
 void te::layout::Scene::redrawItems()
 {
   QList<QGraphicsItem*> allItems = items();

@@ -30,8 +30,8 @@
 #include "../pattern/factory/TemplateParamsCreate.h"
 #include "../pattern/singleton/Context.h"
 #include "../pattern/factory/AbstractTemplateFactory.h"
-#include "JSONTemplate.h"
 #include "../enum/Enums.h"
+#include "AbstractTemplate.h"
 
 te::layout::TemplateEditor::TemplateEditor( EnumType* type, std::string path ) 
 {
@@ -44,15 +44,8 @@ te::layout::TemplateEditor::~TemplateEditor()
 {
   if(m_template)
   {
-    EnumTemplateType* type = Enums::getInstance().getEnumTemplateType();
-
-    if(m_template->getType() == type->getJsonType())
-    {
-      JSONTemplate* jt = dynamic_cast<JSONTemplate*>(m_template);
-
-      if(jt)
-        delete jt;
-    }
+    delete m_template;
+    m_template = 0;
   }
 }
 

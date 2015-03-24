@@ -427,7 +427,6 @@ QVariant te::layout::PropertyBrowser::checkComplexType( QtVariantProperty* prope
   {
     variant = property->attributeValue("enumNames");
     QStringList list = variant.toStringList();
-    /*QString attr = list.value(property->value().toInt());*/
     variant = QVariant(list);
   }
 
