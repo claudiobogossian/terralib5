@@ -60,7 +60,7 @@
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
-//Utility functions used mainly to pupulate ui elements.
+//Utility functions used mainly to populate ui elements.
 void buidTypeMap(std::map<int, std::string>& typeMap)
 {
   typeMap.clear();
