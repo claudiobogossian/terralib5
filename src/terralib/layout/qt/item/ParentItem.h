@@ -380,8 +380,22 @@ namespace te
         return;
       }
 
+      ItemModelObservable* model = dynamic_cast<ItemModelObservable*>(m_model);
+
+      if(!model)
+        return;
+
+      te::color::RGBAColor clrBack = model->getBackgroundColor();
+      QColor backColor;
+      backColor.setRed(clrBack.getRed());
+      backColor.setGreen(clrBack.getGreen());
+      backColor.setBlue(clrBack.getBlue());
+      backColor.setAlpha(clrBack.getAlpha());
+      
       painter->save();
       painter->setPen(Qt::NoPen);
+      painter->setBrush(QBrush(backColor));
+      painter->setBackground(QBrush(backColor));
       painter->setRenderHint( QPainter::Antialiasing, true );
       painter->drawRect(QRectF( 0, 0, boundingRect().width(), boundingRect().height()));
       painter->restore();
@@ -450,10 +464,15 @@ namespace te
       if(!model->isBorder())
         return;
 
-      const QColor backgroundColor(0,0,0);
+      te::color::RGBAColor clrBack = model->getBorderColor();
+      QColor borderColor;
+      borderColor.setRed(clrBack.getRed());
+      borderColor.setGreen(clrBack.getGreen());
+      borderColor.setBlue(clrBack.getBlue());
+      borderColor.setAlpha(clrBack.getAlpha());
 
       painter->save();
-      QPen penBackground(backgroundColor, 0, Qt::SolidLine);
+      QPen penBackground(borderColor, 0, Qt::SolidLine);
       painter->setPen(penBackground);
       painter->setBrush(Qt::NoBrush);
       painter->setRenderHint( QPainter::Antialiasing, true );

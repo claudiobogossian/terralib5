@@ -38,7 +38,7 @@ te::layout::PaperModel::PaperModel() :
 
   m_shadowPadding = 10.;
 
-  m_backgroundColor = te::color::RGBAColor(255, 255, 255, 255);
+  m_paperColor = te::color::RGBAColor(255, 255, 255, 255);
   m_shadowColor = te::color::RGBAColor(0, 0, 0, 255);
 
   m_borderColor = te::color::RGBAColor(255, 255, 255, 0);
@@ -55,7 +55,7 @@ te::layout::PaperModel::PaperModel( PaperConfig* paperConfig ) :
 
   m_shadowPadding = 10.;
 
-  m_backgroundColor = te::color::RGBAColor(255, 255, 255, 255);
+  m_paperColor = te::color::RGBAColor(255, 255, 255, 255);
   m_shadowColor = te::color::RGBAColor(0, 0, 0, 255);
 
   m_borderColor = te::color::RGBAColor(255, 255, 255, 0);
@@ -131,4 +131,14 @@ void te::layout::PaperModel::setBox( te::gm::Envelope box )
 
   m_paperConfig->getPaperSize(pw, ph);
   m_box = te::gm::Envelope(box.m_llx, box.m_lly - m_shadowPadding, pw + m_shadowPadding, ph);
+}
+
+te::color::RGBAColor te::layout::PaperModel::getPaperColor()
+{
+  return m_paperColor;
+}
+
+void te::layout::PaperModel::setPaperColor( te::color::RGBAColor color )
+{
+  m_paperColor = color;
 }
