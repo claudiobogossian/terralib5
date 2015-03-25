@@ -57,18 +57,14 @@
 
 te::layout::TextItem::TextItem( ItemController* controller, Observable* o ) :
   ParentItem(controller, o, true),
-  m_document(0),
   m_editable(false),
   m_move(false)
 {    
   m_nameClass = std::string(this->metaObject()->className());
   
-  m_document = new QTextDocument(this);
-  setDocument(m_document);
-
   //If enabled is true, this item will accept hover events
   setAcceptHoverEvents(false);
-
+  
   m_backgroundColor.setAlpha(0);
 
   init();
@@ -82,7 +78,7 @@ te::layout::TextItem::~TextItem()
 void te::layout::TextItem::init()
 {
   QFont ft("Arial", 12);
-  m_document->setDefaultFont(ft);
+  document()->setDefaultFont(ft);
 
   std::string name = m_model->getName();
   TextModel* model = dynamic_cast<TextModel*>(m_model);
@@ -93,12 +89,12 @@ void te::layout::TextItem::init()
       model->setText(name);
     }
 
-    QTextCursor cursor(getDocument());
+    QTextCursor cursor(document());
     cursor.movePosition(QTextCursor::Start);
     cursor.insertText(name.c_str());
 
     std::string txt = model->getText();
-    m_document->setPlainText(txt.c_str());
+    document()->setPlainText(txt.c_str());
   }
 }
 
@@ -107,7 +103,7 @@ void te::layout::TextItem::updateObserver( ContextItem context )
   if(!m_model)
     return;
 
-  if(!m_document)
+  if(!document())
     return;
 
   TextModel* model = dynamic_cast<TextModel*>(m_model);
@@ -132,10 +128,10 @@ void te::layout::TextItem::updateObserver( ContextItem context )
   qft.setStrikeOut(ft.isStrikeout());
   qft.setUnderline(ft.isUnderline());
 
-  m_document->setDefaultFont(qft);
+  document()->setDefaultFont(qft);
   
   std::string txt = model->getText();
-  m_document->setPlainText(txt.c_str());
+  document()->setPlainText(txt.c_str());
 
   update();
 }
@@ -191,14 +187,14 @@ QImage te::layout::TextItem::createImage()
   //The text size automatically resized by QGraphicsTextItem 
   //depending on the zoom level
   // So it is not necessary to calculate a new value for the font size
-  QFont ft = m_document->defaultFont();
+  QFont ft = document()->defaultFont();
   Font fot = model->getFont();
   int pts = (int)fot.getPointSize();
   ft.setPointSize(pts);
-  m_document->setDefaultFont(ft);
+  document()->setDefaultFont(ft);
 
-  double w = m_document->size().width();
-  double h = m_document->size().height();
+  double w = document()->size().width();
+  double h = document()->size().height();
   
   QImage img(w, h, QImage::Format_ARGB32_Premultiplied);
   img.fill(m_backgroundColor);
@@ -207,7 +203,7 @@ QImage te::layout::TextItem::createImage()
   ptr.setFont(ft);
   ptr.setRenderHint(QPainter::Antialiasing, true);
 
-  m_document->drawContents(&ptr);
+  document()->drawContents(&ptr);
 
   return img;
 }
@@ -237,12 +233,7 @@ void te::layout::TextItem::refreshDocument()
   te::gm::Envelope box(x1, y1, x2, y2);
 
   model->setBox(box);
-  model->setText(m_document->toPlainText().toStdString());
-}
-
-QTextDocument* te::layout::TextItem::getDocument()
-{
-  return m_document;
+  model->setText(document()->toPlainText().toStdString());
 }
 
 te::gm::Coord2D te::layout::TextItem::getPosition()
@@ -385,7 +376,7 @@ void te::layout::TextItem::resetEdit()
   TextModel* model = dynamic_cast<TextModel*>(m_model);
   if(model)
   {
-    if(model->getText().compare(m_document->toPlainText().toStdString()) != 0)
+    if(model->getText().compare(document()->toPlainText().toStdString()) != 0)
     {
       Properties* beforeProps = getProperties();
       Properties* oldCommand = new Properties(*beforeProps);

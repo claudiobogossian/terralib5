@@ -30,6 +30,9 @@
 
 // TerraLib
 #include "ObjectItem.h"
+#include "../../core/Config.h"
+
+// STL
 #include <vector>
 
 // Qt
@@ -42,7 +45,7 @@ namespace te
   {
     class Observable;
 
-    class BalloonItem : public ObjectItem
+    class TELAYOUTEXPORT BalloonItem : public ObjectItem
     {
       public:
 
@@ -66,33 +69,33 @@ namespace te
 
         virtual void	hoverMoveEvent ( QGraphicsSceneHoverEvent * event );
 
-        QPolygonF m_triangleRect; //Poligono que armazena os pontos do triangulo (alça do Balloon)
-        QPointF m_pointOne; //Ponto que armazena o primeiro ponto do triangulo
-        QPointF m_pointTwo; //Ponto que armazena o segundo ponto do triangulo
-        QPointF m_pointThree; //Ponto que armazena o terceiro ponto do triangulo
-        QPointF m_initialPosition; //Ponto que armazena a posição inicial ao clicar com o Mouse
-        QPointF m_finalPosition; //Ponto que armazena a posição do evento de click do Mouse
-        QPointF m_initialPoint; //Ponto que armazena a posição inicial onde o triangulo começará a ser desenhado
-        QPointF m_clikedArea; //Ponto que armazena a posição de um click qualquer para verificar se esse ponto está contido na área do triangulo
-        QPointF m_zero; //Ponto que armazena o ponto agudo do balão (ponta da alça do balloon)
-        bool m_flagReDraw; //Propriedade booleana que será verdadeira quando a tecla SHIFT estiver acionada, permitindo o redimensionamento do BoundRect
-        bool m_flagArrow; //Propriedade booleana que será verdadeira quando a tecla ALT estiver acionada, permitindo arrastar a alça do balão
-        bool m_flagArea; //Propriedade booleana que será verdadeira quando a for realizado um click sobre a área do triangulo
-        bool m_flagChangeArrow; //Propriedade booleana que será verdadeira quando for movido a alça do balão, permitindo que ela seja redimensionada proportionalmente após movida para outra posição
-        double m_deltaX; //Propriedade double que guarda a variação em X quando a alça do balão é arrastada
-        double m_deltaY; //Propriedade double que guarda a variação em Y quando a alça do balão é arrastada
-        double m_initialRect; //Propriedade double que guarda o tamanho do width do Rect adicionado ao QPainterPath
-        double m_boundDeltaX; //Propriedade double que guarda a variação em X para redimensionar o BoundRect
-        double m_boundDeltaY; //Propriedade double que guarda a variação em Y para redimensionar o BoundRect
+        QPolygonF m_triangleRect; 
+        QPointF m_pointOne; 
+        QPointF m_pointTwo; 
+        QPointF m_pointThree; 
+        QPointF m_initialPosition; 
+        QPointF m_finalPosition; 
+        QPointF m_initialPoint; 
+        QPointF m_clikedArea; 
+        QPointF m_zero; 
+        bool m_flagReDraw; 
+        bool m_flagArrow; 
+        bool m_flagArea; 
+        bool m_flagChangeArrow; 
+        double m_deltaX; 
+        double m_deltaY;
+        double m_initialRect; 
+        double m_boundDeltaX; 
+        double m_boundDeltaY; 
                
-        enum rectDiagonal //Enum que contém as diagonais do retângudo do BoundRect, usado para identificar em qual direção o redimensionamento acontecerá
+        enum rectDiagonal 
         {
           UpLeft, 
           UpRight, 
           DownLeft, 
           DownRight
         };
-        rectDiagonal m_size; //Propriedade do tipo rectDiagonal utilizada para acessar as opções de rectDiagonal
+        rectDiagonal m_size; 
     };
   }
 }

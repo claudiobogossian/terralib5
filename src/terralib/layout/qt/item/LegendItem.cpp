@@ -91,3 +91,33 @@ void te::layout::LegendItem::updateObserver( ContextItem context )
   update();
 }
 
+void te::layout::LegendItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
+{
+  Q_UNUSED( option );
+  Q_UNUSED( widget );
+  if ( !painter )
+  {
+    return;
+  }
+
+  drawBackground( painter );
+
+  QRectF boundRect;
+  boundRect = boundingRect();
+
+  painter->save();
+  painter->translate( -boundRect.bottomLeft().x(), -boundRect.topRight().y() );  
+  QRectF rtSource( 0, 0, m_pixmap.width(), m_pixmap.height() );
+  painter->drawPixmap(boundRect, m_pixmap, rtSource);
+  painter->restore();  
+
+  drawBorder(painter);
+
+  //Draw Selection
+  if (option->state & QStyle::State_Selected)
+  {
+    drawSelection(painter);
+  }
+}
+
+

@@ -43,6 +43,7 @@ namespace te
     namespace widgets
     {
     //Forward declarations
+    class TemporalPropertiesWidget;
     class TimeSeriesPropertiesWidget;
 
     /*!
@@ -63,8 +64,8 @@ namespace te
 
         private:
 
-          std::auto_ptr<TimeSeriesPropertiesWidget> m_propWidget; //!< The widget used to configure the general spatio-temporal layer's properties
-
+          std::auto_ptr<TimeSeriesPropertiesWidget>  m_propWidget; //!< The widget used to configure the general spatio-temporal layer's properties
+          std::auto_ptr<TemporalPropertiesWidget>    m_tempPropWidget;  //!< The widget used to configure the general TrajectoryLayer's properties
       };
     } // end namespace widgets
   }   // end namespace qt

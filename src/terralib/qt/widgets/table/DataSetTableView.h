@@ -29,6 +29,7 @@
 
 // TerraLib
 #include "../Config.h"
+#include "../../../common/CharEncodingConv.h"
 
 // Qt
 #include <QTableView>
@@ -39,10 +40,6 @@ class TablePopupFilter;
 namespace te
 {
   // Forward declarations
-  namespace common
-  {
-    enum CharEncoding;
-  }
 
   namespace da
   {

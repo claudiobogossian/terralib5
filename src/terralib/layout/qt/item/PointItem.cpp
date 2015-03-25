@@ -37,6 +37,8 @@
 #include "../../item/PointModel.h"
 #include "../../core/enum/EnumPointType.h"
 
+#include <cmath>
+
 te::layout::PointItem::PointItem( ItemController* controller, Observable* o ) :
   ObjectItem(controller, o)
 {
@@ -54,6 +56,12 @@ void te::layout::PointItem::paint( QPainter * painter, const QStyleOptionGraphic
   Q_UNUSED( widget );
   if ( !painter )
   {
+    return;
+  }
+
+  if(m_resizeMode)
+  {
+    ObjectItem::paint(painter, option, widget);
     return;
   }
 
@@ -129,10 +137,10 @@ void te::layout::PointItem::drawStar( QPainter * painter )
   QPointF pUnion;
   for ( qreal i = 0 ; i < 2*3.14; i += 3.14/5.0, inner=!inner ) {
     qreal const f = inner ? c : d;
-    poly << QPointF( f * cos(i), f * sin(i) );
+    poly << QPointF( f * std::cos(i), f * std::sin(i) );
     if(i == 0)
     {
-      pUnion = QPointF( f * cos(i), f * sin(i) );
+      pUnion = QPointF( f * std::cos(i), f * std::sin(i) );
     }
   }
   poly << pUnion;

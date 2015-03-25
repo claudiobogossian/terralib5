@@ -44,6 +44,9 @@ QIcon getImage(int type)
     case 2:
       return QIcon::fromTheme("tl4-table").pixmap(16,16);
 
+    case 3:
+      return QIcon::fromTheme("tl4-raster").pixmap(16,16);
+
     default:
       return QIcon::fromTheme("tl4-layer").pixmap(16,16);
   }
@@ -59,6 +62,10 @@ te::qt::plugins::terralib4::TL4LayerSelectionWizardPage::TL4LayerSelectionWizard
   connect(m_ui->m_selectAllPushButton, SIGNAL(clicked()), this, SLOT(onSelectAllPushButtonClicked()));
   connect(m_ui->m_deselectAllPushButton, SIGNAL(clicked()), this, SLOT(onDeselectAllPushButtonClicked()));
 
+  // add icons
+  m_ui->m_imgVectorLabel->setPixmap(QIcon::fromTheme("tl4-layer").pixmap(16,16));
+  m_ui->m_imgTabularLabel->setPixmap(QIcon::fromTheme("tl4-table").pixmap(16,16));
+  m_ui->m_imgRasterLabel->setPixmap(QIcon::fromTheme("tl4-raster").pixmap(16,16));
 }
 
 te::qt::plugins::terralib4::TL4LayerSelectionWizardPage::~TL4LayerSelectionWizardPage()
@@ -66,19 +73,21 @@ te::qt::plugins::terralib4::TL4LayerSelectionWizardPage::~TL4LayerSelectionWizar
 }
 
 void te::qt::plugins::terralib4::TL4LayerSelectionWizardPage::setDatasets(std::vector<std::string> layers,
-                                                                          std::vector<std::string> tables)
+                                                                          std::vector<std::string> tables,
+                                                                          std::vector<std::string> rasters)
 {
   m_ui->m_layersListWidget->clear();
 
   setTL4Layers(layers);
   setTL4Tables(tables);
+  setTL4Rasters(rasters);
 }
 
 void te::qt::plugins::terralib4::TL4LayerSelectionWizardPage::setTL4Layers(std::vector<std::string> layers)
 {
   for(std::size_t i = 0; i < layers.size(); ++i)
   {
-    QListWidgetItem* item = new QListWidgetItem(getImage(LAYER), layers[i].c_str(), m_ui->m_layersListWidget, LAYER);
+    QListWidgetItem* item = new QListWidgetItem(getImage(LAYER), QString::fromLatin1(layers[i].c_str()), m_ui->m_layersListWidget, LAYER);
     item->setCheckState(Qt::Checked);
     m_ui->m_layersListWidget->addItem(item);
   }
@@ -88,7 +97,17 @@ void te::qt::plugins::terralib4::TL4LayerSelectionWizardPage::setTL4Tables(std::
 {
   for(std::size_t i = 0; i < tables.size(); ++i)
   {
-    QListWidgetItem* item = new QListWidgetItem(getImage(TABLE), tables[i].c_str(), m_ui->m_layersListWidget, TABLE);
+    QListWidgetItem* item = new QListWidgetItem(getImage(TABLE), QString::fromLatin1(tables[i].c_str()), m_ui->m_layersListWidget, TABLE);
+    item->setCheckState(Qt::Checked);
+    m_ui->m_layersListWidget->addItem(item);
+  }
+}
+
+void te::qt::plugins::terralib4::TL4LayerSelectionWizardPage::setTL4Rasters(std::vector<std::string> rasters)
+{
+  for(std::size_t i = 0; i < rasters.size(); ++i)
+  {
+    QListWidgetItem* item = new QListWidgetItem(getImage(RASTER), QString::fromLatin1(rasters[i].c_str()), m_ui->m_layersListWidget, RASTER);
     item->setCheckState(Qt::Checked);
     m_ui->m_layersListWidget->addItem(item);
   }

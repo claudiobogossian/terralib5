@@ -38,9 +38,6 @@ te::qt::widgets::TimeSeriesPropertiesWidget::TimeSeriesPropertiesWidget(QWidget*
 {
   m_ui->setupUi(this);
   QString item;
-
-// connect signal and slots
-  //connect(m_ui->m_phenomenomComboBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(onPropertyComboBoxIndexChanged(QString)));
 }
 
 te::qt::widgets::TimeSeriesPropertiesWidget::~TimeSeriesPropertiesWidget()

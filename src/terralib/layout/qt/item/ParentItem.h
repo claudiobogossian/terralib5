@@ -106,6 +106,11 @@ namespace te
         virtual void updateObserver(te::layout::ContextItem context);
 
         /*!
+          \brief Reimplemented from QGraphicsItem
+         */
+        virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
+
+        /*!
           \brief Reimplemented from ItemObserver
          */
         virtual te::gm::Coord2D getPosition();
@@ -113,11 +118,6 @@ namespace te
         virtual void setPixmap( const QPixmap& pixmap );
 
         virtual QPixmap getPixmap();
-
-        /*!
-          \brief Mandatory implementation from QGraphicsItem
-         */
-        virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
 
         virtual QRectF boundingRect() const;
 
@@ -207,30 +207,32 @@ namespace te
          */
         virtual void drawText(QPointF point, QPainter* painter, std::string text);
 
+        virtual void createResizePixmap();
+        
       protected:
 
         QPixmap m_pixmap;
         QRectF  m_rect;//In local coordinate
         
         //Resize
-        te::gm::Envelope m_boxCopy;
-        QPixmap m_clonePixmap;
-        bool    m_mousePressedCtrl;
-        QPointF m_initialCoord;
-        QPointF m_finalCoord;
-        bool    m_hoverAboveItem;
-        bool    m_toResizeItem;
-        LayoutAlign m_enumSides;
+        te::gm::Envelope    m_boxCopy; //!< box with resize
+        QPixmap             m_clonePixmap;
+        bool                m_mousePressedAlt; //!< mouse and active alt key
+        QPointF             m_initialCoord;
+        QPointF             m_finalCoord;
+        bool                m_toResizeItem; //!< pixmap to perform the resize is not yet built
+        LayoutAlign         m_enumSides;
+        bool                m_resizeMode; //!< pixmap to perform the resize is already built 
     };
 
     template <class T>
     inline te::layout::ParentItem<T>::ParentItem( ItemController* controller, Observable* o, bool inverted ) :
       T(0),
       ItemObserver(controller, o),
-      m_mousePressedCtrl(false),
-      m_hoverAboveItem(false),
+      m_mousePressedAlt(false),
       m_toResizeItem(false),
-      m_enumSides(TPNoneSide)
+      m_enumSides(TPNoneSide),
+      m_resizeMode(false)
     {
 
       m_invertedMatrix = inverted;
@@ -244,7 +246,7 @@ namespace te
         | QGraphicsItem::ItemIsFocusable);
 
       //If enabled is true, this item will accept hover events
-      setAcceptHoverEvents(true);
+      QGraphicsItem::setAcceptHoverEvents(true);
 
       m_boxCopy = m_model->getBox();
 
@@ -274,10 +276,40 @@ namespace te
       {
         double x = context.getPos().x;
         double y = context.getPos().y;
-        setPos(x, y);
+        QGraphicsItem::setPos(x, y);
       }
 
-      update();
+      QGraphicsItem::update();
+    }
+
+    template <class T>
+    inline void te::layout::ParentItem<T>::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
+    {
+      Q_UNUSED( option );
+      Q_UNUSED( widget );
+      if ( !painter || !m_toResizeItem )
+      {
+        return;
+      }
+      
+      drawBackground( painter );
+
+      QRectF boundRect;
+      boundRect = boundingRect();
+
+      painter->save();
+      painter->translate( -boundRect.bottomLeft().x(), -boundRect.topRight().y() );  
+      QRectF rtSource( 0, 0, m_clonePixmap.width(), m_clonePixmap.height() );
+      painter->drawPixmap(boundRect, m_clonePixmap, rtSource);
+      painter->restore();  
+
+      drawBorder(painter);
+
+      //Draw Selection
+      if (option->state & QStyle::State_Selected)
+      {
+        drawSelection(painter);
+      }
     }
 
     template <class T>
@@ -305,7 +337,7 @@ namespace te
     template <class T>
     inline te::gm::Coord2D te::layout::ParentItem<T>::getPosition()
     {
-      QPointF posF = scenePos();
+      QPointF posF = QGraphicsItem::scenePos();
       qreal valuex = posF.x();
       qreal valuey = posF.y();
 
@@ -332,42 +364,12 @@ namespace te
 
       te::gm::Envelope box = m_model->getBox();
 
-      if(m_mousePressedCtrl)
+      if(m_mousePressedAlt)
         box = m_boxCopy;
 
-      QGraphicsObject::prepareGeometryChange();
+      QGraphicsItem::prepareGeometryChange();
       setRect(QRectF(0, 0, box.getWidth(), box.getHeight()));
-      update();
-    }
-
-    template <class T>
-    inline void te::layout::ParentItem<T>::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
-    {
-      Q_UNUSED( option );
-      Q_UNUSED( widget );
-      if ( !painter )
-      {
-        return;
-      }
-
-      drawBackground( painter );
-
-      QRectF boundRect;
-      boundRect = boundingRect();
-  	
-      painter->save();
-      painter->translate( -boundRect.bottomLeft().x(), -boundRect.topRight().y() );  
-      QRectF rtSource( 0, 0, m_pixmap.width(), m_pixmap.height() );
-      painter->drawPixmap(boundRect, m_pixmap, rtSource);
-      painter->restore();  
-
-      drawBorder(painter);
-  
-      //Draw Selection
-      if (option->state & QStyle::State_Selected)
-      {
-        drawSelection(painter);
-      }
+      QGraphicsItem::update();
     }
 
     template <class T>
@@ -472,7 +474,7 @@ namespace te
         return;
 
       m_rect = rect;
-      update(rect);
+      T::update(rect);
     }
 
     template <class T>
@@ -480,10 +482,11 @@ namespace te
     {  
       QGraphicsItem::mousePressEvent(event);
 
-      if(event->modifiers() == Qt::AltModifier && m_toResizeItem)
+      if(event->modifiers() == Qt::AltModifier && m_toResizeItem && m_model->isResizable())
       {
         m_clonePixmap = getPixmap();
-        m_mousePressedCtrl = true;
+        createResizePixmap();
+        m_mousePressedAlt = true;
         m_initialCoord = event->scenePos();
       }
     }
@@ -499,16 +502,15 @@ namespace te
       if(boxScene.isValid() && boxScene.getWidth() > 0 && boxScene.getHeight() > 0)
         m_controller->setBox(boxScene);
 
-      m_mousePressedCtrl = false;
+      m_mousePressedAlt = false;
 
-      if(m_toResizeItem && boxScene.isValid())
+      if(m_model->isResizable() && m_toResizeItem && boxScene.isValid())
       {
+        m_clonePixmap = QPixmap();
         m_toResizeItem = false;
-        //Antes é necessário saber se o pixmap continua o mesmo, ou foi modificado.
-        //Só chamará o redraw se foi modificado.
-
+        m_resizeMode = false;
         redraw();
-        setOpacity(1.);
+        T::setOpacity(1.);
       }
 
       refresh();
@@ -517,22 +519,22 @@ namespace te
     template <class T>
     inline void te::layout::ParentItem<T>::mouseMoveEvent( QGraphicsSceneMouseEvent * event )
     {
-      if(event->modifiers() == Qt::AltModifier && event->buttons() == Qt::LeftButton && m_toResizeItem)
+      if(event->modifiers() == Qt::AltModifier && event->buttons() == Qt::LeftButton && m_toResizeItem && m_model->isResizable())
       {
-        m_mousePressedCtrl = true;
-        setOpacity(0.5);
+        m_mousePressedAlt = true;
+        T::setOpacity(0.5);
 
         m_finalCoord = event->scenePos();
 
         QPixmap pix = calculateNewPixmap(event->scenePos().x(), event->scenePos().y());
         setPixmap(pix);
-        update();
+        T::update();
       }
       else
       {
         if(!m_toResizeItem)
-          setOpacity(1.);
-        m_mousePressedCtrl = false;
+          T::setOpacity(1.);
+        m_mousePressedAlt = false;
         QGraphicsItem::mouseMoveEvent(event);
       }
     }
@@ -546,16 +548,17 @@ namespace te
     template <class T>
     inline void te::layout::ParentItem<T>::hoverLeaveEvent( QGraphicsSceneHoverEvent * event )
     {
-      m_hoverAboveItem = false;
-      setCursor(Qt::ArrowCursor);
+      T::setCursor(Qt::ArrowCursor);
       QGraphicsItem::hoverLeaveEvent(event);
     }
 
     template <class T>
     inline void te::layout::ParentItem<T>::hoverMoveEvent( QGraphicsSceneHoverEvent * event )
     {
-      m_hoverAboveItem = true;
-      m_toResizeItem = checkTouchesCorner(event->pos().x(), event->pos().y());
+      if(m_model->isResizable())
+      {
+        m_toResizeItem = checkTouchesCorner(event->pos().x(), event->pos().y());
+      }
       QGraphicsItem::hoverMoveEvent(event);
     }
 
@@ -574,30 +577,30 @@ namespace te
       if((x >= (ll.x() - margin) && x <= (ll.x() + margin))
         && (y >= (ll.y() - margin) && y <= (ll.y() + margin)))
       {
-	    setCursor(Qt::SizeFDiagCursor);
+        T::setCursor(Qt::SizeFDiagCursor);
         m_enumSides = TPLowerLeft;
       }
       else if((x >= (lr.x() - margin) && x <= (lr.x() + margin))
         && (y >= (lr.y() - margin) && y <= (lr.y() + margin)))
       {
-	    setCursor(Qt::SizeBDiagCursor);
+        T::setCursor(Qt::SizeBDiagCursor);
         m_enumSides = TPLowerRight;
       }
       else if((x >= (tl.x() - margin) && x <= (tl.x() + margin))
         && (y >= (tl.y() - margin) && y <= (tl.y() + margin)))
       {
-	    setCursor(Qt::SizeBDiagCursor);
+        T::setCursor(Qt::SizeBDiagCursor);
         m_enumSides = TPTopLeft;
       }
       else if((x >= (tr.x() - margin) && x <= (tr.x() + margin))
         && (y >= (tr.y() - margin) && y <= (tr.y() + margin)))
       {
-	    setCursor(Qt::SizeFDiagCursor);
+        T::setCursor(Qt::SizeFDiagCursor);
         m_enumSides = TPTopRight;
       }
       else
       {
-        setCursor(Qt::ArrowCursor);
+        T::setCursor(Qt::ArrowCursor);
         m_enumSides = TPNoneSide;
         result = false;
       }
@@ -609,10 +612,10 @@ namespace te
     inline QPixmap te::layout::ParentItem<T>::calculateNewPixmap( const double& x, const double& y )
     {    
       te::gm::Envelope boxScene = createNewBoxInCoordScene(x, y);
-      QPixmap pix = getPixmap().scaled(boxScene.getWidth(), boxScene.getHeight());
+      QPixmap pix = m_clonePixmap.scaled(boxScene.getWidth(), boxScene.getHeight());
 
       if(pix.isNull())
-        pix = getPixmap();
+        pix = m_clonePixmap;
 
       return pix;
     }
@@ -620,13 +623,13 @@ namespace te
     template <class T>
     inline te::gm::Envelope te::layout::ParentItem<T>::createNewBoxInCoordScene( const double& x, const double& y )
     {
-      QPointF pbxy1 = mapToScene(boundingRect().bottomLeft());
-      QPointF pbxy2 = mapToScene(boundingRect().topRight());
+      QPointF pbxy1 = T::mapToScene(boundingRect().bottomLeft());
+      QPointF pbxy2 = T::mapToScene(boundingRect().topRight());
 
       double dx = 0;
       double dy = 0;
 
-      if(m_mousePressedCtrl && m_toResizeItem)
+      if(m_mousePressedAlt && m_toResizeItem)
       {
         dx = m_finalCoord.x() - m_initialCoord.x();
         dy = m_finalCoord.y() - m_initialCoord.y();
@@ -641,7 +644,7 @@ namespace te
                 m_model->getBox().m_lly, m_model->getBox().m_urx + dx, m_model->getBox().m_ury + dy);
 
               //In Parent Coordinates
-              setPos(QPointF(m_model->getBox().m_llx, m_model->getBox().m_lly));
+              T::setPos(QPointF(m_model->getBox().m_llx, m_model->getBox().m_lly));
             }
             break;
           }
@@ -653,7 +656,7 @@ namespace te
                 m_model->getBox().m_lly - dy, m_model->getBox().m_urx, m_model->getBox().m_ury);
 
               //In Parent Coordinates
-              setPos(QPointF(m_finalCoord.x(), m_model->getBox().m_lly));
+              T::setPos(QPointF(m_finalCoord.x(), m_model->getBox().m_lly));
             }
             break;
           }
@@ -665,7 +668,7 @@ namespace te
                 m_model->getBox().m_lly, m_model->getBox().m_urx + dx, m_model->getBox().m_ury - dy);
 
               //In Parent Coordinates
-              setPos(QPointF(m_model->getBox().m_llx, m_finalCoord.y()));
+              T::setPos(QPointF(m_model->getBox().m_llx, m_finalCoord.y()));
             }
             break;
           }
@@ -677,7 +680,7 @@ namespace te
                 m_model->getBox().m_lly + dy, m_model->getBox().m_urx, m_model->getBox().m_ury);
 
               //In Parent Coordinates
-              setPos(QPointF(m_finalCoord.x(), m_finalCoord.y()));
+              T::setPos(QPointF(m_finalCoord.x(), m_finalCoord.y()));
             }
             break;
           }
@@ -733,7 +736,7 @@ namespace te
       if(angle == model->getOldAngle())
         return;
 
-      setRotation(angle);
+      T::setRotation(angle);
     }
 
     template <class T>
@@ -752,6 +755,20 @@ namespace te
         refresh();
       }
       return QGraphicsItem::itemChange(change, value);
+    }
+
+    template <class T>
+    inline void te::layout::ParentItem<T>::createResizePixmap()
+    {
+      QStyleOptionGraphicsItem opt;
+      m_clonePixmap = QPixmap(m_rect.width(), m_rect.height());
+      QPainter p(&m_clonePixmap);
+      this->paint(&p, &opt, 0);
+
+      if(!m_clonePixmap.isNull())
+      {
+        m_resizeMode = true;
+      }
     }
   }
 }

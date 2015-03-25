@@ -160,12 +160,7 @@ namespace te
           \brief Reimplemented from QGraphicsProxyWidget
        */
       virtual void	dragMoveEvent ( QGraphicsSceneDragDropEvent * event );
-
-      /*!
-          \brief Reimplemented from QGraphicsProxyWidget
-       */
-      virtual void resizeEvent ( QGraphicsSceneResizeEvent * event );
-
+      
       /*!
           \brief Reimplemented from ItemObserver
        */
