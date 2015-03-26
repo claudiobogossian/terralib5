@@ -283,6 +283,15 @@ namespace te
         virtual void redrawItems();
 
         virtual void updateSelectedItemsPositions();
+
+      public slots:
+
+        /*!
+          \brief It is called immediately when the zoom factor is changed in the Context.
+
+          \param currentZoomFactor current zoom factor of the layout module
+         */
+        virtual void onChangeZoomFactor(double currentFactor);
         
       signals:
 

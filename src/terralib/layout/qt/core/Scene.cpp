@@ -734,3 +734,19 @@ void te::layout::Scene::updateSelectedItemsPositions()
     }
   }
 }
+
+void te::layout::Scene::onChangeZoomFactor( double currentFactor )
+{
+  QList<QGraphicsItem*> allItems = items();
+  foreach(QGraphicsItem *item, allItems) 
+  {
+    if(item)
+    {
+      ItemObserver* it = dynamic_cast<ItemObserver*>(item);
+      if(it)
+      {
+        it->changeZoomFactor(currentFactor); 
+      }
+    }
+  }
+}
