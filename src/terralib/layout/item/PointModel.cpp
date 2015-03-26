@@ -39,9 +39,8 @@ te::layout::PointModel::PointModel():
   m_shapeSize(4)
 {
   m_type = Enums::getInstance().getEnumObjectType()->getPointItem();
-
-  m_borderColor = te::color::RGBAColor(0, 0, 255, 255);
-  m_backgroundColor = te::color::RGBAColor(0, 255, 0, 100);
+  
+  m_pointColor = te::color::RGBAColor(0, 255, 0, 255);
 
   m_box = te::gm::Envelope(0., 0., 10., 10.);
 
@@ -142,6 +141,16 @@ te::layout::Property te::layout::PointModel::pointProperty() const
 double te::layout::PointModel::getShapeSize()
 {
   return m_shapeSize;
+}
+
+te::color::RGBAColor te::layout::PointModel::getPointColor()
+{
+  return m_pointColor;
+}
+
+void te::layout::PointModel::setPointColor( te::color::RGBAColor color )
+{
+  m_pointColor = color;
 }
 
 

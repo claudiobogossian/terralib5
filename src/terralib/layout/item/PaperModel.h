@@ -71,6 +71,10 @@ namespace te
 
         virtual void setShadowColor(te::color::RGBAColor color);
 
+        virtual te::color::RGBAColor getPaperColor();
+
+        virtual void setPaperColor(te::color::RGBAColor color);
+
         virtual void setPaperConfig(PaperConfig* pConfig );
 
         virtual PaperConfig* getPaperConfig() const;
@@ -90,6 +94,7 @@ namespace te
       te::gm::Envelope m_boxShadow;
       te::color::RGBAColor m_shadowColor;
       double m_shadowPadding;
+      te::color::RGBAColor m_paperColor;
     };
   }
 }

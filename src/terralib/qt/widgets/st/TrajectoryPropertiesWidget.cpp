@@ -37,9 +37,6 @@ te::qt::widgets::TrajectoryPropertiesWidget::TrajectoryPropertiesWidget(QWidget*
     m_ui(new Ui::TrajectoryPropertiesWidgetForm)
 {
   m_ui->setupUi(this);
-
-// connect signal and slots
-  //connect(m_ui->m_phenomenomComboBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(onPropertyComboBoxIndexChanged(QString)));
 }
 
 te::qt::widgets::TrajectoryPropertiesWidget::~TrajectoryPropertiesWidget()

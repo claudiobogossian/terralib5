@@ -34,18 +34,17 @@
 te::qt::widgets::TrajectoryPropertiesWizardPage::TrajectoryPropertiesWizardPage(QWidget* parent)
   : QWizardPage(parent)
 {
-//  m_ui->setupUi(this);
   m_propWidget.reset(new TrajectoryPropertiesWidget(this));
-  m_genPropWidget.reset(new TemporalPropertiesWidget(this));
+  m_tempPropWidget.reset(new TemporalPropertiesWidget(this));
 
   // Adjusting...
   QGridLayout* propLayout = new QGridLayout(this);
   propLayout->addWidget(m_propWidget.get());
 
   // Adjusting the properties widget
-  QGridLayout* genPropLayout = new QGridLayout(m_propWidget->getForm()->m_generalPropertiesFrame);
-  genPropLayout->setContentsMargins(0, 0, 0, 0);
-  genPropLayout->addWidget(m_genPropWidget.get());
+  QGridLayout* tempPropLayout = new QGridLayout(m_propWidget->getForm()->m_temporalPropertiesFrame);
+  tempPropLayout->setContentsMargins(0, 0, 0, 0);
+  tempPropLayout->addWidget(m_tempPropWidget.get());
 }
 
 te::qt::widgets::TrajectoryPropertiesWizardPage::~TrajectoryPropertiesWizardPage()
@@ -61,7 +60,7 @@ std::list<te::st::TrajectoryDataSetInfo*> te::qt::widgets::TrajectoryPropertiesW
 
   while(typesItBegin != typesItEnd)
   {
-    trajInfos.push_back(new te::st::TrajectoryDataSetInfo(*dsInfo.get(), typesItBegin->get()->getName(), m_genPropWidget->getPhenomenonTime(), m_propWidget->getGeometryId(), -1, typesItBegin->get()->getName()));
+    trajInfos.push_back(new te::st::TrajectoryDataSetInfo(*dsInfo.get(), typesItBegin->get()->getName(), m_tempPropWidget->getPhenomenonTime(), m_propWidget->getGeometryId(), -1, typesItBegin->get()->getName()));
     typesItBegin++;
   }
 
@@ -76,6 +75,6 @@ bool te::qt::widgets::TrajectoryPropertiesWizardPage::isComplete() const
 void te::qt::widgets::TrajectoryPropertiesWizardPage::set(const std::list<te::da::DataSetTypePtr> dataTypes)
 {
   m_dataTypes = dataTypes;
-  m_genPropWidget->setUp(dataTypes.front());
+  m_tempPropWidget->setUp(dataTypes.front());
   m_propWidget->setUp(dataTypes.front());
 }

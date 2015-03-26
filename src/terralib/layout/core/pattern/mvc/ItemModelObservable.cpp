@@ -124,6 +124,7 @@ te::layout::Properties* te::layout::ItemModelObservable::getProperties() const
   Property pro_name;
   pro_name.setName(m_sharedProps->getName());
   pro_name.setId("unknown");
+  pro_name.setEditable(false);
   pro_name.setValue(m_name, dataType->getDataTypeString());
   m_properties->addProperty(pro_name);
 

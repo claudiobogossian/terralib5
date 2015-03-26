@@ -610,6 +610,7 @@ void te::layout::MenuItem::changePropertyValue( Property property )
     QUndoCommand* command = new ChangePropertyCommand(commandItems, commandOld, commandNew);
     lScene->addUndoStack(command);
   }
+  lScene->update();
 }
 
 te::layout::Property te::layout::MenuItem::findProperty( te::layout::EnumType* dataType )

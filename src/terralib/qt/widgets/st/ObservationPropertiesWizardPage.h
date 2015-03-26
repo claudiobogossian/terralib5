@@ -46,6 +46,7 @@ namespace te
     namespace widgets
     {
     //Forward declarations
+    class TemporalPropertiesWidget;
     class ObservationPropertiesWidget;
 
     /*!
@@ -69,8 +70,10 @@ namespace te
           void set(const std::list<te::da::DataSetTypePtr> dataTypes);
 
         private:
-          std::list<te::da::DataSetTypePtr>           m_dataTypes;      //!< The list of datasettypes used to configure the trajectory(ies)
-          std::auto_ptr<ObservationPropertiesWidget>  m_propWidget;     //!< The widget used to configure the unique ObservationLayer's properties
+
+          std::list<te::da::DataSetTypePtr>           m_dataTypes;       //!< The list of datasettypes used to configure the trajectory(ies)
+          std::auto_ptr<ObservationPropertiesWidget>  m_propWidget;      //!< The widget used to configure the unique ObservationLayer's properties
+          std::auto_ptr<TemporalPropertiesWidget>     m_tempPropWidget;  //!< The widget used to configure the general TrajectoryLayer's properties
       };
     } // end namespace widgets
   }   // end namespace qt
