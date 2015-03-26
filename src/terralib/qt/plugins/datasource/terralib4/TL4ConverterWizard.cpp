@@ -539,9 +539,10 @@ std::string te::qt::plugins::terralib4::TL4ConverterWizard::getOriginalName(cons
   {
     QString targetNameInTable = m_resolveNameTableWidget->item(i, 2)->text();
 
-    if(targetName.c_str() == targetNameInTable)
-      return m_resolveNameTableWidget->item(i, 1)->text().toStdString();
+    std::string aux = targetNameInTable.toLatin1();
 
+    if(targetName.c_str() == aux)
+      return aux;
   }
 
   return "";
@@ -555,8 +556,10 @@ std::string te::qt::plugins::terralib4::TL4ConverterWizard::getNewName(const std
   {
     QString oName = m_resolveNameTableWidget->item(i, 1)->text();
 
-    if(originalName.c_str() == oName)
-      return m_resolveNameTableWidget->item(i, 2)->text().toStdString();
+    std::string aux = oName.toLatin1();
+
+    if(originalName.c_str() == aux)
+      return aux;
   }
 
   return "";
@@ -625,7 +628,7 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::commit()
       throw te::common::Exception(TE_TR("Invalid source table item!"));
     }
 
-    std::string sourceName = item_source->text().toStdString();
+    std::string sourceName = item_source->text().toLatin1();
 
 // get target dataset name
     QTableWidgetItem* item_target = m_resolveNameTableWidget->item(i, 2);
@@ -636,7 +639,7 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::commit()
       throw te::common::Exception(TE_TR("Invalid target table item!"));
     }
 
-    std::string targetName = item_target->text().toStdString();
+    std::string targetName = item_target->text().toLatin1();
 
 // ask if the dataset is a raster
     try

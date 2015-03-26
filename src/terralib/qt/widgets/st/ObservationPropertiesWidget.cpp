@@ -68,30 +68,6 @@ int te::qt::widgets::ObservationPropertiesWidget::getGeometryId()
     return -1;
 }
 
-int te::qt::widgets::ObservationPropertiesWidget::getTempPropName()
-{
-  if(m_dataType)
-    return m_dataType->getPropertyPosition(m_ui->m_nameComboBox->currentText().toStdString());
-  else
-    return -1;
-}
-
-int te::qt::widgets::ObservationPropertiesWidget::getResultTime()
-{
-  if(m_dataType)
-    return m_dataType->getPropertyPosition(m_ui->m_resultComboBox->currentText().toStdString());
-  else
-    return -1;
-}
-
-int te::qt::widgets::ObservationPropertiesWidget::getValidTime()
-{
-  if(m_dataType)
-    return m_dataType->getPropertyPosition(m_ui->m_validComboBox->currentText().toStdString());
-  else
-    return -1;
-}
-
 void te::qt::widgets::ObservationPropertiesWidget::setUp (const te::da::DataSetTypePtr dataType)
 {
   QString item;
@@ -108,12 +84,6 @@ void te::qt::widgets::ObservationPropertiesWidget::setUp (const te::da::DataSetT
     if(properties.at(i)->getType() == te::dt::GEOMETRY_TYPE)
     {
       m_ui->m_geometryComboBox->addItem(item);
-    }
-    else if(properties.at(i)->getType() == te::dt::DATETIME_TYPE)
-    {
-      m_ui->m_nameComboBox->addItem(item);
-      m_ui->m_resultComboBox->addItem(item);
-      m_ui->m_validComboBox->addItem(item);
     }
   }
 

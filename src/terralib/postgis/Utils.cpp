@@ -101,7 +101,7 @@ namespace te
     {
       s += tname;
 
-      if(p->size() > 0)
+      if(p->size() > 0 && p->size() < 10485760)
       {
         s += "(";
         s += te::common::Convert2String(static_cast<unsigned int>(p->size()));
@@ -270,7 +270,16 @@ bool te::pgis::SetColumnDef(std::string& s, const te::dt::Property* p, bool just
         if(sp->getSubType() == te::dt::FIXED_STRING)
           SetColumnDef(s, Globals::sm_fixedcharTypeName, sp, justDataType);
         else if(sp->getSubType() == te::dt::VAR_STRING)
-          SetColumnDef(s, Globals::sm_varcharTypeName, sp, justDataType);
+        {
+          if(sp->size() > 10485760)
+          {
+            SetColumnDef(s, Globals::sm_stringTypeName, sp, justDataType);
+          }
+          else
+          {
+            SetColumnDef(s, Globals::sm_varcharTypeName, sp, justDataType);
+          }
+        }
         else
           SetColumnDef(s, Globals::sm_stringTypeName, sp, justDataType);
       }

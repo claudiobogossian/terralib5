@@ -90,7 +90,7 @@ namespace te
         */
         ObservationDataSetInfo( const te::da::DataSourceInfo& dsinfo, const std::string& dsName, 
                                 const std::vector<int>& phTimeIdx, 
-                                const std::vector<int>& obsPropIdx, int gPropIdx = -1); 
+                                const std::vector<int>& obsPropIdx, int gPropIdx = -1);
                                 
         /*! 
           \brief Constructor.
@@ -105,7 +105,7 @@ namespace te
         */
         ObservationDataSetInfo( const te::da::DataSourceInfo& dsinfo, const std::string& dsName, 
                                 const std::vector<int>& phTimeIdx, const std::vector<int>& obsPropIdx, 
-                                const std::vector<int>& valTimeIdx, int resTimeIdx, int gPropIdx = -1); 
+                                const std::vector<int>& valTimeIdx, int resTimeIdx, int gPropIdx = -1);
 
         /*!
           \brief It returns the information about the DataSource

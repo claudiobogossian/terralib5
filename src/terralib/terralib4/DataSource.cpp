@@ -168,17 +168,10 @@ std::vector<std::string> terralib4::DataSource::getDataSourceNames(const std::ma
 
 std::vector<te::common::CharEncoding> terralib4::DataSource::getEncodings(const std::map<std::string, std::string>& dsInfo)
 {
-  /*std::auto_ptr<TeDatabaseFactoryParams> params(terralib4::Convert2T4DatabaseParams(dsInfo));
+  std::vector<te::common::CharEncoding> result;
+  result.push_back(te::common::LATIN1);
 
-  std::auto_ptr<TeDatabase> db(TeDatabaseFactory::make(*params.get()));
-
-  std::vector<std::string> encodings;
-
-  db->getEncodingList(encodings);
-
-  return encodings;*/
-
-  return std::vector<te::common::CharEncoding>();
+  return result;
 }
 
 TeDatabase* terralib4::DataSource::getTerralib4Db()
