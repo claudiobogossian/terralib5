@@ -38,6 +38,7 @@
 //Qt
 #include <QStyleOptionGraphicsItem>
 #include "../../item/GridMapModel.h"
+#include <QTextEdit>
 
 te::layout::GridMapItem::GridMapItem( ItemController* controller, Observable* o ) :
   ObjectItem(controller, o)
@@ -114,10 +115,24 @@ void te::layout::GridMapItem::paint( QPainter * painter, const QStyleOptionGraph
   int widgetRect = (int)boundingRect().width();
 
   painter->setPen(QPen(Qt::black, 0, Qt::SolidLine));
-    
+
+  QFont font("Arial", 12);
+  painter->setFont(font);
+  
+  double mm = 0.3527777778;
+  double widthText = mm * font.pointSize();
+
   for (int i = 0; i <= heightRect; i+=10)
   {
     QLineF lineOne = QLineF(boundingRect().topLeft().x(), boundingRect().topLeft().y() + i, boundingRect().topRight().x(), boundingRect().topRight().y() + i);
+
+    QString text = "Teste Horizontal";
+   
+    QPointF pointInit(boundingRect().topRight().x() + (heightRect*.01), boundingRect().topRight().y()+i);
+    drawText(pointInit, painter, text.toStdString());
+    QPointF pointFinal(boundingRect().topLeft().x() - (heightRect*.01) - widthText, boundingRect().topLeft().y()+i);
+    drawText(pointFinal, painter, text.toStdString());
+        
     painter->drawLine(lineOne);
 
     for (int j = 0; j <= widgetRect; j+=10)
