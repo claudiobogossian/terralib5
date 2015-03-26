@@ -107,14 +107,20 @@ void te::layout::PrintScene::printPaper( QPrinter* printer )
   Context::getInstance().setDpiX(printer->logicalDpiX());
   Context::getInstance().setDpiY(printer->logicalDpiY());
 
+  Scene* sc = dynamic_cast<Scene*>(m_scene);
+  if(!sc)
+    return;
+
   double zoomFactor = Context::getInstance().getZoomFactor();
   Context::getInstance().setZoomFactor(1.);
+  sc->onChangeZoomFactor(1.);
 
   renderScene(&newPainter, printer);
 
   Context::getInstance().setZoomFactor(zoomFactor);
   Context::getInstance().setDpiX(dpiX);
   Context::getInstance().setDpiY(dpiY);
+  sc->onChangeZoomFactor(zoomFactor);
 }
 
 QPrinter* te::layout::PrintScene::createPrinter()

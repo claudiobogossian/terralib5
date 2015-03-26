@@ -168,6 +168,16 @@ void te::layout::PropertiesOutside::itemsSelected(QList<QGraphicsItem*> graphics
 {
   m_updatingValues = false;
 
+  if(graphicsItems.empty())
+  {
+    return;
+  }
+
+  if(m_graphicsItems == graphicsItems)
+  {
+    return;
+  }
+
   m_layoutPropertyBrowser->clearAll();
   m_nameLabel->setText(tr("Component::"));
 
@@ -250,6 +260,7 @@ void te::layout::PropertiesOutside::onChangePropertyValue( Property property )
   }
 
   changeMapVisitable(property);
+  lScene->update();
 }
 
 void te::layout::PropertiesOutside::closeEvent( QCloseEvent * event )

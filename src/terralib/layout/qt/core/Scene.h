@@ -280,23 +280,18 @@ namespace te
         */
         virtual void selectItem(QGraphicsItem* item);
 
-        /*!
-          \brief Reimplemented from QGraphicsScene.
-          The difference to the original scene drawItems is that it does not use the ratio, 
-          so the component will not be scaled, keeping the size it was redraw for printing.
-
-          Since Qt 4.6, this function is not called anymore unless
-          the QGraphicsView::IndirectPainting flag is given as an Optimization
-          flag.
-        */
-        virtual void drawItems(QPainter *painter, int numItems,
-          QGraphicsItem *items[],
-          const QStyleOptionGraphicsItem options[],
-          QWidget *widget = 0);
-
         virtual void redrawItems();
 
         virtual void updateSelectedItemsPositions();
+
+      public slots:
+
+        /*!
+          \brief It is called immediately when the zoom factor is changed in the Context.
+
+          \param currentZoomFactor current zoom factor of the layout module
+         */
+        virtual void onChangeZoomFactor(double currentFactor);
         
       signals:
 

@@ -65,6 +65,7 @@ namespace te
     public:
 
 	    PropertiesItemPropertyBrowser(QObject *parent = 0);
+
 	    virtual ~PropertiesItemPropertyBrowser();
       
       virtual bool addProperty(Property property);

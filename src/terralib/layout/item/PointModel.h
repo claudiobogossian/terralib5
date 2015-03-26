@@ -75,6 +75,10 @@ namespace te
 
         virtual double getShapeSize();
 
+        virtual te::color::RGBAColor getPointColor();
+
+        virtual void setPointColor(te::color::RGBAColor color);
+
       protected:
 
         virtual Property pointProperty() const;
@@ -82,6 +86,7 @@ namespace te
         EnumPointType* m_enumPointType;
         EnumType*      m_currentPointType;
         double         m_shapeSize;
+        te::color::RGBAColor m_pointColor;
     };
   }
 }

@@ -119,9 +119,7 @@ namespace te
           \brief Reimplemented from QGraphicsTextItem
          */
         virtual QVariant	itemChange ( GraphicsItemChange change, const QVariant & value );
-        
-        virtual void drawBackground( QPainter* painter );
-        
+                
         /*!
           \brief Reimplemented from QGraphicsTextItem
          */
@@ -164,6 +162,8 @@ namespace te
         virtual void getDocumentSizeMM(double &w, double &h);
 
         virtual void resetEdit();
+
+        virtual void updateTextConfig();
 
         QColor         m_backgroundColor;
         bool           m_editable;

@@ -87,12 +87,12 @@ void te::layout::PaperItem::drawPaper( QPainter * painter )
 
   painter->save();
 
-  te::color::RGBAColor clrBack = model->getBackgroundColor();
+  te::color::RGBAColor clrPaper = model->getPaperColor();
   QColor cback;
-  cback.setRed(clrBack.getRed());
-  cback.setGreen(clrBack.getGreen());
-  cback.setBlue(clrBack.getBlue());
-  cback.setAlpha(clrBack.getAlpha());
+  cback.setRed(clrPaper.getRed());
+  cback.setGreen(clrPaper.getGreen());
+  cback.setBlue(clrPaper.getBlue());
+  cback.setAlpha(clrPaper.getAlpha());
 
   te::color::RGBAColor clrShadow = model->getShadowColor();
   QColor cShadow;
