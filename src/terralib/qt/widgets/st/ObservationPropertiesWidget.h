@@ -82,6 +82,13 @@ namespace te
           Ui::ObservationPropertiesWidgetForm* getForm();
 
           /*!
+            \brief Returns a vector containing the indexes of the observed properties
+
+            \return A vector containing the indexes of the observed properties.
+          */
+          std::vector<int> getOutputValues();
+
+          /*!
             \brief Returns the index of the temporal property geometry
 
             \return The index of the temporal property geometry
