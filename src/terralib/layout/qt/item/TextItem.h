@@ -43,6 +43,7 @@
 #include <QColor>
 #include <QVariant>
 #include <QPointF>
+#include <QRectF>
 
 class QTextTable;
 class QGraphicsSceneMouseEvent;
@@ -94,9 +95,7 @@ namespace te
           \brief Reimplemented from QGraphicsTextItem
          */
         virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
-
-        virtual QRectF boundingRect() const;
-        
+                
         virtual void refreshDocument();
                 
         /*!
@@ -112,6 +111,11 @@ namespace te
           \param
          */
         virtual void setEditable(bool editable);
+
+        /*!
+          \brief Reimplemented from QGraphicsItem
+         */
+        virtual QRectF boundingRect() const;
                 
       protected:
 
