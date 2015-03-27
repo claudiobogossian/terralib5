@@ -184,17 +184,15 @@ void te::layout::ScaleItem::drawDoubleAlternatingScaleBar( QPainter * painter )
   const qreal adj = penWidth / 2;
 
   newBoxSecond = QRectF(boundRect.x(), boundRect.center().y() - gapY, boundRect.width(), gapY*2);
-  QRectF rtAdjusted = newBoxSecond.adjusted(adj, adj, -adj, -adj);
 
   //Rect around scale
   QPen penBackground(black, 0, Qt::SolidLine);
-  //penBackground.setWidthF(0);
   painter->setBrush(Qt::NoBrush);
   painter->setPen(penBackground);
-  painter->drawRect(rtAdjusted);
+  painter->drawRect(newBoxSecond);
 
   //middle-bottom text
-  double centerX = rtAdjusted.center().x();  
+  double centerX = newBoxSecond.center().x();  
   painter->setPen(QPen(textColor));
     
   QPointF coordText(centerX, boundRect.topLeft().y() + 1); 
@@ -290,17 +288,15 @@ void te::layout::ScaleItem::drawAlternatingScaleBar( QPainter * painter )
   const qreal adj = penWidth / 2;
 
   newBoxSecond = QRectF(boundRect.x(), boundRect.center().y() - gapY/2, boundRect.width(), gapY);
-  QRectF rtAdjusted = newBoxSecond.adjusted(adj, adj, -adj, -adj);
 
   //Rect around scale
   QPen penBackground(black, 0, Qt::SolidLine);
-  penBackground.setWidthF(0.5);
   painter->setBrush(Qt::NoBrush);
-  painter->setPen(QPen(black));
-  painter->drawRect(rtAdjusted);
+  painter->setPen(penBackground);
+  painter->drawRect(newBoxSecond);
 
   //middle-bottom text
-  double centerX = rtAdjusted.center().x();  
+  double centerX = newBoxSecond.center().x();  
   painter->setPen(QPen(textColor));
   
   QPointF coordText(centerX, boundRect.topLeft().y() + 1); 
@@ -401,14 +397,14 @@ void te::layout::ScaleItem::drawHollowScaleBar( QPainter * painter )
   const qreal adj = penWidth / 2;
 
   newBoxSecond = QRectF(boundRect.x(), boundRect.center().y() - gapY/2, boundRect.width(), gapY);
-  QRectF rtAdjusted = newBoxSecond.adjusted(adj, adj, -adj, -adj);
 
+  QPen penBackground(black, 0, Qt::SolidLine);
   painter->setBrush(Qt::NoBrush);
-  painter->setPen(pn);
-  painter->drawRect(rtAdjusted);
+  painter->setPen(penBackground);
+  painter->drawRect(newBoxSecond);
 
   //middle-bottom text
-  double centerX = rtAdjusted.center().x();  
+  double centerX = newBoxSecond.center().x();  
   painter->setPen(QPen(textColor));
 
   QPointF coordText(centerX, boundRect.topLeft().y() + 1); 

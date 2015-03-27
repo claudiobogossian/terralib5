@@ -250,6 +250,7 @@ void te::layout::PropertiesOutside::onChangePropertyValue( Property property )
   }
 
   changeMapVisitable(property);
+  lScene->update();
 }
 
 void te::layout::PropertiesOutside::closeEvent( QCloseEvent * event )

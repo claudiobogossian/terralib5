@@ -181,6 +181,8 @@ bool te::qt::widgets::ComposeBandsWizard::executeCompose()
     return false;
   }
 
+  QApplication::restoreOverrideCursor();
+
   //create layer
   if(res)
   {
@@ -256,6 +258,8 @@ bool te::qt::widgets::ComposeBandsWizard::executeDecompose()
 
     return false;
   }
+
+  QApplication::restoreOverrideCursor();
 
   //create layer
   if(res)

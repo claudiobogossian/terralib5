@@ -93,6 +93,7 @@ te::layout::EnumModeType::EnumModeType() :
   m_modeCreatePolygon(0),
   m_modeCreateBalloon(0),
   m_modeCreateBarCode(0),
+  m_modeCreateGridMap(0),
   m_coordWait(0)
 {
   init();
@@ -419,6 +420,12 @@ te::layout::EnumModeType::~EnumModeType()
     delete m_modeCreateBarCode;
     m_modeCreateBarCode = 0;
   }
+
+  if(m_modeCreateGridMap)
+  {
+    delete m_modeCreateGridMap;
+    m_modeCreateGridMap = 0;
+  }
     
   if(m_coordWait)
   {
@@ -737,7 +744,7 @@ void te::layout::EnumModeType::init()
   m_enums.push_back(m_modeCreatePolygon);
 
   m_modeCreateBalloon = new EnumType (64, "Create Balloon", this); 
-  m_modeCreateBalloon->setLabel("Create Ballon");
+  m_modeCreateBalloon->setLabel("Create Balloon");
   m_modeCreateBalloon->setType(te::layout::EnumCreate);
   m_enums.push_back(m_modeCreateBalloon);
 
@@ -746,7 +753,12 @@ void te::layout::EnumModeType::init()
   m_modeCreateBarCode->setType(te::layout::EnumCreate);
   m_enums.push_back(m_modeCreateBarCode);
 
-  m_coordWait = new EnumType (66, "Wait View", this); 
+  m_modeCreateGridMap = new EnumType(66, "Create GridMap", this);
+  m_modeCreateGridMap->setLabel("Create GridMap");
+  m_modeCreateGridMap->setType(te::layout::EnumCreate);
+  m_enums.push_back(m_modeCreateGridMap);
+
+  m_coordWait = new EnumType (67, "Wait View", this); 
   m_coordWait->setLabel("Wait View");
   m_coordWait->setType(te::layout::EnumAction);
   m_enums.push_back(m_coordWait);
@@ -1075,4 +1087,9 @@ te::layout::EnumType* te::layout::EnumModeType::getModeCoordWait() const
 te::layout::EnumType* te::layout::EnumModeType::getModeCreateBarCode() const
 {
   return m_modeCreateBarCode;
+}
+
+te::layout::EnumType* te::layout::EnumModeType::getModeCreateGridMap() const
+{
+  return m_modeCreateGridMap;
 }

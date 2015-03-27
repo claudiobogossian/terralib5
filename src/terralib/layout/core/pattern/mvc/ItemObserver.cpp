@@ -149,3 +149,8 @@ bool te::layout::ItemObserver::isInvertedMatrix()
 {
   return m_invertedMatrix;
 }
+
+void te::layout::ItemObserver::changeZoomFactor( double currentZoomFactor )
+{
+  //do nothing
+}

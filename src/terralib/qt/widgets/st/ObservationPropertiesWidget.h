@@ -82,44 +82,19 @@ namespace te
           Ui::ObservationPropertiesWidgetForm* getForm();
 
           /*!
+            \brief Returns a vector containing the indexes of the observed properties
+
+            \return A vector containing the indexes of the observed properties.
+          */
+          std::vector<int> getOutputValues();
+
+          /*!
             \brief Returns the index of the temporal property geometry
 
             \return The index of the temporal property geometry
             \note Will return an invalid index if the dataSeType hasn't been given.
           */
           int getGeometryId();
-
-          /*!
-            \brief Returns the index of the chosen temporal property
-
-            \return The index of the chosen temporal property
-            \note Will return an invalid index if the dataSeType hasn't been given.
-          */
-          int getTempPropName();
-
-          /*!
-            \brief Returns the index of the Result Time
-
-            \return The index of the result Time.
-            \note Will return an invalid index if the dataSeType hasn't been given.
-          */
-          int getResultTime();
-
-          /*!
-            \brief Returns the index of the Valid Time
-
-            \return The index of the valid Time.
-            \note Will return an invalid index if the dataSeType hasn't been given.
-          */
-          int getValidTime();
-
-          /*!
-            \brief Returns the mask used to configure the timestamp
-
-            \return The mask used to configure the timestamp
-            \note Will return an invalid index if the dataSeType hasn't been given.
-          */
-          std::string getTempFormat();
 
           /*!
             \brief Adjusts the widget's components based on the given datasettype
@@ -131,8 +106,8 @@ namespace te
         private:
 
           std::auto_ptr<DoubleListWidget>                     m_obsWidget;  //!< The widget used to select the observed properties.
-          std::auto_ptr<Ui::ObservationPropertiesWidgetForm>  m_ui;            //!< The widget's form.
-          te::da::DataSetTypePtr                              m_dataType;      //!< The datasetType that will be used to generate the spatio-temporal layer.
+          std::auto_ptr<Ui::ObservationPropertiesWidgetForm>  m_ui;         //!< The widget's form.
+          te::da::DataSetTypePtr                              m_dataType;   //!< The datasetType that will be used to generate the spatio-temporal layer.
        };
     } // end namespace widgets
   }   // end namespace qt

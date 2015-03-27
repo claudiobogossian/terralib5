@@ -415,7 +415,15 @@ void te::layout::View::config()
   setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
-  connect(scene(), SIGNAL(selectionChanged()), this, SLOT(onSelectionChanged()));
+  if(scene())
+  {
+    connect(scene(), SIGNAL(selectionChanged()), this, SLOT(onSelectionChanged()));
+    Scene* sce = dynamic_cast<Scene*>(scene());
+    if(sce)
+    {
+      connect(this, SIGNAL(changeZoom(double)), sce, SLOT(onChangeZoomFactor(double)));
+    }
+  }
 }
 
 void te::layout::View::resizeEvent(QResizeEvent * event)
@@ -906,6 +914,7 @@ void te::layout::View::zoomPercentage()
   
   mtrx.scale(factor, factor);
   setTransform(mtrx);
+  emit changeZoom(zoomFactor);
 }
 
 void te::layout::View::exportToPDF()

@@ -174,6 +174,14 @@ namespace te
         */
         virtual te::color::RGBAColor** getImage() = 0;
 
+        
+        /*!
+          \brief It is called immediately by the Scene when the zoom factor is changed in the Context.
+
+          \param currentZoomFactor current zoom factor of the layout module
+         */
+        virtual void changeZoomFactor(double currentZoomFactor);
+
       protected:
 
         /*!

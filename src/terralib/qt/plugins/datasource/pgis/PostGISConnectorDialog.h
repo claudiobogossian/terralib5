@@ -83,6 +83,8 @@ namespace te
 
             void setConnectionInfo(const std::map<std::string, std::string>& connInfo);
 
+            void setDatabasesNames(std::vector<std::string> names);
+
           private:
 
             std::auto_ptr<Ui::PostGISConnectorDialogForm> m_ui;

@@ -134,6 +134,8 @@ namespace te
           std::map<int, std::string> m_joinMap;
           std::map<int, std::string> m_capMap;
 
+          bool m_update;
+
       };
     }
   }

@@ -49,13 +49,17 @@
 #include <log4cxx/logger.h>
 #include <log4cxx/logmanager.h>
 #include <log4cxx/logstring.h>
-#include <log4cxx/simplelayout.h>
+#include <log4cxx/patternlayout.h>
+#include <log4cxx/rollingfileappender.h>
 #endif
 
 // QT
 #include <QMenu>
 #include <QMenuBar>
 #include <QString>
+
+// STL
+#include <string>
 
 te::qt::plugins::vp::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo)
   : te::plugin::Plugin(pluginInfo), m_vpMenu(0)
@@ -96,15 +100,22 @@ void te::qt::plugins::vp::Plugin::startup()
   path += "/log/terralib_vp.log";
 
 #if defined(TERRALIB_APACHE_LOG4CXX_ENABLED) && defined(TERRALIB_LOGGER_ENABLED)
-  log4cxx::FileAppender* fileAppender = new log4cxx::FileAppender(log4cxx::LayoutPtr(new log4cxx::SimpleLayout()),
-    log4cxx::helpers::Transcoder::decode(path.c_str()), false);
+  std::string layout = "%d{ISO8601} [%t] %-5p %c - %m%n";
+  std::wstring w_layout(layout.begin(), layout.end());
+
+  log4cxx::FileAppender* fileAppender = new log4cxx::RollingFileAppender(log4cxx::LayoutPtr(new log4cxx::PatternLayout(w_layout)),
+    log4cxx::helpers::Transcoder::decode(path.c_str()), true);
 
   log4cxx::helpers::Pool p;
   fileAppender->activateOptions(p);
 
   log4cxx::BasicConfigurator::configure(log4cxx::AppenderPtr(fileAppender));
   log4cxx::Logger::getRootLogger()->setLevel(log4cxx::Level::getDebug());
+
   log4cxx::LoggerPtr logger = log4cxx::Logger::getLogger("vp");
+  logger->setAdditivity(false);
+  logger->addAppender(fileAppender);
+
 #endif
   m_initialized = true;
 }

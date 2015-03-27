@@ -72,6 +72,8 @@ void te::layout::TitleItem::init()
     return;
 
   updateDocument();
+
+  resetEdit();
 }
 
 void te::layout::TitleItem::updateObserver( ContextItem context )
@@ -79,7 +81,7 @@ void te::layout::TitleItem::updateObserver( ContextItem context )
   if(!m_model)
     return;
 
-  if(!m_document)
+  if(!document())
     return;
  
   updateDocument();
@@ -96,9 +98,9 @@ void te::layout::TitleItem::updateDocument()
   if(!model)
     return;
 
-  m_document->clear();
+  document()->clear();
 
-  QTextDocument* doc = m_document;
+  QTextDocument* doc = document();
 
   QTextCursor cursor(doc);
   cursor.movePosition(QTextCursor::Start);
@@ -144,27 +146,25 @@ void te::layout::TitleItem::updateDocument()
   QColor qOddRowColor(oddRowColor.getRed(), oddRowColor.getGreen(),
     oddRowColor.getBlue(), oddRowColor.getAlpha());
 
-  // Header
-  QBrush headerHrz(qHeaderHrzColor);
-  QTextTableCell cellOne = m_table->cellAt(0, 0);
-  QTextCharFormat fmtOne = cellOne.format(); 
-  fmtOne.setBackground(headerHrz); 
-  cellOne.setFormat(fmtOne);
-  QTextCursor cellCursorOne = cellOne.firstCursorPosition();
-  std::string title = model->getTitle();
-  cellCursorOne.insertText(title.c_str(), format);
-
-  //Table
+  //Header
   QBrush headerVrt(qHeaderVtrColor);
-  QTextTableCell cellTwo = m_table->cellAt(1, 0);
+  QTextTableCell cellTwo = m_table->cellAt(0, 0);
   QTextCharFormat fmtTwo = cellTwo.format(); 
   fmtTwo.setBackground(headerVrt); 
   cellTwo.setFormat(fmtTwo);
   QTextCursor cellCursorTwo = cellTwo.firstCursorPosition();
-  std::string txt = model->getText();
-  cellCursorTwo.insertText(txt.c_str(), format);
+  std::string title = model->getTitle();
+  cellCursorTwo.insertText(title.c_str(), format);
 
-  adjustSize();
+  // table
+  QBrush headerHrz(qHeaderHrzColor);
+  QTextTableCell cellOne = m_table->cellAt(1, 0);
+  QTextCharFormat fmtOne = cellOne.format(); 
+  fmtOne.setBackground(headerHrz); 
+  cellOne.setFormat(fmtOne);
+  std::string txt = model->getText();
+  QTextCursor cellCursorOne = cellOne.firstCursorPosition();  
+  cellCursorOne.insertText(txt.c_str(), format);
 }
 
 void te::layout::TitleItem::refreshDocument()

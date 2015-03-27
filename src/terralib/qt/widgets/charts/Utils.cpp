@@ -798,8 +798,8 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
     int propType = dataset->getPropertyDataType(propId);
     newHistogram->setType(propType);
 
-     if((propType >= te::dt::INT16_TYPE && propType <= te::dt::UINT64_TYPE) || 
-       propType == te::dt::FLOAT_TYPE || propType == te::dt::DOUBLE_TYPE || propType == te::dt::NUMERIC_TYPE)
+     if((propType >= te::dt::INT16_TYPE && propType <= te::dt::UINT64_TYPE) ||
+       (propType >= te::dt::FLOAT_TYPE && propType <= te::dt::NUMERIC_TYPE))
      {
       //Acquiring the name of the base dataset and how many of it's properties are included in it's primary key
       std::pair<std::string, int> dsProps;

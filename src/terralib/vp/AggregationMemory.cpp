@@ -231,7 +231,7 @@ std::auto_ptr<te::da::DataSetType> te::vp::AggregationMemory::buildOutDataSetTyp
 }
 
 
-bool te::vp::AggregationMemory::run()
+bool te::vp::AggregationMemory::run() throw( te::common::Exception )
 {  
   te::gm::GeometryProperty* geom = te::da::GetFirstGeomProperty(m_inDsetType.get());
   std::string geomName = geom->getName();
@@ -307,6 +307,18 @@ bool te::vp::AggregationMemory::run()
     // calculate the spatial aggregation
     std::string value = itg->first;
     te::gm::GeomType outGeoType = te::vp::GeomOpResultType(geom->getGeometryType());
+
+    //verify geometries
+    for (size_t i = 0; i < itg->second.size(); ++i)
+    {
+      if (!itg->second[i]->getGeometry(geomIdx)->isValid())
+      {
+#ifdef TERRALIB_LOGGER_ENABLED
+        te::common::Logger::logDebug("vp", "Aggregation - The input layer has invalid geometry.");
+#endif // TERRALIB_LOGGER_ENABLED
+      }
+    }
+
     te::gm::Geometry* geometry = te::vp::GetGeometryUnion(itg->second, geomIdx, outGeoType);
     
     // if it returned a valid geometry, include the summarization over non-spatial attributes
@@ -330,7 +342,7 @@ bool te::vp::AggregationMemory::run()
       {
         // esse teste é necessário????
         if (te::da::GetPropertyPos(outDataset.get(), itString->first) < outDataset->getNumProperties())
-            outDSetItem->setString(itString->first, itString->second);  
+            outDSetItem->setString(itString->first, itString->second);
         ++itString;
       }
       
@@ -348,6 +360,12 @@ bool te::vp::AggregationMemory::run()
       outDSetItem->setGeometry("geom", geometry);
       outDataset->add(outDSetItem);
     }
+    else
+    {
+#ifdef TERRALIB_LOGGER_ENABLED
+        te::common::Logger::logDebug("vp", "Aggregation - The operation generated invalid geometry.");
+#endif // TERRALIB_LOGGER_ENABLED
+    }
     ++itg;
   
     if (task.isActive() == false)
@@ -355,14 +373,7 @@ bool te::vp::AggregationMemory::run()
   
     task.pulse();
   }
-  
-  try
-  {
-    te::vp::Save(m_outDsrc.get(), outDataset.get(), outDsType.get());
-    return true;
-  }
-  catch(...)
-  {
-    return false;
-  }
+
+  te::vp::Save(m_outDsrc.get(), outDataset.get(), outDsType.get());
+  return true;
 }

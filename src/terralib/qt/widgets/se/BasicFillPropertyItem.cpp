@@ -55,6 +55,8 @@ te::qt::widgets::BasicFillPropertyItem::BasicFillPropertyItem(QtTreePropertyBrow
   basicFillProperty->addSubProperty(m_opacityProperty);
 
   addProperty(basicFillProperty, tr("Basic Fill"), QColor(255, 255, 175));
+
+  m_update = true;
 }
 
 te::qt::widgets::BasicFillPropertyItem::~BasicFillPropertyItem()
@@ -64,8 +66,12 @@ te::qt::widgets::BasicFillPropertyItem::~BasicFillPropertyItem()
 
 void te::qt::widgets::BasicFillPropertyItem::valueChanged(QtProperty *p, int value)
 {
-  if(p == m_opacityProperty)
+  if(!m_update)
+    return;
+
+  if(p == m_opacityProperty && m_update)
   {
+    m_update = false;
     double opacity = value / 100.0;
 
     m_color.setAlpha(opacity * 255);
@@ -74,21 +80,32 @@ void te::qt::widgets::BasicFillPropertyItem::valueChanged(QtProperty *p, int val
     // Updating fill opacity
     m_fill->setOpacity(QString::number(opacity, 'g', 2).toStdString());
     emit fillChanged();
+    m_update = true;
   }
 }
 
 void te::qt::widgets::BasicFillPropertyItem::valueChanged(QtProperty *p, const QColor &value)
 {
+  if(!m_update)
+    return;
+
   if(p == m_colorProperty)
   {
+    m_update = false;
   // The new fill color
-    m_color.setRgb(value.red(), value.green(), value.blue(), m_color.alpha());
+    m_color.setRgb(value.red(), value.green(), value.blue(), value.alpha());
+
+    int opacity = (value.alpha() / 255.) * 100.;
+
+    te::qt::widgets::AbstractPropertyManager::getInstance().m_intSliderManager->setValue(m_opacityProperty, opacity);
 
     updateUiFillColor();
 
     // Updating fill color
     m_fill->setColor(m_color.name().toStdString());
+    m_fill->setOpacity(QString::number(opacity, 'g', 2).toStdString());
     emit fillChanged();
+    m_update = true;
   }
 }
 

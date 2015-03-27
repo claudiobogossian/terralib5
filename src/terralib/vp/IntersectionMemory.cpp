@@ -73,7 +73,7 @@ te::vp::IntersectionMemory::~IntersectionMemory()
 {}
 
 
-bool te::vp::IntersectionMemory::run()
+bool te::vp::IntersectionMemory::run() throw(te::common::Exception)
 {  
   if(m_SRID == 0)
   {
@@ -109,15 +109,9 @@ bool te::vp::IntersectionMemory::run()
   std::auto_ptr<te::da::DataSet> outDataSet(resultPair.second);
   std::auto_ptr<te::da::DataSetType> outDataSetType(resultPair.first);
 
-  try
-  {
-    te::vp::Save(m_outDsrc.get(), outDataSet.get(), outDataSetType.get());
-    return true;
-  }
-  catch(...)
-  {
-    return false;
-  }
+  te::vp::Save(m_outDsrc.get(), outDataSet.get(), outDataSetType.get());
+  return true;
+
 }
 
 std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionMemory::pairwiseIntersection(std::string newName, 
@@ -238,7 +232,9 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionMemory::pa
       }
       else
       {
+#ifdef TERRALIB_LOGGER_ENABLED
         te::common::Logger::logDebug("vp", "Intersection - Invalid geometry found");
+#endif //TERRALIB_LOGGER_ENABLED
         continue;
       }
 

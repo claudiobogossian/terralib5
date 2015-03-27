@@ -32,7 +32,6 @@
 
 // TerraLib
 #include "../core/pattern/mvc/ItemModelObservable.h"
-#include "../core/ContextItem.h"
 #include "../core/Config.h"
 
 namespace te
@@ -61,10 +60,10 @@ namespace te
           \brief Destructor
         */ 
         virtual ~ItemGroupModel();
-
-        virtual void draw( ContextItem context );
     };
   }
 }
 
 #endif 
+
+

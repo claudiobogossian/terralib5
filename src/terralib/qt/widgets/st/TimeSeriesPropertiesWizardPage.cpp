@@ -24,14 +24,27 @@
 */
 
 // TerraLib
+#include "../../../st/core/timeseries/TimeSeriesDataSetInfo.h"
+#include "TemporalPropertiesWidget.h"
 #include "TimeSeriesPropertiesWidget.h"
 #include "TimeSeriesPropertiesWizardPage.h"
+#include "ui_TemporalPropertiesWidgetForm.h"
 #include "ui_TimeSeriesPropertiesWidgetForm.h"
 
 te::qt::widgets:: TimeSeriesPropertiesWizardPage:: TimeSeriesPropertiesWizardPage(QWidget* parent)
   : QWizardPage(parent)
 {
   m_propWidget.reset(new TimeSeriesPropertiesWidget(this));
+  m_tempPropWidget.reset(new TemporalPropertiesWidget(this));
+
+  // Adjusting...
+  QGridLayout* propLayout = new QGridLayout(this);
+  propLayout->addWidget(m_propWidget.get());
+
+  // Adjusting the properties widget
+  QGridLayout* tempPropLayout = new QGridLayout(m_propWidget->getForm()->m_temporalPropertiesFrame);
+  tempPropLayout->setContentsMargins(0, 0, 0, 0);
+  tempPropLayout->addWidget(m_tempPropWidget.get());
 }
 
 te::qt::widgets:: TimeSeriesPropertiesWizardPage::~ TimeSeriesPropertiesWizardPage()

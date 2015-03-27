@@ -63,7 +63,8 @@ namespace te
             {
               LAYER      = 0, /*!< TerraLib4 Layer. */
               THEME      = 1, /*!< TerraLib4 Theme. */
-              TABLE      = 2  /*!< TerraLib4 Table. */
+              TABLE      = 2, /*!< TerraLib4 Table. */
+              RASTER     = 3  /*!< TerraLib4 Raster. */
             };
 
           public:
@@ -73,11 +74,14 @@ namespace te
             ~TL4LayerSelectionWizardPage();
 
             void setDatasets(std::vector<std::string> layers,
-                             std::vector<std::string> tables);
+                             std::vector<std::string> tables,
+                             std::vector<std::string> rasters);
 
             void setTL4Layers(std::vector<std::string> layers);
 
             void setTL4Tables(std::vector<std::string> tables);
+
+            void setTL4Rasters(std::vector<std::string> rasters);
 
             std::vector<std::string> getChecked();
 

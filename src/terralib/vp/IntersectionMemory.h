@@ -29,6 +29,7 @@
 #define __TERRALIB_VP_INTERNAL_INTERSECTION_MEMORY_H
 
 //Terralib
+#include "../common/Exception.h"
 #include "../datatype/Property.h"
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../geometry/Geometry.h"
@@ -61,7 +62,7 @@ namespace te
       
       ~IntersectionMemory();
       
-      bool run();
+      bool run() throw(te::common::Exception);
       
     private:
 

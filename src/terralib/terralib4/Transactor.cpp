@@ -387,6 +387,25 @@ std::auto_ptr<te::da::DataSetType> terralib4::Transactor::getDataSetType(const s
 
     pk->setProperties(pkProps);
   }
+  else
+  {
+    TeAttribute attLink;
+    table.attrLink(attLink);
+
+    std::string attLinkName = attLink.rep_.name_;
+
+    if(!attLinkName.empty())
+    {
+      pk = new te::da::PrimaryKey(table.name() + "_pk", mainDst.get());
+
+      te::dt::Property* p = mainDst->getProperty(attLinkName);
+
+      std::vector<te::dt::Property*> pkProps;
+      pkProps.push_back(p);
+
+      pk->setProperties(pkProps);
+    }
+  }
 
   if(layer)
   {
@@ -796,7 +815,9 @@ std::vector<std::string> terralib4::Transactor::getTL4Layers()
 
   while(it != m_layerMap.end())
   {
-    layers.push_back(it->second->name());
+    if(!it->second->hasGeometry(TeRASTER))
+      layers.push_back(it->second->name());
+
     ++it;
   }
 
@@ -814,6 +835,24 @@ std::vector<std::string> terralib4::Transactor::getTL4Tables()
     tablesVec.push_back(tables[i].name());
 
   return tablesVec;
+}
+
+std::vector<std::string> terralib4::Transactor::getTL4Rasters()
+{
+  std::vector<std::string> rasters;
+
+  std::map<int, TeLayer*>::iterator it = m_layerMap.begin();
+
+  while(it != m_layerMap.end())
+  {
+    if(it->second->hasGeometry(TeRASTER))
+    {
+      rasters.push_back(it->second->name());
+    }
+    ++it;
+  }
+
+  return rasters;
 }
 
 std::vector<::terralib4::ThemeInfo> terralib4::Transactor::getTL4Themes()

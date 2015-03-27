@@ -103,6 +103,9 @@ te::qt::widgets::QueryDataSourceDialog::QueryDataSourceDialog(QWidget* parent, Q
 
   //load data sources information
   loadDataSourcesInformation();
+
+  //
+  m_ui->m_helpPushButton->setPageReference("widgets/query/query_datasource.html");
 }
 
 te::qt::widgets::QueryDataSourceDialog::~QueryDataSourceDialog()
