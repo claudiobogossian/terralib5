@@ -26,6 +26,7 @@
  		    <section title="How to manipulate data?" ref="./widgets/index.html">
 				<section title="Data Source Exchanger" ref="./widgets/exchanger_all/exchanger_all.html"/>
 				<section title="Data Source Selector" ref="./widgets/datasource_selector/datasource_selector.html"/>
+				<section title="Query Data Source" ref="./widgets/query/query_datasource.html"/>
 				<section title="Dataset Selector" ref="./widgets/dataset_selector/dataset_selector.html"/>
 				<section title="Data Table" ref="./widgets/table/index.html">
 					<section title="Basic Features" ref="./widgets/table/basicFeatures.html"/>
@@ -45,7 +46,7 @@
 				</section>
 				<section title="Composition Mode" ref="./widgets/layer/compositionMode_dialog.html"/>
 				<section title="Pie Bar" ref="./widgets/charts/pie_bar/pie_bar.html"/>
-				<section title="Query" ref="./widgets/query/query_dialog.html"/>
+				<section title="Query Layer" ref="./widgets/query/query_dialog.html"/>
 				<section title="Tabular File " ref="./widgets/external_table/external_table.html"/>
 				<section title="Spatial Reference System" ref="./widgets/srs/srs.html"/>
 		    </section>
@@ -157,6 +158,7 @@
 
 			<keyword name="Data Source" ref="./widgets/datasource_selector/datasource_selector.html"/>
 			<keyword name="Data Source Explorer" ref="./widgets/datasource_explorer/datasource_explorer.html"/>
+			<keyword name="Query Data Source" ref="./widgets/query/query_datasource.html"/>
 			<keyword name="Dataset Selector" ref="./widgets/dataset_selector/dataset_selector.html"/>
 			<keyword name="Layer Exchanger" ref="./widgets/exchanger_direct/exchanger_direct.html"/>
 			<keyword name="Data Source Exchanger" ref="./widgets/exchanger_all/exchanger_all.html"/>

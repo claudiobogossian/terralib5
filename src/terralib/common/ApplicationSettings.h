@@ -223,7 +223,11 @@ namespace te
         boost::filesystem::remove(m_file);
       else
       {
+#if BOOST_VERSION > 105600
         boost::property_tree::xml_writer_settings<std::string> settings('\t', 1);
+#else
+        boost::property_tree::xml_writer_settings<char> settings('\t', 1);
+#endif
         boost::property_tree::write_xml(m_file, m_settings, std::locale(), settings);
       }
 
