@@ -271,7 +271,9 @@ std::vector<std::string> te::pgis::Transactor::getDataSetNames()
                   "AND pg_class.relname NOT IN ('spatial_ref_sys', 'geometry_columns', 'geography_columns', 'raster_columns', 'raster_overviews') "
                   "AND pg_class.relkind in ('r','v') "
                   "AND pg_class.relnamespace = pg_namespace.oid "
-                  "AND pg_namespace.nspname NOT IN ('information_schema', 'pg_toast', 'pg_temp_1', 'pg_catalog', 'topology')");
+                  "AND pg_namespace.nspname NOT IN ('information_schema', 'pg_toast', 'pg_temp_1', 'pg_catalog', 'topology') "
+                  "ORDER BY pg_class.relname"
+                  );
 
   std::auto_ptr<te::da::DataSet> datasetInfo = query(sql);
 

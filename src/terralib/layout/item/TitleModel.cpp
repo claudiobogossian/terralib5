@@ -56,8 +56,8 @@ te::layout::TitleModel::TitleModel() :
 
   m_tableColor.setColor(0,0,0,255);
   m_borderGridColor.setColor(0,0,0,255);
-  m_headerHorizontalColor.setColor(255,255,255,255);
-  m_headerVerticalColor.setColor(0,0,255,255);
+  m_headerHorizontalColor.setColor(255,255,255,0);
+  m_headerVerticalColor.setColor(192,192,192,255);
 
   m_textgridProperties = new TextGridSettingsConfigProperties;
   m_text = "Text";

@@ -18,52 +18,53 @@
  */
 
 /*!
-  \file ItemGroupModel.h
+  \file GridMapController.h
    
-   \brief Class that represents a "Model" part of ItemGroup MVC component.  
-   Its coordinate system is the same of scene (millimeters). 
-   This is also son of ItemModelObservable, so it can become observable.
+   \brief Class that represents a "Controller" part of Rectangle MVC component. 
+      Its coordinate system is the same of scene (millimeters).
+      This is also son of ItemController, so it can become a controller.
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_ITEMGROUP_MODEL_H
-#define __TERRALIB_LAYOUT_INTERNAL_ITEMGROUP_MODEL_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_GRIDMAP_CONTROLLER_H 
+#define __TERRALIB_LAYOUT_INTERNAL_GRIDMAP_CONTROLLER_H
 
 // TerraLib
-#include "../core/pattern/mvc/ItemModelObservable.h"
+#include "../core/pattern/mvc/ItemController.h"
 #include "../core/Config.h"
 
 namespace te
 {
   namespace layout
   {
+
     /*!
-    \brief Class that represents a "Model" part of ItemGroup MVC component.  
-    Its coordinate system is the same of scene (millimeters). 
-    This is also son of ItemModelObservable, so it can become observable.
+      \brief Class that represents a "Controller" part of Rectangle MVC component. 
+          Its coordinate system is the same of scene (millimeters). 
+          He is also the son of ItemController, so it can become a controller.
       	  
 	    \ingroup layout
 
-      \sa te::layout::ItemModelObservable
+      \sa te::layout::ItemController
 	  */
-    class TELAYOUTEXPORT ItemGroupModel : public ItemModelObservable
+    class TELAYOUTEXPORT GridMapController : public ItemController
     {
       public:
 
         /*!
           \brief Constructor
+
+          \param o "Model" part of MVC component
         */
-        ItemGroupModel();
+        GridMapController( Observable* o );
 
         /*!
           \brief Destructor
         */ 
-        virtual ~ItemGroupModel();
+        virtual ~GridMapController();
     };
   }
 }
 
-#endif 
-
-
+#endif

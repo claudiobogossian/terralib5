@@ -72,7 +72,10 @@ te::layout::TextItem::TextItem( ItemController* controller, Observable* o ) :
 
 te::layout::TextItem::~TextItem()
 {
-
+  if(m_editable)
+  {
+    resetEdit();
+  }
 }
 
 void te::layout::TextItem::init()
@@ -92,10 +95,12 @@ void te::layout::TextItem::init()
     QTextCursor cursor(document());
     cursor.movePosition(QTextCursor::Start);
     cursor.insertText(name.c_str());
-
+    
     std::string txt = model->getText();
     document()->setPlainText(txt.c_str());
   }
+
+  resetEdit();
 }
 
 void te::layout::TextItem::updateObserver( ContextItem context )
@@ -111,24 +116,7 @@ void te::layout::TextItem::updateObserver( ContextItem context )
   if(!model)
     return;
 
-  te::color::RGBAColor clrBack = model->getBackgroundColor();
-  m_backgroundColor.setRed(clrBack.getRed());
-  m_backgroundColor.setGreen(clrBack.getGreen());
-  m_backgroundColor.setBlue(clrBack.getBlue());
-  m_backgroundColor.setAlpha(clrBack.getAlpha());
-
-  Font ft = model->getFont();
-
-  QFont qft;
-  qft.setFamily(ft.getFamily().c_str());
-  qft.setBold(ft.isBold());
-  qft.setItalic(ft.isItalic());
-  qft.setPointSizeF(ft.getPointSize());
-  qft.setKerning(ft.isKerning());
-  qft.setStrikeOut(ft.isStrikeout());
-  qft.setUnderline(ft.isUnderline());
-
-  document()->setDefaultFont(qft);
+  updateTextConfig();
   
   std::string txt = model->getText();
   document()->setPlainText(txt.c_str());
@@ -145,6 +133,8 @@ void te::layout::TextItem::paint( QPainter * painter, const QStyleOptionGraphics
     return;
   }
 
+  updateTextConfig();
+
   drawBackground( painter );
   
   QGraphicsTextItem::paint(painter, option, widget);
@@ -156,22 +146,6 @@ void te::layout::TextItem::paint( QPainter * painter, const QStyleOptionGraphics
   {
     drawSelection(painter);
   }
-}
-
-void te::layout::TextItem::drawBackground( QPainter* painter )
-{
-  if(!painter)
-  {
-    return;
-  }
-
-  painter->save();
-  painter->setPen(Qt::NoPen);
-  painter->setBrush(QBrush(m_backgroundColor));
-  painter->setBackground(QBrush(m_backgroundColor));
-  painter->setRenderHint( QPainter::Antialiasing, true );
-  painter->drawRect(QRectF( 0, 0, boundingRect().width(), boundingRect().height()));
-  painter->restore();
 }
 
 QImage te::layout::TextItem::createImage()
@@ -308,11 +282,11 @@ void te::layout::TextItem::mouseDoubleClickEvent( QGraphicsSceneMouseEvent * eve
     {
       //If enabled is true, this item will accept hover events
       setTextInteractionFlags(Qt::TextEditable);
-      setFocus();
-      setCursor(QCursor(Qt::IBeamCursor));
+      setCursor(Qt::IBeamCursor);
       QTextCursor cursor(textCursor());
       cursor.clearSelection();
       setTextCursor(cursor);
+      setFocus();
     }
     else
     {
@@ -405,8 +379,42 @@ void te::layout::TextItem::resetEdit()
   clearFocus();     
 }
 
+void te::layout::TextItem::updateTextConfig()
+{
+  if(!m_model)
+    return;
+
+  if(!document())
+    return;
+
+  TextModel* model = dynamic_cast<TextModel*>(m_model);
+
+  if(!model)
+    return;
+
+  te::color::RGBAColor clrBack = model->getBackgroundColor();
+  m_backgroundColor.setRed(clrBack.getRed());
+  m_backgroundColor.setGreen(clrBack.getGreen());
+  m_backgroundColor.setBlue(clrBack.getBlue());
+  m_backgroundColor.setAlpha(clrBack.getAlpha());
+
+  Font ft = model->getFont();
+
+  QFont qft;
+  qft.setFamily(ft.getFamily().c_str());
+  qft.setBold(ft.isBold());
+  qft.setItalic(ft.isItalic());
+  qft.setPointSizeF(ft.getPointSize());
+  qft.setKerning(ft.isKerning());
+  qft.setStrikeOut(ft.isStrikeout());
+  qft.setUnderline(ft.isUnderline());
+
+  document()->setDefaultFont(qft);
+}
+
 QRectF te::layout::TextItem::boundingRect() const
 {
   return QGraphicsTextItem::boundingRect();
 }
+
 

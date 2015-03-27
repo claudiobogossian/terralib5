@@ -45,6 +45,7 @@
 #include "../../../maptools/AbstractLayer.h"
 #include "../../core/Config.h"
 #include "ParentItem.h"
+#include "../../../qt/widgets/tools/ZoomWheel.h"
 
 class QGraphicsSceneMouseEvent;
 class QMimeData;
@@ -119,6 +120,8 @@ namespace te
           \brief Reimplemented from QGraphicsProxyWidget
          */
         QRectF boundingRect() const;
+
+        virtual void changeZoomFactor(double currentZoomFactor);
                                         
       protected slots:
 
@@ -180,6 +183,8 @@ namespace te
 
       virtual void generateMapPixmap();
 
+      virtual void drawMap(QPainter * painter);
+
     protected:
 
       QSize                                   m_mapSize; //!< The size of the map display in a zoom of 100%. This size is in pixels and is calculated based on the size of the GraphicItem in millimeters.
@@ -192,6 +197,8 @@ namespace te
       double                                  m_wMargin;
       double                                  m_hMargin;
       te::map::AbstractLayerPtr               m_layer;
+      te::qt::widgets::ZoomWheel*             m_zoomWheel;
+      bool                                    m_changeLayer;
     };
   }
 }

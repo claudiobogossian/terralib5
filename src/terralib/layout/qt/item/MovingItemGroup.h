@@ -23,7 +23,7 @@
    \brief Class that represents the grouping of objects of moving QGraphicsItems, MVC components.
    Its used to move 2...n QGraphicsItems that has inverted QMatrix.
    Its coordinate system is the same of scene (millimeters). 
-   He is also the son of ItemGroup, ItemObserver and ObjectItem, so it can become observer of a model (Observable). 
+   This is also son of ItemGroup, ItemObserver and ObjectItem, so it can become observer of a model (Observable). 
 
   \ingroup layout
 */
@@ -46,7 +46,7 @@ namespace te
        \brief Class that represents the grouping of objects of moving QGraphicsItems, MVC components.
        Its used to move 2...n QGraphicsItems that has inverted QMatrix.
        Its coordinate system is the same of scene (millimeters). 
-       He is also the son of ItemGroup, ItemObserver and ObjectItem, so it can become observer of a model (Observable). 
+       This is also son of ItemGroup, ItemObserver and ObjectItem, so it can become observer of a model (Observable). 
 
       \ingroup layout
     */
@@ -55,13 +55,13 @@ namespace te
     public:
 
       MovingItemGroup(te::layout::ItemController* controller, te::layout::Observable* o);
+
       virtual ~MovingItemGroup();
 
       virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
-    protected:
-    private:
     };
   }
 }
 
 #endif
+

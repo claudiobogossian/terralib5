@@ -61,6 +61,8 @@ void te::layout::TextGridItem::init()
     return;
 
   updateDocument();
+
+  resetEdit();
 }
 
 void te::layout::TextGridItem::refreshDocument()
@@ -112,9 +114,6 @@ void te::layout::TextGridItem::refreshDocument()
       //model->setText(txtThree);
     }
   }
-
-  /*QPixmap pixmp = QPixmap::fromImage(img);
-  setPixmap(pixmp);*/
 }
 
 void te::layout::TextGridItem::updateDocument()
@@ -144,34 +143,20 @@ void te::layout::TextGridItem::updateDocument()
   tableFormat.setCellSpacing(3);  
   tableFormat.setCellPadding(3); 
   tableFormat.setHeaderRowCount(1);
-
-  /*QVector<QTextLength> constraints;
-  constraints << QTextLength(QTextLength::VariableLength, 50),
-    constraints << QTextLength(QTextLength::VariableLength, 50),
-    constraints << QTextLength(QTextLength::VariableLength, 50);
-
-  tableFormat.setColumnWidthConstraints(constraints);*/
-
+  
   m_table = cursor.insertTable(rows, columns, tableFormat);
-
+    
   int countRows = m_table->rows();
   int countColumns = m_table->columns();
-
-  QTextCharFormat format = cursor.charFormat();
-  format.setFontPointSize(12);
-
-  QTextCharFormat boldFormat = format;
-  boldFormat.setFontWeight(QFont::Bold);
-
+    
   //Table Headers (Hrz)
   for(int i = 1 ; i < countRows ; ++i)
   {
     QTextTableCell cellOne = m_table->cellAt(i, 0);
     QTextCharFormat fmtOne = cellOne.format(); 
     fmtOne.setBackground(Qt::gray);
+    fmtOne.setFontWeight(QFont::Bold);
     cellOne.setFormat(fmtOne);
-    QTextCursor cellCursorOne = cellOne.firstCursorPosition();
-    cellCursorOne.insertText("Header", boldFormat);
   }
 
   //Table Headers (Vrt)
@@ -180,19 +165,7 @@ void te::layout::TextGridItem::updateDocument()
     QTextTableCell cellTwo = m_table->cellAt(0, j);
     QTextCharFormat fmtTwo = cellTwo.format(); 
     fmtTwo.setBackground(Qt::gray); 
+    fmtTwo.setFontWeight(QFont::Bold);
     cellTwo.setFormat(fmtTwo);
-    QTextCursor cellCursorTwo = cellTwo.firstCursorPosition();
-    cellCursorTwo.insertText("Header", boldFormat);
-  }
-
-  //Table
-  for (int i = 1 ; i < countRows ; ++i) 
-  {
-    for(int j = 1 ; j < countColumns ; ++j)
-    {
-      QTextTableCell cellThree = m_table->cellAt(i, j);
-      QTextCursor cellCursorThree = cellThree.firstCursorPosition();
-      cellCursorThree.insertText("Text", format);
-    }
   }
 }

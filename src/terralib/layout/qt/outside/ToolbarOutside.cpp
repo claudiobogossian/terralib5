@@ -88,6 +88,7 @@ te::layout::ToolbarOutside::ToolbarOutside( OutsideController* controller, Obser
   m_optionTitle("text_title"),
   m_optionBalloon("text_balloon"),
   m_optionBarCode("text_barCode"),
+  m_optionGridMap("texte_gridMap"),
   m_optionAlignLeft("align_left"),
   m_optionAlignRight("align_right"),
   m_optionAlignTop("align_top"),
@@ -227,6 +228,9 @@ QToolButton* te::layout::ToolbarOutside::createMapToolButton()
   
   QAction* actionMapGrid = createAction("Map Grid", m_optionMapGrid, "layout-map-grid", "", menu);
   menu->addAction(actionMapGrid);
+
+  QAction* actionGridMap = createAction("Grid Map", m_optionGridMap, "layout-grid", "", menu);
+  menu->addAction(actionGridMap);
 
   QAction* actionLegend = createAction("Default Legend", m_optionLegendDefault, "layout-default-legend", "", menu);
   menu->addAction(actionLegend);
@@ -693,6 +697,10 @@ void te::layout::ToolbarOutside::onMapTriggered( QAction* action )
   else if(action->objectName().compare(m_optionMapGrid.c_str()) == 0)
   {
     changeAction(type->getModeCreateMapGrid());
+  }
+  else if(action->objectName().compare(m_optionGridMap.c_str()) == 0)
+  {
+    changeAction(type->getModeCreateGridMap());
   }
   else if(action->objectName().compare(m_optionLegendDefault.c_str()) == 0)
   {

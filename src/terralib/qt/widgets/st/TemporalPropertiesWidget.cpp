@@ -25,6 +25,7 @@
 
 //Terralib
 #include "../../../dataaccess.h"
+#include "../../../datatype/Enums.h"
 #include "../../../datatype/Property.h"
 #include "TemporalPropertiesWidget.h"
 #include "ui_TemporalPropertiesWidgetForm.h"
@@ -38,8 +39,33 @@ te::qt::widgets::TemporalPropertiesWidget::TemporalPropertiesWidget(QWidget* par
 {
   m_ui->setupUi(this);
 
-// connect signal and slots
-  connect(m_ui->m_phenomenomComboBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(onPropertyComboBoxIndexChanged(QString)));
+  m_ui->m_typeComboBox->addItem(tr("Date Time"), QVariant(te::dt::DATETIME_TYPE));
+  m_ui->m_typeComboBox->addItem(tr("Ordinal"),  QVariant(te::dt::ORDINAL_INSTANT));
+  m_ui->m_typeComboBox->addItem(tr("String"),  QVariant(te::dt::STRING_TYPE));
+
+  m_ui->m_ordTypeComboBox->addItem(tr("Ordinal Instant"), QVariant(te::dt::ORDINAL_INSTANT));
+  m_ui->m_ordTypeComboBox->addItem(tr("Ordinal Period"), QVariant(te::dt::ORDINAL_PERIOD));
+  m_ui->m_ordTypeComboBox->addItem(tr("User defined"), QVariant(-1));
+
+  m_ui->m_tempUnitComboBox->addItem(tr("Year"), QVariant(te::dt::YEAR));
+  m_ui->m_tempUnitComboBox->addItem(tr("Month"), QVariant(te::dt::MONTH));
+  m_ui->m_tempUnitComboBox->addItem(tr("Day"), QVariant(te::dt::DAY));
+  m_ui->m_tempUnitComboBox->addItem(tr("Hour"), QVariant(te::dt::HOUR));
+  m_ui->m_tempUnitComboBox->addItem(tr("Minute"), QVariant(te::dt::MINUTE));
+  m_ui->m_tempUnitComboBox->addItem(tr("Second"), QVariant(te::dt::SECOND));
+  m_ui->m_tempUnitComboBox->addItem(tr("Week"), QVariant(te::dt::WEEK));
+  m_ui->m_tempUnitComboBox->addItem(tr("Day of the Week"), QVariant(te::dt::DAYOFWEEK));
+  m_ui->m_tempUnitComboBox->addItem(tr("Day of the Year"), QVariant(te::dt::DAYOFYEAR));
+  m_ui->m_tempUnitComboBox->addItem(tr("Unknown")), QVariant(te::dt::UNKNOWN);
+
+  m_ui->m_formatComboBox->addItem(QString::fromStdString("YYYY"));
+  m_ui->m_formatComboBox->addItem(QString::fromStdString("YYYYMM"));
+  m_ui->m_formatComboBox->addItem(QString::fromStdString("YYYYDDD"));
+
+  // connect signal and slots
+  connect(m_ui->m_typeComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onTypeCBCurrentIndexChanged(int)));
+  connect(m_ui->m_ordTypeComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onOrdTypeCBCurrentIndexChanged(int)));
+  connect(m_ui->m_tempUnitComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onUnitTypeCBCurrentIndexChanged(int)));
 }
 
 te::qt::widgets::TemporalPropertiesWidget::~TemporalPropertiesWidget()
@@ -75,7 +101,73 @@ int te::qt::widgets::TemporalPropertiesWidget::getValidTime()
     return -1;
 }
 
-void te::qt::widgets::TemporalPropertiesWidget::setUp (const te::da::DataSetTypePtr dataType)
+int te::qt::widgets::TemporalPropertiesWidget::getDateType()
+{
+  return m_ui->m_typeComboBox->currentIndex();
+}
+
+int te::qt::widgets::TemporalPropertiesWidget::getOrdinalType()
+{
+  return m_ui->m_ordTypeComboBox->currentIndex();
+}
+
+int te::qt::widgets::TemporalPropertiesWidget::getTemporalUnit()
+{
+  return m_ui->m_tempUnitComboBox->currentIndex();
+}
+
+std::string te::qt::widgets::TemporalPropertiesWidget::getTemporalValue()
+{
+  return m_ui->m_tempValueLineEdit->text().toStdString();
+}
+
+std::string te::qt::widgets::TemporalPropertiesWidget::getUserOrdinalType()
+{
+  return m_ui->m_ordinalLineEdit->text().toStdString();
+}
+
+std::string te::qt::widgets::TemporalPropertiesWidget::getDateFormat()
+{
+  int index = m_ui->m_formatComboBox->currentIndex();
+  return ""; //TODO adapt to use the enum when it is ready
+}
+
+void te::qt::widgets::TemporalPropertiesWidget::onTypeCBCurrentIndexChanged(int index)
+{
+  if(m_ui->m_typeComboBox->itemData(index).toInt() == te::dt::STRING_TYPE)
+  {
+    m_ui->m_formatComboBox->setEnabled(true);
+    m_ui->m_ordTypeComboBox->setEnabled(false);
+  }
+  else if(m_ui->m_typeComboBox->itemData(index).toInt() == te::dt::ORDINAL_INSTANT)
+  {
+    m_ui->m_ordTypeComboBox->setEnabled(true);
+    m_ui->m_formatComboBox->setEnabled(false);
+  }
+  else
+  {
+    m_ui->m_formatComboBox->setEnabled(false);
+    m_ui->m_ordTypeComboBox->setEnabled(false);
+  }
+}
+
+void te::qt::widgets::TemporalPropertiesWidget::onOrdTypeCBCurrentIndexChanged(int index)
+{
+  if(m_ui->m_ordTypeComboBox->itemData(index).toInt() == -1)
+    m_ui->m_ordinalLineEdit->setEnabled(true);
+  else
+    m_ui->m_ordinalLineEdit->setEnabled(false);
+}
+
+void te::qt::widgets::TemporalPropertiesWidget::onUnitTypeCBCurrentIndexChanged(int index)
+{
+  if(m_ui->m_tempUnitComboBox->itemData(index).toInt() == te::dt::UNKNOWN)
+    m_ui->m_tempValueLineEdit->setEnabled(true);
+  else
+    m_ui->m_tempValueLineEdit->setEnabled(false);
+}
+
+void te::qt::widgets::TemporalPropertiesWidget::setUp(const te::da::DataSetTypePtr dataType)
 {
   QString item;
   m_dataType = dataType;
@@ -93,4 +185,3 @@ void te::qt::widgets::TemporalPropertiesWidget::setUp (const te::da::DataSetType
     }
   }
 }
-

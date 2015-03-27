@@ -206,7 +206,7 @@ bool te::layout::PropertyBrowser::addProperty( Property property )
     The type of the property value is int, as is the position in which the attribute is in the list of Enum. */
     vproperty = m_variantPropertyEditorManager->addProperty(QtVariantPropertyManager::enumTypeId(), tr(property.getName().c_str()));
     addAttribute(vproperty, property);
-    vproperty->setValue(property.getValue().toString().c_str());
+    vproperty->setValue(property.getOptionByCurrentChoice().toString().c_str());
   }
   else if(property.getType() == dataType->getDataTypeDouble())
   {
@@ -427,7 +427,6 @@ QVariant te::layout::PropertyBrowser::checkComplexType( QtVariantProperty* prope
   {
     variant = property->attributeValue("enumNames");
     QStringList list = variant.toStringList();
-    /*QString attr = list.value(property->value().toInt());*/
     variant = QVariant(list);
   }
 
