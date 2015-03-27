@@ -29,6 +29,7 @@
 #define __TERRALIB_VP_INTERNAL_LINETOPOLYGON_QUERY_H
 
 //Terralib
+#include "../common/Exception.h"
 #include "../datatype/Property.h"
 #include "../geometry/Geometry.h"
 #include "../memory/DataSet.h"
@@ -59,7 +60,7 @@ namespace te
       
       ~LineToPolygonQuery();
       
-      bool run();
+      bool run() throw(te::common::Exception);
       
     }; // end class
   } // end namespace vp

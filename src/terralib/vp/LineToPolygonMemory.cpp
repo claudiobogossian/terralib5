@@ -75,7 +75,7 @@ te::vp::LineToPolygonMemory::LineToPolygonMemory()
 te::vp::LineToPolygonMemory::~LineToPolygonMemory()
 {}
 
-bool te::vp::LineToPolygonMemory::run()
+bool te::vp::LineToPolygonMemory::run() throw (te::common::Exception)
 {
   std::auto_ptr<te::da::DataSetType> outDsType = buildOutDataSetType();
 
@@ -136,7 +136,6 @@ bool te::vp::LineToPolygonMemory::run()
   }
 
   te::vp::Save(m_outDsrc.get(), outDSet.get(), outDsType.get());
-
   return true;
 }
 

@@ -92,6 +92,8 @@ te::qt::widgets::BasicStrokePropertyItem::BasicStrokePropertyItem(QtTreeProperty
   basicStrokeProperty->addSubProperty(m_capProperty);
 
   addProperty(basicStrokeProperty, tr("Basic Stroke"), QColor(175, 255, 175));
+
+  m_update = true;
 }
 
 te::qt::widgets::BasicStrokePropertyItem::~BasicStrokePropertyItem()
@@ -205,6 +207,11 @@ void te::qt::widgets::BasicStrokePropertyItem::updateUiStrokeColor()
 
 void te::qt::widgets::BasicStrokePropertyItem::valueChanged(QtProperty *p, int value)
 {
+  if(!m_update)
+    return;
+
+  m_update = false;
+
   if(p == m_opacityProperty)
   {
     double opacity = value / 100.0;
@@ -237,10 +244,17 @@ void te::qt::widgets::BasicStrokePropertyItem::valueChanged(QtProperty *p, int v
     
     emit strokeChanged();
   }
+
+  m_update = true;
 }
 
 void te::qt::widgets::BasicStrokePropertyItem::valueChanged(QtProperty *p, double value)
 {
+  if(!m_update)
+    return;
+
+  m_update = false;
+
   if(p == m_widthProperty)
   {
     QString str;
@@ -249,21 +263,35 @@ void te::qt::widgets::BasicStrokePropertyItem::valueChanged(QtProperty *p, doubl
     m_stroke->setWidth(str.toStdString());
     emit strokeChanged();
   }
+
+  m_update = true;
 }
 
 void te::qt::widgets::BasicStrokePropertyItem::valueChanged(QtProperty *p, const QColor &value)
 {
+  if(!m_update)
+    return;
+
+  m_update = false;
+
   if(p == m_colorProperty)
   {
     // The new stroke color
-    m_color.setRgb(value.red(), value.green(), value.blue(), m_color.alpha());
+    m_color.setRgb(value.red(), value.green(), value.blue(), value.alpha());
+
+    int opacity = (value.alpha() / 255.) * 100.;
+
+    te::qt::widgets::AbstractPropertyManager::getInstance().m_intSliderManager->setValue(m_opacityProperty, opacity);
 
     updateUiStrokeColor();
 
     // Updating stroke color
     m_stroke->setColor(m_color.name().toStdString());
+    m_stroke->setOpacity(QString::number(opacity, 'g', 2).toStdString());
     emit strokeChanged();
   }
+
+  m_update = true;
 }
 
 QMap<int, QIcon> te::qt::widgets::BasicStrokePropertyItem::getDashIcons()
