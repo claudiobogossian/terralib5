@@ -60,6 +60,17 @@ Ui::ObservationPropertiesWidgetForm* te::qt::widgets::ObservationPropertiesWidge
   return m_ui.get();
 }
 
+std::vector<int> te::qt::widgets::ObservationPropertiesWidget::getOutputValues()
+{
+  std::vector<int> indexes;
+  std::vector<std::string> values = m_obsWidget->getOutputValues();
+
+  for(size_t i = 0; i < values.size(); ++i)
+    indexes.push_back(te::da::GetPropertyPos(m_dataType.get(), values[i]));
+
+  return indexes;
+}
+
 int te::qt::widgets::ObservationPropertiesWidget::getGeometryId()
 {
   if(m_dataType)

@@ -72,7 +72,10 @@ te::layout::TextItem::TextItem( ItemController* controller, Observable* o ) :
 
 te::layout::TextItem::~TextItem()
 {
-
+  if(m_editable)
+  {
+    resetEdit();
+  }
 }
 
 void te::layout::TextItem::init()
@@ -92,10 +95,12 @@ void te::layout::TextItem::init()
     QTextCursor cursor(document());
     cursor.movePosition(QTextCursor::Start);
     cursor.insertText(name.c_str());
-
+    
     std::string txt = model->getText();
     document()->setPlainText(txt.c_str());
   }
+
+  resetEdit();
 }
 
 void te::layout::TextItem::updateObserver( ContextItem context )
@@ -277,11 +282,11 @@ void te::layout::TextItem::mouseDoubleClickEvent( QGraphicsSceneMouseEvent * eve
     {
       //If enabled is true, this item will accept hover events
       setTextInteractionFlags(Qt::TextEditable);
-      setFocus();
-      setCursor(QCursor(Qt::IBeamCursor));
+      setCursor(Qt::IBeamCursor);
       QTextCursor cursor(textCursor());
       cursor.clearSelection();
       setTextCursor(cursor);
+      setFocus();
     }
     else
     {
@@ -374,11 +379,6 @@ void te::layout::TextItem::resetEdit()
   clearFocus();     
 }
 
-QRectF te::layout::TextItem::boundingRect() const
-{
-  return QGraphicsTextItem::boundingRect();
-}
-
 void te::layout::TextItem::updateTextConfig()
 {
   if(!m_model)
@@ -411,4 +411,10 @@ void te::layout::TextItem::updateTextConfig()
 
   document()->setDefaultFont(qft);
 }
+
+QRectF te::layout::TextItem::boundingRect() const
+{
+  return QGraphicsTextItem::boundingRect();
+}
+
 
