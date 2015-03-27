@@ -84,7 +84,7 @@ te::vp::PolygonToLineQuery::PolygonToLineQuery()
 te::vp::PolygonToLineQuery::~PolygonToLineQuery()
 {}
 
-bool te::vp::PolygonToLineQuery::run()
+bool te::vp::PolygonToLineQuery::run() throw(te::common::Exception)
 {
   std::auto_ptr<te::da::DataSetType> outDsType = buildOutDataSetType();
   std::vector<te::dt::Property*> props = outDsType->getProperties();
@@ -186,13 +186,7 @@ bool te::vp::PolygonToLineQuery::run()
 
   std::auto_ptr<te::da::DataSet> dsQuery(m_inDsrc->query(select));
 
-  try
-  {
-    te::vp::Save(m_outDsrc.get(), dsQuery.get(), outDsType.get());
-    return true;
-  }
-  catch(...)
-  {
-    return false;
-  }
+  te::vp::Save(m_outDsrc.get(), dsQuery.get(), outDsType.get());
+  return true;
+
 }

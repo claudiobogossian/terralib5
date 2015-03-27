@@ -168,16 +168,6 @@ void te::layout::PropertiesOutside::itemsSelected(QList<QGraphicsItem*> graphics
 {
   m_updatingValues = false;
 
-  if(graphicsItems.empty())
-  {
-    return;
-  }
-
-  if(m_graphicsItems == graphicsItems)
-  {
-    return;
-  }
-
   m_layoutPropertyBrowser->clearAll();
   m_nameLabel->setText(tr("Component::"));
 

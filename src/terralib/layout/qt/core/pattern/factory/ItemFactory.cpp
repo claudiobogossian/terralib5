@@ -33,6 +33,7 @@
 #include "../../../item/PaperItem.h"
 #include "../../../item/MapItem.h"
 #include "../../../item/MapGridItem.h"
+#include "../../../item/GridMapItem.h"
 #include "../../../item/LegendItem.h"
 #include "../../../item/ScaleItem.h"
 #include "../../../item/ImageItem.h"
@@ -100,6 +101,11 @@ te::layout::Observer* te::layout::ItemFactory::make( EnumType* type, ItemParamsC
   {
     MapGridItem* mapGrid = new MapGridItem(params.getController(), params.getModel());
     item = (Observer*)mapGrid;
+  }
+  else if(type == enumObj->getGridMapItem())
+  {
+    GridMapItem* gridMap = new GridMapItem(params.getController(), params.getModel());
+    item = (Observer*)gridMap;
   }
   else if(type == enumObj->getScaleItem())
   {

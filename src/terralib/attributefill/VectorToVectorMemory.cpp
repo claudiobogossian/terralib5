@@ -306,16 +306,22 @@ bool te::attributefill::VectorToVectorMemory::run()
       {
         throw e;
       }
+
+#ifdef TERRALIB_LOGGER_ENABLED
       std::string ex = e.what();
       ex += " | Ref: " + logInfo1 + " : " + logInfo2;
       te::common::Logger::logDebug("attributefill", ex.c_str());
+#endif //TERRALIB_LOGGER_ENABLED
+
       m_hasErrors = true;
     }
     catch(std::exception& e)
     {
+#ifdef TERRALIB_LOGGER_ENABLED
       std::string ex = e.what();
       ex += " | Ref: " + logInfo1 + " : " + logInfo2;
       te::common::Logger::logDebug("attributefill", ex.c_str());
+#endif //TERRALIB_LOGGER_ENABLED
       m_hasErrors = true;
     }
   }

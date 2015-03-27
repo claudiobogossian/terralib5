@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2015 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,29 +18,32 @@
  */
 
 /*!
-  \file MovingItemGroup.cpp
+  \file GridMapController.cpp
    
   \brief 
 
   \ingroup layout
 */
 
-#include "MovingItemGroup.h"
+// TerraLib
+#include "GridMapController.h"
+#include "../core/pattern/mvc/ItemController.h"
+#include "../core/ContextItem.h"
+#include "../core/pattern/factory/AbstractItemFactory.h"
+#include "../core/pattern/singleton/Context.h"
+#include "../core/pattern/mvc/ItemModelObservable.h"
+#include "../core/pattern/factory/ItemParamsCreate.h"
+#include "../core/pattern/mvc/ItemObserver.h"
+#include "../core/pattern/mvc/Observer.h"
+#include "../core/enum/Enums.h"
 
-te::layout::MovingItemGroup::MovingItemGroup(te::layout::ItemController* controller, te::layout::Observable* o)
-  : ItemGroup(controller, o)
+te::layout::GridMapController::GridMapController( Observable* o ) :
+  ItemController(o)
 {
-
+  
 }
 
-te::layout::MovingItemGroup::~MovingItemGroup()
+te::layout::GridMapController::~GridMapController()
 {
-
+	
 }
-
-void te::layout::MovingItemGroup::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
-{
-
-}
-
-

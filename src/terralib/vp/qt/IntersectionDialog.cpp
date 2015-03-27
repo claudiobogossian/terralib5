@@ -396,7 +396,12 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
     this->setCursor(Qt::ArrowCursor);
     QMessageBox::warning(this, TE_TR("Intersection"), e.what());
 
-    te::common::Logger::logDebug("vp", e.what());
+#ifdef TERRALIB_LOGGER_ENABLED
+    std::string str = "Intersection - ";
+    str += e.what();
+    te::common::Logger::logDebug("vp", str.c_str());
+#endif //TERRALIB_LOGGER_ENABLED
+
     te::common::ProgressManager::getInstance().removeViewer(id);
     return;
   }

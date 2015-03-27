@@ -809,7 +809,12 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
 
     QMessageBox::information(this, "Aggregation", e.what());
     
-    te::common::Logger::logDebug("vp", e.what());
+#ifdef TERRALIB_LOGGER_ENABLED
+    std::string str = "Aggregation - ";
+    str += e.what();
+    te::common::Logger::logDebug("vp", str.c_str());
+#endif // TERRALIB_LOGGER_ENABLED
+
     te::common::ProgressManager::getInstance().removeViewer(id);
     return;
   }

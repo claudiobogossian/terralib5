@@ -65,7 +65,7 @@ te::vp::BufferMemory::BufferMemory()
 te::vp::BufferMemory::~BufferMemory()
 {}
 
-bool te::vp::BufferMemory::run()
+bool te::vp::BufferMemory::run() throw(te::common::Exception)
 {
   std::auto_ptr<te::da::DataSetType> outDSType(GetDataSetType());
   std::auto_ptr<te::mem::DataSet> outDSet(new te::mem::DataSet(outDSType.get()));
@@ -119,10 +119,16 @@ bool te::vp::BufferMemory::run()
                 std::auto_ptr<te::gm::Geometry> currentGeom = inDset->getGeometry(j);
                 std::auto_ptr<te::gm::Geometry> outGeom;
 
-                if(currentGeom->isValid())
+                if (currentGeom->isValid())
+                {
                   outGeom.reset(setBuffer(currentGeom.get(), m_distance, i, auxGeom));
+                }
                 else
+                {
+#ifdef TERRALIB_LOGGER_ENABLED
                   te::common::Logger::logDebug("vp", "Buffer - Invalid geometry found");
+#endif //TERRALIB_LOGGER_ENABLED
+                }
 
                 if(outGeom.get() && outGeom->isValid())
                 {
@@ -143,7 +149,11 @@ bool te::vp::BufferMemory::run()
               }
               break;
             default:
-              te::common::Logger::logDebug("vp", "Buffer - Type not found.");
+              {
+#ifdef TERRALIB_LOGGER_ENABLED
+                te::common::Logger::logDebug("vp", "Buffer - Type not found.");
+#endif //TERRALIB_LOGGER_ENABLED
+              }
           }
         }
         else
@@ -157,10 +167,16 @@ bool te::vp::BufferMemory::run()
             std::auto_ptr<te::gm::Geometry> currentGeom = inDset->getGeometry(j);
             std::auto_ptr<te::gm::Geometry> outGeom;
 
-            if(currentGeom->isValid())
+            if (currentGeom->isValid())
+            {
               outGeom.reset(setBuffer(currentGeom.get(), m_distance, i, auxGeom));
+            }
             else
+            {
+#ifdef TERRALIB_LOGGER_ENABLED
               te::common::Logger::logDebug("vp", "Buffer - Invalid geometry found");
+#endif //TERRALIB_LOGGER_ENABLED
+            }
 
             if(outGeom.get() && outGeom->isValid())
             {
@@ -189,15 +205,8 @@ bool te::vp::BufferMemory::run()
     dissolveMemory(outDSet.get(), m_levels);
   }
 
-  try
-  {
-    te::vp::Save(m_outDsrc.get(), outDSet.get(), outDSType.get());
-    return true;
-  }
-  catch(...)
-  {
-    return false;
-  }
+  te::vp::Save(m_outDsrc.get(), outDSet.get(), outDSType.get());
+  return true;
 }
 
 
@@ -213,47 +222,54 @@ te::gm::Geometry* te::vp::BufferMemory::setBuffer(te::gm::Geometry* geom,
   switch(m_bufferPolygonRule)
   {
     case (te::vp::INSIDE_OUTSIDE):
-      outGeom.reset(geom->buffer(distance * level, 16, te::gm::CapButtType));
-      inGeom.reset(geom->buffer(-distance * level, 16, te::gm::CapButtType));
-      geomResult = outGeom->difference(inGeom.get());
-      
-      geomTemp = (te::gm::Geometry*)geomResult->clone();
-      if(auxGeom && auxGeom->isValid())
-        geomResult = geomResult->difference(auxGeom);
+      {
+        outGeom.reset(geom->buffer(distance * level, 16, te::gm::CapButtType));
+        inGeom.reset(geom->buffer(-distance * level, 16, te::gm::CapButtType));
+        geomResult = outGeom->difference(inGeom.get());
 
-      delete auxGeom;
-      auxGeom = geomTemp;
+        geomTemp = (te::gm::Geometry*)geomResult->clone();
+        if (auxGeom && auxGeom->isValid())
+          geomResult = geomResult->difference(auxGeom);
 
+        delete auxGeom;
+        auxGeom = geomTemp;
+      }
       break;
-
+    
     case (te::vp::ONLY_OUTSIDE):
-      outGeom.reset(geom->buffer(distance * level, 16, te::gm::CapButtType));
-      geomResult = outGeom->difference(geom);
+      {
+        outGeom.reset(geom->buffer(distance * level, 16, te::gm::CapButtType));
+        geomResult = outGeom->difference(geom);
 
-      geomTemp = (te::gm::Geometry*)geomResult->clone();
-      if(auxGeom && auxGeom->isValid())
-        geomResult = geomResult->difference(auxGeom);
+        geomTemp = (te::gm::Geometry*)geomResult->clone();
+        if (auxGeom && auxGeom->isValid())
+          geomResult = geomResult->difference(auxGeom);
 
-      delete auxGeom;
-      auxGeom = geomTemp;
-
+        delete auxGeom;
+        auxGeom = geomTemp;
+      }
       break;
-
+    
     case (te::vp::ONLY_INSIDE):
-      inGeom.reset(geom->buffer(-distance * level, 16, te::gm::CapButtType));
-      geomResult = geom->difference(inGeom.get());
+      {
+        inGeom.reset(geom->buffer(-distance * level, 16, te::gm::CapButtType));
+        geomResult = geom->difference(inGeom.get());
 
-      geomTemp = (te::gm::Geometry*)geomResult->clone();
-      if(auxGeom && auxGeom->isValid())
-        geomResult = geomResult->difference(auxGeom);
+        geomTemp = (te::gm::Geometry*)geomResult->clone();
+        if (auxGeom && auxGeom->isValid())
+          geomResult = geomResult->difference(auxGeom);
 
-      delete auxGeom;
-      auxGeom = geomTemp;
-
+        delete auxGeom;
+        auxGeom = geomTemp;
+      }
       break;
 
     default:
+    {
+#ifdef TERRALIB_LOGGER_ENABLED
       te::common::Logger::logDebug("vp", "Buffer - Polygon rule not found.");
+#endif //TERRALIB_LOGGER_ENABLED
+    }
   }
   return geomResult;
 }

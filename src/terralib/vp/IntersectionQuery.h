@@ -29,6 +29,7 @@
 #define __TERRALIB_VP_INTERNAL_INTERSECTION_QUERY_H
 
 //Terralib
+#include "../common/Exception.h"
 #include "../dataaccess/dataset/DataSet.h"
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../datatype/Property.h"
@@ -59,7 +60,7 @@ namespace te
       
       ~IntersectionQuery();
       
-      bool run();
+      bool run() throw(te::common::Exception);
 
     private:
 

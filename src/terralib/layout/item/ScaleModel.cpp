@@ -73,17 +73,17 @@ te::layout::Properties* te::layout::ScaleModel::getProperties() const
 
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
 
-  Property pro_widthRectGap;
-  pro_widthRectGap.setName("scale_width_rect_gap");
-  pro_widthRectGap.setId("");
-  pro_widthRectGap.setValue(m_scaleGapX, dataType->getDataTypeDouble());
-  m_properties->addProperty(pro_widthRectGap);
+  Property pro_widthGap;
+  pro_widthGap.setName("scale_width_rect_gap");
+  pro_widthGap.setId("");
+  pro_widthGap.setValue(m_scaleGapX, dataType->getDataTypeDouble());
+  m_properties->addProperty(pro_widthGap);
 
-  Property pro_heightRectGap;
-  pro_heightRectGap.setName("scale_height_rect_gap");
-  pro_heightRectGap.setId("");
-  pro_heightRectGap.setValue(m_scaleGapY, dataType->getDataTypeDouble());
-  m_properties->addProperty(pro_heightRectGap);
+  Property pro_heightGap;
+  pro_heightGap.setName("scale_height_rect_gap");
+  pro_heightGap.setId("");
+  pro_heightGap.setValue(m_scaleGapY, dataType->getDataTypeDouble());
+  m_properties->addProperty(pro_heightGap);
 
   Property pro_mapName;
   pro_mapName.setName(m_sharedProps->getMapName());
@@ -116,18 +116,18 @@ void te::layout::ScaleModel::updateProperties( te::layout::Properties* propertie
     m_mapName = pro_mapName.getOptionByCurrentChoice().toString();
   }
 
-  Property pro_widthRectGap = vectorProps->contains("scale_width_rect_gap");
+  Property pro_widthGap = vectorProps->contains("scale_width_rect_gap");
 
-  if(!pro_widthRectGap.isNull())
+  if(!pro_widthGap.isNull())
   {
-    m_scaleGapX = pro_widthRectGap.getValue().toDouble();
+    m_scaleGapX = pro_widthGap.getValue().toDouble();
   }
 
-  Property pro_heightRectGap = vectorProps->contains("scale_height_rect_gap");
+  Property pro_heightGap = vectorProps->contains("scale_height_rect_gap");
 
-  if(!pro_heightRectGap.isNull())
+  if(!pro_heightGap.isNull())
   {
-    m_scaleGapY = pro_heightRectGap.getValue().toDouble();
+    m_scaleGapY = pro_heightGap.getValue().toDouble();
   }
 
   Property pro_scaleName = vectorProps->contains("scale_type");
