@@ -57,6 +57,8 @@
 #include <QStyleOption>
 #include <QFont>
 #include <QPaintDevice>
+#include <QColor>
+#include <QMatrix>
 
 te::layout::LegendItem::LegendItem( ItemController* controller, Observable* o ) :
   ObjectItem(controller, o, true),
@@ -124,8 +126,6 @@ void te::layout::LegendItem::paint( QPainter * painter, const QStyleOptionGraphi
   te::layout::Utils* utils = Context::getInstance().getUtils(); 
   te::map::Canvas* canvas = Context::getInstance().getCanvas();
 
-  te::qt::widgets::Canvas geomCanvas (painter->device());
-
   if (legendModel == 0)
   {
     return;
@@ -135,6 +135,12 @@ void te::layout::LegendItem::paint( QPainter * painter, const QStyleOptionGraphi
 
   if (!layer)
   {
+    //Draw Selection
+    if (option->state & QStyle::State_Selected)
+    {
+      drawSelection(painter);
+    }
+
     update();
     return;
   }
@@ -143,14 +149,15 @@ void te::layout::LegendItem::paint( QPainter * painter, const QStyleOptionGraphi
 
   QString qTitle (title.c_str());
 
-  painter->save();
   QRectF boundRect = this->boundingRect();
-
-  geomCanvas.setWindow(boundRect.x(), boundRect.y(), boundRect.x() + boundRect.width(), boundRect.y() + boundRect.height());
+  QMatrix matrix = painter->matrix();
 
   te::layout::Font font = legendModel->getFont(); 
+  te::color::RGBAColor fontColor = legendModel->getFontColor();
 
   QFont qfont (QString(font.getFamily().c_str()), font.getPointSize());
+  QColor qFontColor (fontColor.getRed(), fontColor.getGreen(), fontColor.getBlue(), fontColor.getAlpha());
+
 
   int borderDisplacementInPixels = utils->mm2pixel(legendModel->getBorderDisplacement());
   int dispBetweenSymbolAndTextInPixels = utils->mm2pixel(legendModel->getDisplacementBetweenSymbolAndText());
@@ -177,6 +184,7 @@ void te::layout::LegendItem::paint( QPainter * painter, const QStyleOptionGraphi
   QRectF rectTitle (x1, y1, wtxtInPixels, htxtInPixels);
 
   painter->setFont(qfont);
+  painter->setBrush(qFontColor);
   painter->drawText(rectTitle, qTitle);
 
 
@@ -214,12 +222,18 @@ void te::layout::LegendItem::paint( QPainter * painter, const QStyleOptionGraphi
         label += " ~ ";
         label += upperLimit;
       }
-
+      painter->save();
       QRectF labelRect (labelX1, y1, boundRect.width(), boundRect.height());
       QString qLabel (label.c_str());
+      painter->setFont(qfont);
+      painter->setBrush(qFontColor);
       painter->drawText(labelRect, qLabel);
+      painter->restore();
 
       const std::vector<te::se::Symbolizer*>& symbolizers = item->getSymbolizers();
+
+      te::qt::widgets::Canvas geomCanvas (painter->device());
+      geomCanvas.setMatrix(matrix);
 
       foreach (te::se::Symbolizer* symbol, symbolizers)
       {
@@ -229,20 +243,28 @@ void te::layout::LegendItem::paint( QPainter * painter, const QStyleOptionGraphi
         te::gm::Geometry* geom = 0;
         if (symbol->getType() == "PolygonSymbolizer")
         {
-            te::gm::Polygon* polygon = new te::gm::Polygon(1, te::gm::PolygonType);
-            te::gm::LinearRing* ring = new te::gm::LinearRing(5, te::gm::LineStringType);
-            ring->setPoint(0, x1 + offset, y1 + offset);
-            ring->setPoint(1, x1 + geomRect.width() - offset, y1 + offset);
-            ring->setPoint(2, x1 + geomRect.width() - offset, y1 + geomRect.height() - offset);
-            ring->setPoint(3, x1 + offset, y1 + geomRect.height() - offset);
-            ring->setPoint(4, x1 + offset, y1 + offset);
-            polygon->setRingN(0, ring);
-            geom = polygon;
+          te::gm::Polygon* polygon = new te::gm::Polygon(1, te::gm::PolygonType);
+          te::gm::LinearRing* ring = new te::gm::LinearRing(5, te::gm::LineStringType);
+          ring->setPoint(0, x1 + offset, y1 + offset);
+          ring->setPoint(1, x1 + geomRect.width() - offset, y1 + offset);
+          ring->setPoint(2, x1 + geomRect.width() - offset, y1 + geomRect.height() - offset);
+          ring->setPoint(3, x1 + offset, y1 + geomRect.height() - offset);
+          ring->setPoint(4, x1 + offset, y1 + offset);
+          polygon->setRingN(0, ring);
+          geom = polygon;
+        }
+        else if (symbol->getType() == "LineSymbolizer")
+        {
+          te::gm::LineString* line = new te::gm::LineString(2, te::gm::LineStringType);
+          line->setPoint(0, x1 + offset, y1 + geomRect.height() * 0.5);
+          line->setPoint(1, x1 + geomRect.width() - offset, y1 + geomRect.height() * 0.5);
+          geom = line;
+        }
+        else if (symbol->getType() == "PointSymbolizer")
+        {
+          geom = new te::gm::Point( x1 +geomRect.width() * 0.5, y1 +geomRect.height() * 0.5);
         }
 
-        //geomCanvas.setBackgroundColor(te::color::RGBAColor(0, 0, 0, TE_TRANSPARENT));
-        painter->save();
-        painter->setBrush(Qt::SolidPattern);
         // Configuring...
         te::map::CanvasConfigurer cc(&geomCanvas);
         cc.config(symbol);
@@ -250,14 +272,11 @@ void te::layout::LegendItem::paint( QPainter * painter, const QStyleOptionGraphi
         // Let's draw!
         geomCanvas.draw(geom);
 
-        painter->restore();
       }
 
       y1 += htxtInPixels + dispBetweenSymbolsInPixels;
     }
   }
-
-  painter->restore();
 
   //Draw Selection
   if (option->state & QStyle::State_Selected)

@@ -44,14 +44,8 @@
 #include <QStyleOptionGraphicsItem>
 
 te::layout::ObjectItem::ObjectItem( ItemController* controller, Observable* o,  bool invertedMatrix ) :
-  ParentItem(controller, o)
+  ParentItem(controller, o, invertedMatrix)
 {
-  m_invertedMatrix = invertedMatrix;
-
-  QGraphicsItem* item = this;
-  m_nameClass = std::string(this->metaObject()->className());
-  Context::getInstance().getScene()->insertItem((ItemObserver*)item);
-
 }
 
 te::layout::ObjectItem::~ObjectItem()
