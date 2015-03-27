@@ -41,7 +41,9 @@
 #include <QTextEdit>
 
 te::layout::GridMapItem::GridMapItem( ItemController* controller, Observable* o ) :
-  ObjectItem(controller, o)
+  ObjectItem(controller, o),
+  m_maxWidthTextMM(0),
+  m_maxHeigthTextMM(0)
 {
   this->setFlags(QGraphicsItem::ItemIsMovable
     | QGraphicsItem::ItemIsSelectable
@@ -107,12 +109,19 @@ void te::layout::GridMapItem::paint( QPainter * painter, const QStyleOptionGraph
   drawBackground(painter);
   
   painter->save();
+  
+  QRectF parentBound = boundingRect();
+
+  if(parentItem())
+  {
+    parentBound = parentItem()->boundingRect();
+  }
 
   QPainterPath gridMapPath;
   gridMapPath.setFillRule(Qt::WindingFill);
 
-  int heightRect = (int)boundingRect().height();
-  int widgetRect = (int)boundingRect().width();
+  int heightRect = (int)parentBound.height();
+  int widgetRect = (int)parentBound.width();
 
   painter->setPen(QPen(Qt::black, 0, Qt::SolidLine));
 
@@ -120,24 +129,30 @@ void te::layout::GridMapItem::paint( QPainter * painter, const QStyleOptionGraph
   painter->setFont(font);
   
   double mm = 0.3527777778;
-  double widthText = mm * font.pointSize();
+  m_maxHeigthTextMM = mm * font.pointSize();
+
+  QString text = "A";
 
   for (int i = 0; i <= heightRect; i+=10)
   {
-    QLineF lineOne = QLineF(boundingRect().topLeft().x(), boundingRect().topLeft().y() + i, boundingRect().topRight().x(), boundingRect().topRight().y() + i);
-
-    QString text = "Teste Horizontal";
-   
-    QPointF pointInit(boundingRect().topRight().x() + (heightRect*.01), boundingRect().topRight().y()+i);
-    drawText(pointInit, painter, text.toStdString());
-    QPointF pointFinal(boundingRect().topLeft().x() - (heightRect*.01) - widthText, boundingRect().topLeft().y()+i);
+    QLineF lineOne = QLineF(parentBound.topLeft().x(), parentBound.topLeft().y() + i, parentBound.topRight().x(), parentBound.topRight().y() + i);
+    
+    QPointF pointInit(parentBound.topLeft().x() - (heightRect*.01), parentBound.topLeft().y() + i - (m_maxHeigthTextMM/2)); //esquerda
+    drawText(pointInit, painter, text.toStdString(), true);
+    QPointF pointFinal(parentBound.topRight().x() + (heightRect*.01), parentBound.topRight().y() + i  - (m_maxHeigthTextMM/2)); //direita
     drawText(pointFinal, painter, text.toStdString());
-        
+           
     painter->drawLine(lineOne);
 
     for (int j = 0; j <= widgetRect; j+=10)
     {
-      QLineF lineTwo = QLineF(boundingRect().topLeft().x() + j, boundingRect().topLeft().y(), boundingRect().bottomLeft().x() + j, boundingRect().bottomLeft().y());
+      QLineF lineTwo = QLineF(parentBound.topLeft().x() + j, parentBound.topLeft().y(), parentBound.bottomLeft().x() + j, parentBound.bottomLeft().y());
+
+      QPointF pointInit(parentBound.topLeft().x() + j + (m_maxWidthTextMM/2), boundingRect().topLeft().y() /*- (widgetRect*.01)*/); //inferior
+      drawText(pointInit, painter, text.toStdString(), true);
+      QPointF pointFinal(parentBound.bottomLeft().x() + j  - (m_maxWidthTextMM/2), parentBound.bottomLeft().y() + (widgetRect*.01)); //superior
+      drawText(pointFinal, painter, text.toStdString());
+
       painter->drawLine(lineTwo);
     }    
   }
@@ -158,8 +173,57 @@ QRectF te::layout::GridMapItem::boundingRect()
     if(parentItem()->boundingRect().isValid())
     {
       m_rect = parentItem()->boundingRect();
+      m_rect.setWidth(m_rect.width() + m_maxWidthTextMM);
+      m_rect.setX(m_rect.x() - m_maxWidthTextMM);
+      m_rect.setHeight(m_rect.height() + m_maxHeigthTextMM);
+      m_rect.setY(m_rect.y() - m_maxHeigthTextMM);
       return m_rect;
     }    
   }
   return m_rect;
+}
+
+void te::layout::GridMapItem::drawText( QPointF point, QPainter* painter, std::string text, bool displacementLeft /*= false*/, bool displacementRight /*= false*/ )
+{
+  painter->save();
+
+  QTransform t = painter->transform();
+  QPointF p = t.map(point);
+
+  double zoomFactor = Context::getInstance().getZoomFactor();
+
+  QFont ft = painter->font();
+  ft.setPointSize(ft.pointSize() * zoomFactor);
+  painter->setFont(ft);
+
+  QFontMetrics fm(ft);
+  int width = fm.width(text.c_str());
+
+  QPointF newPoint (p);
+
+  if(displacementLeft)
+  {
+    newPoint.setX(newPoint.x() - width);
+  }
+
+  if(displacementRight)
+  {
+    newPoint.setX(newPoint.x() + width);
+  }
+
+  QTransform copyT = painter->transform().inverted();
+  QPointF copyP = copyT.map(newPoint);
+  double widthMM = point.x() - copyP.x();
+
+  if(widthMM > m_maxWidthTextMM)
+  {
+    m_maxWidthTextMM = widthMM;
+  }
+
+  //Keeps the size of the text.(Aspect)
+  painter->setMatrixEnabled(false);
+  painter->drawText(newPoint, text.c_str());
+  painter->setMatrixEnabled(true);
+
+  painter->restore();
 }

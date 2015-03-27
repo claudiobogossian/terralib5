@@ -74,6 +74,13 @@ namespace te
         virtual void paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
 
         virtual QRectF boundingRect();
+
+      protected:
+
+        virtual void drawText( QPointF point, QPainter* painter, std::string text, bool displacementLeft = false, bool displacementRight = false);
+
+        double m_maxWidthTextMM;
+        double m_maxHeigthTextMM;
     };
   }
 }

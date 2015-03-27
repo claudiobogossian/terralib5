@@ -29,8 +29,10 @@
 #include "GridMapModel.h"
 #include "../core/ContextItem.h"
 #include "../../geometry/Envelope.h"
+#include "../../geometry/Coord2D.h"
 #include "../../color/RGBAColor.h"
 #include "../../maptools/Canvas.h"
+#include "../../srs/Config.h"
 #include "../core/enum/Enums.h"
 #include "MapModel.h"
 #include "../core/property/Property.h"
@@ -38,8 +40,38 @@
 #include "../core/property/SharedProperties.h"
 
 te::layout::GridMapModel::GridMapModel() :
-  m_mapName("")
+  m_mapName(""),
+  m_name("GRID_MODEL"),
+  m_srid(TE_UNKNOWN_SRS),
+  m_systematic(0),
+  m_mapDisplacementX(0),
+  m_mapDisplacementY(0),
+  m_visible(false),  
+  m_lneHrzGap(0),
+  m_lneVrtGap(0),
+  m_initialGridPointX(0),
+  m_initialGridPointY(0),
+  m_gridStyle(0),
+  m_lineStyle(0),
+  m_lineWidth(1),  
+  m_pointTextSize(12),
+  m_fontText("Arial"),
+  m_visibleAllTexts(true),
+
+  m_superscriptText(false),
+  m_lneVrtDisplacement(7),
+  m_lneHrzDisplacement(7),
+  m_bottomText(true),
+  m_leftText(true),
+  m_rightText(true),
+  m_topText(true),
+  m_bottomRotateText(false),
+  m_leftRotateText(false),
+  m_rightRotateText(false),
+  m_topRotateText(false)
 {
+  m_gridStyle = Enums::getInstance().getEnumGridStyleType()->getStyleNone();
+  m_lineStyle = Enums::getInstance().getEnumLineStyleType()->getStyleNone();
 
   m_type = Enums::getInstance().getEnumObjectType()->getGridMapItem();
 
@@ -53,26 +85,104 @@ te::layout::GridMapModel::~GridMapModel()
 
 }
 
-void te::layout::GridMapModel::draw( ContextItem context )
+std::string te::layout::GridMapModel::getName()
 {
-  te::color::RGBAColor** pixmap = 0;
+  return m_name;
+}
 
-  te::map::Canvas* canvas = context.getCanvas();
-  Utils* utils = context.getUtils();
+void te::layout::GridMapModel::setName( std::string name )
+{
+  m_name = name;
+}
 
-  if((!canvas) || (!utils))
-    return;
+bool te::layout::GridMapModel::isVisible()
+{
+  return m_visible;
+}
 
-  if(context.isResizeCanvas())
-    utils->configCanvas(m_box);
+void te::layout::GridMapModel::setVisible( bool visible )
+{
+  m_visible = visible;
+}
 
-  drawBackground(context);
+void te::layout::GridMapModel::setMapScale( double scale )
+{
+  m_mapScale = scale;
+}
 
-  if(context.isResizeCanvas())
-    pixmap = utils->getImageW(m_box);
+void te::layout::GridMapModel::setWorldBox( te::gm::Envelope box )
+{
+  m_worldBox = box;
+}
 
-  context.setPixmap(pixmap);
-  notifyAll(context);
+void te::layout::GridMapModel::setBoxMapMM( te::gm::Envelope box )
+{
+  m_boxMapMM = box;
+}
+
+void te::layout::GridMapModel::setBoundingBoxItemMM( te::gm::Envelope box )
+{
+  m_boundingBoxItemMM = box;
+}
+
+void te::layout::GridMapModel::setSystematic( Systematic* sys )
+{
+  m_systematic = sys;
+}
+
+void te::layout::GridMapModel::setVisibleAllTexts( bool visible )
+{
+  m_visibleAllTexts = visible;
+
+  m_bottomText = visible;
+  m_leftText = visible;
+  m_rightText = visible;
+  m_topText = visible;
+}
+
+bool te::layout::GridMapModel::isVisibleAllTexts()
+{
+  return m_visibleAllTexts;
+}
+
+void te::layout::GridMapModel::gridTextFreeMemory()
+{
+  std::map<te::gm::Point*, std::string>::iterator it;
+  for(it = m_gridTexts.begin() ; it != m_gridTexts.end() ; ++it)
+  {
+    te::gm::Point* p = it->first;
+    if(p)
+    {
+      delete p;
+      p = 0;
+    }
+  }
+  m_gridTexts.clear();
+}
+
+std::map<te::gm::Point*, std::string> te::layout::GridMapModel::getGridInfo()
+{
+  return m_gridTexts;
+}
+
+void te::layout::GridMapModel::setMapDisplacementX( double displacement )
+{
+  m_mapDisplacementX = displacement;
+}
+
+void te::layout::GridMapModel::setMapDisplacementY( double displacement )
+{
+  m_mapDisplacementY = displacement;
+}
+
+int te::layout::GridMapModel::getPointSize()
+{
+  return m_pointTextSize;
+}
+
+std::string te::layout::GridMapModel::getFontFamily()
+{
+  return m_fontText;
 }
 
 void te::layout::GridMapModel::visitDependent( ContextItem context )
@@ -116,4 +226,20 @@ void te::layout::GridMapModel::updateProperties( te::layout::Properties* propert
   {
     m_mapName = pro_mapName.getOptionByCurrentChoice().toString();
   }
+}
+
+te::layout::Property te::layout::GridMapModel::getProperty()
+{
+  Property propertyGridMap;
+  return propertyGridMap;
+}
+
+void te::layout::GridMapModel::updateProperty( Property property )
+{
+  
+}
+
+void te::layout::GridMapModel::calculateGaps( te::gm::Envelope box )
+{
+
 }
