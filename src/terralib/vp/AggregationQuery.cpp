@@ -91,7 +91,7 @@ te::vp::AggregationQuery::AggregationQuery()
 te::vp::AggregationQuery::~AggregationQuery()
 {}
 
-bool te::vp::AggregationQuery::run()
+bool te::vp::AggregationQuery::run() throw(te::common::Exception)
 {
   std::auto_ptr<te::da::DataSetType> outDSetType(new te::da::DataSetType(m_outDset));
   
@@ -293,14 +293,7 @@ bool te::vp::AggregationQuery::run()
     outDSet->add(outDSetItem);
     ++key;
   }
-
-  try
-  {
-    te::vp::Save(m_outDsrc.get(), outDSet.get(), outDSetType.get());
-    return true;
-  }
-  catch(...)
-  {
-    return false;
-  }
+  
+  te::vp::Save(m_outDsrc.get(), outDSet.get(), outDSetType.get());
+  return true;
 }

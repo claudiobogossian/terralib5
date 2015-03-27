@@ -79,7 +79,7 @@ te::vp::IntersectionQuery::~IntersectionQuery()
 {}
 
 
-bool te::vp::IntersectionQuery::run()
+bool te::vp::IntersectionQuery::run() throw(te::common::Exception)
 {
   if(m_SRID == 0)
   {
@@ -193,15 +193,9 @@ bool te::vp::IntersectionQuery::run()
 
   outDset->moveBeforeFirst();
 
-  try
-  {
-    te::vp::Save(m_outDsrc.get(), outDset.get(), outDataSetType.get());
-    return true;
-  }
-  catch(...)
-  {
-    return false;
-  }
+  te::vp::Save(m_outDsrc.get(), outDset.get(), outDataSetType.get());
+  return true;
+
 }
 
 te::da::DataSet* te::vp::IntersectionQuery::updateGeomType(te::da::DataSetType* dsType, te::da::DataSet* ds)

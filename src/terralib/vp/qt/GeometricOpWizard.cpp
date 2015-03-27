@@ -423,7 +423,12 @@ bool te::vp::GeometricOpWizard::execute()
     this->setCursor(Qt::ArrowCursor);
     QMessageBox::information(this, "Greographic Operation", e.what());
 
-    te::common::Logger::logDebug("vp", e.what());
+#ifdef TERRALIB_LOGGER_ENABLED
+    std::string str = "Greographic Operation - ";
+    str += e.what();
+    te::common::Logger::logDebug("vp", str.c_str());
+#endif
+
     te::common::ProgressManager::getInstance().removeViewer(id);
     return false;
   }

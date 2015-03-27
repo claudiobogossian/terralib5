@@ -455,7 +455,11 @@ void te::attributefill::VectorToRasterDialog::onOkPushButtonClicked()
     this->setCursor(Qt::ArrowCursor);
 
     QMessageBox::information(this, "Fill", e.what());
-    te::common::Logger::logDebug("fill", e.what());
+
+#ifdef TERRALIB_LOGGER_ENABLED
+    te::common::Logger::logDebug("attributefill", e.what());
+#endif // TERRALIB_LOGGER_ENABLED
+    
     te::common::ProgressManager::getInstance().removeViewer(id);
 
     return;

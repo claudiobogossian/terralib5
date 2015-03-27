@@ -101,6 +101,8 @@ namespace te
 
           te::se::Fill* m_fill;                        //!< Fill element that will be configured by this widget.
 
+          bool m_update;
+
       };
     }
   }
