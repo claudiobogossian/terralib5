@@ -101,9 +101,9 @@ void te::qt::plugins::vp::Plugin::startup()
 
 #if defined(TERRALIB_APACHE_LOG4CXX_ENABLED) && defined(TERRALIB_LOGGER_ENABLED)
   std::string layout = "%d{ISO8601} [%t] %-5p %c - %m%n";
-  std::wstring w_layout(layout.begin(), layout.end());
+  log4cxx::LogString lString(layout.begin(), layout.end());
 
-  log4cxx::FileAppender* fileAppender = new log4cxx::RollingFileAppender(log4cxx::LayoutPtr(new log4cxx::PatternLayout(w_layout)),
+  log4cxx::FileAppender* fileAppender = new log4cxx::RollingFileAppender(log4cxx::LayoutPtr(new log4cxx::PatternLayout(lString)),
     log4cxx::helpers::Transcoder::decode(path.c_str()), true);
 
   log4cxx::helpers::Pool p;

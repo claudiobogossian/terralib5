@@ -280,11 +280,16 @@ bool te::qt::widgets::ClippingWizard::executeLayerClipping()
   std::auto_ptr<te::rst::Raster> inputRst = ds->getRaster(rpos);
 
   //get parameters
-  te::gm::GeometryCollection* geomColl = 0;
+  std::auto_ptr< te::gm::GeometryCollection > geomColl;
   m_clippingPage->getLayerClipping(geomColl);
 
   if(geomColl->isEmpty())
     return false;
+  
+  if( geomColl->getSRID() != inputRst->getSRID() )
+  {
+    geomColl->transform( inputRst->getSRID() );
+  }
 
   if(m_clippingPage->isSingleRasterResult())
   {
@@ -303,33 +308,54 @@ bool te::qt::widgets::ClippingWizard::executeLayerClipping()
     std::string type = m_rasterInfoPage->getWidget()->getType();
 
     std::map<std::string, std::string> rinfo =  m_rasterInfoPage->getWidget()->getInfo();
-    te::rst::Raster* outputRst = te::rst::RasterFactory::make(type, grid, bands, rinfo);
-    te::rst::FillRaster(outputRst, 255);
+    std::auto_ptr<te::rst::Raster> outputRst( te::rst::RasterFactory::make(type, grid, bands, rinfo) );
+    te::rst::FillRaster(outputRst.get(), outputRst->getBand( 0 )->getProperty()->m_noDataValue );
+    
+    te::gm::Polygon* polygon = 0;
+//     te::rst::PolygonIterator<double> it;
+//     te::rst::PolygonIterator<double> itend;
+    std::vector<double> doubleVec;
+    te::gm::Coord2D inputCoord;
+    te::gm::Coord2D outputCoord;
 
     for(std::size_t i = 0; i < geomColl->getNumGeometries(); ++i)
     {
-      te::gm::Polygon* polygon = static_cast<te::gm::Polygon*> (geomColl->getGeometryN(i));
+      polygon = static_cast<te::gm::Polygon*> (geomColl->getGeometryN(i));
 
       te::rst::PolygonIterator<double> it = te::rst::PolygonIterator<double>::begin(inputRst.get(), polygon);
       te::rst::PolygonIterator<double> itend = te::rst::PolygonIterator<double>::end(inputRst.get(), polygon);
 
       while (it != itend)
       {
-        std::vector<double> doubleVec;
         inputRst->getValues(it.getColumn(), it.getRow(), doubleVec);
 
-        te::gm::Coord2D inputCoord = inputRst->getGrid()->gridToGeo(it.getColumn(), it.getRow());
-        te::gm::Coord2D outputCoord = outputRst->getGrid()->geoToGrid(inputCoord.x, inputCoord.y);
+        inputCoord = inputRst->getGrid()->gridToGeo(it.getColumn(), it.getRow());
+        outputCoord = outputRst->getGrid()->geoToGrid(inputCoord.x, inputCoord.y);
+        outputCoord.x = te::rst::Round(outputCoord.x);
+        outputCoord.y = te::rst::Round(outputCoord.y);
 
-        if( (te::rst::Round(inputCoord.x) >= 0 && te::rst::Round(outputCoord.x) < (int)inputRst->getNumberOfColumns()) &&
-            (te::rst::Round(inputCoord.y) >= 0 && te::rst::Round(outputCoord.y) < (int)inputRst->getNumberOfRows()))
-          outputRst->setValues(te::rst::Round(outputCoord.x), te::rst::Round(outputCoord.y), doubleVec);
+        if( 
+            (
+              ( outputCoord.x >= 0 )
+              && 
+              ( outputCoord.x < (int)outputRst->getNumberOfColumns() )
+            ) 
+            &&
+            (
+              ( outputCoord.y >= 0 )
+              && 
+              ( outputCoord.y < (int)outputRst->getNumberOfRows() )
+            )
+          )
+        {
+          outputRst->setValues(outputCoord.x, outputCoord.y, doubleVec);
+        }
 
         ++it;
       }
     }
 
-    delete outputRst;
+    outputRst.reset();
 
     //set output layer
     m_outputLayer.push_back(te::qt::widgets::createLayer(m_rasterInfoPage->getWidget()->getType(), 
@@ -354,8 +380,9 @@ bool te::qt::widgets::ClippingWizard::executeLayerClipping()
       std::string type = m_rasterInfoPage->getWidget()->getType();
 
       std::map<std::string, std::string> rinfo =  m_rasterInfoPage->getWidget()->getInfo(i);
-      te::rst::Raster* outputRst = te::rst::RasterFactory::make(type, grid, bands, rinfo);
-      te::rst::FillRaster(outputRst, 255);
+      std::auto_ptr<te::rst::Raster> outputRst( te::rst::RasterFactory::make(type, grid, bands, rinfo) );
+      
+      te::rst::FillRaster(outputRst.get(), 255);
 
       te::gm::Polygon* polygon = static_cast<te::gm::Polygon*> (geomColl->getGeometryN(i));
 
@@ -377,7 +404,7 @@ bool te::qt::widgets::ClippingWizard::executeLayerClipping()
         ++it;
       }
 
-      delete outputRst;
+      outputRst.reset();
 
       //set output layer
       m_outputLayer.push_back(te::qt::widgets::createLayer(m_rasterInfoPage->getWidget()->getType(), 
