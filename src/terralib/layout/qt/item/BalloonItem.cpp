@@ -78,8 +78,6 @@ te::layout::BalloonItem::~BalloonItem()
 
 void te::layout::BalloonItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /* = 0 */ )
 {
-  ObjectItem::paint(painter, option, widget);
-
   Q_UNUSED( option );
   Q_UNUSED( widget );
   if ( !painter )
@@ -287,14 +285,12 @@ void te::layout::BalloonItem::hoverEnterEvent( QGraphicsSceneHoverEvent * event 
 
 void te::layout::BalloonItem::hoverLeaveEvent( QGraphicsSceneHoverEvent * event )
 {
-  m_hoverAboveItem = false;
   setCursor(Qt::ArrowCursor);
   QGraphicsItem::hoverLeaveEvent(event);
 }
 
 void te::layout::BalloonItem::hoverMoveEvent( QGraphicsSceneHoverEvent * event )
 {
-  m_hoverAboveItem = true;
   double toleranceX = 2.;
   double toleranceY = 2.;
 

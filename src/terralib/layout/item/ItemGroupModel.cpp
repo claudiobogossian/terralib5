@@ -38,6 +38,8 @@ te::layout::ItemGroupModel::ItemGroupModel()
   m_type = Enums::getInstance().getEnumObjectType()->getItemGroup();
 
   m_box = te::gm::Envelope(0., 0., 10., 10.);
+
+  m_border = false;
 }
 
 te::layout::ItemGroupModel::~ItemGroupModel()
@@ -45,29 +47,4 @@ te::layout::ItemGroupModel::~ItemGroupModel()
 
 }
 
-void te::layout::ItemGroupModel::draw( ContextItem context )
-{
-  te::color::RGBAColor** pixmap = 0;
-  
-  te::map::Canvas* canvas = context.getCanvas();
-  Utils* utils = context.getUtils();
 
-  if((!canvas) || (!utils))
-    return;
-
-  if(context.isResizeCanvas())
-    utils->configCanvas(m_box);
-  
-  canvas->setPolygonContourWidth(1);
-  canvas->setPolygonContourColor(te::color::RGBAColor(0, 0, 255, 255));
-  canvas->setPolygonFillColor(m_backgroundColor);
-  canvas->setBackgroundColor(m_backgroundColor);
-  
-  utils->drawRectW(m_box);
-  
-  if(context.isResizeCanvas())
-    pixmap = utils->getImageW(m_box);
-  
-  context.setPixmap(pixmap);
-  notifyAll(context);
-}

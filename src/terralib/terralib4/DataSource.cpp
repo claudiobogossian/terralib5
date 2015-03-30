@@ -168,17 +168,10 @@ std::vector<std::string> terralib4::DataSource::getDataSourceNames(const std::ma
 
 std::vector<te::common::CharEncoding> terralib4::DataSource::getEncodings(const std::map<std::string, std::string>& dsInfo)
 {
-  /*std::auto_ptr<TeDatabaseFactoryParams> params(terralib4::Convert2T4DatabaseParams(dsInfo));
+  std::vector<te::common::CharEncoding> result;
+  result.push_back(te::common::LATIN1);
 
-  std::auto_ptr<TeDatabase> db(TeDatabaseFactory::make(*params.get()));
-
-  std::vector<std::string> encodings;
-
-  db->getEncodingList(encodings);
-
-  return encodings;*/
-
-  return std::vector<te::common::CharEncoding>();
+  return result;
 }
 
 TeDatabase* terralib4::DataSource::getTerralib4Db()
@@ -208,6 +201,18 @@ std::vector<std::string> terralib4::DataSource::getTL4Tables()
   tables = t4t->getTL4Tables();
 
   return tables;
+}
+
+std::vector<std::string> terralib4::DataSource::getTL4Rasters()
+{
+  std::vector<std::string> rasters;
+
+  std::auto_ptr<te::da::DataSourceTransactor> t = getTransactor();
+
+  terralib4::Transactor* t4t = dynamic_cast<terralib4::Transactor*>(t.get());
+  rasters = t4t->getTL4Rasters();
+
+  return rasters;
 }
 
 std::vector<::terralib4::ThemeInfo> terralib4::DataSource::getTL4Themes()

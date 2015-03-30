@@ -25,19 +25,26 @@
 
 // TerraLib
 #include "../../../st/core/observation/ObservationDataSetInfo.h"
+#include "TemporalPropertiesWidget.h"
 #include "ObservationPropertiesWidget.h"
 #include "ObservationPropertiesWizardPage.h"
 #include "ui_ObservationPropertiesWidgetForm.h"
+#include "ui_TemporalPropertiesWidgetForm.h"
 
 te::qt::widgets::ObservationPropertiesWizardPage::ObservationPropertiesWizardPage(QWidget* parent)
   : QWizardPage(parent)
 {
-//  m_ui->setupUi(this);
   m_propWidget.reset(new ObservationPropertiesWidget(this));
+  m_tempPropWidget.reset(new TemporalPropertiesWidget(this));
 
   // Adjusting...
   QGridLayout* propLayout = new QGridLayout(this);
   propLayout->addWidget(m_propWidget.get());
+
+  // Adjusting the properties widget
+  QGridLayout* tempPropLayout = new QGridLayout(m_propWidget->getForm()->m_temporalPropertiesFrame);
+  tempPropLayout->setContentsMargins(0, 0, 0, 0);
+  tempPropLayout->addWidget(m_tempPropWidget.get());
 }
 
 te::qt::widgets::ObservationPropertiesWizardPage::~ObservationPropertiesWizardPage()
@@ -53,7 +60,9 @@ std::list<te::st::ObservationDataSetInfo*> te::qt::widgets::ObservationPropertie
 
   while(typesItBegin != typesItEnd)
   {
-    obsInfos.push_back(new te::st::ObservationDataSetInfo(*dsInfo.get(), typesItBegin->get()->getName(), m_propWidget->getTempPropName(), m_propWidget->getTempPropName(), m_propWidget->getGeometryId()));
+    std::vector<int> phenomTimes;
+    phenomTimes.resize(m_propWidget->getOutputValues().size()-1, m_tempPropWidget->getPhenomenonTime());
+    obsInfos.push_back(new te::st::ObservationDataSetInfo(*dsInfo.get(), typesItBegin->get()->getName(), phenomTimes, m_propWidget->getOutputValues(), m_propWidget->getGeometryId()));
     typesItBegin++;
   }
 
@@ -68,5 +77,6 @@ bool te::qt::widgets::ObservationPropertiesWizardPage::isComplete() const
 void te::qt::widgets::ObservationPropertiesWizardPage::set(const std::list<te::da::DataSetTypePtr> dataTypes)
 {
   m_dataTypes = dataTypes;
+  m_tempPropWidget->setUp(dataTypes.front());
   m_propWidget->setUp(dataTypes.front());
 }

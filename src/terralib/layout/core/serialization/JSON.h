@@ -53,7 +53,9 @@ namespace te
     class TELAYOUTEXPORT JSON : public Serialization
     {
       public:
+
         JSON();
+        
         virtual ~JSON();
         
         virtual bool serialize();
@@ -80,3 +82,6 @@ namespace te
 }
 
 #endif
+
+
+

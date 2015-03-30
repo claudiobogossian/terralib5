@@ -556,7 +556,12 @@ void te::vp::BufferDialog::onOkPushButtonClicked()
     this->setCursor(Qt::ArrowCursor);
     QMessageBox::information(this, "Buffer", e.what());
 
-    te::common::Logger::logDebug("vp", e.what());
+#ifdef TERRALIB_LOGGER_ENABLED
+    std::string str = "Buffer - ";
+    str += e.what();
+    te::common::Logger::logDebug("vp", str.c_str());
+#endif //TERRALIB_LOGGER_ENABLED
+
     te::common::ProgressManager::getInstance().removeViewer(id);
     return;
   }

@@ -66,12 +66,14 @@ namespace te
           \brief Destructor
         */
         virtual ~PaperModel();
-
-        virtual void draw( ContextItem context );
-
+        
         virtual te::color::RGBAColor getShadowColor();
 
         virtual void setShadowColor(te::color::RGBAColor color);
+
+        virtual te::color::RGBAColor getPaperColor();
+
+        virtual void setPaperColor(te::color::RGBAColor color);
 
         virtual void setPaperConfig(PaperConfig* pConfig );
 
@@ -92,6 +94,7 @@ namespace te
       te::gm::Envelope m_boxShadow;
       te::color::RGBAColor m_shadowColor;
       double m_shadowPadding;
+      te::color::RGBAColor m_paperColor;
     };
   }
 }

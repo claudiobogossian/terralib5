@@ -42,7 +42,6 @@
 #include "../../../qt/widgets/canvas/MultiThreadMapDisplay.h"
 #include "../../../common/TreeItem.h"
 #include "../../../srs/Converter.h"
-#include "../../../qt/widgets/tools/ZoomWheel.h"
 #include "../../../maptools/Utils.h"
 #include "../../item/MapController.h"
 #include "../../../qt/widgets/tools/Pan.h"
@@ -89,7 +88,8 @@ te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
   m_tool(0),
   m_wMargin(0),
   m_hMargin(0),
-  m_layer(0)
+  m_layer(0),
+  m_changeLayer(false)
 {    
   m_nameClass = std::string(this->metaObject()->className());
   
@@ -117,8 +117,8 @@ te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
   connect(m_mapDisplay,SIGNAL(drawLayersFinished(const QMap<QString, QString>&)),
     this,SLOT(onDrawLayersFinished(const QMap<QString, QString>&)));
 
-  te::qt::widgets::ZoomWheel* zoom = new te::qt::widgets::ZoomWheel(m_mapDisplay);
-  m_mapDisplay->installEventFilter(zoom);
+  m_zoomWheel = new te::qt::widgets::ZoomWheel(m_mapDisplay);
+  m_mapDisplay->installEventFilter(m_zoomWheel);
 
   setWidget(m_mapDisplay);
     
@@ -131,10 +131,12 @@ te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
 
 te::layout::MapItem::~MapItem()
 {
-  if(m_tool)
+  clearCurrentTool();
+  if(m_zoomWheel)
   {
-    delete m_tool;
-    m_tool = 0;
+    m_mapDisplay->removeEventFilter(m_zoomWheel);
+    delete m_zoomWheel;
+    m_zoomWheel = 0;
   }
 }
 
@@ -232,29 +234,45 @@ void te::layout::MapItem::paint( QPainter * painter, const QStyleOptionGraphicsI
     return;
   }
 
+  drawBackground( painter );
+
+  drawMap(painter);
+
+  drawBorder(painter);
+
+  //Draw Selection
+  if (option->state & QStyle::State_Selected)
+  {
+    drawSelection(painter);
+  }
+}
+
+void te::layout::MapItem::drawMap( QPainter * painter )
+{
+  if(!m_mapDisplay || !painter)
+    return;
+
   QRectF boundRect;
   boundRect = boundingRect();
 
-  double newZoomFactor = Context::getInstance().getZoomFactor();
-
-  QSize currentSize = m_mapDisplay->size();
-  QSize newSize = m_mapSize * newZoomFactor;
-  if(currentSize != newSize)
+  if( m_pixmap.isNull() || m_changeLayer)
   {
-    m_mapDisplay->resize(m_mapSize * newZoomFactor);
+    m_changeLayer = false;
+        
+    m_pixmap = QPixmap(m_mapDisplay->width(), m_mapDisplay->height());
+    m_pixmap.fill(Qt::transparent);
+
+    QPainter localPainter(&m_pixmap);
+    m_mapDisplay->render(&localPainter);
+    localPainter.end();
+
+    QImage image = m_pixmap.toImage();
+    image = image.mirrored();
+
+    m_pixmap = QPixmap::fromImage(image);
+
+    //scene()->update();
   }
-
-  m_pixmap = QPixmap(m_mapDisplay->width(), m_mapDisplay->height());
-  m_pixmap.fill(Qt::transparent);
-
-  QPainter localPainter(&m_pixmap);
-  m_mapDisplay->render(&localPainter);
-  localPainter.end();
-
-  QImage image = m_pixmap.toImage();
-  image = image.mirrored();
-
-  m_pixmap = QPixmap::fromImage(image);
 
   painter->save();
   painter->setClipRect(boundRect);
@@ -267,14 +285,6 @@ void te::layout::MapItem::paint( QPainter * painter, const QStyleOptionGraphicsI
   painter->drawRect(boundRect);
 
   painter->restore();
-
-  drawBorder(painter);
-
-  //Draw Selection
-  if (option->state & QStyle::State_Selected)
-  {
-    drawSelection(painter);
-  }
 }
 
 void te::layout::MapItem::dropEvent( QGraphicsSceneDragDropEvent * event )
@@ -367,7 +377,7 @@ void te::layout::MapItem::mouseMoveEvent( QGraphicsSceneMouseEvent * event )
   if(!iUtils->isCurrentMapTools())
   {
     clearCurrentTool();
-    QGraphicsItem::mouseMoveEvent(event);
+    ParentItem::mouseMoveEvent(event);
   }
   else
   {
@@ -393,7 +403,7 @@ void te::layout::MapItem::mousePressEvent( QGraphicsSceneMouseEvent * event )
   if(!iUtils->isCurrentMapTools())
   {
     clearCurrentTool();
-    QGraphicsItem::mousePressEvent(event);
+    ParentItem::mousePressEvent(event);
   }
   else
   {
@@ -419,7 +429,7 @@ void te::layout::MapItem::mouseReleaseEvent( QGraphicsSceneMouseEvent * event )
   if(!iUtils->isCurrentMapTools())
   {
     clearCurrentTool();
-    QGraphicsItem::mouseReleaseEvent(event); 
+    ParentItem::mouseReleaseEvent(event); 
   }
   else
   {
@@ -435,11 +445,6 @@ void te::layout::MapItem::mouseReleaseEvent( QGraphicsSceneMouseEvent * event )
     this->update();
   }
   refresh();
-}
-
-void te::layout::MapItem::resizeEvent( QGraphicsSceneResizeEvent * event )
-{
-  QGraphicsProxyWidget::resizeEvent(event);
 }
 
 void te::layout::MapItem::getMimeData( const QMimeData* mime )
@@ -516,6 +521,8 @@ void te::layout::MapItem::onDrawLayersFinished( const QMap<QString, QString>& er
   }
 
   generateMapPixmap();
+
+  m_changeLayer = true;
 
   update();
 }
@@ -682,4 +689,17 @@ QRectF te::layout::MapItem::boundingRect() const
  
   return rect;
 }
+
+void te::layout::MapItem::changeZoomFactor( double currentZoomFactor )
+{
+  QSize currentSize = m_mapDisplay->size();
+  QSize newSize = m_mapSize * currentZoomFactor;
+  if(currentSize != newSize)
+  {
+    m_mapDisplay->resize(newSize);
+    m_changeLayer = true;
+  }
+}
+
+
 

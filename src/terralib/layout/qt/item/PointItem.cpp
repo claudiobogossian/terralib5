@@ -37,6 +37,8 @@
 #include "../../item/PointModel.h"
 #include "../../core/enum/EnumPointType.h"
 
+#include <cmath>
+
 te::layout::PointItem::PointItem( ItemController* controller, Observable* o ) :
   ObjectItem(controller, o)
 {
@@ -54,6 +56,12 @@ void te::layout::PointItem::paint( QPainter * painter, const QStyleOptionGraphic
   Q_UNUSED( widget );
   if ( !painter )
   {
+    return;
+  }
+
+  if(m_resizeMode)
+  {
+    ObjectItem::paint(painter, option, widget);
     return;
   }
 
@@ -110,29 +118,30 @@ void te::layout::PointItem::drawStar( QPainter * painter )
 
   painter->save();
 
-  double half = model->getShapeSize() / 2.;
+  double halfW = boundingRect().width() / 4.;
+  double halfH = boundingRect().height() / 4.;
 
   double centerX = boundingRect().center().x();
   double centerY = boundingRect().center().y();
 
-  double x = centerX - half;
-  double y = centerY + half;
-  double w = model->getShapeSize();
-  double h = model->getShapeSize();
+  double x = centerX - halfW;
+  double y = centerY + halfH;
+  double w = boundingRect().width() / 2.;
+  double h = boundingRect().height() / 2.;
   
   QPainterPath rhombus_path;
 
   QPolygonF poly;
-  qreal const c = half;
+  qreal const c = halfW;
   qreal const d = w;
   bool inner = true;
   QPointF pUnion;
   for ( qreal i = 0 ; i < 2*3.14; i += 3.14/5.0, inner=!inner ) {
     qreal const f = inner ? c : d;
-    poly << QPointF( f * cos(i), f * sin(i) );
+    poly << QPointF( f * std::cos(i), f * std::sin(i) );
     if(i == 0)
     {
-      pUnion = QPointF( f * cos(i), f * sin(i) );
+      pUnion = QPointF( f * std::cos(i), f * std::sin(i) );
     }
   }
   poly << pUnion;
@@ -140,19 +149,18 @@ void te::layout::PointItem::drawStar( QPainter * painter )
 
   rhombus_path.addPolygon(poly);
 
-  QColor cpen(0,0,0);
-  QPen pn(cpen, 0, Qt::SolidLine);
+  te::color::RGBAColor clrPoint = model->getPointColor();
+
+  QColor pointColor;
+  pointColor.setRed(clrPoint.getRed());
+  pointColor.setGreen(clrPoint.getGreen());
+  pointColor.setBlue(clrPoint.getBlue());
+  pointColor.setAlpha(clrPoint.getAlpha());
+
+  QPen pn(pointColor, 0, Qt::SolidLine);
   painter->setPen(pn);
 
-  te::color::RGBAColor clrBack = model->getBackgroundColor();
-
-  QColor cbrush;
-  cbrush.setRed(clrBack.getRed());
-  cbrush.setGreen(clrBack.getGreen());
-  cbrush.setBlue(clrBack.getBlue());
-  cbrush.setAlpha(clrBack.getAlpha());
-
-  painter->setBrush(cbrush);
+  painter->setBrush(pointColor);
   painter->drawPath(rhombus_path);
 
   painter->restore();
@@ -168,31 +176,31 @@ void te::layout::PointItem::drawCircle( QPainter * painter )
 
   painter->save();
 
-  double half = model->getShapeSize() / 2.;
+  double halfW = boundingRect().width() / 4.;
+  double halfH = boundingRect().height() / 4.;
 
-  double x = boundingRect().center().x() - half;
-  double y = boundingRect().center().y() - half;
-  double w = model->getShapeSize();
-  double h = model->getShapeSize();
+  double x = boundingRect().center().x() - halfW;
+  double y = boundingRect().center().y() - halfH;
+  double w = boundingRect().width() / 2.;
+  double h = boundingRect().height() / 2.;
 
   QRectF pointRect(x, y, w, h);
 
   QPainterPath circle_path;
   circle_path.addEllipse(pointRect);
 
-  QColor cpen(0,0,0);
-  QPen pn(cpen, 0, Qt::SolidLine);
+  te::color::RGBAColor clrPoint = model->getPointColor();
+
+  QColor pointColor;
+  pointColor.setRed(clrPoint.getRed());
+  pointColor.setGreen(clrPoint.getGreen());
+  pointColor.setBlue(clrPoint.getBlue());
+  pointColor.setAlpha(clrPoint.getAlpha());
+
+  QPen pn(pointColor, 0, Qt::SolidLine);
   painter->setPen(pn);
 
-  te::color::RGBAColor clrBack = model->getBackgroundColor();
-
-  QColor cbrush;
-  cbrush.setRed(clrBack.getRed());
-  cbrush.setGreen(clrBack.getGreen());
-  cbrush.setBlue(clrBack.getBlue());
-  cbrush.setAlpha(clrBack.getAlpha());
-
-  painter->setBrush(cbrush);
+  painter->setBrush(pointColor);
   painter->drawPath(circle_path);
 
   painter->restore();
@@ -207,13 +215,14 @@ void te::layout::PointItem::drawX( QPainter * painter )
   }
 
   painter->save();
+  
+  double halfW = boundingRect().width() / 4.;
+  double halfH = boundingRect().height() / 4.;
 
-  double half = model->getShapeSize() / 2.;
-
-  double x = boundingRect().center().x() - half;
-  double y = boundingRect().center().y() + half;
-  double w = model->getShapeSize();
-  double h = model->getShapeSize();
+  double x = boundingRect().center().x() - halfW;
+  double y = boundingRect().center().y() + halfH;
+  double w = boundingRect().width() / 2.;
+  double h = boundingRect().height() / 2.;
   
   QFont ft = painter->font();
   ft.setPointSizeF(w);
@@ -221,19 +230,18 @@ void te::layout::PointItem::drawX( QPainter * painter )
   QPainterPath rect_path;
   rect_path.addText(x, y, ft, "X");
 
-  QColor cpen(0,0,0);
-  QPen pn(cpen, 0, Qt::SolidLine);
+  te::color::RGBAColor clrPoint = model->getPointColor();
+
+  QColor pointColor;
+  pointColor.setRed(clrPoint.getRed());
+  pointColor.setGreen(clrPoint.getGreen());
+  pointColor.setBlue(clrPoint.getBlue());
+  pointColor.setAlpha(clrPoint.getAlpha());
+
+  QPen pn(pointColor, 0, Qt::SolidLine);
   painter->setPen(pn);
 
-  te::color::RGBAColor clrBack = model->getBackgroundColor();
-
-  QColor cbrush;
-  cbrush.setRed(clrBack.getRed());
-  cbrush.setGreen(clrBack.getGreen());
-  cbrush.setBlue(clrBack.getBlue());
-  cbrush.setAlpha(clrBack.getAlpha());
-
-  painter->setBrush(cbrush);
+  painter->setBrush(pointColor);
   painter->drawPath(rect_path);
 
   painter->restore();
@@ -248,32 +256,32 @@ void te::layout::PointItem::drawSquare( QPainter * painter )
   }
 
   painter->save();
+  
+  double halfW = boundingRect().width() / 4.;
+  double halfH = boundingRect().height() / 4.;
 
-  double half = model->getShapeSize() / 2.;
-
-  double x = boundingRect().center().x() - half;
-  double y = boundingRect().center().y() - half;
-  double w = model->getShapeSize();
-  double h = model->getShapeSize();
+  double x = boundingRect().center().x() - halfW;
+  double y = boundingRect().center().y() - halfH;
+  double w = boundingRect().width() / 2.;
+  double h = boundingRect().height() / 2.;
 
   QRectF pointRect(x, y, w, h);
 
   QPainterPath rect_path;
   rect_path.addRect(pointRect);
 
-  QColor cpen(0,0,0);
-  QPen pn(cpen, 0, Qt::SolidLine);
+  te::color::RGBAColor clrPoint = model->getPointColor();
+
+  QColor pointColor;
+  pointColor.setRed(clrPoint.getRed());
+  pointColor.setGreen(clrPoint.getGreen());
+  pointColor.setBlue(clrPoint.getBlue());
+  pointColor.setAlpha(clrPoint.getAlpha());
+
+  QPen pn(pointColor, 0, Qt::SolidLine);
   painter->setPen(pn);
 
-  te::color::RGBAColor clrBack = model->getBackgroundColor();
-
-  QColor cbrush;
-  cbrush.setRed(clrBack.getRed());
-  cbrush.setGreen(clrBack.getGreen());
-  cbrush.setBlue(clrBack.getBlue());
-  cbrush.setAlpha(clrBack.getAlpha());
-
-  painter->setBrush(cbrush);
+  painter->setBrush(pointColor);
   painter->drawPath(rect_path);
 
   painter->restore();
@@ -288,40 +296,40 @@ void te::layout::PointItem::drawRhombus( QPainter * painter )
   }
 
   painter->save();
-
-  double half = model->getShapeSize() / 2.;
-
+  
   double centerX = boundingRect().center().x();
   double centerY = boundingRect().center().y();
 
-  double x = centerX - half;
-  double y = centerY + half;
-  double w = model->getShapeSize();
-  double h = model->getShapeSize();
+  double halfW = boundingRect().width() / 4.;
+  double halfH = boundingRect().height() / 4.;
+
+  double x = centerX - halfW;
+  double y = centerY + halfH;
+  double w = boundingRect().width() / 2.;
+  double h = boundingRect().height() / 2.;
   
   QPolygonF poly;
   poly.push_back(QPoint(centerX, y));
-  poly.push_back(QPoint(centerX + half, centerY));
-  poly.push_back(QPoint(centerX, centerY - half));
+  poly.push_back(QPoint(centerX + halfW, centerY));
+  poly.push_back(QPoint(centerX, centerY - halfH));
   poly.push_back(QPoint(x, centerY));
   poly.push_back(QPoint(centerX, y));
 
   QPainterPath rhombus_path;
   rhombus_path.addPolygon(poly);
 
-  QColor cpen(0,0,0);
-  QPen pn(cpen, 0, Qt::SolidLine);
+  te::color::RGBAColor clrPoint = model->getPointColor();
+
+  QColor pointColor;
+  pointColor.setRed(clrPoint.getRed());
+  pointColor.setGreen(clrPoint.getGreen());
+  pointColor.setBlue(clrPoint.getBlue());
+  pointColor.setAlpha(clrPoint.getAlpha());
+
+  QPen pn(pointColor, 0, Qt::SolidLine);
   painter->setPen(pn);
 
-  te::color::RGBAColor clrBack = model->getBackgroundColor();
-
-  QColor cbrush;
-  cbrush.setRed(clrBack.getRed());
-  cbrush.setGreen(clrBack.getGreen());
-  cbrush.setBlue(clrBack.getBlue());
-  cbrush.setAlpha(clrBack.getAlpha());
-
-  painter->setBrush(cbrush);
+  painter->setBrush(pointColor);
   painter->drawPath(rhombus_path);
 
   painter->restore();
@@ -336,30 +344,30 @@ void te::layout::PointItem::drawCross( QPainter * painter )
   }
 
   painter->save();
-
-  double half = model->getShapeSize() / 2.;
-
+  
   double centerX = boundingRect().center().x();
   double centerY = boundingRect().center().y();
+  
+  double halfW = boundingRect().width() / 4.;
+  double halfH = boundingRect().height() / 4.;
 
-  double x = centerX - half;
-  double y = centerY + half;
-  double w = model->getShapeSize();
-  double h = model->getShapeSize();
+  double x = centerX - halfW;
+  double y = centerY + halfH;
+  double w = boundingRect().width() / 2.;
+  double h = boundingRect().height() / 2.;
     
-  QColor cpen(0,0,0);
-  QPen pn(cpen);
+  te::color::RGBAColor clrPoint = model->getPointColor();
+
+  QColor pointColor;
+  pointColor.setRed(clrPoint.getRed());
+  pointColor.setGreen(clrPoint.getGreen());
+  pointColor.setBlue(clrPoint.getBlue());
+  pointColor.setAlpha(clrPoint.getAlpha());
+
+  QPen pn(pointColor, 0, Qt::SolidLine);
   painter->setPen(pn);
 
-  te::color::RGBAColor clrBack = model->getBackgroundColor();
-
-  QColor cbrush;
-  cbrush.setRed(clrBack.getRed());
-  cbrush.setGreen(clrBack.getGreen());
-  cbrush.setBlue(clrBack.getBlue());
-  cbrush.setAlpha(clrBack.getAlpha());
-
-  painter->setBrush(cbrush);
+  painter->setBrush(pointColor);
   painter->drawLine(x, centerY, x + w, centerY);
   painter->drawLine(centerX, y, centerX, y - h);
 

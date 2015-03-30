@@ -45,6 +45,11 @@ namespace te
         LegendChildItem( ItemController* controller, Observable* o );
 
         virtual ~LegendChildItem();
+
+        /*!
+          \brief Mandatory implementation from QGraphicsItem
+         */
+        virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
     };
   }
 }

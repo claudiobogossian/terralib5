@@ -999,9 +999,19 @@ void te::qt::widgets::DataSetTableView::renameColumn(const int& column)
       throw Exception(tr("Fail to get data source.").toStdString());
 
     if(!dsrc->isPropertyNameValid(newName))
-      throw Exception(tr("Invalid column name. Choose another.").toStdString());
+    {
+      QMessageBox::warning(this, tr("TerraView"), tr("Invalid column name. Choose another."));
+      return;
+    }
 
-    dsrc->renameProperty(m_layer->getSchema()->getName(), oldName, newName);
+    try
+    {
+      dsrc->renameProperty(m_layer->getSchema()->getName(), oldName, newName);
+    }
+    catch (const te::common::Exception& e)
+    {
+      QMessageBox::information(this, tr("Rename Column"), tr("The column could not be renamed: ") + e.what());
+    }
 
     m_layer->setOutOfDate();
 

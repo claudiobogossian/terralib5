@@ -29,6 +29,7 @@
 #define __TERRALIB_VP_INTERNAL_GEOGRAPHIC_QUERY_H
 
 //Terralib
+#include "../common/Exception.h"
 #include "../dataaccess/dataset/DataSet.h"
 #include "../datatype/Property.h"
 #include "../geometry/Geometry.h"
@@ -60,7 +61,7 @@ namespace te
       
       ~GeometricOpQuery();
       
-      bool run();
+      bool run() throw(te::common::Exception);
 
     protected:
 

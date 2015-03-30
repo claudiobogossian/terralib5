@@ -302,8 +302,12 @@ void te::attributefill::VectorToVectorDialog::onOkPushButtonClicked()
 
   if(v2v->hasErrors())
   {
-    QString err(tr("Some errors occurred during execution. The error log can be found at: "));
+    QString err(tr("Some errors occurred during execution."));
+#ifdef TERRALIB_LOGGER_ENABLED
+    err.append(tr(" The error log can be found at: "));
     err += m_logPath.c_str();
+#endif //TERRALIB_LOGGER_ENABLED
+
     QMessageBox::warning(this, tr("Vector to Vector"), err);
   }
 
