@@ -406,7 +406,7 @@ void te::da::GetOIDPropertyPos(const te::da::DataSetType* type, std::vector<std:
     ppos.push_back(type->getPropertyPosition(oidprops[i]));
 }
 
-te::da::ObjectIdSet* te::da::GenerateOIDSet(te::da::DataSet* dataset, const te::da::DataSetType* type)
+te::da::ObjectIdSet* te::da::GenerateOIDSet(te::da::DataSet* dataset, const te::da::DataSetType* type, const bool& setGeom)
 {
   assert(dataset);
   assert(type);
@@ -414,10 +414,10 @@ te::da::ObjectIdSet* te::da::GenerateOIDSet(te::da::DataSet* dataset, const te::
   std::vector<std::string> oidprops;
   GetOIDPropertyNames(type, oidprops);
 
-  return te::da::GenerateOIDSet(dataset, oidprops);
+  return te::da::GenerateOIDSet(dataset, oidprops, setGeom);
 }
 
-te::da::ObjectIdSet* te::da::GenerateOIDSet(te::da::DataSet* dataset, const std::vector<std::string>& names)
+te::da::ObjectIdSet* te::da::GenerateOIDSet(te::da::DataSet* dataset, const std::vector<std::string>& names, const bool& setGeom)
 {
   assert(dataset);
   assert(!names.empty());
@@ -435,12 +435,12 @@ te::da::ObjectIdSet* te::da::GenerateOIDSet(te::da::DataSet* dataset, const std:
   }
 
   while(dataset->moveNext())
-    oids->add(GenerateOID(dataset, names));
+    oids->add(GenerateOID(dataset, names, setGeom));
 
   return oids;
 }
 
-te::da::ObjectId* te::da::GenerateOID(te::da::DataSet* dataset, const std::vector<std::string>& names)
+te::da::ObjectId* te::da::GenerateOID(te::da::DataSet* dataset, const std::vector<std::string>& names, const bool& setGeom)
 {
   assert(dataset);
   assert(!names.empty());
@@ -451,6 +451,12 @@ te::da::ObjectId* te::da::GenerateOID(te::da::DataSet* dataset, const std::vecto
   {
     if(!dataset->isNull(names[i]))
       oid->addValue(dataset->getValue(names[i]).release());
+  }
+
+  if(setGeom)
+  {
+    std::size_t pos = te::da::GetFirstSpatialPropertyPos(dataset);
+    oid->setGeom(dataset->getGeometry(pos).release());
   }
 
   return oid;
