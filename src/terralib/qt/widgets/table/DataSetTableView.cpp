@@ -999,7 +999,10 @@ void te::qt::widgets::DataSetTableView::renameColumn(const int& column)
       throw Exception(tr("Fail to get data source.").toStdString());
 
     if(!dsrc->isPropertyNameValid(newName))
-      throw Exception(tr("Invalid column name. Choose another.").toStdString());
+    {
+      QMessageBox::warning(this, tr("TerraView"), tr("Invalid column name. Choose another."));
+      return;
+    }
 
     try
     {

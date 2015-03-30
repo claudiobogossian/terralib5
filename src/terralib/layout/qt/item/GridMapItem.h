@@ -66,11 +66,6 @@ namespace te
          */
         virtual ~GridMapItem();
         
-        /*!
-          \brief Reimplemented from ObjectItem
-         */
-        virtual void updateObserver(ContextItem context);
-
         virtual void paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
 
         virtual QRectF boundingRect();

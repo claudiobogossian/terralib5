@@ -41,6 +41,8 @@
 #include <log4cxx/logmanager.h>
 #include <log4cxx/logstring.h>
 #include <log4cxx/simplelayout.h>
+#include <log4cxx/patternlayout.h>
+#include <log4cxx/rollingfileappender.h>
 #endif
 
 #ifdef TE_QT_PLUGIN_LAYOUT_HAVE_LAYOUTEDITOR
@@ -92,20 +94,26 @@ void te::qt::plugins::layout::Plugin::startup()
   // register actions
   registerActions();
 
-  // vp log startup
+  // layout log startup
   std::string path = te::qt::af::ApplicationController::getInstance().getUserDataDir().toStdString();
   path += "/log/terralib_map_layout.log";
 
 #if defined(TERRALIB_APACHE_LOG4CXX_ENABLED) && defined(TERRALIB_LOGGER_ENABLED)
-  log4cxx::FileAppender* fileAppender = new log4cxx::FileAppender(log4cxx::LayoutPtr(new log4cxx::SimpleLayout()),
-    log4cxx::helpers::Transcoder::decode(path.c_str()), false);
+  std::string layout = "%d{ISO8601} [%t] %-5p %c - %m%n";
+  log4cxx::LogString lString(layout.begin(), layout.end());
+
+  log4cxx::FileAppender* fileAppender = new log4cxx::RollingFileAppender(log4cxx::LayoutPtr(new log4cxx::PatternLayout(lString)),
+    log4cxx::helpers::Transcoder::decode(path.c_str()), true);
 
   log4cxx::helpers::Pool p;
   fileAppender->activateOptions(p);
 
   log4cxx::BasicConfigurator::configure(log4cxx::AppenderPtr(fileAppender));
   log4cxx::Logger::getRootLogger()->setLevel(log4cxx::Level::getDebug());
+
   log4cxx::LoggerPtr logger = log4cxx::Logger::getLogger("maplayout");
+  logger->setAdditivity(false);
+  logger->addAppender(fileAppender);
 #endif
   m_initialized = true;
 }
