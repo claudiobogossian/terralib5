@@ -239,7 +239,8 @@ void te::qt::widgets::ClippingWizardPage::getDimensionClipping(int& x, int& y, i
   height = m_ui->m_heightLineEdit->text().toInt();
 }
 
-void te::qt::widgets::ClippingWizardPage::getLayerClipping(te::gm::GeometryCollection*& geomColl)
+void te::qt::widgets::ClippingWizardPage::getLayerClipping(
+  std::auto_ptr< te::gm::GeometryCollection >& geomColl)
 {
   //get layer
   int index = m_ui->m_layerComboBox->currentIndex();
@@ -251,7 +252,7 @@ void te::qt::widgets::ClippingWizardPage::getLayerClipping(te::gm::GeometryColle
   te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(dsType.get());
   std::string name = geomProp->getName();
 
-  geomColl = new te::gm::GeometryCollection(0, geomProp->getGeometryType(), geomProp->getSRID());
+  geomColl.reset( new te::gm::GeometryCollection(0, geomProp->getGeometryType(), geomProp->getSRID()) );
 
   if(m_ui->m_aggregAllRadioButton->isChecked())
   {
