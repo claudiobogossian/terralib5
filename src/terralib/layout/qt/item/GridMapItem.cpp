@@ -35,6 +35,7 @@
 #include "../../../geometry/Envelope.h"
 #include "../../../common/STLUtils.h"
 #include "../../item/GridMapModel.h"
+#include "MapItem.h"
 
 //Qt
 #include <QStyleOptionGraphicsItem>
@@ -62,6 +63,8 @@ void te::layout::GridMapItem::paint( QPainter * painter, const QStyleOptionGraph
   {
     return;
   }
+
+  recalculateBoundingRect();
 
   drawBackground(painter);
   
@@ -123,23 +126,6 @@ void te::layout::GridMapItem::paint( QPainter * painter, const QStyleOptionGraph
   }
 }
 
-QRectF te::layout::GridMapItem::boundingRect()
-{
-  if(parentItem())
-  {
-    if(parentItem()->boundingRect().isValid())
-    {
-      m_rect = parentItem()->boundingRect();
-      m_rect.setWidth(m_rect.width() + m_maxWidthTextMM);
-      m_rect.setX(m_rect.x() - m_maxWidthTextMM);
-      m_rect.setHeight(m_rect.height() + m_maxHeigthTextMM);
-      m_rect.setY(m_rect.y() - m_maxHeigthTextMM);
-      return m_rect;
-    }    
-  }
-  return m_rect;
-}
-
 void te::layout::GridMapItem::drawText( QPointF point, QPainter* painter, std::string text, bool displacementLeft /*= false*/, bool displacementRight /*= false*/ )
 {
   painter->save();
@@ -184,3 +170,38 @@ void te::layout::GridMapItem::drawText( QPointF point, QPainter* painter, std::s
 
   painter->restore();
 }
+
+void te::layout::GridMapItem::recalculateBoundingRect()
+{
+  if(parentItem()->boundingRect().isValid())
+  {
+    m_rect = parentItem()->boundingRect();
+    m_rect.setWidth(m_rect.width() + m_maxWidthTextMM);
+    m_rect.setX(m_rect.x() - m_maxWidthTextMM);
+    m_rect.setHeight(m_rect.height() + m_maxHeigthTextMM);
+    m_rect.setY(m_rect.y() - m_maxHeigthTextMM);
+  }  
+}
+
+QVariant te::layout::GridMapItem::itemChange( QGraphicsItem::GraphicsItemChange change, const QVariant & value )
+{
+  if(change == QGraphicsItem::ItemParentHasChanged)
+  {
+    GridMapModel* model = dynamic_cast<GridMapModel*>(m_model);
+    if(model)
+    {
+      if(parentItem())
+      {
+        MapItem* mapItem = dynamic_cast<MapItem*>(parentItem());
+        if(mapItem)
+        {
+          model->setMapName(mapItem->getName());
+        }
+      }
+    }
+  }
+
+  return QGraphicsItem::itemChange(change, value);
+}
+
+

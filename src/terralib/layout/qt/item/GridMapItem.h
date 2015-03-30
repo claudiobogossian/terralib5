@@ -67,12 +67,17 @@ namespace te
         virtual ~GridMapItem();
         
         virtual void paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
-
-        virtual QRectF boundingRect();
-
+        
       protected:
 
+        /*!
+          \brief Reimplemented from QGraphicsItem
+         */
+        virtual QVariant	itemChange ( QGraphicsItem::GraphicsItemChange change, const QVariant & value );
+        
         virtual void drawText( QPointF point, QPainter* painter, std::string text, bool displacementLeft = false, bool displacementRight = false);
+
+        virtual void recalculateBoundingRect();
 
         double m_maxWidthTextMM;
         double m_maxHeigthTextMM;

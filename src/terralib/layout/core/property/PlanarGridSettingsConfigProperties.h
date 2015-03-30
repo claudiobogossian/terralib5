@@ -41,7 +41,9 @@ namespace te
     class PlanarGridSettingsConfigProperties: public GridSettingsConfigProperties
     {
       public:
+
         PlanarGridSettingsConfigProperties();
+
         virtual ~PlanarGridSettingsConfigProperties(void);
       
         std::string getUnit();

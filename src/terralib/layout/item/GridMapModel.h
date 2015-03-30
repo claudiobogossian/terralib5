@@ -53,6 +53,7 @@ namespace te
 {
   namespace layout
   {
+    class GridSettingsConfigProperties;
 
     /*!
       \brief Class that represents a "Model" part of GridMap MVC component. 
@@ -73,18 +74,19 @@ namespace te
         GridMapModel();
 
         /*!
+          \brief Constructor
+        */
+        GridMapModel(GridSettingsConfigProperties* settingsConfig);
+
+        /*!
           \brief Destructor
         */ 
         virtual ~GridMapModel();
+
+        virtual Properties* getProperties() const;
+
+        virtual void updateProperties(te::layout::Properties* properties);   
         
-        virtual te::layout::Property getProperty();
-
-        virtual void updateProperty(Property property);
-
-        virtual std::string getName();
-
-        virtual void setName(std::string name);
-
         virtual bool isVisible();
 
         virtual void setVisible(bool visible);
@@ -102,20 +104,12 @@ namespace te
         virtual std::map<te::gm::Point*, std::string> getGridInfo();
 
         virtual void setVisibleAllTexts(bool visible);
-
-        virtual bool isVisibleAllTexts();
-
+        
         virtual void setMapDisplacementX(double displacement);
 
-        virtual void setMapDisplacementY(double displacement);
-
-        virtual int getPointSize();
-
-        virtual std::string getFontFamily();
-
-        virtual Properties* getProperties() const;
-
-        virtual void updateProperties(te::layout::Properties* properties);        
+        virtual void setMapDisplacementY(double displacement);  
+   
+        virtual void setMapName(std::string name);
 
       protected:
 
@@ -126,10 +120,9 @@ namespace te
         virtual void gridTextFreeMemory();
 
         std::string m_mapName;
+        GridSettingsConfigProperties* m_settingsConfig;
 
-        te::layout::Property                    m_property;
         double                                  m_mapScale;
-        std::string                             m_name;
         int                                     m_srid;
         Systematic*                             m_systematic;
         std::map<te::gm::Point*, std::string>   m_gridTexts;

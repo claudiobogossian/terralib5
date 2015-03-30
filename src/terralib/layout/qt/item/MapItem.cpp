@@ -127,6 +127,13 @@ te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
   setWindowFrameMargins(m_wMargin, m_hMargin, m_wMargin, m_hMargin);
 
   m_mapDisplay->show();
+
+  /*
+    MapItem will handle all the events. 
+    For example, the event of mouse click on the child item 
+    won't be handled by child item.
+  */
+  setHandlesChildEvents(true);
 }
 
 te::layout::MapItem::~MapItem()
@@ -233,6 +240,8 @@ void te::layout::MapItem::paint( QPainter * painter, const QStyleOptionGraphicsI
   {
     return;
   }
+
+  recalculateBoundingRect();
 
   drawBackground( painter );
 
@@ -680,16 +689,6 @@ void te::layout::MapItem::updateProperties( te::layout::Properties* properties )
   }
 }
 
-QRectF te::layout::MapItem::boundingRect() const
-{
-  MapModel* model = dynamic_cast<MapModel*>(m_model);
-  te::gm::Envelope box = model->getBox();
-  
-  QRectF rect(0., 0., box.getWidth(), box.getHeight());
- 
-  return rect;
-}
-
 void te::layout::MapItem::changeZoomFactor( double currentZoomFactor )
 {
   QSize currentSize = m_mapDisplay->size();
@@ -700,6 +699,15 @@ void te::layout::MapItem::changeZoomFactor( double currentZoomFactor )
     m_changeLayer = true;
   }
 }
+
+void te::layout::MapItem::recalculateBoundingRect()
+{
+  MapModel* model = dynamic_cast<MapModel*>(m_model);
+  te::gm::Envelope box = model->getBox();
+
+  m_rect = QRectF(0., 0., box.getWidth(), box.getHeight());   
+}
+
 
 
 
