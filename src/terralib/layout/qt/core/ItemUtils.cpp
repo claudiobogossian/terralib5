@@ -294,7 +294,7 @@ void te::layout::ItemUtils::createTextGridAsObject()
           std::map<te::gm::Point*, std::string> mapGeo = gridGeo->getGridInfo();
           gridGeo->setVisibleAllTexts(false);
           ft->setFamily(gridGeo->getFontFamily().c_str());
-          ft->setPointSize(gridGeo->getPointSize());
+          ft->setPointSize(gridGeo->getTextPointSize());
           createTextItemFromObject(mapGeo, ft);
         }
 
@@ -305,7 +305,7 @@ void te::layout::ItemUtils::createTextGridAsObject()
           std::map<te::gm::Point*, std::string> mapPlanar = gridPlanar->getGridInfo();
           gridPlanar->setVisibleAllTexts(false);
           ft->setFamily(gridPlanar->getFontFamily().c_str());
-          ft->setPointSize(gridPlanar->getPointSize());
+          ft->setPointSize(gridPlanar->getTextPointSize());
           createTextItemFromObject(mapPlanar, ft);
         }   
       }

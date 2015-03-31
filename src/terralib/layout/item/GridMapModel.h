@@ -93,6 +93,8 @@ namespace te
 
         virtual void setMapScale(double scale);
 
+        virtual double getMapScale();
+
         virtual void setWorldBox(te::gm::Envelope box);
 
         virtual void setBoxMapMM(te::gm::Envelope box);
@@ -107,11 +109,71 @@ namespace te
         
         virtual void setMapDisplacementX(double displacement);
 
+        virtual double getMapDisplacementX();
+
         virtual void setMapDisplacementY(double displacement);  
+        
+        virtual double getMapDisplacementY();
    
         virtual void setMapName(std::string name);
 
+        virtual std::string getMapName();
+
+        virtual int getSRID();
+
+        virtual te::gm::Envelope  getBoxMapMM();
+
+        virtual te::gm::Envelope getWorldBox();
+        
+        virtual double getLneHrzGap();
+
+        virtual double getLneVrtGap();
+
+        virtual double getInitialGridPointX();
+
+        virtual double getInitialGridPointY();
+
+        virtual EnumType* getGridStyle();
+
+        virtual EnumType* getLineStyle();
+
+        virtual te::color::RGBAColor  getLineColor();
+
+        virtual int getLineWidth();
+
+        virtual int getTextPointSize();
+
+        virtual std::string getFontFamily();
+
+        virtual te::color::RGBAColor getTextColor();
+
+        virtual bool isVisibleAllTexts();
+
+        virtual bool isSuperscriptText();
+
+        virtual double getLneVrtDisplacement();
+
+        virtual double getLneHrzDisplacement();
+
+        virtual bool isBottomText();
+
+        virtual bool isLeftText();
+
+        virtual bool isRightText();
+
+        virtual bool isTopText();
+
+        virtual bool isBottomRotateText();
+
+        virtual bool isLeftRotateText();
+
+        virtual bool isRightRotateText();
+
+        virtual bool isTopRotateText();
+
       protected:
+
+        virtual void init();
 
         virtual void visitDependent(ContextItem context);
 
@@ -119,55 +181,57 @@ namespace te
 
         virtual void gridTextFreeMemory();
 
-        std::string m_mapName;
-        GridSettingsConfigProperties* m_settingsConfig;
+        std::string                             m_mapName;
+        GridSettingsConfigProperties*           m_settingsConfig;
 
         double                                  m_mapScale;
         int                                     m_srid;
         Systematic*                             m_systematic;
         std::map<te::gm::Point*, std::string>   m_gridTexts;
 
-        te::gm::Envelope     m_boxMapMM;
-        te::gm::Envelope     m_boundingBoxItemMM;
-        te::gm::Envelope     m_worldBox;
-        double               m_mapDisplacementX;
-        double               m_mapDisplacementY;
+        te::gm::Envelope                        m_boxMapMM;
+        te::gm::Envelope                        m_boundingBoxItemMM;
+        te::gm::Envelope                        m_worldBox;
+        double                                  m_mapDisplacementX;
+        double                                  m_mapDisplacementY;
 
         /* Grid */
-        bool   m_visible;
-        double m_lneHrzGap;
-        double m_lneVrtGap;
-        double m_initialGridPointX; 
-        double m_initialGridPointY;
+        bool                                    m_visible;
+        double                                  m_lneHrzGap;
+        double                                  m_lneVrtGap;
+        double                                  m_initialGridPointX; 
+        double                                  m_initialGridPointY;
 
         /* Just one is visible */
-        EnumType* m_gridStyle;
+        EnumType*                               m_gridStyle;
 
         /* Line */
-        EnumType*  m_lineStyle;
-        te::color::RGBAColor    m_lineColor;
-        int                     m_lineWidth;
+        EnumType*                               m_lineStyle;
+        te::color::RGBAColor                    m_lineColor;
+        int                                     m_lineWidth;
 
         /* Text: Basic Configuration */
-        int    m_pointTextSize;
-        std::string m_fontText;
-        te::color::RGBAColor  m_textColor;
+        int                                     m_pointTextSize;
+        std::string                             m_fontText;
+        te::color::RGBAColor                    m_textColor;
 
         /* Text: Advanced configuration */
-        bool   m_visibleAllTexts;
-        bool m_superscriptText;
-        double m_lneVrtDisplacement;
-        double m_lneHrzDisplacement;
-        bool   m_bottomText;
-        bool   m_leftText;
-        bool   m_rightText;
-        bool   m_topText;
-        bool   m_bottomRotateText;
-        bool   m_leftRotateText;
-        bool   m_rightRotateText;
-        bool   m_topRotateText;  
+        bool                                    m_visibleAllTexts;
+        bool                                    m_superscriptText;
+        double                                  m_lneVrtDisplacement;
+        double                                  m_lneHrzDisplacement;
+        bool                                    m_bottomText;
+        bool                                    m_leftText;
+        bool                                    m_rightText;
+        bool                                    m_topText;
+        bool                                    m_bottomRotateText;
+        bool                                    m_leftRotateText;
+        bool                                    m_rightRotateText;
+        bool                                    m_topRotateText;  
     };
   }
 }
 
 #endif
+
+

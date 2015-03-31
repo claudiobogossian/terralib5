@@ -94,7 +94,9 @@ te::layout::EnumModeType::EnumModeType() :
   m_modeCreateBalloon(0),
   m_modeCreateBarCode(0),
   m_modeCreateGridMap(0),
-  m_coordWait(0)
+  m_coordWait(0),
+  m_modeCreateGridPlanar(0),
+  m_modeCreateGridGeodesic(0)
 {
   init();
 }
@@ -432,6 +434,18 @@ te::layout::EnumModeType::~EnumModeType()
     delete m_coordWait;
     m_coordWait = 0;
   }
+
+  if(m_modeCreateGridPlanar)
+  {
+    delete m_modeCreateGridPlanar;
+    m_modeCreateGridPlanar = 0;
+  }
+
+  if(m_modeCreateGridGeodesic)
+  {
+    delete m_modeCreateGridGeodesic;
+    m_modeCreateGridGeodesic = 0;
+  }
 }
 
 void te::layout::EnumModeType::init()
@@ -762,6 +776,16 @@ void te::layout::EnumModeType::init()
   m_coordWait->setLabel("Wait View");
   m_coordWait->setType(te::layout::EnumAction);
   m_enums.push_back(m_coordWait);
+
+  m_modeCreateGridPlanar = new EnumType(68, "Create Grid Planar", this);
+  m_modeCreateGridPlanar->setLabel("Create Grid Planar");
+  m_modeCreateGridPlanar->setType(te::layout::EnumCreate);
+  m_enums.push_back(m_modeCreateGridPlanar);
+
+  m_modeCreateGridGeodesic = new EnumType(69, "Create Grid Geodesic", this);
+  m_modeCreateGridGeodesic->setLabel("Create Grid Geodesic");
+  m_modeCreateGridGeodesic->setType(te::layout::EnumCreate);
+  m_enums.push_back(m_modeCreateGridGeodesic);
 }
 
 te::layout::EnumType* te::layout::EnumModeType::getModeSelectByBox() const
@@ -1093,3 +1117,16 @@ te::layout::EnumType* te::layout::EnumModeType::getModeCreateGridMap() const
 {
   return m_modeCreateGridMap;
 }
+
+te::layout::EnumType* te::layout::EnumModeType::getModeCreateGridPlanar() const
+{
+  return m_modeCreateGridPlanar;
+}
+
+te::layout::EnumType* te::layout::EnumModeType::getModeCreateGridGeodesic() const
+{
+  return m_modeCreateGridGeodesic;
+}
+
+
+

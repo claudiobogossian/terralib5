@@ -183,14 +183,14 @@ te::layout::Properties* te::layout::MapGridModel::getProperties() const
 
   if(m_gridPlanar)
   {
-    Property propPlanar = m_gridPlanar->getProperty();
-    pro_grid.addSubProperty(propPlanar);
+    /*Property propPlanar = m_gridPlanar->getProperty();
+    pro_grid.addSubProperty(propPlanar);*/
   }
 
   if(m_gridGeodesic)
   {
-    Property propGeodesic = m_gridGeodesic->getProperty();
-    pro_grid.addSubProperty(propGeodesic);
+    /*Property propGeodesic = m_gridGeodesic->getProperty();
+    pro_grid.addSubProperty(propGeodesic);*/
   }
 
   m_properties->addProperty(pro_grid);
@@ -216,14 +216,14 @@ void te::layout::MapGridModel::updateProperties( te::layout::Properties* propert
 
   if(!pro_grid_planar.isNull())
   {
-    m_gridPlanar->updateProperty(pro_grid_planar);
+    //m_gridPlanar->updateProperty(pro_grid_planar);
   }
 
   Property pro_grid_geodesic = pro_grid.containsSubProperty(m_geodesicGridProperties->getName());
 
   if(!pro_grid_geodesic.isNull())
   {
-    m_gridGeodesic->updateProperty(pro_grid_geodesic);
+    //m_gridGeodesic->updateProperty(pro_grid_geodesic);
   }
 }
 

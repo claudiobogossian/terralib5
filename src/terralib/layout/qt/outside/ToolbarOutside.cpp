@@ -88,7 +88,7 @@ te::layout::ToolbarOutside::ToolbarOutside( OutsideController* controller, Obser
   m_optionTitle("text_title"),
   m_optionBalloon("text_balloon"),
   m_optionBarCode("text_barCode"),
-  m_optionGridMap("texte_gridMap"),
+  m_optionGridMap("text_gridMap"),
   m_optionAlignLeft("align_left"),
   m_optionAlignRight("align_right"),
   m_optionAlignTop("align_top"),

@@ -695,7 +695,9 @@ void te::layout::MapItem::changeZoomFactor( double currentZoomFactor )
   QSize newSize = m_mapSize * currentZoomFactor;
   if(currentSize != newSize)
   {
-    m_mapDisplay->resize(newSize);
+    QPointF pt = scenePos();
+    //QWidget::resize(): causes the component return to starting position
+    m_mapDisplay->setGeometry(pt.x(), pt.y(), newSize.width(), newSize.height());
     m_changeLayer = true;
   }
 }

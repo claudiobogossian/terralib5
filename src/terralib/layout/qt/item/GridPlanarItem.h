@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file GridMapItem.h
+  \file GridPlanarItem.h
    
    \brief Class that represents a graphic GridMap. 
       Its coordinate system is the same of scene (millimeters). 
@@ -27,11 +27,11 @@
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_GRIDMAP_ITEM_H 
-#define __TERRALIB_LAYOUT_INTERNAL_GRIDMAP_ITEM_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_GRIDPLANAR_ITEM_H 
+#define __TERRALIB_LAYOUT_INTERNAL_GRIDPLANAR_ITEM_H
 
 // TerraLib
-#include "ObjectItem.h"
+#include "GridMapItem.h"
 #include "../../core/Config.h"
 
 namespace te
@@ -49,7 +49,7 @@ namespace te
 
 	    \sa te::layout::ObjectItem
 	  */
-    class TELAYOUTEXPORT GridMapItem : public ObjectItem
+    class TELAYOUTEXPORT GridPlanarItem : public GridMapItem
     {
       public:
 
@@ -59,31 +59,16 @@ namespace te
           \param controller "Controller" part of MVC component
           \param o "Model" part of MVC component
         */ 
-        GridMapItem( ItemController* controller, Observable* o );
+        GridPlanarItem( ItemController* controller, Observable* o );
 
         /*!
           \brief Destructor
          */
-        virtual ~GridMapItem();
-        
-        virtual void paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
+        virtual ~GridPlanarItem();
         
       protected:
-
-        /*!
-          \brief Reimplemented from QGraphicsItem
-         */
-        virtual QVariant	itemChange ( QGraphicsItem::GraphicsItemChange change, const QVariant & value );
-
+        
         virtual void drawGrid(QPainter* painter);
-                
-        virtual void drawText( QPointF point, QPainter* painter, std::string text, bool displacementLeft = false, bool displacementRight = false);
-
-        virtual void recalculateBoundingRect();
-
-        double m_maxWidthTextMM;
-        double m_maxHeigthTextMM;
-        double m_onePointMM;
     };
   }
 }

@@ -39,8 +39,8 @@ te::layout::EnumObjectType::EnumObjectType() :
   m_objectInspectorWindow(0),
   m_toolbar(0),
   m_gridSettings(0),
-  m_gridPlanar(0),
-  m_gridGeodesic(0),
+  m_gridPlanarItem(0),
+  m_gridGeodesicItem(0),
   m_itemGroup(0),
   m_scaleItem(0),
   m_pageSetup(0),
@@ -126,18 +126,18 @@ te::layout::EnumObjectType::~EnumObjectType()
     m_gridSettings = 0;
   }
 
-  if(m_gridPlanar)
+  if(m_gridPlanarItem)
   {
-    delete m_gridPlanar;
-    m_gridPlanar = 0;
+    delete m_gridPlanarItem;
+    m_gridPlanarItem = 0;
   }
 
-  if(m_gridGeodesic)
+  if(m_gridGeodesicItem)
   {
-    delete m_gridGeodesic;
-    m_gridGeodesic = 0;
+    delete m_gridGeodesicItem;
+    m_gridGeodesicItem = 0;
   }
-
+  
   if(m_itemGroup)
   {
     delete m_itemGroup;
@@ -294,11 +294,11 @@ void te::layout::EnumObjectType::init()
   m_gridSettings  = new EnumType(10, "Grid_Settings", this);
   m_enums.push_back(m_gridSettings);
 
-  m_gridPlanar = new EnumType(11, "Grid_Planar", this);
-  m_enums.push_back(m_gridPlanar);
+  m_gridPlanarItem = new EnumType(11, "Grid_Planar_Item", this);
+  m_enums.push_back(m_gridPlanarItem);
 
-  m_gridGeodesic = new EnumType(12, "Grid_Geodesic", this);
-  m_enums.push_back(m_gridGeodesic);
+  m_gridGeodesicItem = new EnumType(12, "Grid_Geodesic_Item", this);
+  m_enums.push_back(m_gridGeodesicItem);
 
   m_textItem = new EnumType(15, "Text_Item", this);
   m_enums.push_back(m_textItem);
@@ -436,14 +436,14 @@ te::layout::EnumType* te::layout::EnumObjectType::getGridSettings() const
   return m_gridSettings;
 }
 
-te::layout::EnumType* te::layout::EnumObjectType::getGridPlanar() const
+te::layout::EnumType* te::layout::EnumObjectType::getGridPlanarItem() const
 {
-  return m_gridPlanar;
+  return m_gridPlanarItem;
 }
 
-te::layout::EnumType* te::layout::EnumObjectType::getGridGeodesic() const
+te::layout::EnumType* te::layout::EnumObjectType::getGridGeodesicItem() const
 {
-  return m_gridGeodesic;
+  return m_gridGeodesicItem;
 }
 
 te::layout::EnumType* te::layout::EnumObjectType::getItemGroup() const

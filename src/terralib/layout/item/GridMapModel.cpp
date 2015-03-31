@@ -71,16 +71,7 @@ te::layout::GridMapModel::GridMapModel() :
   m_rightRotateText(false),
   m_topRotateText(false)
 {
-  m_gridStyle = Enums::getInstance().getEnumGridStyleType()->getStyleNone();
-  m_lineStyle = Enums::getInstance().getEnumLineStyleType()->getStyleNone();
-
-  m_type = Enums::getInstance().getEnumObjectType()->getGridMapItem();
-
-  m_borderColor = te::color::RGBAColor(0, 0, 0, 255);
-  m_box = te::gm::Envelope(0., 0., 20., 20.);
-  m_border = false;
-
-  m_settingsConfig = new GridSettingsConfigProperties;
+  init();
 }
 
  te::layout::GridMapModel::GridMapModel( GridSettingsConfigProperties* settingsConfig ) :
@@ -114,6 +105,11 @@ te::layout::GridMapModel::GridMapModel() :
   m_rightRotateText(false),
   m_topRotateText(false)
 {
+  init();
+}
+
+void te::layout::GridMapModel::init()
+{
   m_gridStyle = Enums::getInstance().getEnumGridStyleType()->getStyleNone();
   m_lineStyle = Enums::getInstance().getEnumLineStyleType()->getStyleNone();
 
@@ -122,6 +118,9 @@ te::layout::GridMapModel::GridMapModel() :
   m_borderColor = te::color::RGBAColor(0, 0, 0, 255);
   m_box = te::gm::Envelope(0., 0., 20., 20.);
   m_border = false;
+
+  m_lineColor  = te::color::RGBAColor(0, 0, 0, 255);
+  m_textColor = te::color::RGBAColor(0, 0, 0, 255);
 
   if(!m_settingsConfig)
   {
@@ -550,6 +549,157 @@ void te::layout::GridMapModel::setMapName( std::string name )
 {
   m_mapName = name;
 }
+
+double te::layout::GridMapModel::getMapDisplacementX()
+{
+  return m_mapDisplacementX;
+}
+
+double te::layout::GridMapModel::getMapDisplacementY()
+{
+  return m_mapDisplacementY;
+}
+
+std::string te::layout::GridMapModel::getMapName()
+{
+  return m_mapName;
+}
+
+double te::layout::GridMapModel::getMapScale()
+{
+  return m_mapScale;
+}
+
+int te::layout::GridMapModel::getSRID()
+{
+  return m_srid;
+}
+
+te::gm::Envelope te::layout::GridMapModel::getBoxMapMM()
+{
+  return m_boxMapMM;
+}
+
+te::gm::Envelope te::layout::GridMapModel::getWorldBox()
+{
+  return m_worldBox;
+}
+
+double te::layout::GridMapModel::getLneHrzGap()
+{
+  return m_lneHrzGap;
+}
+
+double te::layout::GridMapModel::getLneVrtGap()
+{
+  return m_lneVrtGap;
+}
+
+double te::layout::GridMapModel::getInitialGridPointX()
+{
+  return m_initialGridPointX;
+}
+
+double te::layout::GridMapModel::getInitialGridPointY()
+{
+  return m_initialGridPointY;
+}
+
+te::layout::EnumType* te::layout::GridMapModel::getGridStyle()
+{
+  return m_gridStyle;
+}
+
+te::layout::EnumType* te::layout::GridMapModel::getLineStyle()
+{
+  return m_lineStyle;
+}
+
+te::color::RGBAColor te::layout::GridMapModel::getLineColor()
+{
+  return m_lineColor;
+}
+
+int te::layout::GridMapModel::getLineWidth()
+{
+  return m_lineWidth;
+}
+
+int te::layout::GridMapModel::getTextPointSize()
+{
+  return m_pointTextSize;
+}
+
+std::string te::layout::GridMapModel::getFontFamily()
+{
+  return m_fontText;
+}
+
+te::color::RGBAColor te::layout::GridMapModel::getTextColor()
+{
+  return m_textColor;
+}
+
+bool te::layout::GridMapModel::isVisibleAllTexts()
+{
+  return m_visibleAllTexts;
+}
+
+bool te::layout::GridMapModel::isSuperscriptText()
+{
+  return m_superscriptText;
+}
+
+double te::layout::GridMapModel::getLneVrtDisplacement()
+{
+  return m_lneVrtDisplacement;
+}
+
+double te::layout::GridMapModel::getLneHrzDisplacement()
+{
+  return m_lneHrzDisplacement;
+}
+
+bool te::layout::GridMapModel::isBottomText()
+{
+  return m_bottomText;
+}
+
+bool te::layout::GridMapModel::isLeftText()
+{
+  return m_leftText;
+}
+
+bool te::layout::GridMapModel::isRightText()
+{
+  return m_rightText;
+}
+
+bool te::layout::GridMapModel::isTopText()
+{
+  return m_topText;
+}
+
+bool te::layout::GridMapModel::isBottomRotateText()
+{
+  return m_bottomRotateText;
+}
+
+bool te::layout::GridMapModel::isLeftRotateText()
+{
+  return m_leftRotateText;
+}
+
+bool te::layout::GridMapModel::isRightRotateText()
+{
+  return m_rightRotateText;
+}
+
+bool te::layout::GridMapModel::isTopRotateText()
+{
+  return m_topRotateText;
+}
+
 
 
 

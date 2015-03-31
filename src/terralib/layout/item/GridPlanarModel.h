@@ -32,6 +32,7 @@
 #include "GridModel.h"
 #include "../core/enum/AbstractType.h"
 #include "../core/Config.h"
+#include "GridMapModel.h"
 
 namespace te
 {
@@ -39,19 +40,16 @@ namespace te
   {
     class PlanarGridSettingsConfigProperties;
 
-    class TELAYOUTEXPORT GridPlanarModel: public GridModel 
+    class TELAYOUTEXPORT GridPlanarModel: public GridMapModel 
     {
       public:
 
         GridPlanarModel();
+
         virtual ~GridPlanarModel();
 
         virtual void draw(te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box, int srid);
-
-        virtual te::layout::Property getProperty();
-
-        virtual void updateProperty(te::layout::Property property);
-
+        
        protected:
 
          virtual void drawVerticalLines(te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box);
@@ -63,8 +61,6 @@ namespace te
        protected:
 
          LayoutUnit m_unit;
-
-         PlanarGridSettingsConfigProperties* m_settingsConfig;
     };
   }
 }
