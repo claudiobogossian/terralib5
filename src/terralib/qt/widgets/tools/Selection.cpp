@@ -203,7 +203,7 @@ void te::qt::widgets::Selection::executeSelection(const te::map::AbstractLayerPt
           continue;
 
         // Feature found!
-        oids->add(te::da::GenerateOID(dataset.get(), pnames));
+        oids->add(te::da::GenerateOID(dataset.get(), pnames, true));
       }
     }
     else
@@ -222,7 +222,7 @@ void te::qt::widgets::Selection::executeSelection(const te::map::AbstractLayerPt
         if(g->contains(&point) || g->crosses(geometryFromEnvelope.get()) || geometryFromEnvelope->contains(g.get()))
         {
           // Feature found!
-          oids->add(te::da::GenerateOID(dataset.get(), pnames));
+          oids->add(te::da::GenerateOID(dataset.get(), pnames, true));
         }
       }
     }
