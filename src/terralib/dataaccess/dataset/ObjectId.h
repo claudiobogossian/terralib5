@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "../../datatype/AbstractData.h"
+#include "../../geometry/Geometry.h"
 #include "../Config.h"
 
 // Boost
@@ -82,6 +83,24 @@ namespace te
         */
         void addValue(te::dt::AbstractData* data);
 
+        /*!
+          \brief It sets the geometry for this object id.
+
+          \param geom The geometry from data set element.
+
+          \note This class will take the ownership of the given pointer.
+        */
+        void setGeom(te::gm::Geometry* geom);
+
+        /*!
+          \brief It gets the geometry from this object id.
+          
+          \return The geometry data set element.
+
+          \note The caller will NOT take the ownership of the returned pointers.
+        */
+        te::gm::Geometry* getGeom();
+
         ObjectId* clone() const;
 
         bool operator<(const ObjectId& rhs) const;
@@ -89,6 +108,8 @@ namespace te
       private:
 
         boost::ptr_vector<te::dt::AbstractData> m_data; //!< A vector of property values.
+
+        te::gm::Geometry* m_geom; //!< Geometry attribute for this element.
     };
 
   } // end namespace da
