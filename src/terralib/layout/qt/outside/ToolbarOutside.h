@@ -252,7 +252,6 @@ namespace te
       std::string m_optionMapGrid;
       std::string m_optionLegendDefault;
       std::string m_optionScale;
-      std::string m_optionGridMap;
 
       /* Map Tools */
       std::string m_optionMapZoomIn;
@@ -262,6 +261,9 @@ namespace te
       std::string m_optionMapCreateTextGrid;
       std::string m_optionMapCreateMapText;
       std::string m_optionMapCreateLegendChildAsObject;
+      std::string m_optionGridMap;
+      std::string m_optionGridPlanar;
+      std::string m_optionGridGeodesic;
       
       /* Geometry Menu */
       std::string m_optionRectangle;

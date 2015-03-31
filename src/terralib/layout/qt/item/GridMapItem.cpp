@@ -189,14 +189,17 @@ void te::layout::GridMapItem::drawText( QPointF point, QPainter* painter, std::s
 
 void te::layout::GridMapItem::recalculateBoundingRect()
 {
-  if(parentItem()->boundingRect().isValid())
+  if(parentItem())
   {
-    m_rect = parentItem()->boundingRect();
-    m_rect.setWidth(m_rect.width() + m_maxWidthTextMM);
-    m_rect.setX(m_rect.x() - m_maxWidthTextMM);
-    m_rect.setHeight(m_rect.height() + m_maxHeigthTextMM);
-    m_rect.setY(m_rect.y() - m_maxHeigthTextMM);
-  }  
+    if(parentItem()->boundingRect().isValid())
+    {
+      m_rect = parentItem()->boundingRect();
+      m_rect.setWidth(m_rect.width() + m_maxWidthTextMM);
+      m_rect.setX(m_rect.x() - m_maxWidthTextMM);
+      m_rect.setHeight(m_rect.height() + m_maxHeigthTextMM);
+      m_rect.setY(m_rect.y() - m_maxHeigthTextMM);
+    } 
+  }
 }
 
 QVariant te::layout::GridMapItem::itemChange( QGraphicsItem::GraphicsItemChange change, const QVariant & value )
