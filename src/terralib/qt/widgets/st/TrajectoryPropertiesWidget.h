@@ -87,12 +87,11 @@ namespace te
           int getId();
 
           /*!
-            \brief Returns the index of the temporal property geometry
+            \brief Returns the name of the property that holds the temporal property geometry
 
-            \return The index of the temporal property geometry
-            \note Will return an invalid index if the dataSeType hasn't been given.
+            \return The name of the property that holds the temporal property geometry
           */
-          int getGeometryId();
+          std::string getGeometryId();
 
           /*!
             \brief Adjusts the widget's components based on the given datasettype

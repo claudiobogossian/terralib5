@@ -702,8 +702,8 @@ void te::qt::widgets::TimeSliderWidget::addTrajectory(te::st::TrajectoryDataSetL
   animation->setEasingCurve(QEasingCurve::Linear);
     
   te::st::TrajectoryDataSet* dset = tl->getTrajectoryDataset().release();
-  animation->m_spatialExtent = dset->getSpatialExtent();
-  animation->m_temporalExtent = *static_cast<te::dt::TimePeriod*>(dset->getTemporalExtent());
+  //animation->m_spatialExtent = *dynamic_cast<te::gm::Envelope*>(dset->getSpatialExtent()->clone());
+  animation->m_temporalExtent = *static_cast<te::dt::TimePeriod*>(dset->getTemporalExtent()->clone());
 
   size_t size = dset->size();
   ti->m_SRID = tl->getSRID();
