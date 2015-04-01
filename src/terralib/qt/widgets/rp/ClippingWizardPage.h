@@ -99,7 +99,7 @@ namespace te
 
           void getDimensionClipping(int& x, int& y, int& width, int& height);
 
-          void getLayerClipping(te::gm::GeometryCollection*& geomColl);
+          void getLayerClipping( std::auto_ptr< te::gm::GeometryCollection >& geomColl);
 
         public slots:
 

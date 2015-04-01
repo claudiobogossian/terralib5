@@ -689,6 +689,7 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAggregByAttribute(te::da::DataSe
 #ifdef TERRALIB_LOGGER_ENABLED
         te::common::Logger::logDebug("vp", "Geometric Operation - Could not insert the aggregated value.");
 #endif //TERRALIB_LOGGER_ENABLED
+        break;
     }
     
     // inserting geometries.

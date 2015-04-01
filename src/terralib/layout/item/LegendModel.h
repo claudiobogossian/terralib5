@@ -37,6 +37,7 @@
 #include "../core/pattern/derivativevisitor/AbstractVisitor.h"
 #include "../../maptools/AbstractLayer.h"
 #include "../../maptools/Canvas.h"
+#include "../../maptools/Grouping.h"
 #include "../core/Utils.h"
 #include "../core/Font.h"
 #include "../core/Config.h"
@@ -94,9 +95,27 @@ namespace te
 
         virtual double getDisplacementBetweenSymbolAndText();
 
+        virtual double getSymbolSize();
+
+        virtual void setSymbolSize(const double& value);
+
         virtual std::map<te::gm::Point*, std::string> getCoordChildren();
 
-       protected:
+        virtual te::map::AbstractLayerPtr getLayer();
+
+        virtual Font getFont();
+
+        virtual te::color::RGBAColor getFontColor();
+
+    private:
+        
+        virtual void drawGroupingLegend(te::map::Grouping* grouping, te::map::Canvas* canvas, Utils* utils);
+
+        virtual void drawStyleLegend(te::se::Style* style, te::map::Canvas* canvas, Utils* utils);
+
+        virtual void updateBox(ContextItem context);
+
+    protected:
 
         virtual void visitDependent(ContextItem context);
 

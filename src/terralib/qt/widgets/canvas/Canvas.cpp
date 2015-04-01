@@ -2218,3 +2218,10 @@ void te::qt::widgets::Canvas::setNormalMode()
   m_painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
   m_erase = false;
 }
+
+void te::qt::widgets::Canvas::setMatrix(const QMatrix& matrix )
+{
+  m_matrix = matrix;
+
+  m_painter.setMatrix(m_matrix);
+}

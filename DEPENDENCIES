@@ -7,9 +7,12 @@ For Microsoft Visual C++ users we have prepared a zip file containing all the th
 http://www.dpi.inpe.br/terralib5-devel
 
 In that folder you will find:
-  - terralib5-3rdparty-win32.zip: all the third-party libraries for building a 32-bit version of TerraLib.
   - terralib5-3rdparty-win32-Qt4.zip: all the third-party libraries for building a 32-bit version of TerraLib with Qt 4 support.
-  - terralib5-3rdparty-win32-Qt5.zip: all the third-party libraries for building a 32-bit version of TerraLib with Qt 5 support.
+  
+  - terralib5-3rdparty-win32-msvc-2010.zip: all the third-party libraries for building a 32-bit version of TerraLib with Qt 5 support.
+  - terralib5-3rdparty-win64-msvc-2010.zip: all the third-party libraries for building a 64-bit version of TerraLib with Qt 5 support.
+  - terralib5-3rdparty-win32-msvc-2013.zip: all the third-party libraries for building a 32-bit version of TerraLib with Qt 5 support.
+  - terralib5-3rdparty-win64-msvc-2013.zip: all the third-party libraries for building a 64-bit version of TerraLib with Qt 5 support.
 
 Below is a list of third-party libraries dependencies and its versions.
 

@@ -115,16 +115,22 @@ bool  te::attributefill::VectorToVectorOp::save(std::auto_ptr<te::mem::DataSet> 
   }
   catch(te::common::Exception& e)
   {
+#ifdef TERRALIB_LOGGER_ENABLED
     std::string ex = e.what();
     ex += " | Ref: SAVE";
     te::common::Logger::logDebug("attributefill", ex.c_str());
+#endif //TERRALIB_LOGGER_ENABLED
+    
     m_hasErrors = true;
   }
   catch(std::exception& e)
   {
+#ifdef TERRALIB_LOGGER_ENABLED
     std::string ex = e.what();
     ex += " | Ref: SAVE";
     te::common::Logger::logDebug("attributefill", ex.c_str());
+#endif //TERRALIB_LOGGER_ENABLED
+    
     m_hasErrors = true;
   }
 
