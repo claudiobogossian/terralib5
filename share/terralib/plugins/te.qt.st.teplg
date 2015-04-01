@@ -7,11 +7,11 @@
             release="2013-01-01"
             engine="C++">
   <Name>te.qt.st</Name>
-  <DisplayName>ST Widgets</DisplayName>
+  <DisplayName>SpatioTemporal Plugin</DisplayName>
   <Description>This plugin .....</Description>
-  <TerraLibVersion>5.0.0-alpha.1</TerraLibVersion>
+  <TerraLibVersion>5.0.0</TerraLibVersion>
   <License xlink:href="http://www.gnu.org/licenses/lgpl-3.0-standalone.html">GNU Lesser General Public License v 3.0</License>
-  <Category>Data Access</Category>
+  <Category>SpatioTemporal Support</Category>
   <Site xlink:href="http://www.dpi.inpe.br/terralib5/wiki/doku.php?id=wiki:designimplementation"></Site>
   <Provider>
     <Name>Terralib Team</Name>

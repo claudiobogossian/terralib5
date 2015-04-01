@@ -40,11 +40,11 @@ te::qt::widgets::TemporalPropertiesWidget::TemporalPropertiesWidget(QWidget* par
   m_ui->setupUi(this);
 
   m_ui->m_typeComboBox->addItem(tr("Date Time"), QVariant(te::dt::DATETIME_TYPE));
-  m_ui->m_typeComboBox->addItem(tr("Ordinal"),  QVariant(te::dt::ORDINAL_INSTANT));
+  m_ui->m_typeComboBox->addItem(tr("Ordinal"),  QVariant(te::dt::ORDINAL_TIME_INSTANT));
   m_ui->m_typeComboBox->addItem(tr("String"),  QVariant(te::dt::STRING_TYPE));
 
-  m_ui->m_ordTypeComboBox->addItem(tr("Ordinal Instant"), QVariant(te::dt::ORDINAL_INSTANT));
-  m_ui->m_ordTypeComboBox->addItem(tr("Ordinal Period"), QVariant(te::dt::ORDINAL_PERIOD));
+  m_ui->m_ordTypeComboBox->addItem(tr("Ordinal Instant"), QVariant(te::dt::ORDINAL_TIME_INSTANT));
+  m_ui->m_ordTypeComboBox->addItem(tr("Ordinal Period"), QVariant(te::dt::ORDINAL_TIME_PERIOD));
   m_ui->m_ordTypeComboBox->addItem(tr("User defined"), QVariant(-1));
 
   m_ui->m_tempUnitComboBox->addItem(tr("Year"), QVariant(te::dt::YEAR));
@@ -139,7 +139,7 @@ void te::qt::widgets::TemporalPropertiesWidget::onTypeCBCurrentIndexChanged(int 
     m_ui->m_formatComboBox->setEnabled(true);
     m_ui->m_ordTypeComboBox->setEnabled(false);
   }
-  else if(m_ui->m_typeComboBox->itemData(index).toInt() == te::dt::ORDINAL_INSTANT)
+  else if(m_ui->m_typeComboBox->itemData(index).toInt() == te::dt::ORDINAL_TIME_INSTANT)
   {
     m_ui->m_ordTypeComboBox->setEnabled(true);
     m_ui->m_formatComboBox->setEnabled(false);

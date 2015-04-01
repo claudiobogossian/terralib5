@@ -38,54 +38,26 @@
 #include "../observation/ObservationDataSet.h"
 #include "../observation/ObservationDataSetType.h"
 
+te::st::TimeSeriesDataSet::TimeSeriesDataSet(te::da::DataSet* ds, const ObservationDataSetType& type,
+  const std::vector<std::string>& propNames)
+: m_obsDs(new ObservationDataSet(ds, type)),
+  m_vlPropNames(propNames),
+  m_id("")
+{  
+}
 
-te::st::TimeSeriesDataSet::TimeSeriesDataSet( te::da::DataSet* ds, int tPropIdx, int vPropIdx, int gPropIdx, 
-                                              int idPropIdx, const std::string& id)
-: m_obsDs(new ObservationDataSet(ds, tPropIdx, vPropIdx, gPropIdx)),
-  m_type(tPropIdx, vPropIdx, gPropIdx, idPropIdx, id),
+te::st::TimeSeriesDataSet::TimeSeriesDataSet(te::da::DataSet* ds, const ObservationDataSetType& type,
+  const std::vector<std::string>& propNames, const std::string& id)
+: m_obsDs(new ObservationDataSet(ds, type)),
+  m_vlPropNames(propNames),
   m_id(id)
-{
+{  
 }
 
-te::st::TimeSeriesDataSet::TimeSeriesDataSet(te::da::DataSet* ds, int tPropIdx, int vPropIdx, int gPropIdx, 
-                              int idPropIdx, const std::string& id, te::dt::DateTimePeriod* text)
-: m_obsDs(new ObservationDataSet(ds, tPropIdx, vPropIdx, gPropIdx, text)),
-  m_type(tPropIdx, vPropIdx, gPropIdx, idPropIdx, id),
-  m_id(id)
-{
-}
-
-te::st::TimeSeriesDataSet::TimeSeriesDataSet(te::da::DataSet* ds, const std::vector<int>& tPropIdxs, 
-                          const std::vector<int>& vPropIdxs, 
-                          int gPropIdx, int idPropIdx, const std::string& id)
-: m_obsDs(new ObservationDataSet(ds, tPropIdxs, vPropIdxs, gPropIdx)),
-  m_type(tPropIdxs, vPropIdxs, gPropIdx, idPropIdx, id),
-  m_id(id)
-{
-}
-
-te::st::TimeSeriesDataSet::TimeSeriesDataSet(te::da::DataSet* ds, const std::vector<int>& tPropIdxs, 
-                          const std::vector<int>& vPropIdxs, int gPropIdx, int idPropIdx, 
-                          const std::string& id, te::dt::DateTimePeriod* text)
-: m_obsDs(new ObservationDataSet(ds, tPropIdxs, vPropIdxs, gPropIdx, text)),
-  m_type(tPropIdxs, vPropIdxs, gPropIdx, idPropIdx, id),
-  m_id(id)
-{
-}
-
-te::st::TimeSeriesDataSet::TimeSeriesDataSet(te::da::DataSet* ds, const TimeSeriesDataSetType& type,
-                                             te::dt::DateTimePeriod* text)
-: m_obsDs(new ObservationDataSet(ds, type.getType(), text)),
-  m_type(type),
-  m_id(type.getId())
-{
-  
-}
-
-te::st::TimeSeriesDataSet::TimeSeriesDataSet( ObservationDataSet* obs, 
-                                              const TimeSeriesDataSetType& type, const std::string& id)
+te::st::TimeSeriesDataSet::TimeSeriesDataSet( ObservationDataSet* obs, const std::vector<std::string>& propNames,
+  const std::string& id)
   : m_obsDs(obs),
-    m_type(type),
+    m_vlPropNames(propNames),
     m_id(id)
 {  
 }
@@ -95,9 +67,14 @@ te::st::ObservationDataSet* te::st::TimeSeriesDataSet::getObservationSet() const
   return m_obsDs.get();
 }
 
-const te::st::TimeSeriesDataSetType& te::st::TimeSeriesDataSet::getType() const
+const std::vector<std::string>& te::st::TimeSeriesDataSet::getValuePropNames() const
 {
-  return m_type;
+  return m_vlPropNames;
+}
+
+void te::st::TimeSeriesDataSet::setValuePropNames(const std::vector<std::string>& n)
+{
+  m_vlPropNames = n;
 }
 
 std::string te::st::TimeSeriesDataSet::getId() const
@@ -163,8 +140,8 @@ bool te::st::TimeSeriesDataSet::isAfterEnd() const
 std::auto_ptr<te::dt::DateTime> te::st::TimeSeriesDataSet::getTime() const
 {
   //TO DO: arrumar pro caso quando for period dividido em duas colunas
-  int phTimePropIdx = m_type.getBeginTimePropIdx();
-  return std::auto_ptr<te::dt::DateTime>(m_obsDs->getData()->getDateTime(phTimePropIdx));
+  std::string phTimePropName = m_obsDs->getType().getBeginTimePropName();
+  return std::auto_ptr<te::dt::DateTime>(m_obsDs->getData()->getDateTime(phTimePropName));
 }
 
 std::auto_ptr<te::dt::AbstractData> te::st::TimeSeriesDataSet::getValue(std::size_t idx) const
@@ -172,9 +149,9 @@ std::auto_ptr<te::dt::AbstractData> te::st::TimeSeriesDataSet::getValue(std::siz
   return std::auto_ptr<te::dt::AbstractData>(m_obsDs->getData()->getValue(idx));
 }
 
-std::auto_ptr<te::dt::AbstractData>te::st::TimeSeriesDataSet::getValue() const
+std::auto_ptr<te::dt::AbstractData> te::st::TimeSeriesDataSet::getValue() const
 {
-  return std::auto_ptr<te::dt::AbstractData>(m_obsDs->getData()->getValue(m_type.getValuePropIdx()[0]));
+  return std::auto_ptr<te::dt::AbstractData>(m_obsDs->getData()->getValue(m_vlPropNames[0]));
 }
 
 double te::st::TimeSeriesDataSet::getDouble(std::size_t idx) const
@@ -184,7 +161,7 @@ double te::st::TimeSeriesDataSet::getDouble(std::size_t idx) const
 
 double te::st::TimeSeriesDataSet::getDouble() const
 {
-  return m_obsDs->getData()->getDouble(m_type.getValuePropIdx()[0]);
+  return m_obsDs->getData()->getDouble(m_vlPropNames[0]);
 }
 
 int te::st::TimeSeriesDataSet::getInt(std::size_t idx) const
@@ -194,25 +171,30 @@ int te::st::TimeSeriesDataSet::getInt(std::size_t idx) const
 
 int te::st::TimeSeriesDataSet::getInt() const
 {
-  return m_obsDs->getData()->getInt32(m_type.getValuePropIdx()[0]);
+  return m_obsDs->getData()->getInt32(m_vlPropNames[0]);
 }
 
 std::auto_ptr<te::gm::Geometry> te::st::TimeSeriesDataSet::getGeometry() const
 {
-  return std::auto_ptr<te::gm::Geometry>(m_obsDs->getData()->getGeometry(m_type.getGeomPropIdx()));
+  if(m_obsDs->getType().hasGeomProp())
+    return std::auto_ptr<te::gm::Geometry>(m_obsDs->getData()->getGeometry(m_obsDs->getType().getGeomPropName()));
+  else if (m_obsDs->getType().hasGeometry())
+    return std::auto_ptr<te::gm::Geometry>(dynamic_cast<te::gm::Geometry*>(m_obsDs->getType().getGeometry()->clone()));
+  return std::auto_ptr<te::gm::Geometry>();
 }
 
-te::dt::DateTimePeriod* te::st::TimeSeriesDataSet::getTemporalExtent() const
+const te::dt::DateTimePeriod* te::st::TimeSeriesDataSet::getTemporalExtent() const
 {
-  return m_obsDs->getTemporalExtent();
+  return m_obsDs->getType().getTemporalExtent();
 }
 
 std::auto_ptr<te::st::TimeSeries> te::st::TimeSeriesDataSet::getTimeSeries(te::st::AbstractTimeSeriesInterp* interp)
 {
-  return std::auto_ptr<te::st::TimeSeries>(getTimeSeries(m_type.getValuePropIdx()[0],interp));
+  return std::auto_ptr<te::st::TimeSeries>(getTimeSeries(m_vlPropNames[0],interp));
 }
 
-std::auto_ptr<te::st::TimeSeries> te::st::TimeSeriesDataSet::getTimeSeries(int idx, te::st::AbstractTimeSeriesInterp* interp)
+std::auto_ptr<te::st::TimeSeries> 
+te::st::TimeSeriesDataSet::getTimeSeries(const std::string& propN, te::st::AbstractTimeSeriesInterp* interp)
 {
   std::auto_ptr<te::st::TimeSeries> result(new TimeSeries(interp,m_id));
   te::da::DataSet* ds = m_obsDs->getData();
@@ -220,23 +202,21 @@ std::auto_ptr<te::st::TimeSeries> te::st::TimeSeriesDataSet::getTimeSeries(int i
   if(ds->moveNext())
   {
     //Get the time series location if there is one
-    if(m_type.getGeomPropIdx()>-1)
-    {
-      std::auto_ptr<te::gm::Geometry> geom(ds->getGeometry(m_type.getGeomPropIdx()));
+    std::auto_ptr<te::gm::Geometry> geom = getGeometry();
+    if(geom.get()!=0)
       result->setLocation(geom.release());
-    }
-
+    
     //Get time and value of time series
-    std::auto_ptr<te::dt::DateTime> time(ds->getDateTime(m_type.getBeginTimePropIdx()));
-    std::auto_ptr<te::dt::AbstractData> value(ds->getValue(idx));
+    std::auto_ptr<te::dt::DateTime> time(ds->getDateTime(m_obsDs->getType().getBeginTimePropName()));
+    std::auto_ptr<te::dt::AbstractData> value(ds->getValue(propN));
     result->add(time.release(), value.release());
   }
 
   while(ds->moveNext())
   {
     //Get time and value of time series
-    std::auto_ptr<te::dt::DateTime> time(ds->getDateTime(m_type.getBeginTimePropIdx()));
-    std::auto_ptr<te::dt::AbstractData> value(ds->getValue(idx));
+    std::auto_ptr<te::dt::DateTime> time(ds->getDateTime(m_obsDs->getType().getBeginTimePropName()));
+    std::auto_ptr<te::dt::AbstractData> value(ds->getValue(propN));
     result->add(time.release(), value.release());
   }
   return result;
@@ -245,7 +225,7 @@ std::auto_ptr<te::st::TimeSeries> te::st::TimeSeriesDataSet::getTimeSeries(int i
 void te::st::TimeSeriesDataSet::getTimeSeriesSet(  te::st::AbstractTimeSeriesInterp* interp, 
                                 std::vector<te::st::TimeSeries*>& result)
 {
-  std::size_t sz = m_type.getValuePropIdx().size();
+  std::size_t sz = m_vlPropNames.size();
   for(unsigned int i = 0; i<sz; ++i)
   {
     TimeSeries* ts = new TimeSeries(interp,m_id);
@@ -259,15 +239,13 @@ void te::st::TimeSeriesDataSet::getTimeSeriesSet(  te::st::AbstractTimeSeriesInt
     for(unsigned int i = 0; i<sz; ++i)
     {
       //Get the time series location if there is one
-      if(m_type.getGeomPropIdx()>-1)
-      {
-        std::auto_ptr<te::gm::Geometry> geom(ds->getGeometry(m_type.getGeomPropIdx()));
+      std::auto_ptr<te::gm::Geometry> geom = getGeometry();
+      if(geom.get()!=0)
         result[i]->setLocation(geom.release());
-      }
-
+      
       //Get time and value of time series
-      std::auto_ptr<te::dt::DateTime> time(ds->getDateTime(m_type.getBeginTimePropIdx()));
-      std::auto_ptr<te::dt::AbstractData> value(ds->getValue(m_type.getValuePropIdx()[i]));
+      std::auto_ptr<te::dt::DateTime> time(ds->getDateTime(m_obsDs->getType().getBeginTimePropName()));
+      std::auto_ptr<te::dt::AbstractData> value(ds->getValue(m_vlPropNames[i]));
       result[i]->add(time.release(), value.release());
     }
   }
@@ -277,8 +255,8 @@ void te::st::TimeSeriesDataSet::getTimeSeriesSet(  te::st::AbstractTimeSeriesInt
     for(unsigned int i = 0; i<sz; ++i)
     {
       //Get time and value of time series
-      std::auto_ptr<te::dt::DateTime> time(ds->getDateTime(m_type.getBeginTimePropIdx()));
-      std::auto_ptr<te::dt::AbstractData> value(ds->getValue(m_type.getValuePropIdx()[i]));
+      std::auto_ptr<te::dt::DateTime> time(ds->getDateTime(m_obsDs->getType().getBeginTimePropName()));
+      std::auto_ptr<te::dt::AbstractData> value(ds->getValue(m_vlPropNames[i]));
       result[i]->add(time.release(), value.release());
     }
   }

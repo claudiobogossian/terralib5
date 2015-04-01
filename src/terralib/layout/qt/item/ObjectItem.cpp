@@ -43,10 +43,9 @@
 #include <QCursor>
 #include <QStyleOptionGraphicsItem>
 
-te::layout::ObjectItem::ObjectItem( ItemController* controller, Observable* o ) :
-  ParentItem(controller, o)
+te::layout::ObjectItem::ObjectItem( ItemController* controller, Observable* o,  bool invertedMatrix ) :
+  ParentItem(controller, o, invertedMatrix)
 {
-
 }
 
 te::layout::ObjectItem::~ObjectItem()

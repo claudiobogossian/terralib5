@@ -68,13 +68,13 @@ a) We will assume that the TerraLib source tree (git clone) is located at:
    C:\terralib\codebase
 
 b) We will assume that the third party libraries, obtained from
-   http://www.dpi.inpe.br/terralib5-devel/terralib5-3rdparty-win32-Qt5.zip
+   http://www.dpi.inpe.br/terralib5-devel/terralib5-3rdparty-win32-msvc-2010.zip
    or
-   http://www.dpi.inpe.br/terralib5-devel/terralib5-3rdparty-win64-Qt5.zip
+   http://www.dpi.inpe.br/terralib5-devel/terralib5-3rdparty-win64-msvc-2010.zip
    are located at:
-   C:\terralib\3rdparty-win32-qt5
+   C:\terralib\3rdparty-win32-msvc-2010
    or
-   C:\terralib\3rdparty-win64-qt5
+   C:\terralib\3rdparty-win64-msvc-2010
 
 c) Create a folder out of the TerraLib source tree to build the binaries, for example:
    C:\terralib\build-win32
@@ -90,12 +90,12 @@ f) Then assure that the following variables are set to the locations defined abo
                                     C:\terralib\build-win64
 
 g) Then add an entry called CMAKE_PREFIX_PATH with the libraries location (separated by semicolons):
-   - Microsoft SDK;
-   - TerraLib 5 Third party path;
-   - Qt CMake.
+   - Microsoft SDK => C:/Program Files (x86)/Microsoft SDKs/Windows/v7.0A
+   - TerraLib 5 Third party path => C:/terralib/3rdparty-win32-msvc-2010
+   - Qt CMake => C:/Qt/Qt5.3.0/5.3/msvc2010_opengl/lib/cmake/Qt5
 
    Example: Press AddEntry button and inform the name CMAKE_PREFIX_PATH, type PATH and set its value as:
-   CMAKE_PREFIX_PATH => C:/Program Files (x86)/Microsoft SDKs/Windows/v7.0A;C:/terralib/3rdparty-win32-qt5;C:/Qt/Qt5.3.0/5.3/msvc2010_opengl/lib/cmake/Qt5
+   CMAKE_PREFIX_PATH => C:/Program Files (x86)/Microsoft SDKs/Windows/v7.0A;C:/terralib/3rdparty-win32-msvc-2010;C:/Qt/Qt5.3.0/5.3/msvc2010_opengl/lib/cmake/Qt5
 
 h) Then press "Configure" and if no problem occurs press "Generate".
  

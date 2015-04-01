@@ -70,7 +70,7 @@ namespace te
           \param controller "Controller" part of MVC component
           \param o "Model" part of MVC component
         */
-        ObjectItem(ItemController* controller = 0, Observable* o = 0);
+        ObjectItem(ItemController* controller = 0, Observable* o = 0, bool invertedMatrix = false);
 
         /*!
           \brief Destructor

@@ -525,17 +525,17 @@ namespace te
            break;
 
         case PG_DATE_TYPE:
-          p = new te::dt::DateTimeProperty(name, te::dt::DATE, te::dt::DAY, attNotNull, defaultValue, attNum);
+          p = new te::dt::DateTimeProperty(name, te::dt::DATE, attNotNull, defaultValue, attNum);
           break;
                   
         case PG_TIME_TYPE:
-          p = new te::dt::DateTimeProperty(name, te::dt::TIME_DURATION, te::dt::SECOND, attNotNull, defaultValue, attNum);
+          p = new te::dt::DateTimeProperty(name, te::dt::TIME_DURATION, attNotNull, defaultValue, attNum);
           break;
         
         case PG_TIMETZ_TYPE:
         case PG_TIMESTAMPTZ_TYPE:
         case PG_TIMESTAMP_TYPE:
-          p = new te::dt::DateTimeProperty(name, te::dt::TIME_INSTANT, te::dt::SECOND, attNotNull, defaultValue, attNum);
+          p = new te::dt::DateTimeProperty(name, te::dt::TIME_INSTANT, attNotNull, defaultValue, attNum);
           break;
 
         case PG_BOOL_TYPE:

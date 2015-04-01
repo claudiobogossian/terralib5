@@ -26,9 +26,13 @@
 //TerraLib
 #include "../../../dataaccess/dataset/DataSet.h"
 #include "../../../dataaccess/dataset/DataSetType.h"
+#include "../../../dataaccess/utils/Utils.h"
 #include "../../../datatype/DateTime.h"
 #include "../../../datatype/DateTimePeriod.h"
 #include "../../../datatype/DateTimeInstant.h"
+#include "../../../datatype/DateTimeProperty.h"
+#include "../../../geometry/Utils.h"
+#include "../../../geometry/GeometryProperty.h"
 
 //ST
 #include "ObservationDataSet.h"
@@ -36,80 +40,25 @@
 
 te::st::ObservationDataSet::ObservationDataSet(te::da::DataSet* ds, const ObservationDataSetType& obst) 
   : m_ds(ds),
-    m_obst(obst),
-    m_tpExtent(),
-    m_spExtent()
+    m_obst(obst)
 {
 }
 
 te::st::ObservationDataSet::ObservationDataSet(te::da::DataSet* ds, const ObservationDataSetType& obst, 
                            te::dt::DateTimePeriod* text)
   : m_ds(ds),
-    m_obst(obst),
-    m_tpExtent(text)
+    m_obst(obst)
 {
+  m_obst.setTemporalExtent(text);
 }
 
 te::st::ObservationDataSet::ObservationDataSet(te::da::DataSet* ds, const ObservationDataSetType& obst, 
-                           te::dt::DateTimePeriod* text, const te::gm::Envelope& sext)
+                           te::dt::DateTimePeriod* text, te::gm::Geometry* sext)
   : m_ds(ds),
-    m_obst(obst),
-    m_tpExtent(text),
-    m_spExtent(sext)
+    m_obst(obst)
 {
-}
-
-te::st::ObservationDataSet::ObservationDataSet(te::da::DataSet* ds, int phTimeIdx, int obsPropIdx, 
-                            int geomPropIdx)
-  : m_ds(ds),
-    m_obst(phTimeIdx, obsPropIdx, geomPropIdx),
-    m_tpExtent(),
-    m_spExtent()
-{
-}
-
-te::st::ObservationDataSet::ObservationDataSet( te::da::DataSet* ds, const std::vector<int>& phTimeIdxs, 
-                              const std::vector<int>& obsPropIdxs, int geomPropIdx)
-  : m_ds(ds),
-    m_obst(phTimeIdxs, obsPropIdxs, geomPropIdx),
-    m_tpExtent(),
-    m_spExtent()
-{
-}
-
-te::st::ObservationDataSet::ObservationDataSet( te::da::DataSet* ds, int phTimeIdx, int obsPropIdx, 
-              int geomPropIdx, te::dt::DateTimePeriod* text)
-  : m_ds(ds),
-    m_obst(phTimeIdx, obsPropIdx, geomPropIdx),
-    m_tpExtent(text)
-{
-}
-
-te::st::ObservationDataSet::ObservationDataSet( te::da::DataSet* ds, int phTimeIdx, int obsPropIdx, 
-              int geomPropIdx, te::dt::DateTimePeriod* text, const te::gm::Envelope& sext)
-  : m_ds(ds),
-    m_obst(phTimeIdx, obsPropIdx, geomPropIdx),
-    m_tpExtent(text),
-    m_spExtent(sext)
-{
-}
-
-te::st::ObservationDataSet::ObservationDataSet( te::da::DataSet* ds, const std::vector<int>& phTimeIdxs, 
-              const std::vector<int>& obsPropIdxs, int geomPropIdx, te::dt::DateTimePeriod* text)
-  : m_ds(ds),
-    m_obst(phTimeIdxs, obsPropIdxs, geomPropIdx),
-    m_tpExtent(text)
-{
-}
-
-te::st::ObservationDataSet::ObservationDataSet( te::da::DataSet* ds, const std::vector<int>& phTimeIdxs, 
-              const std::vector<int>& obsPropIdxs, int geomPropIdx, te::dt::DateTimePeriod* text, 
-              const te::gm::Envelope& sext)
-  : m_ds(ds),
-    m_obst(phTimeIdxs, obsPropIdxs, geomPropIdx),
-    m_tpExtent(text),
-    m_spExtent(sext)
-{
+  m_obst.setTemporalExtent(text);
+  m_obst.setSpatialExtent(sext);
 }
 
 te::da::DataSet* te::st::ObservationDataSet::getData() const
@@ -119,7 +68,6 @@ te::da::DataSet* te::st::ObservationDataSet::getData() const
 
 std::auto_ptr<te::da::DataSet> te::st::ObservationDataSet::release()
 {
-  delete m_tpExtent.release();
   std::auto_ptr<te::da::DataSet> result(m_ds.release());
   return result;
 }
@@ -129,29 +77,30 @@ const te::st::ObservationDataSetType& te::st::ObservationDataSet::getType() cons
   return m_obst;
 }
 
-const te::gm::Envelope& te::st::ObservationDataSet::getSpatialExtent()
+const te::gm::Geometry* te::st::ObservationDataSet::getSpatialExtent()
 {
-  if(m_spExtent.isValid())
-    return m_spExtent;
+  if(m_obst.hasSpatialExtent())
+    return m_obst.getSpatialExtent(); 
   
-  std::auto_ptr<te::gm::Envelope> env(m_ds->getExtent(m_obst.getGeomPropIdx()));
-  m_spExtent = *(env.get());
-  return m_spExtent;
+  std::size_t idx = te::da::GetPropertyPos(m_ds.get(), m_obst.getGeomPropName());
+  std::auto_ptr<te::gm::Envelope> env(m_ds->getExtent(idx));
+  m_obst.setSpatialExtent(te::gm::GetGeomFromEnvelope(env.get(), -1));
+  return m_obst.getSpatialExtent();
 }
 
-void te::st::ObservationDataSet::setSpatialExtent(const te::gm::Envelope& ext)
+void te::st::ObservationDataSet::setSpatialExtent(te::gm::Geometry* ext)
 {
-  m_spExtent = ext;
+  m_obst.setSpatialExtent(ext);
 }
 
-te::dt::DateTimePeriod* te::st::ObservationDataSet::getTemporalExtent()
+const te::dt::DateTimePeriod* te::st::ObservationDataSet::getTemporalExtent()
 {
-  return m_tpExtent.get();
+  return m_obst.getTemporalExtent(); 
 }
 
 void te::st::ObservationDataSet::setTemporalExtent(te::dt::DateTimePeriod* ext)
 {
-  m_tpExtent.reset(ext);
+  m_obst.setTemporalExtent(ext); 
 }
 
 bool te::st::ObservationDataSet::moveNext()
@@ -201,23 +150,55 @@ bool te::st::ObservationDataSet::isAfterEnd() const
 
 std::auto_ptr<te::st::Observation> te::st::ObservationDataSet::getObservation() const
 {
-  std::auto_ptr<te::dt::DateTime> phTime(m_ds->getDateTime(m_obst.getBeginTimePropIdx()));
+  std::auto_ptr<te::dt::DateTime> phTime(m_ds->getDateTime(m_obst.getBeginTimePropName()));
   std::auto_ptr<te::dt::DateTime> vlTime(0);
   std::auto_ptr<te::dt::DateTime> rsTime(0);
 
-  if(m_obst.getVlBeginTimePropIdx()>-1)
-    vlTime = m_ds->getDateTime(m_obst.getVlBeginTimePropIdx());
+  if(m_obst.hasVlTimeProp())
+    vlTime = m_ds->getDateTime(m_obst.getVlBeginTimePropInfo()->getName());
 
-  if(m_obst.getRsTimePropIdx()>-1)
-    rsTime = m_ds->getDateTime(m_obst.getRsTimePropIdx());
+  if(m_obst.hasRsTimeProp())
+    rsTime = m_ds->getDateTime(m_obst.getRsTimePropInfo()->getName());
 
   boost::ptr_vector<te::dt::AbstractData> obsData;
-  for(std::size_t i = 0; i<m_obst.getObsPropIdxs().size(); ++i)
-    obsData.push_back(m_ds->getValue(m_obst.getObsPropIdxs()[i]));
+  for(std::size_t i = 0; i<m_obst.getObsPropNames().size(); ++i)
+    obsData.push_back(m_ds->getValue(m_obst.getObsPropNames()[i]));
 
   return std::auto_ptr<te::st::Observation>(new 
-    Observation(phTime.release(),static_cast<te::dt::DateTimeInstant*>(rsTime.release()),
-                static_cast<te::dt::DateTimePeriod*>(vlTime.release()),obsData));
+    Observation(phTime.release(),
+                static_cast<te::dt::DateTimeInstant*>(rsTime.release()),
+                static_cast<te::dt::DateTimePeriod*>(vlTime.release()),
+                0, obsData));
+}
+
+const te::dt::DateTimeProperty* 
+te::st::ObservationDataSet::getBeginTimeProperty() const
+{
+  return m_obst.getBeginTimePropInfo();
+}
+
+const te::dt::DateTimeProperty* 
+te::st::ObservationDataSet::getEndTimeProperty() const
+{
+  return m_obst.getEndTimePropInfo();
+}
+
+const te::dt::DateTimeProperty* 
+  te::st::ObservationDataSet::getVlBeginTimeProperty() const
+{
+  return m_obst.getVlBeginTimePropInfo();
+}
+
+const te::dt::DateTimeProperty* 
+  te::st::ObservationDataSet::getVlEndTimeProperty() const
+{
+  return m_obst.getVlEndTimePropInfo();
+}
+
+const te::dt::DateTimeProperty* 
+  te::st::ObservationDataSet::getRsTimeProperty() const
+{
+  return m_obst.getRsTimePropInfo();
 }
 
 te::st::ObservationDataSet::~ObservationDataSet()

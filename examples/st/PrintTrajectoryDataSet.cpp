@@ -54,10 +54,10 @@ void PrintTrajectoryDataSetInfo(boost::ptr_vector<te::st::TrajectoryDataSet>& ou
 
 void PrintTrajectoryDataSetInfo(te::st::TrajectoryDataSet* output)
 {
-  te::dt::DateTimePeriod* textent = output->getTemporalExtent();
+  const te::dt::DateTimePeriod* textent = output->getTemporalExtent();
   std::cout << "Temporal Extent: " << textent->toString() << std::endl;
 
-  const te::gm::Envelope sextent = output->getSpatialExtent();
-  std::cout << "Spatial Extent: " << sextent.getLowerLeftX() << std::endl;
+  //const te::gm::Envelope sextent = output->getSpatialExtent();
+  //std::cout << "Spatial Extent: " << sextent.getLowerLeftX() << std::endl;
 }
 
