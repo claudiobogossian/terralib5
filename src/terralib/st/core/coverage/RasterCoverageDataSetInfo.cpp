@@ -29,55 +29,20 @@
 #include "RasterCoverageDataSetInfo.h"
 
 te::st::RasterCoverageDataSetInfo::RasterCoverageDataSetInfo(const te::da::DataSourceInfo& dsinfo, 
-                              const std::string& dsName, int tPropIdx, int rstPropIdx)
-  : m_obsDsInfo(dsinfo, dsName, tPropIdx, rstPropIdx),
-    m_rstPropIdx(rstPropIdx), 
-    m_time(0)
-{  
+   const std::string& dsName, const std::string& rstPropName, te::dt::DateTime* time) 
+   :  m_obsDsInfo(dsinfo, dsName),
+      m_rstPropName(rstPropName)
+{
+  m_obsDsInfo.setTime(time);
 }
 
-te::st::RasterCoverageDataSetInfo::RasterCoverageDataSetInfo(const te::da::DataSourceInfo& dsinfo, 
-                              const std::string& dsName, int rstPropIdx, te::dt::DateTime* time)
-  : m_obsDsInfo(dsinfo, dsName, -1, rstPropIdx),
-    m_rstPropIdx(rstPropIdx), 
-    m_time(time)
-{  
-}
-
-te::st::RasterCoverageDataSetInfo::RasterCoverageDataSetInfo(const ObservationDataSetInfo& info, int rstPropIdx)
+te::st::RasterCoverageDataSetInfo::RasterCoverageDataSetInfo(const ObservationDataSetInfo& info, 
+  const std::string& rstPropName)
   : m_obsDsInfo(info),
-    m_rstPropIdx(rstPropIdx), 
-    m_time(0)
+    m_rstPropName(rstPropName)
 {  
 }    
 
-te::st::RasterCoverageDataSetInfo::RasterCoverageDataSetInfo(const ObservationDataSetInfo& info, int rstPropIdx, 
-                                                             te::dt::DateTime* time)
-  : m_obsDsInfo(info),
-    m_rstPropIdx(rstPropIdx), 
-    m_time(time)
-{  
-}   
-
-te::st::RasterCoverageDataSetInfo::RasterCoverageDataSetInfo(const RasterCoverageDataSetInfo& rcinfo)
-  : m_obsDsInfo(rcinfo.m_obsDsInfo),
-    m_rstPropIdx(rcinfo.m_rstPropIdx), 
-    m_time(static_cast<te::dt::DateTime*> (rcinfo.m_time->clone()))
-{
-}
-
-te::st::RasterCoverageDataSetInfo& 
-te::st::RasterCoverageDataSetInfo::operator=(const RasterCoverageDataSetInfo& other)
-{
-  if(this != &other)
-  {
-    m_obsDsInfo = other.m_obsDsInfo;
-    m_rstPropIdx = other.m_rstPropIdx;
-    m_time.reset(static_cast<te::dt::DateTime*> (other.m_time->clone()));
-  }
-  return *this;
-}
-      
 te::st::CoverageType te::st::RasterCoverageDataSetInfo::getCoverageType() const
 {
   return te::st::RASTER_COVERAGE;
@@ -88,24 +53,9 @@ const te::st::ObservationDataSetInfo& te::st::RasterCoverageDataSetInfo::getObse
   return m_obsDsInfo;
 }
         
-const te::da::DataSourceInfo& te::st::RasterCoverageDataSetInfo::getDataSourceInfo() const
+const std::string& te::st::RasterCoverageDataSetInfo::getRasterPropName() const
 {
-  return m_obsDsInfo.getDataSourceInfo();
-}
-        
-const std::vector<int>& te::st::RasterCoverageDataSetInfo::getTimePropIdxs() const
-{
-  return m_obsDsInfo.getTimePropIdxs();
-}
- 
-int te::st::RasterCoverageDataSetInfo::getRasterPropIdx() const
-{
-  return m_rstPropIdx;
-}
-
-std::auto_ptr<te::dt::DateTime> te::st::RasterCoverageDataSetInfo::getTime() const
-{
-  return std::auto_ptr<te::dt::DateTime>(static_cast<te::dt::DateTime*>(m_time->clone())); 
+  return m_rstPropName;
 }
 
 te::st::RasterCoverageDataSetInfo::~RasterCoverageDataSetInfo()

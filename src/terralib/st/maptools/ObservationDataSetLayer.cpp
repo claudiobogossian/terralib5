@@ -81,7 +81,8 @@ std::auto_ptr<te::map::LayerSchema> te::st::ObservationDataSetLayer::getSchema()
 
 te::dt::DateTimePeriod* te::st::ObservationDataSetLayer::getTemporalExtent() const
 {
-  return te::st::STDataLoader::getDataSet(*m_info.get())->getTemporalExtent();
+  return 0;
+  //return m_info->getTemporalExtent();
 }
 
 std::auto_ptr<te::da::DataSet> te::st::ObservationDataSetLayer::getData(te::common::TraverseType travType,

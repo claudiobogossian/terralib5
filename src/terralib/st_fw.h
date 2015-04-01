@@ -66,7 +66,6 @@ namespace te
     class TimeSeries;
     class TimeSeriesDataSet;
     class TimeSeriesDataSetInfo;
-    class TimeSeriesDataSetType;
     class TimeSeriesIterator;
     class TimeSeriesObservation;
 
@@ -74,7 +73,6 @@ namespace te
     class Trajectory;
     class TrajectoryDataSet;
     class TrajectoryDataSetInfo;
-    class TrajectoryDataSetType;
     class TrajectoryIterator;
     struct TrajectoryPatch;
 

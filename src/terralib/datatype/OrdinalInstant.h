@@ -41,7 +41,11 @@ namespace te
 
       An ordinal number to represent a time instant. Examples: 
       the first/second/etc epidemiological week, the first/second/etc
-      day of the week, etc. 
+      day, etc. 
+
+      To understand the meaning of the ordinal numbers, a user has to use
+      extra information, such as the temporal resolution and the starting time 
+      in the DateTimeProperty.
 
       \sa DateTimeInstant
     */
@@ -128,7 +132,7 @@ namespace te
 
           \return The subtype of the date and time type. 
         */
-        DateTimeType getDateTimeType() const { return ORDINAL_INSTANT; }
+        DateTimeType getDateTimeType() const { return ORDINAL_TIME_INSTANT; }
 
       protected:
 

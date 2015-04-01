@@ -25,25 +25,36 @@
 
 //TerraLib
 #include "../../../dataaccess/datasource/DataSourceInfo.h"
+#include "../../../geometry/GeometryProperty.h"
+#include "../../../datatype/DateTimeProperty.h"
 #include "../../../common/StringUtils.h"
 
 //ST
 #include "TrajectoryDataSetInfo.h"
 
-te::st::TrajectoryDataSetInfo::TrajectoryDataSetInfo( const te::da::DataSourceInfo& dsinfo, 
-                                                      const std::string& dsName, int tPropIdx, 
-                                                      int gPropIdx, int idPropIdx, const std::string& id)
-  : m_obsDsInfo(dsinfo, dsName, tPropIdx, gPropIdx, gPropIdx),
-    m_idPropIdx(idPropIdx),
-    m_id(id)
-{  
+te::st::TrajectoryDataSetInfo::TrajectoryDataSetInfo(const te::da::DataSourceInfo& dsinfo, const std::string& dsName, 
+                              const std::string& tPropName, const std::string& gPropName, 
+                              const std::string& idPropName, const std::string& id) 
+ : m_obsDsInfo(dsinfo, dsName)
+{
+  //create properties
+  te::dt::DateTimeProperty* tp = new te::dt::DateTimeProperty(tPropName);
+  m_obsDsInfo.setTimePropInfo(tp);
+
+  te::gm::GeometryProperty* gp = new te::gm::GeometryProperty(gPropName);
+  m_obsDsInfo.setGeomPropInfo(gp);
+
+  std::vector<std::string> aux;
+  aux.push_back(gPropName);
+  m_obsDsInfo.setObsPropInfo(aux);
+
+  m_obsDsInfo.setIdPropInfo(idPropName);
+  m_obsDsInfo.setId(id);
 }
 
-te::st::TrajectoryDataSetInfo::TrajectoryDataSetInfo( const te::st::ObservationDataSetInfo& info, 
-                                                      int idPropIdx, const std::string& id)
-  : m_obsDsInfo(info),
-    m_idPropIdx(idPropIdx),
-    m_id(id)
+
+te::st::TrajectoryDataSetInfo::TrajectoryDataSetInfo( const te::st::ObservationDataSetInfo& info)
+  : m_obsDsInfo(info)
 {
 }
 
@@ -51,33 +62,6 @@ const te::st::ObservationDataSetInfo&
 te::st::TrajectoryDataSetInfo::getObservationDataSetInfo() const
 {
   return m_obsDsInfo;
-}
-
-const te::da::DataSourceInfo& 
-te::st::TrajectoryDataSetInfo::getDataSourceInfo() const
-{
-  return m_obsDsInfo.getDataSourceInfo();
-}
-
-const std::vector<int>& 
-te::st::TrajectoryDataSetInfo::getTimePropIdxs() const
-{
-  return m_obsDsInfo.getTimePropIdxs();
-}
-
-int te::st::TrajectoryDataSetInfo::getGeomPropIdx() const
-{
-  return m_obsDsInfo.getGeomPropIdx();
-}
-
-int te::st::TrajectoryDataSetInfo::getIdPropIdx() const
-{
-  return m_idPropIdx;
-}
-
-std::string te::st::TrajectoryDataSetInfo::getId() const
-{
-  return m_id;
 }
 
 te::st::TrajectoryDataSetInfo::~TrajectoryDataSetInfo()

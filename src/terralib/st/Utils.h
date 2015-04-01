@@ -49,30 +49,13 @@ namespace te
   namespace st
   {
     // Forward declarations
-    class TimeSeries;
     class ObservationDataSetInfo;
     class ObservationDataSetType;
-    class TrajectoryDataSetInfo;
-    class TrajectoryDataSetType;
-    class TimeSeriesDataSetInfo;
-    class TimeSeriesDataSetType;
-    //class CoverageSeriesDataSetInfo;
-    //class CoverageSeriesDataSetType;
     
     /*! 
       \brief An auxiliary function that transform ObservationDataSetInfo into ObservationDataSetType. 
     */   
     TESTEXPORT ObservationDataSetType GetType(const ObservationDataSetInfo& info);
-
-    /*! 
-      \brief An auxiliary function that transform TimeSeriesDataSetInfo into TimeSeriesDataSetType. 
-    */   
-    TESTEXPORT TimeSeriesDataSetType GetType(const TimeSeriesDataSetInfo& info);
-    
-    /*! 
-      \brief An auxiliary function that transform TrajectoryDataSetInfo into TrajectoryDataSetType. 
-    */   
-    TESTEXPORT TrajectoryDataSetType GetType(const TrajectoryDataSetInfo& info);
     
     /*! 
       \brief An auxiliary struct to compare two datetime shared pointers 

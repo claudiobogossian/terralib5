@@ -28,7 +28,6 @@
 
 //ST
 #include "../../Config.h"
-#include "TrajectoryDataSetType.h"
 
 // Boost
 #include <boost/noncopyable.hpp>
@@ -46,10 +45,11 @@ namespace te
   namespace st
   {
     // Forward declarations
-    class TrajectoryDataSetLayer;
     class ObservationDataSet;
+    class ObservationDataSetType;
     class Trajectory;
     class AbstractTrajectoryInterp; 
+    class TrajectoryDataSetLayer;
  
     /*!
       \class TrajectoryDataSet
@@ -77,97 +77,38 @@ namespace te
 
         /*! \name Constructor */
         //@{
-        /*! 
-          \brief Constructor. 
-
-          \param ds        The data set that contains the trajectory observations.
-          \param tPropIdx  The index of the property that contains the times of a trajectory. 
-          \param gPropIdx  The index of the property that contains the geometries of a trajectory. 
-          \param idPropIdx  The index of the property that contains the identity of the trajectory. 
-          \param id         The trajectory id. 
-          
-          \note It will take the ownership of the given pointer.
-        */
-        TrajectoryDataSet(te::da::DataSet* ds, int tPropIdx, int gPropIdx, int idPropIdx, 
-                          const std::string& id);
-
-        /*! 
-          \brief Constructor. 
-
-          \param ds        The data set that contains the trajectory observations.
-          \param tPropIdx  The index of the property that contains the times of a trajectory. 
-          \param gPropIdx  The index of the property that contains the geometries of a trajectory. 
-          \param idPropIdx  The index of the property that contains the identity of the trajectory. 
-          \param id         The trajectory id. 
-          \param text       The temporal extent.
-          \param sext       The spatial extent.
-          
-          \note It will take the ownership of the given pointer.
-        */
-        TrajectoryDataSet(te::da::DataSet* ds, int tPropIdx, int gPropIdx, int idPropIdx, 
-                          const std::string& id, te::dt::DateTimePeriod* text, 
-                          const te::gm::Envelope& sext);
-                
-        /*! 
-          \brief Constructor. 
-
-          \param ds        The data set that contains the trajectory observations.
-          \param tPropIdxs The indexes of the properties that contains the begin and end times of a trajectory. 
-          \param gPropIdx  The index of the property that contains the geometries of a trajectory. 
-          \param idPropIdx  The index of the property that contains the identity of the trajectory. 
-          \param id         The trajectory id. 
-          
-          \note It will take the ownership of the input pointer.
-          \note This constructor is used when each observation of a trajectory is associated to a period and
-                the DataSet uses two properties to store these periods.
-        */
-        TrajectoryDataSet(te::da::DataSet* ds, const std::vector<int>& tPropIdxs, int gPropIdx, 
-                          int idPropIdx, const std::string& id);
-
-        /*! 
-          \brief Constructor. 
-
-          \param ds        The data set that contains the trajectory observations.
-          \param tPropIdxs The indexes of the properties that contains the begin and end times of a trajectory. 
-          \param gPropIdx  The index of the property that contains the geometries of a trajectory. 
-          \param idPropIdx  The index of the property that contains the identity of the trajectory. 
-          \param id         The trajectory id. 
-          \param text       The temporal extent.
-          \param sext       The spatial extent.
-          
-          \note It will take the ownership of the input pointer.
-          \note This constructor is used when each observation of a trajectory is associated to a period and
-                the DataSet uses two properties to store these periods.
-        */
-        TrajectoryDataSet(te::da::DataSet* ds, const std::vector<int>& tPropIdxs, int gPropIdx, 
-                          int idPropIdx, const std::string& id,  te::dt::DateTimePeriod* text, 
-                          const te::gm::Envelope& sext);
 
         /*! 
           \brief Constructor. 
 
           \param ds         The data set that contains the trajectory observations.
-          \param type       The trajectory data set type. 
-          \param text       The temporal extent.
-          \param sext       The spatial extent.
+          \param type       The observation data set type.
           
           \note It will take the ownership of the input pointer.
-          \note This constructor is used when each observation of a trajectory is associated to a period and
-                the DataSet uses two properties to store these periods.
         */
-        TrajectoryDataSet(te::da::DataSet* ds, const TrajectoryDataSetType& type, 
-                          te::dt::DateTimePeriod* text, const te::gm::Envelope& sext);
+        TrajectoryDataSet(te::da::DataSet* ds, const ObservationDataSetType& type);
+
+        /*! 
+          \brief Constructor. 
+
+          \param ds         The data set that contains the trajectory observations.
+          \param type       The observation data set type.
+          \param id         The trajectory id.
+          
+          \note It will take the ownership of the input pointer.
+        */
+        TrajectoryDataSet(te::da::DataSet* ds, const ObservationDataSetType& type,
+                          const std::string& id);
                           
         /*! 
           \brief Constructor. 
 
           \param obs        The data set that contains the trajectory observations.
-          \param type       The trajectory data set type.
           \param id         The trajectory id
 
           \note It will take the ownership of the input pointer.
         */
-        TrajectoryDataSet(ObservationDataSet* obs, const TrajectoryDataSetType& type, const std::string& id);
+        TrajectoryDataSet(ObservationDataSet* obs, const std::string& id);
        //@}
 
         /*!
@@ -179,13 +120,6 @@ namespace te
         */
         ObservationDataSet* getObservationSet() const;
         
-        /*!
-          \brief It returns a reference to the internal trajectory data set type.
-
-          \return A reference to the internal trajectory data set type.
-        */
-        const TrajectoryDataSetType& getType() const;
-
         /*!
           \brief It returns the identifier associated to the trajectory.
 
@@ -257,14 +191,14 @@ namespace te
 
           \note The caller will NOT take the ownership of the output pointer.
         */
-        te::dt::DateTimePeriod* getTemporalExtent() const;
+        const te::dt::DateTimePeriod* getTemporalExtent() const;
 
         /*!
           \brief  It returns the spatial extent of the trajectory observations.
 
           \return The spatial extent of the trajectory observations.                   
         */
-        const te::gm::Envelope&  getSpatialExtent() const;
+        const te::gm::Geometry*  getSpatialExtent() const;
 
         /*!
           \brief  It returns the trajectory from the DataSet.
@@ -301,7 +235,7 @@ namespace te
 
           \note The caller will NOT take the ownership of the returned pointer.
         */
-        //te::gm::GeometryProperty* getGeometryProperty() const;
+        const te::gm::GeometryProperty* getGeometryProperty() const;
 
         /*!
           \brief It returns the trajectory datetime property.
@@ -310,7 +244,7 @@ namespace te
 
           \note The caller will NOT take the ownership of the returned pointer.
         */
-        //te::dt::DateTimeProperty* getTimeProperty() const;
+        const te::dt::DateTimeProperty* getTimeProperty() const;
                
         /*! \brief Virtual destructor. */
         virtual ~TrajectoryDataSet(); 
@@ -328,7 +262,6 @@ namespace te
 
       private:
         std::auto_ptr<ObservationDataSet>   m_obsDs;    //!< The data set that contains the trajectory observations 
-        TrajectoryDataSetType               m_type;     //!< The trajectory type.
         std::string                         m_id;       //!< The trajectory identification.
      };
    } // end namespace st

@@ -33,39 +33,103 @@ namespace te
     /*!
       \enum DateTimeType
 
-      \brief The subtype of date and time type.
+      \brief The subtype of date and time type, based on ISO 8621.
+
+      There are specific data types in this module to represent the types: 
+      DATE, DATE_PERIOD, DATE_DURATION,  TIME_DURATION, TIME_INSTANT, TIME_PERIOD,
+      TIME_INSTANT_TZ, TIME_PERIOD_TZ
+
+      The type ORDINAL_TIME is represented by the te::dt::Int type. 
+      The type STRING_TIME is represented by the te::dt::String type. 
     */
     enum DateTimeType
     {
-      DATE,                 /*!< Date data type.                                                            */
-      DATE_PERIOD,          /*!< Date period data type.                                                     */
-      DATE_DURATION,        /*!< Date duration data type.                                                   */
-      TIME_DURATION,        /*!< Time period data type.                                                     */
-      TIME_INSTANT,         /*!< Time instant data type (both date and local time).                         */
-      TIME_PERIOD,          /*!< Time period data type (both date and local time).                          */
+      DATE,                 /*!< A gregorian date. Example: 10/01/2013                                                            */
+      DATE_PERIOD,          /*!< A date period represents a range between two dates.                                                     */
+      DATE_DURATION,        /*!< Date duration is a simple day count used for arithmetic with DATE. Example: 3                                                    */
+      TIME_DURATION,        /*!< A length of time with nano-second/micro-second resolution (hh:mm:ss,ss)                                                     */
+      TIME_INSTANT,         /*!< Date and Time instant data type (both date and local time).                         */
+      TIME_PERIOD,          /*!< Date and time period data type (both date and local time).                          */
       TIME_INSTANT_TZ,      /*!< Time instant with time zone data type (both date and time with time zone). */
       TIME_PERIOD_TZ,       /*!< Time period with time zone data type (both date and time with time zone).  */
-      ORDINAL_INSTANT,      /*!< Ordinal time instant.  */
-      ORDINAL_PERIOD        /*!< Ordinal time period.   */
+      ORDINAL_TIME_INSTANT, /*!< Ordinal time instant, for example: 1 -> Monday / 2 -> Tuesday /  */
+      ORDINAL_TIME_PERIOD,  /*!< A period of ordinal time   */
+      STRING_TIME,           /*!< A String that represents an instant of time "1999", "99".   */
+      UNKNOWN
     };
 
     /*!
-      \enum DateTimeResolution
+      \enum DateTimeStringFormat
 
-      \brief The date and time resolution.
+      \brief The format of a string that represents a date and time. 
+
+      It is based on the date and time representations of ISO 8621. 
+      It must be used in the DateTimeProperty when the type is STRING_TIME.
     */
-    enum DateTimeResolution
+    enum DateTimeStringFormat
     {
-      YEAR,                 /*!< Year.                  */
-      MONTH,                /*!< Month of the year.     */
-      DAY,                  /*!< Day of the month.      */
-      HOUR,                 /*!< Hour of the day.       */
-      MINUTE,               /*!< Minute of the hour.    */
-      SECOND,               /*!< Second of the minute.  */
-      WEEK,                 /*!< Week of the year.      */
-      DAYOFWEEK,            /*!< Day of week: from 1 (Monday) to 7 (Sunday). */
-      DAYOFYEAR,            /*!< Day of year.             */
-      UNKNOWN               /*!< Unknown time resolution. */
+      YYYY,     /*!< A year with 4 numbers. Example: 1999 */
+      YY,       /*!< A year with 2 numbers. Example: 99 */
+      YYYYMM,   /*!< A year with 4 numbers and the month. Example: 199903 */
+      YYYYDDD,  /*!< A year with 4 numbers and the ordianl day of the year. Example: 1999360 */
+      UNKNOWN_STRING_FORMAT   /*!< Unknown string format. */
+    };
+
+    /*!
+      \enum DateTimeOrdinalType
+
+      \brief The meaning of the ordial time.  
+
+      It must be used in the DateTimeProperty when the type is ORDINAL_TIME.
+    */
+    enum DateTimeOrdinalType
+    {
+      MONTH_OF_YEAR,    /*!< from 1 (January) to 12 (December) */
+      WEEK_OF_YEAR,     /*!< from 1 to 52 */
+      DAY_OF_WEEK,      /*!< from 1 (Monday) to 7 (Sunday) */
+      DAY_OF_MONTH,     /*!< from 1 to 31 */
+      DAY_OF_YEAR,      /*!< from 001 (01/01) to 365 ou 366 (31/12) */
+      HOUR_OF_DAY,      /*!< from 0 to 23 */
+      MINUTE_OF_HOUR,   /*!< from 0 to 59 */
+      SECOND_OF_MINUTE, /*!< from 0 to 59 */
+      USER_DEFINED      /*!< A ordinal number defined by the user */
+    };
+    
+    /*!
+      \enum TemporalUnit
+
+      \brief The unit of the temporal data 
+    */
+    enum TemporalUnit
+    {
+      YEAR,                 /*!< Year.      */
+      MONTH,                /*!< Month      */
+      DAY,                  /*!< Day        */
+      HOUR,                 /*!< Hour       */
+      MINUTE,               /*!< Minute     */
+      SECOND,               /*!< Second     */
+      WEEK,                 /*!< Week       */
+      UNKNOWN_TEMPORAL_UNIT /*!< Unknown time unit. */
+    };
+
+    /*!
+      \struct TemporalResolution
+
+      \brief A temporal resolution is composed of a unit of time and a value.
+
+      A temporal resolution is composed of a unit and a value. For example,
+      if the temporal resolution is 16 days, the unit is DAY and the value is 16.
+    */
+    struct TemporalResolution
+    {
+        TemporalUnit  m_unit;
+        unsigned int  m_value;
+
+        TemporalResolution() 
+          : m_unit(UNKNOWN_TEMPORAL_UNIT), m_value(0) { }
+
+        TemporalResolution(TemporalUnit unit, unsigned int val) 
+          : m_unit(unit), m_value(val) { }
     };
 
     /*!
