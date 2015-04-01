@@ -113,7 +113,7 @@ te::dt::SimpleProperty* getConvertedproperty(std::string name, int dataType, std
 
     case te::dt::DATETIME_TYPE:
     {
-      newProperty = new te::dt::DateTimeProperty(name, te::dt::DATE, te::dt::UNKNOWN, isRequired, new std::string(defaultValue));
+      newProperty = new te::dt::DateTimeProperty(name, te::dt::DATE, isRequired, new std::string(defaultValue));
       break;
     }
         
