@@ -51,68 +51,32 @@ namespace te
     {
       public:
         
-         /*! 
-          \brief Constructor.
-          
-          \param dsinfo     Infos about the DataSource. 
-          \param dsName     The DataSet name.   
-          \param tPropIdx   The property index that contains the times associated to the coverage.
-          \param rstPropIdx   The property index that contains the raster associated to the coverage. 
-        */
-        RasterCoverageDataSetInfo(const te::da::DataSourceInfo& dsinfo, const std::string& dsName, 
-                              int tPropIdx, int rstPropIdx);
-
         /*! 
           \brief Constructor.
           
           \param dsinfo     Infos about the DataSource. 
           \param dsName     The DataSet name.   
-          \param rstPropIdx   The property index that contains the raster associated to the coverage. 
+          \param rstPropName   The property name that contains the raster associated to the coverage. 
           \param time       The date and time associated to this raster coverage, when this information is not in the DataSet.
 
           \note It will take the ownership of the given pointers.
         */
         RasterCoverageDataSetInfo(const te::da::DataSourceInfo& dsinfo, const std::string& dsName, 
-                                  int rstPropIdx, te::dt::DateTime* time);
+                                  const std::string& rstPropName, te::dt::DateTime* time);
         
         /*! 
           \brief Constructor.
           
           \param info       Infos about the DataSource and DataSet that contains the coverage observations    
-          \param rstPropIdx   The property index that contains the raster associated to the coverage.
+          \param rstPropName   The property name that contains the raster associated to the coverage.
         */
-        RasterCoverageDataSetInfo(const ObservationDataSetInfo& info, int rstPropIdx);
-
-        /*! 
-          \brief Constructor.
-          
-          \param info       Infos about the DataSource and DataSet that contains the coverage observations    
-          \param rstPropIdx   The property index that contains the raster associated to the coverage.
-          \param time       The date and time associated to this raster coverage, when this information is not in the DataSet.
-
-          \note It will take the ownership of the given pointers.
-        */
-        RasterCoverageDataSetInfo(const ObservationDataSetInfo& info, int rstPropIdx, te::dt::DateTime* time);
-
-        /*! 
-          \brief Copy constructor. 
-        */
-        RasterCoverageDataSetInfo(const RasterCoverageDataSetInfo& rcinfo);
-
-        /*! 
-          \brief Copy assignment operator
-        */
-        RasterCoverageDataSetInfo& operator=(const RasterCoverageDataSetInfo& other);
-                
+        RasterCoverageDataSetInfo(const ObservationDataSetInfo& info, const std::string& rstPropName);
+                            
          /*! \name Inhered methods*/
         //@{        
         te::st::CoverageType getCoverageType() const ;
         
         const ObservationDataSetInfo& getObservationDataSetInfo() const;
-        
-        const te::da::DataSourceInfo& getDataSourceInfo() const;
-        
-        const std::vector<int>& getTimePropIdxs() const;
         //@}
 
         /*!
@@ -120,24 +84,16 @@ namespace te
 
           \return The property index that contains the raster of the coverage. 
         */
-        int getRasterPropIdx() const;
+        const std::string& getRasterPropName() const;
 
-        /*!
-          \brief It returns the date and time associated to the raster coverage, when this information is not in the DataSet.
-
-          \return The date and time associated to the raster coverage. 
-        */
-        std::auto_ptr<te::dt::DateTime> getTime() const;
-        
         /*! \brief Virtual destructor. */
         virtual ~RasterCoverageDataSetInfo(); 
 
       protected:
 
         ObservationDataSetInfo  m_obsDsInfo;  //!< Infos about the DataSource and DataSet that contains the point coverage observations    
-        int                     m_rstPropIdx;  //!< The property index that contains the raster 
-        std::auto_ptr<te::dt::DateTime> m_time;    //! The date and time associated to this raster coverage, when this information is not in the DataSet
-     };
+        std::string             m_rstPropName;  //!< The property index that contains the raster 
+    };
   } // end namespace st
 }   // end namespace te
 

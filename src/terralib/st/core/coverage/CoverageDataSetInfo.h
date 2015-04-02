@@ -81,20 +81,6 @@ namespace te
         */
         virtual const ObservationDataSetInfo& getObservationDataSetInfo() const = 0;
         
-        /*!
-          \brief It returns information about the DataSource from which the DataSet comes.
-
-          \return A reference to the internal DataSourceInfo.
-        */
-        virtual const te::da::DataSourceInfo& getDataSourceInfo() const = 0;
-        
-        /*!
-          \brief It returns the indexes of the DataSet properties that contains the times associated to the coverage.
-
-          \return The indexes of the DataSet properties that contains the time.
-        */
-        virtual const std::vector<int>& getTimePropIdxs() const = 0;
-        
         /*! \brief Virtual destructor. */
         virtual ~CoverageDataSetInfo();        
     };

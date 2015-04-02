@@ -83,28 +83,25 @@ namespace te
           Ui::TemporalPropertiesWidgetForm* getForm();
 
           /*!
-            \brief Returns the index of the Phenomenom Time
+            \brief Returns the name of the property that holds the Phenomenom Time
 
-            \return The index of the Phenomenom Time.
-            \note Will return an invalid index if the dataSeType hasn't been given.
+            \return The name of the property that holds the Phenomenom Time.
           */
-          int getPhenomenonTime();
+          std::string getPhenomenonTime();
 
           /*!
-            \brief Returns the index of the Result Time
+            \brief Returns the name of the property that holds the Result Time
 
-            \return The index of the result Time.
-            \note Will return an invalid index if the dataSeType hasn't been given.
+            \return The name of the property that holds the result Time.
           */
-          int getResultTime();
+          std::string getResultTime();
 
           /*!
-            \brief Returns the index of the Valid Time
+            \brief Returns the name of the property that holds the Valid Time
 
-            \return The index of the valid Time.
-            \note Will return an invalid index if the dataSeType hasn't been given.
+            \return The name of the property that holds the valid Time.
           */
-          int getValidTime();
+          std::string getValidTime();
 
           /*!
             \brief Returns the index of the datetime type

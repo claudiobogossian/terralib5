@@ -36,6 +36,8 @@
 namespace te { namespace dt { class AbstractData; class DateTime; class DateTimePeriod;
                               class DateTimeInstant; } }
 
+namespace te { namespace gm { class Geometry; } }
+
 namespace te
 {
   namespace st
@@ -86,11 +88,13 @@ namespace te
           \brief Constructor. 
           
           \param phTime     A pointer to phenomenon time.
+          \param geom		    The observation location.
           \param obsValues  The observed values. 
 
           \note It will take the ownership of the input pointers.
         */
-        Observation(te::dt::DateTime* phTime, const boost::ptr_vector<te::dt::AbstractData>& obsValues);
+        Observation(te::dt::DateTime* phTime, te::gm::Geometry* geom, 
+                    const boost::ptr_vector<te::dt::AbstractData>& obsValues);
 
         /*! 
           \brief Constructor. 
@@ -98,12 +102,13 @@ namespace te
           \param phTime     A pointer to phenomenon time.
           \param resTime    A pointer to the result time.
           \param valTime    A pointer to the valid time.
+          \param geom		    The observation location.
           \param obsValues  The observed values. 
 
          \note It will take the ownership of the input pointers.
         */
         Observation(te::dt::DateTime* phTime, te::dt::DateTimeInstant* resTime, 
-                    te::dt::DateTimePeriod* valTime, 
+                    te::dt::DateTimePeriod* valTime, te::gm::Geometry* geom,
                     const boost::ptr_vector<te::dt::AbstractData>& obsValues);           
 
          /*! \brief Copy constructor. */
@@ -205,6 +210,24 @@ namespace te
         void setValues(const boost::ptr_vector<te::dt::AbstractData>& values);
 
         /*!
+          \brief It returns the observation location or region.
+
+          \return A pointer to the geometry.
+
+          \note The caller will NOT take the ownership of the returned pointer.
+        */
+        te::gm::Geometry* getGeometry() const;
+
+        /*!
+          \brief It sets the observation location or region.
+
+          \param geom A pointer to the observation location or region.
+
+          \note It will take the ownership of the input pointer.
+        */
+        void setGeometry(te::gm::Geometry* geom);
+
+        /*!
           \brief It returns a clone of this object.
           
           \return A clone of this object.
@@ -222,6 +245,7 @@ namespace te
         std::auto_ptr<te::dt::DateTimeInstant>  m_resultTime;           //!< The result time
         std::auto_ptr<te::dt::DateTimePeriod>   m_validTime;            //!< The valid time
         boost::ptr_vector<te::dt::AbstractData> m_observedValues;       //!< The observed values
+        std::auto_ptr<te::gm::Geometry>			    m_geometry;				      //!< The observation location
     };
 
   } // end namespace st

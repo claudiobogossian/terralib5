@@ -35,7 +35,7 @@ te::da::DataSet* CreatingDataSetInMemory(const std::string& datasetName)
     prop03->setSRID(4326);
     
     //fourth property: measure_date
-    te::dt::DateTimeProperty* prop04 = new te::dt::DateTimeProperty( "date", te::dt::DATE, te::dt::UNKNOWN, true);
+    te::dt::DateTimeProperty* prop04 = new te::dt::DateTimeProperty( "date", te::dt::DATE, true);
     
     //fifth property: measure_value
     te::dt::NumericProperty* prop05 = new te::dt::NumericProperty("value", 7, 4, true);

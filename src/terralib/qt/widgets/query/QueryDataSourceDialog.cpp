@@ -24,7 +24,10 @@
 */
 
 // TerraLib
+#include "../../../common/StringUtils.h"
 #include "../../../dataaccess/dataset/DataSet.h"
+#include "../../../dataaccess/dataset/DataSetAdapter.h"
+#include "../../../dataaccess/dataset/DataSetTypeConverter.h"
 #include "../../../dataaccess/dataset/DataSetType.h"
 #include "../../../dataaccess/dataset/ObjectIdSet.h"
 #include "../../../dataaccess/datasource/DataSourceCapabilities.h"
@@ -34,6 +37,8 @@
 #include "../../../dataaccess/query/SQLDialect.h"
 #include "../../../dataaccess/query/SQLFunctionEncoder.h"
 #include "../../../dataaccess/utils/Utils.h"
+#include "../../../datatype/SimpleProperty.h"
+#include "../../../geometry/GeometryProperty.h"
 #include "../../../maptools/DataSetLayer.h"
 #include "../datasource/selector/DataSourceSelectorDialog.h"
 #include "../layer/utils/DataSet2Layer.h"
@@ -649,42 +654,68 @@ void te::qt::widgets::QueryDataSourceDialog::onCreateLayerToolButtonClicked()
   //save data
   std::auto_ptr<te::da::DataSetType> dsType(new te::da::DataSetType(dataSetName));
 
+  dataSet->moveFirst();
+
+  std::set<std::string> names;
+
+  int srid = 0;
+
   for(std::size_t t = 0; t < dataSet->getNumProperties(); ++t)
   {
-    std::string name = dataSet->getPropertyName(t);
+    //check if the property name its duplicated
+    std::string propName = dataSet->getPropertyName(t);
 
-    if(inputDataSetType->getProperty(name))
-      dsType->add(inputDataSetType->getProperty(name)->clone());
-    else
+    int count = 1;
+    while(names.find(propName) != names.end())
     {
-      QMessageBox::warning(this, tr("Query DataSource"), tr("Error creating output dataset."));
-      return;
+      propName += "_";
+      propName += te::common::Convert2String(count);
     }
 
-    /*
-    std::string name = dataSet->getPropertyName(t);
+    names.insert(propName);
 
-    std::string dsName = dataSet->getDatasetNameOfProperty(t);
-
-    std::auto_ptr<te::da::DataSetType> dsTypeItem = ds->getDataSetType(dsName);
-
-    if(dsTypeItem->getProperty(name))
-      dsType->add(dsTypeItem->getProperty(name)->clone());
+    //create output property
+    te::dt::Property* p = 0;
+    if(dataSet->getPropertyDataType(t) != te::dt::GEOMETRY_TYPE)
+    {
+      p = new te::dt::SimpleProperty(propName, dataSet->getPropertyDataType(t));
+    }
     else
     {
-      QMessageBox::warning(this, tr("Query DataSource"), tr("Error creating output dataset."));
+      std::auto_ptr<te::gm::Geometry> geom = dataSet->getGeometry(t);
+
+      srid = geom->getSRID();
+
+      p = new te::gm::GeometryProperty(propName, srid, geom->getGeomTypeId());
+    }
+    
+    //add property to output datasetype
+    if(p)
+    {
+      dsType->add(p);
+    }
+    else
+    {
+       QMessageBox::warning(this, tr("Query DataSource"), tr("Error creating output dataset."));
       return;
     }
-    */
   }
 
   dataSet->moveBeforeFirst();
 
+  //create converter in case property name changed
+  te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter(dsType.get(), outputDataSource->getCapabilities());
+
+  std::auto_ptr<te::da::DataSetAdapter> dsAdapter(te::da::CreateAdapter(dataSet.get(), converter));
+  
+  dsAdapter->setSRID(srid);
+
+  //save data
   std::map<std::string, std::string> options;
 
   outputDataSource->createDataSet(dsType.get(), options);
 
-  outputDataSource->add(dataSetName, dataSet.get(), options);
+  outputDataSource->add(dataSetName, dsAdapter.get(), options);
 
   //create layer
   try

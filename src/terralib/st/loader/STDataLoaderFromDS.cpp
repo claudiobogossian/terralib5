@@ -30,6 +30,8 @@
 #include "../../dataaccess/dataset/DataSet.h"
 #include "../../dataaccess/utils/Utils.h"
 #include "../../datatype/DateTimePeriod.h"
+#include "../../datatype/DateTimeProperty.h"
+#include "../../geometry/Utils.h"
 
 //ST
 #include "../Exception.h"
@@ -70,9 +72,10 @@ te::st::STDataLoaderFromDS::getDataSet(const te::st::ObservationDataSetInfo& inf
   te::da::DataSourcePtr ds = te::da::GetDataSource(info.getDataSourceInfo().getId(), false);
 
   //get the geometry property name
-  std::auto_ptr<te::da::DataSetType> dsettype(ds->getDataSetType(info.getDataSetName()));
+  if(!info.hasGeomProp())
+    return std::auto_ptr<te::st::ObservationDataSet>();
   
-  std::string geomPropName = dsettype->getProperty(info.getGeomPropIdx())->getName();
+  std::string geomPropName = info.getGeomPropName();
 
   //get the data set applying he filter
   std::auto_ptr<te::da::DataSet> dset(ds->getDataSet(info.getDataSetName(), geomPropName, &e, r, travType));
@@ -88,9 +91,10 @@ te::st::STDataLoaderFromDS::getDataSet(const te::st::ObservationDataSetInfo& inf
   te::da::DataSourcePtr ds = te::da::GetDataSource(info.getDataSourceInfo().getId(), false);
 
   //get the geometry property name
-  std::auto_ptr<te::da::DataSetType> dsettype(ds->getDataSetType(info.getDataSetName()));
+   if(!info.hasGeomProp())
+    return std::auto_ptr<te::st::ObservationDataSet>();
 
-  std::string geomPropName = dsettype->getProperty(info.getGeomPropIdx())->getName();
+  std::string geomPropName = info.getGeomPropName();
   
   //get the data set applying he filter
   std::auto_ptr<te::da::DataSet> dset(ds->getDataSet(info.getDataSetName(), geomPropName, &geom, r, travType));
@@ -155,7 +159,7 @@ std::auto_ptr<te::st::TrajectoryDataSet>
 te::st::STDataLoaderFromDS::getDataSet(const TrajectoryDataSetInfo& info, te::common::TraverseType travType) 
 {
  //use the DataSourceManager to get the DataSource 
- te::da::DataSourcePtr ds = te::da::GetDataSource(info.getDataSourceInfo().getId(), false);
+ te::da::DataSourcePtr ds = te::da::GetDataSource(info.getObservationDataSetInfo().getDataSourceInfo().getId(), false);
  
  std::auto_ptr<te::da::DataSet> dset(ds->getDataSet(info.getObservationDataSetInfo().getDataSetName(), travType));
 
@@ -168,13 +172,14 @@ te::st::STDataLoaderFromDS::getDataSet(const TrajectoryDataSetInfo& info,
                              te::common::TraverseType travType)
 {
   //use the DataSourceManager to get the DataSource 
-  te::da::DataSourcePtr ds = te::da::GetDataSource(info.getDataSourceInfo().getId(), false);
+  te::da::DataSourcePtr ds = te::da::GetDataSource(info.getObservationDataSetInfo().getDataSourceInfo().getId(), false);
 
   //get the geometry property name
-  std::auto_ptr<te::da::DataSetType> dsettype(ds->getDataSetType(info.getObservationDataSetInfo().getDataSetName()));
+  if(!info.getObservationDataSetInfo().hasGeomProp())
+    return std::auto_ptr<te::st::TrajectoryDataSet>();
 
-  std::string geomPropName = dsettype->getProperty(info.getGeomPropIdx())->getName();
-  
+  std::string geomPropName = info.getObservationDataSetInfo().getGeomPropName();
+
   //get the data set applying he filter
   std::auto_ptr<te::da::DataSet> dset(ds->getDataSet(info.getObservationDataSetInfo().getDataSetName(), geomPropName, &geom, r, travType));
 
@@ -187,15 +192,17 @@ te::st::STDataLoaderFromDS::getDataSet(const TrajectoryDataSetInfo& info,
                                 te::common::TraverseType travType)
 {
   //use the DataSourceManager to get the DataSource 
-  te::da::DataSourcePtr ds = te::da::GetDataSource(info.getDataSourceInfo().getId(), false);
+  te::da::DataSourcePtr ds = te::da::GetDataSource(info.getObservationDataSetInfo().getDataSourceInfo().getId(), false);
 
   //get the geometry property name
-  std::auto_ptr<te::da::DataSetType> dsettype(ds->getDataSetType(info.getObservationDataSetInfo().getDataSetName()));
-  
-  std::string geomPropName = dsettype->getProperty(info.getGeomPropIdx())->getName();
+  if(!info.getObservationDataSetInfo().hasGeomProp())
+    return std::auto_ptr<te::st::TrajectoryDataSet>();
+
+  std::string geomPropName = info.getObservationDataSetInfo().getGeomPropName();
 
   //get the data set applying he filter
-  std::auto_ptr<te::da::DataSet> dset(ds->getDataSet(info.getObservationDataSetInfo().getDataSetName(), geomPropName, &e, r, travType));
+  std::auto_ptr<te::da::DataSet> dset(ds->getDataSet(info.getObservationDataSetInfo().getDataSetName(), 
+                          geomPropName, &e, r, travType));
 
   return buildDataSet(dset.release(), info);  
 }
@@ -257,7 +264,7 @@ te::st::STDataLoaderFromDS::getDataSet(const TimeSeriesDataSetInfo& info,
                       te::common::TraverseType travType)
 {
  //use the DataSourceManager to get the DataSource 
- te::da::DataSourcePtr ds = te::da::GetDataSource(info.getDataSourceInfo().getId(), false);
+ te::da::DataSourcePtr ds = te::da::GetDataSource(info.getObservationDataSetInfo().getDataSourceInfo().getId(), false);
  
  std::auto_ptr<te::da::DataSet> dset(ds->getDataSet(info.getObservationDataSetInfo().getDataSetName(), travType));
 
@@ -320,7 +327,13 @@ te::st::STDataLoaderFromDS::getSpatialExtent(const ObservationDataSetInfo& info)
   //use the DataSourceManager to get the DataSource 
   te::da::DataSourcePtr ds = te::da::GetDataSource(info.getDataSourceInfo().getId(), false);
 
-  std::auto_ptr<te::gm::Envelope> res(ds->getExtent(info.getDataSetName(), info.getGeomPropIdx()));
+  //get the geometry property name
+  if(!info.hasGeomProp())
+    return te::gm::Envelope();
+
+  std::string geomPropName = info.getGeomPropName();
+
+  std::auto_ptr<te::gm::Envelope> res(ds->getExtent(info.getDataSetName(), geomPropName));
   return *res.get();
 }
 
@@ -328,10 +341,16 @@ te::gm::Envelope
 te::st::STDataLoaderFromDS::getSpatialExtent(const TrajectoryDataSetInfo& info)
 {
   //use the DataSourceManager to get the DataSource 
-  te::da::DataSourcePtr ds = te::da::GetDataSource(info.getDataSourceInfo().getId(), false);
+  te::da::DataSourcePtr ds = te::da::GetDataSource(info.getObservationDataSetInfo().getDataSourceInfo().getId(), false);
+
+  //get the geometry property name
+  if(!info.getObservationDataSetInfo().hasGeomProp())
+    return te::gm::Envelope();
+
+  std::string geomPropName = info.getObservationDataSetInfo().getGeomPropName();
 
   std::auto_ptr<te::gm::Envelope> res(ds->getExtent(info.getObservationDataSetInfo().getDataSetName(), 
-                                     info.getObservationDataSetInfo().getGeomPropIdx()));
+                                     geomPropName));
   return *res.get();
 }
 
@@ -339,20 +358,20 @@ te::st::STDataLoaderFromDS::getSpatialExtent(const TrajectoryDataSetInfo& info)
 std::auto_ptr<te::st::ObservationDataSet>  
 te::st::STDataLoaderFromDS::buildDataSet(te::da::DataSet* ds, const ObservationDataSetInfo& info)
 {
-  return std::auto_ptr<ObservationDataSet> (new ObservationDataSet(ds, te::st::GetType(info), 0, te::gm::Envelope())); 
+  return std::auto_ptr<ObservationDataSet> (new ObservationDataSet(ds, te::st::GetType(info))); 
 }
 
 std::auto_ptr<te::st::TrajectoryDataSet>  
 te::st::STDataLoaderFromDS::buildDataSet(te::da::DataSet* ds, const TrajectoryDataSetInfo& info)
 {
-  return std::auto_ptr<TrajectoryDataSet> (new TrajectoryDataSet(ds, te::st::GetType(info), 0, te::gm::Envelope())); 
+  return std::auto_ptr<TrajectoryDataSet> (new TrajectoryDataSet(ds, te::st::GetType(info.getObservationDataSetInfo()))); 
 }
 
 std::auto_ptr<te::st::TimeSeriesDataSet>  
 te::st::STDataLoaderFromDS::buildDataSet(te::da::DataSet* ds, const TimeSeriesDataSetInfo& info)
 {
-  
-  return std::auto_ptr<TimeSeriesDataSet> (new TimeSeriesDataSet(ds, te::st::GetType(info), 0));
+  return std::auto_ptr<TimeSeriesDataSet> ( new TimeSeriesDataSet(ds, te::st::GetType(info.getObservationDataSetInfo()), 
+                                            info.getValuePropNames(), 0));
 }
 
 te::st::STDataLoaderFromDS::~STDataLoaderFromDS()

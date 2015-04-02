@@ -68,10 +68,10 @@ te::dt::DateTimePeriod* te::dt::GetTemporalExtent(const te::dt::DateTime* t1, co
     case TIME_PERIOD_TZ:
       return new TimePeriodTZ(dynamic_cast<const TimePeriodTZ*>(initialTime)->getInitialTimeInstant(), 
                                 dynamic_cast<const TimePeriodTZ*>(finalTime)->getFinalTimeInstant());
-    case ORDINAL_INSTANT:
+    case ORDINAL_TIME_INSTANT:
       return new OrdinalPeriod(dynamic_cast<const OrdinalInstant*>(initialTime)->getTimeInstant(), 
                                  dynamic_cast<const OrdinalInstant*>(finalTime)->getTimeInstant());
-    case ORDINAL_PERIOD:
+    case ORDINAL_TIME_PERIOD:
       return new OrdinalPeriod(dynamic_cast<const OrdinalPeriod*>(initialTime)->getInitialTime(), 
                                  dynamic_cast<const OrdinalPeriod*>(finalTime)->getFinalTime());
     default:
@@ -95,7 +95,7 @@ long te::dt::GetDistance(const te::dt::DateTime* t1, const te::dt::DateTime* t2)
     case TIME_INSTANT_TZ:
       output = dynamic_cast<const TimeInstantTZ*>(t1)->operator-(*(dynamic_cast<const TimeInstantTZ*>(t2)));  
       return abs(output);
-    case ORDINAL_INSTANT:
+    case ORDINAL_TIME_INSTANT:
       output =  (long)abs(dynamic_cast<const OrdinalInstant*>(t1)->getTimeInstant().getValue() - 
                     dynamic_cast<const OrdinalInstant*>(t2)->getTimeInstant().getValue());  
       return abs(output);
@@ -140,7 +140,7 @@ long te::dt::GetDistance(const te::dt::DateTime* t1, const te::dt::DateTime* t2)
       return abs(instant2 - instant1);    
    }
    
-   if(timeType==ORDINAL_PERIOD)
+   if(timeType==ORDINAL_TIME_PERIOD)
    {
       int64_t instant1 = dynamic_cast<const OrdinalPeriod*>(t1)->getFinalTime().getValue();
       int64_t instant2 = dynamic_cast<const OrdinalPeriod*>(t2)->getInitialTime().getValue();
@@ -171,7 +171,7 @@ te::dt::DateTimePeriod* te::dt::GetTimePeriod(const DateTimeInstant* t1, const D
     case TIME_INSTANT_TZ:
       output = new TimePeriodTZ(*dynamic_cast<const TimeInstantTZ*>(t1), *dynamic_cast<const TimeInstantTZ*>(t2)); 
       return output;
-    case ORDINAL_INSTANT:
+    case ORDINAL_TIME_INSTANT:
       output = new OrdinalPeriod( dynamic_cast<const OrdinalInstant*>(t1)->getTimeInstant().getValue(), 
                                   dynamic_cast<const OrdinalInstant*>(t2)->getTimeInstant().getValue()); 
       return output;
