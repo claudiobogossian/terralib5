@@ -828,7 +828,7 @@ te::dt::AbstractData* te::attributefill::VectorToVectorMemory::getClassWithHighe
 
     std::auto_ptr<te::gm::Geometry> interGeom;
 
-    if(checkGeometries(fromGeom.get(), dsPos[i], toGeom.get()))
+    if(!checkGeometries(fromGeom.get(), dsPos[i], toGeom.get()))
     {
       m_hasErrors = true;
       continue;
