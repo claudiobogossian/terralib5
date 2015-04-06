@@ -1468,7 +1468,7 @@ bool te::attributefill::VectorToVectorMemory::checkGeometries(te::gm::Geometry* 
   if(!fromGeom->isValid())
   {
     std::string ex = TE_TR("\"From\" layer geometry at position ");
-    ex += te::common::Convert2String(fromPos);
+    ex += boost::lexical_cast<std::string>(fromPos);
     ex += TE_TR(" is invalid.");
 #ifdef TERRALIB_LOGGER_ENABLED
     te::common::Logger::logDebug("attributefill", ex.c_str());
