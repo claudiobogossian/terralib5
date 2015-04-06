@@ -477,6 +477,8 @@ namespace te
         bool hasNoIntersectionOperations();
 
         void normalizeClassName(std::string& name);
+
+        bool checkGeometries(te::gm::Geometry* fromGeom, std::size_t fromPos, te::gm::Geometry* toGeom);
     };
   }
 }
