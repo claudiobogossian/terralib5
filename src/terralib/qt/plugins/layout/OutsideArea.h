@@ -110,7 +110,6 @@ namespace te
           PropertiesDock* m_dockProperties;
           ObjectInspectorDock* m_dockInspector;
           EditTemplateDock* m_dockEditTemplate;
-          QMenu* m_mainMenu;
           QMenu* m_parentMenu;
           te::layout::View* m_view;
           te::layout::ToolbarOutside* m_toolbar;

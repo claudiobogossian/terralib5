@@ -53,7 +53,6 @@ te::qt::plugins::layout::OutsideArea::OutsideArea( te::layout::View* view, QWidg
   m_dockProperties(0),
   m_dockInspector(0),
   m_dockEditTemplate(0),
-  m_mainMenu(0),
   m_parentMenu(mnuLayout),
   m_view(view),
   m_toolbar(0),
@@ -198,19 +197,18 @@ void te::qt::plugins::layout::OutsideArea::createEditTemplateDock()
 
 void te::qt::plugins::layout::OutsideArea::createMainMenu()
 {
-  m_mainMenu = new QMenu("Print Model", m_parentMenu);
-  connect(m_mainMenu, SIGNAL(triggered(QAction*)), this, SLOT(onMainMenuTriggered(QAction*)));
+  connect(m_parentMenu, SIGNAL(triggered(QAction*)), this, SLOT(onMainMenuTriggered(QAction*)));
 
   QAction* actionNew = createAction("New", m_optionNew, "layout-new");
-  m_mainMenu->addAction(actionNew);
+  m_parentMenu->addAction(actionNew);
 
   QAction* actionSave = createAction("Update Template", m_optionUpdate, "layout-save");
-  m_mainMenu->addAction(actionSave);
+  m_parentMenu->addAction(actionSave);
 
-  m_mainMenu->addSeparator();
+  m_parentMenu->addSeparator();
   
-  QMenu* mnuImport = m_mainMenu->addMenu("Import Template");
-  QMenu* mnuExport = m_mainMenu->addMenu("Export Template");
+  QMenu* mnuImport = m_parentMenu->addMenu("Import Template");
+  QMenu* mnuExport = m_parentMenu->addMenu("Export Template");
 
   QAction* actionImportJSON = createAction("Import JSON Template", m_optionImportJSON, "layout-import");
   mnuImport->addAction(actionImportJSON);
@@ -218,35 +216,30 @@ void te::qt::plugins::layout::OutsideArea::createMainMenu()
   QAction* actionExportJSON = createAction("Export JSON Template", m_optionExportJSON, "layout-export");
   mnuExport->addAction(actionExportJSON);
   
-  m_mainMenu->addSeparator();
+  m_parentMenu->addSeparator();
   
   QAction* actionDockInspector = createAction("Dock Inspector", m_optionDockInspector, "");
   actionDockInspector->setCheckable(true);
   actionDockInspector->setChecked(true);
-  m_mainMenu->addAction(actionDockInspector);
+  m_parentMenu->addAction(actionDockInspector);
 
   QAction* actionDockProperties = createAction("Dock Properties", m_optionDockProperties, "");
   actionDockProperties->setCheckable(true);
   actionDockProperties->setChecked(true);
-  m_mainMenu->addAction(actionDockProperties);
+  m_parentMenu->addAction(actionDockProperties);
   
-  QAction* actionDockEditTemplate = createAction("Dock Edit Template", m_optionDockEditTemplate, "");
-  actionDockEditTemplate->setCheckable(true);
-  actionDockEditTemplate->setChecked(false);
-  m_mainMenu->addAction(actionDockEditTemplate);
-
-  m_mainMenu->addSeparator();
+  m_parentMenu->addSeparator();
 
   QAction* actionPageConfig = createAction("Page Config...", m_optionPageConfig, "layout-page-setup");
-  m_mainMenu->addAction(actionPageConfig);
+  m_parentMenu->addAction(actionPageConfig);
 
   QAction* actionPrint = createAction("Print...", m_optionPrint, "layout-printer");
-  m_mainMenu->addAction(actionPrint);
+  m_parentMenu->addAction(actionPrint);
 
-  m_mainMenu->addSeparator();
+  m_parentMenu->addSeparator();
 
   QAction* actionExit = createAction("Exit", m_optionExit, "layout-close");
-  m_mainMenu->addAction(actionExit);
+  m_parentMenu->addAction(actionExit);
 }
 
 void te::qt::plugins::layout::OutsideArea::onMainMenuTriggered( QAction* action )
@@ -319,7 +312,7 @@ void te::qt::plugins::layout::OutsideArea::onMainMenuTriggered( QAction* action 
 
 QAction* te::qt::plugins::layout::OutsideArea::createAction( std::string text, std::string objName, std::string icon, std::string tooltip )
 {
-  QAction *actionMenu = new QAction(text.c_str(), m_mainMenu);
+  QAction *actionMenu = new QAction(text.c_str(), m_parentMenu);
   actionMenu->setObjectName(objName.c_str());
 
   actionMenu->setIcon(QIcon::fromTheme(icon.c_str()));
@@ -427,28 +420,13 @@ void te::qt::plugins::layout::OutsideArea::openMainMenu()
 {
   if(!m_parentMenu)
     return;
-
-  if(!m_mainMenu)
-    return;
-
+  
   bool exist_menu = false;
-  QAction* action = m_mainMenu->menuAction();
   QList<QAction*> acts = m_parentMenu->actions();
-  if(action)
+ 
+  foreach(QAction* act, acts)
   {
-    foreach(QAction* act, acts)
-    {
-      if(act == action)
-      {
-        exist_menu = true;
-      }
-    }
-  }
-
-  if(!exist_menu)
-  {
-    m_parentMenu->addSeparator();
-    m_parentMenu->addMenu(m_mainMenu);
+    act->setVisible(true);
   }
 
   if(!acts.empty())
@@ -464,20 +442,10 @@ void te::qt::plugins::layout::OutsideArea::closeMainMenu()
   if(!m_parentMenu)
     return;
 
-  if(!m_mainMenu)
-    return;
-
-  QAction* action = m_mainMenu->menuAction();
   QList<QAction*> acts = m_parentMenu->actions();
-  if(action)
+  foreach(QAction* act, acts)
   {
-    foreach(QAction* act, acts)
-    {
-      if(act == action)
-      {
-        m_parentMenu->removeAction(action);
-      }
-    }
+    act->setVisible(false);
   }
 
   if(!acts.empty())
