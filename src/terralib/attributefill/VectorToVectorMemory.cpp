@@ -828,7 +828,7 @@ te::dt::AbstractData* te::attributefill::VectorToVectorMemory::getClassWithHighe
 
     std::auto_ptr<te::gm::Geometry> interGeom;
 
-    if(checkGeometries(fromGeom.get(), dsPos[i], toGeom.get()))
+    if(!checkGeometries(fromGeom.get(), dsPos[i], toGeom.get()))
     {
       m_hasErrors = true;
       continue;
@@ -1468,7 +1468,7 @@ bool te::attributefill::VectorToVectorMemory::checkGeometries(te::gm::Geometry* 
   if(!fromGeom->isValid())
   {
     std::string ex = TE_TR("\"From\" layer geometry at position ");
-    ex += te::common::Convert2String(fromPos);
+    ex += boost::lexical_cast<std::string>(fromPos);
     ex += TE_TR(" is invalid.");
 #ifdef TERRALIB_LOGGER_ENABLED
     te::common::Logger::logDebug("attributefill", ex.c_str());
