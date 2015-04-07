@@ -235,7 +235,7 @@ namespace te
 
           \note The caller will NOT take the ownership of the returned pointer.
         */
-        const te::gm::GeometryProperty* getGeometryProperty() const;
+        const te::gm::GeometryProperty* getGeometryProperty() const{ return 0;}
 
         /*!
           \brief It returns the trajectory datetime property.
@@ -244,7 +244,7 @@ namespace te
 
           \note The caller will NOT take the ownership of the returned pointer.
         */
-        const te::dt::DateTimeProperty* getTimeProperty() const;
+        const te::dt::DateTimeProperty* getTimeProperty() const{return 0;}
                
         /*! \brief Virtual destructor. */
         virtual ~TrajectoryDataSet(); 

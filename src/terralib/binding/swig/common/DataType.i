@@ -123,6 +123,8 @@ namespace te {
 %include "terralib/datatype/DateDuration.h"
 %include "terralib/datatype/DateTimePeriod.h"
 %include "terralib/datatype/DatePeriod.h"
+%include "terralib/datatype/TimeDuration.h"
+%include "terralib/datatype/TimeInstant.h"
 %include "terralib/datatype/DateTimeProperty.h"
 %include "terralib/datatype/DateTimeUtils.h"
 %include "terralib/datatype/DataTypeConverter.h" 
@@ -139,8 +141,6 @@ namespace te {
 /* %include "terralib/datatype/StringConverters.h" */
 
 %include "terralib/datatype/StringProperty.h"
-%include "terralib/datatype/TimeDuration.h"
-%include "terralib/datatype/TimeInstant.h"
 %include "terralib/datatype/TimeInstantTZ.h"
 %include "terralib/datatype/TimePeriod.h"
 %include "terralib/datatype/TimePeriodTZ.h"
