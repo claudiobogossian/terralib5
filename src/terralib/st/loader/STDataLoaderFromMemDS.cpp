@@ -457,7 +457,7 @@ std::auto_ptr<te::st::ObservationDataSet>
 te::st::STDataLoaderFromMemDS::buildDataSet(te::stmem::DataSet* ds, const ObservationDataSetInfo& info)
 {
   //get type from info
-  ObservationDataSetType& obsType = te::st::GetType(info);
+  ObservationDataSetType obsType = te::st::GetType(info);
 
   //get temporal and spatial extents
   std::auto_ptr<te::dt::DateTimePeriod> period(ds->getTemporalExtent()); 
@@ -479,7 +479,7 @@ te::st::STDataLoaderFromMemDS::buildDataSet(te::stmem::DataSet* ds, const Trajec
 {
   //get type from info
   const ObservationDataSetInfo& info = tjInfo.getObservationDataSetInfo();
-  ObservationDataSetType& obsType = te::st::GetType(info);
+  ObservationDataSetType obsType = te::st::GetType(info);
   
   //get temporal and spatial extents
   std::auto_ptr<te::dt::DateTimePeriod> period(ds->getTemporalExtent()); 
@@ -502,7 +502,7 @@ te::st::STDataLoaderFromMemDS::buildDataSet(te::stmem::DataSet* ds, const TimeSe
 {
   //get type from info
   const ObservationDataSetInfo& info = tsInfo.getObservationDataSetInfo();
-  ObservationDataSetType& obsType = te::st::GetType(info);
+  ObservationDataSetType obsType = te::st::GetType(info);
   
   //get temporal extents
   std::auto_ptr<te::dt::DateTimePeriod> period(ds->getTemporalExtent()); 
