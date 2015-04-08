@@ -387,7 +387,7 @@ void te::qt::widgets::QueryDialog::onApplyPushButtonClicked()
     {
       // Generates the oids
       dataset->moveBeforeFirst();
-      te::da::ObjectIdSet* oids = te::da::GenerateOIDSet(dataset.get(), schema.get());
+      te::da::ObjectIdSet* oids = te::da::GenerateOIDSet(dataset.get(), schema.get(), true);
 
       layer->clearSelected();
       layer->select(oids);
@@ -398,7 +398,7 @@ void te::qt::widgets::QueryDialog::onApplyPushButtonClicked()
     {
       // Generates the oids
       dataset->moveBeforeFirst();
-      te::da::ObjectIdSet* oids = te::da::GenerateOIDSet(dataset.get(), schema.get());
+      te::da::ObjectIdSet* oids = te::da::GenerateOIDSet(dataset.get(), schema.get(), true);
 
       layer->select(oids);
 
