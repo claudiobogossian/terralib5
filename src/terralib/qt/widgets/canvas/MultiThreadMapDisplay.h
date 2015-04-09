@@ -76,6 +76,8 @@ namespace te
           */
           MultiThreadMapDisplay(const QSize& size, const bool& showFeedback = true, QWidget* parent = 0, Qt::WindowFlags f = 0);
 
+          MultiThreadMapDisplay(QWidget* parent = 0, const bool& showFeedback = true, Qt::WindowFlags f = 0);
+
           /*! \brief Destructor. */
           ~MultiThreadMapDisplay();
 
