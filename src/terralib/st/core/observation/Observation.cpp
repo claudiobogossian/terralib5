@@ -63,8 +63,8 @@ te::st::Observation::Observation(te::dt::DateTime* phTime, te::gm::Geometry* geo
   : m_phTime(phTime),
     m_resultTime(),
     m_validTime(),
-    m_geometry(geom),
-    m_observedValues(obsValues)
+    m_observedValues(obsValues),
+    m_geometry(geom)
  {
  }
 
@@ -74,8 +74,8 @@ te::st::Observation::Observation(te::dt::DateTime* phTime, te::dt::DateTimeInsta
   : m_phTime(phTime),
     m_resultTime(resTime),
     m_validTime(valTime),
-    m_geometry(geom),
-    m_observedValues(obsValues)
+    m_observedValues(obsValues),
+    m_geometry(geom)
 {
 }
 

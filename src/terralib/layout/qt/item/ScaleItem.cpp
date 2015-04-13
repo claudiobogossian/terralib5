@@ -115,8 +115,6 @@ void te::layout::ScaleItem::drawDoubleAlternatingScaleBar( QPainter * painter )
     unit = 1000.0;
   }
 
-  double half = boundRect.height() / 2.;
-
   //convert millimeters to centimeters
   double mmToCm = model->getScaleGapX()/10;
 
@@ -180,9 +178,6 @@ void te::layout::ScaleItem::drawDoubleAlternatingScaleBar( QPainter * painter )
     secondRect = changeColor;
   }
 
-  qreal penWidth = painter->pen().widthF();
-  const qreal adj = penWidth / 2;
-
   newBoxSecond = QRectF(boundRect.x(), boundRect.center().y() - gapY, boundRect.width(), gapY*2);
 
   //Rect around scale
@@ -221,8 +216,6 @@ void te::layout::ScaleItem::drawAlternatingScaleBar( QPainter * painter )
   {
     unit = 1000.0;
   }
-
-  double half = boundRect.height() / 2.;
 
   //convert millimeters to centimeters
   double mmToCm = model->getScaleGapX()/10;
@@ -284,9 +277,6 @@ void te::layout::ScaleItem::drawAlternatingScaleBar( QPainter * painter )
     secondRect = changeColor;
   }
 
-  qreal penWidth = painter->pen().widthF();
-  const qreal adj = penWidth / 2;
-
   newBoxSecond = QRectF(boundRect.x(), boundRect.center().y() - gapY/2, boundRect.width(), gapY);
 
   //Rect around scale
@@ -325,8 +315,6 @@ void te::layout::ScaleItem::drawHollowScaleBar( QPainter * painter )
   {
     unit = 1000.0;
   }
-
-  double half = boundRect.height() / 2.;
 
   //convert millimeters to centimeters
   double mmToCm = model->getScaleGapX()/10;
@@ -393,8 +381,6 @@ void te::layout::ScaleItem::drawHollowScaleBar( QPainter * painter )
     secondRect = changeColor;
   }
 
-  qreal penWidth = painter->pen().widthF();
-  const qreal adj = penWidth / 2;
 
   newBoxSecond = QRectF(boundRect.x(), boundRect.center().y() - gapY/2, boundRect.width(), gapY);
 
