@@ -52,8 +52,12 @@ te::qt::plugins::ado::ADOCreatorDialog::ADOCreatorDialog(QWidget* parent, Qt::Wi
   m_ui->setupUi(this);
 
 // popule providers
+#ifdef _M_IX86
   m_ui->m_providerComboBox->addItem("Microsoft.Jet.OLEDB.4.0");
-  
+#else
+  m_ui->m_providerComboBox->addItem("Microsoft.ACE.OLEDB.12.0");
+#endif
+
 // connect signal and slots
   connect(m_ui->m_applyPushButton, SIGNAL(pressed()), this, SLOT(applyPushButtonPressed()));
   //connect(m_ui->m_helpPushButton, SIGNAL(pressed()), this, SLOT(helpPushButtonPressed()));
