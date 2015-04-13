@@ -293,7 +293,6 @@ QVariant te::layout::LegendItem::itemChange( GraphicsItemChange change, const QV
   {
     // value is the new position.
     QPointF newPos = value.toPointF();
-    double w = 0;
     double h = 0;
 
     newPos.setX(newPos.x() - transform().dx());

@@ -120,7 +120,7 @@ std::string te::qt::widgets::TemporalPropertiesWidget::getUserOrdinalType()
 
 std::string te::qt::widgets::TemporalPropertiesWidget::getDateFormat()
 {
-  int index = m_ui->m_formatComboBox->currentIndex();
+  //int index = m_ui->m_formatComboBox->currentIndex();
   return ""; //TODO adapt to use the enum when it is ready
 }
 
