@@ -18,59 +18,40 @@
  */
 
 /*!
-  \file WaitView.cpp
+  \file MapLayerChoiceOutsideModel.h
    
   \brief 
 
   \ingroup layout
 */
 
+#ifndef __TERRALIB_LAYOUT_INTERNAL_MAP_LAYER_CHOICE_OUTSIDE_MODEL_H 
+#define __TERRALIB_LAYOUT_INTERNAL_MAP_LAYER_CHOICE_OUTSIDE_MODEL_H
+
 // TerraLib
-#include "WaitView.h"
-#include "View.h"
+#include "../core/pattern/mvc/OutsideModelObservable.h"
+#include "../core/ContextItem.h"
+#include "../core/property/Properties.h"
+#include "../core/Config.h"
 
-te::layout::WaitView::WaitView()
+namespace te
 {
+  namespace layout
+  {
+    class TELAYOUTEXPORT MapLayerChoiceOutsideModel : public OutsideModelObservable
+    {
+    public:
 
+      MapLayerChoiceOutsideModel();
+
+      virtual ~MapLayerChoiceOutsideModel();
+
+      virtual void updateProperties(te::layout::Properties* properties);
+
+      virtual Properties* getProperties() const;
+
+    };
+  }
 }
 
-te::layout::WaitView::WaitView(View *view) : 
- m_view(view)
-{
-
-}
-
-te::layout::WaitView::~WaitView()
-{  
-  
-}
-
-void te::layout::WaitView::addCoord( QPointF point )
-{
-  if(!m_view)
-    return;
-  
-  QPointF poinT = m_view->mapToScene(point.toPoint());
-  te::gm::Point* p = new te::gm::Point(poinT.x(), poinT.y());
-  m_coords.push_back(p);
-  QPoint received(point.x(), point.y());
-  m_points.push_back(received);
-
-  m_view->viewport()->update();
-}
-
-void te::layout::WaitView::clear()
-{
-  m_coords.clear();
-  m_points.clear();
-}
-
-QVector<QPoint> te::layout::WaitView::getCoords()
-{
-  return m_points;
-}
-
-std::vector<te::gm::Point*> te::layout::WaitView::getCoordsW()
-{
-  return m_coords;
-}
+#endif

@@ -249,7 +249,6 @@ namespace te
 
       /* Map Menu */
       std::string m_optionMapDefault;
-      std::string m_optionMapGrid;
       std::string m_optionLegendDefault;
       std::string m_optionScale;
 

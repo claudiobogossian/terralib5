@@ -95,14 +95,6 @@ void te::layout::ImageModel::updateProperties( te::layout::Properties* propertie
   if(!pro_fileName.isNull())
   {
     m_fileName = pro_fileName.getValue().toString();
-
-    Utils* utils = Context::getInstance().getUtils();
-
-    if(utils)
-    {
-      m_imgType = utils->getFileExtensionType(m_fileName);
-      m_fileExtension = utils->getFileExtension(m_fileName);
-    }
   }
 }
 

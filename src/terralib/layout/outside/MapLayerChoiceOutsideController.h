@@ -18,50 +18,32 @@
  */
 
 /*!
-  \file MapController.h
+  \file MapLayerChoiceOutsideController.h
    
-   \brief Class that represents a "Controller" part of MapGrid MVC component. 
-   Its coordinate system is the same of scene (millimeters).
-   This is also son of ItemController, so it can become a controller.
+  \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_MAP_GRID_CONTROLLER_H 
-#define __TERRALIB_LAYOUT_INTERNAL_MAP_GRID_CONTROLLER_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_MAP_LAYER_CHOISE_OUTSIDE_CONTROLLER_H 
+#define __TERRALIB_LAYOUT_INTERNAL_MAP_LAYER_CHOISE_OUTSIDE_CONTROLLER_H
 
 // TerraLib
-#include "MapController.h"
+#include "../core/pattern/mvc/OutsideController.h"
+#include "../core/property/Property.h"
 #include "../core/Config.h"
 
 namespace te
 {
   namespace layout
   {
-    /*!
-      \brief Class that represents a "Controller" part of MapGrid MVC component. 
-          Its coordinate system is the same of scene (millimeters). 
-          This is also the son of ItemController, so it can become a controller.
-      	  
-	    \ingroup layout
-
-      \sa te::layout::MapController
-	  */
-    class TELAYOUTEXPORT MapGridController : public MapController
+    class TELAYOUTEXPORT MapLayerChoiceOutsideController : public OutsideController
     {
       public:
 
-        /*!
-          \brief Constructor
+	      MapLayerChoiceOutsideController( Observable* o );
 
-          \param o "Model" part of MVC component
-        */
-        MapGridController( Observable* o );
-
-        /*!
-          \brief Destructor
-        */
-        virtual ~MapGridController();
+	      virtual ~MapLayerChoiceOutsideController();
     };
   }
 }

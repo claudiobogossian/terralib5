@@ -108,14 +108,7 @@ namespace te
 		      \return new object 
         */
         QGraphicsItem* createMap();
-
-		    /*!
-          \brief Create graphic object of type MapGridItem
-		  		  
-		      \return new object 
-        */
-        QGraphicsItem* createMapGrid();
-    
+            
         /*!
           \brief Create graphic object of type GridMapItem
 		  		  
@@ -270,7 +263,6 @@ namespace te
 
         std::string             m_paperItem; //!< Part of the name that will be set to a new object of type PaperItem.
         std::string             m_mapItem; //!< Part of the name that will be set to a new object of type MapItem. 
-        std::string             m_mapGridItem; //!< Part of the name that will be set to a new object of type MapGridItem.
         std::string             m_textItem; //!< Part of the name that will be set to a new object of type TextItem.
         std::string             m_rectangleItem; //!< Part of the name that will be set to a new object of type RectangleItem.
         std::string             m_legendItem; //!< Part of the name that will be set to a new object of type LegendItem.

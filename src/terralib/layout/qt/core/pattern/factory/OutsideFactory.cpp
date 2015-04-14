@@ -38,6 +38,7 @@
 #include "../../../outside/EditTemplateOutside.h"
 #include "../../../outside/TextGridSettingsOutside.h"
 #include "../../../../core/enum/Enums.h"
+#include "../../../outside/MapLayerChoiceOutside.h"
 
 te::layout::OutsideFactory::OutsideFactory()
 {
@@ -95,6 +96,11 @@ te::layout::Observer* te::layout::OutsideFactory::make( EnumType* type, OutsideP
   {
     TextGridSettingsOutside* textGridSettings = new TextGridSettingsOutside(params.getController(), params.getModel());		
     outside = (Observer*)textGridSettings;
+  }
+  else if(type == enumObj->getMapLayerChoice())
+  {
+    MapLayerChoiceOutside* mapLayerChoice = new MapLayerChoiceOutside(params.getController(), params.getModel());		
+    outside = (Observer*)mapLayerChoice;
   }
 
 	return outside;

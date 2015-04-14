@@ -31,7 +31,6 @@
 te::layout::EnumObjectType::EnumObjectType() :
   m_rectangleItem(0),
   m_mapItem(0),
-  m_mapGridItem(0),
   m_paperItem(0),
   m_legendItem(0),
   m_propertiesWindow(0),
@@ -59,6 +58,7 @@ te::layout::EnumObjectType::EnumObjectType() :
   m_balloonItem(0),
   m_barCodeItem(0),
   m_gridMapItem(0),
+  m_mapLayerChoice(0),
   m_objectUnknown(0)
 {
   init();
@@ -77,13 +77,7 @@ te::layout::EnumObjectType::~EnumObjectType()
     delete m_rectangleItem;
     m_rectangleItem = 0;
   }
-
-  if(m_mapItem)
-  {
-    delete m_mapGridItem;
-    m_mapGridItem = 0;
-  }
-
+  
   if(m_paperItem)
   {
     delete m_paperItem;
@@ -257,6 +251,12 @@ te::layout::EnumObjectType::~EnumObjectType()
     delete m_gridMapItem;
     m_gridMapItem = 0;
   }
+
+  if(m_mapLayerChoice)
+  {
+    delete m_mapLayerChoice;
+    m_mapLayerChoice = 0;
+  }
 }
 
 void te::layout::EnumObjectType::init()
@@ -269,10 +269,7 @@ void te::layout::EnumObjectType::init()
 
   m_mapItem = new EnumType(2, "Map_Item", this);
   m_enums.push_back(m_mapItem);
-
-  m_mapGridItem = new EnumType(3, "MapGrid_Item", this);
-  m_enums.push_back(m_mapGridItem);
-
+  
   m_paperItem = new EnumType(4, "Paper_Item", this);
   m_enums.push_back(m_paperItem);
 
@@ -359,6 +356,9 @@ void te::layout::EnumObjectType::init()
 
   m_gridMapItem = new EnumType(36, "GridMap_Item", this);
   m_enums.push_back(m_gridMapItem);
+
+  m_mapLayerChoice = new EnumType(37, "Map_Layout_Choice", this);
+  m_enums.push_back(m_mapLayerChoice);
 }
 
 te::layout::EnumType* te::layout::EnumObjectType::getRectangleItem() const
@@ -394,11 +394,6 @@ te::layout::EnumType* te::layout::EnumObjectType::getGridMapItem() const
 te::layout::EnumType* te::layout::EnumObjectType::getMapItem() const
 {
   return m_mapItem;
-}
-
-te::layout::EnumType* te::layout::EnumObjectType::getMapGridItem() const
-{
-  return m_mapGridItem;
 }
 
 te::layout::EnumType* te::layout::EnumObjectType::getPaperItem() const
@@ -526,3 +521,11 @@ te::layout::EnumType* te::layout::EnumObjectType::getObjectUnknown() const
 {
   return m_objectUnknown;
 }
+
+te::layout::EnumType* te::layout::EnumObjectType::getMapLayerChoice() const
+{
+  return m_mapLayerChoice;
+}
+
+
+

@@ -137,14 +137,7 @@ namespace te
 		      \return enum value  	  
         */
         virtual EnumType* getModeCreateMap() const;
-
-        /*!
-          \brief Returns value that represents create map grid mode type belonging to enumeration.
-		  
-		      \return enum value  	  
-        */
-        virtual EnumType* getModeCreateMapGrid() const;
-
+        
         /*!
           \brief Returns value that represents create legend mode type belonging to enumeration.
 		  
@@ -557,7 +550,6 @@ namespace te
         EnumType* m_modeMapZoomIn; //!< value that represents map zoom in mode type belonging to enumeration
         EnumType* m_modeMapZoomOut; //!< value that represents map zoom out mode type belonging to enumeration
         EnumType* m_modeCreateMap; //!< value that represents create map mode type belonging to enumeration
-        EnumType* m_modeCreateMapGrid; //!< value that represents create map grid mode type belonging to enumeration
         EnumType* m_modeCreateLegend; //!< value that represents create legend mode type belonging to enumeration
         EnumType* m_modeCreateRectangle; //!< value that represents create rectangle mode type belonging to enumeration
         EnumType* m_modeCreateText; //!< value that represents create text mode type belonging to enumeration

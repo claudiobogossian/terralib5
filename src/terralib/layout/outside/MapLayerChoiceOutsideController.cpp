@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file WaitView.cpp
+  \file PageSetupController.h
    
   \brief 
 
@@ -26,51 +26,15 @@
 */
 
 // TerraLib
-#include "WaitView.h"
-#include "View.h"
+#include "MapLayerChoiceOutsideController.h"
 
-te::layout::WaitView::WaitView()
+te::layout::MapLayerChoiceOutsideController::MapLayerChoiceOutsideController( Observable* o ) :
+	OutsideController(o)
 {
-
-}
-
-te::layout::WaitView::WaitView(View *view) : 
- m_view(view)
-{
-
-}
-
-te::layout::WaitView::~WaitView()
-{  
   
 }
 
-void te::layout::WaitView::addCoord( QPointF point )
+te::layout::MapLayerChoiceOutsideController::~MapLayerChoiceOutsideController()
 {
-  if(!m_view)
-    return;
-  
-  QPointF poinT = m_view->mapToScene(point.toPoint());
-  te::gm::Point* p = new te::gm::Point(poinT.x(), poinT.y());
-  m_coords.push_back(p);
-  QPoint received(point.x(), point.y());
-  m_points.push_back(received);
 
-  m_view->viewport()->update();
-}
-
-void te::layout::WaitView::clear()
-{
-  m_coords.clear();
-  m_points.clear();
-}
-
-QVector<QPoint> te::layout::WaitView::getCoords()
-{
-  return m_points;
-}
-
-std::vector<te::gm::Point*> te::layout::WaitView::getCoordsW()
-{
-  return m_coords;
 }

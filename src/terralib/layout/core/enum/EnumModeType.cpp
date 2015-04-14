@@ -40,7 +40,6 @@ te::layout::EnumModeType::EnumModeType() :
   m_modeMapZoomIn(0),
   m_modeMapZoomOut(0),
   m_modeCreateMap(0),
-  m_modeCreateMapGrid(0),
   m_modeCreateLegend(0),
   m_modeCreateRectangle(0),
   m_modeCreateText(0),
@@ -147,11 +146,6 @@ te::layout::EnumModeType::~EnumModeType()
   {
     delete m_modeCreateMap;
     m_modeCreateMap = 0;
-  }
-  if(m_modeCreateMapGrid)
-  {
-    delete m_modeCreateMapGrid;
-    m_modeCreateMapGrid = 0;
   }
   if(m_modeCreateLegend)
   {
@@ -502,12 +496,7 @@ void te::layout::EnumModeType::init()
   m_modeCreateMap->setLabel("Create Map Component");
   m_modeCreateMap->setType(te::layout::EnumCreate);
   m_enums.push_back(m_modeCreateMap);
-
-  m_modeCreateMapGrid = new EnumType(12, "CreateMapGrid", this);
-  m_modeCreateMapGrid->setLabel("Create MapGrid Component");
-  m_modeCreateMapGrid->setType(te::layout::EnumCreate);
-  m_enums.push_back(m_modeCreateMapGrid);
-
+  
   m_modeCreateLegend = new EnumType(13, "CreateLegend", this);
   m_modeCreateLegend->setLabel("Create Legend Component");
   m_modeCreateLegend->setType(te::layout::EnumCreate);
@@ -836,11 +825,6 @@ te::layout::EnumType* te::layout::EnumModeType::getModeMapZoomOut() const
 te::layout::EnumType* te::layout::EnumModeType::getModeCreateMap() const
 {
   return m_modeCreateMap;
-}
-
-te::layout::EnumType* te::layout::EnumModeType::getModeCreateMapGrid() const
-{
-  return m_modeCreateMapGrid;
 }
 
 te::layout::EnumType* te::layout::EnumModeType::getModeCreateLegend() const

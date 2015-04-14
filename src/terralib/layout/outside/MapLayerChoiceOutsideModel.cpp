@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file MapGridController.cpp
+  \file MapLayerChoiceOutsideControllerModel.cpp
    
   \brief 
 
@@ -26,22 +26,36 @@
 */
 
 // TerraLib
-#include "MapGridController.h"
-#include "../core/ContextItem.h"
-#include "../core/pattern/factory/AbstractItemFactory.h"
-#include "../core/pattern/singleton/Context.h"
-#include "../core/pattern/mvc/ItemModelObservable.h"
-#include "../core/pattern/factory/ItemParamsCreate.h"
-#include "../core/pattern/mvc/ItemObserver.h"
+#include "MapLayerChoiceOutsideModel.h"
+#include "../core/property/Property.h"
+#include "../core/property/Properties.h"
 #include "../core/enum/Enums.h"
 
-te::layout::MapGridController::MapGridController( Observable* o ) :
-  MapController(o)
+te::layout::MapLayerChoiceOutsideModel::MapLayerChoiceOutsideModel() 
 {
-  
+  m_type = Enums::getInstance().getEnumObjectType()->getMapLayerChoice();
+  m_box = te::gm::Envelope(0., 0., 200., 200.);
 }
 
-te::layout::MapGridController::~MapGridController()
+te::layout::MapLayerChoiceOutsideModel::~MapLayerChoiceOutsideModel()
 {
-	
+
+}
+
+te::layout::Properties* te::layout::MapLayerChoiceOutsideModel::getProperties() const
+{
+  m_properties->clear();
+
+  Property pro_name;
+  pro_name.setName("MapLayerChoice");
+
+  m_properties->addProperty(pro_name);
+
+  m_properties->setTypeObj(m_type);
+  return m_properties;
+}
+
+void te::layout::MapLayerChoiceOutsideModel::updateProperties( te::layout::Properties* properties )
+{
+
 }

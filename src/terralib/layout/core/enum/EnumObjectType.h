@@ -77,14 +77,7 @@ namespace te
 		      \return enum value  	  
         */
         virtual EnumType* getMapItem() const;
-
-        /*!
-          \brief Returns value that represents map grid (MVC Component) type belonging to enumeration.
-		  
-		      \return enum value  	  
-        */
-        virtual EnumType* getMapGridItem() const;
-        
+                
         /*!
           \brief Returns value that represents paper (MVC Component) type belonging to enumeration.
 		  
@@ -295,6 +288,13 @@ namespace te
         */
         virtual EnumType* getGridMapItem() const;
 
+        /*!
+          \brief Returns value that represents map layer choice (MVC Component) type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
+        virtual EnumType* getMapLayerChoice() const;
+
       protected:
 
         /*!
@@ -306,7 +306,6 @@ namespace te
         
         EnumType* m_rectangleItem; //!< value that represents rectangle (MVC Component) type belonging to enumeration
         EnumType* m_mapItem; //!< value that represents map (MVC Component) type belonging to enumeration
-        EnumType* m_mapGridItem; //!< value that represents map grid (MVC Component) type belonging to enumeration
         EnumType* m_paperItem; //!< value that represents paper (MVC Component) type belonging to enumeration
         EnumType* m_legendItem; //!< value that represents legend (MVC Component) type belonging to enumeration
         EnumType* m_propertiesWindow; //!< value that represents properties widget (MVC widget) type belonging to enumeration
@@ -336,6 +335,7 @@ namespace te
         EnumType* m_balloonItem; //!< value that represents balloon (MVC Component) type belonging to enumeration
         EnumType* m_barCodeItem; //!< value that represents barcode (MVC Component) type belonging to enumeration
         EnumType* m_gridMapItem; //!< value that represents gridmap (MVC Component) type belonging to enumeration
+        EnumType* m_mapLayerChoice; //!< value that represents map layer choice (MVC Component) type belonging to enumeration
         EnumType* m_objectUnknown; //!< value that represents unknown type belonging to enumeration
     };
   }

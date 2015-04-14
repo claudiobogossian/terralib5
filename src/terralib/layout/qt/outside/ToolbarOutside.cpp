@@ -58,7 +58,6 @@ te::layout::ToolbarOutside::ToolbarOutside( OutsideController* controller, Obser
   OutsideObserver(controller, o),
   m_comboZoom(0),
   m_optionMapDefault("map_default"),
-  m_optionMapGrid("map_grid"),
   m_optionLegendDefault("legend_default"),
   m_optionScale("scale_object"),
   m_optionMapZoomIn("map_zoom_in"),
@@ -228,9 +227,6 @@ QToolButton* te::layout::ToolbarOutside::createMapToolButton()
   QAction* actionDefaultMenu = createAction("Default Map Object", m_optionMapDefault, "layout-default-map", "", menu);
   menu->addAction(actionDefaultMenu);
   
-  QAction* actionMapGrid = createAction("Map Grid", m_optionMapGrid, "layout-map-grid", "", menu);
-  menu->addAction(actionMapGrid);
-
   QAction* actionGridMap = createAction("Grid Map", m_optionGridMap, "layout-grid", "", menu);
   menu->addAction(actionGridMap);
 
@@ -483,7 +479,7 @@ QToolButton* te::layout::ToolbarOutside::createTextToolButton()
   QAction* actionTitle = createAction("Title Object", m_optionTitle, "layout-title", "", menu);
   menu->addAction(actionTitle);
 
-  QAction* actionStringGrid = createAction("Grid Object", m_optionStringGrid, "layout-grid", "", menu);
+  QAction* actionStringGrid = createAction("Text Grid Object", m_optionStringGrid, "layout-grid", "", menu);
   menu->addAction(actionStringGrid);
 
   QAction* actionImage = createAction("Image Object", m_optionImage, "layout-image", "", menu);
@@ -701,10 +697,6 @@ void te::layout::ToolbarOutside::onMapTriggered( QAction* action )
   if(action->objectName().compare(m_optionMapDefault.c_str()) == 0)
   {
     changeAction(type->getModeCreateMap());
-  }
-  else if(action->objectName().compare(m_optionMapGrid.c_str()) == 0)
-  {
-    changeAction(type->getModeCreateMapGrid());
   }
   else if(action->objectName().compare(m_optionGridMap.c_str()) == 0)
   {

@@ -37,9 +37,6 @@
 #include "../../item/MapModel.h"
 #include "../../item/MapController.h"
 #include "../item/MapItem.h"
-#include "../../item/MapGridModel.h"
-#include "../../item/MapGridController.h"
-#include "../item/MapGridItem.h"
 #include "../../item/LegendModel.h"
 #include "../../item/LegendController.h"
 #include "../item/LegendItem.h"
@@ -113,7 +110,6 @@
 te::layout::BuildGraphicsItem::BuildGraphicsItem() :
   m_paperItem("PAPER_"),
   m_mapItem("MAP_"),
-  m_mapGridItem("MAPGRID_"),
   m_textItem("TEXT_"),
   m_rectangleItem("RECTANGLE_"),
   m_legendItem("LEGEND_"),
@@ -181,11 +177,6 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createItem( te::layout::EnumType* 
   {
     m_name = nameItem(m_mapItem, enumObj->getMapItem());
     item = createMap();
-  }
-  else if(mode == enumMode->getModeCreateMapGrid())
-  {
-    m_name = nameItem(m_mapGridItem, enumObj->getMapGridItem());
-    item = createMapGrid();
   }
   else if(mode == enumMode->getModeCreateGridMap())
   {
@@ -299,10 +290,6 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createItem( te::layout::EnumType* 
   else if(type == enumObj->getMapItem())
   {
     item = createMap();
-  }
-  else if(type == enumObj->getMapGridItem())
-  {
-    item = createMapGrid();
   }
   else if(type == enumObj->getGridMapItem())
   {
@@ -472,43 +459,6 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createMap()
   ItemObserver* itemObs = (ItemObserver*)controller->getView();
 
   MapItem* view = dynamic_cast<MapItem*>(itemObs);
-  if(m_props)
-  {
-    view->updateProperties(m_props);
-  }
-
-  if(view)
-  {
-    view->setPos(QPointF(m_coord.x, m_coord.y));
-    if(m_props)
-    {
-      view->setZValue(m_zValue);
-    }
-    if(m_redraw)
-    {
-      itemObs->redraw();
-    }
-    return view;
-  }
-
-  return item;
-}
-
-QGraphicsItem* te::layout::BuildGraphicsItem::createMapGrid()
-{
-  QGraphicsItem* item = 0;
-
-  MapGridModel* model = new MapGridModel();
-  if(!m_props)
-  {
-    model->setId(m_id);
-    model->setName(m_name);
-  }
-
-  MapGridController* controller = new MapGridController(model);
-  ItemObserver* itemObs = (ItemObserver*)controller->getView();
-
-  MapGridItem* view = dynamic_cast<MapGridItem*>(itemObs);
   if(m_props)
   {
     view->updateProperties(m_props);
