@@ -60,9 +60,10 @@ std::list<te::st::ObservationDataSetInfo*> te::qt::widgets::ObservationPropertie
 
   while(typesItBegin != typesItEnd)
   {
-    std::vector<int> phenomTimes;
-    phenomTimes.resize(m_propWidget->getOutputValues().size()-1, m_tempPropWidget->getPhenomenonTime());
-    obsInfos.push_back(new te::st::ObservationDataSetInfo(*dsInfo.get(), typesItBegin->get()->getName(), phenomTimes, m_propWidget->getOutputValues(), m_propWidget->getGeometryId()));
+    std::vector<std::string> phenomTimes;
+    phenomTimes.resize(2, m_tempPropWidget->getPhenomenonTime());
+    obsInfos.push_back(new te::st::ObservationDataSetInfo(*dsInfo.get(), typesItBegin->get()->getName()));
+//, phenomTimes, m_propWidget->getOutputValues(), m_propWidget->getGeometryId()));
     typesItBegin++;
   }
 

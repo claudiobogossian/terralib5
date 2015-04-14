@@ -327,6 +327,7 @@ void te::vp::BufferQuery::prepareDataSet(te::da::DataSetType* dataSetType,
 #ifdef TERRALIB_LOGGER_ENABLED
             te::common::Logger::logDebug("vp", "Buffer - Type not found.");
 #endif //TERRALIB_LOGGER_ENABLED
+            break;
         }
       }
     }

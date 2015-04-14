@@ -56,12 +56,9 @@ int te::qt::widgets::TrajectoryPropertiesWidget::getId()
     return -1;
 }
 
-int te::qt::widgets::TrajectoryPropertiesWidget::getGeometryId()
+std::string te::qt::widgets::TrajectoryPropertiesWidget::getGeometryId()
 {
-  if(m_dataType)
-    return m_dataType->getPropertyPosition(m_ui->m_geometryComboBox->currentText().toStdString());
-  else
-    return -1;
+  return m_ui->m_geometryComboBox->currentText().toStdString();
 }
 
 void te::qt::widgets::TrajectoryPropertiesWidget::setUp (const te::da::DataSetTypePtr dataType)

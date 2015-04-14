@@ -61,8 +61,6 @@ te::layout::Properties* te::layout::PointModel::getProperties() const
 {
   ItemModelObservable::getProperties();
 
-  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
-
   Property pro_pointName = pointProperty();
   if(!pro_pointName.isNull())
   {

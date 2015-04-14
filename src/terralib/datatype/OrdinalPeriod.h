@@ -45,6 +45,10 @@ namespace te
       Examples: a time period whose initial time is the first 
       epidemiological week and the final time is the fifht epidemiological
       week.
+      
+      To understand the meaning of the ordinal numbers, a user has to use
+      extra information, such as the temporal resolution and the starting time 
+      in the DateTimeProperty.
 
       \sa DateTime
     */
@@ -164,7 +168,7 @@ namespace te
 
           \return The subtype of the date and time type. 
         */
-        DateTimeType getDateTimeType() const { return ORDINAL_PERIOD; }
+        DateTimeType getDateTimeType() const { return ORDINAL_TIME_PERIOD; }
 
       protected:
 

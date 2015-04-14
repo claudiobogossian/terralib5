@@ -47,7 +47,13 @@ te::qt::widgets::Scatter::Scatter()
 
 te::qt::widgets::Scatter::~Scatter()
 {
-  
+  te::qt::widgets::PointToObjectIdSet::iterator it= m_valuesOids.begin();
+  while(it != m_valuesOids.end())
+  {
+    delete it->oid;
+    ++it;
+  }
+  m_valuesOids.clear();
 }
 
 void te::qt::widgets::Scatter::calculateMinMaxValues()
@@ -195,13 +201,7 @@ te::da::ObjectIdSet* te::qt::widgets::Scatter::find(double& xValue, double& yVal
   {
     if(it0->y == yValue)
     {
-      te::da::ObjectId* oid = new te::da::ObjectId();
-
-      for(boost::ptr_vector<te::dt::AbstractData>::const_iterator it = it0->oid->getValue().begin(); it != it0->oid->getValue().end(); ++it)
-      {
-        oid->addValue((it)->clone());
-      }
-
+      te::da::ObjectId* oid = new te::da::ObjectId(*it0->oid);
       oids->add(oid);
     }
 
@@ -231,16 +231,9 @@ te::da::ObjectIdSet* te::qt::widgets::Scatter::find(std::vector<QPointF> selecte
     {
       if(it0->y == y)
       {
-        te::da::ObjectId* oid = new te::da::ObjectId(); 
-
-        for(boost::ptr_vector<te::dt::AbstractData>::const_iterator it = it0->oid->getValue().begin(); it != it0->oid->getValue().end(); ++it)
-        {
-          oid->addValue((it)->clone());
-        }
-
+        te::da::ObjectId* oid = new te::da::ObjectId(*it0->oid);
         oids->add(oid);
       }
-
       ++it0;
     }
   }

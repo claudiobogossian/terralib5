@@ -95,6 +95,8 @@ namespace te
           */
           MapDisplay(const QSize& size, QWidget* parent = 0, Qt::WindowFlags f = 0);
 
+          MapDisplay(QWidget* parent = 0, Qt::WindowFlags f = 0);
+
           /*! \brief Destructor. */
           virtual ~MapDisplay();
 

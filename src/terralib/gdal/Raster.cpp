@@ -140,8 +140,8 @@ te::gdal::Raster::Raster(const Raster& rhs)
 te::gdal::Raster::Raster( const unsigned int multiResolutionLevel, 
   const std::string& uRI, const te::common::AccessPolicy& policy )
   : te::rst::Raster( 0, policy ),
-    m_myURI( uRI ),
-    m_deleter( 0 )
+    m_deleter( 0 ),
+    m_myURI( uRI )
 {
   GDALAllRegister();
   

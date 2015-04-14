@@ -62,6 +62,26 @@ te::qt::widgets::MapDisplay::MapDisplay(const QSize& size, QWidget* parent, Qt::
   setAcceptDrops(true);
 }
 
+te::qt::widgets::MapDisplay::MapDisplay(QWidget* parent, Qt::WindowFlags f)
+: QWidget(parent, f),
+te::map::MapDisplay(),
+m_displayPixmap(new QPixmap(size())),
+m_draftPixmap(new QPixmap(size())),
+m_backgroundColor(Qt::white),
+m_resizePolicy(te::qt::widgets::MapDisplay::Fixed),
+m_timer(new QTimer(this)),
+m_interval(200),
+m_isDrawing(false)
+{
+  m_timer->setSingleShot(true);
+  connect(m_timer, SIGNAL(timeout()), this, SLOT(onResizeTimeout()));
+
+  m_displayPixmap->fill(m_backgroundColor);
+  m_draftPixmap->fill(Qt::transparent);
+
+  setAcceptDrops(true);
+}
+
 te::qt::widgets::MapDisplay::~MapDisplay()
 {
   delete m_displayPixmap;

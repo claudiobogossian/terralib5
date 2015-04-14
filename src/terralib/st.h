@@ -66,7 +66,6 @@
 #include "st/core/timeseries/TimeSeries.h"
 #include "st/core/timeseries/TimeSeriesDataSet.h"
 #include "st/core/timeseries/TimeSeriesDataSetInfo.h"
-#include "st/core/timeseries/TimeSeriesDataSetType.h"
 #include "st/core/timeseries/TimeSeriesIterator.h"
 #include "st/core/timeseries/TimeSeriesObservation.h"
 
@@ -74,7 +73,6 @@
 #include "st/core/trajectory/Trajectory.h"
 #include "st/core/trajectory/TrajectoryDataSet.h"
 #include "st/core/trajectory/TrajectoryDataSetInfo.h"
-#include "st/core/trajectory/TrajectoryDataSetType.h"
 #include "st/core/trajectory/TrajectoryIterator.h"
 #include "st/core/trajectory/TrajectoryObservation.h"
 

@@ -186,9 +186,6 @@ void te::layout::LegendModel::drawGroupingLegend( te::map::Grouping* grouping, t
       label += upperLimit;
     }
 
-    const std::vector<te::se::Symbolizer*>& symbolizers = item->getSymbolizers();
-
-
     //Test
     te::gm::Envelope box(x1, y1 - m_displacementBetweenTitleAndSymbols - (m_displacementBetweenSymbols * i), 
       x1 + m_symbolsize, y1 - m_displacementBetweenTitleAndSymbols - (m_displacementBetweenSymbols * i) - m_symbolsize);
@@ -453,9 +450,6 @@ void te::layout::LegendModel::updateBox(ContextItem context)
   utils->textBoundingBox(wtxt, htxt, title);
 
   te::gm::Envelope box = m_box;
-
-  double newWidth = 0.;
-  double newHeight = 0.;
 
   double boxWidth = box.getWidth();
   double boxHeight = box.getHeight();

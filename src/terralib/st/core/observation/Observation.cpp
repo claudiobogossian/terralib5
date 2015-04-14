@@ -28,48 +28,54 @@
 #include "../../../datatype/DateTime.h"
 #include "../../../datatype/TimeInstant.h"
 #include "../../../datatype/TimePeriod.h"
+#include "../../../geometry/Geometry.h"
 
-//DyGeo
+//ST
 #include "Observation.h"
 
 te::st::Observation::Observation()
   : m_phTime(),
     m_resultTime(),
-    m_validTime()
+    m_validTime(),
+    m_geometry()
 {  
 }
 
 te::st::Observation::Observation(te::dt::DateTime* phTime) 
   : m_phTime(phTime),
     m_resultTime(),
-    m_validTime()
+    m_validTime(),
+    m_geometry()
 {
 }
 
 te::st::Observation::Observation(te::dt::DateTime* phTime, te::dt::AbstractData* obsValue)
   : m_phTime(phTime),
     m_resultTime(),
-    m_validTime()
+    m_validTime(),
+    m_geometry()
 {
   m_observedValues.push_back(obsValue);
 }
 
-te::st::Observation::Observation(te::dt::DateTime* phTime, 
+te::st::Observation::Observation(te::dt::DateTime* phTime, te::gm::Geometry* geom, 
                                  const boost::ptr_vector<te::dt::AbstractData>& obsValues)
   : m_phTime(phTime),
     m_resultTime(),
     m_validTime(),
-    m_observedValues(obsValues)
+    m_observedValues(obsValues),
+    m_geometry(geom)
  {
  }
 
 te::st::Observation::Observation(te::dt::DateTime* phTime, te::dt::DateTimeInstant* resTime, 
-                    te::dt::DateTimePeriod* valTime, 
+                    te::dt::DateTimePeriod* valTime, te::gm::Geometry* geom,
                     const boost::ptr_vector<te::dt::AbstractData>& obsValues) 
   : m_phTime(phTime),
     m_resultTime(resTime),
     m_validTime(valTime),
-    m_observedValues(obsValues)
+    m_observedValues(obsValues),
+    m_geometry(geom)
 {
 }
 
@@ -86,6 +92,7 @@ const te::st::Observation& te::st::Observation::operator=(const Observation& rhs
   m_phTime.reset();
   m_resultTime.reset();
   m_validTime.reset();
+  m_geometry.reset();
   m_observedValues.clear();
 
   if(rhs.m_phTime.get())
@@ -94,6 +101,8 @@ const te::st::Observation& te::st::Observation::operator=(const Observation& rhs
     m_resultTime.reset(dynamic_cast<te::dt::DateTimeInstant*>(rhs.m_resultTime->clone()));
   if(rhs.m_validTime.get())
     m_validTime.reset(dynamic_cast<te::dt::DateTimePeriod*>(rhs.m_validTime->clone()));
+  if(rhs.m_geometry.get())
+    m_geometry.reset(dynamic_cast<te::gm::Geometry*>(rhs.m_geometry->clone()));
   
   m_observedValues = rhs.m_observedValues.clone();
   return *this; 
@@ -148,6 +157,16 @@ void te::st::Observation::setValues(const boost::ptr_vector<te::dt::AbstractData
 {
   m_observedValues.clear();
   m_observedValues = values; //deep copy?
+}
+
+te::gm::Geometry* te::st::Observation::getGeometry() const
+{
+  return m_geometry.get();
+}
+
+void te::st::Observation::setGeometry(te::gm::Geometry* geom)
+{
+  m_geometry.reset(geom);
 }
 
 te::st::Observation* te::st::Observation::clone() const

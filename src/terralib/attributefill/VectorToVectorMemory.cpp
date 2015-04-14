@@ -571,7 +571,7 @@ std::vector<std::size_t> te::attributefill::VectorToVectorMemory::getIntersectio
 
     std::auto_ptr<te::gm::Geometry> g = fromDs->getGeometry(fromSpatialPos);
     g->setSRID(m_fromLayer->getSRID());
-
+    
     if(geom->intersects(g.get()))
     {
       interVec.push_back(report[i]);
@@ -826,7 +826,27 @@ te::dt::AbstractData* te::attributefill::VectorToVectorMemory::getClassWithHighe
     if(fromGeom->getSRID() <= 0)
       fromGeom->setSRID(fromSrid);
 
-    std::auto_ptr<te::gm::Geometry> interGeom(toGeom->intersection(fromGeom.get()));
+    std::auto_ptr<te::gm::Geometry> interGeom;
+
+    if(!checkGeometries(fromGeom.get(), dsPos[i], toGeom.get()))
+    {
+      m_hasErrors = true;
+      continue;
+    }
+    
+    try
+    {
+      interGeom.reset(toGeom->intersection(fromGeom.get()));
+    }
+    catch(const std::exception &e)
+    {
+#ifdef TERRALIB_LOGGER_ENABLED
+      std::string ex = e.what();
+      te::common::Logger::logDebug("attributefill", ex.c_str());
+#endif //TERRALIB_LOGGER_ENABLED
+      m_hasErrors = true;
+      continue;
+    }
 
     std::string value = fromDs->getAsString(propertyName);
 
@@ -930,6 +950,12 @@ double te::attributefill::VectorToVectorMemory::getPercentageOfTotalArea(te::da:
     if(fromGeom->getSRID() <= 0)
       fromGeom->setSRID(fromSrid);
 
+    if(checkGeometries(fromGeom.get(), dsPos[i], toGeom.get()))
+    {
+      m_hasErrors = true;
+      continue;
+    }
+
     std::auto_ptr<te::gm::Geometry> interGeom(toGeom->intersection(fromGeom.get()));
 
     classArea += getArea(interGeom.get());
@@ -965,6 +991,12 @@ std::map<std::string, double> te::attributefill::VectorToVectorMemory::getPercen
     std::auto_ptr<te::gm::Geometry> fromGeom = fromDs->getGeometry(fromGeomPos);
     if(fromGeom->getSRID() <= 0)
       fromGeom->setSRID(fromSrid);
+
+    if(checkGeometries(fromGeom.get(), dsPos[i], toGeom.get()))
+    {
+      m_hasErrors = true;
+      continue;
+    }
 
     std::auto_ptr<te::gm::Geometry> interGeom(toGeom->intersection(fromGeom.get()));
 
@@ -1011,6 +1043,12 @@ double te::attributefill::VectorToVectorMemory::getWeightedByArea(te::da::DataSe
     if(fromGeom->getSRID() <= 0)
       fromGeom->setSRID(fromSrid);
 
+    if(checkGeometries(fromGeom.get(), dsPos[i], toGeom.get()))
+    {
+      m_hasErrors = true;
+      continue;
+    }
+
     std::auto_ptr<te::gm::Geometry> interGeom(toGeom->intersection(fromGeom.get()));
 
     double value_num = 0;
@@ -1054,6 +1092,12 @@ double te::attributefill::VectorToVectorMemory::getWeightedSumByArea(te::da::Dat
       fromGeom->setSRID(fromSrid);
 
     double fromGeomArea = getArea(fromGeom.get());
+
+    if(checkGeometries(fromGeom.get(), dsPos[i], toGeom.get()))
+    {
+      m_hasErrors = true;
+      continue;
+    }
 
     std::auto_ptr<te::gm::Geometry> interGeom(toGeom->intersection(fromGeom.get()));
 
@@ -1419,3 +1463,28 @@ bool te::attributefill::VectorToVectorMemory::hasNoIntersectionOperations()
   return false;
 }
 
+bool te::attributefill::VectorToVectorMemory::checkGeometries(te::gm::Geometry* fromGeom, std::size_t fromPos, te::gm::Geometry* toGeom)
+{
+  if(!fromGeom->isValid())
+  {
+    std::string ex = TE_TR("\"From\" layer geometry at position ");
+    ex += boost::lexical_cast<std::string>(fromPos);
+    ex += TE_TR(" is invalid.");
+#ifdef TERRALIB_LOGGER_ENABLED
+    te::common::Logger::logDebug("attributefill", ex.c_str());
+#endif //TERRALIB_LOGGER_ENABLED
+    
+    return false;
+  }
+  else if(!toGeom->isValid())
+  {
+    std::string ex = TE_TR("\"To\" layer geometry is invalid.");
+#ifdef TERRALIB_LOGGER_ENABLED
+    te::common::Logger::logDebug("attributefill", ex.c_str());
+#endif //TERRALIB_LOGGER_ENABLED
+
+    return false;
+  }
+
+  return true;
+}

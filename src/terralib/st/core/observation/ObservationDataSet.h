@@ -128,91 +128,7 @@ namespace te
             \note It will take the ownership of the given pointers
         */
         ObservationDataSet(te::da::DataSet* ds, const ObservationDataSetType& obst, 
-                           te::dt::DateTimePeriod* text, const te::gm::Envelope& sext); 
-
-        /*! \brief Constructor. 
-
-            \param ds           The DataSet. 
-            \param phTimeIdx    The index of the property that contains the phenomenon time.
-            \param obsPropIdx   The index of the property that is observed.
-            \param geomPropIdx  The index of the observed property that contains the geometry.
-
-            \note It will take the ownership of the DataSet pointer
-        */
-        ObservationDataSet( te::da::DataSet* ds, int phTimeIdx, int obsPropIdx, 
-                            int geomPropIdx = -1);
-
-        /*! \brief Constructor. 
-
-            \param ds     the DataSet 
-            \param phTimeIdxs   The indexes of the property that contains the begin and final phenomenon time.
-            \param obsPropIdx   The indexes of the properties that are observed.
-            \param geomPropIdx  The index of the observed property that contains the geometry.
-
-            \note It will take the ownership of the DataSet pointer
-        */
-        ObservationDataSet( te::da::DataSet* ds, const std::vector<int>& phTimeIdxs, 
-                            const std::vector<int>& obsPropIdxs, int geomPropIdx = -1);
-        
-        /*! \brief Constructor. 
-
-            \param ds           The DataSet 
-            \param phTimeIdx    The index of the property that contains the phenomenon time.
-            \param obsPropIdx   The index of the property that is observed.
-            \param geomPropIdx  The index of the observed property that contains the geometry.
-            \param text         The temporal extent
-            \param sext         The spatial extent
-
-            \note It will take the ownership of the DataSet pointer
-        */
-        ObservationDataSet( te::da::DataSet* ds, int phTimeIdx, int obsPropIdx, 
-                            int geomPropIdx, te::dt::DateTimePeriod* text);                    
-        
-        
-        /*! \brief Constructor. 
-
-            \param ds           The DataSet 
-            \param phTimeIdx    The index of the property that contains the phenomenon time.
-            \param obsPropIdx   The index of the property that is observed.
-            \param geomPropIdx  The index of the observed property that contains the geometry.
-            \param text         The temporal extent
-            \param sext         The spatial extent
-
-            \note It will take the ownership of the DataSet pointer
-        */
-        ObservationDataSet( te::da::DataSet* ds, int phTimeIdx, int obsPropIdx, 
-                            int geomPropIdx, te::dt::DateTimePeriod* text, 
-                            const te::gm::Envelope& sext);
-
-        /*! \brief Constructor. 
-
-            \param ds           The DataSet 
-            \param phTimeIdxs   The index of the property that contains the begin and end times.
-            \param obsPropIdxs  The indexes of the properties that are observed.
-            \param geomPropIdx  The index of the observed property that contains the geometry.
-            \param text         The temporal extent
-            \param sext         The spatial extent
-
-            \note It will take the ownership of the DataSet pointer
-        */
-        ObservationDataSet( te::da::DataSet* ds, const std::vector<int>& phTimeIdxs, 
-                            const std::vector<int>& obsPropIdxs, int geomPropIdx, 
-                            te::dt::DateTimePeriod* text);
-
-        /*! \brief Constructor. 
-
-            \param ds           The DataSet 
-            \param phTimeIdxs   The index of the property that contains the begin and end times.
-            \param obsPropIdxs  The indexes of the properties that are observed.
-            \param geomPropIdx  The index of the observed property that contains the geometry.
-            \param text         The temporal extent
-            \param sext         The spatial extent
-
-            \note It will take the ownership of the DataSet pointer
-        */
-        ObservationDataSet( te::da::DataSet* ds, const std::vector<int>& phTimeIdxs, 
-                            const std::vector<int>& obsPropIdxs, int geomPropIdx, 
-                            te::dt::DateTimePeriod* text, const te::gm::Envelope& sext);
+                           te::dt::DateTimePeriod* text, te::gm::Geometry* sext); 
         //@}
 
         /*!
@@ -236,16 +152,22 @@ namespace te
                   when there is an observed value of geometry type.
 
           \return The spatial extent of the observations.
+
+          \note The caller will NOT take the ownership of the returned pointer.
         */
-        const te::gm::Envelope& getSpatialExtent();
+        //const te::gm::Envelope& getSpatialExtent();
+        const te::gm::Geometry* getSpatialExtent();
 
         /*!
           \brief  It sets the spatial extent of the observations, 
                   when there is an observed value of geometry type.
 
           \param ext The spatial extent of the observations.
+
+          \note It will take the ownership of the given pointer.
         */
-        void setSpatialExtent(const te::gm::Envelope& ext);
+        //void setSpatialExtent(const te::gm::Envelope& ext);
+        void setSpatialExtent(te::gm::Geometry* ext);
         
          /*!
           \brief It returns the temporal extent of the observations.
@@ -254,7 +176,7 @@ namespace te
 
           \note The caller will NOT take the ownership of the returned pointer.
         */
-        te::dt::DateTimePeriod* getTemporalExtent();
+        const te::dt::DateTimePeriod* getTemporalExtent();
 
          /*!
           \brief  It sets the temporal extent of the observations, 
@@ -306,7 +228,7 @@ namespace te
 
           \note The caller will NOT take the ownership of the returned pointer.
         */
-        //te::dt::DateTimeProperty* getBeginTimeProperty() const;
+        const te::dt::DateTimeProperty* getBeginTimeProperty() const;
 
          /*!
           \brief It returns the property of the phenomenon end time.
@@ -315,16 +237,7 @@ namespace te
 
           \note The caller will NOT take the ownership of the returned pointer.
         */
-        //te::dt::DateTimeProperty* getEndTimeProperty() const;
-
-        /*!
-          \brief It returns the properties of the observed values. 
-
-          \param output the properties of the observed values.
-
-          \note The caller will NOT take the ownership of the output pointers.
-        */
-        //void getObsProperties(std::vector<te::dt::Property*> output);
+        const te::dt::DateTimeProperty* getEndTimeProperty() const;
 
         /*!
           \brief It returns the property of the valid beginning time.
@@ -333,7 +246,7 @@ namespace te
 
           \note The caller will NOT take the ownership of the returned pointer.
         */
-        //te::dt::DateTimeProperty* getVlBeginTimeProperty() const;
+        const te::dt::DateTimeProperty* getVlBeginTimeProperty() const;
 
         /*!
           \brief It returns the property of the valid end time.
@@ -342,7 +255,7 @@ namespace te
 
           \note The caller will NOT take the ownership of the returned pointer.
         */
-        //te::dt::DateTimeProperty* getVlEndTimeProperty() const;
+        const te::dt::DateTimeProperty* getVlEndTimeProperty() const;
         
         /*!
           \brief It returns the property of the result time.
@@ -351,7 +264,7 @@ namespace te
 
           \note The caller will NOT take the ownership of the returned pointer.
         */
-        //te::dt::DateTimeProperty* getRsTimeProperty() const;
+        const te::dt::DateTimeProperty* getRsTimeProperty() const;
         //@}
         
         /*! \brief Virtual destructor. */
@@ -372,9 +285,7 @@ namespace te
 
         std::auto_ptr<te::da::DataSet>          m_ds;             //! A data set that contains observations
         ObservationDataSetType                  m_obst;           //! An observation data set type that refers to m_ds
-        std::auto_ptr<te::dt::DateTimePeriod>   m_tpExtent;       //! Its temporal extent
-        te::gm::Envelope                        m_spExtent;       //! Its spatial extent
-    };
+   };
 
     typedef std::auto_ptr<ObservationDataSet> ObservationDataSetPtr;
 

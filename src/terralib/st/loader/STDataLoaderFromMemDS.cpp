@@ -31,6 +31,7 @@
 #include "../../dataaccess/dataset/DataSet.h"
 #include "../../dataaccess/utils/Utils.h"
 #include "../../datatype/DateTimePeriod.h"
+#include "../../geometry/Utils.h"
 
 //STMEM
 #include "../../stmemory/DataSource.h"
@@ -67,11 +68,10 @@ std::auto_ptr<te::st::ObservationDataSet>
 te::st::STDataLoaderFromMemDS::getDataSet(const ObservationDataSetInfo& info, 
                                  te::common::TraverseType travType)
 {
-  
   //load the DataSet from its origin DataSource and put it into the In-Mem DataSource
   if(!m_ds->dataSetExists(info.getDataSetName())) 
-    loadDataSet(info.getDataSourceInfo(), info.getDataSetName(), info.getBeginTimePropIdx(), 
-                info.getEndTimePropIdx(), info.getGeomPropIdx()); 
+    loadDataSet(info.getDataSourceInfo(), info.getDataSetName(), info.getBeginTimePropName(), 
+                info.getEndTimePropName(), info.getGeomPropName()); 
 
   std::auto_ptr<te::da::DataSet> dset(m_ds->getDataSet(info.getDataSetName(), travType));
 
@@ -83,14 +83,16 @@ std::auto_ptr<te::st::ObservationDataSet>
 te::st::STDataLoaderFromMemDS::getDataSet(const te::st::ObservationDataSetInfo& info, const te::gm::Envelope& e,
                           te::gm::SpatialRelation r, te::common::TraverseType travType)
 {
+  if(!info.hasGeomProp())
+    return std::auto_ptr<te::st::ObservationDataSet>();
+  
   //load the DataSet from its origin DataSource and put it into the In-Mem DataSource
   if(!m_ds->dataSetExists(info.getDataSetName())) 
-    loadDataSet(info.getDataSourceInfo(), info.getDataSetName(), info.getBeginTimePropIdx(), 
-                info.getEndTimePropIdx(), info.getGeomPropIdx()); 
+    loadDataSet(info.getDataSourceInfo(), info.getDataSetName(), info.getBeginTimePropName(), 
+                info.getEndTimePropName(), info.getGeomPropName()); 
 
   //get the geometry property name
-  std::auto_ptr<te::da::DataSetType> dsettype(m_ds->getDataSetType(info.getDataSetName()));
-  std::string geomPropName = dsettype->getProperty(info.getGeomPropIdx())->getName();
+  std::string geomPropName = info.getGeomPropName();
 
   //get the data set applying he filter
   std::auto_ptr<te::da::DataSet> dset(m_ds->getDataSet(info.getDataSetName(), geomPropName, &e, r, travType));
@@ -102,15 +104,17 @@ std::auto_ptr<te::st::ObservationDataSet>
 te::st::STDataLoaderFromMemDS::getDataSet(const te::st::ObservationDataSetInfo& info, const te::gm::Geometry& geom, 
                           te::gm::SpatialRelation r, te::common::TraverseType travType)
 {
+  if(!info.hasGeomProp())
+    return std::auto_ptr<te::st::ObservationDataSet>();
+  
   //load the DataSet from its origin DataSource and put it into the In-Mem DataSource
   if(!m_ds->dataSetExists(info.getDataSetName())) 
-    loadDataSet(info.getDataSourceInfo(), info.getDataSetName(), info.getBeginTimePropIdx(), 
-                info.getEndTimePropIdx(), info.getGeomPropIdx()); 
+    loadDataSet(info.getDataSourceInfo(), info.getDataSetName(), info.getBeginTimePropName(), 
+                info.getEndTimePropName(), info.getGeomPropName()); 
 
   //get the geometry property name
-  std::auto_ptr<te::da::DataSetType> dsettype(m_ds->getDataSetType(info.getDataSetName()));
-  std::string geomPropName = dsettype->getProperty(info.getGeomPropIdx())->getName();
-  
+  std::string geomPropName = info.getGeomPropName();
+
   //get the data set applying he filter
   std::auto_ptr<te::da::DataSet> dset(m_ds->getDataSet(info.getDataSetName(), geomPropName, &geom, r, travType));
 
@@ -124,8 +128,8 @@ te::st::STDataLoaderFromMemDS::getDataSet(const te::st::ObservationDataSetInfo& 
 {
   //load the DataSet from its origin DataSource and put it into the In-Mem DataSource
   if(!m_ds->dataSetExists(info.getDataSetName())) 
-    loadDataSet(info.getDataSourceInfo(), info.getDataSetName(), info.getBeginTimePropIdx(), 
-                info.getEndTimePropIdx(), info.getGeomPropIdx()); 
+    loadDataSet(info.getDataSourceInfo(), info.getDataSetName(), info.getBeginTimePropName(), 
+                info.getEndTimePropName(), info.getGeomPropName()); 
 
   te::stmem::DataSource* inMemDataSource = static_cast<te::stmem::DataSource*>(m_ds.get());
 
@@ -144,8 +148,8 @@ te::st::STDataLoaderFromMemDS::getDataSet(const te::st::ObservationDataSetInfo& 
 {
   //load the DataSet from its origin DataSource and put it into the In-Mem DataSource
   if(!m_ds->dataSetExists(info.getDataSetName())) 
-    loadDataSet(info.getDataSourceInfo(), info.getDataSetName(), info.getBeginTimePropIdx(), 
-                info.getEndTimePropIdx(), info.getGeomPropIdx()); 
+    loadDataSet(info.getDataSourceInfo(), info.getDataSetName(), info.getBeginTimePropName(), 
+                info.getEndTimePropName(), info.getGeomPropName()); 
 
   te::stmem::DataSource* inMemDataSource = static_cast<te::stmem::DataSource*>(m_ds.get());
 
@@ -163,8 +167,8 @@ te::st::STDataLoaderFromMemDS::getDataSet(const te::st::ObservationDataSetInfo& 
 {
   //load the DataSet from its origin DataSource and put it into the In-Mem DataSource
   if(!m_ds->dataSetExists(info.getDataSetName())) 
-    loadDataSet(info.getDataSourceInfo(), info.getDataSetName(), info.getBeginTimePropIdx(), 
-                info.getEndTimePropIdx(), info.getGeomPropIdx()); 
+    loadDataSet(info.getDataSourceInfo(), info.getDataSetName(), info.getBeginTimePropName(), 
+                info.getEndTimePropName(), info.getGeomPropName()); 
 
   te::stmem::DataSource* inMemDataSource = static_cast<te::stmem::DataSource*>(m_ds.get());
 
@@ -184,10 +188,10 @@ te::st::STDataLoaderFromMemDS::getDataSet(const TrajectoryDataSetInfo& info, te:
 {
   //load the DataSet from its origin DataSource and put it into the In-Mem DataSource
   if(!m_ds->dataSetExists(info.getObservationDataSetInfo().getDataSetName())) 
-    loadDataSet(info.getDataSourceInfo(), info.getObservationDataSetInfo().getDataSetName(), 
-                info.getObservationDataSetInfo().getBeginTimePropIdx(), 
-                info.getObservationDataSetInfo().getEndTimePropIdx(), 
-                info.getObservationDataSetInfo().getGeomPropIdx()); 
+    loadDataSet(info.getObservationDataSetInfo().getDataSourceInfo(), info.getObservationDataSetInfo().getDataSetName(), 
+                info.getObservationDataSetInfo().getBeginTimePropName(), 
+                info.getObservationDataSetInfo().getEndTimePropName(), 
+                info.getObservationDataSetInfo().getGeomPropName()); 
 
   //get the data set
   std::auto_ptr<te::da::DataSet> dset(m_ds->getDataSet(info.getObservationDataSetInfo().getDataSetName(), travType));
@@ -200,16 +204,18 @@ te::st::STDataLoaderFromMemDS::getDataSet(const TrajectoryDataSetInfo& info,
                              const te::gm::Geometry& geom, te::gm::SpatialRelation r,
                              te::common::TraverseType travType)
 {
+  if(!info.getObservationDataSetInfo().hasGeomProp())
+    return std::auto_ptr<te::st::TrajectoryDataSet>();
+  
   //load the DataSet from its origin DataSource and put it into the In-Mem DataSource
   if(!m_ds->dataSetExists(info.getObservationDataSetInfo().getDataSetName())) 
-    loadDataSet(info.getDataSourceInfo(), info.getObservationDataSetInfo().getDataSetName(), 
-                info.getObservationDataSetInfo().getBeginTimePropIdx(), 
-                info.getObservationDataSetInfo().getEndTimePropIdx(), 
-                info.getObservationDataSetInfo().getGeomPropIdx()); 
+    loadDataSet(info.getObservationDataSetInfo().getDataSourceInfo(), info.getObservationDataSetInfo().getDataSetName(), 
+                info.getObservationDataSetInfo().getBeginTimePropName(), 
+                info.getObservationDataSetInfo().getEndTimePropName(), 
+                info.getObservationDataSetInfo().getGeomPropName()); 
 
   //get data set type to get the geometry property name
-  std::auto_ptr<te::da::DataSetType> dsettype(m_ds->getDataSetType(info.getObservationDataSetInfo().getDataSetName()));
-  std::string geomPropName = dsettype->getProperty(info.getGeomPropIdx())->getName();
+  std::string geomPropName = info.getObservationDataSetInfo().getGeomPropName();
   
   //get the data set, applying the spatial filter
   std::auto_ptr<te::da::DataSet> dset(m_ds->getDataSet(info.getObservationDataSetInfo().getDataSetName(), 
@@ -223,16 +229,18 @@ te::st::STDataLoaderFromMemDS::getDataSet(const TrajectoryDataSetInfo& info,
                                 const te::gm::Envelope& e, te::gm::SpatialRelation r,               
                                 te::common::TraverseType travType)
 {
+  if(!info.getObservationDataSetInfo().hasGeomProp())
+    return std::auto_ptr<te::st::TrajectoryDataSet>();
+  
   //load the DataSet from its origin DataSource and put it into the In-Mem DataSource
   if(!m_ds->dataSetExists(info.getObservationDataSetInfo().getDataSetName())) 
-    loadDataSet(info.getDataSourceInfo(), info.getObservationDataSetInfo().getDataSetName(), 
-                info.getObservationDataSetInfo().getBeginTimePropIdx(), 
-                info.getObservationDataSetInfo().getEndTimePropIdx(), 
-                info.getObservationDataSetInfo().getGeomPropIdx()); 
+    loadDataSet(info.getObservationDataSetInfo().getDataSourceInfo(), info.getObservationDataSetInfo().getDataSetName(), 
+                info.getObservationDataSetInfo().getBeginTimePropName(), 
+                info.getObservationDataSetInfo().getEndTimePropName(), 
+                info.getObservationDataSetInfo().getGeomPropName()); 
 
   //get data set type to get the geometry property name
-  std::auto_ptr<te::da::DataSetType> dsettype(m_ds->getDataSetType(info.getObservationDataSetInfo().getDataSetName()));
-  std::string geomPropName = dsettype->getProperty(info.getGeomPropIdx())->getName();
+  std::string geomPropName = info.getObservationDataSetInfo().getGeomPropName();
   
   //get the data set, applying the spatial filter
   std::auto_ptr<te::da::DataSet> dset(m_ds->getDataSet(info.getObservationDataSetInfo().getDataSetName(), 
@@ -248,10 +256,10 @@ te::st::STDataLoaderFromMemDS::getDataSet(const TrajectoryDataSetInfo& info,
 {
   //load the DataSet from its origin DataSource and put it into the In-Mem DataSource
   if(!m_ds->dataSetExists(info.getObservationDataSetInfo().getDataSetName())) 
-    loadDataSet(info.getDataSourceInfo(), info.getObservationDataSetInfo().getDataSetName(), 
-                info.getObservationDataSetInfo().getBeginTimePropIdx(), 
-                info.getObservationDataSetInfo().getEndTimePropIdx(), 
-                info.getObservationDataSetInfo().getGeomPropIdx()); 
+    loadDataSet(info.getObservationDataSetInfo().getDataSourceInfo(), info.getObservationDataSetInfo().getDataSetName(), 
+                info.getObservationDataSetInfo().getBeginTimePropName(), 
+                info.getObservationDataSetInfo().getEndTimePropName(), 
+                info.getObservationDataSetInfo().getGeomPropName()); 
 
   te::stmem::DataSource* inMemDataSource = static_cast<te::stmem::DataSource*>(m_ds.get());
 
@@ -271,10 +279,10 @@ te::st::STDataLoaderFromMemDS::getDataSet(const TrajectoryDataSetInfo& info,
 {
   //load the DataSet from its origin DataSource and put it into the In-Mem DataSource
   if(!m_ds->dataSetExists(info.getObservationDataSetInfo().getDataSetName())) 
-    loadDataSet(info.getDataSourceInfo(), info.getObservationDataSetInfo().getDataSetName(), 
-                info.getObservationDataSetInfo().getBeginTimePropIdx(), 
-                info.getObservationDataSetInfo().getEndTimePropIdx(), 
-                info.getObservationDataSetInfo().getGeomPropIdx()); 
+    loadDataSet(info.getObservationDataSetInfo().getDataSourceInfo(), info.getObservationDataSetInfo().getDataSetName(), 
+                info.getObservationDataSetInfo().getBeginTimePropName(), 
+                info.getObservationDataSetInfo().getEndTimePropName(), 
+                info.getObservationDataSetInfo().getGeomPropName()); 
 
   te::stmem::DataSource* inMemDataSource = static_cast<te::stmem::DataSource*>(m_ds.get());
 
@@ -292,10 +300,10 @@ te::st::STDataLoaderFromMemDS::getDataSet(const TrajectoryDataSetInfo& info,
 {
   //load the DataSet from its origin DataSource and put it into the In-Mem DataSource
   if(!m_ds->dataSetExists(info.getObservationDataSetInfo().getDataSetName())) 
-    loadDataSet(info.getDataSourceInfo(), info.getObservationDataSetInfo().getDataSetName(), 
-                info.getObservationDataSetInfo().getBeginTimePropIdx(), 
-                info.getObservationDataSetInfo().getEndTimePropIdx(), 
-                info.getObservationDataSetInfo().getGeomPropIdx()); 
+    loadDataSet(info.getObservationDataSetInfo().getDataSourceInfo(), info.getObservationDataSetInfo().getDataSetName(), 
+                info.getObservationDataSetInfo().getBeginTimePropName(), 
+                info.getObservationDataSetInfo().getEndTimePropName(), 
+                info.getObservationDataSetInfo().getGeomPropName()); 
 
   te::stmem::DataSource* inMemDataSource = static_cast<te::stmem::DataSource*>(m_ds.get());
 
@@ -317,10 +325,10 @@ te::st::STDataLoaderFromMemDS::getDataSet(const TimeSeriesDataSetInfo& info,
 {
   //load the DataSet from its origin DataSource and put it into the In-Mem DataSource
   if(!m_ds->dataSetExists(info.getObservationDataSetInfo().getDataSetName())) 
-    loadDataSet(info.getDataSourceInfo(), info.getObservationDataSetInfo().getDataSetName(), 
-                info.getObservationDataSetInfo().getBeginTimePropIdx(), 
-                info.getObservationDataSetInfo().getEndTimePropIdx(), 
-                info.getObservationDataSetInfo().getGeomPropIdx()); 
+    loadDataSet(info.getObservationDataSetInfo().getDataSourceInfo(), info.getObservationDataSetInfo().getDataSetName(), 
+                info.getObservationDataSetInfo().getBeginTimePropName(), 
+                info.getObservationDataSetInfo().getEndTimePropName(), 
+                info.getObservationDataSetInfo().getGeomPropName()); 
 
   //get the data set
   std::auto_ptr<te::da::DataSet> dset(m_ds->getDataSet(info.getObservationDataSetInfo().getDataSetName(), travType));
@@ -335,10 +343,10 @@ te::st::STDataLoaderFromMemDS::getDataSet(const TimeSeriesDataSetInfo& info,
 {
   //load the DataSet from its origin DataSource and put it into the In-Mem DataSource
   if(!m_ds->dataSetExists(info.getObservationDataSetInfo().getDataSetName())) 
-    loadDataSet(info.getDataSourceInfo(), info.getObservationDataSetInfo().getDataSetName(), 
-                info.getObservationDataSetInfo().getBeginTimePropIdx(), 
-                info.getObservationDataSetInfo().getEndTimePropIdx(), 
-                info.getObservationDataSetInfo().getGeomPropIdx()); 
+    loadDataSet(info.getObservationDataSetInfo().getDataSourceInfo(), info.getObservationDataSetInfo().getDataSetName(), 
+                info.getObservationDataSetInfo().getBeginTimePropName(), 
+                info.getObservationDataSetInfo().getEndTimePropName(), 
+                info.getObservationDataSetInfo().getGeomPropName()); 
 
   te::stmem::DataSource* inMemDataSource = static_cast<te::stmem::DataSource*>(m_ds.get());
 
@@ -353,8 +361,8 @@ te::st::STDataLoaderFromMemDS::getTemporalExtent(const ObservationDataSetInfo& i
 {
   //load the DataSet from its origin DataSource and put it into the In-Mem DataSource
   if(!m_ds->dataSetExists(info.getDataSetName())) 
-    loadDataSet(info.getDataSourceInfo(), info.getDataSetName(), info.getBeginTimePropIdx(), 
-                info.getEndTimePropIdx(), info.getGeomPropIdx()); 
+    loadDataSet(info.getDataSourceInfo(), info.getDataSetName(), info.getBeginTimePropName(), 
+                info.getEndTimePropName(), info.getGeomPropName()); 
 
   te::stmem::DataSource* inMemDataSource = static_cast<te::stmem::DataSource*>(m_ds.get());
 
@@ -366,10 +374,10 @@ te::st::STDataLoaderFromMemDS::getTemporalExtent(const TrajectoryDataSetInfo& in
 {
    //load the DataSet from its origin DataSource and put it into the In-Mem DataSource
   if(!m_ds->dataSetExists(info.getObservationDataSetInfo().getDataSetName())) 
-    loadDataSet(info.getDataSourceInfo(), info.getObservationDataSetInfo().getDataSetName(), 
-                info.getObservationDataSetInfo().getBeginTimePropIdx(), 
-                info.getObservationDataSetInfo().getEndTimePropIdx(), 
-                info.getObservationDataSetInfo().getGeomPropIdx()); 
+    loadDataSet(info.getObservationDataSetInfo().getDataSourceInfo(), info.getObservationDataSetInfo().getDataSetName(), 
+                info.getObservationDataSetInfo().getBeginTimePropName(), 
+                info.getObservationDataSetInfo().getEndTimePropName(), 
+                info.getObservationDataSetInfo().getGeomPropName()); 
 
   te::stmem::DataSource* inMemDataSource = static_cast<te::stmem::DataSource*>(m_ds.get());
 
@@ -381,10 +389,10 @@ te::st::STDataLoaderFromMemDS::getTemporalExtent(const TimeSeriesDataSetInfo& in
 {
   //load the DataSet from its origin DataSource and put it into the In-Mem DataSource
   if(!m_ds->dataSetExists(info.getObservationDataSetInfo().getDataSetName())) 
-    loadDataSet(info.getDataSourceInfo(), info.getObservationDataSetInfo().getDataSetName(), 
-                info.getObservationDataSetInfo().getBeginTimePropIdx(), 
-                info.getObservationDataSetInfo().getEndTimePropIdx(), 
-                info.getObservationDataSetInfo().getGeomPropIdx()); 
+    loadDataSet(info.getObservationDataSetInfo().getDataSourceInfo(), info.getObservationDataSetInfo().getDataSetName(), 
+                info.getObservationDataSetInfo().getBeginTimePropName(), 
+                info.getObservationDataSetInfo().getEndTimePropName(), 
+                info.getObservationDataSetInfo().getGeomPropName()); 
 
   te::stmem::DataSource* inMemDataSource = static_cast<te::stmem::DataSource*>(m_ds.get());
 
@@ -396,10 +404,10 @@ te::st::STDataLoaderFromMemDS::getSpatialExtent(const ObservationDataSetInfo& in
 {
   //load the DataSet from its origin DataSource and put it into the In-Mem DataSource
   if(!m_ds->dataSetExists(info.getDataSetName())) 
-    loadDataSet(info.getDataSourceInfo(), info.getDataSetName(), info.getBeginTimePropIdx(), 
-                info.getEndTimePropIdx(), info.getGeomPropIdx()); 
+    loadDataSet(info.getDataSourceInfo(), info.getDataSetName(), info.getBeginTimePropName(), 
+                info.getEndTimePropName(), info.getGeomPropName()); 
 
-  std::auto_ptr<te::gm::Envelope> res(m_ds->getExtent(info.getDataSetName(), info.getGeomPropIdx()));
+  std::auto_ptr<te::gm::Envelope> res(m_ds->getExtent(info.getDataSetName(), info.getGeomPropName()));
   return *res.get();
 }
 
@@ -408,19 +416,20 @@ te::st::STDataLoaderFromMemDS::getSpatialExtent(const TrajectoryDataSetInfo& inf
 {
   //load the DataSet from its origin DataSource and put it into the In-Mem DataSource
   if(!m_ds->dataSetExists(info.getObservationDataSetInfo().getDataSetName())) 
-    loadDataSet(info.getDataSourceInfo(), info.getObservationDataSetInfo().getDataSetName(), 
-                info.getObservationDataSetInfo().getBeginTimePropIdx(), 
-                info.getObservationDataSetInfo().getEndTimePropIdx(), 
-                info.getObservationDataSetInfo().getGeomPropIdx()); 
+    loadDataSet(info.getObservationDataSetInfo().getDataSourceInfo(), info.getObservationDataSetInfo().getDataSetName(), 
+                info.getObservationDataSetInfo().getBeginTimePropName(), 
+                info.getObservationDataSetInfo().getEndTimePropName(), 
+                info.getObservationDataSetInfo().getGeomPropName()); 
 
   std::auto_ptr<te::gm::Envelope> res(m_ds->getExtent(info.getObservationDataSetInfo().getDataSetName(), 
-                                     info.getObservationDataSetInfo().getGeomPropIdx()));
+                                     info.getObservationDataSetInfo().getGeomPropName()));
   return *res.get();
 }
 
 //protected
 void te::st::STDataLoaderFromMemDS::loadDataSet(const te::da::DataSourceInfo& info, const std::string dsname, 
-                                                int begTimePropIdx, int endTimePropIdx, int gmPropIdx)
+                                                const std::string& begTimePropName, const std::string& endTimePropName, 
+                                                const std::string& gmPropName)
 {
   std::auto_ptr<te::da::DataSet> dset(te::da::GetDataSet(dsname, info.getId()));
   if(!dset.get())
@@ -429,6 +438,11 @@ void te::st::STDataLoaderFromMemDS::loadDataSet(const te::da::DataSourceInfo& in
   std::auto_ptr<te::da::DataSetType> dsettype(te::da::GetDataSetType(dsname, info.getId()));
   if(!dsettype.get())
     throw Exception("The DataSetType was not loaded correctly!"); 
+  
+  //Get indexes
+  int begTimePropIdx = te::da::GetPropertyPos(dsettype.get(), begTimePropName);
+  int endTimePropIdx = te::da::GetPropertyPos(dsettype.get(), endTimePropName);
+  int gmPropIdx = te::da::GetPropertyPos(dsettype.get(), gmPropName);
 
   //Before creating a stmem DataSet, we need to put it in a right place to be copied.
   dset->moveNext();
@@ -442,38 +456,60 @@ void te::st::STDataLoaderFromMemDS::loadDataSet(const te::da::DataSourceInfo& in
 std::auto_ptr<te::st::ObservationDataSet>  
 te::st::STDataLoaderFromMemDS::buildDataSet(te::stmem::DataSet* ds, const ObservationDataSetInfo& info)
 {
+  //get type from info
+  ObservationDataSetType obsType = te::st::GetType(info);
+
   //get temporal and spatial extents
   std::auto_ptr<te::dt::DateTimePeriod> period(ds->getTemporalExtent()); 
-  te::gm::Envelope ev;
-  if(info.getGeomPropIdx()>=0)
+  std::auto_ptr<te::gm::Geometry> geom; 
+  if(info.hasGeomProp())
   {
-    std::auto_ptr<te::gm::Envelope> aux = ds->getExtent(info.getGeomPropIdx());
-    ev = *aux.get();
+    std::size_t idx = te::da::GetPropertyPos(ds, info.getGeomPropName());
+    std::auto_ptr<te::gm::Envelope> aux = ds->getExtent(idx);
+    geom.reset(te::gm::GetGeomFromEnvelope(aux.get(), -1));
   }
   
-  return std::auto_ptr<ObservationDataSet> (new ObservationDataSet(ds, 
-                                            te::st::GetType(info), period.release(), ev)); 
+  obsType.setSpatialExtent(geom.release());
+  obsType.setTemporalExtent(period.release());
+  return std::auto_ptr<ObservationDataSet> (new ObservationDataSet(ds, obsType)); 
 }
 
 std::auto_ptr<te::st::TrajectoryDataSet>  
-te::st::STDataLoaderFromMemDS::buildDataSet(te::stmem::DataSet* ds, const TrajectoryDataSetInfo& info)
+te::st::STDataLoaderFromMemDS::buildDataSet(te::stmem::DataSet* ds, const TrajectoryDataSetInfo& tjInfo)
 {
+  //get type from info
+  const ObservationDataSetInfo& info = tjInfo.getObservationDataSetInfo();
+  ObservationDataSetType obsType = te::st::GetType(info);
+  
   //get temporal and spatial extents
   std::auto_ptr<te::dt::DateTimePeriod> period(ds->getTemporalExtent()); 
-  std::auto_ptr<te::gm::Envelope> ev = ds->getExtent(info.getGeomPropIdx());
+  std::auto_ptr<te::gm::Geometry> geom; 
+  if(info.hasGeomProp())
+  {
+    std::size_t idx = te::da::GetPropertyPos(ds, info.getGeomPropName());
+    std::auto_ptr<te::gm::Envelope> aux = ds->getExtent(idx);
+    geom.reset(te::gm::GetGeomFromEnvelope(aux.get(), -1));
+  }
+  
+  obsType.setSpatialExtent(geom.release());
+  obsType.setTemporalExtent(period.release());
 
-  return std::auto_ptr<TrajectoryDataSet> ( new TrajectoryDataSet(ds, te::st::GetType(info), 
-                                            period.release(), *ev.get())); 
+  return std::auto_ptr<TrajectoryDataSet> (new TrajectoryDataSet(ds, obsType)); 
 }
 
 std::auto_ptr<te::st::TimeSeriesDataSet>  
-te::st::STDataLoaderFromMemDS::buildDataSet(te::stmem::DataSet* ds, const TimeSeriesDataSetInfo& info)
+te::st::STDataLoaderFromMemDS::buildDataSet(te::stmem::DataSet* ds, const TimeSeriesDataSetInfo& tsInfo)
 {
-  //get temporal and spatial extents
+  //get type from info
+  const ObservationDataSetInfo& info = tsInfo.getObservationDataSetInfo();
+  ObservationDataSetType obsType = te::st::GetType(info);
+  
+  //get temporal extents
   std::auto_ptr<te::dt::DateTimePeriod> period(ds->getTemporalExtent()); 
+  obsType.setTemporalExtent(period.release());
 
-  return std::auto_ptr<TimeSeriesDataSet> ( new TimeSeriesDataSet(ds, te::st::GetType(info), 
-                                            period.release())); 
+  return std::auto_ptr<TimeSeriesDataSet> ( new TimeSeriesDataSet(ds, obsType, 
+                                            tsInfo.getValuePropNames())); 
 }
 
 te::st::STDataLoaderFromMemDS::~STDataLoaderFromMemDS()

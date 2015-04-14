@@ -151,7 +151,8 @@ namespace te
             \note It can through an Exception. 
         */
         void loadDataSet( const te::da::DataSourceInfo& info, const std::string dsname, 
-                          int begTimePropIdx, int endTimePropIdx, int gmPropIdx);
+                          const std::string& begTimePropName, const std::string& endTimePropName, 
+                          const std::string& gmPropName);
 
         /*! \brief It builds an ObservationDataSet from a given DataSet */
         std::auto_ptr<ObservationDataSet> buildDataSet(te::stmem::DataSet* ds, const ObservationDataSetInfo& info);

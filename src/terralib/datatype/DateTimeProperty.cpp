@@ -28,21 +28,76 @@
 
 te::dt::DateTimeProperty::DateTimeProperty(const std::string& name,
                                            DateTimeType dateType,
-                                           DateTimeResolution dtResolution,
                                            bool isRequired,
                                            std::string* defaultValue,
                                            unsigned int id,
                                            Property* parent)
   : SimpleProperty(name, DATETIME_TYPE, isRequired, defaultValue, id, parent),
     m_dSubType(dateType),
-    m_dtResolution(dtResolution)
+    m_tempResolution(te::dt::TemporalResolution()),
+    m_strFormat(UNKNOWN_STRING_FORMAT),
+    m_ordinalType(USER_DEFINED),
+    m_ordinalStartTime(te::dt::TimeInstant()) 
+{
+}
+
+te::dt::DateTimeProperty::DateTimeProperty(const std::string& name,
+                                           DateTimeType dateType,
+                                           TemporalResolution tmpRes,
+                                           bool isRequired,
+                                           std::string* defaultValue,
+                                           unsigned int id,
+                                           Property* parent)
+  : SimpleProperty(name, DATETIME_TYPE, isRequired, defaultValue, id, parent),
+    m_dSubType(dateType),
+    m_tempResolution(tmpRes),
+    m_strFormat(UNKNOWN_STRING_FORMAT),
+    m_ordinalType(USER_DEFINED),
+    m_ordinalStartTime(te::dt::TimeInstant()) 
+{
+}
+
+
+te::dt::DateTimeProperty::DateTimeProperty(const std::string& name,
+                                           TemporalResolution tmpRes,
+                                           DateTimeStringFormat strFormat,
+                                           bool isRequired,
+                                           std::string* defaultValue,
+                                           unsigned int id,
+                                           Property* parent)
+  : SimpleProperty(name, STRING_TYPE, isRequired, defaultValue, id, parent),
+    m_dSubType(STRING_TIME),
+    m_tempResolution(tmpRes),
+    m_strFormat(strFormat),
+    m_ordinalType(USER_DEFINED),
+    m_ordinalStartTime(te::dt::TimeInstant()) 
+{
+}
+
+te::dt::DateTimeProperty::DateTimeProperty(const std::string& name,
+                                           TemporalResolution tmpRes,
+                                           DateTimeOrdinalType ordType,
+                                           TimeInstant startTime,
+                                           bool isRequired,
+                                           std::string* defaultValue,
+                                           unsigned int id,
+                                           Property* parent)
+  : SimpleProperty(name, UINT64_TYPE, isRequired, defaultValue, id, parent),
+    m_dSubType(ORDINAL_TIME_INSTANT),  
+    m_tempResolution(tmpRes),
+    m_strFormat(UNKNOWN_STRING_FORMAT),
+    m_ordinalType(ordType),
+    m_ordinalStartTime(startTime) 
 {
 }
 
 te::dt::DateTimeProperty::DateTimeProperty(const DateTimeProperty& rhs)
   : SimpleProperty(rhs),
     m_dSubType(rhs.m_dSubType),
-    m_dtResolution(rhs.m_dtResolution)
+    m_tempResolution(rhs.m_tempResolution),
+    m_strFormat(rhs.m_strFormat),
+    m_ordinalType(rhs.m_ordinalType),
+    m_ordinalStartTime(rhs.m_ordinalStartTime) 
 {  
 }
 
@@ -53,7 +108,10 @@ te::dt::DateTimeProperty& te::dt::DateTimeProperty::operator=(const DateTimeProp
     SimpleProperty::operator=(rhs);
 
     m_dSubType = rhs.m_dSubType;
-    m_dtResolution = rhs.m_dtResolution;
+    m_tempResolution = rhs.m_tempResolution;
+    m_strFormat = rhs.m_strFormat;
+    m_ordinalType = rhs.m_ordinalType;
+    m_ordinalStartTime = rhs.m_ordinalStartTime; 
   }
 
   return *this;

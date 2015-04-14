@@ -119,15 +119,8 @@ void te::layout::PointItem::drawStar( QPainter * painter )
   painter->save();
 
   double halfW = boundingRect().width() / 4.;
-  double halfH = boundingRect().height() / 4.;
 
-  double centerX = boundingRect().center().x();
-  double centerY = boundingRect().center().y();
-
-  double x = centerX - halfW;
-  double y = centerY + halfH;
   double w = boundingRect().width() / 2.;
-  double h = boundingRect().height() / 2.;
   
   QPainterPath rhombus_path;
 
@@ -222,8 +215,7 @@ void te::layout::PointItem::drawX( QPainter * painter )
   double x = boundingRect().center().x() - halfW;
   double y = boundingRect().center().y() + halfH;
   double w = boundingRect().width() / 2.;
-  double h = boundingRect().height() / 2.;
-  
+
   QFont ft = painter->font();
   ft.setPointSizeF(w);
 
@@ -305,8 +297,6 @@ void te::layout::PointItem::drawRhombus( QPainter * painter )
 
   double x = centerX - halfW;
   double y = centerY + halfH;
-  double w = boundingRect().width() / 2.;
-  double h = boundingRect().height() / 2.;
   
   QPolygonF poly;
   poly.push_back(QPoint(centerX, y));

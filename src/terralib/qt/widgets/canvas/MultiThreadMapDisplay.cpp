@@ -42,6 +42,14 @@ te::qt::widgets::MultiThreadMapDisplay::MultiThreadMapDisplay(const QSize& size,
   setAttribute(Qt::WA_OpaquePaintEvent, true);
 }
 
+te::qt::widgets::MultiThreadMapDisplay::MultiThreadMapDisplay(QWidget* parent, const bool& showFeedback, Qt::WindowFlags f)
+: te::qt::widgets::MapDisplay(parent, f),
+m_showFeedback(showFeedback),
+m_synchronous(false)
+{
+  setAttribute(Qt::WA_OpaquePaintEvent, true);
+}
+
 te::qt::widgets::MultiThreadMapDisplay::~MultiThreadMapDisplay()
 {
   te::common::FreeContents(m_threads);

@@ -223,7 +223,7 @@ bool te::qt::widgets::NewPropertyWidget::buildProperty()
 
     case te::dt::DATETIME_TYPE:
     {
-      m_simpleProperty = new te::dt::DateTimeProperty(name, te::dt::DATE, te::dt::UNKNOWN, isRequired, new std::string(defaultValue));
+      m_simpleProperty = new te::dt::DateTimeProperty(name, te::dt::DATE, isRequired, new std::string(defaultValue));
       break;
     }
         

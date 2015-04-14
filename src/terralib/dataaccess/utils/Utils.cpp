@@ -456,7 +456,10 @@ te::da::ObjectId* te::da::GenerateOID(te::da::DataSet* dataset, const std::vecto
   if(setGeom)
   {
     std::size_t pos = te::da::GetFirstSpatialPropertyPos(dataset);
-    oid->setGeom(dataset->getGeometry(pos).release());
+
+    std::auto_ptr<te::gm::Geometry> geom = dataset->getGeometry(pos);
+
+    oid->setGeom((te::gm::Geometry*)geom->clone());
   }
 
   return oid;
