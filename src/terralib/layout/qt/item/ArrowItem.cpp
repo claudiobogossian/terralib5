@@ -109,7 +109,6 @@ void te::layout::ArrowItem::drawHeadArrow( QPainter * painter )
 
   QRectF boundRect = boundingRect();
 
-  double w = boundRect.width();
   double h = boundRect.height();
 
   double centerY = boundRect.center().y();

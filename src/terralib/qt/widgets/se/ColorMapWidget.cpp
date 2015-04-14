@@ -766,7 +766,6 @@ void te::qt::widgets::ColorMapWidget::onBandSelected(QString value)
 void te::qt::widgets::ColorMapWidget::onTableWidgetItemDoubleClicked(QTableWidgetItem* item)
 {
   int curCol = m_ui->m_tableWidget->currentColumn();
-  int curRow = m_ui->m_tableWidget->currentRow();
 
   int index = m_ui->m_transformComboBox->currentIndex();
 

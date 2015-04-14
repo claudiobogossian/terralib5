@@ -126,8 +126,6 @@ void te::vp::MultipartToSinglepartDialog::onLayerComboBoxChanged(int index)
 
   m_selectedLayer = layer;
 
-  std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
-
   std::string layerID = m_ui->m_layersComboBox->itemData(index, Qt::UserRole).toString().toStdString();
 }
 

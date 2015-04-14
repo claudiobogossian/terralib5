@@ -64,7 +64,6 @@ QDockWidget(parent, Qt::Widget),
 
 te::qt::af::ChartDisplayDockWidget::~ChartDisplayDockWidget()
 {
-  delete m_displayWidget;
   emit closed(this);
 }
 
