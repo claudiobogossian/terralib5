@@ -117,6 +117,11 @@ namespace te
         virtual void updateProperties(te::layout::Properties* properties);
         
         virtual void changeZoomFactor(double currentZoomFactor);
+
+        /*!
+          \brief Reimplemented from ParentItem
+         */
+        virtual QRectF boundingRect() const;
                                         
       protected slots:
 
@@ -158,12 +163,7 @@ namespace te
           \brief Reimplemented from QGraphicsProxyWidget
        */
       virtual void	dragMoveEvent ( QGraphicsSceneDragDropEvent * event );
-
-      /*!
-          \brief Reimplemented from QGraphicsProxyWidget
-       */
-      virtual bool	sceneEvent ( QEvent * event );
-            
+                  
       /*!
           \brief Reimplemented from ItemObserver
        */

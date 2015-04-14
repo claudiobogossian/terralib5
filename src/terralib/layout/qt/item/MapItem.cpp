@@ -133,7 +133,7 @@ te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
     For example, the event of mouse click on the child item 
     won't be handled by child item.
   */
-  setFiltersChildEvents(true);
+  setHandlesChildEvents(true);
 }
 
 te::layout::MapItem::~MapItem()
@@ -240,9 +240,7 @@ void te::layout::MapItem::paint( QPainter * painter, const QStyleOptionGraphicsI
   {
     return;
   }
-
-  recalculateBoundingRect();
-
+  
   drawBackground( painter );
 
   drawMap(painter);
@@ -721,25 +719,13 @@ void te::layout::MapItem::recalculateBoundingRect()
   }
 }
 
-bool te::layout::MapItem::sceneEvent( QEvent * event )
+QRectF te::layout::MapItem::boundingRect() const
 {
-  if(event->type() == QEvent::GraphicsSceneHoverMove)
-  {
-    if(filtersChildEvents())
-    {
-      QList<QGraphicsItem*> items = childItems();
-      foreach(QGraphicsItem* item, items)
-      {
-        ItemObserver* itObs = dynamic_cast<ItemObserver*>(item);
-        if(itObs)
-        {
-          itObs->recalculateBoundingRect();
-        }
-      }
-    }
-    recalculateBoundingRect();
-  }
-  return QGraphicsProxyWidget::sceneEvent(event);
+  MapModel* model = dynamic_cast<MapModel*>(m_model);
+  te::gm::Envelope box = model->getBox();
+
+  QRectF rect(0., 0., box.getWidth(), box.getHeight()); 
+  return rect;
 }
 
 

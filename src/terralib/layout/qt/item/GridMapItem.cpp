@@ -112,16 +112,16 @@ void te::layout::GridMapItem::drawGrid( QPainter* painter )
 
   m_maxHeigthTextMM = m_onePointMM * ft.pointSize();
 
-  QString text = "A";
+  //QString text = "A";
 
   for (int i = 0; i <= heightRect; i+=10)
   {
     QLineF lineOne = QLineF(parentBound.topLeft().x(), parentBound.topLeft().y() + i, parentBound.topRight().x(), parentBound.topRight().y() + i);
 
     QPointF pointInit(parentBound.topLeft().x(), parentBound.topLeft().y() + i - (m_maxHeigthTextMM/2)); //left
-    drawText(pointInit, painter, text.toStdString(), true);
+    //drawText(pointInit, painter, text.toStdString(), true);
     QPointF pointFinal(parentBound.topRight().x(), parentBound.topRight().y() + i  - (m_maxHeigthTextMM/2)); //right
-    drawText(pointFinal, painter, text.toStdString());
+    //drawText(pointFinal, painter, text.toStdString());
 
     painter->drawLine(lineOne);
 
@@ -130,21 +130,14 @@ void te::layout::GridMapItem::drawGrid( QPainter* painter )
       QLineF lineTwo = QLineF(parentBound.topLeft().x() + j, parentBound.topLeft().y(), parentBound.bottomLeft().x() + j, parentBound.bottomLeft().y());
 
       QPointF pointInit(parentBound.topLeft().x() + j + (m_maxWidthTextMM/2), boundingRect().topLeft().y()); //upper
-      drawText(pointInit, painter, text.toStdString(), true);
+      //drawText(pointInit, painter, text.toStdString(), true);
       QPointF pointFinal(parentBound.bottomLeft().x() + j  - (m_maxWidthTextMM/2), parentBound.bottomLeft().y()); //lower
-      drawText(pointFinal, painter, text.toStdString());
+      //drawText(pointFinal, painter, text.toStdString());
 
       painter->drawLine(lineTwo);
     }    
   }
-
-  if(parentItem())
-  {
-    painter->setPen(QPen(Qt::red, 0, Qt::SolidLine));
-    QRectF rt = parentItem()->childrenBoundingRect();
-    painter->drawRect(rt);
-  }
-  
+    
   painter->restore();
 }
 
@@ -192,6 +185,15 @@ void te::layout::GridMapItem::drawText( QPointF point, QPainter* painter, std::s
   painter->setMatrixEnabled(true);
 
   painter->restore();
+}
+
+QRectF te::layout::GridMapItem::boundingRect() const
+{
+  if(parentItem())
+  {
+    return parentItem()->boundingRect();
+  }
+  return m_rect;
 }
 
 void te::layout::GridMapItem::recalculateBoundingRect()
@@ -243,6 +245,10 @@ QVariant te::layout::GridMapItem::itemChange( QGraphicsItem::GraphicsItemChange 
   }
   return QGraphicsItem::itemChange(change, value);
 }
+
+
+
+
 
 
 

@@ -103,14 +103,16 @@ void te::layout::PropertyBrowser::createManager()
 
 void te::layout::PropertyBrowser::propertyEditorValueChanged( QtProperty *property, const QVariant &value )
 {
-  if(!m_changeQtPropertyVariantValue)
+  if(m_changeQtPropertyVariantValue)
   {
-    QList<QtBrowserItem *> list = m_propertyEditor->items(property);
-    changePropertyValue(property, list);
-
-    Property prop = getProperty(property->propertyName().toStdString());
-    changePropertyValue(prop);
+    return;  
   }
+
+  QList<QtBrowserItem *> list = m_propertyEditor->items(property);
+  changePropertyValue(property, list);
+
+  Property prop = getProperty(property->propertyName().toStdString());
+  changePropertyValue(prop);
 }
 
 void te::layout::PropertyBrowser::updateExpandState()
