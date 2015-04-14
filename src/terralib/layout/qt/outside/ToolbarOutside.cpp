@@ -61,7 +61,6 @@ te::layout::ToolbarOutside::ToolbarOutside( OutsideController* controller, Obser
   m_optionMapGrid("map_grid"),
   m_optionLegendDefault("legend_default"),
   m_optionScale("scale_object"),
-  m_optionGridMap("texte_gridMap"),
   m_optionMapZoomIn("map_zoom_in"),
   m_optionMapZoomOut("map_zoom_out"),
   m_optionMapPan("map_pan"),
