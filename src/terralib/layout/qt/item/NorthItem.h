@@ -18,17 +18,17 @@
  */
 
 /*!
-  \file GridMapItem.h
+  \file NorthItem.h
    
-   \brief Class that represents a graphic GridMap. 
+   \brief Class that represents a graphic Rectangle. 
       Its coordinate system is the same of scene (millimeters). 
       This is also son of ItemObserver and ObjectItem, so it can become observer of a model (Observable). 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_GRIDMAP_ITEM_H 
-#define __TERRALIB_LAYOUT_INTERNAL_GRIDMAP_ITEM_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_NORTH_ITEM_H 
+#define __TERRALIB_LAYOUT_INTERNAL_NORTH_ITEM_H
 
 // TerraLib
 #include "ObjectItem.h"
@@ -41,7 +41,7 @@ namespace te
     class Observable;
 
     /*!
-    \brief Class that represents a graphic GridMap. 
+    \brief Class that represents a graphic Rectangle. 
         Its coordinate system is the same of scene (millimeters). 
         He is also the son of ItemObserver and ObjectItem, so it can become observer of a model (Observable). 
 	  
@@ -49,7 +49,7 @@ namespace te
 
 	    \sa te::layout::ObjectItem
 	  */
-    class TELAYOUTEXPORT GridMapItem : public ObjectItem
+    class TELAYOUTEXPORT NorthItem : public ObjectItem
     {
       public:
 
@@ -59,35 +59,23 @@ namespace te
           \param controller "Controller" part of MVC component
           \param o "Model" part of MVC component
         */ 
-        GridMapItem( ItemController* controller, Observable* o );
+        NorthItem( ItemController* controller, Observable* o );
 
         /*!
           \brief Destructor
          */
-        virtual ~GridMapItem();
-        
-        virtual void paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
-                        
-      protected:
+        virtual ~NorthItem();
 
         /*!
           \brief Reimplemented from QGraphicsItem
          */
-        virtual QVariant	itemChange ( QGraphicsItem::GraphicsItemChange change, const QVariant & value );
-                        
-        virtual void drawGrid(QPainter* painter);
-                
-        virtual void drawText( QPointF point, QPainter* painter, std::string text, bool displacementLeft = false, bool displacementRight = false);
+        virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
+        
+      protected:
 
-        virtual void recalculateBoundingRect();
-
-        double m_maxWidthTextMM;
-        double m_maxHeigthTextMM;
-        double m_onePointMM;
-        bool   m_changeSize;
+        virtual void drawRectangle(QPainter * painter);
     };
   }
 }
 
 #endif
-

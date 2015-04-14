@@ -167,6 +167,23 @@ te::gm::Coord2D te::layout::PropertiesOutside::getPosition()
 void te::layout::PropertiesOutside::itemsSelected(QList<QGraphicsItem*> graphicsItems, QList<QGraphicsItem*> allItems)
 {
   m_updatingValues = false;
+  bool window = false;
+
+  if(graphicsItems == m_graphicsItems)
+  {
+    Properties* props = intersection(graphicsItems, window);
+    m_layoutPropertyBrowser->setHasWindows(window);
+
+    if(!props)
+      return;
+
+    m_nameLabel->setText(tr("Component::") + props->getObjectName().c_str());
+
+    m_layoutPropertyBrowser->updateProperties(props);
+
+    update();
+    return;
+  }
 
   m_layoutPropertyBrowser->clearAll();
   m_nameLabel->setText(tr("Component::"));
@@ -178,7 +195,6 @@ void te::layout::PropertiesOutside::itemsSelected(QList<QGraphicsItem*> graphics
   if(m_graphicsItems.empty())
     return;
     
-  bool window = false;
   Properties* props = intersection(graphicsItems, window);
   m_layoutPropertyBrowser->setHasWindows(window);
 

@@ -51,7 +51,8 @@ te::layout::PropertyBrowser::PropertyBrowser(QObject* parent) :
   m_propertyEditor(0),
   m_variantPropertyEditorManager(0),
   m_strDlgManager(0),
-  m_hasWindows(false)
+  m_hasWindows(false),
+  m_changeQtPropertyVariantValue(false)
 {
   createManager();
 }
@@ -102,11 +103,14 @@ void te::layout::PropertyBrowser::createManager()
 
 void te::layout::PropertyBrowser::propertyEditorValueChanged( QtProperty *property, const QVariant &value )
 {
-  QList<QtBrowserItem *> list = m_propertyEditor->items(property);
-  changePropertyValue(property, list);
+  if(!m_changeQtPropertyVariantValue)
+  {
+    QList<QtBrowserItem *> list = m_propertyEditor->items(property);
+    changePropertyValue(property, list);
 
-  Property prop = getProperty(property->propertyName().toStdString());
-  changePropertyValue(prop);
+    Property prop = getProperty(property->propertyName().toStdString());
+    changePropertyValue(prop);
+  }
 }
 
 void te::layout::PropertyBrowser::updateExpandState()
@@ -194,13 +198,13 @@ bool te::layout::PropertyBrowser::addProperty( Property property )
   Font font;
 
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
-  
-  if(property.getType() == dataType->getDataTypeString())
+
+  if(!dataType)
   {
-    vproperty = m_variantPropertyEditorManager->addProperty(QVariant::String, tr(property.getName().c_str()));
-    vproperty->setValue(property.getValue().toString().c_str());
+    return false;
   }
-  else if(property.getType() == dataType->getDataTypeStringList())
+
+  if(property.getType() == dataType->getDataTypeStringList())
   {
     /* The type of property is enum, and so a combobox appears. 
     The type of the property value is int, as is the position in which the attribute is in the list of Enum. */
@@ -208,44 +212,12 @@ bool te::layout::PropertyBrowser::addProperty( Property property )
     addAttribute(vproperty, property);
     vproperty->setValue(property.getOptionByCurrentChoice().toString().c_str());
   }
-  else if(property.getType() == dataType->getDataTypeDouble())
+  else
   {
-    vproperty = m_variantPropertyEditorManager->addProperty(QVariant::Double, tr(property.getName().c_str()));
-    vproperty->setValue(property.getValue().toDouble());
-  }
-  else if(property.getType() == dataType->getDataTypeInt())
-  {
-    vproperty = m_variantPropertyEditorManager->addProperty(QVariant::Int, tr(property.getName().c_str()));
-    vproperty->setValue(property.getValue().toInt());
-  }
-  else if(property.getType() == dataType->getDataTypeBool())
-  {
-    vproperty = m_variantPropertyEditorManager->addProperty(QVariant::Bool, tr(property.getName().c_str()));
-    vproperty->setValue(property.getValue().toBool());
-  }
-  else if(property.getType() == dataType->getDataTypeColor())
-  {
-    vproperty = m_variantPropertyEditorManager->addProperty(QVariant::Color, tr(property.getName().c_str()));
-    color = property.getValue().toColor();
-    qcolor.setRed(color.getRed());
-    qcolor.setGreen(color.getGreen());
-    qcolor.setBlue(color.getBlue());
-    qcolor.setAlpha(color.getAlpha());
-    vproperty->setValue(qcolor);
-  }
-  else if(property.getType() == dataType->getDataTypeFont())
-  {
-    vproperty = m_variantPropertyEditorManager->addProperty(QVariant::Font, tr(property.getName().c_str()));
-    font = property.getValue().toFont();
-    qfont.setFamily(font.getFamily().c_str());
-    qfont.setPointSize(font.getPointSize());
-    qfont.setBold(font.isBold());
-    qfont.setItalic(font.isItalic());
-    qfont.setUnderline(font.isUnderline());
-    qfont.setStrikeOut(font.isStrikeout());
-    qfont.setKerning(font.isKerning());
-    vproperty->setValue(qfont);    
-  }
+    QVariant::Type type = getVariantType(property.getType());
+    vproperty = m_variantPropertyEditorManager->addProperty(type, tr(property.getName().c_str()));
+    changeQtVariantPropertyValue(vproperty, property);
+  }  
 
   if(vproperty)
   {
@@ -564,3 +536,90 @@ void te::layout::PropertyBrowser::selectProperty( std::string name )
     }
   }
 }
+
+bool te::layout::PropertyBrowser::updateProperty( Property property )
+{
+  std::string name = property.getName();
+  QtProperty* qprop = findProperty(name);
+  QColor qcolor;
+  te::color::RGBAColor color;
+  Font font;
+  QFont qfont;
+  
+  QtVariantProperty* vproperty = m_variantPropertyEditorManager->variantProperty(qprop);
+  if(!vproperty)
+  {
+    return false;
+  }  
+
+  changeQtVariantPropertyValue(vproperty, property);
+
+  return true;
+}
+
+void te::layout::PropertyBrowser::updateProperties( Properties* props )
+{
+  foreach( Property prop, props->getProperties()) 
+  {
+    updateProperty(prop);
+  }
+}
+
+void te::layout::PropertyBrowser::changeQtVariantPropertyValue( QtVariantProperty* vproperty, Property property )
+{
+  QColor qcolor;
+  QFont qfont;
+  te::color::RGBAColor color;
+  Font font;
+  m_changeQtPropertyVariantValue = true;
+
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+  
+  if(property.getType() == dataType->getDataTypeString())
+  {
+    vproperty->setValue(property.getValue().toString().c_str());    
+  }
+  else if(property.getType() == dataType->getDataTypeStringList())
+  {    
+    addAttribute(vproperty, property);
+    vproperty->setValue(property.getOptionByCurrentChoice().toString().c_str());
+  }
+  else if(property.getType() == dataType->getDataTypeDouble())
+  {
+    vproperty->setValue(property.getValue().toDouble());
+  }
+  else if(property.getType() == dataType->getDataTypeInt())
+  {
+    vproperty->setValue(property.getValue().toInt());
+  }
+  else if(property.getType() == dataType->getDataTypeBool())
+  {
+    vproperty->setValue(property.getValue().toBool());
+  }
+  else if(property.getType() == dataType->getDataTypeColor())
+  {
+    color = property.getValue().toColor();
+    qcolor.setRed(color.getRed());
+    qcolor.setGreen(color.getGreen());
+    qcolor.setBlue(color.getBlue());
+    qcolor.setAlpha(color.getAlpha());
+    vproperty->setValue(qcolor);
+  }
+  else if(property.getType() == dataType->getDataTypeFont())
+  {
+    font = property.getValue().toFont();
+    qfont.setFamily(font.getFamily().c_str());
+    qfont.setPointSize(font.getPointSize());
+    qfont.setBold(font.isBold());
+    qfont.setItalic(font.isItalic());
+    qfont.setUnderline(font.isUnderline());
+    qfont.setStrikeOut(font.isStrikeout());
+    qfont.setKerning(font.isKerning());
+    vproperty->setValue(qfont);    
+  }
+  
+  m_changeQtPropertyVariantValue = false;
+}
+
+
+
