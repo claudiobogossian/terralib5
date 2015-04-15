@@ -18,42 +18,28 @@
  */
 
 /*!
-  \file GridSettingsConfigProperties.h
+  \file MapLocationController.cpp
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_PLANAR_GRID_SETTINGS_CONFIG_PROPERTIES_H
-#define __TERRALIB_LAYOUT_INTERNAL_PLANAR_GRID_SETTINGS_CONFIG_PROPERTIES_H
-
 // TerraLib
-#include "GridSettingsConfigProperties.h"
+#include "MapLocationController.h"
+#include "../core/ContextItem.h"
+#include "MapModel.h"
 
-// STL
-#include <string>
-
-namespace te
+te::layout::MapLocationController::MapLocationController( Observable* o ) :
+  MapController(o)
 {
-  namespace layout
-  {
-    class PlanarGridSettingsConfigProperties: public GridSettingsConfigProperties
-    {
-      public:
-
-        PlanarGridSettingsConfigProperties();
-
-        virtual ~PlanarGridSettingsConfigProperties(void);
-      
-        std::string getUnit();
-
-      protected:
-
-        /* Grid */
-        std::string m_unit;
-    };
-  }
+  
 }
 
-#endif
+te::layout::MapLocationController::~MapLocationController()
+{
+	
+}
+
+
+

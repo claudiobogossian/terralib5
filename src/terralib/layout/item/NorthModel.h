@@ -18,51 +18,52 @@
  */
 
 /*!
-  \file GridPlanarModel.h
+  \file NorthModel.h
    
-  \brief 
+   \brief Class that represents a "Model" part of Rectangle MVC component. 
+      Its coordinate system is the same of scene (millimeters). 
+      This is also son of ItemModelObservable, so it can become observable.
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_GRID_PLANAR_MODEL_H
-#define __TERRALIB_LAYOUT_INTERNAL_GRID_PLANAR_MODEL_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_NORTH_MODEL_H
+#define __TERRALIB_LAYOUT_INTERNAL_NORTH_MODEL_H
 
 // TerraLib
-#include "GridModel.h"
-#include "../core/enum/AbstractType.h"
+#include "../core/pattern/mvc/ItemModelObservable.h"
+#include "../core/ContextItem.h"
 #include "../core/Config.h"
-#include "GridMapModel.h"
 
 namespace te
 {
   namespace layout
   {
-    class PlanarGridSettingsConfigProperties;
 
-    class TELAYOUTEXPORT GridPlanarModel: public GridMapModel 
+    /*!
+      \brief Class that represents a "Model" part of Rectangle MVC component. 
+          Its coordinate system is the same of scene (millimeters). 
+          He is also the son of ItemModelObservable, so it can become observable.
+      	  
+	    \ingroup layout
+
+      \sa te::layout::ItemModelObservable
+	  */
+    class TELAYOUTEXPORT NorthModel : public ItemModelObservable
     {
       public:
 
-        GridPlanarModel();
+        /*!
+          \brief Constructor
+        */
+        NorthModel();
 
-        virtual ~GridPlanarModel();
-
-        virtual void draw(te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box, int srid);
-        
-       protected:
-
-         virtual void drawVerticalLines(te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box);
-
-         virtual void drawHorizontalLines(te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box);
-
-         virtual void calculateGaps(te::gm::Envelope box);
-
-       protected:
-
-         LayoutUnit m_unit;
+        /*!
+          \brief Destructor
+        */ 
+        virtual ~NorthModel();
     };
   }
 }
 
-#endif 
+#endif

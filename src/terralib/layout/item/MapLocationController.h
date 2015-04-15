@@ -18,51 +18,52 @@
  */
 
 /*!
-  \file GridPlanarModel.h
+  \file MapLocationController.h
    
-  \brief 
+   \brief Class that represents a "Controller" part of Map MVC component. 
+   Its coordinate system is the same of scene (millimeters). 
+   This is also the son of ItemController, so it can become a controller.
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_GRID_PLANAR_MODEL_H
-#define __TERRALIB_LAYOUT_INTERNAL_GRID_PLANAR_MODEL_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_MAP_LOCATION_CONTROLLER_H 
+#define __TERRALIB_LAYOUT_INTERNAL_MAP_LOCATION_CONTROLLER_H
 
 // TerraLib
-#include "GridModel.h"
-#include "../core/enum/AbstractType.h"
+#include "MapController.h"
 #include "../core/Config.h"
-#include "GridMapModel.h"
 
 namespace te
 {
   namespace layout
   {
-    class PlanarGridSettingsConfigProperties;
+    /*!
+      \brief Class that represents a "Controller" part of Map MVC component. 
+      Its coordinate system is the same of scene (millimeters). 
+      This is also the son of ItemController, so it can become a controller.
+      	  
+	    \ingroup layout
 
-    class TELAYOUTEXPORT GridPlanarModel: public GridMapModel 
+      \sa te::layout::ItemController
+	  */
+    class TELAYOUTEXPORT MapLocationController : public MapController
     {
       public:
 
-        GridPlanarModel();
+        /*!
+          \brief Constructor
 
-        virtual ~GridPlanarModel();
+          \param o "Model" part of MVC component
+        */
+        MapLocationController( Observable* o );
 
-        virtual void draw(te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box, int srid);
-        
-       protected:
-
-         virtual void drawVerticalLines(te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box);
-
-         virtual void drawHorizontalLines(te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box);
-
-         virtual void calculateGaps(te::gm::Envelope box);
-
-       protected:
-
-         LayoutUnit m_unit;
+        /*!
+          \brief Destructor
+        */ 
+        virtual ~MapLocationController();
     };
   }
 }
 
-#endif 
+#endif

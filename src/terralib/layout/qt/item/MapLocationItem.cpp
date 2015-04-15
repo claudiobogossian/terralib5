@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2014-2014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,42 +18,27 @@
  */
 
 /*!
-  \file GridSettingsConfigProperties.h
+  \file MapLocation.cpp
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_PLANAR_GRID_SETTINGS_CONFIG_PROPERTIES_H
-#define __TERRALIB_LAYOUT_INTERNAL_PLANAR_GRID_SETTINGS_CONFIG_PROPERTIES_H
-
 // TerraLib
-#include "GridSettingsConfigProperties.h"
+#include "MapLocationItem.h"
 
-// STL
-#include <string>
-
-namespace te
-{
-  namespace layout
-  {
-    class PlanarGridSettingsConfigProperties: public GridSettingsConfigProperties
-    {
-      public:
-
-        PlanarGridSettingsConfigProperties();
-
-        virtual ~PlanarGridSettingsConfigProperties(void);
-      
-        std::string getUnit();
-
-      protected:
-
-        /* Grid */
-        std::string m_unit;
-    };
-  }
+te::layout::MapLocationItem::MapLocationItem( ItemController* controller, Observable* o ) :
+  MapItem(controller, o)
+{    
+  m_mapDisplay->setAcceptDrops(false);
+  m_mapDisplay->setMouseTracking(false);
 }
 
-#endif
+te::layout::MapLocationItem::~MapLocationItem()
+{
+
+}
+
+
+

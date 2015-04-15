@@ -18,42 +18,25 @@
  */
 
 /*!
-  \file GridSettingsConfigProperties.h
+  \file GridPlanarController.cpp
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_PLANAR_GRID_SETTINGS_CONFIG_PROPERTIES_H
-#define __TERRALIB_LAYOUT_INTERNAL_PLANAR_GRID_SETTINGS_CONFIG_PROPERTIES_H
-
 // TerraLib
-#include "GridSettingsConfigProperties.h"
+#include "GridPlanarController.h"
 
-// STL
-#include <string>
 
-namespace te
+te::layout::GridPlanarController::GridPlanarController( Observable* o ) :
+  GridMapController(o)
 {
-  namespace layout
-  {
-    class PlanarGridSettingsConfigProperties: public GridSettingsConfigProperties
-    {
-      public:
-
-        PlanarGridSettingsConfigProperties();
-
-        virtual ~PlanarGridSettingsConfigProperties(void);
-      
-        std::string getUnit();
-
-      protected:
-
-        /* Grid */
-        std::string m_unit;
-    };
-  }
+  
 }
 
-#endif
+te::layout::GridPlanarController::~GridPlanarController()
+{
+	
+}
+

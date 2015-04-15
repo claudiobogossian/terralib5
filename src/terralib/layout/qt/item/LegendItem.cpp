@@ -82,11 +82,6 @@ void te::layout::LegendItem::updateObserver( ContextItem context )
   if(!m_model)
     return;
 
-  //te::color::RGBAColor** rgba = context.getPixmap();
-
-  //if(!rgba)
-  //  return;
-
   Utils* utils = context.getUtils();
 
   if(!utils)
@@ -102,20 +97,6 @@ void te::layout::LegendItem::updateObserver( ContextItem context )
 
   this->setRect(QRectF(0, 0, widthInPixels, heightInPixels));
 
-  //QPixmap pixmap;
-  //QImage* img = 0;
-
-  //if(rgba)
-  //{
-  //  img = te::qt::widgets::GetImage(rgba, box.getWidth(), box.getHeight());
-  //  pixmap = QPixmap::fromImage(*img);
-  //}
-
-  //te::common::Free(rgba, box.getHeight());
-  //if(img)
-  //  delete img;
-
-  //setPixmap(pixmap);
   update();
 }
 
@@ -131,6 +112,10 @@ void te::layout::LegendItem::paint( QPainter * painter, const QStyleOptionGraphi
     return;
   }
   
+  drawBackground(painter);
+
+  drawBorder(painter);
+
   te::map::AbstractLayerPtr layer = legendModel->getLayer();
 
   if (!layer)
@@ -141,7 +126,6 @@ void te::layout::LegendItem::paint( QPainter * painter, const QStyleOptionGraphi
       drawSelection(painter);
     }
 
-    update();
     return;
   }
 

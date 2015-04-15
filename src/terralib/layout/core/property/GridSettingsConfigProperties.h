@@ -39,7 +39,9 @@ namespace te
     {
       public:
 
-        virtual ~GridSettingsConfigProperties(void){};
+        GridSettingsConfigProperties();
+
+        virtual ~GridSettingsConfigProperties();
         
         std::string getName();
         std::string getVisible();

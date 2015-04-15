@@ -267,15 +267,7 @@ namespace te
           \param line LinearRing pointer in one coordinate system
         */
         virtual void convertToMillimeter(WorldTransformer transf, te::gm::Polygon* poly); 
-
-        /*!
-          \brief Opens the file and loads the image into memory and draws on canvas.
-		  
-		      \param fileName full path to image
-          \param box in mm
-        */
-        virtual void drawImage(std::string fileName, te::gm::Envelope box);
-
+        
         /*!
           \brief Opens the file and loads the image into memory and converts to char*.
 		  
@@ -291,15 +283,7 @@ namespace te
           \return file extension
         */
         virtual std::string getFileExtension(std::string fileName);
-
-        /*!
-          \brief Returns the file type. Ex.: .png (te::map::PNG).
-		  
-		      \param filName full path to image  	  
-          \return file type
-        */
-        virtual te::map::ImageType getFileExtensionType(std::string filName);
-
+        
         /*!
           \brief 
 		  

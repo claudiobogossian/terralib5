@@ -137,14 +137,7 @@ namespace te
 		      \return enum value  	  
         */
         virtual EnumType* getModeCreateMap() const;
-
-        /*!
-          \brief Returns value that represents create map grid mode type belonging to enumeration.
-		  
-		      \return enum value  	  
-        */
-        virtual EnumType* getModeCreateMapGrid() const;
-
+        
         /*!
           \brief Returns value that represents create legend mode type belonging to enumeration.
 		  
@@ -523,6 +516,20 @@ namespace te
         */
         virtual EnumType* getModeCoordWait() const;
 
+        /*!
+          \brief Returns value that represents create grid planar mode type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
+        virtual EnumType* getModeCreateGridPlanar() const;
+
+        /*!
+          \brief Returns value that represents create grid geodesic mode type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
+        virtual EnumType* getModeCreateGridGeodesic() const;
+
       protected:
 
         /*!
@@ -543,7 +550,6 @@ namespace te
         EnumType* m_modeMapZoomIn; //!< value that represents map zoom in mode type belonging to enumeration
         EnumType* m_modeMapZoomOut; //!< value that represents map zoom out mode type belonging to enumeration
         EnumType* m_modeCreateMap; //!< value that represents create map mode type belonging to enumeration
-        EnumType* m_modeCreateMapGrid; //!< value that represents create map grid mode type belonging to enumeration
         EnumType* m_modeCreateLegend; //!< value that represents create legend mode type belonging to enumeration
         EnumType* m_modeCreateRectangle; //!< value that represents create rectangle mode type belonging to enumeration
         EnumType* m_modeCreateText; //!< value that represents create text mode type belonging to enumeration
@@ -598,6 +604,8 @@ namespace te
         EnumType* m_modeCreateBarCode; //!< value that represents create barcode mode type belonging to enumeration
         EnumType* m_modeCreateGridMap; //!< value that represents create gridmap mode type belonging to enumeration
         EnumType* m_coordWait; //!< value that represents wait coordinate mode type belonging to enumeration
+        EnumType* m_modeCreateGridPlanar; //!< value that represents create grid planar mode type belonging to enumeration
+        EnumType* m_modeCreateGridGeodesic; //!< value that represents create grid geodesic mode type belonging to enumeration
     };
   }
 }

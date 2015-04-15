@@ -18,40 +18,38 @@
  */
 
 /*!
-  \file GridSettingsConfigProperties.h
+  \file MapLayerChoiceOutsideModel.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_PLANAR_GRID_SETTINGS_CONFIG_PROPERTIES_H
-#define __TERRALIB_LAYOUT_INTERNAL_PLANAR_GRID_SETTINGS_CONFIG_PROPERTIES_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_MAP_LAYER_CHOICE_OUTSIDE_MODEL_H 
+#define __TERRALIB_LAYOUT_INTERNAL_MAP_LAYER_CHOICE_OUTSIDE_MODEL_H
 
 // TerraLib
-#include "GridSettingsConfigProperties.h"
-
-// STL
-#include <string>
+#include "../core/pattern/mvc/OutsideModelObservable.h"
+#include "../core/ContextItem.h"
+#include "../core/property/Properties.h"
+#include "../core/Config.h"
 
 namespace te
 {
   namespace layout
   {
-    class PlanarGridSettingsConfigProperties: public GridSettingsConfigProperties
+    class TELAYOUTEXPORT MapLayerChoiceOutsideModel : public OutsideModelObservable
     {
-      public:
+    public:
 
-        PlanarGridSettingsConfigProperties();
+      MapLayerChoiceOutsideModel();
 
-        virtual ~PlanarGridSettingsConfigProperties(void);
-      
-        std::string getUnit();
+      virtual ~MapLayerChoiceOutsideModel();
 
-      protected:
+      virtual void updateProperties(te::layout::Properties* properties);
 
-        /* Grid */
-        std::string m_unit;
+      virtual Properties* getProperties() const;
+
     };
   }
 }

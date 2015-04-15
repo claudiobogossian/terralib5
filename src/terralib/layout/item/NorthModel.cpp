@@ -18,42 +18,32 @@
  */
 
 /*!
-  \file GridSettingsConfigProperties.h
+  \file NorthModel.cpp
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_PLANAR_GRID_SETTINGS_CONFIG_PROPERTIES_H
-#define __TERRALIB_LAYOUT_INTERNAL_PLANAR_GRID_SETTINGS_CONFIG_PROPERTIES_H
-
 // TerraLib
-#include "GridSettingsConfigProperties.h"
+#include "NorthModel.h"
+#include "../core/ContextItem.h"
+#include "../../geometry/Envelope.h"
+#include "../../color/RGBAColor.h"
+#include "../../maptools/Canvas.h"
+#include "../core/enum/Enums.h"
 
-// STL
-#include <string>
-
-namespace te
+te::layout::NorthModel::NorthModel() 
 {
-  namespace layout
-  {
-    class PlanarGridSettingsConfigProperties: public GridSettingsConfigProperties
-    {
-      public:
+  m_type = Enums::getInstance().getEnumObjectType()->getRectangleItem();
 
-        PlanarGridSettingsConfigProperties();
+  m_borderColor = te::color::RGBAColor(0, 0, 0, 255);
+  m_box = te::gm::Envelope(0., 0., 20., 20.);
 
-        virtual ~PlanarGridSettingsConfigProperties(void);
-      
-        std::string getUnit();
-
-      protected:
-
-        /* Grid */
-        std::string m_unit;
-    };
-  }
+  m_border = true;
 }
 
-#endif
+te::layout::NorthModel::~NorthModel()
+{
+
+}

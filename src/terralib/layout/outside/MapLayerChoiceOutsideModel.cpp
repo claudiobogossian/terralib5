@@ -18,42 +18,44 @@
  */
 
 /*!
-  \file GridSettingsConfigProperties.h
+  \file MapLayerChoiceOutsideControllerModel.cpp
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_PLANAR_GRID_SETTINGS_CONFIG_PROPERTIES_H
-#define __TERRALIB_LAYOUT_INTERNAL_PLANAR_GRID_SETTINGS_CONFIG_PROPERTIES_H
-
 // TerraLib
-#include "GridSettingsConfigProperties.h"
+#include "MapLayerChoiceOutsideModel.h"
+#include "../core/property/Property.h"
+#include "../core/property/Properties.h"
+#include "../core/enum/Enums.h"
 
-// STL
-#include <string>
-
-namespace te
+te::layout::MapLayerChoiceOutsideModel::MapLayerChoiceOutsideModel() 
 {
-  namespace layout
-  {
-    class PlanarGridSettingsConfigProperties: public GridSettingsConfigProperties
-    {
-      public:
-
-        PlanarGridSettingsConfigProperties();
-
-        virtual ~PlanarGridSettingsConfigProperties(void);
-      
-        std::string getUnit();
-
-      protected:
-
-        /* Grid */
-        std::string m_unit;
-    };
-  }
+  m_type = Enums::getInstance().getEnumObjectType()->getMapLayerChoice();
+  m_box = te::gm::Envelope(0., 0., 200., 200.);
 }
 
-#endif
+te::layout::MapLayerChoiceOutsideModel::~MapLayerChoiceOutsideModel()
+{
+
+}
+
+te::layout::Properties* te::layout::MapLayerChoiceOutsideModel::getProperties() const
+{
+  m_properties->clear();
+
+  Property pro_name;
+  pro_name.setName("MapLayerChoice");
+
+  m_properties->addProperty(pro_name);
+
+  m_properties->setTypeObj(m_type);
+  return m_properties;
+}
+
+void te::layout::MapLayerChoiceOutsideModel::updateProperties( te::layout::Properties* properties )
+{
+
+}

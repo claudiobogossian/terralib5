@@ -18,42 +18,28 @@
  */
 
 /*!
-  \file GridSettingsConfigProperties.h
+  \file MapLocationModel.cpp
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_PLANAR_GRID_SETTINGS_CONFIG_PROPERTIES_H
-#define __TERRALIB_LAYOUT_INTERNAL_PLANAR_GRID_SETTINGS_CONFIG_PROPERTIES_H
-
 // TerraLib
-#include "GridSettingsConfigProperties.h"
-
+#include "MapLocationModel.h"
+#include "../core/enum/Enums.h"
 // STL
+#include <vector>
 #include <string>
+#include <sstream> 
 
-namespace te
+te::layout::MapLocationModel::MapLocationModel() 
 {
-  namespace layout
-  {
-    class PlanarGridSettingsConfigProperties: public GridSettingsConfigProperties
-    {
-      public:
-
-        PlanarGridSettingsConfigProperties();
-
-        virtual ~PlanarGridSettingsConfigProperties(void);
-      
-        std::string getUnit();
-
-      protected:
-
-        /* Grid */
-        std::string m_unit;
-    };
-  }
+  //m_type = Enums::getInstance().getEnumObjectType()->getMapLocationItem();
 }
 
-#endif
+te::layout::MapLocationModel::~MapLocationModel()
+{
+  
+}
+
