@@ -70,7 +70,17 @@ bool te::qt::widgets::FixGeometryWidget::fixGeometry()
 
 void te::qt::widgets::FixGeometryWidget::setLayerList(std::list<te::map::AbstractLayerPtr>& layerList)
 {
+  m_layers = layerList;
 
+  std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
+
+  while (it != m_layers.end())
+  {
+    std::auto_ptr<te::da::DataSetType> dsType = it->get()->getSchema();
+    if (dsType->hasGeom())
+      m_ui->m_layersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
+    ++it;
+  }
 }
 
 void te::qt::widgets::FixGeometryWidget::onTargetFileToolButtonPressed()

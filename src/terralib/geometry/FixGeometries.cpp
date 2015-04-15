@@ -43,19 +43,17 @@ te::gm::Geometry* te::gm::FixGeometry(te::gm::Geometry* inputGeom)
 
   switch (type)
   {
-  case te::gm::PointType:
-    break;
-  case te::gm::LineStringType:
-    break;
-  case te::gm::PolygonType:
-    break;
-  case te::gm::GeometryCollectionType:
-    break;
   case te::gm::MultiPointType:
     break;
   case te::gm::MultiLineStringType:
     break;
   case te::gm::MultiPolygonType:
+    break;
+  case te::gm::PointType:
+    break;
+  case te::gm::LineStringType:
+    break;
+  case te::gm::PolygonType:
     break;
   default:
     //UnknownGeometryType:

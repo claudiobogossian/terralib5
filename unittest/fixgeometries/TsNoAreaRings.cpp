@@ -60,6 +60,7 @@ void TsNoAreaRings::tcCreatePolygon()
   try
   {
     CPPUNIT_ASSERT(poly->isValid() == false);
+    CPPUNIT_ASSERT(false);
   }
   catch (const std::exception& e)
   {

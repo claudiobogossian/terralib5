@@ -78,6 +78,7 @@ namespace te
         private:
 
           std::auto_ptr<Ui::FixGeometryWidgetForm> m_ui;
+          std::list<te::map::AbstractLayerPtr> m_layers;                //!< List of layers.
       }; 
     } // end namespace widgets
   }   // end namespace qt
