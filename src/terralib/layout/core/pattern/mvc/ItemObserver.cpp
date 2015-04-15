@@ -154,3 +154,10 @@ void te::layout::ItemObserver::changeZoomFactor( double currentZoomFactor )
 {
   //do nothing
 }
+
+void te::layout::ItemObserver::recalculateBoundingRect()
+{
+  //do nothing
+}
+
+

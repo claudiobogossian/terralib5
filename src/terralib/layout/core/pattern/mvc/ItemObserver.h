@@ -182,6 +182,11 @@ namespace te
          */
         virtual void changeZoomFactor(double currentZoomFactor);
 
+        /*!
+          \brief The default implementation does nothing.
+         */
+        virtual void recalculateBoundingRect();
+
       protected:
 
         /*!

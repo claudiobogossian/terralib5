@@ -1,4 +1,4 @@
-/*  Copyright (C) 2014-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,40 +18,39 @@
  */
 
 /*!
-  \file MapGridItem.h
+  \file NorthItem.h
    
-  \brief Class daughter of te::layout::MapItem that contains a grid that can be viewed on the map.
+   \brief Class that represents a graphic Rectangle. 
+      Its coordinate system is the same of scene (millimeters). 
+      This is also son of ItemObserver and ObjectItem, so it can become observer of a model (Observable). 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_MAP_GRID_ITEM_H 
-#define __TERRALIB_LAYOUT_INTERNAL_MAP_GRID_ITEM_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_NORTH_ITEM_H 
+#define __TERRALIB_LAYOUT_INTERNAL_NORTH_ITEM_H
 
 // TerraLib
-#include "MapItem.h"
+#include "ObjectItem.h"
 #include "../../core/Config.h"
-
-class QPainter;
 
 namespace te
 {
   namespace layout
   {
     class Observable;
-    class ItemController;
 
     /*!
-      \brief Class daughter of te::layout::MapItem that contains a grid that can be viewed on the map.
+    \brief Class that represents a graphic Rectangle. 
+        Its coordinate system is the same of scene (millimeters). 
+        He is also the son of ItemObserver and ObjectItem, so it can become observer of a model (Observable). 
 	  
 	    \ingroup layout
 
-	    \sa te::layout::MapItem
+	    \sa te::layout::ObjectItem
 	  */
-    class TELAYOUTEXPORT MapGridItem : public MapItem
+    class TELAYOUTEXPORT NorthItem : public ObjectItem
     {
-      Q_OBJECT //for slots/signals
-
       public:
 
         /*!
@@ -60,19 +59,21 @@ namespace te
           \param controller "Controller" part of MVC component
           \param o "Model" part of MVC component
         */ 
-        MapGridItem( ItemController* controller, Observable* o );
+        NorthItem( ItemController* controller, Observable* o );
 
         /*!
           \brief Destructor
          */
-        virtual ~MapGridItem();            
-
-      protected:
+        virtual ~NorthItem();
 
         /*!
-          \brief Reimplemented from MapItem
+          \brief Reimplemented from QGraphicsItem
          */
-        virtual void drawSelection( QPainter* painter );
+        virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
+        
+      protected:
+
+        virtual void drawRectangle(QPainter * painter);
     };
   }
 }

@@ -117,6 +117,11 @@ void te::layout::ItemModelObservable::notifyAll( ContextItem context )
 
 te::layout::Properties* te::layout::ItemModelObservable::getProperties() const
 {  
+  if(!m_properties)
+  {
+    return 0;
+  }
+
   m_properties->clear();
 
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
@@ -278,6 +283,11 @@ bool te::layout::ItemModelObservable::contains( const te::gm::Coord2D &coord ) c
 void te::layout::ItemModelObservable::updateProperties( te::layout::Properties* properties )
 {
   Properties* vectorProps = const_cast<Properties*>(properties);
+
+  if(!vectorProps)
+  {
+    return;
+  }
   
   Property pro_name = vectorProps->contains(m_sharedProps->getName());
   if(!pro_name.isNull())

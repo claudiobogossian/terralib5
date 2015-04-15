@@ -31,26 +31,22 @@
 // TerraLib
 #include "GridModel.h"
 #include "../core/Config.h"
+#include "GridMapModel.h"
 
 namespace te
 {
   namespace layout
   {
-    class GeodesicGridSettingsConfigProperties;
-
-    class TELAYOUTEXPORT GridGeodesicModel: public GridModel 
+    class TELAYOUTEXPORT GridGeodesicModel: public GridMapModel 
     {
       public:
 
         GridGeodesicModel();
+
         virtual ~GridGeodesicModel();
 
         virtual void draw(te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box, int srid);
-
-        virtual te::layout::Property getProperty();
-
-        virtual void updateProperty(te::layout::Property property);
-
+        
         virtual void setPlanarBox(te::gm::Envelope box);
         
         virtual void setVisibleAllTexts(bool visible);
@@ -68,9 +64,7 @@ namespace te
          virtual void calculateGaps(te::gm::Envelope box);
 
        protected:
-
-         GeodesicGridSettingsConfigProperties* m_settingsConfig;
-
+         
          te::gm::Envelope m_planarBox;
 
          /*Text: Basic Configuration*/
@@ -107,3 +101,4 @@ namespace te
 }
 
 #endif 
+

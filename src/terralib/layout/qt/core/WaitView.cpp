@@ -55,6 +55,8 @@ void te::layout::WaitView::addCoord( QPointF point )
   m_coords.push_back(p);
   QPoint received(point.x(), point.y());
   m_points.push_back(received);
+
+  m_view->viewport()->update();
 }
 
 void te::layout::WaitView::clear()

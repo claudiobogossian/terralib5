@@ -38,7 +38,11 @@
 void CreateDataSource(std::string name)
 {
   std::map<std::string, std::string> connInfo;
+#ifdef _M_IX86
   connInfo["PROVIDER"] = "Microsoft.Jet.OLEDB.4.0";
+#else
+  connInfo["PROVIDER"] = "Microsoft.ACE.OLEDB.12.0";
+#endif
   connInfo["DB_NAME"] = name;
   connInfo["CREATE_OGC_METADATA_TABLES"] = "TRUE";
 
@@ -70,7 +74,11 @@ void CopyFromShapeFile()
   inDs->open();
   
   std::map<std::string, std::string> connInfo;
+#ifdef _M_IX86 
   connInfo["PROVIDER"] = "Microsoft.Jet.OLEDB.4.0";
+#else
+  connInfo["PROVIDER"] = "Microsoft.ACE.OLEDB.12.0";
+#endif
   connInfo["HOST"] = "localhost";
   connInfo["USER_NAME"] = "";
   connInfo["PASSWORD"] = "";

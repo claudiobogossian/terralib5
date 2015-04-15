@@ -35,14 +35,18 @@
 #include "../../../geometry/Envelope.h"
 #include "../../../common/STLUtils.h"
 #include "../../item/GridMapModel.h"
+#include "MapItem.h"
 
 //Qt
 #include <QStyleOptionGraphicsItem>
+#include "../../core/WorldTransformer.h"
 
 te::layout::GridMapItem::GridMapItem( ItemController* controller, Observable* o ) :
   ObjectItem(controller, o),
   m_maxWidthTextMM(0),
-  m_maxHeigthTextMM(0)
+  m_maxHeigthTextMM(0),
+  m_onePointMM(0.3527777778),
+  m_changeSize(false)
 {  
   m_nameClass = std::string(this->metaObject()->className());
 }
@@ -62,11 +66,28 @@ void te::layout::GridMapItem::paint( QPainter * painter, const QStyleOptionGraph
   {
     return;
   }
-
+  
   drawBackground(painter);
   
+  drawGrid(painter);
+
+  //Draw Selection
+  if (option->state & QStyle::State_Selected)
+  {
+    drawSelection(painter);
+  }
+}
+
+void te::layout::GridMapItem::drawGrid( QPainter* painter )
+{
+  GridMapModel* model = dynamic_cast<GridMapModel*>(m_model);
+  if(!model)
+  {
+    return;
+  }
+
   painter->save();
-  
+
   QRectF parentBound = boundingRect();
 
   if(parentItem())
@@ -80,64 +101,44 @@ void te::layout::GridMapItem::paint( QPainter * painter, const QStyleOptionGraph
   int heightRect = (int)parentBound.height();
   int widgetRect = (int)parentBound.width();
 
-  painter->setPen(QPen(Qt::black, 0, Qt::SolidLine));
+  te::color::RGBAColor rgbColor = model->getLineColor();
+  QColor cLine(rgbColor.getRed(), rgbColor.getGreen(), rgbColor.getBlue(), rgbColor.getAlpha());
 
-  QFont font("Arial", 12);
-  painter->setFont(font);
-  
-  double mm = 0.3527777778;
-  m_maxHeigthTextMM = mm * font.pointSize();
+  painter->setPen(QPen(cLine, 0, Qt::SolidLine));
 
-  QString text = "A";
+  QFont ft(model->getFontFamily().c_str(), model->getTextPointSize());
+
+  painter->setFont(ft);
+
+  m_maxHeigthTextMM = m_onePointMM * ft.pointSize();
+
+  //QString text = "A";
 
   for (int i = 0; i <= heightRect; i+=10)
   {
     QLineF lineOne = QLineF(parentBound.topLeft().x(), parentBound.topLeft().y() + i, parentBound.topRight().x(), parentBound.topRight().y() + i);
-    
-    QPointF pointInit(parentBound.topLeft().x() - (heightRect*.01), parentBound.topLeft().y() + i - (m_maxHeigthTextMM/2)); //esquerda
-    drawText(pointInit, painter, text.toStdString(), true);
-    QPointF pointFinal(parentBound.topRight().x() + (heightRect*.01), parentBound.topRight().y() + i  - (m_maxHeigthTextMM/2)); //direita
-    drawText(pointFinal, painter, text.toStdString());
-           
+
+    QPointF pointInit(parentBound.topLeft().x(), parentBound.topLeft().y() + i - (m_maxHeigthTextMM/2)); //left
+    //drawText(pointInit, painter, text.toStdString(), true);
+    QPointF pointFinal(parentBound.topRight().x(), parentBound.topRight().y() + i  - (m_maxHeigthTextMM/2)); //right
+    //drawText(pointFinal, painter, text.toStdString());
+
     painter->drawLine(lineOne);
 
     for (int j = 0; j <= widgetRect; j+=10)
     {
       QLineF lineTwo = QLineF(parentBound.topLeft().x() + j, parentBound.topLeft().y(), parentBound.bottomLeft().x() + j, parentBound.bottomLeft().y());
 
-      QPointF pointInit(parentBound.topLeft().x() + j + (m_maxWidthTextMM/2), boundingRect().topLeft().y() /*- (widgetRect*.01)*/); //inferior
-      drawText(pointInit, painter, text.toStdString(), true);
-      QPointF pointFinal(parentBound.bottomLeft().x() + j  - (m_maxWidthTextMM/2), parentBound.bottomLeft().y() + (widgetRect*.01)); //superior
-      drawText(pointFinal, painter, text.toStdString());
+      QPointF pointInit(parentBound.topLeft().x() + j + (m_maxWidthTextMM/2), boundingRect().topLeft().y()); //upper
+      //drawText(pointInit, painter, text.toStdString(), true);
+      QPointF pointFinal(parentBound.bottomLeft().x() + j  - (m_maxWidthTextMM/2), parentBound.bottomLeft().y()); //lower
+      //drawText(pointFinal, painter, text.toStdString());
 
       painter->drawLine(lineTwo);
     }    
   }
     
   painter->restore();
-
-  //Draw Selection
-  if (option->state & QStyle::State_Selected)
-  {
-    drawSelection(painter);
-  }
-}
-
-QRectF te::layout::GridMapItem::boundingRect()
-{
-  if(parentItem())
-  {
-    if(parentItem()->boundingRect().isValid())
-    {
-      m_rect = parentItem()->boundingRect();
-      m_rect.setWidth(m_rect.width() + m_maxWidthTextMM);
-      m_rect.setX(m_rect.x() - m_maxWidthTextMM);
-      m_rect.setHeight(m_rect.height() + m_maxHeigthTextMM);
-      m_rect.setY(m_rect.y() - m_maxHeigthTextMM);
-      return m_rect;
-    }    
-  }
-  return m_rect;
 }
 
 void te::layout::GridMapItem::drawText( QPointF point, QPainter* painter, std::string text, bool displacementLeft /*= false*/, bool displacementRight /*= false*/ )
@@ -160,7 +161,7 @@ void te::layout::GridMapItem::drawText( QPointF point, QPainter* painter, std::s
 
   if(displacementLeft)
   {
-    newPoint.setX(newPoint.x() - width);
+    newPoint.setX(newPoint.x() - width);    
   }
 
   if(displacementRight)
@@ -175,6 +176,7 @@ void te::layout::GridMapItem::drawText( QPointF point, QPainter* painter, std::s
   if(widthMM > m_maxWidthTextMM)
   {
     m_maxWidthTextMM = widthMM;
+    m_changeSize = true;
   }
 
   //Keeps the size of the text.(Aspect)
@@ -184,3 +186,80 @@ void te::layout::GridMapItem::drawText( QPointF point, QPainter* painter, std::s
 
   painter->restore();
 }
+
+QRectF te::layout::GridMapItem::boundingRect() const
+{
+  if(parentItem())
+  {
+    return parentItem()->boundingRect();
+  }
+  return m_rect;
+}
+
+void te::layout::GridMapItem::recalculateBoundingRect()
+{
+  if(!m_changeSize)
+    return;
+
+  if(parentItem())
+  {    
+    QRectF parentBoundRect = parentItem()->boundingRect();
+    if(parentBoundRect.isValid())
+    {
+      QRectF boundRect = boundingRect();
+      double w = parentBoundRect.width() + (m_maxWidthTextMM*2);
+      double h = parentBoundRect.height() + (m_maxHeigthTextMM*2);
+      if(boundRect.width() != w || boundRect.height() != h)
+      {
+        prepareGeometryChange();
+        QRectF rect(0., 0., w, h);
+        setRect(rect);
+        
+        //update model
+        te::gm::Envelope box(m_model->getBox());
+        box.m_urx = box.m_llx + w;
+        box.m_ury = box.m_lly + h;
+        m_controller->setBox(box);
+      }
+    } 
+  }
+  m_changeSize = false;
+}
+
+QVariant te::layout::GridMapItem::itemChange( QGraphicsItem::GraphicsItemChange change, const QVariant & value )
+{
+  if(change == QGraphicsItem::ItemParentHasChanged)
+  {
+    GridMapModel* model = dynamic_cast<GridMapModel*>(m_model);
+    if(model)
+    {
+      if(parentItem())
+      {
+        MapItem* mapItem = dynamic_cast<MapItem*>(parentItem());
+        if(mapItem)
+        {
+          model->setMapName(mapItem->getName());
+        }
+      }
+    }
+  }
+  return QGraphicsItem::itemChange(change, value);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

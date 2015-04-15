@@ -34,13 +34,11 @@
 #include "../item/LegendItem.h"
 #include "../../item/LegendModel.h"
 #include "../../item/MapModel.h"
-#include "../../item/MapGridModel.h"
 #include "../item/TextItem.h"
 #include "../../item/TextModel.h"
 #include "../item/LegendChildItem.h"
 #include "../../item/LegendChildModel.h"
 #include "../../core/pattern/derivativevisitor/VisitorUtils.h"
-#include "../item/MapGridItem.h"
 #include "../../item/GridGeodesicModel.h"
 #include "../../item/GridPlanarModel.h"
 #include "Scene.h"
@@ -275,43 +273,7 @@ void te::layout::ItemUtils::setCurrentToolInSelectedMapItems( EnumType* mode )
 
 void te::layout::ItemUtils::createTextGridAsObject()
 {
-  QFont* ft = new QFont;
-  QGraphicsItem *item = m_scene->selectedItems().first();
-  if(item)
-  {
-    ItemObserver* it = dynamic_cast<ItemObserver*>(item);
-    if(it)
-    {
-      MapGridItem* mt = dynamic_cast<MapGridItem*>(it);
-      if(mt)
-      {
-        MapGridModel* model = dynamic_cast<MapGridModel*>(mt->getModel());
-
-        GridGeodesicModel* gridGeo = dynamic_cast<GridGeodesicModel*>(model->getGridGeodesic());
-        if(model->getGridGeodesic()->isVisible())
-        {
-          model->getGridGeodesic()->setVisibleAllTexts(false);
-          std::map<te::gm::Point*, std::string> mapGeo = gridGeo->getGridInfo();
-          gridGeo->setVisibleAllTexts(false);
-          ft->setFamily(gridGeo->getFontFamily().c_str());
-          ft->setPointSize(gridGeo->getPointSize());
-          createTextItemFromObject(mapGeo, ft);
-        }
-
-        GridPlanarModel* gridPlanar = dynamic_cast<GridPlanarModel*>(model->getGridPlanar());
-        if(model->getGridPlanar()->isVisible())
-        {
-          model->getGridGeodesic()->setVisibleAllTexts(false);
-          std::map<te::gm::Point*, std::string> mapPlanar = gridPlanar->getGridInfo();
-          gridPlanar->setVisibleAllTexts(false);
-          ft->setFamily(gridPlanar->getFontFamily().c_str());
-          ft->setPointSize(gridPlanar->getPointSize());
-          createTextItemFromObject(mapPlanar, ft);
-        }   
-      }
-      it->redraw();
-    }
-  }
+  //do nothing;
 }
 
 void te::layout::ItemUtils::createTextMapAsObject()

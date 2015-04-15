@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file MapGridController.cpp
+  \file NorthController.cpp
    
   \brief 
 
@@ -26,22 +26,15 @@
 */
 
 // TerraLib
-#include "MapGridController.h"
-#include "../core/ContextItem.h"
-#include "../core/pattern/factory/AbstractItemFactory.h"
-#include "../core/pattern/singleton/Context.h"
-#include "../core/pattern/mvc/ItemModelObservable.h"
-#include "../core/pattern/factory/ItemParamsCreate.h"
-#include "../core/pattern/mvc/ItemObserver.h"
-#include "../core/enum/Enums.h"
+#include "NorthController.h"
 
-te::layout::MapGridController::MapGridController( Observable* o ) :
-  MapController(o)
+te::layout::NorthController::NorthController( Observable* o ) :
+  ItemController(o)
 {
   
 }
 
-te::layout::MapGridController::~MapGridController()
+te::layout::NorthController::~NorthController()
 {
 	
 }
