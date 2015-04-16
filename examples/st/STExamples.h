@@ -45,27 +45,27 @@
 #include "Config.h"
 
 /*! 
-	\brief It loads the TerraLib modules. 
+  \brief It loads the TerraLib modules. 
 */
 void LoadModules();
 
 /*! 
-	\brief It creates a new DataSource and put it into the DataSource manager, using a random id. 
+  \brief It creates a new DataSource and put it into the DataSource manager, using a random id. 
 */
 void CreateDataSourceAndUpdateManager(te::da::DataSourceInfo& dsinfo);
 
 /*! 
-	\brief It groups the examples with trajectories (TrajectoryExamples.cpp). 
+  \brief It groups the examples with trajectories (TrajectoryExamples.cpp). 
 */
 void TrajectoryExamples();
 
 /*! 
-	\brief It calculates the distance between two trajectories (TrajectoryDistance.cpp). 
+  \brief It calculates the distance between two trajectories (TrajectoryDistance.cpp). 
 */
 void TrajectoryDistance(te::st::Trajectory* tj1, te::st::Trajectory* tj2);
 
 /*! 
-	\brief It calculates the intersection between a trajectory and a geometry (TrajectoryInstersection.cpp). 
+  \brief It calculates the intersection between a trajectory and a geometry (TrajectoryInstersection.cpp). 
 */
 void TrajectoryIntersection(te::st::Trajectory* tj, te::gm::Geometry* geom);
 
@@ -73,6 +73,16 @@ void TrajectoryIntersection(te::st::Trajectory* tj, te::gm::Geometry* geom);
   \brief It loads trajectory data set from KML file
 */
 void LoadTrajectoryDataSetFromKML(boost::ptr_vector<te::st::TrajectoryDataSet>& output);
+
+/*! 
+  \brief It groups the examples with TimeSeries (TimeSeriesExamples.cpp). 
+*/
+void TimeSeriesExamples();
+
+/*! 
+  \brief It loads a Time Series data set from a PostGIS database
+*/
+void LoadTimeSeriesDataSetFromPGIS(boost::ptr_vector<te::st::TimeSeries>& output);
 
 /*! 
   \brief It loads a coverage series from a set of geotif files

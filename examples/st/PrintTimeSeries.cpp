@@ -14,7 +14,7 @@ void PrintTimeSeries(boost::ptr_vector<te::st::TimeSeries>& input)
 {
   for(std::size_t i=0; i<input.size(); ++i)
   {
-	  std::cout << "Printing observations of the time series " << i << " :" << std::endl;
+    std::cout << "Printing observations of the time series " << i << " :" << std::endl;
     PrintTimeSeries(&input[i]);
   }
 }
@@ -44,7 +44,7 @@ void PrintTimeSeriesInfo(boost::ptr_vector<te::st::TimeSeries>& input)
 {
   for(std::size_t i=0; i<input.size(); ++i)
   {
-	  std::cout << "Printing information about the time series " << i << " :" << std::endl;
+    std::cout << "Printing information about the time series " << i << " :" << std::endl;
     PrintTimeSeriesInfo(&input[i]);
   }
 }
