@@ -263,6 +263,8 @@ namespace te
       std::string m_optionGridMap;
       std::string m_optionGridPlanar;
       std::string m_optionGridGeodesic;
+      std::string m_optionNorth;
+      std::string m_optionMapLocation;
       
       /* Geometry Menu */
       std::string m_optionRectangle;

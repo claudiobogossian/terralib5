@@ -26,23 +26,23 @@
 */
 
 // TerraLib
-#include "MapLayerChoiceOutsideModel.h"
+#include "MapLayerChoiceModel.h"
 #include "../core/property/Property.h"
 #include "../core/property/Properties.h"
 #include "../core/enum/Enums.h"
 
-te::layout::MapLayerChoiceOutsideModel::MapLayerChoiceOutsideModel() 
+te::layout::MapLayerChoiceModel::MapLayerChoiceModel() 
 {
   m_type = Enums::getInstance().getEnumObjectType()->getMapLayerChoice();
   m_box = te::gm::Envelope(0., 0., 200., 200.);
 }
 
-te::layout::MapLayerChoiceOutsideModel::~MapLayerChoiceOutsideModel()
+te::layout::MapLayerChoiceModel::~MapLayerChoiceModel()
 {
 
 }
 
-te::layout::Properties* te::layout::MapLayerChoiceOutsideModel::getProperties() const
+te::layout::Properties* te::layout::MapLayerChoiceModel::getProperties() const
 {
   m_properties->clear();
 
@@ -55,7 +55,7 @@ te::layout::Properties* te::layout::MapLayerChoiceOutsideModel::getProperties() 
   return m_properties;
 }
 
-void te::layout::MapLayerChoiceOutsideModel::updateProperties( te::layout::Properties* properties )
+void te::layout::MapLayerChoiceModel::updateProperties( te::layout::Properties* properties )
 {
 
 }

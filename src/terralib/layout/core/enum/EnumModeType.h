@@ -530,6 +530,20 @@ namespace te
         */
         virtual EnumType* getModeCreateGridGeodesic() const;
 
+        /*!
+          \brief Returns value that represents create north mode type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
+        virtual EnumType* getModeCreateNorth() const;
+
+        /*!
+          \brief Returns value that represents create map location mode type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
+        virtual EnumType* getModeCreateMapLocation() const;
+
       protected:
 
         /*!
@@ -606,8 +620,11 @@ namespace te
         EnumType* m_coordWait; //!< value that represents wait coordinate mode type belonging to enumeration
         EnumType* m_modeCreateGridPlanar; //!< value that represents create grid planar mode type belonging to enumeration
         EnumType* m_modeCreateGridGeodesic; //!< value that represents create grid geodesic mode type belonging to enumeration
+        EnumType* m_modeCreateNorth; //!< value that represents create north mode type belonging to enumeration
+        EnumType* m_modeCreateMapLocation; //!< value that represents create map location mode type belonging to enumeration
     };
   }
 }
 
 #endif
+

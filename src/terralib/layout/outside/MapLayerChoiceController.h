@@ -18,38 +18,32 @@
  */
 
 /*!
-  \file MapLayerChoiceOutsideModel.h
+  \file MapLayerChoiceOutsideController.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_MAP_LAYER_CHOICE_OUTSIDE_MODEL_H 
-#define __TERRALIB_LAYOUT_INTERNAL_MAP_LAYER_CHOICE_OUTSIDE_MODEL_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_MAP_LAYER_CHOISE_CONTROLLER_H 
+#define __TERRALIB_LAYOUT_INTERNAL_MAP_LAYER_CHOISE_CONTROLLER_H
 
 // TerraLib
-#include "../core/pattern/mvc/OutsideModelObservable.h"
-#include "../core/ContextItem.h"
-#include "../core/property/Properties.h"
+#include "../core/pattern/mvc/OutsideController.h"
+#include "../core/property/Property.h"
 #include "../core/Config.h"
 
 namespace te
 {
   namespace layout
   {
-    class TELAYOUTEXPORT MapLayerChoiceOutsideModel : public OutsideModelObservable
+    class TELAYOUTEXPORT MapLayerChoiceController : public OutsideController
     {
-    public:
+      public:
 
-      MapLayerChoiceOutsideModel();
+	      MapLayerChoiceController( Observable* o );
 
-      virtual ~MapLayerChoiceOutsideModel();
-
-      virtual void updateProperties(te::layout::Properties* properties);
-
-      virtual Properties* getProperties() const;
-
+	      virtual ~MapLayerChoiceController();
     };
   }
 }

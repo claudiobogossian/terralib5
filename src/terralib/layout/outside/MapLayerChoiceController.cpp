@@ -26,15 +26,15 @@
 */
 
 // TerraLib
-#include "MapLayerChoiceOutsideController.h"
+#include "MapLayerChoiceController.h"
 
-te::layout::MapLayerChoiceOutsideController::MapLayerChoiceOutsideController( Observable* o ) :
+te::layout::MapLayerChoiceController::MapLayerChoiceController( Observable* o ) :
 	OutsideController(o)
 {
   
 }
 
-te::layout::MapLayerChoiceOutsideController::~MapLayerChoiceOutsideController()
+te::layout::MapLayerChoiceController::~MapLayerChoiceController()
 {
 
 }

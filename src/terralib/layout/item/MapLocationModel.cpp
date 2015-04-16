@@ -35,11 +35,13 @@
 
 te::layout::MapLocationModel::MapLocationModel() 
 {
-  //m_type = Enums::getInstance().getEnumObjectType()->getMapLocationItem();
+  m_type = Enums::getInstance().getEnumObjectType()->getMapLocationItem();
 }
 
 te::layout::MapLocationModel::~MapLocationModel()
 {
   
 }
+
+
 
