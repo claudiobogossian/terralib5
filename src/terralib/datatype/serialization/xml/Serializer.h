@@ -27,6 +27,7 @@
 #define __TERRALIB_DATATYPE_SERIALIZATION_XML_INTERNAL_SERIALIZER_H
 
 // TerraLib
+#include "terralib_config.h"
 #include "../../../common/Singleton.h"
 #include "../../Config.h"
 

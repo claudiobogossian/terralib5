@@ -32,6 +32,8 @@
 #include "Exception.h"
 #include "Translator.h"
 
+#include "terralib_config.h"
+
 // STL
 #include <cassert>
 #include <cstdlib>

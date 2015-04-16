@@ -150,6 +150,10 @@
 
 #cmakedefine TERRALIB_GDAL_ENABLED
 
+#if defined(TERRALIB_GDAL_ENABLED)
+  #define TERRALIB_GDAL_DATA "@GDAL_DATA_DIR@"
+#endif
+
 #cmakedefine TERRALIB_GEOS_ENABLED
 
 #cmakedefine TERRALIB_GEOSC_ENABLED

@@ -29,6 +29,7 @@
 // TerraLib
 #include "../common/Static.h"
 #include "Config.h"
+#include "terralib_config.h"
 
 #ifdef TERRALIB_GEOS_ENABLED
 
