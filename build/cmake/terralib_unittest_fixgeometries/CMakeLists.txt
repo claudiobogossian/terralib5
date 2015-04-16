@@ -18,22 +18,27 @@
 #  TerraLib Team at <terralib-team@terralib.org>.
 #
 #
-#  Description: Script for generating the documentation with Doxygen.
+#  Description: Build the Unit Test for the Raster Processing Blender.
 #
 #  Author: Gilberto Ribeiro de Queiroz <gribeiro@dpi.inpe.br>
 #          Juan Carlos P. Garrido <juan@dpi.inpe.br>
 #          Frederico Augusto T. Bede <frederico.bede@funcate.org.br>
 #
 
-configure_file(${TERRALIB_ABSOLUTE_ROOT_DIR}/doc/api/Doxyfile.in
-               ${CMAKE_CURRENT_BINARY_DIR}/doxygen.txt @ONLY)
 
-add_custom_target(terralib_doxygen
-                  ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/doxygen.txt
-                  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-                  COMMENT "Generating API documentation with Doxygen" VERBATIM)
+include_directories(${Boost_INCLUDE_DIR}
+                    ${CPPUNIT_INCLUDE_DIR})
 
-#install(CODE "execute_process(COMMAND ${DOXYGEN_EXECUTABLE} doxygen.txt WORKING_DIRECTORY \"${CMAKE_CURRENT_BINARY_DIR}\")")
 
-install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doc
-        DESTINATION share/terralib COMPONENT devel)
+file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/fixgeometries/*.cpp)
+file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/fixgeometries/*.h)
+
+add_executable(terralib_unittest_fixgeometries ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
+
+target_link_libraries(terralib_unittest_fixgeometries terralib_mod_geometry
+											          terralib_mod_plugin 
+                                                      terralib_mod_memory
+                                                      ${CPPUNIT_LIBRARY})
+
+install(FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES}
+        DESTINATION ${TERRALIB_DESTINATION_UNITTEST}/fixgeometries COMPONENT devel)

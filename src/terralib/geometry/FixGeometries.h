@@ -18,50 +18,33 @@
  */
 
 /*!
-  \file terralib/datatype/serialization/xml/Serializer.h
+  \file terralib/geometry/FixGeometries.h
 
-  \brief Support for Property serialization.
+  \brief This class contains attributes and functions necessary to fix and report unconsistencies of geometries.
 */
 
-#ifndef __TERRALIB_DATATYPE_SERIALIZATION_XML_INTERNAL_SERIALIZER_H
-#define __TERRALIB_DATATYPE_SERIALIZATION_XML_INTERNAL_SERIALIZER_H
+#ifndef __TERRALIB_GEOMETRY_INTERNAL_FIXGEOMETRIES_H
+#define __TERRALIB_GEOMETRY_INTERNAL_FIXGEOMETRIES_H
 
 // TerraLib
-#include "terralib_config.h"
-#include "../../../common/Singleton.h"
-#include "../../Config.h"
-
-#ifdef TERRALIB_MOD_XML_ENABLED
-
-// STL
-#include <memory>
+#include "Config.h"
+#include "Enums.h"
 
 namespace te
 {
-  namespace xml
+  namespace gm
   {
-    class Reader;
-    class Writer;
-  }
+// Forward declarations
+    class Envelope;
+    class Geometry;
+    class Point;
+    struct Coord2D;
+    class LineString;
+    
+    TEGEOMEXPORT Geometry* FixGeometry(te::gm::Geometry* inputGeom);
 
-  namespace dt
-  {
-    class Property;
-  }
+  } // end namespace gm
+}   // end namespace te
 
-  namespace serialize
-  {
-    namespace xml
-    {
-      TEDATATYPEEXPORT std::auto_ptr<te::dt::Property> ReadProperty(te::xml::Reader& reader);
-
-      TEDATATYPEEXPORT void Save(const te::dt::Property& p, te::xml::Writer& writer);
-
-    } // end namespace xml
-  }   // end namespace serialize
-}     // end namespace te
-
-#endif // TERRALIB_MOD_XML_ENABLED
-
-#endif  // __TERRALIB_DATATYPE_SERIALIZATION_XML_INTERNAL_SERIALIZER_H
+#endif  // __TERRALIB_GEOMETRY_INTERNAL_FIXGEOMETRIES_H
 

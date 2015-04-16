@@ -18,41 +18,34 @@
  */
 
 /*!
-  \file terralib/xlink/serialization/xml/XLinkSerializer.h
+  \file LoadModules.h
+ 
+  \brief Load terralib modules.
+ */
 
-  \brief Data serialization for the XLink module.
-*/
+#ifndef __TERRALIB_UNITTEST_FIXGEOMETRIES_LOADMODULES_H
+#define __TERRALIB_UNITTEST_FIXGEOMETRIES_LOADMODULES_H
 
-#ifndef __TERRALIB_XLINK_INTERNAL_XLINKSERIALIZER_H
-#define __TERRALIB_XLINK_INTERNAL_XLINKSERIALIZER_H
+#include <terralib/common.h>
+#include <terralib/plugin.h>
+#include <terralib/Config.h>
 
-// TerraLib
-#include "terralib_config.h"
-#include "../../Config.h"
+/*!
+  \brief Load terralib modules.
+ */
 
-#ifdef TERRALIB_MOD_XML_ENABLED
-
-namespace te
+void LoadModules()
 {
-  namespace xml
-  {
-    class Reader;
-    class Writer;
-  }
+  std::string plugins_path = te::common::FindInTerraLibPath("share/terralib/plugins");
 
-  namespace xl
-  {
-    class SimpleLink;
+  te::plugin::PluginInfo* info;
+  
+#ifdef TERRALIB_MOD_OGR_ENABLED
+  info = te::plugin::GetInstalledPlugin(plugins_path + "/te.da.ogr.teplg");
+  te::plugin::PluginManager::getInstance().add(info); 
+#endif
 
-    namespace serialize
-    {
-      TEXLEXPORT SimpleLink* ReadSimpleLink(te::xml::Reader& reader);
+  te::plugin::PluginManager::getInstance().loadAll();  
+};
 
-      TEXLEXPORT void Save(const SimpleLink* link, te::xml::Writer& writer);
-    }  // end namespace serialize
-  }    // end namespace xl
-}      // end namespace te
-
-#endif // TERRALIB_MOD_XML_ENABLED
-
-#endif  // __TERRALIB_XLINK_INTERNAL_XLINKSERIALIZER_H
+#endif  // __TERRALIB_UNITTEST_FIXGEOMETRIES_LOADMODULES_H

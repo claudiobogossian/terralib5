@@ -60,7 +60,7 @@ MACRO(TeInstallQt5Plugins)
   
 # Installing platform plugins
   if(WIN32)
-    set(_plugins Qt5::QWindowsIntegrationPlugin)
+    set(_plugins Qt5::QWindowsIntegrationPlugin Qt5::QMinimalIntegrationPlugin)
     TeInstallPlugins("${_plugins}" "platforms")
   endif()
 
