@@ -14,31 +14,31 @@ void TrajectoryExamples()
 {
   try
   {
-	  //Output container
+    //Output container
     boost::ptr_vector<te::st::TrajectoryDataSet> output;
     
-	  //Load the trajectories from a KML Data Source
-	  LoadTrajectoryDataSetFromKML(output);
-	
-	  //Print trajectory data set info: spatial and temporal extent
-	  PrintTrajectoryDataSetInfo(output);
-		
-	  //Get the trajectories from the trajectory data sets to execute other operations 
-	  boost::ptr_vector<te::st::Trajectory> trajectories;
-	  for(std::size_t i=0; i<output.size(); ++i)
-	  {
-		  te::st::TrajectoryDataSet& ds = output[i];
+    //Load the trajectories from a KML Data Source
+    LoadTrajectoryDataSetFromKML(output);
+  
+    //Print trajectory data set info: spatial and temporal extent
+    PrintTrajectoryDataSetInfo(output);
+    
+    //Get the trajectories from the trajectory data sets to execute other operations 
+    boost::ptr_vector<te::st::Trajectory> trajectories;
+    for(std::size_t i=0; i<output.size(); ++i)
+    {
+      te::st::TrajectoryDataSet& ds = output[i];
       ds.moveBeforeFirst();
-		  std::auto_ptr<te::st::Trajectory> tj = ds.getTrajectory();
-		  trajectories.push_back(tj);
-	  }
-	
-	  //Calculate and print the distance between the two first trajectories
-	  if(trajectories.size()>1)
-		  TrajectoryDistance(&trajectories[0], &trajectories[1]);
-		
-	  //Calculate the intersection between the first trajectory and a geometry
-	  //Load the geometry from a shapefile
+      std::auto_ptr<te::st::Trajectory> tj = ds.getTrajectory();
+      trajectories.push_back(tj);
+    }
+  
+    //Calculate and print the distance between the two first trajectories
+    if(trajectories.size()>1)
+      TrajectoryDistance(&trajectories[0], &trajectories[1]);
+    
+    //Calculate the intersection between the first trajectory and a geometry
+    //Load the geometry from a shapefile
     std::map<std::string, std::string> connInfo;
     connInfo["URI"] = ""TERRALIB_DATA_DIR"/st/trajectory/t41_region.shp" ; 
     

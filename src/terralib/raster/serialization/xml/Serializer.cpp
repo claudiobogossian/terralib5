@@ -26,8 +26,9 @@
 // TerraLib
 #include "../../../geometry/Envelope.h"
 #include "../../../geometry/serialization/xml/Serializer.h"
+#include "../../../xml/AbstractWriter.h"
+#include "../../../xml/AbstractWriterFactory.h"
 #include "../../../xml/Reader.h"
-#include "../../../xml/Writer.h"
 #include "../../Band.h"
 #include "../../BandProperty.h"
 #include "../../Grid.h"
@@ -52,8 +53,8 @@ void te::serialize::xml::ReadRasterInfo(std::map<std::string, std::string>& rinf
   while(reader.getNodeType() == te::xml::START_ELEMENT &&
         reader.getElementLocalName() == "kvp")
   {
-    std::string k = reader.getAttr(0);
-    std::string v = reader.getAttr(1);
+    std::string k = reader.getAttr("k");
+    std::string v = reader.getAttr("v");
 
     rinfo[k] = v;
 
@@ -64,7 +65,7 @@ void te::serialize::xml::ReadRasterInfo(std::map<std::string, std::string>& rinf
   }
 }
 
-void te::serialize::xml::SaveRasterInfo(std::map<std::string, std::string>& rinfo, te::xml::Writer& writer)
+void te::serialize::xml::SaveRasterInfo(std::map<std::string, std::string>& rinfo, te::xml::AbstractWriter& writer)
 {
   if(rinfo.empty())
     return;
@@ -98,12 +99,12 @@ void te::serialize::xml::Save(const te::rst::Raster* raster, const std::string& 
 
 void te::serialize::xml::Save(const te::rst::Raster* raster, std::ostream& ostr)
 {
-  te::xml::Writer w(ostr);
+  std::auto_ptr<te::xml::AbstractWriter> w(te::xml::AbstractWriterFactory::make());
 
-  Save(raster, w);
+  Save(raster, *w.get());
 }
 
-void te::serialize::xml::Save(const te::rst::Raster* raster, te::xml::Writer& writer)
+void te::serialize::xml::Save(const te::rst::Raster* raster, te::xml::AbstractWriter& writer)
 {
   writer.writeStartDocument("UTF-8", "no");
 
@@ -213,7 +214,7 @@ te::rst::Grid* te::serialize::xml::ReadGrid(te::xml::Reader& reader)
   return grid;
 }
 
-void te::serialize::xml::Save(const te::rst::Grid* grid, te::xml::Writer& writer)
+void te::serialize::xml::Save(const te::rst::Grid* grid, te::xml::AbstractWriter& writer)
 {
   writer.writeStartElement("Grid");
 
@@ -298,7 +299,7 @@ te::rst::BandProperty* te::serialize::xml::ReadBandProperty(te::xml::Reader& rea
   return bp;
 }
 
-void te::serialize::xml::Save(const te::rst::BandProperty* bp, te::xml::Writer& writer)
+void te::serialize::xml::Save(const te::rst::BandProperty* bp, te::xml::AbstractWriter& writer)
 {
   writer.writeStartElement("Band");
 

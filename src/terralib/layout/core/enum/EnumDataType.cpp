@@ -48,7 +48,7 @@ te::layout::EnumDataType::EnumDataType() :
 
 te::layout::EnumDataType::~EnumDataType()
 {
-  if(m_dataTypeNone)
+ if(m_dataTypeNone)
   {
     delete m_dataTypeNone;
     m_dataTypeNone = 0;

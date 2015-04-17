@@ -14,7 +14,7 @@ void PrintTrajectory(boost::ptr_vector<te::st::Trajectory>& input)
 {
   for(std::size_t i=0; i<input.size(); ++i)
   {
-	  std::cout << "Printing observations of the trajectory " << i << " :" << std::endl;
+    std::cout << "Printing observations of the trajectory " << i << " :" << std::endl;
     PrintTrajectory(&input[i]);
   }
 }
@@ -56,7 +56,7 @@ void PrintTrajectoryInfo(boost::ptr_vector<te::st::Trajectory>& input)
 {
   for(std::size_t i=0; i<input.size(); ++i)
   {
-	  std::cout << "Printing information about the trajectory " << i << " :" << std::endl;
+    std::cout << "Printing information about the trajectory " << i << " :" << std::endl;
     PrintTrajectoryInfo(&input[i]);
   }
 }

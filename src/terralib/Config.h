@@ -43,6 +43,6 @@
 #define __TERRALIB_INTERNAL_CONFIG_H
 
 // TerraLib
-#include "terralib_config.h"
+//#include "terralib_config.h"
 
 #endif  // __TERRALIB_INTERNAL_CONFIG_H

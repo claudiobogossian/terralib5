@@ -42,41 +42,7 @@ te::layout::EnumPointType::EnumPointType() :
 
 te::layout::EnumPointType::~EnumPointType()
 {
-  if(m_noneType)
-  {
-    delete m_noneType;
-    m_noneType = 0;
-  }
-  if(m_star)
-  {
-    delete m_star;
-    m_star = 0;
-  }
-  if(m_circle)
-  {
-    delete m_circle;
-    m_circle = 0;
-  }
-  if(m_x)
-  {
-    delete m_x;
-    m_x = 0;
-  }
-  if(m_square)
-  {
-    delete m_square;
-    m_square = 0;
-  }
-  if(m_rhombus)
-  {
-    delete m_rhombus;
-    m_rhombus = 0;
-  }
-  if(m_cross)
-  {
-    delete m_cross;
-    m_cross = 0;
-  }
+  
 }
 
 void te::layout::EnumPointType::init()

@@ -61,6 +61,11 @@ boost::uint32_t te::xml::Reader::getAttrAsUInt32(std::size_t i) const
   return boost::lexical_cast<boost::uint32_t>(getAttr(i));
 }
 
+boost::uint32_t te::xml::Reader::getAttrAsUInt32(const std::string name) const
+{
+  return boost::lexical_cast<boost::uint32_t>(getAttr(name));
+}
+
 double te::xml::Reader::getAttrAsDouble(const std::string& name) const
 {
   return boost::lexical_cast<double>(getAttr(name));

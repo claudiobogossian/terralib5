@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "terralib_config.h"
 #include "../Defines.h"
 #include "../common/Translator.h"
 #include "../srs/Converter.h"

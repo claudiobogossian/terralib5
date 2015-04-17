@@ -50,10 +50,19 @@ int main(int /*argc*/, char** /*argv*/)
     te::st::STDataLoader::initialize();
     
     //Examples of trajectories
-	 TrajectoryExamples();
-		
+    TrajectoryExamples();
+
+    system("pause");
+
     //Examples of coverage series
-	CoverageSeriesExamples();
+    CoverageSeriesExamples();
+
+    system("pause");
+
+    //Examples of TimeSeries
+    TimeSeriesExamples();
+
+    system("pause");
 
     //Finalize STDataLoader support
     te::st::STDataLoader::finalize();

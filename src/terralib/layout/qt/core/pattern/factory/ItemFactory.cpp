@@ -51,6 +51,8 @@
 #include "../../../item/BarCodeItem.h"
 #include "../../../item/GridPlanarItem.h"
 #include "../../../item/GridGeodesicItem.h"
+#include "../../../item/NorthItem.h"
+#include "../../../item/MapLocationItem.h"
 
 te::layout::ItemFactory::ItemFactory()
 {
@@ -177,6 +179,16 @@ te::layout::Observer* te::layout::ItemFactory::make( EnumType* type, ItemParamsC
   {
     GridGeodesicItem* gridGeodesic = new GridGeodesicItem(params.getController(), params.getModel());
     item = (Observer*)gridGeodesic;
+  }
+  else if(type == enumObj->getNorthItem())
+  {
+    NorthItem* north = new NorthItem(params.getController(), params.getModel());
+    item = (Observer*)north;
+  }
+  else if(type == enumObj->getMapLocationItem())
+  {
+    MapLocationItem* location = new MapLocationItem(params.getController(), params.getModel());
+    item = (Observer*)location;
   }
 
   return item;

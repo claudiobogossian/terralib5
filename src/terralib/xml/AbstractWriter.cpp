@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,23 +18,33 @@
  */
 
 /*!
-  \file PageSetupController.h
-   
-  \brief 
+  \file terralib/xml/AbstractWriter.cpp
 
-  \ingroup layout
+  \brief This class models a XML writer object.
 */
 
 // TerraLib
-#include "MapLayerChoiceOutsideController.h"
+#include "AbstractWriter.h"
 
-te::layout::MapLayerChoiceOutsideController::MapLayerChoiceOutsideController( Observable* o ) :
-	OutsideController(o)
+// Boost
+#include <boost/lexical_cast.hpp>
+
+te::xml::AbstractWriter::AbstractWriter()
+  : m_uri(""),
+    m_rootNamespaceUri("")
 {
-  
 }
 
-te::layout::MapLayerChoiceOutsideController::~MapLayerChoiceOutsideController()
+te::xml::AbstractWriter::~AbstractWriter()
 {
+}
 
+void te::xml::AbstractWriter::setURI(const std::string& uri)
+{
+  m_uri = uri;
+}
+
+void te::xml::AbstractWriter::setRootNamespaceURI(const std::string& uri)
+{
+  m_rootNamespaceUri = uri;
 }

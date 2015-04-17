@@ -26,6 +26,7 @@
  */
 
 //Terralib
+#include "terralib_config.h"
 #include "../common/Logger.h"
 #include "../common/progress/TaskProgress.h"
 #include "../common/STLUtils.h"

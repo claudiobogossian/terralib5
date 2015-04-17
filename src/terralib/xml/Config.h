@@ -50,6 +50,13 @@
  */
 #define TE_XML_READER_MAX_BUFFSIZE 65536
 
+/*!
+\def TE_XML_DEFAULT_WRITER_TYPE
+
+\brief The default implementation to be used when creating a XML writer.
+*/
+#define TE_XML_DEFAULT_WRITER_TYPE "XERCES"
+
 //@}
 
 /** @name DLL/LIB Module

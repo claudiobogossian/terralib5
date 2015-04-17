@@ -38,6 +38,8 @@
 #include "../observation/ObservationDataSet.h"
 #include "../observation/ObservationDataSetType.h"
 
+#include <set>
+
 te::st::TimeSeriesDataSet::TimeSeriesDataSet(te::da::DataSet* ds, const ObservationDataSetType& type,
   const std::vector<std::string>& propNames)
 : m_obsDs(new ObservationDataSet(ds, type)),
@@ -222,42 +224,36 @@ te::st::TimeSeriesDataSet::getTimeSeries(const std::string& propN, te::st::Abstr
   return result;
 }
 
-void te::st::TimeSeriesDataSet::getTimeSeriesSet(  te::st::AbstractTimeSeriesInterp* interp, 
+void te::st::TimeSeriesDataSet::getTimeSeriesSet(  te::st::AbstractTimeSeriesInterp* interp,
+                                const std::string& vPropName,
                                 std::vector<te::st::TimeSeries*>& result)
 {
-  std::size_t sz = m_vlPropNames.size();
-  for(unsigned int i = 0; i<sz; ++i)
-  {
-    TimeSeries* ts = new TimeSeries(interp,m_id);
-    result.push_back(ts);
-  }
-  
   te::da::DataSet* ds = m_obsDs->getData();
-  
-  if(ds->moveNext())
-  {
-    for(unsigned int i = 0; i<sz; ++i)
-    {
-      //Get the time series location if there is one
-      std::auto_ptr<te::gm::Geometry> geom = getGeometry();
-      if(geom.get()!=0)
-        result[i]->setLocation(geom.release());
-      
-      //Get time and value of time series
-      std::auto_ptr<te::dt::DateTime> time(ds->getDateTime(m_obsDs->getType().getBeginTimePropName()));
-      std::auto_ptr<te::dt::AbstractData> value(ds->getValue(m_vlPropNames[i]));
-      result[i]->add(time.release(), value.release());
-    }
-  }
+  std::set<std::string> seriesIds;
+  size_t count = 0;
 
   while(ds->moveNext())
   {
-    for(unsigned int i = 0; i<sz; ++i)
+    //Acquiring the timeSeries identification
+    std::auto_ptr<te::dt::AbstractData> tsid(ds->getValue(vPropName));
+
+    if(seriesIds.insert(tsid->toString()).second)
     {
-      //Get time and value of time series
+      TimeSeries* ts = new TimeSeries(interp,m_id);
+      result.push_back(ts);
+
+      //Get the time series location if there is one
+      std::auto_ptr<te::gm::Geometry> geom = getGeometry();
+      if(geom.get()!=0)
+        result[count]->setLocation(geom.release());
+
+      count++;
+    }
+    else
+    {
       std::auto_ptr<te::dt::DateTime> time(ds->getDateTime(m_obsDs->getType().getBeginTimePropName()));
-      std::auto_ptr<te::dt::AbstractData> value(ds->getValue(m_vlPropNames[i]));
-      result[i]->add(time.release(), value.release());
+      std::auto_ptr<te::dt::AbstractData> value(ds->getValue(m_vlPropNames[0]));
+      result[count-1]->add(time.release(), value.release());
     }
   }
   return;

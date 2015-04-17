@@ -169,6 +169,11 @@ bool te::xerces::Reader::next()
         throw Exception(errmsg);
       }
 
+      if(m_readerH->isInContractedForm())
+      {
+        m_readerH->setNodeType(te::xml::START_ELEMENT);
+      }
+
       if(m_ignoreWhiteSpaces && getNodeType() == te::xml::WHITESPACE)
         continue;
 

@@ -24,8 +24,8 @@
 */
 
 // TerraLib
+#include "../../../xml/AbstractWriter.h"
 #include "../../../xml/Reader.h"
-#include "../../../xml/Writer.h"
 #include "../../SimpleLink.h"
 #include "XLinkSerializer.h"
 
@@ -86,7 +86,7 @@ te::xl::SimpleLink* te::xl::serialize::ReadSimpleLink(te::xml::Reader& reader)
   return link.release();
 }
 
-void te::xl::serialize::Save(const SimpleLink* link, te::xml::Writer& writer)
+void te::xl::serialize::Save(const SimpleLink* link, te::xml::AbstractWriter& writer)
 {
   assert(link);
 
