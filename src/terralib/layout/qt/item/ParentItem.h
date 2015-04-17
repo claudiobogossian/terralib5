@@ -35,7 +35,6 @@
 #define __TERRALIB_LAYOUT_INTERNAL_PARENT_ITEM_H
 
 // Qt
-#include <QGraphicsObject>
 #include <QPixmap>
 #include <QVariant>
 #include <QPainter>
@@ -43,6 +42,7 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QStyleOptionGraphicsItem>
 #include <QWidget>
+#include <QTransform>
 
 // TerraLib
 #include "../../core/pattern/mvc/ItemObserver.h"
@@ -759,6 +759,11 @@ namespace te
       double h = boundingRect().height();
 
       QTransform transf = T::transform();
+
+      if(m_invertedMatrix)
+      {
+        angle = -angle;
+      }
 
       transf.translate(w/2, h/2);
       T::setTransform(transf);
