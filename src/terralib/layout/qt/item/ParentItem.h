@@ -137,7 +137,12 @@ namespace te
         /*!
           \brief Reimplemented from ItemObserver
          */
-        virtual te::color::RGBAColor** getImage();
+        virtual te::color::RGBAColor** getRGBAColorImage(int &w, int &h);
+
+        /*!
+          \brief Reimplemented from ItemObserver
+         */
+        virtual QImage getImage();
 
       protected:
 
@@ -773,11 +778,41 @@ namespace te
     }
 
     template <class T>
-    inline te::color::RGBAColor** te::layout::ParentItem<T>::getImage()
+    inline te::color::RGBAColor** te::layout::ParentItem<T>::getRGBAColorImage(int &w, int &h)
     {
-      QImage img = m_pixmap.toImage();
-      te::color::RGBAColor** teImg = te::qt::widgets::GetImage(&img);
+      w = 0;
+      h = 0;
+      te::color::RGBAColor** teImg = 0;
+
+      QRectF rect = boundingRect();
+      QStyleOptionGraphicsItem opt;
+      QPixmap pix(rect.width(), rect.height());
+      QPainter p(&pix);
+      this->paint(&p, &opt, 0);
+      QImage img = pix.toImage();
+
+      if(img.isNull())
+      {
+        return teImg;
+      }
+
+      w = pix.width();
+      h = pix.height();
+
+      teImg = te::qt::widgets::GetImage(&img);
       return teImg;
+    }
+
+    template <class T>
+    QImage te::layout::ParentItem<T>::getImage()
+    {
+      QRectF rect = boundingRect();
+      QStyleOptionGraphicsItem opt;
+      QPixmap pix(rect.width(), rect.height());
+      QPainter p(&pix);
+      this->paint(&p, &opt, 0);
+
+      return pix.toImage();
     }
 
     template <class T>

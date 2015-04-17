@@ -565,13 +565,16 @@ void te::layout::Scene::exportItemsToImage(std::string dir)
       if(it)
       {
         QImage* img = 0;
-        te::color::RGBAColor** rgba = it->getImage();
+        int w = 0;
+        int h = 0;
 
+        te::color::RGBAColor** rgba = it->getRGBAColorImage(w, h);
+                
         if(!rgba)
           continue;
         
-        te::gm::Envelope box = utils->viewportBox(it->getModel()->getBox());
-        img = te::qt::widgets::GetImage(rgba, box.getWidth(), box.getHeight());
+        //QRectF rect = item->boundingRect();               
+        img = te::qt::widgets::GetImage(rgba, w, h);
         std::string dirName = dir + "/" + it->getName() +".png";
 
         if(!img)
@@ -579,7 +582,7 @@ void te::layout::Scene::exportItemsToImage(std::string dir)
 
         img->save(dirName.c_str());
 
-        te::common::Free(rgba, box.getHeight());
+        te::common::Free(rgba, h);
 
         if(img)
           delete img;        

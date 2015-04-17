@@ -82,7 +82,7 @@ namespace te
 
         void	setZValue ( qreal z );
 
-        virtual te::color::RGBAColor** getImage();
+        virtual te::color::RGBAColor** getRGBAColorImage();
 
       protected:
 

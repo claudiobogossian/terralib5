@@ -170,9 +170,12 @@ namespace te
           \brief Returns a image of the graphic component.
             Reimplement this function in a ItemObserver subclass to provide the item's getImage implementation.
 
+          \param image width
+          \param image height
+
           \return image
         */
-        virtual te::color::RGBAColor** getImage() = 0;
+        virtual te::color::RGBAColor** getRGBAColorImage(int &w, int &h) = 0;
 
         
         /*!

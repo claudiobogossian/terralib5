@@ -116,6 +116,11 @@ namespace te
           \brief Reimplemented from QGraphicsItem
          */
         virtual QRectF boundingRect() const;
+
+        /*!
+          \brief Reimplemented from ItemObserver
+         */
+        virtual te::color::RGBAColor** getRGBAColorImage(int &w, int &h);
                 
       protected:
 
@@ -157,11 +162,6 @@ namespace te
           \brief Reimplemented from ItemObserver
          */
         virtual te::gm::Coord2D getPosition();
-
-        /*!
-          \brief Reimplemented from ItemObserver
-         */
-        virtual te::color::RGBAColor** getImage();
         
         virtual void getDocumentSizeMM(double &w, double &h);
 
