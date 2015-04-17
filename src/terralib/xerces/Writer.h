@@ -18,47 +18,51 @@
  */
 
 /*!
-  \file terralib/xml/Writer.h
+  \file Writer.h
    
-  \brief This class models a XML writer object.
+  \brief A class that models a XML writer object built on top of Xerces-C++.
 */
 
-#ifndef __TERRALIB_XML_INTERNAL_WRITER_H
-#define __TERRALIB_XML_INTERNAL_WRITER_H
+#ifndef __TERRALIB_XERCES_INTERNAL_WRITER_H
+#define __TERRALIB_XERCES_INTERNAL_WRITER_H
 
 // TerraLib
-#include "../common/Holder.h"
-#include "AbstractWriter.h"
+#include "../xml/AbstractWriter.h"
 #include "Config.h"
 
 // STL
 #include <string>
+#include <vector>
 
-// Boost
-#include <boost/cstdint.hpp>
-#include <boost/noncopyable.hpp>
+// Xerces-C++
+#include <xercesc/util/XercesDefs.hpp>
+
+// Forward declaration
+XERCES_CPP_NAMESPACE_BEGIN
+class DOMDocument;
+class DOMElement;
+class DOMImplementation;
+XERCES_CPP_NAMESPACE_END
 
 namespace te
 {
-  namespace xml
+  namespace xerces
   {
+// Forward declaration
+
     /*!
-      \class Writer
+      \class AbstractWriter
 
-      \brief This class models a XML writer object.
-
-      \ingroup xml
+      \brief A class that models a XML writer object built on top of Xerces-C++
     */
-    class TEXMLEXPORT Writer : public te::xml::AbstractWriter
+    class TEXERCESEXPORT Writer : public te::xml::AbstractWriter
     {
       public:
 
+        /*! \brief Default constructor. */
         Writer();
 
-        /*! \brief Constructor. */
-        //Writer(std::ostream& ostr);
-
-        /*! \brief Virtual destructor. */
+        /*! \brief Destructor. */
         ~Writer();
 
         void writeStartDocument(const std::string& encoding, const std::string& standalone);
@@ -103,18 +107,38 @@ namespace te
 
         void writeEndElement(const std::string& qName);
 
-        void setRootNamespaceURI(const std::string& uri);
-
         void writeToFile();
+
+        void setRootNamespaceURI(const std::string& uri);
 
       private:
 
-        std::ostream* m_ostr;
-        bool m_isOpened;
+        /*!
+          \brief Adds a XML value to the last inserted element.
+
+          \param value Element value. (Input)
+        */
+        void addText(const std::string& qValue);
+
+      private:
+
+        XERCES_CPP_NAMESPACE_QUALIFIER DOMImplementation* m_impl; //!< DOM element - implementation.
+        XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument* m_doc;        //!< DOM element - document.
+
+        std::vector<XERCES_CPP_NAMESPACE_QUALIFIER DOMElement*> m_elementSet; //!< Vector that contains all the elements (nodes).
+
+        std::size_t m_indice;     //!< Index to build the ElementSet vector.
+        std::size_t m_topIndice;  //!< Index of the parent node.
+
+        std::vector<std::size_t> m_topElementSet; //!< This vector gives the parent node of each element.
+        std::vector<std::string> m_topElementNamesSet; //!< This vector gives the parent node of each element.
+
+        std::string m_encoding;
+        bool m_standalone;
     };
 
-  } // end namespace xml
+  } // end namespace xerces
 }   // end namespace te
 
-#endif  // __TERRALIB_XML_INTERNAL_WRITER_H
+#endif  // __TERRALIB_XERCES_INTERNAL_WRITER_H
 

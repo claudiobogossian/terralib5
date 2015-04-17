@@ -25,8 +25,8 @@
 
 // TerraLib
 #include "../../../common/Translator.h"
+#include "../../../xml/AbstractWriter.h"
 #include "../../../xml/Reader.h"
-#include "../../../xml/Writer.h"
 #include "../../Enums.h"
 #include "../../NumericProperty.h"
 #include "../../Property.h"
@@ -89,7 +89,7 @@ std::auto_ptr<te::dt::Property> te::serialize::xml::ReadProperty(te::xml::Reader
   return std::auto_ptr<te::dt::Property>(0);
 }
 
-void te::serialize::xml::Save(const te::dt::Property& /*p*/, te::xml::Writer& /*writer*/)
+void te::serialize::xml::Save(const te::dt::Property& /*p*/, te::xml::AbstractWriter& /*writer*/)
 {
   //writer.writeStartElement("te_dt:Property");
 

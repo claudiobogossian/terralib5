@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,29 +18,40 @@
  */
 
 /*!
-  \file terralib/wms/serialization/xml/Config.h
-   
-  \brief Auxiliary classes and functions to read/write WMS layers from a XML document.
+  \file WriterFactory.cpp
+
+  \brief This is the concrete factory for XML writer built on top of Xerces-C++ parser.
 */
 
-#ifndef __TERRALIB_WMS_SERIALIZATION_XML_INTERNAL_LAYER_H
-#define __TERRALIB_WMS_SERIALIZATION_XML_INTERNAL_LAYER_H
-
 // TerraLib
-#include "../../../maptools/serialization/xml/Layer.h"
+#include "Writer.h"
+#include "WriterFactory.h"
 
-namespace te
+te::xerces::WriterFactory* te::xerces::WriterFactory::sm_factory(0);
+
+te::xerces::WriterFactory::~WriterFactory()
 {
-  namespace wms
-  {
-    namespace serialize
-    {
-      te::map::AbstractLayer* LayerReader(te::xml::Reader& reader);
+}
 
-      void LayerWriter(const te::map::AbstractLayer* alayer, te::xml::AbstractWriter& writer);
+te::xml::AbstractWriter* te::xerces::WriterFactory::build()
+{
+  return new Writer;
+}
 
-    }  //end namespace serialize
-  }    // end namespace wms
-}      // end namespace te
+te::xerces::WriterFactory::WriterFactory()
+  : te::xml::AbstractWriterFactory(XERCES_DRIVER_IDENTIFIER)
+{
+}
 
-#endif  // __TERRALIB_WMS_SERIALIZATION_XML_INTERNAL_LAYER_H
+void te::xerces::WriterFactory::initialize()
+{
+  finalize();
+  sm_factory = new WriterFactory;
+}
+
+void te::xerces::WriterFactory::finalize()
+{
+  delete sm_factory;
+  sm_factory = 0;
+}
+

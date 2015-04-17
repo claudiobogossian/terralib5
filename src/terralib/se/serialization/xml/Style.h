@@ -43,8 +43,8 @@ namespace te
 
   namespace xml
   {
+    class AbstractWriter;
     class Reader;
-    class Writer;
   }
 
   namespace se
@@ -60,7 +60,7 @@ namespace te
         public:
 
           typedef boost::function<te::se::Style* (te::xml::Reader&)> StyleReadFnctType;
-          typedef boost::function<void (const te::se::Style*, te::xml::Writer&)> StyleWriteFnctType;
+          typedef boost::function<void (const te::se::Style*, te::xml::AbstractWriter&)> StyleWriteFnctType;
           typedef std::pair<StyleReadFnctType, StyleWriteFnctType> StyleFnctSerializeType;
           typedef std::map<std::string, StyleFnctSerializeType> StyleFnctIdxType;
 
@@ -68,7 +68,7 @@ namespace te
 
           te::se::Style* read(te::xml::Reader& reader) const;
 
-          void write(const te::se::Style* style, te::xml::Writer& writer) const;
+          void write(const te::se::Style* style, te::xml::AbstractWriter& writer) const;
 
           ~Style();
 

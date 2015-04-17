@@ -30,8 +30,8 @@
 #include "../../../fe/Globals.h"
 #include "../../../fe/Literal.h"
 #include "../../../fe/PropertyName.h"
+#include "../../../xml/AbstractWriter.h"
 #include "../../../xml/Reader.h"
-#include "../../../xml/Writer.h"
 #include "../../Exception.h"
 #include "Expression.h"
 
@@ -70,7 +70,7 @@ te::fe::Expression* te::fe::serialize::Expression::read(te::xml::Reader& reader)
   return it->second(reader);
 }
 
-void te::fe::serialize::Expression::write(const te::fe::Expression* exp, te::xml::Writer& writer)
+void te::fe::serialize::Expression::write(const te::fe::Expression* exp, te::xml::AbstractWriter& writer)
 {
   assert(exp);
   assert(&writer);

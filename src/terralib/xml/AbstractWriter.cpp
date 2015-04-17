@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,29 +18,33 @@
  */
 
 /*!
-  \file terralib/wms/serialization/xml/Config.h
-   
-  \brief Auxiliary classes and functions to read/write WMS layers from a XML document.
+  \file terralib/xml/AbstractWriter.cpp
+
+  \brief This class models a XML writer object.
 */
 
-#ifndef __TERRALIB_WMS_SERIALIZATION_XML_INTERNAL_LAYER_H
-#define __TERRALIB_WMS_SERIALIZATION_XML_INTERNAL_LAYER_H
-
 // TerraLib
-#include "../../../maptools/serialization/xml/Layer.h"
+#include "AbstractWriter.h"
 
-namespace te
+// Boost
+#include <boost/lexical_cast.hpp>
+
+te::xml::AbstractWriter::AbstractWriter()
+  : m_uri(""),
+    m_rootNamespaceUri("")
 {
-  namespace wms
-  {
-    namespace serialize
-    {
-      te::map::AbstractLayer* LayerReader(te::xml::Reader& reader);
+}
 
-      void LayerWriter(const te::map::AbstractLayer* alayer, te::xml::AbstractWriter& writer);
+te::xml::AbstractWriter::~AbstractWriter()
+{
+}
 
-    }  //end namespace serialize
-  }    // end namespace wms
-}      // end namespace te
+void te::xml::AbstractWriter::setURI(const std::string& uri)
+{
+  m_uri = uri;
+}
 
-#endif  // __TERRALIB_WMS_SERIALIZATION_XML_INTERNAL_LAYER_H
+void te::xml::AbstractWriter::setRootNamespaceURI(const std::string& uri)
+{
+  m_rootNamespaceUri = uri;
+}
