@@ -137,8 +137,6 @@ void te::layout::View::mousePressEvent( QMouseEvent * event )
   {
     QList<QGraphicsItem*> selectedItems = sc->selectedItems();
 
-    int size = selectedItems.size();
-
     if (selectedItems.size() > 1)
     {
       bool isInvertedMatrix = false;

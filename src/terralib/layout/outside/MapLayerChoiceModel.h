@@ -18,30 +18,40 @@
  */
 
 /*!
-  \file MapGridController.cpp
+  \file MapLayerChoiceOutsideModel.h
    
   \brief 
 
   \ingroup layout
 */
 
+#ifndef __TERRALIB_LAYOUT_INTERNAL_MAP_LAYER_CHOICE_MODEL_H 
+#define __TERRALIB_LAYOUT_INTERNAL_MAP_LAYER_CHOICE_MODEL_H
+
 // TerraLib
-#include "MapGridController.h"
+#include "../core/pattern/mvc/OutsideModelObservable.h"
 #include "../core/ContextItem.h"
-#include "../core/pattern/factory/AbstractItemFactory.h"
-#include "../core/pattern/singleton/Context.h"
-#include "../core/pattern/mvc/ItemModelObservable.h"
-#include "../core/pattern/factory/ItemParamsCreate.h"
-#include "../core/pattern/mvc/ItemObserver.h"
-#include "../core/enum/Enums.h"
+#include "../core/property/Properties.h"
+#include "../core/Config.h"
 
-te::layout::MapGridController::MapGridController( Observable* o ) :
-  MapController(o)
+namespace te
 {
-  
+  namespace layout
+  {
+    class TELAYOUTEXPORT MapLayerChoiceModel : public OutsideModelObservable
+    {
+    public:
+
+      MapLayerChoiceModel();
+
+      virtual ~MapLayerChoiceModel();
+
+      virtual void updateProperties(te::layout::Properties* properties);
+
+      virtual Properties* getProperties() const;
+
+    };
+  }
 }
 
-te::layout::MapGridController::~MapGridController()
-{
-	
-}
+#endif

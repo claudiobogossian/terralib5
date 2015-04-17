@@ -78,6 +78,7 @@
 #include "../widgets/tools/ZoomArea.h"
 #include "../widgets/tools/ZoomClick.h"
 #include "../widgets/srs/SRSManagerDialog.h"
+#include "../widgets/vector/FixGeometryDialog.h"
 #include "connectors/ChartDisplayDockWidget.h"
 #include "connectors/DataSetTableDockWidget.h"
 #include "connectors/InterfaceController.h"
@@ -1005,6 +1006,23 @@ void te::qt::af::BaseApplication::onToolsRasterMultiResolutionTriggered()
     dlg.exec();
   }
   catch(const std::exception& e)
+  {
+    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), e.what());
+  }
+}
+
+void te::qt::af::BaseApplication::onToolsFixGeometryTriggered()
+{
+  try
+  {
+    te::qt::widgets::FixGeometryDialog dlg(this);
+
+    std::list<te::map::AbstractLayerPtr> layers = te::qt::af::ApplicationController::getInstance().getProject()->getSingleLayers(false);
+    dlg.setLayerList(layers);
+
+    dlg.exec();
+  }
+  catch (const std::exception& e)
   {
     QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), e.what());
   }
@@ -2527,6 +2545,7 @@ void te::qt::af::BaseApplication::initActions()
     true, false, true, m_menubar);
   initAction(m_toolsQueryDataSource, "datasource-query", "Tools.Query Data Source", tr("&Query Data Source..."), tr("Allows you to query data in a data source"), true, false, true, m_menubar);
   initAction(m_toolsRasterMultiResolution, "raster-multiresolution-icon", "Tools.Raster Multi Resolution", tr("&Raster Multi Resolution..."), tr("Creates multi resolution over a raster..."), true, false, true, m_menubar);
+  //initAction(m_toolsFixGeometry, "fixgeom-icon", "Tools.Fix Geometry", tr("&Fix Geometry..."), tr("Fix geometry..."), true, false, true, m_menubar);
 
 
 // Menu -Edit- actions
@@ -2781,6 +2800,7 @@ void te::qt::af::BaseApplication::initMenus()
   m_toolsMenu->addAction(m_toolsQueryDataSource);
   m_toolsMenu->addSeparator();
   m_toolsMenu->addAction(m_toolsRasterMultiResolution);
+  //m_toolsMenu->addAction(m_toolsFixGeometry);
   m_toolsMenu->addSeparator();
   m_toolsMenu->addAction(m_toolsCustomize);  
 
@@ -2889,6 +2909,7 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_toolsDataExchangerDirectPopUp, SIGNAL(triggered()), SLOT(onToolsDataExchangerDirectPopUpTriggered()));
   connect(m_toolsQueryDataSource, SIGNAL(triggered()), SLOT(onToolsQueryDataSourceTriggered()));
   connect(m_toolsRasterMultiResolution, SIGNAL(triggered()), SLOT(onToolsRasterMultiResolutionTriggered()));
+  //connect(m_toolsFixGeometry, SIGNAL(triggered()), SLOT(onToolsFixGeometryTriggered()));
   connect(m_helpContents, SIGNAL(triggered()), SLOT(onHelpTriggered()));
   connect(m_layerChartsHistogram, SIGNAL(triggered()), SLOT(onLayerHistogramTriggered()));
   connect(m_layerLinkTable, SIGNAL(triggered()), SLOT(onLinkTriggered()));

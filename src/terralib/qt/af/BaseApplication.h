@@ -151,6 +151,8 @@ namespace te
 
           void onToolsRasterMultiResolutionTriggered();
 
+          void onToolsFixGeometryTriggered();
+
           void onProjectPropertiesTriggered();
 
           void onAddFolderLayerTriggered();
@@ -293,6 +295,7 @@ namespace te
           QAction* m_toolsDataSourceExplorer;
           QAction* m_toolsQueryDataSource;
           QAction* m_toolsRasterMultiResolution;
+          QAction* m_toolsFixGeometry;
           QAction* m_pluginsManager;
           QAction* m_helpContents;
           QAction* m_helpUpdate;

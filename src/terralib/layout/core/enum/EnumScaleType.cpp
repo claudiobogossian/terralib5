@@ -60,7 +60,6 @@ te::layout::EnumScaleType::~EnumScaleType()
     m_hollowScaleBarType = 0;
   }
 }
-
 void te::layout::EnumScaleType::init()
 {
   m_noneType = new EnumType(0, "NoneScale", this);

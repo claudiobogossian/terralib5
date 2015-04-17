@@ -115,13 +115,13 @@ namespace te
           \brief Reimplemented from ItemObserver
          */
         virtual void updateProperties(te::layout::Properties* properties);
+        
+        virtual void changeZoomFactor(double currentZoomFactor);
 
         /*!
-          \brief Reimplemented from QGraphicsProxyWidget
+          \brief Reimplemented from ParentItem
          */
-        QRectF boundingRect() const;
-
-        virtual void changeZoomFactor(double currentZoomFactor);
+        virtual QRectF boundingRect() const;
                                         
       protected slots:
 
@@ -163,7 +163,7 @@ namespace te
           \brief Reimplemented from QGraphicsProxyWidget
        */
       virtual void	dragMoveEvent ( QGraphicsSceneDragDropEvent * event );
-      
+                  
       /*!
           \brief Reimplemented from ItemObserver
        */
@@ -184,6 +184,8 @@ namespace te
       virtual void generateMapPixmap();
 
       virtual void drawMap(QPainter * painter);
+
+      virtual void recalculateBoundingRect();
 
     protected:
 

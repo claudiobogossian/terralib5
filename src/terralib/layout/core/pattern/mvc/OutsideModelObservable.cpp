@@ -42,8 +42,8 @@ te::layout::OutsideModelObservable::OutsideModelObservable() :
   m_type(0),
   m_id(0),
   m_resizable(true),
-  m_name("unknown"),
-  m_hashCode(0)
+  m_hashCode(0),
+  m_name("unknown")
 {
   EnumObjectType* type = Enums::getInstance().getEnumObjectType();
   m_type = type->getObjectUnknown();

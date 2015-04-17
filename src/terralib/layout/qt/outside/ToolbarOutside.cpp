@@ -58,7 +58,6 @@ te::layout::ToolbarOutside::ToolbarOutside( OutsideController* controller, Obser
   OutsideObserver(controller, o),
   m_comboZoom(0),
   m_optionMapDefault("map_default"),
-  m_optionMapGrid("map_grid"),
   m_optionLegendDefault("legend_default"),
   m_optionScale("scale_object"),
   m_optionMapZoomIn("map_zoom_in"),
@@ -68,6 +67,11 @@ te::layout::ToolbarOutside::ToolbarOutside( OutsideController* controller, Obser
   m_optionMapCreateTextGrid("map_text_grid"),
   m_optionMapCreateMapText("map_text_map"),
   m_optionMapCreateLegendChildAsObject("legend_child"),
+  m_optionGridMap("map_grid_map"),
+  m_optionGridPlanar("map_grid_planar"),
+  m_optionGridGeodesic("map_grid_geodesic"),
+  m_optionNorth("map_north"),
+  m_optionMapLocation("map_location"),
   m_optionRectangle("geometry_rectangle"),
   m_optionPoint("geometry_point"),
   m_optionEllipse("geometry_ellipse"),
@@ -88,7 +92,6 @@ te::layout::ToolbarOutside::ToolbarOutside( OutsideController* controller, Obser
   m_optionTitle("text_title"),
   m_optionBalloon("text_balloon"),
   m_optionBarCode("text_barCode"),
-  m_optionGridMap("texte_gridMap"),
   m_optionAlignLeft("align_left"),
   m_optionAlignRight("align_right"),
   m_optionAlignTop("align_top"),
@@ -226,17 +229,26 @@ QToolButton* te::layout::ToolbarOutside::createMapToolButton()
   QAction* actionDefaultMenu = createAction("Default Map Object", m_optionMapDefault, "layout-default-map", "", menu);
   menu->addAction(actionDefaultMenu);
   
-  QAction* actionMapGrid = createAction("Map Grid", m_optionMapGrid, "layout-map-grid", "", menu);
-  menu->addAction(actionMapGrid);
-
   QAction* actionGridMap = createAction("Grid Map", m_optionGridMap, "layout-grid", "", menu);
   menu->addAction(actionGridMap);
+
+  QAction* actionGridPlanar = createAction("Grid Planar", m_optionGridPlanar, "layout-grid", "", menu);
+  menu->addAction(actionGridPlanar);
+
+  QAction* actionGridGeodesic = createAction("Grid Geodesic", m_optionGridGeodesic, "layout-grid", "", menu);
+  menu->addAction(actionGridGeodesic);
 
   QAction* actionLegend = createAction("Default Legend", m_optionLegendDefault, "layout-default-legend", "", menu);
   menu->addAction(actionLegend);
 
   QAction* actionScale = createAction("Scale Object", m_optionScale, "layout-scale", "", menu);
   menu->addAction(actionScale);
+
+  QAction* actionNorth = createAction("North Object", m_optionNorth, "layout-north", "", menu);
+  menu->addAction(actionNorth);
+
+  QAction* actionMapLocation = createAction("Map Location Object", m_optionMapLocation, "layout-map-location", "", menu);
+  menu->addAction(actionMapLocation);
   
   btnMap->setMenu(menu);
   btnMap->setPopupMode(QToolButton::MenuButtonPopup);
@@ -475,7 +487,7 @@ QToolButton* te::layout::ToolbarOutside::createTextToolButton()
   QAction* actionTitle = createAction("Title Object", m_optionTitle, "layout-title", "", menu);
   menu->addAction(actionTitle);
 
-  QAction* actionStringGrid = createAction("Grid Object", m_optionStringGrid, "layout-grid", "", menu);
+  QAction* actionStringGrid = createAction("Text Grid Object", m_optionStringGrid, "layout-grid", "", menu);
   menu->addAction(actionStringGrid);
 
   QAction* actionImage = createAction("Image Object", m_optionImage, "layout-image", "", menu);
@@ -694,13 +706,17 @@ void te::layout::ToolbarOutside::onMapTriggered( QAction* action )
   {
     changeAction(type->getModeCreateMap());
   }
-  else if(action->objectName().compare(m_optionMapGrid.c_str()) == 0)
-  {
-    changeAction(type->getModeCreateMapGrid());
-  }
   else if(action->objectName().compare(m_optionGridMap.c_str()) == 0)
   {
     changeAction(type->getModeCreateGridMap());
+  }
+  else if(action->objectName().compare(m_optionGridPlanar.c_str()) == 0)
+  {
+    changeAction(type->getModeCreateGridPlanar());
+  }
+  else if(action->objectName().compare(m_optionGridGeodesic.c_str()) == 0)
+  {
+    changeAction(type->getModeCreateGridGeodesic());
   }
   else if(action->objectName().compare(m_optionLegendDefault.c_str()) == 0)
   {
@@ -709,6 +725,14 @@ void te::layout::ToolbarOutside::onMapTriggered( QAction* action )
   else if(action->objectName().compare(m_optionScale.c_str()) == 0)
   {
     changeAction(type->getModeCreateScale());
+  }
+  else if(action->objectName().compare(m_optionNorth.c_str()) == 0)
+  {
+    changeAction(type->getModeCreateNorth());
+  }
+  else if(action->objectName().compare(m_optionMapLocation.c_str()) == 0)
+  {
+    changeAction(type->getModeCreateMapLocation());
   }
 }
 

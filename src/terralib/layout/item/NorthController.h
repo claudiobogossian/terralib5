@@ -18,36 +18,37 @@
  */
 
 /*!
-  \file MapController.h
+  \file NorthController.h
    
-   \brief Class that represents a "Controller" part of MapGrid MVC component. 
-   Its coordinate system is the same of scene (millimeters).
-   This is also son of ItemController, so it can become a controller.
+   \brief Class that represents a "Controller" part of Rectangle MVC component. 
+      Its coordinate system is the same of scene (millimeters).
+      This is also son of ItemController, so it can become a controller.
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_MAP_GRID_CONTROLLER_H 
-#define __TERRALIB_LAYOUT_INTERNAL_MAP_GRID_CONTROLLER_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_NORTH_CONTROLLER_H 
+#define __TERRALIB_LAYOUT_INTERNAL_NORTH_CONTROLLER_H
 
 // TerraLib
-#include "MapController.h"
+#include "../core/pattern/mvc/ItemController.h"
 #include "../core/Config.h"
 
 namespace te
 {
   namespace layout
   {
+
     /*!
-      \brief Class that represents a "Controller" part of MapGrid MVC component. 
+      \brief Class that represents a "Controller" part of Rectangle MVC component. 
           Its coordinate system is the same of scene (millimeters). 
-          This is also the son of ItemController, so it can become a controller.
+          He is also the son of ItemController, so it can become a controller.
       	  
 	    \ingroup layout
 
-      \sa te::layout::MapController
+      \sa te::layout::ItemController
 	  */
-    class TELAYOUTEXPORT MapGridController : public MapController
+    class TELAYOUTEXPORT NorthController : public ItemController
     {
       public:
 
@@ -56,12 +57,12 @@ namespace te
 
           \param o "Model" part of MVC component
         */
-        MapGridController( Observable* o );
+        NorthController( Observable* o );
 
         /*!
           \brief Destructor
-        */
-        virtual ~MapGridController();
+        */ 
+        virtual ~NorthController();
     };
   }
 }

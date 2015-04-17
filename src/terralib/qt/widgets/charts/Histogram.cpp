@@ -58,7 +58,6 @@ void te::qt::widgets::Histogram::setSummarized(bool summarized)
  m_isSummarized = summarized;
 }
 
-
 std::map<double, unsigned int> te::qt::widgets::Histogram::getValues()
 { 
   std::map<double, unsigned int> res;
@@ -152,7 +151,7 @@ void te::qt::widgets::Histogram::clear()
     ++it;
   }
   m_values.clear();
-
+  
   te::qt::widgets::IntervalToObjectIdSet::iterator it2= m_valuesOids.begin();
   while(it2 != m_valuesOids.end())
   {
@@ -175,13 +174,7 @@ te::da::ObjectIdSet* te::qt::widgets::Histogram::find(te::dt::AbstractData* inte
 
   while(it0 != it1) 
   {
-    te::da::ObjectId* oid = new te::da::ObjectId(); 
-
-    for(boost::ptr_vector<te::dt::AbstractData>::const_iterator it = it0->oid->getValue().begin(); it != it0->oid->getValue().end(); ++it)
-    {
-      oid->addValue((it)->clone());
-    }
-
+    te::da::ObjectId* oid = new te::da::ObjectId(*it0->oid); 
     oids->add(oid);
     ++it0;
   }
@@ -199,17 +192,11 @@ te::da::ObjectIdSet* te::qt::widgets::Histogram::find(std::vector<te::dt::Abstra
 
     std::pair<itIntervalToObjectIdSet, itIntervalToObjectIdSet> res = m_valuesOids.equal_range(aux);
     itIntervalToObjectIdSet it0 = res.first;
-    itIntervalToObjectIdSet it1 = res.second; 
+    itIntervalToObjectIdSet it1 = res.second;
 
     while(it0 != it1) 
     {
-      te::da::ObjectId* oid = new te::da::ObjectId(); 
-
-      for(boost::ptr_vector<te::dt::AbstractData>::const_iterator it = it0->oid->getValue().begin(); it != it0->oid->getValue().end(); ++it)
-      {
-        oid->addValue((it)->clone());
-      }
-
+      te::da::ObjectId* oid = new te::da::ObjectId(*it0->oid); 
       oids->add(oid);
       ++it0;
     }

@@ -24,9 +24,12 @@
 */
 
 // TerraLib
+#include "../../common/BoostUtils.h"
 #include "../../common/PlatformUtils.h"
 #include "../../common/SystemApplicationSettings.h"
 #include "../../common/UserApplicationSettings.h"
+#include "../../dataaccess/datasource/DataSourceInfo.h"
+#include "../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../dataaccess/serialization/xml/Serializer.h"
 #include "../../maptools/AbstractLayer.h"
 #include "../../plugin/PluginManager.h"
@@ -124,7 +127,23 @@ te::qt::af::Project* te::qt::af::ReadProject(te::xml::Reader& reader)
     reader.next(); // End element
   }
 
+  //read data source list from this project
   reader.next();
+
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "DataSourceList");
+  
+  reader.next();
+
+  while((reader.getNodeType() == te::xml::START_ELEMENT) &&
+        (reader.getElementLocalName() == "DataSource"))
+  {
+    te::da::DataSourceInfoPtr ds(te::serialize::xml::ReadDataSourceInfo(reader));
+    te::da::DataSourceInfoManager::getInstance().add(ds);
+  }
+
+  //end read data source list
+
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "ComponentList");
   reader.next(); // End element
@@ -212,6 +231,59 @@ void te::qt::af::Save(const te::qt::af::Project& project, te::xml::AbstractWrite
 
   writer.writeElement("Title", project.getTitle());
   writer.writeElement("Author", project.getAuthor());
+
+  //write data source list 
+  writer.writeStartElement("te_da:DataSourceList");
+
+  writer.writeAttribute("xmlns:te_common", "http://www.terralib.org/schemas/common");
+
+  te::da::DataSourceInfoManager::iterator itBegin = te::da::DataSourceInfoManager::getInstance().begin();
+  te::da::DataSourceInfoManager::iterator itEnd = te::da::DataSourceInfoManager::getInstance().end();
+  te::da::DataSourceInfoManager::iterator it;
+
+  for(it=itBegin; it!=itEnd; ++it)
+  {
+    bool ogrDsrc = it->second->getAccessDriver() == "OGR";
+
+    writer.writeStartElement("te_da:DataSource");
+
+    writer.writeAttribute("id", it->second->getId());
+    writer.writeAttribute("type", it->second->getType());
+    writer.writeAttribute("access_driver", it->second->getAccessDriver());
+
+    writer.writeStartElement("te_da:Title");
+    writer.writeValue((!ogrDsrc) ? it->second->getTitle() : te::common::ConvertLatin1UTFString(it->second->getTitle()));
+    writer.writeEndElement("te_da:Title");
+
+    writer.writeStartElement("te_da:Description");
+    writer.writeValue((!ogrDsrc) ? it->second->getDescription() : te::common::ConvertLatin1UTFString(it->second->getDescription()));
+    writer.writeEndElement("te_da:Description");
+
+    writer.writeStartElement("te_da:ConnectionInfo");
+    std::map<std::string, std::string> info = it->second->getConnInfo();
+    std::map<std::string, std::string>::iterator conIt;
+
+    for(conIt=info.begin(); conIt!=info.end(); ++conIt)
+    {
+      writer.writeStartElement("te_common:Parameter");
+
+      writer.writeStartElement("te_common:Name");
+      writer.writeValue(conIt->first);
+      writer.writeEndElement("te_common:Name");
+
+      writer.writeStartElement("te_common:Value");
+      writer.writeValue((ogrDsrc && (conIt->first == "URI" || conIt->first == "SOURCE")) ? te::common::ConvertLatin1UTFString(conIt->second) : conIt->second);
+      writer.writeEndElement("te_common:Value");
+
+      writer.writeEndElement("te_common:Parameter");
+    }
+    writer.writeEndElement("te_da:ConnectionInfo");
+
+    writer.writeEndElement("te_da:DataSource");
+  }
+
+  writer.writeEndElement("te_da:DataSourceList");
+  //end write
 
   writer.writeStartElement("ComponentList");
   writer.writeEndElement("ComponentList");

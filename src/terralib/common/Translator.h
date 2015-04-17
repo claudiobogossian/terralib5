@@ -29,6 +29,8 @@
 // TerraLib
 #include "Config.h"
 
+#include "terralib_config.h"
+
 #ifdef TERRALIB_TRANSLATOR_ENABLED
 #include "Singleton.h"
 

@@ -31,7 +31,6 @@
 te::layout::EnumObjectType::EnumObjectType() :
   m_rectangleItem(0),
   m_mapItem(0),
-  m_mapGridItem(0),
   m_paperItem(0),
   m_legendItem(0),
   m_propertiesWindow(0),
@@ -39,8 +38,8 @@ te::layout::EnumObjectType::EnumObjectType() :
   m_objectInspectorWindow(0),
   m_toolbar(0),
   m_gridSettings(0),
-  m_gridPlanar(0),
-  m_gridGeodesic(0),
+  m_gridPlanarItem(0),
+  m_gridGeodesicItem(0),
   m_itemGroup(0),
   m_scaleItem(0),
   m_pageSetup(0),
@@ -59,6 +58,9 @@ te::layout::EnumObjectType::EnumObjectType() :
   m_balloonItem(0),
   m_barCodeItem(0),
   m_gridMapItem(0),
+  m_mapLayerChoice(0),
+  m_northItem(0),
+  m_mapLocationItem(0),
   m_objectUnknown(0)
 {
   init();
@@ -77,13 +79,7 @@ te::layout::EnumObjectType::~EnumObjectType()
     delete m_rectangleItem;
     m_rectangleItem = 0;
   }
-
-  if(m_mapItem)
-  {
-    delete m_mapGridItem;
-    m_mapGridItem = 0;
-  }
-
+  
   if(m_paperItem)
   {
     delete m_paperItem;
@@ -126,18 +122,18 @@ te::layout::EnumObjectType::~EnumObjectType()
     m_gridSettings = 0;
   }
 
-  if(m_gridPlanar)
+  if(m_gridPlanarItem)
   {
-    delete m_gridPlanar;
-    m_gridPlanar = 0;
+    delete m_gridPlanarItem;
+    m_gridPlanarItem = 0;
   }
 
-  if(m_gridGeodesic)
+  if(m_gridGeodesicItem)
   {
-    delete m_gridGeodesic;
-    m_gridGeodesic = 0;
+    delete m_gridGeodesicItem;
+    m_gridGeodesicItem = 0;
   }
-
+  
   if(m_itemGroup)
   {
     delete m_itemGroup;
@@ -257,6 +253,7 @@ te::layout::EnumObjectType::~EnumObjectType()
     delete m_gridMapItem;
     m_gridMapItem = 0;
   }
+  
 }
 
 void te::layout::EnumObjectType::init()
@@ -269,10 +266,7 @@ void te::layout::EnumObjectType::init()
 
   m_mapItem = new EnumType(2, "Map_Item", this);
   m_enums.push_back(m_mapItem);
-
-  m_mapGridItem = new EnumType(3, "MapGrid_Item", this);
-  m_enums.push_back(m_mapGridItem);
-
+  
   m_paperItem = new EnumType(4, "Paper_Item", this);
   m_enums.push_back(m_paperItem);
 
@@ -294,11 +288,11 @@ void te::layout::EnumObjectType::init()
   m_gridSettings  = new EnumType(10, "Grid_Settings", this);
   m_enums.push_back(m_gridSettings);
 
-  m_gridPlanar = new EnumType(11, "Grid_Planar", this);
-  m_enums.push_back(m_gridPlanar);
+  m_gridPlanarItem = new EnumType(11, "Grid_Planar_Item", this);
+  m_enums.push_back(m_gridPlanarItem);
 
-  m_gridGeodesic = new EnumType(12, "Grid_Geodesic", this);
-  m_enums.push_back(m_gridGeodesic);
+  m_gridGeodesicItem = new EnumType(12, "Grid_Geodesic_Item", this);
+  m_enums.push_back(m_gridGeodesicItem);
 
   m_textItem = new EnumType(15, "Text_Item", this);
   m_enums.push_back(m_textItem);
@@ -359,6 +353,15 @@ void te::layout::EnumObjectType::init()
 
   m_gridMapItem = new EnumType(36, "GridMap_Item", this);
   m_enums.push_back(m_gridMapItem);
+
+  m_mapLayerChoice = new EnumType(37, "Map_Layout_Choice", this);
+  m_enums.push_back(m_mapLayerChoice);
+
+  m_northItem = new EnumType(38, "North_Item", this);
+  m_enums.push_back(m_northItem);
+
+  m_mapLocationItem = new EnumType(39, "Map_Location_Item", this);
+  m_enums.push_back(m_mapLocationItem);
 }
 
 te::layout::EnumType* te::layout::EnumObjectType::getRectangleItem() const
@@ -396,11 +399,6 @@ te::layout::EnumType* te::layout::EnumObjectType::getMapItem() const
   return m_mapItem;
 }
 
-te::layout::EnumType* te::layout::EnumObjectType::getMapGridItem() const
-{
-  return m_mapGridItem;
-}
-
 te::layout::EnumType* te::layout::EnumObjectType::getPaperItem() const
 {
   return m_paperItem;
@@ -436,14 +434,14 @@ te::layout::EnumType* te::layout::EnumObjectType::getGridSettings() const
   return m_gridSettings;
 }
 
-te::layout::EnumType* te::layout::EnumObjectType::getGridPlanar() const
+te::layout::EnumType* te::layout::EnumObjectType::getGridPlanarItem() const
 {
-  return m_gridPlanar;
+  return m_gridPlanarItem;
 }
 
-te::layout::EnumType* te::layout::EnumObjectType::getGridGeodesic() const
+te::layout::EnumType* te::layout::EnumObjectType::getGridGeodesicItem() const
 {
-  return m_gridGeodesic;
+  return m_gridGeodesicItem;
 }
 
 te::layout::EnumType* te::layout::EnumObjectType::getItemGroup() const
@@ -526,3 +524,25 @@ te::layout::EnumType* te::layout::EnumObjectType::getObjectUnknown() const
 {
   return m_objectUnknown;
 }
+
+te::layout::EnumType* te::layout::EnumObjectType::getMapLayerChoice() const
+{
+  return m_mapLayerChoice;
+}
+
+te::layout::EnumType* te::layout::EnumObjectType::getNorthItem() const
+{
+  return m_northItem;
+}
+
+te::layout::EnumType* te::layout::EnumObjectType::getMapLocationItem() const
+{
+  return m_mapLocationItem;
+}
+
+
+
+
+
+
+

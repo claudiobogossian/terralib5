@@ -588,7 +588,7 @@ te::da::ObjectId* getObjectId(te::da::DataSet* dataset, std::vector<std::size_t>
     propNames.push_back(dataset->getPropertyName(*it));
 
   //The caller will take ownership of the generated pointer.
-  te::da::ObjectId* oid = te::da::GenerateOID(dataset, propNames);
+  te::da::ObjectId* oid = te::da::GenerateOID(dataset, propNames, true);
   return oid;
 }
 

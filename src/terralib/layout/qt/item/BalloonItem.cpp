@@ -49,17 +49,17 @@
 
 te::layout::BalloonItem::BalloonItem( ItemController* controller, Observable* o ) :
   ObjectItem(controller, o),
+    m_triangleRect(0),
     m_pointOne(0,0),
     m_pointTwo(0,0),
     m_pointThree(0,0),
-    m_triangleRect(0),
     m_initialPosition(0,0),
     m_finalPosition(0,0),
     m_initialPoint(0,0),
     m_clikedArea(0,0),
     m_zero(0,0),
-    m_flagArrow(0),
     m_flagReDraw(0),
+    m_flagArrow(0),
     m_flagArea(0),
     m_flagChangeArrow(0),
     m_deltaX(0),
@@ -102,7 +102,6 @@ void te::layout::BalloonItem::paint( QPainter * painter, const QStyleOptionGraph
   //{
   //  m_initialPoint = QPointF((boundRect.width() - (boundRect.width()*0.5)), (boundRect.height() - (boundRect.height()*0.5))); //Ponto a partir de onde o triangulo será desenhado
   //}
-  QPointF pontoAtual = balloonPath.currentPosition();
 
   if (m_flagArrow && m_flagArea) //Se for clicado sobre a área do triangulo, mantendo a tecla ALT pressionado, significa que a alça será movida e entrará nesse If
   {
@@ -210,7 +209,6 @@ void te::layout::BalloonItem::mouseReleaseEvent( QGraphicsSceneMouseEvent * even
   QPointF topLeftBound = mapToParent(boundingRect().bottomLeft());
   QPointF topRightBound = mapToParent(boundingRect().bottomRight());
   QPointF bottomLeftBound = mapToParent(boundingRect().topLeft());
-  QPointF bottomRightBound = mapToParent(boundingRect().topRight());    
   
   m_boundDeltaX = m_finalPosition.x() - m_initialPosition.x();
   m_boundDeltaY = m_finalPosition.y() - m_initialPosition.y(); //Calculando a variação de X e Y para poder redimensionar o BoundRect

@@ -40,7 +40,6 @@ te::layout::EnumModeType::EnumModeType() :
   m_modeMapZoomIn(0),
   m_modeMapZoomOut(0),
   m_modeCreateMap(0),
-  m_modeCreateMapGrid(0),
   m_modeCreateLegend(0),
   m_modeCreateRectangle(0),
   m_modeCreateText(0),
@@ -94,7 +93,11 @@ te::layout::EnumModeType::EnumModeType() :
   m_modeCreateBalloon(0),
   m_modeCreateBarCode(0),
   m_modeCreateGridMap(0),
-  m_coordWait(0)
+  m_coordWait(0),
+  m_modeCreateGridPlanar(0),
+  m_modeCreateGridGeodesic(0),
+  m_modeCreateNorth(0),
+  m_modeCreateMapLocation(0)
 {
   init();
 }
@@ -145,11 +148,6 @@ te::layout::EnumModeType::~EnumModeType()
   {
     delete m_modeCreateMap;
     m_modeCreateMap = 0;
-  }
-  if(m_modeCreateMapGrid)
-  {
-    delete m_modeCreateMapGrid;
-    m_modeCreateMapGrid = 0;
   }
   if(m_modeCreateLegend)
   {
@@ -432,6 +430,18 @@ te::layout::EnumModeType::~EnumModeType()
     delete m_coordWait;
     m_coordWait = 0;
   }
+
+  if(m_modeCreateGridPlanar)
+  {
+    delete m_modeCreateGridPlanar;
+    m_modeCreateGridPlanar = 0;
+  }
+
+  if(m_modeCreateGridGeodesic)
+  {
+    delete m_modeCreateGridGeodesic;
+    m_modeCreateGridGeodesic = 0;
+  }
 }
 
 void te::layout::EnumModeType::init()
@@ -488,12 +498,7 @@ void te::layout::EnumModeType::init()
   m_modeCreateMap->setLabel("Create Map Component");
   m_modeCreateMap->setType(te::layout::EnumCreate);
   m_enums.push_back(m_modeCreateMap);
-
-  m_modeCreateMapGrid = new EnumType(12, "CreateMapGrid", this);
-  m_modeCreateMapGrid->setLabel("Create MapGrid Component");
-  m_modeCreateMapGrid->setType(te::layout::EnumCreate);
-  m_enums.push_back(m_modeCreateMapGrid);
-
+  
   m_modeCreateLegend = new EnumType(13, "CreateLegend", this);
   m_modeCreateLegend->setLabel("Create Legend Component");
   m_modeCreateLegend->setType(te::layout::EnumCreate);
@@ -762,6 +767,26 @@ void te::layout::EnumModeType::init()
   m_coordWait->setLabel("Wait View");
   m_coordWait->setType(te::layout::EnumAction);
   m_enums.push_back(m_coordWait);
+
+  m_modeCreateGridPlanar = new EnumType(68, "Create Grid Planar", this);
+  m_modeCreateGridPlanar->setLabel("Create Grid Planar");
+  m_modeCreateGridPlanar->setType(te::layout::EnumCreate);
+  m_enums.push_back(m_modeCreateGridPlanar);
+
+  m_modeCreateGridGeodesic = new EnumType(69, "Create Grid Geodesic", this);
+  m_modeCreateGridGeodesic->setLabel("Create Grid Geodesic");
+  m_modeCreateGridGeodesic->setType(te::layout::EnumCreate);
+  m_enums.push_back(m_modeCreateGridGeodesic);
+
+  m_modeCreateNorth = new EnumType(70, "Create North", this);
+  m_modeCreateNorth->setLabel("Create North");
+  m_modeCreateNorth->setType(te::layout::EnumCreate);
+  m_enums.push_back(m_modeCreateNorth);
+
+  m_modeCreateMapLocation = new EnumType(71, "Create Map Location", this);
+  m_modeCreateMapLocation->setLabel("Create Map Location");
+  m_modeCreateMapLocation->setType(te::layout::EnumCreate);
+  m_enums.push_back(m_modeCreateMapLocation);
 }
 
 te::layout::EnumType* te::layout::EnumModeType::getModeSelectByBox() const
@@ -812,11 +837,6 @@ te::layout::EnumType* te::layout::EnumModeType::getModeMapZoomOut() const
 te::layout::EnumType* te::layout::EnumModeType::getModeCreateMap() const
 {
   return m_modeCreateMap;
-}
-
-te::layout::EnumType* te::layout::EnumModeType::getModeCreateMapGrid() const
-{
-  return m_modeCreateMapGrid;
 }
 
 te::layout::EnumType* te::layout::EnumModeType::getModeCreateLegend() const
@@ -1093,3 +1113,26 @@ te::layout::EnumType* te::layout::EnumModeType::getModeCreateGridMap() const
 {
   return m_modeCreateGridMap;
 }
+
+te::layout::EnumType* te::layout::EnumModeType::getModeCreateGridPlanar() const
+{
+  return m_modeCreateGridPlanar;
+}
+
+te::layout::EnumType* te::layout::EnumModeType::getModeCreateGridGeodesic() const
+{
+  return m_modeCreateGridGeodesic;
+}
+
+te::layout::EnumType* te::layout::EnumModeType::getModeCreateNorth() const
+{
+  return m_modeCreateNorth;
+}
+
+te::layout::EnumType* te::layout::EnumModeType::getModeCreateMapLocation() const
+{
+  return m_modeCreateMapLocation;
+}
+
+
+

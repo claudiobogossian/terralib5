@@ -68,16 +68,31 @@ namespace te
         
         virtual void paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
 
-        virtual QRectF boundingRect();
-
+        /*!
+          \brief Reimplemented from ParentItem
+         */
+        virtual QRectF boundingRect() const;
+                        
       protected:
 
+        /*!
+          \brief Reimplemented from QGraphicsItem
+         */
+        virtual QVariant	itemChange ( QGraphicsItem::GraphicsItemChange change, const QVariant & value );
+                        
+        virtual void drawGrid(QPainter* painter);
+                
         virtual void drawText( QPointF point, QPainter* painter, std::string text, bool displacementLeft = false, bool displacementRight = false);
+
+        virtual void recalculateBoundingRect();
 
         double m_maxWidthTextMM;
         double m_maxHeigthTextMM;
+        double m_onePointMM;
+        bool   m_changeSize;
     };
   }
 }
 
 #endif
+

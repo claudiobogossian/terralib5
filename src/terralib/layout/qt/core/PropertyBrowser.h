@@ -80,15 +80,21 @@ namespace te
 
         virtual Property getProperty(std::string name);
 
+        virtual bool updateProperty(Property property);
+
+        virtual void updateProperties(Properties* props);
+
         virtual Properties* getProperties();
 
         virtual EnumType* getLayoutType(QVariant::Type type, std::string name = "");
 
-        virtual QVariant::Type getVariantType(EnumType* dataType);
+        virtual int getVariantType(EnumType* dataType);
       
         virtual void setHasWindows(bool hasWindows = false);
 
         virtual void selectProperty(std::string name);
+
+        virtual void changeQtVariantPropertyValue(QtVariantProperty* vproperty, Property property);
             
       private slots:
 
@@ -135,6 +141,7 @@ namespace te
 
         /* Custom Types: Dialog Window Type */
         bool                 m_hasWindows;
+        bool                 m_changeQtPropertyVariantValue; // true if the change of QtPropertyVariant came from a Property and not of user interaction via Property Browser
     };
   }
 }
