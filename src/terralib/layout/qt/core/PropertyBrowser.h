@@ -34,13 +34,15 @@
 
 // Qt
 #include <QObject>
+#include <QVariant>
 
 // QtPropertyBrowser
-#include <QtPropertyBrowser/QtTreePropertyBrowser>
-#include <QtPropertyBrowser/QtStringPropertyManager>
-#include <QtPropertyBrowser/QtProperty>
-#include <QtPropertyBrowser/QtVariantPropertyManager>
-#include <QtPropertyBrowser/QtBrowserItem>
+class QtTreePropertyBrowser;
+class QtStringPropertyManager;
+class QtProperty;
+class QtVariantPropertyManager;
+class QtVariantProperty;
+class QtBrowserItem;
 
 class QGraphicsItem;
 class QWidget;
@@ -88,7 +90,7 @@ namespace te
 
         virtual EnumType* getLayoutType(QVariant::Type type, std::string name = "");
 
-        virtual int getVariantType(EnumType* dataType);
+        virtual QVariant::Type getVariantType(EnumType* dataType);
       
         virtual void setHasWindows(bool hasWindows = false);
 

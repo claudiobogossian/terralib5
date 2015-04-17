@@ -41,7 +41,10 @@
 // QtPropertyBrowser
 #include <QtPropertyBrowser/QtVariantPropertyManager>
 #include <QtPropertyBrowser/QtTreePropertyBrowser>
+#include <QtPropertyBrowser/QtStringPropertyManager>
 #include <QtPropertyBrowser/qteditorfactory.h>
+#include <QtPropertyBrowser/QtProperty>
+#include <QtPropertyBrowser/QtBrowserItem>
 
 // STL
 #include <algorithm>    // std::find
@@ -206,9 +209,20 @@ bool te::layout::PropertyBrowser::addProperty( Property property )
     return false;
   }
 
-  int type = getVariantType(property.getType());
-  vproperty = m_variantPropertyEditorManager->addProperty(type, tr(property.getName().c_str()));
-  changeQtVariantPropertyValue(vproperty, property);
+  if(property.getType() == dataType->getDataTypeStringList())
+  {
+    /* The type of property is enum, and so a combobox appears. 
+    The type of the property value is int, as is the position in which the attribute is in the list of Enum. */
+    vproperty = m_variantPropertyEditorManager->addProperty(QtVariantPropertyManager::enumTypeId(), tr(property.getName().c_str()));
+    addAttribute(vproperty, property);
+    vproperty->setValue(property.getOptionByCurrentChoice().toString().c_str());
+  }
+  else
+  {
+    QVariant::Type type = getVariantType(property.getType());
+    vproperty = m_variantPropertyEditorManager->addProperty(type, tr(property.getName().c_str()));
+    changeQtVariantPropertyValue(vproperty, property);
+  }  
 
   if(vproperty)
   {
@@ -459,11 +473,11 @@ te::layout::EnumType* te::layout::PropertyBrowser::getLayoutType( QVariant::Type
   return dataType;
 }
 
-int te::layout::PropertyBrowser::getVariantType( te::layout::EnumType* dataType )
+QVariant::Type te::layout::PropertyBrowser::getVariantType( te::layout::EnumType* dataType )
 {
   EnumDataType* dtType = Enums::getInstance().getEnumDataType();
 
-  int type = QVariant::Invalid;
+  QVariant::Type type = QVariant::Invalid;
   
   if(dataType == dtType->getDataTypeString())
   {
@@ -471,7 +485,7 @@ int te::layout::PropertyBrowser::getVariantType( te::layout::EnumType* dataType 
   }
   else if(dataType == dtType->getDataTypeStringList())
   {
-    type = QtVariantPropertyManager::enumTypeId();
+    type = QVariant::Int;
   }
   else if(dataType == dtType->getDataTypeDouble())
   {

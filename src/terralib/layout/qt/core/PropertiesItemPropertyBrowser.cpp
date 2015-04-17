@@ -37,11 +37,14 @@
 #include <utility>
 
 // Qt
-#include <QtPropertyBrowser/QtVariantPropertyManager>
-#include <QtPropertyBrowser/QtTreePropertyBrowser>
 #include <QImageReader>
 #include <QFileDialog>
 #include <QMessageBox>
+
+// QtPropertyBrowser
+#include <QtPropertyBrowser/QtVariantPropertyManager>
+#include <QtPropertyBrowser/QtTreePropertyBrowser>
+#include <QtPropertyBrowser/QtStringPropertyManager>
 
 te::layout::PropertiesItemPropertyBrowser::PropertiesItemPropertyBrowser(QObject* parent) :
   PropertyBrowser(parent),
@@ -339,9 +342,9 @@ te::layout::EnumType* te::layout::PropertiesItemPropertyBrowser::getLayoutType( 
   return dataType;
 }
 
-int te::layout::PropertiesItemPropertyBrowser::getVariantType( te::layout::EnumType* dataType )
+QVariant::Type te::layout::PropertiesItemPropertyBrowser::getVariantType( te::layout::EnumType* dataType )
 {
-  int type = PropertyBrowser::getVariantType(dataType);
+  QVariant::Type type = PropertyBrowser::getVariantType(dataType);
 
   EnumDataType* dtType = Enums::getInstance().getEnumDataType();
 

@@ -42,6 +42,8 @@
 #include <QVBoxLayout>
 #include <QGroupBox>
 
+#include <QtPropertyBrowser/QtTreePropertyBrowser>
+
 te::layout::ObjectInspectorOutside::ObjectInspectorOutside( OutsideController* controller, Observable* o, ObjectInspectorPropertyBrowser* propertyBrowser ) :
   QWidget(0),
   OutsideObserver(controller, o)

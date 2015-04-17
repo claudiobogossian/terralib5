@@ -53,6 +53,8 @@
 #include <QLabel>
 #include <QUndoCommand>
 
+#include <QtPropertyBrowser/QtTreePropertyBrowser>
+
 te::layout::PropertiesOutside::PropertiesOutside( OutsideController* controller, Observable* o, PropertiesItemPropertyBrowser* propertyBrowser ) :
 	QWidget(0),
 	OutsideObserver(controller, o),
