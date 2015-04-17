@@ -277,20 +277,12 @@ void te::layout::MapItem::drawMap( QPainter * painter )
     image = image.mirrored();
 
     m_pixmap = QPixmap::fromImage(image);
-
-    //scene()->update();
   }
 
   painter->save();
   painter->setClipRect(boundRect);
   painter->drawPixmap(boundRect, m_pixmap, m_pixmap.rect());
-
-  QPen pen;
-  pen.setWidth(1);
-
-  painter->setPen(pen);
-  painter->drawRect(boundRect);
-
+  
   painter->restore();
 }
 

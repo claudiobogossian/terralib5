@@ -755,7 +755,16 @@ namespace te
       if(angle == model->getOldAngle())
         return;
 
+      double w = boundingRect().width();
+      double h = boundingRect().height();
+
+      QTransform transf = T::transform();
+
+      transf.translate(w/2, h/2);
+      T::setTransform(transf);
       T::setRotation(angle);
+      transf.translate(-(w/2), -(h/2));
+      T::setTransform(transf);
     }
 
     template <class T>
