@@ -27,27 +27,46 @@
 #          Juan Carlos P. Garrido <juan@dpi.inpe.br>
 #
 
-if(CMAKE_SIZEOF_VOID_P EQUAL 4)
 
-  if(NOT "$ENV{CommonProgramFiles(x86)}")
-    set(path_prefix "$ENV{CommonProgramFiles}")
-  else()
-    set (path_prefix "$ENV{CommonProgramFiles(x86)}")
+# Get the architecture
+
+set(arch "x86")
+
+if("${CMAKE_GENERATOR}" MATCHES "(Win64|IA64)")
+  set(arch "x64")
+elseif("${CMAKE_SIZEOF_VOID_P}" STREQUAL "8")
+  set(arch "x64")
+elseif("$ENV{LIB}" MATCHES "(amd64|ia64)")
+  set(arch "x64")
+endif()
+
+set(_PREFIX_ENV_VAR "ProgramFiles")
+
+if ("$ENV{ProgramW6432}" STREQUAL "$ENV{ProgramFiles}")
+  if(NOT "${arch}" STREQUAL "x64")
+    set(_PREFIX_ENV_VAR "ProgramFiles(x86)")
   endif()
-
 else()
-  set (path_prefix "$ENV{CommonProgramFiles}")
+  if("${arch}" STREQUAL "x64")
+    set(_PREFIX_ENV_VAR "ProgramW6432")
+  endif()
+endif()
 
+if(NOT "$ENV{${_PREFIX_ENV_VAR}}" STREQUAL "")
+  file(TO_CMAKE_PATH "$ENV{${_PREFIX_ENV_VAR}}" path_prefix)
+elseif(NOT "$ENV{SystemDrive}" STREQUAL "")
+  set(path_prefix "$ENV{SystemDrive}/Program Files")
+else()
+  set(path_prefix "C:/Program Files")
 endif()
 
 find_path(ADO_TYPE_LIBRARY_DIR
           NAMES msado15.dll msado26.tlb msadox.dll
-          PATHS ${path_prefix}"/System/ado")
-
+          PATHS ${path_prefix}"/Common Files/System/ado")
 
 find_path(ADO_OLEDB_DIR
           NAMES oledb32.dll
-          PATHS ${path_prefix}"/System/Ole DB")
+          PATHS ${path_prefix}"/Common Files/System/Ole DB")
 
 set(ADO_LIBRARY_DIRS ${ADO_TYPE_LIBRARY_DIR} ${ADO_OLEDB_DIR})
 
