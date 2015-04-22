@@ -78,7 +78,7 @@ namespace te
 
       virtual EnumType* getLayoutType(QVariant::Type type, std::string name = "");
 
-      virtual int getVariantType(EnumType* dataType);
+      virtual QVariant::Type getVariantType(EnumType* dataType);
            
       protected slots:
 
