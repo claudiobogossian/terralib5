@@ -46,8 +46,13 @@
 #include <iostream>
 #include <fstream>
 
-const double	TeCDR =	0.01745329251994329576;		//!< Conversion factor: degrees to radians
-const double	TeCRD = 57.29577951308232087679;	//!< Conversion factor: radians to degrees
+#ifndef TeCDR
+#define TeCDR 0.01745329251994329576		//!< Conversion factor: degrees to radians
+#endif
+
+#ifndef TeCRD
+#define TeCRD 57.29577951308232087679	//!< Conversion factor: radians to degrees
+#endif
 
 namespace te
 {
