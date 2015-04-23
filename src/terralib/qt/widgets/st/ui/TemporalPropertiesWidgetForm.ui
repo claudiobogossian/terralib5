@@ -17,7 +17,7 @@
    <item row="0" column="0">
     <layout class="QGridLayout" name="gridLayout_11">
      <item row="0" column="0">
-      <widget class="QGroupBox" name="TempPropertiesGroupBox">
+      <widget class="QGroupBox" name="m_tempPropertiesGroupBox">
        <property name="title">
         <string>Property</string>
        </property>
@@ -97,7 +97,7 @@
       </widget>
      </item>
      <item row="0" column="1">
-      <widget class="QGroupBox" name="AdvancedGroupBox">
+      <widget class="QGroupBox" name="m_avancedGroupBox">
        <property name="enabled">
         <bool>true</bool>
        </property>

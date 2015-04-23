@@ -143,7 +143,7 @@ namespace te
 
             \return The format that the indicates how the date will be displayed.
           */
-          std::string getDateFormat();
+          int getDateFormat();
 
           /*!
             \brief Adjusts the widget values according to the given datasettype
