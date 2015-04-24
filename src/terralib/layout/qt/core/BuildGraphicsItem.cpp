@@ -382,6 +382,7 @@ std::string te::layout::BuildGraphicsItem::nameItem( te::layout::EnumType* type 
   ss << m_id;
 
   std::string name = type->getName();
+  name+="_";
   name+=ss.str();
 
   return name;
