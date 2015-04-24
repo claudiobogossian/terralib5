@@ -34,9 +34,10 @@
 #include "../../../datatype/Utils.h"
 #include "../../../geometry/Geometry.h"
 #include "../../../geometry/WKTReader.h"
+#include "../../../xml/AbstractWriter.h"
+#include "../../../xml/AbstractWriterFactory.h"
 #include "../../../xml/Reader.h"
 #include "../../../xml/ReaderFactory.h"
-#include "../../../xml/Writer.h"
 #include "../../dataset/DataSetType.h"
 #include "../../datasource/DataSourceCapabilities.h"
 #include "../../datasource/DataSourceCatalog.h"
@@ -121,9 +122,9 @@ te::da::DataSourceInfo* te::serialize::xml::ReadDataSourceInfo(te::xml::Reader& 
 {
   std::auto_ptr<te::da::DataSourceInfo> ds(new te::da::DataSourceInfo);
 
-  ds->setId(reader.getAttr(0));
-  ds->setType(reader.getAttr(1));
-  ds->setAccessDriver(reader.getAttr(2));
+  ds->setId(reader.getAttr("id"));
+  ds->setType(reader.getAttr("type"));
+  ds->setAccessDriver(reader.getAttr("access_driver"));
 
   /* Title Element */
   reader.next();
@@ -199,21 +200,14 @@ te::da::DataSourceInfo* te::serialize::xml::ReadDataSourceInfo(te::xml::Reader& 
 
 void te::serialize::xml::Save(const std::string& fileName)
 {
-  std::fstream ostr(fileName.c_str(), std::ios_base::out);
+  std::auto_ptr<te::xml::AbstractWriter> w(te::xml::AbstractWriterFactory::make());
 
-  Save(ostr);
+  w->setURI(fileName);
 
-  ostr.close();
+  Save(*w.get());
 }
 
-void te::serialize::xml::Save(std::ostream& ostr)
-{
-  te::xml::Writer w(ostr);
-
-  Save(w);
-}
-
-void te::serialize::xml::Save(te::xml::Writer& writer)
+void te::serialize::xml::Save(te::xml::AbstractWriter& writer)
 {
   std::string schema_loc = te::common::FindInTerraLibPath("share/terralib/schemas/terralib/dataaccess/dataaccess.xsd");
 
@@ -223,11 +217,12 @@ void te::serialize::xml::Save(te::xml::Writer& writer)
 
   writer.writeStartDocument("UTF-8", "no");
 
+  writer.setRootNamespaceURI("http://www.terralib.org/schemas/dataaccess");
+
   writer.writeStartElement("te_da:DataSourceList");
 
   writer.writeAttribute("xmlns:xsd", "http://www.w3.org/2001/XMLSchema-instance");
   writer.writeAttribute("xmlns:te_common", "http://www.terralib.org/schemas/common");
-  writer.writeAttribute("xmlns:te_da", "http://www.terralib.org/schemas/dataaccess");
   writer.writeAttribute("xmlns", "http://www.terralib.org/schemas/dataaccess");
   writer.writeAttribute("xsd:schemaLocation", "http://www.terralib.org/schemas/dataaccess " + schema_loc);
   writer.writeAttribute("version", TERRALIB_VERSION_STRING);
@@ -279,6 +274,8 @@ void te::serialize::xml::Save(te::xml::Writer& writer)
   }
 
   writer.writeEndElement("te_da:DataSourceList");
+
+  writer.writeToFile();
 }
 
 te::da::DataSourceCatalog* te::serialize::xml::ReadDataSourceCatalog(te::xml::Reader& reader)
@@ -319,21 +316,12 @@ te::da::DataSourceCatalog* te::serialize::xml::ReadDataSourceCatalog(te::xml::Re
 
 void te::serialize::xml::Save(const te::da::DataSourceCatalog* catalog, const std::string& fileName)
 {
-  std::fstream ostr(fileName.c_str(), std::ios_base::out);
-
-  Save(catalog, ostr);
-
-  ostr.close();
+  std::auto_ptr<te::xml::AbstractWriter> w(te::xml::AbstractWriterFactory::make());
+  w->setURI(fileName);
+  Save(catalog, *w.get());
 }
 
-void te::serialize::xml::Save(const te::da::DataSourceCatalog* catalog, std::ostream& ostr)
-{
-  te::xml::Writer w(ostr);
-
-  Save(catalog, w);
-}
-
-void te::serialize::xml::Save(const te::da::DataSourceCatalog* catalog, te::xml::Writer& writer)
+void te::serialize::xml::Save(const te::da::DataSourceCatalog* catalog, te::xml::AbstractWriter& writer)
 {
   writer.writeStartDocument("UTF-8", "no");
 
@@ -345,8 +333,6 @@ void te::serialize::xml::Save(const te::da::DataSourceCatalog* catalog, te::xml:
   writer.writeAttribute("xsd:schemaLocation", "http://www.terralib.org/schemas/da C:/Users/gribeiro/Documents/terralib5/trunk/myschemas/terralib/da/catalog.xsd");
   writer.writeAttribute("version", "5.0.0");
   writer.writeAttribute("release", "2011-01-01");
-
-  //writer.writeElement(ostr, "Name", "");
 
   writer.writeStartElement("DataSetTypes");
 
@@ -365,9 +351,9 @@ te::da::DataSetType* te::serialize::xml::ReadDataSetType(te::xml::Reader& reader
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "DataSetType");
 
-  unsigned int id = reader.getAttrAsUInt32(0);
-  std::string name = reader.getAttr(1);
-  std::string title = reader.getAttr(2);
+  unsigned int id = reader.getAttrAsUInt32("id");
+  std::string name = reader.getAttr("name");
+  std::string title = reader.getAttr("title");
 
   reader.next();
 
@@ -388,7 +374,7 @@ te::da::DataSetType* te::serialize::xml::ReadDataSetType(te::xml::Reader& reader
   return dt.release();
 }
 
-void te::serialize::xml::Save(const te::da::DataSetType* dt, te::xml::Writer& writer)
+void te::serialize::xml::Save(const te::da::DataSetType* dt, te::xml::AbstractWriter& writer)
 {
   writer.writeStartElement("te_da:DataSetType");
 
@@ -2105,7 +2091,7 @@ te::da::Where* te::serialize::xml::ReadWhere(te::xml::Reader& reader)
   return wh;
 }
 
-void te::serialize::xml::Save(const te::da::Distinct* distinct, te::xml::Writer& writer)
+void te::serialize::xml::Save(const te::da::Distinct* distinct, te::xml::AbstractWriter& writer)
 {
   assert(distinct);
   writer.writeStartElement("te_da:Distinct");
@@ -2120,7 +2106,7 @@ void te::serialize::xml::Save(const te::da::Distinct* distinct, te::xml::Writer&
   writer.writeEndElement("te_da:Distinct");
 }
 
-void te::serialize::xml::Save(const te::da::Expression* expression, te::xml::Writer& writer)
+void te::serialize::xml::Save(const te::da::Expression* expression, te::xml::AbstractWriter& writer)
 {
   assert(expression);
 
@@ -2141,7 +2127,7 @@ void te::serialize::xml::Save(const te::da::Expression* expression, te::xml::Wri
     throw te::da::Exception(TE_TR("Error: Expression Type Undefined!"));
 }
 
-void te::serialize::xml::Save(const te::da::Field* field, te::xml::Writer& writer)
+void te::serialize::xml::Save(const te::da::Field* field, te::xml::AbstractWriter& writer)
 {
   assert(field);
   writer.writeStartElement("te_da:Field");
@@ -2161,7 +2147,7 @@ void te::serialize::xml::Save(const te::da::Field* field, te::xml::Writer& write
 
 }
 
-void te::serialize::xml::Save(const te::da::Fields* fields, te::xml::Writer& writer)
+void te::serialize::xml::Save(const te::da::Fields* fields, te::xml::AbstractWriter& writer)
 {
   assert(fields);
   writer.writeStartElement("te_da:Fields");
@@ -2176,7 +2162,7 @@ void te::serialize::xml::Save(const te::da::Fields* fields, te::xml::Writer& wri
   writer.writeEndElement("te_da:Fields");
 }
 
-void te::serialize::xml::Save(const te::da::From* from, te::xml::Writer& writer)
+void te::serialize::xml::Save(const te::da::From* from, te::xml::AbstractWriter& writer)
 {
   writer.writeStartElement("te_da:From");
 
@@ -2190,7 +2176,7 @@ void te::serialize::xml::Save(const te::da::From* from, te::xml::Writer& writer)
   writer.writeEndElement("te_da:From");
 }
 
-void te::serialize::xml::Save(const te::da::FromItem* fromItem, te::xml::Writer& writer)
+void te::serialize::xml::Save(const te::da::FromItem* fromItem, te::xml::AbstractWriter& writer)
 {
   const te::da::DataSetName* dsName = dynamic_cast<const te::da::DataSetName*>(fromItem);
   if(dsName)
@@ -2279,29 +2265,12 @@ void te::serialize::xml::Save(const te::da::FromItem* fromItem, te::xml::Writer&
   }
 }
 
-std::string Function2Ascii(std::string funcName)
-{
-  if(funcName == "<")
-    return "&#60;";
-  else if(funcName == ">")
-    return "&#62;";
-  else if(funcName == "<>")
-    return "&#60;&#62;";
-  else if(funcName == "<=")
-    return "&#60;=";
-  else if(funcName == ">=")
-    return "&#62;=";
-  else
-    return funcName;
-}
-
-void te::serialize::xml::Save(const te::da::Function* func, te::xml::Writer& writer)
+void te::serialize::xml::Save(const te::da::Function* func, te::xml::AbstractWriter& writer)
 {
   assert(func);
   writer.writeStartElement("te_da:Function");
 
   std::string funcName = func->getName();
-  funcName = Function2Ascii(funcName);
 
   writer.writeElement("te_da:Name", funcName);
 
@@ -2313,7 +2282,7 @@ void te::serialize::xml::Save(const te::da::Function* func, te::xml::Writer& wri
   writer.writeEndElement("te_da:Function");
 }
 
-void te::serialize::xml::Save(const te::da::GroupByItem* groupByItem, te::xml::Writer& writer)
+void te::serialize::xml::Save(const te::da::GroupByItem* groupByItem, te::xml::AbstractWriter& writer)
 {
   assert(groupByItem);
   writer.writeStartElement("te_da:GroupByItem");
@@ -2323,7 +2292,7 @@ void te::serialize::xml::Save(const te::da::GroupByItem* groupByItem, te::xml::W
   writer.writeEndElement("te_da:GroupByItem");
 }
 
-void te::serialize::xml::Save(const te::da::GroupBy* groupBy, te::xml::Writer& writer)
+void te::serialize::xml::Save(const te::da::GroupBy* groupBy, te::xml::AbstractWriter& writer)
 {
   writer.writeStartElement("te_da:GroupBy");
 
@@ -2337,7 +2306,7 @@ void te::serialize::xml::Save(const te::da::GroupBy* groupBy, te::xml::Writer& w
   writer.writeEndElement("te_da:GroupBy");
 }
 
-void te::serialize::xml::Save(const te::da::Having* having, te::xml::Writer& writer)
+void te::serialize::xml::Save(const te::da::Having* having, te::xml::AbstractWriter& writer)
 {
   assert(having);
   writer.writeStartElement("te_da:Having");
@@ -2347,7 +2316,7 @@ void te::serialize::xml::Save(const te::da::Having* having, te::xml::Writer& wri
   writer.writeEndElement("te_da:Having");
 }
 
-void te::serialize::xml::Save(const te::da::Literal* lit, te::xml::Writer& writer)
+void te::serialize::xml::Save(const te::da::Literal* lit, te::xml::AbstractWriter& writer)
 {
   assert(lit);
   writer.writeStartElement("te_da:Literal");
@@ -2361,7 +2330,7 @@ void te::serialize::xml::Save(const te::da::Literal* lit, te::xml::Writer& write
   writer.writeEndElement("te_da:Literal");
 }
 
-void te::serialize::xml::Save(const te::da::OrderByItem* orderByItem, te::xml::Writer& writer)
+void te::serialize::xml::Save(const te::da::OrderByItem* orderByItem, te::xml::AbstractWriter& writer)
 {
   assert(orderByItem);
   writer.writeStartElement("te_da:OrderByItem");
@@ -2376,7 +2345,7 @@ void te::serialize::xml::Save(const te::da::OrderByItem* orderByItem, te::xml::W
   writer.writeEndElement("te_da:OrderByItem");
 }
 
-void te::serialize::xml::Save(const te::da::OrderBy* orderBy, te::xml::Writer& writer)
+void te::serialize::xml::Save(const te::da::OrderBy* orderBy, te::xml::AbstractWriter& writer)
 {
   writer.writeStartElement("te_da:OrderBy");
 
@@ -2390,14 +2359,14 @@ void te::serialize::xml::Save(const te::da::OrderBy* orderBy, te::xml::Writer& w
   writer.writeEndElement("te_da:OrderBy");
 }
 
-void te::serialize::xml::Save(const te::da::PropertyName* propertyName, te::xml::Writer& writer)
+void te::serialize::xml::Save(const te::da::PropertyName* propertyName, te::xml::AbstractWriter& writer)
 {
   assert(propertyName);
 
   writer.writeElement("te_da:PropertyName", propertyName->getName());
 }
 
-void te::serialize::xml::Save(const te::da::Select* select, te::xml::Writer& writer)
+void te::serialize::xml::Save(const te::da::Select* select, te::xml::AbstractWriter& writer)
 {
   assert(select);
   writer.writeStartElement("te_da:Select");
@@ -2447,7 +2416,7 @@ void te::serialize::xml::Save(const te::da::Select* select, te::xml::Writer& wri
   writer.writeEndElement("te_da:Select");
 }
 
-void te::serialize::xml::Save(const te::da::Where* wh, te::xml::Writer& writer)
+void te::serialize::xml::Save(const te::da::Where* wh, te::xml::AbstractWriter& writer)
 {
   writer.writeStartElement("te_da:Where");
 

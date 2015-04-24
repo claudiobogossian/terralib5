@@ -27,6 +27,7 @@
 #define __TERRALIB_XLINK_INTERNAL_XLINKSERIALIZER_H
 
 // TerraLib
+#include "terralib_config.h"
 #include "../../Config.h"
 
 #ifdef TERRALIB_MOD_XML_ENABLED
@@ -35,8 +36,8 @@ namespace te
 {
   namespace xml
   {
+    class AbstractWriter;
     class Reader;
-    class Writer;
   }
 
   namespace xl
@@ -47,7 +48,7 @@ namespace te
     {
       TEXLEXPORT SimpleLink* ReadSimpleLink(te::xml::Reader& reader);
 
-      TEXLEXPORT void Save(const SimpleLink* link, te::xml::Writer& writer);
+      TEXLEXPORT void Save(const SimpleLink* link, te::xml::AbstractWriter& writer);
     }  // end namespace serialize
   }    // end namespace xl
 }      // end namespace te

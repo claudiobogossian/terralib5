@@ -74,6 +74,8 @@ namespace te
 
           void next();
 
+          void finish();
+
       private:
 
           enum

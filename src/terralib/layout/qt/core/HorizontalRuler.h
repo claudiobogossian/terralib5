@@ -30,6 +30,7 @@
 
 // TerraLib
 #include "AbstractRuler.h"
+#include "../../core/Config.h"
 
 namespace te
 {
@@ -40,7 +41,7 @@ namespace te
 	  
 	  \ingroup layout
 	  */
-    class HorizontalRuler : public AbstractRuler
+    class TELAYOUTEXPORT HorizontalRuler : public AbstractRuler
     {
       public:
 

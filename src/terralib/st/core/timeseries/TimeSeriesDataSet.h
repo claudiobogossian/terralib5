@@ -293,11 +293,13 @@ namespace te
           set of TimeSeries associated to a given interpolator.
 
           \param interp The time series interpolator.
+          \param vPropName The property name that contains the attribute values associated to a time series
           \param result The returned set of time series.
 
           \note The caller will take the ownership of the returned pointers. 
         */
-        void getTimeSeriesSet(  te::st::AbstractTimeSeriesInterp* interp, 
+        void getTimeSeriesSet(  te::st::AbstractTimeSeriesInterp* interp,
+                                const std::string& vPropName,
                                 std::vector<te::st::TimeSeries*>& result);
 
         /*!

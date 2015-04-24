@@ -18,52 +18,38 @@
  */
 
 /*!
-  \file ObjectInspectorPropertyBrowser.h
+  \file MapLayerChoiceOutsideModel.h
    
-  \brief Class daughter of te::layout::PropertyBrowser used by the Object Inspector widget.
+  \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_OBJECT_INSPECTOR_PROPERTY_BROWSER_H 
-#define __TERRALIB_LAYOUT_INTERNAL_OBJECT_INSPECTOR_PROPERTY_BROWSER_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_MAP_LAYER_CHOICE_MODEL_H 
+#define __TERRALIB_LAYOUT_INTERNAL_MAP_LAYER_CHOICE_MODEL_H
 
 // TerraLib
-#include "PropertyBrowser.h"
-
-// Qt
-class QGraphicsItem;
-class QWidget;
-
-class QtVariantProperty;
-class QtProperty;
-class QtVariantPropertyManager;
-class QtBrowserIndex;
+#include "../core/pattern/mvc/OutsideModelObservable.h"
+#include "../core/ContextItem.h"
+#include "../core/property/Properties.h"
+#include "../core/Config.h"
 
 namespace te
 {
   namespace layout
   {
-    /*!
-	  \brief Class daughter of te::layout::PropertyBrowser used by the Object Inspector widget.
-	  
-	  \ingroup layout
-
-    \sa te::layout::PropertyBrowser
-	  */
-    class ObjectInspectorPropertyBrowser : public PropertyBrowser
+    class TELAYOUTEXPORT MapLayerChoiceModel : public OutsideModelObservable
     {
-	    Q_OBJECT //for slots/signals
-
     public:
 
-	    ObjectInspectorPropertyBrowser(QObject *parent = 0);
+      MapLayerChoiceModel();
 
-	    virtual ~ObjectInspectorPropertyBrowser();
+      virtual ~MapLayerChoiceModel();
 
-    private slots:
+      virtual void updateProperties(te::layout::Properties* properties);
 
-      void onSetDlg(QWidget *parent, QtProperty * prop);
+      virtual Properties* getProperties() const;
+
     };
   }
 }

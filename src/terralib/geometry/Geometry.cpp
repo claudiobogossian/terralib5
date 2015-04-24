@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "terralib_config.h"
 #include "../common/Globals.h"
 #include "../common/Translator.h"
 #include "../datatype/Enums.h"

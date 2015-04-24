@@ -27,6 +27,7 @@
 #include <boost/foreach.hpp> // Boost => don't change this include order, otherwise you may have compiling problems! 
 
 // TerraLib
+#include "terralib_config.h"
 #include "../../common/Exception.h"
 #include "../../common/PlatformUtils.h"
 #include "../../common/Translator.h"

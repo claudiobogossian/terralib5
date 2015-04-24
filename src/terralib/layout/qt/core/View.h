@@ -40,8 +40,8 @@
 #include "Scene.h"
 #include "../outside/PageSetupOutside.h"
 #include "../outside/SystematicScaleOutside.h"
-#include "MenuItem.h"
 #include "../item/MovingItemGroup.h"
+#include "propertybrowser/MenuBuilder.h"
 
 // STL
 #include <string>
@@ -342,25 +342,25 @@ namespace te
 
       protected:
 
-        VisualizationArea*      m_visualizationArea;
-        AbstractViewTool*       m_currentTool;
-        PageSetupOutside*       m_pageSetupOutside;
-        SystematicScaleOutside* m_systematicOutside;
-        te::gm::Coord2D         m_coordSystematic;
-        bool                    m_selectionChange;
-        MenuItem*               m_menuItem;
-        HorizontalRuler*        m_horizontalRuler;
-        VerticalRuler*          m_verticalRuler;
-        double                  m_maxZoomLimit;
-        double                  m_minZoomLimit;
-        double                  m_width;
-        double                  m_height;
-        bool                    m_isMoving;
-        te::layout::MovingItemGroup* m_movingItemGroup;
-        bool                    m_updateItemPos;
-        EnumType*               m_oldMode;
-        WaitView*               m_wait;
-        bool                    m_flag;
+        VisualizationArea*            m_visualizationArea;
+        AbstractViewTool*             m_currentTool;
+        PageSetupOutside*             m_pageSetupOutside;
+        SystematicScaleOutside*       m_systematicOutside;
+        te::gm::Coord2D               m_coordSystematic;
+        bool                          m_selectionChange;
+        MenuBuilder*                  m_menuBuilder;
+        HorizontalRuler*              m_horizontalRuler;
+        VerticalRuler*                m_verticalRuler;
+        double                        m_maxZoomLimit;
+        double                        m_minZoomLimit;
+        double                        m_width;
+        double                        m_height;
+        bool                          m_isMoving;
+        te::layout::MovingItemGroup*  m_movingItemGroup;
+        bool                          m_updateItemPos;
+        EnumType*                     m_oldMode;
+        WaitView*                     m_wait;
+        bool                          m_flag;
     };
   }
 }

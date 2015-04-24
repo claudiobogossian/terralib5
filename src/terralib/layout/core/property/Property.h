@@ -31,6 +31,7 @@
 // TerraLib
 #include "Variant.h"
 #include "../enum/EnumType.h"
+#include "../Config.h"
 
 namespace te
 {
@@ -41,7 +42,7 @@ namespace te
 	  
 	    \ingroup layout
 	  */
-    class Property
+    class TELAYOUTEXPORT Property
     {
       public:
 
@@ -222,6 +223,20 @@ namespace te
         */
         virtual bool isVisible();
 
+        /*!
+          \brief Returns true if property is required, false otherwise. 
+
+          \return true if property is required, false otherwise 
+        */
+        bool isRequired();
+
+        /*!
+          \brief Sets true if property is required, false otherwise 
+
+          \param true if property is required, false otherwise 
+        */
+        void setRequired(bool required);
+
         bool operator ==(const Property& other); 
 
     protected:
@@ -238,6 +253,7 @@ namespace te
       bool m_menu; //!< /* The property will be used in a menu.  */
       std::string m_icon; //!<
       bool m_visible; //!< visibility
+      bool m_required; //!< required
     };
 
     template <typename ValueType>

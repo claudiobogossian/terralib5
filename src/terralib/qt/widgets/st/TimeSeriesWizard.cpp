@@ -28,6 +28,7 @@
 #include "../../../qt/widgets/datasource/selector/DataSourceSelectorWidget.h"
 #include "../../../qt/widgets/datasource/selector/DataSourceSelectorWizardPage.h"
 #include "../../../qt/widgets/help/HelpPushButton.h"
+#include "../../../st/core/timeseries/TimeSeriesDataSetInfo.h"
 #include "TimeSeriesPropertiesWizardPage.h"
 #include "TimeSeriesWizard.h"
 #include "ui_TimeSeriesWizardForm.h"
@@ -109,4 +110,56 @@ void te::qt::widgets::TimeSeriesWizard::next()
     m_PropWidgetPage->set(getDatasetType());
   }
   QWizard::next();
+}
+
+void te::qt::widgets::TimeSeriesWizard::finish()
+{
+  QApplication::setOverrideCursor(Qt::WaitCursor);
+  te::da::DataSourceInfoPtr dataInfo = getDataSource();
+  std::list<te::da::DataSetTypePtr> dataTypes = m_datasetSelectorPage->getCheckedDataSets();
+
+  try
+  {
+
+    //std::list<te::st::TimeSeriesDataSetInfo*> infos = m_PropWidgetPage->getInfo(dataInfo);
+    //std::list<te::st::TimeSeriesDataSetInfo*>::const_iterator infosBegin = infos.begin();
+    //std::list<te::st::TimeSeriesDataSetInfo*>::const_iterator infosEnd = infos.end();
+    //std::list<te::da::DataSetTypePtr>::const_iterator typesItBegin = dataTypes.begin();
+
+    //if (infos.size() == 1)
+    //{
+    //  m_trajectoryLayers.push_back(generateLayer(*typesItBegin, *infosBegin, dataInfo));
+    //}
+    //else
+    //{
+
+    //  static boost::uuids::basic_random_generator<boost::mt19937> gen;
+    //  boost::uuids::uuid u = gen();
+    //  std::string id = boost::uuids::to_string(u);
+
+    //  te::st::TrajectoryDataSetLayerPtr testParent(new te::st::TrajectoryDataSetLayer());
+    //  testParent->setId(id);
+
+    //  m_trajectoryLayers.push_back(testParent);
+    //  while(infosBegin != infosEnd)
+    //  {
+    //    m_trajectoryLayers.push_back(generateLayer(*typesItBegin, *infosBegin, dataInfo, testParent.get()));
+    //    infosBegin++;
+    //    typesItBegin++;
+    //  }
+    //}
+  }
+  catch(const te::common::Exception& e)
+  {
+    std::cout << std::endl << "Failed to create a new layer and insert it into the application: " << e.what() << std::endl;
+    QWizard::finished(1);
+  }
+  catch(...)
+  {
+    std::cout << std::endl << "Failed to create a new layer and insert it into the application: unknown exception!" << std::endl;
+    QWizard::finished(1);
+  }
+
+  QApplication::restoreOverrideCursor();
+  QWizard::finished(0);
 }

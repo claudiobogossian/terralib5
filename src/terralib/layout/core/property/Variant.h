@@ -33,6 +33,7 @@
 #include "../../../color/RGBAColor.h"
 #include "../Font.h"
 #include "../enum/EnumType.h"
+#include "../Config.h"
 
 // STL
 #include <string>
@@ -54,7 +55,7 @@ namespace te
 	  
 	    \ingroup layout
 	  */
-    class Variant
+    class TELAYOUTEXPORT Variant
     {
       public:
 

@@ -37,7 +37,7 @@ namespace te
     {
       te::map::AbstractLayer* LayerReader(te::xml::Reader& reader);
 
-      void LayerWriter(const te::map::AbstractLayer* alayer, te::xml::Writer& writer);
+      void LayerWriter(const te::map::AbstractLayer* alayer, te::xml::AbstractWriter& writer);
 
     }  //end namespace serialize
   }    // end namespace wms

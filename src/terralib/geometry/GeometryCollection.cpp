@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "terralib_config.h"
 #include "../common/STLUtils.h"
 #include "../common/Translator.h"
 #include "Envelope.h"

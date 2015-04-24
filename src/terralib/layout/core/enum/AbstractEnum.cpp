@@ -36,7 +36,7 @@ te::layout::AbstractEnum::AbstractEnum()
 
 te::layout::AbstractEnum::~AbstractEnum()
 {
-
+  
 }
 
 te::layout::EnumType* te::layout::AbstractEnum::getEnum( int enumId ) const

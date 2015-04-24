@@ -41,8 +41,8 @@ namespace te
 {
   namespace xml
   {
+    class AbstractWriter;
     class Reader;
-    class Writer;
   }
 
   namespace fe
@@ -58,7 +58,7 @@ namespace te
         public:
 
           typedef boost::function<te::fe::AbstractOp* (const char* opName, te::xml::Reader&)> AbstractOpReadFnctType;
-          typedef boost::function<void (const te::fe::AbstractOp*, te::xml::Writer&)> AbstractOpWriteFnctType;
+          typedef boost::function<void (const te::fe::AbstractOp*, te::xml::AbstractWriter&)> AbstractOpWriteFnctType;
           typedef std::pair<AbstractOpReadFnctType, AbstractOpWriteFnctType> AbstractOpFnctSerializeType;
           typedef std::map<std::string, AbstractOpFnctSerializeType> AbstractOpFnctIdxType;
 
@@ -66,7 +66,7 @@ namespace te
 
           te::fe::AbstractOp* read(te::xml::Reader& reader) const;
 
-          void write(const te::fe::AbstractOp* op, te::xml::Writer& writer) const;
+          void write(const te::fe::AbstractOp* op, te::xml::AbstractWriter& writer) const;
 
           ~AbstractOp();
 

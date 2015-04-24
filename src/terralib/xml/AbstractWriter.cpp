@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,40 +18,33 @@
  */
 
 /*!
-  \file MapLayerChoiceOutsideModel.h
-   
-  \brief 
+  \file terralib/xml/AbstractWriter.cpp
 
-  \ingroup layout
+  \brief This class models a XML writer object.
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_MAP_LAYER_CHOICE_OUTSIDE_MODEL_H 
-#define __TERRALIB_LAYOUT_INTERNAL_MAP_LAYER_CHOICE_OUTSIDE_MODEL_H
-
 // TerraLib
-#include "../core/pattern/mvc/OutsideModelObservable.h"
-#include "../core/ContextItem.h"
-#include "../core/property/Properties.h"
-#include "../core/Config.h"
+#include "AbstractWriter.h"
 
-namespace te
+// Boost
+#include <boost/lexical_cast.hpp>
+
+te::xml::AbstractWriter::AbstractWriter()
+  : m_uri(""),
+    m_rootNamespaceUri("")
 {
-  namespace layout
-  {
-    class TELAYOUTEXPORT MapLayerChoiceOutsideModel : public OutsideModelObservable
-    {
-    public:
-
-      MapLayerChoiceOutsideModel();
-
-      virtual ~MapLayerChoiceOutsideModel();
-
-      virtual void updateProperties(te::layout::Properties* properties);
-
-      virtual Properties* getProperties() const;
-
-    };
-  }
 }
 
-#endif
+te::xml::AbstractWriter::~AbstractWriter()
+{
+}
+
+void te::xml::AbstractWriter::setURI(const std::string& uri)
+{
+  m_uri = uri;
+}
+
+void te::xml::AbstractWriter::setRootNamespaceURI(const std::string& uri)
+{
+  m_rootNamespaceUri = uri;
+}

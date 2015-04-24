@@ -24,9 +24,9 @@
 */
 
 // TerraLib
+#include "../../../xml/AbstractWriter.h"
 #include "../../../xml/Reader.h"
 #include "../../../xml/ReaderFactory.h"
-#include "../../../xml/Writer.h"
 #include "../../Envelope.h"
 #include "../../Exception.h"
 #include "Serializer.h"
@@ -49,7 +49,7 @@ std::auto_ptr<te::gm::Envelope> te::serialize::xml::ReadExtent(te::xml::Reader& 
   return std::auto_ptr<te::gm::Envelope>(new te::gm::Envelope(llx, lly, urx, ury));
 }
 
-void te::serialize::xml::SaveExtent(const te::gm::Envelope& e, te::xml::Writer& writer)
+void te::serialize::xml::SaveExtent(const te::gm::Envelope& e, te::xml::AbstractWriter& writer)
 {
   writer.writeStartElement("te_map:Extent");
   writer.writeAttribute("llx", e.m_llx);

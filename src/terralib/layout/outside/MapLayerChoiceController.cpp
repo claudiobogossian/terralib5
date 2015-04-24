@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file ObjectInspectorPropertyBrowser.cpp
+  \file PageSetupController.h
    
   \brief 
 
@@ -26,20 +26,15 @@
 */
 
 // TerraLib
-#include "ObjectInspectorPropertyBrowser.h"
+#include "MapLayerChoiceController.h"
 
-te::layout::ObjectInspectorPropertyBrowser::ObjectInspectorPropertyBrowser(QObject* parent) :
-  PropertyBrowser(parent)
-{
-
-}
-
-te::layout::ObjectInspectorPropertyBrowser::~ObjectInspectorPropertyBrowser()
-{
- 
-}
-
-void te::layout::ObjectInspectorPropertyBrowser::onSetDlg(QWidget *parent, QtProperty * prop)
+te::layout::MapLayerChoiceController::MapLayerChoiceController( Observable* o ) :
+	OutsideController(o)
 {
   
+}
+
+te::layout::MapLayerChoiceController::~MapLayerChoiceController()
+{
+
 }

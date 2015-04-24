@@ -18,44 +18,34 @@
  */
 
 /*!
-  \file MapLayerChoiceOutsideControllerModel.cpp
+  \file MapLayerChoiceOutsideController.h
    
   \brief 
 
   \ingroup layout
 */
 
+#ifndef __TERRALIB_LAYOUT_INTERNAL_MAP_LAYER_CHOISE_CONTROLLER_H 
+#define __TERRALIB_LAYOUT_INTERNAL_MAP_LAYER_CHOISE_CONTROLLER_H
+
 // TerraLib
-#include "MapLayerChoiceOutsideModel.h"
+#include "../core/pattern/mvc/OutsideController.h"
 #include "../core/property/Property.h"
-#include "../core/property/Properties.h"
-#include "../core/enum/Enums.h"
+#include "../core/Config.h"
 
-te::layout::MapLayerChoiceOutsideModel::MapLayerChoiceOutsideModel() 
+namespace te
 {
-  m_type = Enums::getInstance().getEnumObjectType()->getMapLayerChoice();
-  m_box = te::gm::Envelope(0., 0., 200., 200.);
+  namespace layout
+  {
+    class TELAYOUTEXPORT MapLayerChoiceController : public OutsideController
+    {
+      public:
+
+	      MapLayerChoiceController( Observable* o );
+
+	      virtual ~MapLayerChoiceController();
+    };
+  }
 }
 
-te::layout::MapLayerChoiceOutsideModel::~MapLayerChoiceOutsideModel()
-{
-
-}
-
-te::layout::Properties* te::layout::MapLayerChoiceOutsideModel::getProperties() const
-{
-  m_properties->clear();
-
-  Property pro_name;
-  pro_name.setName("MapLayerChoice");
-
-  m_properties->addProperty(pro_name);
-
-  m_properties->setTypeObj(m_type);
-  return m_properties;
-}
-
-void te::layout::MapLayerChoiceOutsideModel::updateProperties( te::layout::Properties* properties )
-{
-
-}
+#endif
