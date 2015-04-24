@@ -41,7 +41,8 @@ te::layout::Property::Property() :
   m_label(""),
   m_menu(false),
   m_icon(""),
-  m_visible(true)
+  m_visible(true),
+  m_required(false)
 {
   m_type = Enums::getInstance().getEnumDataType()->getDataTypeNone();
 }
@@ -263,4 +264,14 @@ void te::layout::Property::setVisible( bool visible )
 bool te::layout::Property::isVisible()
 {
   return m_visible;
+}
+
+bool te::layout::Property::isRequired()
+{
+  return m_required;
+}
+
+void te::layout::Property::setRequired( bool required )
+{
+  m_required = required;
 }

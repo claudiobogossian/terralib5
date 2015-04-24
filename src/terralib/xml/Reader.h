@@ -288,6 +288,17 @@ namespace te
 
           \return The attribute value in the case of an element node with valid attributes.
 
+          \note Just call this method if you know that the attribute value can be converted to a 32-bit unsigned integer.
+        */
+        virtual boost::uint32_t getAttrAsUInt32(const std::string name) const;
+
+        /*!
+          \brief It returns the attribute value in the case of an element node with valid attributes.
+
+          \param name The attribute name.
+
+          \return The attribute value in the case of an element node with valid attributes.
+
           \note Just call this method if you know that the attribute value can be converted to a double.
         */
         virtual double getAttrAsDouble(const std::string& name) const;

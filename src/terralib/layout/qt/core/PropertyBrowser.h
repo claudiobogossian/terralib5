@@ -88,7 +88,7 @@ namespace te
 
         virtual EnumType* getLayoutType(QVariant::Type type, std::string name = "");
 
-        virtual QVariant::Type getVariantType(EnumType* dataType);
+        virtual int getVariantType(EnumType* dataType);
       
         virtual void setHasWindows(bool hasWindows = false);
 

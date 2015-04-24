@@ -99,6 +99,12 @@
 #include "../../item/GridGeodesicModel.h"
 #include "../../item/GridGeodesicController.h"
 #include "../item/GridGeodesicItem.h"
+#include "../../item/NorthModel.h"
+#include "../../item/NorthController.h"
+#include "../item/NorthItem.h"
+#include "../../item/MapLocationModel.h"
+#include "../../item/MapLocationController.h"
+#include "../item/MapLocationItem.h"
 
 // Qt
 #include <QGraphicsItem>
@@ -129,7 +135,9 @@ te::layout::BuildGraphicsItem::BuildGraphicsItem() :
   m_barCodeItem("BARCODE_"),
   m_gridMapItem("GRIDMAP_"),
   m_gridPlanarItem("GRID_PLANAR_"),
-  m_gridGeodesicItem("GRID_GEODESIC_")
+  m_gridGeodesicItem("GRID_GEODESIC_"),
+  m_northItem("NORTH_"),
+  m_mapLocationItem("MAP_LOCATION_")
 {
  
 }
@@ -273,6 +281,16 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createItem( te::layout::EnumType* 
     m_name = nameItem(m_gridGeodesicItem, enumObj->getGridGeodesicItem());
     item = createGridGeodesic();
   }
+  else if (mode == enumMode->getModeCreateNorth())
+  {
+    m_name = nameItem(m_northItem, enumObj->getNorthItem());
+    item = createNorth();
+  }
+  else if (mode == enumMode->getModeCreateMapLocation())
+  {
+    m_name = nameItem(m_mapLocationItem, enumObj->getMapLocationItem());
+    item = createMapLocation();
+  }
 
   return item;
 }
@@ -370,6 +388,14 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createItem( te::layout::EnumType* 
   else if(type == enumObj->getGridGeodesicItem())
   {
     item = createGridGeodesic();
+  }
+  else if(type == enumObj->getNorthItem())
+  {
+    item = createNorth();
+  }
+  else if(type == enumObj->getMapLocationItem())
+  {
+    item = createMapLocation();
   }
 
   return item;
@@ -1234,6 +1260,90 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createGridGeodesic()
   ItemObserver* itemObs = (ItemObserver*)controller->getView();
 
   GridGeodesicItem* view = dynamic_cast<GridGeodesicItem*>(itemObs); 
+  if(m_props)
+  {
+    view->updateProperties(m_props);
+  }
+
+  if(view)
+  {
+    view->setPos(QPointF(m_coord.x, m_coord.y));
+    if(m_props)
+    {
+      view->setZValue(m_zValue);
+    }
+    if(m_redraw)
+    {
+      itemObs->redraw();
+    }
+    return view;
+  }
+
+  return item;
+}
+
+QGraphicsItem* te::layout::BuildGraphicsItem::createNorth()
+{
+  QGraphicsItem* item = 0;
+
+  NorthModel* model = new NorthModel;
+  if(m_props)
+  {
+    model->updateProperties(m_props);
+  }
+  else
+  {
+    model->setId(m_id);
+    model->setName(m_name);
+  }
+
+  NorthController* controller = new NorthController(model);
+  ItemObserver* itemObs = (ItemObserver*)controller->getView();
+
+  NorthItem* view = dynamic_cast<NorthItem*>(itemObs);
+
+  if(m_props)
+  {
+    view->updateProperties(m_props);
+  }
+
+  if(view)
+  {
+    view->setPos(QPointF(m_coord.x, m_coord.y));
+    if(m_props)
+    {
+      view->setZValue(m_zValue);
+    }
+    if(m_redraw)
+    {
+      itemObs->redraw();
+    }
+    return view;
+  }
+
+  return item;
+}
+
+QGraphicsItem* te::layout::BuildGraphicsItem::createMapLocation()
+{
+  QGraphicsItem* item = 0;
+
+  MapLocationModel* model = new MapLocationModel;
+  if(m_props)
+  {
+    model->updateProperties(m_props);
+  }
+  else
+  {
+    model->setId(m_id);
+    model->setName(m_name);
+  }
+
+  MapLocationController* controller = new MapLocationController(model);
+  ItemObserver* itemObs = (ItemObserver*)controller->getView();
+
+  MapLocationItem* view = dynamic_cast<MapLocationItem*>(itemObs);
+
   if(m_props)
   {
     view->updateProperties(m_props);

@@ -14,7 +14,7 @@ void PrintTrajectoryDataSet(boost::ptr_vector<te::st::TrajectoryDataSet>& output
 {
   for(std::size_t i=0; i<output.size(); ++i)
   {
-	  std::cout << "Printing observations of the trajectory data set" << i << " :" << std::endl;
+    std::cout << "Printing observations of the trajectory data set" << i << " :" << std::endl;
     PrintTrajectoryDataSet(&output[i]);
   }
 }
@@ -47,7 +47,7 @@ void PrintTrajectoryDataSetInfo(boost::ptr_vector<te::st::TrajectoryDataSet>& ou
 {
   for(std::size_t i=0; i<output.size(); ++i)
   {
-	  std::cout << "Printing information about the trajectory data set " << i << " :" << std::endl;
+    std::cout << "Printing information about the trajectory data set " << i << " :" << std::endl;
     PrintTrajectoryDataSetInfo(&output[i]);
   }
 }

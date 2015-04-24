@@ -268,7 +268,7 @@ te::st::STDataLoaderFromDS::getDataSet(const TimeSeriesDataSetInfo& info,
  
  std::auto_ptr<te::da::DataSet> dset(ds->getDataSet(info.getObservationDataSetInfo().getDataSetName(), travType));
 
- return buildDataSet(dset.release(), info); 
+ return buildDataSet(dset.release(), info);
 }
 
 std::auto_ptr<te::st::TimeSeriesDataSet> 
@@ -371,7 +371,7 @@ std::auto_ptr<te::st::TimeSeriesDataSet>
 te::st::STDataLoaderFromDS::buildDataSet(te::da::DataSet* ds, const TimeSeriesDataSetInfo& info)
 {
   return std::auto_ptr<TimeSeriesDataSet> ( new TimeSeriesDataSet(ds, te::st::GetType(info.getObservationDataSetInfo()), 
-                                            info.getValuePropNames(), 0));
+                                            info.getValuePropNames()));
 }
 
 te::st::STDataLoaderFromDS::~STDataLoaderFromDS()

@@ -339,9 +339,9 @@ te::layout::EnumType* te::layout::PropertiesItemPropertyBrowser::getLayoutType( 
   return dataType;
 }
 
-QVariant::Type te::layout::PropertiesItemPropertyBrowser::getVariantType( te::layout::EnumType* dataType )
+int te::layout::PropertiesItemPropertyBrowser::getVariantType( te::layout::EnumType* dataType )
 {
-  QVariant::Type type = PropertyBrowser::getVariantType(dataType);
+  int type = PropertyBrowser::getVariantType(dataType);
 
   EnumDataType* dtType = Enums::getInstance().getEnumDataType();
 

@@ -42,8 +42,8 @@
 #include "../../../geometry/GeometryProperty.h"
 #include "../../../geometry/serialization/xml/Serializer.h"
 #include "../../../se/CoverageStyle.h"
+#include "../../../xml/AbstractWriter.h"
 #include "../../../xml/Reader.h"
-#include "../../../xml/Writer.h"
 #include "../../../maptools/AbstractLayer.h"
 #include "../../../maptools/Chart.h"
 #include "../../../maptools/DataSetAdapterLayer.h"
@@ -74,11 +74,11 @@ te::map::AbstractLayer* QueryLayerReader(te::xml::Reader& reader);
 te::map::AbstractLayer* FolderLayerReader(te::xml::Reader& reader);
 te::map::AbstractLayer* RasterLayerReader(te::xml::Reader& reader);
 te::map::AbstractLayer* DataSetAdapterLayerReader(te::xml::Reader& reader);
-void DataSetLayerWriter(const te::map::AbstractLayer* layer, te::xml::Writer& writer);
-void QueryLayerWriter(const te::map::AbstractLayer* layer, te::xml::Writer& writer);
-void FolderLayerWriter(const te::map::AbstractLayer* layer, te::xml::Writer& writer);
-void RasterLayerWriter(const te::map::AbstractLayer* layer, te::xml::Writer& writer);
-void DataSetAdapterLayerWriter(const te::map::AbstractLayer* layer, te::xml::Writer& writer);
+void DataSetLayerWriter(const te::map::AbstractLayer* layer, te::xml::AbstractWriter& writer);
+void QueryLayerWriter(const te::map::AbstractLayer* layer, te::xml::AbstractWriter& writer);
+void FolderLayerWriter(const te::map::AbstractLayer* layer, te::xml::AbstractWriter& writer);
+void RasterLayerWriter(const te::map::AbstractLayer* layer, te::xml::AbstractWriter& writer);
+void DataSetAdapterLayerWriter(const te::map::AbstractLayer* layer, te::xml::AbstractWriter& writer);
 
 te::dt::SimpleProperty* GetProperty(std::string name, int dataType, int geomType, int srid)
 {
@@ -155,7 +155,7 @@ te::map::AbstractLayer* te::map::serialize::Layer::read(te::xml::Reader& reader)
   return it->second.first(reader);
 }
 
-void te::map::serialize::Layer::write(const te::map::AbstractLayer* alayer, te::xml::Writer& writer) const
+void te::map::serialize::Layer::write(const te::map::AbstractLayer* alayer, te::xml::AbstractWriter& writer) const
 {
   assert(alayer);
 
@@ -184,7 +184,7 @@ te::map::serialize::Layer::Layer()
 
 te::map::AbstractLayer* DataSetLayerReader(te::xml::Reader& reader)
 {
-  std::string id = reader.getAttr(0);
+  std::string id = reader.getAttr("id");
 
   /* Title Element */
   reader.next();
@@ -302,7 +302,7 @@ te::map::AbstractLayer* DataSetLayerReader(te::xml::Reader& reader)
 
 te::map::AbstractLayer* QueryLayerReader(te::xml::Reader& reader)
 {
-  std::string id = reader.getAttr(0);
+  std::string id = reader.getAttr("id");
 
  /* Title Element */
   reader.next();
@@ -414,7 +414,7 @@ te::map::AbstractLayer* QueryLayerReader(te::xml::Reader& reader)
 
 te::map::AbstractLayer* FolderLayerReader(te::xml::Reader& reader)
 {
-  std::string id = reader.getAttr(0);
+  std::string id = reader.getAttr("id");
 
   /* Title Element */
   reader.next();
@@ -458,7 +458,7 @@ te::map::AbstractLayer* FolderLayerReader(te::xml::Reader& reader)
 
 te::map::AbstractLayer* RasterLayerReader(te::xml::Reader& reader)
 {
-  std::string id = reader.getAttr(0);
+  std::string id = reader.getAttr("id");
 
   /* Title Element */
   reader.next();
@@ -581,7 +581,7 @@ te::map::AbstractLayer* RasterLayerReader(te::xml::Reader& reader)
 
 te::map::AbstractLayer* DataSetAdapterLayerReader(te::xml::Reader& reader)
 {
-  std::string id = reader.getAttr(0);
+  std::string id = reader.getAttr("id");
 
   /* Title Element */
   reader.next();
@@ -895,7 +895,7 @@ te::map::AbstractLayer* DataSetAdapterLayerReader(te::xml::Reader& reader)
   return result;
 }
 
-void DataSetLayerWriter(const te::map::AbstractLayer* alayer, te::xml::Writer& writer)
+void DataSetLayerWriter(const te::map::AbstractLayer* alayer, te::xml::AbstractWriter& writer)
 {
   const te::map::DataSetLayer* layer = dynamic_cast<const te::map::DataSetLayer*>(alayer);
 
@@ -925,7 +925,7 @@ void DataSetLayerWriter(const te::map::AbstractLayer* alayer, te::xml::Writer& w
   writer.writeEndElement("te_map:DataSetLayer");
 }
 
-void QueryLayerWriter(const te::map::AbstractLayer* alayer, te::xml::Writer& writer)
+void QueryLayerWriter(const te::map::AbstractLayer* alayer, te::xml::AbstractWriter& writer)
 {
   const te::map::QueryLayer* layer = dynamic_cast<const te::map::QueryLayer*>(alayer);
 
@@ -955,7 +955,7 @@ void QueryLayerWriter(const te::map::AbstractLayer* alayer, te::xml::Writer& wri
   writer.writeEndElement("te_map:QueryLayer");
 }
 
-void FolderLayerWriter(const te::map::AbstractLayer* alayer, te::xml::Writer& writer)
+void FolderLayerWriter(const te::map::AbstractLayer* alayer, te::xml::AbstractWriter& writer)
 {
   const te::map::FolderLayer* folderLayer = static_cast<const te::map::FolderLayer*>(alayer);
 
@@ -977,7 +977,7 @@ void FolderLayerWriter(const te::map::AbstractLayer* alayer, te::xml::Writer& wr
   writer.writeEndElement("te_map:FolderLayer");
 }
 
-void RasterLayerWriter(const te::map::AbstractLayer* alayer, te::xml::Writer& writer)
+void RasterLayerWriter(const te::map::AbstractLayer* alayer, te::xml::AbstractWriter& writer)
 {
   const te::map::RasterLayer* layer = dynamic_cast<const te::map::RasterLayer*>(alayer);
 
@@ -1025,7 +1025,7 @@ void RasterLayerWriter(const te::map::AbstractLayer* alayer, te::xml::Writer& wr
   writer.writeEndElement("te_map:RasterLayer");
 }
 
-void DataSetAdapterLayerWriter(const te::map::AbstractLayer* alayer, te::xml::Writer& writer)
+void DataSetAdapterLayerWriter(const te::map::AbstractLayer* alayer, te::xml::AbstractWriter& writer)
 {
   const te::map::DataSetAdapterLayer* layer = dynamic_cast<const te::map::DataSetAdapterLayer*>(alayer);
 

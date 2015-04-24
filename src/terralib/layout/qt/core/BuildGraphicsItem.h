@@ -249,6 +249,20 @@ namespace te
         */
         QGraphicsItem* createGridGeodesic();
 
+        /*!
+          \brief Create graphic object of type GridMapItem
+		  		  
+		      \return new object 
+        */
+        QGraphicsItem* createNorth();
+
+        /*!
+          \brief Create graphic object of type GridMapItem
+		  		  
+		      \return new object 
+        */
+        QGraphicsItem* createMapLocation();
+
 		   /*!
           \brief Creates the name of the new graphic object. Adds the number that corresponds to how many objects of this type have already been created.
 
@@ -283,6 +297,8 @@ namespace te
         std::string             m_gridMapItem; //!< Part of the name that will be set to a new object of type GridMapItem.
         std::string             m_gridPlanarItem; //!< Part of the name that will be set to a new object of type GridPlanarItem.
         std::string             m_gridGeodesicItem; //!< Part of the name that will be set to a new object of type GridGeodesicItem.
+        std::string             m_northItem; //!< Part of the name that will be set to a new object of type NorthItem.
+        std::string             m_mapLocationItem; //!< Part of the name that will be set to a new object of type MapLocationItem.
     };
   }
 }

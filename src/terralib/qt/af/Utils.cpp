@@ -35,9 +35,10 @@
 #include "../../plugin/PluginManager.h"
 #include "../../plugin/PluginInfo.h"
 #include "../../maptools/serialization/xml/Layer.h"
+#include "../../xml/AbstractWriter.h"
+#include "../../xml/AbstractWriterFactory.h"
 #include "../../xml/Reader.h"
 #include "../../xml/ReaderFactory.h"
-#include "../../xml/Writer.h"
 #include "../../Version.h"
 #include "ApplicationController.h"
 #include "Exception.h"
@@ -180,6 +181,16 @@ te::qt::af::Project* te::qt::af::ReadProject(te::xml::Reader& reader)
 
 void te::qt::af::Save(const te::qt::af::Project& project, const std::string& uri)
 {
+
+  std::auto_ptr<te::xml::AbstractWriter> writer(te::xml::AbstractWriterFactory::make());
+
+  writer->setURI(uri);
+
+  Project p(project);
+
+  Save(p, *writer.get());
+
+  /* old way
   std::ofstream fout(uri.c_str(), std::ios_base::trunc);
 
   te::xml::Writer w(fout);
@@ -192,15 +203,15 @@ void te::qt::af::Save(const te::qt::af::Project& project, const std::string& uri
 
   XMLFormatter::format(&p, false);
 
-  fout.close();
+  fout.close();*/
 }
 
-void te::qt::af::Save(const te::qt::af::Project& project, te::xml::Writer& writer)
+void te::qt::af::Save(const te::qt::af::Project& project, te::xml::AbstractWriter& writer)
 {
   std::string schema_loc = te::common::FindInTerraLibPath("share/terralib/schemas/terralib/qt/af/project.xsd");
 
   writer.writeStartDocument("UTF-8", "no");
-
+  
   writer.writeStartElement("Project");
 
   boost::replace_all(schema_loc, " ", "%20");
@@ -289,6 +300,9 @@ void te::qt::af::Save(const te::qt::af::Project& project, te::xml::Writer& write
   writer.writeEndElement("te_map:LayerList");
 
   writer.writeEndElement("Project");
+
+  writer.writeToFile();
+
 }
 
 void te::qt::af::UpdateUserSettings(const QStringList& prjFiles, const QStringList& prjTitles, const std::string& userConfigFile)

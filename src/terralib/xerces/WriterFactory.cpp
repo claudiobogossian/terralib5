@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,34 +18,40 @@
  */
 
 /*!
-  \file NorthModel.cpp
-   
-  \brief 
+  \file WriterFactory.cpp
 
-  \ingroup layout
+  \brief This is the concrete factory for XML writer built on top of Xerces-C++ parser.
 */
 
 // TerraLib
-#include "NorthModel.h"
-#include "../core/ContextItem.h"
-#include "../../geometry/Envelope.h"
-#include "../../color/RGBAColor.h"
-#include "../../maptools/Canvas.h"
-#include "../core/enum/Enums.h"
+#include "Writer.h"
+#include "WriterFactory.h"
 
-te::layout::NorthModel::NorthModel() 
+te::xerces::WriterFactory* te::xerces::WriterFactory::sm_factory(0);
+
+te::xerces::WriterFactory::~WriterFactory()
 {
-  m_type = Enums::getInstance().getEnumObjectType()->getNorthItem();
-
-  m_borderColor = te::color::RGBAColor(0, 0, 0, 255);
-  m_box = te::gm::Envelope(0., 0., 20., 20.);
-
-  m_border = true;
 }
 
-te::layout::NorthModel::~NorthModel()
+te::xml::AbstractWriter* te::xerces::WriterFactory::build()
 {
-
+  return new Writer;
 }
 
+te::xerces::WriterFactory::WriterFactory()
+  : te::xml::AbstractWriterFactory(XERCES_DRIVER_IDENTIFIER)
+{
+}
+
+void te::xerces::WriterFactory::initialize()
+{
+  finalize();
+  sm_factory = new WriterFactory;
+}
+
+void te::xerces::WriterFactory::finalize()
+{
+  delete sm_factory;
+  sm_factory = 0;
+}
 

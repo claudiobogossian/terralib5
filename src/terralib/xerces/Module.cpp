@@ -30,6 +30,7 @@
 #include "Exception.h"
 #include "Module.h"
 #include "ReaderFactory.h"
+#include "WriterFactory.h"
 
 // Xerces-C++ 
 #include <xercesc/util/PlatformUtils.hpp>
@@ -69,7 +70,8 @@ void te::xerces::Module::startup()
   
     // it initializes the reader factory based on Xerces
   ReaderFactory::initialize();
-  
+  WriterFactory::initialize();
+
   TE_LOG_TRACE(TE_TR("TerraLib Xerces driver startup!"));
   
   m_initialized = true;
@@ -82,6 +84,7 @@ void te::xerces::Module::shutdown()
     
   // it finalizes  the reader factory based on Xerces
   ReaderFactory::finalize();
+  WriterFactory::finalize();
   
   try
   {

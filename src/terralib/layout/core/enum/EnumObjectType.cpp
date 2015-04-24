@@ -59,6 +59,8 @@ te::layout::EnumObjectType::EnumObjectType() :
   m_barCodeItem(0),
   m_gridMapItem(0),
   m_mapLayerChoice(0),
+  m_northItem(0),
+  m_mapLocationItem(0),
   m_objectUnknown(0)
 {
   init();
@@ -251,12 +253,7 @@ te::layout::EnumObjectType::~EnumObjectType()
     delete m_gridMapItem;
     m_gridMapItem = 0;
   }
-
-  if(m_mapLayerChoice)
-  {
-    delete m_mapLayerChoice;
-    m_mapLayerChoice = 0;
-  }
+  
 }
 
 void te::layout::EnumObjectType::init()
@@ -359,6 +356,12 @@ void te::layout::EnumObjectType::init()
 
   m_mapLayerChoice = new EnumType(37, "Map_Layout_Choice", this);
   m_enums.push_back(m_mapLayerChoice);
+
+  m_northItem = new EnumType(38, "North_Item", this);
+  m_enums.push_back(m_northItem);
+
+  m_mapLocationItem = new EnumType(39, "Map_Location_Item", this);
+  m_enums.push_back(m_mapLocationItem);
 }
 
 te::layout::EnumType* te::layout::EnumObjectType::getRectangleItem() const
@@ -526,6 +529,20 @@ te::layout::EnumType* te::layout::EnumObjectType::getMapLayerChoice() const
 {
   return m_mapLayerChoice;
 }
+
+te::layout::EnumType* te::layout::EnumObjectType::getNorthItem() const
+{
+  return m_northItem;
+}
+
+te::layout::EnumType* te::layout::EnumObjectType::getMapLocationItem() const
+{
+  return m_mapLocationItem;
+}
+
+
+
+
 
 
 

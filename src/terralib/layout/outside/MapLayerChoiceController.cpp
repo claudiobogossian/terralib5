@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file NorthModel.cpp
+  \file PageSetupController.h
    
   \brief 
 
@@ -26,26 +26,15 @@
 */
 
 // TerraLib
-#include "NorthModel.h"
-#include "../core/ContextItem.h"
-#include "../../geometry/Envelope.h"
-#include "../../color/RGBAColor.h"
-#include "../../maptools/Canvas.h"
-#include "../core/enum/Enums.h"
+#include "MapLayerChoiceController.h"
 
-te::layout::NorthModel::NorthModel() 
+te::layout::MapLayerChoiceController::MapLayerChoiceController( Observable* o ) :
+	OutsideController(o)
 {
-  m_type = Enums::getInstance().getEnumObjectType()->getNorthItem();
-
-  m_borderColor = te::color::RGBAColor(0, 0, 0, 255);
-  m_box = te::gm::Envelope(0., 0., 20., 20.);
-
-  m_border = true;
+  
 }
 
-te::layout::NorthModel::~NorthModel()
+te::layout::MapLayerChoiceController::~MapLayerChoiceController()
 {
 
 }
-
-

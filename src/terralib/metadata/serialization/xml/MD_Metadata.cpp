@@ -31,8 +31,8 @@
 #include "../../../metadata/iso19115/MD_Metadata.h"
 #include "../../../metadata/iso19115/MD_Distribution.h"
 #include "../../../srs/Config.h"
+#include "../../../xml/AbstractWriter.h"
 #include "../../../xml/Reader.h"
-#include "../../../xml/Writer.h"
 #include "MD_Metadata.h"
 
 // STL
@@ -43,7 +43,7 @@
 #include <boost/format.hpp>
 
 
-void te::md::Save(const te::md::MD_Metadata* md, te::xml::Writer& writer)
+void te::md::Save(const te::md::MD_Metadata* md, te::xml::AbstractWriter& writer)
 {
   writer.writeStartDocument("UTF-8", "no");
   writer.writeStartElement("gmd:MD_Metadata");
@@ -287,7 +287,7 @@ void te::md::Save(const te::md::MD_Metadata* md, te::xml::Writer& writer)
   writer.writeEndElement("gmd:MD_Metadata");
 }
 
-void te::md::Save(const te::md::CI_ResponsibleParty& ctc, te::xml::Writer& writer)
+void te::md::Save(const te::md::CI_ResponsibleParty& ctc, te::xml::AbstractWriter& writer)
 {
   writer.writeStartElement("gmd:CI_ResponsibleParty");
 
@@ -335,7 +335,7 @@ void te::md::Save(const te::md::CI_ResponsibleParty& ctc, te::xml::Writer& write
   writer.writeEndElement("gmd:CI_ResponsibleParty");
 }
 
-void te::md::Save(const te::md::MD_Identification& id, te::xml::Writer& writer)
+void te::md::Save(const te::md::MD_Identification& id, te::xml::AbstractWriter& writer)
 {  
   // assuming that it is a data identification
   writer.writeStartElement("gmd:MD_DataIdentification");
@@ -514,7 +514,7 @@ void te::md::Save(const te::md::MD_Identification& id, te::xml::Writer& writer)
   writer.writeEndElement("gmd:MD_DataIdentification");
 }
 
-void te::md::Save(const te::md::CI_Citation* cite, te::xml::Writer& writer)
+void te::md::Save(const te::md::CI_Citation* cite, te::xml::AbstractWriter& writer)
 {
   writer.writeStartElement("gmd:citation");
   writer.writeStartElement("gmd:CI_Citation");
