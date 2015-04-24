@@ -94,7 +94,7 @@ namespace te
 
           \return name
         */
-        virtual std::string nameItem(std::string name, te::layout::EnumType* type) = 0;
+        virtual std::string nameItem(te::layout::EnumType* type) = 0;
 
 		    /*!
           \brief Clear all configuration for create or build a graphic object. 
@@ -109,7 +109,6 @@ namespace te
         int                     m_zValue; //!< Z Value of a graphic object.
         int                     m_id; //!< Id of a graphic object.
         bool                    m_redraw; //!< Information about the graphic object created or built has to be redrawing.
-        std::string             m_name; //!< graphic object name.
     };
   }
 }

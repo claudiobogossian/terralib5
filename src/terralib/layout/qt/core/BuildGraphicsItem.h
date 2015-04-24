@@ -271,36 +271,11 @@ namespace te
 
           \return name
         */
-        std::string nameItem(std::string name, te::layout::EnumType* type);
-        
-      protected:
-
-        std::string             m_paperItem; //!< Part of the name that will be set to a new object of type PaperItem.
-        std::string             m_mapItem; //!< Part of the name that will be set to a new object of type MapItem. 
-        std::string             m_textItem; //!< Part of the name that will be set to a new object of type TextItem.
-        std::string             m_rectangleItem; //!< Part of the name that will be set to a new object of type RectangleItem.
-        std::string             m_legendItem; //!< Part of the name that will be set to a new object of type LegendItem.
-        std::string             m_scaleItem; //!< Part of the name that will be set to a new object of type ScaleItem.
-        std::string             m_groupItem; //!< Part of the name that will be set to a new object of type ItemGroup.
-        std::string             m_movingGroupItem; //!< Part of the name that will be set to a new object of type MovingItemGroup.
-        std::string             m_imageItem; //!< Part of the name that will be set to a new object of type ImageItem.
-        std::string             m_arrowItem; //!< Part of the name that will be set to a new object of type ArrowItem.
-        std::string             m_ellipseItem; //!< Part of the name that will be set to a new object of type EllipseItem.
-        std::string             m_pointItem; //!< Part of the name that will be set to a new object of type PointItem.
-        std::string             m_textGridItem; //!< Part of the name that will be set to a new object of type TextGridItem.
-        std::string             m_titleItem; //!< Part of the name that will be set to a new object of type TitleItem.
-        std::string             m_legendChildItem; //!< Part of the name that will be set to a new object of type LegendChildItem.
-        std::string				      m_lineItem; //!< Part of the name that will be set to a new object of type LineItem.
-        std::string             m_polygonItem; //!< Part of the name that will be set to a new object of type PolygonItem.
-        std::string             m_balloonItem; //!< Part of the name that will be set to a new object of type BalloonItem.
-        std::string             m_barCodeItem; //!< Part of the name that will be set to a new object of type BarCode.
-        std::string             m_gridMapItem; //!< Part of the name that will be set to a new object of type GridMapItem.
-        std::string             m_gridPlanarItem; //!< Part of the name that will be set to a new object of type GridPlanarItem.
-        std::string             m_gridGeodesicItem; //!< Part of the name that will be set to a new object of type GridGeodesicItem.
-        std::string             m_northItem; //!< Part of the name that will be set to a new object of type NorthItem.
-        std::string             m_mapLocationItem; //!< Part of the name that will be set to a new object of type MapLocationItem.
+        std::string nameItem(te::layout::EnumType* type);
     };
   }
 }
 
 #endif
+
+
