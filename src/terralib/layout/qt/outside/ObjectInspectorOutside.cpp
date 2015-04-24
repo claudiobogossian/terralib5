@@ -36,13 +36,16 @@
 #include "../../core/pattern/mvc/OutsideController.h"
 #include "../../../geometry/Envelope.h"
 #include "../../core/enum/Enums.h"
+#include "../core/propertybrowser/VariantPropertiesBrowser.h"
+#include "../core/propertybrowser/DialogPropertiesBrowser.h"
+#include "../item/MovingItemGroup.h"
 
 //Qt
 #include <QGraphicsWidget>
 #include <QVBoxLayout>
 #include <QGroupBox>
 
-te::layout::ObjectInspectorOutside::ObjectInspectorOutside( OutsideController* controller, Observable* o, ObjectInspectorPropertyBrowser* propertyBrowser ) :
+te::layout::ObjectInspectorOutside::ObjectInspectorOutside( OutsideController* controller, Observable* o, PropertyBrowser* propertyBrowser ) :
   QWidget(0),
   OutsideObserver(controller, o)
 {
@@ -53,7 +56,7 @@ te::layout::ObjectInspectorOutside::ObjectInspectorOutside( OutsideController* c
   setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
   
   if(!propertyBrowser)
-    m_layoutPropertyBrowser = new ObjectInspectorPropertyBrowser;
+    m_layoutPropertyBrowser = new PropertyBrowser;
   else
     m_layoutPropertyBrowser = propertyBrowser;
 
@@ -110,6 +113,11 @@ te::gm::Coord2D te::layout::ObjectInspectorOutside::getPosition()
 
 void te::layout::ObjectInspectorOutside::itemsInspector(QList<QGraphicsItem*> graphicsItems)
 {
+  if(hasMoveItemGroup(graphicsItems))
+  {
+    return;
+  }
+
   m_layoutPropertyBrowser->clearAll();
 
   m_graphicsItems = graphicsItems;
@@ -133,10 +141,11 @@ void te::layout::ObjectInspectorOutside::itemsInspector(QList<QGraphicsItem*> gr
           continue;
         }
 
-        QGraphicsObject* itemObj = dynamic_cast<QGraphicsObject*>(item);         
-
-        if(!itemObj)
-          break;
+        // No add MoveItemGroup, because is alive just for mouse move
+        if(lItem->getModel()->getType() == enumObj->getMovingItemGroup())
+        {
+          continue;
+        }
 
         Property pro_class;
         pro_class.setName(lItem->getName());
@@ -158,7 +167,13 @@ void te::layout::ObjectInspectorOutside::onRemoveProperties( std::vector<std::st
 
   for(it = names.begin() ; it != names.end() ; ++it)
   {
-    Property prop = m_layoutPropertyBrowser->getProperty(*it);
+    Property prop = m_layoutPropertyBrowser->getVariantPropertiesBrowser()->getProperty(*it);
+
+    if(prop.isNull())
+    {
+      prop = m_layoutPropertyBrowser->getDialogPropertiesBrowser()->getProperty(*it);
+    }
+
     m_layoutPropertyBrowser->removeProperty(prop);
   }
 }
@@ -178,7 +193,39 @@ void te::layout::ObjectInspectorOutside::selectItems( QList<QGraphicsItem*> grap
   }
 }
 
-te::layout::ObjectInspectorPropertyBrowser* te::layout::ObjectInspectorOutside::getObjectInspector()
+te::layout::PropertyBrowser* te::layout::ObjectInspectorOutside::getObjectInspector()
 {
   return m_layoutPropertyBrowser;
 }
+
+bool te::layout::ObjectInspectorOutside::hasMoveItemGroup( QList<QGraphicsItem*> graphicsItems )
+{
+  bool result = false;
+
+  EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
+
+  if(!enumObj)
+  {
+    return result;
+  }
+
+  foreach( QGraphicsItem *item, graphicsItems) 
+  {
+    if (item)
+    {
+      ItemObserver* movingItem = dynamic_cast<ItemObserver*>(item);
+
+      if(movingItem->getModel()->getType() == enumObj->getMovingItemGroup())
+      {
+        result = true;
+        break;
+      }
+    }
+  }
+
+  return result;
+}
+
+
+
+

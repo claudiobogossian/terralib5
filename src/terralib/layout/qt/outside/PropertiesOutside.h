@@ -49,17 +49,17 @@ class QtBrowserIndex;
 class QLabel;
 class QLineEdit;
 class QToolButton;
-class PropertyBrowser;
 
 namespace te
 {
   namespace layout
   {
-    class PropertiesItemPropertyBrowser;
+    class PropertyBrowser;
     class Properties;
     class SharedProperties;
     class MapItem;
     class MapModel;
+    class PropertiesUtils;
 
     /*!
     \brief Properties tree for any item, MVC component, using Qt for presentation and editing.
@@ -74,7 +74,7 @@ namespace te
 
       public:
 
-	      PropertiesOutside(OutsideController* controller, Observable* o, PropertiesItemPropertyBrowser* propertyBrowser = 0);
+	      PropertiesOutside(OutsideController* controller, Observable* o, PropertyBrowser* propertyBrowser = 0);
 
 	      virtual ~PropertiesOutside();
 
@@ -102,28 +102,13 @@ namespace te
 
         virtual void createLayout();
 
-        virtual Properties* intersection(QList<QGraphicsItem*> graphicsItems, bool& window);
-
-        virtual Properties* sameProperties(QList<QGraphicsItem*> graphicsItems, bool& window);
-
-        virtual void contains(std::vector<Properties*>::iterator itend, 
-          std::vector<Properties*>::iterator it, std::string name, bool& result);
-
-        virtual std::vector<Properties*> getAllProperties(QList<QGraphicsItem*> graphicsItems, bool& window);
-
-        virtual void addDynamicOptions(Property& property, std::vector<std::string> list);
-
-        virtual void checkDynamicProperty(Property& property, QList<QGraphicsItem*> graphicsItems);
-
-        virtual void mapNameDynamicProperty(Property& property, QList<QGraphicsItem*> graphicsItems);
-
         virtual void changeMapVisitable(Property property);
 
         virtual MapModel* getMapModel(std::string nameMap);
 
       protected:
 
-        PropertiesItemPropertyBrowser* m_layoutPropertyBrowser;
+        PropertyBrowser* m_layoutPropertyBrowser;
       
         QList<QGraphicsItem*> m_graphicsItems;
         QList<QGraphicsItem*> m_allItems;
@@ -132,6 +117,7 @@ namespace te
         QToolButton* m_configurePropertyEditor;
         bool m_updatingValues;
         SharedProperties* m_sharedProps;
+        PropertiesUtils*      m_propUtils;
       };
   }
 }

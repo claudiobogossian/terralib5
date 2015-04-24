@@ -268,7 +268,7 @@ void te::layout::ItemGroup::applyRotation()
   setTransform(QTransform().translate(centerX, centerY).rotate(angle).translate(-centerX, -centerY));
 }
 
-te::color::RGBAColor** te::layout::ItemGroup::getRGBAColorImage()
+te::color::RGBAColor** te::layout::ItemGroup::getRGBAColorImage(int &w, int &h)
 {
   QImage img = m_pixmap.toImage();
   te::color::RGBAColor** teImg = te::qt::widgets::GetImage(&img);

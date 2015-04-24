@@ -32,7 +32,7 @@
 #include "../../core/pattern/mvc/OutsideObserver.h"
 #include "../../../geometry/Envelope.h"
 #include "../../core/Config.h"
-#include "../core/ObjectInspectorPropertyBrowser.h"
+#include "../core/propertybrowser/PropertyBrowser.h"
 
 // STL
 #include <string>
@@ -59,7 +59,7 @@ namespace te
 
     public:
 
-	    ObjectInspectorOutside(OutsideController* controller, Observable* o, ObjectInspectorPropertyBrowser* propertyBrowser = 0);
+	    ObjectInspectorOutside(OutsideController* controller, Observable* o, PropertyBrowser* propertyBrowser = 0);
 	    
       virtual ~ObjectInspectorOutside();
 
@@ -73,15 +73,17 @@ namespace te
 
       virtual void selectItems(QList<QGraphicsItem*> graphicsItems);
 
-      virtual ObjectInspectorPropertyBrowser* getObjectInspector();
+      virtual PropertyBrowser* getObjectInspector();
             
     protected slots:
       
       virtual void onRemoveProperties(std::vector<std::string> names);
 
+      virtual bool hasMoveItemGroup(QList<QGraphicsItem*> graphicsItems);
+
     protected:
 
-      ObjectInspectorPropertyBrowser* m_layoutPropertyBrowser;
+      PropertyBrowser* m_layoutPropertyBrowser;
       QList<QGraphicsItem*> m_graphicsItems;
     };
   }
