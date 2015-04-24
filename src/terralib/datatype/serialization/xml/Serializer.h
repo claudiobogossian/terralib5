@@ -40,8 +40,8 @@ namespace te
 {
   namespace xml
   {
+    class AbstractWriter;
     class Reader;
-    class Writer;
   }
 
   namespace dt
@@ -55,7 +55,7 @@ namespace te
     {
       TEDATATYPEEXPORT std::auto_ptr<te::dt::Property> ReadProperty(te::xml::Reader& reader);
 
-      TEDATATYPEEXPORT void Save(const te::dt::Property& p, te::xml::Writer& writer);
+      TEDATATYPEEXPORT void Save(const te::dt::Property& p, te::xml::AbstractWriter& writer);
 
     } // end namespace xml
   }   // end namespace serialize

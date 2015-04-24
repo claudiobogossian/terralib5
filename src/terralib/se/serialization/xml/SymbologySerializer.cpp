@@ -27,8 +27,8 @@
 #include "../../../fe/serialization/xml/Filter.h"
 #include "../../../fe/serialization/xml/Expression.h"
 #include "../../../xlink/serialization/xml/XLinkSerializer.h"
+#include "../../../xml/AbstractWriter.h"
 #include "../../../xml/Reader.h"
-#include "../../../xml/Writer.h"
 #include "../../AnchorPoint.h"
 #include "../../Categorize.h"
 #include "../../ChannelSelection.h"
@@ -91,7 +91,7 @@ te::se::AnchorPoint* te::se::serialize::ReadAnchorPoint(te::xml::Reader& reader)
   return ap.release();
 }
 
-void te::se::serialize::Save(const te::se::AnchorPoint* ap, te::xml::Writer& writer)
+void te::se::serialize::Save(const te::se::AnchorPoint* ap, te::xml::AbstractWriter& writer)
 {
   if(ap == 0)
     return;
@@ -153,7 +153,7 @@ te::se::Categorize* te::se::serialize::ReadCategorize(te::xml::Reader& reader)
   return c.release();
 }
 
-void te::se::serialize::Save(const te::se::Categorize* c, te::xml::Writer& writer)
+void te::se::serialize::Save(const te::se::Categorize* c, te::xml::AbstractWriter& writer)
 {
   if(c == 0)
     return;
@@ -255,7 +255,7 @@ te::se::ChannelSelection* te::se::serialize::ReadChannelSelection(te::xml::Reade
   return cs.release();
 }
 
-void te::se::serialize::Save(const te::se::ChannelSelection* cs, te::xml::Writer& writer)
+void te::se::serialize::Save(const te::se::ChannelSelection* cs, te::xml::AbstractWriter& writer)
 {
   if(cs == 0)
     return;
@@ -308,7 +308,7 @@ te::se::ColorMap* te::se::serialize::ReadColorMap(te::xml::Reader& reader)
   return cm.release();
 }
 
-void te::se::serialize::Save(const te::se::ColorMap* cm, te::xml::Writer& writer)
+void te::se::serialize::Save(const te::se::ColorMap* cm, te::xml::AbstractWriter& writer)
 {
   if(cm == 0)
     return;
@@ -365,7 +365,7 @@ te::se::ContrastEnhancement* te::se::serialize::ReadContrastEnhancement(te::xml:
   return ce.release();
 }
 
-void te::se::serialize::Save(const te::se::ContrastEnhancement* ce, te::xml::Writer& writer)
+void te::se::serialize::Save(const te::se::ContrastEnhancement* ce, te::xml::AbstractWriter& writer)
 {
   if(ce == 0)
     return;
@@ -432,7 +432,7 @@ te::se::Description* te::se::serialize::ReadDescription(te::xml::Reader& reader)
   return description.release();
 }
 
-void te::se::serialize::Save(const te::se::Description* d, te::xml::Writer& writer)
+void te::se::serialize::Save(const te::se::Description* d, te::xml::AbstractWriter& writer)
 {
   if(d == 0)
     return;
@@ -471,7 +471,7 @@ te::se::Displacement* te::se::serialize::ReadDisplacement(te::xml::Reader& reade
   return d.release();
 }
 
-void te::se::serialize::Save(const te::se::Displacement* d, te::xml::Writer& writer)
+void te::se::serialize::Save(const te::se::Displacement* d, te::xml::AbstractWriter& writer)
 {
   if(d == 0)
     return;
@@ -521,7 +521,7 @@ te::se::ExternalGraphic* te::se::serialize::ReadExternalGraphic(te::xml::Reader&
   return eg.release();
 }
 
-void te::se::serialize::Save(const te::se::ExternalGraphic* eg, te::xml::Writer& writer)
+void te::se::serialize::Save(const te::se::ExternalGraphic* eg, te::xml::AbstractWriter& writer)
 {
   if(eg == 0)
     return;
@@ -575,7 +575,7 @@ te::se::Fill* te::se::serialize::ReadFill(te::xml::Reader& reader)
   return fill.release();
 }
 
-void te::se::serialize::Save(const te::se::Fill* fill, te::xml::Writer& writer)
+void te::se::serialize::Save(const te::se::Fill* fill, te::xml::AbstractWriter& writer)
 {
   if(fill == 0)
     return;
@@ -618,7 +618,7 @@ te::se::Font* te::se::serialize::ReadFont(te::xml::Reader& reader)
   return font.release();
 }
 
-void te::se::serialize::Save(const te::se::Font* font, te::xml::Writer& writer)
+void te::se::serialize::Save(const te::se::Font* font, te::xml::AbstractWriter& writer)
 {
   if(font == 0)
     return;
@@ -682,7 +682,7 @@ te::se::Graphic* te::se::serialize::ReadGraphic(te::xml::Reader& reader)
   return graphic.release();
 }
 
-void te::se::serialize::Save(const te::se::Graphic* graphic, te::xml::Writer& writer)
+void te::se::serialize::Save(const te::se::Graphic* graphic, te::xml::AbstractWriter& writer)
 {
   if(graphic == 0)
     return;
@@ -739,7 +739,7 @@ te::se::GraphicStroke* te::se::serialize::ReadGraphicStroke(te::xml::Reader& rea
   return graphicStroke.release();
 }
 
-void te::se::serialize::Save(const te::se::GraphicStroke* graphicStroke, te::xml::Writer& writer)
+void te::se::serialize::Save(const te::se::GraphicStroke* graphicStroke, te::xml::AbstractWriter& writer)
 {
   if(graphicStroke == 0)
     return;
@@ -782,7 +782,7 @@ te::se::Halo* te::se::serialize::ReadHalo(te::xml::Reader& reader)
   return halo.release();
 }
 
-void te::se::serialize::Save(const te::se::Halo* halo, te::xml::Writer& writer)
+void te::se::serialize::Save(const te::se::Halo* halo, te::xml::AbstractWriter& writer)
 {
   if(halo == 0)
     return;
@@ -811,7 +811,7 @@ te::se::ImageOutline* te::se::serialize::ReadImageOutline(te::xml::Reader& reade
   return imageOutline.release();
 }
 
-void te::se::serialize::Save(const te::se::ImageOutline* imageOutline, te::xml::Writer& writer)
+void te::se::serialize::Save(const te::se::ImageOutline* imageOutline, te::xml::AbstractWriter& writer)
 {
   if(imageOutline == 0)
     return;
@@ -848,7 +848,7 @@ te::se::InlineContent* te::se::serialize::ReadInlineContent(te::xml::Reader& rea
   return ic.release();
 }
 
-void te::se::serialize::Save(const te::se::InlineContent* ic, te::xml::Writer& writer)
+void te::se::serialize::Save(const te::se::InlineContent* ic, te::xml::AbstractWriter& writer)
 {
   if(ic == 0)
     return;
@@ -909,7 +909,7 @@ te::se::Interpolate* te::se::serialize::ReadInterpolate(te::xml::Reader& reader)
   return interpolate.release();
 }
 
-void te::se::serialize::Save(const te::se::Interpolate* interpolate, te::xml::Writer& writer)
+void te::se::serialize::Save(const te::se::Interpolate* interpolate, te::xml::AbstractWriter& writer)
 {
   if(interpolate == 0)
     return;
@@ -983,7 +983,7 @@ te::se::InterpolationPoint* te::se::serialize::ReadInterpolationPoint(te::xml::R
   return ip.release();
 }
 
-void te::se::serialize::Save(const te::se::InterpolationPoint* ip, te::xml::Writer& writer)
+void te::se::serialize::Save(const te::se::InterpolationPoint* ip, te::xml::AbstractWriter& writer)
 {
   if(ip == 0)
     return;
@@ -1017,7 +1017,7 @@ te::se::LabelPlacement* te::se::serialize::ReadLabelPlacement(te::xml::Reader& r
   return lp.release();
 }
 
-void te::se::serialize::Save(const te::se::LabelPlacement* lp, te::xml::Writer& writer)
+void te::se::serialize::Save(const te::se::LabelPlacement* lp, te::xml::AbstractWriter& writer)
 {
   if(lp == 0)
     return;
@@ -1103,7 +1103,7 @@ te::se::LinePlacement* te::se::serialize::ReadLinePlacement(te::xml::Reader& rea
   return lp.release();
 }
 
-void te::se::serialize::Save(const te::se::LinePlacement* lp, te::xml::Writer& writer)
+void te::se::serialize::Save(const te::se::LinePlacement* lp, te::xml::AbstractWriter& writer)
 {
   if(lp == 0)
     return;
@@ -1169,7 +1169,7 @@ te::se::Mark* te::se::serialize::ReadMark(te::xml::Reader& reader)
   return mark.release();
 }
 
-void te::se::serialize::Save(const te::se::Mark* mark, te::xml::Writer& writer)
+void te::se::serialize::Save(const te::se::Mark* mark, te::xml::AbstractWriter& writer)
 {
   if(mark == 0)
     return;
@@ -1231,7 +1231,7 @@ te::se::RasterSymbolizer::OverlapBehavior te::se::serialize::ReadOverlapBehavior
   return te::se::RasterSymbolizer::NO_BEHAVIOR;
 }
 
-void te::se::serialize::Save(const te::se::RasterSymbolizer::OverlapBehavior& type, te::xml::Writer& writer)
+void te::se::serialize::Save(const te::se::RasterSymbolizer::OverlapBehavior& type, te::xml::AbstractWriter& writer)
 {
   switch(type)
   {
@@ -1274,7 +1274,7 @@ te::se::ParameterValue* te::se::serialize::ReadParameterValue(te::xml::Reader& r
   return param.release();
 }
 
-void te::se::serialize::Save(const te::se::ParameterValue* p, te::xml::Writer& writer)
+void te::se::serialize::Save(const te::se::ParameterValue* p, te::xml::AbstractWriter& writer)
 {
   if(p == 0)
     return;
@@ -1322,7 +1322,7 @@ te::se::PointPlacement* te::se::serialize::ReadPointPlacement(te::xml::Reader& r
   return pp.release();
 }
 
-void te::se::serialize::Save(const te::se::PointPlacement* pp, te::xml::Writer& writer)
+void te::se::serialize::Save(const te::se::PointPlacement* pp, te::xml::AbstractWriter& writer)
 {
   if(pp == 0)
     return;
@@ -1419,7 +1419,7 @@ te::se::Rule* te::se::serialize::ReadRule(te::xml::Reader& reader)
   return rule.release();
 }
 
-void te::se::serialize::Save(const te::se::Rule* rule, te::xml::Writer& writer)
+void te::se::serialize::Save(const te::se::Rule* rule, te::xml::AbstractWriter& writer)
 {
   if(rule == 0)
     return;
@@ -1487,7 +1487,7 @@ te::se::SelectedChannel* te::se::serialize::ReadSelectedChannel(te::xml::Reader&
   return sc.release();
 }
 
-void te::se::serialize::Save(const te::se::SelectedChannel* sc, te::xml::Writer& writer)
+void te::se::serialize::Save(const te::se::SelectedChannel* sc, te::xml::AbstractWriter& writer)
 {
   if(sc == 0)
     return;
@@ -1529,7 +1529,7 @@ te::se::ShadedRelief* te::se::serialize::ReadShadedRelief(te::xml::Reader& reade
   return sr.release();
 }
 
-void te::se::serialize::Save(const te::se::ShadedRelief* sr, te::xml::Writer& writer)
+void te::se::serialize::Save(const te::se::ShadedRelief* sr, te::xml::AbstractWriter& writer)
 {
   if(sr == 0)
     return;
@@ -1578,7 +1578,7 @@ te::se::Stroke* te::se::serialize::ReadStroke(te::xml::Reader& reader)
   return stroke.release();
 }
 
-void te::se::serialize::Save(const te::se::Stroke* stroke, te::xml::Writer& writer)
+void te::se::serialize::Save(const te::se::Stroke* stroke, te::xml::AbstractWriter& writer)
 {
   if(stroke == 0)
     return;
@@ -1639,7 +1639,7 @@ te::se::SvgParameter* te::se::serialize::ReadSvgParameter(te::xml::Reader& reade
   return svgParam.release();
 }
 
-void te::se::serialize::Save(const te::se::SvgParameter* p, te::xml::Writer& writer)
+void te::se::serialize::Save(const te::se::SvgParameter* p, te::xml::AbstractWriter& writer)
 {
   if(p == 0)
     return;

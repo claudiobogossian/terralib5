@@ -35,8 +35,8 @@ namespace te
 
   namespace xml
   {
+    class AbstractWriter;
     class Reader;
-    class Writer;
   }
 
   namespace fe
@@ -47,7 +47,7 @@ namespace te
     {
       TEFEEXPORT te::fe::Filter* ReadFilter(te::xml::Reader& reader);
 
-      TEFEEXPORT void Save(const te::fe::Filter* filter, te::xml::Writer& writer);
+      TEFEEXPORT void Save(const te::fe::Filter* filter, te::xml::AbstractWriter& writer);
 
     } // end namespace serialize
   }   // end namespace fe

@@ -47,8 +47,8 @@ namespace te
 // Forward declaration
   namespace xml
   {
+    class AbstractWriter;
     class Reader;
-    class Writer;
   }
 
   namespace qt
@@ -91,7 +91,7 @@ namespace te
 
         \param writer The XML writer to be used.
       */
-      TEQTAFEXPORT void Save(const Project& project, te::xml::Writer& writer);
+      TEQTAFEXPORT void Save(const Project& project, te::xml::AbstractWriter& writer);
 
       /*!
         \brief Updates user settings file section about information of the projects.

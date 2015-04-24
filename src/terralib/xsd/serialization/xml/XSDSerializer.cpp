@@ -25,9 +25,9 @@
 
 // TerraLib
 #include "../../../common/StringUtils.h"
+#include "../../../xml/AbstractWriter.h"
 #include "../../../xml/Reader.h"
 #include "../../../xml/ReaderFactory.h"
-#include "../../../xml/Writer.h"
 #include "../../All.h"
 #include "../../Annotated.h"
 #include "../../Annotation.h"
@@ -104,7 +104,7 @@ te::xsd::All* te::xsd::serialize::ReadAll(te::xml::Reader& reader)
   return all.release();
 }
 
-void te::xsd::serialize::Save(All* all, te::xml::Writer& writer)
+void te::xsd::serialize::Save(All* all, te::xml::AbstractWriter& writer)
 {
 }
 
@@ -187,7 +187,7 @@ te::xsd::Annotation* te::xsd::serialize::ReadAnnotation(te::xml::Reader& reader)
   return annotation.release();
 }
 
-void te::xsd::serialize::Save(Annotation* annotation, te::xml::Writer& writer)
+void te::xsd::serialize::Save(Annotation* annotation, te::xml::AbstractWriter& writer)
 {
 }
 
@@ -234,7 +234,7 @@ te::xsd::Any* te::xsd::serialize::ReadAny(te::xml::Reader& reader)
   return any.release();
 }
 
-void te::xsd::serialize::Save(Any* any, te::xml::Writer& writer)
+void te::xsd::serialize::Save(Any* any, te::xml::AbstractWriter& writer)
 {
 }
 
@@ -276,7 +276,7 @@ te::xsd::AnyAttribute* te::xsd::serialize::ReadAnyAttribute(te::xml::Reader& rea
   return anyAttribute.release();
 }
 
-void te::xsd::serialize::Save(AnyAttribute* anyAttribute, te::xml::Writer& writer)
+void te::xsd::serialize::Save(AnyAttribute* anyAttribute, te::xml::AbstractWriter& writer)
 {
 }
 
@@ -347,7 +347,7 @@ te::xsd::Attribute* te::xsd::serialize::ReadAttribute(te::xml::Reader& reader)
   return attribute.release();
 }
 
-void te::xsd::serialize::Save(Attribute* attribute, te::xml::Writer& writer)
+void te::xsd::serialize::Save(Attribute* attribute, te::xml::AbstractWriter& writer)
 {
 }
 
@@ -406,7 +406,7 @@ te::xsd::AttributeGroup* te::xsd::serialize::ReadAttributeGroup(te::xml::Reader&
   return attributeGroup.release();
 }
 
-void te::xsd::serialize::Save(AttributeGroup* attributeGroup, te::xml::Writer& writer)
+void te::xsd::serialize::Save(AttributeGroup* attributeGroup, te::xml::AbstractWriter& writer)
 {
 }
 
@@ -476,7 +476,7 @@ te::xsd::Choice* te::xsd::serialize::ReadChoice(te::xml::Reader& reader)
   return choice.release();
 }
 
-void te::xsd::serialize::Save(Choice* choice, te::xml::Writer& writer)
+void te::xsd::serialize::Save(Choice* choice, te::xml::AbstractWriter& writer)
 {
 }
 
@@ -518,7 +518,7 @@ te::xsd::ComplexContent* te::xsd::serialize::ReadComplexContent(te::xml::Reader&
   return cc.release();
 }
 
-void te::xsd::serialize::Save(ComplexContent* cc, te::xml::Writer& writer)
+void te::xsd::serialize::Save(ComplexContent* cc, te::xml::AbstractWriter& writer)
 {
 }
 
@@ -631,7 +631,7 @@ te::xsd::ComplexType* te::xsd::serialize::ReadComplexType(te::xml::Reader& reade
   return ct.release();
 }
 
-void te::xsd::serialize::Save(ComplexType* ct, te::xml::Writer& writer)
+void te::xsd::serialize::Save(ComplexType* ct, te::xml::AbstractWriter& writer)
 {
 }
 
@@ -733,7 +733,7 @@ te::xsd::Element* te::xsd::serialize::ReadElement(te::xml::Reader& reader)
   return element.release();
 }
 
-void te::xsd::serialize::Save(Element* element, te::xml::Writer& writer)
+void te::xsd::serialize::Save(Element* element, te::xml::AbstractWriter& writer)
 {
 }
 
@@ -820,7 +820,7 @@ te::xsd::Extension* te::xsd::serialize::ReadExtension(te::xml::Reader& reader)
   return extension.release();
 }
 
-void te::xsd::serialize::Save(Extension* extension, te::xml::Writer& writer)
+void te::xsd::serialize::Save(Extension* extension, te::xml::AbstractWriter& writer)
 {
 }
 
@@ -852,7 +852,7 @@ te::xsd::Field* te::xsd::serialize::ReadField(te::xml::Reader& reader)
   return field.release();
 }
 
-void te::xsd::serialize::Save(Field* field, te::xml::Writer& writer)
+void te::xsd::serialize::Save(Field* field, te::xml::AbstractWriter& writer)
 {
 }
 
@@ -900,7 +900,7 @@ te::xsd::Group* te::xsd::serialize::ReadGroup(te::xml::Reader& reader)
   return group.release();
 }
 
-void te::xsd::serialize::Save(Group* group, te::xml::Writer& writer)
+void te::xsd::serialize::Save(Group* group, te::xml::AbstractWriter& writer)
 {
 }
 
@@ -935,7 +935,7 @@ te::xsd::Import* te::xsd::serialize::ReadImport(te::xml::Reader& reader)
   return import.release();
 }
 
-void te::xsd::serialize::Save(Import* import, te::xml::Writer& writer)
+void te::xsd::serialize::Save(Import* import, te::xml::AbstractWriter& writer)
 {
 }
 
@@ -965,7 +965,7 @@ te::xsd::Include* te::xsd::serialize::ReadInclude(te::xml::Reader& reader)
   return include.release();
 }
 
-void te::xsd::serialize::Save(Include* include, te::xml::Writer& writer)
+void te::xsd::serialize::Save(Include* include, te::xml::AbstractWriter& writer)
 {
 }
 
@@ -1008,7 +1008,7 @@ te::xsd::Key* te::xsd::serialize::ReadKey(te::xml::Reader& reader)
   return key.release();
 }
 
-void te::xsd::serialize::Save(Key* key, te::xml::Writer& writer)
+void te::xsd::serialize::Save(Key* key, te::xml::AbstractWriter& writer)
 {
 }
 
@@ -1056,7 +1056,7 @@ te::xsd::KeyRef* te::xsd::serialize::ReadKeyRef(te::xml::Reader& reader)
   return keyRef.release();
 }
 
-void te::xsd::serialize::Save(KeyRef* keyRef, te::xml::Writer& writer)
+void te::xsd::serialize::Save(KeyRef* keyRef, te::xml::AbstractWriter& writer)
 {
 }
 
@@ -1092,7 +1092,7 @@ te::xsd::List* te::xsd::serialize::ReadList(te::xml::Reader& reader)
   return list.release();
 }
 
-void te::xsd::serialize::Save(List* list, te::xml::Writer& writer)
+void te::xsd::serialize::Save(List* list, te::xml::AbstractWriter& writer)
 {
 }
 
@@ -1161,7 +1161,7 @@ te::xsd::Redefine* te::xsd::serialize::ReadRedefine(te::xml::Reader& reader)
   return redefine.release();
 }
 
-void te::xsd::serialize::Save(Redefine* redefine, te::xml::Writer& writer)
+void te::xsd::serialize::Save(Redefine* redefine, te::xml::AbstractWriter& writer)
 {
 }
 
@@ -1249,7 +1249,7 @@ te::xsd::Restriction4ComplexContent* te::xsd::serialize::ReadRestriction4Complex
   return restriction.release();
 }
 
-void te::xsd::serialize::Save(Restriction4ComplexContent* restriction, te::xml::Writer& writer)
+void te::xsd::serialize::Save(Restriction4ComplexContent* restriction, te::xml::AbstractWriter& writer)
 {
 }
 
@@ -1340,7 +1340,7 @@ te::xsd::Restriction4SimpleContent* te::xsd::serialize::ReadRestriction4SimpleCo
   return restriction.release();
 }
 
-void te::xsd::serialize::Save(Restriction4SimpleContent* restriction, te::xml::Writer& writer)
+void te::xsd::serialize::Save(Restriction4SimpleContent* restriction, te::xml::AbstractWriter& writer)
 {
 }
 
@@ -1406,7 +1406,7 @@ te::xsd::Restriction4SimpleType* te::xsd::serialize::ReadRestriction4SimpleType(
   return restriction.release();
 }
 
-void te::xsd::serialize::Save(Restriction4SimpleType* restriction, te::xml::Writer& writer)
+void te::xsd::serialize::Save(Restriction4SimpleType* restriction, te::xml::AbstractWriter& writer)
 {
 }
 
@@ -1555,7 +1555,7 @@ te::xsd::Schema* te::xsd::serialize::ReadSchema(te::xml::Reader& reader)
   return schema.release();
 }
 
-void te::xsd::serialize::Save(Schema* schema, te::xml::Writer& writer)
+void te::xsd::serialize::Save(Schema* schema, te::xml::AbstractWriter& writer)
 {
 }
 
@@ -1587,7 +1587,7 @@ te::xsd::Selector* te::xsd::serialize::ReadSelector(te::xml::Reader& reader)
   return selector.release();
 }
 
-void te::xsd::serialize::Save(Selector* selector, te::xml::Writer& writer)
+void te::xsd::serialize::Save(Selector* selector, te::xml::AbstractWriter& writer)
 {
 }
 
@@ -1657,7 +1657,7 @@ te::xsd::Sequence* te::xsd::serialize::ReadSequence(te::xml::Reader& reader)
   return sequence.release();
 }
 
-void te::xsd::serialize::Save(Sequence* sequence, te::xml::Writer& writer)
+void te::xsd::serialize::Save(Sequence* sequence, te::xml::AbstractWriter& writer)
 {
 }
 
@@ -1690,7 +1690,7 @@ te::xsd::SimpleContent* te::xsd::serialize::ReadSimpleContent(te::xml::Reader& r
   return sc.release();
 }
 
-void te::xsd::serialize::Save(SimpleContent* sc, te::xml::Writer& writer)
+void te::xsd::serialize::Save(SimpleContent* sc, te::xml::AbstractWriter& writer)
 {
 }
 
@@ -1730,7 +1730,7 @@ te::xsd::SimpleType* te::xsd::serialize::ReadSimpleType(te::xml::Reader& reader)
   return st.release();
 }
 
-void te::xsd::serialize::Save(SimpleType* st, te::xml::Writer& writer)
+void te::xsd::serialize::Save(SimpleType* st, te::xml::AbstractWriter& writer)
 {
 }
 
@@ -1772,7 +1772,7 @@ te::xsd::Union* te::xsd::serialize::ReadUnion(te::xml::Reader& reader)
   return u.release();
 }
 
-void te::xsd::serialize::Save(Union* u, te::xml::Writer& writer)
+void te::xsd::serialize::Save(Union* u, te::xml::AbstractWriter& writer)
 {
 }
 
@@ -1815,7 +1815,7 @@ te::xsd::Unique* te::xsd::serialize::ReadUnique(te::xml::Reader& reader)
   return unique.release();
 }
 
-void te::xsd::serialize::Save(Unique* unique, te::xml::Writer& writer)
+void te::xsd::serialize::Save(Unique* unique, te::xml::AbstractWriter& writer)
 {
 }
 

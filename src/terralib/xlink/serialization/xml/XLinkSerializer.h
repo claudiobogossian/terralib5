@@ -36,8 +36,8 @@ namespace te
 {
   namespace xml
   {
+    class AbstractWriter;
     class Reader;
-    class Writer;
   }
 
   namespace xl
@@ -48,7 +48,7 @@ namespace te
     {
       TEXLEXPORT SimpleLink* ReadSimpleLink(te::xml::Reader& reader);
 
-      TEXLEXPORT void Save(const SimpleLink* link, te::xml::Writer& writer);
+      TEXLEXPORT void Save(const SimpleLink* link, te::xml::AbstractWriter& writer);
     }  // end namespace serialize
   }    // end namespace xl
 }      // end namespace te

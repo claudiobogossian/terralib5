@@ -28,10 +28,10 @@
 
 // TerraLib
 #include "../common/Holder.h"
+#include "AbstractWriter.h"
 #include "Config.h"
 
 // STL
-#include <iosfwd>
 #include <string>
 
 // Boost
@@ -49,63 +49,67 @@ namespace te
 
       \ingroup xml
     */
-    class TEXMLEXPORT Writer : public boost::noncopyable
+    class TEXMLEXPORT Writer : public te::xml::AbstractWriter
     {
       public:
 
+        Writer();
+
         /*! \brief Constructor. */
-        Writer(std::ostream& ostr);
+        //Writer(std::ostream& ostr);
 
         /*! \brief Virtual destructor. */
-        virtual ~Writer();
+        ~Writer();
 
-        virtual void writeStartDocument(const std::string& encoding, const std::string& standalone);
+        void writeStartDocument(const std::string& encoding, const std::string& standalone);
 
-        virtual void writeStartElement(const std::string& qName);
+        void writeStartElement(const std::string& qName);
 
-        virtual void writeElement(const std::string& qName, const std::string& value);
+        void writeElement(const std::string& qName, const std::string& value);
 
-        virtual void writeElement(const std::string& qName, const double& value);
+        void writeElement(const std::string& qName, const double& value);
 
-        virtual void writeElement(const std::string& qName, boost::int32_t value);
+        void writeElement(const std::string& qName, boost::int32_t value);
 
-        virtual void writeElement(const std::string& qName, boost::uint32_t value);
+        void writeElement(const std::string& qName, boost::uint32_t value);
 
-        virtual void writeElement(const std::string& qName, boost::int64_t value);
+        void writeElement(const std::string& qName, boost::int64_t value);
 
-        virtual void writeElement(const std::string& qName, boost::uint64_t value);
+        void writeElement(const std::string& qName, boost::uint64_t value);
 
-        virtual void writeAttribute(const std::string& attName, const std::string& value);
+        void writeAttribute(const std::string& attName, const std::string& value);
 
-        virtual void writeAttribute(const std::string& attName, const double& value);
+        void writeAttribute(const std::string& attName, const double& value);
 
-        virtual void writeAttribute(const std::string& attName, boost::int32_t value);
+        void writeAttribute(const std::string& attName, boost::int32_t value);
 
-        virtual void writeAttribute(const std::string& attName, boost::uint32_t value);
+        void writeAttribute(const std::string& attName, boost::uint32_t value);
 
-        virtual void writeAttribute(const std::string& attName, boost::int64_t value);
+        void writeAttribute(const std::string& attName, boost::int64_t value);
 
-        virtual void writeAttribute(const std::string& attName, boost::uint64_t value);
+        void writeAttribute(const std::string& attName, boost::uint64_t value);
 
-        virtual void writeValue(const std::string& value);
+        void writeValue(const std::string& value);
 
-        virtual void writeValue(const double& value);
+        void writeValue(const double& value);
 
-        virtual void writeValue(boost::int32_t value);
+        void writeValue(boost::int32_t value);
 
-        virtual void writeValue(boost::uint32_t value);
+        void writeValue(boost::uint32_t value);
 
-        virtual void writeValue(boost::int64_t value);
+        void writeValue(boost::int64_t value);
 
-        virtual void writeValue(boost::uint64_t value);
+        void writeValue(boost::uint64_t value);
 
-        virtual void writeEndElement(const std::string& qName);
+        void writeEndElement(const std::string& qName);
 
-        /*virtual void writeEndDocument(std::ostream& ostr);*/
+        void setRootNamespaceURI(const std::string& uri);
+
+        void writeToFile();
 
       private:
 
-        std::ostream& m_ostr;
+        std::ostream* m_ostr;
         bool m_isOpened;
     };
 

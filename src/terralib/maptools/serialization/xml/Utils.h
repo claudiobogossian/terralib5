@@ -38,8 +38,8 @@ namespace te
 {
   namespace xml
   {
+    class AbstractWriter;
     class Reader;
-    class Writer;
   }
 
   namespace map
@@ -69,11 +69,11 @@ namespace te
 
       TEMAPEXPORT std::auto_ptr<te::map::Chart> ReadLayerChart(te::xml::Reader& reader);
 
-      TEMAPEXPORT void WriteLayerChart(te::map::Chart* chart, te::xml::Writer& writer);
+      TEMAPEXPORT void WriteLayerChart(te::map::Chart* chart, te::xml::AbstractWriter& writer);
 
-      TEMAPEXPORT void WriteLayerGrouping(te::map::Grouping* g, te::xml::Writer& writer);
+      TEMAPEXPORT void WriteLayerGrouping(te::map::Grouping* g, te::xml::AbstractWriter& writer);
 
-      TEMAPEXPORT void WriteAbstractLayer(const te::map::AbstractLayer* layer, te::xml::Writer& writer);
+      TEMAPEXPORT void WriteAbstractLayer(const te::map::AbstractLayer* layer, te::xml::AbstractWriter& writer);
 
     }  //end namespace serialize
   }    // end namespace map
