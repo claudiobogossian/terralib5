@@ -54,6 +54,7 @@ namespace te
     class EnumType;
     class AbstractProxyProject;
     class ItemUtils;
+    class AbstractBuildGraphicsOutside;
 
     /*!
       \brief Singleton class responsible for keeping active objects while the plugin is loaded in memory 
@@ -306,13 +307,27 @@ namespace te
         */
         ItemUtils* getItemUtils();
 
-        virtual EnumType* getWait();
+        EnumType* getWait();
 
-        virtual void setWait(EnumType* wait);
+        void setWait(EnumType* wait);
 
-        virtual ItemObserver* getItem();
+        ItemObserver* getItem();
 
-        virtual void setItem(ItemObserver* item);
+        void setItem(ItemObserver* item);
+
+        /*!
+          \brief Returns pointer for build graphics MVC components. 
+		  
+		      \return a AbstractBuildGraphicsItem pointer 		  
+        */
+        AbstractBuildGraphicsOutside* getAbstractBuildGraphicsOutside();
+
+        /*!
+          \brief Change a pointer for build graphics MVC components. 
+		  
+		      \param a AbstractBuildGraphicsItem pointer		  
+        */
+        void setAbstractBuildGraphicsOutside(AbstractBuildGraphicsOutside* build);
 
         private:
       
@@ -334,28 +349,29 @@ namespace te
 
       protected:
         
-        EnumType*						        m_mode; //!< value of the enumeration of mode type
-        EnumType*						        m_lineIntersectionMouseMode; //!<
-        LayoutUnitsMetrics          m_unitMetric; //!<
-        AbstractScene*					    m_scene; //!< abstract scene for QGraphicsScene class, part of Graphics View Framework.
-        double							        m_zoomFactor; //!< current zoom factor. Ex.: 0.5 (50%)
-        double                      m_defaultZoomFactor; //!< default zoom factor. Ex.: 0.5 (50%) 
-        double                      m_oldZoomFactor; //!< previous zoom factor. Ex.: 0.5 (50%)
-        te::map::Canvas*	          m_canvas; //!< abstraction of a drawing area
-        AbstractItemFactory*		    m_itemFactory; //!< factory that provide an interface for creating families of related or dependent graphic objects (MVC components)
-        AbstractOutsideFactory*	    m_outsideFactory; //!< factory provide an interface for creating families of related or dependent graphic widgets (MVC widgets)
-        AbstractTemplateFactory*    m_templateFactory; //!< factory provide an interface for creating families of related or dependent templates
-        Utils*                      m_utils; //!< pointer with functions to manipulate the canvas and conversion between projections
-        double                      m_dpiX; //!<
-        double                      m_dpiY; //!<
-        std::string                 m_version; //!< template structure version
-        PaperConfig*                m_paperConfig; //!< paper settings
-        AbstractBuildGraphicsItem*  m_buildGraphicsItem; //!< build graphics MVC components. 
-        SystematicScaleConfig*      m_systematicConfig; //!<
-        AbstractProxyProject*       m_proxyProject; //!< provide a surrogate or placeholder for te::qt::af::Project to control access to it
-        ItemUtils*                  m_itemUtils; //!< pointer for manipulating items in the scene and vectorization of text and legend
-        EnumType*				            m_wait;
-        ItemObserver*			          m_item;
+        EnumType*						          m_mode; //!< value of the enumeration of mode type
+        EnumType*						          m_lineIntersectionMouseMode; //!<
+        LayoutUnitsMetrics            m_unitMetric; //!<
+        AbstractScene*					      m_scene; //!< abstract scene for QGraphicsScene class, part of Graphics View Framework.
+        double							          m_zoomFactor; //!< current zoom factor. Ex.: 0.5 (50%)
+        double                        m_defaultZoomFactor; //!< default zoom factor. Ex.: 0.5 (50%) 
+        double                        m_oldZoomFactor; //!< previous zoom factor. Ex.: 0.5 (50%)
+        te::map::Canvas*	            m_canvas; //!< abstraction of a drawing area
+        AbstractItemFactory*		      m_itemFactory; //!< factory that provide an interface for creating families of related or dependent graphic objects (MVC components)
+        AbstractOutsideFactory*	      m_outsideFactory; //!< factory provide an interface for creating families of related or dependent graphic widgets (MVC widgets)
+        AbstractTemplateFactory*      m_templateFactory; //!< factory provide an interface for creating families of related or dependent templates
+        Utils*                        m_utils; //!< pointer with functions to manipulate the canvas and conversion between projections
+        double                        m_dpiX; //!<
+        double                        m_dpiY; //!<
+        std::string                   m_version; //!< template structure version
+        PaperConfig*                  m_paperConfig; //!< paper settings
+        AbstractBuildGraphicsItem*    m_buildGraphicsItem; //!< build graphics MVC components. 
+        SystematicScaleConfig*        m_systematicConfig; //!<
+        AbstractProxyProject*         m_proxyProject; //!< provide a surrogate or placeholder for te::qt::af::Project to control access to it
+        ItemUtils*                    m_itemUtils; //!< pointer for manipulating items in the scene and vectorization of text and legend
+        EnumType*				              m_wait;
+        ItemObserver*			            m_item;
+        AbstractBuildGraphicsOutside* m_buildGraphicsOutside; //!< build MVC widgets. 
     };
   }
 }

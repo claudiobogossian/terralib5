@@ -110,7 +110,7 @@ void te::layout::PropertiesOutside::createLayout()
   QVBoxLayout* layout = new QVBoxLayout(this);
   layout->setMargin(0);
 
-  QHBoxLayout* filterLayout = new QHBoxLayout;
+  QHBoxLayout* filterLayout = new QHBoxLayout(this);
 
   m_configurePropertyEditor = new QToolButton(this);
   m_configurePropertyEditor->setText(tr("Config"));
@@ -131,7 +131,7 @@ void te::layout::PropertiesOutside::createLayout()
   layout->addWidget(m_nameLabel);
   layout->addWidget(m_layoutPropertyBrowser->getPropertyEditor());
 
-  QGroupBox* groupBox = new QGroupBox;
+  QGroupBox* groupBox = new QGroupBox(this);
   groupBox->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
   groupBox->setLayout(layout);
 

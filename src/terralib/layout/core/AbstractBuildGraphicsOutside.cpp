@@ -18,43 +18,24 @@
  */
 
 /*!
-  \file GridSettingsController.h
+  \file AbstractBuildGraphicsOutside.cpp
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_GRID_SETTINGS_CONTROLLER_H 
-#define __TERRALIB_LAYOUT_INTERNAL_GRID_SETTINGS_CONTROLLER_H
-
 // TerraLib
-#include "../core/pattern/mvc/OutsideController.h"
-#include "../core/property/Property.h"
-#include "../core/Config.h"
+#include "AbstractBuildGraphicsOutside.h"
 
-namespace te
+te::layout::AbstractBuildGraphicsOutside::AbstractBuildGraphicsOutside() 
 {
-  namespace layout
-  {
-    class GridSettingsModel;
 
-    class TELAYOUTEXPORT GridSettingsController : public OutsideController
-    {
-      public:
-
-	      GridSettingsController( Observable* o );
-
-	      virtual ~GridSettingsController();
-        
-        virtual Property updateProperty(std::string name, Variant variant, EnumType* enumType);
-        
-        virtual Property getProperty(std::string name, EnumType* enumType);
-    };
-  }
 }
 
-#endif
-
+te::layout::AbstractBuildGraphicsOutside::~AbstractBuildGraphicsOutside()
+{
+  
+}
 
 

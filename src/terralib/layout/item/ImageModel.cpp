@@ -50,7 +50,7 @@ te::layout::ImageModel::ImageModel() :
 
   m_properties->setHasWindows(true);
 
-  m_border = false;
+  m_border = true;
 }
 
 te::layout::ImageModel::~ImageModel()
@@ -78,7 +78,7 @@ te::layout::Properties* te::layout::ImageModel::getProperties() const
   pro_fileName.setName("fileName");
   pro_fileName.setId("");
   pro_fileName.setValue(m_fileName, dataType->getDataTypeImage());
-  pro_fileName.setMenu(true);
+  //pro_fileName.setMenu(true);
   m_properties->addProperty(pro_fileName);
   
   return m_properties;

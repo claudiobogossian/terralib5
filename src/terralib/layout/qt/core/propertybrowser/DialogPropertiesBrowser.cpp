@@ -30,6 +30,11 @@
 #include "../../../core/property/Properties.h"
 #include "../../../core/enum/Enums.h"
 #include "../../../core/Font.h"
+#include "../../../core/AbstractBuildGraphicsOutside.h"
+#include "../../../core/pattern/singleton/Context.h"
+#include "../BuildGraphicsOutside.h"
+#include "../../outside/GridSettingsOutside.h"
+#include "../../../outside/GridSettingsModel.h"
 
 // Qt
 #include <QVariant>
@@ -81,10 +86,11 @@ te::layout::DialogPropertiesBrowser::~DialogPropertiesBrowser()
 
 void te::layout::DialogPropertiesBrowser::createManager()
 {
-  m_strDlgManager = new QtStringPropertyManager(this);
+  m_strDlgManager = new QtStringPropertyManager;
   
-  m_dlgEditorFactory = new QtDlgEditorFactory(this);
+  m_dlgEditorFactory = new QtDlgEditorFactory;
 
+  // internalDlg is called when an item of property browser tree is clicked
   connect(m_dlgEditorFactory, SIGNAL(internalDlg(QWidget *, QtProperty *)), this, SLOT(onSetDlg(QWidget *, QtProperty *)));
 }
 
@@ -92,7 +98,7 @@ void te::layout::DialogPropertiesBrowser::onSetDlg( QWidget *parent, QtProperty 
 {
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
 
-  if(!dataType)
+  if(!dataType || !parent)
   {
     return;
   }
@@ -100,6 +106,9 @@ void te::layout::DialogPropertiesBrowser::onSetDlg( QWidget *parent, QtProperty 
   std::string name = prop->propertyName().toStdString();
 
   Property propt = findDlgProperty(name);
+
+  m_currentPropertyClicked = propt;
+
   if(propt.getType() == dataType->getDataTypeNone())
     return;
 
@@ -151,7 +160,7 @@ QtProperty* te::layout::DialogPropertiesBrowser::addProperty( Property property 
   QtProperty* qproperty = 0;
 
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
-  if(dataType)
+  if(!dataType)
   {
     return qproperty;
   }
@@ -242,12 +251,40 @@ void te::layout::DialogPropertiesBrowser::changeValueQtPropertyDlg( std::string 
   }
 }
 
-void te::layout::DialogPropertiesBrowser::onShowGridSettingsDlg( Property property )
+void te::layout::DialogPropertiesBrowser::onShowGridSettingsDlg()
 {
+  EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
+  if(!enumObj)
+  {
+    return;
+  }
+  
+  QWidget* widget = createOutside(enumObj->getGridSettings());
+  if(!widget)
+  {
+    return;
+  }
 
+  GridSettingsOutside* gridSettings = dynamic_cast<GridSettingsOutside*>(widget);
+  if(!gridSettings)
+  {
+    return;
+  }
+
+  connect(gridSettings, SIGNAL(updateProperty(Property)), this, SLOT(updateOutside(Property)));
+
+  GridSettingsModel* model = dynamic_cast<GridSettingsModel*>(gridSettings->getModel());
+  if(!model)
+  {
+    return;
+  }
+
+  //model->updateProperties();
+
+  gridSettings->show();
 }
 
-void te::layout::DialogPropertiesBrowser::onShowImageDlg( Property property )
+void te::layout::DialogPropertiesBrowser::onShowImageDlg()
 {
   // Bulding the filter string
   QString filter = tr("Images") + " ( ";
@@ -288,9 +325,9 @@ void te::layout::DialogPropertiesBrowser::onShowImageDlg( Property property )
   }
 }
 
-void te::layout::DialogPropertiesBrowser::onShowTextGridSettingsDlg( Property property )
+void te::layout::DialogPropertiesBrowser::onShowTextGridSettingsDlg()
 {
-
+  
 }
 
 te::layout::Property te::layout::DialogPropertiesBrowser::getProperty( std::string name )
@@ -411,6 +448,36 @@ std::map<std::string, te::layout::Property> te::layout::DialogPropertiesBrowser:
 void te::layout::DialogPropertiesBrowser::closeAllWindows()
 {
 
+}
+
+QWidget* te::layout::DialogPropertiesBrowser::createOutside( EnumType* enumType )
+{
+  QWidget* widget = 0;
+
+  if(!enumType)
+  {
+    return widget;
+  }
+
+  AbstractBuildGraphicsOutside* abstractBuild = Context::getInstance().getAbstractBuildGraphicsOutside();
+  if(!abstractBuild)
+  {
+    return widget;
+  }
+
+  BuildGraphicsOutside* build = dynamic_cast<BuildGraphicsOutside*>(abstractBuild);
+  if(!build)
+  {
+    return widget;
+  }
+
+  widget = build->createOuside(enumType);
+  return widget;
+}
+
+void te::layout::DialogPropertiesBrowser::updateOutside( Property prop )
+{
+  emit changeDlgProperty(prop);
 }
 
 

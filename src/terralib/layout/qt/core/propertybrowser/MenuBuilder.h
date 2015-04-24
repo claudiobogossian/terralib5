@@ -84,11 +84,11 @@ namespace te
 
       virtual Property findMnuProperty(std::string name);
 
-      virtual void checkedBool( Property property, bool checked );
+      virtual void checkedBool(bool checked);
       
-      virtual void onShowFontDlg( Property property );
+      virtual void onShowFontDlg();
 
-      virtual void onShowColorDlg( Property property );
+      virtual void onShowColorDlg();
 
     protected:
 

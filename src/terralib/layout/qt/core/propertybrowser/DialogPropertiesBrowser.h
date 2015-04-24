@@ -101,7 +101,14 @@ namespace te
             
       private slots:
 
+        /*
+          \brief By default it is connected with the internalDlg method of the class QtDlgEditorFactory. 
+            The internalDlg method is called when an item of property browser tree is clicked.
+        */
+
         virtual void onSetDlg(QWidget *parent, QtProperty * prop);
+
+        virtual void updateOutside(Property prop);
 
       signals:
 
@@ -113,17 +120,20 @@ namespace te
 
         virtual void changeValueQtPropertyDlg(std::string name, QVariant variant);
 
-        virtual void onShowGridSettingsDlg( Property property );
+        virtual void onShowGridSettingsDlg();
 
-        virtual void onShowImageDlg( Property property );
+        virtual void onShowImageDlg();
         
-        virtual void onShowTextGridSettingsDlg( Property property );
+        virtual void onShowTextGridSettingsDlg();
+
+        virtual QWidget* createOutside(EnumType* enumType);
       
       protected:
 
         QtStringPropertyManager*        m_strDlgManager;
         QtDlgEditorFactory*             m_dlgEditorFactory;
         std::map<std::string, Property> m_dlgProps;
+        Property                        m_currentPropertyClicked;
     };
   }
 }
