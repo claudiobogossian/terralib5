@@ -108,7 +108,7 @@ add_custom_target(
 )
 
 install(
-  DIRECTORY ${CMAKE_BINARY_DIR}/translations
-  DESTINATION ${TERRALIB_DESTINATION_SHARE}
+  FILES ${_qm_files}
+  DESTINATION ${TERRALIB_DESTINATION_SHARE}/translations
   COMPONENT runtime
 )
