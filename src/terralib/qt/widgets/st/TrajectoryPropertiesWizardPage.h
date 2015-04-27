@@ -27,9 +27,7 @@
 #define __TERRALIB_QT_WIDGETS_INTERNAL_TRAJECOTORYPROPERTIESWIZARDPAGE_H
 
 // TerraLib
-#include "../../../maptools/AbstractLayer.h"
 #include "../Config.h"
-#include "../../../dataaccess/datasource/DataSourceInfo.h"
 
 // Qt
 #include <QWizardPage>
@@ -70,6 +68,7 @@ namespace te
           void set(const std::list<te::da::DataSetTypePtr> dataTypes);
 
         private:
+
           std::list<te::da::DataSetTypePtr>          m_dataTypes;       //!< The list of datasettypes used to configure the trajectory(ies)
           std::auto_ptr<TrajectoryPropertiesWidget>  m_propWidget;      //!< The widget used to configure the unique TrajectoryLayer's properties
           std::auto_ptr<TemporalPropertiesWidget>    m_tempPropWidget;  //!< The widget used to configure the general TrajectoryLayer's properties
