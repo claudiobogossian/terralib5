@@ -140,28 +140,6 @@ void te::qt::widgets::TrajectoryWizard::finish()
 
   try
   {
-    //Generates a random id to the data source
-    boost::uuids::basic_random_generator<boost::mt19937> gen;
-    boost::uuids::uuid u = gen();
-    std::string id = boost::uuids::to_string(u);
-    dataInfo->setId(id);
-
-    //Create the data source and put it into the manager
-    te::da::DataSourceManager::getInstance().open(dataInfo->getId(), dataInfo->getType(), dataInfo->getConnInfo());
-  }
-  catch(const te::common::Exception& e)
-  {
-    std::cout << std::endl << "Failed to create a new data source and put it into the manager: " << e.what() << std::endl;
-    QWizard::finished(1);
-  }
-  catch(...)
-  {
-    std::cout << std::endl << "Failed to create a new data source and put it into the manager: unknown exception!" << std::endl;
-    QWizard::finished(1);
-  }
-
-  try
-  {
 
     std::list<te::st::TrajectoryDataSetInfo*> infos = m_PropWidgetPage->getInfo(dataInfo);
     std::list<te::st::TrajectoryDataSetInfo*>::const_iterator infosBegin = infos.begin();

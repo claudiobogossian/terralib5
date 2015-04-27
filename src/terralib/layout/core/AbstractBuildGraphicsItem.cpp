@@ -36,8 +36,7 @@ te::layout::AbstractBuildGraphicsItem::AbstractBuildGraphicsItem() :
   m_props(0),
   m_zValue(0),
   m_id(0),
-  m_redraw(true),
-  m_name("Unknown")
+  m_redraw(true)
 {
   m_sharedProps = new SharedProperties;
 }
@@ -93,7 +92,6 @@ int te::layout::AbstractBuildGraphicsItem::findZValue( te::layout::Properties* p
 void te::layout::AbstractBuildGraphicsItem::clear()
 {
   m_id = 0;
-  m_name = "Unknown";
   m_zValue = 0;
   m_props = 0;
   m_redraw = true;

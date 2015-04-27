@@ -89,12 +89,43 @@ namespace te
           std::vector<int> getOutputValues();
 
           /*!
+            \brief Returns a vector containing the names of the observed properties
+
+            \return A vector containing the names of the observed properties.
+          */
+          std::vector<std::string> getOutputPropNames();
+
+          /*!
+            \brief Returns the name of the property that holds the geometry
+
+            \return The name of the property that holds the geometry
+.
+          */
+          std::string getGeometryPropName();
+
+          /*!
             \brief Returns the index of the temporal property geometry
 
             \return The index of the temporal property geometry
             \note Will return an invalid index if the dataSeType hasn't been given.
           */
           int getGeometryId();
+
+          /*!
+            \brief Returns the name of the property that holds the observation ID
+
+            \return The name of the property that holds the observation ID
+.
+          */
+          std::string getIdPropName();
+
+          /*!
+            \brief Returns the index of the observation ID
+
+            \return The index of the observation ID
+            \note Will return an invalid index if the dataSeType hasn't been given.
+          */
+          int getIdIndex();
 
           /*!
             \brief Adjusts the widget's components based on the given datasettype

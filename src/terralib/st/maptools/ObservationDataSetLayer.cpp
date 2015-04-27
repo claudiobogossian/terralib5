@@ -224,6 +224,11 @@ const std::string& te::st::ObservationDataSetLayer::getType() const
   return sm_type;
 }
 
+const std::string& te::st::ObservationDataSetLayer::getDataSourceId() const
+{
+  return m_info->getDataSourceInfo().getId();
+}
+
 const std::string& te::st::ObservationDataSetLayer::getRendererType() const
 {
   return m_rendererType;

@@ -7,9 +7,10 @@
 #include <terralib/se/serialization/xml/Style.h>
 #include <terralib/xlink/serialization/xml/XLinkSerializer.h>
 #include <terralib/xsd/serialization/xml/XSDSerializer.h>
+#include <terralib/xml/AbstractWriter.h>
+#include <terralib/xml/AbstractWriterFactory.h>
 #include <terralib/xml/Reader.h>
 #include <terralib/xml/ReaderFactory.h>
-#include <terralib/xml/Writer.h>
 #include <terralib/xlink/SimpleLink.h>
 #include <terralib/xsd/Schema.h>
 
@@ -17,7 +18,7 @@
 #include <cassert>
 #include <sstream>
 
-std::string EncodeStyle()
+void EncodeStyle(const std::string& path)
 {
   /* Creating an OGC Symbology Enconding Style */
 
@@ -139,21 +140,15 @@ std::string EncodeStyle()
   style->setName(new std::string("Style 1"));
   style->setDescription(te::se::CreateDescription("A simple style example", "This style was created to show the power of TerraLib serialization module."));
 
-  return EncodeStyle(style);
-}
+  std::auto_ptr<te::xml::AbstractWriter> writer(te::xml::AbstractWriterFactory::make());
 
-std::string EncodeStyle(te::se::Style* style)
-{
-  /* Let's serialize! */
-  std::ostringstream oss;
+  writer->setURI(path);
 
-  // Serializing...
-  te::xml::Writer writer(oss);
-  te::se::serialize::Style::getInstance().write(style, writer);
+  te::se::serialize::Style::getInstance().write(style, *writer.get());
+
+  writer->writeToFile();
 
   delete style;
-
-  return oss.str();
 }
 
 te::se::Style* DecodeStyle(const std::string& path)
@@ -173,3 +168,4 @@ void DecodeSchema(const std::string& path)
   assert(schema);
   delete schema;
 }
+

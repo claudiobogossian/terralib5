@@ -228,11 +228,15 @@ te::gm::Coord2D te::layout::TextItem::getPosition()
   return coordinate;
 }
 
-te::color::RGBAColor** te::layout::TextItem::getImage()
+te::color::RGBAColor** te::layout::TextItem::getRGBAColorImage(int &w, int &h)
 {
   refreshDocument();
 
   QImage img = createImage();
+
+  w = img.width();
+  h = img.height();
+
   te::color::RGBAColor** teImg = te::qt::widgets::GetImage(&img);
   return teImg;
 }

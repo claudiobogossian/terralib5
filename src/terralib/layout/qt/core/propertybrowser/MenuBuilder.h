@@ -25,16 +25,15 @@
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_MENU_ITEM_H 
-#define __TERRALIB_LAYOUT_INTERNAL_MENU_ITEM_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_MENU_BUILDER_H 
+#define __TERRALIB_LAYOUT_INTERNAL_MENU_BUILDER_H
 
 // Qt
 #include <QObject>
 
 // TerraLib
-#include "../../core/property/Properties.h"
-#include "../../core/enum/AbstractType.h"
-#include "../../core/Config.h"
+#include "../../../core/Config.h"
+#include "DialogPropertiesBrowser.h"
 
 // STL
 #include <string>
@@ -48,24 +47,22 @@ namespace te
 {
   namespace layout
   {
-    class GridSettingsOutside;
-    class EnumType;
-    class TextGridSettingsOutside;
+    class PropertiesUtils;
 
     /*!
 	  \brief Class responsible for creating the menu, right mouse button, and dynamically add menu options.
 	  
 	  \ingroup layout
 	  */
-    class TELAYOUTEXPORT MenuItem : public QObject
+    class TELAYOUTEXPORT MenuBuilder : public DialogPropertiesBrowser
     {
 	    Q_OBJECT //for slots/signals
 
     public:
 
-	    MenuItem( QObject * parent = 0 );
+	    MenuBuilder( QObject * parent = 0 );
 
-	    virtual ~MenuItem();
+	    virtual ~MenuBuilder();
          
       virtual void createMenu(QList<QGraphicsItem*> items);
 
@@ -75,50 +72,35 @@ namespace te
 
         virtual void onMenuTriggered(QAction* action);
 
-        virtual void onUpdateGridSettingsProperty();
-
-        virtual void onUpdateTextGridSettingsProperty();
-
+        virtual void onChangeDlgProperty(Property property);
+        
     protected:
             
       virtual QAction* createAction(std::string text, std::string objName, std::string icon, std::string tooltip = "");
-
-      virtual Properties* intersection(QList<QGraphicsItem*> graphicsItems, bool& window);
-
-      virtual Properties* sameProperties(QList<QGraphicsItem*> graphicsItems, bool& window);
-
-      virtual void contains(std::vector<Properties*>::iterator itend, 
-        std::vector<Properties*>::iterator it, std::string name, bool& result);
-
-      virtual std::vector<Properties*> getAllProperties(QList<QGraphicsItem*> graphicsItems, bool& window);
       
       virtual void changePropertyValue(Property property);
 
-      virtual Property findProperty(EnumType* dataType);
+      virtual Property findMnuProperty(EnumType* dataType);
 
-      virtual Property findProperty(std::string name);
+      virtual Property findMnuProperty(std::string name);
 
       virtual void checkedBool( Property property, bool checked );
+      
+      virtual void onShowFontDlg( Property property );
 
-      virtual void showGridSettingsDlg( Property property );
-
-      virtual void showImageDlg( Property property );
-
-      virtual void showFontDlg( Property property );
-
-      virtual void showColorDlg( Property property );
-
-      virtual void showTextGridSettingsDlg( Property property );
+      virtual void onShowColorDlg( Property property );
 
     protected:
 
       QMenu*                m_menu;
       QList<QGraphicsItem*> m_graphicsItems;
       Properties*           m_properties;
-      GridSettingsOutside* m_gridSettings;
-      TextGridSettingsOutside* m_textGridSettings;
+      PropertiesUtils*      m_propUtils;
     };
   }
 }
 
 #endif
+
+
+

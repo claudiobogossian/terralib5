@@ -53,6 +53,7 @@ te::qt::widgets:: TimeSeriesPropertiesWizardPage::~ TimeSeriesPropertiesWizardPa
 
 void te::qt::widgets:: TimeSeriesPropertiesWizardPage::set(const te::da::DataSetTypePtr dataType)
 {
+  m_tempPropWidget->setUp(dataType);
   m_propWidget->setUp(dataType);
 }
 

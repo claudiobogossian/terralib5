@@ -46,7 +46,7 @@
 // Boost
 #include <boost/format.hpp>
 
-const std::string te::st::TimeSeriesDataSetLayer::sm_type("TimeSeriesDataSetLayer");
+const std::string te::st::TimeSeriesDataSetLayer::sm_type("TIMESERIESDATASETLAYER");
 
 te::st::TimeSeriesDataSetLayer::TimeSeriesDataSetLayer(AbstractLayer* parent, TimeSeriesDataSetInfo* info)
   : AbstractSTDataSetLayer(parent),
@@ -152,6 +152,11 @@ void te::st::TimeSeriesDataSetLayer::draw(te::map::Canvas* canvas, const te::gm:
 const std::string& te::st::TimeSeriesDataSetLayer::getType() const
 {
   return sm_type;
+}
+
+const std::string& te::st::TimeSeriesDataSetLayer::getDataSourceId() const
+{
+  return m_info->getObservationDataSetInfo().getDataSourceInfo().getId();
 }
 
 const std::string& te::st::TimeSeriesDataSetLayer::getRendererType() const

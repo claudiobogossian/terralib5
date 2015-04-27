@@ -118,11 +118,18 @@ namespace te
         void draw(te::map::Canvas* canvas, const te::gm::Envelope& bbox, int srid);
 
         /*!
-          \brief It returns the layer type: DATASET_LAYER.
+          \brief It returns the layer type: TIMESERIESDATASETLAYER.
 
-          \return The layer type: DATASET_LAYER.
+          \return The layer type: TIMESERIESDATASETLAYER.
         */
         const std::string& getType() const;
+
+        /*!
+          \brief
+
+          \return
+        */
+        const std::string& getDataSourceId() const;
 
         /*!
           \brief

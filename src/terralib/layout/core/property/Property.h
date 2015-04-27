@@ -31,6 +31,7 @@
 // TerraLib
 #include "Variant.h"
 #include "../enum/EnumType.h"
+#include "../Config.h"
 
 namespace te
 {
@@ -41,7 +42,7 @@ namespace te
 	  
 	    \ingroup layout
 	  */
-    class Property
+    class TELAYOUTEXPORT Property
     {
       public:
 

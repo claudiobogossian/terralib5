@@ -277,20 +277,12 @@ void te::layout::MapItem::drawMap( QPainter * painter )
     image = image.mirrored();
 
     m_pixmap = QPixmap::fromImage(image);
-
-    //scene()->update();
   }
 
   painter->save();
   painter->setClipRect(boundRect);
   painter->drawPixmap(boundRect, m_pixmap, m_pixmap.rect());
-
-  QPen pen;
-  pen.setWidth(1);
-
-  painter->setPen(pen);
-  painter->drawRect(boundRect);
-
+  
   painter->restore();
 }
 
@@ -582,10 +574,22 @@ void te::layout::MapItem::changeCurrentTool( EnumType* mode )
   }
 }
 
-te::color::RGBAColor** te::layout::MapItem::getImage()
+te::color::RGBAColor** te::layout::MapItem::getRGBAColorImage(int &w, int &h)
 {
-  QImage img = generateImage();
-  te::color::RGBAColor** teImg = te::qt::widgets::GetImage(&img);
+  te::color::RGBAColor** teImg = 0;
+
+  QImage img = m_pixmap.toImage();
+  img = img.mirrored();
+
+  if(img.isNull())
+  {
+    return teImg;
+  }
+
+  w = img.width();
+  h = img.height();
+
+  teImg = te::qt::widgets::GetImage(&img);
   return teImg;
 }
 
@@ -608,6 +612,7 @@ QImage te::layout::MapItem::generateImage()
     painter.save();
     painter.drawPixmap(rectF, m_pixmap, rectF);
     painter.restore(); 
+    generator.mirrored();
   }
 
   painter.end();
