@@ -315,7 +315,7 @@ void te::layout::DialogPropertiesBrowser::onShowImageDlg()
   {
     EnumDataType* dataType = Enums::getInstance().getEnumDataType();
 
-    Property prop = findDlgProperty(dataType->getDataTypeImage());
+    Property prop = m_currentPropertyClicked;
     prop.setValue(path.toStdString(), dataType->getDataTypeImage());
 
     QVariant v(path);
@@ -479,8 +479,6 @@ void te::layout::DialogPropertiesBrowser::updateOutside( Property prop )
 {
   emit changeDlgProperty(prop);
 }
-
-
 
 
 

@@ -73,6 +73,10 @@ namespace te
         virtual void onMenuTriggered(QAction* action);
 
         virtual void onChangeDlgProperty(Property property);
+
+        virtual void onShowFontDlg();
+
+        virtual void onShowColorDlg();
         
     protected:
             
@@ -85,10 +89,6 @@ namespace te
       virtual Property findMnuProperty(std::string name);
 
       virtual void checkedBool(bool checked);
-      
-      virtual void onShowFontDlg();
-
-      virtual void onShowColorDlg();
 
     protected:
 

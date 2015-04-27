@@ -99,7 +99,7 @@ namespace te
 
         virtual int getVariantType(EnumType* dataType);
             
-      private slots:
+      protected slots:
 
         /*
           \brief By default it is connected with the internalDlg method of the class QtDlgEditorFactory. 
@@ -110,6 +110,12 @@ namespace te
 
         virtual void updateOutside(Property prop);
 
+        virtual void onShowGridSettingsDlg();
+
+        virtual void onShowImageDlg();
+
+        virtual void onShowTextGridSettingsDlg();
+
       signals:
 
         void changeDlgProperty(Property property);
@@ -119,12 +125,6 @@ namespace te
         virtual void createManager();
 
         virtual void changeValueQtPropertyDlg(std::string name, QVariant variant);
-
-        virtual void onShowGridSettingsDlg();
-
-        virtual void onShowImageDlg();
-        
-        virtual void onShowTextGridSettingsDlg();
 
         virtual QWidget* createOutside(EnumType* enumType);
       
