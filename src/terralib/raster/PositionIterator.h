@@ -30,10 +30,11 @@
 // Terralib
 #include "../common/STLUtils.h"
 #include "../geometry.h"
-#include "../raster/Band.h"
-#include "../raster/BandProperty.h"
-#include "../raster/BlockUtils.h"
-#include "../raster/Grid.h"
+#include "Band.h"
+#include "BandProperty.h"
+#include "BlockUtils.h"
+#include "Grid.h"
+#include "Exception.h"
 
 // STL
 #include <iostream>
@@ -151,6 +152,7 @@ namespace te
 
           \param b The band to iterate.
           \param p The polygon from where the iteration will navigate.
+          \note Both raster and polygon must have the same SRID.
         */
         PolygonIterator(const te::rst::Raster* r, const te::gm::Polygon* p);
 
@@ -402,6 +404,11 @@ namespace te
         m_actualintersection(-1),
         m_nintersections(0)
     {
+      if( r->getSRID() != p->getSRID() )
+      {
+        throw Exception( TE_TR("Invalid polygon SRID") );
+      }
+      
       te::gm::Coord2D ll = m_polygon->getMBR()->getLowerLeft();
       te::gm::Coord2D ur = m_polygon->getMBR()->getUpperRight();
 

@@ -229,8 +229,6 @@ namespace te
 
           void onLayerExplorerVisibilityChanged(bool visible);
 
-          void onDisplayVisibilityChanged(bool visible);
-
           void onDisplayDataTableChanged(bool visible);
 
           void onStyleExplorerVisibilityChanged(bool visible);
@@ -274,7 +272,6 @@ namespace te
 
           //! Qt components
           QAction* m_viewLayerExplorer;
-          QAction* m_viewMapDisplay;
           QAction* m_viewDataTable;
           QAction* m_viewStyleExplorer;
           //QAction* m_editUndo;
