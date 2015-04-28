@@ -103,15 +103,60 @@ namespace te
         std::auto_ptr<te::da::DataSet> getData(te::common::TraverseType travType = te::common::FORWARDONLY,
                                                const te::common::AccessPolicy accessPolicy = te::common::RAccess) const;
 
+        std::auto_ptr<te::da::DataSet> getData(const std::string& propertyName,
+                                               const te::gm::Envelope* e,
+                                               te::gm::SpatialRelation r = te::gm::INTERSECTS,
+                                               te::common::TraverseType travType = te::common::FORWARDONLY,
+                                               const te::common::AccessPolicy accessPolicy = te::common::RAccess) const;
+
+        std::auto_ptr<te::da::DataSet> getData(const std::string& propertyName,
+                                               const te::gm::Geometry* g,
+                                               te::gm::SpatialRelation r,
+                                               te::common::TraverseType travType = te::common::FORWARDONLY,
+                                               const te::common::AccessPolicy accessPolicy = te::common::RAccess) const;
+
+        std::auto_ptr<te::da::DataSet> getData(te::da::Expression* restriction,
+                                               te::common::TraverseType travType = te::common::FORWARDONLY,
+                                               const te::common::AccessPolicy accessPolicy = te::common::RAccess) const;
+
+        std::auto_ptr<te::da::DataSet> getData(const te::da::ObjectIdSet* oids,
+                                               te::common::TraverseType travType = te::common::FORWARDONLY,
+                                               const te::common::AccessPolicy accessPolicy = te::common::RAccess) const;
+
         std::auto_ptr<te::st::TimeSeriesDataSet> getTimeSeriesDataset(te::common::TraverseType travType = te::common::FORWARDONLY) const;
 
+        std::auto_ptr<te::st::TimeSeriesDataSet> getTimeSeriesDataset(const te::gm::Envelope& e,
+                                                                        te::gm::SpatialRelation r = te::gm::INTERSECTS,
+                                                                        te::common::TraverseType travType = te::common::FORWARDONLY) const;
+
+        std::auto_ptr<te::st::TimeSeriesDataSet> getTimeSeriesDataset(const te::gm::Geometry& g,
+                                                                        te::gm::SpatialRelation r,
+                                                                        te::common::TraverseType travType = te::common::FORWARDONLY) const;
+
         std::auto_ptr<te::da::DataSet> getData( const te::dt::DateTime& dt, te::dt::TemporalRelation r = te::dt::DURING,
-                                                te::common::TraverseType travType = te::common::FORWARDONLY, 
+                                               te::common::TraverseType travType = te::common::FORWARDONLY, 
+                                               te::common::AccessPolicy rwRole = te::common::RAccess) const;
+
+        std::auto_ptr<te::da::DataSet> getData( const te::dt::DateTime& dt, te::dt::TemporalRelation tr,
+                                                const te::gm::Envelope& e, te::gm::SpatialRelation sr = te::gm::INTERSECTS,
+                                                te::common::TraverseType travType = te::common::FORWARDONLY,
                                                 te::common::AccessPolicy rwRole = te::common::RAccess) const;
 
+         std::auto_ptr<te::da::DataSet> getData( const te::dt::DateTime& dt, te::dt::TemporalRelation tr,
+                                                 const te::gm::Geometry& g, te::gm::SpatialRelation sr = te::gm::INTERSECTS,
+                                                 te::common::TraverseType travType = te::common::FORWARDONLY,
+                                                 te::common::AccessPolicy rwRole = te::common::RAccess) const;
 
         std::auto_ptr<te::st::TimeSeriesDataSet> getTimeSeriesDataset( const te::dt::DateTime& dt, te::dt::TemporalRelation r = te::dt::DURING,
                                                                        te::common::TraverseType travType = te::common::FORWARDONLY) const;
+
+        std::auto_ptr<te::st::TimeSeriesDataSet> getTimeSeriesDataset( const te::dt::DateTime& dt, te::dt::TemporalRelation tr,
+                                                                         const te::gm::Envelope& e, te::gm::SpatialRelation sr = te::gm::INTERSECTS,
+                                                                         te::common::TraverseType travType = te::common::FORWARDONLY) const;
+
+         std::auto_ptr<te::st::TimeSeriesDataSet> getTimeSeriesDataset( const te::dt::DateTime& dt, te::dt::TemporalRelation tr,
+                                                                        const te::gm::Geometry& g, te::gm::SpatialRelation sr = te::gm::INTERSECTS,
+                                                                        te::common::TraverseType travType = te::common::FORWARDONLY) const;
 
         bool isValid() const;
 

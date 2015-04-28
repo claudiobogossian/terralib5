@@ -24,7 +24,6 @@
 */
 
 //Terralib
-#include "../../../geometry/Envelope.h"
 #include "../../../geometry/GeometryProperty.h"
 #include "../../../qt/widgets/dataset/selector/DataSetSelectorWizardPage.h"
 #include "../../../qt/widgets/datasource/selector/DataSourceSelectorWidget.h"
@@ -140,7 +139,6 @@ void te::qt::widgets::TrajectoryWizard::finish()
 
   try
   {
-
     std::list<te::st::TrajectoryDataSetInfo*> infos = m_PropWidgetPage->getInfo(dataInfo);
     std::list<te::st::TrajectoryDataSetInfo*>::const_iterator infosBegin = infos.begin();
     std::list<te::st::TrajectoryDataSetInfo*>::const_iterator infosEnd = infos.end();
@@ -152,18 +150,9 @@ void te::qt::widgets::TrajectoryWizard::finish()
     }
     else
     {
-
-      static boost::uuids::basic_random_generator<boost::mt19937> gen;
-      boost::uuids::uuid u = gen();
-      std::string id = boost::uuids::to_string(u);
-
-      te::st::TrajectoryDataSetLayerPtr testParent(new te::st::TrajectoryDataSetLayer());
-      testParent->setId(id);
-
-      m_trajectoryLayers.push_back(testParent);
       while(infosBegin != infosEnd)
       {
-        m_trajectoryLayers.push_back(generateLayer(*typesItBegin, *infosBegin, dataInfo, testParent.get()));
+        m_trajectoryLayers.push_back(generateLayer(*typesItBegin, *infosBegin, dataInfo));
         infosBegin++;
         typesItBegin++;
       }

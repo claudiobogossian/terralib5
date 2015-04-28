@@ -2031,13 +2031,6 @@ void te::qt::af::BaseApplication::onLayerExplorerVisibilityChanged(bool visible)
   m_viewLayerExplorer->blockSignals(false);
 }
 
-void te::qt::af::BaseApplication::onDisplayVisibilityChanged(bool visible)
-{
-  m_viewMapDisplay->blockSignals(true);
-  m_viewMapDisplay->setChecked(visible);
-  m_viewMapDisplay->blockSignals(false);
-}
-
 void te::qt::af::BaseApplication::onDisplayDataTableChanged(bool visible)
 {
   if(m_tableDocks.empty())
@@ -2415,6 +2408,8 @@ void te::qt::af::BaseApplication::makeDialog()
   map->setResizePolicy(te::qt::widgets::MapDisplay::Center);
   m_display = new te::qt::af::MapDisplay(map);
 
+  QMainWindow::setCentralWidget(map);
+
   connect(m_display, SIGNAL(hasPreviousExtent(bool)), m_mapPreviousExtent, SLOT(setEnabled(bool)));
   connect(m_display, SIGNAL(hasNextExtent(bool)), m_mapNextExtent, SLOT(setEnabled(bool)));
 
@@ -2450,13 +2445,6 @@ void te::qt::af::BaseApplication::makeDialog()
   //te::qt::af::ApplicationController::getInstance().addListener(m_viewer);
 
 // initializing connector widgets
-  QDockWidget* doc = new QDockWidget(tr("Map Display"), this);
-  doc->setWidget(map);
-  QMainWindow::setCentralWidget(doc);
-  doc->connect(m_viewMapDisplay, SIGNAL(toggled(bool)), SLOT(setVisible(bool)));
-  m_viewMapDisplay->setChecked(true);
-  connect(doc, SIGNAL(visibilityChanged(bool)), this, SLOT(onDisplayVisibilityChanged(bool)));
-
   // View Data Table
   connect(m_viewDataTable, SIGNAL(toggled(bool)), this, SLOT(onDisplayDataTableChanged(bool)));
 
@@ -2528,7 +2516,6 @@ void te::qt::af::BaseApplication::initActions()
 {
 // Menu -View- actions
   initAction(m_viewLayerExplorer, "view-layer-explorer", "View.Layer Explorer", tr("&Layer Explorer"), tr("Show or hide the layer explorer"), true, true, true, m_menubar);
-  initAction(m_viewMapDisplay, "view-map-display", "View.Map Display", tr("&Map Display"), tr("Show or hide the map display"), true, true, true, m_menubar);
   initAction(m_viewDataTable, "view-data-table", "View.Data Table", tr("&Data Table"), tr("Show or hide the data table"), true, true, true, m_menubar);
   initAction(m_viewStyleExplorer, "style", "View.Style Explorer", tr("&Style Explorer"), tr("Show or hide the style explorer"), true, true, true, m_menubar);
   initAction(m_viewFullScreen, "view-fullscreen", "View.Full Screen", tr("F&ull Screen"), tr(""), true, true, true, m_menubar);
@@ -2686,7 +2673,6 @@ void te::qt::af::BaseApplication::initMenus()
   //m_viewMenu->addAction(m_viewToolBars);
   m_viewMenu->addAction(m_viewDataTable);
   m_viewMenu->addAction(m_viewLayerExplorer);
-  m_viewMenu->addAction(m_viewMapDisplay);
   m_viewMenu->addAction(m_viewStyleExplorer);
   //m_viewMenu->addAction(m_viewGrid); TODO
   m_viewMenu->addSeparator();

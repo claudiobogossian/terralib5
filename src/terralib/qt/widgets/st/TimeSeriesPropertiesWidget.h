@@ -71,6 +71,57 @@ namespace te
           ~TimeSeriesPropertiesWidget();
 
           /*!
+            \brief Returns the name of the property that holds the ID of each timeSeries in the dataset
+
+            \return The name of the property that holds the ID of each timeSeries in the dataset
+.
+          */
+          std::string getIdPropName();
+
+          /*!
+            \brief Returns the index of the ID of each timeSeries in the dataset
+
+            \return The index of the ID of each timeSeries in the dataset
+            \note Will return an invalid index if the dataSeType hasn't been given.
+          */
+          int getIdIndex();
+
+          /*!
+            \brief Returns the name of the property that holds the attribute values associated to each time series in the dataset
+
+            \return The name of the property that holds the the attribute values associated to each time series in the dataset
+.
+          */
+          std::string getValuePropName();
+
+          /*!
+            \brief Returns the index of the attribute values associated to each time series in the dataset
+
+            \return The index of the attribute values associated to each time series in the dataset
+            \note Will return an invalid index if the dataSeType hasn't been given.
+          */
+          int getValueIndex();
+
+          /*!
+            \brief Returns the name of the property that holds the geometry
+
+            \return The name of the property that holds the geometry
+.
+          */
+          std::string getGeometryPropName();
+
+          /*!
+            \brief Returns the index of the temporal property geometry
+
+            \return The index of the temporal property geometry
+            \note Will return an invalid index if the dataSeType hasn't been given.
+          */
+          int getGeometryId();
+
+
+
+
+          /*!
             \brief Returns a pointer to the widget's form
 
             \return A TimeSeriesPropertiesWidgetForm type pointer to the widget's form.
@@ -91,8 +142,8 @@ namespace te
 
         private:
 
-          std::auto_ptr<Ui::TimeSeriesPropertiesWidgetForm>  m_ui;        //!< The widget's form.
-//          std::auto_ptr<te::da::DataSet>           m_dataSet;   //!< The dataset that will be used to generate the histogram graph.
+          std::auto_ptr<Ui::TimeSeriesPropertiesWidgetForm>  m_ui;         //!< The widget's form.
+          te::da::DataSetTypePtr                             m_dataType;   //!< The datasetType that will be used to generate the spatio-temporal layer.
        };
     } // end namespace widgets
   }   // end namespace qt
