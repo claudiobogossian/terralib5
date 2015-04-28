@@ -90,10 +90,6 @@ bool te::vp::PolygonToLineMemory::run() throw(te::common::Exception)
           geomState = false;
           continue;
         }
-        else
-        {
-          //std::
-        }
 
         std::auto_ptr<te::gm::MultiLineString> lineResult = polygon2Line(geom.get());
         if(!lineResult->isValid())
@@ -102,8 +98,11 @@ bool te::vp::PolygonToLineMemory::run() throw(te::common::Exception)
         outDsItem->setGeometry(i, lineResult.release());
       }
     }
-    if(!geomState)
+    if (!geomState)
+    {
+      delete outDsItem;
       continue;
+    }
 
     outDSet->add(outDsItem);
 
