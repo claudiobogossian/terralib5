@@ -303,20 +303,25 @@ void te::layout::MenuBuilder::changePropertyValue( Property property )
       ItemObserver* lItem = dynamic_cast<ItemObserver*>(item);
       if(lItem)
       {
+        if(!lItem->getModel())
+        {
+          continue;
+        }
+
         Properties* props = new Properties("");
-        Properties* beforeProps = lItem->getProperties();
+        Properties* beforeProps = lItem->getModel()->getProperties();
         Properties* oldCommand = new Properties(*beforeProps);
         if(props)
         {
-          props->setObjectName(lItem->getProperties()->getObjectName());
-          props->setTypeObj(lItem->getProperties()->getTypeObj());
+          props->setObjectName(lItem->getModel()->getProperties()->getObjectName());
+          props->setTypeObj(lItem->getModel()->getProperties()->getTypeObj());
           props->addProperty(property);
 
           lItem->updateProperties(props);
 
           if(beforeProps)
           {
-            beforeProps = lItem->getProperties();
+            beforeProps = lItem->getModel()->getProperties();
             Properties* newCommand = new Properties(*beforeProps);
             commandItems.push_back(item);
             commandOld.push_back(oldCommand);

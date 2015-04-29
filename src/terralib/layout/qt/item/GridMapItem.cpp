@@ -238,7 +238,10 @@ QVariant te::layout::GridMapItem::itemChange( QGraphicsItem::GraphicsItemChange 
         MapItem* mapItem = dynamic_cast<MapItem*>(parentItem());
         if(mapItem)
         {
-          model->setMapName(mapItem->getName());
+          if(mapItem->getModel())
+          {
+            model->setMapName(mapItem->getModel()->getName());
+          }
         }
       }
     }

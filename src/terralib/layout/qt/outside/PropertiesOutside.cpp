@@ -110,7 +110,7 @@ void te::layout::PropertiesOutside::createLayout()
   QVBoxLayout* layout = new QVBoxLayout(this);
   layout->setMargin(0);
 
-  QHBoxLayout* filterLayout = new QHBoxLayout(this);
+  QHBoxLayout* filterLayout = new QHBoxLayout;
 
   m_configurePropertyEditor = new QToolButton(this);
   m_configurePropertyEditor->setText(tr("Config"));
@@ -215,6 +215,78 @@ void te::layout::PropertiesOutside::onChangePropertyValue( Property property )
 
   Scene* lScene = dynamic_cast<Scene*>(Context::getInstance().getScene()); 
 
+  if(property.getParentItemHashCode() <= 0)
+  {
+    sendPropertyToSelectedItems(property);
+  }
+  else
+  {
+    sendPropertyToSelectedItem(property);
+  }
+
+  changeMapVisitable(property);
+  lScene->update();
+}
+
+bool te::layout::PropertiesOutside::sendPropertyToSelectedItem( Property property )
+{
+  bool result = true;
+
+  Scene* lScene = dynamic_cast<Scene*>(Context::getInstance().getScene()); 
+
+  std::vector<QGraphicsItem*> commandItems;
+  std::vector<Properties*> commandOld;
+  std::vector<Properties*> commandNew;
+
+  QGraphicsItem *itemSelected = m_propUtils->equalsHashCode(property, m_graphicsItems);
+  if(!itemSelected)
+  {
+    return false;
+  }
+		
+  ItemObserver* lItem = dynamic_cast<ItemObserver*>(itemSelected);
+  if(lItem)
+  {
+    if(!lItem->getModel())
+    {
+      return false;
+    }
+
+    Properties* props = new Properties("");
+    Properties* beforeProps = lItem->getModel()->getProperties();
+    Properties* oldCommand = new Properties(*beforeProps);
+    if(props)
+    {
+      props->setObjectName(lItem->getModel()->getProperties()->getObjectName());
+      props->setTypeObj(lItem->getModel()->getProperties()->getTypeObj());
+      props->addProperty(property);
+
+      lItem->updateProperties(props);
+
+      if(beforeProps)
+      {
+        beforeProps = lItem->getModel()->getProperties();
+        Properties* newCommand = new Properties(*beforeProps);
+        commandItems.push_back(itemSelected);
+        commandOld.push_back(oldCommand);
+        commandNew.push_back(newCommand);
+      }
+    }       
+  }
+
+  if(!m_graphicsItems.isEmpty())
+  {
+    QUndoCommand* command = new ChangePropertyCommand(commandItems, commandOld, commandNew, this);
+    lScene->addUndoStack(command);
+  }
+  return result;
+}
+
+bool te::layout::PropertiesOutside::sendPropertyToSelectedItems( Property property )
+{
+  bool result = true;
+  Scene* lScene = dynamic_cast<Scene*>(Context::getInstance().getScene()); 
+
   std::vector<QGraphicsItem*> commandItems;
   std::vector<Properties*> commandOld;
   std::vector<Properties*> commandNew;
@@ -226,20 +298,25 @@ void te::layout::PropertiesOutside::onChangePropertyValue( Property property )
       ItemObserver* lItem = dynamic_cast<ItemObserver*>(item);
       if(lItem)
       {
+        if(!lItem->getModel())
+        {
+          continue;
+        }
+
         Properties* props = new Properties("");
-        Properties* beforeProps = lItem->getProperties();
+        Properties* beforeProps = lItem->getModel()->getProperties();
         Properties* oldCommand = new Properties(*beforeProps);
         if(props)
         {
-          props->setObjectName(lItem->getProperties()->getObjectName());
-          props->setTypeObj(lItem->getProperties()->getTypeObj());
+          props->setObjectName(lItem->getModel()->getProperties()->getObjectName());
+          props->setTypeObj(lItem->getModel()->getProperties()->getTypeObj());
           props->addProperty(property);
 
           lItem->updateProperties(props);
 
           if(beforeProps)
           {
-            beforeProps = lItem->getProperties();
+            beforeProps = lItem->getModel()->getProperties();
             Properties* newCommand = new Properties(*beforeProps);
             commandItems.push_back(item);
             commandOld.push_back(oldCommand);
@@ -255,9 +332,7 @@ void te::layout::PropertiesOutside::onChangePropertyValue( Property property )
     QUndoCommand* command = new ChangePropertyCommand(commandItems, commandOld, commandNew, this);
     lScene->addUndoStack(command);
   }
-
-  changeMapVisitable(property);
-  lScene->update();
+  return result;
 }
 
 void te::layout::PropertiesOutside::closeEvent( QCloseEvent * event )
@@ -332,3 +407,9 @@ void te::layout::PropertiesOutside::onClear( std::vector<std::string> names )
   m_nameLabel->setText(tr("Component::"));
   m_layoutPropertyBrowser->clearAll();
 }
+
+
+
+
+
+

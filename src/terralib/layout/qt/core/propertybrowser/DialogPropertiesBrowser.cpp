@@ -35,6 +35,7 @@
 #include "../BuildGraphicsOutside.h"
 #include "../../outside/GridSettingsOutside.h"
 #include "../../../outside/GridSettingsModel.h"
+#include "../ItemUtils.h"
 
 // Qt
 #include <QVariant>
@@ -45,6 +46,7 @@
 #include <QMessageBox>
 #include <QDesktopWidget>
 #include <QApplication>
+#include <QByteArray>
 
 te::layout::DialogPropertiesBrowser::DialogPropertiesBrowser(QObject* parent) :
   AbstractPropertiesBrowser(parent),
@@ -279,7 +281,15 @@ void te::layout::DialogPropertiesBrowser::onShowGridSettingsDlg()
     return;
   }
 
-  //model->updateProperties();
+  ItemUtils* utils = Context::getInstance().getItemUtils();
+  if(!utils)
+  {
+    return;
+  }
+
+  std::vector<te::layout::Properties*> props = utils->getGridMapProperties();
+
+  model->setProperties(props);
 
   gridSettings->show();
 }

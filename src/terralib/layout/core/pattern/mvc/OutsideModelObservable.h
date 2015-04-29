@@ -191,10 +191,7 @@ namespace te
       int                 m_id; //!< hashcode
       bool                m_resizable; //!< true if resizable, false otherwise
       int                 m_hashCode;
-
-    private:
-
-      std::string m_name; //!< name of the MVC widget
+      std::string         m_name; //!< name of the MVC widget     
     };
   }
 }

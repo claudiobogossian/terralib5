@@ -246,7 +246,7 @@ namespace te
 
     inline te::layout::Property Properties::contains( std::string name )
     {
-      Property property;
+      Property property(0);
       property.setName(name);
 
       if(std::find(m_properties.begin(), m_properties.end(), property) != m_properties.end())

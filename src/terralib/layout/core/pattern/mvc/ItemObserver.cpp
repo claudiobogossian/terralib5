@@ -51,11 +51,6 @@ te::layout::ItemObserver::~ItemObserver()
     delete (ItemController*)m_controller;
 }
 
-te::layout::Properties* te::layout::ItemObserver::getProperties() const
-{
-  return m_model->getProperties();
-}
-
 void te::layout::ItemObserver::redraw( bool bRefresh )
 {
   if (bRefresh)
@@ -118,11 +113,6 @@ te::layout::ItemController* te::layout::ItemObserver::getController()
 te::layout::Observable* te::layout::ItemObserver::getModel()
 {
   return m_model;
-}
-
-std::string te::layout::ItemObserver::getName()
-{
-  return m_model->getName();
 }
 
 void te::layout::ItemObserver::setZValueItem( int z )

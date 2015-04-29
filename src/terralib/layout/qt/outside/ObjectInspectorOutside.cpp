@@ -135,6 +135,10 @@ void te::layout::ObjectInspectorOutside::itemsInspector(QList<QGraphicsItem*> gr
       ItemObserver* lItem = dynamic_cast<ItemObserver*>(item);
       if(lItem)
       {        
+        if(!lItem->getModel())
+        {
+          continue;
+        }
 
         if(lItem->getModel()->getType() == enumObj->getPaperItem())
         {
@@ -148,8 +152,7 @@ void te::layout::ObjectInspectorOutside::itemsInspector(QList<QGraphicsItem*> gr
         }
 
         Property pro_class;
-        pro_class.setName(lItem->getName());
-        pro_class.setId("");
+        pro_class.setName(lItem->getModel()->getName());
         pro_class.setValue(lItem->getNameClass(), dataType->getDataTypeString());
         pro_class.setEditable(false);
         
@@ -187,7 +190,10 @@ void te::layout::ObjectInspectorOutside::selectItems( QList<QGraphicsItem*> grap
       ItemObserver* iOb = dynamic_cast<ItemObserver*>(item);
       if(iOb)
       {
-        m_layoutPropertyBrowser->selectProperty(iOb->getName());
+        if(iOb->getModel())
+        {
+          m_layoutPropertyBrowser->selectProperty(iOb->getModel()->getName());
+        }
       }
     }
   }

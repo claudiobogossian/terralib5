@@ -107,32 +107,29 @@ te::layout::Properties* te::layout::MapModel::getProperties() const
     name = m_layer->getTitle();
   }
 
-  Property pro_layer;
+  Property pro_layer(m_hashCode);
   pro_layer.setName("layer");
-  pro_layer.setId("unknown");
   pro_layer.setValue(name, dataType->getDataTypeString());
   pro_layer.setEditable(false);
   m_properties->addProperty(pro_layer);
 
-  Property pro_mapbackgroundcolor;
+  Property pro_mapbackgroundcolor(m_hashCode);
   pro_mapbackgroundcolor.setName("map_color");
-  pro_mapbackgroundcolor.setId("unknown");
   pro_mapbackgroundcolor.setValue(m_mapbackgroundColor, dataType->getDataTypeColor());
   pro_mapbackgroundcolor.setMenu(true);
   m_properties->addProperty(pro_mapbackgroundcolor);
 
-  Property pro_fixed;
+  Property pro_fixed(m_hashCode);
   pro_fixed.setName("fixedScale");
-  pro_fixed.setId("unknown");
   pro_fixed.setValue(m_fixedScale, dataType->getDataTypeBool());
   m_properties->addProperty(pro_fixed);
 
-  Property pro_mapDisplacementX;
+  Property pro_mapDisplacementX(m_hashCode);
   pro_mapDisplacementX.setName("map_displacementX");
   pro_mapDisplacementX.setValue(m_mapDisplacementX, dataType->getDataTypeDouble());  
   m_properties->addProperty(pro_mapDisplacementX);
 
-  Property pro_mapDisplacementY;
+  Property pro_mapDisplacementY(m_hashCode);
   pro_mapDisplacementY.setName("map_displacementY");
   pro_mapDisplacementY.setValue(m_mapDisplacementY, dataType->getDataTypeDouble());  
   m_properties->addProperty(pro_mapDisplacementY);

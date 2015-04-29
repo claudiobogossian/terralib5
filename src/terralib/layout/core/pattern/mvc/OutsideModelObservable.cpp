@@ -123,13 +123,10 @@ te::layout::Properties* te::layout::OutsideModelObservable::getProperties() cons
 {
   m_properties->clear();
 
-  Property pro_name;
-  pro_name.setName("Oi");
-  Property pro_label;
-  //pro_label.setLabel("SHOW");
+  Property pro_name(m_hashCode);
+  pro_name.setName(m_name);
 
   m_properties->addProperty(pro_name);
-  m_properties->addProperty(pro_label);
 
   m_properties->setTypeObj(m_type);
   return m_properties;

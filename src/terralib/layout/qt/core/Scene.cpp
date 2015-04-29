@@ -228,7 +228,8 @@ void te::layout::Scene::deleteItems()
         ItemObserver* obs = dynamic_cast<ItemObserver*>(item);
         if(obs)
         {
-          names.push_back(obs->getName());
+          if(obs->getModel())
+            names.push_back(obs->getModel()->getName());
         }
         delete item;
         item = 0;
@@ -256,7 +257,8 @@ void te::layout::Scene::removeSelectedItems()
       ItemObserver* obs = dynamic_cast<ItemObserver*>(item);
       if(obs)
       {
-        names.push_back(obs->getName());
+        if(obs->getModel())
+          names.push_back(obs->getModel()->getName());
       }
     }
   }
@@ -480,7 +482,8 @@ std::vector<te::layout::Properties*> te::layout::Scene::getItemsProperties()
         if(!lItem->isPrintable())
           continue;
 
-        props.push_back(lItem->getProperties());
+        if(lItem->getModel())
+          props.push_back(lItem->getModel()->getProperties());
       }
     }
   }
@@ -568,6 +571,11 @@ void te::layout::Scene::exportItemsToImage(std::string dir)
         int w = 0;
         int h = 0;
 
+        if(!it->getModel())
+        {
+          continue;
+        }
+
         te::color::RGBAColor** rgba = it->getRGBAColorImage(w, h);
                 
         if(!rgba)
@@ -575,10 +583,10 @@ void te::layout::Scene::exportItemsToImage(std::string dir)
         
         //QRectF rect = item->boundingRect();               
         img = te::qt::widgets::GetImage(rgba, w, h);
-        std::string dirName = dir + "/" + it->getName() +".png";
-
         if(!img)
           continue;
+
+        std::string dirName = dir + "/" + it->getModel()->getName() +".png";
 
         img->save(dirName.c_str());
 
@@ -666,7 +674,12 @@ void te::layout::Scene::selectItem( std::string name )
       ItemObserver* it = dynamic_cast<ItemObserver*>(item);
       if(it)
       {
-        if(it->getName().compare(name) == 0)
+        if(!it->getModel())
+        {
+          continue;
+        }
+
+        if(it->getModel()->getName().compare(name) == 0)
         {
           item->setSelected(true);
         }

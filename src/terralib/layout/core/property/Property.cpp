@@ -33,16 +33,17 @@
 #include <vector>
 #include <algorithm>
 
-te::layout::Property::Property() :
+te::layout::Property::Property( int parentItemHashCode ) :
+  m_parentItemHashCode(parentItemHashCode),
   m_name("unknown"),
   m_type(0),
-  m_id("unknown"),
   m_editable(true),
   m_label(""),
   m_menu(false),
   m_icon(""),
   m_visible(true),
-  m_required(false)
+  m_required(false),
+  m_composeWidget(false)
 {
   m_type = Enums::getInstance().getEnumDataType()->getDataTypeNone();
 }
@@ -65,16 +66,6 @@ void te::layout::Property::setName( std::string name )
 te::layout::EnumType* te::layout::Property::getType()
 {
   return m_type;
-}
-
-std::string te::layout::Property::getId()
-{
-  return m_id;
-}
-
-void te::layout::Property::setId( std::string id )
-{
-  m_id = id;
 }
 
 te::layout::Variant te::layout::Property::getValue()
@@ -204,7 +195,6 @@ void te::layout::Property::clear()
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
 
   m_name = "unknown";
-  m_id = "unknown";
   m_editable = true;
   m_type = dataType->getDataTypeNone();
   m_value.clear();
@@ -213,6 +203,9 @@ void te::layout::Property::clear()
   m_subProperty.clear();
   m_menu = false;
   m_icon = "";
+  m_required = false;
+  m_composeWidget = false;
+  m_label = "";
 }
 
 void te::layout::Property::setValue( Variant variant )
@@ -275,3 +268,27 @@ void te::layout::Property::setRequired( bool required )
 {
   m_required = required;
 }
+
+void te::layout::Property::setParentItemHashCode( int hashCode )
+{
+  m_parentItemHashCode = hashCode;
+}
+
+int te::layout::Property::getParentItemHashCode()
+{
+  return m_parentItemHashCode;
+}
+
+bool te::layout::Property::isComposeWidget()
+{
+  return m_composeWidget;
+}
+
+void te::layout::Property::setComposeWidget( bool compose )
+{
+  m_composeWidget = compose;
+}
+
+
+
+

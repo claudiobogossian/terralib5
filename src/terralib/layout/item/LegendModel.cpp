@@ -288,9 +288,8 @@ te::layout::Properties* te::layout::LegendModel::getProperties() const
 
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
 
-  Property pro_mapName;
+  Property pro_mapName(m_hashCode);
   pro_mapName.setName(m_sharedProps->getMapName());
-  pro_mapName.setId("");
   pro_mapName.setValue(m_mapName, dataType->getDataTypeStringList());
   Variant v;
   v.setValue(m_mapName, dataType->getDataTypeString());
@@ -298,16 +297,14 @@ te::layout::Properties* te::layout::LegendModel::getProperties() const
   
   m_properties->addProperty(pro_mapName);
 
-  Property pro_font;
+  Property pro_font(m_hashCode);
   pro_font.setName("Font");
-  pro_font.setId("");
   pro_font.setValue(m_font, dataType->getDataTypeFont());
   pro_font.setMenu(true);
   m_properties->addProperty(pro_font);
 
-  Property pro_fontcolor;
+  Property pro_fontcolor(m_hashCode);
   pro_fontcolor.setName("font_color");
-  pro_fontcolor.setId("unknown");
   pro_fontcolor.setValue(m_fontColor, dataType->getDataTypeColor());
   pro_fontcolor.setMenu(true);
   m_properties->addProperty(pro_fontcolor);

@@ -45,11 +45,11 @@ namespace te
     class TELAYOUTEXPORT Property
     {
       public:
-
+        
         /*!
           \brief Constructor
         */ 
-        Property();
+        Property(int parentItemHashCode = 0);
 
         /*!
           \brief Destructor
@@ -79,20 +79,6 @@ namespace te
 
 	      std::vector<te::layout::Property> getSubProperty();
         
-        /*!
-          \brief Returns the hashcode of the object that owns this property.
-
-          \return hashcode
-        */
-        std::string getId();
-
-        /*!
-          \brief Sets the hashcode of the object that owns this property. 
-
-          \param hashcode
-        */
-        void setId(std::string id);
-
         /*
           To use this method, you need to declare a variable with 
           corresponding type and pass it as the method parameter.
@@ -237,13 +223,43 @@ namespace te
         */
         void setRequired(bool required);
 
+        /*!
+          \brief Sets the hashcode of the object that owns this property. 
+
+          \param hashcode
+        */
+        void setParentItemHashCode(int hashCode);
+
+        /*!
+          \brief Returns the hashcode of the object that owns this property.
+
+          \return hashcode
+        */
+        int getParentItemHashCode();
+
+        /*!
+          \brief Returns true if property compose a widget, false otherwise.
+          If true, and the object that owns this property has a parent, it will not appear in a property browser or a menu, it will be used within a widget.
+
+          \return true if property compose a widget, false otherwise 
+        */
+        bool isComposeWidget();
+
+        /*!
+          \brief Sets true if property compose a widget, false otherwise
+          If true, and the object that owns this property has a parent, it will not appear in a property browser or a menu, it will be used within a widget.
+
+          \param true if property compose a widget, false otherwise 
+        */
+        void setComposeWidget(bool compose);
+      
         bool operator ==(const Property& other); 
 
     protected:
 
+      int m_parentItemHashCode; //!< hashcode of the object that owns this property
       std::string m_name; //!< name of this property
       EnumType* m_type; //!< data type of this property
-      std::string m_id; //!< hashcode of the object that owns this property
       Variant m_value; //!<
       Variant m_currentChoice; //!<
       bool m_editable; //!<
@@ -254,6 +270,7 @@ namespace te
       std::string m_icon; //!<
       bool m_visible; //!< visibility
       bool m_required; //!< required
+      bool m_composeWidget; //!< compose widget
     };
 
     template <typename ValueType>
