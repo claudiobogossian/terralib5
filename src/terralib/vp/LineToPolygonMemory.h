@@ -30,22 +30,18 @@
 
 //Terralib
 #include "../common/Exception.h"
-#include "../datatype/Property.h"
-#include "../dataaccess/dataset/DataSetType.h"
 #include "../geometry/Geometry.h"
-#include "../memory/DataSet.h"
-#include "../statistics/core/Enums.h"
+#include "../geometry/GeometryCollection.h"
+#include "../geometry/LineString.h"
+#include "../geometry/MultiPolygon.h"
+#include "../geometry/Polygon.h"
 
 #include "LineToPolygonOp.h"
 #include "Config.h"
-#include "Enums.h"
 #include "Exception.h"
 
-
 // STL
-#include <map>
 #include <memory>
-#include <string>
 #include <vector>
 
 namespace te
