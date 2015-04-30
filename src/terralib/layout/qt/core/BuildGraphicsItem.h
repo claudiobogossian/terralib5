@@ -91,10 +91,39 @@ namespace te
 		  
 		      \return item value
         */
-        QGraphicsItem* createItem(te::layout::EnumType* type);
+        QGraphicsItem* createItem(te::layout::EnumType* type, bool draw = true);
+
+        virtual bool addChild(QGraphicsItem* child, int x, int y);
 
       protected:
 	  
+        /*!
+          \brief Creates the name of the new graphic object. Adds the number that corresponds to how many objects of this type have already been created.
+
+          \param name of the class type of the graphic object
+		      \param type of the object
+
+          \return name
+        */
+        std::string nameItem(te::layout::EnumType* type);
+
+        /*!
+          \brief 
+
+          \param x
+		      \param y
+
+          \return 
+        */
+        virtual QGraphicsItem* intersectionSelectionItem(int x, int y);
+
+        /*!
+          \brief 
+
+          \param name of the class type of the graphic object
+        */
+        virtual void afterBuild(QGraphicsItem* item, bool draw = true);
+
 		    /*!
           \brief Create graphic object of type PaperItem
 		  		  
@@ -135,7 +164,7 @@ namespace te
 		  		  
 		      \return new object 
         */
-	    QGraphicsItem* createLegend();
+	      QGraphicsItem* createLegend();
 		
 		    /*!
           \brief Create graphic object of type ScaleItem
@@ -262,16 +291,6 @@ namespace te
 		      \return new object 
         */
         QGraphicsItem* createMapLocation();
-
-		   /*!
-          \brief Creates the name of the new graphic object. Adds the number that corresponds to how many objects of this type have already been created.
-
-          \param name of the class type of the graphic object
-		  \param type of the object
-
-          \return name
-        */
-        std::string nameItem(te::layout::EnumType* type);
     };
   }
 }

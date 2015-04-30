@@ -50,7 +50,8 @@ te::layout::ItemModelObservable::ItemModelObservable() :
   m_resizable(true),
   m_angle(0),
   m_hashCode(0),
-  m_oldAngle(0)
+  m_oldAngle(0),
+  m_enableChildren(false)
 {
   EnumObjectType* type = Enums::getInstance().getEnumObjectType();
   m_type = type->getObjectUnknown();
@@ -514,5 +515,15 @@ te::gm::Coord2D te::layout::ItemModelObservable::getOldPos()
 void te::layout::ItemModelObservable::draw( ContextItem context )
 {
 
+}
+
+bool te::layout::ItemModelObservable::isEnableChildren()
+{
+  return m_enableChildren;
+}
+
+void te::layout::ItemModelObservable::setEnableChildren( bool value )
+{
+  m_enableChildren = value;
 }
 

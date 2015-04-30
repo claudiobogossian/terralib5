@@ -65,6 +65,11 @@ namespace te
           \brief Destructor
         */
         virtual ~AbstractBuildGraphicsItem();
+        
+        /*!
+          \brief Clear all configuration for create or build a graphic object. 
+        */
+        virtual void clear();
 
       protected:
         
@@ -96,11 +101,6 @@ namespace te
         */
         virtual std::string nameItem(te::layout::EnumType* type) = 0;
 
-		    /*!
-          \brief Clear all configuration for create or build a graphic object. 
-        */
-        virtual void clear();
-
       protected:
 
         SharedProperties*       m_sharedProps; //!< Default properties of all graphics objects.
@@ -108,7 +108,6 @@ namespace te
         te::gm::Coord2D         m_coord; //!< Coordinate of a graphic object.
         int                     m_zValue; //!< Z Value of a graphic object.
         int                     m_id; //!< Id of a graphic object.
-        bool                    m_redraw; //!< Information about the graphic object created or built has to be redrawing.
     };
   }
 }

@@ -62,6 +62,7 @@ te::layout::MapModel::MapModel() :
   m_backgroundColor = te::color::RGBAColor(255, 255, 255, 0);
 
   m_mapbackgroundColor = te::color::RGBAColor(255, 255, 255, 0);
+  m_enableChildren = true;
 }
 
 te::layout::MapModel::~MapModel()

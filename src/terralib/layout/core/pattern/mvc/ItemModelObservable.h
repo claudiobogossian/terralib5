@@ -251,6 +251,20 @@ namespace te
           \return value of old position
          */
         virtual te::gm::Coord2D getOldPos();
+
+        /*!
+          \brief Returns true if MVC component can have children, false otherwise.
+
+          \return true if MVC component can have children, false otherwise
+         */
+        virtual bool isEnableChildren();
+
+        /*!
+          \brief Sets true if MVC component can have children, false otherwise.
+
+          \param true if MVC component can have children, false otherwise
+         */
+        virtual void setEnableChildren(bool value);
                 
       protected:
 
@@ -286,6 +300,7 @@ namespace te
         int                       m_hashCode;
         double                    m_oldAngle; //!< value of old rotation
         te::gm::Coord2D           m_oldPos; //!< value of old position
+        bool                      m_enableChildren; //!< true if MVC component can have children, false otherwise
     };
   }
 }
