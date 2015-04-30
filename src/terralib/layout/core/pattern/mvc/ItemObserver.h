@@ -87,13 +87,6 @@ namespace te
         virtual te::gm::Coord2D getPosition() = 0;
                 
         /*!
-          \brief Updated model state with properties.
-
-          \param properties
-        */
-        virtual void updateProperties(te::layout::Properties* properties);
-
-        /*!
           \brief Redraws the graphic component.
         */
         virtual void redraw(bool bRefresh = true);

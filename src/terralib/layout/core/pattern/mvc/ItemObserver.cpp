@@ -86,15 +86,6 @@ void te::layout::ItemObserver::refresh(bool pos)
   applyRotation();
 }
 
-void te::layout::ItemObserver::updateProperties( te::layout::Properties* properties )
-{
-  if(m_controller)
-  {
-    m_controller->updateProperties(properties);
-    redraw();
-  }
-}
-
 void te::layout::ItemObserver::setPrintable( bool print )
 {
   m_printable = print;

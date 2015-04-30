@@ -40,6 +40,8 @@ namespace te
 {
   namespace layout
   {
+    class ItemModelObservable;
+
 	/*!
   \brief Class responsible for creating or building graphics objects. All objects are children of QGraphicsItem and ItemObserver.
     An object of a type is created from a coordinated. Also an object of a type can be built from the properties saved in a template.
@@ -73,14 +75,14 @@ namespace te
         */
         QGraphicsItem* rebuildItem(te::layout::Properties* props, bool draw = true);
 		
-		/*!
-          \brief Method to create a graphic object from the properties.
+		   /*!
+         \brief Method to create a graphic object from the properties.
 		  
-		  \param mode type of the object will created
-		  \param coordinate represent the x,y coordinate
-		  \param draw graphics object has or not to be drawing
+		     \param mode type of the object will created
+		     \param coordinate represent the x,y coordinate
+		     \param draw graphics object has or not to be drawing
 		  
-		  \return z value
+		     \return z value
         */
         QGraphicsItem* createItem(te::layout::EnumType* mode, const te::gm::Coord2D& coordinate, bool draw = true);
 
@@ -93,6 +95,13 @@ namespace te
         */
         QGraphicsItem* createItem(te::layout::EnumType* type, bool draw = true);
 
+        /*!
+          \brief Checks whether the coordinated intersects an item and adds a child. 
+          Checks ItemModelObservable::isEnableChildren().
+
+          \param x axis x coordinate
+          \param y axis y coordinate
+        */
         virtual bool addChild(QGraphicsItem* child, int x, int y);
 
       protected:
@@ -108,19 +117,20 @@ namespace te
         std::string nameItem(te::layout::EnumType* type);
 
         /*!
-          \brief 
+          \brief Checks whether the coordinated intersects an item and returns.
 
-          \param x
-		      \param y
+          \param x axis x coordinate
+		      \param y axis y coordinate
 
           \return 
         */
         virtual QGraphicsItem* intersectionSelectionItem(int x, int y);
-
+        
         /*!
-          \brief 
+          \brief After component construction, this method checks and adds a child, position and zValue. If necessary, also redraws.
 
-          \param name of the class type of the graphic object
+          \param item built item
+          \param draw if true the component will be redraw, false otherwise
         */
         virtual void afterBuild(QGraphicsItem* item, bool draw = true);
 
@@ -265,28 +275,28 @@ namespace te
         QGraphicsItem* createBarCode();
 
         /*!
-          \brief Create graphic object of type GridMapItem
+          \brief Create graphic object of type GridPlanarItem
 		  		  
 		      \return new object 
         */
         QGraphicsItem* createGridPlanar();
 
         /*!
-          \brief Create graphic object of type GridMapItem
+          \brief Create graphic object of type GridGeodesicItem
 		  		  
 		      \return new object 
         */
         QGraphicsItem* createGridGeodesic();
 
         /*!
-          \brief Create graphic object of type GridMapItem
+          \brief Create graphic object of type NorthItem
 		  		  
 		      \return new object 
         */
         QGraphicsItem* createNorth();
 
         /*!
-          \brief Create graphic object of type GridMapItem
+          \brief Create graphic object of type MapLocationItem
 		  		  
 		      \return new object 
         */

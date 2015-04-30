@@ -263,7 +263,9 @@ bool te::layout::ChangePropertyCommand::checkItem( QGraphicsItem* item, Properti
   if(equals(props, propsModel))
     return false;
 
-  obs->updateProperties(props);
+  model->updateProperties(props);
+  obs->redraw();
+
   return true;
 }
 

@@ -510,7 +510,7 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createPaper()
   PaperItem* view = dynamic_cast<PaperItem*>(itemObs);
   if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }  
   return view;
 }
@@ -533,7 +533,7 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createMap()
   MapItem* view = dynamic_cast<MapItem*>(itemObs);
   if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
   return view;
 }
@@ -556,7 +556,7 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createGridMap()
   GridMapItem* view = dynamic_cast<GridMapItem*>(itemObs);
   if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
   return view;
 }
@@ -579,7 +579,7 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createText()
   TextItem* view = dynamic_cast<TextItem*>(itemObs); 
   if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
   return view;
 }
@@ -602,7 +602,7 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createRectangle()
   RectangleItem* view = dynamic_cast<RectangleItem*>(itemObs); 
   if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
   return view;
 }
@@ -625,7 +625,7 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createLegend()
   LegendItem* view = dynamic_cast<LegendItem*>(itemObs); 
   if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
   return view;
 }
@@ -648,7 +648,7 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createScale()
   ScaleItem* view = dynamic_cast<ScaleItem*>(itemObs); 
   if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
   return view;
 }
@@ -671,7 +671,7 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createItemGroup()
   ItemGroup* view = dynamic_cast<ItemGroup*>(itemObs); 
   if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
   return view;
 }
@@ -694,7 +694,7 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createMovingItemGroup()
   MovingItemGroup* view = dynamic_cast<MovingItemGroup*>(itemObs); 
   if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
   return view;
 }
@@ -717,7 +717,7 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createImage()
   ImageItem* view = dynamic_cast<ImageItem*>(itemObs); 
   if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
   return view;
 }
@@ -740,7 +740,7 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createArrow()
   ArrowItem* view = dynamic_cast<ArrowItem*>(itemObs); 
   if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
   return view;
 }
@@ -763,7 +763,7 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createEllipse()
   EllipseItem* view = dynamic_cast<EllipseItem*>(itemObs); 
   if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
   return view;
 }
@@ -786,7 +786,7 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createPoint()
   PointItem* view = dynamic_cast<PointItem*>(itemObs); 
   if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
   return view;
 }
@@ -809,7 +809,7 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createTextGrid()
   TextGridItem* view = dynamic_cast<TextGridItem*>(itemObs); 
   if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
   return view;
 }
@@ -832,7 +832,7 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createTitle()
   TitleItem* view = dynamic_cast<TitleItem*>(itemObs); 
   if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
   return view;
 }
@@ -855,7 +855,7 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createLegendChild()
   LegendChildItem* view = dynamic_cast<LegendChildItem*>(itemObs); 
   if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
   return view;
 }
@@ -882,7 +882,7 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createLine()
   LineItem* view = dynamic_cast<LineItem*>(itemObs); 
   if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
   return view;
 }
@@ -909,7 +909,7 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createPolygon()
   PolygonItem* view = dynamic_cast<PolygonItem*>(itemObs); 
   if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
   return view;
 }
@@ -936,7 +936,7 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createBalloon()
   BalloonItem* view = dynamic_cast<BalloonItem*>(itemObs); 
   if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
   return view;
 }
@@ -963,7 +963,7 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createBarCode()
   BarCodeItem* view = dynamic_cast<BarCodeItem*>(itemObs);
   if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }  
   return view;
 }
@@ -986,7 +986,7 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createGridPlanar()
   GridPlanarItem* view = dynamic_cast<GridPlanarItem*>(itemObs); 
   if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
   return view;
 }
@@ -1009,7 +1009,7 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createGridGeodesic()
   GridGeodesicItem* view = dynamic_cast<GridGeodesicItem*>(itemObs); 
   if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
   return view;
 }
@@ -1036,7 +1036,7 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createNorth()
   NorthItem* view = dynamic_cast<NorthItem*>(itemObs);
   if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
   return view;
 }
@@ -1063,10 +1063,12 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createMapLocation()
   MapLocationItem* view = dynamic_cast<MapLocationItem*>(itemObs);
   if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
   return view;
 }
+
+
 
 
 

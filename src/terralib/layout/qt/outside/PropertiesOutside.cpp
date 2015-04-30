@@ -261,7 +261,8 @@ bool te::layout::PropertiesOutside::sendPropertyToSelectedItem( Property propert
       props->setTypeObj(lItem->getModel()->getProperties()->getTypeObj());
       props->addProperty(property);
 
-      lItem->updateProperties(props);
+      lItem->getModel()->updateProperties(props);
+      lItem->redraw();
 
       if(beforeProps)
       {
@@ -312,7 +313,8 @@ bool te::layout::PropertiesOutside::sendPropertyToSelectedItems( Property proper
           props->setTypeObj(lItem->getModel()->getProperties()->getTypeObj());
           props->addProperty(property);
 
-          lItem->updateProperties(props);
+          lItem->getModel()->updateProperties(props);
+          lItem->redraw();
 
           if(beforeProps)
           {
