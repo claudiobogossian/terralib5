@@ -208,10 +208,8 @@ QtTreePropertyBrowser* te::layout::PropertyBrowser::getPropertyEditor()
   return m_propertyEditor;
 }
 
-bool te::layout::PropertyBrowser::addProperty( Property property )
+QtProperty* te::layout::PropertyBrowser::addProperty( Property property )
 {
-  bool result = true;
-
   te::color::RGBAColor color;
   QColor qcolor;
   QFont qfont;
@@ -221,9 +219,9 @@ bool te::layout::PropertyBrowser::addProperty( Property property )
 
   if(!dataType)
   {
-    return false;
+    return 0;
   }
-     
+
   m_changeQtPropertyVariantValue = true;
 
   QtVariantProperty* vproperty = 0;
@@ -244,11 +242,11 @@ bool te::layout::PropertyBrowser::addProperty( Property property )
     }
     else
     {
-      result = false;
+      return pproperty;
     }
   }
   m_changeQtPropertyVariantValue = false;
-  return result;
+  return vproperty;
 }
 
 bool te::layout::PropertyBrowser::removeProperty( Property property )
@@ -364,6 +362,44 @@ te::layout::Properties* te::layout::PropertyBrowser::getProperties()
 
   return properties;
 }
+
+QtProperty* te::layout::PropertyBrowser::findProperty( std::string name )
+{
+  QtProperty* prop = 0;
+
+  prop = m_variantPropertiesBrowser->findProperty(name);
+  if(!prop)
+  {
+    prop = m_dialogPropertiesBrowser->findProperty(name);
+  }
+  return prop;
+}
+
+bool te::layout::PropertyBrowser::addSubProperty( QtProperty* prop, QtProperty* subProp )
+{
+  if(!prop)
+  {
+    return false;
+  }
+
+  prop->addSubProperty(subProp);
+  return true;
+}
+
+bool te::layout::PropertyBrowser::addSubProperty( Property prop, Property subProp )
+{
+  if(prop.isNull() || subProp.isNull())
+  {
+    return false;
+  }
+
+  QtProperty* addProp = addProperty(prop);
+  QtProperty* addSubProp = addProperty(subProp);  
+  
+  return addSubProperty(addProp, addSubProp);
+}
+
+
 
 
 

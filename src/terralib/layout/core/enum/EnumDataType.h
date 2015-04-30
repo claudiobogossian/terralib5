@@ -150,6 +150,13 @@ namespace te
         */
         virtual EnumType* getDataTypeTextGridSettings() const;
 
+        /*!
+          \brief Returns value that represents type Group (string) belonging to enumeration.
+		  
+		      \return enum value   	  
+        */
+        virtual EnumType* getDataTypeGroup() const;
+
       protected:
 
         /*!
@@ -172,6 +179,7 @@ namespace te
         EnumType* m_dataTypeFont; //!< value that represents type Font belonging to enumeration
         EnumType* m_dataTypeImage; //!< value that represents type image (string) belonging to enumeration
         EnumType* m_dataTypeTextGridSettings; //!< value that represents type TextGridSettings (string) belonging to enumeration
+        EnumType* m_dataTypeGroup; //!< value that represents type Group (string) belonging to enumeration
     };
   }
 }

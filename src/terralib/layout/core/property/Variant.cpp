@@ -217,6 +217,16 @@ void te::layout::Variant::convertValue( const void* valueCopy )
        m_sValue = *sp;
      }
    }
+   else if(m_type == dataType->getDataTypeGroup())
+   {
+     // Cast it back to a string pointer.
+     sp = static_cast<std::string*>(value);
+     if(sp)
+     {
+       null = false;
+       m_sValue = *sp;
+     }
+   }
   }
   catch (std::exception const& e)
   {
@@ -544,3 +554,6 @@ bool te::layout::Variant::toBool( std::string str )
     return false;
   }
 }
+
+
+
