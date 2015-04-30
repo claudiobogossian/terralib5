@@ -471,6 +471,27 @@ namespace te
         virtual std::auto_ptr<TimeSeriesDataSet> getDataSet(const TimeSeriesDataSetInfo& info, 
                                  const te::dt::DateTime& dt, te::dt::TemporalRelation r = te::dt::DURING,
                                  te::common::TraverseType travType = te::common::FORWARDONLY) = 0;
+
+        virtual std::auto_ptr<TimeSeriesDataSet> getDataSet(const TimeSeriesDataSetInfo& info, const te::gm::Envelope& e,
+                                 te::gm::SpatialRelation r = te::gm::INTERSECTS,
+                                 te::common::TraverseType travType = te::common::FORWARDONLY) = 0;
+        
+        virtual std::auto_ptr<TimeSeriesDataSet> getDataSet(const TimeSeriesDataSetInfo& info, const te::gm::Geometry& geom, 
+                                 te::gm::SpatialRelation r = te::gm::INTERSECTS,
+                                 te::common::TraverseType travType = te::common::FORWARDONLY) = 0;
+
+        virtual std::auto_ptr<TimeSeriesDataSet> getDataSet(const TimeSeriesDataSetInfo& info,
+                                                    const te::dt::DateTime& dt, 
+                                                    te::dt::TemporalRelation tr,
+                                                    const te::gm::Envelope& e, 
+                                                    te::gm::SpatialRelation sr = te::gm::INTERSECTS,
+                                                    te::common::TraverseType travType = te::common::FORWARDONLY) = 0;
+
+        virtual std::auto_ptr<TimeSeriesDataSet> getDataSet(const TimeSeriesDataSetInfo& info, 
+                                 const te::gm::Geometry& geom, te::gm::SpatialRelation sr,
+                                 const te::dt::DateTime& dt, te::dt::TemporalRelation tr,
+                                 te::common::TraverseType travType = te::common::FORWARDONLY) = 0;
+
         //@}
                
         /*! \name Operations for loading spatiotemporal data types

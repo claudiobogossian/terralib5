@@ -114,7 +114,8 @@ std::auto_ptr<te::da::DataSet> te::st::TimeSeriesDataSetLayer::getData(const std
                                                               te::common::TraverseType travType,
                                                               const te::common::AccessPolicy accessPolicy) const
 {
-  std::auto_ptr<te::da::DataSet> result;
+  std::auto_ptr<te::st::TimeSeriesDataSet> tsds = te::st::TimeSeriesDataSetLayer::getTimeSeriesDataset(*g, r, travType);
+  std::auto_ptr<te::da::DataSet> result = tsds->release();
   return result;
 }
 
@@ -143,14 +144,14 @@ std::auto_ptr<te::st::TimeSeriesDataSet> te::st::TimeSeriesDataSetLayer::getTime
                                                                                               te::gm::SpatialRelation r,
                                                                                               te::common::TraverseType travType) const
 {
-  return te::st::STDataLoader::getDataSet(*m_info.get(), travType);
+  return te::st::STDataLoader::getDataSet(*m_info.get(), e, r, travType);
 }
 
 std::auto_ptr<te::st::TimeSeriesDataSet> te::st::TimeSeriesDataSetLayer::getTimeSeriesDataset(const te::gm::Geometry& g,
                                                                                               te::gm::SpatialRelation r,
                                                                                               te::common::TraverseType travType) const
 {
-  return te::st::STDataLoader::getDataSet(*m_info.get(), travType);
+  return te::st::STDataLoader::getDataSet(*m_info.get(), g, r, travType);
 }
 
 std::auto_ptr<te::da::DataSet> te::st::TimeSeriesDataSetLayer::getData( const te::dt::DateTime& dt, te::dt::TemporalRelation r,
@@ -168,7 +169,8 @@ std::auto_ptr<te::da::DataSet> te::st::TimeSeriesDataSetLayer::getData( const te
   te::common::TraverseType travType,
   te::common::AccessPolicy rwRole) const
 {
-  std::auto_ptr<te::da::DataSet> result;
+  std::auto_ptr<te::st::TimeSeriesDataSet> tds = te::st::TimeSeriesDataSetLayer::getTimeSeriesDataset(dt, tr, e, sr, travType);
+  std::auto_ptr<te::da::DataSet> result = tds->release();
   return result;
 }
 
@@ -177,14 +179,15 @@ std::auto_ptr<te::da::DataSet> te::st::TimeSeriesDataSetLayer::getData( const te
                                                                         te::common::TraverseType travType,
                                                                         te::common::AccessPolicy rwRole) const
 {
-  std::auto_ptr<te::da::DataSet> result;
+  std::auto_ptr<te::st::TimeSeriesDataSet> tds = te::st::TimeSeriesDataSetLayer::getTimeSeriesDataset(dt, tr, g, sr, travType);
+  std::auto_ptr<te::da::DataSet> result = tds->release();
   return result;
 }
 
 std::auto_ptr<te::st::TimeSeriesDataSet> te::st::TimeSeriesDataSetLayer::getTimeSeriesDataset( const te::dt::DateTime& dt, te::dt::TemporalRelation r,
                                                                                                te::common::TraverseType travType) const
 {
- return te::st::STDataLoader::getDataSet(*m_info.get(), dt, r, travType);
+  return te::st::STDataLoader::getDataSet(*m_info.get(), dt, r, travType);
 }
 
 std::auto_ptr<te::st::TimeSeriesDataSet> 
@@ -194,6 +197,7 @@ te::st::TimeSeriesDataSetLayer::getTimeSeriesDataset(const te::dt::DateTime& dt,
 {
   std::auto_ptr<te::st::TimeSeriesDataSet> result;
   return result;
+  //return te::st::STDataLoader::getDataSet(*m_info.get(), dt, tr, e, sr, travType);
 }
 
 std::auto_ptr<te::st::TimeSeriesDataSet> te::st::TimeSeriesDataSetLayer::getTimeSeriesDataset( const te::dt::DateTime& dt, te::dt::TemporalRelation tr,
@@ -202,6 +206,7 @@ std::auto_ptr<te::st::TimeSeriesDataSet> te::st::TimeSeriesDataSetLayer::getTime
 {
   std::auto_ptr<te::st::TimeSeriesDataSet> result;
   return result;
+  //return te::st::STDataLoader::getDataSet(*m_info.get(), dt, tr, g, sr, travType);
 }
 
 bool te::st::TimeSeriesDataSetLayer::isValid() const

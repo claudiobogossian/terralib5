@@ -52,17 +52,11 @@ int main(int /*argc*/, char** /*argv*/)
     //Examples of trajectories
     TrajectoryExamples();
 
-    system("pause");
-
     //Examples of coverage series
     CoverageSeriesExamples();
 
-    system("pause");
-
     //Examples of TimeSeries
     TimeSeriesExamples();
-
-    system("pause");
 
     //Finalize STDataLoader support
     te::st::STDataLoader::finalize();
