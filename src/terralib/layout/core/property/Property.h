@@ -21,6 +21,7 @@
   \file Property.h
    
    \brief A property acts like a attribute member of a object and stores the state of this attribute. A set of properties stores the state of an object.
+   Any data type, not included in the convertValue method in the class te::layout::Variant, it will be by default "std::string" value.
 
   \ingroup layout
 */
@@ -39,6 +40,7 @@ namespace te
   {
     /*!
       \brief A property acts like a attribute member of a object and stores the state of this attribute. A set of properties stores the state of an object.
+      Any data type, not included in the convertValue method in the class te::layout::Variant, it will be by default "std::string" value.
 	  
 	    \ingroup layout
 	  */
