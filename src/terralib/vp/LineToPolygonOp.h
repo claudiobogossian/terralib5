@@ -29,25 +29,15 @@
 #define __TERRALIB_VP_INTERNAL_LINETOPOLYGON_OP_H
 
 //Terralib
-
-#include "../dataaccess/dataset/DataSet.h"
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../dataaccess/dataset/ObjectIdSet.h"
 #include "../dataaccess/datasource/DataSource.h"
 
-#include "../datatype/Property.h"
-
-#include "../memory/DataSet.h"
-#include "../statistics/core/Enums.h"
-
 #include "Config.h"
-#include "Enums.h"
 
 // STL
-#include <map>
 #include <memory>
 #include <string>
-#include <vector>
 
 namespace te
 {

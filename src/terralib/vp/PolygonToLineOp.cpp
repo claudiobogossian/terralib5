@@ -21,23 +21,17 @@
  \file PolygonToLineOp.cpp
  */
 
-#include "../dataaccess/dataset/DataSet.h"
-#include "../dataaccess/dataset/DataSetAdapter.h"
-#include "../dataaccess/dataset/DataSetType.h"
-#include "../dataaccess/dataset/DataSetTypeConverter.h"
-#include "../dataaccess/dataset/ObjectIdSet.h"
-#include "../dataaccess/datasource/DataSource.h"
-#include "../dataaccess/datasource/DataSourceCapabilities.h"
-#include "../dataaccess/utils/Utils.h"
-
+// Terralib
+#include "../datatype/Enums.h"
 #include "../datatype/Property.h"
-#include "../datatype/StringProperty.h"
 
+#include "../geometry/Enums.h"
 #include "../geometry/GeometryProperty.h"
 
-#include "../statistics/core/Utils.h"
-
 #include "PolygonToLineOp.h"
+
+// STL
+#include <vector>
 
 te::vp::PolygonToLineOp::PolygonToLineOp():
   m_outDset("")
