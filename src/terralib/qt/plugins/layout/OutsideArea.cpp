@@ -38,6 +38,7 @@
 #include "../../../layout/outside/ToolbarModel.h"
 #include "../../../layout/outside/ToolbarController.h"
 #include "../../../layout/core/pattern/mvc/OutsideObserver.h"
+#include "../../../layout/qt/core/BuildGraphicsItem.h"
 
 // STL
 #include <string>
@@ -127,6 +128,16 @@ void te::qt::plugins::layout::OutsideArea::init()
     connect(m_view, SIGNAL(showView()), this, SLOT(onShowView()));
     connect(this, SIGNAL(changeMenuContext(bool)), m_view, SLOT(onMainMenuChangeContext(bool)));
     connect(m_view, SIGNAL(changeContext()), this, SLOT(onRefreshStatusBar()));
+  }
+
+  te::layout::AbstractBuildGraphicsItem* abstractBuildItem = te::layout::Context::getInstance().getAbstractBuildGraphicsItem();
+  if(abstractBuildItem)
+  {
+    te::layout::BuildGraphicsItem* buildItem = dynamic_cast<te::layout::BuildGraphicsItem*>(abstractBuildItem);
+    if(buildItem)
+    {
+      connect(buildItem, SIGNAL(addChildFinalized(QGraphicsItem*, QGraphicsItem*)), this, SLOT(onAddChildFinalized(QGraphicsItem*, QGraphicsItem*)));
+    }
   }
 
   createPropertiesDock();
@@ -528,3 +539,15 @@ void te::qt::plugins::layout::OutsideArea::onRefreshStatusBar()
   msg += s_mode;
   m_statusBar->showMessage(msg.c_str());
 }
+
+void te::qt::plugins::layout::OutsideArea::onAddChildFinalized( QGraphicsItem* parent, QGraphicsItem* child )
+{
+  QList<QGraphicsItem*> allItems = m_view->scene()->items();
+  //Refresh Inspector Object window
+  if(m_dockInspector)
+    m_dockInspector->getObjectInspectorOutside()->itemsInspector(allItems);
+}
+
+
+
+

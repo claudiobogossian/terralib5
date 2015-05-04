@@ -34,6 +34,9 @@
 #include "../../core/AbstractBuildGraphicsItem.h"
 #include "../../core/Config.h"
 
+// Qt
+#include <QObject>
+
 class QGraphicsItem;
 
 namespace te
@@ -51,8 +54,10 @@ namespace te
 
 	  \sa te::layout::AbstractBuildGraphicsItem
 	*/
-    class TELAYOUTEXPORT BuildGraphicsItem : public AbstractBuildGraphicsItem
+    class TELAYOUTEXPORT BuildGraphicsItem : public QObject, public AbstractBuildGraphicsItem
     {
+      Q_OBJECT //for slots/signals
+
       public:
 
 		/*!
@@ -103,6 +108,10 @@ namespace te
           \param y axis y coordinate
         */
         virtual bool addChild(QGraphicsItem* child, int x, int y);
+
+      signals:
+
+        void addChildFinalized(QGraphicsItem* parent, QGraphicsItem* child);
 
       protected:
 	  

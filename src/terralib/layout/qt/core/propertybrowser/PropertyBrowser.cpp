@@ -382,6 +382,7 @@ bool te::layout::PropertyBrowser::addSubProperty( QtProperty* prop, QtProperty* 
     return false;
   }
 
+  m_propertyEditor->removeProperty(subProp);
   prop->addSubProperty(subProp);
   return true;
 }

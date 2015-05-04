@@ -442,6 +442,12 @@ bool te::layout::BuildGraphicsItem::addChild( QGraphicsItem* child, int x, int y
   {
     return result;
   }
+  
+  // No add child in unselected items
+  if(!parentItem->isSelected())
+  {
+    return result;
+  }
 
   ItemObserver* itemOb = dynamic_cast<ItemObserver*>(parentItem);
   if(!itemOb)
@@ -463,6 +469,8 @@ bool te::layout::BuildGraphicsItem::addChild( QGraphicsItem* child, int x, int y
       result = true;
     }
   }
+
+  emit addChildFinalized(parentItem, child);
 
   return result;
 }
