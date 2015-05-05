@@ -236,6 +236,7 @@ te::layout::Properties* te::layout::GridMapModel::getProperties() const
   Property pro_grid_name(m_hashCode);
   pro_grid_name.setName("GridSettings");
   pro_grid_name.setMenu(true);
+  pro_grid_name.setPublic(true);
   pro_grid_name.setValue(m_name, dataType->getDataTypeGridSettings());  
   m_properties->addProperty(pro_grid_name);
 

@@ -42,6 +42,7 @@
 
 te::layout::ItemModelObservable::ItemModelObservable() :
   m_id(0),
+  m_publicProperties(0),
   m_type(0),
   m_zValue(0),
   m_sharedProps(0),
@@ -64,12 +65,15 @@ te::layout::ItemModelObservable::ItemModelObservable() :
   m_backgroundColor = te::color::RGBAColor(255, 255, 255, 0);
 
   m_borderColor = te::color::RGBAColor(0, 0, 0, 255);
+  
+  m_sharedProps = new SharedProperties;
 
   m_properties = new Properties(m_name);
 
-  m_sharedProps = new SharedProperties;
-
   m_hashCode = calculateHashCode();
+  m_properties->setHashCode(m_hashCode);
+
+  m_publicProperties = new Properties(m_name, 0, m_hashCode);
 }
 
 te::layout::ItemModelObservable::~ItemModelObservable()
@@ -78,6 +82,14 @@ te::layout::ItemModelObservable::~ItemModelObservable()
   {
     delete m_properties;
     m_properties = 0;
+  }
+
+  m_childrenProperties.clear();
+
+  if(m_publicProperties)
+  {
+    delete m_publicProperties;
+    m_publicProperties = 0;
   }
 
   if(m_sharedProps)
@@ -236,8 +248,12 @@ te::color::RGBAColor te::layout::ItemModelObservable::getBorderColor()
 void te::layout::ItemModelObservable::setName( std::string name )
 {
   m_name = name;
+
   if(m_properties)
     m_properties->setObjectName(m_name);
+
+  if(m_publicProperties)
+    m_publicProperties->setObjectName(m_name);
 }
 
 std::string te::layout::ItemModelObservable::getName()
@@ -526,4 +542,67 @@ void te::layout::ItemModelObservable::setEnableChildren( bool value )
 {
   m_enableChildren = value;
 }
+
+std::vector<te::layout::Properties*> te::layout::ItemModelObservable::getChildrenProperties() const
+{
+  return m_childrenProperties;
+}
+
+void te::layout::ItemModelObservable::addChildrenProperties( te::layout::Properties* properties )
+{
+  if(!properties)
+  {
+    return;
+  }
+
+  if(properties->getHashCode() == m_hashCode)
+  {
+    return;
+  }
+
+  m_childrenProperties.push_back(properties);
+}
+
+void te::layout::ItemModelObservable::removeChildrenProperties( int hashCode )
+{
+  std::vector<Properties*>::iterator it = m_childrenProperties.begin();
+
+  for( ; it != m_childrenProperties.end(); it++)
+  {
+    if((*it)->getHashCode() == hashCode)
+    {
+      m_childrenProperties.erase(it);
+      break;
+    }
+  }
+}
+
+te::layout::Properties* te::layout::ItemModelObservable::getPublicProperties() const
+{
+  if(!m_properties || m_publicProperties)
+  {
+    return 0;
+  }
+
+  m_publicProperties->clear();
+
+  std::vector<Property>::iterator it = m_properties->getProperties().begin();
+
+  for( ; it != m_properties->getProperties().end() ; ++it )
+  {
+    if((*it).isPublic())
+    {
+      m_publicProperties->addProperty(*it);
+    }
+  }
+
+  m_publicProperties->setTypeObj(m_type);
+
+  return m_publicProperties;
+}
+
+
+
+
+
 

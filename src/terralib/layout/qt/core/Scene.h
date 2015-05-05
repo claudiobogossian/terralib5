@@ -284,6 +284,25 @@ namespace te
 
         virtual void updateSelectedItemsPositions();
 
+        /*
+          \brief Add to stack that stores the items that are not entered into the scene.
+          To undo/redo operations, where the item is removed from the scene, 
+          a single place to store it is necessary, and if necessary, delete the items that are not entered into the scene (scene destructor).
+
+          \param item 
+        */
+
+        virtual bool addItemStackWithoutScene(QGraphicsItem* item);
+
+        /*
+          \brief Remove from stack that stores the items that are not entered into the scene.
+          To undo/redo operations, where the item is removed from the scene, 
+          a single place to store it is necessary, and if necessary, delete the items that are not entered into the scene (scene destructor).
+
+          \param item 
+        */
+        virtual bool removeItemStackWithoutScene(QGraphicsItem* item);
+
       public slots:
 
         /*!
@@ -339,8 +358,13 @@ namespace te
         PrintScene*                        m_print; //!< object responsible for printing the scene.
         bool                               m_moveWatched;
         std::map<QGraphicsItem*, QPointF>  m_moveWatches;
+        QList<QGraphicsItem*>              m_itemStackWithoutScene; //!< Items that are not included in any scene 
     };
   }
 }
 
 #endif
+
+
+
+

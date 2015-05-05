@@ -64,15 +64,6 @@ te::layout::ChangePropertyCommand::ChangePropertyCommand( std::vector<QGraphicsI
 
 te::layout::ChangePropertyCommand::~ChangePropertyCommand()
 {
-  if(m_item)
-  {
-    if(!m_item->scene())
-    {
-      delete m_item;
-      m_item = 0;
-    }
-  }
-
   if(m_oldProperties)
   {
     delete m_oldProperties;

@@ -114,6 +114,12 @@ te::layout::Property te::layout::VariantPropertiesBrowser::getProperty( std::str
   prop.setName(name);
   
   QVariant variant = findPropertyValue(name);
+
+  if(variant.isNull() || !variant.isValid())
+  {
+    return prop;
+  }
+
   QtProperty* property = findProperty(name);
   EnumType* type = getLayoutType(variant.type(), name);
   

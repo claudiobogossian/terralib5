@@ -267,6 +267,9 @@ bool te::layout::PropertyBrowser::removeProperty( Property property )
   m_propertyToId.remove(removeProp);
   m_idToProperty.remove(removeProp->propertyName());
 
+  m_variantPropertiesBrowser->removeProperty(removeProp);
+  m_dialogPropertiesBrowser->removeProperty(removeProp);
+
   m_propertyEditor->removeProperty(removeProp);
 
   if(removeProp)

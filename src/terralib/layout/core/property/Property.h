@@ -254,6 +254,24 @@ namespace te
           \param true if property compose a widget, false otherwise 
         */
         void setComposeWidget(bool compose);
+
+        /*!
+          \brief Returns true if property is public, false otherwise.
+          If the component, father of this property, is a child of another component, 
+          then this property can be used by the parent component to display the value or call windows. It can not be edited.
+
+          \return true if property compose a widget, false otherwise 
+        */
+        bool isPublic();
+
+        /*!
+          \brief Sets true if property is public, false otherwise
+          If the component, father of this property, is a child of another component, 
+          then this property can be used by the parent component to display the value or call windows. It can not be edited.
+
+          \param true if property compose a widget, false otherwise 
+        */
+        void setPublic(bool publicProperty);
       
         bool operator ==(const Property& other); 
 
@@ -268,11 +286,12 @@ namespace te
       std::vector<Variant> m_options; //!<
       std::vector<te::layout::Property> m_subProperty; //!<
       std::string m_label; //!<
-      bool m_menu; //!< /* The property will be used in a menu.  */
+      bool m_menu; //!< the property will be used in a menu. 
       std::string m_icon; //!<
       bool m_visible; //!< visibility
       bool m_required; //!< required
       bool m_composeWidget; //!< compose widget
+      bool m_public; //!< public property, used by another component
     };
 
     template <typename ValueType>

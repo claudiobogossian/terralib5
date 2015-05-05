@@ -74,11 +74,20 @@ te::layout::Scene::Scene( QObject* object):
 te::layout::Scene::~Scene()
 {
   m_moveWatches.clear();
-
+  
   if(m_undoStack)
   {
     delete m_undoStack;
     m_undoStack = 0;
+  }
+
+  foreach( QGraphicsItem *item, m_itemStackWithoutScene ) 
+  {
+    if(item->scene() != this)
+    {
+      delete item;
+      item = 0;
+    }
   }
 
   if(m_align)
@@ -98,38 +107,44 @@ void te::layout::Scene::insertItem( ItemObserver* item )
 {
   QGraphicsItem* qitem = ((QGraphicsItem*)item);
 
+  if(!qitem)
+  {
+    return;
+  }
+
+  if(qitem->scene() == this)
+  {
+    return;
+  }
+
   int total = 0;
 
-  if(qitem)
+  total = this->items().count();
+
+  ItemObserver* obs = dynamic_cast<ItemObserver*>(qitem);
+  if(!obs)
   {
-    if(qitem->scene() != this) 
-    {
-      total = this->items().count();
-
-      ItemObserver* obs = dynamic_cast<ItemObserver*>(qitem);
-      this->addItem(qitem);
-      if(obs)
-      {
-        if(obs->isInvertedMatrix())
-        {
-          QTransform transf = m_matrix.inverted();
-          qitem->setTransform(transf);
-        }
-      }
-      qitem->setZValue(total);
-      QGraphicsObject* qObj = dynamic_cast<QGraphicsObject*>(qitem);
-      if(qObj)
-      {
-        qObj->installEventFilter(this);
-      }
-    }
-
-    ItemObserver* obs = dynamic_cast<ItemObserver*>(qitem);
-    if(obs)
-    {
-      obs->refresh(false);
-    }
+    return;
   }
+
+  this->addItem(qitem);
+
+  if(obs->isInvertedMatrix())
+  {
+    QTransform transf = m_matrix.inverted();
+    qitem->setTransform(transf);
+  }
+
+  qitem->setZValue(total);
+  QGraphicsObject* qObj = dynamic_cast<QGraphicsObject*>(qitem);
+  if(qObj)
+  {
+    qObj->installEventFilter(this);
+  }
+
+  obs->refresh(false);
+
+  removeItemStackWithoutScene(qitem);
 
   emit addItemFinalized();
 }
@@ -766,3 +781,39 @@ void te::layout::Scene::onChangeZoomFactor( double currentFactor )
     }
   }
 }
+
+bool te::layout::Scene::addItemStackWithoutScene( QGraphicsItem* item )
+{
+  if(!item)
+  {
+    return false;
+  }
+
+  if(item->scene() == this)
+  {
+    return false;
+  }
+
+  if(m_itemStackWithoutScene.contains(item))
+  {
+    return false;
+  }
+
+  m_itemStackWithoutScene.push_back(item);
+
+  return true;
+}
+
+bool te::layout::Scene::removeItemStackWithoutScene( QGraphicsItem* item )
+{
+  if(!item)
+  {
+    return false;
+  }
+
+  return m_itemStackWithoutScene.removeOne(item);
+}
+
+
+
+

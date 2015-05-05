@@ -343,6 +343,8 @@ void te::layout::DialogPropertiesBrowser::onShowTextGridSettingsDlg()
 te::layout::Property te::layout::DialogPropertiesBrowser::getProperty( std::string name )
 {
   Property prop;
+  prop.setName(name);
+
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
 
   if(!dataType)
@@ -351,6 +353,11 @@ te::layout::Property te::layout::DialogPropertiesBrowser::getProperty( std::stri
   }
   
   QVariant variant = findPropertyValue(name);
+
+  if(variant.isNull() || !variant.isValid())
+  {
+    return prop;
+  }
 
   if(prop.getType() == dataType->getDataTypeGridSettings())
   {

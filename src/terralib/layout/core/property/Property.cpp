@@ -43,7 +43,8 @@ te::layout::Property::Property( int parentItemHashCode ) :
   m_icon(""),
   m_visible(true),
   m_required(false),
-  m_composeWidget(false)
+  m_composeWidget(false),
+  m_public(false)
 {
   m_type = Enums::getInstance().getEnumDataType()->getDataTypeNone();
 }
@@ -288,6 +289,26 @@ void te::layout::Property::setComposeWidget( bool compose )
 {
   m_composeWidget = compose;
 }
+
+bool te::layout::Property::isPublic()
+{
+  return m_public;
+}
+
+void te::layout::Property::setPublic( bool publicProperty )
+{
+  /*
+  If the component, father of this property, is a child of another component, 
+  then this property can be used by the parent component to display the value or call windows. It can not be edited.
+  */
+  m_public = publicProperty;
+  if(m_public)
+  {
+    m_editable = false;
+  }
+}
+
+
 
 
 
