@@ -71,7 +71,7 @@ void te::layout::DeleteCommand::undo()
 
     if(item->scene() != m_scene)
     {
-      m_scene->addItem(item);
+      scene->insertItem(item);
       scene->removeItemStackWithoutScene(item);
     }
   }

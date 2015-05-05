@@ -105,14 +105,24 @@ te::layout::Scene::~Scene()
 
 void te::layout::Scene::insertItem( ItemObserver* item )
 {
-  QGraphicsItem* qitem = ((QGraphicsItem*)item);
-
-  if(!qitem)
+  if(!item)
   {
     return;
   }
 
-  if(qitem->scene() == this)
+  QGraphicsItem* qitem = ((QGraphicsItem*)item);
+  
+  insertItem(qitem);
+}
+
+void te::layout::Scene::insertItem( QGraphicsItem* item )
+{
+  if(!item)
+  {
+    return;
+  }
+
+  if(item->scene() == this)
   {
     return;
   }
@@ -121,22 +131,27 @@ void te::layout::Scene::insertItem( ItemObserver* item )
 
   total = this->items().count();
 
-  ItemObserver* obs = dynamic_cast<ItemObserver*>(qitem);
+  this->addItem(item);
+
+  ItemObserver* obs = dynamic_cast<ItemObserver*>(item);
   if(!obs)
   {
     return;
   }
 
-  this->addItem(qitem);
-
   if(obs->isInvertedMatrix())
   {
-    QTransform transf = m_matrix.inverted();
-    qitem->setTransform(transf);
+    QTransform transfItem = item->transform();
+    // Check if the item had been inserted
+    if(transfItem != m_matrix.inverted())
+    {
+      QTransform transf = m_matrix.inverted();
+      item->setTransform(transf);
+    }    
   }
 
-  qitem->setZValue(total);
-  QGraphicsObject* qObj = dynamic_cast<QGraphicsObject*>(qitem);
+  item->setZValue(total);
+  QGraphicsObject* qObj = dynamic_cast<QGraphicsObject*>(item);
   if(qObj)
   {
     qObj->installEventFilter(this);
@@ -144,7 +159,7 @@ void te::layout::Scene::insertItem( ItemObserver* item )
 
   obs->refresh(false);
 
-  removeItemStackWithoutScene(qitem);
+  removeItemStackWithoutScene(item);
 
   emit addItemFinalized();
 }

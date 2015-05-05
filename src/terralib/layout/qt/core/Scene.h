@@ -99,6 +99,13 @@ namespace te
 		  \param item graphic object		  
         */ 
         virtual void insertItem(ItemObserver* item);
+
+        /*!
+          \brief Method that inserts a graphic object in the scene. Inverts the matrix of the object if necessary, ex.: TextItem.
+		  
+		  \param item graphic object		  
+        */ 
+        virtual void insertItem(QGraphicsItem* item);
                
 		/*!
           \brief Method that starts the scene and configures. Calculates the transformation matrix of the scene and calculates the ratio of the size of the scene with the paper size.

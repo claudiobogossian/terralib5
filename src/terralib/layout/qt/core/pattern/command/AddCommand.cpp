@@ -79,8 +79,7 @@ void te::layout::AddCommand::redo()
   if(m_item->scene() == m_scene)
     return;
     
-  m_scene->addItem(m_item);
-
+  scene->insertItem(m_item);
   scene->removeItemStackWithoutScene(m_item);
 
   m_item->setPos(m_initialPosition);
