@@ -162,7 +162,6 @@ void te::qt::plugins::layout::MainLayout::createDockLayoutDisplay(QWidget* mainW
 
     m_dockLayoutDisplay->setWidget(m_groupBox);
     m_dockLayoutDisplay->setPreviousCentralWidget(mw->centralWidget());
-    mw->removeDockWidget((QDockWidget*)mw->centralWidget());
     m_dockLayoutDisplay->setParent(mw); 
 
     mw->setCentralWidget(m_dockLayoutDisplay);

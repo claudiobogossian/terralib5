@@ -27,9 +27,7 @@
 #define __TERRALIB_QT_WIDGETS_INTERNAL_OBSERVATIONPROPERTIESWIZARDPAGE_H
 
 // TerraLib
-#include "../../../maptools/AbstractLayer.h"
 #include "../Config.h"
-#include "../../../dataaccess/datasource/DataSourceInfo.h"
 
 // Qt
 #include <QWizardPage>

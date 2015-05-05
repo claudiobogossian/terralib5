@@ -24,9 +24,9 @@
 */
 
 // TerraLib
+#include "../common/Exception.h"
 #include "../common/Translator.h"
 #include "Connection.h"
-#include "Exception.h"
 
 // STL
 #include <cassert>
@@ -51,12 +51,16 @@ te::ado::Connection::Connection(const std::string& conninfo)
 
   try
   {
-    m_conn.CreateInstance(__uuidof(::Connection));
+    TESTHR(::CoInitialize(0));
+
+    TESTHR(m_conn.CreateInstance(__uuidof(::Connection)));
     TESTHR(m_conn->Open(connStr, "", "", -1));
   }
   catch(_com_error& e)
   {
-    throw Exception(TE_TR(e.Description()));
+    std::string err = TE_TR("ADO Connection: ");
+    err += (LPCSTR)e.ErrorMessage();
+    throw te::common::Exception(err);
   }
 
   long status = m_conn->GetState();
@@ -71,7 +75,7 @@ te::ado::Connection::Connection(const std::string& conninfo)
 
     m_conn = 0;
 
-    throw Exception(errmsg.str());
+    throw te::common::Exception(errmsg.str());
   }
 }
 
@@ -80,6 +84,8 @@ te::ado::Connection::~Connection()
   if (m_conn)
     if (m_conn->GetState() == ::adStateOpen)
       m_conn->Close();
+
+  ::CoUninitialize();
 }
 
 _RecordsetPtr te::ado::Connection::query(const std::string& query, bool connected)
@@ -97,7 +103,9 @@ _RecordsetPtr te::ado::Connection::query(const std::string& query, bool connecte
   }
   catch(_com_error& e)
   {
-    throw Exception(TE_TR(e.Description()));
+    std::string err = TE_TR("ADO Connection: ");
+    err += (LPCSTR)e.ErrorMessage();
+    throw te::common::Exception(err);
   }
 
   return recordset;
@@ -111,7 +119,9 @@ void te::ado::Connection::execute(const std::string& command)
   }
   catch(_com_error& e)
   {
-    throw Exception(TE_TR(e.Description()));
+    std::string err = TE_TR("ADO Connection: ");
+    err += (LPCSTR)e.ErrorMessage();
+    throw te::common::Exception(err);
   }
 }
 

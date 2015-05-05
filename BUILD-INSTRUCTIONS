@@ -53,10 +53,14 @@ Notes:
           -DCMAKE_BUILD_TYPE:STRING="Debug"
 
 1.5 Building:
-$ make -j 4
+$ make
+$ make terralib_qtranslations
 
 1.6 Installing:
 $ make install
+
+1.7 Uninstalling:
+$ make uninstall
 
 
 2. Building with CMake GUI

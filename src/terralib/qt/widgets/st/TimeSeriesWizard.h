@@ -29,6 +29,7 @@
 //TerraLib
 #include "../../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../../dataaccess.h"
+#include "../../../st/maptools/TimeSeriesDataSetLayer.h"
 #include "../Config.h"
 
 // Qt
@@ -68,6 +69,8 @@ namespace te
 
           te::da::DataSetTypePtr getDatasetType() const;
 
+          te::st::TimeSeriesDataSetLayerPtr getTimeSeriesLayer();
+
     protected slots:
 
           void back();
@@ -89,7 +92,7 @@ namespace te
         std::auto_ptr<DataSourceSelectorWizardPage>    m_datasourceSelectorPage;  //!< The wizard page used to select the datasource
         std::auto_ptr<DataSetSelectorWizardPage>       m_datasetSelectorPage;     //!< The wizard page used to select the dataset
         std::auto_ptr<TimeSeriesPropertiesWizardPage>  m_PropWidgetPage;          //!< The widget used to configure the properties of the new TimeSeriesLayer 
-    
+        te::st::TimeSeriesDataSetLayerPtr              m_timeSeriesLayer;        //!< The new Trajectory Layer(s);
       };
     } // end namespace widgets
   }   // end namespace qt

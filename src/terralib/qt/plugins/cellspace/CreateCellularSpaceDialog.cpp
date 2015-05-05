@@ -640,6 +640,10 @@ te::map::AbstractLayerPtr te::qt::plugins::cellspace::CreateCellularSpaceDialog:
 
   te::da::DataSourcePtr outDataSource = te::da::GetDataSource(m_outDataSourceInfo->getId());
 
+  // Inserido devido a erro indeterminado na criação do layer
+  outDataSource->open();
+  //-----
+
   te::qt::widgets::DataSet2Layer converter(m_outDataSourceInfo->getId());
 
   te::da::DataSetTypePtr dt(outDataSource->getDataSetType(m_outputDataSetName).release());

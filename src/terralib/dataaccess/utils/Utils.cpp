@@ -357,9 +357,12 @@ void te::da::GetOIDDatasetProps(const DataSetType* type, std::pair<std::string, 
   assert(type);
   std::map<std::string, std::pair<int, int> > dsNames;
   std::map<std::string, std::pair<int, int> >::const_iterator dsNamesIt;
+  std::vector<te::dt::Property*> props;
 
-  //Acquiring the primary key of the given DataSetType
-  std::vector<te::dt::Property*> props = type->getPrimaryKey()->getProperties();
+  // Looking for the primary key or unique key properties
+  PrimaryKey* pk = type->getPrimaryKey();
+  if(pk != 0)
+    props = pk->getProperties();
 
   //Getting the name and the number of properties of each dataset involved
   for(size_t i = 0; i < props.size(); ++i)
