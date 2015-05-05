@@ -31,6 +31,7 @@
 #include "../../common/STLUtils.h"
 #include "../../common/Translator.h"
 #include "../../common/UserApplicationSettings.h"
+#include "../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../dataaccess/dataset/ObjectIdSet.h"
 #include "../../maptools/DataSetLayer.h"
 #include "../../maptools/Utils.h"
@@ -44,6 +45,7 @@
 #include "../widgets/charts/ScatterDialog.h"
 #include "../widgets/datasource/core/DataSourceType.h"
 #include "../widgets/datasource/core/DataSourceTypeManager.h"
+#include "../widgets/datasource/connector/AbstractDataSourceConnector.h"
 #include "../widgets/datasource/selector/DataSourceExplorerDialog.h"
 #include "../widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../widgets/exchanger/DataExchangerWizard.h"
@@ -700,6 +702,60 @@ void te::qt::af::BaseApplication::onChangeLayerDataSourceTriggered()
                          te::qt::af::ApplicationController::getInstance().getAppTitle(),
                          tr("Unknown error while trying to change a layer data source!"));
   }  
+}
+
+void te::qt::af::BaseApplication::onUpdateLayerDataSourceTriggered()
+{
+  try
+  {
+    std::list<te::qt::widgets::AbstractTreeItem*> selectedLayerItems = m_explorer->getExplorer()->getSelectedLayerItems();
+
+    if(selectedLayerItems.empty())
+      return;
+
+    te::map::AbstractLayerPtr layer = selectedLayerItems.front()->getLayer();
+
+    te::map::DataSetLayer* dsl = (te::map::DataSetLayer*)layer.get();
+
+    if(!dsl)
+      return;
+      
+    std::list<te::da::DataSourceInfoPtr> selecteds;
+
+    te::da::DataSourceInfoPtr ds = te::da::DataSourceInfoManager::getInstance().get(dsl->getDataSourceId());
+
+    selecteds.push_back(ds);
+
+    const std::string& dsTypeId = selecteds.front()->getType();
+
+    const te::qt::widgets::DataSourceType* dsType = te::qt::widgets::DataSourceTypeManager::getInstance().get(dsTypeId);
+
+    std::auto_ptr<QWidget> connectorw(dsType->getWidget(te::qt::widgets::DataSourceType::WIDGET_DATASOURCE_CONNECTOR, this));
+
+    if(connectorw.get() == 0)
+    {
+      throw Exception((boost::format(TE_TR("No layer selector widget found for this type of data source: %1%!")) % dsTypeId).str());
+    }
+
+    te::qt::widgets::AbstractDataSourceConnector* connector = dynamic_cast<te::qt::widgets::AbstractDataSourceConnector*>(connectorw.get());
+
+    if(connector == 0)
+    {
+      throw Exception(TE_TR("Wrong type of object for layer selection!"));
+    }
+
+    connector->update(selecteds);
+  }
+  catch(const std::exception& e)
+  {
+    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), e.what());
+  }
+  catch(...)
+  {
+    QMessageBox::warning(this,
+                         te::qt::af::ApplicationController::getInstance().getAppTitle(),
+                         tr("Unknown error while trying to update a layer data source!"));
+  } 
 }
 
 void te::qt::af::BaseApplication::onLayerRemoveItemTriggered()
@@ -2376,6 +2432,7 @@ void te::qt::af::BaseApplication::makeDialog()
   // Actions for invalid layers
 
   treeView->add(m_projectChangeLayerDataSource, "", "INVALID_LAYER_ITEM");
+  treeView->add(m_projectUpdateLayerDataSource, "", "INVALID_LAYER_ITEM");
   treeView->add(m_projectRemoveLayer, "", "INVALID_LAYER_ITEM");
 
   /********* Actions to be added to the context menu when there are multiple items selected ***********/
@@ -2562,6 +2619,7 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_projectRemoveLayer, "layer-remove", "Project.Remove Layer", tr("&Remove Layer(s)"), tr("Remove layer(s) from the project"), true, false, true, this);
   initAction(m_projectRenameLayer, "layer-rename", "Project.Rename Layer", tr("Rename Layer..."), tr("Rename layer"), true, false, true, this);
   initAction(m_projectChangeLayerDataSource, "", "Project.Change Layer Data Source", tr("&Change Layer Data Source"), tr("Chanage layer Data Source"), true, false, true, this);
+  initAction(m_projectUpdateLayerDataSource, "", "Project.Update Layer Data Source", tr("&Update Layer Data Source"), tr("Update layer Data Source"), true, false, true, this);
   initAction(m_projectProperties, "document-info", "Project.Properties", tr("&Properties..."), tr("Show the project properties"), true, false, true, m_menubar);
   //initAction(m_projectAddLayerGraph, "", "Graph", tr("&Graph"), tr("Add a new layer from a graph"), true, false, false);
 
@@ -2883,6 +2941,7 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_projectRenameLayer, SIGNAL(triggered()), SLOT(onRenameLayerTriggered()));
   connect(m_projectProperties, SIGNAL(triggered()), SLOT(onProjectPropertiesTriggered()));
   connect(m_projectChangeLayerDataSource, SIGNAL(triggered()), SLOT(onChangeLayerDataSourceTriggered()));
+  connect(m_projectUpdateLayerDataSource, SIGNAL(triggered()), SLOT(onUpdateLayerDataSourceTriggered()));
   connect(m_pluginsManager, SIGNAL(triggered()), SLOT(onPluginsManagerTriggered()));
   connect(m_recentProjectsMenu, SIGNAL(triggered(QAction*)), SLOT(onRecentProjectsTriggered(QAction*)));
   connect(m_fileNewProject, SIGNAL(triggered()), SLOT(onNewProjectTriggered()));

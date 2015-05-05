@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>529</width>
-    <height>472</height>
+    <width>575</width>
+    <height>495</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -311,6 +311,16 @@
               </item>
              </layout>
             </item>
+            <item row="1" column="0">
+             <widget class="QCheckBox" name="m_savePasswordCheckBox">
+              <property name="text">
+               <string>Save Password</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
            </layout>
           </widget>
          </item>
@@ -373,7 +383,7 @@
                <x>0</x>
                <y>0</y>
                <width>241</width>
-               <height>342</height>
+               <height>365</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayout_37">
