@@ -75,7 +75,15 @@ std::auto_ptr<te::da::DataSetType> te::vp::LineToPolygonOp::buildOutDataSetType(
   std::string dSourceType = m_outDsrc->getType();
 
   std::vector<te::dt::Property*> vecProps = inDsType->getProperties();
-  
+
+  std::vector<te::dt::Property*> inPk = inDsType->getPrimaryKey()->getProperties();
+  std::string namePk = m_outDset;
+
+  for (std::size_t p = 0; p < inPk.size(); ++p)
+    namePk += "_" + inPk[p]->getName();
+
+  te::da::PrimaryKey* pk = new te::da::PrimaryKey(namePk + "_pk");
+
   if(dSourceType == "OGR")
   {
     for(std::size_t i = 0; i < vecProps.size(); ++i)
@@ -102,6 +110,12 @@ std::auto_ptr<te::da::DataSetType> te::vp::LineToPolygonOp::buildOutDataSetType(
       if(vecProps[i]->getType() != te::dt::GEOMETRY_TYPE)
       {
         outDsType->add(vecProps[i]->clone());
+
+        for (std::size_t j = 0; j < inPk.size(); ++j)
+        {
+          if (outDsType->getProperty(i)->getName() == inPk[j]->getName())
+            pk->add(outDsType->getProperty(i));
+        }
       }
       else
       {
@@ -113,6 +127,8 @@ std::auto_ptr<te::da::DataSetType> te::vp::LineToPolygonOp::buildOutDataSetType(
       }
     }
   }
+
+  outDsType->setPrimaryKey(pk);
 
   return outDsType;
 }
