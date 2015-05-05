@@ -101,14 +101,9 @@ void te::qt::plugins::pgis::PostGISConnectorDialog::openPushButtonPressed()
     if(te::da::DataSourceFactory::find("POSTGIS") == 0)
       throw te::qt::widgets::Exception(TE_TR("Sorry! No data access driver loaded for PostgreSQL + PostGIS data sources!"));
 
-    // Get the data source connection info based on form data
-    std::map<std::string, std::string> dsInfo;
-
-    getConnectionInfo(dsInfo);
-
     // Perform connection
     std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("POSTGIS");
-    ds->setConnectionInfo(dsInfo);
+    ds->setConnectionInfo(getConnectionInfo(true));
     ds->open();
     m_driver.reset(ds.release());
 
@@ -125,7 +120,7 @@ void te::qt::plugins::pgis::PostGISConnectorDialog::openPushButtonPressed()
       // Create a new data source based on the form data
       m_datasource.reset(new te::da::DataSourceInfo);
 
-      m_datasource->setConnInfo(dsInfo);
+      m_datasource->setConnInfo(getConnectionInfo(m_ui->m_savePasswordCheckBox->isChecked()));
 
       boost::uuids::basic_random_generator<boost::mt19937> gen;
       boost::uuids::uuid u = gen();
@@ -141,7 +136,7 @@ void te::qt::plugins::pgis::PostGISConnectorDialog::openPushButtonPressed()
     else
     {
       m_driver->setId(m_datasource->getId());
-      m_datasource->setConnInfo(dsInfo);
+      m_datasource->setConnInfo(getConnectionInfo(m_ui->m_savePasswordCheckBox->isChecked()));
       m_datasource->setTitle(title.toStdString());
       m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().toStdString());
     }
@@ -172,18 +167,13 @@ void te::qt::plugins::pgis::PostGISConnectorDialog::testPushButtonPressed()
     if(te::da::DataSourceFactory::find("POSTGIS") == 0)
       throw te::qt::widgets::Exception(TE_TR("Sorry! No data access driver loaded for PostgreSQL + PostGIS data sources!"));
 
-    // Get the data source connection info based on form data
-    std::map<std::string, std::string> dsInfo;
-
-    getConnectionInfo(dsInfo);
-
     // Perform connection
     std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("POSTGIS"));
 
     if(ds.get() == 0)
       throw te::qt::widgets::Exception(TE_TR("Could not open PostgreSQL + PostGIS database!"));
 
-    ds->setConnectionInfo(dsInfo);
+    ds->setConnectionInfo(getConnectionInfo(true));
     ds->open();
 
     QMessageBox::information(this,
@@ -206,10 +196,9 @@ void te::qt::plugins::pgis::PostGISConnectorDialog::testPushButtonPressed()
   }
 }
 
-void te::qt::plugins::pgis::PostGISConnectorDialog::getConnectionInfo(std::map<std::string, std::string>& connInfo) const
+std::map<std::string, std::string> te::qt::plugins::pgis::PostGISConnectorDialog::getConnectionInfo(bool getPrivateKeys) const
 {
-// clear input
-  connInfo.clear();
+  std::map<std::string, std::string> connInfo;
 
 // get host
   QString qstr = m_ui->m_hostNameLineEdit->text().trimmed();
@@ -241,11 +230,14 @@ void te::qt::plugins::pgis::PostGISConnectorDialog::getConnectionInfo(std::map<s
   if(!qstr.isEmpty())
     connInfo["PG_USER"] = qstr.toStdString();
 
-// get password
-  qstr = m_ui->m_passwordLineEdit->text().trimmed();
+  if(getPrivateKeys)
+  {
+  // get password
+    qstr = m_ui->m_passwordLineEdit->text().trimmed();
   
-  if(!qstr.isEmpty())
-    connInfo["PG_PASSWORD"] = qstr.toStdString();
+    if(!qstr.isEmpty())
+      connInfo["PG_PASSWORD"] = qstr.toStdString();
+  }
 
 // get table info
   qstr = m_ui->m_tablesToHideLineEdit->text().trimmed();
@@ -280,6 +272,8 @@ void te::qt::plugins::pgis::PostGISConnectorDialog::getConnectionInfo(std::map<s
   
   if(!qstr.isEmpty())
     connInfo["PG_OPTIONS"] = qstr.toStdString();
+
+  return connInfo;
 }
 
 void te::qt::plugins::pgis::PostGISConnectorDialog::setConnectionInfo(const std::map<std::string, std::string>& connInfo)
@@ -384,20 +378,39 @@ void te::qt::plugins::pgis::PostGISConnectorDialog::passwordLineEditEditingFinis
   if(m_ui->m_userNameLineEdit->text() != "" || m_ui->m_passwordLineEdit->text() != "")
   {
     try{
-      std::map<std::string, std::string> dsInfo;
-      getConnectionInfo(dsInfo);
+      std::map<std::string, std::string> dsInfo = getConnectionInfo(true);
+
+      //get current informations
+      std::string curDb = "";
+      
+      if(!m_ui->m_databaseComboBox->currentText().isEmpty())
+        curDb = m_ui->m_databaseComboBox->currentText().toStdString();
+
+      std::string curCE = "";
+
+      if(!m_ui->m_clientEncodingComboBox->currentText().isEmpty())
+        curCE = m_ui->m_clientEncodingComboBox->currentText().toStdString();
+
+      m_ui->m_databaseComboBox->clear();
+      m_ui->m_clientEncodingComboBox->clear();
 
       // Get DataSources
       std::vector<std::string> dbNames = te::da::DataSource::getDataSourceNames("POSTGIS", dsInfo);
-      
+
       if(!dbNames.empty())
       {
-        m_ui->m_databaseComboBox->clear();
         setDatabasesNames(dbNames);
+
+        if(!curDb.empty())
+        {
+          int idx =  m_ui->m_databaseComboBox->findText(curDb.c_str(), Qt::MatchExactly);
+
+          if(idx != -1)
+            m_ui->m_databaseComboBox->setCurrentIndex(idx);
+        }
       }
 
       // Get Encodings
-      m_ui->m_clientEncodingComboBox->clear();
       m_ui->m_clientEncodingComboBox->addItem("");
       std::vector<te::common::CharEncoding> encodings = te::da::DataSource::getEncodings("POSTGIS", dsInfo);
       if(!encodings.empty())
@@ -411,7 +424,17 @@ void te::qt::plugins::pgis::PostGISConnectorDialog::passwordLineEditEditingFinis
 #else
         idx = m_ui->m_clientEncodingComboBox->findText("UTF-8");
 #endif
-        m_ui->m_clientEncodingComboBox->setCurrentIndex(idx);
+        if(!curDb.empty())
+        {
+          idx =  m_ui->m_clientEncodingComboBox->findText(curCE.c_str(), Qt::MatchExactly);
+
+          if(idx != -1)
+            m_ui->m_clientEncodingComboBox->setCurrentIndex(idx);
+        }
+        else
+        {
+          m_ui->m_clientEncodingComboBox->setCurrentIndex(idx);
+        }
       }
     }
     catch(...)
