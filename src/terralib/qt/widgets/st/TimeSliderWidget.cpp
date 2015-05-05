@@ -65,7 +65,7 @@
 #include <QFileDialog>
 
 te::qt::widgets::TimeSliderWidget::TimeSliderWidget(te::qt::widgets::MapDisplay* md, QWidget* parent,  Qt::WindowFlags f)
-  : QWidget((QWidget*)md->parent(), f),
+  : QWidget(parent, f),
     m_display(md),
     m_erasePerfectly(false),
     m_ui(new Ui::TimeSliderWidgetForm),
