@@ -96,9 +96,19 @@ const boost::ptr_vector<te::plugin::PluginInfo>& te::plugin::PluginManager::getU
   return m_unloadedPlugins;
 }
 
+void te::plugin::PluginManager::setUnloadedPlugins(const boost::ptr_vector<te::plugin::PluginInfo> unloadedPlugins)
+{
+  m_unloadedPlugins = unloadedPlugins;
+}
+
 const boost::ptr_vector<te::plugin::PluginInfo>& te::plugin::PluginManager::getBrokenPlugins() const
 {
   return m_brokenPlugins;
+}
+
+void te::plugin::PluginManager::setBrokenPlugins(const boost::ptr_vector<te::plugin::PluginInfo> brokenPlugins)
+{
+  m_brokenPlugins = brokenPlugins;
 }
 
 bool te::plugin::PluginManager::isBrokenPlugin(const std::string& pluginName) const

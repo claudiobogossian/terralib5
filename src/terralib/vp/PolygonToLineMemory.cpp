@@ -94,6 +94,12 @@ bool te::vp::PolygonToLineMemory::run() throw(te::common::Exception)
         std::auto_ptr<te::gm::MultiLineString> lineResult = polygon2Line(geom.get());
         if(!lineResult->isValid())
           geomState = false;
+
+        size_t size = lineResult->getNumGeometries();
+        if (size == 0)
+        {
+          int a = 0;
+        }
         
         outDsItem->setGeometry(i, lineResult.release());
       }
@@ -123,15 +129,10 @@ std::auto_ptr<te::gm::MultiLineString> te::vp::PolygonToLineMemory::polygon2Line
 
   getLines(geom, lines);
 
-  if(lines.size() > 1)
-  {
-    for(size_t i = 0; i < lines.size(); ++i)
-      lineResult->Union(lines[i]);
-  }
-  else
-  {
-    lineResult->add(lines[0]);
-  }
+
+  lineResult->add(lines[0]);
+  for (size_t i = 1; i < lines.size(); ++i)
+    lineResult->Union(lines[i]);
 
   return lineResult;
 }

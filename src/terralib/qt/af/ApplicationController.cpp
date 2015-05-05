@@ -534,6 +534,36 @@ void te::qt::af::ApplicationController::initializePlugins()
 
     user_settings.endArray();
 
+    // get the unloaded plugins
+    std::set<std::string> user_unloaded_plugins;
+    int n_itemsUnloaded = user_settings.beginReadArray("unloaded");
+
+    for (int i = 0; i != n_itemsUnloaded; ++i)
+    {
+      user_settings.setArrayIndex(i);
+
+      QString name = user_settings.value("name").toString();
+
+      user_unloaded_plugins.insert(name.toStdString());
+    }
+
+    user_settings.endArray();
+
+    // get the broken plugins
+    std::set<std::string> user_broken_plugins;
+    int n_itemsBroken = user_settings.beginReadArray("broken");
+
+    for (int i = 0; i != n_itemsBroken; ++i)
+    {
+      user_settings.setArrayIndex(i);
+
+      QString name = user_settings.value("name").toString();
+
+      user_broken_plugins.insert(name.toStdString());
+    }
+
+    user_settings.endArray();
+
     user_settings.endGroup();
 
     //SplashScreenManager::getInstance().showMessage(tr("Enabled plugin list read!"));
@@ -542,7 +572,9 @@ void te::qt::af::ApplicationController::initializePlugins()
 
 // retrieve information for each plugin
     boost::ptr_vector<te::plugin::PluginInfo> plugins;
-    
+    boost::ptr_vector<te::plugin::PluginInfo> unloadedPlugins;
+    boost::ptr_vector<te::plugin::PluginInfo> brokenPlugins;
+
     for(std::size_t i = 0; i != plgFiles.size(); ++i)
     {
       te::plugin::PluginInfo* pinfo = te::plugin::GetInstalledPlugin(plgFiles[i]);
@@ -563,10 +595,24 @@ void te::qt::af::ApplicationController::initializePlugins()
       {
         plugins.push_back(pinfo);                                     // load all enabled plugins using .ini file as reference.
       }
+      else if (user_unloaded_plugins.count(pinfo->m_name) != 0)       // else, if a list is available,
+      {
+        unloadedPlugins.push_back(pinfo);                             // load only unloaded plugins
+      }
+      else if (user_broken_plugins.count(pinfo->m_name) != 0)         // else, if a list is available,
+      {
+        brokenPlugins.push_back(pinfo);                               // load only broken plugins
+      }
     }
     
 // load and start each plugin
     te::plugin::PluginManager::getInstance().load(plugins);
+
+    if (user_unloaded_plugins.size() > 0)
+      te::plugin::PluginManager::getInstance().setUnloadedPlugins(unloadedPlugins);
+
+    if (user_broken_plugins.size() > 0)
+      te::plugin::PluginManager::getInstance().setBrokenPlugins(brokenPlugins);
 
     SplashScreenManager::getInstance().showMessage(tr("Plugins loaded successfully!"));
   }
