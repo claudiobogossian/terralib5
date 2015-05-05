@@ -301,72 +301,84 @@ te::gm::Geometry* te::vp::MultipartToSinglepart::single2multi(te::gm::Geometry* 
     {
       te::gm::MultiLineString* g = new te::gm::MultiLineString(0, te::gm::MultiLineStringType);
       g->add(geom);
+      g->setSRID(geom->getSRID());
       return g;
     }
     case te::gm::LineStringMType:
     {
       te::gm::MultiLineString* g = new te::gm::MultiLineString(0, te::gm::MultiLineStringMType);
       g->add(geom);
+      g->setSRID(geom->getSRID());
       return g;
     }
     case te::gm::LineStringZType:
     {
       te::gm::MultiLineString* g = new te::gm::MultiLineString(0, te::gm::MultiLineStringZType);
       g->add(geom);
+      g->setSRID(geom->getSRID());
       return g;
     }
     case te::gm::LineStringZMType:
     {
       te::gm::MultiLineString* g = new te::gm::MultiLineString(0, te::gm::MultiLineStringZMType);
       g->add(geom);
+      g->setSRID(geom->getSRID());
       return g;
     }
     case te::gm::PointType:
     {
       te::gm::MultiPoint* g = new te::gm::MultiPoint(0, te::gm::MultiPointType);
       g->add(geom);
+      g->setSRID(geom->getSRID());
       return g;
     }
     case te::gm::PointMType:
     {
       te::gm::MultiPoint* g = new te::gm::MultiPoint(0, te::gm::MultiPointMType);
       g->add(geom);
+      g->setSRID(geom->getSRID());
       return g;
     }
     case te::gm::PointZType:
     {
       te::gm::MultiPoint* g = new te::gm::MultiPoint(0, te::gm::MultiPointZType);
       g->add(geom);
+      g->setSRID(geom->getSRID());
       return g;
     }
     case te::gm::PointZMType:
     {
       te::gm::MultiPoint* g = new te::gm::MultiPoint(0, te::gm::MultiPointZMType);
       g->add(geom);
+      g->setSRID(geom->getSRID());
       return g;
     }
     case te::gm::PolygonType:
     {
       te::gm::MultiPolygon* g = new te::gm::MultiPolygon(0, te::gm::MultiPolygonType);
       g->add(geom);
+      g->setSRID(geom->getSRID());
       return g;
     }
     case te::gm::PolygonMType:
     {
       te::gm::MultiPolygon* g = new te::gm::MultiPolygon(0, te::gm::MultiPolygonMType);
       g->add(geom);
+      g->setSRID(geom->getSRID());
       return g;
     }
     case te::gm::PolygonZType:
     {
       te::gm::MultiPolygon* g = new te::gm::MultiPolygon(0, te::gm::MultiPolygonZType);
       g->add(geom);
+      g->setSRID(geom->getSRID());
       return g;
     }
     case te::gm::PolygonZMType:
     {
       te::gm::MultiPolygon* g = new te::gm::MultiPolygon(0, te::gm::MultiPolygonZMType);
       g->add(geom);
+      g->setSRID(geom->getSRID());
       return g;
     }
     default:
