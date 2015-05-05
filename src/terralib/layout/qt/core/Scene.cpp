@@ -71,6 +71,16 @@ te::layout::Scene::Scene( QObject* object):
   m_undoStack = new QUndoStack(this);
 }
 
+te::layout::Scene::Scene( AlignItems* align, PrintScene* print, QObject* object /*= 0*/ ) :
+  QGraphicsScene(object),
+  m_undoStack(0),
+  m_align(align),
+  m_print(print),
+  m_moveWatched(false)
+{
+
+}
+
 te::layout::Scene::~Scene()
 {
   m_moveWatches.clear();

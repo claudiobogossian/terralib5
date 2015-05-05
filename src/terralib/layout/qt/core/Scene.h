@@ -83,20 +83,28 @@ namespace te
 
       public:
 
-		/*!
+		    /*!
           \brief Constructor
         */ 
         Scene(QObject* object = (QObject*)0);
 
-		/*!
+        /*!
+          \brief Constructor. The ownership of objects passed via parameter becomes the scene.
+
+          \param align applying the alignment of one or more objects 
+          \param print printing the entire content or part of the scene
+        */ 
+        Scene(AlignItems* align, PrintScene* print, QObject* object = 0);
+
+		    /*!
           \brief Destructor
         */ 
         virtual ~Scene();
 
-		/*!
+		    /*!
           \brief Method that inserts a graphic object in the scene. Inverts the matrix of the object if necessary, ex.: TextItem.
 		  
-		  \param item graphic object		  
+		      \param item graphic object		  
         */ 
         virtual void insertItem(ItemObserver* item);
 
