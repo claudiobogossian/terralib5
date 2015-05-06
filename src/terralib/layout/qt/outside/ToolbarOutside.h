@@ -128,6 +128,119 @@ namespace te
       virtual QToolButton* getExitButton();
 
       virtual QComboBox* getComboBoxZoom();
+
+      /* Actions names */
+
+      /* Map Menu */
+
+      std::string getActionMapDefault();
+
+      std::string getActionLegendDefault();
+
+      std::string getActionScale();
+
+      /* Map Tools */
+
+      std::string getActionMapZoomIn();
+
+      std::string getActionMapZoomOut();
+
+      std::string getActionMapPan();
+
+      std::string getActionMapSystematicScale();
+
+      std::string getActionMapCreateTextGrid();
+
+      std::string getActionMapCreateMapText();
+
+      std::string getActionMapCreateLegendChildAsObject();
+
+      std::string getActionGridMap();
+
+      std::string getActionGridPlanar();
+
+      std::string getActionGridGeodesic();
+
+      std::string getActionNorth();
+
+      std::string getActionMapLocation();
+
+      /* Geometry Menu */
+
+      std::string getActionRectangle();
+
+      std::string getActionPoint();
+
+      std::string getActionEllipse();
+
+      std::string getActionArrow();
+
+      std::string getActionLine(); 
+
+      std::string getActionPolygon(); 
+
+      /* View Area */
+
+      std::string getActionViewPan();
+
+      std::string getActionViewZoomIn();
+
+      std::string getActionViewZoomOut();
+
+      /* Items Tools */
+
+      std::string getActionGroup();
+
+      std::string getActionUngroup();
+
+      std::string getActionLineIntersectionMouse();
+
+      std::string getActionSceneZoom();
+
+      std::string getActionRemoveObject();
+
+      /* Text Tools */
+
+      std::string getActionTextDefault();
+
+      std::string getActionImage();
+
+      std::string getActionStringGrid();
+
+      std::string getActionTitle();
+
+      std::string getActionBalloon();
+
+      std::string getActionBarCode();
+
+
+      /* Align */
+
+      std::string getActionAlignLeft();
+
+      std::string getActionAlignRight();
+
+      std::string getActionAlignTop();
+
+      std::string getActionAlignBottom();
+
+      std::string getActionAlignCenterHorizontal();
+
+      std::string getActionAlignCenterVertical();
+
+      /* Undo/Redo */
+
+      std::string getActionUndo();
+
+      std::string getActionRedo();
+
+      std::string getActionDrawMap();
+
+      std::string getActionObjectToImage();
+
+      std::string getActionExit();
+
+      std::string getActionExportToPDF();
       
     public slots:
       
@@ -248,73 +361,73 @@ namespace te
       QComboBox* m_comboZoom;
 
       /* Map Menu */
-      std::string m_optionMapDefault;
-      std::string m_optionLegendDefault;
-      std::string m_optionScale;
+      std::string m_actionMapDefault;
+      std::string m_actionLegendDefault;
+      std::string m_actionScale;
 
       /* Map Tools */
-      std::string m_optionMapZoomIn;
-      std::string m_optionMapZoomOut;
-      std::string m_optionMapPan;
-      std::string m_optionMapSystematicScale;
-      std::string m_optionMapCreateTextGrid;
-      std::string m_optionMapCreateMapText;
-      std::string m_optionMapCreateLegendChildAsObject;
-      std::string m_optionGridMap;
-      std::string m_optionGridPlanar;
-      std::string m_optionGridGeodesic;
-      std::string m_optionNorth;
-      std::string m_optionMapLocation;
+      std::string m_actionMapZoomIn;
+      std::string m_actionMapZoomOut;
+      std::string m_actionMapPan;
+      std::string m_actionMapSystematicScale;
+      std::string m_actionMapCreateTextGrid;
+      std::string m_actionMapCreateMapText;
+      std::string m_actionMapCreateLegendChildAsObject;
+      std::string m_actionGridMap;
+      std::string m_actionGridPlanar;
+      std::string m_actionGridGeodesic;
+      std::string m_actionNorth;
+      std::string m_actionMapLocation;
       
       /* Geometry Menu */
-      std::string m_optionRectangle;
-      std::string m_optionPoint;
-      std::string m_optionEllipse;
-      std::string m_optionArrow;
-      std::string m_optionLine; 
-      std::string m_optionPolygon; 
+      std::string m_actionRectangle;
+      std::string m_actionPoint;
+      std::string m_actionEllipse;
+      std::string m_actionArrow;
+      std::string m_actionLine; 
+      std::string m_actionPolygon; 
 
       /* View Area */
-      std::string m_optionViewPan;
-      std::string m_optionViewZoomIn;
-      std::string m_optionViewZoomOut;
+      std::string m_actionViewPan;
+      std::string m_actionViewZoomIn;
+      std::string m_actionViewZoomOut;
       
       /* Items Tools */
 
-      std::string m_optionGroup;
-      std::string m_optionUngroup;
+      std::string m_actionGroup;
+      std::string m_actionUngroup;
 
-      std::string m_optionLineIntersectionMouse;
+      std::string m_actionLineIntersectionMouse;
 
-      std::string m_optionSceneZoom;
+      std::string m_actionSceneZoom;
 
-      std::string m_optionRemoveObject;
+      std::string m_actionRemoveObject;
 
       /* Text Tools */
-      std::string m_optionTextDefault;
-      std::string m_optionImage;
-      std::string m_optionStringGrid;
-      std::string m_optionTitle;
-      std::string m_optionBalloon;
-      std::string m_optionBarCode;
+      std::string m_actionTextDefault;
+      std::string m_actionImage;
+      std::string m_actionStringGrid;
+      std::string m_actionTitle;
+      std::string m_actionBalloon;
+      std::string m_actionBarCode;
 
       /* Align */
-      std::string m_optionAlignLeft;
-      std::string m_optionAlignRight;
-      std::string m_optionAlignTop;
-      std::string m_optionAlignBottom;
-      std::string m_optionAlignCenterHorizontal;
-      std::string m_optionAlignCenterVertical;
+      std::string m_actionAlignLeft;
+      std::string m_actionAlignRight;
+      std::string m_actionAlignTop;
+      std::string m_actionAlignBottom;
+      std::string m_actionAlignCenterHorizontal;
+      std::string m_actionAlignCenterVertical;
 
       /* Undo/Redo */
-      std::string m_optionUndo;
-      std::string m_optionRedo;
+      std::string m_actionUndo;
+      std::string m_actionRedo;
 
-      std::string m_optionDrawMap;
+      std::string m_actionDrawMap;
 
-      std::string m_optionObjectToImage;
-      std::string m_optionExit;
-      std::string m_optionExportToPDF;
+      std::string m_actionObjectToImage;
+      std::string m_actionExit;
+      std::string m_actionExportToPDF;
 
       /* ToolButton */
       QToolButton* m_mapToolButton;
