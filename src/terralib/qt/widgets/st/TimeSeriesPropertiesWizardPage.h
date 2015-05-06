@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "../../../dataaccess/dataset/DataSetType.h"
+#include "terralib/dataaccess/datasource/DataSourceInfo.h"
 #include "../Config.h"
 
 // Qt
