@@ -475,6 +475,30 @@ void  te::qt::af::ApplicationController::initialize()
 
       SplashScreenManager::getInstance().showMessage(tr("Known data sources loaded!"));
     }
+    else
+    {
+      const QString& udir = getUserDataDir();
+
+      QVariant fileName = udir + "/" + QString(TERRALIB_APPLICATION_DATASOURCE_FILE_NAME);
+
+      QFileInfo infoDataSourceFile(fileName.toString());
+      
+      if (infoDataSourceFile.exists())
+      {
+        int reply = QMessageBox::question(0, tr("Data Sources XML"), tr("A file containing data sources already configured was found. Would you like to load it."), QMessageBox::No, QMessageBox::Yes);
+
+        if (reply == QMessageBox::Yes)
+        {
+          std::string dataSourcesFile = fileName.toString().toStdString();
+
+          te::serialize::xml::ReadDataSourceInfo(dataSourcesFile);
+
+          XMLFormatter::formatDataSourceInfos(false);
+
+          SplashScreenManager::getInstance().showMessage(tr("Known data sources loaded!"));
+        }
+      }
+    }
   }
   catch(const std::exception& e)
   {
