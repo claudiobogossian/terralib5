@@ -56,7 +56,7 @@
 #include <QList>
 
 te::layout::TextItem::TextItem( ItemController* controller, Observable* o ) :
-  ParentItem(controller, o, true),
+  ParentItem<QGraphicsTextItem>(controller, o, true),
   m_editable(false),
   m_move(false)
 {    

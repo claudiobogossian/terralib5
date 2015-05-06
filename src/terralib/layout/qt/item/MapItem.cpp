@@ -81,7 +81,7 @@
 #include <QTextEdit>
 
 te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
-  ParentItem(controller, o),
+  ParentItem<QGraphicsProxyWidget>(controller, o),
   m_mapDisplay(0),
   m_grabbedByWidget(false),
   m_treeItem(0),
