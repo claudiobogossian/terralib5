@@ -27,8 +27,9 @@
 #define __TERRALIB_QT_WIDGETS_INTERNAL_TIMESERIESPROPERTIESWIZARDPAGE_H
 
 // TerraLib
-#include "../../../dataaccess/dataset/DataSetType.h"
 #include "../Config.h"
+#include "../../../dataaccess/dataset/DataSetType.h"
+#include "terralib/dataaccess/datasource/DataSourceInfo.h"
 
 // Qt
 #include <QWizardPage>
