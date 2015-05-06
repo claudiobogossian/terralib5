@@ -140,16 +140,6 @@ void te::layout::LegendChildModel::drawLegend( te::map::Canvas* canvas, Utils* u
   } // end for each <Symbolizer>
 }
 
-te::layout::Properties* te::layout::LegendChildModel::getProperties() const
-{
-  return LegendModel::getProperties();
-}
-
-void te::layout::LegendChildModel::updateProperties( te::layout::Properties* properties )
-{
-  LegendModel::updateProperties(properties);
-}
-
 void te::layout::LegendChildModel::visitDependent(ContextItem context)
 {
   MapModel* map = dynamic_cast<MapModel*>(m_visitable);

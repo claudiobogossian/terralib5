@@ -114,16 +114,31 @@ void te::qt::widgets::VectorizationWizard::addPages()
 
 bool te::qt::widgets::VectorizationWizard::execute()
 {
+  //check output parameters
+  std::string outputdataset = m_vectorPage->getLayerName();
+
+  if(outputdataset.empty())
+  {
+    QMessageBox::warning(this, tr("Vectorizer"), tr("Output dataset name not defined."));
+    return false;
+  }
+
+  std::string uriStr = m_vectorPage->getRepositoryName();
+
+  if(uriStr.empty())
+  {
+    QMessageBox::warning(this, tr("Vectorizer"), tr("Output repository name not defined."));
+    return false;
+  }
+
   //check output datasource parameters
   te::da::DataSourceInfoPtr outDSInfo;
-
-  std::string outputdataset = m_vectorPage->getLayerName();
 
   bool toFile = m_vectorPage->outputDataSourceToFile();
 
   if(toFile)
   {
-    boost::filesystem::path uri(m_vectorPage->getRepositoryName());
+    boost::filesystem::path uri(uriStr);
 
     std::size_t idx = outputdataset.find(".");
     if(idx != std::string::npos)

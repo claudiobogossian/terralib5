@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file ObjectInspectorPropertyBrowser.cpp
+  \file AbstractBuildGraphicsOutside.cpp
    
   \brief 
 
@@ -26,20 +26,16 @@
 */
 
 // TerraLib
-#include "ObjectInspectorPropertyBrowser.h"
+#include "AbstractBuildGraphicsOutside.h"
 
-te::layout::ObjectInspectorPropertyBrowser::ObjectInspectorPropertyBrowser(QObject* parent) :
-  PropertyBrowser(parent)
+te::layout::AbstractBuildGraphicsOutside::AbstractBuildGraphicsOutside() 
 {
 
 }
 
-te::layout::ObjectInspectorPropertyBrowser::~ObjectInspectorPropertyBrowser()
-{
- 
-}
-
-void te::layout::ObjectInspectorPropertyBrowser::onSetDlg(QWidget *parent, QtProperty * prop)
+te::layout::AbstractBuildGraphicsOutside::~AbstractBuildGraphicsOutside()
 {
   
 }
+
+

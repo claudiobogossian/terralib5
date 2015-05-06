@@ -36,15 +36,16 @@
 #include "../../core/pattern/mvc/OutsideController.h"
 #include "../../../geometry/Envelope.h"
 #include "../../core/enum/Enums.h"
+#include "../core/propertybrowser/VariantPropertiesBrowser.h"
+#include "../core/propertybrowser/DialogPropertiesBrowser.h"
+#include "../item/MovingItemGroup.h"
 
 //Qt
 #include <QGraphicsWidget>
 #include <QVBoxLayout>
 #include <QGroupBox>
 
-#include <QtPropertyBrowser/QtTreePropertyBrowser>
-
-te::layout::ObjectInspectorOutside::ObjectInspectorOutside( OutsideController* controller, Observable* o, ObjectInspectorPropertyBrowser* propertyBrowser ) :
+te::layout::ObjectInspectorOutside::ObjectInspectorOutside( OutsideController* controller, Observable* o, PropertyBrowser* propertyBrowser ) :
   QWidget(0),
   OutsideObserver(controller, o)
 {
@@ -55,7 +56,7 @@ te::layout::ObjectInspectorOutside::ObjectInspectorOutside( OutsideController* c
   setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
   
   if(!propertyBrowser)
-    m_layoutPropertyBrowser = new ObjectInspectorPropertyBrowser;
+    m_layoutPropertyBrowser = new PropertyBrowser;
   else
     m_layoutPropertyBrowser = propertyBrowser;
 
@@ -112,6 +113,11 @@ te::gm::Coord2D te::layout::ObjectInspectorOutside::getPosition()
 
 void te::layout::ObjectInspectorOutside::itemsInspector(QList<QGraphicsItem*> graphicsItems)
 {
+  if(hasMoveItemGroup(graphicsItems))
+  {
+    return;
+  }
+
   m_layoutPropertyBrowser->clearAll();
 
   m_graphicsItems = graphicsItems;
@@ -119,34 +125,33 @@ void te::layout::ObjectInspectorOutside::itemsInspector(QList<QGraphicsItem*> gr
   if(m_graphicsItems.empty())
     return;
 
-  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
   EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
   
-  foreach( QGraphicsItem *item, graphicsItems) 
+  foreach(QGraphicsItem *item, graphicsItems) 
   {
     if (item)
     {
       ItemObserver* lItem = dynamic_cast<ItemObserver*>(item);
       if(lItem)
       {        
+        if(!lItem->getModel())
+        {
+          continue;
+        }
 
         if(lItem->getModel()->getType() == enumObj->getPaperItem())
         {
           continue;
         }
 
-        QGraphicsObject* itemObj = dynamic_cast<QGraphicsObject*>(item);         
+        // No add MoveItemGroup, because is alive just for mouse move
+        MovingItemGroup* moving =  dynamic_cast<MovingItemGroup*>(item);
+        if(moving)
+        {
+          continue;
+        }
 
-        if(!itemObj)
-          break;
-
-        Property pro_class;
-        pro_class.setName(lItem->getName());
-        pro_class.setId("");
-        pro_class.setValue(lItem->getNameClass(), dataType->getDataTypeString());
-        pro_class.setEditable(false);
-        
-        m_layoutPropertyBrowser->addProperty(pro_class);     
+        addProperty(item);    
       }
     }
   }
@@ -160,27 +165,190 @@ void te::layout::ObjectInspectorOutside::onRemoveProperties( std::vector<std::st
 
   for(it = names.begin() ; it != names.end() ; ++it)
   {
-    Property prop = m_layoutPropertyBrowser->getProperty(*it);
+    Property prop = m_layoutPropertyBrowser->getVariantPropertiesBrowser()->getProperty(*it);
+
+    if(prop.isNull())
+    {
+      prop = m_layoutPropertyBrowser->getDialogPropertiesBrowser()->getProperty(*it);
+    }
+
     m_layoutPropertyBrowser->removeProperty(prop);
   }
 }
 
 void te::layout::ObjectInspectorOutside::selectItems( QList<QGraphicsItem*> graphicsItems )
 {
-  foreach( QGraphicsItem *item, graphicsItems) 
+  foreach(QGraphicsItem *item, graphicsItems) 
   {
     if (item)
     {
       ItemObserver* iOb = dynamic_cast<ItemObserver*>(item);
       if(iOb)
       {
-        m_layoutPropertyBrowser->selectProperty(iOb->getName());
+        if(iOb->getModel())
+        {
+          m_layoutPropertyBrowser->selectProperty(iOb->getModel()->getName());
+        }
       }
     }
   }
 }
 
-te::layout::ObjectInspectorPropertyBrowser* te::layout::ObjectInspectorOutside::getObjectInspector()
+te::layout::PropertyBrowser* te::layout::ObjectInspectorOutside::getObjectInspector()
 {
   return m_layoutPropertyBrowser;
 }
+
+bool te::layout::ObjectInspectorOutside::hasMoveItemGroup( QList<QGraphicsItem*> graphicsItems )
+{
+  bool result = false;
+
+  EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
+
+  if(!enumObj)
+  {
+    return result;
+  }
+
+  foreach(QGraphicsItem *item, graphicsItems) 
+  {
+    if (item)
+    {
+      ItemObserver* movingItem = dynamic_cast<ItemObserver*>(item);
+
+      if(movingItem->getModel()->getType() == enumObj->getMovingItemGroup())
+      {
+        result = true;
+        break;
+      }
+    }
+  }
+
+  return result;
+}
+
+QtProperty* te::layout::ObjectInspectorOutside::addProperty( QGraphicsItem* item )
+{
+  QtProperty* prop = 0;
+
+  if(!item)
+  {
+    return prop;
+  }
+
+  ItemObserver* lItem = dynamic_cast<ItemObserver*>(item);
+  if(!lItem)
+  {
+    return prop;
+  }
+  
+  Property pro_class = createProperty(lItem);
+
+  if(hasProperty(pro_class))
+  {
+    return prop;
+  }
+
+  if(item->parentItem())
+  {
+    return prop;
+  }
+
+  prop = m_layoutPropertyBrowser->addProperty(pro_class); 
+
+  if(!item->childItems().isEmpty())
+  {
+     createSubProperty(item, prop);
+  }
+
+  return prop;
+}
+
+void te::layout::ObjectInspectorOutside::createSubProperty( QGraphicsItem* item, QtProperty* prop )
+{
+  if(!item || !prop)
+  {
+    return;
+  }
+
+  foreach(QGraphicsItem *item, item->childItems()) 
+  {
+    if(!item)
+    {
+      continue;
+    }
+
+    ItemObserver* lItem = dynamic_cast<ItemObserver*>(item);
+    if(!lItem)
+    {
+      continue;
+    }
+
+    Property pro_class = createProperty(lItem);
+    if(hasProperty(pro_class))
+    {
+      continue;
+    }
+
+    QtProperty* subProp = m_layoutPropertyBrowser->addProperty(pro_class); 
+    if(!subProp)
+    {
+      continue;
+    }
+
+    m_layoutPropertyBrowser->addSubProperty(prop, subProp);
+  }  
+}
+
+te::layout::Property te::layout::ObjectInspectorOutside::createProperty( ItemObserver* item )
+{
+  Property pro_class;
+  if(!item)
+  {
+    return pro_class;
+  }
+
+  if(!item->getModel())
+  {
+    return pro_class;
+  }
+
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+  if(!dataType)
+  {
+    return pro_class;
+  }
+
+  pro_class.setName(item->getModel()->getName());
+  pro_class.setValue(item->getNameClass(), dataType->getDataTypeString());
+  pro_class.setEditable(false);
+
+  return pro_class;
+}
+
+bool te::layout::ObjectInspectorOutside::hasProperty( Property property )
+{
+  std::string name = property.getName();
+  std::string label = property.getLabel();
+
+  QtProperty* prop = m_layoutPropertyBrowser->findProperty(name);
+  if(!prop)
+  {
+    prop = m_layoutPropertyBrowser->findProperty(label);
+  }
+
+  if(!prop)
+  {
+    return false;
+  }
+
+  return true;
+}
+
+
+
+
+
+
+
+

@@ -35,7 +35,6 @@
 #define __TERRALIB_LAYOUT_INTERNAL_PARENT_ITEM_H
 
 // Qt
-#include <QGraphicsObject>
 #include <QPixmap>
 #include <QVariant>
 #include <QPainter>
@@ -43,6 +42,7 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QStyleOptionGraphicsItem>
 #include <QWidget>
+#include <QTransform>
 
 // TerraLib
 #include "../../core/pattern/mvc/ItemObserver.h"
@@ -137,7 +137,12 @@ namespace te
         /*!
           \brief Reimplemented from ItemObserver
          */
-        virtual te::color::RGBAColor** getImage();
+        virtual te::color::RGBAColor** getRGBAColorImage(int &w, int &h);
+
+        /*!
+          \brief Reimplemented from ItemObserver
+         */
+        virtual QImage getImage();
 
       protected:
 
@@ -755,15 +760,59 @@ namespace te
       if(angle == model->getOldAngle())
         return;
 
+      double w = boundingRect().width();
+      double h = boundingRect().height();
+
+      QTransform transf = T::transform();
+
+      if(m_invertedMatrix)
+      {
+        angle = -angle;
+      }
+
+      transf.translate(w/2, h/2);
+      T::setTransform(transf);
       T::setRotation(angle);
+      transf.translate(-(w/2), -(h/2));
+      T::setTransform(transf);
     }
 
     template <class T>
-    inline te::color::RGBAColor** te::layout::ParentItem<T>::getImage()
+    inline te::color::RGBAColor** te::layout::ParentItem<T>::getRGBAColorImage(int &w, int &h)
     {
-      QImage img = m_pixmap.toImage();
-      te::color::RGBAColor** teImg = te::qt::widgets::GetImage(&img);
+      w = 0;
+      h = 0;
+      te::color::RGBAColor** teImg = 0;
+
+      QRectF rect = boundingRect();
+      QStyleOptionGraphicsItem opt;
+      QPixmap pix(rect.width(), rect.height());
+      QPainter p(&pix);
+      this->paint(&p, &opt, 0);
+      QImage img = pix.toImage();
+
+      if(img.isNull())
+      {
+        return teImg;
+      }
+
+      w = pix.width();
+      h = pix.height();
+
+      teImg = te::qt::widgets::GetImage(&img);
       return teImg;
+    }
+
+    template <class T>
+    QImage te::layout::ParentItem<T>::getImage()
+    {
+      QRectF rect = boundingRect();
+      QStyleOptionGraphicsItem opt;
+      QPixmap pix(rect.width(), rect.height());
+      QPainter p(&pix);
+      this->paint(&p, &opt, 0);
+
+      return pix.toImage();
     }
 
     template <class T>
@@ -773,6 +822,41 @@ namespace te
       {
         refresh();
       }
+
+      if(change == QGraphicsItem::ItemChildAddedChange)
+      {
+        QGraphicsItem* item = value.value<QGraphicsItem*>();
+        if(item)
+        {
+          ItemObserver* iOb = dynamic_cast<ItemObserver*>(item);
+          if(iOb)
+          {
+            if(iOb->getModel())
+            {
+              Properties* props = iOb->getModel()->getPublicProperties();
+              m_model->addChildrenProperties(props);
+            }
+          }
+        }       
+      }
+
+      if(change == QGraphicsItem::ItemChildRemovedChange)
+      {
+        QGraphicsItem* item = value.value<QGraphicsItem*>();
+        if(item)
+        {
+          ItemObserver* iOb = dynamic_cast<ItemObserver*>(item);
+          if(iOb)
+          {
+            if(iOb->getModel())
+            {
+              int hashCode = iOb->getModel()->getHashCode();
+              m_model->removeChildrenProperties(hashCode);
+            }
+          }
+        } 
+      }
+
       return QGraphicsItem::itemChange(change, value);
     }
 

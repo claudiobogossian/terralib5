@@ -231,15 +231,6 @@ void te::vp::Save(te::da::DataSource* source, te::da::DataSet* result, te::da::D
       result->moveBeforeFirst();
       std::string name = dsTypeResult->getName();
       source->add(dsTypeResult->getName(),result, options);
-  
-      // create the primary key if it is possible
-      if (source->getCapabilities().getDataSetTypeCapabilities().supportsPrimaryKey())
-      {
-        std::string pk_name = dsTypeResult->getName() + "_pkey";
-        te::da::PrimaryKey* pk = new te::da::PrimaryKey(pk_name, dsTypeResult);
-        pk->add(dsTypeResult->getProperty(0));
-        source->addPrimaryKey(outDsType->getName(), pk);
-      }
     }
     else
     {
@@ -252,15 +243,6 @@ void te::vp::Save(te::da::DataSource* source, te::da::DataSet* result, te::da::D
       result->moveBeforeFirst();
       std::string name = dsTypeResult->getName();
       t->add(dsTypeResult->getName(),result, options);
-  
-      // create the primary key if it is possible
-      if (source->getCapabilities().getDataSetTypeCapabilities().supportsPrimaryKey())
-      {
-        std::string pk_name = dsTypeResult->getName() + "_pkey";
-        te::da::PrimaryKey* pk = new te::da::PrimaryKey(pk_name, dsTypeResult);
-        pk->add(dsTypeResult->getProperty(0));
-        t->addPrimaryKey(outDsType->getName(), pk);
-      }
 
       t->commit();
     }
@@ -268,26 +250,12 @@ void te::vp::Save(te::da::DataSource* source, te::da::DataSet* result, te::da::D
   }
   catch(te::common::Exception& e)
   {
-    if(source->getType() != "OGR")
-    {
-      t->rollBack();
-    }
-    else
-    {
-      //TODO: Deletar possivel shp gerado
-    }
+    t->rollBack();
     throw e;
   }
   catch(std::exception& e)
   {
-    if(source->getType() != "OGR")
-    {
-      t->rollBack();
-    }
-    else
-    {
-      //TODO: Deletar possivel shp gerado
-    }
+    t->rollBack();
     throw e;
   }
 }

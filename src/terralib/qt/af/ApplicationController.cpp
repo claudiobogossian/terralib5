@@ -71,6 +71,9 @@
 // Boost
 #include <boost/filesystem.hpp>
 
+//STL
+#include <algorithm>
+
 #if defined(TERRALIB_APACHE_LOG4CXX_ENABLED) && defined(TERRALIB_LOGGER_ENABLED)
 //Log4cxx
 #include <log4cxx/basicconfigurator.h>
@@ -344,6 +347,11 @@ void  te::qt::af::ApplicationController::initialize()
   if(!boost::filesystem::exists(m_appIconName.toStdString()))
     m_appIconName = te::common::FindInTerraLibPath(m_appIconName.toStdString()).c_str();
 
+  m_appPluginsPath = QString::fromStdString(te::common::SystemApplicationSettings::getInstance().getValue("Application.Plugins.<xmlattr>.xlink:href"));
+
+  if (!boost::filesystem::exists(m_appPluginsPath.toStdString()))
+    m_appPluginsPath = te::common::FindInTerraLibPath(m_appPluginsPath.toStdString()).c_str();
+
   m_aboutLogo = QString::fromStdString(te::common::SystemApplicationSettings::getInstance().getValue("Application.AboutDialogLogo.<xmlattr>.xlink:href"));
   
   if(!boost::filesystem::exists(m_aboutLogo.toStdString()))
@@ -497,6 +505,7 @@ void te::qt::af::ApplicationController::initializePlugins()
   {
     SplashScreenManager::getInstance().showMessage(tr("Reading application plugins list..."));
 
+    std::vector<std::string> default_plg = GetDefaultPluginsNames();
     plgFiles = GetPluginsFiles();
 
     //SplashScreenManager::getInstance().showMessage(tr("Plugins list read!"));
@@ -525,6 +534,36 @@ void te::qt::af::ApplicationController::initializePlugins()
 
     user_settings.endArray();
 
+    // get the unloaded plugins
+    std::set<std::string> user_unloaded_plugins;
+    int n_itemsUnloaded = user_settings.beginReadArray("unloaded");
+
+    for (int i = 0; i != n_itemsUnloaded; ++i)
+    {
+      user_settings.setArrayIndex(i);
+
+      QString name = user_settings.value("name").toString();
+
+      user_unloaded_plugins.insert(name.toStdString());
+    }
+
+    user_settings.endArray();
+
+    // get the broken plugins
+    std::set<std::string> user_broken_plugins;
+    int n_itemsBroken = user_settings.beginReadArray("broken");
+
+    for (int i = 0; i != n_itemsBroken; ++i)
+    {
+      user_settings.setArrayIndex(i);
+
+      QString name = user_settings.value("name").toString();
+
+      user_broken_plugins.insert(name.toStdString());
+    }
+
+    user_settings.endArray();
+
     user_settings.endGroup();
 
     //SplashScreenManager::getInstance().showMessage(tr("Enabled plugin list read!"));
@@ -533,21 +572,47 @@ void te::qt::af::ApplicationController::initializePlugins()
 
 // retrieve information for each plugin
     boost::ptr_vector<te::plugin::PluginInfo> plugins;
-    
+    boost::ptr_vector<te::plugin::PluginInfo> unloadedPlugins;
+    boost::ptr_vector<te::plugin::PluginInfo> brokenPlugins;
+
     for(std::size_t i = 0; i != plgFiles.size(); ++i)
     {
       te::plugin::PluginInfo* pinfo = te::plugin::GetInstalledPlugin(plgFiles[i]);
       
-      if(user_enabled_plugins.empty())                        // if there is no list of enabled plugins
-        plugins.push_back(pinfo);                             // try to load all!
-      else if(user_enabled_plugins.count(pinfo->m_name) != 0) // else, if a list is available,
-        plugins.push_back(pinfo);                             // load only enabled plugins
-      else                                                    // otherwise
-        delete pinfo;                                         // release plugin info
+      if (user_enabled_plugins.empty())                               // if there is no list of enabled plugins
+      {
+        if (default_plg.size() > 0)
+        {
+          if (std::find(default_plg.begin(), default_plg.end(), pinfo->m_name) != default_plg.end())
+            plugins.push_back(pinfo);                                 // try to load all default plugins.
+        }
+        else
+        {
+          plugins.push_back(pinfo);                                   // try to load all plugins.
+        }
+      }
+      else if (user_enabled_plugins.count(pinfo->m_name) != 0)        // else, if a list is available,
+      {
+        plugins.push_back(pinfo);                                     // load all enabled plugins using .ini file as reference.
+      }
+      else if (user_unloaded_plugins.count(pinfo->m_name) != 0)       // else, if a list is available,
+      {
+        unloadedPlugins.push_back(pinfo);                             // load only unloaded plugins
+      }
+      else if (user_broken_plugins.count(pinfo->m_name) != 0)         // else, if a list is available,
+      {
+        brokenPlugins.push_back(pinfo);                               // load only broken plugins
+      }
     }
     
 // load and start each plugin
     te::plugin::PluginManager::getInstance().load(plugins);
+
+    if (user_unloaded_plugins.size() > 0)
+      te::plugin::PluginManager::getInstance().setUnloadedPlugins(unloadedPlugins);
+
+    if (user_broken_plugins.size() > 0)
+      te::plugin::PluginManager::getInstance().setBrokenPlugins(brokenPlugins);
 
     SplashScreenManager::getInstance().showMessage(tr("Plugins loaded successfully!"));
   }
@@ -747,7 +812,7 @@ void te::qt::af::ApplicationController::finalize()
 
   m_appUserSettingsFile.clear();
   
-  m_appPluginsFile.clear();
+  m_appPluginsPath.clear();
   
   m_appToolBarDefaultIconSize.clear();
   
@@ -781,6 +846,11 @@ const QString& te::qt::af::ApplicationController::getAppTitle() const
 const QString& te::qt::af::ApplicationController::getAppIconName() const
 {
   return m_appIconName;
+}
+
+const QString& te::qt::af::ApplicationController::getAppPluginsPath() const
+{
+  return m_appPluginsPath;
 }
 
 const QString& te::qt::af::ApplicationController::getAboutLogo() const

@@ -49,9 +49,50 @@ Ui::TimeSeriesPropertiesWidgetForm* te::qt::widgets::TimeSeriesPropertiesWidget:
   return m_ui.get();
 }
 
-void te::qt::widgets::TimeSeriesPropertiesWidget::setUp (const te::da::DataSetTypePtr dataType)
+std::string te::qt::widgets::TimeSeriesPropertiesWidget::getIdPropName()
+{
+  return m_ui->m_idComboBox->currentText().toStdString();
+}
+
+int te::qt::widgets::TimeSeriesPropertiesWidget::getIdIndex()
+{
+  if(m_dataType)
+    return m_dataType->getPropertyPosition(m_ui->m_idComboBox->currentText().toStdString());
+  else
+    return -1;
+}
+
+std::string te::qt::widgets::TimeSeriesPropertiesWidget::getValuePropName()
+{
+  return m_ui->m_valueComboBox->currentText().toStdString();
+}
+
+int te::qt::widgets::TimeSeriesPropertiesWidget::getValueIndex()
+{
+  if(m_dataType)
+    return m_dataType->getPropertyPosition(m_ui->m_valueComboBox->currentText().toStdString());
+  else
+    return -1;
+}
+
+std::string te::qt::widgets::TimeSeriesPropertiesWidget::getGeometryPropName()
+{
+  return m_ui->m_locationComboBox->currentText().toStdString();
+}
+
+int te::qt::widgets::TimeSeriesPropertiesWidget::getGeometryId()
+{
+  if(m_dataType)
+    return m_dataType->getPropertyPosition(m_ui->m_locationComboBox->currentText().toStdString());
+  else
+    return -1;
+}
+
+void te::qt::widgets::TimeSeriesPropertiesWidget::setUp(const te::da::DataSetTypePtr dataType)
 {
   QString item;
+  m_dataType = dataType;
+
   const std::vector<te::dt::Property*>& properties = dataType->getProperties();
 
   for (std::size_t i = 0; i < properties.size(); i++)
@@ -65,6 +106,7 @@ void te::qt::widgets::TimeSeriesPropertiesWidget::setUp (const te::da::DataSetTy
     {
       item = QString::fromStdString(properties.at(i)->getName());
       m_ui->m_idComboBox->addItem(item);
+      m_ui->m_valueComboBox->addItem(item);
     }
   }
 }

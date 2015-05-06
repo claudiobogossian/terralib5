@@ -30,19 +30,18 @@
 #define __TERRALIB_LAYOUT_INTERNAL_PROPERTY_BROWSER_H
 
 // TerraLib
-#include "../../core/property/Property.h"
+#include "../../../core/property/Property.h"
+#include "../../../core/Config.h"
 
 // Qt
 #include <QObject>
-#include <QVariant>
 
 // QtPropertyBrowser
-class QtTreePropertyBrowser;
-class QtStringPropertyManager;
-class QtProperty;
-class QtVariantPropertyManager;
-class QtVariantProperty;
-class QtBrowserItem;
+#include <QtPropertyBrowser/QtTreePropertyBrowser>
+#include <QtPropertyBrowser/QtStringPropertyManager>
+#include <QtPropertyBrowser/QtProperty>
+#include <QtPropertyBrowser/QtVariantPropertyManager>
+#include <QtPropertyBrowser/QtBrowserItem>
 
 class QGraphicsItem;
 class QWidget;
@@ -53,6 +52,8 @@ namespace te
   {
     class Properties;
     class EnumType;
+    class VariantPropertiesBrowser;
+    class DialogPropertiesBrowser;
 
     /*!
     \brief Manage properties variants values. Maps the QProperty properties (Qt) and Property (Layout) and add to a tree (QtTreePropertyBrowser) for presentation to the user, 
@@ -60,7 +61,7 @@ namespace te
 	  
 	  \ingroup layout
 	  */
-    class PropertyBrowser : public QObject
+    class TELAYOUTEXPORT PropertyBrowser : public QObject
     {
 	    Q_OBJECT //for slots/signals
 
@@ -72,39 +73,41 @@ namespace te
 
         QtTreePropertyBrowser* getPropertyEditor();
 
-        QtVariantPropertyManager* getVariantPropertyManager();
+        VariantPropertiesBrowser* getVariantPropertiesBrowser();
+
+        DialogPropertiesBrowser* getDialogPropertiesBrowser();
 
         virtual void clearAll();
 
-        virtual bool addProperty(Property property);
+        virtual void closeAllWindows();
+
+        virtual QtProperty* addProperty(Property property);
       
         virtual bool removeProperty(Property property);
-
-        virtual Property getProperty(std::string name);
 
         virtual bool updateProperty(Property property);
 
         virtual void updateProperties(Properties* props);
 
         virtual Properties* getProperties();
-
-        virtual EnumType* getLayoutType(QVariant::Type type, std::string name = "");
-
-        virtual QVariant::Type getVariantType(EnumType* dataType);
       
         virtual void setHasWindows(bool hasWindows = false);
 
         virtual void selectProperty(std::string name);
 
-        virtual void changeQtVariantPropertyValue(QtVariantProperty* vproperty, Property property);
-            
+        virtual QtProperty* findProperty(std::string name);
+
+        virtual bool addSubProperty(QtProperty* prop, QtProperty* subProp);
+
+        virtual bool addSubProperty(Property prop, Property subProp);
+                    
       private slots:
 
         void propertyEditorValueChanged(QtProperty *property, const QVariant &value);
 
         void onChangeFilter(const QString& filter);
 
-        virtual void onSetDlg(QWidget *parent, QtProperty * prop) = 0;
+        virtual void onChangeDlgProperty(Property property);
         
       signals:
 
@@ -121,25 +124,18 @@ namespace te
         virtual void createManager();
 
         virtual void changeVisibility( QList<QtBrowserItem*> items, bool visible );
-
-        virtual QVariant findPropertyValue(std::string name);
-
-        virtual QtProperty* findProperty(std::string name);
-
+        
         virtual void blockOpenWindows(bool block);
-
-        virtual void addAttribute(QtVariantProperty* vproperty, Property property);
-
-        virtual QVariant checkComplexType(QtVariantProperty* property);
-      
+              
       protected:
 
-        QtTreePropertyBrowser* m_propertyEditor;
-        QtVariantPropertyManager* m_variantPropertyEditorManager; 
-        QtStringPropertyManager*  m_strDlgManager;
-        QMap<QtProperty*, QString> m_propertyToId;
-        QMap<QString, QtProperty*> m_idToProperty;
-        QMap<QString, bool> m_idToExpanded;
+        QtTreePropertyBrowser*      m_propertyEditor;
+        VariantPropertiesBrowser*   m_variantPropertiesBrowser;
+        DialogPropertiesBrowser*    m_dialogPropertiesBrowser;
+        QMap<QtProperty*, QString>  m_propertyToId;
+        QMap<QString, QtProperty*>  m_idToProperty;
+        QMap<QString, bool>         m_idToExpanded;
+
 
         /* Custom Types: Dialog Window Type */
         bool                 m_hasWindows;
@@ -149,3 +145,5 @@ namespace te
 }
 
 #endif
+
+

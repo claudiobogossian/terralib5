@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../common/ByteSwapUtils.h"
+#include "../common/Exception.h"
 #include "../common/Globals.h"
 #include "../common/StringUtils.h"
 #include "../common/Translator.h"
@@ -40,7 +41,7 @@
 #include "Connection.h"
 #include "DataSet.h"
 #include "DataSource.h"
-#include "Exception.h"
+
 #include "Transactor.h"
 #include "Utils.h"
 
@@ -116,7 +117,7 @@ te::common::AccessPolicy te::ado::DataSet::getAccessPolicy() const
 
 std::auto_ptr<te::gm::Envelope> te::ado::DataSet::getExtent(std::size_t /*i*/)
 {
-  throw Exception(TE_TR("Method getExtent: not implemented yet!"));
+  throw te::common::Exception(TE_TR("Method getExtent: not implemented yet!"));
 }
 
 std::size_t te::ado::DataSet::getNumProperties() const
@@ -141,7 +142,7 @@ te::common::CharEncoding te::ado::DataSet::getPropertyCharEncoding(std::size_t i
 
 std::string te::ado::DataSet::getDatasetNameOfProperty(std::size_t /*i*/) const
 {
-  throw Exception(TE_TR("Method getDatasetNameOfProperty: not implemented yet!"));
+  throw te::common::Exception(TE_TR("Method getDatasetNameOfProperty: not implemented yet!"));
 }
 
 bool te::ado::DataSet::isEmpty() const
@@ -253,7 +254,7 @@ char te::ado::DataSet::getChar(std::size_t i) const
   }
   catch(_com_error& e)
   {
-    throw Exception(TE_TR(e.Description()));
+    throw te::common::Exception((LPCSTR)e.ErrorMessage());
   }
 
   return ival;
@@ -278,7 +279,7 @@ boost::int16_t te::ado::DataSet::getInt16(std::size_t i) const
   }
   catch(_com_error& e)
   {
-    throw Exception(TE_TR(e.Description()));
+    throw te::common::Exception((LPCSTR)e.ErrorMessage());
   }
 
   return ival;
@@ -298,7 +299,7 @@ boost::int32_t te::ado::DataSet::getInt32(std::size_t i) const
   }
   catch(_com_error& e)
   {
-    throw Exception(TE_TR(e.Description()));
+    throw te::common::Exception((LPCSTR)e.ErrorMessage());
   }
 
   return ival;
@@ -318,7 +319,7 @@ boost::int64_t te::ado::DataSet::getInt64(std::size_t i) const
   }
   catch(_com_error& e)
   {
-    throw Exception(TE_TR(e.Description()));
+    throw te::common::Exception((LPCSTR)e.ErrorMessage());
   }
 
   return ival;
@@ -338,7 +339,7 @@ bool te::ado::DataSet::getBool(std::size_t i) const
   }
   catch(_com_error& e)
   {
-    throw Exception(TE_TR(e.Description()));
+    throw te::common::Exception((LPCSTR)e.ErrorMessage());
   }
 
   return ival;
@@ -358,7 +359,7 @@ float te::ado::DataSet::getFloat(std::size_t i) const
   }
   catch(_com_error& e)
   {
-    throw Exception(TE_TR(e.Description()));
+    throw te::common::Exception((LPCSTR)e.ErrorMessage());
   }
 
   return value;
@@ -378,7 +379,7 @@ double te::ado::DataSet::getDouble(std::size_t i) const
   }
   catch(_com_error& e)
   {
-    throw Exception(TE_TR(e.Description()));
+    throw te::common::Exception((LPCSTR)e.ErrorMessage());
   }
 
   return value;
@@ -386,7 +387,7 @@ double te::ado::DataSet::getDouble(std::size_t i) const
 
 std::string te::ado::DataSet::getNumeric(std::size_t /*i*/) const
 {
-  throw Exception(TE_TR("Method getNumeric: not implemented yet!"));
+  throw te::common::Exception(TE_TR("Method getNumeric: not implemented yet!"));
 }
 
 std::string te::ado::DataSet::getString(std::size_t i) const
@@ -403,7 +404,7 @@ std::string te::ado::DataSet::getString(std::size_t i) const
   }
   catch(_com_error& e)
   {
-    throw Exception(TE_TR(e.Description()));
+    throw te::common::Exception((LPCSTR)e.ErrorMessage());
   }
 
   return ival;
@@ -455,7 +456,7 @@ std::auto_ptr<te::dt::ByteArray> te::ado::DataSet::getByteArray(std::size_t i) c
   }
   catch(_com_error& e)
   {
-    throw Exception(TE_TR(e.Description()));
+    throw te::common::Exception((LPCSTR)e.ErrorMessage());
   }
 
   return std::auto_ptr<te::dt::ByteArray>(new te::dt::ByteArray(data, size));
@@ -477,7 +478,7 @@ std::auto_ptr<te::gm::Geometry> te::ado::DataSet::getGeometry(std::size_t i) con
 
 std::auto_ptr<te::rst::Raster> te::ado::DataSet::getRaster(std::size_t /*i*/) const
 {
-  throw Exception(TE_TR("Method getRaster: not implemented yet!"));
+  throw te::common::Exception(TE_TR("Method getRaster: not implemented yet!"));
 }
 
 std::auto_ptr<te::dt::DateTime> te::ado::DataSet::getDateTime(std::size_t i) const
@@ -497,7 +498,7 @@ std::auto_ptr<te::dt::DateTime> te::ado::DataSet::getDateTime(std::size_t i) con
   }
   catch(_com_error &e)
   {
-    throw Exception(TE_TR(e.Description()));
+    throw te::common::Exception((LPCSTR)e.ErrorMessage());
   }
 
   if(value.vt == VT_NULL)
@@ -520,7 +521,7 @@ std::auto_ptr<te::dt::DateTime> te::ado::DataSet::getDateTime(std::size_t i) con
 
 std::auto_ptr<te::dt::Array> te::ado::DataSet::getArray(std::size_t /*i*/) const
 {
-  throw Exception(TE_TR("Method getArray: not implemented yet!"));
+  throw te::common::Exception(TE_TR("Method getArray: not implemented yet!"));
 }
 
 bool te::ado::DataSet::isNull(std::size_t i) const
@@ -536,7 +537,7 @@ bool te::ado::DataSet::isNull(std::size_t i) const
 
   catch(_com_error& e)
   {
-    throw Exception(TE_TR(e.Description()));
+    throw te::common::Exception((LPCSTR)e.ErrorMessage());
   }
 
   if(value.vt == VT_NULL)

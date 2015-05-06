@@ -23,6 +23,9 @@
   \brief Utility routines for the TerraLib Application Framework module.
 */
 
+// Boost
+#include <boost/foreach.hpp> // Boost => don't change this include order, otherwise you may have compiling problems! 
+
 // TerraLib
 #include "../../common/BoostUtils.h"
 #include "../../common/PlatformUtils.h"
@@ -52,10 +55,11 @@
 #include <memory>
 
 // Boost
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
+#include <boost/algorithm/string/replace.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/format.hpp>
-#include <boost/property_tree/ptree.hpp>
-#include <boost/algorithm/string/replace.hpp>
 
 // Qt
 #include <QDir>
@@ -68,6 +72,7 @@
 #include <QMainWindow>
 #include <QMessageBox>
 #include <QToolBar>
+
 
 te::qt::af::Project* te::qt::af::ReadProject(const std::string& uri)
 {
@@ -341,6 +346,9 @@ void te::qt::af::UpdateUserSettings(const QStringList& prjFiles, const QStringLi
   user_settings.remove("plugins/enabled");
   
   user_settings.beginGroup("plugins");
+  user_settings.remove("enabled");
+  user_settings.remove("unloaded");
+  user_settings.remove("broken");
   
   user_settings.beginWriteArray("enabled");
   
@@ -355,6 +363,38 @@ void te::qt::af::UpdateUserSettings(const QStringList& prjFiles, const QStringLi
     
     user_settings.setArrayIndex(aidx++);
     
+    user_settings.setValue("name", plugins[i].c_str());
+  }
+
+  user_settings.endArray();
+
+  // save unloaded plugins
+  user_settings.beginWriteArray("unloaded");
+
+  int unloadedidx = 0;
+
+  for (std::size_t i = 0; i != plugins.size(); ++i)
+  {
+    if (!te::plugin::PluginManager::getInstance().isUnloadedPlugin(plugins[i]))
+      continue;
+
+    user_settings.setArrayIndex(unloadedidx++);
+    user_settings.setValue("name", plugins[i].c_str());
+  }
+
+  user_settings.endArray();
+
+  // save broken plugins
+  user_settings.beginWriteArray("broken");
+
+  int brokenidx = 0;
+
+  for (std::size_t i = 0; i != plugins.size(); ++i)
+  {
+    if (!te::plugin::PluginManager::getInstance().isBrokenPlugin(plugins[i]))
+      continue;
+
+    user_settings.setArrayIndex(brokenidx++);
     user_settings.setValue("name", plugins[i].c_str());
   }
   
@@ -759,6 +799,28 @@ std::vector<std::string> te::qt::af::GetPluginsFiles()
   foreach(QFileInfo file, files)
   {
     res.push_back(file.absoluteFilePath().toStdString());
+  }
+
+  return res;
+}
+
+std::vector<std::string> te::qt::af::GetDefaultPluginsNames()
+{
+  std::vector<std::string> res;
+
+// Finding the Default plugins file.
+  std::string pluginsPath = te::qt::af::ApplicationController::getInstance().getAppPluginsPath().toStdString();
+
+  if (pluginsPath == "")
+    return res;
+
+// Reading JSON
+  boost::property_tree::ptree pt;
+  boost::property_tree::json_parser::read_json(pluginsPath, pt);
+
+  BOOST_FOREACH(boost::property_tree::ptree::value_type &v, pt.get_child("plugins"))
+  {
+    res.push_back(v.second.get<std::string>("plugin"));
   }
 
   return res;

@@ -390,6 +390,13 @@ namespace te
           const QString& getAppIconName() const;
 
           /*!
+          \brief Returns the plugins file path of application.
+
+          \return A path of plugins file.
+          */
+          const QString& getAppPluginsPath() const;
+
+          /*!
             \brief Returns the most recent project.
 
             \return Application most recent opened project.
@@ -442,7 +449,7 @@ namespace te
           QStringList m_recentProjs;                  //!< List of the recent projects.
           QStringList m_recentProjsTitles;            //!< List of the titles of the recent projects.
           std::string m_appUserSettingsFile;          //!< Name of the user settings file.
-          QString m_appPluginsFile;                   //!< Name of the plugins file.
+          QString m_appPluginsPath;                   //!< Name of the plugins path.
           QString m_appHelpFile;                      //!< Name of the help file.
           QString m_appIconThemeDir;                  //!< Directory of the application icon theme.
           QString m_appDefaultIconTheme;              //!< Name of the icon theme to be used.

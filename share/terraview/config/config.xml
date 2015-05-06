@@ -9,6 +9,7 @@
   <Title>TerraView</Title>
   <IconName>share/terraview/images/png/terralib-globe-small.png</IconName>
   <HelpFile xlink:href="share/terraview/help/help.qhc"/>
+  <Plugins xlink:href="share/terralib/plugins/terraview_plugins.json"/>
   <IconThemeInfo>
     <BaseDirectory xlink:href="share/terralib/icons"/>
     <DefaultTheme>terralib</DefaultTheme>

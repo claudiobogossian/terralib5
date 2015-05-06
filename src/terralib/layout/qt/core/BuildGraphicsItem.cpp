@@ -113,31 +113,7 @@
 #include <sstream>
 #include <string>  
 
-te::layout::BuildGraphicsItem::BuildGraphicsItem() :
-  m_paperItem("PAPER_"),
-  m_mapItem("MAP_"),
-  m_textItem("TEXT_"),
-  m_rectangleItem("RECTANGLE_"),
-  m_legendItem("LEGEND_"),
-  m_scaleItem("SCALE_"),
-  m_groupItem("ITEM_GROUP_"),
-  m_movingGroupItem("MOVING_ITEM_GROUP_"),
-  m_imageItem("IMAGE_"),
-  m_arrowItem("ARROW_"),
-  m_ellipseItem("ELLIPSE_"),
-  m_pointItem("POINT_"),
-  m_textGridItem("TEXT_GRID_"),
-  m_titleItem("TITLE_"),
-  m_legendChildItem("LEGEND_CHILD_"),
-  m_lineItem("LINE_"), 
-  m_polygonItem("POLYGON_"), 
-  m_balloonItem("BALLOON_"),
-  m_barCodeItem("BARCODE_"),
-  m_gridMapItem("GRIDMAP_"),
-  m_gridPlanarItem("GRID_PLANAR_"),
-  m_gridGeodesicItem("GRID_GEODESIC_"),
-  m_northItem("NORTH_"),
-  m_mapLocationItem("MAP_LOCATION_")
+te::layout::BuildGraphicsItem::BuildGraphicsItem() 
 {
  
 }
@@ -159,13 +135,12 @@ QGraphicsItem* te::layout::BuildGraphicsItem::rebuildItem( te::layout::Propertie
   m_props = props;  
   m_coord = findCoordinate(props);
   m_zValue = findZValue(props);
-  m_redraw = draw;
 
   EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
 
   EnumType* type = props->getTypeObj();
 
-  item = createItem(type);
+  item = createItem(type, draw);
   
   return item;
 }
@@ -176,132 +151,109 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createItem( te::layout::EnumType* 
 
   m_coord = coordinate;
   clear();
-  m_redraw = draw;
 
   EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
   EnumModeType* enumMode = Enums::getInstance().getEnumModeType();
 
   if(mode == enumMode->getModeCreateMap())
   {
-    m_name = nameItem(m_mapItem, enumObj->getMapItem());
-    item = createMap();
+    item = createItem(enumObj->getMapItem(), draw);
   }
   else if(mode == enumMode->getModeCreateGridMap())
   {
-    m_name = nameItem(m_gridMapItem, enumObj->getGridMapItem());
-    item = createGridMap();
+    item = createItem(enumObj->getGridMapItem(), draw);
   }
   else if(mode == enumMode->getModeCreateText())
   {
-    m_name = nameItem(m_textItem, enumObj->getTextItem());
-    item = createText();
+    item = createItem(enumObj->getTextItem(), draw);
   }
   else if(mode == enumMode->getModeCreateImage())
   {
-    m_name = nameItem(m_imageItem, enumObj->getImageItem());
-    item = createImage();
+    item = createItem(enumObj->getImageItem(), draw);
   }
   else if(mode == enumMode->getModeCreateRectangle())
   {
-    m_name = nameItem(m_rectangleItem, enumObj->getRectangleItem());
-    item = createRectangle();
+    item = createItem(enumObj->getRectangleItem(), draw);
   }
   else if(mode == enumMode->getModeCreateLegend())
   {
-    m_name = nameItem(m_legendItem, enumObj->getLegendItem());
-    item = createLegend();
+    item = createItem(enumObj->getLegendItem(), draw);
   }
   else if(mode == enumMode->getModeCreateScale())
   {
-    m_name = nameItem(m_scaleItem, enumObj->getScaleItem());
-    item = createScale();
+    item = createItem(enumObj->getScaleItem(), draw);
   }
   else if(mode == enumMode->getModeCreateItemGroup())
   {
-    m_name = nameItem(m_groupItem, enumObj->getItemGroup());
-    item = createItemGroup();
+    item = createItem(enumObj->getItemGroup(), draw);
   }
   else if(mode == enumMode->getModeCreatePoint())
   {
-    m_name = nameItem(m_pointItem, enumObj->getPointItem());
-    item = createPoint();
+    item = createItem(enumObj->getPointItem(), draw);
   }
   else if(mode == enumMode->getModeCreateArrow())
   {
-    m_name = nameItem(m_arrowItem, enumObj->getArrowItem());
-    item = createArrow();
+    item = createItem(enumObj->getArrowItem(), draw);
   }
   else if(mode == enumMode->getModeCreateEllipse())
   {
-    m_name = nameItem(m_ellipseItem, enumObj->getEllipseItem());
-    item = createEllipse();
+    item = createItem(enumObj->getEllipseItem(), draw);
   }
   else if(mode == enumMode->getModeCreateTitle())
   {
-    m_name = nameItem(m_titleItem, enumObj->getTitleItem());
-    item = createTitle();
+    item = createItem(enumObj->getTitleItem(), draw);
   }
   else if(mode == enumMode->getModeCreateTextGrid())
   {
-    m_name = nameItem(m_textGridItem, enumObj->getTextGridItem());
-    item = createTextGrid();
+    item = createItem(enumObj->getTextGridItem(), draw);
   }
   else if(mode == enumMode->getModeCreateLegendChild())
   {
-    m_name = nameItem(m_legendChildItem, enumObj->getLegendChildItem());
-    item = createLegendChild();
+    item = createItem(enumObj->getLegendChildItem(), draw);
   }
   else if (mode == enumMode->getModeCreateLine()) 
   {
-    m_name = nameItem(m_lineItem, enumObj->getLineItem());
-    item = createLine();
+    item = createItem(enumObj->getLineItem(), draw);
   }
   else if (mode == enumMode->getModeCreatePolygon()) 
   {
-    m_name = nameItem(m_polygonItem, enumObj->getPolygonItem());
-    item = createPolygon();
+    item = createItem(enumObj->getPolygonItem(), draw);
   }
   else if (mode == enumMode->getModeCreateBalloon()) 
   {
-    m_name = nameItem(m_balloonItem, enumObj->getBalloonItem());
-    item = createBalloon();
+    item = createItem(enumObj->getBalloonItem(), draw);
   }
   else if (mode == enumMode->getModeCreateBarCode())
   {
-    m_name = nameItem(m_barCodeItem, enumObj->getBarCodeItem());
-    item = createBarCode();
+    item = createItem(enumObj->getBarCodeItem(), draw);
   }
   else if (mode == enumMode->getModeCreateGridPlanar())
   {
-    m_name = nameItem(m_gridPlanarItem, enumObj->getGridPlanarItem());
-    item = createGridPlanar();
+    item = createItem(enumObj->getGridPlanarItem(), draw);
   }
   else if (mode == enumMode->getModeCreateGridGeodesic())
   {
-    m_name = nameItem(m_gridGeodesicItem, enumObj->getGridGeodesicItem());
-    item = createGridGeodesic();
+    item = createItem(enumObj->getGridGeodesicItem(), draw);
   }
   else if (mode == enumMode->getModeCreateNorth())
   {
-    m_name = nameItem(m_northItem, enumObj->getNorthItem());
-    item = createNorth();
+    item = createItem(enumObj->getNorthItem(), draw);
   }
   else if (mode == enumMode->getModeCreateMapLocation())
   {
-    m_name = nameItem(m_mapLocationItem, enumObj->getMapLocationItem());
-    item = createMapLocation();
+    item = createItem(enumObj->getMapLocationItem(), draw);
   }
 
   return item;
 }
 
-QGraphicsItem* te::layout::BuildGraphicsItem::createItem( te::layout::EnumType* type )
+QGraphicsItem* te::layout::BuildGraphicsItem::createItem( te::layout::EnumType* type, bool draw )
 {
   QGraphicsItem* item = 0;
 
   EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
 
-  if (type == enumObj->getMovingItemGroup())
+  if(type == enumObj->getMovingItemGroup())
   {
     item = createMovingItemGroup();
   }
@@ -398,10 +350,12 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createItem( te::layout::EnumType* 
     item = createMapLocation();
   }
 
+  afterBuild(item, draw);
+
   return item;
 }
 
-std::string te::layout::BuildGraphicsItem::nameItem( std::string name, te::layout::EnumType* type )
+std::string te::layout::BuildGraphicsItem::nameItem( te::layout::EnumType* type )
 {
   AbstractScene* abstScene = Context::getInstance().getScene();
 
@@ -427,623 +381,495 @@ std::string te::layout::BuildGraphicsItem::nameItem( std::string name, te::layou
 
   ss << m_id;
 
+  std::string name = type->getName();
+  name+="_";
   name+=ss.str();
 
   return name;
 }
 
+QGraphicsItem* te::layout::BuildGraphicsItem::intersectionSelectionItem( int x, int y )
+{
+  QGraphicsItem* intersectionItem = 0;
+
+  AbstractScene* abstScene = Context::getInstance().getScene();
+  
+  if(!abstScene)
+  {
+    return intersectionItem;
+  }
+
+  Scene* sc = dynamic_cast<Scene*>(abstScene);
+  if(!sc)
+  {
+    return intersectionItem;
+  }
+  
+  QList<QGraphicsItem*> items = sc->selectedItems();
+
+  QPointF pt(x, y);
+
+  bool intersection = false;
+
+  foreach (QGraphicsItem *item, items) 
+  {
+    if(item)
+    {
+      bool intersection = item->contains(pt);
+      if(intersection)
+      {
+        intersectionItem = item;
+        break;
+      }
+    }
+  }
+
+  return intersectionItem;
+}
+
+bool te::layout::BuildGraphicsItem::addChild( QGraphicsItem* child, int x, int y )
+{
+  bool result = false;
+
+  if(!child)
+  {
+    return result;
+  }
+
+  QGraphicsItem* parentItem = intersectionSelectionItem(x, y);
+
+  if(!parentItem)
+  {
+    return result;
+  }
+  
+  // No add child in unselected items
+  if(!parentItem->isSelected())
+  {
+    return result;
+  }
+
+  ItemObserver* itemOb = dynamic_cast<ItemObserver*>(parentItem);
+  if(!itemOb)
+  {
+    return result;
+  }
+
+  if(!itemOb->getModel())
+  {
+    return result;
+  }
+
+  ItemModelObservable* model = dynamic_cast<ItemModelObservable*>(itemOb->getModel());  
+  if(model)
+  {
+    if(model->isEnableChildren())
+    {
+      child->setParentItem(parentItem);
+      result = true;
+    }
+  }
+
+  emit addChildFinalized(parentItem, child);
+
+  return result;
+}
+
+void te::layout::BuildGraphicsItem::afterBuild( QGraphicsItem* item, bool draw )
+{
+  if(!item)
+  {
+    return;
+  }
+  
+  bool result = addChild(item, m_coord.x, m_coord.y);  
+  if(!result)
+  {
+    item->setPos(QPointF(m_coord.x, m_coord.y));
+  }
+  
+  if(m_props)
+  {
+    item->setZValue(m_zValue);
+  }
+  
+  ItemObserver* itemObs = dynamic_cast<ItemObserver*>(item);
+  if(itemObs && draw)
+  {
+    itemObs->redraw();
+  }
+}
+
 QGraphicsItem* te::layout::BuildGraphicsItem::createPaper()
 {
-  //Paper
-  QGraphicsItem* item = 0;
-
   PaperModel* model = new PaperModel(te::layout::Context::getInstance().getPaperConfig());
   if(!m_props)
   {
     model->setId(m_id);
-    model->setName(m_name);
+    
+    EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
+    std::string name = nameItem(enumObj->getPaperItem());
+    model->setName(name);
   }
 
   PaperController* controllerMap = new PaperController(model);
   ItemObserver* itemObs = (ItemObserver*)controllerMap->getView();
 
   PaperItem* view = dynamic_cast<PaperItem*>(itemObs);
-  if(m_props)
+  if(m_props && view)
   {
-    view->updateProperties(m_props);
-  }
-
-  if(view)
-  {
-    view->setPos(QPointF(m_coord.x, m_coord.y));
-    if(m_props)
-    {
-      view->setZValue(m_zValue);
-    }
-    if(m_redraw)
-    {
-      itemObs->redraw();
-    }
-    return view;
-  }
-
-  return item;
+    model->updateProperties(m_props);
+  }  
+  return view;
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createMap()
 {
-  QGraphicsItem* item = 0;
-
   MapModel* model = new MapModel();
   if(!m_props)
   {
     model->setId(m_id);
-    model->setName(m_name);
+
+    EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
+    std::string name = nameItem(enumObj->getMapItem());
+    model->setName(name);
   }
 
   MapController* controller = new MapController(model);
   ItemObserver* itemObs = (ItemObserver*)controller->getView();
 
   MapItem* view = dynamic_cast<MapItem*>(itemObs);
-  if(m_props)
+  if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
-
-  if(view)
-  {
-    view->setPos(QPointF(m_coord.x, m_coord.y));
-    if(m_props)
-    {
-      view->setZValue(m_zValue);
-    }
-    if(m_redraw)
-    {
-      itemObs->redraw();
-    }
-    return view;
-  }
-
-  return item;
+  return view;
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createGridMap()
 {
-  QGraphicsItem* item = 0;
-
   GridMapModel* model = new GridMapModel();
   if(!m_props)
   {
     model->setId(m_id);
-    model->setName(m_name);
+    
+    EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
+    std::string name = nameItem(enumObj->getGridMapItem());
+    model->setName(name);
   }
 
   GridMapController* controller = new GridMapController(model);
   ItemObserver* itemObs = (ItemObserver*)controller->getView();
 
   GridMapItem* view = dynamic_cast<GridMapItem*>(itemObs);
-
-  if(m_props)
+  if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
-
-  if(view)
-  {
-    AbstractScene* abstractGrid = Context::getInstance().getScene();
-    Scene* scene = dynamic_cast<Scene*> (abstractGrid);
-    if (scene)
-    {
-      ItemUtils* iUtils = Context::getInstance().getItemUtils();
-      if(iUtils)
-      {
-        std::vector<te::layout::MapItem*> mapList = iUtils->getMapItemList(true);
-        if(mapList.size() == 1)
-        {
-          view->setParentItem(mapList[0]);          
-        }
-        else
-        {
-          view->setPos(QPointF(m_coord.x, m_coord.y));
-        }
-      }
-    }
-    if(m_props)
-    {
-      view->setZValue(m_zValue);
-    }
-    if(m_redraw)
-    {
-      itemObs->redraw();
-    }
-  }
-
-  return item;
+  return view;
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createText()
 {
-  QGraphicsItem* item = 0;
-
   TextModel* model = new TextModel();	
   if(!m_props)
   {
     model->setId(m_id);
-    model->setName(m_name);
+    
+    EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
+    std::string name = nameItem(enumObj->getTextItem());
+    model->setName(name);
   }
 
   TextController* controller = new TextController(model);
   ItemObserver* itemObs = (ItemObserver*)controller->getView();
 
   TextItem* view = dynamic_cast<TextItem*>(itemObs); 
-  if(m_props)
+  if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
-
-  if(view)
-  {
-    view->setPos(QPointF(m_coord.x, m_coord.y));
-    if(m_props)
-    {
-      view->setZValue(m_zValue);
-    }
-    if(m_redraw)
-    {
-      itemObs->redraw();
-    }
-    return view;
-  }
-
-  return item;
+  return view;
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createRectangle()
 {
-  QGraphicsItem* item = 0;
-
   RectangleModel* model = new RectangleModel();	
   if(!m_props)
   {
     model->setId(m_id);
-    model->setName(m_name);
+    
+    EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
+    std::string name = nameItem(enumObj->getRectangleItem());
+    model->setName(name);
   }
 
   RectangleController* controller = new RectangleController(model);
   ItemObserver* itemObs = (ItemObserver*)controller->getView();
 
   RectangleItem* view = dynamic_cast<RectangleItem*>(itemObs); 
-  if(m_props)
+  if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
-
-  if(view)
-  {
-    view->setPos(QPointF(m_coord.x, m_coord.y));
-    if(m_props)
-    {
-      view->setZValue(m_zValue);
-    }
-    if(m_redraw)
-    {
-      itemObs->redraw();
-    }
-    return view;
-  }
-
-  return item;
+  return view;
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createLegend()
 {
-  QGraphicsItem* item = 0;
-
   LegendModel* model = new LegendModel();	
   if(!m_props)
   {
     model->setId(m_id);
-    model->setName(m_name);
+    
+    EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
+    std::string name = nameItem(enumObj->getLegendItem());
+    model->setName(name);
   }
 
   LegendController* controller = new LegendController(model);
   ItemObserver* itemObs = (ItemObserver*)controller->getView();
 
   LegendItem* view = dynamic_cast<LegendItem*>(itemObs); 
-  if(m_props)
+  if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
-
-  if(view)
-  {
-    view->setPos(QPointF(m_coord.x, m_coord.y));
-    if(m_props)
-    {
-      view->setZValue(m_zValue);
-    }
-    if(m_redraw)
-    {
-      itemObs->redraw();
-    }
-    return view;
-  }
-
-  return item;
+  return view;
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createScale()
 {
-  QGraphicsItem* item = 0;
-
   ScaleModel* model = new ScaleModel();	
   if(!m_props)
   {
     model->setId(m_id);
-    model->setName(m_name);
+    
+    EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
+    std::string name = nameItem(enumObj->getScaleItem());
+    model->setName(name);
   }
 
   ScaleController* controller = new ScaleController(model);
   ItemObserver* itemObs = (ItemObserver*)controller->getView();
 
   ScaleItem* view = dynamic_cast<ScaleItem*>(itemObs); 
-  if(m_props)
+  if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
-
-  if(view)
-  {
-    view->setPos(QPointF(m_coord.x, m_coord.y));
-    if(m_props)
-    {
-      view->setZValue(m_zValue);
-    }
-    if(m_redraw)
-    {
-      itemObs->redraw();
-    }
-    return view;
-  }
-
-  return item;
+  return view;
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createItemGroup()
 {
-  QGraphicsItem* item = 0;
-
   ItemGroupModel* model = new ItemGroupModel();	
   if(!m_props)
   {
     model->setId(m_id);
-    model->setName(m_name);
+    
+    EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
+    std::string name = nameItem(enumObj->getItemGroup());
+    model->setName(name);
   }
 
   ItemGroupController* controller = new ItemGroupController(model);
   ItemObserver* itemObs = (ItemObserver*)controller->getView();
 
   ItemGroup* view = dynamic_cast<ItemGroup*>(itemObs); 
-  if(m_props)
+  if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
-
-  if(view)
-  {
-    view->setPos(QPointF(m_coord.x, m_coord.y));
-    if(m_props)
-    {
-      view->setZValue(m_zValue);
-    }
-    if(m_redraw)
-    {
-      itemObs->redraw();
-    }
-    return view;
-  }
-
-  return item;
+  return view;
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createMovingItemGroup()
 {
-  QGraphicsItem* item = 0;
-
   MovingItemGroupModel* model = new MovingItemGroupModel();	
   if(!m_props)
   {
     model->setId(m_id);
-    model->setName(m_name);
+    
+    EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
+    std::string name = nameItem(enumObj->getMovingItemGroup());
+    model->setName(name);
   }
 
   MovingItemGroupController* controller = new MovingItemGroupController(model);
   ItemObserver* itemObs = (ItemObserver*)controller->getView();
 
   MovingItemGroup* view = dynamic_cast<MovingItemGroup*>(itemObs); 
-  if(m_props)
+  if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
-
-  if(view)
-  {
-    view->setPos(QPointF(m_coord.x, m_coord.y));
-    if(m_props)
-    {
-      view->setZValue(m_zValue);
-    }
-    if(m_redraw)
-    {
-      itemObs->redraw();
-    }
-    return view;
-  }
-
-  return item;
+  return view;
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createImage()
 {
-  QGraphicsItem* item = 0;
-
   ImageModel* model = new ImageModel();	
   if(!m_props)
   {
     model->setId(m_id);
-    model->setName(m_name);
+    
+    EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
+    std::string name = nameItem(enumObj->getImageItem());
+    model->setName(name);
   }
 
   ImageController* controller = new ImageController(model);
   ItemObserver* itemObs = (ItemObserver*)controller->getView();
 
-  ImageItem* img = dynamic_cast<ImageItem*>(itemObs); 
-  if(m_props)
+  ImageItem* view = dynamic_cast<ImageItem*>(itemObs); 
+  if(m_props && view)
   {
-    img->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
-
-  if(img)
-  {
-    img->setPos(QPointF(m_coord.x, m_coord.y));
-    if(m_props)
-    {
-      img->setZValue(m_zValue);
-    }
-    if(m_redraw)
-      itemObs->redraw();
-    return img;
-  }
-
-  return item;
+  return view;
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createArrow()
 {
-  QGraphicsItem* item = 0;
-
   ArrowModel* model = new ArrowModel();	
   if(!m_props)
   {
     model->setId(m_id);
-    model->setName(m_name);
+    
+    EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
+    std::string name = nameItem(enumObj->getArrowItem());
+    model->setName(name);
   }
 
   ArrowController* controller = new ArrowController(model);
   ItemObserver* itemObs = (ItemObserver*)controller->getView();
 
   ArrowItem* view = dynamic_cast<ArrowItem*>(itemObs); 
-  if(m_props)
+  if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
-
-  if(view)
-  {
-    view->setPos(QPointF(m_coord.x, m_coord.y));
-    if(m_props)
-    {
-      view->setZValue(m_zValue);
-    }
-    if(m_redraw)
-    {
-      itemObs->redraw();
-    }
-    return view;
-  }
-
-  return item;
+  return view;
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createEllipse()
 {
-  QGraphicsItem* item = 0;
-
   EllipseModel* model = new EllipseModel();	
   if(!m_props)
   {
     model->setId(m_id);
-    model->setName(m_name);
+    
+    EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
+    std::string name = nameItem(enumObj->getEllipseItem());
+    model->setName(name);
   }
 
   EllipseController* controller = new EllipseController(model);
   ItemObserver* itemObs = (ItemObserver*)controller->getView();
 
   EllipseItem* view = dynamic_cast<EllipseItem*>(itemObs); 
-  if(m_props)
+  if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
-
-  if(view)
-  {
-    view->setPos(QPointF(m_coord.x, m_coord.y));
-    if(m_props)
-    {
-      view->setZValue(m_zValue);
-    }
-    if(m_redraw)
-    {
-      itemObs->redraw();
-    }
-    return view;
-  }
-
-  return item;
+  return view;
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createPoint()
 {
-  QGraphicsItem* item = 0;
-
   PointModel* model = new PointModel();	
   if(!m_props)
   {
     model->setId(m_id);
-    model->setName(m_name);
+    
+    EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
+    std::string name = nameItem(enumObj->getPointItem());
+    model->setName(name);
   }
 
   PointController* controller = new PointController(model);
   ItemObserver* itemObs = (ItemObserver*)controller->getView();
 
   PointItem* view = dynamic_cast<PointItem*>(itemObs); 
-  if(m_props)
+  if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
-
-  if(view)
-  {
-    view->setPos(QPointF(m_coord.x, m_coord.y));
-    if(m_props)
-    {
-      view->setZValue(m_zValue);
-    }
-    if(m_redraw)
-    {
-      itemObs->redraw();
-    }
-    return view;
-  }
-
-  return item;
+  return view;
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createTextGrid()
 {
-  QGraphicsItem* item = 0;
-
   TextGridModel* model = new TextGridModel();	
   if(!m_props)
   {
     model->setId(m_id);
-    model->setName(m_name);
+    
+    EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
+    std::string name = nameItem(enumObj->getTextGridItem());
+    model->setName(name);
   }
 
   TextGridController* controller = new TextGridController(model);
   ItemObserver* itemObs = (ItemObserver*)controller->getView();
 
   TextGridItem* view = dynamic_cast<TextGridItem*>(itemObs); 
-  if(m_props)
+  if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
-
-  if(view)
-  {
-    view->setPos(QPointF(m_coord.x, m_coord.y));
-    if(m_props)
-    {
-      view->setZValue(m_zValue);
-    }
-    if(m_redraw)
-    {
-      itemObs->redraw();
-    }
-    return view;
-  }
-
-  return item;
+  return view;
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createTitle()
 {
-  QGraphicsItem* item = 0;
-
   TitleModel* model = new TitleModel();	
   if(!m_props)
   {
     model->setId(m_id);
-    model->setName(m_name);
+    
+    EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
+    std::string name = nameItem(enumObj->getTitleItem());
+    model->setName(name);
   }
 
   TitleController* controller = new TitleController(model);
   ItemObserver* itemObs = (ItemObserver*)controller->getView();
 
   TitleItem* view = dynamic_cast<TitleItem*>(itemObs); 
-  if(m_props)
+  if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
-
-  if(view)
-  {
-    view->setPos(QPointF(m_coord.x, m_coord.y));
-    if(m_props)
-    {
-      view->setZValue(m_zValue);
-    }
-    if(m_redraw)
-    {
-      itemObs->redraw();
-    }
-    return view;
-  }
-
-  return item;
+  return view;
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createLegendChild()
 {
-  QGraphicsItem* item = 0;
-
   LegendChildModel* model = new LegendChildModel();	
   if(!m_props)
   {
     model->setId(m_id);
-    model->setName(m_name);
+    
+    EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
+    std::string name = nameItem(enumObj->getLegendChildItem());
+    model->setName(name);
   }
 
   LegendChildController* controller = new LegendChildController(model);
   ItemObserver* itemObs = (ItemObserver*)controller->getView();
 
   LegendChildItem* view = dynamic_cast<LegendChildItem*>(itemObs); 
-  if(m_props)
+  if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
-
-  if(view)
-  {
-    view->setPos(QPointF(m_coord.x, m_coord.y));
-    if(m_props)
-    {
-      view->setZValue(m_zValue);
-    }
-    if(m_redraw)
-    {
-      itemObs->redraw();
-    }
-    return view;
-  }
-
-  return item;
+  return view;
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createLine() 
 {
-  QGraphicsItem* item = 0;
-
   LineModel* model = new LineModel();	
   if(m_props)
   {
@@ -1052,40 +878,25 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createLine()
   else
   {
     model->setId(m_id);
-    model->setName(m_name);
+
+    EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
+    std::string name = nameItem(enumObj->getLineItem());
+    model->setName(name);
   }
 
   LineController* controller = new LineController(model);
   ItemObserver* itemObs = (ItemObserver*)controller->getView();
 
   LineItem* view = dynamic_cast<LineItem*>(itemObs); 
-
-  if(m_props)
+  if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
-
-  if(view)
-  {
-    view->setPos(QPointF(m_coord.x, m_coord.y));
-    if(m_props)
-    {
-      view->setZValue(m_zValue);
-    }
-    if(m_redraw)
-    {
-      itemObs->redraw();
-    }
-    return view;
-  }
-
-  return item;
+  return view;
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createPolygon() 
 {
-  QGraphicsItem* item = 0;
-
   PolygonModel* model = new PolygonModel();	
   if(m_props)
   {
@@ -1094,40 +905,25 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createPolygon()
   else
   {
     model->setId(m_id);
-    model->setName(m_name);
+    
+    EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
+    std::string name = nameItem(enumObj->getPolygonItem());
+    model->setName(name);
   }
 
   PolygonController* controller = new PolygonController(model);
   ItemObserver* itemObs = (ItemObserver*)controller->getView();
 
   PolygonItem* view = dynamic_cast<PolygonItem*>(itemObs); 
-
-  if(m_props)
+  if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
-
-  if(view)
-  {
-    view->setPos(QPointF(m_coord.x, m_coord.y));
-    if(m_props)
-    {
-      view->setZValue(m_zValue);
-    }
-    if(m_redraw)
-    {
-      itemObs->redraw();
-    }
-    return view;
-  }
-
-  return item;
+  return view;
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createBalloon() 
 {
-  QGraphicsItem* item = 0;
-
   BalloonModel* model = new BalloonModel();	
   if(m_props)
   {
@@ -1136,40 +932,25 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createBalloon()
   else
   {
     model->setId(m_id);
-    model->setName(m_name);
+    
+    EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
+    std::string name = nameItem(enumObj->getBalloonItem());
+    model->setName(name);
   }
 
   BalloonController* controller = new BalloonController(model);
   ItemObserver* itemObs = (ItemObserver*)controller->getView();
 
   BalloonItem* view = dynamic_cast<BalloonItem*>(itemObs); 
-
-  if(m_props)
+  if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
-
-  if(view)
-  {
-    view->setPos(QPointF(m_coord.x, m_coord.y));
-    if(m_props)
-    {
-      view->setZValue(m_zValue);
-    }
-    if(m_redraw)
-    {
-      itemObs->redraw();
-    }
-    return view;
-  }
-
-  return item;
+  return view;
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createBarCode()
 {
-  QGraphicsItem* item = 0;
-
   BarCodeModel* model = new BarCodeModel;
   if(m_props)
   {
@@ -1178,114 +959,71 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createBarCode()
   else
   {
     model->setId(m_id);
-    model->setName(m_name);
+    
+    EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
+    std::string name = nameItem(enumObj->getBarCodeItem());
+    model->setName(name);
   }
 
   BarCodeController* controller = new BarCodeController(model);
   ItemObserver* itemObs = (ItemObserver*)controller->getView();
 
   BarCodeItem* view = dynamic_cast<BarCodeItem*>(itemObs);
-
-  if(m_props)
+  if(m_props && view)
   {
-    view->updateProperties(m_props);
-  }
-
-  if(view)
-  {
-    view->setPos(QPointF(m_coord.x, m_coord.y));
-    if(m_props)
-    {
-      view->setZValue(m_zValue);
-    }
-    if(m_redraw)
-    {
-      itemObs->redraw();
-    }
-    return view;
-  }
-
-  return item;
+    model->updateProperties(m_props);
+  }  
+  return view;
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createGridPlanar()
 {
-  QGraphicsItem* item = 0;
-
   GridPlanarModel* model = new GridPlanarModel();	
   if(!m_props)
   {
     model->setId(m_id);
-    model->setName(m_name);
+    
+    EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
+    std::string name = nameItem(enumObj->getGridPlanarItem());
+    model->setName(name);
   }
 
   GridPlanarController* controller = new GridPlanarController(model);
   ItemObserver* itemObs = (ItemObserver*)controller->getView();
 
   GridPlanarItem* view = dynamic_cast<GridPlanarItem*>(itemObs); 
-  if(m_props)
+  if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
-
-  if(view)
-  {
-    view->setPos(QPointF(m_coord.x, m_coord.y));
-    if(m_props)
-    {
-      view->setZValue(m_zValue);
-    }
-    if(m_redraw)
-    {
-      itemObs->redraw();
-    }
-    return view;
-  }
-
-  return item;
+  return view;
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createGridGeodesic()
 {
-  QGraphicsItem* item = 0;
-
   GridGeodesicModel* model = new GridGeodesicModel();	
   if(!m_props)
   {
     model->setId(m_id);
-    model->setName(m_name);
+    
+    EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
+    std::string name = nameItem(enumObj->getGridGeodesicItem());
+    model->setName(name);
   }
 
   GridGeodesicController* controller = new GridGeodesicController(model);
   ItemObserver* itemObs = (ItemObserver*)controller->getView();
 
   GridGeodesicItem* view = dynamic_cast<GridGeodesicItem*>(itemObs); 
-  if(m_props)
+  if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
-
-  if(view)
-  {
-    view->setPos(QPointF(m_coord.x, m_coord.y));
-    if(m_props)
-    {
-      view->setZValue(m_zValue);
-    }
-    if(m_redraw)
-    {
-      itemObs->redraw();
-    }
-    return view;
-  }
-
-  return item;
+  return view;
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createNorth()
 {
-  QGraphicsItem* item = 0;
-
   NorthModel* model = new NorthModel;
   if(m_props)
   {
@@ -1294,40 +1032,25 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createNorth()
   else
   {
     model->setId(m_id);
-    model->setName(m_name);
+    
+    EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
+    std::string name = nameItem(enumObj->getNorthItem());
+    model->setName(name);
   }
 
   NorthController* controller = new NorthController(model);
   ItemObserver* itemObs = (ItemObserver*)controller->getView();
 
   NorthItem* view = dynamic_cast<NorthItem*>(itemObs);
-
-  if(m_props)
+  if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
-
-  if(view)
-  {
-    view->setPos(QPointF(m_coord.x, m_coord.y));
-    if(m_props)
-    {
-      view->setZValue(m_zValue);
-    }
-    if(m_redraw)
-    {
-      itemObs->redraw();
-    }
-    return view;
-  }
-
-  return item;
+  return view;
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createMapLocation()
 {
-  QGraphicsItem* item = 0;
-
   MapLocationModel* model = new MapLocationModel;
   if(m_props)
   {
@@ -1336,35 +1059,33 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createMapLocation()
   else
   {
     model->setId(m_id);
-    model->setName(m_name);
+    
+    EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
+    std::string name = nameItem(enumObj->getMapLocationItem());
+    model->setName(name);
   }
 
   MapLocationController* controller = new MapLocationController(model);
   ItemObserver* itemObs = (ItemObserver*)controller->getView();
 
   MapLocationItem* view = dynamic_cast<MapLocationItem*>(itemObs);
-
-  if(m_props)
+  if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
-
-  if(view)
-  {
-    view->setPos(QPointF(m_coord.x, m_coord.y));
-    if(m_props)
-    {
-      view->setZValue(m_zValue);
-    }
-    if(m_redraw)
-    {
-      itemObs->redraw();
-    }
-    return view;
-  }
-
-  return item;
+  return view;
 }
+
+
+
+
+
+
+
+
+
+
+
 
 
 

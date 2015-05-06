@@ -18,52 +18,45 @@
  */
 
 /*!
-  \file ObjectInspectorPropertyBrowser.h
+  \file AbstractBuildGraphicsOutside.h
    
-  \brief Class daughter of te::layout::PropertyBrowser used by the Object Inspector widget.
-
+  \brief Abstract class for build MVC widgets. 
+    
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_OBJECT_INSPECTOR_PROPERTY_BROWSER_H 
-#define __TERRALIB_LAYOUT_INTERNAL_OBJECT_INSPECTOR_PROPERTY_BROWSER_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_ABSTRACT_BUILD_GRAPHICS_OUTSIDE_H
+#define __TERRALIB_LAYOUT_INTERNAL_ABSTRACT_BUILD_GRAPHICS_OUTSIDE_H
 
 // TerraLib
-#include "PropertyBrowser.h"
-
-// Qt
-class QGraphicsItem;
-class QWidget;
-
-class QtVariantProperty;
-class QtProperty;
-class QtVariantPropertyManager;
-class QtBrowserIndex;
+#include "Config.h"
 
 namespace te
 {
   namespace layout
   {
-    /*!
-	  \brief Class daughter of te::layout::PropertyBrowser used by the Object Inspector widget.
-	  
-	  \ingroup layout
 
-    \sa te::layout::PropertyBrowser
-	  */
-    class ObjectInspectorPropertyBrowser : public PropertyBrowser
+	/*!
+      \class AbstractBuildGraphicsOutside
+
+      \brief Abstract class for build MVC widgets.  
+
+      \ingroup layout
+     */
+
+    class TELAYOUTEXPORT AbstractBuildGraphicsOutside
     {
-	    Q_OBJECT //for slots/signals
-
-    public:
-
-	    ObjectInspectorPropertyBrowser(QObject *parent = 0);
-
-	    virtual ~ObjectInspectorPropertyBrowser();
-
-    private slots:
-
-      void onSetDlg(QWidget *parent, QtProperty * prop);
+      public:
+	  
+	      /*!
+          \brief Constructor
+        */       
+        AbstractBuildGraphicsOutside();
+		
+		    /*!
+          \brief Destructor
+        */
+        virtual ~AbstractBuildGraphicsOutside();
     };
   }
 }
