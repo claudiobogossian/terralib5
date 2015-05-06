@@ -114,6 +114,12 @@ te::layout::Property te::layout::VariantPropertiesBrowser::getProperty( std::str
   prop.setName(name);
   
   QVariant variant = findPropertyValue(name);
+
+  if(variant.isNull() || !variant.isValid())
+  {
+    return prop;
+  }
+
   QtProperty* property = findProperty(name);
   EnumType* type = getLayoutType(variant.type(), name);
   
@@ -219,6 +225,10 @@ te::layout::EnumType* te::layout::VariantPropertiesBrowser::getLayoutType( QVari
         {
           dataType = dtType->getDataTypeStringList();
         }
+        else if(QtVariantPropertyManager::groupTypeId() == vproperty->propertyType())
+        {
+          dataType = dtType->getDataTypeGroup();
+        }
       }
       break;
     case QVariant::Double:
@@ -263,6 +273,10 @@ int te::layout::VariantPropertiesBrowser::getVariantType( te::layout::EnumType* 
   else if(dataType == dtType->getDataTypeStringList())
   {
     type = QtVariantPropertyManager::enumTypeId();
+  }
+  else if(dataType == dtType->getDataTypeGroup())
+  {
+    type = QtVariantPropertyManager::groupTypeId();
   }
   else if(dataType == dtType->getDataTypeDouble())
   {
@@ -314,6 +328,10 @@ bool te::layout::VariantPropertiesBrowser::changeQtVariantPropertyValue( QtVaria
   {    
     addAttribute(vproperty, property);
     vproperty->setValue(property.getOptionByCurrentChoice().toString().c_str());
+  }
+  else if(property.getType() == dataType->getDataTypeGroup())
+  {    
+    vproperty->setValue(property.getValue().toString().c_str());  
   }
   else if(property.getType() == dataType->getDataTypeDouble())
   {

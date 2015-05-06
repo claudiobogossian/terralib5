@@ -56,7 +56,7 @@
 #include <QList>
 
 te::layout::TextItem::TextItem( ItemController* controller, Observable* o ) :
-  ParentItem(controller, o, true),
+  ParentItem<QGraphicsTextItem>(controller, o, true),
   m_editable(false),
   m_move(false)
 {    
@@ -356,12 +356,12 @@ void te::layout::TextItem::resetEdit()
   {
     if(model->getText().compare(document()->toPlainText().toStdString()) != 0)
     {
-      Properties* beforeProps = getProperties();
+      Properties* beforeProps = model->getProperties();
       Properties* oldCommand = new Properties(*beforeProps);
 
       refreshDocument();
 
-      beforeProps = getProperties();
+      beforeProps = model->getProperties();
       Properties* newCommand = new Properties(*beforeProps);
 
       QUndoCommand* command = new ChangePropertyCommand(this, oldCommand, newCommand);

@@ -34,6 +34,7 @@
 
 // STL
 #include <set>
+#include <vector>
 
 namespace te
 {
@@ -186,6 +187,26 @@ namespace te
         /*!
           \brief Reimplemented from Observable
          */
+        virtual std::vector<te::layout::Properties*> getChildrenProperties() const;
+        
+        /*!
+          \brief Reimplemented from Observable
+         */
+        virtual void addChildrenProperties(te::layout::Properties* properties);
+
+        /*!
+        \brief Reimplemented from Observable
+        */
+        virtual void removeChildrenProperties(int hashCode);
+
+        /*!
+          \brief Reimplemented from Observable
+       */
+        virtual te::layout::Properties* getPublicProperties() const;
+
+        /*!
+          \brief Reimplemented from Observable
+         */
         virtual int getZValue();
 
         /*!
@@ -251,6 +272,20 @@ namespace te
           \return value of old position
          */
         virtual te::gm::Coord2D getOldPos();
+
+        /*!
+          \brief Returns true if MVC component can have children, false otherwise.
+
+          \return true if MVC component can have children, false otherwise
+         */
+        virtual bool isEnableChildren();
+
+        /*!
+          \brief Sets true if MVC component can have children, false otherwise.
+
+          \param true if MVC component can have children, false otherwise
+         */
+        virtual void setEnableChildren(bool value);
                 
       protected:
 
@@ -276,6 +311,8 @@ namespace te
         te::color::RGBAColor			m_backgroundColor; //!< background color
         te::color::RGBAColor			m_borderColor; //!< border color
         Properties*               m_properties; //!< properties
+        std::vector<Properties*>  m_childrenProperties; //!< properties
+        Properties*               m_publicProperties; //!< public properties
         EnumType*                 m_type; //!< type of the MVC component
         int                       m_zValue; //!< The Z value decides the stacking order of drawing
         SharedProperties*         m_sharedProps; //!< Names of common properties among all MVC components
@@ -286,6 +323,7 @@ namespace te
         int                       m_hashCode;
         double                    m_oldAngle; //!< value of old rotation
         te::gm::Coord2D           m_oldPos; //!< value of old position
+        bool                      m_enableChildren; //!< true if MVC component can have children, false otherwise
     };
   }
 }

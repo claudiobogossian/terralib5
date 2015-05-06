@@ -74,6 +74,8 @@ namespace te
       virtual void checkDynamicProperty(Property& property, QList<QGraphicsItem*> graphicsItems);
 
       virtual void mapNameDynamicProperty(Property& property, QList<QGraphicsItem*> graphicsItems);
+
+      virtual QGraphicsItem* equalsHashCode(Property property, QList<QGraphicsItem*> graphicsItems);
     };
   }
 }

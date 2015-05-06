@@ -106,6 +106,10 @@ namespace te
 
         virtual MapModel* getMapModel(std::string nameMap);
 
+        virtual bool sendPropertyToSelectedItems(Property property);
+
+        virtual bool sendPropertyToSelectedItem(Property property);
+
       protected:
 
         PropertyBrowser* m_layoutPropertyBrowser;

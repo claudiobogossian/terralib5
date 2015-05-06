@@ -33,11 +33,10 @@
 #include "../../../layout/core/pattern/singleton/Context.h"
 #include "../../../layout/qt/outside/PropertiesOutside.h"
 #include "../../../layout/qt/outside/ObjectInspectorOutside.h"
-#include "../../../layout/qt/outside/ToolbarOutside.h"
 #include "../../../layout/core/enum/Enums.h"
-#include "../../../layout/outside/ToolbarModel.h"
-#include "../../../layout/outside/ToolbarController.h"
 #include "../../../layout/core/pattern/mvc/OutsideObserver.h"
+#include "../../../layout/qt/core/BuildGraphicsItem.h"
+#include "../../../layout/qt/core/BuildGraphicsOutside.h"
 
 // STL
 #include <string>
@@ -129,6 +128,16 @@ void te::qt::plugins::layout::OutsideArea::init()
     connect(m_view, SIGNAL(changeContext()), this, SLOT(onRefreshStatusBar()));
   }
 
+  te::layout::AbstractBuildGraphicsItem* abstractBuildItem = te::layout::Context::getInstance().getAbstractBuildGraphicsItem();
+  if(abstractBuildItem)
+  {
+    te::layout::BuildGraphicsItem* buildItem = dynamic_cast<te::layout::BuildGraphicsItem*>(abstractBuildItem);
+    if(buildItem)
+    {
+      connect(buildItem, SIGNAL(addChildFinalized(QGraphicsItem*, QGraphicsItem*)), this, SLOT(onAddChildFinalized(QGraphicsItem*, QGraphicsItem*)));
+    }
+  }
+
   createPropertiesDock();
 
   createInspectorDock();
@@ -178,13 +187,32 @@ void te::qt::plugins::layout::OutsideArea::createToolbar()
 
   if(!win)
     return;
+  
+  te::layout::AbstractBuildGraphicsOutside* abstractBuildOutside = te::layout::Context::getInstance().getAbstractBuildGraphicsOutside();
+  if(!abstractBuildOutside)
+  {
+    return;
+  }
 
-  //Use the Property Browser Framework for create Object Inspector Window
-  te::layout::ToolbarModel* dockToolbarModel = new te::layout::ToolbarModel();		 
-  te::layout::ToolbarController* dockToolbarController = new te::layout::ToolbarController(dockToolbarModel);
-  te::layout::OutsideObserver* itemDockToolbar = (te::layout::OutsideObserver*)dockToolbarController->getView();
-  m_toolbar = dynamic_cast<te::layout::ToolbarOutside*>(itemDockToolbar); 
+  te::layout::BuildGraphicsOutside* buildOutside = dynamic_cast<te::layout::BuildGraphicsOutside*>(abstractBuildOutside);
+  if(!buildOutside)
+  {
+    return;
+  }
 
+  te::layout::EnumObjectType* objectType = te::layout::Enums::getInstance().getEnumObjectType();
+  if(!objectType)
+  {
+    return;
+  }
+
+  QWidget* widget = buildOutside->createOuside(objectType->getToolbar());
+  if(!widget)
+  {
+    return;
+  }
+
+  m_toolbar = dynamic_cast<te::layout::ToolbarOutside*>(widget);
   win->addToolBar(m_toolbar);
 }
 
@@ -528,3 +556,15 @@ void te::qt::plugins::layout::OutsideArea::onRefreshStatusBar()
   msg += s_mode;
   m_statusBar->showMessage(msg.c_str());
 }
+
+void te::qt::plugins::layout::OutsideArea::onAddChildFinalized( QGraphicsItem* parent, QGraphicsItem* child )
+{
+  QList<QGraphicsItem*> allItems = m_view->scene()->items();
+  //Refresh Inspector Object window
+  if(m_dockInspector)
+    m_dockInspector->getObjectInspectorOutside()->itemsInspector(allItems);
+}
+
+
+
+

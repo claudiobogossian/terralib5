@@ -46,11 +46,7 @@ namespace te
         virtual ~LegendChildModel();
 
         virtual void draw( ContextItem context );
-
-        virtual Properties* getProperties() const;
         
-        virtual void updateProperties(te::layout::Properties* properties);
-
         virtual te::se::Rule* getRule();
 
         virtual void setRule(te::se::Rule* rule);

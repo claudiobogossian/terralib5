@@ -71,14 +71,33 @@ te::layout::Scene::Scene( QObject* object):
   m_undoStack = new QUndoStack(this);
 }
 
+te::layout::Scene::Scene( AlignItems* align, PrintScene* print, QObject* object /*= 0*/ ) :
+  QGraphicsScene(object),
+  m_undoStack(0),
+  m_align(align),
+  m_print(print),
+  m_moveWatched(false)
+{
+
+}
+
 te::layout::Scene::~Scene()
 {
   m_moveWatches.clear();
-
+  
   if(m_undoStack)
   {
     delete m_undoStack;
     m_undoStack = 0;
+  }
+
+  foreach( QGraphicsItem *item, m_itemStackWithoutScene ) 
+  {
+    if(item->scene() != this)
+    {
+      delete item;
+      item = 0;
+    }
   }
 
   if(m_align)
@@ -96,40 +115,61 @@ te::layout::Scene::~Scene()
 
 void te::layout::Scene::insertItem( ItemObserver* item )
 {
+  if(!item)
+  {
+    return;
+  }
+
   QGraphicsItem* qitem = ((QGraphicsItem*)item);
+  
+  insertItem(qitem);
+}
+
+void te::layout::Scene::insertItem( QGraphicsItem* item )
+{
+  if(!item)
+  {
+    return;
+  }
+
+  if(item->scene() == this)
+  {
+    return;
+  }
 
   int total = 0;
 
-  if(qitem)
+  total = this->items().count();
+
+  this->addItem(item);
+
+  ItemObserver* obs = dynamic_cast<ItemObserver*>(item);
+  if(!obs)
   {
-    if(qitem->scene() != this) 
-    {
-      total = this->items().count();
-
-      ItemObserver* obs = dynamic_cast<ItemObserver*>(qitem);
-      this->addItem(qitem);
-      if(obs)
-      {
-        if(obs->isInvertedMatrix())
-        {
-          QTransform transf = m_matrix.inverted();
-          qitem->setTransform(transf);
-        }
-      }
-      qitem->setZValue(total);
-      QGraphicsObject* qObj = dynamic_cast<QGraphicsObject*>(qitem);
-      if(qObj)
-      {
-        qObj->installEventFilter(this);
-      }
-    }
-
-    ItemObserver* obs = dynamic_cast<ItemObserver*>(qitem);
-    if(obs)
-    {
-      obs->refresh(false);
-    }
+    return;
   }
+
+  if(obs->isInvertedMatrix())
+  {
+    QTransform transfItem = item->transform();
+    // Check if the item had been inserted
+    if(transfItem != m_matrix.inverted())
+    {
+      QTransform transf = m_matrix.inverted();
+      item->setTransform(transf);
+    }    
+  }
+
+  item->setZValue(total);
+  QGraphicsObject* qObj = dynamic_cast<QGraphicsObject*>(item);
+  if(qObj)
+  {
+    qObj->installEventFilter(this);
+  }
+
+  obs->refresh(false);
+
+  removeItemStackWithoutScene(item);
 
   emit addItemFinalized();
 }
@@ -228,7 +268,8 @@ void te::layout::Scene::deleteItems()
         ItemObserver* obs = dynamic_cast<ItemObserver*>(item);
         if(obs)
         {
-          names.push_back(obs->getName());
+          if(obs->getModel())
+            names.push_back(obs->getModel()->getName());
         }
         delete item;
         item = 0;
@@ -256,7 +297,8 @@ void te::layout::Scene::removeSelectedItems()
       ItemObserver* obs = dynamic_cast<ItemObserver*>(item);
       if(obs)
       {
-        names.push_back(obs->getName());
+        if(obs->getModel())
+          names.push_back(obs->getModel()->getName());
       }
     }
   }
@@ -480,7 +522,8 @@ std::vector<te::layout::Properties*> te::layout::Scene::getItemsProperties()
         if(!lItem->isPrintable())
           continue;
 
-        props.push_back(lItem->getProperties());
+        if(lItem->getModel())
+          props.push_back(lItem->getModel()->getProperties());
       }
     }
   }
@@ -568,6 +611,11 @@ void te::layout::Scene::exportItemsToImage(std::string dir)
         int w = 0;
         int h = 0;
 
+        if(!it->getModel())
+        {
+          continue;
+        }
+
         te::color::RGBAColor** rgba = it->getRGBAColorImage(w, h);
                 
         if(!rgba)
@@ -575,10 +623,10 @@ void te::layout::Scene::exportItemsToImage(std::string dir)
         
         //QRectF rect = item->boundingRect();               
         img = te::qt::widgets::GetImage(rgba, w, h);
-        std::string dirName = dir + "/" + it->getName() +".png";
-
         if(!img)
           continue;
+
+        std::string dirName = dir + "/" + it->getModel()->getName() +".png";
 
         img->save(dirName.c_str());
 
@@ -666,7 +714,12 @@ void te::layout::Scene::selectItem( std::string name )
       ItemObserver* it = dynamic_cast<ItemObserver*>(item);
       if(it)
       {
-        if(it->getName().compare(name) == 0)
+        if(!it->getModel())
+        {
+          continue;
+        }
+
+        if(it->getModel()->getName().compare(name) == 0)
         {
           item->setSelected(true);
         }
@@ -753,3 +806,39 @@ void te::layout::Scene::onChangeZoomFactor( double currentFactor )
     }
   }
 }
+
+bool te::layout::Scene::addItemStackWithoutScene( QGraphicsItem* item )
+{
+  if(!item)
+  {
+    return false;
+  }
+
+  if(item->scene() == this)
+  {
+    return false;
+  }
+
+  if(m_itemStackWithoutScene.contains(item))
+  {
+    return false;
+  }
+
+  m_itemStackWithoutScene.push_back(item);
+
+  return true;
+}
+
+bool te::layout::Scene::removeItemStackWithoutScene( QGraphicsItem* item )
+{
+  if(!item)
+  {
+    return false;
+  }
+
+  return m_itemStackWithoutScene.removeOne(item);
+}
+
+
+
+

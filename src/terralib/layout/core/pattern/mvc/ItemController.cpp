@@ -101,16 +101,6 @@ void te::layout::ItemController::setBox( te::gm::Envelope box )
   }
 }
 
-void te::layout::ItemController::updateProperties( te::layout::Properties* properties )
-{
-  if(m_model)
-  {
-    ItemModelObservable* model = dynamic_cast<ItemModelObservable*>(m_model);
-    if(model)
-      model->updateProperties(properties);
-  }
-}
-
 bool te::layout::ItemController::contains( const te::gm::Coord2D &coord ) const
 {
   if(m_model)

@@ -70,6 +70,12 @@ void te::layout::AbstractPropertiesBrowser::clearAll()
 QVariant te::layout::AbstractPropertiesBrowser::findPropertyValue( std::string name )
 {
   QVariant variant;
+
+  if(!m_idToProperty.contains(name.c_str()))
+  {
+    return variant;
+  }
+
   QtVariantProperty* vproperty = 0;
   QtProperty* prop = m_idToProperty[name.c_str()];
 
@@ -91,7 +97,14 @@ QVariant te::layout::AbstractPropertiesBrowser::findPropertyValue( std::string n
 
 QtProperty* te::layout::AbstractPropertiesBrowser::findProperty( std::string name )
 {
-  QtProperty* prop = m_idToProperty[name.c_str()];
+  QtProperty* prop = 0;
+
+  if(!m_idToProperty.contains(name.c_str()))
+  {
+    return prop;  
+  }
+
+  prop = m_idToProperty[name.c_str()];
   return prop;
 }
 
@@ -112,6 +125,24 @@ QVariant te::layout::AbstractPropertiesBrowser::checkComplexType( QtVariantPrope
   }
 
   return variant;
+}
+
+bool te::layout::AbstractPropertiesBrowser::removeProperty( QtProperty* prop )
+{
+  if(!prop)
+  {
+    return false;
+  }
+
+  if(!m_idToProperty.contains(prop->propertyName()))
+  {
+    return false;  
+  }
+
+  m_propertyToId.remove(prop);
+  m_idToProperty.remove(prop->propertyName());
+
+  return true;
 }
 
 
