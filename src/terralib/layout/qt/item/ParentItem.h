@@ -83,7 +83,7 @@ namespace te
 	    \sa te::layout::ItemObserver
 	  */
     template <class T>
-    class TELAYOUTEXPORT ParentItem : public T, public ItemObserver
+    class ParentItem : public T, public ItemObserver
     {
       public:
 
