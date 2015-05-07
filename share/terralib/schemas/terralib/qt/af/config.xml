@@ -8,6 +8,7 @@
   <Organization>INPE</Organization>
   <Name>TerraView</Name>
   <Title>TerraView</Title>
+  <ProjectExtension>tview</ProjectExtension>
   <IconName>terraview</IconName>
   <UserSettingsFileName>user_settings.xml</UserSettingsFileName>
   <PluginsFileName>application_plugins.xml</PluginsFileName>

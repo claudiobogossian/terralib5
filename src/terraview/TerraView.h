@@ -65,6 +65,8 @@ class TerraView : public te::qt::af::BaseApplication
 
     void init(const std::string& configFile);
 
+    void startProject(const QString& projectFileName);
+
   protected:
 
     void makeDialog();

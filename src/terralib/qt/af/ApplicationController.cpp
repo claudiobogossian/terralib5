@@ -342,6 +342,7 @@ void  te::qt::af::ApplicationController::initialize()
 
   m_appName = QString::fromStdString(te::common::SystemApplicationSettings::getInstance().getValue("Application.Name"));
   m_appTitle = QString::fromStdString(te::common::SystemApplicationSettings::getInstance().getValue("Application.Title"));
+  m_appProjectExtension = QString::fromStdString(te::common::SystemApplicationSettings::getInstance().getValue("Application.ProjectExtension"));
   m_appIconName = QString::fromStdString(te::common::SystemApplicationSettings::getInstance().getValue("Application.IconName"));
   
   if(!boost::filesystem::exists(m_appIconName.toStdString()))
@@ -474,6 +475,30 @@ void  te::qt::af::ApplicationController::initialize()
       XMLFormatter::formatDataSourceInfos(false);
 
       SplashScreenManager::getInstance().showMessage(tr("Known data sources loaded!"));
+    }
+    else
+    {
+      const QString& udir = getUserDataDir();
+
+      QVariant fileName = udir + "/" + QString(TERRALIB_APPLICATION_DATASOURCE_FILE_NAME);
+
+      QFileInfo infoDataSourceFile(fileName.toString());
+      
+      if (infoDataSourceFile.exists())
+      {
+        int reply = QMessageBox::question(0, tr("Data Sources XML"), tr("A file containing data sources already configured was found. Would you like to load it."), QMessageBox::No, QMessageBox::Yes);
+
+        if (reply == QMessageBox::Yes)
+        {
+          std::string dataSourcesFile = fileName.toString().toStdString();
+
+          te::serialize::xml::ReadDataSourceInfo(dataSourcesFile);
+
+          XMLFormatter::formatDataSourceInfos(false);
+
+          SplashScreenManager::getInstance().showMessage(tr("Known data sources loaded!"));
+        }
+      }
     }
   }
   catch(const std::exception& e)
@@ -804,6 +829,8 @@ void te::qt::af::ApplicationController::finalize()
 
   m_appTitle.clear();
 
+  m_appProjectExtension.clear();
+
   m_tLibLogo.clear();
           
   m_recentProjs.clear();
@@ -838,9 +865,19 @@ void  te::qt::af::ApplicationController::broadcast(te::qt::af::evt::Event* evt)
   emit triggered(evt);
 }
 
+const QString& te::qt::af::ApplicationController::getAppName() const
+{
+  return m_appName;
+}
+
 const QString& te::qt::af::ApplicationController::getAppTitle() const
 {
   return m_appTitle;
+}
+
+const QString& te::qt::af::ApplicationController::getAppProjectExtension() const
+{
+  return m_appProjectExtension;
 }
 
 const QString& te::qt::af::ApplicationController::getAppIconName() const

@@ -372,11 +372,25 @@ namespace te
         public:
 
           /*!
+            \brief Returns the application name.
+
+            \return Application name.
+          */
+          const QString& getAppName() const;
+
+          /*!
             \brief Returns the application title.
 
             \return Application title.
           */
           const QString& getAppTitle() const;
+
+          /*!
+            \brief Returns the application project extension.
+
+            \return Application project extension.
+          */
+          const QString& getAppProjectExtension() const;
 
           const QString& getAboutLogo() const;
 
@@ -443,6 +457,7 @@ namespace te
           QString m_appOrganization;                  //!< Organization name.
           QString m_appName;                          //!< Application name.
           QString m_appTitle;                         //!< Application title.
+          QString m_appProjectExtension;              //!< Application project extension.
           QString m_appIconName;                      //!< Icon used in the application.
           QString m_aboutLogo;
           QString m_tLibLogo;
