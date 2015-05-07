@@ -116,6 +116,10 @@ namespace te
 
         virtual void onShowTextGridSettingsDlg();
 
+        virtual void onShowFontDlg();
+
+        virtual void onShowColorDlg();
+
       signals:
 
         void changeDlgProperty(Property property);
