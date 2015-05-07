@@ -34,6 +34,9 @@
 #include "../core/property/Properties.h"
 #include "../core/Config.h"
 
+// STL
+#include <vector>
+
 namespace te
 {
   namespace layout
@@ -49,25 +52,17 @@ namespace te
 
       virtual ~GridSettingsModel();
 
-      virtual void updateProperties(te::layout::Properties* properties);
+      virtual void setProperties(std::vector<te::layout::Properties*> properties);
+            
+      virtual te::layout::Properties* containsGrid(EnumType* enumType);
 
-      virtual Properties* getProperties() const;
-
-      virtual void setOutsideProperty(Property property);
-
-      virtual Property getOutsideProperty();
-
-      virtual Property containsGrid(LayoutGridType gridType);
-
-      virtual te::layout::Property containsOutsideSubProperty( std::string name, LayoutGridType gridType );
+      virtual te::layout::Property containsProperty( std::string name, EnumType* enumType );
       
-      virtual void updateOutsideSubProperty(Property subProperty, LayoutGridType gridType);
+      virtual bool updateProperty(Property prop, EnumType* enumType);
 
     protected:
 
-      Property m_property;
-      PlanarGridSettingsConfigProperties* m_planarGridSettings;
-      GeodesicGridSettingsConfigProperties* m_geodesicGridSettings;
+      std::vector<te::layout::Properties*> m_properties;
     };
   }
 }

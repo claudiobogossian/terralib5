@@ -35,8 +35,7 @@ te::layout::AbstractBuildGraphicsItem::AbstractBuildGraphicsItem() :
   m_sharedProps(0),
   m_props(0),
   m_zValue(0),
-  m_id(0),
-  m_redraw(true)
+  m_id(0)
 {
   m_sharedProps = new SharedProperties;
 }
@@ -94,5 +93,4 @@ void te::layout::AbstractBuildGraphicsItem::clear()
   m_id = 0;
   m_zValue = 0;
   m_props = 0;
-  m_redraw = true;
 }

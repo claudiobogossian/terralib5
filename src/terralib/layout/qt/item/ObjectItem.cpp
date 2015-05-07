@@ -44,7 +44,7 @@
 #include <QStyleOptionGraphicsItem>
 
 te::layout::ObjectItem::ObjectItem( ItemController* controller, Observable* o,  bool invertedMatrix ) :
-  ParentItem(controller, o, invertedMatrix)
+  ParentItem<QGraphicsObject>(controller, o, invertedMatrix)
 {
 }
 

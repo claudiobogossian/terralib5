@@ -21,6 +21,17 @@
   \file Variant.h
    
   \brief Class acts like a union for some C++/TerraLib5 data types. Responsible for storing the value.
+  Any data type, not included in the convertValue method in this class, it will be by default "std::string".
+  Storing value types:
+
+    - std::string 
+    - double
+    - int 
+    - long 
+    - float 
+    - bool 
+    - te::color::RGBAColor 
+    - te::layout::Font 
 
   \ingroup layout
 */
@@ -52,6 +63,17 @@ namespace te
   {
     /*!
 	    \brief Class acts like a union for some C++/TerraLib5 data types. Responsible for storing the value.
+       Any data type, not included in the convertValue method in this class, it will be by default "std::string".
+       Storing value types:
+
+        - std::string 
+        - double
+        - int 
+        - long 
+        - float 
+        - bool 
+        - te::color::RGBAColor 
+        - te::layout::Font 
 	  
 	    \ingroup layout
 	  */
@@ -195,6 +217,7 @@ namespace te
       
       /*!
           \brief Discovers the type of the value and sets for the corresponding attribute (storage).
+          Any type of data, not included in this class, it will be by default "std::string"
 
           \param valueCopy pointer of the value to be stored 
        */

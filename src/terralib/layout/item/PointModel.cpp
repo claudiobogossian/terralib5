@@ -101,7 +101,7 @@ te::layout::EnumType* te::layout::PointModel::getCurrentPointType()
 
 te::layout::Property te::layout::PointModel::pointProperty() const
 {
-  Property pro_pointName;
+  Property pro_pointName(m_hashCode);
 
   if(!m_currentPointType)
     return pro_pointName;
@@ -113,7 +113,6 @@ te::layout::Property te::layout::PointModel::pointProperty() const
 
   pro_pointName.setName("point_type");
   pro_pointName.setLabel("graphic type");
-  pro_pointName.setId("");
   pro_pointName.setValue(m_currentPointType->getLabel(), dataType->getDataTypeStringList());
 
   Variant v;

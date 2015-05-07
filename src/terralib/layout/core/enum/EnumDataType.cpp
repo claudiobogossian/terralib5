@@ -41,7 +41,8 @@ te::layout::EnumDataType::EnumDataType() :
   m_dataTypeStringList(0),
   m_dataTypeFont(0),
   m_dataTypeImage(0),
-  m_dataTypeTextGridSettings(0)
+  m_dataTypeTextGridSettings(0),
+  m_dataTypeGroup(0)
 {
   init();
 }
@@ -108,6 +109,11 @@ te::layout::EnumDataType::~EnumDataType()
     delete m_dataTypeTextGridSettings;
     m_dataTypeTextGridSettings = 0;
   }
+  if(m_dataTypeGroup)
+  {
+    delete m_dataTypeGroup;
+    m_dataTypeGroup = 0;
+  }
 }
 
 void te::layout::EnumDataType::init()
@@ -150,6 +156,9 @@ void te::layout::EnumDataType::init()
 
   m_dataTypeTextGridSettings = new EnumType(12, "TextGridSettings", this);
   m_enums.push_back(m_dataTypeTextGridSettings);
+
+  m_dataTypeGroup = new EnumType(13, "Group", this);
+  m_enums.push_back(m_dataTypeGroup);
 }
 
 te::layout::EnumType* te::layout::EnumDataType::getDataTypeNone() const
@@ -216,3 +225,11 @@ te::layout::EnumType* te::layout::EnumDataType::getDataTypeTextGridSettings() co
 {
   return m_dataTypeTextGridSettings;
 }
+
+te::layout::EnumType* te::layout::EnumDataType::getDataTypeGroup() const
+{
+  return m_dataTypeGroup;
+}
+
+
+

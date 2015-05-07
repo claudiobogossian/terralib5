@@ -135,13 +135,12 @@ QGraphicsItem* te::layout::BuildGraphicsItem::rebuildItem( te::layout::Propertie
   m_props = props;  
   m_coord = findCoordinate(props);
   m_zValue = findZValue(props);
-  m_redraw = draw;
 
   EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
 
   EnumType* type = props->getTypeObj();
 
-  item = createItem(type);
+  item = createItem(type, draw);
   
   return item;
 }
@@ -152,104 +151,103 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createItem( te::layout::EnumType* 
 
   m_coord = coordinate;
   clear();
-  m_redraw = draw;
 
   EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
   EnumModeType* enumMode = Enums::getInstance().getEnumModeType();
 
   if(mode == enumMode->getModeCreateMap())
   {
-    item = createItem(enumObj->getMapItem());
+    item = createItem(enumObj->getMapItem(), draw);
   }
   else if(mode == enumMode->getModeCreateGridMap())
   {
-    item = createItem(enumObj->getGridMapItem());
+    item = createItem(enumObj->getGridMapItem(), draw);
   }
   else if(mode == enumMode->getModeCreateText())
   {
-    item = createItem(enumObj->getTextItem());
+    item = createItem(enumObj->getTextItem(), draw);
   }
   else if(mode == enumMode->getModeCreateImage())
   {
-    item = createItem(enumObj->getImageItem());
+    item = createItem(enumObj->getImageItem(), draw);
   }
   else if(mode == enumMode->getModeCreateRectangle())
   {
-    item = createItem(enumObj->getRectangleItem());
+    item = createItem(enumObj->getRectangleItem(), draw);
   }
   else if(mode == enumMode->getModeCreateLegend())
   {
-    item = createItem(enumObj->getLegendItem());
+    item = createItem(enumObj->getLegendItem(), draw);
   }
   else if(mode == enumMode->getModeCreateScale())
   {
-    item = createItem(enumObj->getScaleItem());
+    item = createItem(enumObj->getScaleItem(), draw);
   }
   else if(mode == enumMode->getModeCreateItemGroup())
   {
-    item = createItem(enumObj->getItemGroup());
+    item = createItem(enumObj->getItemGroup(), draw);
   }
   else if(mode == enumMode->getModeCreatePoint())
   {
-    item = createItem(enumObj->getPointItem());
+    item = createItem(enumObj->getPointItem(), draw);
   }
   else if(mode == enumMode->getModeCreateArrow())
   {
-    item = createItem(enumObj->getArrowItem());
+    item = createItem(enumObj->getArrowItem(), draw);
   }
   else if(mode == enumMode->getModeCreateEllipse())
   {
-    item = createItem(enumObj->getEllipseItem());
+    item = createItem(enumObj->getEllipseItem(), draw);
   }
   else if(mode == enumMode->getModeCreateTitle())
   {
-    item = createItem(enumObj->getTitleItem());
+    item = createItem(enumObj->getTitleItem(), draw);
   }
   else if(mode == enumMode->getModeCreateTextGrid())
   {
-    item = createItem(enumObj->getTextGridItem());
+    item = createItem(enumObj->getTextGridItem(), draw);
   }
   else if(mode == enumMode->getModeCreateLegendChild())
   {
-    item = createItem(enumObj->getLegendChildItem());
+    item = createItem(enumObj->getLegendChildItem(), draw);
   }
   else if (mode == enumMode->getModeCreateLine()) 
   {
-    item = createItem(enumObj->getLineItem());
+    item = createItem(enumObj->getLineItem(), draw);
   }
   else if (mode == enumMode->getModeCreatePolygon()) 
   {
-    item = createItem(enumObj->getPolygonItem());
+    item = createItem(enumObj->getPolygonItem(), draw);
   }
   else if (mode == enumMode->getModeCreateBalloon()) 
   {
-    item = createItem(enumObj->getBalloonItem());
+    item = createItem(enumObj->getBalloonItem(), draw);
   }
   else if (mode == enumMode->getModeCreateBarCode())
   {
-    item = createItem(enumObj->getBarCodeItem());
+    item = createItem(enumObj->getBarCodeItem(), draw);
   }
   else if (mode == enumMode->getModeCreateGridPlanar())
   {
-    item = createItem(enumObj->getGridPlanarItem());
+    item = createItem(enumObj->getGridPlanarItem(), draw);
   }
   else if (mode == enumMode->getModeCreateGridGeodesic())
   {
-    item = createItem(enumObj->getGridGeodesicItem());
+    item = createItem(enumObj->getGridGeodesicItem(), draw);
   }
   else if (mode == enumMode->getModeCreateNorth())
   {
-    item = createItem(enumObj->getNorthItem());
+    item = createItem(enumObj->getNorthItem(), draw);
   }
   else if (mode == enumMode->getModeCreateMapLocation())
   {
-    item = createItem(enumObj->getMapLocationItem());
+    item = createItem(enumObj->getMapLocationItem(), draw);
   }
 
   return item;
 }
 
-QGraphicsItem* te::layout::BuildGraphicsItem::createItem( te::layout::EnumType* type )
+QGraphicsItem* te::layout::BuildGraphicsItem::createItem( te::layout::EnumType* type, bool draw )
 {
   QGraphicsItem* item = 0;
 
@@ -352,6 +350,8 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createItem( te::layout::EnumType* 
     item = createMapLocation();
   }
 
+  afterBuild(item, draw);
+
   return item;
 }
 
@@ -388,11 +388,120 @@ std::string te::layout::BuildGraphicsItem::nameItem( te::layout::EnumType* type 
   return name;
 }
 
+QGraphicsItem* te::layout::BuildGraphicsItem::intersectionSelectionItem( int x, int y )
+{
+  QGraphicsItem* intersectionItem = 0;
+
+  AbstractScene* abstScene = Context::getInstance().getScene();
+  
+  if(!abstScene)
+  {
+    return intersectionItem;
+  }
+
+  Scene* sc = dynamic_cast<Scene*>(abstScene);
+  if(!sc)
+  {
+    return intersectionItem;
+  }
+  
+  QList<QGraphicsItem*> items = sc->selectedItems();
+
+  QPointF pt(x, y);
+
+  bool intersection = false;
+
+  foreach (QGraphicsItem *item, items) 
+  {
+    if(item)
+    {
+      bool intersection = item->contains(pt);
+      if(intersection)
+      {
+        intersectionItem = item;
+        break;
+      }
+    }
+  }
+
+  return intersectionItem;
+}
+
+bool te::layout::BuildGraphicsItem::addChild( QGraphicsItem* child, int x, int y )
+{
+  bool result = false;
+
+  if(!child)
+  {
+    return result;
+  }
+
+  QGraphicsItem* parentItem = intersectionSelectionItem(x, y);
+
+  if(!parentItem)
+  {
+    return result;
+  }
+  
+  // No add child in unselected items
+  if(!parentItem->isSelected())
+  {
+    return result;
+  }
+
+  ItemObserver* itemOb = dynamic_cast<ItemObserver*>(parentItem);
+  if(!itemOb)
+  {
+    return result;
+  }
+
+  if(!itemOb->getModel())
+  {
+    return result;
+  }
+
+  ItemModelObservable* model = dynamic_cast<ItemModelObservable*>(itemOb->getModel());  
+  if(model)
+  {
+    if(model->isEnableChildren())
+    {
+      child->setParentItem(parentItem);
+      result = true;
+    }
+  }
+
+  emit addChildFinalized(parentItem, child);
+
+  return result;
+}
+
+void te::layout::BuildGraphicsItem::afterBuild( QGraphicsItem* item, bool draw )
+{
+  if(!item)
+  {
+    return;
+  }
+  
+  bool result = addChild(item, m_coord.x, m_coord.y);  
+  if(!result)
+  {
+    item->setPos(QPointF(m_coord.x, m_coord.y));
+  }
+  
+  if(m_props)
+  {
+    item->setZValue(m_zValue);
+  }
+  
+  ItemObserver* itemObs = dynamic_cast<ItemObserver*>(item);
+  if(itemObs && draw)
+  {
+    itemObs->redraw();
+  }
+}
+
 QGraphicsItem* te::layout::BuildGraphicsItem::createPaper()
 {
-  //Paper
-  QGraphicsItem* item = 0;
-
   PaperModel* model = new PaperModel(te::layout::Context::getInstance().getPaperConfig());
   if(!m_props)
   {
@@ -407,32 +516,15 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createPaper()
   ItemObserver* itemObs = (ItemObserver*)controllerMap->getView();
 
   PaperItem* view = dynamic_cast<PaperItem*>(itemObs);
-  if(m_props)
+  if(m_props && view)
   {
-    view->updateProperties(m_props);
-  }
-
-  if(view)
-  {
-    view->setPos(QPointF(m_coord.x, m_coord.y));
-    if(m_props)
-    {
-      view->setZValue(m_zValue);
-    }
-    if(m_redraw)
-    {
-      itemObs->redraw();
-    }
-    return view;
-  }
-
-  return item;
+    model->updateProperties(m_props);
+  }  
+  return view;
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createMap()
 {
-  QGraphicsItem* item = 0;
-
   MapModel* model = new MapModel();
   if(!m_props)
   {
@@ -447,32 +539,15 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createMap()
   ItemObserver* itemObs = (ItemObserver*)controller->getView();
 
   MapItem* view = dynamic_cast<MapItem*>(itemObs);
-  if(m_props)
+  if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
-
-  if(view)
-  {
-    view->setPos(QPointF(m_coord.x, m_coord.y));
-    if(m_props)
-    {
-      view->setZValue(m_zValue);
-    }
-    if(m_redraw)
-    {
-      itemObs->redraw();
-    }
-    return view;
-  }
-
-  return item;
+  return view;
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createGridMap()
 {
-  QGraphicsItem* item = 0;
-
   GridMapModel* model = new GridMapModel();
   if(!m_props)
   {
@@ -487,49 +562,15 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createGridMap()
   ItemObserver* itemObs = (ItemObserver*)controller->getView();
 
   GridMapItem* view = dynamic_cast<GridMapItem*>(itemObs);
-
-  if(m_props)
+  if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
-
-  if(view)
-  {
-    AbstractScene* abstractGrid = Context::getInstance().getScene();
-    Scene* scene = dynamic_cast<Scene*> (abstractGrid);
-    if (scene)
-    {
-      ItemUtils* iUtils = Context::getInstance().getItemUtils();
-      if(iUtils)
-      {
-        std::vector<te::layout::MapItem*> mapList = iUtils->getMapItemList(true);
-        if(mapList.size() == 1)
-        {
-          view->setParentItem(mapList[0]);          
-        }
-        else
-        {
-          view->setPos(QPointF(m_coord.x, m_coord.y));
-        }
-      }
-    }
-    if(m_props)
-    {
-      view->setZValue(m_zValue);
-    }
-    if(m_redraw)
-    {
-      itemObs->redraw();
-    }
-  }
-
-  return item;
+  return view;
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createText()
 {
-  QGraphicsItem* item = 0;
-
   TextModel* model = new TextModel();	
   if(!m_props)
   {
@@ -544,32 +585,15 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createText()
   ItemObserver* itemObs = (ItemObserver*)controller->getView();
 
   TextItem* view = dynamic_cast<TextItem*>(itemObs); 
-  if(m_props)
+  if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
-
-  if(view)
-  {
-    view->setPos(QPointF(m_coord.x, m_coord.y));
-    if(m_props)
-    {
-      view->setZValue(m_zValue);
-    }
-    if(m_redraw)
-    {
-      itemObs->redraw();
-    }
-    return view;
-  }
-
-  return item;
+  return view;
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createRectangle()
 {
-  QGraphicsItem* item = 0;
-
   RectangleModel* model = new RectangleModel();	
   if(!m_props)
   {
@@ -584,32 +608,15 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createRectangle()
   ItemObserver* itemObs = (ItemObserver*)controller->getView();
 
   RectangleItem* view = dynamic_cast<RectangleItem*>(itemObs); 
-  if(m_props)
+  if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
-
-  if(view)
-  {
-    view->setPos(QPointF(m_coord.x, m_coord.y));
-    if(m_props)
-    {
-      view->setZValue(m_zValue);
-    }
-    if(m_redraw)
-    {
-      itemObs->redraw();
-    }
-    return view;
-  }
-
-  return item;
+  return view;
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createLegend()
 {
-  QGraphicsItem* item = 0;
-
   LegendModel* model = new LegendModel();	
   if(!m_props)
   {
@@ -624,32 +631,15 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createLegend()
   ItemObserver* itemObs = (ItemObserver*)controller->getView();
 
   LegendItem* view = dynamic_cast<LegendItem*>(itemObs); 
-  if(m_props)
+  if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
-
-  if(view)
-  {
-    view->setPos(QPointF(m_coord.x, m_coord.y));
-    if(m_props)
-    {
-      view->setZValue(m_zValue);
-    }
-    if(m_redraw)
-    {
-      itemObs->redraw();
-    }
-    return view;
-  }
-
-  return item;
+  return view;
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createScale()
 {
-  QGraphicsItem* item = 0;
-
   ScaleModel* model = new ScaleModel();	
   if(!m_props)
   {
@@ -664,32 +654,15 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createScale()
   ItemObserver* itemObs = (ItemObserver*)controller->getView();
 
   ScaleItem* view = dynamic_cast<ScaleItem*>(itemObs); 
-  if(m_props)
+  if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
-
-  if(view)
-  {
-    view->setPos(QPointF(m_coord.x, m_coord.y));
-    if(m_props)
-    {
-      view->setZValue(m_zValue);
-    }
-    if(m_redraw)
-    {
-      itemObs->redraw();
-    }
-    return view;
-  }
-
-  return item;
+  return view;
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createItemGroup()
 {
-  QGraphicsItem* item = 0;
-
   ItemGroupModel* model = new ItemGroupModel();	
   if(!m_props)
   {
@@ -704,32 +677,15 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createItemGroup()
   ItemObserver* itemObs = (ItemObserver*)controller->getView();
 
   ItemGroup* view = dynamic_cast<ItemGroup*>(itemObs); 
-  if(m_props)
+  if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
-
-  if(view)
-  {
-    view->setPos(QPointF(m_coord.x, m_coord.y));
-    if(m_props)
-    {
-      view->setZValue(m_zValue);
-    }
-    if(m_redraw)
-    {
-      itemObs->redraw();
-    }
-    return view;
-  }
-
-  return item;
+  return view;
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createMovingItemGroup()
 {
-  QGraphicsItem* item = 0;
-
   MovingItemGroupModel* model = new MovingItemGroupModel();	
   if(!m_props)
   {
@@ -744,32 +700,15 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createMovingItemGroup()
   ItemObserver* itemObs = (ItemObserver*)controller->getView();
 
   MovingItemGroup* view = dynamic_cast<MovingItemGroup*>(itemObs); 
-  if(m_props)
+  if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
-
-  if(view)
-  {
-    view->setPos(QPointF(m_coord.x, m_coord.y));
-    if(m_props)
-    {
-      view->setZValue(m_zValue);
-    }
-    if(m_redraw)
-    {
-      itemObs->redraw();
-    }
-    return view;
-  }
-
-  return item;
+  return view;
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createImage()
 {
-  QGraphicsItem* item = 0;
-
   ImageModel* model = new ImageModel();	
   if(!m_props)
   {
@@ -783,31 +722,16 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createImage()
   ImageController* controller = new ImageController(model);
   ItemObserver* itemObs = (ItemObserver*)controller->getView();
 
-  ImageItem* img = dynamic_cast<ImageItem*>(itemObs); 
-  if(m_props)
+  ImageItem* view = dynamic_cast<ImageItem*>(itemObs); 
+  if(m_props && view)
   {
-    img->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
-
-  if(img)
-  {
-    img->setPos(QPointF(m_coord.x, m_coord.y));
-    if(m_props)
-    {
-      img->setZValue(m_zValue);
-    }
-    if(m_redraw)
-      itemObs->redraw();
-    return img;
-  }
-
-  return item;
+  return view;
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createArrow()
 {
-  QGraphicsItem* item = 0;
-
   ArrowModel* model = new ArrowModel();	
   if(!m_props)
   {
@@ -822,32 +746,15 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createArrow()
   ItemObserver* itemObs = (ItemObserver*)controller->getView();
 
   ArrowItem* view = dynamic_cast<ArrowItem*>(itemObs); 
-  if(m_props)
+  if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
-
-  if(view)
-  {
-    view->setPos(QPointF(m_coord.x, m_coord.y));
-    if(m_props)
-    {
-      view->setZValue(m_zValue);
-    }
-    if(m_redraw)
-    {
-      itemObs->redraw();
-    }
-    return view;
-  }
-
-  return item;
+  return view;
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createEllipse()
 {
-  QGraphicsItem* item = 0;
-
   EllipseModel* model = new EllipseModel();	
   if(!m_props)
   {
@@ -862,32 +769,15 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createEllipse()
   ItemObserver* itemObs = (ItemObserver*)controller->getView();
 
   EllipseItem* view = dynamic_cast<EllipseItem*>(itemObs); 
-  if(m_props)
+  if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
-
-  if(view)
-  {
-    view->setPos(QPointF(m_coord.x, m_coord.y));
-    if(m_props)
-    {
-      view->setZValue(m_zValue);
-    }
-    if(m_redraw)
-    {
-      itemObs->redraw();
-    }
-    return view;
-  }
-
-  return item;
+  return view;
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createPoint()
 {
-  QGraphicsItem* item = 0;
-
   PointModel* model = new PointModel();	
   if(!m_props)
   {
@@ -902,32 +792,15 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createPoint()
   ItemObserver* itemObs = (ItemObserver*)controller->getView();
 
   PointItem* view = dynamic_cast<PointItem*>(itemObs); 
-  if(m_props)
+  if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
-
-  if(view)
-  {
-    view->setPos(QPointF(m_coord.x, m_coord.y));
-    if(m_props)
-    {
-      view->setZValue(m_zValue);
-    }
-    if(m_redraw)
-    {
-      itemObs->redraw();
-    }
-    return view;
-  }
-
-  return item;
+  return view;
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createTextGrid()
 {
-  QGraphicsItem* item = 0;
-
   TextGridModel* model = new TextGridModel();	
   if(!m_props)
   {
@@ -942,32 +815,15 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createTextGrid()
   ItemObserver* itemObs = (ItemObserver*)controller->getView();
 
   TextGridItem* view = dynamic_cast<TextGridItem*>(itemObs); 
-  if(m_props)
+  if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
-
-  if(view)
-  {
-    view->setPos(QPointF(m_coord.x, m_coord.y));
-    if(m_props)
-    {
-      view->setZValue(m_zValue);
-    }
-    if(m_redraw)
-    {
-      itemObs->redraw();
-    }
-    return view;
-  }
-
-  return item;
+  return view;
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createTitle()
 {
-  QGraphicsItem* item = 0;
-
   TitleModel* model = new TitleModel();	
   if(!m_props)
   {
@@ -982,32 +838,15 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createTitle()
   ItemObserver* itemObs = (ItemObserver*)controller->getView();
 
   TitleItem* view = dynamic_cast<TitleItem*>(itemObs); 
-  if(m_props)
+  if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
-
-  if(view)
-  {
-    view->setPos(QPointF(m_coord.x, m_coord.y));
-    if(m_props)
-    {
-      view->setZValue(m_zValue);
-    }
-    if(m_redraw)
-    {
-      itemObs->redraw();
-    }
-    return view;
-  }
-
-  return item;
+  return view;
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createLegendChild()
 {
-  QGraphicsItem* item = 0;
-
   LegendChildModel* model = new LegendChildModel();	
   if(!m_props)
   {
@@ -1022,32 +861,15 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createLegendChild()
   ItemObserver* itemObs = (ItemObserver*)controller->getView();
 
   LegendChildItem* view = dynamic_cast<LegendChildItem*>(itemObs); 
-  if(m_props)
+  if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
-
-  if(view)
-  {
-    view->setPos(QPointF(m_coord.x, m_coord.y));
-    if(m_props)
-    {
-      view->setZValue(m_zValue);
-    }
-    if(m_redraw)
-    {
-      itemObs->redraw();
-    }
-    return view;
-  }
-
-  return item;
+  return view;
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createLine() 
 {
-  QGraphicsItem* item = 0;
-
   LineModel* model = new LineModel();	
   if(m_props)
   {
@@ -1066,33 +888,15 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createLine()
   ItemObserver* itemObs = (ItemObserver*)controller->getView();
 
   LineItem* view = dynamic_cast<LineItem*>(itemObs); 
-
-  if(m_props)
+  if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
-
-  if(view)
-  {
-    view->setPos(QPointF(m_coord.x, m_coord.y));
-    if(m_props)
-    {
-      view->setZValue(m_zValue);
-    }
-    if(m_redraw)
-    {
-      itemObs->redraw();
-    }
-    return view;
-  }
-
-  return item;
+  return view;
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createPolygon() 
 {
-  QGraphicsItem* item = 0;
-
   PolygonModel* model = new PolygonModel();	
   if(m_props)
   {
@@ -1111,33 +915,15 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createPolygon()
   ItemObserver* itemObs = (ItemObserver*)controller->getView();
 
   PolygonItem* view = dynamic_cast<PolygonItem*>(itemObs); 
-
-  if(m_props)
+  if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
-
-  if(view)
-  {
-    view->setPos(QPointF(m_coord.x, m_coord.y));
-    if(m_props)
-    {
-      view->setZValue(m_zValue);
-    }
-    if(m_redraw)
-    {
-      itemObs->redraw();
-    }
-    return view;
-  }
-
-  return item;
+  return view;
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createBalloon() 
 {
-  QGraphicsItem* item = 0;
-
   BalloonModel* model = new BalloonModel();	
   if(m_props)
   {
@@ -1156,33 +942,15 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createBalloon()
   ItemObserver* itemObs = (ItemObserver*)controller->getView();
 
   BalloonItem* view = dynamic_cast<BalloonItem*>(itemObs); 
-
-  if(m_props)
+  if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
-
-  if(view)
-  {
-    view->setPos(QPointF(m_coord.x, m_coord.y));
-    if(m_props)
-    {
-      view->setZValue(m_zValue);
-    }
-    if(m_redraw)
-    {
-      itemObs->redraw();
-    }
-    return view;
-  }
-
-  return item;
+  return view;
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createBarCode()
 {
-  QGraphicsItem* item = 0;
-
   BarCodeModel* model = new BarCodeModel;
   if(m_props)
   {
@@ -1201,33 +969,15 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createBarCode()
   ItemObserver* itemObs = (ItemObserver*)controller->getView();
 
   BarCodeItem* view = dynamic_cast<BarCodeItem*>(itemObs);
-
-  if(m_props)
+  if(m_props && view)
   {
-    view->updateProperties(m_props);
-  }
-
-  if(view)
-  {
-    view->setPos(QPointF(m_coord.x, m_coord.y));
-    if(m_props)
-    {
-      view->setZValue(m_zValue);
-    }
-    if(m_redraw)
-    {
-      itemObs->redraw();
-    }
-    return view;
-  }
-
-  return item;
+    model->updateProperties(m_props);
+  }  
+  return view;
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createGridPlanar()
 {
-  QGraphicsItem* item = 0;
-
   GridPlanarModel* model = new GridPlanarModel();	
   if(!m_props)
   {
@@ -1242,32 +992,15 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createGridPlanar()
   ItemObserver* itemObs = (ItemObserver*)controller->getView();
 
   GridPlanarItem* view = dynamic_cast<GridPlanarItem*>(itemObs); 
-  if(m_props)
+  if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
-
-  if(view)
-  {
-    view->setPos(QPointF(m_coord.x, m_coord.y));
-    if(m_props)
-    {
-      view->setZValue(m_zValue);
-    }
-    if(m_redraw)
-    {
-      itemObs->redraw();
-    }
-    return view;
-  }
-
-  return item;
+  return view;
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createGridGeodesic()
 {
-  QGraphicsItem* item = 0;
-
   GridGeodesicModel* model = new GridGeodesicModel();	
   if(!m_props)
   {
@@ -1282,32 +1015,15 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createGridGeodesic()
   ItemObserver* itemObs = (ItemObserver*)controller->getView();
 
   GridGeodesicItem* view = dynamic_cast<GridGeodesicItem*>(itemObs); 
-  if(m_props)
+  if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
-
-  if(view)
-  {
-    view->setPos(QPointF(m_coord.x, m_coord.y));
-    if(m_props)
-    {
-      view->setZValue(m_zValue);
-    }
-    if(m_redraw)
-    {
-      itemObs->redraw();
-    }
-    return view;
-  }
-
-  return item;
+  return view;
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createNorth()
 {
-  QGraphicsItem* item = 0;
-
   NorthModel* model = new NorthModel;
   if(m_props)
   {
@@ -1326,33 +1042,15 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createNorth()
   ItemObserver* itemObs = (ItemObserver*)controller->getView();
 
   NorthItem* view = dynamic_cast<NorthItem*>(itemObs);
-
-  if(m_props)
+  if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
-
-  if(view)
-  {
-    view->setPos(QPointF(m_coord.x, m_coord.y));
-    if(m_props)
-    {
-      view->setZValue(m_zValue);
-    }
-    if(m_redraw)
-    {
-      itemObs->redraw();
-    }
-    return view;
-  }
-
-  return item;
+  return view;
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createMapLocation()
 {
-  QGraphicsItem* item = 0;
-
   MapLocationModel* model = new MapLocationModel;
   if(m_props)
   {
@@ -1371,28 +1069,23 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createMapLocation()
   ItemObserver* itemObs = (ItemObserver*)controller->getView();
 
   MapLocationItem* view = dynamic_cast<MapLocationItem*>(itemObs);
-
-  if(m_props)
+  if(m_props && view)
   {
-    view->updateProperties(m_props);
+    model->updateProperties(m_props);
   }
-
-  if(view)
-  {
-    view->setPos(QPointF(m_coord.x, m_coord.y));
-    if(m_props)
-    {
-      view->setZValue(m_zValue);
-    }
-    if(m_redraw)
-    {
-      itemObs->redraw();
-    }
-    return view;
-  }
-
-  return item;
+  return view;
 }
+
+
+
+
+
+
+
+
+
+
+
 
 
 

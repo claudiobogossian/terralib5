@@ -81,7 +81,7 @@ namespace te
 
         virtual void closeAllWindows();
 
-        virtual bool addProperty(Property property);
+        virtual QtProperty* addProperty(Property property);
       
         virtual bool removeProperty(Property property);
 
@@ -94,6 +94,12 @@ namespace te
         virtual void setHasWindows(bool hasWindows = false);
 
         virtual void selectProperty(std::string name);
+
+        virtual QtProperty* findProperty(std::string name);
+
+        virtual bool addSubProperty(QtProperty* prop, QtProperty* subProp);
+
+        virtual bool addSubProperty(Property prop, Property subProp);
                     
       private slots:
 

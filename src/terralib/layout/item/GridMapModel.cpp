@@ -233,9 +233,16 @@ te::layout::Properties* te::layout::GridMapModel::getProperties() const
 
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
 
-  Property pro_mapName;
+  Property pro_grid_name(m_hashCode);
+  pro_grid_name.setName("GridSettings");
+  pro_grid_name.setMenu(true);
+  pro_grid_name.setPublic(true);
+  pro_grid_name.setValue(m_name, dataType->getDataTypeGridSettings());  
+  m_properties->addProperty(pro_grid_name);
+
+  Property pro_mapName(m_hashCode);
   pro_mapName.setName(m_sharedProps->getMapName());
-  pro_mapName.setId("");
+  pro_mapName.setComposeWidget(true);
   pro_mapName.setValue(m_mapName, dataType->getDataTypeStringList());
   
   Variant v;
@@ -245,127 +252,151 @@ te::layout::Properties* te::layout::GridMapModel::getProperties() const
 
   /* Grid */
 
-  Property pro_visible;
+  Property pro_visible(m_hashCode);
   pro_visible.setName(m_settingsConfig->getVisible());
+  pro_visible.setComposeWidget(true);
   pro_visible.setValue(m_visible, dataType->getDataTypeBool());  
   m_properties->addProperty(pro_visible);
 
-  Property pro_lneHrzGap;
+  Property pro_lneHrzGap(m_hashCode);
   pro_lneHrzGap.setName(m_settingsConfig->getLneHrzGap());
+  pro_lneHrzGap.setComposeWidget(true);
   pro_lneHrzGap.setValue(m_lneHrzGap, dataType->getDataTypeDouble());  
   m_properties->addProperty(pro_lneHrzGap);
 
-  Property pro_lneVrtGap;
+  Property pro_lneVrtGap(m_hashCode);
   pro_lneVrtGap.setName(m_settingsConfig->getLneVrtGap());
+  pro_lneVrtGap.setComposeWidget(true);
   pro_lneVrtGap.setValue(m_lneVrtGap, dataType->getDataTypeDouble());  
   m_properties->addProperty(pro_lneVrtGap);
 
-  Property pro_initialGridPointX;
+  Property pro_initialGridPointX(m_hashCode);
   pro_initialGridPointX.setName(m_settingsConfig->getInitialGridPointX());
+  pro_initialGridPointX.setComposeWidget(true);
   pro_initialGridPointX.setValue(m_initialGridPointX, dataType->getDataTypeDouble());  
   m_properties->addProperty(pro_initialGridPointX);
 
-  Property pro_initialGridPointY;
+  Property pro_initialGridPointY(m_hashCode);
   pro_initialGridPointY.setName(m_settingsConfig->getInitialGridPointY());
+  pro_initialGridPointY.setComposeWidget(true);
   pro_initialGridPointY.setValue(m_initialGridPointY, dataType->getDataTypeDouble());  
   m_properties->addProperty(pro_initialGridPointY);
 
   /* Just one is visible */
-  Property pro_gridStyle;
+  Property pro_gridStyle(m_hashCode);
   pro_gridStyle.setName(m_settingsConfig->getStyle());
+  pro_gridStyle.setComposeWidget(true);
   pro_gridStyle.setValue(m_gridStyle->getName(), dataType->getDataTypeString());  
   m_properties->addProperty(pro_gridStyle);
 
   /* Line */
-  Property pro_lineStyle;
+  Property pro_lineStyle(m_hashCode);
   pro_lineStyle.setName(m_settingsConfig->getLineStyle());
+  pro_lineStyle.setComposeWidget(true);
   pro_lineStyle.setValue(m_lineStyle->getName(), dataType->getDataTypeString());  
   m_properties->addProperty(pro_lineStyle);
 
-  Property pro_lineColor;
+  Property pro_lineColor(m_hashCode);
   pro_lineColor.setName(m_settingsConfig->getLineColor());
+  pro_lineColor.setComposeWidget(true);
   pro_lineColor.setValue(m_lineColor, dataType->getDataTypeColor());  
   m_properties->addProperty(pro_lineColor);
 
-  Property pro_lineWidth;
+  Property pro_lineWidth(m_hashCode);
   pro_lineWidth.setName(m_settingsConfig->getLineWidth());
+  pro_lineWidth.setComposeWidget(true);
   pro_lineWidth.setValue(m_lineWidth, dataType->getDataTypeInt());  
   m_properties->addProperty(pro_lineWidth);
 
   /* Text: Basic Configuration */
-  Property pro_pointTextSize;
+  Property pro_pointTextSize(m_hashCode);
   pro_pointTextSize.setName(m_settingsConfig->getPointTextSize());
+  pro_pointTextSize.setComposeWidget(true);
   pro_pointTextSize.setValue(m_pointTextSize, dataType->getDataTypeInt());  
   m_properties->addProperty(pro_pointTextSize);
 
-  Property pro_fontText;
+  Property pro_fontText(m_hashCode);
   pro_fontText.setName(m_settingsConfig->getFontText());
+  pro_fontText.setComposeWidget(true);
   pro_fontText.setValue(m_fontText, dataType->getDataTypeString());  
   m_properties->addProperty(pro_fontText);
 
-  Property pro_textColor;
+  Property pro_textColor(m_hashCode);
   pro_textColor.setName(m_settingsConfig->getTextColor());
+  pro_textColor.setComposeWidget(true);
   pro_textColor.setValue(m_textColor, dataType->getDataTypeColor());  
   m_properties->addProperty(pro_textColor);
 
   /* Text: Advanced configuration */
-  Property pro_visibleAllTexts;
+  Property pro_visibleAllTexts(m_hashCode);
   pro_visibleAllTexts.setName(m_settingsConfig->getVisibleAllTexts());
+  pro_visibleAllTexts.setComposeWidget(true);
   pro_visibleAllTexts.setValue(m_visibleAllTexts, dataType->getDataTypeBool());  
   m_properties->addProperty(pro_visibleAllTexts);
 
-  Property pro_superscriptText;
+  Property pro_superscriptText(m_hashCode);
   pro_superscriptText.setName(m_settingsConfig->getSuperscriptText());
+  pro_superscriptText.setComposeWidget(true);
   pro_superscriptText.setValue(m_superscriptText, dataType->getDataTypeBool());  
   m_properties->addProperty(pro_superscriptText);
 
-  Property pro_lneVrtDisplacement;
+  Property pro_lneVrtDisplacement(m_hashCode);
   pro_lneVrtDisplacement.setName(m_settingsConfig->getLneVrtDisplacement());
+  pro_lneVrtDisplacement.setComposeWidget(true);
   pro_lneVrtDisplacement.setValue(m_lneVrtDisplacement, dataType->getDataTypeDouble());  
   m_properties->addProperty(pro_lneVrtDisplacement);
 
-  Property pro_lneHrzDisplacement;
+  Property pro_lneHrzDisplacement(m_hashCode);
   pro_lneHrzDisplacement.setName(m_settingsConfig->getLneHrzDisplacement());
+  pro_lneHrzDisplacement.setComposeWidget(true);
   pro_lneHrzDisplacement.setValue(m_lneHrzDisplacement, dataType->getDataTypeDouble());  
   m_properties->addProperty(pro_lneHrzDisplacement);
 
-  Property pro_bottomText;
+  Property pro_bottomText(m_hashCode);
   pro_bottomText.setName(m_settingsConfig->getBottomText());
+  pro_bottomText.setComposeWidget(true);
   pro_bottomText.setValue(m_bottomText, dataType->getDataTypeBool());  
   m_properties->addProperty(pro_bottomText);
 
-  Property pro_leftText;
+  Property pro_leftText(m_hashCode);
   pro_leftText.setName(m_settingsConfig->getLeftText());
+  pro_leftText.setComposeWidget(true);
   pro_leftText.setValue(m_leftText, dataType->getDataTypeBool());  
   m_properties->addProperty(pro_leftText);
 
-  Property pro_rightText;
+  Property pro_rightText(m_hashCode);
   pro_rightText.setName(m_settingsConfig->getRightText());
+  pro_rightText.setComposeWidget(true);
   pro_rightText.setValue(m_rightText, dataType->getDataTypeBool());  
   m_properties->addProperty(pro_rightText);
 
-  Property pro_topText;
+  Property pro_topText(m_hashCode);
   pro_topText.setName(m_settingsConfig->getTopText());
+  pro_topText.setComposeWidget(true);
   pro_topText.setValue(m_topText, dataType->getDataTypeBool());  
   m_properties->addProperty(pro_topText);
 
-  Property pro_bottomRotateText;
+  Property pro_bottomRotateText(m_hashCode);
   pro_bottomRotateText.setName(m_settingsConfig->getBottomRotateText());
+  pro_bottomRotateText.setComposeWidget(true);
   pro_bottomRotateText.setValue(m_bottomRotateText, dataType->getDataTypeBool());  
   m_properties->addProperty(pro_bottomRotateText);
 
-  Property pro_leftRotateText;
+  Property pro_leftRotateText(m_hashCode);
   pro_leftRotateText.setName(m_settingsConfig->getLeftRotateText());
+  pro_leftRotateText.setComposeWidget(true);
   pro_leftRotateText.setValue(m_leftRotateText, dataType->getDataTypeBool());  
   m_properties->addProperty(pro_leftRotateText);
 
-  Property pro_rightRotateText;
+  Property pro_rightRotateText(m_hashCode);
   pro_rightRotateText.setName(m_settingsConfig->getRightRotateText());
+  pro_rightRotateText.setComposeWidget(true);
   pro_rightRotateText.setValue(m_rightRotateText, dataType->getDataTypeBool());  
   m_properties->addProperty(pro_rightRotateText);
 
-  Property pro_topRotateText;
+  Property pro_topRotateText(m_hashCode);
   pro_topRotateText.setName(m_settingsConfig->getTopRotateText());
+  pro_topRotateText.setComposeWidget(true);
   pro_topRotateText.setValue(m_topRotateText, dataType->getDataTypeBool());  
   m_properties->addProperty(pro_topRotateText);
 

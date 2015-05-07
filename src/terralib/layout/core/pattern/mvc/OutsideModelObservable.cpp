@@ -39,6 +39,7 @@
 
 te::layout::OutsideModelObservable::OutsideModelObservable() :
   m_color(0),
+  m_publicProperties(0),
   m_type(0),
   m_id(0),
   m_resizable(true),
@@ -47,15 +48,30 @@ te::layout::OutsideModelObservable::OutsideModelObservable() :
 {
   EnumObjectType* type = Enums::getInstance().getEnumObjectType();
   m_type = type->getObjectUnknown();
-
-  m_properties = new Properties("Unknown");
+  
+  m_properties = new Properties(m_name);
 
   m_hashCode = calculateHashCode();
+  m_properties->setHashCode(m_hashCode);
+
+  m_publicProperties = new Properties(m_name, 0, m_hashCode);
 }
 
 te::layout::OutsideModelObservable::~OutsideModelObservable()
 {
+  if(m_properties)
+  {
+    delete m_properties;
+    m_properties = 0;
+  }
 
+  m_childrenProperties.clear();
+
+  if(m_publicProperties)
+  {
+    delete m_publicProperties;
+    m_publicProperties = 0;
+  }
 }
 
 bool te::layout::OutsideModelObservable::addObserver( Observer* o )
@@ -123,13 +139,10 @@ te::layout::Properties* te::layout::OutsideModelObservable::getProperties() cons
 {
   m_properties->clear();
 
-  Property pro_name;
-  pro_name.setName("Oi");
-  Property pro_label;
-  //pro_label.setLabel("SHOW");
+  Property pro_name(m_hashCode);
+  pro_name.setName(m_name);
 
   m_properties->addProperty(pro_name);
-  m_properties->addProperty(pro_label);
 
   m_properties->setTypeObj(m_type);
   return m_properties;
@@ -239,3 +252,67 @@ int te::layout::OutsideModelObservable::calculateHashCode()
 
   return hashcode;
 }
+
+std::vector<te::layout::Properties*> te::layout::OutsideModelObservable::getChildrenProperties() const
+{
+  return m_childrenProperties;
+}
+
+void te::layout::OutsideModelObservable::addChildrenProperties( te::layout::Properties* properties )
+{
+  if(!properties)
+  {
+    return;
+  }
+
+  if(properties->getHashCode() == m_hashCode)
+  {
+    return;
+  }
+
+  m_childrenProperties.push_back(properties);
+}
+
+void te::layout::OutsideModelObservable::removeChildrenProperties( int hashCode )
+{
+  std::vector<Properties*>::iterator it = m_childrenProperties.begin();
+
+  for( ; it != m_childrenProperties.end(); it++)
+  {
+    if((*it)->getHashCode() == hashCode)
+    {
+      m_childrenProperties.erase(it);
+      break;
+    }
+  }
+}
+
+te::layout::Properties* te::layout::OutsideModelObservable::getPublicProperties() const
+{
+  if(!m_properties || m_publicProperties)
+  {
+    return 0;
+  }
+
+  m_publicProperties->clear();
+
+  std::vector<Property>::iterator it = m_properties->getProperties().begin();
+
+  for( ; it != m_properties->getProperties().end() ; ++it )
+  {
+    if((*it).isPublic())
+    {
+      m_publicProperties->addProperty(*it);
+    }
+  }
+
+  m_publicProperties->setTypeObj(m_type);
+
+  return m_publicProperties;
+}
+
+
+
+
+
+

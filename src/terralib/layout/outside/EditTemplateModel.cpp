@@ -41,20 +41,4 @@ te::layout::EditTemplateModel::~EditTemplateModel()
 
 }
 
-te::layout::Properties* te::layout::EditTemplateModel::getProperties() const
-{
-  m_properties->clear();
 
-  Property pro_name;
-  pro_name.setName("PageSetup");
-
-  m_properties->addProperty(pro_name);
-
-  m_properties->setTypeObj(m_type);
-  return m_properties;
-}
-
-void te::layout::EditTemplateModel::updateProperties( te::layout::Properties* properties )
-{
-
-}

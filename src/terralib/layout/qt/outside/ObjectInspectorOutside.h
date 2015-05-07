@@ -39,6 +39,7 @@
 
 // Qt
 #include <QWidget>
+#include <QtPropertyBrowser/QtProperty>
 
 class QGraphicsItem;
 
@@ -46,6 +47,7 @@ namespace te
 {
   namespace layout
   {
+    class ItemObserver;
     /*!
     \brief Tree of names of all the items entered on the scene, MVC components, using Qt to present the name of each item and its class. Object Inspector.
 	  
@@ -82,7 +84,15 @@ namespace te
       virtual bool hasMoveItemGroup(QList<QGraphicsItem*> graphicsItems);
 
     protected:
+      
+      virtual QtProperty* addProperty(QGraphicsItem* item);
 
+      virtual Property createProperty(ItemObserver* item);
+
+      virtual void createSubProperty(QGraphicsItem* item, QtProperty* prop);
+
+      virtual bool hasProperty(Property property);
+      
       PropertyBrowser* m_layoutPropertyBrowser;
       QList<QGraphicsItem*> m_graphicsItems;
     };

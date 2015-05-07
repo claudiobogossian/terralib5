@@ -83,22 +83,37 @@ namespace te
 
       public:
 
-		/*!
+		    /*!
           \brief Constructor
         */ 
         Scene(QObject* object = (QObject*)0);
 
-		/*!
+        /*!
+          \brief Constructor. The ownership of objects passed via parameter becomes the scene.
+
+          \param align applying the alignment of one or more objects 
+          \param print printing the entire content or part of the scene
+        */ 
+        Scene(AlignItems* align, PrintScene* print, QObject* object = 0);
+
+		    /*!
           \brief Destructor
         */ 
         virtual ~Scene();
 
-		/*!
+		    /*!
+          \brief Method that inserts a graphic object in the scene. Inverts the matrix of the object if necessary, ex.: TextItem.
+		  
+		      \param item graphic object		  
+        */ 
+        virtual void insertItem(ItemObserver* item);
+
+        /*!
           \brief Method that inserts a graphic object in the scene. Inverts the matrix of the object if necessary, ex.: TextItem.
 		  
 		  \param item graphic object		  
         */ 
-        virtual void insertItem(ItemObserver* item);
+        virtual void insertItem(QGraphicsItem* item);
                
 		/*!
           \brief Method that starts the scene and configures. Calculates the transformation matrix of the scene and calculates the ratio of the size of the scene with the paper size.
@@ -284,6 +299,25 @@ namespace te
 
         virtual void updateSelectedItemsPositions();
 
+        /*
+          \brief Add to stack that stores the items that are not entered into the scene.
+          To undo/redo operations, where the item is removed from the scene, 
+          a single place to store it is necessary, and if necessary, delete the items that are not entered into the scene (scene destructor).
+
+          \param item 
+        */
+
+        virtual bool addItemStackWithoutScene(QGraphicsItem* item);
+
+        /*
+          \brief Remove from stack that stores the items that are not entered into the scene.
+          To undo/redo operations, where the item is removed from the scene, 
+          a single place to store it is necessary, and if necessary, delete the items that are not entered into the scene (scene destructor).
+
+          \param item 
+        */
+        virtual bool removeItemStackWithoutScene(QGraphicsItem* item);
+
       public slots:
 
         /*!
@@ -339,8 +373,13 @@ namespace te
         PrintScene*                        m_print; //!< object responsible for printing the scene.
         bool                               m_moveWatched;
         std::map<QGraphicsItem*, QPointF>  m_moveWatches;
+        QList<QGraphicsItem*>              m_itemStackWithoutScene; //!< Items that are not included in any scene 
     };
   }
 }
 
 #endif
+
+
+
+

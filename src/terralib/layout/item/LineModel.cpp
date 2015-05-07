@@ -133,10 +133,9 @@ te::layout::Properties* te::layout::LineModel::getProperties() const
 
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
 
-  Property pro_linecolor;
+  Property pro_linecolor(m_hashCode);
   pro_linecolor.setName("line_color");
   pro_linecolor.setLabel("line color");
-  pro_linecolor.setId("");
   pro_linecolor.setValue(pro_linecolor, dataType->getDataTypeColor());
   pro_linecolor.setMenu(true);
   m_properties->addProperty(pro_linecolor);
