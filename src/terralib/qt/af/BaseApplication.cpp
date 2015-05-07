@@ -836,7 +836,7 @@ void te::qt::af::BaseApplication::onNewProjectTriggered()
 
 void te::qt::af::BaseApplication::onOpenProjectTriggered()
 {
-  QString file = QFileDialog::getOpenFileName(this, tr("Open project file"), qApp->applicationDirPath(), tr("XML File (*.xml *.XML)"));
+  QString file = QFileDialog::getOpenFileName(this, tr("Open project file"), qApp->applicationDirPath(), te::qt::af::GetExtensionFilter());
 
   if(file.isEmpty())
     return;
@@ -860,7 +860,7 @@ void te::qt::af::BaseApplication::onSaveProjectTriggered()
 
   if(fName.empty())
   {
-    QString fileName = QFileDialog::getSaveFileName(this, tr("Save Project File"), qApp->applicationDirPath(), tr("XML Files (*.xml *.XML)"));
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save Project File"), qApp->applicationDirPath(), te::qt::af::GetExtensionFilter());
 
     if(!fileName.isEmpty())
     {
@@ -869,8 +869,14 @@ void te::qt::af::BaseApplication::onSaveProjectTriggered()
 
       QFileInfo info(fileName);
 
-      if(info.suffix() != "xml")
-        fileName += ".xml";
+      QString appProjectExtension = te::qt::af::ApplicationController::getInstance().getAppProjectExtension();
+
+      if(info.suffix() != appProjectExtension)
+      {
+        QString s(".");
+        s.append(appProjectExtension);
+        fileName.append(s);
+      }
 
       fName = fileName.toStdString();
       m_project->setFileName(fName);
@@ -904,7 +910,7 @@ void te::qt::af::BaseApplication::onSaveProjectAsTriggered()
   if(m_project == 0)
     return;
 
-  QString fileName = QFileDialog::getSaveFileName(this, tr("Save Project File"), qApp->applicationDirPath(), tr("XML Files (*.xml *.XML)"));
+  QString fileName = QFileDialog::getSaveFileName(this, tr("Save Project File"), qApp->applicationDirPath(), te::qt::af::GetExtensionFilter());
 
   if(fileName.isEmpty())
     return;

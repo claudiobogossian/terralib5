@@ -64,9 +64,7 @@ te::layout::OutsideModelObservable::~OutsideModelObservable()
     delete m_properties;
     m_properties = 0;
   }
-
-  m_childrenProperties.clear();
-
+  
   if(m_publicProperties)
   {
     delete m_publicProperties;
@@ -251,40 +249,6 @@ int te::layout::OutsideModelObservable::calculateHashCode()
   hashcode *= hour + numberSecond + numberMilliseconds;
 
   return hashcode;
-}
-
-std::vector<te::layout::Properties*> te::layout::OutsideModelObservable::getChildrenProperties() const
-{
-  return m_childrenProperties;
-}
-
-void te::layout::OutsideModelObservable::addChildrenProperties( te::layout::Properties* properties )
-{
-  if(!properties)
-  {
-    return;
-  }
-
-  if(properties->getHashCode() == m_hashCode)
-  {
-    return;
-  }
-
-  m_childrenProperties.push_back(properties);
-}
-
-void te::layout::OutsideModelObservable::removeChildrenProperties( int hashCode )
-{
-  std::vector<Properties*>::iterator it = m_childrenProperties.begin();
-
-  for( ; it != m_childrenProperties.end(); it++)
-  {
-    if((*it)->getHashCode() == hashCode)
-    {
-      m_childrenProperties.erase(it);
-      break;
-    }
-  }
 }
 
 te::layout::Properties* te::layout::OutsideModelObservable::getPublicProperties() const

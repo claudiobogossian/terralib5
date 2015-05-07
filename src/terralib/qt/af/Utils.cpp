@@ -960,3 +960,14 @@ QString te::qt::af::GetWindowTitle(const te::qt::af::Project& project)
 
   return title;
 }
+
+QString te::qt::af::GetExtensionFilter()
+{
+  QString appName = te::qt::af::ApplicationController::getInstance().getAppName();
+  QString appProjectExtension = te::qt::af::ApplicationController::getInstance().getAppProjectExtension();
+  QString extensionFilter = appName;
+  extensionFilter += QString(" (*.");
+  extensionFilter += appProjectExtension + ")";
+
+  return extensionFilter;
+}

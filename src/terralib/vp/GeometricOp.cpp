@@ -106,18 +106,48 @@ te::da::DataSetType* te::vp::GeometricOp::GetDataSetType( te::vp::GeometricOpObj
         {
           dsType = new te::da::DataSetType(m_outDsetName + "_convex_hull");
           dsType->setTitle(m_outDsetName + "_convex_hull");
+
+          // Primary key
+          te::dt::SimpleProperty* pkProperty = new te::dt::SimpleProperty(m_outDsetName + "_id", te::dt::INT32_TYPE);
+          pkProperty->setAutoNumber(true);
+          dsType->add(pkProperty);
+
+          te::da::PrimaryKey* pk = new te::da::PrimaryKey(m_outDsetName + "_convex_hull_pk", dsType);
+          pk->add(pkProperty);
+          dsType->setPrimaryKey(pk);
+
           break;
         }
       case 1:
         {
           dsType = new te::da::DataSetType(m_outDsetName + "_centroid");
           dsType->setTitle(m_outDsetName + "_centroid");
+
+          // Primary key
+          te::dt::SimpleProperty* pkProperty = new te::dt::SimpleProperty(m_outDsetName + "_id", te::dt::INT32_TYPE);
+          pkProperty->setAutoNumber(true);
+          dsType->add(pkProperty);
+
+          te::da::PrimaryKey* pk = new te::da::PrimaryKey(m_outDsetName + "_centroid_pk", dsType);
+          pk->add(pkProperty);
+          dsType->setPrimaryKey(pk);
+
           break;
         }
       case 2:
         {
           dsType = new te::da::DataSetType(m_outDsetName + "_mbr");
           dsType->setTitle(m_outDsetName + "_mbr");
+
+          // Primary key
+          te::dt::SimpleProperty* pkProperty = new te::dt::SimpleProperty(m_outDsetName + "_id", te::dt::INT32_TYPE);
+          pkProperty->setAutoNumber(true);
+          dsType->add(pkProperty);
+
+          te::da::PrimaryKey* pk = new te::da::PrimaryKey(m_outDsetName + "_mbr_pk", dsType);
+          pk->add(pkProperty);
+          dsType->setPrimaryKey(pk);
+
           break;
         }
     }
@@ -127,14 +157,7 @@ te::da::DataSetType* te::vp::GeometricOp::GetDataSetType( te::vp::GeometricOpObj
     dsType = new te::da::DataSetType(m_outDsetName);
     dsType->setTitle(m_outDsetName);
   }
-  // Primary key
-  te::dt::SimpleProperty* pkProperty = new te::dt::SimpleProperty(m_outDsetName + "_id", te::dt::INT32_TYPE);
-  pkProperty->setAutoNumber(true);
-  dsType->add(pkProperty);
 
-  te::da::PrimaryKey* pk = new te::da::PrimaryKey(m_outDsetName + "_pk", dsType);
-  pk->add(pkProperty);
-  dsType->setPrimaryKey(pk);
 
   if(geomOpStrategy == te::vp::ALL_OBJ)
   {

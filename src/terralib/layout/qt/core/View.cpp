@@ -745,7 +745,15 @@ void te::layout::View::contextMenuEvent( QContextMenuEvent * event )
     return;
 
   QPointF pt = mapToScene(event->pos());
-  if(!intersectionSelectionItem(pt.x(), pt.y()))
+
+  ItemUtils* iUtils = Context::getInstance().getItemUtils();
+  if(!iUtils)
+  {
+    return;
+  }
+
+  QGraphicsItem* hasItem = iUtils->intersectionSelectionItem(pt.x(), pt.y());
+  if(!hasItem)
     return;
 
   if(!m_menuBuilder)
@@ -757,24 +765,6 @@ void te::layout::View::contextMenuEvent( QContextMenuEvent * event )
 
   m_menuBuilder->createMenu(graphicsItems);
   m_menuBuilder->menuExec(event->globalX(), event->globalY());
-}
-
-bool te::layout::View::intersectionSelectionItem(int x, int y)
-{
-  QList<QGraphicsItem *> items = this->scene()->selectedItems();
-  bool intersection = false;
-
-  QPointF pt(x, y);
-
-  foreach (QGraphicsItem *item, items) 
-  {
-    if(item)
-    {
-      intersection = item->contains(pt);
-    }
-  }
-
-  return intersection;
 }
 
 QImage te::layout::View::createImage()
