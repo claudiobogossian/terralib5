@@ -312,8 +312,6 @@ namespace te
         virtual void showPageSetup();
 
         virtual void showSystematicScale();
-
-        virtual bool intersectionSelectionItem(int x, int y);
         
         virtual QCursor createCursor(std::string pathIcon);
         
