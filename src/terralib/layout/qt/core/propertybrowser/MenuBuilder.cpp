@@ -315,6 +315,7 @@ void te::layout::MenuBuilder::changePropertyValue( Property property )
         {
           props->setObjectName(lItem->getModel()->getProperties()->getObjectName());
           props->setTypeObj(lItem->getModel()->getProperties()->getTypeObj());
+          props->setHashCode(lItem->getModel()->getHashCode());
           props->addProperty(property);
 
           lItem->getModel()->updateProperties(props);

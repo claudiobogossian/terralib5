@@ -35,6 +35,7 @@
 #include "../../property/SharedProperties.h"
 #include "../singleton/Context.h"
 #include "../../enum/Enums.h"
+#include "ItemObserver.h"
 
 // STL
 #include <ctime>
@@ -84,7 +85,7 @@ te::layout::ItemModelObservable::~ItemModelObservable()
     m_properties = 0;
   }
 
-  m_childrenProperties.clear();
+  m_children.clear();
 
   if(m_publicProperties)
   {
@@ -543,38 +544,58 @@ void te::layout::ItemModelObservable::setEnableChildren( bool value )
   m_enableChildren = value;
 }
 
-std::vector<te::layout::Properties*> te::layout::ItemModelObservable::getChildrenProperties() const
+std::set<te::layout::ItemObserver*> te::layout::ItemModelObservable::getChildren() const
 {
-  return m_childrenProperties;
+  return m_children;
 }
 
-void te::layout::ItemModelObservable::addChildrenProperties( te::layout::Properties* properties )
+bool te::layout::ItemModelObservable::addChildren( ItemObserver* item )
 {
-  if(!properties)
+  bool result = false;
+  if(!item)
   {
-    return;
+    return result;
   }
 
-  if(properties->getHashCode() == m_hashCode)
+  if(!m_enableChildren)
   {
-    return;
+    return result;
   }
 
-  m_childrenProperties.push_back(properties);
+  if(item->getModel()->getHashCode() == m_hashCode)
+  {
+    return result;
+  }
+
+  std::pair<std::set<ItemObserver*>::iterator,bool> p = m_children.insert(item);
+
+  if(p.second == true)
+  {
+    result = true;
+  }
+
+  return result;
 }
 
-void te::layout::ItemModelObservable::removeChildrenProperties( int hashCode )
+bool te::layout::ItemModelObservable::removeChildren( int hashCode )
 {
-  std::vector<Properties*>::iterator it = m_childrenProperties.begin();
-
-  for( ; it != m_childrenProperties.end(); it++)
+  bool result = false;
+  std::set<ItemObserver*>::iterator it = m_children.begin();
+  
+  for( ; it != m_children.end(); it++)
   {
-    if((*it)->getHashCode() == hashCode)
+    if((*it)->getModel()->getHashCode() == hashCode)
     {
-      m_childrenProperties.erase(it);
-      break;
+      int num = m_children.erase(*it);
+
+      if(num == 1)
+      {
+        result = true;
+        break;
+      }
     }
   }
+  return result;
 }
 
 te::layout::Properties* te::layout::ItemModelObservable::getPublicProperties() const
@@ -600,6 +621,39 @@ te::layout::Properties* te::layout::ItemModelObservable::getPublicProperties() c
 
   return m_publicProperties;
 }
+
+void te::layout::ItemModelObservable::addChildrenProperties( Properties* properties )
+{
+  std::set<ItemObserver*>::iterator it = m_children.begin();
+
+  for( ; it != m_children.end(); it++)
+  {
+    Properties* props = (*it)->getModel()->getPublicProperties();
+    
+    std::vector<Property>::iterator itProp = props->getProperties().begin();
+    for( ; itProp != props->getProperties().end(); itProp++)
+    {
+      properties->addProperty(*itProp);
+    }
+  }
+}
+
+void te::layout::ItemModelObservable::updateChildrenProperties( Property prop )
+{
+  int hashCode = prop.getParentItemHashCode();
+
+  std::set<ItemObserver*>::iterator it = m_children.begin();
+
+  for( ; it != m_children.end(); it++)
+  {
+    if((*it)->getModel()->getHashCode() == hashCode)
+    {
+      
+    }
+  }
+}
+
+
 
 
 

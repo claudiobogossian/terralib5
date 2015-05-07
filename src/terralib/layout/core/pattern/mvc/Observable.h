@@ -95,28 +95,7 @@ namespace te
           \param properties
         */
         virtual void updateProperties(te::layout::Properties* properties) = 0;
-
-        /*!
-          \brief Return public properties of child components.
-
-          \return properties
-        */
-        virtual std::vector<te::layout::Properties*> getChildrenProperties() const = 0;
         
-        /*!
-          \brief Add Public properties of child component.
-
-          \param properties
-        */
-        virtual void addChildrenProperties(te::layout::Properties* properties) = 0;
-
-        /*!
-          \brief Remove Public properties of child component.
-
-          \param properties
-        */
-        virtual void removeChildrenProperties(int hashCode) = 0;
-
         /*!
           \brief Returns the model state just the public properties.
             Reimplement this function in a Observable subclass to provide the model's getProperties implementation.
