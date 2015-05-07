@@ -98,7 +98,7 @@ if(CPACK_GENERATOR MATCHES "NSIS")
   set(CPACK_NSIS_HELP_LINK "http://www.dpi.inpe.br/terralib5/wiki")
   set(CPACK_NSIS_URL_INFO_ABOUT "http://www.dpi.inpe.br/terralib5/wiki")
   set(CPACK_NSIS_CONTACT "terralib-team@terralib.org")
-
+  
   set(bitName "(Win32)")
   
   if(CMAKE_CL_64) 
@@ -126,20 +126,34 @@ if(CPACK_GENERATOR MATCHES "NSIS")
   Delete \"$SMPROGRAMS\\$MUI_TEMP\\${shortCutName}.lnk\";
   Delete \"$DESKTOP\\${shortCutName}.lnk\"")
 
-  # Creating GDAL_DIR enviroment variable.
   list (APPEND CPACK_NSIS_EXTRA_INSTALL_COMMANDS "
-#  WriteRegExpandStr HKLM \"SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment\" \"GDAL_DATA\" \"$INSTDIR\\share\\gdal-data\";
+  # Creating GDAL_DIR enviroment variable.
+  # WriteRegExpandStr HKLM \"SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment\" \"GDAL_DATA\" \"$INSTDIR\\share\\gdal-data\";
   WriteRegExpandStr HKLM \"SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment\" \"TERRALIB_HOME\" \"$INSTDIR\";
   SendMessage \${HWND_BROADCAST} \${WM_WININICHANGE} 0 \"STR:Environment\" /TIMEOUT=5000"
   )
-
-  # Removing GDAL_DIR from enviroment variables.
+  
   set (CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS " 
- # DeleteRegValue HKLM \"SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment\" \"GDAL_DATA\";
+  # Removing GDAL_DIR from enviroment variables.
+  # DeleteRegValue HKLM \"SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment\" \"GDAL_DATA\";
   DeleteRegValue HKLM \"SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment\" \"TERRALIB_HOME\";
   SendMessage \${HWND_BROADCAST} \${WM_WININICHANGE} 0 \"STR:Environment\" /TIMEOUT=5000"
   )
   
+ # File types association:
+ list (APPEND CPACK_NSIS_EXTRA_INSTALL_COMMANDS "
+   WriteRegStr HKCR \".tview\" \"\" \"TerraView.Project\"; #registering file extension
+   WriteRegStr HKCR \"TerraView.Project\" \"\" \"TerraView Project File\"; #registering extension desc
+   WriteRegStr HKCR \"TerraView.Project\\DefaultIcon\" \"\" \"$INSTDIR\\share\\terraview\\images\\ico\\terraview-projectfile-icon.ico\"; #registering extension icon 
+   WriteRegStr HKCR \"TerraView.Project\\shell\\open\\command\" \"\" '\"$INSTDIR\\bin\\terraview.exe\" \"%1\"'; #extension open command
+   SetRebootFlag true
+ ")
+  
+ list (APPEND CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "
+   DeleteRegKey HKCR \".tview\"; #removing extension register
+   DeleteRegKey HKCR \"TerraView.Project\"; #removing file association register
+ ")
+ 
 endif()
 
 if(CPACK_GENERATOR MATCHES "ZIP")
