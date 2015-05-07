@@ -831,10 +831,10 @@ namespace te
           ItemObserver* iOb = dynamic_cast<ItemObserver*>(item);
           if(iOb)
           {
-            if(iOb->getModel())
+            ItemModelObservable* itemModel = dynamic_cast<ItemModelObservable*>(m_model);
+            if(itemModel)
             {
-              Properties* props = iOb->getModel()->getPublicProperties();
-              m_model->addChildrenProperties(props);
+              itemModel->addChildren(iOb);
             }
           }
         }       
@@ -848,10 +848,10 @@ namespace te
           ItemObserver* iOb = dynamic_cast<ItemObserver*>(item);
           if(iOb)
           {
-            if(iOb->getModel())
+            ItemModelObservable* itemModel = dynamic_cast<ItemModelObservable*>(m_model);
+            if(itemModel)
             {
-              int hashCode = iOb->getModel()->getHashCode();
-              m_model->removeChildrenProperties(hashCode);
+              itemModel->removeChildren(iOb->getModel()->getHashCode());
             }
           }
         } 

@@ -124,17 +124,7 @@ namespace te
           \return name
         */
         std::string nameItem(te::layout::EnumType* type);
-
-        /*!
-          \brief Checks whether the coordinated intersects an item and returns.
-
-          \param x axis x coordinate
-		      \param y axis y coordinate
-
-          \return 
-        */
-        virtual QGraphicsItem* intersectionSelectionItem(int x, int y);
-        
+                
         /*!
           \brief After component construction, this method checks and adds a child, position and zValue. If necessary, also redraws.
 

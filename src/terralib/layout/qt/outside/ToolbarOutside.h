@@ -129,6 +129,54 @@ namespace te
 
       virtual QComboBox* getComboBoxZoom();
 
+      /* Actions (Widget's) */
+
+      virtual QAction* getActionMapToolButton();
+
+      virtual QAction* getActionMapToolsToolButton();
+
+      virtual QAction* getActionGeometryToolButton();
+
+      virtual QAction* getActionViewAreaToolButton();
+
+      virtual QAction* getActionArrowCursorButton();
+
+      virtual QAction* getActionItemTools();
+
+      virtual QAction* getActionLineIntersectionToolButton();
+
+      virtual QAction* getActionBringToFrontToolButton();
+
+      virtual QAction* getActionSendToBackToolButton();
+
+      virtual QAction* getActionRecomposeToolButton();
+
+      virtual QAction* getActionTextToolButton();
+
+      virtual QAction* getActionAlignLeftToolButton();
+
+      virtual QAction* getActionAlignRightToolButton();
+
+      virtual QAction* getActionAlignTopToolButton();
+
+      virtual QAction* getActionAlignBottomToolButton();
+
+      virtual QAction* getActionAlignCenterHorizontalToolButton();
+
+      virtual QAction* getActionAlignCenterVerticalToolButton();
+
+      virtual QAction* getActionRemoveObjectToolButton();
+
+      virtual QAction* getActionUndoToolButton();
+
+      virtual QAction* getActionDrawMapToolButton();
+
+      virtual QAction* getActionObjectToImageButton();
+
+      virtual QAction* getActionExitButton();
+
+      virtual QAction* getActionComboBoxZoom();
+
       /* Actions names */
 
       /* Map Menu */
@@ -453,6 +501,33 @@ namespace te
       QToolButton* m_objectToImageButton;
       QToolButton* m_exitButton;
       QToolButton* m_exportToPDFButton;
+
+      /* Actions (Widget's) */
+
+      QAction* m_actionComboZoom;
+      QAction* m_actionMapToolButton;
+      QAction* m_actionMapToolsToolButton;
+      QAction* m_actionGeometryToolButton;
+      QAction* m_actionViewAreaToolButton;
+      QAction* m_actionArrowCursorButton;
+      QAction* m_actionItemTools;
+      QAction* m_actionLineIntersectionToolButton;
+      QAction* m_actionBringToFrontToolButton;
+      QAction* m_actionSendToBackToolButton;
+      QAction* m_actionRecomposeToolButton;
+      QAction* m_actionTextToolButton;
+      QAction* m_actionAlignLeftToolButton;
+      QAction* m_actionAlignRightToolButton;
+      QAction* m_actionAlignTopToolButton;
+      QAction* m_actionAlignBottomToolButton;
+      QAction* m_actionAlignCenterHorizontalToolButton;
+      QAction* m_actionAlignCenterVerticalToolButton;
+      QAction* m_actionRemoveObjectToolButton;
+      QAction* m_actionUndoToolButton;
+      QAction* m_actionDrawMapToolButton;
+      QAction* m_actionObjectToImageButton;
+      QAction* m_actionExitButton;
+      QAction* m_actionExportToPDFButton;
     };
   }
 }
