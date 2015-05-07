@@ -469,5 +469,45 @@ std::vector<te::layout::GridMapItem*> te::layout::ItemUtils::getMapChildren()
   return gridMapItems;
 }
 
+QGraphicsItem* te::layout::ItemUtils::intersectionSelectionItem( int x, int y )
+{
+  QGraphicsItem* intersectionItem = 0;
+
+  AbstractScene* abstScene = Context::getInstance().getScene();
+
+  if(!abstScene)
+  {
+    return intersectionItem;
+  }
+
+  Scene* sc = dynamic_cast<Scene*>(abstScene);
+  if(!sc)
+  {
+    return intersectionItem;
+  }
+
+  QList<QGraphicsItem*> items = sc->selectedItems();
+
+  QPointF pt(x, y);
+
+  bool intersection = false;
+
+  foreach (QGraphicsItem *item, items) 
+  {
+    if(item)
+    {
+      bool intersection = item->contains(pt);
+      if(intersection)
+      {
+        intersectionItem = item;
+        break;
+      }
+    }
+  }
+
+  return intersectionItem;
+}
+
+
 
 

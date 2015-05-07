@@ -157,6 +157,16 @@ namespace te
           \return all GridMapItem, children of a MapItem.
         */
         virtual std::vector<GridMapItem*> getMapChildren();
+
+        /*!
+          \brief Checks whether the coordinated intersects an item and returns.
+
+          \param x axis x coordinate
+		      \param y axis y coordinate
+
+          \return 
+        */
+        virtual QGraphicsItem* intersectionSelectionItem(int x, int y);
           
       protected:
 

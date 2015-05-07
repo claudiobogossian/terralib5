@@ -139,22 +139,7 @@ namespace te
           \brief Reimplemented from Observable
        */
       virtual void updateProperties(te::layout::Properties* properties);
-
-      /*!
-        \brief Reimplemented from Observable
-        */
-      virtual std::vector<te::layout::Properties*> getChildrenProperties() const;
-        
-      /*!
-        \brief Reimplemented from Observable
-        */
-      virtual void addChildrenProperties(te::layout::Properties* properties);
-
-      /*!
-        \brief Reimplemented from Observable
-        */
-      virtual void removeChildrenProperties(int hashCode);
-
+      
       /*!
           \brief Reimplemented from Observable
        */
@@ -206,7 +191,6 @@ namespace te
       te::gm::Coord2D 		      m_centerCoordinate; //!< center coordinate of the bounding rectangle
       int							          m_color; //!< background color
       Properties*               m_properties; //!< properties
-      std::vector<Properties*>  m_childrenProperties; //!< properties
       Properties*               m_publicProperties; //!< public properties
       EnumType*                 m_type; //!< type of the MVC widget
       int                       m_zValue; //!< The Z value decides the stacking order of drawing

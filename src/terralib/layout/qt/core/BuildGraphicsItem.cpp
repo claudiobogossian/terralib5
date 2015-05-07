@@ -357,6 +357,8 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createItem( te::layout::EnumType* 
 
 std::string te::layout::BuildGraphicsItem::nameItem( te::layout::EnumType* type )
 {
+  std::string name = "";
+
   AbstractScene* abstScene = Context::getInstance().getScene();
 
   QList<QGraphicsItem*> graphicsItems;
@@ -372,6 +374,11 @@ std::string te::layout::BuildGraphicsItem::nameItem( te::layout::EnumType* type 
   }  
 
   ItemUtils* iUtils = Context::getInstance().getItemUtils();
+  if(!iUtils)
+  {
+    return name;
+  }
+
   m_id = iUtils->maxTypeId(type);
 
   if(m_id < 0)
@@ -381,50 +388,11 @@ std::string te::layout::BuildGraphicsItem::nameItem( te::layout::EnumType* type 
 
   ss << m_id;
 
-  std::string name = type->getName();
+  name = type->getName();
   name+="_";
   name+=ss.str();
 
   return name;
-}
-
-QGraphicsItem* te::layout::BuildGraphicsItem::intersectionSelectionItem( int x, int y )
-{
-  QGraphicsItem* intersectionItem = 0;
-
-  AbstractScene* abstScene = Context::getInstance().getScene();
-  
-  if(!abstScene)
-  {
-    return intersectionItem;
-  }
-
-  Scene* sc = dynamic_cast<Scene*>(abstScene);
-  if(!sc)
-  {
-    return intersectionItem;
-  }
-  
-  QList<QGraphicsItem*> items = sc->selectedItems();
-
-  QPointF pt(x, y);
-
-  bool intersection = false;
-
-  foreach (QGraphicsItem *item, items) 
-  {
-    if(item)
-    {
-      bool intersection = item->contains(pt);
-      if(intersection)
-      {
-        intersectionItem = item;
-        break;
-      }
-    }
-  }
-
-  return intersectionItem;
 }
 
 bool te::layout::BuildGraphicsItem::addChild( QGraphicsItem* child, int x, int y )
@@ -436,7 +404,13 @@ bool te::layout::BuildGraphicsItem::addChild( QGraphicsItem* child, int x, int y
     return result;
   }
 
-  QGraphicsItem* parentItem = intersectionSelectionItem(x, y);
+  ItemUtils* iUtils = Context::getInstance().getItemUtils();
+  if(!iUtils)
+  {
+    return result;
+  }
+
+  QGraphicsItem* parentItem = iUtils->intersectionSelectionItem(x, y);
 
   if(!parentItem)
   {
