@@ -153,8 +153,6 @@ namespace te
 
           void drawDataSet(te::da::DataSet* dataset, const std::string& geomPropertyName, int srid, const QColor& color, bool isLinked = false);
 
-          void drawObjectIdSet(const te::da::ObjectIdSet* oids, int srid, const QColor& color, bool isLinked = false);
-
           void configSRS(const std::list<te::map::AbstractLayerPtr>& layers);
 
         signals:

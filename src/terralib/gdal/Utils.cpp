@@ -597,14 +597,32 @@ GDALDataset* te::gdal::CreateRaster(const std::string& name, te::rst::Grid* g, c
   
   OGRSpatialReference oSRS;
   
-  oSRS.importFromEPSG(g->getSRID());
+  OGRErr osrsErrorReturn = oSRS.importFromEPSG(g->getSRID());
+  CPLErr setProjErrorReturn = CE_Fatal;
   
-  char* projWKTPtr = 0;
-  
-  if(oSRS.exportToWkt(&projWKTPtr) == OGRERR_NONE)
+  if( osrsErrorReturn == OGRERR_NONE )
   {
-    poDataset->SetProjection(projWKTPtr);
+    char* projWKTPtr = 0;
+    
+    osrsErrorReturn = oSRS.exportToWkt(&projWKTPtr);
+    
+    if( osrsErrorReturn == OGRERR_NONE )
+    {
+      setProjErrorReturn = poDataset->SetProjection(projWKTPtr);
+    }
+    
     OGRFree(projWKTPtr);
+  }
+  
+  if( setProjErrorReturn != CE_None )
+  {
+    std::string wktStr = te::srs::SpatialReferenceSystemManager::getInstance().getWkt( 
+      g->getSRID() );
+    
+    if( !wktStr.empty() )
+    {
+      setProjErrorReturn = poDataset->SetProjection(wktStr.c_str());
+    }
   }
   
   int nb = static_cast<int>(bands.size());
