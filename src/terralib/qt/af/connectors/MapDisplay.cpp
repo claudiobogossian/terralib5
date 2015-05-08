@@ -383,7 +383,46 @@ void te::qt::af::MapDisplay::drawLayerSelection(te::map::AbstractLayerPtr layer)
 
   try
   {
-    drawObjectIdSet(oids, layer->getSRID(), ApplicationController::getInstance().getSelectionColor(), te::da::HasLinkedTable(layer->getSchema().get()));
+    std::size_t maxOids = 4000;
+
+    if(oids->size() > maxOids)
+    {
+      std::auto_ptr<te::da::ObjectIdSet> oidsBatch(new te::da::ObjectIdSet(*oids, false));
+
+      // Count the all oids
+      std::size_t nOids = 0;
+
+      // Count the processed oids
+      std::size_t nProcessedOids = 0;
+
+      std::set<te::da::ObjectId*, te::common::LessCmp<te::da::ObjectId*> >::const_iterator it;
+      for(it = oids->begin(); it != oids->end(); ++it)
+      {
+  
+        oidsBatch->add((*it)->clone());
+
+        ++nOids;
+        ++nProcessedOids;
+
+        if(nProcessedOids == maxOids || nOids == oids->size())
+        {
+          // Try to retrieve the layer selection batch
+          std::auto_ptr<te::da::DataSet> selected(layer->getData(oidsBatch.get()));
+
+          drawDataSet(selected.get(), layer->getGeomPropertyName(), layer->getSRID(), ApplicationController::getInstance().getSelectionColor(), te::da::HasLinkedTable(layer->getSchema().get()));
+
+          // Prepares to next batch
+          oidsBatch->clear();
+          nProcessedOids = 0;
+        }
+      }
+    }
+    else
+    {
+      std::auto_ptr<te::da::DataSet> selected(layer->getData(oids->getExpression()));
+
+      drawDataSet(selected.get(), layer->getGeomPropertyName(), layer->getSRID(), ApplicationController::getInstance().getSelectionColor(), te::da::HasLinkedTable(layer->getSchema().get()));
+    }
   }
   catch(std::exception& e)
   {
@@ -449,62 +488,6 @@ void te::qt::af::MapDisplay::drawDataSet(te::da::DataSet* dataset, const std::st
     }
     else
       canvas.draw(g.get());
-  }
-}
-
-void te::qt::af::MapDisplay::drawObjectIdSet(const te::da::ObjectIdSet* oids, int srid, const QColor& color, bool isLinked)
-{
-  assert(color.isValid());
-
-  if(srid == TE_UNKNOWN_SRS && m_display->getSRID() != TE_UNKNOWN_SRS)
-    return;
-
-  bool needRemap = false;
-
-  if((srid != TE_UNKNOWN_SRS) && (m_display->getSRID() != TE_UNKNOWN_SRS) && (srid != m_display->getSRID()))
-    needRemap = true;
-
-  QPixmap* content = m_display->getDisplayPixmap();
-
-  const te::gm::Envelope& displayExtent = m_display->getExtent();
-
-  te::qt::widgets::Canvas canvas(content);
-  canvas.setWindow(displayExtent.m_llx, displayExtent.m_lly, displayExtent.m_urx, displayExtent.m_ury);
-
-  std::set<std::string> highlightedGeoms;
-
-  te::gm::GeomType currentGeomType = te::gm::UnknownGeometryType;
-
-  std::set<te::da::ObjectId*, te::common::LessCmp<te::da::ObjectId*> >::const_iterator it;
-
-  for(it = oids->begin(); it != oids->end(); ++it)
-  {
-    te::gm::Geometry* geom = (*it)->getGeom();
-
-    if(geom)
-    {
-      if(currentGeomType != geom->getGeomTypeId())
-      {
-        currentGeomType = geom->getGeomTypeId();
-        te::qt::widgets::Config2DrawLayerSelection(&canvas, color, currentGeomType);
-      }
-
-      if(needRemap)
-      {
-        geom->setSRID(srid);
-        geom->transform(m_display->getSRID());
-      }
-
-      if(isLinked)
-      {
-        if(highlightedGeoms.insert(geom->asText()).second)
-        {
-          canvas.draw(geom);
-        }
-      }
-      else
-        canvas.draw(geom);
-    }
   }
 }
 

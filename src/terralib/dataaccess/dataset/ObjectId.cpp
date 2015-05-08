@@ -29,7 +29,7 @@
 // STL
 #include <cassert>
 
-te::da::ObjectId::ObjectId() : m_geom(0)
+te::da::ObjectId::ObjectId()
 {
 }
 
@@ -37,16 +37,10 @@ te::da::ObjectId::ObjectId(const ObjectId& rhs)
 {
   for(std::size_t i = 0; i < rhs.m_data.size(); ++i)
     m_data.push_back(rhs.m_data[i].clone());
-
-  if(rhs.m_geom)
-    m_geom = dynamic_cast<te::gm::Geometry*>(rhs.m_geom->clone());
-  else
-    m_geom = 0;
 }
 
 te::da::ObjectId::~ObjectId()
 {
-  delete m_geom;
 }
 
 const boost::ptr_vector<te::dt::AbstractData>& te::da::ObjectId::getValue() const
@@ -69,18 +63,6 @@ void te::da::ObjectId::addValue(te::dt::AbstractData* data)
   assert(data);
 
   m_data.push_back(data);
-}
-
-void te::da::ObjectId::setGeom(te::gm::Geometry* geom)
-{
-  delete m_geom;
-
-  m_geom = geom;
-}
-
-te::gm::Geometry* te::da::ObjectId::getGeom()
-{
-  return m_geom;
 }
 
 te::da::ObjectId* te::da::ObjectId::clone() const

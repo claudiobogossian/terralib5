@@ -534,7 +534,9 @@ void te::qt::widgets::QueryDataSourceDialog::onApplySelToolButtonClicked()
     {
       // Generates the oids
       dataSet->moveBeforeFirst();
-      te::da::ObjectIdSet* oids = te::da::GenerateOIDSet(dataSet.get(), dsType.get(), true);
+      te::da::ObjectIdSet* oids = te::da::GenerateOIDSet(dataSet.get(), dsType.get());
+
+      oids->setExpressionByInClause();
 
       layer->clearSelected();
       layer->select(oids);
@@ -543,7 +545,9 @@ void te::qt::widgets::QueryDataSourceDialog::onApplySelToolButtonClicked()
     {
       // Generates the oids
       dataSet->moveBeforeFirst();
-      te::da::ObjectIdSet* oids = te::da::GenerateOIDSet(dataSet.get(), dsType.get(), true);
+      te::da::ObjectIdSet* oids = te::da::GenerateOIDSet(dataSet.get(), dsType.get());
+
+      oids->setExpressionByInClause();
 
       layer->select(oids);
     }

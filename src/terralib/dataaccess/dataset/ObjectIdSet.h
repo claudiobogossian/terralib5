@@ -37,6 +37,8 @@
 
 namespace te
 {
+  namespace gm { class Envelope; }
+
   namespace da
   {
 // Forward declaration
@@ -81,6 +83,20 @@ namespace te
         */
         void add(ObjectId* oid);
 
+
+        /*!
+          \brief It set the expression that can be used to retrieve the data set that contains the all indentified elements.
+
+          \param expression The expression that can be used to retrieve the data set that contains the all indentified elements.
+
+          \note This method will take the ownership of the given pointer.
+        */
+        void setExpression(te::da::Expression* expression, bool isClauseIn);
+
+        void setExpressionByIntersection(std::string geomAttrName, te::gm::Envelope env, int srid);
+
+        void setExpressionByInClause(const std::string source = "");
+
         /*!
           \brief It returns the expression that can be used to retrieve the data set that contains the all indentified elements.
 
@@ -88,7 +104,9 @@ namespace te
 
           \note The caller will take the ownership of the given pointer.
         */
-        Expression* getExpression(const std::string source = "") const;
+        Expression* getExpression() const;
+
+        Expression* getExpressionByInClause(const std::string source = "") const;
 
         /*!
           \brief It clears this object id set.
@@ -191,12 +209,17 @@ namespace te
 
         ObjectIdSet* clone() const;
 
+        bool isExpressionClauseIn() const;
+
       private:
 
         std::vector<std::string> m_pnames;                            //!< The list of property names used to generate the unique ids.
         std::vector<std::size_t> m_ppos;                              //!< The list of property positions used to generate the unique ids.
         std::vector<int> m_ptypes;                                    //!< The list of property types used to generate the unique ids.
         std::set<ObjectId*, te::common::LessCmp<ObjectId*> > m_oids;  //!< The set of unique ids.
+        te::da::Expression* m_expression;                             //!< The expression that can be used to retrieve the data set that contains the all indentified elements.
+
+        bool m_expByClauseIn;
     };
 
   } // end namespace da
