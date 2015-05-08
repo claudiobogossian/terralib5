@@ -370,8 +370,10 @@ te::da::ObjectIdSet* te::qt::widgets::DataSetTableModel::getObjectIdSet (const i
     row = (int)m_promoter->getLogicalRow(i);
     m_dataset->move(row);
 
-    oids->add(te::da::GenerateOID(m_dataset, oids->getPropertyNames(), true));
+    oids->add(te::da::GenerateOID(m_dataset, oids->getPropertyNames()));
   }
+
+  oids->setExpressionByInClause();
 
   return oids;
 }

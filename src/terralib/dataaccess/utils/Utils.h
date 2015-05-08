@@ -171,35 +171,32 @@ namespace te
      
       \param dataset A pointer to a valid data set. Do not pass null.
       \param type    A pointer to a data set type that describes the given dataset. Do not pass null.
-      \param setGeom Flag used to indicate if the geometry from dataset has to be stored.
 
       \return The object id set generated from the given dataset.
     */
-    TEDATAACCESSEXPORT ObjectIdSet* GenerateOIDSet(DataSet* dataset, const DataSetType* type, const bool& setGeom = false);
+    TEDATAACCESSEXPORT ObjectIdSet* GenerateOIDSet(DataSet* dataset, const DataSetType* type);
 
     /*
       \brief It generates the set of object ids for every element of the given dataset using a set of attributes.
 
       \param dataset A pointer to a valid data set.
       \param names   A non empty vector of property names to be used to identify the elements.
-      \param setGeom Flag used to indicate if the geometry from dataset has to be stored.
-     
+
       \return The object id set generated from the given dataset.
 
       \exception Exception It throws an exception if a property was not found in data set
     */
-    TEDATAACCESSEXPORT ObjectIdSet* GenerateOIDSet(DataSet* dataset, const std::vector<std::string>& names, const bool& setGeom = false);
+    TEDATAACCESSEXPORT ObjectIdSet* GenerateOIDSet(DataSet* dataset, const std::vector<std::string>& names);
 
     /*
       \brief It generates an object id for the current element of the given dataset using the informed set of attributes.
 
       \param dataset A pointer to a valid data set.
       \param names   A non empty vector of property names to be used to identify the element.
-      \param setGeom Flag used to indicate if the geometry from dataset has to be stored.
-     
+
       \return The object id generated for the current element of the given dataset.
     */
-    TEDATAACCESSEXPORT ObjectId* GenerateOID(DataSet* dataset, const std::vector<std::string>& names, const bool& setGeom = false);
+    TEDATAACCESSEXPORT ObjectId* GenerateOID(DataSet* dataset, const std::vector<std::string>& names);
 
     /*!
       \brief It returns the first dataset spatial property or NULL if none is found.
