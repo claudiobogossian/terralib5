@@ -43,19 +43,7 @@ te::layout::GridSettingsController::~GridSettingsController()
 
 }
 
-te::layout::Property te::layout::GridSettingsController::updateProperty()
-{
-  return m_update;
-}
-
-void te::layout::GridSettingsController::clearUpdate()
-{
-  m_update.clear();
-  m_gridGeodesic.clear();
-  m_gridPlanar.clear();
-}
-
-void te::layout::GridSettingsController::addUpdateProperty( std::string name, Variant variant, LayoutGridType gridType )
+te::layout::Property te::layout::GridSettingsController::updateProperty( std::string name, Variant variant, EnumType* enumType )
 {
   GridSettingsModel* outsideModel = 0;
 
@@ -66,20 +54,12 @@ void te::layout::GridSettingsController::addUpdateProperty( std::string name, Va
   }
  
   if(!outsideModel)
-    return;
-
-  if(m_update.isNull())
   {
-    Property prop = outsideModel->getOutsideProperty();
-
-    m_update.setEditable(prop.isEditable());
-    m_update.setId(prop.getId());
-
-    m_update.setName(prop.getName());
-    m_update.setValue(prop.getValue());
+    Property prop;
+    return prop;
   }
-
-  Property property = outsideModel->containsOutsideSubProperty(name, gridType);
+  
+  Property property = outsideModel->containsProperty(name, enumType);
 
   if(!property.isNull())
   {
@@ -88,11 +68,11 @@ void te::layout::GridSettingsController::addUpdateProperty( std::string name, Va
       if(property.getValue() != variant)
       {
         property.setValue(variant);
-        outsideModel->updateOutsideSubProperty(property, gridType);
+        outsideModel->updateProperty(property, enumType);
       }
       else
       {
-        return;
+        return property;
       }
     }
     else
@@ -100,84 +80,19 @@ void te::layout::GridSettingsController::addUpdateProperty( std::string name, Va
       if(property.getOptionByCurrentChoice() != variant)
       {
         property.setOptionChoice(variant);
-        outsideModel->updateOutsideSubProperty(property, gridType);
+        outsideModel->updateProperty(property, enumType);
       }
       else
       {
-        return;
+        return property;
       }
     }
-
-    if(gridType == TypeGeodesic)
-    {
-      addUpdateGeodesicProperty(outsideModel, property, gridType);
-    }
-    if(gridType == TypePlanar)
-    {
-      addUpdatePlanarProperty(outsideModel, property, gridType);
-    }
   } 
+
+  return property;
 }
 
-void te::layout::GridSettingsController::addUpdateGeodesicProperty( GridSettingsModel* outsideModel, Property subProperty, LayoutGridType gridType )
-{
-  if(m_gridGeodesic.isNull())
-  {
-    Property prop = outsideModel->containsGrid(gridType);
-
-    m_gridGeodesic.setEditable(prop.isEditable());
-    m_gridGeodesic.setId(prop.getId());
-
-    m_gridGeodesic.setName(prop.getName());
-    m_gridGeodesic.setValue(prop.getValue());
-  }
-
-  if(!subProperty.isNull())
-  {
-    if(m_gridGeodesic.containsSubProperty(subProperty))
-    {
-      m_gridGeodesic.removeSubProperty(subProperty);
-    }
-    m_gridGeodesic.addSubProperty(subProperty);
-
-    if(m_update.containsSubProperty(m_gridGeodesic))
-    {
-      m_update.removeSubProperty(m_gridGeodesic);
-    }
-    m_update.addSubProperty(m_gridGeodesic);
-  }
-}
-
-void te::layout::GridSettingsController::addUpdatePlanarProperty( GridSettingsModel* outsideModel, Property subProperty, LayoutGridType gridType )
-{
-  if(m_gridPlanar.isNull())
-  {
-    Property prop = outsideModel->containsGrid(gridType);
-
-    m_gridPlanar.setEditable(prop.isEditable());
-    m_gridPlanar.setId(prop.getId());
-
-    m_gridPlanar.setName(prop.getName());
-    m_gridPlanar.setValue(prop.getValue());
-  }
-
-  if(!subProperty.isNull())
-  {
-    if(m_gridPlanar.containsSubProperty(subProperty))
-    {
-      m_gridPlanar.removeSubProperty(subProperty);
-    }
-    m_gridPlanar.addSubProperty(subProperty);
-
-    if(m_update.containsSubProperty(m_gridPlanar))
-    {
-      m_update.removeSubProperty(m_gridPlanar);
-    }
-    m_update.addSubProperty(m_gridPlanar);
-  }
-}
-
-te::layout::Property te::layout::GridSettingsController::getProperty( std::string name, LayoutGridType gridType )
+te::layout::Property te::layout::GridSettingsController::getProperty( std::string name, EnumType* enumType )
 {
   GridSettingsModel* outsideModel = 0;
   Property prop;
@@ -191,7 +106,9 @@ te::layout::Property te::layout::GridSettingsController::getProperty( std::strin
   if(!outsideModel)
     return prop;
 
-  prop = outsideModel->containsOutsideSubProperty(name, gridType);
+  prop = outsideModel->containsProperty(name, enumType);
 
   return prop;
 }
+
+

@@ -44,6 +44,7 @@ namespace te
     class BuildGraphicsItem;
     class SystematicScaleConfig;
     class ItemUtils;
+    class BuildGraphicsOutside;
 
     class BuildContext 
     {
@@ -66,6 +67,7 @@ namespace te
         BuildGraphicsItem*        m_buildGraphicsItem;
         SystematicScaleConfig*    m_systematicConfig;
         ItemUtils*                m_itemUtils;
+        BuildGraphicsOutside*     m_buildGraphicsOutside;
     };
   }
 }

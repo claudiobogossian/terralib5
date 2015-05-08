@@ -85,26 +85,7 @@ namespace te
           \return coordinate
         */ 
         virtual te::gm::Coord2D getPosition() = 0;
-
-        /*!
-          \brief Method that returns the name of the MVC component.
-
-          \return name of the graphic item
-        */
-        virtual std::string getName();
-
-        /*!
-          \brief Reimplemented from Observer
-         */
-        virtual te::layout::Properties* getProperties() const;	
-
-        /*!
-          \brief Updated model state with properties.
-
-          \param properties
-        */
-        virtual void updateProperties(te::layout::Properties* properties);
-
+                
         /*!
           \brief Redraws the graphic component.
         */

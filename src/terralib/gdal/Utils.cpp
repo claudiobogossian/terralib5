@@ -36,6 +36,7 @@
 #include "../raster/Grid.h"
 #include "../raster/RasterFactory.h"
 #include "../raster/RasterProperty.h"
+#include "../srs/SpatialReferenceSystemManager.h"
 #include "Band.h"
 #include "Exception.h"
 #include "Raster.h"
@@ -121,19 +122,49 @@ te::rst::Grid* te::gdal::GetGrid(GDALDataset* gds, const int multiResLevel)
   // The calling of GetProjectionRef isn't thread safe, even for distinct datasets
   // under some linuxes
   boost::unique_lock< boost::mutex > lockGuard( getStaticMutex() );
-  char* projWKT = (char*)gds->GetProjectionRef();
+  const char* projRef = gds->GetProjectionRef();
   lockGuard.release();
   getStaticMutex().unlock();
   
-  if (projWKT)
+  if ( ( projRef != 0 ) && ( std::strlen( projRef ) > 0 ) )
   {
-    char** projWKTPtr = &(projWKT);
+    char* projRef2 = (char*)projRef;
+    char** projWKTPtr = &(projRef2);
     OGRSpatialReference oSRS;
-    oSRS.importFromWkt( projWKTPtr );
-    oSRS.AutoIdentifyEPSG();
-    const char* srsAuth = oSRS.GetAuthorityCode(0);
-    if (srsAuth)
-      srid = atoi(srsAuth);
+    
+    OGRErr ogrReturn = oSRS.importFromWkt( projWKTPtr );
+    
+    if( ogrReturn == OGRERR_NONE )
+    {
+      ogrReturn = oSRS.AutoIdentifyEPSG();
+      
+      if( ogrReturn == OGRERR_NONE )
+      {
+        const char* srsAuth = oSRS.GetAuthorityCode(0);
+        
+        if (srsAuth)
+        {
+          srid = atoi(srsAuth);
+        }
+      }
+    }
+    
+    if( srid == TE_UNKNOWN_SRS )
+    {
+      std::pair< std::string, unsigned int > customSRID;
+      std::string projRefStr( projRef );
+      
+      try
+      {
+        customSRID = te::srs::SpatialReferenceSystemManager::getInstance().getIdFromWkt( 
+          projRefStr );
+        srid = (int)customSRID.second;
+      }
+      catch( te::common::Exception& )
+      {
+        srid = TE_UNKNOWN_SRS;
+      }
+    }
   }
   
   // Defining the number of rows / lines

@@ -7,6 +7,7 @@
   <Organization>INPE</Organization>
   <Name>TerraView</Name>
   <Title>TerraView</Title>
+  <ProjectExtension>tview</ProjectExtension>
   <IconName>share/terraview/images/png/terralib-globe-small.png</IconName>
   <HelpFile xlink:href="share/terraview/help/help.qhc"/>
   <Plugins xlink:href="share/terralib/plugins/terraview_plugins.json"/>

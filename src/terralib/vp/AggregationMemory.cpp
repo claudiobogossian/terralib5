@@ -286,10 +286,7 @@ bool te::vp::AggregationMemory::run() throw( te::common::Exception )
     else
       itg->second.push_back(dataSetItem);
   }
-  
-  
-  // tratamento de erro se nao gerou grupos
-  
+
   // define the schema of the output dataset based on the aggregation parameters
   // for the non-spatial attributes
   std::auto_ptr<te::da::DataSetType> outDsType = this->buildOutDataSetType();

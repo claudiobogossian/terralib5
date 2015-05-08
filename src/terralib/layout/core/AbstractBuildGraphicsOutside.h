@@ -18,61 +18,47 @@
  */
 
 /*!
-  \file BalloonItem.h
+  \file AbstractBuildGraphicsOutside.h
    
-  \brief 
-
+  \brief Abstract class for build MVC widgets. 
+    
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_BALLOON_ITEM_H 
-#define __TERRALIB_LAYOUT_INTERNAL_BALLOON_ITEM_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_ABSTRACT_BUILD_GRAPHICS_OUTSIDE_H
+#define __TERRALIB_LAYOUT_INTERNAL_ABSTRACT_BUILD_GRAPHICS_OUTSIDE_H
 
 // TerraLib
-#include "ObjectItem.h"
-#include "../../core/Config.h"
-
-// STL
-#include <vector>
-
-// Qt
-#include <QGraphicsSceneMouseEvent>
-#include <QPointF>
+#include "Config.h"
 
 namespace te
 {
   namespace layout
   {
-    class Observable;
 
-    class TELAYOUTEXPORT BalloonItem : public ObjectItem
+	/*!
+      \class AbstractBuildGraphicsOutside
+
+      \brief Abstract class for build MVC widgets.  
+
+      \ingroup layout
+     */
+
+    class TELAYOUTEXPORT AbstractBuildGraphicsOutside
     {
       public:
-
-        BalloonItem( ItemController* controller, Observable* o );
-
-        virtual ~BalloonItem();
-
-        virtual void paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
-        
-      protected:
-
-        virtual void drawBalloon(QPainter* painter);
-
-        virtual void	mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
-        
-        virtual void  mousePressEvent ( QGraphicsSceneMouseEvent * event );
-
-        virtual void	mouseMoveEvent ( QGraphicsSceneMouseEvent * event );
-
-        QPointF     m_initPoint;
-        QPointF     m_endPoint;
+	  
+	      /*!
+          \brief Constructor
+        */       
+        AbstractBuildGraphicsOutside();
+		
+		    /*!
+          \brief Destructor
+        */
+        virtual ~AbstractBuildGraphicsOutside();
     };
   }
 }
 
 #endif
-
-
-
-

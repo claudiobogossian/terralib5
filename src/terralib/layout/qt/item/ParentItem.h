@@ -822,6 +822,41 @@ namespace te
       {
         refresh();
       }
+
+      if(change == QGraphicsItem::ItemChildAddedChange)
+      {
+        QGraphicsItem* item = value.value<QGraphicsItem*>();
+        if(item)
+        {
+          ItemObserver* iOb = dynamic_cast<ItemObserver*>(item);
+          if(iOb)
+          {
+            ItemModelObservable* itemModel = dynamic_cast<ItemModelObservable*>(m_model);
+            if(itemModel)
+            {
+              itemModel->addChildren(iOb);
+            }
+          }
+        }       
+      }
+
+      if(change == QGraphicsItem::ItemChildRemovedChange)
+      {
+        QGraphicsItem* item = value.value<QGraphicsItem*>();
+        if(item)
+        {
+          ItemObserver* iOb = dynamic_cast<ItemObserver*>(item);
+          if(iOb)
+          {
+            ItemModelObservable* itemModel = dynamic_cast<ItemModelObservable*>(m_model);
+            if(itemModel)
+            {
+              itemModel->removeChildren(iOb->getModel()->getHashCode());
+            }
+          }
+        } 
+      }
+
       return QGraphicsItem::itemChange(change, value);
     }
 

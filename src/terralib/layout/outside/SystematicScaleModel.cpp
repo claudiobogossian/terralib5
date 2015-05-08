@@ -46,8 +46,8 @@ te::layout::Properties* te::layout::SystematicScaleModel::getProperties() const
 {
   m_properties->clear();
 
-  Property pro_name;
-  pro_name.setName("PageSetup");
+  Property pro_name(m_hashCode);
+  pro_name.setName(m_name);
 
   m_properties->addProperty(pro_name);
 

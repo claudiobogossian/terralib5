@@ -33,9 +33,14 @@
 #include "../../../core/enum/Enums.h"
 #include "../../../core/pattern/singleton/Context.h"
 #include "../ItemUtils.h"
+#include "../Scene.h"
+#include "../pattern/command/ChangePropertyCommand.h"
+#include "../../../core/pattern/mvc/Observable.h"
 
 // Qt
 #include <QGraphicsItem>
+#include <QObject>
+#include <QUndoCommand>
 
 te::layout::PropertiesUtils::PropertiesUtils() 
 {
@@ -59,8 +64,11 @@ te::layout::Properties* te::layout::PropertiesUtils::intersection( QList<QGraphi
       ItemObserver* lItem = dynamic_cast<ItemObserver*>(item);
       if(lItem)
       {
-        props = const_cast<Properties*>(lItem->getProperties());
-        window = props->hasWindows();
+        if(lItem->getModel())
+        {
+          props = const_cast<Properties*>(lItem->getModel()->getProperties());
+          window = props->hasWindows();
+        }
       }
     }
   }
@@ -85,7 +93,13 @@ te::layout::Properties* te::layout::PropertiesUtils::sameProperties( QList<QGrap
     return props;
   }
 
-  Properties* firstProps = const_cast<Properties*>(lItem->getProperties());
+  Properties* firstProps = 0;
+
+  if(lItem->getModel())
+  {
+    firstProps = const_cast<Properties*>(lItem->getModel()->getProperties());
+  }
+
   if(!firstProps)
   {
     return props;
@@ -103,6 +117,7 @@ te::layout::Properties* te::layout::PropertiesUtils::sameProperties( QList<QGrap
       {
         props = new Properties("");
       }
+      prop.setParentItemHashCode(0);
       props->addProperty(prop);
     }
   }  
@@ -141,7 +156,12 @@ std::vector<te::layout::Properties*> te::layout::PropertiesUtils::getAllProperti
       ItemObserver* lItem = dynamic_cast<ItemObserver*>(item);
       if(lItem)
       {
-        Properties* propsItem = const_cast<Properties*>(lItem->getProperties());
+        if(!lItem->getModel())
+        {
+          continue;
+        }
+
+        Properties* propsItem = const_cast<Properties*>(lItem->getModel()->getProperties());
         if(propsItem)
         {
           propsVec.push_back(propsItem);
@@ -203,6 +223,36 @@ void te::layout::PropertiesUtils::mapNameDynamicProperty( Property& property, QL
 
   addDynamicOptions(property, strList);
 }
+
+QGraphicsItem* te::layout::PropertiesUtils::equalsHashCode( Property property, QList<QGraphicsItem*> graphicsItems )
+{
+  QGraphicsItem *itemSelected = 0;
+
+  foreach( QGraphicsItem *item, graphicsItems) 
+  {
+    if (item)
+    {			
+      ItemObserver* lItem = dynamic_cast<ItemObserver*>(item);
+      if(lItem)
+      {
+        if(lItem->getModel())
+        {
+          int hashcode = lItem->getModel()->getHashCode();
+          if(hashcode == property.getParentItemHashCode())
+          {
+            itemSelected = item;
+          }
+        } 
+      }
+    }
+  }
+  return itemSelected;
+}
+
+
+
+
+
 
 
 

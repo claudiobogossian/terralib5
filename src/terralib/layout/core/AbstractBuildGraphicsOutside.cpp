@@ -18,38 +18,24 @@
  */
 
 /*!
-  \file EditTemplateModel.h
+  \file AbstractBuildGraphicsOutside.cpp
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_EDIT_TEMPLATE_MODEL_H 
-#define __TERRALIB_LAYOUT_INTERNAL_EDIT_TEMPLATE_MODEL_H
-
 // TerraLib
-#include "../core/pattern/mvc/OutsideModelObservable.h"
-#include "../core/ContextItem.h"
-#include "../core/property/Properties.h"
-#include "../core/Config.h"
+#include "AbstractBuildGraphicsOutside.h"
 
-namespace te
+te::layout::AbstractBuildGraphicsOutside::AbstractBuildGraphicsOutside() 
 {
-  namespace layout
-  {
-    class TELAYOUTEXPORT EditTemplateModel : public OutsideModelObservable
-    {
-    public:
 
-      EditTemplateModel();
-
-      virtual ~EditTemplateModel();      
-    };
-  }
 }
 
-#endif
-
+te::layout::AbstractBuildGraphicsOutside::~AbstractBuildGraphicsOutside()
+{
+  
+}
 
 

@@ -87,8 +87,14 @@ namespace te
         /*! \brief It returns the list of plugins that are not loaded. */
         const boost::ptr_vector<PluginInfo>& getUnloadedPlugins() const;
 
+        /*! \*brief It sets a list of unloaded plugins. */
+        void setUnloadedPlugins(boost::ptr_vector<te::plugin::PluginInfo> unloadedPlugins);
+        
         /*! \brief It returns the list of plugins that could not be loaded. */
         const boost::ptr_vector<PluginInfo>& getBrokenPlugins() const;
+
+        /*! \*brief It sets a list of broken plugins. */
+        void setBrokenPlugins(boost::ptr_vector<te::plugin::PluginInfo> brokenPlugins);
 
         /*!
           \brief It returns true if the plugin is in the broken list of plugins.

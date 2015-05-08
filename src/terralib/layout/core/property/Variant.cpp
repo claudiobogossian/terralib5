@@ -96,6 +96,11 @@ void te::layout::Variant::convertValue( const void* valueCopy )
 
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
 
+  if(!m_type || !dataType)
+  {
+    return;
+  }
+
   try
   {
     if(m_type == dataType->getDataTypeString())
@@ -106,7 +111,6 @@ void te::layout::Variant::convertValue( const void* valueCopy )
       {
         null = false;
         m_sValue = *sp;
-        //return throw_exception("Cast failure! Wrong type.");
       }
     }
     else if(m_type == dataType->getDataTypeStringList())
@@ -165,16 +169,6 @@ void te::layout::Variant::convertValue( const void* valueCopy )
         m_bValue = *bValue;
       }
    }
-   else if(m_type == dataType->getDataTypeGridSettings())
-   {
-      // Cast it back to a string pointer.
-      sp = static_cast<std::string*>(value);
-      if(sp)
-      {
-        null = false;
-        m_sValue = *sp;
-      }
-   }
    else if(m_type == dataType->getDataTypeColor())
    {
       // Cast it back to a string pointer.
@@ -197,17 +191,7 @@ void te::layout::Variant::convertValue( const void* valueCopy )
         m_complex = true;
       }
    }
-   else if(m_type == dataType->getDataTypeImage())
-   {
-      // Cast it back to a string pointer.
-      sp = static_cast<std::string*>(value);
-      if(sp)
-      {
-        null = false;
-        m_sValue = *sp;
-      }
-   }
-   else if(m_type == dataType->getDataTypeTextGridSettings())
+   else // Any remaining data will be by default "std::string"  
    {
      // Cast it back to a string pointer.
      sp = static_cast<std::string*>(value);
@@ -234,7 +218,14 @@ void te::layout::Variant::fromPtree( boost::property_tree::ptree tree, EnumType*
   bool null = true;
 
   if(!dataType)
+  {
     return;
+  }
+
+  if(!type)
+  {
+    return;
+  }
 
   /* the ptree boost returns data with string type */
 
@@ -245,38 +236,32 @@ void te::layout::Variant::fromPtree( boost::property_tree::ptree tree, EnumType*
       m_sValue = tree.data();
       null = false;
     }
-
-    if(type == dataType->getDataTypeDouble())
+    else if(type == dataType->getDataTypeDouble())
     {
       m_dValue = std::atof(tree.data().c_str());
       null = false;
     }
-
-    if(type == dataType->getDataTypeInt())
+    else if(type == dataType->getDataTypeInt())
     {
       m_iValue = std::atoi(tree.data().c_str());
       null = false;
     }
-
-    if(type == dataType->getDataTypeLong())
+    else if(type == dataType->getDataTypeLong())
     {
       m_lValue = std::atol(tree.data().c_str());
       null = false;
     }
-
-    if(type == dataType->getDataTypeFloat())
+    else if(type == dataType->getDataTypeFloat())
     {
       m_fValue = (float)std::atof(tree.data().c_str());
       null = false;
     }
-
-    if(type == dataType->getDataTypeBool())
+    else if(type == dataType->getDataTypeBool())
     {
       m_bValue = toBool(tree.data());
       null = false;
     }
-
-    if(type == dataType->getDataTypeColor())
+    else if(type == dataType->getDataTypeColor())
     {
       std::string color = tree.data();
 
@@ -301,12 +286,16 @@ void te::layout::Variant::fromPtree( boost::property_tree::ptree tree, EnumType*
       m_complex = true;
       null = false;
     }
-
-    if(type == dataType->getDataTypeFont())
+    else if(type == dataType->getDataTypeFont())
     {
       std::string font = tree.data();
       m_fontValue.fromString(font);
       m_complex = true;
+      null = false;
+    }
+    else // Any remaining data will be by default "std::string"  
+    {
+      m_sValue = tree.data();
       null = false;
     }
   }
@@ -544,3 +533,6 @@ bool te::layout::Variant::toBool( std::string str )
     return false;
   }
 }
+
+
+

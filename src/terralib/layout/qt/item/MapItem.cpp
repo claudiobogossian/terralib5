@@ -81,7 +81,7 @@
 #include <QTextEdit>
 
 te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
-  ParentItem(controller, o),
+  ParentItem<QGraphicsProxyWidget>(controller, o),
   m_mapDisplay(0),
   m_grabbedByWidget(false),
   m_treeItem(0),
@@ -654,14 +654,16 @@ void te::layout::MapItem::generateMapPixmap()
 
 void te::layout::MapItem::updateProperties( te::layout::Properties* properties )
 {
-  if(!m_controller)
-    return;
-
-  m_controller->updateProperties(properties);
 
   MapModel* model = dynamic_cast<MapModel*>(m_model);
   if(!model)
     return;
+
+  if(!m_controller)
+    return;
+
+  model->updateProperties(properties);
+  redraw();
 
   if(model->isLoadedLayer())
   {

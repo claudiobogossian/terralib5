@@ -149,37 +149,37 @@ void te::layout::MenuBuilder::onMenuTriggered( QAction* action )
   if(!m_menu)
     return;
 
-  Property prop = findMnuProperty(action->objectName().toStdString());
+  m_currentPropertyClicked = findMnuProperty(action->objectName().toStdString());
 
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
 
-  if(prop.getType() == dataType->getDataTypeColor())
+  if(m_currentPropertyClicked.getType() == dataType->getDataTypeColor())
   {
-    onShowColorDlg(prop);
+    onShowColorDlg();
   }
-  else if(prop.getType() == dataType->getDataTypeFont())
+  else if(m_currentPropertyClicked.getType() == dataType->getDataTypeFont())
   {
-    onShowFontDlg(prop);
+    onShowFontDlg();
   }
-  else if(prop.getType() == dataType->getDataTypeGridSettings())
+  else if(m_currentPropertyClicked.getType() == dataType->getDataTypeGridSettings())
   {
-    onShowGridSettingsDlg(prop);
+    onShowGridSettingsDlg();
   }
-  else if(prop.getType() == dataType->getDataTypeImage())
+  else if(m_currentPropertyClicked.getType() == dataType->getDataTypeImage())
   {
-    onShowImageDlg(prop);
+    onShowImageDlg();
   }
-  else if(prop.getType() == dataType->getDataTypeBool())
+  else if(m_currentPropertyClicked.getType() == dataType->getDataTypeBool())
   {
-    checkedBool(prop, action->isChecked());
+    checkedBool(action->isChecked());
   }
-  else if(prop.getType() == dataType->getDataTypeTextGridSettings())
+  else if(m_currentPropertyClicked.getType() == dataType->getDataTypeTextGridSettings())
   {
-    onShowTextGridSettingsDlg(prop);
+    onShowTextGridSettingsDlg();
   }
 }
 
-void te::layout::MenuBuilder::onShowFontDlg( Property property )
+void te::layout::MenuBuilder::onShowFontDlg()
 {
   QWidget* wdg = dynamic_cast<QWidget*>(parent());
 
@@ -187,6 +187,8 @@ void te::layout::MenuBuilder::onShowFontDlg( Property property )
     return;
 
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+
+  Property property = m_currentPropertyClicked;
 
   if(property.getType() != dataType->getDataTypeFont())
     return;
@@ -221,7 +223,7 @@ void te::layout::MenuBuilder::onShowFontDlg( Property property )
   emit changeDlgProperty(property);
 }
 
-void te::layout::MenuBuilder::onShowColorDlg( Property property )
+void te::layout::MenuBuilder::onShowColorDlg()
 {
   QWidget* wdg = dynamic_cast<QWidget*>(parent());
 
@@ -229,6 +231,8 @@ void te::layout::MenuBuilder::onShowColorDlg( Property property )
     return;
 
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+
+  Property property = m_currentPropertyClicked;
 
   if(property.getType() != dataType->getDataTypeColor())
     return;
@@ -261,9 +265,11 @@ void te::layout::MenuBuilder::onShowColorDlg( Property property )
   }
 }
 
-void te::layout::MenuBuilder::checkedBool( Property property, bool checked )
+void te::layout::MenuBuilder::checkedBool( bool checked )
 {
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+
+  Property property = m_currentPropertyClicked;
 
   if(property.getType() != dataType->getDataTypeBool())
     return;
@@ -297,20 +303,27 @@ void te::layout::MenuBuilder::changePropertyValue( Property property )
       ItemObserver* lItem = dynamic_cast<ItemObserver*>(item);
       if(lItem)
       {
+        if(!lItem->getModel())
+        {
+          continue;
+        }
+
         Properties* props = new Properties("");
-        Properties* beforeProps = lItem->getProperties();
+        Properties* beforeProps = lItem->getModel()->getProperties();
         Properties* oldCommand = new Properties(*beforeProps);
         if(props)
         {
-          props->setObjectName(lItem->getProperties()->getObjectName());
-          props->setTypeObj(lItem->getProperties()->getTypeObj());
+          props->setObjectName(lItem->getModel()->getProperties()->getObjectName());
+          props->setTypeObj(lItem->getModel()->getProperties()->getTypeObj());
+          props->setHashCode(lItem->getModel()->getHashCode());
           props->addProperty(property);
 
-          lItem->updateProperties(props);
+          lItem->getModel()->updateProperties(props);
+          lItem->redraw();
 
           if(beforeProps)
           {
-            beforeProps = lItem->getProperties();
+            beforeProps = lItem->getModel()->getProperties();
             Properties* newCommand = new Properties(*beforeProps);
             commandItems.push_back(item);
             commandOld.push_back(oldCommand);

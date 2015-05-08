@@ -342,6 +342,7 @@ void  te::qt::af::ApplicationController::initialize()
 
   m_appName = QString::fromStdString(te::common::SystemApplicationSettings::getInstance().getValue("Application.Name"));
   m_appTitle = QString::fromStdString(te::common::SystemApplicationSettings::getInstance().getValue("Application.Title"));
+  m_appProjectExtension = QString::fromStdString(te::common::SystemApplicationSettings::getInstance().getValue("Application.ProjectExtension"));
   m_appIconName = QString::fromStdString(te::common::SystemApplicationSettings::getInstance().getValue("Application.IconName"));
   
   if(!boost::filesystem::exists(m_appIconName.toStdString()))
@@ -475,6 +476,30 @@ void  te::qt::af::ApplicationController::initialize()
 
       SplashScreenManager::getInstance().showMessage(tr("Known data sources loaded!"));
     }
+    else
+    {
+      const QString& udir = getUserDataDir();
+
+      QVariant fileName = udir + "/" + QString(TERRALIB_APPLICATION_DATASOURCE_FILE_NAME);
+
+      QFileInfo infoDataSourceFile(fileName.toString());
+      
+      if (infoDataSourceFile.exists())
+      {
+        int reply = QMessageBox::question(0, tr("Data Sources XML"), tr("A file containing data sources already configured was found. Would you like to load it."), QMessageBox::No, QMessageBox::Yes);
+
+        if (reply == QMessageBox::Yes)
+        {
+          std::string dataSourcesFile = fileName.toString().toStdString();
+
+          te::serialize::xml::ReadDataSourceInfo(dataSourcesFile);
+
+          XMLFormatter::formatDataSourceInfos(false);
+
+          SplashScreenManager::getInstance().showMessage(tr("Known data sources loaded!"));
+        }
+      }
+    }
   }
   catch(const std::exception& e)
   {
@@ -534,6 +559,36 @@ void te::qt::af::ApplicationController::initializePlugins()
 
     user_settings.endArray();
 
+    // get the unloaded plugins
+    std::set<std::string> user_unloaded_plugins;
+    int n_itemsUnloaded = user_settings.beginReadArray("unloaded");
+
+    for (int i = 0; i != n_itemsUnloaded; ++i)
+    {
+      user_settings.setArrayIndex(i);
+
+      QString name = user_settings.value("name").toString();
+
+      user_unloaded_plugins.insert(name.toStdString());
+    }
+
+    user_settings.endArray();
+
+    // get the broken plugins
+    std::set<std::string> user_broken_plugins;
+    int n_itemsBroken = user_settings.beginReadArray("broken");
+
+    for (int i = 0; i != n_itemsBroken; ++i)
+    {
+      user_settings.setArrayIndex(i);
+
+      QString name = user_settings.value("name").toString();
+
+      user_broken_plugins.insert(name.toStdString());
+    }
+
+    user_settings.endArray();
+
     user_settings.endGroup();
 
     //SplashScreenManager::getInstance().showMessage(tr("Enabled plugin list read!"));
@@ -542,7 +597,9 @@ void te::qt::af::ApplicationController::initializePlugins()
 
 // retrieve information for each plugin
     boost::ptr_vector<te::plugin::PluginInfo> plugins;
-    
+    boost::ptr_vector<te::plugin::PluginInfo> unloadedPlugins;
+    boost::ptr_vector<te::plugin::PluginInfo> brokenPlugins;
+
     for(std::size_t i = 0; i != plgFiles.size(); ++i)
     {
       te::plugin::PluginInfo* pinfo = te::plugin::GetInstalledPlugin(plgFiles[i]);
@@ -563,10 +620,24 @@ void te::qt::af::ApplicationController::initializePlugins()
       {
         plugins.push_back(pinfo);                                     // load all enabled plugins using .ini file as reference.
       }
+      else if (user_unloaded_plugins.count(pinfo->m_name) != 0)       // else, if a list is available,
+      {
+        unloadedPlugins.push_back(pinfo);                             // load only unloaded plugins
+      }
+      else if (user_broken_plugins.count(pinfo->m_name) != 0)         // else, if a list is available,
+      {
+        brokenPlugins.push_back(pinfo);                               // load only broken plugins
+      }
     }
     
 // load and start each plugin
     te::plugin::PluginManager::getInstance().load(plugins);
+
+    if (user_unloaded_plugins.size() > 0)
+      te::plugin::PluginManager::getInstance().setUnloadedPlugins(unloadedPlugins);
+
+    if (user_broken_plugins.size() > 0)
+      te::plugin::PluginManager::getInstance().setBrokenPlugins(brokenPlugins);
 
     SplashScreenManager::getInstance().showMessage(tr("Plugins loaded successfully!"));
   }
@@ -758,6 +829,8 @@ void te::qt::af::ApplicationController::finalize()
 
   m_appTitle.clear();
 
+  m_appProjectExtension.clear();
+
   m_tLibLogo.clear();
           
   m_recentProjs.clear();
@@ -792,9 +865,19 @@ void  te::qt::af::ApplicationController::broadcast(te::qt::af::evt::Event* evt)
   emit triggered(evt);
 }
 
+const QString& te::qt::af::ApplicationController::getAppName() const
+{
+  return m_appName;
+}
+
 const QString& te::qt::af::ApplicationController::getAppTitle() const
 {
   return m_appTitle;
+}
+
+const QString& te::qt::af::ApplicationController::getAppProjectExtension() const
+{
+  return m_appProjectExtension;
 }
 
 const QString& te::qt::af::ApplicationController::getAppIconName() const

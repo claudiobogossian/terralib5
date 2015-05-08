@@ -64,15 +64,6 @@ te::layout::ChangePropertyCommand::ChangePropertyCommand( std::vector<QGraphicsI
 
 te::layout::ChangePropertyCommand::~ChangePropertyCommand()
 {
-  if(m_item)
-  {
-    if(!m_item->scene())
-    {
-      delete m_item;
-      m_item = 0;
-    }
-  }
-
   if(m_oldProperties)
   {
     delete m_oldProperties;
@@ -263,7 +254,9 @@ bool te::layout::ChangePropertyCommand::checkItem( QGraphicsItem* item, Properti
   if(equals(props, propsModel))
     return false;
 
-  obs->updateProperties(props);
+  model->updateProperties(props);
+  obs->redraw();
+
   return true;
 }
 

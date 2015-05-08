@@ -21,6 +21,7 @@
   \file Property.h
    
    \brief A property acts like a attribute member of a object and stores the state of this attribute. A set of properties stores the state of an object.
+   Any data type, not included in the convertValue method in the class te::layout::Variant, it will be by default "std::string" value.
 
   \ingroup layout
 */
@@ -39,17 +40,18 @@ namespace te
   {
     /*!
       \brief A property acts like a attribute member of a object and stores the state of this attribute. A set of properties stores the state of an object.
+      Any data type, not included in the convertValue method in the class te::layout::Variant, it will be by default "std::string" value.
 	  
 	    \ingroup layout
 	  */
     class TELAYOUTEXPORT Property
     {
       public:
-
+        
         /*!
           \brief Constructor
         */ 
-        Property();
+        Property(int parentItemHashCode = 0);
 
         /*!
           \brief Destructor
@@ -79,20 +81,6 @@ namespace te
 
 	      std::vector<te::layout::Property> getSubProperty();
         
-        /*!
-          \brief Returns the hashcode of the object that owns this property.
-
-          \return hashcode
-        */
-        std::string getId();
-
-        /*!
-          \brief Sets the hashcode of the object that owns this property. 
-
-          \param hashcode
-        */
-        void setId(std::string id);
-
         /*
           To use this method, you need to declare a variable with 
           corresponding type and pass it as the method parameter.
@@ -237,23 +225,73 @@ namespace te
         */
         void setRequired(bool required);
 
+        /*!
+          \brief Sets the hashcode of the object that owns this property. 
+
+          \param hashcode
+        */
+        void setParentItemHashCode(int hashCode);
+
+        /*!
+          \brief Returns the hashcode of the object that owns this property.
+
+          \return hashcode
+        */
+        int getParentItemHashCode();
+
+        /*!
+          \brief Returns true if property compose a widget, false otherwise.
+          If true, and the object that owns this property has a parent, it will not appear in a property browser or a menu, it will be used within a widget.
+
+          \return true if property compose a widget, false otherwise 
+        */
+        bool isComposeWidget();
+
+        /*!
+          \brief Sets true if property compose a widget, false otherwise
+          If true, and the object that owns this property has a parent, it will not appear in a property browser or a menu, it will be used within a widget.
+
+          \param true if property compose a widget, false otherwise 
+        */
+        void setComposeWidget(bool compose);
+
+        /*!
+          \brief Returns true if property is public, false otherwise.
+          If the component, father of this property, is a child of another component, 
+          then this property can be used by the parent component to display the value or call windows. It can not be edited.
+
+          \return true if property compose a widget, false otherwise 
+        */
+        bool isPublic();
+
+        /*!
+          \brief Sets true if property is public, false otherwise
+          If the component, father of this property, is a child of another component, 
+          then this property can be used by the parent component to display the value or call windows. It can not be edited.
+
+          \param true if property compose a widget, false otherwise 
+        */
+        void setPublic(bool publicProperty);
+      
         bool operator ==(const Property& other); 
 
     protected:
 
+      int m_parentItemHashCode; //!< hashcode of the object that owns this property
       std::string m_name; //!< name of this property
       EnumType* m_type; //!< data type of this property
-      std::string m_id; //!< hashcode of the object that owns this property
       Variant m_value; //!<
       Variant m_currentChoice; //!<
       bool m_editable; //!<
       std::vector<Variant> m_options; //!<
       std::vector<te::layout::Property> m_subProperty; //!<
       std::string m_label; //!<
-      bool m_menu; //!< /* The property will be used in a menu.  */
+      bool m_menu; //!< the property will be used in a menu. 
       std::string m_icon; //!<
       bool m_visible; //!< visibility
       bool m_required; //!< required
+      bool m_composeWidget; //!< compose widget
+      bool m_public; //!< public property, used by another component
     };
 
     template <typename ValueType>

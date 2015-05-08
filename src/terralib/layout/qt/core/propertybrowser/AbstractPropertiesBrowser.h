@@ -83,6 +83,8 @@ namespace te
         virtual QVariant findPropertyValue(std::string name);
 
         virtual QtProperty* findProperty(std::string name);
+
+        virtual bool removeProperty(QtProperty* prop);
                           
       protected:
 

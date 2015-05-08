@@ -38,6 +38,9 @@
 #include "../../enum/EnumType.h"
 #include "../../Config.h"
 
+// STL
+#include <vector>
+
 namespace te
 {
   namespace layout
@@ -92,6 +95,14 @@ namespace te
           \param properties
         */
         virtual void updateProperties(te::layout::Properties* properties) = 0;
+        
+        /*!
+          \brief Returns the model state just the public properties.
+            Reimplement this function in a Observable subclass to provide the model's getProperties implementation.
+
+          \return properties
+        */
+        virtual te::layout::Properties* getPublicProperties() const = 0;
 
         /*!
           \brief Returns the bounding rectangle of the component in scene coordinates(millimeters).

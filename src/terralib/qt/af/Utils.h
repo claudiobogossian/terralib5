@@ -337,6 +337,11 @@ namespace te
         \brief Returns the date and time of generated binary.
       */
       TEQTAFEXPORT QString GetGenerationDate();
+
+      /*!
+        \brief Return extension filter string
+      */
+      TEQTAFEXPORT QString GetExtensionFilter();
     } // end namespace af
   }   // end namespace qt
 }     // end namespace te

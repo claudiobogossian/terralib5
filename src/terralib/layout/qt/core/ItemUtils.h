@@ -31,6 +31,7 @@
 // TerraLib
 #include "../../core/Config.h"
 #include "../../../geometry/Point.h"
+#include "../../core/property/Properties.h"
 
 // STL
 #include <vector>
@@ -51,6 +52,7 @@ namespace te
     class MapItem;
     class EnumType;
     class MapModel;
+    class GridMapItem;
 
     /*!
       \brief Utility class for manipulating items in the scene and vectorization of text and legend.
@@ -140,6 +142,32 @@ namespace te
         */
         virtual void createLegendChildAsObject();
 
+        /*!
+          \brief Get properties of all GridMapItem, children of a MapItem.
+		  
+		      \param 
+          \return properties of all GridMapItem, children of a MapItem.
+        */
+        virtual std::vector<Properties*> getGridMapProperties();
+
+        /*!
+          \brief Get all GridMapItem, children of a MapItem.
+		  
+		      \param 
+          \return all GridMapItem, children of a MapItem.
+        */
+        virtual std::vector<GridMapItem*> getMapChildren();
+
+        /*!
+          \brief Checks whether the coordinated intersects an item and returns.
+
+          \param x axis x coordinate
+		      \param y axis y coordinate
+
+          \return 
+        */
+        virtual QGraphicsItem* intersectionSelectionItem(int x, int y);
+          
       protected:
 
         /*!
