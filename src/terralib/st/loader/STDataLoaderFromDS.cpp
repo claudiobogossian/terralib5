@@ -302,7 +302,7 @@ te::st::STDataLoaderFromDS::getDataSet(const TimeSeriesDataSetInfo& info,
   //get the data set applying he filter
   std::auto_ptr<te::da::DataSet> dset(ds->getDataSet(info.getObservationDataSetInfo().getDataSetName(), geomPropName, &geom, r, travType));
 
-  return buildDataSet(dset.release(), info); 
+  return buildDataSet(dset.release(), info);
 }
 
 std::auto_ptr<te::st::TimeSeriesDataSet>
@@ -323,7 +323,7 @@ te::st::STDataLoaderFromDS::getDataSet(const TimeSeriesDataSetInfo& info,
   std::auto_ptr<te::da::DataSet> dset(ds->getDataSet(info.getObservationDataSetInfo().getDataSetName(), 
                           geomPropName, &e, r, travType));
 
-  return buildDataSet(dset.release(), info);  
+  return buildDataSet(dset.release(), info);
 }
 
 std::auto_ptr<te::st::TimeSeriesDataSet> 
