@@ -71,7 +71,7 @@ void EncodeStyle(const std::string& path)
   categorize->setThresholdsBelongTo(te::se::Categorize::PRECEDING);
   categorize->setFallbackValue("0");
   categorize->setLookupValue(new te::se::ParameterValue("Rasterdata"));
-  categorize->setValue(new te::se::ParameterValue("#00FF00"));
+  categorize->addValue(new te::se::ParameterValue("#00FF00"));
   categorize->addThreshold(new te::se::ParameterValue("-417"));
   categorize->addValue(new te::se::ParameterValue("#00FA00"));
   categorize->addThreshold(new te::se::ParameterValue("-333"));
@@ -143,6 +143,10 @@ void EncodeStyle(const std::string& path)
   std::auto_ptr<te::xml::AbstractWriter> writer(te::xml::AbstractWriterFactory::make());
 
   writer->setURI(path);
+
+  writer->writeStartDocument("UTF-8", "no");
+
+  writer->setRootNamespaceURI("http://www.opengis.net/se");
 
   te::se::serialize::Style::getInstance().write(style, *writer.get());
 
