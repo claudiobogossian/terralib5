@@ -305,7 +305,7 @@ namespace te
          */
         virtual void drawBackground(ContextItem context);
 
-        virtual void addChildrenProperties(Properties* properties);
+        virtual void addChildrenProperties(Properties* properties) const;
 
         virtual void updateChildrenProperties(Property prop);
                 

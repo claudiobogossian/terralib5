@@ -272,6 +272,9 @@ bool te::layout::PropertiesOutside::sendPropertyToSelectedItem( Property propert
         commandOld.push_back(oldCommand);
         commandNew.push_back(newCommand);
       }
+        
+      delete props;
+      props = 0;
     }       
   }
 
@@ -339,6 +342,7 @@ bool te::layout::PropertiesOutside::sendPropertyToSelectedItems( Property proper
 
 void te::layout::PropertiesOutside::closeEvent( QCloseEvent * event )
 {
+  //Closing the PropertiesOutside, all open windows from a property will be closed.
   m_layoutPropertyBrowser->closeAllWindows();
 }
 

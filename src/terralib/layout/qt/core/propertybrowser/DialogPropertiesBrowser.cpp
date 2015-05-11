@@ -283,7 +283,12 @@ void te::layout::DialogPropertiesBrowser::onShowGridSettingsDlg()
     return;
   }
 
+  m_dialogs.append(gridSettings);
+
   connect(gridSettings, SIGNAL(updateProperty(Property)), this, SLOT(updateOutside(Property)));
+  connect(gridSettings, SIGNAL(destroyed( QObject *)), this, SLOT(onDestroyed(QObject*)));
+
+  gridSettings->setAttribute(Qt::WA_DeleteOnClose);
 
   GridSettingsModel* model = dynamic_cast<GridSettingsModel*>(gridSettings->getModel());
   if(!model)
@@ -566,7 +571,18 @@ std::map<std::string, te::layout::Property> te::layout::DialogPropertiesBrowser:
 
 void te::layout::DialogPropertiesBrowser::closeAllWindows()
 {
+  if(m_dialogs.empty())
+    return;
 
+  foreach(QWidget* widget, m_dialogs)
+  {
+    if(m_dialogs.removeAll(widget))
+    {
+      widget->close();
+      delete widget;
+      widget = 0;
+    }
+  }
 }
 
 QWidget* te::layout::DialogPropertiesBrowser::createOutside( EnumType* enumType )
@@ -598,6 +614,22 @@ void te::layout::DialogPropertiesBrowser::updateOutside( Property prop )
 {
   emit changeDlgProperty(prop);
 }
+
+void te::layout::DialogPropertiesBrowser::onDestroyed( QObject* obj )
+{
+  if(m_dialogs.empty())
+    return;
+
+  foreach(QWidget* widget, m_dialogs)
+  {
+    if(widget == obj)
+    {
+      m_dialogs.removeAll(widget);
+    }
+  }
+}
+
+
 
 
 

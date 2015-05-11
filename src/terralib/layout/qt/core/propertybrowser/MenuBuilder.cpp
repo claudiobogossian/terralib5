@@ -243,6 +243,8 @@ void te::layout::MenuBuilder::changePropertyValue( Property property )
             commandOld.push_back(oldCommand);
             commandNew.push_back(newCommand);
           }
+          delete props;
+          props = 0;
         }       
       }
     }

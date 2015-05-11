@@ -212,6 +212,9 @@ te::layout::Properties* te::layout::ItemModelObservable::getProperties() const
   pro_border.setValue(m_border, dataType->getDataTypeBool());
   m_properties->addProperty(pro_border);
 
+  /* Add properties of all children */
+  addChildrenProperties(m_properties);
+
   m_properties->setTypeObj(m_type);
   return m_properties;
 }
@@ -582,7 +585,7 @@ bool te::layout::ItemModelObservable::removeChildren( int hashCode )
   bool result = false;
   std::set<ItemObserver*>::iterator it = m_children.begin();
   
-  for( ; it != m_children.end(); it++)
+  for( ; it != m_children.end(); ++it)
   {
     if((*it)->getModel()->getHashCode() == hashCode)
     {
@@ -600,16 +603,25 @@ bool te::layout::ItemModelObservable::removeChildren( int hashCode )
 
 te::layout::Properties* te::layout::ItemModelObservable::getPublicProperties() const
 {
-  if(!m_properties || m_publicProperties)
+  if(!m_properties || !m_publicProperties)
   {
     return 0;
   }
 
+  getProperties(); //Refresh properties
+
   m_publicProperties->clear();
 
-  std::vector<Property>::iterator it = m_properties->getProperties().begin();
+  std::vector<Property> props = m_properties->getProperties();
 
-  for( ; it != m_properties->getProperties().end() ; ++it )
+  if(props.empty())
+  {
+    return 0;
+  }
+
+  std::vector<Property>::iterator it = props.begin();
+
+  for( ; it != props.end() ; ++it )
   {
     if((*it).isPublic())
     {
@@ -622,16 +634,25 @@ te::layout::Properties* te::layout::ItemModelObservable::getPublicProperties() c
   return m_publicProperties;
 }
 
-void te::layout::ItemModelObservable::addChildrenProperties( Properties* properties )
+void te::layout::ItemModelObservable::addChildrenProperties( te::layout::Properties* properties ) const
 {
   std::set<ItemObserver*>::iterator it = m_children.begin();
 
-  for( ; it != m_children.end(); it++)
+  for( ; it != m_children.end(); ++it)
   {
-    Properties* props = (*it)->getModel()->getPublicProperties();
+    ItemObserver* item = (*it);
+    Properties* props = item->getModel()->getPublicProperties();
+    if(!props)
+      continue;
     
-    std::vector<Property>::iterator itProp = props->getProperties().begin();
-    for( ; itProp != props->getProperties().end(); itProp++)
+    std::vector<Property> proper = props->getProperties();
+    if(proper.empty())
+    {
+      continue;
+    }
+
+    std::vector<Property>::iterator itProp = proper.begin();
+    for( ; itProp != proper.end(); ++itProp)
     {
       properties->addProperty(*itProp);
     }
@@ -644,11 +665,27 @@ void te::layout::ItemModelObservable::updateChildrenProperties( Property prop )
 
   std::set<ItemObserver*>::iterator it = m_children.begin();
 
-  for( ; it != m_children.end(); it++)
+  for( ; it != m_children.end(); ++it)
   {
-    if((*it)->getModel()->getHashCode() == hashCode)
+    ItemObserver* item = (*it);
+    if(!item)
+      continue;
+
+    if(item->getModel()->getHashCode() == hashCode)
     {
-      
+      Properties* props = new Properties("");
+      props->setObjectName(item->getModel()->getProperties()->getObjectName());
+      props->setTypeObj(item->getModel()->getProperties()->getTypeObj());
+      props->setHashCode(item->getModel()->getHashCode());
+      props->addProperty(prop);
+
+      item->getModel()->updateProperties(props);
+      item->redraw();
+
+      delete props;
+      props = 0;
+
+      break;
     }
   }
 }

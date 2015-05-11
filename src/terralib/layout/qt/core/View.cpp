@@ -658,12 +658,22 @@ void te::layout::View::outsideAreaChangeContext( bool change )
 
 void te::layout::View::hideEvent( QHideEvent * event )
 {
+  if(m_menuBuilder)
+  {
+    m_menuBuilder->closeAllWindows();
+  }
+
   QGraphicsView::hideEvent(event);
   emit hideView();
 }
 
 void te::layout::View::closeEvent( QCloseEvent * event )
 {
+  if(m_menuBuilder)
+  {
+    m_menuBuilder->closeAllWindows();
+  }
+
   QGraphicsView::closeEvent(event);
   emit closeView();
 }
