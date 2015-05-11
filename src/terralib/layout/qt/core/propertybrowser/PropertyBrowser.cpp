@@ -40,6 +40,9 @@
 #include <QColor>
 
 // QtPropertyBrowser
+#include <QtPropertyBrowser/QtStringPropertyManager>
+#include <QtPropertyBrowser/QtProperty>
+#include <QtPropertyBrowser/QtBrowserItem>
 #include <QtPropertyBrowser/QtVariantPropertyManager>
 #include <QtPropertyBrowser/QtTreePropertyBrowser>
 #include <QtPropertyBrowser/qteditorfactory.h>

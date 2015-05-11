@@ -29,17 +29,18 @@
 #define __TERRALIB_LAYOUT_INTERNAL_OBJECTINSPECTOR_OUTSIDE_H
 
 // TerraLib
+#include "../core/propertybrowser/PropertyBrowser.h"
 #include "../../core/pattern/mvc/OutsideObserver.h"
 #include "../../../geometry/Envelope.h"
 #include "../../core/Config.h"
-#include "../core/propertybrowser/PropertyBrowser.h"
 
 // STL
 #include <string>
 
 // Qt
 #include <QWidget>
-#include <QtPropertyBrowser/QtProperty>
+
+class QtProperty;
 
 class QGraphicsItem;
 
