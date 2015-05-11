@@ -20,5 +20,7 @@
 	{"plugin":"te.qt.layout"},
 	{"plugin":"te.qt.rp"},
 	{"plugin":"te.qt.sa"},
-	{"plugin":"te.qt.vp"}
+	{"plugin":"te.qt.vp"},
+	{"plugin":"te.da.terralib4"},
+	{"plugin":"te.qt.datasource.terralib4"}
 ]}
