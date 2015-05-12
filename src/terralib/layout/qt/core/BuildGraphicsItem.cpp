@@ -439,6 +439,15 @@ bool te::layout::BuildGraphicsItem::addChild( QGraphicsItem* child, int x, int y
   {
     if(model->isEnableChildren())
     {
+      if(child->scene() == parentItem->scene())
+      {
+        QGraphicsScene* scene = child->scene();
+        if(scene)
+        {
+          scene->removeItem(child);
+        }
+      }
+      //implicitly adds this graphics item to the scene of the parent.
       child->setParentItem(parentItem);
       result = true;
     }

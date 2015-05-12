@@ -106,6 +106,8 @@ te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
     box = utils->viewportBox(m_model->getBox());
   }
 
+  setFlag(QGraphicsItem::ItemClipsChildrenToShape);
+
   m_mapSize = QSize(box.getWidth(), box.getHeight());
   m_mapDisplay = new te::qt::widgets::MultiThreadMapDisplay(m_mapSize, true);
   m_mapDisplay->setSynchronous(true);
@@ -259,8 +261,26 @@ void te::layout::MapItem::drawMap( QPainter * painter )
   if(!m_mapDisplay || !painter)
     return;
 
+  MapModel* model = dynamic_cast<MapModel*>(m_model);
+  if(!model)
+  {
+    return;
+  }
+
   QRectF boundRect;
-  boundRect = boundingRect();
+
+  if(model->getBox().getWidth() < model->getMapBox().getWidth()
+    || model->getBox().getHeight() < model->getMapBox().getHeight())
+  {
+    boundRect = boundingRect();
+  }
+  else
+  {
+    double x = model->getDisplacementX();
+    double y = model->getDisplacementY();
+    boundRect = QRectF(x, y, model->getMapBox().getWidth(), model->getMapBox().getHeight());
+  }
+  
 
   if( m_pixmap.isNull() || m_changeLayer)
   {
@@ -624,17 +644,9 @@ void te::layout::MapItem::calculateFrameMargin()
   MapModel* model = dynamic_cast<MapModel*>(m_model);
   if(!model)
     return;
-
-  Utils* utils = Context::getInstance().getUtils();
-
-  if(!utils)
-    return;
-
-  te::gm::Envelope box = utils->viewportBox(m_model->getBox());
-  te::gm::Envelope mapBox = utils->viewportBox(model->getMapBox());
-
-  m_wMargin = (box.getWidth() - mapBox.getWidth()) / 2.;
-  m_hMargin = (box.getHeight() - mapBox.getHeight()) / 2.;
+  
+  m_wMargin = model->getDisplacementX();
+  m_hMargin = model->getDisplacementY();
 }
 
 void te::layout::MapItem::generateMapPixmap()
@@ -733,6 +745,126 @@ QRectF te::layout::MapItem::boundingRect() const
 
   QRectF rect(0., 0., box.getWidth(), box.getHeight()); 
   return rect;
+}
+
+void te::layout::MapItem::drawBackground( QPainter* painter )
+{
+  if ( !painter )
+  {
+    return;
+  }
+
+  MapModel* model = dynamic_cast<MapModel*>(m_model);
+  if(!model)
+    return;
+
+  te::color::RGBAColor clrBack = model->getBackgroundColor();
+  QColor backColor;
+  backColor.setRed(clrBack.getRed());
+  backColor.setGreen(clrBack.getGreen());
+  backColor.setBlue(clrBack.getBlue());
+  backColor.setAlpha(clrBack.getAlpha());
+
+  double x = model->getDisplacementX();
+  double y = model->getDisplacementY();
+  QRectF boundRect = QRectF(x, y, model->getMapBox().getWidth(), model->getMapBox().getHeight());
+
+  painter->save();
+  painter->setPen(Qt::NoPen);
+  painter->setBrush(QBrush(backColor));
+  painter->setBackground(QBrush(backColor));
+  painter->setRenderHint( QPainter::Antialiasing, true );
+  painter->drawRect(boundRect);
+  painter->restore();
+}
+
+void te::layout::MapItem::drawSelection( QPainter* painter )
+{
+  if(!painter)
+  {
+    return;
+  }
+
+  MapModel* model = dynamic_cast<MapModel*>(m_model);
+  if(!model)
+    return;
+
+  double x = model->getDisplacementX();
+  double y = model->getDisplacementY();
+  QRectF boundRect = QRectF(x, y, model->getMapBox().getWidth(), model->getMapBox().getHeight());
+
+  painter->save();
+
+  qreal penWidth = painter->pen().widthF();
+
+  const qreal adj = penWidth / 2;
+  const QColor fgcolor(0,255,0);
+  const QColor backgroundColor(0,0,0);
+
+  QRectF rtAdjusted = boundRect.adjusted(adj, adj, -adj, -adj);
+
+  QPen penBackground(backgroundColor, 0, Qt::SolidLine);
+  painter->setPen(penBackground);
+  painter->setBrush(Qt::NoBrush);
+  painter->drawRect(rtAdjusted);
+
+  QPen penForeground(fgcolor, 0, Qt::DashLine);
+  painter->setPen(penForeground);
+  painter->setBrush(Qt::NoBrush);
+  painter->drawRect(rtAdjusted);
+
+  painter->setPen(Qt::NoPen);
+  QBrush brushEllipse(fgcolor);
+  painter->setBrush(fgcolor);
+
+  double w = 2.0;
+  double h = 2.0;
+  double half = 1.0;
+
+  painter->drawRect(rtAdjusted.center().x() - half, rtAdjusted.center().y() - half, w, h); // center
+  painter->drawRect(rtAdjusted.bottomLeft().x() - half, rtAdjusted.bottomLeft().y() - half, w, h); // left-top
+  painter->drawRect(rtAdjusted.bottomRight().x() - half, rtAdjusted.bottomRight().y() - half, w, h); // right-top
+  painter->drawRect(rtAdjusted.topLeft().x() - half, rtAdjusted.topLeft().y() - half, w, h); // left-bottom
+  painter->drawRect(rtAdjusted.topRight().x() - half, rtAdjusted.topRight().y() - half, w, h); // right-bottom
+
+  painter->restore();
+}
+
+void te::layout::MapItem::drawBorder( QPainter* painter )
+{
+  if ( !painter )
+  {
+    return;
+  }
+
+  if(!m_model)
+    return;
+
+  MapModel* model = dynamic_cast<MapModel*>(m_model);
+  if(!model)
+    return;
+
+  if(!model->isBorder())
+    return;
+
+  te::color::RGBAColor clrBack = model->getBorderColor();
+  QColor borderColor;
+  borderColor.setRed(clrBack.getRed());
+  borderColor.setGreen(clrBack.getGreen());
+  borderColor.setBlue(clrBack.getBlue());
+  borderColor.setAlpha(clrBack.getAlpha());
+
+  double x = model->getDisplacementX();
+  double y = model->getDisplacementY();
+  QRectF boundRect = QRectF(x, y, model->getMapBox().getWidth(), model->getMapBox().getHeight());
+
+  painter->save();
+  QPen penBackground(borderColor, 0, Qt::SolidLine);
+  painter->setPen(penBackground);
+  painter->setBrush(Qt::NoBrush);
+  painter->setRenderHint( QPainter::Antialiasing, true );
+  painter->drawRect(boundRect);
+  painter->restore();
 }
 
 
