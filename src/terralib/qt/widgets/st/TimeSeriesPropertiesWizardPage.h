@@ -1,4 +1,4 @@
-/*  Copyright (C) 2010-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "../../../dataaccess/dataset/DataSetType.h"
+#include "terralib/dataaccess/datasource/DataSourceInfo.h"
 #include "../Config.h"
 
 // Qt

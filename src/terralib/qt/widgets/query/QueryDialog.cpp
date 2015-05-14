@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -387,7 +387,9 @@ void te::qt::widgets::QueryDialog::onApplyPushButtonClicked()
     {
       // Generates the oids
       dataset->moveBeforeFirst();
-      te::da::ObjectIdSet* oids = te::da::GenerateOIDSet(dataset.get(), schema.get(), true);
+      te::da::ObjectIdSet* oids = te::da::GenerateOIDSet(dataset.get(), schema.get());
+
+      oids->setExpression(wh->getExp()->clone(), false);
 
       layer->clearSelected();
       layer->select(oids);
@@ -398,7 +400,9 @@ void te::qt::widgets::QueryDialog::onApplyPushButtonClicked()
     {
       // Generates the oids
       dataset->moveBeforeFirst();
-      te::da::ObjectIdSet* oids = te::da::GenerateOIDSet(dataset.get(), schema.get(), true);
+      te::da::ObjectIdSet* oids = te::da::GenerateOIDSet(dataset.get(), schema.get());
+
+      oids->setExpression(wh->getExp()->clone(), false);
 
       layer->select(oids);
 

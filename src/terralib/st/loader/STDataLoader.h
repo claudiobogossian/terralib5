@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -155,8 +155,9 @@ namespace te
           \brief It returns a data set with observations whose phenomenon times satisfy a
                  given temporal relation. 
 
-          The possible temporal relations are: 1. AFTER; 
-          2. AFTER | EQUALS; 3. BEFORE;  4. BEFORE | EQUALS; 5. DURING; 6. EQUALS 
+          The possible temporal relations are:
+          1. BEFORE; 2. AFTER; 3. DURING;  4. EQUALS;
+          5. MEETS; 6. OVERLAPS 7 - STARTS; 8 -FINISHES;
 
           \param info Information about the DataSource which the observation are from and 
                       the DataSet which contains the observations.
@@ -180,8 +181,9 @@ namespace te
           \brief It returns a data set with observations whose observed geometries 
                  satisfy a given spatial relation and phenomenon times satisfy a given temporal relation. 
 
-          The possible temporal relations are: 1. AFTER; 
-          2. AFTER | EQUALS; 3. BEFORE;  4. BEFORE | EQUALS; 5. DURING; 6. EQUALS 
+          The possible temporal relations are:
+          1. BEFORE; 2. AFTER; 3. DURING;  4. EQUALS;
+          5. MEETS; 6. OVERLAPS 7 - STARTS; 8 -FINISHES;
 
           \param info Information about the DataSource which the observation of trajectpries 
                       are from and the DataSet which contains the observations.
@@ -212,8 +214,9 @@ namespace te
                  given spatial relation and phenomenon times satisfy a given temporal relation. 
 
           The possible spatial relations are: INTERSECTS
-          The possible temporal relations are: 1. AFTER; 
-          2. AFTER | EQUALS; 3. BEFORE;  4. BEFORE | EQUALS; 5. DURING; 6. EQUALS
+          The possible temporal relations are:
+          1. BEFORE; 2. AFTER; 3. DURING;  4. EQUALS;
+          5. MEETS; 6. OVERLAPS 7 - STARTS; 8 -FINISHES;
 
           \param info Information about the DataSource which the observation are from and 
                       the DataSet which contains the observations.
@@ -342,8 +345,9 @@ namespace te
           (TrajectoryDataSetInfo) must contain the id of the desire trajectory that
           must be returned as a TrajectoryDataSet.
 
-          The possible temporal relations are: 1. AFTER; 
-          2. AFTER | EQUALS; 3. BEFORE;  4. BEFORE | EQUALS; 5. DURING; 6. EQUALS 
+          The possible temporal relations are:
+          1. BEFORE; 2. AFTER; 3. DURING;  4. EQUALS;
+          5. MEETS; 6. OVERLAPS 7 - STARTS; 8 -FINISHES;
 
           \param info Information about the DataSource which the observation of trajectpries 
                       are from and the DataSet which contains the observations.
@@ -371,8 +375,9 @@ namespace te
           (TrajectoryDataSetInfo) must contain the id of the desire trajectory that
           must be returned as a TrajectoryDataSet.
 
-          The possible temporal relations are: 1. AFTER; 
-          2. AFTER | EQUALS; 3. BEFORE;  4. BEFORE | EQUALS; 5. DURING; 6. EQUALS 
+          The possible temporal relations are:
+          1. BEFORE; 2. AFTER; 3. DURING;  4. EQUALS;
+          5. MEETS; 6. OVERLAPS 7 - STARTS; 8 -FINISHES;
 
           \param info Information about the DataSource which the observation of trajectpries 
                       are from and the DataSet which contains the observations.
@@ -406,8 +411,9 @@ namespace te
           must be returned as a TrajectoryDataSet.
 
           The possible spatial relations are: INTERSECTS
-          The possible temporal relations are: 1. AFTER; 
-          2. AFTER | EQUALS; 3. BEFORE;  4. BEFORE | EQUALS; 5. DURING; 6. EQUALS
+          The possible temporal relations are:
+          1. BEFORE; 2. AFTER; 3. DURING;  4. EQUALS;
+          5. MEETS; 6. OVERLAPS 7 - STARTS; 8 -FINISHES;
 
           \param info Information about the DataSource which the observations of trajectories 
                       are from and the DataSet which contains these observations.
@@ -466,7 +472,7 @@ namespace te
                       are from and the DataSet which contains these observations.
           \param travType The traverse type associated to the returned datasets.
 
-          \return The returned TrajectoryDataSet.
+          \return The returned TimeSeriesDataSet.
           
           \note Before using this method, certify that the Data Source exists in the DataSourceManager and 
                 its "id" is correct in the info parameter  
@@ -484,8 +490,9 @@ namespace te
           (TimeSeriesDataSetInfo) must contain the id of the desire time series that
           must be returned as a TimeSeriesDataSet.
 
-          The possible temporal relations are: 1. AFTER; 
-          2. AFTER | EQUALS; 3. BEFORE;  4. BEFORE | EQUALS; 5. DURING; 6. EQUALS 
+          The possible temporal relations are:
+          1. BEFORE; 2. AFTER; 3. DURING;  4. EQUALS;
+          5. MEETS; 6. OVERLAPS 7 - STARTS; 8 -FINISHES;
 
           \param info Information about the DataSource which the observation of time series 
                       are from and the DataSet which contains the observations.
@@ -505,14 +512,67 @@ namespace te
                                  const te::dt::DateTime& dt, te::dt::TemporalRelation r = te::dt::DURING,
                                  te::common::TraverseType travType = te::common::FORWARDONLY);
 
+        /*!
+          \brief  It returns patches of a timeseries whose geometries 
+                  satisfy a given spatial relation. 
+
+          When the DataSet contains more than one trajectory, the info parameter
+          (TrajectoryDataSetInfo) must contain the id of the desire trajectory that
+          must be returned as a TrajectoryDataSet.
+
+          \param info Information about the DataSource which the observations of a trajectory are from 
+                      and the DataSet which contains the observations.
+          \param e        A given envelope.
+          \param r        A given spatial relation.
+          \param travType The traverse type associated to the returned dataset.  
+
+          \return The returned trajectoy data set.
+          
+          \note Before using this method, certify that the Data Source exists in the DataSourceManager and 
+                its "id" is correct in the info parameter  
+          \note The caller will take the ownership of the returned pointer.
+          \note It can throw an Exception when internal errors occur.
+        */
         static std::auto_ptr<TimeSeriesDataSet> getDataSet(const TimeSeriesDataSetInfo& info, const te::gm::Envelope& e,
                                  te::gm::SpatialRelation r = te::gm::INTERSECTS,
                                  te::common::TraverseType travType = te::common::FORWARDONLY);
-        
+
+        /*!
+          \brief  It returns data set with observations of time series whose geometries 
+                  satisfy a given spatial relation. 
+
+          \param info Information about the DataSource which the observations of a time series are from 
+                      and the DataSet which contains the observations.
+          \param geom     A given geometry.
+          \param r        A given spatial relation.
+          \param travType The traverse type associated to the returned dataset.  
+
+          \return The returned time series data set.
+          
+          \note The caller will take the ownership of the returned pointer.
+          \note It can throw an Exception when internal errors occur.
+        */
         static std::auto_ptr<TimeSeriesDataSet> getDataSet(const TimeSeriesDataSetInfo& info, const te::gm::Geometry& geom, 
                                  te::gm::SpatialRelation r = te::gm::INTERSECTS,
                                  te::common::TraverseType travType = te::common::FORWARDONLY);
 
+        /*!
+          \brief  It returns data set with observations of time series whose geometries 
+                  satisfy a given spatial relation and times satisfy a given temporal relation 
+
+          \param info Information about the DataSource which the observations of a time series are from 
+                      and the DataSet which contains the observations.
+          \param  dt  A given datetime.
+          \param  tr  A given temporal relation.
+          \param  e   A given envelope.
+          \param  sr  A given spatial relation.
+          \param travType The traverse type associated to the returned dataset.
+
+          \return The returned time series data set.
+          
+          \note The caller will take the ownership of the returned pointer.
+          \note It can throw an Exception when internal errors occur.
+        */
         static std::auto_ptr<TimeSeriesDataSet> getDataSet(const TimeSeriesDataSetInfo& info,
                                                     const te::dt::DateTime& dt, 
                                                     te::dt::TemporalRelation tr,
@@ -520,6 +580,21 @@ namespace te
                                                     te::gm::SpatialRelation sr = te::gm::INTERSECTS,
                                                     te::common::TraverseType travType = te::common::FORWARDONLY);
 
+        /*!
+          \brief  It returns data set with observations of time series whose geometries 
+                  satisfy a given spatial relation and times satisfy a given temporal relation. 
+
+          \param info Information about the DataSource which the observations of a time series are from 
+                      and the DataSet which contains the observations.
+          \param e        A given envelope.
+          \param r        A given spatial relation.
+          \param travType The traverse type associated to the returned dataset.  
+
+          \return The returned time series data set.
+          
+          \note The caller will take the ownership of the returned pointer.
+          \note It can throw an Exception when internal errors occur.
+        */
         static std::auto_ptr<TimeSeriesDataSet> getDataSet(const TimeSeriesDataSetInfo& info, 
                                  const te::gm::Geometry& geom, te::gm::SpatialRelation sr,
                                  const te::dt::DateTime& dt, te::dt::TemporalRelation tr,

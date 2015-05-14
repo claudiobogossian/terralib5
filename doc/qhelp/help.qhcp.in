@@ -8,7 +8,6 @@
       <enableFilterFunctionality>false</enableFilterFunctionality>
       <enableDocumentationManager>false</enableDocumentationManager>
       <enableAddressBar visible="true">false</enableAddressBar>
-      <cacheDirectory base="collection">cache</cacheDirectory>
       <aboutMenuText>
          <text>About TerraView... </text>
          <text language="pt">Sobre o TerraView ...</text>
