@@ -34,12 +34,14 @@
 #include "../../../qt/widgets/Utils.h"
 #include "../../../geometry/Envelope.h"
 #include "../../../common/STLUtils.h"
-#include "../../item/GridMapModel.h"
+#include "../../item/GridPlanarModel.h"
 #include "MapItem.h"
+#include "../../core/WorldTransformer.h"
+#include "../../item/MapModel.h"
+#include "../../../maptools/AbstractLayer.h"
 
 //Qt
 #include <QStyleOptionGraphicsItem>
-#include "../../core/WorldTransformer.h"
 
 te::layout::GridPlanarItem::GridPlanarItem( ItemController* controller, Observable* o ) :
   GridMapItem(controller, o)
@@ -54,65 +56,145 @@ te::layout::GridPlanarItem::~GridPlanarItem()
 
 void te::layout::GridPlanarItem::drawGrid( QPainter* painter )
 {
-  GridMapModel* model = dynamic_cast<GridMapModel*>(m_model);
+  if(!parentItem())
+  {
+    return;
+  }
+
+  GridPlanarModel* model = dynamic_cast<GridPlanarModel*>(m_model);
   if(!model)
   {
     return;
   }
 
+  MapItem* item = dynamic_cast<MapItem*>(parentItem());
+  if(!item)
+  {
+    return;    
+  }
+
+  MapModel* mapModel = dynamic_cast<MapModel*>(item->getModel());
+  if(!mapModel)
+  {
+    return;    
+  }
+
+  if(!mapModel->getLayer())
+  {
+    return;
+  }
+
+  int srid = mapModel->getLayer()->getSRID();
+  if(srid <= 0)
+    return;
+
+  double scale = mapModel->getScale();
+  te::gm::Envelope box = mapModel->getWorldInMeters();
+  te::gm::Envelope boxMM = mapModel->getMapBox();
+
+  model->setMapScale(scale); // put visit
+  model->calculateGaps(box);
+
+  drawVerticalLines(painter, box, boxMM, scale);
+
+}
+
+void te::layout::GridPlanarItem::drawVerticalLines(QPainter* painter, te::gm::Envelope geoBox, te::gm::Envelope boxMM, double scale)
+{
   painter->save();
 
-  QRectF parentBound = boundingRect();
-
-  if(parentItem())
+  GridPlanarModel* model = dynamic_cast<GridPlanarModel*>(m_model);
+  if(!model)
   {
-    parentBound = parentItem()->boundingRect();
+    return;
   }
 
-  QPainterPath gridMapPath;
-  gridMapPath.setFillRule(Qt::WindingFill);
-
-  int heightRect = (int)parentBound.height();
-  int widgetRect = (int)parentBound.width();
-
-  te::color::RGBAColor rgbColor = model->getLineColor();
-  QColor cLine(rgbColor.getRed(), rgbColor.getGreen(), rgbColor.getBlue(), rgbColor.getAlpha());
-
-  painter->setPen(QPen(cLine, 0, Qt::SolidLine));
-
-  QFont ft(model->getFontFamily().c_str(), model->getTextPointSize());
-
-  painter->setFont(ft);
-
-  m_maxHeigthTextMM = m_onePointMM * ft.pointSize();
-
-  QString text = "A";
-
-  for (int i = 0; i <= heightRect; i+=10)
+  MapItem* item = dynamic_cast<MapItem*>(parentItem());
+  if(!item)
   {
-    QLineF lineOne = QLineF(parentBound.topLeft().x(), parentBound.topLeft().y() + i, parentBound.topRight().x(), parentBound.topRight().y() + i);
+    return;    
+  }
 
-    QPointF pointInit(parentBound.topLeft().x() - (heightRect*.01), parentBound.topLeft().y() + i - (m_maxHeigthTextMM/2)); //esquerda
-    drawText(pointInit, painter, text.toStdString(), true);
-    QPointF pointFinal(parentBound.topRight().x() + (heightRect*.01), parentBound.topRight().y() + i  - (m_maxHeigthTextMM/2)); //direita
-    drawText(pointFinal, painter, text.toStdString());
+  MapModel* mapModel = dynamic_cast<MapModel*>(item->getModel());
+  if(!mapModel)
+  {
+    return;    
+  }
 
-    painter->drawLine(lineOne);
+  if(!mapModel->getLayer())
+  {
+    return;
+  }
 
-    for (int j = 0; j <= widgetRect; j+=10)
+  Utils* utils = Context::getInstance().getUtils();
+
+  // Draw a horizontal line and the y coordinate change(vertical)
+
+  double			y1;
+  double			yInit;
+
+  WorldTransformer transf = utils->getTransformGeo(geoBox, boxMM);
+  transf.setMirroring(false);
+
+  yInit = model->getInitialGridPointY();
+  if(yInit < geoBox.getLowerLeftY())
+  {
+    double dify = geoBox.getLowerLeftY() - yInit;
+    int nParts = (int)(dify/model->getLneVrtGap());
+    if(nParts == 0)
     {
-      QLineF lineTwo = QLineF(parentBound.topLeft().x() + j, parentBound.topLeft().y(), parentBound.bottomLeft().x() + j, parentBound.bottomLeft().y());
-
-      QPointF pointInit(parentBound.topLeft().x() + j + (m_maxWidthTextMM/2), boundingRect().topLeft().y() /*- (widgetRect*.01)*/); //inferior
-      drawText(pointInit, painter, text.toStdString(), true);
-      QPointF pointFinal(parentBound.bottomLeft().x() + j  - (m_maxWidthTextMM/2), parentBound.bottomLeft().y() + (widgetRect*.01)); //superior
-      drawText(pointFinal, painter, text.toStdString());
-
-      painter->drawLine(lineTwo);
-    }    
+      yInit = model->getInitialGridPointY();
+    }
+    else
+    {
+      yInit = yInit + (nParts * model->getLneVrtGap());
+    }
   }
 
+  double wtxt = 0;
+  double htxt = 0;
+
+  y1 = yInit;
+  for( ; y1 < geoBox.getUpperRightY() ; y1 += model->getLneVrtGap())
+  {
+    if(y1 < geoBox.getLowerLeftY())
+      continue;
+
+    double llx = 0;
+    double urx = 0;
+    double y = 0;
+    transf.system1Tosystem2(geoBox.getLowerLeftX(), y1, llx, y);
+    transf.system1Tosystem2(geoBox.getUpperRightX(), y1, urx, y);
+
+    QLineF line(llx, y, urx, y);
+    painter->drawLine(line);
+
+    std::ostringstream convert;
+    convert.precision(10);
+    double number = y1 / (double)model->getUnit();
+    convert << number;
+
+    utils->textBoundingBox(wtxt, htxt, convert.str());
+
+    if(model->isVisibleAllTexts())
+    {
+      if(model->isLeftText())
+      {
+        drawText(QPointF(llx - model->getLneHrzDisplacement() - wtxt, y), painter, convert.str());
+      }
+
+      if(model->isRightText())
+      {
+        drawText(QPointF(urx + model->getLneHrzDisplacement(), y), painter, convert.str());
+      }
+    }
+  }
   painter->restore();
+}
+
+void te::layout::GridPlanarItem::drawHorizontalLines(QPainter* painter, te::gm::Envelope geoBox, te::gm::Envelope boxMM, double scale)
+{
+  
 }
 
 

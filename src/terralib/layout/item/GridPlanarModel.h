@@ -29,7 +29,6 @@
 #define __TERRALIB_LAYOUT_INTERNAL_GRID_PLANAR_MODEL_H
 
 // TerraLib
-#include "GridModel.h"
 #include "../core/enum/AbstractType.h"
 #include "../core/Config.h"
 #include "GridMapModel.h"
@@ -49,14 +48,16 @@ namespace te
         virtual ~GridPlanarModel();
 
         virtual void draw(te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box, int srid);
+
+        virtual LayoutUnit getUnit();
+
+        virtual void calculateGaps(te::gm::Envelope box);
         
        protected:
 
          virtual void drawVerticalLines(te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box);
 
          virtual void drawHorizontalLines(te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box);
-
-         virtual void calculateGaps(te::gm::Envelope box);
 
        protected:
 

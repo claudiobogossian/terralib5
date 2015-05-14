@@ -159,6 +159,9 @@ void te::layout::MapItem::updateObserver( ContextItem context )
   if(!utils)
     return;
 
+  calculateFrameMargin();
+  setWindowFrameMargins(m_wMargin, m_hMargin, m_wMargin, m_hMargin);
+
   QRectF boundRect;
   boundRect = boundingRect();
 

@@ -33,6 +33,7 @@
 // TerraLib
 #include "GridMapItem.h"
 #include "../../core/Config.h"
+#include "../../../geometry/Envelope.h"
 
 namespace te
 {
@@ -69,6 +70,10 @@ namespace te
       protected:
         
         virtual void drawGrid(QPainter* painter);
+
+        virtual void drawVerticalLines(QPainter* painter, te::gm::Envelope geoBox, te::gm::Envelope boxMM, double scale);
+
+        virtual void drawHorizontalLines(QPainter* painter, te::gm::Envelope geoBox, te::gm::Envelope boxMM, double scale);
     };
   }
 }

@@ -29,7 +29,6 @@
 #define __TERRALIB_LAYOUT_INTERNAL_GRID_GEODESIC_MODEL_H
 
 // TerraLib
-#include "GridModel.h"
 #include "../core/Config.h"
 #include "GridMapModel.h"
 

@@ -253,9 +253,6 @@ QToolButton* te::layout::ToolbarOutside::createMapToolButton()
   QAction* actionDefaultMenu = createAction("Default Map Object", m_actionMapDefault, "layout-default-map", "", menu);
   menu->addAction(actionDefaultMenu);
   
-  QAction* actionGridMap = createAction("Grid Map", m_actionGridMap, "layout-grid", "", menu);
-  menu->addAction(actionGridMap);
-
   QAction* actionGridPlanar = createAction("Grid Planar", m_actionGridPlanar, "layout-grid", "", menu);
   menu->addAction(actionGridPlanar);
 
