@@ -527,3 +527,48 @@ void TsExpansibleRaster::addBottomBandsTest()
   testValues( rasterInstance );  
 }
 
+void TsExpansibleRaster::multiResolutionTest()
+{
+  std::vector< te::rst::BandProperty * > bandsProps;
+  bandsProps.push_back( new te::rst::BandProperty( 0, te::dt::UINT32_TYPE ) );
+  bandsProps[ 0 ]->m_blkw = 100;
+  bandsProps[ 0 ]->m_blkh = 1;
+  bandsProps[ 0 ]->m_nblocksx = 1;
+  bandsProps[ 0 ]->m_nblocksy = 100;   
+  bandsProps.push_back( new te::rst::BandProperty( 1, te::dt::UINT32_TYPE ) );
+  bandsProps[ 1 ]->m_blkw = 100;
+  bandsProps[ 1 ]->m_blkh = 1;
+  bandsProps[ 1 ]->m_nblocksx = 1;
+  bandsProps[ 1 ]->m_nblocksy = 100;
+  bandsProps.push_back( new te::rst::BandProperty( 2, te::dt::UINT32_TYPE ) );
+  bandsProps[ 2 ]->m_blkw = 100;
+  bandsProps[ 2 ]->m_blkh = 1;
+  bandsProps[ 2 ]->m_nblocksx = 1;
+  bandsProps[ 2 ]->m_nblocksy = 100; 
+  
+  te::mem::ExpansibleRaster rasterInstance( new te::rst::Grid( 100, 100 ), bandsProps, 2 );
+
+  writeValues( rasterInstance );
+  
+  CPPUNIT_ASSERT( rasterInstance.getMultiResLevelsCount() == 0 );
+  CPPUNIT_ASSERT( rasterInstance.createMultiResolution( 3, te::rst::NearestNeighbor ) == true );
+  CPPUNIT_ASSERT( rasterInstance.getMultiResLevelsCount() == 3 );
+  
+  std::auto_ptr< te::rst::Raster > level0Ptr( rasterInstance.getMultiResLevel( 0 ) );
+  CPPUNIT_ASSERT( level0Ptr.get() != 0 );
+  CPPUNIT_ASSERT( level0Ptr->getNumberOfBands() == 3 );
+  CPPUNIT_ASSERT( level0Ptr->getNumberOfRows() == 100 );
+  CPPUNIT_ASSERT( level0Ptr->getNumberOfColumns() == 100 );
+  
+  std::auto_ptr< te::rst::Raster > level1Ptr( rasterInstance.getMultiResLevel( 1 ) );
+  CPPUNIT_ASSERT( level1Ptr.get() != 0 );
+  CPPUNIT_ASSERT( level1Ptr->getNumberOfBands() == 3 );
+  CPPUNIT_ASSERT( level1Ptr->getNumberOfRows() == 50 );
+  CPPUNIT_ASSERT( level1Ptr->getNumberOfColumns() == 50 );
+
+  std::auto_ptr< te::rst::Raster > level2Ptr( rasterInstance.getMultiResLevel( 2 ) );
+  CPPUNIT_ASSERT( level2Ptr.get() != 0 );
+  CPPUNIT_ASSERT( level2Ptr->getNumberOfBands() == 3 );
+  CPPUNIT_ASSERT( level2Ptr->getNumberOfRows() == 25 );
+  CPPUNIT_ASSERT( level2Ptr->getNumberOfColumns() == 25 ); 
+}
