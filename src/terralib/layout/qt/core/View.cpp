@@ -747,6 +747,11 @@ void te::layout::View::onSystematicApply(double scale, SystematicScaleType type)
 void te::layout::View::onSelectionChanged()
 {
   m_selectionChange = true;
+
+  if(m_menuBuilder)
+  {
+    m_menuBuilder->closeAllWindows();
+  }
 }
 
 void te::layout::View::contextMenuEvent( QContextMenuEvent * event )

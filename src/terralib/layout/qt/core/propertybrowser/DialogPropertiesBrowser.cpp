@@ -36,6 +36,10 @@
 #include "../../outside/GridSettingsOutside.h"
 #include "../../../outside/GridSettingsModel.h"
 #include "../ItemUtils.h"
+#include "../../outside/MapLayerChoiceOutside.h"
+#include "../../../outside/MapLayerChoiceModel.h"
+#include "../../outside/LegendChoiceOutside.h"
+#include "../../../outside/LegendChoiceModel.h"
 
 // Qt
 #include <QVariant>
@@ -127,6 +131,14 @@ void te::layout::DialogPropertiesBrowser::onSetDlg( QWidget *parent, QtProperty 
   if(propt.getType() == dataType->getDataTypeTextGridSettings())
   {
     connect(parent, SIGNAL(showDlg()), this, SLOT(onShowTextGridSettingsDlg()));
+  }
+  if(propt.getType() == dataType->getDataTypeMapChoice())
+  {
+    connect(parent, SIGNAL(showDlg()), this, SLOT(onShowMapLayerChoiceDlg()));
+  }
+  if(propt.getType() == dataType->getDataTypeLegendChoice())
+  {
+    connect(parent, SIGNAL(showDlg()), this, SLOT(onShowLegendChoiceDlg()));
   }
   if(propt.getType() == dataType->getDataTypeColor())
   {
@@ -388,7 +400,7 @@ void te::layout::DialogPropertiesBrowser::onShowFontDlg()
   QRect screen = wdg->geometry();
   dialog.move( screen.center() - dialog.rect().center() );
 
-  QFont newFont = dialog.getFont(&ok, qFont, wdg, tr("Select Font"), QFontDialog::NoButtons);
+  QFont newFont = dialog.getFont(&ok, qFont, wdg, tr("Select Font"));
 
   if (!ok || newFont == qFont) 
     return;
@@ -445,6 +457,85 @@ void te::layout::DialogPropertiesBrowser::onShowColorDlg()
 
     emit changeDlgProperty(property);
   }
+}
+
+void te::layout::DialogPropertiesBrowser::onShowMapLayerChoiceDlg()
+{
+  EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
+  if(!enumObj)
+  {
+    return;
+  }
+
+  QWidget* widget = createOutside(enumObj->getMapLayerChoice());
+  if(!widget)
+  {
+    return;
+  }
+
+  MapLayerChoiceOutside* layerChoice = dynamic_cast<MapLayerChoiceOutside*>(widget);
+  if(!layerChoice)
+  {
+    return;
+  }
+
+  m_dialogs.append(layerChoice);
+
+  connect(layerChoice, SIGNAL(updateProperty(Property)), this, SLOT(updateOutside(Property)));
+  connect(layerChoice, SIGNAL(destroyed( QObject *)), this, SLOT(onDestroyed(QObject*)));
+
+  layerChoice->setAttribute(Qt::WA_DeleteOnClose);
+
+  MapLayerChoiceModel* model = dynamic_cast<MapLayerChoiceModel*>(layerChoice->getModel());
+  if(!model)
+  {
+    return;
+  }
+
+  AbstractProxyProject* proxy = Context::getInstance().getProxyProject();
+  if(!proxy)
+  {
+    return;
+  }
+
+
+  layerChoice->show();
+}
+
+void te::layout::DialogPropertiesBrowser::onShowLegendChoiceDlg()
+{
+  EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
+  if(!enumObj)
+  {
+    return;
+  }
+
+  QWidget* widget = createOutside(enumObj->getGridSettings());
+  if(!widget)
+  {
+    return;
+  }
+
+  LegendChoiceOutside* legendChoice = dynamic_cast<LegendChoiceOutside*>(widget);
+  if(!legendChoice)
+  {
+    return;
+  }
+
+  m_dialogs.append(legendChoice);
+
+  connect(legendChoice, SIGNAL(updateProperty(Property)), this, SLOT(updateOutside(Property)));
+  connect(legendChoice, SIGNAL(destroyed( QObject *)), this, SLOT(onDestroyed(QObject*)));
+
+  legendChoice->setAttribute(Qt::WA_DeleteOnClose);
+
+  LegendChoiceModel* model = dynamic_cast<LegendChoiceModel*>(legendChoice->getModel());
+  if(!model)
+  {
+    return;
+  }
+  
+  legendChoice->show();
 }
 
 te::layout::Property te::layout::DialogPropertiesBrowser::getProperty( std::string name )
@@ -628,6 +719,18 @@ void te::layout::DialogPropertiesBrowser::onDestroyed( QObject* obj )
     }
   }
 }
+
+void te::layout::DialogPropertiesBrowser::clearAll()
+{
+  AbstractPropertiesBrowser::clearAll();
+  closeAllWindows();
+}
+
+
+
+
+
+
 
 
 

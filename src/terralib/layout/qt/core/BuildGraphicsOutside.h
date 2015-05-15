@@ -134,6 +134,27 @@ namespace te
 		      \return new object 
         */
         QWidget* createMapLayerChoice();
+
+        /*!
+          \brief Create a widget of Color Dialog type 
+
+		      \return new object 
+        */
+        QWidget* createColorDialog();
+
+        /*!
+          \brief Create a widget of Font Dialog type 
+
+		      \return new object 
+        */
+        QWidget* createFontDialog();
+
+        /*!
+          \brief Create a widget of Legend Choice type 
+
+		      \return new object 
+        */
+        QWidget* createLegendChoice();
     };
   }
 }

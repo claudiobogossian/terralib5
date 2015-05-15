@@ -309,6 +309,27 @@ namespace te
         */
         virtual EnumType* getMapLocationItem() const;
 
+        /*!
+          \brief Returns value that represents color dialog widget (MVC Component) type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
+        virtual EnumType* getColorDialog() const;
+
+        /*!
+          \brief Returns value that represents font dialog widget (MVC Component) type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
+        virtual EnumType* getFontDialog() const;
+
+        /*!
+          \brief Returns value that represents font dialog widget (MVC Component) type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
+        virtual EnumType* getLegendChoice() const;
+
       protected:
 
         /*!
@@ -353,6 +374,9 @@ namespace te
         EnumType* m_northItem; //!< value that represents north (MVC Component) type belonging to enumeration
         EnumType* m_mapLocationItem; //!< value that represents map location (MVC Component) type belonging to enumeration
         EnumType* m_objectUnknown; //!< value that represents unknown type belonging to enumeration
+        EnumType* m_colorDialog; //!< value that represents color (dialog) type belonging to enumeration
+        EnumType* m_fontDialog; //!< value that represents font (dialog) type belonging to enumeration
+        EnumType* m_legendChoice; //!< value that represents map layer choice (dialog) type belonging to enumeration
     };
   }
 }

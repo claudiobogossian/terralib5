@@ -145,8 +145,6 @@ void te::layout::PropertyBrowser::updateExpandState()
 
 void te::layout::PropertyBrowser::clearAll()
 {
-  m_dialogPropertiesBrowser->getDlgProps().clear();
-
   updateExpandState();
 
   QMap<QtProperty *, QString>::ConstIterator itProp = m_propertyToId.constBegin();

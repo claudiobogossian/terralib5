@@ -111,6 +111,12 @@ te::layout::Properties* te::layout::MapModel::getProperties() const
     name = m_layer->getTitle();
   }
 
+  Property pro_mapchoice(m_hashCode);
+  pro_mapchoice.setName("mapChoice");
+  pro_mapchoice.setValue(name, dataType->getDataTypeMapChoice());
+  pro_mapchoice.setMenu(true);
+  m_properties->addProperty(pro_mapchoice);
+
   Property pro_layer(m_hashCode);
   pro_layer.setName("layer");
   pro_layer.setValue(name, dataType->getDataTypeString());
@@ -145,7 +151,7 @@ void te::layout::MapModel::updateProperties( te::layout::Properties* properties 
 {
   ItemModelObservable::updateProperties(properties);
 
-  Properties* vectorProps = const_cast<Properties*>(properties);
+  Properties* vectorProps = const_cast<Properties*>(properties);  
   
   Property pro_layer = vectorProps->contains("layer");
   if(!pro_layer.isNull())

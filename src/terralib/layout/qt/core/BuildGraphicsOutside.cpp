@@ -56,6 +56,15 @@
 #include "../outside/MapLayerChoiceOutside.h"
 #include "../../outside/MapLayerChoiceModel.h"
 #include "../../outside/MapLayerChoiceController.h"
+#include "../../outside/ColorDialogModel.h"
+#include "../../outside/ColorDialogController.h"
+#include "../outside/ColorDialogOutside.h"
+#include "../../outside/FontDialogModel.h"
+#include "../../outside/FontDialogController.h"
+#include "../outside/FontDialogOutside.h"
+#include "../../outside/LegendChoiceModel.h"
+#include "../../outside/LegendChoiceController.h"
+#include "../outside/LegendChoiceOutside.h"
 
 // Qt
 #include <QWidget>
@@ -115,6 +124,18 @@ QWidget* te::layout::BuildGraphicsOutside::createOuside( te::layout::EnumType* t
   if (type == enumObj->getMapLayerChoice())
   {
     widget = createMapLayerChoice();
+  }
+  if (type == enumObj->getColorDialog())
+  {
+    widget = createColorDialog();
+  }
+  if (type == enumObj->getFontDialog())
+  {
+    widget = createFontDialog();
+  }
+  if (type == enumObj->getLegendChoice())
+  {
+    widget = createLegendChoice();
   }
   
   return widget;
@@ -224,6 +245,42 @@ QWidget* te::layout::BuildGraphicsOutside::createMapLayerChoice()
   OutsideObserver* itemObs = (OutsideObserver*)controller->getView();
 
   MapLayerChoiceOutside* view = dynamic_cast<MapLayerChoiceOutside*>(itemObs);
+
+  return view;
+}
+
+QWidget* te::layout::BuildGraphicsOutside::createColorDialog()
+{
+  ColorDialogModel* model = new ColorDialogModel();
+
+  ColorDialogController* controller = new ColorDialogController(model);
+  OutsideObserver* itemObs = (OutsideObserver*)controller->getView();
+
+  ColorDialogOutside* view = dynamic_cast<ColorDialogOutside*>(itemObs);
+
+  return view;
+}
+
+QWidget* te::layout::BuildGraphicsOutside::createFontDialog()
+{
+  FontDialogModel* model = new FontDialogModel();
+
+  FontDialogController* controller = new FontDialogController(model);
+  OutsideObserver* itemObs = (OutsideObserver*)controller->getView();
+
+  FontDialogOutside* view = dynamic_cast<FontDialogOutside*>(itemObs);
+
+  return view;
+}
+
+QWidget* te::layout::BuildGraphicsOutside::createLegendChoice()
+{
+  LegendChoiceModel* model = new LegendChoiceModel();
+
+  LegendChoiceController* controller = new LegendChoiceController(model);
+  OutsideObserver* itemObs = (OutsideObserver*)controller->getView();
+
+  LegendChoiceOutside* view = dynamic_cast<LegendChoiceOutside*>(itemObs);
 
   return view;
 }
