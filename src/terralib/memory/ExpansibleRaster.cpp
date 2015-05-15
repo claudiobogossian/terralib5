@@ -247,9 +247,9 @@ bool te::mem::ExpansibleRaster::createMultiResolution( const unsigned int levels
         )->getProperty() ) ) );
       
       bandsProperties[ bandIdx ]->m_blkw = std::max( 1, 
-        bandsProperties[ bandIdx ]->m_blkw / 2 );
+        bandsProperties[ bandIdx ]->m_blkw / (int)( 2 * level ) );
       bandsProperties[ bandIdx ]->m_blkh = std::max( 1,
-        bandsProperties[ bandIdx ]->m_blkh / 2 );   
+        bandsProperties[ bandIdx ]->m_blkh / (int)( 2 * level ) );   
       bandsProperties[ bandIdx ]->m_nblocksx = (int)std::ceil(
         ((double)gridPtr->getNumberOfColumns()) / 
         ((double)bandsProperties[ bandIdx ]->m_blkw) );
