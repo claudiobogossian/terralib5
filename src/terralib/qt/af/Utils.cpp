@@ -140,6 +140,13 @@ te::qt::af::Project* te::qt::af::ReadProject(te::xml::Reader& reader)
   
   reader.next();
 
+  // DataSourceList contract form
+  if(reader.getNodeType() == te::xml::END_ELEMENT &&
+    reader.getElementLocalName() == "DataSourceList")
+  {
+    reader.next();
+  }
+
   while((reader.getNodeType() == te::xml::START_ELEMENT) &&
         (reader.getElementLocalName() == "DataSource"))
   {
