@@ -82,4 +82,14 @@ te::layout::PropertiesOutside* te::qt::plugins::layout::PropertiesDock::getPrope
   return m_properties;
 }
 
+void te::qt::plugins::layout::PropertiesDock::closeEvent( QCloseEvent * event )
+{
+  // Closing the PropertiesDock, all open windows from a property will be closed.
+  m_properties->close();
+}
+
+
+
+
+
 

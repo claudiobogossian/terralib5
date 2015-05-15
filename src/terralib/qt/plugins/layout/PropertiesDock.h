@@ -25,8 +25,8 @@
   \ingroup layout
 */
 
-#ifndef __TE_QT_PLUGINS_LAYOUT2_INTERNAL_PROPERTIES_DOCK_H 
-#define __TE_QT_PLUGINS_LAYOUT2_INTERNAL_PROPERTIES_DOCK_H
+#ifndef __TE_QT_PLUGINS_LAYOUT_INTERNAL_PROPERTIES_DOCK_H 
+#define __TE_QT_PLUGINS_LAYOUT_INTERNAL_PROPERTIES_DOCK_H
 
 // Qt
 #include <QDockWidget>
@@ -34,6 +34,7 @@
 // STL
 #include <vector>
 
+class QCloseEvent;
 
 namespace te
 {
@@ -59,6 +60,8 @@ namespace te
           te::layout::PropertiesOutside* getPropertiesOutside();
 
         protected:
+          
+          virtual void	closeEvent ( QCloseEvent * event );
 
           virtual void create();
 

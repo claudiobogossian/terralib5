@@ -81,6 +81,10 @@ namespace te
         virtual QVariant	itemChange ( QGraphicsItem::GraphicsItemChange change, const QVariant & value );
                         
         virtual void drawGrid(QPainter* painter);
+
+        virtual void drawVerticalLines();
+
+        virtual void drawHorizontalLines();
                 
         virtual void drawText( QPointF point, QPainter* painter, std::string text, bool displacementLeft = false, bool displacementRight = false);
 

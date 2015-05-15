@@ -73,11 +73,7 @@ namespace te
         virtual void onMenuTriggered(QAction* action);
 
         virtual void onChangeDlgProperty(Property property);
-
-        virtual void onShowFontDlg();
-
-        virtual void onShowColorDlg();
-        
+                
     protected:
             
       virtual QAction* createAction(std::string text, std::string objName, std::string icon, std::string tooltip = "");

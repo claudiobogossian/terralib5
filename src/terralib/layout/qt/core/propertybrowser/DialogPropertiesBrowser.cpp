@@ -43,6 +43,8 @@
 #include <QColor>
 #include <QImageReader>
 #include <QFileDialog>
+#include <QColorDialog>
+#include <QFontDialog>
 #include <QMessageBox>
 #include <QDesktopWidget>
 #include <QApplication>
@@ -125,6 +127,14 @@ void te::layout::DialogPropertiesBrowser::onSetDlg( QWidget *parent, QtProperty 
   if(propt.getType() == dataType->getDataTypeTextGridSettings())
   {
     connect(parent, SIGNAL(showDlg()), this, SLOT(onShowTextGridSettingsDlg()));
+  }
+  if(propt.getType() == dataType->getDataTypeColor())
+  {
+    connect(parent, SIGNAL(showDlg()), this, SLOT(onShowColorDlg()));
+  }
+  if(propt.getType() == dataType->getDataTypeFont())
+  {
+    connect(parent, SIGNAL(showDlg()), this, SLOT(onShowFontDlg()));
   }
 }
 
@@ -273,7 +283,12 @@ void te::layout::DialogPropertiesBrowser::onShowGridSettingsDlg()
     return;
   }
 
+  m_dialogs.append(gridSettings);
+
   connect(gridSettings, SIGNAL(updateProperty(Property)), this, SLOT(updateOutside(Property)));
+  connect(gridSettings, SIGNAL(destroyed( QObject *)), this, SLOT(onDestroyed(QObject*)));
+
+  gridSettings->setAttribute(Qt::WA_DeleteOnClose);
 
   GridSettingsModel* model = dynamic_cast<GridSettingsModel*>(gridSettings->getModel());
   if(!model)
@@ -338,6 +353,98 @@ void te::layout::DialogPropertiesBrowser::onShowImageDlg()
 void te::layout::DialogPropertiesBrowser::onShowTextGridSettingsDlg()
 {
   
+}
+
+void te::layout::DialogPropertiesBrowser::onShowFontDlg()
+{
+  QWidget* wdg = dynamic_cast<QWidget*>(parent());
+
+  if(!wdg)
+    return;
+
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+
+  Property property = m_currentPropertyClicked;
+
+  if(property.getType() != dataType->getDataTypeFont())
+    return;
+
+  bool ok = false;
+  Font font;
+  QFont qFont;
+
+  font = property.getValue().toFont();
+  qFont.setFamily(font.getFamily().c_str());
+  qFont.setPointSize(font.getPointSize());
+  qFont.setBold(font.isBold());
+  qFont.setItalic(font.isItalic());
+  qFont.setUnderline(font.isUnderline());
+  qFont.setStrikeOut(font.isStrikeout());
+  qFont.setKerning(font.isKerning());
+
+  QFontDialog dialog;
+  
+  //Put the dialog in the screen center
+  QRect screen = wdg->geometry();
+  dialog.move( screen.center() - dialog.rect().center() );
+
+  QFont newFont = dialog.getFont(&ok, qFont, wdg, tr("Select Font"), QFontDialog::NoButtons);
+
+  if (!ok || newFont == qFont) 
+    return;
+
+  font.setFamily(newFont.family().toStdString());
+  font.setPointSize(newFont.pointSize());
+  font.setBold(newFont.bold());
+  font.setItalic(newFont.italic());
+  font.setUnderline(newFont.underline());
+  font.setStrikeout(newFont.strikeOut());
+  font.setKerning(newFont.kerning());
+  property.setValue(font, dataType->getDataTypeFont());
+
+  emit changeDlgProperty(property);
+}
+
+void te::layout::DialogPropertiesBrowser::onShowColorDlg()
+{
+  QWidget* wdg = dynamic_cast<QWidget*>(parent());
+
+  if(!wdg)
+    return;
+
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+
+  Property property = m_currentPropertyClicked;
+
+  if(property.getType() != dataType->getDataTypeColor())
+    return;
+
+  bool ok = false;
+  QColor qcolor;
+  te::color::RGBAColor color;
+
+  color = property.getValue().toColor();
+  qcolor.setRed(color.getRed());
+  qcolor.setGreen(color.getGreen());
+  qcolor.setBlue(color.getBlue());
+  qcolor.setAlpha(color.getAlpha());
+
+  QRgb oldRgba = qcolor.rgba();
+
+  QRgb newRgba = QColorDialog::getRgba(oldRgba, &ok, wdg);
+
+  if (!ok || newRgba == oldRgba)
+    return;
+
+  qcolor = QColor::fromRgba(newRgba);
+
+  if(qcolor.isValid()) 
+  {
+    color.setColor(qcolor.red(), qcolor.green(), qcolor.blue(), qcolor.alpha());
+    property.setValue(color, dataType->getDataTypeColor());
+
+    emit changeDlgProperty(property);
+  }
 }
 
 te::layout::Property te::layout::DialogPropertiesBrowser::getProperty( std::string name )
@@ -464,7 +571,18 @@ std::map<std::string, te::layout::Property> te::layout::DialogPropertiesBrowser:
 
 void te::layout::DialogPropertiesBrowser::closeAllWindows()
 {
+  if(m_dialogs.empty())
+    return;
 
+  foreach(QWidget* widget, m_dialogs)
+  {
+    if(m_dialogs.removeAll(widget))
+    {
+      widget->close();
+      delete widget;
+      widget = 0;
+    }
+  }
 }
 
 QWidget* te::layout::DialogPropertiesBrowser::createOutside( EnumType* enumType )
@@ -496,6 +614,22 @@ void te::layout::DialogPropertiesBrowser::updateOutside( Property prop )
 {
   emit changeDlgProperty(prop);
 }
+
+void te::layout::DialogPropertiesBrowser::onDestroyed( QObject* obj )
+{
+  if(m_dialogs.empty())
+    return;
+
+  foreach(QWidget* widget, m_dialogs)
+  {
+    if(widget == obj)
+    {
+      m_dialogs.removeAll(widget);
+    }
+  }
+}
+
+
 
 
 

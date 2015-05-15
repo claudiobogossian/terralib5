@@ -48,8 +48,8 @@
 #include <sstream> 
 
 te::layout::MapModel::MapModel() :
-  m_mapDisplacementX(0),
-  m_mapDisplacementY(0),
+  m_mapDisplacementX(10),
+  m_mapDisplacementY(10),
   m_systematic(0),
   m_fixedScale(false),
   m_loadedLayer(false)
@@ -58,6 +58,9 @@ te::layout::MapModel::MapModel() :
 
   m_box = te::gm::Envelope(0., 0., 150., 120.);
   m_mapBoxMM = m_box;
+
+  //will calculated map box with displacement
+  setBox(m_box);
 
   m_backgroundColor = te::color::RGBAColor(255, 255, 255, 0);
 

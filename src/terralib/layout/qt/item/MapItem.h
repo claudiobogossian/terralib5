@@ -169,6 +169,21 @@ namespace te
        */
       virtual te::gm::Coord2D getPosition();
 
+      /*!
+          \brief Reimplemented from ParentItem
+       */
+      virtual void drawBackground( QPainter* painter );
+
+      /*!
+          \brief Reimplemented from ParentItem
+       */
+      virtual void drawSelection(QPainter* painter);
+
+      /*!
+          \brief Reimplemented from ParentItem
+       */
+      virtual void drawBorder(QPainter* painter);
+
       virtual void getMimeData(const QMimeData* mime);
 
       std::list<te::map::AbstractLayerPtr>  getVisibleLayers();

@@ -279,5 +279,10 @@ void te::layout::GridPlanarModel::calculateGaps( te::gm::Envelope box )
   }
 }
 
+te::layout::LayoutUnit te::layout::GridPlanarModel::getUnit()
+{
+  return m_unit;
+}
+
 
 

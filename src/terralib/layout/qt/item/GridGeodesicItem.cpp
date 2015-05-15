@@ -36,10 +36,11 @@
 #include "../../../common/STLUtils.h"
 #include "../../item/GridMapModel.h"
 #include "MapItem.h"
+#include "../../core/WorldTransformer.h"
+#include "../../item/MapModel.h"
 
 //Qt
 #include <QStyleOptionGraphicsItem>
-#include "../../core/WorldTransformer.h"
 
 te::layout::GridGeodesicItem::GridGeodesicItem( ItemController* controller, Observable* o ) :
   GridMapItem(controller, o)
@@ -66,7 +67,18 @@ void te::layout::GridGeodesicItem::drawGrid( QPainter* painter )
 
   if(parentItem())
   {
-    parentBound = parentItem()->boundingRect();
+    MapItem* item = dynamic_cast<MapItem*>(parentItem());
+    if(item)
+    {
+      MapModel* model = dynamic_cast<MapModel*>(item->getModel());
+      double x = model->getDisplacementX();
+      double y = model->getDisplacementY();
+      parentBound = QRectF(x, y, model->getMapBox().getWidth(), model->getMapBox().getHeight());
+    }
+    else
+    {
+      parentBound = parentItem()->boundingRect();
+    }
   }
 
   QPainterPath gridMapPath;
@@ -84,17 +96,18 @@ void te::layout::GridGeodesicItem::drawGrid( QPainter* painter )
 
   painter->setFont(ft);
 
+  // PostScript to mm
   m_maxHeigthTextMM = m_onePointMM * ft.pointSize();
 
-  QString text = "A";
+  QString text = "Geo";
 
   for (int i = 0; i <= heightRect; i+=10)
   {
     QLineF lineOne = QLineF(parentBound.topLeft().x(), parentBound.topLeft().y() + i, parentBound.topRight().x(), parentBound.topRight().y() + i);
 
-    QPointF pointInit(parentBound.topLeft().x() - (heightRect*.01), parentBound.topLeft().y() + i - (m_maxHeigthTextMM/2)); //esquerda
+    QPointF pointInit(parentBound.topLeft().x(), parentBound.topLeft().y() + i - (m_maxHeigthTextMM/2)); //left
     drawText(pointInit, painter, text.toStdString(), true);
-    QPointF pointFinal(parentBound.topRight().x() + (heightRect*.01), parentBound.topRight().y() + i  - (m_maxHeigthTextMM/2)); //direita
+    QPointF pointFinal(parentBound.topRight().x(), parentBound.topRight().y() + i  - (m_maxHeigthTextMM/2)); //right
     drawText(pointFinal, painter, text.toStdString());
 
     painter->drawLine(lineOne);
@@ -103,9 +116,9 @@ void te::layout::GridGeodesicItem::drawGrid( QPainter* painter )
     {
       QLineF lineTwo = QLineF(parentBound.topLeft().x() + j, parentBound.topLeft().y(), parentBound.bottomLeft().x() + j, parentBound.bottomLeft().y());
 
-      QPointF pointInit(parentBound.topLeft().x() + j + (m_maxWidthTextMM/2), boundingRect().topLeft().y() /*- (widgetRect*.01)*/); //inferior
+      QPointF pointInit(parentBound.topLeft().x() + j + (m_maxWidthTextMM/2), boundingRect().topLeft().y() + (m_maxHeigthTextMM)); //lower
       drawText(pointInit, painter, text.toStdString(), true);
-      QPointF pointFinal(parentBound.bottomLeft().x() + j  - (m_maxWidthTextMM/2), parentBound.bottomLeft().y() + (widgetRect*.01)); //superior
+      QPointF pointFinal(parentBound.bottomLeft().x() + j  - (m_maxWidthTextMM/2), parentBound.bottomLeft().y()); //upper
       drawText(pointFinal, painter, text.toStdString());
 
       painter->drawLine(lineTwo);

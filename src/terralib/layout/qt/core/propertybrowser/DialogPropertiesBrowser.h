@@ -101,6 +101,11 @@ namespace te
             
       protected slots:
 
+         /*
+          \brief Call when one of the Windows was close.
+        */
+        virtual void onDestroyed(QObject* obj = 0);
+
         /*
           \brief By default it is connected with the internalDlg method of the class QtDlgEditorFactory. 
             The internalDlg method is called when an item of property browser tree is clicked.
@@ -115,6 +120,10 @@ namespace te
         virtual void onShowImageDlg();
 
         virtual void onShowTextGridSettingsDlg();
+
+        virtual void onShowFontDlg();
+
+        virtual void onShowColorDlg();
 
       signals:
 
@@ -134,6 +143,7 @@ namespace te
         QtDlgEditorFactory*             m_dlgEditorFactory;
         std::map<std::string, Property> m_dlgProps;
         Property                        m_currentPropertyClicked;
+        QList<QWidget*>                 m_dialogs;
     };
   }
 }

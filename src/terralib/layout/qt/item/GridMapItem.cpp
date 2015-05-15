@@ -29,17 +29,18 @@
 #include "GridMapItem.h"
 #include "../../core/pattern/mvc/ItemController.h"
 #include "../../core/AbstractScene.h"
-#include "../../core/pattern/mvc/Observable.h"
+#include "../../core/pattern/mvc/ItemModelObservable.h"
 #include "../../../color/RGBAColor.h"
 #include "../../../qt/widgets/Utils.h"
 #include "../../../geometry/Envelope.h"
 #include "../../../common/STLUtils.h"
 #include "../../item/GridMapModel.h"
-#include "MapItem.h"
-
-//Qt
-#include <QStyleOptionGraphicsItem>
 #include "../../core/WorldTransformer.h"
+#include "MapItem.h"
+#include "../../item/MapModel.h"
+
+// Qt
+#include <QStyleOptionGraphicsItem>
 
 te::layout::GridMapItem::GridMapItem( ItemController* controller, Observable* o ) :
   ObjectItem(controller, o),
@@ -49,6 +50,9 @@ te::layout::GridMapItem::GridMapItem( ItemController* controller, Observable* o 
   m_changeSize(false)
 {  
   m_nameClass = std::string(this->metaObject()->className());
+
+  //The text size or length that exceeds the sides will be cut
+  setFlag(QGraphicsItem::ItemClipsToShape);
 }
 
 te::layout::GridMapItem::~GridMapItem()
@@ -76,69 +80,6 @@ void te::layout::GridMapItem::paint( QPainter * painter, const QStyleOptionGraph
   {
     drawSelection(painter);
   }
-}
-
-void te::layout::GridMapItem::drawGrid( QPainter* painter )
-{
-  GridMapModel* model = dynamic_cast<GridMapModel*>(m_model);
-  if(!model)
-  {
-    return;
-  }
-
-  painter->save();
-
-  QRectF parentBound = boundingRect();
-
-  if(parentItem())
-  {
-    parentBound = parentItem()->boundingRect();
-  }
-
-  QPainterPath gridMapPath;
-  gridMapPath.setFillRule(Qt::WindingFill);
-
-  int heightRect = (int)parentBound.height();
-  int widgetRect = (int)parentBound.width();
-
-  te::color::RGBAColor rgbColor = model->getLineColor();
-  QColor cLine(rgbColor.getRed(), rgbColor.getGreen(), rgbColor.getBlue(), rgbColor.getAlpha());
-
-  painter->setPen(QPen(cLine, 0, Qt::SolidLine));
-
-  QFont ft(model->getFontFamily().c_str(), model->getTextPointSize());
-
-  painter->setFont(ft);
-
-  m_maxHeigthTextMM = m_onePointMM * ft.pointSize();
-
-  //QString text = "A";
-
-  for (int i = 0; i <= heightRect; i+=10)
-  {
-    QLineF lineOne = QLineF(parentBound.topLeft().x(), parentBound.topLeft().y() + i, parentBound.topRight().x(), parentBound.topRight().y() + i);
-
-    QPointF pointInit(parentBound.topLeft().x(), parentBound.topLeft().y() + i - (m_maxHeigthTextMM/2)); //left
-    //drawText(pointInit, painter, text.toStdString(), true);
-    QPointF pointFinal(parentBound.topRight().x(), parentBound.topRight().y() + i  - (m_maxHeigthTextMM/2)); //right
-    //drawText(pointFinal, painter, text.toStdString());
-
-    painter->drawLine(lineOne);
-
-    for (int j = 0; j <= widgetRect; j+=10)
-    {
-      QLineF lineTwo = QLineF(parentBound.topLeft().x() + j, parentBound.topLeft().y(), parentBound.bottomLeft().x() + j, parentBound.bottomLeft().y());
-
-      QPointF pointInit(parentBound.topLeft().x() + j + (m_maxWidthTextMM/2), boundingRect().topLeft().y()); //upper
-      //drawText(pointInit, painter, text.toStdString(), true);
-      QPointF pointFinal(parentBound.bottomLeft().x() + j  - (m_maxWidthTextMM/2), parentBound.bottomLeft().y()); //lower
-      //drawText(pointFinal, painter, text.toStdString());
-
-      painter->drawLine(lineTwo);
-    }    
-  }
-    
-  painter->restore();
 }
 
 void te::layout::GridMapItem::drawText( QPointF point, QPainter* painter, std::string text, bool displacementLeft /*= false*/, bool displacementRight /*= false*/ )
@@ -235,12 +176,12 @@ QVariant te::layout::GridMapItem::itemChange( QGraphicsItem::GraphicsItemChange 
     {
       if(parentItem())
       {
-        MapItem* mapItem = dynamic_cast<MapItem*>(parentItem());
-        if(mapItem)
+        MapItem* item = dynamic_cast<MapItem*>(parentItem());
+        if(item)
         {
-          if(mapItem->getModel())
+          if(item->getModel())
           {
-            model->setMapName(mapItem->getModel()->getName());
+            model->setMapName(item->getModel()->getName());
           }
         }
       }
@@ -248,6 +189,23 @@ QVariant te::layout::GridMapItem::itemChange( QGraphicsItem::GraphicsItemChange 
   }
   return QGraphicsItem::itemChange(change, value);
 }
+
+void te::layout::GridMapItem::drawGrid( QPainter* painter )
+{
+
+}
+
+void te::layout::GridMapItem::drawVerticalLines()
+{
+
+}
+
+void te::layout::GridMapItem::drawHorizontalLines()
+{
+
+}
+
+
 
 
 
