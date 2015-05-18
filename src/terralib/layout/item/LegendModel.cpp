@@ -288,6 +288,12 @@ te::layout::Properties* te::layout::LegendModel::getProperties() const
 
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
 
+  Property pro_legendchoice(m_hashCode);
+  pro_legendchoice.setName("legendChoice");
+  pro_legendchoice.setValue(m_name, dataType->getDataTypeLegendChoice());
+  pro_legendchoice.setMenu(true);
+  m_properties->addProperty(pro_legendchoice);
+
   Property pro_mapName(m_hashCode);
   pro_mapName.setName(m_sharedProps->getMapName());
   pro_mapName.setValue(m_mapName, dataType->getDataTypeStringList());

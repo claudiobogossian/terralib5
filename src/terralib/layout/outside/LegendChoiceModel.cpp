@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,40 +18,44 @@
  */
 
 /*!
-  \file MapLayerChoiceOutsideModel.h
+  \file LegendChoiceModel.cpp
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_MAP_LAYER_CHOICE_MODEL_H 
-#define __TERRALIB_LAYOUT_INTERNAL_MAP_LAYER_CHOICE_MODEL_H
-
 // TerraLib
-#include "../core/pattern/mvc/OutsideModelObservable.h"
-#include "../core/ContextItem.h"
+#include "LegendChoiceModel.h"
+#include "../core/property/Property.h"
 #include "../core/property/Properties.h"
-#include "../core/Config.h"
+#include "../core/enum/Enums.h"
 
-namespace te
+te::layout::LegendChoiceModel::LegendChoiceModel() 
 {
-  namespace layout
-  {
-    class TELAYOUTEXPORT MapLayerChoiceModel : public OutsideModelObservable
-    {
-    public:
-
-      MapLayerChoiceModel();
-
-      virtual ~MapLayerChoiceModel();
-
-      virtual void updateProperties(te::layout::Properties* properties);
-
-      virtual Properties* getProperties() const;
-
-    };
-  }
+  m_type = Enums::getInstance().getEnumObjectType()->getMapLayerChoice();
+  m_box = te::gm::Envelope(0., 0., 200., 200.);
 }
 
-#endif
+te::layout::LegendChoiceModel::~LegendChoiceModel()
+{
+
+}
+
+te::layout::Properties* te::layout::LegendChoiceModel::getProperties() const
+{
+  m_properties->clear();
+
+  Property pro_name(m_hashCode);
+  pro_name.setName(m_name);
+
+  m_properties->addProperty(pro_name);
+
+  m_properties->setTypeObj(m_type);
+  return m_properties;
+}
+
+void te::layout::LegendChoiceModel::updateProperties( te::layout::Properties* properties )
+{
+
+}

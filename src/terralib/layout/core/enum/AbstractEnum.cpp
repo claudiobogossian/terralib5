@@ -130,3 +130,21 @@ int te::layout::AbstractEnum::size()
   return m_enums.size();
 }
 
+te::layout::EnumType* te::layout::AbstractEnum::createEnum(std::string name, AbstractEnum* type, std::string label)
+{
+  int id = maxId();
+  ++id;
+
+  EnumType* enumType = new EnumType(id, name, type);
+
+  if(label.compare("") == 0)
+  {
+    label = name;
+  }
+  enumType->setLabel(label);
+
+  m_enums.push_back(enumType);
+
+  return enumType;
+}
+

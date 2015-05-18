@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,38 +18,32 @@
  */
 
 /*!
-  \file MapLayerChoiceOutsideModel.h
+  \file LegendChoiceController.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_MAP_LAYER_CHOICE_MODEL_H 
-#define __TERRALIB_LAYOUT_INTERNAL_MAP_LAYER_CHOICE_MODEL_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_LEGEND_CHOICE_CONTROLLER_H 
+#define __TERRALIB_LAYOUT_INTERNAL_LEGEND_CHOICE_CONTROLLER_H
 
 // TerraLib
-#include "../core/pattern/mvc/OutsideModelObservable.h"
-#include "../core/ContextItem.h"
-#include "../core/property/Properties.h"
+#include "../core/pattern/mvc/OutsideController.h"
+#include "../core/property/Property.h"
 #include "../core/Config.h"
 
 namespace te
 {
   namespace layout
   {
-    class TELAYOUTEXPORT MapLayerChoiceModel : public OutsideModelObservable
+    class TELAYOUTEXPORT LegendChoiceController : public OutsideController
     {
-    public:
+      public:
 
-      MapLayerChoiceModel();
+	      LegendChoiceController( Observable* o );
 
-      virtual ~MapLayerChoiceModel();
-
-      virtual void updateProperties(te::layout::Properties* properties);
-
-      virtual Properties* getProperties() const;
-
+	      virtual ~LegendChoiceController();
     };
   }
 }

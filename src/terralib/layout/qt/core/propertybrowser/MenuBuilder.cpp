@@ -169,6 +169,14 @@ void te::layout::MenuBuilder::onMenuTriggered( QAction* action )
   {
     onShowImageDlg();
   }
+  if(m_currentPropertyClicked.getType() == dataType->getDataTypeMapChoice())
+  {
+    onShowMapLayerChoiceDlg();
+  }
+  if(m_currentPropertyClicked.getType() == dataType->getDataTypeLegendChoice())
+  {
+    onShowLegendChoiceDlg();
+  }
   else if(m_currentPropertyClicked.getType() == dataType->getDataTypeBool())
   {
     checkedBool(action->isChecked());

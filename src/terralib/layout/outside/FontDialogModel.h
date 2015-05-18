@@ -18,15 +18,15 @@
  */
 
 /*!
-  \file MapLayerChoiceOutsideModel.h
+  \file FontDialogModel.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_MAP_LAYER_CHOICE_MODEL_H 
-#define __TERRALIB_LAYOUT_INTERNAL_MAP_LAYER_CHOICE_MODEL_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_FONT_DIALOG_MODEL_H
+#define __TERRALIB_LAYOUT_INTERNAL_FONT_DIALOG_MODEL_H
 
 // TerraLib
 #include "../core/pattern/mvc/OutsideModelObservable.h"
@@ -38,18 +38,13 @@ namespace te
 {
   namespace layout
   {
-    class TELAYOUTEXPORT MapLayerChoiceModel : public OutsideModelObservable
+    class TELAYOUTEXPORT FontDialogModel : public OutsideModelObservable
     {
     public:
 
-      MapLayerChoiceModel();
+      FontDialogModel();
 
-      virtual ~MapLayerChoiceModel();
-
-      virtual void updateProperties(te::layout::Properties* properties);
-
-      virtual Properties* getProperties() const;
-
+      virtual ~FontDialogModel();
     };
   }
 }

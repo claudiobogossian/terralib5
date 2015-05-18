@@ -18,20 +18,18 @@
  */
 
 /*!
-  \file terralib/layout/qt/outside/MapLayerChoiceOutside.h
+  \file terralib/layout/qt/outside/LegendChoiceOutside.h
 
-  \brief
+  \brief 
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_MAP_LAYER_CHOICE_OUTSIDE_H
-#define __TERRALIB_LAYOUT_INTERNAL_MAP_LAYER_CHOICE_OUTSIDE_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_LEGEND_CHOICE_OUTSIDE_H
+#define __TERRALIB_LAYOUT_INTERNAL_LEGEND_CHOICE_OUTSIDE_H
 
 // TerraLib
 #include "../../../qt/widgets/utils/DoubleListWidget.h"
-#include "../../../maptools/AbstractLayer.h"
-#include "../../core/Config.h"
-#include "terralib/dataaccess/datasource/DataSource.h"
 #include "../../core/pattern/mvc/OutsideObserver.h"
+#include "../../core/Config.h"
 
 // STL
 #include <map>
@@ -40,10 +38,7 @@
 // Qt
 #include <QDialog>
 
-namespace Ui { class MapLayerChoice; }
-
-// Forward declarations
-class QModelIndex;
+namespace Ui { class LegendChoice; }
 
 namespace te
 {
@@ -52,27 +47,16 @@ namespace te
     class OutsideController;
     class Observable;
 
-    class TELAYOUTEXPORT MapLayerChoiceOutside : public QDialog, public OutsideObserver 
+    class TELAYOUTEXPORT LegendChoiceOutside : public QDialog, public OutsideObserver 
     {
       Q_OBJECT
 
       public:
 
-        MapLayerChoiceOutside(OutsideController* controller, Observable* o);
+        LegendChoiceOutside(OutsideController* controller, Observable* o);
 
-        ~MapLayerChoiceOutside();
-
-        /*!
-          \brief Set the layer that can be used
-
-          \param layers   List of AbstractLayerPtr
-        */
-        void setLayers(std::list<te::map::AbstractLayerPtr> layers);
-
-        te::map::AbstractLayerPtr getLayer();
-
-        te::da::DataSourcePtr getDataSource();
-
+        ~LegendChoiceOutside();
+        
         virtual void updateObserver( ContextItem context );
 
         virtual void setPosition( const double& x, const double& y );
@@ -91,16 +75,11 @@ namespace te
 
       private:
 
-        std::auto_ptr<Ui::MapLayerChoice> m_ui;
+        std::auto_ptr<Ui::LegendChoice> m_ui;
         std::auto_ptr<te::qt::widgets::DoubleListWidget> m_widget;
-        std::list<te::map::AbstractLayerPtr> m_layers;  //!< List of layers.
-        te::da::DataSourcePtr m_dataSource;
-        te::map::AbstractLayerPtr m_selectedLayer;  //!< Layer 
-        std::vector<std::string> m_selectedProps; //!< Selected properties related to the selected Layer
-
     };
-  }    
-}     
+  }   
+}    
 
 #endif
 

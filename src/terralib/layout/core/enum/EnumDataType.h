@@ -157,6 +157,20 @@ namespace te
         */
         virtual EnumType* getDataTypeGroup() const;
 
+        /*!
+          \brief Returns value that represents type Map Choice (string) belonging to enumeration.
+		  
+		      \return enum value   	  
+        */
+        virtual EnumType* getDataTypeMapChoice() const;
+
+        /*!
+          \brief Returns value that represents type Legend Choice (string) belonging to enumeration.
+		  
+		      \return enum value   	  
+        */
+        virtual EnumType* getDataTypeLegendChoice() const;
+
       protected:
 
         /*!
@@ -180,6 +194,8 @@ namespace te
         EnumType* m_dataTypeImage; //!< value that represents type image (string) belonging to enumeration
         EnumType* m_dataTypeTextGridSettings; //!< value that represents type TextGridSettings (string) belonging to enumeration
         EnumType* m_dataTypeGroup; //!< value that represents type Group (string) belonging to enumeration
+        EnumType* m_dataTypeMapChoice; //!< value that represents type Map Choice (string) belonging to enumeration
+        EnumType* m_dataTypeLegendChoice; //!< value that represents type Legend Choice (string) belonging to enumeration
     };
   }
 }

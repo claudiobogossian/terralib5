@@ -98,6 +98,8 @@ namespace te
         virtual EnumType* getLayoutType(QVariant::Type type, std::string name = "");
 
         virtual int getVariantType(EnumType* dataType);
+
+        virtual void clearAll();
             
       protected slots:
 
@@ -124,6 +126,10 @@ namespace te
         virtual void onShowFontDlg();
 
         virtual void onShowColorDlg();
+
+        virtual void onShowMapLayerChoiceDlg();
+
+        virtual void onShowLegendChoiceDlg();
 
       signals:
 

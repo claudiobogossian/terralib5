@@ -107,6 +107,11 @@ namespace te
           */ 
           virtual void init() = 0;
 
+          /*!
+            \brief Creates the enumeration values and adds the list
+          */ 
+          virtual EnumType* createEnum(std::string name, AbstractEnum* type, std::string label = "");
+
       protected:
 
         std::vector<EnumType*> m_enums; //!< list of enumeration values

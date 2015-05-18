@@ -18,40 +18,23 @@
  */
 
 /*!
-  \file MapLayerChoiceOutsideModel.h
+  \file FontDialogController.cpp
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_MAP_LAYER_CHOICE_MODEL_H 
-#define __TERRALIB_LAYOUT_INTERNAL_MAP_LAYER_CHOICE_MODEL_H
-
 // TerraLib
-#include "../core/pattern/mvc/OutsideModelObservable.h"
-#include "../core/ContextItem.h"
-#include "../core/property/Properties.h"
-#include "../core/Config.h"
+#include "FontDialogController.h"
 
-namespace te
+te::layout::FontDialogController::FontDialogController( Observable* o ) :
+	OutsideController(o)
 {
-  namespace layout
-  {
-    class TELAYOUTEXPORT MapLayerChoiceModel : public OutsideModelObservable
-    {
-    public:
-
-      MapLayerChoiceModel();
-
-      virtual ~MapLayerChoiceModel();
-
-      virtual void updateProperties(te::layout::Properties* properties);
-
-      virtual Properties* getProperties() const;
-
-    };
-  }
+  
 }
 
-#endif
+te::layout::FontDialogController::~FontDialogController()
+{
+
+}

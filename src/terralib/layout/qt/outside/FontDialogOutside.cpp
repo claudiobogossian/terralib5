@@ -18,40 +18,55 @@
  */
 
 /*!
-  \file MapLayerChoiceOutsideModel.h
+  \file FontDialogOutside.cpp
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_MAP_LAYER_CHOICE_MODEL_H 
-#define __TERRALIB_LAYOUT_INTERNAL_MAP_LAYER_CHOICE_MODEL_H
-
 // TerraLib
-#include "../core/pattern/mvc/OutsideModelObservable.h"
-#include "../core/ContextItem.h"
-#include "../core/property/Properties.h"
-#include "../core/Config.h"
+#include "FontDialogOutside.h"
 
-namespace te
+// Qt
+
+te::layout::FontDialogOutside::FontDialogOutside( OutsideController* controller, Observable* o ) :
+	QFontDialog(0),
+	OutsideObserver(controller, o)
 {
-  namespace layout
-  {
-    class TELAYOUTEXPORT MapLayerChoiceModel : public OutsideModelObservable
-    {
-    public:
-
-      MapLayerChoiceModel();
-
-      virtual ~MapLayerChoiceModel();
-
-      virtual void updateProperties(te::layout::Properties* properties);
-
-      virtual Properties* getProperties() const;
-
-    };
-  }
+  
 }
 
-#endif
+te::layout::FontDialogOutside::~FontDialogOutside()
+{
+
+}
+
+void te::layout::FontDialogOutside::updateObserver( ContextItem context )
+{
+  
+}
+
+void te::layout::FontDialogOutside::createLayout()
+{
+  //Layout
+}
+
+void te::layout::FontDialogOutside::setPosition( const double& x, const double& y )
+{
+  
+}
+
+te::gm::Coord2D te::layout::FontDialogOutside::getPosition()
+{
+  QPointF posF = pos();
+  qreal valuex = posF.x();
+  qreal valuey = posF.y();
+
+  te::gm::Coord2D coordinate;
+  coordinate.x = valuex;
+  coordinate.y = valuey;
+
+  return coordinate;
+}
+

@@ -18,39 +18,62 @@
  */
 
 /*!
-  \file MapLayerChoiceOutsideModel.h
+  \file ColorDialogOutside.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_MAP_LAYER_CHOICE_MODEL_H 
-#define __TERRALIB_LAYOUT_INTERNAL_MAP_LAYER_CHOICE_MODEL_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_COLOR_DIALOG_OUTSIDE_H 
+#define __TERRALIB_LAYOUT_INTERNAL_COLOR_DIALOG_OUTSIDE_H
+
+// Qt
+#include <QColorDialog>
 
 // TerraLib
-#include "../core/pattern/mvc/OutsideModelObservable.h"
-#include "../core/ContextItem.h"
-#include "../core/property/Properties.h"
-#include "../core/Config.h"
+#include "../../core/pattern/mvc/OutsideObserver.h"
+#include "../../../geometry/Envelope.h"
+#include "../../core/Config.h"
+
+// STL
+#include <vector>
 
 namespace te
 {
   namespace layout
   {
-    class TELAYOUTEXPORT MapLayerChoiceModel : public OutsideModelObservable
+    
+    /*!
+    \brief 
+	  
+	    \ingroup layout
+
+	    \sa te::layout::OutsideObserver
+	  */
+    class TELAYOUTEXPORT ColorDialogOutside : public QColorDialog, public OutsideObserver
     {
-    public:
+	    Q_OBJECT //for slots/signals
 
-      MapLayerChoiceModel();
+      public:
 
-      virtual ~MapLayerChoiceModel();
+	      ColorDialogOutside(OutsideController* controller, Observable* o);
 
-      virtual void updateProperties(te::layout::Properties* properties);
+	      virtual ~ColorDialogOutside();
 
-      virtual Properties* getProperties() const;
+	      virtual void updateObserver(ContextItem context);
 
-    };
+	      virtual void setPosition(const double& x, const double& y);
+
+	      virtual te::gm::Coord2D getPosition();
+
+        virtual void refreshOutside();
+
+      protected:
+
+        virtual void createLayout();
+
+      };
   }
 }
 

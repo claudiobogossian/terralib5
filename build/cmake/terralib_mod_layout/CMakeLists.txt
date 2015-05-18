@@ -166,7 +166,10 @@ else()
 								 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/layout/qt/outside/MapLayerChoiceOutside.h
 								 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/layout/qt/core/propertybrowser/DialogPropertiesBrowser.h
 								 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/layout/qt/core/propertybrowser/VariantPropertiesBrowser.h
-								 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/layout/qt/core/BuildGraphicsItem.h)
+								 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/layout/qt/core/BuildGraphicsItem.h
+								 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/layout/qt/outside/ColorDialogOutside.h
+								 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/layout/qt/outside/LegendChoiceOutside.h
+								 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/layout/qt/outside/FontDialogOutside.h)
 
   QT4_WRAP_CPP(TERRALIB_GEN_SRC_FILES ${TERRALIB_HDRS_TO_MOC_FILES} OPTIONS -DBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
 
