@@ -162,7 +162,7 @@ void te::qt::plugins::gdal::Plugin::openFileDialog()
     ds->setAccessDriver("GDAL");
 
     std::map<std::string, std::string> dsinfo;
-    dsinfo["URI"] = it->toStdString();
+    dsinfo["URI"] = it->toLatin1().toStdString();
 
     ds->setConnInfo(dsinfo);
 
