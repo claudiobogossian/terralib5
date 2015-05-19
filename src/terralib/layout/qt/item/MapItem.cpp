@@ -384,7 +384,7 @@ void te::layout::MapItem::mouseMoveEvent( QGraphicsSceneMouseEvent * event )
   if(!iUtils->isCurrentMapTools())
   {
     clearCurrentTool();
-    ParentItem::mouseMoveEvent(event);
+    ParentItem<QGraphicsProxyWidget>::mouseMoveEvent(event);
   }
   else
   {
@@ -410,7 +410,7 @@ void te::layout::MapItem::mousePressEvent( QGraphicsSceneMouseEvent * event )
   if(!iUtils->isCurrentMapTools())
   {
     clearCurrentTool();
-    ParentItem::mousePressEvent(event);
+    ParentItem<QGraphicsProxyWidget>::mousePressEvent(event);
   }
   else
   {
@@ -436,7 +436,7 @@ void te::layout::MapItem::mouseReleaseEvent( QGraphicsSceneMouseEvent * event )
   if(!iUtils->isCurrentMapTools())
   {
     clearCurrentTool();
-    ParentItem::mouseReleaseEvent(event); 
+    ParentItem<QGraphicsProxyWidget>::mouseReleaseEvent(event); 
   }
   else
   {

@@ -429,10 +429,10 @@ namespace te
 
     inline void Envelope::makeInvalid()
     {
-      init(std::numeric_limits<double>::max(),
-           std::numeric_limits<double>::max(),
-           -(std::numeric_limits<double>::max()),
-           -(std::numeric_limits<double>::max()));
+      init((std::numeric_limits<double>::max)(),
+           (std::numeric_limits<double>::max)(),
+           -((std::numeric_limits<double>::max)()),
+           -((std::numeric_limits<double>::max)()));
     }
 
     inline bool Envelope::isValid() const

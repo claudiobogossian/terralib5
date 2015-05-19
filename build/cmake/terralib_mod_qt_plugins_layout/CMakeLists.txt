@@ -25,6 +25,7 @@
 
 include_directories(${Boost_INCLUDE_DIR})
 include_directories(${QTPROPERTYBROWSER_INCLUDE_DIR})
+include_directories(${LOG4CXX_INCLUDE_DIR})
 
 if(WIN32)
   add_definitions(-DTEQTPLUGINLAYOUTDLL)

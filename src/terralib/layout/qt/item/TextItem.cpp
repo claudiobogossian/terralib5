@@ -171,7 +171,7 @@ QImage te::layout::TextItem::createImage()
   double h = document()->size().height();
   
   QImage img(w, h, QImage::Format_ARGB32_Premultiplied);
-  img.fill(m_backgroundColor);
+  img.fill(m_backgroundColor.rgba());
 
   QPainter ptr(&img);
   ptr.setFont(ft);
