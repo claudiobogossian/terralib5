@@ -31,9 +31,11 @@
 // TerraLib
 #include "Observable.h"
 #include "../../Config.h"
+#include "../../property/Property.h"
 
 // STL
 #include <set>
+#include <vector>
 
 namespace te
 {
@@ -41,6 +43,7 @@ namespace te
   {
     class Observer;
     class SharedProperties;
+    class ItemObserver;
 
     /*!
       \brief Abstract class to represent an observable. "Model" part of MVC component. All classes representing the model of a component must inherit from this class.
@@ -186,6 +189,26 @@ namespace te
         /*!
           \brief Reimplemented from Observable
          */
+        virtual std::set<ItemObserver*> getChildren() const;
+        
+        /*!
+          \brief Reimplemented from Observable
+         */
+        virtual bool addChildren( ItemObserver* item );
+
+        /*!
+        \brief Reimplemented from Observable
+        */
+        virtual bool removeChildren(int hashCode);
+
+        /*!
+          \brief Reimplemented from Observable
+       */
+        virtual te::layout::Properties* getPublicProperties() const;
+
+        /*!
+          \brief Reimplemented from Observable
+         */
         virtual int getZValue();
 
         /*!
@@ -251,6 +274,20 @@ namespace te
           \return value of old position
          */
         virtual te::gm::Coord2D getOldPos();
+
+        /*!
+          \brief Returns true if MVC component can have children, false otherwise.
+
+          \return true if MVC component can have children, false otherwise
+         */
+        virtual bool isEnableChildren();
+
+        /*!
+          \brief Sets true if MVC component can have children, false otherwise.
+
+          \param true if MVC component can have children, false otherwise
+         */
+        virtual void setEnableChildren(bool value);
                 
       protected:
 
@@ -267,25 +304,32 @@ namespace te
           \param context maintaining the drawing context of a MVC component
          */
         virtual void drawBackground(ContextItem context);
+
+        virtual void addChildrenProperties(Properties* properties);
+
+        virtual void updateChildrenProperties(Property prop);
                 
       protected:
-        std::set<Observer*>	      m_observers; //!< set of observers of this object
-        int							          m_id; //!< hashcode
-        te::gm::Envelope					m_box; //!< bounding rectangle 
-        te::gm::Coord2D			      m_centerCoordinate; //!< center coordinate of the bounding rectangle
-        te::color::RGBAColor			m_backgroundColor; //!< background color
-        te::color::RGBAColor			m_borderColor; //!< border color
-        Properties*               m_properties; //!< properties
-        EnumType*                 m_type; //!< type of the MVC component
-        int                       m_zValue; //!< The Z value decides the stacking order of drawing
-        SharedProperties*         m_sharedProps; //!< Names of common properties among all MVC components
-        bool                      m_border; //!< true if should be drawn border, false otherwise
-        std::string               m_name; //!< name of the MVC component
-        bool                      m_resizable; //!< true if resizable, false otherwise
-        double                    m_angle; //!< value of rotation
-        int                       m_hashCode;
-        double                    m_oldAngle; //!< value of old rotation
-        te::gm::Coord2D           m_oldPos; //!< value of old position
+        std::set<Observer*>	       m_observers; //!< set of observers of this object
+        int							           m_id; //!< hashcode
+        te::gm::Envelope					 m_box; //!< bounding rectangle 
+        te::gm::Coord2D			       m_centerCoordinate; //!< center coordinate of the bounding rectangle
+        te::color::RGBAColor			 m_backgroundColor; //!< background color
+        te::color::RGBAColor			 m_borderColor; //!< border color
+        Properties*                m_properties; //!< properties
+        std::set<ItemObserver*>    m_children; //!< children components
+        Properties*                m_publicProperties; //!< public properties
+        EnumType*                  m_type; //!< type of the MVC component
+        int                        m_zValue; //!< The Z value decides the stacking order of drawing
+        SharedProperties*          m_sharedProps; //!< Names of common properties among all MVC components
+        bool                       m_border; //!< true if should be drawn border, false otherwise
+        std::string                m_name; //!< name of the MVC component
+        bool                       m_resizable; //!< true if resizable, false otherwise
+        double                     m_angle; //!< value of rotation
+        int                        m_hashCode;
+        double                     m_oldAngle; //!< value of old rotation
+        te::gm::Coord2D            m_oldPos; //!< value of old position
+        bool                       m_enableChildren; //!< true if MVC component can have children, false otherwise
     };
   }
 }

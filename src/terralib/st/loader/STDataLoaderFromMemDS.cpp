@@ -337,6 +337,56 @@ te::st::STDataLoaderFromMemDS::getDataSet(const TimeSeriesDataSetInfo& info,
 }
 
 std::auto_ptr<te::st::TimeSeriesDataSet> 
+te::st::STDataLoaderFromMemDS::getDataSet(const TimeSeriesDataSetInfo& info,  
+                             const te::gm::Geometry& geom, te::gm::SpatialRelation r,
+                             te::common::TraverseType travType)
+{
+  if(!info.getObservationDataSetInfo().hasGeomProp())
+    return std::auto_ptr<te::st::TimeSeriesDataSet>();
+  
+  //load the DataSet from its origin DataSource and put it into the In-Mem DataSource
+  if(!m_ds->dataSetExists(info.getObservationDataSetInfo().getDataSetName())) 
+    loadDataSet(info.getObservationDataSetInfo().getDataSourceInfo(), info.getObservationDataSetInfo().getDataSetName(), 
+                info.getObservationDataSetInfo().getBeginTimePropName(), 
+                info.getObservationDataSetInfo().getEndTimePropName(), 
+                info.getObservationDataSetInfo().getGeomPropName()); 
+
+  //get data set type to get the geometry property name
+  std::string geomPropName = info.getObservationDataSetInfo().getGeomPropName();
+  
+  //get the data set, applying the spatial filter
+  std::auto_ptr<te::da::DataSet> dset(m_ds->getDataSet(info.getObservationDataSetInfo().getDataSetName(), 
+                                      geomPropName, &geom, r, travType));
+  
+  return buildDataSet(static_cast<te::stmem::DataSet*>(dset.release()), info);
+}
+
+std::auto_ptr<te::st::TimeSeriesDataSet>
+te::st::STDataLoaderFromMemDS::getDataSet(const TimeSeriesDataSetInfo& info, 
+                                const te::gm::Envelope& e, te::gm::SpatialRelation r,               
+                                te::common::TraverseType travType)
+{
+  if(!info.getObservationDataSetInfo().hasGeomProp())
+    return std::auto_ptr<te::st::TimeSeriesDataSet>();
+  
+  //load the DataSet from its origin DataSource and put it into the In-Mem DataSource
+  if(!m_ds->dataSetExists(info.getObservationDataSetInfo().getDataSetName())) 
+    loadDataSet(info.getObservationDataSetInfo().getDataSourceInfo(), info.getObservationDataSetInfo().getDataSetName(), 
+                info.getObservationDataSetInfo().getBeginTimePropName(), 
+                info.getObservationDataSetInfo().getEndTimePropName(), 
+                info.getObservationDataSetInfo().getGeomPropName()); 
+
+  //get data set type to get the geometry property name
+  std::string geomPropName = info.getObservationDataSetInfo().getGeomPropName();
+  
+  //get the data set, applying the spatial filter
+  std::auto_ptr<te::da::DataSet> dset(m_ds->getDataSet(info.getObservationDataSetInfo().getDataSetName(), 
+                                      geomPropName, &e, r, travType));
+  
+  return buildDataSet(static_cast<te::stmem::DataSet*>(dset.release()), info);
+}
+
+std::auto_ptr<te::st::TimeSeriesDataSet> 
 te::st::STDataLoaderFromMemDS::getDataSet(const TimeSeriesDataSetInfo& info, 
                           const te::dt::DateTime& dt, te::dt::TemporalRelation r,
                           te::common::TraverseType travType)
@@ -352,6 +402,50 @@ te::st::STDataLoaderFromMemDS::getDataSet(const TimeSeriesDataSetInfo& info,
 
   std::auto_ptr<te::da::DataSet> dset(inMemDataSource->getDataSet(
     info.getObservationDataSetInfo().getDataSetName(), &dt, r, travType));
+
+  return buildDataSet(static_cast<te::stmem::DataSet*>(dset.release()), info);
+}
+
+std::auto_ptr<te::st::TimeSeriesDataSet> 
+te::st::STDataLoaderFromMemDS::getDataSet(const TimeSeriesDataSetInfo& info,
+                                          const te::dt::DateTime& dt, 
+                                          te::dt::TemporalRelation tr,
+                                          const te::gm::Envelope& e, 
+                                          te::gm::SpatialRelation sr,
+                                          te::common::TraverseType travType)
+{
+  //load the DataSet from its origin DataSource and put it into the In-Mem DataSource
+  if(!m_ds->dataSetExists(info.getObservationDataSetInfo().getDataSetName())) 
+    loadDataSet(info.getObservationDataSetInfo().getDataSourceInfo(), info.getObservationDataSetInfo().getDataSetName(), 
+                info.getObservationDataSetInfo().getBeginTimePropName(), 
+                info.getObservationDataSetInfo().getEndTimePropName(), 
+                info.getObservationDataSetInfo().getGeomPropName()); 
+
+  te::stmem::DataSource* inMemDataSource = static_cast<te::stmem::DataSource*>(m_ds.get());
+
+  std::auto_ptr<te::da::DataSet> dset(inMemDataSource->getDataSet(
+    info.getObservationDataSetInfo().getDataSetName(), &e, sr, &dt, tr, travType));
+
+  return buildDataSet(static_cast<te::stmem::DataSet*>(dset.release()), info);
+}
+
+std::auto_ptr<te::st::TimeSeriesDataSet>  
+te::st::STDataLoaderFromMemDS::getDataSet(const TimeSeriesDataSetInfo& info, 
+                          const te::gm::Geometry& geom, te::gm::SpatialRelation sr,
+                          const te::dt::DateTime& dt, te::dt::TemporalRelation tr,
+                          te::common::TraverseType travType)
+{
+  //load the DataSet from its origin DataSource and put it into the In-Mem DataSource
+  if(!m_ds->dataSetExists(info.getObservationDataSetInfo().getDataSetName())) 
+    loadDataSet(info.getObservationDataSetInfo().getDataSourceInfo(), info.getObservationDataSetInfo().getDataSetName(), 
+                info.getObservationDataSetInfo().getBeginTimePropName(), 
+                info.getObservationDataSetInfo().getEndTimePropName(), 
+                info.getObservationDataSetInfo().getGeomPropName()); 
+
+  te::stmem::DataSource* inMemDataSource = static_cast<te::stmem::DataSource*>(m_ds.get());
+
+  std::auto_ptr<te::da::DataSet> dset(inMemDataSource->getDataSet(
+    info.getObservationDataSetInfo().getDataSetName(), &geom, sr, &dt, tr, travType));
 
   return buildDataSet(static_cast<te::stmem::DataSet*>(dset.release()), info);
 }

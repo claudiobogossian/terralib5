@@ -24,16 +24,9 @@
 */
 
 //Terralib
-
-#include "../common/progress/TaskProgress.h"
-#include "../common/Logger.h"
-#include "../common/Translator.h"
-
 #include "../dataaccess/dataset/DataSet.h"
 
 #include "../datatype/Property.h"
-
-#include "../dataaccess/dataset/ObjectIdSet.h"
 
 #include "../dataaccess/query/DataSetName.h"
 #include "../dataaccess/query/Expression.h"
@@ -45,39 +38,18 @@
 #include "../dataaccess/query/GroupByItem.h"
 #include "../dataaccess/query/PropertyName.h"
 #include "../dataaccess/query/Select.h"
-#include "../dataaccess/query/ST_Boundary.h"
 #include "../dataaccess/query/ST_Dump.h"
-#include "../dataaccess/query/ST_DumpRings.h"
 #include "../dataaccess/query/ST_Collect.h"
 #include "../dataaccess/query/ST_MakePolygon.h"
-#include "../dataaccess/query/ST_NumGeometries.h"
-#include "../dataaccess/query/ST_Union.h"
 #include "../dataaccess/query/SubSelect.h"
 #include "../dataaccess/query/Where.h"
-#include "../dataaccess/utils/Utils.h"
-
-#include "../geometry/Geometry.h"
-#include "../geometry/GeometryCollection.h"
-#include "../geometry/GeometryProperty.h"
-#include "../geometry/Utils.h"
-
-#include "../memory/DataSet.h"
-#include "../memory/DataSetItem.h"
 
 #include "LineToPolygonQuery.h"
-#include "Config.h"
-#include "Exception.h"
 #include "Utils.h"
 
 // STL
-#include <map>
-#include <math.h>
-#include <string>
+#include <memory>
 #include <vector>
-
-// BOOST
-#include <boost/lexical_cast.hpp>
-#include <boost/algorithm/string.hpp>
 
 te::vp::LineToPolygonQuery::LineToPolygonQuery()
 {}

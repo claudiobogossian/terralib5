@@ -42,14 +42,13 @@
 #include "../../item/GridGeodesicModel.h"
 #include "../../item/GridPlanarModel.h"
 #include "Scene.h"
+#include "../item/GridMapItem.h"
 
 // STL
 #include <stddef.h>  // defines NULL
 
-// Boost
-#include <boost/foreach.hpp>
-
 // Qt
+#include <QObject>
 #include <QGraphicsItem>
 #include <QGraphicsScene>
 #include <QTextDocument>
@@ -108,7 +107,10 @@ te::layout::MapItem* te::layout::ItemUtils::getMapItem( std::string name )
     if(!mit)
       continue;
 
-    if(mit->getName().compare(name) != 0)
+    if(!mit->getModel())
+      continue;
+
+    if(mit->getModel()->getName().compare(name) != 0)
       continue;
 
     map = mit;
@@ -135,7 +137,10 @@ std::vector<std::string> te::layout::ItemUtils::mapNameList(bool selected)
     if(!mit)
       continue;
 
-    std::string name = mit->getName();
+    if(!mit->getModel())
+      continue;
+
+    std::string name = mit->getModel()->getName();
     strList.push_back(name);
   }
 
@@ -403,3 +408,106 @@ void te::layout::ItemUtils::createLegendChildItemFromLegend( std::map<te::gm::Po
 
   Context::getInstance().setMode(mode->getModeNone());
 }
+
+std::vector<te::layout::Properties*> te::layout::ItemUtils::getGridMapProperties()
+{
+  std::vector<te::layout::Properties*> props;
+
+  std::vector<te::layout::GridMapItem*> gridMapItems = getMapChildren();
+
+  std::vector<te::layout::GridMapItem*>::iterator it = gridMapItems.begin();
+  for( ; it != gridMapItems.end() ; ++it)
+  {
+    if(!(*it))
+    {
+      continue;
+    }
+
+    if(!(*it)->getModel())
+    {
+      continue;;
+    }
+
+    Properties* prop = (*it)->getModel()->getProperties();
+    props.push_back(prop);
+  }
+
+  return props;
+}
+
+std::vector<te::layout::GridMapItem*> te::layout::ItemUtils::getMapChildren()
+{
+  std::vector<te::layout::GridMapItem*> gridMapItems;
+
+  QGraphicsItem *item = m_scene->selectedItems().first();
+  if(!item)
+  {
+    return gridMapItems;
+  }
+  
+  MapItem* map = dynamic_cast<MapItem*>(item);
+  if(!map)
+  {
+    return gridMapItems;
+  }
+
+  QList<QGraphicsItem*> graphicsItems = map->childItems();
+  foreach(QGraphicsItem *item, graphicsItems) 
+  {
+    if(!item)
+      continue;
+
+    GridMapItem* grid = dynamic_cast<GridMapItem*>(item);
+    if(!grid)
+    {
+      continue;
+    }
+
+    gridMapItems.push_back(grid);
+  }
+  
+  return gridMapItems;
+}
+
+QGraphicsItem* te::layout::ItemUtils::intersectionSelectionItem( int x, int y )
+{
+  QGraphicsItem* intersectionItem = 0;
+
+  AbstractScene* abstScene = Context::getInstance().getScene();
+
+  if(!abstScene)
+  {
+    return intersectionItem;
+  }
+
+  Scene* sc = dynamic_cast<Scene*>(abstScene);
+  if(!sc)
+  {
+    return intersectionItem;
+  }
+
+  QList<QGraphicsItem*> items = sc->selectedItems();
+
+  QPointF pt(x, y);
+
+  bool intersection = false;
+
+  foreach (QGraphicsItem *item, items) 
+  {
+    if(item)
+    {
+      bool intersection = item->contains(pt);
+      if(intersection)
+      {
+        intersectionItem = item;
+        break;
+      }
+    }
+  }
+
+  return intersectionItem;
+}
+
+
+
+

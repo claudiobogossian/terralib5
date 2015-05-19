@@ -57,47 +57,22 @@ namespace te
         
       protected:
 
+        virtual void drawBalloon(QPainter* painter);
+
         virtual void	mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
         
         virtual void  mousePressEvent ( QGraphicsSceneMouseEvent * event );
 
         virtual void	mouseMoveEvent ( QGraphicsSceneMouseEvent * event );
 
-        virtual void	hoverEnterEvent ( QGraphicsSceneHoverEvent * event );
-
-        virtual void	hoverLeaveEvent ( QGraphicsSceneHoverEvent * event );
-
-        virtual void	hoverMoveEvent ( QGraphicsSceneHoverEvent * event );
-
-        QPolygonF m_triangleRect; 
-        QPointF m_pointOne; 
-        QPointF m_pointTwo; 
-        QPointF m_pointThree; 
-        QPointF m_initialPosition; 
-        QPointF m_finalPosition; 
-        QPointF m_initialPoint; 
-        QPointF m_clikedArea; 
-        QPointF m_zero; 
-        bool m_flagReDraw; 
-        bool m_flagArrow; 
-        bool m_flagArea; 
-        bool m_flagChangeArrow; 
-        double m_deltaX; 
-        double m_deltaY;
-        double m_initialRect; 
-        double m_boundDeltaX; 
-        double m_boundDeltaY; 
-               
-        enum rectDiagonal 
-        {
-          UpLeft, 
-          UpRight, 
-          DownLeft, 
-          DownRight
-        };
-        rectDiagonal m_size; 
+        QPointF     m_initPoint;
+        QPointF     m_endPoint;
     };
   }
 }
 
 #endif
+
+
+
+

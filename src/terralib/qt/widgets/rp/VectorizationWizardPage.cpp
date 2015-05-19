@@ -129,11 +129,17 @@ te::da::DataSourceInfoPtr te::qt::widgets::VectorizationWizardPage::getDataSourc
 
 std::string te::qt::widgets::VectorizationWizardPage::getLayerName()
 {
+  if(m_ui->m_newLayerNameLineEdit->text().isEmpty())
+    return "";
+
   return m_ui->m_newLayerNameLineEdit->text().toStdString();
 }
 
 std::string te::qt::widgets::VectorizationWizardPage::getRepositoryName()
 {
+  if(m_ui->m_repositoryLineEdit->text().isEmpty())
+    return "";
+
   return m_ui->m_repositoryLineEdit->text().toStdString();
 }
 

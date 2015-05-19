@@ -94,4 +94,9 @@ void TerraView::onHelpTriggered()
   te::qt::widgets::HelpManager::getInstance().showHelp("terraview/index.html", "dpi.inpe.br.terraview");
 }
 
+void TerraView::startProject(const QString& projectFileName)
+{
+  openProject(projectFileName);
+}
+
 

@@ -73,21 +73,18 @@ te::layout::Properties* te::layout::ScaleModel::getProperties() const
 
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
 
-  Property pro_widthGap;
+  Property pro_widthGap(m_hashCode);
   pro_widthGap.setName("scale_width_rect_gap");
-  pro_widthGap.setId("");
   pro_widthGap.setValue(m_scaleGapX, dataType->getDataTypeDouble());
   m_properties->addProperty(pro_widthGap);
 
-  Property pro_heightGap;
+  Property pro_heightGap(m_hashCode);
   pro_heightGap.setName("scale_height_rect_gap");
-  pro_heightGap.setId("");
   pro_heightGap.setValue(m_scaleGapY, dataType->getDataTypeDouble());
   m_properties->addProperty(pro_heightGap);
 
-  Property pro_mapName;
+  Property pro_mapName(m_hashCode);
   pro_mapName.setName(m_sharedProps->getMapName());
-  pro_mapName.setId("");
   pro_mapName.setValue(m_mapName, dataType->getDataTypeStringList());
   Variant v;
   v.setValue(m_mapName, dataType->getDataTypeString());
@@ -187,7 +184,7 @@ te::layout::EnumScaleType* te::layout::ScaleModel::getEnumScaleType()
 
 te::layout::Property te::layout::ScaleModel::scaleProperty() const
 {
-  Property pro_scaleName;
+  Property pro_scaleName(m_hashCode);
 
   if(!m_currentScaleType)
     return pro_scaleName;
@@ -199,7 +196,6 @@ te::layout::Property te::layout::ScaleModel::scaleProperty() const
 
   pro_scaleName.setName("scale_type");
   pro_scaleName.setLabel("graphic type");
-  pro_scaleName.setId("");
   pro_scaleName.setValue(m_currentScaleType->getLabel(), dataType->getDataTypeStringList());
 
   Variant v;

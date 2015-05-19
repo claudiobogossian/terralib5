@@ -43,14 +43,13 @@ namespace te
     public:
 
       EditTemplateModel();
-      virtual ~EditTemplateModel();
 
-      virtual void updateProperties(te::layout::Properties* properties);
-
-      virtual Properties* getProperties() const;
-
+      virtual ~EditTemplateModel();      
     };
   }
 }
 
 #endif
+
+
+

@@ -39,7 +39,7 @@
 // TerraLib
 #include "../geometry/Coord2D.h"
 #include "../geometry/LineString.h"
-#include "../sam/rtree/Index.h"
+#include "../sam/rtree.h"
 #include "Enums.h"
 #include "Raster.h"
 #include "VectorizerPolygonStructure.h"

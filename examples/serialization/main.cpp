@@ -37,18 +37,6 @@
 #include <fstream>
 #include <iostream>
 
-void ShowResult(const std::string& data)
-{
-  std::cout << "Result:" << std::endl;
-  std::cout << data << std::endl;
-}
-
-void SaveResult(const std::string& data, const std::string& path)
-{
-  std::ofstream ofs(path.c_str());
-  ofs << data;
-}
-
 int main(int /*argc*/, char** /*argv*/)
 {
 // Initializes Terralib support
@@ -58,17 +46,11 @@ int main(int /*argc*/, char** /*argv*/)
   {
     /* OGC Symbology Encoding */
 
-    std::string encodedStyle = EncodeStyle(); // Creates a Style and encodes it to XML format.
+    std::string path = ""TERRALIB_DATA_DIR"/xml/style.xml";
 
-    ShowResult(encodedStyle); // Shows the serializaton result.
-    
-    SaveResult(encodedStyle, ""TERRALIB_DATA_DIR"/xml/style.xml"); // Saves the enconded style to XML file.
-    te::se::Style* style = DecodeStyle(""TERRALIB_DATA_DIR"/xml/style.xml"); // Decodes the created XML file.
+    EncodeStyle(path); // Creates a Style and encodes it to XML format.
 
-    std::string backData = EncodeStyle(style); // Encodes again.
-    
-    // Comparing the results...
-    encodedStyle == backData ? std::cout << "Great job!" << std::endl : std::cout << "You are doing it wrong!" << std::endl;
+    te::se::Style* style = DecodeStyle(path); // Decodes the created XML file.
 
     /* XSD Schema */
 

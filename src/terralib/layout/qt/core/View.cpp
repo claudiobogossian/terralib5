@@ -65,7 +65,7 @@ te::layout::View::View( QWidget* widget) :
   m_pageSetupOutside(0),
   m_systematicOutside(0),
   m_selectionChange(false),
-  m_menuItem(0),
+  m_menuBuilder(0),
   m_maxZoomLimit(29.),
   m_minZoomLimit(0.9),
   m_width(-1),
@@ -745,36 +745,26 @@ void te::layout::View::contextMenuEvent( QContextMenuEvent * event )
     return;
 
   QPointF pt = mapToScene(event->pos());
-  if(!intersectionSelectionItem(pt.x(), pt.y()))
+
+  ItemUtils* iUtils = Context::getInstance().getItemUtils();
+  if(!iUtils)
+  {
+    return;
+  }
+
+  QGraphicsItem* hasItem = iUtils->intersectionSelectionItem(pt.x(), pt.y());
+  if(!hasItem)
     return;
 
-  if(!m_menuItem)
+  if(!m_menuBuilder)
   {
-    m_menuItem = new MenuItem(this);
+    m_menuBuilder = new MenuBuilder(this);
   }
 
   QList<QGraphicsItem*> graphicsItems = this->scene()->selectedItems();
 
-  m_menuItem->createMenu(graphicsItems);
-  m_menuItem->menuExec(event->globalX(), event->globalY());
-}
-
-bool te::layout::View::intersectionSelectionItem(int x, int y)
-{
-  QList<QGraphicsItem *> items = this->scene()->selectedItems();
-  bool intersection = false;
-
-  QPointF pt(x, y);
-
-  foreach (QGraphicsItem *item, items) 
-  {
-    if(item)
-    {
-      intersection = item->contains(pt);
-    }
-  }
-
-  return intersection;
+  m_menuBuilder->createMenu(graphicsItems);
+  m_menuBuilder->menuExec(event->globalX(), event->globalY());
 }
 
 QImage te::layout::View::createImage()

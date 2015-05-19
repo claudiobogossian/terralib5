@@ -109,7 +109,7 @@ namespace te
         /*!
           \brief Reimplemented from ItemObserver
          */
-        virtual te::color::RGBAColor** getImage();
+        virtual te::color::RGBAColor** getRGBAColorImage(int &w, int &h);
         
         /*!
           \brief Reimplemented from ItemObserver
@@ -206,3 +206,5 @@ namespace te
 }
 
 #endif
+
+

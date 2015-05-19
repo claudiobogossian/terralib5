@@ -246,6 +246,12 @@ const std::string& te::st::TrajectoryDataSetLayer::getType() const
   return sm_type;
 }
 
+const std::string& te::st::TrajectoryDataSetLayer::getDataSourceId() const
+{
+  return m_info->getObservationDataSetInfo().getDataSourceInfo().getId();
+}
+
+
 const std::string& te::st::TrajectoryDataSetLayer::getRendererType() const
 {
   return m_rendererType;

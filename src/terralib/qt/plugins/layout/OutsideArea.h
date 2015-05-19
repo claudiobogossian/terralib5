@@ -42,6 +42,7 @@ class QWidget;
 class QMenu;
 class QAction;
 class QStatusBar;
+class QGraphicsItem;
 
 namespace te
 {
@@ -84,6 +85,7 @@ namespace te
           virtual void onHideView();
           virtual void onCloseView();
           virtual void onRefreshStatusBar();
+          virtual void onAddChildFinalized(QGraphicsItem* parent, QGraphicsItem* child);
 
         signals:
 

@@ -31,10 +31,12 @@
 #include "Config.h"
 
 // Qt
-#include <QtCore/QString>
-#include <QtGui/QColor>
+//#include <QtCore/QString>
+//#include <QtGui/QColor>
     
 // Forward declarations
+class QString;
+class QColor;
 class QAction;
 class QMainWindow;
 class QStringList;
@@ -275,8 +277,10 @@ namespace te
         \brief Returns the default path for output of configuration file.
       */
       TEQTAFEXPORT QString GetDefaultConfigFileOutputDir();
-	  
+
       TEQTAFEXPORT std::vector<std::string> GetPluginsFiles();
+
+      TEQTAFEXPORT std::vector<std::string> GetDefaultPluginsNames();
       
       TEQTAFEXPORT std::vector<std::string> GetPluginsNames(const std::vector<std::string>& plgFiles);
 
@@ -333,6 +337,11 @@ namespace te
         \brief Returns the date and time of generated binary.
       */
       TEQTAFEXPORT QString GetGenerationDate();
+
+      /*!
+        \brief Return extension filter string
+      */
+      TEQTAFEXPORT QString GetExtensionFilter();
     } // end namespace af
   }   // end namespace qt
 }     // end namespace te

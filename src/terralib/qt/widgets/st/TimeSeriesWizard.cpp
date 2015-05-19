@@ -24,14 +24,39 @@
 */
 
 //Terralib
+#include "../../../geometry/GeometryProperty.h"
 #include "../../../qt/widgets/dataset/selector/DataSetSelectorWizardPage.h"
 #include "../../../qt/widgets/datasource/selector/DataSourceSelectorWidget.h"
 #include "../../../qt/widgets/datasource/selector/DataSourceSelectorWizardPage.h"
 #include "../../../qt/widgets/help/HelpPushButton.h"
+#include "../../../se/Utils.h"
+#include "../../../st/core/timeseries/TimeSeriesDataSetInfo.h"
 #include "TimeSeriesPropertiesWizardPage.h"
 #include "TimeSeriesWizard.h"
 #include "ui_TimeSeriesWizardForm.h"
 
+//Boost
+#include <boost/uuid/random_generator.hpp>
+#include <boost/uuid/uuid_io.hpp>
+
+te::st::TimeSeriesDataSetLayerPtr generateLayer(te::da::DataSetTypePtr dataType, te::st::TimeSeriesDataSetInfo* timeSeriesInfo, te::da::DataSourceInfoPtr dataInfo, te::map::AbstractLayer* parent = 0)
+{
+  static boost::uuids::basic_random_generator<boost::mt19937> gen;
+  boost::uuids::uuid u = gen();
+  std::string id = boost::uuids::to_string(u);
+  std::string title = dataType->getTitle().empty() ? dataType->getName() : dataType->getTitle();
+
+  te::st::TimeSeriesDataSetLayerPtr timeSeriesLayer = new te::st::TimeSeriesDataSetLayer(id, title, parent, timeSeriesInfo);
+  timeSeriesLayer->setVisibility(te::map::NOT_VISIBLE);
+  timeSeriesLayer->setRendererType("ABSTRACT_LAYER_RENDERER");
+
+  te::gm::GeometryProperty* gp = te::da::GetFirstGeomProperty(dataType.get());
+  std::auto_ptr<te::gm::Envelope> mbr(te::da::GetExtent(dataType->getName(), gp->getName(), dataInfo->getId()));
+  timeSeriesLayer->setSRID(gp->getSRID());
+  timeSeriesLayer->setExtent(*mbr);
+  timeSeriesLayer->setStyle(te::se::CreateFeatureTypeStyle(gp->getGeometryType()));
+  return timeSeriesLayer;
+}
 
 te::qt::widgets::TimeSeriesWizard::TimeSeriesWizard(QWidget* parent, Qt::WindowFlags f)
   : QWizard(parent, f),
@@ -40,7 +65,7 @@ te::qt::widgets::TimeSeriesWizard::TimeSeriesWizard(QWidget* parent, Qt::WindowF
 // setup controls
   m_ui->setupUi(this);
 
-// add pages
+  // add pages
 
   //DataSource
   m_datasourceSelectorPage.reset(new DataSourceSelectorWizardPage(this));
@@ -63,6 +88,7 @@ te::qt::widgets::TimeSeriesWizard::TimeSeriesWizard(QWidget* parent, Qt::WindowF
   // connect signals and slots
   connect(this->button(QWizard::NextButton), SIGNAL(pressed()), this, SLOT(next()));
   connect(this->button(QWizard::BackButton), SIGNAL(pressed()), this, SLOT(back()));
+  connect(this->button(QWizard::FinishButton), SIGNAL(pressed()), this, SLOT(finish()));
 
   te::qt::widgets::HelpPushButton* helpButton = new te::qt::widgets::HelpPushButton(this);
   this->setButton(QWizard::HelpButton, helpButton);
@@ -93,6 +119,11 @@ te::da::DataSetTypePtr te::qt::widgets::TimeSeriesWizard::getDatasetType() const
     return dataTypes.front();
 }
 
+te::st::TimeSeriesDataSetLayerPtr te::qt::widgets::TimeSeriesWizard::getTimeSeriesLayer()
+{
+  return m_timeSeriesLayer;
+}
+
 void te::qt::widgets::TimeSeriesWizard::back()
 {
   QWizard::back();
@@ -109,4 +140,30 @@ void te::qt::widgets::TimeSeriesWizard::next()
     m_PropWidgetPage->set(getDatasetType());
   }
   QWizard::next();
+}
+
+void te::qt::widgets::TimeSeriesWizard::finish()
+{
+  QApplication::setOverrideCursor(Qt::WaitCursor);
+  te::da::DataSourceInfoPtr dataInfo = getDataSource();
+  std::list<te::da::DataSetTypePtr> dataTypes = m_datasetSelectorPage->getCheckedDataSets();
+  try
+  {
+    te::st::TimeSeriesDataSetInfo* info = m_PropWidgetPage->getInfo(dataInfo);
+    m_timeSeriesLayer = generateLayer(dataTypes.front(), info, dataInfo);
+
+  }
+  catch(const te::common::Exception& e)
+  {
+    std::cout << std::endl << "Failed to create a new layer and insert it into the application: " << e.what() << std::endl;
+    QWizard::finished(1);
+  }
+  catch(...)
+  {
+    std::cout << std::endl << "Failed to create a new layer and insert it into the application: unknown exception!" << std::endl;
+    QWizard::finished(1);
+  }
+
+  QApplication::restoreOverrideCursor();
+  QWizard::finished(0);
 }

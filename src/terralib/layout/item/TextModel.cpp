@@ -60,16 +60,14 @@ te::layout::Properties* te::layout::TextModel::getProperties() const
 
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
   
-  Property pro_font;
+  Property pro_font(m_hashCode);
   pro_font.setName("Font");
-  pro_font.setId("");
   pro_font.setValue(m_font, dataType->getDataTypeFont());
   pro_font.setMenu(true);
   m_properties->addProperty(pro_font);
 
-  Property pro_text;
+  Property pro_text(m_hashCode);
   pro_text.setName("Text");
-  pro_text.setId("");
   pro_text.setValue(m_text, dataType->getDataTypeString());
   pro_text.setVisible(false);
   m_properties->addProperty(pro_text);

@@ -24,6 +24,8 @@
 */
 
 // TerraLib
+#include "../../../datatype/DateTimeProperty.h"
+#include "../../../geometry/GeometryProperty.h"
 #include "../../../st/core/observation/ObservationDataSetInfo.h"
 #include "TemporalPropertiesWidget.h"
 #include "ObservationPropertiesWidget.h"
@@ -60,8 +62,25 @@ std::list<te::st::ObservationDataSetInfo*> te::qt::widgets::ObservationPropertie
 
   while(typesItBegin != typesItEnd)
   {
-    obsInfos.push_back(new te::st::ObservationDataSetInfo(*dsInfo.get(), typesItBegin->get()->getName()));
-//, phenomTimes, m_propWidget->getOutputValues(), m_propWidget->getGeometryId()));
+    te::st::ObservationDataSetInfo* obsInfo = new te::st::ObservationDataSetInfo(*dsInfo.get(), typesItBegin->get()->getName());
+    obsInfo->setTimePropInfo(new te::dt::DateTimeProperty(m_tempPropWidget->getPhenomenonTime()));
+
+    if(m_tempPropWidget->getForm()->m_avancedGroupBox->isEnabled())
+    {
+      obsInfo->setVlTimePropInfo(new te::dt::DateTimeProperty(m_tempPropWidget->getValidTime()));
+      obsInfo->setRsTimePropInfo(new te::dt::DateTimeProperty(m_tempPropWidget->getResultTime()));
+    }
+
+    obsInfo->setObsPropInfo(m_propWidget->getOutputValues());
+    obsInfo->setObsPropInfo(m_propWidget->getOutputPropNames());
+    obsInfo->setGeomPropInfo(new te::gm::GeometryProperty(m_propWidget->getGeometryPropName()));
+
+    //id properties
+    obsInfo->setIdPropInfo(m_propWidget->getIdPropName());
+    obsInfo->setIdPropInfo(m_propWidget->getIdIndex());
+    //result.setId(info.getObsId());
+
+    obsInfos.push_back(obsInfo);
     typesItBegin++;
   }
 
@@ -79,3 +98,4 @@ void te::qt::widgets::ObservationPropertiesWizardPage::set(const std::list<te::d
   m_tempPropWidget->setUp(dataTypes.front());
   m_propWidget->setUp(dataTypes.front());
 }
+

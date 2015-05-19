@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "../../../dataaccess/dataset/DataSetType.h"
+#include "terralib/dataaccess/datasource/DataSourceInfo.h"
 #include "../Config.h"
 
 // Qt
@@ -38,6 +39,9 @@
 
 namespace te
 {
+
+  namespace st { class TimeSeriesDataSetInfo; }
+
   namespace qt
   {
     namespace widgets
@@ -60,11 +64,14 @@ namespace te
 
           ~TimeSeriesPropertiesWizardPage();
 
+          te::st::TimeSeriesDataSetInfo* getInfo(const te::da::DataSourceInfoPtr dsInfo);
+
           void set(const te::da::DataSetTypePtr dataType);
 
         private:
 
-          std::auto_ptr<TimeSeriesPropertiesWidget>  m_propWidget; //!< The widget used to configure the general spatio-temporal layer's properties
+          te::da::DataSetTypePtr                     m_dataType;        //!< The list of datasettypes used to configure the time series
+          std::auto_ptr<TimeSeriesPropertiesWidget>  m_propWidget;      //!< The widget used to configure the general spatio-temporal layer's properties
           std::auto_ptr<TemporalPropertiesWidget>    m_tempPropWidget;  //!< The widget used to configure the general TrajectoryLayer's properties
       };
     } // end namespace widgets

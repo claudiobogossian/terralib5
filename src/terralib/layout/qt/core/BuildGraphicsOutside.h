@@ -30,6 +30,7 @@
 #define __TERRALIB_LAYOUT_INTERNAL_BUILD_GRAPHICS_OUTSIDE_H
 
 //TerraLib
+#include "../../core/AbstractBuildGraphicsOutside.h"
 #include "../../core/Config.h"
 #include "../../core/enum/EnumType.h"
 
@@ -45,7 +46,7 @@ namespace te
 	  
 	  \ingroup layout
 	*/
-    class TELAYOUTEXPORT BuildGraphicsOutside 
+    class TELAYOUTEXPORT BuildGraphicsOutside : public AbstractBuildGraphicsOutside
     {
       public:
 

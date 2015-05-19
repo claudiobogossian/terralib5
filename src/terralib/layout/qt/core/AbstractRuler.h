@@ -28,6 +28,9 @@
 #ifndef __TERRALIB_LAYOUT_INTERNAL_ABSTRACT_RULER_H
 #define __TERRALIB_LAYOUT_INTERNAL_ABSTRACT_RULER_H
 
+// TerraLib
+#include "../../core/Config.h"
+
 // Qt
 #include <QGraphicsView>
 #include <QPainter>
@@ -41,7 +44,7 @@ namespace te
 	  
 	  \ingroup layout
 	  */
-    class AbstractRuler
+    class TELAYOUTEXPORT AbstractRuler
     {
       public:
 

@@ -107,15 +107,10 @@ void te::qt::plugins::ado::ADOConnectorDialog::openPushButtonPressed()
     if(te::da::DataSourceFactory::find("ADO") == 0)
       throw te::qt::widgets::Exception(TE_TR("Sorry! No data access driver loaded for ADO data sources!"));
 
-// get data source connection info based on form data
-    std::map<std::string, std::string> dsInfo;
-
-    getConnectionInfo(dsInfo);
-
 // perform connection
     //m_driver.reset(te::da::DataSourceFactory::open("ADO", dsInfo));
     std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("ADO");
-    ds->setConnectionInfo(dsInfo);
+    ds->setConnectionInfo(getConnectionInfo(true));
     ds->open();
     m_driver.reset(ds.release());
 
@@ -132,7 +127,7 @@ void te::qt::plugins::ado::ADOConnectorDialog::openPushButtonPressed()
 // create a new data source based on form data
       m_datasource.reset(new te::da::DataSourceInfo);
 
-      m_datasource->setConnInfo(dsInfo);
+      m_datasource->setConnInfo(getConnectionInfo(m_ui->m_savePasswordCheckBox->isChecked()));
 
       boost::uuids::basic_random_generator<boost::mt19937> gen;
       boost::uuids::uuid u = gen();
@@ -148,7 +143,7 @@ void te::qt::plugins::ado::ADOConnectorDialog::openPushButtonPressed()
     else
     {
       m_driver->setId(m_datasource->getId());
-      m_datasource->setConnInfo(dsInfo);
+      m_datasource->setConnInfo(getConnectionInfo(m_ui->m_savePasswordCheckBox->isChecked()));
       m_datasource->setTitle(title.toUtf8().data());
       m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().trimmed().toUtf8().data());
     }
@@ -179,15 +174,10 @@ void te::qt::plugins::ado::ADOConnectorDialog::testPushButtonPressed()
     if(te::da::DataSourceFactory::find("ADO") == 0)
       throw te::qt::widgets::Exception(TE_TR("Sorry! No data access driver loaded for ADO data sources!"));
 
-// get data source connection info based on form data
-    std::map<std::string, std::string> dsInfo;
-
-    getConnectionInfo(dsInfo);
-
 // perform connection
     //std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::open("ADO", dsInfo));
     std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("ADO"));
-    ds->setConnectionInfo(dsInfo);
+    ds->setConnectionInfo(getConnectionInfo(true));
     ds->open();
 
     if(ds.get() == 0)
@@ -232,25 +222,29 @@ void te::qt::plugins::ado::ADOConnectorDialog::searchDatabaseToolButtonPressed()
   te::qt::widgets::AddFilePathToSettings(info.absolutePath(), "vector");
 }
 
-void te::qt::plugins::ado::ADOConnectorDialog::getConnectionInfo(std::map<std::string, std::string>& connInfo) const
+std::map<std::string, std::string> te::qt::plugins::ado::ADOConnectorDialog::getConnectionInfo(bool getPrivateKeys) const
 {
-// clear input
-  connInfo.clear();
+  std::map<std::string, std::string> connInfo;
 
   QString qstr = m_ui->m_fileLineEdit->text().trimmed();
 
   if(!qstr.isEmpty())
     connInfo["DB_NAME"] = qstr.toStdString();
 
-  qstr = m_ui->m_passwordLineEdit->text().trimmed();
+  if(getPrivateKeys)
+  {
+    qstr = m_ui->m_passwordLineEdit->text().trimmed();
 
-  if(!qstr.isEmpty())
-    connInfo["PASSWORD"] = qstr.toStdString();
+    if(!qstr.isEmpty())
+      connInfo["PASSWORD"] = qstr.toStdString();
+  }
 
   qstr = m_ui->m_providerComboBox->currentText().trimmed();
 
   if(!qstr.isEmpty())
     connInfo["PROVIDER"] = qstr.toStdString();
+
+  return connInfo;
 }
 
 void te::qt::plugins::ado::ADOConnectorDialog::setConnectionInfo(const std::map<std::string, std::string>& connInfo)

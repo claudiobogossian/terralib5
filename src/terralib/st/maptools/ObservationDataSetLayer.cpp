@@ -150,7 +150,6 @@ std::auto_ptr<te::st::ObservationDataSet> te::st::ObservationDataSetLayer::getOb
   return te::st::STDataLoader::getDataSet(*m_info.get(), g, r, travType);
 }
 
-
 std::auto_ptr<te::da::DataSet> te::st::ObservationDataSetLayer::getData( const te::dt::DateTime& dt, te::dt::TemporalRelation r,
                                                                         te::common::TraverseType travType, 
                                                                         te::common::AccessPolicy rwRole) const
@@ -222,6 +221,11 @@ void te::st::ObservationDataSetLayer::draw(te::map::Canvas* canvas, const te::gm
 const std::string& te::st::ObservationDataSetLayer::getType() const
 {
   return sm_type;
+}
+
+const std::string& te::st::ObservationDataSetLayer::getDataSourceId() const
+{
+  return m_info->getDataSourceInfo().getId();
 }
 
 const std::string& te::st::ObservationDataSetLayer::getRendererType() const

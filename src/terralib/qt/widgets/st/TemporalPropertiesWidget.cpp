@@ -118,10 +118,9 @@ std::string te::qt::widgets::TemporalPropertiesWidget::getUserOrdinalType()
   return m_ui->m_ordinalLineEdit->text().toStdString();
 }
 
-std::string te::qt::widgets::TemporalPropertiesWidget::getDateFormat()
+int te::qt::widgets::TemporalPropertiesWidget::getDateFormat()
 {
-  //int index = m_ui->m_formatComboBox->currentIndex();
-  return ""; //TODO adapt to use the enum when it is ready
+	return m_ui->m_formatComboBox->itemData(m_ui->m_formatComboBox->currentIndex()).toInt();
 }
 
 void te::qt::widgets::TemporalPropertiesWidget::onTypeCBCurrentIndexChanged(int index)

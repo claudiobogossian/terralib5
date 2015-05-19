@@ -30,6 +30,7 @@
 
 // TerraLib
 #include "GridSettingsConfigProperties.h"
+#include "../Config.h"
 
 // STL
 #include <string>
@@ -38,7 +39,7 @@ namespace te
 {
   namespace layout
   {
-    class PlanarGridSettingsConfigProperties: public GridSettingsConfigProperties
+    class TELAYOUTEXPORT PlanarGridSettingsConfigProperties: public GridSettingsConfigProperties
     {
       public:
 

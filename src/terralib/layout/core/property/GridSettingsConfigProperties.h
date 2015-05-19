@@ -28,6 +28,9 @@
 #ifndef __TERRALIB_LAYOUT_INTERNAL_GRID_SETTINGS_CONFIG_PROPERTIES_H
 #define __TERRALIB_LAYOUT_INTERNAL_GRID_SETTINGS_CONFIG_PROPERTIES_H
 
+// TerraLib
+#include "../Config.h"
+
 // STL
 #include <string>
 
@@ -35,7 +38,7 @@ namespace te
 {
   namespace layout
   {
-    class GridSettingsConfigProperties
+    class TELAYOUTEXPORT GridSettingsConfigProperties
     {
       public:
 

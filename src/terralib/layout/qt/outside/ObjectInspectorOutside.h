@@ -29,10 +29,10 @@
 #define __TERRALIB_LAYOUT_INTERNAL_OBJECTINSPECTOR_OUTSIDE_H
 
 // TerraLib
+#include "../core/propertybrowser/PropertyBrowser.h"
 #include "../../core/pattern/mvc/OutsideObserver.h"
 #include "../../../geometry/Envelope.h"
 #include "../../core/Config.h"
-#include "../core/ObjectInspectorPropertyBrowser.h"
 
 // STL
 #include <string>
@@ -40,12 +40,15 @@
 // Qt
 #include <QWidget>
 
+class QtProperty;
+
 class QGraphicsItem;
 
 namespace te
 {
   namespace layout
   {
+    class ItemObserver;
     /*!
     \brief Tree of names of all the items entered on the scene, MVC components, using Qt to present the name of each item and its class. Object Inspector.
 	  
@@ -59,7 +62,7 @@ namespace te
 
     public:
 
-	    ObjectInspectorOutside(OutsideController* controller, Observable* o, ObjectInspectorPropertyBrowser* propertyBrowser = 0);
+	    ObjectInspectorOutside(OutsideController* controller, Observable* o, PropertyBrowser* propertyBrowser = 0);
 	    
       virtual ~ObjectInspectorOutside();
 
@@ -73,15 +76,25 @@ namespace te
 
       virtual void selectItems(QList<QGraphicsItem*> graphicsItems);
 
-      virtual ObjectInspectorPropertyBrowser* getObjectInspector();
+      virtual PropertyBrowser* getObjectInspector();
             
     protected slots:
       
       virtual void onRemoveProperties(std::vector<std::string> names);
 
-    protected:
+      virtual bool hasMoveItemGroup(QList<QGraphicsItem*> graphicsItems);
 
-      ObjectInspectorPropertyBrowser* m_layoutPropertyBrowser;
+    protected:
+      
+      virtual QtProperty* addProperty(QGraphicsItem* item);
+
+      virtual Property createProperty(ItemObserver* item);
+
+      virtual void createSubProperty(QGraphicsItem* item, QtProperty* prop);
+
+      virtual bool hasProperty(Property property);
+      
+      PropertyBrowser* m_layoutPropertyBrowser;
       QList<QGraphicsItem*> m_graphicsItems;
     };
   }

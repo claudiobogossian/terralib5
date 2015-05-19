@@ -56,7 +56,8 @@ te::layout::Context::Context() :
   m_proxyProject(0),
   m_itemUtils(0),
   m_wait(0),
-  m_item(0)
+  m_item(0),
+  m_buildGraphicsOutside(0)
 {
   EnumModeType* type = Enums::getInstance().getEnumModeType();
   if(type)
@@ -293,3 +294,16 @@ void te::layout::Context::setItem( ItemObserver* item )
 {
   m_item = item;
 }
+
+te::layout::AbstractBuildGraphicsOutside* te::layout::Context::getAbstractBuildGraphicsOutside()
+{
+  return m_buildGraphicsOutside;
+}
+
+void te::layout::Context::setAbstractBuildGraphicsOutside( AbstractBuildGraphicsOutside* build )
+{
+  m_buildGraphicsOutside = build;
+}
+
+
+

@@ -57,53 +57,53 @@ te::layout::ToolbarOutside::ToolbarOutside( OutsideController* controller, Obser
   QToolBar(0),
   OutsideObserver(controller, o),
   m_comboZoom(0),
-  m_optionMapDefault("map_default"),
-  m_optionLegendDefault("legend_default"),
-  m_optionScale("scale_object"),
-  m_optionMapZoomIn("map_zoom_in"),
-  m_optionMapZoomOut("map_zoom_out"),
-  m_optionMapPan("map_pan"),
-  m_optionMapSystematicScale("map_systematic_scale"),
-  m_optionMapCreateTextGrid("map_text_grid"),
-  m_optionMapCreateMapText("map_text_map"),
-  m_optionMapCreateLegendChildAsObject("legend_child"),
-  m_optionGridMap("map_grid_map"),
-  m_optionGridPlanar("map_grid_planar"),
-  m_optionGridGeodesic("map_grid_geodesic"),
-  m_optionNorth("map_north"),
-  m_optionMapLocation("map_location"),
-  m_optionRectangle("geometry_rectangle"),
-  m_optionPoint("geometry_point"),
-  m_optionEllipse("geometry_ellipse"),
-  m_optionArrow("geometry_arrow"),
-  m_optionLine("geometry_line"),
-  m_optionPolygon("geometry_polygon"),
-  m_optionViewPan("view_pan"),
-  m_optionViewZoomIn("view_zoom_in"),
-  m_optionViewZoomOut("view_zoom_out"),
-  m_optionGroup("items_group"),
-  m_optionUngroup("items_ungroup"),
-  m_optionLineIntersectionMouse("items_intersection_mouse"),
-  m_optionSceneZoom("scene_zoom"),
-  m_optionRemoveObject("remove_item"),
-  m_optionTextDefault("text_default"),
-  m_optionImage("text_image"),
-  m_optionStringGrid("text_stringGrid"),
-  m_optionTitle("text_title"),
-  m_optionBalloon("text_balloon"),
-  m_optionBarCode("text_barCode"),
-  m_optionAlignLeft("align_left"),
-  m_optionAlignRight("align_right"),
-  m_optionAlignTop("align_top"),
-  m_optionAlignBottom("align_bottom"),
-  m_optionAlignCenterHorizontal("align_center_horizontal"),
-  m_optionAlignCenterVertical("align_center_vertical"),
-  m_optionUndo("undo"),
-  m_optionRedo("redo"),
-  m_optionDrawMap("draw_map"),
-  m_optionObjectToImage("object_to_image"),
-  m_optionExit("exit"),
-  m_optionExportToPDF("export_to_pdf"),
+  m_actionMapDefault("map_default"),
+  m_actionLegendDefault("legend_default"),
+  m_actionScale("scale_object"),
+  m_actionMapZoomIn("map_zoom_in"),
+  m_actionMapZoomOut("map_zoom_out"),
+  m_actionMapPan("map_pan"),
+  m_actionMapSystematicScale("map_systematic_scale"),
+  m_actionMapCreateTextGrid("map_text_grid"),
+  m_actionMapCreateMapText("map_text_map"),
+  m_actionMapCreateLegendChildAsObject("legend_child"),
+  m_actionGridMap("map_grid_map"),
+  m_actionGridPlanar("map_grid_planar"),
+  m_actionGridGeodesic("map_grid_geodesic"),
+  m_actionNorth("map_north"),
+  m_actionMapLocation("map_location"),
+  m_actionRectangle("geometry_rectangle"),
+  m_actionPoint("geometry_point"),
+  m_actionEllipse("geometry_ellipse"),
+  m_actionArrow("geometry_arrow"),
+  m_actionLine("geometry_line"),
+  m_actionPolygon("geometry_polygon"),
+  m_actionViewPan("view_pan"),
+  m_actionViewZoomIn("view_zoom_in"),
+  m_actionViewZoomOut("view_zoom_out"),
+  m_actionGroup("items_group"),
+  m_actionUngroup("items_ungroup"),
+  m_actionLineIntersectionMouse("items_intersection_mouse"),
+  m_actionSceneZoom("scene_zoom"),
+  m_actionRemoveObject("remove_item"),
+  m_actionTextDefault("text_default"),
+  m_actionImage("text_image"),
+  m_actionStringGrid("text_stringGrid"),
+  m_actionTitle("text_title"),
+  m_actionBalloon("text_balloon"),
+  m_actionBarCode("text_barCode"),
+  m_actionAlignLeft("align_left"),
+  m_actionAlignRight("align_right"),
+  m_actionAlignTop("align_top"),
+  m_actionAlignBottom("align_bottom"),
+  m_actionAlignCenterHorizontal("align_center_horizontal"),
+  m_actionAlignCenterVertical("align_center_vertical"),
+  m_actionUndo("undo"),
+  m_actionRedo("redo"),
+  m_actionDrawMap("draw_map"),
+  m_actionObjectToImage("object_to_image"),
+  m_actionExit("exit"),
+  m_actionExportToPDF("export_to_pdf"),
   m_mapToolButton(0),
   m_mapToolsToolButton(0),
   m_geometryToolButton(0),
@@ -126,7 +126,31 @@ te::layout::ToolbarOutside::ToolbarOutside( OutsideController* controller, Obser
   m_drawMapToolButton(0),
   m_objectToImageButton(0),
   m_exitButton(0),
-  m_exportToPDFButton(0)
+  m_exportToPDFButton(0),
+  m_actionComboZoom(0),
+  m_actionMapToolButton(0),
+  m_actionMapToolsToolButton(0),
+  m_actionGeometryToolButton(0),
+  m_actionViewAreaToolButton(0),
+  m_actionArrowCursorButton(0),
+  m_actionItemTools(0),
+  m_actionLineIntersectionToolButton(0),
+  m_actionBringToFrontToolButton(0),
+  m_actionSendToBackToolButton(0),
+  m_actionRecomposeToolButton(0),
+  m_actionTextToolButton(0),
+  m_actionAlignLeftToolButton(0),
+  m_actionAlignRightToolButton(0),
+  m_actionAlignTopToolButton(0),
+  m_actionAlignBottomToolButton(0),
+  m_actionAlignCenterHorizontalToolButton(0),
+  m_actionAlignCenterVerticalToolButton(0),
+  m_actionRemoveObjectToolButton(0),
+  m_actionUndoToolButton(0),
+  m_actionDrawMapToolButton(0),
+  m_actionObjectToImageButton(0),
+  m_actionExitButton(0),
+  m_actionExportToPDFButton(0)
 {
 	setVisible(false);
 	setWindowTitle("Layout - Toolbar");
@@ -226,28 +250,28 @@ QToolButton* te::layout::ToolbarOutside::createMapToolButton()
 
   QMenu* menu = new QMenu(btnMap);
 
-  QAction* actionDefaultMenu = createAction("Default Map Object", m_optionMapDefault, "layout-default-map", "", menu);
+  QAction* actionDefaultMenu = createAction("Default Map Object", m_actionMapDefault, "layout-default-map", "", menu);
   menu->addAction(actionDefaultMenu);
   
-  QAction* actionGridMap = createAction("Grid Map", m_optionGridMap, "layout-grid", "", menu);
+  QAction* actionGridMap = createAction("Grid Map", m_actionGridMap, "layout-grid", "", menu);
   menu->addAction(actionGridMap);
 
-  QAction* actionGridPlanar = createAction("Grid Planar", m_optionGridPlanar, "layout-grid", "", menu);
+  QAction* actionGridPlanar = createAction("Grid Planar", m_actionGridPlanar, "layout-grid", "", menu);
   menu->addAction(actionGridPlanar);
 
-  QAction* actionGridGeodesic = createAction("Grid Geodesic", m_optionGridGeodesic, "layout-grid", "", menu);
+  QAction* actionGridGeodesic = createAction("Grid Geodesic", m_actionGridGeodesic, "layout-grid", "", menu);
   menu->addAction(actionGridGeodesic);
 
-  QAction* actionLegend = createAction("Default Legend", m_optionLegendDefault, "layout-default-legend", "", menu);
+  QAction* actionLegend = createAction("Default Legend", m_actionLegendDefault, "layout-default-legend", "", menu);
   menu->addAction(actionLegend);
 
-  QAction* actionScale = createAction("Scale Object", m_optionScale, "layout-scale", "", menu);
+  QAction* actionScale = createAction("Scale Object", m_actionScale, "layout-scale", "", menu);
   menu->addAction(actionScale);
 
-  QAction* actionNorth = createAction("North Object", m_optionNorth, "layout-north", "", menu);
+  QAction* actionNorth = createAction("North Object", m_actionNorth, "layout-north", "", menu);
   menu->addAction(actionNorth);
 
-  QAction* actionMapLocation = createAction("Map Location Object", m_optionMapLocation, "layout-map-location", "", menu);
+  QAction* actionMapLocation = createAction("Map Location Object", m_actionMapLocation, "layout-map-location", "", menu);
   menu->addAction(actionMapLocation);
   
   btnMap->setMenu(menu);
@@ -255,7 +279,7 @@ QToolButton* te::layout::ToolbarOutside::createMapToolButton()
   btnMap->setDefaultAction(actionDefaultMenu);
 
   connect(btnMap, SIGNAL(triggered(QAction*)), this, SLOT(onMapTriggered(QAction*)));
-  this->addWidget(btnMap);
+  m_actionMapToolButton = this->addWidget(btnMap);
 
   m_mapToolButton = btnMap;
 
@@ -268,25 +292,25 @@ QToolButton* te::layout::ToolbarOutside::createMapToolsToolButton()
 
   QMenu* menu = new QMenu(btnMapTools);
 
-  QAction* actionPan = createAction("Pan Tool", m_optionMapPan, "layout-map-pan", "", menu);
+  QAction* actionPan = createAction("Pan Tool", m_actionMapPan, "layout-map-pan", "", menu);
   menu->addAction(actionPan);
 
-  QAction* actionZoomIn = createAction("Zoom In", m_optionMapZoomIn, "layout-map-zoom-in", "", menu);
+  QAction* actionZoomIn = createAction("Zoom In", m_actionMapZoomIn, "layout-map-zoom-in", "", menu);
   menu->addAction(actionZoomIn);
 
-  QAction* actionZoomOut = createAction("Zoom Out", m_optionMapZoomOut, "layout-map-zoom-out", "", menu);
+  QAction* actionZoomOut = createAction("Zoom Out", m_actionMapZoomOut, "layout-map-zoom-out", "", menu);
   menu->addAction(actionZoomOut);
 
-  QAction* actionSystematic = createAction("Systematic Scale", m_optionMapSystematicScale, "layout-systematic-map", "", menu);
+  QAction* actionSystematic = createAction("Systematic Scale", m_actionMapSystematicScale, "layout-systematic-map", "", menu);
   menu->addAction(actionSystematic);
 
-  QAction* actionTextGrid = createAction("Text Grid as Object", m_optionMapCreateTextGrid, "layout-createtext-as-obj", "", menu);
+  QAction* actionTextGrid = createAction("Text Grid as Object", m_actionMapCreateTextGrid, "layout-createtext-as-obj", "", menu);
   menu->addAction(actionTextGrid);
 
-  QAction* actionTextMap = createAction("Text Map as Object", m_optionMapCreateMapText, "layout-createmap-text-as-objs", "", menu);
+  QAction* actionTextMap = createAction("Text Map as Object", m_actionMapCreateMapText, "layout-createmap-text-as-objs", "", menu);
   menu->addAction(actionTextMap);
 
-  QAction* actionLegend = createAction("Legend as Object", m_optionMapCreateLegendChildAsObject, "layout-legend-child", "", menu);
+  QAction* actionLegend = createAction("Legend as Object", m_actionMapCreateLegendChildAsObject, "layout-legend-child", "", menu);
   menu->addAction(actionLegend);
 
   btnMapTools->setMenu(menu);
@@ -294,7 +318,7 @@ QToolButton* te::layout::ToolbarOutside::createMapToolsToolButton()
   btnMapTools->setDefaultAction(actionPan);
 
   connect(btnMapTools, SIGNAL(triggered(QAction*)), this, SLOT(onMapToolsTriggered(QAction*)));
-  this->addWidget(btnMapTools);
+  m_actionMapToolsToolButton = this->addWidget(btnMapTools);
 
   m_mapToolsToolButton = btnMapTools;
 
@@ -307,22 +331,22 @@ QToolButton* te::layout::ToolbarOutside::createGeometryToolButton()
 
   QMenu* menu = new QMenu(btnGeometry);
 
-  QAction* actionRectagle = createAction("Rectangle Object", m_optionRectangle, "layout-square", "", menu);
+  QAction* actionRectagle = createAction("Rectangle Object", m_actionRectangle, "layout-square", "", menu);
   menu->addAction(actionRectagle);
 
-  QAction* actionArrow = createAction("Arrow Object", m_optionArrow, "layout-arrow", "", menu);
+  QAction* actionArrow = createAction("Arrow Object", m_actionArrow, "layout-arrow", "", menu);
   menu->addAction(actionArrow);
 
-  QAction* actionEllipse = createAction("Ellipse Object", m_optionEllipse, "layout-ellipse", "", menu);
+  QAction* actionEllipse = createAction("Ellipse Object", m_actionEllipse, "layout-ellipse", "", menu);
   menu->addAction(actionEllipse);
 
-  QAction* actionPoint = createAction("Point Object", m_optionPoint, "layout-point", "", menu);
+  QAction* actionPoint = createAction("Point Object", m_actionPoint, "layout-point", "", menu);
   menu->addAction(actionPoint);
 
-  QAction* actionLine = createAction("Line Object", m_optionLine, "layout-drawline", "", menu); 
+  QAction* actionLine = createAction("Line Object", m_actionLine, "layout-drawline", "", menu); 
   menu->addAction(actionLine);
 
-  QAction* actionPolygon = createAction("Polygon Object", m_optionPolygon, "layout-polygon", "", menu); 
+  QAction* actionPolygon = createAction("Polygon Object", m_actionPolygon, "layout-polygon", "", menu); 
   menu->addAction(actionPolygon);
 
   btnGeometry->setMenu(menu);
@@ -330,7 +354,7 @@ QToolButton* te::layout::ToolbarOutside::createGeometryToolButton()
   btnGeometry->setDefaultAction(actionRectagle);
 
   connect(btnGeometry, SIGNAL(triggered(QAction*)), this, SLOT(onGeometryTriggered(QAction*)));
-  this->addWidget(btnGeometry);
+  m_actionGeometryToolButton = this->addWidget(btnGeometry);
 
   m_geometryToolButton = btnGeometry;
 
@@ -343,13 +367,13 @@ QToolButton* te::layout::ToolbarOutside::createViewAreaToolButton()
 
   QMenu* menu = new QMenu(btnViewArea);
 
-  QAction* actionPan = createAction("Pan Tool", m_optionViewPan, "layout-paper-pan", "", menu);
+  QAction* actionPan = createAction("Pan Tool", m_actionViewPan, "layout-paper-pan", "", menu);
   menu->addAction(actionPan);
   
-  QAction* actionZoomIn = createAction("Zoom In", m_optionViewZoomIn, "layout-paper-zoom-in", "", menu);
+  QAction* actionZoomIn = createAction("Zoom In", m_actionViewZoomIn, "layout-paper-zoom-in", "", menu);
   menu->addAction(actionZoomIn);
   
-  QAction* actionZoomOut = createAction("Zoom Out", m_optionViewZoomOut, "layout-paper-zoom-out", "", menu);
+  QAction* actionZoomOut = createAction("Zoom Out", m_actionViewZoomOut, "layout-paper-zoom-out", "", menu);
   menu->addAction(actionZoomOut);
 
   btnViewArea->setMenu(menu);
@@ -357,7 +381,7 @@ QToolButton* te::layout::ToolbarOutside::createViewAreaToolButton()
   btnViewArea->setDefaultAction(actionPan);
 
   connect(btnViewArea, SIGNAL(triggered(QAction*)), this, SLOT(onViewAreaTriggered(QAction*)));
-  this->addWidget(btnViewArea);
+  m_actionViewAreaToolButton = this->addWidget(btnViewArea);
 
   m_viewAreaToolButton = btnViewArea;
 
@@ -370,7 +394,7 @@ QToolButton* te::layout::ToolbarOutside::createArrowCursorButton()
   btnArrowCursor->setCheckable(false);
   connect(btnArrowCursor, SIGNAL(clicked(bool)), this, SLOT(onArrowCursorClicked(bool)));
 
-  this->addWidget(btnArrowCursor);
+  m_actionArrowCursorButton = this->addWidget(btnArrowCursor);
 
   m_arrowCursorButton = btnArrowCursor;
 
@@ -383,10 +407,10 @@ QToolButton* te::layout::ToolbarOutside::createItemTools()
 
   QMenu* menu = new QMenu(btnTools);
 
-  QAction* actionGroup = createAction("Group", m_optionGroup, "layout-group", "", menu);
+  QAction* actionGroup = createAction("Group", m_actionGroup, "layout-group", "", menu);
   menu->addAction(actionGroup);
 
-  QAction* actionUngroup = createAction("Ungroup", m_optionUngroup, "layout-ungroup", "", menu);
+  QAction* actionUngroup = createAction("Ungroup", m_actionUngroup, "layout-ungroup", "", menu);
   menu->addAction(actionUngroup);
 
   btnTools->setMenu(menu);
@@ -394,7 +418,7 @@ QToolButton* te::layout::ToolbarOutside::createItemTools()
   btnTools->setDefaultAction(actionGroup);
 
   connect(btnTools, SIGNAL(triggered(QAction*)), this, SLOT(onItemToolsTriggered(QAction*)));
-  this->addWidget(btnTools);
+  m_actionItemTools = this->addWidget(btnTools);
 
   m_itemTools = btnTools;
 
@@ -406,7 +430,7 @@ QToolButton* te::layout::ToolbarOutside::createLineIntersectionToolButton()
   QToolButton *btnLineMouse = createToolButton("Draw Line Intersection Mouse", "Draw Line Intersection Mouse", "layout-draw-line-mouse-intersection");
   connect(btnLineMouse, SIGNAL(toggled(bool)), this, SLOT(onLineIntersectionMouse(bool)));
 
-  this->addWidget(btnLineMouse);
+  m_actionLineIntersectionToolButton = this->addWidget(btnLineMouse);
 
   m_lineIntersectionToolButton = btnLineMouse;
 
@@ -416,7 +440,7 @@ QToolButton* te::layout::ToolbarOutside::createLineIntersectionToolButton()
 QComboBox* te::layout::ToolbarOutside::createSceneZoomCombobox()
 {
   m_comboZoom = new QComboBox(this);
-  m_comboZoom->setObjectName(m_optionSceneZoom.c_str());
+  m_comboZoom->setObjectName(m_actionSceneZoom.c_str());
 
   m_comboZoom->addItem("42%", 0.42);
   m_comboZoom->addItem("50%", 0.5);
@@ -430,7 +454,7 @@ QComboBox* te::layout::ToolbarOutside::createSceneZoomCombobox()
   m_comboZoom->setCurrentIndex(1);
   Context::getInstance().setDefaultZoomFactor(m_comboZoom->itemData(1).toDouble());
   
-  this->addWidget(m_comboZoom);
+  m_actionComboZoom = this->addWidget(m_comboZoom);
   
   return m_comboZoom;
 }
@@ -441,7 +465,7 @@ QToolButton* te::layout::ToolbarOutside::createBringToFrontToolButton()
   btn->setCheckable(false);
   connect(btn, SIGNAL(clicked(bool)), this, SLOT(onBringToFrontClicked(bool)));
 
-  this->addWidget(btn);
+  m_actionBringToFrontToolButton = this->addWidget(btn);
 
   m_bringToFrontToolButton = btn;
 
@@ -454,7 +478,7 @@ QToolButton* te::layout::ToolbarOutside::createSendToBackToolButton()
   btn->setCheckable(false);
   connect(btn, SIGNAL(clicked(bool)), this, SLOT(onSendToBackClicked(bool)));
 
-  this->addWidget(btn);
+  m_actionSendToBackToolButton = this->addWidget(btn);
 
   m_sendToBackToolButton = btn;
 
@@ -468,7 +492,7 @@ QToolButton* te::layout::ToolbarOutside::createRecomposeToolButton()
   btn->setCheckable(false);
   connect(btn, SIGNAL(clicked(bool)), this, SLOT(onRecomposeClicked(bool)));
 
-  this->addWidget(btn);
+  m_actionRecomposeToolButton = this->addWidget(btn);
 
   m_recomposeToolButton = btn;
 
@@ -481,22 +505,22 @@ QToolButton* te::layout::ToolbarOutside::createTextToolButton()
 
   QMenu* menu = new QMenu(btn);
 
-  QAction* actionTxtDefault = createAction("Default Text Object", m_optionTextDefault, "layout-default-text", "", menu);
+  QAction* actionTxtDefault = createAction("Default Text Object", m_actionTextDefault, "layout-default-text", "", menu);
   menu->addAction(actionTxtDefault);
   
-  QAction* actionTitle = createAction("Title Object", m_optionTitle, "layout-title", "", menu);
+  QAction* actionTitle = createAction("Title Object", m_actionTitle, "layout-title", "", menu);
   menu->addAction(actionTitle);
 
-  QAction* actionStringGrid = createAction("Text Grid Object", m_optionStringGrid, "layout-grid", "", menu);
+  QAction* actionStringGrid = createAction("Text Grid Object", m_actionStringGrid, "layout-grid", "", menu);
   menu->addAction(actionStringGrid);
 
-  QAction* actionImage = createAction("Image Object", m_optionImage, "layout-image", "", menu);
+  QAction* actionImage = createAction("Image Object", m_actionImage, "layout-image", "", menu);
   menu->addAction(actionImage);
 
-  QAction* actionBalloon = createAction("Balloon Object", m_optionBalloon, "layout-ballon", "", menu); 
+  QAction* actionBalloon = createAction("Balloon Object", m_actionBalloon, "layout-ballon", "", menu); 
   menu->addAction(actionBalloon);
 
-  QAction* actionBarCode = createAction("BarCode Object", m_optionBarCode, "layout-barcode", "", menu);
+  QAction* actionBarCode = createAction("BarCode Object", m_actionBarCode, "layout-barcode", "", menu);
   menu->addAction(actionBarCode);
 
   btn->setMenu(menu);
@@ -504,7 +528,7 @@ QToolButton* te::layout::ToolbarOutside::createTextToolButton()
   btn->setDefaultAction(actionTxtDefault);
 
   connect(btn, SIGNAL(triggered(QAction*)), this, SLOT(onTextToolsTriggered(QAction*)));
-  this->addWidget(btn);
+  m_actionTextToolButton = this->addWidget(btn);
 
   m_textToolButton = btn;
 
@@ -517,7 +541,7 @@ QToolButton* te::layout::ToolbarOutside::createAlignLeftToolButton()
   btn->setCheckable(false);
   connect(btn, SIGNAL(clicked(bool)), this, SLOT(onAlignLeftClicked(bool)));
 
-  this->addWidget(btn);
+  m_actionAlignLeftToolButton = this->addWidget(btn);
 
   m_alignLeftToolButton = btn;
 
@@ -530,7 +554,7 @@ QToolButton* te::layout::ToolbarOutside::createAlignRightToolButton()
   btn->setCheckable(false);
   connect(btn, SIGNAL(clicked(bool)), this, SLOT(onAlignRightClicked(bool)));
 
-  this->addWidget(btn);
+  m_actionAlignRightToolButton = this->addWidget(btn);
 
   m_alignRightToolButton = btn;
 
@@ -543,7 +567,7 @@ QToolButton* te::layout::ToolbarOutside::createAlignTopToolButton()
   btn->setCheckable(false);
   connect(btn, SIGNAL(clicked(bool)), this, SLOT(onAlignTopClicked(bool)));
 
-  this->addWidget(btn);
+  m_actionAlignTopToolButton = this->addWidget(btn);
 
   m_alignTopToolButton = btn;
 
@@ -556,7 +580,7 @@ QToolButton* te::layout::ToolbarOutside::createAlignBottomToolButton()
   btn->setCheckable(false);
   connect(btn, SIGNAL(clicked(bool)), this, SLOT(onAlignBottomClicked(bool)));
 
-  this->addWidget(btn);
+  m_actionAlignBottomToolButton = this->addWidget(btn);
 
   m_alignBottomToolButton = btn;
 
@@ -569,7 +593,7 @@ QToolButton* te::layout::ToolbarOutside::createAlignCenterHorizontalToolButton()
   btn->setCheckable(false);
   connect(btn, SIGNAL(clicked(bool)), this, SLOT(onAlignCenterHorizontalClicked(bool)));
 
-  this->addWidget(btn);
+  m_actionAlignCenterHorizontalToolButton = this->addWidget(btn);
 
   m_alignCenterHorizontalToolButton = btn;
 
@@ -582,7 +606,7 @@ QToolButton* te::layout::ToolbarOutside::createAlignCenterVerticalToolButton()
   btn->setCheckable(false);
   connect(btn, SIGNAL(clicked(bool)), this, SLOT(onAlignCenterVerticalClicked(bool)));
 
-  this->addWidget(btn);
+  m_actionAlignCenterVerticalToolButton = this->addWidget(btn);
 
   m_alignCenterVerticalToolButton = btn;
 
@@ -595,7 +619,7 @@ QToolButton* te::layout::ToolbarOutside::createRemoveObjectToolButton()
   btn->setCheckable(false);
   connect(btn, SIGNAL(clicked(bool)), this, SLOT(onRemoveObjectClicked(bool)));
 
-  this->addWidget(btn);
+  m_actionRemoveObjectToolButton = this->addWidget(btn);
 
   m_removeObjectToolButton = btn;
 
@@ -617,14 +641,14 @@ QToolButton* te::layout::ToolbarOutside::createUndoToolButton()
 
   QAction* actionUndo = undoStack->createUndoAction(menu, tr("&Undo"));
   actionUndo->setShortcuts(QKeySequence::Undo);
-  actionUndo->setObjectName(m_optionUndo.c_str());
+  actionUndo->setObjectName(m_actionUndo.c_str());
   actionUndo->setIcon(QIcon::fromTheme("layout-undo"));
   actionUndo->setToolTip("Undo Action");
   menu->addAction(actionUndo);
 
   QAction* actionRedo  = undoStack->createRedoAction(menu, tr("&Redo"));
   actionRedo->setShortcuts(QKeySequence::Redo);
-  actionRedo->setObjectName(m_optionRedo.c_str());
+  actionRedo->setObjectName(m_actionRedo.c_str());
   actionRedo->setIcon(QIcon::fromTheme("layout-redo"));
   actionRedo->setToolTip("Redo Action");
   menu->addAction(actionRedo);
@@ -633,8 +657,8 @@ QToolButton* te::layout::ToolbarOutside::createUndoToolButton()
   btn->setPopupMode(QToolButton::MenuButtonPopup);
   btn->setDefaultAction(actionUndo);
 
-  this->addWidget(btn);
-
+  m_actionUndoToolButton = this->addWidget(btn);
+  
   m_undoToolButton = btn;
 
   return btn;
@@ -646,7 +670,7 @@ QToolButton* te::layout::ToolbarOutside::createDrawMapToolButton()
   btn->setCheckable(false);
   connect(btn, SIGNAL(clicked(bool)), this, SLOT(onDrawMapClicked(bool)));
 
-  this->addWidget(btn);
+  m_actionDrawMapToolButton = this->addWidget(btn);
 
   m_drawMapToolButton = btn;
 
@@ -659,7 +683,7 @@ QToolButton* te::layout::ToolbarOutside::createObjectToImageButton()
   btn->setCheckable(false);
   connect(btn, SIGNAL(clicked(bool)), this, SLOT(onObjectToImageClicked(bool)));
 
-  this->addWidget(btn);
+  m_actionObjectToImageButton = this->addWidget(btn);
 
   m_objectToImageButton = btn;
 
@@ -672,7 +696,7 @@ QToolButton* te::layout::ToolbarOutside::createExitButton()
   btn->setCheckable(false);
   connect(btn, SIGNAL(clicked(bool)), this, SLOT(onExitClicked(bool)));
 
-  this->addWidget(btn);
+  m_actionExitButton = this->addWidget(btn);
 
   m_exitButton = btn;
 
@@ -685,7 +709,7 @@ QToolButton* te::layout::ToolbarOutside::createExportToPDFButton()
   btn->setCheckable(false);
   connect(btn, SIGNAL(clicked(bool)), this, SLOT(onExportToPDFClicked(bool)));
 
-  this->addWidget(btn);
+  m_actionExportToPDFButton = this->addWidget(btn);
 
   m_exportToPDFButton = btn;
 
@@ -702,35 +726,35 @@ void te::layout::ToolbarOutside::onMapTriggered( QAction* action )
 
   EnumModeType* type = Enums::getInstance().getEnumModeType();
 
-  if(action->objectName().compare(m_optionMapDefault.c_str()) == 0)
+  if(action->objectName().compare(m_actionMapDefault.c_str()) == 0)
   {
     changeAction(type->getModeCreateMap());
   }
-  else if(action->objectName().compare(m_optionGridMap.c_str()) == 0)
+  else if(action->objectName().compare(m_actionGridMap.c_str()) == 0)
   {
     changeAction(type->getModeCreateGridMap());
   }
-  else if(action->objectName().compare(m_optionGridPlanar.c_str()) == 0)
+  else if(action->objectName().compare(m_actionGridPlanar.c_str()) == 0)
   {
     changeAction(type->getModeCreateGridPlanar());
   }
-  else if(action->objectName().compare(m_optionGridGeodesic.c_str()) == 0)
+  else if(action->objectName().compare(m_actionGridGeodesic.c_str()) == 0)
   {
     changeAction(type->getModeCreateGridGeodesic());
   }
-  else if(action->objectName().compare(m_optionLegendDefault.c_str()) == 0)
+  else if(action->objectName().compare(m_actionLegendDefault.c_str()) == 0)
   {
     changeAction(type->getModeCreateLegend());
   }
-  else if(action->objectName().compare(m_optionScale.c_str()) == 0)
+  else if(action->objectName().compare(m_actionScale.c_str()) == 0)
   {
     changeAction(type->getModeCreateScale());
   }
-  else if(action->objectName().compare(m_optionNorth.c_str()) == 0)
+  else if(action->objectName().compare(m_actionNorth.c_str()) == 0)
   {
     changeAction(type->getModeCreateNorth());
   }
-  else if(action->objectName().compare(m_optionMapLocation.c_str()) == 0)
+  else if(action->objectName().compare(m_actionMapLocation.c_str()) == 0)
   {
     changeAction(type->getModeCreateMapLocation());
   }
@@ -746,31 +770,31 @@ void te::layout::ToolbarOutside::onMapToolsTriggered( QAction* action )
 
   EnumModeType* type = Enums::getInstance().getEnumModeType();
 
-  if(action->objectName().compare(m_optionMapPan.c_str()) == 0)
+  if(action->objectName().compare(m_actionMapPan.c_str()) == 0)
   {
     changeAction(type->getModeMapPan());
   }
-  else if(action->objectName().compare(m_optionMapZoomIn.c_str()) == 0)
+  else if(action->objectName().compare(m_actionMapZoomIn.c_str()) == 0)
   {
     changeAction(type->getModeMapZoomIn());
   }
-  else if(action->objectName().compare(m_optionMapZoomOut.c_str()) == 0)
+  else if(action->objectName().compare(m_actionMapZoomOut.c_str()) == 0)
   {
     changeAction(type->getModeMapZoomOut());
   }
-  else if(action->objectName().compare(m_optionMapSystematicScale.c_str()) == 0)
+  else if(action->objectName().compare(m_actionMapSystematicScale.c_str()) == 0)
   {
     changeAction(type->getModeSystematicScale());
   }
-  else if(action->objectName().compare(m_optionMapCreateTextGrid.c_str()) == 0)
+  else if(action->objectName().compare(m_actionMapCreateTextGrid.c_str()) == 0)
   {
     changeAction(type->getModeMapCreateTextGrid());
   }
-  else if(action->objectName().compare(m_optionMapCreateMapText.c_str()) == 0)
+  else if(action->objectName().compare(m_actionMapCreateMapText.c_str()) == 0)
   {
     changeAction(type->getModeMapCreateTextMap());
   }
-  else if(action->objectName().compare(m_optionMapCreateLegendChildAsObject.c_str()) == 0)
+  else if(action->objectName().compare(m_actionMapCreateLegendChildAsObject.c_str()) == 0)
   {
     changeAction(type->getModeLegendChildAsObject());
   }
@@ -786,28 +810,28 @@ void te::layout::ToolbarOutside::onGeometryTriggered( QAction* action )
 
   EnumModeType* type = Enums::getInstance().getEnumModeType();
 
-  if(action->objectName().compare(m_optionRectangle.c_str()) == 0)
+  if(action->objectName().compare(m_actionRectangle.c_str()) == 0)
   {
     changeAction(type->getModeCreateRectangle());
   }
-  else if(action->objectName().compare(m_optionArrow.c_str()) == 0)
+  else if(action->objectName().compare(m_actionArrow.c_str()) == 0)
   {
     changeAction(type->getModeCreateArrow());
   }
-  else if(action->objectName().compare(m_optionEllipse.c_str()) == 0)
+  else if(action->objectName().compare(m_actionEllipse.c_str()) == 0)
   {
     changeAction(type->getModeCreateEllipse());
   }
-  else if(action->objectName().compare(m_optionPoint.c_str()) == 0)
+  else if(action->objectName().compare(m_actionPoint.c_str()) == 0)
   {
     changeAction(type->getModeCreatePoint());
   }
-  else if (action->objectName().compare(m_optionLine.c_str()) == 0) 
+  else if (action->objectName().compare(m_actionLine.c_str()) == 0) 
   {
     changeAction(type->getModeCreateLine());
     Context::getInstance().setWait(type->getModeCoordWait());
   }
-  else if (action->objectName().compare(m_optionPolygon.c_str()) == 0) 
+  else if (action->objectName().compare(m_actionPolygon.c_str()) == 0) 
   {
     changeAction(type->getModeCreatePolygon());
     Context::getInstance().setWait(type->getModeCoordWait());
@@ -824,15 +848,15 @@ void te::layout::ToolbarOutside::onViewAreaTriggered( QAction* action )
 
   EnumModeType* type = Enums::getInstance().getEnumModeType();
 
-  if(action->objectName().compare(m_optionViewPan.c_str()) == 0)
+  if(action->objectName().compare(m_actionViewPan.c_str()) == 0)
   {
     changeAction(type->getModePan());
   }
-  else if(action->objectName().compare(m_optionViewZoomIn.c_str()) == 0)
+  else if(action->objectName().compare(m_actionViewZoomIn.c_str()) == 0)
   {
     changeAction(type->getModeZoomIn());
   }
-  else if(action->objectName().compare(m_optionViewZoomOut.c_str()) == 0)
+  else if(action->objectName().compare(m_actionViewZoomOut.c_str()) == 0)
   {
     changeAction(type->getModeZoomOut());
   }
@@ -854,11 +878,11 @@ void te::layout::ToolbarOutside::onItemToolsTriggered( QAction* action )
 
   EnumModeType* type = Enums::getInstance().getEnumModeType();
 
-  if(action->objectName().compare(m_optionGroup.c_str()) == 0)
+  if(action->objectName().compare(m_actionGroup.c_str()) == 0)
   {
     changeAction(type->getModeGroup());
   }
-  else if(action->objectName().compare(m_optionUngroup.c_str()) == 0)
+  else if(action->objectName().compare(m_actionUngroup.c_str()) == 0)
   {
     changeAction(type->getModeUngroup());
   }
@@ -929,27 +953,27 @@ void te::layout::ToolbarOutside::onTextToolsTriggered( QAction* action )
   }
 
   EnumModeType* type = Enums::getInstance().getEnumModeType();
-  if(action->objectName().compare(m_optionTextDefault.c_str()) == 0)
+  if(action->objectName().compare(m_actionTextDefault.c_str()) == 0)
   {
     changeAction(type->getModeCreateText());
   }
-  else if(action->objectName().compare(m_optionStringGrid.c_str()) == 0)
+  else if(action->objectName().compare(m_actionStringGrid.c_str()) == 0)
   {
     changeAction(type->getModeCreateTextGrid());
   }
-  else if(action->objectName().compare(m_optionTitle.c_str()) == 0)
+  else if(action->objectName().compare(m_actionTitle.c_str()) == 0)
   {
     changeAction(type->getModeCreateTitle());
   }
-  else if(action->objectName().compare(m_optionImage.c_str()) == 0)
+  else if(action->objectName().compare(m_actionImage.c_str()) == 0)
   {
     changeAction(type->getModeCreateImage());
   }
-  else if(action->objectName().compare(m_optionBalloon.c_str()) == 0)
+  else if(action->objectName().compare(m_actionBalloon.c_str()) == 0)
   {
     changeAction(type->getModeCreateBalloon());
   }
-  else if(action->objectName().compare(m_optionBarCode.c_str()) == 0)
+  else if(action->objectName().compare(m_actionBarCode.c_str()) == 0)
   {
     changeAction(type->getModeCreateBarCode());
   }
@@ -1205,3 +1229,356 @@ QToolButton* te::layout::ToolbarOutside::getExitButton()
 {
   return m_exitButton;
 }
+
+std::string te::layout::ToolbarOutside::getActionMapDefault()
+{
+  return m_actionMapDefault;
+}
+
+std::string te::layout::ToolbarOutside::getActionLegendDefault()
+{
+  return m_actionLegendDefault;
+}
+
+std::string te::layout::ToolbarOutside::getActionScale()
+{
+  return m_actionScale;
+}
+
+std::string te::layout::ToolbarOutside::getActionMapZoomIn()
+{
+  return m_actionMapZoomIn;
+}
+
+std::string te::layout::ToolbarOutside::getActionMapZoomOut()
+{
+  return m_actionMapZoomOut;
+}
+
+std::string te::layout::ToolbarOutside::getActionMapPan()
+{
+  return m_actionMapPan;
+}
+
+std::string te::layout::ToolbarOutside::getActionMapSystematicScale()
+{
+  return m_actionMapSystematicScale;
+}
+
+std::string te::layout::ToolbarOutside::getActionMapCreateTextGrid()
+{
+  return m_actionMapCreateTextGrid;
+}
+
+std::string te::layout::ToolbarOutside::getActionMapCreateMapText()
+{
+  return m_actionMapCreateMapText;
+}
+
+std::string te::layout::ToolbarOutside::getActionMapCreateLegendChildAsObject()
+{
+  return m_actionMapCreateLegendChildAsObject;
+}
+
+std::string te::layout::ToolbarOutside::getActionGridMap()
+{
+  return m_actionGridMap;
+}
+
+std::string te::layout::ToolbarOutside::getActionGridPlanar()
+{
+  return m_actionGridPlanar;
+}
+
+std::string te::layout::ToolbarOutside::getActionGridGeodesic()
+{
+  return m_actionGridGeodesic;
+}
+
+std::string te::layout::ToolbarOutside::getActionNorth()
+{
+  return m_actionNorth;
+}
+
+std::string te::layout::ToolbarOutside::getActionMapLocation()
+{
+  return m_actionMapLocation;
+}
+
+std::string te::layout::ToolbarOutside::getActionRectangle()
+{
+  return m_actionRectangle;
+}
+
+std::string te::layout::ToolbarOutside::getActionPoint()
+{
+  return m_actionPoint;
+}
+
+std::string te::layout::ToolbarOutside::getActionEllipse()
+{
+  return m_actionEllipse;
+}
+
+std::string te::layout::ToolbarOutside::getActionArrow()
+{
+  return m_actionArrow;
+}
+
+std::string te::layout::ToolbarOutside::getActionLine()
+{
+  return m_actionLine;
+}
+
+std::string te::layout::ToolbarOutside::getActionPolygon()
+{
+  return m_actionPolygon;
+}
+
+std::string te::layout::ToolbarOutside::getActionViewPan()
+{
+  return m_actionViewPan;
+}
+
+std::string te::layout::ToolbarOutside::getActionViewZoomIn()
+{
+  return m_actionViewZoomIn;
+}
+
+std::string te::layout::ToolbarOutside::getActionViewZoomOut()
+{
+  return m_actionViewZoomOut;
+}
+
+std::string te::layout::ToolbarOutside::getActionGroup()
+{
+  return m_actionGroup;
+}
+
+std::string te::layout::ToolbarOutside::getActionUngroup()
+{
+  return m_actionUngroup;
+}
+
+std::string te::layout::ToolbarOutside::getActionLineIntersectionMouse()
+{
+  return m_actionLineIntersectionMouse;
+}
+
+std::string te::layout::ToolbarOutside::getActionSceneZoom()
+{
+  return m_actionSceneZoom;
+}
+
+std::string te::layout::ToolbarOutside::getActionRemoveObject()
+{
+  return m_actionRemoveObject;
+}
+
+std::string te::layout::ToolbarOutside::getActionTextDefault()
+{
+  return m_actionTextDefault;
+}
+
+std::string te::layout::ToolbarOutside::getActionImage()
+{
+  return m_actionImage;
+}
+
+std::string te::layout::ToolbarOutside::getActionStringGrid()
+{
+  return m_actionStringGrid;
+}
+
+std::string te::layout::ToolbarOutside::getActionTitle()
+{
+  return m_actionTitle;
+}
+
+std::string te::layout::ToolbarOutside::getActionBalloon()
+{
+  return m_actionBalloon;
+}
+
+std::string te::layout::ToolbarOutside::getActionBarCode()
+{
+  return m_actionBarCode;
+}
+
+std::string te::layout::ToolbarOutside::getActionAlignLeft()
+{
+  return m_actionAlignLeft;
+}
+
+std::string te::layout::ToolbarOutside::getActionAlignRight()
+{
+  return m_actionAlignRight;
+}
+
+std::string te::layout::ToolbarOutside::getActionAlignTop()
+{
+  return m_actionAlignTop;
+}
+
+std::string te::layout::ToolbarOutside::getActionAlignBottom()
+{
+  return m_actionAlignBottom;
+}
+
+std::string te::layout::ToolbarOutside::getActionAlignCenterHorizontal()
+{
+  return m_actionAlignCenterHorizontal;
+}
+
+std::string te::layout::ToolbarOutside::getActionAlignCenterVertical()
+{
+  return m_actionAlignCenterVertical;
+}
+
+std::string te::layout::ToolbarOutside::getActionUndo()
+{
+  return m_actionUndo;
+}
+
+std::string te::layout::ToolbarOutside::getActionRedo()
+{
+  return m_actionRedo;
+}
+
+std::string te::layout::ToolbarOutside::getActionDrawMap()
+{
+  return m_actionDrawMap;
+}
+
+std::string te::layout::ToolbarOutside::getActionObjectToImage()
+{
+  return m_actionObjectToImage;
+}
+
+std::string te::layout::ToolbarOutside::getActionExit()
+{
+  return m_actionExit;
+}
+
+std::string te::layout::ToolbarOutside::getActionExportToPDF()
+{
+  return m_actionExportToPDF;
+}
+
+QAction* te::layout::ToolbarOutside::getActionMapToolButton()
+{
+  return m_actionMapToolButton;
+}
+
+QAction* te::layout::ToolbarOutside::getActionMapToolsToolButton()
+{
+  return m_actionMapToolsToolButton;
+}
+
+QAction* te::layout::ToolbarOutside::getActionGeometryToolButton()
+{
+  return m_actionGeometryToolButton;
+}
+
+QAction* te::layout::ToolbarOutside::getActionViewAreaToolButton()
+{
+  return m_actionViewAreaToolButton;
+}
+
+QAction* te::layout::ToolbarOutside::getActionArrowCursorButton()
+{
+  return m_actionArrowCursorButton;
+}
+
+QAction* te::layout::ToolbarOutside::getActionItemTools()
+{
+  return m_actionItemTools;
+}
+
+QAction* te::layout::ToolbarOutside::getActionLineIntersectionToolButton()
+{
+  return m_actionLineIntersectionToolButton;
+}
+
+QAction* te::layout::ToolbarOutside::getActionBringToFrontToolButton()
+{
+  return m_actionBringToFrontToolButton;
+}
+
+QAction* te::layout::ToolbarOutside::getActionSendToBackToolButton()
+{
+  return m_actionSendToBackToolButton;
+}
+
+QAction* te::layout::ToolbarOutside::getActionRecomposeToolButton()
+{
+  return m_actionRecomposeToolButton;
+}
+
+QAction* te::layout::ToolbarOutside::getActionTextToolButton()
+{
+  return m_actionTextToolButton;
+}
+
+QAction* te::layout::ToolbarOutside::getActionAlignLeftToolButton()
+{
+  return m_actionAlignLeftToolButton;
+}
+
+QAction* te::layout::ToolbarOutside::getActionAlignRightToolButton()
+{
+  return m_actionAlignRightToolButton;
+}
+
+QAction* te::layout::ToolbarOutside::getActionAlignTopToolButton()
+{
+  return m_actionAlignTopToolButton;
+}
+
+QAction* te::layout::ToolbarOutside::getActionAlignBottomToolButton()
+{
+  return m_actionAlignBottomToolButton;
+}
+
+QAction* te::layout::ToolbarOutside::getActionAlignCenterHorizontalToolButton()
+{
+  return m_actionAlignCenterHorizontalToolButton;
+}
+
+QAction* te::layout::ToolbarOutside::getActionAlignCenterVerticalToolButton()
+{
+  return m_actionAlignCenterVerticalToolButton;
+}
+
+QAction* te::layout::ToolbarOutside::getActionRemoveObjectToolButton()
+{
+  return m_actionRemoveObjectToolButton;
+}
+
+QAction* te::layout::ToolbarOutside::getActionUndoToolButton()
+{
+  return m_actionUndoToolButton;
+}
+
+QAction* te::layout::ToolbarOutside::getActionDrawMapToolButton()
+{
+  return m_actionDrawMapToolButton;
+}
+
+QAction* te::layout::ToolbarOutside::getActionObjectToImageButton()
+{
+  return m_actionObjectToImageButton;
+}
+
+QAction* te::layout::ToolbarOutside::getActionExitButton()
+{
+  return m_actionExitButton;
+}
+
+QAction* te::layout::ToolbarOutside::getActionComboBoxZoom()
+{
+  return m_actionComboZoom;
+}
+
+
+

@@ -27,9 +27,9 @@
 
 // TerraLib
 #include "PropertiesDock.h"
-#include "../../../layout/outside/PropertiesModel.h"
-#include "../../../layout/outside/PropertiesController.h"
-#include "../../../layout/core/pattern/mvc/OutsideObserver.h"
+#include "../../../layout/core/pattern/singleton/Context.h"
+#include "../../../layout/qt/core/BuildGraphicsOutside.h"
+#include "../../../layout/core/enum/Enums.h"
 #include "../../../layout/qt/outside/PropertiesOutside.h"
 
 te::qt::plugins::layout::PropertiesDock::PropertiesDock( QWidget * parent, Qt::WindowFlags flags ) :
@@ -51,14 +51,35 @@ te::qt::plugins::layout::PropertiesDock::~PropertiesDock()
 
 void te::qt::plugins::layout::PropertiesDock::create()
 {
-  //Use the Property Browser Framework for create Property Window
-  te::layout::PropertiesModel* dockPropertyModel = new te::layout::PropertiesModel();		 
-  te::layout::PropertiesController* dockPropertyController = new te::layout::PropertiesController(dockPropertyModel);
-  te::layout::OutsideObserver* itemDockProperty = (te::layout::OutsideObserver*)dockPropertyController->getView();
-  m_properties = dynamic_cast<te::layout::PropertiesOutside*>(itemDockProperty);   
+  te::layout::AbstractBuildGraphicsOutside* abstractBuildOutside = te::layout::Context::getInstance().getAbstractBuildGraphicsOutside();
+  if(!abstractBuildOutside)
+  {
+    return;
+  }
+
+  te::layout::BuildGraphicsOutside* buildOutside = dynamic_cast<te::layout::BuildGraphicsOutside*>(abstractBuildOutside);
+  if(!buildOutside)
+  {
+    return;
+  }
+
+  te::layout::EnumObjectType* objectType = te::layout::Enums::getInstance().getEnumObjectType();
+  if(!objectType)
+  {
+    return;
+  }
+
+  QWidget* widget = buildOutside->createOuside(objectType->getPropertiesWindow());
+  if(!widget)
+  {
+    return;
+  }
+  m_properties = dynamic_cast<te::layout::PropertiesOutside*>(widget);   
 }
 
 te::layout::PropertiesOutside* te::qt::plugins::layout::PropertiesDock::getPropertiesOutside()
 {
   return m_properties;
 }
+
+

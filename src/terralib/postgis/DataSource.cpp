@@ -218,7 +218,7 @@ void te::pgis::DataSource::create(const std::map<std::string, std::string>& dsIn
   std::map<std::string, std::string>::const_iterator it_end = dsInfo.end();
 
   if(it != it_end)
-    sql += it->second;
+    sql += "\"" + it->second + "\"";
   else
     throw Exception(TE_TR("The database could not be created due the missing parameter: PG_NEWDB_NAME!"));
 
