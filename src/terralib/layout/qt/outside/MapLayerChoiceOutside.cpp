@@ -96,17 +96,16 @@ void te::layout::MapLayerChoiceOutside::setLayers(std::list<te::map::AbstractLay
   
   std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
 
+  std::vector <std::string> names;
+
   while(it != m_layers.end())
   {
-    std::auto_ptr<te::da::DataSetType> dsType = it->get()->getSchema();
-    if(dsType->hasGeom())
-    {
-      te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(dsType.get());
-      int type = geomProp->getGeometryType();        
-    }
-      
+    te::map::AbstractLayerPtr layer = it->get();
+    names.push_back(layer->getTitle());
     ++it;
   }
+
+  m_widget->setInputValues(names);      
 }
 
 te::map::AbstractLayerPtr te::layout::MapLayerChoiceOutside::getLayer()
@@ -121,77 +120,34 @@ te::da::DataSourcePtr te::layout::MapLayerChoiceOutside::getDataSource()
 
 void te::layout::MapLayerChoiceOutside::onOkPushButtonClicked()
 {
-  te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(m_selectedLayer.get());
-  if(!dsLayer)
-  {
-    QMessageBox::information(this, "Address Geocoding", "Can not execute this operation on this type of layer.");
-    return;
-  }
+  m_layersOnTheRight = m_widget->getOutputValues();
 
-  m_dataSource = te::da::GetDataSource(dsLayer->getDataSourceId(), true);
-  if(!m_dataSource.get())
+  if(!m_layersOnTheRight.empty())
   {
-    QMessageBox::information(this, "Address Geocoding", "The selected input data source can not be accessed.");
-  }
+    std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
+    
+    for (int iterator = 0; iterator < m_layersOnTheRight.size(); ++iterator)
+    {
+      if(it == m_layers.end())
+        it = m_layers.begin();
 
-  m_selectedProps = m_widget->getOutputValues();
-  if(m_selectedProps.empty())
-  {
-    QMessageBox::information(this, "Address Geocoding", "Select at least one attribute.");
-    return;
-  }
+      while(it != m_layers.end())
+      {
+        te::map::AbstractLayerPtr layer = it->get();
+        std::string nameLayer = layer->getTitle();
+
+        if(nameLayer.compare(m_layersOnTheRight[iterator]) == 0)
+        {
+          m_layersSelected.push_back(layer);
+        }
+        ++it;
+      }
+    }    
+  }  
+
+  m_layersSelected.clear();
   
-//Checks whether the table already contains a column called tsvector.
-  std::auto_ptr<te::da::DataSetType> schema = m_selectedLayer->getSchema();
-  const std::vector<te::dt::Property*>& properties = schema->getProperties();
-
-  bool addNewColumn = true;
-  for(std::size_t i = 0; i < properties.size(); ++i)
-  {
-    std::string name = properties[i]->getName();
-    if(name == "tsvector")
-      addNewColumn = false;
-  }
-
-// ALTER TABLE adding a new columns of tsvector type.  
-  if(addNewColumn == true)
-  {
-    std::auto_ptr<te::da::DataSourceTransactor> trans = m_dataSource->getTransactor();
-    std::string alterTable = "ALTER TABLE "+ m_selectedLayer->getTitle() + " ADD tsvector tsvector";
-    trans->execute(alterTable);
-  }
-
-
-  
-// UPDATE values in tsvector column.
-  std::string updateTable = "UPDATE " + m_selectedLayer->getTitle() + " SET tsvector = to_tsvector('english', ";
-
-  for(std::size_t selProps = 0; selProps < m_selectedProps.size(); ++selProps)
-  {
-    if(selProps == 0)
-      updateTable += " "+ m_selectedProps[selProps];
-    else
-      updateTable += "||' '||"+ m_selectedProps[selProps];
-  }
-  
-  updateTable += ")";
-
-  m_dataSource->execute(updateTable);
-
-  
-  unsigned dot = m_selectedLayer->getTitle().find_last_of(".");
-  std::string table = m_selectedLayer->getTitle().substr(dot+1);
-
-//DROP INDEX if exists.
-  std::string dropIndex = "DROP INDEX IF EXISTS " + table +"_idx";
-  m_dataSource->execute(dropIndex);
-
-//CREATE INDEX to speed up the text search.
-  std::string createIndex = "CREATE INDEX "+ table +"_idx ON "+ m_selectedLayer->getTitle() + "  USING GIN(tsvector)";
-
-  m_dataSource->execute(createIndex);
-
-  this->accept();
+  QMessageBox::information(this, "Address Geocoding", "Test button OK.");
 }
 
 void te::layout::MapLayerChoiceOutside::onCancelPushButtonClicked()
