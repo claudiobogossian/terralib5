@@ -44,7 +44,9 @@ te::layout::EnumDataType::EnumDataType() :
   m_dataTypeTextGridSettings(0),
   m_dataTypeGroup(0),
   m_dataTypeMapChoice(0),
-  m_dataTypeLegendChoice(0)
+  m_dataTypeLegendChoice(0),
+  m_dataTypeGenericVariant(0),
+  m_dataTypeLayer(0)
 {
   init();
 }
@@ -126,6 +128,16 @@ te::layout::EnumDataType::~EnumDataType()
     delete m_dataTypeLegendChoice;
     m_dataTypeLegendChoice = 0;
   }
+  if(m_dataTypeGenericVariant)
+  {
+    delete m_dataTypeGenericVariant;
+    m_dataTypeGenericVariant = 0;
+  }
+  if(m_dataTypeLayer)
+  {
+    delete m_dataTypeLayer;
+    m_dataTypeLayer = 0;
+  }
 }
 
 void te::layout::EnumDataType::init()
@@ -161,6 +173,10 @@ void te::layout::EnumDataType::init()
   m_dataTypeMapChoice = createEnum("MapChoice", this, "Legend Choice");
 
   m_dataTypeLegendChoice = createEnum("LegendChoice", this, "Legend Choice");
+
+  m_dataTypeGenericVariant = createEnum("GenericVariant", this, "Generic Variant");
+
+  m_dataTypeLayer = createEnum("Layer", this, "Layer");
 }
 
 te::layout::EnumType* te::layout::EnumDataType::getDataTypeNone() const
@@ -242,6 +258,19 @@ te::layout::EnumType* te::layout::EnumDataType::getDataTypeLegendChoice() const
 {
   return m_dataTypeLegendChoice;
 }
+
+te::layout::EnumType* te::layout::EnumDataType::getDataTypeGenericVariant() const
+{
+  return m_dataTypeGenericVariant;
+}
+
+te::layout::EnumType* te::layout::EnumDataType::getDataTypeLayer() const
+{
+  return m_dataTypeLayer;
+}
+
+
+
 
 
 
