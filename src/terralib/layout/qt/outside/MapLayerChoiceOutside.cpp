@@ -122,28 +122,27 @@ void te::layout::MapLayerChoiceOutside::onOkPushButtonClicked()
 {
   m_layersOnTheRight = m_widget->getOutputValues();
 
-  if(!m_layersOnTheRight.empty())
+  if(m_layersOnTheRight.empty())
+  {  
+    return;
+  }
+
+  std::vector<std::string>::iterator itString = m_layersOnTheRight.begin();
+  for ( ; itString != m_layersOnTheRight.end() ; ++itString)
   {
     std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
-    
-    for (int iterator = 0; iterator < m_layersOnTheRight.size(); ++iterator)
+    for( ; it != m_layers.end() ; ++it)
     {
-      if(it == m_layers.end())
-        it = m_layers.begin();
+      te::map::AbstractLayerPtr layer = it->get();
+      std::string nameLayer = layer->getTitle();
 
-      while(it != m_layers.end())
+      std::string name = (*itString);
+      if(nameLayer.compare(name) == 0)
       {
-        te::map::AbstractLayerPtr layer = it->get();
-        std::string nameLayer = layer->getTitle();
-
-        if(nameLayer.compare(m_layersOnTheRight[iterator]) == 0)
-        {
-          m_layersSelected.push_back(layer);
-        }
-        ++it;
+        m_layersSelected.push_back(layer);
       }
-    }    
-  }  
+    }
+  }    
 
   m_layersSelected.clear();
   
