@@ -97,12 +97,11 @@ namespace te
         te::da::DataSourcePtr m_dataSource;
         te::map::AbstractLayerPtr m_selectedLayer;  //!< Layer 
         std::vector<std::string> m_selectedProps; //!< Selected properties related to the selected Layer
-
+        std::vector<std::string> m_layersOnTheRight; //!< Layers on the right in the DoubleList Widget
+        std::vector<te::map::AbstractLayerPtr> m_layersSelected; //!< Vector that will store selected layers (on the rigth DoubleList Widget)
     };
   }    
 }     
 
 #endif
-
-
 

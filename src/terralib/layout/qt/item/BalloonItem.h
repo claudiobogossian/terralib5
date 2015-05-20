@@ -47,32 +47,43 @@ namespace te
 
     class TELAYOUTEXPORT BalloonItem : public ObjectItem
     {
-      public:
+    public:
 
-        BalloonItem( ItemController* controller, Observable* o );
+      BalloonItem( ItemController* controller, Observable* o );
 
-        virtual ~BalloonItem();
+      virtual ~BalloonItem();
 
-        virtual void paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
-        
-      protected:
+      virtual void paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
 
-        virtual void drawBalloon(QPainter* painter);
+      virtual void drawRectBalloon( QPainter * painter );
 
-        virtual void	mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
-        
-        virtual void  mousePressEvent ( QGraphicsSceneMouseEvent * event );
+      virtual void drawLineBalloon( QPainter * painter/*, QRectF rectangle*/ );
 
-        virtual void	mouseMoveEvent ( QGraphicsSceneMouseEvent * event );
+      virtual double getAngle( double centerX, double centerY, double clikedX, double clikedY );
 
-        QPointF     m_initPoint;
-        QPointF     m_endPoint;
+    protected:
+
+      virtual void	mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
+
+      virtual void  mousePressEvent ( QGraphicsSceneMouseEvent * event );
+
+      virtual void	mouseMoveEvent ( QGraphicsSceneMouseEvent * event );
+
+      QRectF m_rectangleItem;
+
+      QRectF m_firstQuadrant;
+
+      QRectF m_secondQuadrant;
+
+      QRectF m_thirdQuadrant;
+
+      QRectF m_fourthQuadrant;
+
+      QPointF m_pointClicked;
+
+      double m_angle;
     };
   }
 }
 
 #endif
-
-
-
-

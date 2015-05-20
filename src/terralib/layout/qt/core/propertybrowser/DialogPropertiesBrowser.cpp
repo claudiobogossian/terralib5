@@ -53,6 +53,7 @@
 #include <QDesktopWidget>
 #include <QApplication>
 #include <QByteArray>
+#include "../../../core/pattern/proxy/AbstractProxyProject.h"
 
 te::layout::DialogPropertiesBrowser::DialogPropertiesBrowser(QObject* parent) :
   AbstractPropertiesBrowser(parent),
@@ -498,6 +499,9 @@ void te::layout::DialogPropertiesBrowser::onShowMapLayerChoiceDlg()
     return;
   }
 
+  std::list<te::map::AbstractLayerPtr> listLayers = proxy->getAllLayers();
+
+  layerChoice->setLayers(listLayers);
 
   layerChoice->show();
 }
