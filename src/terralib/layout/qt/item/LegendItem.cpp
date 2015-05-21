@@ -41,6 +41,7 @@
 #include "../../item/LegendModel.h"
 #include "../../../maptools/AbstractLayer.h"
 #include "../../../maptools/GroupingItem.h"
+#include "../../../maptools/Grouping.h"
 #include "../../../maptools/Canvas.h"
 #include "../../../maptools/CanvasConfigurer.h"
 #include "../../../qt/widgets/canvas/Canvas.h"

@@ -91,6 +91,11 @@ te::layout::View::View( QWidget* widget) :
 
 te::layout::View::~View()
 {
+  if(m_wait)
+  {
+    delete m_wait;
+    m_wait = 0;
+  }
   if(m_visualizationArea)
   {
     delete m_visualizationArea;
@@ -640,7 +645,7 @@ void te::layout::View::outsideAreaChangeContext( bool change )
   }
   else if(mode == enumMode->getModeLegendChildAsObject()) 
   {
-    iUtils->createLegendChildAsObject();
+
   }
   else if(mode == enumMode->getModeObjectToImage())
   {
@@ -888,7 +893,6 @@ void te::layout::View::print()
 
 void te::layout::View::recompose()
 {
-  resetView();
   resetDefaultConfig();
 
   double defaultZoomFactor = Context::getInstance().getDefaultZoomFactor();
@@ -1091,6 +1095,9 @@ void te::layout::View::exportItemsToImage()
 void te::layout::View::changeZoomFactor( double currentZoom )
 {
   double zoomFactor = Context::getInstance().getZoomFactor();
+
+  if(zoomFactor == currentZoom)
+    return;
 
   double scaleMatrix = transform().m11();
 

@@ -72,214 +72,8 @@ te::layout::LegendModel::~LegendModel()
 
 void te::layout::LegendModel::draw( ContextItem context )
 {
-  te::color::RGBAColor** pixmap = 0;
-
   te::map::Canvas* canvas = context.getCanvas();
-  Utils* utils = context.getUtils();
-
-  if(context.isResizeCanvas())
-    utils->configCanvas(m_box);
-
-  if(context.isResizeCanvas())
-    pixmap = utils->getImageW(m_box);
-
-  context.setPixmap(pixmap);
-
   notifyAll(context);
-  return;
-  
-  //te::color::RGBAColor** pixmap = 0;
-
-  //te::map::Canvas* canvas = context.getCanvas();
-  //Utils* utils = context.getUtils();
-
-  if((!canvas) || (!utils))
-    return;
-
-  if(context.isResizeCanvas())
-    utils->configCanvas(m_box);
-  
-  drawBackground(context);
-
-  childrenFreeMemory();
-
-  drawLegend(canvas, utils);
-
-  if(context.isResizeCanvas())
-    pixmap = utils->getImageW(m_box);
-
-  context.setPixmap(pixmap);
-  notifyAll(context);
-}
-
-void te::layout::LegendModel::drawLegend( te::map::Canvas* canvas, Utils* utils )
-{
-  if(!m_layer)
-    return;
-
-  //Header
-  std::string layerName = m_layer->getTitle();
-  
-  double wtxt = 0;
-  double htxt = 0;
-
-  canvas->setTextPointSize(m_font.getPointSize());
-  canvas->setTextUnderline(m_font.isUnderline());
-  canvas->setTextStrikeOut(m_font.isStrikeout());
-  canvas->setTextColor(m_fontColor);
-
-  utils->textBoundingBox(wtxt, htxt, layerName);
-
-  double x1 = m_box.getLowerLeftX() + m_borderDisplacement;
-  double y1 = m_box.getUpperRightY() - m_borderDisplacement - htxt;
-  canvas->drawText(x1, y1, layerName, 0);
-
-  te::map::Grouping* grouping = m_layer->getGrouping();
-
-  if (grouping != 0 && grouping->isVisible() == true)
-  {
-    this->drawGroupingLegend(grouping, canvas, utils);
-  }
-  else if (m_layer->getStyle() != 0)
-  {
-    this->drawStyleLegend(m_layer->getStyle(), canvas, utils);
-  }
-
-}
-
-void te::layout::LegendModel::drawGroupingLegend( te::map::Grouping* grouping, te::map::Canvas* canvas, Utils* utils )
-{
-  std::string propertyName = grouping->getPropertyName();
-
-  std::vector<te::map::GroupingItem*> items = grouping->getGroupingItems();
-
-  te::map::GroupingType type = grouping->getType();
-
-  std::string layerName = m_layer->getTitle();
-
-  double wtxt = 0;
-  double htxt = 0;
-
-  utils->textBoundingBox(wtxt, htxt, layerName);
-
-  double x1 = m_box.getLowerLeftX() + m_borderDisplacement;
-  double y1 = m_box.getUpperRightY() - m_borderDisplacement - htxt;
-
-  for (unsigned int i = 0; i < items.size(); ++i)
-  {
-    std::string label = propertyName;
-    label += ": ";
-
-    te::map::GroupingItem* item = items[i];
-
-    if (type == te::map::UNIQUE_VALUE)
-    {
-      label += item->getValue();
-    }
-    else
-    {
-      std::string upperLimit = item->getUpperLimit();
-      std::string lowerLimit = item->getLowerLimit();
-
-      label += lowerLimit;
-      label += " ~ ";
-      label += upperLimit;
-    }
-
-    //Test
-    te::gm::Envelope box(x1, y1 - m_displacementBetweenTitleAndSymbols - (m_displacementBetweenSymbols * i), 
-      x1 + m_symbolsize, y1 - m_displacementBetweenTitleAndSymbols - (m_displacementBetweenSymbols * i) - m_symbolsize);
-    utils->drawRectW(box);
-
-    canvas->setTextPointSize(m_font.getPointSize());
-    canvas->setTextUnderline(m_font.isUnderline());
-    canvas->setTextStrikeOut(m_font.isStrikeout());
-    canvas->setTextColor(m_fontColor);
-
-    utils->textBoundingBox(wtxt, htxt, label);
-    canvas->drawText(box.getLowerLeftX() + m_symbolsize + m_displacementBetweenSymbolsAndText, box.m_ury, label, 0);
-  }
-}
-
-void te::layout::LegendModel::drawStyleLegend( te::se::Style* style, te::map::Canvas* canvas, Utils* utils )
-{
-  // Number of rules defined on feature type style
-  std::size_t nRules = m_layer->getStyle()->getRules().size();
-  
-  // Creates a canvas configurer
-  te::map::CanvasConfigurer cc(canvas);
-
-  //Header
-  std::string layerName = m_layer->getTitle();
-
-  double wtxt = 0;
-  double htxt = 0;
-
-  canvas->setTextPointSize(m_font.getPointSize());
-  canvas->setTextUnderline(m_font.isUnderline());
-  canvas->setTextStrikeOut(m_font.isStrikeout());
-  canvas->setTextColor(m_fontColor);
-
-  utils->textBoundingBox(wtxt, htxt, layerName);
-
-  double x1 = m_box.getLowerLeftX() + m_borderDisplacement;
-  double y1 = m_box.getUpperRightY() - m_borderDisplacement - htxt;
-
-  for(std::size_t i = 0; i < nRules; ++i) // for each <Rule>
-  {
-    // The current rule
-    te::se::Rule* rule = style->getRule(i);
-    assert(rule);
-        
-    // Gets the set of symbolizers defined on current rule
-    const std::vector<te::se::Symbolizer*>& symbolizers = rule->getSymbolizers();
-
-    if(symbolizers.empty())
-    {
-      continue;
-    }
-
-    std::size_t nSymbolizers = symbolizers.size();
-
-    for(std::size_t j = 0; j < nSymbolizers; ++j) // for each <Symbolizer>
-    {
-      // The current symbolizer
-      te::se::Symbolizer* symb = symbolizers[j];
-      
-      // Let's config the canvas based on the current symbolizer
-      cc.config(symb);
-
-      //Test
-      te::gm::Envelope box(x1, y1 - m_displacementBetweenTitleAndSymbols - (m_displacementBetweenSymbols * j), 
-                    x1 + m_symbolsize, y1 - m_displacementBetweenTitleAndSymbols - (m_displacementBetweenSymbols * j) - m_symbolsize);
-      utils->drawRectW(box);
-      
-      canvas->setTextPointSize(m_font.getPointSize());
-      canvas->setTextUnderline(m_font.isUnderline());
-      canvas->setTextStrikeOut(m_font.isStrikeout());
-      canvas->setTextColor(m_fontColor);
-      std::string* nameRule = const_cast<std::string*>(rule->getName());
-      std::string n = symb->getName();
-      std::string name;
-      if(nameRule)
-      {
-        name = nameRule->c_str();
-      }
-      else
-      {
-        std::ostringstream convert;
-        convert << j;
-        name = "Legend_" + convert.str();
-      }
-
-      te::gm::Point* coord = new te::gm::Point(x1, y1 - m_displacementBetweenTitleAndSymbols - (m_displacementBetweenSymbols * j));
-      m_coordChildren[coord] = name;
-
-      utils->textBoundingBox(wtxt, htxt, name);
-      canvas->drawText(box.getLowerLeftX() + m_symbolsize + m_displacementBetweenSymbolsAndText, box.m_ury, name, 0);
-    } // end for each <Symbolizer>
-
-  }   // end for each <Rule>
 }
 
 te::layout::Properties* te::layout::LegendModel::getProperties() const
@@ -353,9 +147,7 @@ void te::layout::LegendModel::visitDependent(ContextItem context)
   if(map)
   {
     m_layer = map->getLayer();
-
-    this->updateBox(context);
-
+    
     draw(context);
   }	
 }
@@ -400,26 +192,6 @@ double te::layout::LegendModel::getDisplacementBetweenSymbolAndText()
   return m_displacementBetweenSymbolsAndText;
 }
 
-std::map<te::gm::Point*, std::string> te::layout::LegendModel::getCoordChildren()
-{
-  return m_coordChildren;
-}
-
-void te::layout::LegendModel::childrenFreeMemory()
-{
-  std::map<te::gm::Point*, std::string>::iterator it;
-  for(it = m_coordChildren.begin() ; it != m_coordChildren.end() ; ++it)
-  {
-    te::gm::Point* p = it->first;
-    if(p)
-    {
-      delete p;
-      p = 0;
-    }
-  }
-  m_coordChildren.clear();
-}
-
 te::map::AbstractLayerPtr te::layout::LegendModel::getLayer()
 {
   return m_layer;
@@ -430,112 +202,9 @@ te::layout::Font te::layout::LegendModel::getFont()
   return m_font;
 }
 
-void te::layout::LegendModel::updateBox(ContextItem context)
+te::color::RGBAColor te::layout::LegendModel::getFontColor()
 {
-  if (!m_layer)
-  {
-    return;
-  }
-
-  te::map::Canvas* canvas = context.getCanvas();
-  te::layout::Utils* utils = context.getUtils();
-
-  canvas->setTextPointSize(m_font.getPointSize());
-  canvas->setTextUnderline(m_font.isUnderline());
-  canvas->setTextStrikeOut(m_font.isStrikeout());
-  canvas->setTextColor(m_fontColor);
-
-  double wtxt = 0.;
-  double htxt = 0.;
-
-  std::string title = m_layer->getTitle();
-  
-  utils->textBoundingBox(wtxt, htxt, title);
-
-  te::gm::Envelope box = m_box;
-
-  double boxWidth = box.getWidth();
-  double boxHeight = box.getHeight();
-
-  double sumWidth = (double) (m_borderDisplacement + wtxt + m_borderDisplacement);
-
-  if (boxWidth < sumWidth)
-  {
-    box = te::gm::Envelope(box.getLowerLeftX(), box.getLowerLeftY(), sumWidth, boxHeight);  
-
-    boxWidth = sumWidth;
-  }
-
-  double sumHeight = (double) (m_borderDisplacement + htxt + m_displacementBetweenTitleAndSymbols);
-
-  if (boxHeight < sumHeight)
-  {
-    box = te::gm::Envelope(box.getLowerLeftX(), box.getLowerLeftY(), boxWidth, sumHeight);  
-
-    boxHeight = sumHeight;
-  }
-
-  te::map::Grouping* grouping = m_layer->getGrouping();
-
-  if (grouping != 0 && grouping->isVisible() == true)
-  {
-    std::string propertyName = grouping->getPropertyName();
-
-    std::vector<te::map::GroupingItem*> items = grouping->getGroupingItems();
-
-    te::map::GroupingType type = grouping->getType();
-
-    for (unsigned int i = 0; i < items.size(); ++i)
-    {
-      std::string label = propertyName;
-      label += ": ";
-
-      te::map::GroupingItem* item = items[i];
-
-      if (type == te::map::UNIQUE_VALUE)
-      {
-        label += item->getValue();
-      }
-      else
-      {
-        std::string upperLimit = item->getUpperLimit();
-        std::string lowerLimit = item->getLowerLimit();
-
-        label += lowerLimit;
-        label += " ~ ";
-        label += upperLimit;
-      }
-
-      utils->textBoundingBox(wtxt, htxt, label);
-
-      sumWidth = (double) (m_borderDisplacement + m_symbolsize + m_displacementBetweenSymbolsAndText + wtxt + m_borderDisplacement);
-
-      if (boxWidth < sumWidth)
-      {
-        box = te::gm::Envelope(box.getLowerLeftX(), box.getLowerLeftY(), sumWidth, boxHeight);  
-
-        boxWidth = sumWidth;
-      }
-
-      sumHeight += (double) (htxt + m_displacementBetweenSymbols);
-      
-      if (boxHeight < sumHeight)
-      {
-        box = te::gm::Envelope(box.getLowerLeftX(), box.getLowerLeftY(), boxWidth, sumHeight);  
-
-        boxHeight =  sumHeight;
-      }
-    }
-  }
-  else if (m_layer->getStyle() != 0)
-  {
-
-  }
-
-  m_box = box;
-
-  this->notifyAll(context);
-
+  return m_fontColor;
 }
 
 double te::layout::LegendModel::getSymbolSize()
@@ -543,12 +212,5 @@ double te::layout::LegendModel::getSymbolSize()
   return m_symbolsize;
 }
 
-void te::layout::LegendModel::setSymbolSize( const double& value )
-{
-  m_symbolsize = value;
-}
 
-te::color::RGBAColor te::layout::LegendModel::getFontColor()
-{
-  return m_fontColor;
-}
+

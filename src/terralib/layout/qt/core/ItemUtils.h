@@ -136,12 +136,7 @@ namespace te
           \brief Vectorizes inside text of selected MapItem. (generates te::layout::TextItem objects)
         */
         virtual void createTextMapAsObject();
-
-        /*!
-          \brief Vectorizes selected LegendItem. (generates te::layout::TextItem objects)
-        */
-        virtual void createLegendChildAsObject();
-
+        
         /*!
           \brief Get properties of all GridMapItem, children of a MapItem.
 		  

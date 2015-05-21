@@ -936,8 +936,15 @@ void te::layout::ToolbarOutside::onSendToBackClicked( bool checked )
 
 void te::layout::ToolbarOutside::onRecomposeClicked( bool checked )
 {
+  double zoomFactor = Context::getInstance().getZoomFactor();
+  Context::getInstance().setOldZoomFactor(zoomFactor);
+
   EnumModeType* type = Enums::getInstance().getEnumModeType();
   m_comboZoom->setCurrentIndex(1);
+
+  double currentZoom = m_comboZoom->itemData(1).toDouble();
+
+  Context::getInstance().setZoomFactor(currentZoom);
   changeAction(type->getModeRecompose());
 }
 
