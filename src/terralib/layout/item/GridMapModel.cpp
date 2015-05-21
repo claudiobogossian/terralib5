@@ -60,8 +60,8 @@ te::layout::GridMapModel::GridMapModel() :
   m_visibleAllTexts(true),
 
   m_superscriptText(false),
-  m_lneVrtDisplacement(7),
-  m_lneHrzDisplacement(7),
+  m_lneVrtDisplacement(1),
+  m_lneHrzDisplacement(1),
   m_bottomText(true),
   m_leftText(true),
   m_rightText(true),

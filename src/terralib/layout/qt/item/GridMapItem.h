@@ -33,6 +33,10 @@
 // TerraLib
 #include "ObjectItem.h"
 #include "../../core/Config.h"
+#include "../../../color/RGBAColor.h"
+
+// Qt
+#include <QColor>
 
 namespace te
 {
@@ -89,6 +93,8 @@ namespace te
         virtual void drawText( QPointF point, QPainter* painter, std::string text, bool displacementLeft = false, bool displacementRight = false);
 
         virtual void recalculateBoundingRect();
+
+        virtual QColor rgbaToQColor(te::color::RGBAColor color);
 
         double m_maxWidthTextMM;
         double m_maxHeigthTextMM;

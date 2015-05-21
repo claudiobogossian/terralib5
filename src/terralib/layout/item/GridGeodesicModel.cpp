@@ -71,8 +71,8 @@ te::layout::GridGeodesicModel::GridGeodesicModel() :
 {
   m_type = Enums::getInstance().getEnumObjectType()->getGridGeodesicItem();
 
-  m_lneVrtDisplacement = 10;
-  m_lneHrzDisplacement = 10;
+  m_lneVrtDisplacement = 2;
+  m_lneHrzDisplacement = 2;
 }
 
 te::layout::GridGeodesicModel::~GridGeodesicModel()

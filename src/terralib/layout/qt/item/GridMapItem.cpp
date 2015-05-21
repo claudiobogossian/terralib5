@@ -205,6 +205,17 @@ void te::layout::GridMapItem::drawHorizontalLines()
 
 }
 
+QColor te::layout::GridMapItem::rgbaToQColor( te::color::RGBAColor color )
+{
+  QColor clr;
+  clr.setRed(color.getRed());
+  clr.setGreen(color.getGreen());
+  clr.setBlue(color.getBlue());
+  clr.setAlpha(color.getAlpha());
+
+  return clr;
+}
+
 
 
 
