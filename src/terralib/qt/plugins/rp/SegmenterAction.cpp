@@ -39,8 +39,9 @@
 te::qt::plugins::rp::SegmenterAction::SegmenterAction(QMenu* menu, QMenu* popupMenu):te::qt::plugins::rp::AbstractAction(menu, popupMenu)
 {
   createAction(tr("Segmenter...").toStdString(), "segmenter");
+  m_action->setObjectName("Processing.Raster Processing.Segmenter");
 
-  createPopUpAction(tr("Segmenter...").toStdString(), "segmenter");
+  //createPopUpAction(tr("Segmenter...").toStdString(), "segmenter");
 }
 
 te::qt::plugins::rp::SegmenterAction::~SegmenterAction()
