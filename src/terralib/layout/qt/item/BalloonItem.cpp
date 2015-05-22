@@ -37,6 +37,7 @@
 
 // STL
 #include <algorithm>    // std::max and std::min
+#include <cmath>
 
 // Qt
 #include <QTextDocument>
