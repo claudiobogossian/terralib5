@@ -216,6 +216,30 @@ QColor te::layout::GridMapItem::rgbaToQColor( te::color::RGBAColor color )
   return clr;
 }
 
+bool te::layout::GridMapItem::hasLayer()
+{
+  bool result = false;
+
+  MapItem* item = dynamic_cast<MapItem*>(parentItem());
+  if(!item)
+  {
+    return result;    
+  }
+
+  MapModel* mapModel = dynamic_cast<MapModel*>(item->getModel());
+  if(!mapModel)
+  {
+    return result;    
+  }
+
+  if(!mapModel->getLayer())
+  {
+    return result;
+  }
+
+  return true;
+}
+
 
 
 

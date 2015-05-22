@@ -175,7 +175,7 @@ te::layout::Observer* te::layout::ItemFactory::make( EnumType* type, ItemParamsC
     GridPlanarItem* gridPlanar = new GridPlanarItem(params.getController(), params.getModel());
     item = (Observer*)gridPlanar;
   }
-  else if(type == enumObj->getGridMapItem())
+  else if(type == enumObj->getGridGeodesicItem())
   {
     GridGeodesicItem* gridGeodesic = new GridGeodesicItem(params.getController(), params.getModel());
     item = (Observer*)gridGeodesic;

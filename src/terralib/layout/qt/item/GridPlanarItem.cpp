@@ -39,9 +39,13 @@
 #include "../../core/WorldTransformer.h"
 #include "../../item/MapModel.h"
 #include "../../../maptools/AbstractLayer.h"
+#include "../../core/pattern/singleton/Context.h"
+#include "../../core/Utils.h"
 
 //Qt
 #include <QStyleOptionGraphicsItem>
+#include <QPointF>
+#include <QLineF>
 
 te::layout::GridPlanarItem::GridPlanarItem( ItemController* controller, Observable* o ) :
   GridMapItem(controller, o)
@@ -312,31 +316,6 @@ double te::layout::GridPlanarItem::initHorizontalLines( te::gm::Envelope geoBox 
 
   return xInit;
 }
-
-bool te::layout::GridPlanarItem::hasLayer()
-{
-  bool result = false;
-
-  MapItem* item = dynamic_cast<MapItem*>(parentItem());
-  if(!item)
-  {
-    return result;    
-  }
-
-  MapModel* mapModel = dynamic_cast<MapModel*>(item->getModel());
-  if(!mapModel)
-  {
-    return result;    
-  }
-
-  if(!mapModel->getLayer())
-  {
-    return result;
-  }
-
-  return true;
-}
-
 
 
 

@@ -318,3 +318,28 @@ bool te::layout::GridGeodesicModel::isVisibleCornerTextsText()
   return m_visibleCornerTextsText;
 }
 
+te::gm::Envelope te::layout::GridGeodesicModel::getPlanarBox()
+{
+  return m_planarBox;
+}
+
+bool te::layout::GridGeodesicModel::isDegreesText()
+{
+  return m_degreesText;
+}
+
+bool te::layout::GridGeodesicModel::isMinutesText()
+{
+  return m_minutesText;
+}
+
+bool te::layout::GridGeodesicModel::isSecondsText()
+{
+  return m_secondsText;
+}
+
+void te::layout::GridGeodesicModel::setSRID( int srid )
+{
+  m_srid = srid;
+}
+

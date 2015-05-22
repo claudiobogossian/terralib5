@@ -47,6 +47,7 @@ te::layout::TextModel::TextModel() :
   m_font.setPointSize(12);
 
   m_resizable = false;
+  m_border = false;
 }
 
 te::layout::TextModel::~TextModel()

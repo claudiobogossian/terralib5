@@ -96,6 +96,8 @@ namespace te
 
         virtual QColor rgbaToQColor(te::color::RGBAColor color);
 
+        virtual bool hasLayer();
+
         double m_maxWidthTextMM;
         double m_maxHeigthTextMM;
         double m_onePointMM;

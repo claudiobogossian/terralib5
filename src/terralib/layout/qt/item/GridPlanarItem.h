@@ -78,8 +78,6 @@ namespace te
         virtual double initVerticalLines(te::gm::Envelope geoBox);
 
         virtual double initHorizontalLines(te::gm::Envelope geoBox);
-
-        virtual bool hasLayer();
     };
   }
 }
