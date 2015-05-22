@@ -330,6 +330,14 @@ namespace te
         */
         virtual EnumType* getLegendChoice() const;
 
+        /*!
+          \brief Returns value that represents star location (MVC Component) type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
+        virtual EnumType* getStarItem() const;
+
+
       protected:
 
         /*!
@@ -377,6 +385,7 @@ namespace te
         EnumType* m_colorDialog; //!< value that represents color (dialog) type belonging to enumeration
         EnumType* m_fontDialog; //!< value that represents font (dialog) type belonging to enumeration
         EnumType* m_legendChoice; //!< value that represents map layer choice (dialog) type belonging to enumeration
+        EnumType* m_starItem; //!< value that represents star type belonging to enumeration
     };
   }
 }

@@ -37,6 +37,9 @@
 #include "../../item/ArrowModel.h"
 
 #include <cmath>
+#include "geos/platform.h"
+#include "qgraphicsitem.h"
+#include "qpoint.h"
 
 te::layout::ArrowItem::ArrowItem( ItemController* controller, Observable* o ) :
   ObjectItem(controller, o)
@@ -60,7 +63,7 @@ void te::layout::ArrowItem::paint( QPainter * painter, const QStyleOptionGraphic
 
   drawBackground(painter);
 
-  drawArrow(painter);
+  drawRightArrow(painter);
 
   drawBorder(painter);
 
@@ -71,67 +74,67 @@ void te::layout::ArrowItem::paint( QPainter * painter, const QStyleOptionGraphic
   }
 }
 
-void te::layout::ArrowItem::drawArrow( QPainter * painter )
+void te::layout::ArrowItem::drawLeftArrow( QPainter * painter )
 {
-  ArrowModel* model = dynamic_cast<ArrowModel*>(m_model);
-  if(!model)
-  {
-    return;
-  }
+	QRectF boundRect = boundingRect();
 
-  painter->save();
+	QColor cblack(0,0,0);
+	QPen pn(cblack, 0, Qt::SolidLine);
+	painter->setPen(pn);
 
-  QRectF boundRect = boundingRect();
+	double centerY = boundRect.center().y();
+	QLineF lne(boundRect.bottomLeft().x(), centerY, boundRect.width(), centerY);
 
-  QColor cblack(0,0,0);
-  QPen pn(cblack, 0, Qt::SolidLine);
-  painter->setPen(pn);
+	painter->save();
 
-  double centerY = boundRect.center().y();
-  
-  QLineF lne(boundRect.bottomLeft().x(), centerY, boundRect.width(), centerY);
+	double h = boundRect.height();
+	double Pi = 3.14;
+	double sizeHead = 10;
 
-  painter->drawLine(lne);
+	double angle = std::acos(lne.dx() / lne.length());
+	if (lne.dy() >= 0)
+		angle = (Pi * 2) - angle;
 
-  painter->restore();
+	QPointF arrowP1 = lne.p1() + QPointF(sin(angle + Pi / 3) * sizeHead,
+		cos(angle + Pi / 3) * sizeHead);
+	QPointF arrowP2 = lne.p1() + QPointF(sin(angle + Pi - Pi / 3) * sizeHead,
+		cos(angle + Pi - Pi / 3) * sizeHead);
 
-  /* Draw Arrow Head */
-  drawHeadArrow(painter);
+	qreal extra = (pn.width() + 20) / 2.0;
+
+	QRectF laleska (lne.p1(), QSizeF(lne.p2().x() - lne.p1().x(),
+	lne.p2().x() - lne.p1().y()));
+
+	QPolygonF trianglePolygon;
+	trianglePolygon << lne.p1() << arrowP1 << arrowP2;
+	painter->drawPolygon(trianglePolygon);
+	painter->drawRect(laleska);
+	painter->restore();
+
 }
 
-void te::layout::ArrowItem::drawHeadArrow( QPainter * painter )
+void te::layout::ArrowItem::drawRightArrow( QPainter * painter )
 {
-  painter->save();
+	QRectF boundRect = boundingRect();
 
-  QBrush bsh(Qt::black);
-  painter->setBrush(bsh);
-  painter->setPen(Qt::NoPen);
 
-  QRectF boundRect = boundingRect();
 
-  double h = boundRect.height();
+	double centerY = boundRect.center().y();
+	QLineF lne(boundRect.bottomLeft().x(), centerY, boundRect.width(), centerY);
+	double centerW = boundRect.width()/2;
+	painter->save();
 
-  double centerY = boundRect.center().y();
-  QLineF lne(boundRect.bottomLeft().x(), centerY, boundRect.width(), centerY);
+	QPointF p1 = QPointF(boundRect.bottomLeft().x()/2, centerW+10);
+	QPointF p2 = QPointF(boundRect.width()/2+10, boundRect.width()/2+5);
+	QPointF p3 = (boundRect.width()/2+5, boundRect.bottomRight()/2);
+	QPointF p4 = (boundRect.bottomRight()/2,boundRect.bottomRight()/2);
+	QPointF p5 = QPointF(boundRect.bottomRight().y()/2,boundRect.width()/2-5);
+	QPointF p6 = QPointF(boundRect.width()/2-5, boundRect.width()/2-10);
+	QPointF p7 = (boundRect.width()/2-10, boundRect.bottomLeft()/2);
 
-  double Pi = 3.14;
-  double sizeHead = (h / 5.);
+	QPolygonF arrowPolygon;
+	arrowPolygon<<p1<<p2<<p3<<p4<<p5<<p6<<p7;
+	painter->drawPolygon(arrowPolygon);
+	painter->restore();
 
-  double angle = std::acos(lne.dx() / lne.length());
-  if (lne.dy() >= 0)
-    angle = (Pi * 2) - angle;
-
-  QPointF arrowP1 = lne.p1() + QPointF(sin(angle + Pi / 3) * sizeHead,
-    cos(angle + Pi / 3) * sizeHead);
-  QPointF arrowP2 = lne.p1() + QPointF(sin(angle + Pi - Pi / 3) * sizeHead,
-    cos(angle + Pi - Pi / 3) * sizeHead);
-
-  QPolygonF trianglePolygon;
-  trianglePolygon << lne.p1() << arrowP1 << arrowP2;
-
-  painter->drawPolygon(trianglePolygon);
-
-  painter->restore();
 }
-
-

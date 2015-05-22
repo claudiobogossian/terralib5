@@ -998,5 +998,8 @@ te::layout::EnumType* te::layout::EnumModeType::getModeCreateMapLocation() const
   return m_modeCreateMapLocation;
 }
 
-
+te::layout::EnumType* te::layout::EnumModeType::getModeCreateStar() const
+{
+	return m_modeCreateStar;
+}
 

@@ -78,6 +78,7 @@ te::layout::ToolbarOutside::ToolbarOutside( OutsideController* controller, Obser
   m_actionArrow("geometry_arrow"),
   m_actionLine("geometry_line"),
   m_actionPolygon("geometry_polygon"),
+  m_actionStar("geometry_star"),
   m_actionViewPan("view_pan"),
   m_actionViewZoomIn("view_zoom_in"),
   m_actionViewZoomOut("view_zoom_out"),
@@ -345,6 +346,9 @@ QToolButton* te::layout::ToolbarOutside::createGeometryToolButton()
 
   QAction* actionPolygon = createAction("Polygon Object", m_actionPolygon, "layout-polygon", "", menu); 
   menu->addAction(actionPolygon);
+
+  QAction* actionStar = createAction("Star Object", m_actionStar, "layout-star", "", menu); 
+  menu->addAction(actionStar);
 
   btnGeometry->setMenu(menu);
   btnGeometry->setPopupMode(QToolButton::MenuButtonPopup);
@@ -832,6 +836,10 @@ void te::layout::ToolbarOutside::onGeometryTriggered( QAction* action )
   {
     changeAction(type->getModeCreatePolygon());
     Context::getInstance().setWait(type->getModeCoordWait());
+  }
+  else if (action->objectName().compare(m_actionStar.c_str()) == 0) 
+  {
+	  changeAction(type->getModeCreateStar());
   }
 }
 
@@ -1575,6 +1583,11 @@ QAction* te::layout::ToolbarOutside::getActionExitButton()
 QAction* te::layout::ToolbarOutside::getActionComboBoxZoom()
 {
   return m_actionComboZoom;
+}
+
+std::string te::layout::ToolbarOutside::getActionStar()
+{
+	return m_actionStar;
 }
 
 
