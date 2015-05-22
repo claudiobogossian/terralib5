@@ -2685,7 +2685,7 @@ void te::qt::af::BaseApplication::initActions()
 void te::qt::af::BaseApplication::initMenus()
 {
 // Making menus
-  m_menubar->setObjectName(QString::fromUtf8("menubar"));
+  m_menubar->setObjectName("menubar");
   m_menubar->setGeometry(QRect(0, 0, 640, 21));
 
 // File menu
