@@ -41,6 +41,7 @@ te::qt::plugins::vp::GeometricOpAction::GeometricOpAction(QMenu* menu)
   : te::qt::plugins::vp::AbstractAction(menu)
 {
   createAction(tr("Geometric Operation...").toStdString(), "vector-processing-geometric-op");
+  m_action->setObjectName("Processing.Vector Processing.Gometric Operation");
 }
 
 te::qt::plugins::vp::GeometricOpAction::~GeometricOpAction()

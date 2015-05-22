@@ -78,6 +78,7 @@ void te::qt::plugins::addressgeocoding::Plugin::startup()
   m_action = new QAction(pluginMenu);
   m_action->setText("Address Geocoding...");
   m_action->setIcon(QIcon::fromTheme("addressgeocoding-icon"));
+  m_action->setObjectName("Processing.Address Geocoding");
 
   connect(m_action, SIGNAL(triggered(bool)), this, SLOT(onActionActivated(bool)));
 
