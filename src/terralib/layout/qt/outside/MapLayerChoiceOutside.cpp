@@ -25,50 +25,19 @@
 
 // TerraLib
 #include "../../../common/Logger.h"
-#include "../../../common/progress/ProgressManager.h"
-#include "../../../common/Translator.h"
-#include "../../../common/STLUtils.h"
-#include "../../../dataaccess/dataset/DataSetType.h"
-#include "../../../dataaccess/dataset/ObjectIdSet.h"
-#include "../../../dataaccess/datasource/DataSourceCapabilities.h"
-#include "../../../dataaccess/datasource/DataSourceInfo.h"
-#include "../../../dataaccess/datasource/DataSourceInfoManager.h"
-#include "../../../dataaccess/datasource/DataSourceFactory.h"
-#include "../../../dataaccess/datasource/DataSourceManager.h"
-#include "../../../dataaccess/utils/Utils.h"
-#include "../../../datatype/Enums.h"
-#include "../../../datatype/Property.h"
-#include "../../../geometry/GeometryProperty.h"
-#include "../../../maptools/AbstractLayer.h"
-#include "../../../postgis/Transactor.h"
-#include "../../../qt/af/Utils.h"
-#include "../../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
-#include "../../../qt/widgets/layer/utils/DataSet2Layer.h"
-#include "../../../qt/widgets/progress/ProgressViewerDialog.h"
 #include "../../../qt/widgets/utils/DoubleListWidget.h"
-#include "../../../statistics/core/Utils.h"
 #include "MapLayerChoiceOutside.h"
+#include "../../outside/MapLayerChoiceModel.h"
 #include "ui_MapLayerChoice.h"
 
 // Qt
-#include <QFileDialog>
 #include <QGridLayout>
 #include <QMessageBox>
-
-// Boost
-#include <boost/algorithm/string.hpp>
-#include <boost/filesystem.hpp>
-#include <boost/uuid/random_generator.hpp>
-#include <boost/uuid/uuid_io.hpp>
-
-#include <iostream>
-#include <string>
 
 te::layout::MapLayerChoiceOutside::MapLayerChoiceOutside(OutsideController* controller, Observable* o)
   : QDialog(0),
     OutsideObserver(controller, o),
-    m_ui(new Ui::MapLayerChoice),
-    m_layers(std::list<te::map::AbstractLayerPtr>())
+    m_ui(new Ui::MapLayerChoice)
 {
 // add controls
   m_ui->setupUi(this);
@@ -90,15 +59,21 @@ te::layout::MapLayerChoiceOutside::~MapLayerChoiceOutside()
 {
 }
 
-void te::layout::MapLayerChoiceOutside::setLayers(std::list<te::map::AbstractLayerPtr> layers)
+void te::layout::MapLayerChoiceOutside::init()
 {
-  m_layers = layers;
+  MapLayerChoiceModel* model = dynamic_cast<MapLayerChoiceModel*>(m_model);
+  if(!model)
+  {
+    return;
+  }
+
+  std::list<te::map::AbstractLayerPtr> layers = model->getLayers();
   
-  std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
+  std::list<te::map::AbstractLayerPtr>::iterator it = layers.begin();
 
   std::vector <std::string> names;
 
-  while(it != m_layers.end())
+  while(it != layers.end())
   {
     te::map::AbstractLayerPtr layer = it->get();
     names.push_back(layer->getTitle());
@@ -108,18 +83,16 @@ void te::layout::MapLayerChoiceOutside::setLayers(std::list<te::map::AbstractLay
   m_widget->setInputValues(names);      
 }
 
-te::map::AbstractLayerPtr te::layout::MapLayerChoiceOutside::getLayer()
-{
-  return m_selectedLayer;
-}
-
-te::da::DataSourcePtr te::layout::MapLayerChoiceOutside::getDataSource()
-{
-  return m_dataSource;
-}
-
 void te::layout::MapLayerChoiceOutside::onOkPushButtonClicked()
 {
+  MapLayerChoiceModel* model = dynamic_cast<MapLayerChoiceModel*>(m_model);
+  if(!model)
+  {
+    return;
+  }
+
+  std::list<te::map::AbstractLayerPtr> layers = model->getLayers();
+
   m_layersOnTheRight = m_widget->getOutputValues();
 
   if(m_layersOnTheRight.empty())
@@ -130,8 +103,8 @@ void te::layout::MapLayerChoiceOutside::onOkPushButtonClicked()
   std::vector<std::string>::iterator itString = m_layersOnTheRight.begin();
   for ( ; itString != m_layersOnTheRight.end() ; ++itString)
   {
-    std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
-    for( ; it != m_layers.end() ; ++it)
+    std::list<te::map::AbstractLayerPtr>::iterator it = model->getLayers().begin();
+    for( ; it != model->getLayers().end() ; ++it)
     {
       te::map::AbstractLayerPtr layer = it->get();
       std::string nameLayer = layer->getTitle();
@@ -146,7 +119,7 @@ void te::layout::MapLayerChoiceOutside::onOkPushButtonClicked()
 
   m_layersSelected.clear();
   
-  QMessageBox::information(this, "Address Geocoding", "Test button OK.");
+  QMessageBox::information(this, "Map Layer Choice", "Test button OK.");
 }
 
 void te::layout::MapLayerChoiceOutside::onCancelPushButtonClicked()

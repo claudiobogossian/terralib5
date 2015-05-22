@@ -500,8 +500,7 @@ void te::layout::DialogPropertiesBrowser::onShowMapLayerChoiceDlg()
   }
 
   std::list<te::map::AbstractLayerPtr> listLayers = proxy->getAllLayers();
-
-  layerChoice->setLayers(listLayers);
+  model->setLayers(listLayers);
 
   layerChoice->show();
 }

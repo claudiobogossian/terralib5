@@ -33,6 +33,11 @@
 #include "../core/ContextItem.h"
 #include "../core/property/Properties.h"
 #include "../core/Config.h"
+#include "../../maptools/AbstractLayer.h"
+
+// STL
+#include <vector>
+#include <list>
 
 namespace te
 {
@@ -50,6 +55,16 @@ namespace te
 
       virtual Properties* getProperties() const;
 
+      virtual void setPropertiesMaps(std::vector<te::layout::Properties*> properties);
+
+      virtual void setLayers(std::list<te::map::AbstractLayerPtr> layers);
+
+      virtual std::list<te::map::AbstractLayerPtr> getLayers();
+
+    protected:
+
+      std::list<te::map::AbstractLayerPtr> m_layers;
+      std::vector<te::layout::Properties*> m_mapProperties;
     };
   }
 }

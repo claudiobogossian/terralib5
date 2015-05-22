@@ -29,24 +29,9 @@
 #include "GenericVariant.h"
 #include "../enum/Enums.h"
 
-// STL
-#include <sstream>
-#include <string>  
-#include <exception>
-#include <stdexcept>
-#include <cctype>
-#include <iostream>
-#include <stdlib.h>
-
 te::layout::GenericVariant::GenericVariant()
 {
 
-}
-
-te::layout::GenericVariant::GenericVariant(EnumType* type) :
-  m_type(type)
-{
- 
 }
 
 te::layout::GenericVariant::~GenericVariant()
@@ -54,59 +39,14 @@ te::layout::GenericVariant::~GenericVariant()
   clear();
 }
 
-void te::layout::GenericVariant::setVector( std::vector<boost::any> value )
-{
-  m_data = value;
-}
-
-std::vector<std::string> te::layout::GenericVariant::toString()
+std::vector<std::string> te::layout::GenericVariant::toStringVector()
 {
   return m_vString;
 }
 
-std::vector<double> te::layout::GenericVariant::toDouble()
+std::list<te::map::AbstractLayerPtr> te::layout::GenericVariant::toLayerList()
 {
-  return m_vDouble;
-}
-
-std::vector<int> te::layout::GenericVariant::toInt()
-{
-  return m_vInt;
-}
-
-std::vector<long> te::layout::GenericVariant::toLong()
-{
-  return m_vLong;
-}
-
-std::vector<float> te::layout::GenericVariant::toFloat()
-{
-  return m_vFloat;
-}
-
-std::vector<bool> te::layout::GenericVariant::toBool()
-{
-  return m_vBool;
-}
-
-std::vector<te::color::RGBAColor> te::layout::GenericVariant::toColor()
-{
-  return m_vRGBColor;
-}
-
-std::vector<te::layout::Font> te::layout::GenericVariant::toFont()
-{
-  return m_vFont;
-}
-
-std::vector<te::map::AbstractLayerPtr> te::layout::GenericVariant::toLayer()
-{
-  return m_vLayer;
-}
-
-std::vector<boost::any> te::layout::GenericVariant::toAny()
-{
-  return m_data;
+  return m_listLayer;
 }
 
 std::string te::layout::GenericVariant::convertToString()
@@ -126,41 +66,13 @@ bool te::layout::GenericVariant::isEmpty()
 
   bool result = true;
 
-  if(m_type == dataType->getDataTypeString())
+  if(m_type == dataType->getDataTypeStringVector())
   {
     return m_vString.empty();
   }
-  else if(m_type == dataType->getDataTypeDouble())
+  if(m_type == dataType->getDataTypeLayerList())
   {
-    return m_vDouble.empty();
-  }
-  else if(m_type == dataType->getDataTypeInt())
-  {
-    return m_vInt.empty();
-  }
-  else if(m_type == dataType->getDataTypeLong())
-  {
-    return m_vLong.empty();
-  }
-  else if(m_type == dataType->getDataTypeFloat())
-  {
-    return m_vFloat.empty();
-  }
-  else if(m_type == dataType->getDataTypeBool())
-  {
-    return m_vBool.empty();
-  }
-  else if(m_type == dataType->getDataTypeColor())
-  {
-    return m_vRGBColor.empty();
-  }
-  else if(m_type == dataType->getDataTypeFont())
-  {
-    return m_vFont.empty();
-  }
-  else if(m_type == dataType->getDataTypeLayer())
-  {
-    return m_vLayer.empty();
+    return m_listLayer.empty();
   }
 
   return result;
@@ -168,16 +80,8 @@ bool te::layout::GenericVariant::isEmpty()
 
 void te::layout::GenericVariant::clear()
 {
-  m_data.clear();
   m_vString.clear();
-  m_vDouble.clear();      
-  m_vInt.clear();
-  m_vLong.clear();
-  m_vFloat.clear();
-  m_vBool.clear();
-  m_vRGBColor.clear();
-  m_vFont.clear();
-  m_vLayer.clear();
+  m_listLayer.clear();
 }
 
 void te::layout::GenericVariant::fromPtree( boost::property_tree::ptree tree )
@@ -190,6 +94,14 @@ std::string te::layout::GenericVariant::vectorToString()
   std::string s;
   return s;
 }
+
+std::string te::layout::GenericVariant::listToString()
+{
+  std::string s;
+  return s;
+}
+
+
 
 
 

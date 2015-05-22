@@ -59,3 +59,21 @@ void te::layout::MapLayerChoiceModel::updateProperties( te::layout::Properties* 
 {
 
 }
+
+void te::layout::MapLayerChoiceModel::setPropertiesMaps( std::vector<te::layout::Properties*> properties )
+{
+  m_mapProperties = properties;
+}
+
+void te::layout::MapLayerChoiceModel::setLayers( std::list<te::map::AbstractLayerPtr> layers )
+{
+  m_layers = layers;
+}
+
+std::list<te::map::AbstractLayerPtr> te::layout::MapLayerChoiceModel::getLayers()
+{
+  return m_layers;
+}
+
+
+

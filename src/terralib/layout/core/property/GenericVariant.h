@@ -38,9 +38,9 @@
 // STL
 #include <vector>
 #include <string>
+#include <list>
 
 // Boost
-#include <boost/any.hpp>
 #include <boost/property_tree/ptree.hpp>
 
 using namespace std;
@@ -61,12 +61,7 @@ namespace te
           \brief Constructor
         */ 
         GenericVariant();
-
-        /*!
-          \brief Constructor
-        */ 
-        GenericVariant(EnumType* type);
-        
+                
         /*!
           \brief Destructor
         */ 
@@ -79,7 +74,7 @@ namespace te
           \param type data type
         */
         template<typename T>
-        bool setVector(std::vector<T> value);
+        bool setVector(std::vector<T> value, EnumType* type);
 
         /*!
           \brief Stores a copy of a vector.
@@ -87,77 +82,22 @@ namespace te
           \param value copies the vector to be stored
           \param type data type
         */
-        void setVector(std::vector<boost::any> value);
-        
+        template<typename T>
+        bool setList(std::list<T> value, EnumType* type);
+                
         /*!
-          \brief Returns the value of string type. (The setValue method received a string)
+          \brief Returns the value of string vector type. (The setValue method received a string vector)
 
           \return value of string type
         */
-        std::vector<std::string> toString();
+        std::vector<std::string> toStringVector();
 
         /*!
-          \brief Returns the value of double type. (The setValue method received a double)
+          \brief Returns the value of layer list type. (The setValue method received a list layer)
 
-          \return value of double type
+          \return value of string type
         */
-        std::vector<double> toDouble();
-
-        /*!
-          \brief Returns the value of int type. (The setValue method received a int)
-
-          \return value of int type
-        */
-        std::vector<int> toInt();
-
-        /*!
-          \brief Returns the value of long type. (The setValue method received a long)
-
-          \return value of long type
-        */
-        std::vector<long> toLong();
-
-        /*!
-          \brief Returns the value of float type. (The setValue method received a float)
-
-          \return value of float type
-        */
-        std::vector<float> toFloat();
-
-        /*!
-          \brief Returns the value of boolean type. (The setValue method received a boolean)
-
-          \return value of boolean type
-        */
-        std::vector<bool> toBool();
-
-        /*!
-          \brief Returns the value of te::color::RGBAColor type. (The setValue method received a te::color::RGBAColor). Complex type.
-
-          \return value of te::color::RGBAColor type
-        */
-        std::vector<te::color::RGBAColor> toColor(); 
-
-        /*!
-          \brief Returns the value of te::layout::Font type. (The setValue method received a te::layout::Font). Complex type.
-
-          \return value of te::layout::Font type
-        */
-        std::vector<Font> toFont();
-
-        /*!
-          \brief Returns the value of te::layout::Font type. (The setValue method received a te::layout::Font). Complex type.
-
-          \return value of te::layout::Font type
-        */
-        std::vector<te::map::AbstractLayerPtr> toLayer();
-
-        /*!
-          \brief Returns the value of std::vector<boost::any> type. (The setValue method received a std::vector<boost::any>). Complex type.
-
-          \return value of std::vector<boost::any> type
-        */
-        std::vector<boost::any> toAny();
+        std::list<te::map::AbstractLayerPtr>  toLayerList();
         
         /*!
           \brief Converts the value to a string.
@@ -193,67 +133,71 @@ namespace te
        */
       virtual std::string vectorToString();
 
+      /*!
+          \brief Convert a list values into string representation.
+
+          \param vector
+          \return string representation 
+       */
+      virtual std::string listToString();
+
       EnumType*                               m_type;
 
-      std::vector<boost::any>                 m_data; //!< value of generic vector type
       std::vector<std::string>                m_vString; //!< value of string vector type
-      std::vector<double>                     m_vDouble; //!< value of double vector type       
-      std::vector<int>                        m_vInt; //!< value of int vector type
-      std::vector<long>                       m_vLong; //!< value of long vector type
-      std::vector<float>                      m_vFloat; //!< value of float vector type
-      std::vector<bool>                       m_vBool; //!< value of bool vector type
-      std::vector<te::color::RGBAColor>       m_vRGBColor; //!< value of te::color::RGBAColor vector type
-      std::vector<te::layout::Font>           m_vFont; //!< value of te::layout::Font vector type
-      std::vector<te::map::AbstractLayerPtr>  m_vLayer; //!< value of te::map::AbstractLayerPtr vector type
+      std::list<te::map::AbstractLayerPtr>    m_listLayer; //!< value of te::map::AbstractLayerPtr list type
     };
 
     template<typename T>
-    inline bool te::layout::GenericVariant::setVector( std::vector<T> value )
+    inline bool te::layout::GenericVariant::setVector( std::vector<T> value, EnumType* type )
     {
-      EnumDataType* dataType = Enums::getInstance().getEnumDataType();
-
-      if(!m_type || !dataType)
-      {
-        return;
-      }
-
       bool result = true;
 
-      if(m_type == dataType->getDataTypeString())
+      EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+      if(!dataType)
+      {
+        return false;
+      }
+      
+      m_type = type;
+
+      if(!type || !dataType)
+      {
+        return false;
+      }
+
+      if(m_type == dataType->getDataTypeStringVector())
       {
         m_vString = value;
       }
-      else if(m_type == dataType->getDataTypeDouble())
+      else
       {
-        m_vDouble = value;
+        result = false;
       }
-      else if(m_type == dataType->getDataTypeInt())
+
+      return result;
+    }
+
+    template<typename T>
+    inline bool te::layout::GenericVariant::setList( std::list<T> value, EnumType* type )
+    {
+      bool result = true;
+
+      EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+      if(!dataType)
       {
-        m_vInt = value;
+        return false;
       }
-      else if(m_type == dataType->getDataTypeLong())
+
+      m_type = type;
+
+      if(!type || !dataType)
       {
-        m_vLong = value;
+        return false;
       }
-      else if(m_type == dataType->getDataTypeFloat())
+
+      if(m_type == dataType->getDataTypeLayerList())
       {
-        m_vFloat = value;
-      }
-      else if(m_type == dataType->getDataTypeBool())
-      {
-        m_vBool = value;
-      }
-      else if(m_type == dataType->getDataTypeColor())
-      {
-        m_vRGBColor = value;
-      }
-      else if(m_type == dataType->getDataTypeFont())
-      {
-        m_vFont = value;
-      }
-      else if(m_type == dataType->getDataTypeLayer())
-      {
-        m_vLayer = value;
+        m_listLayer = value;
       }
       else
       {
