@@ -32,6 +32,7 @@
 #include "../../../color/RGBAColor.h"
 #include "../Font.h"
 #include "../enum/EnumType.h"
+#include "../enum/Enums.h"
 #include "../Config.h"
 #include "../../../maptools/AbstractLayer.h"
 

@@ -30,6 +30,7 @@
 #include "../datatype/TimeInstant.h"
 #include "../geometry/Envelope.h"
 #include "../geometry/GeometryProperty.h"
+#include "../srs/SpatialReferenceSystemManager.h"
 #include "../srs/Config.h"
 #include "DataSource.h"
 #include "DataSet.h"
@@ -867,8 +868,7 @@ void te::ogr::Transactor::createDataSet(te::da::DataSetType* dt, const std::map<
     int srid = te::da::GetFirstGeomProperty(dt)->getSRID();
     if (srid != TE_UNKNOWN_SRS)
     {
-      srs = new OGRSpatialReference();
-      srs->importFromEPSG(srid);
+      srs = Convert2OGRProjection( srid );
     }
   }
   
