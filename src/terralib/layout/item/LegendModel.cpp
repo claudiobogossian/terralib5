@@ -146,7 +146,18 @@ void te::layout::LegendModel::visitDependent(ContextItem context)
 
   if(map)
   {
-    m_layer = map->getLayer();
+    if(!map->isLoadedLayer())
+    {
+      return;
+    }
+
+    std::list<te::map::AbstractLayerPtr> layerListMap = map->getLayers();
+    std::list<te::map::AbstractLayerPtr>::iterator it;
+    it = layerListMap.begin();
+
+    te::map::AbstractLayerPtr layer = (*it);
+
+    m_layer = layer;
     
     draw(context);
   }	

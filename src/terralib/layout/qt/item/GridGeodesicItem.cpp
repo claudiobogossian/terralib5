@@ -84,12 +84,19 @@ void te::layout::GridGeodesicItem::drawGrid( QPainter* painter )
     return;    
   }
 
-  if(!mapModel->getLayer())
+  if(!mapModel->isLoadedLayer())
   {
     return;
   }
 
-  int srid = mapModel->getLayer()->getSRID();
+  std::list<te::map::AbstractLayerPtr> layerListMap = mapModel->getLayers();
+
+  std::list<te::map::AbstractLayerPtr>::iterator it;
+  it = layerListMap.begin();
+
+  te::map::AbstractLayerPtr layer = (*it);
+  
+  int srid = layer->getSRID();
   if(srid <= 0)
     return;
 

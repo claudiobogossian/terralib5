@@ -214,11 +214,19 @@ void te::layout::GridMapModel::visitDependent( ContextItem context )
 
   if(map)
   {
-    //m_worldBox = map->getWorldInMeters(); 
-    if(map->getLayer())
+    if(!map->isLoadedLayer())
     {
-      m_srid = map->getLayer()->getSRID();   
-    } 
+      return;
+    }
+
+    std::list<te::map::AbstractLayerPtr> layerListMap = map->getLayers();
+    std::list<te::map::AbstractLayerPtr>::iterator it;
+    it = layerListMap.begin();
+
+    te::map::AbstractLayerPtr layer = (*it);
+
+    m_srid = layer->getSRID();
+
     m_mapScale = map->getScale();
     m_boxMapMM = map->getMapBox();
     m_mapDisplacementX = map->getDisplacementX();

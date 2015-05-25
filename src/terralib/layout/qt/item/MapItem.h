@@ -40,12 +40,14 @@
 // TerraLib
 #include "../../core/pattern/mvc/ItemObserver.h"
 #include "../../../qt/widgets/canvas/MultiThreadMapDisplay.h"
-#include "../../../qt/widgets/layer/explorer/AbstractTreeItem.h"
 #include "../../../qt/widgets/tools/AbstractTool.h"
 #include "../../../maptools/AbstractLayer.h"
 #include "../../core/Config.h"
 #include "ParentItem.h"
 #include "../../../qt/widgets/tools/ZoomWheel.h"
+
+// STL
+#include <list>
 
 class QGraphicsSceneMouseEvent;
 class QMimeData;
@@ -110,11 +112,6 @@ namespace te
           \brief Reimplemented from ItemObserver
          */
         virtual te::color::RGBAColor** getRGBAColorImage(int &w, int &h);
-        
-        /*!
-          \brief Reimplemented from ItemObserver
-         */
-        virtual void updateProperties(te::layout::Properties* properties);
         
         virtual void changeZoomFactor(double currentZoomFactor);
 
@@ -187,9 +184,7 @@ namespace te
       virtual void getMimeData(const QMimeData* mime);
 
       std::list<te::map::AbstractLayerPtr>  getVisibleLayers();
-
-      te::map::AbstractLayerPtr getLayer();
-      
+            
       void setCurrentTool(te::qt::widgets::AbstractTool* tool);
       
       virtual QImage generateImage();
@@ -202,20 +197,20 @@ namespace te
 
       virtual void recalculateBoundingRect();
 
+      virtual void updateMapDisplay();
+
     protected:
 
-      QSize                                   m_mapSize; //!< The size of the map display in a zoom of 100%. This size is in pixels and is calculated based on the size of the GraphicItem in millimeters.
-      QPixmap                                 m_mapPixmap;
-      QMimeData*                              m_mime;      
-      te::qt::widgets::MultiThreadMapDisplay* m_mapDisplay;
-      bool                                    m_grabbedByWidget;
-      te::qt::widgets::AbstractTreeItem*      m_treeItem;
-      te::qt::widgets::AbstractTool*          m_tool;
-      double                                  m_wMargin;
-      double                                  m_hMargin;
-      te::map::AbstractLayerPtr               m_layer;
-      te::qt::widgets::ZoomWheel*             m_zoomWheel;
-      bool                                    m_changeLayer;
+      QSize                                         m_mapSize; //!< The size of the map display in a zoom of 100%. This size is in pixels and is calculated based on the size of the GraphicItem in millimeters.
+      QPixmap                                       m_mapPixmap;
+      QMimeData*                                    m_mime;      
+      te::qt::widgets::MultiThreadMapDisplay*       m_mapDisplay;
+      bool                                          m_grabbedByWidget;
+      te::qt::widgets::AbstractTool*                m_tool;
+      double                                        m_wMargin;
+      double                                        m_hMargin;
+      te::qt::widgets::ZoomWheel*                   m_zoomWheel;
+      bool                                          m_changeLayer;
     };
   }
 }

@@ -232,7 +232,7 @@ bool te::layout::GridMapItem::hasLayer()
     return result;    
   }
 
-  if(!mapModel->getLayer())
+  if(!mapModel->isLoadedLayer())
   {
     return result;
   }

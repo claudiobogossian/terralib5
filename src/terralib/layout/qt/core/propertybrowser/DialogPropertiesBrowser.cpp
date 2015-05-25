@@ -40,6 +40,12 @@
 #include "../../../outside/MapLayerChoiceModel.h"
 #include "../../outside/LegendChoiceOutside.h"
 #include "../../../outside/LegendChoiceModel.h"
+#include "../../../core/pattern/proxy/AbstractProxyProject.h"
+#include "../../item/MapItem.h"
+#include "../../../item/MapModel.h"
+
+// STL
+#include <vector>
 
 // Qt
 #include <QVariant>
@@ -53,7 +59,6 @@
 #include <QDesktopWidget>
 #include <QApplication>
 #include <QByteArray>
-#include "../../../core/pattern/proxy/AbstractProxyProject.h"
 
 te::layout::DialogPropertiesBrowser::DialogPropertiesBrowser(QObject* parent) :
   AbstractPropertiesBrowser(parent),
@@ -183,6 +188,11 @@ bool te::layout::DialogPropertiesBrowser::changeQtPropertyValue(QtProperty* ppro
 QtProperty* te::layout::DialogPropertiesBrowser::addProperty( Property property )
 {
   QtProperty* qproperty = 0;
+
+  if(!property.isVisible())
+  {
+    return qproperty;
+  }
 
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
   if(!dataType)
@@ -502,6 +512,23 @@ void te::layout::DialogPropertiesBrowser::onShowMapLayerChoiceDlg()
   std::list<te::map::AbstractLayerPtr> listLayers = proxy->getAllLayers();
   model->setLayers(listLayers);
 
+  ItemUtils* utils = Context::getInstance().getItemUtils();
+
+  std::vector<MapItem*> mapList = utils->getMapItemList(true);
+  
+  std::vector<Properties*> props;
+
+  std::vector<MapItem*>::const_iterator it = mapList.begin();
+  for( ; it != mapList.end() ; ++it)
+  {
+    MapItem* mIt = (*it);
+    MapModel* mapModel = dynamic_cast<MapModel*>(mIt->getModel());
+    props.push_back(mapModel->getProperties());
+  }
+
+  model->setPropertiesMaps(props);
+
+  layerChoice->init();
   layerChoice->show();
 }
 

@@ -212,6 +212,12 @@ QtProperty* te::layout::PropertyBrowser::addProperty( Property property )
   QColor qcolor;
   QFont qfont;
   Font font;
+  QtVariantProperty* vproperty = 0;
+
+  if(!property.isVisible())
+  {
+    return vproperty;
+  }
 
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
 
@@ -221,8 +227,7 @@ QtProperty* te::layout::PropertyBrowser::addProperty( Property property )
   }
 
   m_changeQtPropertyVariantValue = true;
-
-  QtVariantProperty* vproperty = 0;
+  
   vproperty = m_variantPropertiesBrowser->addProperty(property);
   if(vproperty) 
   {

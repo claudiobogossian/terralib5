@@ -52,7 +52,6 @@ te::layout::MapLayerChoiceOutside::MapLayerChoiceOutside(OutsideController* cont
 
   connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
   connect(m_ui->m_cancelPushButton, SIGNAL(clicked()), this, SLOT(onCancelPushButtonClicked()));
-
 }
 
 te::layout::MapLayerChoiceOutside::~MapLayerChoiceOutside()
@@ -90,9 +89,7 @@ void te::layout::MapLayerChoiceOutside::onOkPushButtonClicked()
   {
     return;
   }
-
-  std::list<te::map::AbstractLayerPtr> layers = model->getLayers();
-
+  
   m_layersOnTheRight = m_widget->getOutputValues();
 
   if(m_layersOnTheRight.empty())
@@ -100,11 +97,13 @@ void te::layout::MapLayerChoiceOutside::onOkPushButtonClicked()
     return;
   }
 
+  std::list<te::map::AbstractLayerPtr> layerListMap = model->getLayers();
+
   std::vector<std::string>::iterator itString = m_layersOnTheRight.begin();
   for ( ; itString != m_layersOnTheRight.end() ; ++itString)
   {
-    std::list<te::map::AbstractLayerPtr>::iterator it = model->getLayers().begin();
-    for( ; it != model->getLayers().end() ; ++it)
+    std::list<te::map::AbstractLayerPtr>::iterator it = layerListMap.begin();
+    for( ; it != layerListMap.end() ; ++it)
     {
       te::map::AbstractLayerPtr layer = it->get();
       std::string nameLayer = layer->getTitle();
@@ -119,7 +118,7 @@ void te::layout::MapLayerChoiceOutside::onOkPushButtonClicked()
 
   m_layersSelected.clear();
   
-  QMessageBox::information(this, "Map Layer Choice", "Test button OK.");
+  QMessageBox::information(this, "Map Layer Choice", "Layer Choice!");
 }
 
 void te::layout::MapLayerChoiceOutside::onCancelPushButtonClicked()

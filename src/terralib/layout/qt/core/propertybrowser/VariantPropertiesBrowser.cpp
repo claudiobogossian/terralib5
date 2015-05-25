@@ -68,6 +68,11 @@ QtVariantProperty* te::layout::VariantPropertiesBrowser::addProperty( Property p
 {
   QtVariantProperty* vproperty = 0;
 
+  if(!property.isVisible())
+  {
+    return vproperty;
+  }
+
   te::color::RGBAColor color;
   QColor qcolor;
   QFont qfont;
