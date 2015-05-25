@@ -28,6 +28,7 @@
 #include "../../../../common/Translator.h"
 #include "../../../../common/Logger.h"
 #include "../../../af/ApplicationController.h"
+#include "../../../af/Utils.h"
 #include "TL4ConverterAction.h"
 #include "TL4ConverterWizard.h"
 #include "Plugin.h"
@@ -71,6 +72,8 @@ void te::qt::plugins::terralib4::Plugin::startup()
 
     connect(m_showWindow, SIGNAL(triggered()), SLOT(showWindow()));
   }
+
+  te::qt::af::AddActionToCustomToolbars(m_showWindow);
 
   m_initialized = true;
 }

@@ -111,7 +111,7 @@ namespace te
             */
             std::list<te::map::AbstractLayerPtr> getLayers();
 
-        public:
+          public:
             QAction* getAction()
             {
               return m_action;

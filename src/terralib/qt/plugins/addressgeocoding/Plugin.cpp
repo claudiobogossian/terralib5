@@ -32,6 +32,7 @@
 #include "../../af/ApplicationController.h"
 #include "../../af/events/LayerEvents.h"
 #include "../../af/Project.h"
+#include "../../af/Utils.h"
 #include "Plugin.h"
 
 #if defined(TERRALIB_APACHE_LOG4CXX_ENABLED) && defined(TERRALIB_LOGGER_ENABLED)
@@ -107,6 +108,8 @@ void te::qt::plugins::addressgeocoding::Plugin::startup()
   logger->setAdditivity(false);
   logger->addAppender(fileAppender);
 #endif
+
+  te::qt::af::AddActionToCustomToolbars(m_action);
 
   m_initialized = true;
 }
