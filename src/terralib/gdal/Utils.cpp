@@ -136,34 +136,7 @@ te::rst::Grid* te::gdal::GetGrid(GDALDataset* gds, const int multiResLevel)
     
     if( ogrReturn == OGRERR_NONE )
     {
-      ogrReturn = oSRS.AutoIdentifyEPSG();
-      
-      if( ogrReturn == OGRERR_NONE )
-      {
-        const char* srsAuth = oSRS.GetAuthorityCode(0);
-        
-        if (srsAuth)
-        {
-          srid = atoi(srsAuth);
-        }
-      }
-    }
-    
-    if( srid == TE_UNKNOWN_SRS )
-    {
-      std::pair< std::string, unsigned int > customSRID;
-      std::string projRefStr( projRef );
-      
-      try
-      {
-        customSRID = te::srs::SpatialReferenceSystemManager::getInstance().getIdFromWkt( 
-          projRefStr );
-        srid = (int)customSRID.second;
-      }
-      catch( te::common::Exception& )
-      {
-        srid = TE_UNKNOWN_SRS;
-      }
+      srid = te::ogr::Convert2TerraLibProjection(&oSRS);
     }
   }
   
