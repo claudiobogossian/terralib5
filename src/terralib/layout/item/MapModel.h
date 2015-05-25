@@ -98,7 +98,11 @@ namespace te
 
         virtual double getDisplacementX();
 
+        virtual void setDisplacementX(double displacement);
+
         virtual double getDisplacementY();
+
+        virtual void setDisplacementY(double displacement);
 
         virtual void setSystematic(Systematic* systematic);
                 
@@ -123,6 +127,8 @@ namespace te
         virtual bool isLoadedLayer();
 
       protected:
+
+        virtual void recalculateMapBoxMM();
 
         te::map::AbstractLayerPtr m_layer;
         te::gm::Envelope          m_mapBoxMM;

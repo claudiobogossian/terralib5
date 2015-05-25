@@ -394,10 +394,7 @@ void te::layout::MapModel::setBox( te::gm::Envelope box )
 {
   ItemModelObservable::setBox(box);
 
-  m_mapBoxMM.m_llx = box.m_llx + m_mapDisplacementX;
-  m_mapBoxMM.m_lly = box.m_lly + m_mapDisplacementY;
-  m_mapBoxMM.m_urx = box.m_urx - m_mapDisplacementX;
-  m_mapBoxMM.m_ury = box.m_ury - m_mapDisplacementY;
+  recalculateMapBoxMM();
 }
 
 te::gm::Envelope te::layout::MapModel::getMapBox()
@@ -409,10 +406,7 @@ void te::layout::MapModel::setPosition( const double& x, const double& y )
 {
   ItemModelObservable::setPosition(x, y);
 
-  m_mapBoxMM.m_llx = m_box.m_llx + m_mapDisplacementX;
-  m_mapBoxMM.m_lly = m_box.m_lly + m_mapDisplacementY;
-  m_mapBoxMM.m_urx = m_box.m_urx - m_mapDisplacementX;
-  m_mapBoxMM.m_ury = m_box.m_ury - m_mapDisplacementY;
+  recalculateMapBoxMM();
 }
 
 double te::layout::MapModel::getDisplacementX()
@@ -594,4 +588,26 @@ std::string te::layout::MapModel::getNameLayer()
 bool te::layout::MapModel::isLoadedLayer()
 {
   return m_loadedLayer;
+}
+
+void te::layout::MapModel::setDisplacementX( double displacement )
+{
+  m_mapDisplacementX = displacement;
+
+  recalculateMapBoxMM();
+}
+
+void te::layout::MapModel::setDisplacementY( double displacement )
+{
+  m_mapDisplacementY = displacement;
+
+  recalculateMapBoxMM();
+}
+
+void te::layout::MapModel::recalculateMapBoxMM()
+{
+  m_mapBoxMM.m_llx = m_box.m_llx + m_mapDisplacementX;
+  m_mapBoxMM.m_lly = m_box.m_lly + m_mapDisplacementY;
+  m_mapBoxMM.m_urx = m_box.m_urx - m_mapDisplacementX;
+  m_mapBoxMM.m_ury = m_box.m_ury - m_mapDisplacementY;
 }

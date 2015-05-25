@@ -41,6 +41,7 @@
 #include "../../item/LegendModel.h"
 #include "../../../maptools/AbstractLayer.h"
 #include "../../../maptools/GroupingItem.h"
+#include "../../../maptools/Grouping.h"
 #include "../../../maptools/Canvas.h"
 #include "../../../maptools/CanvasConfigurer.h"
 #include "../../../qt/widgets/canvas/Canvas.h"
@@ -101,6 +102,51 @@ void te::layout::LegendItem::updateObserver( ContextItem context )
 }
 
 void te::layout::LegendItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
+{  
+  drawBackground(painter);
+
+  drawBorder(painter);
+
+  drawLegend(painter);
+
+  //Draw Selection
+  if (option->state & QStyle::State_Selected)
+  {
+    drawSelection(painter);
+  }
+
+  update();
+}
+
+QVariant te::layout::LegendItem::itemChange( GraphicsItemChange change, const QVariant & value )
+{
+  if(change == QGraphicsItem::ItemPositionChange && !m_move)
+  {
+    // value is the new position.
+    QPointF newPos = value.toPointF();
+    double h = 0;
+
+    newPos.setX(newPos.x() - transform().dx());
+    newPos.setY(newPos.y() - transform().dy() + h);
+    return newPos;
+  }
+  else if(change == QGraphicsItem::ItemPositionHasChanged)
+  {
+    refresh();
+    m_move = false;
+  }
+
+  return QGraphicsItem::itemChange(change, value);
+}
+
+void te::layout::LegendItem::mouseMoveEvent( QGraphicsSceneMouseEvent * event )
+{
+  m_move = true;
+
+  QGraphicsItem::mouseMoveEvent(event);
+}
+
+void te::layout::LegendItem::drawLegend( QPainter* painter )
 {
   LegendModel* legendModel = dynamic_cast<LegendModel*> (m_model);
 
@@ -111,21 +157,11 @@ void te::layout::LegendItem::paint( QPainter * painter, const QStyleOptionGraphi
   {
     return;
   }
-  
-  drawBackground(painter);
-
-  drawBorder(painter);
 
   te::map::AbstractLayerPtr layer = legendModel->getLayer();
 
-  if (!layer)
+  if(!layer)
   {
-    //Draw Selection
-    if (option->state & QStyle::State_Selected)
-    {
-      drawSelection(painter);
-    }
-
     return;
   }
 
@@ -142,7 +178,6 @@ void te::layout::LegendItem::paint( QPainter * painter, const QStyleOptionGraphi
   QFont qfont (QString(font.getFamily().c_str()), font.getPointSize());
   QColor qFontColor (fontColor.getRed(), fontColor.getGreen(), fontColor.getBlue(), fontColor.getAlpha());
 
-
   int borderDisplacementInPixels = utils->mm2pixel(legendModel->getBorderDisplacement());
   int dispBetweenSymbolAndTextInPixels = utils->mm2pixel(legendModel->getDisplacementBetweenSymbolAndText());
   int dispBetweenSymbolsInPixels = utils->mm2pixel(legendModel->getDisplacementBetweenSymbols());
@@ -150,7 +185,7 @@ void te::layout::LegendItem::paint( QPainter * painter, const QStyleOptionGraphi
   int symbolSizeInPixels = utils->mm2pixel(legendModel->getSymbolSize());
 
   double x1 = boundRect.x() + borderDisplacementInPixels;
-  double y1 = boundRect.y() + borderDisplacementInPixels;
+  double y1 = boundRect.y() - borderDisplacementInPixels;
 
   canvas->setTextPointSize(font.getPointSize());
   canvas->setTextUnderline(font.isUnderline());
@@ -169,8 +204,9 @@ void te::layout::LegendItem::paint( QPainter * painter, const QStyleOptionGraphi
 
   painter->setFont(qfont);
   painter->setBrush(qFontColor);
-  painter->drawText(rectTitle, qTitle);
 
+  QPointF pt(x1, y1);
+  drawText(pt, painter, title);
 
   y1 += htxtInPixels + dispBetweenTitleAndSymbolsInPixels;
 
@@ -207,11 +243,12 @@ void te::layout::LegendItem::paint( QPainter * painter, const QStyleOptionGraphi
         label += upperLimit;
       }
       painter->save();
-      QRectF labelRect (labelX1, y1, boundRect.width(), boundRect.height());
-      QString qLabel (label.c_str());
       painter->setFont(qfont);
       painter->setBrush(qFontColor);
-      painter->drawText(labelRect, qLabel);
+
+      QPointF pt(labelX1, y1);
+      drawText(pt, painter, label);
+
       painter->restore();
 
       const std::vector<te::se::Symbolizer*>& symbolizers = item->getSymbolizers();
@@ -223,7 +260,7 @@ void te::layout::LegendItem::paint( QPainter * painter, const QStyleOptionGraphi
       {
         double offset = 2.0;
         QRectF geomRect (x1, y1, symbolSizeInPixels, symbolSizeInPixels);
-
+        
         te::gm::Geometry* geom = 0;
         if (symbol->getType() == "PolygonSymbolizer")
         {
@@ -261,41 +298,5 @@ void te::layout::LegendItem::paint( QPainter * painter, const QStyleOptionGraphi
       y1 += htxtInPixels + dispBetweenSymbolsInPixels;
     }
   }
-
-  //Draw Selection
-  if (option->state & QStyle::State_Selected)
-  {
-    drawSelection(painter);
-  }
-
-  update();
-}
-
-QVariant te::layout::LegendItem::itemChange( GraphicsItemChange change, const QVariant & value )
-{
-  if(change == QGraphicsItem::ItemPositionChange && !m_move)
-  {
-    // value is the new position.
-    QPointF newPos = value.toPointF();
-    double h = 0;
-
-    newPos.setX(newPos.x() - transform().dx());
-    newPos.setY(newPos.y() - transform().dy() + h);
-    return newPos;
-  }
-  else if(change == QGraphicsItem::ItemPositionHasChanged)
-  {
-    refresh();
-    m_move = false;
-  }
-
-  return QGraphicsItem::itemChange(change, value);
-}
-
-void te::layout::LegendItem::mouseMoveEvent( QGraphicsSceneMouseEvent * event )
-{
-  m_move = true;
-
-  QGraphicsItem::mouseMoveEvent(event);
 }
 

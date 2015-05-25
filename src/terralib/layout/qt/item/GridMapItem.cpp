@@ -205,6 +205,41 @@ void te::layout::GridMapItem::drawHorizontalLines()
 
 }
 
+QColor te::layout::GridMapItem::rgbaToQColor( te::color::RGBAColor color )
+{
+  QColor clr;
+  clr.setRed(color.getRed());
+  clr.setGreen(color.getGreen());
+  clr.setBlue(color.getBlue());
+  clr.setAlpha(color.getAlpha());
+
+  return clr;
+}
+
+bool te::layout::GridMapItem::hasLayer()
+{
+  bool result = false;
+
+  MapItem* item = dynamic_cast<MapItem*>(parentItem());
+  if(!item)
+  {
+    return result;    
+  }
+
+  MapModel* mapModel = dynamic_cast<MapModel*>(item->getModel());
+  if(!mapModel)
+  {
+    return result;    
+  }
+
+  if(!mapModel->getLayer())
+  {
+    return result;
+  }
+
+  return true;
+}
+
 
 
 

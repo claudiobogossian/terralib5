@@ -71,8 +71,8 @@ te::layout::GridGeodesicModel::GridGeodesicModel() :
 {
   m_type = Enums::getInstance().getEnumObjectType()->getGridGeodesicItem();
 
-  m_lneVrtDisplacement = 10;
-  m_lneHrzDisplacement = 10;
+  m_lneVrtDisplacement = 2;
+  m_lneHrzDisplacement = 2;
 }
 
 te::layout::GridGeodesicModel::~GridGeodesicModel()
@@ -316,5 +316,30 @@ void te::layout::GridGeodesicModel::setVisibleCornerTextsText( bool visible )
 bool te::layout::GridGeodesicModel::isVisibleCornerTextsText()
 {
   return m_visibleCornerTextsText;
+}
+
+te::gm::Envelope te::layout::GridGeodesicModel::getPlanarBox()
+{
+  return m_planarBox;
+}
+
+bool te::layout::GridGeodesicModel::isDegreesText()
+{
+  return m_degreesText;
+}
+
+bool te::layout::GridGeodesicModel::isMinutesText()
+{
+  return m_minutesText;
+}
+
+bool te::layout::GridGeodesicModel::isSecondsText()
+{
+  return m_secondsText;
+}
+
+void te::layout::GridGeodesicModel::setSRID( int srid )
+{
+  m_srid = srid;
 }
 

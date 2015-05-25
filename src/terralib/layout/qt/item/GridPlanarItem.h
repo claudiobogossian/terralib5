@@ -74,6 +74,10 @@ namespace te
         virtual void drawVerticalLines(QPainter* painter, te::gm::Envelope geoBox, te::gm::Envelope boxMM, double scale);
 
         virtual void drawHorizontalLines(QPainter* painter, te::gm::Envelope geoBox, te::gm::Envelope boxMM, double scale);
+
+        virtual double initVerticalLines(te::gm::Envelope geoBox);
+
+        virtual double initHorizontalLines(te::gm::Envelope geoBox);
     };
   }
 }

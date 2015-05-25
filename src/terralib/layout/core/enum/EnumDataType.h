@@ -171,6 +171,27 @@ namespace te
         */
         virtual EnumType* getDataTypeLegendChoice() const;
 
+        /*!
+          \brief Returns value that represents type Generic Vector (T) belonging to enumeration.
+		  
+		      \return enum value   	  
+        */
+        virtual EnumType* getDataTypeGenericVariant() const;
+
+        /*!
+          \brief Returns value that represents type Layer (te::map::AbstractLayerPtr) belonging to enumeration.
+		  
+		      \return enum value   	  
+        */
+        virtual EnumType* getDataTypeLayerList() const;
+
+        /*!
+          \brief Returns value that represents type string vector (std::vector<std::string>) belonging to enumeration
+		  
+		      \return enum value   	  
+        */
+        virtual EnumType* getDataTypeStringVector() const;
+
       protected:
 
         /*!
@@ -196,8 +217,14 @@ namespace te
         EnumType* m_dataTypeGroup; //!< value that represents type Group (string) belonging to enumeration
         EnumType* m_dataTypeMapChoice; //!< value that represents type Map Choice (string) belonging to enumeration
         EnumType* m_dataTypeLegendChoice; //!< value that represents type Legend Choice (string) belonging to enumeration
+        EnumType* m_dataTypeGenericVariant; //!< value that represents type Generic Vector belonging to enumeration
+        EnumType* m_dataTypeLayerList; //!< value that represents type Layer List (te::map::AbstractLayerPtr) belonging to enumeration
+        EnumType* m_dataTypeStringVector; //!< value that represents type string vector (std::vector<std::string>) belonging to enumeration
     };
   }
 }
 
 #endif
+
+
+

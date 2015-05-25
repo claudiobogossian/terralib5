@@ -39,9 +39,13 @@
 #include "../../core/WorldTransformer.h"
 #include "../../item/MapModel.h"
 #include "../../../maptools/AbstractLayer.h"
+#include "../../core/pattern/singleton/Context.h"
+#include "../../core/Utils.h"
 
 //Qt
 #include <QStyleOptionGraphicsItem>
+#include <QPointF>
+#include <QLineF>
 
 te::layout::GridPlanarItem::GridPlanarItem( ItemController* controller, Observable* o ) :
   GridMapItem(controller, o)
@@ -92,10 +96,16 @@ void te::layout::GridPlanarItem::drawGrid( QPainter* painter )
   te::gm::Envelope box = mapModel->getWorldInMeters();
   te::gm::Envelope boxMM = mapModel->getMapBox();
 
+  double wMargin = mapModel->getDisplacementX();
+  double hMargin = mapModel->getDisplacementY();
+
+  te::gm::Envelope newBoxMM(wMargin, hMargin, boxMM.getWidth() + wMargin, boxMM.getHeight() + hMargin);
+
   model->setMapScale(scale); // put visit
   model->calculateGaps(box);
 
-  drawVerticalLines(painter, box, boxMM, scale);
+  drawVerticalLines(painter, box, newBoxMM, scale);
+  drawHorizontalLines(painter, box, newBoxMM, scale);
 
 }
 
@@ -109,52 +119,29 @@ void te::layout::GridPlanarItem::drawVerticalLines(QPainter* painter, te::gm::En
     return;
   }
 
-  MapItem* item = dynamic_cast<MapItem*>(parentItem());
-  if(!item)
-  {
-    return;    
-  }
-
-  MapModel* mapModel = dynamic_cast<MapModel*>(item->getModel());
-  if(!mapModel)
-  {
-    return;    
-  }
-
-  if(!mapModel->getLayer())
+  if(!hasLayer())
   {
     return;
   }
 
   Utils* utils = Context::getInstance().getUtils();
 
-  // Draw a horizontal line and the y coordinate change(vertical)
+  te::color::RGBAColor clrLine = model->getLineColor();
+  QColor lineColor = rgbaToQColor(clrLine);
 
-  double			y1;
-  double			yInit;
+  QPen pn(lineColor, 0, Qt::SolidLine);
+  painter->setPen(pn);
+
+  // Draw a horizontal line and the y coordinate change(vertical)
 
   WorldTransformer transf = utils->getTransformGeo(geoBox, boxMM);
   transf.setMirroring(false);
 
-  yInit = model->getInitialGridPointY();
-  if(yInit < geoBox.getLowerLeftY())
-  {
-    double dify = geoBox.getLowerLeftY() - yInit;
-    int nParts = (int)(dify/model->getLneVrtGap());
-    if(nParts == 0)
-    {
-      yInit = model->getInitialGridPointY();
-    }
-    else
-    {
-      yInit = yInit + (nParts * model->getLneVrtGap());
-    }
-  }
+  double y1 = initVerticalLines(geoBox);
 
   double wtxt = 0;
   double htxt = 0;
 
-  y1 = yInit;
   for( ; y1 < geoBox.getUpperRightY() ; y1 += model->getLneVrtGap())
   {
     if(y1 < geoBox.getLowerLeftY())
@@ -194,8 +181,144 @@ void te::layout::GridPlanarItem::drawVerticalLines(QPainter* painter, te::gm::En
 
 void te::layout::GridPlanarItem::drawHorizontalLines(QPainter* painter, te::gm::Envelope geoBox, te::gm::Envelope boxMM, double scale)
 {
+  painter->save();
+
+  GridPlanarModel* model = dynamic_cast<GridPlanarModel*>(m_model);
+  if(!model)
+  {
+    return;
+  }
+
+  if(!hasLayer())
+  {
+    return;
+  }
+
+  Utils* utils = Context::getInstance().getUtils();
+
+  te::color::RGBAColor clrLine = model->getLineColor();
+  QColor lineColor = rgbaToQColor(clrLine);
+
+  QPen pn(lineColor, 0, Qt::SolidLine);
+  painter->setPen(pn);
+
+  // Draw a vertical line and the x coordinate change(horizontal)
   
+  WorldTransformer transf = utils->getTransformGeo(geoBox, boxMM);
+  transf.setMirroring(false);
+
+  double x1 = initHorizontalLines(geoBox);
+  
+  utils = Context::getInstance().getUtils();
+
+  double wtxt = 0;
+  double htxt = 0;
+;
+  for( ; x1 < geoBox.getUpperRightX() ; x1 += model->getLneHrzGap())
+  {
+    if(x1 < geoBox.getLowerLeftX())
+      continue;
+
+    double lly = 0;
+    double ury = 0;
+    double x = 0;
+    transf.system1Tosystem2(x1, geoBox.getLowerLeftY(), x, lly);
+    transf.system1Tosystem2(x1, geoBox.getUpperRightY(), x, ury);
+
+    te::gm::Envelope newBox(x, lly, x, ury);
+
+    if(lly > ury)
+    {
+      double ycopy = lly;
+      lly = ury;
+      ury = ycopy;
+    }
+
+    QLineF line(x, lly, x, ury);
+    painter->drawLine(line);
+
+    std::ostringstream convert;
+    convert.precision(10);
+    double number = x1 / (double)model->getUnit();
+    convert << number;
+
+    utils->textBoundingBox(wtxt, htxt, convert.str());
+
+    if(model->isVisibleAllTexts())
+    {
+      if(model->isBottomText())
+      {
+        drawText(QPointF(x - (wtxt/2.), lly - model->getLneVrtDisplacement() - htxt), painter, convert.str());
+      }
+
+      if(model->isTopText())
+      {
+        drawText(QPointF(x - (wtxt/2.), ury + model->getLneVrtDisplacement()), painter, convert.str());
+      }
+    }
+  }
+
+  painter->restore();
 }
+
+double te::layout::GridPlanarItem::initVerticalLines( te::gm::Envelope geoBox )
+{
+  double yInit = 0;
+
+  GridPlanarModel* model = dynamic_cast<GridPlanarModel*>(m_model);
+  if(!model)
+  {
+    return yInit;
+  }
+  
+  yInit = model->getInitialGridPointY();
+  if(yInit < geoBox.getLowerLeftY())
+  {
+    double dify = geoBox.getLowerLeftY() - yInit;
+    int nParts = (int)(dify/model->getLneVrtGap());
+    if(nParts == 0)
+    {
+      yInit = model->getInitialGridPointY();
+    }
+    else
+    {
+      yInit = yInit + (nParts * model->getLneVrtGap());
+    }
+  }
+
+  return yInit;
+}
+
+double te::layout::GridPlanarItem::initHorizontalLines( te::gm::Envelope geoBox )
+{
+  double xInit = 0;
+
+  GridPlanarModel* model = dynamic_cast<GridPlanarModel*>(m_model);
+  if(!model)
+  {
+    return xInit;
+  }
+
+  xInit = model->getInitialGridPointX();
+  if(xInit < geoBox.getLowerLeftX())
+  {
+    double difx = geoBox.getLowerLeftX() - xInit;
+    int nParts = (int)(difx/model->getLneHrzGap());
+    if(nParts == 0)
+    {
+      xInit = model->getInitialGridPointX();
+    }
+    else
+    {
+      xInit = xInit + (nParts * model->getLneHrzGap());
+    }
+  }
+
+  return xInit;
+}
+
+
+
 
 
 
