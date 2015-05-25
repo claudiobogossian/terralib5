@@ -78,7 +78,11 @@ void te::ogr::Module::startup()
   if(gdal_data.empty())
     gdal_data = TERRALIB_GDAL_DATA;
 
-  CPLSetConfigOption("GDAL_DATA", gdal_data.c_str());
+  if( !gdal_data.empty() )
+  {
+    CPLSetConfigOption("GDAL_DATA", gdal_data.c_str());
+  }
+  
   CPLSetConfigOption("GDAL_PAM_ENABLED", "NO");
 
 // registers all format drivers built into OGR.
