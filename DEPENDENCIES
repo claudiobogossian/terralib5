@@ -7,15 +7,10 @@ For Microsoft Visual C++ users we have prepared a zip file containing all the th
 http://www.dpi.inpe.br/terralib5-devel
 
 In that folder you will find:
-  - terralib5-3rdparty-win32-Qt4.zip: all the third-party libraries for building a 32-bit version of TerraLib with Qt 4 support.
-  
-  - terralib5-3rdparty-win32-msvc-2010.zip: all the third-party libraries for building a 32-bit version of TerraLib with Qt 5 support.
-  - terralib5-3rdparty-win64-msvc-2010.zip: all the third-party libraries for building a 64-bit version of TerraLib with Qt 5 support.
-  - terralib5-3rdparty-win32-msvc-2013.zip: all the third-party libraries for building a 32-bit version of TerraLib with Qt 5 support.
-  - terralib5-3rdparty-win64-msvc-2013.zip: all the third-party libraries for building a 64-bit version of TerraLib with Qt 5 support.
+  - terralib5-3rdparty-msvc-2013-win64.zip: all the third-party libraries for building a 64-bit version of TerraLib with Qt 5.4.1 support.
+  - terralib5-3rdparty-msvc-2013-win32.zip: all the third-party libraries for building a 32-bit version of TerraLib with Qt 5.4.1 support.
 
 Below is a list of third-party libraries dependencies and its versions.
-
 
 1. Boost (Mandatory)
 --------------------
@@ -31,7 +26,7 @@ http://www.boost.org
 2. Qt (Optional)
 ----------------
 
-Make sure you have an installed version of Qt 4.x or Qt 5.x.
+Make sure you have an installed version of  Qt 5.4.1 or later.
 
 Linux users may use any package manager to perform an easy installation.
 
@@ -42,7 +37,7 @@ http://qt-project.org/downloads.
 
 Make sure to have at least version 4.6.3 installed.
 
-Windows users that had downloaded the auxiliary package (in the TerraLib site) must install Qt 5.3.0 or Qt 4.8.6.
+Windows users that had downloaded the auxiliary package (in the TerraLib site) must install Qt 5.4.1
 
 
 3. QtPropertyBrowser (Optional)
@@ -99,6 +94,7 @@ Microsof ADO is general installed under a folder such as:
 C:\Program Files (x86)\Common Files\System\ado
 C:\Program Files (x86)\Common Files\System\Ole DB
 
+Oprtionally you can install de 
 
 8. Xerces-c (Optional)
 ----------------------
