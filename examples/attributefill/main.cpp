@@ -77,11 +77,11 @@ int main(int argc, char** argv)
     //  std::cout << "\tOK!" << std::endl;
 
 
-		//VectorToRaster examples
+    //VectorToRaster examples
 
-    //std::cout << std::endl << "VectorToRaster: " << std::endl;
-    //if (VectorToRaster())
-    //  std::cout << "\tOK!" << std::endl;
+    std::cout << std::endl << "VectorToRaster: " << std::endl;
+    if (VectorToRaster())
+      std::cout << "\tOK!" << std::endl;
 
 
     te::plugin::PluginManager::getInstance().unloadAll();
