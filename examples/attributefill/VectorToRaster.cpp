@@ -26,7 +26,7 @@ bool VectorToRaster()
   srcInfo["URI"] = filename;
   srcInfo["DRIVER"] = "ESRI Shapefile";
 
-  te::da::DataSourcePtr srcDs = te::da::DataSourceFactory::make("OGR");
+  te::da::DataSourcePtr srcDs(te::da::DataSourceFactory::make("OGR").release());
   srcDs->setConnectionInfo(srcInfo);
   srcDs->open();
 
