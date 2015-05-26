@@ -101,23 +101,6 @@ bool VectorToRaster()
   dsOGR->close();
 
   delete vec2rst;
-  
-  // let's include the new datasource in the managers
-  boost::uuids::basic_random_generator<boost::mt19937> gen;
-  boost::uuids::uuid u = gen();
-  std::string id_ds = boost::uuids::to_string(u);
 
-  te::da::DataSourceInfoPtr ds(new te::da::DataSourceInfo);
-  ds->setConnInfo(dsinfo);
-  ds->setTitle(uri.stem().string());
-  ds->setAccessDriver("GDAL");
-  ds->setType("GDAL");
-  ds->setDescription(uri.string());
-  ds->setId(id_ds);
-
-  te::da::DataSourcePtr newds = te::da::DataSourceManager::getInstance().get(id_ds, "GDAL", ds->getConnInfo());
-  newds->open();
-  te::da::DataSourceInfoManager::getInstance().add(ds);
-
-  return true;
+  return res;
 }
