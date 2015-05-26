@@ -329,6 +329,7 @@ void te::layout::DialogPropertiesBrowser::onShowGridSettingsDlg()
 
   model->setProperties(props);
 
+  gridSettings->load();
   gridSettings->show();
 }
 

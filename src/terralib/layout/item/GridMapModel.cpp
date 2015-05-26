@@ -47,7 +47,7 @@ te::layout::GridMapModel::GridMapModel() :
   m_systematic(0),
   m_mapDisplacementX(0),
   m_mapDisplacementY(0),
-  m_visible(false),  
+  m_visible(true),  
   m_lneHrzGap(0),
   m_lneVrtGap(0),
   m_initialGridPointX(0),
@@ -81,7 +81,7 @@ te::layout::GridMapModel::GridMapModel() :
   m_systematic(0),
   m_mapDisplacementX(0),
   m_mapDisplacementY(0),
-  m_visible(false),  
+  m_visible(true),  
   m_lneHrzGap(0),
   m_lneVrtGap(0),
   m_initialGridPointX(0),
@@ -413,7 +413,7 @@ te::layout::Properties* te::layout::GridMapModel::getProperties() const
 
 void te::layout::GridMapModel::updateProperties( te::layout::Properties* properties, bool notify )
 {
-  ItemModelObservable::updateProperties(properties);
+  ItemModelObservable::updateProperties(properties, false);
 
   Properties* vectorProps = const_cast<Properties*>(properties);
 
