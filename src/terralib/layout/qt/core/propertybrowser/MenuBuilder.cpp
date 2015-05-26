@@ -241,7 +241,6 @@ void te::layout::MenuBuilder::changePropertyValue( Property property )
           props->addProperty(property);
 
           lItem->getModel()->updateProperties(props);
-          lItem->redraw();
 
           if(beforeProps)
           {

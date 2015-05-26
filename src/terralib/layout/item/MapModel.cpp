@@ -71,33 +71,13 @@ te::layout::MapModel::MapModel() :
 
 te::layout::MapModel::~MapModel()
 {
+  m_layers.clear();
+
   if(m_systematic)
   {
     delete m_systematic;
     m_systematic = 0;
   }
-}
-
-void te::layout::MapModel::draw( ContextItem context )
-{
-  te::color::RGBAColor** pixmap = 0;
-
-  te::map::Canvas* canvas = context.getCanvas();
-  Utils* utils = context.getUtils();
-
-  if((!canvas) || (!utils))
-    return;
-
-  if(context.isResizeCanvas())
-    utils->configCanvas(m_box);
-
-  drawBackground(context);
-
-  if(context.isResizeCanvas())
-    pixmap = utils->getImageW(m_box);
-
-  context.setPixmap(pixmap);
-  notifyAll(context);
 }
 
 te::layout::Properties* te::layout::MapModel::getProperties() const
@@ -147,9 +127,9 @@ te::layout::Properties* te::layout::MapModel::getProperties() const
   return m_properties;
 }
 
-void te::layout::MapModel::updateProperties( te::layout::Properties* properties )
+void te::layout::MapModel::updateProperties( te::layout::Properties* properties, bool notify )
 {
-  ItemModelObservable::updateProperties(properties);
+  ItemModelObservable::updateProperties(properties, false);
 
   Properties* vectorProps = const_cast<Properties*>(properties);  
   
@@ -225,6 +205,12 @@ void te::layout::MapModel::updateProperties( te::layout::Properties* properties 
   }
     
   updateVisitors();
+
+  if(notify)
+  {
+    ContextItem context;
+    notifyAll(context);
+  }  
 }
 
 double te::layout::MapModel::getScale()
@@ -765,6 +751,25 @@ std::vector<std::string> te::layout::MapModel::findLayerNames() const
   }
 
   return stringList;
+}
+
+te::gm::Envelope te::layout::MapModel::maxLayerExtent()
+{
+  te::gm::Envelope box;
+
+  if(m_layers.empty())
+  {
+    return box;
+  }
+  
+  std::list<te::map::AbstractLayerPtr>::const_iterator it;
+  it = m_layers.begin();
+
+  te::map::AbstractLayerPtr layer = (*it);
+
+  box = layer->getExtent();
+
+  return box;
 }
 
 

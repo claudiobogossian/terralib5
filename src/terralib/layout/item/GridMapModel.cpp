@@ -411,7 +411,7 @@ te::layout::Properties* te::layout::GridMapModel::getProperties() const
   return m_properties;
 }
 
-void te::layout::GridMapModel::updateProperties( te::layout::Properties* properties )
+void te::layout::GridMapModel::updateProperties( te::layout::Properties* properties, bool notify )
 {
   ItemModelObservable::updateProperties(properties);
 
@@ -576,6 +576,12 @@ void te::layout::GridMapModel::updateProperties( te::layout::Properties* propert
   if(!pro_topRotateText.isNull())
   {
     m_topRotateText = pro_topRotateText.getValue().toBool();
+  }
+
+  if(notify)
+  {
+    ContextItem context;
+    notifyAll(context);
   }
 }
 

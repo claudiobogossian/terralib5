@@ -30,9 +30,14 @@
 #include "../../outside/MapLayerChoiceModel.h"
 #include "ui_MapLayerChoice.h"
 
+// STL
+#include <algorithm>
+
 // Qt
 #include <QGridLayout>
 #include <QMessageBox>
+#include "../../core/enum/Enums.h"
+#include "../../core/property/GenericVariant.h"
 
 te::layout::MapLayerChoiceOutside::MapLayerChoiceOutside(OutsideController* controller, Observable* o)
   : QDialog(0),
@@ -66,20 +71,43 @@ void te::layout::MapLayerChoiceOutside::init()
     return;
   }
 
-  std::list<te::map::AbstractLayerPtr> layers = model->getLayers();
+  // Layers From Map Items
+  std::list<te::map::AbstractLayerPtr> selectedLayers = model->getSelectedLayers();
   
+  // All Layers from Project
+
+  std::list<te::map::AbstractLayerPtr> layers = model->getLayers();
   std::list<te::map::AbstractLayerPtr>::iterator it = layers.begin();
 
   std::vector <std::string> names;
-
   while(it != layers.end())
   {
     te::map::AbstractLayerPtr layer = it->get();
-    names.push_back(layer->getTitle());
+
+    if(std::find(selectedLayers.begin(), selectedLayers.end(), layer) != selectedLayers.end())
+    {
+      ++it;
+      continue;
+    }
+    
+    names.push_back(layer->getTitle());    
     ++it;
   }
 
   m_widget->setInputValues(names);      
+  
+  // Layers From Map Items
+  std::list<te::map::AbstractLayerPtr>::iterator itSelected = selectedLayers.begin();
+
+  names.clear();
+  while(itSelected != selectedLayers.end())
+  {
+    te::map::AbstractLayerPtr layer = itSelected->get();
+    names.push_back(layer->getTitle());
+    ++itSelected;
+  }
+
+  m_widget->setOutputValues(names);      
 }
 
 void te::layout::MapLayerChoiceOutside::onOkPushButtonClicked()
@@ -116,9 +144,18 @@ void te::layout::MapLayerChoiceOutside::onOkPushButtonClicked()
     }
   }    
 
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+
+  GenericVariant v;
+  v.setList(m_layersSelected, dataType->getDataTypeLayerList());
+
+  Property prop;
+  prop.setName("layers");
+  prop.setValue(v, dataType->getDataTypeGenericVariant());
+
   m_layersSelected.clear();
-  
-  QMessageBox::information(this, "Map Layer Choice", "Layer Choice!");
+
+  emit updateProperty(prop);
 }
 
 void te::layout::MapLayerChoiceOutside::onCancelPushButtonClicked()

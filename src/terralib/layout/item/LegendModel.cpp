@@ -112,9 +112,9 @@ te::layout::Properties* te::layout::LegendModel::getProperties() const
   return m_properties;
 }
 
-void te::layout::LegendModel::updateProperties( te::layout::Properties* properties )
+void te::layout::LegendModel::updateProperties( te::layout::Properties* properties, bool notify )
 {
-  ItemModelObservable::updateProperties(properties);
+  ItemModelObservable::updateProperties(properties, false);
 
   Properties* vectorProps = const_cast<Properties*>(properties);
 
@@ -137,6 +137,12 @@ void te::layout::LegendModel::updateProperties( te::layout::Properties* properti
   if(!pro_fontColor.isNull())
   {
     m_fontColor = pro_fontColor.getValue().toColor();
+  }
+
+  if(notify)
+  {
+    ContextItem context;
+    notifyAll(context);
   }
 }
 

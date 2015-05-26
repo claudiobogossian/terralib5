@@ -736,6 +736,11 @@ void te::layout::DialogPropertiesBrowser::updateOutside( Property prop )
   emit changeDlgProperty(prop);
 }
 
+void te::layout::DialogPropertiesBrowser::updateOutside( std::vector<Property> props )
+{
+  emit changeDlgProperty(props);
+}
+
 void te::layout::DialogPropertiesBrowser::onDestroyed( QObject* obj )
 {
   if(m_dialogs.empty())

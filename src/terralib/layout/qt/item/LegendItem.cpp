@@ -83,7 +83,7 @@ void te::layout::LegendItem::updateObserver( ContextItem context )
   if(!m_model)
     return;
 
-  Utils* utils = context.getUtils();
+  Utils* utils = Context::getInstance().getUtils();
 
   if(!utils)
     return;

@@ -290,7 +290,7 @@ bool te::layout::ItemModelObservable::contains( const te::gm::Coord2D &coord ) c
   return false;
 }
 
-void te::layout::ItemModelObservable::updateProperties( te::layout::Properties* properties )
+void te::layout::ItemModelObservable::updateProperties( te::layout::Properties* properties, bool notify )
 {
   Properties* vectorProps = const_cast<Properties*>(properties);
 
@@ -368,6 +368,12 @@ void te::layout::ItemModelObservable::updateProperties( te::layout::Properties* 
   if(!pro_border.isNull())
   {
     m_border = pro_border.getValue().toBool();
+  }
+
+  if(notify)
+  {
+    ContextItem context;
+    notifyAll(context);
   }
 }
 

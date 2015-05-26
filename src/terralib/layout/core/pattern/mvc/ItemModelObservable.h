@@ -184,7 +184,7 @@ namespace te
         /*!
           \brief Reimplemented from Observable
          */
-        virtual void updateProperties(te::layout::Properties* properties);
+        virtual void updateProperties(te::layout::Properties* properties, bool notify = true);
 
         /*!
           \brief Reimplemented from Observable

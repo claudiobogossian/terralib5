@@ -58,6 +58,7 @@
 // STL
 #include <vector>
 #include <memory>
+#include <algorithm>
 
 // Qt
 #include <QCursor>
@@ -111,7 +112,9 @@ te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
   m_mapDisplay = new te::qt::widgets::MultiThreadMapDisplay(m_mapSize, true);
   m_mapDisplay->setSynchronous(true);
   m_mapDisplay->setAcceptDrops(true);
-  m_mapDisplay->setBackgroundColor(Qt::gray);
+
+  QColor clr(0,0,0,0);
+  m_mapDisplay->setBackgroundColor(clr);
   m_mapDisplay->setResizeInterval(0);
   m_mapDisplay->setMouseTracking(true);
 
@@ -153,23 +156,17 @@ void te::layout::MapItem::updateObserver( ContextItem context )
   if(!m_model)
     return;
 
-  Utils* utils = context.getUtils();
+  Utils* utils = Context::getInstance().getUtils();
 
   if(!utils)
     return;
 
   calculateFrameMargin();
   setWindowFrameMargins(m_wMargin, m_hMargin, m_wMargin, m_hMargin);
-
-  QRectF boundRect;
-  boundRect = boundingRect();
-
-  te::gm::Envelope box = utils->viewportBox(m_model->getBox());
-  
-  if(!box.isValid())
-    return;
-  
+      
   updateMapDisplay();
+
+  reloadLayers();
 
   MapModel* model = dynamic_cast<MapModel*>(m_model);
   if(model)
@@ -203,25 +200,6 @@ void te::layout::MapItem::updateObserver( ContextItem context )
     calculateFrameMargin();
   }
 
-  te::color::RGBAColor** rgba = context.getPixmap();
-
-  if(!rgba)
-    return;
-
-  QPixmap pixmap;
-  QImage* img = 0;
-
-  if(rgba)
-  {
-    img = te::qt::widgets::GetImage(rgba, box.getWidth(), box.getHeight());
-    pixmap = QPixmap::fromImage(*img);
-  }
-    
-  te::common::Free(rgba, box.getHeight());
-  if(img)
-    delete img;
-  
-  setPixmap(pixmap);
   update();
 }
 
@@ -284,7 +262,6 @@ void te::layout::MapItem::drawMap( QPainter * painter )
     double y = model->getDisplacementY();
     boundRect = QRectF(x, y, model->getMapBox().getWidth(), model->getMapBox().getHeight());
   }
-  
 
   if( m_pixmap.isNull() || m_changeLayer)
   {
@@ -319,29 +296,7 @@ void te::layout::MapItem::dropEvent( QGraphicsSceneDragDropEvent * event )
 
   getMimeData(event->mimeData());
 
-  MapModel* model = dynamic_cast<MapModel*>(m_model);
-  if(!model)
-  {
-    return;
-  }
-
-  if(!model->isLoadedLayer())
-  {
-    return;
-  }
-
-  std::list<te::map::AbstractLayerPtr> layerList = model->getLayers();
-
-  std::list<te::map::AbstractLayerPtr>::iterator it;
-  it = layerList.begin();
-
-  te::map::AbstractLayerPtr al = (*it);
-
-  te::gm::Envelope e = al->getExtent();
-  
-  m_mapDisplay->setLayerList(layerList);
-  m_mapDisplay->setExtent(e, false);
-  m_mapDisplay->setSRID(al->getSRID(), true);
+  reloadLayers();
 }
 
 void te::layout::MapItem::dragEnterEvent( QGraphicsSceneDragDropEvent * event )
@@ -878,6 +833,78 @@ void te::layout::MapItem::drawBorder( QPainter* painter )
   painter->setRenderHint( QPainter::Antialiasing, true );
   painter->drawRect(boundRect);
   painter->restore();
+}
+
+void te::layout::MapItem::reloadLayers()
+{
+  MapModel* model = dynamic_cast<MapModel*>(m_model);
+  if(!model)
+  {
+    return;
+  }
+
+  std::list<te::map::AbstractLayerPtr> layerList = model->getLayers();
+
+  if(m_oldLayers.empty())
+  {
+    m_oldLayers = layerList;
+  }
+  else
+  {
+    if(!hasListLayerChanged())
+    {
+      return;
+    }
+  }
+
+  std::list<te::map::AbstractLayerPtr>::iterator it;
+  it = layerList.begin();
+
+  te::map::AbstractLayerPtr al = (*it);
+
+  te::gm::Envelope e = model->maxLayerExtent();
+
+  m_changeLayer = true;
+
+  m_mapDisplay->setLayerList(layerList);
+  m_mapDisplay->setSRID(al->getSRID(), false);
+  m_mapDisplay->setExtent(e, true);
+}
+
+bool te::layout::MapItem::hasListLayerChanged()
+{
+  bool result = false;
+  MapModel* model = dynamic_cast<MapModel*>(m_model);
+  if(!model)
+  {
+    return false;
+  }
+
+  std::list<te::map::AbstractLayerPtr> layerList = model->getLayers();
+  std::list<te::map::AbstractLayerPtr>::const_iterator it = layerList.begin();
+
+  for( ; it != layerList.end() ; ++it)
+  {
+    te::map::AbstractLayerPtr layer = (*it);
+    if(std::find(m_oldLayers.begin(), m_oldLayers.end(), layer) == m_oldLayers.end())
+    {
+      result = true;
+      break;
+    }
+  }
+
+  return result;
+}
+
+void te::layout::MapItem::redraw( bool bRefresh /*= true*/ )
+{
+  if(m_oldLayers.empty())
+  {
+    return;
+  }
+
+  ContextItem context;
+  updateObserver(context);
 }
 
 

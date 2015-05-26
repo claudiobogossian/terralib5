@@ -74,11 +74,9 @@ namespace te
         */ 
         virtual ~MapModel();
 
-        virtual void draw( ContextItem context );
-
         virtual te::layout::Properties* getProperties() const;
 
-        virtual void updateProperties(te::layout::Properties* properties);
+        virtual void updateProperties(te::layout::Properties* properties, bool notify = true);
 
         virtual bool addLayer(te::map::AbstractLayerPtr layer);
 
@@ -131,6 +129,8 @@ namespace te
         void clear();
 
         std::vector<std::string> getLayerNames();
+
+        virtual te::gm::Envelope maxLayerExtent();
 
       protected:
 
