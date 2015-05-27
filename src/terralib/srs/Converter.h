@@ -208,22 +208,19 @@ namespace te
        \return true if succeed and false otherwise.
        */
       bool convertToProjected(double &lon, double &lat, int SRID) const;
-      
-      
+
     private:
       
-			int m_targetSRID;			
-			int m_sourceSRID;
+      int m_targetSRID;
+      int m_sourceSRID;
       
-			void* m_sourcePj4Handler;	// Proj4 handler to source SRS
-			void* m_targetPj4Handler;	// Proj4 handler to target SRS
+      void* m_sourcePj4Handler;	// Proj4 handler to source SRS
+      void* m_targetPj4Handler;	// Proj4 handler to target SRS
       
-		};
+    };
 
     typedef std::auto_ptr<Converter> ConverterPtr;  //!< \typedef ConverterPtr an auto pointer to a Converter.
-	}
+  }
 } // end TerraLib
 
 #endif // __TERRALIB_SRS_INTERNAL_CONVERTER_H
-
-

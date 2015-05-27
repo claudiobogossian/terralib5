@@ -42,6 +42,9 @@ te::srs::Module::Module()
 
 // initialize TerraLib singleton
   TerraLib::getInstance().add(m);
+
+  // initializing the static mutex
+  getStaticMutex();
 }
 
 te::srs::Module::~Module()
@@ -62,6 +65,12 @@ void te::srs::Module::finalize()
 {
   
   TE_LOG_TRACE(TE_TR("TerraLib SRS Finalized!"));
+}
+
+boost::mutex& te::srs::getStaticMutex()
+{
+  static boost::mutex getStaticMutexStaticMutex;
+  return getStaticMutexStaticMutex;
 }
 
 
