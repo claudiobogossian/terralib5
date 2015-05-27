@@ -46,13 +46,16 @@ bool RasterToVectorInSHP()
   dsOGR->open();
 
   std::auto_ptr<te::da::DataSetType>dsTypeVector = dsOGR->getDataSetType(fileNameVector);
+  
+  // Params
+  std::vector<unsigned int> vecBands;
+  vecBands.push_back(0);
+  vecBands.push_back(1);
 
-
-// Params
-  std::vector<unsigned int> vecBands = { 0, 1 }; //bands
-  std::vector<te::stat::StatisticalSummary> vecStat = { te::stat::MIN_VALUE,
-                                                        te::stat::MAX_VALUE,
-                                                        te::stat::SUM }; // Statistical Summary
+  std::vector<te::stat::StatisticalSummary> vecStat;
+  vecStat.push_back(te::stat::StatisticalSummary::MIN_VALUE);
+  vecStat.push_back(te::stat::StatisticalSummary::MAX_VALUE);
+  vecStat.push_back(te::stat::StatisticalSummary::SUM);
 
 // Output Vector
   std::string outputdataset = "raster2vector";
@@ -139,10 +142,14 @@ bool RasterToVectorInPGIS()
 
 
   // Params
-  std::vector<unsigned int> vecBands = { 0, 1 }; //bands
-  std::vector<te::stat::StatisticalSummary> vecStat = { te::stat::MIN_VALUE,
-    te::stat::MAX_VALUE,
-    te::stat::SUM }; // Statistical Summary
+  std::vector<unsigned int> vecBands;
+  vecBands.push_back(0);
+  vecBands.push_back(1);
+  
+  std::vector<te::stat::StatisticalSummary> vecStat;
+  vecStat.push_back(te::stat::StatisticalSummary::MIN_VALUE);
+  vecStat.push_back(te::stat::StatisticalSummary::MAX_VALUE);
+  vecStat.push_back(te::stat::StatisticalSummary::SUM);
 
   // Output Vector
 
