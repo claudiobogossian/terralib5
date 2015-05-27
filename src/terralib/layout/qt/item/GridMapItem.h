@@ -86,6 +86,8 @@ namespace te
                         
         virtual void drawGrid(QPainter* painter);
 
+        virtual void drawDefaultGrid(QPainter* painter);
+
         virtual void drawVerticalLines();
 
         virtual void drawHorizontalLines();
@@ -94,9 +96,11 @@ namespace te
 
         virtual void recalculateBoundingRect();
 
-        virtual QColor rgbaToQColor(te::color::RGBAColor color);
-
         virtual bool hasLayer();
+
+        virtual void configPainter(QPainter* painter);
+
+        virtual void configTextPainter(QPainter* painter);
 
         double m_maxWidthTextMM;
         double m_maxHeigthTextMM;

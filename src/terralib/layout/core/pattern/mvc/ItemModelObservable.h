@@ -308,6 +308,8 @@ namespace te
         virtual void addChildrenProperties(Properties* properties) const;
 
         virtual void updateChildrenProperties(Property prop);
+
+		virtual void updateChildrenProperties(Properties* properties);
                 
       protected:
         std::set<Observer*>	       m_observers; //!< set of observers of this object

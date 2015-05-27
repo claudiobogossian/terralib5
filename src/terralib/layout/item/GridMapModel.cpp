@@ -55,7 +55,7 @@ te::layout::GridMapModel::GridMapModel() :
   m_gridStyle(0),
   m_lineStyle(0),
   m_lineWidth(1),  
-  m_pointTextSize(12),
+  m_pointTextSize(6),
   m_fontText("Arial"),
   m_visibleAllTexts(true),
 
@@ -89,7 +89,7 @@ te::layout::GridMapModel::GridMapModel() :
   m_gridStyle(0),
   m_lineStyle(0),
   m_lineWidth(1),  
-  m_pointTextSize(12),
+  m_pointTextSize(6),
   m_fontText("Arial"),
   m_visibleAllTexts(true),
 
@@ -110,8 +110,8 @@ te::layout::GridMapModel::GridMapModel() :
 
 void te::layout::GridMapModel::init()
 {
-  m_gridStyle = Enums::getInstance().getEnumGridStyleType()->getStyleNone();
-  m_lineStyle = Enums::getInstance().getEnumLineStyleType()->getStyleNone();
+  m_gridStyle = Enums::getInstance().getEnumGridStyleType()->getStyleContinuous();
+  m_lineStyle = Enums::getInstance().getEnumLineStyleType()->getStyleSolid();
 
   m_type = Enums::getInstance().getEnumObjectType()->getGridMapItem();
 
@@ -465,7 +465,12 @@ void te::layout::GridMapModel::updateProperties( te::layout::Properties* propert
   {
     std::string style = pro_gridStyle.getValue().toString();
     EnumType* styleType = Enums::getInstance().getEnumGridStyleType()->getEnum(style);
-    m_gridStyle = styleType;
+    if(!styleType)
+    {
+      styleType = Enums::getInstance().getEnumGridStyleType()->searchLabel(style);
+    }
+    if(styleType)
+      m_gridStyle = styleType;
   }
 
   Property pro_lineStyle = vectorProps->contains(m_settingsConfig->getLineStyle());
@@ -473,7 +478,12 @@ void te::layout::GridMapModel::updateProperties( te::layout::Properties* propert
   {
     std::string style = pro_lineStyle.getValue().toString();
     EnumType* lineStyle = Enums::getInstance().getEnumLineStyleType()->getEnum(style);
-    m_lineStyle = lineStyle;
+    if(!lineStyle)
+    {
+      lineStyle = Enums::getInstance().getEnumLineStyleType()->searchLabel(style);
+    }
+    if(lineStyle)
+      m_lineStyle = lineStyle;
   }
 
   Property pro_lineColor = vectorProps->contains(m_settingsConfig->getLineColor());

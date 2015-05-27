@@ -142,12 +142,6 @@ void te::layout::GridGeodesicItem::drawVerticalLines( QPainter* painter, te::gm:
 
   te::gm::Envelope planarBox = model->getPlanarBox();
 
-  te::color::RGBAColor clrLine = model->getLineColor();
-  QColor lineColor = rgbaToQColor(clrLine);
-
-  QPen pn(lineColor, 0, Qt::SolidLine);
-  painter->setPen(pn);
-
   WorldTransformer transf = utils->getTransformGeo(model->getPlanarBox(), boxMM);
   transf.setMirroring(false);
 
@@ -173,10 +167,14 @@ void te::layout::GridGeodesicItem::drawVerticalLines( QPainter* painter, te::gm:
 
     te::gm::Envelope* ev = const_cast<te::gm::Envelope*>(line->getMBR());
 
+    configPainter(painter);
+
     QLineF lne(ev->getLowerLeftX(), ev->getLowerLeftY(), ev->getUpperRightX(), ev->getUpperRightY());
     painter->drawLine(lne);
 
     std::string text = utils->convertDecimalToDegree(y1, model->isDegreesText(), model->isMinutesText(), model->isSecondsText());
+    
+    configTextPainter(painter);
 
     if(model->isVisibleAllTexts())
     {
@@ -216,13 +214,7 @@ void te::layout::GridGeodesicItem::drawHorizontalLines( QPainter* painter, te::g
   Utils* utils = Context::getInstance().getUtils();
 
   te::gm::Envelope planarBox = model->getPlanarBox();
-
-  te::color::RGBAColor clrLine = model->getLineColor();
-  QColor lineColor = rgbaToQColor(clrLine);
-
-  QPen pn(lineColor, 0, Qt::SolidLine);
-  painter->setPen(pn);
-
+  
   WorldTransformer transf = utils->getTransformGeo(planarBox, boxMM);
   transf.setMirroring(false);
 
@@ -246,11 +238,15 @@ void te::layout::GridGeodesicItem::drawHorizontalLines( QPainter* painter, te::g
     
     te::gm::Envelope* ev = const_cast<te::gm::Envelope*>(line->getMBR());
 
+    configPainter(painter);
+
     QLineF lne(ev->getLowerLeftX(), ev->getLowerLeftY(), ev->getUpperRightX(), ev->getUpperRightY());
     painter->drawLine(lne);
 
     std::string text = utils->convertDecimalToDegree(x1, model->isDegreesText(), model->isMinutesText(), model->isSecondsText());
     
+    configTextPainter(painter);
+
     if(model->isVisibleAllTexts())
     {
       if(model->isBottomText())

@@ -133,12 +133,6 @@ void te::layout::GridPlanarItem::drawVerticalLines(QPainter* painter, te::gm::En
 
   Utils* utils = Context::getInstance().getUtils();
 
-  te::color::RGBAColor clrLine = model->getLineColor();
-  QColor lineColor = rgbaToQColor(clrLine);
-
-  QPen pn(lineColor, 0, Qt::SolidLine);
-  painter->setPen(pn);
-
   // Draw a horizontal line and the y coordinate change(vertical)
 
   WorldTransformer transf = utils->getTransformGeo(geoBox, boxMM);
@@ -160,6 +154,8 @@ void te::layout::GridPlanarItem::drawVerticalLines(QPainter* painter, te::gm::En
     transf.system1Tosystem2(geoBox.getLowerLeftX(), y1, llx, y);
     transf.system1Tosystem2(geoBox.getUpperRightX(), y1, urx, y);
 
+    configPainter(painter);
+
     QLineF line(llx, y, urx, y);
     painter->drawLine(line);
 
@@ -169,6 +165,8 @@ void te::layout::GridPlanarItem::drawVerticalLines(QPainter* painter, te::gm::En
     convert << number;
 
     utils->textBoundingBox(wtxt, htxt, convert.str());
+
+    configTextPainter(painter);
 
     if(model->isVisibleAllTexts())
     {
@@ -202,13 +200,7 @@ void te::layout::GridPlanarItem::drawHorizontalLines(QPainter* painter, te::gm::
   }
 
   Utils* utils = Context::getInstance().getUtils();
-
-  te::color::RGBAColor clrLine = model->getLineColor();
-  QColor lineColor = rgbaToQColor(clrLine);
-
-  QPen pn(lineColor, 0, Qt::SolidLine);
-  painter->setPen(pn);
-
+  
   // Draw a vertical line and the x coordinate change(horizontal)
   
   WorldTransformer transf = utils->getTransformGeo(geoBox, boxMM);
@@ -241,6 +233,8 @@ void te::layout::GridPlanarItem::drawHorizontalLines(QPainter* painter, te::gm::
       ury = ycopy;
     }
 
+    configPainter(painter);
+
     QLineF line(x, lly, x, ury);
     painter->drawLine(line);
 
@@ -250,6 +244,8 @@ void te::layout::GridPlanarItem::drawHorizontalLines(QPainter* painter, te::gm::
     convert << number;
 
     utils->textBoundingBox(wtxt, htxt, convert.str());
+
+    configTextPainter(painter);
 
     if(model->isVisibleAllTexts())
     {

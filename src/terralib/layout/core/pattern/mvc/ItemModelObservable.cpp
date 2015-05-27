@@ -370,6 +370,8 @@ void te::layout::ItemModelObservable::updateProperties( te::layout::Properties* 
     m_border = pro_border.getValue().toBool();
   }
 
+	updateChildrenProperties(properties);
+
   if(notify)
   {
     ContextItem context;
@@ -694,6 +696,20 @@ void te::layout::ItemModelObservable::updateChildrenProperties( Property prop )
       break;
     }
   }
+}
+
+void te::layout::ItemModelObservable::updateChildrenProperties( Properties* properties )
+{
+	std::set<ItemObserver*>::iterator it = m_children.begin();
+
+	for( ; it != m_children.end(); ++it)
+	{
+		ItemObserver* item = (*it);
+		if(!item)
+			continue;
+
+		item->getModel()->updateProperties(properties);
+	}
 }
 
 

@@ -43,6 +43,7 @@
 #include <QStyleOptionGraphicsItem>
 #include <QWidget>
 #include <QTransform>
+#include <QColor>
 
 // TerraLib
 #include "../../core/pattern/mvc/ItemObserver.h"
@@ -213,6 +214,8 @@ namespace te
         virtual void drawText(QPointF point, QPainter* painter, std::string text);
 
         virtual void createResizePixmap();
+
+        virtual QColor rgbaToQColor(te::color::RGBAColor color);
         
       protected:
 
@@ -872,6 +875,18 @@ namespace te
       {
         m_resizeMode = true;
       }
+    }
+
+    template <class T>
+    inline QColor te::layout::ParentItem<T>::rgbaToQColor( te::color::RGBAColor color )
+    {
+      QColor clr;
+      clr.setRed(color.getRed());
+      clr.setGreen(color.getGreen());
+      clr.setBlue(color.getBlue());
+      clr.setAlpha(color.getAlpha());
+
+      return clr;
     }
   }
 }

@@ -1557,10 +1557,22 @@ void te::layout::GridSettingsOutside::initCombo( QWidget* widget, std::string na
   {
     variant.setValue(QString(prop.getValue().toString().c_str()));
   }
+
+  //When the value is not a QString
+  QString value = variant.toString();
+  variant.setValue(value);
   
   index = combo->findData(variant);
-  if ( index != -1 ) 
+  if ( index == -1 ) 
   { 
+    index = combo->findText(value);
+    if(index != -1)
+    {
+      combo->setCurrentIndex(index);
+    }
+  }
+  else
+  {
     combo->setCurrentIndex(index);
   }
 }

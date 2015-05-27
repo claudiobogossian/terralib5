@@ -204,6 +204,8 @@ void te::layout::MapModel::updateProperties( te::layout::Properties* properties,
     m_mapDisplacementY = pro_mapDisplacementY.getValue().toDouble();
   }
     
+
+
   updateVisitors();
 
   if(notify)

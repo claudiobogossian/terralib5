@@ -143,15 +143,15 @@ namespace te
         std::vector<std::string> findLayerNames() const;
 
         std::list<te::map::AbstractLayerPtr> m_layers;
-        te::gm::Envelope          m_mapBoxMM;
-        double                    m_mapDisplacementX;
-        double                    m_mapDisplacementY;
-        Systematic*               m_systematic;
-        bool                      m_fixedScale;
-        te::gm::Envelope          m_worldBox;
-        te::color::RGBAColor			m_mapbackgroundColor;
-        bool                      m_loadedLayer;
-        std::vector<std::string>  m_layerNames;
+        te::gm::Envelope					 m_mapBoxMM;
+        double								 m_mapDisplacementX;
+        double								 m_mapDisplacementY;
+        Systematic*							 m_systematic;
+        bool								 m_fixedScale;
+        te::gm::Envelope					 m_worldBox;
+        te::color::RGBAColor				 m_mapbackgroundColor;
+        bool								 m_loadedLayer;
+        std::vector<std::string>			 m_layerNames;
     };
   }
 }
