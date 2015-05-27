@@ -147,9 +147,9 @@ bool RasterToVectorInPGIS()
   vecBands.push_back(1);
   
   std::vector<te::stat::StatisticalSummary> vecStat;
-  vecStat.push_back(te::stat::StatisticalSummary::MIN_VALUE);
-  vecStat.push_back(te::stat::StatisticalSummary::MAX_VALUE);
-  vecStat.push_back(te::stat::StatisticalSummary::SUM);
+  vecStat.push_back(te::stat::MIN_VALUE);
+  vecStat.push_back(te::stat::MAX_VALUE);
+  vecStat.push_back(te::stat::SUM);
 
   // Output Vector
 
