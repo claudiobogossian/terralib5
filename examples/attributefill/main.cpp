@@ -67,7 +67,7 @@ int main(int argc, char** argv)
     te::plugin::PluginManager::getInstance().loadAll();
 
     //RasterToVector example
-
+	
     //std::cout << std::endl << "RasterToVector in Shape: " << std::endl;
     //if (RasterToVectorInSHP())
     //  std::cout << "\tOK!" << std::endl;
@@ -79,9 +79,9 @@ int main(int argc, char** argv)
 
     //VectorToRaster examples
 
-    std::cout << std::endl << "VectorToRaster: " << std::endl;
-    if (VectorToRaster())
-      std::cout << "\tOK!" << std::endl;
+    //std::cout << std::endl << "VectorToRaster: " << std::endl;
+    //if (VectorToRaster())
+    //  std::cout << "\tOK!" << std::endl;
 
 
     te::plugin::PluginManager::getInstance().unloadAll();
