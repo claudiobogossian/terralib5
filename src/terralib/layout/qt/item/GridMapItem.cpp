@@ -206,16 +206,6 @@ void te::layout::GridMapItem::drawGrid( QPainter* painter )
 
 }
 
-void te::layout::GridMapItem::drawVerticalLines()
-{
-
-}
-
-void te::layout::GridMapItem::drawHorizontalLines()
-{
-
-}
-
 bool te::layout::GridMapItem::hasLayer()
 {
   bool result = false;
@@ -371,6 +361,191 @@ void te::layout::GridMapItem::drawDefaultGrid( QPainter* painter )
 
   painter->restore();
 }
+
+void te::layout::GridMapItem::drawContinuousLines( QPainter* painter )
+{
+  painter->save();
+
+  configPainter(painter);
+
+  drawVerticalLines(painter);
+
+  drawHorizontalLines(painter);
+
+  drawTexts(painter);
+
+  painter->restore();
+}
+
+void te::layout::GridMapItem::drawCrossLines( QPainter* painter )
+{
+  GridMapModel* model = dynamic_cast<GridMapModel*>(m_model);
+  if(!model)
+  {
+    return;
+  }
+
+  painter->save();
+
+  configPainter(painter);
+
+  double crossOffSet = model->getCrossOffSet();   
+
+  QList<QLineF>::iterator itv = m_verticalLines.begin();
+  for( ; itv != m_verticalLines.end() ; ++itv )
+  {
+    QLineF vtrLine = (*itv);
+    te::gm::Envelope vertical(vtrLine.x1(), vtrLine.y1(), vtrLine.x2(), vtrLine.y2());
+
+    QList<QLineF>::iterator ith = m_horizontalLines.begin();
+    for( ; ith != m_horizontalLines.end() ; ++ith )
+    {
+      QLineF hrzLine = (*ith);
+      te::gm::Envelope horizontal(hrzLine.x1(), hrzLine.y1(), hrzLine.x2(), hrzLine.y2());
+
+      // check intersection between two lines
+      te::gm::Envelope result = vertical.intersection(horizontal);
+      if(result.isValid())
+      {
+        QPointF pot(result.m_llx, result.m_lly);
+
+        QLineF lneHrz(pot.x() - crossOffSet, pot.y(), pot.x() + crossOffSet, pot.y());
+        QLineF lneVrt(pot.x(), pot.y() - crossOffSet, pot.x(), pot.y() + crossOffSet);
+
+        painter->drawLine(lneHrz);
+        painter->drawLine(lneVrt);
+      }
+    }
+  }
+
+  painter->restore();
+}
+
+void te::layout::GridMapItem::calculateVertical( te::gm::Envelope geoBox, te::gm::Envelope boxMM, double scale )
+{
+
+}
+
+void te::layout::GridMapItem::calculateHorizontal( te::gm::Envelope geoBox, te::gm::Envelope boxMM, double scale )
+{
+
+}
+
+void te::layout::GridMapItem::drawTexts( QPainter* painter )
+{
+  GridMapModel* model = dynamic_cast<GridMapModel*>(m_model);
+  if(!model)
+  {
+    return;
+  }
+
+  if(!model->isVisibleAllTexts())
+  {
+    return;
+  }
+
+  painter->save();
+
+  configTextPainter(painter);
+
+  if(model->isLeftText())
+  {
+    drawLeftTexts(painter);
+  }
+
+  if(model->isRightText())
+  {
+    drawRightTexts(painter);
+  }
+  
+  if(model->isBottomText())
+  {
+    drawBottomTexts(painter);
+  }
+
+  if(model->isTopText())
+  {
+    drawTopTexts(painter);
+  }
+
+  painter->restore();  
+}
+
+void te::layout::GridMapItem::clear()
+{
+  m_verticalLines.clear();
+  m_horizontalLines.clear();
+  m_topTexts.clear();
+  m_bottomTexts.clear();
+  m_rightTexts.clear();
+  m_leftTexts.clear();
+}
+
+void te::layout::GridMapItem::drawTopTexts( QPainter* painter )
+{
+  std::map<std::string, QPointF>::iterator it = m_topTexts.begin();
+  for( ; it != m_topTexts.end() ; ++it )
+  {
+    std::string txt = it->first;
+    QPointF pt = it->second;     
+    drawText(pt, painter, txt);
+  }
+}
+
+void te::layout::GridMapItem::drawBottomTexts( QPainter* painter )
+{
+  std::map<std::string, QPointF>::iterator it = m_bottomTexts.begin();
+  for( ; it != m_bottomTexts.end() ; ++it )
+  {
+    std::string txt = it->first;
+    QPointF pt = it->second;    
+    drawText(pt, painter, txt);
+  }
+}
+
+void te::layout::GridMapItem::drawLeftTexts( QPainter* painter )
+{
+  std::map<std::string, QPointF>::iterator it = m_leftTexts.begin();
+  for( ; it != m_leftTexts.end() ; ++it )
+  {
+    std::string txt = it->first;
+    QPointF pt = it->second;   
+    drawText(pt, painter, txt);
+  }
+}
+
+void te::layout::GridMapItem::drawRightTexts( QPainter* painter )
+{
+  std::map<std::string, QPointF>::iterator it = m_rightTexts.begin();
+  for( ; it != m_rightTexts.end() ; ++it )
+  {
+    std::string txt = it->first;
+    QPointF pt = it->second;  
+    drawText(pt, painter, txt);
+  }
+}
+
+void te::layout::GridMapItem::drawVerticalLines( QPainter* painter )
+{
+  QList<QLineF>::iterator it = m_verticalLines.begin();
+  for( ; it != m_verticalLines.end() ; ++it )
+  {
+    QLineF line = (*it);
+    painter->drawLine(line);
+  }
+}
+
+void te::layout::GridMapItem::drawHorizontalLines( QPainter* painter )
+{
+  QList<QLineF>::iterator it = m_horizontalLines.begin();
+  for( ; it != m_horizontalLines.end() ; ++it )
+  {
+    QLineF line = (*it);
+    painter->drawLine(line);
+  }
+}
+
+
 
 
 

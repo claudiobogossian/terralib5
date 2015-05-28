@@ -71,9 +71,9 @@ namespace te
         
         virtual void drawGrid(QPainter* painter);
 
-        virtual void drawVerticalLines(QPainter* painter, te::gm::Envelope geoBox, te::gm::Envelope boxMM, double scale);
+        virtual void calculateVertical(te::gm::Envelope geoBox, te::gm::Envelope boxMM, double scale);
 
-        virtual void drawHorizontalLines(QPainter* painter, te::gm::Envelope geoBox, te::gm::Envelope boxMM, double scale);
+        virtual void calculateHorizontal(te::gm::Envelope geoBox, te::gm::Envelope boxMM, double scale);
 
         virtual double initVerticalLines(te::gm::Envelope geoBox);
 

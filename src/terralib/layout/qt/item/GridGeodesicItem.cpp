@@ -100,6 +100,8 @@ void te::layout::GridGeodesicItem::drawGrid( QPainter* painter )
   if(srid <= 0)
     return;
 
+  clear();
+
   Utils* utils = Context::getInstance().getUtils();
 
   double scale = mapModel->getScale();
@@ -122,152 +124,23 @@ void te::layout::GridGeodesicItem::drawGrid( QPainter* painter )
   utils->remapToPlanar(&planarBoxGeodesic, zone);
   model->setPlanarBox(planarBoxGeodesic);
 
-  drawVerticalLines(painter, box, newBoxMM, scale);
-  drawHorizontalLines(painter, box, newBoxMM, scale);
-}
+  calculateVertical(box, newBoxMM, scale);
+  calculateHorizontal(box, newBoxMM, scale);
 
-void te::layout::GridGeodesicItem::drawVerticalLines( QPainter* painter, te::gm::Envelope geoBox, te::gm::Envelope boxMM, double scale )
-{
-  painter->save();
-
-  GridGeodesicModel* model = dynamic_cast<GridGeodesicModel*>(m_model);
-  if(!model)
+  EnumGridStyleType* gridStyle = Enums::getInstance().getEnumGridStyleType();
+  if(!gridStyle)
   {
     return;
   }
 
-  // Draw a horizontal line and the y coordinate change(vertical)
-  
-  Utils* utils = Context::getInstance().getUtils();
-
-  te::gm::Envelope planarBox = model->getPlanarBox();
-
-  WorldTransformer transf = utils->getTransformGeo(model->getPlanarBox(), boxMM);
-  transf.setMirroring(false);
-
-  int zone = utils->calculatePlanarZone(geoBox);
-
-  double y1 = initVerticalLines(geoBox);
-
-  for( ; y1 < geoBox.getUpperRightY() ; y1 += model->getLneVrtGap())
+  if(model->getGridStyle() == gridStyle->getStyleContinuous())
   {
-    if(y1 < geoBox.getLowerLeftY())
-      continue;
-
-    te::gm::Envelope env(geoBox.getLowerLeftX(), y1, geoBox.getUpperRightX(), y1);
-
-    te::gm::LinearRing* line = 0;
-    line = utils->addCoordsInX(env, y1, model->getLneVrtGap());
-
-    // Curvatura da linha: de latlong para planar;
-    // Desenhar linha: de planar para milimetro
-
-    utils->remapToPlanar(line, zone);
-    utils->convertToMillimeter(transf, line);
-
-    te::gm::Envelope* ev = const_cast<te::gm::Envelope*>(line->getMBR());
-
-    configPainter(painter);
-
-    QLineF lne(ev->getLowerLeftX(), ev->getLowerLeftY(), ev->getUpperRightX(), ev->getUpperRightY());
-    painter->drawLine(lne);
-
-    std::string text = utils->convertDecimalToDegree(y1, model->isDegreesText(), model->isMinutesText(), model->isSecondsText());
-    
-    configTextPainter(painter);
-
-    if(model->isVisibleAllTexts())
-    {
-      if(model->isLeftText())
-      {
-        drawText(QPointF(ev->getLowerLeftX() - model->getLneHrzDisplacement(), ev->getLowerLeftY()), painter, text);
-      }
-
-      if(model->isRightText())
-      {
-        drawText(QPointF(ev->getUpperRightX() + model->getLneHrzDisplacement(), ev->getUpperRightY()), painter, text);
-      }
-    }
-
-    if(line)
-    {
-      delete line;
-      line = 0;
-    }
+    drawContinuousLines(painter);
   }
-
-  painter->restore();
-}
-
-void te::layout::GridGeodesicItem::drawHorizontalLines( QPainter* painter, te::gm::Envelope geoBox, te::gm::Envelope boxMM, double scale )
-{
-  painter->save();
-
-  GridGeodesicModel* model = dynamic_cast<GridGeodesicModel*>(m_model);
-  if(!model)
+  else if(model->getGridStyle() == gridStyle->getStyleCross())
   {
-    return;
+    drawCrossLines(painter);
   }
-
-  // Draw a vertical line and the x coordinate change(horizontal)
-  
-  Utils* utils = Context::getInstance().getUtils();
-
-  te::gm::Envelope planarBox = model->getPlanarBox();
-  
-  WorldTransformer transf = utils->getTransformGeo(planarBox, boxMM);
-  transf.setMirroring(false);
-
-  int zone = utils->calculatePlanarZone(geoBox);
-
-  double x1 = initHorizontalLines(geoBox);
-
-  for( ; x1 < geoBox.getUpperRightX() ; x1 += model->getLneHrzGap())
-  {
-    if(x1 < geoBox.getLowerLeftX())
-      continue;
-
-    te::gm::Envelope env(x1, geoBox.getLowerLeftY(), x1, geoBox.getUpperRightY());
-    te::gm::LinearRing* line = 0;
-    line = utils->addCoordsInY(env, x1, model->getLneHrzGap());
-
-    // Curvatura da linha: de latlong para planar;
-    // Desenhar linha: de planar para milimetro
-    utils->remapToPlanar(line, zone);
-    utils->convertToMillimeter(transf, line);
-    
-    te::gm::Envelope* ev = const_cast<te::gm::Envelope*>(line->getMBR());
-
-    configPainter(painter);
-
-    QLineF lne(ev->getLowerLeftX(), ev->getLowerLeftY(), ev->getUpperRightX(), ev->getUpperRightY());
-    painter->drawLine(lne);
-
-    std::string text = utils->convertDecimalToDegree(x1, model->isDegreesText(), model->isMinutesText(), model->isSecondsText());
-    
-    configTextPainter(painter);
-
-    if(model->isVisibleAllTexts())
-    {
-      if(model->isBottomText())
-      {
-        drawText(QPointF(ev->getLowerLeftX(), ev->getLowerLeftX() - model->getLneVrtDisplacement()), painter, text);
-      }
-
-      if(model->isTopText())
-      {
-        drawText(QPointF(ev->getUpperRightX(), ev->getUpperRightY() + model->getLneVrtDisplacement()), painter, text);
-      }
-    }
-
-    if(line)
-    {
-      delete line;
-      line = 0;
-    }
-  }
-
-  painter->restore();
 }
 
 double te::layout::GridGeodesicItem::initVerticalLines( te::gm::Envelope geoBox )
@@ -322,6 +195,123 @@ double te::layout::GridGeodesicItem::initHorizontalLines( te::gm::Envelope geoBo
     }
   }
   return xInit;
+}
+
+void te::layout::GridGeodesicItem::calculateVertical( te::gm::Envelope geoBox, te::gm::Envelope boxMM, double scale )
+{
+  GridGeodesicModel* model = dynamic_cast<GridGeodesicModel*>(m_model);
+  if(!model)
+  {
+    return;
+  }
+
+  // Draw a horizontal line and the y coordinate change(vertical)
+
+  Utils* utils = Context::getInstance().getUtils();
+
+  te::gm::Envelope planarBox = model->getPlanarBox();
+
+  WorldTransformer transf = utils->getTransformGeo(model->getPlanarBox(), boxMM);
+  transf.setMirroring(false);
+
+  int zone = utils->calculatePlanarZone(geoBox);
+
+  double y1 = initVerticalLines(geoBox);
+
+  for( ; y1 < geoBox.getUpperRightY() ; y1 += model->getLneVrtGap())
+  {
+    if(y1 < geoBox.getLowerLeftY())
+      continue;
+
+    te::gm::Envelope env(geoBox.getLowerLeftX(), y1, geoBox.getUpperRightX(), y1);
+
+    te::gm::LinearRing* line = 0;
+    line = utils->addCoordsInX(env, y1, model->getLneVrtGap());
+    
+    // Line curvature: of latlong to planar;
+    // Draw line: planar to mm
+    utils->remapToPlanar(line, zone);
+    utils->convertToMillimeter(transf, line);
+
+    te::gm::Envelope* ev = const_cast<te::gm::Envelope*>(line->getMBR());
+
+    QLineF lne(ev->getLowerLeftX(), ev->getLowerLeftY(), ev->getUpperRightX(), ev->getUpperRightY());
+    m_horizontalLines.push_back(lne);
+
+    std::string text = utils->convertDecimalToDegree(y1, model->isDegreesText(), model->isMinutesText(), model->isSecondsText());
+
+    // text left
+    QPointF ptLeft(ev->getLowerLeftX() - model->getLneHrzDisplacement(), ev->getLowerLeftY());
+    m_leftTexts[text] =  ptLeft;
+
+    // text right
+    QPointF ptRight(ev->getUpperRightX() + model->getLneHrzDisplacement(), ev->getUpperRightY());
+    m_rightTexts[text] = ptRight;
+
+    if(line)
+    {
+      delete line;
+      line = 0;
+    }
+  }
+}
+
+void te::layout::GridGeodesicItem::calculateHorizontal( te::gm::Envelope geoBox, te::gm::Envelope boxMM, double scale )
+{
+  GridGeodesicModel* model = dynamic_cast<GridGeodesicModel*>(m_model);
+  if(!model)
+  {
+    return;
+  }
+
+  // Draw a vertical line and the x coordinate change(horizontal)
+
+  Utils* utils = Context::getInstance().getUtils();
+
+  te::gm::Envelope planarBox = model->getPlanarBox();
+
+  WorldTransformer transf = utils->getTransformGeo(planarBox, boxMM);
+  transf.setMirroring(false);
+
+  int zone = utils->calculatePlanarZone(geoBox);
+
+  double x1 = initHorizontalLines(geoBox);
+
+  for( ; x1 < geoBox.getUpperRightX() ; x1 += model->getLneHrzGap())
+  {
+    if(x1 < geoBox.getLowerLeftX())
+      continue;
+
+    te::gm::Envelope env(x1, geoBox.getLowerLeftY(), x1, geoBox.getUpperRightY());
+    te::gm::LinearRing* line = 0;
+    line = utils->addCoordsInY(env, x1, model->getLneHrzGap());
+
+    // Line curvature: of latlong to planar;
+    // Draw line: planar to mm
+    utils->remapToPlanar(line, zone);
+    utils->convertToMillimeter(transf, line);
+
+    te::gm::Envelope* ev = const_cast<te::gm::Envelope*>(line->getMBR());
+
+    QLineF lne(ev->getLowerLeftX(), ev->getLowerLeftY(), ev->getUpperRightX(), ev->getUpperRightY());
+    m_verticalLines.push_back(lne);
+
+    std::string text = utils->convertDecimalToDegree(x1, model->isDegreesText(), model->isMinutesText(), model->isSecondsText());
+
+    // text bottom
+    QPointF ptBottom(ev->getLowerLeftX(), ev->getLowerLeftX() - model->getLneVrtDisplacement());
+    m_bottomTexts[text] = ptBottom;
+
+    // text top
+    QPointF ptTop(ev->getUpperRightX(), ev->getUpperRightY() + model->getLneVrtDisplacement());
+    m_topTexts[text] = ptTop;
+
+    if(line)
+    {
+      delete line;
+      line = 0;
+    }
+  }
 }
 
 
