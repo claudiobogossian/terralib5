@@ -32,6 +32,7 @@ te::qt::plugins::sa::KernelMapAction::KernelMapAction(QMenu *menu) :
   AbstractAction(menu)
 {
   createAction(tr("Kernel Map...").toStdString(), "sa-kernelmap-icon");
+  m_action->setObjectName("Processing.Spatial Analysis.Kernel Map");
 }
 
 te::qt::plugins::sa::KernelMapAction::~KernelMapAction()

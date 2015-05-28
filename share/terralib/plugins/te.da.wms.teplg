@@ -3,13 +3,13 @@
             xmlns:xsd="http://www.w3.org/2001/XMLSchema-instance"
             xmlns="http://www.terralib.org/schemas/plugin"
             xsd:schemaLocation="http://www.terralib.org/schemas/plugin ../schemas/terralib/plugin/plugin_info.xsd"
-            version="5.0.0-alpha.1"
+            version="5.0.0"
             release="2013-01-01"
             engine="C++">
   <Name>te.da.wms</Name>
   <DisplayName>WMS Data Source Driver</DisplayName>
   <Description>This plugin enables TerraLib to access vector data through the WMS servers</Description>
-  <TerraLibVersion>5.0.0-alpha.1</TerraLibVersion>
+  <TerraLibVersion>5.0.0-rc</TerraLibVersion>
   <License xlink:href="http://www.gnu.org/licenses/lgpl-3.0-standalone.html">GNU Lesser General Public License v 3.0</License>
   <Category>Data Access</Category>
   <Site xlink:href="http://www.dpi.inpe.br/terralib5/wiki/doku.php?id=wiki:designimplementation:dataaccess:wms"></Site>

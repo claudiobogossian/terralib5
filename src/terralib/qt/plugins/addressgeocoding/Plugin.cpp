@@ -32,6 +32,7 @@
 #include "../../af/ApplicationController.h"
 #include "../../af/events/LayerEvents.h"
 #include "../../af/Project.h"
+#include "../../af/Utils.h"
 #include "Plugin.h"
 
 #if defined(TERRALIB_APACHE_LOG4CXX_ENABLED) && defined(TERRALIB_LOGGER_ENABLED)
@@ -78,6 +79,7 @@ void te::qt::plugins::addressgeocoding::Plugin::startup()
   m_action = new QAction(pluginMenu);
   m_action->setText("Address Geocoding...");
   m_action->setIcon(QIcon::fromTheme("addressgeocoding-icon"));
+  m_action->setObjectName("Processing.Address Geocoding");
 
   connect(m_action, SIGNAL(triggered(bool)), this, SLOT(onActionActivated(bool)));
 
@@ -106,6 +108,8 @@ void te::qt::plugins::addressgeocoding::Plugin::startup()
   logger->setAdditivity(false);
   logger->addAppender(fileAppender);
 #endif
+
+  te::qt::af::AddActionToCustomToolbars(m_action);
 
   m_initialized = true;
 }

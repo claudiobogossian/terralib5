@@ -32,6 +32,7 @@ te::qt::plugins::sa::BayesLocalAction::BayesLocalAction(QMenu *menu) :
   AbstractAction(menu)
 {
   createAction(tr("Local Empirical Bayes...").toStdString(), "sa-bayeslocal-icon");
+  m_action->setObjectName("Processing.Spatial Analysis.Local Empirical Bayes");
 }
 
 te::qt::plugins::sa::BayesLocalAction::~BayesLocalAction()

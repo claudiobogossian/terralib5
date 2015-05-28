@@ -43,10 +43,12 @@ void LoadTimeSeriesDataSetFromPGIS(boost::ptr_vector<te::st::TimeSeries>& output
 
     te::st::TimeSeriesDataSetInfo tsInfo(dsInfo, "ordered_cells_view", "time", "value", "spatial_data", "id_cell", "");
 
-    std::auto_ptr<te::st::TimeSeriesDataSet> timeSeriesDS = te::st::STDataLoader::getDataSet(tsInfo);
+    te::gm::Envelope e(622000, 9291000, 625000, 9294000); //Creating a spatial restriction to load a small number of TimeSeries
+    std::auto_ptr<te::st::TimeSeriesDataSet> timeSeriesDS = te::st::STDataLoader::getDataSet(tsInfo, e);
+
     timeSeriesDS->moveBeforeFirst();
     timeSeriesDS->getTimeSeriesSet(&te::st::NearestValueAtTimeInterp::getInstance(), tsInfo.getObservationDataSetInfo().getIdPropName(), series);
-    for(size_t i = 0; i < 100; i++)
+    for(size_t i = 0; i < series.size(); i++)
     {
       output.push_back(series[i]);
     }

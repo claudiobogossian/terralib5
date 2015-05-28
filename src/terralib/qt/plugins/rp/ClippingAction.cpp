@@ -39,6 +39,7 @@
 te::qt::plugins::rp::ClippingAction::ClippingAction(QMenu* menu, QMenu* popupMenu):te::qt::plugins::rp::AbstractAction(menu, popupMenu)
 {
   createAction(tr("Clipping...").toStdString(), "edit-cut");
+  m_action->setObjectName("Processing.Raster Processing.Clipping");
 
   createPopUpAction(tr("Clipping...").toStdString(), "clipping");
 }

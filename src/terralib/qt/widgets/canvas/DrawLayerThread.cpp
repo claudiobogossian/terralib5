@@ -105,19 +105,23 @@ void te::qt::widgets::DrawLayerThread::run()
     }
     catch(const te::da::Exception& e)
     {
-      if(e.code() != te::common::NO_CONNECTION_AVAILABLE)
+      if(e.code() == te::common::NO_CONNECTION_AVAILABLE)
+      {
+        //try again
+        //msleep(100);
+      }
+      else
       {
         m_finishedWithSuccess = false;
         m_errorMessage = QString(tr("The layer") + " %1 " + tr("could not be drawn! Details:") + " %2").arg(m_layer->getTitle().c_str()).arg(e.what());
-        break;
+        break; // finish with error
       }
-      msleep(100);
     }
     catch(const std::exception& e)
     {
       m_finishedWithSuccess = false;
       m_errorMessage = QString(tr("The layer") + " %1 " + tr("could not be drawn! Details:") + " %2").arg(m_layer->getTitle().c_str()).arg(e.what());
-      break;
+      break; // finish with error
     }
   }
 }

@@ -41,6 +41,7 @@ te::qt::plugins::vp::MultipartToSinglepartAction::MultipartToSinglepartAction(QM
   : te::qt::plugins::vp::AbstractAction(menu)
 {
   createAction(tr("Multipart To Singlepart...").toStdString(), "vp-multiparttosinglepart-icon");
+  m_action->setObjectName("Processing.Vector Processing.Multipart to Singlepart");
 }
 
 te::qt::plugins::vp::MultipartToSinglepartAction::~MultipartToSinglepartAction()

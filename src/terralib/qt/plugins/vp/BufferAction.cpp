@@ -41,6 +41,7 @@ te::qt::plugins::vp::BufferAction::BufferAction(QMenu* menu)
   : te::qt::plugins::vp::AbstractAction(menu)
 {
   createAction(tr("Buffer...").toStdString(), "vector-processing-buffer");
+  m_action->setObjectName("Processing.Vector Processing.Buffer");
 }
 
 te::qt::plugins::vp::BufferAction::~BufferAction()
