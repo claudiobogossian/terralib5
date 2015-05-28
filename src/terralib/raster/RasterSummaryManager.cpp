@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../common/STLUtils.h"
 #include "Band.h"
 #include "Raster.h"
 #include "RasterSummary.h"
@@ -32,30 +33,43 @@
 // STL
 #include <complex>
 
+std::string getConnInfoStr(const te::rst::Raster* raster);
+
 void te::rst::RasterSummaryManager::add(const Raster* raster, RasterSummary* summary)
 {
-  if (m_rasterSummaries.find(raster) != m_rasterSummaries.end())
-    m_rasterSummaries.erase(raster);
+  std::string connInfoStr = getConnInfoStr(raster);
 
-  m_rasterSummaries.insert(raster, summary);
+  if(m_rasterSummaries.find(connInfoStr) != m_rasterSummaries.end())
+    m_rasterSummaries.erase(connInfoStr);
+
+  if(!connInfoStr.empty())
+    m_rasterSummaries.insert(std::map<std::string, RasterSummary*>::value_type(connInfoStr, summary));
 }
 
 const te::rst::RasterSummary* te::rst::RasterSummaryManager::find(const Raster* raster) const
 {
-  if (m_rasterSummaries.find(raster) == m_rasterSummaries.end())
+  std::string connInfoStr = getConnInfoStr(raster);
+
+  std::map<std::string, RasterSummary*>::const_iterator it = m_rasterSummaries.find(connInfoStr);
+
+  if (it == m_rasterSummaries.end())
     return 0;
 
-  return &m_rasterSummaries.at(raster);
+  return it->second;
 }
 
 void te::rst::RasterSummaryManager::remove(const Raster* raster)
 {
-  m_rasterSummaries.erase(raster);
+  std::string connInfoStr = getConnInfoStr(raster);
+
+  m_rasterSummaries.erase(connInfoStr);
 }
 
 const te::rst::RasterSummary* te::rst::RasterSummaryManager::get(const Raster* raster, const SummaryTypes types, bool readall)
 {
-  boost::ptr_map<const Raster*, RasterSummary>::iterator it = m_rasterSummaries.find(raster);
+  std::string connInfoStr = getConnInfoStr(raster);
+
+  std::map<std::string, RasterSummary*>::const_iterator it = m_rasterSummaries.find(connInfoStr);
 
   te::rst::RasterSummary* rs = 0;
 
@@ -70,7 +84,6 @@ const te::rst::RasterSummary* te::rst::RasterSummaryManager::get(const Raster* r
   }
   else
     rs = it->second;
-    //rs = new te::rst::RasterSummary(*find(raster));
 
   for (std::size_t b = 0; b < raster->getNumberOfBands(); b++)
   {
@@ -132,9 +145,33 @@ const te::rst::RasterSummary* te::rst::RasterSummaryManager::get(const Raster* r
 
 te::rst::RasterSummaryManager::~RasterSummaryManager()
 {
+  te::common::FreeContents(m_rasterSummaries);
+
+  m_rasterSummaries.clear();
 }
 
 te::rst::RasterSummaryManager::RasterSummaryManager()
 {
+}
+
+std::string getConnInfoStr(const te::rst::Raster* raster)
+{
+  std::string connInfoStr = "";
+
+  std::map<std::string, std::string> connInfo = raster->getInfo();
+
+  std::map<std::string, std::string>::iterator it = connInfo.begin();
+
+  while(it != connInfo.end())
+  {
+    connInfoStr += it->first;
+    connInfoStr += "=";
+    connInfoStr += it->second;
+    connInfoStr += ";";
+
+    ++it;
+  }
+
+  return connInfoStr;
 }
 

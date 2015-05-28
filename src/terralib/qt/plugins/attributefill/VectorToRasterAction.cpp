@@ -40,7 +40,8 @@
 te::qt::plugins::attributefill::VectorToRasterAction::VectorToRasterAction(QMenu* menu)
   : te::qt::plugins::attributefill::AbstractAction(menu)
 {
-  createAction(tr("VectorToRaster...").toStdString(), "attributefill-vector2raster-icon");
+  createAction(tr("Vector to Raster...").toStdString(), "attributefill-vector2raster-icon");
+  m_action->setObjectName("Processing.Attribute Fill.Vector to Raster");
 }
 
 te::qt::plugins::attributefill::VectorToRasterAction::~VectorToRasterAction()

@@ -35,10 +35,10 @@ d) Make sure the current branch is "master" and merge it with the "release" bran
 e) Follow the instructions on item 4 to build all modules based on master branch.
 
 f) Make sure the application is running by installing them and running some tests
-Installer names: terraview-5.0.0-win32-msvc-2010.exe
-			     terraview-5.0.0-win64-msvc-2010.exe
-                 terraview-5.0.0-win32-macosx.exe
-
+Installer names: TerraView-5.0.0-win64.exe
+                 TerraView-5.0.0-macosx.dmg
+				 TerraView-5.0.0-unix.tar-gz
+				 			     
 g) After that generate a tag to finish the release branch.
    $ git tag -a 5.0.0             (create a tag named 5.0.0)
    $ git push --tags              (to push all tags) or
@@ -47,7 +47,7 @@ g) After that generate a tag to finish the release branch.
 h) Use the following git command to generate a zip file with the latest source code   
    $git branch -a 
    *master
-   $git archive -o terralib-5.0.0.zip HEAD  (the latest update)
+   $git archive -o terralib-5.0.0.zip  HEAD  (the latest update)
    
 i) Update the wiki documentation according to item 7.
 
@@ -77,13 +77,13 @@ i) Update the wiki documentation according to item 7.
 4. Install Packages - Test
 --------------------------
 
-4.1 Generating the Install Packages on Windows with Microsoft Visual C++ 2010
+4.1 Generating the Install Packages on Windows with Microsoft Visual C++ 2013
 -----------------------------------------------------------------------------
 
 a) Create a fresh copy of the repository into a place such as:
    C:\terralib5\codebase
 
-b) Open CMake-GUI in order to generate a build project for Microsoft Visual C++ 2010 (32-bit or 64-bit).
+b) Open CMake-GUI in order to generate a build project for Microsoft Visual C++ 2013 (64-bit).
    Then assure that the following variables are set:
      CMAKE_INSTALL_PREFIX => C:\MyInstalls\TerraLib5
      TERRALIB_TRACK_3RDPARTY_DEPENDENCIES => ON
@@ -100,11 +100,11 @@ d) Open the generated terralib.sln solution (see in the target folder C:\terrali
 
 e) Set the active solution configuration to "Release" and then "Build Solution"
 
-f) Build additional projects: terralib_qhelp and terralib_doxygen (if set).
+f) Build additional projects: terralib_qhelp and qt_translations.
 
 g) After that you can make the NSIS package by building the project named "PACKAGE".
-   According to the target platform this build will generate an executable file for the terralib installer.
-   For 32-bit build the file terralib-5.0.0-win32-msvc-2010.exe is generated in the main folder of your project (see C:\terralib5\build).
+   According to the target platform this build will generate an executable file for the Terraview/terralib installer.
+   For 64-bit the installer is called TerraView-5.0.0-win64.exe and is generated in the main folder of your project (see C:\terralib5\build).
 
 4.2 Generating a Mac OS X Bundle for Drag and Drop
 --------------------------------------------------
@@ -140,15 +140,15 @@ Note: If you are in CMake-GUI, remember to turn on only the CPACK_BINARY_DRAGNDR
 7. Wiki documentation updates
 ---------------
 ) Copy the installers to http://www.dpi.inpe.br/terralib5/download/  
-  under the controlled dir called "files<number>" (used to count the downloads)
+  under the controlled dir called "files<big-number>" (used to count the downloads)
                          
-Ex: Installer names: terraview-5.0.0-win32-msvc-2010.exe
-					 terraview-5.0.0-win64-msvc-2010.exe
-                     terraview-5.0.0-win32-macosx.exe					 
+Ex: Installer names: TerraView-5.0.0-win64.exe				
+                     TerraView-5.0.0--macosx.dmg
+					 TerraView-5.0.0-unix.tar-gz
 
 b) Copy the zip file terralib_5.0.0.zip containing the source code (generated at item 1.h )
-    to  http://www.dpi.inpe.br/terralib5/download/download/
-    under the controlled dir called "files<number>" (used to count the downloads)
+    to  http://www.dpi.inpe.br/terralib5/download/files<big-number>/
+    under the controlled dir called "files<big-number>" (used to count the downloads)
 					 
 c) Copy the doxygen files located at C:\terralib_build\terralib_doxygen\doc\html\*  to
 	to http://www.dpi.inpe.br/terralib5/codedocs_XXXX/ 

@@ -40,7 +40,8 @@
 te::qt::plugins::cellspace::CreateCellLayerAction::CreateCellLayerAction(QMenu* menu)
   : te::qt::plugins::cellspace::AbstractAction(menu)
 {
-  createAction(tr("Create Cell Layer...").toStdString(), "cellspace-vector-hint");
+  createAction(tr("Create Cell Layer...").toStdString(), "cellspace");
+  m_action->setObjectName("Processing.Cellular Spaces.Create Cell Layer");
 }
 
 te::qt::plugins::cellspace::CreateCellLayerAction::~CreateCellLayerAction()

@@ -32,6 +32,7 @@ te::qt::plugins::sa::BayesGlobalAction::BayesGlobalAction(QMenu *menu) :
   AbstractAction(menu)
 {
   createAction(tr("Global Empirical Bayes...").toStdString(), "sa-bayesglobal-icon");
+  m_action->setObjectName("Processing.Spatial Analysis.Global Empirical Bayes");
 }
 
 te::qt::plugins::sa::BayesGlobalAction::~BayesGlobalAction()

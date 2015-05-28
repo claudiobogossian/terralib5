@@ -32,6 +32,7 @@ te::qt::plugins::sa::ProximityMatrixCreatorAction::ProximityMatrixCreatorAction(
   AbstractAction(menu)
 {
   createAction(tr("Proximity Matrix Creator...").toStdString(), "sa-proxmatrixcreator-icon");
+  m_action->setObjectName("Processing.Spatial Analysis.Proximity Matrix Creator");
 }
 
 te::qt::plugins::sa::ProximityMatrixCreatorAction::~ProximityMatrixCreatorAction()

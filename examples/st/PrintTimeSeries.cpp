@@ -35,7 +35,7 @@ void PrintTimeSeries(te::st::TimeSeries* ts)
   while(it != ts->end())
   {
     std::cout << "Date and time: " <<  it.getTime()->toString() << std::endl;
-    std::cout << "Value: " <<  it.getValue()->toString()  << std::endl << std::endl;     
+    std::cout << "Value: " <<  it.getValue()->toString()  << std::endl << std::endl;
     ++it;
   }
 }
@@ -67,7 +67,7 @@ void PrintTimeSeriesInfo(te::st::TimeSeries* ts)
 
   te::gm::Geometry* gm = ts->getLocation();
   if(gm!=0)
-    std::cout << "Time series location: " << gm->toString() << std::endl;  
+    std::cout << "Time series location: " << gm->toString() << std::endl;
 }
 
 

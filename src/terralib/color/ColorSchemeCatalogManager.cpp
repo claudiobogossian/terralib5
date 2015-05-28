@@ -94,7 +94,7 @@ void te::color::ColorSchemeCatalogManager::init()
           unsigned int green = c.second.get<unsigned int>("green");
           unsigned int blue = c.second.get<unsigned int>("blue");
 
-          rgbaVec->push_back(te::color::RGBAColor(red, green, blue, 0));
+          rgbaVec->push_back(te::color::RGBAColor(red, green, blue, TE_OPAQUE));
         }
 
         cs->push_back(rgbaVec);

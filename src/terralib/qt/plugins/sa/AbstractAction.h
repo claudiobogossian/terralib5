@@ -111,6 +111,12 @@ namespace te
             */
             std::list<te::map::AbstractLayerPtr> getLayers();
 
+          public:
+            QAction* getAction()
+            {
+              return m_action;
+            }
+
           protected:
 
             QMenu* m_menu;          //!< Parent Menu.

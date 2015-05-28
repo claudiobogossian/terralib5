@@ -39,7 +39,8 @@ te::qt::plugins::rp::ContrastAction::ContrastAction(QMenu* menu, QMenu* popupMen
 {
   createAction(tr("Contrast...").toStdString(), "histogram");
 
-  createPopUpAction(tr("Contrast...").toStdString(), "histogram");
+  //createPopUpAction(tr("Contrast...").toStdString(), "histogram");
+  m_action->setObjectName("Processing.Raster Processing.Contrast");
 }
 
 te::qt::plugins::rp::ContrastAction::~ContrastAction()
