@@ -74,6 +74,8 @@ namespace te
       protected:
 
         virtual void drawRectangle(QPainter * painter);
+				virtual void drawRoundedRectangle(QPainter * painter);
+				virtual void drawSingleCornerTrimmedRectangle(QPainter * painter);
     };
   }
 }

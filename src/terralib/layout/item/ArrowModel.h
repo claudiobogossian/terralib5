@@ -37,6 +37,7 @@
 #include "../../color/RGBAColor.h"
 #include "../../maptools/Canvas.h"
 #include "../core/Config.h"
+#include "../core/enum/EnumArrowType.h"
 
 namespace te
 {
@@ -64,6 +65,29 @@ namespace te
           \brief Destructor
         */ 
         virtual ~ArrowModel();
+
+				virtual Properties* getProperties() const;
+
+				virtual void updateProperties(te::layout::Properties* properties);
+
+				virtual EnumArrowType* getEnumArrowType();
+
+				virtual EnumType* getCurrentArrowType();
+
+				virtual double getShapeSize();
+
+				virtual te::color::RGBAColor getArrowColor();
+
+				virtual void setArrowColor(te::color::RGBAColor color);
+
+		protected:
+
+			virtual Property arrowProperty() const;
+
+			EnumArrowType* m_enumArrowType;
+			EnumType*      m_currentArrowType;
+			double         m_shapeSize;
+			te::color::RGBAColor m_arrowColor;
 
     };
   }

@@ -97,7 +97,8 @@ te::layout::EnumModeType::EnumModeType() :
   m_modeCreateGridPlanar(0),
   m_modeCreateGridGeodesic(0),
   m_modeCreateNorth(0),
-  m_modeCreateMapLocation(0)
+  m_modeCreateMapLocation(0),
+	m_modeCreateStar(0)
 {
   init();
 }
@@ -442,6 +443,12 @@ te::layout::EnumModeType::~EnumModeType()
     delete m_modeCreateGridGeodesic;
     m_modeCreateGridGeodesic = 0;
   }
+
+	if(m_modeCreateStar)
+	{
+		delete m_modeCreateStar;
+		m_modeCreateStar= 0;
+	}
 }
 
 void te::layout::EnumModeType::init()
@@ -651,6 +658,9 @@ void te::layout::EnumModeType::init()
 
   m_modeCreateMapLocation = createEnum("Create Map Location", this, "Create Map Location");
   m_modeCreateMapLocation->setType(te::layout::EnumCreate);
+
+	m_modeCreateStar = createEnum("Create Star", this, "Create Star");
+	m_modeCreateStar->setType(te::layout::EnumCreate);
 }
 
 te::layout::EnumType* te::layout::EnumModeType::getModeSelectByBox() const

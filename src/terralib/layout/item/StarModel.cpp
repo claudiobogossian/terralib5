@@ -33,6 +33,8 @@
 #include "../../maptools/Canvas.h"
 #include "../core/enum/Enums.h"
 #include "../core/pattern/mvc/ItemModelObservable.h"
+#include "../core/property/Properties.h"
+#include "../core/property/Property.h"
 
 te::layout::StarModel::StarModel():
 	m_enumStarType(0),

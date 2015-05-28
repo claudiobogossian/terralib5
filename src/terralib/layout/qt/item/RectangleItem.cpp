@@ -35,6 +35,7 @@
 #include "../../../geometry/Envelope.h"
 #include "../../../common/STLUtils.h"
 #include "../../item/RectangleModel.h"
+#include "../../core/enum/EnumRectangleType.h"
 
 te::layout::RectangleItem::RectangleItem( ItemController* controller, Observable* o ) :
   ObjectItem(controller, o)
@@ -64,7 +65,25 @@ void te::layout::RectangleItem::paint( QPainter * painter, const QStyleOptionGra
 
   drawBackground(painter);
 
-  drawRectangle(painter);
+	RectangleModel* model = dynamic_cast<RectangleModel*>(m_model);
+
+	if(model)
+	{
+		EnumRectangleType* enumScale = model->getEnumRectangleType();
+
+		if(model->getCurrentRectangleType() == enumScale->getSimpleRectangleType())
+		{
+			drawRectangle(painter);
+		}
+		if(model->getCurrentRectangleType() == enumScale->getRoundedRetangleType())
+		{
+			drawRoundedRectangle(painter);
+		}
+
+		if(model->getCurrentRectangleType() == enumScale->getSingleCornerTrimmedRectangleType())
+		{
+			drawSingleCornerTrimmedRectangle(painter);
+		}
 
   drawBorder(painter);
 
@@ -74,34 +93,92 @@ void te::layout::RectangleItem::paint( QPainter * painter, const QStyleOptionGra
     drawSelection(painter);
   }
 }
+}
 
-void te::layout::RectangleItem::drawRectangle( QPainter * painter )
+	void te::layout::RectangleItem::drawRectangle( QPainter * painter )
+	{
+		RectangleModel* model = dynamic_cast<RectangleModel*>(m_model);
+		if(!model)
+		{
+			return;
+		}
+
+		painter->save();
+
+		QPainterPath rect_path;
+		rect_path.addRect(boundingRect());
+
+		QColor cpen(0,0,0);
+		QPen pn(cpen, 0, Qt::SolidLine);
+		painter->setPen(pn);
+
+		te::color::RGBAColor clrBack = model->getBackgroundColor();
+
+		QColor cbrush;
+		cbrush.setRed(clrBack.getRed());
+		cbrush.setGreen(clrBack.getGreen());
+		cbrush.setBlue(clrBack.getBlue());
+		cbrush.setAlpha(clrBack.getAlpha());
+
+		painter->setBrush(cbrush);
+		painter->drawPath(rect_path);
+
+		painter->restore();
+	}
+
+void te::layout::RectangleItem::drawRoundedRectangle(QPainter * painter)
 {
-  RectangleModel* model = dynamic_cast<RectangleModel*>(m_model);
-  if(!model)
-  {
-    return;
-  }
+	RectangleModel* model = dynamic_cast<RectangleModel*>(m_model);
+	if(!model)
+	{
+		return;
+	}
+	painter->save();
+	QColor cpen(0,0,0);
+	QPen pn(cpen, 0, Qt::SolidLine);
+	painter->setPen(pn);
+	te::color::RGBAColor clrBack = model->getBackgroundColor();
+	QColor cbrush;
+	cbrush.setRed(clrBack.getRed());
+	cbrush.setGreen(clrBack.getGreen());
+	cbrush.setBlue(clrBack.getBlue());
+	cbrush.setAlpha(clrBack.getAlpha());
 
-  painter->save();
+	QRectF roundedRect = boundingRect();
+	QPainterPath rect_path;
+	rect_path.addRoundRect(roundedRect,30,30);
+	painter->drawPath(rect_path);
+	painter->setBrush(cbrush);
+	painter->restore();
+}
 
-  QPainterPath rect_path;
-  rect_path.addRect(boundingRect());
+void te::layout::RectangleItem::drawSingleCornerTrimmedRectangle(QPainter * painter)
+{
+	RectangleModel* model = dynamic_cast<RectangleModel*>(m_model);
+	if(!model)
+	{
+		return;
+	}
+	painter->save();
+	QColor cpen(0,0,0);
+	QPen pn(cpen, 0, Qt::SolidLine);
+	painter->setPen(pn);
+	te::color::RGBAColor clrBack = model->getBackgroundColor();
+	QColor cbrush;
+	cbrush.setRed(clrBack.getRed());
+	cbrush.setGreen(clrBack.getGreen());
+	cbrush.setBlue(clrBack.getBlue());
+	cbrush.setAlpha(clrBack.getAlpha());
 
-  QColor cpen(0,0,0);
-  QPen pn(cpen, 0, Qt::SolidLine);
-  painter->setPen(pn);
+	QPointF p1 = QPointF(boundingRect().width() - boundingRect().width() / 4., boundingRect().center().y()+ boundingRect().height() / 2.);
+	QPointF p2 = QPointF(boundingRect().height()-boundingRect().topRight().y(),boundingRect().topRight().x()-boundingRect().width()/4);
+	QPointF p3 = QPointF(boundingRect().bottomRight().y(),boundingRect().top());
+	QPointF p4 = QPointF(boundingRect().bottomLeft().x(),boundingRect().top());
+	QPointF p5 = QPointF(boundingRect().bottomLeft().x(),boundingRect().bottom());
+	QPolygonF rect;
+	rect<<p1<<p2<<p3<<p4<<p5;
+	painter->drawPolygon(rect);
+	painter->setBrush(cbrush);
+	painter->restore();
 
-  te::color::RGBAColor clrBack = model->getBackgroundColor();
-
-  QColor cbrush;
-  cbrush.setRed(clrBack.getRed());
-  cbrush.setGreen(clrBack.getGreen());
-  cbrush.setBlue(clrBack.getBlue());
-  cbrush.setAlpha(clrBack.getAlpha());
-
-  painter->setBrush(cbrush);
-  painter->drawPath(rect_path);
-
-  painter->restore();
 }

@@ -72,14 +72,6 @@ namespace te
         virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
 
        protected:
-				
-        /*!
-          \brief Drawing method of a Left Arrow
-
-          \param canvas
-          \param utils
-         */
-        virtual void drawLeftArrow(QPainter * painter);
 
         /*!
           \brief Drawing method of a Right Arrow
@@ -89,6 +81,14 @@ namespace te
           \param box
          */
         virtual void drawRightArrow(QPainter * painter);
+				/*!
+          \brief Drawing method of a Double Arrow
+
+          \param canvas
+          \param utils
+          \param box
+         */
+        virtual void drawDoubleArrow(QPainter * painter);
     };
   }
 }

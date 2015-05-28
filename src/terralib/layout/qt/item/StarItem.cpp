@@ -50,53 +50,52 @@ te::layout::StarItem::~StarItem()
 
 void te::layout::StarItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
 {
-  Q_UNUSED( option );
-  Q_UNUSED( widget );
-  if ( !painter )
-  {
-    return;
-  }
+	Q_UNUSED( option );
+	Q_UNUSED( widget );
+	if ( !painter )
+	{
+		return;
+	}
 
-  if(m_resizeMode)
-  {
-    ObjectItem::paint(painter, option, widget);
-    return;
-  }
+	if(m_resizeMode)
+	{
+		ObjectItem::paint(painter, option, widget);
+		return;
+	}
 
-  StarModel* model = dynamic_cast<StarModel*>(m_model);
+	drawBackground(painter);
 
-  if(model)
-  {
-	  EnumStarType* enumScale = model->getEnumStarType();
+	StarModel* model = dynamic_cast<StarModel*>(m_model);
 
-	  if(model->getCurrentStarType() == enumScale->getStar1Type())
-	  {
-		  drawStar1(painter);
-	  }
-	  if(model->getCurrentStarType() == enumScale->getStar2Type())
-	  {
-		  drawStar2(painter);
-	  }
-	  if(model->getCurrentStarType() == enumScale->getStar3Type())
-	  {
-		  drawStar3(painter);
-	  }
+	if(model)
+	{
+		EnumStarType* enumScale = model->getEnumStarType();
 
+		if(model->getCurrentStarType() == enumScale->getStar1Type())
+		{
+			drawStar1(painter);
+		}
+		if(model->getCurrentStarType() == enumScale->getStar2Type())
+		{
+			drawStar2(painter);
+		}
+		if(model->getCurrentStarType() == enumScale->getStar3Type())
+		{
+			drawStar3(painter);
+		}
 		if(model->getCurrentStarType() == enumScale->getStar4Type())
 		{
 			drawStar4(painter);
 		}
-  }
+	}
 
-  drawBackground(painter);
+	drawBorder(painter);
 
-  drawBorder(painter);
-
-  //Draw Selection
-  if (option->state & QStyle::State_Selected)
-  {
-    drawSelection(painter);
-  }
+	//Draw Selection
+	if (option->state & QStyle::State_Selected)
+	{
+		drawSelection(painter);
+	}
 }
 
 void te::layout::StarItem::drawStar1( QPainter * painter )
