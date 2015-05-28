@@ -88,6 +88,10 @@ namespace te
          */
         virtual void	mouseMoveEvent ( QGraphicsSceneMouseEvent * event );
 
+    protected:
+
+        virtual void drawLegend(QPainter* painter);
+
     private:
 
         bool m_move;

@@ -300,28 +300,6 @@ void te::layout::ItemUtils::createTextMapAsObject()
   }
 }
 
-void te::layout::ItemUtils::createLegendChildAsObject()
-{
-  QGraphicsItem *item = m_scene->selectedItems().first();
-  if(item)
-  {
-    ItemObserver* it = dynamic_cast<ItemObserver*>(item);
-    if(it)
-    {
-      LegendItem* lit = dynamic_cast<LegendItem*>(it);
-      if(lit)
-      {
-        LegendModel* model = dynamic_cast<LegendModel*>(lit->getModel());
-        MapModel* visitable = dynamic_cast<MapModel*>(model->getVisitable());
-
-        std::map<te::gm::Point*, std::string> coord = model->getCoordChildren();
-        createLegendChildItemFromLegend(coord, visitable);
-      }
-      it->redraw();
-    }
-  }
-}
-
 void te::layout::ItemUtils::createTextItemFromObject( std::map<te::gm::Point*, std::string> map, QFont* ft )
 {
   Scene* scne = dynamic_cast<Scene*>(m_scene);

@@ -290,7 +290,7 @@ bool te::layout::ItemModelObservable::contains( const te::gm::Coord2D &coord ) c
   return false;
 }
 
-void te::layout::ItemModelObservable::updateProperties( te::layout::Properties* properties )
+void te::layout::ItemModelObservable::updateProperties( te::layout::Properties* properties, bool notify )
 {
   Properties* vectorProps = const_cast<Properties*>(properties);
 
@@ -368,6 +368,14 @@ void te::layout::ItemModelObservable::updateProperties( te::layout::Properties* 
   if(!pro_border.isNull())
   {
     m_border = pro_border.getValue().toBool();
+  }
+
+	updateChildrenProperties(properties);
+
+  if(notify)
+  {
+    ContextItem context;
+    notifyAll(context);
   }
 }
 
@@ -688,6 +696,20 @@ void te::layout::ItemModelObservable::updateChildrenProperties( Property prop )
       break;
     }
   }
+}
+
+void te::layout::ItemModelObservable::updateChildrenProperties( Properties* properties )
+{
+	std::set<ItemObserver*>::iterator it = m_children.begin();
+
+	for( ; it != m_children.end(); ++it)
+	{
+		ItemObserver* item = (*it);
+		if(!item)
+			continue;
+
+		item->getModel()->updateProperties(properties);
+	}
 }
 
 

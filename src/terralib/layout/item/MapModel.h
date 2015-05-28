@@ -42,6 +42,8 @@
 // STL
 #include <map>
 #include <string>
+#include <list>
+#include <vector>
 
 namespace te
 {
@@ -72,15 +74,15 @@ namespace te
         */ 
         virtual ~MapModel();
 
-        virtual void draw( ContextItem context );
-
         virtual te::layout::Properties* getProperties() const;
 
-        virtual void updateProperties(te::layout::Properties* properties);
+        virtual void updateProperties(te::layout::Properties* properties, bool notify = true);
 
-        virtual bool refreshLayer(te::map::AbstractLayerPtr layer);
+        virtual bool addLayer(te::map::AbstractLayerPtr layer);
 
-        virtual te::map::AbstractLayerPtr getLayer();
+        virtual bool removeLayer(te::map::AbstractLayerPtr layer);
+
+        std::list<te::map::AbstractLayerPtr> getLayers();
 
         virtual double getScale();
 
@@ -98,7 +100,11 @@ namespace te
 
         virtual double getDisplacementX();
 
+        virtual void setDisplacementX(double displacement);
+
         virtual double getDisplacementY();
+
+        virtual void setDisplacementY(double displacement);
 
         virtual void setSystematic(Systematic* systematic);
                 
@@ -118,22 +124,34 @@ namespace te
 
         virtual te::color::RGBAColor getMapBackgroundColor();
 
-        virtual std::string getNameLayer();
-
         virtual bool isLoadedLayer();
+
+        void clear();
+
+        std::vector<std::string> getLayerNames();
+
+        virtual te::gm::Envelope maxLayerExtent();
 
       protected:
 
-        te::map::AbstractLayerPtr m_layer;
-        te::gm::Envelope          m_mapBoxMM;
-        double                    m_mapDisplacementX;
-        double                    m_mapDisplacementY;
-        Systematic*               m_systematic;
-        bool                      m_fixedScale;
-        te::gm::Envelope          m_worldBox;
-        te::color::RGBAColor			m_mapbackgroundColor;
-        std::string               m_nameLayer;
-        bool                      m_loadedLayer;
+        virtual void recalculateMapBoxMM();
+
+        virtual te::layout::Property getLayerNamesProperty() const;
+
+        virtual te::layout::Property getLayersGenericVariant() const;
+
+        std::vector<std::string> findLayerNames() const;
+
+        std::list<te::map::AbstractLayerPtr> m_layers;
+        te::gm::Envelope					 m_mapBoxMM;
+        double								 m_mapDisplacementX;
+        double								 m_mapDisplacementY;
+        Systematic*							 m_systematic;
+        bool								 m_fixedScale;
+        te::gm::Envelope					 m_worldBox;
+        te::color::RGBAColor				 m_mapbackgroundColor;
+        bool								 m_loadedLayer;
+        std::vector<std::string>			 m_layerNames;
     };
   }
 }

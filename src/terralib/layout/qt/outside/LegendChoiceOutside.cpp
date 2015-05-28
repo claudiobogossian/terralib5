@@ -60,7 +60,7 @@ te::layout::LegendChoiceOutside::~LegendChoiceOutside()
 
 void te::layout::LegendChoiceOutside::onOkPushButtonClicked()
 {
-  this->accept();
+
 }
 
 void te::layout::LegendChoiceOutside::onCancelPushButtonClicked()

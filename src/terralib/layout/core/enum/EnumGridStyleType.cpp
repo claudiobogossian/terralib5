@@ -59,9 +59,9 @@ void te::layout::EnumGridStyleType::init()
 {
   m_styleNone = createEnum("None", this);
 
-  m_styleContinuous = createEnum("Continuous", this);
+  m_styleContinuous = createEnum("Continuous Lines", this);
 
-  m_styleCross = new EnumType(2, "Cross", this);
+  m_styleCross = createEnum("Cross Lines", this);
 }
 
 te::layout::EnumType* te::layout::EnumGridStyleType::getStyleNone() const

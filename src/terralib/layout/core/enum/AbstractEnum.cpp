@@ -27,7 +27,7 @@
 
 // TerraLib
 #include "AbstractEnum.h"
-
+#include "../../../common/StringUtils.h"
 
 te::layout::AbstractEnum::AbstractEnum()
 {
@@ -58,6 +58,8 @@ te::layout::EnumType* te::layout::AbstractEnum::getEnum( int enumId ) const
 te::layout::EnumType* te::layout::AbstractEnum::getEnum( std::string name ) const
 {
   EnumType* enumTp = 0;
+
+  name = te::common::Convert2UCase(name);
 
   for(std::vector<EnumType*>::const_iterator it = m_enums.begin(); it != m_enums.end(); it++)
   {

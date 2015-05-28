@@ -36,6 +36,7 @@
 // STL
 #include <map>
 #include <string>
+#include <vector>
 
 // Qt
 #include <QObject>
@@ -117,6 +118,8 @@ namespace te
 
         virtual void updateOutside(Property prop);
 
+        virtual void updateOutside(std::vector<Property> props);
+
         virtual void onShowGridSettingsDlg();
 
         virtual void onShowImageDlg();
@@ -134,6 +137,8 @@ namespace te
       signals:
 
         void changeDlgProperty(Property property);
+
+        void changeDlgProperty(std::vector<Property> props);
 
       protected:
 

@@ -46,7 +46,7 @@ namespace te
 
         virtual ~TextGridSettingsModel();
 
-        virtual void updateProperties(te::layout::Properties* properties);
+        virtual void updateProperties(te::layout::Properties* properties, bool notify = true);
 
         virtual Properties* getProperties() const;
 

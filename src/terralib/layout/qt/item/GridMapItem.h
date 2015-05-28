@@ -33,6 +33,10 @@
 // TerraLib
 #include "ObjectItem.h"
 #include "../../core/Config.h"
+#include "../../../color/RGBAColor.h"
+
+// Qt
+#include <QColor>
 
 namespace te
 {
@@ -82,6 +86,8 @@ namespace te
                         
         virtual void drawGrid(QPainter* painter);
 
+        virtual void drawDefaultGrid(QPainter* painter);
+
         virtual void drawVerticalLines();
 
         virtual void drawHorizontalLines();
@@ -89,6 +95,12 @@ namespace te
         virtual void drawText( QPointF point, QPainter* painter, std::string text, bool displacementLeft = false, bool displacementRight = false);
 
         virtual void recalculateBoundingRect();
+
+        virtual bool hasLayer();
+
+        virtual void configPainter(QPainter* painter);
+
+        virtual void configTextPainter(QPainter* painter);
 
         double m_maxWidthTextMM;
         double m_maxHeigthTextMM;

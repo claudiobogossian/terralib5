@@ -63,13 +63,6 @@ namespace te
           \brief Destructor
         */ 
         virtual ~MapController();
-        
-        /*!
-          \brief 
-
-          \param layer
-         */
-        virtual bool refreshLayer(te::map::AbstractLayerPtr layer);
     };
   }
 }

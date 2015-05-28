@@ -143,7 +143,7 @@ te::layout::Properties* te::layout::LineModel::getProperties() const
   return m_properties;
 }
 
-void te::layout::LineModel::updateProperties( te::layout::Properties* properties )
+void te::layout::LineModel::updateProperties( te::layout::Properties* properties, bool notify )
 {
   ItemModelObservable::updateProperties(properties);
 
@@ -153,6 +153,12 @@ void te::layout::LineModel::updateProperties( te::layout::Properties* properties
   if(!pro_linecolor.isNull())
   {
     m_lineColor = pro_linecolor.getValue().toColor();
+  }
+
+  if(notify)
+  {
+    ContextItem context;
+    notifyAll(context);
   }
 }
 

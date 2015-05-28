@@ -93,6 +93,7 @@ void te::layout::Variant::convertValue( const void* valueCopy )
   bool* bValue = 0;
   te::color::RGBAColor* colorValue = 0;
   Font* fontValue = 0;
+  GenericVariant* generic = 0;
 
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
 
@@ -190,6 +191,17 @@ void te::layout::Variant::convertValue( const void* valueCopy )
         m_fontValue = *fontValue;
         m_complex = true;
       }
+   }
+   else if(m_type == dataType->getDataTypeGenericVariant())
+   {
+     // Cast it back to a string pointer.
+     generic = static_cast<GenericVariant*>(value);
+     if(generic)
+     {
+       null = false;
+       m_generic = *generic;
+       m_complex = true;
+     }
    }
    else // Any remaining data will be by default "std::string"  
    {
@@ -293,6 +305,10 @@ void te::layout::Variant::fromPtree( boost::property_tree::ptree tree, EnumType*
       m_complex = true;
       null = false;
     }
+    else if(type == dataType->getDataTypeGenericVariant())
+    {
+      m_generic.fromPtree(tree);
+    }
     else // Any remaining data will be by default "std::string"  
     {
       m_sValue = tree.data();
@@ -363,6 +379,7 @@ void te::layout::Variant::clear()
   m_bValue = false;
   m_type = Enums::getInstance().getEnumDataType()->getDataTypeNone();
   m_null = true;
+  m_generic.clear();
 }
 
 std::string te::layout::Variant::convertToString()
@@ -532,6 +549,11 @@ bool te::layout::Variant::toBool( std::string str )
   {
     return false;
   }
+}
+
+te::layout::GenericVariant te::layout::Variant::toGenericVariant()
+{
+  return m_generic;
 }
 
 

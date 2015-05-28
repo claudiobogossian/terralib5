@@ -47,18 +47,6 @@ te::layout::MapController::~MapController()
 	
 }
 
-bool te::layout::MapController::refreshLayer( te::map::AbstractLayerPtr layer )
-{
-  if(!m_model)
-    return false;
 
-  ItemModelObservable* model = dynamic_cast<ItemModelObservable*>(m_model);
-  if(!model)
-    return false;
 
-  MapModel* mpModel = dynamic_cast<MapModel*>(model);
-  if(!mpModel)
-    return false;
 
-  return mpModel->refreshLayer(layer);
-}

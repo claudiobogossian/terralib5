@@ -35,6 +35,7 @@
 #include "../../core/property/PlanarGridSettingsConfigProperties.h"
 #include "../../core/property/GeodesicGridSettingsConfigProperties.h"
 #include "../../core/enum/Enums.h"
+#include "../../outside/GridSettingsModel.h"
 
 // STL
 #include <string>
@@ -251,6 +252,24 @@ te::color::RGBAColor te::layout::GridSettingsOutside::configColor( QWidget* widg
 
 void te::layout::GridSettingsOutside::load()
 {
+  GridSettingsModel* model = dynamic_cast<GridSettingsModel*>(m_model);
+  if(!model)
+    return;
+
+  if(!model->containsGrid(m_planarType))
+  {
+    m_ui->tabType->setTabEnabled(0, false);
+  }
+  
+  if(!model->containsGrid(m_geodesicType))
+  {
+    m_ui->tabType->setTabEnabled(1, false);
+  }
+  else
+  {
+    m_ui->tbwSettings->setTabEnabled(2, false);
+  }
+
   /* Grid */
   
   initCombo(m_ui->cmbUnit, m_planarGridSettings->getUnit(), m_planarType);
@@ -1538,10 +1557,22 @@ void te::layout::GridSettingsOutside::initCombo( QWidget* widget, std::string na
   {
     variant.setValue(QString(prop.getValue().toString().c_str()));
   }
+
+  //When the value is not a QString
+  QString value = variant.toString();
+  variant.setValue(value);
   
   index = combo->findData(variant);
-  if ( index != -1 ) 
+  if ( index == -1 ) 
   { 
+    index = combo->findText(value);
+    if(index != -1)
+    {
+      combo->setCurrentIndex(index);
+    }
+  }
+  else
+  {
     combo->setCurrentIndex(index);
   }
 }

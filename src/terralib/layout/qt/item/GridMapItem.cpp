@@ -73,7 +73,18 @@ void te::layout::GridMapItem::paint( QPainter * painter, const QStyleOptionGraph
   
   drawBackground(painter);
   
-  drawGrid(painter);
+  GridMapModel* model = dynamic_cast<GridMapModel*>(m_model);
+  if(model)
+  {
+    if(model->isVisible() && parentItem())
+    {
+      drawGrid(painter);
+    }
+    else
+    {
+      drawDefaultGrid(painter);
+    }
+  }
 
   //Draw Selection
   if (option->state & QStyle::State_Selected)
@@ -203,6 +214,162 @@ void te::layout::GridMapItem::drawVerticalLines()
 void te::layout::GridMapItem::drawHorizontalLines()
 {
 
+}
+
+bool te::layout::GridMapItem::hasLayer()
+{
+  bool result = false;
+
+  MapItem* item = dynamic_cast<MapItem*>(parentItem());
+  if(!item)
+  {
+    return result;    
+  }
+
+  MapModel* mapModel = dynamic_cast<MapModel*>(item->getModel());
+  if(!mapModel)
+  {
+    return result;    
+  }
+
+  if(!mapModel->isLoadedLayer())
+  {
+    return result;
+  }
+
+  return true;
+}
+
+void te::layout::GridMapItem::configPainter( QPainter* painter )
+{
+  GridMapModel* model = dynamic_cast<GridMapModel*>(m_model);
+  if(!model)
+  {
+    return;
+  }
+
+  QPen pen;
+
+  EnumLineStyleType* lineStyle = Enums::getInstance().getEnumLineStyleType();
+  if(model->getLineStyle() == lineStyle->getStyleSolid())
+  {
+    pen.setStyle(Qt::SolidLine);
+  }
+  else if(model->getLineStyle() == lineStyle->getStyleDot())
+  {
+    pen.setStyle(Qt::DotLine);
+  }
+  else if(model->getLineStyle() == lineStyle->getStyleDash())
+  {
+    pen.setStyle(Qt::DashLine);
+  }
+  else if(model->getLineStyle() == lineStyle->getStyleDashDot())
+  {
+    pen.setStyle(Qt::DashDotLine);
+  }
+  else if(model->getLineStyle() == lineStyle->getStyleDashDotDot())
+  {
+    pen.setStyle(Qt::DashDotDotLine);
+  }
+
+  te::color::RGBAColor lineColor = model->getLineColor();
+  QColor clrLine = rgbaToQColor(lineColor);
+  pen.setColor(clrLine);
+
+  double lineWidth = model->getLineWidth();
+  pen.setWidth(0);
+
+  painter->setPen(pen);  
+}
+
+void te::layout::GridMapItem::configTextPainter( QPainter* painter )
+{
+  GridMapModel* model = dynamic_cast<GridMapModel*>(m_model);
+  if(!model)
+  {
+    return;
+  }
+
+  QPen pen;
+
+  int pointTextSize = model->getTextPointSize();
+  std::string family = model->getFontFamily();
+
+  QFont ft(family.c_str(), pointTextSize);
+  te::color::RGBAColor textColor = model->getTextColor();
+  
+  painter->setFont(ft);
+
+  QColor clrText = rgbaToQColor(textColor);
+  pen.setColor(clrText);
+
+  painter->setPen(pen);
+}
+
+void te::layout::GridMapItem::drawDefaultGrid( QPainter* painter )
+{
+  if(parentItem())
+  {
+    return;
+  }
+
+  GridMapModel* model = dynamic_cast<GridMapModel*>(m_model);
+  if(!model)
+  {
+    return;
+  }
+
+  painter->save();
+
+  QRectF parentBound = boundingRect();
+  
+  QPainterPath gridMapPath;
+  gridMapPath.setFillRule(Qt::WindingFill);
+
+  int heightRect = (int)parentBound.height();
+  int widgetRect = (int)parentBound.width();
+    
+  QFont ft(model->getFontFamily().c_str(), model->getTextPointSize());
+  painter->setFont(ft);
+
+  // PostScript to mm
+  m_maxHeigthTextMM = m_onePointMM * ft.pointSize();
+
+  QString text = "GRID";
+
+  for (int i = 0; i <= heightRect; i+=10)
+  {
+    QLineF lineOne = QLineF(parentBound.topLeft().x(), parentBound.topLeft().y() + i, parentBound.topRight().x(), parentBound.topRight().y() + i);
+
+    configTextPainter(painter);
+
+    QPointF pointInit(parentBound.topLeft().x(), parentBound.topLeft().y() + i - (m_maxHeigthTextMM/2)); //left
+    drawText(pointInit, painter, text.toStdString(), true);
+    QPointF pointFinal(parentBound.topRight().x(), parentBound.topRight().y() + i  - (m_maxHeigthTextMM/2)); //right
+    drawText(pointFinal, painter, text.toStdString());
+
+    configPainter(painter);
+
+    painter->drawLine(lineOne);
+
+    for (int j = 0; j <= widgetRect; j+=10)
+    {
+      QLineF lineTwo = QLineF(parentBound.topLeft().x() + j, parentBound.topLeft().y(), parentBound.bottomLeft().x() + j, parentBound.bottomLeft().y());
+
+      configTextPainter(painter);
+
+      QPointF pointInit(parentBound.topLeft().x() + j + (m_maxWidthTextMM/2), boundingRect().topLeft().y() + (m_maxHeigthTextMM)); //lower
+      drawText(pointInit, painter, text.toStdString(), true);
+      QPointF pointFinal(parentBound.bottomLeft().x() + j  - (m_maxWidthTextMM/2), parentBound.bottomLeft().y()); //upper
+      drawText(pointFinal, painter, text.toStdString());
+
+      configPainter(painter);
+
+      painter->drawLine(lineTwo);
+    }    
+  }
+
+  painter->restore();
 }
 
 

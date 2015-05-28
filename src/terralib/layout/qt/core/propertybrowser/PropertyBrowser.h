@@ -33,6 +33,9 @@
 #include "../../../core/property/Property.h"
 #include "../../../core/Config.h"
 
+//STL
+#include <vector>
+
 // Qt
 #include <QObject>
 
@@ -101,19 +104,23 @@ namespace te
 
         virtual bool addSubProperty(Property prop, Property subProp);
                     
-      private slots:
+      protected slots:
 
         void propertyEditorValueChanged(QtProperty *property, const QVariant &value);
 
         void onChangeFilter(const QString& filter);
 
         virtual void onChangeDlgProperty(Property property);
+
+        virtual void onChangeDlgProperty(std::vector<Property> props);
         
       signals:
 
         void changePropertyValue(QtProperty *property, QList<QtBrowserItem*> items);
 
         void changePropertyValue(Property property);
+
+        void changePropertyValue(std::vector<Property> props);
 
       protected:
       

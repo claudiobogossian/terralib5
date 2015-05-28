@@ -55,7 +55,7 @@ te::layout::Properties* te::layout::LegendChoiceModel::getProperties() const
   return m_properties;
 }
 
-void te::layout::LegendChoiceModel::updateProperties( te::layout::Properties* properties )
+void te::layout::LegendChoiceModel::updateProperties( te::layout::Properties* properties, bool notify )
 {
 
 }

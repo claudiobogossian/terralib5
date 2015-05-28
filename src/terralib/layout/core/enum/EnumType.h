@@ -50,7 +50,7 @@ namespace te
       public:
 
         /*!
-         \brief Constructor
+         \brief Constructor. Name parameter will be uppercase.
 
          \param id numeric value assigned
          \param name  
@@ -77,7 +77,7 @@ namespace te
         std::string getName();
 
         /*!
-          \brief Change name
+          \brief Change name. Name parameter will be uppercase.
 		  
 		      \return new name 		  
         */

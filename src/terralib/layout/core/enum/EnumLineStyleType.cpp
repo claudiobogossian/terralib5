@@ -83,17 +83,17 @@ void te::layout::EnumLineStyleType::init()
 {
   m_styleNone = createEnum("No Line", this);
 
-  m_styleSolid = createEnum("Solid Line", this);
+  m_styleSolid = createEnum("Solid", this, "Continuous");
 
-  m_styleDash = createEnum("Dash Line", this);
+  m_styleDash = createEnum("Dash", this, "Dashed");
 
-  m_styleDot = createEnum("Dot Line", this);
+  m_styleDot = createEnum("Dot", this, "Dotted");
 
-  m_styleDashDot = createEnum("Dash Dot Line", this);
+  m_styleDashDot = createEnum("Dash Dot", this, "Dash Dot");
 
-  m_styleDashDotDot = createEnum("Dash Dot Dot Line", this);
+  m_styleDashDotDot = createEnum("Dash Dot Dot", this, "Dash Dot Dot");
 
-  m_styleCustomDash = createEnum("Custom Dash Line", this);
+  m_styleCustomDash = createEnum("Custom Dash", this);
 }
 
 te::layout::EnumType* te::layout::EnumLineStyleType::getStyleNone() const
@@ -123,7 +123,7 @@ te::layout::EnumType* te::layout::EnumLineStyleType::getStyleDashDot() const
 
 te::layout::EnumType* te::layout::EnumLineStyleType::getStyleDashDotDot() const
 {
-  return m_styleDashDot;
+  return m_styleDashDotDot;
 }
 
 te::layout::EnumType* te::layout::EnumLineStyleType::getStyleCustomDash() const

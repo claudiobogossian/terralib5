@@ -30,6 +30,7 @@
 #include "../../../common/Logger.h"
 #include "../../af/ApplicationController.h"
 #include "Plugin.h"
+#include "../../af/Utils.h"
 
 #if defined(TERRALIB_APACHE_LOG4CXX_ENABLED) && defined(TERRALIB_LOGGER_ENABLED)
 //Log4cxx
@@ -117,6 +118,8 @@ void te::qt::plugins::layout::Plugin::startup()
   logger->addAppender(fileAppender);
 #endif
   m_initialized = true;
+
+  te::qt::af::AddActionToCustomToolbars(m_layout->getAction());
 }
 
 void te::qt::plugins::layout::Plugin::shutdown()

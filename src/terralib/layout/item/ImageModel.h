@@ -74,7 +74,7 @@ namespace te
         /*!
           \brief Reimplemented from ItemModelObservable
          */
-        virtual void updateProperties(te::layout::Properties* properties);   
+        virtual void updateProperties(te::layout::Properties* properties, bool notify = true);   
         
         /*!
           \brief Change file name

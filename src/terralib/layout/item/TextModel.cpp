@@ -47,6 +47,7 @@ te::layout::TextModel::TextModel() :
   m_font.setPointSize(12);
 
   m_resizable = false;
+  m_border = false;
 }
 
 te::layout::TextModel::~TextModel()
@@ -75,9 +76,9 @@ te::layout::Properties* te::layout::TextModel::getProperties() const
   return m_properties;
 }
 
-void te::layout::TextModel::updateProperties( te::layout::Properties* properties )
+void te::layout::TextModel::updateProperties( te::layout::Properties* properties, bool notify )
 {
-  ItemModelObservable::updateProperties(properties);
+  ItemModelObservable::updateProperties(properties, false);
 
   Properties* vectorProps = const_cast<Properties*>(properties);
   
@@ -93,6 +94,12 @@ void te::layout::TextModel::updateProperties( te::layout::Properties* properties
   if(!pro_font.isNull())
   {
     m_font = pro_font.getValue().toFont();
+  }
+
+  if(notify)
+  {
+    ContextItem context;
+    notifyAll(context);
   }
 }
 
