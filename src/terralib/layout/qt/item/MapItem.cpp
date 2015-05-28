@@ -177,10 +177,7 @@ void te::layout::MapItem::updateObserver( ContextItem context )
     double w = mapBox.getWidth() * zoomFactor;
     double h = mapBox.getHeight() * zoomFactor;
 
-    /* This item ignores the transformations of the scene, so comes with no zoom. 
-    His transformation matrix is the inverse scene, understanding the pixel 
-    coordinates, and its position can only be given in the scene coordinates(mm). 
-    For these reasons, it is necessary to resize it.*/
+    /* resize */
     if(w != m_mapDisplay->getWidth() 
       || h != m_mapDisplay->getHeight())
     {
@@ -296,7 +293,9 @@ void te::layout::MapItem::dropEvent( QGraphicsSceneDragDropEvent * event )
 
   getMimeData(event->mimeData());
 
-  reloadLayers();
+  reloadLayers(false);
+
+  redraw();
 }
 
 void te::layout::MapItem::dragEnterEvent( QGraphicsSceneDragDropEvent * event )
@@ -835,7 +834,7 @@ void te::layout::MapItem::drawBorder( QPainter* painter )
   painter->restore();
 }
 
-void te::layout::MapItem::reloadLayers()
+void te::layout::MapItem::reloadLayers(bool draw)
 {
   MapModel* model = dynamic_cast<MapModel*>(m_model);
   if(!model)
@@ -868,7 +867,7 @@ void te::layout::MapItem::reloadLayers()
 
   m_mapDisplay->setLayerList(layerList);
   m_mapDisplay->setSRID(al->getSRID(), false);
-  m_mapDisplay->setExtent(e, true);
+  m_mapDisplay->setExtent(e, draw);
 }
 
 bool te::layout::MapItem::hasListLayerChanged()
