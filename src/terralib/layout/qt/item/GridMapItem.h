@@ -46,6 +46,8 @@
 #include <QLineF>
 #include <QPointF>
 #include <QString>
+#include <QPainter>
+#include <QFont>
 
 namespace te
 {
@@ -130,6 +132,16 @@ namespace te
         virtual void configTextPainter(QPainter* painter);
 
         virtual void clear();
+
+        /*!
+          \brief Check if is necessary change map displacement.
+
+          \param width text width in mm
+          \param height text height in mm
+         */
+        virtual void checkMaxMapDisplacement(QFont ft, std::string text, double& width, double& height);
+
+        virtual void changeMapDisplacement(double width, double height);
 
         double                    m_maxWidthTextMM;
         double                    m_maxHeigthTextMM;

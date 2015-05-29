@@ -41,6 +41,7 @@
 #include "../../../maptools/AbstractLayer.h"
 #include "../../core/pattern/singleton/Context.h"
 #include "../../core/Utils.h"
+#include "../core/ItemUtils.h"
 
 //Qt
 #include <QStyleOptionGraphicsItem>
@@ -115,13 +116,13 @@ void te::layout::GridPlanarItem::drawGrid( QPainter* painter )
 
   calculateVertical(box, newBoxMM, scale);
   calculateHorizontal(box, newBoxMM, scale);
-
+  
   EnumGridStyleType* gridStyle = Enums::getInstance().getEnumGridStyleType();
   if(!gridStyle)
   {
     return;
   }
-
+  
   if(model->getGridStyle() == gridStyle->getStyleContinuous())
   {
     drawContinuousLines(painter);
@@ -202,6 +203,7 @@ void te::layout::GridPlanarItem::calculateVertical( te::gm::Envelope geoBox, te:
   }
 
   Utils* utils = Context::getInstance().getUtils();
+  ItemUtils* itemUtils = Context::getInstance().getItemUtils();
 
   // Draw a horizontal line and the y coordinate change(vertical)
 
@@ -212,6 +214,8 @@ void te::layout::GridPlanarItem::calculateVertical( te::gm::Envelope geoBox, te:
 
   double wtxt = 0;
   double htxt = 0;
+  
+  QFont ft(model->getFontFamily().c_str(), model->getTextPointSize());
 
   for( ; y1 < geoBox.getUpperRightY() ; y1 += model->getLneVrtGap())
   {
@@ -231,9 +235,9 @@ void te::layout::GridPlanarItem::calculateVertical( te::gm::Envelope geoBox, te:
     convert.precision(10);
     double number = y1 / (double)model->getUnit();
     convert << number;
-
-    utils->textBoundingBox(wtxt, htxt, convert.str());
     
+    itemUtils->getTextBoundary(ft, wtxt, htxt,convert.str());
+        
     // text left
     QPointF ptLeft(llx - model->getLneHrzDisplacement() - wtxt, y);
     m_leftTexts[convert.str()] = ptLeft;
@@ -258,6 +262,7 @@ void te::layout::GridPlanarItem::calculateHorizontal( te::gm::Envelope geoBox, t
   }
 
   Utils* utils = Context::getInstance().getUtils();
+  ItemUtils* itemUtils = Context::getInstance().getItemUtils();
 
   // Draw a vertical line and the x coordinate change(horizontal)
 
@@ -270,7 +275,9 @@ void te::layout::GridPlanarItem::calculateHorizontal( te::gm::Envelope geoBox, t
 
   double wtxt = 0;
   double htxt = 0;
-  ;
+  
+  QFont ft(model->getFontFamily().c_str(), model->getTextPointSize());
+
   for( ; x1 < geoBox.getUpperRightX() ; x1 += model->getLneHrzGap())
   {
     if(x1 < geoBox.getLowerLeftX())
@@ -299,7 +306,7 @@ void te::layout::GridPlanarItem::calculateHorizontal( te::gm::Envelope geoBox, t
     double number = x1 / (double)model->getUnit();
     convert << number;
 
-    utils->textBoundingBox(wtxt, htxt, convert.str());
+    itemUtils->getTextBoundary(ft, wtxt, htxt, convert.str());
 
     // text bottom
     QPointF ptBottom(x - (wtxt/2.), lly - model->getLneVrtDisplacement() - htxt);

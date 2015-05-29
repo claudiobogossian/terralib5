@@ -42,6 +42,7 @@
 #include "../../../geometry/LinearRing.h"
 #include "../../core/pattern/singleton/Context.h"
 #include "../../core/Utils.h"
+#include "../core/ItemUtils.h"
 
 //Qt
 #include <QStyleOptionGraphicsItem>
@@ -208,6 +209,7 @@ void te::layout::GridGeodesicItem::calculateVertical( te::gm::Envelope geoBox, t
   // Draw a horizontal line and the y coordinate change(vertical)
 
   Utils* utils = Context::getInstance().getUtils();
+  ItemUtils* itemUtils = Context::getInstance().getItemUtils();
 
   te::gm::Envelope planarBox = model->getPlanarBox();
 
@@ -267,6 +269,7 @@ void te::layout::GridGeodesicItem::calculateHorizontal( te::gm::Envelope geoBox,
   // Draw a vertical line and the x coordinate change(horizontal)
 
   Utils* utils = Context::getInstance().getUtils();
+  ItemUtils* itemUtils = Context::getInstance().getItemUtils();
 
   te::gm::Envelope planarBox = model->getPlanarBox();
 

@@ -38,6 +38,8 @@
 #include "../../core/WorldTransformer.h"
 #include "MapItem.h"
 #include "../../item/MapModel.h"
+#include "../../core/pattern/singleton/Context.h"
+#include "../core/ItemUtils.h"
 
 // Qt
 #include <QStyleOptionGraphicsItem>
@@ -418,6 +420,10 @@ void te::layout::GridMapItem::drawCrossLines( QPainter* painter )
     }
   }
 
+  configPainter(painter);
+  
+  drawTexts(painter);
+
   painter->restore();
 }
 
@@ -505,13 +511,23 @@ void te::layout::GridMapItem::drawBottomTexts( QPainter* painter )
 
 void te::layout::GridMapItem::drawLeftTexts( QPainter* painter )
 {
+  double width = 0;
+  double height = 0;
+
+  QFont ft = painter->font();
+
   std::map<std::string, QPointF>::iterator it = m_leftTexts.begin();
   for( ; it != m_leftTexts.end() ; ++it )
   {
     std::string txt = it->first;
     QPointF pt = it->second;   
+
+    checkMaxMapDisplacement(ft, txt, width, height);
+
     drawText(pt, painter, txt);
   }
+
+  changeMapDisplacement(width, height);
 }
 
 void te::layout::GridMapItem::drawRightTexts( QPainter* painter )
@@ -543,6 +559,70 @@ void te::layout::GridMapItem::drawHorizontalLines( QPainter* painter )
     QLineF line = (*it);
     painter->drawLine(line);
   }
+}
+
+void te::layout::GridMapItem::checkMaxMapDisplacement(QFont ft, std::string text, double& width, double& height )
+{
+  double mw = 0;
+  double mh = 0;
+
+  if(!parentItem())
+  {
+    return;
+  }
+
+  MapModel* model = dynamic_cast<MapModel*>(parentItem());
+  if(!model)
+  {
+    return;
+  }
+
+  ItemUtils* itemUtils = Context::getInstance().getItemUtils();
+
+  itemUtils->getTextBoundary(ft, width, height, text);
+
+  mw = model->getDisplacementX();
+  mh = model->getDisplacementY();
+
+  if(mw > width)
+  {
+    width = mw;
+  }
+
+  if(mh > height)
+  {
+    height = mh;
+  } 
+}
+
+void te::layout::GridMapItem::changeMapDisplacement( double width, double height )
+{
+  double mw = 0;
+  double mh = 0;
+
+  if(!parentItem())
+  {
+    return;
+  }
+
+  MapModel* model = dynamic_cast<MapModel*>(parentItem());
+  if(!model)
+  {
+    return;
+  }
+
+  mw = model->getDisplacementX();
+  mh = model->getDisplacementY();
+
+  if(mw != width)
+  {
+    model->setDisplacementX(width);
+  }
+
+  if(mh != height)
+  {
+    model->setDisplacementY(height);
+  } 
 }
 
 
