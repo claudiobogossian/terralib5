@@ -3,7 +3,7 @@
             xmlns:xsd="http://www.w3.org/2001/XMLSchema-instance"
             xmlns="http://www.terralib.org/schemas/plugin"
             xsd:schemaLocation="http://www.terralib.org/schemas/plugin ../schemas/terralib/plugin/plugin_info.xsd"
-            version="5.0.0-rc"
+            version="5.0.0"
             release="2013-01-01"
             engine="C++">
   <Name>te.qt.layout</Name>
