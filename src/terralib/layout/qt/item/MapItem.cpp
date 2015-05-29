@@ -844,11 +844,7 @@ void te::layout::MapItem::reloadLayers(bool draw)
 
   std::list<te::map::AbstractLayerPtr> layerList = model->getLayers();
 
-  if(m_oldLayers.empty())
-  {
-    m_oldLayers = layerList;
-  }
-  else
+  if(!m_oldLayers.empty())
   {
     if(!hasListLayerChanged())
     {
@@ -868,6 +864,8 @@ void te::layout::MapItem::reloadLayers(bool draw)
   m_mapDisplay->setLayerList(layerList);
   m_mapDisplay->setSRID(al->getSRID(), false);
   m_mapDisplay->setExtent(e, draw);
+
+  m_oldLayers = layerList;
 }
 
 bool te::layout::MapItem::hasListLayerChanged()
@@ -881,6 +879,11 @@ bool te::layout::MapItem::hasListLayerChanged()
 
   std::list<te::map::AbstractLayerPtr> layerList = model->getLayers();
   std::list<te::map::AbstractLayerPtr>::const_iterator it = layerList.begin();
+
+  if(layerList.size() != m_oldLayers.size())
+  {
+    return true;
+  }
 
   for( ; it != layerList.end() ; ++it)
   {

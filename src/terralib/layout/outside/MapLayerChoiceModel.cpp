@@ -30,6 +30,10 @@
 #include "../core/property/Property.h"
 #include "../core/property/Properties.h"
 #include "../core/enum/Enums.h"
+#include "../core/property/GenericVariant.h"
+
+// STL
+#include <algorithm>
 
 te::layout::MapLayerChoiceModel::MapLayerChoiceModel() 
 {
@@ -108,6 +112,10 @@ std::list<te::map::AbstractLayerPtr> te::layout::MapLayerChoiceModel::searchLaye
 	  GenericVariant v = pp.getValue().toGenericVariant();
 
 	  std::list<te::map::AbstractLayerPtr> layerList = v.toLayerList();
+
+    layerList.sort();
+    layers.sort();
+
 	  layers.merge(layerList);
   }
 
