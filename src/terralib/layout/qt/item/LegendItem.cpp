@@ -101,6 +101,8 @@ void te::layout::LegendItem::updateObserver( ContextItem context )
 
   this->setRect(QRectF(0, 0, widthInPixels, heightInPixels));
 
+  refresh();
+
   update();
 }
 

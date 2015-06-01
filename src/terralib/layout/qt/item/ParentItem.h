@@ -287,6 +287,8 @@ namespace te
         QGraphicsItem::setPos(x, y);
       }
 
+      refresh();
+
       QGraphicsItem::update();
     }
 

@@ -35,6 +35,7 @@
 // Qt 
 #include <QVector>
 #include <QPolygonF>
+#include <QPen>
 
 class QGraphicsSceneMouseEvent;
 
@@ -65,8 +66,11 @@ namespace te
       protected:
 
         virtual void drawLine(QPainter * painter);
+        
+        virtual void searchStyle();
 
         QPolygonF   m_poly;
+        QPen        m_penStyle;
 	  };
   }
 }

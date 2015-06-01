@@ -197,6 +197,8 @@ void te::layout::MapItem::updateObserver( ContextItem context )
     calculateFrameMargin();
   }
 
+  refresh();
+
   update();
 }
 
