@@ -511,23 +511,13 @@ void te::layout::GridMapItem::drawBottomTexts( QPainter* painter )
 
 void te::layout::GridMapItem::drawLeftTexts( QPainter* painter )
 {
-  double width = 0;
-  double height = 0;
-
-  QFont ft = painter->font();
-
   std::map<std::string, QPointF>::iterator it = m_leftTexts.begin();
   for( ; it != m_leftTexts.end() ; ++it )
   {
     std::string txt = it->first;
     QPointF pt = it->second;   
-
-    checkMaxMapDisplacement(ft, txt, width, height);
-
     drawText(pt, painter, txt);
   }
-
-  changeMapDisplacement(width, height);
 }
 
 void te::layout::GridMapItem::drawRightTexts( QPainter* painter )
