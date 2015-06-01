@@ -54,6 +54,7 @@
 #include "../core/Scene.h"
 #include "../../core/pattern/proxy/AbstractProxyProject.h"
 #include "../../../qt/widgets/layer/explorer/AbstractTreeItem.h"
+#include "GridMapItem.h"
 
 // STL
 #include <vector>
@@ -963,6 +964,16 @@ bool te::layout::MapItem::checkTouchesCorner( const double& x, const double& y )
   }
 
   return result;
+}
+
+bool te::layout::MapItem::canBeChild( ItemObserver* item )
+{
+  GridMapItem* gItem = dynamic_cast<GridMapItem*>(item);
+  if(gItem)
+  {
+    return true;
+  }
+  return false;
 }
 
 

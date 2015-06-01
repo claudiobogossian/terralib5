@@ -435,23 +435,38 @@ bool te::layout::BuildGraphicsItem::addChild( QGraphicsItem* child, int x, int y
   }
 
   ItemModelObservable* model = dynamic_cast<ItemModelObservable*>(itemOb->getModel());  
-  if(model)
+  if(!model)
   {
-    if(model->isEnableChildren())
+    return result;
+  }
+
+  if(!model->isEnableChildren())
+  {
+    return result;
+  }
+
+  ItemObserver* itemChild = dynamic_cast<ItemObserver*>(child);
+  if(!itemChild)
+  {
+    return result;
+  }
+
+  if(!itemOb->canBeChild(itemChild))
+  {
+    return result;
+  }
+
+  if(child->scene() == parentItem->scene())
+  {
+    QGraphicsScene* scene = child->scene();
+    if(scene)
     {
-      if(child->scene() == parentItem->scene())
-      {
-        QGraphicsScene* scene = child->scene();
-        if(scene)
-        {
-          scene->removeItem(child);
-        }
-      }
-      //implicitly adds this graphics item to the scene of the parent.
-      child->setParentItem(parentItem);
-      result = true;
+      scene->removeItem(child);
     }
   }
+  //implicitly adds this graphics item to the scene of the parent.
+  child->setParentItem(parentItem);
+  result = true;
 
   emit addChildFinalized(parentItem, child);
 

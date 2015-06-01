@@ -171,6 +171,11 @@ namespace te
          */
         virtual void recalculateBoundingRect();
 
+        /*!
+          \brief Checks if the object, passed via parameter, can be child.
+         */
+        virtual bool canBeChild(ItemObserver* item);
+
       protected:
 
         /*!
