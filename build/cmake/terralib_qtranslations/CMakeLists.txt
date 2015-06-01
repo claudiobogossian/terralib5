@@ -29,6 +29,7 @@ MACRO(GenerateTranslation translation_dir project_name qm_files)
 
   add_custom_command(
     OUTPUT ${qm_file}
+          COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_BINARY_DIR}/translations"
 	  COMMAND ${Qt5_LUPDATE_EXECUTABLE} 
 	  ARGS -I ${translation_dir} -recursive ${translation_dir} -ts "${_ts_file_name}"
 	  COMMAND ${Qt5_LRELEASE_EXECUTABLE} 

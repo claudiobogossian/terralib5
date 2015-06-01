@@ -204,9 +204,14 @@ namespace te
 
         virtual void updateMapDisplay();
 
-        virtual void reloadLayers();
+        virtual void reloadLayers(bool draw = true);
 
         virtual bool hasListLayerChanged();
+
+        /*!
+            \brief Reimplemented from ParentItem
+         */
+        virtual bool checkTouchesCorner(const double& x, const double& y);
 
       protected:
 

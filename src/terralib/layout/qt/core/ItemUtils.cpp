@@ -486,6 +486,28 @@ QGraphicsItem* te::layout::ItemUtils::intersectionSelectionItem( int x, int y )
   return intersectionItem;
 }
 
+void te::layout::ItemUtils::getTextBoundary( QFont ft, double& w, double& h, std::string txt )
+{
+  AbstractScene* abScene = Context::getInstance().getScene();
+
+  if(!abScene)
+  {
+    return;
+  }
+
+  Scene* scene = dynamic_cast<Scene*>(abScene);
+
+  QTransform matrix = scene->sceneTransform();
+
+  QString qtx(txt.c_str());
+  QFontMetrics fm(ft);
+  QRectF rec(fm.boundingRect(qtx));
+  QRectF wrec(matrix.inverted().mapRect(rec));
+
+  w = wrec.width();
+  h = wrec.height();
+}
+
 
 
 

@@ -1711,8 +1711,15 @@ void te::qt::af::BaseApplication::onLayerFitOnMapDisplayTriggered()
 
     te::gm::Envelope env = selectedLayer->getExtent();
 
-    if( (display->getSRID() == TE_UNKNOWN_SRS && selectedLayer->getSRID() == TE_UNKNOWN_SRS) || (display->getSRID() == selectedLayer->getSRID()))
+    if ((display->getSRID() == TE_UNKNOWN_SRS && selectedLayer->getSRID() == TE_UNKNOWN_SRS) || (display->getSRID() == selectedLayer->getSRID()))
     {
+      display->setExtent(env, true);
+      return;
+    }
+
+    if (display->getSRID() == TE_UNKNOWN_SRS && selectedLayer->getSRID() != TE_UNKNOWN_SRS)
+    {
+      display->setSRID(selectedLayer->getSRID());
       display->setExtent(env, true);
       return;
     }
@@ -1724,7 +1731,7 @@ void te::qt::af::BaseApplication::onLayerFitOnMapDisplayTriggered()
       return;
     }
 
-    if(display->getSRID() != selectedLayer->getSRID())
+    if (display->getSRID() != selectedLayer->getSRID())
       env.transform(selectedLayer->getSRID(), display->getSRID());
 
     display->setExtent(env, true);
@@ -2678,7 +2685,7 @@ void te::qt::af::BaseApplication::initActions()
 void te::qt::af::BaseApplication::initMenus()
 {
 // Making menus
-  m_menubar->setObjectName(QString::fromUtf8("menubar"));
+  m_menubar->setObjectName("menubar");
   m_menubar->setGeometry(QRect(0, 0, 640, 21));
 
 // File menu

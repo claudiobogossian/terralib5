@@ -40,7 +40,8 @@
 te::qt::plugins::attributefill::VectorToVectorAction::VectorToVectorAction(QMenu* menu)
   : te::qt::plugins::attributefill::AbstractAction(menu)
 {
-  createAction(tr("VectorToVector...").toStdString(), "attributefill-vector2vector-icon");
+  createAction(tr("Vector to Vector...").toStdString(), "attributefill-vector2vector-icon");
+  m_action->setObjectName("Processing.Attribute Fill.Vector to Vector");
 }
 
 te::qt::plugins::attributefill::VectorToVectorAction::~VectorToVectorAction()

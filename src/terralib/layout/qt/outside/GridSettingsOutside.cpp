@@ -1178,7 +1178,7 @@ void te::layout::GridSettingsOutside::on_cmbCornerGeoTextSize_currentIndexChange
   {
     EnumDataType* dataType = Enums::getInstance().getEnumDataType();
     Variant variant;
-    variant.setValue(text.toInt(), dataType->getDataTypeString());
+    variant.setValue(text.toInt(), dataType->getDataTypeInt());
     Property prop = controller->updateProperty(m_geodesicGridSettings->getPointTextSizeCorner(), variant, m_geodesicType);
     emit updateProperty(prop);
   }

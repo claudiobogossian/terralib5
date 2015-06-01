@@ -46,6 +46,11 @@ te::qt::widgets::TiePointLocatorParametersWidget::~TiePointLocatorParametersWidg
 {
 }
 
+Ui::TiePointLocatorParametersWidgetForm* te::qt::widgets::TiePointLocatorParametersWidget::getWidgetForm()
+{
+  return m_ui.get();
+}
+
 void te::qt::widgets::TiePointLocatorParametersWidget::setMosaicLayout()
 {
   m_ui->m_glLabel->setVisible(false);

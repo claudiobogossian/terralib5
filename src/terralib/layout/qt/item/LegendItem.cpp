@@ -71,6 +71,9 @@ te::layout::LegendItem::LegendItem( ItemController* controller, Observable* o ) 
     | QGraphicsItem::ItemIsFocusable);
 
   m_nameClass = std::string(this->metaObject()->className());
+
+  //The text size or length that exceeds the sides will be cut
+  setFlag(QGraphicsItem::ItemClipsToShape);
 }
 
 te::layout::LegendItem::~LegendItem()
@@ -97,6 +100,8 @@ void te::layout::LegendItem::updateObserver( ContextItem context )
   double heightInPixels = utils->mm2pixel(box.getHeight());
 
   this->setRect(QRectF(0, 0, widthInPixels, heightInPixels));
+
+  refresh();
 
   update();
 }
@@ -208,7 +213,7 @@ void te::layout::LegendItem::drawLegend( QPainter* painter )
   QPointF pt(x1, y1);
   drawText(pt, painter, title);
 
-  y1 += htxtInPixels + dispBetweenTitleAndSymbolsInPixels;
+  y1 += dispBetweenTitleAndSymbolsInPixels;
 
   te::map::Grouping* grouping = layer->getGrouping();
 
@@ -295,7 +300,7 @@ void te::layout::LegendItem::drawLegend( QPainter* painter )
 
       }
 
-      y1 += htxtInPixels + dispBetweenSymbolsInPixels;
+      y1 += dispBetweenSymbolsInPixels;
     }
   }
 }

@@ -59,6 +59,8 @@ namespace te
 
           ~TiePointLocatorParametersWidget();
 
+          Ui::TiePointLocatorParametersWidgetForm* getWidgetForm();
+
         public:
 
           void setMosaicLayout();

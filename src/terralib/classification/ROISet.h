@@ -108,10 +108,10 @@ namespace te
       protected:
 
         /*! \brief Creates a dataset type that defines a roi. */
-        std::auto_ptr<te::da::DataSetType> getDataSetType();
+        std::auto_ptr<te::da::DataSetType> getDataSetType(int srid);
 
         /*! \brief Creates a dataset that with the roi set information. */
-        std::auto_ptr<te::da::DataSet> getDataSet();
+        std::auto_ptr<te::da::DataSet> getDataSet(int srid);
 
       private:
 

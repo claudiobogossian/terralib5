@@ -88,6 +88,8 @@ void te::layout::TitleItem::updateObserver( ContextItem context )
 
   refreshDocument();
 
+  refresh();
+
   update();
 }
 

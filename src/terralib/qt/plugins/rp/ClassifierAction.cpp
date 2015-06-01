@@ -38,6 +38,7 @@
 te::qt::plugins::rp::ClassifierAction::ClassifierAction(QMenu* menu, QMenu* popupMenu):te::qt::plugins::rp::AbstractAction(menu, popupMenu)
 {
   createAction(tr("Classifier...").toStdString(), "classifier");
+  m_action->setObjectName("Processing.Raster Processing.Classifier");
 }
 
 te::qt::plugins::rp::ClassifierAction::~ClassifierAction()

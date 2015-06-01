@@ -212,6 +212,10 @@ te::st::TimeSeriesDataSet::getTimeSeries(const std::string& propN, te::st::Abstr
     std::auto_ptr<te::dt::DateTime> time(ds->getDateTime(m_obsDs->getType().getBeginTimePropName()));
     std::auto_ptr<te::dt::AbstractData> value(ds->getValue(propN));
     result->add(time.release(), value.release());
+
+    //Acquiring the timeSeries identification
+    std::auto_ptr<te::dt::AbstractData> tsid(ds->getValue(propN));
+    result->setId(tsid->toString());
   }
 
   while(ds->moveNext())
@@ -239,7 +243,7 @@ void te::st::TimeSeriesDataSet::getTimeSeriesSet(  te::st::AbstractTimeSeriesInt
 
     if(seriesIds.insert(tsid->toString()).second)
     {
-      TimeSeries* ts = new TimeSeries(interp,m_id);
+      TimeSeries* ts = new TimeSeries(interp,tsid->toString());
       result.push_back(ts);
 
       //Get the time series location if there is one

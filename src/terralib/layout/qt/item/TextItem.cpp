@@ -121,6 +121,8 @@ void te::layout::TextItem::updateObserver( ContextItem context )
   std::string txt = model->getText();
   document()->setPlainText(txt.c_str());
 
+  refresh();
+
   update();
 }
 
