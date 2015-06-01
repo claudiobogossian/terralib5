@@ -71,7 +71,7 @@ namespace te
 
 				virtual Properties* getProperties() const;
 
-				virtual void updateProperties(te::layout::Properties* properties);
+				virtual void updateProperties(te::layout::Properties* properties, bool notify = true);
 
 				virtual EnumRectangleType* getEnumRectangleType();
 

@@ -72,7 +72,7 @@ te::layout::Properties* te::layout::RectangleModel::getProperties() const
 	return m_properties;
 }
 
-void te::layout::RectangleModel::updateProperties( te::layout::Properties* properties )
+void te::layout::RectangleModel::updateProperties( te::layout::Properties* properties, bool notify )
 {
 	ItemModelObservable::updateProperties(properties);
 
@@ -88,6 +88,12 @@ void te::layout::RectangleModel::updateProperties( te::layout::Properties* prope
 		{
 			m_currentRectangleType = enumType;
 		}
+	}
+
+	if(notify)
+	{
+		ContextItem context;
+		notifyAll(context);
 	}
 }
 

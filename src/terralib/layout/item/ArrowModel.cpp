@@ -73,7 +73,7 @@ te::layout::Properties* te::layout::ArrowModel::getProperties() const
 	return m_properties;
 }
 
-void te::layout::ArrowModel::updateProperties( te::layout::Properties* properties )
+void te::layout::ArrowModel::updateProperties( te::layout::Properties* properties, bool notify)
 {
 	ItemModelObservable::updateProperties(properties);
 
@@ -89,6 +89,11 @@ void te::layout::ArrowModel::updateProperties( te::layout::Properties* propertie
 		{
 			m_currentArrowType = enumType;
 		}
+	}
+	if(notify)
+	{
+		ContextItem context;
+		notifyAll(context);
 	}
 }
 

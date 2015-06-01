@@ -73,7 +73,7 @@ te::layout::Properties* te::layout::StarModel::getProperties() const
 	return m_properties;
 }
 
-void te::layout::StarModel::updateProperties( te::layout::Properties* properties )
+void te::layout::StarModel::updateProperties( te::layout::Properties* properties, bool notify)
 {
 	ItemModelObservable::updateProperties(properties);
 
@@ -89,6 +89,11 @@ void te::layout::StarModel::updateProperties( te::layout::Properties* properties
 		{
 			m_currentStarType = enumType;
 		}
+	}
+	if(notify)
+	{
+		ContextItem context;
+		notifyAll(context);
 	}
 }
 
