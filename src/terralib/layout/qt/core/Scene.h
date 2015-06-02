@@ -318,6 +318,11 @@ namespace te
         */
         virtual bool removeItemStackWithoutScene(QGraphicsItem* item);
 
+        /*!
+          \brief This function is called every time the context is updated. It will sign to all items that a change in the context had ocurred.
+        */
+        virtual void contextUpdated();
+
       public slots:
 
         /*!

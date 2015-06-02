@@ -171,11 +171,9 @@ void te::layout::MapItem::updateObserver( ContextItem context )
   MapModel* model = dynamic_cast<MapModel*>(m_model);
   if(model)
   {
-    double zoomFactor = Context::getInstance().getZoomFactor();
-
     te::gm::Envelope mapBox = utils->viewportBox(model->getMapBox());
-    double w = mapBox.getWidth() * zoomFactor;
-    double h = mapBox.getHeight() * zoomFactor;
+    double w = mapBox.getWidth();
+    double h = mapBox.getHeight();
 
     /* This item ignores the transformations of the scene, so comes with no zoom. 
     His transformation matrix is the inverse scene, understanding the pixel 
@@ -674,19 +672,6 @@ void te::layout::MapItem::updateMapDisplay()
   m_mapDisplay->setExtent(e, true);
 }
 
-void te::layout::MapItem::changeZoomFactor( double currentZoomFactor )
-{
-  QSize currentSize = m_mapDisplay->size();
-  QSize newSize = m_mapSize * currentZoomFactor;
-  if(currentSize != newSize)
-  {
-    QPointF pt = scenePos();
-    //QWidget::resize(): causes the component return to starting position
-    m_mapDisplay->setGeometry(pt.x(), pt.y(), newSize.width(), newSize.height());
-    m_changeLayer = true;
-  }
-}
-
 void te::layout::MapItem::recalculateBoundingRect()
 {
   MapModel* model = dynamic_cast<MapModel*>(m_model);
@@ -907,9 +892,28 @@ void te::layout::MapItem::redraw( bool bRefresh /*= true*/ )
   updateObserver(context);
 }
 
+void te::layout::MapItem::contextUpdated()
+{
+  Utils* utils = Context::getInstance().getUtils();
+  te::gm::Envelope box;
+  
+  MapModel* model = dynamic_cast<MapModel*>(m_model);
+  if(model)
+  {
+    box = utils->viewportBox(model->getMapBox());
+  }
+  else
+  {
+    box = utils->viewportBox(m_model->getBox());
+  }
 
+  QSizeF currentSize = this->size();
+  QSizeF newSize(box.getWidth(), box.getHeight());
+  if(currentSize != newSize)
+  {
+    QPointF pt = scenePos();
 
-
-
-
-
+	m_mapDisplay->setGeometry(pt.x(), pt.y(), newSize.width(), newSize.height());
+    m_changeLayer = true;
+  }
+}

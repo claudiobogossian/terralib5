@@ -180,10 +180,9 @@ te::gm::Envelope te::layout::Utils::viewportBoxFromMM( te::gm::Envelope box )
   te::map::WorldDeviceTransformer transf; // World Device Transformer.
 
   double zoomFactor = 1.;
-  
   if(m_applyZoom)
   {
-    //zoomFactor = Context::getInstance().getZoomFactor();
+    zoomFactor = Context::getInstance().getZoomFactor();
   }
   
   int pxwidth = mm2pixel(box.getWidth() * zoomFactor);

@@ -113,8 +113,6 @@ namespace te
          */
         virtual te::color::RGBAColor** getRGBAColorImage(int &w, int &h);
         
-        virtual void changeZoomFactor(double currentZoomFactor);
-
         /*!
           \brief Reimplemented from ParentItem
          */
@@ -124,7 +122,9 @@ namespace te
           \brief Redraws the graphic component.
         */
         virtual void redraw(bool bRefresh = true);
-                                        
+
+        virtual void contextUpdated();
+
       protected slots:
 
           void onDrawLayersFinished(const QMap<QString, QString>& errors);
