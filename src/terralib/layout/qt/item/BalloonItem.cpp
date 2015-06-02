@@ -39,7 +39,8 @@
 #include <algorithm>    // std::max and std::min
 #include <cmath>
 
-te::layout::BalloonItem::BalloonItem( ItemController* controller, Observable* o ) 
+te::layout::BalloonItem::BalloonItem( ItemController* controller, Observable* o ):
+  ObjectItem(controller, o)  
 {      
   m_nameClass = std::string(this->metaObject()->className());
 }
@@ -47,6 +48,26 @@ te::layout::BalloonItem::BalloonItem( ItemController* controller, Observable* o 
 te::layout::BalloonItem::~BalloonItem()
 {
 
+}
+
+void te::layout::BalloonItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
+{
+  Q_UNUSED( option );
+  Q_UNUSED( widget );
+  if ( !painter )
+  {
+    return;
+  }
+
+  drawBackground(painter);
+
+  drawBorder(painter);
+
+  //Draw Selection
+  if (option->state & QStyle::State_Selected)
+  {
+    drawSelection(painter);
+  }
 }
 
 
