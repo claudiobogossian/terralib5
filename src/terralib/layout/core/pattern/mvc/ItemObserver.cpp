@@ -141,4 +141,9 @@ void te::layout::ItemObserver::recalculateBoundingRect()
   //do nothing
 }
 
+bool te::layout::ItemObserver::canBeChild( ItemObserver* item )
+{
+  return false;
+}
+
 

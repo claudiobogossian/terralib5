@@ -124,6 +124,11 @@ namespace te
           \brief Redraws the graphic component.
         */
         virtual void redraw(bool bRefresh = true);
+
+        /*!
+          \brief Reimplemented from ParentItem.
+         */
+        virtual bool canBeChild(ItemObserver* item);
                                         
       protected slots:
 
