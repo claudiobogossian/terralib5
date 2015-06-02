@@ -27,18 +27,17 @@
 
 MACRO(TeInstallPlugins plugins location)
 
-  set(_files )
-  
+  set(_files)
+
   foreach(plugin ${plugins})
     get_target_property(_loc ${plugin} LOCATION)
-	list(APPEND _files ${_loc})
+    list(APPEND _files ${_loc})
   endforeach()
-  
-  install (FILES ${_files}
-	DESTINATION qtplugins/${location}
-	CONFIGURATIONS Release
-	COMPONENT runtime
-  )
+
+  install(FILES ${_files}
+           DESTINATION terraview.app/Contents/qtplugins/${location}
+           CONFIGURATIONS Release
+           COMPONENT runtime)
   
 ENDMACRO(TeInstallPlugins)
 
