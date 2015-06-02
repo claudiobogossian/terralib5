@@ -69,7 +69,7 @@
 					<section title="Buffer" ref="./plugins/vp/vp_buffer.html"/>
 					<section title="Intersection" ref="./plugins/vp/vp_intersection.html"/>
 					<section title="Geometric Operations" ref="./plugins/vp/vp_geometricOper.html"/>
-					<section title="Polygon to File" ref="./plugins/vp/vp_polygonToLine.html"/>
+					<section title="Polygon to Line" ref="./plugins/vp/vp_polygonToLine.html"/>
 				</section>
 				<section title="Raster Processing" ref="./plugins/rp/rp.html">
 					<section title="Arithmetic Operations" ref="./plugins/rp/rp_arithOp.html"/>
