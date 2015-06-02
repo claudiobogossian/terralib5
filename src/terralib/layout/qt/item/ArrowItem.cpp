@@ -36,10 +36,11 @@
 #include "../../../common/STLUtils.h"
 #include "../../item/ArrowModel.h"
 
+// STL
 #include <cmath>
-#include "geos/platform.h"
-#include "qgraphicsitem.h"
-#include "qpoint.h"
+
+// Qt
+#include <QPointF>
 
 te::layout::ArrowItem::ArrowItem( ItemController* controller, Observable* o ) :
   ObjectItem(controller, o)

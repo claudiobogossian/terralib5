@@ -37,6 +37,11 @@
 #include "../../item/RectangleModel.h"
 #include "../../core/enum/EnumRectangleType.h"
 
+// Qt
+#include <QColor>
+#include <QPen>
+#include <QRectF>
+
 te::layout::RectangleItem::RectangleItem( ItemController* controller, Observable* o ) :
   ObjectItem(controller, o)
 {  

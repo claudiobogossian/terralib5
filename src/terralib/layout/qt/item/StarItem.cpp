@@ -35,7 +35,11 @@
 #include "../../../geometry/Envelope.h"
 #include "../../../common/STLUtils.h"
 #include "../../item/StarModel.h"
-#include "geos/platform.h"
+#include "../../core/enum/EnumStarType.h"
+
+// Qt
+#include <QPolygonF>
+#include <QPointF>
 
 te::layout::StarItem::StarItem( ItemController* controller, Observable* o ) :
   ObjectItem(controller, o)
@@ -106,6 +110,8 @@ void te::layout::StarItem::drawStar1( QPainter * painter )
 		return;
 	}
 
+  double dPi = 3.14159265358979323846;
+
 	painter->save();
 
 	double halfW = boundingRect().width() / 4.;
@@ -115,7 +121,7 @@ void te::layout::StarItem::drawStar1( QPainter * painter )
 	qreal const d = w;
 	bool inner = true;
 	QPointF center;
-	for ( qreal i = 0 ; i < 2*M_PI; i += M_PI/5.0, inner=!inner ) {
+	for ( qreal i = 0 ; i < 2*dPi; i += dPi/5.0, inner=!inner ) {
 		qreal const f = inner ? c : d;
 		star << QPointF( f * std::cos(i), f * std::sin(i) );
 		if(i == 0)
@@ -139,6 +145,8 @@ void te::layout::StarItem::drawStar2(QPainter * painter)
 
 	painter->save();
 
+  double dPi = 3.14159265358979323846;
+
 	double halfW = boundingRect().width() / 4.;
 	double w = boundingRect().width() / 2.;
 	QPolygonF star;
@@ -146,7 +154,7 @@ void te::layout::StarItem::drawStar2(QPainter * painter)
 	qreal const d = w;
 	bool inner = true;
 	QPointF center;
-	for ( qreal i = 0 ; i < 2*M_PI; i += M_PI/6.0, inner=!inner ) {
+	for ( qreal i = 0 ; i < 2*dPi; i += dPi/6.0, inner=!inner ) {
 		qreal const f = inner ? c : d;
 		star << QPointF( f * std::cos(i), f * std::sin(i) );
 		if(i == 0)
@@ -170,13 +178,15 @@ void te::layout::StarItem::drawStar3(QPainter * painter)
 
 	painter->save();
 
+  double dPi = 3.14159265358979323846;
+
 	QPolygonF star;
 	double halfW = boundingRect().width() / 4.;
 	double w = boundingRect().width() / 2.;
 	qreal const c = halfW;
 	qreal const d = w;
 	bool inner = true;
-	for ( qreal i=0; i<2*M_PI; i+=M_PI/7.0, inner=!inner ) {
+	for ( qreal i=0; i<2*dPi; i+=dPi/7.0, inner=!inner ) {
 		qreal const f = inner ? c : d;
 		star << QPointF( f * cos(i), f * sin(i) );
 	}
@@ -195,13 +205,15 @@ void te::layout::StarItem::drawStar4(QPainter * painter)
 
 	painter->save();
 
+  double dPi = 3.14159265358979323846;
+
 	QPolygonF star;
 	double halfW = boundingRect().width() / 4.;
 	double w = boundingRect().width() / 2.;
 	qreal const c = halfW;
 	qreal const d = w;
 	bool inner = true;
-	for ( qreal i=0; i<2*M_PI; i+=M_PI/8.0, inner=!inner ) {
+	for ( qreal i=0; i<2*dPi; i+=dPi/8.0, inner=!inner ) {
 		qreal const f = inner ? c : d;
 		star << QPointF( f * cos(i), f * sin(i) );
 	}
@@ -209,3 +221,5 @@ void te::layout::StarItem::drawStar4(QPainter * painter)
 	painter->drawPolygon(star);
 	painter->restore();
 }
+
+
