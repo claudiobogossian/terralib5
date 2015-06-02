@@ -30,6 +30,7 @@
 #include "../../../common/Logger.h"
 #include "../../af/ApplicationController.h"
 #include "../../af/events/LayerEvents.h"
+#include "../../af/Utils.h"
 #include "RasterToVectorAction.h"
 #include "VectorToRasterAction.h"
 #include "VectorToVectorAction.h"
@@ -53,6 +54,7 @@
 // QT
 #include <QMenu>
 #include <QMenuBar>
+#include <qaction.h>
 
 te::qt::plugins::attributefill::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo)
   : te::plugin::Plugin(pluginInfo), m_attributefillMenu(0)
@@ -110,6 +112,10 @@ void te::qt::plugins::attributefill::Plugin::startup()
   logger->setAdditivity(false);
   logger->addAppender(fileAppender);
 #endif
+
+  te::qt::af::AddActionToCustomToolbars(m_rasterToVector->getAction());
+  te::qt::af::AddActionToCustomToolbars(m_vectorToRaster->getAction());
+  te::qt::af::AddActionToCustomToolbars(m_vectorToVector->getAction());
 
   m_initialized = true;
 }

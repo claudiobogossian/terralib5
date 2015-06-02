@@ -29,6 +29,7 @@
 #include "../../../common/Translator.h"
 #include "../../../common/Logger.h"
 #include "../../af/ApplicationController.h"
+#include "../../af/Utils.h"
 #include "AggregationAction.h"
 #include "GeometricOpAction.h"
 #include "BufferAction.h"
@@ -152,6 +153,14 @@ void te::qt::plugins::vp::Plugin::registerActions()
   m_polygonToLine = new te::qt::plugins::vp::PolygonToLineAction(m_vpMenu);
   //m_summarization = new te::qt::plugins::vp::SummarizationAction(m_vpMenu);
   //m_transformation = new te::qt::plugins::vp::TransformationAction(m_vpMenu);
+
+  te::qt::af::AddActionToCustomToolbars(m_aggregation->getAction());
+  te::qt::af::AddActionToCustomToolbars(m_buffer->getAction());
+  te::qt::af::AddActionToCustomToolbars(m_geometricOp->getAction());
+  te::qt::af::AddActionToCustomToolbars(m_intersection->getAction());
+  te::qt::af::AddActionToCustomToolbars(m_multipart2singlepart->getAction());
+  te::qt::af::AddActionToCustomToolbars(m_lineToPolygon->getAction());
+  te::qt::af::AddActionToCustomToolbars(m_polygonToLine->getAction());
 }
 
 void  te::qt::plugins::vp::Plugin::unRegisterActions()

@@ -662,7 +662,11 @@ void te::layout::ItemModelObservable::addChildrenProperties( te::layout::Propert
     std::vector<Property>::iterator itProp = proper.begin();
     for( ; itProp != proper.end(); ++itProp)
     {
-      properties->addProperty(*itProp);
+      Property prop = (*itProp);
+      if(properties->contains(prop))
+        continue;
+
+      properties->addProperty(prop);
     }
   }
 }

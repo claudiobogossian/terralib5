@@ -152,6 +152,14 @@ void te::layout::MapModel::updateProperties( te::layout::Properties* properties,
   {
     GenericVariant v = pro_layers.getValue().toGenericVariant();
     m_layers = v.toLayerList();
+    if(m_layers.empty())
+    {
+      m_loadedLayer = false;
+    }
+    else
+    {
+      m_loadedLayer = true;
+    }
   }
 
   Property pro_mapbackgroundcolor = vectorProps->contains("map_color");

@@ -140,3 +140,10 @@ void te::layout::ItemObserver::contextUpdated()
 {
   //do nothing
 }
+
+bool te::layout::ItemObserver::canBeChild( ItemObserver* item )
+{
+  return false;
+}
+
+

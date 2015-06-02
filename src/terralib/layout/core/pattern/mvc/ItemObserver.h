@@ -164,6 +164,11 @@ namespace te
         virtual void recalculateBoundingRect();
 
         /*!
+          \brief Checks if the object, passed via parameter, can be child.
+         */
+        virtual bool canBeChild(ItemObserver* item);
+
+        /*!
           \brief This function is called every time the context is updated. It is usually used by the item to configure its drawings due to changes in the zoom factor or in the DPI of the device.
         */
         virtual void contextUpdated();

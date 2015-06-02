@@ -48,6 +48,7 @@
 #include "TiePointLocatorParametersWidget.h"
 #include "ui_RasterNavigatorWidgetForm.h"
 #include "ui_TiePointLocatorWidgetForm.h"
+#include "ui_TiePointLocatorParametersWidgetForm.h"
 
 // Qt
 #include <QGridLayout>
@@ -57,7 +58,7 @@
 // STL
 #include <memory>
 
-#define PATTERN_SIZE 18
+#define PATTERN_SIZE 12
 
 /* TiePointData Class*/
 
@@ -127,12 +128,14 @@ te::qt::widgets::TiePointLocatorWidget::TiePointLocatorWidget(QWidget* parent, Q
   connect(m_ui->m_tiePointsTableWidget, SIGNAL(itemSelectionChanged()), this, SLOT(onTiePointsTableWidgetItemSelectionChanged()));
   connect(m_ui->m_sridPushButton, SIGNAL(clicked()), this, SLOT(onSRIDPushButtonClicked()));
 
+  connect(m_tiePointParameters->getWidgetForm()->m_geomTransfNameComboBox, SIGNAL(activated(int)), this, SLOT(onRefreshToolButtonClicked()));
+
 
 // connects
   connect(this, SIGNAL(tiePointsUpdated()), this, SLOT(onTiePointsUpdated()));
 
 //define mark selected
-  te::se::Stroke* strokeSel = te::se::CreateStroke("#000000", "2");
+  te::se::Stroke* strokeSel = te::se::CreateStroke("#000000", "1");
   te::se::Fill* fillSel = te::se::CreateFill("#0000FF", "1.0");
   m_markSelected = te::se::CreateMark("circle", strokeSel, fillSel);
 
@@ -142,8 +145,8 @@ te::qt::widgets::TiePointLocatorWidget::TiePointLocatorWidget(QWidget* parent, Q
   setSelectedTiePointMarkLegend(markSelPix);
 
 //define mark unselected
-  te::se::Stroke* strokeUnsel = te::se::CreateStroke("#000000", "2");
-  te::se::Fill* fillUnsel = te::se::CreateFill("#000000", "1.0");
+  te::se::Stroke* strokeUnsel = te::se::CreateStroke("#000000", "1");
+  te::se::Fill* fillUnsel = te::se::CreateFill("#00FF00", "1.0");
   m_markUnselected = te::se::CreateMark("cross", strokeUnsel, fillUnsel);
 
   m_rgbaMarkUnselected = te::map::MarkRendererManager::getInstance().render(m_markUnselected, PATTERN_SIZE);
@@ -152,7 +155,7 @@ te::qt::widgets::TiePointLocatorWidget::TiePointLocatorWidget(QWidget* parent, Q
   setTiePointMarkLegend(markPix);
 
 //define mark reference
-  te::se::Stroke* strokeRef = te::se::CreateStroke("#000000", "2");
+  te::se::Stroke* strokeRef = te::se::CreateStroke("#000000", "1");
   te::se::Fill* fillRef = te::se::CreateFill("#FF0000", "1.0");
   m_markRef = te::se::CreateMark("x", strokeRef, fillRef);
 
@@ -796,12 +799,14 @@ void te::qt::widgets::TiePointLocatorWidget::tiePointsTableUpdate()
     currTPError = transfPtr.get() ? transfPtr->getDirectMappingError(currTP) : 0.0;
 
     //tie point id
-    QTableWidgetItem* itemId = new QTableWidgetItem(QString::number(tPIt->first));
+    QTableWidgetItem* itemId = new QTableWidgetItem;
+    itemId->setData(Qt::EditRole, tPIt->first);
     itemId->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
     m_ui->m_tiePointsTableWidget->setItem(newrow, 0, itemId);
     
     //tie point current tie point error
-    QTableWidgetItem* itemError = new QTableWidgetItem(QString::number(currTPError));
+    QTableWidgetItem* itemError = new QTableWidgetItem;
+    itemError->setData(Qt::EditRole, currTPError);
     itemError->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
     m_ui->m_tiePointsTableWidget->setItem(newrow, 1, itemError);
 
@@ -821,22 +826,26 @@ void te::qt::widgets::TiePointLocatorWidget::tiePointsTableUpdate()
     m_ui->m_tiePointsTableWidget->setItem(newrow, 2, itemType);
 
     //ref x coord
-    QTableWidgetItem* itemRefX = new QTableWidgetItem(QString::number(currTP.first.x));
+    QTableWidgetItem* itemRefX = new QTableWidgetItem;
+    itemRefX->setData(Qt::EditRole, currTP.first.x);
     itemRefX->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
     m_ui->m_tiePointsTableWidget->setItem(newrow, 3, itemRefX);
 
     //ref y coord
-    QTableWidgetItem* itemRefY = new QTableWidgetItem(QString::number(currTP.first.y));
+    QTableWidgetItem* itemRefY = new QTableWidgetItem;
+    itemRefY->setData(Qt::EditRole, currTP.first.y);
     itemRefY->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
     m_ui->m_tiePointsTableWidget->setItem(newrow, 4, itemRefY);
 
     //adj x coord
-    QTableWidgetItem* itemAdjX = new QTableWidgetItem(QString::number(currTP.second.x));
+    QTableWidgetItem* itemAdjX = new QTableWidgetItem;
+    itemAdjX->setData(Qt::EditRole, currTP.second.x);
     itemAdjX->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
     m_ui->m_tiePointsTableWidget->setItem(newrow, 5, itemAdjX);
 
     //adj y coord
-    QTableWidgetItem* itemAdjY = new QTableWidgetItem(QString::number(currTP.second.y));
+    QTableWidgetItem* itemAdjY = new QTableWidgetItem;
+    itemAdjY->setData(Qt::EditRole, currTP.second.y);
     itemAdjY->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
     m_ui->m_tiePointsTableWidget->setItem(newrow, 6, itemAdjY);
 

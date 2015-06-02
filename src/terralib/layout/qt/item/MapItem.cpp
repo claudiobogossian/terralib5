@@ -54,6 +54,7 @@
 #include "../core/Scene.h"
 #include "../../core/pattern/proxy/AbstractProxyProject.h"
 #include "../../../qt/widgets/layer/explorer/AbstractTreeItem.h"
+#include "GridMapItem.h"
 
 // STL
 #include <vector>
@@ -175,10 +176,7 @@ void te::layout::MapItem::updateObserver( ContextItem context )
     double w = mapBox.getWidth();
     double h = mapBox.getHeight();
 
-    /* This item ignores the transformations of the scene, so comes with no zoom. 
-    His transformation matrix is the inverse scene, understanding the pixel 
-    coordinates, and its position can only be given in the scene coordinates(mm). 
-    For these reasons, it is necessary to resize it.*/
+    /* resize */
     if(w != m_mapDisplay->getWidth() 
       || h != m_mapDisplay->getHeight())
     {
@@ -197,6 +195,8 @@ void te::layout::MapItem::updateObserver( ContextItem context )
 
     calculateFrameMargin();
   }
+
+  refresh();
 
   update();
 }
@@ -294,7 +294,9 @@ void te::layout::MapItem::dropEvent( QGraphicsSceneDragDropEvent * event )
 
   getMimeData(event->mimeData());
 
-  reloadLayers();
+  reloadLayers(false);
+
+  redraw();
 }
 
 void te::layout::MapItem::dragEnterEvent( QGraphicsSceneDragDropEvent * event )
@@ -820,7 +822,7 @@ void te::layout::MapItem::drawBorder( QPainter* painter )
   painter->restore();
 }
 
-void te::layout::MapItem::reloadLayers()
+void te::layout::MapItem::reloadLayers(bool draw)
 {
   MapModel* model = dynamic_cast<MapModel*>(m_model);
   if(!model)
@@ -830,11 +832,7 @@ void te::layout::MapItem::reloadLayers()
 
   std::list<te::map::AbstractLayerPtr> layerList = model->getLayers();
 
-  if(m_oldLayers.empty())
-  {
-    m_oldLayers = layerList;
-  }
-  else
+  if(!m_oldLayers.empty())
   {
     if(!hasListLayerChanged())
     {
@@ -853,7 +851,9 @@ void te::layout::MapItem::reloadLayers()
 
   m_mapDisplay->setLayerList(layerList);
   m_mapDisplay->setSRID(al->getSRID(), false);
-  m_mapDisplay->setExtent(e, true);
+  m_mapDisplay->setExtent(e, draw);
+
+  m_oldLayers = layerList;
 }
 
 bool te::layout::MapItem::hasListLayerChanged()
@@ -867,6 +867,11 @@ bool te::layout::MapItem::hasListLayerChanged()
 
   std::list<te::map::AbstractLayerPtr> layerList = model->getLayers();
   std::list<te::map::AbstractLayerPtr>::const_iterator it = layerList.begin();
+
+  if(layerList.size() != m_oldLayers.size())
+  {
+    return true;
+  }
 
   for( ; it != layerList.end() ; ++it)
   {
@@ -890,6 +895,70 @@ void te::layout::MapItem::redraw( bool bRefresh /*= true*/ )
 
   ContextItem context;
   updateObserver(context);
+}
+
+bool te::layout::MapItem::checkTouchesCorner( const double& x, const double& y )
+{  
+  bool result = true;
+
+  MapModel* model = dynamic_cast<MapModel*>(m_model);
+  if(!model)
+  {
+    return result;
+  }
+
+  te::gm::Envelope boxMM = model->getMapBox();
+  
+  QRectF bRect(m_wMargin, m_hMargin, boxMM.getWidth() + m_wMargin, boxMM.getHeight() + m_hMargin);
+  double margin = 10.; //precision
+
+  QPointF ll = bRect.bottomLeft();
+  QPointF lr = bRect.bottomRight();
+  QPointF tl = bRect.topLeft();
+  QPointF tr = bRect.topRight();
+
+  if((x >= (ll.x() - margin) && x <= (ll.x() + margin))
+    && (y >= (ll.y() - margin) && y <= (ll.y() + margin)))
+  {
+    QGraphicsItem::setCursor(Qt::SizeFDiagCursor);
+    m_enumSides = TPLowerLeft;
+  }
+  else if((x >= (lr.x() - margin) && x <= (lr.x() + margin))
+    && (y >= (lr.y() - margin) && y <= (lr.y() + margin)))
+  {
+    QGraphicsItem::setCursor(Qt::SizeBDiagCursor);
+    m_enumSides = TPLowerRight;
+  }
+  else if((x >= (tl.x() - margin) && x <= (tl.x() + margin))
+    && (y >= (tl.y() - margin) && y <= (tl.y() + margin)))
+  {
+    QGraphicsItem::setCursor(Qt::SizeBDiagCursor);
+    m_enumSides = TPTopLeft;
+  }
+  else if((x >= (tr.x() - margin) && x <= (tr.x() + margin))
+    && (y >= (tr.y() - margin) && y <= (tr.y() + margin)))
+  {
+    QGraphicsItem::setCursor(Qt::SizeFDiagCursor);
+    m_enumSides = TPTopRight;
+  }
+  else
+  {
+    QGraphicsItem::setCursor(Qt::ArrowCursor);
+    m_enumSides = TPNoneSide;
+    result = false;
+  }
+
+  return result;
+}
+
+bool te::layout::MapItem::canBeChild( ItemObserver* item )
+{
+  GridMapItem* gItem = dynamic_cast<GridMapItem*>(item);
+  if(gItem)
+  {
+    return true;
+  }
+  return false;
 }
 
 void te::layout::MapItem::contextUpdated()

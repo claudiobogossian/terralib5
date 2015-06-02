@@ -38,6 +38,7 @@
 te::qt::plugins::rp::ColorTransformAction::ColorTransformAction(QMenu* menu, QMenu* popupMenu):te::qt::plugins::rp::AbstractAction(menu, popupMenu)
 {
   createAction(tr("Color Transform...").toStdString(), "colorTransform");
+  m_action->setObjectName("Processing.Raster Processing.Color Transform");
 }
 
 te::qt::plugins::rp::ColorTransformAction::~ColorTransformAction()

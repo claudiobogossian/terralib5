@@ -32,6 +32,7 @@ te::qt::plugins::sa::KernelRatioAction::KernelRatioAction(QMenu *menu) :
   AbstractAction(menu)
 {
   createAction(tr("Kernel Ratio...").toStdString(), "sa-kernelratio-icon");
+  m_action->setObjectName("Processing.Spatial Analysis.Kernel Ratio");
 }
 
 te::qt::plugins::sa::KernelRatioAction::~KernelRatioAction()

@@ -129,7 +129,7 @@ bool te::attributefill::VectorToRaster::run()
   for(std::size_t i = 0; i < m_selectedAttVec.size(); ++i)
   {
     te::dt::Property* prop =  m_inVectorDsType->getProperty(m_selectedAttVec[i]);
-    te::rst::BandProperty* bProp = new te::rst::BandProperty(i, prop->getType(), prop->getName());
+    te::rst::BandProperty* bProp = new te::rst::BandProperty(i, te::dt::DOUBLE_TYPE, "");
     
     if(m_setDummy == true)
       bProp->m_noDataValue = m_dummy;

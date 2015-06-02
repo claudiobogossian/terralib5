@@ -29,6 +29,7 @@
 #include "../../../common/Logger.h"
 #include "../../af/ApplicationController.h"
 #include "../../af/events/LayerEvents.h"
+#include "../../af/Utils.h"
 #include "Plugin.h"
 
 #ifdef TE_QT_PLUGIN_SA_HAVE_BAYESGLOBAL
@@ -131,44 +132,53 @@ void te::qt::plugins::sa::Plugin::registerActions()
 
 #ifdef TE_QT_PLUGIN_SA_HAVE_PROXIMITYMATRIXCREATOR
   m_proxMatrixCreator = new te::qt::plugins::sa::ProximityMatrixCreatorAction(m_saMenu);
+  te::qt::af::AddActionToCustomToolbars(m_proxMatrixCreator->getAction());
 #endif
 
 #ifdef TE_QT_PLUGIN_SA_HAVE_SPATIALSTATISTICS
   m_saMenu->addSeparator();
   m_spatialStatistics = new te::qt::plugins::sa::SpatialStatisticsAction(m_saMenu);
+  te::qt::af::AddActionToCustomToolbars(m_spatialStatistics->getAction());
 #endif
 
 #ifdef TE_QT_PLUGIN_SA_HAVE_BAYESGLOBAL
   m_saMenu->addSeparator();
   m_bayesGlobal = new te::qt::plugins::sa::BayesGlobalAction(m_saMenu);
+  te::qt::af::AddActionToCustomToolbars(m_bayesGlobal->getAction());
 #endif
 
 #ifdef TE_QT_PLUGIN_SA_HAVE_BAYESLOCAL
     m_bayesLocal = new te::qt::plugins::sa::BayesLocalAction(m_saMenu);
+    te::qt::af::AddActionToCustomToolbars(m_bayesLocal->getAction());
 #endif
 
 #ifdef TE_QT_PLUGIN_SA_HAVE_KERNELMAP
   m_saMenu->addSeparator();
   m_kernelMap = new te::qt::plugins::sa::KernelMapAction(m_saMenu);
+  te::qt::af::AddActionToCustomToolbars(m_kernelMap->getAction());
 #endif
 
 #ifdef TE_QT_PLUGIN_SA_HAVE_KERNELRATIO
   m_kernelRatio = new te::qt::plugins::sa::KernelRatioAction(m_saMenu);
+  te::qt::af::AddActionToCustomToolbars(m_kernelRatio->getAction());
 #endif
 
 #ifdef TE_QT_PLUGIN_SA_HAVE_SKATER
   m_saMenu->addSeparator();
   m_skater = new te::qt::plugins::sa::SkaterAction(m_saMenu);
+  te::qt::af::AddActionToCustomToolbars(m_skater->getAction());
 #endif
 
 #ifdef TE_QT_PLUGIN_SA_HAVE_GEOSTATISTICALMETHODS
   m_saMenu->addSeparator();
   m_geostatistics = new te::qt::plugins::sa::GeostatisticalMethodsAction(m_saMenu);
+  te::qt::af::AddActionToCustomToolbars(m_geostatistics->getAction());
 #endif
 
 #ifdef TE_QT_PLUGIN_SA_HAVE_SAMPLEPOINTSGENERATOR
   m_saMenu->addSeparator();
   m_samplePointsGenerator = new te::qt::plugins::sa::SamplePointsGeneratorAction(m_saMenu);
+  te::qt::af::AddActionToCustomToolbars(m_samplePointsGenerator->getAction());
 #endif
 
 }

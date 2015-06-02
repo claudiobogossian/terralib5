@@ -32,6 +32,9 @@
 // STL
 #include <string>
 
+// Boost
+#include <boost/thread/mutex.hpp>
+
 namespace te
 {
   namespace srs
@@ -72,6 +75,12 @@ namespace te
       static const Module& sm_module; //!< Just to make a static initialization.
       
     };
+
+    /*!
+    \brief Returns a reference to a static mutex initialized when this module is initialized.
+    \return Returns a reference to a static mutex initialized when this module is initialized.
+    */
+    TESRSEXPORT boost::mutex& getStaticMutex();
   } // end namespace srs
 }   // end namespace te
 

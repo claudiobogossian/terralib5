@@ -32,13 +32,6 @@
 #include "ObjectItem.h"
 #include "../../core/Config.h"
 
-// STL
-#include <vector>
-
-// Qt
-#include <QGraphicsSceneMouseEvent>
-#include <QPointF>
-
 namespace te
 {
   namespace layout
@@ -53,37 +46,14 @@ namespace te
 
       virtual ~BalloonItem();
 
-      virtual void paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
-
-      virtual void drawRectBalloon( QPainter * painter );
-
-      virtual void drawLineBalloon( QPainter * painter/*, QRectF rectangle*/ );
-
-      virtual double getAngle( double centerX, double centerY, double clikedX, double clikedY );
-
-    protected:
-
-      virtual void	mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
-
-      virtual void  mousePressEvent ( QGraphicsSceneMouseEvent * event );
-
-      virtual void	mouseMoveEvent ( QGraphicsSceneMouseEvent * event );
-
-      QRectF m_rectangleItem;
-
-      QRectF m_firstQuadrant;
-
-      QRectF m_secondQuadrant;
-
-      QRectF m_thirdQuadrant;
-
-      QRectF m_fourthQuadrant;
-
-      QPointF m_pointClicked;
-
-      double m_angle;
+      /*!
+        \brief Reimplemented from QGraphicsItem
+      */
+      virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
     };
   }
 }
 
 #endif
+
+

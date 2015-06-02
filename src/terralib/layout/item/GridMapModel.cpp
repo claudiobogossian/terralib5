@@ -69,7 +69,8 @@ te::layout::GridMapModel::GridMapModel() :
   m_bottomRotateText(false),
   m_leftRotateText(false),
   m_rightRotateText(false),
-  m_topRotateText(false)
+  m_topRotateText(false),
+  m_crossOffSet(4.)
 {
   init();
 }
@@ -94,8 +95,8 @@ te::layout::GridMapModel::GridMapModel() :
   m_visibleAllTexts(true),
 
   m_superscriptText(false),
-  m_lneVrtDisplacement(7),
-  m_lneHrzDisplacement(7),
+  m_lneVrtDisplacement(1),
+  m_lneHrzDisplacement(1),
   m_bottomText(true),
   m_leftText(true),
   m_rightText(true),
@@ -103,7 +104,8 @@ te::layout::GridMapModel::GridMapModel() :
   m_bottomRotateText(false),
   m_leftRotateText(false),
   m_rightRotateText(false),
-  m_topRotateText(false)
+  m_topRotateText(false),
+  m_crossOffSet(4.)
 {
   init();
 }
@@ -753,6 +755,11 @@ bool te::layout::GridMapModel::isRightRotateText()
 bool te::layout::GridMapModel::isTopRotateText()
 {
   return m_topRotateText;
+}
+
+double te::layout::GridMapModel::getCrossOffSet()
+{
+  return m_crossOffSet;
 }
 
 

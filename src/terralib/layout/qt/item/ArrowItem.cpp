@@ -36,7 +36,11 @@
 #include "../../../common/STLUtils.h"
 #include "../../item/ArrowModel.h"
 
+// STL
 #include <cmath>
+
+// Qt
+#include <QPointF>
 
 te::layout::ArrowItem::ArrowItem( ItemController* controller, Observable* o ) :
   ObjectItem(controller, o)
@@ -60,7 +64,23 @@ void te::layout::ArrowItem::paint( QPainter * painter, const QStyleOptionGraphic
 
   drawBackground(painter);
 
-  drawArrow(painter);
+
+	ArrowModel* model = dynamic_cast<ArrowModel*>(m_model);
+
+	if(model)
+	{
+		EnumArrowType* enumScale = model->getEnumArrowType();
+
+		if(model->getCurrentArrowType() == enumScale->getDoubleArrowType())
+		{
+			drawDoubleArrow(painter);
+		}
+		if(model->getCurrentArrowType() == enumScale->getRightArrowType())
+		{
+			drawRightArrow(painter);
+		}
+		
+	}
 
   drawBorder(painter);
 
@@ -71,67 +91,55 @@ void te::layout::ArrowItem::paint( QPainter * painter, const QStyleOptionGraphic
   }
 }
 
-void te::layout::ArrowItem::drawArrow( QPainter * painter )
+void te::layout::ArrowItem::drawRightArrow( QPainter * painter )
 {
-  ArrowModel* model = dynamic_cast<ArrowModel*>(m_model);
-  if(!model)
-  {
-    return;
-  }
+	painter->save();
 
-  painter->save();
+	double w1 = boundingRect().width() / 2.;
+	double w3 = boundingRect().width() / 40.;
+	double h1 = boundingRect().height() / 2.;
+	double h2 = boundingRect().height() / 4.;
+	double y1 = boundingRect().center().y()-h1;
+	double y2 = boundingRect().center().y()+h1;
+	double y3 = boundingRect().center().y()-h2;
+	double y4 = boundingRect().center().y()+h2;
 
-  QRectF boundRect = boundingRect();
-
-  QColor cblack(0,0,0);
-  QPen pn(cblack, 0, Qt::SolidLine);
-  painter->setPen(pn);
-
-  double centerY = boundRect.center().y();
-  
-  QLineF lne(boundRect.bottomLeft().x(), centerY, boundRect.width(), centerY);
-
-  painter->drawLine(lne);
-
-  painter->restore();
-
-  /* Draw Arrow Head */
-  drawHeadArrow(painter);
+	QPointF p1 = QPointF(w1,y2);
+	QPointF p2 = QPointF(y2,w1);
+	QPointF p3 = QPointF(w1,y1);
+	QPointF p4 = QPointF(h1,y3);
+	QPointF p5 = QPointF(w3,y3);
+	QPointF p6 = QPointF(w3,y4);
+	QPointF p7 = QPointF(h1,y4);
+	QPolygonF arrowPolygon;
+	arrowPolygon<<p1<<p2<<p3<<p4<<p5<<p6<<p7;
+	painter->drawPolygon(arrowPolygon);
+	painter->restore();
 }
 
-void te::layout::ArrowItem::drawHeadArrow( QPainter * painter )
+void te::layout::ArrowItem::drawDoubleArrow(QPainter * painter)
 {
-  painter->save();
-
-  QBrush bsh(Qt::black);
-  painter->setBrush(bsh);
-  painter->setPen(Qt::NoPen);
-
-  QRectF boundRect = boundingRect();
-
-  double h = boundRect.height();
-
-  double centerY = boundRect.center().y();
-  QLineF lne(boundRect.bottomLeft().x(), centerY, boundRect.width(), centerY);
-
-  double Pi = 3.14;
-  double sizeHead = (h / 5.);
-
-  double angle = std::acos(lne.dx() / lne.length());
-  if (lne.dy() >= 0)
-    angle = (Pi * 2) - angle;
-
-  QPointF arrowP1 = lne.p1() + QPointF(sin(angle + Pi / 3) * sizeHead,
-    cos(angle + Pi / 3) * sizeHead);
-  QPointF arrowP2 = lne.p1() + QPointF(sin(angle + Pi - Pi / 3) * sizeHead,
-    cos(angle + Pi - Pi / 3) * sizeHead);
-
-  QPolygonF trianglePolygon;
-  trianglePolygon << lne.p1() << arrowP1 << arrowP2;
-
-  painter->drawPolygon(trianglePolygon);
-
-  painter->restore();
+	double w1 = boundingRect().width() / 2.;
+	double w2 = boundingRect().width() / 4.;
+	double w3 = boundingRect().width() - boundingRect().width() / 4.;
+	double h1 = boundingRect().height() / 2.;
+	double h2 = boundingRect().height() / 4.;
+	double y1 = boundingRect().center().y()-h1;
+	double y2 = boundingRect().center().y()+h1;
+	double y4 = boundingRect().center().y()+h2;
+	painter->save();
+	QPointF p1 = QPointF(w3,y2);
+	QPointF p2 = QPointF(y2,w1);
+	QPointF p3 = QPointF(w3,y1);
+	QPointF p4 = QPointF(w3,h2);
+	QPointF p5 = QPointF(h2,w2);
+	QPointF p6 = QPointF(w2,y1);
+	QPointF p7 = QPointF(y1,w1);
+	QPointF p8 = QPointF(w2,y2);
+	QPointF p9 = QPointF(h2,y4);
+	QPointF p10 = QPointF(w3,y4);
+	QPolygonF arrowPolygon;
+	arrowPolygon<<p1<<p2<<p3<<p4<<p5<<p6<<p7<<p8<<p9<<p10;
+	painter->drawPolygon(arrowPolygon);
+	painter->restore();
 }
-
-

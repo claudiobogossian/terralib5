@@ -39,6 +39,9 @@
 #include <cassert>
 #include <cstring>
 
+// Boost
+#include <boost/thread/mutex.hpp>
+
 te::srs::Converter::Converter():
   m_targetSRID(TE_UNKNOWN_SRS),
   m_sourceSRID(TE_UNKNOWN_SRS),
@@ -101,6 +104,8 @@ te::srs::Converter::~Converter()
 void 
 te::srs::Converter::setSourceSRID(int sourceSRID)
 {
+  boost::unique_lock< boost::mutex > lockGuard(getStaticMutex());
+
 #ifdef TERRALIB_PROJ4_ENABLED 
   if (m_sourcePj4Handler)
   {
@@ -109,8 +114,12 @@ te::srs::Converter::setSourceSRID(int sourceSRID)
   }
 
   std::string description = te::srs::SpatialReferenceSystemManager::getInstance().getP4Txt(sourceSRID);
-  if ( description.empty())
-      throw te::srs::Exception(TE_TR("Source SRS ID not recognized."));
+  if (description.empty())
+  {
+    lockGuard.release();
+    getStaticMutex().unlock();
+    throw te::srs::Exception(TE_TR("Source SRS ID not recognized."));
+  }
 
   m_sourcePj4Handler = pj_init_plus(description.c_str());
   if (!m_sourcePj4Handler)
@@ -118,10 +127,17 @@ te::srs::Converter::setSourceSRID(int sourceSRID)
     std::string exceptionTxt = TE_TR("Source SRS description is not valid: ");
     char* pjError = pj_strerrno(*(pj_get_errno_ref()));
     exceptionTxt += std::string(pjError);
+
+    lockGuard.release();
+    getStaticMutex().unlock();
+
     throw te::srs::Exception(exceptionTxt);
   }
 #endif
-  m_sourceSRID = sourceSRID;  
+  m_sourceSRID = sourceSRID;
+
+  lockGuard.release();
+  getStaticMutex().unlock();
 }
 
 void te::srs::Converter::setSourcePJ4txt(const std::string& pj4txt)
@@ -156,6 +172,8 @@ te::srs::Converter::getSourceSRID() const
 void 
 te::srs::Converter::setTargetSRID(int targetSRID)
 {
+  boost::unique_lock< boost::mutex > lockGuard(getStaticMutex());
+
 #ifdef TERRALIB_PROJ4_ENABLED 
   if (m_targetPj4Handler)
   {
@@ -164,8 +182,13 @@ te::srs::Converter::setTargetSRID(int targetSRID)
   }
 
   std::string description = te::srs::SpatialReferenceSystemManager::getInstance().getP4Txt(targetSRID);
-  if ( description.empty())
-      throw te::srs::Exception(TE_TR("Target SRS ID not recognized."));
+  if (description.empty())
+  {
+    lockGuard.release();
+    getStaticMutex().unlock();
+
+    throw te::srs::Exception(TE_TR("Target SRS ID not recognized."));
+  }
 
   m_targetPj4Handler = pj_init_plus(description.c_str());
   if (!m_targetPj4Handler)
@@ -173,10 +196,17 @@ te::srs::Converter::setTargetSRID(int targetSRID)
     std::string exceptionTxt = TE_TR("Target SRS description is not valid: ");
     char* pjError = pj_strerrno(*(pj_get_errno_ref()));
     exceptionTxt += std::string(pjError);
+
+    lockGuard.release();
+    getStaticMutex().unlock();
+
     throw te::srs::Exception(exceptionTxt);
   }
 #endif
   m_targetSRID = targetSRID;  
+
+  lockGuard.release();
+  getStaticMutex().unlock();
 }
 
 void te::srs::Converter::setTargetPJ4txt(const std::string& pj4txt)
@@ -482,3 +512,4 @@ bool te::srs::Converter::convertToProjected(double &lon, double &lat, int SRID) 
 #endif
 
 }
+
