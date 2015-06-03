@@ -8,7 +8,7 @@ Follow the steps below in order to prepare a new release of TerraLib/TerraView.
 1. Branching
 ------------
 
-Three branches are essential in Terralib/terraview: develop, release-x.x.x and master:
+Three branches are essential in TerraLib/TerraView: develop, release-x.x.x and master:
   - develop: this is the branch where the development team are working together to reach a "desirable" point.
 
   - release-x.x.x: this branch is created from "develop" when a desirable point is reached by the team and a new release should be prepared to be tagged. 
@@ -20,16 +20,16 @@ The details of this process are given below.
 a) Make sure the current branch is "develop"
    $ git branch -a                         ( *develop )
 
-b) Create a "release-x.x.x" branch from the "develop" branch, where x.x.x is the upcoming release (tag)number to be created: 5.0.0-alpha, 5.0.0-beta, 5.0.0, 5.1.0, 6.2.0 and so on.
+b) Create a "release-x.x.x" branch from the "develop" branch, where x.x is the upcoming release (tag)number to be created: 5.0.0-alpha, 5.0.0-beta, 5.0.0, 5.1.0, 6.2.0 and so on.
    $ git tag -l                  (list all tag names)
-   $ git branch -a release-5.0.0 develop
+   $ git branch -a release-5.0 develop
 
 c) In the release branch only small changes can be applied and after the stabilization it will be merged with "master" branch where a tag with the version number will be created (in this example the tag number is "5.0.0").
 
 d) Make sure the current branch is "master" and merge it with the "release" branch.
    $ git branch -a                         ( *master ) 
    $ git checkout master                   (checking out master if it is not marked with *)
-   $ git merge --no-ff release-5.0.0       (merging master with release)
+   $ git merge --no-ff release-5.0       (merging master with release)
    $ git tag -l                            (list all tag names)
 
 e) Follow the instructions on item 4 to build all modules based on master branch.
@@ -37,9 +37,9 @@ e) Follow the instructions on item 4 to build all modules based on master branch
 f) Make sure the application is running by installing them and running some tests
 Installer names: TerraView-5.0.0-win64.exe
                  TerraView-5.0.0-macosx.dmg
-				 TerraView-5.0.0-unix.tar-gz
+				 TerraView-5.0.0-unix.tar.gz
 				 			     
-g) After that generate a tag to finish the release branch.
+g) After that generate a tag on master branch to finish the process of releasing:
    $ git tag -a 5.0.0             (create a tag named 5.0.0)
    $ git push --tags              (to push all tags) or
    $ git push origin 5.0.0        (to push only a tag named 5.0.0)
@@ -48,6 +48,9 @@ h) Use the following git command to generate a zip file with the latest source c
    $git branch -a 
    *master
    $git archive -o terralib-5.0.0.zip  HEAD  (the latest update)
+   
+g) The release-5.0 branch will be used just to correct small bug reported after release. 
+It must be merged with develop branch, and after that keep using DEVELOP branch.
    
 i) Update the wiki documentation according to item 7.
 
@@ -139,12 +142,12 @@ Note: If you are in CMake-GUI, remember to turn on only the CPACK_BINARY_DRAGNDR
 
 7. Wiki documentation updates
 ---------------
-) Copy the installers to http://www.dpi.inpe.br/terralib5/download/  
+Copy the installers to http://www.dpi.inpe.br/terralib5/download/  
   under the controlled dir called "files<big-number>" (used to count the downloads)
                          
 Ex: Installer names: TerraView-5.0.0-win64.exe				
-                     TerraView-5.0.0--macosx.dmg
-					 TerraView-5.0.0-unix.tar-gz
+                     TerraView-5.0.0-macosx.dmg
+					 TerraView-5.0.0-unix.tar.gz
 
 b) Copy the zip file terralib_5.0.0.zip containing the source code (generated at item 1.h )
     to  http://www.dpi.inpe.br/terralib5/download/files<big-number>/
@@ -162,7 +165,11 @@ d) Copy the help files located at C:\terralib\codebase\terralib5\doc\qhelp\src\*
    
 Note: The new directories "codedocs_XXXX" and "help_XXXX", created at www.dpi.inpe.br/terralib5,
   will be referenced by the  http://www.dpi.inpe.br/terralib5/wiki .
+  
+f) Copy the data.zip file to the http://www.dpi.inpe.br/terralib5/.
 
+h) Copy the third party library used in this version terralib5-3rdparty-msvc-2013-win64 under
+http://www.dpi.inpe.br/terralib5/
 
 8. Release Packages
 -------------------
@@ -171,4 +178,4 @@ For more information on TerraLib, please, visit its main web page at:
 http://www.terralib.org
 
 
-  March 2015, TerraLib Team <terralib-team@dpi.inpe.br>
+  June 2015, TerraLib Team <terralib-team@dpi.inpe.br>
