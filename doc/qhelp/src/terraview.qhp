@@ -53,6 +53,7 @@
 		    <section title="How to change the visual presentation of points, lines, polygons, raster data?" ref="./widgets/style/explorer.html"/>
 			<section title="How to Load/Unload, Add/Remove Plugins" ref="./widgets/pluginmanager/PluginManager.html"/>
 			<section title="Using Plugins Available" ref="./plugins/index.html">
+				<section title="Address Geocoding" ref="./plugins/addressgeocoding/addressgeocoding.html"/>
 				<section title="Attribute Fill" ref="./plugins/attributefill/attributefill.html">
 					<section title="Raster To Vector" ref="./plugins/attributefill/attrfill_raster_to_vector.html"/>
 					<section title="Vector To Raster" ref="./plugins/attributefill/attrfill_vector_to_raster.html"/>
@@ -110,6 +111,7 @@
 			<file>./apf/settings/generalconfig/*.*</file>
 			<file>./apf/settings/*.html</file>
 			<file>./plugins/ado/*.*</file>
+			<file>./plugins/addressgeocoding/*.*</file>
 			<file>./plugins/attributefill/*.*</file>
 			<file>./plugins/cellspace/*.*</file>
 			<file>./plugins/gdal/*.*</file>
