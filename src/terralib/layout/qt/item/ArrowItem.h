@@ -65,13 +65,10 @@ namespace te
           \brief Destructor
          */
         virtual ~ArrowItem();
-        
-        /*!
-          \brief Reimplemented from QGraphicsItem
-         */
-        virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
 
        protected:
+         
+         virtual void drawItem ( QPainter * painter );
 
         /*!
           \brief Drawing method of a Right Arrow

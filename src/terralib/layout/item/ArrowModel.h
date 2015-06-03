@@ -66,19 +66,19 @@ namespace te
         */ 
         virtual ~ArrowModel();
 
-				virtual Properties* getProperties() const;
+		    virtual Properties* getProperties() const;
 
-				virtual void updateProperties(te::layout::Properties* properties, bool notify = true);
+		    virtual void updateProperties(te::layout::Properties* properties, bool notify = true);
 
-				virtual EnumArrowType* getEnumArrowType();
+		    virtual EnumArrowType* getEnumArrowType();
 
-				virtual EnumType* getCurrentArrowType();
+		    virtual EnumType* getCurrentArrowType();
 
-				virtual double getShapeSize();
+		    virtual double getShapeSize();
 
-				virtual te::color::RGBAColor getArrowColor();
+		    virtual te::color::RGBAColor getArrowColor();
 
-				virtual void setArrowColor(te::color::RGBAColor color);
+		    virtual void setArrowColor(te::color::RGBAColor color);
 
 		protected:
 

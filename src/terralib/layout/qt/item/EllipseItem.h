@@ -44,11 +44,11 @@ namespace te
     \brief Class that represents a graphic Ellipse. 
         Its coordinate system is the same of scene (millimeters). 
         He is also the son of ItemObserver and ObjectItem, so it can become observer of a model (Observable). 
-	  
-	    \ingroup layout
 
-	    \sa te::layout::ObjectItem
-	  */
+      \ingroup layout
+
+      \sa te::layout::ObjectItem
+    */
     class TELAYOUTEXPORT EllipseItem : public ObjectItem
     {
       public:
@@ -66,19 +66,9 @@ namespace te
          */
         virtual ~EllipseItem();
 
-        /*!
-          \brief Reimplemented from QGraphicsItem
-         */
-        virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
+    protected:
 
-      protected:
-      
-        /*!
-          \brief Drawing method of a ellipse
-
-          \param 
-         */
-        virtual void drawEllipse(QPainter * painter);
+        virtual void drawItem ( QPainter * painter );
     };
   }
 }

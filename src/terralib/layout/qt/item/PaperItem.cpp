@@ -52,29 +52,7 @@ te::layout::PaperItem::~PaperItem()
 
 }
 
-void te::layout::PaperItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
-{
-  Q_UNUSED( option );
-  Q_UNUSED( widget );
-  if ( !painter )
-  {
-    return;
-  }
-
-  drawBackground( painter );
-
-  drawPaper(painter);
-
-  drawBorder(painter);
-
-  //Draw Selection
-  if (option->state & QStyle::State_Selected)
-  {
-    drawSelection(painter);
-  }
-}
-
-void te::layout::PaperItem::drawPaper( QPainter * painter )
+void te::layout::PaperItem::drawItem( QPainter * painter )
 {
   PaperModel* model = dynamic_cast<PaperModel*>(m_model);
   if(!model)
@@ -132,5 +110,5 @@ void te::layout::PaperItem::drawPaper( QPainter * painter )
   QRectF boxPaper = QRectF(boundRect.x(), boundRect.y() + shadowPadding, boundRect.width() - shadowPadding, boundRect.height() - shadowPadding);
   painter->drawRect(boxPaper);
 
-  painter->restore();  
+  painter->restore();
 }

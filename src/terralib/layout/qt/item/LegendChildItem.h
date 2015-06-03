@@ -46,10 +46,9 @@ namespace te
 
         virtual ~LegendChildItem();
 
-        /*!
-          \brief Mandatory implementation from QGraphicsItem
-         */
-        virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
+      protected:
+
+        virtual void drawItem ( QPainter * painter );
     };
   }
 }

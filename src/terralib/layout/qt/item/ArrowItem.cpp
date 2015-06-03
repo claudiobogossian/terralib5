@@ -26,15 +26,15 @@
 */
 
 // TerraLib
-#include "ArrowItem.h"
-#include "../../core/pattern/mvc/ItemController.h"
-#include "../../core/AbstractScene.h"
-#include "../../core/pattern/mvc/Observable.h"
 #include "../../../color/RGBAColor.h"
-#include "../../../qt/widgets/Utils.h"
-#include "../../../geometry/Envelope.h"
 #include "../../../common/STLUtils.h"
+#include "../../../geometry/Envelope.h"
+#include "../../../qt/widgets/Utils.h"
+#include "../../core/AbstractScene.h"
+#include "../../core/pattern/mvc/ItemController.h"
+#include "../../core/pattern/mvc/Observable.h"
 #include "../../item/ArrowModel.h"
+#include "ArrowItem.h"
 
 // STL
 #include <cmath>
@@ -53,41 +53,21 @@ te::layout::ArrowItem::~ArrowItem()
 
 }
 
-void te::layout::ArrowItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
+void te::layout::ArrowItem::drawItem( QPainter * painter )
 {
-  Q_UNUSED( option );
-  Q_UNUSED( widget );
-  if ( !painter )
+  ArrowModel* model = dynamic_cast<ArrowModel*>(m_model);
+  if(model)
   {
-    return;
-  }
+    EnumArrowType* enumScale = model->getEnumArrowType();
 
-  drawBackground(painter);
-
-
-	ArrowModel* model = dynamic_cast<ArrowModel*>(m_model);
-
-	if(model)
-	{
-		EnumArrowType* enumScale = model->getEnumArrowType();
-
-		if(model->getCurrentArrowType() == enumScale->getDoubleArrowType())
-		{
-			drawDoubleArrow(painter);
-		}
-		if(model->getCurrentArrowType() == enumScale->getRightArrowType())
-		{
-			drawRightArrow(painter);
-		}
-		
-	}
-
-  drawBorder(painter);
-
-  //Draw Selection
-  if (option->state & QStyle::State_Selected)
-  {
-    drawSelection(painter);
+    if(model->getCurrentArrowType() == enumScale->getDoubleArrowType())
+    {
+      drawDoubleArrow(painter);
+    }
+    if(model->getCurrentArrowType() == enumScale->getRightArrowType())
+    {
+      drawRightArrow(painter);
+    }
   }
 }
 

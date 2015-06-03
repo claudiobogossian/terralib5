@@ -65,15 +65,10 @@ namespace te
           \brief Destructor
          */
         virtual ~PaperItem();
-        
-        /*!
-          \brief Mandatory implementation from QGraphicsItem
-         */
-        virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
 
-      protected:
+    protected:
 
-        virtual void drawPaper(QPainter * painter);
+        virtual void drawItem(QPainter * painter);
     };
   }
 }

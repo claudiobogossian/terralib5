@@ -81,7 +81,7 @@ namespace te
          */
         virtual ~GridMapItem();
         
-        virtual void paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
+        virtual void drawItem( QPainter * painter );
 
         /*!
           \brief Reimplemented from ParentItem

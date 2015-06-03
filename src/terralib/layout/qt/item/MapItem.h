@@ -98,12 +98,7 @@ namespace te
         virtual void updateObserver(ContextItem context);
 
         void setPixmap( const QPixmap& pixmap );
-
-        /*!
-          \brief Reimplemented from QGraphicsProxyWidget
-         */
-        virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem* option, QWidget * widget = 0 );
-                
+               
         virtual void changeCurrentTool(EnumType* mode);
 
         void clearCurrentTool();
@@ -177,6 +172,8 @@ namespace te
          */
         virtual te::gm::Coord2D getPosition();
 
+		virtual void drawItem(QPainter * painter);
+
         /*!
             \brief Reimplemented from ParentItem
          */
@@ -202,9 +199,7 @@ namespace te
 
         virtual void calculateFrameMargin();
 
-        virtual void generateMapPixmap();
-
-        virtual void drawMap(QPainter * painter);
+        virtual void generateMapPixmap();        
 
         virtual void recalculateBoundingRect();
 
@@ -222,7 +217,6 @@ namespace te
       protected:
 
         QSize                                         m_mapSize; //!< The size of the map display in a zoom of 100%. This size is in pixels and is calculated based on the size of the GraphicItem in millimeters.
-        QPixmap                                       m_mapPixmap;
         QMimeData*                                    m_mime;      
         te::qt::widgets::MultiThreadMapDisplay*       m_mapDisplay;
         bool                                          m_grabbedByWidget;
@@ -230,7 +224,7 @@ namespace te
         double                                        m_wMargin;
         double                                        m_hMargin;
         te::qt::widgets::ZoomWheel*                   m_zoomWheel;
-        bool                                          m_changeLayer;
+        bool                                          m_pixmapIsDirty;
         std::list<te::map::AbstractLayerPtr>          m_oldLayers;
     };
   }

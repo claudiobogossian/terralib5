@@ -51,16 +51,11 @@ namespace te
         PolygonItem ( ItemController* controller, Observable* o );
 
         virtual ~PolygonItem ();
-        		
-	    /*!
-          \brief Reimplemented from QGraphicsItem
-         */
-        virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
-      
+
       protected:
 
-        virtual void drawPolygon(QPainter * painter);
-	  };
+        virtual void drawItem(QPainter * painter);
+    };
   }
 }
 

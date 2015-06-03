@@ -66,16 +66,13 @@ namespace te
          */
         virtual ~RectangleItem();
 
-        /*!
-          \brief Reimplemented from QGraphicsItem
-         */
-        virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
-        
       protected:
 
+        virtual void drawItem ( QPainter * painter );
+
         virtual void drawRectangle(QPainter * painter);
-				virtual void drawRoundedRectangle(QPainter * painter);
-				virtual void drawSingleCornerTrimmedRectangle(QPainter * painter);
+        virtual void drawRoundedRectangle(QPainter * painter);
+        virtual void drawSingleCornerTrimmedRectangle(QPainter * painter);
     };
   }
 }

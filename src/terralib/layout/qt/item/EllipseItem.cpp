@@ -47,29 +47,7 @@ te::layout::EllipseItem::~EllipseItem()
 
 }
 
-void te::layout::EllipseItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
-{
-  Q_UNUSED( option );
-  Q_UNUSED( widget );
-  if ( !painter )
-  {
-    return;
-  }
-
-  drawBackground(painter);
-
-  drawEllipse(painter);
-
-  drawBorder(painter);
-
-  //Draw Selection
-  if (option->state & QStyle::State_Selected)
-  {
-    drawSelection(painter);
-  }
-}
-
-void te::layout::EllipseItem::drawEllipse( QPainter * painter )
+void te::layout::EllipseItem::drawItem( QPainter * painter )
 {
   EllipseModel* model = dynamic_cast<EllipseModel*>(m_model);
   if(!model)
@@ -99,4 +77,3 @@ void te::layout::EllipseItem::drawEllipse( QPainter * painter )
 
   painter->restore();
 }
-
