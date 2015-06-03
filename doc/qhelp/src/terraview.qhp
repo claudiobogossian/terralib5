@@ -71,6 +71,7 @@
 					<section title="Intersection" ref="./plugins/vp/vp_intersection.html"/>
 					<section title="Geometric Operations" ref="./plugins/vp/vp_geometricOper.html"/>
 					<section title="Polygon to Line" ref="./plugins/vp/vp_polygonToLine.html"/>
+					<section title="Line to Polygon" ref="./plugins/vp/vp_lineToPolygon.html"/>
 				</section>
 				<section title="Raster Processing" ref="./plugins/rp/rp.html">
 					<section title="Arithmetic Operations" ref="./plugins/rp/rp_arithOp.html"/>
@@ -194,6 +195,7 @@
 			<keyword name="Intersection" ref="./plugins/vp/vp_intersection.html"/>
 			<keyword name="Geometric Operations" ref="./plugins/vp/vp_geometricOper.html"/>
 			<keyword name="Polygon to Line" ref="./plugins/vp/vp_polygonToLine.html"/>
+			<keyword name="Line to Polygon" ref="./plugins/vp/vp_lineToPolygon.html"/>
 			
 			<keyword name="Raster Processing" ref="./plugins/rp/rp.html"/>
 			<keyword name="Arithmetic Operations" ref="./plugins/rp/rp_arithOp.html"/>
