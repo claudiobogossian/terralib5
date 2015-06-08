@@ -145,11 +145,6 @@ te::map::AbstractLayerPtr te::attributefill::VectorToVectorDialog::getLayer()
   return m_outLayer;
 }
 
-void te::attributefill::VectorToVectorDialog::onHelpPushButtonClicked()
-{
-  QMessageBox::information(this, "Help", "Under development");
-}
-
 void te::attributefill::VectorToVectorDialog::onOkPushButtonClicked()
 {
   te::map::DataSetLayerPtr fromLayer(dynamic_cast<te::map::DataSetLayer*>(getCurrentFromLayer().get()));

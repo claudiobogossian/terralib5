@@ -88,7 +88,7 @@ te::vp::LineToPolygonDialog::LineToPolygonDialog(QWidget* parent, Qt::WindowFlag
   connect(m_ui->m_cancelPushButton, SIGNAL(clicked()), this, SLOT(onCancelPushButtonClicked()));
 
   m_ui->m_helpPushButton->setNameSpace("dpi.inpe.br.plugins"); 
-  //m_ui->m_helpPushButton->setPageReference("plugins/vp/vp_lineToPolygon.html");
+  m_ui->m_helpPushButton->setPageReference("plugins/vp/vp_lineToPolygon.html");
 }
 
 te::vp::LineToPolygonDialog::~LineToPolygonDialog()
