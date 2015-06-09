@@ -46,8 +46,8 @@
 #include <QPolygonF>
 #include <QPainterPath>
 
-te::layout::PointItem::PointItem( ItemController* controller, Observable* o ) :
-  ObjectItem(controller, o)
+te::layout::PointItem::PointItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
+  ObjectItem(controller, o, invertedMatrix)
 {
   m_nameClass = std::string(this->metaObject()->className());
 }

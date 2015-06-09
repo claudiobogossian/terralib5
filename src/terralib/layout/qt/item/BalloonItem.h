@@ -42,7 +42,7 @@ namespace te
     {
     public:
 
-      BalloonItem( ItemController* controller, Observable* o );
+      BalloonItem( ItemController* controller, Observable* o, bool invertedMatrix = false );
 
       virtual ~BalloonItem();
 

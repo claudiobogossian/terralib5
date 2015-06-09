@@ -41,8 +41,8 @@
 #include <QPolygonF>
 #include <QPointF>
 
-te::layout::StarItem::StarItem( ItemController* controller, Observable* o ) :
-  ObjectItem(controller, o)
+te::layout::StarItem::StarItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
+  ObjectItem(controller, o, invertedMatrix)
 {  
   m_nameClass = std::string(this->metaObject()->className());
 }

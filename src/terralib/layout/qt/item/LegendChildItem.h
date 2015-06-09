@@ -42,7 +42,7 @@ namespace te
     {
       public:
 
-        LegendChildItem( ItemController* controller, Observable* o );
+        LegendChildItem( ItemController* controller, Observable* o, bool invertedMatrix = false );
 
         virtual ~LegendChildItem();
 

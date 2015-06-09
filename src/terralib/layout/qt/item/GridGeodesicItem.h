@@ -60,7 +60,7 @@ namespace te
           \param controller "Controller" part of MVC component
           \param o "Model" part of MVC component
         */ 
-        GridGeodesicItem( ItemController* controller, Observable* o );
+        GridGeodesicItem( ItemController* controller, Observable* o, bool invertedMatrix = false );
 
         /*!
           \brief Destructor

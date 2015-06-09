@@ -36,8 +36,8 @@
 #include "../../../common/STLUtils.h"
 #include "../../item/EllipseModel.h"
 
-te::layout::EllipseItem::EllipseItem( ItemController* controller, Observable* o ) :
-  ObjectItem(controller, o)
+te::layout::EllipseItem::EllipseItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
+  ObjectItem(controller, o, invertedMatrix)
 {
   m_nameClass = std::string(this->metaObject()->className());
 }
