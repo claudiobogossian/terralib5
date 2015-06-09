@@ -169,7 +169,7 @@ Note: The new directories "codedocs_XXXX" and "help_XXXX", created at www.dpi.in
 f) Copy the data.zip file to the http://www.dpi.inpe.br/terralib5/.
 
 h) Copy the third party library used in this version "terralib5-3rdparty-msvc-2013-win64" under
-http://www.dpi.inpe.br/terralib5-devel/terralib5-3rdparty/ and RENAME it to terralib5.0.0-3rdparty-msvc-2013-win64
+http://www.dpi.inpe.br/terralib5/terralib5-3rdparty/ and RENAME it to terralib5.0.0-3rdparty-msvc-2013-win64
 
 8. Release Packages
 -------------------
