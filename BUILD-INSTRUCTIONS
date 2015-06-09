@@ -70,29 +70,36 @@ $ make uninstall
 a) We will assume that the TerraLib source tree (git clone) is located at:
    C:\terralib\codebase
 
-b) We will assume that the third party libraries for Visual Studio 2013, obtained from
-   http://www.dpi.inpe.br/terralib5-devel/terralib5-3rdparty-msvc-2013-win32.zip
-   or
-   http://www.dpi.inpe.br/terralib5-devel/terralib5-3rdparty-msvc-2013-win64.zip
+b) We will assume that the third party libraries for Visual Studio 2013, can be obtained from two places:
+   b.1) The tagged version:  
+     http://www.dpi.inpe.br/terralib5-devel/terralib5-3rdparty/terralib5.0.0-3rdparty-msvc-2013-win64.zip
+           or
+     http://www.dpi.inpe.br/terralib5-devel/terralib5-3rdparty/terralib5.0.0-3rdparty-msvc-2013-win32.zip   or
+		   
+   b.2) The most updated one used by developers (can not work with different tags): 
+     http://www.dpi.inpe.br/terralib5-devel/terralib5-3rdparty-msvc-2013-win64.zip
+           or
+     http://www.dpi.inpe.br/terralib5-devel/terralib5-3rdparty-msvc-2013-win32.zip
    
-are located at:
+
+are uncompressed at :
    
-   C:\terralib\terralib5-3rdparty-msvc-2013-win32
-   or
    C:\terralib\terralib5-3rdparty-msvc-2013-win64
+   or
+   C:\terralib\terralib5-3rdparty-msvc-2013-win32
 
 c) Create a folder out of the TerraLib source tree to build the binaries, for example:
-   C:\terralib\build-win32
-   or
    C:\terralib\build-win64
+   or
+   C:\terralib\build-win32
 
 d) Open CMake-GUI in order to generate a build project for Microsoft Visual C++ 2013 (32-bit or 64-bit).
 
 f) Then assure that the following variables are set to the locations defined above:
    Where is the source code    => C:\terralib\codebase\build\cmake
-   Where to build the binaries => C:\terralib\build-win32
+   Where to build the binaries => C:\terralib\build-win64
                                   or
-                                  C:\terralib\build-win64
+                                  C:\terralib\build-win32
 
 g) Then add an entry called CMAKE_PREFIX_PATH with the libraries location (separated by semicolons):
 
