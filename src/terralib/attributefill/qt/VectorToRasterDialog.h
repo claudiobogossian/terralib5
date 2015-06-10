@@ -90,8 +90,6 @@ namespace te
 
         void onTargetFileToolButtonPressed();
 
-        void onHelpPushButtonClicked();
-
         void onOkPushButtonClicked();
 
         void onCancelPushButtonClicked();

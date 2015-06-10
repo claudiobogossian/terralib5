@@ -138,6 +138,10 @@ b) We will assume that the build tree where will be generated the binaries is lo
 
 c) We will assume that all the third-party libraries that TerraLib needs to be compiled
    are installed in your system, and the Qt5 version is used.
+   
+   Note: Some QT5 related variables may not be automatically set (they have "NOT-FOUND" values) and must be set manually.
+	 Example: QT_QCOLLECTIONGENERATOR_EXECUTABLE (required by the help system) must point the refered executable.
+         (i.e. "/usr/bin/qcollectiongenerator-qt5")
 
 d) Open CMake-GUI in order to generate a build project for MacOS or Linux:
 

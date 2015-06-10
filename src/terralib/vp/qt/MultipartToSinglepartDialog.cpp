@@ -171,11 +171,6 @@ void te::vp::MultipartToSinglepartDialog::onTargetFileToolButtonPressed()
   m_ui->m_newLayerNameLineEdit->setEnabled(false);
 }
 
-void te::vp::MultipartToSinglepartDialog::onHelpPushButtonClicked()
-{
-  QMessageBox::information(this, "Help", "Under development");
-}
-
 void te::vp::MultipartToSinglepartDialog::onOkPushButtonClicked()
 {
   if(m_ui->m_layersComboBox->count() == 0)

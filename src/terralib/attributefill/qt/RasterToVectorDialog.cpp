@@ -294,11 +294,6 @@ void te::attributefill::RasterToVectorDialog::onTargetFileToolButtonPressed()
   m_ui->m_newLayerNameLineEdit->setEnabled(false);
 }
 
-void te::attributefill::RasterToVectorDialog::onHelpPushButtonClicked()
-{
-  QMessageBox::information(this, "Help", "Under development");
-}
-
 void te::attributefill::RasterToVectorDialog::onOkPushButtonClicked()
 {
   if(m_ui->m_inRasterComboBox->count() == 0)

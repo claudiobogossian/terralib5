@@ -27,18 +27,17 @@
 
 MACRO(TeInstallPlugins plugins location)
 
-  set(_files )
-  
+  set(_files)
+
   foreach(plugin ${plugins})
     get_target_property(_loc ${plugin} LOCATION)
-	list(APPEND _files ${_loc})
+    list(APPEND _files ${_loc})
   endforeach()
-  
-  install (FILES ${_files}
-	DESTINATION qtplugins/${location}
-	CONFIGURATIONS Release
-	COMPONENT runtime
-  )
+
+  install(FILES ${_files}
+           DESTINATION terraview.app/Contents/qtplugins/${location}
+           CONFIGURATIONS Release
+           COMPONENT runtime)
   
 ENDMACRO(TeInstallPlugins)
 
@@ -61,6 +60,9 @@ MACRO(TeInstallQt5Plugins)
 # Installing platform plugins
   if(WIN32)
     set(_plugins Qt5::QWindowsIntegrationPlugin Qt5::QMinimalIntegrationPlugin)
+    TeInstallPlugins("${_plugins}" "platforms")
+  elseif(APPLE)
+    set(_plugins Qt5::QCocoaIntegrationPlugin Qt5::QMinimalIntegrationPlugin)
     TeInstallPlugins("${_plugins}" "platforms")
   endif()
 

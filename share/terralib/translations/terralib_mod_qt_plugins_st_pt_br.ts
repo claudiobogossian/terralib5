@@ -4,7 +4,7 @@
 <context>
     <name>te::qt::plugins::st::ObservationAction</name>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/st/ObservationAction.cpp" line="45"/>
+        <location filename="../../../src/terralib/qt/plugins/st/ObservationAction.cpp" line="50"/>
         <source>Observation...</source>
         <translation type="unfinished"></translation>
     </message>
