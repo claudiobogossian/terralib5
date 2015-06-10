@@ -306,12 +306,7 @@ void te::layout::DialogPropertiesBrowser::onShowGridSettingsDlg()
     return;
   }
 
-  m_dialogs.append(gridSettings);
-
-  connect(gridSettings, SIGNAL(updateProperty(Property)), this, SLOT(updateOutside(Property)));
-  connect(gridSettings, SIGNAL(destroyed( QObject *)), this, SLOT(onDestroyed(QObject*)));
-
-  gridSettings->setAttribute(Qt::WA_DeleteOnClose);
+  appendDialog(gridSettings);
 
   GridSettingsModel* model = dynamic_cast<GridSettingsModel*>(gridSettings->getModel());
   if(!model)
@@ -490,13 +485,8 @@ void te::layout::DialogPropertiesBrowser::onShowMapLayerChoiceDlg()
   {
     return;
   }
-
-  m_dialogs.append(layerChoice);
-
-  connect(layerChoice, SIGNAL(updateProperty(Property)), this, SLOT(updateOutside(Property)));
-  connect(layerChoice, SIGNAL(destroyed( QObject *)), this, SLOT(onDestroyed(QObject*)));
-
-  layerChoice->setAttribute(Qt::WA_DeleteOnClose);
+  
+  appendDialog(layerChoice);
 
   MapLayerChoiceModel* model = dynamic_cast<MapLayerChoiceModel*>(layerChoice->getModel());
   if(!model)
@@ -553,12 +543,7 @@ void te::layout::DialogPropertiesBrowser::onShowLegendChoiceDlg()
     return;
   }
 
-  m_dialogs.append(legendChoice);
-
-  connect(legendChoice, SIGNAL(updateProperty(Property)), this, SLOT(updateOutside(Property)));
-  connect(legendChoice, SIGNAL(destroyed( QObject *)), this, SLOT(onDestroyed(QObject*)));
-
-  legendChoice->setAttribute(Qt::WA_DeleteOnClose);
+  appendDialog(legendChoice);
 
   LegendChoiceModel* model = dynamic_cast<LegendChoiceModel*>(legendChoice->getModel());
   if(!model)
@@ -761,6 +746,18 @@ void te::layout::DialogPropertiesBrowser::clearAll()
   AbstractPropertiesBrowser::clearAll();
   closeAllWindows();
 }
+
+void te::layout::DialogPropertiesBrowser::appendDialog( QWidget* widget )
+{
+  m_dialogs.append(widget);
+
+  connect(widget, SIGNAL(updateProperty(Property)), this, SLOT(updateOutside(Property)));
+  connect(widget, SIGNAL(destroyed( QObject *)), this, SLOT(onDestroyed(QObject*)));
+
+  widget->setAttribute(Qt::WA_DeleteOnClose);
+}
+
+
 
 
 
