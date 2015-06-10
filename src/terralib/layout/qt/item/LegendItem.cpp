@@ -61,7 +61,7 @@
 #include <QColor>
 #include <QMatrix>
 
-te::layout::LegendItem::LegendItem( ItemController* controller, Observable* o ) :
+te::layout::LegendItem::LegendItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
   ObjectItem(controller, o, true),
   m_move(false)
 {  

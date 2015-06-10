@@ -39,8 +39,8 @@
 #include <algorithm>    // std::max and std::min
 #include <cmath>
 
-te::layout::BalloonItem::BalloonItem( ItemController* controller, Observable* o ):
-  ObjectItem(controller, o)  
+te::layout::BalloonItem::BalloonItem( ItemController* controller, Observable* o, bool invertedMatrix ):
+  ObjectItem(controller, o, invertedMatrix)  
 {      
   m_nameClass = std::string(this->metaObject()->className());
 }

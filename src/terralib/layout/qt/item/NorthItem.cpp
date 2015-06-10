@@ -29,8 +29,8 @@
 #include "NorthItem.h"
 #include "../../item/NorthModel.h"
 
-te::layout::NorthItem::NorthItem( ItemController* controller, Observable* o ) :
-  ObjectItem(controller, o)
+te::layout::NorthItem::NorthItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
+  ObjectItem(controller, o, invertedMatrix)
 {  
   m_nameClass = std::string(this->metaObject()->className());
 }

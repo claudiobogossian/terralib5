@@ -42,8 +42,8 @@
 #include <QStyleOptionGraphicsItem>
 #include <QObject>
 
-te::layout::PolygonItem::PolygonItem( ItemController* controller, Observable* o ) :
-  LineItem(controller, o)
+te::layout::PolygonItem::PolygonItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
+  LineItem(controller, o, invertedMatrix)
 { 
   m_nameClass = std::string(this->metaObject()->className());
 }

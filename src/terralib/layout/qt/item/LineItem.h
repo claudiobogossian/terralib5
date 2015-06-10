@@ -49,7 +49,7 @@ namespace te
     {
       public:
 
-        LineItem ( ItemController* controller, Observable* o );
+        LineItem ( ItemController* controller, Observable* o, bool invertedMatrix = false );
 
         virtual ~LineItem ();
 

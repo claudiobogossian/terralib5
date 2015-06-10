@@ -44,8 +44,8 @@
 // Qt
 #include <QStyleOptionGraphicsItem>
 
-te::layout::GridMapItem::GridMapItem( ItemController* controller, Observable* o ) :
-  ObjectItem(controller, o),
+te::layout::GridMapItem::GridMapItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
+  ObjectItem(controller, o, invertedMatrix),
   m_maxWidthTextMM(0),
   m_maxHeigthTextMM(0),
   m_onePointMM(0.3527777778),

@@ -49,8 +49,8 @@
 #include <QPointF>
 #include <QLineF>
 
-te::layout::GridGeodesicItem::GridGeodesicItem( ItemController* controller, Observable* o ) :
-  GridMapItem(controller, o)
+te::layout::GridGeodesicItem::GridGeodesicItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
+  GridMapItem(controller, o, invertedMatrix)
 {  
   m_nameClass = std::string(this->metaObject()->className());
 }

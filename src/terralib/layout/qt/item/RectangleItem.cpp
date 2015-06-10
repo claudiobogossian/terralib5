@@ -42,8 +42,8 @@
 #include <QPen>
 #include <QRectF>
 
-te::layout::RectangleItem::RectangleItem( ItemController* controller, Observable* o ) :
-  ObjectItem(controller, o)
+te::layout::RectangleItem::RectangleItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
+  ObjectItem(controller, o, invertedMatrix)
 {  
   m_nameClass = std::string(this->metaObject()->className());
 }

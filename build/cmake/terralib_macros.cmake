@@ -33,9 +33,9 @@ MACRO(TeInstallPlugins plugins location)
     get_target_property(_loc ${plugin} LOCATION)
     list(APPEND _files ${_loc})
   endforeach()
-
-  install(FILES ${_files}
-           DESTINATION terraview.app/Contents/qtplugins/${location}
+  
+	install(FILES ${_files}
+           DESTINATION "${TERRALIB_BASE_DESTINATION_DIR}qtplugins/${location}"
            CONFIGURATIONS Release
            COMPONENT runtime)
   
@@ -105,11 +105,7 @@ MACRO(TeInstallQtPlugins plgs)
 
   set (_regex_exp "(${_regex_exp})?(${CMAKE_SHARED_LIBRARY_SUFFIX})$")
 
-  if(APPLE)
-    set (_dest terraview.app/Contents/qtplugins)
-  else()
-    set (_dest qtplugins)
-  endif()
+  set (_dest "${TERRALIB_BASE_DESTINATION_DIR}qtplugins")
 
 if(QT4_FOUND)
   set (_plugin_dirs "imageformats;iconengines;sqldrivers")
