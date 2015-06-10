@@ -22,7 +22,7 @@ a) Make sure the current branch is "develop"
 
 b) Create a "release-x.x.x" branch from the "develop" branch, where x.x is the upcoming release (tag)number to be created: 5.0.0-alpha, 5.0.0-beta, 5.0.0, 5.1.0, 6.2.0 and so on.
    $ git tag -l                  (list all tag names)
-   $ git branch -a release-5.0 develop
+   $ git checkout -b release-5.0 develop
 
 c) In the release branch only small changes can be applied and after the stabilization it will be merged with "master" branch where a tag with the version number will be created (in this example the tag number is "5.0.0").
 
@@ -168,8 +168,8 @@ Note: The new directories "codedocs_XXXX" and "help_XXXX", created at www.dpi.in
   
 f) Copy the data.zip file to the http://www.dpi.inpe.br/terralib5/.
 
-h) Copy the third party library used in this version terralib5-3rdparty-msvc-2013-win64 under
-http://www.dpi.inpe.br/terralib5/
+h) Copy the third party library used in this version "terralib5-3rdparty-msvc-2013-win64" under
+http://www.dpi.inpe.br/terralib5/terralib5-3rdparty/ and RENAME it to terralib5.0.0-3rdparty-msvc-2013-win64
 
 8. Release Packages
 -------------------
