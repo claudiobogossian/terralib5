@@ -1,20 +1,20 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
- 
- This file is part of the TerraLib - a Framework for building GIS enabled applications.
- 
- TerraLib is free software: you can redistribute it and/or modify
- it under the terms of the GNU Lesser General Public License as published by
- the Free Software Foundation, either version 3 of the License,
- or (at your option) any later version.
- 
- TerraLib is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- GNU Lesser General Public License for more details.
- 
- You should have received a copy of the GNU Lesser General Public License
- along with TerraLib. See COPYING. If not, write to
- TerraLib Team at <terralib-team@terralib.org>.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
+
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License,
+    or (at your option) any later version.
+
+    TerraLib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
  */
 
 /*!
@@ -92,34 +92,6 @@ std::vector<std::string> te::vp::GeometricOp::GetOutputDSetNames()
   return m_outDsetNameVec;
 }
 
-bool  te::vp::GeometricOp::save(std::auto_ptr<te::mem::DataSet> result, std::auto_ptr<te::da::DataSetType> outDsType)
-{
-  // do any adaptation necessary to persist the output dataset
-  te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter(outDsType.get(), m_outDsrc->getCapabilities());
-  te::da::DataSetType* dsTypeResult = converter->getResult();
-  std::auto_ptr<te::da::DataSetAdapter> dsAdapter(te::da::CreateAdapter(result.get(), converter));
-  
-  std::map<std::string, std::string> options;
-  // create the dataset
-  m_outDsrc->createDataSet(dsTypeResult, options);
-  
-  // copy from memory to output datasource
-  result->moveBeforeFirst();
-  std::string name = dsTypeResult->getName();
-  m_outDsrc->add(dsTypeResult->getName(),result.get(), options);
-  
-  // create the primary key if it is possible
-  if (m_outDsrc->getCapabilities().getDataSetTypeCapabilities().supportsPrimaryKey())
-  {
-    std::string pk_name = dsTypeResult->getName() + "_pkey";
-    te::da::PrimaryKey* pk = new te::da::PrimaryKey(pk_name, dsTypeResult);
-    pk->add(dsTypeResult->getProperty(0));
-    m_outDsrc->addPrimaryKey(outDsType->getName(), pk);
-  }
-  
-  return true;
-}
-
 te::da::DataSetType* te::vp::GeometricOp::GetDataSetType( te::vp::GeometricOpObjStrategy geomOpStrategy,
                                                           bool multiGeomColumns,
                                                           int geomOp)
@@ -134,18 +106,48 @@ te::da::DataSetType* te::vp::GeometricOp::GetDataSetType( te::vp::GeometricOpObj
         {
           dsType = new te::da::DataSetType(m_outDsetName + "_convex_hull");
           dsType->setTitle(m_outDsetName + "_convex_hull");
+
+          // Primary key
+          te::dt::SimpleProperty* pkProperty = new te::dt::SimpleProperty(m_outDsetName + "_id", te::dt::INT32_TYPE);
+          pkProperty->setAutoNumber(true);
+          dsType->add(pkProperty);
+
+          te::da::PrimaryKey* pk = new te::da::PrimaryKey(m_outDsetName + "_convex_hull_pk", dsType);
+          pk->add(pkProperty);
+          dsType->setPrimaryKey(pk);
+
           break;
         }
       case 1:
         {
           dsType = new te::da::DataSetType(m_outDsetName + "_centroid");
           dsType->setTitle(m_outDsetName + "_centroid");
+
+          // Primary key
+          te::dt::SimpleProperty* pkProperty = new te::dt::SimpleProperty(m_outDsetName + "_id", te::dt::INT32_TYPE);
+          pkProperty->setAutoNumber(true);
+          dsType->add(pkProperty);
+
+          te::da::PrimaryKey* pk = new te::da::PrimaryKey(m_outDsetName + "_centroid_pk", dsType);
+          pk->add(pkProperty);
+          dsType->setPrimaryKey(pk);
+
           break;
         }
       case 2:
         {
           dsType = new te::da::DataSetType(m_outDsetName + "_mbr");
           dsType->setTitle(m_outDsetName + "_mbr");
+
+          // Primary key
+          te::dt::SimpleProperty* pkProperty = new te::dt::SimpleProperty(m_outDsetName + "_id", te::dt::INT32_TYPE);
+          pkProperty->setAutoNumber(true);
+          dsType->add(pkProperty);
+
+          te::da::PrimaryKey* pk = new te::da::PrimaryKey(m_outDsetName + "_mbr_pk", dsType);
+          pk->add(pkProperty);
+          dsType->setPrimaryKey(pk);
+
           break;
         }
     }
@@ -155,14 +157,7 @@ te::da::DataSetType* te::vp::GeometricOp::GetDataSetType( te::vp::GeometricOpObj
     dsType = new te::da::DataSetType(m_outDsetName);
     dsType->setTitle(m_outDsetName);
   }
-  // Primary key
-  te::dt::SimpleProperty* pkProperty = new te::dt::SimpleProperty(m_outDsetName + "_id", te::dt::INT32_TYPE);
-  pkProperty->setAutoNumber(true);
-  dsType->add(pkProperty);
 
-  te::da::PrimaryKey* pk = new te::da::PrimaryKey(m_outDsetName + "_pk", dsType);
-  pk->add(pkProperty);
-  dsType->setPrimaryKey(pk);
 
   if(geomOpStrategy == te::vp::ALL_OBJ)
   {
@@ -203,6 +198,8 @@ te::da::DataSetType* te::vp::GeometricOp::GetDataSetType( te::vp::GeometricOpObj
           te::dt::SimpleProperty* perimeter = new te::dt::SimpleProperty("perimeter", te::dt::DOUBLE_TYPE);
           dsType->add(perimeter);
         }
+        break;
+      default:
         break;
     }
   }
@@ -304,6 +301,9 @@ te::da::DataSetType* te::vp::GeometricOp::GetDataSetType( te::vp::GeometricOpObj
           flagGeom = true;
         }
         break;
+      default:
+        break;
+
     }
 
     if(!flagGeom)

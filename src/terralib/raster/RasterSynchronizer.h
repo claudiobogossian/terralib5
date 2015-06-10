@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -51,6 +51,8 @@ namespace te
       \class RasterSynchronizer
 
       \brief An access synchronizer to be used in SynchronizedRaster raster instances.
+      
+      \ingroup rst
     */
     class TERASTEREXPORT RasterSynchronizer: public boost::noncopyable
     {

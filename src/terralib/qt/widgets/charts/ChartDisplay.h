@@ -1,4 +1,4 @@
-/*  Copyright (C) 2010-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -44,7 +44,7 @@ class QwtPlotMagnifier;
 namespace te
 {
   namespace color { class RGBAColor; }
-  namespace da    { class ObjectIdSet; }
+  namespace da    { class ObjectIdSet; class DataSetType;}
   namespace se    { class Stroke; class Fill; class Font; }
 
   namespace qt
@@ -107,7 +107,7 @@ namespace te
 
             \param oids The identifiers of plotitems to be highlighted.
           */
-          void highlightOIds(const te::da::ObjectIdSet* oids);
+          void highlightOIds(const te::da::ObjectIdSet* oids, te::da::DataSetType* dataType);
 
           /*!
             \brief color used to hgihlight selected objects on this display.
@@ -142,13 +142,25 @@ namespace te
           */
           void selected(te::da::ObjectIdSet*, const bool&);
 
+         /*!
+            \brief Emmit when a clicked with left button was made.
+          */
+          void leftPointSelected(const QPointF& pos);
+
+         /*!
+            \brief Emmit when a clicked with rigth button was made.
+          */
+          void rigthPointSelected(const QPointF& pos);
+
          private:
 
           ChartStyle*       m_chartStyle;   //!< The display's style.
           QwtPlotGrid*      m_grid;         //!< The display's grid
           QwtPlotPanner*    m_panner;       //!< The display's panner.
           QwtPlotPicker*    m_leftPicker;   //!< The display's left button picker.
-          QwtPlotMagnifier* m_magnifier;     //!< The display's magnifinifier.
+          QwtPlotPicker*    m_leftPointPicker;   //!< The display's left button picker.
+          QwtPlotPicker*    m_rigthPointPicker;  //!< The display's rigth button picker.
+          QwtPlotMagnifier* m_magnifier;    //!< The display's magnifinifier.
           QwtPlotPicker*    m_ctrlPicker;   //!< The display's control button picker.
           QwtPlotPicker*    m_shiftPicker;  //!< The display's shift button picker.
       };

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -37,6 +37,9 @@ namespace te
 // Forward declarations
     class Envelope;
     class Geometry;
+    class Point;
+    struct Coord2D;
+    class LineString;
     
     /*!
       \brief It returns the number of measurements or axes needed to describe a position in a coordinate system.
@@ -89,6 +92,35 @@ namespace te
       \exception Exception It throws an exception if the spatial relation is not valid or if the test can not be evaluated.
     */
     TEGEOMEXPORT bool SatisfySpatialRelation(const Geometry* g1, const Geometry* g2, SpatialRelation relation);
+
+    /*!
+      \brief  Finds the correspondent smallest box that allows a box to be cut in blocks of a given size
+     
+      \param env     Reference envelope
+      \param bWidth  Block width
+      \param bHeight Block height
+      
+      \return It returns a adjusted envelope
+    */
+    TEGEOMEXPORT Envelope AdjustToCut(const Envelope & env, double bWidth, double bHeight);
+
+    /* \brief It checks if one object intersects another object. */
+    template<class T1, class T2> bool Intersects(const T1& o1, const T2& o2);
+
+    /* \brief Specialized function that checks if point intersects envelope. */
+    template<> TEGEOMEXPORT bool Intersects(const te::gm::Point& point, const te::gm::Envelope& e);
+
+    /*!
+      \brief Make the line interpolation to find a target
+     
+      \param line LineString to make the interpolation
+      \param initial Initial value
+      \param final Final value
+      \param target Target value
+      
+      \return It returns a target Coord2D in the line.
+    */
+    TEGEOMEXPORT Coord2D* locateAlong(const LineString* line, double initial, double final, double target);
 
   } // end namespace gm
 }   // end namespace te

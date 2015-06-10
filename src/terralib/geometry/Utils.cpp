@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -25,10 +25,13 @@
 
 // TerraLib
 #include "../common/Translator.h"
+#include "Coord2D.h"
 #include "Envelope.h"
 #include "Exception.h"
 #include "Geometry.h"
 #include "LinearRing.h"
+#include "LineString.h"
+#include "Point.h"
 #include "Polygon.h"
 #include "Utils.h"
 
@@ -89,4 +92,138 @@ bool te::gm::SatisfySpatialRelation(const Geometry* g1,
     default:
       throw Exception(TE_TR("Invalid spatial relation!"));
   }
+}
+
+te::gm::Envelope te::gm::AdjustToCut(const Envelope & env, double bWidth, double bHeight)
+{
+  double auxD;
+  int auxI;
+
+  int magicX; 
+  auxD = env.m_llx/bWidth;
+  auxI = (int)(env.m_llx/bWidth);
+  if (env.m_llx < 0 && (auxD - auxI) != 0)
+    magicX = (int) (env.m_llx/bWidth - 1);
+  else
+    magicX = auxI;
+
+  int magicY;
+  auxD = env.m_lly/bHeight;
+  auxI = (int)(env.m_lly/bHeight);
+  if (env.m_lly < 0 && (auxD - auxI) != 0)
+    magicY  = (int)(env.m_lly/bHeight - 1);
+  else
+    magicY  = auxI;
+
+  double xi = magicX*bWidth;
+  double yi = magicY*bHeight;
+
+  int magicX2;
+  auxD = env.m_urx/bWidth;
+  auxI = (int)(env.m_urx/bWidth);
+  if ((env.m_urx < 0) || (auxD - auxI) == 0)
+    magicX2 = (int) (env.m_urx/bWidth);
+  else
+    magicX2 = (int) (env.m_urx/bWidth + 1);
+
+  int magicY2;
+  auxD = env.m_ury/bHeight;
+  auxI = (int)(env.m_ury/bHeight);
+  if ((env.m_ury < 0) || (auxD - auxI) == 0)
+    magicY2 = (int) (env.m_ury/bHeight);
+  else
+    magicY2 = (int) (env.m_ury/bHeight + 1);
+
+  double xf = (magicX2)*bWidth;
+  double yf = (magicY2)*bHeight;
+
+  return te::gm::Envelope(xi,yi,xf,yf);
+}
+
+template<class T1, class T2> bool te::gm::Intersects(const T1& o1, const T2& o2)
+{
+  return o1->intersects(o2);
+}
+
+template<> bool te::gm::Intersects(const te::gm::Point& point, const te::gm::Envelope& e)
+{
+  // point to the right of envelope
+  if(point.getX() > e.m_urx)
+    return false;
+
+  // point to the left of envelope
+  if(e.m_llx > point.getX())
+    return false;
+
+  // point is above envelope
+  if(point.getY() > e.m_ury)
+    return false;
+
+  // point is below envelope
+  if(e.m_lly > point.getY())
+    return false;
+
+  return true;
+}
+
+te::gm::Coord2D* te::gm::locateAlong(const LineString* line, double initial, double final, double target)
+{
+  double tTof; // Distance of target to fist point
+
+  std::map<int, double> pointLenghtFromFirst;
+
+  double fullLineLenght = 0;
+  
+  pointLenghtFromFirst[0] = 0;
+  for(std::size_t i = 1; i < line->getNPoints(); i++)
+  {
+    fullLineLenght += line->getPointN(i)->distance(line->getPointN(i-1));
+    pointLenghtFromFirst[i] = fullLineLenght;
+  }
+
+  double diference = final-initial;
+  
+  tTof = ((target-initial)*fullLineLenght)/diference;
+
+  int onTheFly = -1;
+
+  int pointBeforeTarget;
+  for(std::size_t i = 0; i < pointLenghtFromFirst.size(); i++)
+  {
+    if(pointLenghtFromFirst[i] == tTof)
+    {
+      onTheFly = i;
+      break;
+    }
+    if(tTof >= pointLenghtFromFirst[i] && tTof < pointLenghtFromFirst[i+1])
+    {
+      pointBeforeTarget = i;
+      break;
+    }
+  }
+
+  te::gm::Coord2D* targetCoord = new te::gm::Coord2D();
+
+  if(onTheFly >= 0)
+  {
+    targetCoord->x = line->getPointN(onTheFly)->getX();
+    targetCoord->y = line->getPointN(onTheFly)->getY();
+
+    return targetCoord;
+  }
+
+  Point* p1 = line->getPointN(pointBeforeTarget);
+  Point* p2 = line->getPointN(pointBeforeTarget+1);
+
+  // Partial distance: target to p1
+  double pd = tTof - pointLenghtFromFirst[pointBeforeTarget];
+  
+  // Total distance: p2 to p1
+  double td = pointLenghtFromFirst[pointBeforeTarget+1] - pointLenghtFromFirst[pointBeforeTarget];
+  
+  targetCoord->x = ((pd*(p2->getX()-p1->getX()))/td)+p1->getX();  
+
+  targetCoord->y = ((pd*(p2->getY()-p1->getY()))/td)+p1->getY();
+
+  return targetCoord;
 }

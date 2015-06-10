@@ -1,0 +1,76 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html;charset=ISO-8859-1" http-equiv="Content-Type">
+  <title>Cellular Spaces</title>
+</head>
+<body>
+<h3 style="text-align: center;"><font><font
+ style="font-family: Calibri Light;"><span style="font-weight: bold;">Cellular
+Spaces</span></font></font></h3>
+<p>The <span style="font-weight: bold;">Cellular Spaces</span> is a
+tool that allows the creation of a cellular dataset that can be used in
+various ways.</p>
+<p>At
+first the goal is to homogenize information from different sources, in
+different formats (vector data, raster and also other cell spaces),
+adding them in the same base.</p>
+<p>To create a cellular space use the option:</p>
+<p> <span style="font-weight: bold;">Processing &gt; Cellular Spaces
+&gt; Create Cellular Space</span>...</p>
+<p>If there is layer with SRID in the tree, the cellular space can be
+created having a layer reference. </p>
+<p>Simply fill in the fields:</p>
+<p><br>
+</p>
+<ul>
+  <li>
+    <p><span style="font-weight: bold;">Refer&ecirc;nce Layer:</span>
+if there is, a reference layer may be chosen from the list.</p>
+  </li>
+  <li>
+    <p><span style="font-weight: bold;">Use Mask or not:</span> using
+the layer as a mask, will only be created cells that intersect any
+geometry layer.</p>
+  </li>
+  <li>
+    <p><span style="font-weight: bold;">Bounding Box:</span> these
+fields are initialized with the reference layer information. If
+necessary, this information can be changed.</p>
+  </li>
+  <li>
+    <p><span style="font-weight: bold;">Cellular Space Type:</span>
+there are two options for creating the layer of cells;</p>
+  </li>
+  <ul>
+    <li>
+      <p>Polygons: will be created geometries of polygon type to
+represent the cells;</p>
+    </li>
+    <li>
+      <p>Points: will be created geometries of point type to represent
+the cells;</p>
+    </li>
+  </ul>
+  <li>
+    <p><span style="font-weight: bold;">Resolution or number of columns
+and rows:</span> can opt to choose the resolution of the cell or the
+number of columns and rows of cellsthat will be created.</p>
+  </li>
+  <li>
+    <p><span style="font-weight: bold;">Output:</span> select the
+location where the dataset is generated;</p>
+  </li>
+  <ul>
+    <li>
+      <p>Repository: file or DataSource;</p>
+    </li>
+    <li>
+      <p>DataSet name.</p>
+    </li>
+  </ul>
+</ul>
+<p>After the creation, the option to create the layer in the tree is
+displayed.</p>
+</body>
+</html>

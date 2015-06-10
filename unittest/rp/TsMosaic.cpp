@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -26,9 +26,6 @@
 #include "TsMosaic.h"
 #include "../Config.h"
 
-#include <terralib/rp/TiePointsMosaic.h>
-#include <terralib/rp/GeoMosaic.h>
-#include <terralib/rp/SequenceMosaic.h>
 #include <terralib/raster/Raster.h>
 #include <terralib/raster/RasterFactory.h>
 #include <terralib/dataaccess/datasource/DataSourceFactory.h>
@@ -85,7 +82,7 @@ void TsMosaic::GeoReferencedImagesMosaicTest()
   algoInputParams.m_inputRastersBands.push_back( bands );
   algoInputParams.m_inputRastersBands.push_back( bands );
   
-  algoInputParams.m_interpMethod = te::rst::Interpolator::NearestNeighbor;
+  algoInputParams.m_interpMethod = te::rst::NearestNeighbor;
   algoInputParams.m_noDataValue = 0;
   algoInputParams.m_forceInputNoDataValue = true;
   algoInputParams.m_blendMethod = te::rp::Blender::NoBlendMethod;
@@ -154,7 +151,7 @@ void TsMosaic::GeoReferencedImagesMosaicWithReprojectionTest()
   bands[ 1 ] = 0;
   algoInputParams.m_inputRastersBands.push_back( bands );
   
-  algoInputParams.m_interpMethod = te::rst::Interpolator::NearestNeighbor;
+  algoInputParams.m_interpMethod = te::rst::NearestNeighbor;
   algoInputParams.m_noDataValue = 0;
   algoInputParams.m_forceInputNoDataValue = false;
   algoInputParams.m_blendMethod = te::rp::Blender::NoBlendMethod;
@@ -258,7 +255,7 @@ void TsMosaic::TiePointsMosaicTest1()
   algoInputParams.m_tiePointsLinkType = 
     te::rp::TiePointsMosaic::InputParameters::AdjacentRastersLinkingTiePointsT;
   
-  algoInputParams.m_interpMethod = te::rst::Interpolator::NearestNeighbor;
+  algoInputParams.m_interpMethod = te::rst::NearestNeighbor;
   algoInputParams.m_noDataValue = 0;
   algoInputParams.m_blendMethod = te::rp::Blender::NoBlendMethod;
   algoInputParams.m_autoEqualize = true;  
@@ -361,7 +358,7 @@ void TsMosaic::TiePointsMosaicTest2()
   algoInputParams.m_tiePointsLinkType = 
     te::rp::TiePointsMosaic::InputParameters::AdjacentRastersLinkingTiePointsT;
   
-  algoInputParams.m_interpMethod = te::rst::Interpolator::NearestNeighbor;
+  algoInputParams.m_interpMethod = te::rst::NearestNeighbor;
   algoInputParams.m_noDataValue = 0;
   algoInputParams.m_blendMethod = te::rp::Blender::NoBlendMethod;
   algoInputParams.m_autoEqualize = true;  
@@ -431,7 +428,7 @@ void TsMosaic::SequenceMosaicTest()
   
   algoInputParams.m_geomTransfName = "Affine";
   
-  algoInputParams.m_interpMethod = te::rst::Interpolator::NearestNeighbor;
+  algoInputParams.m_interpMethod = te::rst::NearestNeighbor;
   
   algoInputParams.m_noDataValue = 0.0;
   
@@ -452,8 +449,6 @@ void TsMosaic::SequenceMosaicTest()
   algoInputParams.m_tiePointsLocationBandIndex = 0;
   
   algoInputParams.m_locatorParams.m_maxTiePoints = 500;
-  
-  algoInputParams.m_locatorParams.m_maxR1ToR2Offset = 0;
   
   algoInputParams.m_outDataSetsNamePrefix = 
     "terralib_unittest_rp_Mosaic_SequenceMosaic_Test_";

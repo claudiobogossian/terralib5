@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -25,6 +25,9 @@
 
 // TerraLib
 #include "../../../../common/Exception.h"
+#include "../../../../common/StringUtils.h"
+#include "../../../../common/progress/ProgressManager.h"
+#include "../../../../common/progress/TaskProgress.h"
 #include "../../../../common/Translator.h"
 #include "../../../../dataaccess.h"
 #include "../../../../geometry/GeometryProperty.h"
@@ -33,6 +36,7 @@
 #include "../../../../qt/widgets/datasource/selector/DataSourceSelectorWizardPage.h"
 #include "../../../../qt/widgets/layer/utils/DataSet2Layer.h"
 #include "../../../../qt/widgets/help/HelpPushButton.h"
+#include "../../../../qt/widgets/progress/ProgressViewerDialog.h"
 #include "../../../../qt/widgets/rp/Utils.h"
 #include "../../../../qt/widgets/utils/ScopedCursor.h"
 #include "../../../../qt/af/ApplicationController.h"
@@ -209,9 +213,10 @@ bool te::qt::plugins::terralib4::TL4ConverterWizard::validateCurrentPage()
     ::terralib4::DataSource* tl4Ds = dynamic_cast<::terralib4::DataSource*>(m_tl4Database.get());
 
     std::vector<std::string> layers = tl4Ds->getTL4Layers();
+    std::vector<std::string> rasters = tl4Ds->getTL4Rasters();
     std::vector<std::string> tables = tl4Ds->getTL4Tables();
 
-    m_layerSelectionPage->setDatasets(layers, tables);
+    m_layerSelectionPage->setDatasets(layers, tables, rasters);
 
   }
   else if(current_page_id == PAGE_LAYER_SELECTION)
@@ -279,8 +284,15 @@ bool te::qt::plugins::terralib4::TL4ConverterWizard::validateCurrentPage()
         {
   // non-raster
           QTableWidgetItem *conflictItem = 0;
-        
-          if(tl5ds->dataSetExists(targetDatasetName))
+
+          std::string targetDatasetNameAux = targetDatasetName;
+
+          if(tl5ds->getType() == "POSTGIS")
+          {
+            targetDatasetNameAux = te::common::Convert2LCase(targetDatasetName);
+          }
+
+          if(tl5ds->dataSetExists(targetDatasetNameAux))
           {
             hasConflicts = true;
 
@@ -334,6 +346,8 @@ bool te::qt::plugins::terralib4::TL4ConverterWizard::validateCurrentPage()
 
 bool te::qt::plugins::terralib4::TL4ConverterWizard::validTerraLib4Connection()
 {
+  setCursor(Qt::WaitCursor);
+
   std::map<std::string, std::string> connInfo = m_connectorPage->getConnInfo();
 
   try
@@ -345,14 +359,17 @@ bool te::qt::plugins::terralib4::TL4ConverterWizard::validTerraLib4Connection()
   }
   catch(const te::da::Exception& e)
   {
+    setCursor(Qt::ArrowCursor);
     QMessageBox::warning(this, tr("Warning"), e.what());
     return false;
   }
   catch(...)
   {
+    setCursor(Qt::ArrowCursor);
     QMessageBox::warning(this, tr("Warning"), tr("A connection to the informed Terralib 4.x database could not be established. Please, verify the informed parameters."));
     return false;
   }
+  setCursor(Qt::ArrowCursor);
 
   return true;
 }
@@ -458,6 +475,7 @@ bool te::qt::plugins::terralib4::TL4ConverterWizard::validLayerNames()
         if(boost::filesystem::exists(m_rasterFolderPath + "/" + targetName + ".tif"))
         {
           hasConflict = true;
+          QTableWidgetItem *nonconflictItem = new QTableWidgetItem(QIcon::fromTheme("delete"), "");
         }
         else
         {
@@ -469,9 +487,17 @@ bool te::qt::plugins::terralib4::TL4ConverterWizard::validLayerNames()
       else
       {
 // no!
-        if(tl5ds->dataSetExists(targetName))
+        std::string targetDatasetNameAux = targetName;
+
+        if(tl5ds->getType() == "POSTGIS")
+        {
+          targetDatasetNameAux = te::common::Convert2LCase(targetName);
+        }
+
+        if(tl5ds->dataSetExists(targetDatasetNameAux))
         {
           hasConflict = true;
+          QTableWidgetItem *nonconflictItem = new QTableWidgetItem(QIcon::fromTheme("delete"), "");
         }
         else
         {
@@ -513,9 +539,10 @@ std::string te::qt::plugins::terralib4::TL4ConverterWizard::getOriginalName(cons
   {
     QString targetNameInTable = m_resolveNameTableWidget->item(i, 2)->text();
 
-    if(targetName.c_str() == targetNameInTable)
-      return m_resolveNameTableWidget->item(i, 1)->text().toStdString();
+    std::string aux = targetNameInTable.toLatin1();
 
+    if(targetName.c_str() == aux)
+      return aux;
   }
 
   return "";
@@ -529,8 +556,10 @@ std::string te::qt::plugins::terralib4::TL4ConverterWizard::getNewName(const std
   {
     QString oName = m_resolveNameTableWidget->item(i, 1)->text();
 
-    if(originalName.c_str() == oName)
-      return m_resolveNameTableWidget->item(i, 2)->text().toStdString();
+    std::string aux = oName.toLatin1();
+
+    if(originalName.c_str() == aux)
+      return aux;
   }
 
   return "";
@@ -580,23 +609,37 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::commit()
 
   int nrows = m_resolveNameTableWidget->rowCount();
 
+  //progress
+  te::qt::widgets::ProgressViewerDialog v(this);
+  int id = te::common::ProgressManager::getInstance().addViewer(&v);
+
+  te::common::TaskProgress task("TerraLib4 Converter...");
+  task.setTotalSteps(nrows);
+  task.useTimer(true);
+
   for(int i = 0; i != nrows; ++i)
   {
 // get original dataset name
     QTableWidgetItem* item_source = m_resolveNameTableWidget->item(i, 1);
 
     if(item_source == 0)
+    {
+      te::common::ProgressManager::getInstance().removeViewer(id);
       throw te::common::Exception(TE_TR("Invalid source table item!"));
+    }
 
-    std::string sourceName = item_source->text().toStdString();
+    std::string sourceName = item_source->text().toLatin1();
 
 // get target dataset name
     QTableWidgetItem* item_target = m_resolveNameTableWidget->item(i, 2);
 
     if(item_target == 0)
+    {
+      te::common::ProgressManager::getInstance().removeViewer(id);
       throw te::common::Exception(TE_TR("Invalid target table item!"));
+    }
 
-    std::string targetName = item_target->text().toStdString();
+    std::string targetName = item_target->text().toLatin1();
 
 // ask if the dataset is a raster
     try
@@ -634,6 +677,14 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::commit()
 
         te::da::DataSetType* type = dt_adapter->getResult();
 
+        te::da::PrimaryKey* pk = 0;
+        pk = type->getPrimaryKey();
+
+        if(pk)
+        {
+          pk->setName(te::common::Convert2LCase(targetName) + "_pk");
+        }
+
         te::common::CharEncoding encTo = tl5ds->getEncoding();
 
         for(std::size_t i = 0; i < type->size(); ++i)
@@ -653,10 +704,7 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::commit()
 
         ::terralib4::DataSource* tl4Ds = dynamic_cast<::terralib4::DataSource*>(m_tl4Database.get());
 
-        int finalSrid = tl4Ds->getLayerSRID(targetName);
-
-        if(finalSrid == 4979)
-          finalSrid = 4326;
+        int finalSrid = tl4Ds->getLayerSRID(sourceName);
 
         ds_adapter->setSRID(finalSrid);
 
@@ -677,6 +725,14 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::commit()
       
       problematicDatasets.push_back(dproblem);
     }
+    catch(std::exception& e)
+    {
+      std::pair<std::string, std::string> dproblem;
+      dproblem.first = sourceName;
+      dproblem.second = e.what();
+      
+      problematicDatasets.push_back(dproblem);
+    }
     catch(...)
     {
       std::pair<std::string, std::string> dproblem;
@@ -685,6 +741,14 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::commit()
       
       problematicDatasets.push_back(dproblem);
     }
+
+    if (task.isActive() == false)
+    {
+      te::common::ProgressManager::getInstance().removeViewer(id);
+      throw te::common::Exception(TE_TR("Operation canceled!"));
+    }
+
+    task.pulse();
   }
 
 // give a warning
@@ -728,6 +792,8 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::commit()
   m_themeSelection->setThemes(convertedThemes);
 
   m_rollback = false;
+
+  te::common::ProgressManager::getInstance().removeViewer(id);
 }
 
 void te::qt::plugins::terralib4::TL4ConverterWizard::finish()
@@ -756,7 +822,8 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::finish()
 
   try
   {
-    te::qt::widgets::ScopedCursor sc(Qt::WaitCursor);
+    //te::qt::widgets::ScopedCursor sc(Qt::WaitCursor);
+    setCursor(Qt::WaitCursor);
 
     for(std::size_t i = 0; i < selected.size(); ++i)
     {
@@ -875,12 +942,14 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::finish()
   }
   catch(const te::da::Exception& e)
   {
+    setCursor(Qt::ArrowCursor);
     m_rollback = true;
     QMessageBox::warning(this, tr("Warning"), e.what());
     return;
   }
   catch(...)
   {
+    setCursor(Qt::ArrowCursor);
     m_rollback = true;
     QMessageBox::warning(this, tr("Warning"), tr("Automatic layer creation failed!"));
     return;

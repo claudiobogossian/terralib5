@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -24,6 +24,7 @@
 */
 
 // TerraLib 
+#include "../../../common/progress/ProgressManager.h"
 #include "../../../dataaccess/dataset/DataSet.h"
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../raster/Grid.h"
@@ -33,6 +34,7 @@
 #include "../help/HelpPushButton.h"
 #include "../layer/search/LayerSearchWidget.h"
 #include "../layer/search/LayerSearchWizardPage.h"
+#include "../progress/ProgressViewerDialog.h"
 #include "RasterInfoWidget.h"
 #include "RasterInfoWizardPage.h"
 #include "RegisterWizard.h"
@@ -197,6 +199,11 @@ bool te::qt::widgets::RegisterWizard::execute()
   algoOutputParams.m_rType = m_rasterInfoPage->getWidget()->getType();
   algoOutputParams.m_rInfo = m_rasterInfoPage->getWidget()->getInfo();
 
+
+  //progress
+  te::qt::widgets::ProgressViewerDialog v(this);
+  int id = te::common::ProgressManager::getInstance().addViewer(&v);
+
   QApplication::setOverrideCursor(Qt::WaitCursor);
 
   try
@@ -208,6 +215,8 @@ bool te::qt::widgets::RegisterWizard::execute()
       QMessageBox::warning(this, tr("Register"), tr("Algorithm initialization error.") +
         ( " " + te::rp::Module::getLastLogStr() ).c_str());
 
+      te::common::ProgressManager::getInstance().removeViewer(id);
+
       QApplication::restoreOverrideCursor();
 
       return false;
@@ -217,6 +226,8 @@ bool te::qt::widgets::RegisterWizard::execute()
     {
       QMessageBox::warning(this, tr("Register"), tr("Register Error.") +
         ( " " + te::rp::Module::getLastLogStr() ).c_str());
+
+      te::common::ProgressManager::getInstance().removeViewer(id);
 
       QApplication::restoreOverrideCursor();
 
@@ -237,6 +248,8 @@ bool te::qt::widgets::RegisterWizard::execute()
   {
     QMessageBox::warning(this, tr("Register"), e.what());
 
+    te::common::ProgressManager::getInstance().removeViewer(id);
+
     QApplication::restoreOverrideCursor();
 
     return false;
@@ -245,10 +258,14 @@ bool te::qt::widgets::RegisterWizard::execute()
   {
     QMessageBox::warning(this, tr("Register"), tr("An exception has occurred!"));
 
+    te::common::ProgressManager::getInstance().removeViewer(id);
+
     QApplication::restoreOverrideCursor();
 
     return false;
   }
+
+  te::common::ProgressManager::getInstance().removeViewer(id);
 
   QApplication::restoreOverrideCursor();
 

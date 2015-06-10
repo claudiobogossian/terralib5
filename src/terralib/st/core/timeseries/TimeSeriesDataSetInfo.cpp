@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -26,37 +26,62 @@
 //TerraLib
 #include "../../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../../common/StringUtils.h"
+#include "../../../geometry/GeometryProperty.h"
+#include "../../../datatype/DateTimeProperty.h"
 
 //ST
 #include "TimeSeriesDataSetInfo.h"
 
-te::st::TimeSeriesDataSetInfo::TimeSeriesDataSetInfo( const te::da::DataSourceInfo& dsinfo, 
-                              const std::string& dsName, int tPropIdx, int vPropIdx, int gPropIdx, 
-                              int idPropIdx, const std::string& id)
-  : m_obsDsInfo(dsinfo, dsName, tPropIdx, vPropIdx, gPropIdx),
-    m_vlPropIdxs(1,vPropIdx),
-    m_idPropIdx(idPropIdx),
-    m_id(id)
-{  
+
+te::st::TimeSeriesDataSetInfo::TimeSeriesDataSetInfo(const te::da::DataSourceInfo& dsinfo, const std::string& dsName, 
+                              const std::string& tPropName, const std::string& vPropName, 
+                              const std::string& gPropName, const std::string& idPropName, 
+                              const std::string& id)
+   : m_obsDsInfo(dsinfo, dsName),
+     m_vlPropNames()
+{
+  m_vlPropNames.push_back(vPropName);
+
+  //create properties
+  te::dt::DateTimeProperty* tp = new te::dt::DateTimeProperty(tPropName);
+  m_obsDsInfo.setTimePropInfo(tp);
+
+  te::gm::GeometryProperty* gp = new te::gm::GeometryProperty(gPropName);
+  m_obsDsInfo.setGeomPropInfo(gp);
+
+  std::vector<std::string> aux;
+  aux.push_back(vPropName);
+  m_obsDsInfo.setObsPropInfo(aux);
+
+  m_obsDsInfo.setIdPropInfo(idPropName);
+  m_obsDsInfo.setId(id);
 }
 
-te::st::TimeSeriesDataSetInfo::TimeSeriesDataSetInfo( const te::da::DataSourceInfo& dsinfo, const std::string& dsName, 
-                              int tPropIdx, const std::vector<int>& vPropIdxs, int gPropIdx,
-                              int idPropIdx, const std::string& id)
-  : m_obsDsInfo(dsinfo, dsName, std::vector<int>(1,tPropIdx), vPropIdxs, gPropIdx),
-    m_vlPropIdxs(vPropIdxs),
-    m_idPropIdx(idPropIdx),
-    m_id(id)
-{  
+te::st::TimeSeriesDataSetInfo::TimeSeriesDataSetInfo(const te::da::DataSourceInfo& dsinfo, const std::string& dsName, 
+                              const std::string& tPropName, const std::vector<std::string>& vPropNames, 
+                              const std::string& gPropName, const std::string& idPropName, 
+                              const std::string& id)
+   : m_obsDsInfo(dsinfo, dsName),
+     m_vlPropNames(vPropNames)
+{
+  //create properties
+  te::dt::DateTimeProperty* tp = new te::dt::DateTimeProperty(tPropName);
+  m_obsDsInfo.setTimePropInfo(tp);
+
+  te::gm::GeometryProperty* gp = new te::gm::GeometryProperty(gPropName);
+  m_obsDsInfo.setGeomPropInfo(gp);
+
+  m_obsDsInfo.setObsPropInfo(vPropNames);
+
+  m_obsDsInfo.setIdPropInfo(idPropName);
+  m_obsDsInfo.setId(id);
 }
 
 
 te::st::TimeSeriesDataSetInfo::TimeSeriesDataSetInfo( const te::st::ObservationDataSetInfo& info, 
-                                                      int idPropIdx, const std::string& id)
+                                                      const std::vector<std::string>& valPropNames)
   : m_obsDsInfo(info),
-    m_vlPropIdxs(info.getObsPropIdxs()),
-    m_idPropIdx(idPropIdx),
-    m_id(id)
+    m_vlPropNames(valPropNames)
 {
 }
 
@@ -66,37 +91,10 @@ te::st::TimeSeriesDataSetInfo::getObservationDataSetInfo() const
   return m_obsDsInfo;
 }
 
-const te::da::DataSourceInfo& 
-te::st::TimeSeriesDataSetInfo::getDataSourceInfo() const
+const std::vector<std::string>& 
+te::st::TimeSeriesDataSetInfo::getValuePropNames() const
 {
-  return m_obsDsInfo.getDataSourceInfo();
-}
-
-const std::vector<int>& 
-te::st::TimeSeriesDataSetInfo::getTimePropIdxs() const
-{
-  return m_obsDsInfo.getTimePropIdxs();
-}
-
-const std::vector<int>& 
-te::st::TimeSeriesDataSetInfo::getValuePropIdxs() const
-{
-  return m_vlPropIdxs;
-}
-
-int te::st::TimeSeriesDataSetInfo::getGeomPropIdx() const
-{
-  return m_obsDsInfo.getGeomPropIdx();
-}
-
-int te::st::TimeSeriesDataSetInfo::getIdPropIdx() const
-{
-  return m_idPropIdx;
-}
-
-std::string te::st::TimeSeriesDataSetInfo::getId() const
-{
-  return m_id;
+  return m_vlPropNames;
 }
 
 te::st::TimeSeriesDataSetInfo::~TimeSeriesDataSetInfo()

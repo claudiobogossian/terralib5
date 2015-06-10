@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "Raster.h"
+#include "Enums.h"
 
 // STL
 #include <complex>
@@ -58,12 +59,7 @@ namespace te
         /*!
           \brief Allowed interpolation methods.
         */
-        enum Method
-        {
-          NearestNeighbor = 1,    //!< Near neighborhood interpolation method.
-          Bilinear = 2,           //!< Bilinear interpolation method.
-          Bicubic = 3             //!< Bicubic interpolation method.
-        };
+        typedef InterpolationMethod Method;
 
         /*!
           \brief Constructor.

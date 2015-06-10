@@ -25,7 +25,10 @@ void VectorizeRaster()
 
     std::cout << "vectorizer created " << polygons.size() << " polygons" << std::endl;
     for (unsigned int i = 0; i < polygons.size(); i++)
-      std::cout << "  polygon " << i << ": " << polygons[i]->toString() << std::endl;
+    {
+      te::gm::Polygon* polygon = (te::gm::Polygon*) polygons[i];
+      std::cout << i << ": " << polygon->toString() << std::endl;
+    }
 
 // clean up
     delete inraster;

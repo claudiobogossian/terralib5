@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -25,6 +25,7 @@
 #include "TiePointsMosaic.h"
 
 #include "Macros.h"
+#include "Functions.h"
 #include "../raster/Interpolator.h"
 #include "../raster/Enums.h"
 #include "../raster/RasterFactory.h"
@@ -77,7 +78,7 @@ namespace te
       m_inputRastersBands.clear();
       m_tiePoints.clear();
       m_geomTransfName = "Affine";
-      m_interpMethod = te::rst::Interpolator::NearestNeighbor;
+      m_interpMethod = te::rst::NearestNeighbor;
       m_noDataValue = 0.0;
       m_forceInputNoDataValue = false;
       m_blendMethod = te::rp::Blender::NoBlendMethod;
@@ -204,17 +205,10 @@ namespace te
           // te::gm::GTParameters::TiePoint::second are the other rasters indexed points (lines/cols).  
           
         std::vector< te::rst::Grid > rastersGrids; //all rasters original grids under their original SRSs
-          
-        te::gm::Polygon auxPolygon( 0, te::gm::PolygonType, 0 );
-        te::gm::LinearRing* auxLinearRingPtr = 0;        
+        
         te::rst::Raster const* inputRasterPtr = 0;
         unsigned int inputRasterIdx = 0;
         te::srs::Converter convInstance;
-        boost::shared_ptr< te::gm::GeometricTransformation > auxTransPtr;
-        te::gm::Coord2D llCoord1;
-        te::gm::Coord2D urCoord1;
-        te::gm::Coord2D llCoord2;
-        te::gm::Coord2D urCoord2;
 
         m_inputParameters.m_feederRasterPtr->reset();
         while( ( inputRasterPtr = m_inputParameters.m_feederRasterPtr->getCurrentObj() ) )
@@ -243,14 +237,16 @@ namespace te
             mosaicBaseBandProperties = *inputRasterPtr->getBand( 0 )->getProperty();
             
             // finding the current raster bounding box polygon (first raster world coordinates)
-
-            auxPolygon.clear();
-            auxLinearRingPtr = new te::gm::LinearRing(5, te::gm::LineStringType);
+            
+            te::gm::LinearRing* auxLinearRingPtr = new te::gm::LinearRing(5, te::gm::LineStringType);
             auxLinearRingPtr->setPoint( 0, mosaicLLX, mosaicURY );
             auxLinearRingPtr->setPoint( 1, mosaicURX, mosaicURY );
             auxLinearRingPtr->setPoint( 2, mosaicURX, mosaicLLY );
             auxLinearRingPtr->setPoint( 3, mosaicLLX, mosaicLLY );
             auxLinearRingPtr->setPoint( 4, mosaicLLX, mosaicURY );
+            auxLinearRingPtr->setSRID( mosaicSRID );
+            
+            te::gm::Polygon auxPolygon( 0, te::gm::PolygonType, 0 );
             auxPolygon.push_back( auxLinearRingPtr );
             auxPolygon.setSRID( mosaicSRID );
             rastersBBoxes.push_back( auxPolygon );
@@ -284,61 +280,65 @@ namespace te
                 transParams.m_tiePoints.push_back( auxTP );
               }
             }
+            
+            // The transformation
+            // inverse mapping current raster lines/cols into the first raster lines/cols.
 
-            auxTransPtr.reset( te::gm::GTFactory::make(
-              m_inputParameters.m_geomTransfName ) );
+            boost::shared_ptr< te::gm::GeometricTransformation > auxTransPtr( 
+              te::gm::GTFactory::make( m_inputParameters.m_geomTransfName ) );
             TERP_TRUE_OR_RETURN_FALSE( auxTransPtr.get() != 0,
               "Geometric transformation instatiation error" );
             TERP_TRUE_OR_RETURN_FALSE( auxTransPtr->initialize( transParams ),
               "Geometric transformation parameters calcule error" );
             eachRasterPixelToFirstRasterPixelGeomTransfms.push_back( auxTransPtr );
+            
+            // The indexed detailed extent of input raster
+            
+            te::gm::LinearRing inRasterIndexedDetailedExtent( te::gm::LineStringType, 0, 0 );
+            TERP_TRUE_OR_RETURN_FALSE( te::rp::GetIndexedDetailedExtent(
+              *inputRasterPtr->getGrid(), inRasterIndexedDetailedExtent ),
+              "Error creating the raster detailed extent" );               
+            
+            // The input rasters detailed extent over the expanded mosaic
+            
+            te::gm::LinearRing inRasterDetailedExtent( 
+                inRasterIndexedDetailedExtent.size(), te::gm::LineStringType,
+                mosaicSRID, (te::gm::Envelope*)0 );
+            
+            {
+              double mappedX = 0;
+              double mappedY = 0;
+              double geoX = 0;
+              double geoY = 0;
 
-            // current raster corner coords (line/column)
-
-            urCoord2.x = ((double)inputRasterPtr->getGrid()->getNumberOfColumns())
-              - 1.0;
-            urCoord2.y = 0.0;
-            llCoord2.x = 0.0;
-            llCoord2.y = ((double)inputRasterPtr->getGrid()->getNumberOfRows())
-              - 1.0;
-
-            // current raster corner coords (line/column) over the
-            // first raster coords system (lines/columns)
-
-            auxTransPtr->inverseMap( urCoord2, urCoord1 );
-            auxTransPtr->inverseMap( llCoord2, llCoord1 );
-
-            // the respective coords in world space (first raster)
-
-            rastersGrids[ 0 ].gridToGeo( urCoord1.x, urCoord1.y, urCoord2.x,
-              urCoord2.y );
-            rastersGrids[ 0 ].gridToGeo( llCoord1.x, llCoord1.y, llCoord2.x,
-              llCoord2.y );
+              for( unsigned int inRasterDetExtentIdx = 0 ; inRasterDetExtentIdx <
+                inRasterIndexedDetailedExtent.size() ; ++inRasterDetExtentIdx )
+              {
+                auxTransPtr->inverseMap( 
+                  inRasterIndexedDetailedExtent.getX( inRasterDetExtentIdx ),
+                  inRasterIndexedDetailedExtent.getY( inRasterDetExtentIdx ),
+                  mappedX,
+                  mappedY);
+                
+                rastersGrids[ 0 ].gridToGeo( mappedX, mappedY, geoX,
+                  geoY );                
+                
+                inRasterDetailedExtent.setPoint( inRasterDetExtentIdx, geoX, geoY );
+              }            
+            }            
 
             // expanding mosaic area
 
-            mosaicLLX = std::min( mosaicLLX, urCoord2.x );
-            mosaicLLX = std::min( mosaicLLX, llCoord2.x );
+            mosaicLLX = std::min( mosaicLLX, inRasterDetailedExtent.getMBR()->getLowerLeftX() );
+            mosaicLLY = std::min( mosaicLLY, inRasterDetailedExtent.getMBR()->getLowerLeftY() );
 
-            mosaicLLY = std::min( mosaicLLY, urCoord2.y );
-            mosaicLLY = std::min( mosaicLLY, llCoord2.y );
-
-            mosaicURX = std::max( mosaicURX, urCoord2.x );
-            mosaicURX = std::max( mosaicURX, llCoord2.x );
-
-            mosaicURY = std::max( mosaicURY, urCoord2.y );
-            mosaicURY = std::max( mosaicURY, llCoord2.y );
+            mosaicURX = std::max( mosaicURX, inRasterDetailedExtent.getMBR()->getUpperRightX() );
+            mosaicURY = std::max( mosaicURY, inRasterDetailedExtent.getMBR()->getUpperRightY() );
 
             // finding the current raster bounding box polygon (first raster world coordinates)
 
-            auxPolygon.clear();
-            auxLinearRingPtr = new te::gm::LinearRing(5, te::gm::LineStringType);
-            auxLinearRingPtr->setPoint( 0, llCoord2.x, urCoord2.y );
-            auxLinearRingPtr->setPoint( 1, urCoord2.x, urCoord2.y );
-            auxLinearRingPtr->setPoint( 2, urCoord2.x, llCoord2.y );
-            auxLinearRingPtr->setPoint( 3, llCoord2.x, llCoord2.y );
-            auxLinearRingPtr->setPoint( 4, llCoord2.x, urCoord2.y );
-            auxPolygon.push_back( auxLinearRingPtr );
+            te::gm::Polygon auxPolygon( 0, te::gm::PolygonType, 0 );
+            auxPolygon.push_back( new te::gm::LinearRing( inRasterDetailedExtent ) );
             auxPolygon.setSRID( mosaicSRID );
             rastersBBoxes.push_back( auxPolygon );
           }
@@ -690,11 +690,13 @@ namespace te
               m_inputParameters.m_noDataValue,
               currentRasterMean,
               currentRasterVariance );
-
-            currentRasterBandsScales.push_back( std::sqrt( mosaicTargetVariances[ inputRastersBandsIdx ] /
-              currentRasterVariance ) );
-            currentRasterBandsOffsets.push_back( mosaicTargetMeans[ inputRastersBandsIdx ] -
-              ( currentRasterBandsScales[ inputRastersBandsIdx ] * currentRasterMean ) );
+            
+            currentRasterBandsScales.push_back( 
+                std::sqrt( mosaicTargetVariances[ inputRastersBandsIdx ] )
+                 /
+                std::sqrt( currentRasterVariance ) );
+            currentRasterBandsOffsets.push_back( mosaicTargetMeans[ inputRastersBandsIdx ]
+               - ( currentRasterBandsScales[ inputRastersBandsIdx ] * currentRasterMean ) );            
           }
         }
         else
@@ -713,9 +715,10 @@ namespace te
           *inputRasterPtr,
           m_inputParameters.m_inputRastersBands[ inputRasterIdx ],
           m_inputParameters.m_blendMethod,
-          te::rst::Interpolator::NearestNeighbor,
+          te::rst::NearestNeighbor,
           m_inputParameters.m_interpMethod,
           m_inputParameters.m_noDataValue,
+          false,
           m_inputParameters.m_forceInputNoDataValue,
           dummyRasterOffsets,
           dummyRasterScales,

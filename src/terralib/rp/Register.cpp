@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -24,6 +24,7 @@
 
 #include "Register.h"
 #include "Macros.h"
+#include "Functions.h"
 #include "../geometry/GeometricTransformation.h"
 #include "../geometry/GTFactory.h"
 #include "../raster/RasterFactory.h"
@@ -65,7 +66,7 @@ namespace te
       m_outputSRID = 0;
       m_outputResolutionX = 1.0;
       m_outputResolutionY = 1.0;
-      m_interpMethod = te::rst::Interpolator::NearestNeighbor;
+      m_interpMethod = te::rst::NearestNeighbor;
       m_noDataValue = 0;
       m_geomTransfName = "Affine";
       m_geomTransfPtr = 0;
@@ -199,40 +200,25 @@ namespace te
       }
       else
       {
+        te::gm::LinearRing indexedDetailedExtent(te::gm::LineStringType, 0, 0);
+        TERP_TRUE_OR_RETURN_FALSE( te::rp::GetIndexedDetailedExtent( 
+          *m_inputParameters.m_inputRasterPtr->getGrid(), indexedDetailedExtent ),
+          "Indexed extent creation error" );
+        
         double mappedX = 0;
         double mappedY = 0;        
+        
+        for( std::size_t extentIdx = 0 ; extentIdx < indexedDetailedExtent.size() ;
+          ++extentIdx )
+        {
+          transformationPtr->directMap( indexedDetailedExtent.getX( extentIdx ), 
+            indexedDetailedExtent.getY( extentIdx ), mappedX, mappedY );
           
-        transformationPtr->directMap( -0.5, -0.5, mappedX, mappedY );
-        lowerLeftX = std::min( lowerLeftX, mappedX );
-        lowerLeftY = std::min( lowerLeftY, mappedY );
-        upperRightX = std::max( upperRightX, mappedX );
-        upperRightY = std::max( upperRightY, mappedY );        
-        
-        transformationPtr->directMap( 
-          ((double)m_inputParameters.m_inputRasterPtr->getNumberOfColumns()) - 0.5, 
-          -0.5, mappedX, mappedY );
-        lowerLeftX = std::min( lowerLeftX, mappedX );
-        lowerLeftY = std::min( lowerLeftY, mappedY );
-        upperRightX = std::max( upperRightX, mappedX );
-        upperRightY = std::max( upperRightY, mappedY );
-        
-        transformationPtr->directMap( 
-          ((double)m_inputParameters.m_inputRasterPtr->getNumberOfColumns()) - 0.5, 
-          ((double)m_inputParameters.m_inputRasterPtr->getNumberOfRows()) - 0.5, 
-          mappedX, mappedY );
-        lowerLeftX = std::min( lowerLeftX, mappedX );
-        lowerLeftY = std::min( lowerLeftY, mappedY );
-        upperRightX = std::max( upperRightX, mappedX );
-        upperRightY = std::max( upperRightY, mappedY );
-        
-        transformationPtr->directMap( 
-          -0.5, 
-          ((double)m_inputParameters.m_inputRasterPtr->getNumberOfRows()) - 0.5, 
-          mappedX, mappedY );
-        lowerLeftX = std::min( lowerLeftX, mappedX );
-        lowerLeftY = std::min( lowerLeftY, mappedY );
-        upperRightX = std::max( upperRightX, mappedX );
-        upperRightY = std::max( upperRightY, mappedY );          
+          lowerLeftX = std::min( lowerLeftX, mappedX );
+          lowerLeftY = std::min( lowerLeftY, mappedY );
+          upperRightX = std::max( upperRightX, mappedX );
+          upperRightY = std::max( upperRightY, mappedY );  
+        }
       }
       
       // creating the output raster

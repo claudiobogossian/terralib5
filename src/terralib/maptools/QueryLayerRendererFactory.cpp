@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -27,12 +27,23 @@
 #include "QueryLayerRenderer.h"
 #include "QueryLayerRendererFactory.h"
 
-te::map::QueryLayerRendererFactory te::map::QueryLayerRendererFactory::sm_factory;
+te::map::QueryLayerRendererFactory* te::map::QueryLayerRendererFactory::sm_factory(0);
+
+void te::map::QueryLayerRendererFactory::initialize()
+{
+  finalize();
+  sm_factory = new QueryLayerRendererFactory;
+}
+
+void te::map::QueryLayerRendererFactory::finalize()
+{
+  delete sm_factory;
+  sm_factory = 0;
+}
 
 te::map::QueryLayerRendererFactory::~QueryLayerRendererFactory()
 {
 }
-
 
 te::map::AbstractRenderer* te::map::QueryLayerRendererFactory::build()
 {
@@ -43,5 +54,3 @@ te::map::QueryLayerRendererFactory::QueryLayerRendererFactory()
   : RendererFactory("QUERY_LAYER_RENDERER")
 {
 }
-
-

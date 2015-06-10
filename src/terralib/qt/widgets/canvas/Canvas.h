@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -399,6 +399,8 @@ namespace te
             \return The marix.
            */
           QMatrix getMatrix();
+
+          void setMatrix(const QMatrix& matrix);
 
           /*! \brief Sets the given render hint on the canvas painter if on is true; otherwise clears the render hint. */
           void setRenderHint(QPainter::RenderHint hint, bool on = true);

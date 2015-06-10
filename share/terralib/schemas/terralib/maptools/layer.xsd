@@ -53,6 +53,7 @@
           <xsd:element name="SRID" type="xsd:integer" minOccurs="1" maxOccurs="1" />
           <xsd:element name="Extent" type="te_gm:EnvelopeType" minOccurs="1" maxOccurs="1" />
           <xsd:element name="RendererId" type="xsd:string" minOccurs="1" maxOccurs="1" />
+          <xsd:element name="CompositionMode" type="xsd:integer" minOccurs="0" maxOccurs="1" />
           <xsd:element name="Style" type="te_map:StyleType" minOccurs="0" maxOccurs="1"/>
         </xsd:sequence>
       </xsd:extension>
@@ -70,6 +71,7 @@
           <xsd:element name="SRID" type="xsd:integer" minOccurs="1" maxOccurs="1" />
           <xsd:element name="Extent" type="te_gm:EnvelopeType" minOccurs="1" maxOccurs="1" />
           <xsd:element name="RendererId" type="xsd:string" minOccurs="1" maxOccurs="1" />
+          <xsd:element name="CompositionMode" type="xsd:integer" minOccurs="0" maxOccurs="1" />
           <xsd:element name="Style" type="te_map:StyleType" minOccurs="0" maxOccurs="1"/>
         </xsd:sequence>
       </xsd:extension>
@@ -98,6 +100,7 @@
           <xsd:element name="SRID" type="xsd:integer" minOccurs="1" maxOccurs="1" />
           <xsd:element name="Extent" type="te_gm:EnvelopeType" minOccurs="1" maxOccurs="1" />
           <xsd:element name="RendererId" type="xsd:string" minOccurs="1" maxOccurs="1" />
+          <xsd:element name="CompositionMode" type="xsd:integer" minOccurs="0" maxOccurs="1" />
           <xsd:element name="Style" type="te_map:StyleType" minOccurs="0" maxOccurs="1"/>
         </xsd:sequence>
       </xsd:extension>
@@ -113,6 +116,7 @@
           <xsd:element name="DataSetName" type="xsd:string" minOccurs="1" maxOccurs="1" />
           <xsd:element name="DataSourceId" type="xsd:string" minOccurs="1" maxOccurs="1" />
           <xsd:element name="RendererType" type="xsd:string" minOccurs="1" maxOccurs="1" />
+          <xsd:element name="CompositionMode" type="xsd:integer" minOccurs="0" maxOccurs="1" />
           <xsd:element name="Style" type="te_map:StyleType" minOccurs="0" maxOccurs="1"/>
           <xsd:element name="Converter" type="te_map:DataSetTypeConverterType" minOccurs="1" maxOccurs="1" />
         </xsd:sequence>
@@ -177,6 +181,7 @@
       <xsd:element name="Precision" type="xsd:integer" minOccurs="1" maxOccurs="1" />
       <xsd:element name="StandardDeviation" type="xsd:double" minOccurs="0" maxOccurs="1" />
       <xsd:element ref="te_map:GroupingItem" minOccurs="1" maxOccurs="unbounded" />
+	  <xsd:element name="Summary" type="xsd:string" minOccurs="0" maxOccurs="1" />
     </xsd:sequence>
   </xsd:complexType>
 
@@ -216,6 +221,7 @@
       <xsd:element name="BarWidth" type="xsd:integer" minOccurs="0" maxOccurs="1" />
       <xsd:element name="IsVisible" type="xsd:boolean" minOccurs="1" maxOccurs="1" />
       <xsd:element name="MaxValue" type="xsd:double" minOccurs="0" maxOccurs="1" />
+      <xsd:element name="Summary" type="xsd:string" minOccurs="0" maxOccurs="1" />
       <xsd:element ref="te_map:Slice" minOccurs="1" maxOccurs="unbounded" />
     </xsd:sequence>
   </xsd:complexType>

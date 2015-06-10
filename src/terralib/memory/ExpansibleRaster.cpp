@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -112,8 +112,6 @@ te::mem::ExpansibleRaster::ExpansibleRaster( const unsigned char maxMemPercentUs
       *(bandsProperties[ bandsIdx ]) , bandsIdx ) );
     delete ( bandsProperties[ bandsIdx ] );
   }
-  
-  dummyFillAllBlocks();
 }
 
 te::mem::ExpansibleRaster::ExpansibleRaster( te::rst::Grid* grid, 
@@ -165,8 +163,6 @@ te::mem::ExpansibleRaster::ExpansibleRaster( te::rst::Grid* grid,
       *(bandsProperties[ bandsIdx ]) , bandsIdx ) );
     delete ( bandsProperties[ bandsIdx ] );
   }
-  
-  dummyFillAllBlocks();
 }
 
 te::mem::ExpansibleRaster::~ExpansibleRaster()

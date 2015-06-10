@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -38,7 +38,11 @@
 void CreateDataSource(std::string name)
 {
   std::map<std::string, std::string> connInfo;
+#ifdef _M_IX86
   connInfo["PROVIDER"] = "Microsoft.Jet.OLEDB.4.0";
+#else
+  connInfo["PROVIDER"] = "Microsoft.ACE.OLEDB.12.0";
+#endif
   connInfo["DB_NAME"] = name;
   connInfo["CREATE_OGC_METADATA_TABLES"] = "TRUE";
 
@@ -70,7 +74,11 @@ void CopyFromShapeFile()
   inDs->open();
   
   std::map<std::string, std::string> connInfo;
+#ifdef _M_IX86 
   connInfo["PROVIDER"] = "Microsoft.Jet.OLEDB.4.0";
+#else
+  connInfo["PROVIDER"] = "Microsoft.ACE.OLEDB.12.0";
+#endif
   connInfo["HOST"] = "localhost";
   connInfo["USER_NAME"] = "";
   connInfo["PASSWORD"] = "";

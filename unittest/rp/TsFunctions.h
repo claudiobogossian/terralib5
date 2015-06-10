@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -29,6 +29,10 @@
 // cppUnit
 #include <cppunit/extensions/HelperMacros.h>
 
+// Terralib
+#include <terralib/rp.h>
+
+
 /*!
   \class TsFunctions
 
@@ -37,7 +41,7 @@
 class TsFunctions : public CPPUNIT_NS::TestFixture 
 {
   CPPUNIT_TEST_SUITE( TsFunctions );
-  
+
   CPPUNIT_TEST( GetStdDevValue );
   
   CPPUNIT_TEST( GetStdDevValueOptimized );
@@ -55,6 +59,18 @@ class TsFunctions : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST( getCovarianceValueOptimized );
   
   CPPUNIT_TEST( ihs );
+  
+  CPPUNIT_TEST( DecomposeBands );
+  
+  CPPUNIT_TEST( ComposeBandsSameSRID );
+  
+  CPPUNIT_TEST( ComposeBandsDifSRID );
+  
+  CPPUNIT_TEST( GetDetailedExtent );
+  
+  CPPUNIT_TEST( GetIndexedDetailedExtent );
+  
+  CPPUNIT_TEST( WaveletAtrous );
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -77,6 +93,18 @@ protected :
   void GetStdDevValue();
   
   void GetStdDevValueOptimized();
+  
+  void DecomposeBands();
+  
+  void ComposeBandsSameSRID();
+  
+  void ComposeBandsDifSRID();
+  
+  void GetDetailedExtent();
+  
+  void GetIndexedDetailedExtent();
+  
+  void WaveletAtrous();
   
 };
 

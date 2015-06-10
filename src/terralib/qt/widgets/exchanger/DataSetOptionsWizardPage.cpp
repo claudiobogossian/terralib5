@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -44,6 +44,7 @@
 #include <algorithm>
 
 // Boost
+#include <boost/algorithm/string/replace.hpp>
 #include <boost/lexical_cast.hpp>
 
 // Qt
@@ -108,12 +109,24 @@ void te::qt::widgets::DataSetOptionsWizardPage::set(const std::list<te::da::Data
       te::da::LoadProperties((*it).get(), datasource->getId());
 
     //create dataset adapter
-    te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter((*it).get(), targetDSPtr->getCapabilities());
+    te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter((*it).get(), targetDSPtr->getCapabilities(), targetDSPtr->getEncoding());
 
+    //fix output dataset name
+    std::string name = converter->getResult()->getName();
+
+    std::size_t idx = name.find(".");
+    if (idx != std::string::npos)
+    {
+        name = name.substr(idx + 1, name.size() - 1);
+    }
+
+    converter->getResult()->setName(name);
+
+    //fix primary key name
     if(converter->getResult() && converter->getResult()->getPrimaryKey())
     {
       te::da::PrimaryKey* pk = converter->getResult()->getPrimaryKey();
-      pk->setName(converter->getResult()->getName() + "_" + pk->getName() + "_pk");
+      pk->setName(converter->getResult()->getName() + "_pk");
     }
 
     m_datasets.insert(std::map<te::da::DataSetTypePtr, te::da::DataSetTypeConverter*>::value_type((*it), converter));
@@ -183,7 +196,7 @@ void te::qt::widgets::DataSetOptionsWizardPage::applyChanges()
       if(it->second->getResult()->getPrimaryKey())
       {
         te::da::PrimaryKey* pk = it->second->getResult()->getPrimaryKey();
-        pk->setName(it->second->getResult()->getName() + "_" + pk->getName() + "_pk");
+        pk->setName(it->second->getResult()->getName() + "_pk");
 
         // fill constraints
         m_constraintWidget->setDataSetType(it->second->getResult());

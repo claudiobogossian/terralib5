@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -48,7 +48,7 @@ void TsSkeleton::Pattern1Test()
   auxRasterInfo["MEM_SRC_RASTER_DRIVER_TYPE"] = "MEM";  
   auxRasterInfo["FORCE_MEM_DRIVER"] = "TRUE";
   inputRasterPtrPointer.reset( inputRasterPtrPointer->resample( 
-    te::rst::Interpolator::NearestNeighbor, -2, auxRasterInfo ) );
+    te::rst::NearestNeighbor, -2, auxRasterInfo ) );
   CPPUNIT_ASSERT( inputRasterPtrPointer.get() );  
   
   // Creating the algorithm parameters

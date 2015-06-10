@@ -19,10 +19,10 @@
   <property name="modal">
    <bool>false</bool>
   </property>
-  <layout class="QGridLayout" name="gridLayout_9">
+  <layout class="QGridLayout" name="gridLayout_3">
    <item row="0" column="0">
-    <layout class="QVBoxLayout" name="verticalLayout_26">
-     <item>
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="0">
       <widget class="QTabWidget" name="tabType">
        <property name="currentIndex">
         <number>0</number>
@@ -1067,11 +1067,11 @@
                  <property name="title">
                   <string>Font Settings</string>
                  </property>
-                 <layout class="QGridLayout" name="gridLayout">
+                 <layout class="QGridLayout" name="gridLayout_57">
                   <item row="0" column="0">
                    <layout class="QVBoxLayout" name="verticalLayout_17">
                     <item>
-                     <layout class="QGridLayout" name="gridLayout_3">
+                     <layout class="QGridLayout" name="gridLayout_33">
                       <item row="0" column="0" colspan="2">
                        <widget class="QLabel" name="textLabel7_2">
                         <property name="text">
@@ -2957,7 +2957,7 @@
                        </layout>
                       </item>
                       <item>
-                       <layout class="QGridLayout" name="gridLayout_13">
+                       <layout class="QGridLayout" name="gridLayout_43">
                         <item row="0" column="0">
                          <widget class="QLabel" name="textLabel10_2_2">
                           <property name="text">
@@ -3688,7 +3688,7 @@
        </widget>
       </widget>
      </item>
-     <item>
+     <item row="1" column="0">
       <layout class="QHBoxLayout" name="horizontalLayout_9">
        <item>
         <widget class="QPushButton" name="helpPushButton">
@@ -3710,18 +3710,11 @@
          </property>
          <property name="sizeHint" stdset="0">
           <size>
-           <width>170</width>
+           <width>498</width>
            <height>20</height>
           </size>
          </property>
         </spacer>
-       </item>
-       <item>
-        <widget class="QPushButton" name="pbApply">
-         <property name="text">
-          <string>&amp;Apply</string>
-         </property>
-        </widget>
        </item>
        <item>
         <widget class="QPushButton" name="pbClose">

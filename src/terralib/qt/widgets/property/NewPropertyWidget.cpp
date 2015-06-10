@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -223,7 +223,7 @@ bool te::qt::widgets::NewPropertyWidget::buildProperty()
 
     case te::dt::DATETIME_TYPE:
     {
-      m_simpleProperty = new te::dt::DateTimeProperty(name, te::dt::DATE, te::dt::UNKNOWN, isRequired, new std::string(defaultValue));
+      m_simpleProperty = new te::dt::DateTimeProperty(name, te::dt::DATE, isRequired, new std::string(defaultValue));
       break;
     }
         

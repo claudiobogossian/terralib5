@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -39,17 +39,11 @@
 // GDAL
 #include <gdal_priv.h>
 
-te::gdal::Band::Band(Raster* rst, std::size_t idx)
+te::gdal::Band::Band(Raster* rstPtr, std::size_t idx, GDALRasterBand* gdalRasterBandPtr )
   : te::rst::Band(0, idx),
-    m_raster(rst),
-    m_rasterBand(0),
-    m_getBuff(0)
+    m_raster(rstPtr),
+    m_rasterBand(gdalRasterBandPtr)
 {
-  m_rasterBand = 
-    ( rst->getGDALDataset()->GetRasterBand(1)->GetColorInterpretation() ==
-    GCI_PaletteIndex ) ? rst->getGDALDataset()->GetRasterBand(1) :
-    rst->getGDALDataset()->GetRasterBand( idx + 1 );
-      
   m_gdaltype = m_rasterBand->GetRasterDataType();
   
   m_property = GetBandProperty(m_rasterBand, idx);
@@ -62,7 +56,7 @@ te::gdal::Band::Band(Raster* rst, std::size_t idx)
 
   m_y = std::numeric_limits<int>::max();
 
-  m_update_buffer = false;
+  m_update_buffer = false;  
 }
 
 te::gdal::Band::Band(const Band& rhs)
@@ -294,4 +288,3 @@ int te::gdal::Band::placeBuffer(unsigned c, unsigned r) const
 // calculates and returns the value of m_i
   return (m_currC + m_currR * m_property->m_blkw);
 }
-

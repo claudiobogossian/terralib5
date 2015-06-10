@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -41,8 +41,8 @@ namespace te
 {
   namespace xml
   {
+    class AbstractWriter;
     class Reader;
-    class Writer;
   }
 
   namespace map
@@ -58,7 +58,7 @@ namespace te
         public:
 
           typedef boost::function<te::map::AbstractLayer* (te::xml::Reader&)> LayerReadFnctType;
-          typedef boost::function<void (const te::map::AbstractLayer*, te::xml::Writer&)> LayerWriteFnctType;
+          typedef boost::function<void (const te::map::AbstractLayer*, te::xml::AbstractWriter&)> LayerWriteFnctType;
           typedef std::pair<LayerReadFnctType, LayerWriteFnctType> LayerFnctSerializeType;
           typedef std::map<std::string, LayerFnctSerializeType> LayerFnctIdxType;
 
@@ -66,7 +66,7 @@ namespace te
 
           te::map::AbstractLayer* read(te::xml::Reader& reader) const;
 
-          void write(const te::map::AbstractLayer* alayer, te::xml::Writer& writer) const;
+          void write(const te::map::AbstractLayer* alayer, te::xml::AbstractWriter& writer) const;
 
           ~Layer();
 

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -26,11 +26,13 @@
 // Terralib
 #include "../../../vp/qt/PolygonToLineDialog.h"
 #include "../../af/ApplicationController.h"
+#include "../../af/events/LayerEvents.h"
 #include "../../af/Project.h"
 #include "PolygonToLineAction.h"
 
 // Qt
 #include <QtCore/QObject>
+#include <QMessageBox>
 
 // STL
 #include <memory>
@@ -38,7 +40,8 @@
 te::qt::plugins::vp::PolygonToLineAction::PolygonToLineAction(QMenu* menu)
   : te::qt::plugins::vp::AbstractAction(menu)
 {
-  createAction(tr("Polygon to Line...").toStdString());
+  createAction(tr("Polygon to Line...").toStdString(), "polygontoline-icon");
+  m_action->setObjectName("Processing.Vector Processing.Polygon to Line");
 }
 
 te::qt::plugins::vp::PolygonToLineAction::~PolygonToLineAction()
@@ -47,7 +50,8 @@ te::qt::plugins::vp::PolygonToLineAction::~PolygonToLineAction()
 
 void te::qt::plugins::vp::PolygonToLineAction::onActionActivated(bool checked)
 {
-  te::vp::PolygonToLineDialog dlg(0);
+  QWidget* parent = te::qt::af::ApplicationController::getInstance().getMainWindow();
+  te::vp::PolygonToLineDialog dlg(parent);
 
   // get the list of layers from current project
   te::qt::af::Project* prj = te::qt::af::ApplicationController::getInstance().getProject();
@@ -57,5 +61,20 @@ void te::qt::plugins::vp::PolygonToLineAction::onActionActivated(bool checked)
     dlg.setLayers(prj->getSingleLayers(false));
   }
 
-  dlg.exec();
+  if(dlg.exec() != QDialog::Accepted)
+    return;
+
+  te::map::AbstractLayerPtr layer = dlg.getLayer();
+
+  if(!layer)
+    return;
+
+  int reply = QMessageBox::question(0, tr("Polygon to Line Result"), tr("The operation was concluded successfully. Would you like to add the layer to the project?"), QMessageBox::No, QMessageBox::Yes);
+
+  if(prj && reply == QMessageBox::Yes)
+  {
+    te::qt::af::evt::LayerAdded evt(layer);
+
+    te::qt::af::ApplicationController::getInstance().broadcast(&evt);
+  }
 }

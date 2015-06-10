@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -28,6 +28,7 @@
 #include "Config.h"
 #include "AbstractFeeder.h"
 #include "../raster/Raster.h"
+#include "../geometry/Geometry.h"
 
 #include <string>
 #include <vector>
@@ -155,7 +156,31 @@ namespace te
           const bool sortFileNames,
           const std::vector< std::string >& fileExtensions );
         
+        /*!
+          \brief Constructor from an input directory name with a restriction geometry.
+          \param directoryName The directory full path name. 
+          \param recursive true if a recursive search must be performed. 
+          \param rType The name of the specific driver to instantiate each raster. 
+          \param sortFileNames If true, the file names will be sorted.
+          \param fileExtensions The file extensions filter (example: ".tif"), or an empty vector if all extensions must be accepted.
+          \param restrictionGeomPtr A pointer to a restriction geometry (only rasters intercepting this geomtry will be considered) or a null pointer if there is no restriction.
+          \param ignoreInvalidRasterFiles If true, invalid raster files will be ignored.
+        */        
+        FeederConstRasterDirectory( const std::string& directoryName,
+          const bool recursive,
+          const std::string& rType,
+          const bool sortFileNames,
+          const std::vector< std::string >& fileExtensions,
+          te::gm::Geometry const * const restrictionGeomPtr,
+          const bool ignoreInvalidRasterFiles );        
+        
         ~FeederConstRasterDirectory();
+
+        /*!
+          \brief Returns the current raster file name.
+          \return Returns the current raster file name.
+        */        
+        const std::string& getCurrentRasterFileName();
         
         //overloads
         te::rst::Raster const* getCurrentObj() const;
@@ -164,15 +189,43 @@ namespace te
         void reset();
         unsigned int getObjsCount() const;
         unsigned int getCurrentOffset() const;
+
+        /*!
+          \brief Apply a new geometry intersect restriction selecting only those rasters intersecting the given geometry.
+          \param restrictionGeom The new restrigion geometry.
+        */         
+        void applyGeometryRestriction( const te::gm::Geometry& restrictionGeom );
         
       protected :
         
+        bool m_ignoreInvalidRasterFiles; //!< If true, invalid raster files will be ignored.
         std::string m_rType;
-        std::vector< std::string >::size_type m_currentOffset;
-        std::vector< std::string > m_filesNames;
+        std::vector< unsigned int > m_selectedRastersIndexes;
+        std::vector< unsigned int > ::size_type m_selectedRasterIndexesOffset;
+        std::vector< std::string > m_allRasterFileNames;
+        std::vector< te::gm::Polygon > m_allRastersBoundingBoxes;
         std::auto_ptr< te::rst::Raster > m_currentRasterPtr;
+        std::auto_ptr< te::gm::Geometry > m_restrictionGeomPtr;
         
         FeederConstRasterDirectory();
+        
+        /*!
+          \brief Initialize this instance
+          \param directoryName The directory full path name. 
+          \param recursive true if a recursive search must be performed. 
+          \param rType The name of the specific driver to instantiate each raster. 
+          \param sortFileNames If true, the file names will be sorted.
+          \param fileExtensions The file extensions filter (example: ".tif"), or an empty vector if all extensions must be accepted.
+          \param restrictionGeomPtr A pointer to a restriction geometry (only rasters intercepting this geomtry will be considered) or a null pointer if there is no restriction.
+          \param ignoreInvalidRasterFiles If true, invalid raster files will be ignored.
+        */            
+        bool initialize(  const std::string& directoryName,
+          const bool recursive,
+          const std::string& rType,
+          const bool sortFileNames,
+          const std::vector< std::string >& fileExtensions,
+          te::gm::Geometry const * const restrictionGeomPtr,
+          const bool ignoreInvalidRasterFiles );
     };      
   } // end namespace rp
 }   // end namespace te

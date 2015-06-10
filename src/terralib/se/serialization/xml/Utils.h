@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -37,8 +37,8 @@ namespace te
 
   namespace xml
   {
+    class AbstractWriter;
     class Reader;
-    class Writer;
   }
 
   namespace se
@@ -49,21 +49,21 @@ namespace te
 
     namespace serialize
     {
-      void WriteStringPtrHelper(const std::string& elementName, const std::string* s, te::xml::Writer& writer);
+      void WriteStringPtrHelper(const std::string& elementName, const std::string* s, te::xml::AbstractWriter& writer);
 
-      void WriteParameterValuePtrHelper(const std::string& elementName, const te::se::ParameterValue* p, te::xml::Writer& writer);
+      void WriteParameterValuePtrHelper(const std::string& elementName, const te::se::ParameterValue* p, te::xml::AbstractWriter& writer);
 
-      void WriteBaseSymbolizerHelper(const te::xl::SimpleLink* link, te::xml::Writer& writer);
+      void WriteBaseSymbolizerHelper(const te::xl::SimpleLink* link, te::xml::AbstractWriter& writer);
     
-      void WriteOnlineResourceHelper(const te::xl::SimpleLink* link, te::xml::Writer& writer);
+      void WriteOnlineResourceHelper(const te::xl::SimpleLink* link, te::xml::AbstractWriter& writer);
 
-      void WriteSymbolizerHelper(const te::se::Symbolizer* symbolizer, te::xml::Writer& writer);
+      void WriteSymbolizerHelper(const te::se::Symbolizer* symbolizer, te::xml::AbstractWriter& writer);
 
       void ReadSymbolizerHelper(te::se::Symbolizer* symbolizer, te::xml::Reader& reader);
 
-      void WriteSelectedChannelHelper(const std::string& elementName, const te::se::SelectedChannel* sc, te::xml::Writer& writer);
+      void WriteSelectedChannelHelper(const std::string& elementName, const te::se::SelectedChannel* sc, te::xml::AbstractWriter& writer);
 
-      void WriteGeometryPropertyHelper(const te::fe::PropertyName* p, te::xml::Writer& writer);
+      void WriteGeometryPropertyHelper(const te::fe::PropertyName* p, te::xml::AbstractWriter& writer);
 
       te::fe::PropertyName* ReadGeometryPropertyHelper(te::xml::Reader& reader);
     }  // end namespace serialize

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -117,7 +117,7 @@ namespace te
 
           std::vector<std::string> m_expressionHistory;
 
-          std::size_t m_expressionHistoryCounter;
+          int m_expressionHistoryCounter;
 
           std::auto_ptr<Ui::ArithmeticOpWizardPageForm> m_ui;
           

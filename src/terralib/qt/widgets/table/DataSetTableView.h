@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -29,6 +29,7 @@
 
 // TerraLib
 #include "../Config.h"
+#include "../../../common/CharEncodingConv.h"
 
 // Qt
 #include <QTableView>
@@ -39,6 +40,7 @@ class TablePopupFilter;
 namespace te
 {
   // Forward declarations
+
   namespace da
   {
     class DataSet;
@@ -93,13 +95,42 @@ namespace te
           virtual ~DataSetTableView();
 
           /*!
+            \brief Sets the drag drop on the horizontal header.
+                  When the drag drop is enabled, you lose the ability to swap columns
+          
+            \param b True: does the drag drop. False: do not drag drop.
+          */
+          void setDragDrop(bool b);
+
+          /*!
+            \brief Gets the drag drop flag.
+          
+            \return True: is drag drop. False: not is drag drop.
+          */
+          bool getDragDrop();
+
+          /*!
+            \brief Sets the drop on the horizontal header.
+          
+            \param b True: accept drop. False: do not accept drop.
+          */
+          void setAcceptDrop(bool b);
+
+          /*!
+            \brief Gets accept drop flag.
+          
+            \return True: accept drop. False: not accept drop.
+          */
+          bool getAcceptDrop();
+
+          /*!
             \brief Sets the layer to be presented.
           
             \param layer Pointer to the layer to be presented.
 
             \param clearEditor True for reset editions, false to maintain it.
           */
-          void setLayer(const te::map::AbstractLayer* layer, const bool& clearEditor = true);
+          void setLayer(te::map::AbstractLayer* layer, const bool& clearEditor = true);
 
           /*!
             \brief Updates the data set being visualized.
@@ -110,7 +141,7 @@ namespace te
 
             \param clearEditor True for reset editions, false to maintain it.
           */
-          void setDataSet(te::da::DataSet* dset, const bool& clearEditor = true);
+          void setDataSet(te::da::DataSet* dset, te::common::CharEncoding enc, const bool& clearEditor = true);
 
           /*!
             \brief Sets the schema of the data set. It is used to define the primary keys and create the ObjectIdSet.
@@ -155,6 +186,13 @@ namespace te
             \param column Column that provides the data for the histogram.
           */
           void createHistogram(const int& column);
+
+          /*!
+            \brief Creates a new chart that displays the normal distribution based on the data at position \a column
+
+            \param column Column that provides the data used to calculate the normal distribution.
+          */
+          void createNormalDistribution(const int& column);
 
           /*!
             \brief Hides the column at position \a column
@@ -294,7 +332,7 @@ namespace te
           DataSetTableModel* m_model;       //!< The model to be used.
           TablePopupFilter*  m_popupFilter; //!< The menus popup filter.
           HighlightDelegate* m_delegate;    //!< Delegate used for rendering selected rows.
-          const te::map::AbstractLayer* m_layer;  //!< Pointer to the layer being presented.
+          te::map::AbstractLayer* m_layer;  //!< Pointer to the layer being presented.
           bool m_autoScrollEnabled;         //!< Auto scroll enabling.
           bool m_doScroll;                  //!< Flag to force or not scrolling.
           bool m_promotionEnabled;          //!< Promotion enabled.
@@ -302,6 +340,7 @@ namespace te
           std::vector<std::string> m_orderby;          //!< Order by columns.
           bool m_orderAsc;                       //!< Flag that sinalizes if the it is sorted in ascending sorting.
           bool m_resetOrder;                //!< Flag that sinalizes if there's is no sort.
+          te::common::CharEncoding m_encoding;
       };
     }
   }

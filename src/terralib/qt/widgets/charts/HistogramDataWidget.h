@@ -1,4 +1,4 @@
-/*  Copyright (C) 2010-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -93,6 +93,14 @@ namespace te
             \note The caller will take ownership of the returned pointer.
           */
           te::qt::widgets::Histogram* getHistogram();
+
+          /*!
+            \brief Sets the property to be used in order to generate the histogram
+
+            \note This function is intented to prevent the user from selecting a property through this widget in special cases,
+                  if that is not the intended behaviour, do not call this function.
+          */
+          void setHistogramProperty(int propId);
 
         protected slots:
 

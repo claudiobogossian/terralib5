@@ -28,7 +28,7 @@
 include_directories(${Boost_INCLUDE_DIR})
 
 if(TERRALIB_GEOS_ENABLED)
-  include_directories(${GEOS_INCLUDE_DIR})
+  include_directories(${GEOS_INCLUDE_DIR} ${GEOS_INCLUDE_DIR}/..)
 endif()
 
 if(WIN32)

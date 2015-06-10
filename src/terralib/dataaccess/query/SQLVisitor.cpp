@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -57,6 +57,7 @@
 #include "SQLDialect.h"
 #include "SQLFunctionEncoder.h"
 #include "SQLVisitor.h"
+#include "ST_Dump.h"
 #include "SubSelect.h"
 #include "Where.h"
 
@@ -302,11 +303,14 @@ void te::da::SQLVisitor::visit(const Select& visited)
 void te::da::SQLVisitor::visit(const SubSelect& visited)
 {
   assert(visited.getSelect());
+
+  m_sql += "(";
   visited.getSelect()->accept(*this);
+  m_sql += ")";
 
   if(visited.getAlias().empty() == false)
   {
-    m_sql += " AS ";
+    m_sql += "AS ";
     m_sql += visited.getAlias();
   }  
 }

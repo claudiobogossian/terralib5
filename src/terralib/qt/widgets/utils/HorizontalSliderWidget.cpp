@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -43,6 +43,9 @@ te::qt::widgets::HorizontalSliderWidget::HorizontalSliderWidget(QWidget* parent,
   m_minValue = 0;
   m_maxValue = 99;
   m_defaultValue = 0;
+
+  m_ui->m_defaultPushButton->setIcon(QIcon::fromTheme("edit-undo"));
+  m_ui->m_defaultPushButton->setIconSize(QSize(16,16));
 
 // connect signals and slots
   connect(m_ui->m_defaultPushButton, SIGNAL(released()), this, SLOT(onDefaultButtonPressed()));

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -43,15 +43,21 @@ class TsSegmenter : public CPPUNIT_NS::TestFixture
 {
   CPPUNIT_TEST_SUITE( TsSegmenter );
   
-  CPPUNIT_TEST( RegionGrowingBaatzStrategy ); 
-  
-  CPPUNIT_TEST( RegionGrowingMeanStrategy ); 
-  
   CPPUNIT_TEST( BlockProcessingWithoutMerging );
-  
-  CPPUNIT_TEST( BlockProcessingWithMerging );
+ 
+  CPPUNIT_TEST( BlockProcessingWithMerging );  
   
   CPPUNIT_TEST( ThreadedProcessing );  
+  
+  CPPUNIT_TEST( RegionGrowingMeanStrategy );
+  
+  CPPUNIT_TEST( RegionGrowingMeanStrategyBlockProcessing );  
+  
+  CPPUNIT_TEST( RegionGrowingBaatzStrategy );
+  
+  CPPUNIT_TEST( RegionGrowingBaatzStrategyBlockProcessing ); 
+  
+ 
   
   CPPUNIT_TEST_SUITE_END();
   
@@ -65,7 +71,11 @@ class TsSegmenter : public CPPUNIT_NS::TestFixture
     
     void RegionGrowingMeanStrategy();
     
+    void RegionGrowingMeanStrategyBlockProcessing();
+    
     void RegionGrowingBaatzStrategy();
+    
+    void RegionGrowingBaatzStrategyBlockProcessing();
 };
 
 #endif

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -104,7 +104,7 @@ te::graph::AbstractGraphFactory::AbstractGraphFactory(const std::string& factory
 
 te::graph::GraphMetadata* te::graph::AbstractGraphFactory::getMetadata(const std::map<std::string, std::string>& dsInfo, const std::map<std::string, std::string>& gInfo)
 {
-  te::graph::GraphMetadata* metadata;
+  te::graph::GraphMetadata* metadata = 0;
 
   std::map<std::string, std::string>::const_iterator it;
   std::map<std::string, std::string>::const_iterator itend = gInfo.end();
@@ -135,6 +135,7 @@ te::graph::GraphMetadata* te::graph::AbstractGraphFactory::getMetadata(const std
       metadata->m_memoryGraph = false;
     }
   }
+  
 
   return metadata;
 }

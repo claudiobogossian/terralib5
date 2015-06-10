@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -31,15 +31,22 @@ namespace te
   namespace gm
   {    
     class AbstractPoint;
+    class AffineGT;
+    class AffineGTFactory;
     class CircularString;
     class CompoundCurve;
     class Curve;
     class CurvePolygon;
     class Envelope;
+    class GeometricTransformation;
     class Geometry;
     class GeometryCollection;
     class GeometryFactory;
     class GeometryProperty;
+    class GTFactory;
+    class GTFilter;
+    class GTModelParameters;
+    class GTParameters;
     class LinearRing;
     class LineString;
     class MultiCurve;
@@ -58,6 +65,14 @@ namespace te
     class Surface;
     class TIN;
     class Triangle;
+    class ProjectiveGT;
+    class ProjectiveGTFactory;
+    class RSTGT;
+    class RSTGTFactory;
+    class SecondDegreePolynomialGT;
+    class SecondDegreePolynomialGTFactory;
+    class ThirdDegreePolynomialGT;
+    class ThirdDegreePolynomialGTFactory;
     class WKBReader;
     class WKBSize;
     class WKBWriter;

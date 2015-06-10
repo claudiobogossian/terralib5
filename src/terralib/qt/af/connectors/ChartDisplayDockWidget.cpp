@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -64,7 +64,6 @@ QDockWidget(parent, Qt::Widget),
 
 te::qt::af::ChartDisplayDockWidget::~ChartDisplayDockWidget()
 {
-  delete m_displayWidget;
   emit closed(this);
 }
 
@@ -77,7 +76,7 @@ void te::qt::af::ChartDisplayDockWidget::setLayer(te::map::AbstractLayer* layer)
   cc.config(m_layer);
 
   //Adjusting the selected objectIdSet
-  m_displayWidget->highlightOIds(m_layer->getSelected());
+  m_displayWidget->highlightOIds(m_layer->getSelected(), m_layer->getSchema().get());
 
   if(m_layer==0)
     return;
@@ -105,7 +104,7 @@ void te::qt::af::ChartDisplayDockWidget::onApplicationTriggered(te::qt::af::evt:
 
         if(ev->m_layer->getId() == m_layer->getId())
         {
-          m_displayWidget->highlightOIds(ev->m_layer->getSelected());
+          m_displayWidget->highlightOIds(ev->m_layer->getSelected(), ev->m_layer->getSchema().get());
         }
       }
     break;
@@ -126,7 +125,7 @@ void te::qt::af::ChartDisplayDockWidget::onApplicationTriggered(te::qt::af::evt:
 
 void te::qt::af::ChartDisplayDockWidget::selectionChanged(te::da::ObjectIdSet* oids, const bool& add)
 {
-    te::da::ObjectIdSet* added = oids->clone();
+  te::da::ObjectIdSet* added = oids->clone();
 
   if(m_layer->getSelected())
   {
@@ -160,13 +159,13 @@ void te::qt::af::ChartDisplayDockWidget::selectionChanged(te::da::ObjectIdSet* o
     added->addProperty(m_layer->getData()->getPropertyName(*it), *it, m_layer->getData()->getPropertyDataType(*it));
 
   //Acquiring the envelope
-  if(added->size() > 0)
+  if(added->size() > 0 && m_layer->getSchema()->hasGeom())
   {
     std::auto_ptr<te::da::DataSet> ds = m_layer->getData(added);
     ds->moveBeforeFirst();
 
-    size_t numProp, geomPos;
-    numProp =  ds->getNumProperties();
+    size_t numProp = ds->getNumProperties();
+    size_t geomPos = 0;
 
     for(size_t i=0; i<numProp; i++)
     {

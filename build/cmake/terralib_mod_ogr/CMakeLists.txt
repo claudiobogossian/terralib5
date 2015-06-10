@@ -39,6 +39,7 @@ add_library(terralib_mod_ogr SHARED ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
 
 target_link_libraries(terralib_mod_ogr terralib_mod_dataaccess
                                        terralib_mod_geometry
+                                       terralib_mod_srs
                                        terralib_mod_datatype
                                        terralib_mod_plugin
                                        terralib_mod_common
@@ -63,5 +64,11 @@ install(FILES ${TERRALIB_HDR_FILES}
 
 install(FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/plugins/te.da.ogr.teplg
         DESTINATION ${TERRALIB_DESTINATION_PLUGINS} COMPONENT runtime)
+
+if(WIN32)        
+  install(DIRECTORY ${GDAL_DATA_DIR}/ 
+          DESTINATION ${TERRALIB_DESTINATION_SHARE}/gdal-data 
+          COMPONENT devel)        
+endif()
 
 export(TARGETS terralib_mod_ogr APPEND FILE ${CMAKE_BINARY_DIR}/terralib-exports.cmake)

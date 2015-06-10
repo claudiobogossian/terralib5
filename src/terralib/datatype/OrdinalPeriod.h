@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -45,6 +45,10 @@ namespace te
       Examples: a time period whose initial time is the first 
       epidemiological week and the final time is the fifht epidemiological
       week.
+      
+      To understand the meaning of the ordinal numbers, a user has to use
+      extra information, such as the temporal resolution and the starting time 
+      in the DateTimeProperty.
 
       \sa DateTime
     */
@@ -164,7 +168,7 @@ namespace te
 
           \return The subtype of the date and time type. 
         */
-        DateTimeType getDateTimeType() const { return ORDINAL_PERIOD; }
+        DateTimeType getDateTimeType() const { return ORDINAL_TIME_PERIOD; }
 
       protected:
 

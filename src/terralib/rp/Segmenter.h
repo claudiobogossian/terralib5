@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -32,6 +32,7 @@
 #include "Algorithm.h"
 #include "Matrix.h"
 #include "Config.h"
+#include "../raster/RasterSynchronizer.h"
 #include "../common/progress/TaskProgress.h"
 
 #include <vector>
@@ -85,15 +86,17 @@ namespace te
             
             std::vector< unsigned int > m_inputRasterBands; //!< Bands to be processed from the input raster.
             
+            std::vector< double > m_inputRasterNoDataValues; //!< A vector of values to be used as input raster no-data values or an empty vector indicating to use the default values from the input raster..
+            
             bool m_enableThreadedProcessing; //!< If true, threaded processing will be performed (best with  multi-core or multi-processor systems (default:true).
             
             unsigned int m_maxSegThreads; //!< The maximum number of concurrent segmenter threads (default:0 - automatically found).
             
             bool m_enableBlockProcessing; //!< If true, the original raster will be splitted into small blocks, each one will be segmented independently and the result will be merged (if possible) at the end (default:true).
             
-            bool m_enableBlockMerging; //!< If true, a block merging procedure will be performed (default:true).
-            
             unsigned int m_maxBlockSize; //!< The input image will be split into blocks with this width for processing, this parameter tells the maximum block lateral size (width or height), the default: 0 - the size will be defined following the current system resources and physical processors number).
+            
+            unsigned char m_blocksOverlapPercent; //!< The percentage of blocks overlapped area (valid range:0-25, defaul:10).
             
             std::string m_strategyName; //!< The segmenter strategy name see each te::rp::SegmenterStrategyFactory inherited classes documentation for reference.
             
@@ -196,50 +199,53 @@ namespace te
         class SegmenterThreadEntryParams
         {
           public :
-            //! A pointer to the global segmenter input execution parameters (default:0). */
-            Segmenter::InputParameters const* m_inputParametersPtr;
+            //! The global segmenter input execution parameters.
+            Segmenter::InputParameters m_inputParameters;
             
-            //! A pointer to the global segmenter input execution parameters (default:0). */
+            //! A pointer to the global segmenter input execution parameters (default:0).
             Segmenter::OutputParameters* m_outputParametersPtr;
             
-            //! Pointer to the segments blocks matrix (default:0)*/
+            //! Pointer to the segments blocks matrix (default:0).
             SegmentsBlocksMatrixT* m_segsBlocksMatrixPtr;
             
-            //! Pointer to a general global mutex (default:0)*/
+            //! Pointer to a general global mutex (default:0).
             boost::mutex* m_generalMutexPtr;            
             
-            //! Pointer to the mutex used when accessing the input raster (default:0)*/
-            boost::mutex* m_inputRasterIOMutexPtr;
+            //! Pointer to the input raster synchronizer (default:0).
+            te::rst::RasterSynchronizer* m_inputRasterSyncPtr;
+
+            //! Pointer to the output raster synchronizer (default:0).
+            te::rst::RasterSynchronizer* m_outputRasterSyncPtr;
             
-            //! Pointer to the mutex used when accessing the output raster (default:0)*/
-            boost::mutex* m_outputRasterIOMutexPtr;
-            
-            //! Pointer to the mutex used by the block processed signal (default:0)*/
+            //! Pointer to the mutex used by the block processed signal (default:0).
             boost::mutex* m_blockProcessedSignalMutexPtr;            
             
-            //! Pointer to the abort segmentation flag (default:0)*/
+            //! Pointer to the abort segmentation flag (default:0).
             bool volatile* m_abortSegmentationFlagPtr;
             
-            //! Pointer to the segments Ids manager - (default 0) */
+            //! Pointer to the segments Ids manager - (default 0).
             SegmenterIdsManager* m_segmentsIdsManagerPtr;
             
-            //! Pointer to a signal to be emited when a segments block was processed (default:0)*/
+            //! Pointer to a signal to be emited when a segments block was processed (default:0).
             boost::condition_variable* m_blockProcessedSignalPtr;
             
-            //! Pointer to the running threads counter - default 0) */
+            //! Pointer to the running threads counter - default 0).
             unsigned int volatile* m_runningThreadsCounterPtr;        
             
-            //! Pointer to a vector of input raster bands gain values */
-            std::vector< double > const * m_inputRasterGainsPtr;
+            //! A vector of input raster bands minimum values.
+            std::vector< double > m_inputRasterBandMinValues;
             
-            //! Pointer to a vector of input raster bands offset values */
-            std::vector< double > const * m_inputRasterOffsetsPtr;
+            //! A vector of input raster bands maximum values.
+            std::vector< double > m_inputRasterBandMaxValues;
             
-            //! Enable/Disable the segmentation strategy to use its own progress interface (default:false). */
+            //! A vector of values to be used as input raster no-data values.
+            std::vector< double > m_inputRasterNoDataValues; 
+            
+            //! Enable/Disable the segmentation strategy to use its own progress interface (default:false).
             bool m_enableStrategyProgress;
             
-            //! A pointer to an active task progress tha should be pulsed for each processed block or a null pointer (default:null). */
-            te::common::TaskProgress* m_progressPtr;
+            //! The maximum number of input raster cached blocks per-thread.
+            unsigned int m_maxInputRasterCachedBlocks;
             
             SegmenterThreadEntryParams();
             
@@ -253,25 +259,25 @@ namespace te
         /*! 
           \brief Calc the best sub-image block size for each thread to
           process.
-          \param totalImageLines The total original full image lines.
-          \param totalImageCols The total original full image columns.
           \param minBlockPixels The minimun allowed pixels number for each block (expanded block).
           \param maxBlockPixels The maximum allowed pixels number for each block (expanded block).
           \param blocksHOverlapSize The blocks horizontal overlap size (number of columns).
           \param blocksVOverlapSize The blocks vertical overlap size (number of rows).
-          \param blockWidth The calculated block width (non-expanded block).
-          \param blockHeight The calculated block height (non-expanded block).
+          \param nonExpandedBlockWidth The calculated non-expanded block width (non-expanded block).
+          \param nonExpandedBlockHeight The calculated non-expanded block height (non-expanded block).
+          \param expandedBlockWidth The calculated expanded block width (non-expanded block).
+          \param expandedBlockHeight The calculated expanded block height (non-expanded block).          
           \return true if OK, false on errors.
         */                
         bool calcBestBlockSize( 
-          const unsigned int totalImageLines, 
-          const unsigned int totalImageCols, 
           const unsigned int minExapandedBlockPixels,
           const unsigned int maxExapandedBlockPixels, 
-          const unsigned int blocksHOverlapSize,
-          const unsigned int blocksVOverlapSize, 
+          unsigned int& blocksHOverlapSize,
+          unsigned int& blocksVOverlapSize, 
           unsigned int& nonExpandedBlockWidth,
-          unsigned int& nonExpandedBlockHeight ) const;        
+          unsigned int& nonExpandedBlockHeight,
+          unsigned int& expandedBlockWidth,
+          unsigned int& expandedBlockHeight ) const;        
           
         /*! 
           \brief Segmenter thread entry.
@@ -284,12 +290,10 @@ namespace te
           \param profileCenter The profile center line.
           \param inRaster The input raster.
           \param inRasterBands The input raster bands.
-          \param pixelNeighborhoodSize The pixel neighborhood size over the 
-          line transverse to each tile line.
+          \param pixelNeighborhoodSize The pixel neighborhood size over the line transverse to each tile line.
           \param tileNeighborhoodSize The buffer size around each tile.
           \param profileAntiSmoothingFactor A positive profile anti-smoothing factor.
-          \param profile The generated profile (each element is a inRaster
-          line index ).
+          \param profile The generated profile (each element is a inRaster line index ).
           \return true if OK, false on errors.
         */                
         bool genImageHCutOffProfile( const unsigned int profileCenter,
@@ -305,12 +309,10 @@ namespace te
           \param profileCenter The profile center column.
           \param inRaster The input raster.
           \param inRasterBands The input raster bands.
-          \param pixelNeighborhoodSize The pixel neighborhood size over the 
-          line transverse to each tile line.
+          \param pixelNeighborhoodSize The pixel neighborhood size over the line transverse to each tile line.
           \param tileNeighborhoodSize The buffer size around each tile.
           \param profileAntiSmoothingFactor A positive profile anti-smoothing factor.
-          \param profile The generated profile (each element is a inRaster
-          column index )
+          \param profile The generated profile (each element is a inRaster column index )
           \return true if OK, false on errors.
         */                
         bool genImageVCutOffProfile( const unsigned int profileCenter,

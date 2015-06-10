@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -52,7 +52,7 @@ double te::gm::Surface::getPerimeter() const
   return g->getLength();
 
 #else
-  throw Exception(TR_TR("getLength routine is supported by GEOS! Please, enable the GEOS support."));
+  throw Exception(TE_TR("getLength routine is supported by GEOS! Please, enable the GEOS support."));
 #endif  
 }
 

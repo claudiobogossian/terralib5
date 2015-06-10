@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -133,6 +133,8 @@ namespace te
           std::vector<std::string> m_dashes;             //!< Predefined dash styles. TODO: it can be filled out, based on a file, etc (?)
           std::map<int, std::string> m_joinMap;
           std::map<int, std::string> m_capMap;
+
+          bool m_update;
 
       };
     }

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -43,13 +43,13 @@
 
 #define RANSACGETMAXINVALIDITERATIONS( assurance, dynamicMaxIterations ) \
   std::max( \
-    (RansacItCounterT)1 \
+    (RansacIntegerCounterT)1 \
     , \
     ( \
-      (RansacItCounterT)( \
-        ((long double)dynamicMaxIterations) \
+      (RansacIntegerCounterT)( \
+        ((RansacFloatCounterT)dynamicMaxIterations) \
         * \
-        ((long double)assurance) \
+        ((RansacFloatCounterT)assurance) \
       ) \
     ) \
   ) \
@@ -57,29 +57,29 @@
 #define RANSACGETMAXITERATIONS( goodTPNumber, totalTPNumber, modelRequiredTPNumber, procsNumber, assurance ) \
   ( \
     ( \
-      (RansacItCounterT) \
+      (RansacIntegerCounterT) \
       ( \
         std::log( \
-          (long double)( 1.0 - ((long double)assurance) ) \
+          (RansacFloatCounterT)( 1.0 - ((RansacFloatCounterT)assurance) ) \
         ) \
         / \
         std::log( \
-          ((long double)1.0) \
+          ((RansacFloatCounterT)1.0) \
           - \
           std::pow( \
             ( \
-              ((long double)goodTPNumber ) \
+              ((RansacFloatCounterT)goodTPNumber ) \
               / \
-              ((long double)totalTPNumber) \
+              ((RansacFloatCounterT)totalTPNumber) \
             ) \
             , \
-            ((long double)modelRequiredTPNumber) \
+            ((RansacFloatCounterT)modelRequiredTPNumber) \
           ) \
         ) \
       ) \
     ) \
     / \
-    ((RansacItCounterT)procsNumber) \
+    ((RansacIntegerCounterT)procsNumber) \
   ) \
   
   #define RANSACSYNCTHREAD \
@@ -200,7 +200,7 @@ bool te::gm::GTFilter::applyRansac(const std::string& transfName,
                                    const GTParameters& inputParams,
                                    const double maxDirectMapError,
                                    const double maxInverseMapError,
-                                   const RansacItCounterT& maxIterations,
+                                   const RansacIntegerCounterT& maxIterations,
                                    const double& assurance,
                                    const bool enableMultiThread,
                                    const std::vector<double>& tiePointsWeights,
@@ -288,7 +288,7 @@ bool te::gm::GTFilter::applyRansac(const std::string& transfName,
   double bestParamsConvexHullArea = -1.0;
   bool returnValue = true;
   bool keepRunningFlag = true;
-  RansacItCounterT dynamicMaxIterations = 
+  RansacIntegerCounterT dynamicMaxIterations = 
     maxIterations ?
       ( 
         maxIterations 
@@ -314,7 +314,7 @@ bool te::gm::GTFilter::applyRansac(const std::string& transfName,
   baseThreadParams.m_useDynamicIterationsNumber = ( maxIterations == 0 );
   baseThreadParams.m_dynamicMaxIterationsPtr = &dynamicMaxIterations;
   baseThreadParams.m_procsNumber = enableMultiThread ?
-    ((RansacItCounterT)procsNumber) : 1;
+    ((RansacIntegerCounterT)procsNumber) : 1;
   baseThreadParams.m_returnValuePtr = &returnValue;
   baseThreadParams.m_mutexPtr = &syncMutex;
   baseThreadParams.m_keepRunningFlagPtr = &keepRunningFlag;
@@ -395,13 +395,13 @@ void te::gm::GTFilter::applyRansacThreadEntry(te::gm::GTFilter::ApplyRansacThrea
   
   // external globals
   
-  const RansacItCounterT& procsNumber = paramsPtr->m_procsNumber;
+  const RansacIntegerCounterT& procsNumber = paramsPtr->m_procsNumber;
   const double& maxDirectMapError = paramsPtr->m_maxDirectMapError;
   const double& maxInverseMapError = paramsPtr->m_maxInverseMapError;
   bool& keepRunningFlag = (*(paramsPtr->m_keepRunningFlagPtr));    
   const double& assurance = paramsPtr->m_assurance;
   const bool& useDynamicIterationsNumber = paramsPtr->m_useDynamicIterationsNumber;
-  RansacItCounterT& globalDynamicMaxIterations = (*(paramsPtr->m_dynamicMaxIterationsPtr));
+  RansacIntegerCounterT& globalDynamicMaxIterations = (*(paramsPtr->m_dynamicMaxIterationsPtr));
   boost::mutex& mutex = (*(paramsPtr->m_mutexPtr));
   
   // Checking the number of required tie-points
@@ -445,20 +445,20 @@ void te::gm::GTFilter::applyRansacThreadEntry(te::gm::GTFilter::ApplyRansacThrea
   std::map< double, GTParameters::TiePoint >::const_iterator tpsMapIt;
   unsigned int inputTpIdx = 0;
     
-  RansacItCounterT selectedTpsCounter = 0;
+  RansacIntegerCounterT selectedTpsCounter = 0;
   std::vector< GTParameters::TiePoint* > selectedTpsPtrsVec;
   selectedTpsPtrsVec.resize( reqTPsNmb, 0 );
   unsigned int selectedTpsPtrsVecIdx = 0;
   bool selectedTpsNotSelectedBefore = false;
-  RansacItCounterT currentIteration = 0;
+  RansacIntegerCounterT currentIteration = 0;
 
-  RansacItCounterT dynamicMaxIterations = globalDynamicMaxIterations;
-  RansacItCounterT dynamicMaxConsecutiveInvalidIterations =
+  RansacIntegerCounterT dynamicMaxIterations = globalDynamicMaxIterations;
+  RansacIntegerCounterT dynamicMaxConsecutiveInvalidIterations =
     RANSACGETMAXINVALIDITERATIONS( assurance, dynamicMaxIterations );
-  const RansacItCounterT threadSyncMaxIterations = procsNumber;
-  RansacItCounterT threadSyncIteration = 0;
+  const RansacIntegerCounterT threadSyncMaxIterations = procsNumber;
+  RansacIntegerCounterT threadSyncIteration = 0;
 
-  RansacItCounterT consecutiveInvalidIterations = 0;
+  RansacIntegerCounterT consecutiveInvalidIterations = 0;
   double randomValue = 0;
     
   while( keepRunningFlag && ( currentIteration < dynamicMaxIterations ) && 
@@ -597,7 +597,7 @@ void te::gm::GTFilter::applyRansacThreadEntry(te::gm::GTFilter::ApplyRansacThrea
       }
       else if( ! bestTiePoins.empty() )
       {
-        const RansacItCounterT dynamicMaxIterationsEstimation = RANSACGETMAXITERATIONS(
+        const RansacIntegerCounterT dynamicMaxIterationsEstimation = RANSACGETMAXITERATIONS(
           bestTiePoins.size(),
           inputTPNmb,
           reqTPsNmb,

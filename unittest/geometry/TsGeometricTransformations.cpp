@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -22,9 +22,7 @@
 #include "../Config.h"
 
 // TerraLib
-#include <terralib/geometry/AffineGT.h>
-#include <terralib/geometry/GTParameters.h>
-#include <terralib/geometry/GTFactory.h>
+#include <terralib/geometry.h>
 
 #include <boost/lexical_cast.hpp> 
 
@@ -134,29 +132,469 @@ void TsGeometricTransformations::tcAffine()
   CPPUNIT_ASSERT( transfPtr->getName() == "Affine" );
   
 testTiePoints( transfParams.m_tiePoints, *transfPtr, 0.00001 );  
-    
-  double translationX = 0;
-  double translationY = 0;
-  double scalingFactorX = 0;
-  double scalingFactorY = 0;
-  double skew = 0;
-  double squeeze = 0;
-  double scaling = 0;
-  double rotation = 0;
+}
+
+void TsGeometricTransformations::tcAffineDecompose()
+{
+  // translation X+1
   
-  CPPUNIT_ASSERT( te::gm::AffineGT::decompose( 
-    transfPtr->getParameters().m_directParameters,
-    translationX, translationY, scalingFactorX, scalingFactorY, skew, 
-    squeeze, scaling, rotation ) );
+  {
+    std::auto_ptr< te::gm::GeometricTransformation > transfPtr( 
+      te::gm::GTFactory::make( "Affine" ) );
+    CPPUNIT_ASSERT( transfPtr.get() != 0 );    
     
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.999999999999, translationX, 0.00000000001 );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 0, translationY, 0.00000000001 );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 2, scalingFactorX, 0.00000000001 );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 2, scalingFactorY, 0.00000000001 );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( -1, skew, 0.00000000001 );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 1, squeeze, 0.00000000001 );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 2, scaling, 0.00000000001 );
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.5707963267948966, rotation, 0.00000000001 );
+    te::gm::GTParameters transfParams;
+    
+    transfParams.m_tiePoints.push_back( te::gm::GTParameters::TiePoint( 
+      te::gm::Coord2D( 0.0, 0.0 ), te::gm::Coord2D( 1.0, 0.0 ) ) );
+    transfParams.m_tiePoints.push_back( te::gm::GTParameters::TiePoint( 
+      te::gm::Coord2D( 0.0, 1.0 ), te::gm::Coord2D( 1.0, 1.0 ) ) );
+    transfParams.m_tiePoints.push_back( te::gm::GTParameters::TiePoint( 
+      te::gm::Coord2D( 1.0, 1.0 ), te::gm::Coord2D( 2.0, 1.0 ) ) );
+      
+
+    CPPUNIT_ASSERT( transfPtr->initialize( transfParams ) );
+    CPPUNIT_ASSERT( transfPtr->getName() == "Affine" );
+    
+    testTiePoints( transfParams.m_tiePoints, *transfPtr, 0.00001 );  
+      
+    double translationX = 0;
+    double translationY = 0;
+    double scalingFactorX = 0;
+    double scalingFactorY = 0;
+    double skew = 0;
+    double squeeze = 0;
+    double scaling = 0;
+    double rotation = 0;
+    
+    CPPUNIT_ASSERT( te::gm::AffineGT::decompose( 
+      transfPtr->getParameters().m_directParameters,
+      translationX, translationY, scalingFactorX, scalingFactorY, skew, 
+      squeeze, scaling, rotation ) );
+      
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, translationX, 0.00000000001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, translationY, 0.00000000001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, scalingFactorX, 0.00000000001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, scalingFactorY, 0.00000000001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, skew, 0.00000000001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, squeeze, 0.00000000001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, scaling, 0.00000000001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, rotation, 0.00000000001 );
+  }
+  
+  // translation X+1
+  
+  {
+    std::auto_ptr< te::gm::GeometricTransformation > transfPtr( 
+      te::gm::GTFactory::make( "Affine" ) );
+    CPPUNIT_ASSERT( transfPtr.get() != 0 );    
+    
+    te::gm::GTParameters transfParams;
+    
+    transfParams.m_tiePoints.push_back( te::gm::GTParameters::TiePoint( 
+      te::gm::Coord2D( 0.0, 0.0 ), te::gm::Coord2D( -1.0, 0.0 ) ) );
+    transfParams.m_tiePoints.push_back( te::gm::GTParameters::TiePoint( 
+      te::gm::Coord2D( 0.0, 1.0 ), te::gm::Coord2D( -1.0, 1.0 ) ) );
+    transfParams.m_tiePoints.push_back( te::gm::GTParameters::TiePoint( 
+      te::gm::Coord2D( 1.0, 1.0 ), te::gm::Coord2D( 0.0, 1.0 ) ) );
+      
+
+    CPPUNIT_ASSERT( transfPtr->initialize( transfParams ) );
+    CPPUNIT_ASSERT( transfPtr->getName() == "Affine" );
+    
+    testTiePoints( transfParams.m_tiePoints, *transfPtr, 0.00001 );  
+      
+    double translationX = 0;
+    double translationY = 0;
+    double scalingFactorX = 0;
+    double scalingFactorY = 0;
+    double skew = 0;
+    double squeeze = 0;
+    double scaling = 0;
+    double rotation = 0;
+    
+    CPPUNIT_ASSERT( te::gm::AffineGT::decompose( 
+      transfPtr->getParameters().m_directParameters,
+      translationX, translationY, scalingFactorX, scalingFactorY, skew, 
+      squeeze, scaling, rotation ) );
+      
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( -1.0, translationX, 0.00000000001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, translationY, 0.00000000001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, scalingFactorX, 0.00000000001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, scalingFactorY, 0.00000000001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, skew, 0.00000000001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, squeeze, 0.00000000001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, scaling, 0.00000000001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, rotation, 0.00000000001 );
+  }  
+  
+  // translation Y+1
+  
+  {
+    std::auto_ptr< te::gm::GeometricTransformation > transfPtr( 
+      te::gm::GTFactory::make( "Affine" ) );
+    CPPUNIT_ASSERT( transfPtr.get() != 0 );    
+    
+    te::gm::GTParameters transfParams;
+    
+    transfParams.m_tiePoints.push_back( te::gm::GTParameters::TiePoint( 
+      te::gm::Coord2D( 0.0, 0.0 ), te::gm::Coord2D( 0.0, 1.0 ) ) );
+    transfParams.m_tiePoints.push_back( te::gm::GTParameters::TiePoint( 
+      te::gm::Coord2D( 0.0, 1.0 ), te::gm::Coord2D( 0.0, 2.0 ) ) );
+    transfParams.m_tiePoints.push_back( te::gm::GTParameters::TiePoint( 
+      te::gm::Coord2D( 1.0, 1.0 ), te::gm::Coord2D( 1.0, 2.0 ) ) );
+      
+
+    CPPUNIT_ASSERT( transfPtr->initialize( transfParams ) );
+    CPPUNIT_ASSERT( transfPtr->getName() == "Affine" );
+    
+    testTiePoints( transfParams.m_tiePoints, *transfPtr, 0.00001 );  
+      
+    double translationX = 0;
+    double translationY = 0;
+    double scalingFactorX = 0;
+    double scalingFactorY = 0;
+    double skew = 0;
+    double squeeze = 0;
+    double scaling = 0;
+    double rotation = 0;
+    
+    CPPUNIT_ASSERT( te::gm::AffineGT::decompose( 
+      transfPtr->getParameters().m_directParameters,
+      translationX, translationY, scalingFactorX, scalingFactorY, skew, 
+      squeeze, scaling, rotation ) );
+      
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, translationX, 0.00000000001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, translationY, 0.00000000001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, scalingFactorX, 0.00000000001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, scalingFactorY, 0.00000000001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, skew, 0.00000000001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, squeeze, 0.00000000001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, scaling, 0.00000000001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, rotation, 0.00000000001 );
+  }  
+  
+  // translation Y-1
+  
+  {
+    std::auto_ptr< te::gm::GeometricTransformation > transfPtr( 
+      te::gm::GTFactory::make( "Affine" ) );
+    CPPUNIT_ASSERT( transfPtr.get() != 0 );    
+    
+    te::gm::GTParameters transfParams;
+    
+    transfParams.m_tiePoints.push_back( te::gm::GTParameters::TiePoint( 
+      te::gm::Coord2D( 0.0, 0.0 ), te::gm::Coord2D( 0.0, -1.0 ) ) );
+    transfParams.m_tiePoints.push_back( te::gm::GTParameters::TiePoint( 
+      te::gm::Coord2D( 0.0, 1.0 ), te::gm::Coord2D( 0.0, 0.0 ) ) );
+    transfParams.m_tiePoints.push_back( te::gm::GTParameters::TiePoint( 
+      te::gm::Coord2D( 1.0, 1.0 ), te::gm::Coord2D( 1.0, 0.0 ) ) );
+      
+
+    CPPUNIT_ASSERT( transfPtr->initialize( transfParams ) );
+    CPPUNIT_ASSERT( transfPtr->getName() == "Affine" );
+    
+    testTiePoints( transfParams.m_tiePoints, *transfPtr, 0.00001 );  
+      
+    double translationX = 0;
+    double translationY = 0;
+    double scalingFactorX = 0;
+    double scalingFactorY = 0;
+    double skew = 0;
+    double squeeze = 0;
+    double scaling = 0;
+    double rotation = 0;
+    
+    CPPUNIT_ASSERT( te::gm::AffineGT::decompose( 
+      transfPtr->getParameters().m_directParameters,
+      translationX, translationY, scalingFactorX, scalingFactorY, skew, 
+      squeeze, scaling, rotation ) );
+      
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, translationX, 0.00000000001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( -1.0, translationY, 0.00000000001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, scalingFactorX, 0.00000000001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, scalingFactorY, 0.00000000001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, skew, 0.00000000001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, squeeze, 0.00000000001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, scaling, 0.00000000001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, rotation, 0.00000000001 );
+  }  
+  
+  // 90 deg clock wise rotation around the center
+  
+  {
+    std::auto_ptr< te::gm::GeometricTransformation > transfPtr( 
+      te::gm::GTFactory::make( "Affine" ) );
+    CPPUNIT_ASSERT( transfPtr.get() != 0 );    
+    
+    te::gm::GTParameters transfParams;
+    
+    transfParams.m_tiePoints.push_back( te::gm::GTParameters::TiePoint( 
+      te::gm::Coord2D( 0.0, 0.0 ), te::gm::Coord2D( 0.0, 0.0 ) ) );
+    transfParams.m_tiePoints.push_back( te::gm::GTParameters::TiePoint( 
+      te::gm::Coord2D( 0.0, 1.0 ), te::gm::Coord2D( 1.0, 0.0 ) ) );
+    transfParams.m_tiePoints.push_back( te::gm::GTParameters::TiePoint( 
+      te::gm::Coord2D( 1.0, 1.0 ), te::gm::Coord2D( 1.0, -1.0 ) ) );
+      
+
+    CPPUNIT_ASSERT( transfPtr->initialize( transfParams ) );
+    CPPUNIT_ASSERT( transfPtr->getName() == "Affine" );
+    
+    testTiePoints( transfParams.m_tiePoints, *transfPtr, 0.00001 );  
+      
+    double translationX = 0;
+    double translationY = 0;
+    double scalingFactorX = 0;
+    double scalingFactorY = 0;
+    double skew = 0;
+    double squeeze = 0;
+    double scaling = 0;
+    double rotation = 0;
+    
+    CPPUNIT_ASSERT( te::gm::AffineGT::decompose( 
+      transfPtr->getParameters().m_directParameters,
+      translationX, translationY, scalingFactorX, scalingFactorY, skew, 
+      squeeze, scaling, rotation ) );
+      
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, translationX, 0.00000000001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, translationY, 0.00000000001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, scalingFactorX, 0.00000000001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, scalingFactorY, 0.00000000001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, skew, 0.00000000001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, squeeze, 0.00000000001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, scaling, 0.00000000001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( -1.570796, rotation, 0.001 );
+  }  
+  
+  // 90 deg counter clock wise rotation around the center
+  
+  {
+    std::auto_ptr< te::gm::GeometricTransformation > transfPtr( 
+      te::gm::GTFactory::make( "Affine" ) );
+    CPPUNIT_ASSERT( transfPtr.get() != 0 );    
+    
+    te::gm::GTParameters transfParams;
+    
+    transfParams.m_tiePoints.push_back( te::gm::GTParameters::TiePoint( 
+      te::gm::Coord2D( 0.0, 0.0 ), te::gm::Coord2D( 0.0, 0.0 ) ) );
+    transfParams.m_tiePoints.push_back( te::gm::GTParameters::TiePoint( 
+      te::gm::Coord2D( 0.0, 1.0 ), te::gm::Coord2D( -1.0, 0.0 ) ) );
+    transfParams.m_tiePoints.push_back( te::gm::GTParameters::TiePoint( 
+      te::gm::Coord2D( 1.0, 1.0 ), te::gm::Coord2D( -1.0, 1.0 ) ) );
+      
+
+    CPPUNIT_ASSERT( transfPtr->initialize( transfParams ) );
+    CPPUNIT_ASSERT( transfPtr->getName() == "Affine" );
+    
+    testTiePoints( transfParams.m_tiePoints, *transfPtr, 0.00001 );  
+      
+    double translationX = 0;
+    double translationY = 0;
+    double scalingFactorX = 0;
+    double scalingFactorY = 0;
+    double skew = 0;
+    double squeeze = 0;
+    double scaling = 0;
+    double rotation = 0;
+    
+    CPPUNIT_ASSERT( te::gm::AffineGT::decompose( 
+      transfPtr->getParameters().m_directParameters,
+      translationX, translationY, scalingFactorX, scalingFactorY, skew, 
+      squeeze, scaling, rotation ) );
+      
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, translationX, 0.00000000001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, translationY, 0.00000000001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, scalingFactorX, 0.00000000001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, scalingFactorY, 0.00000000001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, skew, 0.00000000001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, squeeze, 0.00000000001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, scaling, 0.00000000001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.570796, rotation, 0.001 );
+  }   
+  
+  // scale +2X
+  
+  {
+    std::auto_ptr< te::gm::GeometricTransformation > transfPtr( 
+      te::gm::GTFactory::make( "Affine" ) );
+    CPPUNIT_ASSERT( transfPtr.get() != 0 );    
+    
+    te::gm::GTParameters transfParams;
+    
+    transfParams.m_tiePoints.push_back( te::gm::GTParameters::TiePoint( 
+      te::gm::Coord2D( 0.0, 0.0 ), te::gm::Coord2D( 0.0, 0.0 ) ) );
+    transfParams.m_tiePoints.push_back( te::gm::GTParameters::TiePoint( 
+      te::gm::Coord2D( 0.0, 1.0 ), te::gm::Coord2D( 0.0, 1.0 ) ) );
+    transfParams.m_tiePoints.push_back( te::gm::GTParameters::TiePoint( 
+      te::gm::Coord2D( 1.0, 1.0 ), te::gm::Coord2D( 2.0, 1.0 ) ) );
+      
+
+    CPPUNIT_ASSERT( transfPtr->initialize( transfParams ) );
+    CPPUNIT_ASSERT( transfPtr->getName() == "Affine" );
+    
+    testTiePoints( transfParams.m_tiePoints, *transfPtr, 0.00001 );  
+      
+    double translationX = 0;
+    double translationY = 0;
+    double scalingFactorX = 0;
+    double scalingFactorY = 0;
+    double skew = 0;
+    double squeeze = 0;
+    double scaling = 0;
+    double rotation = 0;
+    
+    CPPUNIT_ASSERT( te::gm::AffineGT::decompose( 
+      transfPtr->getParameters().m_directParameters,
+      translationX, translationY, scalingFactorX, scalingFactorY, skew, 
+      squeeze, scaling, rotation ) );
+      
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, translationX, 0.00000000001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, translationY, 0.00000000001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 2.0, scalingFactorX, 0.00000000001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, scalingFactorY, 0.00000000001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, skew, 0.00000000001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.414213, squeeze, 0.0001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.414213, scaling, 0.0001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, rotation, 0.00000000001 );
+  }  
+  
+  // scale -2X
+  
+  {
+    std::auto_ptr< te::gm::GeometricTransformation > transfPtr( 
+      te::gm::GTFactory::make( "Affine" ) );
+    CPPUNIT_ASSERT( transfPtr.get() != 0 );    
+    
+    te::gm::GTParameters transfParams;
+    
+    transfParams.m_tiePoints.push_back( te::gm::GTParameters::TiePoint( 
+      te::gm::Coord2D( 0.0, 0.0 ), te::gm::Coord2D( 0.0, 0.0 ) ) );
+    transfParams.m_tiePoints.push_back( te::gm::GTParameters::TiePoint( 
+      te::gm::Coord2D( 0.0, 1.0 ), te::gm::Coord2D( 0.0, 1.0 ) ) );
+    transfParams.m_tiePoints.push_back( te::gm::GTParameters::TiePoint( 
+      te::gm::Coord2D( 1.0, 1.0 ), te::gm::Coord2D( -2.0, 1.0 ) ) );
+      
+
+    CPPUNIT_ASSERT( transfPtr->initialize( transfParams ) );
+    CPPUNIT_ASSERT( transfPtr->getName() == "Affine" );
+    
+    testTiePoints( transfParams.m_tiePoints, *transfPtr, 0.00001 );  
+      
+    double translationX = 0;
+    double translationY = 0;
+    double scalingFactorX = 0;
+    double scalingFactorY = 0;
+    double skew = 0;
+    double squeeze = 0;
+    double scaling = 0;
+    double rotation = 0;
+    
+    CPPUNIT_ASSERT( te::gm::AffineGT::decompose( 
+      transfPtr->getParameters().m_directParameters,
+      translationX, translationY, scalingFactorX, scalingFactorY, skew, 
+      squeeze, scaling, rotation ) );
+      
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, translationX, 0.00000000001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, translationY, 0.00000000001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 2.0, scalingFactorX, 0.00000000001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, scalingFactorY, 0.00000000001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, skew, 0.00000000001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.707106, squeeze, 0.0001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.414213, scaling, 0.0001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, rotation, 0.00000000001 );
+  }  
+  
+  // scale 2Y
+  
+  {
+    std::auto_ptr< te::gm::GeometricTransformation > transfPtr( 
+      te::gm::GTFactory::make( "Affine" ) );
+    CPPUNIT_ASSERT( transfPtr.get() != 0 );    
+    
+    te::gm::GTParameters transfParams;
+    
+    transfParams.m_tiePoints.push_back( te::gm::GTParameters::TiePoint( 
+      te::gm::Coord2D( 0.0, 0.0 ), te::gm::Coord2D( 0.0, 0.0 ) ) );
+    transfParams.m_tiePoints.push_back( te::gm::GTParameters::TiePoint( 
+      te::gm::Coord2D( 0.0, 1.0 ), te::gm::Coord2D( 0.0, 2.0 ) ) );
+    transfParams.m_tiePoints.push_back( te::gm::GTParameters::TiePoint( 
+      te::gm::Coord2D( 1.0, 1.0 ), te::gm::Coord2D( 1.0, 2.0 ) ) );
+      
+
+    CPPUNIT_ASSERT( transfPtr->initialize( transfParams ) );
+    CPPUNIT_ASSERT( transfPtr->getName() == "Affine" );
+    
+    testTiePoints( transfParams.m_tiePoints, *transfPtr, 0.00001 );  
+      
+    double translationX = 0;
+    double translationY = 0;
+    double scalingFactorX = 0;
+    double scalingFactorY = 0;
+    double skew = 0;
+    double squeeze = 0;
+    double scaling = 0;
+    double rotation = 0;
+    
+    CPPUNIT_ASSERT( te::gm::AffineGT::decompose( 
+      transfPtr->getParameters().m_directParameters,
+      translationX, translationY, scalingFactorX, scalingFactorY, skew, 
+      squeeze, scaling, rotation ) );
+      
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, translationX, 0.00000000001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, translationY, 0.00000000001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, scalingFactorX, 0.00000000001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 2.0, scalingFactorY, 0.00000000001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, skew, 0.00000000001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.707106, squeeze, 0.0001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.414213, scaling, 0.0001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, rotation, 0.00000000001 );
+  }   
+  
+  // scale -2Y
+  
+  {
+    std::auto_ptr< te::gm::GeometricTransformation > transfPtr( 
+      te::gm::GTFactory::make( "Affine" ) );
+    CPPUNIT_ASSERT( transfPtr.get() != 0 );    
+    
+    te::gm::GTParameters transfParams;
+    
+    transfParams.m_tiePoints.push_back( te::gm::GTParameters::TiePoint( 
+      te::gm::Coord2D( 0.0, 0.0 ), te::gm::Coord2D( 0.0, 0.0 ) ) );
+    transfParams.m_tiePoints.push_back( te::gm::GTParameters::TiePoint( 
+      te::gm::Coord2D( 0.0, 1.0 ), te::gm::Coord2D( 0.0, -2.0 ) ) );
+    transfParams.m_tiePoints.push_back( te::gm::GTParameters::TiePoint( 
+      te::gm::Coord2D( 1.0, 1.0 ), te::gm::Coord2D( 1.0, -2.0 ) ) );
+      
+
+    CPPUNIT_ASSERT( transfPtr->initialize( transfParams ) );
+    CPPUNIT_ASSERT( transfPtr->getName() == "Affine" );
+    
+    testTiePoints( transfParams.m_tiePoints, *transfPtr, 0.00001 );  
+      
+    double translationX = 0;
+    double translationY = 0;
+    double scalingFactorX = 0;
+    double scalingFactorY = 0;
+    double skew = 0;
+    double squeeze = 0;
+    double scaling = 0;
+    double rotation = 0;
+    
+    CPPUNIT_ASSERT( te::gm::AffineGT::decompose( 
+      transfPtr->getParameters().m_directParameters,
+      translationX, translationY, scalingFactorX, scalingFactorY, skew, 
+      squeeze, scaling, rotation ) );
+      
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, translationX, 0.00000000001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, translationY, 0.00000000001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0, scalingFactorX, 0.00000000001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 2.0, scalingFactorY, 0.00000000001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, skew, 0.00000000001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.414213, squeeze, 0.0001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.414213, scaling, 0.0001 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0, rotation, 0.00000000001 );
+  }   
 }
 
 void TsGeometricTransformations::tcSecondDegreePolynomialGT()

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2010-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -30,7 +30,8 @@
 #include "../Config.h"
 #include "../../../geometry.h"
 #include "../../../datatype.h"
-
+#include "../InterfaceController.h"
+#include "SliderPropertiesDialog.h"
 // Qt
 #include <QWidget>
 #include <QAbstractAnimation>
@@ -61,6 +62,7 @@ namespace te
   namespace st
   {
     class TrajectoryDataSet;
+    class TrajectoryDataSetLayer;
   }
 
   namespace qt
@@ -73,15 +75,17 @@ namespace te
       class TrajectoryItem;
       class PixmapItem;
       class AnimationScene;
+
       /*!
         \class TimeSliderWidget
 
         \brief A wdiget used to control the visualization of temporal data
       */
-      class TEQTWIDGETSEXPORT TimeSliderWidget : public QWidget
+      class TEQTWIDGETSEXPORT TimeSliderWidget : public QWidget, public InterfaceController
       {
         Q_OBJECT
 
+        friend class SliderPropertiesDialog;
         public:
 
           /*!
@@ -97,6 +101,24 @@ namespace te
             It destructs a Time Slider Widget
           */
           ~TimeSliderWidget();
+
+          /*!
+            \brief This method is used to set current layer
+            
+          */
+          virtual void layerSelected(te::map::AbstractLayerPtr layer);
+
+          /*!
+            \brief This method is used to add a new layer
+            
+          */
+          virtual void layerAdded(te::map::AbstractLayerPtr layer);
+
+          /*!
+            \brief This method is used to remove a layer
+            
+          */
+          virtual void layerRemoved(te::map::AbstractLayerPtr layer);
 
           void addTemporalImages(const QString& filePath);
 
@@ -127,7 +149,7 @@ namespace te
             \param pixmapFile The trajectory icon.
             \param poinstFile The trajectory points.
           */
-          void addTrajectory(const QString& title, const QString& pixmapFile, te::st::TrajectoryDataSet* dset);
+          void addTrajectory(te::st::TrajectoryDataSetLayer* tl, const QString& pixmapFile);
 
           /*!
             \brief It calculates the spatial extent.
@@ -212,13 +234,6 @@ namespace te
           */
            te::dt::TimeInstant getFinalTime();
 
-          ///*!
-          //  \brief It converts simple time string to iso time string.
-
-          //  \return The converted time string.
-          //*/
-          // QString simpleTimeString2IsoString(QString timeString);
-
         protected:
 
           /*!
@@ -297,6 +312,12 @@ namespace te
 
         QImage* getImage(te::qt::widgets::PixmapItem* pi);
 
+        void loadAnimation(const QString& title);
+
+        void removeAnimation(const QString& title);
+
+        void removeOnPropertieCombo(const QString& title);
+
         /*!
           \brief
           Draw the trajectory icon.
@@ -307,9 +328,8 @@ namespace te
         */
         void drawTrajectoryIcon(const TrajectoryItem* t, const QPoint& pos, QPainter* painter);
 
-        void openTrajectory(const QString file, const QString& leao); // so para teste
-
-        bool alreadyExists(QPair<QString, QString>& item);
+        bool trajectoryAlreadyExists(QPair<QString, te::st::TrajectoryDataSetLayer*>& item);
+        bool coverageAlreadyExists(QPair<QString, QString>& item);
 
           /*!
             \brief It initialize a property animation dialog
@@ -335,19 +355,32 @@ namespace te
 
             \param ai The item to be removed.
           */
-          void removeComboItem(te::qt::widgets::AnimationItem* ai);
+          //void removeComboItem(te::qt::widgets::AnimationItem* ai);
 
-          void dragEnterEvent(QDragEnterEvent*);
+          //void getAuxInfo(te::qt::widgets::AnimationItem* ai, int index = -1);
 
-          void dropEvent(QDropEvent*);
+          //void setAuxInfo(te::qt::widgets::AnimationItem* ai, int index = -1);
+          
+          void adjustTrajectoryGroupBox(te::qt::widgets::AnimationItem*);
+
+          QString getDateString(const te::dt::TimeInstant& t);
+
 
         protected slots:
 
           /*!
             \brief it draw on display.
+            \param p Pointer to QPainter.
           */
-          void onDisplayPaintEvent(QPainter*);
+          void onDisplayPaintEvent(QPainter* p);
 
+          /*!
+            \brief Drag enter event on display.
+            \param e The drag enter event.
+          */
+          void onAnimationDragEnterEvent(QDragEnterEvent* e);
+
+          void onAnimationDropEvent(QDropEvent*);
           /*!
             \brief it opens the configuration window animation.
           */
@@ -365,6 +398,7 @@ namespace te
 
           /*!
             \brief It takes the necessary measures after slider move.
+            \param e The slider value.
           */
           void onSliderMoved(int value);
 
@@ -397,34 +431,34 @@ namespace te
 
           /*!
             \brief It takes the necessary steps after changing the current time of animation.
-
             \param t The new current time.
           */
           void onDateTimeEditChanged(const QDateTime& t);
 
-          void onAddEtaPushButtonClicked(bool);
-          void onAddHidroPushButtonClicked(bool);
           void onAutoPanCheckBoxClicked(bool);
-          void onAddPushButtonClicked(bool b);
-          void onRemovePushButtonClicked(bool b);
+          void onPanFactorValueChanged(double);
           void onFrontPushButtonClicked(bool b);
           void onBackPushButtonClicked(bool b);
 
-          ///*!
-          //  \brief Ok button clicked.
-          //*/
-          //void onOkPushButtonClicked();
+          /*!
+            \brief Help button clicked.
+          */
+          void onHelpPushButtonClicked();
 
-          ///*!
-          //  \brief Cancel button clicked.
-          //*/
-          //void onCancelPushButtonClicked();
+          /*!
+            \brief Draw track check box clicked.
 
-          ///*!
-          //  \brief Help button clicked.
-          //*/
-          //void onHelpPushButtonClicked();
+            \param b True if the button is checked, or false if the button is unchecked
+          */
+          void onDrawTrailCheckBoxClicked(bool b);         
 
+          /*!
+            \brief Apply animation items push button clicked. It Sets the visibility of animations.
+
+            \param b True if the button is checked, or false if the button is unchecked
+          */
+          //void onApplyAnimationItemPushButtonClicked(bool);
+          
           /*!
             \brief Forward radio button clicked.
 
@@ -465,14 +499,24 @@ namespace te
 
             \param i The index of combo box.
           */
-          void onTrajectoryColorComboBoxActivated(int i);
+          //void onTrajectoryColorComboBoxActivated(int i);
 
           /*!
             \brief Opacity combo box activated.
 
             \param i The index of combo box.
           */
-          void onOpacityComboBoxActivated(int i);
+          void onAnimationComboBoxActivated(int i);
+
+          /*!
+            \brief Remove item animation.
+          */
+          void onRemovePushButtonClicked(bool);
+
+          /*!
+            \brief Remove all animations.
+          */
+          void onRemoveAllPushButtonClicked(bool);
 
           /*!
             \brief Reset initial time button clicked.
@@ -483,6 +527,10 @@ namespace te
             \brief Reset final time button clicked.
           */
           void onResetFinalTimePushButtonClicked();
+
+          void onWidthValueChanged(int);
+
+          void onHeightValueChanged(int);
 
           void dropAction();
 
@@ -495,34 +543,46 @@ namespace te
 
         private:
 
-          bool                                    m_loop;                     //!< This property holds whether the slider's animation is on loop.
-          int                                     m_duration;                 //!< The animation's duration time in miliseconds
-          QAbstractAnimation::Direction           m_direction;                //!< QAbstractAnimation::Forward or QAbstractAnimation::Backward
-          bool                                    m_goAndBack;                //!< Forward and then backward direction
-          bool                                    m_comingBack;               //!< Flag to indicate that the trend is coming back
-          MapDisplay*                             m_display;                  //!< The map display
-          QGraphicsView*                          m_animationView;            //!< The animation graphics view
-          AnimationScene*                         m_animationScene;           //!< The animation scene
-          QParallelAnimationGroup*                m_parallelAnimation;        //!< The parallel animation
-          te::gm::Envelope                        m_spatialExtent;            //!< Spatial extent.
-          te::dt::TimePeriod                      m_temporalExtent;           //!< Temporal extent.
-          te::dt::TimePeriod                      m_temporalAnimationExtent;  //!< Animation temporal extent. It is used for show animation.
-          int                                     m_currentTime;              //!< Current animation time (relative to time duration).
-          bool                                    m_erasePerfectly;           //!< flag to erase trajectory piece perfectly (default = false).
-          std::auto_ptr<Ui::TimeSliderWidgetForm> m_ui;                       //!< The widget form.
-          QDateTime                               m_oldQDateTime;             //!< The old Qt date time.
-          QDateTime                               m_oldIQDateTime;            //!< The old initial Qt date time.
-          QDateTime                               m_oldFQDateTime;            //!< The old final Qt date time.
-          bool                                    m_dateTimeChanged;
-          int                                     m_maxSliderValue;           //!< The max slider value.
-          bool                                    m_finished;
-          QList<QPair<QString, QString> >         m_itemList;                 //!< List of all animation items (URI, DataSetName).
-          Qt::KeyboardModifiers                   m_dropModifiers;            //!< Control pressed to add animation with drag and drop.
-          QList<QUrl>                             m_dropUrls;                 //!< Urls to animation with drag and drop.
-          QByteArray                              m_dropBA;                   //!< Layer animation with drag and drop.
+          //struct AnimationAuxInfo
+          //{
+          //  QString       type;
+          //  QString       title;
+          //  unsigned char opacity;
+          //  bool          drawTrail;
+          //  bool          autoPan;
+          //  QColor        forwardColor;
+          //  QColor        backwardColor;
+          //};
 
-          QRectF          m_initialDisplayRect; // so para teste
-
+          bool                                                    m_loop;                     //!< This property holds whether the slider's animation is on loop.
+          int                                                     m_duration;                 //!< The animation's duration time in miliseconds
+          QAbstractAnimation::Direction                           m_direction;                //!< QAbstractAnimation::Forward or QAbstractAnimation::Backward
+          bool                                                    m_goAndBack;                //!< Forward and then backward direction
+          bool                                                    m_comingBack;               //!< Flag to indicate that the trend is coming back
+          MapDisplay*                                             m_display;                  //!< The map display
+          QGraphicsView*                                          m_animationView;            //!< The animation graphics view
+          AnimationScene*                                         m_animationScene;           //!< The animation scene
+          QParallelAnimationGroup*                                m_parallelAnimation;        //!< The parallel animation
+          te::gm::Envelope                                        m_spatialExtent;            //!< Spatial extent.
+          te::dt::TimePeriod                                      m_temporalExtent;           //!< Temporal extent.
+          te::dt::TimePeriod                                      m_temporalAnimationExtent;  //!< Animation temporal extent. It is used for show animation.
+          int                                                     m_currentTime;              //!< Current animation time (relative to time duration).
+          bool                                                    m_erasePerfectly;           //!< flag to erase trajectory piece perfectly (default = false).
+          std::auto_ptr<Ui::TimeSliderWidgetForm>                 m_ui;                       //!< The widget form.
+          QDateTime                                               m_oldQDateTime;             //!< The old Qt date time.
+          QDateTime                                               m_oldIQDateTime;            //!< The old initial Qt date time.
+          QDateTime                                               m_oldFQDateTime;            //!< The old final Qt date time.
+          bool                                                    m_dateTimeChanged;
+          int                                                     m_maxSliderValue;           //!< The max slider value.
+          bool                                                    m_finished;
+          bool                                                    m_paused;
+          QList<QPair<QString, te::st::TrajectoryDataSetLayer*> > m_trajectoryItemList;       //!< List of all trajectory items (title, layer).
+          QList<QPair<QString, QString> >                         m_coverageItemList;         //!< List of all animation items (title, path).
+          Qt::KeyboardModifiers                                   m_dropModifiers;            //!< Control pressed to add animation with drag and drop.
+          QList<QUrl>                                             m_dropUrls;                 //!< Urls to animation with drag and drop.
+          QByteArray                                              m_dropBA;                   //!< Layer animation with drag and drop.
+          SliderPropertiesDialog*                                 m_spd;                      //!< Slider Properties Dialog.
+          //QMap<int, AnimationAuxInfo>                             m_auxInfo;                  //!< animation auxiliar information                                        
       };
     } // end namespace widgets
   }   // end namespace qt

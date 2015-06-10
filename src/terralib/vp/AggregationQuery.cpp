@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -91,7 +91,7 @@ te::vp::AggregationQuery::AggregationQuery()
 te::vp::AggregationQuery::~AggregationQuery()
 {}
 
-bool te::vp::AggregationQuery::run()
+bool te::vp::AggregationQuery::run() throw(te::common::Exception)
 {
   std::auto_ptr<te::da::DataSetType> outDSetType(new te::da::DataSetType(m_outDset));
   
@@ -293,5 +293,7 @@ bool te::vp::AggregationQuery::run()
     outDSet->add(outDSetItem);
     ++key;
   }
-  return save(outDSet,outDSetType);
+  
+  te::vp::Save(m_outDsrc.get(), outDSet.get(), outDSetType.get());
+  return true;
 }

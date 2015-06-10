@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -48,6 +48,7 @@ class TsGeometricTransformations : public CPPUNIT_NS::TestFixture
 // It registers the class methods as Test Cases belonging to the suit 
   CPPUNIT_TEST( tcRSTGT );
   CPPUNIT_TEST( tcAffine );
+  CPPUNIT_TEST( tcAffineDecompose );
   CPPUNIT_TEST( tcSecondDegreePolynomialGT );
   CPPUNIT_TEST( tcThirdDegreePolynomialGT );
   CPPUNIT_TEST( tcProjectiveGT );  
@@ -75,6 +76,9 @@ class TsGeometricTransformations : public CPPUNIT_NS::TestFixture
 
     /*! \brief Test Case: Affine transformation. */
     void tcAffine();
+    
+    /*! \brief Test Case: Affine transformation decompose method. */
+    void tcAffineDecompose();    
     
     /*! \brief Test Case: Second degree polynomial transformation. */
     void tcSecondDegreePolynomialGT();

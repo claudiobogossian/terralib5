@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/qt/widgets/canvas/AnimationItem.h
+  \file terralib/qt/widgets/st/AnimationItem.h
 
   \brief This file defines a class for a Animation Item.
 */
@@ -150,6 +150,7 @@ namespace te
         QVector<QPointF> m_animationRoute;                  //!< The path coordenates in map display projection. It contains only the portions to be animated.
         QMatrix m_matrix;                                   //!< The display transformation matrix.
         bool m_automaticPan;                                //!< True if automatic pan over this item.
+        double m_panFactor;                                 //!< the range is between 0.05 and 0.5 
         unsigned int m_curTimeDuration;                     //!< Current time (ms). Its value is between 0 and the total duration.
         double m_norInitialTime;                            //!< Normalized initial time (between 0 and 1).
         double m_norFinalTime;                              //!< Normalized final time (between 0 and 1).

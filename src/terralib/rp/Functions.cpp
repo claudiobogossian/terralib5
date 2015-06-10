@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -49,8 +49,6 @@
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/shared_array.hpp>
-#include <boost/random.hpp>
-#include <boost/random/uniform_int_distribution.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/thread.hpp>
 #include <boost/numeric/ublas/lu.hpp>
@@ -111,6 +109,7 @@ namespace te
       te::rst::Raster const * m_inputRasterPtr;
       std::vector< unsigned int > const * m_inputRasterBandsPtr;
       te::rst::Raster* m_outputRasterPtr;
+      std::vector< unsigned int > const * m_outputRasterBandsPtr;
       boost::numeric::ublas::matrix< double > const * m_remapMatrixPtr;
       Matrix< bool > * m_rasterBlocksStatusPtr;
       bool m_returnStatus;
@@ -238,39 +237,39 @@ namespace te
       const std::string& fileName,
       RasterHandler& outRasterHandler )
     {
-      
-      boost::filesystem::path pathInfo( fileName );
-
-      // Creating a new datasource
-
-      std::auto_ptr< te::da::DataSource > dataSourcePtr(
-        te::da::DataSourceFactory::make( "GDAL" ) );
-      if( dataSourcePtr.get() == 0 ) return false;
-
-      std::map<std::string, std::string> outputRasterInfo;
-      outputRasterInfo["SOURCE"] = pathInfo.parent_path().string().empty() ?
-        "." : pathInfo.parent_path().string();
-
-      dataSourcePtr->setConnectionInfo(outputRasterInfo);
-      dataSourcePtr->open();
-      if( ! dataSourcePtr->isOpened() ) return false;
-      
-      RasterHandler internalRasterHandler;
-      
-      if( CreateNewRaster( rasterGrid, bandsProperties, 
-        pathInfo.filename().string(), *dataSourcePtr, internalRasterHandler ) )
+      std::auto_ptr< te::rst::Raster > outRasterPtr;
+      if( CreateNewGdalRaster( rasterGrid, bandsProperties, fileName, outRasterPtr ) )
       {
-        std::auto_ptr< te::da::DataSource > dummyDataSourcePtr;
-        std::auto_ptr< te::da::DataSourceTransactor > transactorPtr;
-        std::auto_ptr< te::da::DataSet > dataSetPtr;
-        std::auto_ptr< te::rst::Raster > rasterPtr;
-        
-        internalRasterHandler.release( dummyDataSourcePtr, transactorPtr,
-          dataSetPtr, rasterPtr );
-          
-        outRasterHandler.reset( dataSourcePtr.release(), transactorPtr.release(), 
-          dataSetPtr.release(), rasterPtr.release() );
-        
+        outRasterHandler.reset( outRasterPtr.release() ); 
+        return true;
+      }
+      else
+      {
+        outRasterHandler.reset();
+        return false;
+      }
+    }
+    
+    bool CreateNewGdalRaster( const te::rst::Grid& rasterGrid,
+      std::vector< te::rst::BandProperty* > bandsProperties,
+      const std::string& fileName,
+      std::auto_ptr< te::rst::Raster >& outRasterPtr )
+    {
+      outRasterPtr.reset();
+      
+      std::map< std::string, std::string > rInfo;
+      rInfo[ "URI" ] = fileName;
+      
+      outRasterPtr.reset( te::rst::RasterFactory::make(
+        "GDAL",
+        new te::rst::Grid( rasterGrid ),
+        bandsProperties,
+        rInfo,
+        0,
+        0 ) );
+      
+      if( outRasterPtr.get() )
+      {
         return true;
       }
       else
@@ -711,8 +710,8 @@ namespace te
 
       for (unsigned int b = 0; b < inraster.getNumberOfBands(); b++)
       {
-        omins.push_back(inraster.getBand(b)->getMinValue().real());
-        omaxs.push_back(inraster.getBand(b)->getMaxValue().real());
+        omins.push_back(inraster.getBand(b)->getMinValue(true).real());
+        omaxs.push_back(inraster.getBand(b)->getMaxValue(true).real());
 
         bands.push_back(b);
       }
@@ -742,26 +741,7 @@ namespace te
 
       return true;
     }
-
-    std::vector<te::gm::Point*> GetRandomPointsInRaster(const te::rst::Raster& inputRaster, unsigned int numberOfPoints)
-    {
-      std::vector<te::gm::Point*> randomPoints;
-      double randX;
-      double randY;
-
-      boost::random::mt19937 generator((boost::random::mt19937::result_type) time(0));
-      boost::random::uniform_int_distribution<> random_rows(0, inputRaster.getNumberOfRows() - 1);
-      boost::random::uniform_int_distribution<> random_columns(0, inputRaster.getNumberOfColumns() - 1);
-
-      for (unsigned int p = 0; p < numberOfPoints; p++)
-      {
-        inputRaster.getGrid()->gridToGeo(random_columns(generator), random_rows(generator), randX, randY);
-        randomPoints.push_back(new te::gm::Point(randX, randY, inputRaster.getSRID()));
-      }
-
-      return randomPoints;
-    }   
-    
+  
     bool ConvertRGB2IHS( const te::rst::Raster& inputRGBRaster, 
       const unsigned int redBandIdx, const unsigned int greenBandIdx,
       const unsigned int blueBandIdx, const double rgbRangeMin, 
@@ -1526,6 +1506,7 @@ namespace te
       const std::vector< unsigned int >& inputRasterBands,
       boost::numeric::ublas::matrix< double >& pcaMatrix,
       te::rst::Raster& pcaRaster,
+      const std::vector< unsigned int >& pcaRasterBands,
       const unsigned int maxThreads )
     {
       if( ( inputRaster.getAccessPolicy() & te::common::RAccess ) == 0 )
@@ -1606,13 +1587,15 @@ namespace te
       
       pcaMatrix = boost::numeric::ublas::trans( eigenVectors );
       
-      return RemapValues( inputRaster, inputRasterBands, pcaMatrix, pcaRaster, maxThreads );
+      return RemapValues( inputRaster, inputRasterBands, pcaMatrix, pcaRaster, 
+        pcaRasterBands, maxThreads );
     }
     
     bool InversePrincipalComponents( 
       const te::rst::Raster& pcaRaster,
       const boost::numeric::ublas::matrix< double >& pcaMatrix,
       te::rst::Raster& outputRaster,
+      const std::vector< unsigned int >& outputRasterBands,
       const unsigned int maxThreads )    
     {
       boost::numeric::ublas::matrix< double > inversePcaMatrix;
@@ -1630,7 +1613,7 @@ namespace te
       }
       
       return RemapValues( pcaRaster, inputRasterBands, inversePcaMatrix, 
-        outputRaster, maxThreads );
+        outputRaster, outputRasterBands, maxThreads );
     }
     
     void RemapValuesThread( RemapValuesThreadParams* paramsPtr )
@@ -1645,7 +1628,9 @@ namespace te
       
       const std::vector< unsigned int >  inputRasterBands = *( paramsPtr->m_inputRasterBandsPtr );
       const unsigned int  inputRasterBandsSize = (unsigned int)inputRasterBands.size();
+      const std::vector< unsigned int >  outputRasterBands = *( paramsPtr->m_inputRasterBandsPtr );
       assert( inputRasterBandsSize == paramsPtr->m_outputRasterPtr->getNumberOfBands() );
+      assert( inputRasterBandsSize == outputRasterBands.size() );
       
       unsigned int maxBlocksSizesBytes = 0;
       std::vector< double > inputBandsNoDataValues( inputRasterBandsSize, 0.0 );
@@ -1668,7 +1653,8 @@ namespace te
         assert( inBandIdx < paramsPtr->m_inputRasterPtr->getNumberOfBands() );
         
         te::rst::Band const * const inBandPtr = paramsPtr->m_inputRasterPtr->getBand( inBandIdx );
-        te::rst::Band * const outBandPtr = paramsPtr->m_outputRasterPtr->getBand( inputRasterBandsIdx );
+        te::rst::Band * const outBandPtr = paramsPtr->m_outputRasterPtr->getBand( 
+          outputRasterBands[ inputRasterBandsIdx ] );
         
         maxBlocksSizesBytes = std::max( maxBlocksSizesBytes, (unsigned int)inBandPtr->getBlockSize() );
         maxBlocksSizesBytes = std::max( maxBlocksSizesBytes, (unsigned int)outBandPtr->getBlockSize() );
@@ -1782,7 +1768,8 @@ namespace te
             for( inputRasterBandsIdx = 0 ; inputRasterBandsIdx < inputRasterBandsSize ;
               ++inputRasterBandsIdx )
             { 
-              te::rst::Band* outBandPtr = paramsPtr->m_outputRasterPtr->getBand( inputRasterBandsIdx );
+              te::rst::Band* outBandPtr = paramsPtr->m_outputRasterPtr->getBand( 
+                outputRasterBands[ inputRasterBandsIdx ] );
               
               ConvertDoublesVector( outDoubleBuffers[ inputRasterBandsIdx ],
                 blockElementsNumber, outBandPtr->getProperty()->getType(),
@@ -1803,6 +1790,7 @@ namespace te
       const std::vector< unsigned int >& inputRasterBands, 
       const boost::numeric::ublas::matrix< double >& remapMatrix,
       te::rst::Raster& outputRaster,
+      const std::vector< unsigned int >& outputRasterBands,
       const unsigned int maxThreads )
     {
       if( ( inputRaster.getAccessPolicy() & te::common::RAccess ) == 0 )
@@ -1833,6 +1821,30 @@ namespace te
       {
         return false;
       }    
+      if( remapMatrix.size1() != outputRasterBands.size() )
+      {
+        return false;
+      }
+      if( remapMatrix.size2() != outputRasterBands.size() )
+      {
+        return false;
+      }     
+      for( unsigned int inputRasterBandsIdx = 0 ; inputRasterBandsIdx < inputRasterBands.size() ;
+        ++inputRasterBandsIdx )
+      {
+        if( inputRasterBands[ inputRasterBandsIdx ] >= inputRaster.getNumberOfBands() )
+        {
+          return false;
+        }    
+      }
+      for( unsigned int outputRasterBandsIdx = 0 ; outputRasterBandsIdx < outputRasterBands.size() ;
+        ++outputRasterBandsIdx )
+      {
+        if( outputRasterBands[ outputRasterBandsIdx ] >= outputRaster.getNumberOfBands() )
+        {
+          return false;
+        }    
+      }      
       
       // Checking if optmized PCA can be executed
       
@@ -1926,6 +1938,7 @@ namespace te
         params.m_inputRasterPtr = &inputRaster;
         params.m_inputRasterBandsPtr = &inputRasterBands;
         params.m_outputRasterPtr = &outputRaster;
+        params.m_outputRasterBandsPtr = &outputRasterBands;
         params.m_remapMatrixPtr = &remapMatrix;
         params.m_rasterBlocksStatusPtr = &rasterBlocksStatus;
         params.m_returnStatus = true;
@@ -1981,10 +1994,10 @@ namespace te
             inputRasterBands[ inputRasterBandsIdx ] )->getProperty()->m_noDataValue;
             
           outputNoDataValues[ inputRasterBandsIdx ] = outputRaster.getBand( 
-            inputRasterBandsIdx )->getProperty()->m_noDataValue;
+            outputRasterBands[ inputRasterBandsIdx ] )->getProperty()->m_noDataValue;
             
           te::rst::GetDataTypeRanges( 
-            outputRaster.getBand( inputRasterBandsIdx )->getProperty()->getType(),
+            outputRaster.getBand( outputRasterBands[ inputRasterBandsIdx ] )->getProperty()->getType(),
             outputMinValue[ inputRasterBandsIdx ],
             outputMaxValue[ inputRasterBandsIdx ] );
         }
@@ -2027,7 +2040,7 @@ namespace te
                       remappedPixelValues( inputRasterBandsIdx, 0 )
                     )
                   ),
-                  inputRasterBandsIdx );
+                  outputRasterBands[ inputRasterBandsIdx ] );
               }              
             }
             else
@@ -2036,13 +2049,673 @@ namespace te
                 ++inputRasterBandsIdx )
               {              
                 outputRaster.setValue( col, row, outputNoDataValues[ inputRasterBandsIdx ], 
-                  inputRasterBandsIdx );
+                  outputRasterBands[ inputRasterBandsIdx ] );
               }
             }
           }
         }
       }
         
+      return true;
+    }
+    
+    bool DecomposeBands( 
+      const te::rst::Raster& inputRaster,
+      const std::vector< unsigned int >& inputRasterBands,
+      const std::vector< std::map<std::string, std::string> > & outputRastersInfos,
+      const std::string& outputDataSourceType,
+      std::vector< boost::shared_ptr< te::rst::Raster > > & outputRastersPtrs )
+    {
+      outputRastersPtrs.clear();
+      
+      if( !( inputRaster.getAccessPolicy() & te::common::RAccess ) )
+      {
+        return false;
+      }
+      if( outputRastersInfos.size() != inputRasterBands.size() )
+      {
+        return false;
+      }
+      if( outputDataSourceType.empty() )
+      {
+        return false;
+      }
+      
+      outputRastersPtrs.resize( inputRasterBands.size() );
+      
+      const unsigned int nRows = inputRaster.getNumberOfRows();
+      const unsigned int nCols = inputRaster.getNumberOfColumns();
+      
+      for( unsigned int inputRasterBandsIdx = 0 ; inputRasterBandsIdx <
+        inputRasterBands.size() ; ++inputRasterBandsIdx )
+      {
+        const unsigned int bandIdx = inputRasterBands[ inputRasterBandsIdx ];
+        if( bandIdx >= inputRaster.getNumberOfBands() )
+        {
+          return false;
+        }
+        
+        std::vector< te::rst::BandProperty* > bandsProperties;
+
+        bandsProperties.push_back( new te::rst::BandProperty( 
+          *( inputRaster.getBand( bandIdx )->getProperty()) ) );
+        
+        outputRastersPtrs[ inputRasterBandsIdx].reset( 
+          te::rst::RasterFactory::make( outputDataSourceType,
+          new te::rst::Grid( *inputRaster.getGrid() ), bandsProperties, 
+          outputRastersInfos[ inputRasterBandsIdx ], 0, 0 ) );
+        if( outputRastersPtrs[ inputRasterBandsIdx].get() == 0 ) return false;        
+        
+        unsigned int col = 0;
+        unsigned int row = 0;
+        double value = 0;
+        const te::rst::Band& inBand = *(inputRaster.getBand( bandIdx ));
+        te::rst::Band& outBand = *(outputRastersPtrs[ inputRasterBandsIdx]->getBand( 0 ));
+        
+        for( row = 0 ; row < nRows ; ++row )
+        {
+          for( col = 0 ; col < nCols ; ++col )
+          {
+            inBand.getValue( col, row, value );
+            outBand.setValue( col, row, value );
+          }
+        }
+      }
+      
+      return true;
+    }
+    
+    bool ComposeBands( 
+      te::rp::FeederConstRaster& feeder,
+      const std::vector< unsigned int >& inputRasterBands,
+      const te::rst::Interpolator::Method& interpMethod,
+      const std::map<std::string, std::string>& outputRasterInfo,
+      const std::string& outputDataSourceType,
+      std::auto_ptr< te::rst::Raster >& outputRasterPtr )
+    {
+      outputRasterPtr.reset();
+      
+      if( inputRasterBands.size() != feeder.getObjsCount() )
+      {
+        return false;
+      }
+      if( outputDataSourceType.empty() )
+      {
+        return false;
+      }
+      
+      // creating the output raster
+      
+      {
+        te::rst::Raster const * inputRasterPtr = 0;
+        std::auto_ptr< te::rst::Grid > outputGridPtr;
+        std::vector< te::rst::BandProperty* > bandsProperties;
+        
+        feeder.reset();
+        while( inputRasterPtr = feeder.getCurrentObj() )
+        {
+          if( inputRasterBands[ feeder.getCurrentOffset() ] >= 
+            inputRasterPtr->getNumberOfBands() )
+          {
+            return false;
+          }
+          
+          if( feeder.getCurrentOffset() == 0 )
+          {
+            outputGridPtr.reset( new te::rst::Grid( *inputRasterPtr->getGrid() ) );
+          }          
+
+          bandsProperties.push_back( new te::rst::BandProperty( 
+            *( inputRasterPtr->getBand( inputRasterBands[ 
+            feeder.getCurrentOffset() ] )->getProperty()) ) );
+          
+          feeder.moveNext();
+        }
+        
+        outputRasterPtr.reset( te::rst::RasterFactory::make( outputDataSourceType,
+          outputGridPtr.release(), bandsProperties, outputRasterInfo, 0, 0 ) );
+        if( outputRasterPtr.get() == 0 ) return false;
+      }
+      
+      // copying data from each input band
+        
+      {
+        te::rst::Raster const * inputRasterPtr = 0;
+        
+        feeder.reset();
+        while( inputRasterPtr = feeder.getCurrentObj() )
+        {
+          const unsigned int inBandIdx = inputRasterBands[ 
+            feeder.getCurrentOffset() ];
+          te::rst::Interpolator interp( inputRasterPtr, interpMethod );
+          unsigned int outRow = 0;
+          unsigned int outCol = 0;
+          const unsigned int nOutRows = outputRasterPtr->getNumberOfRows();
+          const unsigned int nOutCols = outputRasterPtr->getNumberOfColumns();
+          te::rst::Band& outBand = *outputRasterPtr->getBand( 
+            feeder.getCurrentOffset() );
+          const te::rst::Grid& inGrid = *inputRasterPtr->getGrid();
+          const te::rst::Grid& outGrid = *outputRasterPtr->getGrid();
+          double xOutCoord = 0;
+          double yOutCoord = 0;
+          double xInCoord = 0;
+          double yInCoord = 0;          
+          double inRow = 0;
+          double inCol = 0;
+          std::complex< double > value = 0;
+          te::srs::Converter conv( outputRasterPtr->getSRID(),
+            inputRasterPtr->getSRID() );
+          
+          if( inputRasterPtr->getSRID() == outputRasterPtr->getSRID() )
+          {
+            for( outRow = 0 ; outRow < nOutRows ; ++outRow )
+            {
+              for( outCol = 0 ; outCol < nOutCols ; ++outCol )
+              {
+                outGrid.gridToGeo( (double)outCol, (double)outRow, xOutCoord, yOutCoord );
+                inGrid.geoToGrid( xOutCoord, yOutCoord, inCol, inRow );
+                interp.getValue( inCol, inRow, value, inBandIdx );
+                outBand.setValue( outCol, outRow, value );
+              }
+            }
+          }
+          else
+          {
+            for( outRow = 0 ; outRow < nOutRows ; ++outRow )
+            {
+              for( outCol = 0 ; outCol < nOutCols ; ++outCol )
+              {
+                outGrid.gridToGeo( (double)outCol, (double)outRow, xOutCoord, yOutCoord );
+                conv.convert( xOutCoord, yOutCoord, xInCoord, yInCoord );
+                inGrid.geoToGrid( xInCoord, yInCoord, inCol, inRow );
+                interp.getValue( inCol, inRow, value, inBandIdx );
+                outBand.setValue( outCol, outRow, value );                
+              }
+            }
+          }
+          
+          feeder.moveNext();
+        }
+      }        
+      
+      return true;
+    }
+    
+    bool GetDetailedExtent( const te::rst::Grid& grid, te::gm::LinearRing& detailedExtent )
+    {
+      const int nCols = (int)grid.getNumberOfColumns();
+      const int nRows = (int)grid.getNumberOfRows();
+      if( ( nCols == 0 ) || ( nRows == 0 ) )
+      {
+        return false;
+      }
+      
+      const unsigned int ringSize = ( 2 * ( nCols + 1 ) ) +
+        ( 2 * ( nRows - 1 ) ) + 1;
+      
+      te::gm::LinearRing ring( ringSize , te::gm::LineStringType,
+        grid.getSRID(), 0 );
+
+      const double lLX = grid.getExtent()->getLowerLeftX();
+      const double lLY = grid.getExtent()->getLowerLeftY();
+      const double uRX = grid.getExtent()->getUpperRightX();
+      const double uRY = grid.getExtent()->getUpperRightY();
+      const double& resX = grid.getResolutionX();
+      const double& resY = grid.getResolutionY();        
+      unsigned int ringIdx = 0;
+      int row = 0;
+      int col = 0;
+      
+      ring.setPoint( 0, lLX, uRY ); 
+      
+      for( col = 0 ; col < nCols ; ++col )
+      {
+        ring.setPoint( ++ringIdx, lLX + ( ((double)( col + 1 ) ) * resX ), uRY );
+      }
+
+      for( row = 0 ; row < nRows ; ++row )
+      {
+        ring.setPoint( ++ringIdx, uRX, uRY - ( ((double)( row + 1 ) ) * resY ) );
+      } 
+      
+      for( col = nCols - 1 ; col > -1 ; --col )
+      {
+        ring.setPoint( ++ringIdx, lLX + ( ((double)( col + 1 ) ) * resX ), lLY );
+      }    
+      
+      for( row = nRows - 1 ; row > 0 ; --row )
+      {
+        ring.setPoint( ++ringIdx, lLX, uRY - ( ((double)( row + 1 ) ) * resY ) );
+      }
+      
+      ring.setPoint( ringSize - 1, lLX, uRY );
+      
+      detailedExtent = ring;
+      
+      return true;
+    }
+    
+    bool GetIndexedDetailedExtent( const te::rst::Grid& grid, 
+      te::gm::LinearRing& indexedDetailedExtent )
+    {
+      const int nCols = (int)grid.getNumberOfColumns();
+      const int nRows = (int)grid.getNumberOfRows();
+      if( ( nCols == 0 ) || ( nRows == 0 ) )
+      {
+        return false;
+      }
+      
+      const unsigned int ringSize = ( 2 * ( nCols + 1 ) ) +
+        ( 2 * ( nRows - 1 ) ) + 1;
+      
+      te::gm::LinearRing ring( ringSize , te::gm::LineStringType,
+        0, 0 );
+
+      const double lLY = ((double)nRows) - 0.5;
+      const double uRX = ((double)nCols) - 0.5;
+      unsigned int ringIdx = 0;
+      int row = 0;
+      int col = 0;
+      
+      ring.setPoint( 0, -0.5, -0.5 );
+      
+      for( col = 0 ; col < nCols ; ++col )
+      {
+        ring.setPoint( ++ringIdx, 0.5 + ((double)col), (-0.5) );
+      }
+
+      for( row = 0 ; row < nRows ; ++row )
+      {
+        ring.setPoint( ++ringIdx, uRX, 0.5 + ((double)row) );
+      } 
+      
+      for( col = nCols - 1 ; col > -1 ; --col )
+      {
+        ring.setPoint( ++ringIdx, ((double)col) - 0.5, lLY );
+      }    
+      
+      for( row = nRows - 1 ; row > -1 ; --row )
+      {
+        ring.setPoint( ++ringIdx, (-0.5), ((double)row) - 0.5 );
+      }       
+      
+      ring.setPoint( ringSize - 1, -0.5, -0.5 );            
+      
+      indexedDetailedExtent = ring;
+      
+      return true;
+    }
+    
+    boost::numeric::ublas::matrix< double > CreateWaveletAtrousFilter( 
+      const WaveletAtrousFilterType& filterType )
+    {
+      boost::numeric::ublas::matrix< double > emptyFilter;
+      
+      switch( filterType )
+      {
+        case B3SplineWAFilter :
+        {
+          boost::numeric::ublas::matrix< double > internalFilter( 5, 5 );
+          const double weight = 256;
+          
+          internalFilter(0,0) = 1/weight; internalFilter(0,1) = 4/weight; internalFilter(0,2) = 6/weight; internalFilter(0,3) = 4/weight; internalFilter(0,4) = 1/weight;
+          internalFilter(1,0) = 4/weight; internalFilter(1,1) = 16/weight; internalFilter(1,2) = 24/weight; internalFilter(1,3) = 16/weight; internalFilter(1,4) = 4/weight;
+          internalFilter(2,0) = 6/weight; internalFilter(2,1) = 24/weight; internalFilter(2,2) = 36/weight; internalFilter(2,3) = 24/weight; internalFilter(2,4) = 6/weight;
+          internalFilter(3,0) = 4/weight; internalFilter(3,1) = 16/weight; internalFilter(3,2) = 24/weight; internalFilter(3,3) = 16/weight; internalFilter(3,4) = 4/weight;
+          internalFilter(4,0) = 1/weight; internalFilter(4,1) = 4/weight; internalFilter(4,2) = 6/weight; internalFilter(4,3) = 4/weight; internalFilter(4,4) = 1/weight;
+          
+          return internalFilter;
+          
+          break;
+        }
+        case TriangleWAFilter :
+        {
+          boost::numeric::ublas::matrix< double > internalFilter( 3, 3 );
+          const double weight = 16;
+          
+          internalFilter(0,0) = 1/weight; internalFilter(0,1) = 2/weight; internalFilter(0,2) = 1/weight;
+          internalFilter(1,0) = 2/weight; internalFilter(1,1) = 4/weight; internalFilter(1,2) = 2/weight;
+          internalFilter(2,0) = 1/weight; internalFilter(2,1) = 2/weight; internalFilter(2,2) = 1/weight;
+          
+          return internalFilter;
+          
+          break;
+        }  
+        default :
+        {
+          throw te::rp::Exception( "Invalid filter type" );
+          break;
+        }
+      }
+      
+      return emptyFilter;
+    }
+    
+    bool DirectWaveletAtrous( 
+      const te::rst::Raster& inputRaster,
+      const std::vector< unsigned int >& inputRasterBands,
+      te::rst::Raster& waveletRaster,
+      const unsigned int levelsNumber,
+      const boost::numeric::ublas::matrix< double >& filter )
+    {
+      if( ! ( inputRaster.getAccessPolicy() & te::common::RAccess ) )
+      {
+        return false;
+      }
+      for( unsigned int inputRasterBandsIdx = 0 ; inputRasterBandsIdx <
+        inputRasterBands.size() ; ++inputRasterBandsIdx )
+      {
+        if( inputRasterBands[ inputRasterBandsIdx ] >= inputRaster.getNumberOfBands() )
+        {
+          return false;
+        }
+      }
+      if( 
+          ( ( waveletRaster.getAccessPolicy() & te::common::WAccess ) == 0 )
+          ||
+          ( waveletRaster.getNumberOfColumns() != inputRaster.getNumberOfColumns() )
+          ||
+          ( waveletRaster.getNumberOfRows() != inputRaster.getNumberOfRows() )
+          ||
+          ( waveletRaster.getNumberOfBands() < ( 2 *  levelsNumber * inputRasterBands.size() ) )
+        )
+      {
+        return false;
+      }
+      if( levelsNumber == 0 )
+      {
+        return false;
+      }
+      if( ( filter.size1() == 0 ) || ( filter.size2() == 0 ) || 
+        ( filter.size1() != filter.size2() )
+      )
+      {
+        return false;
+      }
+      
+      // Creating the coeficients and the resitual planes for each required
+      // wavelet level
+
+      const int filterWidth = filter.size1();
+      const int offset = filterWidth / 2;
+      const int nLines = inputRaster.getNumberOfRows();
+      const int nCols = inputRaster.getNumberOfColumns();
+      
+      for( unsigned int inputRasterBandsIdx = 0 ; inputRasterBandsIdx < inputRasterBands.size() ;
+        ++inputRasterBandsIdx )
+      {
+        for( unsigned int levelIndex = 0; levelIndex < levelsNumber; ++levelIndex)
+        {
+          const unsigned int currentSmoothBandIdx = ( 2 * levelsNumber * 
+            inputRasterBandsIdx ) + ( 2 * levelIndex );
+          te::rst::Band& currentSmoothBand = *waveletRaster.getBand( currentSmoothBandIdx );
+          
+          const unsigned int currentWaveletBandIdx = currentSmoothBandIdx + 1;
+          te::rst::Band& currentWaveletBand = *waveletRaster.getBand(
+            currentWaveletBandIdx );
+          
+          const unsigned int prevSmoothBandIdx =  currentSmoothBandIdx - 2;
+          te::rst::Band const* prevSmoothBandPtr = 0;
+          if( levelIndex == 0 )
+          {
+            prevSmoothBandPtr = inputRaster.getBand( inputRasterBands[ inputRasterBandsIdx ] );
+          }
+          else
+          {
+            prevSmoothBandPtr = waveletRaster.getBand( prevSmoothBandIdx );
+          }          
+          const te::rst::Band& prevSmoothBand = *prevSmoothBandPtr;          
+          
+          const int filterScale = (int)std::pow(2.0, (double)levelIndex);          
+          
+          int col = 0;
+          int row = 0;
+          int convolutionCenterCol = 0;
+          int convolutionCenterRow = 0;
+          int filterCol = 0;
+          int filterRow = 0; 
+          double valueOriginal = 0.0;
+          double valuePrev = 0.0;
+          double valueNew = 0.0;          
+
+          for (convolutionCenterRow = 0; convolutionCenterRow < nLines; convolutionCenterRow++)
+          {
+            for (convolutionCenterCol = 0; convolutionCenterCol < nCols; convolutionCenterCol++)
+            {
+              valueNew = 0.0;
+              
+              for (filterRow = 0; filterRow < filterWidth; filterRow++)
+              {
+                for (filterCol = 0; filterCol < filterWidth; filterCol++)
+                {
+                  col = convolutionCenterCol+(filterCol-offset)*filterScale;
+                  row = convolutionCenterRow+(filterRow-offset)*filterScale;
+                  
+                  if (col < 0)
+                    col = nCols + col;
+                  else if (col >= nCols)
+                    col = col - nCols;
+                  if (row < 0)
+                    row = nLines + row;
+                  else if (row >= nLines)
+                    row = row - nLines;
+                  
+                  prevSmoothBand.getValue( col, row, valueOriginal );
+                  
+                  valueNew += valueOriginal * filter( filterRow, filterCol );
+                }
+              }
+              
+              currentSmoothBand.setValue( convolutionCenterCol, convolutionCenterRow, 
+                valueNew );
+              prevSmoothBand.getValue( convolutionCenterCol, convolutionCenterRow, 
+                valueOriginal );
+              currentWaveletBand.setValue( convolutionCenterCol, convolutionCenterRow, 
+                valueOriginal - valueNew );
+            }
+          }
+        }
+      }
+      
+      return true;
+    }
+    
+    bool InverseWaveletAtrous( 
+      const te::rst::Raster& waveletRaster,
+      const unsigned int levelsNumber,
+      te::rst::Raster& outputRaster,
+      const std::vector< unsigned int >& outputRasterBands )
+    {
+      if( 
+          ( ! ( waveletRaster.getAccessPolicy() & te::common::RAccess ) )
+          ||
+          ( waveletRaster.getNumberOfBands() < ( 2 *  levelsNumber * outputRasterBands.size() ) )
+        )
+      {
+        return false;
+      }
+      if( levelsNumber == 0 )
+      {
+        return false;
+      }
+      if( 
+          ( ( outputRaster.getAccessPolicy() & te::common::WAccess ) == 0 )
+          ||
+          ( waveletRaster.getNumberOfColumns() != outputRaster.getNumberOfColumns() )
+          ||
+          ( waveletRaster.getNumberOfRows() != outputRaster.getNumberOfRows() )
+        )
+      {
+        return false;
+      }
+      for( unsigned int outputRasterBandsIdx = 0 ; outputRasterBandsIdx <
+        outputRasterBands.size() ; ++outputRasterBandsIdx )
+      {
+        if( outputRasterBands[ outputRasterBandsIdx ] >= outputRaster.getNumberOfBands() )
+        {
+          return false;
+        }
+      }
+      
+      for( unsigned int outputRasterBandsIdx = 0 ; outputRasterBandsIdx <
+        outputRasterBands.size() ; ++outputRasterBandsIdx )
+      {
+        const unsigned int outputRasterBandIdx = outputRasterBands[ outputRasterBandsIdx ];
+        const unsigned int nRows = waveletRaster.getNumberOfRows();
+        const unsigned int nCols = waveletRaster.getNumberOfColumns();        
+        const unsigned int firstSmoothBandIdx = outputRasterBandsIdx *
+          levelsNumber * 2;
+        const unsigned int firstWaveletBandIdx = firstSmoothBandIdx
+          + 1;          
+        const unsigned int lastSmoothBandIdx = firstSmoothBandIdx
+          + ( 2 * levelsNumber ) - 2;
+        const unsigned int lastWaveletBandIdx = lastSmoothBandIdx + 1;
+        unsigned int col = 0;
+        unsigned int row = 0;        
+        double value = 0;
+        double sum = 0;
+        unsigned int waveletRasterBand = 0;
+        
+        double bandAllowedMinValue = 0;
+        double bandAllowedMaxValue = 0;
+        te::rst::GetDataTypeRanges( outputRaster.getBand( 
+          outputRasterBandIdx )->getProperty()->m_type, bandAllowedMinValue,
+          bandAllowedMaxValue );
+        
+        
+        for( row = 0 ; row < nRows ; ++row )
+        {
+          for( col = 0 ; col < nCols ; ++col )
+          {
+            sum = 0.0;
+            
+            for( waveletRasterBand = firstWaveletBandIdx ; 
+              waveletRasterBand <= lastWaveletBandIdx ; 
+              waveletRasterBand += 2)
+            {
+              waveletRaster.getValue( col, row, value, waveletRasterBand );
+              sum += value;
+            }
+            
+            waveletRaster.getValue( col, row, value, lastSmoothBandIdx );
+            sum += value;
+            
+            sum = std::max( sum, bandAllowedMinValue );
+            sum = std::min( sum, bandAllowedMaxValue );
+            
+            outputRaster.setValue( col, row, sum, outputRasterBandIdx );
+          }
+        }
+      }
+           
+      return true;
+    }
+    
+    bool RasterResample( 
+      const te::rst::Raster& inputRaster,
+      const std::vector< unsigned int >& inputRasterBands,
+      const te::rst::Interpolator::Method interpMethod, 
+      const unsigned int firstRow,
+      const unsigned int firstColumn, 
+      const unsigned int height, 
+      const unsigned int width,
+      const unsigned int newheight, 
+      const unsigned int newwidth, 
+      const std::map<std::string, std::string>& rinfo,
+      const std::string& dataSourceType,
+      std::auto_ptr< te::rst::Raster >& resampledRasterPtr )
+    {
+      if( ( firstRow + height ) > inputRaster.getNumberOfRows() )
+      {
+        return false;
+      }
+      if( ( firstColumn + width ) > inputRaster.getNumberOfColumns() )
+      {
+        return false;
+      }
+      for (std::size_t inputRasterBandsIdx = 0; inputRasterBandsIdx < 
+        inputRasterBands.size(); inputRasterBandsIdx++)
+      {
+        if( inputRasterBands[ inputRasterBandsIdx ] >= inputRaster.getNumberOfBands() )
+        {
+          return false;
+        }
+      }
+      
+      te::gm::Coord2D ulc = inputRaster.getGrid()->gridToGeo( ((double)firstColumn) 
+        - 0.5, ((double)firstRow) - 0.5);
+      te::gm::Coord2D lrc = inputRaster.getGrid()->gridToGeo( ((double)(firstColumn 
+        + width)) - 0.5, ((double)(firstRow + height)) - 0.5);
+      
+      std::auto_ptr< te::gm::Envelope > newEnvelopePtr( new te::gm::Envelope( 
+        ulc.x, lrc.y, lrc.x, ulc.y ) );  
+
+      // create output parameters and raster
+      
+      std::auto_ptr< te::rst::Grid > gridPtr( new te::rst::Grid(
+        newwidth, newheight, newEnvelopePtr.release(),
+        inputRaster.getSRID()) );
+
+      std::vector<te::rst::BandProperty*> bands;
+
+      for (std::size_t inputRasterBandsIdx = 0; inputRasterBandsIdx < 
+        inputRasterBands.size(); inputRasterBandsIdx++)
+      {
+        bands.push_back( new te::rst::BandProperty(
+          *(inputRaster.getBand( inputRasterBands[ inputRasterBandsIdx ] )->getProperty())));
+        bands[ inputRasterBandsIdx ]->m_blkh = 1;
+        bands[ inputRasterBandsIdx ]->m_blkw = newwidth;
+        bands[ inputRasterBandsIdx ]->m_nblocksx = 1;
+        bands[ inputRasterBandsIdx ]->m_nblocksy = newheight;
+      }
+
+      resampledRasterPtr.reset( te::rst::RasterFactory::make( dataSourceType, 
+        gridPtr.release(), bands, rinfo, 0 ) );
+      if( resampledRasterPtr.get() == 0 )
+      {
+        return false;
+      }
+
+      // fill output raster
+            
+      std::complex<double> interpValue;
+      te::rst::Interpolator interp( &inputRaster, interpMethod);      
+      const double rowsFactor = ((double)(height-1)) / ((double)(newheight-1));
+      const double colsFactor = ((double)(width-1)) / ((double)(newwidth-1));
+      double inputRow = 0;
+      double inputCol = 0;      
+      unsigned int outputCol = 0;
+      unsigned int outputRow = 0;
+      unsigned int inputBandIdx = 0;
+      double allowedMin = 0;
+      double allowedMax = 0;
+      
+      for (std::size_t inputRasterBandsIdx = 0; inputRasterBandsIdx < 
+        inputRasterBands.size(); inputRasterBandsIdx++)
+      {
+        te::rst::Band& outputBand = *resampledRasterPtr->getBand( inputRasterBandsIdx );
+        inputBandIdx = inputRasterBands[ inputRasterBandsIdx ];
+        te::rp::GetDataTypeRange( outputBand.getProperty()->m_type, allowedMin, 
+          allowedMax );
+        
+        for ( outputRow = 0; outputRow < newheight; ++outputRow)
+        {
+          inputRow = ( ((double)( outputRow ) ) * rowsFactor ) + ((double)firstRow);
+          
+          for ( outputCol = 0; outputCol < newwidth; ++outputCol )
+          {
+            inputCol = ( ((double)( outputCol ) ) * colsFactor ) + ((double)firstColumn);
+            
+            interp.getValue(inputCol, inputRow, interpValue, inputBandIdx);
+            
+            interpValue.real( std::max( allowedMin, interpValue.real() ) );
+            interpValue.real( std::min( allowedMax, interpValue.real() ) );
+
+            outputBand.setValue(outputCol, outputRow, interpValue);
+          }
+        }
+      }
+      
       return true;
     }
     

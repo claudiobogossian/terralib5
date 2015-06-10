@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -50,6 +50,16 @@ te::color::RGBAColor** te::map::ChartRendererManager::render(const Chart* chart,
     throw Exception(TE_TR("There is not a chart renderer registered!"));
 
   return m_renderer->render(chart, dataset, width);
+}
+
+te::color::RGBAColor** te::map::ChartRendererManager::render(const Chart* chart, const std::map<std::string, double>& chartValue, std::size_t& width)
+{
+  LockWrite l;
+
+  if(m_renderer == 0)
+    throw Exception(TE_TR("There is not a chart renderer registered!"));
+
+  return m_renderer->render(chart, chartValue, width);
 }
 
 void te::map::ChartRendererManager::set(AbstractChartRenderer* renderer)

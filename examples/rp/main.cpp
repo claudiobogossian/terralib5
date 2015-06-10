@@ -2,7 +2,7 @@
 #include "RPExamples.h"
 
 // TerraLib
-#include <terralib/common/TerraLib.h>
+#include <terralib/common.h>
 #include <terralib/plugin.h>
 
 // STL
@@ -25,6 +25,8 @@ int main()
     Register();
     IHSFusion();
     Filter();
+    ArithmeticOperations();
+    Texture();
 
     te::plugin::PluginManager::getInstance().unloadAll();
 

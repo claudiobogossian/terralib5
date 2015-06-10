@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -57,20 +57,27 @@ namespace te
     
     bool SegmenterDummyStrategy::execute( 
       SegmenterIdsManager& segmenterIdsManager,
-      const te::rst::Raster&,
+      const te::rp::SegmenterSegmentsBlock& block2ProcessInfo,
+      const te::rst::Raster& inputRaster,
       const std::vector< unsigned int >& inputRasterBands,
-      const std::vector< double >&,
-      const std::vector< double >&,                                         
+      const std::vector< double >& inputRasterNoDataValues,
+      const std::vector< double >& inputRasterBandMinValues,
+      const std::vector< double >& inputRasterBandMaxValues,
       te::rst::Raster& outputRaster,
       const unsigned int outputRasterBand,
       const bool enableProgressInterface )
       throw( te::rp::Exception )
     {
+      assert( inputRasterBands.size() == inputRasterNoDataValues.size() );
+      assert( inputRasterNoDataValues.size() == inputRasterBandMinValues.size() );
+      assert( inputRasterBandMinValues.size() == inputRasterBandMaxValues.size() );      
+      assert( block2ProcessInfo.m_topCutOffProfile.size() == block2ProcessInfo.m_width );
+      assert( block2ProcessInfo.m_bottomCutOffProfile.size() == block2ProcessInfo.m_width );
+      assert( block2ProcessInfo.m_leftCutOffProfile.size() == block2ProcessInfo.m_height );
+      assert( block2ProcessInfo.m_rightCutOffProfile.size() == block2ProcessInfo.m_height );      
+      
       SegmenterSegmentsBlock::SegmentIdDataType segmentId = 
         segmenterIdsManager.getNewID();
-      
-      const unsigned int nLines = outputRaster.getNumberOfRows();
-      const unsigned int nCols = outputRaster.getNumberOfColumns();
       
       // Progress interface
       
@@ -78,17 +85,53 @@ namespace te
       if( enableProgressInterface )
       {
         progressPtr.reset( new te::common::TaskProgress );
-        progressPtr->setTotalSteps( nLines );
+        progressPtr->setTotalSteps( block2ProcessInfo.m_height );
         progressPtr->setMessage( "Segmentation" );
       }        
       
-      unsigned int col = 0;
+      // processing each block
       
-      for( unsigned int line = 0 ; line < nLines ; ++line )
+      unsigned int blkCol = 0;
+      double value = 0;
+      unsigned int inputRasterBandsIdx = 0;
+      const unsigned int inputRasterBandsSize = inputRasterBands.size();
+      bool rasterValuesAreValid = false;
+      
+      for( unsigned int blkLine = 0 ; blkLine < block2ProcessInfo.m_height ; ++blkLine )
       {
-        for( col = 0 ; col < nCols ; ++col )
+        for( blkCol = 0 ; blkCol < block2ProcessInfo.m_width ; ++blkCol )
         {
-          outputRaster.setValue( col, line, segmentId, outputRasterBand );
+          rasterValuesAreValid = true;
+          
+          for( inputRasterBandsIdx = 0 ; inputRasterBandsIdx < 
+            inputRasterBandsSize ; ++inputRasterBandsIdx )
+          {
+            inputRaster.getValue( blkCol + block2ProcessInfo.m_startX, blkLine +
+              block2ProcessInfo.m_startY, value, 
+              inputRasterBands[ inputRasterBandsIdx ] );
+              
+            if( value == inputRasterNoDataValues[ inputRasterBandsIdx ] )
+            {
+              rasterValuesAreValid = false;
+              break;
+            }
+          }          
+          
+          if( 
+              rasterValuesAreValid
+              &&
+              ( blkLine >= block2ProcessInfo.m_topCutOffProfile[ blkCol ] )
+              &&
+              ( blkLine <= block2ProcessInfo.m_bottomCutOffProfile[ blkCol ] )
+              &&
+              ( blkCol >= block2ProcessInfo.m_leftCutOffProfile[ blkLine ] )
+              &&
+              ( blkCol <= block2ProcessInfo.m_rightCutOffProfile[ blkLine ] )
+            )
+          {
+            outputRaster.setValue( blkCol + block2ProcessInfo.m_startX, 
+               blkLine + block2ProcessInfo.m_startY, segmentId, outputRasterBand );
+          }
         }
         
         if( enableProgressInterface )

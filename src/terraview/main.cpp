@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of TerraView - A Free and Open Source GIS Application.
 
@@ -132,6 +132,15 @@ int main(int argc, char** argv)
       tview.showMaximized();
 
       tview.resetState();
+
+      // Start TerraView from project file(.tview)
+      if(argc > 1)
+      {
+        std::string projPath = argv[1];
+
+        if(!projPath.empty())
+          tview.startProject(projPath.c_str());
+      }
 
       waitVal = app.exec();
 

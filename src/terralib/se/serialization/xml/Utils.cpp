@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -26,8 +26,8 @@
 // TerraLib
 #include "../../../fe/PropertyName.h"
 #include "../../../se/Symbolizer.h"
+#include "../../../xml/AbstractWriter.h"
 #include "../../../xml/Reader.h"
-#include "../../../xml/Writer.h"
 #include "../../../xlink/serialization/xml/XLinkSerializer.h"
 #include "../../../fe/serialization/xml/Expression.h"
 #include "../../Description.h"
@@ -39,12 +39,12 @@
 // STL
 #include <cassert>
 
-void te::se::serialize::WriteStringPtrHelper(const std::string& elementName, const std::string* s, te::xml::Writer& writer)
+void te::se::serialize::WriteStringPtrHelper(const std::string& elementName, const std::string* s, te::xml::AbstractWriter& writer)
 {
   if(s != 0 && !s->empty()) writer.writeElement(elementName, *s);
 }
 
-void te::se::serialize::WriteParameterValuePtrHelper(const std::string& elementName, const te::se::ParameterValue* p, te::xml::Writer& writer)
+void te::se::serialize::WriteParameterValuePtrHelper(const std::string& elementName, const te::se::ParameterValue* p, te::xml::AbstractWriter& writer)
 {
   if(p == 0)
     return;
@@ -54,7 +54,7 @@ void te::se::serialize::WriteParameterValuePtrHelper(const std::string& elementN
   writer.writeEndElement(elementName);
 }
 
-void te::se::serialize::WriteBaseSymbolizerHelper(const te::xl::SimpleLink* link, te::xml::Writer& writer)
+void te::se::serialize::WriteBaseSymbolizerHelper(const te::xl::SimpleLink* link, te::xml::AbstractWriter& writer)
 {
   if(link == 0)
     return;
@@ -64,7 +64,7 @@ void te::se::serialize::WriteBaseSymbolizerHelper(const te::xl::SimpleLink* link
   writer.writeEndElement("se:BaseSymbolizer");
 }
 
-void te::se::serialize::WriteOnlineResourceHelper(const te::xl::SimpleLink* link, te::xml::Writer& writer)
+void te::se::serialize::WriteOnlineResourceHelper(const te::xl::SimpleLink* link, te::xml::AbstractWriter& writer)
 {
   if(link == 0)
     return;
@@ -74,7 +74,7 @@ void te::se::serialize::WriteOnlineResourceHelper(const te::xl::SimpleLink* link
   writer.writeEndElement("se:OnlineResource");
 }
 
-void te::se::serialize::WriteSymbolizerHelper(const te::se::Symbolizer* symbolizer, te::xml::Writer& writer)
+void te::se::serialize::WriteSymbolizerHelper(const te::se::Symbolizer* symbolizer, te::xml::AbstractWriter& writer)
 {
   assert(symbolizer);
 
@@ -120,7 +120,7 @@ void te::se::serialize::ReadSymbolizerHelper(te::se::Symbolizer* symbolizer, te:
   // TODO: BaseSymbolizer
 }
 
-void te::se::serialize::WriteSelectedChannelHelper(const std::string& elementName, const te::se::SelectedChannel* sc, te::xml::Writer& writer)
+void te::se::serialize::WriteSelectedChannelHelper(const std::string& elementName, const te::se::SelectedChannel* sc, te::xml::AbstractWriter& writer)
 {
   if(sc == 0)
     return;
@@ -130,7 +130,7 @@ void te::se::serialize::WriteSelectedChannelHelper(const std::string& elementNam
   writer.writeEndElement(elementName);
 }
 
-void te::se::serialize::WriteGeometryPropertyHelper(const te::fe::PropertyName* p, te::xml::Writer& writer)
+void te::se::serialize::WriteGeometryPropertyHelper(const te::fe::PropertyName* p, te::xml::AbstractWriter& writer)
 {
   if(p == 0)
     return;

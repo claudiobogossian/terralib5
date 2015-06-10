@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -40,7 +40,7 @@ namespace te { namespace rst { class Raster; } }
 
 namespace te
 {
-  namespace core
+  namespace da
   {
 // Forward declaration
     class DataSet;
@@ -67,6 +67,13 @@ namespace te
         explicit DataSetItem(const te::da::DataSet* parent);
 
         /*!
+          \brief It creates a new item having the given number of properties.
+
+          \param nproperties The number of properties.
+        */
+        explicit DataSetItem(const std::size_t& nproperties);
+
+        /*!
           \brief It creates a new item by cloning the values in the source item (rhs).
 
           \param rhs The right-hand-side object to copy its values.
@@ -74,7 +81,7 @@ namespace te
         explicit DataSetItem(const DataSetItem& rhs);
 
         /*! \brief Destructor. */
-        ~DataSetItem();
+        virtual ~DataSetItem();
 
         /*!
           \brief Assignment operator.
@@ -90,7 +97,7 @@ namespace te
         DataSetItem& operator=(const DataSetItem& rhs);
 
         /*!
-          \brief It returns a clone of the DataSetItem.          
+          \brief It returns a clone of the DataSetItem.
         */
         std::auto_ptr<DataSetItem> clone() const;
 

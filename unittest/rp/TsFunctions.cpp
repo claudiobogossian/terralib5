@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -26,12 +26,12 @@
 #include "TsFunctions.h"
 #include "../Config.h"
 
-#include <terralib/rp/Functions.h>
 #include <terralib/raster/Grid.h>
 #include <terralib/raster/Raster.h>
 #include <terralib/raster/RasterFactory.h>
 #include <terralib/raster/BandProperty.h>
 #include <terralib/raster/Band.h>
+#include <terralib/dataaccess/datasource/DataSourceFactory.h>
 
 #include <boost/lexical_cast.hpp>
 #include <boost/timer.hpp>
@@ -240,6 +240,7 @@ void TsFunctions::PrincipalComponents()
     inputRasterBands,
     pcaMatrix,
     *pcaRasterPtr,
+    inputRasterBands,
     1 ) );
     
   CPPUNIT_ASSERT( te::rp::Copy2DiskRaster( *pcaRasterPtr, "terralib_unittest_rp_functions_DirectPrincipalComponents.tif" ) ) ;  
@@ -261,6 +262,7 @@ void TsFunctions::PrincipalComponents()
     *pcaRasterPtr,
     pcaMatrix,
     *outDiskRasterPtr,
+    inputRasterBands,
     1 ) );  
 }
 
@@ -301,6 +303,7 @@ void TsFunctions::PrincipalComponentsOptimized()
     inputRasterBands,
     pcaMatrix,
     *pcaRasterPtr,
+    inputRasterBands,
     4 ) );
     
   CPPUNIT_ASSERT( te::rp::Copy2DiskRaster( *pcaRasterPtr, "terralib_unittest_rp_functions_DirectPrincipalComponentsOptimized.tif" ) ) ;  
@@ -322,6 +325,7 @@ void TsFunctions::PrincipalComponentsOptimized()
     *pcaRasterPtr,
     pcaMatrix,
     *outDiskRasterPtr,
+    inputRasterBands,
     4 ) );  
 }
 
@@ -362,4 +366,256 @@ void TsFunctions::GetStdDevValueOptimized()
 //  std::cout << std::endl << "Elapsed:" << timer.elapsed() << std::endl;
   CPPUNIT_ASSERT_DOUBLES_EQUAL( 46.302240075, stdDevValue, 0.0001 );  
 }
+
+void TsFunctions::DecomposeBands()
+{
+  // openning input raster
+  
+  std::map<std::string, std::string> auxRasterInfo;
+  
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_rgb342_crop.tif";
+  std::auto_ptr< te::rst::Raster > diskRasterPtr( te::rst::RasterFactory::open(
+    auxRasterInfo ) );
+  CPPUNIT_ASSERT( diskRasterPtr.get() );  
+  
+  std::vector< unsigned int > inputRasterBands;
+  inputRasterBands.push_back( 2 );
+  inputRasterBands.push_back( 0 );
+  
+  std::vector< std::map<std::string, std::string> > outputRastersInfos( 2 );
+  outputRastersInfos[ 0 ][ "URI" ] = "terralib_unittest_rp_functions_DecomposeBands_2.tif";
+  outputRastersInfos[ 1 ][ "URI" ] = "terralib_unittest_rp_functions_DecomposeBands_0.tif";
+
+  std::vector< boost::shared_ptr< te::rst::Raster > > outputRastersPtrs;
+  
+  CPPUNIT_ASSERT( te::rp::DecomposeBands( *diskRasterPtr, inputRasterBands,
+    outputRastersInfos, "GDAL", outputRastersPtrs ) );  
+}
+
+void TsFunctions::ComposeBandsSameSRID()
+{
+  // openning input rasters
+  
+  std::map<std::string, std::string> auxRasterInfo;
+  
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop2.tif";
+  std::auto_ptr< te::rst::Raster > diskRasterPtr1( te::rst::RasterFactory::open(
+    auxRasterInfo ) );
+  CPPUNIT_ASSERT( diskRasterPtr1.get() );
+
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop3.tif";
+  std::auto_ptr< te::rst::Raster > diskRasterPtr2( te::rst::RasterFactory::open(
+    auxRasterInfo ) );
+  CPPUNIT_ASSERT( diskRasterPtr2.get() ); 
+  
+  std::vector< const te::rst::Raster * > rasters;
+  rasters.push_back( diskRasterPtr1.get() );
+  rasters.push_back( diskRasterPtr2.get() );
+
+  te::rp::FeederConstRasterVector feeder( rasters );
+  
+  std::vector< unsigned int > inputRasterBands;
+  inputRasterBands.push_back( 2 );
+  inputRasterBands.push_back( 0 );
+  
+  std::map<std::string, std::string> outputRasterInfo;
+  outputRasterInfo["URI"] = "terralib_unittest_rp_functions_ComposeBandsSameSRID.tif";
+  
+  std::auto_ptr< te::rst::Raster > outputRasterPtr;
+  
+  CPPUNIT_ASSERT( te::rp::ComposeBands( feeder, inputRasterBands,
+    te::rst::NearestNeighbor, outputRasterInfo,
+    "GDAL", outputRasterPtr ) );
+}
+
+void TsFunctions::ComposeBandsDifSRID()
+{
+  // openning input rasters
+  
+  std::map<std::string, std::string> auxRasterInfo;
+  
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop2.tif";
+  std::auto_ptr< te::rst::Raster > diskRasterPtr1( te::rst::RasterFactory::open(
+    auxRasterInfo ) );
+  CPPUNIT_ASSERT( diskRasterPtr1.get() );
+
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers_rgb342_crop3_EPSG_22522.tif";
+  std::auto_ptr< te::rst::Raster > diskRasterPtr2( te::rst::RasterFactory::open(
+    auxRasterInfo ) );
+  CPPUNIT_ASSERT( diskRasterPtr2.get() ); 
+  
+  std::vector< const te::rst::Raster * > rasters;
+  rasters.push_back( diskRasterPtr1.get() );
+  rasters.push_back( diskRasterPtr2.get() );
+
+  te::rp::FeederConstRasterVector feeder( rasters );
+  
+  std::vector< unsigned int > inputRasterBands;
+  inputRasterBands.push_back( 2 );
+  inputRasterBands.push_back( 0 );
+  
+  std::map<std::string, std::string> outputRasterInfo;
+  outputRasterInfo["URI"] = "terralib_unittest_rp_functions_ComposeBandsDifSRID.tif";
+  
+  std::auto_ptr< te::rst::Raster > outputRasterPtr;
+  
+  CPPUNIT_ASSERT( te::rp::ComposeBands( feeder, inputRasterBands,
+    te::rst::NearestNeighbor, outputRasterInfo,
+    "GDAL", outputRasterPtr ) );  
+}
+
+void TsFunctions::GetDetailedExtent()
+{
+  te::rst::Grid grid( 2u, 2u, new te::gm::Envelope( 0.0, 0.0, 2.0, 2.0 ), 12345 );
+  
+  te::gm::LinearRing lr( te::gm::LineStringType, 0, 0 );
+  
+  CPPUNIT_ASSERT( te::rp::GetDetailedExtent( grid, lr ) );
+  CPPUNIT_ASSERT( lr.size() == 9 );
+  
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getX( 0 ), 0.0 , 1.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getY( 0 ), 2.0 , 1.0000000001 );
+  
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getX( 1 ), 1.0 , 1.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getY( 1 ), 2.0 , 1.0000000001 );
+
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getX( 2 ), 2.0 , 1.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getY( 2 ), 2.0 , 1.0000000001 );
+  
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getX( 3 ), 2.0 , 1.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getY( 3 ), 1.0 , 1.0000000001 );
+  
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getX( 4 ), 2.0 , 1.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getY( 4 ), 0.0 , 1.0000000001 );
+  
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getX( 5 ), 1.0 , 1.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getY( 5 ), 0.0 , 1.0000000001 );          
+  
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getX( 6 ), 0.0 , 1.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getY( 6 ), 0.0 , 1.0000000001 );          
+  
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getX( 7 ), 0.0 , 1.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getY( 7 ), 1.0 , 1.0000000001 );          
+  
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getX( 8 ), 0.0 , 1.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getY( 8 ), 2.0 , 1.0000000001 );          
+}
+
+void TsFunctions::GetIndexedDetailedExtent()
+{
+  te::rst::Grid grid( 2u, 2u, new te::gm::Envelope( 0.0, 0.0, 2.0, 2.0 ), 12345 );
+  
+  te::gm::LinearRing lr( te::gm::LineStringType, 0, 0 );
+  
+  CPPUNIT_ASSERT( te::rp::GetIndexedDetailedExtent( grid, lr ) );
+  CPPUNIT_ASSERT( lr.size() == 9 );
+  
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getX( 0 ), -0.5 , 1.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getY( 0 ), -0.5 , 1.0000000001 );
+  
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getX( 1 ), 0.5 , 1.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getY( 1 ), -0.5 , 1.0000000001 );
+
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getX( 2 ), 1.5 , 1.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getY( 2 ), -0.5 , 1.0000000001 );
+  
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getX( 3 ), 1.5 , 1.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getY( 3 ), 0.5 , 1.0000000001 );
+  
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getX( 4 ), 1.5 , 1.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getY( 4 ), 1.5 , 1.0000000001 );
+  
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getX( 5 ), 0.5 , 1.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getY( 5 ), 1.5 , 1.0000000001 );          
+  
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getX( 6 ), -0.5 , 1.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getY( 6 ), 1.5 , 1.0000000001 );          
+  
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getX( 7 ), -0.5 , 1.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getY( 7 ), 0.5 , 1.0000000001 );          
+  
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getX( 8 ), -0.5 , 1.0000000001 );
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( lr.getY( 8 ), -0.5 , 1.0000000001 );          
+}
+
+void TsFunctions::WaveletAtrous()
+{
+  const unsigned int waveletDecompLevelsNumb = 3;
+  
+  // openning input raster
+  
+  std::map<std::string, std::string> auxRasterInfo;
+  
+  auxRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_rgb342_crop.tif";
+  std::auto_ptr< te::rst::Raster > diskRasterPtr( te::rst::RasterFactory::open(
+    auxRasterInfo ) );
+  CPPUNIT_ASSERT( diskRasterPtr.get() );  
+  
+  std::vector< te::rst::BandProperty * > waveletRasterBandProps;
+  for( unsigned int bandIdx = 0 ; bandIdx < diskRasterPtr->getNumberOfBands() ;
+    ++bandIdx )
+  {
+    for( unsigned int levelIdx = 0 ; levelIdx < waveletDecompLevelsNumb ;
+      ++levelIdx )
+    {
+      waveletRasterBandProps.push_back( new te::rst::BandProperty( 
+        *( diskRasterPtr->getBand( 0 )->getProperty() ) ) );
+      waveletRasterBandProps.back()->m_blkh = diskRasterPtr->getNumberOfRows();
+      waveletRasterBandProps.back()->m_blkw = diskRasterPtr->getNumberOfColumns();
+      waveletRasterBandProps.back()->m_nblocksx = 1;
+      waveletRasterBandProps.back()->m_nblocksy = 1;
+      waveletRasterBandProps.back()->m_type = te::dt::DOUBLE_TYPE;
+      
+      waveletRasterBandProps.push_back( new te::rst::BandProperty( 
+        *( diskRasterPtr->getBand( 0 )->getProperty() ) ) );
+      waveletRasterBandProps.back()->m_blkh = diskRasterPtr->getNumberOfRows();
+      waveletRasterBandProps.back()->m_blkw = diskRasterPtr->getNumberOfColumns();
+      waveletRasterBandProps.back()->m_nblocksx = 1;
+      waveletRasterBandProps.back()->m_nblocksy = 1;
+      waveletRasterBandProps.back()->m_type = te::dt::DOUBLE_TYPE;      
+    }
+  }
+  
+  std::auto_ptr< te::rst::Raster > waveletRasterPtr( te::rst::RasterFactory::make(
+    "MEM", new te::rst::Grid( *( diskRasterPtr->getGrid() ) ), waveletRasterBandProps, 
+    std::map<std::string, std::string>(), 0, 0 ) );
+  CPPUNIT_ASSERT( waveletRasterPtr.get() );  
+  
+  std::vector< unsigned int > inputRasterBands;
+  inputRasterBands.push_back( 0 );
+  inputRasterBands.push_back( 1 );
+  inputRasterBands.push_back( 2 );
+  
+  boost::numeric::ublas::matrix< double > filter = te::rp::CreateWaveletAtrousFilter( 
+    te::rp::B3SplineWAFilter );  
+  
+  CPPUNIT_ASSERT( te::rp::DirectWaveletAtrous( 
+    *diskRasterPtr, 
+    inputRasterBands,
+    *waveletRasterPtr,
+    waveletDecompLevelsNumb,
+    filter ) );
+    
+  CPPUNIT_ASSERT( te::rp::Copy2DiskRaster( *waveletRasterPtr, "terralib_unittest_rp_functions_DirectWaveletAtrous.tif" ) ) ;  
+  
+  auxRasterInfo.clear();
+  auxRasterInfo["URI"] = "terralib_unittest_rp_functions_InverseWaveletAtrous.tif";
+  
+  std::vector< te::rst::BandProperty * > bandProps2;
+  bandProps2.push_back( new te::rst::BandProperty( *( diskRasterPtr->getBand( 0 )->getProperty() ) ) );
+  bandProps2.push_back( new te::rst::BandProperty( *( diskRasterPtr->getBand( 1 )->getProperty() ) ) );
+  bandProps2.push_back( new te::rst::BandProperty( *( diskRasterPtr->getBand( 2 )->getProperty() ) ) );
+  
+  std::auto_ptr< te::rst::Raster > outDiskRasterPtr( te::rst::RasterFactory::make(
+    "GDAL", new te::rst::Grid( *( diskRasterPtr->getGrid() ) ), bandProps2, 
+    auxRasterInfo, 0, 0 ) );
+  CPPUNIT_ASSERT( outDiskRasterPtr.get() );
+  
+  CPPUNIT_ASSERT( te::rp::InverseWaveletAtrous( 
+    *waveletRasterPtr,
+    waveletDecompLevelsNumb,
+    *outDiskRasterPtr,
+    inputRasterBands ) );  
+}
+
 

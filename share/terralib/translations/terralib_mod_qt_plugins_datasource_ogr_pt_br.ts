@@ -6,72 +6,72 @@
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/ogr/ui/OGRConnectorDialogForm.ui" line="14"/>
         <source>OGR Connector</source>
-        <translation>Conector OGR</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/ogr/ui/OGRConnectorDialogForm.ui" line="39"/>
         <source>OGR - Simple Features</source>
-        <translation>OGR - Feições Simples</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/ogr/ui/OGRConnectorDialogForm.ui" line="51"/>
         <source>Feature access information</source>
-        <translation>Informação de acesso à feição</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/ogr/ui/OGRConnectorDialogForm.ui" line="74"/>
         <source>...</source>
-        <translation>...</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/ogr/ui/OGRConnectorDialogForm.ui" line="89"/>
         <source>File</source>
-        <translation>Arquivo</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/ogr/ui/OGRConnectorDialogForm.ui" line="99"/>
         <source>URL</source>
-        <translation>URL</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/ogr/ui/OGRConnectorDialogForm.ui" line="106"/>
         <source>Directory</source>
-        <translation>Diretório</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/ogr/ui/OGRConnectorDialogForm.ui" line="118"/>
         <source>Data Source Title</source>
-        <translation>Título da Fonte de Dados</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/ogr/ui/OGRConnectorDialogForm.ui" line="128"/>
         <source>Data Source Description</source>
-        <translation>Descrição da Fonte de Dados</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/ogr/ui/OGRConnectorDialogForm.ui" line="147"/>
         <source>A more detailed description about the data source</source>
-        <translation>Uma descrição mais detalhada sobre a fonte de dados</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/ogr/ui/OGRConnectorDialogForm.ui" line="163"/>
         <source>&amp;Help</source>
-        <translation>A&amp;juda</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/ogr/ui/OGRConnectorDialogForm.ui" line="185"/>
         <source>&amp;Test</source>
-        <translation>&amp;Testar</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/ogr/ui/OGRConnectorDialogForm.ui" line="192"/>
         <source>&amp;Open</source>
-        <translation>&amp;Abrir</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/ogr/ui/OGRConnectorDialogForm.ui" line="199"/>
         <source>&amp;Close</source>
-        <translation>&amp;Fechar</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -79,37 +79,37 @@
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="93"/>
         <source>ESRI Shapefile (*.shp *.SHP)</source>
-        <translation>ESRI Shapefile (*.shp *.SHP)</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="95"/>
         <source>MapInfo File (*.mif *.MIF)</source>
-        <translation>Arquivo MapInfo (*.mif *.MIF)</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="97"/>
         <source>DGN File (*.dgn *.DGN)</source>
-        <translation>Arquivo DGN (*.dgn *.DGN)</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="101"/>
         <source>GML File (*.gml *.GML)</source>
-        <translation>Arquivo GML (*.gml *.GML)</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="103"/>
         <source>KML File (*.kml *.KML)</source>
-        <translation>Arquivo KML (*.kml *.KML)</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="105"/>
         <source>GeoJSON File (*.geojson *.GEOJSON)</source>
-        <translation>Arquivo GeoJSON (*.geojson *.GEOJSON)</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="107"/>
         <source>DXF File (*.dxf *.DXF)</source>
-        <translation>Arquivo DXF (*.dxf *.DXF)</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -117,14 +117,13 @@
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/ogr/OGRConnector.cpp" line="76"/>
         <source>TerraLib Qt Components</source>
-        <translation>Componentes Qt da TerraLib</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/ogr/OGRConnector.cpp" line="77"/>
         <source>Not implemented yet!
 We will provide it soon!</source>
-        <translation>Não implementado ainda!
-Disponibilizaremos em breve!</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -132,7 +131,7 @@ Disponibilizaremos em breve!</translation>
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/ogr/OGRConnectorDialog.cpp" line="156"/>
         <source>Do you want create spatial index to the selected ESRI ShapeFile?</source>
-        <translation>Deseja criar índice espacial para o Shapefile da ESRI selecionado?</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/ogr/OGRConnectorDialog.cpp" line="177"/>
@@ -143,88 +142,87 @@ Disponibilizaremos em breve!</translation>
         <location filename="../../../src/terralib/qt/plugins/datasource/ogr/OGRConnectorDialog.cpp" line="231"/>
         <location filename="../../../src/terralib/qt/plugins/datasource/ogr/OGRConnectorDialog.cpp" line="268"/>
         <source>TerraLib Qt Components</source>
-        <translation>Componentes Qt da TerraLib</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/ogr/OGRConnectorDialog.cpp" line="185"/>
         <source>Unknown error while opening feature via OGR!</source>
-        <translation>Erro desconhecido ao abrir feição via OGR!</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/ogr/OGRConnectorDialog.cpp" line="216"/>
         <source>Directory does not contain datasets!</source>
-        <translation>Diretório não contem conjuntos de dados!</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/ogr/OGRConnectorDialog.cpp" line="220"/>
         <source>Data source is ok!</source>
-        <translation>Fonte de dados está ok!</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/ogr/OGRConnectorDialog.cpp" line="232"/>
         <source>Unknown error while testing OGR data source!</source>
-        <translation>Erro desconhecido ao testar fonte de dados OGR!</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/ogr/OGRConnectorDialog.cpp" line="240"/>
         <source>Open Vector File</source>
-        <translation>Abrir Arquivo Vetorial</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/ogr/OGRConnectorDialog.cpp" line="240"/>
         <source>Esri Shapefile (*.shp *.SHP);; Mapinfo File (*.mif *.MIF);; GeoJSON (*.geojson *.GeoJSON);; GML (*.gml *.GML);; KML (*.kml *.KML);; All Files (*.*)</source>
-        <translation>Esri Shapefile (*.shp *.SHP);; Arquivo Mapinfo (*.mif *.MIF);; GeoJSON (*.geojson *.GeoJSON);; GML (*.gml *.GML);; KML (*.kml *.KML);; Todos os Arquivos (*.*)</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/ogr/OGRConnectorDialog.cpp" line="256"/>
         <source>Select a directory with shape files</source>
-        <translation>Selecione um diretório que contenha arquivos shape</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/ogr/OGRConnectorDialog.cpp" line="269"/>
         <source>Sorry, network files are not implemented yet!
 We will provide it soon!</source>
-        <translation>Desculpe, arquivos da internet ainda não foram implementados!
-Disponibilizaremos em breve!</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>te::qt::plugins::ogr::Plugin</name>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="160"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="161"/>
         <source>Vector File...</source>
-        <translation>Arquivo Vetorial...</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="191"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="192"/>
         <source>Open Vector File</source>
-        <translation>Abrir Arquivo Vetorial</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="191"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="192"/>
         <source>Esri Shapefile (*.shp *.SHP);; Mapinfo File (*.mif *.MIF);; GeoJSON (*.geojson *.GeoJSON);; GML (*.gml *.GML);; KML (*.kml *.KML);; All Files (*.*)</source>
-        <translation>Esri Shapefile (*.shp *.SHP);; Arquivo Mapinfo (*.mif *.MIF);; GeoJSON (*.geojson *.GeoJSON);; GML (*.gml *.GML);; KML (*.kml *.KML);; Todos os Arquivos (*.*)</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="249"/>
-        <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="266"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="254"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="271"/>
         <source>Spatial Index</source>
-        <translation>Índice Espacial</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="249"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="254"/>
         <source>Do you want create spatial index to the selected ESRI ShapeFiles?</source>
-        <translation>Deseja criar um índice espacial para os Shapefiles ESRI selecionados?</translation>
-    </message>
-    <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="286"/>
-        <source>Layer %1 has SRID %2 that is not recognized by TerraLib. Setting it to unknown.</source>
-        <translation>Layer %1 tem SRID %2 que não é reconhecido pela TerraLib. Colocando o valor &quot;desconhecido&quot;.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="291"/>
+        <source>Layer %1 has SRID %2 that is not recognized by TerraLib. Setting it to unknown.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="296"/>
         <source>Layer SRS check</source>
-        <translation>Verificando o SRS do layer</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

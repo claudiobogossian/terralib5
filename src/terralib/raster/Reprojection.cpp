@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -43,7 +43,7 @@
 
 bool IsPointOnLine(te::gm::Coord2D& p, te::gm::Coord2D& q, te::gm::Coord2D& t, double tol);
 
-bool InterpolateIn(te::rst::Raster const * const rin, te::rst::Raster* rout, te::gm::Envelope* box, te::srs::Converter* conv, int m = te::rst::Interpolator::NearestNeighbor);
+bool InterpolateIn(te::rst::Raster const * const rin, te::rst::Raster* rout, te::gm::Envelope* box, te::srs::Converter* conv, int m = te::rst::NearestNeighbor);
 
 te::rst::Raster* te::rst::Reproject(te::rst::Raster const * const rin, int srid, const std::map<std::string, std::string>& routinfo, int m)
 {

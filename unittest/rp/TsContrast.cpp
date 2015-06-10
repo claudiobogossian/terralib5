@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -26,7 +26,6 @@
 #include "TsContrast.h"
 #include "../Config.h"
 
-#include <terralib/rp/Contrast.h>
 #include <terralib/raster/RasterFactory.h>
 
 #include <terralib/dataaccess/datasource/DataSourceFactory.h>
@@ -50,7 +49,7 @@ void TsContrast::LinearContrast()
   // access a raster datasource to create the output raster
 
   std::map<std::string, std::string> outputRasterInfo;
-  outputRasterInfo["URI"] = "terralib_unittest_rp_Contrast_noOptimization_Test.tif";
+  outputRasterInfo["URI"] = "terralib_unittest_rp_Contrast_LinearnoOptimization_Test.tif";
 
   // Creating the algorithm parameters
 
@@ -113,6 +112,123 @@ void TsContrast::HistogramEqualizationContrast()
   CPPUNIT_ASSERT( algorithmInstance.execute( algoOutputParams ) );
 }
 
+void TsContrast::SquareContrast()
+{
+  // open input raster
+
+  std::map<std::string, std::string> inputRasterInfo;
+  inputRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_rgb342_crop.tif";
+
+  boost::shared_ptr< te::rst::Raster > inputRasterPointer( te::rst::RasterFactory::open(
+    inputRasterInfo ) );
+  CPPUNIT_ASSERT( inputRasterPointer.get() );
+
+  // access a raster datasource to create the output raster
+
+  std::map<std::string, std::string> outputRasterInfo;
+  outputRasterInfo["URI"] = "terralib_unittest_rp_Contrast_SquareContrast_Test.tif";
+
+  // Creating the algorithm parameters
+
+  te::rp::Contrast::InputParameters algoInputParams;
+  te::rp::Contrast::OutputParameters algoOutputParams;
+
+  algoInputParams.m_type = te::rp::Contrast::InputParameters::SquareContrastT;
+  algoInputParams.m_squareCMinInput.resize( 3, 50 );
+  algoInputParams.m_squareCMaxInput.resize( 3, 200 );
+  algoInputParams.m_inRasterPtr = inputRasterPointer.get();
+  algoInputParams.m_inRasterBands.push_back( 0 );
+  algoInputParams.m_inRasterBands.push_back( 1 );
+  algoInputParams.m_inRasterBands.push_back( 2 );
+  algoOutputParams.m_createdOutRasterInfo = outputRasterInfo;
+  algoOutputParams.m_createdOutRasterDSType =  "GDAL";
+
+  // Executing the algorithm
+
+  te::rp::Contrast algorithmInstance;
+
+  CPPUNIT_ASSERT( algorithmInstance.initialize( algoInputParams ) );
+  CPPUNIT_ASSERT( algorithmInstance.execute( algoOutputParams ) );
+}
+
+void TsContrast::SquareRootContrast()
+{
+  // open input raster
+
+  std::map<std::string, std::string> inputRasterInfo;
+  inputRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_rgb342_crop.tif";
+
+  boost::shared_ptr< te::rst::Raster > inputRasterPointer( te::rst::RasterFactory::open(
+    inputRasterInfo ) );
+  CPPUNIT_ASSERT( inputRasterPointer.get() );
+
+  // access a raster datasource to create the output raster
+
+  std::map<std::string, std::string> outputRasterInfo;
+  outputRasterInfo["URI"] = "terralib_unittest_rp_Contrast_SquareRootContrast_Test.tif";
+
+  // Creating the algorithm parameters
+
+  te::rp::Contrast::InputParameters algoInputParams;
+  te::rp::Contrast::OutputParameters algoOutputParams;
+
+  algoInputParams.m_type = te::rp::Contrast::InputParameters::SquareRootContrastT;
+  algoInputParams.m_squareRootCMinInput.resize( 3, 50 );
+  algoInputParams.m_squareRootCMaxInput.resize( 3, 200 );
+  algoInputParams.m_inRasterPtr = inputRasterPointer.get();
+  algoInputParams.m_inRasterBands.push_back( 0 );
+  algoInputParams.m_inRasterBands.push_back( 1 );
+  algoInputParams.m_inRasterBands.push_back( 2 );
+  algoOutputParams.m_createdOutRasterInfo = outputRasterInfo;
+  algoOutputParams.m_createdOutRasterDSType =  "GDAL";
+
+  // Executing the algorithm
+
+  te::rp::Contrast algorithmInstance;
+
+  CPPUNIT_ASSERT( algorithmInstance.initialize( algoInputParams ) );
+  CPPUNIT_ASSERT( algorithmInstance.execute( algoOutputParams ) );
+}
+
+void TsContrast::LogContrast()
+{
+  // open input raster
+
+  std::map<std::string, std::string> inputRasterInfo;
+  inputRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_rgb342_crop.tif";
+
+  boost::shared_ptr< te::rst::Raster > inputRasterPointer( te::rst::RasterFactory::open(
+    inputRasterInfo ) );
+  CPPUNIT_ASSERT( inputRasterPointer.get() );
+
+  // access a raster datasource to create the output raster
+
+  std::map<std::string, std::string> outputRasterInfo;
+  outputRasterInfo["URI"] = "terralib_unittest_rp_Contrast_LogContrast_Test.tif";
+
+  // Creating the algorithm parameters
+
+  te::rp::Contrast::InputParameters algoInputParams;
+  te::rp::Contrast::OutputParameters algoOutputParams;
+
+  algoInputParams.m_type = te::rp::Contrast::InputParameters::LogContrastT;
+  algoInputParams.m_logCMinInput.resize( 3, 50 );
+  algoInputParams.m_logCMaxInput.resize( 3, 200 );
+  algoInputParams.m_inRasterPtr = inputRasterPointer.get();
+  algoInputParams.m_inRasterBands.push_back( 0 );
+  algoInputParams.m_inRasterBands.push_back( 1 );
+  algoInputParams.m_inRasterBands.push_back( 2 );
+  algoOutputParams.m_createdOutRasterInfo = outputRasterInfo;
+  algoOutputParams.m_createdOutRasterDSType =  "GDAL";
+
+  // Executing the algorithm
+
+  te::rp::Contrast algorithmInstance;
+
+  CPPUNIT_ASSERT( algorithmInstance.initialize( algoInputParams ) );
+  CPPUNIT_ASSERT( algorithmInstance.execute( algoOutputParams ) );
+}
+
 void TsContrast::SetMeanAndStdContrast()
 {
   // open input raster
@@ -134,7 +250,7 @@ void TsContrast::SetMeanAndStdContrast()
   te::rp::Contrast::InputParameters algoInputParams;
   te::rp::Contrast::OutputParameters algoOutputParams;
 
-  algoInputParams.m_type = te::rp::Contrast::InputParameters::SetMeanAndStdContrastT;
+  algoInputParams.m_type = te::rp::Contrast::InputParameters::MeanAndStdContrastT;
   algoInputParams.m_sMASCMeanInput.resize( 3, 127 );
   algoInputParams.m_sMASCStdInput.resize( 3, 100 );
   algoInputParams.m_inRasterPtr = inputRasterPointer.get();
@@ -143,6 +259,44 @@ void TsContrast::SetMeanAndStdContrast()
   algoInputParams.m_inRasterBands.push_back( 2 );
   algoOutputParams.m_createdOutRasterInfo = outputRasterInfo;
   algoOutputParams.m_createdOutRasterDSType = "GDAL";
+
+  // Executing the algorithm
+
+  te::rp::Contrast algorithmInstance;
+
+  CPPUNIT_ASSERT( algorithmInstance.initialize( algoInputParams ) );
+  CPPUNIT_ASSERT( algorithmInstance.execute( algoOutputParams ) );
+}
+
+
+void TsContrast::DecorrelationEnhancementTContrast()
+{
+  // open input raster
+
+  std::map<std::string, std::string> inputRasterInfo;
+  inputRasterInfo["URI"] = TERRALIB_DATA_DIR "/rasters/cbers2b_rgb342_crop.tif";
+
+  boost::shared_ptr< te::rst::Raster > inputRasterPointer( te::rst::RasterFactory::open(
+    inputRasterInfo ) );
+  CPPUNIT_ASSERT( inputRasterPointer.get() );
+
+  // access a raster datasource to create the output raster
+
+  std::map<std::string, std::string> outputRasterInfo;
+  outputRasterInfo["URI"] = "terralib_unittest_rp_Contrast_DecorrelationEnhancement_Test.tif";
+
+  // Creating the algorithm parameters
+
+  te::rp::Contrast::InputParameters algoInputParams;
+  te::rp::Contrast::OutputParameters algoOutputParams;
+
+  algoInputParams.m_type = te::rp::Contrast::InputParameters::DecorrelationEnhancementT;
+  algoInputParams.m_inRasterPtr = inputRasterPointer.get();
+  algoInputParams.m_inRasterBands.push_back( 0 );
+  algoInputParams.m_inRasterBands.push_back( 1 );
+  algoInputParams.m_inRasterBands.push_back( 2 );
+  algoOutputParams.m_createdOutRasterInfo = outputRasterInfo;
+  algoOutputParams.m_createdOutRasterDSType =  "GDAL";
 
   // Executing the algorithm
 

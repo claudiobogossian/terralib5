@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -27,6 +27,7 @@
 #define __TERRALIB_DATAACCESS_INTERNAL_DATASETTYPECONVERTER_H
 
 // TerraLib
+#include "../../common/CharEncodingConv.h"
 #include "../Config.h"
 #include "AttributeConverters.h"
 
@@ -86,6 +87,7 @@ namespace te
           \param type A pointer to the DataSetType that will be converted.
           \param capabilities A data source capabilities of the data source that the user intend use.
                  e.g. the data source where the given data set type will be saved.
+          \param ce The destintion character encoding.
 
           \note This method will try to create automatic property conversions based on the given capabilities.
                 Here we will look up the data type support of DataSourceCapabilities.
@@ -97,7 +99,7 @@ namespace te
           
           \sa DataSetType, DataSourceCapabilities DataTypeCapabilities
         */
-        DataSetTypeConverter(DataSetType* type, const DataSourceCapabilities& capabilities);
+        DataSetTypeConverter(DataSetType* type, const DataSourceCapabilities& capabilities, const te::common::CharEncoding& ce = te::common::UNKNOWN_CHAR_ENCODING);
 
         /*! \brief Destructor. */
         ~DataSetTypeConverter();
@@ -183,6 +185,15 @@ namespace te
         void add(std::size_t propertyPos, te::dt::Property* p, const std::string& attributeConverterName = "GenericAttributeConverter");
 
         /*!
+          \brief It adds a conversions to the given property of the input data set type.
+
+          \param propertyPos The property position that will be converted.
+          \param p The converted property.
+          \param conv The function that will be used to do the property values conversion.
+        */
+        void add(std::size_t propertyPos, te::dt::Property* p, AttributeConverter conv);
+
+        /*!
           \brief It adds a conversion to the given properties of the input data set type.
 
           \param propertyNames The property names that will be converted.
@@ -199,6 +210,15 @@ namespace te
           \param attributeConverterName The function name that will be used to do the property values conversion.
         */
         void add(const std::vector<std::size_t>& propertyPos, te::dt::Property* p, const std::string& attributeConverterName = "GenericAttributeConverter");
+
+        /*!
+          \brief It adds a conversion to the given properties of the input data set type.
+
+          \param propertyPos The property positions that will be converted.
+          \param p The converted property.
+          \param conv The function that will be used to do the property values conversion.
+        */
+        void add(const std::vector<std::size_t>& propertyPos, te::dt::Property* p, AttributeConverter conv);
 
         /*!
           \brief Static method that verifies if the given data set type need an converter based on given data source capabilities.

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2009-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -71,6 +71,8 @@ namespace terralib4
       std::vector<std::string> getTL4Layers();
 
       std::vector<std::string> getTL4Tables();
+
+      std::vector<std::string> getTL4Rasters();
 
       std::vector<::terralib4::ThemeInfo> getTL4Themes();
 

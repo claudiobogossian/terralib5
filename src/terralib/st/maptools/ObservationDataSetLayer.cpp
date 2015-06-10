@@ -1,4 +1,4 @@
-/*  Copyright (C) 2010-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -79,6 +79,12 @@ std::auto_ptr<te::map::LayerSchema> te::st::ObservationDataSetLayer::getSchema()
   return ds->getDataSetType(m_info->getDataSetName());
 }
 
+te::dt::DateTimePeriod* te::st::ObservationDataSetLayer::getTemporalExtent() const
+{
+  return 0;
+  //return m_info->getTemporalExtent();
+}
+
 std::auto_ptr<te::da::DataSet> te::st::ObservationDataSetLayer::getData(te::common::TraverseType travType,
                                                               const te::common::AccessPolicy accessPolicy) const
 {
@@ -98,16 +104,6 @@ std::auto_ptr<te::da::DataSet> te::st::ObservationDataSetLayer::getData(const st
   return result;
 }
 
-std::auto_ptr<te::da::DataSet> te::st::ObservationDataSetLayer::getData( const te::dt::DateTime& dt, te::dt::TemporalRelation tr,
-                                                                        const te::gm::Envelope& e, te::gm::SpatialRelation sr,
-                                                                        te::common::TraverseType travType,
-                                                                        te::common::AccessPolicy rwRole) const
-{
-  std::auto_ptr<te::st::ObservationDataSet> ods = te::st::ObservationDataSetLayer::getObservationDataset(dt, tr, e, sr, travType);
-  std::auto_ptr<te::da::DataSet> result = ods->release();
-  return result;
-}
-
 std::auto_ptr<te::da::DataSet> te::st::ObservationDataSetLayer::getData(const std::string& propertyName,
                                                               const te::gm::Geometry* g,
                                                               te::gm::SpatialRelation r,
@@ -116,6 +112,22 @@ std::auto_ptr<te::da::DataSet> te::st::ObservationDataSetLayer::getData(const st
 {
   std::auto_ptr<te::st::ObservationDataSet> ods = te::st::ObservationDataSetLayer::getObservationDataset(*g, r, travType);
   std::auto_ptr<te::da::DataSet> result = ods->release();
+  return result;
+}
+
+std::auto_ptr<te::da::DataSet> te::st::ObservationDataSetLayer::getData(te::da::Expression* restriction,
+  te::common::TraverseType travType,
+  const te::common::AccessPolicy accessPolicy) const
+{
+  std::auto_ptr<te::da::DataSet> result;
+  return result;
+}
+
+std::auto_ptr<te::da::DataSet> te::st::ObservationDataSetLayer::getData(const te::da::ObjectIdSet* oids,
+  te::common::TraverseType travType,
+  const te::common::AccessPolicy accessPolicy) const
+{
+  std::auto_ptr<te::da::DataSet> result;
   return result;
 }
 
@@ -138,12 +150,21 @@ std::auto_ptr<te::st::ObservationDataSet> te::st::ObservationDataSetLayer::getOb
   return te::st::STDataLoader::getDataSet(*m_info.get(), g, r, travType);
 }
 
-
 std::auto_ptr<te::da::DataSet> te::st::ObservationDataSetLayer::getData( const te::dt::DateTime& dt, te::dt::TemporalRelation r,
                                                                         te::common::TraverseType travType, 
                                                                         te::common::AccessPolicy rwRole) const
 {
   std::auto_ptr<te::st::ObservationDataSet> ods = te::st::ObservationDataSetLayer::getObservationDataset(dt, r, travType);
+  std::auto_ptr<te::da::DataSet> result = ods->release();
+  return result;
+}
+
+std::auto_ptr<te::da::DataSet> te::st::ObservationDataSetLayer::getData( const te::dt::DateTime& dt, te::dt::TemporalRelation tr,
+  const te::gm::Envelope& e, te::gm::SpatialRelation sr,
+  te::common::TraverseType travType,
+  te::common::AccessPolicy rwRole) const
+{
+  std::auto_ptr<te::st::ObservationDataSet> ods = te::st::ObservationDataSetLayer::getObservationDataset(dt, tr, e, sr, travType);
   std::auto_ptr<te::da::DataSet> result = ods->release();
   return result;
 }
@@ -187,12 +208,12 @@ bool te::st::ObservationDataSetLayer::isValid() const
 void te::st::ObservationDataSetLayer::draw(te::map::Canvas* canvas, const te::gm::Envelope& bbox, int srid)
 {
   if(m_rendererType.empty())
-    throw te::map::Exception((boost::format(TR_MAP("Could not draw the data set layer %1%. The renderer type is empty!")) % getTitle()).str());
+    throw te::map::Exception((boost::format(TE_TR("Could not draw the data set layer %1%. The renderer type is empty!")) % getTitle()).str());
 
   // Try get the defined renderer
   std::auto_ptr<te::map::AbstractRenderer> renderer(te::map::RendererFactory::make(m_rendererType));
   if(renderer.get() == 0)
-    throw te::map::Exception((boost::format(TR_MAP("Could not draw the data set layer %1%. The renderer %2% could not be created!")) % getTitle() % m_rendererType).str());
+    throw te::map::Exception((boost::format(TE_TR("Could not draw the data set layer %1%. The renderer %2% could not be created!")) % getTitle() % m_rendererType).str());
 
   renderer->draw(this, canvas, bbox, srid);
 }
@@ -200,6 +221,11 @@ void te::st::ObservationDataSetLayer::draw(te::map::Canvas* canvas, const te::gm
 const std::string& te::st::ObservationDataSetLayer::getType() const
 {
   return sm_type;
+}
+
+const std::string& te::st::ObservationDataSetLayer::getDataSourceId() const
+{
+  return m_info->getDataSourceInfo().getId();
 }
 
 const std::string& te::st::ObservationDataSetLayer::getRendererType() const

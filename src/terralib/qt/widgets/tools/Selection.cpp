@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -143,7 +143,7 @@ void te::qt::widgets::Selection::setLayers(const std::list<te::map::AbstractLaye
 
 void te::qt::widgets::Selection::executeSelection(const te::map::AbstractLayerPtr& layer, const te::gm::Envelope& e)
 {
-  if(layer->getVisibility() != te::map::VISIBLE || !layer->isValid())
+  if(layer->getVisibility() != te::map::VISIBLE || !layer->isValid() || layer->getType() == "FOLDERLAYER")
     return;
 
   std::auto_ptr<te::da::DataSetType> dsType = layer->getSchema();
@@ -196,12 +196,17 @@ void te::qt::widgets::Selection::executeSelection(const te::map::AbstractLayerPt
       {
         std::auto_ptr<te::gm::Geometry> g(dataset->getGeometry(gp->getName()));
 
+        if(g->getSRID() == TE_UNKNOWN_SRS)
+          g->setSRID(layer->getSRID());
+
         if(!g->intersects(geometryFromEnvelope.get()))
           continue;
 
         // Feature found!
         oids->add(te::da::GenerateOID(dataset.get(), pnames));
       }
+
+      oids->setExpressionByIntersection(gp->getName(), reprojectedEnvelope, layer->getSRID());
     }
     else
     {
@@ -213,13 +218,17 @@ void te::qt::widgets::Selection::executeSelection(const te::map::AbstractLayerPt
       {
         std::auto_ptr<te::gm::Geometry> g(dataset->getGeometry(gp->getName()));
 
+        if(g->getSRID() == TE_UNKNOWN_SRS)
+          g->setSRID(layer->getSRID());
+
         if(g->contains(&point) || g->crosses(geometryFromEnvelope.get()) || geometryFromEnvelope->contains(g.get()))
         {
           // Feature found!
           oids->add(te::da::GenerateOID(dataset.get(), pnames));
-          break;
         }
       }
+
+      oids->setExpressionByInClause();
     }
 
     assert(oids);

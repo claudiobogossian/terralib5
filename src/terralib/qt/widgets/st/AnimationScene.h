@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/qt/widgets/canvas/AnimationScene.h
+  \file terralib/qt/widgets/st/AnimationScene.h
 
   \brief This file defines a class for a Animation Scene.
 */
@@ -31,6 +31,7 @@
 
 // Qt
 #include <QGraphicsScene>
+#include <QtCore/QMutex>
 
 namespace te
 {
@@ -110,8 +111,9 @@ namespace te
       public:
         te::qt::widgets::MapDisplay* m_display; //!< Indicates where the scene is displayed.
         QPixmap* m_trajectoryPixmap;            //!< QPixmap where all the trajectory item are drawn.
+        QMutex m_mutex;                         //!< To not use the scene pixmap simultaneously
         int m_numberOfTrajectories;             //!< Number of trajectory items.
-        int m_numberOfPixmaps;                  //!< Number of pixmap items.
+        int m_numberOfCoverages;                  //!< Number of coverage items.
       };
     } // end namespace widgets
   }   // end namespace qt

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -29,6 +29,10 @@
 // cppUnit
 #include <cppunit/extensions/HelperMacros.h>
 
+// Terralib
+#include <terralib/rp.h>
+
+
 /*!
   \class TsBlender
 
@@ -40,7 +44,11 @@ class TsBlender : public CPPUNIT_NS::TestFixture
   
   CPPUNIT_TEST( PixelByPixelEucBlendTest );
   
+  CPPUNIT_TEST( EqualizationTest );
+  
   CPPUNIT_TEST( PixelByPixelNoBlendTest );
+  
+  CPPUNIT_TEST( PixelByPixelSumBlendTest );
   
   CPPUNIT_TEST( FullRasterBlendTest );
   
@@ -54,9 +62,13 @@ protected :
   
   void PixelByPixelEucBlendTest();
   
+  void PixelByPixelSumBlendTest();
+  
   void FullRasterBlendTest();
   
   void ThreadedFullRasterBlendTest();
+  
+  void EqualizationTest();
 };
 
 #endif

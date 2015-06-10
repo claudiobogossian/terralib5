@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -29,6 +29,7 @@
 #include "../geometry/MultiPoint.h"
 #include "../geometry/MultiLineString.h"
 #include "../geometry/Point.h"
+#include "../geometry/CurvePolygon.h"
 #include "../geometry/Envelope.h"
 #include "../geometry/Enums.h"
 #include "../raster/Raster.h"
@@ -82,9 +83,9 @@ namespace te
       m_raster1BlocksInfosPtr( 0 ), m_mutexPtr( 0 ), m_blockProcessedSignalMutexPtr( 0 ),
       m_blockProcessedSignalPtr( 0 ), m_runningThreadsCounterPtr( 0 ),
       m_blendMethod( te::rp::Blender::InvalidBlendMethod ),
-      m_interpMethod1( te::rst::Interpolator::NearestNeighbor ),
-      m_interpMethod2( te::rst::Interpolator::NearestNeighbor ),
-      m_noDataValue( 0.0 ), m_forceInputNoDataValue( false ), 
+      m_interpMethod2( te::rst::NearestNeighbor ),
+      m_noDataValue( 0.0 ), m_forceRaster1NoDataValue( false ),
+      m_forceRaster2NoDataValue( false ),  
       m_maxRasterCachedBlocks( 0 ), m_useProgress( false )
     {
     }
@@ -114,10 +115,10 @@ namespace te
       m_raster1Bands = rhs.m_raster1Bands;
       m_raster2Bands = rhs.m_raster2Bands;
       m_blendMethod = rhs.m_blendMethod;
-      m_interpMethod1 = rhs.m_interpMethod1;
       m_interpMethod2 = rhs.m_interpMethod2;
       m_noDataValue = rhs.m_noDataValue;
-      m_forceInputNoDataValue = rhs.m_forceInputNoDataValue;
+      m_forceRaster1NoDataValue = rhs.m_forceRaster1NoDataValue;
+      m_forceRaster2NoDataValue = rhs.m_forceRaster2NoDataValue;
       m_maxRasterCachedBlocks = rhs.m_maxRasterCachedBlocks;
       m_pixelOffsets1 = rhs.m_pixelOffsets1;
       m_pixelScales1 = rhs.m_pixelScales1;
@@ -174,7 +175,8 @@ namespace te
       const te::rst::Interpolator::Method& interpMethod1,
       const te::rst::Interpolator::Method& interpMethod2,
       const double& noDataValue,
-      const bool forceInputNoDataValue,
+      const bool forceRaster1NoDataValue,
+      const bool forceRaster2NoDataValue,
       const std::vector< double >& pixelOffsets1,
       const std::vector< double >& pixelScales1,
       const std::vector< double >& pixelOffsets2,
@@ -394,25 +396,15 @@ namespace te
       
       // Calculating the intersection (raster 1 lines/cols)
       
+      m_intersectionPtr.reset( indexedDelimiter2Ptr->intersection( 
+        indexedDelimiter1Ptr.get() ) );
+      
+      // Initializing the intersection tile indexer
+      
+      if( m_intersectionPtr.get() )
       {
-        std::auto_ptr< te::gm::Geometry > geomIntersectionPtr( 
-          indexedDelimiter2Ptr->intersection( indexedDelimiter1Ptr.get() ) );
-          
-        if( geomIntersectionPtr.get() )
-        {
-          if( geomIntersectionPtr->getGeomTypeId() == te::gm::PolygonType )
-          {
-            std::auto_ptr< te::gm::MultiPolygon > multiPolIntersectionPtr( 
-              new te::gm::MultiPolygon( 0, te::gm::MultiPolygonType, 0, 0 ) );
-            multiPolIntersectionPtr->add( geomIntersectionPtr.release() );
-            
-            m_intersectionPtr.reset( multiPolIntersectionPtr.release() );
-          }
-          else if( geomIntersectionPtr->getGeomTypeId() == te::gm::MultiPolygonType )
-          {
-            m_intersectionPtr.reset( (te::gm::MultiPolygon*)geomIntersectionPtr.release() );
-          }
-        }
+        TERP_TRUE_OR_THROW( getTileIndexers( m_intersectionPtr.get(), 
+          m_intersectionTileIndexers ), "Intersection tile indexers creation error" );
       }
       
       // Extracting the intersection segments points
@@ -421,9 +413,11 @@ namespace te
       {
         std::size_t ringIdx = 0;
         std::auto_ptr< te::gm::Geometry > ringIntersectionPtr;
-        std::size_t nPols = indexedDelimiter2Ptr->getNumGeometries();   
+        std::size_t nPols = 0;
+        std::size_t polIdx = 0;
         
-        for( std::size_t polIdx = 0 ; polIdx < nPols ; ++polIdx )
+        nPols = indexedDelimiter2Ptr->getNumGeometries();           
+        for( polIdx = 0 ; polIdx < nPols ; ++polIdx )
         {
           te::gm::Polygon const* polPtr = dynamic_cast< te::gm::Polygon* >(
             indexedDelimiter2Ptr->getGeometryN( polIdx ) );
@@ -437,52 +431,14 @@ namespace te
             
             if( ringIntersectionPtr.get() != 0 ) 
             {
-              if( ringIntersectionPtr->getGeomTypeId() == te::gm::MultiLineStringType )
-              {
-                te::gm::MultiLineString const* ringIntersectionNPtr = dynamic_cast< te::gm::MultiLineString const * >(
-                  ringIntersectionPtr.get() );
-                assert( ringIntersectionNPtr );
-                
-                std::size_t numGeoms = ringIntersectionNPtr->getNumGeometries();
-                
-                for( std::size_t gIdx = 0 ; gIdx < numGeoms ; ++gIdx )
-                {
-                  te::gm::LineString const* segIndexedNPtr = dynamic_cast< te::gm::LineString const * >(
-                    ringIntersectionNPtr->getGeometryN( gIdx ) );
-                  assert( segIndexedNPtr );
-                  
-                  std::size_t nPoints = segIndexedNPtr->size();
-                  te::gm::Coord2D const* coodsPtr = segIndexedNPtr->getCoordinates();
-                  
-                  for( std::size_t pIdx = 1 ; pIdx < nPoints ; ++pIdx )
-                  {
-                    m_r2IntersectionSegmentsPoints.push_back( std::pair< te::gm::Coord2D, te::gm::Coord2D >(
-                      coodsPtr[ pIdx - 1 ], coodsPtr[ pIdx ] ) );
-                  }
-                }
-              }
-              else if( ringIntersectionPtr->getGeomTypeId() == te::gm::LineStringType )
-              {
-                te::gm::LineString const* segIndexedNPtr = dynamic_cast< te::gm::LineString const * >(
-                  ringIntersectionPtr.get() );
-                assert( segIndexedNPtr );
-                
-                std::size_t nPoints = segIndexedNPtr->size();
-                te::gm::Coord2D const* coodsPtr = segIndexedNPtr->getCoordinates();
-                
-                for( std::size_t pIdx = 1 ; pIdx < nPoints ; ++pIdx )
-                {
-                  m_r2IntersectionSegmentsPoints.push_back( std::pair< te::gm::Coord2D, te::gm::Coord2D >(
-                    coodsPtr[ pIdx - 1 ], coodsPtr[ pIdx ] ) );
-                }
-              }
+              TERP_TRUE_OR_THROW( getSegments( ringIntersectionPtr.get(),
+                m_r2IntersectionSegmentsPoints ), "Error getting intersection segments" );
             }
           }
         }
         
-        nPols = indexedDelimiter1Ptr->getNumGeometries();  
-        
-        for( std::size_t polIdx = 0 ; polIdx < nPols ; ++polIdx )
+        nPols = indexedDelimiter1Ptr->getNumGeometries();          
+        for( polIdx = 0 ; polIdx < nPols ; ++polIdx )
         {
           te::gm::Polygon const* polPtr = dynamic_cast< te::gm::Polygon* >(
             indexedDelimiter1Ptr->getGeometryN( polIdx ) );
@@ -496,45 +452,8 @@ namespace te
             
             if( ringIntersectionPtr.get() != 0 ) 
             {
-              if( ringIntersectionPtr->getGeomTypeId() == te::gm::MultiLineStringType )
-              {
-                te::gm::MultiLineString const* ringIntersectionNPtr = dynamic_cast< te::gm::MultiLineString const * >(
-                  ringIntersectionPtr.get() );
-                assert( ringIntersectionNPtr );
-                
-                std::size_t numGeoms = ringIntersectionNPtr->getNumGeometries();
-                
-                for( std::size_t gIdx = 0 ; gIdx < numGeoms ; ++gIdx )
-                {
-                  te::gm::LineString const* segIndexedNPtr = dynamic_cast< te::gm::LineString const * >(
-                    ringIntersectionNPtr->getGeometryN( gIdx ) );
-                  assert( segIndexedNPtr );
-                  
-                  std::size_t nPoints = segIndexedNPtr->size();
-                  te::gm::Coord2D const* coodsPtr = segIndexedNPtr->getCoordinates();
-                  
-                  for( std::size_t pIdx = 1 ; pIdx < nPoints ; ++pIdx )
-                  {
-                    m_r1IntersectionSegmentsPoints.push_back( std::pair< te::gm::Coord2D, te::gm::Coord2D >(
-                      coodsPtr[ pIdx - 1 ], coodsPtr[ pIdx ] ) );
-                  }
-                }
-              }
-              else if( ringIntersectionPtr->getGeomTypeId() == te::gm::LineStringType )
-              {
-                te::gm::LineString const* segIndexedNPtr = dynamic_cast< te::gm::LineString const * >(
-                  ringIntersectionPtr.get() );
-                assert( segIndexedNPtr );
-                
-                std::size_t nPoints = segIndexedNPtr->size();
-                te::gm::Coord2D const* coodsPtr = segIndexedNPtr->getCoordinates();
-                
-                for( std::size_t pIdx = 1 ; pIdx < nPoints ; ++pIdx )
-                {
-                  m_r1IntersectionSegmentsPoints.push_back( std::pair< te::gm::Coord2D, te::gm::Coord2D >(
-                    coodsPtr[ pIdx - 1 ], coodsPtr[ pIdx ] ) );
-                }
-              }
+              TERP_TRUE_OR_THROW( getSegments( ringIntersectionPtr.get(),
+                m_r1IntersectionSegmentsPoints ), "Error getting intersection segments" );
             }
           }    
         }    
@@ -584,7 +503,21 @@ namespace te
             m_blendMethod = NoBlendMethod;
           }
           break;
-        }        
+        }
+        case SumMethod :
+        {
+          if( ( m_intersectionPtr.get() != 0 ) && 
+            ( m_r1IntersectionSegmentsPointsSize > 1 ) && 
+            ( m_r2IntersectionSegmentsPointsSize > 1 ) )
+          {
+            m_blendMethod = SumMethod;
+          }
+          else
+          {
+            m_blendMethod = NoBlendMethod;
+          }
+          break;
+        }
         default :
         {
           TERP_LOG_AND_THROW( "Invalid blend method" );
@@ -602,13 +535,37 @@ namespace te
       
       // defining the interpolators
       
-      m_interp1 = new te::rst::Interpolator( &raster1, interpMethod1 );
-      m_interp2 = new te::rst::Interpolator( &raster2, interpMethod2 );
+      if( forceRaster1NoDataValue )
+      {
+        std::vector< std::complex<double> > noDataValues1( raster1.getNumberOfBands(),
+          std::complex<double>( noDataValue, 0.0 ) ); 
+        m_interp1Ptr.reset( new te::rst::Interpolator( &raster1, interpMethod1,
+          noDataValues1 ) );
+      }
+      else
+      {
+        m_interp1Ptr.reset( new te::rst::Interpolator( &raster1, interpMethod1 ) );
+      }      
+      
+      if( forceRaster2NoDataValue )
+      {
+        std::vector< std::complex<double> > noDataValues2( raster2.getNumberOfBands(),
+          std::complex<double>( noDataValue, 0.0 ) );
+        m_interp2Ptr.reset( new te::rst::Interpolator( &raster2, interpMethod2,
+          noDataValues2 ) );
+      }
+      else
+      {
+        m_interp2Ptr.reset( new te::rst::Interpolator( &raster2, interpMethod2 ) );
+      }
         
       m_interpMethod1 = interpMethod1;
       m_interpMethod2 = interpMethod2;
       
       // defining dummy values
+      
+      m_forceRaster1NoDataValue = forceRaster1NoDataValue;
+      m_forceRaster2NoDataValue = forceRaster2NoDataValue;
       
       for( std::vector< unsigned int >::size_type rasterBandsIdx = 0 ; 
         rasterBandsIdx < raster1Bands.size() ; ++rasterBandsIdx )
@@ -618,19 +575,25 @@ namespace te
         TERP_TRUE_OR_RETURN_FALSE( raster2Bands[ rasterBandsIdx ] <
           raster2.getNumberOfBands(), "Invalid band" );            
         
-        m_forceInputNoDataValue = forceInputNoDataValue;
-        if( forceInputNoDataValue )
+        if( forceRaster1NoDataValue )
         {
           m_raster1NoDataValues.push_back( noDataValue );
-          m_raster2NoDataValues.push_back( noDataValue );
         }
         else
         {
           m_raster1NoDataValues.push_back( raster1.getBand( raster1Bands[ 
             rasterBandsIdx ] )->getProperty()->m_noDataValue );
+        }
+        
+        if( forceRaster2NoDataValue )
+        {
+          m_raster2NoDataValues.push_back( noDataValue );
+        }
+        else
+        {
           m_raster2NoDataValues.push_back( raster2.getBand( raster2Bands[ 
             rasterBandsIdx ] )->getProperty()->m_noDataValue );
-        }
+        }        
       }
       
       m_outputNoDataValue = noDataValue;
@@ -669,7 +632,8 @@ namespace te
     void Blender::initState()
     {
       m_enableProgressInterface = false;
-      m_forceInputNoDataValue = false;
+      m_forceRaster1NoDataValue = false;
+      m_forceRaster2NoDataValue = false;
       m_threadsNumber = 0;
       m_blendMethod = InvalidBlendMethod;
       m_blendFuncPtr = 0;
@@ -678,11 +642,9 @@ namespace te
       m_r1IntersectionSegmentsPointsSize = 0;
       m_r2IntersectionSegmentsPointsSize = 0;
       m_geomTransformationPtr = 0;
-      m_interpMethod1 = te::rst::Interpolator::NearestNeighbor;
-      m_interpMethod2 = te::rst::Interpolator::NearestNeighbor;
+      m_interpMethod1 = te::rst::NearestNeighbor;
+      m_interpMethod2 = te::rst::NearestNeighbor;
       m_outputNoDataValue = 0;
-      m_interp1 = 0;
-      m_interp2 = 0;      
     }
     
     void Blender::clear()
@@ -693,8 +655,8 @@ namespace te
       m_r1IntersectionSegmentsPoints.clear();
       m_r2IntersectionSegmentsPoints.clear();
       if( m_geomTransformationPtr ) delete m_geomTransformationPtr;
-      if( m_interp1 ) delete m_interp1;
-      if( m_interp2 ) delete m_interp2;
+      m_interp1Ptr.reset();
+      m_interp2Ptr.reset();
       m_raster1Bands.clear();
       m_raster2Bands.clear();
       m_pixelOffsets1.clear();
@@ -703,6 +665,7 @@ namespace te
       m_pixelScales2.clear();
       m_raster1NoDataValues.clear();
       m_raster2NoDataValues.clear();
+      m_intersectionTileIndexers.clear();
 
       initState();
     }
@@ -720,7 +683,12 @@ namespace te
         {
           m_blendFuncPtr = &Blender::euclideanDistanceMethodImp;
           break;
-        }        
+        }  
+        case SumMethod :
+        {
+          m_blendFuncPtr = &Blender::sumMethodImp;
+          break;
+        }
         default :
         {
           TERP_LOG_AND_THROW( "Invalid blend method" );
@@ -742,13 +710,13 @@ namespace te
       for( m_noBlendMethodImp_BandIdx = 0 ; m_noBlendMethodImp_BandIdx <
         m_raster1Bands.size() ; ++m_noBlendMethodImp_BandIdx )
       {
-        m_interp1->getValue( col, line, m_noBlendMethodImp_cValue, 
+        m_interp1Ptr->getValue( col, line, m_noBlendMethodImp_cValue, 
           m_raster1Bands[ m_noBlendMethodImp_BandIdx ] ); 
         m_noBlendMethodImp_Value = m_noBlendMethodImp_cValue.real();      
     
         if( m_noBlendMethodImp_Value == m_raster1NoDataValues[ m_noBlendMethodImp_BandIdx ] )
         {
-          m_interp2->getValue( m_noBlendMethodImp_Point2Col, 
+          m_interp2Ptr->getValue( m_noBlendMethodImp_Point2Col, 
             m_noBlendMethodImp_Point2Line, m_noBlendMethodImp_cValue, 
             m_raster2Bands[ m_noBlendMethodImp_BandIdx ] );
           m_noBlendMethodImp_Value =  m_noBlendMethodImp_cValue.real();          
@@ -759,16 +727,20 @@ namespace te
           }
           else
           {
+            
             m_noBlendMethodImp_Value *= m_pixelScales2[ m_noBlendMethodImp_BandIdx ];
-            values[ m_noBlendMethodImp_BandIdx ] = m_noBlendMethodImp_Value + 
-              m_pixelOffsets2[ m_noBlendMethodImp_BandIdx ]; 
+            m_noBlendMethodImp_Value += m_pixelOffsets2[ m_noBlendMethodImp_BandIdx ];
+            
+            values[ m_noBlendMethodImp_BandIdx ] = m_noBlendMethodImp_Value;
           }
         }
         else
         {
+          
           m_noBlendMethodImp_Value *= m_pixelScales1[ m_noBlendMethodImp_BandIdx ];
-          values[ m_noBlendMethodImp_BandIdx ] =  m_noBlendMethodImp_Value + 
-            m_pixelOffsets1[ m_noBlendMethodImp_BandIdx ]; 
+          m_noBlendMethodImp_Value += m_pixelOffsets1[ m_noBlendMethodImp_BandIdx ]; 
+          
+          values[ m_noBlendMethodImp_BandIdx ] = m_noBlendMethodImp_Value;            
         }      
       }
     }
@@ -785,7 +757,23 @@ namespace te
       m_euclideanDistanceMethodImp_auxPoint.setX( col );
       m_euclideanDistanceMethodImp_auxPoint.setY( line );
       
-      if( m_euclideanDistanceMethodImp_auxPoint.within( m_intersectionPtr.get() ) )
+      m_euclideanDistanceMethodImp_PointInsideIntersection = false;
+      for( m_euclideanDistanceMethodImp_IntersectionTileIndexersIdx = 0;
+        m_euclideanDistanceMethodImp_IntersectionTileIndexersIdx < m_intersectionTileIndexers.size() ;
+        ++m_euclideanDistanceMethodImp_IntersectionTileIndexersIdx )
+      {
+        if( m_intersectionTileIndexers[ 
+          m_euclideanDistanceMethodImp_IntersectionTileIndexersIdx ].within( 
+          m_euclideanDistanceMethodImp_auxPoint ) )
+        {
+          m_euclideanDistanceMethodImp_PointInsideIntersection = true;
+          break;
+        }
+      }
+      
+      // Blending if the point is inside the intersection
+      
+      if( m_euclideanDistanceMethodImp_PointInsideIntersection )
       {
         // Finding distances to both rasters valid area delimiters
               
@@ -845,9 +833,9 @@ namespace te
         for( m_euclideanDistanceMethodImp_BandIdx = 0 ; m_euclideanDistanceMethodImp_BandIdx <
           m_raster1Bands.size() ; ++m_euclideanDistanceMethodImp_BandIdx )
         {
-          m_interp1->getValue( col, line, m_euclideanDistanceMethodImp_cValue1, 
+          m_interp1Ptr->getValue( col, line, m_euclideanDistanceMethodImp_cValue1, 
             m_raster1Bands[ m_euclideanDistanceMethodImp_BandIdx ] ); 
-          m_interp2->getValue( m_euclideanDistanceMethodImp_Point2Col, 
+          m_interp2Ptr->getValue( m_euclideanDistanceMethodImp_Point2Col, 
             m_euclideanDistanceMethodImp_Point2Line, m_euclideanDistanceMethodImp_cValue2, 
             m_raster2Bands[ m_euclideanDistanceMethodImp_BandIdx ] );
       
@@ -860,34 +848,52 @@ namespace te
             else
             {
               values[ m_euclideanDistanceMethodImp_BandIdx ] = 
-                ( m_euclideanDistanceMethodImp_cValue2.real() * 
-                m_pixelScales2[ m_euclideanDistanceMethodImp_BandIdx ] ) + 
-                m_pixelOffsets2[ m_euclideanDistanceMethodImp_BandIdx ]; 
+                ( 
+                  m_euclideanDistanceMethodImp_cValue2.real() 
+                  *
+                  m_pixelScales2[ m_euclideanDistanceMethodImp_BandIdx ]
+                )
+                +
+                m_pixelOffsets2[ m_euclideanDistanceMethodImp_BandIdx ];
             }
           }
           else
           {
             if( m_euclideanDistanceMethodImp_cValue2.real() == m_raster2NoDataValues[ m_euclideanDistanceMethodImp_BandIdx ] )
             {
-              values[ m_euclideanDistanceMethodImp_BandIdx ] =  
-                ( m_euclideanDistanceMethodImp_cValue1.real()  * 
-                m_pixelScales1[ m_euclideanDistanceMethodImp_BandIdx ] ) +
-                m_pixelOffsets1[ m_euclideanDistanceMethodImp_BandIdx ]; 
+              values[ m_euclideanDistanceMethodImp_BandIdx ] =
+                ( 
+                  m_euclideanDistanceMethodImp_cValue1.real()  
+                  *
+                  m_pixelScales1[ m_euclideanDistanceMethodImp_BandIdx ]
+                  
+                )
+                +
+                m_pixelOffsets1[ m_euclideanDistanceMethodImp_BandIdx ];
             }
             else
             {
               if( m_euclideanDistanceMethodImp_dist2 == 0.0 )
               {
-                values[ m_euclideanDistanceMethodImp_BandIdx ] =  
-                  ( m_euclideanDistanceMethodImp_cValue1.real()  * 
-                  m_pixelScales1[ m_euclideanDistanceMethodImp_BandIdx ] ) +
+                values[ m_euclideanDistanceMethodImp_BandIdx ] =
+                  ( 
+                    m_euclideanDistanceMethodImp_cValue1.real()  
+                    *
+                    m_pixelScales1[ m_euclideanDistanceMethodImp_BandIdx ]
+                  )
+                  +
                   m_pixelOffsets1[ m_euclideanDistanceMethodImp_BandIdx ]; 
               }
               else if( m_euclideanDistanceMethodImp_dist1 == 0.0 )
               {
                 values[ m_euclideanDistanceMethodImp_BandIdx ] =  
-                  ( m_euclideanDistanceMethodImp_cValue2.real()  * 
-                  m_pixelScales2[ m_euclideanDistanceMethodImp_BandIdx ] ) +
+                  ( 
+                    m_euclideanDistanceMethodImp_cValue2.real()
+                    *
+                    m_pixelScales2[ m_euclideanDistanceMethodImp_BandIdx ]
+                    
+                  )
+                  +
                   m_pixelOffsets2[ m_euclideanDistanceMethodImp_BandIdx ]; 
               }            
               else
@@ -896,11 +902,12 @@ namespace te
                   (
                     (
                       (
-                        ( 
+                        (
                           m_euclideanDistanceMethodImp_cValue1.real()  
-                          * 
+                          *
                           m_pixelScales1[ m_euclideanDistanceMethodImp_BandIdx ] 
-                        ) 
+                          
+                        )
                         +
                         m_pixelOffsets1[ m_euclideanDistanceMethodImp_BandIdx ]
                       )
@@ -910,12 +917,12 @@ namespace te
                     +
                     (
                       (
-                        ( 
-                          m_euclideanDistanceMethodImp_cValue2.real() 
+                        (
+                          m_euclideanDistanceMethodImp_cValue2.real()
                           * 
                           m_pixelScales2[ m_euclideanDistanceMethodImp_BandIdx ] 
-                        ) 
-                        + 
+                        )
+                        +
                         m_pixelOffsets2[ m_euclideanDistanceMethodImp_BandIdx ]
                       )
                       *
@@ -938,7 +945,118 @@ namespace te
         noBlendMethodImp( line, col, values );
       }
     }    
+
+    void Blender::sumMethodImp( const double& line, const double& col,
+      double* const values )
+    {
+      TERP_DEBUG_TRUE_OR_THROW( m_intersectionPtr.get(), "Invalid intersection pointer" );
+      TERP_DEBUG_TRUE_OR_THROW( m_r1IntersectionSegmentsPointsSize > 1, "Invalid intersection points" );
+      TERP_DEBUG_TRUE_OR_THROW( m_r2IntersectionSegmentsPointsSize > 1, "Invalid intersection points" );
+      
+      // Checking if it is inside the intersection
+      
+      m_sumMethodImp_auxPoint.setX( col );
+      m_sumMethodImp_auxPoint.setY( line );
+      
+      m_sumMethodImp_PointInsideIntersection = false;
+      for( m_sumMethodImp_IntersectionTileIndexersIdx = 0;
+        m_sumMethodImp_IntersectionTileIndexersIdx < m_intersectionTileIndexers.size() ;
+        ++m_sumMethodImp_IntersectionTileIndexersIdx )
+      {
+        if( m_intersectionTileIndexers[ 
+          m_sumMethodImp_IntersectionTileIndexersIdx ].within( 
+          m_sumMethodImp_auxPoint ) )
+        {
+          m_sumMethodImp_PointInsideIntersection = true;
+          break;
+        }
+      }
+      
+      // Blending if the point is inside the intersection      
+      
+      if( m_sumMethodImp_PointInsideIntersection )
+      {
+        // Finding the point over the second raster
+        
+        m_geomTransformationPtr->directMap( col, line, m_sumMethodImp_Point2Col,
+          m_sumMethodImp_Point2Line );      
+        
+        // Blending values
+
+        for( m_sumMethodImp_BandIdx = 0 ; m_sumMethodImp_BandIdx <
+          m_raster1Bands.size() ; ++m_sumMethodImp_BandIdx )
+        {
+          m_interp1Ptr->getValue( col, line, m_sumMethodImp_cValue1, 
+            m_raster1Bands[ m_sumMethodImp_BandIdx ] ); 
+          m_interp2Ptr->getValue( m_sumMethodImp_Point2Col, 
+            m_sumMethodImp_Point2Line, m_sumMethodImp_cValue2, 
+            m_raster2Bands[ m_sumMethodImp_BandIdx ] );
+      
+          if( m_sumMethodImp_cValue1.real() == m_raster1NoDataValues[ m_sumMethodImp_BandIdx ] )
+          {
+            if( m_sumMethodImp_cValue2.real() == m_raster2NoDataValues[ m_sumMethodImp_BandIdx ] )
+            {
+              values[ m_sumMethodImp_BandIdx ] = m_outputNoDataValue;
+            }
+            else
+            {
+              values[ m_sumMethodImp_BandIdx ] = 
+                ( 
+                  m_sumMethodImp_cValue2.real()
+                  *
+                  m_pixelScales2[ m_sumMethodImp_BandIdx ]
+                )
+                +
+                m_pixelOffsets2[ m_sumMethodImp_BandIdx ]; 
+            }
+          }
+          else
+          {
+            if( m_sumMethodImp_cValue2.real() == m_raster2NoDataValues[ m_sumMethodImp_BandIdx ] )
+            {
+              values[ m_sumMethodImp_BandIdx ] =  
+                ( 
+                  m_sumMethodImp_cValue1.real()
+                  
+                  *
+                  m_pixelScales1[ m_sumMethodImp_BandIdx ]
+                )
+                +
+                m_pixelOffsets1[ m_sumMethodImp_BandIdx ]; 
+            }
+            else
+            {
+              values[ m_sumMethodImp_BandIdx ] =
+                (
+                  (
+                    m_sumMethodImp_cValue1.real()  
+                    * 
+                    m_pixelScales1[ m_sumMethodImp_BandIdx ] 
+                  )
+                  +
+                  m_pixelOffsets1[ m_sumMethodImp_BandIdx ]
+                )
+                +
+                (
+                  (
+                    m_sumMethodImp_cValue2.real()
+                    * 
+                    m_pixelScales2[ m_sumMethodImp_BandIdx ]
+                  )
+                  +
+                  m_pixelOffsets2[ m_sumMethodImp_BandIdx ]
+                );
+            }          
+          }      
+        }
+      }
+      else
+      {
+        noBlendMethodImp( line, col, values );
+      }
+    }    
     
+        
     bool Blender::blendIntoRaster1()
     {
       TERP_TRUE_OR_RETURN_FALSE( m_raster1Ptr->getAccessPolicy() & 
@@ -1175,10 +1293,10 @@ namespace te
         auxThreadParams.m_raster1Bands = m_raster1Bands;
         auxThreadParams.m_raster2Bands = m_raster2Bands;
         auxThreadParams.m_blendMethod = m_blendMethod;
-        auxThreadParams.m_interpMethod1 = m_interpMethod1;
         auxThreadParams.m_interpMethod2 = m_interpMethod2;
         auxThreadParams.m_noDataValue = m_outputNoDataValue;
-        auxThreadParams.m_forceInputNoDataValue = m_forceInputNoDataValue;
+        auxThreadParams.m_forceRaster1NoDataValue = m_forceRaster1NoDataValue;
+        auxThreadParams.m_forceRaster2NoDataValue = m_forceRaster2NoDataValue;
         auxThreadParams.m_pixelOffsets1 = m_pixelOffsets1;
         auxThreadParams.m_pixelScales1 = m_pixelScales1;
         auxThreadParams.m_pixelOffsets2 = m_pixelOffsets2;
@@ -1204,8 +1322,9 @@ namespace te
           }
           allThreadsParams[ 0 ].m_geomTransformationPtr.reset( 
             m_geomTransformationPtr->clone() );
-          allThreadsParams[ 0 ].m_maxRasterCachedBlocks = ((unsigned int)maxVMem2Use)
-            / ((unsigned int)m_raster2Ptr->getBand( m_raster1Bands[ 0 ] )->getBlockSize() );
+          allThreadsParams[ 0 ].m_maxRasterCachedBlocks = std::max( 1u, 
+            ((unsigned int)maxVMem2Use)
+            / ((unsigned int)m_raster2Ptr->getBand( m_raster1Bands[ 0 ] )->getBlockSize() ) );
           allThreadsParams[ 0 ].m_useProgress = m_enableProgressInterface;
           
           blendIntoRaster1Thread( &( allThreadsParams[ 0 ] ) );
@@ -1231,14 +1350,14 @@ namespace te
             allThreadsParams[ threadIdx ].m_geomTransformationPtr.reset( 
               m_geomTransformationPtr->clone() );
             
-            allThreadsParams[ 0 ].m_maxRasterCachedBlocks = 
+            allThreadsParams[ 0 ].m_maxRasterCachedBlocks = std::max( 1u,
               ((unsigned int)maxVMem2Use)
               / 
               (
                 ((unsigned int)m_raster2Ptr->getBand( m_raster1Bands[ 0 ] )->getBlockSize() )
                 *
                 m_threadsNumber
-              );
+              ) );
             
             allThreadsParams[ threadIdx ].m_useProgress = false;
             
@@ -1300,7 +1419,8 @@ namespace te
     {
       // Instantiating the local rasters instance
       
-      te::rst::SynchronizedRaster raster1( 1, *( paramsPtr->m_sync1Ptr ) );
+      te::rst::SynchronizedRaster raster1( paramsPtr->m_raster1Bands.size(), 
+        *( paramsPtr->m_sync1Ptr ) );
       te::rst::SynchronizedRaster raster2( paramsPtr->m_maxRasterCachedBlocks,
         *( paramsPtr->m_sync2Ptr ) );
       
@@ -1339,10 +1459,11 @@ namespace te
         raster2,
         paramsPtr->m_raster2Bands,
         paramsPtr->m_blendMethod,
-        paramsPtr->m_interpMethod1,
+        te::rst::NearestNeighbor,
         paramsPtr->m_interpMethod2,
         paramsPtr->m_noDataValue,
-        paramsPtr->m_forceInputNoDataValue,
+        paramsPtr->m_forceRaster1NoDataValue,
+        paramsPtr->m_forceRaster2NoDataValue,
         paramsPtr->m_pixelOffsets1,
         paramsPtr->m_pixelScales1,
         paramsPtr->m_pixelOffsets2,
@@ -1375,11 +1496,9 @@ namespace te
       // loocking for the next raster block to blend
       
       boost::scoped_array< double > blendedValuesHandler( new double[ raster1BandsSize ] );
+      double* blendedValuesHandlerPtr = blendedValuesHandler.get();
       
       const double noDataValue = paramsPtr->m_noDataValue;
-      
-      boost::scoped_array< double > blendedBandsBlockHandler;
-      unsigned int blendedBandsBlockPixelsNumber = 0;
       
       for( unsigned int raster1BlocksInfosIdx = 0 ; raster1BlocksInfosIdx <
         raster1BlocksInfosSize ; ++raster1BlocksInfosIdx )
@@ -1397,22 +1516,12 @@ namespace te
           rBInfo.m_wasProcessed = true;
           paramsPtr->m_mutexPtr->unlock();
           
-          // Allocating the blended block memory
-          
-          if( blendedBandsBlockPixelsNumber < rBInfo.m_blkTotalPixelsNumber )
-          {
-            blendedBandsBlockHandler.reset( new double[ rBInfo.m_blkTotalPixelsNumber *
-              raster1BandsSize ] );
-            blendedBandsBlockPixelsNumber = rBInfo.m_blkTotalPixelsNumber;
-          }
-          
           //blending block data          
           
           unsigned int raster1Row = 0;
           unsigned int raster1Col = 0;
           unsigned int raster1BandsIdx = 0;
-          double* blendedBandsBlockHandlerPointer = blendedBandsBlockHandler.get();
-          
+            
           for( raster1Row = rBInfo.m_firstRasterRow2Process ; raster1Row < rBInfo.m_rasterRows2ProcessBound ;
             ++raster1Row )
           {
@@ -1420,25 +1529,11 @@ namespace te
               ++raster1Col )
             {
               blender.getBlendedValues( (double)raster1Row, (double)raster1Col,
-                blendedBandsBlockHandlerPointer );            
+                blendedValuesHandlerPtr );  
               
-              blendedBandsBlockHandlerPointer = blendedBandsBlockHandlerPointer + raster1BandsSize;
-            }
-          }
-          
-          blendedBandsBlockHandlerPointer = blendedBandsBlockHandler.get();
-         
-          for( raster1BandsIdx = 0 ; raster1BandsIdx < raster1BandsSize ; ++raster1BandsIdx )
-          {          
-            blendedBandsBlockHandlerPointer = blendedBandsBlockHandler.get() + raster1BandsIdx;
-            
-            for( raster1Row = rBInfo.m_firstRasterRow2Process ; raster1Row < rBInfo.m_rasterRows2ProcessBound ;
-              ++raster1Row )
-            {
-              for( raster1Col = rBInfo.m_firstRasterCol2Process ; raster1Col < rBInfo.m_rasterCols2ProcessBound ;
-                ++raster1Col )
-              {
-                double& blendedValue = *( blendedBandsBlockHandlerPointer );
+              for( raster1BandsIdx = 0 ; raster1BandsIdx < raster1BandsSize ; ++raster1BandsIdx )
+              {          
+                double& blendedValue = blendedValuesHandlerPtr[ raster1BandsIdx ];
                 
                 if( blendedValue != noDataValue )
                 {
@@ -1450,8 +1545,6 @@ namespace te
                   raster1.setValue( raster1Col, raster1Row, blendedValue,
                     raster1Bands[ raster1BandsIdx ] );
                 }
-                
-                blendedBandsBlockHandlerPointer = blendedBandsBlockHandlerPointer + raster1BandsSize;
               }
             }
           }
@@ -1497,6 +1590,87 @@ namespace te
       --( *(paramsPtr->m_runningThreadsCounterPtr) );
       paramsPtr->m_mutexPtr->unlock();
     }
+    
+    bool Blender::getSegments( te::gm::Geometry const * const geometryPtr, 
+      std::vector< std::pair< te::gm::Coord2D, te::gm::Coord2D > >& segments ) const
+    {
+      if( dynamic_cast< te::gm::LineString const * >( geometryPtr ) )
+      {
+        te::gm::LineString const* castGeomPtr = 
+          dynamic_cast< te::gm::LineString const * >( geometryPtr );
+        
+        std::size_t nPoints = castGeomPtr->size();
+        te::gm::Coord2D const* coodsPtr = castGeomPtr->getCoordinates();
+        
+        for( std::size_t pIdx = 1 ; pIdx < nPoints ; ++pIdx )
+        {
+          segments.push_back( std::pair< te::gm::Coord2D, te::gm::Coord2D >(
+            coodsPtr[ pIdx - 1 ], coodsPtr[ pIdx ] ) );
+        }
+      } 
+      else if( dynamic_cast< te::gm::CurvePolygon const * >( geometryPtr ) )
+      {
+        te::gm::CurvePolygon const * castGeomPtr = 
+          dynamic_cast< te::gm::CurvePolygon const * >( geometryPtr );
+        
+        std::size_t numGeoms = castGeomPtr->getNumRings();
+        
+        for( std::size_t gIdx = 0 ; gIdx < numGeoms ; ++gIdx )
+        {
+          if( ! ( getSegments( castGeomPtr->getRingN( gIdx ), segments ) ) )
+          {
+            return false;
+          }
+        }
+      }              
+      else if( dynamic_cast< te::gm::GeometryCollection const * >( geometryPtr ) )
+      {
+        te::gm::GeometryCollection const * castGeomPtr = 
+          dynamic_cast< te::gm::GeometryCollection const * >( geometryPtr );
+        
+        std::size_t numGeoms = castGeomPtr->getNumGeometries();
+        
+        for( std::size_t gIdx = 0 ; gIdx < numGeoms ; ++gIdx )
+        {
+          if( ! ( getSegments( castGeomPtr->getGeometryN( gIdx ), segments ) ) )
+          {
+            return false;
+          }
+        }
+      }     
+      
+      return true;
+    }
+    
+    bool Blender::getTileIndexers( te::gm::Geometry const * const geometryPtr, 
+      boost::ptr_vector< te::rst::TileIndexer >& tileIndexers ) const
+    {
+      if( dynamic_cast< te::gm::Polygon const * >( geometryPtr ) )
+      {
+        te::gm::Polygon const * castGeomPtr = 
+          dynamic_cast< te::gm::Polygon const * >( geometryPtr );
+          
+        tileIndexers.push_back( new te::rst::TileIndexer( *castGeomPtr, 1.0 ) );
+      }              
+      else if( dynamic_cast< te::gm::GeometryCollection const * >( geometryPtr ) )
+      {
+        te::gm::GeometryCollection const * castGeomPtr = 
+          dynamic_cast< te::gm::GeometryCollection const * >( geometryPtr );
+        
+        std::size_t numGeoms = castGeomPtr->getNumGeometries();
+        
+        for( std::size_t gIdx = 0 ; gIdx < numGeoms ; ++gIdx )
+        {
+          if( ! ( getTileIndexers( castGeomPtr->getGeometryN( gIdx ), tileIndexers ) ) )
+          {
+            return false;
+          }
+        }
+      }     
+      
+      return true;
+    }    
+    
   } // end namespace rp
 }   // end namespace te    
 

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -26,11 +26,7 @@
 // TerraLib
 #include "../Config.h"
 #include "TsMixtureModel.h"
-#include <terralib/gdal.h>
 #include <terralib/raster.h>
-#include <terralib/rp/MixtureModel.h>
-#include <terralib/rp/MixtureModelLinearStrategy.h>
-#include <terralib/rp/MixtureModelPCAStrategy.h>
 
 CPPUNIT_TEST_SUITE_REGISTRATION( TsMixtureModel );
 

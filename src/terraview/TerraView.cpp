@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of TerraView - A Free and Open Source GIS Application.
 
@@ -41,7 +41,8 @@
 #include <QMenu>
 
 TerraView::TerraView(QWidget* parent)
-  : te::qt::af::BaseApplication(parent)
+  : te::qt::af::BaseApplication(parent),
+    m_helpManager(0)
 {
 }
 
@@ -91,6 +92,11 @@ void TerraView::showAboutDialog()
 void TerraView::onHelpTriggered()
 {
   te::qt::widgets::HelpManager::getInstance().showHelp("terraview/index.html", "dpi.inpe.br.terraview");
+}
+
+void TerraView::startProject(const QString& projectFileName)
+{
+  openProject(projectFileName);
 }
 
 

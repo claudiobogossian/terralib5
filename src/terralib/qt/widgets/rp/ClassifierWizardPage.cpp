@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -79,6 +79,8 @@ te::qt::widgets::ClassifierWizardPage::ClassifierWizardPage(QWidget* parent)
   connect(m_ui->m_acquireToolButton, SIGNAL(toggled(bool)), this, SLOT(showROIManager(bool)));
   connect(m_ui->m_samAcquireToolButton, SIGNAL(toggled(bool)), this, SLOT(showROIManager(bool)));
   connect(m_roiMngDlg.get(), SIGNAL(roiManagerClosed()), this, SLOT(onROIManagerClosed()));
+  connect(m_ui->m_classifierTypeComboBox, SIGNAL(activated(int)), this, SIGNAL(completeChanged()));
+  connect(m_ui->m_inputRasterBandsListWidget, SIGNAL(itemSelectionChanged()), this, SIGNAL(completeChanged()));
 
   connect(m_roiMngDlg->getWidget(), SIGNAL(roiSetChanged(te::cl::ROISet*)), this, SLOT(onRoiSetChanged(te::cl::ROISet*)));
 
@@ -89,6 +91,33 @@ te::qt::widgets::ClassifierWizardPage::ClassifierWizardPage(QWidget* parent)
 te::qt::widgets::ClassifierWizardPage::~ClassifierWizardPage()
 {
 
+}
+
+bool te::qt::widgets::ClassifierWizardPage::isComplete() const
+{
+  int idx = m_ui->m_classifierTypeComboBox->currentIndex();
+  int type = m_ui->m_classifierTypeComboBox->itemData(idx).toInt();
+
+  if(type == CLASSIFIER_ISOSEG)
+  {
+    if(m_ui->m_isosegLayersComboBox->currentText().isEmpty())
+      return false;
+  }
+  else if(type == CLASSIFIER_MAP)
+  {
+    if(m_ui->m_mapTableWidget->rowCount() == 0)
+      return false;
+  }
+  else if(type == CLASSIFIER_SAM)
+  {
+    if(m_ui->m_samTableWidget->rowCount() == 0)
+      return false;
+  }
+
+  if(m_ui->m_inputRasterBandsListWidget->selectedItems().empty())
+    return false;
+
+  return true;
 }
 
 void te::qt::widgets::ClassifierWizardPage::set(te::map::AbstractLayerPtr layer)
@@ -241,6 +270,11 @@ te::rp::Classifier::OutputParameters te::qt::widgets::ClassifierWizardPage::getO
   te::rp::Classifier::OutputParameters algoOutputParams;
 
   return algoOutputParams;
+}
+
+te::cl::ROISet* te::qt::widgets::ClassifierWizardPage::getROISet()
+{
+  return m_roiMngDlg->getWidget()->getROISet();
 }
 
 void te::qt::widgets::ClassifierWizardPage::fillClassifierTypes()
@@ -504,5 +538,7 @@ void te::qt::widgets::ClassifierWizardPage::onRoiSetChanged(te::cl::ROISet* rs)
 
     m_ui->m_samTableWidget->resizeColumnsToContents();
   }
+
+  emit completeChanged();
 }
 

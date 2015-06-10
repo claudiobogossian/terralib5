@@ -1,4 +1,4 @@
-/*  Copyright (C) 2010-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -47,7 +47,13 @@ te::qt::widgets::Scatter::Scatter()
 
 te::qt::widgets::Scatter::~Scatter()
 {
-  
+  te::qt::widgets::PointToObjectIdSet::iterator it= m_valuesOids.begin();
+  while(it != m_valuesOids.end())
+  {
+    delete it->oid;
+    ++it;
+  }
+  m_valuesOids.clear();
 }
 
 void te::qt::widgets::Scatter::calculateMinMaxValues()
@@ -83,6 +89,11 @@ std::size_t te::qt::widgets::Scatter::sizeY()
   return m_yValues.size();
 }
 
+std::vector<double> te::qt::widgets::Scatter::getXValues()
+{
+  return m_xValues;
+}
+
 double te::qt::widgets::Scatter::getX(unsigned int idx)
 {
   return m_xValues[idx];
@@ -91,6 +102,11 @@ double te::qt::widgets::Scatter::getX(unsigned int idx)
 double* te::qt::widgets::Scatter::getX()
 {
   return &m_xValues[0];
+}
+
+std::vector<double> te::qt::widgets::Scatter::getYValues()
+{
+  return m_yValues;
 }
 
 double te::qt::widgets::Scatter::getY(unsigned int idx)
@@ -123,6 +139,11 @@ double te::qt::widgets::Scatter::getMaxY()
   return m_maxY;
 }
 
+void te::qt::widgets::Scatter::setXValues(std::vector<double> xValues)
+{
+  m_xValues = xValues;
+}
+
 void te::qt::widgets::Scatter::setMinX(double& new_minX)
 {
    m_minX = new_minX;
@@ -131,6 +152,11 @@ void te::qt::widgets::Scatter::setMinX(double& new_minX)
 void te::qt::widgets::Scatter::setMaxX(double& new_maxX)
 {
   m_maxX = new_maxX;
+}
+
+void te::qt::widgets::Scatter::setYValues(std::vector<double> yValues)
+{
+  m_yValues = yValues;
 }
 
 void te::qt::widgets::Scatter::setMinY(double& new_minY)
@@ -175,13 +201,7 @@ te::da::ObjectIdSet* te::qt::widgets::Scatter::find(double& xValue, double& yVal
   {
     if(it0->y == yValue)
     {
-      te::da::ObjectId* oid = new te::da::ObjectId(); 
-
-      for(boost::ptr_vector<te::dt::AbstractData>::const_iterator it = it0->oid->getValue().begin(); it != it0->oid->getValue().end(); ++it)
-      {
-        oid->addValue((it)->clone());
-      }
-
+      te::da::ObjectId* oid = new te::da::ObjectId(*it0->oid);
       oids->add(oid);
     }
 
@@ -211,16 +231,9 @@ te::da::ObjectIdSet* te::qt::widgets::Scatter::find(std::vector<QPointF> selecte
     {
       if(it0->y == y)
       {
-        te::da::ObjectId* oid = new te::da::ObjectId(); 
-
-        for(boost::ptr_vector<te::dt::AbstractData>::const_iterator it = it0->oid->getValue().begin(); it != it0->oid->getValue().end(); ++it)
-        {
-          oid->addValue((it)->clone());
-        }
-
+        te::da::ObjectId* oid = new te::da::ObjectId(*it0->oid);
         oids->add(oid);
       }
-
       ++it0;
     }
   }

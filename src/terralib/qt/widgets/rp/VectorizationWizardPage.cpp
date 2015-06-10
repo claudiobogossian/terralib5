@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
   
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
     
@@ -45,6 +45,8 @@ te::qt::widgets::VectorizationWizardPage::VectorizationWizardPage(QWidget *paren
 //configure page
   this->setTitle(tr("Vectorization"));
   this->setSubTitle(tr("Define the vectorization parameters."));
+
+  m_ui->m_targetDatasourceToolButton->setIcon(QIcon::fromTheme("datasource"));
 
   connect(m_ui->m_targetDatasourceToolButton, SIGNAL(pressed()), this, SLOT(onTargetDatasourceToolButtonPressed()));
   connect(m_ui->m_targetFileToolButton, SIGNAL(pressed()), this,  SLOT(onTargetFileToolButtonPressed()));
@@ -127,11 +129,17 @@ te::da::DataSourceInfoPtr te::qt::widgets::VectorizationWizardPage::getDataSourc
 
 std::string te::qt::widgets::VectorizationWizardPage::getLayerName()
 {
+  if(m_ui->m_newLayerNameLineEdit->text().isEmpty())
+    return "";
+
   return m_ui->m_newLayerNameLineEdit->text().toStdString();
 }
 
 std::string te::qt::widgets::VectorizationWizardPage::getRepositoryName()
 {
+  if(m_ui->m_repositoryLineEdit->text().isEmpty())
+    return "";
+
   return m_ui->m_repositoryLineEdit->text().toStdString();
 }
 

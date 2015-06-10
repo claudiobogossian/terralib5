@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -50,7 +50,7 @@ te::qt::plugins::terralib4::TL4ThemeSelectionWizardPage::~TL4ThemeSelectionWizar
 
 void te::qt::plugins::terralib4::TL4ThemeSelectionWizardPage::onSelectAllPushButtonClicked()
 {
-  for(std::size_t i = 0; i < m_ui->m_themeListWidget->count(); ++i)
+  for(int i = 0; i < m_ui->m_themeListWidget->count(); ++i)
   {
     Qt::CheckState state = m_ui->m_themeListWidget->item(i)->checkState();
 
@@ -61,7 +61,7 @@ void te::qt::plugins::terralib4::TL4ThemeSelectionWizardPage::onSelectAllPushBut
 
 void te::qt::plugins::terralib4::TL4ThemeSelectionWizardPage::onDeselectAllPushButtonClicked()
 {
-  for(std::size_t i = 0; i < m_ui->m_themeListWidget->count(); ++i)
+  for(int i = 0; i < m_ui->m_themeListWidget->count(); ++i)
   {
     Qt::CheckState state = m_ui->m_themeListWidget->item(i)->checkState();
 
@@ -78,7 +78,7 @@ void te::qt::plugins::terralib4::TL4ThemeSelectionWizardPage::setThemes(const st
 
     std::string names = "Layer: " + theme.m_layerName + " | View: " + theme.m_viewName + " | Theme: " + theme.m_name;
 
-    QListWidgetItem* item = new QListWidgetItem(QIcon::fromTheme("tl4-theme"), names.c_str(), m_ui->m_themeListWidget, 1);
+    QListWidgetItem* item = new QListWidgetItem(QIcon::fromTheme("tl4-theme"), QString::fromLatin1(names.c_str()), m_ui->m_themeListWidget, 1);
 
     item->setData(Qt::UserRole, QVariant::fromValue(theme));
 
@@ -92,14 +92,16 @@ std::vector<::terralib4::ThemeInfo> te::qt::plugins::terralib4::TL4ThemeSelectio
 {
   std::vector<::terralib4::ThemeInfo> themes;
 
-  for(std::size_t i = 0; i < m_ui->m_themeListWidget->count(); ++i)
+  for(int i = 0; i < m_ui->m_themeListWidget->count(); ++i)
   {
     QListWidgetItem* item = m_ui->m_themeListWidget->item(i);
 
     if(item->type() != 1 || item->checkState() != Qt::Checked)
       continue;
 
-    std::vector<std::string> names = getNames(m_ui->m_themeListWidget->item(i)->text().toStdString());
+    std::string aux = m_ui->m_themeListWidget->item(i)->text().toLatin1();
+
+    std::vector<std::string> names = getNames(aux);
 
     ::terralib4::ThemeInfo theme;
     theme.m_layerName = names[0];

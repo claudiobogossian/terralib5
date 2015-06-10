@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -273,8 +273,6 @@ te::da::ObjectIdSet* te::da::SpatialQueryProcessor::getOIDSet(DataSourceTransact
 
   // The property names that compose the oid set
   const std::vector<std::string>& pnames = oids->getPropertyNames();
-
-  std::size_t size = dataset->size();
 
   while(dataset->moveNext())
   {

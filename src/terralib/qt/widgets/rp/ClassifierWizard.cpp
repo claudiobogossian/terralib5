@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -30,6 +30,11 @@
 #include "../../../raster/Raster.h"
 #include "../../../rp/Classifier.h"
 #include "../../../rp/Module.h"
+#include "../../../se/Categorize.h"
+#include "../../../se/ColorMap.h"
+#include "../../../se/ParameterValue.h"
+#include "../../../se/RasterSymbolizer.h"
+#include "../../../se/Utils.h"
 #include "../help/HelpPushButton.h"
 #include "../layer/search/LayerSearchWidget.h"
 #include "../layer/search/LayerSearchWizardPage.h"
@@ -188,6 +193,58 @@ bool te::qt::widgets::ClassifierWizard::execute()
     QApplication::restoreOverrideCursor();
 
     return false;
+  }
+
+  //create legend
+  te::cl::ROISet* rs = m_classifierPage->getROISet();
+
+  if(rs && rs->getROISet().empty() == false)
+  {
+    te::se::ColorMap* cm = new te::se::ColorMap();
+
+    te::se::Categorize* c = new te::se::Categorize();
+
+    c->setFallbackValue("#000000");
+    c->setLookupValue(new te::se::ParameterValue("Rasterdata"));
+
+    QColor cWhite(Qt::white);
+    std::string colorWhiteStr = cWhite.name().toLatin1().data();
+
+    //added dummy color for values < than min values...
+    c->addValue(new te::se::ParameterValue(colorWhiteStr));
+
+    std::map<std::string, te::cl::ROI*> roiSetMap = rs->getROISet();
+    std::map<std::string, te::cl::ROI*>::iterator it = roiSetMap.begin();
+
+    int count = 1;
+
+    while(it != roiSetMap.end())
+    {
+      std::string color = it->second->getColor();
+      std::string range = QString::number(count).toStdString();
+      
+
+      c->addThreshold(new te::se::ParameterValue(range));
+      c->addValue(new te::se::ParameterValue(color));
+
+      if(count == roiSetMap.size())
+      {
+        std::string rangeNext = QString::number(count + 1).toStdString();
+        c->addThreshold(new te::se::ParameterValue(rangeNext));
+      }
+
+      ++count;
+      ++it;
+    }
+
+    //added dummy color for values > than max values...
+    c->addValue(new te::se::ParameterValue(colorWhiteStr));
+
+    c->setThresholdsBelongTo(te::se::Categorize::SUCCEEDING);
+    cm->setCategorize(c);
+
+    te::se::RasterSymbolizer* rasterSymb = te::se::GetRasterSymbolizer(m_outputLayer->getStyle());
+    rasterSymb->setColorMap(cm);
   }
 
   te::common::ProgressManager::getInstance().removeViewer(id);

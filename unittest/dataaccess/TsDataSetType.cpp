@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -161,8 +161,8 @@ void TsDataSetType::tcCreateDataSetTypeAndChecks()
       dt.add(new te::dt::DateTimeProperty("attr_time_period", te::dt::TIME_PERIOD));
       dt.add(new te::dt::DateTimeProperty("attr_time_instant_tz", te::dt::TIME_INSTANT_TZ));
       dt.add(new te::dt::DateTimeProperty("attr_time_period_tz", te::dt::TIME_PERIOD_TZ));
-      dt.add(new te::dt::DateTimeProperty("attr_ordinal_instant", te::dt::ORDINAL_INSTANT));
-      dt.add(new te::dt::DateTimeProperty("attr_ordinal_period", te::dt::ORDINAL_PERIOD));
+      dt.add(new te::dt::DateTimeProperty("attr_ordinal_instant", te::dt::ORDINAL_TIME_INSTANT));
+      dt.add(new te::dt::DateTimeProperty("attr_ordinal_period", te::dt::ORDINAL_TIME_PERIOD));
       int i = 0;
   }
 

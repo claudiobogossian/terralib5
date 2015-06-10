@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -36,8 +36,8 @@ namespace te
 {
   namespace xml
   {
+    class AbstractWriter;
     class Reader;
-    class Writer;
   }
 
   namespace se
@@ -75,115 +75,115 @@ namespace te
     {
       TESEEXPORT te::se::AnchorPoint* ReadAnchorPoint(te::xml::Reader& reader);
 
-      TESEEXPORT void Save(const te::se::AnchorPoint* ap, te::xml::Writer& writer);
+      TESEEXPORT void Save(const te::se::AnchorPoint* ap, te::xml::AbstractWriter& writer);
 
       TESEEXPORT te::se::Categorize* ReadCategorize(te::xml::Reader& reader);
 
-      TESEEXPORT void Save(const te::se::Categorize* c, te::xml::Writer& writer);
+      TESEEXPORT void Save(const te::se::Categorize* c, te::xml::AbstractWriter& writer);
 
       TESEEXPORT te::se::ChannelSelection* ReadChannelSelection(te::xml::Reader& reader);
 
-      TESEEXPORT void Save(const te::se::ChannelSelection* cs, te::xml::Writer& writer);
+      TESEEXPORT void Save(const te::se::ChannelSelection* cs, te::xml::AbstractWriter& writer);
 
       TESEEXPORT te::se::ColorMap* ReadColorMap(te::xml::Reader& reader);
 
-      TESEEXPORT void Save(const te::se::ColorMap* cm, te::xml::Writer& writer);
+      TESEEXPORT void Save(const te::se::ColorMap* cm, te::xml::AbstractWriter& writer);
 
       TESEEXPORT te::se::ContrastEnhancement* ReadContrastEnhancement(te::xml::Reader& reader);
 
-      TESEEXPORT void Save(const te::se::ContrastEnhancement* ce, te::xml::Writer& writer);
+      TESEEXPORT void Save(const te::se::ContrastEnhancement* ce, te::xml::AbstractWriter& writer);
 
       TESEEXPORT te::se::Description* ReadDescription(te::xml::Reader& reader);
 
-      TESEEXPORT void Save(const te::se::Description* d, te::xml::Writer& writer);
+      TESEEXPORT void Save(const te::se::Description* d, te::xml::AbstractWriter& writer);
 
       TESEEXPORT te::se::Displacement* ReadDisplacement(te::xml::Reader& reader);
 
-      TESEEXPORT void Save(const te::se::Displacement* d, te::xml::Writer& writer);
+      TESEEXPORT void Save(const te::se::Displacement* d, te::xml::AbstractWriter& writer);
 
       TESEEXPORT te::se::ExternalGraphic* ReadExternalGraphic(te::xml::Reader& reader);
 
-      TESEEXPORT void Save(const te::se::ExternalGraphic* eg, te::xml::Writer& writer);
+      TESEEXPORT void Save(const te::se::ExternalGraphic* eg, te::xml::AbstractWriter& writer);
 
       TESEEXPORT te::se::Fill* ReadFill(te::xml::Reader& reader);
 
-      TESEEXPORT void Save(const te::se::Fill* fill, te::xml::Writer& writer);
+      TESEEXPORT void Save(const te::se::Fill* fill, te::xml::AbstractWriter& writer);
 
       TESEEXPORT te::se::Font* ReadFont(te::xml::Reader& reader);
 
-      TESEEXPORT void Save(const te::se::Font* font, te::xml::Writer& writer);
+      TESEEXPORT void Save(const te::se::Font* font, te::xml::AbstractWriter& writer);
 
       TESEEXPORT te::se::Graphic* ReadGraphic(te::xml::Reader& reader);
 
-      TESEEXPORT void Save(const te::se::Graphic* graphic, te::xml::Writer& writer);
+      TESEEXPORT void Save(const te::se::Graphic* graphic, te::xml::AbstractWriter& writer);
 
       TESEEXPORT te::se::GraphicStroke* ReadGraphicStroke(te::xml::Reader& reader);
 
-      TESEEXPORT void Save(const te::se::GraphicStroke* graphicStroke, te::xml::Writer& writer);
+      TESEEXPORT void Save(const te::se::GraphicStroke* graphicStroke, te::xml::AbstractWriter& writer);
 
       TESEEXPORT te::se::Halo* ReadHalo(te::xml::Reader& reader);
 
-      TESEEXPORT void Save(const te::se::Halo* halo, te::xml::Writer& writer);
+      TESEEXPORT void Save(const te::se::Halo* halo, te::xml::AbstractWriter& writer);
 
       TESEEXPORT te::se::ImageOutline* ReadImageOutline(te::xml::Reader& reader);
 
-      TESEEXPORT void Save(const te::se::ImageOutline* imageOutline, te::xml::Writer& writer);
+      TESEEXPORT void Save(const te::se::ImageOutline* imageOutline, te::xml::AbstractWriter& writer);
 
       TESEEXPORT te::se::InlineContent* ReadInlineContent(te::xml::Reader& reader);
 
-      TESEEXPORT void Save(const te::se::InlineContent* ic, te::xml::Writer& writer);
+      TESEEXPORT void Save(const te::se::InlineContent* ic, te::xml::AbstractWriter& writer);
 
       TESEEXPORT te::se::Interpolate* ReadInterpolate(te::xml::Reader& reader);
 
-      TESEEXPORT void Save(const te::se::Interpolate* interpolate, te::xml::Writer& writer);
+      TESEEXPORT void Save(const te::se::Interpolate* interpolate, te::xml::AbstractWriter& writer);
 
       TESEEXPORT te::se::InterpolationPoint* ReadInterpolationPoint(te::xml::Reader& reader);
 
-      TESEEXPORT void Save(const te::se::InterpolationPoint* ip, te::xml::Writer& writer);
+      TESEEXPORT void Save(const te::se::InterpolationPoint* ip, te::xml::AbstractWriter& writer);
 
       TESEEXPORT te::se::LabelPlacement* ReadLabelPlacement(te::xml::Reader& reader);
 
-      TESEEXPORT void Save(const te::se::LabelPlacement* lp, te::xml::Writer& writer);
+      TESEEXPORT void Save(const te::se::LabelPlacement* lp, te::xml::AbstractWriter& writer);
 
       TESEEXPORT te::se::LinePlacement* ReadLinePlacement(te::xml::Reader& reader);
 
-      TESEEXPORT void Save(const te::se::LinePlacement* lp, te::xml::Writer& writer);
+      TESEEXPORT void Save(const te::se::LinePlacement* lp, te::xml::AbstractWriter& writer);
 
       TESEEXPORT te::se::Mark* ReadMark(te::xml::Reader& reader);
 
-      TESEEXPORT void Save(const te::se::Mark* mark, te::xml::Writer& writer);
+      TESEEXPORT void Save(const te::se::Mark* mark, te::xml::AbstractWriter& writer);
 
       TESEEXPORT RasterSymbolizer::OverlapBehavior ReadOverlapBehavior(te::xml::Reader& reader);
 
-      TESEEXPORT void Save(const RasterSymbolizer::OverlapBehavior& type, te::xml::Writer& writer);
+      TESEEXPORT void Save(const RasterSymbolizer::OverlapBehavior& type, te::xml::AbstractWriter& writer);
 
       TESEEXPORT te::se::ParameterValue* ReadParameterValue(te::xml::Reader& reader);
 
-      TESEEXPORT void Save(const te::se::ParameterValue* p, te::xml::Writer& writer);
+      TESEEXPORT void Save(const te::se::ParameterValue* p, te::xml::AbstractWriter& writer);
 
       TESEEXPORT te::se::PointPlacement* ReadPointPlacement(te::xml::Reader& reader);
 
-      TESEEXPORT void Save(const te::se::PointPlacement* pp, te::xml::Writer& writer);
+      TESEEXPORT void Save(const te::se::PointPlacement* pp, te::xml::AbstractWriter& writer);
 
       TESEEXPORT te::se::Rule* ReadRule(te::xml::Reader& reader);
 
-      TESEEXPORT void Save(const te::se::Rule* rule, te::xml::Writer& writer);
+      TESEEXPORT void Save(const te::se::Rule* rule, te::xml::AbstractWriter& writer);
 
       TESEEXPORT te::se::SelectedChannel* ReadSelectedChannel(te::xml::Reader& reader);
 
-      TESEEXPORT void Save(const te::se::SelectedChannel* sc, te::xml::Writer& writer);
+      TESEEXPORT void Save(const te::se::SelectedChannel* sc, te::xml::AbstractWriter& writer);
 
       TESEEXPORT te::se::ShadedRelief* ReadShadedRelief(te::xml::Reader& reader);
 
-      TESEEXPORT void Save(const te::se::ShadedRelief* sr, te::xml::Writer& writer);
+      TESEEXPORT void Save(const te::se::ShadedRelief* sr, te::xml::AbstractWriter& writer);
 
       TESEEXPORT te::se::Stroke* ReadStroke(te::xml::Reader& reader);
 
-      TESEEXPORT void Save(const te::se::Stroke* stroke, te::xml::Writer& writer);
+      TESEEXPORT void Save(const te::se::Stroke* stroke, te::xml::AbstractWriter& writer);
 
       TESEEXPORT te::se::SvgParameter* ReadSvgParameter(te::xml::Reader& reader);
 
-      TESEEXPORT void Save(const te::se::SvgParameter* p, te::xml::Writer& writer);
+      TESEEXPORT void Save(const te::se::SvgParameter* p, te::xml::AbstractWriter& writer);
 
     }  // end namespace serialize
   }    // end namespace se

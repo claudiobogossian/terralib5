@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -27,9 +27,12 @@
 #include "../../../../common/Config.h"
 #include "../../../../common/Translator.h"
 #include "../../../../common/Logger.h"
+
 #include "../../../../dataaccess/dataset/DataSetType.h"
 #include "../../../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../../../dataaccess/datasource/DataSourceManager.h"
+
+#include "../../../../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../../../../maptools/AbstractLayer.h"
 #include "../../../widgets/datasource/core/DataSourceTypeManager.h"
 #include "../../../widgets/layer/utils/DataSet2Layer.h"
@@ -42,6 +45,7 @@
 
 #include "GDALType.h"
 #include "Plugin.h"
+#include "../../../../cellspace/CellSpaceOperations.h"
 
 // Boost
 #include <boost/uuid/random_generator.hpp>
@@ -82,7 +86,8 @@ void GetLayers(const te::da::DataSourceInfoPtr& info, std::list<te::map::Abstrac
 
 te::qt::plugins::gdal::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo) :
 QObject(),
- te::plugin::Plugin(pluginInfo)
+ te::plugin::Plugin(pluginInfo),
+ m_openFile(0)
 {
 }
 
@@ -136,9 +141,18 @@ void te::qt::plugins::gdal::Plugin::shutdown()
 
 void te::qt::plugins::gdal::Plugin::openFileDialog()
 {
-  QString filter = tr("Image File (*.png *.jpg *.jpeg *.tif *.tiff *.geotif *.geotiff);; Web Map Service - WMS (*.xml *.wms);; Web Coverage Service - WCS (*.xml *.wcs);; All Files (*.*)");
+  te::qt::af::Project* proj = te::qt::af::ApplicationController::getInstance().getProject();
 
-  QStringList fileNames = QFileDialog::getOpenFileNames(te::qt::af::ApplicationController::getInstance().getMainWindow(), tr("Open Raster File"), te::qt::widgets::GetFilePathFromSettings("raster"), filter);
+  if(proj == 0)
+  {
+    QMessageBox::warning(te::qt::af::ApplicationController::getInstance().getMainWindow(), tr("Raster File"), tr("Error: there is no opened project!"));
+    return;
+  }
+
+  QStringList fileNames = QFileDialog::getOpenFileNames(
+    te::qt::af::ApplicationController::getInstance().getMainWindow(), 
+    tr("Open Raster File"), te::qt::widgets::GetFilePathFromSettings("raster"), 
+    te::qt::widgets::GetDiskRasterFileSelFilter());
 
   if(fileNames.isEmpty())
     return;
@@ -156,7 +170,7 @@ void te::qt::plugins::gdal::Plugin::openFileDialog()
     ds->setAccessDriver("GDAL");
 
     std::map<std::string, std::string> dsinfo;
-    dsinfo["URI"] = it->toStdString();
+    dsinfo["URI"] = it->toLatin1().data();
 
     ds->setConnInfo(dsinfo);
 
@@ -199,3 +213,4 @@ void te::qt::plugins::gdal::Plugin::openFileDialog()
 }
 
 PLUGIN_CALL_BACK_IMPL(te::qt::plugins::gdal::Plugin)
+

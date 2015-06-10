@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -25,6 +25,7 @@
 
 //Terralib
 
+#include "terralib_config.h"
 #include "../common/progress/TaskProgress.h"
 #include "../common/Logger.h"
 #include "../common/Translator.h"
@@ -73,7 +74,7 @@ te::vp::IntersectionMemory::~IntersectionMemory()
 {}
 
 
-bool te::vp::IntersectionMemory::run()
+bool te::vp::IntersectionMemory::run() throw(te::common::Exception)
 {  
   if(m_SRID == 0)
   {
@@ -109,7 +110,9 @@ bool te::vp::IntersectionMemory::run()
   std::auto_ptr<te::da::DataSet> outDataSet(resultPair.second);
   std::auto_ptr<te::da::DataSetType> outDataSetType(resultPair.first);
 
-  return save(outDataSet, outDataSetType);
+  te::vp::Save(m_outDsrc.get(), outDataSet.get(), outDataSetType.get());
+  return true;
+
 }
 
 std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionMemory::pairwiseIntersection(std::string newName, 
@@ -230,7 +233,9 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionMemory::pa
       }
       else
       {
+#ifdef TERRALIB_LOGGER_ENABLED
         te::common::Logger::logDebug("vp", "Intersection - Invalid geometry found");
+#endif //TERRALIB_LOGGER_ENABLED
         continue;
       }
 

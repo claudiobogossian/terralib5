@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -29,6 +29,13 @@
 #include <terralib/geometry.h>
 #include <terralib/raster/Raster.h>
 #include <terralib/raster/Vectorizer.h>
+#include <terralib/dataaccess/dataset/DataSetType.h>
+#include <terralib/dataaccess/datasource/DataSourceFactory.h>
+#include <terralib/dataaccess/utils/Utils.h>
+#include <terralib/memory/DataSet.h>
+#include <terralib/memory/DataSetItem.h>
+
+#include <memory>
 
 CPPUNIT_TEST_SUITE_REGISTRATION(TsRasterVectorizer);
 
@@ -37,16 +44,60 @@ void TsRasterVectorizer::tcRasterVectorizer()
 // define raster info and load
   std::map<std::string, std::string> rinfo;
   rinfo["URI"] = TERRALIB_DATA_DIR"/rasters/pattern1.tif";
-  te::rst::Raster* inraster = te::rst::RasterFactory::open(rinfo);
+  std::auto_ptr< te::rst::Raster > inrasterPtr( te::rst::RasterFactory::open(rinfo) );
 
   std::vector<te::gm::Geometry*> polygons;
-  inraster->vectorize(polygons, 0);
+  inrasterPtr->vectorize(polygons, 0);
 
   std::cout << "vectorizer created " << polygons.size() << " polygons" << std::endl;
   for (unsigned int i = 0; i < polygons.size(); i++)
     std::cout << "  polygon " << i << ": " << polygons[i]->toString() << std::endl;
+  
+  // creating a dataset in memory
+  
+  std::auto_ptr< te::mem::DataSet > memDataSetPtr;
+  
+  {
+    std::auto_ptr<te::da::DataSetType> dataSetTypePtr(new te::da::DataSetType("RasterVectorizerTestPolygons"));
+    
+    te::gm::GeometryProperty* propPtr = new te::gm::GeometryProperty("polygon", 0, 
+      te::gm::PolygonType, true);
+    propPtr->setSRID( inrasterPtr->getSRID() );
+    dataSetTypePtr->add( propPtr );  
+    
+    memDataSetPtr.reset( new te::mem::DataSet( dataSetTypePtr.get()) );
+    
+    for( unsigned int polygonsIdx = 0 ; polygonsIdx < polygons.size() ; ++polygonsIdx )
+    {
+      te::mem::DataSetItem* dsItemPtr = new te::mem::DataSetItem(memDataSetPtr.get());
+      dsItemPtr->setGeometry( 0, polygons[ polygonsIdx ] );
+      
+      memDataSetPtr->add( dsItemPtr );
+    }
+  }
+  
+  // Exporting to disk
+  
+  {
+    std::auto_ptr<te::da::DataSetType> dataSetTypePtr(new te::da::DataSetType("RasterVectorizerTestPolygons"));
+    
+    te::gm::GeometryProperty* propPtr = new te::gm::GeometryProperty("polygon", 0, 
+      te::gm::PolygonType, true);
+    propPtr->setSRID( inrasterPtr->getSRID() );
+    dataSetTypePtr->add( propPtr );  
+    
+    std::map<std::string, std::string> connInfo;
+    connInfo["URI"] = "./RasterVectorizerTestPolygons";
+    connInfo["DRIVER"] = "ESRI Shapefile";
+    
+    std::auto_ptr<te::da::DataSource> dsOGR( te::da::DataSourceFactory::make("OGR") );
+    dsOGR->setConnectionInfo(connInfo);
+    dsOGR->open();
+    
+    memDataSetPtr->moveBeforeFirst();
+    
+    te::da::Create(dsOGR.get(), dataSetTypePtr.get(), memDataSetPtr.get());
 
-// clean up
-  delete inraster;
-  polygons.clear();
+    dsOGR->close();
+  }  
 }

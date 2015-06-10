@@ -1,20 +1,20 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
- This file is part of the TerraLib - a Framework for building GIS enabled applications.
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
- TerraLib is free software: you can redistribute it and/or modify
- it under the terms of the GNU Lesser General Public License as published by
- the Free Software Foundation, either version 3 of the License,
- or (at your option) any later version.
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License,
+    or (at your option) any later version.
 
- TerraLib is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- GNU Lesser General Public License for more details.
+    TerraLib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
 
- You should have received a copy of the GNU Lesser General Public License
- along with TerraLib. See COPYING. If not, write to
- TerraLib Team at <terralib-team@terralib.org>.
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
  */
 
 /*!
@@ -34,6 +34,8 @@
 
 #include <string>
 #include <memory>
+
+#include <gdal_priv.h>
 
 // Forward declaration
 class GDALDataset;
@@ -134,7 +136,26 @@ namespace te
                   const std::vector<te::rst::BandProperty*> bands,
                   const std::map<std::string, std::string>& rinfo,
                   void* h, void (*deleter)(void*));
+      
+      bool createMultiResolution( const unsigned int levels, const te::rst::InterpolationMethod interpMethod );
+      
+      bool removeMultiResolution(); 
+      
+      unsigned int getMultiResLevelsCount() const;
+      
+      te::rst::Raster* getMultiResLevel( const unsigned int level ) const;
+      
+    protected :
+      
+      /*!
+       \brief Constructor.
 
+       \param multiResolutionLevel Level of a multi-resolution pyramid.
+       \param uRI         The raster URI.
+       \param policy      The raster access policy. 
+       */
+      Raster( const unsigned int multiResolutionLevel, const std::string& uRI, 
+              const te::common::AccessPolicy& policy );
 
     private:
 

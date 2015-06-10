@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -50,10 +50,13 @@ int main(int /*argc*/, char** /*argv*/)
     te::st::STDataLoader::initialize();
     
     //Examples of trajectories
-	 TrajectoryExamples();
-		
+    TrajectoryExamples();
+
     //Examples of coverage series
-	CoverageSeriesExamples();
+    CoverageSeriesExamples();
+
+    //Examples of TimeSeries
+    TimeSeriesExamples();
 
     //Finalize STDataLoader support
     te::st::STDataLoader::finalize();

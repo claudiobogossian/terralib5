@@ -1,4 +1,4 @@
-/*  Copyright (C) 2010-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -46,7 +46,7 @@
 // Boost
 #include <boost/format.hpp>
 
-const std::string te::st::TimeSeriesDataSetLayer::sm_type("TimeSeriesDataSetLayer");
+const std::string te::st::TimeSeriesDataSetLayer::sm_type("TIMESERIESDATASETLAYER");
 
 te::st::TimeSeriesDataSetLayer::TimeSeriesDataSetLayer(AbstractLayer* parent, TimeSeriesDataSetInfo* info)
   : AbstractSTDataSetLayer(parent),
@@ -76,15 +76,18 @@ std::auto_ptr<te::map::LayerSchema> te::st::TimeSeriesDataSetLayer::getSchema() 
 {
   assert(!m_info->getObservationDataSetInfo().getDataSetName().empty());
 
-  te::da::DataSourcePtr ds = te::da::GetDataSource(m_info->getDataSourceInfo().getId(), true);
+  te::da::DataSourcePtr ds = te::da::GetDataSource(m_info->getObservationDataSetInfo().getDataSourceInfo().getId(), true);
 
   return ds->getDataSetType(m_info->getObservationDataSetInfo().getDataSetName());
 }
 
 te::dt::DateTimePeriod* te::st::TimeSeriesDataSetLayer::getTemporalExtent() const
 {
-  return te::st::STDataLoader::getDataSet(*m_info.get())->getTemporalExtent();
+  return 0;
+  //return te::st::STDataLoader::getDataSet(*m_info.get())->getTemporalExtent();
 }
+
+// -----------------------------------------------------------------------------------------------------------------------
 
 std::auto_ptr<te::da::DataSet> te::st::TimeSeriesDataSetLayer::getData(te::common::TraverseType travType,
                                                                        const te::common::AccessPolicy accessPolicy) const
@@ -94,9 +97,61 @@ std::auto_ptr<te::da::DataSet> te::st::TimeSeriesDataSetLayer::getData(te::commo
   return result;
 }
 
+std::auto_ptr<te::da::DataSet> te::st::TimeSeriesDataSetLayer::getData(const std::string& propertyName,
+                                                              const te::gm::Envelope* e,
+                                                              te::gm::SpatialRelation r,
+                                                              te::common::TraverseType travType,
+                                                              const te::common::AccessPolicy accessPolicy) const
+{
+  std::auto_ptr<te::st::TimeSeriesDataSet> tsds = te::st::TimeSeriesDataSetLayer::getTimeSeriesDataset(*e, r, travType);
+  std::auto_ptr<te::da::DataSet> result = tsds->release();
+  return result;
+}
+
+std::auto_ptr<te::da::DataSet> te::st::TimeSeriesDataSetLayer::getData(const std::string& propertyName,
+                                                              const te::gm::Geometry* g,
+                                                              te::gm::SpatialRelation r,
+                                                              te::common::TraverseType travType,
+                                                              const te::common::AccessPolicy accessPolicy) const
+{
+  std::auto_ptr<te::st::TimeSeriesDataSet> tsds = te::st::TimeSeriesDataSetLayer::getTimeSeriesDataset(*g, r, travType);
+  std::auto_ptr<te::da::DataSet> result = tsds->release();
+  return result;
+}
+
+std::auto_ptr<te::da::DataSet> te::st::TimeSeriesDataSetLayer::getData(te::da::Expression* restriction,
+  te::common::TraverseType travType,
+  const te::common::AccessPolicy accessPolicy) const
+{
+  std::auto_ptr<te::da::DataSet> result;
+  return result;
+}
+
+std::auto_ptr<te::da::DataSet> te::st::TimeSeriesDataSetLayer::getData(const te::da::ObjectIdSet* oids,
+  te::common::TraverseType travType,
+  const te::common::AccessPolicy accessPolicy) const
+{
+  std::auto_ptr<te::da::DataSet> result;
+  return result;
+}
+
 std::auto_ptr<te::st::TimeSeriesDataSet> te::st::TimeSeriesDataSetLayer::getTimeSeriesDataset(te::common::TraverseType travType) const
 {
   return te::st::STDataLoader::getDataSet(*m_info.get(), travType);
+}
+
+std::auto_ptr<te::st::TimeSeriesDataSet> te::st::TimeSeriesDataSetLayer::getTimeSeriesDataset(const te::gm::Envelope& e,
+                                                                                              te::gm::SpatialRelation r,
+                                                                                              te::common::TraverseType travType) const
+{
+  return te::st::STDataLoader::getDataSet(*m_info.get(), e, r, travType);
+}
+
+std::auto_ptr<te::st::TimeSeriesDataSet> te::st::TimeSeriesDataSetLayer::getTimeSeriesDataset(const te::gm::Geometry& g,
+                                                                                              te::gm::SpatialRelation r,
+                                                                                              te::common::TraverseType travType) const
+{
+  return te::st::STDataLoader::getDataSet(*m_info.get(), g, r, travType);
 }
 
 std::auto_ptr<te::da::DataSet> te::st::TimeSeriesDataSetLayer::getData( const te::dt::DateTime& dt, te::dt::TemporalRelation r,
@@ -108,21 +163,61 @@ std::auto_ptr<te::da::DataSet> te::st::TimeSeriesDataSetLayer::getData( const te
   return result;
 }
 
+
+std::auto_ptr<te::da::DataSet> te::st::TimeSeriesDataSetLayer::getData( const te::dt::DateTime& dt, te::dt::TemporalRelation tr,
+  const te::gm::Envelope& e, te::gm::SpatialRelation sr,
+  te::common::TraverseType travType,
+  te::common::AccessPolicy rwRole) const
+{
+  std::auto_ptr<te::st::TimeSeriesDataSet> tds = te::st::TimeSeriesDataSetLayer::getTimeSeriesDataset(dt, tr, e, sr, travType);
+  std::auto_ptr<te::da::DataSet> result = tds->release();
+  return result;
+}
+
+std::auto_ptr<te::da::DataSet> te::st::TimeSeriesDataSetLayer::getData( const te::dt::DateTime& dt, te::dt::TemporalRelation tr,
+                                                                        const te::gm::Geometry& g, te::gm::SpatialRelation sr ,
+                                                                        te::common::TraverseType travType,
+                                                                        te::common::AccessPolicy rwRole) const
+{
+  std::auto_ptr<te::st::TimeSeriesDataSet> tds = te::st::TimeSeriesDataSetLayer::getTimeSeriesDataset(dt, tr, g, sr, travType);
+  std::auto_ptr<te::da::DataSet> result = tds->release();
+  return result;
+}
+
 std::auto_ptr<te::st::TimeSeriesDataSet> te::st::TimeSeriesDataSetLayer::getTimeSeriesDataset( const te::dt::DateTime& dt, te::dt::TemporalRelation r,
                                                                                                te::common::TraverseType travType) const
 {
- return te::st::STDataLoader::getDataSet(*m_info.get(), dt, r, travType);
+  return te::st::STDataLoader::getDataSet(*m_info.get(), dt, r, travType);
+}
+
+std::auto_ptr<te::st::TimeSeriesDataSet> 
+te::st::TimeSeriesDataSetLayer::getTimeSeriesDataset(const te::dt::DateTime& dt, te::dt::TemporalRelation tr,
+                                                       const te::gm::Envelope& e, te::gm::SpatialRelation sr,
+                                                       te::common::TraverseType travType) const
+{
+  std::auto_ptr<te::st::TimeSeriesDataSet> result;
+  return result;
+  //return te::st::STDataLoader::getDataSet(*m_info.get(), dt, tr, e, sr, travType);
+}
+
+std::auto_ptr<te::st::TimeSeriesDataSet> te::st::TimeSeriesDataSetLayer::getTimeSeriesDataset( const te::dt::DateTime& dt, te::dt::TemporalRelation tr,
+                                                                                                 const te::gm::Geometry& g, te::gm::SpatialRelation sr,
+                                                                                                 te::common::TraverseType travType) const
+{
+  std::auto_ptr<te::st::TimeSeriesDataSet> result;
+  return result;
+  //return te::st::STDataLoader::getDataSet(*m_info.get(), dt, tr, g, sr, travType);
 }
 
 bool te::st::TimeSeriesDataSetLayer::isValid() const
 {
-  if(m_info->getDataSourceInfo().getId().empty())
+  if(m_info->getObservationDataSetInfo().getDataSourceInfo().getId().empty())
     return false;
 
   te::da::DataSourcePtr ds;
   try
   {
-    ds = te::da::GetDataSource(m_info->getDataSourceInfo().getId(), true);
+    ds = te::da::GetDataSource(m_info->getObservationDataSetInfo().getDataSourceInfo().getId(), true);
   }
   catch(...)
   {
@@ -138,12 +233,12 @@ bool te::st::TimeSeriesDataSetLayer::isValid() const
 void te::st::TimeSeriesDataSetLayer::draw(te::map::Canvas* canvas, const te::gm::Envelope& bbox, int srid)
 {
   if(m_rendererType.empty())
-    throw te::map::Exception((boost::format(TR_MAP("Could not draw the data set layer %1%. The renderer type is empty!")) % getTitle()).str());
+    throw te::map::Exception((boost::format(TE_TR("Could not draw the data set layer %1%. The renderer type is empty!")) % getTitle()).str());
 
   // Try get the defined renderer
   std::auto_ptr<te::map::AbstractRenderer> renderer(te::map::RendererFactory::make(m_rendererType));
   if(renderer.get() == 0)
-    throw te::map::Exception((boost::format(TR_MAP("Could not draw the data set layer %1%. The renderer %2% could not be created!")) % getTitle() % m_rendererType).str());
+    throw te::map::Exception((boost::format(TE_TR("Could not draw the data set layer %1%. The renderer %2% could not be created!")) % getTitle() % m_rendererType).str());
 
   renderer->draw(this, canvas, bbox, srid);
 }
@@ -151,6 +246,11 @@ void te::st::TimeSeriesDataSetLayer::draw(te::map::Canvas* canvas, const te::gm:
 const std::string& te::st::TimeSeriesDataSetLayer::getType() const
 {
   return sm_type;
+}
+
+const std::string& te::st::TimeSeriesDataSetLayer::getDataSourceId() const
+{
+  return m_info->getObservationDataSetInfo().getDataSourceInfo().getId();
 }
 
 const std::string& te::st::TimeSeriesDataSetLayer::getRendererType() const

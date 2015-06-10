@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -70,7 +70,7 @@ namespace te
       m_highResRasterPtr = 0;
       m_highResRasterBand = 0;
       m_enableProgress = false;
-      m_interpMethod = te::rst::Interpolator::NearestNeighbor;
+      m_interpMethod = te::rst::NearestNeighbor;
       m_RGBMin = 0.0;
       m_RGBMax = 0.0;
     }
@@ -583,9 +583,8 @@ namespace te
         }
       }
       
-      double gain = ( ( rasterVariance == 0.0 ) ? 0.0 :
-        ( std::sqrt( intensityVariance ) / std::sqrt( rasterVariance ) ) );
-      double offset = ( ( rasterVariance == 0.0 ) ? 0.0 : ( intensityMean - ( gain * rasterMean ) ) );
+      const double gain = ( ( rasterVariance == 0.0 ) ? 0.0 :
+        std::sqrt( (double)intensityVariance ) / std::sqrt( rasterVariance ) );
       float* intensityRow = 0;
       
       for( row = 0 ; row < nRows ; ++row )
@@ -595,7 +594,7 @@ namespace te
         for( col = 0 ; col < nCols ; ++col )
         {
           band.getValue( col, row, value );
-          intensityRow[ col ] = (float)std::min( 1.0, std::max( 0.0, ( ( value * gain ) - offset ) ) );
+          intensityRow[ col ] = (float)std::min( 1.0, std::max( 0.0, ( ( value - rasterMean ) * gain ) + ((double)intensityMean) ) );
         }
       }      
       
@@ -621,16 +620,26 @@ namespace te
       outRasterBandsProperties.push_back( new te::rst::BandProperty(
         *( m_inputParameters.m_lowResRasterPtr->getBand( 
         m_inputParameters.m_lowResRasterRedBandIndex )->getProperty() ) ) );    
+      outRasterBandsProperties[ 0 ]->m_blkw = nCols;
+      outRasterBandsProperties[ 0 ]->m_blkh = 1;
+      outRasterBandsProperties[ 0 ]->m_nblocksx = 1;
+      outRasterBandsProperties[ 0 ]->m_nblocksy = nRows;
       outRasterBandsProperties.push_back( new te::rst::BandProperty(
         *( m_inputParameters.m_lowResRasterPtr->getBand( 
         m_inputParameters.m_lowResRasterGreenBandIndex )->getProperty() ) ) ); 
+      outRasterBandsProperties[ 1 ]->m_blkw = nCols;
+      outRasterBandsProperties[ 1 ]->m_blkh = 1;
+      outRasterBandsProperties[ 1 ]->m_nblocksx = 1;
+      outRasterBandsProperties[ 1 ]->m_nblocksy = nRows;      
       outRasterBandsProperties.push_back( new te::rst::BandProperty(
         *( m_inputParameters.m_lowResRasterPtr->getBand( 
         m_inputParameters.m_lowResRasterBlueBandIndex )->getProperty() ) ) );         
+      outRasterBandsProperties[ 2 ]->m_blkw = nCols;
+      outRasterBandsProperties[ 2 ]->m_blkh = 1;
+      outRasterBandsProperties[ 2 ]->m_nblocksx = 1;
+      outRasterBandsProperties[ 2 ]->m_nblocksy = nRows;      
       
-      te::rst::Grid* gridPtr = new te::rst::Grid( nCols, nRows,
-        new te::gm::Envelope( *( m_inputParameters.m_lowResRasterPtr->getGrid()->getExtent() ) ),
-        m_inputParameters.m_lowResRasterPtr->getGrid()->getSRID() );
+      te::rst::Grid* gridPtr = new te::rst::Grid( *m_inputParameters.m_highResRasterPtr->getGrid() );
 
       outputRasterPtr.reset(
         te::rst::RasterFactory::make(

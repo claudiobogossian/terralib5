@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -26,14 +26,15 @@
 #define __TERRALIB_RP_INTERNAL_ARITHMETICOPERATIONS_H
 
 #include "Algorithm.h"
+#include "../raster/Grid.h"
+#include "../raster/Interpolator.h"
+#include "../common/progress/TaskProgress.h"
 
 #include <map>
 #include <memory>
 #include <stack>
 #include <string>
 #include <vector>
-
-#include <boost/shared_ptr.hpp>
 
 namespace te
 {
@@ -74,13 +75,15 @@ namespace te
         {
           public:
 
-            std::vector< boost::shared_ptr<te::rst::Raster> > m_rasterVec; //!< Input rasters vector.
+            std::vector< te::rst::Raster* > m_inputRasters; //!< Input rasters vector.
 
             std::string m_arithmeticString;  //!< Arithmetic string.
 
             bool m_normalize; //!< Output values normalization will be performed to fit the allowed values range (default:false).
 
             bool m_enableProgress; //!< Enable/Disable the progress interface (default:false).
+            
+            te::rst::Interpolator::Method m_interpMethod; //!< The raster interpolator method (default:NearestNeighbor).
             
             InputParameters();
             
@@ -161,33 +164,87 @@ namespace te
 
             unsigned int m_rasterBand; //!< Raster band index.
 
-             boost::shared_ptr<te::rst::Raster> m_raster; //!< Raster pointer.
+            te::rst::Raster* m_rasterNPtr; //!< Raster pointer.
+            
+            mutable std::auto_ptr< te::rst::Raster > m_rasterHandler; //!< Raster handler.
 
+            ExecStackElement( const ExecStackElement& rhs )
+            : m_isRaster( false ), m_isRealNumber( false ), m_realNumberValue( 0 ),
+              m_rasterBand( 0 ), m_rasterNPtr( 0 )
+            {
+              operator==( rhs );
+            };
+            
             ExecStackElement()
             : m_isRaster( false ), m_isRealNumber( false ), m_realNumberValue( 0 ),
-              m_rasterBand( 0 )
-            {};
+              m_rasterBand( 0 ), m_rasterNPtr( 0 )
+            {};            
+            
+            ExecStackElement& operator==( const ExecStackElement& rhs )
+            {
+              m_isRaster = rhs.m_isRaster;
+              m_isRealNumber = rhs.m_isRealNumber;
+              m_realNumberValue = rhs.m_realNumberValue;
+              m_rasterBand = rhs.m_rasterBand;
+              m_rasterNPtr = rhs.m_rasterNPtr;
+              m_rasterHandler.reset( rhs.m_rasterHandler.release() );
+              
+              return *this;
+            };
           
             ~ExecStackElement() {};
         };
 
         typedef std::stack< ExecStackElement > ExecStackT; //!< Execution stack type definition.
+        
+        /*!
+          \brief Type definition for a operation function pointer.
+         */         
+        typedef void (ArithmeticOperations::*BinOpFuncPtrT)( const double& inputValue1, const double& inputValue2,
+          double& outputValue ) const;
 
         ArithmeticOperations::InputParameters m_inputParameters; //!< Input execution parameters.
 
         bool m_isInitialized; //!< Tells if this instance is initialized.
+        
+        /*!
+          \brief Addition binary operator function.
+         */             
+        inline void additionBinOp( const double& inputValue1, const double& inputValue2,
+          double& outputValue ) const { outputValue = inputValue1 + inputValue2; };
+      
+        /*!
+          \brief Subtraction binary operator function.
+         */             
+        inline void subtractionBinOp( const double& inputValue1, const double& inputValue2,
+          double& outputValue ) const { outputValue = inputValue1 - inputValue2; };
 
+        /*!
+          \brief Multiplication binary operator function.
+         */             
+        inline void multiplicationBinOp( const double& inputValue1, const double& inputValue2,
+          double& outputValue ) const { outputValue = inputValue1 * inputValue2; };          
+          
+        /*!
+          \brief Division binary operator function.
+         */             
+        inline void divisionBinOp( const double& inputValue1, const double& inputValue2,
+          double& outputValue ) const { ( inputValue2 == 0.0 ) ? ( outputValue = 0 ) 
+          : ( outputValue = inputValue1 / inputValue2 ); };
+          
         /*!
           \brief Execute the automata parsing the given input string.
           \param aStr The input arithmetic expression string.
           \param inRasters Input rasters pointers.
           \param outRaster Output raster pointer (pre-initiated).
           \param generateOutput If true, the output raster data will be generated, if false only the automata execution will be performed..
+          \param progressPtr A pointer to a progress interface to be pulsed on each operation or a null pointer.
         */
         bool executeString( const std::string& aStr, 
-          std::vector< boost::shared_ptr<te::rst::Raster> > inRasters,
-          boost::shared_ptr<te::rst::Raster>& outRaster,
-          bool generateOutput ) const;
+          const std::vector< te::rst::Raster* >& inRasters,
+          std::auto_ptr<te::rst::Raster>& outRaster,
+          bool generateOutput,
+          te::common::TaskProgress* const progressPtr ) const;
         
         /*!
           \brief Convert the input tokens vector from the infix notation to postfix notation.
@@ -252,6 +309,37 @@ namespace te
         */       
         bool execBinaryOperator( const std::string& token, ExecStackT& 
           execStack, bool generateOutput ) const;
+          
+        /*!
+          \brief Execute the given binary operator using the given input rasters
+          \param inRaster1 Input raster 1.
+          \param band1 Input raster 1 band.
+          \param inRaster2 Input raster 2.
+          \param band2 Input raster 2 band.
+          \param binOptFunctPtr The binary operation function pointer.
+          \param outRasterPtr The generated output raster.
+          \return true if OK, false on errors..
+        */       
+        bool execBinaryOperatorRasterXRaster( const te::rst::Raster& inRaster1, 
+          const unsigned int band1, const te::rst::Raster& inRaster2, 
+          const unsigned int band2,
+          const BinOpFuncPtrT binOptFunctPtr,
+          std::auto_ptr<te::rst::Raster>& outRasterPtr ) const;          
+          
+        /*!
+          \brief Execute the given binary operator using the given input raster and a real number
+          \param inRaster Input raster.
+          \param bandIdx Input raster band.
+          \param binOptFunctPtr The binary operation function pointer.
+          \param outRasterPtr The generated output raster.
+          \param realNumberIsRigthtTerm true if the real number is the right term.
+          \return true if OK, false on errors..
+        */       
+        bool execBinaryOperatorRasterXReal( const te::rst::Raster& inRaster, 
+          const unsigned int bandIdx, const double value, 
+          const BinOpFuncPtrT binOptFunctPtr,
+          std::auto_ptr<te::rst::Raster>& outRasterPtr,
+          const bool realNumberIsRigthtTerm ) const;           
       
         /*!
           \brief Execute the given unary operator using the current given execution stack.
@@ -273,13 +361,12 @@ namespace te
       
         /*!
           \brief Allocate a new RAM memory raster.
-          \param nLines Number of raster lines.
-          \param nCols Number of raster columns.
+          \param grid The output raster grid.
           \param rasterPtr The output raster pointer.
           \return Returns true if OK, false on errors.
         */        
-        bool allocResultRaster( unsigned int nLines, unsigned int nCols,
-          boost::shared_ptr<te::rst::Raster>& rasterPtr ) const;
+        bool allocResultRaster( const te::rst::Grid& grid, 
+          std::auto_ptr<te::rst::Raster>& rasterPtr ) const;
         
         /*!
           \brief Split the input string into a vector of token strings

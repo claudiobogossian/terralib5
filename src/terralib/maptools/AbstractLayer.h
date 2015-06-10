@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-20013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -480,6 +480,29 @@ namespace te
         */
         virtual void draw(Canvas* canvas, const te::gm::Envelope& bbox, int srid) = 0;
 
+        /*!
+          \brief It returns the composition mode.
+
+          Composition modes are used to specify how the pixels in one image, the source, are merged with the pixel in another image, the destination.
+
+          \return The composition mode enum.
+        */
+        te::map::CompositionMode getCompositionMode() const;
+
+        /*!
+          \brief It sets the composition mode.
+
+          Composition modes are used to specify how the pixels in one image, the source, are merged with the pixel in another image, the destination.
+
+          \param mode The composition mode enum.
+        */
+        void setCompositionMode(te::map::CompositionMode mode);
+
+        /*!
+          \brief Its indicate that the layer schema is out of date.
+        */
+        virtual void setOutOfDate();
+
       protected:
 
         std::string m_id;                 //!< Layer id.
@@ -493,6 +516,7 @@ namespace te
         te::map::Grouping* m_grouping;    //!< The grouping information.
         te::map::Chart* m_chart;          //!< The chart information.
         std::string m_geomPropertyName;   //!< The name of the referenced geometry property.
+        te::map::CompositionMode m_compositionMode; //!< The composition mode used to merged the canvas.
     };
 
     typedef boost::intrusive_ptr<AbstractLayer> AbstractLayerPtr;

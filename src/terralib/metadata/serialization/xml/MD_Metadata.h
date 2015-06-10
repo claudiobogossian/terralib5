@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -40,8 +40,8 @@ namespace te
 {
   namespace xml
   {
+    class AbstractWriter;
     class Reader;
-    class Writer;
   }
 
   namespace md
@@ -50,13 +50,13 @@ namespace te
     
     class CI_ResponsibleParty; 
     
-    TEMDEXPORT void Save(const te::md::MD_Metadata* md, te::xml::Writer& writer);
+    TEMDEXPORT void Save(const te::md::MD_Metadata* md, te::xml::AbstractWriter& writer);
     
-    TEMDEXPORT void Save(const te::md::CI_ResponsibleParty& ctc, te::xml::Writer& writer);
+    TEMDEXPORT void Save(const te::md::CI_ResponsibleParty& ctc, te::xml::AbstractWriter& writer);
     
-    TEMDEXPORT void Save(const te::md::MD_Identification& id, te::xml::Writer& writer);
+    TEMDEXPORT void Save(const te::md::MD_Identification& id, te::xml::AbstractWriter& writer);
     
-    TEMDEXPORT void Save(const te::md::CI_Citation* cite, te::xml::Writer& writer);
+    TEMDEXPORT void Save(const te::md::CI_Citation* cite, te::xml::AbstractWriter& writer);
     
   } // end namespace md
 }   // end namespace te

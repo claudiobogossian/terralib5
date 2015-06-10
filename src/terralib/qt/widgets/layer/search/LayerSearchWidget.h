@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -79,6 +79,10 @@ namespace te
 
           void filterAll();
 
+          void setMinRasterBands(std::size_t value);
+
+          void setMaxRasterBands(std::size_t value);
+
         protected:
 
           void fillTreeView(std::list<te::map::AbstractLayerPtr>& layerList);
@@ -94,6 +98,12 @@ namespace te
           std::auto_ptr<Ui::LayerSearchWidgetForm> m_ui;
 
           std::list<te::map::AbstractLayerPtr> m_layerList;
+
+          std::size_t m_minRasterBandsValue;
+          bool m_minRasterBandsDefined;
+
+          std::size_t m_maxRasterBandsValue;
+          bool m_maxRasterBandsDefined;
       }; 
     } // end namespace widgets
   }   // end namespace qt

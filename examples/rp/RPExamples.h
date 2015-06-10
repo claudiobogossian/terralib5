@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -54,5 +54,11 @@ void IHSFusion();
 
 /* \brief Filter examples (Sobel, Mean, Median, Low/High-pass). */
 void Filter();
+
+/* \brief Arithmetic operations examples (band division band sum). */
+void ArithmeticOperations();
+
+/* \brief Texture metrics example. */
+void Texture();
 
 #endif

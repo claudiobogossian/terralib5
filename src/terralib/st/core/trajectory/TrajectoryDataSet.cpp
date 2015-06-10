@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -39,57 +39,21 @@
 #include "../observation/ObservationDataSetType.h"
 #include "../interpolator/NearestGeometryAtTimeInterp.h"
 
-te::st::TrajectoryDataSet::TrajectoryDataSet(te::da::DataSet* ds, int tPropIdx, int gPropIdx, 
-                                             int idPropIdx, const std::string& id)
-: m_obsDs(new ObservationDataSet(ds, tPropIdx, gPropIdx, gPropIdx)),
-  m_type(tPropIdx, gPropIdx, idPropIdx, id),
+te::st::TrajectoryDataSet::TrajectoryDataSet(te::da::DataSet* ds, const ObservationDataSetType& type)
+: m_obsDs(new ObservationDataSet(ds, type)),
+  m_id()
+{
+}
+
+te::st::TrajectoryDataSet::TrajectoryDataSet(te::da::DataSet* ds, const ObservationDataSetType& type,
+  const std::string& id)
+: m_obsDs(new ObservationDataSet(ds, type)),
   m_id(id)
 {
-  
 }
 
-te::st::TrajectoryDataSet::TrajectoryDataSet(te::da::DataSet* ds, int tPropIdx, int gPropIdx, 
-                                             int idPropIdx, const std::string& id, 
-                                             te::dt::DateTimePeriod* text, const te::gm::Envelope& sext)
-: m_obsDs(new ObservationDataSet(ds, tPropIdx, gPropIdx, gPropIdx, text, sext)),
-  m_type(tPropIdx, gPropIdx, idPropIdx, id),
-  m_id(id)
-{
-  
-}
-
-te::st::TrajectoryDataSet::TrajectoryDataSet(te::da::DataSet* ds, const std::vector<int>& tPropIdxs, 
-        int gPropIdx, int idPropIdx, const std::string& id)
-: m_obsDs(new ObservationDataSet(ds, tPropIdxs, std::vector<int>(1,gPropIdx), gPropIdx)),
-  m_type(tPropIdxs, gPropIdx, idPropIdx, id),
-  m_id(id)
-{
-  
-}
-
-te::st::TrajectoryDataSet::TrajectoryDataSet(te::da::DataSet* ds, const std::vector<int>& tPropIdxs, 
-        int gPropIdx, int idPropIdx, const std::string& id, te::dt::DateTimePeriod* text, 
-        const te::gm::Envelope& sext)
-: m_obsDs(new ObservationDataSet(ds, tPropIdxs, std::vector<int>(1,gPropIdx), gPropIdx, text, sext)),
-  m_type(tPropIdxs, gPropIdx, idPropIdx, id),
-  m_id(id)
-{
-  
-}
-
-te::st::TrajectoryDataSet::TrajectoryDataSet(te::da::DataSet* ds, const TrajectoryDataSetType& type,
-                                             te::dt::DateTimePeriod* text, const te::gm::Envelope& sext)
-: m_obsDs(new ObservationDataSet(ds, type.getType(), text, sext)),
-  m_type(type),
-  m_id(type.getId())
-{
-  
-}
-
-te::st::TrajectoryDataSet::TrajectoryDataSet( ObservationDataSet* obs, 
-                                              const TrajectoryDataSetType& type, const std::string& id)
+te::st::TrajectoryDataSet::TrajectoryDataSet( ObservationDataSet* obs, const std::string& id)
   : m_obsDs(obs),
-    m_type(type),
     m_id(id)
 {  
 }
@@ -97,11 +61,6 @@ te::st::TrajectoryDataSet::TrajectoryDataSet( ObservationDataSet* obs,
 te::st::ObservationDataSet* te::st::TrajectoryDataSet::getObservationSet() const
 {
   return m_obsDs.get();
-}
-
-const te::st::TrajectoryDataSetType& te::st::TrajectoryDataSet::getType() const
-{
-  return m_type;
 }
 
 std::string te::st::TrajectoryDataSet::getId() const
@@ -166,25 +125,26 @@ bool te::st::TrajectoryDataSet::isAfterEnd() const
 
 std::auto_ptr<te::gm::Geometry> te::st::TrajectoryDataSet::getGeometry() const
 {
-  int geomPropIdx = m_type.getGeomPropIdx();
-  return std::auto_ptr<te::gm::Geometry>(m_obsDs->getData()->getGeometry(geomPropIdx));
+  if(!m_obsDs->getType().hasGeomProp())
+    return std::auto_ptr<te::gm::Geometry>();
+  return std::auto_ptr<te::gm::Geometry>(m_obsDs->getData()->getGeometry(m_obsDs->getType().getGeomPropName()));
 }
 
 std::auto_ptr<te::dt::DateTime> te::st::TrajectoryDataSet::getTime() const
 {
   //TO DO: arrumar pro caso quando for period dividido em duas colunas
-  int phTimePropIdx = m_type.getBeginTimePropIdx();
-  return std::auto_ptr<te::dt::DateTime>(m_obsDs->getData()->getDateTime(phTimePropIdx));
+  std::string phTimePropName = m_obsDs->getType().getBeginTimePropName();
+  return std::auto_ptr<te::dt::DateTime>(m_obsDs->getData()->getDateTime(phTimePropName));
 }
 
-te::dt::DateTimePeriod* te::st::TrajectoryDataSet::getTemporalExtent() const
+const te::dt::DateTimePeriod* te::st::TrajectoryDataSet::getTemporalExtent() const
 {
-  return m_obsDs->getTemporalExtent();
+  return m_obsDs->getType().getTemporalExtent();
 }
 
-const te::gm::Envelope& te::st::TrajectoryDataSet::getSpatialExtent() const
+const te::gm::Geometry* te::st::TrajectoryDataSet::getSpatialExtent() const
 {
-  return m_obsDs->getSpatialExtent();
+  return m_obsDs->getType().getSpatialExtent();
 }
 
 std::auto_ptr<te::st::Trajectory> te::st::TrajectoryDataSet::getTrajectory(te::st::AbstractTrajectoryInterp* interp)
@@ -193,8 +153,8 @@ std::auto_ptr<te::st::Trajectory> te::st::TrajectoryDataSet::getTrajectory(te::s
   te::da::DataSet* ds = m_obsDs->getData();
   while(ds->moveNext())
   {
-    std::auto_ptr<te::dt::DateTime> time(ds->getDateTime(m_type.getBeginTimePropIdx()));
-    std::auto_ptr<te::gm::Geometry> geom(ds->getGeometry(m_type.getGeomPropIdx()));
+    std::auto_ptr<te::dt::DateTime> time(ds->getDateTime(m_obsDs->getType().getBeginTimePropName()));
+    std::auto_ptr<te::gm::Geometry> geom(ds->getGeometry(m_obsDs->getType().getGeomPropName()));
     result->add(time.release(), geom.release());
   }
   return std::auto_ptr<te::st::Trajectory>(result);

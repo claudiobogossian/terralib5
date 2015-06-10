@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -82,8 +82,8 @@ te::plugin::PluginInfo* te::plugin::GetInstalledPlugin(const std::string& plugin
   boost::filesystem::path pluginFileName(pluginFilePath);
 
 // check if it was provided a plugin file name or just its dir
-  if(boost::filesystem::is_directory(pluginFileName))
-    pluginFileName /= TE_DEFAULT_PLUGIN_FILE_NAME;
+ /* if(boost::filesystem::is_directory(pluginFileName))
+    pluginFileName /= TE_DEFAULT_PLUGIN_FILE_NAME;*/
 
 // check
   if(!boost::filesystem::is_regular_file(pluginFileName))

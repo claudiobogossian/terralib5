@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -76,6 +76,8 @@ te::qt::widgets::WhereClauseWidget::WhereClauseWidget(QWidget* parent, Qt::Windo
   connect(m_ui->m_clearAllPushButton, SIGNAL(clicked()), this, SLOT(onClearAllPushButtonClicked()));
   connect(m_ui->m_valueValueRadioButton, SIGNAL(clicked()), this, SLOT(onValuePropertyRadioButtonClicked()));
   connect(m_ui->m_restrictValueComboBox, SIGNAL(activated(QString)), this, SLOT(onRestrictValueComboBoxActivated(QString)));
+
+  m_ui->m_sqlTextEdit->setReadOnly(true);
 
   m_count = 0;
   m_srid = 0;
@@ -334,12 +336,15 @@ void te::qt::widgets::WhereClauseWidget::onAddWhereClausePushButtonClicked()
   std::string operatorStr = "";
   std::string valueStr = "";
 
+  setCursor(Qt::WaitCursor);
+
   if(m_ui->m_criteriaTabWidget->currentIndex() == 0) // criteria by attribute restriction
   {
     int expId = ++m_count;
 
     if(m_ui->m_restrictValueComboBox->currentText().isEmpty())
     {
+      setCursor(Qt::ArrowCursor);
       QMessageBox::warning(this, tr("Query Builder"), tr("Restrict value not defined."));
       return;
     }
@@ -349,6 +354,7 @@ void te::qt::widgets::WhereClauseWidget::onAddWhereClausePushButtonClicked()
     {
        if(m_ui->m_valueValueComboBox->currentText().isEmpty())
       {
+        setCursor(Qt::ArrowCursor);
         QMessageBox::warning(this, tr("Query Builder"), tr("Value not defined."));
         return;
       }
@@ -358,6 +364,7 @@ void te::qt::widgets::WhereClauseWidget::onAddWhereClausePushButtonClicked()
     {
       if(m_ui->m_valueValueComboBox->currentText().isEmpty())
       {
+        setCursor(Qt::ArrowCursor);
         QMessageBox::warning(this, tr("Query Builder"), tr("Value not defined."));
         return;
       }
@@ -367,6 +374,7 @@ void te::qt::widgets::WhereClauseWidget::onAddWhereClausePushButtonClicked()
 
     if(m_ui->m_OperatorComboBox->currentText().isEmpty())
     {
+      setCursor(Qt::ArrowCursor);
       QMessageBox::warning(this, tr("Query Builder"), tr("Operator not defined."));
       return;
     }
@@ -447,6 +455,13 @@ void te::qt::widgets::WhereClauseWidget::onAddWhereClausePushButtonClicked()
     m_ui->m_whereClauseTableWidget->setCellWidget(newrow, 3, cmbValue);
     ep->m_valuesComboBox = cmbValue;
 
+    if(ep->m_valuesComboBox->currentText() != valueStr.c_str())
+    {
+      int nrow = ep->m_valuesComboBox->count();
+      ep->m_valuesComboBox->addItem(valueStr.c_str());
+      ep->m_valuesComboBox->setCurrentIndex(nrow);
+    }
+
     //connector information
     QComboBox* connectorCmbBox = new QComboBox(m_ui->m_whereClauseTableWidget);
     connect(connectorCmbBox, SIGNAL(activated(QString)), this, SLOT(onComboBoxActivated(QString)));
@@ -468,6 +483,7 @@ void te::qt::widgets::WhereClauseWidget::onAddWhereClausePushButtonClicked()
   {
     if(m_ui->m_SpatialOperatorComboBox->currentText().isEmpty())
     {
+      setCursor(Qt::ArrowCursor);
       QMessageBox::warning(this, tr("Query Builder"), tr("Operator not defined."));
       return;
     }
@@ -486,6 +502,7 @@ void te::qt::widgets::WhereClauseWidget::onAddWhereClausePushButtonClicked()
 
     if(!prop)
     {
+      setCursor(Qt::ArrowCursor);
       QMessageBox::warning(this, tr("Query Builder"), tr("Selected layer has no geometry property."));
       return;
     }
@@ -498,6 +515,7 @@ void te::qt::widgets::WhereClauseWidget::onAddWhereClausePushButtonClicked()
 
       if(!selecteds || selecteds->size() == 0)
       {
+        setCursor(Qt::ArrowCursor);
         QMessageBox::warning(this, tr("Query Builder"), tr("Selected layer has no selected geometries."));
         return;
       }
@@ -610,6 +628,8 @@ void te::qt::widgets::WhereClauseWidget::onAddWhereClausePushButtonClicked()
   std::string sql = getWhereString();
 
   m_ui->m_sqlTextEdit->setText(sql.c_str());
+
+  setCursor(Qt::ArrowCursor);
 }
 
 void te::qt::widgets::WhereClauseWidget::onRemoveWhereClausePushButtonClicked()
@@ -622,7 +642,6 @@ void te::qt::widgets::WhereClauseWidget::onRemoveWhereClausePushButtonClicked()
     for(int i = 0; i < m_ui->m_whereClauseTableWidget->rowCount(); ++i)
     {
       QWidget* w = m_ui->m_whereClauseTableWidget->cellWidget(i, 0);
-      QToolButton* btn = dynamic_cast<QToolButton*>(w);
       if(button == w)
       {
         row = i;
@@ -654,6 +673,11 @@ void te::qt::widgets::WhereClauseWidget::onClearAllPushButtonClicked()
 {
   m_ui->m_whereClauseTableWidget->setRowCount(0);
   m_ui->m_whereClauseTableWidget->resizeColumnsToContents();
+
+  //get string sql
+  std::string sql = getWhereString();
+
+  m_ui->m_sqlTextEdit->setText(sql.c_str());
 }
 
 void te::qt::widgets::WhereClauseWidget::onRestrictValueComboBoxActivated(QString value)
@@ -819,8 +843,6 @@ QStringList te::qt::widgets::WhereClauseWidget::getPropertyValues(std::string pr
   te::da::Field* f = new te::da::Field(new te::da::PropertyName(propertyName));
   fields->push_back(f);
 
-  te::da::PropertyName* name = new te::da::PropertyName(propertyName);
-
   te::da::From* from = new te::da::From;
 
   for(size_t t = 0; t < m_fromItems.size(); ++t)
@@ -870,14 +892,21 @@ QStringList te::qt::widgets::WhereClauseWidget::getPropertyValues(std::string pr
   std::set<double> valuesDouble;
   std::set<int> valuesInt;
 
+  bool found = false;
   std::size_t propertyPos;
   for(std::size_t t = 0; t < dataset->getNumProperties(); ++t)
   {
     if(dataset->getPropertyName(t) == propertyName)
     {
       propertyPos = t;
+      found = true;
       break;
     }
+  }
+
+  if(!found)
+  {
+    return list;
   }
 
   int propertyType = dataset->getPropertyDataType(propertyPos);

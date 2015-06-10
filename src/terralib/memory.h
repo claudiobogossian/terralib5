@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -29,9 +29,18 @@
 
 // memory
 #include "memory/Config.h"
+#include "memory/CachedRaster.h"
 #include "memory/DataSet.h"
 #include "memory/DataSetItem.h"
+#include "memory/ExpansibleBandBlocksManager.h"
+#include "memory/ExpansibleRaster.h"
 #include "memory/Raster.h"
+
+/*!
+  \defgroup mem Memory
+
+  \brief This module can be used to manage geographical data with a representation stored in RAM memory.
+*/
 
 namespace te
 {

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -53,8 +53,11 @@ namespace te
     {
       public:
         
-        /*! \brief RANSAC iterations counter type. */
-        typedef unsigned long long int RansacItCounterT;
+        /*! \brief RANSAC integer counter type. */
+        typedef unsigned long int RansacIntegerCounterT;
+        
+        /*! \brief RANSAC floating point counter type. */
+        typedef long double RansacFloatCounterT;
 
         /*! \brief Default constructor. */
         GTFilter();
@@ -84,7 +87,7 @@ namespace te
                          const GTParameters& inputParams,
                          const double maxDirectMapError, 
                          const double maxInverseMapError,
-                         const RansacItCounterT& maxIterations,
+                         const RansacIntegerCounterT& maxIterations,
                          const double& assurance,
                          const bool enableMultiThread,
                          const std::vector< double >& tiePointsWeights,
@@ -109,8 +112,8 @@ namespace te
             double m_maxInverseMapError;
             double m_assurance;
             bool m_useDynamicIterationsNumber;
-            RansacItCounterT* m_dynamicMaxIterationsPtr;
-            RansacItCounterT m_procsNumber;
+            RansacIntegerCounterT* m_dynamicMaxIterationsPtr;
+            RansacIntegerCounterT m_procsNumber;
             bool* m_returnValuePtr;
             boost::mutex* m_mutexPtr;
             bool* m_keepRunningFlagPtr;

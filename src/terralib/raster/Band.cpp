@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -24,8 +24,10 @@
 */
 
 // TerraLib
+
 #include "Band.h"
 #include "BandProperty.h"
+#include "PositionIterator.h"
 #include "Utils.h"
 
 // STL
@@ -77,24 +79,52 @@ void te::rst::Band::setValue(unsigned int c, unsigned int r, const std::complex<
   setIValue(c, r, value.imag());
 }
 
-std::complex<double> te::rst::Band::getMinValue(unsigned int rs, unsigned int cs, unsigned int rf, unsigned int cf) const
+std::complex<double> te::rst::Band::getMinValue(bool readall, unsigned int rs, unsigned int cs, unsigned int rf, unsigned int cf) const
 {
-  if ((rf == cf) && (rf  == 0))
-  {
-    rf = getRaster()->getNumberOfRows() - 1;
-
-    cf = getRaster()->getNumberOfColumns() - 1;
-  }
-
   std::complex<double> pixel;
-
   double min_img = std::numeric_limits<double>::max();
   double min_real = std::numeric_limits<double>::max();
+  double no_data = getProperty()->m_noDataValue;
 
+  if ((rf == cf) && (rf == 0))
+  {
+    rf = getRaster()->getNumberOfRows() - 1;
+    cf = getRaster()->getNumberOfColumns() - 1;
+
+// read up to 1000 pixels in random positions
+    const unsigned int maxInputPoints = 1000;
+    if (readall == false && (rf * cf) > maxInputPoints)
+    {
+      std::vector<te::gm::Point*> randomPoints = te::rst::GetRandomPointsInRaster(*getRaster(), maxInputPoints);
+      te::rst::PointSetIterator<double> pit = te::rst::PointSetIterator<double>::begin(getRaster(), randomPoints);
+      te::rst::PointSetIterator<double> pitend = te::rst::PointSetIterator<double>::end(getRaster(), randomPoints);
+      while (pit != pitend)
+      {
+        getValue(pit.getColumn(), pit.getRow(), pixel);
+        ++pit;
+
+        if(pixel.real() == no_data)
+          continue;
+
+        if (pixel.real() < min_real)
+          min_real = pixel.real();
+
+        if (pixel.imag() < min_img)
+          min_img = pixel.imag();
+      }
+      
+      return std::complex<double>(min_real, min_img);
+    }
+  }
+  
+// read all pixels in range
   for (unsigned r = rs; r <= rf; r++)
     for (unsigned c = cs; c <= cf; c++)
     {
       getValue(c, r, pixel);
+
+      if(pixel.real() == no_data)
+        continue;
 
       if (pixel.real() < min_real)
         min_real = pixel.real();
@@ -106,24 +136,52 @@ std::complex<double> te::rst::Band::getMinValue(unsigned int rs, unsigned int cs
   return std::complex<double>(min_real, min_img);
 }
 
-std::complex<double> te::rst::Band::getMaxValue(unsigned int rs, unsigned int cs, unsigned int rf, unsigned int cf) const
+std::complex<double> te::rst::Band::getMaxValue(bool readall, unsigned int rs, unsigned int cs, unsigned int rf, unsigned int cf) const
 {
-  if ((rf == cf) && (rf  == 0))
+  std::complex<double> pixel;
+  double max_img = std::numeric_limits<double>::min();
+  double max_real = std::numeric_limits<double>::min();
+  double no_data = getProperty()->m_noDataValue;
+
+  if ((rf == cf) && (rf == 0))
   {
     rf = getRaster()->getNumberOfRows() - 1;
-
     cf = getRaster()->getNumberOfColumns() - 1;
+
+// read up to 1000 pixels in random positions
+    const unsigned int maxInputPoints = 1000;
+    if (readall == false && (rf * cf) > maxInputPoints)
+    {
+      std::vector<te::gm::Point*> randomPoints = te::rst::GetRandomPointsInRaster(*getRaster(), maxInputPoints);
+      te::rst::PointSetIterator<double> pit = te::rst::PointSetIterator<double>::begin(getRaster(), randomPoints);
+      te::rst::PointSetIterator<double> pitend = te::rst::PointSetIterator<double>::end(getRaster(), randomPoints);
+      while (pit != pitend)
+      {
+        getValue(pit.getColumn(), pit.getRow(), pixel);
+        ++pit;
+
+        if(pixel.real() == no_data)
+          continue;
+
+        if (pixel.real() > max_real)
+          max_real = pixel.real();
+
+        if (pixel.imag() > max_img)
+          max_img = pixel.imag();
+      }
+      
+      return std::complex<double>(max_real, max_img);
+    }
   }
-
-  std::complex<double> pixel;
-
-  double max_img = -1.0 * std::numeric_limits<double>::max();
-  double max_real = -1.0 * std::numeric_limits<double>::max();
-
+  
+// read all pixels in range
   for (unsigned r = rs; r <= rf; r++)
     for (unsigned c = cs; c <= cf; c++)
     {
       getValue(c, r, pixel);
+
+      if(pixel.real() == no_data)
+        continue;
 
       if (pixel.real() > max_real)
         max_real = pixel.real();

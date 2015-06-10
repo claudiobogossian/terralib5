@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -32,6 +32,7 @@
 #include "TiePointLocatorDialog.h"
 #include "TiePointLocatorWidget.h"
 #include "MosaicWizardPage.h"
+#include "TiePointLocatorParametersWidget.h"
 #include "ui_MosaicWizardPageForm.h"
 
 // Qt
@@ -60,6 +61,13 @@ te::qt::widgets::MosaicWizardPage::MosaicWizardPage(QWidget* parent)
   m_ui->m_noDataValueLineEdit->setValidator(new QDoubleValidator(this));
 
   m_ui->m_tpmAcquireToolButton->setIcon(QIcon::fromTheme("wand"));
+
+  //add tie point locator parameters widget
+  QGridLayout* layout = new QGridLayout(m_ui->m_tplpWidget);
+  m_tiePointParameters = new te::qt::widgets::TiePointLocatorParametersWidget(m_ui->m_tplpWidget);
+  m_tiePointParameters->setMosaicLayout();
+  layout->setContentsMargins(0, 0, 0, 0);
+  layout->addWidget(m_tiePointParameters);
 
   //connects
   connect(m_ui->m_tpmAcquireToolButton, SIGNAL(clicked()), this, SLOT(onTiePointsAcquiredToolButtonClicked()));
@@ -225,7 +233,7 @@ te::rp::SequenceMosaic::InputParameters te::qt::widgets::MosaicWizardPage::getIn
   algoInputParams.m_enableMultiThread = true;
   algoInputParams.m_enableProgress = true;
 
-  // The parameters used by the tie-points locator when processing each rasters pair was leaved untouched to use the default.
+  algoInputParams.m_locatorParams = m_tiePointParameters->getTiePointInputParameters();
 
   return algoInputParams;
 }
@@ -293,23 +301,24 @@ void te::qt::widgets::MosaicWizardPage::fillMosaicTypes()
   //interpolator types
   m_ui->m_interpolatorTypeComboBox->clear();
 
-  m_ui->m_interpolatorTypeComboBox->addItem(tr("Nearest Neighbor"), te::rst::Interpolator::NearestNeighbor);
-  m_ui->m_interpolatorTypeComboBox->addItem(tr("Bilinear"), te::rst::Interpolator::Bilinear);
-  m_ui->m_interpolatorTypeComboBox->addItem(tr("Bicubic"), te::rst::Interpolator::Bicubic);
+  m_ui->m_interpolatorTypeComboBox->addItem(tr("Nearest Neighbor"), te::rst::NearestNeighbor);
+  m_ui->m_interpolatorTypeComboBox->addItem(tr("Bilinear"), te::rst::Bilinear);
+  m_ui->m_interpolatorTypeComboBox->addItem(tr("Bicubic"), te::rst::Bicubic);
 
   //blender types
   m_ui->m_blenderTypeComboBox->clear();
 
   m_ui->m_blenderTypeComboBox->addItem(tr("No blending performed"), te::rp::Blender::NoBlendMethod);
   m_ui->m_blenderTypeComboBox->addItem(tr("Euclidean distance method"), te::rp::Blender::EuclideanDistanceMethod);
-  m_ui->m_blenderTypeComboBox->addItem(tr("Invalid blending method"), te::rp::Blender::InvalidBlendMethod);
+  m_ui->m_blenderTypeComboBox->addItem(tr("Sum method"), te::rp::Blender::SumMethod);
+  //m_ui->m_blenderTypeComboBox->addItem(tr("Invalid blending method"), te::rp::Blender::InvalidBlendMethod);
 
   //tie points link types
   m_ui->m_tpmLinkTypeComboBox->clear();
 
   m_ui->m_tpmLinkTypeComboBox->addItem(tr("Linking adjacent raster pairs"), te::rp::TiePointsMosaic::InputParameters::AdjacentRastersLinkingTiePointsT);
   m_ui->m_tpmLinkTypeComboBox->addItem(tr("Linking any raster to the first raster"), te::rp::TiePointsMosaic::InputParameters::FirstRasterLinkingTiePointsT);
-  m_ui->m_tpmLinkTypeComboBox->addItem(tr("Invalid linking type"), te::rp::TiePointsMosaic::InputParameters::InvalidTiePointsT);
+  //m_ui->m_tpmLinkTypeComboBox->addItem(tr("Invalid linking type"), te::rp::TiePointsMosaic::InputParameters::InvalidTiePointsT);
 
   m_ui->m_tpmLinkTypeComboBox->setEnabled(false);
 

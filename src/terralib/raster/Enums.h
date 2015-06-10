@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -85,6 +85,17 @@ namespace te
       CMYKPalInt,                 //!< CMYK indexed palette interpretation.
       HSLPalInt                   //!< HSL indexed palette interpretation. 
     };
+    
+    /*!
+      \brief Allowed interpolation methods.
+    */
+    enum InterpolationMethod
+    {
+      UndefInterpMethod = 0,  //!< Undefined interpolation method.
+      NearestNeighbor = 1,    //!< Near neighborhood interpolation method.
+      Bilinear = 2,           //!< Bilinear interpolation method.
+      Bicubic = 3             //!< Bicubic interpolation method.
+    };    
 
   } // end namespace rst
 }   // end namespace te

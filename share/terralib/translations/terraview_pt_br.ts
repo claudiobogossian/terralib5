@@ -5,7 +5,7 @@
     <name>AboutDialog</name>
     <message>
         <location filename="../../../src/terraview/AboutDialog.cpp" line="57"/>
-        <source>&lt;p&gt;Copyright &amp;copy; 2010-2013 INPE&lt;BR&gt;</source>
+        <source>&lt;p&gt;Copyright &amp;copy; 2010-2015 INPE&lt;BR&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -75,7 +75,7 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>TerraView</name>
     <message>
-        <location filename="../../../src/terraview/TerraView.cpp" line="76"/>
+        <location filename="../../../src/terraview/TerraView.cpp" line="77"/>
         <source>&amp;About...</source>
         <translation type="unfinished"></translation>
     </message>

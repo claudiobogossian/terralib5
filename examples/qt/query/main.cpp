@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -94,7 +94,7 @@ int main(int argc, char** argv)
       tv.show();
 
       //show result
-      tv.setDataSet(dataSet);
+      tv.setDataSet(dataSet, ds->getEncoding());
 
       dlg.exec();
 

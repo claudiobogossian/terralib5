@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -280,6 +280,17 @@ namespace te
           \note Just call this method if you know that the attribute value can be converted to a 32-bit unsigned integer.
         */
         virtual boost::uint32_t getAttrAsUInt32(std::size_t i) const;
+
+        /*!
+          \brief It returns the attribute value in the case of an element node with valid attributes.
+
+          \param name The attribute name.
+
+          \return The attribute value in the case of an element node with valid attributes.
+
+          \note Just call this method if you know that the attribute value can be converted to a 32-bit unsigned integer.
+        */
+        virtual boost::uint32_t getAttrAsUInt32(const std::string name) const;
 
         /*!
           \brief It returns the attribute value in the case of an element node with valid attributes.

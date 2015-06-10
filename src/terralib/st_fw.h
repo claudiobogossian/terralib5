@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -66,7 +66,6 @@ namespace te
     class TimeSeries;
     class TimeSeriesDataSet;
     class TimeSeriesDataSetInfo;
-    class TimeSeriesDataSetType;
     class TimeSeriesIterator;
     class TimeSeriesObservation;
 
@@ -74,7 +73,6 @@ namespace te
     class Trajectory;
     class TrajectoryDataSet;
     class TrajectoryDataSetInfo;
-    class TrajectoryDataSetType;
     class TrajectoryIterator;
     struct TrajectoryPatch;
 

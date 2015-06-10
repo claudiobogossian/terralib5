@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -114,7 +114,7 @@ std::list<te::map::AbstractLayerPtr> te::qt::plugins::rp::AbstractAction::getLay
   te::qt::af::Project* prj = te::qt::af::ApplicationController::getInstance().getProject();
 
   if(prj)
-    list = prj->getAllLayers(false);
+    list = prj->getSingleLayers(false);
 
   return list;
 }

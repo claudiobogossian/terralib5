@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -42,6 +42,8 @@ namespace te
 
       \brief An adapter class to allow concurrent access to raster data by multiple threads.
       
+      \ingroup rst
+      
       \note One unique RasterSynchronizer must be instantiated on the main process. That RasterSynchronizer is used by each thread to instantiate multiple SynchronizedRaster instances.
       
       \note More efficient access can be achieved by following the bands internal blocking scheme.
@@ -56,6 +58,8 @@ namespace te
           \param sync The raster synchronizer instance.
 
           \param maxMemPercentUsed The maximum free memory percentual to use valid range: [1:100].
+          
+          \note For the case where using the write raster access policy: The use of multiple cached blocks can cause deadlocks if multiple threads are locking blocks needed by other threads, use it with caution!
         */
         SynchronizedRaster( RasterSynchronizer& sync, const unsigned char maxMemPercentUsed );
 
@@ -65,6 +69,8 @@ namespace te
           \param sync The raster synchronizer instance.
 
           \param maxNumberOfCacheBlocks The maximum number of cache blocks.
+          
+          \note For the case where using the write raster access policy: The use of multiple cached blocks can cause deadlocks if multiple threads are locking blocks needed by other threads, use it with caution!
         */
         SynchronizedRaster( const unsigned int maxNumberOfCacheBlocks, RasterSynchronizer& sync );
 
@@ -104,6 +110,23 @@ namespace te
         };
 
         te::dt::AbstractData* clone() const;
+        
+        bool createMultiResolution( const unsigned int levels, const InterpolationMethod interpMethod )
+        {
+          return false;
+        };
+        
+        bool removeMultiResolution() { return false; }; 
+        
+        unsigned int getMultiResLevelsCount() const
+        {
+          return 0;        
+        }
+        
+        Raster* getMultiResLevel( const unsigned int level ) const
+        {
+          return 0;         
+        }
 
       protected:
 

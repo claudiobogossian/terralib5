@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -80,7 +80,7 @@ te::vp::BufferQuery::BufferQuery()
 te::vp::BufferQuery::~BufferQuery()
 {}
 
-bool te::vp::BufferQuery::run()
+bool te::vp::BufferQuery::run() throw(te::common::Exception)
 {
   te::da::Fields* fields = new te::da::Fields;
 
@@ -174,7 +174,9 @@ bool te::vp::BufferQuery::run()
     prepareDataSet(outDSType.get(), dsQuery.get(), outDSet.get(), m_distance);
   }
 
-  return save(outDSet,outDSType);
+  te::vp::Save(m_outDsrc.get(), outDSet.get(), outDSType.get());
+  return true;
+
 }
 
 std::vector<std::vector<te::gm::Geometry*> > te::vp::BufferQuery::dissolveQuery(te::da::DataSet* dsQuery,
@@ -322,7 +324,10 @@ void te::vp::BufferQuery::prepareDataSet(te::da::DataSetType* dataSetType,
             }
             break;
           default:
+#ifdef TERRALIB_LOGGER_ENABLED
             te::common::Logger::logDebug("vp", "Buffer - Type not found.");
+#endif //TERRALIB_LOGGER_ENABLED
+            break;
         }
       }
     }

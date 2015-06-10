@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -39,7 +39,8 @@ te::map::AbstractLayer::AbstractLayer(AbstractLayer* parent)
     m_selected(0),
     m_style(0),
     m_grouping(0),
-    m_chart(0)
+    m_chart(0),
+    m_compositionMode(te::map::SourceOver)
 {
 }
 
@@ -52,7 +53,8 @@ te::map::AbstractLayer::AbstractLayer(const std::string& id, AbstractLayer* pare
     m_selected(0),
     m_style(0),
     m_grouping(0),
-    m_chart(0)
+    m_chart(0),
+    m_compositionMode(te::map::SourceOver)
 {
 }
 
@@ -68,7 +70,8 @@ te::map::AbstractLayer::AbstractLayer(const std::string& id,
     m_selected(0),
     m_style(0),
     m_grouping(0),
-    m_chart(0)
+    m_chart(0),
+    m_compositionMode(te::map::SourceOver)
 {
 }
 
@@ -316,4 +319,18 @@ const std::string& te::map::AbstractLayer::getGeomPropertyName() const
 void te::map::AbstractLayer::setGeomPropertytName(const std::string& name)
 {
   m_geomPropertyName = name;
+}
+
+te::map::CompositionMode te::map::AbstractLayer::getCompositionMode() const
+{
+  return m_compositionMode;
+}
+
+void te::map::AbstractLayer::setCompositionMode(te::map::CompositionMode mode)
+{
+  m_compositionMode = mode;
+}
+
+void te::map::AbstractLayer::setOutOfDate()
+{
 }

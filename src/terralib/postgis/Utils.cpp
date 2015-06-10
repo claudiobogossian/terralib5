@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -101,7 +101,7 @@ namespace te
     {
       s += tname;
 
-      if(p->size() > 0)
+      if(p->size() > 0 && p->size() < 10485760)
       {
         s += "(";
         s += te::common::Convert2String(static_cast<unsigned int>(p->size()));
@@ -270,7 +270,16 @@ bool te::pgis::SetColumnDef(std::string& s, const te::dt::Property* p, bool just
         if(sp->getSubType() == te::dt::FIXED_STRING)
           SetColumnDef(s, Globals::sm_fixedcharTypeName, sp, justDataType);
         else if(sp->getSubType() == te::dt::VAR_STRING)
-          SetColumnDef(s, Globals::sm_varcharTypeName, sp, justDataType);
+        {
+          if(sp->size() > 10485760)
+          {
+            SetColumnDef(s, Globals::sm_stringTypeName, sp, justDataType);
+          }
+          else
+          {
+            SetColumnDef(s, Globals::sm_varcharTypeName, sp, justDataType);
+          }
+        }
         else
           SetColumnDef(s, Globals::sm_stringTypeName, sp, justDataType);
       }
@@ -658,8 +667,10 @@ const char* te::pgis::GetPGEncoding(te::common::CharEncoding encoding)
 te::common::CharEncoding te::pgis::GetTeEncoding(const char* const encoding)
 {
   for(std::size_t i = 0; i < sg_n_encoding; ++i)
-    if(sg_pg_encoding[i] == encoding)
+  {
+    if(strcmp(sg_pg_encoding[i],encoding) == 0)
       return (te::common::CharEncoding)i;
+  }
 
   return te::common::UNKNOWN_CHAR_ENCODING;
 }

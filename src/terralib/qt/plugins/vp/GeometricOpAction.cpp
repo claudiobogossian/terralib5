@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -41,6 +41,7 @@ te::qt::plugins::vp::GeometricOpAction::GeometricOpAction(QMenu* menu)
   : te::qt::plugins::vp::AbstractAction(menu)
 {
   createAction(tr("Geometric Operation...").toStdString(), "vector-processing-geometric-op");
+  m_action->setObjectName("Processing.Vector Processing.Gometric Operation");
 }
 
 te::qt::plugins::vp::GeometricOpAction::~GeometricOpAction()

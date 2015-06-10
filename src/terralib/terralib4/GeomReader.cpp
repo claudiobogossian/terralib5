@@ -1,4 +1,4 @@
-/*  Copyright (C) 2009-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -26,6 +26,7 @@
 // Terralib 5
 #include "../common/Translator.h"
 #include "../geometry/Curve.h"
+#include "../geometry/Envelope.h"
 #include "../geometry/LinearRing.h"
 #include "../geometry/LineString.h"
 #include "../geometry/Point.h"
@@ -33,6 +34,7 @@
 #include "../geometry/MultiPolygon.h"
 #include "../geometry/MultilineString.h"
 #include "../geometry/MultiPoint.h"
+#include "../geometry/Utils.h"
 #include "Config.h"
 #include "Exception.h"
 #include "GeomReader.h"
@@ -154,20 +156,15 @@ std::auto_ptr<te::gm::MultiPoint> terralib4::GeomReader::getMultiPoint(const TeP
 
 std::auto_ptr<te::gm::Polygon> terralib4::GeomReader::getPolygon(const TeCell& cell)
 {
-  std::auto_ptr<te::gm::Polygon> geom(new te::gm::Polygon(cell.size(), te::gm::PolygonType, cell.srid()));
-
   TeBox cellBox = cell.box();
 
-  te::gm::LinearRing* s = new te::gm::LinearRing(5, te::gm::LineStringType);
-  s->setPoint(0, cellBox.x1(), cellBox.y1());
-  s->setPoint(1, cellBox.x2()-cellBox.x1(), cellBox.y1());
-  s->setPoint(2, cellBox.x2(), cellBox.y2());
-  s->setPoint(3, cellBox.x1(), cellBox.y2()-cellBox.y1());
-  s->setPoint(4, cellBox.x1(), cellBox.y1());
+  te::gm::Envelope* env = new te::gm::Envelope(cellBox.x1(), cellBox.y1(), cellBox.x2(), cellBox.y2());
 
-  geom->add(s);
+  std::auto_ptr<te::gm::Geometry> geom(te::gm::GetGeomFromEnvelope(env, 0));
 
-  return geom;
+  std::auto_ptr<te::gm::Polygon> finalGeom(dynamic_cast<te::gm::Polygon*>(geom.release()));
+
+  return finalGeom;
 }
 
 std::auto_ptr<te::gm::Geometry> terralib4::GeomReader::getGeometry(const TeGeometry& geom)
@@ -196,7 +193,7 @@ std::auto_ptr<te::gm::Geometry> terralib4::GeomReader::getGeometry(const TeGeome
 
     case TeCELLS:
     {
-      TePolygon p = dynamic_cast<const TePolygon&>(geom);
+      TeCell p = dynamic_cast<const TeCell&>(geom);
       return std::auto_ptr<te::gm::Geometry>(getPolygon(p).release());
     }
 

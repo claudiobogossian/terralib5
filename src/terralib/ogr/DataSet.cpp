@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2010 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -334,7 +334,7 @@ bool te::ogr::DataSet::isNull(std::size_t i) const
 const unsigned char* te::ogr::DataSet::getWKB() const
 {
   // The OGR library supports only one geometry field
-  OGRGeometry* geom = m_currentFeature->GetGeometryRef();
+  OGRGeometry* geom = m_currentFeature->GetGeometryRef()->clone();
 
   if(geom == 0)
     return 0;
@@ -364,6 +364,8 @@ const unsigned char* te::ogr::DataSet::getWKB() const
     newcode += 1000;
     memcpy(m_wkbArray + 1, &newcode, sizeof(unsigned int));
   }
+
+  OGRGeometryFactory::destroyGeometry(geom);
 
   return (const unsigned char*)m_wkbArray;
 }

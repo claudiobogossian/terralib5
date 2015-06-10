@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -26,18 +26,11 @@
 #ifndef __TERRALIB_EXAMPLES_SAM_INTERNAL_SAMEXAMPLES_H
 #define __TERRALIB_EXAMPLES_SAM_INTERNAL_SAMEXAMPLES_H
 
-//#define TE_EXAMPLE_USE_GDAL
-#define TE_EXAMPLE_USE_OGR
-//#define TE_EXAMPLE_USE_PGIS
-//#define TE_EXAMPLE_USE_T3
-//#define TE_EXAMPLE_USE_SQLITE
-//#define TE_EXAMPLE_USE_QTSQL
-//#define TE_EXAMPLE_USE_SPRING
-
-#define TE_DATA_LOCALE "."
-
 /*! \brief This example shows how to index a set of points using the R-tree spatial access method. */
 void IndexPointUsingRTree();
+
+/*! \brief This example shows how to index a set of points using the K-d tree spatial access method. */
+void IndexPointUsingKdTree();
 
 #endif  // __TERRALIB_EXAMPLES_SAM_INTERNAL_SAMEXAMPLES_H
 

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -29,6 +29,7 @@
 #define __TERRALIB_VP_INTERNAL_BUFFER_QUERY_H
 
 //Terralib
+#include "../common/Exception.h"
 #include "../datatype/Property.h"
 #include "../geometry/Geometry.h"
 #include "../memory/DataSet.h"
@@ -59,7 +60,7 @@ namespace te
       
       ~BufferQuery();
       
-      bool run();
+      bool run() throw(te::common::Exception);
 
     protected:
 

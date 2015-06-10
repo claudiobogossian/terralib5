@@ -1,4 +1,4 @@
-/*  Copyright (C) 2010-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -58,10 +58,10 @@ te::qt::widgets::ScatterChart::ScatterChart(Scatter* data) :
 
   //Adjusting the symbol
   m_scatterStyle =  new te::qt::widgets::ScatterStyle();
-  if(m_scatter->sizeX() > 100 || m_scatter->sizeY() > 100)
+  if(dataSize() > 500)
   {
     QwtSymbol* newSymbol =  m_scatterStyle->getSymbol(); 
-    newSymbol->setSize(QSize( 1, 1 ));
+    newSymbol->setSize(QSize(2 , 2));
     setSymbol(newSymbol);
   }
   else
@@ -170,10 +170,12 @@ void te::qt::widgets::ScatterChart::highlight(const te::da::ObjectIdSet* oids)
     for(itObjSet = oids->begin(); itObjSet != oids->end(); ++itObjSet)
     {
       std::pair<double, double> point = m_scatter->find((*itObjSet));
-      highlightedPoints.push_back(QPointF(point.first, point.second));
+      if(this->boundingRect().contains(point.first, point.second))
+        highlightedPoints.push_back(QPointF(point.first, point.second));
     }
 
   m_selection->setSamples(highlightedPoints);
+
   m_selection->attach(plot());
   plot()->replot();
 }

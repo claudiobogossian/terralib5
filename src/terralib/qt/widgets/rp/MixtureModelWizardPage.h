@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -21,6 +21,45 @@
   \file terralib/qt/widgets/rp/MixtureModelWizardPage.h
 
   \brief This file defines a class for a MixtureModel Wizard page.
+
+  /brief JSON File Structure used to save the mix model components information
+
+  {"MixModel_Components":
+    [
+      {"Component":
+        {"id" : ****},
+        {"name" : "******"},
+        {"coordGrid":
+          [
+            {"x" : ******},
+            {"y" : ******}
+          ]
+        }
+        {"coordGeo":
+          [
+            {"x" : ******},
+            {"y" : ******}
+          ]
+        }
+        {"values":
+          [
+            {"pixelValue" : *****},
+            {"pixelValue" : *****},
+            {"pixelValue" : *****}
+          ]
+        }
+      }
+    ]
+  }
+
+  struct MixModelComponent
+  {
+    std::string m_id;
+    std::string m_name;
+    te::gm::Coord2D m_coordGrid;
+    te::gm::Coord2D m_coordGeo;
+    std::vector<double> m_values;
+  };
 */
 
 #ifndef __TERRALIB_QT_WIDGETS_RP_INTERNAL_MIXTUREMODELWIZARDPAGE_H
@@ -103,7 +142,15 @@ namespace te
 
           te::rp::MixtureModel::OutputParameters getOutputParams();
 
+          void saveMixtureModelComponents(std::string fileName);
+
+          void loadMixtureModelComponents(std::string fileName);
+
         public slots:
+
+          void onSaveToolButtonClicked();
+
+          void onLoadToolButtonClicked();
 
           void onMapDisplayExtentChanged();
 

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -79,6 +79,8 @@ namespace te
 
           ~ClassifierWizardPage();
 
+          bool isComplete() const;
+
         public:
 
           /*!
@@ -95,6 +97,8 @@ namespace te
           te::rp::Classifier::InputParameters getInputParams();
 
           te::rp::Classifier::OutputParameters getOutputParams();
+
+          te::cl::ROISet* getROISet();
 
         protected:
 

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -447,7 +447,6 @@ std::auto_ptr<te::gm::Envelope> te::stmem::Transactor::getExtent(const std::stri
 std::auto_ptr<te::gm::Envelope> te::stmem::Transactor::getExtent(const std::string& datasetName,
                                                 std::size_t propertyPos)
 {
-   te::da::DataSetType* type = getType(datasetName);
    DataSet* ds = getData(datasetName);
    if(propertyPos != ds->getGeomPropIdx())
      throw Exception("Not supported by ST In-Memory driver!");

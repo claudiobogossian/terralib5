@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -257,9 +257,9 @@ void te::map::AbstractLayerRenderer::drawLayerGeometries(AbstractLayer* layer,
         // There isn't a Filter expression. Gets the data using only extent spatial restriction...
         dataset = layer->getData(geomPropertyName, &bbox, te::gm::INTERSECTS);
       }
-      catch(std::exception& /*e*/)
+      catch(Exception& e)
       {
-        continue; // TODO: deal the exceptions!
+        throw e;
       }
     }
     else
@@ -289,7 +289,7 @@ void te::map::AbstractLayerRenderer::drawLayerGeometries(AbstractLayer* layer,
       }
       catch(std::exception& /*e*/)
       {
-        continue; // TODO: deal the exceptions!
+        throw Exception((boost::format(TE_TR("Could not retrieve the data set from the layer %1%.")) % layer->getTitle()).str());
       }
     }
 
@@ -764,12 +764,17 @@ void te::map::AbstractLayerRenderer::buildChart(Chart* chart, te::da::DataSet* d
       te::gm::Polygon* p = dynamic_cast<te::gm::Polygon*>(geom);
       worldCoord.reset(p->getCentroidCoord());
     }
+    break;
 
     case te::gm::MultiPolygonType:
     {
       te::gm::MultiPolygon* mp = dynamic_cast<te::gm::MultiPolygon*>(geom);
       worldCoord.reset(mp->getCentroidCoord());
     }
+    break;
+
+    default:
+      break;
   }
 
   // Case not find, use the center of the MBR

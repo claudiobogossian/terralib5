@@ -14,7 +14,16 @@
    <string>Layer Search</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_7">
-   <property name="margin">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
     <number>0</number>
    </property>
    <item row="0" column="0">
@@ -58,7 +67,7 @@
           </column>
           <column>
            <property name="text">
-            <string>Id</string>
+            <string>Folder</string>
            </property>
           </column>
           <column>

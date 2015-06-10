@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -48,6 +48,10 @@
 
 // Qt
 #include <QMessageBox>
+
+// Boost
+#include <boost/timer.hpp>
+#include <boost/format.hpp>
 
 
 te::qt::widgets::SegmenterWizard::SegmenterWizard(QWidget* parent)
@@ -162,8 +166,8 @@ bool te::qt::widgets::SegmenterWizard::execute()
   algoInputParams.m_enableThreadedProcessing = m_segmenterAdvOptPage->getForm()->m_enableThreadedProcessingcheckBox->isChecked();
   algoInputParams.m_maxSegThreads = m_segmenterAdvOptPage->getForm()->m_maximumThreadsNumberLineEdit->text().toUInt();
   algoInputParams.m_enableBlockProcessing = m_segmenterAdvOptPage->getForm()->m_enableBlockProcessingcheckBox->isChecked();
-  algoInputParams.m_enableBlockMerging = m_segmenterAdvOptPage->getForm()->m_enableBlockMergingCheckBox->isChecked();
   algoInputParams.m_maxBlockSize = m_segmenterAdvOptPage->getForm()->m_maximumBlockSizeLineEdit->text().toUInt();
+  algoInputParams.m_blocksOverlapPercent = m_segmenterAdvOptPage->getForm()->m_blockOverlapPercentSpinBox->value();
 
   te::rp::Segmenter::OutputParameters algoOutputParams;
   algoOutputParams.m_rType = m_rasterInfoPage->getWidget()->getType();
@@ -179,6 +183,8 @@ bool te::qt::widgets::SegmenterWizard::execute()
   {
     if(algorithmInstance.initialize(algoInputParams))
     {
+      boost::timer timer;
+      
       if(algorithmInstance.execute(algoOutputParams))
       {
         algoOutputParams.reset();
@@ -186,8 +192,8 @@ bool te::qt::widgets::SegmenterWizard::execute()
         //set output layer
         m_outputLayer = te::qt::widgets::createLayer(m_rasterInfoPage->getWidget()->getType(), 
                                                      m_rasterInfoPage->getWidget()->getInfo());
-
-        QMessageBox::information(this, tr("Segmenter"), tr("Segmenter ended sucessfully"));
+        std::string elapsedTimeStr = boost::str( boost::format( "%.2f" ) % timer.elapsed() );
+        QMessageBox::information(this, tr("Segmenter"), tr("Segmenter ended sucessfully") + ( " (" + elapsedTimeStr + " " ).c_str() + tr("seconds") + ")" );
       }
       else
       {

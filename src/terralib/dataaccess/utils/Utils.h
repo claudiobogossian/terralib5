@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -131,6 +131,15 @@ namespace te
     TEDATAACCESSEXPORT void GetOIDPropertyNames(const DataSetType* type, std::vector<std::string>& pnames);
 
     /*
+      \brief It returns the name of the base dataset of a linked dataset
+             and how many of it's properties are a part of the objectId
+
+      \param type   A pointer to a valid data set type. Do not pass null.
+      \param pnames The pair that will be filled with the dataset name and the number of properties.
+    */
+    TEDATAACCESSEXPORT void GetOIDDatasetProps(const DataSetType* type, std::pair<std::string, int>& dsProps);
+
+    /*
       \brief It returns the property positions used to generate the object ids.
 
       This method first looks for the primary key properties defined on data set type.
@@ -140,6 +149,19 @@ namespace te
       \param pnames The vector that will be filled with the property names.
     */
     TEDATAACCESSEXPORT void GetOIDPropertyPos(const DataSetType* type, std::vector<std::size_t>& ppos);
+
+    /*
+      \function getBasePkey
+      \brief Function used to acquire the string that represents the objectId of the base dataset.
+
+      \param oid The objectId as returned from the dataset;
+      \param dsProps A pair that indicates the name of the base dataset and how many key properties it's got
+
+      \note Will return the whole objectId as a string unless the dataset of interest is based on a linked layer,
+          otherwise it returns a string that represents the objectId of the base Dataset.
+      \note It will not take ownership of the given objectId pointer
+    */
+    TEDATAACCESSEXPORT std::string getBasePkey(te::da::ObjectId* oid, std::pair<std::string, int>& dsProps);
 
     /*
       \brief It generates the set of object ids for every element of the given dataset.
@@ -159,7 +181,7 @@ namespace te
 
       \param dataset A pointer to a valid data set.
       \param names   A non empty vector of property names to be used to identify the elements.
-     
+
       \return The object id set generated from the given dataset.
 
       \exception Exception It throws an exception if a property was not found in data set
@@ -171,7 +193,7 @@ namespace te
 
       \param dataset A pointer to a valid data set.
       \param names   A non empty vector of property names to be used to identify the element.
-     
+
       \return The object id generated for the current element of the given dataset.
     */
     TEDATAACCESSEXPORT ObjectId* GenerateOID(DataSet* dataset, const std::vector<std::string>& names);
@@ -308,6 +330,54 @@ namespace te
       \return If the name is valid.
     */
     TEDATAACCESSEXPORT bool IsValidName(const std::string& name, std::string& invalidChar);
+
+    /*!
+      \brief It checks if the datasettype has a linked table.
+
+      \param type The Datasettype.
+
+      \return True if has linked table.
+    */
+    TEDATAACCESSEXPORT bool HasLinkedTable(te::da::DataSetType* type);
+
+    /*!
+      \brief It gets the summarized value.
+
+      \param values The input values.
+      \param summary The summary mode. It can be: "MIN", "MAX", "SUM", "AVERAGE", "MEDIAN", "STDDEV" or "VARIANCE"
+
+      \return The summarized value.
+    */
+    TEDATAACCESSEXPORT double GetSummarizedValue(std::vector<double>& values, const std::string& summary);
+
+    /*!
+      \brief It gets the summarized value.
+
+      \param values The input values.
+      \param summary The summary mode. It can be: "MIN" or "MAX"
+
+      \return The summarized value.
+    */
+    TEDATAACCESSEXPORT std::string GetSummarizedValue(const std::vector<std::string>& values, const std::string& sumary);
+
+    /*!
+      \brief It gets the round value.
+
+      \param value The input value.
+
+      \return The rounded value.
+    */
+    TEDATAACCESSEXPORT double Round(const double& value, const size_t& precision);
+
+    /*!
+      \brief It gets the value as double.
+
+      \param ds The input dataset.
+      \param pos The column position.
+
+      \return The double value. Default value is 0.
+    */
+    TEDATAACCESSEXPORT double GetValueAsDouble(const te::da::DataSet* ds, const size_t pos);
 
   } // end namespace da
 }   // end namespace te

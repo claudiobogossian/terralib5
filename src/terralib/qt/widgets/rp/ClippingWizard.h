@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -67,7 +67,7 @@ namespace te
 
           void setLayer(te::map::AbstractLayerPtr layer);
 
-          te::map::AbstractLayerPtr getOutputLayer();
+          std::vector<te::map::AbstractLayerPtr> getOutputLayers();
 
         protected:
 
@@ -87,7 +87,7 @@ namespace te
           std::auto_ptr<te::qt::widgets::LayerSearchWizardPage> m_layerSearchPage;
           std::auto_ptr<te::qt::widgets::RasterInfoWizardPage> m_rasterInfoPage;
 
-          te::map::AbstractLayerPtr m_outputLayer;
+          std::vector<te::map::AbstractLayerPtr> m_outputLayer;
       };
     }   // end namespace widgets
   }     // end namespace qt

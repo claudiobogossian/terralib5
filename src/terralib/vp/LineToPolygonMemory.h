@@ -1,0 +1,79 @@
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
+
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License,
+    or (at your option) any later version.
+
+    TerraLib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
+ */
+
+/*!
+  \file LineToPolygonMemory.h
+   
+  \brief 
+ 
+  \ingroup vp
+*/
+
+#ifndef __TERRALIB_VP_INTERNAL_LINETOPOLYGON_MEMORY_H
+#define __TERRALIB_VP_INTERNAL_LINETOPOLYGON_MEMORY_H
+
+//Terralib
+#include "../common/Exception.h"
+#include "../geometry/Geometry.h"
+#include "../geometry/GeometryCollection.h"
+#include "../geometry/LineString.h"
+#include "../geometry/MultiPolygon.h"
+#include "../geometry/Polygon.h"
+
+#include "LineToPolygonOp.h"
+#include "Config.h"
+#include "Exception.h"
+
+// STL
+#include <memory>
+#include <vector>
+
+namespace te
+{
+  namespace vp
+  {
+    class TEVPEXPORT LineToPolygonMemory : public LineToPolygonOp
+    {
+
+    public:
+
+      LineToPolygonMemory();
+
+      ~LineToPolygonMemory();
+
+      bool run() throw(te::common::Exception);
+
+    private:
+
+      std::auto_ptr<te::gm::MultiPolygon> line2Polygon(te::gm::Geometry* geom);
+
+      void getPolygons(te::gm::Geometry* geom, std::vector<te::gm::Polygon*>& polygons);
+
+      void getPolygons(te::gm::GeometryCollection* gc, std::vector<te::gm::Polygon*>& polygons);
+
+      void getPolygons(te::gm::LineString* l, std::vector<te::gm::Polygon*>& polygons);
+
+      void getPolygons(te::gm::Polygon* p, std::vector<te::gm::Polygon*>& polygons);
+
+    }; // end class
+  } // end namespace vp
+}   // end namespace te
+
+#endif  // __TERRALIB_VP_INTERNAL_LINETOPOLYGON_MEMORY_H
+

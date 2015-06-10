@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -65,7 +65,8 @@ te::qt::widgets::RasterNavigatorWidget::RasterNavigatorWidget(QWidget* parent, Q
   : QWidget(parent, f),
     m_ui(new Ui::RasterNavigatorWidgetForm),
     m_symbolizer(0),
-    m_tool(0), m_panTool(0), m_zoomTool(0)
+    m_tool(0), m_panTool(0), m_zoomTool(0),
+    m_draftOriginal(0)
 {
   m_ui->setupUi(this);
 
@@ -115,6 +116,9 @@ te::qt::widgets::RasterNavigatorWidget::RasterNavigatorWidget(QWidget* parent, Q
   connect(m_ui->m_greenToolButton, SIGNAL(clicked(bool)), this, SLOT(onGreenToolClicked(bool)));
   connect(m_ui->m_blueToolButton, SIGNAL(clicked(bool)), this, SLOT(onBlueToolClicked(bool)));
 
+  connect(m_ui->m_verticalSlider, SIGNAL(valueChanged(int)), this, SLOT(onVSliderChanged(int)));
+  connect(m_ui->m_horizontalSlider, SIGNAL(valueChanged(int)), this, SLOT(onHSliderChanged(int)));
+
   connect(coordTracking, SIGNAL(coordTracked(QPointF&)), this, SLOT(onCoordTrackedChanged(QPointF&)));
   connect(m_mapDisplay, SIGNAL(extentChanged()), this, SLOT(onMapDisplayExtentChanged()));
 
@@ -139,7 +143,10 @@ te::qt::widgets::RasterNavigatorWidget::RasterNavigatorWidget(QWidget* parent, Q
   m_ui->m_greenToolButton->setIcon(QIcon::fromTheme("channel-green"));
   m_ui->m_blueToolButton->setIcon(QIcon::fromTheme("channel-blue"));
 
+  //hide preview options
   m_ui->m_previewToolButton->setVisible(false);
+  m_ui->m_horizontalSlider->setVisible(false);
+  m_ui->m_verticalSlider->setVisible(false);
 
   onExtraDisplaysToggled(false);
 }
@@ -152,6 +159,7 @@ te::qt::widgets::RasterNavigatorWidget::~RasterNavigatorWidget()
   delete m_tool;
   delete m_panTool;
   delete m_zoomTool;
+  delete m_draftOriginal;
 }
 
 void te::qt::widgets::RasterNavigatorWidget::set(te::map::AbstractLayerPtr layer, bool setFullScaleBox)
@@ -305,8 +313,26 @@ void te::qt::widgets::RasterNavigatorWidget::drawRaster(te::rst::Raster* rst, te
   // Draw raster
   te::map::DrawRaster(rst, &canvas, env, m_mapDisplay->getSRID(), envRst, rst->getSRID(), cs);
 
+  if(m_draftOriginal)
+    delete m_draftOriginal;
+
+  m_draftOriginal = new QPixmap(*m_mapDisplay->getDraftPixmap());
+
   if(hasToDelete)
     delete style;
+
+  //update slide bars
+
+  disconnect(m_ui->m_verticalSlider, SIGNAL(valueChanged(int)), this, SLOT(onVSliderChanged(int)));
+  disconnect(m_ui->m_horizontalSlider, SIGNAL(valueChanged(int)), this, SLOT(onHSliderChanged(int)));
+
+  m_ui->m_horizontalSlider->setMaximum(m_mapDisplay->getWidth() - 1);
+  m_ui->m_horizontalSlider->setValue(m_mapDisplay->getWidth() - 1);
+  m_ui->m_verticalSlider->setMaximum(m_mapDisplay->getHeight() - 1);
+  m_ui->m_verticalSlider->setValue(m_mapDisplay->getHeight() - 1);
+
+  connect(m_ui->m_verticalSlider, SIGNAL(valueChanged(int)), this, SLOT(onVSliderChanged(int)));
+  connect(m_ui->m_horizontalSlider, SIGNAL(valueChanged(int)), this, SLOT(onHSliderChanged(int)));
 
   m_mapDisplay->repaint();
 }
@@ -322,6 +348,9 @@ void te::qt::widgets::RasterNavigatorWidget::showAsPreview(bool asPreview, bool 
   m_ui->m_toolsFrame->setVisible(!asPreview);
   m_ui->m_label->setVisible(!asPreview);
   m_ui->m_previewToolButton->setVisible(asPreview);
+
+  m_ui->m_horizontalSlider->setVisible(asPreview);
+  m_ui->m_verticalSlider->setVisible(asPreview);
 
   hideExtraDisplaysTool(asPreview);
 
@@ -404,22 +433,22 @@ void te::qt::widgets::RasterNavigatorWidget::onCoordTrackedChanged(QPointF& coor
     m_zoomInMapDisplay->drawCursorPosition((double) coordinate.rx(), (double)coordinate.ry());
     
 
-    //draw zoom in rectangle
-    te::gm::Envelope ext = m_zoomInMapDisplay->getCurrentExtent();
+    ////draw zoom in rectangle
+    //te::gm::Envelope ext = m_zoomInMapDisplay->getCurrentExtent();
 
-    m_mapDisplay->getDraftPixmap()->fill(QColor(0, 0, 0, 0));
-    const te::gm::Envelope& mapExt = m_mapDisplay->getExtent();
-    te::qt::widgets::Canvas canvasInstance(m_mapDisplay->getDraftPixmap());
+    //m_mapDisplay->getDraftPixmap()->fill(QColor(0, 0, 0, 0));
+    //const te::gm::Envelope& mapExt = m_mapDisplay->getExtent();
+    //te::qt::widgets::Canvas canvasInstance(m_mapDisplay->getDraftPixmap());
 
-    canvasInstance.setWindow(mapExt.m_llx, mapExt.m_lly, mapExt.m_urx, mapExt.m_ury);
-    canvasInstance.setPolygonContourColor(te::color::RGBAColor(255,0,0,TE_OPAQUE));
-    canvasInstance.setPolygonFillColor(te::color::RGBAColor(0,0,0,TE_TRANSPARENT));
+    //canvasInstance.setWindow(mapExt.m_llx, mapExt.m_lly, mapExt.m_urx, mapExt.m_ury);
+    //canvasInstance.setPolygonContourColor(te::color::RGBAColor(255,0,0,TE_OPAQUE));
+    //canvasInstance.setPolygonFillColor(te::color::RGBAColor(0,0,0,TE_TRANSPARENT));
 
-    te::gm::Geometry* geom = te::gm::GetGeomFromEnvelope(&ext, m_layer->getSRID());
-    canvasInstance.draw(geom);
-    delete geom;
+    //te::gm::Geometry* geom = te::gm::GetGeomFromEnvelope(&ext, m_layer->getSRID());
+    //canvasInstance.draw(geom);
+    //delete geom;
 
-    m_mapDisplay->repaint();
+    //m_mapDisplay->repaint();
   }
 
   //get input raster
@@ -484,6 +513,9 @@ void te::qt::widgets::RasterNavigatorWidget::onMapDisplayExtentChanged()
   //emit signal
   if(e.isValid())
     emit mapDisplayExtentChanged();
+
+  delete m_draftOriginal;
+  m_draftOriginal = 0;
 }
 
 void te::qt::widgets::RasterNavigatorWidget::onZoomAreaToggled(bool checked)
@@ -706,6 +738,16 @@ void te::qt::widgets::RasterNavigatorWidget::onPreviewClicked()
   emit previewClicked();
 }
 
+void te::qt::widgets::RasterNavigatorWidget::onVSliderChanged(int value)
+{
+  drawOverlay();
+}
+
+void te::qt::widgets::RasterNavigatorWidget::onHSliderChanged(int value)
+{
+  drawOverlay();
+}
+
 void te::qt::widgets::RasterNavigatorWidget::setCurrentTool(te::qt::widgets::AbstractTool* tool)
 {
   delete m_tool;
@@ -851,4 +893,22 @@ void te::qt::widgets::RasterNavigatorWidget::setComboBoxText(QComboBox* cb, std:
     cb->addItem(name);
     cb->setCurrentIndex(cb->count() - 1);
   }
+}
+
+void te::qt::widgets::RasterNavigatorWidget::drawOverlay()
+{
+  if(!m_draftOriginal)
+    return;
+
+  QImage img = m_draftOriginal->toImage();
+
+  QPixmap* draft = m_mapDisplay->getDraftPixmap();
+
+  draft->fill(Qt::transparent);
+
+  QPainter p(draft);
+  p.drawImage(0, 0, img, 0, 0, m_ui->m_horizontalSlider->value(), m_ui->m_verticalSlider->value());
+  p.end();
+
+  m_mapDisplay->repaint();
 }

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -41,7 +41,8 @@ te::map::Chart::Chart(ChartType type, const std::vector<std::string>& properties
     m_barWidth(16),
     m_isVisible(true),
     m_maxValue(0.0),
-    m_avoidConflicts(true)
+    m_avoidConflicts(true),
+    m_summary("AVERAGE")
 {
   assert(!properties.empty());
 
@@ -63,7 +64,8 @@ te::map::Chart::Chart(ChartType type, const std::vector<std::string>& properties
     m_barWidth(16),
     m_isVisible(true),
     m_maxValue(0.0),
-    m_avoidConflicts(true)
+    m_avoidConflicts(true),
+    m_summary("AVERAGE")
 {
   assert(!properties.empty());
   assert(properties.size() == colors.size());
@@ -81,6 +83,16 @@ te::map::ChartType te::map::Chart::getType() const
 const std::vector<std::string>& te::map::Chart::getProperties() const
 {
   return m_properties;
+}
+
+const std::vector<size_t>& te::map::Chart::getPropertiesPos() const
+{
+  return m_propertiesPos;
+}
+
+void te::map::Chart::setPropertiesPos(const std::vector<size_t>& proPos)
+{
+  m_propertiesPos = proPos;
 }
 
 const te::color::RGBAColor& te::map::Chart::getColor(std::size_t i) const
@@ -180,4 +192,14 @@ void te::map::Chart::setAvoidConflicts(bool on)
 bool te::map::Chart::getAvoidConflicts() const
 {
   return m_avoidConflicts;
+}
+
+std::string te::map::Chart::getSummary() const
+{
+  return m_summary;
+}
+
+void te::map::Chart::setSummary(const std::string& summary)
+{
+  m_summary = summary;
 }

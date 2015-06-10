@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -501,7 +501,7 @@ namespace te
 
           \note The caller will take the ownership of the returned pointer.
         */
-        virtual Raster* trim(const te::gm::Envelope* env, const std::map<std::string, std::string>& rinfo);
+        virtual Raster* trim(const te::gm::Envelope* env, const std::map<std::string, std::string>& rinfo) const;
 
         /*!
           \brief Resample a subset of the raster, given a box.
@@ -613,6 +613,8 @@ namespace te
           \param g           A reference to a vector of geometries.
                              Will be filled with geometries found in band.
           \param b           The band index to vectorize.
+          
+          \note The caller of this method must take the ownership of the returned geometries and must delete them when necessary.
         */
         virtual void vectorize(std::vector<te::gm::Geometry*>& g, std::size_t b, unsigned int mp = 0);
 
@@ -625,6 +627,41 @@ namespace te
           \param b           The band index to rasterize.
         */
         virtual void rasterize(std::vector<te::gm::Geometry*> g, std::vector<double> vp, std::size_t b = 0);
+        
+        /*!
+          \brief Create a sub-sampled multi-resolution pyramid.
+
+          \param levels The number of pyramid levels to generate.
+          \param interpMethod The used interpolation method.
+          
+          \return true if OK, false if errors ocurred.
+        */        
+        virtual bool createMultiResolution( const unsigned int levels, const InterpolationMethod interpMethod ) = 0;
+        
+        /*!
+          \brief Remove/Destroy a sub-sampled multi-resolution pyramid, if there is one.
+          
+          \return true if OK, false if errors ocurred.
+        */        
+        virtual bool removeMultiResolution() = 0;        
+        
+        /*!
+          \brief Returns the current number of multi-resolution pyramid levels.
+
+          \return Returns the current number of multi-resolution pyramid levels.
+        */        
+        virtual unsigned int getMultiResLevelsCount() const = 0;        
+        
+        /*!
+          \brief Returns the required level of a multi-resolution pyramid or NULL if that level does not exists.
+          
+          \param level Level of a multi-resolution pyramid.
+
+          \return Returns the required level of a multi-resolution pyramid or NULL if that level does not exists.
+          
+          \note The caller must take the ownership of the returned pointer.
+        */        
+        virtual Raster* getMultiResLevel( const unsigned int level ) const = 0;         
 
       protected:
 

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -29,6 +29,10 @@
 // cppUnit
 #include <cppunit/extensions/HelperMacros.h>
 
+// Terralib
+#include <terralib/rp.h>
+
+
 /*!
   \class TsContrast
 
@@ -46,8 +50,16 @@ class TsContrast : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST( LinearContrast );
 
   CPPUNIT_TEST( HistogramEqualizationContrast );
+  
+  CPPUNIT_TEST( SquareContrast );
+  
+  CPPUNIT_TEST( SquareRootContrast );
+  
+  CPPUNIT_TEST( LogContrast );
 
   CPPUNIT_TEST( SetMeanAndStdContrast );
+  
+  CPPUNIT_TEST( DecorrelationEnhancementTContrast );
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -55,7 +67,11 @@ class TsContrast : public CPPUNIT_NS::TestFixture
 
     void LinearContrast();
     void HistogramEqualizationContrast();
+    void SquareContrast();
+    void SquareRootContrast();
+    void LogContrast();
     void SetMeanAndStdContrast();
+    void DecorrelationEnhancementTContrast();
 };
 
 #endif  // __TERRALIB_UNITTEST_DATAACCESS_INTERNAL_H

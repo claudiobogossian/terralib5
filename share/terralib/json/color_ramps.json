@@ -2,7 +2,7 @@
 	[
 		{ "name" : "Basic", "schemes" :
 			[
-				{ "name" : "Vermelho", "values" : 
+				{ "name" : "Red", "values" : 
 					[
 						{ "red" : 254, "green" : 225, "blue" : 225 },
 						{ "red" : 255, "green" : 195, "blue" : 195 },
@@ -19,7 +19,7 @@
 						{ "red" : 99, "green" : 0, "blue" : 0 }
 					] 
 				},
-				{ "name" : "Laranja", "values" : 
+				{ "name" : "Orange", "values" : 
 					[
 						{ "red" : 254, "green" : 238, "blue" : 225 },
 						{ "red" : 254, "green" : 221, "blue" : 195 },
@@ -36,7 +36,7 @@
 						{ "red" : 134, "green" : 60, "blue" : 0 }
 					] 
 				},
-				{ "name" : "Amarelo", "values" : 
+				{ "name" : "Yellow", "values" : 
 					[
 						{ "red" : 254, "green" : 250, "blue" : 225 },
 						{ "red" : 254, "green" : 245, "blue" : 195 },
@@ -53,7 +53,7 @@
 						{ "red" : 134, "green" : 113, "blue" : 0 }
 					] 
 				},
-				{ "name" : "Verde claro", "values" : 
+				{ "name" : "Light Green", "values" : 
 					[
 						{ "red" : 246, "green" : 254, "blue" : 225 },
 						{ "red" : 237, "green" : 254, "blue" : 195 },
@@ -70,7 +70,7 @@
 						{ "red" : 96, "green" : 134, "blue" : 0 }
 					] 
 				},
-				{ "name" : "Verde", "values" : 
+				{ "name" : "Green", "values" : 
 					[
 						{ "red" : 230, "green" : 254, "blue" : 230 },
 						{ "red" : 205, "green" : 254, "blue" : 205 },
@@ -87,7 +87,7 @@
 						{ "red" : 1, "green" : 84, "blue" : 0 }
 					] 
 				},
-				{ "name" : "Verde azulado", "values" : 
+				{ "name" : "Bluish Green", "values" : 
 					[
 						{ "red" : 225, "green" : 254, "blue" : 245 },
 						{ "red" : 195, "green" : 254, "blue" : 236 },
@@ -104,7 +104,7 @@
 						{ "red" : 0, "green" : 134, "blue" : 93 }
 					] 
 				},
-				{ "name" : "Ciano", "values" : 
+				{ "name" : "Cyan", "values" : 
 					[
 						{ "red" : 225, "green" : 254, "blue" : 254 },
 						{ "red" : 195, "green" : 254, "blue" : 254 },
@@ -121,7 +121,7 @@
 						{ "red" : 0, "green" : 154, "blue" : 154 }
 					] 
 				},
-				{ "name" : "Azul", "values" : 
+				{ "name" : "Blue", "values" : 
 					[
 						{ "red" : 225, "green" : 225, "blue" : 254 },
 						{ "red" : 195, "green" : 196, "blue" : 254 },
@@ -138,7 +138,7 @@
 						{ "red" : 0, "green" : 2, "blue" : 134 }
 					] 
 				},
-				{ "name" : "Violeta", "values" : 
+				{ "name" : "Violet", "values" : 
 					[
 						{ "red" : 250, "green" : 215, "blue" : 254 },
 						{ "red" : 248, "green" : 195, "blue" : 254 },
@@ -172,7 +172,7 @@
 						{ "red" : 134, "green" : 0, "blue" : 98 }
 					] 
 				},
-				{ "name" : "Cinza", "values" : 
+				{ "name" : "Gray", "values" : 
 					[
 						{ "red" : 245, "green" : 245, "blue" : 245 },
 						{ "red" : 225, "green" : 225, "blue" : 225 },
@@ -193,7 +193,7 @@
 		},
 		{ "name" : "Composition", "schemes" :
 			[
-				{ "name" : "Azul-Verde", "values" : 
+				{ "name" : "Blue-Green", "values" : 
 					[
 						{ "red" : 23, "green" : 0, "blue" : 220 },
 						{ "red" : 20, "green" : 0, "blue" : 254 },
@@ -210,7 +210,7 @@
 						{ "red" : 2, "green" : 220, "blue" : 0 }
 					] 
 				},
-				{ "name" : "Cinza-Vermelho", "values" : 
+				{ "name" : "Gray-Red", "values" : 
 					[
 						{ "red" : 85, "green" : 85, "blue" : 85 },
 						{ "red" : 115, "green" : 115, "blue" : 115 },
@@ -227,7 +227,7 @@
 						{ "red" : 219, "green" : 0, "blue" : 0 }
 					] 
 				},
-				{ "name" : "Azul-Laranja", "values" : 
+				{ "name" : "Blue-Orange", "values" : 
 					[
 						{ "red" : 23, "green" : 0, "blue" : 220 },
 						{ "red" : 20, "green" : 0, "blue" : 254 },
@@ -244,7 +244,7 @@
 						{ "red" : 219, "green" : 98, "blue" : 0 }
 					] 
 				},
-				{ "name" : "Violeta-Laranja", "values" : 
+				{ "name" : "Violet-Orange", "values" : 
 					[
 						{ "red" : 197, "green" : 0, "blue" : 219 },
 						{ "red" : 229, "green" : 0, "blue" : 254 }, 
@@ -261,7 +261,7 @@
 						{ "red" : 219, "green" : 98, "blue" : 0 }
 					] 
 				},
-				{ "name" : "Verde-Vermelho", "values" : 
+				{ "name" : "Green-Red", "values" : 
 					[
 						{ "red" : 2, "green" : 220, "blue" : 0 },
 						{ "red" : 0, "green" : 255, "blue" : 0 },
@@ -278,7 +278,7 @@
 						{ "red" : 219, "green" : 0, "blue" : 0 }
 					] 
 				},
-				{ "name" : "Verde-Laranja", "values" : 
+				{ "name" : "Green-Orange", "values" : 
 					[
 						{ "red" : 2, "green" : 220, "blue" : 0 },
 						{ "red" : 0, "green" : 255, "blue" : 0 },
@@ -295,7 +295,7 @@
 						{ "red" : 219, "green" : 98, "blue" : 0 }
 					] 
 				},
-				{ "name" : "Marrom-Verde", "values" : 
+				{ "name" : "Brown-Green", "values" : 
 					[
 						{ "red" : 90, "green" : 52, "blue" : 45 },
 						{ "red" : 115, "green" : 73, "blue" : 58 },
@@ -312,7 +312,7 @@
 						{ "red" : 45, "green" : 90, "blue" : 82 }
 					] 
 				},
-				{ "name" : "Violeta-Verde", "values" : 
+				{ "name" : "Violet-Green", "values" : 
 					[
 						{ "red" : 57, "green" : 0, "blue" : 115 },
 						{ "red" : 80, "green" : 23, "blue" : 138 },
@@ -329,7 +329,7 @@
 						{ "red" : 15, "green" : 90, "blue" : 0 }
 					] 
 				},
-				{ "name" : "Ciano-Vermelho", "values" : 
+				{ "name" : "Cyan-Red", "values" : 
 					[
 						{ "red" : 0, "green" : 219, "blue" : 219 },
 						{ "red" : 0, "green" : 255, "blue" : 255 },
@@ -346,7 +346,7 @@
 						{ "red" : 219, "green" : 0, "blue" : 0 }
 					] 
 				},
-				{ "name" : "Ciano-Laranja", "values" : 
+				{ "name" : "Cyan-Orange", "values" : 
 					[
 						{ "red" : 0, "green" : 219, "blue" : 219 },
 						{ "red" : 0, "green" : 255, "blue" : 255 },
@@ -363,7 +363,7 @@
 						{ "red" : 219, "green" : 98, "blue" : 0 }
 					] 
 				},
-				{ "name" : "Amarelo-Laranja-Vermelho", "values" : 
+				{ "name" : "Yellow-Orange-Red", "values" : 
 					[
 						{ "red" : 247, "green" : 254, "blue" : 0 },
 						{ "red" : 254, "green" : 245, "blue" : 0 },
@@ -380,7 +380,7 @@
 						{ "red" : 255, "green" : 0, "blue" : 0 }
 					] 
 				},
-				{ "name" : "Beige-Marron", "values" : 
+				{ "name" : "Beige-Brown", "values" : 
 					[
 						{ "red" : 255, "green" : 234, "blue" : 190 },
 						{ "red" : 244, "green" : 218, "blue" : 170 },
@@ -397,7 +397,7 @@
 						{ "red" : 90, "green" : 45, "blue" : 45 }
 					] 
 				},
-				{ "name" : "Vermelho-Violeta-Azul", "values" : 
+				{ "name" : "Red-Violet-Blue", "values" : 
 					[
 						{ "red" : 220, "green" : 0, "blue" : 0 },
 						{ "red" : 239, "green" : 0, "blue" : 0 },
@@ -414,7 +414,7 @@
 						{ "red" : 0, "green" : 0, "blue" : 255 }
 					] 
 				},
-				{ "name" : "Verde-Ciano-Azul", "values" : 
+				{ "name" : "Green-Cyan-Blue", "values" : 
 					[
 						{ "red" : 0, "green" : 254, "blue" : 58 },
 						{ "red" : 0, "green" : 254, "blue" : 88 },
@@ -431,7 +431,7 @@
 						{ "red" : 0, "green" : 0, "blue" : 255 }
 					] 
 				},
-				{ "name" : "Amarelo-Verde-Azul", "values" : 
+				{ "name" : "Yellow-Green-Blue", "values" : 
 					[
 						{ "red" : 255, "green" : 255, "blue" : 0 },
 						{ "red" : 229, "green" : 254, "blue" : 0 },
@@ -452,7 +452,7 @@
 		},
 		{ "name" : "Classification", "schemes" :
 			[
-				{ "name" : "Altimetria úmida", "values" : 
+				{ "name" : "Altimetry Wet", "values" : 
 					[
 						{ "red" : 175, "green" : 254, "blue" : 230 },
 						{ "red" : 151, "green" : 254, "blue" : 150 },
@@ -469,7 +469,7 @@
 						{ "red" : 255, "green" : 255, "blue" : 255 }
 					] 
 				},
-				{ "name" : "Altimetria seca", "values" : 
+				{ "name" : "Altimetry Dry", "values" : 
 					[
 						{ "red" : 175, "green" : 230, "blue" : 219 },
 						{ "red" : 228, "green" : 254, "blue" : 180 },
@@ -486,7 +486,7 @@
 						{ "red" : 255, "green" : 255, "blue" : 255 }
 					] 
 				},
-				{ "name" : "Batimetria", "values" : 
+				{ "name" : "Bathymetry", "values" : 
 					[
 						{ "red" : 210, "green" : 254, "blue" : 218 },
 						{ "red" : 198, "green" : 254, "blue" : 231 },
@@ -520,7 +520,24 @@
 						{ "red" : 254, "green" : 0, "blue" : 155 }
 					] 
 				},
-				{ "name" : "Precipitação", "values" : 
+				{ "name" : "Kernel", "values" : 
+					[
+						{ "red" : 0, "green" : 255, "blue" : 255 },
+						{ "red" : 0, "green" : 255, "blue" : 176 },
+						{ "red" : 0, "green" : 255, "blue" : 83 },
+						{ "red" : 0, "green" : 255, "blue" : 0 },
+						{ "red" : 83, "green" : 255, "blue" : 0 },
+						{ "red" : 176, "green" : 255, "blue" : 0 },
+						{ "red" : 255, "green" : 255, "blue" : 0 },
+						{ "red" : 255, "green" : 214, "blue" : 0 },
+						{ "red" : 255, "green" : 170, "blue" : 0 },
+						{ "red" : 255, "green" : 128, "blue" : 0 },
+						{ "red" : 255, "green" : 85, "blue" : 0 },
+						{ "red" : 255, "green" : 42, "blue" : 0 },
+						{ "red" : 255, "green" : 0, "blue" : 0 }
+					]
+				},
+				{ "name" : "Precipitation", "values" : 
 					[
 						{ "red" : 205, "green" : 133, "blue" : 63 },
 						{ "red" : 255, "green" : 165, "blue" : 0 },
@@ -537,7 +554,7 @@
 						{ "red" : 31, "green" : 71, "blue" : 145 }
 					] 
 				},
-				{ "name" : "Temperatura", "values" : 
+				{ "name" : "Temperature", "values" : 
 					[
 						{ "red" : 255, "green" : 255, "blue" : 255 },
 						{ "red" : 240, "green" : 100, "blue" : 150 },
@@ -554,7 +571,7 @@
 						{ "red" : 179, "green" : 0, "blue" : 0 }
 					] 
 				},
-				{ "name" : "Uso da Terra 1", "values" : 
+				{ "name" : "Land Use 1", "values" : 
 					[
 						{ "red" : 255, "green" : 236, "blue" : 139 },
 						{ "red" : 254, "green" : 200, "blue" : 124 },
@@ -571,7 +588,7 @@
 						{ "red" : 1, "green" : 100, "blue" : 0 }
 					] 
 				},
-				{ "name" : "Uso da Terra 2", "values" : 
+				{ "name" : "Land Use 2", "values" : 
 					[
 						{ "red" : 205, "green" : 51, "blue" : 51 },
 						{ "red" : 238, "green" : 154, "blue" : 73 },

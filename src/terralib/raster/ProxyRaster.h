@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -37,6 +37,8 @@ namespace te
       \class ProxyRaster
 
       \brief A proxy class for bands of several rasters over the same region.
+      
+      \ingroup rst
     */
     class TERASTEREXPORT ProxyRaster: public Raster
     {
@@ -84,6 +86,23 @@ namespace te
         Band& operator[](std::size_t i);
 
         te::dt::AbstractData* clone() const { return 0; }
+        
+        bool createMultiResolution( const unsigned int levels, const InterpolationMethod interpMethod )
+        {
+          return false;
+        };
+        
+        bool removeMultiResolution() { return false; }; 
+        
+        unsigned int getMultiResLevelsCount() const
+        {
+          return 0;        
+        }
+        
+        Raster* getMultiResLevel( const unsigned int level ) const
+        {
+          return 0;         
+        }        
 
       protected:
 

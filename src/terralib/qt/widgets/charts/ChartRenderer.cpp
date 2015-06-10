@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../../../dataaccess/dataset/DataSet.h"
+#include "../../../dataaccess/utils/Utils.h"
 #include "../../../maptools/Chart.h"
 #include "../Utils.h"
 #include "ChartRenderer.h"
@@ -72,6 +73,31 @@ te::color::RGBAColor** te::qt::widgets::ChartRenderer::render(const te::map::Cha
   return rgba;
 }
 
+te::color::RGBAColor** te::qt::widgets::ChartRenderer::render(const te::map::Chart* chart, const std::map<std::string, double>& chartValue, std::size_t& width)
+{
+  assert(chart);
+
+  QImage* result = 0;
+
+  switch(chart->getType())
+  {
+    case te::map::Pie:
+      result = drawPies(chart, chartValue, width);
+    break;
+
+    case te::map::Bar:
+      result = drawBars(chart, chartValue, width);
+    break;
+  }
+
+  // Converts QImage to te::color::RGBAColor**
+  te::color::RGBAColor** rgba = te::qt::widgets::GetImage(result);
+
+  delete result;
+
+  return rgba;
+}
+
 void te::qt::widgets::ChartRenderer::setup(QImage* img)
 {
   m_painter.begin(img);
@@ -96,6 +122,58 @@ QImage* te::qt::widgets::ChartRenderer::drawPies(const te::map::Chart* chart, co
 
   std::vector<double> values;
   getValues(chart, dataset, values);
+
+  if(values.empty())
+    return img;
+
+  double sum = computeSum(values);
+
+  int lastAngle = 0;
+
+  // Draw each pie slice
+  for(std::size_t i = 0; i < values.size(); ++i)
+  {
+    int currentAngle = static_cast<int>((values[i] * 5760) / sum);
+
+    // Test: Try shadow to help the chart svisualization
+    QColor shadowColor = Convert2Qt(chart->getColor(i));
+    shadowColor.setAlpha(128);
+    //QColor shadowColor = QColorQColor(128, 128, 128, 128);
+    QPen shadowPen(shadowColor);
+    shadowPen.setWidth(2);
+    m_painter.setPen(shadowPen);
+    m_painter.drawPie(img->rect(), lastAngle, currentAngle);
+
+    // Configs a new color for this slice
+    m_painter.setPen(m_pen);
+    m_painter.setBrush(Convert2Qt(chart->getColor(i)));
+
+    m_painter.drawPie(img->rect(), lastAngle, currentAngle);
+
+    lastAngle += currentAngle;
+  }
+
+  end();
+
+  return img;
+}
+
+QImage* te::qt::widgets::ChartRenderer::drawPies(const te::map::Chart* chart, const std::map<std::string, double>& chartValue, std::size_t& width)
+{
+  // Creates the image that will represent the chart
+  QImage* img = new QImage(chart->getWidth(), chart->getHeight(), QImage::Format_ARGB32_Premultiplied);
+  img->fill(Qt::transparent);
+
+  setup(img);
+
+  m_pen.setColor(Convert2Qt(chart->getContourColor()));
+  m_pen.setWidth(static_cast<int>(chart->getContourWidth()));
+
+  std::vector<double> values;
+  getValues(chart, chartValue, values);
+
+  if(values.empty())
+    return img;
 
   double sum = computeSum(values);
 
@@ -144,6 +222,71 @@ QImage* te::qt::widgets::ChartRenderer::drawBars(const te::map::Chart* chart, co
   std::vector<double> values;
   getValues(chart, dataset, values);
 
+  if(values.empty())
+    return img;
+
+  // Gets the previous computed max value
+  double maxValue = chart->getMaxValue();
+  assert(maxValue > 0.0);
+
+  int lastx = 0;
+
+  int shadowOffset = 2;
+
+  // Draw each bar
+  for(std::size_t i = 0; i < values.size(); ++i)
+  {
+    int barHeight = static_cast<int>((values[i] * chart->getHeight()) / maxValue);
+
+    // Test: Try shadow to help the chart svisualization
+    QRect shadowBar(lastx - shadowOffset, -shadowOffset, chart->getBarWidth() + shadowOffset, barHeight + shadowOffset);
+    QColor shadowColor = Convert2Qt(chart->getColor(i));
+    shadowColor.setAlpha(128);
+    m_painter.setBrush(shadowColor);
+    //m_painter.setBrush(QColor(128, 128, 128, 128));
+    m_painter.setPen(Qt::NoPen);
+    m_painter.drawRect(shadowBar);
+
+    // Current bar
+    QRect bar(lastx, 0, chart->getBarWidth(), barHeight);
+
+    // Configs a new color for this bar
+    m_painter.setPen(m_pen);
+    m_painter.setBrush(Convert2Qt(chart->getColor(i)));
+
+    m_painter.drawRect(bar);
+
+    lastx += chart->getBarWidth();
+  }
+
+  end();
+
+  // TODO: Need review! Draw the bar on right place! ... For while, return the mirrored image.
+  QImage* mirroed = new QImage(img->mirrored());
+
+  delete img;
+
+  return mirroed;
+}
+
+QImage* te::qt::widgets::ChartRenderer::drawBars(const te::map::Chart* chart, const std::map<std::string, double>& chartValue, std::size_t& width)
+{
+  // Creates the image that will represent the chart
+  QImage* img = new QImage(chart->getWidth(), chart->getHeight(), QImage::Format_ARGB32_Premultiplied);
+  img->fill(Qt::transparent);
+
+  setup(img);
+
+  m_pen.setColor(Convert2Qt(chart->getContourColor()));
+  m_pen.setWidth(static_cast<int>(chart->getContourWidth()));
+  m_painter.setPen(m_pen);
+
+  std::vector<double> values;
+  getValues(chart, chartValue, values);
+
+  if(values.empty())
+    return img;
+
   // Gets the previous computed max value
   double maxValue = chart->getMaxValue();
   assert(maxValue > 0.0);
@@ -190,14 +333,41 @@ QImage* te::qt::widgets::ChartRenderer::drawBars(const te::map::Chart* chart, co
 
 void te::qt::widgets::ChartRenderer::getValues(const te::map::Chart* chart, const te::da::DataSet* dataset, std::vector<double>& values)
 {
-  std::size_t precision = 5;
-
   const std::vector<std::string>& properties = chart->getProperties();
-  
+  size_t psize = properties.size();
+  size_t ppsize = chart->getPropertiesPos().size();
+  for(std::size_t i = 0; i < psize; ++i)
+  {
+    if(dataset->isNull(properties[i]))
+    {
+      values.clear();
+      break;
+    }
+
+    if(ppsize == psize)
+      values.push_back(te::da::GetValueAsDouble(dataset, chart->getPropertiesPos()[i]));
+    else
+    {
+      size_t pos = te::da::GetPropertyPos(dataset, properties[i]);
+      values.push_back(te::da::GetValueAsDouble(dataset, pos));
+    }
+  }
+}
+
+void te::qt::widgets::ChartRenderer::getValues(const te::map::Chart* chart, const std::map<std::string, double>& chartValue, std::vector<double>& values)
+{
+  std::map<std::string, double>::const_iterator it;
+  const std::vector<std::string>& properties = chart->getProperties(); 
   for(std::size_t i = 0; i < properties.size(); ++i)
   {
-    std::string value = dataset->getAsString(properties[i], precision);
-    values.push_back(boost::lexical_cast<double>(value));
+    it = chartValue.find(properties[i]);
+    if(it != chartValue.end())
+      values.push_back(it->second);
+    else
+    {
+      values.clear();
+      break;
+    }
   }
 }
 

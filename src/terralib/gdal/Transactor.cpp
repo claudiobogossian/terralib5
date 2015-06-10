@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -101,34 +101,66 @@ void te::gdal::Transactor::getDataSetNames(const boost::filesystem::path& path, 
 {  
   if (boost::filesystem::is_regular_file(path))
   {
-    DataSetUseCounter dsUseCounter( path.string(), DataSetsManager::MultipleAccessType );
+    std::string upcaseExtension = te::common::Convert2UCase( path.extension().string() );
+    if( upcaseExtension[ 0 ] == '.' ) upcaseExtension = upcaseExtension.substr( 1, upcaseExtension.size() - 1);
     
-    GDALDataset* gds = static_cast<GDALDataset*>(GDALOpen(path.string().c_str(), GA_ReadOnly));
-    if (!gds)
-      return;
+    std::pair< std::multimap< std::string, std::string >::const_iterator,
+      std::multimap< std::string, std::string >::const_iterator > extensionsRangeIts =
+      GetGDALDriversUCaseExt2DriversMap().equal_range( upcaseExtension );
     
-    char** subdatasets = gds->GetMetadata("SUBDATASETS");
-    if(subdatasets == 0)
+    if( extensionsRangeIts.first != extensionsRangeIts.second )
     {
-      dsnames.push_back(path.leaf().string());
-      GDALClose(gds);
-      return;
-    }
-    
-    for(char** i = subdatasets; *i != 0; ++i)
-    {
-      std::map<std::string, std::string> sdsmap;
-      
-      te::common::ExtractKVP(std::string(*i), sdsmap);
-      
-      if(sdsmap.begin()->first.find("_NAME") != std::string::npos)
+      bool subDatasetsSupport = false;
+      std::map< std::string, DriverMetadata >::const_iterator metaIt;
+      while( extensionsRangeIts.first != extensionsRangeIts.second )
       {
-        std::string fullName = sdsmap.begin()->second;
-        std::string subdsname = GetSubDataSetName(fullName, te::gdal::GetDriverName(path.string()));
-        dsnames.push_back(subdsname);
+        metaIt = GetGDALDriversMetadata().find( extensionsRangeIts.first->second );
+        
+        if( metaIt->second.m_subDatasetsSupport )
+        {
+          subDatasetsSupport = true;
+          break;
+        }
+        ++extensionsRangeIts.first;
+      }      
+      
+      if( subDatasetsSupport )
+      {
+        DataSetUseCounter dsUseCounter( path.string(), DataSetsManager::MultipleAccessType );
+        
+        GDALDataset* gds = static_cast<GDALDataset*>(GDALOpen(path.string().c_str(), GA_ReadOnly));
+        if (!gds)
+          return;
+        
+        char** subdatasets = gds->GetMetadata("SUBDATASETS");
+        if(subdatasets == 0)
+        {
+          dsnames.push_back(path.leaf().string());
+          GDALClose(gds);
+          return;
+        }
+        
+        for(char** i = subdatasets; *i != 0; ++i)
+        {
+          std::map<std::string, std::string> sdsmap;
+          
+          te::common::ExtractKVP(std::string(*i), sdsmap);
+          
+          if(sdsmap.begin()->first.find("_NAME") != std::string::npos)
+          {
+            std::string fullName = sdsmap.begin()->second;
+            std::string subdsname = GetSubDataSetName(fullName, te::gdal::GetDriverName(path.string()));
+            dsnames.push_back(subdsname);
+          }
+        }
+        GDALClose(gds);
+      }
+      else
+      {
+        dsnames.push_back(path.leaf().string());
+        return;
       }
     }
-    GDALClose(gds);
   }
   else 
   {
@@ -149,23 +181,7 @@ std::vector<std::string> te::gdal::Transactor::getDataSetNames()
 
 bool te::gdal::Transactor::hasDataSets(const boost::filesystem::path& path)
 {
-  if (boost::filesystem::is_regular_file(path))
-  {
-    DataSetUseCounter dsUseCounter( path.string(), DataSetsManager::MultipleAccessType );
-    
-    GDALDataset* gds = static_cast<GDALDataset*>(GDALOpen(path.string().c_str(), GA_ReadOnly));
-    if (!gds)
-      return false;
-    GDALClose(gds);
-    return true;
-  }
-  else 
-  {
-    for (boost::filesystem::directory_iterator it(path), itEnd; it != itEnd; ++it)
-      if (hasDataSets(*it))
-        return true;
-  }
-  return false;
+  return ( getNumberOfDataSets( path ) > 0 );
 }
   
 bool te::gdal::Transactor::hasDataSets()
@@ -175,31 +191,9 @@ bool te::gdal::Transactor::hasDataSets()
 
 size_t te::gdal::Transactor::getNumberOfDataSets(const boost::filesystem::path& path)
 {
-  size_t nds = 0;
-  if (boost::filesystem::is_regular_file(path))
-  {
-    DataSetUseCounter dsUseCounter( path.string(), DataSetsManager::MultipleAccessType );
-    
-    GDALDataset* gds = static_cast<GDALDataset*>(GDALOpen(path.string().c_str(), GA_ReadOnly));
-    if (!gds)
-      return 0;
-    char** subdatasets = gds->GetMetadata("SUBDATASETS");
-    if(subdatasets == 0)
-    {
-      GDALClose(gds);
-      return 1;
-    }
-    for(char** i = subdatasets; *i != 0; ++i, ++nds);
-    
-    GDALClose(gds);
-    return nds;
-  }
-  else 
-  {
-    for (boost::filesystem::directory_iterator it(path), itEnd; it != itEnd; ++it)
-      nds+= getNumberOfDataSets(*it);
-  }
-  return nds;
+  std::vector<std::string> dsnames;
+  getDataSetNames( path, dsnames );
+  return dsnames.size();
 }
 
 std::size_t te::gdal::Transactor::getNumberOfDataSets()
@@ -228,43 +222,78 @@ std::auto_ptr<te::da::DataSetType> te::gdal::Transactor::getDataSetType(const bo
     }
     else
     {
-      DataSetUseCounter dsUseCounter( GetParentDataSetName( path.string() ), DataSetsManager::MultipleAccessType );
+      std::string upcaseExtension = te::common::Convert2UCase( path.extension().string() );
+      if( upcaseExtension[ 0 ] == '.' ) upcaseExtension = upcaseExtension.substr( 1, upcaseExtension.size() - 1);
       
-      // it might be one of its sub datasets 
-      GDALDataset* gds = static_cast<GDALDataset*>(GDALOpen(path.string().c_str(), GA_ReadOnly));
-      if (!gds)
-        return std::auto_ptr<te::da::DataSetType>();
-      
-      char** subdatasets = gds->GetMetadata("SUBDATASETS");
-      if(subdatasets == 0)
-      {
-        GDALClose(gds);
-        return std::auto_ptr<te::da::DataSetType>(); // it has no subdatasets
-      }
-      
-      for(char** i = subdatasets; *i != 0; i=i+2)
-      {
-        std::string sds_name = std::string(*i);
-        std::string sds_desc = std::string(*(i+1));
+      std::pair< std::multimap< std::string, std::string >::const_iterator,
+        std::multimap< std::string, std::string >::const_iterator > extensionsRangeIts =
+        GetGDALDriversUCaseExt2DriversMap().equal_range( upcaseExtension );      
         
-        unsigned pos = sds_name.find("=");
-        std::string val = sds_name.substr(++pos);
-        if(GetSubDataSetName(val, te::gdal::GetDriverName(path.string())) == name)
+      if( extensionsRangeIts.first != extensionsRangeIts.second )
+      {        
+        bool subDatasetsSupport = false;
+        std::map< std::string, DriverMetadata >::const_iterator metaIt;
+        while( extensionsRangeIts.first != extensionsRangeIts.second )
         {
+          metaIt = GetGDALDriversMetadata().find( extensionsRangeIts.first->second );
+          
+          if( metaIt->second.m_subDatasetsSupport )
+          {
+            subDatasetsSupport = true;
+            break;
+          }
+          ++extensionsRangeIts.first;
+        }     
+        
+        if( subDatasetsSupport )
+        {
+          DataSetUseCounter dsUseCounter( GetParentDataSetName( path.string() ), DataSetsManager::MultipleAccessType );
+          
+          // it might be one of its sub datasets 
+          GDALDataset* gds = static_cast<GDALDataset*>(GDALOpen(path.string().c_str(), GA_ReadOnly));
+          if (!gds)
+            return std::auto_ptr<te::da::DataSetType>();
+          
+          char** subdatasets = gds->GetMetadata("SUBDATASETS");
+          if(subdatasets == 0)
+          {
+            GDALClose(gds);
+            return std::auto_ptr<te::da::DataSetType>(); // it has no subdatasets
+          }
+          
+          for(char** i = subdatasets; *i != 0; i=i+2)
+          {
+            std::string sds_name = std::string(*i);
+            std::string sds_desc = std::string(*(i+1));
+            
+            unsigned pos = sds_name.find("=");
+            std::string val = sds_name.substr(++pos);
+            if(GetSubDataSetName(val, te::gdal::GetDriverName(path.string())) == name)
+            {
+              GDALClose(gds);
+              
+              uri = val;
+              std::auto_ptr<te::da::DataSetType> dsty = getType(val);
+              dsty->setName(name);
+              
+              pos = sds_desc.find("=");
+              val = sds_desc.substr(++pos);
+              dsty->setTitle(val);
+              
+              return dsty;
+            }
+          }
           GDALClose(gds);
-          
-          uri = val;
-          std::auto_ptr<te::da::DataSetType> dsty = getType(val);
-          dsty->setName(name);
-          
-          pos = sds_desc.find("=");
-          val = sds_desc.substr(++pos);
-          dsty->setTitle(val);
-          
-          return dsty;
+        }
+        else
+        {
+          return std::auto_ptr<te::da::DataSetType>(); // it has no subdatasets
         }
       }
-      GDALClose(gds);
+      else
+      {
+        return std::auto_ptr<te::da::DataSetType>();
+      }
     }
   }
   else 

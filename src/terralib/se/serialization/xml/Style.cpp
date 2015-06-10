@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -25,8 +25,8 @@
 
 // TerraLib
 #include "../../../common/Translator.h"
+#include "../../../xml/AbstractWriter.h"
 #include "../../../xml/Reader.h"
-#include "../../../xml/Writer.h"
 #include "../../../se/CoverageStyle.h"
 #include "../../../se/FeatureTypeStyle.h"
 #include "../../Exception.h"
@@ -45,8 +45,8 @@
 te::se::Style* FeatureTypeStyleReader(te::xml::Reader& reader);
 te::se::Style* CoverageStyleReader(te::xml::Reader& reader);
 
-void FeatureTypeStyleWriter(const te::se::Style* style, te::xml::Writer& writer);
-void CoverageStyleWriter(const te::se::Style* layer, te::xml::Writer& writer);
+void FeatureTypeStyleWriter(const te::se::Style* style, te::xml::AbstractWriter& writer);
+void CoverageStyleWriter(const te::se::Style* layer, te::xml::AbstractWriter& writer);
 
 void te::se::serialize::Style::reg(const std::string& styleType, const StyleFnctSerializeType& fncts)
 {
@@ -67,7 +67,7 @@ te::se::Style* te::se::serialize::Style::read(te::xml::Reader& reader) const
   return it->second.first(reader);
 }
 
-void te::se::serialize::Style::write(const te::se::Style* style, te::xml::Writer& writer) const
+void te::se::serialize::Style::write(const te::se::Style* style, te::xml::AbstractWriter& writer) const
 {
   assert(style);
 
@@ -98,7 +98,7 @@ te::se::Style* FeatureTypeStyleReader(te::xml::Reader& reader)
   // Version
   if(reader.getNumberOfAttrs() > 0)
   {
-    std::string version = reader.getAttr(0);
+    std::string version = reader.getAttr("version");
     fts->setVersion(version);
   }
   
@@ -167,7 +167,7 @@ te::se::Style* CoverageStyleReader(te::xml::Reader& reader)
   // Version
   if(reader.getNumberOfAttrs() > 0)
   {
-    std::string version = reader.getAttr(0);
+    std::string version = reader.getAttr("version");
     cs->setVersion(version);
   }
   
@@ -229,7 +229,7 @@ te::se::Style* CoverageStyleReader(te::xml::Reader& reader)
   return cs.release();
 }
 
-void FeatureTypeStyleWriter(const te::se::Style* style, te::xml::Writer& writer)
+void FeatureTypeStyleWriter(const te::se::Style* style, te::xml::AbstractWriter& writer)
 {
   const te::se::FeatureTypeStyle* fts = dynamic_cast<const te::se::FeatureTypeStyle*>(style);
 
@@ -277,7 +277,7 @@ void FeatureTypeStyleWriter(const te::se::Style* style, te::xml::Writer& writer)
   writer.writeEndElement("se:FeatureTypeStyle");
 }
 
-void CoverageStyleWriter(const te::se::Style* style, te::xml::Writer& writer)
+void CoverageStyleWriter(const te::se::Style* style, te::xml::AbstractWriter& writer)
 {
   const te::se::CoverageStyle* cs = dynamic_cast<const te::se::CoverageStyle*>(style);
 

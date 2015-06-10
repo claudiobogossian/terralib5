@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "terralib_config.h"
 #include "../common/Exception.h"
 #include "../common/Translator.h"
 #include "../srs/Converter.h"
@@ -32,6 +33,7 @@
 #include "Exception.h"
 
 // STL
+#include <algorithm>
 #include <cassert>
 #include <cmath>
 #include <memory>

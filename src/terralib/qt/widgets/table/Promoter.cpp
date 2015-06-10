@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -168,7 +168,10 @@ void te::qt::widgets::Promoter::preProcessKeys(te::da::DataSet* dset, const std:
     std::string pkey;
 
     for(size_t aux=0; aux<pkeys.size(); aux++)
-      pkey += dset->getAsString(pkeys[aux]) + ";";
+    {
+      if(dset->isNull(pkeys[aux]) == false)
+        pkey += dset->getAsString(pkeys[aux]) + ";";
+    }
 
     m_PkeysRows[pkey] = i;
 

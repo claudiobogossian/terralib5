@@ -1,138 +1,58 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-
-
-
-
-
-  
-  
-  
-  
-  
-  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-
-
-
-
-
-  
-  
-  
-  
-  
+  <meta http-equiv="Content-Type"
+ content="text/html; charset=ISO-8859-1">
   <title>Histogram</title>
 </head>
-
-
 <body>
-
-
-
-
-
 <div style="text-align: center; font-family: Calibri Light;">
 <h3><strong></strong>Histogram</h3>
-
-
-
-
-
 <strong></strong></div>
-
-
-
-
-
 <font style="font-family: Calibri Light;" face="Calibri Light">A <b>Histogram</b>
 is a bar graph that shows how frequently data occur within certain
 ranges of intervals. The height of each bar gives the frequency in the
 respective interval.<br>
-
-
-
-
 <br>
-
-
-
-
-
-To generate a histogram based on a layer, it is necessary to define the attribute and the number of intervals (slices). <br>
-
-
-
-
+To generate a histogram based on a layer, it is necessary to define the
+attribute and the number of intervals (slices). <br>
 <br>
-
-
-
-
-
 It is accessible through:
 <br>
-
-
-
-
-
 <span style="font-weight: bold;"><br>
-
-
-
-
 &nbsp;&nbsp;&nbsp; Layer&nbsp; &gt; Histogram... &nbsp;<br>
-
-
-
-
 </span></font>
 <ol style="font-family: Calibri Light;">
-
-
-
-
-  <li><i>Property &nbsp;- </i>select the numerical attribute to generate the histogram.</li>
-
-
-
-
-  <li><i>Number of slices</i> - select the number of intervals (slices) if the attribute is a number.</li>
-
-
-
-
-  <li>Press <b>OK</b> to generate the histogram or <b>Cancel</b> to close the dialog.</li>
-
-  <li value="4"><i>Graphic Style</i> &nbsp;- used to change color, title, X and Y labels, font style, grid and so on through the <a href="../style/style.html">chart style</a> interface.</li>
-
+  <li><i>Property &nbsp;- </i>select the numerical attribute to
+generate the histogram.</li>
+  <li><i>Number of slices</i> - select the number of intervals (slices)
+if the attribute is a number.</li>
+  <li>Press <b>OK</b> to generate the histogram or <b>Cancel</b> to
+close the dialog.</li>
+  <li><font face="Calibri Light">A summary function can be chosen if
+the
+histogram is being generated based on a linked dataset, otherwise this
+option won't be visible.</font></li>
+  <li value="4"><i>Graphic Style</i> &nbsp;- used to change color,
+title, X and Y labels, font style, grid and so on through the <a
+ href="../style/style.html">chart style</a> interface.</li>
 </ol>
-
-
-
-
-
-
 <font style="font-family: Calibri Light;" face="Calibri Light">
-</font><span style="font-family: Calibri Light;">
-
-
-It is also possible to interact with the histogram plotter area
+</font><span style="font-family: Calibri Light;">It is also possible to
+interact with the histogram plotter area
 highlighting some data, zooming in or out. See the details on how to do
-that </span><a style="font-family: Calibri Light;" href="../display/display.html">here</a><span style="font-family: Calibri Light;">.</span><br style="font-family: Calibri Light;">
-
-
-
-
-<font style="font-family: Calibri Light;" face="Calibri Light">
-</font><font style="font-family: Calibri Light;" face="Calibri Light">Hint: If the attribute chosen is not numeric, all unique values are treat as intervals.<br>
-
-
-
+that </span><a style="font-family: Calibri Light;"
+ href="../display/display.html">here</a><span
+ style="font-family: Calibri Light;">.<br>
+<br style="font-family: Calibri Light;">
+</span><font style="font-family: Calibri Light;" face="Calibri Light">
+</font><font style="font-family: Calibri Light;" face="Calibri Light">Hint:
+If the attribute chosen is not numeric, all unique values are treat as
+intervals.<br>
+<br>
+Note: When the histogram is based on a raster file, setting the number
+of slices to 0 means all the of the pixel values will be used to
+generate the histogram.<br>
 </font>
-
-
-
 </body>
 </html>

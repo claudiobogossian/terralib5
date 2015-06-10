@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -500,8 +500,36 @@ void te::map::DrawRaster(te::rst::Raster* raster, Canvas* canvas, const te::gm::
   te::gm::Envelope* gmbr = new te::gm::Envelope(visibleArea);
   std::auto_ptr<te::rst::Grid> gridCanvas(new te::rst::Grid(static_cast<unsigned int>(canvas->getWidth()), static_cast<unsigned int>(canvas->getHeight()), gmbr, srid));
 
+// compute the best level
+  double resx = visibleArea.getWidth() / static_cast<double>(canvas->getWidth());
+  double resy = visibleArea.getHeight() / static_cast<double>(canvas->getHeight());
+
+  double rx = resx / raster->getResolutionX();
+  double ry = resy / raster->getResolutionY();
+
+  double factor = std::min(rx, ry);
+  factor = std::max(factor, 1.0);
+
+  std::size_t level = static_cast<std::size_t>(std::log(factor) / std::log(2.0));
+
+// get the raster overview
+  te::rst::Raster* overview = raster;
+  bool needDelete = false;
+  std::size_t numberOfLevels = raster->getMultiResLevelsCount();
+  if(level != 0 && numberOfLevels != 0) // need overview? has overview?
+  {
+    if(numberOfLevels >= level)
+      overview = raster->getMultiResLevel(level - 1);
+    else 
+      overview = raster->getMultiResLevel(numberOfLevels - 1);
+
+    assert(overview);
+
+    needDelete = true;
+  }
+
 // create a raster transform
-  RasterTransform rasterTransform(raster, 0);
+  RasterTransform rasterTransform(overview, 0);
 
 //check band data type
   if(raster->getBandDataType(0) != te::dt::UCHAR_TYPE)
@@ -580,16 +608,16 @@ void te::map::DrawRaster(te::rst::Raster* raster, Canvas* canvas, const te::gm::
       if(needRemap)
         converter->convert(inputGeo.x, inputGeo.y, inputGeo.x, inputGeo.y);
 
-      te::gm::Coord2D outputGrid = raster->getGrid()->geoToGrid(inputGeo.x, inputGeo.y);
+      te::gm::Coord2D outputGrid = overview->getGrid()->geoToGrid(inputGeo.x, inputGeo.y);
 
 // TODO: round or truncate?
       int x = te::rst::Round(outputGrid.x);
       int y = te::rst::Round(outputGrid.y);
 
-      te::color::RGBAColor color(255, 255, 255, 0);
+      te::color::RGBAColor color(0, 0, 0, 0);
 
-      if((x >= 0 && x < (int)(raster->getNumberOfColumns())) &&
-         (y >= 0 && y < (int)(raster->getNumberOfRows())))
+      if((x >= 0 && x < (int)(overview->getNumberOfColumns())) &&
+         (y >= 0 && y < (int)(overview->getNumberOfRows())))
            color = rasterTransform.apply(x, y);
 
       columns[c] = color;
@@ -614,6 +642,9 @@ void te::map::DrawRaster(te::rst::Raster* raster, Canvas* canvas, const te::gm::
 
     task.pulse();
   }
+
+  if(needDelete)
+    delete overview;
 
 // put the result in the canvas
   //canvas->drawImage(0, 0, rgba, canvas->getWidth(), canvas->getHeight());

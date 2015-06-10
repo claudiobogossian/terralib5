@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -52,7 +52,28 @@ void te::gdal::Module::startup()
 {
   if(m_initialized)
     return;
-  
+
+  std::string gdal_data;
+
+  char* tDir = getenv("TERRALIB_HOME");
+  std::string teDir;
+
+  if(tDir != 0)
+    teDir = std::string(tDir);
+
+  if(!teDir.empty())
+    gdal_data = teDir + "/share/gdal-data";
+  //}
+
+  if(gdal_data.empty())
+    gdal_data = TERRALIB_GDAL_DATA;
+
+  if( ! gdal_data.empty() )
+  {
+    CPLSetConfigOption("GDAL_DATA", gdal_data.c_str());
+  }
+  CPLSetConfigOption("GDAL_PAM_ENABLED", "NO");
+
   te::da::DataSourceFactory::add(TE_GDAL_DRIVER_IDENTIFIER, te::gdal::Build);
 
   GDALAllRegister();
@@ -82,11 +103,41 @@ void te::gdal::Module::startup()
   capabilities.setDataSetCapabilities(dataSetCapabilities);
   capabilities.setQueryCapabilities(queryCapabilities);
   capabilities.setAccessPolicy(te::common::RWAccess);
+  
+  // Supported file extensions capability
+  
+  std::set< std::string > supportedExtensionsSet;
+  for( std::map< std::string, DriverMetadata >::const_iterator it = 
+    GetGDALDriversMetadata().begin() ; it != 
+    GetGDALDriversMetadata().end() ; ++it )
+  {
+    if( !it->second.m_extension.empty() )
+    {
+      if( supportedExtensionsSet.find( it->second.m_extension ) ==
+        supportedExtensionsSet.end() )
+      {
+        supportedExtensionsSet.insert( it->second.m_extension );
+      }
+    }
+  }
+  
+  std::string supportedExtensionsStr;
+  for( std::set< std::string >::const_iterator it = supportedExtensionsSet.begin() ; 
+    it != supportedExtensionsSet.end() ; ++it )
+  {
+    if( !supportedExtensionsStr.empty() )
+    {
+      supportedExtensionsStr.append( ";" );
+    }
+    supportedExtensionsStr.append( *it );
+  }  
+
+  capabilities.addSpecificCapability( "SUPPORTED_EXTENSIONS", supportedExtensionsStr );
 
   te::gdal::DataSource::setCapabilities(capabilities);
   
   // initializing the static mutex
-  boost::mutex& staticMutex = getStaticMutex();
+  getStaticMutex();
   
   TE_LOG_TRACE(TE_TR("TerraLib GDAL driver startup!"));
 

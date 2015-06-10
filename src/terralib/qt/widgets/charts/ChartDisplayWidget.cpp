@@ -1,4 +1,4 @@
-/*  Copyright (C) 2010-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -90,9 +90,9 @@ int te::qt::widgets::ChartDisplayWidget::getType()
 }
 
 
-void te::qt::widgets::ChartDisplayWidget::highlightOIds(const te::da::ObjectIdSet* oids)
+void te::qt::widgets::ChartDisplayWidget::highlightOIds(const te::da::ObjectIdSet* oids, te::da::DataSetType* dataType)
 {
-  m_display->highlightOIds(oids);
+  m_display->highlightOIds(oids, dataType);
 }
 
 void te::qt::widgets::ChartDisplayWidget::onSettingsToolButtonnClicked()

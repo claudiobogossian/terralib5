@@ -1,4 +1,4 @@
-/*  Copyright (C) 2010-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -43,7 +43,7 @@ namespace Ui { class ChartDisplayWidgetForm; }
 namespace te
 {
 
-  namespace da    { class ObjectIdSet; }
+  namespace da    { class ObjectIdSet;  class DataSetType;}
   namespace qt
   {
     namespace widgets
@@ -121,7 +121,7 @@ namespace te
 
             \param oids The identifiers of plotitems to be highlighted.
           */
-          void highlightOIds(const te::da::ObjectIdSet* oids);
+          void highlightOIds(const te::da::ObjectIdSet* oids, te::da::DataSetType* dataType);
 
           /*!
             \brief color used to hgihlight selected objects on this display.

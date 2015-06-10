@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -26,21 +26,22 @@
 // TerraLib
 #include "../../../dataaccess/dataset/DataSet.h"
 #include "../../../dataaccess/utils/Utils.h"
+#include "../../../raster/Band.h"
 #include "../../../raster/Raster.h"
-#include "../../../se/Fill.h"
-#include "../../../se/Stroke.h"
-#include "../../../se/Utils.h"
+#include "../../../raster/Utils.h"
 #include "../charts/ChartDisplay.h"
 #include "../charts/ChartStyle.h"
 #include "../charts/Histogram.h"
 #include "../charts/HistogramChart.h"
 #include "../charts/HistogramStyle.h"
-#include "../charts/Utils.h"
 #include "RasterHistogramWidget.h"
 #include "ui_RasterHistogramWidgetForm.h"
 
 // Qt
 #include <QGridLayout>
+
+//Qwt
+#include <qwt_legend.h>
 
 //STL
 #include <memory>
@@ -51,21 +52,17 @@ te::qt::widgets::RasterHistogramWidget::RasterHistogramWidget(QWidget* parent, Q
 {
   m_ui->setupUi(this);
 
-  m_ui->m_redToolButton->setIcon(QIcon::fromTheme("bullet-red"));
-  m_ui->m_greenToolButton->setIcon(QIcon::fromTheme("bullet-green"));
-  m_ui->m_blueToolButton->setIcon(QIcon::fromTheme("bullet-blue"));
-  m_ui->m_monoToolButton->setIcon(QIcon::fromTheme("bullet-black"));
+  m_ui->m_applyToolButton->setIcon(QIcon::fromTheme("chart-bar"));
 
-  connect(m_ui->m_redToolButton, SIGNAL(toggled(bool)), this, SLOT(onRedToolButtonToggled(bool)));
-  connect(m_ui->m_greenToolButton, SIGNAL(toggled(bool)), this, SLOT(onGreenToolButtonToggled(bool)));
-  connect(m_ui->m_blueToolButton, SIGNAL(toggled(bool)), this, SLOT(onBlueToolButtonToggled(bool)));
-  connect(m_ui->m_monoToolButton, SIGNAL(toggled(bool)), this, SLOT(onMonoToolButtonToggled(bool)));
+  m_minValueLine = 0;
+  m_maxValueLine = 0;
 
   //Creating and adjusting the chart Display's style.
   m_chartStyle = new te::qt::widgets::ChartStyle();
   m_chartStyle->setTitle(tr(""));
   m_chartStyle->setAxisX(tr("Gray Level"));
   m_chartStyle->setAxisY(tr("Frequency"));
+  m_chartStyle->setGridChecked(true);
 
   //build form
   QGridLayout* layout = new QGridLayout(m_ui->m_widget);
@@ -78,6 +75,31 @@ te::qt::widgets::RasterHistogramWidget::RasterHistogramWidget(QWidget* parent, Q
 
   layout->addWidget(m_chartDisplay, 0, 0);
   layout->setContentsMargins(0,0,0,0);
+
+  m_histogramInput = new te::qt::widgets::Histogram();
+  m_histogramChartInput = new te::qt::widgets::HistogramChart(m_histogramInput);
+  m_histogramChartInput->setPen(Qt::black);
+  m_histogramChartInput->setBrush(QBrush(Qt::blue));
+  m_histogramChartInput->attach(m_chartDisplay);
+  m_histogramChartInput->setTitle(tr("Input"));
+
+  m_histogramOutput = new te::qt::widgets::Histogram();
+  m_histogramChartOutput = new te::qt::widgets::HistogramChart(m_histogramOutput);
+  m_histogramChartOutput->setPen(Qt::black, 3.);
+  m_histogramChartOutput->setBrush(QBrush(QColor(255, 0, 0, 127)));
+  m_histogramChartOutput->setStyle(QwtPlotHistogram::Outline);
+  m_histogramChartOutput->attach(m_chartDisplay);
+  m_histogramChartOutput->setTitle(tr("Output"));
+
+  m_chartDisplay->insertLegend(new QwtLegend(), QwtPlot::RightLegend);
+
+  //connects
+  connect(m_ui->m_applyToolButton, SIGNAL(clicked()), this, SLOT(onApplyToolButtonClicked()));
+  connect(m_chartDisplay, SIGNAL(leftPointSelected(const QPointF &)), this, SLOT(onLeftPointSelected(const QPointF &)));
+  connect(m_chartDisplay, SIGNAL(rigthPointSelected(const QPointF &)), this, SLOT(onRigthPointSelected(const QPointF &)));
+
+  //hide tool bar
+  m_ui->m_frame->setVisible(false);
 }
 
 te::qt::widgets::RasterHistogramWidget::~RasterHistogramWidget()
@@ -89,63 +111,172 @@ Ui::RasterHistogramWidgetForm* te::qt::widgets::RasterHistogramWidget::getForm()
   return m_ui.get();
 }
 
-void te::qt::widgets::RasterHistogramWidget::set(te::map::AbstractLayerPtr layer)
+void te::qt::widgets::RasterHistogramWidget::setInputRaster(te::rst::Raster* raster)
 {
-  m_layer = layer;
+  m_inputRaster.reset(raster);
 
-  //list bands
-  m_ui->m_redComboBox->clear();
-  m_ui->m_greenComboBox->clear();
-  m_ui->m_blueComboBox->clear();
-  m_ui->m_monoComboBox->clear();
+  //set bands from input raster
+  m_ui->m_bandComboBox->clear();
 
-  std::auto_ptr<te::da::DataSet> ds(m_layer->getData());
-  std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);
-  std::auto_ptr<te::rst::Raster> inputRst = ds->getRaster(rpos);
-
-  for(unsigned int i = 0; i < inputRst->getNumberOfBands(); ++i)
+  for(unsigned int i = 0; i < m_inputRaster->getNumberOfBands(); ++i)
   {
     QString strBand;
     strBand.setNum(i);
 
-    m_ui->m_redComboBox->addItem(strBand);
-    m_ui->m_greenComboBox->addItem(strBand);
-    m_ui->m_blueComboBox->addItem(strBand);
-    m_ui->m_monoComboBox->addItem(strBand);
+    m_ui->m_bandComboBox->addItem(strBand);
   }
 }
 
-void te::qt::widgets::RasterHistogramWidget::onRedToolButtonToggled(bool flag)
+void te::qt::widgets::RasterHistogramWidget::setOutputRaster(te::rst::Raster* raster)
 {
-  int band = m_ui->m_redComboBox->currentText().toInt();
+  m_outputRaster.reset(raster);
+}
 
-  std::auto_ptr<te::da::DataSet> ds(m_layer->getData());
-  std::auto_ptr<te::map::LayerSchema> dsType(m_layer->getSchema());
+void te::qt::widgets::RasterHistogramWidget::drawHistogram(int band)
+{
+  QString toFind = QString::number(band);
+  int idx = m_ui->m_bandComboBox->findText(toFind);
+  m_ui->m_bandComboBox->setCurrentIndex(idx);
 
-  te::qt::widgets::Histogram* hist = te::qt::widgets::createHistogram(ds.get(), dsType.get(), band);
+  if(m_inputRaster.get())
+  {
+    m_histogramInput->setValues(std::map<te::dt::AbstractData*, unsigned int>());
 
-//  te::se::Fill* fill = te::se::CreateFill("#009900", "1.0");
+    std::map<double, unsigned int> values =  m_inputRaster->getBand(band)->getHistogramR();
 
-//  te::se::Stroke* stroke = te::se::CreateStroke("#000000", "1");
+    for(std::map<double, unsigned int>::iterator it = values.begin(); it != values.end(); ++it)
+    {
+      m_histogramInput->insert(std::make_pair(new te::dt::Double(it->first), it->second));
+    }
 
-  te::qt::widgets::HistogramChart* histChart = new te::qt::widgets::HistogramChart(hist);
+    m_histogramInput->setMinValue(m_inputRaster->getBand(band)->getMinValue().real());
 
-  m_chartDisplay->adjustDisplay();
-  histChart->attach(m_chartDisplay);
-  m_chartDisplay->show();
+    m_histogramChartInput->setData();
+  }
+
+  if(m_outputRaster.get())
+  {
+    m_histogramOutput->setValues(std::map<te::dt::AbstractData*, unsigned int>());
+
+    double max = 0.;
+
+    std::map<double, unsigned int> values =  m_outputRaster->getBand(band)->getHistogramR();
+
+    for(std::map<double, unsigned int>::iterator it = values.begin(); it != values.end(); ++it)
+    {
+      m_histogramOutput->insert(std::make_pair(new te::dt::Double(it->first), it->second));
+
+      if(it->second > max)
+        max = it->second;
+    }
+
+    m_histogramOutput->setMinValue(m_outputRaster->getBand(band)->getMinValue().real());
+
+    m_histogramChartOutput->setData();
+  }
+
+  m_chartDisplay->updateLayout();
+
   m_chartDisplay->replot();
-
- // delete histChart;
 }
 
-void te::qt::widgets::RasterHistogramWidget::onGreenToolButtonToggled(bool flag)
+void te::qt::widgets::RasterHistogramWidget::setMinimumValueEnabled(bool enable)
 {
+  if(m_minValueLine)
+  {
+    if(enable)
+      m_minValueLine->attach(m_chartDisplay);
+    else
+      m_minValueLine->detach();
+  }
 }
 
-void te::qt::widgets::RasterHistogramWidget::onBlueToolButtonToggled(bool flag)
+void te::qt::widgets::RasterHistogramWidget::updateMinimumValueLine(int value, bool replot)
 {
+  if(!m_minValueLine)
+  {
+    m_minValueLine = new QwtPlotMarker();
+    m_minValueLine->setLabel(QString::fromLatin1("Minimum"));
+    m_minValueLine->setLabelAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    m_minValueLine->setLabelOrientation(Qt::Vertical);
+    m_minValueLine->setLineStyle(QwtPlotMarker::VLine);
+    m_minValueLine->setLinePen(Qt::darkRed, 2, Qt::DashDotLine);
+    m_minValueLine->attach(m_chartDisplay);
+  }
+
+  m_minValueLine->setXValue(value);
+
+  if(replot)
+  {
+    m_chartDisplay->updateLayout();
+
+    m_chartDisplay->replot();
+  }
 }
 
-void te::qt::widgets::RasterHistogramWidget::onMonoToolButtonToggled(bool flag)
+void te::qt::widgets::RasterHistogramWidget::updateMinimumValueLabel(QString value)
 {
+  if(m_minValueLine)
+    m_minValueLine->setLabel(value);
+}
+
+void te::qt::widgets::RasterHistogramWidget::setMaximumValueEnabled(bool enable)
+{
+  if(m_maxValueLine)
+  {
+    if(enable)
+      m_maxValueLine->attach(m_chartDisplay);
+    else
+      m_maxValueLine->detach();
+  }
+}
+
+void te::qt::widgets::RasterHistogramWidget::updateMaximumValueLine(int value, bool replot)
+{
+  if(!m_maxValueLine)
+  {
+    m_maxValueLine = new QwtPlotMarker();
+    m_maxValueLine->setLabel(QString::fromLatin1("Maximum"));
+    m_maxValueLine->setLabelAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    m_maxValueLine->setLabelOrientation(Qt::Vertical);
+    m_maxValueLine->setLineStyle(QwtPlotMarker::VLine);
+    m_maxValueLine->setLinePen(Qt::darkRed, 2, Qt::DashDotLine);
+    m_maxValueLine->attach(m_chartDisplay);
+  }
+
+  m_maxValueLine->setXValue(value);
+
+  if(replot)
+  {
+    m_chartDisplay->updateLayout();
+
+    m_chartDisplay->replot();
+  }
+}
+
+void te::qt::widgets::RasterHistogramWidget::updateMaximumValueLabel(QString value)
+{
+  if(m_maxValueLine)
+    m_maxValueLine->setLabel(value);
+}
+
+void te::qt::widgets::RasterHistogramWidget::onApplyToolButtonClicked()
+{
+  int index = m_ui->m_bandComboBox->currentIndex();
+
+  drawHistogram(index);
+}
+
+void te::qt::widgets::RasterHistogramWidget::onLeftPointSelected(const QPointF& point)
+{
+  int xMin = (int)point.x();
+
+  emit minValueSelected(xMin, m_ui->m_bandComboBox->currentIndex());
+}
+
+void te::qt::widgets::RasterHistogramWidget::onRigthPointSelected(const QPointF& point)
+{
+  int xMax = (int)point.x();
+
+  emit maxValueSelected(xMax, m_ui->m_bandComboBox->currentIndex());
 }

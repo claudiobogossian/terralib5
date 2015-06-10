@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -26,12 +26,8 @@
 #include "TsCachedRaster.h"
 #include "../Config.h"
 
-#include <terralib/memory/CachedRaster.h>
-#include <terralib/raster/RasterFactory.h>
-#include <terralib/raster/BandProperty.h>
-#include <terralib/raster/Grid.h>
-
-#include <terralib/dataaccess/datasource/DataSourceFactory.h>
+#include <terralib/raster.h>
+#include <terralib/dataaccess.h>
 
 #include <boost/shared_ptr.hpp>
 

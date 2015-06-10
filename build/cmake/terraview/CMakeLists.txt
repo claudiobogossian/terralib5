@@ -158,7 +158,7 @@ install(DIRECTORY ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terraview/
         DESTINATION ${TERRALIB_DESTINATION_SHARE}/terraview COMPONENT runtime)
 
 if(TERRALIB_TRACK_3RDPARTY_DEPENDENCIES)
-  TeInstallQtPlugins("qgif;qico;qjpeg;qmng;qtiff;qsvg;qsvgicon;qsqlite;qwindows;qcocoa")
+  TeInstallQt5Plugins("qgif;qico;qjpeg;qmng;qtiff;qsvg;qsvgicon;qsqlite;qwindows;qcocoa")
 
   if(APPLE)
 

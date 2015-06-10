@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -29,6 +29,9 @@
 #include "../raster.h"
 #include "../raster/RasterProperty.h"
 #include "../se/RasterSymbolizer.h"
+
+// Boost
+#include <boost/math/special_functions/fpclassify.hpp>
 
 // STL
 #include <limits>
@@ -86,17 +89,24 @@ void te::map::RasterTransform::setLinearTransfParameters(double vmin, double vma
 {
   m_rstMinValue = rmin;
   m_rstMaxValue = rmax;
-  
-  if( vmax == vmin )
+
+  if(vmax == vmin)
   {
-    m_gain = 0.0;
+    m_gain = 1.0;
     m_offset = 0.0;
+    return;
   }
-  else
+
+  m_gain = (double)(rmax-rmin)/(vmax-vmin);
+
+  if(boost::math::isnan(m_gain) || boost::math::isinf(m_gain))
   {
-    m_gain = (double)(rmax-rmin)/(vmax-vmin);
-    m_offset = -1*m_gain*vmin+rmin;
+    m_gain = 1.0;
+    m_offset = 0.0;
+    return;
   }
+
+  m_offset = -1*m_gain*vmin+rmin;
 }
 
 te::map::RasterTransform::RasterTransfFunctions te::map::RasterTransform::getTransfFunction()
@@ -519,7 +529,10 @@ te::color::RGBAColor te::map::RasterTransform::getCategorize(double icol, double
 
   m_rasterIn->getValue((int)icol, (int)ilin, val, m_monoBand);
 
-  return getCategorizedColor(val);
+  if(checkNoValue(val, m_monoBand) == false)
+    return getCategorizedColor(val);
+
+  return te::color::RGBAColor();
 }
 
 void te::map::RasterTransform::setInterpolate(double icol, double ilin, double ocol, double olin)
@@ -544,7 +557,10 @@ te::color::RGBAColor te::map::RasterTransform::getInterpolate(double icol, doubl
 
   m_rasterIn->getValue((int)icol, (int)ilin, val, m_monoBand);
 
-  return getInterpolatedColor(val);
+  if(checkNoValue(val, m_monoBand) == false)
+    return getInterpolatedColor(val);
+
+  return te::color::RGBAColor();
 }
 
 void te::map::RasterTransform::setBand2Band(double icol, double ilin, double ocol, double olin)

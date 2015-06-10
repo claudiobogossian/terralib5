@@ -1,4 +1,4 @@
-/*  Copyright (C) 2010-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -48,6 +48,11 @@
 
 const std::string te::st::TrajectoryDataSetLayer::sm_type("TRAJECTORYDATASETLAYER");
 
+te::st::TrajectoryDataSetLayer::TrajectoryDataSetLayer(AbstractLayer* parent)
+  : AbstractSTDataSetLayer(parent)
+{
+}
+
 te::st::TrajectoryDataSetLayer::TrajectoryDataSetLayer(AbstractLayer* parent, TrajectoryDataSetInfo* info)
   : AbstractSTDataSetLayer(parent),
     m_info(info)
@@ -76,14 +81,15 @@ std::auto_ptr<te::map::LayerSchema> te::st::TrajectoryDataSetLayer::getSchema() 
 {
   assert(!m_info->getObservationDataSetInfo().getDataSetName().empty());
 
-  te::da::DataSourcePtr ds = te::da::GetDataSource(m_info->getDataSourceInfo().getId(), true);
+  te::da::DataSourcePtr ds = te::da::GetDataSource(m_info->getObservationDataSetInfo().getDataSourceInfo().getId(), true);
 
   return ds->getDataSetType(m_info->getObservationDataSetInfo().getDataSetName());
 }
 
 te::dt::DateTimePeriod* te::st::TrajectoryDataSetLayer::getTemporalExtent() const
 {
-  return te::st::STDataLoader::getDataSet(*m_info.get())->getTemporalExtent();
+  return 0;
+  //return te::st::STDataLoader::getDataSet(*m_info.get())->getTemporalExtent();
 }
 
 std::auto_ptr<te::da::DataSet> te::st::TrajectoryDataSetLayer::getData(te::common::TraverseType travType,
@@ -113,6 +119,22 @@ std::auto_ptr<te::da::DataSet> te::st::TrajectoryDataSetLayer::getData(const std
 {
   std::auto_ptr<te::st::TrajectoryDataSet> tds = te::st::TrajectoryDataSetLayer::getTrajectoryDataset(*g, r, travType);
   std::auto_ptr<te::da::DataSet> result = tds->release();
+  return result;
+}
+
+std::auto_ptr<te::da::DataSet> te::st::TrajectoryDataSetLayer::getData(te::da::Expression* restriction,
+                                        te::common::TraverseType travType,
+                                        const te::common::AccessPolicy accessPolicy) const
+{
+  std::auto_ptr<te::da::DataSet> result;
+  return result;
+}
+
+std::auto_ptr<te::da::DataSet> te::st::TrajectoryDataSetLayer::getData(const te::da::ObjectIdSet* oids,
+                                                                       te::common::TraverseType travType,
+                                                                       const te::common::AccessPolicy accessPolicy) const
+{
+  std::auto_ptr<te::da::DataSet> result;
   return result;
 }
 
@@ -187,13 +209,13 @@ std::auto_ptr<te::st::TrajectoryDataSet> te::st::TrajectoryDataSetLayer::getTraj
 
 bool te::st::TrajectoryDataSetLayer::isValid() const
 {
-  if(m_info->getDataSourceInfo().getId().empty())
+  if(m_info->getObservationDataSetInfo().getDataSourceInfo().getId().empty())
     return false;
 
   te::da::DataSourcePtr ds;
   try
   {
-    ds = te::da::GetDataSource(m_info->getDataSourceInfo().getId(), true);
+    ds = te::da::GetDataSource(m_info->getObservationDataSetInfo().getDataSourceInfo().getId(), true);
   }
   catch(...)
   {
@@ -209,12 +231,12 @@ bool te::st::TrajectoryDataSetLayer::isValid() const
 void te::st::TrajectoryDataSetLayer::draw(te::map::Canvas* canvas, const te::gm::Envelope& bbox, int srid)
 {
   if(m_rendererType.empty())
-    throw te::map::Exception((boost::format(TR_MAP("Could not draw the data set layer %1%. The renderer type is empty!")) % getTitle()).str());
+    throw te::map::Exception((boost::format(TE_TR("Could not draw the data set layer %1%. The renderer type is empty!")) % getTitle()).str());
 
   // Try get the defined renderer
   std::auto_ptr<te::map::AbstractRenderer> renderer(te::map::RendererFactory::make(m_rendererType));
   if(renderer.get() == 0)
-    throw te::map::Exception((boost::format(TR_MAP("Could not draw the data set layer %1%. The renderer %2% could not be created!")) % getTitle() % m_rendererType).str());
+    throw te::map::Exception((boost::format(TE_TR("Could not draw the data set layer %1%. The renderer %2% could not be created!")) % getTitle() % m_rendererType).str());
 
   renderer->draw(this, canvas, bbox, srid);
 }
@@ -223,6 +245,12 @@ const std::string& te::st::TrajectoryDataSetLayer::getType() const
 {
   return sm_type;
 }
+
+const std::string& te::st::TrajectoryDataSetLayer::getDataSourceId() const
+{
+  return m_info->getObservationDataSetInfo().getDataSourceInfo().getId();
+}
+
 
 const std::string& te::st::TrajectoryDataSetLayer::getRendererType() const
 {

@@ -1,20 +1,20 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
- 
- This file is part of the TerraLib - a Framework for building GIS enabled applications.
- 
- TerraLib is free software: you can redistribute it and/or modify
- it under the terms of the GNU Lesser General Public License as published by
- the Free Software Foundation, either version 3 of the License,
- or (at your option) any later version.
- 
- TerraLib is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- GNU Lesser General Public License for more details.
- 
- You should have received a copy of the GNU Lesser General Public License
- along with TerraLib. See COPYING. If not, write to
- TerraLib Team at <terralib-team@terralib.org>.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
+
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License,
+    or (at your option) any later version.
+
+    TerraLib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
  */
 
 /*!
@@ -30,6 +30,7 @@
 #include "../raster/BandProperty.h"
 #include "../raster/Enums.h"
 #include "../raster/Raster.h"
+#include "../common/Translator.h"
 #include "Config.h"
 #include "Band.h"
 #include "Raster.h"
@@ -40,6 +41,8 @@
 // STL
 #include <map>
 #include <string>
+#include <vector>
+#include <set>
 
 #include <boost/filesystem.hpp>
 #include <boost/thread/mutex.hpp>
@@ -52,6 +55,17 @@ namespace te
   
   namespace gdal
   {
+    /*!
+     \brief GDAL driver metadata.
+     */    
+    struct DriverMetadata
+    {
+      std::string m_driverName;  //!< Driver name (driver description).
+      std::string m_extension; //!< File extension (DMD_EXTENSION).
+      std::string m_longName; //!< File long name (DMD_LONGNAME).
+      bool m_subDatasetsSupport; //!< true if the driver has support for sub-datasets (DMD_SUBDATASETS).
+    };
+    
     /*!
      \brief It translates a GDAL DataType to a TerraLib DataType.
      */
@@ -169,12 +183,35 @@ namespace te
         default : return te::rst::UndefPalInt;
       }
     }
+    
+    /*!
+     \brief It translates a TerraLib interpolation method into a GDAL ressampling method name string.
+     */
+    inline std::string GetGDALRessamplingMethod(te::rst::InterpolationMethod interpolationMethod )
+    {
+      switch(interpolationMethod)
+      {
+        case te::rst::NearestNeighbor : return std::string( "NEAREST" );
+        case te::rst::Bilinear : return std::string( "AVERAGE" );
+        case te::rst::Bicubic : return std::string( "CUBIC" );
+        default : throw Exception(TE_TR("Invalid interpolation method"));
+      }
+    }    
+    
     /*!
      \brief Gets the grid definition from a GDAL dataset.
      \param gds A pointer to a GDAL dataset.
      \return A pointer to the grid definition from a GDAL dataset. Caller takes its ownership.
      */
     TEGDALEXPORT te::rst::Grid* GetGrid(GDALDataset* gds);
+    
+    /*!
+     \brief Gets the grid definition from a GDAL dataset.
+     \param gds A pointer to a GDAL dataset.
+     \param multiResLevel Multi resolution level (use -1 to use the original resolution).
+     \return A pointer to the grid definition from a GDAL dataset. Caller takes its ownership.
+     */
+    TEGDALEXPORT te::rst::Grid* GetGrid(GDALDataset* gds, const int multiResLevel );    
     
     /*!
      \brief Gets the list of bands definition from a GDAL dataset.
@@ -205,6 +242,16 @@ namespace te
      \note The caller of this method must take the ownership of the returned properties.
      */
     void GetBands(te::gdal::Raster* rst, std::vector<te::gdal::Band*>& bands);
+    
+    /*!
+     \brief Gets the list of bands from a GDAL dataset.
+     
+     \param rst    A pointer to the raster.
+     \param multiResLevel Multi-resolution pyramid level (value -1 -> overviews disabled).
+     \param bands  A reference to a vector to be filled with the bands extracted from a dataset.
+     \note The caller of this method must take the ownership of the returned properties.
+     */
+    bool GetBands(te::gdal::Raster* rst, int multiResLevel, std::vector<te::gdal::Band*>& bands);    
     
     /*!
      \brief Gets the complete description from a GDAL dataset.
@@ -345,7 +392,19 @@ namespace te
      \brief Returns a reference to a static mutex initialized when this module is initialized.
      \return Returns a reference to a static mutex initialized when this module is initialized.
      */
-    TEGDALEXPORT boost::mutex& getStaticMutex();    
+    TEGDALEXPORT boost::mutex& getStaticMutex();   
+    
+    /*!
+     \brief Returns metadata from all registered GDAL drivers (key: driver name).
+     \return Metadata from all registered GDAL drivers (key: driver name).
+     */    
+    const std::map< std::string, DriverMetadata >& GetGDALDriversMetadata();
+    
+    /*!
+     \brief Returns a map all GDAL supported Upper-case extensions to their respective driver names.
+     \return Returns a map all GDAL supported Upper-case extensions to their respective driver names.
+     */    
+    const std::multimap< std::string, std::string >& GetGDALDriversUCaseExt2DriversMap();    
         
   } // end namespace gdal
 } // end namespace te

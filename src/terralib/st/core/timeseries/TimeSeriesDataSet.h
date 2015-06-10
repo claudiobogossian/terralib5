@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -28,7 +28,6 @@
 
 //ST
 #include "../../Config.h"
-#include "TimeSeriesDataSetType.h"
 
 // Boost
 #include <boost/noncopyable.hpp>
@@ -47,6 +46,7 @@ namespace te
   {
     // Forward declarations
     class ObservationDataSet;
+    class ObservationDataSetType;
     class TimeSeries;
     class AbstractTimeSeriesInterp;
  
@@ -71,93 +71,42 @@ namespace te
       friend class TimeSeriesDataSetLayer;
 
       public:
-
-        /*! \name Constructor */
-        //@{
-        /*! 
-          \brief Constructor. 
-
-          \param ds        The data set that contains the time series observations.
-          \param tPropIdx  The index of the property that contains the times of time series. 
-          \param vPropIdx  The index of the property that contains the values of time series. 
-          \param gPropIdx  The index of the property that contains the location of time series. 
-          \param idPropIdx  The index of the property that contains the identity of the time series. 
-          \param id         The time series id. 
-          
-          \note It will take the ownership of the input pointer.
-        */
-        TimeSeriesDataSet(te::da::DataSet* ds, int tPropIdx, int vPropIdx, int gPropIdx, 
-                          int idPropIdx, const std::string& id);
-
-         /*! 
-          \brief Constructor. 
-
-          \param ds        The data set that contains the time series observations.
-          \param tPropIdx  The index of the property that contains the times of time series. 
-          \param vPropIdx  The index of the property that contains the values of time series. 
-          \param gPropIdx  The index of the property that contains the location of time series. 
-          \param idPropIdx  The index of the property that contains the identity of the time series. 
-          \param id         The time series id. 
-          \param text       The temporal extent.
-          
-          \note It will take the ownership of the input pointers.
-        */
-        TimeSeriesDataSet(te::da::DataSet* ds, int tPropIdx, int vPropIdx, int gPropIdx, 
-                          int idPropIdx, const std::string& id, te::dt::DateTimePeriod* text);
-
-        /*! 
-          \brief Constructor. 
-
-          \param ds        The data set that contains the time series observations.
-          \param tPropIdxs The indexes of the properties that contain the begin and end times of time series.  
-          \param vPropIdxs The indexes of the properties that contain the values of time series. 
-          \param gPropIdx  The index of the property that contains the location of time series. 
-          \param idPropIdx The index of the property that contains the identity of the time series. 
-          \param id        The time series id. 
-          
-          \note It will take the ownership of the input pointer.
-        */
-        TimeSeriesDataSet(te::da::DataSet* ds, const std::vector<int>& tPropIdxs, const std::vector<int>& vPropIdxs, 
-                          int gPropIdx, int idPropIdx, const std::string& id);
-
-        /*! 
-          \brief Constructor. 
-
-          \param ds        The data set that contains the time series observations.
-          \param tPropIdxs The indexes of the properties that contain the begin and end times of time series.  
-          \param vPropIdxs The indexes of the properties that contain the values of time series. 
-          \param gPropIdx  The index of the property that contains the location of time series. 
-          \param idPropIdx The index of the property that contains the identity of the time series. 
-          \param id        The time series id. 
-          \param text       The temporal extent.
-          
-          \note It will take the ownership of the input pointer.
-        */
-        TimeSeriesDataSet(te::da::DataSet* ds, const std::vector<int>& tPropIdxs, const std::vector<int>& vPropIdxs, 
-                          int gPropIdx, int idPropIdx, const std::string& id, te::dt::DateTimePeriod* text);
         /*! 
           \brief Constructor. 
 
           \param ds         The data set that contains the time series observations.
-          \param type       The time series data set type. 
-          \param text       The temporal extent.
+          \param type       The observation data set type.
+          \param propNames  The names of the properties that contains the time series values
           
           \note It will take the ownership of the input pointer.
-          \note This constructor is used when each observation of a trajectory is associated to a period and
-                the DataSet uses two properties to store these periods.
         */
-        TimeSeriesDataSet(te::da::DataSet* ds, const TimeSeriesDataSetType& type, te::dt::DateTimePeriod* text);
+        TimeSeriesDataSet(te::da::DataSet* ds, const ObservationDataSetType& type, 
+          const std::vector<std::string>& propNames);
+        
+        /*! 
+          \brief Constructor. 
+
+          \param ds         The data set that contains the time series observations.
+          \param type       The observation data set type.
+          \param propNames  The names of the properties that contains the time series values
+          \param id         The time series id
+          
+          \note It will take the ownership of the input pointer.
+        */
+        TimeSeriesDataSet(te::da::DataSet* ds, const ObservationDataSetType& type, 
+                          const std::vector<std::string>& propNames, const std::string& id);
                                                     
         /*! 
           \brief Constructor. 
 
           \param obs        The data set that contains the time series observations.
-          \param type       The time series data set type.
+          \param propNames  The names of the properties that contains the time series values
           \param id         The time series id
 
           \note It will take the ownership of the given pointer.
         */
-        TimeSeriesDataSet(ObservationDataSet* obs, const TimeSeriesDataSetType& type, const std::string& id);
+        TimeSeriesDataSet(ObservationDataSet* obs, const std::vector<std::string>& propNames, 
+          const std::string& id);
        //@}
 
         /*!
@@ -168,14 +117,21 @@ namespace te
           \note The caller will NOT take the ownership of the input pointer.
         */
         ObservationDataSet* getObservationSet() const;
-        
+
         /*!
-          \brief It returns a reference to the internal time series data set type.
+          \brief It returns the indexes of the DataSet properties that contains the values associated to the time series.
 
-          \return A reference to the internal time series data set type.
+          \return The indexes of the DataSet properties that contains the observed values.
         */
-        const TimeSeriesDataSetType& getType() const;
+        const std::vector<std::string>& getValuePropNames() const;
 
+        /*!
+          \brief It sets the names of the DataSet properties that contains the values associated to the time series.
+
+          \param n The names of the DataSet properties that contains the time series values.
+        */
+        void setValuePropNames(const std::vector<std::string>& n);
+        
         /*!
           \brief It returns the identifier associated to the time series.
 
@@ -219,7 +175,7 @@ namespace te
         bool isAfterEnd() const;
         //@}
 
-        /*! \name Methods to get values pointed by the internal cursor.
+        /*! \name Methods to get values pointed by the internal cursor. */
         //@{
         
         /*! 
@@ -298,7 +254,7 @@ namespace te
 
           \note The caller will NOT take the ownership of the output pointer.
         */
-        te::dt::DateTimePeriod* getTemporalExtent() const;
+        const te::dt::DateTimePeriod* getTemporalExtent() const;
                         
         /*!
           \brief  It returns the time series from the DataSet.
@@ -321,14 +277,14 @@ namespace te
           This method encapsulates all observations of this DataSet as a
           TimeSeries type associated to a given interpolator.
 
-          \param idx    The index of the observed property to be considered
-          \param interp The time series interpolator.
+          \param propName    The name of the observed property to be considered
+          \param interp     The time series interpolator.
 
           \return The time series associated to a given interpolator.
 
           \note The caller will take the ownership of the returned pointer. 
         */
-        std::auto_ptr<TimeSeries> getTimeSeries(int idx, te::st::AbstractTimeSeriesInterp* interp);
+        std::auto_ptr<TimeSeries> getTimeSeries(const std::string& propName, te::st::AbstractTimeSeriesInterp* interp);
         
         /*!
           \brief  It returns all time series from the DataSet.
@@ -337,11 +293,13 @@ namespace te
           set of TimeSeries associated to a given interpolator.
 
           \param interp The time series interpolator.
+          \param vPropName The property name that contains the attribute values associated to a time series
           \param result The returned set of time series.
 
           \note The caller will take the ownership of the returned pointers. 
         */
-        void getTimeSeriesSet(  te::st::AbstractTimeSeriesInterp* interp, 
+        void getTimeSeriesSet(  te::st::AbstractTimeSeriesInterp* interp,
+                                const std::string& vPropName,
                                 std::vector<te::st::TimeSeries*>& result);
 
         /*!
@@ -378,8 +336,8 @@ namespace te
 
       private:
         std::auto_ptr<ObservationDataSet>     m_obsDs;         //!< The data set that contains the trajectory observations 
-        TimeSeriesDataSetType                 m_type;          //!< The trajectory type.
-        std::string                           m_id;            //!< The trajectory identification.
+        std::vector<std::string>              m_vlPropNames;   //!< The names of the properties that contain the time series values. 
+        std::string                           m_id;            //!< The time series identification.
      };
    } // end namespace st
 }   // end namespace te

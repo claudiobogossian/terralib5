@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -81,6 +81,33 @@ namespace te
             return false;
 
           return true;
+        }
+      
+        /*! \brief Lexicographic compare (x-y). */
+        bool operator<(const Coord2D& rhs) const
+        {
+          if(x < rhs.x)
+            return true;
+          
+          if(x > rhs.x)
+            return false;
+          
+          if(y < rhs.y)
+            return true;
+          
+          return false;
+        }
+
+        /*! \brief It returns the x-coordinate. */
+        double getX() const
+        {
+          return x;
+        }
+
+        /*! \brief It returns the y-coordinate. */
+        double getY() const
+        {
+          return y;
         }
 
         double x;  //!< x-coordinate.

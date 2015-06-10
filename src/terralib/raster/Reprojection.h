@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -58,7 +58,7 @@ namespace te
 
       \note The caller will take the ownership of the returned pointer.
     */
-    TERASTEREXPORT te::rst::Raster* Reproject(te::rst::Raster const * const rin, int srid, const std::map<std::string, std::string>& routinfo, int m = te::rst::Interpolator::NearestNeighbor);
+    TERASTEREXPORT te::rst::Raster* Reproject(te::rst::Raster const * const rin, int srid, const std::map<std::string, std::string>& routinfo, int m = te::rst::NearestNeighbor);
 
     /*!
       \brief Reprojects a portion of a raster to another SRS.
@@ -78,7 +78,7 @@ namespace te
 
       \note The caller will take the ownership of the returned pointer.
     */
-    TERASTEREXPORT te::rst::Raster* Reproject(te::rst::Raster const * const rin, int srid, double llx, double lly, double urx, double ury, const std::map<std::string, std::string>& routinfo, int m = te::rst::Interpolator::NearestNeighbor);
+    TERASTEREXPORT te::rst::Raster* Reproject(te::rst::Raster const * const rin, int srid, double llx, double lly, double urx, double ury, const std::map<std::string, std::string>& routinfo, int m = te::rst::NearestNeighbor);
 
     /*!
       \brief Reprojects a portion of a raster to another SRS and maintaining a given resolution.
@@ -100,7 +100,7 @@ namespace te
 
       \note The caller will take the ownership of the returned pointer.
     */
-    TERASTEREXPORT te::rst::Raster* Reproject(te::rst::Raster const * const rin, int srid, double llx, double lly, double urx, double ury, double resx, double resy, const std::map<std::string, std::string>& routinfo, int m = te::rst::Interpolator::NearestNeighbor);
+    TERASTEREXPORT te::rst::Raster* Reproject(te::rst::Raster const * const rin, int srid, double llx, double lly, double urx, double ury, double resx, double resy, const std::map<std::string, std::string>& routinfo, int m = te::rst::NearestNeighbor);
   }
 }
 

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -24,27 +24,14 @@
 */
 
 // TerraLib
+#include "../common/Exception.h"
 #include "../common/Translator.h"
-//#include "../dataaccess/dataset/CheckConstraint.h"
-//#include "../dataaccess/dataset/DataSet.h"
-//#include "../dataaccess/dataset/ForeignKey.h"
-//#include "../dataaccess/dataset/Index.h"
-//#include "../dataaccess/dataset/PrimaryKey.h"
-//#include "../dataaccess/dataset/Sequence.h"
-//#include "../dataaccess/dataset/UniqueKey.h"
 #include "../dataaccess/datasource/DataSourceTransactor.h"
-//#include "../dataaccess/query/Select.h"
 #include "../dataaccess/query/SQLDialect.h"
-//#include "../dataaccess/utils/Utils.h"
-//#include "../datatype/DateTimeProperty.h"
 #include "../datatype/StringProperty.h"
-//#include "../geometry/GeometryProperty.h"
-//#include "../geometry/Envelope.h"
-//#include "../geometry/Geometry.h"
 #include "Connection.h"
 #include "DataSource.h"
-//#include "DataSet.h"
-#include "Exception.h"
+
 #include "Globals.h"
 #include "Transactor.h"
 #include "Utils.h"
@@ -68,12 +55,12 @@ inline void TESTHR(HRESULT hr)
 te::ado::DataSource::DataSource()
   : m_isOpened(false)
 {
-  ::CoInitialize(0);
+  //::CoInitialize(0);
 }
 
 te::ado::DataSource::~DataSource()
 {
-  ::CoUninitialize();
+  //::CoUninitialize();
 }
 
 std::string te::ado::DataSource::getType() const
@@ -179,7 +166,7 @@ void te::ado::DataSource::create(const std::map<std::string, std::string>& dsInf
   }
   catch(_com_error& e)
   {
-    throw Exception(TE_TR(e.Description()));
+    throw te::common::Exception((LPCSTR)e.ErrorMessage());
   }
   
   std::map<std::string, std::string>::const_iterator it = dsInfo.find("CREATE_OGC_METADATA_TABLES");
@@ -209,14 +196,14 @@ void te::ado::DataSource::create(const std::map<std::string, std::string>& dsInf
 void te::ado::DataSource::drop(const std::map<std::string, std::string>& dsInfo)
 {
   if(!exists(dsInfo))
-    throw Exception(TE_TR("The data source doesn't exist!"));
+    throw te::common::Exception(TE_TR("The data source doesn't exist!"));
 
   std::map<std::string, std::string> info = dsInfo;
 
   boost::filesystem::path path(info["DB_NAME"]);
 
   if(boost::filesystem::remove(path) == false)
-    throw Exception(TE_TR("The data source could not be dropped!"));
+    throw te::common::Exception(TE_TR("The data source could not be dropped!"));
 }
 
 bool te::ado::DataSource::exists(const std::map<std::string, std::string>& dsInfo)
@@ -267,7 +254,7 @@ void te::ado::DataSource::loadGeometryColumnsCache(_ConnectionPtr& adoConn)
   }
   catch(_com_error& e)
   {
-    throw Exception(TE_TR(e.Description()));
+    throw te::common::Exception((LPCSTR)e.ErrorMessage());
   }
 }
 

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -49,23 +49,23 @@ te::qt::widgets::MaskDialog::~MaskDialog()
   m_window.clear();
 }
 
-void te::qt::widgets::MaskDialog::setMaskSize(int size, int defaultValue)
+void te::qt::widgets::MaskDialog::setMaskSize(int height, int width, double defaultValue)
 {
   QGridLayout* layout = new QGridLayout(m_ui->m_widget);
 
   QString defaultValueStr;
   defaultValueStr.setNum(defaultValue);
 
-  for(int i = 0; i < size; ++i)
+  for(int i = 0; i < height; ++i)
   {
     std::vector<QLineEdit*> line;
 
-    for(int j = 0; j < size; ++j)
+    for(int j = 0; j < width; ++j)
     {
       QLineEdit* lineEdit = new QLineEdit(m_ui->m_widget);
       
-      lineEdit->setValidator(new QIntValidator(this));
-      lineEdit->setMaximumWidth(30);
+      lineEdit->setValidator(new QDoubleValidator(this));
+      lineEdit->setMaximumWidth(50);
       lineEdit->setAlignment(Qt::AlignHCenter);
       lineEdit->setText(defaultValueStr);
 
@@ -90,8 +90,8 @@ void te::qt::widgets::MaskDialog::setMaskSize(boost::numeric::ublas::matrix<doub
     {
       QLineEdit* lineEdit = new QLineEdit(m_ui->m_widget);
       
-      lineEdit->setValidator(new QIntValidator(this));
-      lineEdit->setMaximumWidth(30);
+      lineEdit->setValidator(new QDoubleValidator(this));
+      lineEdit->setMaximumWidth(50);
       lineEdit->setAlignment(Qt::AlignHCenter);
 
       QString value;
@@ -114,7 +114,13 @@ boost::numeric::ublas::matrix<double> te::qt::widgets::MaskDialog::getMatrix()
 
 void te::qt::widgets::MaskDialog::onOkPushButtonClicked()
 {
-  m_window.resize(m_matrix.size(), m_matrix.size());
+  if(m_matrix.empty())
+  {
+    QMessageBox::warning(this, tr("Warning"), tr("Matrix empty."));
+    return;
+  }
+
+  m_window.resize(m_matrix.size(), m_matrix[0].size());
 
   for(std::size_t i = 0; i < m_matrix.size(); ++i)
   {

@@ -16,9 +16,10 @@ te::qt::widgets::AnimationItem::AnimationItem(const QString& title, te::qt::widg
   QGraphicsPixmapItem(),
   m_title(title),
   m_display(display),
-  m_pos(QPoint(0,0)),
   m_SRID(-1),
+  m_pos(QPoint(0,0)),
   m_automaticPan(false),
+  m_panFactor(.01),
   m_curTimeDuration(0),
   m_opacity(255)
 {

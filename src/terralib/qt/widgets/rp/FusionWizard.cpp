@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -31,6 +31,7 @@
 #include "../../../rp/IHSFusion.h"
 #include "../../../rp/Module.h"
 #include "../../../rp/PCAFusion.h"
+#include "../../../rp/WisperFusion.h"
 #include "../help/HelpPushButton.h"
 #include "../layer/search/LayerSearchWidget.h"
 #include "../layer/search/LayerSearchWizardPage.h"
@@ -154,6 +155,9 @@ bool te::qt::widgets::FusionWizard::execute()
 
   if(m_fusionPage->isPCAFusion())
     return executePCA();
+
+  if(m_fusionPage->isWisperFusion())
+    return executeWisper();
 
   return false;
 }
@@ -405,6 +409,129 @@ bool te::qt::widgets::FusionWizard::executePCA()
   return true;
 }
 
+bool te::qt::widgets::FusionWizard::executeWisper()
+{
+  //get layer lower
+  std::list<te::map::AbstractLayerPtr> listLower = m_layerLowerSearchPage->getSearchWidget()->getSelecteds();
+  te::map::AbstractLayerPtr lLower = *listLower.begin();
+  std::auto_ptr<te::da::DataSet> dsLower = lLower->getData();
+
+  std::size_t rpos = te::da::GetFirstPropertyPos(dsLower.get(), te::dt::RASTER_TYPE);
+
+  te::rst::Raster* inputRstLower = dsLower->getRaster(rpos).release();
+
+  //get layer higher
+  std::list<te::map::AbstractLayerPtr> listHigher = m_layerHigherSearchPage->getSearchWidget()->getSelecteds();
+  te::map::AbstractLayerPtr lHigher = *listHigher.begin();
+  std::auto_ptr<te::da::DataSet> dsHigher = lHigher->getData();
+
+  rpos = te::da::GetFirstPropertyPos(dsHigher.get(), te::dt::RASTER_TYPE);
+
+  te::rst::Raster* inputRstHigher = dsHigher->getRaster(rpos).release();
+
+  te::rst::Raster* rasterLower = 0;
+  te::rst::Raster* rasterHigher = 0;
+
+  adjustRasters(inputRstLower, inputRstHigher, rasterLower, rasterHigher);
+
+  //run Wisper Fusion
+  te::rp::WisperFusion algorithmInstance;
+
+  te::rp::WisperFusion::InputParameters algoInputParams = m_fusionPage->getInputWisperParams();
+  algoInputParams.m_lowResRasterPtr = rasterLower;
+  algoInputParams.m_highResRasterPtr = rasterHigher;
+
+  te::rp::WisperFusion::OutputParameters algoOutputParams = m_fusionPage->getOutputWisperParams();
+  algoOutputParams.m_rInfo = m_rasterInfoPage->getWidget()->getInfo();
+  algoOutputParams.m_rType = m_rasterInfoPage->getWidget()->getType();
+
+  //progress
+  te::qt::widgets::ProgressViewerDialog v(this);
+  int id = te::common::ProgressManager::getInstance().addViewer(&v);
+
+  QApplication::setOverrideCursor(Qt::WaitCursor);
+
+  try
+  {
+    if(algorithmInstance.initialize(algoInputParams))
+    {
+      if(algorithmInstance.execute(algoOutputParams))
+      {
+        algoOutputParams.reset();
+
+        //set output layer
+        m_outputLayer = te::qt::widgets::createLayer(m_rasterInfoPage->getWidget()->getType(), 
+                                                     m_rasterInfoPage->getWidget()->getInfo());
+      
+        QMessageBox::information(this, tr("Fusion"), tr("Fusion ended sucessfully"));
+      }
+      else
+      {
+        QMessageBox::critical(this, tr("Fusion"), tr("Fusion execution error.") +
+          ( " " + te::rp::Module::getLastLogStr() ).c_str());
+
+        te::common::ProgressManager::getInstance().removeViewer(id);
+
+        QApplication::restoreOverrideCursor();
+
+        delete rasterLower;
+        delete rasterHigher;
+
+        return false;
+      }
+    }
+    else
+    {
+      QMessageBox::critical(this, tr("Fusion"), tr("Fusion initialization error.") +
+        ( " " + te::rp::Module::getLastLogStr() ).c_str() );
+
+      te::common::ProgressManager::getInstance().removeViewer(id);
+
+      QApplication::restoreOverrideCursor();
+
+      delete rasterLower;
+      delete rasterHigher;
+
+      return false;
+    }
+  }
+  catch(const std::exception& e)
+  {
+    QMessageBox::warning(this, tr("Fusion"), e.what());
+
+    te::common::ProgressManager::getInstance().removeViewer(id);
+
+    QApplication::restoreOverrideCursor();
+
+    delete rasterLower;
+    delete rasterHigher;
+
+    return false;
+  }
+  catch(...)
+  {
+    QMessageBox::warning(this, tr("Fusion"), tr("An exception has occurred!"));
+
+    te::common::ProgressManager::getInstance().removeViewer(id);
+
+    QApplication::restoreOverrideCursor();
+
+    delete rasterLower;
+    delete rasterHigher;
+
+    return false;
+  }
+
+  te::common::ProgressManager::getInstance().removeViewer(id);
+
+  QApplication::restoreOverrideCursor();
+
+  delete rasterLower;
+  delete rasterHigher;
+
+  return true;
+}
+
 void te::qt::widgets::FusionWizard::adjustRasters(te::rst::Raster* rInLower, te::rst::Raster* rInHigher, te::rst::Raster*& rOutLower, te::rst::Raster*& rOutHigher)
 {
   assert(rInLower);
@@ -446,20 +573,20 @@ void te::qt::widgets::FusionWizard::adjustRasters(te::rst::Raster* rInLower, te:
   //generate lower raster
   std::map<std::string, std::string> rLowerInfo;
   rLowerInfo["FORCE_MEM_DRIVER"] = "TRUE";
-  rLowerInfo["MEM_RASTER_NROWS"] = boost::lexical_cast<std::string>(interBox.getHeight() / rInLower->getResolutionX());
-  rLowerInfo["MEM_RASTER_NCOLS"] = boost::lexical_cast<std::string>(interBox.getWidth() / rInLower->getResolutionY());
-  rLowerInfo["MEM_RASTER_DATATYPE"] = boost::lexical_cast<std::string>(rInLower->getBandDataType(0));
-  rLowerInfo["MEM_RASTER_NBANDS"] = boost::lexical_cast<std::string>(rInLower->getNumberOfBands());
+//   rLowerInfo["MEM_RASTER_NROWS"] = boost::lexical_cast<std::string>(interBox.getHeight() / rInLower->getResolutionX());
+//   rLowerInfo["MEM_RASTER_NCOLS"] = boost::lexical_cast<std::string>(interBox.getWidth() / rInLower->getResolutionY());
+//   rLowerInfo["MEM_RASTER_DATATYPE"] = boost::lexical_cast<std::string>(rInLower->getBandDataType(0));
+//   rLowerInfo["MEM_RASTER_NBANDS"] = boost::lexical_cast<std::string>(rInLower->getNumberOfBands());
 
   rOutLower = rInLower->trim(&interBox, rLowerInfo);
 
   //generate higher raster
   std::map<std::string, std::string> rHigherInfo;
   rHigherInfo["FORCE_MEM_DRIVER"] = "TRUE";
-  rHigherInfo["MEM_RASTER_NROWS"] = boost::lexical_cast<std::string>(interBox.getHeight() / rInHigher->getResolutionX());
-  rHigherInfo["MEM_RASTER_NCOLS"] = boost::lexical_cast<std::string>(interBox.getWidth() / rInHigher->getResolutionY());
-  rHigherInfo["MEM_RASTER_DATATYPE"] = boost::lexical_cast<std::string>(rInHigher->getBandDataType(0));
-  rHigherInfo["MEM_RASTER_NBANDS"] = boost::lexical_cast<std::string>(rInHigher->getNumberOfBands());
+//   rHigherInfo["MEM_RASTER_NROWS"] = boost::lexical_cast<std::string>(interBox.getHeight() / rInHigher->getResolutionX());
+//   rHigherInfo["MEM_RASTER_NCOLS"] = boost::lexical_cast<std::string>(interBox.getWidth() / rInHigher->getResolutionY());
+//   rHigherInfo["MEM_RASTER_DATATYPE"] = boost::lexical_cast<std::string>(rInHigher->getBandDataType(0));
+//   rHigherInfo["MEM_RASTER_NBANDS"] = boost::lexical_cast<std::string>(rInHigher->getNumberOfBands());
 
   if(reproject)
   {

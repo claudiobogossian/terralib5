@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -334,7 +334,7 @@ te::map::Grouping* te::qt::plugins::terralib4::GetGrouping(TeTheme* theme)
 
   std::vector<te::map::GroupingItem*> items;
 
-  for(std::size_t i = 0; i < slices; ++i)
+  for(int i = 0; i < slices; ++i)
   {
     te::map::GroupingItem* item = new te::map::GroupingItem;
 
@@ -394,7 +394,7 @@ te::se::ColorMap* te::qt::plugins::terralib4::GetRasterGrouping(TeTheme* theme)
   //added dummy color for values < than min values...
   c->addValue(new te::se::ParameterValue(colorWhiteStr));
 
-  for(std::size_t i = 0; i < slices; ++i)
+  for(int i = 0; i < slices; ++i)
   {
     TeLegendEntry le = leg[i];
 

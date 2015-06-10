@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -38,22 +38,22 @@
 
 te::st::Object::Object(const std::string& id, TimeSeries* ts, Trajectory* tj)
   : m_id(id),
-    m_timeseries(ts),
-    m_trajectory(tj)
+    m_trajectory(tj),
+    m_timeseries(ts)
 {
 }
 
 te::st::Object::Object(const std::string& id, TimeSeries* ts)
   : m_id(id),
-    m_timeseries(ts),
-    m_trajectory()
+    m_trajectory(),
+    m_timeseries(ts)
 {
 }
 
 te::st::Object::Object(const std::string& id, Trajectory* tj)
   : m_id(id),
-    m_timeseries(),
-    m_trajectory(tj)
+    m_trajectory(tj),
+    m_timeseries()
 {
 }
 

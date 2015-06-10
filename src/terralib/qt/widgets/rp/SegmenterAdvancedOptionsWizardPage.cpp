@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -50,7 +50,7 @@ te::qt::widgets::SegmenterAdvancedOptionsWizardPage::SegmenterAdvancedOptionsWiz
   m_ui->m_enableThreadedProcessingcheckBox->setChecked(input.m_enableThreadedProcessing);
   m_ui->m_maximumThreadsNumberLineEdit->setText(threadNumber);
   m_ui->m_enableBlockProcessingcheckBox->setChecked(input.m_enableBlockProcessing);
-  m_ui->m_enableBlockMergingCheckBox->setChecked(input.m_enableBlockMerging);
+  m_ui->m_blockOverlapPercentSpinBox->setValue(input.m_blocksOverlapPercent);
   m_ui->m_maximumBlockSizeLineEdit->setText(maxBlockSize);
 }
 

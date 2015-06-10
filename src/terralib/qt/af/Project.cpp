@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -95,7 +95,15 @@ std::list<te::map::AbstractLayerPtr> te::qt::af::Project::getAllLayers(bool inva
     {
       std::vector<te::map::AbstractLayer*> children = topLevelLayer->getDescendants();
       for(std::size_t i = 0; i < children.size(); ++i)
+      {
+        if(!invalid && !children[i]->isValid())
+        {
+          continue;
+        }
+
         layers.push_back(te::map::AbstractLayerPtr(children[i]));
+      }
+        
     }
   }
 

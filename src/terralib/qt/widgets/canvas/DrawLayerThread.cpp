@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -62,10 +62,10 @@ void te::qt::widgets::DrawLayerThread::draw(te::map::AbstractLayer* layer, const
 
   // Creates the result image
   if(m_image.size() != size)
-  {
     m_image = QImage(size, QImage::Format_ARGB32_Premultiplied);
-    m_image.fill(qRgba(0, 0, 0, 0));
-  }
+
+   m_image.fill(qRgba(0, 0, 0, 0));
+
 
   // Requests the thread execution!
   start();
@@ -105,19 +105,23 @@ void te::qt::widgets::DrawLayerThread::run()
     }
     catch(const te::da::Exception& e)
     {
-      if(e.code() != te::common::NO_CONNECTION_AVAILABLE)
+      if(e.code() == te::common::NO_CONNECTION_AVAILABLE)
+      {
+        //try again
+        //msleep(100);
+      }
+      else
       {
         m_finishedWithSuccess = false;
         m_errorMessage = QString(tr("The layer") + " %1 " + tr("could not be drawn! Details:") + " %2").arg(m_layer->getTitle().c_str()).arg(e.what());
-        break;
+        break; // finish with error
       }
-      msleep(100);
     }
     catch(const std::exception& e)
     {
       m_finishedWithSuccess = false;
       m_errorMessage = QString(tr("The layer") + " %1 " + tr("could not be drawn! Details:") + " %2").arg(m_layer->getTitle().c_str()).arg(e.what());
-      break;
+      break; // finish with error
     }
   }
 }

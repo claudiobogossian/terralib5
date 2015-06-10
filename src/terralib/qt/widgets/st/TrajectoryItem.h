@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/qt/widgets/canvas/TrajectoryItem.h
+  \file terralib/qt/widgets/st/TrajectoryItem.h
 
   \brief This file defines a class for a Trajectory Item.
 */
@@ -66,10 +66,11 @@ namespace te
           \brief Constructor
           It constructs a Trajectory Icon Item.
           \param title The icon item title.
-          \param file The icon file.
           \param display Where the icon item is displayed.
+          \param file The icon file.
+          \param size icon size.
         */
-        TrajectoryItem(const QString& title, const QString& file, te::qt::widgets::MapDisplay* display);
+        TrajectoryItem(const QString& title, te::qt::widgets::MapDisplay* display, const QString& file, const QSize& size);
 
         /*!
           \brief Destructor
@@ -110,6 +111,9 @@ namespace te
         void erase(const unsigned int& curTime);
 
       public:
+        QString m_iconFile;       //!< file that generated the pixmap
+        QSize m_iconSize;         //!< icon size
+        bool m_drawTrail;         //!< flag to draw trail
         QColor m_forwardColor;    //!< The forward trail color.
         QColor m_backwardColor;   //!< The backward trail color.
         int m_lineWidth;          //!< The route/trail line width in pixels.

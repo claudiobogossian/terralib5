@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -37,6 +37,9 @@ namespace te
     class Raster;
     class RasterFactory;
 	  class RasterProperty;
+    class SynchronizedBand;
+    class SynchronizedBandBlocksManager;
+    class SynchronizedRaster;
     class Platform;
 
   } // end namespace rst

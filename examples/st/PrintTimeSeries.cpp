@@ -14,7 +14,7 @@ void PrintTimeSeries(boost::ptr_vector<te::st::TimeSeries>& input)
 {
   for(std::size_t i=0; i<input.size(); ++i)
   {
-	  std::cout << "Printing observations of the time series " << i << " :" << std::endl;
+    std::cout << "Printing observations of the time series " << i << " :" << std::endl;
     PrintTimeSeries(&input[i]);
   }
 }
@@ -35,7 +35,7 @@ void PrintTimeSeries(te::st::TimeSeries* ts)
   while(it != ts->end())
   {
     std::cout << "Date and time: " <<  it.getTime()->toString() << std::endl;
-    std::cout << "Value: " <<  it.getValue()->toString()  << std::endl << std::endl;     
+    std::cout << "Value: " <<  it.getValue()->toString()  << std::endl << std::endl;
     ++it;
   }
 }
@@ -44,7 +44,7 @@ void PrintTimeSeriesInfo(boost::ptr_vector<te::st::TimeSeries>& input)
 {
   for(std::size_t i=0; i<input.size(); ++i)
   {
-	  std::cout << "Printing information about the time series " << i << " :" << std::endl;
+    std::cout << "Printing information about the time series " << i << " :" << std::endl;
     PrintTimeSeriesInfo(&input[i]);
   }
 }
@@ -67,7 +67,7 @@ void PrintTimeSeriesInfo(te::st::TimeSeries* ts)
 
   te::gm::Geometry* gm = ts->getLocation();
   if(gm!=0)
-    std::cout << "Time series location: " << gm->toString() << std::endl;  
+    std::cout << "Time series location: " << gm->toString() << std::endl;
 }
 
 

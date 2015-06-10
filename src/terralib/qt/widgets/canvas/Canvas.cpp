@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -2217,4 +2217,11 @@ void te::qt::widgets::Canvas::setNormalMode()
 {
   m_painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
   m_erase = false;
+}
+
+void te::qt::widgets::Canvas::setMatrix(const QMatrix& matrix )
+{
+  m_matrix = matrix;
+
+  m_painter.setMatrix(m_matrix);
 }

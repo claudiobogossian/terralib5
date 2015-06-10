@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -105,7 +105,7 @@ terralib4::TableDataSet::TableDataSet( TeDatabase* db, TeTable table)
           break;
 
         case TeREAL:
-          item->setNumeric(i, portal->getData(i));
+          item->setDouble(i, portal->getDouble(i));//Numeric(i, portal->getData(i));
           break;
 
         case TeINT:

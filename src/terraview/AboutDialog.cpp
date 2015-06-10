@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of TerraView - A Free and Open Source GIS Application.
 
@@ -54,7 +54,7 @@ AboutDialog::AboutDialog(QWidget* parent, Qt::WindowFlags f)
 
   m_ui->m_terralibLogo->setPixmap(pixmapTE);
 
-  std::string copyrightStr = tr("<p>Copyright &copy; 2010-2013 INPE<BR>").toStdString();
+  std::string copyrightStr = tr("<p>Copyright &copy; 2010-2015 INPE<BR>").toStdString();
   m_ui->m_copyrightLabel->setText(copyrightStr.c_str());
 
   std::string terraviewVersionStr = tr("TerraView Version: ").toStdString() + TERRALIB_VERSION_STRING;

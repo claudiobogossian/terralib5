@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -90,10 +90,27 @@ namespace te
 
         void create(te::rst::Grid *g, const std::vector< te::rst::BandProperty * > bands, const std::map< std::string, std::string > &rinfo, void *h = 0, void(*deleter)(void *) = 0)
         {
-        // see terralib/memory/Raster.cpp (create)
-	// to be implemented
-	}
+          // see terralib/memory/Raster.cpp (create)
+          // to be implemented
+        }
 
+        bool createMultiResolution( const unsigned int levels, const te::rst::InterpolationMethod interpMethod )
+        {
+          return false;
+        };
+        
+        bool removeMultiResolution() { return false; }; 
+        
+        unsigned int getMultiResLevelsCount() const
+        {
+          return 0;        
+        }
+        
+        te::rst::Raster* getMultiResLevel( const unsigned int level ) const
+        {
+          return 0;         
+        }  
+        	
       protected:
 
         std::vector<Band*> m_bands;       //!< The list of data bands.

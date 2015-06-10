@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -99,7 +99,7 @@ namespace te
   } // end namespace xerces
 }   // end namespace te
 
-PLUGIN_CALL_BACK_DECLARATION(TEXERCESEXPORT);
+PLUGIN_CALL_BACK_DECLARATION(TEXERCESEXPORT)
 
 #endif  // __TERRALIB_XERCES_INTERNAL_MODULE_H
 

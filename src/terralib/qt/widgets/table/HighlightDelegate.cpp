@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -50,7 +50,10 @@ bool ToHighlight(te::da::DataSet* dset, const std::vector<size_t>& cols, const s
   std::string pkey;
 
   for(size_t i=0; i<cols.size(); i++)
-    pkey += dset->getAsString(cols[i]) + ";";
+  {
+    if(dset->isNull(cols[i]) == false)
+      pkey += dset->getAsString(cols[i]) + ";";
+  }
 
   return (data.find(pkey) != data.end());
 }

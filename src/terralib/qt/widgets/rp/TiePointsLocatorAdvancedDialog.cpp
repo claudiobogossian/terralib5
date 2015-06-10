@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -104,13 +104,13 @@ namespace te
           
         switch( m_inputParameters.m_interpMethod )
         {
-          case te::rst::Interpolator::Bilinear :
+          case te::rst::Bilinear :
           {
             m_uiPtr->m_interpMethodComboBox->setCurrentIndex(
               m_uiPtr->m_interpMethodComboBox->findText( "Bilinear" ) );
             break;
           }
-          case te::rst::Interpolator::Bicubic :
+          case te::rst::Bicubic :
           {
             m_uiPtr->m_interpMethodComboBox->setCurrentIndex(
               m_uiPtr->m_interpMethodComboBox->findText( "Bicubic" ) );
@@ -130,7 +130,7 @@ namespace te
           m_inputParameters.m_moravecCorrelationWindowWidth ) );
           
         m_uiPtr->m_gaussianFilterIterationsLineEdit->setText( QString::number(
-          m_inputParameters.m_moravecGaussianFilterIterations ) );
+          m_inputParameters.m_moravecNoiseFilterIterations ) );
           
         m_uiPtr->m_minAbsCorrelationLineEdit->setText( QString::number(
           m_inputParameters.m_moravecMinAbsCorrelation ) );
@@ -179,15 +179,15 @@ namespace te
           
         if( m_uiPtr->m_interpMethodComboBox->currentText() == "Bilinear" )
         {
-          m_inputParameters.m_interpMethod = te::rst::Interpolator::Bilinear;
+          m_inputParameters.m_interpMethod = te::rst::Bilinear;
         }
         else if( m_uiPtr->m_interpMethodComboBox->currentText() == "Bicubic" )
         {
-          m_inputParameters.m_interpMethod = te::rst::Interpolator::Bicubic;
+          m_inputParameters.m_interpMethod = te::rst::Bicubic;
         }
         else
         {
-          m_inputParameters.m_interpMethod = te::rst::Interpolator::NearestNeighbor;
+          m_inputParameters.m_interpMethod = te::rst::NearestNeighbor;
         }
         
         m_inputParameters.m_maxTiePoints =  
@@ -196,7 +196,7 @@ namespace te
         m_inputParameters.m_moravecCorrelationWindowWidth = 
           m_uiPtr->m_correlationWindowWidthLineEdit->text().toUInt();
           
-        m_inputParameters.m_moravecGaussianFilterIterations = 
+        m_inputParameters.m_moravecNoiseFilterIterations = 
           m_uiPtr->m_gaussianFilterIterationsLineEdit->text().toUInt();
           
         m_inputParameters.m_moravecMinAbsCorrelation = 

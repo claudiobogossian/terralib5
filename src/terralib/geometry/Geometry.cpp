@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "terralib_config.h"
 #include "../common/Globals.h"
 #include "../common/Translator.h"
 #include "../datatype/Enums.h"
@@ -213,6 +214,11 @@ te::gm::Geometry* te::gm::Geometry::getBoundary() const throw(std::exception)
 bool te::gm::Geometry::equals(const Geometry* const rhs, const bool exact) const throw(std::exception)
 {
 #ifdef TERRALIB_GEOS_ENABLED
+  if( m_srid != rhs->m_srid )
+  {
+    throw te::common::Exception(TE_TR("this method must not be used with different SRIDs geometries."));
+  }
+  
   std::auto_ptr<geos::geom::Geometry> thisGeom(GEOSWriter::write(this));
 
   std::auto_ptr<geos::geom::Geometry> rhsGeom(GEOSWriter::write(rhs));
@@ -229,6 +235,11 @@ bool te::gm::Geometry::equals(const Geometry* const rhs, const bool exact) const
 bool te::gm::Geometry::disjoint(const Geometry* const rhs) const throw(std::exception)
 {
 #ifdef TERRALIB_GEOS_ENABLED
+  if( m_srid != rhs->m_srid )
+  {
+    throw te::common::Exception(TE_TR("this method must not be used with different SRIDs geometries."));
+  }
+    
   std::auto_ptr<geos::geom::Geometry> thisGeom(GEOSWriter::write(this));
 
   std::auto_ptr<geos::geom::Geometry> rhsGeom(GEOSWriter::write(rhs));
@@ -243,6 +254,11 @@ bool te::gm::Geometry::disjoint(const Geometry* const rhs) const throw(std::exce
 bool te::gm::Geometry::intersects(const Geometry* const rhs) const throw(std::exception)
 {
 #ifdef TERRALIB_GEOS_ENABLED
+  if( m_srid != rhs->m_srid )
+  {
+    throw te::common::Exception(TE_TR("this method must not be used with different SRIDs geometries."));
+  }
+    
   std::auto_ptr<geos::geom::Geometry> thisGeom(GEOSWriter::write(this));
 
   std::auto_ptr<geos::geom::Geometry> rhsGeom(GEOSWriter::write(rhs));
@@ -257,6 +273,11 @@ bool te::gm::Geometry::intersects(const Geometry* const rhs) const throw(std::ex
 bool te::gm::Geometry::touches(const Geometry* const rhs) const throw(std::exception)
 {
 #ifdef TERRALIB_GEOS_ENABLED
+  if( m_srid != rhs->m_srid )
+  {
+    throw te::common::Exception(TE_TR("this method must not be used with different SRIDs geometries."));
+  }
+    
   std::auto_ptr<geos::geom::Geometry> thisGeom(GEOSWriter::write(this));
 
   std::auto_ptr<geos::geom::Geometry> rhsGeom(GEOSWriter::write(rhs));
@@ -271,6 +292,11 @@ bool te::gm::Geometry::touches(const Geometry* const rhs) const throw(std::excep
 bool te::gm::Geometry::crosses(const Geometry* const rhs) const throw(std::exception)
 {
 #ifdef TERRALIB_GEOS_ENABLED
+  if( m_srid != rhs->m_srid )
+  {
+    throw te::common::Exception(TE_TR("this method must not be used with different SRIDs geometries."));
+  }
+    
   std::auto_ptr<geos::geom::Geometry> thisGeom(GEOSWriter::write(this));
 
   std::auto_ptr<geos::geom::Geometry> rhsGeom(GEOSWriter::write(rhs));
@@ -285,6 +311,11 @@ bool te::gm::Geometry::crosses(const Geometry* const rhs) const throw(std::excep
 bool te::gm::Geometry::within(const Geometry* const rhs) const throw(std::exception)
 {
 #ifdef TERRALIB_GEOS_ENABLED
+  if( m_srid != rhs->m_srid )
+  {
+    throw te::common::Exception(TE_TR("this method must not be used with different SRIDs geometries."));
+  }
+    
   std::auto_ptr<geos::geom::Geometry> thisGeom(GEOSWriter::write(this));
 
   std::auto_ptr<geos::geom::Geometry> rhsGeom(GEOSWriter::write(rhs));
@@ -299,6 +330,11 @@ bool te::gm::Geometry::within(const Geometry* const rhs) const throw(std::except
 bool te::gm::Geometry::contains(const Geometry* const rhs) const throw(std::exception)
 {
 #ifdef TERRALIB_GEOS_ENABLED
+  if( m_srid != rhs->m_srid )
+  {
+    throw te::common::Exception(TE_TR("this method must not be used with different SRIDs geometries."));
+  }
+    
   std::auto_ptr<geos::geom::Geometry> thisGeom(GEOSWriter::write(this));
 
   std::auto_ptr<geos::geom::Geometry> rhsGeom(GEOSWriter::write(rhs));
@@ -313,6 +349,11 @@ bool te::gm::Geometry::contains(const Geometry* const rhs) const throw(std::exce
 bool te::gm::Geometry::overlaps(const Geometry* const rhs) const throw(std::exception)
 {
 #ifdef TERRALIB_GEOS_ENABLED
+  if( m_srid != rhs->m_srid )
+  {
+    throw te::common::Exception(TE_TR("this method must not be used with different SRIDs geometries."));
+  }
+    
   std::auto_ptr<geos::geom::Geometry> thisGeom(GEOSWriter::write(this));
 
   std::auto_ptr<geos::geom::Geometry> rhsGeom(GEOSWriter::write(rhs));
@@ -329,6 +370,11 @@ bool te::gm::Geometry::relate(const Geometry* const rhs, const std::string& matr
   assert(matrix.size() == 9);
 
 #ifdef TERRALIB_GEOS_ENABLED
+  if( m_srid != rhs->m_srid )
+  {
+    throw te::common::Exception(TE_TR("this method must not be used with different SRIDs geometries."));
+  }
+    
   std::auto_ptr<geos::geom::Geometry> thisGeom(GEOSWriter::write(this));
 
   std::auto_ptr<geos::geom::Geometry> rhsGeom(GEOSWriter::write(rhs));
@@ -343,6 +389,11 @@ bool te::gm::Geometry::relate(const Geometry* const rhs, const std::string& matr
 std::string te::gm::Geometry::relate(const Geometry* const rhs) const throw(std::exception)
 {
 #ifdef TERRALIB_GEOS_ENABLED
+  if( m_srid != rhs->m_srid )
+  {
+    throw te::common::Exception(TE_TR("this method must not be used with different SRIDs geometries."));
+  }
+    
   std::auto_ptr<geos::geom::Geometry> thisGeom(GEOSWriter::write(this));
 
   std::auto_ptr<geos::geom::Geometry> rhsGeom(GEOSWriter::write(rhs));
@@ -359,6 +410,11 @@ std::string te::gm::Geometry::relate(const Geometry* const rhs) const throw(std:
 bool te::gm::Geometry::covers(const Geometry* const rhs) const throw(std::exception)
 {
 #ifdef TERRALIB_GEOS_ENABLED
+  if( m_srid != rhs->m_srid )
+  {
+    throw te::common::Exception(TE_TR("this method must not be used with different SRIDs geometries."));
+  }
+    
   std::auto_ptr<geos::geom::Geometry> thisGeom(GEOSWriter::write(this));
 
   std::auto_ptr<geos::geom::Geometry> rhsGeom(GEOSWriter::write(rhs));
@@ -373,6 +429,11 @@ bool te::gm::Geometry::covers(const Geometry* const rhs) const throw(std::except
 bool te::gm::Geometry::coveredBy(const Geometry* const rhs) const throw(std::exception)
 {
 #ifdef TERRALIB_GEOS_ENABLED
+  if( m_srid != rhs->m_srid )
+  {
+    throw te::common::Exception(TE_TR("this method must not be used with different SRIDs geometries."));
+  }
+    
   std::auto_ptr<geos::geom::Geometry> thisGeom(GEOSWriter::write(this));
 
   std::auto_ptr<geos::geom::Geometry> rhsGeom(GEOSWriter::write(rhs));
@@ -392,6 +453,11 @@ te::gm::Geometry* te::gm::Geometry::locateBetween(const double& /*mStart*/, cons
 double te::gm::Geometry::distance(const Geometry* const rhs) const throw(std::exception)
 {
 #ifdef TERRALIB_GEOS_ENABLED
+  if( m_srid != rhs->m_srid )
+  {
+    throw te::common::Exception(TE_TR("this method must not be used with different SRIDs geometries."));
+  }
+    
   std::auto_ptr<geos::geom::Geometry> thisGeom(GEOSWriter::write(this));
 
   std::auto_ptr<geos::geom::Geometry> rhsGeom(GEOSWriter::write(rhs));
@@ -455,6 +521,11 @@ te::gm::Geometry* te::gm::Geometry::convexHull() const throw(std::exception)
 te::gm::Geometry* te::gm::Geometry::intersection(const Geometry* const rhs) const throw(std::exception)
 {
 #ifdef TERRALIB_GEOS_ENABLED
+  if( m_srid != rhs->m_srid )
+  {
+    throw te::common::Exception(TE_TR("this method must not be used with different SRIDs geometries."));
+  }
+    
   std::auto_ptr<geos::geom::Geometry> thisGeom(GEOSWriter::write(this));
 
   std::auto_ptr<geos::geom::Geometry> rhsGeom(GEOSWriter::write(rhs));
@@ -473,7 +544,11 @@ te::gm::Geometry* te::gm::Geometry::intersection(const Geometry* const rhs) cons
 te::gm::Geometry* te::gm::Geometry::Union(const Geometry* const rhs) const throw(std::exception)
 {
 #ifdef TERRALIB_GEOS_ENABLED
-
+  if( m_srid != rhs->m_srid )
+  {
+    throw te::common::Exception(TE_TR("this method must not be used with different SRIDs geometries."));
+  }
+  
   std::auto_ptr<geos::geom::Geometry> thisGeom(GEOSWriter::write(this));
 
   std::auto_ptr<geos::geom::Geometry> rhsGeom(GEOSWriter::write(rhs));
@@ -492,6 +567,11 @@ te::gm::Geometry* te::gm::Geometry::Union(const Geometry* const rhs) const throw
 te::gm::Geometry* te::gm::Geometry::difference(const Geometry* const rhs) const throw(std::exception)
 {
 #ifdef TERRALIB_GEOS_ENABLED
+  if( m_srid != rhs->m_srid )
+  {
+    throw te::common::Exception(TE_TR("this method must not be used with different SRIDs geometries."));
+  }
+    
   std::auto_ptr<geos::geom::Geometry> thisGeom(GEOSWriter::write(this));
 
   std::auto_ptr<geos::geom::Geometry> rhsGeom(GEOSWriter::write(rhs));
@@ -510,6 +590,11 @@ te::gm::Geometry* te::gm::Geometry::difference(const Geometry* const rhs) const 
 te::gm::Geometry* te::gm::Geometry::symDifference(const Geometry* const rhs) const throw(std::exception)
 {
 #ifdef TERRALIB_GEOS_ENABLED
+  if( m_srid != rhs->m_srid )
+  {
+    throw te::common::Exception(TE_TR("this method must not be used with different SRIDs geometries."));
+  }
+    
   std::auto_ptr<geos::geom::Geometry> thisGeom(GEOSWriter::write(this));
 
   std::auto_ptr<geos::geom::Geometry> rhsGeom(GEOSWriter::write(rhs));
@@ -529,6 +614,11 @@ bool te::gm::Geometry::dWithin(const Geometry* const rhs, const double& distance
   assert(distance >= 0.0);
 
 #ifdef TERRALIB_GEOS_ENABLED
+  if( m_srid != rhs->m_srid )
+  {
+    throw te::common::Exception(TE_TR("this method must not be used with different SRIDs geometries."));
+  }
+    
   std::auto_ptr<geos::geom::Geometry> thisGeom(GEOSWriter::write(this));
 
   std::auto_ptr<geos::geom::Geometry> rhsGeom(GEOSWriter::write(rhs));

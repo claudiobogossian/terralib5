@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -56,8 +56,9 @@ namespace te
   {
     namespace widgets
     {
-      class QueryDialog;
       class ChartDisplayWidget;
+      class CompositionModeMenuWidget;
+      class QueryDialog;
     }
 
     namespace af
@@ -98,6 +99,8 @@ namespace te
 
           MapDisplay* getDisplay();
 
+          InterfaceController* getInterfaceController();
+
           virtual void resetState();
 
           void resetTerraLib(const bool& status);
@@ -117,6 +120,8 @@ namespace te
           void onRemoveLayerTriggered();
 
           void onChangeLayerDataSourceTriggered();
+
+          void onUpdateLayerDataSourceTriggered();
 
           void onLayerRemoveItemTriggered();
 
@@ -146,6 +151,10 @@ namespace te
 
           void onToolsQueryDataSourceTriggered();
 
+          void onToolsRasterMultiResolutionTriggered();
+
+          void onToolsFixGeometryTriggered();
+
           void onProjectPropertiesTriggered();
 
           void onAddFolderLayerTriggered();
@@ -160,6 +169,8 @@ namespace te
 
           void onLayerHistogramTriggered();
 
+          void onLinkTriggered(); 
+
           void onLayerScatterTriggered();
 
           void onLayerChartTriggered();
@@ -171,6 +182,8 @@ namespace te
           void onLayerFitSelectedOnMapDisplayTriggered();
 
           void onLayerPanToSelectedOnMapDisplayTriggered();
+
+          void onLayerCompositionModeTriggered();
 
           void onQueryLayerTriggered();
 
@@ -218,13 +231,13 @@ namespace te
 
           void onLayerExplorerVisibilityChanged(bool visible);
 
-          void onDisplayVisibilityChanged(bool visible);
-
           void onDisplayDataTableChanged(bool visible);
 
           void onStyleExplorerVisibilityChanged(bool visible);
 
           void onDataSourceExplorerTriggered();
+
+          void onCreateNewLayer(te::map::AbstractLayerPtr layer);
 
           //void onTrajectoryAnimationTriggered(); // Lauro
 
@@ -261,7 +274,6 @@ namespace te
 
           //! Qt components
           QAction* m_viewLayerExplorer;
-          QAction* m_viewMapDisplay;
           QAction* m_viewDataTable;
           QAction* m_viewStyleExplorer;
           //QAction* m_editUndo;
@@ -281,6 +293,8 @@ namespace te
           QAction* m_toolsDataExchangerDirectPopUp;
           QAction* m_toolsDataSourceExplorer;
           QAction* m_toolsQueryDataSource;
+          QAction* m_toolsRasterMultiResolution;
+          QAction* m_toolsFixGeometry;
           QAction* m_pluginsManager;
           QAction* m_helpContents;
           QAction* m_helpUpdate;
@@ -291,6 +305,7 @@ namespace te
           QAction* m_projectAddLayerGraph;
           QAction* m_projectAddFolderLayer;
           QAction* m_projectChangeLayerDataSource;
+          QAction* m_projectUpdateLayerDataSource;
           QAction* m_projectRemoveLayer;
           QAction* m_projectRenameLayer;
           QAction* m_projectProperties;
@@ -307,11 +322,13 @@ namespace te
           QAction* m_layerChartsHistogram;
           QAction* m_layerChartsScatter;
           QAction* m_layerChart;
+          QAction* m_layerLinkTable;
           QAction* m_layerObjectGrouping;
           QAction* m_layerFitOnMapDisplay;
           QAction* m_layerRemoveObjectSelection;
           QAction* m_layerFitSelectedOnMapDisplay;
           QAction* m_layerPanToSelectedOnMapDisplay;
+          QAction* m_layerCompositionMode;
           QAction* m_queryLayer;
           QAction* m_toolsDataSourceManagement;
           QAction* m_helpAbout;
@@ -379,6 +396,9 @@ namespace te
 
           //non modal intefaces
           te::qt::widgets::QueryDialog* m_queryDlg;
+
+          //popup menus
+          te::qt::widgets::CompositionModeMenuWidget* m_compModeMenu;
 
           // Project
           Project* m_project;

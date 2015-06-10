@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -89,6 +89,10 @@
 
 #ifdef TERRALIB_MOD_RP_ENABLED
 #include "terralib/rp.h"
+#endif
+
+#ifdef TERRALIB_MOD_SA_CORE_ENABLED
+#include "terralib/sa.h"
 #endif
 
 #ifdef TERRALIB_MOD_SAM_ENABLED

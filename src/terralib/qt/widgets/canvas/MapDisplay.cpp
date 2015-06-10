@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -39,6 +39,7 @@
 #include <QPaintDevice>
 #include <QResizeEvent>
 #include <QTimer>
+#include <QGraphicsView>
 
 te::qt::widgets::MapDisplay::MapDisplay(const QSize& size, QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f),
@@ -58,6 +59,27 @@ te::qt::widgets::MapDisplay::MapDisplay(const QSize& size, QWidget* parent, Qt::
   m_draftPixmap->fill(Qt::transparent);
 
   resize(size);
+  setAcceptDrops(true);
+}
+
+te::qt::widgets::MapDisplay::MapDisplay(QWidget* parent, Qt::WindowFlags f)
+: QWidget(parent, f),
+te::map::MapDisplay(),
+m_displayPixmap(new QPixmap(size())),
+m_draftPixmap(new QPixmap(size())),
+m_backgroundColor(Qt::white),
+m_resizePolicy(te::qt::widgets::MapDisplay::Fixed),
+m_timer(new QTimer(this)),
+m_interval(200),
+m_isDrawing(false)
+{
+  m_timer->setSingleShot(true);
+  connect(m_timer, SIGNAL(timeout()), this, SLOT(onResizeTimeout()));
+
+  m_displayPixmap->fill(m_backgroundColor);
+  m_draftPixmap->fill(Qt::transparent);
+
+  setAcceptDrops(true);
 }
 
 te::qt::widgets::MapDisplay::~MapDisplay()
@@ -70,32 +92,6 @@ te::qt::widgets::MapDisplay::~MapDisplay()
     delete it->second;
 
   m_layerCanvasMap.clear();
-}
-
-void te::qt::widgets::MapDisplay::dragEnterEvent(QDragEnterEvent* e)
-{
-  Qt::DropActions actions = e->dropAction();
-  if(actions != Qt::CopyAction)
-    return;
-
-  const QMimeData* mime = e->mimeData();
-  QString s = mime->data("application/x-terralib;value=\"DraggedItems\"").constData();
-  if(s.isEmpty())
-    return;
-
-  e->accept();
-  return;
-}
-
-void te::qt::widgets::MapDisplay::dropEvent(QDropEvent* e)
-{
-  const QMimeData* mime = e->mimeData();
-  QString s = mime->data("application/x-terralib;value=\"DraggedItems\"").constData();
-  unsigned long v = s.toULongLong();
-  std::vector<te::qt::widgets::AbstractTreeItem*>* draggedItems = reinterpret_cast<std::vector<AbstractTreeItem*>*>(v);
-  te::qt::widgets::AbstractTreeItem* item = draggedItems->operator[](0);
-  te::map::AbstractLayerPtr al = item->getLayer();
-  changeData(al);
 }
 
 void te::qt::widgets::MapDisplay::changeData(te::map::AbstractLayerPtr al, int nsrid)
@@ -252,7 +248,14 @@ void te::qt::widgets::MapDisplay::draw(te::map::AbstractLayer* layer, QPainter& 
   te::qt::widgets::Canvas* canvas = getCanvas(layer);
 
   // Draw the current layer
-  layer->draw(canvas, m_extent, m_srid);
+  try
+  {
+    layer->draw(canvas, m_extent, m_srid);
+  }
+  catch(...)
+  {
+    return;
+  }
 
   // Compose the result
   QPaintDevice* device = canvas->getDevice();

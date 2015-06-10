@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -37,8 +37,8 @@
 #include "../../../fe/PropertyIsNull.h"
 #include "../../../fe/PropertyName.h"
 #include "../../../fe/UnaryLogicOp.h"
+#include "../../../xml/AbstractWriter.h"
 #include "../../../xml/Reader.h"
-#include "../../../xml/Writer.h"
 #include "../../Exception.h"
 #include "AbstractOp.h"
 #include "Expression.h"
@@ -71,18 +71,18 @@ te::fe::AbstractOp* BBOXReader(const char* opName, te::xml::Reader& reader);
 /* @name AbstractOp Writer Methods */
 //@{
 
-void BinaryComparsionOpWriter(const te::fe::AbstractOp* op, te::xml::Writer& writer);
+void BinaryComparsionOpWriter(const te::fe::AbstractOp* op, te::xml::AbstractWriter& writer);
 
-void BetweenWriter(const te::fe::AbstractOp* op, te::xml::Writer& writer);
-void LikeWriter(const te::fe::AbstractOp* op, te::xml::Writer& writer);
-void NullWriter(const te::fe::AbstractOp* op, te::xml::Writer& writer);
+void BetweenWriter(const te::fe::AbstractOp* op, te::xml::AbstractWriter& writer);
+void LikeWriter(const te::fe::AbstractOp* op, te::xml::AbstractWriter& writer);
+void NullWriter(const te::fe::AbstractOp* op, te::xml::AbstractWriter& writer);
 
-void BinaryLogicOpWriter(const te::fe::AbstractOp* op, te::xml::Writer& writer);
-void UnaryLogicOpWriter(const te::fe::AbstractOp* op, te::xml::Writer& writer);
+void BinaryLogicOpWriter(const te::fe::AbstractOp* op, te::xml::AbstractWriter& writer);
+void UnaryLogicOpWriter(const te::fe::AbstractOp* op, te::xml::AbstractWriter& writer);
 
-void BinarySpatialOpWriter(const te::fe::AbstractOp* op, te::xml::Writer& writer);
-void DistanceBufferOpWriter(const te::fe::AbstractOp* op, te::xml::Writer& writer);
-void BBOXWriter(const te::fe::AbstractOp* op, te::xml::Writer& writer);
+void BinarySpatialOpWriter(const te::fe::AbstractOp* op, te::xml::AbstractWriter& writer);
+void DistanceBufferOpWriter(const te::fe::AbstractOp* op, te::xml::AbstractWriter& writer);
+void BBOXWriter(const te::fe::AbstractOp* op, te::xml::AbstractWriter& writer);
 
 //@}
 
@@ -112,7 +112,7 @@ te::fe::AbstractOp* te::fe::serialize::AbstractOp::read(te::xml::Reader& reader)
   return it->second.first(m_names.find(opName)->second, reader);
 }
 
-void te::fe::serialize::AbstractOp::write(const te::fe::AbstractOp* op, te::xml::Writer& writer) const
+void te::fe::serialize::AbstractOp::write(const te::fe::AbstractOp* op, te::xml::AbstractWriter& writer) const
 {
   assert(op);
 
@@ -408,7 +408,7 @@ te::fe::AbstractOp* BBOXReader(const char* opName, te::xml::Reader& reader)
   return op.release();
 }
 
-void BinaryComparsionOpWriter(const te::fe::AbstractOp* op, te::xml::Writer& writer)
+void BinaryComparsionOpWriter(const te::fe::AbstractOp* op, te::xml::AbstractWriter& writer)
 {
   const te::fe::BinaryComparisonOp* binaryOp = dynamic_cast<const te::fe::BinaryComparisonOp*>(op);
 
@@ -424,7 +424,7 @@ void BinaryComparsionOpWriter(const te::fe::AbstractOp* op, te::xml::Writer& wri
   writer.writeEndElement(GetQualifiedName(op));
 }
 
-void BetweenWriter(const te::fe::AbstractOp* op, te::xml::Writer& writer)
+void BetweenWriter(const te::fe::AbstractOp* op, te::xml::AbstractWriter& writer)
 {
   const te::fe::PropertyIsBetween* between = dynamic_cast<const te::fe::PropertyIsBetween*>(op);
 
@@ -442,7 +442,7 @@ void BetweenWriter(const te::fe::AbstractOp* op, te::xml::Writer& writer)
   writer.writeEndElement(GetQualifiedName(op));
 }
 
-void LikeWriter(const te::fe::AbstractOp* op, te::xml::Writer& writer)
+void LikeWriter(const te::fe::AbstractOp* op, te::xml::AbstractWriter& writer)
 {
   const te::fe::PropertyIsLike* like = dynamic_cast<const te::fe::PropertyIsLike*>(op);
 
@@ -472,7 +472,7 @@ void LikeWriter(const te::fe::AbstractOp* op, te::xml::Writer& writer)
   writer.writeEndElement(GetQualifiedName(op));
 }
 
-void NullWriter(const te::fe::AbstractOp* op, te::xml::Writer& writer)
+void NullWriter(const te::fe::AbstractOp* op, te::xml::AbstractWriter& writer)
 {
   const te::fe::PropertyIsNull* isNull = dynamic_cast<const te::fe::PropertyIsNull*>(op);
 
@@ -486,7 +486,7 @@ void NullWriter(const te::fe::AbstractOp* op, te::xml::Writer& writer)
   writer.writeEndElement(GetQualifiedName(op));
 }
 
-void BinaryLogicOpWriter(const te::fe::AbstractOp* op, te::xml::Writer& writer)
+void BinaryLogicOpWriter(const te::fe::AbstractOp* op, te::xml::AbstractWriter& writer)
 {
   const te::fe::BinaryLogicOp* binaryLogicOp = dynamic_cast<const te::fe::BinaryLogicOp*>(op);
 
@@ -503,7 +503,7 @@ void BinaryLogicOpWriter(const te::fe::AbstractOp* op, te::xml::Writer& writer)
   writer.writeEndElement(GetQualifiedName(op));
 }
 
-void UnaryLogicOpWriter(const te::fe::AbstractOp* op, te::xml::Writer& writer)
+void UnaryLogicOpWriter(const te::fe::AbstractOp* op, te::xml::AbstractWriter& writer)
 {
   const te::fe::UnaryLogicOp* unaryLogicOp = dynamic_cast<const te::fe::UnaryLogicOp*>(op);
 
@@ -517,7 +517,7 @@ void UnaryLogicOpWriter(const te::fe::AbstractOp* op, te::xml::Writer& writer)
   writer.writeEndElement(GetQualifiedName(op));
 }
 
-void BinarySpatialOpWriter(const te::fe::AbstractOp* op, te::xml::Writer& writer)
+void BinarySpatialOpWriter(const te::fe::AbstractOp* op, te::xml::AbstractWriter& writer)
 {
   const te::fe::BinarySpatialOp* binarySpatialOp = dynamic_cast<const te::fe::BinarySpatialOp*>(op);
 
@@ -537,7 +537,7 @@ void BinarySpatialOpWriter(const te::fe::AbstractOp* op, te::xml::Writer& writer
   writer.writeEndElement(GetQualifiedName(op));
 }
 
-void DistanceBufferOpWriter(const te::fe::AbstractOp* op, te::xml::Writer& writer)
+void DistanceBufferOpWriter(const te::fe::AbstractOp* op, te::xml::AbstractWriter& writer)
 {
   const te::fe::DistanceBuffer* db = dynamic_cast<const te::fe::DistanceBuffer*>(op);
 
@@ -559,7 +559,7 @@ void DistanceBufferOpWriter(const te::fe::AbstractOp* op, te::xml::Writer& write
   writer.writeEndElement(GetQualifiedName(op));
 }
 
-void BBOXWriter(const te::fe::AbstractOp* op, te::xml::Writer& writer)
+void BBOXWriter(const te::fe::AbstractOp* op, te::xml::AbstractWriter& writer)
 {
   const te::fe::BBOXOp* bbox = dynamic_cast<const te::fe::BBOXOp*>(op);
 

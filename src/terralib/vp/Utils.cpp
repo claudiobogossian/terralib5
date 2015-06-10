@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -24,8 +24,13 @@
 */
 
 // TerraLib
+#include "../dataaccess/dataset/DataSetTypeConverter.h"
+#include "../dataaccess/dataset/DataSetTypeCapabilities.h"
+#include "../dataaccess/datasource/DataSource.h"
+#include "../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../dataaccess/datasource/DataSourceInfo.h"
 #include "../dataaccess/datasource/DataSourceManager.h"
+#include "../dataaccess/datasource/DataSourceTransactor.h"
 #include "../dataaccess/utils/Utils.h"
 #include "../geometry/Geometry.h"
 #include "../geometry/GeometryCollection.h"
@@ -203,4 +208,121 @@ te::gm::GeomType te::vp::GeomOpResultType(te::gm::GeomType firstGeom)
     return te::gm::MultiPointType;
   
   return firstGeom;
+}
+
+void te::vp::Save(te::da::DataSource* source, te::da::DataSet* result, te::da::DataSetType* outDsType)
+{
+  // do any adaptation necessary to persist the output dataset
+  te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter(outDsType, source->getCapabilities());
+  te::da::DataSetType* dsTypeResult = converter->getResult();
+
+  std::auto_ptr<te::da::DataSourceTransactor> t = source->getTransactor();
+
+  std::map<std::string, std::string> options;
+
+  try
+  {
+    if(source->getType() == "OGR")
+    {
+      // create the dataset
+      source->createDataSet(dsTypeResult, options);
+  
+      // copy from memory to output datasource
+      result->moveBeforeFirst();
+      std::string name = dsTypeResult->getName();
+      source->add(dsTypeResult->getName(),result, options);
+    }
+    else
+    {
+      t->begin();
+
+      // create the dataset
+      t->createDataSet(dsTypeResult, options);
+  
+      // copy from memory to output datasource
+      result->moveBeforeFirst();
+      std::string name = dsTypeResult->getName();
+      t->add(dsTypeResult->getName(),result, options);
+
+      t->commit();
+    }
+
+  }
+  catch(te::common::Exception& e)
+  {
+    t->rollBack();
+    throw e;
+  }
+  catch(std::exception& e)
+  {
+    t->rollBack();
+    throw e;
+  }
+}
+
+void te::vp::Multi2Single(te::gm::Geometry* g, std::vector<te::gm::Geometry*>& geoms)
+{
+  te::gm::GeometryCollection* gc = dynamic_cast<te::gm::GeometryCollection*>(g);
+  if(gc)
+  {
+    for(std::size_t i = 0; i < gc->getNumGeometries(); ++i)
+      Multi2Single(gc->getGeometryN(i), geoms);
+  }
+  else
+    geoms.push_back(g);
+}
+
+bool te::vp::IsMultiType(te::gm::GeomType geomType)
+{
+  switch(geomType)
+  {
+    case te::gm::MultiLineStringType:
+    case te::gm::MultiLineStringMType:
+    case te::gm::MultiLineStringZType:
+    case te::gm::MultiLineStringZMType:
+    case te::gm::MultiPointType:
+    case te::gm::MultiPointMType:
+    case te::gm::MultiPointZType:
+    case te::gm::MultiPointZMType:
+    case te::gm::MultiPolygonType:
+    case te::gm::MultiPolygonMType:
+    case te::gm::MultiPolygonZType:
+    case te::gm::MultiPolygonZMType:
+      return true;
+    default:
+      return false;
+  }
+}
+
+te::gm::GeomType te::vp::GetSimpleType(te::gm::GeomType geomType)
+{
+  switch(geomType)
+  {
+    case te::gm::MultiLineStringType:
+      return te::gm::LineStringType;
+    case te::gm::MultiLineStringMType:
+      return te::gm::LineStringMType;
+    case te::gm::MultiLineStringZType:
+      return te::gm::LineStringZType;
+    case te::gm::MultiLineStringZMType:
+      return te::gm::LineStringZMType;
+    case te::gm::MultiPointType:
+      return te::gm::PointType;
+    case te::gm::MultiPointMType:
+      return te::gm::PointMType;
+    case te::gm::MultiPointZType:
+      return te::gm::PointZType;
+    case te::gm::MultiPointZMType:
+      return te::gm::PointZMType;
+    case te::gm::MultiPolygonType:
+      return te::gm::PolygonType;
+    case te::gm::MultiPolygonMType:
+      return te::gm::PolygonMType;
+    case te::gm::MultiPolygonZType:
+      return te::gm::PolygonZType;
+    case te::gm::MultiPolygonZMType:
+      return te::gm::PolygonZMType;
+    default:
+      return te::gm::UnknownGeometryType;
+  }
 }

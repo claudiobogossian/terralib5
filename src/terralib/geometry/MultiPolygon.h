@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -53,7 +53,7 @@ namespace te
 
         TE_DEFINE_VISITABLE
 
-        using Geometry::asText;
+        //using Geometry::asText;
 
         /** @name Initializer methods on geometric objects
          *  Methods for initializing a geometric object.

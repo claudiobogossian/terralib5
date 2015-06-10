@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -45,8 +45,8 @@ namespace te
 
   namespace xml
   {
+    class AbstractWriter;
     class Reader;
-    class Writer;
   }
 
   namespace serialize
@@ -55,25 +55,25 @@ namespace te
     {
       TERASTEREXPORT void ReadRasterInfo(std::map<std::string, std::string>& rinfo, te::xml::Reader& reader);
 
-      TERASTEREXPORT void SaveRasterInfo(std::map<std::string, std::string>& rinfo, te::xml::Writer& writer);
+      TERASTEREXPORT void SaveRasterInfo(std::map<std::string, std::string>& rinfo, te::xml::AbstractWriter& writer);
 
       TERASTEREXPORT void Save(const te::rst::Raster* raster, const std::string& fileName);
 
       TERASTEREXPORT void Save(const te::rst::Raster* raster, std::ostream& ostr);
 
-      TERASTEREXPORT void Save(const te::rst::Raster* raster, te::xml::Writer& writer);
+      TERASTEREXPORT void Save(const te::rst::Raster* raster, te::xml::AbstractWriter& writer);
 
       TERASTEREXPORT double* ReadGeoTransform(te::xml::Reader& reader);
 
       TERASTEREXPORT te::rst::Grid* ReadGrid(te::xml::Reader& reader);
 
-      TERASTEREXPORT void Save(const te::rst::Grid* grid, te::xml::Writer& writer);
+      TERASTEREXPORT void Save(const te::rst::Grid* grid, te::xml::AbstractWriter& writer);
 
       TERASTEREXPORT std::vector<te::rst::BandProperty*> ReadBandPropertyVector(te::xml::Reader& reader);
 
       TERASTEREXPORT te::rst::BandProperty* ReadBandProperty(te::xml::Reader& reader);
 
-      TERASTEREXPORT void Save(const te::rst::BandProperty* bp, te::xml::Writer& writer);
+      TERASTEREXPORT void Save(const te::rst::BandProperty* bp, te::xml::AbstractWriter& writer);
 
     } // end namespace xml
   }   // end namespace serialize

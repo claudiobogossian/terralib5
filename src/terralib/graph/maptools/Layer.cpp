@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -128,8 +128,8 @@ void te::graph::Layer::setGraph(te::graph::AbstractGraph* g)
   //set graph parameters
   if(m_graph->getMetadata())
   {
-    //this->setSRID(m_graph->getMetadata()->getSRID());
-    //this->setExtent(m_graph->getMetadata()->getEnvelope());
+    this->setSRID(m_graph->getMetadata()->getSRID());
+    this->setExtent(*m_graph->getMetadata()->getEnvelope());
   }
 }
 

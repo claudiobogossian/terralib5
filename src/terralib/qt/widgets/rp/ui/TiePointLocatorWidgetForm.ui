@@ -14,7 +14,16 @@
    <string>Tie Point Locator</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_37">
-   <property name="margin">
+   <property name="leftMargin">
+    <number>9</number>
+   </property>
+   <property name="topMargin">
+    <number>9</number>
+   </property>
+   <property name="rightMargin">
+    <number>9</number>
+   </property>
+   <property name="bottomMargin">
     <number>9</number>
    </property>
    <item row="0" column="0">
@@ -50,7 +59,16 @@
                <enum>QFrame::Sunken</enum>
               </property>
               <layout class="QGridLayout" name="gridLayout">
-               <property name="margin">
+               <property name="leftMargin">
+                <number>2</number>
+               </property>
+               <property name="topMargin">
+                <number>2</number>
+               </property>
+               <property name="rightMargin">
+                <number>2</number>
+               </property>
+               <property name="bottomMargin">
                 <number>2</number>
                </property>
                <item row="0" column="5">
@@ -202,12 +220,6 @@
                 <attribute name="verticalHeaderVisible">
                  <bool>false</bool>
                 </attribute>
-                <attribute name="verticalHeaderVisible">
-                 <bool>false</bool>
-                </attribute>
-                <attribute name="horizontalHeaderMinimumSectionSize">
-                 <number>30</number>
-                </attribute>
                 <column>
                  <property name="text">
                   <string>ID</string>
@@ -271,7 +283,7 @@
          </property>
          <layout class="QGridLayout" name="gridLayout_34">
           <item row="0" column="0">
-           <widget class="QTabWidget" name="tabWidget">
+           <widget class="QTabWidget" name="m_tabWidget">
             <property name="tabPosition">
              <enum>QTabWidget::South</enum>
             </property>
@@ -972,625 +984,6 @@
               </item>
              </layout>
             </widget>
-            <widget class="QWidget" name="tab_8">
-             <attribute name="title">
-              <string>Options</string>
-             </attribute>
-             <layout class="QGridLayout" name="gridLayout_18">
-              <item row="0" column="0">
-               <widget class="QTabWidget" name="m_optionsTabWidget">
-                <property name="currentIndex">
-                 <number>0</number>
-                </property>
-                <widget class="QWidget" name="tab_4">
-                 <attribute name="title">
-                  <string>General</string>
-                 </attribute>
-                 <layout class="QGridLayout" name="gridLayout_13">
-                  <item row="4" column="0">
-                   <layout class="QHBoxLayout" name="horizontalLayout_6">
-                    <item>
-                     <widget class="QLabel" name="label_5">
-                      <property name="minimumSize">
-                       <size>
-                        <width>200</width>
-                        <height>0</height>
-                       </size>
-                      </property>
-                      <property name="maximumSize">
-                       <size>
-                        <width>200</width>
-                        <height>16777215</height>
-                       </size>
-                      </property>
-                      <property name="toolTip">
-                       <string>Geometry assurance (the error-free selection percent assurance) - valid range (0-1) - Use 0-zero to let this number be automatically found.</string>
-                      </property>
-                      <property name="text">
-                       <string>Geometry Filter Assurance</string>
-                      </property>
-                      <property name="alignment">
-                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QLineEdit" name="m_geometryFilterAssuranceLineEdit">
-                      <property name="toolTip">
-                       <string>Geometry assurance (the error-free selection percent assurance) - valid range (0-1) - Use 0-zero to let this number be automatically found.</string>
-                      </property>
-                     </widget>
-                    </item>
-                   </layout>
-                  </item>
-                  <item row="2" column="0">
-                   <layout class="QHBoxLayout" name="horizontalLayout_9">
-                    <item>
-                     <widget class="QLabel" name="label_15">
-                      <property name="minimumSize">
-                       <size>
-                        <width>200</width>
-                        <height>0</height>
-                       </size>
-                      </property>
-                      <property name="maximumSize">
-                       <size>
-                        <width>200</width>
-                        <height>16777215</height>
-                       </size>
-                      </property>
-                      <property name="text">
-                       <string>Interest Points Location</string>
-                      </property>
-                      <property name="alignment">
-                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QComboBox" name="m_interesPointsLocationStrategyComboBox">
-                      <item>
-                       <property name="text">
-                        <string>Moravec</string>
-                       </property>
-                      </item>
-                      <item>
-                       <property name="text">
-                        <string>Surf</string>
-                       </property>
-                      </item>
-                     </widget>
-                    </item>
-                   </layout>
-                  </item>
-                  <item row="7" column="0">
-                   <layout class="QHBoxLayout" name="horizontalLayout_12">
-                    <item>
-                     <widget class="QLabel" name="label_19">
-                      <property name="minimumSize">
-                       <size>
-                        <width>200</width>
-                        <height>0</height>
-                       </size>
-                      </property>
-                      <property name="maximumSize">
-                       <size>
-                        <width>200</width>
-                        <height>16777215</height>
-                       </size>
-                      </property>
-                      <property name="toolTip">
-                       <string>The maximum number of tie-points to generate (0 - Automatically found)</string>
-                      </property>
-                      <property name="text">
-                       <string>Maximum TiePoints</string>
-                      </property>
-                      <property name="alignment">
-                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QLineEdit" name="m_maxTiePointsLineEdit">
-                      <property name="toolTip">
-                       <string>The maximum number of tie-points to generate (0 - Automatically found)</string>
-                      </property>
-                     </widget>
-                    </item>
-                   </layout>
-                  </item>
-                  <item row="6" column="0">
-                   <layout class="QHBoxLayout" name="horizontalLayout_10">
-                    <item>
-                     <widget class="QLabel" name="label_18">
-                      <property name="minimumSize">
-                       <size>
-                        <width>200</width>
-                        <height>0</height>
-                       </size>
-                      </property>
-                      <property name="maximumSize">
-                       <size>
-                        <width>200</width>
-                        <height>16777215</height>
-                       </size>
-                      </property>
-                      <property name="toolTip">
-                       <string>The raster interpolator method</string>
-                      </property>
-                      <property name="text">
-                       <string>Interpolator</string>
-                      </property>
-                      <property name="alignment">
-                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QComboBox" name="m_interpMethodComboBox">
-                      <property name="toolTip">
-                       <string>The raster interpolator method</string>
-                      </property>
-                      <item>
-                       <property name="text">
-                        <string>NearestNeighbor</string>
-                       </property>
-                      </item>
-                      <item>
-                       <property name="text">
-                        <string>Bilinear</string>
-                       </property>
-                      </item>
-                      <item>
-                       <property name="text">
-                        <string>Bicubic</string>
-                       </property>
-                      </item>
-                     </widget>
-                    </item>
-                   </layout>
-                  </item>
-                  <item row="5" column="0">
-                   <layout class="QHBoxLayout" name="horizontalLayout_7">
-                    <item>
-                     <widget class="QLabel" name="label_17">
-                      <property name="minimumSize">
-                       <size>
-                        <width>200</width>
-                        <height>0</height>
-                       </size>
-                      </property>
-                      <property name="maximumSize">
-                       <size>
-                        <width>200</width>
-                        <height>16777215</height>
-                       </size>
-                      </property>
-                      <property name="toolTip">
-                       <string>The maximum allowed transformation error (pixel units)</string>
-                      </property>
-                      <property name="text">
-                       <string>Transformation Max Error</string>
-                      </property>
-                      <property name="alignment">
-                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QLineEdit" name="m_geomTransfMaxErrorLineEdit">
-                      <property name="toolTip">
-                       <string>The maximum allowed transformation error (pixel units)</string>
-                      </property>
-                     </widget>
-                    </item>
-                   </layout>
-                  </item>
-                  <item row="3" column="0">
-                   <layout class="QHBoxLayout" name="horizontalLayout_8">
-                    <item>
-                     <widget class="QLabel" name="label_16">
-                      <property name="minimumSize">
-                       <size>
-                        <width>200</width>
-                        <height>0</height>
-                       </size>
-                      </property>
-                      <property name="maximumSize">
-                       <size>
-                        <width>200</width>
-                        <height>16777215</height>
-                       </size>
-                      </property>
-                      <property name="text">
-                       <string>Geometric Transformation</string>
-                      </property>
-                      <property name="alignment">
-                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QComboBox" name="m_geomTransfNameComboBox"/>
-                    </item>
-                   </layout>
-                  </item>
-                  <item row="0" column="0">
-                   <layout class="QHBoxLayout" name="horizontalLayout_3">
-                    <item>
-                     <widget class="QLabel" name="label_2">
-                      <property name="minimumSize">
-                       <size>
-                        <width>200</width>
-                        <height>0</height>
-                       </size>
-                      </property>
-                      <property name="maximumSize">
-                       <size>
-                        <width>200</width>
-                        <height>16777215</height>
-                       </size>
-                      </property>
-                      <property name="toolTip">
-                       <string>Enable/disable the geometry filter/outliers remotion</string>
-                      </property>
-                      <property name="text">
-                       <string>Geometry Filter</string>
-                      </property>
-                      <property name="alignment">
-                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QCheckBox" name="m_enableGeometryFilterCheckBox">
-                      <property name="toolTip">
-                       <string>Enable/disable the geometry filter/outliers remotion</string>
-                      </property>
-                      <property name="text">
-                       <string>Enabled</string>
-                      </property>
-                     </widget>
-                    </item>
-                   </layout>
-                  </item>
-                  <item row="1" column="0">
-                   <layout class="QHBoxLayout" name="horizontalLayout_4">
-                    <item>
-                     <widget class="QLabel" name="label_3">
-                      <property name="minimumSize">
-                       <size>
-                        <width>200</width>
-                        <height>0</height>
-                       </size>
-                      </property>
-                      <property name="maximumSize">
-                       <size>
-                        <width>200</width>
-                        <height>16777215</height>
-                       </size>
-                      </property>
-                      <property name="toolTip">
-                       <string>Enable/Disable the use of multi-threads</string>
-                      </property>
-                      <property name="text">
-                       <string>Multi-Thread</string>
-                      </property>
-                      <property name="alignment">
-                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QCheckBox" name="m_enableMultiThreadCheckBox">
-                      <property name="toolTip">
-                       <string>Enable/Disable the use of multi-threads</string>
-                      </property>
-                      <property name="text">
-                       <string>Enabled</string>
-                      </property>
-                     </widget>
-                    </item>
-                   </layout>
-                  </item>
-                 </layout>
-                </widget>
-                <widget class="QWidget" name="tab_5">
-                 <attribute name="title">
-                  <string>Moravec</string>
-                 </attribute>
-                 <layout class="QGridLayout" name="gridLayout_14">
-                  <item row="3" column="0">
-                   <layout class="QHBoxLayout" name="horizontalLayout_14">
-                    <item>
-                     <widget class="QLabel" name="label_22">
-                      <property name="minimumSize">
-                       <size>
-                        <width>200</width>
-                        <height>0</height>
-                       </size>
-                      </property>
-                      <property name="maximumSize">
-                       <size>
-                        <width>200</width>
-                        <height>16777215</height>
-                       </size>
-                      </property>
-                      <property name="toolTip">
-                       <string>The Moravec window width used to locate canditate tie-points (minimum 3)</string>
-                      </property>
-                      <property name="text">
-                       <string>Moravec Window Width</string>
-                      </property>
-                      <property name="alignment">
-                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QLineEdit" name="m_moravecWindowWidthLineEdit">
-                      <property name="toolTip">
-                       <string>The Moravec window width used to locate canditate tie-points (minimum 3)</string>
-                      </property>
-                     </widget>
-                    </item>
-                   </layout>
-                  </item>
-                  <item row="0" column="0">
-                   <layout class="QHBoxLayout" name="horizontalLayout_2">
-                    <item>
-                     <widget class="QLabel" name="label">
-                      <property name="minimumSize">
-                       <size>
-                        <width>200</width>
-                        <height>0</height>
-                       </size>
-                      </property>
-                      <property name="maximumSize">
-                       <size>
-                        <width>200</width>
-                        <height>16777215</height>
-                       </size>
-                      </property>
-                      <property name="toolTip">
-                       <string>The correlation window width used to correlate points between the images (minimum 3)</string>
-                      </property>
-                      <property name="text">
-                       <string>Correlation Window Width</string>
-                      </property>
-                      <property name="alignment">
-                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QLineEdit" name="m_correlationWindowWidthLineEdit">
-                      <property name="toolTip">
-                       <string>The correlation window width used to correlate points between the images (minimum 3)</string>
-                      </property>
-                     </widget>
-                    </item>
-                   </layout>
-                  </item>
-                  <item row="2" column="0">
-                   <layout class="QHBoxLayout" name="horizontalLayout_13">
-                    <item>
-                     <widget class="QLabel" name="label_21">
-                      <property name="minimumSize">
-                       <size>
-                        <width>200</width>
-                        <height>0</height>
-                       </size>
-                      </property>
-                      <property name="maximumSize">
-                       <size>
-                        <width>200</width>
-                        <height>16777215</height>
-                       </size>
-                      </property>
-                      <property name="toolTip">
-                       <string>The minimum acceptable absolute correlation value when matching features (valid range: [0,1])</string>
-                      </property>
-                      <property name="text">
-                       <string>Minimum Correlation</string>
-                      </property>
-                      <property name="alignment">
-                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QLineEdit" name="m_minAbsCorrelationLineEdit">
-                      <property name="toolTip">
-                       <string>The minimum acceptable absolute correlation value when matching features (valid range: [0,1])</string>
-                      </property>
-                     </widget>
-                    </item>
-                   </layout>
-                  </item>
-                  <item row="1" column="0">
-                   <layout class="QHBoxLayout" name="horizontalLayout_5">
-                    <item>
-                     <widget class="QLabel" name="label_20">
-                      <property name="minimumSize">
-                       <size>
-                        <width>200</width>
-                        <height>0</height>
-                       </size>
-                      </property>
-                      <property name="maximumSize">
-                       <size>
-                        <width>200</width>
-                        <height>16777215</height>
-                       </size>
-                      </property>
-                      <property name="toolTip">
-                       <string>The number of noise Gaussin iterations, when applicable (used to remove image noise, zero will disable the Gaussian Filter)</string>
-                      </property>
-                      <property name="text">
-                       <string>Gaussian Filter Iterations</string>
-                      </property>
-                      <property name="alignment">
-                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QLineEdit" name="m_gaussianFilterIterationsLineEdit">
-                      <property name="toolTip">
-                       <string>The number of noise Gaussin iterations, when applicable (used to remove image noise, zero will disable the Gaussian Filter)</string>
-                      </property>
-                     </widget>
-                    </item>
-                   </layout>
-                  </item>
-                  <item row="4" column="0">
-                   <spacer name="verticalSpacer_3">
-                    <property name="orientation">
-                     <enum>Qt::Vertical</enum>
-                    </property>
-                    <property name="sizeHint" stdset="0">
-                     <size>
-                      <width>20</width>
-                      <height>40</height>
-                     </size>
-                    </property>
-                   </spacer>
-                  </item>
-                 </layout>
-                </widget>
-                <widget class="QWidget" name="tab_6">
-                 <attribute name="title">
-                  <string>Surf</string>
-                 </attribute>
-                 <layout class="QGridLayout" name="gridLayout_15">
-                  <item row="2" column="0">
-                   <layout class="QHBoxLayout" name="horizontalLayout_16">
-                    <item>
-                     <widget class="QLabel" name="label_25">
-                      <property name="minimumSize">
-                       <size>
-                        <width>200</width>
-                        <height>0</height>
-                       </size>
-                      </property>
-                      <property name="maximumSize">
-                       <size>
-                        <width>200</width>
-                        <height>16777215</height>
-                       </size>
-                      </property>
-                      <property name="toolTip">
-                       <string>The number of sub-sampling scales to generate (minimum:3)</string>
-                      </property>
-                      <property name="text">
-                       <string>Scales Number</string>
-                      </property>
-                      <property name="alignment">
-                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QLineEdit" name="m_scalesNumberLineEdit">
-                      <property name="toolTip">
-                       <string>The number of sub-sampling scales to generate (minimum:3)</string>
-                      </property>
-                     </widget>
-                    </item>
-                   </layout>
-                  </item>
-                  <item row="0" column="0">
-                   <layout class="QHBoxLayout" name="horizontalLayout_11">
-                    <item>
-                     <widget class="QLabel" name="label_23">
-                      <property name="minimumSize">
-                       <size>
-                        <width>200</width>
-                        <height>0</height>
-                       </size>
-                      </property>
-                      <property name="maximumSize">
-                       <size>
-                        <width>200</width>
-                        <height>16777215</height>
-                       </size>
-                      </property>
-                      <property name="toolTip">
-                       <string>The maximum acceptable euclidean distance when matching features (when applicable), valid range: [0,1]</string>
-                      </property>
-                      <property name="text">
-                       <string>Maximum Euclidean Distance</string>
-                      </property>
-                      <property name="alignment">
-                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QLineEdit" name="m_maxNormEuclideanDistLineEdit">
-                      <property name="toolTip">
-                       <string>The maximum acceptable euclidean distance when matching features (when applicable), valid range: [0,1]</string>
-                      </property>
-                     </widget>
-                    </item>
-                   </layout>
-                  </item>
-                  <item row="1" column="0">
-                   <layout class="QHBoxLayout" name="horizontalLayout_15">
-                    <item>
-                     <widget class="QLabel" name="label_24">
-                      <property name="minimumSize">
-                       <size>
-                        <width>200</width>
-                        <height>0</height>
-                       </size>
-                      </property>
-                      <property name="maximumSize">
-                       <size>
-                        <width>200</width>
-                        <height>16777215</height>
-                       </size>
-                      </property>
-                      <property name="toolTip">
-                       <string>The number of octaves to generate (Minimum: 1)</string>
-                      </property>
-                      <property name="text">
-                       <string>Octaves Number</string>
-                      </property>
-                      <property name="alignment">
-                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QLineEdit" name="m_octavesNumberLineEdit">
-                      <property name="toolTip">
-                       <string>The number of octaves to generate (Minimum: 1)</string>
-                      </property>
-                     </widget>
-                    </item>
-                   </layout>
-                  </item>
-                  <item row="3" column="0">
-                   <spacer name="verticalSpacer_2">
-                    <property name="orientation">
-                     <enum>Qt::Vertical</enum>
-                    </property>
-                    <property name="sizeHint" stdset="0">
-                     <size>
-                      <width>20</width>
-                      <height>40</height>
-                     </size>
-                    </property>
-                   </spacer>
-                  </item>
-                 </layout>
-                </widget>
-               </widget>
-              </item>
-             </layout>
-            </widget>
            </widget>
           </item>
          </layout>
@@ -1612,7 +1005,16 @@
           <string>Reference</string>
          </property>
          <layout class="QGridLayout" name="gridLayout_19">
-          <property name="margin">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
            <number>0</number>
           </property>
           <item row="0" column="0">
@@ -1640,7 +1042,16 @@
           <string>Adjust</string>
          </property>
          <layout class="QGridLayout" name="gridLayout_20">
-          <property name="margin">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
            <number>0</number>
           </property>
           <item row="0" column="0">
@@ -1675,7 +1086,7 @@
   <tabstop>m_x2LineEdit</tabstop>
   <tabstop>m_y2LineEdit</tabstop>
   <tabstop>m_addToolButton</tabstop>
-  <tabstop>tabWidget</tabstop>
+  <tabstop>m_tabWidget</tabstop>
   <tabstop>m_referenceBand1ComboBox</tabstop>
   <tabstop>m_referenceBand2ComboBox</tabstop>
   <tabstop>m_sridPushButton</tabstop>
@@ -1686,22 +1097,6 @@
   <tabstop>m_transformationRMSEAllLineEdit</tabstop>
   <tabstop>m_transformationRMSESelectedLineEdit</tabstop>
   <tabstop>m_transformationRMSEunselectedLineEdit</tabstop>
-  <tabstop>m_optionsTabWidget</tabstop>
-  <tabstop>m_enableGeometryFilterCheckBox</tabstop>
-  <tabstop>m_enableMultiThreadCheckBox</tabstop>
-  <tabstop>m_interesPointsLocationStrategyComboBox</tabstop>
-  <tabstop>m_geomTransfNameComboBox</tabstop>
-  <tabstop>m_geometryFilterAssuranceLineEdit</tabstop>
-  <tabstop>m_geomTransfMaxErrorLineEdit</tabstop>
-  <tabstop>m_interpMethodComboBox</tabstop>
-  <tabstop>m_maxTiePointsLineEdit</tabstop>
-  <tabstop>m_correlationWindowWidthLineEdit</tabstop>
-  <tabstop>m_gaussianFilterIterationsLineEdit</tabstop>
-  <tabstop>m_minAbsCorrelationLineEdit</tabstop>
-  <tabstop>m_moravecWindowWidthLineEdit</tabstop>
-  <tabstop>m_maxNormEuclideanDistLineEdit</tabstop>
-  <tabstop>m_octavesNumberLineEdit</tabstop>
-  <tabstop>m_scalesNumberLineEdit</tabstop>
  </tabstops>
  <resources/>
  <connections/>

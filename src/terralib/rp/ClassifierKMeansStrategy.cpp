@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -30,6 +30,7 @@
 #include "../raster/Grid.h"
 #include "../raster/PositionIterator.h"
 #include "../raster/RasterIterator.h"
+#include "../raster/Utils.h"
 #include "ClassifierKMeansStrategy.h"
 #include "Macros.h"
 #include "Functions.h"
@@ -123,7 +124,7 @@ bool te::rp::ClassifierKMeansStrategy::execute(const te::rst::Raster& inputRaste
   std::vector<unsigned int> classification;
 
 // define point set iterators for training
-  std::vector<te::gm::Point*> randomPoints = te::rp::GetRandomPointsInRaster(inputRaster, m_parameters.m_maxInputPoints);
+  std::vector<te::gm::Point*> randomPoints = te::rst::GetRandomPointsInRaster(inputRaster, m_parameters.m_maxInputPoints);
   te::rst::PointSetIterator<double> pit = te::rst::PointSetIterator<double>::begin(&inputRaster, randomPoints);
   te::rst::PointSetIterator<double> pitend = te::rst::PointSetIterator<double>::end(&inputRaster, randomPoints);
 

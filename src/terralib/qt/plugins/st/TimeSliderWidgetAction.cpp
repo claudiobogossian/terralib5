@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -24,61 +24,66 @@
 */
 
 // Terralib
-#include "../../../qt/widgets/st/TimeSliderWidget.h"
 #include "../../../qt/widgets/canvas/MapDisplay.h"
 #include "../../af/ApplicationController.h"
 #include "../../af/BaseApplication.h"
 #include "../../af/connectors/MapDisplay.h"
+#include "../../af/connectors/InterfaceController.h"
 #include "../../af/Project.h"
 #include "TimeSliderWidgetAction.h"
 
-te::qt::plugins::slider::TimeSliderWidgetAction::TimeSliderWidgetAction(QMenu* menu)
-  : te::qt::plugins::slider::AbstractAction(menu),
+te::qt::plugins::st::TimeSliderWidgetAction::TimeSliderWidgetAction(QMenu* menu)
+  : te::qt::plugins::st::AbstractAction(menu),
   m_timeSliderWidget(0)
 {
   createAction(tr("Time Slider...").toStdString());
+
+  //GEnerating the slider
+  QWidget* mainWindow = te::qt::af::ApplicationController::getInstance().getMainWindow();
+  te::qt::af::BaseApplication* ba = (te::qt::af::BaseApplication*)mainWindow;
+  te::qt::widgets::MapDisplay* display = ba->getDisplay()->getDisplay();
+  //if(display->getExtent().isValid() == false)
+  //{
+  //  // WGS84
+  //  te::gm::Envelope e(-180, -180, 360, 360);
+  //  display->setExtent(e);
+  //  display->setSRID(4326);
+  //}
+  m_timeSliderWidget = new te::qt::widgets::TimeSliderWidget(display, display);
+  connect(m_timeSliderWidget, SIGNAL(deleteTimeSliderWidget()), this, SLOT(onDeleteTimeSliderWidget()));
+  connect(ba, SIGNAL(applicationClose()), this, SLOT(onDeleteTimeSliderWidget()));
+
+  ba->getInterfaceController()->addInterface(m_timeSliderWidget);
+  m_timeSliderWidget->hide();
 }
 
-te::qt::plugins::slider::TimeSliderWidgetAction::~TimeSliderWidgetAction()
+te::qt::plugins::st::TimeSliderWidgetAction::~TimeSliderWidgetAction()
 {
   if(m_timeSliderWidget)
   {
-    te::qt::af::ApplicationController::getInstance().removeListener(m_timeSliderWidget);
+    QWidget* mainWindow = te::qt::af::ApplicationController::getInstance().getMainWindow();
+    te::qt::af::BaseApplication* ba = (te::qt::af::BaseApplication*)mainWindow;
+
+    ba->getInterfaceController()->removeInteface(m_timeSliderWidget);
     delete m_timeSliderWidget;
   }
+  m_menu->removeAction(m_action);
+  delete m_action;
 }
 
-void te::qt::plugins::slider::TimeSliderWidgetAction::onActionActivated(bool checked)
+void te::qt::plugins::st::TimeSliderWidgetAction::onActionActivated(bool checked)
 {
-  if(m_timeSliderWidget == 0)
+  if(m_timeSliderWidget->isHidden())
   {
-    QWidget* parent = te::qt::af::ApplicationController::getInstance().getMainWindow();
-    te::qt::af::BaseApplication* ba = (te::qt::af::BaseApplication*)parent;
-    te::qt::widgets::MapDisplay* display = ba->getDisplay()->getDisplay();
-    if(display->getExtent().isValid() == false)
-    {
-      // WGS84
-      te::gm::Envelope e(-180, -180, 360, 360);
-      display->setExtent(e);
-      display->setSRID(4326);
-    }
-    te::qt::widgets::TimeSliderWidget* ts = new te::qt::widgets::TimeSliderWidget(display, parent, Qt::Window);
-    ts->show();
-    ts->move(200, 200);
-    connect(ts, SIGNAL(deleteTimeSliderWidget()), this, SLOT(onDeleteTimeSliderWidget()));
-    connect(ba, SIGNAL(applicationClose()), this, SLOT(onDeleteTimeSliderWidget()));
-    m_timeSliderWidget = new te::qt::af::TimeSliderWidget(ts);
+    m_timeSliderWidget->show();
   }
   else
   {
-    if(m_timeSliderWidget->getTimeSliderWidget()->isMinimized())
-      m_timeSliderWidget->getTimeSliderWidget()->showNormal();
-    else
-      m_timeSliderWidget->getTimeSliderWidget()->show();
+    m_timeSliderWidget->hide();
   }
 }
 
-void te::qt::plugins::slider::TimeSliderWidgetAction::onDeleteTimeSliderWidget()
+void te::qt::plugins::st::TimeSliderWidgetAction::onDeleteTimeSliderWidget()
 {
   if(m_timeSliderWidget)
     delete m_timeSliderWidget;

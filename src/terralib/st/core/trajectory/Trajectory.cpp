@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -516,6 +516,11 @@ void te::st::Trajectory::getPatches(const te::gm::Geometry& geom, te::gm::Spatia
   return;
 }
 
+void te::st::Trajectory::getPatches(const te::gm::Geometry& geom, te::st::SpatioTemporalRelation str, 
+                    const std::vector<TrajectoryPatch>& result) const
+{
+}
+
 std::auto_ptr<te::st::TimeSeries> te::st::Trajectory::getDistance(const Trajectory& other) const
 {
   std::auto_ptr<te::st::TimeSeries> result(new te::st::TimeSeries());
@@ -533,6 +538,13 @@ std::auto_ptr<te::st::TimeSeries> te::st::Trajectory::getDistance(const Trajecto
     ++it;
   }
   return result;
+}
+
+std::auto_ptr<te::st::TimeSeries> te::st::Trajectory::getDistance(const te::gm::Geometry& geom)
+{
+  std::auto_ptr<te::st::TimeSeries> res;
+
+  return res;
 }
 
 te::st::Trajectory::~Trajectory()

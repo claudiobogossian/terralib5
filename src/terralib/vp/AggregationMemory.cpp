@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -25,6 +25,7 @@
 
 //Terralib
 
+#include "terralib_config.h"
 #include "../common/progress/TaskProgress.h"
 #include "../common/Logger.h"
 #include "../common/Translator.h"
@@ -231,7 +232,7 @@ std::auto_ptr<te::da::DataSetType> te::vp::AggregationMemory::buildOutDataSetTyp
 }
 
 
-bool te::vp::AggregationMemory::run()
+bool te::vp::AggregationMemory::run() throw( te::common::Exception )
 {  
   te::gm::GeometryProperty* geom = te::da::GetFirstGeomProperty(m_inDsetType.get());
   std::string geomName = geom->getName();
@@ -285,10 +286,7 @@ bool te::vp::AggregationMemory::run()
     else
       itg->second.push_back(dataSetItem);
   }
-  
-  
-  // tratamento de erro se nao gerou grupos
-  
+
   // define the schema of the output dataset based on the aggregation parameters
   // for the non-spatial attributes
   std::auto_ptr<te::da::DataSetType> outDsType = this->buildOutDataSetType();
@@ -307,6 +305,18 @@ bool te::vp::AggregationMemory::run()
     // calculate the spatial aggregation
     std::string value = itg->first;
     te::gm::GeomType outGeoType = te::vp::GeomOpResultType(geom->getGeometryType());
+
+    //verify geometries
+    for (size_t i = 0; i < itg->second.size(); ++i)
+    {
+      if (!itg->second[i]->getGeometry(geomIdx)->isValid())
+      {
+#ifdef TERRALIB_LOGGER_ENABLED
+        te::common::Logger::logDebug("vp", "Aggregation - The input layer has invalid geometry.");
+#endif // TERRALIB_LOGGER_ENABLED
+      }
+    }
+
     te::gm::Geometry* geometry = te::vp::GetGeometryUnion(itg->second, geomIdx, outGeoType);
     
     // if it returned a valid geometry, include the summarization over non-spatial attributes
@@ -330,7 +340,7 @@ bool te::vp::AggregationMemory::run()
       {
         // esse teste é necessário????
         if (te::da::GetPropertyPos(outDataset.get(), itString->first) < outDataset->getNumProperties())
-            outDSetItem->setString(itString->first, itString->second);  
+            outDSetItem->setString(itString->first, itString->second);
         ++itString;
       }
       
@@ -348,6 +358,12 @@ bool te::vp::AggregationMemory::run()
       outDSetItem->setGeometry("geom", geometry);
       outDataset->add(outDSetItem);
     }
+    else
+    {
+#ifdef TERRALIB_LOGGER_ENABLED
+        te::common::Logger::logDebug("vp", "Aggregation - The operation generated invalid geometry.");
+#endif // TERRALIB_LOGGER_ENABLED
+    }
     ++itg;
   
     if (task.isActive() == false)
@@ -355,7 +371,7 @@ bool te::vp::AggregationMemory::run()
   
     task.pulse();
   }
-  
-  // save the result
-  return save(outDataset,outDsType);
+
+  te::vp::Save(m_outDsrc.get(), outDataset.get(), outDsType.get());
+  return true;
 }

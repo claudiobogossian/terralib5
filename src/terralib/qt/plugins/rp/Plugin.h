@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -46,6 +46,7 @@ namespace te
         class ClassifierAction;
         class ClippingAction;
         class ColorTransformAction;
+        class ComposeBandsAction;
         class ContrastAction;
         class FilterAction;
         class FusionAction;
@@ -91,6 +92,7 @@ namespace te
             te::qt::plugins::rp::ClassifierAction* m_classifier;      //!< Classifier Process Action
             te::qt::plugins::rp::ClippingAction* m_clipping;          //!< Clipping Process Action
             te::qt::plugins::rp::ColorTransformAction* m_colorTrans;  //!< Color Transform Process Action
+            te::qt::plugins::rp::ComposeBandsAction* m_composeBands;  //!< Compose Bands Process Action
             te::qt::plugins::rp::ContrastAction* m_contrast;          //!< Contrast Process Action
             te::qt::plugins::rp::FilterAction* m_filter;              //!< Filter Process Action
             te::qt::plugins::rp::FusionAction* m_fusion;              //!< Fusion Process Action

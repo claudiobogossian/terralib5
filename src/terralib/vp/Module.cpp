@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -51,12 +51,12 @@ te::vp::Module::~Module()
 
 void te::vp::Module::initialize()
 {
-  TE_LOG_TRACE(TE_TR("TerraLib Intersection Operation initialized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Vector Processing initialized!"));
 }
 
 void te::vp::Module::finalize()
 {
 
-  TE_LOG_TRACE(TE_TR("TerraLib Intersection Operation finalized!"));
+  TE_LOG_TRACE(TE_TR("TerraLib Vector Processing finalized!"));
 }
 

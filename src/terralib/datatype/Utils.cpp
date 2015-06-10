@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../common/Translator.h"
 #include "CompositeProperty.h"
 #include "Property.h"
 #include "Utils.h"
@@ -56,6 +57,8 @@ int te::dt::Convert2Terralib(const std::string& dataType)
     return te::dt::UINT32_TYPE;
   else if(dataType == "INT64_TYPE")
     return te::dt::INT64_TYPE;
+    else if(dataType == "UINT16_TYPE")
+    return te::dt::UINT16_TYPE;
   else if(dataType == "UINT64_TYPE")
     return te::dt::UINT64_TYPE;
   else if(dataType == "BOOLEAN_TYPE")
@@ -83,7 +86,7 @@ int te::dt::Convert2Terralib(const std::string& dataType)
   else if(dataType == "RASTER_TYPE")
     return te::dt::RASTER_TYPE;
   else if(dataType == "CINT16_TYPE")
-    return te::dt::UNKNOWN_TYPE;
+    return te::dt::CINT16_TYPE;
   else if(dataType == "CINT32_TYPE")
     return te::dt::CINT32_TYPE;
   else if(dataType == "CFLOAT_TYPE")
@@ -97,13 +100,81 @@ int te::dt::Convert2Terralib(const std::string& dataType)
   else if(dataType == "POLYMORPHIC_TYPE")
     return te::dt::POLYMORPHIC_TYPE;
   else if(dataType == "R4BITS_TYPE")
-    return te::dt::UNKNOWN_TYPE;
-  else if(dataType == "R4BITS_TYPE")
-    return te::dt::UNKNOWN_TYPE;
+    return te::dt::R4BITS_TYPE;
   else if(dataType == "R2BITS_TYPE")
     return te::dt::R2BITS_TYPE;
   else if(dataType == "R1BIT_TYPE")
     return te::dt::R1BIT_TYPE;
   else
-    return te::dt::UNKNOWN_TYPE;    
+    return te::dt::UNKNOWN_TYPE;
+}
+
+std::string te::dt::ConvertDataTypeToString(const int& dataType)
+{
+  if(dataType == te::dt::VOID_TYPE)
+    return TE_TR("Void");
+  else if(dataType == te::dt::BIT_TYPE)
+    return TE_TR("Bit");
+  else if(dataType == te::dt::CHAR_TYPE)
+    return TE_TR("Char");
+  else if(dataType == te::dt::UCHAR_TYPE)
+    return TE_TR("Unsigned Char");
+  else if(dataType == te::dt::INT16_TYPE)
+    return TE_TR("Integer 16");
+  else if(dataType == te::dt::INT32_TYPE)
+    return TE_TR("Integer 32");
+  else if(dataType == te::dt::UINT32_TYPE)
+    return TE_TR("Unsigned Integer 32");
+  else if(dataType == te::dt::INT64_TYPE)
+    return TE_TR("Integer 64");
+  else if(dataType == te::dt::UINT16_TYPE)
+    return TE_TR("Unsigned Integer 16");
+  else if(dataType == te::dt::UINT64_TYPE)
+    return TE_TR("Unsigned Integer 64");
+  else if(dataType == te::dt::BOOLEAN_TYPE)
+    return TE_TR("Boolean");
+  else if(dataType == te::dt::FLOAT_TYPE)
+    return TE_TR("Float");
+  else if(dataType == te::dt::DOUBLE_TYPE)
+    return TE_TR("Double");
+  else if(dataType == te::dt::NUMERIC_TYPE)
+    return TE_TR("Numeric");
+  else if(dataType == te::dt::STRING_TYPE)
+    return TE_TR("String");
+  else if(dataType == te::dt::BYTE_ARRAY_TYPE)
+    return TE_TR("Byte Array");
+  else if(dataType == te::dt::GEOMETRY_TYPE)
+    return TE_TR("Geometry");
+  else if(dataType == te::dt::DATETIME_TYPE)
+    return TE_TR("Date Time");
+  else if(dataType == te::dt::ARRAY_TYPE)
+    return TE_TR("Array");
+  else if(dataType == te::dt::COMPOSITE_TYPE)
+    return TE_TR("Composite");
+  else if(dataType == te::dt::DATASET_TYPE)
+    return TE_TR("Dataset");
+  else if(dataType == te::dt::RASTER_TYPE)
+    return TE_TR("Raster");
+  else if(dataType == te::dt::CINT16_TYPE)
+    return TE_TR("Complex Integer 16");
+  else if(dataType == te::dt::CINT32_TYPE)
+    return TE_TR("Complex Integer 32");
+  else if(dataType == te::dt::CFLOAT_TYPE)
+    return TE_TR("Complex Float");
+  else if(dataType == te::dt::CDOUBLE_TYPE)
+    return TE_TR("Complex Double");
+  else if(dataType == te::dt::XML_TYPE)
+    return TE_TR("XML");
+  else if(dataType == te::dt::DATASETITEM_TYPE)
+    return TE_TR("Dataset Item");
+  else if(dataType == te::dt::POLYMORPHIC_TYPE)
+    return TE_TR("Polymorphic");
+  else if(dataType == te::dt::R4BITS_TYPE)
+    return TE_TR("Raster 4 Bits");
+  else if(dataType == te::dt::R2BITS_TYPE)
+    return TE_TR("Raster 2 Bits");
+  else if(dataType == te::dt::R1BIT_TYPE)
+    return TE_TR("Raster 1 Bit");
+  else
+    return TE_TR("Unknown");
 }

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -172,6 +172,21 @@ double te::common::UnitsOfMeasureManager::getConversion(const std::string& unitF
     return ((b-d)/(c-a));
   }
   throw Exception(TE_TR("There is no known conversion."));
+}
+
+bool te::common::UnitsOfMeasureManager::areConvertible(const std::string& unitFromName, const std::string& unitToName) const
+{
+  UnitOfMeasurePtr uFrom = this->find(unitFromName);
+  UnitOfMeasurePtr uTo = this->find(unitToName);
+  
+  if (uFrom->getType() != uTo->getType())
+    return false;
+  
+  if ((uFrom->getBaseUnitId() == uTo->getId()) ||
+      (uTo->getBaseUnitId() == uFrom->getId()))
+    return true;
+  
+  return false;
 }
 
 void te::common::UnitsOfMeasureManager::init()

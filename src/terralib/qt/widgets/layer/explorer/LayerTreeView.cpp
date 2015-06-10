@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -322,7 +322,7 @@ std::list<te::qt::widgets::AbstractTreeItem*> te::qt::widgets::LayerTreeView::ge
   {
     te::qt::widgets::AbstractTreeItem* selectedLayerItem = *it;
 
-    if(selectedLayerItem->getLayer() && selectedLayerItem->getItemType() != "FOLDER_ITEM_TYPE")
+    if(selectedLayerItem->getLayer() && selectedLayerItem->getItemType() != "FOLDER_LAYER_ITEM")
       selectedSingleLayerItems.push_back(selectedLayerItem);
   }
 
@@ -338,8 +338,6 @@ std::list<te::map::AbstractLayerPtr> te::qt::widgets::LayerTreeView::getSelected
   std::list<te::qt::widgets::AbstractTreeItem*>::const_iterator it;
   for(it = selectedItems.begin(); it != selectedItems.end(); ++it)
   {
-    AbstractTreeItem* item = *it;
-
     te::map::AbstractLayerPtr layer = (*it)->getLayer();
 
     if(layer && layer->getType() != "FOLDERLAYER")

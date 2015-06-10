@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -133,12 +133,14 @@ namespace te
           */
           void onItemClicked(int row, int column);
 
+          double getMaxValue(te::map::Chart* chart);
+
         private:
 
           std::auto_ptr<Ui::ChartLayerWidgetForm> m_ui;             //!< Widget form.
           ColorPickerToolButton* m_colorPicker;                     //!< The color picker used to customise the color of several chart parameters.
           te::map::AbstractLayerPtr m_layer;                        //!< TerraLib layer auto ptr
-          std::map<std::string, QColor> m_chartMap;                 //!< Chart Map
+          std::vector<std::pair<std::string, QColor> > m_chartVec;  //!< Chart Vec
       };
 
     } // end namespace widgets

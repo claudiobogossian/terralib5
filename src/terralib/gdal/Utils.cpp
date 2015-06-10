@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -25,7 +25,6 @@
 
 // TerraLib
 #include "../common/StringUtils.h"
-#include "../common/Translator.h"
 #include "../common/UnitOfMeasure.h"
 #include "../common/UnitsOfMeasureManager.h"
 #include "../dataaccess/dataset/DataSetType.h"
@@ -37,6 +36,7 @@
 #include "../raster/Grid.h"
 #include "../raster/RasterFactory.h"
 #include "../raster/RasterProperty.h"
+#include "../srs/SpatialReferenceSystemManager.h"
 #include "Band.h"
 #include "Exception.h"
 #include "Raster.h"
@@ -44,6 +44,7 @@
 
 // STL
 #include <cmath>
+#include <cstring>
 #include <vector>
 
 // GDAL
@@ -57,6 +58,7 @@
 #include <boost/format.hpp>
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
+#include <boost/graph/graph_concepts.hpp>
 
 std::string te::gdal::GetSubDataSetName(const std::string& name, const std::string& driverName)
 {
@@ -101,36 +103,67 @@ std::string te::gdal::GetSubDataSetName(const std::string& name, const std::stri
 
 te::rst::Grid* te::gdal::GetGrid(GDALDataset* gds)
 {
-  if (!gds)
-    return 0;
+  return GetGrid( gds, -1 );
+}
 
+te::rst::Grid* te::gdal::GetGrid(GDALDataset* gds, const int multiResLevel)
+{
+  if (!gds) return 0;
+  if( multiResLevel != -1 )
+  {
+    if( gds->GetRasterCount() <= 0 ) return 0;
+    if( multiResLevel >= gds->GetRasterBand( 1 )->GetOverviewCount() ) return 0;
+  }
+  
+  // Defining SRID
+  
   int srid = TE_UNKNOWN_SRS;
   
   // The calling of GetProjectionRef isn't thread safe, even for distinct datasets
   // under some linuxes
   boost::unique_lock< boost::mutex > lockGuard( getStaticMutex() );
-  char* projWKT = (char*)gds->GetProjectionRef();
+  const char* projRef = gds->GetProjectionRef();
   lockGuard.release();
   getStaticMutex().unlock();
   
-  if (projWKT)
+  if ( ( projRef != 0 ) && ( std::strlen( projRef ) > 0 ) )
   {
-    char** projWKTPtr = &(projWKT);
+    char* projRef2 = (char*)projRef;
+    char** projWKTPtr = &(projRef2);
     OGRSpatialReference oSRS;
-    oSRS.importFromWkt( projWKTPtr );
-    oSRS.AutoIdentifyEPSG();
-    const char* srsAuth = oSRS.GetAuthorityCode(0);
-    if (srsAuth)
-      srid = atoi(srsAuth);
+    
+    OGRErr ogrReturn = oSRS.importFromWkt( projWKTPtr );
+    
+    if( ogrReturn == OGRERR_NONE )
+    {
+      srid = te::ogr::Convert2TerraLibProjection(&oSRS);
+    }
   }
+  
+  // Defining the number of rows / lines
+  
+  unsigned int NRows = 0;
+  unsigned int nCols = 0;
+  
+  if( multiResLevel == -1 )
+  {
+    nCols = (unsigned int)gds->GetRasterXSize();
+    NRows = (unsigned int)gds->GetRasterYSize();
+  }
+  else
+  {
+    nCols = (unsigned int)gds->GetRasterBand( 1 )->GetOverview( multiResLevel )->GetXSize();
+    NRows = (unsigned int)gds->GetRasterBand( 1 )->GetOverview( multiResLevel )->GetYSize();
+  }
+  
+  // Defining bounding box
 
   double gtp[6];
-  
   te::rst::Grid* grid = 0;
   
   if( gds->GetGeoTransform(gtp) == CE_Failure )
   {
-    grid = new te::rst::Grid(gds->GetRasterXSize(), gds->GetRasterYSize(), 1.0, 1.0, (te::gm::Envelope*)0, srid);    
+    grid = new te::rst::Grid(nCols, NRows, 1.0, 1.0, (te::gm::Envelope*)0, srid);    
   }
   else
   {
@@ -140,10 +173,18 @@ te::rst::Grid* te::gdal::GetGrid(GDALDataset* gds)
     gridAffineParams[ 2 ] = gtp[ 0 ];
     gridAffineParams[ 3 ] = gtp[ 4 ];
     gridAffineParams[ 4 ] = gtp[ 5 ];
-    gridAffineParams[ 5 ] = gtp[ 3 ];
+    gridAffineParams[ 5 ] = gtp[ 3 ];     
     
-    grid = new te::rst::Grid(gridAffineParams, gds->GetRasterXSize(),
-      gds->GetRasterYSize(), srid);    
+    if( multiResLevel == -1 )
+    {
+      grid = new te::rst::Grid(gridAffineParams, nCols, NRows, srid);
+    }
+    else
+    {
+      te::rst::Grid tempGrid(gridAffineParams, (unsigned int)gds->GetRasterXSize(),
+        (unsigned int)gds->GetRasterYSize(), srid);
+      grid = new te::rst::Grid( nCols, NRows, new te::gm::Envelope( *tempGrid.getExtent() ), srid );
+    }
   }
   
   return grid;    
@@ -311,32 +352,51 @@ te::rst::BandProperty* te::gdal::GetBandProperty(GDALRasterBand* gband,
 
 void te::gdal::GetBands(te::gdal::Raster* rst, std::vector<te::gdal::Band*>& bands)
 {
+  if( !GetBands( rst, -1, bands )  )
+  {
+    throw Exception(TE_TR("Internal error"));
+  }
+}
+
+bool te::gdal::GetBands(te::gdal::Raster* rst, int multiResLevel, std::vector<te::gdal::Band*>& bands)
+{
   bands.clear();
   
-  int nBands = 0;
+  if( rst == 0 ) return false;
   
-  if( rst->getGDALDataset()->GetRasterCount() > 0 )
+  GDALDataset* gds = rst->getGDALDataset();
+  
+  if( gds == 0 ) return false;
+  
+  if( ( gds->GetAccess() != GA_ReadOnly ) && ( gds->GetAccess() != GA_Update ) )
+    return false;
+  
+  // Defining the number of bands
+  
+  int terralibBandsNumber = 0;
+  
+  if( gds->GetRasterCount() > 0 )
   {
-    if( rst->getGDALDataset()->GetRasterBand(1)->GetColorInterpretation() == GCI_PaletteIndex )
+    if( gds->GetRasterBand(1)->GetColorInterpretation() == GCI_PaletteIndex )
     {
-      if( rst->getGDALDataset()->GetRasterBand(1)->GetColorTable() == 0 )
+      if( gds->GetRasterBand(1)->GetColorTable() == 0 )
       {
         throw Exception(TE_TR("invalid color table"));
       }
       
-      switch( rst->getGDALDataset()->GetRasterBand(1)->GetColorTable()->GetPaletteInterpretation() )
+      switch( gds->GetRasterBand(1)->GetColorTable()->GetPaletteInterpretation() )
       {
         case GPI_Gray : 
-          nBands = 1;
+          terralibBandsNumber = 1;
           break;
         case GPI_RGB : // RGBA
-          nBands = 4;
+          terralibBandsNumber = 4;
           break;
         case GPI_CMYK :
-          nBands = 4;
+          terralibBandsNumber = 4;
           break;          
         case GPI_HLS :
-          nBands = 3;
+          terralibBandsNumber = 3;
           break;
         default :
           throw Exception(TE_TR("invalid palette interpretation"));
@@ -345,12 +405,57 @@ void te::gdal::GetBands(te::gdal::Raster* rst, std::vector<te::gdal::Band*>& ban
     }
     else
     {
-      nBands = rst->getGDALDataset()->GetRasterCount();
+      terralibBandsNumber = rst->getGDALDataset()->GetRasterCount();
     }
   }  
   
-  for (int b = 0; b < nBands; b++)
-    bands.push_back( new te::gdal::Band(rst, b) );
+  // Creating terralib bands
+  
+  int gdalBandIndex = 1;
+  for (int terralibBandIndex = 0; terralibBandIndex < terralibBandsNumber; terralibBandIndex++)
+  {
+    if( multiResLevel == -1 )
+    {
+      bands.push_back( 
+        new te::gdal::Band(
+          rst, 
+          terralibBandIndex,
+          rst->getGDALDataset()->GetRasterBand( gdalBandIndex )
+        ) 
+      );
+    }
+    else
+    {
+      if( multiResLevel < gds->GetRasterBand( gdalBandIndex )->GetOverviewCount() )
+      {
+        bands.push_back( 
+          new te::gdal::Band(
+            rst, 
+            terralibBandIndex,
+            gds->GetRasterBand( gdalBandIndex )->GetOverview( multiResLevel )
+          ) 
+        );        
+      }
+      else
+      {
+        while( ! bands.empty() )
+        {
+          delete( bands.back() );
+          bands.pop_back();
+        }
+        
+        return false;
+      }
+    }   
+    
+    if( rst->getGDALDataset()->GetRasterBand(1)->GetColorInterpretation() !=
+      GCI_PaletteIndex )     
+    {
+      ++gdalBandIndex;
+    }
+  }
+  
+  return true;
 }
 
 te::rst::RasterProperty* te::gdal::GetRasterProperty(std::string strAccessInfo)
@@ -465,14 +570,32 @@ GDALDataset* te::gdal::CreateRaster(const std::string& name, te::rst::Grid* g, c
   
   OGRSpatialReference oSRS;
   
-  oSRS.importFromEPSG(g->getSRID());
+  OGRErr osrsErrorReturn = oSRS.importFromEPSG(g->getSRID());
+  CPLErr setProjErrorReturn = CE_Fatal;
   
-  char* projWKTPtr = 0;
-  
-  if(oSRS.exportToWkt(&projWKTPtr) == OGRERR_NONE)
+  if( osrsErrorReturn == OGRERR_NONE )
   {
-    poDataset->SetProjection(projWKTPtr);
+    char* projWKTPtr = 0;
+    
+    osrsErrorReturn = oSRS.exportToWkt(&projWKTPtr);
+    
+    if( osrsErrorReturn == OGRERR_NONE )
+    {
+      setProjErrorReturn = poDataset->SetProjection(projWKTPtr);
+    }
+    
     OGRFree(projWKTPtr);
+  }
+  
+  if( setProjErrorReturn != CE_None )
+  {
+    std::string wktStr = te::srs::SpatialReferenceSystemManager::getInstance().getWkt( 
+      g->getSRID() );
+    
+    if( !wktStr.empty() )
+    {
+      setProjErrorReturn = poDataset->SetProjection(wktStr.c_str());
+    }
   }
   
   int nb = static_cast<int>(bands.size());
@@ -656,29 +779,19 @@ std::string te::gdal::GetDriverName(const std::string& name)
   boost::filesystem::path mpath(name.c_str());
 
   std::string ext = te::common::Convert2UCase(mpath.extension().string());
-
-  if(ext == ".TIF" || ext == ".TIFF")
-    return std::string("GTiff");
-
-  if(ext == ".JPG")
-    return std::string("JPEG");
-
-  if(ext == ".NTF")
-    return std::string("NITF");
+  if( ext[ 0 ] == '.' ) ext = ext.substr( 1, ext.size() - 1);
   
-  if(ext == ".NC")
-    return std::string("netCDF");
-
-  if(ext == ".GRB")
-    return std::string("GRIB");
-
-  if(ext == ".PNG")
-    return std::string("PNG");
-  
-  if(ext == ".HDF")
-     return std::string("HDF4");
-
-  return "";
+  std::multimap< std::string, std::string >::const_iterator exttMapIt =
+    GetGDALDriversUCaseExt2DriversMap().find( ext );
+    
+  if( exttMapIt == GetGDALDriversUCaseExt2DriversMap().end() )
+  {
+    return std::string();
+  }
+  else
+  {
+    return exttMapIt->second;
+  }
 }
 
 std::string te::gdal::GetGDALConnectionInfo(const std::map<std::string, std::string>& connInfo)
@@ -801,3 +914,76 @@ boost::mutex& te::gdal::getStaticMutex()
   static boost::mutex getStaticMutexStaticMutex;
   return getStaticMutexStaticMutex;
 }
+
+const std::map< std::string, te::gdal::DriverMetadata >&  te::gdal::GetGDALDriversMetadata()
+{
+  static std::map< std::string, DriverMetadata > driversMetadata;
+  
+  if( driversMetadata.empty() )
+  {
+    GDALDriverManager* driverManagerPtr = GetGDALDriverManager();
+    
+    int driversCount = driverManagerPtr->GetDriverCount();
+    char** metaInfoPtr = 0;
+    const char* valuePtr = 0;
+    
+    for( int driverIndex = 0 ; driverIndex < driversCount ; ++driverIndex )
+    {
+      GDALDriver* driverPtr = driverManagerPtr->GetDriver(driverIndex);
+      
+      if( driverPtr )
+      {
+        DriverMetadata auxMD;
+        auxMD.m_driverName = driverPtr->GetDescription();
+        
+        metaInfoPtr = driverPtr->GetMetadata();
+        
+        if( metaInfoPtr )
+        {
+          valuePtr = CSLFetchNameValue( metaInfoPtr, "DMD_EXTENSION" );
+          if( valuePtr ) auxMD.m_extension = valuePtr;
+          
+          valuePtr = CSLFetchNameValue( metaInfoPtr, "DMD_LONGNAME" );
+          if( valuePtr ) auxMD.m_longName = valuePtr;    
+          
+          valuePtr = CSLFetchNameValue( metaInfoPtr, "DMD_SUBDATASETS" );
+          if( ( valuePtr != 0 ) && ( std::strcmp( "YES", valuePtr ) == 0 ) )
+          {
+            auxMD.m_subDatasetsSupport = true;
+          }
+          else
+          {
+            auxMD.m_subDatasetsSupport = false;
+          }
+        }
+        
+        driversMetadata[ auxMD.m_driverName ] = auxMD;
+      }
+    }
+  }
+  
+  return driversMetadata;
+}
+
+const std::multimap< std::string, std::string >& te::gdal::GetGDALDriversUCaseExt2DriversMap()
+{
+  static std::multimap< std::string, std::string > extensions;
+  
+  if( extensions.empty() )
+  {
+    const std::map< std::string, DriverMetadata >& driversMetadata = GetGDALDriversMetadata();
+    
+    for( std::map< std::string, DriverMetadata >::const_iterator it = driversMetadata.begin() ;
+      it != driversMetadata.end() ; ++it )
+    {
+      if( ! it->second.m_extension.empty() )
+      {
+        extensions.insert( std::pair< std::string, std::string >( 
+          te::common::Convert2UCase( it->second.m_extension ), it->first ) );;
+      }
+    }
+  }
+  
+  return extensions;
+}
+

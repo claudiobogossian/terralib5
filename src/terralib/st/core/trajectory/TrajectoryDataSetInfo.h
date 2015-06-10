@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -65,64 +65,28 @@ namespace te
           
           \param dsinfo     Infos about the DataSource. 
           \param dsName     The DataSet name.   
-          \param tPropIdx   The property index that contains the times associated to the trajectory.
-          \param gPropIdx   The property index that contains the geometries associated to the trajectory.
-          \param idPropIdx  The property index that contains the identification of each trajectory. 
+          \param tPropName  The property name that contains the times associated to the trajectory.
+          \param gPropName  The property name that contains the geometries associated to the trajectory.
+          \param idPropName The property name that contains the identification of each trajectory. 
           \param id         The identification of the trajectory hat this DataSet contains. 
         */
         TrajectoryDataSetInfo(const te::da::DataSourceInfo& dsinfo, const std::string& dsName, 
-                              int tPropIdx, int gPropIdx, int idPropIdx, const std::string& id);
-        
+                              const std::string& tPropName, const std::string& gPropName, 
+                              const std::string& idPropName, const std::string& id); 
+
         /*! 
           \brief Constructor.
           
           \param info       Infos about the DataSource and DataSet that contains the trajectory observations    
-          \param idPropIdx  The property index that contains the identification of each trajectory. 
-          \param id         The identification of the trajectory hat this DataSet contains.  
         */
-        TrajectoryDataSetInfo(const ObservationDataSetInfo& info, int idPropIdx, const std::string& id); 
+        TrajectoryDataSetInfo(const ObservationDataSetInfo& info); 
                 
         /*!
-          \brief It returns information about the DataSet that contians the trajectory observations
+          \brief It returns information about the DataSet that contains the trajectory observations
 
           \return A reference to the internal ObservationDataSetInfo.
         */
         const ObservationDataSetInfo& getObservationDataSetInfo() const;
-        
-        /*!
-          \brief It returns information about the DataSource from which the DataSet comes.
-
-          \return A reference to the internal DataSourceInfo.
-        */
-        const te::da::DataSourceInfo& getDataSourceInfo() const;
-        
-        /*!
-          \brief It returns the indexes of the DataSet properties that contains the times associated to the trajectories.
-
-          \return The indexes of the DataSet properties that contains the time.
-        */
-        const std::vector<int>& getTimePropIdxs() const;
-
-        /*!
-          \brief It returns the indexes of the DataSet properties that contains the geometries associated to the trajectories.
-
-          \return The indexes of the DataSet properties that contains the geometies.
-        */
-        int getGeomPropIdx() const;
-
-        /*!
-          \brief It returns the indexes of the DataSet properties that contains the identification of each trajectory. 
-
-          \return The indexes of the DataSet properties that contains the identification of each trajectory. 
-        */
-        int getIdPropIdx() const;
-
-        /*!
-          \brief It returns the trajectory id that this DataSet contains
-
-          \return The trajectory id.
-        */
-        std::string getId() const;
  
         /*! \brief Virtual destructor. */
         virtual ~TrajectoryDataSetInfo(); 
@@ -130,9 +94,7 @@ namespace te
       protected:
 
         ObservationDataSetInfo  m_obsDsInfo;    //!< Infos about the DataSource and DataSet that contains the trajectory observations    
-        int                     m_idPropIdx;    //!< The property index that contains the identification of each trajectory. 
-        std::string             m_id;           //!< The trajectory id that this DataSet contains        
-    };
+     };
   } // end namespace st
 }   // end namespace te
 

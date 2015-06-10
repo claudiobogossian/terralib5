@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -365,21 +365,21 @@ namespace te
               itB->second.m_tiePoint.second.x;
             coordDiffY = itB->second.m_tiePoint.first.y -
               itB->second.m_tiePoint.second.y;              
-            inputParams.m_maxR1ToR2Offset += std::max( inputParams.m_maxR1ToR2Offset,
-              (unsigned int)std::ceil( std::sqrt( ( coordDiffX * coordDiffX ) + 
-              ( coordDiffY * coordDiffY ) ) ) );
+//             inputParams.m_maxR1ToR2Offset += std::max( inputParams.m_maxR1ToR2Offset,
+//               (unsigned int)std::ceil( std::sqrt( ( coordDiffX * coordDiffX ) + 
+//               ( coordDiffY * coordDiffY ) ) ) );
             ++manualTPNumber;
           }
           
           ++itB;
         }
         
-        if( inputParams.m_maxR1ToR2Offset > 0 )
-        {
-          inputParams.m_maxR1ToR2Offset /= manualTPNumber;
-          inputParams.m_maxR1ToR2Offset += ( ( inputParams.m_maxR1ToR2Offset * 10 )
-            / 100 );
-        }
+//         if( inputParams.m_maxR1ToR2Offset > 0 )
+//         {
+//           inputParams.m_maxR1ToR2Offset /= manualTPNumber;
+//           inputParams.m_maxR1ToR2Offset += ( ( inputParams.m_maxR1ToR2Offset * 10 )
+//             / 100 );
+//         }
         
         // Executing the algorithm
         

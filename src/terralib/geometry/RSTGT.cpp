@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -29,9 +29,6 @@
 
 // STL
 #include <cmath>
-
-// Boost
-#include <boost/numeric/ublas/matrix.hpp>
 
 te::gm::RSTGT::RSTGT()
 {  
@@ -89,96 +86,90 @@ te::gm::GeometricTransformation* te::gm::RSTGT::clone() const
   te::gm::RSTGT* newTransPtr = new RSTGT;
   newTransPtr->m_internalParameters = m_internalParameters;
   return newTransPtr;
-};
+}
         
 bool te::gm::RSTGT::computeParameters( GTParameters& params ) const
 {
-  const unsigned int tiepointsSize = params.m_tiePoints.size();
-  if( tiepointsSize < 2 ) return false;
+  m_computeParameters_tiepointsSize = params.m_tiePoints.size();
+  if( m_computeParameters_tiepointsSize < 2 ) return false;
   
-  boost::numeric::ublas::matrix< double > A( 2 * tiepointsSize, 4 );
-  boost::numeric::ublas::matrix< double > L( 2 * tiepointsSize, 1 );
-  unsigned int index1 = 0;
-  unsigned int index2 = 0;  
+  m_computeParameters_A.resize( 2 * m_computeParameters_tiepointsSize, 4 );
+  m_computeParameters_L.resize( 2 * m_computeParameters_tiepointsSize, 1 );
   
-  for ( unsigned int tpIdx = 0 ; tpIdx < tiepointsSize ; ++tpIdx ) 
+  for ( m_computeParameters_tpIdx = 0 ; m_computeParameters_tpIdx < m_computeParameters_tiepointsSize ; ++m_computeParameters_tpIdx ) 
   {
-    index1 = tpIdx*2;
-    index2 = index1 + 1;
+    m_computeParameters_index1 = m_computeParameters_tpIdx*2;
+    m_computeParameters_index2 = m_computeParameters_index1 + 1;
         
-    const Coord2D& x_y = params.m_tiePoints[ tpIdx ].first;
-    const Coord2D& u_v = params.m_tiePoints[ tpIdx ].second;
+    const Coord2D& x_y = params.m_tiePoints[ m_computeParameters_tpIdx ].first;
+    const Coord2D& u_v = params.m_tiePoints[ m_computeParameters_tpIdx ].second;
     
-    A( index1, 0 ) = x_y.x;
-    A( index1, 1 ) = -1.0 * x_y.y;
-    A( index1, 2 ) = 1.0;
-    A( index1, 3 ) = 0.0;
+    m_computeParameters_A( m_computeParameters_index1, 0 ) = x_y.x;
+    m_computeParameters_A( m_computeParameters_index1, 1 ) = -1.0 * x_y.y;
+    m_computeParameters_A( m_computeParameters_index1, 2 ) = 1.0;
+    m_computeParameters_A( m_computeParameters_index1, 3 ) = 0.0;
     
-    A( index2, 0 ) = x_y.y;
-    A( index2, 1 ) = x_y.x;
-    A( index2, 2 ) = 0.0;
-    A( index2, 3 ) = 1.0;    
+    m_computeParameters_A( m_computeParameters_index2, 0 ) = x_y.y;
+    m_computeParameters_A( m_computeParameters_index2, 1 ) = x_y.x;
+    m_computeParameters_A( m_computeParameters_index2, 2 ) = 0.0;
+    m_computeParameters_A( m_computeParameters_index2, 3 ) = 1.0;    
     
-    L( index1, 0 ) = u_v.x;
-    L( index2, 0 ) = u_v.y;
+    m_computeParameters_L( m_computeParameters_index1, 0 ) = u_v.x;
+    m_computeParameters_L( m_computeParameters_index2, 0 ) = u_v.y;
   }  
   
 //  std::cout << std::endl << "L:" << std::endl << L << std::endl;
 //  std::cout << std::endl << "A:" << std::endl << A << std::endl;  
 
   /* At calcule */
-  boost::numeric::ublas::matrix< double > At( boost::numeric::ublas::trans( A ) ) ;
+  m_computeParameters_At =  boost::numeric::ublas::trans( m_computeParameters_A );
 
   /* N calcule */
-  boost::numeric::ublas::matrix< double > N( boost::numeric::ublas::prod( At, A ) );
+  m_computeParameters_N = boost::numeric::ublas::prod( m_computeParameters_At, m_computeParameters_A );
 
   /* U calcule */
-  boost::numeric::ublas::matrix< double > U( boost::numeric::ublas::prod( At, L ) );
+  m_computeParameters_U = boost::numeric::ublas::prod( m_computeParameters_At, m_computeParameters_L );
 
   /* N_inv calcule */
-  boost::numeric::ublas::matrix< double > N_inv;
     
-  if ( te::common::GetInverseMatrix( N, N_inv ) ) 
+  if ( te::common::GetInverseMatrix( m_computeParameters_N, m_computeParameters_N_inv ) ) 
   {
     /* direct parameters calcule */
 
-    boost::numeric::ublas::matrix< double > X( 
-      boost::numeric::ublas::prod( N_inv, U ) );
+    m_computeParameters_X = boost::numeric::ublas::prod( m_computeParameters_N_inv, m_computeParameters_U );
       
 //    std::cout << std::endl << "X:" << std::endl << X << std::endl;      
     
     params.m_directParameters.resize( 4 );
-    params.m_directParameters[0] = X(0,0);
-    params.m_directParameters[1] = X(1,0);
-    params.m_directParameters[2] = X(2,0);
-    params.m_directParameters[3] = X(3,0);
+    params.m_directParameters[0] = m_computeParameters_X(0,0);
+    params.m_directParameters[1] = m_computeParameters_X(1,0);
+    params.m_directParameters[2] = m_computeParameters_X(2,0);
+    params.m_directParameters[3] = m_computeParameters_X(3,0);
     
     /* inverse parameters calcule */
     
-    boost::numeric::ublas::matrix< double > XExpanded( 3, 3 );
-    XExpanded( 0, 0 ) = X(0,0);
-    XExpanded( 0, 1 ) = -1.0 * X(1,0);
-    XExpanded( 0, 2 ) = X(2,0);
-    XExpanded( 1, 0 ) = X(1,0);
-    XExpanded( 1, 1 ) = X(0,0);
-    XExpanded( 1, 2 ) = X(3,0);
-    XExpanded( 2, 0 ) = 0;
-    XExpanded( 2, 1 ) = 0;
-    XExpanded( 2, 2 ) = 1;
+    m_computeParameters_XExpanded.resize( 3, 3 );
+    m_computeParameters_XExpanded( 0, 0 ) = m_computeParameters_X(0,0);
+    m_computeParameters_XExpanded( 0, 1 ) = -1.0 * m_computeParameters_X(1,0);
+    m_computeParameters_XExpanded( 0, 2 ) = m_computeParameters_X(2,0);
+    m_computeParameters_XExpanded( 1, 0 ) = m_computeParameters_X(1,0);
+    m_computeParameters_XExpanded( 1, 1 ) = m_computeParameters_X(0,0);
+    m_computeParameters_XExpanded( 1, 2 ) = m_computeParameters_X(3,0);
+    m_computeParameters_XExpanded( 2, 0 ) = 0;
+    m_computeParameters_XExpanded( 2, 1 ) = 0;
+    m_computeParameters_XExpanded( 2, 2 ) = 1;
     
 //    std::cout << std::endl << "XExpanded:" << std::endl << XExpanded << std::endl;    
     
-    boost::numeric::ublas::matrix< double > XExpandedInv;
-
-    if( te::common::GetInverseMatrix( XExpanded, XExpandedInv ) ) 
+    if( te::common::GetInverseMatrix( m_computeParameters_XExpanded, m_computeParameters_XExpandedInv ) ) 
     {
 //      std::cout << std::endl << "XExpandedInv:" << std::endl << XExpandedInv << std::endl;
 
       params.m_inverseParameters.resize( 4 );
-      params.m_inverseParameters[0] = XExpandedInv(0,0);
-      params.m_inverseParameters[1] = XExpandedInv(1,0);
-      params.m_inverseParameters[2] = XExpandedInv(0,2);
-      params.m_inverseParameters[3] = XExpandedInv(1,2);
+      params.m_inverseParameters[0] = m_computeParameters_XExpandedInv(0,0);
+      params.m_inverseParameters[1] = m_computeParameters_XExpandedInv(1,0);
+      params.m_inverseParameters[2] = m_computeParameters_XExpandedInv(0,2);
+      params.m_inverseParameters[3] = m_computeParameters_XExpandedInv(1,2);
       
       return true;
     }

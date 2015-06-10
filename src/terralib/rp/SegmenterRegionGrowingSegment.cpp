@@ -11,12 +11,14 @@ namespace te
       const SegmenterRegionGrowingSegment& other )
     {
       m_id = other.m_id;
-      m_status = other.m_status;
       m_size = other.m_size;
       m_xStart = other.m_xStart;
       m_xBound = other.m_xBound;
       m_yStart = other.m_yStart;
       m_yBound = other.m_yBound;
+      m_mergetIteration = other.m_mergetIteration;
+      m_prevActiveSegment = other.m_prevActiveSegment;
+      m_nextActiveSegment = other.m_nextActiveSegment;
       
       free( m_neighborSegments );
       if( other.m_neighborSegmentsSize )
@@ -75,7 +77,7 @@ namespace te
           
         m_neighborSegments[ m_neighborSegmentsSize ] = nSegPtr;
           
-        ++m_neighborSegmentsSize;
+        m_neighborSegmentsSize = m_neighborSegmentsSize + 1;
       }
     }
     

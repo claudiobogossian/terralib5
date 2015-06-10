@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -183,6 +183,17 @@ namespace te
         */
         void setVisibility(bool visible);
 
+        /*! \brief It gets the grouping summary. It is used only in case 1 to n.
+        */
+        std::string getSummary() const;
+
+        /*!
+          \brief It gets the grouping summary. It is used only in case 1 to n.
+
+          \param summary The summary mode. It can be: "MIN", "MAX", "SUM", "AVERAGE", "MEDIAN", "STDDEV" or "VARIANCE"
+        */
+        void setSummary(const std::string& summary);
+
       private:
 
         std::string m_propertyName;                  //!< The property name whose values will be used to make the grouping.
@@ -193,6 +204,7 @@ namespace te
         double m_stdDeviation;                       //!< The standard deviation used in the Standard Deviation grouping.
         bool m_isVisible;                            //!< A flag that indicates if the grouping is visible.
         std::vector<te::map::GroupingItem*> m_items; //!< The vector of grouping items.
+        std::string m_summary;                       //!< The summary used in case 1 to n.
     };
 
   } // end namespace map

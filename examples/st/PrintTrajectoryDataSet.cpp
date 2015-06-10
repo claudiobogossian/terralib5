@@ -14,7 +14,7 @@ void PrintTrajectoryDataSet(boost::ptr_vector<te::st::TrajectoryDataSet>& output
 {
   for(std::size_t i=0; i<output.size(); ++i)
   {
-	  std::cout << "Printing observations of the trajectory data set" << i << " :" << std::endl;
+    std::cout << "Printing observations of the trajectory data set" << i << " :" << std::endl;
     PrintTrajectoryDataSet(&output[i]);
   }
 }
@@ -47,17 +47,17 @@ void PrintTrajectoryDataSetInfo(boost::ptr_vector<te::st::TrajectoryDataSet>& ou
 {
   for(std::size_t i=0; i<output.size(); ++i)
   {
-	  std::cout << "Printing information about the trajectory data set " << i << " :" << std::endl;
+    std::cout << "Printing information about the trajectory data set " << i << " :" << std::endl;
     PrintTrajectoryDataSetInfo(&output[i]);
   }
 }
 
 void PrintTrajectoryDataSetInfo(te::st::TrajectoryDataSet* output)
 {
-  te::dt::DateTimePeriod* textent = output->getTemporalExtent();
+  const te::dt::DateTimePeriod* textent = output->getTemporalExtent();
   std::cout << "Temporal Extent: " << textent->toString() << std::endl;
 
-  const te::gm::Envelope sextent = output->getSpatialExtent();
-  std::cout << "Spatial Extent: " << sextent.getLowerLeftX() << std::endl;
+  //const te::gm::Envelope sextent = output->getSpatialExtent();
+  //std::cout << "Spatial Extent: " << sextent.getLowerLeftX() << std::endl;
 }
 

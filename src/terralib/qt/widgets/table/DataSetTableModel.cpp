@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../../../common/Exception.h"
+#include "../../../common/CharEncodingConv.h"
 #include "../../../dataaccess/dataset/DataSet.h"
 #include "../../../dataaccess/dataset/ObjectIdSet.h"
 #include "../../../dataaccess/utils/Utils.h"
@@ -306,13 +307,18 @@ te::qt::widgets::DataSetTableModel::~DataSetTableModel()
   delete m_promoter;
 }
 
-void te::qt::widgets::DataSetTableModel::setDataSet(te::da::DataSet* dset, const bool& clearEditor)
+void te::qt::widgets::DataSetTableModel::setDataSet(te::da::DataSet* dset, te::common::CharEncoding enc, const bool& clearEditor)
 {
   beginResetModel();
 
   delete m_dataset;
 
   m_dataset = dset;
+
+  m_encoding = enc;
+
+  if(m_dataset)
+    m_dataset->moveFirst();
 
   if(clearEditor)
     m_editor->clear();
@@ -366,6 +372,8 @@ te::da::ObjectIdSet* te::qt::widgets::DataSetTableModel::getObjectIdSet (const i
 
     oids->add(te::da::GenerateOID(m_dataset, oids->getPropertyNames()));
   }
+
+  oids->setExpressionByInClause();
 
   return oids;
 }
@@ -440,7 +448,11 @@ QVariant te::qt::widgets::DataSetTableModel::data(const QModelIndex & index, int
       }
 
       if(m_editor->isEdited(m_promoter->getLogicalRow(index.row()), index.column()))
-        return m_editor->getValue(m_promoter->getLogicalRow(index.row()), index.column()).c_str();
+      {
+        std::string f = m_editor->getValue(m_promoter->getLogicalRow(index.row()), index.column()).c_str();
+
+        return te::qt::widgets::Convert2Qt(f, m_encoding);
+      }
 
       if(m_dataset->isNull(index.column()))
         return QVariant();
@@ -452,7 +464,7 @@ QVariant te::qt::widgets::DataSetTableModel::data(const QModelIndex & index, int
         if (encoding == te::common::UNKNOWN_CHAR_ENCODING)
           return value.c_str();
         else
-			    return Convert2Qt(value, encoding);
+          return Convert2Qt(value, encoding);
       }
       else
         return m_dataset->getAsString(index.column(), 6).c_str();
@@ -577,7 +589,11 @@ bool te::qt::widgets::DataSetTableModel::setData (const QModelIndex & index, con
       QString newV = value.toString();
 
       if(curV != newV)
-        m_editor->setValue(m_promoter->getLogicalRow(index.row()), index.column(), value.toString().toStdString());
+      {
+        te::common::CharEncodingConv c(te::common::UTF8, m_encoding);
+        std::string out = c.conv(newV.toStdString());
+        m_editor->setValue(m_promoter->getLogicalRow(index.row()), index.column(), out);
+      }
 
       return true;
     }

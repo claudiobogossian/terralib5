@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -23,13 +23,13 @@
   \brief This file defines the SliderAction class
 */
 
-#ifndef __TE_QT_PLUGINS_SLIDER_INTERNAL_TIMESLIDERWIDGET_H
-#define __TE_QT_PLUGINS_SLIDER_INTERNAL_TIMESLIDERWIDGET_H
+#ifndef __TE_QT_PLUGINS_ST_INTERNAL_TIMESLIDERWIDGET_H
+#define __TE_QT_PLUGINS_ST_INTERNAL_TIMESLIDERWIDGET_H
 
 // TerraLib
 #include "Config.h"
 #include "AbstractAction.h"
-#include "../../../qt/af/connectors/TimeSliderWidget.h"
+#include "../../../qt/widgets/st/TimeSliderWidget.h"
 
 namespace te
 {
@@ -42,7 +42,7 @@ namespace te
 
     namespace plugins
     {
-      namespace slider
+      namespace st
       {
         /*!
           \class TimeSliderWidgetAction
@@ -50,7 +50,7 @@ namespace te
           \brief This class register the contrast action into TIMESLIDERWIDGET Plugin.
 
         */
-        class TimeSliderWidgetAction : public te::qt::plugins::slider::AbstractAction
+        class TimeSliderWidgetAction : public te::qt::plugins::st::AbstractAction
         {
           Q_OBJECT
             
@@ -67,12 +67,12 @@ namespace te
             virtual void onDeleteTimeSliderWidget();
 
           private:
-            te::qt::af::TimeSliderWidget* m_timeSliderWidget;
+            te::qt::widgets::TimeSliderWidget* m_timeSliderWidget;
         };
 
-      } // end namespace slider
+      } // end namespace st
     }   // end namespace plugins
   }     // end namespace qt
 }       // end namespace te
 
-#endif //__TE_QT_PLUGINS_SLIDER_INTERNAL_TIMESLIDERWIDGET_H
+#endif //__TE_QT_PLUGINS_ST_INTERNAL_TIMESLIDERWIDGET_H

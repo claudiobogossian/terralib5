@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -32,6 +32,7 @@
 
 // Boost
 #include <boost/concept_check.hpp>
+#include <boost/numeric/ublas/matrix.hpp>
 
 namespace te
 {
@@ -94,6 +95,26 @@ namespace te
         GeometricTransformation* clone() const;
 
       protected:
+        
+        // Variables used by method computeParameters
+        mutable unsigned int m_computeParameters_tiepointsSize;
+        mutable unsigned int m_computeParameters_index1;
+        mutable unsigned int m_computeParameters_index2;
+        mutable unsigned int m_computeParameters_blockOffset;
+        mutable boost::numeric::ublas::matrix< double > m_computeParameters_L_DM;
+        mutable boost::numeric::ublas::matrix< double > m_computeParameters_A_DM;
+        mutable boost::numeric::ublas::matrix< double > m_computeParameters_L_IM;
+        mutable boost::numeric::ublas::matrix< double > m_computeParameters_A_IM;
+        mutable boost::numeric::ublas::matrix< double > m_computeParameters_A_DM_t;
+        mutable boost::numeric::ublas::matrix< double > m_computeParameters_A_IM_t;
+        mutable boost::numeric::ublas::matrix< double > m_computeParameters_N_DM;
+        mutable boost::numeric::ublas::matrix< double > m_computeParameters_N_IM;
+        mutable boost::numeric::ublas::matrix< double > m_computeParameters_U_DM;
+        mutable boost::numeric::ublas::matrix< double > m_computeParameters_U_IM;
+        mutable boost::numeric::ublas::matrix< double > m_computeParameters_N_DM_inv;
+        mutable boost::numeric::ublas::matrix< double > m_computeParameters_N_IM_inv;
+        mutable boost::numeric::ublas::matrix< double > m_computeParameters_X_DM;
+        mutable boost::numeric::ublas::matrix< double > m_computeParameters_X_IM;
 
         bool computeParameters( GTParameters& params ) const;
     };

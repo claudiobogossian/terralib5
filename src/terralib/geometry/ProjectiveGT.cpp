@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -29,9 +29,6 @@
 
 // STL
 #include <cmath>
-
-// Boost
-#include <boost/numeric/ublas/matrix.hpp>
 
 te::gm::ProjectiveGT::ProjectiveGT()
 {  
@@ -123,7 +120,7 @@ te::gm::GeometricTransformation* te::gm::ProjectiveGT::clone() const
   te::gm::ProjectiveGT* newTransPtr = new ProjectiveGT;
   newTransPtr->m_internalParameters = m_internalParameters;
   return newTransPtr;
-};
+}
         
 bool te::gm::ProjectiveGT::computeParameters( GTParameters& params ) const
 {
@@ -145,117 +142,110 @@ bool te::gm::ProjectiveGT::computeParameters( GTParameters& params ) const
         Karlsruhe: Wichmann, 1989.
     */
 
-  const unsigned int tiepointsSize = params.m_tiePoints.size();
-  if( tiepointsSize < getMinRequiredTiePoints() ) return false;
+  m_computeParameters_tiepointsSize = params.m_tiePoints.size();
+  if( m_computeParameters_tiepointsSize < getMinRequiredTiePoints() ) return false;
 
   // Direct mapping
-  boost::numeric::ublas::matrix< double > L_DM( 2*tiepointsSize, 1 );
-  boost::numeric::ublas::matrix< double > A_DM( 2*tiepointsSize, 8 ); 
+  m_computeParameters_L_DM.resize( 2*m_computeParameters_tiepointsSize, 1 );
+  m_computeParameters_A_DM.resize( 2*m_computeParameters_tiepointsSize, 8 ); 
   
   //Inverse mapping
-  boost::numeric::ublas::matrix< double > L_IM( 2*tiepointsSize, 1 );
-  boost::numeric::ublas::matrix< double > A_IM( 2*tiepointsSize, 8 );  
+  m_computeParameters_L_IM.resize( 2*m_computeParameters_tiepointsSize, 1 );
+  m_computeParameters_A_IM.resize( 2*m_computeParameters_tiepointsSize, 8 );  
   
-  unsigned int index1 = 0;
-  unsigned int index2 = 0;
-  
-  for ( unsigned int blockOffset = 0 ; (blockOffset < tiepointsSize) ; 
-        ++blockOffset) 
+  for ( m_computeParameters_blockOffset = 0 ; (m_computeParameters_blockOffset < m_computeParameters_tiepointsSize) ; 
+        ++m_computeParameters_blockOffset) 
   {
-    index1 = blockOffset*2;
-    index2 = index1 + 1;
+    m_computeParameters_index1 = m_computeParameters_blockOffset*2;
+    m_computeParameters_index2 = m_computeParameters_index1 + 1;
     
-    const Coord2D& x_y = params.m_tiePoints[ blockOffset ].first;
-    const Coord2D& u_v = params.m_tiePoints[ blockOffset ].second;
+    const Coord2D& x_y = params.m_tiePoints[ m_computeParameters_blockOffset ].first;
+    const Coord2D& u_v = params.m_tiePoints[ m_computeParameters_blockOffset ].second;
     
-    L_DM( index1, 0) = u_v.x;
-    L_DM( index2, 0) = u_v.y;
+    m_computeParameters_L_DM( m_computeParameters_index1, 0) = u_v.x;
+    m_computeParameters_L_DM( m_computeParameters_index2, 0) = u_v.y;
     
-    A_DM( index1, 0 ) = x_y.x ;
-    A_DM( index1, 1 ) = x_y.y ;
-    A_DM( index1, 2 ) = 1 ;
-    A_DM( index1, 3 ) = 0 ;
-    A_DM( index1, 4 ) = 0 ;
-    A_DM( index1, 5 ) = 0 ;
-    A_DM( index1, 6 ) = - x_y.x * u_v.x;
-    A_DM( index1, 7 ) = - x_y.y * u_v.x;
+    m_computeParameters_A_DM( m_computeParameters_index1, 0 ) = x_y.x ;
+    m_computeParameters_A_DM( m_computeParameters_index1, 1 ) = x_y.y ;
+    m_computeParameters_A_DM( m_computeParameters_index1, 2 ) = 1 ;
+    m_computeParameters_A_DM( m_computeParameters_index1, 3 ) = 0 ;
+    m_computeParameters_A_DM( m_computeParameters_index1, 4 ) = 0 ;
+    m_computeParameters_A_DM( m_computeParameters_index1, 5 ) = 0 ;
+    m_computeParameters_A_DM( m_computeParameters_index1, 6 ) = - x_y.x * u_v.x;
+    m_computeParameters_A_DM( m_computeParameters_index1, 7 ) = - x_y.y * u_v.x;
     
-    A_DM( index2, 0 ) = 0;
-    A_DM( index2, 1 ) = 0;
-    A_DM( index2, 2 ) = 0;
-    A_DM( index2, 3 ) = x_y.x ;
-    A_DM( index2, 4 ) = x_y.y ;
-    A_DM( index2, 5 ) = 1 ;
-    A_DM( index2, 6 ) = - x_y.x * u_v.y;
-    A_DM( index2, 7 ) = - x_y.y * u_v.y;
+    m_computeParameters_A_DM( m_computeParameters_index2, 0 ) = 0;
+    m_computeParameters_A_DM( m_computeParameters_index2, 1 ) = 0;
+    m_computeParameters_A_DM( m_computeParameters_index2, 2 ) = 0;
+    m_computeParameters_A_DM( m_computeParameters_index2, 3 ) = x_y.x ;
+    m_computeParameters_A_DM( m_computeParameters_index2, 4 ) = x_y.y ;
+    m_computeParameters_A_DM( m_computeParameters_index2, 5 ) = 1 ;
+    m_computeParameters_A_DM( m_computeParameters_index2, 6 ) = - x_y.x * u_v.y;
+    m_computeParameters_A_DM( m_computeParameters_index2, 7 ) = - x_y.y * u_v.y;
     
-    L_IM( index1, 0) = x_y.x;
-    L_IM( index2, 0) = x_y.y;
+    m_computeParameters_L_IM( m_computeParameters_index1, 0) = x_y.x;
+    m_computeParameters_L_IM( m_computeParameters_index2, 0) = x_y.y;
     
-    A_IM( index1, 0 ) = u_v.x ;
-    A_IM( index1, 1 ) = u_v.y ;
-    A_IM( index1, 2 ) = 1 ;
-    A_IM( index1, 3 ) = 0 ;
-    A_IM( index1, 4 ) = 0 ;
-    A_IM( index1, 5 ) = 0 ;
-    A_IM( index1, 6 ) = - u_v.x * x_y.x;
-    A_IM( index1, 7 ) = - u_v.y * x_y.x;
+    m_computeParameters_A_IM( m_computeParameters_index1, 0 ) = u_v.x ;
+    m_computeParameters_A_IM( m_computeParameters_index1, 1 ) = u_v.y ;
+    m_computeParameters_A_IM( m_computeParameters_index1, 2 ) = 1 ;
+    m_computeParameters_A_IM( m_computeParameters_index1, 3 ) = 0 ;
+    m_computeParameters_A_IM( m_computeParameters_index1, 4 ) = 0 ;
+    m_computeParameters_A_IM( m_computeParameters_index1, 5 ) = 0 ;
+    m_computeParameters_A_IM( m_computeParameters_index1, 6 ) = - u_v.x * x_y.x;
+    m_computeParameters_A_IM( m_computeParameters_index1, 7 ) = - u_v.y * x_y.x;
     
-    A_IM( index2, 0 ) = 0;
-    A_IM( index2, 1 ) = 0;
-    A_IM( index2, 2 ) = 0;
-    A_IM( index2, 3 ) = u_v.x ;
-    A_IM( index2, 4 ) = u_v.y ;
-    A_IM( index2, 5 ) = 1 ;
-    A_IM( index2, 6 ) = - u_v.x * x_y.y;
-    A_IM( index2, 7 ) = - u_v.y * x_y.y;    
+    m_computeParameters_A_IM( m_computeParameters_index2, 0 ) = 0;
+    m_computeParameters_A_IM( m_computeParameters_index2, 1 ) = 0;
+    m_computeParameters_A_IM( m_computeParameters_index2, 2 ) = 0;
+    m_computeParameters_A_IM( m_computeParameters_index2, 3 ) = u_v.x ;
+    m_computeParameters_A_IM( m_computeParameters_index2, 4 ) = u_v.y ;
+    m_computeParameters_A_IM( m_computeParameters_index2, 5 ) = 1 ;
+    m_computeParameters_A_IM( m_computeParameters_index2, 6 ) = - u_v.x * x_y.y;
+    m_computeParameters_A_IM( m_computeParameters_index2, 7 ) = - u_v.y * x_y.y;    
   }
   
   /* At calcule */
-  boost::numeric::ublas::matrix< double > A_DM_t( boost::numeric::ublas::trans( A_DM ) ) ;
-  boost::numeric::ublas::matrix< double > A_IM_t( boost::numeric::ublas::trans( A_IM ) ) ;
+  m_computeParameters_A_DM_t = boost::numeric::ublas::trans( m_computeParameters_A_DM );
+  m_computeParameters_A_IM_t = boost::numeric::ublas::trans( m_computeParameters_A_IM );
 
   /* N calcule */
-  boost::numeric::ublas::matrix< double > N_DM( boost::numeric::ublas::prod( A_DM_t, A_DM ) );
-  boost::numeric::ublas::matrix< double > N_IM( boost::numeric::ublas::prod( A_IM_t, A_IM ) );
+  m_computeParameters_N_DM = boost::numeric::ublas::prod( m_computeParameters_A_DM_t, m_computeParameters_A_DM );
+  m_computeParameters_N_IM = boost::numeric::ublas::prod( m_computeParameters_A_IM_t, m_computeParameters_A_IM );
 
   /* U calcule */
-  boost::numeric::ublas::matrix< double > U_DM( boost::numeric::ublas::prod( A_DM_t, L_DM ) );
-  boost::numeric::ublas::matrix< double > U_IM( boost::numeric::ublas::prod( A_IM_t, L_IM ) );
+  m_computeParameters_U_DM = boost::numeric::ublas::prod( m_computeParameters_A_DM_t, m_computeParameters_L_DM );
+  m_computeParameters_U_IM = boost::numeric::ublas::prod( m_computeParameters_A_IM_t, m_computeParameters_L_IM );
 
   /* N_inv calcule */
-  boost::numeric::ublas::matrix< double > N_DM_inv;
-  boost::numeric::ublas::matrix< double > N_IM_inv;
   
-  if ( ! te::common::GetInverseMatrix( N_DM, N_DM_inv ) ) return false;
+  if ( ! te::common::GetInverseMatrix( m_computeParameters_N_DM, m_computeParameters_N_DM_inv ) ) return false;
 
-  boost::numeric::ublas::matrix< double > X_DM( 
-    boost::numeric::ublas::prod( N_DM_inv, U_DM ) );
+  m_computeParameters_X_DM = boost::numeric::ublas::prod( m_computeParameters_N_DM_inv, m_computeParameters_U_DM );
       
   params.m_directParameters.resize( 8 );
-  params.m_directParameters[0] = X_DM(0,0);
-  params.m_directParameters[1] = X_DM(1,0);
-  params.m_directParameters[2] = X_DM(2,0);
-  params.m_directParameters[3] = X_DM(3,0);
-  params.m_directParameters[4] = X_DM(4,0);
-  params.m_directParameters[5] = X_DM(5,0);
-  params.m_directParameters[6] = X_DM(6,0);
-  params.m_directParameters[7] = X_DM(7,0);
+  params.m_directParameters[0] = m_computeParameters_X_DM(0,0);
+  params.m_directParameters[1] = m_computeParameters_X_DM(1,0);
+  params.m_directParameters[2] = m_computeParameters_X_DM(2,0);
+  params.m_directParameters[3] = m_computeParameters_X_DM(3,0);
+  params.m_directParameters[4] = m_computeParameters_X_DM(4,0);
+  params.m_directParameters[5] = m_computeParameters_X_DM(5,0);
+  params.m_directParameters[6] = m_computeParameters_X_DM(6,0);
+  params.m_directParameters[7] = m_computeParameters_X_DM(7,0);
   
-  if ( ! te::common::GetInverseMatrix( N_IM, N_IM_inv ) ) return false;
+  if ( ! te::common::GetInverseMatrix( m_computeParameters_N_IM, m_computeParameters_N_IM_inv ) ) return false;
 
-  boost::numeric::ublas::matrix< double > X_IM( 
-    boost::numeric::ublas::prod( N_IM_inv, U_IM ) );
+  m_computeParameters_X_IM = boost::numeric::ublas::prod( m_computeParameters_N_IM_inv, m_computeParameters_U_IM );
       
   params.m_inverseParameters.resize( 8 );
-  params.m_inverseParameters[0] = X_IM(0,0);
-  params.m_inverseParameters[1] = X_IM(1,0);
-  params.m_inverseParameters[2] = X_IM(2,0);
-  params.m_inverseParameters[3] = X_IM(3,0);
-  params.m_inverseParameters[4] = X_IM(4,0);
-  params.m_inverseParameters[5] = X_IM(5,0);
-  params.m_inverseParameters[6] = X_IM(6,0);
-  params.m_inverseParameters[7] = X_IM(7,0);  
+  params.m_inverseParameters[0] = m_computeParameters_X_IM(0,0);
+  params.m_inverseParameters[1] = m_computeParameters_X_IM(1,0);
+  params.m_inverseParameters[2] = m_computeParameters_X_IM(2,0);
+  params.m_inverseParameters[3] = m_computeParameters_X_IM(3,0);
+  params.m_inverseParameters[4] = m_computeParameters_X_IM(4,0);
+  params.m_inverseParameters[5] = m_computeParameters_X_IM(5,0);
+  params.m_inverseParameters[6] = m_computeParameters_X_IM(6,0);
+  params.m_inverseParameters[7] = m_computeParameters_X_IM(7,0);  
   
   return true;
 }

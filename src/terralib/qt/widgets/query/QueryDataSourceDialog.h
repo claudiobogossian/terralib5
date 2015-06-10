@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -27,9 +27,11 @@
 #define __TERRALIB_QT_WIDGETS_QUERY_INTERNAL_QUERYDATASOURCEDIALOG_H
 
 // TerraLib
+#include "../../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../../dataaccess/query/Where.h"
 #include "../../../maptools/AbstractLayer.h"
 #include "../table/DataSetTableModel.h"
+#include "../canvas/MapDisplay.h"
 #include "../mapdisplay/DataSetDisplay.h"
 #include "../Config.h"
 
@@ -78,6 +80,8 @@ namespace te
           */
           void setLayerList(std::list<te::map::AbstractLayerPtr> layerList);
 
+          void setAppMapDisplay(te::qt::widgets::MapDisplay* appMapDisplay);
+
         protected:
 
           void loadDataSourcesInformation();
@@ -104,10 +108,18 @@ namespace te
 
           void onApplySelToolButtonClicked();
 
+          void onCreateLayerToolButtonClicked();
+
+          void onTargetDatasourceToolButtonPressed();
+
+          void onTargetFileToolButtonPressed();
+
         signals:
 
           /*! This signal is emitted when the layer objects must be highlighted. */
-          void highlightLayerObjects(const te::map::AbstractLayerPtr& layer, te::da::DataSet* dataset, const QColor& color);
+          //void highlightLayerObjects(const te::map::AbstractLayerPtr& layer, te::da::DataSet* dataset, const QColor& color);
+
+          void createNewLayer(te::map::AbstractLayerPtr layer);
 
         private:
 
@@ -118,6 +130,12 @@ namespace te
           te::qt::widgets::DataSetTableModel* m_tableModel;
 
           te::qt::widgets::DataSetDisplay* m_dataSetDisplay;
+
+          te::qt::widgets::MapDisplay* m_appMapDisplay;
+
+          te::da::DataSourceInfoPtr m_outputDatasource;
+
+          bool m_toFile;
 
           std::map<std::string, Qt::GlobalColor> m_keyWords;
       };

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of TerraView - A GIS Application.
 
@@ -258,6 +258,10 @@ void te::qt::af::MapDisplay::onDrawLayersFinished(const QMap<QString, QString>& 
 
   // Draw the layers selection
   drawLayersSelection(ApplicationController::getInstance().getProject()->getSingleLayers(false));
+
+  // Informs the end of drawing
+  te::qt::af::evt::DrawingFinished drawingFinished(this);
+  ApplicationController::getInstance().broadcast(&drawingFinished);
 }
 
 void te::qt::af::MapDisplay::onApplicationTriggered(te::qt::af::evt::Event* e)
@@ -331,6 +335,13 @@ void te::qt::af::MapDisplay::onApplicationTriggered(te::qt::af::evt::Event* e)
     }
     break;
 
+    case te::qt::af::evt::GET_MAPDISPLAY:
+    {
+      te::qt::af::evt::GetMapDisplay* getDisplay = static_cast<te::qt::af::evt::GetMapDisplay*>(e);
+      getDisplay->m_display = this;
+    }
+    break;
+
     default:
       return;
   }
@@ -366,6 +377,7 @@ void te::qt::af::MapDisplay::drawLayerSelection(te::map::AbstractLayerPtr layer)
     return;
 
   const te::da::ObjectIdSet* oids = layer->getSelected();
+
   if(oids == 0 || oids->size() == 0)
     return;
 
@@ -373,44 +385,43 @@ void te::qt::af::MapDisplay::drawLayerSelection(te::map::AbstractLayerPtr layer)
   {
     std::size_t maxOids = 4000;
 
-    if(oids->size() <= maxOids)
+    if(oids->size() > maxOids)
     {
-      // Try to retrieve the layer selection
-      std::auto_ptr<te::da::DataSet> selected(layer->getData(oids));
+      std::auto_ptr<te::da::ObjectIdSet> oidsBatch(new te::da::ObjectIdSet(*oids, false));
 
-      drawDataSet(selected.get(), layer->getGeomPropertyName(), layer->getSRID(), ApplicationController::getInstance().getSelectionColor());
+      // Count the all oids
+      std::size_t nOids = 0;
 
-      return;
-    }
-    
-    // The batch of oids
-    std::auto_ptr<te::da::ObjectIdSet> oidsBatch(new te::da::ObjectIdSet(*oids, false));
+      // Count the processed oids
+      std::size_t nProcessedOids = 0;
 
-    // Count the all oids
-    std::size_t nOids = 0;
-
-    // Count the processed oids
-    std::size_t nProcessedOids = 0;
-
-    std::set<te::da::ObjectId*, te::common::LessCmp<te::da::ObjectId*> >::const_iterator it;
-    for(it = oids->begin(); it != oids->end(); ++it)
-    {
-      oidsBatch->add((*it)->clone());
-
-      ++nOids;
-      ++nProcessedOids;
-
-      if(nProcessedOids == maxOids || nOids == oids->size())
+      std::set<te::da::ObjectId*, te::common::LessCmp<te::da::ObjectId*> >::const_iterator it;
+      for(it = oids->begin(); it != oids->end(); ++it)
       {
-        // Try to retrieve the layer selection batch
-        std::auto_ptr<te::da::DataSet> selected(layer->getData(oidsBatch.get()));
+  
+        oidsBatch->add((*it)->clone());
 
-        drawDataSet(selected.get(), layer->getGeomPropertyName(), layer->getSRID(), ApplicationController::getInstance().getSelectionColor());
+        ++nOids;
+        ++nProcessedOids;
 
-        // Prepares to next batch
-        oidsBatch->clear();
-        nProcessedOids = 0;
+        if(nProcessedOids == maxOids || nOids == oids->size())
+        {
+          // Try to retrieve the layer selection batch
+          std::auto_ptr<te::da::DataSet> selected(layer->getData(oidsBatch.get()));
+
+          drawDataSet(selected.get(), layer->getGeomPropertyName(), layer->getSRID(), ApplicationController::getInstance().getSelectionColor(), te::da::HasLinkedTable(layer->getSchema().get()));
+
+          // Prepares to next batch
+          oidsBatch->clear();
+          nProcessedOids = 0;
+        }
       }
+    }
+    else
+    {
+      std::auto_ptr<te::da::DataSet> selected(layer->getData(oids->getExpression()));
+
+      drawDataSet(selected.get(), layer->getGeomPropertyName(), layer->getSRID(), ApplicationController::getInstance().getSelectionColor(), te::da::HasLinkedTable(layer->getSchema().get()));
     }
   }
   catch(std::exception& e)
@@ -418,9 +429,11 @@ void te::qt::af::MapDisplay::drawLayerSelection(te::map::AbstractLayerPtr layer)
     QMessageBox::critical(m_display, tr("Error"), QString(tr("The layer selection cannot be drawn. Details:") + " %1.").arg(e.what()));
     return;
   }
+
+  return;
 }
 
-void te::qt::af::MapDisplay::drawDataSet(te::da::DataSet* dataset, const std::string& geomPropertyName, int srid, const QColor& color)
+void te::qt::af::MapDisplay::drawDataSet(te::da::DataSet* dataset, const std::string& geomPropertyName, int srid, const QColor& color, bool isLinked)
 {
   assert(dataset);
   assert(color.isValid());
@@ -449,10 +462,11 @@ void te::qt::af::MapDisplay::drawDataSet(te::da::DataSet* dataset, const std::st
 
   dataset->moveBeforeFirst();
 
+  std::set<std::string> highlightedGeoms;
+
   while(dataset->moveNext())
   {
     std::auto_ptr<te::gm::Geometry> g(dataset->getGeometry(gpos));
-
     if(needRemap)
     {
       g->setSRID(srid);
@@ -465,7 +479,15 @@ void te::qt::af::MapDisplay::drawDataSet(te::da::DataSet* dataset, const std::st
       te::qt::widgets::Config2DrawLayerSelection(&canvas, color, currentGeomType);
     }
 
-    canvas.draw(g.get());
+    if(isLinked)
+    {
+      if(highlightedGeoms.insert(g->asText()).second)
+      {
+        canvas.draw(g.get());
+      }
+    }
+    else
+      canvas.draw(g.get());
   }
 }
 

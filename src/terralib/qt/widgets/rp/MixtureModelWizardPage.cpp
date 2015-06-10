@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -46,13 +46,19 @@
 #include "ui_MixtureModelWizardPageForm.h"
 
 // Qt
+#include <QFileDialog>
 #include <QGridLayout>
+#include <QMessageBox>
 
 // Boost
+#include <boost/foreach.hpp>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
 //STL
+#include <fstream>
 #include <memory>
 
 #define PATTERN_SIZE 12
@@ -65,6 +71,9 @@ te::qt::widgets::MixtureModelWizardPage::MixtureModelWizardPage(QWidget* parent)
 {
 // setup controls
   m_ui->setupUi(this);
+
+  m_ui->m_loadToolButton->setIcon(QIcon::fromTheme("document-open"));
+  m_ui->m_saveToolButton->setIcon(QIcon::fromTheme("document-save"));
 
   fillMixtureModelTypes();
 
@@ -79,6 +88,8 @@ te::qt::widgets::MixtureModelWizardPage::MixtureModelWizardPage(QWidget* parent)
   connect(m_ui->m_tableWidget, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(onItemChanged(QTableWidgetItem*)));
   connect(m_ui->m_removeToolButton, SIGNAL(clicked()), this, SLOT(onRemoveToolButtonClicked()));
   connect(m_ui->m_acquireToolButton, SIGNAL(toggled(bool)), this, SLOT(showNavigator(bool)));
+  connect(m_ui->m_loadToolButton, SIGNAL(clicked()), this, SLOT(onLoadToolButtonClicked()));
+  connect(m_ui->m_saveToolButton, SIGNAL(clicked()), this, SLOT(onSaveToolButtonClicked()));
 
 
   //configure raster navigator
@@ -119,6 +130,8 @@ bool te::qt::widgets::MixtureModelWizardPage::isComplete() const
   int nBands = m_ui->m_bandTableWidget->rowCount();
 
   bool isChecked = false;
+
+  std::size_t count = 0;
   for(int i = 0; i < nBands; ++i)
   {
     QCheckBox* checkBox = (QCheckBox*)m_ui->m_bandTableWidget->cellWidget(i, 0);
@@ -126,11 +139,14 @@ bool te::qt::widgets::MixtureModelWizardPage::isComplete() const
     if(checkBox->isChecked())
     {
       isChecked = true;
-      break;
+      ++count;
     }
   }
 
   if(!isChecked)
+    return false;
+
+  if(count != m_components.size())
     return false;
 
   return true;
@@ -223,6 +239,122 @@ te::rp::MixtureModel::OutputParameters te::qt::widgets::MixtureModelWizardPage::
   algoOutputParams.m_createErrorRaster = m_ui->m_createErrorRasterCheckBox->isChecked();
 
   return algoOutputParams;
+}
+
+void te::qt::widgets::MixtureModelWizardPage::saveMixtureModelComponents(std::string fileName)
+{
+  boost::property_tree::ptree pt;
+
+  std::map<std::string, MixModelComponent >::iterator it = m_components.begin();
+
+  boost::property_tree::ptree children;
+
+  while(it != m_components.end())
+  {
+    boost::property_tree::ptree child;
+
+    child.put("id", it->first);
+    child.put("name", it->second.m_name);
+
+    boost::property_tree::ptree coordGrid;
+    coordGrid.put("xGrid", it->second.m_coordGrid.getX());
+    coordGrid.put("yGrid", it->second.m_coordGrid.getY());
+    child.push_back(std::make_pair("coordGrid", coordGrid));
+
+    boost::property_tree::ptree coordGeo;
+    coordGeo.put("xGeo", it->second.m_coordGeo.getX());
+    coordGeo.put("yGeo", it->second.m_coordGeo.getY());
+    child.push_back(std::make_pair("coordGeo", coordGeo));
+
+    boost::property_tree::ptree values;
+
+    for(std::size_t t = 0; t < it->second.m_values.size(); ++t)
+    {
+      boost::property_tree::ptree val;
+      val.put("value", it->second.m_values[t]);
+      values.push_back(std::make_pair("", val));
+    }
+
+    child.add_child("Values", values);
+
+    children.push_back(std::make_pair("Component", child));
+
+    ++it;
+  }
+
+  pt.add_child("MixModel_Components", children);
+
+  boost::property_tree::json_parser::write_json(fileName, pt);
+}
+
+void te::qt::widgets::MixtureModelWizardPage::loadMixtureModelComponents(std::string fileName)
+{
+  try
+  {
+    boost::property_tree::ptree pt;
+    boost::property_tree::json_parser::read_json(fileName, pt);
+
+    BOOST_FOREACH(boost::property_tree::ptree::value_type &v, pt.get_child("MixModel_Components"))
+    {
+      std::string id = v.second.get<std::string>("id");
+      std::string name = v.second.get<std::string>("name");
+
+      int xGrid = v.second.get<int>("coordGrid.xGrid");
+      int yGrid = v.second.get<int>("coordGrid.yGrid");
+
+      double xGeo = v.second.get<double>("coordGeo.xGeo");
+      double yGeo = v.second.get<double>("coordGeo.yGeo");
+
+      std::vector<double> valuesVec;
+      BOOST_FOREACH(boost::property_tree::ptree::value_type &c, v.second.get_child("Values"))
+      {
+        double val = c.second.get<double>("value");
+
+        valuesVec.push_back(val);
+      }
+
+      MixModelComponent mmc;
+      mmc.m_id = id;
+      mmc.m_name = name;
+      mmc.m_values = valuesVec;
+      mmc.m_coordGrid = te::gm::Coord2D(xGrid, yGrid);
+      mmc.m_coordGeo = te::gm::Coord2D(xGeo, yGeo);
+
+      m_components.insert(std::map<std::string, MixModelComponent >::value_type(id, mmc));
+    }
+
+    updateComponents();
+  }
+  catch(boost::property_tree::json_parser::json_parser_error &je)
+  {
+    QString errmsg = tr("Error parsing: ") + je.filename().c_str() + ": " + je.message().c_str();
+
+    QMessageBox::warning(this, tr("Warning"), errmsg);
+
+    return;
+  }
+  catch (std::exception const& e)
+  {
+    QString errmsg = e.what();
+
+    QMessageBox::warning(this, tr("Warning"), errmsg);
+  }
+}
+
+void te::qt::widgets::MixtureModelWizardPage::onSaveToolButtonClicked()
+{
+  QString fileName = QFileDialog::getSaveFileName(this, tr("Save MixModel Components"), "", "JSON File (*.json)");
+
+  if(!fileName.isEmpty())
+    saveMixtureModelComponents(fileName.toStdString());
+}
+
+void te::qt::widgets::MixtureModelWizardPage::onLoadToolButtonClicked()
+{
+  QString fileName = QFileDialog::getOpenFileName(this, tr("Load MixModel Components"), "", "JSON File (*.json)");
+
+  if(!fileName.isEmpty())
+    loadMixtureModelComponents(fileName.toStdString());
 }
 
 void te::qt::widgets::MixtureModelWizardPage::onMapDisplayExtentChanged()
@@ -390,8 +522,9 @@ void te::qt::widgets::MixtureModelWizardPage::listBands()
         
         QCheckBox* bandCheckBox = new QCheckBox(bName, this);
 
-        //if(inputRst->getNumberOfBands() == 1)
-            bandCheckBox->setChecked(true);
+        connect(bandCheckBox, SIGNAL(stateChanged(int)), this, SIGNAL(completeChanged()));
+
+        bandCheckBox->setChecked(true);
 
         QComboBox* sensorDescriptionComboBox = new QComboBox(this);
         sensorDescriptionComboBox->addItems(sensorsDescriptions);

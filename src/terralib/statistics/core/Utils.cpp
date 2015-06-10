@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -30,6 +30,9 @@
 #include "Enums.h"
 #include "Exception.h"
 #include "Utils.h"
+
+//Boost
+#include <boost/lexical_cast.hpp>
 
 std::string te::stat::GetStatSummaryShortName(const int& e)
 {
@@ -178,6 +181,8 @@ std::vector<double> te::stat::GetNumericData(te::da::DataSet* dataSet, const std
         numval = dataSet->getFloat(index);
       else if (type == te::dt::DOUBLE_TYPE)
         numval = dataSet->getDouble(index);
+      else if(type ==  te::dt::NUMERIC_TYPE)
+        numval = boost::lexical_cast<double>(dataSet->getNumeric(index));
       result.push_back(numval);
     }
   }while(dataSet->moveNext());

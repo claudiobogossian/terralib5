@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -108,7 +108,11 @@ namespace te
 
           void getDataAsDouble(std::vector<double>& vec, const std::string& attrName, const int& dataType, int& nullValues);
 
+          void getLinkedDataAsDouble(std::vector<double>& vec, const std::string& attrName, const int& dataType, int& nullValues);
+
           void getDataAsString(std::vector<std::string>& vec, const std::string& attrName, int& nullValues);
+
+          void getLinkedDataAsString(std::vector<std::string>& vec, const std::string& attrName, int& nullValues);
 
           void createDoubleNullGroupingItem(int count);
 

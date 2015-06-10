@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -20,7 +20,7 @@
 /*!
   \file terralib/vp/qt/PolygonToLineDialog.h
 
-  \brief A dialog polygon to line operation
+  \brief A dialog for polygon to line operation
 */
 
 #ifndef __TERRALIB_VP_INTERNAL_POLYGONTOLINEDIALOG_H
@@ -44,16 +44,12 @@
 namespace Ui { class PolygonToLineDialogForm; }
 
 // Forward declarations
-class QListWidgetItem;
 class QModelIndex;
 
 namespace te
 {
   namespace vp
   {
-// Forward declarations
-    class LayerTreeModel;
-
     class TEVPEXPORT PolygonToLineDialog : public QDialog
     {
       Q_OBJECT
@@ -71,11 +67,15 @@ namespace te
         */
         void setLayers(std::list<te::map::AbstractLayerPtr> layers);
 
-      private:
+        te::map::AbstractLayerPtr getLayer();
 
       protected slots:
-        
-        void onHelpPushButtonClicked();
+
+        void onLayerComboBoxChanged(int index);
+
+        void onTargetDatasourceToolButtonPressed();
+
+        void onTargetFileToolButtonPressed();
 
         void onOkPushButtonClicked();
 
@@ -84,9 +84,11 @@ namespace te
       private:
 
         std::auto_ptr<Ui::PolygonToLineDialogForm> m_ui;
-        te::da::DataSourceInfoPtr m_outputDatasource;                                     //!< DataSource information.
-        std::list<te::map::AbstractLayerPtr> m_layers;                                    //!< List of layers.
-        te::map::AbstractLayerPtr m_selectedLayer;                                        //!< Layer used for buffer
+        te::da::DataSourceInfoPtr m_outputDatasource;     //!< DataSource information.
+        std::list<te::map::AbstractLayerPtr> m_layers;    //!< List of layers.
+        te::map::AbstractLayerPtr m_selectedLayer;        //!< Layer used for operation.
+        te::map::AbstractLayerPtr m_outLayer;             //!< Resulting layer.
+        bool m_toFile;
     };
   }   // end namespace vp
 }     // end namespace te

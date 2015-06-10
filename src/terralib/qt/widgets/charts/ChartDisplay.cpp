@@ -1,4 +1,4 @@
-/*  Copyright (C) 2010-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../../../color/RGBAColor.h"
+#include "../../../dataaccess/dataset/DataSetType.h"
 #include "../../../dataaccess/dataset/ObjectIdSet.h"
 #include "../../../se.h"
 #include "ChartDisplay.h"
@@ -82,6 +83,14 @@ te::qt::widgets::ChartDisplay::ChartDisplay(QWidget* parent, QString title, Char
   m_leftPicker = new QwtPlotPicker(QwtPlot::xBottom, QwtPlot::yLeft, QwtPlotPicker::RectRubberBand, QwtPicker::AlwaysOff, this->canvas());
   m_leftPicker->setStateMachine(new QwtPickerDragRectMachine );
 
+  m_leftPointPicker = new QwtPlotPicker(QwtPlot::xBottom, QwtPlot::yLeft, QwtPlotPicker::CrossRubberBand, QwtPicker::AlwaysOff, this->canvas());
+  m_leftPointPicker->setStateMachine(new QwtPickerClickPointMachine);
+  m_leftPointPicker->setMousePattern(QwtEventPattern::MouseSelect1, Qt::LeftButton);
+
+  m_rigthPointPicker = new QwtPlotPicker(QwtPlot::xBottom, QwtPlot::yLeft, QwtPlotPicker::CrossRubberBand, QwtPicker::AlwaysOff, this->canvas());
+  m_rigthPointPicker->setStateMachine(new QwtPickerClickPointMachine);
+  m_rigthPointPicker->setMousePattern(QwtEventPattern::MouseSelect1, Qt::RightButton);
+
   m_ctrlPicker = new QwtPlotPicker(QwtPlot::xBottom, QwtPlot::yLeft, QwtPlotPicker::RectRubberBand, QwtPicker::AlwaysOff, this->canvas());
   m_ctrlPicker->setStateMachine(new QwtPickerDragRectMachine );
   m_ctrlPicker->setMousePattern(QwtEventPattern::MouseSelect1, Qt::LeftButton, Qt::ControlModifier);
@@ -93,6 +102,9 @@ te::qt::widgets::ChartDisplay::ChartDisplay(QWidget* parent, QString title, Char
   connect(m_leftPicker, SIGNAL(selected(const QRectF&)), SLOT(onRectPicked(const QRectF&)));
   connect(m_ctrlPicker, SIGNAL(selected(const QRectF&)), SLOT(onRectPicked(const QRectF&)));
   connect(m_shiftPicker, SIGNAL(selected(const QRectF&)), SLOT(onRectPicked(const QRectF&)));
+
+  connect(m_leftPointPicker, SIGNAL(selected(const QPointF &)), SIGNAL(leftPointSelected(const QPointF &)));
+  connect(m_rigthPointPicker, SIGNAL(selected(const QPointF &)), SIGNAL(rigthPointSelected(const QPointF &)));
 
   canvas()->setCursor(Qt::CrossCursor);
 }
@@ -119,7 +131,7 @@ void te::qt::widgets::ChartDisplay::setStyle(te::qt::widgets::ChartStyle* newSty
   adjustDisplay();
 }
 
-void te::qt::widgets::ChartDisplay::highlightOIds(const te::da::ObjectIdSet* oids)
+void te::qt::widgets::ChartDisplay::highlightOIds(const te::da::ObjectIdSet* oids, te::da::DataSetType* dataType)
 {
   if(oids)
   {
@@ -131,12 +143,12 @@ void te::qt::widgets::ChartDisplay::highlightOIds(const te::da::ObjectIdSet* oid
     {
       if ( ( *it )->rtti() == te::qt::widgets::SCATTER_CHART)
       {
-        static_cast<te::qt::widgets::ScatterChart*>(*it)->highlight( oids);
+        static_cast<te::qt::widgets::ScatterChart*>(*it)->highlight(oids);
         break;
       }
       else if( ( *it )->rtti() == te::qt::widgets::HISTOGRAM_CHART )
       {
-        static_cast<te::qt::widgets::HistogramChart*>(*it)->highlight( oids);
+        static_cast<te::qt::widgets::HistogramChart*>(*it)->highlight(oids, dataType);
         break;
       }
     }
@@ -188,6 +200,7 @@ void  te::qt::widgets::ChartDisplay::adjustDisplay()
 
     canvas()->setPalette(m_chartStyle->getColor());
   }
+  updateLayout();
 }
 
 void te::qt::widgets::ChartDisplay::onRectPicked(const QRectF &rect)

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -98,6 +98,7 @@ void te::qt::widgets::ColorTransformWizard::setList(std::list<te::map::AbstractL
 {
   m_layerSearchPage->getSearchWidget()->setList(layerList);
   m_layerSearchPage->getSearchWidget()->filterOnlyByRaster();
+  m_layerSearchPage->getSearchWidget()->setMinRasterBands(3);
   m_layerSearchPage->getSearchWidget()->enableMultiSelection(false);
 }
 
@@ -186,6 +187,9 @@ bool te::qt::widgets::ColorTransformWizard::executeRGB2IHS()
   te::rst::Raster* inputRaster = m_colorTransformPage->getRGBRaster();
   te::rst::Raster* outputRaster = buildOutputRaster();
 
+  if(!outputRaster)
+    return false;
+
   unsigned int rBand = m_colorTransformPage->getRGBRBand();
   unsigned int gBand = m_colorTransformPage->getRGBGBand();
   unsigned int bBand = m_colorTransformPage->getRGBBBand();
@@ -244,6 +248,8 @@ te::rst::Raster* te::qt::widgets::ColorTransformWizard::buildOutputRaster()
     inputRaster = m_colorTransformPage->getRGBRaster();
   else if(m_colorTransformPage->isIHS2RGB())
     inputRaster = m_colorTransformPage->getIHSRaster();
+  else
+    return 0;
 
   //get input bands info
   std::vector<te::rst::BandProperty*> bands;

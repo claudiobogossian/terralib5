@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -24,12 +24,14 @@
 */
 
 // TerraLib
+#include "../common/progress/TaskProgress.h"
 #include "../geometry.h"
 #include "../raster/Band.h"
 #include "../raster/BandIterator.h"
 #include "../raster/Grid.h"
 #include "../raster/PositionIterator.h"
 #include "../raster/Raster.h"
+#include "../raster/Utils.h"
 #include "../statistics.h"
 #include "RasterAttributes.h"
 
@@ -177,10 +179,13 @@ boost::numeric::ublas::matrix<double> te::rp::RasterAttributes::getCovarianceMat
   }
 
 // compute covariance matrix based on values and means
+  te::common::TaskProgress taskProgress("Computing covariance matrix", te::common::TaskProgress::UNDEFINED, nbands * nbands);
   std::complex<double> sum;
   for (i = 0; i < nbands; i++)
     for (j = 0; j < nbands; j++)
     {
+      taskProgress.pulse();
+      
       sum = std::complex<double> (0.0, 0.0);
 
       for (k = 0; k < nvalues; k++)
@@ -190,4 +195,115 @@ boost::numeric::ublas::matrix<double> te::rp::RasterAttributes::getCovarianceMat
     }
 
   return covariance;
+}
+
+boost::numeric::ublas::matrix<double> te::rp::RasterAttributes::getGLCM(const te::rst::Raster& rin, unsigned int band, int dx, int dy)
+{
+  assert(band < rin.getNumberOfBands());
+  
+  double minPixel;
+  double maxPixel;
+  te::rst::GetDataTypeRanges(rin.getBandDataType(band), minPixel, maxPixel);
+  
+  boost::numeric::ublas::matrix<double> glcm (maxPixel + 1, maxPixel + 1);
+  glcm.clear();
+  double pixel;
+  double neighborPixel;
+  double noDataValue = rin.getBand(band)->getProperty()->m_noDataValue;
+  double N = 0.0;
+  
+// defining limits for iteration  
+  int row_start = 0;
+  int row_end = rin.getNumberOfRows();
+  int column_start = 0;
+  int column_end = rin.getNumberOfColumns();
+  
+  if (dy > 0)
+    row_end -= dy;
+  else
+    row_start -= dy;
+
+  if (dx > 0)
+    column_end -= dx;
+  else
+    column_start -= dx;
+  
+// computing GLCM
+  te::common::TaskProgress taskProgress("Computing the GLCM", te::common::TaskProgress::UNDEFINED, (row_end - row_start) * (column_end - column_start));
+  for (int r = row_start; r < row_end; r++)
+  {
+    for (int c = column_start; c < column_end; c++)
+    {
+      taskProgress.pulse();
+      
+// get central pixel      
+      rin.getValue(c, r, pixel, band);
+      if (pixel == noDataValue)
+        continue;
+      
+// get neighbor pixel      
+      rin.getValue(c + dx, r + dy, neighborPixel, band);
+      if (neighborPixel == noDataValue)
+        continue;
+
+// update GLCM matrix
+      glcm(pixel, neighborPixel) = glcm(pixel, neighborPixel) + 1;
+      N++;
+    }
+  }
+
+  if (N > 0.0)
+  {
+    for (unsigned int i = 0; i < glcm.size1(); i++)
+      for (unsigned int j = 0; j < glcm.size2(); j++)
+        glcm(i, j) = glcm(i, j) / N;
+  }
+  
+  return glcm;
+}
+        
+boost::numeric::ublas::matrix<double> te::rp::RasterAttributes::getGLCM(const te::rst::Raster& rin, unsigned int band, int dx, int dy, const te::gm::Polygon& polygon)
+{
+  // create raster crop with polygon
+  std::map<std::string, std::string> rcropinfo;
+  rcropinfo["FORCE_MEM_DRIVER"] = "TRUE";
+  te::rst::RasterPtr rcrop = te::rst::CropRaster(rin, polygon, rcropinfo, "MEM");
+  
+  // call previous method using crop
+  return getGLCM(*rcrop.get(), band, dx, dy);
+}
+        
+te::rp::Texture te::rp::RasterAttributes::getGLCMMetrics(boost::numeric::ublas::matrix<double> glcm)
+{
+  te::rp::Texture metrics;
+  
+  unsigned int i;
+  unsigned int j;
+  double di;
+  double dj;
+  double di_minus_dj;
+  double square_di_minus_dj;
+  te::common::TaskProgress taskProgress("Computing GLCM Metrics", te::common::TaskProgress::UNDEFINED, glcm.size1() * glcm.size2());
+  for (i = 0, di = 0.0; i < glcm.size1(); i++, di++)
+  {
+    for (j = 0, dj = 0.0; j < glcm.size2(); j++, dj++)
+    {
+      taskProgress.pulse();
+      
+      di_minus_dj = (di - dj);
+      square_di_minus_dj = di_minus_dj * di_minus_dj;
+      
+      metrics.m_contrast += glcm(i, j) * square_di_minus_dj;
+      metrics.m_dissimilarity += glcm(i, j) * std::abs(di_minus_dj);
+      metrics.m_energy += glcm(i, j) * glcm(i, j);
+      if (glcm(i, j) > 0)
+        metrics.m_entropy += glcm(i, j) * (-1.0 * log(glcm(i, j)));
+      metrics.m_homogeneity += glcm(i, j) / (1 + square_di_minus_dj);
+    }
+  }
+
+  if (metrics.m_energy > 0)
+    metrics.m_energy = std::sqrt(metrics.m_energy);
+
+  return metrics;
 }

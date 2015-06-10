@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -27,6 +27,7 @@
 
 #include "Config.h"
 
+#include "FeedersRaster.h"
 #include "Matrix.h"
 #include "Macros.h"
 #include "../dataaccess/datasource/DataSource.h"
@@ -35,7 +36,13 @@
 #include "../raster/Grid.h"
 #include "../raster/BandProperty.h"
 #include "../raster/RasterFactory.h"
+#include "../raster/Interpolator.h"
 #include "../raster/Utils.h"
+#include "../srs/Converter.h"
+#include "../geometry/LinearRing.h"
+#include "../geometry/GTParameters.h"
+#include "../geometry/MultiPoint.h"
+#include "../geometry/Surface.h"
 
 // STL
 #include <memory>
@@ -46,6 +53,7 @@
 
 // Boost
 #include <boost/numeric/ublas/matrix.hpp>
+#include <boost/shared_ptr.hpp>
 
 namespace te
 {
@@ -58,6 +66,17 @@ namespace te
   namespace rp
   {
     class RasterHandler;
+    
+    /*!
+      \brief Wavelet Atrous Filter types.
+      \ingroup rp_func
+     */    
+    enum WaveletAtrousFilterType
+    {
+      InvalidWAFilter, //!< Invalid filter type
+      B3SplineWAFilter, //!< Spline filter type.
+      TriangleWAFilter //!< Triangle filter type.
+    };
     
     /*!
       \brief Create a new raster into the givem data source.
@@ -120,6 +139,21 @@ namespace te
       std::vector< te::rst::BandProperty* > bandsProperties,
       const std::string& fileName,
       RasterHandler& outRasterHandler );
+    
+    /*!
+      \brief Create a new raster into a GDAL datasource.
+      \param rasterGrid The template grid used to create the output raster.
+      \param bandsProperties The template band properties used to create the output raster.
+      \param fileName The output tif file name.
+      \param outRasterPtr The created raster pointer.
+      \return true if OK, false on errors.
+      \note All bandsProperties pointed objects will be acquired by this function and must not be deleted.
+      \ingroup rp_func
+     */
+    bool TERPEXPORT CreateNewGdalRaster( const te::rst::Grid& rasterGrid,
+      std::vector< te::rst::BandProperty* > bandsProperties,
+      const std::string& fileName,
+      std::auto_ptr< te::rst::Raster >& outRasterPtr );    
       
     /*!
       \brief Create a new raster into a GDAL datasource.
@@ -312,17 +346,6 @@ namespace te
     TERPEXPORT bool NormalizeRaster(te::rst::Raster& inputRaster, double nmin = 0.0, double nmax = 255.0);
 
     /*!
-      \brief Creates a vector of random positions (points) inside the raster.
-
-      \param inputRaster     The given raster.
-      \param numberOfPoints  The number of random positions to be created (default = 1000).
-
-      \return A vector of random positions (points).
-      \ingroup rp_func
-    */
-    TERPEXPORT std::vector<te::gm::Point*> GetRandomPointsInRaster(const te::rst::Raster& inputRaster, unsigned int numberOfPoints = 1000);    
-    
-    /*!
       \brief RGB to IHS conversion.
       \param inputRGBRaster The input raster.
       \param redBandIdx The red band index.
@@ -330,7 +353,7 @@ namespace te
       \param blueBandIdx The red band index.
       \param rgbRangeMin The minimum RGB value.
       \param rgbRangeMax The maximum RGB value.
-      \param outputIHSRaster An output pré-initiated raster (with the same dimensions of inputRGBRaster) where the IHS data will be written.
+      \param outputIHSRaster An output pré-initiated raster (with the same dimensions of inputRGBRaster) where the IHS data will be written (double or float as the data type).
       \return true if OK, false on errors.
       \note The outputIHSRaster mas have a float or double data type. 
       \note IHS data with the following channels ranges: I:[0,1] H:[0,2pi] (radians) S:[0,1].
@@ -366,6 +389,7 @@ namespace te
       \param meanValue The calculated mean value.
       \return true if OK, false on errors.
       \note Optimized for rasters where the used bands have the same blocking scheme.
+      \ingroup rp_func
     */
     TERPEXPORT bool GetMeanValue( 
       const te::rst::Band& band, 
@@ -380,6 +404,7 @@ namespace te
       \param stdDevValue The calculated standard deviation value.
       \return true if OK, false on errors.
       \note Optimized for rasters where the used bands have the same blocking scheme.
+      \ingroup rp_func
     */
     TERPEXPORT bool GetStdDevValue( 
       const te::rst::Band& band, 
@@ -412,7 +437,8 @@ namespace te
       \param inputRaster Input raster.
       \param inputRasterBands Input raster bands.
       \param pcaMatrix The matrix generated over the principal components process.
-      \param pcaRaster The pré-initiated output PCA raster (with the same dimensions of inputRaster).
+      \param pcaRaster The pré-initiated output PCA raster (with the same dimensions of inputRaster) and double as the data type.
+      \param pcaRasterBands Output raster bands.
       \param maxThreads The maximum number of threads to use (0-auto, 1-single thread used).
       \return true if OK, false on errors.
       \note Optimized for rasters where the used bands have the same blocking scheme.
@@ -423,6 +449,7 @@ namespace te
       const std::vector< unsigned int >& inputRasterBands,
       boost::numeric::ublas::matrix< double >& pcaMatrix,
       te::rst::Raster& pcaRaster,
+      const std::vector< unsigned int >& pcaRasterBands,
       const unsigned int maxThreads );  
       
     /*!
@@ -430,6 +457,7 @@ namespace te
       \param pcaRaster The principal components raster (with the same dimensions of outputRaster).
       \param pcaMatrix The matrix generated by the direct principal components process.
       \param outputRaster The regenerated output raster (with the same dimentions.
+      \param outputRasterBands Output raster bands.
       \param maxThreads The maximum number of threads to use (0-auto, 1-single thread used).
       \return true if OK, false on errors.
       \note Optimized for rasters where the used bands have the same blocking scheme.
@@ -439,6 +467,7 @@ namespace te
       const te::rst::Raster& pcaRaster,
       const boost::numeric::ublas::matrix< double >& pcaMatrix,
       te::rst::Raster& outputRaster,
+      const std::vector< unsigned int >& outputRasterBands,
       const unsigned int maxThreads );       
       
     /*!
@@ -447,6 +476,7 @@ namespace te
       \param inputRasterBands Input raster bands.
       \param remapMatrix The remap function matrix.
       \param outputRaster The pré-initiated output raster (with the same dimentions of inputRaster).
+      \param outputRasterBands Output raster bands.
       \param maxThreads The maximum number of threads to use (0-auto, 1-single thread used).
       \return true if OK, false on errors.
       \note Optimized for rasters where the used bands have the same blocking scheme.
@@ -457,7 +487,187 @@ namespace te
       const std::vector< unsigned int >& inputRasterBands,
       const boost::numeric::ublas::matrix< double >& remapMatrix,
       te::rst::Raster& outputRaster,
-      const unsigned int maxThreads );      
+      const std::vector< unsigned int >& outputRasterBands,
+      const unsigned int maxThreads ); 
+    
+    /*!
+      \brief Decompose a multi-band raster into a set of one-band rasters.
+      \param inputRaster Input raster.
+      \param inputRasterBands Input raster bands.
+      \param outputRastersInfos Output rasters connections infos. (one info for each decomposed band).
+      \param outputDataSourceType Output raster datasource type.
+      \param outputRastersPtrs Pointers to the generated outputs rasters.
+      \return true if OK, false on errors.
+      \ingroup rp_func
+    */
+    TERPEXPORT bool DecomposeBands( 
+      const te::rst::Raster& inputRaster,
+      const std::vector< unsigned int >& inputRasterBands,
+      const std::vector< std::map<std::string, std::string> > & outputRastersInfos,
+      const std::string& outputDataSourceType,
+      std::vector< boost::shared_ptr< te::rst::Raster > > & outputRastersPtrs );   
+    
+    /*!
+      \brief Compose a set of bands into one multi-band raster.
+      \param feeder Input rasters feeder.
+      \param inputRasterBands Input raster bands (one band for each input raster).
+      \param interpMethod The interpolator method to use.
+      \param outputRasterInfo Output raster connection info.
+      \param outputDataSourceType Output raster datasource type.
+      \param outputRasterPtr A pointer to the generated output raster.
+      \return true if OK, false on errors.
+      \note The first raster Grid will be taken as reference for the composed raster.
+      \ingroup rp_func
+    */
+    TERPEXPORT bool ComposeBands( 
+      te::rp::FeederConstRaster& feeder,
+      const std::vector< unsigned int >& inputRasterBands,
+      const te::rst::Interpolator::Method& interpMethod,
+      const std::map<std::string, std::string>& outputRasterInfo,
+      const std::string& outputDataSourceType,
+      std::auto_ptr< te::rst::Raster >& outputRasterPtr );     
+    
+    /*!
+      \brief Create a datailed extent from the given grid.
+      \param grid Input grid.
+      \param detailedExtent The created detailed extent.
+      \return true if ok, false on errors.
+      \ingroup rp_func
+    */
+    TERPEXPORT bool GetDetailedExtent( const te::rst::Grid& grid, 
+      te::gm::LinearRing& detailedExtent );
+    
+    /*!
+      \brief Create a indexed (lines,columns) datailed extent from the given grid.
+      \param grid Input grid.
+      \param indexedDetailedExtent The created detailed extent.
+      \return true if ok, false on errors.
+      \ingroup rp_func
+    */
+    TERPEXPORT bool GetIndexedDetailedExtent( const te::rst::Grid& grid, 
+      te::gm::LinearRing& indexedDetailedExtent );  
+    
+    /*!
+      \brief Create a Wavele Atrous Filter.
+      \param filterType The filter type.
+      \return the created filter.
+      \ingroup rp_func
+    */
+    TERPEXPORT boost::numeric::ublas::matrix< double > 
+      CreateWaveletAtrousFilter( const WaveletAtrousFilterType& filterType );     
+    
+    /*!
+      \brief Generate all wavelet planes from the given input raster.
+      \param inputRaster Input raster.
+      \param inputRasterBands Input raster bands.
+      \param waveletRaster The pré-initiated output wavelet raster (with the same dimensions of inputRaster) and double as the data type.
+      \param levelsNumber The number of decomposed wavelet levels to generate for each input raster band;
+      \param filter The square filter to use.
+      \return true if OK, false on errors.
+      \note The band order of the generated wavelet levels: { [ band0-smoothed0, band0-wavelet0, ... , band0-smoothedN, band0-waveletN ], ... }
+      \note The number of bands of waveletRaster must be ( inputRasterBands.size() * 2 * levelsNumber ) at least.
+      \ingroup rp_func
+    */
+    TERPEXPORT bool DirectWaveletAtrous( 
+      const te::rst::Raster& inputRaster,
+      const std::vector< unsigned int >& inputRasterBands,
+      te::rst::Raster& waveletRaster,
+      const unsigned int levelsNumber,
+      const boost::numeric::ublas::matrix< double >& filter );     
+    
+    /*!
+      \brief Regenerate the original raster from its wavelets planes.
+      \param waveletRaster The input wavelet raster (with the same dimensions of outputRaster).
+      \param levelsNumber The number of decomposed wavelet levels present inside the wavelet raster.
+      \param outputRaster The regenerated output raster.
+      \param outputRasterBands Output raster bands.
+      \return true if OK, false on errors.
+      \note The band order of the expected wavelet levels: { [ band0-smoothed0, band0-wavelet0, ... , band0-smoothedN, band0-waveletN ], ... }
+      \note The number of bands of waveletRaster must be ( outputRasterBands.size() * 2 * levelsNumber ) at least.
+      \note Only the wavelet bands and the last smoothed band are used.
+      \ingroup rp_func
+    */
+    TERPEXPORT bool InverseWaveletAtrous( 
+      const te::rst::Raster& waveletRaster,
+      const unsigned int levelsNumber,
+      te::rst::Raster& outputRaster,
+      const std::vector< unsigned int >& outputRasterBands ); 
+    
+    /*!
+      \brief Resample a subset of the raster, given a box.
+      \param inputRaster Input raster.
+      \param inputRasterBands Input raster bands to process.
+      \param interpMethod      The method of interpolation. \sa te::rst::Interpolator
+      \param firstRow        The starting row to make a subset of the image.
+      \param firstColumn     The starting column to make a subset of the image.
+      \param height      The height of the subset.
+      \param width       The width of the subset.
+      \param newheight   The resampled height of the new raster.
+      \param newwidth    The resampled width of the new raster.
+      \param rinfo       The parameters needed to build the output raster (see RasterFactory documentation).
+      \param dataSourceType Data source type (raster type. I.E. GDAL).
+      \param resampledRasterPtr The resampled raster pointer.
+      \return true if ok, false on errors.
+    */
+    TERPEXPORT bool RasterResample( 
+      const te::rst::Raster& inputRaster,
+      const std::vector< unsigned int >& inputRasterBands,
+      const te::rst::Interpolator::Method interpMethod, 
+      const unsigned int firstRow,
+      const unsigned int firstColumn, 
+      const unsigned int height, 
+      const unsigned int width,
+      const unsigned int newheight, 
+      const unsigned int newwidth, 
+      const std::map<std::string, std::string>& rinfo,
+      const std::string& dataSourceType,
+      std::auto_ptr< te::rst::Raster >& resampledRasterPtr ); 
+    
+    /*!
+      \brief Returns the tie points converx hull area.
+      \param tiePoints Input tie-points (container of te::gm::GTParameters::TiePoint).
+      \param useTPSecondCoordPair If true the sencond tie-point component (te::gm::GTParameters::TiePoint::second) will be used for the area calcule, otherwize the first component will be used.
+      \return Returns the tie points converx hull area.
+    */          
+    template< typename ContainerT >
+    double GetTPConvexHullArea( const ContainerT& tiePoints,
+      const bool useTPSecondCoordPair )
+    {
+      if( tiePoints.size() < 3 )
+      {
+        return 0;
+      }
+      else
+      {
+        te::gm::MultiPoint points( 0, te::gm::MultiPointType );
+        
+        typename ContainerT::const_iterator it =
+          tiePoints.begin();
+        const typename ContainerT::const_iterator itE =
+          tiePoints.end();        
+        
+        while( it != itE )
+        {
+          if( useTPSecondCoordPair )
+            points.add( new te::gm::Point( it->second.x, it->second.y ) );
+          else
+            points.add( new te::gm::Point(  it->first.x, it->first.y ) );
+            
+          ++it;
+        }
+        
+        std::auto_ptr< te::gm::Geometry > convexHullPolPtr( points.convexHull() );
+        
+        if( dynamic_cast< te::gm::Surface* >( convexHullPolPtr.get() ) )
+        {
+          return ( (te::gm::Surface*)( convexHullPolPtr.get() ) )->getArea();
+        }
+        else
+        {
+          return 0.0;
+        }
+      }
+    }
     
   } // end namespace rp
 }   // end namespace te

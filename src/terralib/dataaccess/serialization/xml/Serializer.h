@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -59,8 +59,8 @@ namespace te
 
   namespace xml
   {
+    class AbstractWriter;
     class Reader;
-    class Writer;
   }
 
   namespace serialize
@@ -73,21 +73,17 @@ namespace te
 
       TEDATAACCESSEXPORT void Save(const std::string& fileName);
 
-      TEDATAACCESSEXPORT void Save(std::ostream& ostr);
-
-      TEDATAACCESSEXPORT void Save(te::xml::Writer& writer);
+      TEDATAACCESSEXPORT void Save(te::xml::AbstractWriter& writer);
 
       TEDATAACCESSEXPORT te::da::DataSourceCatalog* ReadDataSourceCatalog(te::xml::Reader& reader);
 
       TEDATAACCESSEXPORT void Save(const te::da::DataSourceCatalog* catalog, const std::string& fileName);
 
-      TEDATAACCESSEXPORT void Save(const te::da::DataSourceCatalog* catalog, std::ostream& ostr);
-
-      TEDATAACCESSEXPORT void Save(const te::da::DataSourceCatalog* catalog, te::xml::Writer& writer);
+      TEDATAACCESSEXPORT void Save(const te::da::DataSourceCatalog* catalog, te::xml::AbstractWriter& writer);
 
       TEDATAACCESSEXPORT te::da::DataSetType* ReadDataSetType(te::xml::Reader& reader);
 
-      TEDATAACCESSEXPORT void Save(const te::da::DataSetType* dt, te::xml::Writer& writer);
+      TEDATAACCESSEXPORT void Save(const te::da::DataSetType* dt, te::xml::AbstractWriter& writer);
 
       TEDATAACCESSEXPORT void Read(const std::string& dialectFileName, te::da::DataSourceCapabilities& capabilities, te::da::SQLDialect& dialect);
 
@@ -98,6 +94,8 @@ namespace te
       TEDATAACCESSEXPORT te::da::Fields* ReadFields(te::xml::Reader& reader);
 
       TEDATAACCESSEXPORT te::da::From* ReadFrom(te::xml::Reader& reader);
+
+      TEDATAACCESSEXPORT te::da::FromItem* ReadFromItem(te::xml::Reader& reader);
 
       TEDATAACCESSEXPORT te::da::Function* ReadFunction(te::xml::Reader& reader);
 
@@ -115,37 +113,37 @@ namespace te
 
       TEDATAACCESSEXPORT te::da::Where* ReadWhere(te::xml::Reader& reader);
 
-      TEDATAACCESSEXPORT void Save(const te::da::Distinct* distinct, te::xml::Writer& writer);
+      TEDATAACCESSEXPORT void Save(const te::da::Distinct* distinct, te::xml::AbstractWriter& writer);
 
-      TEDATAACCESSEXPORT void Save(const te::da::Expression* expression, te::xml::Writer& writer);
+      TEDATAACCESSEXPORT void Save(const te::da::Expression* expression, te::xml::AbstractWriter& writer);
 
-      TEDATAACCESSEXPORT void Save(const te::da::Field* field, te::xml::Writer& writer);
+      TEDATAACCESSEXPORT void Save(const te::da::Field* field, te::xml::AbstractWriter& writer);
 
-      TEDATAACCESSEXPORT void Save(const te::da::Fields* fields, te::xml::Writer& writer);
+      TEDATAACCESSEXPORT void Save(const te::da::Fields* fields, te::xml::AbstractWriter& writer);
 
-      TEDATAACCESSEXPORT void Save(const te::da::From* from, te::xml::Writer& writer);
+      TEDATAACCESSEXPORT void Save(const te::da::From* from, te::xml::AbstractWriter& writer);
 
-      TEDATAACCESSEXPORT void Save(const te::da::FromItem* fromItem, te::xml::Writer& writer);
+      TEDATAACCESSEXPORT void Save(const te::da::FromItem* fromItem, te::xml::AbstractWriter& writer);
 
-      TEDATAACCESSEXPORT void Save(const te::da::Function* func, te::xml::Writer& writer);
+      TEDATAACCESSEXPORT void Save(const te::da::Function* func, te::xml::AbstractWriter& writer);
 
-      TEDATAACCESSEXPORT void Save(const te::da::GroupByItem* groupByItem, te::xml::Writer& writer);
+      TEDATAACCESSEXPORT void Save(const te::da::GroupByItem* groupByItem, te::xml::AbstractWriter& writer);
 
-      TEDATAACCESSEXPORT void Save(const te::da::GroupBy* groupBy, te::xml::Writer& writer);
+      TEDATAACCESSEXPORT void Save(const te::da::GroupBy* groupBy, te::xml::AbstractWriter& writer);
 
-      TEDATAACCESSEXPORT void Save(const te::da::Having* having, te::xml::Writer& writer);
+      TEDATAACCESSEXPORT void Save(const te::da::Having* having, te::xml::AbstractWriter& writer);
 
-      TEDATAACCESSEXPORT void Save(const te::da::Literal* lit, te::xml::Writer& writer);
+      TEDATAACCESSEXPORT void Save(const te::da::Literal* lit, te::xml::AbstractWriter& writer);
 
-      TEDATAACCESSEXPORT void Save(const te::da::OrderByItem* orderByItem, te::xml::Writer& writer);
+      TEDATAACCESSEXPORT void Save(const te::da::OrderByItem* orderByItem, te::xml::AbstractWriter& writer);
 
-      TEDATAACCESSEXPORT void Save(const te::da::OrderBy* orderBy, te::xml::Writer& writer);
+      TEDATAACCESSEXPORT void Save(const te::da::OrderBy* orderBy, te::xml::AbstractWriter& writer);
 
-      TEDATAACCESSEXPORT void Save(const te::da::PropertyName* propertyName, te::xml::Writer& writer);
+      TEDATAACCESSEXPORT void Save(const te::da::PropertyName* propertyName, te::xml::AbstractWriter& writer);
 
-      TEDATAACCESSEXPORT void Save(const te::da::Select* select, te::xml::Writer& writer);
+      TEDATAACCESSEXPORT void Save(const te::da::Select* select, te::xml::AbstractWriter& writer);
 
-      TEDATAACCESSEXPORT void Save(const te::da::Where* wh, te::xml::Writer& writer);
+      TEDATAACCESSEXPORT void Save(const te::da::Where* wh, te::xml::AbstractWriter& writer);
 
     } // end namespace xml
   }   // end namespace serialize

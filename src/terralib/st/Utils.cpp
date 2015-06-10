@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -24,41 +24,109 @@
  */
 
 //TerraLib
-#include "../datatype/AbstractData.h"
-#include "../datatype/Enums.h"
-#include "../datatype/SimpleData.h"
-#include "../dataaccess/dataset/DataSetType.h"
-#include "../datatype/Property.h"
+#include "../geometry/Geometry.h"
 #include "../geometry/GeometryProperty.h"
-#include "../common/STLUtils.h"
+#include "../datatype/DateTimeProperty.h"
+#include "../datatype/DateTime.h"
+#include "../datatype/DateTimeInstant.h"
+#include "../datatype/DateTimePeriod.h"
 
 //ST
 #include "Utils.h"
-#include "core/trajectory/Trajectory.h"
-#include "core/trajectory/TrajectoryIterator.h"
-#include "core/trajectory/TrajectoryDataSetInfo.h"
-#include "core/trajectory/TrajectoryDataSetType.h"
-#include "core/observation/ObservationDataSetInfo.h"
 #include "core/observation/ObservationDataSetType.h"
-#include "core/timeseries/TimeSeriesDataSetInfo.h"
-#include "core/timeseries/TimeSeriesDataSetType.h"
+#include "core/observation/ObservationDataSetInfo.h"
 
 te::st::ObservationDataSetType te::st::GetType(const ObservationDataSetInfo& info)
 {
-  return ObservationDataSetType(info.getTimePropIdxs(), info.getObsPropIdxs(), info.getGeomPropIdx(), 
-                                info.getVlTimePropIdxs(), info.getRsTimePropIdx());
-}
+  
+  te::st::ObservationDataSetType result(info.getDataSetName());
 
-te::st::TimeSeriesDataSetType te::st::GetType(const TimeSeriesDataSetInfo& info)
-{
-  return TimeSeriesDataSetType(GetType(info.getObservationDataSetInfo()), info.getValuePropIdxs(), 
-                               info.getIdPropIdx(), info.getId());
-}
-
-te::st::TrajectoryDataSetType te::st::GetType(const TrajectoryDataSetInfo& info)
-{
-  return TrajectoryDataSetType(GetType(info.getObservationDataSetInfo()), info.getIdPropIdx(), info.getId());
-}
+  //Phenomenon time
+  if(info.hasTimeProp())
+  {
+    te::dt::DateTimeProperty* prop1 = new te::dt::DateTimeProperty(*info.getBeginTimePropInfo()); 
     
+    if(info.hasTwoTimeProp())
+    {
+      te::dt::DateTimeProperty* prop2 = new te::dt::DateTimeProperty(*info.getEndTimePropInfo()); 
+      result.setTimePropInfo(prop1, prop2);
+    }
+    else
+      result.setTimePropInfo(prop1);
+  }
+  
+  if(info.hasTime())
+  {
+    te::dt::DateTime* t = dynamic_cast<te::dt::DateTime*>(info.getTime()->clone()); 
+    result.setTime(t);
+  }
 
-         
+  //Valid time
+  if(info.hasVlTimeProp())
+  {
+    te::dt::DateTimeProperty* prop1 = new te::dt::DateTimeProperty(*info.getVlBeginTimePropInfo()); 
+    if(info.hasTwoVlTimeProp())
+    {
+      te::dt::DateTimeProperty* prop2 = new te::dt::DateTimeProperty(*info.getVlEndTimePropInfo()); 
+      result.setVlTimePropInfo(prop1, prop2);
+    }
+    else
+      result.setVlTimePropInfo(prop1);
+  }
+  
+  if(info.hasVlTime())
+  {
+    te::dt::DateTimePeriod* t = dynamic_cast<te::dt::DateTimePeriod*>(info.getVlTime()->clone()); 
+    result.setVlTime(t);
+  }  
+  
+  //Result time
+  if(info.hasRsTimeProp())
+  {
+    te::dt::DateTimeProperty* prop = new te::dt::DateTimeProperty(*info.getRsTimePropInfo()); 
+    result.setRsTimePropInfo(prop);
+  }
+  if(info.hasRsTime())
+  {
+    te::dt::DateTimeInstant* t = dynamic_cast<te::dt::DateTimeInstant*>(info.getRsTime()->clone()); 
+    result.setRsTime(t);
+  }  
+
+  //observed properties
+  result.setObsPropInfo(info.getObsPropIdxs());
+  result.setObsPropInfo(info.getObsPropNames());
+
+  //geometry
+  if(info.hasGeomProp())
+  {
+    te::gm::GeometryProperty* prop = new te::gm::GeometryProperty(*info.getGeomPropInfo()); 
+    result.setGeomPropInfo(prop);
+  }
+  if(info.hasGeometry())
+  {
+    te::gm::Geometry* g = dynamic_cast<te::gm::Geometry*>(info.getGeometry()->clone()); 
+    result.setGeometry(g);
+  }  
+
+  //id properties
+  result.setIdPropInfo(info.getIdPropIdx());
+  result.setIdPropInfo(info.getIdPropName());
+  result.setId(info.getObsId());
+
+  //spatial extent
+  if(info.hasSpatialExtent())
+  {
+    te::gm::Geometry* g = dynamic_cast<te::gm::Geometry*>(info.getSpatialExtent()->clone()); 
+    result.setSpatialExtent(g);
+  } 
+
+  //temporal extent
+  if(info.hasTemporalExtent())
+  {
+    te::dt::DateTimePeriod* t = dynamic_cast<te::dt::DateTimePeriod*>(info.getTemporalExtent()->clone()); 
+    result.setTemporalExtent(t);
+  }  
+
+  return result;
+}
+

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -181,7 +181,7 @@ bool te::cl::KMeans<TTRAIN, TCLASSIFY>::initialize(const typename te::cl::KMeans
 
   if (m_parameters.m_K < 2)
   {
-    TE_TR("The value of K must be at least 2.");
+    throw te::cl::Exception(TE_TR("The value of K must be at least 2."));
     return false;
   }
   if (m_parameters.m_maxIterations < 1)
@@ -307,15 +307,30 @@ bool te::cl::KMeans<TTRAIN, TCLASSIFY>::classify(TCLASSIFY& itBegin, TCLASSIFY& 
                                                  const bool enableProgressInterface) throw(te::cl::Exception)
 {
   TCLASSIFY it = itBegin;
-  std::vector<double> values;
+  std::vector<double> values(attributesIndices.size());
+  classification.clear();
+
+// count number of elements to be classified  
+  unsigned int N = 0;
   while(it != itEnd)
   {
-    values.clear();
+    N++;
+    ++it;
+  }
+  classification.resize(N);
+
+// classify elements
+  te::common::TaskProgress task(TE_TR("K-Means algorithm - classifying data"), te::common::TaskProgress::UNDEFINED, N);
+  unsigned j = 0;
+  it = itBegin;
+  while(it != itEnd)
+  {
     for (unsigned int i = 0; i < attributesIndices.size(); i++)
-      values.push_back((*it)[attributesIndices[i]]);
-    classification.push_back(getClassification(values));
+      values[i] = (*it)[attributesIndices[i]];
+    classification[j++] = getClassification(values);
 
     ++it;
+    task.pulse();
   }
 
   return true;

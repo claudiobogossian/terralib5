@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -95,7 +95,6 @@ te::vp::AggregationDialog::AggregationDialog(QWidget* parent, Qt::WindowFlags f)
   connect(m_ui->m_targetDatasourceToolButton, SIGNAL(pressed()), this, SLOT(onTargetDatasourceToolButtonPressed()));
   connect(m_ui->m_targetFileToolButton, SIGNAL(pressed()), this,  SLOT(onTargetFileToolButtonPressed()));
 
-  //connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));
   connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
   connect(m_ui->m_cancelPushButton, SIGNAL(clicked()), this, SLOT(onCancelPushButtonClicked()));
 
@@ -140,7 +139,7 @@ std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> > te::vp::
     std::vector<std::string> tokens;
     std::string pname;
     std::string auxItem = itemList[i]->text().toStdString();
-    
+
     boost::split(tokens, auxItem, boost::is_any_of(":"));
     if(tokens[0] != "")
     {
@@ -191,7 +190,7 @@ std::vector<te::dt::Property*> te::vp::AggregationDialog::getSelectedProperties(
 {
   std::vector<te::dt::Property*> selProperties;
 
-  for(std::size_t i = 0; i != m_ui->m_propertieslistWidget->count(); ++i)
+  for(int i = 0; i != m_ui->m_propertieslistWidget->count(); ++i)
   {
     if(m_ui->m_propertieslistWidget->isItemSelected(m_ui->m_propertieslistWidget->item(i)))
     {
@@ -581,7 +580,7 @@ void te::vp::AggregationDialog::onTargetFileToolButtonPressed()
   
   QString fileName = QFileDialog::getSaveFileName(this, tr("Save as..."),
                                                         QString(), tr("Shapefile (*.shp *.SHP);;"),0, QFileDialog::DontConfirmOverwrite);
-  
+
   if (fileName.isEmpty())
     return;
   
@@ -593,11 +592,6 @@ void te::vp::AggregationDialog::onTargetFileToolButtonPressed()
   
   m_toFile = true;
   m_ui->m_newLayerNameLineEdit->setEnabled(false);
-}
-
-void te::vp::AggregationDialog::onHelpPushButtonClicked()
-{
-  QMessageBox::information(this, "Help", "Under development");
 }
 
 void te::vp::AggregationDialog::onOkPushButtonClicked()
@@ -809,7 +803,12 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
 
     QMessageBox::information(this, "Aggregation", e.what());
     
-    te::common::Logger::logDebug("vp", e.what());
+#ifdef TERRALIB_LOGGER_ENABLED
+    std::string str = "Aggregation - ";
+    str += e.what();
+    te::common::Logger::logDebug("vp", str.c_str());
+#endif // TERRALIB_LOGGER_ENABLED
+
     te::common::ProgressManager::getInstance().removeViewer(id);
     return;
   }

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -27,6 +27,7 @@
 #define __TERRALIB_DATATYPE_SERIALIZATION_XML_INTERNAL_SERIALIZER_H
 
 // TerraLib
+#include "terralib_config.h"
 #include "../../../common/Singleton.h"
 #include "../../Config.h"
 
@@ -39,8 +40,8 @@ namespace te
 {
   namespace xml
   {
+    class AbstractWriter;
     class Reader;
-    class Writer;
   }
 
   namespace dt
@@ -54,7 +55,7 @@ namespace te
     {
       TEDATATYPEEXPORT std::auto_ptr<te::dt::Property> ReadProperty(te::xml::Reader& reader);
 
-      TEDATATYPEEXPORT void Save(const te::dt::Property& p, te::xml::Writer& writer);
+      TEDATATYPEEXPORT void Save(const te::dt::Property& p, te::xml::AbstractWriter& writer);
 
     } // end namespace xml
   }   // end namespace serialize

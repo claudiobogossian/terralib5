@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -24,16 +24,20 @@
 */
 
 // TerraLib
+#include "terralib_config.h"
 #include "../../../common/Config.h"
 #include "../../../common/Translator.h"
 #include "../../../common/Logger.h"
 #include "../../af/ApplicationController.h"
+#include "../../af/Utils.h"
 #include "AggregationAction.h"
 #include "GeometricOpAction.h"
 #include "BufferAction.h"
 #include "IntersectionAction.h"
+#include "LineToPolygonAction.h"
+#include "MultipartToSinglepartAction.h"
 #include "Plugin.h"
-//#include "PolygonToLineAction.h"
+#include "PolygonToLineAction.h"
 //#include "SummarizationAction.h"
 //#include "TransformationAction.h"
 
@@ -47,13 +51,17 @@
 #include <log4cxx/logger.h>
 #include <log4cxx/logmanager.h>
 #include <log4cxx/logstring.h>
-#include <log4cxx/simplelayout.h>
+#include <log4cxx/patternlayout.h>
+#include <log4cxx/rollingfileappender.h>
 #endif
 
 // QT
 #include <QMenu>
 #include <QMenuBar>
 #include <QString>
+
+// STL
+#include <string>
 
 te::qt::plugins::vp::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo)
   : te::plugin::Plugin(pluginInfo), m_vpMenu(0)
@@ -75,7 +83,14 @@ void te::qt::plugins::vp::Plugin::startup()
   TE_LOG_TRACE(TE_TR("TerraLib Qt VP Plugin startup!"));
 
 // add plugin menu
-  m_vpMenu = te::qt::af::ApplicationController::getInstance().getMenu("VP");
+  QMenu* pluginMenu = te::qt::af::ApplicationController::getInstance().getMenu("Processing");
+  m_vpMenu = new QMenu(pluginMenu);
+  m_vpMenu->setIcon(QIcon::fromTheme("vp-vectorprocessing-icon"));
+
+  // Insert action before plugin manager action
+  QAction* pluginsSeparator = te::qt::af::ApplicationController::getInstance().findAction("ManagePluginsSeparator");
+
+  pluginMenu->insertMenu(pluginsSeparator, m_vpMenu);
 
   m_vpMenu->setTitle(TE_TR("Vector Processing"));
 
@@ -87,15 +102,22 @@ void te::qt::plugins::vp::Plugin::startup()
   path += "/log/terralib_vp.log";
 
 #if defined(TERRALIB_APACHE_LOG4CXX_ENABLED) && defined(TERRALIB_LOGGER_ENABLED)
-  log4cxx::FileAppender* fileAppender = new log4cxx::FileAppender(log4cxx::LayoutPtr(new log4cxx::SimpleLayout()),
-    log4cxx::helpers::Transcoder::decode(path.c_str()), false);
+  std::string layout = "%d{ISO8601} [%t] %-5p %c - %m%n";
+  log4cxx::LogString lString(layout.begin(), layout.end());
+
+  log4cxx::FileAppender* fileAppender = new log4cxx::RollingFileAppender(log4cxx::LayoutPtr(new log4cxx::PatternLayout(lString)),
+    log4cxx::helpers::Transcoder::decode(path.c_str()), true);
 
   log4cxx::helpers::Pool p;
   fileAppender->activateOptions(p);
 
   log4cxx::BasicConfigurator::configure(log4cxx::AppenderPtr(fileAppender));
   log4cxx::Logger::getRootLogger()->setLevel(log4cxx::Level::getDebug());
+
   log4cxx::LoggerPtr logger = log4cxx::Logger::getLogger("vp");
+  logger->setAdditivity(false);
+  logger->addAppender(fileAppender);
+
 #endif
   m_initialized = true;
 }
@@ -126,9 +148,19 @@ void te::qt::plugins::vp::Plugin::registerActions()
   m_buffer = new te::qt::plugins::vp::BufferAction(m_vpMenu);
   m_geometricOp = new te::qt::plugins::vp::GeometricOpAction(m_vpMenu);
   m_intersection = new te::qt::plugins::vp::IntersectionAction(m_vpMenu);
-  //m_polygonToLine = new te::qt::plugins::vp::PolygonToLineAction(m_vpMenu);
+  m_multipart2singlepart = new te::qt::plugins::vp::MultipartToSinglepartAction(m_vpMenu);
+  m_lineToPolygon = new te::qt::plugins::vp::LineToPolygonAction(m_vpMenu);
+  m_polygonToLine = new te::qt::plugins::vp::PolygonToLineAction(m_vpMenu);
   //m_summarization = new te::qt::plugins::vp::SummarizationAction(m_vpMenu);
   //m_transformation = new te::qt::plugins::vp::TransformationAction(m_vpMenu);
+
+  te::qt::af::AddActionToCustomToolbars(m_aggregation->getAction());
+  te::qt::af::AddActionToCustomToolbars(m_buffer->getAction());
+  te::qt::af::AddActionToCustomToolbars(m_geometricOp->getAction());
+  te::qt::af::AddActionToCustomToolbars(m_intersection->getAction());
+  te::qt::af::AddActionToCustomToolbars(m_multipart2singlepart->getAction());
+  te::qt::af::AddActionToCustomToolbars(m_lineToPolygon->getAction());
+  te::qt::af::AddActionToCustomToolbars(m_polygonToLine->getAction());
 }
 
 void  te::qt::plugins::vp::Plugin::unRegisterActions()
@@ -137,9 +169,12 @@ void  te::qt::plugins::vp::Plugin::unRegisterActions()
   delete m_buffer;
   delete m_geometricOp;
   delete m_intersection;
-  //delete m_polygonToLine;
+  delete m_multipart2singlepart;
+  delete m_lineToPolygon;
+  delete m_polygonToLine;
   //delete m_summarization;
   //delete m_transformation;
 }
 
 PLUGIN_CALL_BACK_IMPL(te::qt::plugins::vp::Plugin)
+

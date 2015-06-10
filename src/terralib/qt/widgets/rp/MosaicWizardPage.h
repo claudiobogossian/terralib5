@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -50,6 +50,8 @@ namespace te
   {
     namespace widgets
     {
+      class TiePointLocatorParametersWidget;
+
       /*!
         \class MosaicWizardPage
 
@@ -111,6 +113,8 @@ namespace te
         private:
 
           std::auto_ptr<Ui::MosaicWizardPageForm> m_ui;
+
+          te::qt::widgets::TiePointLocatorParametersWidget* m_tiePointParameters;     //!<Tie Point parameters widget
           
           std::list<te::map::AbstractLayerPtr> m_layerList;
 

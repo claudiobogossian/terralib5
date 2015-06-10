@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -26,6 +26,7 @@
 // TerraLib
 #include "../common/StringUtils.h"
 #include "../dataaccess/dataset/ObjectIdSet.h"
+#include "../dataaccess/dataset/PrimaryKey.h"
 #include "../dataaccess/datasource/DataSource.h"
 #include "../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../dataaccess/query/And.h"
@@ -35,6 +36,7 @@
 #include "../dataaccess/query/Function.h"
 #include "../dataaccess/query/FunctionNames.h"
 #include "../dataaccess/query/FromItem.h"
+#include "../dataaccess/query/Join.h"
 #include "../dataaccess/query/LiteralEnvelope.h"
 #include "../dataaccess/query/PropertyName.h"
 #include "../dataaccess/query/Select.h"
@@ -85,6 +87,8 @@ std::auto_ptr<te::map::LayerSchema> te::map::QueryLayer::getSchema() const
 {
   std::auto_ptr<te::map::LayerSchema> output(new te::map::LayerSchema(getTitle()));
 
+  te::da::PrimaryKey* outKey =  new te::da::PrimaryKey();
+
   te::da::DataSourcePtr ds = te::da::GetDataSource(m_datasourceId, true);
 
   const te::da::Fields* fields = m_query->getFields();
@@ -108,22 +112,46 @@ std::auto_ptr<te::map::LayerSchema> te::map::QueryLayer::getSchema() const
     {
       const te::da::FromItem& item = from->at(j);
       const te::da::DataSetName* dsName = dynamic_cast<const te::da::DataSetName*>(&item);
-      if(dsName->getAlias() == tokens[0])
-        name = dsName->getName();
+      if(dsName != 0)
+      {
+        if(dsName->getAlias() == tokens[0])
+          name = dsName->getName();
+      }
+      else
+      {
+        const te::da::Join* dsJoin = dynamic_cast<const te::da::Join*>(&item);
+        const te::da::FromItem* first = dsJoin->getFirst();
+        const te::da::DataSetName* dsName = dynamic_cast<const te::da::DataSetName*>(first);
+        if(dsName->getAlias() == tokens[0])
+        {
+          name = dsName->getName();
+        }
+        else
+        {
+          const te::da::FromItem* second = dsJoin->getSecond();
+          const te::da::DataSetName* dsName = dynamic_cast<const te::da::DataSetName*>(second);
+          name = dsName->getName();
+        }
+      }
     }
 
     assert(!name.empty());
 
-    std::auto_ptr<te::da::DataSetType> dt = ds->getDataSetType(name);
+    std::auto_ptr<te::da::DataSetType> input = ds->getDataSetType(name);
 
-    te::dt::Property* pRef = dt->getProperty(tokens[1]);
+    te::dt::Property* pRef = input->getProperty(tokens[1]);
     assert(pRef);
 
     std::auto_ptr<te::dt::Property> p(pRef->clone());
-    //p->setName(pName->getName());
-
+    p->setDatasetName(name);
     output->add(p.release());
+
+    if(input->getPrimaryKey()->has(pRef))
+      outKey->add(output->getProperty(pRef->getName()));
   }
+
+  if(!outKey->getProperties().empty())
+    output->setPrimaryKey(outKey);
 
   return output;
 }
@@ -158,28 +186,45 @@ std::auto_ptr<te::da::DataSet> te::map::QueryLayer::getData(const std::string& p
   // Original Where
   te::da::Where* wh = select->getWhere();
 
-  // Original restriction expression
-  te::da::Expression* exp = wh->getExp()->clone();
-
-  // TODO: switch that verifies the given te::gm::SpatialRelation and build the query object (ST_Intersects. ST_Touches, etc).
-
-  if(spatialTopOp.find(te::da::FunctionNames::sm_ST_EnvelopeIntersects) != spatialTopOp.end())
+  if(wh != 0)
   {
-    te::da::ST_EnvelopeIntersects* intersects = new te::da::ST_EnvelopeIntersects(pname, lenv);
+    // Original restriction expression
+    te::da::Expression* exp = wh->getExp()->clone();
 
-    // The final restriction: original restriction expression + extent restriction
-    te::da::And* andop = new te::da::And(exp, intersects);
+    // TODO: switch that verifies the given te::gm::SpatialRelation and build the query object (ST_Intersects. ST_Touches, etc).
 
-    wh->setExp(andop);
+    if(spatialTopOp.find(te::da::FunctionNames::sm_ST_EnvelopeIntersects) != spatialTopOp.end())
+    {
+      te::da::ST_EnvelopeIntersects* intersects = new te::da::ST_EnvelopeIntersects(pname, lenv);
+
+      // The final restriction: original restriction expression + extent restriction
+      te::da::And* andop = new te::da::And(exp, intersects);
+
+      wh->setExp(andop);
+    }
+    else if(spatialTopOp.find(te::da::FunctionNames::sm_ST_Intersects) != spatialTopOp.end())
+    {
+      te::da::ST_Intersects* intersects = new te::da::ST_Intersects(pname, lenv);
+
+      // The final restriction: original restriction expression + extent restriction
+      te::da::And* andop = new te::da::And(exp, intersects);
+
+      wh->setExp(andop);
+    }
   }
-  else if(spatialTopOp.find(te::da::FunctionNames::sm_ST_Intersects) != spatialTopOp.end())
+  else
   {
-    te::da::ST_Intersects* intersects = new te::da::ST_Intersects(pname, lenv);
-
-    // The final restriction: original restriction expression + extent restriction
-    te::da::And* andop = new te::da::And(exp, intersects);
-
-    wh->setExp(andop);
+    if(spatialTopOp.find(te::da::FunctionNames::sm_ST_EnvelopeIntersects) != spatialTopOp.end())
+    {
+      te::da::ST_EnvelopeIntersects* intersects = new te::da::ST_EnvelopeIntersects(pname, lenv);
+      wh = new te::da::Where(intersects);
+    }
+    else if(spatialTopOp.find(te::da::FunctionNames::sm_ST_Intersects) != spatialTopOp.end())
+    {
+      te::da::ST_Intersects* intersects = new te::da::ST_Intersects(pname, lenv);
+      wh = new te::da::Where(intersects);
+    }
+    select->setWhere(wh);
   }
 
   return getData(select.get(), travType, accessPolicy);
@@ -204,12 +249,20 @@ std::auto_ptr<te::da::DataSet> te::map::QueryLayer::getData(te::da::Expression* 
   // Original Where
   te::da::Where* wh = select->getWhere();
 
-  // Original restriction expression
-  te::da::Expression* exp = wh->getExp()->clone();
+  if(wh != 0)
+  {
+    // Original restriction expression
+    te::da::Expression* exp = wh->getExp()->clone();
 
-  // The final restriction: original restriction expression + the given restriction expression
-  te::da::And* andop = new te::da::And(exp, restriction);
-  wh->setExp(andop);
+    // The final restriction: original restriction expression + the given restriction expression
+    te::da::And* andop = new te::da::And(exp, restriction);
+    wh->setExp(andop);
+  }
+  else
+  {
+    wh = new te::da::Where(restriction);
+    select->setWhere(wh);
+  }
 
   return getData(select.get(), travType, accessPolicy);
 }
@@ -224,12 +277,20 @@ std::auto_ptr<te::da::DataSet> te::map::QueryLayer::getData(const te::da::Object
   // Original Where
   te::da::Where* wh = select->getWhere();
 
-  // Original restriction expression
-  te::da::Expression* exp = wh->getExp()->clone();
+  if(wh != 0)
+  {
+    // Original restriction expression
+    te::da::Expression* exp = wh->getExp()->clone();
 
-  // The final restriction: original restriction expression + the oids restriction
-  te::da::And* andop = new te::da::And(exp, oids->getExpression());
-  wh->setExp(andop);
+    // The final restriction: original restriction expression + the oids restriction
+    te::da::And* andop = new te::da::And(exp, oids->getExpression());
+    wh->setExp(andop);
+  }
+  else
+  {
+    wh =  new te::da::Where(oids->getExpression());
+    select->setWhere(wh);
+  }
 
   return getData(select.get(), travType, accessPolicy);
 }
@@ -316,8 +377,10 @@ void te::map::QueryLayer::computeExtent()
   // Get the associated data source
   te::da::DataSourcePtr ds = te::da::GetDataSource(m_datasourceId, true);
 
+  std::auto_ptr<te::da::DataSet> dataset;
+
   // Get the dataset
-  std::auto_ptr<te::da::DataSet> dataset(ds->query(m_query));
+  dataset = ds->query(m_query);
   assert(dataset.get());
 
   // MBR

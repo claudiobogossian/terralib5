@@ -1,20 +1,20 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
- 
- This file is part of the TerraLib - a Framework for building GIS enabled applications.
- 
- TerraLib is free software: you can redistribute it and/or modify
- it under the terms of the GNU Lesser General Public License as published by
- the Free Software Foundation, either version 3 of the License,
- or (at your option) any later version.
- 
- TerraLib is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- GNU Lesser General Public License for more details.
- 
- You should have received a copy of the GNU Lesser General Public License
- along with TerraLib. See COPYING. If not, write to
- TerraLib Team at <terralib-team@terralib.org>.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
+
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License,
+    or (at your option) any later version.
+
+    TerraLib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
  */
 
 /*!
@@ -208,22 +208,19 @@ namespace te
        \return true if succeed and false otherwise.
        */
       bool convertToProjected(double &lon, double &lat, int SRID) const;
-      
-      
+
     private:
       
-			int m_targetSRID;			
-			int m_sourceSRID;
+      int m_targetSRID;
+      int m_sourceSRID;
       
-			void* m_sourcePj4Handler;	// Proj4 handler to source SRS
-			void* m_targetPj4Handler;	// Proj4 handler to target SRS
+      void* m_sourcePj4Handler;	// Proj4 handler to source SRS
+      void* m_targetPj4Handler;	// Proj4 handler to target SRS
       
-		};
+    };
 
     typedef std::auto_ptr<Converter> ConverterPtr;  //!< \typedef ConverterPtr an auto pointer to a Converter.
-	}
+  }
 } // end TerraLib
 
 #endif // __TERRALIB_SRS_INTERNAL_CONVERTER_H
-
-

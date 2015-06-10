@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -30,6 +30,7 @@
 #include "../datatype/TimeInstant.h"
 #include "../geometry/Envelope.h"
 #include "../geometry/GeometryProperty.h"
+#include "../srs/SpatialReferenceSystemManager.h"
 #include "../srs/Config.h"
 #include "DataSource.h"
 #include "DataSet.h"
@@ -867,8 +868,7 @@ void te::ogr::Transactor::createDataSet(te::da::DataSetType* dt, const std::map<
     int srid = te::da::GetFirstGeomProperty(dt)->getSRID();
     if (srid != TE_UNKNOWN_SRS)
     {
-      srs = new OGRSpatialReference();
-      srs->importFromEPSG(srid);
+      srs = Convert2OGRProjection( srid );
     }
   }
   
@@ -1184,6 +1184,12 @@ void te::ogr::Transactor::update(const std::string &datasetName, te::da::DataSet
         case te::dt::STRING_TYPE:
           feat->SetField(fpos_o, dataset->getString(fpos).c_str());
         break;
+
+        case te::dt::GEOMETRY_TYPE:
+        {
+          std::auto_ptr<te::gm::Geometry> gm = dataset->getGeometry(fpos);
+          feat->SetGeometry(te::ogr::Convert2OGR(gm.get()));
+        }
       }
     }
 

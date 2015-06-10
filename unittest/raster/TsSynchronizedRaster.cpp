@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -25,11 +25,6 @@
 
 #include "TsSynchronizedRaster.h"
 #include "../Config.h"
-
-#include <terralib/raster/SynchronizedRaster.h>
-#include <terralib/raster/RasterFactory.h>
-#include <terralib/raster/BandProperty.h>
-#include <terralib/raster/Grid.h>
 
 #include <boost/thread.hpp>
 

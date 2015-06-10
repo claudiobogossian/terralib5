@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -25,6 +25,7 @@
 
 //Terralib
 
+#include "terralib_config.h"
 #include "../common/progress/TaskProgress.h"
 #include "../common/Logger.h"
 #include "../common/Translator.h"
@@ -92,7 +93,7 @@ te::vp::GeometricOpQuery::GeometricOpQuery()
 te::vp::GeometricOpQuery::~GeometricOpQuery()
 {}
 
-bool te::vp::GeometricOpQuery::run()
+bool te::vp::GeometricOpQuery::run() throw(te::common::Exception)
 {
 // get the geometric operation and/or tabular operation. 
   std::vector<int> opGeom;
@@ -122,7 +123,11 @@ bool te::vp::GeometricOpQuery::run()
         opTab.push_back(te::vp::PERIMETER);
         break;
       default:
-        te::common::Logger::logDebug("vp", "Geometric Operation - The operation is not valid.");
+        {
+#ifdef TERRALIB_LOGGER_ENABLED
+          te::common::Logger::logDebug("vp", "Geometric Operation - The operation is not valid.");
+#endif //TERRALIB_LOGGER_ENABLED
+        }
     }
   }
 
@@ -158,7 +163,10 @@ bool te::vp::GeometricOpQuery::run()
 
             std::auto_ptr<te::da::DataSetType> outDataSetType(dsTypeVec[dsTypePos]);
             std::auto_ptr<te::mem::DataSet> outDataSet(SetAllObjects(dsTypeVec[dsTypePos], opTab, opGeom));
-            result = save(outDataSet, outDataSetType);
+
+            te::vp::Save(m_outDsrc.get(), outDataSet.get(), outDataSetType.get());
+            result = true;
+
             if(!result)
               return result;
           }
@@ -189,7 +197,15 @@ bool te::vp::GeometricOpQuery::run()
 
             std::auto_ptr<te::da::DataSetType> outDataSetType(dsTypeVec[dsTypePos]);
             std::auto_ptr<te::mem::DataSet> outDataSet(SetAggregObj(dsTypeVec[dsTypePos], opTab, opGeom));
-            result = save(outDataSet, outDataSetType);
+            try
+            {
+              te::vp::Save(m_outDsrc.get(), outDataSet.get(), outDataSetType.get());
+              result = true;
+            }
+            catch(...)
+            {
+              result = false;
+            }
             if(!result)
               return result;
           }
@@ -220,14 +236,26 @@ bool te::vp::GeometricOpQuery::run()
 
             std::auto_ptr<te::da::DataSetType> outDataSetType(dsTypeVec[dsTypePos]);
             std::auto_ptr<te::mem::DataSet> outDataSet(SetAggregByAttribute(dsTypeVec[dsTypePos], opTab, opGeom));
-            result = save(outDataSet, outDataSetType);
+            try
+            {
+              te::vp::Save(m_outDsrc.get(), outDataSet.get(), outDataSetType.get());
+              result = true;
+            }
+            catch(...)
+            {
+              result = false;
+            }
             if(!result)
               return result;
           }
         }
         break;
       default:
-        te::common::Logger::logDebug("vp", "Geometric Operation - Strategy Not found!");
+        {
+#ifdef TERRALIB_LOGGER_ENABLED
+          te::common::Logger::logDebug("vp", "Geometric Operation - Strategy Not found!");
+#endif //TERRALIB_LOGGER_ENABLED
+        }
         return false;
     }
     
@@ -295,7 +323,11 @@ te::mem::DataSet* te::vp::GeometricOpQuery::SetAllObjects(te::da::DataSetType* d
           }
           break;
         default:
-          te::common::Logger::logDebug("vp", "Geometric Operation - Invalid field to add in query.");
+          {
+#ifdef TERRALIB_LOGGER_ENABLED
+            te::common::Logger::logDebug("vp", "Geometric Operation - Invalid field to add in query.");
+#endif //TERRALIB_LOGGER_ENABLED
+          }
       }
     }
   }
@@ -343,7 +375,11 @@ te::mem::DataSet* te::vp::GeometricOpQuery::SetAllObjects(te::da::DataSetType* d
           }
           break;
         default:
-          te::common::Logger::logDebug("vp", "Geometric Operation - Invalid field to add in query.");
+          {
+#ifdef TERRALIB_LOGGER_ENABLED
+            te::common::Logger::logDebug("vp", "Geometric Operation - Invalid field to add in query.");
+#endif //TERRALIB_LOGGER_ENABLED
+          }
       }
     }
   }
@@ -415,7 +451,11 @@ te::mem::DataSet* te::vp::GeometricOpQuery::SetAggregObj( te::da::DataSetType* d
           }
           break;
         default:
-          te::common::Logger::logDebug("vp", "Geometric Operation - Invalid field to add in query.");
+          {
+#ifdef TERRALIB_LOGGER_ENABLED
+            te::common::Logger::logDebug("vp", "Geometric Operation - Invalid field to add in query.");
+#endif //TERRALIB_LOGGER_ENABLED
+          }
       }
     }
   }
@@ -466,7 +506,11 @@ te::mem::DataSet* te::vp::GeometricOpQuery::SetAggregObj( te::da::DataSetType* d
           }
           break;
         default:
+          {
+#ifdef TERRALIB_LOGGER_ENABLED
           te::common::Logger::logDebug("vp", "Geometric Operation - Invalid field to add in query.");
+#endif //TERRALIB_LOGGER_ENABLED
+          }
       }
     }
   }
@@ -541,7 +585,11 @@ te::mem::DataSet* te::vp::GeometricOpQuery::SetAggregByAttribute( te::da::DataSe
           }
           break;
         default:
+        {
+#ifdef TERRALIB_LOGGER_ENABLED
           te::common::Logger::logDebug("vp", "Geometric Operation - Invalid field to add in query.");
+#endif //TERRALIB_LOGGER_ENABLED
+        }
       }
     }
   }
@@ -592,7 +640,11 @@ te::mem::DataSet* te::vp::GeometricOpQuery::SetAggregByAttribute( te::da::DataSe
           }
           break;
         default:
-          te::common::Logger::logDebug("vp", "Geometric Operation - Invalid field to add in query.");
+          {
+#ifdef TERRALIB_LOGGER_ENABLED
+            te::common::Logger::logDebug("vp", "Geometric Operation - Invalid field to add in query.");
+#endif //TERRALIB_LOGGER_ENABLED
+          }
       }
     }
   }
@@ -639,7 +691,7 @@ void te::vp::GeometricOpQuery::SetOutputDSet( te::da::DataSet* inDataSet,
     geomFlag = true;
 
     te::mem::DataSetItem* dItem = new te::mem::DataSetItem(outDataSet);
-    
+
     dItem->setInt32(0, pk);
 
     for(std::size_t i = 0; i < numProps; ++i)
@@ -740,7 +792,11 @@ void te::vp::GeometricOpQuery::SetOutputDSet( te::da::DataSet* inDataSet,
           }
           break;
         default:
-          te::common::Logger::logDebug("vp", "Geometric Operation - Property type not found.");
+          {
+#ifdef TERRALIB_LOGGER_ENABLED
+            te::common::Logger::logDebug("vp", "Geometric Operation - Property type not found.");
+#endif //TERRALIB_LOGGER_ENABLED
+          }
       }
     }
     if(geomFlag)

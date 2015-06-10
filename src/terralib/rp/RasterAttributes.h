@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -31,8 +31,10 @@
 #include "Algorithm.h"
 #include "Config.h"
 #include "Exception.h"
+#include "Texture.h"
 
 // Boost
+#include <boost/numeric/ublas/io.hpp> 
 #include <boost/numeric/ublas/matrix.hpp>
 
 // STL
@@ -53,7 +55,6 @@ namespace te
 
   namespace rp
   {
-
     /*!
       \class RasterAttributes
 
@@ -152,6 +153,45 @@ namespace te
           \warning All vectors sizes must fit.
         */
         boost::numeric::ublas::matrix<double> getCovarianceMatrix(const std::vector<std::vector<double> >& vpixels, const std::vector<double>& vmeans);
+        
+        /*!
+          \brief Computes the Gray-Level CoOccurrence Matrix (GLCM) from a raster band.
+
+          \param rin    The input raster.
+          \param band   The input band position.
+          \param dx     The displacement in x direction, to be considered as neighborhood, can be either + or -.
+          \param dy     The displacement in y direction, to be considered as neighborhood, can be either + or -.
+          
+          \return The GLCM from the raster band.
+          
+          \warning The pixels from the input band will be considered of type unsigned int.
+        */
+        boost::numeric::ublas::matrix<double> getGLCM(const te::rst::Raster& rin, unsigned int band, int dx, int dy);
+        
+        /*!
+          \brief Computes the Gray-Level CoOccurrence Matrix (GLCM) from a raster band, inside the polygon.
+
+          \param rin         The input raster.
+          \param band        The input band position.
+          \param dx          The displacement in x direction, to be considered as neighborhood, can be either + or -.
+          \param dy          The displacement in y direction, to be considered as neighborhood, can be either + or -.
+          \param polygon     The input polygon.
+          
+          \return The GLCM from the raster band, inside the polygon.
+          
+          \warning The pixels from the input band will be considered of type unsigned int.
+        */
+        boost::numeric::ublas::matrix<double> getGLCM(const te::rst::Raster& rin, unsigned int band, int dx, int dy, const te::gm::Polygon& polygon);
+        
+        /*!
+          \brief Compute texture metrics from GLCM matrix.
+          
+          \param glcm The input GLCM matrix.
+          
+          \return The Texture structure will all available metrics computed.
+        */
+        te::rp::Texture getGLCMMetrics(boost::numeric::ublas::matrix<double> glcm);
+        
     };
 
   } // end namespace rp

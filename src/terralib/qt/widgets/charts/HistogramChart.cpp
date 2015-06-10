@@ -1,4 +1,4 @@
-/*  Copyright (C) 2010-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -26,6 +26,7 @@
 //Terralib
 #include "../../../dataaccess/dataset/ObjectId.h"
 #include "../../../dataaccess/dataset/ObjectIdSet.h"
+#include "../../../dataaccess/utils/Utils.h"
 #include "../../../qt/widgets/se/Utils.h"
 #include "../../../se/Stroke.h"
 #include "Enums.h"
@@ -33,6 +34,7 @@
 #include "HistogramChart.h"
 #include "HistogramStyle.h"
 #include "StringScaleDraw.h"
+#include "Utils.h"
 
 
 //QT
@@ -51,10 +53,6 @@ te::qt::widgets::HistogramChart::HistogramChart(Histogram* histogram, te::qt::wi
   m_histogram(histogram),
   m_histogramStyle(style)
 {
-
-  //Vector that will be populated by the histogram's data
-  QVector<QwtIntervalSample> samples;
-
   if(!m_histogramStyle)
   {
     m_histogramStyle = new te::qt::widgets::HistogramStyle();
@@ -68,13 +66,28 @@ te::qt::widgets::HistogramChart::HistogramChart(Histogram* histogram, te::qt::wi
     setPen(barPen);
     setBrush(barBrush);
   }
+  
+  setData();
+  
+  m_selection = new QwtPlotHistogram();
+  m_selection->setStyle(QwtPlotHistogram::Columns);
 
-  if((histogram->getType() >= te::dt::INT16_TYPE && histogram->getType() <= te::dt::UINT64_TYPE) || 
-    histogram->getType() == te::dt::FLOAT_TYPE || histogram->getType() == te::dt::DOUBLE_TYPE || 
-    histogram->getType() == te::dt::NUMERIC_TYPE)
+  //The default selection color is green
+  m_selection->setBrush(QColor("#00FF00"));
+  m_selection->attach(plot());
+
+}
+
+void te::qt::widgets::HistogramChart::setData()
+{
+  //Vector that will be populated by the histogram's data
+  QVector<QwtIntervalSample> samples;
+  if((m_histogram->getType() >= te::dt::INT16_TYPE && m_histogram->getType() <= te::dt::UINT64_TYPE) || 
+    m_histogram->getType() == te::dt::FLOAT_TYPE || m_histogram->getType() == te::dt::DOUBLE_TYPE || 
+    m_histogram->getType() == te::dt::NUMERIC_TYPE)
   {
     std::map<double, unsigned int> values;
-    values = histogram->getValues();
+    values = m_histogram->getValues();
 
     std::map<double,  unsigned int>::const_iterator it;
     it = values.begin();
@@ -83,9 +96,9 @@ te::qt::widgets::HistogramChart::HistogramChart(Histogram* histogram, te::qt::wi
 
     int i = 0;
 
-    double ini = histogram->getMinValue();
+    double ini = m_histogram->getMinValue();
 
-    double vx = ini + histogram->getInterval();
+    double vx = ini + m_histogram->getInterval();
 
     while(vx <= values.rbegin()->first)
     {
@@ -106,22 +119,21 @@ te::qt::widgets::HistogramChart::HistogramChart(Histogram* histogram, te::qt::wi
       samples.push_back(QwtIntervalSample(vmap[i], qinterval));
 
       ini = vx;
-      vx += histogram->getInterval();
+      vx += m_histogram->getInterval();
       ++i;
     }
-
-    setData(new QwtIntervalSeriesData(samples));
+    setSamples(samples);
   }
 
-  else if (histogram->getType() == te::dt::DATETIME_TYPE || histogram->getType() == te::dt::STRING_TYPE)
+  else if (m_histogram->getType() == te::dt::DATETIME_TYPE || m_histogram->getType() == te::dt::STRING_TYPE)
   {
     std::map<std::string, unsigned int> values;
-    values = histogram->getStringValues();
+    values = m_histogram->getStringValues();
 
     std::map<std::string,  unsigned int>::iterator it;
     it  = values.begin();
 
-    m_histogramScaleDraw = new StringScaleDraw(histogram->getStringInterval());
+    m_histogramScaleDraw = new StringScaleDraw(m_histogram->getStringInterval());
     QVector<QwtIntervalSample> samples(values.size());
     double LabelInterval = 0.0;
 
@@ -133,22 +145,20 @@ te::qt::widgets::HistogramChart::HistogramChart(Histogram* histogram, te::qt::wi
       LabelInterval++;
        it++;
     }
-
-    setData(new QwtIntervalSeriesData(samples));
+    setSamples(samples);
   }
   else
   {
     std::map<double,  unsigned int> values;
     std::map<double,  unsigned int>::const_iterator it;
-    values = histogram->getValues();
+    values = m_histogram->getValues();
     it = values.begin();
-    double interval = 0.0;
 
     while (it != values.end())
     {
+      double interval = it->first;
       QwtInterval qwtInterval(interval, interval+1);
       samples.push_back(QwtIntervalSample(it->second, qwtInterval));
-      interval++;
       it++;
     }
 
@@ -158,17 +168,8 @@ te::qt::widgets::HistogramChart::HistogramChart(Histogram* histogram, te::qt::wi
     te::se::Stroke* blankStroke = new te::se::Stroke();
     blankStroke->setOpacity(QString::number(0, 'g', 2).toStdString());
     m_histogramStyle->setStroke(blankStroke);
-
-    setData(new QwtIntervalSeriesData(samples));
+    setSamples(samples);
   }
-
-  m_selection = new QwtPlotHistogram();
-  m_selection->setStyle(QwtPlotHistogram::Columns);
-
-  //The default selection color is green
-  m_selection->setBrush(QColor("#00FF00"));
-  m_selection->attach(plot());
-
 }
 
 te::qt::widgets::HistogramChart::~HistogramChart()
@@ -243,7 +244,7 @@ void te::qt::widgets::HistogramChart::setHistogramStyle(te::qt::widgets::Histogr
   setBrush(barBrush);
 }
 
-void te::qt::widgets::HistogramChart::highlight(const te::da::ObjectIdSet* oids)
+void te::qt::widgets::HistogramChart::highlight(const te::da::ObjectIdSet* oids, te::da::DataSetType* dataType)
 {
   //Removing the previous selection, if there was any.
   m_selection->detach();
@@ -254,24 +255,53 @@ void te::qt::widgets::HistogramChart::highlight(const te::da::ObjectIdSet* oids)
   //Acquiring all selected intervals:
 
   if((m_histogram->getType() >= te::dt::INT16_TYPE && m_histogram->getType() <= te::dt::UINT64_TYPE) || 
-    m_histogram->getType() == te::dt::FLOAT_TYPE || m_histogram->getType() == te::dt::DOUBLE_TYPE || 
-    m_histogram->getType() == te::dt::NUMERIC_TYPE)
+     m_histogram->getType() == te::dt::FLOAT_TYPE || m_histogram->getType() == te::dt::DOUBLE_TYPE || 
+     m_histogram->getType() == te::dt::NUMERIC_TYPE)
   {
-
     std::map<double, unsigned int> highlightedIntervals;
+    std::set<std::string> highlightedPkeys;
 
     //Acquiring the slected intervals
     for(itObjSet = oids->begin(); itObjSet != oids->end(); ++itObjSet)
     {
-      double interval = static_cast< const te::dt::Double*>(m_histogram->find((*itObjSet)))->getValue();
-      highlightedIntervals.insert(std::make_pair(interval, 0));
+      const te::dt::Double* data = static_cast< const te::dt::Double*>(m_histogram->find((*itObjSet)));
+      if(data)
+      {
+        double interval = data->getValue();
+        highlightedIntervals.insert(std::make_pair(interval, 0));
+      }
     }
+
+    //Acquiring the name of the base dataset and how many of it's properties are included in it's primary key
+    std::pair<std::string, int> dsProps;
+    te::da::GetOIDDatasetProps(dataType, dsProps);
 
     //Acquiring the selected values' frequency
     for(itObjSet = oids->begin(); itObjSet != oids->end(); ++itObjSet)
     {
-      double interval = static_cast< const te::dt::Double*>(m_histogram->find((*itObjSet)))->getValue();
-      ++highlightedIntervals.at(interval);
+      //Acquiring the value of the base primaryKey on the current objectId;
+      std::string pKey = te::da::getBasePkey((*itObjSet),dsProps);
+      if(m_histogram->isSummarized())
+      {
+        if(highlightedPkeys.insert(pKey).second)
+        {
+          const te::dt::Double* data = static_cast< const te::dt::Double*>(m_histogram->find((*itObjSet)));
+          if(data)
+          {
+            double interval = data->getValue();
+            ++highlightedIntervals.at(interval);
+          }
+        }
+      }
+      else
+      {
+        const te::dt::Double* data = static_cast< const te::dt::Double*>(m_histogram->find((*itObjSet)));
+        if(data)
+        {
+          double interval = data->getValue();
+          ++highlightedIntervals.at(interval);
+        }
+      }
     }
 
     QVector<QwtIntervalSample> highlightedSamples(highlightedIntervals.size());
@@ -309,9 +339,9 @@ void te::qt::widgets::HistogramChart::highlight(const te::da::ObjectIdSet* oids)
     for(itObjSet = oids->begin(); itObjSet != oids->end(); ++itObjSet)
     {
       std::string interval = m_histogram->find((*itObjSet))->toString();
-      ++highlightedIntervals.at(interval);
+      if(m_histogram->getStringValues().at(interval) > highlightedIntervals.at(interval))
+        ++highlightedIntervals.at(interval);
     }
-
 
     //A vector containing that will be populated with the samples that match the selected strings
     QVector<QwtIntervalSample> highlightedSamples(highlightedIntervals.size());
@@ -379,11 +409,11 @@ te::da::ObjectIdSet* te::qt::widgets::HistogramChart::highlight(QRectF rect)
       int frequency = values->sample(i).value;
 
       //Checking if the interval is within the rectangle, works when a rectangle is drawn around the intervals
-      if(min > rect.x() && (max < rect.x() + rect.width() || min < rect.x() + rect.width())  &&  frequency > rect.y())
+      if(min > rect.x() && (max < rect.x() + rect.width() || min < rect.x() + rect.width())  &&  (frequency > rect.y() && rect.y() + rect.height() > 0))
         selected.push_back(new te::dt::String(m_histogramScaleDraw->label(i).text().toStdString()));
 
       //Checking if the rectangle is within the interval, works when the user simply clicked on an interval
-      else if(min < rect.x() && max > rect.x() &&  frequency > rect.y())
+      else if(min < rect.x() && max > rect.x() &&  (frequency > rect.y() && rect.y() + rect.height() > 0))
         selected.push_back(new te::dt::String(m_histogramScaleDraw->label(i).text().toStdString()));
     }
   }
@@ -398,11 +428,11 @@ te::da::ObjectIdSet* te::qt::widgets::HistogramChart::highlight(QRectF rect)
       int frequency = values->sample(i).value;
 
       //Checking if the interval is within the rectangle, works when a rectangle is drawn around the intervals
-      if(min > rect.x() && (max < rect.x() + rect.width() || min < rect.x() + rect.width()) &&  frequency > rect.y())
+      if(min > rect.x() && (max < rect.x() + rect.width() || min < rect.x() + rect.width()) &&  (frequency > rect.y() && rect.y() + rect.height() > 0))
         selected.push_back(new te::dt::Double(values->sample(i).interval.minValue()));
 
       //Checking if the rectangle is within the interval, works when the user simply clicked on an interval
-      else if(min < rect.x() && max > rect.x() &&  frequency > rect.y())
+      else if(min < rect.x() && max > rect.x() &&  (frequency > rect.y() && rect.y() + rect.height() > 0))
         selected.push_back(new te::dt::Double(values->sample(i).interval.minValue()));
     }
   }

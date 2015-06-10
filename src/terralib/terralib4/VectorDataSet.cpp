@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -318,7 +318,11 @@ std::auto_ptr<te::gm::Geometry> terralib4::VectorDataSet::getGeometry(std::size_
 
   std::auto_ptr<te::gm::Geometry> t5g(terralib4::GeomReader::getGeometry(*geoms[0]));
 
-  t5g->setSRID(m_layer->projection()->epsgCode());
+  int srid = m_layer->projection()->epsgCode();
+  if(srid == 4979)
+    srid = 4326;
+
+  t5g->setSRID(srid);
 
   return t5g;
 }

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,69 +18,91 @@
  */
 
 /*!
-  \file terralib/qt/plugins/slider/Config.h
+  \file terralib/qt/plugins/st/Config.h
 
-  \brief Configuration flags for the SLIDER Qt Widget plugin.
+  \brief Configuration flags for the ST Qt Widget plugin.
 */
 
-#ifndef __TERRALIB_QT_PLUGINS_SLIDER_INTERNAL_CONFIG_H
-#define __TERRALIB_QT_PLUGINS_SLIDER_INTERNAL_CONFIG_H
+#ifndef __TERRALIB_QT_PLUGINS_ST_INTERNAL_CONFIG_H
+#define __TERRALIB_QT_PLUGINS_ST_INTERNAL_CONFIG_H
 
 // TerraLib
 #include "../../../Config.h"
 
 
 /*!
-  \def TE_QT_PLUGIN_SLIDER_HAVE_SLIDER
+  \def TE_QT_PLUGIN_ST_HAVE_SLIDER
 
-  \brief It defines if the SLIDER Qt Plugin has the slider operation.
+  \brief It defines if the ST Qt Plugin has the slider operation.
 */
-#define TE_QT_PLUGIN_SLIDER_HAVE_SLIDER
+#define TE_QT_PLUGIN_ST_HAVE_SLIDER
 
 /*!
-  \def TE_QT_PLUGIN_SLIDER_PLUGIN_NAME
+  \def TE_QT_PLUGIN_ST_HAVE_OBSERVATION
+
+  \brief It defines if the ST Qt Plugin has the observation operation.
+*/
+#define TE_QT_PLUGIN_ST_HAVE_OBSERVATION
+
+/*!
+  \def TE_QT_PLUGIN_ST_HAVE_TIMESERIES
+
+  \brief It defines if the ST Qt Plugin has the timeseries operation.
+*/
+#define TE_QT_PLUGIN_ST_HAVE_TIMESERIES
+
+/*!
+  \def TE_QT_PLUGIN_ST_HAVE_TRAJECTORY
+
+  \brief It defines if the ST Qt Plugin has the trajectory operation.
+*/
+#define TE_QT_PLUGIN_ST_HAVE_TRAJECTORY
+
+
+/*!
+  \def TE_QT_PLUGIN_ST_PLUGIN_NAME
 
   \brief It contains the plugin name.
 */
-#define TE_QT_PLUGIN_SLIDER_PLUGIN_NAME "te.qt.slider"
+#define TE_QT_PLUGIN_ST_PLUGIN_NAME "te.qt.st"
 
 /*!
-  \def TE_QT_PLUGIN_SLIDER_TEXT_DOMAIN
+  \def TE_QT_PLUGIN_ST_TEXT_DOMAIN
 
-  \brief It contains the name of the text domain used in the translation of messages in TerraLib SLIDER Qt Plugin implementation.
+  \brief It contains the name of the text domain used in the translation of messages in TerraLib ST Qt Plugin implementation.
 */
-#define TE_QT_PLUGIN_SLIDER_TEXT_DOMAIN "teqtpluginslider"
+#define TE_QT_PLUGIN_ST_TEXT_DOMAIN "teqtpluginst"
 
 /*!
-  \def TE_QT_PLUGIN_SLIDER_TEXT_DOMAIN_DIR
+  \def TE_QT_PLUGIN_ST_TEXT_DOMAIN_DIR
 
   \brief It contains the translation catalog directory.
 */
-#define TE_QT_PLUGIN_SLIDER_TEXT_DOMAIN_DIR "locale"
+#define TE_QT_PLUGIN_ST_TEXT_DOMAIN_DIR "locale"
 
 /*!
-  \def TE_QT_PLUGIN_SLIDER
+  \def TE_QT_PLUGIN_ST
 
-  \brief It marks a string in order to get translated. This is a special mark used in the SLIDER QtPlugin of TerraLib.
+  \brief It marks a string in order to get translated. This is a special mark used in the ST QtPlugin of TerraLib.
 */
-#define TE_QT_PLUGIN_SLIDER(message) TR(message, TE_QT_PLUGIN_SLIDER_TEXT_DOMAIN)
+#define TE_QT_PLUGIN_ST(message) TR(message, TE_QT_PLUGIN_ST_TEXT_DOMAIN)
 
 /*!
-  \def TEQTPLUGINSLIDEREXPORT
+  \def TEQTPLUGINSTEXPORT
 
   \brief You can use this macro in order to export/import classes and functions from all plug-ins files.
 
-  \note To compile plug-ins in Windows, remember to insert TEQTPLUGINSLIDEREXPORT into the project's list of defines.
+  \note To compile plug-ins in Windows, remember to insert TEQTPLUGINSTEXPORT into the project's list of defines.
  */
 #ifdef WIN32
-  #ifdef TEQTPLUGINSLIDERDLL
-    #define TEQTPLUGINSLIDEREXPORT  __declspec(dllexport)   // export DLL information
+  #ifdef TEQTPLUGINSTDLL
+    #define TEQTPLUGINSTEXPORT  __declspec(dllexport)   // export DLL information
   #else
-    #define TEQTPLUGINSLIDEREXPORT  __declspec(dllimport)   // import DLL information
+    #define TEQTPLUGINSTEXPORT  __declspec(dllimport)   // import DLL information
   #endif 
 #else
-  #define TEQTPLUGINSLIDEREXPORT
+  #define TEQTPLUGINSTEXPORT
 #endif
 
-#endif  // __TERRALIB_QT_PLUGINS_SLIDER_INTERNAL_CONFIG_H
+#endif  // __TERRALIB_QT_PLUGINS_ST_INTERNAL_CONFIG_H
 

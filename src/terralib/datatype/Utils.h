@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -64,6 +64,15 @@ namespace te
       \return DataType integer
     */
     TEDATATYPEEXPORT int Convert2Terralib(const std::string& dataType);
+
+    /*!
+      \brief Function used to convert from a int (Data Type Enum) to a string
+
+      \param dataType     Integer value that defines the data type
+
+      \return A string with the data type name.
+    */
+    TEDATATYPEEXPORT std::string ConvertDataTypeToString(const int& dataType);
 
   } // end namespace dt
 }   // end namespace te

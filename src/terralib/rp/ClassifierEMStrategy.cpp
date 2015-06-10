@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -124,7 +124,7 @@ bool te::rp::ClassifierEMStrategy::execute(const te::rst::Raster& inputRaster, c
   TERP_TRUE_OR_RETURN_FALSE(m_isInitialized, TE_TR("Instance not initialized"))
 
 // create a vector of points with random positions inside raster to obtain input data
-  std::vector<te::gm::Point*> randomPoints = te::rp::GetRandomPointsInRaster(inputRaster, m_parameters.m_maxInputPoints);
+  std::vector<te::gm::Point*> randomPoints = te::rst::GetRandomPointsInRaster(inputRaster, m_parameters.m_maxInputPoints);
 
 // M is the number of clusters
   const unsigned int M = m_parameters.m_numberOfClusters;

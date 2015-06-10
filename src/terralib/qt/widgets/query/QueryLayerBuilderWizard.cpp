@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -206,7 +206,7 @@ te::map::AbstractLayerPtr te::qt::widgets::QueryLayerBuilderWizard::getQueryLaye
 
   te::map::QueryLayerPtr layer(new te::map::QueryLayer(id, title));
   layer->setDataSourceId(m_ds->getId());
-  layer->setRendererType("ABSTRACT_LAYER_RENDERER");
+  layer->setRendererType("QUERY_LAYER_RENDERER");
   layer->setQuery(s);
   layer->computeExtent();
 

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -58,6 +58,10 @@ namespace te
           virtual void valueChanged(QtProperty* p, int value);
 
           virtual void valueChanged(QtProperty* p, const QString& value);
+
+        protected:
+
+          void setLayerRasterProperties(te::map::AbstractLayer* rasterLayer);
 
         protected:
 

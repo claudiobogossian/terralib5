@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -31,12 +31,14 @@
 #include "../raster/Raster.h"
 #include "../raster/Interpolator.h"
 #include "../raster/RasterSynchronizer.h"
+#include "../raster/TileIndexer.h"
 #include "../geometry/Polygon.h"
 #include "../geometry/MultiPolygon.h"
 #include "../geometry/Point.h"
 #include "../geometry/GeometricTransformation.h"
 
 #include <boost/noncopyable.hpp>
+#include <boost/ptr_container/ptr_vector.hpp>
 
 #include <vector>
 #include <complex>
@@ -60,9 +62,10 @@ namespace te
         /*! \enum BlendMethod Pixel Blend methods. */      
         enum BlendMethod 
         {
-          InvalidBlendMethod = 0, //!< Invalid blending method.
-          NoBlendMethod = 1, //!< No blending performed.
-          EuclideanDistanceMethod = 2 //!< Euclidean distance method.
+          InvalidBlendMethod, //!< Invalid blending method.
+          NoBlendMethod, //!< No blending performed.
+          EuclideanDistanceMethod, //!< Euclidean distance method.
+          SumMethod //!< Pixels will be summed inside the raster overlapped area.
         };        
         
         /*! Default constructor. */
@@ -81,7 +84,8 @@ namespace te
           \param interpMethod1 The interpolation method to use when reading raster 1 data.
           \param interpMethod2 The interpolation method to use when reading raster 2 data.
           \param noDataValue The value returned where there is no pixel data bo blend.
-          \param forceInputNoDataValue Use noDataValue as the input rasters no-data value (The original rasters no-data values will be ignored) 
+          \param forceRaster1NoDataValue Use noDataValue as the input raster 1 no-data value (The original rasters no-data values will be ignored)
+          \param forceRaster2NoDataValue Use noDataValue as the input raster 1 no-data value (The original rasters no-data values will be ignored)  
           \param pixelOffsets1 The values offset to be applied to raster 1 pixel values before the blended value calcule (one element for each used raster channel/band).
           \param pixelScales1 The values scale to be applied to raster 1 pixel values before the blended value calcule (one element for each used raster channel/band).
           \param pixelOffsets2 The values offset to be applied to raster 2 pixel values before the blended value calcule (one element for each used raster channel/band).
@@ -92,6 +96,7 @@ namespace te
           \param threadsNumber Enable/disable the use of threads when applicable (0:automatic , 1:disabled, any other integer dictates the number of threads).
           \param enableProgressInterface Enable/disable the use of a progress interface when applicable.
           \return true if ok, false on errors
+          \note Aboute scale and offset parametrs:  outValue = ( ( inputValue + offsetA ) * scale ) + offsetB
         */
         bool initialize( 
           te::rst::Raster& raster1, 
@@ -102,7 +107,8 @@ namespace te
           const te::rst::Interpolator::Method& interpMethod1,
           const te::rst::Interpolator::Method& interpMethod2,
           const double& noDataValue,
-          const bool forceInputNoDataValue,
+          const bool forceRaster1NoDataValue,
+          const bool forceRaster2NoDataValue,
           const std::vector< double >& pixelOffsets1,
           const std::vector< double >& pixelScales1,
           const std::vector< double >& pixelOffsets2,
@@ -182,10 +188,10 @@ namespace te
             std::vector< unsigned int > m_raster1Bands; //!< Input raster 1 band indexes to use.
             std::vector< unsigned int > m_raster2Bands; //!< Input raster 2 band indexes to use (this vector has the same size as raster1Bands).
             BlendMethod m_blendMethod; //!<  The blend method to apply.
-            te::rst::Interpolator::Method m_interpMethod1; //!< The interpolation method to use when reading raster 1 data.
             te::rst::Interpolator::Method m_interpMethod2; //!< The interpolation method to use when reading raster 2 data.
             double m_noDataValue; //!< The value returned where there is no pixel data bo blend.
-            bool m_forceInputNoDataValue; //!< Use noDataValue as the input rasters no-data value (The original rasters no-data values will be ignored) 
+            bool m_forceRaster1NoDataValue; //!< Use noDataValue as the input rasters no-data value (The original rasters no-data values will be ignored)
+            bool m_forceRaster2NoDataValue; //!< Use noDataValue as the input rasters no-data value (The original rasters no-data values will be ignored)  
             std::vector< double > m_pixelOffsets1; //!< The values offset to be applied to raster 1 pixel values before the blended value calcule (one element for each used raster channel/band).
             std::vector< double > m_pixelScales1; //!< The values scale to be applied to raster 1 pixel values before the blended value calcule (one element for each used raster channel/band).
             std::vector< double > m_pixelOffsets2; //!< The values offset to be applied to raster 2 pixel values before the blended value calcule (one element for each used raster channel/band).
@@ -206,7 +212,8 @@ namespace te
         };           
 
         bool m_enableProgressInterface; //!< Enable progress interface.
-        bool m_forceInputNoDataValue; //!<  Use noDataValue as the input rasters no-data value (The original rasters no-data values will be ignored) 
+        bool m_forceRaster1NoDataValue; //!<  Use noDataValue as the input raster 1 no-data value (The original rasters no-data values will be ignored)
+        bool m_forceRaster2NoDataValue; //!<  Use noDataValue as the input raster 2 no-data value (The original rasters no-data values will be ignored)  
         unsigned int m_threadsNumber; //!< The number of threads to use (0:automatic , 1:disabled, any other integer dictates the number of threads)..
         BlendMethod m_blendMethod; //!< The blend method to apply.
         BlendFunctPtr m_blendFuncPtr; //!< The current blend function.
@@ -214,7 +221,7 @@ namespace te
         te::rst::Raster const * m_raster2Ptr; //!< Input raster 2.
         std::auto_ptr< te::gm::MultiPolygon > m_r1ValidDataDelimiterPtr; //!< A pointer to a geometry (raster 1 world/projected coords) delimiting the raster region with valid data, or null if all raster data area is valid.
         std::auto_ptr< te::gm::MultiPolygon > m_r2ValidDataDelimiterPtr; //!< A pointer to a geometry (raster 2 world/projected coords) delimiting the raster region with valid data, or null if all raster data area is valid.
-        std::auto_ptr< te::gm::MultiPolygon > m_intersectionPtr; //!< The Intersection geometry ( raster 1 indexed coods).
+        std::auto_ptr< te::gm::Geometry > m_intersectionPtr; //!< The Intersection geometry ( raster 1 indexed coods).
         std::vector< std::pair< te::gm::Coord2D, te::gm::Coord2D > > m_r1IntersectionSegmentsPoints; //!< A sub-set of the intersection polygon wich is part of raster 1 valid data polygon ( raster 1 indexed coods).
         std::size_t m_r1IntersectionSegmentsPointsSize; //!< Size of m_r1IntersectionSegmentsPoints;
         std::vector< std::pair< te::gm::Coord2D, te::gm::Coord2D > > m_r2IntersectionSegmentsPoints; //!< A sub-set of the intersection polygon wich is part of raster 2 valid data polygon ( raster 1 indexed coods).
@@ -223,16 +230,17 @@ namespace te
         te::rst::Interpolator::Method m_interpMethod1; //!< The interpolation method to use when reading raster 1 data.
         te::rst::Interpolator::Method m_interpMethod2; //!< The interpolation method to use when reading raster 2 data.
         double m_outputNoDataValue; //!< The output raster no-data value.
-        te::rst::Interpolator* m_interp1; //!< Raster 1 interpolator instance pointer.
-        te::rst::Interpolator* m_interp2; //!< Raster 2 interpolator instance pointer.        
+        std::auto_ptr< te::rst::Interpolator > m_interp1Ptr; //!< Raster 1 interpolator instance pointer.
+        std::auto_ptr< te::rst::Interpolator > m_interp2Ptr; //!< Raster 2 interpolator instance pointer.        
         std::vector< unsigned int > m_raster1Bands; //!< Input raster 1 band indexes to use.
         std::vector< unsigned int > m_raster2Bands; //!< Input raster 2 band indexes to use.
         std::vector< double > m_pixelOffsets1; //!< The values offset to be applied to raster 1 pixel values before the blended value calcule (one element for each used raster channel/band).
         std::vector< double > m_pixelScales1; //!< The values scale to be applied to raster 1 pixel values before the blended value calcule (one element for each used raster channel/band).
         std::vector< double > m_pixelOffsets2; //!< The values offset to be applied to raster 2 pixel values before the blended value calcule (one element for each used raster channel/band).
         std::vector< double > m_pixelScales2; //!< The values scale to be applied to raster 2 pixel values before the blended value calcule (one element for each used raster channel/band).
-        std::vector< double > m_raster1NoDataValues; //! Raster 1 no-data values (on value per band).
-        std::vector< double > m_raster2NoDataValues; //! Raster 2 no-data values (on value per band).
+        std::vector< double > m_raster1NoDataValues; //!< Raster 1 no-data values (on value per band).
+        std::vector< double > m_raster2NoDataValues; //!< Raster 2 no-data values (on value per band).
+        boost::ptr_vector< te::rst::TileIndexer > m_intersectionTileIndexers; //!< The Intersection geometry tile indexers( raster 1 indexed coods), one indexer for each intersection polygon.
         
         // variables used by the noBlendMethodImp method
         double m_noBlendMethodImp_Point1XProj1;
@@ -258,7 +266,18 @@ namespace te
         std::size_t m_euclideanDistanceMethodImp_vecIdx;
         double m_euclideanDistanceMethodImp_aux1;
         double m_euclideanDistanceMethodImp_aux2;
+        unsigned int m_euclideanDistanceMethodImp_IntersectionTileIndexersIdx;
+        bool m_euclideanDistanceMethodImp_PointInsideIntersection;
         
+        // variables used by the sumMethodImp method
+        te::gm::Point m_sumMethodImp_auxPoint;
+        double m_sumMethodImp_Point2Line;
+        double m_sumMethodImp_Point2Col;        
+        std::complex< double > m_sumMethodImp_cValue1;
+        std::complex< double > m_sumMethodImp_cValue2;
+        unsigned int m_sumMethodImp_BandIdx; 
+        unsigned int m_sumMethodImp_IntersectionTileIndexersIdx;
+        bool m_sumMethodImp_PointInsideIntersection;
         
         /*! \brief Reset the instance to its initial default state. */
         void initState();
@@ -285,13 +304,41 @@ namespace te
           \param values A pointer to a pre-allocated vector where the blended values will be stored.
         */
         void euclideanDistanceMethodImp( const double& line1, const double& col1,
-          double* const values );              
+          double* const values );
+        
+        /*!
+          \brief Implementation for SumMethod.
+          \param line Raster 1 Line.
+          \param col Raster 1 Column.
+          \param values A pointer to a pre-allocated vector where the blended values will be stored.
+        */
+        void sumMethodImp( const double& line1, const double& col1,
+          double* const values );        
         
         /*!
           \brief Thread entry for the method blendIntoRaster1.
 
         */        
         static void blendIntoRaster1Thread( BlendIntoRaster1ThreadParams* paramsPtr );
+        
+        /*!
+          \brief Extract segments from the given geometry.
+          \param geometryPtr Input geometry.
+          \param segments Found segments (appended here).
+          \return true if OK, false on errors.
+        */        
+        bool getSegments( te::gm::Geometry const * const geometryPtr, 
+          std::vector< std::pair< te::gm::Coord2D, te::gm::Coord2D > >& segments ) const;
+          
+        
+        /*!
+          \brief Creater polygon tile indexers from the given geometry.
+          \param geometryPtr Input geometry.
+          \param tileIndexers Created indexers (appended here).
+          \return true if OK, false on errors.
+        */        
+        bool getTileIndexers( te::gm::Geometry const * const geometryPtr, 
+          boost::ptr_vector< te::rst::TileIndexer >& tileIndexers ) const;          
     };
 
   } // end namespace rp

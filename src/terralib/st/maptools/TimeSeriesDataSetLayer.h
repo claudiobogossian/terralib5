@@ -1,4 +1,4 @@
-/*  Copyright (C) 2010-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -43,8 +43,8 @@ namespace te
     class TimeSeriesDataSetInfo;
 
     typedef te::da::DataSetType LayerSchema;
-	
-	/*!
+
+  /*!
       \class TimeSeriesDataSetLayer
 
       \brief A layer with reference to a dataset that contains trajectories.
@@ -54,8 +54,8 @@ namespace te
     class TESTEXPORT TimeSeriesDataSetLayer : public AbstractSTDataSetLayer
     {
       public:
-	  
-	  /*!
+    
+    /*!
           \brief It initializes a new layer.
 
           \param parent The parent layer (NULL if it has no parent).
@@ -103,26 +103,78 @@ namespace te
         std::auto_ptr<te::da::DataSet> getData(te::common::TraverseType travType = te::common::FORWARDONLY,
                                                const te::common::AccessPolicy accessPolicy = te::common::RAccess) const;
 
+        std::auto_ptr<te::da::DataSet> getData(const std::string& propertyName,
+                                               const te::gm::Envelope* e,
+                                               te::gm::SpatialRelation r = te::gm::INTERSECTS,
+                                               te::common::TraverseType travType = te::common::FORWARDONLY,
+                                               const te::common::AccessPolicy accessPolicy = te::common::RAccess) const;
+
+        std::auto_ptr<te::da::DataSet> getData(const std::string& propertyName,
+                                               const te::gm::Geometry* g,
+                                               te::gm::SpatialRelation r,
+                                               te::common::TraverseType travType = te::common::FORWARDONLY,
+                                               const te::common::AccessPolicy accessPolicy = te::common::RAccess) const;
+
+        std::auto_ptr<te::da::DataSet> getData(te::da::Expression* restriction,
+                                               te::common::TraverseType travType = te::common::FORWARDONLY,
+                                               const te::common::AccessPolicy accessPolicy = te::common::RAccess) const;
+
+        std::auto_ptr<te::da::DataSet> getData(const te::da::ObjectIdSet* oids,
+                                               te::common::TraverseType travType = te::common::FORWARDONLY,
+                                               const te::common::AccessPolicy accessPolicy = te::common::RAccess) const;
+
         std::auto_ptr<te::st::TimeSeriesDataSet> getTimeSeriesDataset(te::common::TraverseType travType = te::common::FORWARDONLY) const;
 
+        std::auto_ptr<te::st::TimeSeriesDataSet> getTimeSeriesDataset(const te::gm::Envelope& e,
+                                                                        te::gm::SpatialRelation r = te::gm::INTERSECTS,
+                                                                        te::common::TraverseType travType = te::common::FORWARDONLY) const;
+
+        std::auto_ptr<te::st::TimeSeriesDataSet> getTimeSeriesDataset(const te::gm::Geometry& g,
+                                                                        te::gm::SpatialRelation r,
+                                                                        te::common::TraverseType travType = te::common::FORWARDONLY) const;
+
         std::auto_ptr<te::da::DataSet> getData( const te::dt::DateTime& dt, te::dt::TemporalRelation r = te::dt::DURING,
-                                                te::common::TraverseType travType = te::common::FORWARDONLY, 
+                                               te::common::TraverseType travType = te::common::FORWARDONLY, 
+                                               te::common::AccessPolicy rwRole = te::common::RAccess) const;
+
+        std::auto_ptr<te::da::DataSet> getData( const te::dt::DateTime& dt, te::dt::TemporalRelation tr,
+                                                const te::gm::Envelope& e, te::gm::SpatialRelation sr = te::gm::INTERSECTS,
+                                                te::common::TraverseType travType = te::common::FORWARDONLY,
                                                 te::common::AccessPolicy rwRole = te::common::RAccess) const;
 
+         std::auto_ptr<te::da::DataSet> getData( const te::dt::DateTime& dt, te::dt::TemporalRelation tr,
+                                                 const te::gm::Geometry& g, te::gm::SpatialRelation sr = te::gm::INTERSECTS,
+                                                 te::common::TraverseType travType = te::common::FORWARDONLY,
+                                                 te::common::AccessPolicy rwRole = te::common::RAccess) const;
 
         std::auto_ptr<te::st::TimeSeriesDataSet> getTimeSeriesDataset( const te::dt::DateTime& dt, te::dt::TemporalRelation r = te::dt::DURING,
                                                                        te::common::TraverseType travType = te::common::FORWARDONLY) const;
+
+        std::auto_ptr<te::st::TimeSeriesDataSet> getTimeSeriesDataset( const te::dt::DateTime& dt, te::dt::TemporalRelation tr,
+                                                                         const te::gm::Envelope& e, te::gm::SpatialRelation sr = te::gm::INTERSECTS,
+                                                                         te::common::TraverseType travType = te::common::FORWARDONLY) const;
+
+         std::auto_ptr<te::st::TimeSeriesDataSet> getTimeSeriesDataset( const te::dt::DateTime& dt, te::dt::TemporalRelation tr,
+                                                                        const te::gm::Geometry& g, te::gm::SpatialRelation sr = te::gm::INTERSECTS,
+                                                                        te::common::TraverseType travType = te::common::FORWARDONLY) const;
 
         bool isValid() const;
 
         void draw(te::map::Canvas* canvas, const te::gm::Envelope& bbox, int srid);
 
         /*!
-          \brief It returns the layer type: DATASET_LAYER.
+          \brief It returns the layer type: TIMESERIESDATASETLAYER.
 
-          \return The layer type: DATASET_LAYER.
+          \return The layer type: TIMESERIESDATASETLAYER.
         */
         const std::string& getType() const;
+
+        /*!
+          \brief
+
+          \return
+        */
+        const std::string& getDataSourceId() const;
 
         /*!
           \brief

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2010-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -35,7 +35,7 @@
 namespace te
 {
 
-  namespace da    { class ObjectIdSet; }
+  namespace da    { class ObjectIdSet;  class DataSetType;}
   namespace qt
   {
     namespace widgets
@@ -134,7 +134,7 @@ namespace te
 
             \param oids The identifiers of plotitems to be highlighted.
           */
-          void highlight(const te::da::ObjectIdSet* oids);
+          void highlight(const te::da::ObjectIdSet* oids, te::da::DataSetType* dataType);
 
           /*!
             \brief Highlights the intervals identified by \a point
@@ -157,6 +157,9 @@ namespace te
 
           */
           void setSelectionColor(QColor selColor);
+
+          void setData();
+
 
         private:
 

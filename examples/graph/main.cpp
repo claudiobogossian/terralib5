@@ -32,21 +32,8 @@ int main()
     //-----------------------------------------------------------------------------------------------------
     bool draw = true;
 
-    //run Moran operation
-    Moran();
-
-    //exchange spatial weights files
-    //ExchangeSpatialWeightsFiles(draw);
-
-
-    ////create gpm graph
-    //CreateGPMAdjacencyGraph(draw);
-
-    //CreateGPMDistanceGraph(draw);
-
-
-    ////create ldd graph
-    //CreateLDDGraph(draw);
+    //create ldd graph
+    CreateMSTGraph(draw);
 
     //-----------------------------------------------------------------------------------------------------
 

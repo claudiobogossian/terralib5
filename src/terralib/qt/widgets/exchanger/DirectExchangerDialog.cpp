@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../../../common/StringUtils.h"
 #include "../../../dataaccess/dataset/DataSetAdapter.h"
 #include "../../../dataaccess/dataset/PrimaryKey.h"
 #include "../../../dataaccess/dataset/DataSetTypeConverter.h"
@@ -31,6 +32,7 @@
 #include "../../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../../dataaccess/datasource/DataSourceManager.h"
+#include "../../../dataaccess/datasource/DataSourceTransactor.h"
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../geometry/GeometryProperty.h"
 #include "../../../maptools/DataSetLayer.h"
@@ -181,7 +183,7 @@ bool te::qt::widgets::DirectExchangerDialog::exchangeToFile()
     dsOGR->setConnectionInfo(connInfo);
     dsOGR->open();
 
-    te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter(dsType.get(), dsOGR->getCapabilities());
+    te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter(dsType.get(), dsOGR->getCapabilities(), dsOGR->getEncoding());
 
     te::da::DataSetType* dsTypeResult = converter->getResult();
 
@@ -198,6 +200,70 @@ bool te::qt::widgets::DirectExchangerDialog::exchangeToFile()
     std::string val = uri.stem().string();
 
     dsTypeResult->setName(val);
+
+    // Check dataset name
+    if(!dsOGR->isDataSetNameValid(dsTypeResult->getName()))
+    {
+      int r = QMessageBox::question(this, tr("Exchanger"), tr("Layer name invalid for output datasource. Would you like to normalize the name?"), QMessageBox::Yes, QMessageBox::No);
+
+      if(r == QMessageBox::Yes)
+      {
+        bool aux;
+        std::string newName = te::common::ReplaceSpecialChars(dsTypeResult->getName(), aux);
+        dsTypeResult->setName(newName);
+      }
+      else
+      {
+        throw te::common::Exception(tr("Layer name invalid for output datasource!").toStdString());
+      }
+    }
+
+    // Check properties names
+    std::vector<te::dt::Property* > props = dsTypeResult->getProperties();
+    std::map<std::size_t, std::string> invalidNames;
+    for(std::size_t i = 0; i < props.size(); ++i)
+    {
+      if(!dsOGR->isPropertyNameValid(props[i]->getName()))
+      {
+        invalidNames[i] = props[i]->getName();
+      }
+    }
+
+    if(!invalidNames.empty())
+    {
+      int r = QMessageBox::question(this, tr("Exchanger"), tr("Some property name is invalid for output datasource. Would you like to normalize the name?"), QMessageBox::Yes, QMessageBox::No);
+
+      if(r == QMessageBox::Yes)
+      {
+        std::map<std::size_t, std::string>::iterator it = invalidNames.begin();
+
+        while(it != invalidNames.end())
+        {
+          bool aux;
+          std::string newName = te::common::ReplaceSpecialChars(it->second, aux);
+
+          props[it->first]->setName(newName);
+
+          ++it;
+        }
+      }
+      else
+      {
+        QString err(tr("Some property name is invalid for output datasource:\n\n"));
+
+        std::map<std::size_t, std::string>::iterator it = invalidNames.begin();
+
+        while(it != invalidNames.end())
+        {
+          err.append(" - ");
+          err.append(it->second.c_str());
+
+          ++it;
+        }
+
+        throw te::common::Exception(err.toStdString());
+      }
+    }
 
     //exchange
     std::map<std::string,std::string> nopt;
@@ -273,18 +339,88 @@ bool te::qt::widgets::DirectExchangerDialog::exchangeToDatabase()
     return false;
   }
 
+  std::auto_ptr<te::da::DataSourceTransactor> transactor;
+
   try
   {
+    setCursor(Qt::WaitCursor);
+
     //create adapter
     std::auto_ptr<te::da::DataSetType> dsType = layer->getSchema();
 
     te::da::DataSourcePtr targetDSPtr = te::da::DataSourceManager::getInstance().get(dsInfo->getId(), dsInfo->getType(), dsInfo->getConnInfo()); 
 
-    te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter(dsType.get(), targetDSPtr->getCapabilities());
+    transactor = targetDSPtr->getTransactor();
+
+    te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter(dsType.get(), targetDSPtr->getCapabilities(), targetDSPtr->getEncoding());
 
     te::da::DataSetType* dsTypeResult = converter->getResult();
     
     dsTypeResult->setName(m_ui->m_dataSetLineEdit->text().toStdString());
+
+    // Check dataset name
+    if(!targetDSPtr->isDataSetNameValid(dsTypeResult->getName()))
+    {
+      int r = QMessageBox::question(this, tr("Exchanger"), tr("Layer name invalid for output datasource. Would you like to normalize the name?"), QMessageBox::Yes, QMessageBox::No);
+
+      if(r == QMessageBox::Yes)
+      {
+        bool aux;
+        std::string newName = te::common::ReplaceSpecialChars(dsTypeResult->getName(), aux);
+        dsTypeResult->setName(newName);
+      }
+      else
+      {
+        throw te::common::Exception(tr("Layer name invalid for output datasource!").toStdString());
+      }
+    }
+
+    // Check properties names
+    std::vector<te::dt::Property* > props = dsTypeResult->getProperties();
+    std::map<std::size_t, std::string> invalidNames;
+    for(std::size_t i = 0; i < props.size(); ++i)
+    {
+      if(!targetDSPtr->isPropertyNameValid(props[i]->getName()))
+      {
+        invalidNames[i] = props[i]->getName();
+      }
+    }
+
+    if(!invalidNames.empty())
+    {
+      int r = QMessageBox::question(this, tr("Exchanger"), tr("Some property name is invalid for output datasource. Would you like to normalize the name?"), QMessageBox::Yes, QMessageBox::No);
+
+      if(r == QMessageBox::Yes)
+      {
+        std::map<std::size_t, std::string>::iterator it = invalidNames.begin();
+
+        while(it != invalidNames.end())
+        {
+          bool aux;
+          std::string newName = te::common::ReplaceSpecialChars(it->second, aux);
+
+          props[it->first]->setName(newName);
+
+          ++it;
+        }
+      }
+      else
+      {
+        QString err(tr("Some property name is invalid for output datasource:\n\n"));
+
+        std::map<std::size_t, std::string>::iterator it = invalidNames.begin();
+
+        while(it != invalidNames.end())
+        {
+          err.append(" - ");
+          err.append(it->second.c_str());
+
+          ++it;
+        }
+
+        throw te::common::Exception(err.toStdString());
+      }
+    }
 
     //create index
     if(m_ui->m_spatialIndexCheckBox->isChecked())
@@ -340,19 +476,28 @@ bool te::qt::widgets::DirectExchangerDialog::exchangeToDatabase()
 
     std::auto_ptr<te::da::DataSet> dataset = layer->getData();
 
-    targetDSPtr->createDataSet(dsTypeResult, nopt);
+    transactor->begin();
+
+    transactor->createDataSet(dsTypeResult, nopt);
 
     std::auto_ptr<te::da::DataSetAdapter> dsAdapter(te::da::CreateAdapter(dataset.get(), converter));
 
     dsAdapter->setSRID(layer->getSRID());
 
      if(dataset->moveBeforeFirst())
-       targetDSPtr->add(dsTypeResult->getName(), dsAdapter.get(), targetDSPtr->getConnectionInfo());
+       transactor->add(dsTypeResult->getName(), dsAdapter.get(), targetDSPtr->getConnectionInfo());
 
-    QMessageBox::information(this, tr("Exchanger"), tr("Layer exported successfully."));
+     transactor->commit();
+
+     setCursor(Qt::ArrowCursor);
+     QMessageBox::information(this, tr("Exchanger"), tr("Layer exported successfully."));
   }
   catch(const std::exception& e)
   {
+    setCursor(Qt::ArrowCursor);
+
+    transactor->rollBack();
+
     QString errMsg(tr("Error during exchanger. The reported error is: %1"));
 
     errMsg = errMsg.arg(e.what());

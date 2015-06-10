@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/qt/plugins/vp/AbstractAction.h
+  \file terralib/qt/plugins/layout/AbstractAction.h
 
   \brief This file defines the abstract class AbstractAction
 */
@@ -30,9 +30,9 @@
 #include "Config.h"
 
 // Qt
-#include <QtCore/QObject>
-#include <QtGui/QMenu>
-#include <QtGui/QAction>
+#include <QObject>
+#include <QMenu>
+#include <QAction>
 
 namespace te
 {
@@ -92,7 +92,7 @@ namespace te
             QAction* m_action;    //!< Action used to call the process.
         };
 
-      } // end namespace vp
+      } // end namespace layout
     }   // end namespace plugins
   }     // end namespace qt
 }       // end namespace te

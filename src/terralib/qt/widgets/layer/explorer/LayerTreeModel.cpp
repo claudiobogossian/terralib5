@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -539,7 +539,6 @@ bool te::qt::widgets::LayerTreeModel::removeRows(int row, int count, const QMode
 
     // Finally, remove the item from the tree
     const QList<QObject*>& childrenList = parentItem->children();
-    int numChildren = childrenList.count();
 
     std::vector<QObject*> items;
     for(int i = row; i < row + count; ++i)
@@ -583,7 +582,7 @@ QModelIndex te::qt::widgets::LayerTreeModel::getIndex(AbstractTreeItem* item)
   if(!item)
     return QModelIndex();
 
-  int itemRow;              // The item row
+  int itemRow = 0;              // The item row
   QModelIndex parentIndex;  // The parent index of the item
 
   AbstractTreeItem* parentItem = static_cast<AbstractTreeItem*>(item->parent());

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -27,57 +27,87 @@
 #define __TERRALIB_RP_INTERNAL_CONFIG_H
 
 /*!
+  \defgroup rp_optical Optical Raster Data Processing.
+  \brief Optical Raster Data Processing
+  \ingroup rp
+*/
+
+/*!
+  \defgroup rp_radar Radar Raster Data Processing.
+  \brief Radar Raster Data Processing
+  \ingroup rp
+*/
+
+/*!
   \defgroup rp_class Classification
   \brief Algorithms to detect patterns in raster regions using different methods.
-  \ingroup rp
+  \ingroup rp_optical
 */
 
 /*!
   \defgroup rp_aux Auxiliary classes
   \brief Raster processing auxiliary classes.
-  \ingroup rp
+  \ingroup rp_optical
 */
 
 /*!
   \defgroup rp_func Auxiliary functions.
   \brief Raster processing auxiliary functions.
-  \ingroup rp
+  \ingroup rp_optical
 */
 
 /*!
   \defgroup rp_enh Enhancement
   \brief Raster enhancement algorithms.
-  \ingroup rp
+  \ingroup rp_optical
 */
 
 /*!
   \defgroup rp_mos Mosaic
   \brief Algorithms to merge two or more rasters into a single one.
-  \ingroup rp
+  \ingroup rp_optical
 */
 
 /*!
   \defgroup rp_fus Fusion
   \brief Algorithms to combine pixel information from different sensors to obtain better spatial or radiometric resolutions.
-  \ingroup rp
+  \ingroup rp_optical
 */
 
 /*!
   \defgroup rp_gen General purpose
   \brief General pupose raster processing algorithms.
-  \ingroup rp
+  \ingroup rp_optical
 */
 
 /*!
   \defgroup rp_seg Segmentation
   \brief Techniques for splitting one rasters into its components as homogeneous regions.
-  \ingroup rp
+  \ingroup rp_optical
 */
 
 /*!
   \defgroup rp_match Matching
   \brief Techniques to create tie-points between rasters by matching and correlating homologous regions.
-  \ingroup rp
+  \ingroup rp_optical
+*/
+
+/*!
+  \defgroup rp_radar_func Auxiliary functions.
+  \brief Raster processing auxiliary functions.
+  \ingroup rp_radar
+*/
+
+/*!
+  \defgroup rp_radar_class Classification
+  \brief Algorithms to detect patterns in raster regions using different methods.
+  \ingroup rp_radar
+*/
+
+/*!
+  \defgroup rp_radar_gen General purpose
+  \brief General pupose raster processing algorithms.
+  \ingroup rp_radar
 */
 
 // TerraLib

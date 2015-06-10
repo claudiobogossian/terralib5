@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -28,6 +28,8 @@
   #include "Config.h"
   #include "SegmenterSegmentsBlock.h"
   
+  #include <limits>
+  
   namespace te
   {
     namespace rp
@@ -41,16 +43,16 @@
           \brief Feature type definition.
          */          
         typedef float FeatureType;
+        
+        /*!
+          \brief Feature type definition.
+         */          
+        typedef unsigned short int IterationCounterType;        
           
         /*!
           \brief Segment ID.
         */             
         SegmenterSegmentsBlock::SegmentIdDataType m_id;   
-
-        /*!
-          \brief Segment status (active=true).
-        */                    
-        bool m_status;
         
         /*!
           \brief Segment area (pixels number).
@@ -87,6 +89,16 @@
           \brief The current size of m_neighborSegments.
         */             
         unsigned int m_neighborSegmentsSize;  
+        
+        /*!
+          \brief A pointer to the previous active segment.
+        */             
+        SegmenterRegionGrowingSegment* m_prevActiveSegment;
+        
+        /*!
+          \brief A pointer to the next active segment.
+        */             
+        SegmenterRegionGrowingSegment* m_nextActiveSegment;                 
 
         /*!
           \brief A pionter to a fixed size vector of segment features.
@@ -98,6 +110,12 @@
           \brief The current size of m_features.
         */                     
         unsigned int m_featuresSize;
+
+        /*!
+          \brief The current merge iteration.
+          \note Disabled: std::numeric_limits< SegmenterRegionGrowingSegment::IterationCounterType>::max()
+        */                             
+        IterationCounterType m_mergetIteration;
         
         //overload
         SegmenterRegionGrowingSegment& operator=( const SegmenterRegionGrowingSegment& other );
@@ -116,6 +134,18 @@
           \brief Remove all neighbor segments.
         */             
         void clearNeighborSegments();    
+        
+        /*!
+          \brief Disable this segment ( same as m_mergetIteration = std::numeric_limits< SegmenterRegionGrowingSegment::IterationCounterType>::max() ).
+        */             
+        inline void disable() { m_mergetIteration = std::numeric_limits< IterationCounterType>::max(); };
+        
+        /*!
+          \brief Returns true if this segment is enabled.
+          \returns Returns true if this segment is enabled.          
+        */             
+        inline bool isEnabled() const { return m_mergetIteration != std::numeric_limits< IterationCounterType>::max(); };        
+
       };
     } // namespace rp
   } // namespace te

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -23,18 +23,25 @@
   \brief Utility routines for the TerraLib Application Framework module.
 */
 
+// Boost
+#include <boost/foreach.hpp> // Boost => don't change this include order, otherwise you may have compiling problems! 
+
 // TerraLib
+#include "../../common/BoostUtils.h"
 #include "../../common/PlatformUtils.h"
 #include "../../common/SystemApplicationSettings.h"
 #include "../../common/UserApplicationSettings.h"
+#include "../../dataaccess/datasource/DataSourceInfo.h"
+#include "../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../dataaccess/serialization/xml/Serializer.h"
 #include "../../maptools/AbstractLayer.h"
 #include "../../plugin/PluginManager.h"
 #include "../../plugin/PluginInfo.h"
 #include "../../maptools/serialization/xml/Layer.h"
+#include "../../xml/AbstractWriter.h"
+#include "../../xml/AbstractWriterFactory.h"
 #include "../../xml/Reader.h"
 #include "../../xml/ReaderFactory.h"
-#include "../../xml/Writer.h"
 #include "../../Version.h"
 #include "ApplicationController.h"
 #include "Exception.h"
@@ -48,10 +55,11 @@
 #include <memory>
 
 // Boost
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
+#include <boost/algorithm/string/replace.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/format.hpp>
-#include <boost/property_tree/ptree.hpp>
-#include <boost/algorithm/string/replace.hpp>
 
 // Qt
 #include <QDir>
@@ -64,6 +72,7 @@
 #include <QMainWindow>
 #include <QMessageBox>
 #include <QToolBar>
+
 
 te::qt::af::Project* te::qt::af::ReadProject(const std::string& uri)
 {
@@ -123,7 +132,30 @@ te::qt::af::Project* te::qt::af::ReadProject(te::xml::Reader& reader)
     reader.next(); // End element
   }
 
+  //read data source list from this project
   reader.next();
+
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "DataSourceList");
+  
+  reader.next();
+
+  // DataSourceList contract form
+  if(reader.getNodeType() == te::xml::END_ELEMENT &&
+    reader.getElementLocalName() == "DataSourceList")
+  {
+    reader.next();
+  }
+
+  while((reader.getNodeType() == te::xml::START_ELEMENT) &&
+        (reader.getElementLocalName() == "DataSource"))
+  {
+    te::da::DataSourceInfoPtr ds(te::serialize::xml::ReadDataSourceInfo(reader));
+    te::da::DataSourceInfoManager::getInstance().add(ds);
+  }
+
+  //end read data source list
+
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "ComponentList");
   reader.next(); // End element
@@ -161,6 +193,16 @@ te::qt::af::Project* te::qt::af::ReadProject(te::xml::Reader& reader)
 
 void te::qt::af::Save(const te::qt::af::Project& project, const std::string& uri)
 {
+
+  std::auto_ptr<te::xml::AbstractWriter> writer(te::xml::AbstractWriterFactory::make());
+
+  writer->setURI(uri);
+
+  Project p(project);
+
+  Save(p, *writer.get());
+
+  /* old way
   std::ofstream fout(uri.c_str(), std::ios_base::trunc);
 
   te::xml::Writer w(fout);
@@ -173,15 +215,15 @@ void te::qt::af::Save(const te::qt::af::Project& project, const std::string& uri
 
   XMLFormatter::format(&p, false);
 
-  fout.close();
+  fout.close();*/
 }
 
-void te::qt::af::Save(const te::qt::af::Project& project, te::xml::Writer& writer)
+void te::qt::af::Save(const te::qt::af::Project& project, te::xml::AbstractWriter& writer)
 {
   std::string schema_loc = te::common::FindInTerraLibPath("share/terralib/schemas/terralib/qt/af/project.xsd");
 
   writer.writeStartDocument("UTF-8", "no");
-
+  
   writer.writeStartElement("Project");
 
   boost::replace_all(schema_loc, " ", "%20");
@@ -202,6 +244,59 @@ void te::qt::af::Save(const te::qt::af::Project& project, te::xml::Writer& write
   writer.writeElement("Title", project.getTitle());
   writer.writeElement("Author", project.getAuthor());
 
+  //write data source list 
+  writer.writeStartElement("te_da:DataSourceList");
+
+  writer.writeAttribute("xmlns:te_common", "http://www.terralib.org/schemas/common");
+
+  te::da::DataSourceInfoManager::iterator itBegin = te::da::DataSourceInfoManager::getInstance().begin();
+  te::da::DataSourceInfoManager::iterator itEnd = te::da::DataSourceInfoManager::getInstance().end();
+  te::da::DataSourceInfoManager::iterator it;
+
+  for(it=itBegin; it!=itEnd; ++it)
+  {
+    bool ogrDsrc = it->second->getAccessDriver() == "OGR";
+
+    writer.writeStartElement("te_da:DataSource");
+
+    writer.writeAttribute("id", it->second->getId());
+    writer.writeAttribute("type", it->second->getType());
+    writer.writeAttribute("access_driver", it->second->getAccessDriver());
+
+    writer.writeStartElement("te_da:Title");
+    writer.writeValue((!ogrDsrc) ? it->second->getTitle() : te::common::ConvertLatin1UTFString(it->second->getTitle()));
+    writer.writeEndElement("te_da:Title");
+
+    writer.writeStartElement("te_da:Description");
+    writer.writeValue((!ogrDsrc) ? it->second->getDescription() : te::common::ConvertLatin1UTFString(it->second->getDescription()));
+    writer.writeEndElement("te_da:Description");
+
+    writer.writeStartElement("te_da:ConnectionInfo");
+    std::map<std::string, std::string> info = it->second->getConnInfo();
+    std::map<std::string, std::string>::iterator conIt;
+
+    for(conIt=info.begin(); conIt!=info.end(); ++conIt)
+    {
+      writer.writeStartElement("te_common:Parameter");
+
+      writer.writeStartElement("te_common:Name");
+      writer.writeValue(conIt->first);
+      writer.writeEndElement("te_common:Name");
+
+      writer.writeStartElement("te_common:Value");
+      writer.writeValue((ogrDsrc && (conIt->first == "URI" || conIt->first == "SOURCE")) ? te::common::ConvertLatin1UTFString(conIt->second) : conIt->second);
+      writer.writeEndElement("te_common:Value");
+
+      writer.writeEndElement("te_common:Parameter");
+    }
+    writer.writeEndElement("te_da:ConnectionInfo");
+
+    writer.writeEndElement("te_da:DataSource");
+  }
+
+  writer.writeEndElement("te_da:DataSourceList");
+  //end write
+
   writer.writeStartElement("ComponentList");
   writer.writeEndElement("ComponentList");
 
@@ -217,6 +312,9 @@ void te::qt::af::Save(const te::qt::af::Project& project, te::xml::Writer& write
   writer.writeEndElement("te_map:LayerList");
 
   writer.writeEndElement("Project");
+
+  writer.writeToFile();
+
 }
 
 void te::qt::af::UpdateUserSettings(const QStringList& prjFiles, const QStringList& prjTitles, const std::string& userConfigFile)
@@ -255,6 +353,9 @@ void te::qt::af::UpdateUserSettings(const QStringList& prjFiles, const QStringLi
   user_settings.remove("plugins/enabled");
   
   user_settings.beginGroup("plugins");
+  user_settings.remove("enabled");
+  user_settings.remove("unloaded");
+  user_settings.remove("broken");
   
   user_settings.beginWriteArray("enabled");
   
@@ -269,6 +370,38 @@ void te::qt::af::UpdateUserSettings(const QStringList& prjFiles, const QStringLi
     
     user_settings.setArrayIndex(aidx++);
     
+    user_settings.setValue("name", plugins[i].c_str());
+  }
+
+  user_settings.endArray();
+
+  // save unloaded plugins
+  user_settings.beginWriteArray("unloaded");
+
+  int unloadedidx = 0;
+
+  for (std::size_t i = 0; i != plugins.size(); ++i)
+  {
+    if (!te::plugin::PluginManager::getInstance().isUnloadedPlugin(plugins[i]))
+      continue;
+
+    user_settings.setArrayIndex(unloadedidx++);
+    user_settings.setValue("name", plugins[i].c_str());
+  }
+
+  user_settings.endArray();
+
+  // save broken plugins
+  user_settings.beginWriteArray("broken");
+
+  int brokenidx = 0;
+
+  for (std::size_t i = 0; i != plugins.size(); ++i)
+  {
+    if (!te::plugin::PluginManager::getInstance().isBrokenPlugin(plugins[i]))
+      continue;
+
+    user_settings.setArrayIndex(brokenidx++);
     user_settings.setValue("name", plugins[i].c_str());
   }
   
@@ -678,6 +811,28 @@ std::vector<std::string> te::qt::af::GetPluginsFiles()
   return res;
 }
 
+std::vector<std::string> te::qt::af::GetDefaultPluginsNames()
+{
+  std::vector<std::string> res;
+
+// Finding the Default plugins file.
+  std::string pluginsPath = te::qt::af::ApplicationController::getInstance().getAppPluginsPath().toStdString();
+
+  if (pluginsPath == "")
+    return res;
+
+// Reading JSON
+  boost::property_tree::ptree pt;
+  boost::property_tree::json_parser::read_json(pluginsPath, pt);
+
+  BOOST_FOREACH(boost::property_tree::ptree::value_type &v, pt.get_child("plugins"))
+  {
+    res.push_back(v.second.get<std::string>("plugin"));
+  }
+
+  return res;
+}
+
 std::vector<std::string> te::qt::af::GetPluginsNames(const std::vector<std::string>& plgFiles)
 {
   std::vector<std::string> res;
@@ -740,7 +895,11 @@ void te::qt::af::UpdateUserSettingsFile(const QString& fileName, const bool& rem
 
   if(!info.exists())
   {
+#if BOOST_VERSION > 105600
+    boost::property_tree::xml_writer_settings<std::string> settings('\t', 1);
+#else
     boost::property_tree::xml_writer_settings<char> settings('\t', 1);
+#endif
     boost::property_tree::write_xml(fileName.toStdString(), usrSett.getAllSettings(), std::locale(), settings);
   }
 
@@ -768,7 +927,11 @@ void te::qt::af::WriteDefaultProjectFile(const QString& fileName)
   p.add("Project.te_map:LayerList", "");
 
   //Store file
+#if BOOST_VERSION > 105600
+  boost::property_tree::xml_writer_settings<std::string> settings('\t', 1);
+#else
   boost::property_tree::xml_writer_settings<char> settings('\t', 1);
+#endif
   boost::property_tree::write_xml(fileName.toStdString(), p, std::locale(), settings);
 }
 
@@ -786,4 +949,32 @@ QString te::qt::af::GetGenerationDate()
   f.close();
 
   return s;
+}
+
+QString te::qt::af::GetWindowTitle(const te::qt::af::Project& project)
+{
+  QString title = te::qt::af::ApplicationController::getInstance().getAppTitle() + " - ";
+  title += TE_TR("Project:");
+  title += " ";
+  title += project.getTitle().c_str();
+  title += " - ";
+
+  boost::filesystem::path p(project.getFileName());
+
+  std::string filename = p.filename().string();
+
+  title += filename.c_str();
+
+  return title;
+}
+
+QString te::qt::af::GetExtensionFilter()
+{
+  QString appName = te::qt::af::ApplicationController::getInstance().getAppName();
+  QString appProjectExtension = te::qt::af::ApplicationController::getInstance().getAppProjectExtension();
+  QString extensionFilter = appName;
+  extensionFilter += QString(" (*.");
+  extensionFilter += appProjectExtension + ")";
+
+  return extensionFilter;
 }

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -95,7 +95,7 @@ te::plugin::PluginInfo& operator<<(te::plugin::PluginInfo& pInfo, te::xml::Reade
 
   if(xmlReader.hasAttrs())
   {
-    pInfo.m_licenseURL = xmlReader.getAttr(0);
+    pInfo.m_licenseURL = xmlReader.getAttr("xlink:href");
   }
 
   xmlReader.next();
@@ -122,7 +122,7 @@ te::plugin::PluginInfo& operator<<(te::plugin::PluginInfo& pInfo, te::xml::Reade
 
   if(xmlReader.hasAttrs())
   {
-    pInfo.m_site = xmlReader.getAttr(0);
+    pInfo.m_site = xmlReader.getAttr("xlink:href");
   }
   xmlReader.next();
   assert(xmlReader.getNodeType() == te::xml::END_ELEMENT); // End of Site element
@@ -148,7 +148,7 @@ te::plugin::PluginInfo& operator<<(te::plugin::PluginInfo& pInfo, te::xml::Reade
 
   if(xmlReader.hasAttrs())
   {
-    pInfo.m_provider.m_site = xmlReader.getAttr(0);
+    pInfo.m_provider.m_site = xmlReader.getAttr("xlink:href");
   }
   xmlReader.next();
   assert(xmlReader.getNodeType() == te::xml::END_ELEMENT); // End of Provider/Site element

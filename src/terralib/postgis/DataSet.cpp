@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -412,8 +412,18 @@ std::string te::pgis::DataSet::getNumeric(std::size_t i) const
     te::common::SwapBytes(n);
 #endif
 
-    intVal += te::common::Convert2String(n);
+    std::string v = te::common::Convert2String(n);
+    if(intVal.empty() == false)
+    {
+      if(n < 10)
+        v = "000" + v;
+      else if(n < 100)
+        v = "00" + v;
+      else if(n < 1000)
+        v = "0" + v;
+    }
 
+    intVal += v;
     ii += 2;
   }
 

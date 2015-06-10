@@ -1,4 +1,4 @@
-/*  Copyright (C) 2010-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -67,10 +67,10 @@ namespace te
           */
           ~Histogram();
 
-            /*!
+          /*!
             \brief It returns the histogram's type.  
 
-            \return And int that represents the histogram's type.  
+            \return An int that represents the histogram's type.  
           */
           int& getType();
       
@@ -82,12 +82,35 @@ namespace te
           void setType(int new_type);
 
           /*!
+            \brief It returns a boolean that holds whether the histogram has been created from summarized values or not
+
+            \return A boolean that holds whether the histogram has been created from summarized values or not
+          */
+          bool isSummarized();
+      
+          /*!
+            \brief It sets the property that holds whether the histogram has been created from summarized values or not
+
+            \param summarized A boolean that holds whether the histogram has been created from summarized values or not
+          */
+          void setSummarized(bool summarized);
+
+          /*!
             \brief It returns the map containing the histogram values. 
                    The key is the minimum values of the histogram's interval, and the unsigned int is the frequency of that interval.
 
             \return A  map containing the histogram values. 
           */
           std::map<double, unsigned int> getValues();
+
+          /*!
+            \brief It sets the histogram's values. 
+
+            \param values The new values.
+            /note Any current data will be lost.
+            /noter The ObjectIds will have to be manually adjusted later.
+          */
+          void setValues(std::map<te::dt::AbstractData*, unsigned int> values);
 
           /*!
             \brief It returns the map containing the histogram String values. 
@@ -181,6 +204,11 @@ namespace te
           void insert(te::dt::AbstractData* interval, unsigned int frequency);
 
            /*!
+            \brief A function used to clear the contents of the histogram, deleting the pointers contained by the boost containers used to store the histogram's data.
+          */
+          void clear();
+
+           /*!
             \brief It returns an ObjectIdSet containing all the object Ids associeted with the given interval.
 
             \param interval The interval that will be searched.
@@ -205,6 +233,7 @@ namespace te
             \brief It returns an AbstractData representing the interval that contains the given ObjectId
 
             \param oid The ObjectId that will be searched.
+            \note Returns NULL if no matching interval was found
           */
           const te::dt::AbstractData* find(const te::da::ObjectId* oid);
 
@@ -218,12 +247,13 @@ namespace te
 
         private:
 
-          int                                    m_histogramType;    //!< Histogram's type
-          HistogramValues                        m_values;           //!< Histogram's values;
-          double                                 m_minValue;         //!< Histogram's minimum numeric value
-          double                                 m_interval;         //!< Histogram's numeric interval
-          std::set <std::string>                 m_StringIntervals;  //!< Histogram unique strings set, represents string intervals
-          IntervalToObjectIdSet                  m_valuesOids;       //!< The intervals and ObjecIds ordered in a boost multi index container
+          bool                    m_isSummarized;     //!< This property holds whether the histogram has been created from summarized values or not
+          int                     m_histogramType;    //!< Histogram's type
+          double                  m_minValue;         //!< Histogram's minimum numeric value
+          double                  m_interval;         //!< Histogram's numeric interval
+          std::set <std::string>  m_StringIntervals;  //!< Histogram unique strings set, represents string intervals
+          HistogramValues         m_values;           //!< Histogram's values;
+          IntervalToObjectIdSet   m_valuesOids;       //!< The intervals and ObjecIds ordered in a boost multi index container
       };
     } // end namespace widgets
   }   // end namespace qt

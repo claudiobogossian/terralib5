@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -36,6 +36,7 @@
 #include "QueryDialog.h"
 #include "WhereClauseWidget.h"
 #include "ui_QueryDialogForm.h"
+#include "ui_WhereClauseWidgetForm.h"
 
 // Qt
 #include <QGridLayout>
@@ -168,6 +169,7 @@ void te::qt::widgets::QueryDialog::layerSelected(te::map::AbstractLayerPtr layer
 
 void te::qt::widgets::QueryDialog::layerAdded(te::map::AbstractLayerPtr layer)
 {
+  //add layer to input layer combo box
   te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(layer.get());
 
   if(dsLayer)
@@ -184,10 +186,15 @@ void te::qt::widgets::QueryDialog::layerAdded(te::map::AbstractLayerPtr layer)
 
     onInputLayerActivated(s);
   }
+
+  //add layer to spatial layer combo box
+  if(dsLayer)
+    m_whereClauseWidget->getForm()->m_layerComboBox->addItem(layer->getTitle().c_str(), QVariant::fromValue(layer));
 }
 
 void te::qt::widgets::QueryDialog::layerRemoved(te::map::AbstractLayerPtr layer)
 {
+  //remove layer from input layer combo box
   int curIdx = m_ui->m_inputLayerComboBox->currentIndex();
 
   for(int i = 0; i < m_ui->m_inputLayerComboBox->count(); ++i)
@@ -214,6 +221,20 @@ void te::qt::widgets::QueryDialog::layerRemoved(te::map::AbstractLayerPtr layer)
           m_whereClauseWidget->resetInterface();
         }
       }
+    }
+  }
+
+  //remove layer from spatial layer combo box
+  curIdx = m_whereClauseWidget->getForm()->m_layerComboBox->currentIndex();
+
+  for(int i = 0; i < m_whereClauseWidget->getForm()->m_layerComboBox->count(); ++i)
+  {
+    QVariant varLayer = m_whereClauseWidget->getForm()->m_layerComboBox->itemData(i, Qt::UserRole);
+    te::map::AbstractLayerPtr l = varLayer.value<te::map::AbstractLayerPtr>();
+
+    if(l == layer)
+    {
+      m_whereClauseWidget->getForm()->m_layerComboBox->removeItem(i);
     }
   }
 }
@@ -368,6 +389,8 @@ void te::qt::widgets::QueryDialog::onApplyPushButtonClicked()
       dataset->moveBeforeFirst();
       te::da::ObjectIdSet* oids = te::da::GenerateOIDSet(dataset.get(), schema.get());
 
+      oids->setExpression(wh->getExp()->clone(), false);
+
       layer->clearSelected();
       layer->select(oids);
 
@@ -378,6 +401,8 @@ void te::qt::widgets::QueryDialog::onApplyPushButtonClicked()
       // Generates the oids
       dataset->moveBeforeFirst();
       te::da::ObjectIdSet* oids = te::da::GenerateOIDSet(dataset.get(), schema.get());
+
+      oids->setExpression(wh->getExp()->clone(), false);
 
       layer->select(oids);
 

@@ -57,18 +57,13 @@
 <context>
     <name>te::qt::plugins::wfs::WFSConnector</name>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/wfs/WFSConnector.cpp" line="72"/>
-        <location filename="../../../src/terralib/qt/plugins/datasource/wfs/WFSConnector.cpp" line="79"/>
-        <location filename="../../../src/terralib/qt/plugins/datasource/wfs/WFSConnector.cpp" line="86"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/wfs/WFSConnector.cpp" line="71"/>
         <source>TerraLib Qt Components</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/wfs/WFSConnector.cpp" line="73"/>
-        <location filename="../../../src/terralib/qt/plugins/datasource/wfs/WFSConnector.cpp" line="80"/>
-        <location filename="../../../src/terralib/qt/plugins/datasource/wfs/WFSConnector.cpp" line="87"/>
-        <source>Not implemented yet!
-We will provide it soon!</source>
+        <location filename="../../../src/terralib/qt/plugins/datasource/wfs/WFSConnector.cpp" line="71"/>
+        <source>The WFS data access driver not support creation operation.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

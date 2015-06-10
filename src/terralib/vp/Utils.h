@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -60,6 +60,14 @@ namespace te
     te::gm::GeomType GeomOpResultType(te::gm::GeomType firstGeom, te::gm::GeomType secondGeom);
     
     te::gm::GeomType GeomOpResultType(te::gm::GeomType firstGeom);
+
+    void Save(te::da::DataSource* source, te::da::DataSet* result, te::da::DataSetType* outDsType);
+
+    void Multi2Single(te::gm::Geometry* g, std::vector<te::gm::Geometry*>& geoms);
+
+    bool IsMultiType(te::gm::GeomType geomType);
+
+    te::gm::GeomType GetSimpleType(te::gm::GeomType geomType);
 
   } // end namespace vp
 }   // end namespace te

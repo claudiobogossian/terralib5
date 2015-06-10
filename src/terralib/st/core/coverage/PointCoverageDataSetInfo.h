@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -54,113 +54,24 @@ namespace te
         /*! 
           \brief Constructor.
           
-          A user must use this constructor when the DataSet has a property that contain a date and time
-          associated to each observation.
-
-          \param dsinfo     Infos about the DataSource. 
-          \param dsName     The DataSet name.   
-          \param tPropIdx   The property index that contains the times associated to the coverage observations.
-          \param ptPropIdx  The property index that contains the points associated to the coverage observations.
-          \param vlPropIdx  The property index that contains the values of the coverage. 
-          \param time       The date and time associated to the entire point coverage.
-        */
-        PointCoverageDataSetInfo(const te::da::DataSourceInfo& dsinfo, const std::string& dsName, 
-                              int tPropIdx, int ptPropIdx, int vlPropIdx, te::dt::DateTime* time);
-
-        /*! 
-          \brief Constructor.
-
-          A user must use this constructor when the DataSet has NOT a property that contain a date and time
-          associated to each observation.
-          
-          \param dsinfo     Infos about the DataSource. 
-          \param dsName     The DataSet name.   
-          \param ptPropIdx  The property index that contains the points associated to the coverage.
-          \param vlPropIdx  The property index that contains the values of the coverage.  
-          \param time       The date and time associated to the entire point coverage.
-
-          \note It will take the ownership of the given pointers.
-        */
-        PointCoverageDataSetInfo(const te::da::DataSourceInfo& dsinfo, const std::string& dsName, 
-                              int ptPropIdx, int vlPropIdx, te::dt::DateTime* time);
-
-        /*! 
-          \brief Constructor.
-
-          A user must use this constructor when the DataSet has a property that contain a date and time
-          associated to each observation.
-          
-          \param dsinfo     Infos about the DataSource. 
-          \param dsName     The DataSet name.   
-          \param tPropIdx   The property indexes that contains the times associated to the coverage observations.
-          \param ptPropIdx  The property index that contains the points associated to the coverage observations.
-          \param vlPropIdx  The property index that contains the values of the coverage observations.  
-          \param time       The date and time associated to the entire point coverage.
-        */
-        PointCoverageDataSetInfo(const te::da::DataSourceInfo& dsinfo, const std::string& dsName, 
-                              const std::vector<int>& tPropIdx, int ptPropIdx, const std::vector<int>& vlPropIdx, te::dt::DateTime* time);
-
-        /*! 
-          \brief Constructor.
-
-          A user must use this constructor when the DataSet has NOT a property that contain a date and time
-          associated to each observation.
-          
-          \param dsinfo     Infos about the DataSource. 
-          \param dsName     The DataSet name.   
-          \param ptPropIdx  The property index that contains the points associated to the coverage observations.
-          \param vlPropIdx  The property index that contains the values of the coverage observations.  
-          \param time       The date and time associated to the entire point coverage.
-
-          \note It will take the ownership of the given pointers.
-        */
-        PointCoverageDataSetInfo(const te::da::DataSourceInfo& dsinfo, const std::string& dsName, 
-                              int ptPropIdx, const std::vector<int>& vlPropIdx, te::dt::DateTime* time);
-        
-        /*! 
-          \brief Constructor.
-          
           \param info       Infos about the DataSource and DataSet that contains the coverage observations    
-          \param vlPropIdx  The property index that contains the values of the coverage.  
-          \param time       The date and time associated to the entire point coverage.
-
-          \note It will take the ownership of the given pointers.
+          \param vlPropNames  The property names that contains the values of the coverage.  
         */
-        PointCoverageDataSetInfo( const ObservationDataSetInfo& info, const std::vector<int>& vlPropIdxs, 
-                                  te::dt::DateTime* time);
+        PointCoverageDataSetInfo(const ObservationDataSetInfo& info, const std::vector<std::string>& vlPropNames);
                 
          /*! \name Inhered methods*/
         //@{        
         te::st::CoverageType getCoverageType() const ;
         
         const ObservationDataSetInfo& getObservationDataSetInfo() const;
-        
-        const te::da::DataSourceInfo& getDataSourceInfo() const;
-        
-        const std::vector<int>& getTimePropIdxs() const;
         //@}
 
         /*!
-          \brief It returns the property index that contains the points of the coverage. 
+          \brief It returns the property names that contains the values of the coverage. 
 
-          \return The property index that contains the points of the coverage. 
+          \return The property names that contains the values of the coverage. 
         */
-        int getPointPropIdx() const;
-        
-        /*!
-          \brief It returns the property indexes that contains the values of the coverage. 
-
-          \return The property indexes that contains the values of the coverage. 
-        */
-        const std::vector<int>& getValuePropIdxs() const;
-        
-        /*!
-          \brief It returns the date and time associated to the entire point coverage.
-
-          \return The date and time associated to the point coverage. 
-        */
-        std::auto_ptr<te::dt::DateTime> getTime() const;
-
+        const std::vector<std::string>& getValuePropNames() const;
         
         /*! \brief Virtual destructor. */
         virtual ~PointCoverageDataSetInfo(); 
@@ -168,8 +79,7 @@ namespace te
       protected:
 
         ObservationDataSetInfo          m_obsDsInfo;  //!< Infos about the DataSource and DataSet that contains the point coverage observations    
-        std::vector<int>                m_vlPropIdx;  //!< The indexes of the properties that contain the point coverage values. 
-        std::auto_ptr<te::dt::DateTime> m_time;    //! The date and time associated to this point coverage, when this information is not in the DataSet
+        std::vector<std::string>        m_vlPropNames;  //!< The names of the properties that contain the point coverage values. 
      };
   } // end namespace st
 }   // end namespace te

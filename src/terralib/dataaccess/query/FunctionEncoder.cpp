@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -30,24 +30,46 @@
 
 // STL
 #include <cassert>
+#include <string>
 
 void te::da::FunctionEncoder::toSQL(const Function& f,
                                     std::string& buff,
                                     SQLVisitor& v) const
 {
   size_t size = f.getNumArgs();
-  buff += m_name;
-  buff += "(";
 
-  for(size_t i = 0; i < size; ++i)
+  if(m_name.compare("st_dump") != 0 && m_name.compare("st_dumprings") != 0)
   {
-    if(i != 0)
-      buff += ", ";
+    buff += m_name;
+    buff += "(";
 
-    assert(f[i]);
-    f[i]->accept(v);
+    for(size_t i = 0; i < size; ++i)
+    {
+      if(i != 0)
+        buff += ", ";
+
+      assert(f[i]);
+      f[i]->accept(v);
+    }
+
+    buff += ")";
   }
+  else
+  {
+    buff += "(";
+    buff += m_name;
+    buff += "(";
 
-  buff += ")";
+    for(size_t i = 0; i < size; ++i)
+    {
+      if(i != 0)
+        buff += ", ";
+
+      assert(f[i]);
+      f[i]->accept(v);
+    }
+
+    buff += ")).geom";
+  }
 }
 

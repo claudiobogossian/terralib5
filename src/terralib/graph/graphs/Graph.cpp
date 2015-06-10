@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -49,11 +49,11 @@
 // STL Includes
 #include <cassert>
 
-te::graph::Graph::Graph() : AbstractGraph(), 
-  m_graphData(0),
+te::graph::Graph::Graph() : AbstractGraph(),
   m_dataManager(0),
   m_graphCache(0), 
-  m_metadata(0)
+  m_metadata(0),
+  m_graphData(0)
 {
 }
 
@@ -70,11 +70,11 @@ te::graph::Graph::Graph(GraphMetadata* metadata):
 }
 
 te::graph::Graph::Graph(AbstractCachePolicy* cp, AbstractGraphLoaderStrategy* ls): 
-  AbstractGraph(), 
-  m_graphData(0),
+  AbstractGraph(),
   m_dataManager(0),
   m_graphCache(0), 
-  m_metadata(0)
+  m_metadata(0),
+  m_graphData(0)
 {
   assert(ls);
 

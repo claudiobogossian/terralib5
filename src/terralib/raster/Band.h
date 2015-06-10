@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -208,10 +208,11 @@ namespace te
         /*!
           \brief It computes and returns the minimum occurring value in a window of the band.
 
-          \param rs The starting row.
-          \param cs The starting column.
-          \param rf The final row.
-          \param cf The final column.
+          \param readall     Force the reading the entire image (can be slow). If false, will read up to 1000 pixels of the image, equally spaced.
+          \param rs          The starting row.
+          \param cs          The starting column.
+          \param rf          The final row.
+          \param cf          The final column.
 
           \note This method without parameters will compute for the entire image.
 
@@ -219,15 +220,16 @@ namespace te
 
           \return The minimum occurring value in the window, real and imaginary (if present).
         */
-        virtual std::complex<double> getMinValue(unsigned int rs = 0, unsigned int cs = 0, unsigned int rf = 0, unsigned int cf = 0) const;
+        virtual std::complex<double> getMinValue(bool readall = false, unsigned int rs = 0, unsigned int cs = 0, unsigned int rf = 0, unsigned int cf = 0) const;
 
         /*!
           \brief It computes and returns the maximum occurring value in a window of the band.
 
-          \param rs The starting row.
-          \param cs The starting column.
-          \param rf The final row.
-          \param cf The final column.
+          \param readall     Force the reading the entire image (can be slow). If false, will read up to 1000 pixels of the image, equally spaced.
+          \param rs          The starting row.
+          \param cs          The starting column.
+          \param rf          The final row.
+          \param cf          The final column.
 
           \note This method without parameters will compute for the entire raster band.
 
@@ -235,7 +237,7 @@ namespace te
 
           \return The maximum occurring value in the window, real and imaginary (if present).
         */
-        virtual std::complex<double> getMaxValue(unsigned int rs = 0, unsigned int cs = 0, unsigned int rf = 0, unsigned int cf = 0) const;
+        virtual std::complex<double> getMaxValue(bool readall = false, unsigned int rs = 0, unsigned int cs = 0, unsigned int rf = 0, unsigned int cf = 0) const;
 
         /*!
           \brief It computes and returns the standard deviation of the occurring values in a window of the band.

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -45,6 +45,7 @@
 
 // Forward declarations
 class QAction;
+class QActionGroup;
 class QImage;
 class QMenu;
 class QMenuBar;
@@ -187,6 +188,26 @@ namespace te
       */
       TEQTWIDGETSEXPORT QAction* FindAction(const QString& actText, QMenuBar* mnuBar);
 
+      /*!
+        \brief
+
+        \param
+        \param
+
+        \return
+      */
+      TEQTWIDGETSEXPORT QActionGroup* FindActionGroup(const QString& actGroupText, QMenu* mnu);
+
+      /*!
+        \brief
+
+        \param
+        \param
+
+        \return
+      */
+      TEQTWIDGETSEXPORT QActionGroup* FindActionGroup(const QString& actText, QMenuBar* mnuBar);
+
        /*!
         \brief It converts a Qt Color to TerraLib Color.
 
@@ -290,6 +311,13 @@ namespace te
         \return The converted string.
       */
       TEQTWIDGETSEXPORT QString Convert2Qt(const std::string& text, const te::common::CharEncoding& encoding);
+      
+      /*!
+        \brief Returns a disk raster file selection filter base on current supported formats.
+
+        \return Returns a disk raster file selection filter base on current supported formats.
+      */
+      TEQTWIDGETSEXPORT QString GetDiskRasterFileSelFilter();      
 
     } // end namespace widgets
   }   // end namespace qt

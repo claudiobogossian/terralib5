@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -74,6 +74,8 @@ namespace te
 
           std::map<std::string, std::string> getInfo() const;
 
+          std::map<std::string, std::string> getInfo(int count) const;
+
           std::auto_ptr<te::da::DataSource> getDataSource() const;
 
           std::string getName() const;
@@ -91,6 +93,8 @@ namespace te
         protected:
 
           std::string getBaseName() const;
+
+          void fillExtensions();
 
         protected slots:
 

@@ -108,7 +108,7 @@ void saveUsingOGR(const std::string& filename, const std::string drivername)
   te::gm::GeometryProperty* prop03 = new te::gm::GeometryProperty("location", 0, te::gm::PointType, true);
   prop03->setSRID(4618);
   
-  te::dt::DateTimeProperty* prop04 = new te::dt::DateTimeProperty( "date", te::dt::DATE, te::dt::UNKNOWN, true);
+  te::dt::DateTimeProperty* prop04 = new te::dt::DateTimeProperty( "date", te::dt::DATE, true);
   
   te::dt::NumericProperty*  prop05 = new te::dt::NumericProperty("value", 7, 4, true);
   

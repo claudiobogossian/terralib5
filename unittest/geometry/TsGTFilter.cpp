@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -20,11 +20,6 @@
 // Unit-Test TerraLib
 #include "TsGTFilter.h"
 #include "../Config.h"
-
-// TerraLib
-#include <terralib/geometry/GTParameters.h>
-#include <terralib/geometry/GTFactory.h>
-#include <terralib/geometry/GTFilter.h>
 
 #include <cmath> 
 

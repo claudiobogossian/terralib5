@@ -1,4 +1,4 @@
-/*  Copyright (C) 2010-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -60,7 +60,7 @@
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
-//Utility functions used mainly to pupulate ui elements.
+//Utility functions used mainly to populate ui elements.
 void buidTypeMap(std::map<int, std::string>& typeMap)
 {
   typeMap.clear();
@@ -113,7 +113,7 @@ te::dt::SimpleProperty* getConvertedproperty(std::string name, int dataType, std
 
     case te::dt::DATETIME_TYPE:
     {
-      newProperty = new te::dt::DateTimeProperty(name, te::dt::DATE, te::dt::UNKNOWN, isRequired, new std::string(defaultValue));
+      newProperty = new te::dt::DateTimeProperty(name, te::dt::DATE, isRequired, new std::string(defaultValue));
       break;
     }
         
@@ -176,6 +176,11 @@ te::qt::widgets::DatapPropertiesWidget::DatapPropertiesWidget(QWidget* parent, Q
 te::qt::widgets::DatapPropertiesWidget::~DatapPropertiesWidget()
 {
   m_typeMap.clear();
+}
+
+Ui::DataPropertiesWidgetForm* te::qt::widgets::DatapPropertiesWidget::getForm() const
+{
+  return m_ui.get();
 }
 
 std::auto_ptr<te::da::DataSetTypeConverter> te::qt::widgets::DatapPropertiesWidget::getConverter()
@@ -315,7 +320,7 @@ void te::qt::widgets::DatapPropertiesWidget::onInputDataToolButtonTriggered()
     //The table will display 5 rows of the data for previewing purposes
     std::auto_ptr<te::mem::DataSet> memFeature((new te::mem::DataSet(*m_dataSet.get(), properties, 5)));
 
-    m_tblView->setDataSet(memFeature.release());
+    m_tblView->setDataSet(memFeature.release(), m_dataSource->getEncoding());
     m_tblView->resizeColumnsToContents();
     m_tblView->show();
 
@@ -424,6 +429,7 @@ void te::qt::widgets::DatapPropertiesWidget::onInputDataToolButtonTriggered()
         m_ui->m_yAxisComboBox->addItem(QString::fromStdString(propName));
       }
     }
+    emit itemChanged();
   }
   catch(const std::exception& e)
   {

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -27,9 +27,13 @@
 #include "../common/Logger.h"
 #include "../common/TerraLib.h"
 #include "../common/Translator.h"
+#include "AbstractLayerRendererFactory.h"
+#include "DataSetLayerRendererFactory.h"
 #include "Config.h"
 #include "Module.h"
 #include "QueryEncoder.h"
+#include "QueryLayerRendererFactory.h"
+#include "RasterLayerRendererFactory.h"
 
 const te::map::Module& sm_module = te::map::Module::getInstance();
 
@@ -51,6 +55,12 @@ te::map::Module::~Module()
 
 void te::map::Module::initialize()
 {
+// initialize renderers
+  AbstractLayerRendererFactory::initialize();
+  DataSetLayerRendererFactory::initialize();
+  QueryLayerRendererFactory::initialize();
+  RasterLayerRendererFactory::initialize();
+
   QueryEncoder::initialize();
 
   TE_LOG_TRACE(TE_TR("TerraLib Map Tools module initialized!"));
@@ -58,6 +68,12 @@ void te::map::Module::initialize()
 
 void te::map::Module::finalize()
 {
+// finalize renderers
+  AbstractLayerRendererFactory::finalize();
+  DataSetLayerRendererFactory::finalize();
+  QueryLayerRendererFactory::finalize();
+  RasterLayerRendererFactory::finalize();
+
   TE_LOG_TRACE(TE_TR("TerraLib Map Tools module finalized!"));
 }
 

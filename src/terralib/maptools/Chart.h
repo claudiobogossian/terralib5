@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -76,6 +76,10 @@ namespace te
 
         const std::vector<std::string>& getProperties() const;
 
+        const std::vector<size_t>& getPropertiesPos() const;
+
+        void setPropertiesPos(const std::vector<size_t>& propPos);
+
         const te::color::RGBAColor& getColor(std::size_t i) const;
 
         void setColor(std::size_t i, const te::color::RGBAColor& color);
@@ -116,10 +120,22 @@ namespace te
 
         bool getAvoidConflicts() const;
 
+        /*! \brief It gets the grouping summary. It is used only in case 1 to n.
+        */
+        std::string getSummary() const;
+
+        /*!
+          \brief It gets the grouping summary. It is used only in case 1 to n.
+
+          \param summary The summary mode. It can be: "MIN", "MAX", "SUM", "AVERAGE", "MEDIAN", "STDDEV" or "VARIANCE"
+        */
+        void setSummary(const std::string& summary);
+
       private:
 
         ChartType m_type;                           //!< The chart type.
         std::vector<std::string> m_properties;      //!< The property names that will be used to generate the chart.
+        std::vector<size_t> m_propertiesPos;        //!< The properties position.
         std::vector<te::color::RGBAColor> m_colors; //!< The color used to each property.
         te::color::RGBAColor m_contourColor;        //!< The chart contour color.
         std::size_t m_contourWidth;                 //!< The chart contour width (in pixels).
@@ -128,6 +144,7 @@ namespace te
         bool m_isVisible;                           //!< A flag that indicates if the chart is visible.
         double m_maxValue;                          //!< The max value of the chart.
         bool m_avoidConflicts;                      //!< A flag that indicates if conflicts must be avoided.
+        std::string m_summary;                       //!< The summary used in case 1 to n.
     };
 
   } // end namespace map

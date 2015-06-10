@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -55,6 +55,7 @@ namespace te
     {
       class MapDisplay;
       class RasterNavigatorWidget;
+      class TiePointLocatorParametersWidget;
 
         /*! \class TiePointData Tie Point data. */
         class TiePointData
@@ -168,7 +169,7 @@ namespace te
 
           void setReferenceTiePointMarkLegend(QPixmap p);
 
-          void createSelection(int initialId);
+          void createSelection(int initialIdx, int nPos);
 
         protected slots:
 
@@ -208,12 +209,6 @@ namespace te
           /*! \brief Uptate the current transformation information widgets. */
           void transformationInfoUpdate();
 
-          /*! \brief Fill interface widget with initial values. */
-          void startAdvancedOptions();
-
-          /*! \brief Update tie point values with  advanced options changed values. */
-          void updateAdvancedOptions();
-
           void startUpNavigators();
 
           void drawTiePoints();
@@ -228,21 +223,20 @@ namespace te
 
         private:
 
-         std::auto_ptr<Ui::TiePointLocatorWidgetForm> m_ui;
+          std::auto_ptr<Ui::TiePointLocatorWidgetForm> m_ui;
+
+          te::qt::widgets::TiePointLocatorParametersWidget* m_tiePointParameters;     //!<Tie Point parameters widget
 
           te::map::AbstractLayerPtr m_refLayer;                         //!< Layer with reference imagem
           te::map::AbstractLayerPtr m_adjLayer;                         //!< Layer with adjust imagem
 
           te::qt::widgets::TiePointData::TPContainerT m_tiePoints;       //!< Internal tie-points container.
 
-          te::rp::TiePointsLocator::InputParameters m_inputParameters;   //!< The current parameters.
-
           te::gm::GTParameters::TiePoint m_currentTiePoint;             //!< The current tie-point.
           bool m_tiePointHasFirstCoord;                                 //!< true if the tie-point has the first part set;
           unsigned int m_tiePointIdCounter;                             //!< A ID counter for new tie pointes inserted into m_tiePoints;
 
           std::set<int> m_tiePointsSelected;                            //!< List of selected tie points.
-
 
           te::qt::widgets::RasterNavigatorWidget* m_refNavigator;     //!< Reference raster navigator
           te::qt::widgets::RasterNavigatorWidget* m_adjNavigator;     //!< Adjust raster navigator

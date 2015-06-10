@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -93,18 +93,27 @@ namespace te
 
           bool isLayerClipping();
 
+          bool isSingleRasterResult();
+
           void getExtentClipping(te::gm::Envelope& env);
 
           void getDimensionClipping(int& x, int& y, int& width, int& height);
 
+          void getLayerClipping( std::auto_ptr< te::gm::GeometryCollection >& geomColl);
 
         public slots:
 
           void onStrategyTypeComboBoxActivated(int index);
 
+          void onStrategyTypeComboBoxChanged(int index);
+
           void onLayerComboBoxActivated(int index);
+          
+          void onLayerComboBoxChanged(int index);
 
           void onEnvelopeAcquired(te::gm::Envelope env);
+
+          void drawGeom();
 
         protected:
 
@@ -114,7 +123,11 @@ namespace te
 
           std::auto_ptr<Ui::ClippingWizardPageForm> m_ui;
           std::auto_ptr<te::qt::widgets::RasterNavigatorWidget> m_navigator;
+
           te::map::AbstractLayerPtr m_layer;
+
+          te::gm::Envelope m_envExt;
+          te::gm::Envelope m_envDim;
       };
 
     } // end namespace widgets

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -119,10 +119,9 @@ namespace te
 
       \param rin The input raster.
       \param uri The output raster URI.
-
       \param rType The name of the specific driver to create the raster.
 
-      \return a valid pointer to the created raster or a null (invalid) pointer if an error ocurred.
+      \return A valid pointer to the created raster or a null (invalid) pointer if an error ocurred.
     */
     TERASTEREXPORT te::rst::RasterPtr CreateCopy(const te::rst::Raster& rin, const std::string& uri,
                                                  const std::string& rType = std::string("GDAL"));
@@ -151,6 +150,51 @@ namespace te
       \param value The value to fill all the bands of the Raster.
     */
     TERASTEREXPORT void FillBand(te::rst::Band* bin, const std::complex<double>& value);
+    
+    /*!
+      \brief Creates a raster crop using a polygon delimiter.
+      
+      \param rin   The input raster.
+      \param pin   The input polygon, to be used as a delimiter.
+      \param rinfo The map of raster informations.
+      \param rType The name of the specific driver to create the raster.
+
+      \return A valid pointer to the created raster or a null (invalid) pointer if an error ocurred.
+    */      
+    TERASTEREXPORT te::rst::RasterPtr CropRaster(const te::rst::Raster& rin, 
+                                                 const te::gm::Polygon& pin,
+                                                 const std::map<std::string, std::string>& rinfo,
+                                                 const std::string& rType = std::string("GDAL"));
+
+    /*!
+      \brief Creates a vector of random positions (points) inside the raster.
+
+      \param inputRaster     The given raster.
+      \param numberOfPoints  The number of random positions to be created (default = 1000).
+
+      \return A vector of random positions (points).
+      \ingroup rp_func
+    */
+    TERASTEREXPORT std::vector<te::gm::Point*> GetRandomPointsInRaster(const te::rst::Raster& inputRaster, unsigned int numberOfPoints = 1000);
+
+    /*!
+      \brief Function used to convert from a Color Interp Enum to a string
+
+      \param ci     The color interpretation enum
+
+      \return A string with the color interpreation name.
+    */
+    TERASTEREXPORT std::string ConvertColorInterpTypeToString(const te::rst::ColorInterp& ci);
+
+    /*!
+      \brief Function used to convert from a Pallete Interp Enum to a string
+
+      \param pi     The pallete interpretation enum
+
+      \return A string with the pallete interpreation name.
+    */
+    TERASTEREXPORT std::string ConvertPalleteInterpTypeToString(const te::rst::PaletteInterpretation& pi);
+
   } // end namespace rst
 }   // end namespace te
 

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -138,7 +138,7 @@ namespace te
         /*!
           \brief It sets number of colors in the color bar.
 
-          \params size Number of colors in the color bar.
+          \param size Number of colors in the color bar.
          */
        void setBarSize(const int& size);
 
@@ -152,8 +152,8 @@ namespace te
         /*!
           \brief It adds a color in the color bar.
 
-          \params color Color to be added in the color bar.
-          \params pos Position where the color is added.
+          \param color Color to be added in the color bar.
+          \param pos Position where the color is added.
           \note 0 <= pos <= 1
           \note If you add to the first position, the color previously occupied is shifted to be between this and the next color of the bar.
           \note If you add to the last position, the color previously occupied is shifted to be between this and the previous color of the bar.
@@ -164,7 +164,7 @@ namespace te
         /*!
           \brief It removes a color in the color bar.
 
-          \params color Color to be removed in the color bar.
+          \param color Color to be removed in the color bar.
           \note If you remove the first color, the color next to occupy its place.
           \note If you remove the last color, the previous color will take its place.
           \note The bar should have at least two colors.
@@ -174,7 +174,7 @@ namespace te
         /*!
           \brief It removes a color in the color bar.
 
-          \params index Index of color to be removed in the color bar.
+          \param index Index of color to be removed in the color bar.
           \note 0:remove the first color; 1:remove the second color...
           \note If you remove the first color, the color next to occupy its place.
           \note If you remove the last color, the previous color will take its place.
@@ -185,7 +185,7 @@ namespace te
         /*!
           \brief It removes a color in the color bar.
 
-          \params pos Position of color to be removed in the color bar.
+          \param pos Position of color to be removed in the color bar.
           \note If you remove the first color, the color next to occupy its place.
           \note If you remove the last color, the previous color will take its place.
           \note The bar should have at least two colors.
@@ -195,7 +195,7 @@ namespace te
         /*!
           \brief It removes a color in the color bar.
 
-          \params index Reverse index of color to be removed in the color bar.
+          \param index Reverse index of color to be removed in the color bar.
           \note 0:remove the last color; 1:remove the penultimate color...
           \note If you remove the first color, the color next to occupy its place.
           \note If you remove the last color, the previous color will take its place.
@@ -206,23 +206,23 @@ namespace te
         /*!
           \brief It moves a color to new posisiton.
 
-          \params pos position of the color in the color bar.
-          \params color The new color.
+          \param pos position of the color in the color bar.
+          \param color The new color.
          */
        void changeColor(const double& pos, const RGBAColor& color);
 
         /*!
           \brief It moves a color to new posisiton.
 
-          \params index index of the color in the color bar.
-          \params color The new color.
+          \param index index of the color in the color bar.
+          \param color The new color.
          */
        void changeColor(const int& index, const RGBAColor& color);
 
         /*!
           \brief It moves a color to new posisiton.
 
-          \params color Color to be moved in the color bar.
+          \param color Color to be moved in the color bar.
           \note Move the first color matching found in the color bar.
           \note If you place the color where there is already another, the color previously occupied is shifted to be between this and the next color of the bar.
          */
@@ -231,8 +231,8 @@ namespace te
         /*!
           \brief It moves a color to new posisiton.
 
-          \params index Index of color to be moved in the color bar.
-          \params pos The new postion of color in the color bar.
+          \param index Index of color to be moved in the color bar.
+          \param pos The new postion of color in the color bar.
           \note 0:move the first color; 1:remove the second color...
           \note If you place the color where there is already another, the color previously occupied is shifted to be between this and the next color of the bar.
 
@@ -243,8 +243,8 @@ namespace te
         /*!
           \brief It moves a color to new posisiton.
 
-          \params index Index of color to be moved in the color bar.
-          \params pos The new postion of color in the color bar.
+          \param index Index of color to be moved in the color bar.
+          \param pos The new postion of color in the color bar.
           \note 0:move the first color; 1:remove the second color...
           \note If you place the color where there is already another, the color previously occupied is shifted to be between this and the next color of the bar.
 
@@ -255,8 +255,8 @@ namespace te
         /*!
           \brief It moves a color to new posisiton.
 
-          \params index Reverse index of color to be moved in the color bar.
-          \params pos The new postion of color in the color bar.
+          \param index Reverse index of color to be moved in the color bar.
+          \param pos The new postion of color in the color bar.
           \note 0:move the last color; 1:remove the penultimate color...
           \note If you place the color where there is already another, the color previously occupied is shifted to be between this and the next color of the bar.
 

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -31,10 +31,12 @@
 #include "Config.h"
 
 // Qt
-#include <QtCore/QString>
-#include <QtGui/QColor>
+//#include <QtCore/QString>
+//#include <QtGui/QColor>
     
 // Forward declarations
+class QString;
+class QColor;
 class QAction;
 class QMainWindow;
 class QStringList;
@@ -47,8 +49,8 @@ namespace te
 // Forward declaration
   namespace xml
   {
+    class AbstractWriter;
     class Reader;
-    class Writer;
   }
 
   namespace qt
@@ -91,7 +93,7 @@ namespace te
 
         \param writer The XML writer to be used.
       */
-      TEQTAFEXPORT void Save(const Project& project, te::xml::Writer& writer);
+      TEQTAFEXPORT void Save(const Project& project, te::xml::AbstractWriter& writer);
 
       /*!
         \brief Updates user settings file section about information of the projects.
@@ -275,8 +277,10 @@ namespace te
         \brief Returns the default path for output of configuration file.
       */
       TEQTAFEXPORT QString GetDefaultConfigFileOutputDir();
-	  
+
       TEQTAFEXPORT std::vector<std::string> GetPluginsFiles();
+
+      TEQTAFEXPORT std::vector<std::string> GetDefaultPluginsNames();
       
       TEQTAFEXPORT std::vector<std::string> GetPluginsNames(const std::vector<std::string>& plgFiles);
 
@@ -325,9 +329,19 @@ namespace te
       TEQTAFEXPORT void WriteDefaultProjectFile(const QString& fileName);
 
       /*!
+        \brief Return a QString with the new window title based on the project informations.
+      */
+      TEQTAFEXPORT QString GetWindowTitle(const Project& project);
+
+      /*!
         \brief Returns the date and time of generated binary.
       */
       TEQTAFEXPORT QString GetGenerationDate();
+
+      /*!
+        \brief Return extension filter string
+      */
+      TEQTAFEXPORT QString GetExtensionFilter();
     } // end namespace af
   }   // end namespace qt
 }     // end namespace te

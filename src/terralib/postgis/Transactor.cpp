@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -271,7 +271,9 @@ std::vector<std::string> te::pgis::Transactor::getDataSetNames()
                   "AND pg_class.relname NOT IN ('spatial_ref_sys', 'geometry_columns', 'geography_columns', 'raster_columns', 'raster_overviews') "
                   "AND pg_class.relkind in ('r','v') "
                   "AND pg_class.relnamespace = pg_namespace.oid "
-                  "AND pg_namespace.nspname NOT IN ('information_schema', 'pg_toast', 'pg_temp_1', 'pg_catalog', 'topology')");
+                  "AND pg_namespace.nspname NOT IN ('information_schema', 'pg_toast', 'pg_temp_1', 'pg_catalog', 'topology') "
+                  "ORDER BY pg_class.relname"
+                  );
 
   std::auto_ptr<te::da::DataSet> datasetInfo = query(sql);
 
@@ -478,7 +480,13 @@ void te::pgis::Transactor::addProperty(const std::string& datasetName, te::dt::P
 
     sql += te::common::Convert2LCase(gp->getName());
     sql += "', ";
-    sql += te::common::Convert2String(gp->getSRID());
+
+    int srid = gp->getSRID();
+    if(srid <= TE_UNKNOWN_SRS)
+      srid = PGIS_UNKNOWN_SRS;
+
+    sql += te::common::Convert2String(srid);
+
     sql += ", '";
     sql += GetGeometryName(gp->getGeometryType() == te::gm::UnknownGeometryType ? te::gm::GeometryType : gp->getGeometryType());
     sql += "', ";
@@ -1929,13 +1937,13 @@ void te::pgis::Transactor::getGeometryInfo(const std::string& datasetName, te::g
 {
   std::string sql = "SELECT g.coord_dimension, g.srid, g.type "
                     "FROM geometry_columns g "
-                    "WHERE g.f_table_name = '";
+                    "WHERE lower(g.f_table_name) = '";
 
   std::string tname, sname;
   
   SplitTableName(datasetName, &(m_ds->getCurrentSchema()), sname, tname);
 
-  sql += tname;
+  sql += te::common::Convert2LCase(tname);
   sql += "' AND g.f_table_schema = '";
   sql += sname;
   sql += "' AND f_geometry_column = '";
@@ -1950,13 +1958,17 @@ void te::pgis::Transactor::getGeometryInfo(const std::string& datasetName, te::g
     int srid = result->getInt32(1);
     te::gm::GeomType t = te::gm::Geometry::getGeomTypeId(result->getString(2));
     //gp->setCoordDimension(cdim);
+
+    if(srid == PGIS_UNKNOWN_SRS)
+      srid = TE_UNKNOWN_SRS;
+
     gp->setSRID(srid);
     gp->setGeometryType(t);
   }
   else
   {
 // Don't throw: someone can create a geometry column without using AddGeometryColumn function!!
-    gp->setSRID(-1);
+    gp->setSRID(TE_UNKNOWN_SRS);
     gp->setGeometryType(te::gm::GeometryType);
   }
 }
@@ -1981,6 +1993,9 @@ void te::pgis::Transactor::getRasterInfo(const std::string& datasetName, te::rst
   if(result->moveNext())
   {
     int srid = result->getInt32("srid");
+
+    if(srid == PGIS_UNKNOWN_SRS)
+      srid = TE_UNKNOWN_SRS;
 
     double scale_x = result->getDouble("scale_x");
 

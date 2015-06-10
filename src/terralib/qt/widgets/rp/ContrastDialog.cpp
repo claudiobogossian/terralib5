@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -150,7 +150,7 @@ void te::qt::widgets::ContrastDialog::on_okPushButton_clicked()
         tr( "Mean and standard deviation" ) )
       {
         algoInputParams.m_type = 
-          te::rp::Contrast::InputParameters::SetMeanAndStdContrastT;
+          te::rp::Contrast::InputParameters::MeanAndStdContrastT;
         algoInputParams.m_sMASCMeanInput.resize( selectedBands.size(),
           m_uiPtr->m_sMASCMeanInputLineEdit->text().toDouble() );
         algoInputParams.m_sMASCStdInput.resize( selectedBands.size(),

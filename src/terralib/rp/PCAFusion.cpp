@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -66,7 +66,7 @@ namespace te
       m_highResRasterBand = 0;
       m_enableProgress = false;
       m_enableThreadedProcessing = true;
-      m_interpMethod = te::rst::Interpolator::NearestNeighbor;
+      m_interpMethod = te::rst::NearestNeighbor;
     }
 
     const PCAFusion::InputParameters& PCAFusion::InputParameters::operator=(
@@ -204,8 +204,9 @@ namespace te
           TERP_LOG_AND_RETURN_FALSE( e.what() );
         }    
         
-        TERP_TRUE_OR_RETURN_FALSE( DirectPrincipalComponents( *ressampledRasterPtr, ressampledRasterBands,
-          pcaMatrix, *pcaRasterPtr, m_inputParameters.m_enableThreadedProcessing ? 0 : 1 ),
+        TERP_TRUE_OR_RETURN_FALSE( DirectPrincipalComponents( *ressampledRasterPtr, 
+          ressampledRasterBands, pcaMatrix, *pcaRasterPtr, ressampledRasterBands,
+          m_inputParameters.m_enableThreadedProcessing ? 0 : 1 ),
           "Principal components generation error" );
           
 //        te::rp::Copy2DiskRaster( *pcaRasterPtr, "pcaRaster.tif" );
@@ -233,8 +234,10 @@ namespace te
       // Generating the output fused raster
       
       {
-        te::rst::Grid* gridPtr = new te::rst::Grid( *pcaRasterPtr->getGrid() );
+        te::rst::Grid* gridPtr = new te::rst::Grid( *m_inputParameters.m_highResRasterPtr->getGrid() );        
+        
         std::vector< te::rst::BandProperty * > bandProperties;
+        std::vector< unsigned int > outputRasterBands;
           
         for( unsigned int bandIdx = 0 ; bandIdx <
           pcaRasterPtr->getNumberOfBands() ; ++bandIdx )
@@ -243,6 +246,8 @@ namespace te
             *pcaRasterPtr->getBand( bandIdx )->getProperty() ) );
           bandProperties[ bandIdx ]->m_type = 
             ressampledRasterPtr->getBand( bandIdx )->getProperty()->m_type;
+            
+          outputRasterBands.push_back( bandIdx );
         } 
         
         outParamsPtr->m_outputRasterPtr.reset(
@@ -257,7 +262,7 @@ namespace te
           "Output raster creation error" );
           
         TERP_TRUE_OR_RETURN_FALSE( InversePrincipalComponents( *pcaRasterPtr,
-          pcaMatrix, *outParamsPtr->m_outputRasterPtr,
+          pcaMatrix, *outParamsPtr->m_outputRasterPtr, outputRasterBands,
           m_inputParameters.m_enableThreadedProcessing ? 0 : 1 ),
           "Inverse PCA error" );
       }                  
@@ -352,6 +357,10 @@ namespace te
         
         ressampledBandProperties.push_back( new te::rst::BandProperty( 
           *m_inputParameters.m_lowResRasterPtr->getBand( lowResRasterBandIdx )->getProperty() ) );
+        ressampledBandProperties[ lowResRasterBandsIdx ]->m_blkw = outNCols;
+        ressampledBandProperties[ lowResRasterBandsIdx ]->m_blkh = 1;
+        ressampledBandProperties[ lowResRasterBandsIdx ]->m_nblocksx = 1;
+        ressampledBandProperties[ lowResRasterBandsIdx ]->m_nblocksy = outNRows;
       } 
       
       try
@@ -449,7 +458,6 @@ namespace te
       }
       
       const double gain = ( ( hrStdDev == 0.0 ) ? 0.0 : ( pcaZeroStdDev / hrStdDev ) );
-      const double offset = ( hrStdDev == 0.0 ) ? 0.0 : ( pcaZeroMean - ( hrMean * gain ) );
       const double& pcaNoDataValue = pcaBand.getProperty()->m_noDataValue;
       const double& hrNoDataValue = hrBand.getProperty()->m_noDataValue;
       const unsigned int nRows = pcaRaster.getNumberOfRows();
@@ -473,7 +481,7 @@ namespace te
           }
           else
           {
-            value = ( value * gain ) + offset;
+            value = ( ( value - hrMean ) * gain ) + pcaZeroMean;
             value = std::max( pcaAllowedMin, value );
             value = std::min( pcaAllowedMax, value );
             

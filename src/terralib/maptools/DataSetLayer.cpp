@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -47,33 +47,50 @@
 const std::string te::map::DataSetLayer::sm_type("DATASETLAYER");
 
 te::map::DataSetLayer::DataSetLayer(AbstractLayer* parent)
-  : AbstractLayer(parent)
+  : AbstractLayer(parent),
+    m_schema(0)
 {
 }
 
 te::map::DataSetLayer::DataSetLayer(const std::string& id, AbstractLayer* parent)
-  : AbstractLayer(id, parent)
+  : AbstractLayer(id, parent),
+    m_schema(0)
 {
 }
 
 te::map::DataSetLayer::DataSetLayer(const std::string& id,
                                     const std::string& title,
                                     AbstractLayer* parent)
-  : AbstractLayer(id, title, parent)
+  : AbstractLayer(id, title, parent),
+    m_schema(0)
 {
 }
 
 te::map::DataSetLayer::~DataSetLayer()
 {
+  delete m_schema;
 }
 
 std::auto_ptr<te::map::LayerSchema> te::map::DataSetLayer::getSchema() const
 {
   assert(!m_datasetName.empty());
 
-  te::da::DataSourcePtr ds = te::da::GetDataSource(m_datasourceId, true);
+  if(m_schema == 0)
+  {
+    te::da::DataSourcePtr ds = te::da::GetDataSource(m_datasourceId, true);
 
-  return ds->getDataSetType(m_datasetName);
+    std::auto_ptr<LayerSchema> type = ds->getDataSetType(m_datasetName);
+
+    if(!type.get())
+      return std::auto_ptr<te::da::DataSetType>();
+
+    // Cache the schema from datasource
+    m_schema = static_cast<LayerSchema*>(type->clone());
+
+    return type;
+  }
+
+  return std::auto_ptr<LayerSchema>(static_cast<LayerSchema*>(m_schema->clone()));
 }
 
 std::auto_ptr<te::da::DataSet> te::map::DataSetLayer::getData(te::common::TraverseType travType,
@@ -219,4 +236,10 @@ const std::string& te::map::DataSetLayer::getRendererType() const
 void te::map::DataSetLayer::setRendererType(const std::string& t)
 {
   m_rendererType = t;
+}
+
+void te::map::DataSetLayer::setOutOfDate()
+{
+  delete m_schema;
+  m_schema = 0;
 }

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -28,15 +28,15 @@
 // STL
 #include <cassert>
 
-te::qt::plugins::slider::AbstractAction::AbstractAction(QMenu* menu): m_menu(menu), m_action(0)
+te::qt::plugins::st::AbstractAction::AbstractAction(QMenu* menu): m_menu(menu), m_action(0)
 {
 }
 
-te::qt::plugins::slider::AbstractAction::~AbstractAction()
+te::qt::plugins::st::AbstractAction::~AbstractAction()
 {
 }
 
-void te::qt::plugins::slider::AbstractAction::createAction(std::string name, std::string pixmap)
+void te::qt::plugins::st::AbstractAction::createAction(std::string name, std::string pixmap)
 {
   assert(m_menu);
 

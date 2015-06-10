@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -90,7 +90,7 @@ namespace te
           //@{
 
           /*!
-            \biref Filters events if this object has been installed as an event filter for the watched object.
+            \brief Filters events if this object has been installed as an event filter for the watched object.
 
             \param watched The watched object.
             \param event The last event sent to watched object.
@@ -104,7 +104,7 @@ namespace te
           virtual bool eventFilter(QObject* watched, QEvent* e);
 
           /*!
-            \biref This event handler can be reimplemented in a concrete tool class
+            \brief This event handler can be reimplemented in a concrete tool class
                    to receive mouse press events for the watched object.
             
             \param e The mouse event.
@@ -114,7 +114,7 @@ namespace te
           virtual bool mousePressEvent(QMouseEvent* e);
 
           /*!
-            \biref This event handler can be reimplemented in a concrete tool class
+            \brief This event handler can be reimplemented in a concrete tool class
                    to receive mouse move events for the watched object.
             
             \param e The mouse event.
@@ -124,7 +124,7 @@ namespace te
           virtual bool mouseMoveEvent(QMouseEvent* e);
 
           /*!
-            \biref This event handler can be reimplemented in a concrete tool class
+            \brief This event handler can be reimplemented in a concrete tool class
                    to receive mouse release events for the watched object.
 
             \param e The mouse event.
@@ -134,7 +134,7 @@ namespace te
           virtual bool mouseReleaseEvent(QMouseEvent* e);
 
           /*!
-            \biref This event handler can be reimplemented in a concrete tool class
+            \brief This event handler can be reimplemented in a concrete tool class
                    to receive mouse double click events for the watched object.
 
             \param e The mouse event.
@@ -149,7 +149,7 @@ namespace te
           //@}
 
           /*!
-            \biref It sets the tool cursor.
+            \brief It sets the tool cursor.
 
             \param cursor The cursor that will be used during the tool operation.
           */

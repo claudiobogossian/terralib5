@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -28,16 +28,19 @@
 #include "../geometry/Coord2D.h"
 #include "BandIterator.h"
 #include "Exception.h"
+#include "PositionIterator.h"
 #include "RasterFactory.h"
 #include "Utils.h"
 
 // Boost
 #include <boost/cstdint.hpp>
+#include <boost/random.hpp>
+#include <boost/random/uniform_int_distribution.hpp>
 
 // STL
 #include <cassert>
-
 #include <limits>
+#include <vector>
 
 static int sg_pixelSize[] = {  0,
                                0,
@@ -423,4 +426,133 @@ void te::rst::FillBand(te::rst::Band* bin, const std::complex<double>& value)
   for (unsigned int r = 0; r < bin->getRaster()->getNumberOfRows(); r++)
     for (unsigned int c = 0; c < bin->getRaster()->getNumberOfColumns(); c++)
       bin->setValue(c, r, value);
+}
+
+te::rst::RasterPtr te::rst::CropRaster(const te::rst::Raster& rin, const te::gm::Polygon& pin, const std::map<std::string, std::string>& rinfo, const std::string& rType)
+{
+  std::vector<te::rst::BandProperty*> bprops;
+  for(unsigned int b = 0; b < rin.getNumberOfBands(); b++)
+  {
+    bprops.push_back(new te::rst::BandProperty(*(rin.getBand(b)->getProperty())));
+  }
+
+// define new grid
+  te::gm::Envelope* envelope = new te::gm::Envelope(*pin.getMBR());
+  te::rst::Grid* grid = new te::rst::Grid(rin.getResolutionX(),
+                                          rin.getResolutionY(),
+                                          envelope,
+                                          rin.getSRID());
+// create the output raster
+  te::rst::RasterPtr rout;
+  rout.reset(te::rst::RasterFactory::make(rType, grid, bprops, rinfo, 0, 0));
+  if(rout.get() == 0)
+    return rout;
+  
+// fill bands with no data
+  for (unsigned int b = 0; b < rin.getNumberOfBands(); b++)
+  {
+    double noDataValue = rin.getBand(b)->getProperty()->m_noDataValue;
+    FillBand(rout->getBand(b), noDataValue);
+  }
+  
+// make crop using polygon iterator
+  te::gm::Coord2D geoCoord;
+  te::gm::Coord2D gridCoord;
+  te::rst::PolygonIterator<double> it = te::rst::PolygonIterator<double>::begin(&rin, &pin);
+  te::rst::PolygonIterator<double> itend = te::rst::PolygonIterator<double>::end(&rin, &pin);
+  std::vector<double> pixels(rin.getNumberOfBands());
+  unsigned int gridColumn;
+  unsigned int gridRow;
+  while (it != itend)
+  {
+    for (unsigned int b = 0; b < rout->getNumberOfBands(); b++)
+      pixels[b] = (*it)[b];
+    geoCoord = rin.getGrid()->gridToGeo(it.getColumn(), it.getRow());
+    ++it;
+    gridCoord = rout->getGrid()->geoToGrid(geoCoord.x, geoCoord.y);
+    gridColumn = (unsigned int) gridCoord.x;
+    gridRow = (unsigned int) gridCoord.y;
+    if (gridColumn >= rout->getNumberOfColumns())
+      continue;
+    if (gridRow >= rout->getNumberOfRows())
+      continue;
+    rout->setValues(gridColumn, gridRow, pixels);
+  }
+  
+  return rout;
+} 
+
+std::vector<te::gm::Point*> te::rst::GetRandomPointsInRaster(const te::rst::Raster& inputRaster, unsigned int numberOfPoints)
+{
+  std::vector<te::gm::Point*> randomPoints;
+  double randX;
+  double randY;
+
+  boost::random::mt19937 generator((boost::random::mt19937::result_type) time(0));
+  boost::random::uniform_int_distribution<> random_rows(0, inputRaster.getNumberOfRows() - 1);
+  boost::random::uniform_int_distribution<> random_columns(0, inputRaster.getNumberOfColumns() - 1);
+
+  for (unsigned int p = 0; p < numberOfPoints; p++)
+  {
+    inputRaster.getGrid()->gridToGeo(random_columns(generator), random_rows(generator), randX, randY);
+    randomPoints.push_back(new te::gm::Point(randX, randY, inputRaster.getSRID()));
+  }
+
+  return randomPoints;
+}
+
+std::string te::rst::ConvertColorInterpTypeToString(const te::rst::ColorInterp& ci)
+{
+  if(ci == te::rst::UndefCInt)
+    return TE_TR("Undefined");
+  else if(ci == te::rst::GrayIdxCInt)
+    return TE_TR("Gray");
+  else if(ci == te::rst::PaletteIdxCInt)
+    return TE_TR("Palette");
+  else if(ci == te::rst::RedCInt)
+    return TE_TR("Red");
+  else if(ci == te::rst::GreenCInt)
+    return TE_TR("Green");
+  else if(ci == te::rst::BlueCInt)
+    return TE_TR("Blue");
+  else if(ci == te::rst::AlphaCInt)
+    return TE_TR("Alpha");
+  else if(ci == te::rst::HueCInt)
+    return TE_TR("Hue");
+  else if(ci == te::rst::SatCInt)
+    return TE_TR("Saturation");
+  else if(ci == te::rst::LigCInt)
+    return TE_TR("Lightness");
+  else if(ci == te::rst::CyanCInt)
+    return TE_TR("Cyan");
+  else if(ci == te::rst::MagentaCInt)
+    return TE_TR("Magenta");
+  else if(ci == te::rst::YellowCInt)
+    return TE_TR("Yellow");
+  else if(ci == te::rst::KeyCInt)
+    return TE_TR("Key");
+  else if(ci == te::rst::YCInt)
+    return TE_TR("Y");
+  else if(ci == te::rst::CbCInt)
+    return TE_TR("Cb");
+  else if(ci == te::rst::CrCInt)
+    return TE_TR("Cr");
+
+  return "";
+}
+
+std::string te::rst::ConvertPalleteInterpTypeToString(const te::rst::PaletteInterpretation& pi)
+{
+  if(pi == te::rst::UndefPalInt)
+    return TE_TR("Undefined");
+  else if(pi == te::rst::GrayPalInt)
+    return TE_TR("Gray");
+  else if(pi == te::rst::RGBPalInt)
+    return TE_TR("RGB");
+  else if(pi == te::rst::CMYKPalInt)
+    return TE_TR("CMYK");
+  else if(pi == te::rst::HSLPalInt)
+    return TE_TR("HSL");
+
+  return "";
 }

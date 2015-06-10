@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -55,7 +55,6 @@
             \param featuresNumber The number of features for each created segment.
             \return true if ok, false on errors.
             \note The segments pool will initiate just SegmenterRegionGrowingSegment::m_features vector and take the ownership of it.
-            \note The segments pool will initiate just SegmenterRegionGrowingSegment::m_status to false.
           */            
           bool initialize( const SegmenterSegmentsBlock::SegmentIdDataType segsNumber,
             const unsigned int featuresNumber );            

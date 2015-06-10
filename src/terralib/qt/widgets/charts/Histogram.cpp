@@ -1,4 +1,4 @@
-/*  Copyright (C) 2010-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -35,19 +35,7 @@ te::qt::widgets::Histogram::Histogram()
 
 te::qt::widgets::Histogram::~Histogram()
 {
-  HistogramValues::iterator it = m_values.begin();
-  while(it != m_values.end())
-  {
-    delete it->first;
-    ++it;
-  }
-
-  te::qt::widgets::IntervalToObjectIdSet::iterator it2= m_valuesOids.begin();
-  while(it2 != m_valuesOids.end())
-  {
-    delete it2->oid;
-    ++it2;
-  }
+  clear();
 }
 
 int& te::qt::widgets::Histogram::getType()
@@ -60,6 +48,16 @@ void te::qt::widgets::Histogram::setType(int new_type)
  m_histogramType = new_type;
 }
 
+bool te::qt::widgets::Histogram::isSummarized()
+{
+  return m_isSummarized;
+}
+
+void te::qt::widgets::Histogram::setSummarized(bool summarized)
+{
+ m_isSummarized = summarized;
+}
+
 std::map<double, unsigned int> te::qt::widgets::Histogram::getValues()
 { 
   std::map<double, unsigned int> res;
@@ -69,6 +67,19 @@ std::map<double, unsigned int> te::qt::widgets::Histogram::getValues()
     res.insert(std::make_pair(static_cast<te::dt::Double*>(it->first)->getValue(), it->second));
 
   return res;
+}
+
+void te::qt::widgets::Histogram::setValues(std::map<te::dt::AbstractData*, unsigned int> values)
+{
+  clear();
+  std::map<te::dt::AbstractData*, unsigned int>::iterator valItbegin = values.begin();
+  std::map<te::dt::AbstractData*, unsigned int>::iterator valItend = values.end();
+
+  while(valItbegin != valItend)
+  {
+    m_values.insert(*valItbegin);
+    valItbegin++;
+  }
 }
 
 std::map<std::string, unsigned int> te::qt::widgets::Histogram::getStringValues()
@@ -131,6 +142,25 @@ void te::qt::widgets::Histogram::insert(te::dt::AbstractData* interval, unsigned
   insert(std::make_pair(interval, frequency));
 }
 
+void te::qt::widgets::Histogram::clear()
+{
+  HistogramValues::iterator it = m_values.begin();
+  while(it != m_values.end())
+  {
+    delete it->first;
+    ++it;
+  }
+  m_values.clear();
+  
+  te::qt::widgets::IntervalToObjectIdSet::iterator it2= m_valuesOids.begin();
+  while(it2 != m_valuesOids.end())
+  {
+    delete it2->oid;
+    ++it2;
+  }
+  m_valuesOids.clear();
+}
+
 te::da::ObjectIdSet* te::qt::widgets::Histogram::find(te::dt::AbstractData* interval)
 {
   typedef te::qt::widgets::IntervalToObjectIdSet::nth_index<0>::type::iterator itIntervalToObjectIdSet;
@@ -144,19 +174,12 @@ te::da::ObjectIdSet* te::qt::widgets::Histogram::find(te::dt::AbstractData* inte
 
   while(it0 != it1) 
   {
-    te::da::ObjectId* oid = new te::da::ObjectId(); 
-
-    for(boost::ptr_vector<te::dt::AbstractData>::const_iterator it = it0->oid->getValue().begin(); it != it0->oid->getValue().end(); ++it)
-    {
-      oid->addValue((it)->clone());
-    }
-
+    te::da::ObjectId* oid = new te::da::ObjectId(*it0->oid); 
     oids->add(oid);
     ++it0;
   }
   return oids;
 }
-
 
 te::da::ObjectIdSet* te::qt::widgets::Histogram::find(std::vector<te::dt::AbstractData*> intervals)
 {
@@ -169,17 +192,11 @@ te::da::ObjectIdSet* te::qt::widgets::Histogram::find(std::vector<te::dt::Abstra
 
     std::pair<itIntervalToObjectIdSet, itIntervalToObjectIdSet> res = m_valuesOids.equal_range(aux);
     itIntervalToObjectIdSet it0 = res.first;
-    itIntervalToObjectIdSet it1 = res.second; 
+    itIntervalToObjectIdSet it1 = res.second;
 
     while(it0 != it1) 
     {
-      te::da::ObjectId* oid = new te::da::ObjectId(); 
-
-      for(boost::ptr_vector<te::dt::AbstractData>::const_iterator it = it0->oid->getValue().begin(); it != it0->oid->getValue().end(); ++it)
-      {
-        oid->addValue((it)->clone());
-      }
-
+      te::da::ObjectId* oid = new te::da::ObjectId(*it0->oid); 
       oids->add(oid);
       ++it0;
     }
@@ -193,7 +210,10 @@ const te::dt::AbstractData* te::qt::widgets::Histogram::find(const te::da::Objec
 {
   te::qt::widgets::IntervalToObjectIdSet::nth_index<1>::type::iterator it= m_valuesOids.get<1>().find(oid->getValueAsString());
   te::dt::AbstractData* interval = it->interval;
-  return interval;
+  if(it != m_valuesOids.get<1>().end())
+    return interval;
+  else
+    return NULL;
 }
 
 void te::qt::widgets::Histogram::adjustOids(te::dt::AbstractData* interval, std::vector<te::da::ObjectId*> valuesOIds)

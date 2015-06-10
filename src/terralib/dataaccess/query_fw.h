@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -94,6 +94,7 @@ namespace te
     class SQLVisitor;
     class ST_Area;
     class ST_Beyond;
+    class ST_Boundary;
     class ST_Buffer;
     class ST_Centroid;
     class ST_Contains;
@@ -102,16 +103,20 @@ namespace te
     class ST_Difference;
     class ST_Disjoint;
     class ST_DistanceBuffer;
+    class ST_Dump;
+    class ST_DumpRings;
     class ST_DWithin;
     class ST_Equals;
     class ST_Intersection;
     class ST_Intersects;
     class ST_Length;
+    class ST_NumGeometries;
     class ST_Overlaps;
     class ST_Perimeter;
     class ST_Relate;
     class ST_Touches;
     class ST_Transform;
+    class ST_Union;
     class ST_Within;
     class StdDev;
     class Sub;

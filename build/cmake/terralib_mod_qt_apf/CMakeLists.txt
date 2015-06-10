@@ -27,6 +27,10 @@
 
 include_directories(${Boost_INCLUDE_DIR})
 
+if(LOG4CXX_FOUND)
+  include_directories(${LOG4CXX_INCLUDE_DIR})
+endif()
+
 if(WIN32)
   add_definitions(-D_SCL_SECURE_NO_WARNINGS -DTEQTAFDLL)
 endif()
@@ -57,10 +61,8 @@ list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terrali
                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/af/connectors/DataSetTableDockWidget.h
                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/af/connectors/InterfaceController.h
                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/af/connectors/LayerExplorer.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/af/connectors/LayoutEditor.h
                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/af/connectors/MapDisplay.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/af/connectors/StyleExplorer.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/af/connectors/TimeSliderWidget.h)
+                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/af/connectors/StyleExplorer.h)
 
 #events
 file(GLOB TERRALIB_EVENTS_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/af/events/*.h)

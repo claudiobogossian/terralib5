@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -60,6 +60,13 @@
 #define TE_QT_PLUGIN_RP_HAVE_COLORTRANSFORM
 
 /*!
+  \def TE_QT_PLUGIN_RP_HAVE_COMPOSEBANDS
+
+  \brief It defines if the RP Qt Plugin has the compose bands operation.
+*/
+#define TE_QT_PLUGIN_RP_HAVE_COMPOSEBANDS
+
+/*!
   \def TE_QT_PLUGIN_RP_HAVE_CONTRAST
 
   \brief It defines if the RP Qt Plugin has the contrast operation.
@@ -114,7 +121,7 @@
 
   \brief It defines if the RP Qt Plugin has the vectorization operation.
 */
-//#define TE_QT_PLUGIN_RP_HAVE_VECTORIZATION
+#define TE_QT_PLUGIN_RP_HAVE_VECTORIZATION
 
 
 /*!

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -28,6 +28,8 @@
 // TerraLib
 #include <terralib/common.h>
 #include <terralib/plugin.h>
+#include <terralib/plugin/PluginInfo.h>
+#include <terralib/plugin/PluginManager.h>
 #include <terralib/se/Style.h>
 #include "../Config.h"
 
@@ -37,38 +39,33 @@
 #include <fstream>
 #include <iostream>
 
-void ShowResult(const std::string& data)
-{
-  std::cout << "Result:" << std::endl;
-  std::cout << data << std::endl;
-}
-
-void SaveResult(const std::string& data, const std::string& path)
-{
-  std::ofstream ofs(path.c_str());
-  ofs << data;
-}
-
 int main(int /*argc*/, char** /*argv*/)
 {
 // Initializes Terralib support
   TerraLib::getInstance().initialize();
 
+
+  te::plugin::PluginInfo pinfo;
+  pinfo.m_name = "TERRALIB_XERCES";
+  pinfo.m_category = "XML";
+  pinfo.m_engine = TE_CPPPLUGINENGINE_CODE;
+  //pinfo.m_folder = "."; //the default search directories will be used
+  pinfo.m_resources.push_back(te::plugin::PluginInfo::Resource("SharedLibraryName", "terralib_mod_xerces"));
+
+  te::plugin::PluginManager::getInstance().load(pinfo, true);
+
+
+
+
   try
   {
     /* OGC Symbology Encoding */
 
-    std::string encodedStyle = EncodeStyle(); // Creates a Style and encodes it to XML format.
+    std::string path = ""TERRALIB_DATA_DIR"/xml/style.xml";
 
-    ShowResult(encodedStyle); // Shows the serializaton result.
-    
-    SaveResult(encodedStyle, ""TERRALIB_DATA_DIR"/xml/style.xml"); // Saves the enconded style to XML file.
-    te::se::Style* style = DecodeStyle(""TERRALIB_DATA_DIR"/xml/style.xml"); // Decodes the created XML file.
+    EncodeStyle(path); // Creates a Style and encodes it to XML format.
 
-    std::string backData = EncodeStyle(style); // Encodes again.
-    
-    // Comparing the results...
-    encodedStyle == backData ? std::cout << "Great job!" << std::endl : std::cout << "You are doing it wrong!" << std::endl;
+    te::se::Style* style = DecodeStyle(path); // Decodes the created XML file.
 
     /* XSD Schema */
 

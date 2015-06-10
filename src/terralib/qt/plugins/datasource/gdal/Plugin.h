@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -72,6 +72,6 @@ namespace te
   }     // end namespace qt
 }       // end namespace te
 
-PLUGIN_CALL_BACK_DECLARATION(TEQTPLUGINGDALEXPORT);
+PLUGIN_CALL_BACK_DECLARATION(TEQTPLUGINGDALEXPORT)
 
 #endif //__TE_QT_PLUGINS_DATASOURCE_GDAL_INTERNAL_PLUGIN_H

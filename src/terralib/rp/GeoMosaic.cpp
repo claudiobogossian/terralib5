@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -77,7 +77,7 @@ namespace te
     {
       m_feederRasterPtr = 0;
       m_inputRastersBands.clear();
-      m_interpMethod = te::rst::Interpolator::NearestNeighbor;
+      m_interpMethod = te::rst::NearestNeighbor;
       m_noDataValue = 0.0;
       m_forceInputNoDataValue = false;
       m_blendMethod = te::rp::Blender::NoBlendMethod;
@@ -203,10 +203,7 @@ namespace te
         te::rst::Raster const* inputRasterPtr = 0;
         unsigned int inputRasterIdx = 0;
         te::srs::Converter convInstance;
-        te::gm::Coord2D llCoord1;
-        te::gm::Coord2D urCoord1;
-        te::gm::Coord2D llCoord2;
-        te::gm::Coord2D urCoord2;
+        te::gm::LinearRing reprojectedExtent(te::gm::LineStringType, 0, 0);
 
         m_inputParameters.m_feederRasterPtr->reset();
         while( ( inputRasterPtr = m_inputParameters.m_feederRasterPtr->getCurrentObj() ) )
@@ -240,59 +237,34 @@ namespace te
             auxLinearRingPtr->setPoint( 2, mosaicURX, mosaicLLY );
             auxLinearRingPtr->setPoint( 3, mosaicLLX, mosaicLLY );
             auxLinearRingPtr->setPoint( 4, mosaicLLX, mosaicURY );
+            auxLinearRingPtr->setSRID( mosaicSRID );
             auxPolygon.push_back( auxLinearRingPtr );
             auxPolygon.setSRID( mosaicSRID );
             rastersBBoxes.push_back( auxPolygon );
           }
           else
           {
-            if( mosaicSRID == inputRasterPtr->getGrid()->getSRID() )
+            TERP_TRUE_OR_RETURN_FALSE( te::rp::GetDetailedExtent( 
+              *inputRasterPtr->getGrid(), reprojectedExtent ),
+              "Detailed raster extent calcule error" );
+            
+            if( mosaicSRID != inputRasterPtr->getGrid()->getSRID() )
             {
-              urCoord1.x = inputRasterPtr->getGrid()->getExtent()->m_urx;
-              urCoord1.y = inputRasterPtr->getGrid()->getExtent()->m_ury;
-              llCoord1.x = inputRasterPtr->getGrid()->getExtent()->m_llx;
-              llCoord1.y = inputRasterPtr->getGrid()->getExtent()->m_lly;
-            }
-            else
-            {
-              convInstance.setSourceSRID( inputRasterPtr->getGrid()->getSRID() );
-              convInstance.setTargetSRID( mosaicSRID );
-
-              convInstance.convert(
-                inputRasterPtr->getGrid()->getExtent()->m_urx,
-                inputRasterPtr->getGrid()->getExtent()->m_ury,
-                urCoord1.x,
-                urCoord1.y );
-              convInstance.convert(
-                inputRasterPtr->getGrid()->getExtent()->m_llx,
-                inputRasterPtr->getGrid()->getExtent()->m_lly,
-                llCoord1.x,
-                llCoord1.y );
+              reprojectedExtent.transform( mosaicSRID );
             }
 
             // expanding mosaic area
 
-            mosaicLLX = std::min( mosaicLLX, urCoord1.x );
-            mosaicLLX = std::min( mosaicLLX, llCoord1.x );
+            mosaicLLX = std::min( mosaicLLX, reprojectedExtent.getMBR()->getLowerLeftX() );
+            mosaicLLY = std::min( mosaicLLY, reprojectedExtent.getMBR()->getLowerLeftY() );
 
-            mosaicLLY = std::min( mosaicLLY, urCoord1.y );
-            mosaicLLY = std::min( mosaicLLY, llCoord1.y );
-
-            mosaicURX = std::max( mosaicURX, urCoord1.x );
-            mosaicURX = std::max( mosaicURX, llCoord1.x );
-
-            mosaicURY = std::max( mosaicURY, urCoord1.y );
-            mosaicURY = std::max( mosaicURY, llCoord1.y );
+            mosaicURX = std::max( mosaicURX, reprojectedExtent.getMBR()->getUpperRightX() );
+            mosaicURY = std::max( mosaicURY, reprojectedExtent.getMBR()->getUpperRightY() );
 
             // finding the current raster bounding box polygon (first raster world coordinates)
 
             auxPolygon.clear();
-            auxLinearRingPtr = new te::gm::LinearRing(5, te::gm::LineStringType);
-            auxLinearRingPtr->setPoint( 0, llCoord1.x, urCoord1.y );
-            auxLinearRingPtr->setPoint( 1, urCoord1.x, urCoord1.y );
-            auxLinearRingPtr->setPoint( 2, urCoord1.x, llCoord1.y );
-            auxLinearRingPtr->setPoint( 3, llCoord1.x, llCoord1.y );
-            auxLinearRingPtr->setPoint( 4, llCoord1.x, urCoord1.y );
+            auxLinearRingPtr = new te::gm::LinearRing( reprojectedExtent );
             auxPolygon.push_back( auxLinearRingPtr );
             auxPolygon.setSRID( mosaicSRID );
             rastersBBoxes.push_back( auxPolygon );
@@ -619,24 +591,24 @@ namespace te
           transParams.m_tiePoints.push_back( auxTP );
           
           auxTP.first.x = 0;
-          auxTP.first.y = (double)outputRasterPtr->getNumberOfRows();
+          auxTP.first.y = (double)( outputRasterPtr->getNumberOfRows() - 1 );
           outputRasterPtr->getGrid()->gridToGeo( auxTP.first.x, auxTP.first.y, auxX, auxY );
           inputRasterPtr->getGrid()->geoToGrid( auxX, auxY, auxTP.second.x, auxTP.second.y );          
           transParams.m_tiePoints.push_back( auxTP );
+//           
+//           auxTP.first.x = (double)( outputRasterPtr->getNumberOfColumns() - 1);
+//           auxTP.first.y = 0;
+//           outputRasterPtr->getGrid()->gridToGeo( auxTP.first.x, auxTP.first.y, auxX, auxY );
+//           inputRasterPtr->getGrid()->geoToGrid( auxX, auxY, auxTP.second.x, auxTP.second.y );
+//           transParams.m_tiePoints.push_back( auxTP );
           
-          auxTP.first.x = (double)outputRasterPtr->getNumberOfColumns();
-          auxTP.first.y = 0;
-          outputRasterPtr->getGrid()->gridToGeo( auxTP.first.x, auxTP.first.y, auxX, auxY );
-          inputRasterPtr->getGrid()->geoToGrid( auxX, auxY, auxTP.second.x, auxTP.second.y );
-          transParams.m_tiePoints.push_back( auxTP );
-          
-          auxTP.first.x = (double)outputRasterPtr->getNumberOfColumns();
-          auxTP.first.y = (double)outputRasterPtr->getNumberOfRows();
+          auxTP.first.x = (double)( outputRasterPtr->getNumberOfColumns() - 1 );
+          auxTP.first.y = (double)( outputRasterPtr->getNumberOfRows() - 1 );
           outputRasterPtr->getGrid()->gridToGeo( auxTP.first.x, auxTP.first.y, auxX, auxY );
           inputRasterPtr->getGrid()->geoToGrid( auxX, auxY, auxTP.second.x, auxTP.second.y );                    
           transParams.m_tiePoints.push_back( auxTP );
           
-          transPtr.reset( te::gm::GTFactory::make( "RST" ) );
+          transPtr.reset( te::gm::GTFactory::make( "Affine" ) );
           TERP_TRUE_OR_RETURN_FALSE( transPtr.get(), "Could not instantiate a geometric transformation" );
           
           TERP_TRUE_OR_RETURN_FALSE( transPtr->initialize( transParams ),
@@ -666,10 +638,12 @@ namespace te
               currentRasterMean,
               currentRasterVariance );
 
-            currentRasterBandsScales.push_back( std::sqrt( mosaicTargetVariances[ inputRastersBandsIdx ] /
-              currentRasterVariance ) );
-            currentRasterBandsOffsets.push_back( mosaicTargetMeans[ inputRastersBandsIdx ] -
-              ( currentRasterBandsScales[ inputRastersBandsIdx ] * currentRasterMean ) );
+            currentRasterBandsScales.push_back( 
+                std::sqrt( mosaicTargetVariances[ inputRastersBandsIdx ] )
+                 /
+                std::sqrt( currentRasterVariance ) );
+            currentRasterBandsOffsets.push_back( mosaicTargetMeans[ inputRastersBandsIdx ]
+               - ( currentRasterBandsScales[ inputRastersBandsIdx ] * currentRasterMean ) );
           }
         }
         else
@@ -688,9 +662,10 @@ namespace te
           *inputRasterPtr,
           m_inputParameters.m_inputRastersBands[ inputRasterIdx ],
           m_inputParameters.m_blendMethod,
-          te::rst::Interpolator::NearestNeighbor,
+          te::rst::NearestNeighbor,
           m_inputParameters.m_interpMethod,
           m_inputParameters.m_noDataValue,
+          false,
           m_inputParameters.m_forceInputNoDataValue,
           dummyRasterOffsets,
           dummyRasterScales,

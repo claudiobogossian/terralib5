@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -82,6 +82,8 @@ namespace te
           \exception Exception It will throws an exception if the image pattern can not be generated.
         */
         te::color::RGBAColor** render(const Chart* chart, const te::da::DataSet* dataset, std::size_t& width);
+
+        te::color::RGBAColor** render(const Chart* chart, const std::map<std::string, double>& chartValue, std::size_t& width);
 
         /*!
           \brief It sets the chart renderer to the manager.

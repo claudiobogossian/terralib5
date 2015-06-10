@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -29,7 +29,7 @@
 // cppUnit
 #include <cppunit/extensions/HelperMacros.h>
 
-#include <terralib/memory/ExpansibleBandBlocksManager.h>
+#include <terralib/memory.h>
 
 /*!
   \class TsExpansibleBandBlocksManager
@@ -75,7 +75,7 @@ class TsExpansibleBandBlocksManager : public CPPUNIT_NS::TestFixture
             }
           }
       }
-    };
+    }
     
     template< typename DataType >
     void CheckValues( te::mem::ExpansibleBandBlocksManager& manager )
@@ -104,7 +104,7 @@ class TsExpansibleBandBlocksManager : public CPPUNIT_NS::TestFixture
             }
           }
       }
-    };    
+    }    
     
     void ReadWriteTest();
     

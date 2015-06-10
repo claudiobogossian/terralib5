@@ -1,4 +1,4 @@
-/*  Copyright (C) 2010-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -84,7 +84,15 @@ namespace te
           */
           std::size_t sizeY();
 
-          /*!            
+          /*!
+            \brief It returns the vector containing the values of the scatter X axis. 
+
+            \return A vector containing the values of the scatter X axis.
+
+          */
+          std::vector<double> getXValues();
+
+          /*!
             \brief It returns the idx-th value of the scatter X axis, as a double. 
 
             \param idx  The index of the element.
@@ -102,7 +110,15 @@ namespace te
           */
           double* getX();
 
-          /*!            
+          /*!
+            \brief It returns the vector containing the values of the scatter Y axis. 
+
+            \return A vector containing the values of the scatter Y axis.
+
+          */
+          std::vector<double> getYValues();
+
+          /*!
             \brief It returns the idx-th value of the scatter Y axis, as a double. 
 
             \param idx  The index of the element.
@@ -157,6 +173,13 @@ namespace te
           double getMaxY();
 
           /*!
+            \brief It sets the values of the X axis.
+
+            \param xValues The vector containing the new values.
+          */
+          void setXValues(std::vector<double> xValues);
+
+          /*!
             \brief It sets the minimum value of the X axis.  
           */
           void setMinX(double& new_minX);
@@ -165,6 +188,13 @@ namespace te
             \brief It sets the maximum value of the X axis. 
           */
           void setMaxX(double& new_maxX);
+
+          /*!
+            \brief It sets the values of the Y axis.  
+
+            \param yValues The vector containing the new values.
+          */
+          void setYValues(std::vector<double> yValues);
 
           /*!
             \brief It sets the minimum value of the Y axis. 
@@ -225,13 +255,13 @@ namespace te
             \brief It returns a pair representing the point that contais the secected ObjectId.
 
             \param oid  The ObjectId to be searched.
-
+            \note Returns NULL if no matching point was found
           */
           const std::pair<double, double> find(const te::da::ObjectId* oid);
 
         private:
 
-          PointToObjectIdSet m_valuesOids;  //!< The intervals and ObjecIds ordered in a boost multi index container
+          PointToObjectIdSet m_valuesOids;  //!< The points and ObjecIds ordered in a boost multi index container
           std::vector<double> m_xValues;    //!< Double values for axis X
           std::vector<double> m_yValues;    //!< Double values for axis Y
 

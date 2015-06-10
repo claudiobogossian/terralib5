@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -23,15 +23,15 @@
   \brief Plugin implementation for the RP Qt Plugin widget.
 */
 
-#ifndef __TE_QT_PLUGINS_RP_INTERNAL_PLUGIN_H
-#define __TE_QT_PLUGINS_RP_INTERNAL_PLUGIN_H
+#ifndef __TE_QT_PLUGINS_LAYOUT_INTERNAL_PLUGIN_H
+#define __TE_QT_PLUGINS_LAYOUT_INTERNAL_PLUGIN_H
 
 // TerraLib
 #include "../../../plugin/Plugin.h"
 #include "Config.h"
 
 // Qt
-#include <QtGui/QMenu>
+#include <QMenu>
 
 namespace te
 {

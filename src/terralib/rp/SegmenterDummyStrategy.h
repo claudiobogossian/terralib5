@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -57,10 +57,12 @@ namespace te
         //overload
         bool execute( 
           SegmenterIdsManager& segmenterIdsManager,
+          const te::rp::SegmenterSegmentsBlock& block2ProcessInfo,
           const te::rst::Raster& inputRaster,
           const std::vector< unsigned int >& inputRasterBands,
-          const std::vector< double >& inputRasterGains,
-          const std::vector< double >& inputRasterOffsets,          
+          const std::vector< double >& inputRasterNoDataValues,
+          const std::vector< double >& inputRasterBandMinValues,
+          const std::vector< double >& inputRasterBandMaxValues,
           te::rst::Raster& outputRaster,
           const unsigned int outputRasterBand,
           const bool enableProgressInterface ) throw( te::rp::Exception );

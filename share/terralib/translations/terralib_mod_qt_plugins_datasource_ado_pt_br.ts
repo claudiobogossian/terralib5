@@ -49,32 +49,37 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/ado/ui/ADOConnectorDialogForm.ui" line="179"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/ado/ui/ADOConnectorDialogForm.ui" line="178"/>
+        <source>Save Password</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/plugins/datasource/ado/ui/ADOConnectorDialogForm.ui" line="192"/>
         <source>File/URL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/ado/ui/ADOConnectorDialogForm.ui" line="188"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/ado/ui/ADOConnectorDialogForm.ui" line="201"/>
         <source>Provider</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/ado/ui/ADOConnectorDialogForm.ui" line="218"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/ado/ui/ADOConnectorDialogForm.ui" line="231"/>
         <source>&amp;Help</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/ado/ui/ADOConnectorDialogForm.ui" line="240"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/ado/ui/ADOConnectorDialogForm.ui" line="253"/>
         <source>&amp;Test</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/ado/ui/ADOConnectorDialogForm.ui" line="247"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/ado/ui/ADOConnectorDialogForm.ui" line="260"/>
         <source>&amp;Open</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/ado/ui/ADOConnectorDialogForm.ui" line="254"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/ado/ui/ADOConnectorDialogForm.ui" line="267"/>
         <source>&amp;Close</source>
         <translation type="unfinished"></translation>
     </message>
@@ -127,17 +132,22 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/ado/ui/ADOCreatorDialogForm.ui" line="179"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/ado/ui/ADOCreatorDialogForm.ui" line="167"/>
+        <source>Save Password</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/plugins/datasource/ado/ui/ADOCreatorDialogForm.ui" line="189"/>
         <source>&amp;Help</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/ado/ui/ADOCreatorDialogForm.ui" line="201"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/ado/ui/ADOCreatorDialogForm.ui" line="211"/>
         <source>&amp;Apply</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/ado/ui/ADOCreatorDialogForm.ui" line="208"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/ado/ui/ADOCreatorDialogForm.ui" line="218"/>
         <source>&amp;Close</source>
         <translation type="unfinished"></translation>
     </message>
@@ -145,43 +155,43 @@
 <context>
     <name>te::qt::plugins::ado::ADOConnectorDialog</name>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/ado/ADOConnectorDialog.cpp" line="155"/>
-        <location filename="../../../src/terralib/qt/plugins/datasource/ado/ADOConnectorDialog.cpp" line="162"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/ado/ADOConnectorDialog.cpp" line="154"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/ado/ADOConnectorDialog.cpp" line="161"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/ado/ADOConnectorDialog.cpp" line="187"/>
         <location filename="../../../src/terralib/qt/plugins/datasource/ado/ADOConnectorDialog.cpp" line="193"/>
         <location filename="../../../src/terralib/qt/plugins/datasource/ado/ADOConnectorDialog.cpp" line="199"/>
-        <location filename="../../../src/terralib/qt/plugins/datasource/ado/ADOConnectorDialog.cpp" line="205"/>
-        <location filename="../../../src/terralib/qt/plugins/datasource/ado/ADOConnectorDialog.cpp" line="213"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/ado/ADOConnectorDialog.cpp" line="207"/>
         <source>TerraLib Qt Components</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/ado/ADOConnectorDialog.cpp" line="163"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/ado/ADOConnectorDialog.cpp" line="162"/>
         <source>Unknown error while opening ADO database!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/ado/ADOConnectorDialog.cpp" line="194"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/ado/ADOConnectorDialog.cpp" line="188"/>
         <source>Data source is ok!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/ado/ADOConnectorDialog.cpp" line="206"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/ado/ADOConnectorDialog.cpp" line="200"/>
         <source>Unknown error while testing ADO data source!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/ado/ADOConnectorDialog.cpp" line="214"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/ado/ADOConnectorDialog.cpp" line="208"/>
         <source>Not implemented yet!
 We will provide it soon!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/ado/ADOConnectorDialog.cpp" line="219"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/ado/ADOConnectorDialog.cpp" line="213"/>
         <source>Open ADO Database</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/ado/ADOConnectorDialog.cpp" line="219"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/ado/ADOConnectorDialog.cpp" line="213"/>
         <source>Database files (*.accdb *.mdb);; All Files (*.*)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -189,30 +199,30 @@ We will provide it soon!</source>
 <context>
     <name>te::qt::plugins::ado::ADOCreatorDialog</name>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/ado/ADOCreatorDialog.cpp" line="143"/>
-        <location filename="../../../src/terralib/qt/plugins/datasource/ado/ADOCreatorDialog.cpp" line="150"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/ado/ADOCreatorDialog.cpp" line="154"/>
         <location filename="../../../src/terralib/qt/plugins/datasource/ado/ADOCreatorDialog.cpp" line="161"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/ado/ADOCreatorDialog.cpp" line="172"/>
         <source>TerraLib Qt Components</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/ado/ADOCreatorDialog.cpp" line="151"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/ado/ADOCreatorDialog.cpp" line="162"/>
         <source>Unknown error while opening ADO database!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/ado/ADOCreatorDialog.cpp" line="162"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/ado/ADOCreatorDialog.cpp" line="173"/>
         <source>Not implemented yet!
 We will provide it soon!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/ado/ADOCreatorDialog.cpp" line="167"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/ado/ADOCreatorDialog.cpp" line="178"/>
         <source>Save ADO Database</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/ado/ADOCreatorDialog.cpp" line="167"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/ado/ADOCreatorDialog.cpp" line="178"/>
         <source>Database files (*.accdb *.mdb);; All Files (*.*)</source>
         <translation type="unfinished"></translation>
     </message>

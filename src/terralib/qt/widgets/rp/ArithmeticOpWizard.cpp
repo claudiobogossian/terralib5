@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -243,8 +243,7 @@ te::rp::ArithmeticOperations::InputParameters te::qt::widgets::ArithmeticOpWizar
   params.m_arithmeticString = arithmeticString;
   params.m_normalize = normalize;
 
-  boost::shared_ptr<te::rst::Raster> rstAPtr(rstA.release());
-  params.m_rasterVec.push_back(rstAPtr);
+  params.m_inputRasters.push_back(rstA.release());
 
   return params;
 }
@@ -285,11 +284,9 @@ te::rp::ArithmeticOperations::InputParameters te::qt::widgets::ArithmeticOpWizar
   params.m_arithmeticString = arithmeticString;
   params.m_normalize = normalize;
 
-  boost::shared_ptr<te::rst::Raster> rstAPtr(rstA.release());
-  params.m_rasterVec.push_back(rstAPtr);
+  params.m_inputRasters.push_back(rstA.release());
 
-  boost::shared_ptr<te::rst::Raster> rstBPtr(rstB.release());
-  params.m_rasterVec.push_back(rstBPtr);
+  params.m_inputRasters.push_back(rstB.release());
 
   return params;
 }
@@ -330,11 +327,9 @@ te::rp::ArithmeticOperations::InputParameters te::qt::widgets::ArithmeticOpWizar
   params.m_arithmeticString = arithmeticString;
   params.m_normalize = normalize;
 
-  boost::shared_ptr<te::rst::Raster> rstAPtr(rstA.release());
-  params.m_rasterVec.push_back(rstAPtr);
+  params.m_inputRasters.push_back(rstA.release());
 
-  boost::shared_ptr<te::rst::Raster> rstBPtr(rstB.release());
-  params.m_rasterVec.push_back(rstBPtr);
+  params.m_inputRasters.push_back(rstB.release());
 
   return params;
 }
@@ -375,11 +370,9 @@ te::rp::ArithmeticOperations::InputParameters te::qt::widgets::ArithmeticOpWizar
   params.m_arithmeticString = arithmeticString;
   params.m_normalize = normalize;
 
-  boost::shared_ptr<te::rst::Raster> rstAPtr(rstA.release());
-  params.m_rasterVec.push_back(rstAPtr);
+  params.m_inputRasters.push_back(rstA.release());
 
-  boost::shared_ptr<te::rst::Raster> rstBPtr(rstB.release());
-  params.m_rasterVec.push_back(rstBPtr);
+  params.m_inputRasters.push_back(rstB.release());
 
   return params;
 }
@@ -420,11 +413,9 @@ te::rp::ArithmeticOperations::InputParameters te::qt::widgets::ArithmeticOpWizar
   params.m_arithmeticString = arithmeticString;
   params.m_normalize = normalize;
 
-  boost::shared_ptr<te::rst::Raster> rstAPtr(rstA.release());
-  params.m_rasterVec.push_back(rstAPtr);
+  params.m_inputRasters.push_back(rstA.release());
 
-  boost::shared_ptr<te::rst::Raster> rstBPtr(rstB.release());
-  params.m_rasterVec.push_back(rstBPtr);
+  params.m_inputRasters.push_back(rstB.release());
 
   return params;
 }
@@ -471,11 +462,9 @@ te::rp::ArithmeticOperations::InputParameters te::qt::widgets::ArithmeticOpWizar
   params.m_arithmeticString = arithmeticString;
   params.m_normalize = normalize;
 
-  boost::shared_ptr<te::rst::Raster> rstAPtr(rstA.release());
-  params.m_rasterVec.push_back(rstAPtr);
+  params.m_inputRasters.push_back(rstA.release());
 
-  boost::shared_ptr<te::rst::Raster> rstBPtr(rstB.release());
-  params.m_rasterVec.push_back(rstBPtr);
+  params.m_inputRasters.push_back(rstB.release());
 
   return params;
 }
@@ -484,8 +473,6 @@ te::rp::ArithmeticOperations::InputParameters te::qt::widgets::ArithmeticOpWizar
 {
   te::rp::ArithmeticOperations::InputParameters params;
 
-  double gain = m_arithmeticOpPage->getGainValue();
-  double offSet = m_arithmeticOpPage->getOffSetValue();
   bool normalize = m_arithmeticOpPage->normalize();
   std::string arithExpStr = m_arithmeticOpPage->getUserDefinedExpression();
 

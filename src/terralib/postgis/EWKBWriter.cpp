@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -27,6 +27,7 @@
 #include "../common/ByteSwapUtils.h"
 #include "../common/Globals.h"
 #include "../geometry.h"
+#include "../srs/Config.h"
 #include "EWKBWriter.h"
 #include "Utils.h"
 
@@ -127,6 +128,9 @@ void te::pgis::EWKBWriter::visit(const te::gm::GeometryCollection& visited)
   unsigned int nGeoms = static_cast<unsigned int>(visited.getNumGeometries());
   int srid = visited.getSRID();
 
+  if(srid <= TE_UNKNOWN_SRS)
+    srid = PGIS_UNKNOWN_SRS;
+
   Convert2PostGISWKBType(gType);
 
   if(m_outputSRID)
@@ -163,6 +167,9 @@ void te::pgis::EWKBWriter::visit(const te::gm::LineString& visited)
 
   unsigned int gType = static_cast<unsigned int>(visited.getGeomTypeId());
   int srid = visited.getSRID();
+
+  if(srid <= TE_UNKNOWN_SRS)
+    srid = PGIS_UNKNOWN_SRS;
 
   Convert2PostGISWKBType(gType);
 
@@ -207,6 +214,9 @@ void te::pgis::EWKBWriter::visit(const te::gm::Point& visited)
 
   unsigned int gType = static_cast<unsigned int>(visited.getGeomTypeId());
   int srid = visited.getSRID();
+
+  if(srid <= TE_UNKNOWN_SRS)
+    srid = PGIS_UNKNOWN_SRS;
 
   Convert2PostGISWKBType(gType);
 
@@ -269,6 +279,9 @@ void te::pgis::EWKBWriter::visit(const te::gm::Polygon& visited)
   unsigned int gType = static_cast<unsigned int>(visited.getGeomTypeId());
   unsigned int nRings = static_cast<unsigned int>(visited.getNumRings());
   int srid = visited.getSRID();
+
+  if(srid <= TE_UNKNOWN_SRS)
+    srid = PGIS_UNKNOWN_SRS;
 
   Convert2PostGISWKBType(gType);
 

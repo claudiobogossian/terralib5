@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -76,6 +76,8 @@ namespace te
           */
           MultiThreadMapDisplay(const QSize& size, const bool& showFeedback = true, QWidget* parent = 0, Qt::WindowFlags f = 0);
 
+          MultiThreadMapDisplay(QWidget* parent = 0, const bool& showFeedback = true, Qt::WindowFlags f = 0);
+
           /*! \brief Destructor. */
           ~MultiThreadMapDisplay();
 
@@ -101,6 +103,8 @@ namespace te
             \note This method will return a null point if the transform can not be done.
           */
           virtual QPointF transform(const QPointF& p);
+
+          void setSynchronous(bool on);
 
         private:
 
@@ -157,6 +161,7 @@ namespace te
           std::map<int, QImage> m_images;                       //!< The set of images built by each thread. It will be used to compose the final result, keeping the layer list order.
           bool m_showFeedback;                                  //!< A flag that indicates if the map display will show drawing feedback.
           QMatrix m_matrix;                                     //!<  Used to convert screen coordinates to world coordinates.
+          bool m_synchronous;                                   //!< A flag that indicates if the map display is  synchronous or asynchronous.
       };
 
     } // end namespace widgets

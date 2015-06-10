@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../common/Translator.h"
+#include "../common/PlatformUtils.h"
 #include "DefaultFinder.h"
 #include "PluginInfo.h"
 #include "Utils.h"
@@ -36,6 +37,7 @@
 // STL
 #include <cassert>
 #include <cstdlib>
+
 
 te::plugin::DefaultFinder::DefaultFinder()
 {
@@ -63,17 +65,14 @@ void te::plugin::DefaultFinder::getDefaultDirs( std::vector< std::string >& dirs
 
 // if the default dir is not available in the current dir let's try an environment variable defined as TERRALIB_DIR_ENVIRONMENT_VARIABLE
 
+  std::string plgDir = te::common::FindInTerraLibPath(TE_DEFAULT_PLUGINS_DIR);
+
+  if(!plgDir.empty())
   {
-    char* e = getenv(TERRALIB_DIR_VAR_NAME);
+    boost::filesystem::path p(plgDir);
 
-    if(e != 0)
-    {
-      boost::filesystem::path p(e);
-      p /= TE_DEFAULT_PLUGINS_DIR;
-
-      if(boost::filesystem::is_directory(p))
-        dirs.push_back( boost::filesystem::system_complete(p).string() );
-    }
+    if(boost::filesystem::is_directory(p))
+      dirs.push_back( boost::filesystem::system_complete(p).string() );
   }
   
 #ifdef TE_PLUGINS_INSTALL_PATH
@@ -121,19 +120,30 @@ void te::plugin::DefaultFinder::getPlugins(boost::ptr_vector<PluginInfo>& plugin
 
     for(boost::filesystem::directory_iterator it(path), itEnd; it != itEnd; ++it)
     {
-// check just in direct sub-dirs, don't go recursively for ever!
-      if(boost::filesystem::is_directory(it->status()))
+      if(boost::filesystem::is_regular_file(it->status()))
       {
-        boost::filesystem::path foundPlugin = (*it);
-        
-        foundPlugin /= TE_DEFAULT_PLUGIN_FILE_NAME;
+        std::string ext = boost::filesystem::extension(it->path());
 
-        if(boost::filesystem::is_regular_file(foundPlugin))
-        {
-// try to read the plugin XML configuration file and add info to the output vector
-          plugins.push_back(GetInstalledPlugin(foundPlugin.string()));
-        }
+        if(ext == TE_DEFAULT_PLUGIN_EXTENSION)
+          plugins.push_back(GetInstalledPlugin(it->path().string()));
       }
+// check just in direct sub-dirs, don't go recursively for ever!
+//      if(boost::filesystem::is_directory(it->status()))
+//      {
+//        boost::filesystem::path foundPlugin = (*it);
+//
+//
+//        std::cout <<std::endl <<foundPlugin.string();
+//
+//        
+//        foundPlugin /= TE_DEFAULT_PLUGIN_FILE_NAME;
+//
+//        if(boost::filesystem::is_regular_file(foundPlugin))
+//        {
+//// try to read the plugin XML configuration file and add info to the output vector
+//          plugins.push_back(GetInstalledPlugin(foundPlugin.string()));
+//        }
+//      }
     }
   }
 }

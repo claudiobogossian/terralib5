@@ -19,77 +19,77 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="90"/>
+        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="83"/>
         <source>Input layer and the group attribute(s)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="117"/>
+        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="110"/>
         <source>Filter:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="131"/>
+        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="124"/>
         <source>Only Selected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="138"/>
+        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="131"/>
         <source>Calculate Statistics</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="171"/>
+        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="164"/>
         <source>Output</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="177"/>
+        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="170"/>
         <source>Repository:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="197"/>
+        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="190"/>
         <source>...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="210"/>
+        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="203"/>
         <source>BD</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="217"/>
+        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="210"/>
         <source>Layer Name:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="236"/>
+        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="229"/>
         <source>Output Statistics</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="246"/>
+        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="239"/>
         <source>Select all:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="253"/>
+        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="246"/>
         <source>Reject all:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="302"/>
+        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="304"/>
         <source>Help</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="322"/>
+        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="324"/>
         <source>&amp;Ok</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="329"/>
+        <location filename="../../../src/terralib/vp/qt/ui/AggregationDialogForm.ui" line="331"/>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
@@ -98,7 +98,7 @@
     <name>BufferDialogForm</name>
     <message>
         <location filename="../../../src/terralib/vp/qt/ui/BufferDialogForm.ui" line="14"/>
-        <source>Buffer</source>
+        <source>Buffer Operation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -413,15 +413,146 @@
     </message>
 </context>
 <context>
+    <name>LineToPolygonDialogForm</name>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/LineToPolygonDialogForm.ui" line="14"/>
+        <source>Line to Polygon Operation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/LineToPolygonDialogForm.ui" line="50"/>
+        <source>Generates a layer of polygons from a layer of lines.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/LineToPolygonDialogForm.ui" line="69"/>
+        <source>Imagem</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/LineToPolygonDialogForm.ui" line="87"/>
+        <source>Output layer of polygon(s)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/LineToPolygonDialogForm.ui" line="93"/>
+        <source>Repository:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/LineToPolygonDialogForm.ui" line="113"/>
+        <source>...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/LineToPolygonDialogForm.ui" line="126"/>
+        <source>BD</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/LineToPolygonDialogForm.ui" line="133"/>
+        <source>Layer Name:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/LineToPolygonDialogForm.ui" line="150"/>
+        <source>Input layer of line(s)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/LineToPolygonDialogForm.ui" line="169"/>
+        <source>Only Selected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/LineToPolygonDialogForm.ui" line="190"/>
+        <source>Help</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/LineToPolygonDialogForm.ui" line="210"/>
+        <source>&amp;Ok</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/LineToPolygonDialogForm.ui" line="217"/>
+        <source>Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>MultipartToSinglepartDialogForm</name>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/MultipartToSinglepartDialogForm.ui" line="14"/>
+        <source>Multipart To Singlepart</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/MultipartToSinglepartDialogForm.ui" line="48"/>
+        <source>Split multpart geometries in singlepart geometries</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/MultipartToSinglepartDialogForm.ui" line="67"/>
+        <source>Imagem</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/MultipartToSinglepartDialogForm.ui" line="77"/>
+        <source>Input layer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/MultipartToSinglepartDialogForm.ui" line="91"/>
+        <source>Only Selected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/MultipartToSinglepartDialogForm.ui" line="122"/>
+        <source>Output</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/MultipartToSinglepartDialogForm.ui" line="128"/>
+        <source>Repository:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/MultipartToSinglepartDialogForm.ui" line="148"/>
+        <source>...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/MultipartToSinglepartDialogForm.ui" line="161"/>
+        <source>BD</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/MultipartToSinglepartDialogForm.ui" line="168"/>
+        <source>Layer Name:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/MultipartToSinglepartDialogForm.ui" line="196"/>
+        <source>Help</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/MultipartToSinglepartDialogForm.ui" line="216"/>
+        <source>&amp;Ok</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/MultipartToSinglepartDialogForm.ui" line="223"/>
+        <source>Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>PolygonToLineDialogForm</name>
     <message>
         <location filename="../../../src/terralib/vp/qt/ui/PolygonToLineDialogForm.ui" line="14"/>
         <source>Polygon to Line Operation</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../src/terralib/vp/qt/ui/PolygonToLineDialogForm.ui" line="50"/>
-        <source>Polygon to Line operation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -430,92 +561,57 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/PolygonToLineDialogForm.ui" line="81"/>
-        <source>Input polygon layer</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../src/terralib/vp/qt/ui/PolygonToLineDialogForm.ui" line="90"/>
+        <location filename="../../../src/terralib/vp/qt/ui/PolygonToLineDialogForm.ui" line="169"/>
         <source>Only Selected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/PolygonToLineDialogForm.ui" line="99"/>
-        <source>Filter:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../src/terralib/vp/qt/ui/PolygonToLineDialogForm.ui" line="120"/>
-        <source>Advanced</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../src/terralib/vp/qt/ui/PolygonToLineDialogForm.ui" line="135"/>
-        <source>operation with all layers in memory</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../src/terralib/vp/qt/ui/PolygonToLineDialogForm.ui" line="138"/>
-        <source>Whole operation in memory</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../src/terralib/vp/qt/ui/PolygonToLineDialogForm.ui" line="148"/>
-        <source>operation with only one layer in memory</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../src/terralib/vp/qt/ui/PolygonToLineDialogForm.ui" line="151"/>
-        <source>Partially operation in memory</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../src/terralib/vp/qt/ui/PolygonToLineDialogForm.ui" line="158"/>
-        <source>operation without memory use</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../src/terralib/vp/qt/ui/PolygonToLineDialogForm.ui" line="161"/>
-        <source>Low memory use</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../src/terralib/vp/qt/ui/PolygonToLineDialogForm.ui" line="177"/>
-        <source>Output line layer</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../src/terralib/vp/qt/ui/PolygonToLineDialogForm.ui" line="192"/>
+        <location filename="../../../src/terralib/vp/qt/ui/PolygonToLineDialogForm.ui" line="126"/>
         <source>BD</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/PolygonToLineDialogForm.ui" line="199"/>
+        <location filename="../../../src/terralib/vp/qt/ui/PolygonToLineDialogForm.ui" line="93"/>
         <source>Repository:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/PolygonToLineDialogForm.ui" line="212"/>
+        <location filename="../../../src/terralib/vp/qt/ui/PolygonToLineDialogForm.ui" line="50"/>
+        <source>Generates a layer of lines from a layer of polygons.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/PolygonToLineDialogForm.ui" line="87"/>
+        <source>Output layer of line(s)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/PolygonToLineDialogForm.ui" line="113"/>
         <source>...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/PolygonToLineDialogForm.ui" line="226"/>
+        <location filename="../../../src/terralib/vp/qt/ui/PolygonToLineDialogForm.ui" line="133"/>
         <source>Layer Name:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/PolygonToLineDialogForm.ui" line="247"/>
+        <location filename="../../../src/terralib/vp/qt/ui/PolygonToLineDialogForm.ui" line="150"/>
+        <source>Input layer of polygon(s)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/ui/PolygonToLineDialogForm.ui" line="190"/>
         <source>Help</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/PolygonToLineDialogForm.ui" line="267"/>
+        <location filename="../../../src/terralib/vp/qt/ui/PolygonToLineDialogForm.ui" line="210"/>
         <source>&amp;Ok</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/ui/PolygonToLineDialogForm.ui" line="274"/>
+        <location filename="../../../src/terralib/vp/qt/ui/PolygonToLineDialogForm.ui" line="217"/>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
@@ -791,12 +887,12 @@
 <context>
     <name>te::vp::AggregationDialog</name>
     <message>
-        <location filename="../../../src/terralib/vp/qt/AggregationDialog.cpp" line="582"/>
+        <location filename="../../../src/terralib/vp/qt/AggregationDialog.cpp" line="581"/>
         <source>Save as...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/AggregationDialog.cpp" line="583"/>
+        <location filename="../../../src/terralib/vp/qt/AggregationDialog.cpp" line="582"/>
         <source>Shapefile (*.shp *.SHP);;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -856,12 +952,99 @@
 <context>
     <name>te::vp::IntersectionDialog</name>
     <message>
-        <location filename="../../../src/terralib/vp/qt/IntersectionDialog.cpp" line="435"/>
+        <location filename="../../../src/terralib/vp/qt/IntersectionDialog.cpp" line="434"/>
         <source>Save as...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/IntersectionDialog.cpp" line="436"/>
+        <location filename="../../../src/terralib/vp/qt/IntersectionDialog.cpp" line="435"/>
+        <source>Shapefile (*.shp *.SHP);;</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>te::vp::LineToPolygonDialog</name>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/LineToPolygonDialog.cpp" line="175"/>
+        <source>Save as...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/LineToPolygonDialog.cpp" line="176"/>
+        <source>Shapefile (*.shp *.SHP);;</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>te::vp::MultipartToSinglepartDialog</name>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="158"/>
+        <source>Save as...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="159"/>
+        <source>Shapefile (*.shp *.SHP);;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="178"/>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="186"/>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="197"/>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="205"/>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="213"/>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="219"/>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="237"/>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="253"/>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="270"/>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="300"/>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="306"/>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="323"/>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="340"/>
+        <source>Multipart To Singlepart</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="178"/>
+        <source>Select an input layer.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="186"/>
+        <source>Can not execute this operation on this type of layer.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="197"/>
+        <source>None selected object!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="205"/>
+        <source>The selected input data source can not be accessed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="213"/>
+        <source>Define a repository for the result.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="270"/>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="323"/>
+        <source>Error: could not operate.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>te::vp::PolygonToLineDialog</name>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/PolygonToLineDialog.cpp" line="175"/>
+        <source>Save as...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/vp/qt/PolygonToLineDialog.cpp" line="176"/>
         <source>Shapefile (*.shp *.SHP);;</source>
         <translation type="unfinished"></translation>
     </message>

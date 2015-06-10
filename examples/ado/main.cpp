@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-20013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -53,13 +53,18 @@ int main(int /*argc*/, char** /*argv*/)
 
     // Set the minimum server connection information needed to connect to the database server
     std::map<std::string, std::string> connInfo;
+#ifdef _M_IX86
     connInfo["PROVIDER"] = "Microsoft.Jet.OLEDB.4.0";
+#else
+    connInfo["PROVIDER"] = "Microsoft.ACE.OLEDB.12.0";
+#endif
     connInfo["HOST"] = "localhost";
     connInfo["USER_NAME"] = "";
     connInfo["PASSWORD"] = "";
 
     std::string data_dir = TERRALIB_DATA_DIR;
     connInfo["DB_NAME"] = data_dir + "/mdb/ADODataSource.mdb";
+    //connInfo["DB_NAME"] = "C:/Users/juan/MyData/DadosTutorial/bh.mdb";
    
     // Create a data source using the data source factory
     std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("ADO"));

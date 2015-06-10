@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -29,17 +29,11 @@
 // TerraLib
 #include "Config.h"
 #include "AbstractAction.h"
-#include "../../../qt/af/connectors/LayoutEditor.h"
 
 namespace te
 {
   namespace qt
   {
-    namespace widgets
-    {
-      class LayoutEditor;
-    }
-
     namespace plugins
     {
       namespace layout
@@ -63,9 +57,6 @@ namespace te
           protected slots:
 
             virtual void onActionActivated(bool checked);
-
-          private:
-            te::qt::af::LayoutEditor* m_layoutEditor;
         };
 
       } // end namespace layout
