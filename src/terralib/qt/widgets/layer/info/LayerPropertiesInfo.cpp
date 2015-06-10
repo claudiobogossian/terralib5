@@ -112,16 +112,16 @@ te::qt::widgets::LayerPropertiesInfo::~LayerPropertiesInfo()
 
 void te::qt::widgets::LayerPropertiesInfo::valueChanged(QtProperty* p, int value)
 {
-  if(p->propertyName() == "srid")
-    m_layer->setSRID(value);
-  else if(p->propertyName() == "visibility")
-    m_layer->setVisibility((te::map::Visibility)value);
+  //if(p->propertyName() == "srid")
+  //  m_layer->setSRID(value);
+  //else if(p->propertyName() == "visibility")
+  //  m_layer->setVisibility((te::map::Visibility)value);
 }
 
 void te::qt::widgets::LayerPropertiesInfo::valueChanged(QtProperty* p, const QString& value)
 {
-  if(p->propertyName() == "title")
-    m_layer->setTitle(value.toStdString());
+  //if(p->propertyName() == "title")
+  //  m_layer->setTitle(value.toStdString());
 }
 
 void te::qt::widgets::LayerPropertiesInfo::setLayerRasterProperties(te::map::AbstractLayer* rasterLayer)
