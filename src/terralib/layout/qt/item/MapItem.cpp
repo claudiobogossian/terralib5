@@ -947,7 +947,7 @@ void te::layout::MapItem::contextUpdated()
   {
     QPointF pt = scenePos();
 
-	m_mapDisplay->setGeometry(pt.x(), pt.y(), newSize.width(), newSize.height());
+    m_mapDisplay->setGeometry(pt.x(), pt.y(), newSize.width(), newSize.height());
     m_pixmapIsDirty = true;
   }
 }
