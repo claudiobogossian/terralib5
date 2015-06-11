@@ -59,11 +59,6 @@ te::qt::widgets::TimeSeriesDataWidget::TimeSeriesDataWidget(te::da::DataSet* dat
         m_ui->m_idComboBox->addItem(item, QVariant::fromValue(i));
     }
   }
-
-// connect signal and slots
-  connect(m_ui->m_timeComboBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(onTimeComboBoxIndexChanged(QString)));
-  connect(m_ui->m_valueComboBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(onValueComboBoxIndexChanged(QString)));
-  connect(m_ui->m_idComboBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(onIdComboBoxIndexChanged(QString)));
 }
 
 te::qt::widgets::TimeSeriesDataWidget::~TimeSeriesDataWidget()

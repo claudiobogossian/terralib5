@@ -144,7 +144,6 @@ namespace te
           StringScaleDraw*     m_scaleDraw;        //!< Scale draw that defines how a label will be displayed on this chart.
           TimeSeriesStyle*     m_timeSeriesStyle;  //!< The symbol that defines the look of a scatter's point.
           QColor               m_selColor;         //!< The color used to highlight selected obecjts.
-          //QwtPlotCurve*        m_selection;        //!< The PlotItems to be highlighted when a selection occurs;
       };
     } // end namespace widgets
   }   // end namespace qt

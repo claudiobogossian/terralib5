@@ -96,7 +96,7 @@ void te::qt::widgets::TimeSeriesChart::setData()
       boost::gregorian::date_duration days = ti->getDate().getDate() - basedate;
       long long int seconds = ti->getTime().getTimeDuration().total_seconds();
       long long int boostDays = days.days();
-      date = (double) boostDays * 86400 + seconds;
+      date = (double) boostDays;
       dates.insert(boost::gregorian::to_iso_extended_string(ti->getDate().getDate()));
     }
     else if(dateTime->getDateTimeType() == te::dt::DATE)
@@ -106,7 +106,6 @@ void te::qt::widgets::TimeSeriesChart::setData()
       date = days.days();
       dates.insert(boost::gregorian::to_iso_extended_string(d->getDate()));
     }
-
     samples += QPointF(date, it.getDouble());
     ++it;
   }
@@ -117,8 +116,8 @@ void te::qt::widgets::TimeSeriesChart::setData()
 
 te::qt::widgets::TimeSeriesChart::~TimeSeriesChart()
 {
-  //delete m_timeSeries;
   delete m_timeSeriesStyle;
+  delete m_scaleDraw;
 }
 
 int  te::qt::widgets::TimeSeriesChart::rtti() const
@@ -139,7 +138,7 @@ void te::qt::widgets::TimeSeriesChart::setScaleDraw( StringScaleDraw* newScaleDr
 
 void te::qt::widgets::TimeSeriesChart::attach(QwtPlot* plot)
 {
-  plot->setAxisScaleDraw(QwtPlot::xBottom, m_scaleDraw);
+  //plot->setAxisScaleDraw(QwtPlot::xBottom, m_scaleDraw);
   plot->axisScaleDraw(QwtPlot::xBottom)->setLabelAlignment(Qt::AlignLeft | Qt::AlignVCenter);
   plot->axisScaleDraw(QwtPlot::xBottom)->setLabelRotation(-60);
   QwtPlotCurve::attach(plot);
