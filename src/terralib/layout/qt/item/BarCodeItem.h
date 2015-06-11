@@ -46,7 +46,7 @@ namespace te
     {
       public:
 
-        BarCodeItem( ItemController* controller, Observable* o );
+        BarCodeItem( ItemController* controller, Observable* o, bool invertedMatrix = false );
 
         virtual ~BarCodeItem();
         

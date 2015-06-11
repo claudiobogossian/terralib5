@@ -55,7 +55,7 @@
 #include <QGraphicsView>
 #include <QList>
 
-te::layout::TextItem::TextItem( ItemController* controller, Observable* o ) :
+te::layout::TextItem::TextItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
   ParentItem<QGraphicsTextItem>(controller, o, true),
   m_editable(false),
   m_move(false)

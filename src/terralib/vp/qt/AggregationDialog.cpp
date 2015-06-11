@@ -95,7 +95,6 @@ te::vp::AggregationDialog::AggregationDialog(QWidget* parent, Qt::WindowFlags f)
   connect(m_ui->m_targetDatasourceToolButton, SIGNAL(pressed()), this, SLOT(onTargetDatasourceToolButtonPressed()));
   connect(m_ui->m_targetFileToolButton, SIGNAL(pressed()), this,  SLOT(onTargetFileToolButtonPressed()));
 
-  //connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));
   connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
   connect(m_ui->m_cancelPushButton, SIGNAL(clicked()), this, SLOT(onCancelPushButtonClicked()));
 
@@ -191,7 +190,7 @@ std::vector<te::dt::Property*> te::vp::AggregationDialog::getSelectedProperties(
 {
   std::vector<te::dt::Property*> selProperties;
 
-  for(std::size_t i = 0; i != m_ui->m_propertieslistWidget->count(); ++i)
+  for(int i = 0; i != m_ui->m_propertieslistWidget->count(); ++i)
   {
     if(m_ui->m_propertieslistWidget->isItemSelected(m_ui->m_propertieslistWidget->item(i)))
     {
@@ -593,11 +592,6 @@ void te::vp::AggregationDialog::onTargetFileToolButtonPressed()
   
   m_toFile = true;
   m_ui->m_newLayerNameLineEdit->setEnabled(false);
-}
-
-void te::vp::AggregationDialog::onHelpPushButtonClicked()
-{
-  QMessageBox::information(this, "Help", "Under development");
 }
 
 void te::vp::AggregationDialog::onOkPushButtonClicked()

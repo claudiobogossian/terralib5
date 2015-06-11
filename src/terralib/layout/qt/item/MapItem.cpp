@@ -83,8 +83,8 @@
 
 #include <QTextEdit>
 
-te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
-  ParentItem<QGraphicsProxyWidget>(controller, o),
+te::layout::MapItem::MapItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
+  ParentItem<QGraphicsProxyWidget>(controller, o, invertedMatrix),
   m_mapDisplay(0),
   m_grabbedByWidget(false),
   m_tool(0),

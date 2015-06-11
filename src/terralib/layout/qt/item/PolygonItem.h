@@ -48,7 +48,7 @@ namespace te
     {
       public:
 
-        PolygonItem ( ItemController* controller, Observable* o );
+        PolygonItem ( ItemController* controller, Observable* o, bool invertedMatrix = false );
 
         virtual ~PolygonItem ();
         		

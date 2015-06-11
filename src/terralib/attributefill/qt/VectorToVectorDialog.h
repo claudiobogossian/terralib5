@@ -115,8 +115,6 @@ namespace te
 
         void onToLayerComboBoxCurrentIndexChanged(int index);
 
-        void onHelpPushButtonClicked();
-
         void onOkPushButtonClicked();
 
         void onCancelPushButtonClicked();

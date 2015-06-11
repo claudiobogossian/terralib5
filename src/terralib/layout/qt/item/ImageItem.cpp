@@ -39,8 +39,8 @@
 // Qt
 #include <QStyleOptionGraphicsItem>
 
-te::layout::ImageItem::ImageItem( ItemController* controller, Observable* o ) :
-  ObjectItem(controller, o)
+te::layout::ImageItem::ImageItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
+  ObjectItem(controller, o, invertedMatrix)
 {
   m_nameClass = std::string(this->metaObject()->className());
 }

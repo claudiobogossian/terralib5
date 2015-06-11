@@ -38,8 +38,8 @@
 // Qt
 #include <QPixmap>
 
-te::layout::LegendChildItem::LegendChildItem( ItemController* controller, Observable* o ) :
-  LegendItem(controller, o)
+te::layout::LegendChildItem::LegendChildItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
+  LegendItem(controller, o, true)
 {  
   this->setFlags(QGraphicsItem::ItemIsMovable
     | QGraphicsItem::ItemIsSelectable

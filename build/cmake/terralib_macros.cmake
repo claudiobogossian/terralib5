@@ -27,18 +27,17 @@
 
 MACRO(TeInstallPlugins plugins location)
 
-  set(_files )
-  
+  set(_files)
+
   foreach(plugin ${plugins})
     get_target_property(_loc ${plugin} LOCATION)
-	list(APPEND _files ${_loc})
+    list(APPEND _files ${_loc})
   endforeach()
   
-  install (FILES ${_files}
-	DESTINATION qtplugins/${location}
-	CONFIGURATIONS Release
-	COMPONENT runtime
-  )
+	install(FILES ${_files}
+           DESTINATION "${TERRALIB_BASE_DESTINATION_DIR}qtplugins/${location}"
+           CONFIGURATIONS Release
+           COMPONENT runtime)
   
 ENDMACRO(TeInstallPlugins)
 
@@ -61,6 +60,9 @@ MACRO(TeInstallQt5Plugins)
 # Installing platform plugins
   if(WIN32)
     set(_plugins Qt5::QWindowsIntegrationPlugin Qt5::QMinimalIntegrationPlugin)
+    TeInstallPlugins("${_plugins}" "platforms")
+  elseif(APPLE)
+    set(_plugins Qt5::QCocoaIntegrationPlugin Qt5::QMinimalIntegrationPlugin)
     TeInstallPlugins("${_plugins}" "platforms")
   endif()
 
@@ -103,11 +105,7 @@ MACRO(TeInstallQtPlugins plgs)
 
   set (_regex_exp "(${_regex_exp})?(${CMAKE_SHARED_LIBRARY_SUFFIX})$")
 
-  if(APPLE)
-    set (_dest terraview.app/Contents/qtplugins)
-  else()
-    set (_dest qtplugins)
-  endif()
+  set (_dest "${TERRALIB_BASE_DESTINATION_DIR}qtplugins")
 
 if(QT4_FOUND)
   set (_plugin_dirs "imageformats;iconengines;sqldrivers")

@@ -36,8 +36,8 @@
 #include "../../../common/STLUtils.h"
 #include "../../item/PaperModel.h"
 
-te::layout::PaperItem::PaperItem( ItemController* controller, Observable* o ) :
-  ObjectItem(controller, o)
+te::layout::PaperItem::PaperItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
+  ObjectItem(controller, o, invertedMatrix)
 {  
 
   this->setFlags(QGraphicsItem::ItemSendsGeometryChanges);

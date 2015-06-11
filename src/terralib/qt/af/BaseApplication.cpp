@@ -397,6 +397,9 @@ void te::qt::af::BaseApplication::onAddDataSetLayerTriggered()
 {
   try
   {
+    if(m_project == 0)
+      throw Exception(TE_TR("Error: there is no opened project!"));
+
     QApplication::setOverrideCursor(Qt::WaitCursor);
 
     // Get the parent layer where the dataset layer(s) will be added.
@@ -466,12 +469,6 @@ void te::qt::af::BaseApplication::onAddDataSetLayerTriggered()
     QApplication::setOverrideCursor(Qt::WaitCursor);
 
     lselectorw.reset(0);
-
-    if(m_project == 0)
-    {
-      QApplication::restoreOverrideCursor();
-      throw Exception(TE_TR("Error: there is no opened project!"));
-    }
 
     std::list<te::map::AbstractLayerPtr>::const_iterator it = layers.begin();
     std::list<te::map::AbstractLayerPtr>::const_iterator itend = layers.end();

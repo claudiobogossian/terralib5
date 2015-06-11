@@ -1,20 +1,21 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-  <meta content="text/html; charset=ISO-8859-1"
- http-equiv="content-type">
-  <title>Polygon to Line</title>
+  <meta http-equiv="content-type"
+ content="text/html; charset=ISO-8859-1">
+  <title>Line to Polygon</title>
 </head>
 <body>
 <h3 style="text-align: center;"><font><font><font><font
  style="font-family: Calibri Light;" face="Calibri Light"><span
- style="font-weight: bold;">Polygon to Line</span></font></font></font></font></h3>
-<font face="Calibri Light">The
-<span style="font-weight: bold;">Polygon
-to Line</span>
-operation generates a new layer of lines based on a layer of polygons. </font><span
+ style="font-weight: bold;">Line
+to Polygon</span></font></font></font></font></h3>
+<font face="Calibri Light">The&nbsp;<span style="font-weight: bold;">Line
+to Polygon</span>
+operation generates a new layer of polygon based on a layer of closed
+lines. </font><span
  style="color: rgb(0, 0, 0); font-family: 'Calibri Light'; font-size: medium; font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; text-align: start; text-indent: 0px; text-transform: none; white-space: normal; word-spacing: 0px; display: inline ! important; float: none;">The
-figure bellow shows an examples of polygon to line operation.<br>
+figure bellow shows an examples of line to polygon operation.<br>
 </span>
 <div style="text-align: center;"><span
  style="color: rgb(0, 0, 0); font-family: 'Calibri Light'; font-size: medium; font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; text-align: start; text-indent: 0px; text-transform: none; white-space: normal; word-spacing: 0px; display: inline ! important; float: none;"></span><br>
@@ -23,22 +24,22 @@ figure bellow shows an examples of polygon to line operation.<br>
 <span
  style="color: rgb(0, 0, 0); font-family: 'Calibri Light'; font-size: medium; font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; text-align: start; text-indent: 0px; text-transform: none; white-space: normal; word-spacing: 0px; display: inline ! important; float: none;"></span>
 <table
- style="width: 1222px; height: 406px; text-align: left; margin-left: auto; margin-right: auto;"
+ style="text-align: left; margin-left: auto; margin-right: auto; height: 406px; width: 1222px;"
  border="0" cellpadding="2" cellspacing="2">
   <tbody>
     <tr>
       <td style="text-align: center;"><img
- style="width: 584px; height: 365px;" alt="Layer of polygons"
- title="Layer of polygons" src="pol2line01.png"></td>
-      <td style="text-align: center;"><img
  style="width: 584px; height: 366px;" alt="Layer of lines"
  title="Layer of lines" src="pol2line02.png"></td>
+      <td style="text-align: center;"><img
+ style="width: 584px; height: 365px;" alt="Layer of polygons"
+ title="Layer of polygons" src="pol2line01.png"></td>
     </tr>
     <tr>
       <td style="text-align: center;">Input
-layer of polygons.</td>
+layer of closed lines.</td>
       <td style="text-align: center;">Output
-layer of lines.</td>
+layer of polygons.</td>
     </tr>
   </tbody>
 </table>
@@ -49,20 +50,22 @@ layer of lines.</td>
 <span
  style="color: rgb(0, 0, 0); font-family: 'Calibri Light'; font-size: medium; font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; text-align: start; text-indent: 0px; text-transform: none; white-space: normal; word-spacing: 0px; display: inline ! important; float: none;"></span><font
  face="Calibri Light">The output is a new layer that
-contains all data values of the input layer including the lines
+contains all data values of the input layer including the polygons
 objects. <br>
 <br>
 </font><font face="Calibri Light">It is
 accessed through:<br>
 </font>
 <p><font face="Calibri Light"><font face="Calibri Light"><b>&nbsp;&nbsp;&nbsp;
-Processing &gt; Vector Processing &gt; </b></font><font
- face="Calibri Light"><b>Polygon
-to Line...</b></font></font></p>
+Processing &gt; Vector Processing &gt; </b></font></font><font
+ face="Calibri Light"><font face="Calibri Light"><b>Line
+to </b></font></font><font face="Calibri Light"><font
+ face="Calibri Light"><b>Polygon...</b></font></font></p>
 <ol>
   <li><font face="Calibri Light"><font>Select
 the <i>Input layer</i>
-to apply the operation. The input layer needs to be composed by polygons</font></font>.</li>
+to apply the operation. The input layer needs to be composed by closed
+lines</font></font>.</li>
   <li><font face="Calibri Light"><font>Optionally,
 check the option <span style="font-style: italic;">Only selected </span>if
 you wish to
@@ -89,9 +92,9 @@ to close the interface.</font></li>
 </ol>
 <font face="Calibri Light"><b>Usage
 Tips:</b></font>
-<font face="Calibri Light"></font><font face="Calibri Light"> </font>
-<p><font face="Calibri Light"><font face="Calibri Light">The Polygon to
-Line result can be stored in different TerraLib data sources.
+<font face="Calibri Light"> </font>
+<p><font face="Calibri Light"><font face="Calibri Light">The&nbsp;Line
+to Polygon result can be stored in different TerraLib data sources.
 Check <a style="font-family: Calibri Light;"
  href="../../widgets/datasource_selector/datasource_selector.html">data
 source selector</a><span style="font-family: Calibri Light;"> for more

@@ -76,8 +76,6 @@ namespace te
 
         void onSecondLayerComboBoxChanged(int index);
 
-        void onHelpPushButtonClicked();
-
         void onOkPushButtonClicked();
 
         void onTargetDatasourceToolButtonPressed();
