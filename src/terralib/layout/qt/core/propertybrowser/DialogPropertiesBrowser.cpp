@@ -43,6 +43,8 @@
 #include "../../../core/pattern/proxy/AbstractProxyProject.h"
 #include "../../item/MapItem.h"
 #include "../../../item/MapModel.h"
+#include "../../outside/ColorDialogOutside.h"
+#include "../../../outside/ColorDialogModel.h"
 
 // STL
 #include <vector>
@@ -426,44 +428,38 @@ void te::layout::DialogPropertiesBrowser::onShowFontDlg()
 
 void te::layout::DialogPropertiesBrowser::onShowColorDlg()
 {
-  QWidget* wdg = dynamic_cast<QWidget*>(parent());
-
-  if(!wdg)
-    return;
-
-  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
-
-  Property property = m_currentPropertyClicked;
-
-  if(property.getType() != dataType->getDataTypeColor())
-    return;
-
-  bool ok = false;
-  QColor qcolor;
-  te::color::RGBAColor color;
-
-  color = property.getValue().toColor();
-  qcolor.setRed(color.getRed());
-  qcolor.setGreen(color.getGreen());
-  qcolor.setBlue(color.getBlue());
-  qcolor.setAlpha(color.getAlpha());
-
-  QRgb oldRgba = qcolor.rgba();
-
-  QRgb newRgba = QColorDialog::getRgba(oldRgba, &ok, wdg);
-
-  if (!ok || newRgba == oldRgba)
-    return;
-
-  qcolor = QColor::fromRgba(newRgba);
-
-  if(qcolor.isValid()) 
+  EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
+  if(!enumObj)
   {
-    color.setColor(qcolor.red(), qcolor.green(), qcolor.blue(), qcolor.alpha());
-    property.setValue(color, dataType->getDataTypeColor());
-
-    emit changeDlgProperty(property);
+    return;
   }
+
+  QWidget* widget = createOutside(enumObj->getColorDialog());
+  if(!widget)
+  {
+    return;
+  }
+
+  ColorDialogOutside* colorDialog = dynamic_cast<ColorDialogOutside*>(widget);
+  if(!colorDialog)
+  {
+    return;
+  }
+
+  appendDialog(colorDialog);
+
+  ColorDialogModel* model = dynamic_cast<ColorDialogModel*>(colorDialog->getModel());
+  if(!model)
+  {
+    return;
+  }
+    
+  model->setColorProperty(m_currentPropertyClicked);
+
+  colorDialog->init();
+  colorDialog->show(); // modeless dialog
+  colorDialog->raise(); // top of the parent widget's stack
+  colorDialog->activateWindow(); // visible top-level window that has the keyboard input focus
 }
 
 void te::layout::DialogPropertiesBrowser::onShowMapLayerChoiceDlg()
