@@ -68,20 +68,10 @@ namespace te
           \brief Destructor
          */
         virtual ~ImageItem();
-        
-        /*!
-          \brief Reimplemented from QGraphicsItem
-         */
-        virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
 
       protected:
-      
-        /*!
-          \brief Drawing method of a ellipse
 
-          \param 
-         */
-        virtual void drawImage(QPainter * painter);
+        virtual void drawItem ( QPainter * painter );
     };
   }
 }

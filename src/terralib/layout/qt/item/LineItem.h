@@ -58,15 +58,10 @@ namespace te
          */
         virtual void updateObserver(ContextItem context);
 
-        /*!
-          \brief Reimplemented from QGraphicsItem
-         */
-        virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
-      
       protected:
 
-        virtual void drawLine(QPainter * painter);
-        
+        virtual void drawItem(QPainter * painter);
+
         virtual void searchStyle();
 
         QPolygonF   m_poly;

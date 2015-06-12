@@ -24,8 +24,6 @@
 */
 
 // TerraLib
-
-
 #include "../../../dataaccess/dataset/ObjectIdSet.h"
 #include "Enums.h"
 #include "ScatterChart.h"

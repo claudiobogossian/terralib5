@@ -53,54 +53,31 @@ te::layout::RectangleItem::~RectangleItem()
 
 }
 
-void te::layout::RectangleItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
+void te::layout::RectangleItem::drawItem( QPainter * painter )
 {
-  Q_UNUSED( option );
-  Q_UNUSED( widget );
-  if ( !painter )
+  RectangleModel* model = dynamic_cast<RectangleModel*>(m_model);
+
+  if(model)
   {
-    return;
-  }
+    EnumRectangleType* enumScale = model->getEnumRectangleType();
 
-  if(m_resizeMode)
-  {
-    ObjectItem::paint(painter, option, widget);
-    return;
-  }
+    if(model->getCurrentRectangleType() == enumScale->getSimpleRectangleType())
+    {
+      drawRectangle(painter);
+    }
+    if(model->getCurrentRectangleType() == enumScale->getRoundedRetangleType())
+    {
+      drawRoundedRectangle(painter);
+    }
 
-  drawBackground(painter);
-
-	RectangleModel* model = dynamic_cast<RectangleModel*>(m_model);
-
-	if(model)
-	{
-		EnumRectangleType* enumScale = model->getEnumRectangleType();
-
-		if(model->getCurrentRectangleType() == enumScale->getSimpleRectangleType())
-		{
-			drawRectangle(painter);
-		}
-		if(model->getCurrentRectangleType() == enumScale->getRoundedRetangleType())
-		{
-			drawRoundedRectangle(painter);
-		}
-
-		if(model->getCurrentRectangleType() == enumScale->getSingleCornerTrimmedRectangleType())
-		{
-			drawSingleCornerTrimmedRectangle(painter);
-		}
-
-  drawBorder(painter);
-
-  //Draw Selection
-  if (option->state & QStyle::State_Selected)
-  {
-    drawSelection(painter);
+    if(model->getCurrentRectangleType() == enumScale->getSingleCornerTrimmedRectangleType())
+    {
+      drawSingleCornerTrimmedRectangle(painter);
+    }
   }
 }
-}
 
-	void te::layout::RectangleItem::drawRectangle( QPainter * painter )
+void te::layout::RectangleItem::drawRectangle( QPainter * painter )
 	{
 		RectangleModel* model = dynamic_cast<RectangleModel*>(m_model);
 		if(!model)

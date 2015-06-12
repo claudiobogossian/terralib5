@@ -73,12 +73,7 @@ namespace te
          */
         virtual void updateObserver(ContextItem context);
 
-         /*!
-          \brief Mandatory implementation from QGraphicsObject
-         */
-        virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
-
-         /*!
+        /*!
           \brief Reimplemented from QGraphicsItem
          */
         virtual QVariant	itemChange ( GraphicsItemChange change, const QVariant & value );
@@ -90,7 +85,7 @@ namespace te
 
     protected:
 
-        virtual void drawLegend(QPainter* painter);
+        virtual void drawItem(QPainter* painter);
 
     private:
 

@@ -90,7 +90,7 @@ te::layout::MapItem::MapItem( ItemController* controller, Observable* o, bool in
   m_tool(0),
   m_wMargin(0),
   m_hMargin(0),
-  m_changeLayer(false)
+  m_pixmapIsDirty(false)
 {    
   m_nameClass = std::string(this->metaObject()->className());
   
@@ -214,29 +214,7 @@ QPointF remapPointToViewport(const QPointF& point, const QRectF& item, const QRe
   return remappedPoint;
 }
 
-void te::layout::MapItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
-{  
-  Q_UNUSED( option );
-  Q_UNUSED( widget );
-  if ( !painter )
-  {
-    return;
-  }
-  
-  drawBackground( painter );
-
-  drawMap(painter);
-
-  drawBorder(painter);
-
-  //Draw Selection
-  if (option->state & QStyle::State_Selected)
-  {
-    drawSelection(painter);
-  }
-}
-
-void te::layout::MapItem::drawMap( QPainter * painter )
+void te::layout::MapItem::drawItem( QPainter * painter )
 {
   if(!m_mapDisplay || !painter)
     return;
@@ -261,21 +239,10 @@ void te::layout::MapItem::drawMap( QPainter * painter )
     boundRect = QRectF(x, y, model->getMapBox().getWidth(), model->getMapBox().getHeight());
   }
 
-  if( m_pixmap.isNull() || m_changeLayer)
+  if( m_pixmapIsDirty == true)
   {
-    m_changeLayer = false;
-        
-    m_pixmap = QPixmap(m_mapDisplay->width(), m_mapDisplay->height());
-    m_pixmap.fill(Qt::transparent);
-
-    QPainter localPainter(&m_pixmap);
-    m_mapDisplay->render(&localPainter);
-    localPainter.end();
-
-    QImage image = m_pixmap.toImage();
-    image = image.mirrored();
-
-    m_pixmap = QPixmap::fromImage(image);
+    m_pixmapIsDirty = false;
+    generateMapPixmap();
   }
 
   painter->save();
@@ -505,9 +472,7 @@ void te::layout::MapItem::onDrawLayersFinished( const QMap<QString, QString>& er
   if(!model->isLoadedLayer())
     return;
   
-  generateMapPixmap();
-
-  m_changeLayer = true;
+  m_pixmapIsDirty = true;
 
   update();
 }
@@ -617,17 +582,17 @@ void te::layout::MapItem::calculateFrameMargin()
 
 void te::layout::MapItem::generateMapPixmap()
 {
-  QRegion srcRegion( 0, 0, this->widget()->width(), this->widget()->height());
+  m_pixmap = QPixmap(m_mapDisplay->width(), m_mapDisplay->height());
+  m_pixmap.fill(Qt::transparent);
 
-  QColor color(255, 255, 255, 0);
-  QPixmap img(this->widget()->width(), this->widget()->height());
-  img.fill(Qt::transparent);
+  QPainter localPainter(&m_pixmap);
+  m_mapDisplay->render(&localPainter);
+  localPainter.end();
 
-  QPainter ptr(&img);
-  QPoint pt(0, 0);
-  this->widget()->render(&ptr, pt, srcRegion);
+  QImage image = m_pixmap.toImage();
+  image = image.mirrored();
 
-  m_mapPixmap = img; 
+  m_pixmap = QPixmap::fromImage(image);
 }
 
 void te::layout::MapItem::updateMapDisplay()
@@ -845,15 +810,15 @@ void te::layout::MapItem::reloadLayers(bool draw)
 
   te::map::AbstractLayerPtr al = (*it);
 
-  te::gm::Envelope e = model->maxLayerExtent();
-
-  m_changeLayer = true;
+  te::gm::Envelope e = model->maxLayerExtent();  
 
   m_mapDisplay->setLayerList(layerList);
   m_mapDisplay->setSRID(al->getSRID(), false);
   m_mapDisplay->setExtent(e, draw);
 
   m_oldLayers = layerList;
+
+  m_pixmapIsDirty = true;
 }
 
 bool te::layout::MapItem::hasListLayerChanged()
@@ -982,7 +947,7 @@ void te::layout::MapItem::contextUpdated()
   {
     QPointF pt = scenePos();
 
-	m_mapDisplay->setGeometry(pt.x(), pt.y(), newSize.width(), newSize.height());
-    m_changeLayer = true;
+    m_mapDisplay->setGeometry(pt.x(), pt.y(), newSize.width(), newSize.height());
+    m_pixmapIsDirty = true;
   }
 }

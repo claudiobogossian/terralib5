@@ -54,17 +54,8 @@ te::layout::ScaleItem::~ScaleItem()
 
 }
 
-void te::layout::ScaleItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
+void te::layout::ScaleItem::drawItem( QPainter * painter )
 {
-  Q_UNUSED( option );
-  Q_UNUSED( widget );
-  if ( !painter )
-  {
-    return;
-  }
-
-  drawBackground(painter);
-
   ScaleModel* model = dynamic_cast<ScaleModel*>(m_model);
 
   if(model)
@@ -83,14 +74,6 @@ void te::layout::ScaleItem::paint( QPainter * painter, const QStyleOptionGraphic
     {
       drawHollowScaleBar(painter);
     }
-  }
-
-  drawBorder(painter);
-
-  //Draw Selection
-  if (option->state & QStyle::State_Selected)
-  {
-    drawSelection(painter);
   }
 }
 

@@ -32,6 +32,7 @@
 #include "ChartWidgetFactory.h"
 #include "HistogramFrameFactory.h"
 #include "ScatterFrameFactory.h"
+#include "TimeSeriesFrameFactory.h"
 #include "ui_ChartPropertiesDialogForm.h"
 
 //QWT
@@ -50,11 +51,12 @@ te::qt::widgets::ChartProperties::ChartProperties(te::qt::widgets::ChartDisplayW
   {
     case(te::qt::widgets::HISTOGRAM_CHART):
       HistogramFrameFactory::initialize();
-      ScatterFrameFactory::finalize();
       break;
     case(te::qt::widgets::SCATTER_CHART):
       ScatterFrameFactory::initialize();
-      HistogramFrameFactory::finalize();
+      break;
+    case(te::qt::widgets::TIMESERIES_CHART):
+      TimeSeriesFrameFactory::initialize();
       break;
   }
 

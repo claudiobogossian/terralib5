@@ -52,23 +52,8 @@ te::layout::StarItem::~StarItem()
 
 }
 
-void te::layout::StarItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
+void te::layout::StarItem::drawItem( QPainter * painter )
 {
-	Q_UNUSED( option );
-	Q_UNUSED( widget );
-	if ( !painter )
-	{
-		return;
-	}
-
-	if(m_resizeMode)
-	{
-		ObjectItem::paint(painter, option, widget);
-		return;
-	}
-
-	drawBackground(painter);
-
 	StarModel* model = dynamic_cast<StarModel*>(m_model);
 
 	if(model)
@@ -91,14 +76,6 @@ void te::layout::StarItem::paint( QPainter * painter, const QStyleOptionGraphics
 		{
 			drawStar4(painter);
 		}
-	}
-
-	drawBorder(painter);
-
-	//Draw Selection
-	if (option->state & QStyle::State_Selected)
-	{
-		drawSelection(painter);
 	}
 }
 

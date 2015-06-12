@@ -62,19 +62,8 @@ te::layout::GridMapItem::~GridMapItem()
 
 }
 
-void te::layout::GridMapItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
+void te::layout::GridMapItem::drawItem( QPainter * painter )
 {
-  ObjectItem::paint(painter, option, widget);
-
-  Q_UNUSED( option );
-  Q_UNUSED( widget );
-  if ( !painter )
-  {
-    return;
-  }
-  
-  drawBackground(painter);
-  
   GridMapModel* model = dynamic_cast<GridMapModel*>(m_model);
   if(model)
   {
@@ -86,12 +75,6 @@ void te::layout::GridMapItem::paint( QPainter * painter, const QStyleOptionGraph
     {
       drawDefaultGrid(painter);
     }
-  }
-
-  //Draw Selection
-  if (option->state & QStyle::State_Selected)
-  {
-    drawSelection(painter);
   }
 }
 
