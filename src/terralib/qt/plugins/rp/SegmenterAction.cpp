@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -39,8 +39,9 @@
 te::qt::plugins::rp::SegmenterAction::SegmenterAction(QMenu* menu, QMenu* popupMenu):te::qt::plugins::rp::AbstractAction(menu, popupMenu)
 {
   createAction(tr("Segmenter...").toStdString(), "segmenter");
+  m_action->setObjectName("Processing.Raster Processing.Segmenter");
 
-  createPopUpAction(tr("Segmenter...").toStdString(), "segmenter");
+  //createPopUpAction(tr("Segmenter...").toStdString(), "segmenter");
 }
 
 te::qt::plugins::rp::SegmenterAction::~SegmenterAction()

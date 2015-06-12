@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -29,6 +29,7 @@
 #include "../geometry/Envelope.h"
 #include "../raster/Utils.h"
 #include "../raster/BlockUtils.h"
+#include "../raster/Interpolator.h"
 #include "Exception.h"
 #include "ExpansibleRaster.h"
 
@@ -41,9 +42,40 @@ te::mem::ExpansibleRaster::ExpansibleRaster()
 {
 }
 
-te::mem::ExpansibleRaster::ExpansibleRaster( const Raster& rhs )
+te::mem::ExpansibleRaster::ExpansibleRaster( ExpansibleRaster& rhs )
 : te::rst::Raster( rhs )
 {
+  m_blocksManagerPtr = rhs.m_blocksManagerPtr;
+  
+  for( unsigned int bandsIdx = 0 ; bandsIdx < rhs.getNumberOfBands() ; 
+    ++bandsIdx )
+  {
+    m_bands.push_back( new te::mem::ExpansibleBand( *m_blocksManagerPtr, *this,
+      *(rhs.getBand( bandsIdx )->getProperty()) , bandsIdx ) );
+  }
+  
+  m_multiResRasters = rhs.m_multiResRasters;  
+}
+
+te::mem::ExpansibleRaster::ExpansibleRaster( const te::rst::Raster& rhs )
+: te::rst::Raster( rhs )
+{
+  ExpansibleRaster const* rhsPtr = dynamic_cast< ExpansibleRaster const* >( &rhs );
+  if( rhsPtr == 0 )
+  {
+    throw te::mem::Exception( "Invalid constructor call" );
+  }
+  
+  m_blocksManagerPtr = rhsPtr->m_blocksManagerPtr;
+  
+  for( unsigned int bandsIdx = 0 ; bandsIdx < rhsPtr->getNumberOfBands() ; 
+    ++bandsIdx )
+  {
+    m_bands.push_back( new te::mem::ExpansibleBand( *m_blocksManagerPtr, *this,
+      *(rhsPtr->getBand( bandsIdx )->getProperty()) , bandsIdx ) );
+  }
+  
+  m_multiResRasters = rhsPtr->m_multiResRasters;  
 }
 
 te::mem::ExpansibleRaster::ExpansibleRaster( te::rst::Grid* grid, te::common::AccessPolicy p )
@@ -100,7 +132,8 @@ te::mem::ExpansibleRaster::ExpansibleRaster( const unsigned char maxMemPercentUs
   const unsigned int maxNumberOfBlocks = (unsigned int)
     std::max( 1.0, std::ceil( freeVMem / ((double)maxBlockSizeBytes) ) );    
   
-  if( ! m_blocksManager.initialize( maxNumberOfBlocks, numbersOfBlocksX,
+  m_blocksManagerPtr.reset( new ExpansibleBandBlocksManager() );
+  if( ! m_blocksManagerPtr->initialize( maxNumberOfBlocks, numbersOfBlocksX,
     numbersOfBlocksY, blocksSizesBytes, 
     TLINTERNAL_EXPANSIBLERASTER_MAXDISKFILESSIZE ) )
     throw Exception(TE_TR("Cannot initialize the blocks menager") );
@@ -108,7 +141,7 @@ te::mem::ExpansibleRaster::ExpansibleRaster( const unsigned char maxMemPercentUs
   for( unsigned int bandsIdx = 0 ; bandsIdx < bandsProperties.size() ; 
     ++bandsIdx )
   {
-    m_bands.push_back( new te::mem::ExpansibleBand( m_blocksManager, *this,
+    m_bands.push_back( new te::mem::ExpansibleBand( *m_blocksManagerPtr, *this,
       *(bandsProperties[ bandsIdx ]) , bandsIdx ) );
     delete ( bandsProperties[ bandsIdx ] );
   }
@@ -151,7 +184,8 @@ te::mem::ExpansibleRaster::ExpansibleRaster( te::rst::Grid* grid,
     }
   }
   
-  if( ! m_blocksManager.initialize( maxNumberOfRAMBlocks, numbersOfBlocksX,
+  m_blocksManagerPtr.reset( new ExpansibleBandBlocksManager() );
+  if( ! m_blocksManagerPtr->initialize( maxNumberOfRAMBlocks, numbersOfBlocksX,
     numbersOfBlocksY, blocksSizesBytes, 
     TLINTERNAL_EXPANSIBLERASTER_MAXDISKFILESSIZE ) )
     throw Exception(TE_TR("Cannot initialize the blocks menager") );
@@ -159,7 +193,7 @@ te::mem::ExpansibleRaster::ExpansibleRaster( te::rst::Grid* grid,
   for( unsigned int bandsIdx = 0 ; bandsIdx < bandsProperties.size() ; 
     ++bandsIdx )
   {
-    m_bands.push_back( new te::mem::ExpansibleBand( m_blocksManager, *this,
+    m_bands.push_back( new te::mem::ExpansibleBand( *m_blocksManagerPtr, *this,
       *(bandsProperties[ bandsIdx ]) , bandsIdx ) );
     delete ( bandsProperties[ bandsIdx ] );
   }
@@ -190,8 +224,128 @@ te::dt::AbstractData* te::mem::ExpansibleRaster::clone() const
   }
   
   return new te::mem::ExpansibleRaster( new te::rst::Grid( *m_grid ), bandsProperties,
-    m_blocksManager.getMaxNumberOfRAMBlocks() );
+    m_blocksManagerPtr->getMaxNumberOfRAMBlocks() );
 }
+
+bool te::mem::ExpansibleRaster::createMultiResolution( const unsigned int levels, 
+  const te::rst::InterpolationMethod interpMethod )
+{
+  m_multiResRasters.clear();
+  
+  for( unsigned int level = 1 ; level < levels ; ++level )
+  {
+    std::auto_ptr< te::rst::Grid > gridPtr( new te::rst::Grid(
+      getGrid()->getNumberOfColumns() / ( 2 * level ), 
+      getGrid()->getNumberOfRows() / ( 2 * level ),
+      new te::gm::Envelope( *(getGrid()->getExtent()) ), getSRID() ) );
+    
+    std::vector<te::rst::BandProperty*> bandsProperties;
+    
+    for( unsigned int bandIdx = 0 ; bandIdx < getNumberOfBands() ;  ++bandIdx )
+    {
+      bandsProperties.push_back( new te::rst::BandProperty( *( getBand( bandIdx 
+        )->getProperty() ) ) );
+      
+      bandsProperties[ bandIdx ]->m_blkw = std::max( 1, 
+        bandsProperties[ bandIdx ]->m_blkw / (int)( 2 * level ) );
+      bandsProperties[ bandIdx ]->m_blkh = std::max( 1,
+        bandsProperties[ bandIdx ]->m_blkh / (int)( 2 * level ) );   
+      bandsProperties[ bandIdx ]->m_nblocksx = (int)std::ceil(
+        ((double)gridPtr->getNumberOfColumns()) / 
+        ((double)bandsProperties[ bandIdx ]->m_blkw) );
+      bandsProperties[ bandIdx ]->m_nblocksy = (int)std::ceil(
+        ((double)gridPtr->getNumberOfRows()) / 
+        ((double)bandsProperties[ bandIdx ]->m_blkh) );      
+    }    
+    
+    boost::shared_ptr< ExpansibleRaster > outRasterPtr;
+    try
+    {
+      outRasterPtr.reset( new ExpansibleRaster( gridPtr.release(), bandsProperties, 
+        m_blocksManagerPtr->getMaxNumberOfRAMBlocks() ) );
+    }
+    catch( te::common::Exception& )
+    {
+      m_multiResRasters.clear();
+      return false;
+    }
+    
+    // data interpolation
+    
+    const double scaleFactorX = ((double)getNumberOfColumns()) /
+      ((double)outRasterPtr->getNumberOfColumns());
+    const double scaleFactorY = ((double)getNumberOfRows()) /
+      ((double)outRasterPtr->getNumberOfRows());      
+    const unsigned int outBandsNumber = getNumberOfBands();
+    const unsigned int outColsNumber = outRasterPtr->getNumberOfColumns();
+    const unsigned int outRowsNumber = outRasterPtr->getNumberOfRows();
+    te::rst::Interpolator interp( this, interpMethod );
+    unsigned int outBandIdx = 0;
+    unsigned int outCol = 0;
+    unsigned int outRow = 0;
+    double inRow = 0;
+    double inCol = 0;
+    std::complex<double> value;
+    
+    for( outBandIdx = 0 ; outBandIdx < outBandsNumber ; ++outBandIdx )
+    {
+      te::rst::Band& outBand = (*(outRasterPtr->getBand( outBandIdx )));
+      
+      for( outRow = 0 ; outRow < outRowsNumber ; ++outRow )
+      {
+        inRow = scaleFactorY * ((double)outRow);
+        
+        for( outCol = 0 ; outCol < outColsNumber ; ++outCol )
+        {
+          inCol = scaleFactorX * ((double)outCol);
+          interp.getValue( inCol, inRow, value, outBandIdx );
+          outBand.setValue( outCol, outRow, value );
+        }
+      }
+    }
+    
+    m_multiResRasters.push_back( outRasterPtr );
+  }
+  
+  return true;
+}
+
+bool te::mem::ExpansibleRaster::removeMultiResolution()
+{ 
+  m_multiResRasters.clear();
+  return true;
+} 
+
+unsigned int te::mem::ExpansibleRaster::getMultiResLevelsCount() const
+{
+  return ( m_multiResRasters.empty() ? 0 : ( m_multiResRasters.size() + 1 ) );
+}
+
+te::rst::Raster* te::mem::ExpansibleRaster::getMultiResLevel( const unsigned int level ) const
+{
+  if( m_multiResRasters.empty() )
+  {
+    return 0;
+  }
+  else
+  {
+    if( level == 0 )
+    {
+      return new ExpansibleRaster( *this );
+    }
+    else
+    {
+      if( ( level - 1 ) < m_multiResRasters.size() )
+      {
+        return new ExpansibleRaster( *( m_multiResRasters[ level - 1 ].get() ) );
+      }
+      else
+      {
+        return 0;
+      }
+    }
+  }
+}   
 
 bool te::mem::ExpansibleRaster::addTopLines( const unsigned int number )
 {
@@ -207,7 +361,7 @@ bool te::mem::ExpansibleRaster::addTopLines( const unsigned int number )
     for( unsigned int bandsIdx = 0 ; bandsIdx < m_bands.size() ; ++bandsIdx )
     {
       std::vector< ExpansibleBandBlocksManager::BlockIndex3D > bandAddedBlocksCoords;
-      if( ! m_blocksManager.addTopBlocks( blockExpansionSize, bandsIdx,
+      if( ! m_blocksManagerPtr->addTopBlocks( blockExpansionSize, bandsIdx,
         bandAddedBlocksCoords ) ) 
         return false;
       
@@ -269,7 +423,7 @@ bool te::mem::ExpansibleRaster::addBottomLines( const unsigned int number )
       for( unsigned int bandsIdx = 0 ; bandsIdx < m_bands.size() ; ++bandsIdx )
       {
         std::vector< ExpansibleBandBlocksManager::BlockIndex3D > bandAddedBlocksCoords;
-        if( ! m_blocksManager.addBottomBlocks( blockExpansionSize, bandsIdx,
+        if( ! m_blocksManagerPtr->addBottomBlocks( blockExpansionSize, bandsIdx,
           bandAddedBlocksCoords ) ) 
           return false;
         
@@ -327,7 +481,7 @@ bool te::mem::ExpansibleRaster::addLeftColumns( const unsigned int number )
     for( unsigned int bandsIdx = 0 ; bandsIdx < m_bands.size() ; ++bandsIdx )
     {
       std::vector< ExpansibleBandBlocksManager::BlockIndex3D > bandAddedBlocksCoords;
-      if( ! m_blocksManager.addLeftBlocks( blockExpansionSize, bandsIdx,
+      if( ! m_blocksManagerPtr->addLeftBlocks( blockExpansionSize, bandsIdx,
         bandAddedBlocksCoords ) ) 
         return false;
       
@@ -388,7 +542,7 @@ bool te::mem::ExpansibleRaster::addRightColumns( const unsigned int number )
       for( unsigned int bandsIdx = 0 ; bandsIdx < m_bands.size() ; ++bandsIdx )
       {
         std::vector< ExpansibleBandBlocksManager::BlockIndex3D > bandAddedBlocksCoords;
-        if( ! m_blocksManager.addRightBlocks( blockExpansionSize, bandsIdx,
+        if( ! m_blocksManagerPtr->addRightBlocks( blockExpansionSize, bandsIdx,
           bandAddedBlocksCoords ) ) 
           return false;
         
@@ -436,7 +590,7 @@ bool te::mem::ExpansibleRaster::addTopBands( const unsigned int number )
   {
     std::vector< ExpansibleBandBlocksManager::BlockIndex3D > addedBlocksCoords;
       
-    if( ! m_blocksManager.addTopBands( number, addedBlocksCoords ) ) 
+    if( ! m_blocksManagerPtr->addTopBands( number, addedBlocksCoords ) ) 
         return false;
 
     m_bands.insert( m_bands.begin(), number, 0 );
@@ -445,13 +599,13 @@ bool te::mem::ExpansibleRaster::addTopBands( const unsigned int number )
       if( m_bands[ bIdx ] )
       {
         te::mem::ExpansibleBand* oldBandPtr = m_bands[ bIdx ];
-        m_bands[ bIdx ] = new te::mem::ExpansibleBand( m_blocksManager, *this,
+        m_bands[ bIdx ] = new te::mem::ExpansibleBand( *m_blocksManagerPtr, *this,
           *( oldBandPtr->getProperty() ), bIdx );
         delete( oldBandPtr );
       }
       else
       {
-        m_bands[ bIdx ] = new te::mem::ExpansibleBand( m_blocksManager, *this,
+        m_bands[ bIdx ] = new te::mem::ExpansibleBand( *m_blocksManagerPtr, *this,
           *( m_bands[ number ]->getProperty() ), bIdx );
       }
     }
@@ -470,14 +624,14 @@ bool te::mem::ExpansibleRaster::addBottomBands( const unsigned int number )
   {
     std::vector< ExpansibleBandBlocksManager::BlockIndex3D > addedBlocksCoords;
       
-    if( ! m_blocksManager.addBottomBands( number, addedBlocksCoords ) ) 
+    if( ! m_blocksManagerPtr->addBottomBands( number, addedBlocksCoords ) ) 
         return false;
 
     unsigned int lastBandIdx = (unsigned int)m_bands.size() - 1;
     m_bands.insert( m_bands.end(), number, 0 );
     for( unsigned int bIdx = lastBandIdx + 1 ; bIdx < m_bands.size() ; ++bIdx )
     {
-      m_bands[ bIdx ] = new te::mem::ExpansibleBand( m_blocksManager, *this,
+      m_bands[ bIdx ] = new te::mem::ExpansibleBand( *m_blocksManagerPtr, *this,
         *( m_bands[ lastBandIdx ]->getProperty() ), bIdx );
     }
     
@@ -496,7 +650,9 @@ void te::mem::ExpansibleRaster::free()
     m_bands.clear();
   }
   
-  m_blocksManager.free();
+  m_blocksManagerPtr.reset();
+  
+  m_multiResRasters.clear();
 }
 
 void te::mem::ExpansibleRaster::dummyFillAllBlocks()
@@ -526,7 +682,7 @@ void te::mem::ExpansibleRaster::dummyFillAllBlocks()
     {
       for( blockYIdx = 0 ; blockYIdx < nBlocksY ; ++blockYIdx )
       {
-        blockPtr = m_blocksManager.getBlockPointer( bandsIdx, blockXIdx, 
+        blockPtr = m_blocksManagerPtr->getBlockPointer( bandsIdx, blockXIdx, 
           blockYIdx );
         assert( blockPtr );
         
@@ -555,7 +711,7 @@ void te::mem::ExpansibleRaster::dummyFillBlocks(
     
     te::rst::SetBlockFunctions( &gb, &gbi, &sb, &sbi, band.getProperty()->m_type );
     
-    void* blockPtr = m_blocksManager.getBlockPointer( block3DIdx.m_dim0Index,
+    void* blockPtr = m_blocksManagerPtr->getBlockPointer( block3DIdx.m_dim0Index,
       block3DIdx.m_dim2Index, block3DIdx.m_dim1Index );
     
     const int elementsNumber = band.getProperty()->m_blkh *

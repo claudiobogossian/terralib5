@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -29,6 +29,7 @@
 #include "../../../common/Logger.h"
 #include "../../af/ApplicationController.h"
 #include "../../af/events/LayerEvents.h"
+#include "../../af/Utils.h"
 #include "Plugin.h"
 
 #ifdef TE_QT_PLUGIN_RP_HAVE_ARITHMETICOP
@@ -84,6 +85,7 @@
 #endif
 
 // QT
+#include <QAction>
 #include <QMenu>
 #include <QMenuBar>
 
@@ -159,54 +161,67 @@ void te::qt::plugins::rp::Plugin::registerActions()
 {
 #ifdef TE_QT_PLUGIN_RP_HAVE_ARITHMETICOP
   m_arithmeticOp = new te::qt::plugins::rp::ArithmeticOpAction(m_rpMenu, m_rpPopupMenu);
+  te::qt::af::AddActionToCustomToolbars(m_arithmeticOp->getAction());
 #endif
 
 #ifdef TE_QT_PLUGIN_RP_HAVE_CLASSIFIER
     m_classifier = new te::qt::plugins::rp::ClassifierAction(m_rpMenu, m_rpPopupMenu);
+    te::qt::af::AddActionToCustomToolbars(m_classifier->getAction());
 #endif
 
 #ifdef TE_QT_PLUGIN_RP_HAVE_CLIPPING
     m_clipping = new te::qt::plugins::rp::ClippingAction(m_rpMenu, m_rpPopupMenu);
+    te::qt::af::AddActionToCustomToolbars(m_clipping->getAction());
 #endif
 
 #ifdef TE_QT_PLUGIN_RP_HAVE_COLORTRANSFORM
     m_colorTrans = new te::qt::plugins::rp::ColorTransformAction(m_rpMenu, m_rpPopupMenu);
+    te::qt::af::AddActionToCustomToolbars(m_colorTrans->getAction());
 #endif
 
 #ifdef TE_QT_PLUGIN_RP_HAVE_COMPOSEBANDS
    m_composeBands = new te::qt::plugins::rp::ComposeBandsAction(m_rpMenu, m_rpPopupMenu);
+   te::qt::af::AddActionToCustomToolbars(m_composeBands->getAction());
 #endif
 
 #ifdef TE_QT_PLUGIN_RP_HAVE_CONTRAST
     m_contrast = new te::qt::plugins::rp::ContrastAction(m_rpMenu, m_rpPopupMenu);
+    te::qt::af::AddActionToCustomToolbars(m_contrast->getAction());
 #endif
 
 #ifdef TE_QT_PLUGIN_RP_HAVE_FILTER
     m_filter = new te::qt::plugins::rp::FilterAction(m_rpMenu, m_rpPopupMenu);
+    te::qt::af::AddActionToCustomToolbars(m_filter->getAction());
 #endif
 
 #ifdef TE_QT_PLUGIN_RP_HAVE_FUSION
     m_fusion = new te::qt::plugins::rp::FusionAction(m_rpMenu, m_rpPopupMenu);
+    te::qt::af::AddActionToCustomToolbars(m_fusion->getAction());
 #endif
 
 #ifdef TE_QT_PLUGIN_RP_HAVE_MIXTUREMODEL
   m_mixtureModel = new te::qt::plugins::rp::MixtureModelAction(m_rpMenu, m_rpPopupMenu);
+  te::qt::af::AddActionToCustomToolbars(m_mixtureModel->getAction());
 #endif
 
   #ifdef TE_QT_PLUGIN_RP_HAVE_MOSAIC
   m_mosaic = new te::qt::plugins::rp::MosaicAction(m_rpMenu, m_rpPopupMenu);
+  te::qt::af::AddActionToCustomToolbars(m_mosaic->getAction());
 #endif
 
 #ifdef TE_QT_PLUGIN_RP_HAVE_REGISTER
   m_register = new te::qt::plugins::rp::RegisterAction(m_rpMenu, m_rpPopupMenu);
+  te::qt::af::AddActionToCustomToolbars(m_register->getAction());
 #endif
 
 #ifdef TE_QT_PLUGIN_RP_HAVE_SEGMENTER
     m_segmenter = new te::qt::plugins::rp::SegmenterAction(m_rpMenu, m_rpPopupMenu);
+    te::qt::af::AddActionToCustomToolbars(m_segmenter->getAction());
 #endif
 
 #ifdef TE_QT_PLUGIN_RP_HAVE_VECTORIZATION
   m_vector = new te::qt::plugins::rp::VectorizationAction(m_rpMenu, m_rpPopupMenu);
+  te::qt::af::AddActionToCustomToolbars(m_vector->getAction());
 #endif
 }
 

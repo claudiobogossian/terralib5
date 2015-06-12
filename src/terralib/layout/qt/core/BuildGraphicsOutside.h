@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -134,6 +134,27 @@ namespace te
 		      \return new object 
         */
         QWidget* createMapLayerChoice();
+
+        /*!
+          \brief Create a widget of Color Dialog type 
+
+		      \return new object 
+        */
+        QWidget* createColorDialog();
+
+        /*!
+          \brief Create a widget of Font Dialog type 
+
+		      \return new object 
+        */
+        QWidget* createFontDialog();
+
+        /*!
+          \brief Create a widget of Legend Choice type 
+
+		      \return new object 
+        */
+        QWidget* createLegendChoice();
     };
   }
 }

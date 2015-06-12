@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -20,7 +20,7 @@
 /*!
   \file terralib/layout/qt/outside/MapLayerChoiceOutside.h
 
-  \brief A dialog configure the input layer to address geocoding operation
+  \brief
 */
 
 #ifndef __TERRALIB_LAYOUT_INTERNAL_MAP_LAYER_CHOICE_OUTSIDE_H
@@ -30,20 +30,18 @@
 #include "../../../qt/widgets/utils/DoubleListWidget.h"
 #include "../../../maptools/AbstractLayer.h"
 #include "../../core/Config.h"
-#include "terralib/dataaccess/datasource/DataSource.h"
 #include "../../core/pattern/mvc/OutsideObserver.h"
 
 // STL
-#include <map>
 #include <memory>
+#include <string>
+#include <vector>
+#include <list>
 
 // Qt
 #include <QDialog>
 
 namespace Ui { class MapLayerChoice; }
-
-// Forward declarations
-class QModelIndex;
 
 namespace te
 {
@@ -63,21 +61,21 @@ namespace te
         ~MapLayerChoiceOutside();
 
         /*!
-          \brief Set the layer that can be used
-
-          \param layers   List of AbstractLayerPtr
+          \brief Load layers in double widget.
         */
-        void setLayers(std::list<te::map::AbstractLayerPtr> layers);
-
-        te::map::AbstractLayerPtr getLayer();
-
-        te::da::DataSourcePtr getDataSource();
-
+        virtual void init();
+        
         virtual void updateObserver( ContextItem context );
 
         virtual void setPosition( const double& x, const double& y );
 
         virtual te::gm::Coord2D getPosition();
+
+      signals:
+
+        void updateProperty(Property prop);
+
+        void updateProperties(std::vector<Property> props);
         
       protected slots:
 
@@ -89,16 +87,13 @@ namespace te
 
         std::auto_ptr<Ui::MapLayerChoice> m_ui;
         std::auto_ptr<te::qt::widgets::DoubleListWidget> m_widget;
-        std::list<te::map::AbstractLayerPtr> m_layers;  //!< List of layers.
-        te::da::DataSourcePtr m_dataSource;
-        te::map::AbstractLayerPtr m_selectedLayer;  //!< Layer used for address geocoding
+        te::map::AbstractLayerPtr m_selectedLayer;  //!< Layer 
         std::vector<std::string> m_selectedProps; //!< Selected properties related to the selected Layer
-
+        std::vector<std::string> m_layersOnTheRight; //!< Layers on the right in the DoubleList Widget
+        std::list<te::map::AbstractLayerPtr> m_layersSelected; //!< Vector that will store selected layers (on the rigth DoubleList Widget)
     };
-  }   // end namespace addressgeocoding
-}     // end namespace te
+  }    
+}     
 
 #endif
-
-
 

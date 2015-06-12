@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -225,7 +225,9 @@ namespace te
 
       std::string getActionLine(); 
 
-      std::string getActionPolygon(); 
+      std::string getActionPolygon();
+
+	  std::string getActionStar(); 
 
       /* View Area */
 
@@ -433,7 +435,8 @@ namespace te
       std::string m_actionEllipse;
       std::string m_actionArrow;
       std::string m_actionLine; 
-      std::string m_actionPolygon; 
+      std::string m_actionPolygon;
+	    std::string m_actionStar;
 
       /* View Area */
       std::string m_actionViewPan;

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -41,6 +41,7 @@ te::qt::plugins::vp::LineToPolygonAction::LineToPolygonAction(QMenu* menu)
   : te::qt::plugins::vp::AbstractAction(menu)
 {
   createAction(tr("Line to Polygon...").toStdString(), "linetopolygon-icon");
+  m_action->setObjectName("Processing.Vector Processing.Line to Polygon");
 }
 
 te::qt::plugins::vp::LineToPolygonAction::~LineToPolygonAction()

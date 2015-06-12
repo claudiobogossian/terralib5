@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -81,5 +81,15 @@ te::layout::PropertiesOutside* te::qt::plugins::layout::PropertiesDock::getPrope
 {
   return m_properties;
 }
+
+void te::qt::plugins::layout::PropertiesDock::closeEvent( QCloseEvent * event )
+{
+  // Closing the PropertiesDock, all open windows from a property will be closed.
+  m_properties->close();
+}
+
+
+
+
 
 

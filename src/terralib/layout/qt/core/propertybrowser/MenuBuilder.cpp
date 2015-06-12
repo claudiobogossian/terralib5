@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -169,6 +169,14 @@ void te::layout::MenuBuilder::onMenuTriggered( QAction* action )
   {
     onShowImageDlg();
   }
+  if(m_currentPropertyClicked.getType() == dataType->getDataTypeMapChoice())
+  {
+    onShowMapLayerChoiceDlg();
+  }
+  if(m_currentPropertyClicked.getType() == dataType->getDataTypeLegendChoice())
+  {
+    onShowLegendChoiceDlg();
+  }
   else if(m_currentPropertyClicked.getType() == dataType->getDataTypeBool())
   {
     checkedBool(action->isChecked());
@@ -176,92 +184,6 @@ void te::layout::MenuBuilder::onMenuTriggered( QAction* action )
   else if(m_currentPropertyClicked.getType() == dataType->getDataTypeTextGridSettings())
   {
     onShowTextGridSettingsDlg();
-  }
-}
-
-void te::layout::MenuBuilder::onShowFontDlg()
-{
-  QWidget* wdg = dynamic_cast<QWidget*>(parent());
-
-  if(!wdg)
-    return;
-
-  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
-
-  Property property = m_currentPropertyClicked;
-
-  if(property.getType() != dataType->getDataTypeFont())
-    return;
-
-  bool ok = false;
-  Font font;
-  QFont qFont;
-
-  font = property.getValue().toFont();
-  qFont.setFamily(font.getFamily().c_str());
-  qFont.setPointSize(font.getPointSize());
-  qFont.setBold(font.isBold());
-  qFont.setItalic(font.isItalic());
-  qFont.setUnderline(font.isUnderline());
-  qFont.setStrikeOut(font.isStrikeout());
-  qFont.setKerning(font.isKerning());
-
-  QFont newFont = QFontDialog::getFont(&ok, qFont, wdg, tr("Select Font"));
-
-  if (!ok || newFont == qFont) 
-    return;
-
-  font.setFamily(newFont.family().toStdString());
-  font.setPointSize(newFont.pointSize());
-  font.setBold(newFont.bold());
-  font.setItalic(newFont.italic());
-  font.setUnderline(newFont.underline());
-  font.setStrikeout(newFont.strikeOut());
-  font.setKerning(newFont.kerning());
-  property.setValue(font, dataType->getDataTypeFont());
-    
-  emit changeDlgProperty(property);
-}
-
-void te::layout::MenuBuilder::onShowColorDlg()
-{
-  QWidget* wdg = dynamic_cast<QWidget*>(parent());
-
-  if(!wdg)
-    return;
-
-  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
-
-  Property property = m_currentPropertyClicked;
-
-  if(property.getType() != dataType->getDataTypeColor())
-    return;
-
-  bool ok = false;
-  QColor qcolor;
-  te::color::RGBAColor color;
-
-  color = property.getValue().toColor();
-  qcolor.setRed(color.getRed());
-  qcolor.setGreen(color.getGreen());
-  qcolor.setBlue(color.getBlue());
-  qcolor.setAlpha(color.getAlpha());
-
-  QRgb oldRgba = qcolor.rgba();
-
-  QRgb newRgba = QColorDialog::getRgba(oldRgba, &ok, wdg);
-
-  if (!ok || newRgba == oldRgba)
-    return;
-
-  qcolor = QColor::fromRgba(newRgba);
-
-  if(qcolor.isValid()) 
-  {
-    color.setColor(qcolor.red(), qcolor.green(), qcolor.blue(), qcolor.alpha());
-    property.setValue(color, dataType->getDataTypeColor());
-
-    emit changeDlgProperty(property);
   }
 }
 
@@ -319,7 +241,6 @@ void te::layout::MenuBuilder::changePropertyValue( Property property )
           props->addProperty(property);
 
           lItem->getModel()->updateProperties(props);
-          lItem->redraw();
 
           if(beforeProps)
           {
@@ -329,6 +250,8 @@ void te::layout::MenuBuilder::changePropertyValue( Property property )
             commandOld.push_back(oldCommand);
             commandNew.push_back(newCommand);
           }
+          delete props;
+          props = 0;
         }       
       }
     }

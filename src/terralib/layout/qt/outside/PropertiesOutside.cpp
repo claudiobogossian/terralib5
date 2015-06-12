@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -77,6 +77,9 @@ te::layout::PropertiesOutside::PropertiesOutside( OutsideController* controller,
   
   connect(m_layoutPropertyBrowser,SIGNAL(changePropertyValue(Property)),
     this,SLOT(onChangePropertyValue(Property))); 
+
+  connect(m_layoutPropertyBrowser,SIGNAL(changePropertyValue(std::vector<Property>)),
+    this,SLOT(onChangePropertyValue(std::vector<Property>))); 
 
   createLayout();
 
@@ -216,72 +219,20 @@ void te::layout::PropertiesOutside::onChangePropertyValue( Property property )
 
   Scene* lScene = dynamic_cast<Scene*>(Context::getInstance().getScene()); 
 
-  if(property.getParentItemHashCode() <= 0)
-  {
-    sendPropertyToSelectedItems(property);
-  }
-  else
-  {
-    sendPropertyToSelectedItem(property);
-  }
+  sendPropertyToSelectedItems(property);
 
   changeMapVisitable(property);
   lScene->update();
 }
 
-bool te::layout::PropertiesOutside::sendPropertyToSelectedItem( Property property )
+void te::layout::PropertiesOutside::onChangePropertyValue( std::vector<Property> props )
 {
-  bool result = true;
-
-  Scene* lScene = dynamic_cast<Scene*>(Context::getInstance().getScene()); 
-
-  std::vector<QGraphicsItem*> commandItems;
-  std::vector<Properties*> commandOld;
-  std::vector<Properties*> commandNew;
-
-  QGraphicsItem *itemSelected = m_propUtils->equalsHashCode(property, m_graphicsItems);
-  if(!itemSelected)
+  std::vector<Property>::const_iterator it = props.begin();
+  for( ; it != props.end() ; ++it)
   {
-    return false;
+    Property prop = (*it);
+    onChangePropertyValue(prop);
   }
-		
-  ItemObserver* lItem = dynamic_cast<ItemObserver*>(itemSelected);
-  if(lItem)
-  {
-    if(!lItem->getModel())
-    {
-      return false;
-    }
-
-    Properties* props = new Properties("");
-    Properties* beforeProps = lItem->getModel()->getProperties();
-    Properties* oldCommand = new Properties(*beforeProps);
-    if(props)
-    {
-      props->setObjectName(lItem->getModel()->getProperties()->getObjectName());
-      props->setTypeObj(lItem->getModel()->getProperties()->getTypeObj());
-      props->addProperty(property);
-
-      lItem->getModel()->updateProperties(props);
-      lItem->redraw();
-
-      if(beforeProps)
-      {
-        beforeProps = lItem->getModel()->getProperties();
-        Properties* newCommand = new Properties(*beforeProps);
-        commandItems.push_back(itemSelected);
-        commandOld.push_back(oldCommand);
-        commandNew.push_back(newCommand);
-      }
-    }       
-  }
-
-  if(!m_graphicsItems.isEmpty())
-  {
-    QUndoCommand* command = new ChangePropertyCommand(commandItems, commandOld, commandNew, this);
-    lScene->addUndoStack(command);
-  }
-  return result;
 }
 
 bool te::layout::PropertiesOutside::sendPropertyToSelectedItems( Property property )
@@ -315,7 +266,6 @@ bool te::layout::PropertiesOutside::sendPropertyToSelectedItems( Property proper
           props->addProperty(property);
 
           lItem->getModel()->updateProperties(props);
-          lItem->redraw();
 
           if(beforeProps)
           {
@@ -340,6 +290,7 @@ bool te::layout::PropertiesOutside::sendPropertyToSelectedItems( Property proper
 
 void te::layout::PropertiesOutside::closeEvent( QCloseEvent * event )
 {
+  //Closing the PropertiesOutside, all open windows from a property will be closed.
   m_layoutPropertyBrowser->closeAllWindows();
 }
 

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -96,9 +96,11 @@ te::addressgeocoding::MainWindowDialog::MainWindowDialog(QWidget* parent, Qt::Wi
   connect(m_ui->m_removeAddressFileToolButton, SIGNAL(clicked()), this, SLOT(onRemoveAddressToolButtonPressed()));
   connect(m_ui->m_editAddressFileToolButton, SIGNAL(clicked()), this, SLOT(onEditAddressToolButtonPressed()));
 
-  connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));
   connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
   connect(m_ui->m_cancelPushButton, SIGNAL(clicked()), this, SLOT(onCancelPushButtonClicked()));
+
+  m_ui->m_helpPushButton->setNameSpace("dpi.inpe.br.plugins");
+  m_ui->m_helpPushButton->setPageReference("plugins/addressgeocoding/addressgeocoding.html");
 
 // Load the Address file Name.
   GetAddressFilePathToSettings(m_mapFields);
@@ -417,11 +419,6 @@ void te::addressgeocoding::MainWindowDialog::onTargetFileToolButtonPressed()
   
   m_toFile = true;
   m_ui->m_newLayerNameLineEdit->setEnabled(false);
-}
-
-void te::addressgeocoding::MainWindowDialog::onHelpPushButtonClicked()
-{
-  QMessageBox::information(this, "Help", "Under development");
 }
 
 void te::addressgeocoding::MainWindowDialog::onOkPushButtonClicked()

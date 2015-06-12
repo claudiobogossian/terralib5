@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -78,6 +78,7 @@ te::layout::ToolbarOutside::ToolbarOutside( OutsideController* controller, Obser
   m_actionArrow("geometry_arrow"),
   m_actionLine("geometry_line"),
   m_actionPolygon("geometry_polygon"),
+  m_actionStar("geometry_star"),
   m_actionViewPan("view_pan"),
   m_actionViewZoomIn("view_zoom_in"),
   m_actionViewZoomOut("view_zoom_out"),
@@ -253,9 +254,6 @@ QToolButton* te::layout::ToolbarOutside::createMapToolButton()
   QAction* actionDefaultMenu = createAction("Default Map Object", m_actionMapDefault, "layout-default-map", "", menu);
   menu->addAction(actionDefaultMenu);
   
-  QAction* actionGridMap = createAction("Grid Map", m_actionGridMap, "layout-grid", "", menu);
-  menu->addAction(actionGridMap);
-
   QAction* actionGridPlanar = createAction("Grid Planar", m_actionGridPlanar, "layout-grid", "", menu);
   menu->addAction(actionGridPlanar);
 
@@ -348,6 +346,9 @@ QToolButton* te::layout::ToolbarOutside::createGeometryToolButton()
 
   QAction* actionPolygon = createAction("Polygon Object", m_actionPolygon, "layout-polygon", "", menu); 
   menu->addAction(actionPolygon);
+
+  QAction* actionStar = createAction("Star Object", m_actionStar, "layout-star", "", menu); 
+  menu->addAction(actionStar);
 
   btnGeometry->setMenu(menu);
   btnGeometry->setPopupMode(QToolButton::MenuButtonPopup);
@@ -836,6 +837,10 @@ void te::layout::ToolbarOutside::onGeometryTriggered( QAction* action )
     changeAction(type->getModeCreatePolygon());
     Context::getInstance().setWait(type->getModeCoordWait());
   }
+  else if (action->objectName().compare(m_actionStar.c_str()) == 0) 
+  {
+	  changeAction(type->getModeCreateStar());
+  }
 }
 
 void te::layout::ToolbarOutside::onViewAreaTriggered( QAction* action )
@@ -939,8 +944,15 @@ void te::layout::ToolbarOutside::onSendToBackClicked( bool checked )
 
 void te::layout::ToolbarOutside::onRecomposeClicked( bool checked )
 {
+  double zoomFactor = Context::getInstance().getZoomFactor();
+  Context::getInstance().setOldZoomFactor(zoomFactor);
+
   EnumModeType* type = Enums::getInstance().getEnumModeType();
   m_comboZoom->setCurrentIndex(1);
+
+  double currentZoom = m_comboZoom->itemData(1).toDouble();
+
+  Context::getInstance().setZoomFactor(currentZoom);
   changeAction(type->getModeRecompose());
 }
 
@@ -1578,6 +1590,11 @@ QAction* te::layout::ToolbarOutside::getActionExitButton()
 QAction* te::layout::ToolbarOutside::getActionComboBoxZoom()
 {
   return m_actionComboZoom;
+}
+
+std::string te::layout::ToolbarOutside::getActionStar()
+{
+	return m_actionStar;
 }
 
 

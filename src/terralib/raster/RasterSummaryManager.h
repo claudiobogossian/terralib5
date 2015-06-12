@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -32,8 +32,8 @@
 #include "Enums.h"
 #include "RasterSummary.h"
 
-// Boost
-#include <boost/ptr_container/ptr_map.hpp>
+//STL
+#include <map>
 
 namespace te
 {
@@ -46,7 +46,7 @@ namespace te
       \class RasterSummaryManager
 
       \brief A singleton for keeping raster summaries (most statistics).
-             It stores an internal map of raster references and their
+             It stores an internal map of raster conn info str and their
              respective summaries.
 
       \ingroup rst
@@ -107,7 +107,7 @@ namespace te
 
       private:
 
-        boost::ptr_map<const Raster*, RasterSummary> m_rasterSummaries;    //!< A map of rasters and their respective summaries.
+        std::map<std::string, RasterSummary*> m_rasterSummaries;    //!< A map of rasters conn info and their respective summaries.
     };
 
   } // end namespace rst

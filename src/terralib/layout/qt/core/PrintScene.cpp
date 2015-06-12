@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -101,26 +101,27 @@ void te::layout::PrintScene::printPaper( QPrinter* printer )
   QPainter newPainter(printer);
   newPainter.setRenderHint(QPainter::Antialiasing);
 
-  double dpiX = Context::getInstance().getDpiX();
-  double dpiY = Context::getInstance().getDpiY();
-
-  Context::getInstance().setDpiX(printer->logicalDpiX());
-  Context::getInstance().setDpiY(printer->logicalDpiY());
-
   Scene* sc = dynamic_cast<Scene*>(m_scene);
   if(!sc)
     return;
 
+  double dpiX = Context::getInstance().getDpiX();
+  double dpiY = Context::getInstance().getDpiY();
+
   double zoomFactor = Context::getInstance().getZoomFactor();
   Context::getInstance().setZoomFactor(1.);
-  sc->onChangeZoomFactor(1.);
+  Context::getInstance().setDpiX(printer->logicalDpiX());
+  Context::getInstance().setDpiY(printer->logicalDpiY());
+
+  sc->contextUpdated();
 
   renderScene(&newPainter, printer);
 
   Context::getInstance().setZoomFactor(zoomFactor);
   Context::getInstance().setDpiX(dpiX);
   Context::getInstance().setDpiY(dpiY);
-  sc->onChangeZoomFactor(zoomFactor);
+  
+  sc->contextUpdated();
 }
 
 QPrinter* te::layout::PrintScene::createPrinter()
@@ -245,4 +246,16 @@ void te::layout::PrintScene::deselectAllItems()
       item->setSelected(false);
     }
   }
+}
+
+void te::layout::PrintScene::contextUpdated()
+{
+  if(!m_scene)
+    return;
+
+  Scene* sc = dynamic_cast<Scene*>(m_scene);
+  if(!sc)
+    return;
+
+  sc->contextUpdated();
 }

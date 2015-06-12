@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -137,8 +137,15 @@ te::qt::af::Project* te::qt::af::ReadProject(te::xml::Reader& reader)
 
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "DataSourceList");
-  
+
   reader.next();
+
+  // DataSourceList contract form
+  if(reader.getNodeType() == te::xml::END_ELEMENT &&
+     reader.getElementLocalName() == "DataSourceList")
+  {
+    reader.next();
+  }
 
   while((reader.getNodeType() == te::xml::START_ELEMENT) &&
         (reader.getElementLocalName() == "DataSource"))

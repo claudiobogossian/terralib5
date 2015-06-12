@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -70,9 +70,9 @@ te::layout::Properties* te::layout::PointModel::getProperties() const
   return m_properties;
 }
 
-void te::layout::PointModel::updateProperties( te::layout::Properties* properties )
+void te::layout::PointModel::updateProperties( te::layout::Properties* properties, bool notify )
 {
-  ItemModelObservable::updateProperties(properties);
+  ItemModelObservable::updateProperties(properties, false);
 
   Properties* vectorProps = const_cast<Properties*>(properties);
 
@@ -86,6 +86,12 @@ void te::layout::PointModel::updateProperties( te::layout::Properties* propertie
     {
       m_currentPointType = enumType;
     }
+  }
+
+  if(notify)
+  {
+    ContextItem context;
+    notifyAll(context);
   }
 }
 

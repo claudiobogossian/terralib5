@@ -1,0 +1,112 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta content="text/html; charset=ISO-8859-1"
+ http-equiv="Content-Type">
+  <title>Address Geocoding</title>
+</head>
+<body>
+<h3 style="text-align: center;"><font><font><font><font
+ face="Calibri Light"><span style="font-family: Calibri Light;">Address
+Geocoding</span></font></font></font></font></h3>
+<span style="font-family: Calibri Light;"></span><font
+ face="Calibri Light">By estimation, this operation determines the
+corresponding geographical position of each address. This functionality
+is used in situations where textual data needs to be handled spatially,
+but its geographic coordinates are not available. Only their addresses
+are known. <br>
+The figure bellow shows an example of address geocoding.</font><br>
+<br>
+<table
+ style="width: 100%; text-align: left; margin-left: auto; margin-right: auto;"
+ border="0" cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="text-align: center;"><img
+ style="width: 383px; height: 199px;" alt="Mapa" title="mapa"
+ src="mapa.png"></td>
+    </tr>
+    <tr>
+      <td style="text-align: center;">Shape composed by lines
+representing streets and&nbsp;a shape composed by points representing
+the found addresses.</td>
+    </tr>
+    <tr>
+      <td style="text-align: center; vertical-align: middle;"></td>
+    </tr>
+    <tr>
+      <td style="text-align: center;"><img
+ style="width: 792px; height: 163px;" alt="Table" title="table"
+ src="table.png"></td>
+    </tr>
+    <tr>
+      <td style="text-align: center;">Table representing the found
+addresses.</td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<br>
+<font face="Calibri Light">It
+is
+accessed through:<br>
+</font><font face="Calibri Light"><font face="Calibri Light"><b><br>
+&nbsp;&nbsp;&nbsp; Processing &gt; </b></font></font><font
+ face="Calibri Light"><font face="Calibri Light"><b>Address Geocoding</b></font><font
+ face="Calibri Light"><b>...</b></font></font><br>
+<ol>
+  <li><font face="Calibri Light"><font>Select
+an <i>Input vector
+layer</i> composed by lines, if the field of <span
+ style="font-style: italic;">Input Layer </span>is empty click on <span
+ style="font-style: italic;">Configure</span> to prepare the layer to
+the operation.</font></font></li>
+  <li><font face="Calibri Light">Relate the address number attributes.</font></li>
+  <li><font face="Calibri Light">In <span style="font-style: italic;">Input
+Address</span> field, select a DBF file with the addresses that want to
+find in the Input vector layer,&nbsp;</font><font face="Calibri Light"><font>if
+the field of <span style="font-style: italic;">Input Address </span>is
+empty click on <span style="font-style: italic;"></span></font></font><font
+ face="Calibri Light"><img style="width: 27px; height: 19px;"
+ alt="(...)" src="../../gen_icones/ic_3points.PNG"></font><font
+ face="Calibri Light"><font><span style="font-style: italic;"></span>
+to select a DBF file and configure the fields that represent address
+attributes.</font></font></li>
+  <li><font face="Calibri Light">Inform the <i>Output
+Repository</i>
+by clicking on:</font></li>
+  <ol>
+    <li><font face="Calibri Light"><img
+ style="width: 27px; height: 19px;" alt="(...)"
+ src="../../gen_icones/ic_3points.PNG"></font><font face="Calibri Light">to
+select the output
+directory and also inform the new layer name to store the result, or</font></li>
+    <li><font face="Calibri Light"><img
+ style="width: 21px; height: 23px;" alt="database icon"
+ src="../../gen_icones/ic_database.PNG"></font><font
+ face="Calibri Light">&nbsp;to select the Data
+Source.</font></li>
+  </ol>
+  <li><font face="Calibri Light">Inform the&nbsp;new&nbsp;<i>Layer
+Name</i>
+to store the operation result, if the repository is a data source.</font></li>
+  <li><font face="Calibri Light">Click&nbsp;<b>OK</b>
+to perform the
+operation or&nbsp;<b>Cancel</b>
+to close the in</font><span style="font-family: Calibri Light;"></span><font
+ face="Calibri Light">terface.</font></li>
+</ol>
+<font face="Calibri Light"><b>Usage
+Tips:<br>
+</b></font><br>
+<font face="Calibri Light"><font face="Calibri Light">Necessarily the
+input layer should be in a database that supports <span
+ style="font-style: italic;">Full Text Search</span>.<br>
+The operation result can be stored in different TerraLib data sources.
+Check <a style="font-family: Calibri Light;"
+ href="../../widgets/datasource_selector/datasource_selector.html">data
+source selector</a><span style="font-family: Calibri Light;"> for more
+details on how to select a data source.</span></font></font>
+<br>
+</body>
+</html>

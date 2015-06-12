@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -76,6 +76,8 @@ namespace te
         virtual void renderScene( QPainter* newPainter, QPrinter* printer );
 
         virtual void deselectAllItems();
+
+        virtual void contextUpdated();
 
         QGraphicsScene* m_scene;
         PaperConfig*    m_config;

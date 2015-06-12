@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -74,21 +74,21 @@ namespace te
        protected:
 
         /*!
-          \brief Drawing method of a Arrow
-
-          \param canvas
-          \param utils
-         */
-        virtual void drawArrow(QPainter * painter);
-
-        /*!
-          \brief Drawing method of a Head Arrow
+          \brief Drawing method of a Right Arrow
 
           \param canvas
           \param utils
           \param box
          */
-        virtual void drawHeadArrow(QPainter * painter);
+        virtual void drawRightArrow(QPainter * painter);
+				/*!
+          \brief Drawing method of a Double Arrow
+
+          \param canvas
+          \param utils
+          \param box
+         */
+        virtual void drawDoubleArrow(QPainter * painter);
     };
   }
 }

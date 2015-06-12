@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -33,6 +33,7 @@
 // TerraLib
 #include "GridMapItem.h"
 #include "../../core/Config.h"
+#include "../../../geometry/Envelope.h"
 
 namespace te
 {
@@ -69,6 +70,14 @@ namespace te
       protected:
         
         virtual void drawGrid(QPainter* painter);
+
+        virtual void calculateVertical(te::gm::Envelope geoBox, te::gm::Envelope boxMM, double scale);
+
+        virtual void calculateHorizontal(te::gm::Envelope geoBox, te::gm::Envelope boxMM, double scale);
+
+        virtual double initVerticalLines(te::gm::Envelope geoBox);
+
+        virtual double initHorizontalLines(te::gm::Envelope geoBox);
     };
   }
 }

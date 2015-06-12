@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -85,7 +85,7 @@ namespace te
 
         virtual Properties* getProperties() const;
 
-        virtual void updateProperties(te::layout::Properties* properties);   
+        virtual void updateProperties(te::layout::Properties* properties, bool notify = true);   
         
         virtual bool isVisible();
 
@@ -171,6 +171,8 @@ namespace te
 
         virtual bool isTopRotateText();
 
+        virtual double getCrossOffSet();
+
       protected:
 
         virtual void init();
@@ -228,6 +230,8 @@ namespace te
         bool                                    m_leftRotateText;
         bool                                    m_rightRotateText;
         bool                                    m_topRotateText;  
+
+        double                                  m_crossOffSet;
     };
   }
 }

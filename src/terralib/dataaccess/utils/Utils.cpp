@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -409,7 +409,7 @@ void te::da::GetOIDPropertyPos(const te::da::DataSetType* type, std::vector<std:
     ppos.push_back(type->getPropertyPosition(oidprops[i]));
 }
 
-te::da::ObjectIdSet* te::da::GenerateOIDSet(te::da::DataSet* dataset, const te::da::DataSetType* type, const bool& setGeom)
+te::da::ObjectIdSet* te::da::GenerateOIDSet(te::da::DataSet* dataset, const te::da::DataSetType* type)
 {
   assert(dataset);
   assert(type);
@@ -417,10 +417,10 @@ te::da::ObjectIdSet* te::da::GenerateOIDSet(te::da::DataSet* dataset, const te::
   std::vector<std::string> oidprops;
   GetOIDPropertyNames(type, oidprops);
 
-  return te::da::GenerateOIDSet(dataset, oidprops, setGeom);
+  return te::da::GenerateOIDSet(dataset, oidprops);
 }
 
-te::da::ObjectIdSet* te::da::GenerateOIDSet(te::da::DataSet* dataset, const std::vector<std::string>& names, const bool& setGeom)
+te::da::ObjectIdSet* te::da::GenerateOIDSet(te::da::DataSet* dataset, const std::vector<std::string>& names)
 {
   assert(dataset);
   assert(!names.empty());
@@ -438,12 +438,12 @@ te::da::ObjectIdSet* te::da::GenerateOIDSet(te::da::DataSet* dataset, const std:
   }
 
   while(dataset->moveNext())
-    oids->add(GenerateOID(dataset, names, setGeom));
+    oids->add(GenerateOID(dataset, names));
 
   return oids;
 }
 
-te::da::ObjectId* te::da::GenerateOID(te::da::DataSet* dataset, const std::vector<std::string>& names, const bool& setGeom)
+te::da::ObjectId* te::da::GenerateOID(te::da::DataSet* dataset, const std::vector<std::string>& names)
 {
   assert(dataset);
   assert(!names.empty());
@@ -454,15 +454,6 @@ te::da::ObjectId* te::da::GenerateOID(te::da::DataSet* dataset, const std::vecto
   {
     if(!dataset->isNull(names[i]))
       oid->addValue(dataset->getValue(names[i]).release());
-  }
-
-  if(setGeom)
-  {
-    std::size_t pos = te::da::GetFirstSpatialPropertyPos(dataset);
-
-    std::auto_ptr<te::gm::Geometry> geom = dataset->getGeometry(pos);
-
-    oid->setGeom((te::gm::Geometry*)geom->clone());
   }
 
   return oid;

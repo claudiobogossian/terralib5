@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -36,6 +36,7 @@
 // STL
 #include <map>
 #include <string>
+#include <vector>
 
 // Qt
 #include <QObject>
@@ -98,8 +99,15 @@ namespace te
         virtual EnumType* getLayoutType(QVariant::Type type, std::string name = "");
 
         virtual int getVariantType(EnumType* dataType);
+
+        virtual void clearAll();
             
       protected slots:
+
+         /*
+          \brief Call when one of the Windows was close.
+        */
+        virtual void onDestroyed(QObject* obj = 0);
 
         /*
           \brief By default it is connected with the internalDlg method of the class QtDlgEditorFactory. 
@@ -110,15 +118,27 @@ namespace te
 
         virtual void updateOutside(Property prop);
 
+        virtual void updateOutside(std::vector<Property> props);
+
         virtual void onShowGridSettingsDlg();
 
         virtual void onShowImageDlg();
 
         virtual void onShowTextGridSettingsDlg();
 
+        virtual void onShowFontDlg();
+
+        virtual void onShowColorDlg();
+
+        virtual void onShowMapLayerChoiceDlg();
+
+        virtual void onShowLegendChoiceDlg();
+
       signals:
 
         void changeDlgProperty(Property property);
+
+        void changeDlgProperty(std::vector<Property> props);
 
       protected:
 
@@ -134,6 +154,7 @@ namespace te
         QtDlgEditorFactory*             m_dlgEditorFactory;
         std::map<std::string, Property> m_dlgProps;
         Property                        m_currentPropertyClicked;
+        QList<QWidget*>                 m_dialogs;
     };
   }
 }

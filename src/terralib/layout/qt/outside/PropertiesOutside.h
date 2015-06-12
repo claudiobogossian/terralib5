@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -96,6 +96,8 @@ namespace te
 
         void onChangePropertyValue(Property property);
 
+        void onChangePropertyValue(std::vector<Property> props);
+
       protected:
 
         virtual void	closeEvent ( QCloseEvent * event );
@@ -107,8 +109,6 @@ namespace te
         virtual MapModel* getMapModel(std::string nameMap);
 
         virtual bool sendPropertyToSelectedItems(Property property);
-
-        virtual bool sendPropertyToSelectedItem(Property property);
 
       protected:
 

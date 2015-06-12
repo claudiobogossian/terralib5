@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -72,7 +72,6 @@ te::vp::IntersectionDialog::IntersectionDialog(QWidget* parent, Qt::WindowFlags 
 
   connect(m_ui->m_firstLayerComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onFirstLayerComboBoxChanged(int)));
   connect(m_ui->m_secondLayerComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onSecondLayerComboBoxChanged(int)));
-  //connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));
   connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
   connect(m_ui->m_targetDatasourceToolButton, SIGNAL(pressed()), this, SLOT(onTargetDatasourceToolButtonPressed()));
   connect(m_ui->m_targetFileToolButton, SIGNAL(pressed()), this,  SLOT(onTargetFileToolButtonPressed()));
@@ -144,11 +143,6 @@ void te::vp::IntersectionDialog::onSecondLayerComboBoxChanged(int index)
 
     ++it;
   }
-}
-
-void te::vp::IntersectionDialog::onHelpPushButtonClicked()
-{
-  QMessageBox::information(this, "Intersection Operation", "Under development");
 }
 
 void te::vp::IntersectionDialog::onOkPushButtonClicked()

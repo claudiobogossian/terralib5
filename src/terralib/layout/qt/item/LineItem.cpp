@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -115,7 +115,7 @@ void te::layout::LineItem::drawLine( QPainter * painter )
 
   if(m_poly.empty())
     return;
-  
+
   te::color::RGBAColor clrLne = model->getLineColor();
 
   QColor cpen;
@@ -129,9 +129,11 @@ void te::layout::LineItem::drawLine( QPainter * painter )
   for(int i = 0; i < m_poly.size() ; ++i)
   {
     path.lineTo(m_poly[i]);
-  }
+  } 
 
-  QPen pn(cpen, 0, Qt::SolidLine);
+  searchStyle();
+
+  QPen pn(cpen, 0, m_penStyle.style());
   painter->setPen(pn);
 
   painter->save();
@@ -139,4 +141,44 @@ void te::layout::LineItem::drawLine( QPainter * painter )
   painter->restore();
 }
 
+void te::layout::LineItem::searchStyle()
+{
+  LineModel* model = dynamic_cast<LineModel*>(m_model);
+  if(!model)
+  {
+    return;
+  }
+
+  EnumLineStyleType* enumScale = model->getEnumLineStyleType();
+
+  if(!enumScale)
+  {
+    return;
+  }
+
+  if(model->getCurrentLineStyleType() == enumScale->getStyleSolid())
+  {
+    m_penStyle.setStyle(Qt::SolidLine);
+  }
+  if(model->getCurrentLineStyleType() == enumScale->getStyleDash())
+  {
+    m_penStyle.setStyle(Qt::DashLine);
+  }
+  if(model->getCurrentLineStyleType() == enumScale->getStyleDot())
+  {
+    m_penStyle.setStyle(Qt::DotLine);
+  }
+  if(model->getCurrentLineStyleType() == enumScale->getStyleDashDot())
+  {
+    m_penStyle.setStyle(Qt::DashDotLine);
+  }
+  if(model->getCurrentLineStyleType() == enumScale->getStyleDashDotDot())
+  {
+    m_penStyle.setStyle(Qt::DashDotDotLine);
+  }
+  if(model->getCurrentLineStyleType() == enumScale->getStyleCustomDash())
+  {
+    m_penStyle.setStyle(Qt::CustomDashLine);
+  }
+}
 

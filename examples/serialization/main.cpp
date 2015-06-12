@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -28,6 +28,8 @@
 // TerraLib
 #include <terralib/common.h>
 #include <terralib/plugin.h>
+#include <terralib/plugin/PluginInfo.h>
+#include <terralib/plugin/PluginManager.h>
 #include <terralib/se/Style.h>
 #include "../Config.h"
 
@@ -41,6 +43,19 @@ int main(int /*argc*/, char** /*argv*/)
 {
 // Initializes Terralib support
   TerraLib::getInstance().initialize();
+
+
+  te::plugin::PluginInfo pinfo;
+  pinfo.m_name = "TERRALIB_XERCES";
+  pinfo.m_category = "XML";
+  pinfo.m_engine = TE_CPPPLUGINENGINE_CODE;
+  //pinfo.m_folder = "."; //the default search directories will be used
+  pinfo.m_resources.push_back(te::plugin::PluginInfo::Resource("SharedLibraryName", "terralib_mod_xerces"));
+
+  te::plugin::PluginManager::getInstance().load(pinfo, true);
+
+
+
 
   try
   {

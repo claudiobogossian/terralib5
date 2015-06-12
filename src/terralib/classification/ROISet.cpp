@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -84,7 +84,7 @@ std::map<std::string, te::cl::ROI*>& te::cl::ROISet::getROISet()
 void te::cl::ROISet::exportToFile(std::string fileName, int srid)
 {
   //get dsType
-  std::auto_ptr<te::da::DataSetType> dsType = getDataSetType();
+  std::auto_ptr<te::da::DataSetType> dsType = getDataSetType(srid);
 
   //create data source
   std::map<std::string, std::string> connInfo;
@@ -106,7 +106,7 @@ void te::cl::ROISet::exportToFile(std::string fileName, int srid)
   dsTypeResult->setName(val);
 
   //get dataset
-  std::auto_ptr<te::da::DataSet> dataset = getDataSet();
+  std::auto_ptr<te::da::DataSet> dataset = getDataSet(srid);
 
   //exchange
   std::map<std::string,std::string> nopt;
@@ -172,14 +172,14 @@ te::cl::ROISet* te::cl::ROISet::createROISet(std::auto_ptr<te::da::DataSet> ds)
   return rs;
 }
 
-std::auto_ptr<te::da::DataSetType> te::cl::ROISet::getDataSetType()
+std::auto_ptr<te::da::DataSetType> te::cl::ROISet::getDataSetType(int srid)
 {
   std::auto_ptr<te::da::DataSetType> dsType;
 
   te::dt::StringProperty* geomIdProp = new te::dt::StringProperty(TE_CL_ROI_GEOM_ID_NAME);
   te::dt::StringProperty* labelProp  = new te::dt::StringProperty(TE_CL_ROI_LABEL_NAME);
   te::dt::StringProperty* colorProp  = new te::dt::StringProperty(TE_CL_ROI_COLOR_NAME);
-  te::gm::GeometryProperty* geomProp = new te::gm::GeometryProperty(TE_CL_ROI_GEOM_NAME);
+  te::gm::GeometryProperty* geomProp = new te::gm::GeometryProperty(TE_CL_ROI_GEOM_NAME, srid, te::gm::PolygonType);
 
   te::da::PrimaryKey* pk = new te::da::PrimaryKey(TE_CL_ROI_PK_NAME, dsType.get());
   pk->add(geomIdProp);
@@ -196,11 +196,11 @@ std::auto_ptr<te::da::DataSetType> te::cl::ROISet::getDataSetType()
   return dsType;
 }
 
-std::auto_ptr<te::da::DataSet> te::cl::ROISet::getDataSet()
+std::auto_ptr<te::da::DataSet> te::cl::ROISet::getDataSet(int srid)
 {
   std::auto_ptr<te::da::DataSet> ds;
 
-  std::auto_ptr<te::da::DataSetType> dsType = getDataSetType();
+  std::auto_ptr<te::da::DataSetType> dsType = getDataSetType(srid);
 
   te::da::DataSet* dsMem = new te::mem::DataSet(dsType.get());
 

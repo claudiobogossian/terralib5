@@ -1,4 +1,4 @@
-/*  Copyright (C) 2014-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -94,7 +94,7 @@ namespace te
 
           \param properties
         */
-        virtual void updateProperties(te::layout::Properties* properties) = 0;
+        virtual void updateProperties(te::layout::Properties* properties, bool notify = true) = 0;
         
         /*!
           \brief Returns the model state just the public properties.

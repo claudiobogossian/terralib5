@@ -33,6 +33,12 @@
 #include "../core/ContextItem.h"
 #include "../core/property/Properties.h"
 #include "../core/Config.h"
+#include "../../maptools/AbstractLayer.h"
+#include "../core/property/Property.h"
+
+// STL
+#include <vector>
+#include <list>
 
 namespace te
 {
@@ -46,10 +52,30 @@ namespace te
 
       virtual ~MapLayerChoiceModel();
 
-      virtual void updateProperties(te::layout::Properties* properties);
+      virtual void updateProperties(te::layout::Properties* properties, bool notify = true);
 
       virtual Properties* getProperties() const;
 
+      virtual void setPropertiesMaps(std::vector<te::layout::Properties*> properties);
+
+      virtual void setLayers(std::list<te::map::AbstractLayerPtr> layers);
+
+      virtual std::list<te::map::AbstractLayerPtr> getLayers();
+
+	    virtual std::list<te::map::AbstractLayerPtr> getSelectedLayers();
+
+      virtual std::vector<Property> getLayerProperties();
+
+      virtual void refresh();
+	  
+    protected:
+
+	    virtual std::list<te::map::AbstractLayerPtr> searchLayers();
+
+      std::list<te::map::AbstractLayerPtr> m_layers;
+      std::vector<te::layout::Properties*> m_mapProperties;
+	    std::list<te::map::AbstractLayerPtr> m_selectedLayers;
+      std::vector<Property> m_layerProperties;
     };
   }
 }

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -257,9 +257,9 @@ void te::map::AbstractLayerRenderer::drawLayerGeometries(AbstractLayer* layer,
         // There isn't a Filter expression. Gets the data using only extent spatial restriction...
         dataset = layer->getData(geomPropertyName, &bbox, te::gm::INTERSECTS);
       }
-      catch(std::exception& /*e*/)
+      catch(Exception& e)
       {
-        continue; // TODO: deal the exceptions!
+        throw e;
       }
     }
     else
@@ -289,7 +289,7 @@ void te::map::AbstractLayerRenderer::drawLayerGeometries(AbstractLayer* layer,
       }
       catch(std::exception& /*e*/)
       {
-        continue; // TODO: deal the exceptions!
+        throw Exception((boost::format(TE_TR("Could not retrieve the data set from the layer %1%.")) % layer->getTitle()).str());
       }
     }
 

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -38,6 +38,7 @@
 te::qt::plugins::rp::FilterAction::FilterAction(QMenu* menu, QMenu* popupMenu):te::qt::plugins::rp::AbstractAction(menu, popupMenu)
 {
   createAction(tr("Filter...").toStdString(), "mask");
+  m_action->setObjectName("Processing.Raster Processing.Filter");
 }
 
 te::qt::plugins::rp::FilterAction::~FilterAction()

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2014-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -40,12 +40,14 @@
 // TerraLib
 #include "../../core/pattern/mvc/ItemObserver.h"
 #include "../../../qt/widgets/canvas/MultiThreadMapDisplay.h"
-#include "../../../qt/widgets/layer/explorer/AbstractTreeItem.h"
 #include "../../../qt/widgets/tools/AbstractTool.h"
 #include "../../../maptools/AbstractLayer.h"
 #include "../../core/Config.h"
 #include "ParentItem.h"
 #include "../../../qt/widgets/tools/ZoomWheel.h"
+
+// STL
+#include <list>
 
 class QGraphicsSceneMouseEvent;
 class QMimeData;
@@ -112,95 +114,124 @@ namespace te
         virtual te::color::RGBAColor** getRGBAColorImage(int &w, int &h);
         
         /*!
-          \brief Reimplemented from ItemObserver
-         */
-        virtual void updateProperties(te::layout::Properties* properties);
-        
-        virtual void changeZoomFactor(double currentZoomFactor);
-
-        /*!
           \brief Reimplemented from ParentItem
          */
         virtual QRectF boundingRect() const;
+
+        /*!
+          \brief Redraws the graphic component.
+        */
+        virtual void redraw(bool bRefresh = true);
+
+        /*!
+          \brief Reimplemented from ParentItem.
+         */
+        virtual bool canBeChild(ItemObserver* item);
                                         
+
+        virtual void contextUpdated();
+
       protected slots:
 
           void onDrawLayersFinished(const QMap<QString, QString>& errors);
           
-    protected:
+      protected:
       
-      /*!
-          \brief Reimplemented from QGraphicsProxyWidget
-       */
-      virtual void	dropEvent ( QGraphicsSceneDragDropEvent * event );
+        /*!
+            \brief Reimplemented from QGraphicsProxyWidget
+         */
+        virtual void	dropEvent ( QGraphicsSceneDragDropEvent * event );
 
-      /*!
-          \brief Reimplemented from QGraphicsProxyWidget
-       */
-      virtual void	mouseMoveEvent ( QGraphicsSceneMouseEvent * event );
+        /*!
+            \brief Reimplemented from QGraphicsProxyWidget
+         */
+        virtual void	mouseMoveEvent ( QGraphicsSceneMouseEvent * event );
 
-      /*!
-          \brief Reimplemented from QGraphicsProxyWidget
-       */
-      virtual void	mousePressEvent ( QGraphicsSceneMouseEvent * event );
+        /*!
+            \brief Reimplemented from QGraphicsProxyWidget
+         */
+        virtual void	mousePressEvent ( QGraphicsSceneMouseEvent * event );
 
-      /*!
-          \brief Reimplemented from QGraphicsProxyWidget
-       */
-      virtual void	mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
+        /*!
+            \brief Reimplemented from QGraphicsProxyWidget
+         */
+        virtual void	mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
 
-      /*!
-          \brief Reimplemented from QGraphicsProxyWidget
-       */
-      virtual void	dragEnterEvent ( QGraphicsSceneDragDropEvent * event );
+        /*!
+            \brief Reimplemented from QGraphicsProxyWidget
+         */
+        virtual void	dragEnterEvent ( QGraphicsSceneDragDropEvent * event );
 
-      /*!
-          \brief Reimplemented from QGraphicsProxyWidget
-       */
-      virtual void	dragLeaveEvent ( QGraphicsSceneDragDropEvent * event );
+        /*!
+            \brief Reimplemented from QGraphicsProxyWidget
+         */
+        virtual void	dragLeaveEvent ( QGraphicsSceneDragDropEvent * event );
 
-      /*!
-          \brief Reimplemented from QGraphicsProxyWidget
-       */
-      virtual void	dragMoveEvent ( QGraphicsSceneDragDropEvent * event );
+        /*!
+            \brief Reimplemented from QGraphicsProxyWidget
+         */
+        virtual void	dragMoveEvent ( QGraphicsSceneDragDropEvent * event );
                   
-      /*!
-          \brief Reimplemented from ItemObserver
-       */
-      virtual te::gm::Coord2D getPosition();
+        /*!
+            \brief Reimplemented from ItemObserver
+         */
+        virtual te::gm::Coord2D getPosition();
 
-      virtual void getMimeData(const QMimeData* mime);
+        /*!
+            \brief Reimplemented from ParentItem
+         */
+        virtual void drawBackground( QPainter* painter );
 
-      std::list<te::map::AbstractLayerPtr>  getVisibleLayers();
+        /*!
+            \brief Reimplemented from ParentItem
+         */
+        virtual void drawSelection(QPainter* painter);
 
-      te::map::AbstractLayerPtr getLayer();
+        /*!
+            \brief Reimplemented from ParentItem
+         */
+        virtual void drawBorder(QPainter* painter);
+
+        virtual void getMimeData(const QMimeData* mime);
+
+        std::list<te::map::AbstractLayerPtr>  getVisibleLayers();
+            
+        void setCurrentTool(te::qt::widgets::AbstractTool* tool);
       
-      void setCurrentTool(te::qt::widgets::AbstractTool* tool);
-      
-      virtual QImage generateImage();
+        virtual QImage generateImage();
 
-      virtual void calculateFrameMargin();
+        virtual void calculateFrameMargin();
 
-      virtual void generateMapPixmap();
+        virtual void generateMapPixmap();
 
-      virtual void drawMap(QPainter * painter);
+        virtual void drawMap(QPainter * painter);
 
-      virtual void recalculateBoundingRect();
+        virtual void recalculateBoundingRect();
 
-    protected:
+        virtual void updateMapDisplay();
 
-      QSize                                   m_mapSize; //!< The size of the map display in a zoom of 100%. This size is in pixels and is calculated based on the size of the GraphicItem in millimeters.
-      QPixmap                                 m_mapPixmap;
-      QMimeData*                              m_mime;      
-      te::qt::widgets::MultiThreadMapDisplay* m_mapDisplay;
-      bool                                    m_grabbedByWidget;
-      te::qt::widgets::AbstractTreeItem*      m_treeItem;
-      te::qt::widgets::AbstractTool*          m_tool;
-      double                                  m_wMargin;
-      double                                  m_hMargin;
-      te::map::AbstractLayerPtr               m_layer;
-      te::qt::widgets::ZoomWheel*             m_zoomWheel;
-      bool                                    m_changeLayer;
+        virtual void reloadLayers(bool draw = true);
+
+        virtual bool hasListLayerChanged();
+
+        /*!
+            \brief Reimplemented from ParentItem
+         */
+        virtual bool checkTouchesCorner(const double& x, const double& y);
+
+      protected:
+
+        QSize                                         m_mapSize; //!< The size of the map display in a zoom of 100%. This size is in pixels and is calculated based on the size of the GraphicItem in millimeters.
+        QPixmap                                       m_mapPixmap;
+        QMimeData*                                    m_mime;      
+        te::qt::widgets::MultiThreadMapDisplay*       m_mapDisplay;
+        bool                                          m_grabbedByWidget;
+        te::qt::widgets::AbstractTool*                m_tool;
+        double                                        m_wMargin;
+        double                                        m_hMargin;
+        te::qt::widgets::ZoomWheel*                   m_zoomWheel;
+        bool                                          m_changeLayer;
+        std::list<te::map::AbstractLayerPtr>          m_oldLayers;
     };
   }
 }

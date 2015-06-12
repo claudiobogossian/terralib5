@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -39,7 +39,8 @@ te::qt::plugins::rp::ContrastAction::ContrastAction(QMenu* menu, QMenu* popupMen
 {
   createAction(tr("Contrast...").toStdString(), "histogram");
 
-  createPopUpAction(tr("Contrast...").toStdString(), "histogram");
+  //createPopUpAction(tr("Contrast...").toStdString(), "histogram");
+  m_action->setObjectName("Processing.Raster Processing.Contrast");
 }
 
 te::qt::plugins::rp::ContrastAction::~ContrastAction()

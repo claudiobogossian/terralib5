@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -32,13 +32,6 @@
 #include "ObjectItem.h"
 #include "../../core/Config.h"
 
-// STL
-#include <vector>
-
-// Qt
-#include <QGraphicsSceneMouseEvent>
-#include <QPointF>
-
 namespace te
 {
   namespace layout
@@ -47,32 +40,20 @@ namespace te
 
     class TELAYOUTEXPORT BalloonItem : public ObjectItem
     {
-      public:
+    public:
 
-        BalloonItem( ItemController* controller, Observable* o );
+      BalloonItem( ItemController* controller, Observable* o );
 
-        virtual ~BalloonItem();
+      virtual ~BalloonItem();
 
-        virtual void paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
-        
-      protected:
-
-        virtual void drawBalloon(QPainter* painter);
-
-        virtual void	mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
-        
-        virtual void  mousePressEvent ( QGraphicsSceneMouseEvent * event );
-
-        virtual void	mouseMoveEvent ( QGraphicsSceneMouseEvent * event );
-
-        QPointF     m_initPoint;
-        QPointF     m_endPoint;
+      /*!
+        \brief Reimplemented from QGraphicsItem
+      */
+      virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
     };
   }
 }
 
 #endif
-
-
 
 

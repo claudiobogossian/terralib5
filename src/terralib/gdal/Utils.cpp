@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -136,34 +136,7 @@ te::rst::Grid* te::gdal::GetGrid(GDALDataset* gds, const int multiResLevel)
     
     if( ogrReturn == OGRERR_NONE )
     {
-      ogrReturn = oSRS.AutoIdentifyEPSG();
-      
-      if( ogrReturn == OGRERR_NONE )
-      {
-        const char* srsAuth = oSRS.GetAuthorityCode(0);
-        
-        if (srsAuth)
-        {
-          srid = atoi(srsAuth);
-        }
-      }
-    }
-    
-    if( srid == TE_UNKNOWN_SRS )
-    {
-      std::pair< std::string, unsigned int > customSRID;
-      std::string projRefStr( projRef );
-      
-      try
-      {
-        customSRID = te::srs::SpatialReferenceSystemManager::getInstance().getIdFromWkt( 
-          projRefStr );
-        srid = (int)customSRID.second;
-      }
-      catch( te::common::Exception& )
-      {
-        srid = TE_UNKNOWN_SRS;
-      }
+      srid = te::ogr::Convert2TerraLibProjection(&oSRS);
     }
   }
   
@@ -597,14 +570,32 @@ GDALDataset* te::gdal::CreateRaster(const std::string& name, te::rst::Grid* g, c
   
   OGRSpatialReference oSRS;
   
-  oSRS.importFromEPSG(g->getSRID());
+  OGRErr osrsErrorReturn = oSRS.importFromEPSG(g->getSRID());
+  CPLErr setProjErrorReturn = CE_Fatal;
   
-  char* projWKTPtr = 0;
-  
-  if(oSRS.exportToWkt(&projWKTPtr) == OGRERR_NONE)
+  if( osrsErrorReturn == OGRERR_NONE )
   {
-    poDataset->SetProjection(projWKTPtr);
+    char* projWKTPtr = 0;
+    
+    osrsErrorReturn = oSRS.exportToWkt(&projWKTPtr);
+    
+    if( osrsErrorReturn == OGRERR_NONE )
+    {
+      setProjErrorReturn = poDataset->SetProjection(projWKTPtr);
+    }
+    
     OGRFree(projWKTPtr);
+  }
+  
+  if( setProjErrorReturn != CE_None )
+  {
+    std::string wktStr = te::srs::SpatialReferenceSystemManager::getInstance().getWkt( 
+      g->getSRID() );
+    
+    if( !wktStr.empty() )
+    {
+      setProjErrorReturn = poDataset->SetProjection(wktStr.c_str());
+    }
   }
   
   int nb = static_cast<int>(bands.size());

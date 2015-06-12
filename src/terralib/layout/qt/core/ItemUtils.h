@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -40,6 +40,8 @@
 
 // Qt
 #include <QList>
+#include <QPainter>
+#include <QFont>
 
 class QGraphicsItem;
 class QGraphicsScene;
@@ -136,12 +138,7 @@ namespace te
           \brief Vectorizes inside text of selected MapItem. (generates te::layout::TextItem objects)
         */
         virtual void createTextMapAsObject();
-
-        /*!
-          \brief Vectorizes selected LegendItem. (generates te::layout::TextItem objects)
-        */
-        virtual void createLegendChildAsObject();
-
+        
         /*!
           \brief Get properties of all GridMapItem, children of a MapItem.
 		  
@@ -167,6 +164,14 @@ namespace te
           \return 
         */
         virtual QGraphicsItem* intersectionSelectionItem(int x, int y);
+
+        /*!
+          \brief Get text boundary in mm.
+		  
+		      \param w
+          \param h
+        */
+        virtual void getTextBoundary(QFont ft, double& w, double& h, std::string txt);
           
       protected:
 

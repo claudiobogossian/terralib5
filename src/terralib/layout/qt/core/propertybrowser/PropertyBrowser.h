@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -32,6 +32,9 @@
 // TerraLib
 #include "../../../core/property/Property.h"
 #include "../../../core/Config.h"
+
+//STL
+#include <vector>
 
 // Qt
 #include <QObject>
@@ -101,19 +104,23 @@ namespace te
 
         virtual bool addSubProperty(Property prop, Property subProp);
                     
-      private slots:
+      protected slots:
 
         void propertyEditorValueChanged(QtProperty *property, const QVariant &value);
 
         void onChangeFilter(const QString& filter);
 
         virtual void onChangeDlgProperty(Property property);
+
+        virtual void onChangeDlgProperty(std::vector<Property> props);
         
       signals:
 
         void changePropertyValue(QtProperty *property, QList<QtBrowserItem*> items);
 
         void changePropertyValue(Property property);
+
+        void changePropertyValue(std::vector<Property> props);
 
       protected:
       

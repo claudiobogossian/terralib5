@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -544,6 +544,13 @@ namespace te
         */
         virtual EnumType* getModeCreateMapLocation() const;
 
+				/*!
+          \brief Returns value that represents create map location mode type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
+        virtual EnumType* getModeCreateStar() const;
+
       protected:
 
         /*!
@@ -622,6 +629,7 @@ namespace te
         EnumType* m_modeCreateGridGeodesic; //!< value that represents create grid geodesic mode type belonging to enumeration
         EnumType* m_modeCreateNorth; //!< value that represents create north mode type belonging to enumeration
         EnumType* m_modeCreateMapLocation; //!< value that represents create map location mode type belonging to enumeration
+				EnumType* m_modeCreateStar; //!< value that represents create star type belonging to enumeration
     };
   }
 }

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -108,10 +108,10 @@ namespace te
       protected:
 
         /*! \brief Creates a dataset type that defines a roi. */
-        std::auto_ptr<te::da::DataSetType> getDataSetType();
+        std::auto_ptr<te::da::DataSetType> getDataSetType(int srid);
 
         /*! \brief Creates a dataset that with the roi set information. */
-        std::auto_ptr<te::da::DataSet> getDataSet();
+        std::auto_ptr<te::da::DataSet> getDataSet(int srid);
 
       private:
 

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2013-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -793,18 +793,7 @@ void te::layout::Scene::updateSelectedItemsPositions()
 
 void te::layout::Scene::onChangeZoomFactor( double currentFactor )
 {
-  QList<QGraphicsItem*> allItems = items();
-  foreach(QGraphicsItem *item, allItems) 
-  {
-    if(item)
-    {
-      ItemObserver* it = dynamic_cast<ItemObserver*>(item);
-      if(it)
-      {
-        it->changeZoomFactor(currentFactor); 
-      }
-    }
-  }
+  contextUpdated();
 }
 
 bool te::layout::Scene::addItemStackWithoutScene( QGraphicsItem* item )
@@ -839,6 +828,18 @@ bool te::layout::Scene::removeItemStackWithoutScene( QGraphicsItem* item )
   return m_itemStackWithoutScene.removeOne(item);
 }
 
-
-
-
+void te::layout::Scene::contextUpdated()
+{
+  QList<QGraphicsItem*> allItems = items();
+  foreach(QGraphicsItem *item, allItems)
+  {
+    if(item)
+    {
+      ItemObserver* it = dynamic_cast<ItemObserver*>(item);
+      if(it)
+      {
+        it->contextUpdated();
+      }
+    }
+  }
+}

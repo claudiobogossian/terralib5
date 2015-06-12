@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -67,6 +67,11 @@ void te::layout::VariantPropertiesBrowser::createManager()
 QtVariantProperty* te::layout::VariantPropertiesBrowser::addProperty( Property property )
 {
   QtVariantProperty* vproperty = 0;
+
+  if(!property.isVisible())
+  {
+    return vproperty;
+  }
 
   te::color::RGBAColor color;
   QColor qcolor;

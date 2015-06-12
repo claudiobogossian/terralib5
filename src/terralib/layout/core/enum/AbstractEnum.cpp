@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -27,7 +27,7 @@
 
 // TerraLib
 #include "AbstractEnum.h"
-
+#include "../../../common/StringUtils.h"
 
 te::layout::AbstractEnum::AbstractEnum()
 {
@@ -58,6 +58,8 @@ te::layout::EnumType* te::layout::AbstractEnum::getEnum( int enumId ) const
 te::layout::EnumType* te::layout::AbstractEnum::getEnum( std::string name ) const
 {
   EnumType* enumTp = 0;
+
+  name = te::common::Convert2UCase(name);
 
   for(std::vector<EnumType*>::const_iterator it = m_enums.begin(); it != m_enums.end(); it++)
   {
@@ -128,5 +130,23 @@ int te::layout::AbstractEnum::minId()
 int te::layout::AbstractEnum::size()
 {
   return m_enums.size();
+}
+
+te::layout::EnumType* te::layout::AbstractEnum::createEnum(std::string name, AbstractEnum* type, std::string label)
+{
+  int id = maxId();
+  ++id;
+
+  EnumType* enumType = new EnumType(id, name, type);
+
+  if(label.compare("") == 0)
+  {
+    label = name;
+  }
+  enumType->setLabel(label);
+
+  m_enums.push_back(enumType);
+
+  return enumType;
 }
 

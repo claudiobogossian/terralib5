@@ -1,4 +1,4 @@
-/*  Copyright (C) 2013-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -91,6 +91,11 @@ te::layout::View::View( QWidget* widget) :
 
 te::layout::View::~View()
 {
+  if(m_wait)
+  {
+    delete m_wait;
+    m_wait = 0;
+  }
   if(m_visualizationArea)
   {
     delete m_visualizationArea;
@@ -640,7 +645,7 @@ void te::layout::View::outsideAreaChangeContext( bool change )
   }
   else if(mode == enumMode->getModeLegendChildAsObject()) 
   {
-    iUtils->createLegendChildAsObject();
+
   }
   else if(mode == enumMode->getModeObjectToImage())
   {
@@ -658,12 +663,22 @@ void te::layout::View::outsideAreaChangeContext( bool change )
 
 void te::layout::View::hideEvent( QHideEvent * event )
 {
+  if(m_menuBuilder)
+  {
+    m_menuBuilder->closeAllWindows();
+  }
+
   QGraphicsView::hideEvent(event);
   emit hideView();
 }
 
 void te::layout::View::closeEvent( QCloseEvent * event )
 {
+  if(m_menuBuilder)
+  {
+    m_menuBuilder->closeAllWindows();
+  }
+
   QGraphicsView::closeEvent(event);
   emit closeView();
 }
@@ -737,6 +752,11 @@ void te::layout::View::onSystematicApply(double scale, SystematicScaleType type)
 void te::layout::View::onSelectionChanged()
 {
   m_selectionChange = true;
+
+  if(m_menuBuilder)
+  {
+    m_menuBuilder->closeAllWindows();
+  }
 }
 
 void te::layout::View::contextMenuEvent( QContextMenuEvent * event )
@@ -873,7 +893,6 @@ void te::layout::View::print()
 
 void te::layout::View::recompose()
 {
-  resetView();
   resetDefaultConfig();
 
   double defaultZoomFactor = Context::getInstance().getDefaultZoomFactor();
@@ -1076,6 +1095,9 @@ void te::layout::View::exportItemsToImage()
 void te::layout::View::changeZoomFactor( double currentZoom )
 {
   double zoomFactor = Context::getInstance().getZoomFactor();
+
+  if(zoomFactor == currentZoom)
+    return;
 
   double scaleMatrix = transform().m11();
 

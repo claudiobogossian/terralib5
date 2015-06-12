@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -51,11 +51,9 @@ te::layout::EnumTemplateType::~EnumTemplateType()
 
 void te::layout::EnumTemplateType::init()
 {
-  m_noneType = new EnumType(1, "NoneTemplate", this);
-  m_enums.push_back(m_noneType);
+  m_noneType = createEnum("NoneTemplate", this);
 
-  m_jsonType = new EnumType(0, "JsonTemplate", this);
-  m_enums.push_back(m_jsonType);
+  m_jsonType = createEnum("JsonTemplate", this);
 }
 
 te::layout::EnumType* te::layout::EnumTemplateType::getNoneType() const

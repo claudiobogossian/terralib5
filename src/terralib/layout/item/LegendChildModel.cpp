@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -146,7 +146,18 @@ void te::layout::LegendChildModel::visitDependent(ContextItem context)
 
   if(map)
   {
-    m_layer = map->getLayer();
+    if(!map->isLoadedLayer())
+    {
+      return;
+    }
+
+    std::list<te::map::AbstractLayerPtr> layerListMap = map->getLayers();
+    std::list<te::map::AbstractLayerPtr>::iterator it;
+    it = layerListMap.begin();
+
+    te::map::AbstractLayerPtr layer = (*it);
+
+    m_layer = layer;
 
     refreshRule();
 

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -180,10 +180,9 @@ te::gm::Envelope te::layout::Utils::viewportBoxFromMM( te::gm::Envelope box )
   te::map::WorldDeviceTransformer transf; // World Device Transformer.
 
   double zoomFactor = 1.;
-  
   if(m_applyZoom)
   {
-    //zoomFactor = Context::getInstance().getZoomFactor();
+    zoomFactor = Context::getInstance().getZoomFactor();
   }
   
   int pxwidth = mm2pixel(box.getWidth() * zoomFactor);

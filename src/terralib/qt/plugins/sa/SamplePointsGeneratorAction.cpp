@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
   
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
     
@@ -32,6 +32,7 @@ te::qt::plugins::sa::SamplePointsGeneratorAction::SamplePointsGeneratorAction(QM
   AbstractAction(menu)
 {
   createAction(tr("Sample Points Generator...").toStdString(), "sa-samplepoint-icon");
+  m_action->setObjectName("Processing.Spatial Analysis.Sample Points Generator");
 }
 
 te::qt::plugins::sa::SamplePointsGeneratorAction::~SamplePointsGeneratorAction()

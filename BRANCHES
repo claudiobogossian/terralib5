@@ -1,0 +1,83 @@
+This is the TerraLib Platform version 5.0  Long Term Support 
+============================================
+              (!!UNDER DEVELOPMENT!!)
+
+TerraLib is a multiplatform C++ framework for GIS application development.
+
+Read this document before trying to build terralib/terraview, to aovid using the wrong files
+------------------------------------------------------------
+
+BRANCHES  Notes on how to switch to the right branch to work on: MASTER, DEVELOP or any tagged release.
+
+
+1. Branching
+------------
+
+Three branches are essential in Terralib/terraview: "develop", "release-x.x.x" and "master":
+  - develop: this is the branch where the development team are working together to reach a "desirable" point.
+
+  - release-x.x.x: this branch is created from "develop" when a desirable point is reached by the team and a new release should be prepared to be tagged. 
+
+  - master: reflects a production-ready state where a tag (x.x.x) should be created after merge it with the "release-x.x.x" branch.
+
+Also there are tags which, usually are originated from a release branch: 5.0.0-alpha, 5.0.0-beta, 5.0.0-LTS, and so on.
+     
+2. After cloning terralib5 git repository, the current branch is always "master". To work on in a specific branch or released-tag, use the following git commands to help you:
+
+a) To check all branches available (remotes and local) and see the current one marked with "*".
+   $ git branch -a  
+   *master                           -- *master -> means the current branch is master
+   remotes/origin/HEAD -> origin/master
+   remotes/origin/develop
+   remotes/origin/master
+   remotes/origin/release-5.0.0-alpha
+   remotes/origin/release-5.0.0-beta
+   
+b) To switch to one of the branches listed above, use the checkout command (syntax and example bellow)and create a local branch to track the remote branch
+   $ git checkout -b <local_branch_name> <remote_branch_name without this part "remotes/">  
+   $ git checkout -b develop origin/develop   
+
+c) To check all tags available, use:
+   $ git tag -l                  (list all tag names)
+   5.0.0-alpha
+   5.0.0-beta
+   5.0.0-LTS-1
+   5.0.0
+   ...
+   
+d) It is also possible to checkout a specific tag and create a local branch to work on:
+   $ git checkout -b <local_branch_tag_name> <one_of_tag_name_listed>
+   $ git checkout -b tag_branch_5.0.0-beta  5.0.0-beta
+   
+e) After choosing the right branch to work on, follow the BUILD-INSTRUCTIONS.
+
+2. Version Number schema 
+-------------------
+5.0.0-alpha
+5.0.0-beta
+5.0.0-beta1
+5.0.0-beta2
+5.0.0-LTS-1  (Long Term Support)
+5.0.0-LTS-2
+...
+5.0.0
+5.0.1
+5.1.0-alpha
+5.1.0-alpha1
+5.1.0-alpha2
+5.1.0
+...
+6.0.0-alpha
+6.0.0-beta
+6.0.0
+
+--------------
+      
+Any problems should be reported to: 
+terralib-developers@dpi.inpe.br  or terralib-community@dpi.inpe.br
+
+                           @-TerraLib Team-@
+            National Institute For Space Research - INPE
+      P. BOX 515 - São Jose dos Campos - SP - Brazil, 12201-970
+                            April 15, 2015
+              

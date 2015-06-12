@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -166,13 +166,18 @@ void te::layout::OutsideModelObservable::setZValue( int zValue )
   m_zValue = zValue;
 }
 
-void te::layout::OutsideModelObservable::updateProperties( te::layout::Properties* properties )
+void te::layout::OutsideModelObservable::updateProperties( te::layout::Properties* properties, bool notify )
 {
   Properties* vectorProps = const_cast<Properties*>(properties);
 
   std::vector<Property> vProps = vectorProps->getProperties();
   Property pro_name = vProps[0];
-  //m_name = pro_name.getName();
+  
+  if(notify)
+  {
+    ContextItem context;
+    notifyAll(context);
+  }
 }
 
 std::string te::layout::OutsideModelObservable::getName()

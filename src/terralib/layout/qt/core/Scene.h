@@ -1,4 +1,4 @@
-/*  Copyright (C) 2013-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -317,6 +317,11 @@ namespace te
           \param item 
         */
         virtual bool removeItemStackWithoutScene(QGraphicsItem* item);
+
+        /*!
+          \brief This function is called every time the context is updated. It will sign to all items that a change in the context had ocurred.
+        */
+        virtual void contextUpdated();
 
       public slots:
 

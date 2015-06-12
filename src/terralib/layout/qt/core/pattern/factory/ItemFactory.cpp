@@ -1,4 +1,4 @@
-/*  Copyright (C) 2014-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -53,6 +53,7 @@
 #include "../../../item/GridGeodesicItem.h"
 #include "../../../item/NorthItem.h"
 #include "../../../item/MapLocationItem.h"
+#include "../../../item/StarItem.h"
 
 te::layout::ItemFactory::ItemFactory()
 {
@@ -175,7 +176,7 @@ te::layout::Observer* te::layout::ItemFactory::make( EnumType* type, ItemParamsC
     GridPlanarItem* gridPlanar = new GridPlanarItem(params.getController(), params.getModel());
     item = (Observer*)gridPlanar;
   }
-  else if(type == enumObj->getGridMapItem())
+  else if(type == enumObj->getGridGeodesicItem())
   {
     GridGeodesicItem* gridGeodesic = new GridGeodesicItem(params.getController(), params.getModel());
     item = (Observer*)gridGeodesic;
@@ -191,6 +192,11 @@ te::layout::Observer* te::layout::ItemFactory::make( EnumType* type, ItemParamsC
     item = (Observer*)location;
   }
 
+	else if(type == enumObj->getStarItem())
+	{
+		StarItem* point = new StarItem(params.getController(), params.getModel());
+		item = (Observer*)point;
+	}
   return item;
 }
 

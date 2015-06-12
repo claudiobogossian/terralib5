@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -57,14 +57,11 @@ te::layout::EnumGridStyleType::~EnumGridStyleType()
 
 void te::layout::EnumGridStyleType::init()
 {
-  m_styleNone = new EnumType(0, "None", this);
-  m_enums.push_back(m_styleNone);
+  m_styleNone = createEnum("None", this);
 
-  m_styleContinuous = new EnumType(1, "Continuous", this);
-  m_enums.push_back(m_styleContinuous);
+  m_styleContinuous = createEnum("Continuous Lines", this);
 
-  m_styleCross = new EnumType(2, "Cross", this);
-  m_enums.push_back(m_styleCross);
+  m_styleCross = createEnum("Cross Lines", this);
 }
 
 te::layout::EnumType* te::layout::EnumGridStyleType::getStyleNone() const
