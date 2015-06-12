@@ -253,8 +253,11 @@ QVariant te::layout::TextItem::itemChange( GraphicsItemChange change, const QVar
     double h = 0;
     getDocumentSizeMM(w, h);
 
-    newPos.setX(newPos.x() - transform().dx());
-    newPos.setY(newPos.y() - transform().dy() + h);
+    double tx = transform().dx();
+    double ty = transform().dy();
+
+    newPos.setX(newPos.x() - tx);
+    newPos.setY(newPos.y() - ty);
     return newPos;
   }
   else if(change == QGraphicsItem::ItemPositionHasChanged)
