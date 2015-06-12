@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/qt/widgets/charts/HistogramStyle.h
+  \file terralib/qt/widgets/charts/TimeSeriesStyle.h
 
-  \brief A class used to define the style of a histogram's chart
+  \brief A class used to define the style of a TimeSeries's chart
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_INTERNAL_HISTOGRAMSTYLE_H
-#define __TERRALIB_QT_WIDGETS_INTERNAL_HISTOGRAMSTYLE_H
+#ifndef __TERRALIB_QT_WIDGETS_INTERNAL_TIMESERIESSTYLE_H
+#define __TERRALIB_QT_WIDGETS_INTERNAL_TIMESERIESSTYLE_H
 
 //TerraLib
 #include "../Config.h"
@@ -46,7 +46,7 @@ namespace te
 
     namespace widgets
     {
-      class TEQTWIDGETSEXPORT HistogramStyle
+      class TEQTWIDGETSEXPORT TimeSeriesStyle
       {
 
         public:
@@ -54,47 +54,31 @@ namespace te
           /*!
             \brief Constructor
           */
-          HistogramStyle(); 
+          TimeSeriesStyle(); 
 
           /*!
             \brief Constructor
 
-            \param fill The histogram bar's fill
-            \param stroke The histogram bar's stroke
+            \param stroke The line's stroke
           */
-          HistogramStyle (te::se::Fill* fill, te::se::Stroke* stroke);
+          TimeSeriesStyle (te::se::Stroke* stroke);
 
           /*! 
             \brief Destructor.
           */
-          ~HistogramStyle();
+          ~TimeSeriesStyle();
 
           /*!
-            \brief Returns a pointer to a clone of this HistogramStyle.
+            \brief Returns a pointer to a clone of this TimeSeriesStyle.
 
-            \return A HistogramStyle type clone of this HistogramStyle.
+            \return A TimeSeriesStyle type clone of this TimeSeriesStyle.
             \note The caller will take ownership of the returned pointer. 
           */
-          HistogramStyle* clone();
+          TimeSeriesStyle* clone();
+
 
           /*!
-            \brief Returns a pointer to the histogram bar's fill
-
-            \return A Fill type pointer to the histogram bar's fill.
-            \note The caller will not take ownership of the returned pointer. 
-          */
-          te::se::Fill* getFill();
-
-          /*!
-            \brief It sets the  histogram bar's fill
-
-            \param newFill The new fill.
-            \note It will take ownership of the given pointer
-          */
-          void setFill(te::se::Fill* newFill);
-
-          /*!
-            \brief Returns a pointer to the histogram bar's stroke
+            \brief Returns a pointer to the line's stroke
 
             \return A Fill type pointer to the  histogram bar's stroke.
             \note The caller will not take ownership of the returned pointer. 
@@ -102,7 +86,7 @@ namespace te
           te::se::Stroke* getStroke();
 
           /*!            
-            \brief It sets the  histogram bar's stroke
+            \brief It sets the  line's stroke
 
             \param newStroke The new stroke.
             \note It will take ownership of the given pointer
@@ -115,7 +99,6 @@ namespace te
 
         private:
 
-          te::se::Fill*    m_fill;     //!< The bar's fill .
           te::se::Stroke*  m_stroke;   //!< The bar's stroke.
 
       };
@@ -123,4 +106,4 @@ namespace te
   }    //end namespace qt
 }      // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_INTERNAL_HISTOGRAMSTYLE_H
+#endif  // __TERRALIB_QT_WIDGETS_INTERNAL_TIMESERIESSTYLE_H

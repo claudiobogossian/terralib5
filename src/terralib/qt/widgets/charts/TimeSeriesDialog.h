@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/qt/widgets/charts/HistogramDialog.h
+  \file terralib/qt/widgets/charts/TimeSeriesDialog.h
 
-  \brief A dialog used to define the basic parameters of a new histogram.
+  \brief A dialog used to define the basic parameters of a new timeSeries.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_INTERNAL_HISTOGRAMDIALOG_H
-#define __TERRALIB_QT_WIDGETS_INTERNAL_HISTOGRAMDIALOG_H
+#ifndef __TERRALIB_QT_WIDGETS_INTERNAL_TIMESERIESDIALOG_H
+#define __TERRALIB_QT_WIDGETS_INTERNAL_TIMESERIESDIALOG_H
 
 //TerraLib
 #include "../Config.h"
@@ -49,14 +49,14 @@ namespace te
 
     //forward declarations
     class ChartDisplayWidget;
-    class HistogramDataWidget;
+    class TimeSeriesDataWidget;
 
       /*!
-        \class HistogramDialog
+        \class TimeSeriesDialog
 
-        \brief A Dialog used to customize a Histogram parameters and generate it's ChartDisplayWidget.
+        \brief A Dialog used to customize a timeSeries parameters and generate it's ChartDisplayWidget.
       */
-      class TEQTWIDGETSEXPORT HistogramDialog : public QDialog
+      class TEQTWIDGETSEXPORT TimeSeriesDialog : public QDialog
       {
 
         Q_OBJECT
@@ -66,17 +66,17 @@ namespace te
           /*!
             \brief Constructor
 
-            \param dataSet The dataset that will be used to generate a histogram.
-            \param dataType The dataset that will be used to generate a histogram.
+            \param dataSet The dataset that will be used to generate a timeSeries.
+            \param dataType The dataset that will be used to generate a timeSeries.
             \param parent this widget's parent
             \param f Window flags used to configure this dialog
           */
-          HistogramDialog(te::da::DataSet* dataSet, te::da::DataSetType* dataType, QWidget* parent = 0,  Qt::WindowFlags f = 0);
+          TimeSeriesDialog(te::da::DataSet* dataSet, te::da::DataSetType* dataType, QWidget* parent = 0,  Qt::WindowFlags f = 0);
 
           /*!
             \brief Destructor
           */
-          ~HistogramDialog();
+          ~TimeSeriesDialog();
 
           /*!
             \brief Returns a pointer to the generated ChartDisplayWidget
@@ -92,12 +92,12 @@ namespace te
 
         private:
 
-          std::auto_ptr<Ui::ChartDialogForm>  m_ui;                   //!< The dialog form.
-          HistogramDataWidget*                m_histogramDataWidget;  //!< The histogram's data widget used to configure the basic parameters of the new histogram.
-          ChartDisplayWidget*                 m_displayWidget;        //!< The display's widget that will be populated by this widget.
+          std::auto_ptr<Ui::ChartDialogForm>  m_ui;                    //!< The dialog form.
+          TimeSeriesDataWidget*               m_timeSeriesDataWidget;  //!< The histogram's data widget used to configure the basic parameters of the new histogram.
+          ChartDisplayWidget*                 m_displayWidget;         //!< The display's widget that will be populated by this widget.
       };
     } // end namespace widgets
   }   // end namespace qt
 }     // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_INTERNAL_HISTOGRAMDIALOG_H
+#endif  // __TERRALIB_QT_WIDGETS_INTERNAL_TIMESERIESDIALOG_H

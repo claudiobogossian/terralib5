@@ -1,21 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ScatterDialogForm</class>
- <widget class="QDialog" name="ScatterDialogForm">
+ <class>ChartDialogForm</class>
+ <widget class="QDialog" name="ChartDialogForm">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>333</width>
-    <height>70</height>
+    <height>60</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Scatter</string>
+   <string>Chart creation</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_2">
+  <layout class="QGridLayout" name="gridLayout_3">
+   <property name="sizeConstraint">
+    <enum>QLayout::SetDefaultConstraint</enum>
+   </property>
    <item row="0" column="0">
-    <layout class="QGridLayout" name="gridLayout">
+    <layout class="QGridLayout" name="gridLayout_2">
      <item row="0" column="0">
       <widget class="QFrame" name="m_dataWidgetFrame">
        <property name="frameShape">
@@ -27,7 +30,7 @@
       </widget>
      </item>
      <item row="1" column="0">
-      <layout class="QGridLayout" name="gridLayout_3">
+      <layout class="QGridLayout" name="gridLayout">
        <item row="0" column="0" colspan="4">
         <widget class="Line" name="line">
          <property name="sizePolicy">
@@ -98,16 +101,16 @@
   <connection>
    <sender>m_cancelPushButton</sender>
    <signal>clicked()</signal>
-   <receiver>ScatterDialogForm</receiver>
+   <receiver>ChartDialogForm</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>281</x>
-     <y>33</y>
+     <x>297</x>
+     <y>30</y>
     </hint>
     <hint type="destinationlabel">
-     <x>321</x>
-     <y>51</y>
+     <x>327</x>
+     <y>42</y>
     </hint>
    </hints>
   </connection>

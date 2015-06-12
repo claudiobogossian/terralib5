@@ -39,8 +39,9 @@ namespace te
       */
       enum ChartType
       {
-        HISTOGRAM_CHART = 1001,  /*!< Histogram.  */
-        SCATTER_CHART = 1002     /*!< Scatter.    */
+        HISTOGRAM_CHART = 1001,   /*!< Histogram.   */
+        SCATTER_CHART = 1002,     /*!< Scatter.     */
+        TIMESERIES_CHART = 1003   /*!< TimeSeries.  */
       };
     }
   } // end namespace dt
