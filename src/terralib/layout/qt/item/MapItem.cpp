@@ -110,8 +110,8 @@ te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
   setFlag(QGraphicsItem::ItemClipsChildrenToShape);
 
   m_mapSize = QSize(box.getWidth(), box.getHeight());
-  m_mapDisplay = new te::qt::widgets::MultiThreadMapDisplay(m_mapSize, true);
-  m_mapDisplay->setSynchronous(true);
+  m_mapDisplay = new te::qt::widgets::MapDisplay(m_mapSize);
+  //m_mapDisplay->setSynchronous(true);
   m_mapDisplay->setAcceptDrops(true);
 
   QColor clr(0,0,0,0);
@@ -197,7 +197,7 @@ void te::layout::MapItem::updateObserver( ContextItem context )
   }
 
   refresh();
-
+  m_changeLayer = true;
   update();
 }
 
