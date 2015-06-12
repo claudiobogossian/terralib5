@@ -192,6 +192,13 @@ namespace te
         */
         virtual EnumType* getDataTypeStringVector() const;
 
+        /*!
+          \brief Returns value that represents type SVGView(string) belonging to enumeration.
+		  
+		      \return enum value   	  
+        */
+        virtual EnumType* getDataTypeSVGView() const;
+
       protected:
 
         /*!
@@ -220,6 +227,7 @@ namespace te
         EnumType* m_dataTypeGenericVariant; //!< value that represents type Generic Vector belonging to enumeration
         EnumType* m_dataTypeLayerList; //!< value that represents type Layer List (te::map::AbstractLayerPtr) belonging to enumeration
         EnumType* m_dataTypeStringVector; //!< value that represents type string vector (std::vector<std::string>) belonging to enumeration
+        EnumType* m_dataTypeSVGView; //!< value that represents type SVGView (string) belonging to enumeration
     };
   }
 }
