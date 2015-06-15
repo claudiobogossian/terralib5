@@ -887,12 +887,12 @@
 <context>
     <name>te::vp::AggregationDialog</name>
     <message>
-        <location filename="../../../src/terralib/vp/qt/AggregationDialog.cpp" line="582"/>
+        <location filename="../../../src/terralib/vp/qt/AggregationDialog.cpp" line="581"/>
         <source>Save as...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/AggregationDialog.cpp" line="583"/>
+        <location filename="../../../src/terralib/vp/qt/AggregationDialog.cpp" line="582"/>
         <source>Shapefile (*.shp *.SHP);;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -952,12 +952,12 @@
 <context>
     <name>te::vp::IntersectionDialog</name>
     <message>
-        <location filename="../../../src/terralib/vp/qt/IntersectionDialog.cpp" line="440"/>
+        <location filename="../../../src/terralib/vp/qt/IntersectionDialog.cpp" line="434"/>
         <source>Save as...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/IntersectionDialog.cpp" line="441"/>
+        <location filename="../../../src/terralib/vp/qt/IntersectionDialog.cpp" line="435"/>
         <source>Shapefile (*.shp *.SHP);;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -988,50 +988,50 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="183"/>
-        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="191"/>
-        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="202"/>
-        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="210"/>
-        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="218"/>
-        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="224"/>
-        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="242"/>
-        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="258"/>
-        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="275"/>
-        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="305"/>
-        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="311"/>
-        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="328"/>
-        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="345"/>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="178"/>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="186"/>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="197"/>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="205"/>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="213"/>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="219"/>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="237"/>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="253"/>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="270"/>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="300"/>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="306"/>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="323"/>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="340"/>
         <source>Multipart To Singlepart</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="183"/>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="178"/>
         <source>Select an input layer.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="191"/>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="186"/>
         <source>Can not execute this operation on this type of layer.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="202"/>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="197"/>
         <source>None selected object!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="210"/>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="205"/>
         <source>The selected input data source can not be accessed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="218"/>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="213"/>
         <source>Define a repository for the result.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="275"/>
-        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="328"/>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="270"/>
+        <location filename="../../../src/terralib/vp/qt/MultipartToSinglepartDialog.cpp" line="323"/>
         <source>Error: could not operate.</source>
         <translation type="unfinished"></translation>
     </message>

@@ -42,8 +42,8 @@
 #include <QTextCursor>
 #include <QTextTableCell>
 
-te::layout::TextGridItem::TextGridItem( ItemController* controller, Observable* o ) :
-  TitleItem(controller, o)
+te::layout::TextGridItem::TextGridItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
+  TitleItem(controller, o, true)
 {
   init();
 }

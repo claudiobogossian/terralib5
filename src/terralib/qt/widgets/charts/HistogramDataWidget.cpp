@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/qt/widgets/charts/histogramDataWidget.cpp
+  \file terralib/qt/widgets/charts/HistogramDataWidget.cpp
 
   \brief A widget used to adjust a histogram's input data.
 */
@@ -34,8 +34,6 @@
 #include "Histogram.h"
 #include "HistogramDataWidget.h"
 #include "ui_HistogramDataWidgetForm.h"
-
-#include <iostream>
 
 void updateSummary(te::da::DataSet* dataSet, Ui::HistogramDataWidgetForm* ui)
 {

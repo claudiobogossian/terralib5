@@ -60,7 +60,7 @@ namespace te
           \param controller "Controller" part of MVC component
           \param o "Model" part of MVC component
         */ 
-        GridPlanarItem( ItemController* controller, Observable* o );
+        GridPlanarItem( ItemController* controller, Observable* o, bool invertedMatrix = false );
 
         /*!
           \brief Destructor

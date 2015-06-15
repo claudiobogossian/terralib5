@@ -45,8 +45,8 @@
 #include <QStyleOptionGraphicsItem>
 #include <QObject>
 
-te::layout::LineItem::LineItem( ItemController* controller, Observable* o ) :
-  ObjectItem(controller, o)
+te::layout::LineItem::LineItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
+  ObjectItem(controller, o, invertedMatrix)
 {  
   m_nameClass = std::string(this->metaObject()->className());
 }
@@ -83,29 +83,7 @@ void te::layout::LineItem::updateObserver( ContextItem context )
   }
 }
 
-void te::layout::LineItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
-{
-  Q_UNUSED( option );
-  Q_UNUSED( widget );
-  if ( !painter )
-  {
-    return;
-  }
-
-  drawBackground(painter);
-
-  drawLine(painter);
-
-  drawBorder(painter);
-
-  //Draw Selection
-  if (option->state & QStyle::State_Selected)
-  {
-    drawSelection(painter);
-  }
-}
-
-void te::layout::LineItem::drawLine( QPainter * painter )
+void te::layout::LineItem::drawItem( QPainter * painter )
 {
   LineModel* model = dynamic_cast<LineModel*>(m_model);
   if(!model)

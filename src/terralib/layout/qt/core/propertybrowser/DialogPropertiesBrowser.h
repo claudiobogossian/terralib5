@@ -147,6 +147,8 @@ namespace te
         virtual void changeValueQtPropertyDlg(std::string name, QVariant variant);
 
         virtual QWidget* createOutside(EnumType* enumType);
+
+        virtual void appendDialog(QWidget* widget);
       
       protected:
 
