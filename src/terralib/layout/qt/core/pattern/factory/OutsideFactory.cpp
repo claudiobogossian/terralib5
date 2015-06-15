@@ -40,6 +40,7 @@
 #include "../../../../core/enum/Enums.h"
 #include "../../../outside/MapLayerChoiceOutside.h"
 #include "../../../outside/LegendChoiceOutside.h"
+#include "../../../outside/SVGViewOutside.h"
 
 te::layout::OutsideFactory::OutsideFactory()
 {
@@ -87,6 +88,11 @@ te::layout::Observer* te::layout::OutsideFactory::make( EnumType* type, OutsideP
   {
     SystematicScaleOutside* systematic = new SystematicScaleOutside(params.getController(), params.getModel());		
     outside = (Observer*)systematic;
+  }
+  else if(type == enumObj->getSVGView())
+  {
+    SVGViewOutside* svgview = new SVGViewOutside(params.getController(), params.getModel());		
+    outside = (Observer*)svgview;
   }
   else if(type == enumObj->getEditTemplate())
   {

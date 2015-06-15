@@ -18,57 +18,59 @@
  */
 
 /*!
-  \file terralib/layout/qt/outside/LegendChoiceOutside.cpp
+  \file terralib/layout/qt/outside/SVGViewOutside.cpp
 
   \brief A dialog configure the input layer to address geocoding operation
 */
 
 // TerraLib
-#include "LegendChoiceOutside.h"
-#include "ui_LegendChoice.h"
+#include "../../../common/Logger.h"
+#include "../../../qt/widgets/utils/DoubleListWidget.h"
+#include "SVGViewOutside.h"
+#include "../../outside/SVGViewModel.h"
+#include "ui_SVGView.h"
 
 // STL
-#include <string>
+#include <algorithm>
 
 // Qt
 #include <QGridLayout>
+#include <QMessageBox>
+#include "../../core/enum/Enums.h"
+#include "../../core/property/GenericVariant.h"
 
-te::layout::LegendChoiceOutside::LegendChoiceOutside(OutsideController* controller, Observable* o)
+te::layout::SVGViewOutside::SVGViewOutside(OutsideController* controller, Observable* o)
   : QDialog(0),
     OutsideObserver(controller, o),
-    m_ui(new Ui::LegendChoice)
+    m_ui(new Ui::SVGView)
 {
-  // add controls
   m_ui->setupUi(this);
-  
-  m_widget.reset(new te::qt::widgets::DoubleListWidget(m_ui->m_widget));
-  
-  QGridLayout* displayLayout = new QGridLayout(m_ui->m_widget);
-  displayLayout->addWidget(m_widget.get());
-
-  m_widget->setLeftLabel("Available Attributes");
-  m_widget->setRightLabel("Selected Attributes");
-
-  connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
-  connect(m_ui->m_cancelPushButton, SIGNAL(clicked()), this, SLOT(onCancelPushButtonClicked()));
-
 }
 
-te::layout::LegendChoiceOutside::~LegendChoiceOutside()
+te::layout::SVGViewOutside::~SVGViewOutside()
 {
 }
 
-void te::layout::LegendChoiceOutside::onOkPushButtonClicked()
+void te::layout::SVGViewOutside::init()
 {
-
+  SVGViewOutside* model = dynamic_cast<SVGViewOutside*>(m_model);
+  if(!model)
+  {
+    return;
+  }  
 }
 
-void te::layout::LegendChoiceOutside::onCancelPushButtonClicked()
+void te::layout::SVGViewOutside::onOkPushButtonClicked()
+{
+  
+}
+
+void te::layout::SVGViewOutside::onCancelPushButtonClicked()
 {
   reject();
 }
 
-void te::layout::LegendChoiceOutside::updateObserver( ContextItem context )
+void te::layout::SVGViewOutside::updateObserver( ContextItem context )
 {
   setVisible(context.isShow());
   if(context.isShow() == true)
@@ -77,13 +79,13 @@ void te::layout::LegendChoiceOutside::updateObserver( ContextItem context )
     hide();
 }
 
-void te::layout::LegendChoiceOutside::setPosition( const double& x, const double& y )
+void te::layout::SVGViewOutside::setPosition( const double& x, const double& y )
 {
   move(x,y);
   refresh();
 }
 
-te::gm::Coord2D te::layout::LegendChoiceOutside::getPosition()
+te::gm::Coord2D te::layout::SVGViewOutside::getPosition()
 {
   QPointF posF = pos();
   qreal valuex = posF.x();
