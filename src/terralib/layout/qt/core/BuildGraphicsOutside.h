@@ -136,6 +136,13 @@ namespace te
         QWidget* createMapLayerChoice();
 
         /*!
+          \brief Create a widget of SVG View type 
+
+		      \return new object 
+        */
+        QWidget* createSVGView();
+
+        /*!
           \brief Create a widget of Color Dialog type 
 
 		      \return new object 
