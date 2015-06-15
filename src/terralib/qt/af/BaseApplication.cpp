@@ -212,9 +212,6 @@ te::qt::af::BaseApplication::~BaseApplication()
 {
   te::qt::af::SaveState(this);
 
-  if(m_iController)
-    m_iController->removeInteface(m_queryDlg);
-
   delete m_iController;
   delete m_explorer;
   delete m_display;
