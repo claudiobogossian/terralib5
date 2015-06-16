@@ -805,8 +805,12 @@ void te::layout::MapItem::reloadLayers(bool draw)
     }
   }
 
-  std::list<te::map::AbstractLayerPtr>::iterator it;
-  it = layerList.begin();
+  if(layerList.empty() == true)
+  {
+    return;
+  }
+
+  std::list<te::map::AbstractLayerPtr>::iterator it = layerList.begin();
 
   te::map::AbstractLayerPtr al = (*it);
 
