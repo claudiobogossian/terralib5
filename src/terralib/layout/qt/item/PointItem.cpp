@@ -46,8 +46,8 @@
 #include <QPolygonF>
 #include <QPainterPath>
 
-te::layout::PointItem::PointItem( ItemController* controller, Observable* o ) :
-  ObjectItem(controller, o)
+te::layout::PointItem::PointItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
+  ObjectItem(controller, o, invertedMatrix)
 {
   m_nameClass = std::string(this->metaObject()->className());
 }
@@ -57,23 +57,8 @@ te::layout::PointItem::~PointItem()
 
 }
 
-void te::layout::PointItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
+void te::layout::PointItem::drawItem( QPainter * painter )
 {
-  Q_UNUSED( option );
-  Q_UNUSED( widget );
-  if ( !painter )
-  {
-    return;
-  }
-
-  if(m_resizeMode)
-  {
-    ObjectItem::paint(painter, option, widget);
-    return;
-  }
-
-  drawBackground(painter);
-
   PointModel* model = dynamic_cast<PointModel*>(m_model);
 
   if(model)
@@ -104,14 +89,6 @@ void te::layout::PointItem::paint( QPainter * painter, const QStyleOptionGraphic
     {
       drawCross(painter);
     }
-  }
-
-  drawBorder(painter);
-
-  //Draw Selection
-  if (option->state & QStyle::State_Selected)
-  {
-    drawSelection(painter);
   }
 }
 

@@ -79,6 +79,7 @@ te::layout::ToolbarOutside::ToolbarOutside( OutsideController* controller, Obser
   m_actionLine("geometry_line"),
   m_actionPolygon("geometry_polygon"),
   m_actionStar("geometry_star"),
+  m_actionSVG("geometry_svg"),
   m_actionViewPan("view_pan"),
   m_actionViewZoomIn("view_zoom_in"),
   m_actionViewZoomOut("view_zoom_out"),
@@ -349,6 +350,9 @@ QToolButton* te::layout::ToolbarOutside::createGeometryToolButton()
 
   QAction* actionStar = createAction("Star Object", m_actionStar, "layout-star", "", menu); 
   menu->addAction(actionStar);
+
+  QAction* actionSVG = createAction("SVG Object", m_actionSVG, "layout-svg", "", menu); 
+  menu->addAction(actionSVG);
 
   btnGeometry->setMenu(menu);
   btnGeometry->setPopupMode(QToolButton::MenuButtonPopup);
@@ -1595,6 +1599,11 @@ QAction* te::layout::ToolbarOutside::getActionComboBoxZoom()
 std::string te::layout::ToolbarOutside::getActionStar()
 {
 	return m_actionStar;
+}
+
+std::string te::layout::ToolbarOutside::getActionSVG()
+{
+  return m_actionSVG;
 }
 
 

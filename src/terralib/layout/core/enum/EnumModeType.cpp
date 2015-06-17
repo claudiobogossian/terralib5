@@ -62,6 +62,7 @@ te::layout::EnumModeType::EnumModeType() :
   m_modeCreateImage(0),
   m_modePageConfig(0),
   m_modeSystematicScale(0),
+  m_modeSVGView(0),
   m_modeCreatePoint(0),
   m_modeCreateArrow(0),
   m_modeCreateEllipse(0),
@@ -98,7 +99,8 @@ te::layout::EnumModeType::EnumModeType() :
   m_modeCreateGridGeodesic(0),
   m_modeCreateNorth(0),
   m_modeCreateMapLocation(0),
-	m_modeCreateStar(0)
+	m_modeCreateStar(0),
+  m_modeCreateSVG(0)
 {
   init();
 }
@@ -259,6 +261,11 @@ te::layout::EnumModeType::~EnumModeType()
   {
     delete m_modeSystematicScale;
     m_modeSystematicScale = 0;
+  }
+  if(m_modeSVGView)
+  {
+    delete m_modeSVGView;
+    m_modeSVGView = 0;
   }
   if(m_modeCreatePoint)
   {
@@ -449,6 +456,12 @@ te::layout::EnumModeType::~EnumModeType()
 		delete m_modeCreateStar;
 		m_modeCreateStar= 0;
 	}
+
+  if(m_modeCreateSVG)
+  {
+    delete m_modeCreateSVG;
+    m_modeCreateSVG= 0;
+  }
 }
 
 void te::layout::EnumModeType::init()
@@ -550,6 +563,9 @@ void te::layout::EnumModeType::init()
 
   m_modeSystematicScale = createEnum("SystematicScale", this, "Systematic Scale");
   m_modeSystematicScale->setType(te::layout::EnumDialog);
+
+  m_modeSVGView = createEnum("SVGView", this, "SVG View");
+  m_modeSVGView->setType(te::layout::EnumDialog);
 
   m_modeCreatePoint = createEnum("CreatePoint", this, "Create Point Component");
   m_modeCreatePoint->setType(te::layout::EnumCreate);
@@ -661,6 +677,9 @@ void te::layout::EnumModeType::init()
 
 	m_modeCreateStar = createEnum("Create Star", this, "Create Star");
 	m_modeCreateStar->setType(te::layout::EnumCreate);
+
+  m_modeCreateSVG = createEnum("Create SVG", this, "Create SVG");
+  m_modeCreateSVG->setType(te::layout::EnumCreate);
 }
 
 te::layout::EnumType* te::layout::EnumModeType::getModeSelectByBox() const
@@ -1011,5 +1030,15 @@ te::layout::EnumType* te::layout::EnumModeType::getModeCreateMapLocation() const
 te::layout::EnumType* te::layout::EnumModeType::getModeCreateStar() const
 {
 	return m_modeCreateStar;
+}
+
+te::layout::EnumType* te::layout::EnumModeType::getModeCreateSVG() const
+{
+  return m_modeCreateSVG;
+}
+
+te::layout::EnumType* te::layout::EnumModeType::getModeSVGView() const
+{
+  return m_modeSVGView;
 }
 

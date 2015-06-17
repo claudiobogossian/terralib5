@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/layout/qt/outside/MapLayerChoiceOutside.cpp
+  \file terralib/layout/qt/outside/LegendChoiceOutside.cpp
 
   \brief A dialog configure the input layer to address geocoding operation
 */

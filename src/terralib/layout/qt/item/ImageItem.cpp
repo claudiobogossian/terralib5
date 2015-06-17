@@ -39,8 +39,8 @@
 // Qt
 #include <QStyleOptionGraphicsItem>
 
-te::layout::ImageItem::ImageItem( ItemController* controller, Observable* o ) :
-  ObjectItem(controller, o)
+te::layout::ImageItem::ImageItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
+  ObjectItem(controller, o, invertedMatrix)
 {
   m_nameClass = std::string(this->metaObject()->className());
 }
@@ -50,29 +50,7 @@ te::layout::ImageItem::~ImageItem()
 
 }
 
-void te::layout::ImageItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
-{
-  Q_UNUSED( option );
-  Q_UNUSED( widget );
-  if ( !painter )
-  {
-    return;
-  }
-
-  drawBackground(painter);
-
-  drawImage(painter);
-
-  drawBorder(painter);
-
-  //Draw Selection
-  if (option->state & QStyle::State_Selected)
-  {
-    drawSelection(painter);
-  }
-}
-
-void te::layout::ImageItem::drawImage( QPainter * painter )
+void te::layout::ImageItem::drawItem( QPainter * painter )
 {
   ImageModel* model = dynamic_cast<ImageModel*>(m_model);
   if(!model)
@@ -97,4 +75,3 @@ void te::layout::ImageItem::drawImage( QPainter * painter )
 
   painter->restore();
 }
-

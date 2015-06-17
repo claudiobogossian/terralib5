@@ -33,15 +33,18 @@
 #include "../../core/pattern/mvc/ItemModelObservable.h"
 #include "../../item/MapModel.h"
 #include "../core/ItemUtils.h"
+#include "../../outside/ColorDialogModel.h"
+#include "../../../color/RGBAColor.h"
 
 // Qt
-
+#include <QColor>
 
 te::layout::ColorDialogOutside::ColorDialogOutside( OutsideController* controller, Observable* o ) :
   QColorDialog(0),
-	OutsideObserver(controller, o)
+	OutsideObserver(controller, o),
+  m_okClicked(false)
 {
-	
+	connect(this, SIGNAL(currentColorChanged(const QColor&)), this, SLOT(onCurrentColorChanged(const QColor&)));
 }
 
 te::layout::ColorDialogOutside::~ColorDialogOutside()
@@ -49,20 +52,38 @@ te::layout::ColorDialogOutside::~ColorDialogOutside()
   
 }
 
-void te::layout::ColorDialogOutside::createLayout()
+void te::layout::ColorDialogOutside::init()
 {
-  //Layout
-    
+  ColorDialogModel* model = dynamic_cast<ColorDialogModel*>(m_model);
+  if(!model)
+    return;
+
+  Property prop_color = model->getColorProperty();
+
+  te::color::RGBAColor rgbColor = prop_color.getValue().toColor();
+
+  QColor color;
+  color.setRed(rgbColor.getRed());
+  color.setGreen(rgbColor.getGreen());
+  color.setBlue(rgbColor.getBlue());
+  color.setAlpha(rgbColor.getAlpha());
+
+  setCurrentColor(color);
 }
 
 void te::layout::ColorDialogOutside::updateObserver( ContextItem context )
 {
-	
+  setVisible(context.isShow());
+  if(context.isShow() == true)
+    show();
+  else
+    hide();
 }
 
 void te::layout::ColorDialogOutside::setPosition( const double& x, const double& y )
 {
-  
+  move(x,y);
+  refresh();
 }
 
 te::gm::Coord2D te::layout::ColorDialogOutside::getPosition()
@@ -77,8 +98,63 @@ te::gm::Coord2D te::layout::ColorDialogOutside::getPosition()
 
   return coordinate;
 }
- 
-void te::layout::ColorDialogOutside::refreshOutside()
+
+void te::layout::ColorDialogOutside::accept()
 {
+  m_okClicked = true;
+
+  ColorDialogModel* model = dynamic_cast<ColorDialogModel*>(m_model);
+  if(!model)
+    return;
+
+  Property prop_color = model->getColorProperty();
+
+  te::color::RGBAColor rgbColor = prop_color.getValue().toColor();
+
+  QColor color;
+  color.setRed(rgbColor.getRed());
+  color.setGreen(rgbColor.getGreen());
+  color.setBlue(rgbColor.getBlue());
+  color.setAlpha(rgbColor.getAlpha());
   
+  if(color == m_currentColor)
+  {
+    return;
+  }
+
+  rgbColor.setColor(m_currentColor.red(), m_currentColor.green(), m_currentColor.blue(), m_currentColor.alpha());
+
+  prop_color.setValue(rgbColor, prop_color.getType());
+
+  model->setColorProperty(prop_color); // refresh property value
+
+  emit updateProperty(prop_color);
 }
+
+void te::layout::ColorDialogOutside::onCurrentColorChanged( const QColor & color )
+{
+  m_currentColor = color;
+}
+
+bool te::layout::ColorDialogOutside::event( QEvent * e )
+{
+  return QColorDialog::event(e);
+}
+
+void te::layout::ColorDialogOutside::closeEvent( QCloseEvent * event )
+{
+  if(m_okClicked)
+  {
+    m_okClicked = false;
+    event->accept();
+  }
+  else
+  {
+    QColorDialog::closeEvent(event);
+  }
+}
+
+
+
+
+

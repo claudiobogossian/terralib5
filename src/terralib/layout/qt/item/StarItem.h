@@ -59,19 +59,16 @@ namespace te
           \param controller "Controller" part of MVC component
           \param o "Model" part of MVC component
         */ 
-        StarItem( ItemController* controller, Observable* o );
+        StarItem( ItemController* controller, Observable* o, bool invertedMatrix = false );
 
         /*!
           \brief Destructor
          */
         virtual ~StarItem();
 
-        /*!
-          \brief Reimplemented from QGraphicsItem
-         */
-        virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
-        
       protected:
+
+        virtual void drawItem ( QPainter * painter );
 
         virtual void drawStar1(QPainter * painter);
 				virtual void drawStar2(QPainter * painter);

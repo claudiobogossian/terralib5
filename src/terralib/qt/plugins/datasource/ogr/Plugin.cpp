@@ -25,8 +25,8 @@
 
 // TerraLib
 #include "../../../../common/Config.h"
-#include "../../../../common/Translator.h"
 #include "../../../../common/Logger.h"
+#include "../../../../common/Translator.h"
 #include "../../../../srs/Config.h"
 #include "../../../../srs/SpatialReferenceSystemManager.h"
 #include "../../../../dataaccess/dataset/DataSetType.h"
@@ -189,6 +189,14 @@ void te::qt::plugins::ogr::Plugin::showWindow()
 //  QString filter = GetSupportedFiles();
 //  QStringList fileNames = QFileDialog::getOpenFileNames(te::qt::af::ApplicationController::getInstance().getMainWindow(), tr("Open Vector File"), te::qt::af::GetFilePathFromSettings("vector"), filter);
   
+  te::qt::af::Project* proj = te::qt::af::ApplicationController::getInstance().getProject();
+
+  if(proj == 0)
+  {
+    QMessageBox::warning(te::qt::af::ApplicationController::getInstance().getMainWindow(), tr("Vector File"), tr("Error: there is no opened project!"));
+    return;
+  }
+
   QStringList fileNames = QFileDialog::getOpenFileNames(te::qt::af::ApplicationController::getInstance().getMainWindow(), tr("Open Vector File"), te::qt::widgets::GetFilePathFromSettings("vector"), tr("Esri Shapefile (*.shp *.SHP);; Mapinfo File (*.mif *.MIF);; GeoJSON (*.geojson *.GeoJSON);; GML (*.gml *.GML);; KML (*.kml *.KML);; All Files (*.*)"));
 
   if(fileNames.isEmpty())
