@@ -79,6 +79,11 @@ bool te::layout::ViewZoomArea::mouseReleaseEvent(QMouseEvent* e)
   if(!scne)
     return false;
 
+  if(m_rubberBand == 0)
+  {
+    return false;
+  }
+
   QRect rect = m_rubberBand->geometry().normalized();
 
   ViewRubberBand::mouseReleaseEvent(e);
@@ -88,6 +93,12 @@ bool te::layout::ViewZoomArea::mouseReleaseEvent(QMouseEvent* e)
 
   //Updates 
   QRectF bounding = poly.boundingRect();
+  if(bounding.width() == 0. || bounding.height() == 0.)
+  {
+    return false;
+  }
+
+
   /*
   Zoom In Area:
   Scales the view matrix. The view is scaled according to aspectRatioMode.
