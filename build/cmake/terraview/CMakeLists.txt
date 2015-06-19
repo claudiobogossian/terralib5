@@ -164,7 +164,7 @@ if(TERRALIB_TRACK_3RDPARTY_DEPENDENCIES)
 
     file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/qt.conf
          "[Paths]\nBinaries = .\nPlugins = qtplugins\nTranslations = share/terralib/translations")
-         
+
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/qt.conf
             DESTINATION terraview.app/Contents/Resources COMPONENT runtime)
 

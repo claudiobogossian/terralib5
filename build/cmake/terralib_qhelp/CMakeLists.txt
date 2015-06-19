@@ -99,10 +99,11 @@ if(Qt5_FOUND)
   )
   
   if(ASSIST_PRG)
-    install (
-      FILES ${ASSIST_PRG}
-      DESTINATION ${TERRALIB_DESTINATION_RUNTIME}
-      COMPONENT runtime
-    )
+    install (FILES ${ASSIST_PRG}
+             DESTINATION ${TERRALIB_DESTINATION_RUNTIME}
+             PERMISSIONS OWNER_READ OWNER_EXECUTE
+                         GROUP_READ GROUP_EXECUTE
+                         WORLD_READ WORLD_EXECUTE
+             COMPONENT runtime)
   endif()
 endif()
