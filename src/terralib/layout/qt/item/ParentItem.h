@@ -530,7 +530,7 @@ namespace te
     {  
       QGraphicsItem::mousePressEvent(event);
 
-      if(event->modifiers() == Qt::AltModifier && m_toResizeItem && m_model->isResizable())
+      if(m_toResizeItem && m_model->isResizable())
       {
         m_clonePixmap = getPixmap();
         createResizePixmap();
@@ -567,7 +567,7 @@ namespace te
     template <class T>
     inline void te::layout::ParentItem<T>::mouseMoveEvent( QGraphicsSceneMouseEvent * event )
     {
-      if(event->modifiers() == Qt::AltModifier && event->buttons() == Qt::LeftButton && m_toResizeItem && m_model->isResizable())
+      if(event->buttons() == Qt::LeftButton && m_toResizeItem && m_model->isResizable())
       {
         m_mousePressedAlt = true;
         T::setOpacity(0.5);
