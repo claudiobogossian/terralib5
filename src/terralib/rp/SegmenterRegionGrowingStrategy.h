@@ -31,6 +31,7 @@
 #include "SegmenterRegionGrowingSegment.h"
 #include "SegmenterRegionGrowingSegmentsPool.h"
 #include "SegmenterSegmentsBlock.h"
+#include "SegmenterRegionGrowingMerger.h"
 #include "Matrix.h"
 #include "Config.h"
 
@@ -146,202 +147,11 @@ namespace te
         unsigned int getOptimalBlocksOverlapSize() const;
         
       protected :
-        
         /*!
           \brief Internal segments ids matrix type definition.
          */          
         typedef Matrix< SegmenterSegmentsBlock::SegmentIdDataType >
           SegmentsIdsMatrixT;
-        
-        /*!
-          \class Merger
-          \brief Segments merger
-         */        
-        class TERPEXPORT Merger
-        {
-          public:
-            
-            virtual ~Merger();
-            
-            /*!
-              \brief Returns a dimilarity index between this and the other segment.
-              \param segment1Ptr A pointer to the first segment.
-              \param segment2Ptr A pointer to the second segment.
-              \param mergePreviewSegPtr A pointer to a valid segment where the merged features values will be stored (when aplicable).
-              \return A similarity index between this and the other segment ( normalized between 0 and 1 ).
-            */              
-            virtual SegmenterRegionGrowingSegment::FeatureType getDissimilarity(
-              SegmenterRegionGrowingSegment const * const segment1Ptr, 
-              SegmenterRegionGrowingSegment const * const segment2Ptr, 
-              SegmenterRegionGrowingSegment * const mergePreviewSegPtr ) const = 0;
-              
-            /*!
-              \brief Merge specific segment features from both segments into the first segment.
-              \param segment1Ptr The first segment.
-              \param segment2Ptr A pointer to the second segment.
-              \param mergePreviewSegPtr A pointer to a valid segment where the merged features values were be stored by calling getDissimilarityIndex (when aplicable).
-            */                
-            virtual void mergeFeatures( 
-              SegmenterRegionGrowingSegment * const segment1Ptr, 
-              SegmenterRegionGrowingSegment const * const segment2Ptr, 
-              SegmenterRegionGrowingSegment const * const mergePreviewSegPtr ) const = 0;
-              
-            /*!
-              \brief Update the internal state.
-              \param actSegsListHeadPtr A pointer the the active segments list head.
-            */    
-            virtual void update( SegmenterRegionGrowingSegment* const actSegsListHeadPtr ) = 0;
-
-            /*!
-              \brief Return the required segments features vector size (numer of elements).
-              \return Return the required segments features vector size (numer of elements).
-            */                
-            virtual unsigned int getSegmentFeaturesSize() const = 0;
-            
-          protected :
-            
-            Merger();
-            
-          private :
-          
-            Merger( const Merger& ) {};
-            
-            const Merger& operator=( const Merger& other ) { return other; };
-        };        
-        
-        /*!
-          \class MeanMerger
-          \brief Mean based Segments merger
-         */        
-        class TERPEXPORT MeanMerger : public SegmenterRegionGrowingStrategy::Merger
-        {
-          public:
-            
-            MeanMerger( const unsigned int featuresNumber );
-            
-            ~MeanMerger();
-            
-            //overload        
-            SegmenterRegionGrowingSegment::FeatureType getDissimilarity(
-              SegmenterRegionGrowingSegment const * const segment1Ptr, 
-              SegmenterRegionGrowingSegment const * const segment2Ptr, 
-              SegmenterRegionGrowingSegment * const mergePreviewSegPtr ) const;
-              
-            //overload                
-            void mergeFeatures( 
-              SegmenterRegionGrowingSegment * const segment1Ptr, 
-              SegmenterRegionGrowingSegment const * const segment2Ptr, 
-              SegmenterRegionGrowingSegment const * const mergePreviewSegPtr ) const;
-              
-            //overload
-            void update( SegmenterRegionGrowingSegment* const ) {};  
-            
-            //overload
-            inline unsigned int getSegmentFeaturesSize() const { return m_featuresNumber; };
-            
-          protected :
-            
-            unsigned int m_featuresNumber; //!< The number of features (bands).
-            SegmenterRegionGrowingSegment::FeatureType m_dissimilarityNormFactor;
-            
-            // variables used by the method getDissimilarity
-            mutable SegmenterRegionGrowingSegment::FeatureType m_getDissimilarity_dissValue;
-            mutable SegmenterRegionGrowingSegment::FeatureType m_getDissimilarity_diffValue; 
-            mutable unsigned int m_getDissimilarity_meansIdx;
-        };        
-        
-        /*!
-          \class BaatzMerger
-          \brief Baatz based Segments merger
-         */        
-        class TERPEXPORT BaatzMerger : public SegmenterRegionGrowingStrategy::Merger
-        {
-          public:
-            
-            /*!
-              \brief Default constructor.
-              \param bandsWeights A reference to an external valid structure where each bands weight are stored.
-              \param segmentsIds //!< A reference to an external valid structure where all segments IDs are stored.
-              \param segmentsMatrix //!< A reference to an external valid segments matrix.
-              \param colorWeight //!< The weight given to the color component, deafult:0.5, valid range: [0,1].
-              \param compactnessWeight //!< The weight given to the compactness component, deafult:0.5, valid range: [0,1].
-            */
-            BaatzMerger( const double& colorWeight, const double& compactnessWeight,
-              const std::vector< double >& bandsWeights,
-              const SegmentsIdsMatrixT& segmentsIds );
-            
-            ~BaatzMerger();
-            
-            //overload        
-            SegmenterRegionGrowingSegment::FeatureType getDissimilarity(
-              SegmenterRegionGrowingSegment const * const segment1Ptr, 
-              SegmenterRegionGrowingSegment const * const segment2Ptr, 
-              SegmenterRegionGrowingSegment * const mergePreviewSegPtr ) const;
-              
-            //overload                
-            void mergeFeatures( 
-              SegmenterRegionGrowingSegment * const segment1Ptr, 
-              SegmenterRegionGrowingSegment const * const segment2Ptr, 
-              SegmenterRegionGrowingSegment const * const mergePreviewSegPtr ) const;
-              
-            //overload
-            void update( SegmenterRegionGrowingSegment* const actSegsListHeadPtr );
-            
-            //overload
-            inline unsigned int getSegmentFeaturesSize() const { return 3 + ( 3 * m_bandsNumber ); };            
-              
-          protected :
-
-            const SegmentsIdsMatrixT& m_segmentsIds; //!< A reference to an external valid structure where each all segments IDs are stored.
-            
-            unsigned int m_bandsNumber; //!< The number of features (bands).
-            
-            SegmenterRegionGrowingSegment::FeatureType m_allSegsCompactnessOffset; //!< The offsets applied to normalize the compactness value.
-            
-            SegmenterRegionGrowingSegment::FeatureType m_allSegsCompactnessGain; //!< The gains applied to normalize the compactness value.
-            
-            SegmenterRegionGrowingSegment::FeatureType m_allSegsSmoothnessOffset; //!< The offsets applied to normalize the smoothness value.
-            
-            SegmenterRegionGrowingSegment::FeatureType m_allSegsSmoothnessGain; //!< The gains applied to normalize the smoothness value.            
-            
-            SegmenterRegionGrowingSegment::FeatureType m_allSegsStdDevOffset; //!< The offsets applied to normalize the standard deviation value.
-            
-            SegmenterRegionGrowingSegment::FeatureType m_allSegsStdDevGain; //!< The gains applied to normalize the standard deviation value.            
-            
-            SegmenterRegionGrowingSegment::FeatureType m_colorWeight; //!< The weight given to the color component, deafult:0.5, valid range: [0,1].
-            
-            SegmenterRegionGrowingSegment::FeatureType m_compactnessWeight; //!< The weight given to the compactness component, deafult:0.5, valid range: [0,1].
-            
-            std::vector< SegmenterRegionGrowingSegment::FeatureType > m_bandsWeights; //!< A vector where each bands weight are stored.
-            
-            // Variables used by the method getDissimilarity            
-            mutable SegmenterRegionGrowingSegment::FeatureType m_getDissimilarity_sizeUnionD;            
-            mutable SegmenterRegionGrowingSegment::FeatureType m_getDissimilarity_sizeSeg1D;
-            mutable SegmenterRegionGrowingSegment::FeatureType m_getDissimilarity_sizeSeg2D;
-            mutable unsigned int m_getDissimilarity_touchingEdgeLength1;
-            mutable unsigned int m_getDissimilarity_touchingEdgeLength2;               
-            mutable SegmenterRegionGrowingSegment::FeatureType m_getDissimilarity_hCompact; 
-            mutable SegmenterRegionGrowingSegment::FeatureType m_getDissimilarity_hSmooth;
-            mutable SegmenterRegionGrowingSegment::FeatureType m_getDissimilarity_hForm;
-            mutable SegmenterRegionGrowingSegment::FeatureType m_getDissimilarity_hColor;
-            mutable SegmenterRegionGrowingSegment::FeatureType m_getDissimilarity_sumUnion;
-            mutable SegmenterRegionGrowingSegment::FeatureType m_getDissimilarity_squaresSumUnion;
-            mutable SegmenterRegionGrowingSegment::FeatureType m_getDissimilarity_meanUnion;
-            mutable SegmenterRegionGrowingSegment::FeatureType m_getDissimilarity_stdDevUnion;
-            mutable unsigned int m_getDissimilarity_sumsIdx;
-            
-            // Variables used by the method update
-            mutable SegmenterRegionGrowingSegment::FeatureType m_update_compactnessMin;
-            mutable SegmenterRegionGrowingSegment::FeatureType m_update_compactnessMax;
-            mutable SegmenterRegionGrowingSegment::FeatureType m_update_smoothnessMin;
-            mutable SegmenterRegionGrowingSegment::FeatureType m_update_smoothnessMax;              
-            mutable SegmenterRegionGrowingSegment::FeatureType m_update_stdDevMin;
-            mutable SegmenterRegionGrowingSegment::FeatureType m_update_stdDevMax;              
-            mutable SegmenterRegionGrowingSegment::FeatureType* m_update_featuresPtr;
-            mutable SegmenterRegionGrowingSegment* m_update_currentActSegPtr;
-            mutable unsigned int m_update_band;
-            mutable SegmenterRegionGrowingSegment::FeatureType const* m_update_stdDevPtr;
-        };          
         
         /*!
           \brief true if this instance is initialized.
@@ -401,7 +211,7 @@ namespace te
           const SegmenterRegionGrowingSegment::FeatureType disimilarityThreshold,
           const unsigned int maxSegSizeThreshold,
           SegmenterIdsManager& segmenterIdsManager,
-          Merger& merger,
+          SegmenterRegionGrowingMerger& merger,
           const bool enablelocalMutualBestFitting,
           const bool enableSameIterationMerges,
           SegmenterRegionGrowingSegment* auxSeg1Ptr,
@@ -422,27 +232,6 @@ namespace te
         void exportSegs2Tif( const SegmentsIdsMatrixT& segmentsIds,
           bool normto8bits, const std::string& fileName );
           
-        /*!
-          \brief Returns the count of points from region 1 (with ID1) touching the region 2 (with ID2).
-          \param segsIds The segment ids container.
-          \param xStart The upper left X of the bounding box surrounding both regions.
-          \param yStart The upper left Y of the bounding box surrounding both regions.
-          \param xBound The lower right X bound of the bounding box surrounding both regions.
-          \param yBound The lower right Y bound of the bounding box surrounding both regions.
-          \param id1 Region 1 ID.
-          \param id2 Region 2 ID.
-          \param edgeLength1 The touching edge length for the region 1.
-          \param edgeLength2 The touching edge length for the region 2.
-          \return Returns the count of points from region 1 (with ID1) touching the region 2 (with ID2).
-        */            
-        static void getTouchingEdgeLength( const SegmentsIdsMatrixT& segsIds,
-          const unsigned int& xStart, const unsigned int& yStart,
-          const unsigned int& xBound, const unsigned int& yBound,
-          const SegmenterSegmentsBlock::SegmentIdDataType& id1,
-          const SegmenterSegmentsBlock::SegmentIdDataType& id2,
-          unsigned int& edgeLength1,
-          unsigned int& edgeLength2 );
-        
         /*!
           \brief Returns the number of active segments.
           \param actSegsListHeadPtr A pointer the the active segments list head.
