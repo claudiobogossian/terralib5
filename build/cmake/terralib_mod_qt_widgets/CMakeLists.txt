@@ -507,9 +507,6 @@ if(Qt5_FOUND)
   
   # end of Qt5 uic'ing
 
-  # Adding all external dependencies to rpath
-  addExternalLibrariesToRPATH(${TERRALIB_LIBRARIES_DEPENDENCIES})
-
   add_library(terralib_mod_qt_widgets SHARED ${TERRALIB_FILES})
 
   target_link_libraries(terralib_mod_qt_widgets ${TERRALIB_LIBRARIES_DEPENDENCIES})
