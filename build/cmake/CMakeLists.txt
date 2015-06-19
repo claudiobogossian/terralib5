@@ -1298,7 +1298,7 @@ install ( # -- images folder
   DIRECTORY ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/images
   DESTINATION ${TERRALIB_DESTINATION_SHARE}/terralib 
   COMPONENT runtime
-  PATTERN "*icns*" EXCLUDE
+  #PATTERN "*icns*" EXCLUDE
 )
 
 if(WIN32)
