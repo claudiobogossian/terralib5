@@ -266,6 +266,13 @@ namespace te
         */
         QGraphicsItem* createStar();
 
+        /*!
+          \brief Create graphic object of type StarItem
+		  		  
+		      \return new object 
+        */
+        QGraphicsItem* createSVG();
+
        /*!
           \brief Create graphic object of type Balloon
 		  		  

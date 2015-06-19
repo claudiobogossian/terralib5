@@ -109,6 +109,7 @@ namespace te
     class ST_Equals;
     class ST_Intersection;
     class ST_Intersects;
+    class ST_IsValid;
     class ST_Length;
     class ST_NumGeometries;
     class ST_Overlaps;

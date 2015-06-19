@@ -37,6 +37,7 @@ te::qt::af::InterfaceController::InterfaceController(QObject* parent)
 
 te::qt::af::InterfaceController::~InterfaceController()
 {
+  m_interfaces.erase(m_interfaces.begin(), m_interfaces.end());
   m_interfaces.clear();
 }
 

@@ -65,6 +65,9 @@
 #include "../../outside/LegendChoiceModel.h"
 #include "../../outside/LegendChoiceController.h"
 #include "../outside/LegendChoiceOutside.h"
+#include "../../outside/SVGViewModel.h"
+#include "../../outside/SVGViewController.h"
+#include "../outside/SVGViewOutside.h"
 
 // Qt
 #include <QWidget>
@@ -124,6 +127,10 @@ QWidget* te::layout::BuildGraphicsOutside::createOuside( te::layout::EnumType* t
   if (type == enumObj->getMapLayerChoice())
   {
     widget = createMapLayerChoice();
+  }
+  if (type == enumObj->getSVGView())
+  {
+    widget = createSVGView();
   }
   if (type == enumObj->getColorDialog())
   {
@@ -281,6 +288,18 @@ QWidget* te::layout::BuildGraphicsOutside::createLegendChoice()
   OutsideObserver* itemObs = (OutsideObserver*)controller->getView();
 
   LegendChoiceOutside* view = dynamic_cast<LegendChoiceOutside*>(itemObs);
+
+  return view;
+}
+
+QWidget* te::layout::BuildGraphicsOutside::createSVGView()
+{
+  SVGViewModel* model = new SVGViewModel();
+
+  SVGViewController* controller = new SVGViewController(model);
+  OutsideObserver* itemObs = (OutsideObserver*)controller->getView();
+
+  SVGViewOutside* view = dynamic_cast<SVGViewOutside*>(itemObs);
 
   return view;
 }

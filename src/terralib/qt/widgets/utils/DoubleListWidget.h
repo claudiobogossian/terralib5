@@ -88,6 +88,10 @@ namespace te
 
           void onRemoveAllToolButtonPressed();
 
+          void onUpToolButtonPressed();
+
+          void onDownToolButtonPressed();
+
           void onLeftListPressed(QListWidgetItem* item);
 
           void onRightListPressed(QListWidgetItem* item);

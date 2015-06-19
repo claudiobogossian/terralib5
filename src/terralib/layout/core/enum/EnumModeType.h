@@ -286,6 +286,13 @@ namespace te
         virtual EnumType* getModeSystematicScale() const;
 
         /*!
+          \brief Returns value that represents svgview mode type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
+        virtual EnumType* getModeSVGView() const;
+
+        /*!
           \brief Returns value that represents create point mode type belonging to enumeration.
 		  
 		      \return enum value  	  
@@ -544,6 +551,13 @@ namespace te
         */
         virtual EnumType* getModeCreateStar() const;
 
+        /*!
+          \brief Returns value that represents create map location mode type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
+        virtual EnumType* getModeCreateSVG() const;
+
       protected:
 
         /*!
@@ -585,6 +599,7 @@ namespace te
         EnumType* m_modeCreateImage; //!< value that represents create image mode type belonging to enumeration
         EnumType* m_modePageConfig; //!< value that represents page configuration mode type belonging to enumeration
         EnumType* m_modeSystematicScale; //!< value that represents systematic scale mode type belonging to enumeration
+        EnumType* m_modeSVGView; //!< value that represents svgview mode type belonging to enumeration
         EnumType* m_modeCreatePoint; //!< value that represents create point mode type belonging to enumeration
         EnumType* m_modeCreateArrow; //!< value that represents create arrow mode type belonging to enumeration
         EnumType* m_modeCreateEllipse; //!< value that represents create ellipse mode type belonging to enumeration
@@ -622,6 +637,7 @@ namespace te
         EnumType* m_modeCreateNorth; //!< value that represents create north mode type belonging to enumeration
         EnumType* m_modeCreateMapLocation; //!< value that represents create map location mode type belonging to enumeration
 				EnumType* m_modeCreateStar; //!< value that represents create star type belonging to enumeration
+        EnumType* m_modeCreateSVG; //!< value that represents create SVG type belonging to enumeration
     };
   }
 }

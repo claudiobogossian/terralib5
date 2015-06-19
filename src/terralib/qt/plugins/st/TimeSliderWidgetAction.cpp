@@ -61,10 +61,6 @@ te::qt::plugins::st::TimeSliderWidgetAction::~TimeSliderWidgetAction()
 {
   if(m_timeSliderWidget)
   {
-    QWidget* mainWindow = te::qt::af::ApplicationController::getInstance().getMainWindow();
-    te::qt::af::BaseApplication* ba = (te::qt::af::BaseApplication*)mainWindow;
-
-    ba->getInterfaceController()->removeInteface(m_timeSliderWidget);
     delete m_timeSliderWidget;
   }
   m_menu->removeAction(m_action);

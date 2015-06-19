@@ -227,7 +227,9 @@ namespace te
 
       std::string getActionPolygon();
 
-	  std::string getActionStar(); 
+	    std::string getActionStar(); 
+
+      std::string getActionSVG();
 
       /* View Area */
 
@@ -437,6 +439,7 @@ namespace te
       std::string m_actionLine; 
       std::string m_actionPolygon;
 	    std::string m_actionStar;
+      std::string m_actionSVG;
 
       /* View Area */
       std::string m_actionViewPan;

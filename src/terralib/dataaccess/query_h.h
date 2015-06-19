@@ -109,6 +109,7 @@
 #include "query/ST_Equals.h"
 #include "query/ST_Intersection.h"
 #include "query/ST_Intersects.h"
+#include "query/ST_IsValid.h"
 #include "query/ST_Length.h"
 #include "query/ST_NumGeometries.h"
 #include "query/ST_Overlaps.h"
