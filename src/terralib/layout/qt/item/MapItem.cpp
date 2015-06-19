@@ -839,17 +839,21 @@ bool te::layout::MapItem::hasListLayerChanged()
   }
 
   std::list<te::map::AbstractLayerPtr> layerList = model->getLayers();
-  std::list<te::map::AbstractLayerPtr>::const_iterator it = layerList.begin();
 
   if(layerList.size() != m_oldLayers.size())
   {
     return true;
   }
 
-  for( ; it != layerList.end() ; ++it)
+  std::list<te::map::AbstractLayerPtr>::const_iterator it = layerList.begin();
+  std::list<te::map::AbstractLayerPtr>::const_iterator itOld = m_oldLayers.begin();
+
+  for(; it != layerList.end() ; ++it, ++itOld)
   {
     te::map::AbstractLayerPtr layer = (*it);
-    if(std::find(m_oldLayers.begin(), m_oldLayers.end(), layer) == m_oldLayers.end())
+    te::map::AbstractLayerPtr layerOld = (*itOld);
+
+    if(layer != layerOld)
     {
       result = true;
       break;
