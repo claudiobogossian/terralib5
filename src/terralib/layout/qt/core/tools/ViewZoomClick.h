@@ -63,7 +63,7 @@ namespace te
 
             \note The tool will NOT take the ownership of the given pointers.
           */
-          ViewZoomClick(View* view, const QCursor& cursor, const double& zoomFactor = 2.0, const ViewZoomType& type = TypeIn, QObject* parent = 0);
+          ViewZoomClick(View* view, const QCursor& cursor, const double& zoomFactor = 2.0, const ViewZoomType& type = ZoomIn, QObject* parent = 0);
 
           /*! \brief Destructor. */
           ~ViewZoomClick();

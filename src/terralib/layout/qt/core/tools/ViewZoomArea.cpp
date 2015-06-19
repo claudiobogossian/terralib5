@@ -93,7 +93,7 @@ bool te::layout::ViewZoomArea::mouseReleaseEvent(QMouseEvent* e)
   Scales the view matrix. The view is scaled according to aspectRatioMode.
   Ensure that the scene rectangle rect fits inside the viewport
   */
-  m_view->fitInView(bounding, Qt::KeepAspectRatio);
+  m_view->fitZoom(bounding);
 
   scne->update();
 

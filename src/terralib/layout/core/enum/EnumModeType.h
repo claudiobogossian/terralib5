@@ -244,13 +244,6 @@ namespace te
         virtual EnumType* getModeExit() const;
 
         /*!
-          \brief Returns value that represents scene zoom mode type belonging to enumeration.
-		  
-		      \return enum value  	  
-        */
-        virtual EnumType* getModeSceneZoom() const;
-
-        /*!
           \brief Returns value that represents bring to front mode type belonging to enumeration.
 		  
 		      \return enum value  	  
@@ -586,7 +579,6 @@ namespace te
         EnumType* m_modeOffLinesIntersectionMouse; //!< value that represents off lines intersection mouse mode type belonging to enumeration
         EnumType* m_modePrinter; //!< value that represents printer mode type belonging to enumeration
         EnumType* m_modeExit; //!< value that represents exit mode type belonging to enumeration
-        EnumType* m_modeSceneZoom; //!< value that represents scene zoom mode type belonging to enumeration
         EnumType* m_modeBringToFront; //!< value that represents bring to front mode type belonging to enumeration
         EnumType* m_modeSendToBack; //!< value that represents send to back mode type belonging to enumeration
         EnumType* m_modeRecompose; //!< value that represents recompose mode type belonging to enumeration

@@ -55,7 +55,6 @@ te::layout::EnumModeType::EnumModeType() :
   m_modeOffLinesIntersectionMouse(0),
   m_modePrinter(0),
   m_modeExit(0),
-  m_modeSceneZoom(0),
   m_modeBringToFront(0),
   m_modeSendToBack(0),
   m_modeRecompose(0),
@@ -98,7 +97,7 @@ te::layout::EnumModeType::EnumModeType() :
   m_modeCreateGridGeodesic(0),
   m_modeCreateNorth(0),
   m_modeCreateMapLocation(0),
-	m_modeCreateStar(0)
+  m_modeCreateStar(0)
 {
   init();
 }
@@ -224,11 +223,6 @@ te::layout::EnumModeType::~EnumModeType()
   {
     delete m_modeExit;
     m_modeExit = 0;
-  }
-  if(m_modeSceneZoom)
-  {
-    delete m_modeSceneZoom;
-    m_modeSceneZoom = 0;
   }
   if(m_modeBringToFront)
   {
@@ -530,9 +524,6 @@ void te::layout::EnumModeType::init()
   m_modeExit = createEnum("Exit", this, "Exit");
   m_modeExit->setType(te::layout::EnumAction);
 
-  m_modeSceneZoom = createEnum("SceneZoom", this, "Scene Zoom");
-  m_modeSceneZoom->setType(te::layout::EnumAction);
-
   m_modeBringToFront = createEnum("BringToFront", this, "Bring To Front");
   m_modeBringToFront->setType(te::layout::EnumAction);
 
@@ -786,11 +777,6 @@ te::layout::EnumType* te::layout::EnumModeType::getModePrinter() const
 te::layout::EnumType* te::layout::EnumModeType::getModeExit() const
 {
   return m_modeExit;
-}
-
-te::layout::EnumType* te::layout::EnumModeType::getModeSceneZoom() const
-{
-  return m_modeSceneZoom;
 }
 
 te::layout::EnumType* te::layout::EnumModeType::getModeBringToFront() const
