@@ -409,7 +409,6 @@ void te::layout::View::config()
   scale(newScale, newScale); //Initial zoom out
 
   //----------------------------------------------------------------------------------------------
-    
   if(!m_visualizationArea)
   {
     m_visualizationArea = new VisualizationArea(box);
@@ -418,6 +417,8 @@ void te::layout::View::config()
           
   setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
+  connect(scene(), SIGNAL(selectionChanged()), this, SLOT(onSelectionChanged()));
 }
 
 void te::layout::View::resizeEvent(QResizeEvent * event)
