@@ -85,6 +85,7 @@
 
 te::layout::MapItem::MapItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
   ParentItem<QGraphicsProxyWidget>(controller, o, invertedMatrix),
+  m_mime(0),
   m_mapDisplay(0),
   m_grabbedByWidget(false),
   m_tool(0),
@@ -615,10 +616,6 @@ void te::layout::MapItem::updateMapDisplay()
   std::list<te::map::AbstractLayerPtr> layerList;
 
   std::vector<std::string> names = model->getLayerNames();
-  if(names.empty())
-  {
-    return;
-  }
 
   std::vector<std::string>::const_iterator it = names.begin();
 
@@ -626,17 +623,21 @@ void te::layout::MapItem::updateMapDisplay()
   {
     std::string name = (*it);
     te::map::AbstractLayerPtr layer = project->contains(name);
-    layerList.push_back(layer);    
+    layerList.push_back(layer);
     model->addLayer(layer);
   }
 
-  std::list<te::map::AbstractLayerPtr>::const_iterator itl = model->getLayers().begin(); 
-  te::map::AbstractLayerPtr al = (*itl);
-  te::gm::Envelope e = al->getExtent();
-
   m_mapDisplay->setLayerList(layerList);
-  m_mapDisplay->setSRID(al->getSRID(), false);
-  m_mapDisplay->setExtent(e, true);
+
+  std::list<te::map::AbstractLayerPtr>::const_iterator itl = layerList.begin(); 
+  if(itl != layerList.end())
+  {
+    te::map::AbstractLayerPtr al = (*itl);
+    te::gm::Envelope e = al->getExtent();
+
+    m_mapDisplay->setSRID(al->getSRID(), false);
+    m_mapDisplay->setExtent(e, true);
+  }
 }
 
 void te::layout::MapItem::recalculateBoundingRect()
@@ -805,6 +806,11 @@ void te::layout::MapItem::reloadLayers(bool draw)
     }
   }
 
+  m_oldLayers = layerList;
+  m_pixmapIsDirty = true;
+
+  m_mapDisplay->setLayerList(layerList);
+
   if(layerList.empty() == true)
   {
     return;
@@ -816,11 +822,9 @@ void te::layout::MapItem::reloadLayers(bool draw)
 
   te::gm::Envelope e = model->maxLayerExtent();  
 
-  m_mapDisplay->setLayerList(layerList);
+
   m_mapDisplay->setSRID(al->getSRID(), false);
   m_mapDisplay->setExtent(e, draw);
-
-  m_oldLayers = layerList;
 
   m_pixmapIsDirty = true;
 }
