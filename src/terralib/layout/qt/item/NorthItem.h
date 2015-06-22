@@ -69,11 +69,13 @@ namespace te
         /*!
           \brief Reimplemented from QGraphicsItem
          */
-        virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
+        virtual void paint (QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
         
       protected:
 
-        virtual void drawRectangle(QPainter * painter);
+				virtual void drawNorthArrow1(QPainter * painter);
+				virtual void drawNorthArrow2(QPainter * painter);
+				virtual void drawNorthArrow3(QPainter * painter);
     };
   }
 }
