@@ -55,13 +55,13 @@ te::layout::EnumModeType::EnumModeType() :
   m_modeOffLinesIntersectionMouse(0),
   m_modePrinter(0),
   m_modeExit(0),
-  m_modeSceneZoom(0),
   m_modeBringToFront(0),
   m_modeSendToBack(0),
   m_modeRecompose(0),
   m_modeCreateImage(0),
   m_modePageConfig(0),
   m_modeSystematicScale(0),
+  m_modeSVGView(0),
   m_modeCreatePoint(0),
   m_modeCreateArrow(0),
   m_modeCreateEllipse(0),
@@ -97,7 +97,9 @@ te::layout::EnumModeType::EnumModeType() :
   m_modeCreateGridPlanar(0),
   m_modeCreateGridGeodesic(0),
   m_modeCreateNorth(0),
-  m_modeCreateMapLocation(0)
+  m_modeCreateMapLocation(0),
+	m_modeCreateStar(0),
+  m_modeCreateSVG(0)
 {
   init();
 }
@@ -224,11 +226,6 @@ te::layout::EnumModeType::~EnumModeType()
     delete m_modeExit;
     m_modeExit = 0;
   }
-  if(m_modeSceneZoom)
-  {
-    delete m_modeSceneZoom;
-    m_modeSceneZoom = 0;
-  }
   if(m_modeBringToFront)
   {
     delete m_modeBringToFront;
@@ -258,6 +255,11 @@ te::layout::EnumModeType::~EnumModeType()
   {
     delete m_modeSystematicScale;
     m_modeSystematicScale = 0;
+  }
+  if(m_modeSVGView)
+  {
+    delete m_modeSVGView;
+    m_modeSVGView = 0;
   }
   if(m_modeCreatePoint)
   {
@@ -442,6 +444,18 @@ te::layout::EnumModeType::~EnumModeType()
     delete m_modeCreateGridGeodesic;
     m_modeCreateGridGeodesic = 0;
   }
+
+	if(m_modeCreateStar)
+	{
+		delete m_modeCreateStar;
+		m_modeCreateStar= 0;
+	}
+
+  if(m_modeCreateSVG)
+  {
+    delete m_modeCreateSVG;
+    m_modeCreateSVG= 0;
+  }
 }
 
 void te::layout::EnumModeType::init()
@@ -523,9 +537,6 @@ void te::layout::EnumModeType::init()
   m_modeExit = createEnum("Exit", this, "Exit");
   m_modeExit->setType(te::layout::EnumAction);
 
-  m_modeSceneZoom = createEnum("SceneZoom", this, "Scene Zoom");
-  m_modeSceneZoom->setType(te::layout::EnumAction);
-
   m_modeBringToFront = createEnum("BringToFront", this, "Bring To Front");
   m_modeBringToFront->setType(te::layout::EnumAction);
 
@@ -543,6 +554,9 @@ void te::layout::EnumModeType::init()
 
   m_modeSystematicScale = createEnum("SystematicScale", this, "Systematic Scale");
   m_modeSystematicScale->setType(te::layout::EnumDialog);
+
+  m_modeSVGView = createEnum("SVGView", this, "SVG View");
+  m_modeSVGView->setType(te::layout::EnumDialog);
 
   m_modeCreatePoint = createEnum("CreatePoint", this, "Create Point Component");
   m_modeCreatePoint->setType(te::layout::EnumCreate);
@@ -651,6 +665,12 @@ void te::layout::EnumModeType::init()
 
   m_modeCreateMapLocation = createEnum("Create Map Location", this, "Create Map Location");
   m_modeCreateMapLocation->setType(te::layout::EnumCreate);
+
+	m_modeCreateStar = createEnum("Create Star", this, "Create Star");
+	m_modeCreateStar->setType(te::layout::EnumCreate);
+
+  m_modeCreateSVG = createEnum("Create SVG", this, "Create SVG");
+  m_modeCreateSVG->setType(te::layout::EnumCreate);
 }
 
 te::layout::EnumType* te::layout::EnumModeType::getModeSelectByBox() const
@@ -776,11 +796,6 @@ te::layout::EnumType* te::layout::EnumModeType::getModePrinter() const
 te::layout::EnumType* te::layout::EnumModeType::getModeExit() const
 {
   return m_modeExit;
-}
-
-te::layout::EnumType* te::layout::EnumModeType::getModeSceneZoom() const
-{
-  return m_modeSceneZoom;
 }
 
 te::layout::EnumType* te::layout::EnumModeType::getModeBringToFront() const
@@ -998,5 +1013,18 @@ te::layout::EnumType* te::layout::EnumModeType::getModeCreateMapLocation() const
   return m_modeCreateMapLocation;
 }
 
+te::layout::EnumType* te::layout::EnumModeType::getModeCreateStar() const
+{
+	return m_modeCreateStar;
+}
 
+te::layout::EnumType* te::layout::EnumModeType::getModeCreateSVG() const
+{
+  return m_modeCreateSVG;
+}
+
+te::layout::EnumType* te::layout::EnumModeType::getModeSVGView() const
+{
+  return m_modeSVGView;
+}
 

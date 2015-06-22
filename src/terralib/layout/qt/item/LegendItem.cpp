@@ -61,7 +61,7 @@
 #include <QColor>
 #include <QMatrix>
 
-te::layout::LegendItem::LegendItem( ItemController* controller, Observable* o ) :
+te::layout::LegendItem::LegendItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
   ObjectItem(controller, o, true),
   m_move(false)
 {  
@@ -71,6 +71,9 @@ te::layout::LegendItem::LegendItem( ItemController* controller, Observable* o ) 
     | QGraphicsItem::ItemIsFocusable);
 
   m_nameClass = std::string(this->metaObject()->className());
+
+  //The text size or length that exceeds the sides will be cut
+  setFlag(QGraphicsItem::ItemClipsToShape);
 }
 
 te::layout::LegendItem::~LegendItem()
@@ -98,55 +101,12 @@ void te::layout::LegendItem::updateObserver( ContextItem context )
 
   this->setRect(QRectF(0, 0, widthInPixels, heightInPixels));
 
-  update();
-}
-
-void te::layout::LegendItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
-{  
-  drawBackground(painter);
-
-  drawBorder(painter);
-
-  drawLegend(painter);
-
-  //Draw Selection
-  if (option->state & QStyle::State_Selected)
-  {
-    drawSelection(painter);
-  }
+  refresh();
 
   update();
 }
 
-QVariant te::layout::LegendItem::itemChange( GraphicsItemChange change, const QVariant & value )
-{
-  if(change == QGraphicsItem::ItemPositionChange && !m_move)
-  {
-    // value is the new position.
-    QPointF newPos = value.toPointF();
-    double h = 0;
-
-    newPos.setX(newPos.x() - transform().dx());
-    newPos.setY(newPos.y() - transform().dy() + h);
-    return newPos;
-  }
-  else if(change == QGraphicsItem::ItemPositionHasChanged)
-  {
-    refresh();
-    m_move = false;
-  }
-
-  return QGraphicsItem::itemChange(change, value);
-}
-
-void te::layout::LegendItem::mouseMoveEvent( QGraphicsSceneMouseEvent * event )
-{
-  m_move = true;
-
-  QGraphicsItem::mouseMoveEvent(event);
-}
-
-void te::layout::LegendItem::drawLegend( QPainter* painter )
+void te::layout::LegendItem::drawItem( QPainter * painter )
 {
   LegendModel* legendModel = dynamic_cast<LegendModel*> (m_model);
 
@@ -208,7 +168,7 @@ void te::layout::LegendItem::drawLegend( QPainter* painter )
   QPointF pt(x1, y1);
   drawText(pt, painter, title);
 
-  y1 += htxtInPixels + dispBetweenTitleAndSymbolsInPixels;
+  y1 += dispBetweenTitleAndSymbolsInPixels;
 
   te::map::Grouping* grouping = layer->getGrouping();
 
@@ -295,8 +255,35 @@ void te::layout::LegendItem::drawLegend( QPainter* painter )
 
       }
 
-      y1 += htxtInPixels + dispBetweenSymbolsInPixels;
+      y1 += dispBetweenSymbolsInPixels;
     }
   }
 }
 
+QVariant te::layout::LegendItem::itemChange( GraphicsItemChange change, const QVariant & value )
+{
+  if(change == QGraphicsItem::ItemPositionChange && !m_move)
+  {
+    // value is the new position.
+    QPointF newPos = value.toPointF();
+    double h = 0;
+
+    newPos.setX(newPos.x() - transform().dx());
+    newPos.setY(newPos.y() - transform().dy() + h);
+    return newPos;
+  }
+  else if(change == QGraphicsItem::ItemPositionHasChanged)
+  {
+    refresh();
+    m_move = false;
+  }
+
+  return QGraphicsItem::itemChange(change, value);
+}
+
+void te::layout::LegendItem::mouseMoveEvent( QGraphicsSceneMouseEvent * event )
+{
+  m_move = true;
+
+  QGraphicsItem::mouseMoveEvent(event);
+}

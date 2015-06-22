@@ -43,6 +43,7 @@
 #include "../widgets/charts/ChartLayerDialog.h"
 #include "../widgets/charts/HistogramDialog.h"
 #include "../widgets/charts/ScatterDialog.h"
+#include "../widgets/charts/TimeSeriesDialog.h"
 #include "../widgets/datasource/core/DataSourceType.h"
 #include "../widgets/datasource/core/DataSourceTypeManager.h"
 #include "../widgets/datasource/connector/AbstractDataSourceConnector.h"
@@ -210,9 +211,6 @@ te::qt::af::BaseApplication::BaseApplication(QWidget* parent)
 te::qt::af::BaseApplication::~BaseApplication()
 {
   te::qt::af::SaveState(this);
-
-  if(m_iController)
-    m_iController->removeInteface(m_queryDlg);
 
   delete m_iController;
   delete m_explorer;
@@ -396,6 +394,9 @@ void te::qt::af::BaseApplication::onAddDataSetLayerTriggered()
 {
   try
   {
+    if(m_project == 0)
+      throw Exception(TE_TR("Error: there is no opened project!"));
+
     QApplication::setOverrideCursor(Qt::WaitCursor);
 
     // Get the parent layer where the dataset layer(s) will be added.
@@ -465,12 +466,6 @@ void te::qt::af::BaseApplication::onAddDataSetLayerTriggered()
     QApplication::setOverrideCursor(Qt::WaitCursor);
 
     lselectorw.reset(0);
-
-    if(m_project == 0)
-    {
-      QApplication::restoreOverrideCursor();
-      throw Exception(TE_TR("Error: there is no opened project!"));
-    }
 
     std::list<te::map::AbstractLayerPtr>::const_iterator it = layers.begin();
     std::list<te::map::AbstractLayerPtr>::const_iterator itend = layers.end();
@@ -1480,6 +1475,75 @@ void te::qt::af::BaseApplication::onLayerScatterTriggered()
   }
 }
 
+void te::qt::af::BaseApplication::onLayerTimeSeriesTriggered()
+{
+  try
+  {
+    std::list<te::map::AbstractLayerPtr> selectedLayers = m_explorer->getExplorer()->getSelectedSingleLayers();
+
+    if(selectedLayers.empty())
+    {
+      QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(),
+                           tr("Select a layer in the layer explorer!"));
+      return;
+    }
+    else
+    {
+      std::list<te::map::AbstractLayerPtr>::iterator it = selectedLayers.begin();
+
+      while(it != selectedLayers.end())
+      {
+        if(!it->get()->isValid())
+        {
+          QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(),
+                           tr("There are invalid layers selected!"));
+          return;
+        }
+
+        ++it;
+      }
+    }
+
+    // The TimeSeries will be created based on the first selected layer
+    te::map::AbstractLayerPtr selectedLayer = *(selectedLayers.begin());
+
+    const te::map::LayerSchema* schema = selectedLayer->getSchema().release();
+
+    te::da::DataSet* dataset = selectedLayer->getData().release();
+    te::da::DataSetType* dataType = (te::da::DataSetType*) schema;
+
+    if(!dataType->hasPropertyOfType(te::dt::DATETIME_TYPE))
+    {
+      QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(),
+                        tr("The layer must have a property of type: Date and Time"));
+      return;
+    }
+
+    te::qt::widgets::TimeSeriesDialog dlg(dataset, dataType, this);
+
+    dlg.setWindowTitle(dlg.windowTitle() + " (" + tr("Layer") + ":" + selectedLayer->getTitle().c_str() +")");
+
+    int res = dlg.exec();
+    if (res == QDialog::Accepted)
+    {
+      ChartDisplayDockWidget* doc = new ChartDisplayDockWidget(dlg.getDisplayWidget(), this);
+
+      doc->setSelectionColor(ApplicationController::getInstance().getSelectionColor());
+      doc->setWindowTitle(tr("Time Series"));
+      doc->setWindowIcon(QIcon::fromTheme("chart-time-series"));
+      ApplicationController::getInstance().addListener(doc);
+      doc->setLayer(selectedLayer.get());
+
+      addDockWidget(Qt::RightDockWidgetArea, doc, Qt::Horizontal);
+      doc->show();
+    }
+  }
+  catch(const std::exception& e)
+  {
+    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), e.what());
+  }
+}
+
 void te::qt::af::BaseApplication::onLayerChartTriggered()
 {
  try
@@ -2364,6 +2428,7 @@ void te::qt::af::BaseApplication::makeDialog()
   treeView->add(m_layerChart);
   treeView->add(m_queryLayer);
   treeView->add(m_layerChartsScatter);
+  treeView->add(m_layerChartsTimeSeries);
   treeView->add(m_layerLinkTable, "", "DATASET_LAYER_ITEM");
 
   QAction* actionChartSep = new QAction(this);
@@ -2645,6 +2710,7 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_layerShowTable, "view-data-table", "Layer.Show Table", tr("S&how Table"), tr(""), true, false, true, m_menubar);
   initAction(m_layerChartsHistogram, "chart-bar", "Layer.Charts.Histogram", tr("&Histogram..."), tr(""), true, false, true, m_menubar);
   initAction(m_layerChartsScatter, "chart-scatter", "Layer.Charts.Scatter", tr("&Scatter..."), tr(""), true, false, true, m_menubar);
+  initAction(m_layerChartsTimeSeries, "chart-time-series", "Layer.Charts.timeSeries", tr("&Time Series..."), tr(""), true, false, true, m_menubar);
   initAction(m_layerChart, "chart-pie", "Layer.Charts.Chart", tr("&Pie/Bar Chart..."), tr(""), true, false, true, m_menubar);
   initAction(m_layerFitOnMapDisplay, "layer-fit", "Layer.Fit Layer on the Map Display", tr("Fit Layer"), tr("Fit the current layer on the Map Display"), true, false, true, m_menubar);
   initAction(m_layerFitSelectedOnMapDisplay, "zoom-selected-extent", "Layer.Fit Selected Features on the Map Display", tr("Fit Selected Features"), tr("Fit the selected features on the Map Display"), true, false, true, m_menubar);
@@ -2780,6 +2846,7 @@ void te::qt::af::BaseApplication::initMenus()
   m_layerMenu->addAction(m_layerChart);
   m_layerMenu->addAction(m_queryLayer);
   m_layerMenu->addAction(m_layerChartsScatter);
+  m_layerMenu->addAction(m_layerChartsTimeSeries);
   m_layerMenu->addSeparator();
   m_layerMenu->addAction(m_layerFitOnMapDisplay);
   m_layerMenu->addAction(m_layerFitSelectedOnMapDisplay);
@@ -2972,6 +3039,7 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_layerChartsHistogram, SIGNAL(triggered()), SLOT(onLayerHistogramTriggered()));
   connect(m_layerLinkTable, SIGNAL(triggered()), SLOT(onLinkTriggered()));
   connect(m_layerChartsScatter, SIGNAL(triggered()), SLOT(onLayerScatterTriggered()));
+  connect(m_layerChartsTimeSeries, SIGNAL(triggered()), SLOT(onLayerTimeSeriesTriggered()));
   connect(m_layerChart, SIGNAL(triggered()), SLOT(onLayerChartTriggered()));
   connect(m_projectAddFolderLayer, SIGNAL(triggered()), SLOT(onAddFolderLayerTriggered()));
   connect(m_layerProperties, SIGNAL(triggered()), SLOT(onLayerPropertiesTriggered()));

@@ -17,7 +17,7 @@
    inkscape:export-ydpi="180"
    inkscape:output_extension="org.inkscape.output.svgz.inkscape"
    inkscape:version="0.48.4 r9939"
-   sodipodi:docname="timeseries-teste.svg"
+   sodipodi:docname="timeseries-layer.svg"
    sodipodi:version="0.32"
    version="1.0"
    width="128">
@@ -2189,7 +2189,7 @@
      inkscape:window-height="746"
      inkscape:window-width="1366"
      inkscape:window-x="-8"
-     inkscape:window-y="-8"
+     inkscape:window-y="424"
      inkscape:zoom="2"
      objecttolerance="8"
      pagecolor="#ffffff"
@@ -2238,18 +2238,6 @@
          style="fill:#800000"
          sodipodi:nodetypes="ccccccccccccccccccc" />
     </g>
-    <path
-       style="fill:none;stroke:#000000;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-       d="m -133.5,-44 c 4.10831,-33.681797 9.23649,-50.926568 16,0 5.33333,33.475098 10.66667,49.832007 16,0 5.01757,-19.893102 9.718996,-59.70323 16,0 4.366865,26.569917 8.993771,56.39036 16,0 6.124318,-49.832007 11.198017,-33.475098 16,0 4.701806,20.524629 8.771326,61.59857 16,0 3.333333,-41.333333 8.66667,-41.333333 16,0 6,45.333333 11.33333,45.333333 16,0"
-       id="path4112"
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="ccccccccc" />
-    <path
-       style="fill:none;stroke:#000000;stroke-width:2.48099542;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-       d="m 149.9905,33.501101 c 13.03012,-55.152715 22.33523,-26.7014263 31.50475,0 9.84523,32.010749 20.34682,32.010749 31.50475,0 10.50158,-46.250958 21.00317,-37.5887045 31.50475,0 10.50159,36.707109 21.00317,29.832304 31.50475,0"
-       id="path4118"
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="ccccc" />
     <path
        style="fill:none;stroke:#000000;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        d="M 0,64 C 9.0060469,22.243719 17.808936,-26.234106 32,48 48.915172,-3.029461 54.300079,56.104913 64,64 76.272867,-5.6910843 86.387899,-3.3716996 96,48 c 8.54126,-24.973486 18.1694,-21.176259 32,16"

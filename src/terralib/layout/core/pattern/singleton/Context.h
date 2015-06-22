@@ -117,46 +117,39 @@ namespace te
         void setScene(AbstractScene* scene);
 
         /*!
-          \brief Returns current zoom factor. Ex.: 0.5 (50%)
-		  
-		      \return current zoom factor 	  
-        */
-        double getZoomFactor();
+          \brief Default zoom  Ex.: 50 (50%)
+          \return default zoom         */
+        int getDefaultZoom();
 
         /*!
-          \brief Change current zoom factor. Ex.: 0.5 (50%)
-		  
-		      \param zoomFactor current zoom factor 	 	  
+          \brief Change default zoom  Ex.: 50 (50%)
+          \param zoom default zoom
         */
-        void  setZoomFactor(double zoomFactor);
+        void setDefaultZoom(int zoomFactor);
 
         /*!
-          \brief Default zoom factor. Ex.: 0.5 (50%) 
-		  
-		      \return default zoom factor	  
+          \brief Returns current zoom. Ex.: 50 (50%)
+          \return current zoom
         */
-        double getDefaultZoomFactor();
+        int getZoom();
 
         /*!
-          \brief Change default zoom factor. Ex.: 0.5 (50%)
-		  
-		      \param zoomFactor default zoom factor
+          \brief Change current zoom factor. Ex.: 50 (50%)
+          \param zoom current zoom
         */
-        void  setDefaultZoomFactor(double zoomFactor);
+        void setZoom(int zoom);
 
         /*!
-          \brief Returns previous zoom factor. Ex.: 0.5 (50%)
-		  
-		      \return previous zoom factor	  
+          \brief Returns previous zoom. Ex.: 50 (50%)
+          \return previous zoom
         */
-        double getOldZoomFactor();
+        int getOldZoom();
 
         /*!
-          \brief Change previous zoom factor. Ex.: 0.5 (50%)
-		  
-		      \param zoomFactor previous zoom factor	  
+          \brief Change previous zoom. Ex.: 50 (50%)
+          \param zoom previous zoom
         */
-        void  setOldZoomFactor(double zoomFactor);
+        void setOldZoom(int zoom);
 
         /*! 
           \brief Returns Abstract Factory that provide an interface for creating families of related or dependent graphic objects (MVC components).
@@ -349,15 +342,15 @@ namespace te
 
       protected:
         
-        EnumType*						          m_mode; //!< value of the enumeration of mode type
-        EnumType*						          m_lineIntersectionMouseMode; //!<
+        EnumType*                     m_mode; //!< value of the enumeration of mode type
+        EnumType*                     m_lineIntersectionMouseMode; //!<
         LayoutUnitsMetrics            m_unitMetric; //!<
-        AbstractScene*					      m_scene; //!< abstract scene for QGraphicsScene class, part of Graphics View Framework.
-        double							          m_zoomFactor; //!< current zoom factor. Ex.: 0.5 (50%)
-        double                        m_defaultZoomFactor; //!< default zoom factor. Ex.: 0.5 (50%) 
-        double                        m_oldZoomFactor; //!< previous zoom factor. Ex.: 0.5 (50%)
-        te::map::Canvas*	            m_canvas; //!< abstraction of a drawing area
-        AbstractItemFactory*		      m_itemFactory; //!< factory that provide an interface for creating families of related or dependent graphic objects (MVC components)
+        AbstractScene*                m_scene; //!< abstract scene for QGraphicsScene class, part of Graphics View Framework.
+        int                           m_zoom; //!< current zoom. Ex.: 55 (50%)
+        int                           m_defaultZoom; //!< default zoom. Ex.: 50 (50%) 
+        int                           m_oldZoom; //!< previous zoom. Ex.: 50 (50%)
+        te::map::Canvas*              m_canvas; //!< abstraction of a drawing area
+        AbstractItemFactory*          m_itemFactory; //!< factory that provide an interface for creating families of related or dependent graphic objects (MVC components)
         AbstractOutsideFactory*	      m_outsideFactory; //!< factory provide an interface for creating families of related or dependent graphic widgets (MVC widgets)
         AbstractTemplateFactory*      m_templateFactory; //!< factory provide an interface for creating families of related or dependent templates
         Utils*                        m_utils; //!< pointer with functions to manipulate the canvas and conversion between projections
@@ -369,8 +362,8 @@ namespace te
         SystematicScaleConfig*        m_systematicConfig; //!<
         AbstractProxyProject*         m_proxyProject; //!< provide a surrogate or placeholder for te::qt::af::Project to control access to it
         ItemUtils*                    m_itemUtils; //!< pointer for manipulating items in the scene and vectorization of text and legend
-        EnumType*				              m_wait;
-        ItemObserver*			            m_item;
+        EnumType*                     m_wait;
+        ItemObserver*                 m_item;
         AbstractBuildGraphicsOutside* m_buildGraphicsOutside; //!< build MVC widgets. 
     };
   }

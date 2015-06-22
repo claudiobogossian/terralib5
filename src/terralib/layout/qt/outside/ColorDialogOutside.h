@@ -39,6 +39,11 @@
 // STL
 #include <vector>
 
+// Qt
+#include <QColor>
+#include <QEvent>
+#include <QCloseEvent>
+
 namespace te
 {
   namespace layout
@@ -61,19 +66,35 @@ namespace te
 
 	      virtual ~ColorDialogOutside();
 
+        virtual void init();
+
 	      virtual void updateObserver(ContextItem context);
 
 	      virtual void setPosition(const double& x, const double& y);
 
 	      virtual te::gm::Coord2D getPosition();
 
-        virtual void refreshOutside();
+      signals:
+
+        void updateProperty(Property prop);
+
+      public slots:
+
+        virtual void	accept();
+
+      protected slots:
+
+        void	onCurrentColorChanged( const QColor & color );
 
       protected:
 
-        virtual void createLayout();
+        virtual void	closeEvent ( QCloseEvent * event );
 
-      };
+        virtual bool event(QEvent * e);
+
+        QColor m_currentColor;
+        bool   m_okClicked;
+    };
   }
 }
 

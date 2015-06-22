@@ -44,8 +44,8 @@
 // Qt
 #include <QStyleOptionGraphicsItem>
 
-te::layout::GridMapItem::GridMapItem( ItemController* controller, Observable* o ) :
-  ObjectItem(controller, o),
+te::layout::GridMapItem::GridMapItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
+  ObjectItem(controller, o, invertedMatrix),
   m_maxWidthTextMM(0),
   m_maxHeigthTextMM(0),
   m_onePointMM(0.3527777778),
@@ -62,19 +62,8 @@ te::layout::GridMapItem::~GridMapItem()
 
 }
 
-void te::layout::GridMapItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
+void te::layout::GridMapItem::drawItem( QPainter * painter )
 {
-  ObjectItem::paint(painter, option, widget);
-
-  Q_UNUSED( option );
-  Q_UNUSED( widget );
-  if ( !painter )
-  {
-    return;
-  }
-  
-  drawBackground(painter);
-  
   GridMapModel* model = dynamic_cast<GridMapModel*>(m_model);
   if(model)
   {
@@ -87,12 +76,6 @@ void te::layout::GridMapItem::paint( QPainter * painter, const QStyleOptionGraph
       drawDefaultGrid(painter);
     }
   }
-
-  //Draw Selection
-  if (option->state & QStyle::State_Selected)
-  {
-    drawSelection(painter);
-  }
 }
 
 void te::layout::GridMapItem::drawText( QPointF point, QPainter* painter, std::string text, bool displacementLeft /*= false*/, bool displacementRight /*= false*/ )
@@ -102,7 +85,8 @@ void te::layout::GridMapItem::drawText( QPointF point, QPainter* painter, std::s
   QTransform t = painter->transform();
   QPointF p = t.map(point);
 
-  double zoomFactor = Context::getInstance().getZoomFactor();
+  int zoom = Context::getInstance().getZoom();
+  double zoomFactor = zoom / 100.;
 
   QFont ft = painter->font();
   ft.setPointSize(ft.pointSize() * zoomFactor);
@@ -511,23 +495,13 @@ void te::layout::GridMapItem::drawBottomTexts( QPainter* painter )
 
 void te::layout::GridMapItem::drawLeftTexts( QPainter* painter )
 {
-  double width = 0;
-  double height = 0;
-
-  QFont ft = painter->font();
-
   std::map<std::string, QPointF>::iterator it = m_leftTexts.begin();
   for( ; it != m_leftTexts.end() ; ++it )
   {
     std::string txt = it->first;
     QPointF pt = it->second;   
-
-    checkMaxMapDisplacement(ft, txt, width, height);
-
     drawText(pt, painter, txt);
   }
-
-  changeMapDisplacement(width, height);
 }
 
 void te::layout::GridMapItem::drawRightTexts( QPainter* painter )

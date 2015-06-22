@@ -42,8 +42,8 @@
 #include <QStyleOptionGraphicsItem>
 #include <QObject>
 
-te::layout::PolygonItem::PolygonItem( ItemController* controller, Observable* o ) :
-  LineItem(controller, o)
+te::layout::PolygonItem::PolygonItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
+  LineItem(controller, o, invertedMatrix)
 { 
   m_nameClass = std::string(this->metaObject()->className());
 }
@@ -53,29 +53,7 @@ te::layout::PolygonItem::~PolygonItem()
 
 }
 
-void te::layout::PolygonItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
-{
-  Q_UNUSED( option );
-  Q_UNUSED( widget );
-  if ( !painter )
-  {
-    return;
-  }
-
-  drawBackground(painter);
-
-  drawPolygon(painter);
-
-  drawBorder(painter);
-
-  //Draw Selection
-  if (option->state & QStyle::State_Selected)
-  {
-    drawSelection(painter);
-  }
-}
-
-void te::layout::PolygonItem::drawPolygon( QPainter * painter )
+void te::layout::PolygonItem::drawItem( QPainter * painter )
 {
   LineModel* model = dynamic_cast<LineModel*>(m_model);
   if(!model)
@@ -101,4 +79,3 @@ void te::layout::PolygonItem::drawPolygon( QPainter * painter )
   painter->drawPolygon(m_poly);
   painter->restore();
 }
-

@@ -151,7 +151,8 @@ void te::qt::plugins::layout::OutsideArea::init()
   if(m_toolbar)
   {
     connect(m_toolbar, SIGNAL(changeContext(bool)), m_view, SLOT(onToolbarChangeContext(bool)));
-    connect(m_view, SIGNAL(changeZoom(double)), m_toolbar, SLOT(onChangeZoom(double)));
+    connect(m_toolbar, SIGNAL(zoomChangedInComboBox(int)), m_view, SLOT(setZoom(int)));
+    connect(m_view, SIGNAL(zoomChanged(int)), m_toolbar, SLOT(onZoomChanged(int)));
   }
 
   if(m_dockInspector)

@@ -330,11 +330,6 @@ void te::vp::BufferDialog::onTargetFileToolButtonPressed()
   m_ui->m_newLayerNameLineEdit->setEnabled(false);
 }
 
-void te::vp::BufferDialog::onHelpPushButtonClicked()
-{
-  QMessageBox::information(this, "Help", "Under development");
-}
-
 void te::vp::BufferDialog::onOkPushButtonClicked()
 {
   if(m_ui->m_layersComboBox->currentText().isEmpty())

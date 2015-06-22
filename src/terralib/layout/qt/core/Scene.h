@@ -318,14 +318,19 @@ namespace te
         */
         virtual bool removeItemStackWithoutScene(QGraphicsItem* item);
 
+        /*!
+          \brief This function is called every time the context is updated. It will sign to all items that a change in the context had ocurred.
+        */
+        virtual void contextUpdated();
+
       public slots:
 
         /*!
           \brief It is called immediately when the zoom factor is changed in the Context.
 
-          \param currentZoomFactor current zoom factor of the layout module
+          \param zoom current zoom factor of the layout module
          */
-        virtual void onChangeZoomFactor(double currentFactor);
+        virtual void onChangeZoomFactor(int zoom);
         
       signals:
 

@@ -45,6 +45,14 @@ namespace te
       ColorDialogModel();
 
       virtual ~ColorDialogModel();
+
+      void setColorProperty(Property prop);
+
+      Property getColorProperty();
+
+    protected:
+
+      Property m_colorProperty;
     };
   }
 }

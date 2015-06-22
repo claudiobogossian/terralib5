@@ -59,9 +59,9 @@ namespace te
           \brief Constructor
 
           \param params
-          \param zoomFactor zoom factor
+          \param zoom zoom
         */ 
-        ContextItem(ParamsCreate params, double zoomFactor);
+        ContextItem(ParamsCreate params, int zoom);
 
         /*!
           \brief Destructor
@@ -79,18 +79,18 @@ namespace te
         virtual ParamsCreate getParams();
 
         /*!
-         \brief Change current zoom factor.
+         \brief Change current zoom.
 
-         \param zoomFactor current zoom factor
+         \param zoom current zoom
         */
-        virtual void setZoomFactor(double zoomFactor);
+        virtual void setZoom(int zoom);
         
         /*!
-         \brief Returns current zoom factor.
+         \brief Returns current zoom.
 
-         \return current zoom factor
+         \return current zoom
         */
-        virtual double getZoomFactor();
+        virtual int getZoom();
 
         /*!
         \brief Stores pixmap generated after drawing.
@@ -184,10 +184,10 @@ namespace te
 
       protected:
         ParamsCreate            m_params; //!<
-        double                  m_zoomFactor; //!<
+        int                     m_zoom; //!<
         te::color::RGBAColor**  m_pixmap; //!<
         bool                    m_resizeCanvas; //!<
-        bool		                m_show; //!<
+        bool                    m_show; //!<
         Utils*                  m_utils; //!<
         te::map::Canvas*        m_canvas; //!<
         double                  m_dpiX; //!<

@@ -73,6 +73,7 @@ else()
 # moc'ing
   set(TERRALIB_HDRS_TO_MOC_FILES  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/addressgeocoding/qt/ConfigInputAddressDialog.h
 								  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/addressgeocoding/qt/ConfigInputLayerDialog.h
+								  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/addressgeocoding/qt/ConfigNumberDialog.h
 								  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/addressgeocoding/qt/ImportTableDialog.h
 								  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/addressgeocoding/qt/MainWindowDialog.h)
 
