@@ -115,8 +115,7 @@ te::layout::MapItem::MapItem( ItemController* controller, Observable* o, bool in
   m_mapDisplay->setSynchronous(true);
   m_mapDisplay->setAcceptDrops(true);
 
-  QColor clr(0,0,0,0);
-  m_mapDisplay->setBackgroundColor(clr);
+  m_mapDisplay->setBackgroundColor(Qt::transparent);
   m_mapDisplay->setResizeInterval(0);
   m_mapDisplay->setMouseTracking(true);
 
@@ -185,13 +184,6 @@ void te::layout::MapItem::updateObserver( ContextItem context )
       m_mapDisplay->setGeometry(pt.x(), pt.y(), w, h);
     }
 
-    te::color::RGBAColor clr = model->getMapBackgroundColor();
-    QColor qcolor;
-    qcolor.setRed(clr.getRed());
-    qcolor.setGreen(clr.getGreen());
-    qcolor.setBlue(clr.getBlue());
-    qcolor.setAlpha(clr.getAlpha());
-    m_mapDisplay->setBackgroundColor(qcolor);
     m_mapDisplay->refresh();
 
     calculateFrameMargin();

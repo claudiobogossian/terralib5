@@ -65,7 +65,6 @@ te::layout::MapModel::MapModel() :
 
   m_backgroundColor = te::color::RGBAColor(255, 255, 255, 0);
 
-  m_mapbackgroundColor = te::color::RGBAColor(255, 255, 255, 0);
   m_enableChildren = true;
 }
 
@@ -102,12 +101,6 @@ te::layout::Properties* te::layout::MapModel::getProperties() const
 
   Property pro_layers = getLayersGenericVariant();
   m_properties->addProperty(pro_layers);
-
-  Property pro_mapbackgroundcolor(m_hashCode);
-  pro_mapbackgroundcolor.setName("map_color");
-  pro_mapbackgroundcolor.setValue(m_mapbackgroundColor, dataType->getDataTypeColor());
-  pro_mapbackgroundcolor.setMenu(true);
-  m_properties->addProperty(pro_mapbackgroundcolor);
 
   Property pro_fixed(m_hashCode);
   pro_fixed.setName("fixedScale");
@@ -160,12 +153,6 @@ void te::layout::MapModel::updateProperties( te::layout::Properties* properties,
     {
       m_loadedLayer = true;
     }
-  }
-
-  Property pro_mapbackgroundcolor = vectorProps->contains("map_color");
-  if(!pro_mapbackgroundcolor.isNull())
-  {
-    m_mapbackgroundColor = pro_mapbackgroundcolor.getValue().toColor();
   }
 
   Property pro_fixed = vectorProps->contains("fixedScale");
@@ -603,16 +590,6 @@ std::map<te::gm::Point*, std::string> te::layout::MapModel::getTextMapAsObjectIn
   std::map<te::gm::Point*, std::string>  map;
 
   return map;
-}
-
-void te::layout::MapModel::setMapBackgroundColor( te::color::RGBAColor color )
-{
-  m_mapbackgroundColor = color;
-}
-
-te::color::RGBAColor te::layout::MapModel::getMapBackgroundColor()
-{
-  return m_mapbackgroundColor;
 }
 
 bool te::layout::MapModel::isLoadedLayer()
