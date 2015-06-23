@@ -134,7 +134,7 @@ bool te::vp::IntersectionQuery::run() throw(te::common::Exception)
   select->setFields(fields);
   select->setFrom(from);
 
-//Where clause if the object ids were selected.
+// Where clause if the object ids were selected.
   te::da::Where* w_oid = 0;
   if(m_firstOidSet && m_secondOidSet)
   {
@@ -148,6 +148,7 @@ bool te::vp::IntersectionQuery::run() throw(te::common::Exception)
   
   select->setWhere(w_oid);
 
+// Execute Query
   std::auto_ptr<te::da::DataSet> dsQuery = m_inFirstDsrc->query(select);
   dsQuery->moveBeforeFirst();
 
