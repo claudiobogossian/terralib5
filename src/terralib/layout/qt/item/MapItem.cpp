@@ -80,7 +80,6 @@
 #include <QPoint>
 #include <QMimeData>
 #include <QColor>
-
 #include <QTextEdit>
 
 te::layout::MapItem::MapItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
@@ -499,6 +498,7 @@ void te::layout::MapItem::changeCurrentTool( EnumType* mode )
   {
     te::qt::widgets::Pan* pan = new te::qt::widgets::Pan(m_mapDisplay, Qt::OpenHandCursor, Qt::ClosedHandCursor);	 
     setCurrentTool(pan);
+    m_mapDisplay->setCursor(Qt::OpenHandCursor);
   }
   if(mode == type->getModeMapZoomIn())
   {
@@ -507,6 +507,7 @@ void te::layout::MapItem::changeCurrentTool( EnumType* mode )
     QCursor zoomAreaCursor(QIcon::fromTheme(icon_path_zoom_area.c_str()).pixmap(QSize(10,10)));
     te::qt::widgets::ZoomArea* zoomArea = new te::qt::widgets::ZoomArea(m_mapDisplay, zoomAreaCursor);
     setCurrentTool(zoomArea);
+    m_mapDisplay->setCursor(zoomAreaCursor);
   }
   if(mode == type->getModeMapZoomOut())
   {
@@ -515,6 +516,11 @@ void te::layout::MapItem::changeCurrentTool( EnumType* mode )
     QCursor zoomOutCursor(QIcon::fromTheme(icon_path_zoom_out.c_str()).pixmap(QSize(10,10)));
     te::qt::widgets::ZoomClick* zoomOut = new te::qt::widgets::ZoomClick(m_mapDisplay, zoomOutCursor, 2.0, te::qt::widgets::Zoom::Out);
     setCurrentTool(zoomOut);
+    m_mapDisplay->setCursor(zoomOutCursor);
+  }
+  else if (mode == type->getModeArrowCursor())
+  {
+    m_mapDisplay->setCursor(Qt::ArrowCursor);
   }
 }
 
@@ -908,7 +914,7 @@ bool te::layout::MapItem::checkTouchesCorner( const double& x, const double& y )
   }
   else
   {
-    QGraphicsItem::setCursor(Qt::ArrowCursor);
+    QGraphicsItem::setCursor(m_mapDisplay->cursor());
     m_enumSides = TPNoneSide;
     result = false;
   }

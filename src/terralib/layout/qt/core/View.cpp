@@ -45,6 +45,7 @@
 #include "ItemUtils.h"
 #include "../../item/LineModel.h"
 #include "WaitView.h"
+#include "../item/MapItem.h"
 
 // Qt
 #include <QMouseEvent>
@@ -555,6 +556,14 @@ void te::layout::View::outsideAreaChangeContext( bool change )
   else if(mode == enumMode->getModeArrowCursor())
   {
     resetDefaultConfig();
+    std::vector<te::layout::MapItem*> list = iUtils->getMapItemList();
+    if (!list.empty())
+    {
+      foreach(MapItem* mit, list)
+      {
+        mit->changeCurrentTool(mode);
+      }
+    }
   }
   else if(mode == enumMode->getModeNewTemplate())
   {
