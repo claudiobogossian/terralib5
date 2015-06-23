@@ -326,7 +326,7 @@ void te::layout::MapItem::mouseMoveEvent( QGraphicsSceneMouseEvent * event )
   if(!iUtils->isCurrentMapTools())
   {
     clearCurrentTool();
-    ParentItem::mouseMoveEvent(event);
+    ParentItem<QGraphicsProxyWidget>::mouseMoveEvent(event);
   }
   else
   {
@@ -352,7 +352,7 @@ void te::layout::MapItem::mousePressEvent( QGraphicsSceneMouseEvent * event )
   if(!iUtils->isCurrentMapTools())
   {
     clearCurrentTool();
-    ParentItem::mousePressEvent(event);
+    ParentItem<QGraphicsProxyWidget>::mousePressEvent(event);
   }
   else
   {
@@ -378,7 +378,7 @@ void te::layout::MapItem::mouseReleaseEvent( QGraphicsSceneMouseEvent * event )
   if(!iUtils->isCurrentMapTools())
   {
     clearCurrentTool();
-    ParentItem::mouseReleaseEvent(event); 
+    ParentItem<QGraphicsProxyWidget>::mouseReleaseEvent(event); 
   }
   else
   {
@@ -548,7 +548,7 @@ QImage te::layout::MapItem::generateImage()
   QColor color(0, 0, 255, 0);
 
   QImage generator(m_pixmap.width(), m_pixmap.height(), QImage::Format_ARGB32);
-  generator.fill(color);
+  generator.fill(color.rgba());
 
   QPainter painter;
   painter.begin(&generator);
