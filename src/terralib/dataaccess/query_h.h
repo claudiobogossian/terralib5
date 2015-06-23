@@ -58,6 +58,7 @@
 #include "query/GroupByItem.h"
 #include "query/Having.h"
 #include "query/In.h"
+#include "query/Insert.h"
 #include "query/IsNull.h"
 #include "query/Join.h"
 #include "query/JoinCondition.h"

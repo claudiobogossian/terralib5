@@ -59,6 +59,7 @@ namespace te
     class GroupByItem;
     class Having;
     class In;
+    class Insert;
     class IsNull;
     class Join;
     class JoinCondition;

@@ -88,6 +88,7 @@ namespace te
         virtual void visit(const DataSetName& visited) {}
         virtual void visit(const FromItem& visited) {}
         virtual void visit(const Function& visited);
+        virtual void visit(const Insert& visited) {}
         virtual void visit(const Join& visited) {}
         virtual void visit(const JoinCondition& visited) {}
         virtual void visit(const JoinConditionOn& visited) {}
