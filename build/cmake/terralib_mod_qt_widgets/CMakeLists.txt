@@ -686,7 +686,7 @@ else() # QT4_FOUND
                                           ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/charts/TimeSeriesDataWidget.h
                                           ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/charts/TimeSeriesDialog.h
                                           ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/charts/TimeSeriesFrame.h
-                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/charts/TimeSeriesStyleWidget)
+                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/charts/TimeSeriesStyleWidget.h)
 
   # classification
   list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/classification/ROIManagerDialog.h
@@ -918,6 +918,9 @@ else() # QT4_FOUND
                                            ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/AnimationItem.h
                                            ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/AnimationScene.h
                                            ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/AnimationView.h
+										   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/ObservationPropertiesWidget.h
+										   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/ObservationPropertiesWizardPage.h
+										   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/ObservationWizard.h
                                            ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/PixmapItem.h
                                            ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/SliderPropertiesDialog.h
                                            ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/TrajectoryItem.h
@@ -1097,3 +1100,4 @@ install(FILES ${TERRALIB_VECTOR_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/vector COMPONENT devel)
 
 export(TARGETS terralib_mod_qt_widgets APPEND FILE ${CMAKE_BINARY_DIR}/terralib-exports.cmake)
+

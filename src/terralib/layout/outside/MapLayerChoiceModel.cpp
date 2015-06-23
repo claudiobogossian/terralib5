@@ -100,7 +100,7 @@ std::list<te::map::AbstractLayerPtr> te::layout::MapLayerChoiceModel::searchLaye
   for( ; itProp != m_mapProperties.end() ; ++itProp)
   {
     Properties* prop = (*itProp);
-	  Property pp = prop->contains("layers");
+    Property pp = prop->contains("layers");
 
     if(pp.isNull())
     {
@@ -109,14 +109,15 @@ std::list<te::map::AbstractLayerPtr> te::layout::MapLayerChoiceModel::searchLaye
 
     m_layerProperties.push_back(pp);
 
-	  GenericVariant v = pp.getValue().toGenericVariant();
+    GenericVariant v = pp.getValue().toGenericVariant();
 
-	  std::list<te::map::AbstractLayerPtr> layerList = v.toLayerList();
-
-    layerList.sort();
-    layers.sort();
-
-	  layers.merge(layerList);
+    std::list<te::map::AbstractLayerPtr> currentLayers = v.toLayerList();
+    std::list<te::map::AbstractLayerPtr>::iterator itLayers = currentLayers.begin();
+    while(itLayers != currentLayers.end())
+    {
+      layers.push_back(*itLayers);
+      ++itLayers;
+    }
   }
 
   return layers;

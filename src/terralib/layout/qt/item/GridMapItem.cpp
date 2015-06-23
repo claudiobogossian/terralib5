@@ -85,7 +85,8 @@ void te::layout::GridMapItem::drawText( QPointF point, QPainter* painter, std::s
   QTransform t = painter->transform();
   QPointF p = t.map(point);
 
-  double zoomFactor = Context::getInstance().getZoomFactor();
+  int zoom = Context::getInstance().getZoom();
+  double zoomFactor = zoom / 100.;
 
   QFont ft = painter->font();
   ft.setPointSize(ft.pointSize() * zoomFactor);

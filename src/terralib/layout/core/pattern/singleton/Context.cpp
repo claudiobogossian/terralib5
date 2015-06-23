@@ -39,9 +39,9 @@ te::layout::Context::Context() :
   m_mode(0),
   m_lineIntersectionMouseMode(0),
   m_scene(0),
-  m_zoomFactor(1.),
-  m_defaultZoomFactor(0.5),
-  m_oldZoomFactor(1.),
+  m_zoom(50),
+  m_defaultZoom(50),
+  m_oldZoom(50),
   m_canvas(0),
   m_itemFactory(0),
   m_outsideFactory(0),
@@ -98,16 +98,6 @@ void te::layout::Context::setMode( EnumType* mode )
 void te::layout::Context::setScene( AbstractScene* scene )
 {
   m_scene = scene;
-}
-
-double te::layout::Context::getZoomFactor()
-{
-  return m_zoomFactor;
-}
-
-void te::layout::Context::setZoomFactor( double zoomFactor )
-{
-  m_zoomFactor = zoomFactor;
 }
 
 te::layout::AbstractItemFactory* te::layout::Context::getItemFactory()
@@ -225,24 +215,34 @@ void te::layout::Context::setLineIntersectionMouseMode( EnumType* mode )
   m_lineIntersectionMouseMode = mode;
 }
 
-double te::layout::Context::getDefaultZoomFactor()
+int te::layout::Context::getDefaultZoom()
 {
-  return m_defaultZoomFactor;
+  return m_defaultZoom;
 }
 
-void te::layout::Context::setDefaultZoomFactor( double zoomFactor )
+void te::layout::Context::setDefaultZoom( int zoom )
 {
-  m_defaultZoomFactor = zoomFactor;
+  m_defaultZoom = zoom;
 }
 
-double te::layout::Context::getOldZoomFactor()
+int te::layout::Context::getZoom()
 {
-  return m_oldZoomFactor;
+  return m_zoom;
 }
 
-void te::layout::Context::setOldZoomFactor( double zoomFactor )
+void te::layout::Context::setZoom( int zoom )
 {
-  m_oldZoomFactor = zoomFactor;
+  m_zoom = zoom;
+}
+
+int te::layout::Context::getOldZoom()
+{
+  return m_oldZoom;
+}
+
+void te::layout::Context::setOldZoom( int zoom )
+{
+  m_oldZoom = zoom;
 }
 
 te::layout::SystematicScaleConfig* te::layout::Context::getSystematicScaleConfig()
