@@ -49,8 +49,8 @@
 #include <algorithm>
 
 te::layout::MapModel::MapModel() :
-  m_mapDisplacementX(10),
-  m_mapDisplacementY(10),
+  m_mapDisplacementX(0),
+  m_mapDisplacementY(0),
   m_systematic(0),
   m_fixedScale(false),
   m_loadedLayer(false)

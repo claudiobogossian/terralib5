@@ -363,6 +363,7 @@ void te::layout::MapItem::mousePressEvent( QGraphicsSceneMouseEvent * event )
     QMouseEvent mouseEvent(QEvent::MouseButtonPress, remappedPoint.toPoint(),
     event->button(),event->buttons(), event->modifiers());
     QApplication::sendEvent(m_mapDisplay, &mouseEvent);
+    QGraphicsItem::setCursor(m_mapDisplay->cursor());
     event->setAccepted(mouseEvent.isAccepted());
 
     this->update();
@@ -885,7 +886,7 @@ bool te::layout::MapItem::checkTouchesCorner( const double& x, const double& y )
   te::gm::Envelope boxMM = model->getMapBox();
   
   QRectF bRect(m_wMargin, m_hMargin, boxMM.getWidth() + m_wMargin, boxMM.getHeight() + m_hMargin);
-  double margin = 10.; //precision
+  double margin = 3; //precision
 
   QPointF ll = bRect.bottomLeft();
   QPointF lr = bRect.bottomRight();
