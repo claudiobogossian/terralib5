@@ -53,6 +53,9 @@
 #include <QToolButton>
 #include <QLabel>
 #include <QUndoCommand>
+#include <QLineEdit>
+
+#include <QtPropertyBrowser/QtTreePropertyBrowser>
 
 te::layout::PropertiesOutside::PropertiesOutside( OutsideController* controller, Observable* o, PropertyBrowser* propertyBrowser ) :
 	QWidget(0),

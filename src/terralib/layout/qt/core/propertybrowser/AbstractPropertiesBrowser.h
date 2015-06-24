@@ -42,8 +42,8 @@
 #include <QMap>
 
 // QtPropertyBrowser
-#include <QtPropertyBrowser/QtVariantProperty>
-#include <QtPropertyBrowser/QtProperty>
+class QtVariantProperty;
+class QtProperty;
 
 class QGraphicsItem;
 class QWidget;
