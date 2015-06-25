@@ -78,7 +78,10 @@ void te::layout::ArrowItem::paint( QPainter * painter, const QStyleOptionGraphic
 		{
 			drawRightArrow(painter);
 		}
-		
+		if(model->getCurrentArrowType() == enumScale->getLeftArrowType())
+		{
+			drawLeftArrow(painter);
+		}
 	}
 
   drawBorder(painter);
@@ -117,6 +120,33 @@ void te::layout::ArrowItem::drawRightArrow( QPainter * painter )
 	painter->restore();
 }
 
+void te::layout::ArrowItem::drawLeftArrow(QPainter * painter)
+{
+	double w2 = boundingRect().width() / 2.;
+	double w3 = boundingRect().width() - boundingRect().width() / 100.;
+	double w4 = boundingRect().width() / 100.;
+	double h1 = boundingRect().height() / 2.;
+	double h2 = boundingRect().height() / 4.;
+	double y1 = boundingRect().center().y()-h1;
+	double y2 = boundingRect().center().y()+h1;
+	double y4 = boundingRect().center().y()+h2;
+	double y5 = boundingRect().width() - w4;
+	double y6 = boundingRect().center().y() + w4;
+	
+	QPointF p1 = QPointF(w3,y4);
+	QPointF p2 = QPointF(w2,y4);
+	QPointF p3 = QPointF(w2,y2);
+	QPointF p4 = QPointF(w4,y6);
+	QPointF p5 = QPointF(w2,y1);
+	QPointF p6 = QPointF(w2,h2);
+	QPointF p7 = QPointF(w3,h2);
+	QPolygonF arrowPolygon;
+	arrowPolygon<<p1<<p2<<p3<<p4<<p5<<p6<<p7;
+	painter->drawPolygon(arrowPolygon);
+	painter->restore();
+
+}
+
 void te::layout::ArrowItem::drawDoubleArrow(QPainter * painter)
 {
 
@@ -147,3 +177,4 @@ void te::layout::ArrowItem::drawDoubleArrow(QPainter * painter)
 	painter->drawPolygon(arrowPolygon);
 	painter->restore();
 }
+
