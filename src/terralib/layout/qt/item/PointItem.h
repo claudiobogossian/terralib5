@@ -73,7 +73,13 @@ namespace te
 
       protected:
 
-        virtual void drawStar(QPainter * painter);
+        virtual void drawStar1(QPainter * painter);
+
+				virtual void drawStar2(QPainter * painter);
+
+				virtual void drawStar3(QPainter * painter);
+
+				virtual void drawStar4(QPainter * painter);
 
         virtual void drawCircle(QPainter * painter);
 

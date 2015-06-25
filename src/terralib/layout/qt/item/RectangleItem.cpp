@@ -170,14 +170,8 @@ void te::layout::RectangleItem::drawSingleCornerTrimmedRectangle(QPainter * pain
 	cbrush.setBlue(clrBack.getBlue());
 	cbrush.setAlpha(clrBack.getAlpha());
 
-	//QPointF p1 = QPointF(boundingRect().width() - boundingRect().width() / 4., boundingRect().center().y()+ boundingRect().height() / 2.);
-	//QPointF p2 = QPointF(boundingRect().height()-boundingRect().topRight().y(),boundingRect().topRight().x()-boundingRect().width()/4);
-	//QPointF p3 = QPointF(boundingRect().bottomRight().y(),boundingRect().top());
-	//QPointF p4 = QPointF(boundingRect().bottomLeft().x(),boundingRect().top());
-	//QPointF p5 = QPointF(boundingRect().bottomLeft().x(),boundingRect().bottom());
-
 	QPointF p1 = QPointF(boundingRect().width() - boundingRect().width() / 4., boundingRect().center().y()+ boundingRect().height() / 2.);
-	QPointF p2 = QPointF(boundingRect().bottomRight().x() - boundingRect().bottomRight().x()/100.,boundingRect().width() - boundingRect().width() / 4.);
+	QPointF p2 = QPointF(boundingRect().bottomRight().x() - boundingRect().bottomRight().x()/100.,boundingRect().height() - boundingRect().height() / 4.);
 	QPointF p3 = QPointF(boundingRect().bottomRight().x(),boundingRect().top());
 	QPointF p4 = QPointF(boundingRect().bottomLeft().x(),boundingRect().top());
 	QPointF p5 = QPointF(boundingRect().bottomLeft().x(),boundingRect().bottom());
