@@ -281,24 +281,25 @@ void te::layout::TextItem::keyPressEvent( QKeyEvent * event )
 
 void te::layout::TextItem::mouseDoubleClickEvent( QGraphicsSceneMouseEvent * event )
 {
-  if(event->button() == Qt::LeftButton)
-  {
-    m_editable = !m_editable;
-    if(m_editable)
-    {
-      //If enabled is true, this item will accept hover events
-      setTextInteractionFlags(Qt::TextEditable);
-      setCursor(Qt::IBeamCursor);
-      QTextCursor cursor(textCursor());
-      cursor.clearSelection();
-      setTextCursor(cursor);
-      setFocus();
-    }
-    else
-    {
-      setCursor(Qt::ArrowCursor);
-    }
-  }
+	QTextCursor cursor(textCursor());
+	setTextCursor(cursor);
+	setEditable(true);
+	setTextInteractionFlags(Qt::TextEditorInteraction);
+
+	qDebug("mouseDoubleClickEvent '%s'", this->toPlainText().toStdString().c_str());
+	if(textInteractionFlags() == Qt::TextEditorInteraction)
+	{
+		QGraphicsTextItem::mouseDoubleClickEvent(event);
+		setTextInteractionFlags(Qt::TextEditorInteraction);
+		return;
+	}
+
+	QGraphicsSceneMouseEvent *click = new QGraphicsSceneMouseEvent(QEvent::GraphicsSceneMousePress);
+	click->setButton(event->button());
+	click->setPos(event->pos());
+	QGraphicsTextItem::mousePressEvent(click);
+	delete click;
+
 }
 
 void te::layout::TextItem::mouseMoveEvent( QGraphicsSceneMouseEvent * event )
