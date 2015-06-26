@@ -85,7 +85,7 @@ void te::qt::plugins::rp::AbstractAction::addNewLayer(te::map::AbstractLayerPtr 
 {
   te::qt::af::evt::LayerAdded evt(layer.get());
 
-  te::qt::af::ApplicationController::getInstance().broadcast(&evt);
+  te::qt::af::AppCtrlSingleton::getInstance().broadcast(&evt);
 }
 
 te::map::AbstractLayerPtr te::qt::plugins::rp::AbstractAction::getCurrentLayer()
@@ -94,7 +94,7 @@ te::map::AbstractLayerPtr te::qt::plugins::rp::AbstractAction::getCurrentLayer()
 
   te::qt::af::evt::GetLayerSelected evt;
 
-  te::qt::af::ApplicationController::getInstance().broadcast(&evt);
+  te::qt::af::AppCtrlSingleton::getInstance().broadcast(&evt);
 
   if(evt.m_layer.get())
   {
@@ -111,7 +111,7 @@ std::list<te::map::AbstractLayerPtr> te::qt::plugins::rp::AbstractAction::getLay
 {
   std::list<te::map::AbstractLayerPtr> list;
 
-  te::qt::af::Project* prj = te::qt::af::ApplicationController::getInstance().getProject();
+  te::qt::af::Project* prj = te::qt::af::AppCtrlSingleton::getInstance().getProject();
 
   if(prj)
     list = prj->getSingleLayers(false);

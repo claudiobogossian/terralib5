@@ -50,11 +50,11 @@ te::qt::plugins::attributefill::VectorToRasterAction::~VectorToRasterAction()
 
 void te::qt::plugins::attributefill::VectorToRasterAction::onActionActivated(bool checked)
 {
-  QWidget* parent = te::qt::af::ApplicationController::getInstance().getMainWindow();
+  QWidget* parent = te::qt::af::AppCtrlSingleton::getInstance().getMainWindow();
   te::attributefill::VectorToRasterDialog dlg(parent);
 
   // get the list of layers from current project
-  te::qt::af::Project* prj = te::qt::af::ApplicationController::getInstance().getProject();
+  te::qt::af::Project* prj = te::qt::af::AppCtrlSingleton::getInstance().getProject();
 
   if(prj)
   {
@@ -75,6 +75,6 @@ void te::qt::plugins::attributefill::VectorToRasterAction::onActionActivated(boo
   {
     te::qt::af::evt::LayerAdded evt(layer);
 
-    te::qt::af::ApplicationController::getInstance().broadcast(&evt);
+    te::qt::af::AppCtrlSingleton::getInstance().broadcast(&evt);
   }
 }

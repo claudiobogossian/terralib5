@@ -103,9 +103,17 @@ int main(int argc, char** argv)
 
       splash->show();
 
+      QStringList ithemes = QIcon::themeSearchPaths();
+
+      ithemes <<QString("/home/fred-bd/Documentos/funcate/terralib5_rc/terralib5/share/terralib/icons");
+
+      QIcon::setThemeSearchPaths(ithemes);
+
+      QIcon::setThemeName("terralib");
+
       TerraView tview;
 
-      tview.resetTerraLib(waitVal != RESTART_CODE);
+//      tview.resetTerraLib(waitVal != RESTART_CODE);
       
 #if TE_PLATFORM == TE_PLATFORMCODE_APPLE
       CFBundleRef mainBundle = CFBundleGetMainBundle();
@@ -131,7 +139,7 @@ int main(int argc, char** argv)
 
       tview.showMaximized();
 
-      tview.resetState();
+//      tview.resetState();
 
       // Start TerraView from project file(.tview)
       if(argc > 1)
@@ -144,7 +152,7 @@ int main(int argc, char** argv)
 
       waitVal = app.exec();
 
-      tview.resetTerraLib(waitVal != RESTART_CODE);
+//      tview.resetTerraLib(waitVal != RESTART_CODE);
 
     } while(waitVal == RESTART_CODE);
   }

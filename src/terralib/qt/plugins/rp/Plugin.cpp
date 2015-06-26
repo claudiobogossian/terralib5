@@ -109,12 +109,12 @@ void te::qt::plugins::rp::Plugin::startup()
   TE_LOG_TRACE(TE_TR("TerraLib Qt RP Plugin startup!"));
 
 // add plugin menu
-  QMenu* pluginMenu = te::qt::af::ApplicationController::getInstance().getMenu("Processing");
+  QMenu* pluginMenu = te::qt::af::AppCtrlSingleton::getInstance().getMenu("Processing");
   m_rpMenu = new QMenu(pluginMenu);
   m_rpMenu->setIcon(QIcon::fromTheme("rp-rasterprocessing-icon"));
 
   // Insert action before plugin manager action
-  QAction* pluginsSeparator = te::qt::af::ApplicationController::getInstance().findAction("ManagePluginsSeparator");
+  QAction* pluginsSeparator = te::qt::af::AppCtrlSingleton::getInstance().findAction("ManagePluginsSeparator");
 
   pluginMenu->insertMenu(pluginsSeparator, m_rpMenu);
 

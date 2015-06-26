@@ -68,6 +68,13 @@ namespace te
         struct Event;
       }
 
+      enum ListenerType
+      {
+        SENDER,
+        RECEIVER,
+        BOTH
+      };
+
       /*!
         \class ApplicationController
 
@@ -77,7 +84,7 @@ namespace te
 
         \ingroup af
       */
-      class TEQTAFEXPORT ApplicationController : public QObject, public te::common::Singleton<ApplicationController>
+      class TEQTAFEXPORT ApplicationController : public QObject//, public te::common::Singleton<ApplicationController>
       {
         Q_OBJECT
 
@@ -265,7 +272,7 @@ namespace te
 
             \note If the \a obj was previously registered, nothing will be done.
           */
-          void addListener(QObject* obj);
+          void addListener(QObject* obj, const ListenerType& type = BOTH);
 
           /*!
             \brief Remove the \a obj from the list of event listeners.
@@ -481,10 +488,9 @@ namespace te
 
           bool m_resetTerralib;
 
-// Singleton instance
-//          static ApplicationController* sm_instance;  //!< There can be only one object of class Application.
       };
 
+      typedef te::common::Singleton<ApplicationController> AppCtrlSingleton;
     } // end namespace af
   }   // end namespace qt
 }     // end namespace te

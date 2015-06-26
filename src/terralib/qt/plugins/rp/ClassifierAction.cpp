@@ -47,7 +47,7 @@ te::qt::plugins::rp::ClassifierAction::~ClassifierAction()
 
 void te::qt::plugins::rp::ClassifierAction::onActionActivated(bool checked)
 {
-  te::qt::widgets::ClassifierWizard dlg(te::qt::af::ApplicationController::getInstance().getMainWindow());
+  te::qt::widgets::ClassifierWizard dlg(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
 
   std::list<te::map::AbstractLayerPtr> layersList = getLayers();
 

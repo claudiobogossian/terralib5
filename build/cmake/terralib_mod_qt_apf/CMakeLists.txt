@@ -36,6 +36,7 @@ if(WIN32)
 endif()
 
 set(TERRALIB_LIBRARIES_DEPENDENCIES "terralib_mod_common"
+                                    "terralib_mod_plugin"
                                     "terralib_mod_qt_widgets")
 
 file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/af/*.cpp)

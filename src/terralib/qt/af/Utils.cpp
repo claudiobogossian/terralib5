@@ -418,7 +418,8 @@ void te::qt::af::SaveDataSourcesFile()
 
   if(fileName.isNull())
   {
-    const QString& udir = ApplicationController::getInstance().getUserDataDir();
+    // Fred: revisar
+    const QString& udir=""; //= ApplicationController::getInstance().getUserDataDir();
     
     fileName = udir + "/" + QString(TERRALIB_APPLICATION_DATASOURCE_FILE_NAME);
     
@@ -452,7 +453,9 @@ void AddToolbarAndActions(QToolBar* bar, QSettings& sett)
 
 void te::qt::af::UpdateToolBarsInTheSettings()
 {
-  std::vector<QToolBar*> bars = te::qt::af::ApplicationController::getInstance().getToolBars();
+  // Fred: revisar
+
+  std::vector<QToolBar*> bars;// = te::qt::af::ApplicationController::getInstance().getToolBars();
   std::vector<QToolBar*>::const_iterator it;
   QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
 
@@ -526,7 +529,9 @@ std::vector<QToolBar*> te::qt::af::ReadToolBarsFromSettings(QWidget* barsParent)
       }
       else
       {
-        QAction* a = ApplicationController::getInstance().findAction(act);
+        // Fred: revisar
+
+        QAction* a;// = ApplicationController::getInstance().findAction(act);
       
         if(a != 0)
           toolbar->addAction(a);
@@ -780,7 +785,8 @@ void te::qt::af::AddActionToCustomToolbars(QAction* act)
 
       if (v == act->objectName())
       {
-        ApplicationController::getInstance().getToolBar(*it)->addAction(act);
+        // Fred: revisar
+//        ApplicationController::getInstance().getToolBar(*it)->addAction(act);
         break;
       }
     }
@@ -816,7 +822,8 @@ std::vector<std::string> te::qt::af::GetDefaultPluginsNames()
   std::vector<std::string> res;
 
 // Finding the Default plugins file.
-  std::string pluginsPath = te::qt::af::ApplicationController::getInstance().getAppPluginsPath().toStdString();
+  // Fred: revisar
+  std::string pluginsPath; //= te::qt::af::ApplicationController::getInstance().getAppPluginsPath().toStdString();
 
   if (pluginsPath == "")
     return res;
@@ -953,7 +960,8 @@ QString te::qt::af::GetGenerationDate()
 
 QString te::qt::af::GetWindowTitle(const te::qt::af::Project& project)
 {
-  QString title = te::qt::af::ApplicationController::getInstance().getAppTitle() + " - ";
+  // Fred: revisar
+  QString title;// = te::qt::af::ApplicationController::getInstance().getAppTitle() + " - ";
   title += TE_TR("Project:");
   title += " ";
   title += project.getTitle().c_str();
@@ -970,8 +978,9 @@ QString te::qt::af::GetWindowTitle(const te::qt::af::Project& project)
 
 QString te::qt::af::GetExtensionFilter()
 {
-  QString appName = te::qt::af::ApplicationController::getInstance().getAppName();
-  QString appProjectExtension = te::qt::af::ApplicationController::getInstance().getAppProjectExtension();
+  // Fred: revisar
+  QString appName;// = te::qt::af::ApplicationController::getInstance().getAppName();
+  QString appProjectExtension;// = te::qt::af::ApplicationController::getInstance().getAppProjectExtension();
   QString extensionFilter = appName;
   extensionFilter += QString(" (*.");
   extensionFilter += appProjectExtension + ")";

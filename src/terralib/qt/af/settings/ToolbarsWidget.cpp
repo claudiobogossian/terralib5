@@ -14,7 +14,8 @@
 
 void SetToolbars(QComboBox* cmb, std::vector< QList<QAction*> >& acts)
 {
-  std::vector<QToolBar*> bars = te::qt::af::ApplicationController::getInstance().getToolBars();
+  // Fred: revisar
+  std::vector<QToolBar*> bars;// = te::qt::af::ApplicationController::getInstance().getToolBars();
   std::vector<QToolBar*>::iterator it;
 
   for(it=bars.begin(); it != bars.end(); ++it)
@@ -29,7 +30,8 @@ void SetActions(QListView* view)
 {
   QAbstractItemModel* old_m = view->model();
 
-  te::qt::af::MenuBarModel* model = new te::qt::af::MenuBarModel(te::qt::af::ApplicationController::getInstance().getMenuBar("menubar"), view);
+  // Fred: revisar
+  te::qt::af::MenuBarModel* model = 0; //new te::qt::af::MenuBarModel(te::qt::af::ApplicationController::getInstance().getMenuBar("menubar"), view);
   view->setModel(model);
 
   delete old_m;
@@ -53,7 +55,8 @@ void RemoveBars(const std::set<QToolBar*>& bars)
 
     te::qt::af::RemoveToolBarFromSettings(bar);
 
-    te::qt::af::ApplicationController::getInstance().removeToolBar(bar->objectName());
+    // Fred: revisar
+//    te::qt::af::ApplicationController::getInstance().removeToolBar(bar->objectName());
 
     delete bar;
   }
@@ -109,7 +112,8 @@ void te::qt::af::ToolbarsWidget::saveChanges()
     
     AddToolBarToSettings(bar);
 
-    te::qt::af::ApplicationController::getInstance().addToolBar(bar->objectName(), bar);
+    // Fred: revisar
+//    te::qt::af::ApplicationController::getInstance().addToolBar(bar->objectName(), bar);
   }
 
   // Removed toolbars

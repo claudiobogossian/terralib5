@@ -41,6 +41,7 @@
 #include "../../../af/Project.h"
 #include "../../../af/Utils.h"
 #include "../../../af/events/LayerEvents.h"
+#include "../../../af/events/ApplicationEvents.h"
 #include "OGRType.h"
 #include "Plugin.h"
 #include "Utils.h"
@@ -134,6 +135,7 @@ QObject(),
 te::plugin::Plugin(pluginInfo),
 m_showWindow(0)
 {
+  te::qt::af::AppCtrlSingleton::getInstance().addListener(this, te::qt::af::SENDER);
 }
 
 te::qt::plugins::ogr::Plugin::~Plugin() 
@@ -151,19 +153,26 @@ void te::qt::plugins::ogr::Plugin::startup()
 
   m_initialized = true;
   
-  //Initializing action
-  QAction* act = te::qt::af::ApplicationController::getInstance().findAction("Project.Add Layer.Tabular File");
-  QMenu* mnu = te::qt::af::ApplicationController::getInstance().findMenu("Project.Add Layer");
+//  //Initializing action
+//  QAction* act = te::qt::af::AppCtrlSingleton::getInstance().findAction("Project.Add Layer.Tabular File");
+//  QMenu* mnu = te::qt::af::AppCtrlSingleton::getInstance().findMenu("Project.Add Layer");
 
-  if(act != 0 && mnu != 0)
+//  if(act != 0 && mnu != 0)
   {
-    QWidget* parent = act->parentWidget();
-    m_showWindow = new QAction(QIcon::fromTheme("file-vector"), tr("Vector File..."), parent);
+//    QWidget* parent = act->parentWidget();
+    m_showWindow = new QAction(QIcon::fromTheme("file-vector"), tr("Vector File..."), this);
     m_showWindow->setObjectName("Project.Add Layer.Vector File");
-    mnu->insertAction(act, m_showWindow);
-    //mnu->addAction(m_showWindow);
 
-    te::qt::af::AddActionToCustomToolbars(m_showWindow);
+    te::qt::af::evt::NewActionsAvailable e;
+    e.m_category = "Datasource";
+    e.m_actions << m_showWindow;
+
+    emit triggered(&e);
+
+//    mnu->insertAction(act, m_showWindow);
+//    //mnu->addAction(m_showWindow);
+
+//    te::qt::af::AddActionToCustomToolbars(m_showWindow);
 
     connect (m_showWindow, SIGNAL(triggered()), SLOT(showWindow()));
   }
@@ -189,15 +198,15 @@ void te::qt::plugins::ogr::Plugin::showWindow()
 //  QString filter = GetSupportedFiles();
 //  QStringList fileNames = QFileDialog::getOpenFileNames(te::qt::af::ApplicationController::getInstance().getMainWindow(), tr("Open Vector File"), te::qt::af::GetFilePathFromSettings("vector"), filter);
   
-  te::qt::af::Project* proj = te::qt::af::ApplicationController::getInstance().getProject();
+//  te::qt::af::Project* proj = te::qt::af::AppCtrlSingleton::getInstance().getProject();
 
-  if(proj == 0)
-  {
-    QMessageBox::warning(te::qt::af::ApplicationController::getInstance().getMainWindow(), tr("Vector File"), tr("Error: there is no opened project!"));
-    return;
-  }
+//  if(proj == 0)
+//  {
+//    QMessageBox::warning(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow(), tr("Vector File"), tr("Error: there is no opened project!"));
+//    return;
+//  }
 
-  QStringList fileNames = QFileDialog::getOpenFileNames(te::qt::af::ApplicationController::getInstance().getMainWindow(), tr("Open Vector File"), te::qt::widgets::GetFilePathFromSettings("vector"), tr("Esri Shapefile (*.shp *.SHP);; Mapinfo File (*.mif *.MIF);; GeoJSON (*.geojson *.GeoJSON);; GML (*.gml *.GML);; KML (*.kml *.KML);; All Files (*.*)"));
+  QStringList fileNames = QFileDialog::getOpenFileNames(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow(), tr("Open Vector File"), te::qt::widgets::GetFilePathFromSettings("vector"), tr("Esri Shapefile (*.shp *.SHP);; Mapinfo File (*.mif *.MIF);; GeoJSON (*.geojson *.GeoJSON);; GML (*.gml *.GML);; KML (*.kml *.KML);; All Files (*.*)"));
 
   if(fileNames.isEmpty())
     return;
@@ -258,7 +267,7 @@ void te::qt::plugins::ogr::Plugin::showWindow()
 
   if(!shpWithoutSpatialIndex.empty())
   {
-    if(QMessageBox::question(te::qt::af::ApplicationController::getInstance().getMainWindow(),
+    if(QMessageBox::question(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow(),
                               tr("Spatial Index"), tr("Do you want create spatial index to the selected ESRI ShapeFiles?"),
                               QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes)
     {
@@ -276,7 +285,7 @@ void te::qt::plugins::ogr::Plugin::showWindow()
       
       QApplication::restoreOverrideCursor();
 
-      QMessageBox::information(te::qt::af::ApplicationController::getInstance().getMainWindow(), tr("Spatial Index"), "Spatial index created with successfully!");
+      QMessageBox::information(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow(), tr("Spatial Index"), "Spatial index created with successfully!");
     }
   }
 
@@ -284,10 +293,10 @@ void te::qt::plugins::ogr::Plugin::showWindow()
   // otherwise, add the layer as a top level layer
   te::map::AbstractLayerPtr parentLayer(0);
 
-  std::list<te::map::AbstractLayerPtr> selectedLayers = te::qt::af::ApplicationController::getInstance().getProject()->getSelectedLayers();
+//  std::list<te::map::AbstractLayerPtr> selectedLayers = te::qt::af::AppCtrlSingleton::getInstance().getProject()->getSelectedLayers();
 
-  if(selectedLayers.size() == 1 && selectedLayers.front()->getType() == "FOLDERLAYER")
-    parentLayer = selectedLayers.front();
+//  if(selectedLayers.size() == 1 && selectedLayers.front()->getType() == "FOLDERLAYER")
+//    parentLayer = selectedLayers.front();
 
   std::list<te::map::AbstractLayerPtr>::iterator it;
   for(it = layers.begin(); it != layers.end(); ++it)
@@ -300,14 +309,14 @@ void te::qt::plugins::ogr::Plugin::showWindow()
         msgErr = msgErr.arg((*it)->getTitle().c_str());
         msgErr = msgErr.arg((*it)->getSRID());
         
-        QMessageBox::warning(te::qt::af::ApplicationController::getInstance().getMainWindow(),
+        QMessageBox::warning(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow(),
                               tr("Layer SRS check"), msgErr);
         (*it)->setSRID(TE_UNKNOWN_SRS);
       }
     }
     
     te::qt::af::evt::LayerAdded evt(*it, parentLayer);
-    te::qt::af::ApplicationController::getInstance().broadcast(&evt);
+    emit triggered(&evt);
   }
 }
 

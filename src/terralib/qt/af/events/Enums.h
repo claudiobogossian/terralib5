@@ -70,6 +70,7 @@ namespace te
           SELECTION_BUTTON_TOGGLED,
           GET_MAPDISPLAY,
           DRAWING_FINISHED,
+          NEW_ACTIONS_AVAILABLE,
           CUSTOM = 1024
         };
 

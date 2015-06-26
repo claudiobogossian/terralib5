@@ -72,7 +72,8 @@ void te::qt::af::DisplayWidget::saveChanges()
 
   te::qt::af::evt::MapColorChanged mapColorChanged(m_ui->m_backColor->palette().color(QPalette::Window));
 
-  te::qt::af::ApplicationController::getInstance().broadcast(&mapColorChanged);
+  // Fred: revisar
+//  te::qt::af::ApplicationController::getInstance().broadcast(&mapColorChanged);
 
   changeApplyButtonState(false);
 }

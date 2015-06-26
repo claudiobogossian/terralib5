@@ -34,6 +34,7 @@
 
 // Forward declarations
 class QWidget;
+class QMenu;
 
 namespace te
 {
@@ -77,9 +78,13 @@ class TerraView : public te::qt::af::BaseApplication
 
     void onHelpTriggered();
 
+    void onApplicationTriggered(te::qt::af::evt::Event* e);
+
   protected:
 
     te::qt::widgets::HelpManagerImpl* m_helpManager;
+
+    QMenu* m_dsMenu;
 };
 
 #endif  // __TERRAVIEW_INTERNAL_TERRAVIEW_H

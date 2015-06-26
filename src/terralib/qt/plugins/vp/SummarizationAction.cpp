@@ -51,7 +51,7 @@ void te::qt::plugins::vp::SummarizationAction::onActionActivated(bool checked)
   te::vp::SummarizationDialog dlg(0);
 
   // get the list of layers from current project
-  te::qt::af::Project* prj = te::qt::af::ApplicationController::getInstance().getProject();
+  te::qt::af::Project* prj = te::qt::af::AppCtrlSingleton::getInstance().getProject();
 
   if(prj)
   {

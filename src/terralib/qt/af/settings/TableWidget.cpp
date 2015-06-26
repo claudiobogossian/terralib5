@@ -90,7 +90,8 @@ void te::qt::af::TableWidget::saveChanges()
   sett.setValue("table/secondaryColor", m_secondaryColor.name());
 
   te::qt::af::evt::TableAlternatingColorsChanged tableAlternatingColorsChanged(isChecked, m_primaryColor, m_secondaryColor);
-  te::qt::af::ApplicationController::getInstance().broadcast(&tableAlternatingColorsChanged);
+  // Fred: revisar
+//  te::qt::af::ApplicationController::getInstance().broadcast(&tableAlternatingColorsChanged);
 
   changeApplyButtonState(false);
 }

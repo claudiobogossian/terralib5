@@ -78,7 +78,8 @@ void te::qt::af::LayerExplorer::onApplicationTriggered(te::qt::af::evt::Event* e
       // Update the project
       te::map::AbstractLayerPtr parentLayer = e->m_parentLayer;
 
-      ApplicationController::getInstance().getProject()->add(e->m_layer, parentLayer);
+      // Fred: revisar
+//      ApplicationController::getInstance().getProject()->add(e->m_layer, parentLayer);
 
       // Add the layer in the layer explorer
       te::qt::widgets::AbstractTreeItem* parentItem = m_explorer->getLayerItem(parentLayer);
@@ -89,7 +90,7 @@ void te::qt::af::LayerExplorer::onApplicationTriggered(te::qt::af::evt::Event* e
         m_explorer->expand(parentItem);
 
       te::qt::af::evt::ProjectUnsaved projectUnsavedEvent;
-      ApplicationController::getInstance().broadcast(&projectUnsavedEvent);
+      emit triggered(&projectUnsavedEvent);
     }
     break;
 
@@ -103,10 +104,11 @@ void te::qt::af::LayerExplorer::onApplicationTriggered(te::qt::af::evt::Event* e
       te::qt::widgets::AbstractTreeItem* layerItem = m_explorer->getLayerItem(layer);
       m_explorer->remove(layerItem);
 
-      ApplicationController::getInstance().getProject()->remove(layer);
+      // Fred: revisar
+//      ApplicationController::getInstance().getProject()->remove(layer);
 
       te::qt::af::evt::ProjectUnsaved projectUnsavedEvent;
-      ApplicationController::getInstance().broadcast(&projectUnsavedEvent);
+      emit triggered(&projectUnsavedEvent);
     }
     break;
 
@@ -148,7 +150,7 @@ void te::qt::af::LayerExplorer::onApplicationTriggered(te::qt::af::evt::Event* e
       m_explorer->remove(item);
 
       te::qt::af::evt::ProjectUnsaved projectUnsavedEvent;
-      ApplicationController::getInstance().broadcast(&projectUnsavedEvent);
+      emit triggered(&projectUnsavedEvent);
     }
     break;
 
@@ -191,31 +193,33 @@ void te::qt::af::LayerExplorer::onSelectedLayersChanged(const std::list<te::map:
   if(selectedLayers.empty())
     return;
 
-  ApplicationController::getInstance().getProject()->setSelectedLayers(selectedLayers);
+  // Fred: revisar
+//  ApplicationController::getInstance().getProject()->setSelectedLayers(selectedLayers);
 
   std::list<te::map::AbstractLayerPtr>::const_iterator it;
   for(it = selectedLayers.begin(); it != selectedLayers.end(); ++it)
   {
     te::qt::af::evt::LayerSelected ev(*it);
-    ApplicationController::getInstance().broadcast(&ev);
+    emit triggered(&ev);
   }
 }
 
 void te::qt::af::LayerExplorer::onLayerVisibilityChanged(te::map::AbstractLayerPtr layer)
 {
   te::qt::af::evt::LayerVisibilityChanged layerVisibilityChangedEvent(layer, layer->getVisibility());
-  ApplicationController::getInstance().broadcast(&layerVisibilityChangedEvent);
+  emit triggered(&layerVisibilityChangedEvent);
 
   te::qt::af::evt::ProjectUnsaved projectUnsavedEvent;
-  ApplicationController::getInstance().broadcast(&projectUnsavedEvent);
+  emit triggered(&projectUnsavedEvent);
 }
 
 void te::qt::af::LayerExplorer::onLayerOrderChanged()
 {
-  ApplicationController::getInstance().getProject()->setTopLayers(m_explorer->getTopLayers());
+  // Fred: revisar
+//  ApplicationController::getInstance().getProject()->setTopLayers(m_explorer->getTopLayers());
 
   te::qt::af::evt::ProjectUnsaved projectUnsavedEvent;
-  ApplicationController::getInstance().broadcast(&projectUnsavedEvent);
+  emit triggered(&projectUnsavedEvent);
 }
 
 void te::qt::af::LayerExplorer::onTreeItemDoubleClicked(te::qt::widgets::AbstractTreeItem* item)
@@ -231,5 +235,5 @@ void te::qt::af::LayerExplorer::onTreeItemDoubleClicked(te::qt::widgets::Abstrac
   assert(layer);
 
   te::qt::af::evt::LayerStyleSelected layerStyleSelected(layer);
-  ApplicationController::getInstance().broadcast(&layerStyleSelected);
+  emit triggered(&layerStyleSelected);
 }

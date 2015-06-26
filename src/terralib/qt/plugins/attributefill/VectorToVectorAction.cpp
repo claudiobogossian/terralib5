@@ -50,11 +50,11 @@ te::qt::plugins::attributefill::VectorToVectorAction::~VectorToVectorAction()
 
 void te::qt::plugins::attributefill::VectorToVectorAction::onActionActivated(bool checked)
 {
-  QWidget* parent = te::qt::af::ApplicationController::getInstance().getMainWindow();
+  QWidget* parent = te::qt::af::AppCtrlSingleton::getInstance().getMainWindow();
   te::attributefill::VectorToVectorDialog dlg(parent);
 
   // get the list of layers from current project
-  te::qt::af::Project* prj = te::qt::af::ApplicationController::getInstance().getProject();
+  te::qt::af::Project* prj = te::qt::af::AppCtrlSingleton::getInstance().getProject();
 
   if(prj)
   {
@@ -68,7 +68,7 @@ void te::qt::plugins::attributefill::VectorToVectorAction::onActionActivated(boo
     dlg.setLayers(prj->getSingleLayers(false));
   }
 
-  QString logPath = te::qt::af::ApplicationController::getInstance().getUserDataDir();
+  QString logPath = te::qt::af::AppCtrlSingleton::getInstance().getUserDataDir();
   logPath += "/log/terralib_attributefill.log";
 
   dlg.setLogPath(logPath.toStdString());
@@ -87,6 +87,6 @@ void te::qt::plugins::attributefill::VectorToVectorAction::onActionActivated(boo
   {
     te::qt::af::evt::LayerAdded evt(layer);
 
-    te::qt::af::ApplicationController::getInstance().broadcast(&evt);
+    te::qt::af::AppCtrlSingleton::getInstance().broadcast(&evt);
   }
 }

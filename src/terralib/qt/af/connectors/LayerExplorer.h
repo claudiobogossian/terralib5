@@ -107,7 +107,9 @@ namespace te
 
           void onTreeItemDoubleClicked(te::qt::widgets::AbstractTreeItem* item);
 
-        //signals:
+        signals:
+
+          void triggered(te::qt::af::evt::Event* e);
 
           //void selectedLayersChanged(const std::list<te::map::AbstractLayerPtr>& selectedLayers);
 

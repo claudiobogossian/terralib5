@@ -268,28 +268,19 @@ QActionGroup* te::qt::af::ApplicationController::findActionGroup(const QString& 
   return 0;
 }
 
-void te::qt::af::ApplicationController::addListener(QObject* obj)
+void te::qt::af::ApplicationController::addListener(QObject* obj, const ListenerType& type)
 {
-  std::set<QObject*>::const_iterator it = m_applicationItems.find(obj);
+  if(type == SENDER || type == BOTH)
+    connect(obj, SIGNAL(triggered(te::qt::af::evt::Event*)),
+            this, SIGNAL(triggered(te::qt::af::evt::Event*)));
 
-  if(it != m_applicationItems.end())
-    return;
-
-  m_applicationItems.insert(obj);
-
-  obj->connect(this, SIGNAL(triggered(te::qt::af::evt::Event*)), SLOT(onApplicationTriggered(te::qt::af::evt::Event*)));
+  if(type == RECEIVER || type == BOTH)
+    obj->connect(this, SIGNAL(triggered(te::qt::af::evt::Event*)), SLOT(onApplicationTriggered(te::qt::af::evt::Event*)));
 }
 
 void te::qt::af::ApplicationController::removeListener(QObject* obj)
 {
-  std::set<QObject*>::iterator it = m_applicationItems.find(obj);
-
-  if(it == m_applicationItems.end())
-    return;
-
-  m_applicationItems.erase(it);
-
-  disconnect(SIGNAL(triggered(te::qt::af::evt::Event*)), obj, SLOT(onApplicationTriggered(te::qt::af::evt::Event*)));
+  disconnect(obj);
 }
 
 void  te::qt::af::ApplicationController::initialize()

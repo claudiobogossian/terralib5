@@ -90,12 +90,12 @@ void te::qt::plugins::sa::Plugin::startup()
   TE_LOG_TRACE(TE_TR("TerraLib Qt SA Plugin startup!"));
 
   // add sa entry in plugin menu
-  QMenu* pluginMenu = te::qt::af::ApplicationController::getInstance().getMenu("Processing");
+  QMenu* pluginMenu = te::qt::af::AppCtrlSingleton::getInstance().getMenu("Processing");
   m_saMenu = new QMenu(pluginMenu);
   m_saMenu->setIcon(QIcon::fromTheme("sa-spatialanalysis-icon"));
 
   // Insert action before plugin manager action
-  QAction* pluginsSeparator = te::qt::af::ApplicationController::getInstance().findAction("ManagePluginsSeparator");
+  QAction* pluginsSeparator = te::qt::af::AppCtrlSingleton::getInstance().findAction("ManagePluginsSeparator");
 
   pluginMenu->insertMenu(pluginsSeparator, m_saMenu);
 

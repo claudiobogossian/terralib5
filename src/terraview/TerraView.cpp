@@ -30,6 +30,7 @@
 // TerraLib
 #include <terralib/common/PlatformUtils.h>
 #include <terralib/qt/af/ApplicationController.h>
+#include <terralib/qt/af/events/ApplicationEvents.h>
 #include <terralib/qt/widgets/help/HelpManager.h>
 
 // STL
@@ -39,11 +40,14 @@
 #include <QAction>
 #include <QApplication>
 #include <QMenu>
+#include <QMenuBar>
+//#include <QMessageBox>
 
 TerraView::TerraView(QWidget* parent)
   : te::qt::af::BaseApplication(parent),
     m_helpManager(0)
 {
+  m_dsMenu = menuBar()->addMenu(tr("Datasources"));
 }
 
 TerraView::~TerraView()
@@ -57,36 +61,36 @@ void TerraView::init()
 
 void TerraView::init(const std::string& configFile)
 {
-  te::qt::af::BaseApplication::init(configFile);
+  te::qt::af::BaseApplication::init(configFile.c_str());
 
-//set application icon
-  std::string tvIcon = te::qt::af::ApplicationController::getInstance().getAppIconName().toStdString();
-  QPixmap pix(tvIcon.c_str());
-  pix = pix.scaled(16, 16, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-  QIcon icon(pix);
+////set application icon
+//  std::string tvIcon = te::qt::af::ApplicationController::getInstance().getAppIconName().toStdString();
+//  QPixmap pix(tvIcon.c_str());
+//  pix = pix.scaled(16, 16, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+//  QIcon icon(pix);
 
-  this->setWindowIcon(icon);
+//  this->setWindowIcon(icon);
 }
 
 void TerraView::makeDialog()
 {
-  te::qt::af::BaseApplication::makeDialog();
+//  te::qt::af::BaseApplication::makeDialog();
 
-  QMenu* hmenu = te::qt::af::ApplicationController::getInstance().getMenu("Help");
+//  QMenu* hmenu = te::qt::af::ApplicationController::getInstance().getMenu("Help");
 
-  QAction* helpAbout = hmenu->addAction(tr("&About..."));
+//  QAction* helpAbout = hmenu->addAction(tr("&About..."));
 
-  helpAbout->setObjectName("Help.About");
-  helpAbout->setIcon(QIcon::fromTheme("help-about-browser"));
+//  helpAbout->setObjectName("Help.About");
+//  helpAbout->setIcon(QIcon::fromTheme("help-about-browser"));
 
-  connect(helpAbout, SIGNAL(triggered()), this, SLOT(showAboutDialog()));
+//  connect(helpAbout, SIGNAL(triggered()), this, SLOT(showAboutDialog()));
 }
 
 void TerraView::showAboutDialog()
 {
-  std::auto_ptr<AboutDialog> dialog(new AboutDialog(this));
+//  std::auto_ptr<AboutDialog> dialog(new AboutDialog(this));
 
-  dialog->exec();
+//  dialog->exec();
 }
 
 void TerraView::onHelpTriggered()
@@ -94,9 +98,22 @@ void TerraView::onHelpTriggered()
   te::qt::widgets::HelpManager::getInstance().showHelp("terraview/index.html", "dpi.inpe.br.terraview");
 }
 
+void TerraView::onApplicationTriggered(te::qt::af::evt::Event* e)
+{
+  if(e->m_id == te::qt::af::evt::NEW_ACTIONS_AVAILABLE)
+  {
+    te::qt::af::evt::NewActionsAvailable* evt = static_cast<te::qt::af::evt::NewActionsAvailable*>(e);
+
+    if(evt->m_category == "Datasource")
+    {
+      m_dsMenu->addActions(evt->m_actions);
+    }
+  }
+}
+
 void TerraView::startProject(const QString& projectFileName)
 {
-  openProject(projectFileName);
+//  openProject(projectFileName);
 }
 
 

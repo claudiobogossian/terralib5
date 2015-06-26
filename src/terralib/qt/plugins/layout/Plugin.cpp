@@ -75,13 +75,13 @@ void te::qt::plugins::layout::Plugin::startup()
   TE_LOG_TRACE(TE_TR("TerraLib Qt Map Layout Plugin startup!"));
   
   // add plugin menu
-  QMenu* pluginMenu = te::qt::af::ApplicationController::getInstance().getMenu("Plugins");
+  QMenu* pluginMenu = te::qt::af::AppCtrlSingleton::getInstance().getMenu("Plugins");
 
   if(!pluginMenu)
     return;
 
   // Insert action before plugin manager action
-  QAction* pluginsSeparator = te::qt::af::ApplicationController::getInstance().findAction("ManagePluginsSeparator");
+  QAction* pluginsSeparator = te::qt::af::AppCtrlSingleton::getInstance().findAction("ManagePluginsSeparator");
 
   if(!pluginsSeparator)
     return;
@@ -97,7 +97,7 @@ void te::qt::plugins::layout::Plugin::startup()
   registerActions();
 
   // layout log startup
-  std::string path = te::qt::af::ApplicationController::getInstance().getUserDataDir().toStdString();
+  std::string path = te::qt::af::AppCtrlSingleton::getInstance().getUserDataDir().toStdString();
   path += "/log/terralib_map_layout.log";
 
 #if defined(TERRALIB_APACHE_LOG4CXX_ENABLED) && defined(TERRALIB_LOGGER_ENABLED)

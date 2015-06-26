@@ -155,11 +155,15 @@ namespace te
 
           void configSRS(const std::list<te::map::AbstractLayerPtr>& layers);
 
+          std::list<te::map::AbstractLayerPtr> getSelectedLayer();
+
         signals:
 
           void hasNextExtent(bool value);
 
           void hasPreviousExtent(bool value);
+
+          void triggered(te::qt::af::evt::Event* e);
 
         protected:
 

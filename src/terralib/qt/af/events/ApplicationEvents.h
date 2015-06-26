@@ -30,10 +30,12 @@
 #include "Enums.h"
 
 // Qt
-#include <QtCore/QSize>
+#include <QSize>
+#include <QList>
 
 // Forward declarations
 class QToolBar;
+class QAction;
 
 namespace te
 {
@@ -199,6 +201,19 @@ namespace te
           Event(SELECTION_BUTTON_TOGGLED)
           {
           }
+        };
+
+        struct NewActionsAvailable : public Event
+        {
+          NewActionsAvailable() :
+          Event(NEW_ACTIONS_AVAILABLE)
+          {
+
+          }
+
+          std::string m_category;
+          QToolBar* m_toolbar;
+          QList<QAction*> m_actions;
         };
       }
     }

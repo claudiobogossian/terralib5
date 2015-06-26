@@ -51,11 +51,11 @@ te::qt::plugins::vp::IntersectionAction::~IntersectionAction()
 
 void te::qt::plugins::vp::IntersectionAction::onActionActivated(bool checked)
 {
-  QWidget* parent = te::qt::af::ApplicationController::getInstance().getMainWindow();
+  QWidget* parent = te::qt::af::AppCtrlSingleton::getInstance().getMainWindow();
   te::vp::IntersectionDialog dlg(parent);
 
   // get the list of layers from current project
-  te::qt::af::Project* prj = te::qt::af::ApplicationController::getInstance().getProject();
+  te::qt::af::Project* prj = te::qt::af::AppCtrlSingleton::getInstance().getProject();
 
   if(prj)
   {
@@ -76,6 +76,6 @@ void te::qt::plugins::vp::IntersectionAction::onActionActivated(bool checked)
   {
     te::qt::af::evt::LayerAdded evt(layer);
 
-    te::qt::af::ApplicationController::getInstance().broadcast(&evt);
+    te::qt::af::AppCtrlSingleton::getInstance().broadcast(&evt);
   }
 }
