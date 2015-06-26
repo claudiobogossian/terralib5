@@ -340,6 +340,7 @@ void te::layout::MapItem::mouseMoveEvent( QGraphicsSceneMouseEvent * event )
     event->setAccepted(mouseEvent.isAccepted());
 
     this->update();
+    m_pixmapIsDirty = true;
   }
 }
 
