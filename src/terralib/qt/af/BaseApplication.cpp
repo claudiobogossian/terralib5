@@ -40,6 +40,8 @@ te::qt::af::BaseApplication::BaseApplication(QWidget* parent) :
 te::qt::af::BaseApplication::~BaseApplication()
 {
   delete m_ui;
+  delete m_layerExplorer;
+  delete m_display;
 
   te::plugin::PluginManager::getInstance().shutdownAll();
 
@@ -48,7 +50,6 @@ te::qt::af::BaseApplication::~BaseApplication()
   te::plugin::PluginManager::getInstance().clear();
 
   TerraLib::getInstance().finalize();
-
 }
 
 void te::qt::af::BaseApplication::init(const QString& /*cfgFile*/)
@@ -65,6 +66,11 @@ void te::qt::af::BaseApplication::init(const QString& /*cfgFile*/)
   {
 //    QMessageBox::warning(this, "Error", e.what());
   }
+}
+
+te::qt::widgets::LayerExplorer*te::qt::af::BaseApplication::getLayerExplorer()
+{
+  return m_ui->m_layerExplorer;
 }
 
 void te::qt::af::BaseApplication::onAddLayerTriggered()
@@ -232,11 +238,10 @@ void te::qt::af::BaseApplication::initFramework()
 {
   m_app = &AppCtrlSingleton::getInstance();
 
-  LayerExplorer* explorer = new LayerExplorer(m_ui->m_layerExplorer, this);
+  m_layerExplorer = new LayerExplorer(m_ui->m_layerExplorer);
   m_display = new MapDisplay(m_ui->m_display);
-  m_display->setParent(this);
 
-  m_app->addListener(explorer);
+  m_app->addListener(m_layerExplorer);
   m_app->addListener(m_display);
   m_app->addListener(this);
 }

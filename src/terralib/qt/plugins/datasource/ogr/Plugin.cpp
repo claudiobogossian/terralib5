@@ -188,7 +188,7 @@ void te::qt::plugins::ogr::Plugin::shutdown()
 
   TE_LOG_TRACE(TE_TR("TerraLib Qt OGR widget shutdown!"));
 
-  delete m_showWindow;
+//  delete m_showWindow;
 
   m_initialized = false;
 }

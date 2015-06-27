@@ -373,7 +373,7 @@ void te::qt::af::MapDisplay::drawLayerSelection(te::map::AbstractLayerPtr layer)
 {
   assert(layer.get());
 
-  if(layer->getVisibility() != te::map::VISIBLE)
+  if(layer.get() == 0 || layer->getVisibility() != te::map::VISIBLE)
     return;
 
   std::auto_ptr<te::da::DataSetType> dsType = layer->getSchema();

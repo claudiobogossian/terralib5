@@ -93,15 +93,15 @@ int main(int argc, char** argv)
 
       QPixmap pixmap(splash_pix.c_str());
 
-      QSplashScreen* splash(new QSplashScreen(pixmap/*, Qt::WindowStaysOnTopHint*/));
+      QSplashScreen splash(pixmap/*, Qt::WindowStaysOnTopHint*/);
 
-      splash->setAttribute(Qt::WA_DeleteOnClose, true);
+//      splash.setAttribute(Qt::WA_DeleteOnClose, true);
 
-      splash->setStyleSheet("QWidget { font-size: 12px; font-weight: bold }");
+      splash.setStyleSheet("QWidget { font-size: 12px; font-weight: bold }");
 
-      te::qt::af::SplashScreenManager::getInstance().set(splash, Qt::AlignBottom | Qt::AlignHCenter, Qt::white);
+      te::qt::af::SplashScreenManager::getInstance().set(&splash, Qt::AlignBottom | Qt::AlignHCenter, Qt::white);
 
-      splash->show();
+      splash.show();
 
       QStringList ithemes = QIcon::themeSearchPaths();
 
@@ -135,7 +135,7 @@ int main(int argc, char** argv)
 
       tview.init();
 
-      splash->finish(&tview);
+      splash.finish(&tview);
 
       tview.showMaximized();
 
@@ -156,8 +156,9 @@ int main(int argc, char** argv)
 
     } while(waitVal == RESTART_CODE);
   }
-  catch(const std::exception& /*e*/)
+  catch(const std::exception& e)
   {
+    QMessageBox::warning(0, "test", e.what());
     return EXIT_FAILURE;
   }
   catch(...)

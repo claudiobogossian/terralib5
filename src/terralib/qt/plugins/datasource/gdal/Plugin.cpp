@@ -146,7 +146,7 @@ void te::qt::plugins::gdal::Plugin::shutdown()
 
   m_initialized = false;
 
-  delete m_openFile;
+//  delete m_openFile;
 }
 
 void te::qt::plugins::gdal::Plugin::openFileDialog()

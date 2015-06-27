@@ -63,6 +63,10 @@ void TerraView::init(const std::string& configFile)
 {
   te::qt::af::BaseApplication::init(configFile.c_str());
 
+  m_app->setMsgBoxParentWidget(this);
+
+//  m_app->m
+
 ////set application icon
 //  std::string tvIcon = te::qt::af::ApplicationController::getInstance().getAppIconName().toStdString();
 //  QPixmap pix(tvIcon.c_str());

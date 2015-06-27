@@ -44,6 +44,11 @@ namespace te
 {
   namespace qt
   {
+    namespace widgets
+    {
+      class LayerExplorer;
+    }
+
     namespace af
     {      
       namespace evt
@@ -54,6 +59,7 @@ namespace te
 
       class ApplicationController;
       class MapDisplay;
+      class LayerExplorer;
 
       class TEQTAFEXPORT BaseApplication : public QMainWindow
       {
@@ -66,6 +72,8 @@ namespace te
         virtual ~BaseApplication();
 
         virtual void init(const QString& cfgFile);
+
+        te::qt::widgets::LayerExplorer* getLayerExplorer();
 
       public slots:
 
@@ -97,6 +105,7 @@ namespace te
 
         ApplicationController* m_app;
         MapDisplay* m_display;
+        LayerExplorer* m_layerExplorer;
 
         Ui::BaseApplicationForm* m_ui;
       };
