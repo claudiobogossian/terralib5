@@ -34,6 +34,13 @@
 #include "ExpansibleBand.h"
 #include "ExpansibleBandBlocksManager.h"
 
+// Boost
+
+#include <boost/shared_ptr.hpp>
+
+// STL
+#include <vector>
+
 namespace te
 {
   namespace mem
@@ -124,22 +131,13 @@ namespace te
 
         te::dt::AbstractData* clone() const;
         
-        bool createMultiResolution( const unsigned int levels, const te::rst::InterpolationMethod interpMethod )
-        {
-          return false;
-        };
+        bool createMultiResolution( const unsigned int levels, const te::rst::InterpolationMethod interpMethod );
         
-        bool removeMultiResolution() { return false; }; 
+        bool removeMultiResolution(); 
         
-        unsigned int getMultiResLevelsCount() const
-        {
-          return 0;        
-        }
+        unsigned int getMultiResLevelsCount() const;
         
-        te::rst::Raster* getMultiResLevel( const unsigned int level ) const
-        {
-          return 0;         
-        }                
+        te::rst::Raster* getMultiResLevel( const unsigned int level ) const;
 
         /*!
           \brief New lines will be added at the top of the raster (before the first line).
@@ -199,7 +197,25 @@ namespace te
 
         std::vector<ExpansibleBand*> m_bands; //!< Internal raster bands.
 
-        ExpansibleBandBlocksManager m_blocksManager; //!< Internal blocks manager.
+        boost::shared_ptr< ExpansibleBandBlocksManager > m_blocksManagerPtr; //!< Internal blocks manager.
+        
+        std::vector< boost::shared_ptr< ExpansibleRaster > > m_multiResRasters; //!< Pointer to Multi-resolution versions of this raster instance.
+        
+        /*!
+          \brief Constructor from other expansible raster instance
+
+          \param other The other expansible raster instance.
+          \note Both instances will share the same blocks manager instance.
+        */        
+        ExpansibleRaster( ExpansibleRaster& rhs );          
+        
+        /*!
+          \brief Constructor from other expansible raster instance
+
+          \param other The other expansible raster instance.
+          \note Both instances will share the same blocks manager instance.
+        */        
+        ExpansibleRaster( const te::rst::Raster& rhs );        
 
         /*! \brief Free all allocated internal resources and go back to the initial state. */
         void free();
@@ -217,8 +233,6 @@ namespace te
         void dummyFillBlocks( const std::vector<ExpansibleBandBlocksManager::BlockIndex3D>& blocksCoords );
 
       private :
-
-        ExpansibleRaster( const Raster &rhs );
 
         ExpansibleRaster(te::rst::Grid* grid, te::common::AccessPolicy p = te::common::RAccess);
     };

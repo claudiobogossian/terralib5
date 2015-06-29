@@ -32,6 +32,7 @@
     - bool 
     - te::color::RGBAColor 
     - te::layout::Font 
+    - te::layout::GenericVariant
 
   \ingroup layout
 */
@@ -45,6 +46,7 @@
 #include "../Font.h"
 #include "../enum/EnumType.h"
 #include "../Config.h"
+#include "GenericVariant.h"
 
 // STL
 #include <string>
@@ -74,6 +76,7 @@ namespace te
         - bool 
         - te::color::RGBAColor 
         - te::layout::Font 
+        - te::layout::GenericVariant
 	  
 	    \ingroup layout
 	  */
@@ -182,6 +185,13 @@ namespace te
         Font toFont();
 
         /*!
+          \brief Returns the value of te::layout::GenericVariant type. (The setValue method received a te::layout::GenericVariant). Complex type.
+
+          \return value of te::layout::Font type
+        */
+        GenericVariant toGenericVariant();
+
+        /*!
           \brief Converts the value to a string.
 
           \return Value as a string
@@ -282,6 +292,7 @@ namespace te
       EnumType* m_type; //!< data type of this object
       bool m_null; //!< true if no value has been set, false otherwise
       bool m_complex; //!< true if value is not of common C++ data type, false otherwise
+      GenericVariant m_generic; //!< value of te::layout::GenericVariant type
     };
 
     template<typename ValueType>

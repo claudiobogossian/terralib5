@@ -49,8 +49,8 @@
 #include <QTextCharFormat>
 #include <QTextList>
 
-te::layout::TitleItem::TitleItem( ItemController* controller, Observable* o ) :
-  TextItem(controller, o)
+te::layout::TitleItem::TitleItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
+  TextItem(controller, o, true)
 {
   init();
 }
@@ -87,6 +87,8 @@ void te::layout::TitleItem::updateObserver( ContextItem context )
   updateDocument();
 
   refreshDocument();
+
+  refresh();
 
   update();
 }

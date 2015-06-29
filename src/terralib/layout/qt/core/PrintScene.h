@@ -77,6 +77,8 @@ namespace te
 
         virtual void deselectAllItems();
 
+        virtual void contextUpdated();
+
         QGraphicsScene* m_scene;
         PaperConfig*    m_config;
         te::layout::PrinterScene m_printState;

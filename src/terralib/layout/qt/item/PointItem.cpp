@@ -37,10 +37,17 @@
 #include "../../item/PointModel.h"
 #include "../../core/enum/EnumPointType.h"
 
+// STL
 #include <cmath>
 
-te::layout::PointItem::PointItem( ItemController* controller, Observable* o ) :
-  ObjectItem(controller, o)
+// Qt
+#include <QColor>
+#include <QPen>
+#include <QPolygonF>
+#include <QPainterPath>
+
+te::layout::PointItem::PointItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
+  ObjectItem(controller, o, invertedMatrix)
 {
   m_nameClass = std::string(this->metaObject()->className());
 }
@@ -50,23 +57,8 @@ te::layout::PointItem::~PointItem()
 
 }
 
-void te::layout::PointItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
+void te::layout::PointItem::drawItem( QPainter * painter )
 {
-  Q_UNUSED( option );
-  Q_UNUSED( widget );
-  if ( !painter )
-  {
-    return;
-  }
-
-  if(m_resizeMode)
-  {
-    ObjectItem::paint(painter, option, widget);
-    return;
-  }
-
-  drawBackground(painter);
-
   PointModel* model = dynamic_cast<PointModel*>(m_model);
 
   if(model)
@@ -97,14 +89,6 @@ void te::layout::PointItem::paint( QPainter * painter, const QStyleOptionGraphic
     {
       drawCross(painter);
     }
-  }
-
-  drawBorder(painter);
-
-  //Draw Selection
-  if (option->state & QStyle::State_Selected)
-  {
-    drawSelection(painter);
   }
 }
 
@@ -209,19 +193,19 @@ void te::layout::PointItem::drawX( QPainter * painter )
 
   painter->save();
   
+  double centerX = boundingRect().center().x();
+  double centerY = boundingRect().center().y();
+
   double halfW = boundingRect().width() / 4.;
   double halfH = boundingRect().height() / 4.;
-
-  double x = boundingRect().center().x() - halfW;
-  double y = boundingRect().center().y() + halfH;
-  double w = boundingRect().width() / 2.;
-
-  QFont ft = painter->font();
-  ft.setPointSizeF(w);
-
+    
   QPainterPath rect_path;
-  rect_path.addText(x, y, ft, "X");
 
+  rect_path.moveTo(halfW, centerY + halfH);
+  rect_path.lineTo(centerX + halfW, halfH);
+  rect_path.moveTo(halfW, centerY - halfH);
+  rect_path.lineTo(centerX + halfW, centerY + halfH);
+  
   te::color::RGBAColor clrPoint = model->getPointColor();
 
   QColor pointColor;
@@ -230,7 +214,7 @@ void te::layout::PointItem::drawX( QPainter * painter )
   pointColor.setBlue(clrPoint.getBlue());
   pointColor.setAlpha(clrPoint.getAlpha());
 
-  QPen pn(pointColor, 0, Qt::SolidLine);
+  QPen pn(pointColor, 1, Qt::SolidLine);
   painter->setPen(pn);
 
   painter->setBrush(pointColor);
@@ -294,16 +278,13 @@ void te::layout::PointItem::drawRhombus( QPainter * painter )
 
   double halfW = boundingRect().width() / 4.;
   double halfH = boundingRect().height() / 4.;
-
-  double x = centerX - halfW;
-  double y = centerY + halfH;
   
   QPolygonF poly;
-  poly.push_back(QPoint(centerX, y));
-  poly.push_back(QPoint(centerX + halfW, centerY));
-  poly.push_back(QPoint(centerX, centerY - halfH));
-  poly.push_back(QPoint(x, centerY));
-  poly.push_back(QPoint(centerX, y));
+  poly.push_back(QPointF(centerX, centerY + halfH));
+  poly.push_back(QPointF(centerX + halfW, centerY));
+  poly.push_back(QPointF(centerX, centerY - halfH));
+  poly.push_back(QPointF(centerX - halfW, centerY));
+  poly.push_back(QPointF(centerX, centerY + halfH));
 
   QPainterPath rhombus_path;
   rhombus_path.addPolygon(poly);
@@ -340,13 +321,10 @@ void te::layout::PointItem::drawCross( QPainter * painter )
   
   double halfW = boundingRect().width() / 4.;
   double halfH = boundingRect().height() / 4.;
-
-  double x = centerX - halfW;
-  double y = centerY + halfH;
-  double w = boundingRect().width() / 2.;
-  double h = boundingRect().height() / 2.;
     
   te::color::RGBAColor clrPoint = model->getPointColor();
+
+  QPainterPath painterCross;
 
   QColor pointColor;
   pointColor.setRed(clrPoint.getRed());
@@ -358,9 +336,13 @@ void te::layout::PointItem::drawCross( QPainter * painter )
   painter->setPen(pn);
 
   painter->setBrush(pointColor);
-  painter->drawLine(x, centerY, x + w, centerY);
-  painter->drawLine(centerX, y, centerX, y - h);
-
+  
+  painterCross.moveTo(centerX - halfW, centerY);
+  painterCross.lineTo(centerX + halfW, centerY);
+  painterCross.moveTo(centerX, centerY + halfH);
+  painterCross.lineTo(centerX, centerY - halfH);
+  
+  painter->drawPath(painterCross);
   painter->restore();
 }
 

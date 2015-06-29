@@ -36,6 +36,7 @@
 // STL
 #include <map>
 #include <string>
+#include <vector>
 
 // Qt
 #include <QObject>
@@ -98,8 +99,15 @@ namespace te
         virtual EnumType* getLayoutType(QVariant::Type type, std::string name = "");
 
         virtual int getVariantType(EnumType* dataType);
+
+        virtual void clearAll();
             
       protected slots:
+
+         /*
+          \brief Call when one of the Windows was close.
+        */
+        virtual void onDestroyed(QObject* obj = 0);
 
         /*
           \brief By default it is connected with the internalDlg method of the class QtDlgEditorFactory. 
@@ -110,15 +118,27 @@ namespace te
 
         virtual void updateOutside(Property prop);
 
+        virtual void updateOutside(std::vector<Property> props);
+
         virtual void onShowGridSettingsDlg();
 
         virtual void onShowImageDlg();
 
         virtual void onShowTextGridSettingsDlg();
 
+        virtual void onShowFontDlg();
+
+        virtual void onShowColorDlg();
+
+        virtual void onShowMapLayerChoiceDlg();
+
+        virtual void onShowLegendChoiceDlg();
+
       signals:
 
         void changeDlgProperty(Property property);
+
+        void changeDlgProperty(std::vector<Property> props);
 
       protected:
 
@@ -127,6 +147,8 @@ namespace te
         virtual void changeValueQtPropertyDlg(std::string name, QVariant variant);
 
         virtual QWidget* createOutside(EnumType* enumType);
+
+        virtual void appendDialog(QWidget* widget);
       
       protected:
 
@@ -134,6 +156,7 @@ namespace te
         QtDlgEditorFactory*             m_dlgEditorFactory;
         std::map<std::string, Property> m_dlgProps;
         Property                        m_currentPropertyClicked;
+        QList<QWidget*>                 m_dialogs;
     };
   }
 }

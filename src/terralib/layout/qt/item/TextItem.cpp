@@ -55,7 +55,7 @@
 #include <QGraphicsView>
 #include <QList>
 
-te::layout::TextItem::TextItem( ItemController* controller, Observable* o ) :
+te::layout::TextItem::TextItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
   ParentItem<QGraphicsTextItem>(controller, o, true),
   m_editable(false),
   m_move(false)
@@ -120,6 +120,8 @@ void te::layout::TextItem::updateObserver( ContextItem context )
   
   std::string txt = model->getText();
   document()->setPlainText(txt.c_str());
+
+  refresh();
 
   update();
 }
@@ -251,8 +253,11 @@ QVariant te::layout::TextItem::itemChange( GraphicsItemChange change, const QVar
     double h = 0;
     getDocumentSizeMM(w, h);
 
-    newPos.setX(newPos.x() - transform().dx());
-    newPos.setY(newPos.y() - transform().dy() + h);
+    double tx = transform().dx();
+    double ty = transform().dy();
+
+    newPos.setX(newPos.x() - tx);
+    newPos.setY(newPos.y() - ty);
     return newPos;
   }
   else if(change == QGraphicsItem::ItemPositionHasChanged)

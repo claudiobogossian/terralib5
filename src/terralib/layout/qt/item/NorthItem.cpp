@@ -29,8 +29,8 @@
 #include "NorthItem.h"
 #include "../../item/NorthModel.h"
 
-te::layout::NorthItem::NorthItem( ItemController* controller, Observable* o ) :
-  ObjectItem(controller, o)
+te::layout::NorthItem::NorthItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
+  ObjectItem(controller, o, invertedMatrix)
 {  
   m_nameClass = std::string(this->metaObject()->className());
 }
@@ -40,35 +40,7 @@ te::layout::NorthItem::~NorthItem()
 
 }
 
-void te::layout::NorthItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
-{
-  Q_UNUSED( option );
-  Q_UNUSED( widget );
-  if ( !painter )
-  {
-    return;
-  }
-
-  if(m_resizeMode)
-  {
-    ObjectItem::paint(painter, option, widget);
-    return;
-  }
-
-  drawBackground(painter);
-
-  drawRectangle(painter);
-
-  drawBorder(painter);
-
-  //Draw Selection
-  if (option->state & QStyle::State_Selected)
-  {
-    drawSelection(painter);
-  }
-}
-
-void te::layout::NorthItem::drawRectangle( QPainter * painter )
+void te::layout::NorthItem::drawItem( QPainter * painter )
 {
   NorthModel* model = dynamic_cast<NorthModel*>(m_model);
   if(!model)

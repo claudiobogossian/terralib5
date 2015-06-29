@@ -96,6 +96,7 @@ void te::layout::PropertyBrowser::createManager()
   m_dialogPropertiesBrowser = new DialogPropertiesBrowser;
 
   connect(m_dialogPropertiesBrowser, SIGNAL(changeDlgProperty(Property)), this, SLOT(onChangeDlgProperty(Property)));
+  connect(m_dialogPropertiesBrowser, SIGNAL(changeDlgProperty(std::vector<Property>)), this, SLOT(onChangeDlgProperty(std::vector<Property>)));
 
   m_propertyEditor->setFactoryForManager(m_dialogPropertiesBrowser->getStringPropertyManager(), m_dialogPropertiesBrowser->getDlgEditorFactory());
   m_propertyEditor->setFactoryForManager(m_variantPropertiesBrowser->getVariantPropertyManager(), m_variantPropertiesBrowser->getVariantEditorFactory());
@@ -111,7 +112,7 @@ void te::layout::PropertyBrowser::propertyEditorValueChanged( QtProperty *proper
   }
 
   QList<QtBrowserItem *> list = m_propertyEditor->items(property);
-  changePropertyValue(property, list);
+  emit changePropertyValue(property, list);
 
   Property prop = m_variantPropertiesBrowser->getProperty(property->propertyName().toStdString());
 
@@ -120,7 +121,7 @@ void te::layout::PropertyBrowser::propertyEditorValueChanged( QtProperty *proper
     prop = m_dialogPropertiesBrowser->getProperty(property->propertyName().toStdString());
   }
 
-  changePropertyValue(prop);
+  emit changePropertyValue(prop);
 }
 
 void te::layout::PropertyBrowser::onChangeDlgProperty( Property property )
@@ -129,7 +130,12 @@ void te::layout::PropertyBrowser::onChangeDlgProperty( Property property )
   {
     return;  
   }
-  changePropertyValue(property);
+  emit changePropertyValue(property);
+}
+
+void te::layout::PropertyBrowser::onChangeDlgProperty( std::vector<Property> props )
+{
+  emit changePropertyValue(props);
 }
 
 void te::layout::PropertyBrowser::updateExpandState()
@@ -145,8 +151,6 @@ void te::layout::PropertyBrowser::updateExpandState()
 
 void te::layout::PropertyBrowser::clearAll()
 {
-  m_dialogPropertiesBrowser->getDlgProps().clear();
-
   updateExpandState();
 
   QMap<QtProperty *, QString>::ConstIterator itProp = m_propertyToId.constBegin();
@@ -214,6 +218,12 @@ QtProperty* te::layout::PropertyBrowser::addProperty( Property property )
   QColor qcolor;
   QFont qfont;
   Font font;
+  QtVariantProperty* vproperty = 0;
+
+  if(!property.isVisible())
+  {
+    return vproperty;
+  }
 
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
 
@@ -223,8 +233,7 @@ QtProperty* te::layout::PropertyBrowser::addProperty( Property property )
   }
 
   m_changeQtPropertyVariantValue = true;
-
-  QtVariantProperty* vproperty = 0;
+  
   vproperty = m_variantPropertiesBrowser->addProperty(property);
   if(vproperty) 
   {

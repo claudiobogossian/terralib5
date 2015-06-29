@@ -62,21 +62,13 @@ te::layout::EnumScaleType::~EnumScaleType()
 }
 void te::layout::EnumScaleType::init()
 {
-  m_noneType = new EnumType(0, "NoneScale", this);
-  m_noneType->setLabel("None Scale");
-  m_enums.push_back(m_noneType);
+  m_noneType = createEnum("NoneScale", this, "None Scale");
 
-  m_alternatingScaleBarType = new EnumType(1, "AlternantingScaleBar", this);
-  m_alternatingScaleBarType->setLabel("Alternanting Scale Bar");
-  m_enums.push_back(m_alternatingScaleBarType);
+  m_alternatingScaleBarType = createEnum("AlternantingScaleBar", this, "Alternanting Scale Bar");
 
-  m_doubleAlternatingScaleBarType = new EnumType(2, "DoubleAlternantingScaleBar", this);
-  m_doubleAlternatingScaleBarType->setLabel("Double Alternanting Scale Bar");
-  m_enums.push_back(m_doubleAlternatingScaleBarType);
+  m_doubleAlternatingScaleBarType = createEnum("DoubleAlternantingScaleBar", this, "Double Alternanting Scale Bar");
 
-  m_hollowScaleBarType = new EnumType(3, "HollowScaleBar", this);
-  m_hollowScaleBarType->setLabel("Hollow Scale Bar");
-  m_enums.push_back(m_hollowScaleBarType);
+  m_hollowScaleBarType = createEnum("HollowScaleBar", this, "Hollow Scale Bar");
 }
 
 te::layout::EnumType* te::layout::EnumScaleType::getNoneType() const

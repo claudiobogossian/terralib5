@@ -39,7 +39,7 @@ te::layout::BalloonModel::BalloonModel()
 
   m_borderColor = te::color::RGBAColor(0, 0, 0, 255);
   m_box = te::gm::Envelope(0., 0., 20., 20.);
-  m_border = false;
+  m_border = true;
 }
 
 te::layout::BalloonModel::~BalloonModel()

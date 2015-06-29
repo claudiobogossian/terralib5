@@ -83,9 +83,9 @@ te::layout::Properties* te::layout::ImageModel::getProperties() const
   return m_properties;
 }
 
-void te::layout::ImageModel::updateProperties( te::layout::Properties* properties )
+void te::layout::ImageModel::updateProperties( te::layout::Properties* properties, bool notify )
 {
-  ItemModelObservable::updateProperties(properties);
+  ItemModelObservable::updateProperties(properties, false);
 
   Properties* vectorProps = const_cast<Properties*>(properties);
 
@@ -94,6 +94,12 @@ void te::layout::ImageModel::updateProperties( te::layout::Properties* propertie
   if(!pro_fileName.isNull())
   {
     m_fileName = pro_fileName.getValue().toString();
+  }
+
+  if(notify)
+  {
+    ContextItem context;
+    notifyAll(context);
   }
 }
 

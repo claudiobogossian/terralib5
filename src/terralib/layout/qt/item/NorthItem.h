@@ -59,21 +59,16 @@ namespace te
           \param controller "Controller" part of MVC component
           \param o "Model" part of MVC component
         */ 
-        NorthItem( ItemController* controller, Observable* o );
+        NorthItem( ItemController* controller, Observable* o, bool invertedMatrix = false );
 
         /*!
           \brief Destructor
          */
         virtual ~NorthItem();
 
-        /*!
-          \brief Reimplemented from QGraphicsItem
-         */
-        virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
-        
       protected:
 
-        virtual void drawRectangle(QPainter * painter);
+        virtual void drawItem(QPainter * painter);
     };
   }
 }

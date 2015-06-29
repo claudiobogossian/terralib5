@@ -54,7 +54,7 @@ te::layout::Properties* te::layout::TextGridSettingsModel::getProperties() const
   return m_properties;
 }
 
-void te::layout::TextGridSettingsModel::updateProperties( te::layout::Properties* properties )
+void te::layout::TextGridSettingsModel::updateProperties( te::layout::Properties* properties, bool notify )
 {
 
 }

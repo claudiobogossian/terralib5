@@ -29,7 +29,6 @@
 #define __TERRALIB_LAYOUT_INTERNAL_GRID_GEODESIC_MODEL_H
 
 // TerraLib
-#include "GridModel.h"
 #include "../core/Config.h"
 #include "GridMapModel.h"
 
@@ -47,6 +46,8 @@ namespace te
 
         virtual void draw(te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box, int srid);
         
+        virtual te::gm::Envelope getPlanarBox();
+
         virtual void setPlanarBox(te::gm::Envelope box);
         
         virtual void setVisibleAllTexts(bool visible);
@@ -55,13 +56,21 @@ namespace te
 
         virtual bool isVisibleCornerTextsText();
 
+        virtual void calculateGaps(te::gm::Envelope box);
+
+        bool isDegreesText();
+
+        bool isMinutesText();
+        
+        bool isSecondsText();
+
+        void setSRID(int srid);
+
        protected:
 
          virtual void drawVerticalLines(te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box);
 
          virtual void drawHorizontalLines(te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box);  
-
-         virtual void calculateGaps(te::gm::Envelope box);
 
        protected:
          

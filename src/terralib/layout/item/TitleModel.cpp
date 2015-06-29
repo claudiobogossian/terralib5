@@ -166,9 +166,9 @@ te::layout::Properties* te::layout::TitleModel::getProperties() const
   return m_properties;
 }
 
-void te::layout::TitleModel::updateProperties( te::layout::Properties* properties )
+void te::layout::TitleModel::updateProperties( te::layout::Properties* properties, bool notify )
 {
-  TextModel::updateProperties(properties);
+  TextModel::updateProperties(properties, false);
 
   Properties* vectorProps = const_cast<Properties*>(properties);
 
@@ -263,6 +263,12 @@ void te::layout::TitleModel::updateProperties( te::layout::Properties* propertie
   if(!pro_headerVerticalColor.isNull())
   {
     m_headerVerticalColor = pro_headerVerticalColor.getValue().toColor();
+  }
+
+  if(notify)
+  {
+    ContextItem context;
+    notifyAll(context);
   }
 }
 

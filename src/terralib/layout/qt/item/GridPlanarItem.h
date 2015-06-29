@@ -33,6 +33,7 @@
 // TerraLib
 #include "GridMapItem.h"
 #include "../../core/Config.h"
+#include "../../../geometry/Envelope.h"
 
 namespace te
 {
@@ -59,7 +60,7 @@ namespace te
           \param controller "Controller" part of MVC component
           \param o "Model" part of MVC component
         */ 
-        GridPlanarItem( ItemController* controller, Observable* o );
+        GridPlanarItem( ItemController* controller, Observable* o, bool invertedMatrix = false );
 
         /*!
           \brief Destructor
@@ -69,6 +70,14 @@ namespace te
       protected:
         
         virtual void drawGrid(QPainter* painter);
+
+        virtual void calculateVertical(te::gm::Envelope geoBox, te::gm::Envelope boxMM, double scale);
+
+        virtual void calculateHorizontal(te::gm::Envelope geoBox, te::gm::Envelope boxMM, double scale);
+
+        virtual double initVerticalLines(te::gm::Envelope geoBox);
+
+        virtual double initHorizontalLines(te::gm::Envelope geoBox);
     };
   }
 }

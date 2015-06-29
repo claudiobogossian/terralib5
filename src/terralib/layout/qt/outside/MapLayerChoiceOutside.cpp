@@ -25,50 +25,24 @@
 
 // TerraLib
 #include "../../../common/Logger.h"
-#include "../../../common/progress/ProgressManager.h"
-#include "../../../common/Translator.h"
-#include "../../../common/STLUtils.h"
-#include "../../../dataaccess/dataset/DataSetType.h"
-#include "../../../dataaccess/dataset/ObjectIdSet.h"
-#include "../../../dataaccess/datasource/DataSourceCapabilities.h"
-#include "../../../dataaccess/datasource/DataSourceInfo.h"
-#include "../../../dataaccess/datasource/DataSourceInfoManager.h"
-#include "../../../dataaccess/datasource/DataSourceFactory.h"
-#include "../../../dataaccess/datasource/DataSourceManager.h"
-#include "../../../dataaccess/utils/Utils.h"
-#include "../../../datatype/Enums.h"
-#include "../../../datatype/Property.h"
-#include "../../../geometry/GeometryProperty.h"
-#include "../../../maptools/AbstractLayer.h"
-#include "../../../postgis/Transactor.h"
-#include "../../../qt/af/Utils.h"
-#include "../../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
-#include "../../../qt/widgets/layer/utils/DataSet2Layer.h"
-#include "../../../qt/widgets/progress/ProgressViewerDialog.h"
 #include "../../../qt/widgets/utils/DoubleListWidget.h"
-#include "../../../statistics/core/Utils.h"
 #include "MapLayerChoiceOutside.h"
+#include "../../outside/MapLayerChoiceModel.h"
 #include "ui_MapLayerChoice.h"
 
+// STL
+#include <algorithm>
+
 // Qt
-#include <QFileDialog>
 #include <QGridLayout>
 #include <QMessageBox>
-
-// Boost
-#include <boost/algorithm/string.hpp>
-#include <boost/filesystem.hpp>
-#include <boost/uuid/random_generator.hpp>
-#include <boost/uuid/uuid_io.hpp>
-
-#include <iostream>
-#include <string>
+#include "../../core/enum/Enums.h"
+#include "../../core/property/GenericVariant.h"
 
 te::layout::MapLayerChoiceOutside::MapLayerChoiceOutside(OutsideController* controller, Observable* o)
   : QDialog(0),
     OutsideObserver(controller, o),
-    m_ui(new Ui::MapLayerChoice),
-    m_layers(std::list<te::map::AbstractLayerPtr>())
+    m_ui(new Ui::MapLayerChoice)
 {
 // add controls
   m_ui->setupUi(this);
@@ -83,115 +57,103 @@ te::layout::MapLayerChoiceOutside::MapLayerChoiceOutside(OutsideController* cont
 
   connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
   connect(m_ui->m_cancelPushButton, SIGNAL(clicked()), this, SLOT(onCancelPushButtonClicked()));
-
 }
 
 te::layout::MapLayerChoiceOutside::~MapLayerChoiceOutside()
 {
 }
 
-void te::layout::MapLayerChoiceOutside::setLayers(std::list<te::map::AbstractLayerPtr> layers)
+void te::layout::MapLayerChoiceOutside::init()
 {
-  m_layers = layers;
-  
-  std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
-
-  while(it != m_layers.end())
+  MapLayerChoiceModel* model = dynamic_cast<MapLayerChoiceModel*>(m_model);
+  if(!model)
   {
-    std::auto_ptr<te::da::DataSetType> dsType = it->get()->getSchema();
-    if(dsType->hasGeom())
+    return;
+  }
+
+  // Layers From Map Items
+  std::list<te::map::AbstractLayerPtr> selectedLayers = model->getSelectedLayers();
+  
+  // All Layers from Project
+
+  std::list<te::map::AbstractLayerPtr> layers = model->getLayers();
+  std::list<te::map::AbstractLayerPtr>::iterator it = layers.begin();
+
+  std::vector <std::string> names;
+  while(it != layers.end())
+  {
+    te::map::AbstractLayerPtr layer = it->get();
+
+    if(std::find(selectedLayers.begin(), selectedLayers.end(), layer) != selectedLayers.end())
     {
-      te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(dsType.get());
-      int type = geomProp->getGeometryType();        
+      ++it;
+      continue;
     }
-      
+    
+    names.push_back(layer->getTitle());    
     ++it;
   }
-}
 
-te::map::AbstractLayerPtr te::layout::MapLayerChoiceOutside::getLayer()
-{
-  return m_selectedLayer;
-}
+  m_widget->setInputValues(names);      
+  
+  // Layers From Map Items
+  std::list<te::map::AbstractLayerPtr>::iterator itSelected = selectedLayers.begin();
 
-te::da::DataSourcePtr te::layout::MapLayerChoiceOutside::getDataSource()
-{
-  return m_dataSource;
+  names.clear();
+  while(itSelected != selectedLayers.end())
+  {
+    te::map::AbstractLayerPtr layer = itSelected->get();
+    names.push_back(layer->getTitle());
+    ++itSelected;
+  }
+
+  m_widget->setOutputValues(names);      
 }
 
 void te::layout::MapLayerChoiceOutside::onOkPushButtonClicked()
 {
-  te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(m_selectedLayer.get());
-  if(!dsLayer)
+  MapLayerChoiceModel* model = dynamic_cast<MapLayerChoiceModel*>(m_model);
+  if(!model)
   {
-    QMessageBox::information(this, "Address Geocoding", "Can not execute this operation on this type of layer.");
-    return;
-  }
-
-  m_dataSource = te::da::GetDataSource(dsLayer->getDataSourceId(), true);
-  if(!m_dataSource.get())
-  {
-    QMessageBox::information(this, "Address Geocoding", "The selected input data source can not be accessed.");
-  }
-
-  m_selectedProps = m_widget->getOutputValues();
-  if(m_selectedProps.empty())
-  {
-    QMessageBox::information(this, "Address Geocoding", "Select at least one attribute.");
     return;
   }
   
-//Checks whether the table already contains a column called tsvector.
-  std::auto_ptr<te::da::DataSetType> schema = m_selectedLayer->getSchema();
-  const std::vector<te::dt::Property*>& properties = schema->getProperties();
+  m_layersOnTheRight = m_widget->getOutputValues();
 
-  bool addNewColumn = true;
-  for(std::size_t i = 0; i < properties.size(); ++i)
+
+  std::list<te::map::AbstractLayerPtr> layerListMap = model->getLayers();
+
+  std::vector<std::string>::iterator itString = m_layersOnTheRight.begin();
+  for ( ; itString != m_layersOnTheRight.end() ; ++itString)
   {
-    std::string name = properties[i]->getName();
-    if(name == "tsvector")
-      addNewColumn = false;
-  }
+    std::list<te::map::AbstractLayerPtr>::iterator it = layerListMap.begin();
+    for( ; it != layerListMap.end() ; ++it)
+    {
+      te::map::AbstractLayerPtr layer = it->get();
+      std::string nameLayer = layer->getTitle();
 
-// ALTER TABLE adding a new columns of tsvector type.  
-  if(addNewColumn == true)
-  {
-    std::auto_ptr<te::da::DataSourceTransactor> trans = m_dataSource->getTransactor();
-    std::string alterTable = "ALTER TABLE "+ m_selectedLayer->getTitle() + " ADD tsvector tsvector";
-    trans->execute(alterTable);
-  }
+      std::string name = (*itString);
+      if(nameLayer.compare(name) == 0)
+      {
+        m_layersSelected.push_back(layer);
+      }
+    }
+  }    
 
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
 
-  
-// UPDATE values in tsvector column.
-  std::string updateTable = "UPDATE " + m_selectedLayer->getTitle() + " SET tsvector = to_tsvector('english', ";
+  GenericVariant v;
+  v.setList(m_layersSelected, dataType->getDataTypeLayerList());
 
-  for(std::size_t selProps = 0; selProps < m_selectedProps.size(); ++selProps)
-  {
-    if(selProps == 0)
-      updateTable += " "+ m_selectedProps[selProps];
-    else
-      updateTable += "||' '||"+ m_selectedProps[selProps];
-  }
-  
-  updateTable += ")";
+  Property prop;
+  prop.setName("layers");
+  prop.setValue(v, dataType->getDataTypeGenericVariant());
 
-  m_dataSource->execute(updateTable);
+  m_layersSelected.clear();
 
-  
-  unsigned dot = m_selectedLayer->getTitle().find_last_of(".");
-  std::string table = m_selectedLayer->getTitle().substr(dot+1);
+  emit updateProperty(prop);
 
-//DROP INDEX if exists.
-  std::string dropIndex = "DROP INDEX IF EXISTS " + table +"_idx";
-  m_dataSource->execute(dropIndex);
-
-//CREATE INDEX to speed up the text search.
-  std::string createIndex = "CREATE INDEX "+ table +"_idx ON "+ m_selectedLayer->getTitle() + "  USING GIN(tsvector)";
-
-  m_dataSource->execute(createIndex);
-
-  this->accept();
+  accept();
 }
 
 void te::layout::MapLayerChoiceOutside::onCancelPushButtonClicked()

@@ -46,10 +46,11 @@
 #include <vector>
 #include <string>
 #include <sstream> 
+#include <algorithm>
 
 te::layout::MapModel::MapModel() :
-  m_mapDisplacementX(0),
-  m_mapDisplacementY(0),
+  m_mapDisplacementX(10),
+  m_mapDisplacementY(10),
   m_systematic(0),
   m_fixedScale(false),
   m_loadedLayer(false)
@@ -59,6 +60,9 @@ te::layout::MapModel::MapModel() :
   m_box = te::gm::Envelope(0., 0., 150., 120.);
   m_mapBoxMM = m_box;
 
+  //will calculated map box with displacement
+  setBox(m_box);
+
   m_backgroundColor = te::color::RGBAColor(255, 255, 255, 0);
 
   m_mapbackgroundColor = te::color::RGBAColor(255, 255, 255, 0);
@@ -67,33 +71,13 @@ te::layout::MapModel::MapModel() :
 
 te::layout::MapModel::~MapModel()
 {
+  m_layers.clear();
+
   if(m_systematic)
   {
     delete m_systematic;
     m_systematic = 0;
   }
-}
-
-void te::layout::MapModel::draw( ContextItem context )
-{
-  te::color::RGBAColor** pixmap = 0;
-
-  te::map::Canvas* canvas = context.getCanvas();
-  Utils* utils = context.getUtils();
-
-  if((!canvas) || (!utils))
-    return;
-
-  if(context.isResizeCanvas())
-    utils->configCanvas(m_box);
-
-  drawBackground(context);
-
-  if(context.isResizeCanvas())
-    pixmap = utils->getImageW(m_box);
-
-  context.setPixmap(pixmap);
-  notifyAll(context);
 }
 
 te::layout::Properties* te::layout::MapModel::getProperties() const
@@ -102,17 +86,22 @@ te::layout::Properties* te::layout::MapModel::getProperties() const
 
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
 
-  std::string name = "";
-  if(m_layer)
-  {
-    name = m_layer->getTitle();
-  }
+  if(!dataType)
+    return m_properties;
 
-  Property pro_layer(m_hashCode);
-  pro_layer.setName("layer");
-  pro_layer.setValue(name, dataType->getDataTypeString());
-  pro_layer.setEditable(false);
-  m_properties->addProperty(pro_layer);
+  std::string name = "Choice";
+
+  Property pro_mapchoice(m_hashCode);
+  pro_mapchoice.setName("mapChoice");
+  pro_mapchoice.setValue(name, dataType->getDataTypeMapChoice());
+  pro_mapchoice.setMenu(true);
+  m_properties->addProperty(pro_mapchoice);
+
+  Property pro_layersNames = getLayerNamesProperty();
+  m_properties->addProperty(pro_layersNames);
+
+  Property pro_layers = getLayersGenericVariant();
+  m_properties->addProperty(pro_layers);
 
   Property pro_mapbackgroundcolor(m_hashCode);
   pro_mapbackgroundcolor.setName("map_color");
@@ -138,16 +127,39 @@ te::layout::Properties* te::layout::MapModel::getProperties() const
   return m_properties;
 }
 
-void te::layout::MapModel::updateProperties( te::layout::Properties* properties )
+void te::layout::MapModel::updateProperties( te::layout::Properties* properties, bool notify )
 {
-  ItemModelObservable::updateProperties(properties);
+  ItemModelObservable::updateProperties(properties, false);
 
-  Properties* vectorProps = const_cast<Properties*>(properties);
+  Properties* vectorProps = const_cast<Properties*>(properties);  
   
-  Property pro_layer = vectorProps->contains("layer");
-  if(!pro_layer.isNull())
+  Property pro_layerNames = vectorProps->contains("layerNames");
+  if(!pro_layerNames.isNull())
   {
-    m_nameLayer = pro_layer.getValue().toString();
+    m_layerNames.clear();
+    std::vector<Variant> names = pro_layerNames.getOptionChoices();
+    std::vector<Variant>::const_iterator it = names.begin();
+    for( ; it != names.end() ; ++it)
+    {
+      Variant v = (*it);
+      std::string name = v.toString();
+      m_layerNames.push_back(name);
+    }
+  }
+
+  Property pro_layers = vectorProps->contains("layers");
+  if(!pro_layers.isNull())
+  {
+    GenericVariant v = pro_layers.getValue().toGenericVariant();
+    m_layers = v.toLayerList();
+    if(m_layers.empty())
+    {
+      m_loadedLayer = false;
+    }
+    else
+    {
+      m_loadedLayer = true;
+    }
   }
 
   Property pro_mapbackgroundcolor = vectorProps->contains("map_color");
@@ -200,44 +212,34 @@ void te::layout::MapModel::updateProperties( te::layout::Properties* properties 
     m_mapDisplacementY = pro_mapDisplacementY.getValue().toDouble();
   }
     
+
+
   updateVisitors();
-}
 
-bool te::layout::MapModel::refreshLayer( te::map::AbstractLayerPtr layer )
-{
-  if(!layer)
-    return false;
-
-  if(m_layer)
+  if(notify)
   {
-    if(m_layer->getId() == layer->getId())
-      return false;
-  }
-
-  m_layer = layer;
-
-  m_loadedLayer = true;
-
-  updateVisitors();
-
-  return true;
-}
-
-te::map::AbstractLayerPtr te::layout::MapModel::getLayer()
-{
-  return m_layer;
+    ContextItem context;
+    notifyAll(context);
+  }  
 }
 
 double te::layout::MapModel::getScale()
 {
-  if(!m_layer)
+  if(m_layers.empty())
+  {
     return 0;
+  }
 
-  if(m_layer.get() == 0)
+  std::list<te::map::AbstractLayerPtr>::iterator it;
+  it = m_layers.begin();
+
+  te::map::AbstractLayerPtr layer = (*it);
+
+  if(layer.get() == 0)
     return 0;
 
   // World box: coordinates in the same SRS as the layer
-  te::gm::Envelope worldBox = m_layer->getExtent();
+  te::gm::Envelope worldBox = layer->getExtent();
   
   //About units names (SI): terralib5\resources\json\uom.json 
   te::common::UnitOfMeasurePtr unitPtr = unitMeasureLayer();
@@ -290,15 +292,22 @@ te::gm::Envelope te::layout::MapModel::getWorldInMeters()
 {
   te::gm::Envelope worldBox;
 
-  if(!m_layer)
+  if(m_layers.empty())
+  {
     return worldBox;
+  }
 
-  if(m_layer.get() == 0)
+  std::list<te::map::AbstractLayerPtr>::iterator it;
+  it = m_layers.begin();
+
+  te::map::AbstractLayerPtr layer = (*it);
+  
+  if(layer.get() == 0)
     return worldBox;
 
   // World box: coordinates in the same SRS as the layer
-  worldBox = m_layer->getExtent();
-  int srid = m_layer->getSRID();
+  worldBox = layer->getExtent();
+  int srid = layer->getSRID();
   
   //About units names (SI): terralib5\resources\json\uom.json 
   te::common::UnitOfMeasurePtr unitPtr = unitMeasureLayer();
@@ -331,12 +340,19 @@ te::common::UnitOfMeasurePtr te::layout::MapModel::unitMeasureLayer()
 {
   te::common::UnitOfMeasurePtr unitPtr;
 
-  if(!m_layer)
+  if(m_layers.empty())
+  {
     return unitPtr;
+  }
 
+  std::list<te::map::AbstractLayerPtr>::iterator it;
+  it = m_layers.begin();
+
+  te::map::AbstractLayerPtr layer = (*it);
+  
   //About units names (SI): terralib5\resources\json\uom.json 
   
-  int srid = m_layer->getSRID();
+  int srid = layer->getSRID();
 
   Utils* utils = Context::getInstance().getUtils();
   unitPtr = utils->unitMeasure(srid);
@@ -347,15 +363,22 @@ te::gm::Envelope te::layout::MapModel::getWorldInDegrees()
 {
   te::gm::Envelope worldBox;
   
-  if(!m_layer)
+  if(m_layers.empty())
+  {
     return worldBox;
+  }
 
-  if(m_layer.get() == 0)
+  std::list<te::map::AbstractLayerPtr>::iterator it;
+  it = m_layers.begin();
+
+  te::map::AbstractLayerPtr layer = (*it);
+  
+  if(layer.get() == 0)
     return worldBox;
 
   // World box: coordinates in the same SRS as the layer
-  worldBox = m_layer->getExtent();
-  int srid = m_layer->getSRID();
+  worldBox = layer->getExtent();
+  int srid = layer->getSRID();
     
   //About units names (SI): terralib5\resources\json\uom.json 
   te::common::UnitOfMeasurePtr unitPtr = unitMeasureLayer();
@@ -385,10 +408,7 @@ void te::layout::MapModel::setBox( te::gm::Envelope box )
 {
   ItemModelObservable::setBox(box);
 
-  m_mapBoxMM.m_llx = box.m_llx + m_mapDisplacementX;
-  m_mapBoxMM.m_lly = box.m_lly + m_mapDisplacementY;
-  m_mapBoxMM.m_urx = box.m_urx - m_mapDisplacementX;
-  m_mapBoxMM.m_ury = box.m_ury - m_mapDisplacementY;
+  recalculateMapBoxMM();
 }
 
 te::gm::Envelope te::layout::MapModel::getMapBox()
@@ -400,10 +420,7 @@ void te::layout::MapModel::setPosition( const double& x, const double& y )
 {
   ItemModelObservable::setPosition(x, y);
 
-  m_mapBoxMM.m_llx = m_box.m_llx + m_mapDisplacementX;
-  m_mapBoxMM.m_lly = m_box.m_lly + m_mapDisplacementY;
-  m_mapBoxMM.m_urx = m_box.m_urx - m_mapDisplacementX;
-  m_mapBoxMM.m_ury = m_box.m_ury - m_mapDisplacementY;
+  recalculateMapBoxMM();
 }
 
 double te::layout::MapModel::getDisplacementX()
@@ -432,13 +449,20 @@ void te::layout::MapModel::generateSystematic( te::gm::Coord2D coord )
   if(!m_systematic)
     return;
 
-  if(!m_layer)
+  if(m_layers.empty())
+  {
+    return;
+  }
+
+  std::list<te::map::AbstractLayerPtr>::iterator it;
+  it = m_layers.begin();
+
+  te::map::AbstractLayerPtr layer = (*it);
+  
+  if(layer.get() == 0)
     return;
 
-  if(m_layer.get() == 0)
-    return;
-
-  int srid = m_layer->getSRID();  
+  int srid = layer->getSRID();  
   if(srid == 0)
     return;
 
@@ -502,10 +526,17 @@ bool te::layout::MapModel::isPlanar()
 {
   bool result = false;
 
-  if(!m_layer)
+  if(m_layers.empty())
+  {
     return result;
+  }
 
-  if(m_layer.get() == 0)
+  std::list<te::map::AbstractLayerPtr>::iterator it;
+  it = m_layers.begin();
+
+  te::map::AbstractLayerPtr layer = (*it);
+  
+  if(layer.get() == 0)
     return result;
   
   //About units names (SI): terralib5\resources\json\uom.json 
@@ -529,15 +560,22 @@ te::gm::Envelope te::layout::MapModel::getWorldBox()
 {
   te::gm::Envelope worldBox;
 
-  if(!m_layer)
+  if(m_layers.empty())
+  {
     return worldBox;
+  }
 
-  if(m_layer.get() == 0)
+  std::list<te::map::AbstractLayerPtr>::iterator it;
+  it = m_layers.begin();
+
+  te::map::AbstractLayerPtr layer = (*it);
+
+  if(layer.get() == 0)
     return worldBox;
 
   // World box: coordinates in the same SRS as the layer
-  worldBox = m_layer->getExtent();
-  int srid = m_layer->getSRID();
+  worldBox = layer->getExtent();
+  int srid = layer->getSRID();
 
   if(!m_worldBox.isValid())
     return worldBox;
@@ -577,12 +615,171 @@ te::color::RGBAColor te::layout::MapModel::getMapBackgroundColor()
   return m_mapbackgroundColor;
 }
 
-std::string te::layout::MapModel::getNameLayer()
-{
-  return m_nameLayer;
-}
-
 bool te::layout::MapModel::isLoadedLayer()
 {
   return m_loadedLayer;
 }
+
+void te::layout::MapModel::setDisplacementX( double displacement )
+{
+  m_mapDisplacementX = displacement;
+
+  recalculateMapBoxMM();
+}
+
+void te::layout::MapModel::setDisplacementY( double displacement )
+{
+  m_mapDisplacementY = displacement;
+
+  recalculateMapBoxMM();
+}
+
+void te::layout::MapModel::recalculateMapBoxMM()
+{
+  m_mapBoxMM.m_llx = m_box.m_llx + m_mapDisplacementX;
+  m_mapBoxMM.m_lly = m_box.m_lly + m_mapDisplacementY;
+  m_mapBoxMM.m_urx = m_box.m_urx - m_mapDisplacementX;
+  m_mapBoxMM.m_ury = m_box.m_ury - m_mapDisplacementY;
+}
+
+bool te::layout::MapModel::addLayer( te::map::AbstractLayerPtr layer )
+{
+  if(!layer)
+    return false;
+
+  std::list<te::map::AbstractLayerPtr>::iterator it;
+  it = std::find(m_layers.begin(), m_layers.end(), layer);
+  if(it != m_layers.end())
+  {
+    if((*it)->getId() == layer->getId())
+      return false;
+  }
+
+  m_loadedLayer = true;
+
+  m_layers.push_back(layer);
+
+  updateVisitors();
+
+  return true;
+}
+
+bool te::layout::MapModel::removeLayer( te::map::AbstractLayerPtr layer )
+{
+  bool result = false;
+  std::list<te::map::AbstractLayerPtr>::iterator it;
+  it = std::find(m_layers.begin(), m_layers.end(), layer);
+  if(it != m_layers.end())
+  {
+    m_layers.erase(it);
+    result = true;
+  }
+
+  if(m_layers.empty())
+  {
+    m_loadedLayer = false;
+  }
+  return result;
+}
+
+void te::layout::MapModel::clear()
+{
+  m_layers.clear();
+  m_loadedLayer = false;
+}
+
+te::layout::Property te::layout::MapModel::getLayerNamesProperty() const
+{
+  Property prop;
+  prop.setName("layerNames");
+
+  if(m_layers.empty())
+  {
+    return prop;
+  }
+
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+
+  std::vector<std::string> stringList = findLayerNames();
+
+  std::vector<std::string>::const_iterator it;
+  it = stringList.begin();
+
+  for( ; it != stringList.end() ; ++it)
+  {
+    std::string name = (*it);
+
+    Variant v;
+    v.setValue(name, dataType->getDataTypeString());
+    prop.addOption(v);
+  }
+
+  prop.setEditable(false);
+  prop.setVisible(false);
+  return prop;
+}
+
+te::layout::Property te::layout::MapModel::getLayersGenericVariant() const
+{
+  Property prop;
+  prop.setName("layers");
+  
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+  
+  GenericVariant gv;
+  gv.setList(m_layers, dataType->getDataTypeLayerList());
+
+  prop.setValue(gv, dataType->getDataTypeGenericVariant());
+
+  prop.setEditable(false);
+  prop.setVisible(false);
+  return prop;
+}
+
+std::list<te::map::AbstractLayerPtr> te::layout::MapModel::getLayers()
+{
+  return m_layers;
+}
+
+std::vector<std::string> te::layout::MapModel::getLayerNames()
+{
+  return m_layerNames;
+}
+
+std::vector<std::string> te::layout::MapModel::findLayerNames() const
+{
+  std::vector<std::string> stringList;
+
+  std::list<te::map::AbstractLayerPtr>::const_iterator it;
+  it = m_layers.begin();
+
+  for( ; it != m_layers.end() ; ++it)
+  {
+    te::map::AbstractLayerPtr layer = (*it);
+    std::string name = layer->getTitle();
+    stringList.push_back(name);
+  }
+
+  return stringList;
+}
+
+te::gm::Envelope te::layout::MapModel::maxLayerExtent()
+{
+  te::gm::Envelope box;
+
+  if(m_layers.empty())
+  {
+    return box;
+  }
+  
+  std::list<te::map::AbstractLayerPtr>::const_iterator it;
+  it = m_layers.begin();
+
+  te::map::AbstractLayerPtr layer = (*it);
+
+  box = layer->getExtent();
+
+  return box;
+}
+
+

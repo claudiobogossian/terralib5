@@ -131,14 +131,19 @@ bool te::layout::ItemObserver::isInvertedMatrix()
   return m_invertedMatrix;
 }
 
-void te::layout::ItemObserver::changeZoomFactor( double currentZoomFactor )
+void te::layout::ItemObserver::recalculateBoundingRect()
 {
   //do nothing
 }
 
-void te::layout::ItemObserver::recalculateBoundingRect()
+void te::layout::ItemObserver::contextUpdated()
 {
   //do nothing
+}
+
+bool te::layout::ItemObserver::canBeChild( ItemObserver* item )
+{
+  return false;
 }
 
 

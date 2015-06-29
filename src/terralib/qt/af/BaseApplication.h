@@ -173,6 +173,8 @@ namespace te
 
           void onLayerScatterTriggered();
 
+          void onLayerTimeSeriesTriggered();
+
           void onLayerChartTriggered();
 
           void onLayerGroupingTriggered();
@@ -321,6 +323,7 @@ namespace te
           QAction* m_layerToBottom;
           QAction* m_layerChartsHistogram;
           QAction* m_layerChartsScatter;
+          QAction* m_layerChartsTimeSeries;
           QAction* m_layerChart;
           QAction* m_layerLinkTable;
           QAction* m_layerObjectGrouping;

@@ -42,7 +42,13 @@ te::layout::EnumDataType::EnumDataType() :
   m_dataTypeFont(0),
   m_dataTypeImage(0),
   m_dataTypeTextGridSettings(0),
-  m_dataTypeGroup(0)
+  m_dataTypeGroup(0),
+  m_dataTypeMapChoice(0),
+  m_dataTypeLegendChoice(0),
+  m_dataTypeGenericVariant(0),
+  m_dataTypeLayerList(0),
+  m_dataTypeStringVector(0),
+  m_dataTypeSVGView(0)
 {
   init();
 }
@@ -114,51 +120,79 @@ te::layout::EnumDataType::~EnumDataType()
     delete m_dataTypeGroup;
     m_dataTypeGroup = 0;
   }
+  if(m_dataTypeMapChoice)
+  {
+    delete m_dataTypeMapChoice;
+    m_dataTypeMapChoice = 0;
+  }
+  if(m_dataTypeLegendChoice)
+  {
+    delete m_dataTypeLegendChoice;
+    m_dataTypeLegendChoice = 0;
+  }
+  if(m_dataTypeGenericVariant)
+  {
+    delete m_dataTypeGenericVariant;
+    m_dataTypeGenericVariant = 0;
+  }
+  if(m_dataTypeLayerList)
+  {
+    delete m_dataTypeLayerList;
+    m_dataTypeLayerList = 0;
+  }
+  if(m_dataTypeStringVector)
+  {
+    delete m_dataTypeStringVector;
+    m_dataTypeStringVector = 0;
+  }
+  if(m_dataTypeSVGView)
+  {
+    delete m_dataTypeSVGView;
+    m_dataTypeSVGView = 0;
+  }
 }
 
 void te::layout::EnumDataType::init()
 {
-  m_dataTypeNone = new EnumType(0, "None", this);
-  m_enums.push_back(m_dataTypeNone);
+  m_dataTypeNone = createEnum("None", this);
 
-  m_dataTypeInt = new EnumType(1, "Int", this);
-  m_enums.push_back(m_dataTypeInt);
+  m_dataTypeInt = createEnum("Int", this);
 
-  m_dataTypeDouble = new EnumType(2, "Double", this);
-  m_enums.push_back(m_dataTypeDouble);
+  m_dataTypeDouble = createEnum("Double", this);
 
-  m_dataTypeLong = new EnumType(3, "Long", this);
-  m_enums.push_back(m_dataTypeLong);
+  m_dataTypeLong = createEnum("Long", this);
 
-  m_dataTypeFloat = new EnumType(4, "Float", this);
-  m_enums.push_back(m_dataTypeFloat);
+  m_dataTypeFloat = createEnum("Float", this);
 
-  m_dataTypeString = new EnumType(5, "String", this);
-  m_enums.push_back(m_dataTypeString);
+  m_dataTypeString = createEnum("String", this);
 
-  m_dataTypeBool = new EnumType(6, "Bool", this);
-  m_enums.push_back(m_dataTypeBool);
+  m_dataTypeBool = createEnum("Bool", this);
 
-  m_dataTypeColor = new EnumType(7, "Color", this);
-  m_enums.push_back(m_dataTypeColor);
+  m_dataTypeColor = createEnum("Color", this);
 
-  m_dataTypeGridSettings = new EnumType(8, "GridSettings", this);
-  m_enums.push_back(m_dataTypeGridSettings);
+  m_dataTypeGridSettings = createEnum("GridSettings", this, "Grid Settings");
 
-  m_dataTypeStringList = new EnumType(9, "StringList", this);
-  m_enums.push_back(m_dataTypeStringList);
+  m_dataTypeStringList = createEnum("StringList", this);
 
-  m_dataTypeFont = new EnumType(10, "Font", this);
-  m_enums.push_back(m_dataTypeFont);
+  m_dataTypeFont = createEnum("Font", this);
 
-  m_dataTypeImage = new EnumType(11, "Image", this);
-  m_enums.push_back(m_dataTypeImage);
+  m_dataTypeImage = createEnum("Image", this);
 
-  m_dataTypeTextGridSettings = new EnumType(12, "TextGridSettings", this);
-  m_enums.push_back(m_dataTypeTextGridSettings);
+  m_dataTypeTextGridSettings = createEnum("TextGridSettings", this);
 
-  m_dataTypeGroup = new EnumType(13, "Group", this);
-  m_enums.push_back(m_dataTypeGroup);
+  m_dataTypeGroup = createEnum("Group", this);
+
+  m_dataTypeMapChoice = createEnum("MapChoice", this, "Legend Choice");
+
+  m_dataTypeLegendChoice = createEnum("LegendChoice", this, "Legend Choice");
+
+  m_dataTypeGenericVariant = createEnum("GenericVariant", this, "Generic Variant");
+
+  m_dataTypeLayerList = createEnum("Layer", this, "Layer");
+
+  m_dataTypeStringVector = createEnum("StringVector", this, "String Vector");
+
+  m_dataTypeSVGView = createEnum("SVGView", this, "SVG View");
 }
 
 te::layout::EnumType* te::layout::EnumDataType::getDataTypeNone() const
@@ -230,6 +264,42 @@ te::layout::EnumType* te::layout::EnumDataType::getDataTypeGroup() const
 {
   return m_dataTypeGroup;
 }
+
+te::layout::EnumType* te::layout::EnumDataType::getDataTypeMapChoice() const
+{
+  return m_dataTypeMapChoice;
+}
+
+te::layout::EnumType* te::layout::EnumDataType::getDataTypeLegendChoice() const
+{
+  return m_dataTypeLegendChoice;
+}
+
+te::layout::EnumType* te::layout::EnumDataType::getDataTypeGenericVariant() const
+{
+  return m_dataTypeGenericVariant;
+}
+
+te::layout::EnumType* te::layout::EnumDataType::getDataTypeLayerList() const
+{
+  return m_dataTypeLayerList;
+}
+
+te::layout::EnumType* te::layout::EnumDataType::getDataTypeStringVector() const
+{
+  return m_dataTypeStringVector;
+}
+
+te::layout::EnumType* te::layout::EnumDataType::getDataTypeSVGView() const
+{
+  return m_dataTypeSVGView;
+}
+
+
+
+
+
+
 
 
 

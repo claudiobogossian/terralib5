@@ -85,7 +85,7 @@ namespace te
 
         virtual Properties* getProperties() const;
 
-        virtual void updateProperties(te::layout::Properties* properties);   
+        virtual void updateProperties(te::layout::Properties* properties, bool notify = true);   
         
         virtual bool isVisible();
 
@@ -171,6 +171,8 @@ namespace te
 
         virtual bool isTopRotateText();
 
+        virtual double getCrossOffSet();
+
       protected:
 
         virtual void init();
@@ -228,6 +230,8 @@ namespace te
         bool                                    m_leftRotateText;
         bool                                    m_rightRotateText;
         bool                                    m_topRotateText;  
+
+        double                                  m_crossOffSet;
     };
   }
 }

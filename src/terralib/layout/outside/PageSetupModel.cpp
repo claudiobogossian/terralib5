@@ -55,7 +55,7 @@ te::layout::Properties* te::layout::PageSetupModel::getProperties() const
   return m_properties;
 }
 
-void te::layout::PageSetupModel::updateProperties( te::layout::Properties* properties )
+void te::layout::PageSetupModel::updateProperties( te::layout::Properties* properties, bool notify )
 {
 
 }

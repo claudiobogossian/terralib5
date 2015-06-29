@@ -166,13 +166,18 @@ void te::layout::OutsideModelObservable::setZValue( int zValue )
   m_zValue = zValue;
 }
 
-void te::layout::OutsideModelObservable::updateProperties( te::layout::Properties* properties )
+void te::layout::OutsideModelObservable::updateProperties( te::layout::Properties* properties, bool notify )
 {
   Properties* vectorProps = const_cast<Properties*>(properties);
 
   std::vector<Property> vProps = vectorProps->getProperties();
   Property pro_name = vProps[0];
-  //m_name = pro_name.getName();
+  
+  if(notify)
+  {
+    ContextItem context;
+    notifyAll(context);
+  }
 }
 
 std::string te::layout::OutsideModelObservable::getName()

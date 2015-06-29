@@ -184,7 +184,7 @@ namespace te
         /*!
           \brief Reimplemented from Observable
          */
-        virtual void updateProperties(te::layout::Properties* properties);
+        virtual void updateProperties(te::layout::Properties* properties, bool notify = true);
 
         /*!
           \brief Reimplemented from Observable
@@ -305,9 +305,11 @@ namespace te
          */
         virtual void drawBackground(ContextItem context);
 
-        virtual void addChildrenProperties(Properties* properties);
+        virtual void addChildrenProperties(Properties* properties) const;
 
         virtual void updateChildrenProperties(Property prop);
+
+		virtual void updateChildrenProperties(Properties* properties);
                 
       protected:
         std::set<Observer*>	       m_observers; //!< set of observers of this object

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -30,6 +30,10 @@
 #include "../core/property/Property.h"
 #include "../core/property/Properties.h"
 #include "../core/enum/Enums.h"
+#include "../core/property/GenericVariant.h"
+
+// STL
+#include <algorithm>
 
 te::layout::MapLayerChoiceModel::MapLayerChoiceModel() 
 {
@@ -55,7 +59,82 @@ te::layout::Properties* te::layout::MapLayerChoiceModel::getProperties() const
   return m_properties;
 }
 
-void te::layout::MapLayerChoiceModel::updateProperties( te::layout::Properties* properties )
+void te::layout::MapLayerChoiceModel::updateProperties( te::layout::Properties* properties, bool notify )
 {
 
 }
+
+void te::layout::MapLayerChoiceModel::setPropertiesMaps( std::vector<te::layout::Properties*> properties )
+{
+  m_mapProperties = properties;
+  m_selectedLayers = searchLayers();
+}
+
+void te::layout::MapLayerChoiceModel::setLayers( std::list<te::map::AbstractLayerPtr> layers )
+{
+  m_layers = layers;
+}
+
+std::list<te::map::AbstractLayerPtr> te::layout::MapLayerChoiceModel::getLayers()
+{
+  return m_layers;
+}
+
+std::list<te::map::AbstractLayerPtr> te::layout::MapLayerChoiceModel::getSelectedLayers()
+{
+  return m_selectedLayers;
+}
+
+std::list<te::map::AbstractLayerPtr> te::layout::MapLayerChoiceModel::searchLayers()
+{
+  std::list<te::map::AbstractLayerPtr> layers;
+
+  if(m_mapProperties.empty())
+  {
+    return layers; 
+  }
+  
+  std::vector<te::layout::Properties*>::const_iterator itProp;
+  itProp = m_mapProperties.begin();
+
+  for( ; itProp != m_mapProperties.end() ; ++itProp)
+  {
+    Properties* prop = (*itProp);
+    Property pp = prop->contains("layers");
+
+    if(pp.isNull())
+    {
+      continue;
+    }
+
+    m_layerProperties.push_back(pp);
+
+    GenericVariant v = pp.getValue().toGenericVariant();
+
+    std::list<te::map::AbstractLayerPtr> currentLayers = v.toLayerList();
+    std::list<te::map::AbstractLayerPtr>::iterator itLayers = currentLayers.begin();
+    while(itLayers != currentLayers.end())
+    {
+      layers.push_back(*itLayers);
+      ++itLayers;
+    }
+  }
+
+  return layers;
+}
+
+std::vector<te::layout::Property> te::layout::MapLayerChoiceModel::getLayerProperties()
+{
+  return m_layerProperties;
+}
+
+void te::layout::MapLayerChoiceModel::refresh()
+{
+  m_selectedLayers = searchLayers();
+}
+
+
+
+
+
+

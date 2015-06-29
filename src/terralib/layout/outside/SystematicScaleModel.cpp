@@ -55,7 +55,7 @@ te::layout::Properties* te::layout::SystematicScaleModel::getProperties() const
   return m_properties;
 }
 
-void te::layout::SystematicScaleModel::updateProperties( te::layout::Properties* properties )
+void te::layout::SystematicScaleModel::updateProperties( te::layout::Properties* properties, bool notify )
 {
 
 }

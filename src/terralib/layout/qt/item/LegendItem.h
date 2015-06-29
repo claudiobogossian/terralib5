@@ -61,7 +61,7 @@ namespace te
           \param controller "Controller" part of MVC component
           \param o "Model" part of MVC component
         */ 
-        LegendItem( ItemController* controller, Observable* o );
+        LegendItem( ItemController* controller, Observable* o, bool invertedMatrix = false );
 
         /*!
           \brief Destructor
@@ -73,12 +73,7 @@ namespace te
          */
         virtual void updateObserver(ContextItem context);
 
-         /*!
-          \brief Mandatory implementation from QGraphicsObject
-         */
-        virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
-
-         /*!
+        /*!
           \brief Reimplemented from QGraphicsItem
          */
         virtual QVariant	itemChange ( GraphicsItemChange change, const QVariant & value );
@@ -87,6 +82,10 @@ namespace te
           \brief Reimplemented from QGraphicsItem
          */
         virtual void	mouseMoveEvent ( QGraphicsSceneMouseEvent * event );
+
+    protected:
+
+        virtual void drawItem(QPainter* painter);
 
     private:
 

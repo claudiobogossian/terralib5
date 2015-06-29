@@ -66,6 +66,11 @@ namespace te
             */
             virtual ~AbstractAction();
 
+            QAction* getAction()
+            {
+              return m_action;
+            }
+
           protected slots:
 
             /*!

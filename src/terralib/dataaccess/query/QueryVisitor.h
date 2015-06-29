@@ -59,6 +59,7 @@ namespace te
         //virtual void visit(const FromFunctionCall& visited) = 0;
         virtual void visit(const FromItem& visited) = 0;
         virtual void visit(const Function& visited) = 0;
+        virtual void visit(const Insert& visited) = 0;
         virtual void visit(const Join& visited) = 0;
         virtual void visit(const JoinCondition& visited) = 0;
         virtual void visit(const JoinConditionOn& visited) = 0;

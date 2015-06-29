@@ -52,6 +52,7 @@
 #include <QAction>
 #include <QPushButton>
 #include <QUndoStack>
+#include <QLineEdit>
 
 te::layout::ToolbarOutside::ToolbarOutside( OutsideController* controller, Observable* o ) :
   QToolBar(0),
@@ -78,6 +79,8 @@ te::layout::ToolbarOutside::ToolbarOutside( OutsideController* controller, Obser
   m_actionArrow("geometry_arrow"),
   m_actionLine("geometry_line"),
   m_actionPolygon("geometry_polygon"),
+  m_actionStar("geometry_star"),
+  m_actionSVG("geometry_svg"),
   m_actionViewPan("view_pan"),
   m_actionViewZoomIn("view_zoom_in"),
   m_actionViewZoomOut("view_zoom_out"),
@@ -253,9 +256,6 @@ QToolButton* te::layout::ToolbarOutside::createMapToolButton()
   QAction* actionDefaultMenu = createAction("Default Map Object", m_actionMapDefault, "layout-default-map", "", menu);
   menu->addAction(actionDefaultMenu);
   
-  QAction* actionGridMap = createAction("Grid Map", m_actionGridMap, "layout-grid", "", menu);
-  menu->addAction(actionGridMap);
-
   QAction* actionGridPlanar = createAction("Grid Planar", m_actionGridPlanar, "layout-grid", "", menu);
   menu->addAction(actionGridPlanar);
 
@@ -348,6 +348,12 @@ QToolButton* te::layout::ToolbarOutside::createGeometryToolButton()
 
   QAction* actionPolygon = createAction("Polygon Object", m_actionPolygon, "layout-polygon", "", menu); 
   menu->addAction(actionPolygon);
+
+  QAction* actionStar = createAction("Star Object", m_actionStar, "layout-star", "", menu); 
+  menu->addAction(actionStar);
+
+  QAction* actionSVG = createAction("SVG Object", m_actionSVG, "layout-svg", "", menu); 
+  menu->addAction(actionSVG);
 
   btnGeometry->setMenu(menu);
   btnGeometry->setPopupMode(QToolButton::MenuButtonPopup);
@@ -442,6 +448,8 @@ QComboBox* te::layout::ToolbarOutside::createSceneZoomCombobox()
   m_comboZoom = new QComboBox(this);
   m_comboZoom->setObjectName(m_actionSceneZoom.c_str());
 
+  m_comboZoom->setEditable(true);
+  m_comboZoom->setInsertPolicy(QComboBox::NoInsert);
   m_comboZoom->addItem("42%", 0.42);
   m_comboZoom->addItem("50%", 0.5);
   m_comboZoom->addItem("70%", 0.7);
@@ -450,10 +458,11 @@ QComboBox* te::layout::ToolbarOutside::createSceneZoomCombobox()
   m_comboZoom->addItem("200%", 2.);
   m_comboZoom->addItem("300%", 3.); 
 
-  connect(m_comboZoom, SIGNAL(currentIndexChanged(int)), this, SLOT(onSceneZoomCurrentIndexChanged(int)));
-  m_comboZoom->setCurrentIndex(1);
-  Context::getInstance().setDefaultZoomFactor(m_comboZoom->itemData(1).toDouble());
-  
+  connect(m_comboZoom, SIGNAL(activated(const QString &)), this, SLOT(onComboZoomActivated()));
+  connect(m_comboZoom->lineEdit(), SIGNAL(returnPressed()), this, SLOT(onComboZoomActivated()));
+
+  onZoomChanged(Context::getInstance().getZoom());
+
   m_actionComboZoom = this->addWidget(m_comboZoom);
   
   return m_comboZoom;
@@ -836,6 +845,10 @@ void te::layout::ToolbarOutside::onGeometryTriggered( QAction* action )
     changeAction(type->getModeCreatePolygon());
     Context::getInstance().setWait(type->getModeCoordWait());
   }
+  else if (action->objectName().compare(m_actionStar.c_str()) == 0) 
+  {
+	  changeAction(type->getModeCreateStar());
+  }
 }
 
 void te::layout::ToolbarOutside::onViewAreaTriggered( QAction* action )
@@ -912,17 +925,46 @@ void te::layout::ToolbarOutside::onLineIntersectionMouse( bool checked )
   emit changeContext(result);
 }
 
-void te::layout::ToolbarOutside::onSceneZoomCurrentIndexChanged( int index )
+void te::layout::ToolbarOutside::onComboZoomActivated()
 {
-  QVariant variant = m_comboZoom->itemData(index);
-  double zoomFactor = Context::getInstance().getZoomFactor();
-  if(variant.toDouble() != zoomFactor)
+  QString text = m_comboZoom->currentText();
+  if(text.isEmpty() == true)
   {
-    EnumModeType* type = Enums::getInstance().getEnumModeType();
-    Context::getInstance().setZoomFactor(variant.toDouble());
-    Context::getInstance().setOldZoomFactor(zoomFactor);
-    changeAction(type->getModeSceneZoom());
+    return;
   }
+
+  QString textCopy = text;
+  std::string cText = textCopy.toStdString();
+
+  textCopy.replace(QString("%"), QString(""));
+
+  std::string cText2 = textCopy.toStdString();
+
+  bool converted = false;
+  int newZoom = textCopy.toInt(&converted);
+  if(converted == false)
+  {
+    m_comboZoom->setEditText("");
+    return;
+  }
+
+  emit zoomChangedInComboBox(newZoom);
+}
+
+void te::layout::ToolbarOutside::onZoomChanged( int zoom )
+{
+  if(zoom <= 0)
+  {
+    return;
+  }
+
+  QString value = QString::number(zoom) + "%";
+  if(m_comboZoom->currentText() == value)
+  {
+    return;
+  }
+
+  m_comboZoom->setEditText(value);
 }
 
 void te::layout::ToolbarOutside::onBringToFrontClicked( bool checked )
@@ -939,9 +981,8 @@ void te::layout::ToolbarOutside::onSendToBackClicked( bool checked )
 
 void te::layout::ToolbarOutside::onRecomposeClicked( bool checked )
 {
-  EnumModeType* type = Enums::getInstance().getEnumModeType();
-  m_comboZoom->setCurrentIndex(1);
-  changeAction(type->getModeRecompose());
+  onZoomChanged(Context::getInstance().getDefaultZoom());
+  onComboZoomActivated();
 }
 
 void te::layout::ToolbarOutside::onTextToolsTriggered( QAction* action )
@@ -1109,15 +1150,6 @@ QAction* te::layout::ToolbarOutside::createAction( std::string text, std::string
 QComboBox* te::layout::ToolbarOutside::getComboBoxZoom()
 {
   return m_comboZoom;
-}
-
-void te::layout::ToolbarOutside::onChangeZoom( double factor )
-{
-  int index = m_comboZoom->findData(factor);
-  
-  if ( index != -1 ) { // -1 for not found
-    m_comboZoom->setCurrentIndex(index);
-  }
 }
 
 QToolButton* te::layout::ToolbarOutside::getMapToolButton()
@@ -1578,6 +1610,16 @@ QAction* te::layout::ToolbarOutside::getActionExitButton()
 QAction* te::layout::ToolbarOutside::getActionComboBoxZoom()
 {
   return m_actionComboZoom;
+}
+
+std::string te::layout::ToolbarOutside::getActionStar()
+{
+	return m_actionStar;
+}
+
+std::string te::layout::ToolbarOutside::getActionSVG()
+{
+  return m_actionSVG;
 }
 
 

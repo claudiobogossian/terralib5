@@ -94,7 +94,7 @@ namespace te
 
           \param properties
         */
-        virtual void updateProperties(te::layout::Properties* properties) = 0;
+        virtual void updateProperties(te::layout::Properties* properties, bool notify = true) = 0;
         
         /*!
           \brief Returns the model state just the public properties.
