@@ -52,7 +52,6 @@ namespace te
     class TERPEXPORT SegmenterRegionGrowingBaatzStrategy : public SegmenterStrategy
     {
       public :
-        
         /*!
           \class Parameters
           \brief Segmenter Parameters
@@ -60,7 +59,6 @@ namespace te
         class TERPEXPORT Parameters : public SegmenterStrategyParameters
         {
           public:
-
             /**
             * \name Global parameters
             */
@@ -110,8 +108,7 @@ namespace te
         SegmenterRegionGrowingBaatzStrategy();
         
         //overload
-        bool initialize( 
-          SegmenterStrategyParameters const* const strategyParams ) 
+        bool initialize( SegmenterStrategyParameters const* const strategyParams ) 
           throw( te::rp::Exception );
           
         //overload

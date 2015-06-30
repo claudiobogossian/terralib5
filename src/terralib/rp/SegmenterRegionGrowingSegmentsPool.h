@@ -135,7 +135,7 @@ namespace te
     template< typename FeatureDataTypeT >
     bool SegmenterRegionGrowingSegmentsPool< FeatureDataTypeT >::initialize(
       const SegmenterSegmentsBlock::SegmentIdDataType segsNumber,
-      const unsigned int featuresNumber)
+      const unsigned int featuresNumber )
     {
       if( ( segsNumber > m_segsNumber ) || ( featuresNumber != m_featuresNumber ) )
       {
