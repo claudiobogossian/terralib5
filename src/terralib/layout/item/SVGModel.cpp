@@ -34,38 +34,39 @@
 #include "../core/enum/Enums.h"
 
 te::layout::SVGModel::SVGModel():
-  m_enumPointType(0),
-  m_currentPointType(0),
-  m_shapeSize(4)
+  m_pathsName(0)
 {
   m_type = Enums::getInstance().getEnumObjectType()->getSVGItem();
   
-  m_pointColor = te::color::RGBAColor(0, 255, 0, 255);
-
-  m_box = te::gm::Envelope(0., 0., 10., 10.);
-
-  m_enumPointType = new EnumPointType();
-  m_currentPointType = m_enumPointType->getCircleType();
+  m_borderColor = te::color::RGBAColor(0, 0, 0, 255);
+  m_box = te::gm::Envelope(0., 0., 20., 20.);
 }
 
 te::layout::SVGModel::~SVGModel()
 {
-  if(m_enumPointType)
-  {
-    delete m_enumPointType;
-    m_enumPointType = 0;
-  }
+  
 }
 
 te::layout::Properties* te::layout::SVGModel::getProperties() const
 {
   ItemModelObservable::getProperties();
 
-  Property pro_pointName = pointProperty();
-  if(!pro_pointName.isNull())
-  {
-    m_properties->addProperty(pro_pointName);
-  }
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+
+  if(!dataType)
+    return m_properties;
+
+  std::string name = "Choice";
+
+  Property pro_svgchoice(m_hashCode);
+  pro_svgchoice.setName("sgvChoice");
+  pro_svgchoice.setValue(name, dataType->getDataTypeSVGView());
+  pro_svgchoice.setMenu(true);
+  
+  Property pro_svgPaths = getSVGPathsProperty();
+  pro_svgchoice.addSubProperty(pro_svgPaths);
+  
+  m_properties->addProperty(pro_svgchoice);
 
   return m_properties;
 }
@@ -74,86 +75,39 @@ void te::layout::SVGModel::updateProperties( te::layout::Properties* properties,
 {
   ItemModelObservable::updateProperties(properties, false);
 
-  Properties* vectorProps = const_cast<Properties*>(properties);
+  Properties* vectorProps = const_cast<Properties*>(properties);  
 
-  Property pro_pointName = vectorProps->contains("point_type");
-
-  if(!pro_pointName.isNull())
-  {
-    std::string label = pro_pointName.getOptionByCurrentChoice().toString();
-    EnumType* enumType = m_enumPointType->searchLabel(label);
-    if(enumType)
-    {
-      m_currentPointType = enumType;
-    }
-  }
+  //updateVisitors();
 
   if(notify)
   {
     ContextItem context;
     notifyAll(context);
-  }
+  }  
 }
 
-te::layout::EnumPointType* te::layout::SVGModel::getEnumPointType()
-{
-  return m_enumPointType;
-}
 
-te::layout::EnumType* te::layout::SVGModel::getCurrentPointType()
+te::layout::Property te::layout::SVGModel::getSVGPathsProperty() const
 {
-  return m_currentPointType;
-}
-
-te::layout::Property te::layout::SVGModel::pointProperty() const
-{
-  Property pro_pointName(m_hashCode);
-
-  if(!m_currentPointType)
-    return pro_pointName;
+  Property prop;
+  prop.setName("paths");
 
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
 
-  if(!dataType)
-    return pro_pointName;
+  GenericVariant gv;
 
-  pro_pointName.setName("point_type");
-  pro_pointName.setLabel("graphic type");
-  pro_pointName.setValue(m_currentPointType->getLabel(), dataType->getDataTypeStringList());
+  gv.setVector(m_pathsName, dataType->getDataTypeStringVector());
 
-  Variant v;
-  v.setValue(m_currentPointType->getLabel(), dataType->getDataTypeString());
-  pro_pointName.addOption(v);
-  pro_pointName.setOptionChoice(v);
+  prop.setValue(gv, dataType->getDataTypeGenericVariant());
 
-  for(int i = 0 ; i < m_enumPointType->size() ; ++i)
-  {
-    EnumType* enumType = m_enumPointType->getEnum(i);
-
-    if(enumType == m_enumPointType->getNoneType() || enumType == m_currentPointType)
-      continue;
-
-    Variant v;
-    v.setValue(enumType->getLabel(), dataType->getDataTypeString());
-    pro_pointName.addOption(v);
-  }
-
-  return pro_pointName;
+  prop.setEditable(false);
+  prop.setVisible(false);
+  return prop;
 }
 
-double te::layout::SVGModel::getShapeSize()
+void te::layout::SVGModel::setPathsName( std::vector<std::string> pathVector )
 {
-  return m_shapeSize;
-}
-
-te::color::RGBAColor te::layout::SVGModel::getPointColor()
-{
-  return m_pointColor;
-}
-
-void te::layout::SVGModel::setPointColor( te::color::RGBAColor color )
-{
-  m_pointColor = color;
+  m_pathsName = pathVector;
 }
 
 

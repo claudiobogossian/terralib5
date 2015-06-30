@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file SVGViewController.h
+  \file SVGDialogController.h
    
   \brief 
 
@@ -26,15 +26,15 @@
 */
 
 // TerraLib
-#include "SVGViewController.h"
+#include "SVGDialogController.h"
 
-te::layout::SVGViewController::SVGViewController( Observable* o ) :
+te::layout::SVGDialogController::SVGDialogController( Observable* o ) :
 	OutsideController(o)
 {
   
 }
 
-te::layout::SVGViewController::~SVGViewController()
+te::layout::SVGDialogController::~SVGDialogController()
 {
 
 }

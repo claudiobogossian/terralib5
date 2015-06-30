@@ -18,15 +18,15 @@
  */
 
 /*!
-  \file SVGViewModel.h
+  \file SVGDialogModel.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_SVGVIEW_CHOICE_MODEL_H 
-#define __TERRALIB_LAYOUT_INTERNAL_SVGVIEW_CHOICE_MODEL_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_SVG_DIALOG_MODEL_H 
+#define __TERRALIB_LAYOUT_INTERNAL_SVG_DIALOG_MODEL_H
 
 // TerraLib
 #include "../core/pattern/mvc/OutsideModelObservable.h"
@@ -44,38 +44,25 @@ namespace te
 {
   namespace layout
   {
-    class TELAYOUTEXPORT SVGViewModel : public OutsideModelObservable
+    class TELAYOUTEXPORT SVGDialogModel : public OutsideModelObservable
     {
     public:
 
-      SVGViewModel();
+      SVGDialogModel();
 
-      virtual ~SVGViewModel();
+      virtual ~SVGDialogModel();
 
       virtual void updateProperties(te::layout::Properties* properties, bool notify = true);
 
       virtual Properties* getProperties() const;
 
-      virtual void setPropertiesMaps(std::vector<te::layout::Properties*> properties);
+      virtual void setPathsProperty(Property property);
 
-      virtual void setLayers(std::list<te::map::AbstractLayerPtr> layers);
-
-      virtual std::list<te::map::AbstractLayerPtr> getLayers();
-
-	    virtual std::list<te::map::AbstractLayerPtr> getSelectedLayers();
-
-      virtual std::vector<Property> getLayerProperties();
-
-      virtual void refresh();
+      virtual std::vector<std::string> getPaths();
 	  
     protected:
 
-	    virtual std::list<te::map::AbstractLayerPtr> searchLayers();
-
-      std::list<te::map::AbstractLayerPtr> m_layers;
-      std::vector<te::layout::Properties*> m_mapProperties;
-	    std::list<te::map::AbstractLayerPtr> m_selectedLayers;
-      std::vector<Property> m_layerProperties;
+      Property m_svgProperty;
     };
   }
 }

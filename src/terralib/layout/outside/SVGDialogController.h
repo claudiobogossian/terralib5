@@ -18,15 +18,15 @@
  */
 
 /*!
-  \file SVGViewController.h
+  \file SVGDialogController.h
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_SVGVIEW_CONTROLLER_H 
-#define __TERRALIB_LAYOUT_INTERNAL_SVGVIEW_CONTROLLER_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_SVG_DIALOG_CONTROLLER_H 
+#define __TERRALIB_LAYOUT_INTERNAL_SVG_DIALOG_CONTROLLER_H
 
 // TerraLib
 #include "../core/pattern/mvc/OutsideController.h"
@@ -37,13 +37,13 @@ namespace te
 {
   namespace layout
   {
-    class TELAYOUTEXPORT SVGViewController : public OutsideController
+    class TELAYOUTEXPORT SVGDialogController : public OutsideController
     {
       public:
 
-	      SVGViewController( Observable* o );
+	      SVGDialogController( Observable* o );
 
-	      virtual ~SVGViewController();
+	      virtual ~SVGDialogController();
     };
   }
 }

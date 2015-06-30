@@ -36,6 +36,7 @@
 #include "../../../common/STLUtils.h"
 #include "../../item/PointModel.h"
 #include "../../core/enum/EnumPointType.h"
+#include "../../item/SVGModel.h"
 
 // STL
 #include <cmath>
@@ -66,48 +67,10 @@ void te::layout::SVGItem::paint( QPainter * painter, const QStyleOptionGraphicsI
     return;
   }
 
-  if(m_resizeMode)
-  {
-    ObjectItem::paint(painter, option, widget);
-    return;
-  }
-
   drawBackground(painter);
 
-  PointModel* model = dynamic_cast<PointModel*>(m_model);
-
-  if(model)
-  {
-    EnumPointType* enumScale = model->getEnumPointType();
-
-    /*if(model->getCurrentPointType() == enumScale->getStarType())
-    {
-      drawStar(painter);
-    }
-    if(model->getCurrentPointType() == enumScale->getCircleType())
-    {
-      drawCircle(painter);
-    }
-    if(model->getCurrentPointType() == enumScale->getXType())
-    {
-      drawX(painter);
-    }
-    if(model->getCurrentPointType() == enumScale->getSquareType())
-    {
-      drawSquare(painter);
-    }
-    if(model->getCurrentPointType() == enumScale->getRhombusType())
-    {
-      drawRhombus(painter);
-    }
-    if(model->getCurrentPointType() == enumScale->getCrossType())
-    {
-      drawCross(painter);
-    }*/
-  }
-
-  drawBorder(painter);
-
+  drawSVG(painter);
+  
   //Draw Selection
   if (option->state & QStyle::State_Selected)
   {
@@ -115,9 +78,9 @@ void te::layout::SVGItem::paint( QPainter * painter, const QStyleOptionGraphicsI
   }
 }
 
-/*void te::layout::PointItem::drawStar( QPainter * painter )
+void te::layout::SVGItem::drawSVG( QPainter * painter )
 {
-  PointModel* model = dynamic_cast<PointModel*>(m_model);
+  SVGModel* model = dynamic_cast<SVGModel*>(m_model);
   if(!model)
   {
     return;
@@ -125,248 +88,10 @@ void te::layout::SVGItem::paint( QPainter * painter, const QStyleOptionGraphicsI
 
   painter->save();
 
-  double halfW = boundingRect().width() / 4.;
-
-  double w = boundingRect().width() / 2.;
+  painter->drawRect(boundingRect());
+  painter->drawText(QPointF(boundingRect().center().x(), boundingRect().center().y()), "SVG Item");
   
-  QPainterPath rhombus_path;
-
-  QPolygonF poly;
-  qreal const c = halfW;
-  qreal const d = w;
-  bool inner = true;
-  QPointF pUnion;
-  for ( qreal i = 0 ; i < 2*3.14; i += 3.14/5.0, inner=!inner ) {
-    qreal const f = inner ? c : d;
-    poly << QPointF( f * std::cos(i), f * std::sin(i) );
-    if(i == 0)
-    {
-      pUnion = QPointF( f * std::cos(i), f * std::sin(i) );
-    }
-  }
-  poly << pUnion;
-  poly.translate(boundingRect().center());
-
-  rhombus_path.addPolygon(poly);
-
-  te::color::RGBAColor clrPoint = model->getPointColor();
-
-  QColor pointColor;
-  pointColor.setRed(clrPoint.getRed());
-  pointColor.setGreen(clrPoint.getGreen());
-  pointColor.setBlue(clrPoint.getBlue());
-  pointColor.setAlpha(clrPoint.getAlpha());
-
-  QPen pn(pointColor, 0, Qt::SolidLine);
-  painter->setPen(pn);
-
-  painter->setBrush(pointColor);
-  painter->drawPath(rhombus_path);
-
   painter->restore();
 }
-
-void te::layout::PointItem::drawCircle( QPainter * painter )
-{
-  PointModel* model = dynamic_cast<PointModel*>(m_model);
-  if(!model)
-  {
-    return;
-  }
-
-  painter->save();
-
-  double halfW = boundingRect().width() / 4.;
-  double halfH = boundingRect().height() / 4.;
-
-  double x = boundingRect().center().x() - halfW;
-  double y = boundingRect().center().y() - halfH;
-  double w = boundingRect().width() / 2.;
-  double h = boundingRect().height() / 2.;
-
-  QRectF pointRect(x, y, w, h);
-
-  QPainterPath circle_path;
-  circle_path.addEllipse(pointRect);
-
-  te::color::RGBAColor clrPoint = model->getPointColor();
-
-  QColor pointColor;
-  pointColor.setRed(clrPoint.getRed());
-  pointColor.setGreen(clrPoint.getGreen());
-  pointColor.setBlue(clrPoint.getBlue());
-  pointColor.setAlpha(clrPoint.getAlpha());
-
-  QPen pn(pointColor, 0, Qt::SolidLine);
-  painter->setPen(pn);
-
-  painter->setBrush(pointColor);
-  painter->drawPath(circle_path);
-
-  painter->restore();
-}
-
-void te::layout::PointItem::drawX( QPainter * painter )
-{
-  PointModel* model = dynamic_cast<PointModel*>(m_model);
-  if(!model)
-  {
-    return;
-  }
-
-  painter->save();
-  
-  double centerX = boundingRect().center().x();
-  double centerY = boundingRect().center().y();
-
-  double halfW = boundingRect().width() / 4.;
-  double halfH = boundingRect().height() / 4.;
-    
-  QPainterPath rect_path;
-
-  rect_path.moveTo(halfW, centerY + halfH);
-  rect_path.lineTo(centerX + halfW, halfH);
-  rect_path.moveTo(halfW, centerY - halfH);
-  rect_path.lineTo(centerX + halfW, centerY + halfH);
-  
-  te::color::RGBAColor clrPoint = model->getPointColor();
-
-  QColor pointColor;
-  pointColor.setRed(clrPoint.getRed());
-  pointColor.setGreen(clrPoint.getGreen());
-  pointColor.setBlue(clrPoint.getBlue());
-  pointColor.setAlpha(clrPoint.getAlpha());
-
-  QPen pn(pointColor, 1, Qt::SolidLine);
-  painter->setPen(pn);
-
-  painter->setBrush(pointColor);
-  painter->drawPath(rect_path);
-
-  painter->restore();
-}
-
-void te::layout::PointItem::drawSquare( QPainter * painter )
-{
-  PointModel* model = dynamic_cast<PointModel*>(m_model);
-  if(!model)
-  {
-    return;
-  }
-
-  painter->save();
-  
-  double halfW = boundingRect().width() / 4.;
-  double halfH = boundingRect().height() / 4.;
-
-  double x = boundingRect().center().x() - halfW;
-  double y = boundingRect().center().y() - halfH;
-  double w = boundingRect().width() / 2.;
-  double h = boundingRect().height() / 2.;
-
-  QRectF pointRect(x, y, w, h);
-
-  QPainterPath rect_path;
-  rect_path.addRect(pointRect);
-
-  te::color::RGBAColor clrPoint = model->getPointColor();
-
-  QColor pointColor;
-  pointColor.setRed(clrPoint.getRed());
-  pointColor.setGreen(clrPoint.getGreen());
-  pointColor.setBlue(clrPoint.getBlue());
-  pointColor.setAlpha(clrPoint.getAlpha());
-
-  QPen pn(pointColor, 0, Qt::SolidLine);
-  painter->setPen(pn);
-
-  painter->setBrush(pointColor);
-  painter->drawPath(rect_path);
-
-  painter->restore();
-}
-
-void te::layout::PointItem::drawRhombus( QPainter * painter )
-{
-  PointModel* model = dynamic_cast<PointModel*>(m_model);
-  if(!model)
-  {
-    return;
-  }
-
-  painter->save();
-  
-  double centerX = boundingRect().center().x();
-  double centerY = boundingRect().center().y();
-
-  double halfW = boundingRect().width() / 4.;
-  double halfH = boundingRect().height() / 4.;
-  
-  QPolygonF poly;
-  poly.push_back(QPointF(centerX, centerY + halfH));
-  poly.push_back(QPointF(centerX + halfW, centerY));
-  poly.push_back(QPointF(centerX, centerY - halfH));
-  poly.push_back(QPointF(centerX - halfW, centerY));
-  poly.push_back(QPointF(centerX, centerY + halfH));
-
-  QPainterPath rhombus_path;
-  rhombus_path.addPolygon(poly);
-
-  te::color::RGBAColor clrPoint = model->getPointColor();
-
-  QColor pointColor;
-  pointColor.setRed(clrPoint.getRed());
-  pointColor.setGreen(clrPoint.getGreen());
-  pointColor.setBlue(clrPoint.getBlue());
-  pointColor.setAlpha(clrPoint.getAlpha());
-
-  QPen pn(pointColor, 0, Qt::SolidLine);
-  painter->setPen(pn);
-
-  painter->setBrush(pointColor);
-  painter->drawPath(rhombus_path);
-
-  painter->restore();
-}
-
-void te::layout::PointItem::drawCross( QPainter * painter )
-{
-  PointModel* model = dynamic_cast<PointModel*>(m_model);
-  if(!model)
-  {
-    return;
-  }
-
-  painter->save();
-  
-  double centerX = boundingRect().center().x();
-  double centerY = boundingRect().center().y();
-  
-  double halfW = boundingRect().width() / 4.;
-  double halfH = boundingRect().height() / 4.;
-    
-  te::color::RGBAColor clrPoint = model->getPointColor();
-
-  QPainterPath painterCross;
-
-  QColor pointColor;
-  pointColor.setRed(clrPoint.getRed());
-  pointColor.setGreen(clrPoint.getGreen());
-  pointColor.setBlue(clrPoint.getBlue());
-  pointColor.setAlpha(clrPoint.getAlpha());
-
-  QPen pn(pointColor, 0, Qt::SolidLine);
-  painter->setPen(pn);
-
-  painter->setBrush(pointColor);
-  
-  painterCross.moveTo(centerX - halfW, centerY);
-  painterCross.lineTo(centerX + halfW, centerY);
-  painterCross.moveTo(centerX, centerY + halfH);
-  painterCross.lineTo(centerX, centerY - halfH);
-  
-  painter->drawPath(painterCross);
-  painter->restore();
-}*/
 
 
