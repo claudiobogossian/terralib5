@@ -328,9 +328,9 @@ namespace te
         /*!
           \brief It is called immediately when the zoom factor is changed in the Context.
 
-          \param currentZoomFactor current zoom factor of the layout module
+          \param zoom current zoom factor of the layout module
          */
-        virtual void onChangeZoomFactor(double currentFactor);
+        virtual void onChangeZoomFactor(int zoom);
         
       signals:
 

@@ -64,6 +64,11 @@
 #include <QApplication>
 #include <QByteArray>
 
+// QtPropertyBrowser
+#include <QtPropertyBrowser/QtStringPropertyManager>
+#include <QtPropertyBrowser/qteditorfactory.h>
+#include <QtPropertyBrowser/QtProperty>
+
 te::layout::DialogPropertiesBrowser::DialogPropertiesBrowser(QObject* parent) :
   AbstractPropertiesBrowser(parent),
   m_strDlgManager(0),

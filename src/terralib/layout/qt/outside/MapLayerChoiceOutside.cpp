@@ -120,10 +120,6 @@ void te::layout::MapLayerChoiceOutside::onOkPushButtonClicked()
   
   m_layersOnTheRight = m_widget->getOutputValues();
 
-  if(m_layersOnTheRight.empty())
-  {  
-    return;
-  }
 
   std::list<te::map::AbstractLayerPtr> layerListMap = model->getLayers();
 
@@ -156,6 +152,8 @@ void te::layout::MapLayerChoiceOutside::onOkPushButtonClicked()
   m_layersSelected.clear();
 
   emit updateProperty(prop);
+
+  accept();
 }
 
 void te::layout::MapLayerChoiceOutside::onCancelPushButtonClicked()

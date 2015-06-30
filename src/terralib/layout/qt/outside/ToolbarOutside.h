@@ -310,7 +310,9 @@ namespace te
 
       virtual void onLineIntersectionMouse(bool checked);
 
-      virtual void onSceneZoomCurrentIndexChanged(int index);
+      virtual void onComboZoomActivated();
+
+      virtual void onZoomChanged(int factor);
 
       virtual void onBringToFrontClicked(bool checked);
 
@@ -346,10 +348,8 @@ namespace te
 
       void changeContext(bool change);
 
-    protected slots:
+      void zoomChangedInComboBox(int zoomFactor);
 
-      virtual void onChangeZoom(double factor);
-      
     protected:
 
       virtual QToolButton* createMapToolButton();

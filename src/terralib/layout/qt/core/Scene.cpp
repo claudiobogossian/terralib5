@@ -791,7 +791,7 @@ void te::layout::Scene::updateSelectedItemsPositions()
   }
 }
 
-void te::layout::Scene::onChangeZoomFactor( double currentFactor )
+void te::layout::Scene::onChangeZoomFactor( int zoom )
 {
   contextUpdated();
 }

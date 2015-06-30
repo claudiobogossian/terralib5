@@ -42,9 +42,9 @@
 #include <QObject>
 
 // QtPropertyBrowser
-#include <QtPropertyBrowser/QtStringPropertyManager>
-#include <QtPropertyBrowser/qteditorfactory.h>
-#include <QtPropertyBrowser/QtProperty>
+class QtStringPropertyManager;
+class QtDlgEditorFactory;
+class QtProperty;
 
 class QGraphicsItem;
 class QWidget;

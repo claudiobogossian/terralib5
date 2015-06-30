@@ -53,6 +53,9 @@
 #include <QToolButton>
 #include <QLabel>
 #include <QUndoCommand>
+#include <QLineEdit>
+
+#include <QtPropertyBrowser/QtTreePropertyBrowser>
 
 te::layout::PropertiesOutside::PropertiesOutside( OutsideController* controller, Observable* o, PropertyBrowser* propertyBrowser ) :
 	QWidget(0),
@@ -199,8 +202,8 @@ void te::layout::PropertiesOutside::itemsSelected(QList<QGraphicsItem*> graphics
   
   foreach( Property prop, props->getProperties()) 
   {
-    if(prop.isMenu() || !prop.isVisible())
-      continue;
+    //if(prop.isMenu() || !prop.isVisible())
+    //  continue;
 
     m_propUtils->checkDynamicProperty(prop, allItems);
     m_layoutPropertyBrowser->addProperty(prop);

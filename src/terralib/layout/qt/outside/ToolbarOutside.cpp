@@ -52,6 +52,7 @@
 #include <QAction>
 #include <QPushButton>
 #include <QUndoStack>
+#include <QLineEdit>
 
 te::layout::ToolbarOutside::ToolbarOutside( OutsideController* controller, Observable* o ) :
   QToolBar(0),
@@ -447,6 +448,8 @@ QComboBox* te::layout::ToolbarOutside::createSceneZoomCombobox()
   m_comboZoom = new QComboBox(this);
   m_comboZoom->setObjectName(m_actionSceneZoom.c_str());
 
+  m_comboZoom->setEditable(true);
+  m_comboZoom->setInsertPolicy(QComboBox::NoInsert);
   m_comboZoom->addItem("42%", 0.42);
   m_comboZoom->addItem("50%", 0.5);
   m_comboZoom->addItem("70%", 0.7);
@@ -455,10 +458,11 @@ QComboBox* te::layout::ToolbarOutside::createSceneZoomCombobox()
   m_comboZoom->addItem("200%", 2.);
   m_comboZoom->addItem("300%", 3.); 
 
-  connect(m_comboZoom, SIGNAL(currentIndexChanged(int)), this, SLOT(onSceneZoomCurrentIndexChanged(int)));
-  m_comboZoom->setCurrentIndex(1);
-  Context::getInstance().setDefaultZoomFactor(m_comboZoom->itemData(1).toDouble());
-  
+  connect(m_comboZoom, SIGNAL(activated(const QString &)), this, SLOT(onComboZoomActivated()));
+  connect(m_comboZoom->lineEdit(), SIGNAL(returnPressed()), this, SLOT(onComboZoomActivated()));
+
+  onZoomChanged(Context::getInstance().getZoom());
+
   m_actionComboZoom = this->addWidget(m_comboZoom);
   
   return m_comboZoom;
@@ -925,17 +929,46 @@ void te::layout::ToolbarOutside::onLineIntersectionMouse( bool checked )
   emit changeContext(result);
 }
 
-void te::layout::ToolbarOutside::onSceneZoomCurrentIndexChanged( int index )
+void te::layout::ToolbarOutside::onComboZoomActivated()
 {
-  QVariant variant = m_comboZoom->itemData(index);
-  double zoomFactor = Context::getInstance().getZoomFactor();
-  if(variant.toDouble() != zoomFactor)
+  QString text = m_comboZoom->currentText();
+  if(text.isEmpty() == true)
   {
-    EnumModeType* type = Enums::getInstance().getEnumModeType();
-    Context::getInstance().setZoomFactor(variant.toDouble());
-    Context::getInstance().setOldZoomFactor(zoomFactor);
-    changeAction(type->getModeSceneZoom());
+    return;
   }
+
+  QString textCopy = text;
+  std::string cText = textCopy.toStdString();
+
+  textCopy.replace(QString("%"), QString(""));
+
+  std::string cText2 = textCopy.toStdString();
+
+  bool converted = false;
+  int newZoom = textCopy.toInt(&converted);
+  if(converted == false)
+  {
+    m_comboZoom->setEditText("");
+    return;
+  }
+
+  emit zoomChangedInComboBox(newZoom);
+}
+
+void te::layout::ToolbarOutside::onZoomChanged( int zoom )
+{
+  if(zoom <= 0)
+  {
+    return;
+  }
+
+  QString value = QString::number(zoom) + "%";
+  if(m_comboZoom->currentText() == value)
+  {
+    return;
+  }
+
+  m_comboZoom->setEditText(value);
 }
 
 void te::layout::ToolbarOutside::onBringToFrontClicked( bool checked )
@@ -952,16 +985,8 @@ void te::layout::ToolbarOutside::onSendToBackClicked( bool checked )
 
 void te::layout::ToolbarOutside::onRecomposeClicked( bool checked )
 {
-  double zoomFactor = Context::getInstance().getZoomFactor();
-  Context::getInstance().setOldZoomFactor(zoomFactor);
-
-  EnumModeType* type = Enums::getInstance().getEnumModeType();
-  m_comboZoom->setCurrentIndex(1);
-
-  double currentZoom = m_comboZoom->itemData(1).toDouble();
-
-  Context::getInstance().setZoomFactor(currentZoom);
-  changeAction(type->getModeRecompose());
+  onZoomChanged(Context::getInstance().getDefaultZoom());
+  onComboZoomActivated();
 }
 
 void te::layout::ToolbarOutside::onTextToolsTriggered( QAction* action )
@@ -1129,15 +1154,6 @@ QAction* te::layout::ToolbarOutside::createAction( std::string text, std::string
 QComboBox* te::layout::ToolbarOutside::getComboBoxZoom()
 {
   return m_comboZoom;
-}
-
-void te::layout::ToolbarOutside::onChangeZoom( double factor )
-{
-  int index = m_comboZoom->findData(factor);
-  
-  if ( index != -1 ) { // -1 for not found
-    m_comboZoom->setCurrentIndex(index);
-  }
 }
 
 QToolButton* te::layout::ToolbarOutside::getMapToolButton()

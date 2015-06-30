@@ -108,8 +108,8 @@ void te::layout::PrintScene::printPaper( QPrinter* printer )
   double dpiX = Context::getInstance().getDpiX();
   double dpiY = Context::getInstance().getDpiY();
 
-  double zoomFactor = Context::getInstance().getZoomFactor();
-  Context::getInstance().setZoomFactor(1.);
+  int zoom = Context::getInstance().getZoom();
+  Context::getInstance().setZoom(100);
   Context::getInstance().setDpiX(printer->logicalDpiX());
   Context::getInstance().setDpiY(printer->logicalDpiY());
 
@@ -117,7 +117,7 @@ void te::layout::PrintScene::printPaper( QPrinter* printer )
 
   renderScene(&newPainter, printer);
 
-  Context::getInstance().setZoomFactor(zoomFactor);
+  Context::getInstance().setZoom(zoom);
   Context::getInstance().setDpiX(dpiX);
   Context::getInstance().setDpiY(dpiY);
   

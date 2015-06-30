@@ -27,7 +27,8 @@
 #include "SegmenterDialog.h"
 
 #include "../../../rp/Segmenter.h"
-#include "../../../rp/SegmenterRegionGrowingStrategy.h"
+#include "../../../rp/SegmenterRegionGrowingBaatzStrategy.h"
+#include "../../../rp/SegmenterRegionGrowingMeanStrategy.h"
 #include <ui_SegmenterForm.h>
 
 #include <QMessageBox>
@@ -116,9 +117,20 @@ void te::qt::widgets::SegmenterDialog::on_okPushButton_clicked()
       
       algoInputParams.m_strategyName = m_uiPtr->m_segmenterStrategyComboBox->currentText().toStdString();
       
-      if( algoInputParams.m_strategyName == "RegionGrowing" )
+      if( algoInputParams.m_strategyName == "RegionGrowingMean" )
       {
-        te::rp::SegmenterRegionGrowingStrategy::Parameters strategyParameters;
+        te::rp::SegmenterRegionGrowingMeanStrategy::Parameters strategyParameters;
+        strategyParameters.m_minSegmentSize = 
+          m_uiPtr->m_minimumSegmentSizeRGLineEdit->text().toUInt();
+        strategyParameters.m_segmentsSimilarityThreshold = 
+          m_uiPtr->m_segmentsSimilarityThresholdRGLineEdit->text().toDouble();
+        algoInputParams.setSegStrategyParams( strategyParameters );
+      }
+      
+
+      if( algoInputParams.m_strategyName == "RegionGrowingBaatz" )
+      {
+        te::rp::SegmenterRegionGrowingBaatzStrategy::Parameters strategyParameters;
         strategyParameters.m_minSegmentSize = 
           m_uiPtr->m_minimumSegmentSizeRGLineEdit->text().toUInt();
         strategyParameters.m_segmentsSimilarityThreshold = 
