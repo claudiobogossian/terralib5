@@ -32,21 +32,23 @@
 #include "../core/property/SharedProperties.h"
 #include "../core/enum/Enums.h"
 #include "../core/pattern/singleton/Context.h"
+#include "../core/enum/Enums.h"
 
 // STL
 #include <string>
 #include <sstream> // std::stringstream
+#include "../core/enum/EnumDataType.h"
 
 te::layout::TextModel::TextModel() :
-  m_text("")
+  m_text("")	
 {
   m_type = Enums::getInstance().getEnumObjectType()->getTextItem();
 
   m_box = te::gm::Envelope(0., 0., 40., 20.);
 
   m_font.setPointSize(12);
-
-  m_resizable = false;
+	m_fontColor.setColor(0,0,0);
+	m_resizable = false;
   m_border = false;
 }
 
@@ -64,14 +66,19 @@ te::layout::Properties* te::layout::TextModel::getProperties() const
   Property pro_font(m_hashCode);
   pro_font.setName("Font");
   pro_font.setValue(m_font, dataType->getDataTypeFont());
-  pro_font.setMenu(true);
   m_properties->addProperty(pro_font);
 
   Property pro_text(m_hashCode);
   pro_text.setName("Text");
   pro_text.setValue(m_text, dataType->getDataTypeString());
-  pro_text.setVisible(false);
+  pro_font.setVisible(false);
   m_properties->addProperty(pro_text);
+
+	Property pro_fontColor(m_hashCode);
+	pro_fontColor.setName("Font Color");
+	pro_fontColor.setValue(m_fontColor, dataType->getDataTypeColor());
+	pro_font.setVisible(false);
+	m_properties->addProperty(pro_fontColor);
 
   return m_properties;
 }
@@ -94,13 +101,20 @@ void te::layout::TextModel::updateProperties( te::layout::Properties* properties
   if(!pro_font.isNull())
   {
     m_font = pro_font.getValue().toFont();
-  }
+	}
 
-  if(notify)
-  {
-    ContextItem context;
-    notifyAll(context);
-  }
+	Property pro_fontColor = vectorProps->contains("Font Color");
+
+	if(!pro_fontColor.isNull())
+	{
+		m_fontColor = pro_fontColor.getValue().toColor();
+	}
+
+	if(notify)
+	{
+		ContextItem context;
+		notifyAll(context);
+	}
 }
 
 void te::layout::TextModel::setText( std::string txt )
@@ -113,12 +127,24 @@ std::string te::layout::TextModel::getText()
   return m_text;
 }
 
+void te::layout::TextModel::setFont( Font ft )
+{
+	m_font = ft;
+}
+
 te::layout::Font te::layout::TextModel::getFont()
 {
   return m_font;
 }
 
-void te::layout::TextModel::setFont( Font ft )
+void te::layout::TextModel::setFontColor(te::color::RGBAColor clft)
 {
-  m_font = ft;
+	m_fontColor = clft;
 }
+
+te::color::RGBAColor te::layout::TextModel::getFontColor()
+{
+	return m_fontColor;
+}
+
+

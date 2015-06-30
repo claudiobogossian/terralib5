@@ -54,19 +54,22 @@
 #include <QKeyEvent>
 #include <QGraphicsView>
 #include <QList>
+#include "terralib/qt/widgets/propertybrowser/AbstractPropertyManager.h"
+#include "terralib/se/Utils.h"
+#include "terralib/qt/widgets/se/BasicFillPropertyItem.h"
+
 
 te::layout::TextItem::TextItem( ItemController* controller, Observable* o ) :
   ParentItem<QGraphicsTextItem>(controller, o, true),
   m_editable(false),
   m_move(false)
-{    
+{  
   m_nameClass = std::string(this->metaObject()->className());
   
   //If enabled is true, this item will accept hover events
   setAcceptHoverEvents(false);
   
   m_backgroundColor.setAlpha(0);
-
   init();
 }
 
@@ -81,23 +84,27 @@ te::layout::TextItem::~TextItem()
 void te::layout::TextItem::init()
 {
   QFont ft("Arial", 12);
+	m_fontColor.setRgb(0,0,0);
+	setDefaultTextColor(m_fontColor);
   document()->setDefaultFont(ft);
-
+	
   std::string name = m_model->getName();
   TextModel* model = dynamic_cast<TextModel*>(m_model);
+
   if(model)
   {
     if(model->getText().compare("") == 0)
     {
       model->setText(name);
     }
-
+		
     QTextCursor cursor(document());
     cursor.movePosition(QTextCursor::Start);
     cursor.insertText(name.c_str());
     
     std::string txt = model->getText();
     document()->setPlainText(txt.c_str());
+
   }
 
   resetEdit();
@@ -405,6 +412,15 @@ void te::layout::TextItem::updateTextConfig()
   m_backgroundColor.setBlue(clrBack.getBlue());
   m_backgroundColor.setAlpha(clrBack.getAlpha());
 
+
+	te::color::RGBAColor clrText = model->getFontColor();
+	m_fontColor.setRed(clrText.getRed());
+	m_fontColor.setGreen(clrText.getGreen());
+	m_fontColor.setBlue(clrText.getBlue());
+	m_fontColor.setAlpha(clrText.getAlpha());
+	
+	setDefaultTextColor(m_fontColor);
+
   Font ft = model->getFont();
 
   QFont qft;
@@ -423,5 +439,6 @@ QRectF te::layout::TextItem::boundingRect() const
 {
   return QGraphicsTextItem::boundingRect();
 }
+
 
 

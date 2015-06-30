@@ -44,6 +44,8 @@
 #include <QVariant>
 #include <QPointF>
 #include <QRectF>
+#include "QtPropertyBrowser/qtpropertybrowser.h"
+#include "terralib/se/Font.h"
 
 class QTextTable;
 class QGraphicsSceneMouseEvent;
@@ -168,13 +170,14 @@ namespace te
         virtual void resetEdit();
 
         virtual void updateTextConfig();
-
-        QColor         m_backgroundColor;
+				
+				QColor         m_backgroundColor;
+				QColor				 m_fontColor;
         bool           m_editable;
         QTextTable*    m_table;
         bool           m_move;
+				bool					 m_update;
     };
   }
 }
-
 #endif

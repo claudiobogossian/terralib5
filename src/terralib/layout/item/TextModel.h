@@ -41,6 +41,7 @@
 
 // STL
 #include <string>
+#include "QtPropertyBrowser/qtpropertybrowser.h"
 
 namespace te
 {
@@ -80,11 +81,18 @@ namespace te
         virtual Font getFont();
 
         virtual void setFont(Font ft);
+				
+				virtual void setFontColor(te::color::RGBAColor clft);
+
+				virtual te::color::RGBAColor getFontColor();
+
+			
 
        protected:
          
          std::string m_text;
          Font m_font;
+				 te::color::RGBAColor m_fontColor;
     };
   }
 }
