@@ -61,7 +61,7 @@ te::layout::SVGDialogOutside::~SVGDialogOutside()
 
 void te::layout::SVGDialogOutside::init()
 {
-  m_initFile = "C:\Paths\geometic_cornersvg.svg";
+  m_initFile = "";
 
   SVGDialogModel* model = dynamic_cast<SVGDialogModel*>(m_model);
   if(!model)
@@ -73,9 +73,9 @@ void te::layout::SVGDialogOutside::init()
 
   QListWidgetItem* item = new QListWidgetItem(m_ui->listWidget);
 
-  item->setData(QIcon(QString::fromStdString(m_initFile)), Qt::DecorationRole);
+  item->setData(Qt::DecorationRole, QIcon(QString::fromStdString(m_initFile)));
 
-  m_ui->listWidget.addItem(item);  
+  m_ui->listWidget->addItem(item);
 }
 
 void te::layout::SVGDialogOutside::onOkPushButtonClicked()
