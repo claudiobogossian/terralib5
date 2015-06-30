@@ -54,13 +54,11 @@ std::vector<te::gm::Polygon*> SegmentImage(te::rst::Raster* rin)
   algoInputParameters.m_inputRasterBands.push_back(2);
 
 // link specific parameters with chosen implementation
-  te::rp::SegmenterRegionGrowingStrategy::Parameters segparameters;
+  te::rp::SegmenterRegionGrowingMeanStrategy::Parameters segparameters;
   segparameters.m_minSegmentSize = 50;
   segparameters.m_segmentsSimilarityThreshold = 0.10;
-  segparameters.m_segmentFeatures = 
-    te::rp::SegmenterRegionGrowingStrategy::Parameters::MeanFeaturesType;
 
-  algoInputParameters.m_strategyName = "RegionGrowing";
+  algoInputParameters.m_strategyName = "RegionGrowingMean";
   algoInputParameters.setSegStrategyParams(segparameters);
 
 // output parameters
