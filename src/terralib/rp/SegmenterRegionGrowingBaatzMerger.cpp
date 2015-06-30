@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2015 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -60,8 +60,8 @@ namespace te
         m_allSegsCompactnessGain( 1.0 ),
         m_allSegsSmoothnessOffset( 0 ),
         m_allSegsSmoothnessGain( 0 ),
-        m_colorWeight( (SegmenterRegionGrowingSegment::FeatureType)colorWeight ),
-        m_compactnessWeight( (SegmenterRegionGrowingSegment::FeatureType)compactnessWeight )
+        m_colorWeight( (rg::BaatzFeatureType)colorWeight ),
+        m_compactnessWeight( (rg::BaatzFeatureType)compactnessWeight )
     {
       m_bandsNumber = (unsigned int)bandsWeights.size();
       
@@ -69,8 +69,7 @@ namespace te
       
       for( unsigned int band = 0 ; band < m_bandsNumber ; ++band )
       {
-        m_bandsWeights[ band ] = (SegmenterRegionGrowingSegment::FeatureType)
-          bandsWeights[ band ];
+        m_bandsWeights[ band ] = (rg::BaatzFeatureType)bandsWeights[ band ];
       }
     }
     
@@ -78,10 +77,10 @@ namespace te
     {
     }    
     
-    SegmenterRegionGrowingSegment::FeatureType
-    SegmenterRegionGrowingBaatzMerger::getDissimilarity( SegmenterRegionGrowingSegment const * const segment1Ptr, 
-							 SegmenterRegionGrowingSegment const * const segment2Ptr, 
-							 SegmenterRegionGrowingSegment * const mergePreviewSegPtr ) const
+    SegmenterRegionGrowingSegment< rg::BaatzFeatureType >::FeatureType
+    SegmenterRegionGrowingBaatzMerger::getDissimilarity( SegmenterRegionGrowingSegment< rg::BaatzFeatureType > const * const segment1Ptr, 
+      SegmenterRegionGrowingSegment< rg::BaatzFeatureType > const * const segment2Ptr, 
+      SegmenterRegionGrowingSegment< rg::BaatzFeatureType > * const mergePreviewSegPtr ) const
     {
       assert( segment1Ptr );
       assert( segment1Ptr->m_features );
@@ -91,11 +90,9 @@ namespace te
       
       // globals
       
-      m_getDissimilarity_sizeSeg1D = 
-        (SegmenterRegionGrowingSegment::FeatureType)segment1Ptr->m_size;      
+      m_getDissimilarity_sizeSeg1D = (rg::BaatzFeatureType)segment1Ptr->m_size;      
       
-      m_getDissimilarity_sizeSeg2D = 
-        (SegmenterRegionGrowingSegment::FeatureType)segment2Ptr->m_size;      
+      m_getDissimilarity_sizeSeg2D = (rg::BaatzFeatureType)segment2Ptr->m_size;      
       
       m_getDissimilarity_sizeUnionD = m_getDissimilarity_sizeSeg1D + m_getDissimilarity_sizeSeg2D;
       TERP_DEBUG_TRUE_OR_THROW( m_getDissimilarity_sizeUnionD, "Internal error" );
@@ -128,18 +125,18 @@ namespace te
           m_getDissimilarity_touchingEdgeLength2 );
         
         BAATZ_EL( mergePreviewSegPtr->m_features ) = 
-          BAATZ_EL( segment1Ptr->m_features ) - ( (SegmenterRegionGrowingSegment::FeatureType)m_getDissimilarity_touchingEdgeLength1 )
+          BAATZ_EL( segment1Ptr->m_features ) - ( (rg::BaatzFeatureType)m_getDissimilarity_touchingEdgeLength1 )
           +
-          BAATZ_EL( segment2Ptr->m_features ) - ( (SegmenterRegionGrowingSegment::FeatureType)m_getDissimilarity_touchingEdgeLength2 );
+          BAATZ_EL( segment2Ptr->m_features ) - ( (rg::BaatzFeatureType)m_getDissimilarity_touchingEdgeLength2 );
         
-        BAATZ_CO( mergePreviewSegPtr->m_features ) = (SegmenterRegionGrowingSegment::FeatureType)(
+        BAATZ_CO( mergePreviewSegPtr->m_features ) = (rg::BaatzFeatureType)(
           BAATZ_EL( mergePreviewSegPtr->m_features ) /
           std::sqrt( m_getDissimilarity_sizeUnionD ) );
           
         BAATZ_SM( mergePreviewSegPtr->m_features ) =
           BAATZ_EL( mergePreviewSegPtr->m_features ) 
           /
-          (SegmenterRegionGrowingSegment::FeatureType)(
+          (rg::BaatzFeatureType)(
             (
               2 * ( mergePreviewSegPtr->m_xBound - mergePreviewSegPtr->m_xStart )
             )
@@ -285,14 +282,14 @@ namespace te
           m_getDissimilarity_stdDevUnion =
             std::sqrt(
               std::max(
-                (SegmenterRegionGrowingSegment::FeatureType)0
+                (rg::BaatzFeatureType)0
                 ,
                 (
                   (
                     m_getDissimilarity_squaresSumUnion
                     -
                     (
-                      ((SegmenterRegionGrowingSegment::FeatureType)2) * m_getDissimilarity_meanUnion * m_getDissimilarity_sumUnion
+                      ((rg::BaatzFeatureType)2) * m_getDissimilarity_meanUnion * m_getDissimilarity_sumUnion
                     )
                     +
                     (
@@ -367,13 +364,13 @@ namespace te
           )
         );       
         
-      return std::max( m_getDissimilarity_hColor, ((SegmenterRegionGrowingSegment::FeatureType)0) );
+      return std::max( m_getDissimilarity_hColor, ((rg::BaatzFeatureType)0) );
     }
     
     void SegmenterRegionGrowingBaatzMerger::mergeFeatures( 
-      SegmenterRegionGrowingSegment * const segment1Ptr, 
-      SegmenterRegionGrowingSegment const * const segment2Ptr , 
-      SegmenterRegionGrowingSegment const * const mergePreviewSegPtr ) const
+      SegmenterRegionGrowingSegment< rg::BaatzFeatureType > * const segment1Ptr, 
+      SegmenterRegionGrowingSegment< rg::BaatzFeatureType > const * const segment2Ptr , 
+      SegmenterRegionGrowingSegment< rg::BaatzFeatureType > const * const mergePreviewSegPtr ) const
     {
       assert( segment1Ptr );
       assert( segment1Ptr->m_features );
@@ -392,26 +389,26 @@ namespace te
       // Merging specific features   
       
       memcpy( segment1Ptr->m_features, mergePreviewSegPtr->m_features,
-        sizeof( SegmenterRegionGrowingSegment::FeatureType ) * getSegmentFeaturesSize() );
+        sizeof( rg::BaatzFeatureType ) * getSegmentFeaturesSize() );
     }    
     
     void SegmenterRegionGrowingBaatzMerger::update(
-      SegmenterRegionGrowingSegment* const actSegsListHeadPtr )
+      SegmenterRegionGrowingSegment< rg::BaatzFeatureType >* const actSegsListHeadPtr )
     {
       m_update_compactnessMin = 
-        std::numeric_limits< SegmenterRegionGrowingSegment::FeatureType >::max();
+        std::numeric_limits< rg::BaatzFeatureType >::max();
       m_update_compactnessMax = -1.0f * 
-        std::numeric_limits< SegmenterRegionGrowingSegment::FeatureType >::max();
+        std::numeric_limits< rg::BaatzFeatureType >::max();
 
       m_update_smoothnessMin =
-        std::numeric_limits< SegmenterRegionGrowingSegment::FeatureType >::max();
+        std::numeric_limits< rg::BaatzFeatureType >::max();
       m_update_smoothnessMax = -1.0f *
-        std::numeric_limits< SegmenterRegionGrowingSegment::FeatureType >::max();
+        std::numeric_limits< rg::BaatzFeatureType >::max();
         
       m_update_stdDevMin =
-        std::numeric_limits< SegmenterRegionGrowingSegment::FeatureType >::max();
+        std::numeric_limits< rg::BaatzFeatureType >::max();
       m_update_stdDevMax = -1.0f *
-        std::numeric_limits< SegmenterRegionGrowingSegment::FeatureType >::max();          
+        std::numeric_limits< rg::BaatzFeatureType >::max();          
         
       m_update_currentActSegPtr = actSegsListHeadPtr;
       

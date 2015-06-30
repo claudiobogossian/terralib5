@@ -15,7 +15,7 @@
     You should have received a copy of the GNU Lesser General Public License
     along with TerraLib. See COPYING. If not, write to
     TerraLib Team at <terralib-team@terralib.org>.
- */
+*/
 
 /*!
   \file terralib/rp/SegmenterRegionGrowingMeanMerger.h
@@ -25,6 +25,7 @@
 #ifndef __TERRALIB_RP_INTERNAL_SEGMENTERREGIONGROWINGMEANMERGER_H
 #define __TERRALIB_RP_INTERNAL_SEGMENTERREGIONGROWINGMEANMERGER_H
 
+#include "SegmenterRegionGrowingFunctions.h"
 #include "SegmenterRegionGrowingMerger.h"
 
 namespace te
@@ -36,40 +37,39 @@ namespace te
       \brief Mean based Segments merger
     */        
     class TERPEXPORT SegmenterRegionGrowingMeanMerger :
-      public SegmenterRegionGrowingMerger
+      public SegmenterRegionGrowingMerger< rg::MeanFeatureType >
     {
       public:
             
         SegmenterRegionGrowingMeanMerger( const unsigned int featuresNumber );
             
-	~SegmenterRegionGrowingMeanMerger();
+	      ~SegmenterRegionGrowingMeanMerger();
             
-	//overload        
-	SegmenterRegionGrowingSegment::FeatureType
-	  getDissimilarity( SegmenterRegionGrowingSegment const * const segment1Ptr, 
-			    SegmenterRegionGrowingSegment const * const segment2Ptr, 
-			    SegmenterRegionGrowingSegment * const mergePreviewSegPtr ) const;
+	      //overload        
+	      SegmenterRegionGrowingSegment< rg::MeanFeatureType >::FeatureType
+	        getDissimilarity( SegmenterRegionGrowingSegment< rg::MeanFeatureType > const * const segment1Ptr, 
+			      SegmenterRegionGrowingSegment< rg::MeanFeatureType > const * const segment2Ptr, 
+			      SegmenterRegionGrowingSegment< rg::MeanFeatureType > * const mergePreviewSegPtr ) const;
               
-	//overload                
-	void mergeFeatures( SegmenterRegionGrowingSegment * const segment1Ptr, 
-			    SegmenterRegionGrowingSegment const * const segment2Ptr, 
-			    SegmenterRegionGrowingSegment const * const mergePreviewSegPtr ) const;
+	      //overload                
+	      void mergeFeatures( SegmenterRegionGrowingSegment< rg::MeanFeatureType > * const segment1Ptr, 
+			    SegmenterRegionGrowingSegment< rg::MeanFeatureType > const * const segment2Ptr, 
+			    SegmenterRegionGrowingSegment< rg::MeanFeatureType > const * const mergePreviewSegPtr ) const;
               
-	//overload
-	void update( SegmenterRegionGrowingSegment* const ) {};  
+	      //overload
+	      void update( SegmenterRegionGrowingSegment< rg::MeanFeatureType >* const ) {};  
             
-	//overload
-	inline unsigned int getSegmentFeaturesSize() const { return m_featuresNumber; };
+	      //overload
+	      inline unsigned int getSegmentFeaturesSize() const { return m_featuresNumber; };
             
       protected :
+        unsigned int m_featuresNumber; //!< The number of features (bands).
+	      SegmenterRegionGrowingSegment< rg::MeanFeatureType >::FeatureType m_dissimilarityNormFactor;
             
-	unsigned int m_featuresNumber; //!< The number of features (bands).
-	SegmenterRegionGrowingSegment::FeatureType m_dissimilarityNormFactor;
-            
-	// variables used by the method getDissimilarity
-	mutable SegmenterRegionGrowingSegment::FeatureType m_getDissimilarity_dissValue;
-	mutable SegmenterRegionGrowingSegment::FeatureType m_getDissimilarity_diffValue; 
-	mutable unsigned int m_getDissimilarity_meansIdx;
+	      // variables used by the method getDissimilarity
+	      mutable SegmenterRegionGrowingSegment< rg::MeanFeatureType >::FeatureType m_getDissimilarity_dissValue;
+	      mutable SegmenterRegionGrowingSegment< rg::MeanFeatureType >::FeatureType m_getDissimilarity_diffValue; 
+	      mutable unsigned int m_getDissimilarity_meansIdx;
     };        
   } // end namespace rp
 }   // end namespace te

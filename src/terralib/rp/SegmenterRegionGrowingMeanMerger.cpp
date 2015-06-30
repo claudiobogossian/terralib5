@@ -31,7 +31,7 @@ namespace te
     SegmenterRegionGrowingMeanMerger::SegmenterRegionGrowingMeanMerger( const unsigned int featuresNumber )
     {
       m_featuresNumber = featuresNumber;
-      m_dissimilarityNormFactor = (SegmenterRegionGrowingSegment::FeatureType)( 
+      m_dissimilarityNormFactor = (rg::MeanFeatureType)( 
         2.0 * std::sqrt( (double)featuresNumber ) );
     }
     
@@ -39,10 +39,10 @@ namespace te
     {
     }    
     
-    SegmenterRegionGrowingSegment::FeatureType
-    SegmenterRegionGrowingMeanMerger::getDissimilarity( SegmenterRegionGrowingSegment const * const segment1Ptr, 
-							SegmenterRegionGrowingSegment const * const segment2Ptr, 
-							SegmenterRegionGrowingSegment * const ) const
+    SegmenterRegionGrowingSegment< rg::MeanFeatureType >::FeatureType
+    SegmenterRegionGrowingMeanMerger::getDissimilarity( SegmenterRegionGrowingSegment< rg::MeanFeatureType > const * const segment1Ptr, 
+		  SegmenterRegionGrowingSegment< rg::MeanFeatureType > const * const segment2Ptr, 
+		  SegmenterRegionGrowingSegment< rg::MeanFeatureType > * const ) const
     {
       assert( segment1Ptr );
       assert( segment1Ptr->m_features );
@@ -66,9 +66,9 @@ namespace te
       return m_getDissimilarity_dissValue;
     }
     
-    void SegmenterRegionGrowingMeanMerger::mergeFeatures( SegmenterRegionGrowingSegment * const segment1Ptr, 
-							  SegmenterRegionGrowingSegment const * const segment2Ptr, 
-							  SegmenterRegionGrowingSegment const * const ) const
+    void SegmenterRegionGrowingMeanMerger::mergeFeatures( SegmenterRegionGrowingSegment< rg::MeanFeatureType > * const segment1Ptr, 
+		  SegmenterRegionGrowingSegment< rg::MeanFeatureType > const * const segment2Ptr, 
+		  SegmenterRegionGrowingSegment< rg::MeanFeatureType > const * const ) const
     {
       assert( segment1Ptr );
       assert( segment1Ptr->m_features );
@@ -102,18 +102,18 @@ namespace te
             ( 
               segment1Ptr->m_features[ meansIdx ] 
               * 
-              ((SegmenterRegionGrowingSegment::FeatureType)segment1Ptr->m_size ) 
+              ((SegmenterRegionGrowingSegment< rg::MeanFeatureType >::FeatureType)segment1Ptr->m_size ) 
             ) 
             +
             ( 
               segment2Ptr->m_features[ meansIdx ] 
               *
-              ( (SegmenterRegionGrowingSegment::FeatureType)segment2Ptr->m_size) 
+              ( (SegmenterRegionGrowingSegment< rg::MeanFeatureType >::FeatureType)segment2Ptr->m_size) 
             )
           )
           / 
           (
-            (SegmenterRegionGrowingSegment::FeatureType)
+            (SegmenterRegionGrowingSegment< rg::MeanFeatureType >::FeatureType)
             ( 
               segment1Ptr->m_size 
               + 

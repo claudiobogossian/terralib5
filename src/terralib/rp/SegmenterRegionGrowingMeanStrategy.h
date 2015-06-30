@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2015 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,16 +18,17 @@
  */
 
 /*!
-  \file terralib/rp/SegmenterRegionGrowingStrategy.h
-  \brief Raster region growing segmenter strategy.
+  \file terralib/rp/SegmenterRegionGrowingMeanStrategy.h
+  \brief Raster region growing segmenter Mean strategy.
  */
 
-#ifndef __TERRALIB_RP_INTERNAL_SEGMENTERREGIONGROWINGSTRATEGY_H
-#define __TERRALIB_RP_INTERNAL_SEGMENTERREGIONGROWINGSTRATEGY_H
+#ifndef __TERRALIB_RP_INTERNAL_SEGMENTERREGIONGROWINGMEANSTRATEGY_H
+#define __TERRALIB_RP_INTERNAL_SEGMENTERREGIONGROWINGMEANSTRATEGY_H
 
 #include "SegmenterStrategyFactory.h"
 #include "SegmenterStrategy.h"
 #include "SegmenterStrategyParameters.h"
+#include "SegmenterRegionGrowingFunctions.h"
 #include "SegmenterRegionGrowingSegment.h"
 #include "SegmenterRegionGrowingSegmentsPool.h"
 #include "SegmenterSegmentsBlock.h"
@@ -44,11 +45,11 @@ namespace te
   namespace rp
   {
     /*!
-      \class SegmenterRegionGrowingStrategy
+      \class SegmenterRegionGrowingMeanStrategy
       \brief Raster region growing segmenter strategy.
       \ingroup rp_seg
      */
-    class TERPEXPORT SegmenterRegionGrowingStrategy : public SegmenterStrategy
+    class TERPEXPORT SegmenterRegionGrowingMeanStrategy : public SegmenterStrategy
     {
       public :
         
@@ -65,19 +66,9 @@ namespace te
             */
             /**@{*/              
             
-            /*! \enum SegmentFeaturesType Segment features types. */
-            enum SegmentFeaturesType
-            {
-              InvalidFeaturesType, //!< Invalid features type.
-              MeanFeaturesType, //!< The mean of segments pixel values will be used - Reference: S. A. Bins, L. M. G. Fonseca, G. J. Erthal e F. M. Ii, "Satellite Imagery segmentation: a region growing approach", VIII Simposio Brasileiro de Sensoriamento Remoto, Salvador, BA, 14-19 abril 1996.
-              BaatzFeaturesType //!< The Baatz based features will be used - Reference: Baatz, M.; Schape, A. Multiresolution segmentation: an optimization approach for high quality multi-scale image segmentation. In: XII Angewandte Geographische Informationsverarbeitung, Wichmann-Verlag, Heidelberg, 2000.
-            };             
-            
             unsigned int m_minSegmentSize; //!< A positive minimum segment size (pixels number - default: 100).
             
             double m_segmentsSimilarityThreshold; //!< Segments similarity treshold - Use lower values to merge only those segments that are more similar - Higher values will allow more segments to be merged - valid values range: positive values - default: 0.03 ).
-            
-            SegmentFeaturesType m_segmentFeatures; //!< What segment features will be used on the segmentation process (default:InvalidFeaturesType).
             
             unsigned int m_segmentsSimIncreaseSteps; //!< The maximum number of steps to increment the similarity threshold value for the cases where no segment merge occurred - zero will disable segment similarity threshold increments - defaul: 2.
             
@@ -86,19 +77,6 @@ namespace te
             bool m_enableSameIterationMerges; //!< If enabled, a merged segment could be merged with another within the same iteration (default:false).            
             
             //@} 
-            
-            /**
-            * \name Baatz specific parameters
-            */
-            /**@{*/                       
-            
-            std::vector< double > m_bandsWeights; //!< The weight given to each band, when applicable (note: the bands weights sum must always be 1) or an empty vector indicating that all bands have the same weight.
-            
-            double m_colorWeight; //!< The weight given to the color component, deafult:0.9, valid range: [0,1].
-            
-            double m_compactnessWeight; //!< The weight given to the compactness component, deafult:0.5, valid range: [0,1].
-            
-            //@}
             
             Parameters();
             
@@ -114,9 +92,9 @@ namespace te
             AbstractParameters* clone() const;
         };        
         
-        ~SegmenterRegionGrowingStrategy();
+        ~SegmenterRegionGrowingMeanStrategy();
         
-        SegmenterRegionGrowingStrategy();
+        SegmenterRegionGrowingMeanStrategy();
         
         //overload
         bool initialize( 
@@ -161,10 +139,10 @@ namespace te
         /*!
           \brief Internal execution parameters.
         */        
-        SegmenterRegionGrowingStrategy::Parameters m_parameters;
+        SegmenterRegionGrowingMeanStrategy::Parameters m_parameters;
         
         /*! \brief A pool of segments that can be reused on each strategy execution. */
-        SegmenterRegionGrowingSegmentsPool m_segmentsPool;
+        SegmenterRegionGrowingSegmentsPool< rg::MeanFeatureType > m_segmentsPool;
         
         /*! \brief A internal segments IDs matrix that can be reused  on each strategy execution. */
         SegmentsIdsMatrixT m_segmentsIdsMatrix;
@@ -188,71 +166,22 @@ namespace te
           const std::vector< double >& inputRasterNoDataValues,
           const std::vector< double >& inputRasterBandMinValues,
           const std::vector< double >& inputRasterBandMaxValues,
-          SegmenterRegionGrowingSegment** actSegsListHeadPtr );
-          
-        /*!
-          \brief Merge closest segments.
-          \param disimilarityThreshold The maximum similarity value allowed when deciding when to merge two segments.
-          \param maxSegSizeThreshold Segments with sizes smaller then this value will allways be merged with the closest segment (disimilarityThreshold will be ignored).
-          \param segmenterIdsManager A segments ids manager to acquire unique segments ids.
-          \param merger The merger instance to use.
-          \param enablelocalMutualBestFitting If enabled, a merge only occurs between two segments if the minimum dissimilarity criteria is best fulfilled mutually.
-          \param enableSameIterationMerges If enabled, a merged segment could be merged with another under the same iteration.
-          \param auxSeg1Ptr A pointer to a valid auxiliar segment that will be used by this method.
-          \param auxSeg2Ptr A pointer to a valid auxiliar segment that will be used by this method.
-          \param auxSeg3Ptr A pointer to a valid auxiliar segment that will be used by this method.
-          \param minFoundDissimilarity The minimum dissimilarity value found.
-          \param maxFoundDissimilarity The maximum dissimilarity value found.
-          \param totalMergesNumber The total number of merges.
-          \param mergeIterationCounter A reference to a iteration number counter (this variable will be only incremented, never zeroed. It never must be reset. ).
-          \param actSegsListHeadPtr A pointer the the active segments list head.
-        */           
-        void mergeSegments( 
-          const SegmenterRegionGrowingSegment::FeatureType disimilarityThreshold,
-          const unsigned int maxSegSizeThreshold,
-          SegmenterIdsManager& segmenterIdsManager,
-          SegmenterRegionGrowingMerger& merger,
-          const bool enablelocalMutualBestFitting,
-          const bool enableSameIterationMerges,
-          SegmenterRegionGrowingSegment* auxSeg1Ptr,
-          SegmenterRegionGrowingSegment* auxSeg2Ptr,
-          SegmenterRegionGrowingSegment* auxSeg3Ptr,
-          SegmenterRegionGrowingSegment::FeatureType& minFoundDissimilarity,
-          SegmenterRegionGrowingSegment::FeatureType& maxFoundDissimilarity,
-          unsigned int& totalMergesNumber,
-          SegmenterRegionGrowingSegment::IterationCounterType& globalMergeIterationsCounter,
-          SegmenterRegionGrowingSegment** const actSegsListHeadPtrPtr );
-          
-        /*!
-          \brief Export the segments IDs to a tif file.
-          \param segmentsIds The output segment ids container.
-          \param normto8bits If true, a 8 bits file will be generated.
-          \param fileName The output tif file name.
-        */           
-        void exportSegs2Tif( const SegmentsIdsMatrixT& segmentsIds,
-          bool normto8bits, const std::string& fileName );
-          
-        /*!
-          \brief Returns the number of active segments.
-          \param actSegsListHeadPtr A pointer the the active segments list head.
-          \return Returns the number of active segments.
-        */           
-        unsigned int getActiveSegmentsNumber( SegmenterRegionGrowingSegment* const actSegsListHeadPtr ) const;        
+          SegmenterRegionGrowingSegment< rg::MeanFeatureType >** actSegsListHeadPtr );
     };
     
     /*!
-      \class SegmenterRegionGrowingStrategyFactory
+      \class SegmenterRegionGrowingMeanStrategyFactory
       \brief Raster region growing segmenter strategy factory.
-      \note Factory key: RegionGrowing
+      \note Factory key: RegionGrowingMean
      */
-    class TERPEXPORT SegmenterRegionGrowingStrategyFactory : public 
+    class TERPEXPORT SegmenterRegionGrowingMeanStrategyFactory : public 
       te::rp::SegmenterStrategyFactory
     {
       public:
         
-        SegmenterRegionGrowingStrategyFactory();
+        SegmenterRegionGrowingMeanStrategyFactory();
         
-        ~SegmenterRegionGrowingStrategyFactory();
+        ~SegmenterRegionGrowingMeanStrategyFactory();
    
         //overload
         te::rp::SegmenterStrategy* build();
@@ -262,5 +191,4 @@ namespace te
   } // end namespace rp
 }   // end namespace te
 
-#endif  // __TERRALIB_RP_INTERNAL_ALGORITHM_H
-
+#endif  // __TERRALIB_RP_INTERNAL_SEGMENTERREGIONGROWINGMEANSTRATEGY_H
