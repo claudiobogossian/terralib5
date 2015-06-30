@@ -202,8 +202,8 @@ void te::layout::PropertiesOutside::itemsSelected(QList<QGraphicsItem*> graphics
   
   foreach( Property prop, props->getProperties()) 
   {
-    if(prop.isMenu() || !prop.isVisible())
-      continue;
+    //if(prop.isMenu() || !prop.isVisible())
+    //  continue;
 
     m_propUtils->checkDynamicProperty(prop, allItems);
     m_layoutPropertyBrowser->addProperty(prop);
