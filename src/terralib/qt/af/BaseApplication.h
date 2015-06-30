@@ -103,10 +103,15 @@ namespace te
 
         virtual void initFramework();
 
+        QMenu* getMenuFile();
+
+        QToolBar* getToolbar(const QString& barName);
+
         ApplicationController* m_app;
         MapDisplay* m_display;
         LayerExplorer* m_layerExplorer;
 
+      private:
         Ui::BaseApplicationForm* m_ui;
       };
     }

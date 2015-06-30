@@ -38,7 +38,7 @@
 #include "../../../widgets/datasource/core/DataSourceTypeManager.h"
 #include "../../../widgets/Utils.h"
 #include "../../../af/ApplicationController.h"
-#include "../../../af/Project.h"
+//#include "../../../af/Project.h"
 #include "../../../af/Utils.h"
 #include "../../../af/events/LayerEvents.h"
 #include "../../../af/events/ApplicationEvents.h"

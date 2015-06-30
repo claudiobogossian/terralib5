@@ -30,7 +30,7 @@
 #include "../events/ProjectEvents.h"
 #include "../events/LayerEvents.h"
 #include "../ApplicationController.h"
-#include "../Project.h"
+//#include "../Project.h"
 #include "LayerExplorer.h"
 
 te::qt::af::LayerExplorer::LayerExplorer(te::qt::widgets::LayerExplorer* explorer, QObject* parent)
@@ -60,14 +60,14 @@ void te::qt::af::LayerExplorer::onApplicationTriggered(te::qt::af::evt::Event* e
   {
     case te::qt::af::evt::PROJECT_ADDED:
     {
-      assert(m_explorer);
+//      assert(m_explorer);
 
-      te::qt::af::evt::ProjectAdded* projectAdded = static_cast<te::qt::af::evt::ProjectAdded*>(evt);
+//      te::qt::af::evt::ProjectAdded* projectAdded = static_cast<te::qt::af::evt::ProjectAdded*>(evt);
 
-      if(projectAdded == 0 || projectAdded->m_proj == 0)
-        return;
+//      if(projectAdded == 0 || projectAdded->m_proj == 0)
+//        return;
 
-      m_explorer->set(projectAdded->m_proj->getTopLayers());
+//      m_explorer->set(projectAdded->m_proj->getTopLayers());
     }
     break;
 

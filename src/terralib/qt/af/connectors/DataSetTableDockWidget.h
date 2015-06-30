@@ -155,6 +155,8 @@ namespace te
           */
           void closed(te::qt::af::DataSetTableDockWidget*);
 
+          void triggered(te::qt::af::evt::Event* e);
+
         protected:
 
           te::qt::widgets::DataSetTableView* m_view;           //!< The table view.

@@ -36,7 +36,7 @@ te::qt::af::DataSetTableDockWidget::DataSetTableDockWidget(QWidget* parent)
   m_view = new te::qt::widgets::DataSetTableView(this);
 
   // Fred: revisar
-//  m_view->setHighlightColor(ApplicationController::getInstance().getSelectionColor());
+  m_view->setHighlightColor(Qt::blue);
 
   setWidget(m_view);
 
@@ -141,8 +141,7 @@ void te::qt::af::DataSetTableDockWidget::selectionChanged(te::da::ObjectIdSet* o
   m_layer->select(oids);
 
   te::qt::af::evt::LayerSelectedObjectsChanged e(m_layer, env);
-  // Fred: revisar
-//  ApplicationController::getInstance().broadcast(&e);
+  emit triggered(&e);
 }
 
 void te::qt::af::DataSetTableDockWidget::removeSelectedOIds(te::da::ObjectIdSet* oids)
@@ -152,7 +151,6 @@ void te::qt::af::DataSetTableDockWidget::removeSelectedOIds(te::da::ObjectIdSet*
     m_layer->deselect(oids);
 
     te::qt::af::evt::LayerSelectedObjectsChanged e(m_layer, 0);
-    // Fred: revisar
-//    ApplicationController::getInstance().broadcast(&e);
+    emit triggered(&e);
   }
 }

@@ -29,15 +29,16 @@
      <height>25</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menu_File">
+   <widget class="QMenu" name="m_menuFile">
     <property name="title">
      <string>&amp;File</string>
     </property>
+    <addaction name="m_exitAction"/>
    </widget>
-   <addaction name="menu_File"/>
+   <addaction name="m_menuFile"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <widget class="QToolBar" name="toolBar">
+  <widget class="QToolBar" name="m_fileToolbar">
    <property name="windowTitle">
     <string>toolBar</string>
    </property>
@@ -172,6 +173,18 @@
     <string>Fit...</string>
    </property>
   </action>
+  <action name="m_exitAction">
+   <property name="icon">
+    <iconset theme="system-log-out">
+     <normaloff>../../../../../share/terralib/icons/terralib/scalable/system-log-out.svg</normaloff>../../../../../share/terralib/icons/terralib/scalable/system-log-out.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Exit...</string>
+   </property>
+   <property name="toolTip">
+    <string>Quit the application</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -274,6 +287,22 @@
    <signal>triggered()</signal>
    <receiver>BaseApplicationForm</receiver>
    <slot>onFitLayersTriggered()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>569</x>
+     <y>350</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_exitAction</sender>
+   <signal>triggered()</signal>
+   <receiver>BaseApplicationForm</receiver>
+   <slot>close()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>

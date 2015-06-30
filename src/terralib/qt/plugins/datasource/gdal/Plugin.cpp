@@ -39,7 +39,7 @@
 #include "../../../widgets/Utils.h"
 
 #include "../../../af/ApplicationController.h"
-#include "../../../af/Project.h"
+//#include "../../../af/Project.h"
 #include "../../../af/Utils.h"
 #include "../../../af/events/LayerEvents.h"
 #include "../../../af/events/ApplicationEvents.h"
@@ -151,7 +151,7 @@ void te::qt::plugins::gdal::Plugin::shutdown()
 
 void te::qt::plugins::gdal::Plugin::openFileDialog()
 {
-  te::qt::af::Project* proj = te::qt::af::AppCtrlSingleton::getInstance().getProject();
+//  te::qt::af::Project* proj = te::qt::af::AppCtrlSingleton::getInstance().getProject();
 
 //  if(proj == 0)
 //  {

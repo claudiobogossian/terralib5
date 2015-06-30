@@ -48,7 +48,7 @@
 #include "events/ApplicationEvents.h"
 #include "ApplicationController.h"
 #include "Exception.h"
-#include "Project.h"
+//#include "Project.h"
 #include "SplashScreenManager.h"
 #include "Utils.h"
 #include "XMLFormatter.h"
@@ -95,7 +95,7 @@ te::qt::af::ApplicationController::ApplicationController(/*QObject* parent*/)
     m_defaultSRID(TE_UNKNOWN_SRS),
     m_selectionColor(QColor(0, 255, 0)),
     m_initialized(false),
-    m_project(0),
+//    m_project(0),
     m_resetTerralib(true)
 {
 }
@@ -122,7 +122,7 @@ void te::qt::af::ApplicationController::addToolBar(const QString& id, QToolBar* 
 // send event: tool bar added
   te::qt::af::evt::ToolBarAdded evt(bar);
 
-  broadcast(&evt);
+  emit triggered(&evt);
 }
 
 void te::qt::af::ApplicationController::registerToolBar(const QString& id, QToolBar* bar)
@@ -762,24 +762,24 @@ void te::qt::af::ApplicationController::updateRecentProjects(const QString& prjF
     act->setEnabled(true);
 }
 
-void te::qt::af::ApplicationController::set(te::qt::af::Project* prj)
-{
-  m_project = prj;
-}
+//void te::qt::af::ApplicationController::set(te::qt::af::Project* prj)
+//{
+//  m_project = prj;
+//}
 
-te::qt::af::Project* te::qt::af::ApplicationController::getProject()
-{
-  return m_project;
-}
+//te::qt::af::Project* te::qt::af::ApplicationController::getProject()
+//{
+//  return m_project;
+//}
 
 void te::qt::af::ApplicationController::finalize()
 {
   if(!m_initialized)
     return;
 
-  UpdateUserSettings(m_recentProjs, m_recentProjsTitles, m_appUserSettingsFile);
+//  UpdateUserSettings(m_recentProjs, m_recentProjsTitles, m_appUserSettingsFile);
 
-  SaveDataSourcesFile();
+//  SaveDataSourcesFile();
 
   te::plugin::PluginManager::getInstance().shutdownAll();
 
@@ -838,7 +838,7 @@ void te::qt::af::ApplicationController::finalize()
   
   m_selectionColor = QColor();
 
-  m_project = 0;
+//  m_project = 0;
   
   m_initialized = false;
 }
@@ -848,13 +848,13 @@ QSettings& te::qt::af::ApplicationController::getSettings()
   return m_appSettings;
 }
 
-void  te::qt::af::ApplicationController::broadcast(te::qt::af::evt::Event* evt)
-{
-  // Need to check event send to prevent loops
-  // -----------------------------------------
+//void  te::qt::af::ApplicationController::broadcast(te::qt::af::evt::Event* evt)
+//{
+//  // Need to check event send to prevent loops
+//  // -----------------------------------------
 
-  emit triggered(evt);
-}
+//  emit triggered(evt);
+//}
 
 const QString& te::qt::af::ApplicationController::getAppName() const
 {

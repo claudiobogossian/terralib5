@@ -57,7 +57,7 @@ namespace te
   {
     namespace af
     {
-      class Project;
+//      class Project;
 
       /*!
         \brief Reads and return a te::qt::af::Project from the file.
@@ -66,7 +66,7 @@ namespace te
 
         \return A pointer to the te::qt::af::Project defined in the \a uri file.
       */
-      TEQTAFEXPORT Project* ReadProject(const std::string& uri);
+//      TEQTAFEXPORT Project* ReadProject(const std::string& uri);
 
       /*!
         \brief Reads and return a te::qt::af::Project using \a reader XML reader.
@@ -75,7 +75,7 @@ namespace te
 
         \return A pointer to the te::qt::af::Project.
       */
-      TEQTAFEXPORT Project* ReadProject(te::xml::Reader& reader);
+//      TEQTAFEXPORT Project* ReadProject(te::xml::Reader& reader);
 
       /*!
         \brief Saves the informations of the project in the \a uri file.
@@ -84,7 +84,7 @@ namespace te
 
         \param uri File location.
       */
-      TEQTAFEXPORT void Save(const Project& project, const std::string& uri);
+//      TEQTAFEXPORT void Save(const Project& project, const std::string& uri);
 
       /*!
         \brief Saves the informations of the te::qt::af::Project using \a writer XML writer.
@@ -93,7 +93,7 @@ namespace te
 
         \param writer The XML writer to be used.
       */
-      TEQTAFEXPORT void Save(const Project& project, te::xml::AbstractWriter& writer);
+//      TEQTAFEXPORT void Save(const Project& project, te::xml::AbstractWriter& writer);
 
       /*!
         \brief Updates user settings file section about information of the projects.
@@ -331,7 +331,7 @@ namespace te
       /*!
         \brief Return a QString with the new window title based on the project informations.
       */
-      TEQTAFEXPORT QString GetWindowTitle(const Project& project);
+//      TEQTAFEXPORT QString GetWindowTitle(const Project& project);
 
       /*!
         \brief Returns the date and time of generated binary.

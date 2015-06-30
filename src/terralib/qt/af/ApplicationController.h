@@ -60,7 +60,7 @@ namespace te
   {
     namespace af
     {
-      class Project;
+//      class Project;
 
       namespace evt
       {
@@ -334,7 +334,7 @@ namespace te
             \param prj Pointer to a current project.
 
           */
-          void set(te::qt::af::Project* prj);
+//          void set(te::qt::af::Project* prj);
 
           /*!
             \brief Get the current project.
@@ -342,7 +342,7 @@ namespace te
             \return Pointer to a current project if defined or a null pointer in other case.
 
           */
-          te::qt::af::Project* getProject();
+//          te::qt::af::Project* getProject();
 
           /*!
             \brief Finalize the application framework.
@@ -367,7 +367,7 @@ namespace te
 
             \param evt Event to be sent.
           */
-          void broadcast(te::qt::af::evt::Event* evt);
+//          void broadcast(te::qt::af::evt::Event* evt);
 
         signals:
 
@@ -482,7 +482,7 @@ namespace te
 
           bool m_initialized;                         //!< A flag indicating if the controller is initialized.
 
-          Project* m_project;                         //!< Pointer to current project.
+//          Project* m_project;                         //!< Pointer to current project.
 
           QSettings m_appSettings;
 

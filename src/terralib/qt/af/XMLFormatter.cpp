@@ -24,7 +24,7 @@
 #include "../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../maptools/DataSetLayer.h"
 
-#include "Project.h"
+//#include "Project.h"
 
 #include <QtCore/QUrl>
 
@@ -34,62 +34,62 @@ namespace te {
       
       void XMLFormatter::format(Project *p, const bool& encode)
       {
-        p->setAuthor(format(p->getAuthor(), encode));
-        p->setTitle(format(p->getTitle(), encode));
+//        p->setAuthor(format(p->getAuthor(), encode));
+//        p->setTitle(format(p->getTitle(), encode));
 
-        std::list<te::map::AbstractLayerPtr> ls = p->getTopLayers();
-        std::list<te::map::AbstractLayerPtr>::iterator it;
+//        std::list<te::map::AbstractLayerPtr> ls = p->getTopLayers();
+//        std::list<te::map::AbstractLayerPtr>::iterator it;
 
-        for(it = ls.begin(); it != ls.end(); ++it)
-          format((*it).get(), encode);
+//        for(it = ls.begin(); it != ls.end(); ++it)
+//          format((*it).get(), encode);
       }
 
       void XMLFormatter::format(map::AbstractLayer *l, const bool &encode)
       {
-        if(l == 0)
-          return;
+//        if(l == 0)
+//          return;
 
-        l->setTitle(format(l->getTitle(), encode));
+//        l->setTitle(format(l->getTitle(), encode));
 
-        std::list<te::common::TreeItemPtr> ls = l->getChildren();
-        std::list<te::common::TreeItemPtr>::iterator it;
+//        std::list<te::common::TreeItemPtr> ls = l->getChildren();
+//        std::list<te::common::TreeItemPtr>::iterator it;
 
-        if(l->getType() == "DATASETLAYER")
-        {
-          te::map::DataSetLayer* dl = static_cast<te::map::DataSetLayer*>(l);
+//        if(l->getType() == "DATASETLAYER")
+//        {
+//          te::map::DataSetLayer* dl = static_cast<te::map::DataSetLayer*>(l);
 
-          dl->setDataSetName(format(dl->getDataSetName(), encode));
-        }
+//          dl->setDataSetName(format(dl->getDataSetName(), encode));
+//        }
 
-        for(it = ls.begin(); it != ls.end(); ++it)
-          format(dynamic_cast<te::map::AbstractLayer*>((*it).get()), encode);
+//        for(it = ls.begin(); it != ls.end(); ++it)
+//          format(dynamic_cast<te::map::AbstractLayer*>((*it).get()), encode);
       }
 
       void XMLFormatter::format(te::da::DataSourceInfo *d, const bool &encode)
       {
-        d->setTitle(format(d->getTitle(), encode));
-        d->setDescription(format(d->getDescription(), encode));
+//        d->setTitle(format(d->getTitle(), encode));
+//        d->setDescription(format(d->getDescription(), encode));
 
-        std::map<std::string, std::string>& i = d->getConnInfo();
-        std::map<std::string, std::string>::iterator it = i.find("SOURCE");
+//        std::map<std::string, std::string>& i = d->getConnInfo();
+//        std::map<std::string, std::string>::iterator it = i.find("SOURCE");
 
-        if(it != i.end())
-          it->second = format(it->second, encode);
+//        if(it != i.end())
+//          it->second = format(it->second, encode);
 
-        it = i.find("URI");
+//        it = i.find("URI");
 
-        if(it != i.end())
-          it->second = format(it->second, encode);
+//        if(it != i.end())
+//          it->second = format(it->second, encode);
       }
 
       void XMLFormatter::formatDataSourceInfos(const bool &encode)
       {
-        te::da::DataSourceInfoManager::iterator it;
-        te::da::DataSourceInfoManager::iterator beg = te::da::DataSourceInfoManager::getInstance().begin();
-        te::da::DataSourceInfoManager::iterator end = te::da::DataSourceInfoManager::getInstance().end();
+//        te::da::DataSourceInfoManager::iterator it;
+//        te::da::DataSourceInfoManager::iterator beg = te::da::DataSourceInfoManager::getInstance().begin();
+//        te::da::DataSourceInfoManager::iterator end = te::da::DataSourceInfoManager::getInstance().end();
 
-        for(it = beg; it != end; ++it)
-          format(it->second.get(), encode);
+//        for(it = beg; it != end; ++it)
+//          format(it->second.get(), encode);
       }
 
       std::string XMLFormatter::format(const std::string &s, const bool& encode)

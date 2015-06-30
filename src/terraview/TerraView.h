@@ -36,10 +36,16 @@
 class QWidget;
 class QMenu;
 
+struct ProjectMetadata;
+
 namespace te
 {
   namespace qt
   {
+    namespace af
+    {
+      class DataSetTableDockWidget;
+    }
     namespace widgets
     {
       class HelpManagerImpl;
@@ -64,7 +70,7 @@ class TerraView : public te::qt::af::BaseApplication
 
     void init();
 
-    void init(const std::string& configFile);
+//    void init(const std::string& configFile);
 
     void startProject(const QString& projectFileName);
 
@@ -80,11 +86,31 @@ class TerraView : public te::qt::af::BaseApplication
 
     void onApplicationTriggered(te::qt::af::evt::Event* e);
 
+    void onShowTableTriggered();
+
+    void onLayerTableClose(te::qt::af::DataSetTableDockWidget* wid);
+
+    void onSaveProjectTriggered();
+
+    void onOpenProjectTriggered();
+
   protected:
+
+    void projectChanged();
+
+    void checkAndSaveProject();
+
+    void openProject(const QString& prjFileName);
+
+    void closeEvent(QCloseEvent * event);
 
     te::qt::widgets::HelpManagerImpl* m_helpManager;
 
     QMenu* m_dsMenu;
+
+    std::vector<te::qt::af::DataSetTableDockWidget*> m_tables;
+
+    ProjectMetadata* m_project;
 };
 
 #endif  // __TERRAVIEW_INTERNAL_TERRAVIEW_H

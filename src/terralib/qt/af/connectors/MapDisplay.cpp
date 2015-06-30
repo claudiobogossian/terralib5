@@ -47,7 +47,7 @@
 #include "../events/ProjectEvents.h"
 #include "../events/ToolEvents.h"
 #include "../ApplicationController.h"
-#include "../Project.h"
+//#include "../Project.h"
 #include "../Utils.h"
 #include "MapDisplay.h"
 

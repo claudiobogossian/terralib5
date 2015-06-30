@@ -45,7 +45,7 @@
 #include "../../Version.h"
 #include "ApplicationController.h"
 #include "Exception.h"
-#include "Project.h"
+//#include "Project.h"
 #include "Utils.h"
 #include "XMLFormatter.h"
 
@@ -74,248 +74,248 @@
 #include <QToolBar>
 
 
-te::qt::af::Project* te::qt::af::ReadProject(const std::string& uri)
-{
-  boost::filesystem::path furi(uri);
+//te::qt::af::Project* te::qt::af::ReadProject(const std::string& uri)
+//{
+//  boost::filesystem::path furi(uri);
   
-  if (!boost::filesystem::exists(furi) || !boost::filesystem::is_regular_file(furi))   
-    throw Exception((boost::format(TE_TR("Could not read project file: %1%.")) % uri).str());
+//  if (!boost::filesystem::exists(furi) || !boost::filesystem::is_regular_file(furi))
+//    throw Exception((boost::format(TE_TR("Could not read project file: %1%.")) % uri).str());
   
-  std::auto_ptr<te::xml::Reader> xmlReader(te::xml::ReaderFactory::make());
-  xmlReader->setValidationScheme(false);
+//  std::auto_ptr<te::xml::Reader> xmlReader(te::xml::ReaderFactory::make());
+//  xmlReader->setValidationScheme(false);
   
-  xmlReader->read(uri);
+//  xmlReader->read(uri);
   
-  if(!xmlReader->next())
-    throw Exception((boost::format(TE_TR("Could not read project information in the file: %1%.")) % uri).str());
+//  if(!xmlReader->next())
+//    throw Exception((boost::format(TE_TR("Could not read project information in the file: %1%.")) % uri).str());
   
-  if(xmlReader->getNodeType() != te::xml::START_ELEMENT)
-    throw Exception((boost::format(TE_TR("Error reading the document %1%, the start element wasn't found.")) % uri).str());
+//  if(xmlReader->getNodeType() != te::xml::START_ELEMENT)
+//    throw Exception((boost::format(TE_TR("Error reading the document %1%, the start element wasn't found.")) % uri).str());
   
-  if(xmlReader->getElementLocalName() != "Project")
-    throw Exception((boost::format(TE_TR("The first tag in the document %1% is not 'Project'.")) % uri).str());
+//  if(xmlReader->getElementLocalName() != "Project")
+//    throw Exception((boost::format(TE_TR("The first tag in the document %1% is not 'Project'.")) % uri).str());
   
-  Project* proj = ReadProject(*xmlReader);
+//  Project* proj = ReadProject(*xmlReader);
   
-  proj->setFileName(uri);
+//  proj->setFileName(uri);
   
-  XMLFormatter::format(proj, false);
+//  XMLFormatter::format(proj, false);
 
-  proj->setProjectAsChanged(false);
+//  proj->setProjectAsChanged(false);
 
-  return proj;
+//  return proj;
 
-}
+//}
 
-te::qt::af::Project* te::qt::af::ReadProject(te::xml::Reader& reader)
-{
-  std::auto_ptr<Project> project(new Project);
+//te::qt::af::Project* te::qt::af::ReadProject(te::xml::Reader& reader)
+//{
+//  std::auto_ptr<Project> project(new Project);
 
-  reader.next();
-  assert(reader.getNodeType() == te::xml::START_ELEMENT);
-  assert(reader.getElementLocalName() == "Title");
+//  reader.next();
+//  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+//  assert(reader.getElementLocalName() == "Title");
 
-  reader.next();
-  assert(reader.getNodeType() == te::xml::VALUE);
-  project->setTitle(reader.getElementValue());
-  reader.next(); // End element
+//  reader.next();
+//  assert(reader.getNodeType() == te::xml::VALUE);
+//  project->setTitle(reader.getElementValue());
+//  reader.next(); // End element
 
-  reader.next();
-  assert(reader.getNodeType() == te::xml::START_ELEMENT);
-  assert(reader.getElementLocalName() == "Author");
+//  reader.next();
+//  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+//  assert(reader.getElementLocalName() == "Author");
 
-  reader.next();
+//  reader.next();
 
-  if(reader.getNodeType() == te::xml::VALUE)
-  {
-    project->setAuthor(reader.getElementValue());
-    reader.next(); // End element
-  }
+//  if(reader.getNodeType() == te::xml::VALUE)
+//  {
+//    project->setAuthor(reader.getElementValue());
+//    reader.next(); // End element
+//  }
 
-  //read data source list from this project
-  reader.next();
+//  //read data source list from this project
+//  reader.next();
 
-  assert(reader.getNodeType() == te::xml::START_ELEMENT);
-  assert(reader.getElementLocalName() == "DataSourceList");
+//  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+//  assert(reader.getElementLocalName() == "DataSourceList");
 
-  reader.next();
+//  reader.next();
 
-  // DataSourceList contract form
-  if(reader.getNodeType() == te::xml::END_ELEMENT &&
-     reader.getElementLocalName() == "DataSourceList")
-  {
-    reader.next();
-  }
+//  // DataSourceList contract form
+//  if(reader.getNodeType() == te::xml::END_ELEMENT &&
+//     reader.getElementLocalName() == "DataSourceList")
+//  {
+//    reader.next();
+//  }
 
-  while((reader.getNodeType() == te::xml::START_ELEMENT) &&
-        (reader.getElementLocalName() == "DataSource"))
-  {
-    te::da::DataSourceInfoPtr ds(te::serialize::xml::ReadDataSourceInfo(reader));
-    te::da::DataSourceInfoManager::getInstance().add(ds);
-  }
+//  while((reader.getNodeType() == te::xml::START_ELEMENT) &&
+//        (reader.getElementLocalName() == "DataSource"))
+//  {
+//    te::da::DataSourceInfoPtr ds(te::serialize::xml::ReadDataSourceInfo(reader));
+//    te::da::DataSourceInfoManager::getInstance().add(ds);
+//  }
 
-  //end read data source list
+//  //end read data source list
 
-  assert(reader.getNodeType() == te::xml::START_ELEMENT);
-  assert(reader.getElementLocalName() == "ComponentList");
-  reader.next(); // End element
-  reader.next(); // next after </ComponentList>
+//  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+//  assert(reader.getElementLocalName() == "ComponentList");
+//  reader.next(); // End element
+//  reader.next(); // next after </ComponentList>
 
-  assert(reader.getNodeType() == te::xml::START_ELEMENT);
-  assert(reader.getElementLocalName() == "LayerList");
+//  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+//  assert(reader.getElementLocalName() == "LayerList");
 
-  reader.next();
+//  reader.next();
 
-  const te::map::serialize::Layer& lserial = te::map::serialize::Layer::getInstance();
+//  const te::map::serialize::Layer& lserial = te::map::serialize::Layer::getInstance();
 
-  // Read the layers
-  while((reader.getNodeType() != te::xml::END_ELEMENT) &&
-        (reader.getElementLocalName() != "LayerList"))
-  {
-    te::map::AbstractLayerPtr layer(lserial.read(reader));
+//  // Read the layers
+//  while((reader.getNodeType() != te::xml::END_ELEMENT) &&
+//        (reader.getElementLocalName() != "LayerList"))
+//  {
+//    te::map::AbstractLayerPtr layer(lserial.read(reader));
 
-    assert(layer.get());
+//    assert(layer.get());
 
-    project->add(layer);
-  }
+//    project->add(layer);
+//  }
 
-  assert(reader.getNodeType() == te::xml::END_ELEMENT);
-  assert(reader.getElementLocalName() == "LayerList");
+//  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+//  assert(reader.getElementLocalName() == "LayerList");
 
-  reader.next();
-  assert((reader.getNodeType() == te::xml::END_ELEMENT) || (reader.getNodeType() == te::xml::END_DOCUMENT));
-  assert(reader.getElementLocalName() == "Project");
+//  reader.next();
+//  assert((reader.getNodeType() == te::xml::END_ELEMENT) || (reader.getNodeType() == te::xml::END_DOCUMENT));
+//  assert(reader.getElementLocalName() == "Project");
 
-  project->setProjectAsChanged(false);
+//  project->setProjectAsChanged(false);
 
-  return project.release();
-}
+//  return project.release();
+//}
 
-void te::qt::af::Save(const te::qt::af::Project& project, const std::string& uri)
-{
+//void te::qt::af::Save(const te::qt::af::Project& project, const std::string& uri)
+//{
 
-  std::auto_ptr<te::xml::AbstractWriter> writer(te::xml::AbstractWriterFactory::make());
+//  std::auto_ptr<te::xml::AbstractWriter> writer(te::xml::AbstractWriterFactory::make());
 
-  writer->setURI(uri);
+//  writer->setURI(uri);
 
-  Project p(project);
+//  Project p(project);
 
-  Save(p, *writer.get());
+//  Save(p, *writer.get());
 
-  /* old way
-  std::ofstream fout(uri.c_str(), std::ios_base::trunc);
+//  /* old way
+//  std::ofstream fout(uri.c_str(), std::ios_base::trunc);
 
-  te::xml::Writer w(fout);
+//  te::xml::Writer w(fout);
 
-  Project p(project);
+//  Project p(project);
 
-  XMLFormatter::format(&p, true);
+//  XMLFormatter::format(&p, true);
 
-  Save(p, w);
+//  Save(p, w);
 
-  XMLFormatter::format(&p, false);
+//  XMLFormatter::format(&p, false);
 
-  fout.close();*/
-}
+//  fout.close();*/
+//}
 
-void te::qt::af::Save(const te::qt::af::Project& project, te::xml::AbstractWriter& writer)
-{
-  std::string schema_loc = te::common::FindInTerraLibPath("share/terralib/schemas/terralib/qt/af/project.xsd");
+//void te::qt::af::Save(const te::qt::af::Project& project, te::xml::AbstractWriter& writer)
+//{
+//  std::string schema_loc = te::common::FindInTerraLibPath("share/terralib/schemas/terralib/qt/af/project.xsd");
 
-  writer.writeStartDocument("UTF-8", "no");
+//  writer.writeStartDocument("UTF-8", "no");
   
-  writer.writeStartElement("Project");
+//  writer.writeStartElement("Project");
 
-  boost::replace_all(schema_loc, " ", "%20");
+//  boost::replace_all(schema_loc, " ", "%20");
 
-  writer.writeAttribute("xmlns:xsd", "http://www.w3.org/2001/XMLSchema-instance");
-  writer.writeAttribute("xmlns:te_da", "http://www.terralib.org/schemas/dataaccess");
-  writer.writeAttribute("xmlns:te_map", "http://www.terralib.org/schemas/maptools");
-  writer.writeAttribute("xmlns:te_qt_af", "http://www.terralib.org/schemas/common/af");
+//  writer.writeAttribute("xmlns:xsd", "http://www.w3.org/2001/XMLSchema-instance");
+//  writer.writeAttribute("xmlns:te_da", "http://www.terralib.org/schemas/dataaccess");
+//  writer.writeAttribute("xmlns:te_map", "http://www.terralib.org/schemas/maptools");
+//  writer.writeAttribute("xmlns:te_qt_af", "http://www.terralib.org/schemas/common/af");
 
-  writer.writeAttribute("xmlns:se", "http://www.opengis.net/se");
-  writer.writeAttribute("xmlns:ogc", "http://www.opengis.net/ogc");
-  writer.writeAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
+//  writer.writeAttribute("xmlns:se", "http://www.opengis.net/se");
+//  writer.writeAttribute("xmlns:ogc", "http://www.opengis.net/ogc");
+//  writer.writeAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
 
-  writer.writeAttribute("xmlns", "http://www.terralib.org/schemas/qt/af");
-  writer.writeAttribute("xsd:schemaLocation", "http://www.terralib.org/schemas/qt/af " + schema_loc);
-  writer.writeAttribute("version", TERRALIB_VERSION_STRING);
+//  writer.writeAttribute("xmlns", "http://www.terralib.org/schemas/qt/af");
+//  writer.writeAttribute("xsd:schemaLocation", "http://www.terralib.org/schemas/qt/af " + schema_loc);
+//  writer.writeAttribute("version", TERRALIB_VERSION_STRING);
 
-  writer.writeElement("Title", project.getTitle());
-  writer.writeElement("Author", project.getAuthor());
+//  writer.writeElement("Title", project.getTitle());
+//  writer.writeElement("Author", project.getAuthor());
 
-  //write data source list 
-  writer.writeStartElement("te_da:DataSourceList");
+//  //write data source list
+//  writer.writeStartElement("te_da:DataSourceList");
 
-  writer.writeAttribute("xmlns:te_common", "http://www.terralib.org/schemas/common");
+//  writer.writeAttribute("xmlns:te_common", "http://www.terralib.org/schemas/common");
 
-  te::da::DataSourceInfoManager::iterator itBegin = te::da::DataSourceInfoManager::getInstance().begin();
-  te::da::DataSourceInfoManager::iterator itEnd = te::da::DataSourceInfoManager::getInstance().end();
-  te::da::DataSourceInfoManager::iterator it;
+//  te::da::DataSourceInfoManager::iterator itBegin = te::da::DataSourceInfoManager::getInstance().begin();
+//  te::da::DataSourceInfoManager::iterator itEnd = te::da::DataSourceInfoManager::getInstance().end();
+//  te::da::DataSourceInfoManager::iterator it;
 
-  for(it=itBegin; it!=itEnd; ++it)
-  {
-    bool ogrDsrc = it->second->getAccessDriver() == "OGR";
+//  for(it=itBegin; it!=itEnd; ++it)
+//  {
+//    bool ogrDsrc = it->second->getAccessDriver() == "OGR";
 
-    writer.writeStartElement("te_da:DataSource");
+//    writer.writeStartElement("te_da:DataSource");
 
-    writer.writeAttribute("id", it->second->getId());
-    writer.writeAttribute("type", it->second->getType());
-    writer.writeAttribute("access_driver", it->second->getAccessDriver());
+//    writer.writeAttribute("id", it->second->getId());
+//    writer.writeAttribute("type", it->second->getType());
+//    writer.writeAttribute("access_driver", it->second->getAccessDriver());
 
-    writer.writeStartElement("te_da:Title");
-    writer.writeValue((!ogrDsrc) ? it->second->getTitle() : te::common::ConvertLatin1UTFString(it->second->getTitle()));
-    writer.writeEndElement("te_da:Title");
+//    writer.writeStartElement("te_da:Title");
+//    writer.writeValue((!ogrDsrc) ? it->second->getTitle() : te::common::ConvertLatin1UTFString(it->second->getTitle()));
+//    writer.writeEndElement("te_da:Title");
 
-    writer.writeStartElement("te_da:Description");
-    writer.writeValue((!ogrDsrc) ? it->second->getDescription() : te::common::ConvertLatin1UTFString(it->second->getDescription()));
-    writer.writeEndElement("te_da:Description");
+//    writer.writeStartElement("te_da:Description");
+//    writer.writeValue((!ogrDsrc) ? it->second->getDescription() : te::common::ConvertLatin1UTFString(it->second->getDescription()));
+//    writer.writeEndElement("te_da:Description");
 
-    writer.writeStartElement("te_da:ConnectionInfo");
-    std::map<std::string, std::string> info = it->second->getConnInfo();
-    std::map<std::string, std::string>::iterator conIt;
+//    writer.writeStartElement("te_da:ConnectionInfo");
+//    std::map<std::string, std::string> info = it->second->getConnInfo();
+//    std::map<std::string, std::string>::iterator conIt;
 
-    for(conIt=info.begin(); conIt!=info.end(); ++conIt)
-    {
-      writer.writeStartElement("te_common:Parameter");
+//    for(conIt=info.begin(); conIt!=info.end(); ++conIt)
+//    {
+//      writer.writeStartElement("te_common:Parameter");
 
-      writer.writeStartElement("te_common:Name");
-      writer.writeValue(conIt->first);
-      writer.writeEndElement("te_common:Name");
+//      writer.writeStartElement("te_common:Name");
+//      writer.writeValue(conIt->first);
+//      writer.writeEndElement("te_common:Name");
 
-      writer.writeStartElement("te_common:Value");
-      writer.writeValue((ogrDsrc && (conIt->first == "URI" || conIt->first == "SOURCE")) ? te::common::ConvertLatin1UTFString(conIt->second) : conIt->second);
-      writer.writeEndElement("te_common:Value");
+//      writer.writeStartElement("te_common:Value");
+//      writer.writeValue((ogrDsrc && (conIt->first == "URI" || conIt->first == "SOURCE")) ? te::common::ConvertLatin1UTFString(conIt->second) : conIt->second);
+//      writer.writeEndElement("te_common:Value");
 
-      writer.writeEndElement("te_common:Parameter");
-    }
-    writer.writeEndElement("te_da:ConnectionInfo");
+//      writer.writeEndElement("te_common:Parameter");
+//    }
+//    writer.writeEndElement("te_da:ConnectionInfo");
 
-    writer.writeEndElement("te_da:DataSource");
-  }
+//    writer.writeEndElement("te_da:DataSource");
+//  }
 
-  writer.writeEndElement("te_da:DataSourceList");
-  //end write
+//  writer.writeEndElement("te_da:DataSourceList");
+//  //end write
 
-  writer.writeStartElement("ComponentList");
-  writer.writeEndElement("ComponentList");
+//  writer.writeStartElement("ComponentList");
+//  writer.writeEndElement("ComponentList");
 
-  writer.writeStartElement("te_map:LayerList");
+//  writer.writeStartElement("te_map:LayerList");
 
-  const te::map::serialize::Layer& lserial = te::map::serialize::Layer::getInstance();
+//  const te::map::serialize::Layer& lserial = te::map::serialize::Layer::getInstance();
 
-  for(std::list<te::map::AbstractLayerPtr>::const_iterator it = project.getTopLayers().begin();
-      it != project.getTopLayers().end();
-      ++it)
-    lserial.write(it->get(), writer);
+//  for(std::list<te::map::AbstractLayerPtr>::const_iterator it = project.getTopLayers().begin();
+//      it != project.getTopLayers().end();
+//      ++it)
+//    lserial.write(it->get(), writer);
 
-  writer.writeEndElement("te_map:LayerList");
+//  writer.writeEndElement("te_map:LayerList");
 
-  writer.writeEndElement("Project");
+//  writer.writeEndElement("Project");
 
-  writer.writeToFile();
+//  writer.writeToFile();
 
-}
+//}
 
 void te::qt::af::UpdateUserSettings(const QStringList& prjFiles, const QStringList& prjTitles, const std::string& userConfigFile)
 {
@@ -958,23 +958,23 @@ QString te::qt::af::GetGenerationDate()
   return s;
 }
 
-QString te::qt::af::GetWindowTitle(const te::qt::af::Project& project)
-{
-  // Fred: revisar
-  QString title;// = te::qt::af::ApplicationController::getInstance().getAppTitle() + " - ";
-  title += TE_TR("Project:");
-  title += " ";
-  title += project.getTitle().c_str();
-  title += " - ";
+//QString te::qt::af::GetWindowTitle(const te::qt::af::Project& project)
+//{
+//  // Fred: revisar
+//  QString title;// = te::qt::af::ApplicationController::getInstance().getAppTitle() + " - ";
+//  title += TE_TR("Project:");
+//  title += " ";
+//  title += project.getTitle().c_str();
+//  title += " - ";
 
-  boost::filesystem::path p(project.getFileName());
+//  boost::filesystem::path p(project.getFileName());
 
-  std::string filename = p.filename().string();
+//  std::string filename = p.filename().string();
 
-  title += filename.c_str();
+//  title += filename.c_str();
 
-  return title;
-}
+//  return title;
+//}
 
 QString te::qt::af::GetExtensionFilter()
 {

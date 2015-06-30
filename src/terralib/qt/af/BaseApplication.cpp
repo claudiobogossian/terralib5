@@ -43,28 +43,28 @@ te::qt::af::BaseApplication::~BaseApplication()
   delete m_layerExplorer;
   delete m_display;
 
-  te::plugin::PluginManager::getInstance().shutdownAll();
-
-  te::plugin::PluginManager::getInstance().unloadAll();
-
-  te::plugin::PluginManager::getInstance().clear();
-
-  TerraLib::getInstance().finalize();
+  m_app->finalize();
 }
 
-void te::qt::af::BaseApplication::init(const QString& /*cfgFile*/)
+void te::qt::af::BaseApplication::init(const QString& cfgFile)
 {
   try
   {
-    TerraLib::getInstance().initialize();
-
     initFramework();
 
-    te::plugin::PluginManager::getInstance().loadAll();
+    m_app->setConfigFile(cfgFile.toStdString());
+    m_app->initialize();
+
+    setWindowTitle(m_app->getAppTitle());
+    setWindowIcon(QIcon(m_app->getAppIconName()));
+
+    setWindowIconText(m_app->getAppTitle());
+
+    m_app->initializePlugins();
   }
   catch(te::common::Exception& e)
   {
-//    QMessageBox::warning(this, "Error", e.what());
+    //    QMessageBox::warning(this, "Error", e.what());
   }
 }
 
@@ -76,98 +76,87 @@ te::qt::widgets::LayerExplorer*te::qt::af::BaseApplication::getLayerExplorer()
 void te::qt::af::BaseApplication::onAddLayerTriggered()
 {
   try
-   {
-//     if(m_project == 0)
-//       throw Exception(TE_TR("Error: there is no opened project!"));
+  {
+    //     if(m_project == 0)
+    //       throw Exception(TE_TR("Error: there is no opened project!"));
 
-     QApplication::setOverrideCursor(Qt::WaitCursor);
+    QApplication::setOverrideCursor(Qt::WaitCursor);
 
-     // Get the parent layer where the dataset layer(s) will be added.
-     te::map::AbstractLayerPtr parentLayer(0);
+    // Get the parent layer where the dataset layer(s) will be added.
+    te::map::AbstractLayerPtr parentLayer(0);
 
-     std::list<te::qt::widgets::AbstractTreeItem*> selectedLayerItems = m_ui->m_layerExplorer->getSelectedLayerItems();
+    std::list<te::qt::widgets::AbstractTreeItem*> selectedLayerItems = m_ui->m_layerExplorer->getSelectedLayerItems();
 
-     if(selectedLayerItems.size() == 1 && selectedLayerItems.front()->getItemType() == "FOLDER_LAYER_ITEM")
-       parentLayer = selectedLayerItems.front()->getLayer();
+    if(selectedLayerItems.size() == 1 && selectedLayerItems.front()->getItemType() == "FOLDER_LAYER_ITEM")
+      parentLayer = selectedLayerItems.front()->getLayer();
 
-     // Get the layer(s) to be added
-     std::auto_ptr<te::qt::widgets::DataSourceSelectorDialog> dselector(new te::qt::widgets::DataSourceSelectorDialog(this));
+    // Get the layer(s) to be added
+    std::auto_ptr<te::qt::widgets::DataSourceSelectorDialog> dselector(new te::qt::widgets::DataSourceSelectorDialog(this));
 
-//     QString dsTypeSett = GetLastDatasourceFromSettings();
+    //     QString dsTypeSett = GetLastDatasourceFromSettings();
 
-//     if(!dsTypeSett.isNull() && !dsTypeSett.isEmpty())
-//       dselector->setDataSourceToUse(dsTypeSett);
+    //     if(!dsTypeSett.isNull() && !dsTypeSett.isEmpty())
+    //       dselector->setDataSourceToUse(dsTypeSett);
 
-     QApplication::restoreOverrideCursor();
+    QApplication::restoreOverrideCursor();
 
-     int retval = dselector->exec();
+    int retval = dselector->exec();
 
-     QApplication::setOverrideCursor(Qt::WaitCursor);
+    QApplication::setOverrideCursor(Qt::WaitCursor);
 
-     if(retval == QDialog::Rejected)
-     {
-       QApplication::restoreOverrideCursor();
-       return;
-     }
+    if(retval == QDialog::Rejected)
+    {
+      QApplication::restoreOverrideCursor();
+      return;
+    }
 
-     std::list<te::da::DataSourceInfoPtr> selectedDatasources = dselector->getSelecteds();
+    std::list<te::da::DataSourceInfoPtr> selectedDatasources = dselector->getSelecteds();
 
-     if(selectedDatasources.empty())
-     {
-       QApplication::restoreOverrideCursor();
-       return;
-     }
+    if(selectedDatasources.empty())
+    {
+      QApplication::restoreOverrideCursor();
+      return;
+    }
 
-     dselector.reset(0);
+    dselector.reset(0);
 
-     const std::string& dsTypeId = selectedDatasources.front()->getType();
+    const std::string& dsTypeId = selectedDatasources.front()->getType();
 
-     const te::qt::widgets::DataSourceType* dsType = te::qt::widgets::DataSourceTypeManager::getInstance().get(dsTypeId);
+    const te::qt::widgets::DataSourceType* dsType = te::qt::widgets::DataSourceTypeManager::getInstance().get(dsTypeId);
 
-     std::auto_ptr<QWidget> lselectorw(dsType->getWidget(te::qt::widgets::DataSourceType::WIDGET_LAYER_SELECTOR, this));
+    std::auto_ptr<QWidget> lselectorw(dsType->getWidget(te::qt::widgets::DataSourceType::WIDGET_LAYER_SELECTOR, this));
 
-     if(lselectorw.get() == 0)
-     {
-       QApplication::restoreOverrideCursor();
-//       throw Exception((boost::format(TE_TR("No layer selector widget found for this type of data source: %1%!")) % dsTypeId).str());
-     }
+    if(lselectorw.get() == 0)
+    {
+      QApplication::restoreOverrideCursor();
+      //       throw Exception((boost::format(TE_TR("No layer selector widget found for this type of data source: %1%!")) % dsTypeId).str());
+    }
 
-     te::qt::widgets::AbstractLayerSelector* lselector = dynamic_cast<te::qt::widgets::AbstractLayerSelector*>(lselectorw.get());
+    te::qt::widgets::AbstractLayerSelector* lselector = dynamic_cast<te::qt::widgets::AbstractLayerSelector*>(lselectorw.get());
 
-     if(lselector == 0)
-     {
-       QApplication::restoreOverrideCursor();
-//       throw Exception(TE_TR("Wrong type of object for layer selection!"));
-     }
+    if(lselector == 0)
+    {
+      QApplication::restoreOverrideCursor();
+      //       throw Exception(TE_TR("Wrong type of object for layer selection!"));
+    }
 
-     lselector->set(selectedDatasources);
+    lselector->set(selectedDatasources);
 
-     QApplication::restoreOverrideCursor();
+    QApplication::restoreOverrideCursor();
 
-     std::list<te::map::AbstractLayerPtr> layers = lselector->getLayers();
+    std::list<te::map::AbstractLayerPtr> layers = lselector->getLayers();
 
-     QApplication::setOverrideCursor(Qt::WaitCursor);
+    QApplication::setOverrideCursor(Qt::WaitCursor);
 
-     lselectorw.reset(0);
+    lselectorw.reset(0);
 
-//     std::list<te::map::AbstractLayerPtr>::const_iterator it = layers.begin();
-//     std::list<te::map::AbstractLayerPtr>::const_iterator itend = layers.end();
+    for(std::list<te::map::AbstractLayerPtr>::const_iterator it = layers.begin(); it != layers.end(); ++it)
+    {
+      te::qt::af::evt::LayerAdded evt(*it, parentLayer);
+      emit triggered(&evt);
+    }
 
-//     for(std::list<te::map::AbstractLayerPtr>::const_iterator it = layers.begin(); it != layers.end(); ++it)
-       m_ui->m_layerExplorer->set(layers);
-//       if((m_explorer != 0) && (m_explorer->getExplorer() != 0))
-//       {
-//         te::qt::af::evt::LayerAdded evt(*it, parentLayer);
-//         te::qt::af::ApplicationController::getInstance().broadcast(&evt);
-//       }
-//       ++it;
-//     }
-
-//     SaveLastDatasourceOnSettings(dsTypeId.c_str());
-
-//     te::qt::af::evt::ProjectUnsaved projectUnsavedEvent;
-//     ApplicationController::getInstance().broadcast(&projectUnsavedEvent);*/
-     QApplication::restoreOverrideCursor();
+    QApplication::restoreOverrideCursor();
   }
   catch(...)
   {
@@ -210,7 +199,8 @@ void te::qt::af::BaseApplication::onSelectionTriggered(bool s)
   te::qt::widgets::Selection* selection = new te::qt::widgets::Selection(m_display->getDisplay(), Qt::ArrowCursor, m_ui->m_layerExplorer->getSelectedSingleLayers());
   m_display->setCurrentTool(selection);
 
-  connect(m_ui->m_layerExplorer, SIGNAL(selectedLayersChanged(const std::list<te::map::AbstractLayerPtr>&)), selection, SLOT(setLayers(const std::list<te::map::AbstractLayerPtr>&)));
+  connect(m_ui->m_layerExplorer, SIGNAL(selectedLayersChanged(const std::list<te::map::AbstractLayerPtr>&)),
+          selection, SLOT(setLayers(const std::list<te::map::AbstractLayerPtr>&)));
   connect(selection, SIGNAL(layerSelectedObjectsChanged(const te::map::AbstractLayerPtr&)), SLOT(onLayerSelectionChanged(const te::map::AbstractLayerPtr&)));
 
   te::qt::af::evt::SelectionButtonToggled esel;
@@ -244,4 +234,17 @@ void te::qt::af::BaseApplication::initFramework()
   m_app->addListener(m_layerExplorer);
   m_app->addListener(m_display);
   m_app->addListener(this);
+}
+
+QMenu* te::qt::af::BaseApplication::getMenuFile()
+{
+  return m_ui->m_menuFile;
+}
+
+QToolBar*te::qt::af::BaseApplication::getToolbar(const QString& barName)
+{
+  if(barName == "m_fileToolbar")
+    return m_ui->m_fileToolbar;
+
+  return 0;
 }
