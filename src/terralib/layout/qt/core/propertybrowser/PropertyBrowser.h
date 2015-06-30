@@ -38,13 +38,13 @@
 
 // Qt
 #include <QObject>
+#include <QMap>
 
-// QtPropertyBrowser
-#include <QtPropertyBrowser/QtTreePropertyBrowser>
-#include <QtPropertyBrowser/QtStringPropertyManager>
-#include <QtPropertyBrowser/QtProperty>
-#include <QtPropertyBrowser/QtVariantPropertyManager>
-#include <QtPropertyBrowser/QtBrowserItem>
+class QtTreePropertyBrowser;
+class QtStringPropertyManager;
+class QtProperty;
+class QtVariantPropertyManager;
+class QtBrowserItem;
 
 class QGraphicsItem;
 class QWidget;

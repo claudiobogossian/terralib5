@@ -37,6 +37,7 @@
 #include <QColor>
 
 // QtPropertyBrowser
+#include <QtPropertyBrowser/QtVariantProperty>
 #include <QtPropertyBrowser/qteditorfactory.h>
 #include <QtPropertyBrowser/QtProperty>
 

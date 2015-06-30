@@ -296,7 +296,7 @@ te::layout::Properties* te::layout::GridMapModel::getProperties() const
   Property pro_gridStyle(m_hashCode);
   pro_gridStyle.setName(m_settingsConfig->getStyle());
   pro_gridStyle.setComposeWidget(true);
-  pro_gridStyle.setValue(m_gridStyle->getName(), dataType->getDataTypeString());  
+  pro_gridStyle.setValue(m_gridStyle->getLabel(), dataType->getDataTypeString());  
   m_properties->addProperty(pro_gridStyle);
 
   /* Line */

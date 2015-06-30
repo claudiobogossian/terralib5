@@ -150,6 +150,8 @@ int main(int /*argc*/, char** /*argv*/)
 
     ///////QueryExample(); //its almost all inside QueryExample_2()
 
+    ///////QueryInsertExample();
+
     ////////DataSetAdapter();
 
     //////MySQLExample();

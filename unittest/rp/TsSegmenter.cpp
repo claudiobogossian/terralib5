@@ -27,7 +27,8 @@
 #include "../Config.h"
 
 #include <terralib/rp/Segmenter.h>
-#include <terralib/rp/SegmenterRegionGrowingStrategy.h>
+#include <terralib/rp/SegmenterRegionGrowingBaatzStrategy.h>
+#include <terralib/rp/SegmenterRegionGrowingMeanStrategy.h>
 #include <terralib/raster/RasterFactory.h>
 #include <terralib/common/progress/ConsoleProgressViewer.h>
 #include <terralib/common/progress/ProgressManager.h>
@@ -60,7 +61,7 @@ void TsSegmenter::BlockProcessingWithoutMerging()
   
   // Creating the algorithm parameters
   
-  te::rp::SegmenterRegionGrowingStrategy::Parameters strategyParameters;
+  te::rp::SegmenterRegionGrowingMeanStrategy::Parameters strategyParameters;
   strategyParameters.m_minSegmentSize = 50;
   strategyParameters.m_segmentsSimilarityThreshold = 0.1;
   
@@ -114,7 +115,7 @@ void TsSegmenter::BlockProcessingWithMerging()
   
   // Creating the algorithm parameters
   
-  te::rp::SegmenterRegionGrowingStrategy::Parameters strategyParameters;
+  te::rp::SegmenterRegionGrowingMeanStrategy::Parameters strategyParameters;
   strategyParameters.m_minSegmentSize = 50;
   strategyParameters.m_segmentsSimilarityThreshold = 0.1;
   
@@ -168,7 +169,7 @@ void TsSegmenter::ThreadedProcessing()
   
   // Creating the algorithm parameters
   
-  te::rp::SegmenterRegionGrowingStrategy::Parameters strategyParameters;
+  te::rp::SegmenterRegionGrowingMeanStrategy::Parameters strategyParameters;
   strategyParameters.m_minSegmentSize = 50;
   strategyParameters.m_segmentsSimilarityThreshold = 0.1;
   
@@ -222,8 +223,7 @@ void TsSegmenter::RegionGrowingMeanStrategy()
   
   // Creating the algorithm parameters
   
-  te::rp::SegmenterRegionGrowingStrategy::Parameters strategyParameters;
-  strategyParameters.m_segmentFeatures = te::rp::SegmenterRegionGrowingStrategy::Parameters::MeanFeaturesType;
+  te::rp::SegmenterRegionGrowingMeanStrategy::Parameters strategyParameters;
   strategyParameters.m_minSegmentSize = 100;
   strategyParameters.m_segmentsSimilarityThreshold = 0.03;
   
@@ -238,7 +238,7 @@ void TsSegmenter::RegionGrowingMeanStrategy()
   algoInputParams.m_enableBlockProcessing = false;
   algoInputParams.m_blocksOverlapPercent = 0;
   algoInputParams.m_maxBlockSize = 0;
-  algoInputParams.m_strategyName = "RegionGrowing";
+  algoInputParams.m_strategyName = "RegionGrowingMean";
   algoInputParams.setSegStrategyParams( strategyParameters );
   algoInputParams.m_enableProgress = true;
   
@@ -278,8 +278,7 @@ void TsSegmenter::RegionGrowingMeanStrategyBlockProcessing()
   
   // Creating the algorithm parameters
   
-  te::rp::SegmenterRegionGrowingStrategy::Parameters strategyParameters;
-  strategyParameters.m_segmentFeatures = te::rp::SegmenterRegionGrowingStrategy::Parameters::MeanFeaturesType;
+  te::rp::SegmenterRegionGrowingMeanStrategy::Parameters strategyParameters;
   strategyParameters.m_minSegmentSize = 100;
   strategyParameters.m_segmentsSimilarityThreshold = 0.1;
   
@@ -294,7 +293,7 @@ void TsSegmenter::RegionGrowingMeanStrategyBlockProcessing()
   algoInputParams.m_enableBlockProcessing = true;
   algoInputParams.m_blocksOverlapPercent = 20;
   algoInputParams.m_maxBlockSize = 100;
-  algoInputParams.m_strategyName = "RegionGrowing";
+  algoInputParams.m_strategyName = "RegionGrowingMean";
   algoInputParams.setSegStrategyParams( strategyParameters );
   algoInputParams.m_enableProgress = true;
   
@@ -334,16 +333,15 @@ void TsSegmenter::RegionGrowingBaatzStrategy()
   
   // Creating the algorithm parameters
   
-  te::rp::SegmenterRegionGrowingStrategy::Parameters strategyParameters;
+  te::rp::SegmenterRegionGrowingBaatzStrategy::Parameters strategyParameters;
   strategyParameters.m_minSegmentSize = 100;
   strategyParameters.m_segmentsSimilarityThreshold = 0.5;
-  strategyParameters.m_segmentFeatures = te::rp::SegmenterRegionGrowingStrategy::Parameters::BaatzFeaturesType;
-   strategyParameters.m_bandsWeights.resize( 
-     (unsigned int)inputRasterPointer->getNumberOfBands(),
-     1.0 / ((double)inputRasterPointer->getNumberOfBands()) );
-   strategyParameters.m_colorWeight = 0.9;
-   strategyParameters.m_compactnessWeight = 0.5;
-   strategyParameters.m_segmentsSimIncreaseSteps = 10;
+  strategyParameters.m_bandsWeights.resize( 
+    (unsigned int)inputRasterPointer->getNumberOfBands(),
+    1.0 / ((double)inputRasterPointer->getNumberOfBands()) );
+  strategyParameters.m_colorWeight = 0.9;
+  strategyParameters.m_compactnessWeight = 0.5;
+  strategyParameters.m_segmentsSimIncreaseSteps = 10;
   
   te::rp::Segmenter::InputParameters algoInputParams;
   algoInputParams.m_inputRasterPtr = inputRasterPointer.get();
@@ -355,7 +353,7 @@ void TsSegmenter::RegionGrowingBaatzStrategy()
   algoInputParams.m_enableBlockProcessing = false;
   algoInputParams.m_blocksOverlapPercent = 0;
   algoInputParams.m_maxBlockSize = 0;
-  algoInputParams.m_strategyName = "RegionGrowing";
+  algoInputParams.m_strategyName = "RegionGrowingBaatz";
   algoInputParams.setSegStrategyParams( strategyParameters );
   algoInputParams.m_enableProgress = true;
   
@@ -395,16 +393,15 @@ void TsSegmenter::RegionGrowingBaatzStrategyBlockProcessing()
   
   // Creating the algorithm parameters
   
-  te::rp::SegmenterRegionGrowingStrategy::Parameters strategyParameters;
+  te::rp::SegmenterRegionGrowingBaatzStrategy::Parameters strategyParameters;
   strategyParameters.m_minSegmentSize = 100;
   strategyParameters.m_segmentsSimilarityThreshold = 0.03;
-  strategyParameters.m_segmentFeatures = te::rp::SegmenterRegionGrowingStrategy::Parameters::BaatzFeaturesType;
-   strategyParameters.m_bandsWeights.resize( 
-     (unsigned int)inputRasterPointer->getNumberOfBands(),
-     1.0 / ((double)inputRasterPointer->getNumberOfBands()) );
-   strategyParameters.m_colorWeight = 1.0;
-   strategyParameters.m_compactnessWeight = 0.5;
-   strategyParameters.m_segmentsSimIncreaseSteps = 10;
+  strategyParameters.m_bandsWeights.resize( 
+    (unsigned int)inputRasterPointer->getNumberOfBands(),
+    1.0 / ((double)inputRasterPointer->getNumberOfBands()) );
+  strategyParameters.m_colorWeight = 1.0;
+  strategyParameters.m_compactnessWeight = 0.5;
+  strategyParameters.m_segmentsSimIncreaseSteps = 10;
   
   te::rp::Segmenter::InputParameters algoInputParams;
   algoInputParams.m_inputRasterPtr = inputRasterPointer.get();
@@ -416,7 +413,7 @@ void TsSegmenter::RegionGrowingBaatzStrategyBlockProcessing()
   algoInputParams.m_enableBlockProcessing = true;
   algoInputParams.m_blocksOverlapPercent = 20;
   algoInputParams.m_maxBlockSize = 100;
-  algoInputParams.m_strategyName = "RegionGrowing";
+  algoInputParams.m_strategyName = "RegionGrowingBaatz";
   algoInputParams.setSegStrategyParams( strategyParameters );
   algoInputParams.m_enableProgress = true;
   

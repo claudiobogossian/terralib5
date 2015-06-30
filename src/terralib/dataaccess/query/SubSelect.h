@@ -66,7 +66,7 @@ namespace te
 
           \param s The real SubSelect to be associated to this object.
         */
-        SubSelect(const Select& s, const std::string& alias);        
+        SubSelect(const Select& s, const std::string& alias);
 
         /*! \brief Copy constructor. */
         SubSelect(const SubSelect& rhs);
