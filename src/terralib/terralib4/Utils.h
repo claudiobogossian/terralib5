@@ -119,6 +119,8 @@ namespace terralib4
 
   te::rst::RasterProperty* Convert2T5(TeRasterParams& rparams);
 
+  void CheckDecimalSeparator(std::string& value);
+
 } // end namespace terralib4
 
 #endif  // __TERRALIB_T4_INTERNAL_UTILS_H
