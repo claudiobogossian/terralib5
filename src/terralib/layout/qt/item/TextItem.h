@@ -129,32 +129,32 @@ namespace te
         /*!
           \brief Reimplemented from QGraphicsTextItem
          */
-        virtual QVariant	itemChange ( GraphicsItemChange change, const QVariant & value );
+        virtual QVariant itemChange ( GraphicsItemChange change, const QVariant & value );
                 
         /*!
           \brief Reimplemented from QGraphicsTextItem
          */
-        virtual void	keyPressEvent ( QKeyEvent * event );
+        virtual void keyPressEvent ( QKeyEvent * event );
 
         /*!
           \brief Reimplemented from QGraphicsTextItem
          */
-        virtual void	mouseDoubleClickEvent ( QGraphicsSceneMouseEvent * event );
+        virtual void mouseDoubleClickEvent ( QGraphicsSceneMouseEvent * event );
 
         /*!
           \brief Reimplemented from QGraphicsTextItem
          */
-        virtual void	mouseMoveEvent ( QGraphicsSceneMouseEvent * event );
+        virtual void mouseMoveEvent ( QGraphicsSceneMouseEvent * event );
 
         /*!
           \brief Reimplemented from QGraphicsTextItem
          */
-        virtual void	mousePressEvent ( QGraphicsSceneMouseEvent * event );
+        virtual void mousePressEvent ( QGraphicsSceneMouseEvent * event );
 
         /*!
           \brief Reimplemented from QGraphicsTextItem
          */
-        virtual void	mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
+        virtual void mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
                 
         virtual void init();
         
@@ -170,13 +170,21 @@ namespace te
         virtual void resetEdit();
 
         virtual void updateTextConfig();
-				
-				QColor         m_backgroundColor;
-				QColor				 m_fontColor;
+
+        void setAlignment(Qt::Alignment alignment);
+
+        virtual void drawAlignmentCenter(QPainter * painter);
+
+        virtual void drawAlignmentLeft(QPainter * painter);
+
+        virtual void drawAlignmentRight(QPainter * painter);
+
+        QColor         m_backgroundColor;
+        QColor         m_fontColor;
         bool           m_editable;
         QTextTable*    m_table;
         bool           m_move;
-				bool					 m_update;
+        bool           m_update;
     };
   }
 }

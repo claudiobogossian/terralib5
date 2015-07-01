@@ -57,6 +57,9 @@
 #include "terralib/qt/widgets/propertybrowser/AbstractPropertyManager.h"
 #include "terralib/se/Utils.h"
 #include "terralib/qt/widgets/se/BasicFillPropertyItem.h"
+#include "../../core/enum/EnumAlignmentType.h"
+#include "qlabel.h"
+#include "qpainter.h"
 
 
 te::layout::TextItem::TextItem( ItemController* controller, Observable* o ) :
@@ -84,10 +87,10 @@ te::layout::TextItem::~TextItem()
 void te::layout::TextItem::init()
 {
   QFont ft("Arial", 12);
-	m_fontColor.setRgb(0,0,0);
-	setDefaultTextColor(m_fontColor);
+  m_fontColor.setRgb(0,0,0);
+  setDefaultTextColor(m_fontColor);
   document()->setDefaultFont(ft);
-	
+  
   std::string name = m_model->getName();
   TextModel* model = dynamic_cast<TextModel*>(m_model);
 
@@ -97,7 +100,7 @@ void te::layout::TextItem::init()
     {
       model->setText(name);
     }
-		
+    
     QTextCursor cursor(document());
     cursor.movePosition(QTextCursor::Start);
     cursor.insertText(name.c_str());
@@ -154,6 +157,28 @@ void te::layout::TextItem::paint( QPainter * painter, const QStyleOptionGraphics
   if (option->state & QStyle::State_Selected)
   {
     drawSelection(painter);
+  }
+
+   TextModel* model = dynamic_cast<TextModel*>(m_model);
+
+  if(model)
+  {
+    EnumAlignmentType* enumScale = model->getEnumAlignmentType();
+
+    if(model->getCurrentAlignmentType() == enumScale->getAlignmentCenterType())
+    {
+      drawAlignmentCenter(painter);
+    }
+
+    if(model->getCurrentAlignmentType() == enumScale->getAlignmentLeftType())
+    {
+      drawAlignmentLeft(painter);
+    }
+
+    if(model->getCurrentAlignmentType() == enumScale->getAlignmentRightType())
+    {
+      drawAlignmentRight(painter);
+    }
   }
 }
 
@@ -226,7 +251,7 @@ te::gm::Coord2D te::layout::TextItem::getPosition()
   double w = 0;
   double h = 0;
 
-  getDocumentSizeMM(w, h);  
+  getDocumentSizeMM(w, h);
   qreal valuex = posF.x();
   qreal valuey = posF.y() - h;
 
@@ -288,24 +313,24 @@ void te::layout::TextItem::keyPressEvent( QKeyEvent * event )
 
 void te::layout::TextItem::mouseDoubleClickEvent( QGraphicsSceneMouseEvent * event )
 {
-	QTextCursor cursor(textCursor());
-	setTextCursor(cursor);
-	setEditable(true);
-	setTextInteractionFlags(Qt::TextEditorInteraction);
+  QTextCursor cursor(textCursor());
+  setTextCursor(cursor);
+  setEditable(true);
+  setTextInteractionFlags(Qt::TextEditorInteraction);
 
-	qDebug("mouseDoubleClickEvent '%s'", this->toPlainText().toStdString().c_str());
-	if(textInteractionFlags() == Qt::TextEditorInteraction)
-	{
-		QGraphicsTextItem::mouseDoubleClickEvent(event);
-		setTextInteractionFlags(Qt::TextEditorInteraction);
-		return;
-	}
+  qDebug("mouseDoubleClickEvent '%s'", this->toPlainText().toStdString().c_str());
+  if(textInteractionFlags() == Qt::TextEditorInteraction)
+  {
+    QGraphicsTextItem::mouseDoubleClickEvent(event);
+    setTextInteractionFlags(Qt::TextEditorInteraction);
+    return;
+  }
 
-	QGraphicsSceneMouseEvent *click = new QGraphicsSceneMouseEvent(QEvent::GraphicsSceneMousePress);
-	click->setButton(event->button());
-	click->setPos(event->pos());
-	QGraphicsTextItem::mousePressEvent(click);
-	delete click;
+  QGraphicsSceneMouseEvent *click = new QGraphicsSceneMouseEvent(QEvent::GraphicsSceneMousePress);
+  click->setButton(event->button());
+  click->setPos(event->pos());
+  QGraphicsTextItem::mousePressEvent(click);
+  delete click;
 
 }
 
@@ -413,13 +438,13 @@ void te::layout::TextItem::updateTextConfig()
   m_backgroundColor.setAlpha(clrBack.getAlpha());
 
 
-	te::color::RGBAColor clrText = model->getFontColor();
-	m_fontColor.setRed(clrText.getRed());
-	m_fontColor.setGreen(clrText.getGreen());
-	m_fontColor.setBlue(clrText.getBlue());
-	m_fontColor.setAlpha(clrText.getAlpha());
-	
-	setDefaultTextColor(m_fontColor);
+  te::color::RGBAColor clrText = model->getFontColor();
+  m_fontColor.setRed(clrText.getRed());
+  m_fontColor.setGreen(clrText.getGreen());
+  m_fontColor.setBlue(clrText.getBlue());
+  m_fontColor.setAlpha(clrText.getAlpha());
+  
+  setDefaultTextColor(m_fontColor);
 
   Font ft = model->getFont();
 
@@ -440,5 +465,38 @@ QRectF te::layout::TextItem::boundingRect() const
   return QGraphicsTextItem::boundingRect();
 }
 
+void te::layout::TextItem::drawAlignmentCenter(QPainter * painter)
+{
 
+  TextModel* model = dynamic_cast<TextModel*>(m_model);
+  if(!model)
+  {
+    return;
+  }
 
+  painter->save();
+
+  std::string txt = model->getText();
+  QString text;
+  painter->restore();
+
+  setAlignment(Qt::AlignCenter);
+}
+
+void te::layout::TextItem::drawAlignmentLeft(QPainter * painter)
+{
+  setAlignment(Qt::AlignLeft);
+  painter->save();
+  painter->restore();
+}
+
+void te::layout::TextItem::drawAlignmentRight(QPainter * painter)
+{
+  setAlignment(Qt::AlignRight);
+  painter->save();
+  painter->restore();
+}
+
+void te::layout::TextItem::setAlignment(Qt::Alignment alignment)
+{
+}

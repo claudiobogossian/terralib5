@@ -44,11 +44,11 @@ namespace te
     \brief Class that represents a graphic Point. 
         Its coordinate system is the same of scene (millimeters). 
         He is also the son of ItemObserver and ObjectItem, so it can become observer of a model (Observable). 
-	  
-	    \ingroup layout
+    
+      \ingroup layout
 
-	    \sa te::layout::ObjectItem
-	  */
+      \sa te::layout::ObjectItem
+    */
     class TELAYOUTEXPORT PointItem : public ObjectItem
     {
       public:
@@ -75,11 +75,11 @@ namespace te
 
         virtual void drawStar1(QPainter * painter);
 
-				virtual void drawStar2(QPainter * painter);
+        virtual void drawStar2(QPainter * painter);
 
-				virtual void drawStar3(QPainter * painter);
+        virtual void drawStar3(QPainter * painter);
 
-				virtual void drawStar4(QPainter * painter);
+        virtual void drawStar4(QPainter * painter);
 
         virtual void drawCircle(QPainter * painter);
 

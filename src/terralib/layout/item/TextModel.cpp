@@ -38,9 +38,13 @@
 #include <string>
 #include <sstream> // std::stringstream
 #include "../core/enum/EnumDataType.h"
+#include "../core/enum/EnumAlignmentType.h"
 
 te::layout::TextModel::TextModel() :
-  m_text("")	
+  m_text(""),
+	m_enumAlignmentType(0),
+	m_currentAlignmentType(0),
+	m_shapeSize(4)
 {
   m_type = Enums::getInstance().getEnumObjectType()->getTextItem();
 
@@ -50,11 +54,18 @@ te::layout::TextModel::TextModel() :
 	m_fontColor.setColor(0,0,0);
 	m_resizable = false;
   m_border = false;
+
+	m_enumAlignmentType = new EnumAlignmentType();
+	m_currentAlignmentType = m_enumAlignmentType->getAlignmentCenterType();
 }
 
 te::layout::TextModel::~TextModel()
 {
-
+	if(m_enumAlignmentType)
+	{
+		delete m_enumAlignmentType;
+		m_enumAlignmentType = 0;
+	}
 }
 
 te::layout::Properties* te::layout::TextModel::getProperties() const
@@ -79,6 +90,12 @@ te::layout::Properties* te::layout::TextModel::getProperties() const
 	pro_fontColor.setValue(m_fontColor, dataType->getDataTypeColor());
 	pro_font.setVisible(false);
 	m_properties->addProperty(pro_fontColor);
+
+	Property pro_alignmentName = alignmentProperty();
+	if(!pro_alignmentName.isNull())
+	{
+		m_properties->addProperty(pro_alignmentName);
+	}
 
   return m_properties;
 }
@@ -108,6 +125,18 @@ void te::layout::TextModel::updateProperties( te::layout::Properties* properties
 	if(!pro_fontColor.isNull())
 	{
 		m_fontColor = pro_fontColor.getValue().toColor();
+	}
+
+	Property pro_alignmentName = vectorProps->contains("Alignment");
+
+	if(!pro_alignmentName.isNull())
+	{
+		std::string label = pro_alignmentName.getOptionByCurrentChoice().toString();
+		EnumType* enumType = m_enumAlignmentType->searchLabel(label);
+		if(enumType)
+		{
+			m_currentAlignmentType = enumType;
+		}
 	}
 
 	if(notify)
@@ -145,6 +174,57 @@ void te::layout::TextModel::setFontColor(te::color::RGBAColor clft)
 te::color::RGBAColor te::layout::TextModel::getFontColor()
 {
 	return m_fontColor;
+}
+
+te::layout::EnumAlignmentType* te::layout::TextModel::getEnumAlignmentType()
+{
+	return m_enumAlignmentType;
+}
+
+te::layout::EnumType* te::layout::TextModel::getCurrentAlignmentType()
+{
+	return m_currentAlignmentType;
+}
+
+double te::layout::TextModel::getShapeSize()
+{
+	return m_shapeSize;
+}
+
+te::layout::Property te::layout::TextModel::alignmentProperty() const
+{
+	Property pro_alignmentName(m_hashCode);
+
+	if(!m_currentAlignmentType)
+		return pro_alignmentName;
+
+	EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+
+	if(!dataType)
+		return pro_alignmentName;
+
+	pro_alignmentName.setName("Alignment");
+	pro_alignmentName.setLabel("graphic type");
+	pro_alignmentName.setValue(m_currentAlignmentType->getLabel(), dataType->getDataTypeStringList());
+
+	Variant v;
+	v.setValue(m_currentAlignmentType->getLabel(), dataType->getDataTypeString());
+	pro_alignmentName.addOption(v);
+	pro_alignmentName.setOptionChoice(v);
+
+	for(int i = 0 ; i < m_enumAlignmentType->size() ; ++i)
+	{
+		EnumType* enumType = m_enumAlignmentType->getEnum(i);
+
+		if(enumType == m_enumAlignmentType->getNoneType() || enumType == m_currentAlignmentType)
+			continue;
+
+		Variant v;
+		v.setValue(enumType->getLabel(), dataType->getDataTypeString());
+		pro_alignmentName.addOption(v);
+	}
+
+	return pro_alignmentName;
 }
 
 

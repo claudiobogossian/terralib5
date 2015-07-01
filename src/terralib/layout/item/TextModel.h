@@ -38,6 +38,10 @@
 #include "../core/Utils.h"
 #include "../core/Font.h"
 #include "../core/Config.h"
+#include "../core/enum/EnumAlignmentType.h"
+#include "../core/property/Property.h"
+#include "../core/property/Properties.h"
+
 
 // STL
 #include <string>
@@ -81,18 +85,27 @@ namespace te
         virtual Font getFont();
 
         virtual void setFont(Font ft);
-				
-				virtual void setFontColor(te::color::RGBAColor clft);
 
-				virtual te::color::RGBAColor getFontColor();
+        virtual void setFontColor(te::color::RGBAColor clft);
 
-			
+        virtual te::color::RGBAColor getFontColor();
+
+        virtual EnumAlignmentType* getEnumAlignmentType();
+
+        virtual EnumType* getCurrentAlignmentType();
+
+        virtual double getShapeSize();
 
        protected:
          
+        virtual Property alignmentProperty() const;
+
          std::string m_text;
          Font m_font;
-				 te::color::RGBAColor m_fontColor;
+         te::color::RGBAColor m_fontColor;
+         EnumAlignmentType* m_enumAlignmentType;
+         EnumType*      m_currentAlignmentType;
+         double         m_shapeSize;
     };
   }
 }
