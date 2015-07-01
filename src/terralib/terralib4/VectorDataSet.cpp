@@ -275,7 +275,9 @@ double terralib4::VectorDataSet::getDouble(std::size_t i) const
   std::string val;
   int ii = static_cast<int>(i);
   m_instance.getPropertyValue(val, ii);
-
+  
+  CheckDecimalSeparator(val);
+  
   return boost::lexical_cast<double>(val);
 }
 
@@ -285,6 +287,8 @@ std::string terralib4::VectorDataSet::getNumeric(std::size_t i) const
   int ii = static_cast<int>(i);
 
   m_instance.getPropertyValue(val, ii);
+
+  CheckDecimalSeparator(val);
 
   return val;
 }
