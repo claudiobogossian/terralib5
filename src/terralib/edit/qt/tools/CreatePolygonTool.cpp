@@ -30,6 +30,8 @@
 #include "../../../geometry/LineString.h"
 #include "../../../geometry/Point.h"
 #include "../../../geometry/Polygon.h"
+#include "../../../dataaccess/dataset/ObjectId.h"
+#include "../../../dataaccess/utils/Utils.h"
 #include "../../../qt/widgets/canvas/MapDisplay.h"
 #include "../../../qt/widgets/Utils.h"
 #include "../../RepositoryManager.h"
@@ -46,6 +48,9 @@
 // STL
 #include <cassert>
 #include <memory>
+
+//test remove
+#include <QMessageBox>
 
 te::edit::CreatePolygonTool::CreatePolygonTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, QObject* parent) 
   : AbstractTool(display, parent),
@@ -109,10 +114,15 @@ bool te::edit::CreatePolygonTool::mouseMoveEvent(QMouseEvent* e)
 
   Qt::KeyboardModifiers keys = e->modifiers();
 
-  if(keys == Qt::NoModifier)
+  /*if(keys == Qt::NoModifier)
     m_continuousMode = false;
   else if(keys == Qt::ShiftModifier)
-    m_continuousMode = true;
+    m_continuousMode = true;*/
+  
+  if (e->buttons() & Qt::LeftButton)
+	m_continuousMode = true;
+  else
+	m_continuousMode = false;
 
   draw();
 
@@ -243,7 +253,9 @@ te::gm::Geometry* te::edit::CreatePolygonTool::buildLine()
 
 void te::edit::CreatePolygonTool::storeNewGeometry()
 {
+
   RepositoryManager::getInstance().addGeometry(m_layer->getId(), buildPolygon());
+
 }
 
 void te::edit::CreatePolygonTool::onExtentChanged()

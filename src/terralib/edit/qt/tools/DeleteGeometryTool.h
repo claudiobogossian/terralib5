@@ -18,48 +18,47 @@
  */
 
 /*!
-  \file terralib/edit/qt/tools/CreateLineTool.h
+  \file terralib/edit/qt/tools/MoveGeometryTool.h
 
-  \brief This class implements a concrete tool to create lines.
+  \brief This class implements a concrete tool to move geometries.
 */
 
-#ifndef __TERRALIB_EDIT_QT_INTERNAL_CREATELINETOOL_H
-#define __TERRALIB_EDIT_QT_INTERNAL_CREATELINETOOL_H
+#ifndef __TERRALIB_EDIT_QT_INTERNAL_DELETEGEOMETRYTOOL_H
+#define __TERRALIB_EDIT_QT_INTERNAL_DELETEGEOMETRYTOOL_H
 
 // TerraLib
-#include "../../../geometry/Coord2D.h"
+#include "../../../geometry/Envelope.h"
 #include "../../../maptools/AbstractLayer.h"
 #include "../../../qt/widgets/tools/AbstractTool.h"
 #include "../Config.h"
 
-// STL
-#include <vector>
+// Qt
+#include <QPointF>
 
 namespace te
 {
-  namespace gm
-  {
-    class Geometry;
-  }
-
   namespace qt
   {
     namespace widgets
     {
+      class Canvas;
       class MapDisplay;
     }
   }
 
   namespace edit
   {
-    /*!
-      \class CreateLineTool
+// Forward declaration
+    class Feature;
 
-      \brief This class implements a concrete tool to create lines.
+    /*!
+      \class DeleteGeometryTool
+
+      \brief This class implements a concrete tool to move geometries.
     */
-    class TEEDITQTEXPORT CreateLineTool : public te::qt::widgets::AbstractTool
+    class TEEDITQTEXPORT DeleteGeometryTool : public te::qt::widgets::AbstractTool
     {
-      Q_OBJECT
+      //Q_OBJECT
 
       public:
 
@@ -69,17 +68,17 @@ namespace te
         //@{
 
         /*!
-          \brief It constructs a create line tool associated with the given map display.
+          \brief It constructs a move geometry tool associated with the given map display.
 
           \param display The map display associated with the tool.
           \param parent The tool's parent.
 
           \note The tool will NOT take the ownership of the given pointers.
         */
-        CreateLineTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, QObject* parent = 0);
+        DeleteGeometryTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent = 0);
 
         /*! \brief Destructor. */
-        ~CreateLineTool();
+        ~DeleteGeometryTool();
 
         //@}
 
@@ -100,13 +99,15 @@ namespace te
 
       private:
 
+        void reset();
+
+        void pickFeature(const te::map::AbstractLayerPtr& layer);
+
+        te::gm::Envelope buildEnvelope(const QPointF& pos);
+
         void draw();
 
-        //void clear();
-
-        te::gm::Geometry* buildLine();
-
-        void storeNewGeometry();
+        void storeRemovedFeature();
 
       private slots:
 
@@ -114,17 +115,14 @@ namespace te
 
       protected:
 
-        te::map::AbstractLayerPtr m_layer;      //!< The layer used by this tool.
-        std::vector<te::gm::Coord2D> m_coords;  //!< The coord list managed by this tool.
-        te::gm::Coord2D m_lastPos;              //!< The last position captured on mouse move event.
-        bool m_continuousMode;                  //!< A flag that indicates if the tool is working in 'continuous mode'. i.e. the coordinates will be acquired  from each mouseMove.
-        bool m_isFinished;                      //!< A flag that indicates if the operations was finished.
-        te::gm::LineString* _line;                //!< The line were the coords are added. It is a copy from the current line and it is used to optimize the feedkback speed.
+        te::map::AbstractLayerPtr m_layer;
+        Feature* m_feature;
 
-        void clear();
+    //QList<Feature*> m_feature;// m_tools;
+
     };
 
   }   // end namespace edit
 }     // end namespace te
 
-#endif  // __TERRALIB_EDIT_QT_INTERNAL_CREATELINETOOL_H
+#endif  // __TERRALIB_EDIT_QT_INTERNAL_DELETEGEOMETRYTOOL_H

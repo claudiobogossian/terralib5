@@ -486,7 +486,7 @@ te::common::CharEncoding te::da::DataSource::getEncoding()
 void te::da::DataSource::remove(const std::string& datasetName, const ObjectIdSet* oids)
 {
   std::auto_ptr<DataSourceTransactor> t = getTransactor();
-  return t->remove(datasetName);
+  return t->remove(datasetName, oids);
 }
 
 void te::da::DataSource::update(const std::string& datasetName,
