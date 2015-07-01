@@ -41,6 +41,7 @@
 
 // Qt
 #include <QPointF>
+#include "qglobal.h"
 
 te::layout::ArrowItem::ArrowItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
   ObjectItem(controller, o, invertedMatrix)
@@ -55,18 +56,9 @@ te::layout::ArrowItem::~ArrowItem()
 
 void te::layout::ArrowItem::drawItem( QPainter * painter )
 {
-<<<<<<< HEAD
-  Q_UNUSED( option );
-  Q_UNUSED( widget );
-  if ( !painter )
-  {
-    return;
-  }
+  	ArrowModel* model = dynamic_cast<ArrowModel*>(m_model);
 
   drawBackground(painter);
-
-
-	ArrowModel* model = dynamic_cast<ArrowModel*>(m_model);
 
 	if(model)
 	{
@@ -87,25 +79,6 @@ void te::layout::ArrowItem::drawItem( QPainter * painter )
 	}
 
   drawBorder(painter);
-
-  //Draw Selection
-  if (option->state & QStyle::State_Selected)
-=======
-  ArrowModel* model = dynamic_cast<ArrowModel*>(m_model);
-  if(model)
->>>>>>> 5e560945015893cb5a2da682f359d1a675549014
-  {
-    EnumArrowType* enumScale = model->getEnumArrowType();
-
-    if(model->getCurrentArrowType() == enumScale->getDoubleArrowType())
-    {
-      drawDoubleArrow(painter);
-    }
-    if(model->getCurrentArrowType() == enumScale->getRightArrowType())
-    {
-      drawRightArrow(painter);
-    }
-  }
 }
 
 void te::layout::ArrowItem::drawRightArrow( QPainter * painter )

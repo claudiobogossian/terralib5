@@ -41,7 +41,6 @@ te::layout::NorthItem::~NorthItem()
 
 }
 
-<<<<<<< HEAD
 void te::layout::NorthItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
 {
 	Q_UNUSED( option );
@@ -125,11 +124,7 @@ void te::layout::NorthItem::drawNorthArrow1(QPainter * painter)
 	painter->drawPolygon(north);
 	painter->restore();
 }
-
 void te::layout::NorthItem::drawNorthArrow2(QPainter * painter)
-=======
-void te::layout::NorthItem::drawItem( QPainter * painter )
->>>>>>> 5e560945015893cb5a2da682f359d1a675549014
 {
 	NorthModel* model = dynamic_cast<NorthModel*>(m_model);
 	if(!model)

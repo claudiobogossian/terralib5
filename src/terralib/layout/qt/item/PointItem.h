@@ -68,7 +68,6 @@ namespace te
 
       protected:
 
-<<<<<<< HEAD
         virtual void drawStar1(QPainter * painter);
 
         virtual void drawStar2(QPainter * painter);
@@ -76,11 +75,8 @@ namespace te
         virtual void drawStar3(QPainter * painter);
 
         virtual void drawStar4(QPainter * painter);
-=======
-        virtual void drawItem ( QPainter * painter );
 
-        virtual void drawStar(QPainter * painter);
->>>>>>> 5e560945015893cb5a2da682f359d1a675549014
+        virtual void drawItem ( QPainter * painter );
 
         virtual void drawCircle(QPainter * painter);
 

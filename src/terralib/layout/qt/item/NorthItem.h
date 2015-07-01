@@ -66,7 +66,6 @@ namespace te
          */
         virtual ~NorthItem();
 
-<<<<<<< HEAD
         /*!
           \brief Reimplemented from QGraphicsItem
          */
@@ -77,13 +76,7 @@ namespace te
 				virtual void drawNorthArrow1(QPainter * painter);
 				virtual void drawNorthArrow2(QPainter * painter);
 				virtual void drawNorthArrow3(QPainter * painter);
-=======
-      protected:
-
-        virtual void drawItem(QPainter * painter);
->>>>>>> 5e560945015893cb5a2da682f359d1a675549014
     };
   }
 }
-
 #endif

@@ -46,6 +46,7 @@
 #include <QPen>
 #include <QPolygonF>
 #include <QPainterPath>
+#include "ParentItem.h"
 
 te::layout::PointItem::PointItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
   ObjectItem(controller, o, invertedMatrix)

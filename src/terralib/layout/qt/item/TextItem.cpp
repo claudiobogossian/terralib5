@@ -480,11 +480,11 @@ void te::layout::TextItem::drawAlignmentCenter(QPainter * painter)
 
   painter->save();
   std::string txt = model->getText();
-  QGraphicsTextItem textItem(txt);
-  painter->setFont(textItem.font());
-  painter->setTransform(textItem.sceneTransform());
+  //QGraphicsTextItem textItem(txt);
+  //painter->setFont(textItem.font());
+  //painter->setTransform(textItem.sceneTransform());
 
-  painter->drawText(textItem.boundingRect(), Qt::AlignCenter, textItem.toPlainText());
+  //painter->drawText(textItem.boundingRect(), Qt::AlignCenter, textItem.toPlainText());
 
   painter->restore();
 

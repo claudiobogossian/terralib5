@@ -79,11 +79,7 @@ te::layout::ToolbarOutside::ToolbarOutside( OutsideController* controller, Obser
   m_actionArrow("geometry_arrow"),
   m_actionLine("geometry_line"),
   m_actionPolygon("geometry_polygon"),
-<<<<<<< HEAD
-=======
-  m_actionStar("geometry_star"),
   m_actionSVG("geometry_svg"),
->>>>>>> 5e560945015893cb5a2da682f359d1a675549014
   m_actionViewPan("view_pan"),
   m_actionViewZoomIn("view_zoom_in"),
   m_actionViewZoomOut("view_zoom_out"),
@@ -352,15 +348,9 @@ QToolButton* te::layout::ToolbarOutside::createGeometryToolButton()
   QAction* actionPolygon = createAction("Polygon Object", m_actionPolygon, "layout-polygon", "", menu); 
   menu->addAction(actionPolygon);
 
-<<<<<<< HEAD
-=======
-  QAction* actionStar = createAction("Star Object", m_actionStar, "layout-star", "", menu); 
-  menu->addAction(actionStar);
-
   QAction* actionSVG = createAction("SVG Object", m_actionSVG, "layout-svg", "", menu); 
   menu->addAction(actionSVG);
 
->>>>>>> 5e560945015893cb5a2da682f359d1a675549014
   btnGeometry->setMenu(menu);
   btnGeometry->setPopupMode(QToolButton::MenuButtonPopup);
   btnGeometry->setDefaultAction(actionRectagle);
@@ -851,17 +841,10 @@ void te::layout::ToolbarOutside::onGeometryTriggered( QAction* action )
     changeAction(type->getModeCreatePolygon());
     Context::getInstance().setWait(type->getModeCoordWait());
   }
-<<<<<<< HEAD
-=======
-  else if (action->objectName().compare(m_actionStar.c_str()) == 0) 
-  {
-	  changeAction(type->getModeCreateStar());
-  }
   else if (action->objectName().compare(m_actionSVG.c_str()) == 0) 
   {
     changeAction(type->getModeCreateSVG());
   }
->>>>>>> 5e560945015893cb5a2da682f359d1a675549014
 }
 
 void te::layout::ToolbarOutside::onViewAreaTriggered( QAction* action )
@@ -1625,18 +1608,9 @@ QAction* te::layout::ToolbarOutside::getActionComboBoxZoom()
   return m_actionComboZoom;
 }
 
-<<<<<<< HEAD
-=======
-std::string te::layout::ToolbarOutside::getActionStar()
-{
-	return m_actionStar;
-}
-
 std::string te::layout::ToolbarOutside::getActionSVG()
 {
   return m_actionSVG;
 }
-
->>>>>>> 5e560945015893cb5a2da682f359d1a675549014
 
 

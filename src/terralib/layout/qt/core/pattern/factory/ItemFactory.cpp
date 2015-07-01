@@ -53,11 +53,7 @@
 #include "../../../item/GridGeodesicItem.h"
 #include "../../../item/NorthItem.h"
 #include "../../../item/MapLocationItem.h"
-<<<<<<< HEAD
-=======
-#include "../../../item/StarItem.h"
 #include "../../../item/SVGItem.h"
->>>>>>> 5e560945015893cb5a2da682f359d1a675549014
 
 te::layout::ItemFactory::ItemFactory()
 {
@@ -195,20 +191,11 @@ te::layout::Observer* te::layout::ItemFactory::make( EnumType* type, ItemParamsC
     MapLocationItem* location = new MapLocationItem(params.getController(), params.getModel());
     item = (Observer*)location;
   }
-<<<<<<< HEAD
-
-=======
-	else if(type == enumObj->getStarItem())
-	{
-		StarItem* point = new StarItem(params.getController(), params.getModel());
-		item = (Observer*)point;
-	}
   else if(type == enumObj->getSVGItem())
   {
     SVGItem* point = new SVGItem(params.getController(), params.getModel());
     item = (Observer*)point;
   }
->>>>>>> 5e560945015893cb5a2da682f359d1a675549014
   return item;
 }
 
