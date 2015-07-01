@@ -49,12 +49,12 @@ te::layout::NorthModel::~NorthModel()
 
 }
 
-const te::color::RGBAColor& te::layout::LineModel::getColor() const
+const te::color::RGBAColor& te::layout::NorthModel::getColor() const
 {
   return m_color;
 }
 
-void te::layout::LineModel::setColor(const te::color::RGBAColor& color)
+void te::layout::NorthModel::setColor(const te::color::RGBAColor& color)
 {
   m_color = color;
 }
