@@ -8,7 +8,7 @@ Until now its build has been tested on Linux Ubuntu 12.04, Mac OS X Mavericks an
 
 Future releases will be tested on Mac OS X Snow Leopard, Microsoft Windows 8 and others Linux flavours.
 
-You should use at least CMake version 2.8.7 for building TerraLib. Older versions than this may not work properly.
+You should use at least CMake version 2.8.12 for building TerraLib. Older versions than this may not work properly.
 
 Make sure you have all the third-party library dependencies listed in the DEPENDENCIES file on the root of the codebase.
 
@@ -53,66 +53,87 @@ Notes:
           -DCMAKE_BUILD_TYPE:STRING="Debug"
 
 1.5 Building:
-$ make -j 4
+$ make
+$ make terralib_qhelp
+$ make terralib_qtranslations
 
 1.6 Installing:
 $ make install
 
+1.7 Uninstalling:
+$ make uninstall
 
-2. Building with CMake GUI
+
+2. Building with CMake GUI on Windows using MSVC2013
 --------------------------
-
-2.1 On Windows:
 
 a) We will assume that the TerraLib source tree (git clone) is located at:
    C:\terralib\codebase
 
-b) We will assume that the third party libraries, obtained from
-   http://www.dpi.inpe.br/terralib5-devel/terralib5-3rdparty-win32-msvc-2010.zip
+b) We will assume that the third party libraries for Visual Studio 2013, can be obtained from two places:
+   b.1) The tagged version:  
+     http://www.dpi.inpe.br/terralib5/terralib5-3rdparty/terralib5.0.0-3rdparty-msvc-2013-win64.zip
+           or
+     http://www.dpi.inpe.br/terralib5/terralib5-3rdparty/terralib5.0.0-3rdparty-msvc-2013-win32.zip
+		   
+   b.2) The most updated version used by developers (might not work with different tags): 
+     http://www.dpi.inpe.br/terralib5-devel/terralib5-3rdparty-msvc-2013-win64.zip
+           or
+     http://www.dpi.inpe.br/terralib5-devel/terralib5-3rdparty-msvc-2013-win32.zip
+   
+are uncompressed at :
+   
+   C:\terralib\terralib5-3rdparty-msvc-2013-win64
    or
-   http://www.dpi.inpe.br/terralib5-devel/terralib5-3rdparty-win64-msvc-2010.zip
-   are located at:
-   C:\terralib\3rdparty-win32-msvc-2010
-   or
-   C:\terralib\3rdparty-win64-msvc-2010
+   C:\terralib\terralib5-3rdparty-msvc-2013-win32
 
 c) Create a folder out of the TerraLib source tree to build the binaries, for example:
-   C:\terralib\build-win32
-   or
    C:\terralib\build-win64
+   or
+   C:\terralib\build-win32
 
-d) Open CMake-GUI in order to generate a build project for Microsoft Visual C++ 2010 (32-bit or 64-bit).
+d) Open CMake-GUI in order to generate a build project for Microsoft Visual C++ 2013 (32-bit or 64-bit).
 
 f) Then assure that the following variables are set to the locations defined above:
-   - Where is the source code => C:\terralib\codebase\build\cmake
-   - Where to build the binaries => C:\terralib\build-win32
-                                    or
-                                    C:\terralib\build-win64
+   Where is the source code    => C:\terralib\codebase\build\cmake
+   Where to build the binaries => C:\terralib\build-win64
+                                  or
+                                  C:\terralib\build-win32
 
 g) Then add an entry called CMAKE_PREFIX_PATH with the libraries location (separated by semicolons):
-   - Microsoft SDK => C:/Program Files (x86)/Microsoft SDKs/Windows/v7.0A
-   - TerraLib 5 Third party path => C:/terralib/3rdparty-win32-msvc-2010
-   - Qt CMake => C:/Qt/Qt5.3.0/5.3/msvc2010_opengl/lib/cmake/Qt5
 
-   Example: Press AddEntry button and inform the name CMAKE_PREFIX_PATH, type PATH and set its value as:
-   CMAKE_PREFIX_PATH => C:/Program Files (x86)/Microsoft SDKs/Windows/v7.0A;C:/terralib/3rdparty-win32-msvc-2010;C:/Qt/Qt5.3.0/5.3/msvc2010_opengl/lib/cmake/Qt5
+  * TerraLib 5 Third party => C:/terralib/terralib5-3rdparty-msvc-2013-win64
+  * Qt CMake => look for the Qt dir containing ''Qt5Config.cmake''
 
-h) Then press "Configure" and if no problem occurs press "Generate".
+Example for win64: Press ''AddEntry'' button and inform the name ''CMAKE_PREFIX_PATH'', type ''PATH'' and set its value as:   
+   CMAKE_PREFIX_PATH => C:/terralib5-3rdparty-msvc-2013-win64;C:/Qt/Qt5.4.1/5.4/msvc2013_64/lib/cmake/Qt5
  
-Note: Some projects may be disabled through the following variables:
+Example for win32: Press ''AddEntry'' button and inform the name ''CMAKE_PREFIX_PATH'', type ''PATH'' and set its value as:   
+   CMAKE_PREFIX_PATH => C:/Program Files (x86)/Microsoft SDKs/Windows/v7.0A;C:/terralib/terralib5-3rdparty-msvc-2013-win32;C:/Qt/Qt5.3.0/5.3/msvc2010_opengl/lib/cmake/Qt5 - not maintained.
+
+Note that for 32 bits it is necessary to include the path for Microsoft SDK  => look for the dir containing include/glu.h)  
+
+h) Then press "''Configure''" and choose:
+  * "''Visual Studio 12 x64''" (win64) or "''Visual Studio 12''" (win32) and 
+  * if no problem occurs press "''Generate''". Otherwise update your environment variable "PATH" with the right location of Qt and third party (see item "j").
+ 
+Note: Some projects may be disabled through the following variables(in this case press again "Configure" and "Generate"):
         TERRALIB_BUILD_EXAMPLES_ENABLED => OFF
         TERRALIB_BUILD_UNITTEST_ENABLED => OFF
 
-i) Open the generated terralib.sln solution at the folder C:\terralib\build-win32.
-   Then build the "ALL_BUILD" project to build all terralib projects, including terraview application.
+i) Open the generated ''terralib.sln'' solution at the folder ''C:\terralib\build-win64'' or ''C:\terralib\build-win32''. Then build the "''ALL_BUILD''" project to build all terralib projects, including terraview application. To build the help associated with TerraView application, it is necessary to build "''terralib_qhelp''" and "''terralib_qtranslations''".
    
-j) To run and debug TerraView application, set it as StartUp Project at Microsoft Visual C++ 2010.
+j) To be able to debug, add to your environment variable "PATH" the following:
+  For 64 bits: C:\terralib5-3rdparty-msvc-2013-win64\lib;C:\Qt\Qt5.4.1\5.4\msvc2013_64\bin
 
-k) To run and debug terralib_example_* and/or terralib_unittest_* set it as StartUp Project and make sure the data used are located at the default directory:
-   TERRALIB_DATA_DIR   C:\terralib\build-win32\data
-   
-l) Make sure the default directory used to save the reports generated by the terralib_unittest_* exist, otherwise no report will be saved:
-   TERRALIB_REPORT_DIR   C:\terralib\build-win32\report
+k) To run and debug TerraView application, set terraview module as StartUp Project at Microsoft Visual C++ 2013.
+
+l) To run and debug an terralib_example_* and/or terralib_unitest_*  set it as ''StartUp'' Project and 
+   make sure the the data ([[http://www.dpi.inpe.br/terralib5-devel/data.zip| data.zip]]) used are uncompressed at the default directory 
+   specified by TERRALIB_DATA_DIR :   
+   TERRALIB_DATA_DIR   C:\terralib\build-win32\data     or   C:\terralib\build-win64\data
+m) Make sure the default directory used to save the reports generated by the unittests exist, otherwise no report will be saved:
+   TERRALIB_REPORT_DIR   C:\terralib\build-win32\report  or C:\terralib\build-win64\report
 
 
 2.2 On MacOs and Linux:
@@ -125,6 +146,10 @@ b) We will assume that the build tree where will be generated the binaries is lo
 
 c) We will assume that all the third-party libraries that TerraLib needs to be compiled
    are installed in your system, and the Qt5 version is used.
+   
+   Note: Some QT5 related variables may not be automatically set (they have "NOT-FOUND" values) and must be set manually.
+	 Example: QT_QCOLLECTIONGENERATOR_EXECUTABLE (required by the help system) must point the refered executable.
+         (i.e. "/usr/bin/qcollectiongenerator-qt5")
 
 d) Open CMake-GUI in order to generate a build project for MacOS or Linux:
 

@@ -1,43 +1,37 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
- 
- This file is part of the TerraLib - a Framework for building GIS enabled applications.
- 
- TerraLib is free software: you can redistribute it and/or modify
- it under the terms of the GNU Lesser General Public License as published by
- the Free Software Foundation, either version 3 of the License,
- or (at your option) any later version.
- 
- TerraLib is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- GNU Lesser General Public License for more details.
- 
- You should have received a copy of the GNU Lesser General Public License
- along with TerraLib. See COPYING. If not, write to
- TerraLib Team at <terralib-team@terralib.org>.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
+
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License,
+    or (at your option) any later version.
+
+    TerraLib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
  */
 
 /*!
  \file PolygonToLineOp.cpp
  */
 
-#include "../dataaccess/dataset/DataSet.h"
-#include "../dataaccess/dataset/DataSetAdapter.h"
-#include "../dataaccess/dataset/DataSetType.h"
-#include "../dataaccess/dataset/DataSetTypeConverter.h"
-#include "../dataaccess/dataset/ObjectIdSet.h"
-#include "../dataaccess/datasource/DataSource.h"
-#include "../dataaccess/datasource/DataSourceCapabilities.h"
-#include "../dataaccess/utils/Utils.h"
-
+// Terralib
+#include "../datatype/Enums.h"
 #include "../datatype/Property.h"
-#include "../datatype/StringProperty.h"
 
+#include "../geometry/Enums.h"
 #include "../geometry/GeometryProperty.h"
 
-#include "../statistics/core/Utils.h"
-
 #include "PolygonToLineOp.h"
+
+// STL
+#include <vector>
 
 te::vp::PolygonToLineOp::PolygonToLineOp():
   m_outDset("")
@@ -67,6 +61,15 @@ std::auto_ptr<te::da::DataSetType> te::vp::PolygonToLineOp::buildOutDataSetType(
   std::string dSourceType = m_outDsrc->getType();
 
   std::vector<te::dt::Property*> vecProps = inDsType->getProperties();
+
+  std::vector<te::dt::Property*> inPk = inDsType->getPrimaryKey()->getProperties();
+  std::string namePk = m_outDset;
+
+  for (std::size_t p = 0; p < inPk.size(); ++p)
+    namePk += "_" + inPk[p]->getName();
+
+  te::da::PrimaryKey* pk = new te::da::PrimaryKey(namePk + "_pk");
+
   if(dSourceType == "OGR")
   {
     for(std::size_t i = 0; i < vecProps.size(); ++i)
@@ -93,6 +96,12 @@ std::auto_ptr<te::da::DataSetType> te::vp::PolygonToLineOp::buildOutDataSetType(
       if(vecProps[i]->getType() != te::dt::GEOMETRY_TYPE)
       {
         outDsType->add(vecProps[i]->clone());
+
+        for (std::size_t j = 0; j < inPk.size(); ++j)
+        {
+          if (outDsType->getProperty(i)->getName() == inPk[j]->getName())
+            pk->add(outDsType->getProperty(i));
+        }
       }
       else
       {
@@ -105,6 +114,8 @@ std::auto_ptr<te::da::DataSetType> te::vp::PolygonToLineOp::buildOutDataSetType(
     }
   }
 
+  outDsType->setPrimaryKey(pk);
+  
   return outDsType;
 }
 

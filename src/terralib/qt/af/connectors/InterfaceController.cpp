@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of TerraView - A GIS Application.
 
@@ -37,6 +37,7 @@ te::qt::af::InterfaceController::InterfaceController(QObject* parent)
 
 te::qt::af::InterfaceController::~InterfaceController()
 {
+  m_interfaces.erase(m_interfaces.begin(), m_interfaces.end());
   m_interfaces.clear();
 }
 

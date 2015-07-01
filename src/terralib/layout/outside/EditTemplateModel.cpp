@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -41,20 +41,4 @@ te::layout::EditTemplateModel::~EditTemplateModel()
 
 }
 
-te::layout::Properties* te::layout::EditTemplateModel::getProperties() const
-{
-  m_properties->clear();
 
-  Property pro_name;
-  pro_name.setName("PageSetup");
-
-  m_properties->addProperty(pro_name);
-
-  m_properties->setTypeObj(m_type);
-  return m_properties;
-}
-
-void te::layout::EditTemplateModel::updateProperties( te::layout::Properties* properties )
-{
-
-}

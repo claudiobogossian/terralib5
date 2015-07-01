@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -31,7 +31,6 @@
 te::layout::EnumObjectType::EnumObjectType() :
   m_rectangleItem(0),
   m_mapItem(0),
-  m_mapGridItem(0),
   m_paperItem(0),
   m_legendItem(0),
   m_propertiesWindow(0),
@@ -39,8 +38,8 @@ te::layout::EnumObjectType::EnumObjectType() :
   m_objectInspectorWindow(0),
   m_toolbar(0),
   m_gridSettings(0),
-  m_gridPlanar(0),
-  m_gridGeodesic(0),
+  m_gridPlanarItem(0),
+  m_gridGeodesicItem(0),
   m_itemGroup(0),
   m_scaleItem(0),
   m_pageSetup(0),
@@ -59,7 +58,16 @@ te::layout::EnumObjectType::EnumObjectType() :
   m_balloonItem(0),
   m_barCodeItem(0),
   m_gridMapItem(0),
-  m_objectUnknown(0)
+  m_mapLayerChoice(0),
+  m_svgDialog(0),
+  m_northItem(0),
+  m_mapLocationItem(0),
+  m_objectUnknown(0),
+  m_colorDialog(0),
+  m_fontDialog(0),
+  m_legendChoice(0),
+  m_starItem(0),
+  m_svgItem(0)
 {
   init();
 }
@@ -77,13 +85,7 @@ te::layout::EnumObjectType::~EnumObjectType()
     delete m_rectangleItem;
     m_rectangleItem = 0;
   }
-
-  if(m_mapItem)
-  {
-    delete m_mapGridItem;
-    m_mapGridItem = 0;
-  }
-
+  
   if(m_paperItem)
   {
     delete m_paperItem;
@@ -126,18 +128,18 @@ te::layout::EnumObjectType::~EnumObjectType()
     m_gridSettings = 0;
   }
 
-  if(m_gridPlanar)
+  if(m_gridPlanarItem)
   {
-    delete m_gridPlanar;
-    m_gridPlanar = 0;
+    delete m_gridPlanarItem;
+    m_gridPlanarItem = 0;
   }
 
-  if(m_gridGeodesic)
+  if(m_gridGeodesicItem)
   {
-    delete m_gridGeodesic;
-    m_gridGeodesic = 0;
+    delete m_gridGeodesicItem;
+    m_gridGeodesicItem = 0;
   }
-
+  
   if(m_itemGroup)
   {
     delete m_itemGroup;
@@ -257,108 +259,133 @@ te::layout::EnumObjectType::~EnumObjectType()
     delete m_gridMapItem;
     m_gridMapItem = 0;
   }
+
+  if(m_mapLayerChoice)
+  {
+    delete m_mapLayerChoice;
+    m_mapLayerChoice = 0;
+  }
+  
+  if(m_svgDialog)
+  {
+    delete m_svgDialog;
+    m_svgDialog = 0;
+  }
+
+  if(m_colorDialog)
+  {
+    delete m_colorDialog;
+    m_colorDialog = 0;
+  }
+
+  if(m_fontDialog)
+  {
+    delete m_fontDialog;
+    m_fontDialog = 0;
+  }  
+
+  if(m_legendChoice)
+  {
+    delete m_legendChoice;
+    m_legendChoice = 0;
+  }  
+
+  if(m_starItem)
+  {
+    delete m_starItem;
+    m_starItem = 0;
+  } 
+
+  if(m_svgItem)
+  {
+    delete m_svgItem;
+    m_svgItem = 0;
+  } 
 }
 
 void te::layout::EnumObjectType::init()
 {
-  m_objectUnknown = new EnumType(0, "None", this);
-  m_enums.push_back(m_objectUnknown);
+  m_objectUnknown = createEnum("None", this);
 
-  m_rectangleItem = new EnumType(1, "Rectangle_Item", this);
-  m_enums.push_back(m_rectangleItem);
+  m_rectangleItem = createEnum("Rectangle_Item", this);
 
-  m_mapItem = new EnumType(2, "Map_Item", this);
-  m_enums.push_back(m_mapItem);
+  m_mapItem = createEnum("Map_Item", this);
+  
+  m_paperItem = createEnum("Paper_Item", this);
 
-  m_mapGridItem = new EnumType(3, "MapGrid_Item", this);
-  m_enums.push_back(m_mapGridItem);
+  m_legendItem = createEnum("Legend_Item", this);
 
-  m_paperItem = new EnumType(4, "Paper_Item", this);
-  m_enums.push_back(m_paperItem);
+  m_propertiesWindow = createEnum("Properties_Window", this);
 
-  m_legendItem = new EnumType(5, "Legend_Item", this);
-  m_enums.push_back(m_legendItem);
+  m_displayWindow = createEnum("Display_Window", this);
 
-  m_propertiesWindow = new EnumType(6, "Properties_Window", this);
-  m_enums.push_back(m_propertiesWindow);
+  m_objectInspectorWindow = createEnum("ObjectInspector_Window", this);
 
-  m_displayWindow = new EnumType(7, "Display_Window", this);
-  m_enums.push_back(m_displayWindow);
+  m_toolbar = createEnum("Toolbar", this);
 
-  m_objectInspectorWindow = new EnumType(8, "ObjectInspector_Window", this);
-  m_enums.push_back(m_objectInspectorWindow);
+  m_gridSettings  = createEnum("Grid_Settings", this);
 
-  m_toolbar = new EnumType(9, "Toolbar", this);
-  m_enums.push_back(m_toolbar);
+  m_gridPlanarItem = createEnum("Grid_Planar_Item", this);
 
-  m_gridSettings  = new EnumType(10, "Grid_Settings", this);
-  m_enums.push_back(m_gridSettings);
+  m_gridGeodesicItem = createEnum("Grid_Geodesic_Item", this);
 
-  m_gridPlanar = new EnumType(11, "Grid_Planar", this);
-  m_enums.push_back(m_gridPlanar);
+  m_textItem = createEnum("Text_Item", this);
 
-  m_gridGeodesic = new EnumType(12, "Grid_Geodesic", this);
-  m_enums.push_back(m_gridGeodesic);
+  m_itemGroup = createEnum("Item_Group", this);
 
-  m_textItem = new EnumType(15, "Text_Item", this);
-  m_enums.push_back(m_textItem);
+  m_scaleItem = createEnum("Scale_Item", this);
 
-  m_itemGroup = new EnumType(16, "Item_Group", this);
-  m_enums.push_back(m_itemGroup);
+  m_pageSetup = createEnum("Page_Setup", this);
 
-  m_scaleItem = new EnumType(17, "Scale_Item", this);
-  m_enums.push_back(m_scaleItem);
+  m_imageItem = createEnum("Image_Item", this);
 
-  m_pageSetup = new EnumType(18, "Page_Setup", this);
-  m_enums.push_back(m_pageSetup);
+  m_systematicScale = createEnum("Systematic_Scale", this);
 
-  m_imageItem = new EnumType(19, "Image_Item", this);
-  m_enums.push_back(m_imageItem);
+  m_pointItem = createEnum("Point_Item", this);
 
-  m_systematicScale = new EnumType(20, "Systematic_Scale", this);
-  m_enums.push_back(m_systematicScale);
+  m_arrowItem = createEnum("Arrow_Item", this);
 
-  m_pointItem = new EnumType(21, "Point_Item", this);
-  m_enums.push_back(m_pointItem);
+  m_ellipseItem = createEnum("Ellipse_Item", this);
 
-  m_arrowItem = new EnumType(22, "Arrow_Item", this);
-  m_enums.push_back(m_arrowItem);
+  m_titleItem = createEnum("Title_Item", this);
 
-  m_ellipseItem = new EnumType(23, "Ellipse_Item", this);
-  m_enums.push_back(m_ellipseItem);
+  m_textGridItem = createEnum("TextGrid_Item", this);
 
-  m_titleItem = new EnumType(24, "Title_Item", this);
-  m_enums.push_back(m_titleItem);
+  m_editTemplate = createEnum("Edit_Template", this);
 
-  m_textGridItem = new EnumType(25, "TextGrid_Item", this);
-  m_enums.push_back(m_textGridItem);
+  m_textGridSettings = createEnum("Text_Grid_Settings", this);
 
-  m_editTemplate = new EnumType(27, "Edit_Template", this);
-  m_enums.push_back(m_editTemplate);
+  m_legendChildItem = createEnum("Legend_Child_Item", this);
 
-  m_textGridSettings = new EnumType(29, "Text_Grid_Settings", this);
-  m_enums.push_back(m_textGridSettings);
+  m_movingItemGroup = createEnum("Moving_Item_Group", this);
 
-  m_legendChildItem = new EnumType(30, "Legend_Child_Item", this);
-  m_enums.push_back(m_legendChildItem);
+  m_lineItem = createEnum("Line_Item", this); 
 
-  m_movingItemGroup = new EnumType(31, "Moving_Item_Group", this);
-  m_enums.push_back(m_movingItemGroup);
+  m_polygonItem = createEnum("Polygon_Item", this); 
 
-  m_lineItem = new EnumType(32, "Line_Item", this); 
-  m_enums.push_back(m_lineItem);
+  m_balloonItem = createEnum("Balloon_Item", this); 
 
-  m_polygonItem = new EnumType(33, "Polygon_Item", this); 
-  m_enums.push_back(m_polygonItem);
+  m_barCodeItem = createEnum("BarCode_Item", this);
 
-  m_balloonItem = new EnumType(34, "Balloon_Item", this); 
-  m_enums.push_back(m_balloonItem);
+  m_gridMapItem = createEnum("GridMap_Item", this);
 
-  m_barCodeItem = new EnumType(35, "BarCode_Item", this);
-  m_enums.push_back(m_barCodeItem);
+  m_mapLayerChoice = createEnum("Map_Layout_Choice", this);
 
-  m_gridMapItem = new EnumType(36, "GridMap_Item", this);
-  m_enums.push_back(m_gridMapItem);
+  m_svgDialog = createEnum("SVG_Dialog", this);
+
+  m_northItem = createEnum("North_Item", this);
+
+  m_mapLocationItem = createEnum("Map_Location_Item", this);
+
+  m_colorDialog = createEnum("Color_Dialog", this);
+
+  m_fontDialog = createEnum("Font_Dialog", this);
+
+  m_legendChoice = createEnum("Legend_Choice", this);
+
+  m_starItem = createEnum("Star_Item", this);
+
+  m_svgItem = createEnum("SVG_Item", this);
 }
 
 te::layout::EnumType* te::layout::EnumObjectType::getRectangleItem() const
@@ -396,11 +423,6 @@ te::layout::EnumType* te::layout::EnumObjectType::getMapItem() const
   return m_mapItem;
 }
 
-te::layout::EnumType* te::layout::EnumObjectType::getMapGridItem() const
-{
-  return m_mapGridItem;
-}
-
 te::layout::EnumType* te::layout::EnumObjectType::getPaperItem() const
 {
   return m_paperItem;
@@ -436,14 +458,14 @@ te::layout::EnumType* te::layout::EnumObjectType::getGridSettings() const
   return m_gridSettings;
 }
 
-te::layout::EnumType* te::layout::EnumObjectType::getGridPlanar() const
+te::layout::EnumType* te::layout::EnumObjectType::getGridPlanarItem() const
 {
-  return m_gridPlanar;
+  return m_gridPlanarItem;
 }
 
-te::layout::EnumType* te::layout::EnumObjectType::getGridGeodesic() const
+te::layout::EnumType* te::layout::EnumObjectType::getGridGeodesicItem() const
 {
-  return m_gridGeodesic;
+  return m_gridGeodesicItem;
 }
 
 te::layout::EnumType* te::layout::EnumObjectType::getItemGroup() const
@@ -526,3 +548,51 @@ te::layout::EnumType* te::layout::EnumObjectType::getObjectUnknown() const
 {
   return m_objectUnknown;
 }
+
+te::layout::EnumType* te::layout::EnumObjectType::getMapLayerChoice() const
+{
+  return m_mapLayerChoice;
+}
+
+te::layout::EnumType* te::layout::EnumObjectType::getNorthItem() const
+{
+  return m_northItem;
+}
+
+te::layout::EnumType* te::layout::EnumObjectType::getMapLocationItem() const
+{
+  return m_mapLocationItem;
+}
+
+te::layout::EnumType* te::layout::EnumObjectType::getColorDialog() const
+{
+  return m_colorDialog;
+}
+
+te::layout::EnumType* te::layout::EnumObjectType::getFontDialog() const
+{
+  return m_fontDialog;
+}
+
+te::layout::EnumType* te::layout::EnumObjectType::getLegendChoice() const
+{
+  return m_legendChoice;
+}
+
+te::layout::EnumType* te::layout::EnumObjectType::getStarItem() const
+{
+  return m_starItem;
+}
+
+te::layout::EnumType* te::layout::EnumObjectType::getSVGItem() const
+{
+  return m_svgItem;
+}
+
+te::layout::EnumType* te::layout::EnumObjectType::getSVGDialog() const
+{
+  return m_svgDialog;
+}
+
+
+

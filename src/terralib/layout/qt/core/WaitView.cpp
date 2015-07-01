@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -55,6 +55,8 @@ void te::layout::WaitView::addCoord( QPointF point )
   m_coords.push_back(p);
   QPoint received(point.x(), point.y());
   m_points.push_back(received);
+
+  m_view->viewport()->update();
 }
 
 void te::layout::WaitView::clear()

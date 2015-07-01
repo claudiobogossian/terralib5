@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -27,9 +27,9 @@
 
 // TerraLib
 #include "PropertiesDock.h"
-#include "../../../layout/outside/PropertiesModel.h"
-#include "../../../layout/outside/PropertiesController.h"
-#include "../../../layout/core/pattern/mvc/OutsideObserver.h"
+#include "../../../layout/core/pattern/singleton/Context.h"
+#include "../../../layout/qt/core/BuildGraphicsOutside.h"
+#include "../../../layout/core/enum/Enums.h"
 #include "../../../layout/qt/outside/PropertiesOutside.h"
 
 te::qt::plugins::layout::PropertiesDock::PropertiesDock( QWidget * parent, Qt::WindowFlags flags ) :
@@ -51,14 +51,45 @@ te::qt::plugins::layout::PropertiesDock::~PropertiesDock()
 
 void te::qt::plugins::layout::PropertiesDock::create()
 {
-  //Use the Property Browser Framework for create Property Window
-  te::layout::PropertiesModel* dockPropertyModel = new te::layout::PropertiesModel();		 
-  te::layout::PropertiesController* dockPropertyController = new te::layout::PropertiesController(dockPropertyModel);
-  te::layout::OutsideObserver* itemDockProperty = (te::layout::OutsideObserver*)dockPropertyController->getView();
-  m_properties = dynamic_cast<te::layout::PropertiesOutside*>(itemDockProperty);   
+  te::layout::AbstractBuildGraphicsOutside* abstractBuildOutside = te::layout::Context::getInstance().getAbstractBuildGraphicsOutside();
+  if(!abstractBuildOutside)
+  {
+    return;
+  }
+
+  te::layout::BuildGraphicsOutside* buildOutside = dynamic_cast<te::layout::BuildGraphicsOutside*>(abstractBuildOutside);
+  if(!buildOutside)
+  {
+    return;
+  }
+
+  te::layout::EnumObjectType* objectType = te::layout::Enums::getInstance().getEnumObjectType();
+  if(!objectType)
+  {
+    return;
+  }
+
+  QWidget* widget = buildOutside->createOuside(objectType->getPropertiesWindow());
+  if(!widget)
+  {
+    return;
+  }
+  m_properties = dynamic_cast<te::layout::PropertiesOutside*>(widget);   
 }
 
 te::layout::PropertiesOutside* te::qt::plugins::layout::PropertiesDock::getPropertiesOutside()
 {
   return m_properties;
 }
+
+void te::qt::plugins::layout::PropertiesDock::closeEvent( QCloseEvent * event )
+{
+  // Closing the PropertiesDock, all open windows from a property will be closed.
+  m_properties->close();
+}
+
+
+
+
+
+

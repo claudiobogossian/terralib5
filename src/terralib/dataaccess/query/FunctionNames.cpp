@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -60,6 +60,7 @@ const std::string te::da::FunctionNames::sm_ST_EnvelopeIntersects("st_envelopein
 const std::string te::da::FunctionNames::sm_ST_Equals("st_equals");
 const std::string te::da::FunctionNames::sm_ST_Intersection("st_intersection");
 const std::string te::da::FunctionNames::sm_ST_Intersects("st_intersects");
+const std::string te::da::FunctionNames::sm_ST_IsValid("st_isvalid");
 const std::string te::da::FunctionNames::sm_ST_Length("st_length");
 const std::string te::da::FunctionNames::sm_ST_MakePolygon("st_makepolygon");
 const std::string te::da::FunctionNames::sm_ST_NumGeometries("st_numgeometries");

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -60,6 +60,8 @@ void te::qt::plugins::layout::DisplayDock::closeEvent( QCloseEvent * event )
 void te::qt::plugins::layout::DisplayDock::setPreviousCentralWidget( QWidget* previous )
 {
   m_previousCentralWidget = previous;
+
+  m_previousCentralWidget->setParent(0);
 }
 
 void te::qt::plugins::layout::DisplayDock::removeDock()
@@ -69,15 +71,12 @@ void te::qt::plugins::layout::DisplayDock::removeDock()
   if(mw)
   {
     mw->removeDockWidget(this);
-	this->setParent(0);
+    this->setParent(0);
+
     if(m_previousCentralWidget)
     {
-      QDockWidget* dock = dynamic_cast<QDockWidget*>(m_previousCentralWidget);
-      if(dock)
-      {
-        mw->setCentralWidget(dock);
-        dock->setVisible(m_previousCentralWidgetVisibilite);
-      }
+      mw->setCentralWidget(m_previousCentralWidget);
+      m_previousCentralWidget->show();
     }
   }
 }

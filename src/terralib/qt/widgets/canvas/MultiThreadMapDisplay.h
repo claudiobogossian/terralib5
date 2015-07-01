@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -75,6 +75,8 @@ namespace te
             \param f Widget window flags.
           */
           MultiThreadMapDisplay(const QSize& size, const bool& showFeedback = true, QWidget* parent = 0, Qt::WindowFlags f = 0);
+
+          MultiThreadMapDisplay(QWidget* parent = 0, const bool& showFeedback = true, Qt::WindowFlags f = 0);
 
           /*! \brief Destructor. */
           ~MultiThreadMapDisplay();

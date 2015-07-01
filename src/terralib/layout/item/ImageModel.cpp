@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -43,14 +43,13 @@ te::layout::ImageModel::ImageModel() :
 {
   m_type = Enums::getInstance().getEnumObjectType()->getImageItem();
 
-  m_borderColor = te::color::RGBAColor(0, 0, 0, 255);
   m_backgroundColor = te::color::RGBAColor(0, 0, 255, 0);
 
   m_box = te::gm::Envelope(0., 0., 90., 90.);
 
   m_properties->setHasWindows(true);
 
-  m_border = false;
+  m_border = true;
 }
 
 te::layout::ImageModel::~ImageModel()
@@ -74,9 +73,8 @@ te::layout::Properties* te::layout::ImageModel::getProperties() const
 
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
 
-  Property pro_fileName;
+  Property pro_fileName(m_hashCode);
   pro_fileName.setName("fileName");
-  pro_fileName.setId("");
   pro_fileName.setValue(m_fileName, dataType->getDataTypeImage());
   pro_fileName.setMenu(true);
   m_properties->addProperty(pro_fileName);
@@ -84,9 +82,9 @@ te::layout::Properties* te::layout::ImageModel::getProperties() const
   return m_properties;
 }
 
-void te::layout::ImageModel::updateProperties( te::layout::Properties* properties )
+void te::layout::ImageModel::updateProperties( te::layout::Properties* properties, bool notify )
 {
-  ItemModelObservable::updateProperties(properties);
+  ItemModelObservable::updateProperties(properties, false);
 
   Properties* vectorProps = const_cast<Properties*>(properties);
 
@@ -95,14 +93,12 @@ void te::layout::ImageModel::updateProperties( te::layout::Properties* propertie
   if(!pro_fileName.isNull())
   {
     m_fileName = pro_fileName.getValue().toString();
+  }
 
-    Utils* utils = Context::getInstance().getUtils();
-
-    if(utils)
-    {
-      m_imgType = utils->getFileExtensionType(m_fileName);
-      m_fileExtension = utils->getFileExtension(m_fileName);
-    }
+  if(notify)
+  {
+    ContextItem context;
+    notifyAll(context);
   }
 }
 

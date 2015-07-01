@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -37,9 +37,8 @@ te::layout::BalloonModel::BalloonModel()
 {
   m_type = Enums::getInstance().getEnumObjectType()->getBalloonItem();
 
-  m_borderColor = te::color::RGBAColor(0, 0, 0, 255);
   m_box = te::gm::Envelope(0., 0., 20., 20.);
-  m_border = false;
+  m_border = true;
 }
 
 te::layout::BalloonModel::~BalloonModel()

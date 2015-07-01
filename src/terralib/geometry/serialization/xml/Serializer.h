@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -38,8 +38,8 @@ namespace te
 
   namespace xml
   {
+    class AbstractWriter;
     class Reader;
-    class Writer;
   }
 
   namespace serialize
@@ -48,7 +48,7 @@ namespace te
     {
       TEGEOMEXPORT std::auto_ptr<te::gm::Envelope> ReadExtent(te::xml::Reader& reader);
 
-      TEGEOMEXPORT void SaveExtent(const te::gm::Envelope& e, te::xml::Writer& writer);
+      TEGEOMEXPORT void SaveExtent(const te::gm::Envelope& e, te::xml::AbstractWriter& writer);
 
     } // end namespace xml
   }   // end namespace serialize

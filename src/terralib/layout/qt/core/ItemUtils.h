@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -31,6 +31,7 @@
 // TerraLib
 #include "../../core/Config.h"
 #include "../../../geometry/Point.h"
+#include "../../core/property/Properties.h"
 
 // STL
 #include <vector>
@@ -39,6 +40,8 @@
 
 // Qt
 #include <QList>
+#include <QPainter>
+#include <QFont>
 
 class QGraphicsItem;
 class QGraphicsScene;
@@ -51,6 +54,7 @@ namespace te
     class MapItem;
     class EnumType;
     class MapModel;
+    class GridMapItem;
 
     /*!
       \brief Utility class for manipulating items in the scene and vectorization of text and legend.
@@ -134,12 +138,41 @@ namespace te
           \brief Vectorizes inside text of selected MapItem. (generates te::layout::TextItem objects)
         */
         virtual void createTextMapAsObject();
+        
+        /*!
+          \brief Get properties of all GridMapItem, children of a MapItem.
+		  
+		      \param 
+          \return properties of all GridMapItem, children of a MapItem.
+        */
+        virtual std::vector<Properties*> getGridMapProperties();
 
         /*!
-          \brief Vectorizes selected LegendItem. (generates te::layout::TextItem objects)
+          \brief Get all GridMapItem, children of a MapItem.
+		  
+		      \param 
+          \return all GridMapItem, children of a MapItem.
         */
-        virtual void createLegendChildAsObject();
+        virtual std::vector<GridMapItem*> getMapChildren();
 
+        /*!
+          \brief Checks whether the coordinated intersects an item and returns.
+
+          \param x axis x coordinate
+		      \param y axis y coordinate
+
+          \return 
+        */
+        virtual QGraphicsItem* intersectionSelectionItem(int x, int y);
+
+        /*!
+          \brief Get text boundary in mm.
+		  
+		      \param w
+          \param h
+        */
+        virtual void getTextBoundary(QFont ft, double& w, double& h, std::string txt);
+          
       protected:
 
         /*!

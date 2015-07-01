@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -62,6 +62,8 @@ class TsExpansibleRaster : public CPPUNIT_NS::TestFixture
   
   CPPUNIT_TEST( addBottomBandsTest );
   
+  CPPUNIT_TEST( multiResolutionTest );
+  
   CPPUNIT_TEST_SUITE_END();
 
   protected :
@@ -90,6 +92,8 @@ class TsExpansibleRaster : public CPPUNIT_NS::TestFixture
     void addTopBandsTest();
     
     void addBottomBandsTest();
+    
+    void multiResolutionTest();
 };
 
 #endif  // __TERRALIB_UNITTEST_MEMORY_EXPANSIBLERASTER_INTERNAL_H

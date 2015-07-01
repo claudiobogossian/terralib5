@@ -1,4 +1,4 @@
-/*  Copyright (C) 2010-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -71,6 +71,16 @@ std::vector<int> te::qt::widgets::ObservationPropertiesWidget::getOutputValues()
   return indexes;
 }
 
+std::vector<std::string> te::qt::widgets::ObservationPropertiesWidget::getOutputPropNames()
+{
+  return m_obsWidget->getOutputValues();
+}
+
+std::string te::qt::widgets::ObservationPropertiesWidget::getGeometryPropName()
+{
+  return m_ui->m_geometryComboBox->currentText().toStdString();
+}
+
 int te::qt::widgets::ObservationPropertiesWidget::getGeometryId()
 {
   if(m_dataType)
@@ -79,25 +89,38 @@ int te::qt::widgets::ObservationPropertiesWidget::getGeometryId()
     return -1;
 }
 
+std::string te::qt::widgets::ObservationPropertiesWidget::getIdPropName()
+{
+  return m_ui->m_idComboBox->currentText().toStdString();
+}
+
+int te::qt::widgets::ObservationPropertiesWidget::getIdIndex()
+{
+  if(m_dataType)
+    return m_dataType->getPropertyPosition(m_ui->m_idComboBox->currentText().toStdString());
+  else
+    return -1;
+}
+
 void te::qt::widgets::ObservationPropertiesWidget::setUp (const te::da::DataSetTypePtr dataType)
 {
   QString item;
-  std::vector<std::string> propertiyNames;
+  std::vector<std::string> propertyNames;
   m_dataType = dataType;
 
   const std::vector<te::dt::Property*>& properties = dataType->getProperties();
 
   for (std::size_t i = 0; i < properties.size(); i++)
   {
-    item = item = QString::fromStdString(properties.at(i)->getName());
-    propertiyNames.push_back(item.toStdString());
+    item = QString::fromStdString(properties.at(i)->getName());
+    propertyNames.push_back(item.toStdString());
 
     if(properties.at(i)->getType() == te::dt::GEOMETRY_TYPE)
-    {
       m_ui->m_geometryComboBox->addItem(item);
-    }
+    else
+      m_ui->m_idComboBox->addItem(item);
   }
 
-  m_obsWidget->setInputValues(propertiyNames);
+  m_obsWidget->setInputValues(propertyNames);
 }
 

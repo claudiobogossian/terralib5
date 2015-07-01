@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -48,19 +48,14 @@ namespace te
     {
       public:
 
-        PolygonItem ( ItemController* controller, Observable* o );
+        PolygonItem ( ItemController* controller, Observable* o, bool invertedMatrix = false );
 
         virtual ~PolygonItem ();
-        		
-	    /*!
-          \brief Reimplemented from QGraphicsItem
-         */
-        virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
-      
+
       protected:
 
-        virtual void drawPolygon(QPainter * painter);
-	  };
+        virtual void drawItem(QPainter * painter);
+    };
   }
 }
 

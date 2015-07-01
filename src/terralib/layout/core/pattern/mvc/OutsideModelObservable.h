@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -138,12 +138,17 @@ namespace te
       /*!
           \brief Reimplemented from Observable
        */
-      virtual void updateProperties(te::layout::Properties* properties);
-
+      virtual void updateProperties(te::layout::Properties* properties, bool notify = true);
+      
       /*!
           \brief Reimplemented from Observable
        */
       virtual Properties* getProperties() const;
+
+      /*!
+          \brief Reimplemented from Observable
+       */
+      virtual te::layout::Properties* getPublicProperties() const;
 
       /*!
           \brief Reimplemented from Observable
@@ -181,20 +186,18 @@ namespace te
 
     protected:
 
-      std::set<Observer*>	m_observers; //!< set of observers of this object
-      te::gm::Envelope		m_box; //!< bounding rectangle 
-      te::gm::Coord2D 		m_centerCoordinate; //!< center coordinate of the bounding rectangle
-      int							    m_color; //!< background color
-      Properties*         m_properties; //!< properties
-      EnumType*           m_type; //!< type of the MVC widget
-      int                 m_zValue; //!< The Z value decides the stacking order of drawing
-      int                 m_id; //!< hashcode
-      bool                m_resizable; //!< true if resizable, false otherwise
-      int                 m_hashCode;
-
-    private:
-
-      std::string m_name; //!< name of the MVC widget
+      std::set<Observer*>	      m_observers; //!< set of observers of this object
+      te::gm::Envelope		      m_box; //!< bounding rectangle 
+      te::gm::Coord2D 		      m_centerCoordinate; //!< center coordinate of the bounding rectangle
+      int							          m_color; //!< background color
+      Properties*               m_properties; //!< properties
+      Properties*               m_publicProperties; //!< public properties
+      EnumType*                 m_type; //!< type of the MVC widget
+      int                       m_zValue; //!< The Z value decides the stacking order of drawing
+      int                       m_id; //!< hashcode
+      bool                      m_resizable; //!< true if resizable, false otherwise
+      int                       m_hashCode;
+      std::string               m_name; //!< name of the MVC widget     
     };
   }
 }

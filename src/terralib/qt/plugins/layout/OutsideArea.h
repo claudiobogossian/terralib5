@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -42,6 +42,7 @@ class QWidget;
 class QMenu;
 class QAction;
 class QStatusBar;
+class QGraphicsItem;
 
 namespace te
 {
@@ -84,6 +85,7 @@ namespace te
           virtual void onHideView();
           virtual void onCloseView();
           virtual void onRefreshStatusBar();
+          virtual void onAddChildFinalized(QGraphicsItem* parent, QGraphicsItem* child);
 
         signals:
 
@@ -110,7 +112,6 @@ namespace te
           PropertiesDock* m_dockProperties;
           ObjectInspectorDock* m_dockInspector;
           EditTemplateDock* m_dockEditTemplate;
-          QMenu* m_mainMenu;
           QMenu* m_parentMenu;
           te::layout::View* m_view;
           te::layout::ToolbarOutside* m_toolbar;

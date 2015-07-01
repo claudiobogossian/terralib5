@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -27,8 +27,8 @@
 #include "../../../geometry/serialization/xml/Serializer.h"
 #include "../../../maptools/serialization/xml/Utils.h"
 #include "../../../se/serialization/xml/Style.h"
+#include "../../../xml/AbstractWriter.h"
 #include "../../../xml/Reader.h"
-#include "../../../xml/Writer.h"
 #include "../../WMSLayer.h"
 #include "Layer.h"
 
@@ -37,7 +37,7 @@
 
 te::map::AbstractLayer* te::wms::serialize::LayerReader(te::xml::Reader& reader)
 {
-  std::string id = reader.getAttr(0);
+  std::string id = reader.getAttr("id");
 
   /* Title Element */
   reader.next();
@@ -153,7 +153,7 @@ te::map::AbstractLayer* te::wms::serialize::LayerReader(te::xml::Reader& reader)
   return layer.release();
 }
 
-void te::wms::serialize::LayerWriter(const te::map::AbstractLayer* alayer, te::xml::Writer& writer)
+void te::wms::serialize::LayerWriter(const te::map::AbstractLayer* alayer, te::xml::AbstractWriter& writer)
 {
   const te::wms::WMSLayer* layer = dynamic_cast<const te::wms::WMSLayer*>(alayer);
 

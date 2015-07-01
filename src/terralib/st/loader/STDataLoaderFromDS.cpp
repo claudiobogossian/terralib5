@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -268,7 +268,7 @@ te::st::STDataLoaderFromDS::getDataSet(const TimeSeriesDataSetInfo& info,
  
  std::auto_ptr<te::da::DataSet> dset(ds->getDataSet(info.getObservationDataSetInfo().getDataSetName(), travType));
 
- return buildDataSet(dset.release(), info); 
+ return buildDataSet(dset.release(), info);
 }
 
 std::auto_ptr<te::st::TimeSeriesDataSet> 
@@ -284,6 +284,80 @@ te::st::STDataLoaderFromDS::getDataSet(const TimeSeriesDataSetInfo& /*info*/,
   //return buildDataSet(dset.release(), info);
   return std::auto_ptr<te::st::TimeSeriesDataSet>();
 }
+
+std::auto_ptr<te::st::TimeSeriesDataSet> 
+te::st::STDataLoaderFromDS::getDataSet(const TimeSeriesDataSetInfo& info,  
+                             const te::gm::Geometry& geom, te::gm::SpatialRelation r,
+                             te::common::TraverseType travType)
+{
+  //use the DataSourceManager to get the DataSource 
+  te::da::DataSourcePtr ds = te::da::GetDataSource(info.getObservationDataSetInfo().getDataSourceInfo().getId(), false);
+
+  //get the geometry property name
+  if(!info.getObservationDataSetInfo().hasGeomProp())
+    return std::auto_ptr<te::st::TimeSeriesDataSet>();
+
+  std::string geomPropName = info.getObservationDataSetInfo().getGeomPropName();
+
+  //get the data set applying he filter
+  std::auto_ptr<te::da::DataSet> dset(ds->getDataSet(info.getObservationDataSetInfo().getDataSetName(), geomPropName, &geom, r, travType));
+
+  return buildDataSet(dset.release(), info);
+}
+
+std::auto_ptr<te::st::TimeSeriesDataSet>
+te::st::STDataLoaderFromDS::getDataSet(const TimeSeriesDataSetInfo& info, 
+                                const te::gm::Envelope& e, te::gm::SpatialRelation r,
+                                te::common::TraverseType travType)
+{
+  //use the DataSourceManager to get the DataSource 
+  te::da::DataSourcePtr ds = te::da::GetDataSource(info.getObservationDataSetInfo().getDataSourceInfo().getId(), false);
+
+  //get the geometry property name
+  if(!info.getObservationDataSetInfo().hasGeomProp())
+    return std::auto_ptr<te::st::TimeSeriesDataSet>();
+
+  std::string geomPropName = info.getObservationDataSetInfo().getGeomPropName();
+
+  //get the data set applying he filter
+  std::auto_ptr<te::da::DataSet> dset(ds->getDataSet(info.getObservationDataSetInfo().getDataSetName(), 
+                          geomPropName, &e, r, travType));
+
+  return buildDataSet(dset.release(), info);
+}
+
+std::auto_ptr<te::st::TimeSeriesDataSet> 
+te::st::STDataLoaderFromDS::getDataSet(const TimeSeriesDataSetInfo& /*info*/,
+                                       const te::dt::DateTime& /*dt*/, 
+                                       te::dt::TemporalRelation /*tr*/,
+                                       const te::gm::Envelope& /*e*/, 
+                                       te::gm::SpatialRelation /*sr*/,
+                                       te::common::TraverseType /*travType*/)
+{
+  //use the DataSourceManager to get the DataSource 
+  //te::da::DataSourcePtr ds = te::da::GetDataSource(info.getDataSourceInfo().getId(), false);
+
+  //montar uma Query e passar para o data source!
+
+  //return buildDataSet(dset.release(), info); 
+  return std::auto_ptr<te::st::TimeSeriesDataSet>();
+}
+
+std::auto_ptr<te::st::TimeSeriesDataSet>  
+te::st::STDataLoaderFromDS::getDataSet(const TimeSeriesDataSetInfo& /*info*/, 
+                          const te::gm::Geometry& /*geom*/, te::gm::SpatialRelation /*sr*/,
+                          const te::dt::DateTime& /*dt*/, te::dt::TemporalRelation /*tr*/,
+                          te::common::TraverseType /*travType*/)
+{
+  //use the DataSourceManager to get the DataSource 
+  //te::da::DataSource* ds = te::da::GetDataSource(info.getDataSourceInfo().getId(), false);
+
+  //montar uma Query e passar para o data source!
+
+  //return buildDataSet(dset.release(), info);
+  return std::auto_ptr<te::st::TimeSeriesDataSet>();
+}
+
 
 std::auto_ptr<te::dt::DateTimePeriod> 
 te::st::STDataLoaderFromDS::getTemporalExtent(const ObservationDataSetInfo& /*info*/)
@@ -371,7 +445,7 @@ std::auto_ptr<te::st::TimeSeriesDataSet>
 te::st::STDataLoaderFromDS::buildDataSet(te::da::DataSet* ds, const TimeSeriesDataSetInfo& info)
 {
   return std::auto_ptr<TimeSeriesDataSet> ( new TimeSeriesDataSet(ds, te::st::GetType(info.getObservationDataSetInfo()), 
-                                            info.getValuePropNames(), 0));
+                                            info.getValuePropNames()));
 }
 
 te::st::STDataLoaderFromDS::~STDataLoaderFromDS()

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -35,7 +35,6 @@
 #define __TERRALIB_LAYOUT_INTERNAL_PARENT_ITEM_H
 
 // Qt
-#include <QGraphicsObject>
 #include <QPixmap>
 #include <QVariant>
 #include <QPainter>
@@ -43,6 +42,8 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QStyleOptionGraphicsItem>
 #include <QWidget>
+#include <QTransform>
+#include <QColor>
 
 // TerraLib
 #include "../../core/pattern/mvc/ItemObserver.h"
@@ -123,6 +124,12 @@ namespace te
 
         virtual void setRect(QRectF rect);
 
+        /*!
+          \brief  Gets the adjusted boundigned rectangle which considers the current state of the QPen that will be used to draw it. 
+                  The returned rect will be in the ITEM coordinate system.
+         */
+        virtual QRectF getAdjustedBoundingRect(QPainter* painter) const;
+
         //Override 
         /*World coordinates(mm)*/
         virtual bool contains(const QPointF &point) const;
@@ -137,15 +144,34 @@ namespace te
         /*!
           \brief Reimplemented from ItemObserver
          */
-        virtual te::color::RGBAColor** getImage();
+        virtual te::color::RGBAColor** getRGBAColorImage(int &w, int &h);
+
+        /*!
+          \brief Reimplemented from ItemObserver
+         */
+        virtual QImage getImage();
 
       protected:
 
+        /*!
+          \brief For any specific drawing, the item must reimplement this function
+         */
+        virtual void drawItem( QPainter* painter );
+
+        /*!
+          \brief Draws the background of the item
+         */
         virtual void drawBackground( QPainter* painter );
 
-        virtual void drawSelection(QPainter* painter);
+        /*!
+          \brief Draws the frame of the item
+         */
+        virtual void drawFrame(QPainter* painter);
 
-        virtual void drawBorder(QPainter* painter);
+        /*!
+          \brief Draws the selection of the item
+         */
+        virtual void drawSelection(QPainter* painter);
 
         /*!
           \brief Reimplemented from QGraphicsItem
@@ -208,6 +234,8 @@ namespace te
         virtual void drawText(QPointF point, QPainter* painter, std::string text);
 
         virtual void createResizePixmap();
+
+        virtual QColor rgbaToQColor(te::color::RGBAColor color);
         
       protected:
 
@@ -279,6 +307,8 @@ namespace te
         QGraphicsItem::setPos(x, y);
       }
 
+      refresh();
+
       QGraphicsItem::update();
     }
 
@@ -287,25 +317,21 @@ namespace te
     {
       Q_UNUSED( option );
       Q_UNUSED( widget );
-      if ( !painter || !m_toResizeItem )
+      if ( painter == 0 )
       {
         return;
       }
       
+      //Draws the background
       drawBackground( painter );
 
-      QRectF boundRect;
-      boundRect = boundingRect();
+      //Draws the item
+      drawItem( painter );
 
-      painter->save();
-      painter->translate( -boundRect.bottomLeft().x(), -boundRect.topRight().y() );  
-      QRectF rtSource( 0, 0, m_clonePixmap.width(), m_clonePixmap.height() );
-      painter->drawPixmap(boundRect, m_clonePixmap, rtSource);
-      painter->restore();  
+      //Draws the frame
+      drawFrame(painter);
 
-      drawBorder(painter);
-
-      //Draw Selection
+      //Draws the selection
       if (option->state & QStyle::State_Selected)
       {
         drawSelection(painter);
@@ -320,7 +346,8 @@ namespace te
       QTransform t = painter->transform();
       QPointF p = t.map(point);
 
-      double zoomFactor = Context::getInstance().getZoomFactor();
+      int zoom = Context::getInstance().getZoom();
+      double zoomFactor = zoom / 100.;
 
       QFont ft = painter->font();
       ft.setPointSize(ft.pointSize() * zoomFactor);
@@ -372,6 +399,23 @@ namespace te
       QGraphicsItem::update();
     }
 
+	template <class T>
+    inline void te::layout::ParentItem<T>::drawItem( QPainter * painter )
+    {
+      if ( !painter )
+      {
+        return;
+      }
+
+      QRectF boundRect = boundingRect();
+
+      painter->save();
+      painter->translate( -boundRect.bottomLeft().x(), -boundRect.topRight().y() );  
+      QRectF rtSource( 0, 0, m_clonePixmap.width(), m_clonePixmap.height() );
+      painter->drawPixmap(boundRect, m_clonePixmap, rtSource);
+      painter->restore();      
+    }
+
     template <class T>
     inline void te::layout::ParentItem<T>::drawBackground( QPainter * painter )
     {
@@ -385,69 +429,26 @@ namespace te
       if(!model)
         return;
 
-      te::color::RGBAColor clrBack = model->getBackgroundColor();
-      QColor backColor;
-      backColor.setRed(clrBack.getRed());
-      backColor.setGreen(clrBack.getGreen());
-      backColor.setBlue(clrBack.getBlue());
-      backColor.setAlpha(clrBack.getAlpha());
+      const te::color::RGBAColor& clrBack = model->getBackgroundColor();
+      QColor backColor(clrBack.getRed(), clrBack.getGreen(), clrBack.getBlue(), clrBack.getAlpha());
       
       painter->save();
       painter->setPen(Qt::NoPen);
       painter->setBrush(QBrush(backColor));
       painter->setBackground(QBrush(backColor));
       painter->setRenderHint( QPainter::Antialiasing, true );
-      painter->drawRect(QRectF( 0, 0, boundingRect().width(), boundingRect().height()));
-      painter->restore();
-    }
 
-    template <class T>
-    inline void te::layout::ParentItem<T>::drawSelection( QPainter* painter )
-    {
-      if(!painter)
-      {
-        return;
-      }
+      //gets the adjusted boundigng rectangle based of the painter settings
+      QRectF rectAdjusted = getAdjustedBoundingRect(painter);
 
-      painter->save();
-
-      qreal penWidth = painter->pen().widthF();
-
-      const qreal adj = penWidth / 2;
-      const QColor fgcolor(0,255,0);
-      const QColor backgroundColor(0,0,0);
-
-      QRectF rtAdjusted = boundingRect().adjusted(adj, adj, -adj, -adj);
-
-      QPen penBackground(backgroundColor, 0, Qt::SolidLine);
-      painter->setPen(penBackground);
-      painter->setBrush(Qt::NoBrush);
-      painter->drawRect(rtAdjusted);
-
-      QPen penForeground(fgcolor, 0, Qt::DashLine);
-      painter->setPen(penForeground);
-      painter->setBrush(Qt::NoBrush);
-      painter->drawRect(rtAdjusted);
-
-      painter->setPen(Qt::NoPen);
-      QBrush brushEllipse(fgcolor);
-      painter->setBrush(fgcolor);
-
-      double w = 2.0;
-      double h = 2.0;
-      double half = 1.0;
-
-      painter->drawRect(rtAdjusted.center().x() - half, rtAdjusted.center().y() - half, w, h); // center
-      painter->drawRect(rtAdjusted.bottomLeft().x() - half, rtAdjusted.bottomLeft().y() - half, w, h); // left-top
-      painter->drawRect(rtAdjusted.bottomRight().x() - half, rtAdjusted.bottomRight().y() - half, w, h); // right-top
-      painter->drawRect(rtAdjusted.topLeft().x() - half, rtAdjusted.topLeft().y() - half, w, h); // left-bottom
-      painter->drawRect(rtAdjusted.topRight().x() - half, rtAdjusted.topRight().y() - half, w, h); // right-bottom
+      //draws the background
+      painter->drawRect(rectAdjusted);
 
       painter->restore();
     }
 
-    template <class T>
-    inline void te::layout::ParentItem<T>::drawBorder( QPainter * painter )
+     template <class T>
+    inline void te::layout::ParentItem<T>::drawFrame( QPainter * painter )
     {
       if ( !painter )
       {
@@ -464,19 +465,70 @@ namespace te
       if(!model->isBorder())
         return;
 
-      te::color::RGBAColor clrBack = model->getBorderColor();
-      QColor borderColor;
-      borderColor.setRed(clrBack.getRed());
-      borderColor.setGreen(clrBack.getGreen());
-      borderColor.setBlue(clrBack.getBlue());
-      borderColor.setAlpha(clrBack.getAlpha());
+      const te::color::RGBAColor& clrFrame = model->getFrameColor();
+      QColor borderColor(clrFrame.getRed(), clrFrame.getGreen(), clrFrame.getBlue(), clrFrame.getAlpha());
 
       painter->save();
-      QPen penBackground(borderColor, 0, Qt::SolidLine);
-      painter->setPen(penBackground);
+      QPen pen(borderColor, 0, Qt::SolidLine);
+      painter->setPen(pen);
       painter->setBrush(Qt::NoBrush);
       painter->setRenderHint( QPainter::Antialiasing, true );
-      painter->drawRect(QRectF( 0, 0, boundingRect().width(), boundingRect().height()));
+
+      //gets the adjusted boundigng rectangle based of the painter settings
+      QRectF rectAdjusted = getAdjustedBoundingRect(painter);
+
+      //draws the frame
+      painter->drawRect(rectAdjusted);
+
+      painter->restore();
+    }
+
+    template <class T>
+    inline void te::layout::ParentItem<T>::drawSelection( QPainter* painter )
+    {
+      if(!painter)
+      {
+        return;
+      }
+
+      painter->save();
+
+      const QColor fgcolor(0,255,0);
+      const QColor backgroundColor(0,0,0);
+
+      QPen penBackground(backgroundColor, 0, Qt::SolidLine);
+      painter->setPen(penBackground);
+      painter->setBrush(Qt::NoBrush);
+
+      //gets the adjusted boundigng rectangle based of the painter settings
+      QRectF rectAdjusted = getAdjustedBoundingRect(painter);
+      painter->drawRect(rectAdjusted);
+
+      QPen penForeground(fgcolor, 0, Qt::DashLine);
+      painter->setPen(penForeground);
+      painter->setBrush(Qt::NoBrush);
+
+      //gets the adjusted boundigng rectangle based of the painter settings
+      rectAdjusted = getAdjustedBoundingRect(painter);
+      painter->drawRect(rectAdjusted);
+
+      painter->setPen(Qt::NoPen);
+      QBrush brushEllipse(fgcolor);
+      painter->setBrush(fgcolor);
+
+      //gets the adjusted boundigng rectangle based of the painter settings
+      rectAdjusted = getAdjustedBoundingRect(painter);
+
+      double w = 2.0;
+      double h = 2.0;
+      double half = 1.0;
+
+      painter->drawRect(rectAdjusted.center().x() - half, rectAdjusted.center().y() - half, w, h); // center
+      painter->drawRect(rectAdjusted.bottomLeft().x(), rectAdjusted.bottomLeft().y() - h, w, h); // left-top
+      painter->drawRect(rectAdjusted.bottomRight().x() - w, rectAdjusted.bottomRight().y() - h, w, h); // right-top
+      painter->drawRect(rectAdjusted.topLeft().x(), rectAdjusted.topLeft().y(), w, h); // left-bottom
+      painter->drawRect(rectAdjusted.topRight().x() - w, rectAdjusted.topRight().y(), w, h); // right-bottom
+
       painter->restore();
     }
 
@@ -497,11 +549,30 @@ namespace te
     }
 
     template <class T>
+    inline QRectF te::layout::ParentItem<T>::getAdjustedBoundingRect(QPainter* painter) const
+    {
+      qreal penWidth = painter->pen().widthF();
+      if(painter->pen().style() == Qt::NoPen)
+      {
+        penWidth = 0.;
+      }
+
+      QRectF bRect = boundingRect();
+      bRect.setX(0.);
+      bRect.setY(0.);
+
+      const qreal adj = penWidth / 2.;
+      QRectF rectAdjusted = bRect.adjusted(adj, adj, -adj, -adj);
+
+      return rectAdjusted;
+    }
+
+    template <class T>
     inline void te::layout::ParentItem<T>::mousePressEvent( QGraphicsSceneMouseEvent * event )
     {  
       QGraphicsItem::mousePressEvent(event);
 
-      if(event->modifiers() == Qt::AltModifier && m_toResizeItem && m_model->isResizable())
+      if(m_toResizeItem && m_model->isResizable())
       {
         m_clonePixmap = getPixmap();
         createResizePixmap();
@@ -538,7 +609,7 @@ namespace te
     template <class T>
     inline void te::layout::ParentItem<T>::mouseMoveEvent( QGraphicsSceneMouseEvent * event )
     {
-      if(event->modifiers() == Qt::AltModifier && event->buttons() == Qt::LeftButton && m_toResizeItem && m_model->isResizable())
+      if(event->buttons() == Qt::LeftButton && m_toResizeItem && m_model->isResizable())
       {
         m_mousePressedAlt = true;
         T::setOpacity(0.5);
@@ -755,15 +826,59 @@ namespace te
       if(angle == model->getOldAngle())
         return;
 
+      double w = boundingRect().width();
+      double h = boundingRect().height();
+
+      QTransform transf = T::transform();
+
+      if(m_invertedMatrix)
+      {
+        angle = -angle;
+      }
+
+      transf.translate(w/2, h/2);
+      T::setTransform(transf);
       T::setRotation(angle);
+      transf.translate(-(w/2), -(h/2));
+      T::setTransform(transf);
     }
 
     template <class T>
-    inline te::color::RGBAColor** te::layout::ParentItem<T>::getImage()
+    inline te::color::RGBAColor** te::layout::ParentItem<T>::getRGBAColorImage(int &w, int &h)
     {
-      QImage img = m_pixmap.toImage();
-      te::color::RGBAColor** teImg = te::qt::widgets::GetImage(&img);
+      w = 0;
+      h = 0;
+      te::color::RGBAColor** teImg = 0;
+
+      QRectF rect = boundingRect();
+      QStyleOptionGraphicsItem opt;
+      QPixmap pix(rect.width(), rect.height());
+      QPainter p(&pix);
+      this->paint(&p, &opt, 0);
+      QImage img = pix.toImage();
+
+      if(img.isNull())
+      {
+        return teImg;
+      }
+
+      w = pix.width();
+      h = pix.height();
+
+      teImg = te::qt::widgets::GetImage(&img);
       return teImg;
+    }
+
+    template <class T>
+    QImage te::layout::ParentItem<T>::getImage()
+    {
+      QRectF rect = boundingRect();
+      QStyleOptionGraphicsItem opt;
+      QPixmap pix(rect.width(), rect.height());
+      QPainter p(&pix);
+      this->paint(&p, &opt, 0);
+
+      return pix.toImage();
     }
 
     template <class T>
@@ -773,6 +888,41 @@ namespace te
       {
         refresh();
       }
+
+      if(change == QGraphicsItem::ItemChildAddedChange)
+      {
+        QGraphicsItem* item = value.value<QGraphicsItem*>();
+        if(item)
+        {
+          ItemObserver* iOb = dynamic_cast<ItemObserver*>(item);
+          if(iOb)
+          {
+            ItemModelObservable* itemModel = dynamic_cast<ItemModelObservable*>(m_model);
+            if(itemModel)
+            {
+              itemModel->addChildren(iOb);
+            }
+          }
+        }       
+      }
+
+      if(change == QGraphicsItem::ItemChildRemovedChange)
+      {
+        QGraphicsItem* item = value.value<QGraphicsItem*>();
+        if(item)
+        {
+          ItemObserver* iOb = dynamic_cast<ItemObserver*>(item);
+          if(iOb)
+          {
+            ItemModelObservable* itemModel = dynamic_cast<ItemModelObservable*>(m_model);
+            if(itemModel)
+            {
+              itemModel->removeChildren(iOb->getModel()->getHashCode());
+            }
+          }
+        } 
+      }
+
       return QGraphicsItem::itemChange(change, value);
     }
 
@@ -788,6 +938,18 @@ namespace te
       {
         m_resizeMode = true;
       }
+    }
+
+    template <class T>
+    inline QColor te::layout::ParentItem<T>::rgbaToQColor( te::color::RGBAColor color )
+    {
+      QColor clr;
+      clr.setRed(color.getRed());
+      clr.setGreen(color.getGreen());
+      clr.setBlue(color.getBlue());
+      clr.setAlpha(color.getAlpha());
+
+      return clr;
     }
   }
 }

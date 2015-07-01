@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -38,17 +38,22 @@
 #include "../core/pattern/mvc/ItemObserver.h"
 #include "../core/property/Property.h"
 #include "../core/property/Properties.h"
+#include "../core/enum/EnumLineStyleType.h"
 
-te::layout::LineModel::LineModel() 
+te::layout::LineModel::LineModel() :
+  m_currentLineStyleType(0),
+  m_enumLineStyleType(0)
 {
   m_type = Enums::getInstance().getEnumObjectType()->getLineItem();
 
-  m_borderColor = te::color::RGBAColor(255, 255, 255, 0);
   m_box = te::gm::Envelope(0., 0., 20., 20.);
 
-  m_lineColor = te::color::RGBAColor(0, 0, 0, 255);
+  m_enumLineStyleType = new EnumLineStyleType();
+  m_currentLineStyleType = m_enumLineStyleType->getStyleSolid();
 
   m_border = false;
+
+  m_color = te::color::RGBAColor(0, 0, 0, 255);
 }
 
 te::layout::LineModel::~LineModel()
@@ -122,38 +127,109 @@ std::vector<te::gm::Point*> te::layout::LineModel::getCoords()
   return m_coords;
 }
 
-te::color::RGBAColor te::layout::LineModel::getLineColor()
-{
-  return m_lineColor;
-}
-
 te::layout::Properties* te::layout::LineModel::getProperties() const
 {
   ItemModelObservable::getProperties();
 
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
 
-  Property pro_linecolor;
-  pro_linecolor.setName("line_color");
-  pro_linecolor.setLabel("line color");
-  pro_linecolor.setId("");
-  pro_linecolor.setValue(pro_linecolor, dataType->getDataTypeColor());
-  pro_linecolor.setMenu(true);
-  m_properties->addProperty(pro_linecolor);
+  Property pro_lineStyleType = lineProperty();
+  if(!pro_lineStyleType.isNull())
+    m_properties->addProperty(pro_lineStyleType);
+
+  Property pro_fillColor(m_hashCode);
+  pro_fillColor.setName("color");
+  pro_fillColor.setValue(m_color, dataType->getDataTypeColor());
+  pro_fillColor.setMenu(true);
+  m_properties->addProperty(pro_fillColor);
 
   return m_properties;
 }
 
-void te::layout::LineModel::updateProperties( te::layout::Properties* properties )
+void te::layout::LineModel::updateProperties( te::layout::Properties* properties, bool notify )
 {
-  ItemModelObservable::updateProperties(properties);
+  ItemModelObservable::updateProperties(properties, false);
 
   Properties* vectorProps = const_cast<Properties*>(properties);
 
-  Property pro_linecolor = vectorProps->contains("line_color");
-  if(!pro_linecolor.isNull())
+  Property pro_lineType = vectorProps->contains("line_style_type");
+  if(!pro_lineType.isNull())
   {
-    m_lineColor = pro_linecolor.getValue().toColor();
+    std::string label = pro_lineType.getOptionByCurrentChoice().toString();
+    EnumType* enumType = m_enumLineStyleType->searchLabel(label);
+    if(enumType)
+      m_currentLineStyleType = enumType;
+  }
+
+  {
+    Property prop = vectorProps->contains("color");
+    if(prop.isNull() == false)
+    {
+      m_color = prop.getValue().toColor();
+    }
+  }
+
+  if(notify)
+  {
+    ContextItem context;
+    notifyAll(context);
   }
 }
+
+te::layout::EnumLineStyleType* te::layout::LineModel::getEnumLineStyleType()
+{
+  return m_enumLineStyleType;
+}
+
+te::layout::EnumType* te::layout::LineModel::getCurrentLineStyleType()
+{
+  return m_currentLineStyleType;
+}
+
+te::layout::Property te::layout::LineModel::lineProperty() const
+{
+  Property pro_lineStyleType(m_hashCode);
+
+  if(!m_currentLineStyleType)
+    return pro_lineStyleType;
+
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+
+  if(!dataType)
+    return pro_lineStyleType;
+
+  pro_lineStyleType.setName("line_style_type");
+  pro_lineStyleType.setLabel("line style type");
+  pro_lineStyleType.setValue(m_currentLineStyleType->getLabel(), dataType->getDataTypeStringList());
+
+  Variant v;
+  v.setValue(m_currentLineStyleType->getLabel(), dataType->getDataTypeString());
+  pro_lineStyleType.addOption(v);
+  pro_lineStyleType.setOptionChoice(v);
+
+  for(int i = 0; i < m_enumLineStyleType->size(); i++)
+  {
+    EnumType* enumType = m_enumLineStyleType->getEnum(i);
+
+    if(enumType == m_enumLineStyleType->getStyleNone() || enumType == m_currentLineStyleType || enumType == m_enumLineStyleType->getStyleCustomDash())
+      continue;
+
+    Variant v;
+    v.setValue(enumType->getLabel(), dataType->getDataTypeString());
+    pro_lineStyleType.addOption(v);
+  }
+
+  return pro_lineStyleType;
+}
+
+const te::color::RGBAColor& te::layout::LineModel::getColor() const
+{
+  return m_color;
+}
+
+void te::layout::LineModel::setColor(const te::color::RGBAColor& color)
+{
+  m_color = color;
+}
+
 

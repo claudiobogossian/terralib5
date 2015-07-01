@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -59,7 +59,7 @@ namespace te
           \param objectName Object name that owns these properties
           \param type Object type that owns these properties
         */ 
-        Properties(std::string objectName, EnumType* type = 0);
+        Properties(std::string objectName, EnumType* type = 0, int hashCode = 0);
 
         /*!
           \brief Destructor
@@ -154,19 +154,35 @@ namespace te
         */
         virtual Property contains(std::string name);
 
+        /*!
+          \brief Returns the hashcode of a MVC component.
+
+          \return hashCode
+        */
+        virtual int getHashCode();
+
+        /*!
+          \brief Sets the hashcode of a MVC component.
+
+          \return hashCode
+        */
+        virtual void setHashCode(int hashCode);
+
       protected:
 
         std::vector<Property> m_properties; //!< set of properties for this object
         std::string m_objName; //!< Object name that owns these properties
         EnumType* m_typeObj; //!< Object type that owns these properties
         bool m_hasWindows; //!<
+        int  m_hashcode;
 
     };
 
-    inline Properties::Properties(std:: string objectName, te::layout::EnumType* type) :
+    inline Properties::Properties(std:: string objectName, te::layout::EnumType* type, int hashCode) :
       m_objName(objectName),
       m_typeObj(type),
-      m_hasWindows(false)
+      m_hasWindows(false),
+      m_hashcode(hashCode)
     {
     }
 
@@ -246,7 +262,7 @@ namespace te
 
     inline te::layout::Property Properties::contains( std::string name )
     {
-      Property property;
+      Property property(0);
       property.setName(name);
 
       if(std::find(m_properties.begin(), m_properties.end(), property) != m_properties.end())
@@ -269,6 +285,16 @@ namespace te
     inline bool te::layout::Properties::hasWindows()
     {
 	    return m_hasWindows;
+    }
+
+    inline int te::layout::Properties::getHashCode()
+    {
+      return m_hashcode;
+    }
+
+    inline void te::layout::Properties::setHashCode( int hashCode )
+    {
+      m_hashcode = hashCode;
     }
   }
 }

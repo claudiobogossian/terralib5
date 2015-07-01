@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -88,6 +88,7 @@ namespace te
         virtual void visit(const DataSetName& visited) {}
         virtual void visit(const FromItem& visited) {}
         virtual void visit(const Function& visited);
+        virtual void visit(const Insert& visited) {}
         virtual void visit(const Join& visited) {}
         virtual void visit(const JoinCondition& visited) {}
         virtual void visit(const JoinConditionOn& visited) {}

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -61,8 +61,6 @@ te::layout::Properties* te::layout::PointModel::getProperties() const
 {
   ItemModelObservable::getProperties();
 
-  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
-
   Property pro_pointName = pointProperty();
   if(!pro_pointName.isNull())
   {
@@ -72,9 +70,9 @@ te::layout::Properties* te::layout::PointModel::getProperties() const
   return m_properties;
 }
 
-void te::layout::PointModel::updateProperties( te::layout::Properties* properties )
+void te::layout::PointModel::updateProperties( te::layout::Properties* properties, bool notify )
 {
-  ItemModelObservable::updateProperties(properties);
+  ItemModelObservable::updateProperties(properties, false);
 
   Properties* vectorProps = const_cast<Properties*>(properties);
 
@@ -88,6 +86,12 @@ void te::layout::PointModel::updateProperties( te::layout::Properties* propertie
     {
       m_currentPointType = enumType;
     }
+  }
+
+  if(notify)
+  {
+    ContextItem context;
+    notifyAll(context);
   }
 }
 
@@ -103,7 +107,7 @@ te::layout::EnumType* te::layout::PointModel::getCurrentPointType()
 
 te::layout::Property te::layout::PointModel::pointProperty() const
 {
-  Property pro_pointName;
+  Property pro_pointName(m_hashCode);
 
   if(!m_currentPointType)
     return pro_pointName;
@@ -115,7 +119,6 @@ te::layout::Property te::layout::PointModel::pointProperty() const
 
   pro_pointName.setName("point_type");
   pro_pointName.setLabel("graphic type");
-  pro_pointName.setId("");
   pro_pointName.setValue(m_currentPointType->getLabel(), dataType->getDataTypeStringList());
 
   Variant v;

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -183,6 +183,9 @@ void QueryExample();
 
 /*! \brief Quering a dataset. */
 void QueryExample_2();
+
+/*! \brief Quering Insert clause. */
+void QueryInsertExample();
 
 /*! \brief This example shows how to copy a given dataset from one data source to another one. */
 void CopyingData();

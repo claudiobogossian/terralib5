@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -34,24 +34,21 @@
 #include "../item/LegendItem.h"
 #include "../../item/LegendModel.h"
 #include "../../item/MapModel.h"
-#include "../../item/MapGridModel.h"
 #include "../item/TextItem.h"
 #include "../../item/TextModel.h"
 #include "../item/LegendChildItem.h"
 #include "../../item/LegendChildModel.h"
 #include "../../core/pattern/derivativevisitor/VisitorUtils.h"
-#include "../item/MapGridItem.h"
 #include "../../item/GridGeodesicModel.h"
 #include "../../item/GridPlanarModel.h"
 #include "Scene.h"
+#include "../item/GridMapItem.h"
 
 // STL
 #include <stddef.h>  // defines NULL
 
-// Boost
-#include <boost/foreach.hpp>
-
 // Qt
+#include <QObject>
 #include <QGraphicsItem>
 #include <QGraphicsScene>
 #include <QTextDocument>
@@ -110,7 +107,10 @@ te::layout::MapItem* te::layout::ItemUtils::getMapItem( std::string name )
     if(!mit)
       continue;
 
-    if(mit->getName().compare(name) != 0)
+    if(!mit->getModel())
+      continue;
+
+    if(mit->getModel()->getName().compare(name) != 0)
       continue;
 
     map = mit;
@@ -137,7 +137,10 @@ std::vector<std::string> te::layout::ItemUtils::mapNameList(bool selected)
     if(!mit)
       continue;
 
-    std::string name = mit->getName();
+    if(!mit->getModel())
+      continue;
+
+    std::string name = mit->getModel()->getName();
     strList.push_back(name);
   }
 
@@ -275,43 +278,7 @@ void te::layout::ItemUtils::setCurrentToolInSelectedMapItems( EnumType* mode )
 
 void te::layout::ItemUtils::createTextGridAsObject()
 {
-  QFont* ft = new QFont;
-  QGraphicsItem *item = m_scene->selectedItems().first();
-  if(item)
-  {
-    ItemObserver* it = dynamic_cast<ItemObserver*>(item);
-    if(it)
-    {
-      MapGridItem* mt = dynamic_cast<MapGridItem*>(it);
-      if(mt)
-      {
-        MapGridModel* model = dynamic_cast<MapGridModel*>(mt->getModel());
-
-        GridGeodesicModel* gridGeo = dynamic_cast<GridGeodesicModel*>(model->getGridGeodesic());
-        if(model->getGridGeodesic()->isVisible())
-        {
-          model->getGridGeodesic()->setVisibleAllTexts(false);
-          std::map<te::gm::Point*, std::string> mapGeo = gridGeo->getGridInfo();
-          gridGeo->setVisibleAllTexts(false);
-          ft->setFamily(gridGeo->getFontFamily().c_str());
-          ft->setPointSize(gridGeo->getPointSize());
-          createTextItemFromObject(mapGeo, ft);
-        }
-
-        GridPlanarModel* gridPlanar = dynamic_cast<GridPlanarModel*>(model->getGridPlanar());
-        if(model->getGridPlanar()->isVisible())
-        {
-          model->getGridGeodesic()->setVisibleAllTexts(false);
-          std::map<te::gm::Point*, std::string> mapPlanar = gridPlanar->getGridInfo();
-          gridPlanar->setVisibleAllTexts(false);
-          ft->setFamily(gridPlanar->getFontFamily().c_str());
-          ft->setPointSize(gridPlanar->getPointSize());
-          createTextItemFromObject(mapPlanar, ft);
-        }   
-      }
-      it->redraw();
-    }
-  }
+  //do nothing;
 }
 
 void te::layout::ItemUtils::createTextMapAsObject()
@@ -329,28 +296,6 @@ void te::layout::ItemUtils::createTextMapAsObject()
         std::map<te::gm::Point*, std::string> map = model->getTextMapAsObjectInfo();
         createTextItemFromObject(map);
       }
-    }
-  }
-}
-
-void te::layout::ItemUtils::createLegendChildAsObject()
-{
-  QGraphicsItem *item = m_scene->selectedItems().first();
-  if(item)
-  {
-    ItemObserver* it = dynamic_cast<ItemObserver*>(item);
-    if(it)
-    {
-      LegendItem* lit = dynamic_cast<LegendItem*>(it);
-      if(lit)
-      {
-        LegendModel* model = dynamic_cast<LegendModel*>(lit->getModel());
-        MapModel* visitable = dynamic_cast<MapModel*>(model->getVisitable());
-
-        std::map<te::gm::Point*, std::string> coord = model->getCoordChildren();
-        createLegendChildItemFromLegend(coord, visitable);
-      }
-      it->redraw();
     }
   }
 }
@@ -441,3 +386,128 @@ void te::layout::ItemUtils::createLegendChildItemFromLegend( std::map<te::gm::Po
 
   Context::getInstance().setMode(mode->getModeNone());
 }
+
+std::vector<te::layout::Properties*> te::layout::ItemUtils::getGridMapProperties()
+{
+  std::vector<te::layout::Properties*> props;
+
+  std::vector<te::layout::GridMapItem*> gridMapItems = getMapChildren();
+
+  std::vector<te::layout::GridMapItem*>::iterator it = gridMapItems.begin();
+  for( ; it != gridMapItems.end() ; ++it)
+  {
+    if(!(*it))
+    {
+      continue;
+    }
+
+    if(!(*it)->getModel())
+    {
+      continue;;
+    }
+
+    Properties* prop = (*it)->getModel()->getProperties();
+    props.push_back(prop);
+  }
+
+  return props;
+}
+
+std::vector<te::layout::GridMapItem*> te::layout::ItemUtils::getMapChildren()
+{
+  std::vector<te::layout::GridMapItem*> gridMapItems;
+
+  QGraphicsItem *item = m_scene->selectedItems().first();
+  if(!item)
+  {
+    return gridMapItems;
+  }
+  
+  MapItem* map = dynamic_cast<MapItem*>(item);
+  if(!map)
+  {
+    return gridMapItems;
+  }
+
+  QList<QGraphicsItem*> graphicsItems = map->childItems();
+  foreach(QGraphicsItem *item, graphicsItems) 
+  {
+    if(!item)
+      continue;
+
+    GridMapItem* grid = dynamic_cast<GridMapItem*>(item);
+    if(!grid)
+    {
+      continue;
+    }
+
+    gridMapItems.push_back(grid);
+  }
+  
+  return gridMapItems;
+}
+
+QGraphicsItem* te::layout::ItemUtils::intersectionSelectionItem( int x, int y )
+{
+  QGraphicsItem* intersectionItem = 0;
+
+  AbstractScene* abstScene = Context::getInstance().getScene();
+
+  if(!abstScene)
+  {
+    return intersectionItem;
+  }
+
+  Scene* sc = dynamic_cast<Scene*>(abstScene);
+  if(!sc)
+  {
+    return intersectionItem;
+  }
+
+  QList<QGraphicsItem*> items = sc->selectedItems();
+
+  QPointF pt(x, y);
+
+  bool intersection = false;
+
+  foreach (QGraphicsItem *item, items) 
+  {
+    if(item)
+    {
+      bool intersection = item->contains(pt);
+      if(intersection)
+      {
+        intersectionItem = item;
+        break;
+      }
+    }
+  }
+
+  return intersectionItem;
+}
+
+void te::layout::ItemUtils::getTextBoundary( QFont ft, double& w, double& h, std::string txt )
+{
+  AbstractScene* abScene = Context::getInstance().getScene();
+
+  if(!abScene)
+  {
+    return;
+  }
+
+  Scene* scene = dynamic_cast<Scene*>(abScene);
+
+  QTransform matrix = scene->sceneTransform();
+
+  QString qtx(txt.c_str());
+  QFontMetrics fm(ft);
+  QRectF rec(fm.boundingRect(qtx));
+  QRectF wrec(matrix.inverted().mapRect(rec));
+
+  w = wrec.width();
+  h = wrec.height();
+}
+
+
+
+

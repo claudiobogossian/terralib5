@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -35,6 +35,7 @@
 // Qt 
 #include <QVector>
 #include <QPolygonF>
+#include <QPen>
 
 class QGraphicsSceneMouseEvent;
 
@@ -48,7 +49,7 @@ namespace te
     {
       public:
 
-        LineItem ( ItemController* controller, Observable* o );
+        LineItem ( ItemController* controller, Observable* o, bool invertedMatrix = false );
 
         virtual ~LineItem ();
 
@@ -57,16 +58,14 @@ namespace te
          */
         virtual void updateObserver(ContextItem context);
 
-        /*!
-          \brief Reimplemented from QGraphicsItem
-         */
-        virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
-      
       protected:
 
-        virtual void drawLine(QPainter * painter);
+        virtual void drawItem(QPainter * painter);
+
+        virtual void searchStyle();
 
         QPolygonF   m_poly;
+        QPen        m_penStyle;
 	  };
   }
 }

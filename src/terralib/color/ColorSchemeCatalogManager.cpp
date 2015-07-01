@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -94,7 +94,7 @@ void te::color::ColorSchemeCatalogManager::init()
           unsigned int green = c.second.get<unsigned int>("green");
           unsigned int blue = c.second.get<unsigned int>("blue");
 
-          rgbaVec->push_back(te::color::RGBAColor(red, green, blue, 0));
+          rgbaVec->push_back(te::color::RGBAColor(red, green, blue, TE_OPAQUE));
         }
 
         cs->push_back(rgbaVec);

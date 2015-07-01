@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -80,6 +80,9 @@ std::auto_ptr<te::map::LayerSchema> te::map::DataSetLayer::getSchema() const
     te::da::DataSourcePtr ds = te::da::GetDataSource(m_datasourceId, true);
 
     std::auto_ptr<LayerSchema> type = ds->getDataSetType(m_datasetName);
+
+    if(!type.get())
+      return std::auto_ptr<te::da::DataSetType>();
 
     // Cache the schema from datasource
     m_schema = static_cast<LayerSchema*>(type->clone());

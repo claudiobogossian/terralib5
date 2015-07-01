@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -25,6 +25,7 @@
 
 //Terralib
 
+#include "terralib_config.h"
 #include "../common/progress/TaskProgress.h"
 #include "../common/Logger.h"
 #include "../common/Translator.h"
@@ -285,10 +286,7 @@ bool te::vp::AggregationMemory::run() throw( te::common::Exception )
     else
       itg->second.push_back(dataSetItem);
   }
-  
-  
-  // tratamento de erro se nao gerou grupos
-  
+
   // define the schema of the output dataset based on the aggregation parameters
   // for the non-spatial attributes
   std::auto_ptr<te::da::DataSetType> outDsType = this->buildOutDataSetType();

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -179,13 +179,14 @@ te::gm::Envelope te::layout::Utils::viewportBoxFromMM( te::gm::Envelope box )
 {
   te::map::WorldDeviceTransformer transf; // World Device Transformer.
 
-  double zoomFactor = 1.;
-  
+  int zoom = 100;
   if(m_applyZoom)
   {
-    //zoomFactor = Context::getInstance().getZoomFactor();
+    zoom = Context::getInstance().getZoom();
   }
-  
+
+  double zoomFactor = (double)zoom / 100.;
+
   int pxwidth = mm2pixel(box.getWidth() * zoomFactor);
   int pxheight = mm2pixel(box.getHeight() * zoomFactor);
     
@@ -533,21 +534,6 @@ void te::layout::Utils::convertToMillimeter( WorldTransformer transf, te::gm::Po
   poly->computeMBR(true);
 }
 
-void te::layout::Utils::drawImage( std::string fileName, te::gm::Envelope box )
-{
-  te::map::Canvas* canvas = Context::getInstance().getCanvas();
-
-  std::ifstream::pos_type size;
-  char* img = imageToChar(fileName, size);
-  te::map::ImageType imgType = getFileExtensionType(fileName);
-  if(img)
-  {
-    te::gm::Envelope boxViewport = viewportBox(box);
-    canvas->drawImage(0, 0, boxViewport.getWidth(), boxViewport.getHeight(), img, size, imgType);
-    delete[] img;
-  }
-}
-
 char* te::layout::Utils::imageToChar( std::string fileName, std::ifstream::pos_type &size )
 {
   char* memblock = 0;
@@ -585,36 +571,6 @@ std::string te::layout::Utils::getFileExtension( std::string fileName )
 {
   std::string extension = fileName.substr(fileName.find_last_of("/\\.") + 1);
   return extension;
-}
-
-te::map::ImageType te::layout::Utils::getFileExtensionType( std::string fileName )
-{
-  te::map::ImageType imgType;
-
-  std::string extension = getFileExtension(fileName);
-  
-  if(extension.compare("png") == 0)
-  {
-    imgType = te::map::PNG;
-  }
-  else if(extension.compare("bmp") == 0)
-  {
-    imgType = te::map::BMP;
-  }
-  else if(extension.compare("jpeg") == 0 || extension.compare("jpg") == 0)
-  {
-    imgType = te::map::JPEG;
-  }
-  else if(extension.compare("gif") == 0)
-  {
-    imgType = te::map::GIF;
-  }
-  else if(extension.compare("tiff") == 0)
-  {
-    imgType = te::map::TIFF;
-  }
-
-  return imgType;
 }
 
 void te::layout::Utils::setApplyZoom( bool apply )

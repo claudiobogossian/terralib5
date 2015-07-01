@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -21,6 +21,18 @@
   \file Variant.h
    
   \brief Class acts like a union for some C++/TerraLib5 data types. Responsible for storing the value.
+  Any data type, not included in the convertValue method in this class, it will be by default "std::string".
+  Storing value types:
+
+    - std::string 
+    - double
+    - int 
+    - long 
+    - float 
+    - bool 
+    - te::color::RGBAColor 
+    - te::layout::Font 
+    - te::layout::GenericVariant
 
   \ingroup layout
 */
@@ -33,6 +45,8 @@
 #include "../../../color/RGBAColor.h"
 #include "../Font.h"
 #include "../enum/EnumType.h"
+#include "../Config.h"
+#include "GenericVariant.h"
 
 // STL
 #include <string>
@@ -51,10 +65,22 @@ namespace te
   {
     /*!
 	    \brief Class acts like a union for some C++/TerraLib5 data types. Responsible for storing the value.
+       Any data type, not included in the convertValue method in this class, it will be by default "std::string".
+       Storing value types:
+
+        - std::string 
+        - double
+        - int 
+        - long 
+        - float 
+        - bool 
+        - te::color::RGBAColor 
+        - te::layout::Font 
+        - te::layout::GenericVariant
 	  
 	    \ingroup layout
 	  */
-    class Variant
+    class TELAYOUTEXPORT Variant
     {
       public:
 
@@ -159,6 +185,13 @@ namespace te
         Font toFont();
 
         /*!
+          \brief Returns the value of te::layout::GenericVariant type. (The setValue method received a te::layout::GenericVariant). Complex type.
+
+          \return value of te::layout::Font type
+        */
+        GenericVariant toGenericVariant();
+
+        /*!
           \brief Converts the value to a string.
 
           \return Value as a string
@@ -194,6 +227,7 @@ namespace te
       
       /*!
           \brief Discovers the type of the value and sets for the corresponding attribute (storage).
+          Any type of data, not included in this class, it will be by default "std::string"
 
           \param valueCopy pointer of the value to be stored 
        */
@@ -258,6 +292,7 @@ namespace te
       EnumType* m_type; //!< data type of this object
       bool m_null; //!< true if no value has been set, false otherwise
       bool m_complex; //!< true if value is not of common C++ data type, false otherwise
+      GenericVariant m_generic; //!< value of te::layout::GenericVariant type
     };
 
     template<typename ValueType>

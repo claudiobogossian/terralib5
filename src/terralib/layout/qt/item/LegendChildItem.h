@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -42,14 +42,13 @@ namespace te
     {
       public:
 
-        LegendChildItem( ItemController* controller, Observable* o );
+        LegendChildItem( ItemController* controller, Observable* o, bool invertedMatrix = false );
 
         virtual ~LegendChildItem();
 
-        /*!
-          \brief Mandatory implementation from QGraphicsItem
-         */
-        virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
+      protected:
+
+        virtual void drawItem ( QPainter * painter );
     };
   }
 }

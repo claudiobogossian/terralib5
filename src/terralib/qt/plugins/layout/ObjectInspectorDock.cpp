@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -27,10 +27,10 @@
 
 // TerraLib
 #include "ObjectInspectorDock.h"
-#include "../../../layout/outside/ObjectInspectorModel.h"
-#include "../../../layout/outside/ObjectInspectorController.h"
-#include "../../../layout/core/pattern/mvc/OutsideObserver.h"
 #include "../../../layout/qt/outside/ObjectInspectorOutside.h"
+#include "../../../layout/core/pattern/singleton/Context.h"
+#include "../../../layout/qt/core/BuildGraphicsOutside.h"
+#include "../../../layout/core/enum/Enums.h"
 
 
 te::qt::plugins::layout::ObjectInspectorDock::ObjectInspectorDock( QWidget * parent /*= 0*/, Qt::WindowFlags flags /*= 0*/ ) :
@@ -51,13 +51,36 @@ te::qt::plugins::layout::ObjectInspectorDock::~ObjectInspectorDock()
 
 void te::qt::plugins::layout::ObjectInspectorDock::create()
 {
-  te::layout::ObjectInspectorModel* dockInspectorModel = new te::layout::ObjectInspectorModel();		 
-  te::layout::ObjectInspectorController* dockInspectorController = new te::layout::ObjectInspectorController(dockInspectorModel);
-  te::layout::OutsideObserver* itemDockInspector = (te::layout::OutsideObserver*)dockInspectorController->getView();
-  m_inspector = dynamic_cast<te::layout::ObjectInspectorOutside*>(itemDockInspector);  
+  te::layout::AbstractBuildGraphicsOutside* abstractBuildOutside = te::layout::Context::getInstance().getAbstractBuildGraphicsOutside();
+  if(!abstractBuildOutside)
+  {
+    return;
+  }
+
+  te::layout::BuildGraphicsOutside* buildOutside = dynamic_cast<te::layout::BuildGraphicsOutside*>(abstractBuildOutside);
+  if(!buildOutside)
+  {
+    return;
+  }
+
+  te::layout::EnumObjectType* objectType = te::layout::Enums::getInstance().getEnumObjectType();
+  if(!objectType)
+  {
+    return;
+  }
+
+  QWidget* widget = buildOutside->createOuside(objectType->getObjectInspectorWindow());
+  if(!widget)
+  {
+    return;
+  }
+  m_inspector = dynamic_cast<te::layout::ObjectInspectorOutside*>(widget);  
 }
 
 te::layout::ObjectInspectorOutside* te::qt::plugins::layout::ObjectInspectorDock::getObjectInspectorOutside()
 {
   return m_inspector;
 }
+
+
+

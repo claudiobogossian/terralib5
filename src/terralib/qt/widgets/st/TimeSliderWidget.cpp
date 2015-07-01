@@ -1,4 +1,4 @@
-/*  Copyright (C) 2010-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -65,7 +65,7 @@
 #include <QFileDialog>
 
 te::qt::widgets::TimeSliderWidget::TimeSliderWidget(te::qt::widgets::MapDisplay* md, QWidget* parent,  Qt::WindowFlags f)
-  : QWidget((QWidget*)md->parent(), f),
+  : QWidget(parent, f),
     m_display(md),
     m_erasePerfectly(false),
     m_ui(new Ui::TimeSliderWidgetForm),

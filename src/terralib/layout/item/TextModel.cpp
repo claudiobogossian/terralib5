@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -47,6 +47,7 @@ te::layout::TextModel::TextModel() :
   m_font.setPointSize(12);
 
   m_resizable = false;
+  m_border = false;
 }
 
 te::layout::TextModel::~TextModel()
@@ -60,16 +61,14 @@ te::layout::Properties* te::layout::TextModel::getProperties() const
 
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
   
-  Property pro_font;
+  Property pro_font(m_hashCode);
   pro_font.setName("Font");
-  pro_font.setId("");
   pro_font.setValue(m_font, dataType->getDataTypeFont());
   pro_font.setMenu(true);
   m_properties->addProperty(pro_font);
 
-  Property pro_text;
+  Property pro_text(m_hashCode);
   pro_text.setName("Text");
-  pro_text.setId("");
   pro_text.setValue(m_text, dataType->getDataTypeString());
   pro_text.setVisible(false);
   m_properties->addProperty(pro_text);
@@ -77,9 +76,9 @@ te::layout::Properties* te::layout::TextModel::getProperties() const
   return m_properties;
 }
 
-void te::layout::TextModel::updateProperties( te::layout::Properties* properties )
+void te::layout::TextModel::updateProperties( te::layout::Properties* properties, bool notify )
 {
-  ItemModelObservable::updateProperties(properties);
+  ItemModelObservable::updateProperties(properties, false);
 
   Properties* vectorProps = const_cast<Properties*>(properties);
   
@@ -95,6 +94,12 @@ void te::layout::TextModel::updateProperties( te::layout::Properties* properties
   if(!pro_font.isNull())
   {
     m_font = pro_font.getValue().toFont();
+  }
+
+  if(notify)
+  {
+    ContextItem context;
+    notifyAll(context);
   }
 }
 

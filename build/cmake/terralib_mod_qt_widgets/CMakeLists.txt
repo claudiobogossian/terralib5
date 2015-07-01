@@ -184,6 +184,11 @@ file(GLOB TERRALIB_UTILS_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt
 
 file(GLOB TERRALIB_UTILS_UI_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/utils/ui/*.ui)
 
+# vector
+file(GLOB TERRALIB_VECTOR_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/vector/*.cpp)
+file(GLOB TERRALIB_VECTOR_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/vector/*.h)
+file(GLOB TERRALIB_VECTOR_UI_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/vector/ui/*.ui)
+
 #
 # Grouping the source  and ui files
 #
@@ -333,6 +338,11 @@ source_group("Header Files\\tools"  FILES ${TERRALIB_TOOLS_HDR_FILES})
 source_group("Source Files\\utils"  FILES ${TERRALIB_UTILS_SRC_FILES})
 source_group("Header Files\\utils"  FILES ${TERRALIB_UTILS_HDR_FILES})
 source_group("Header Files\\utils"  FILES ${TERRALIB_UTILS_UI_FILES})
+
+# vector
+source_group("Source Files\\vector"  FILES ${TERRALIB_VECTOR_SRC_FILES})
+source_group("Header Files\\vector"  FILES ${TERRALIB_VECTOR_HDR_FILES})
+source_group("UI Files\\vector"      FILES ${TERRALIB_VECTOR_UI_FILES})
 
 #
 # Set the dependency libraries
@@ -491,7 +501,14 @@ if(Qt5_FOUND)
   QT5_WRAP_UI(TERRALIB_UTILS_GEN_HDR_FILES ${TERRALIB_UTILS_UI_FILES})
   list(APPEND TERRALIB_FILES ${TERRALIB_UTILS_SRC_FILES} ${TERRALIB_UTILS_HDR_FILES} ${TERRALIB_UTILS_GEN_HDR_FILES})
 
+  # vector
+  QT5_WRAP_UI(TERRALIB_VECTOR_GEN_HDR_FILES ${TERRALIB_VECTOR_UI_FILES})
+  list(APPEND TERRALIB_FILES ${TERRALIB_VECTOR_SRC_FILES} ${TERRALIB_VECTOR_HDR_FILES} ${TERRALIB_VECTOR_GEN_HDR_FILES})
+  
   # end of Qt5 uic'ing
+
+  # Adding all external dependencies to rpath
+  addExternalLibrariesToRPATH(${TERRALIB_LIBRARIES_DEPENDENCIES})
 
   add_library(terralib_mod_qt_widgets SHARED ${TERRALIB_FILES})
 
@@ -637,6 +654,10 @@ else() # QT4_FOUND
   QT4_WRAP_UI(TERRALIB_UTILS_GEN_HDR_FILES ${TERRALIB_UTILS_UI_FILES})
   list(APPEND TERRALIB_FILES ${TERRALIB_UTILS_SRC_FILES} ${TERRALIB_UTILS_HDR_FILES} ${TERRALIB_UTILS_GEN_HDR_FILES})
 
+  # vector
+  QT4_WRAP_UI(TERRALIB_VECTOR_GEN_HDR_FILES ${TERRALIB_VECTOR_UI_FILES})
+  list(APPEND TERRALIB_FILES ${TERRALIB_VECTOR_SRC_FILES} ${TERRALIB_VECTOR_HDR_FILES} ${TERRALIB_VECTOR_GEN_HDR_FILES})
+  
   #
   # Qt4 moc'ing
   #
@@ -664,7 +685,11 @@ else() # QT4_FOUND
                                           ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/charts/ScatterDataWidget.h
                                           ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/charts/ScatterDialog.h
                                           ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/charts/ScatterFrame.h
-                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/charts/ScatterStyleWidget.h)
+                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/charts/ScatterStyleWidget.h
+                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/charts/TimeSeriesDataWidget.h
+                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/charts/TimeSeriesDialog.h
+                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/charts/TimeSeriesFrame.h
+                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/charts/TimeSeriesStyleWidget.h)
 
   # classification
   list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/classification/ROIManagerDialog.h
@@ -896,6 +921,9 @@ else() # QT4_FOUND
                                            ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/AnimationItem.h
                                            ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/AnimationScene.h
                                            ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/AnimationView.h
+										   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/ObservationPropertiesWidget.h
+										   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/ObservationPropertiesWizardPage.h
+										   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/ObservationWizard.h
                                            ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/PixmapItem.h
                                            ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/SliderPropertiesDialog.h
                                            ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/TrajectoryItem.h
@@ -939,10 +967,16 @@ else() # QT4_FOUND
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/utils/ParameterTableWidget.h
                                          ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/utils/ResourceChooser.h)
 
+  # vector
+  list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/vector/FixGeometryDialog.h
+                                         ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/vector/FixGeometryWidget.h)
+
   # Moc'ing DataSetTableView.cpp
   QT4_GENERATE_MOC(${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/table/DataSetTableView.cpp DataSetTableView.moc)
 
   QT4_WRAP_CPP(TERRALIB_GEN_SRC_FILES ${TERRALIB_HDRS_TO_MOC_FILES} OPTIONS -DBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
+
+  addExternalLibrariesToRPATH("${TERRALIB_LIBRARIES_DEPENDENCIES}")
 
   add_library(terralib_mod_qt_widgets SHARED ${TERRALIB_FILES} ${TERRALIB_GEN_SRC_FILES} DataSetTableView.moc)
 
@@ -1067,4 +1101,8 @@ install(FILES ${TERRALIB_TOOLS_HDR_FILES}
 install(FILES ${TERRALIB_UTILS_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/utils COMPONENT devel)
 
+install(FILES ${TERRALIB_VECTOR_HDR_FILES}
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/qt/widgets/vector COMPONENT devel)
+
 export(TARGETS terralib_mod_qt_widgets APPEND FILE ${CMAKE_BINARY_DIR}/terralib-exports.cmake)
+

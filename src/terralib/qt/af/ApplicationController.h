@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -372,11 +372,25 @@ namespace te
         public:
 
           /*!
+            \brief Returns the application name.
+
+            \return Application name.
+          */
+          const QString& getAppName() const;
+
+          /*!
             \brief Returns the application title.
 
             \return Application title.
           */
           const QString& getAppTitle() const;
+
+          /*!
+            \brief Returns the application project extension.
+
+            \return Application project extension.
+          */
+          const QString& getAppProjectExtension() const;
 
           const QString& getAboutLogo() const;
 
@@ -388,6 +402,13 @@ namespace te
             \return Application icon.
           */
           const QString& getAppIconName() const;
+
+          /*!
+          \brief Returns the plugins file path of application.
+
+          \return A path of plugins file.
+          */
+          const QString& getAppPluginsPath() const;
 
           /*!
             \brief Returns the most recent project.
@@ -436,13 +457,14 @@ namespace te
           QString m_appOrganization;                  //!< Organization name.
           QString m_appName;                          //!< Application name.
           QString m_appTitle;                         //!< Application title.
+          QString m_appProjectExtension;              //!< Application project extension.
           QString m_appIconName;                      //!< Icon used in the application.
           QString m_aboutLogo;
           QString m_tLibLogo;
           QStringList m_recentProjs;                  //!< List of the recent projects.
           QStringList m_recentProjsTitles;            //!< List of the titles of the recent projects.
           std::string m_appUserSettingsFile;          //!< Name of the user settings file.
-          QString m_appPluginsFile;                   //!< Name of the plugins file.
+          QString m_appPluginsPath;                   //!< Name of the plugins path.
           QString m_appHelpFile;                      //!< Name of the help file.
           QString m_appIconThemeDir;                  //!< Directory of the application icon theme.
           QString m_appDefaultIconTheme;              //!< Name of the icon theme to be used.

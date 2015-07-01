@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -61,10 +61,6 @@ te::qt::plugins::st::TimeSliderWidgetAction::~TimeSliderWidgetAction()
 {
   if(m_timeSliderWidget)
   {
-    QWidget* mainWindow = te::qt::af::ApplicationController::getInstance().getMainWindow();
-    te::qt::af::BaseApplication* ba = (te::qt::af::BaseApplication*)mainWindow;
-
-    ba->getInterfaceController()->removeInteface(m_timeSliderWidget);
     delete m_timeSliderWidget;
   }
   m_menu->removeAction(m_action);

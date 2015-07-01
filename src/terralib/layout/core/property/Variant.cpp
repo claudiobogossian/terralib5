@@ -1,4 +1,4 @@
-/*  Copyright (C) 2014-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -93,8 +93,14 @@ void te::layout::Variant::convertValue( const void* valueCopy )
   bool* bValue = 0;
   te::color::RGBAColor* colorValue = 0;
   Font* fontValue = 0;
+  GenericVariant* generic = 0;
 
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+
+  if(!m_type || !dataType)
+  {
+    return;
+  }
 
   try
   {
@@ -106,7 +112,6 @@ void te::layout::Variant::convertValue( const void* valueCopy )
       {
         null = false;
         m_sValue = *sp;
-        //return throw_exception("Cast failure! Wrong type.");
       }
     }
     else if(m_type == dataType->getDataTypeStringList())
@@ -165,16 +170,6 @@ void te::layout::Variant::convertValue( const void* valueCopy )
         m_bValue = *bValue;
       }
    }
-   else if(m_type == dataType->getDataTypeGridSettings())
-   {
-      // Cast it back to a string pointer.
-      sp = static_cast<std::string*>(value);
-      if(sp)
-      {
-        null = false;
-        m_sValue = *sp;
-      }
-   }
    else if(m_type == dataType->getDataTypeColor())
    {
       // Cast it back to a string pointer.
@@ -197,17 +192,18 @@ void te::layout::Variant::convertValue( const void* valueCopy )
         m_complex = true;
       }
    }
-   else if(m_type == dataType->getDataTypeImage())
+   else if(m_type == dataType->getDataTypeGenericVariant())
    {
-      // Cast it back to a string pointer.
-      sp = static_cast<std::string*>(value);
-      if(sp)
-      {
-        null = false;
-        m_sValue = *sp;
-      }
+     // Cast it back to a string pointer.
+     generic = static_cast<GenericVariant*>(value);
+     if(generic)
+     {
+       null = false;
+       m_generic = *generic;
+       m_complex = true;
+     }
    }
-   else if(m_type == dataType->getDataTypeTextGridSettings())
+   else // Any remaining data will be by default "std::string"  
    {
      // Cast it back to a string pointer.
      sp = static_cast<std::string*>(value);
@@ -234,7 +230,14 @@ void te::layout::Variant::fromPtree( boost::property_tree::ptree tree, EnumType*
   bool null = true;
 
   if(!dataType)
+  {
     return;
+  }
+
+  if(!type)
+  {
+    return;
+  }
 
   /* the ptree boost returns data with string type */
 
@@ -245,38 +248,32 @@ void te::layout::Variant::fromPtree( boost::property_tree::ptree tree, EnumType*
       m_sValue = tree.data();
       null = false;
     }
-
-    if(type == dataType->getDataTypeDouble())
+    else if(type == dataType->getDataTypeDouble())
     {
       m_dValue = std::atof(tree.data().c_str());
       null = false;
     }
-
-    if(type == dataType->getDataTypeInt())
+    else if(type == dataType->getDataTypeInt())
     {
       m_iValue = std::atoi(tree.data().c_str());
       null = false;
     }
-
-    if(type == dataType->getDataTypeLong())
+    else if(type == dataType->getDataTypeLong())
     {
       m_lValue = std::atol(tree.data().c_str());
       null = false;
     }
-
-    if(type == dataType->getDataTypeFloat())
+    else if(type == dataType->getDataTypeFloat())
     {
       m_fValue = (float)std::atof(tree.data().c_str());
       null = false;
     }
-
-    if(type == dataType->getDataTypeBool())
+    else if(type == dataType->getDataTypeBool())
     {
       m_bValue = toBool(tree.data());
       null = false;
     }
-
-    if(type == dataType->getDataTypeColor())
+    else if(type == dataType->getDataTypeColor())
     {
       std::string color = tree.data();
 
@@ -301,12 +298,20 @@ void te::layout::Variant::fromPtree( boost::property_tree::ptree tree, EnumType*
       m_complex = true;
       null = false;
     }
-
-    if(type == dataType->getDataTypeFont())
+    else if(type == dataType->getDataTypeFont())
     {
       std::string font = tree.data();
       m_fontValue.fromString(font);
       m_complex = true;
+      null = false;
+    }
+    else if(type == dataType->getDataTypeGenericVariant())
+    {
+      m_generic.fromPtree(tree);
+    }
+    else // Any remaining data will be by default "std::string"  
+    {
+      m_sValue = tree.data();
       null = false;
     }
   }
@@ -374,6 +379,7 @@ void te::layout::Variant::clear()
   m_bValue = false;
   m_type = Enums::getInstance().getEnumDataType()->getDataTypeNone();
   m_null = true;
+  m_generic.clear();
 }
 
 std::string te::layout::Variant::convertToString()
@@ -544,3 +550,11 @@ bool te::layout::Variant::toBool( std::string str )
     return false;
   }
 }
+
+te::layout::GenericVariant te::layout::Variant::toGenericVariant()
+{
+  return m_generic;
+}
+
+
+

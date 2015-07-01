@@ -27,18 +27,17 @@
 
 MACRO(TeInstallPlugins plugins location)
 
-  set(_files )
-  
+  set(_files)
+
   foreach(plugin ${plugins})
     get_target_property(_loc ${plugin} LOCATION)
-	list(APPEND _files ${_loc})
+    list(APPEND _files ${_loc})
   endforeach()
   
-  install (FILES ${_files}
-	DESTINATION qtplugins/${location}
-	CONFIGURATIONS Release
-	COMPONENT runtime
-  )
+	install(FILES ${_files}
+           DESTINATION "${TERRALIB_BASE_DESTINATION_DIR}qtplugins/${location}"
+           CONFIGURATIONS Release
+           COMPONENT runtime)
   
 ENDMACRO(TeInstallPlugins)
 
@@ -60,7 +59,10 @@ MACRO(TeInstallQt5Plugins)
   
 # Installing platform plugins
   if(WIN32)
-    set(_plugins Qt5::QWindowsIntegrationPlugin)
+    set(_plugins Qt5::QWindowsIntegrationPlugin Qt5::QMinimalIntegrationPlugin)
+    TeInstallPlugins("${_plugins}" "platforms")
+  elseif(APPLE)
+    set(_plugins Qt5::QCocoaIntegrationPlugin Qt5::QMinimalIntegrationPlugin)
     TeInstallPlugins("${_plugins}" "platforms")
   endif()
 
@@ -103,11 +105,7 @@ MACRO(TeInstallQtPlugins plgs)
 
   set (_regex_exp "(${_regex_exp})?(${CMAKE_SHARED_LIBRARY_SUFFIX})$")
 
-  if(APPLE)
-    set (_dest terraview.app/Contents/qtplugins)
-  else()
-    set (_dest qtplugins)
-  endif()
+  set (_dest "${TERRALIB_BASE_DESTINATION_DIR}qtplugins")
 
 if(QT4_FOUND)
   set (_plugin_dirs "imageformats;iconengines;sqldrivers")
@@ -123,3 +121,29 @@ endif()
   endforeach()
 
 ENDMACRO(TeInstallQtPlugins)
+
+#Add library path to RPATH (This will make this project library to find automatically it's dependencies)
+#Verify if the lib is already on LD or not
+MACRO(addExternalLibraryToRPATH LIBRARY)
+	IF(UNIX)
+		get_filename_component(LIBRARY_PATH ${LIBRARY} DIRECTORY)
+		LIST(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES ${LIBRARY_PATH} isSystemDir)
+		IF("${isSystemDir}" STREQUAL "-1")
+	    	list (APPEND CMAKE_INSTALL_RPATH ${LIBRARY_PATH})
+			MESSAGE(STATUS " -- Adding ${LIBRARY} to RPATH")
+		ENDIF("${isSystemDir}" STREQUAL "-1")
+	ENDIF()
+ENDMACRO(addExternalLibraryToRPATH)
+
+#Add a list of libraries to RPATH (This will make this project library to find automatically it's dependencies)
+#Verify if the lib is already on LD or not
+MACRO(addExternalLibrariesToRPATH LIBRARY_LIST)
+  IF(UNIX)
+	  FOREACH(LIBRARY ${LIBRARY_LIST})
+		string(FIND ${LIBRARY} ".so" isShared)
+		IF(NOT "${isShared}" EQUAL "-1")
+			addExternalLibraryToRPATH(${LIBRARY})	
+		ENDIF()
+	  ENDFOREACH()
+  ENDIF()
+ENDMACRO(addExternalLibrariesToRPATH)

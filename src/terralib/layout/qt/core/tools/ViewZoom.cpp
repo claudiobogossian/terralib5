@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -64,15 +64,18 @@ void te::layout::ViewZoom::applyZoom(const QPointF& point)
   //Conversion to world coordinates
   QPointF pt = m_view->mapToScene(point.toPoint());
 
-  double currentZoomFactor = Context::getInstance().getZoomFactor();
-  double factor = m_view->previousFactor(currentZoomFactor);
-
-  if(factor > 0)
+  int newZoom = 100;
+  if(m_zoomType == ZoomIn)
   {
-    //Zoom Out
-    m_view->changeZoomFactor(factor);
-    m_view->centerOn(pt);
+    newZoom = Context::getInstance().getZoom() / m_zoomFactor;
   }
+  else
+  {
+    newZoom = Context::getInstance().getZoom() * m_zoomFactor;
+  }
+
+  m_view->setZoom(newZoom);
+  m_view->centerOn(pt);
 
   scne->update();
 }

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -59,6 +59,11 @@ boost::int32_t te::xml::Reader::getAttrAsInt32(std::size_t i) const
 boost::uint32_t te::xml::Reader::getAttrAsUInt32(std::size_t i) const
 {
   return boost::lexical_cast<boost::uint32_t>(getAttr(i));
+}
+
+boost::uint32_t te::xml::Reader::getAttrAsUInt32(const std::string name) const
+{
+  return boost::lexical_cast<boost::uint32_t>(getAttr(name));
 }
 
 double te::xml::Reader::getAttrAsDouble(const std::string& name) const

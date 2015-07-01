@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -32,13 +32,6 @@
 #include "ObjectItem.h"
 #include "../../core/Config.h"
 
-// STL
-#include <vector>
-
-// Qt
-#include <QGraphicsSceneMouseEvent>
-#include <QPointF>
-
 namespace te
 {
   namespace layout
@@ -47,57 +40,17 @@ namespace te
 
     class TELAYOUTEXPORT BalloonItem : public ObjectItem
     {
-      public:
+    public:
 
-        BalloonItem( ItemController* controller, Observable* o );
+      BalloonItem( ItemController* controller, Observable* o, bool invertedMatrix = false );
 
-        virtual ~BalloonItem();
+      virtual ~BalloonItem();
 
-        virtual void paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
-        
-      protected:
-
-        virtual void	mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
-        
-        virtual void  mousePressEvent ( QGraphicsSceneMouseEvent * event );
-
-        virtual void	mouseMoveEvent ( QGraphicsSceneMouseEvent * event );
-
-        virtual void	hoverEnterEvent ( QGraphicsSceneHoverEvent * event );
-
-        virtual void	hoverLeaveEvent ( QGraphicsSceneHoverEvent * event );
-
-        virtual void	hoverMoveEvent ( QGraphicsSceneHoverEvent * event );
-
-        QPolygonF m_triangleRect; 
-        QPointF m_pointOne; 
-        QPointF m_pointTwo; 
-        QPointF m_pointThree; 
-        QPointF m_initialPosition; 
-        QPointF m_finalPosition; 
-        QPointF m_initialPoint; 
-        QPointF m_clikedArea; 
-        QPointF m_zero; 
-        bool m_flagReDraw; 
-        bool m_flagArrow; 
-        bool m_flagArea; 
-        bool m_flagChangeArrow; 
-        double m_deltaX; 
-        double m_deltaY;
-        double m_initialRect; 
-        double m_boundDeltaX; 
-        double m_boundDeltaY; 
-               
-        enum rectDiagonal 
-        {
-          UpLeft, 
-          UpRight, 
-          DownLeft, 
-          DownRight
-        };
-        rectDiagonal m_size; 
+      virtual void drawItem ( QPainter * painter );
     };
   }
 }
 
 #endif
+
+

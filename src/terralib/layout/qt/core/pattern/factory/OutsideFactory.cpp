@@ -1,4 +1,4 @@
-/*  Copyright (C) 2014-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -38,6 +38,11 @@
 #include "../../../outside/EditTemplateOutside.h"
 #include "../../../outside/TextGridSettingsOutside.h"
 #include "../../../../core/enum/Enums.h"
+#include "../../../outside/MapLayerChoiceOutside.h"
+#include "../../../outside/LegendChoiceOutside.h"
+#include "../../../outside/SVGDialogOutside.h"
+#include "../../../outside/ColorDialogOutside.h"
+#include "../../../outside/FontDialogOutside.h"
 
 te::layout::OutsideFactory::OutsideFactory()
 {
@@ -86,6 +91,11 @@ te::layout::Observer* te::layout::OutsideFactory::make( EnumType* type, OutsideP
     SystematicScaleOutside* systematic = new SystematicScaleOutside(params.getController(), params.getModel());		
     outside = (Observer*)systematic;
   }
+  else if(type == enumObj->getSVGDialog())
+  {
+    SVGDialogOutside* svgdialog = new SVGDialogOutside(params.getController(), params.getModel());		
+    outside = (Observer*)svgdialog;
+  }
   else if(type == enumObj->getEditTemplate())
   {
     EditTemplateOutside* editTemplate = new EditTemplateOutside(params.getController(), params.getModel());		
@@ -95,6 +105,26 @@ te::layout::Observer* te::layout::OutsideFactory::make( EnumType* type, OutsideP
   {
     TextGridSettingsOutside* textGridSettings = new TextGridSettingsOutside(params.getController(), params.getModel());		
     outside = (Observer*)textGridSettings;
+  }
+  else if(type == enumObj->getMapLayerChoice())
+  {
+    MapLayerChoiceOutside* mapLayerChoice = new MapLayerChoiceOutside(params.getController(), params.getModel());		
+    outside = (Observer*)mapLayerChoice;
+  }
+  else if(type == enumObj->getLegendChoice())
+  {
+    LegendChoiceOutside* legendChoice = new LegendChoiceOutside(params.getController(), params.getModel());		
+    outside = (Observer*)legendChoice;
+  }
+  else if(type == enumObj->getColorDialog())
+  {
+    ColorDialogOutside* colorDialog = new ColorDialogOutside(params.getController(), params.getModel());		
+    outside = (Observer*)colorDialog;
+  }
+  else if(type == enumObj->getFontDialog())
+  {
+    FontDialogOutside* fontDialog = new FontDialogOutside(params.getController(), params.getModel());		
+    outside = (Observer*)fontDialog;
   }
 
 	return outside;

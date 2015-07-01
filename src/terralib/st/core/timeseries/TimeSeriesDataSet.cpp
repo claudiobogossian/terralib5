@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -37,6 +37,8 @@
 #include "TimeSeries.h"
 #include "../observation/ObservationDataSet.h"
 #include "../observation/ObservationDataSetType.h"
+
+#include <set>
 
 te::st::TimeSeriesDataSet::TimeSeriesDataSet(te::da::DataSet* ds, const ObservationDataSetType& type,
   const std::vector<std::string>& propNames)
@@ -210,6 +212,10 @@ te::st::TimeSeriesDataSet::getTimeSeries(const std::string& propN, te::st::Abstr
     std::auto_ptr<te::dt::DateTime> time(ds->getDateTime(m_obsDs->getType().getBeginTimePropName()));
     std::auto_ptr<te::dt::AbstractData> value(ds->getValue(propN));
     result->add(time.release(), value.release());
+
+    //Acquiring the timeSeries identification
+    std::auto_ptr<te::dt::AbstractData> tsid(ds->getValue(propN));
+    result->setId(tsid->toString());
   }
 
   while(ds->moveNext())
@@ -222,42 +228,40 @@ te::st::TimeSeriesDataSet::getTimeSeries(const std::string& propN, te::st::Abstr
   return result;
 }
 
-void te::st::TimeSeriesDataSet::getTimeSeriesSet(  te::st::AbstractTimeSeriesInterp* interp, 
+void te::st::TimeSeriesDataSet::getTimeSeriesSet(  te::st::AbstractTimeSeriesInterp* interp,
+                                const std::string& vPropName,
                                 std::vector<te::st::TimeSeries*>& result)
 {
-  std::size_t sz = m_vlPropNames.size();
-  for(unsigned int i = 0; i<sz; ++i)
-  {
-    TimeSeries* ts = new TimeSeries(interp,m_id);
-    result.push_back(ts);
-  }
-  
   te::da::DataSet* ds = m_obsDs->getData();
-  
-  if(ds->moveNext())
+  std::set<std::string> seriesIds;
+  size_t count = 0;
+
+  ds->moveBeforeFirst();
+  while(ds->moveNext())
   {
-    for(unsigned int i = 0; i<sz; ++i)
+    //Acquiring the timeSeries identification
+    std::auto_ptr<te::dt::AbstractData> tsid(ds->getValue(vPropName));
+
+    if(seriesIds.insert(tsid->toString()).second)
     {
+      TimeSeries* ts = new TimeSeries(interp,tsid->toString());
+      std::auto_ptr<te::dt::DateTime> time(ds->getDateTime(m_obsDs->getType().getBeginTimePropName()));
+      std::auto_ptr<te::dt::AbstractData> value(ds->getValue(m_vlPropNames[0]));
+      ts->add(time.release(), value.release());
+      result.push_back(ts);
+
       //Get the time series location if there is one
       std::auto_ptr<te::gm::Geometry> geom = getGeometry();
       if(geom.get()!=0)
-        result[i]->setLocation(geom.release());
-      
-      //Get time and value of time series
-      std::auto_ptr<te::dt::DateTime> time(ds->getDateTime(m_obsDs->getType().getBeginTimePropName()));
-      std::auto_ptr<te::dt::AbstractData> value(ds->getValue(m_vlPropNames[i]));
-      result[i]->add(time.release(), value.release());
-    }
-  }
+        result[count]->setLocation(geom.release());
 
-  while(ds->moveNext())
-  {
-    for(unsigned int i = 0; i<sz; ++i)
+      count++;
+    }
+    else
     {
-      //Get time and value of time series
       std::auto_ptr<te::dt::DateTime> time(ds->getDateTime(m_obsDs->getType().getBeginTimePropName()));
-      std::auto_ptr<te::dt::AbstractData> value(ds->getValue(m_vlPropNames[i]));
-      result[i]->add(time.release(), value.release());
+      std::auto_ptr<te::dt::AbstractData> value(ds->getValue(m_vlPropNames[0]));
+      result[count-1]->add(time.release(), value.release());
     }
   }
   return;

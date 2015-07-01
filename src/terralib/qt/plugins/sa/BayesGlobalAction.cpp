@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
   
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
     
@@ -32,6 +32,7 @@ te::qt::plugins::sa::BayesGlobalAction::BayesGlobalAction(QMenu *menu) :
   AbstractAction(menu)
 {
   createAction(tr("Global Empirical Bayes...").toStdString(), "sa-bayesglobal-icon");
+  m_action->setObjectName("Processing.Spatial Analysis.Global Empirical Bayes");
 }
 
 te::qt::plugins::sa::BayesGlobalAction::~BayesGlobalAction()

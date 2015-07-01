@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -280,7 +280,7 @@ void te::qt::widgets::PluginSourceWriter::insertTerraLibHeader(std::ofstream& st
 {
   std::string defaultHeader = "";
 
-  defaultHeader += "/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.\n";
+  defaultHeader += "/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.\n";
   defaultHeader += "\n";
   defaultHeader += "    This file is part of the TerraLib - a Framework for building GIS enabled applications.\n";
   defaultHeader += "\n";

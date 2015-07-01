@@ -1,4 +1,4 @@
-/*  Copyright (C) 2010-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -104,7 +104,7 @@ namespace te
           /*!            
             \brief It sets the  histogram bar's stroke
 
-            \param newFill The new stroke.
+            \param newStroke The new stroke.
             \note It will take ownership of the given pointer
           */
           void setStroke(te::se::Stroke* newStroke);

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -84,6 +84,7 @@ namespace te
         static const std::string sm_ST_Equals;
         static const std::string sm_ST_Intersection;
         static const std::string sm_ST_Intersects;
+        static const std::string sm_ST_IsValid;
         static const std::string sm_ST_Length;
         static const std::string sm_ST_MakePolygon;
         static const std::string sm_ST_NumGeometries;

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -28,6 +28,9 @@
 #ifndef __TERRALIB_LAYOUT_INTERNAL_TEXTGRID_SETTINGS_CONFIG_PROPERTIES_H
 #define __TERRALIB_LAYOUT_INTERNAL_TEXTGRID_SETTINGS_CONFIG_PROPERTIES_H
 
+// TerraLib
+#include "../Config.h"
+
 // STL
 #include <string>
 
@@ -35,7 +38,7 @@ namespace te
 {
   namespace layout
   {
-    class TextGridSettingsConfigProperties
+    class TELAYOUTEXPORT TextGridSettingsConfigProperties
     {
       public:
 

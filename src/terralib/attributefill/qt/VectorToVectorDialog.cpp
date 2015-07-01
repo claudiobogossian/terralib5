@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -143,11 +143,6 @@ void te::attributefill::VectorToVectorDialog::setLayers(std::list<te::map::Abstr
 te::map::AbstractLayerPtr te::attributefill::VectorToVectorDialog::getLayer()
 {
   return m_outLayer;
-}
-
-void te::attributefill::VectorToVectorDialog::onHelpPushButtonClicked()
-{
-  QMessageBox::information(this, "Help", "Under development");
 }
 
 void te::attributefill::VectorToVectorDialog::onOkPushButtonClicked()

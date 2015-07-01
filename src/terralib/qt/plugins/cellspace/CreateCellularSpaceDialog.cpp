@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -639,6 +639,10 @@ te::map::AbstractLayerPtr te::qt::plugins::cellspace::CreateCellularSpaceDialog:
   }
 
   te::da::DataSourcePtr outDataSource = te::da::GetDataSource(m_outDataSourceInfo->getId());
+
+  // Inserido devido a erro indeterminado na criação do layer
+  outDataSource->open();
+  //-----
 
   te::qt::widgets::DataSet2Layer converter(m_outDataSourceInfo->getId());
 

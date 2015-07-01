@@ -1,4 +1,4 @@
-/*  Copyright (C) 2014-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -30,6 +30,7 @@
 #include "../../../../core/pattern/mvc/ItemObserver.h"
 #include "../../../../core/enum/EnumType.h"
 #include "../../../../core/pattern/mvc/Observable.h"
+#include "../../Scene.h"
 
 // Qt
 #include <QGraphicsScene>
@@ -54,19 +55,14 @@ te::layout::DeleteCommand::DeleteCommand( QGraphicsScene* scene, QUndoCommand *p
 
 te::layout::DeleteCommand::~DeleteCommand()
 {
-  foreach( QGraphicsItem *item, m_items ) 
-  {
-    if(!item->scene())
-    {
-      delete item;
-      item = 0;
-    }
-  }
+  
 }
 
 void te::layout::DeleteCommand::undo()
 {
-  if(!m_scene)
+  Scene* scene = dynamic_cast<Scene*>(m_scene);
+
+  if(!scene)
     return;
 
   foreach( QGraphicsItem *item, m_items ) 
@@ -75,7 +71,8 @@ void te::layout::DeleteCommand::undo()
 
     if(item->scene() != m_scene)
     {
-      m_scene->addItem(item);
+      scene->insertItem(item);
+      scene->removeItemStackWithoutScene(item);
     }
   }
 
@@ -84,7 +81,9 @@ void te::layout::DeleteCommand::undo()
 
 void te::layout::DeleteCommand::redo()
 {
-  if(!m_scene)
+  Scene* scene = dynamic_cast<Scene*>(m_scene);
+
+  if(!scene)
     return;
 
   foreach( QGraphicsItem *item, m_items ) 
@@ -92,6 +91,7 @@ void te::layout::DeleteCommand::redo()
     if(item->scene() == m_scene)
     {
       m_scene->removeItem(item);
+      scene->addItemStackWithoutScene(item);
     }
   }
 }
@@ -101,3 +101,6 @@ QString te::layout::DeleteCommand::createCommandString( int totalItems )
   return QObject::tr("%1")
     .arg(totalItems);
 }
+
+
+

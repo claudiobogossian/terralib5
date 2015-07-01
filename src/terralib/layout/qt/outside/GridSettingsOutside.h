@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -37,6 +37,7 @@
 #include "../../core/Config.h"
 #include "../../../geometry/Envelope.h"
 #include "../../../color/RGBAColor.h"
+#include "../../core/property/Property.h"
 
 namespace Ui { class GridSettings; }
 
@@ -83,8 +84,6 @@ namespace te
         /* Grid */
         virtual void on_pbClose_clicked();
         
-        virtual void on_pbApply_clicked();
-
         virtual void on_helpPushButton_clicked();
 
         virtual void on_cmbUnit_currentIndexChanged ( const QString & text );
@@ -243,7 +242,7 @@ namespace te
 
       signals:
 
-        void updateProperty();
+        void updateProperty(Property prop);
 
       protected:
 
@@ -253,22 +252,24 @@ namespace te
 
         virtual void init();
 
-        virtual void initString( QWidget* widget, std::string nameComponent, LayoutGridType gridType );
+        virtual void initString( QWidget* widget, std::string nameComponent, EnumType* gridType );
 
-        virtual void initInt( QWidget* widget, std::string nameComponent, LayoutGridType gridType );
+        virtual void initInt( QWidget* widget, std::string nameComponent, EnumType* gridType );
 
-        virtual void initDouble( QWidget* widget, std::string nameComponent, LayoutGridType gridType );
+        virtual void initDouble( QWidget* widget, std::string nameComponent, EnumType* gridType );
 
-        virtual void initBool( QWidget* widget, std::string nameComponent, LayoutGridType gridType );
+        virtual void initBool( QWidget* widget, std::string nameComponent, EnumType* gridType );
 
-        virtual void initColor( QWidget* widget, std::string nameComponent, LayoutGridType gridType );
+        virtual void initColor( QWidget* widget, std::string nameComponent, EnumType* gridType );
 
-        virtual void initCombo(QWidget* widget, std::string nameComponent, LayoutGridType gridType);
+        virtual void initCombo(QWidget* widget, std::string nameComponent, EnumType* gridType);
                 
       protected:
 
         PlanarGridSettingsConfigProperties* m_planarGridSettings;
         GeodesicGridSettingsConfigProperties* m_geodesicGridSettings;
+        EnumType* m_planarType;
+        EnumType* m_geodesicType;
 
       private:
 
@@ -278,3 +279,6 @@ namespace te
 }
 
 #endif
+
+
+

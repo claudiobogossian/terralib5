@@ -34,6 +34,9 @@
 #include "../../../maptools/DataSetAdapterLayer.h"
 #include "../../../maptools/QueryLayer.h"
 #include "../../../statistics/qt/StatisticsDialog.h"
+#include "../../../st/maptools/ObservationDataSetLayer.h"
+#include "../../../st/maptools/TimeSeriesDataSetLayer.h"
+#include "../../../st/maptools/TrajectoryDataSetLayer.h"
 
 // Qt
 #include <QBoxLayout>
@@ -148,7 +151,27 @@ te::da::DataSourcePtr GetDataSource(const te::map::AbstractLayer* layer)
     if(l != 0)
       ds = te::da::DataSourceManager::getInstance().find(l->getDataSourceId());
   }
+  else if(layer->getType() == "OBSERVATIONDATASETLAYER")
+  {
+    const te::st::ObservationDataSetLayer* l = dynamic_cast<const te::st::ObservationDataSetLayer*>(layer);
 
+    if(l != 0)
+      ds = te::da::DataSourceManager::getInstance().find(l->getDataSourceId());
+  }
+  else if(layer->getType() == "TIMESERIESDATASETLAYER")
+  {
+    const te::st::TimeSeriesDataSetLayer* l = dynamic_cast<const te::st::TimeSeriesDataSetLayer*>(layer);
+
+    if(l != 0)
+      ds = te::da::DataSourceManager::getInstance().find(l->getDataSourceId());
+  }
+  else if(layer->getType() == "TRAJECTORYDATASETLAYER")
+  {
+    const te::st::TrajectoryDataSetLayer* l = dynamic_cast<const te::st::TrajectoryDataSetLayer*>(layer);
+
+    if(l != 0)
+      ds = te::da::DataSourceManager::getInstance().find(l->getDataSourceId());
+  }
   return ds;
 }
 
@@ -242,6 +265,27 @@ std::auto_ptr<te::da::DataSet> GetDataSet(const te::map::AbstractLayer* layer, c
 
     if(l != 0)
       query.reset(new te::da::Select(l->getQuery()));
+  }
+  else if(layer->getType() == "OBSERVATIONDATASETLAYER")
+  {
+    const te::st::ObservationDataSetLayer* l = dynamic_cast<const te::st::ObservationDataSetLayer*>(layer);
+
+    if(l != 0)
+      query = GetSelectExpression(layer->getSchema()->getName(), colsNames, asc);
+  }
+  else if(layer->getType() == "TIMESERIESDATASETLAYER")
+  {
+    const te::st::TimeSeriesDataSetLayer* l = dynamic_cast<const te::st::TimeSeriesDataSetLayer*>(layer);
+
+    if(l != 0)
+      query = GetSelectExpression(layer->getSchema()->getName(), colsNames, asc);
+  }
+  else if(layer->getType() == "TRAJECTORYDATASETLAYER")
+  {
+    const te::st::TrajectoryDataSetLayer* l = dynamic_cast<const te::st::TrajectoryDataSetLayer*>(layer);
+
+    if(l != 0)
+      query = GetSelectExpression(layer->getSchema()->getName(), colsNames, asc);
   }
 
   try

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -79,6 +79,11 @@ bool te::layout::ViewZoomArea::mouseReleaseEvent(QMouseEvent* e)
   if(!scne)
     return false;
 
+  if(m_rubberBand == 0)
+  {
+    return false;
+  }
+
   QRect rect = m_rubberBand->geometry().normalized();
 
   ViewRubberBand::mouseReleaseEvent(e);
@@ -88,12 +93,18 @@ bool te::layout::ViewZoomArea::mouseReleaseEvent(QMouseEvent* e)
 
   //Updates 
   QRectF bounding = poly.boundingRect();
+  if(bounding.width() == 0. || bounding.height() == 0.)
+  {
+    return false;
+  }
+
+
   /*
   Zoom In Area:
   Scales the view matrix. The view is scaled according to aspectRatioMode.
   Ensure that the scene rectangle rect fits inside the viewport
   */
-  m_view->fitInView(bounding, Qt::KeepAspectRatio);
+  m_view->fitZoom(bounding);
 
   scne->update();
 

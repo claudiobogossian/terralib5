@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -203,8 +203,10 @@ void te::qt::widgets::Selection::executeSelection(const te::map::AbstractLayerPt
           continue;
 
         // Feature found!
-        oids->add(te::da::GenerateOID(dataset.get(), pnames, true));
+        oids->add(te::da::GenerateOID(dataset.get(), pnames));
       }
+
+      oids->setExpressionByIntersection(gp->getName(), reprojectedEnvelope, layer->getSRID());
     }
     else
     {
@@ -222,9 +224,11 @@ void te::qt::widgets::Selection::executeSelection(const te::map::AbstractLayerPt
         if(g->contains(&point) || g->crosses(geometryFromEnvelope.get()) || geometryFromEnvelope->contains(g.get()))
         {
           // Feature found!
-          oids->add(te::da::GenerateOID(dataset.get(), pnames, true));
+          oids->add(te::da::GenerateOID(dataset.get(), pnames));
         }
       }
+
+      oids->setExpressionByInClause();
     }
 
     assert(oids);

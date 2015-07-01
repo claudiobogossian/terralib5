@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -78,14 +78,14 @@ te::layout::ContextItem te::layout::AbstractVisitor::getContextItem()
 {
   te::map::Canvas* canvas = Context::getInstance().getCanvas();
   Utils* utils = Context::getInstance().getUtils();
-  double zoomFactor = Context::getInstance().getZoomFactor();
+  int zoom = Context::getInstance().getZoom();
   double dpiX = Context::getInstance().getDpiX();
   double dpiY = Context::getInstance().getDpiY();
 
   ContextItem context;
   context.setCanvas(canvas);
   context.setUtils(utils);
-  context.setZoomFactor(zoomFactor);
+  context.setZoom(zoom);
   context.setDpiX(dpiX);
   context.setDpiY(dpiY);
 

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -78,7 +78,7 @@ te::layout::Properties* te::layout::TitleModel::getProperties() const
 
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
   
-  Property pro_title;
+  Property pro_title(m_hashCode);
   pro_title.setName(m_textgridProperties->getTitle());
   pro_title.setValue(m_title, dataType->getDataTypeString());
   pro_title.addSubProperty(pro_title);
@@ -86,76 +86,75 @@ te::layout::Properties* te::layout::TitleModel::getProperties() const
 
   //------------------------------------------------------------------------
 
-  Property pro_textGrid;  
+  Property pro_textGrid(m_hashCode);  
   pro_textGrid.setName(m_textgridProperties->getName());
-  pro_textGrid.setId("unknown");
   std::string sValuePlanar = "Settings";
   pro_textGrid.setMenu(true);
   pro_textGrid.setValue(sValuePlanar, dataType->getDataTypeTextGridSettings());
 
   /* Subproperties of DataTypeGridSettings property */
 
-  Property pro_spacing;
+  Property pro_spacing(m_hashCode);
   pro_spacing.setName(m_textgridProperties->getSpacing());
   pro_spacing.setValue(m_spacing, dataType->getDataTypeDouble());
   pro_textGrid.addSubProperty(pro_spacing);
 
-  Property pro_padding;
+  Property pro_padding(m_hashCode);
   pro_padding.setName(m_textgridProperties->getPadding());
   pro_padding.setValue(m_padding, dataType->getDataTypeDouble());
   pro_textGrid.addSubProperty(pro_padding);
   
-  Property pro_tableColor;
+  Property pro_tableColor(m_hashCode);
   pro_tableColor.setName(m_textgridProperties->getTableColor());
   pro_tableColor.setValue(m_tableColor, dataType->getDataTypeColor());
   pro_textGrid.addSubProperty(pro_tableColor);
 
-  Property pro_width;
+  Property pro_width(m_hashCode);
   pro_width.setName(m_textgridProperties->getWidth());
   pro_width.setValue(m_width, dataType->getDataTypeDouble());
   pro_textGrid.addSubProperty(pro_width);
 
-  Property pro_rowNumber;
+  Property pro_rowNumber(m_hashCode);
   pro_rowNumber.setName(m_textgridProperties->getRowNumber());
   pro_rowNumber.setValue(m_rowNumber, dataType->getDataTypeInt());
   pro_textGrid.addSubProperty(pro_rowNumber);
 
-  Property pro_evenRow;
+  Property pro_evenRow(m_hashCode);
   pro_evenRow.setName(m_textgridProperties->getEvenRow());
   pro_evenRow.setValue(m_evenRow, dataType->getDataTypeColor());
   pro_textGrid.addSubProperty(pro_evenRow);
 
-  Property pro_oddRow;
+  Property pro_oddRow(m_hashCode);
   pro_oddRow.setName(m_textgridProperties->getOddRow());
   pro_oddRow.setValue(m_oddRow, dataType->getDataTypeColor());
   pro_textGrid.addSubProperty(pro_oddRow);
 
-  Property pro_columnNumber;
+  Property pro_columnNumber(m_hashCode);
   pro_columnNumber.setName(m_textgridProperties->getColumnNumber());
   pro_columnNumber.setValue(m_columnNumber, dataType->getDataTypeInt());
   pro_textGrid.addSubProperty(pro_columnNumber);
 
-  Property pro_columnWidth;
+  Property pro_columnWidth(m_hashCode);
   pro_columnWidth.setName(m_textgridProperties->getColumnWidth());
   pro_columnWidth.setValue(m_columnWidth, dataType->getDataTypeDouble());
   pro_textGrid.addSubProperty(pro_columnWidth);
 
-  Property pro_borderWidth;
+  Property pro_borderWidth(m_hashCode);
   pro_borderWidth.setName(m_textgridProperties->getBorderWidth());
   pro_borderWidth.setValue(m_borderWidth, dataType->getDataTypeDouble());
   pro_textGrid.addSubProperty(pro_borderWidth);
 
-  Property pro_borderGridColor;
+  Property pro_borderGridColor(m_hashCode);
   pro_borderGridColor.setName(m_textgridProperties->getBorderGridColor());
   pro_borderGridColor.setValue(m_borderGridColor, dataType->getDataTypeColor());
   pro_textGrid.addSubProperty(pro_borderGridColor);
   
-  Property pro_headerHorizontalColor;
+  Property pro_headerHorizontalColor(m_hashCode);
   pro_headerHorizontalColor.setName(m_textgridProperties->getHeaderHorizontalColor());
   pro_headerHorizontalColor.setValue(m_headerHorizontalColor, dataType->getDataTypeColor());
   pro_textGrid.addSubProperty(pro_headerHorizontalColor);
   
-  Property headerVerticalColor;
+  Property headerVerticalColor(m_hashCode);
   headerVerticalColor.setName(m_textgridProperties->getHeaderVerticalColor());
   headerVerticalColor.setValue(m_headerVerticalColor, dataType->getDataTypeColor());
   pro_textGrid.addSubProperty(headerVerticalColor);
@@ -167,9 +166,9 @@ te::layout::Properties* te::layout::TitleModel::getProperties() const
   return m_properties;
 }
 
-void te::layout::TitleModel::updateProperties( te::layout::Properties* properties )
+void te::layout::TitleModel::updateProperties( te::layout::Properties* properties, bool notify )
 {
-  TextModel::updateProperties(properties);
+  TextModel::updateProperties(properties, false);
 
   Properties* vectorProps = const_cast<Properties*>(properties);
 
@@ -264,6 +263,12 @@ void te::layout::TitleModel::updateProperties( te::layout::Properties* propertie
   if(!pro_headerVerticalColor.isNull())
   {
     m_headerVerticalColor = pro_headerVerticalColor.getValue().toColor();
+  }
+
+  if(notify)
+  {
+    ContextItem context;
+    notifyAll(context);
   }
 }
 

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -38,92 +38,75 @@ te::layout::GridSettingsModel::GridSettingsModel()
   m_type = Enums::getInstance().getEnumObjectType()->getGridSettings();
 
   m_box = te::gm::Envelope(0., 0., 200., 200.);
-
-  m_planarGridSettings = new PlanarGridSettingsConfigProperties;
-  m_geodesicGridSettings = new GeodesicGridSettingsConfigProperties;
 }
 
 te::layout::GridSettingsModel::~GridSettingsModel()
 {
-  if(m_planarGridSettings)
-  {
-    delete m_planarGridSettings;
-    m_planarGridSettings = 0;
-  }
 
-  if(m_geodesicGridSettings)
-  {
-    delete m_geodesicGridSettings;
-    m_geodesicGridSettings = 0;
-  }
 }
 
-te::layout::Properties* te::layout::GridSettingsModel::getProperties() const
+void te::layout::GridSettingsModel::setProperties(std::vector<te::layout::Properties*> properties)
 {
-  m_properties->clear();
-
-  Property pro_name;
-  pro_name.setName("GridSettings");
-
-  m_properties->addProperty(pro_name);
-
-  m_properties->setTypeObj(m_type);
-  return m_properties;
+  m_properties = properties;
 }
 
-void te::layout::GridSettingsModel::updateProperties( te::layout::Properties* properties )
-{
-
-}
-
-void te::layout::GridSettingsModel::setOutsideProperty( Property property )
-{
-  m_property.clear();
-  m_property = property;
-}
-
-te::layout::Property te::layout::GridSettingsModel::getOutsideProperty()
-{
-  return m_property;
-}
-
-te::layout::Property te::layout::GridSettingsModel::containsOutsideSubProperty( std::string name, LayoutGridType gridType )
-{
-  Property prop = containsGrid(gridType);
-  return prop.containsSubProperty(name);
-}
-
-void te::layout::GridSettingsModel::updateOutsideSubProperty( Property subProperty, LayoutGridType gridType )
-{
-  Property sub;
-
-  sub = containsGrid(gridType);
-
-  if(sub.isNull())
-    return;
-
-  if(sub.containsSubProperty(subProperty))
-  {
-    sub.removeSubProperty(subProperty);
-    sub.addSubProperty(subProperty);
-
-    m_property.removeSubProperty(sub);
-    m_property.addSubProperty(sub);
-  }
-}
-
-te::layout::Property te::layout::GridSettingsModel::containsGrid( LayoutGridType gridType )
+te::layout::Property te::layout::GridSettingsModel::containsProperty( std::string name, EnumType* enumType )
 {
   Property prop;
 
-  if(gridType == TypeGeodesic)
+  Properties* props = containsGrid(enumType);
+  if(!props)
   {
-    prop = m_property.containsSubProperty(m_geodesicGridSettings->getName());
-  }
-  if(gridType == TypePlanar)
-  {
-    prop = m_property.containsSubProperty(m_planarGridSettings->getName());
+    return prop;
   }
 
+  prop = props->contains(name);
   return prop;
 }
+
+bool te::layout::GridSettingsModel::updateProperty( Property prop, EnumType* enumType )
+{
+  Properties* props = containsGrid(enumType);
+
+  if(!props)
+  {
+    return false;
+  }
+  
+  bool result = props->contains(prop);
+  if(!result)
+  {
+    return result;
+  }
+
+  if(props->removeProperty(prop.getName()))
+  {
+    props->addProperty(prop);
+  }
+  return result;
+}
+
+te::layout::Properties* te::layout::GridSettingsModel::containsGrid(EnumType* enumType)
+{
+  Properties* properties = 0;
+
+  std::vector<Properties*>::iterator it = m_properties.begin();
+  for(it ; it != m_properties.end() ; ++it)
+  {
+    Properties* props = (*it);
+    if(props)
+    {
+      if(props->getTypeObj() == enumType)
+      {
+        properties = props;
+        break;
+      }
+    }
+  }
+
+  return properties;
+}
+
+
+
+

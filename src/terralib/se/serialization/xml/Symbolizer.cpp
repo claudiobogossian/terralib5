@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -27,8 +27,8 @@
 #include "../../../common/Translator.h"
 #include "../../../fe/Expression.h"
 #include "../../../maptools/Utils.h"
+#include "../../../xml/AbstractWriter.h"
 #include "../../../xml/Reader.h"
-#include "../../../xml/Writer.h"
 #include "../../../se/LineSymbolizer.h"
 #include "../../../se/ParameterValue.h"
 #include "../../../se/PointSymbolizer.h"
@@ -54,11 +54,11 @@ te::se::Symbolizer* PolygonSymbolizerReader(te::xml::Reader& reader);
 te::se::Symbolizer* RasterSymbolizerReader(te::xml::Reader& reader);
 te::se::Symbolizer* TextSymbolizerReader(te::xml::Reader& reader);
 
-void LineSymbolizerWriter(const te::se::Symbolizer* symbolizer, te::xml::Writer& writer);
-void PointSymbolizerWriter(const te::se::Symbolizer* symbolizer, te::xml::Writer& writer);
-void PolygonSymbolizerWriter(const te::se::Symbolizer* symbolizer, te::xml::Writer& writer);
-void RasterSymbolizerWriter(const te::se::Symbolizer* symbolizer, te::xml::Writer& writer);
-void TextSymbolizerWriter(const te::se::Symbolizer* symbolizer, te::xml::Writer& writer);
+void LineSymbolizerWriter(const te::se::Symbolizer* symbolizer, te::xml::AbstractWriter& writer);
+void PointSymbolizerWriter(const te::se::Symbolizer* symbolizer, te::xml::AbstractWriter& writer);
+void PolygonSymbolizerWriter(const te::se::Symbolizer* symbolizer, te::xml::AbstractWriter& writer);
+void RasterSymbolizerWriter(const te::se::Symbolizer* symbolizer, te::xml::AbstractWriter& writer);
+void TextSymbolizerWriter(const te::se::Symbolizer* symbolizer, te::xml::AbstractWriter& writer);
 
 void te::se::serialize::Symbolizer::reg(const std::string& symbolizerType, const SymbolizerFnctSerializeType& fncts)
 {
@@ -79,7 +79,7 @@ te::se::Symbolizer* te::se::serialize::Symbolizer::read(te::xml::Reader& reader)
   return it->second.first(reader);
 }
 
-void te::se::serialize::Symbolizer::write(const te::se::Symbolizer* symbolizer, te::xml::Writer& writer) const
+void te::se::serialize::Symbolizer::write(const te::se::Symbolizer* symbolizer, te::xml::AbstractWriter& writer) const
 {
   assert(symbolizer);
 
@@ -320,7 +320,7 @@ te::se::Symbolizer* TextSymbolizerReader(te::xml::Reader& reader)
   return ts.release();
 }
 
-void LineSymbolizerWriter(const te::se::Symbolizer* symbolizer, te::xml::Writer& writer)
+void LineSymbolizerWriter(const te::se::Symbolizer* symbolizer, te::xml::AbstractWriter& writer)
 {
   const te::se::LineSymbolizer* ls = dynamic_cast<const te::se::LineSymbolizer*>(symbolizer);
 
@@ -340,7 +340,7 @@ void LineSymbolizerWriter(const te::se::Symbolizer* symbolizer, te::xml::Writer&
   writer.writeEndElement("se:LineSymbolizer");
 }
 
-void PointSymbolizerWriter(const te::se::Symbolizer* symbolizer, te::xml::Writer& writer)
+void PointSymbolizerWriter(const te::se::Symbolizer* symbolizer, te::xml::AbstractWriter& writer)
 {
   const te::se::PointSymbolizer* ps = dynamic_cast<const te::se::PointSymbolizer*>(symbolizer);
 
@@ -359,7 +359,7 @@ void PointSymbolizerWriter(const te::se::Symbolizer* symbolizer, te::xml::Writer
   writer.writeEndElement("se:PointSymbolizer");
 }
 
-void PolygonSymbolizerWriter(const te::se::Symbolizer* symbolizer, te::xml::Writer& writer)
+void PolygonSymbolizerWriter(const te::se::Symbolizer* symbolizer, te::xml::AbstractWriter& writer)
 {
   const te::se::PolygonSymbolizer* ps = dynamic_cast<const te::se::PolygonSymbolizer*>(symbolizer);
 
@@ -381,7 +381,7 @@ void PolygonSymbolizerWriter(const te::se::Symbolizer* symbolizer, te::xml::Writ
   writer.writeEndElement("se:PolygonSymbolizer");
 }
 
-void RasterSymbolizerWriter(const te::se::Symbolizer* symbolizer, te::xml::Writer& writer)
+void RasterSymbolizerWriter(const te::se::Symbolizer* symbolizer, te::xml::AbstractWriter& writer)
 {
   const te::se::RasterSymbolizer* rs = dynamic_cast<const te::se::RasterSymbolizer*>(symbolizer);
 
@@ -414,7 +414,7 @@ void RasterSymbolizerWriter(const te::se::Symbolizer* symbolizer, te::xml::Write
   writer.writeEndElement("se:RasterSymbolizer");
 }
 
-void TextSymbolizerWriter(const te::se::Symbolizer* symbolizer, te::xml::Writer& writer)
+void TextSymbolizerWriter(const te::se::Symbolizer* symbolizer, te::xml::AbstractWriter& writer)
 {
   const te::se::TextSymbolizer* ts = dynamic_cast<const te::se::TextSymbolizer*>(symbolizer);
 

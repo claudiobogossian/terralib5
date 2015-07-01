@@ -26,6 +26,7 @@
       <xsd:element name="Organization" type="xsd:string" minOccurs="1" maxOccurs="1" />
       <xsd:element name="Name" type="xsd:string" minOccurs="1" maxOccurs="1" />
       <xsd:element name="Title" type="xsd:string" minOccurs="1" maxOccurs="1" />
+	  <xsd:element name="ProjectExtension" type="xsd:string" minOccurs="1" maxOccurs="1" />
       <xsd:element name="IconName" type="xsd:string" minOccurs="0" maxOccurs="1" />
       <xsd:element name="UserSettingsFileName" type="xsd:string" minOccurs="0" maxOccurs="1" />
       <xsd:element name="PluginsFileName" type="xsd:string" minOccurs="0" maxOccurs="1" />

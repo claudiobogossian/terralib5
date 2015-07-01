@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -37,6 +37,7 @@
 #include "GroupByItem.h"
 #include "Having.h"
 #include "In.h"
+#include "Insert.h"
 #include "Join.h"
 #include "JoinCondition.h"
 #include "JoinConditionOn.h"
@@ -93,6 +94,30 @@ void te::da::SQLVisitor::visit(const Function& visited)
     throw Exception(TE_TR("The informed function is not supported by this driver!"));
 
   encoder->toSQL(visited, m_sql, *this);
+}
+
+void te::da::SQLVisitor::visit(const Insert& visited)
+{
+  m_sql += "INSERT INTO ";
+
+  if (visited.getDataSetName())
+  {
+    visit(*(visited.getDataSetName()));
+    m_sql += " ";
+  }
+
+  if (visited.getFields())
+  {
+    m_sql += "( ";
+    visit(*(visited.getFields()));
+    m_sql += " ) ";
+  }
+
+  if (visited.getSelect())
+  {
+    visit(*(visited.getSelect()));
+    m_sql += " ";
+  }
 }
 
 void te::da::SQLVisitor::visit(const Join& visited)

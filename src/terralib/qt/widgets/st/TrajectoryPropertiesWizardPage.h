@@ -1,4 +1,4 @@
-/*  Copyright (C) 2010-2014 National Institute For Space Research (INPE) - Brazil. 
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil. 
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -27,9 +27,9 @@
 #define __TERRALIB_QT_WIDGETS_INTERNAL_TRAJECOTORYPROPERTIESWIZARDPAGE_H
 
 // TerraLib
-#include "../../../maptools/AbstractLayer.h"
 #include "../Config.h"
-#include "../../../dataaccess/datasource/DataSourceInfo.h"
+#include "terralib/dataaccess/datasource/DataSourceInfo.h"
+#include "terralib/dataaccess/dataset/DataSetType.h"
 
 // Qt
 #include <QWizardPage>
@@ -70,6 +70,7 @@ namespace te
           void set(const std::list<te::da::DataSetTypePtr> dataTypes);
 
         private:
+
           std::list<te::da::DataSetTypePtr>          m_dataTypes;       //!< The list of datasettypes used to configure the trajectory(ies)
           std::auto_ptr<TrajectoryPropertiesWidget>  m_propWidget;      //!< The widget used to configure the unique TrajectoryLayer's properties
           std::auto_ptr<TemporalPropertiesWidget>    m_tempPropWidget;  //!< The widget used to configure the general TrajectoryLayer's properties

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2014-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -37,6 +37,9 @@
 #include "../../Utils.h"
 #include "../../enum/EnumType.h"
 #include "../../Config.h"
+
+// STL
+#include <vector>
 
 namespace te
 {
@@ -91,7 +94,15 @@ namespace te
 
           \param properties
         */
-        virtual void updateProperties(te::layout::Properties* properties) = 0;
+        virtual void updateProperties(te::layout::Properties* properties, bool notify = true) = 0;
+        
+        /*!
+          \brief Returns the model state just the public properties.
+            Reimplement this function in a Observable subclass to provide the model's getProperties implementation.
+
+          \return properties
+        */
+        virtual te::layout::Properties* getPublicProperties() const = 0;
 
         /*!
           \brief Returns the bounding rectangle of the component in scene coordinates(millimeters).

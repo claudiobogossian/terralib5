@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -29,7 +29,8 @@
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../raster/Raster.h"
 #include "../../../rp/Segmenter.h"
-#include "../../../rp/SegmenterRegionGrowingStrategy.h"
+#include "../../../rp/SegmenterRegionGrowingBaatzStrategy.h"
+#include "../../../rp/SegmenterRegionGrowingMeanStrategy.h"
 #include "../../../rp/Module.h"
 #include "../help/HelpPushButton.h"
 #include "../layer/search/LayerSearchWidget.h"

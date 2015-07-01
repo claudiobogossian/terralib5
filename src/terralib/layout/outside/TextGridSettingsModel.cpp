@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -45,8 +45,8 @@ te::layout::Properties* te::layout::TextGridSettingsModel::getProperties() const
 {
   m_properties->clear();
 
-  Property pro_name;
-  pro_name.setName("TextGridSettings");
+  Property pro_name(m_hashCode);
+  pro_name.setName(m_name);
 
   m_properties->addProperty(pro_name);
 
@@ -54,7 +54,7 @@ te::layout::Properties* te::layout::TextGridSettingsModel::getProperties() const
   return m_properties;
 }
 
-void te::layout::TextGridSettingsModel::updateProperties( te::layout::Properties* properties )
+void te::layout::TextGridSettingsModel::updateProperties( te::layout::Properties* properties, bool notify )
 {
 
 }

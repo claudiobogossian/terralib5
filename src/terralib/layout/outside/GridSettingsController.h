@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -47,25 +47,14 @@ namespace te
 
 	      virtual ~GridSettingsController();
         
-        virtual Property updateProperty();
-
-        virtual void addUpdateProperty(std::string name, Variant variant, LayoutGridType gridType);
-
-        virtual void addUpdateGeodesicProperty(GridSettingsModel* outsideModel, Property subProperty, LayoutGridType gridType);
-
-        virtual void addUpdatePlanarProperty(GridSettingsModel* outsideModel, Property subProperty, LayoutGridType gridType);
-
-        virtual void clearUpdate();
-
-        virtual Property getProperty(std::string name, LayoutGridType gridType);
-
-      protected:
-
-        Property m_update;
-        Property m_gridPlanar;
-        Property m_gridGeodesic;
+        virtual Property updateProperty(std::string name, Variant variant, EnumType* enumType);
+        
+        virtual Property getProperty(std::string name, EnumType* enumType);
     };
   }
 }
 
 #endif
+
+
+

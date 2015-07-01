@@ -23,109 +23,97 @@
 #
 #  Author: Frederico Augusto T. Bede <frederico.bede@funcate.org.br>
 #
+MACRO(GenerateTranslation translation_dir project_name qm_files)
+  set(_ts_file_name ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/translations/${project_name}_pt_br.ts)
+  set(qm_file ${CMAKE_BINARY_DIR}/translations/${project_name}_pt_br.qm)
 
-MACRO(GenerateTranslation QM_FILE proj dir)
-  file(GLOB_RECURSE h2Translate "${dir}/*.h")
-  file(GLOB_RECURSE cpp2Translate "${dir}/*.c*")
-  file(GLOB_RECURSE ui2Translate "${dir}/*.ui")
-
-  set(files2Translate ${h2Translate} ${cpp2Translate} ${ui2Translate})
-
-  qt5_create_translation(${QM_FILE} ${files2Translate} "${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/translations/${proj}_pt_br.ts")	
-
-  install(
-    FILES ${CMAKE_CURRENT_BINARY_DIR}/${proj}_pt_br.qm
-    DESTINATION ${TERRALIB_DESTINATION_SHARE}/terralib/translations
-    COMPONENT runtime
+  add_custom_command(
+    OUTPUT ${qm_file}
+          COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_BINARY_DIR}/translations"
+	  COMMAND ${Qt5_LUPDATE_EXECUTABLE} 
+	  ARGS -I ${translation_dir} -recursive ${translation_dir} -ts "${_ts_file_name}"
+	  COMMAND ${Qt5_LRELEASE_EXECUTABLE} 
+	  ARGS "${_ts_file_name}" -qm "${qm_file}"
+	  COMMENT "Generating ${project_name} translations"
   )
+  
+  list(APPEND ${qm_files} ${qm_file})
 ENDMACRO(GenerateTranslation)
 
-if(TERRALIB_MOD_QT_WIDGETS_ENABLED)
-  GenerateTranslation(QM_FILE "terralib_mod_qt_widgets" "${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets")
-  list(APPEND qm_files ${QM_FILE})
-endif()
+if(DEFINED TERRALIB_QTRANSLATION_ENABLED)
 
-if(TERRALIB_MOD_QT_APF_ENABLED)
-  GenerateTranslation(QM_FILE "terralib_mod_qt_apf" "${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/af")
-  list(APPEND qm_files ${QM_FILE})
-endif()
+  set(_qm_files "")
 
-if(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_ADO_ENABLED)
-  GenerateTranslation(QM_FILE "terralib_mod_qt_plugins_datasource_ado" "${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/datasource/ado")
-  list(APPEND qm_files ${QM_FILE})
-endif()
+  if(TERRALIB_MOD_QT_WIDGETS_ENABLED)
+    GenerateTranslation("${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets" "terralib_mod_qt_widgets" _qm_files) 
+  endif()
 
-if(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_GDAL_ENABLED)
-  GenerateTranslation(QM_FILE "terralib_mod_qt_plugins_datasource_gdal" "${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/datasource/gdal")
-  list(APPEND qm_files ${QM_FILE})
-endif()
+  if(TERRALIB_MOD_QT_APF_ENABLED)
+    GenerateTranslation("${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/af" "terralib_mod_qt_apf" _qm_files) 
+  endif()
 
-if(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_TERRALIB4_ENABLED)
-  GenerateTranslation(QM_FILE "terralib_mod_qt_plugins_datasource_terralib4" "${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/datasource/terralib4")
-  list(APPEND qm_files ${QM_FILE})
-endif()
+  if(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_ADO_ENABLED)
+    GenerateTranslation("${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/datasource/ado" "terralib_mod_qt_plugins_datasource_ado" _qm_files) 
+  endif()
 
-if(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_OGR_ENABLED)
-  GenerateTranslation(QM_FILE "terralib_mod_qt_plugins_datasource_ogr" "${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/datasource/ogr")
-  list(APPEND qm_files ${QM_FILE})
-endif()
+  if(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_GDAL_ENABLED)
+    GenerateTranslation("${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/datasource/gdal" "terralib_mod_qt_plugins_datasource_gdal" _qm_files) 
+  endif()
 
-if(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_POSTGIS_ENABLED)
-  GenerateTranslation(QM_FILE "terralib_mod_qt_plugins_datasource_pgis" "${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/datasource/pgis")
-  list(APPEND qm_files ${QM_FILE})
-endif()
+  if(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_TERRALIB4_ENABLED)
+    GenerateTranslation("${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/datasource/terralib4" "terralib_mod_qt_plugins_datasource_terralib4" _qm_files) 
+  endif()
 
-if(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_WCS_ENABLED)
-  GenerateTranslation(QM_FILE "terralib_mod_qt_plugins_datasource_wcs" "${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/datasource/wcs")
-  list(APPEND qm_files ${QM_FILE})
-endif()
+  if(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_OGR_ENABLED)
+    GenerateTranslation("${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/datasource/ogr" "terralib_mod_qt_plugins_datasource_ogr" _qm_files) 
+  endif()
 
-if(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_WFS_ENABLED)
-  GenerateTranslation(QM_FILE "terralib_mod_qt_plugins_datasource_wfs" "${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/datasource/wfs")
-  list(APPEND qm_files ${QM_FILE})
-endif()
+  if(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_POSTGIS_ENABLED)
+    GenerateTranslation("${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/datasource/pgis" "terralib_mod_qt_plugins_datasource_pgis" _qm_files) 
+  endif()
 
-if(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_WMS_ENABLED)
-  GenerateTranslation(QM_FILE "terralib_mod_qt_plugins_datasource_wms" "${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/datasource/wms")
-  list(APPEND qm_files ${QM_FILE})
-endif()
+  if(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_WCS_ENABLED)
+    GenerateTranslation("${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/datasource/wcs" "terralib_mod_qt_plugins_datasource_wcs" _qm_files) 
+  endif()
 
-if(TERRALIB_MOD_QT_PLUGINS_VP_ENABLED)
-  GenerateTranslation(QM_FILE "terralib_mod_qt_plugins_vp" "${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/vp")
-  list(APPEND qm_files ${QM_FILE})
-endif()
+  if(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_WFS_ENABLED)
+    GenerateTranslation("${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/datasource/wfs" "terralib_mod_qt_plugins_datasource_wfs" _qm_files) 
+  endif()
 
-if(TERRALIB_MOD_QT_PLUGINS_RP_ENABLED)
-  GenerateTranslation(QM_FILE "terralib_mod_qt_plugins_rp" "${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/rp")
-  list(APPEND qm_files ${QM_FILE})
-endif()
+  if(TERRALIB_MOD_QT_PLUGINS_DATASOURCE_WMS_ENABLED)
+    GenerateTranslation("${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/datasource/wms" "terralib_mod_qt_plugins_datasource_wms" _qm_files) 
+  endif()
 
-if(TERRALIB_MOD_QT_PLUGINS_ST_ENABLED)
-  GenerateTranslation(QM_FILE "terralib_mod_qt_plugins_st" "${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/st")
-  list(APPEND qm_files ${QM_FILE})
-endif()
+  if(TERRALIB_MOD_QT_PLUGINS_VP_ENABLED)
+    GenerateTranslation("${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/vp" "terralib_mod_qt_plugins_vp" _qm_files) 
+  endif()
 
-if(TERRALIB_MOD_VP_QT_ENABLED)
-  GenerateTranslation(QM_FILE "terralib_mod_vp_qt" "${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt")
-  list(APPEND qm_files ${QM_FILE})
-endif()
+  if(TERRALIB_MOD_QT_PLUGINS_RP_ENABLED)
+    GenerateTranslation("${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/rp" "terralib_mod_qt_plugins_rp" _qm_files) 
+  endif()
 
-if(TERRALIB_TERRAVIEW_ENABLED)
-  GenerateTranslation(QM_FILE "terraview" "${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terraview")
-  list(APPEND qm_files ${QM_FILE})
-endif()
+  if(TERRALIB_MOD_QT_PLUGINS_ST_ENABLED)
+    GenerateTranslation("${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/st" "terralib_mod_qt_plugins_st" _qm_files) 
+  endif()
 
-add_custom_target(
-  terralib_qtranslations
-  COMMENT "Generating qt translation files..."
-  SOURCES ${qm_files}
-)
+  if(TERRALIB_MOD_VP_QT_ENABLED)
+    GenerateTranslation("${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/vp/qt" "terralib_mod_vp_qt" _qm_files) 
+  endif()
 
-foreach (qm ${qm_files})
-  add_custom_command(
-    TARGET terralib_qtranslations
-    POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_BINARY_DIR}/share/terralib/translations"
-    COMMAND ${CMAKE_COMMAND} -E copy ${qm} "${CMAKE_BINARY_DIR}/share/terralib/translations"
+  if(TERRALIB_TERRAVIEW_ENABLED)
+    GenerateTranslation("${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terraview" "terraview" _qm_files) 
+  endif()
+
+  add_custom_target(
+    terralib_qtranslations
+    COMMENT "Generating qt translation files..."
+    SOURCES ${_qm_files}
   )
-endforeach()
+
+  install(
+    FILES ${_qm_files}
+    DESTINATION ${TERRALIB_DESTINATION_SHARE}/translations
+    COMPONENT runtime
+  )
+
+endif()

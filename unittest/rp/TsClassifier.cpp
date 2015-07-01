@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -54,13 +54,11 @@ std::vector<te::gm::Polygon*> SegmentImage(te::rst::Raster* rin)
   algoInputParameters.m_inputRasterBands.push_back(2);
 
 // link specific parameters with chosen implementation
-  te::rp::SegmenterRegionGrowingStrategy::Parameters segparameters;
+  te::rp::SegmenterRegionGrowingMeanStrategy::Parameters segparameters;
   segparameters.m_minSegmentSize = 50;
   segparameters.m_segmentsSimilarityThreshold = 0.10;
-  segparameters.m_segmentFeatures = 
-    te::rp::SegmenterRegionGrowingStrategy::Parameters::MeanFeaturesType;
 
-  algoInputParameters.m_strategyName = "RegionGrowing";
+  algoInputParameters.m_strategyName = "RegionGrowingMean";
   algoInputParameters.setSegStrategyParams(segparameters);
 
 // output parameters

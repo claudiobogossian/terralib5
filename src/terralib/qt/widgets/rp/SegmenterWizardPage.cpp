@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -30,7 +30,8 @@
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../raster/Raster.h"
 #include "../../../rp/Segmenter.h"
-#include "../../../rp/SegmenterRegionGrowingStrategy.h"
+#include "../../../rp/SegmenterRegionGrowingBaatzStrategy.h"
+#include "../../../rp/SegmenterRegionGrowingMeanStrategy.h"
 #include "../progress/ProgressViewerDialog.h"
 #include "RasterNavigatorWidget.h"
 #include "SegmenterWizardPage.h"
@@ -78,7 +79,7 @@ te::qt::widgets::SegmenterWizardPage::SegmenterWizardPage(QWidget* parent)
 
   m_ui->m_noDataValueLineEdit->setValidator(new QDoubleValidator(this));
   
-  te::rp::SegmenterRegionGrowingStrategy::Parameters regGrowStrategyParameters;
+  te::rp::SegmenterRegionGrowingBaatzStrategy::Parameters regGrowStrategyParameters;
   m_ui->m_minimumSegmentSizeRGLineEdit->setText( QString::number( regGrowStrategyParameters.m_minSegmentSize ) );
   m_ui->m_minimumSegmentSizeRGLineEdit_2->setText( QString::number( regGrowStrategyParameters.m_minSegmentSize ) );
   m_ui->m_thresholdRGDoubleSpinBox->setValue( regGrowStrategyParameters.m_segmentsSimilarityThreshold );
@@ -163,24 +164,22 @@ te::rp::Segmenter::InputParameters te::qt::widgets::SegmenterWizardPage::getInpu
 
   std::string strategyName = m_ui->m_strategyTypeComboBox->itemData(index).toString().toStdString();
 
-  if(strategyName == "RegionGrowing")
+  if(strategyName == "RegionGrowingMean")
   {
-    te::rp::SegmenterRegionGrowingStrategy::Parameters strategyParameters;
+    te::rp::SegmenterRegionGrowingMeanStrategy::Parameters strategyParameters;
     strategyParameters.m_minSegmentSize = m_ui->m_minimumSegmentSizeRGLineEdit->text().toUInt();
     strategyParameters.m_segmentsSimilarityThreshold = m_ui->m_thresholdRGDoubleSpinBox->value();
-    strategyParameters.m_segmentFeatures = te::rp::SegmenterRegionGrowingStrategy::Parameters::MeanFeaturesType;
     strategyParameters.m_enableLocalMutualBestFitting = m_ui->m_localMutualBestFittingCheckBox->isChecked();
     strategyParameters.m_enableSameIterationMerges = m_ui->m_sameIterationMergeCheckBox->isChecked();
 
-    algoInputParams.m_strategyName = "RegionGrowing";
+    algoInputParams.m_strategyName = "RegionGrowingMean";
     algoInputParams.setSegStrategyParams( strategyParameters );
   }
-  else if(strategyName == "Baatz")
+  else if(strategyName == "RegionGrowingBaatz")
   {
-    te::rp::SegmenterRegionGrowingStrategy::Parameters strategyParameters;
+    te::rp::SegmenterRegionGrowingBaatzStrategy::Parameters strategyParameters;
     strategyParameters.m_minSegmentSize = m_ui->m_minimumSegmentSizeRGLineEdit->text().toUInt();
     strategyParameters.m_segmentsSimilarityThreshold = m_ui->m_thresholdBaatzDoubleSpinBox->value();
-    strategyParameters.m_segmentFeatures = te::rp::SegmenterRegionGrowingStrategy::Parameters::BaatzFeaturesType;
     strategyParameters.m_enableLocalMutualBestFitting = m_ui->m_localMutualBestFittingCheckBox->isChecked();
     strategyParameters.m_enableSameIterationMerges = m_ui->m_sameIterationMergeCheckBox->isChecked();    
 
@@ -199,7 +198,7 @@ te::rp::Segmenter::InputParameters te::qt::widgets::SegmenterWizardPage::getInpu
     strategyParameters.m_colorWeight = m_ui->m_colorWeightBaatzDoubleSpinBox->value();
     strategyParameters.m_compactnessWeight = m_ui->m_compactnessWeightBaatzDoubleSpinBox->value();
 
-    algoInputParams.m_strategyName = "RegionGrowing";
+    algoInputParams.m_strategyName = "RegionGrowingBaatz";
     algoInputParams.setSegStrategyParams( strategyParameters );
   }
 
@@ -210,7 +209,7 @@ void te::qt::widgets::SegmenterWizardPage::onStrategyTypeComboBoxActivated(int i
 {
   std::string strategyName = m_ui->m_strategyTypeComboBox->itemData(index).toString().toStdString();
 
-  if(strategyName == "RegionGrowing")
+  if(strategyName == "RegionGrowingMean")
   {
     QStringList list;
     list.append(tr("Band"));
@@ -218,7 +217,7 @@ void te::qt::widgets::SegmenterWizardPage::onStrategyTypeComboBoxActivated(int i
     m_ui->m_bandTableWidget->setColumnCount(1);
     m_ui->m_bandTableWidget->setHorizontalHeaderLabels(list);
   }
-  else if(strategyName == "Baatz")
+  else if(strategyName == "RegionGrowingBaatz")
   {
     QStringList list;
     list.append(tr("Band"));
@@ -312,8 +311,8 @@ void te::qt::widgets::SegmenterWizardPage::fillSegmenterTypes()
 {
   m_ui->m_strategyTypeComboBox->clear();
 
-  m_ui->m_strategyTypeComboBox->addItem(tr("Region Growing"), "RegionGrowing");
-  m_ui->m_strategyTypeComboBox->addItem(tr("Baatz"), "Baatz");
+  m_ui->m_strategyTypeComboBox->addItem(tr("Region Growing Mean"), "RegionGrowingMean");
+  m_ui->m_strategyTypeComboBox->addItem(tr("Region Growing Baatz"), "RegionGrowingBaatz");
 }
 
 void te::qt::widgets::SegmenterWizardPage::listBands()

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -27,10 +27,10 @@
 
 // TerraLib
 #include "EditTemplateDock.h"
-#include "../../../layout/core/pattern/mvc/OutsideObserver.h"
-#include "../../../layout/outside/EditTemplateModel.h"
-#include "../../../layout/outside/EditTemplateController.h"
 #include "../../../layout/qt/outside/EditTemplateOutside.h"
+#include "../../../layout/core/pattern/singleton/Context.h"
+#include "../../../layout/qt/core/BuildGraphicsOutside.h"
+#include "../../../layout/core/enum/Enums.h"
 
 // Qt
 #include <QTabBar>
@@ -77,11 +77,30 @@ te::qt::plugins::layout::EditTemplateDock::~EditTemplateDock()
 
 void te::qt::plugins::layout::EditTemplateDock::create()
 {
-  //Use the Property Browser Framework for create Property Window
-  te::layout::EditTemplateModel* model = new te::layout::EditTemplateModel();		 
-  te::layout::EditTemplateController* controller = new te::layout::EditTemplateController(model);
-  te::layout::OutsideObserver* outside = (te::layout::OutsideObserver*)controller->getView();
-  m_editTemplate = dynamic_cast<te::layout::EditTemplateOutside*>(outside);   
+  te::layout::AbstractBuildGraphicsOutside* abstractBuildOutside = te::layout::Context::getInstance().getAbstractBuildGraphicsOutside();
+  if(!abstractBuildOutside)
+  {
+    return;
+  }
+
+  te::layout::BuildGraphicsOutside* buildOutside = dynamic_cast<te::layout::BuildGraphicsOutside*>(abstractBuildOutside);
+  if(!buildOutside)
+  {
+    return;
+  }
+
+  te::layout::EnumObjectType* objectType = te::layout::Enums::getInstance().getEnumObjectType();
+  if(!objectType)
+  {
+    return;
+  }
+
+  QWidget* widget = buildOutside->createOuside(objectType->getEditTemplate());
+  if(!widget)
+  {
+    return;
+  }
+  m_editTemplate = dynamic_cast<te::layout::EditTemplateOutside*>(widget);   
 }
 
 te::layout::EditTemplateOutside* te::qt::plugins::layout::EditTemplateDock::getEditTemplateOutside()

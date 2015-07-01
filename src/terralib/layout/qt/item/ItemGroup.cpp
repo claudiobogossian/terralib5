@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -268,9 +268,11 @@ void te::layout::ItemGroup::applyRotation()
   setTransform(QTransform().translate(centerX, centerY).rotate(angle).translate(-centerX, -centerY));
 }
 
-te::color::RGBAColor** te::layout::ItemGroup::getImage()
+te::color::RGBAColor** te::layout::ItemGroup::getRGBAColorImage(int &w, int &h)
 {
   QImage img = m_pixmap.toImage();
   te::color::RGBAColor** teImg = te::qt::widgets::GetImage(&img);
   return teImg;
 }
+
+

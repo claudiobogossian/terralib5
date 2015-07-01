@@ -1,4 +1,4 @@
-/*  Copyright (C) 2014-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -53,10 +53,13 @@
 #include "../../core/enum/Enums.h"
 #include "../core/Scene.h"
 #include "../../core/pattern/proxy/AbstractProxyProject.h"
+#include "../../../qt/widgets/layer/explorer/AbstractTreeItem.h"
+#include "GridMapItem.h"
 
 // STL
 #include <vector>
 #include <memory>
+#include <algorithm>
 
 // Qt
 #include <QCursor>
@@ -77,19 +80,17 @@
 #include <QPoint>
 #include <QMimeData>
 #include <QColor>
-
 #include <QTextEdit>
 
-te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
-  ParentItem(controller, o),
+te::layout::MapItem::MapItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
+  ParentItem<QGraphicsProxyWidget>(controller, o, invertedMatrix),
+  m_mime(0),
   m_mapDisplay(0),
   m_grabbedByWidget(false),
-  m_treeItem(0),
   m_tool(0),
   m_wMargin(0),
   m_hMargin(0),
-  m_layer(0),
-  m_changeLayer(false)
+  m_pixmapIsDirty(false)
 {    
   m_nameClass = std::string(this->metaObject()->className());
   
@@ -106,11 +107,14 @@ te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
     box = utils->viewportBox(m_model->getBox());
   }
 
+  setFlag(QGraphicsItem::ItemClipsChildrenToShape);
+
   m_mapSize = QSize(box.getWidth(), box.getHeight());
   m_mapDisplay = new te::qt::widgets::MultiThreadMapDisplay(m_mapSize, true);
   m_mapDisplay->setSynchronous(true);
   m_mapDisplay->setAcceptDrops(true);
-  m_mapDisplay->setBackgroundColor(Qt::gray);
+
+  m_mapDisplay->setBackgroundColor(Qt::transparent);
   m_mapDisplay->setResizeInterval(0);
   m_mapDisplay->setMouseTracking(true);
 
@@ -127,6 +131,13 @@ te::layout::MapItem::MapItem( ItemController* controller, Observable* o ) :
   setWindowFrameMargins(m_wMargin, m_hMargin, m_wMargin, m_hMargin);
 
   m_mapDisplay->show();
+
+  /*
+    MapItem will handle all the events. 
+    For example, the event of mouse click on the child item 
+    won't be handled by child item.
+  */
+  setHandlesChildEvents(true);
 }
 
 te::layout::MapItem::~MapItem()
@@ -145,32 +156,26 @@ void te::layout::MapItem::updateObserver( ContextItem context )
   if(!m_model)
     return;
 
-  Utils* utils = context.getUtils();
+  Utils* utils = Context::getInstance().getUtils();
 
   if(!utils)
     return;
 
-  QRectF boundRect;
-  boundRect = boundingRect();
+  calculateFrameMargin();
+  setWindowFrameMargins(m_wMargin, m_hMargin, m_wMargin, m_hMargin);
+      
+  updateMapDisplay();
 
-  te::gm::Envelope box = utils->viewportBox(m_model->getBox());
-  
-  if(!box.isValid())
-    return;
-  
+  reloadLayers();
+
   MapModel* model = dynamic_cast<MapModel*>(m_model);
   if(model)
   {
-    double zoomFactor = Context::getInstance().getZoomFactor();
-
     te::gm::Envelope mapBox = utils->viewportBox(model->getMapBox());
-    double w = mapBox.getWidth() * zoomFactor;
-    double h = mapBox.getHeight() * zoomFactor;
+    double w = mapBox.getWidth();
+    double h = mapBox.getHeight();
 
-    /* This item ignores the transformations of the scene, so comes with no zoom. 
-    His transformation matrix is the inverse scene, understanding the pixel 
-    coordinates, and its position can only be given in the scene coordinates(mm). 
-    For these reasons, it is necessary to resize it.*/
+    /* resize */
     if(w != m_mapDisplay->getWidth() 
       || h != m_mapDisplay->getHeight())
     {
@@ -178,37 +183,13 @@ void te::layout::MapItem::updateObserver( ContextItem context )
       m_mapDisplay->setGeometry(pt.x(), pt.y(), w, h);
     }
 
-    te::color::RGBAColor clr = model->getMapBackgroundColor();
-    QColor qcolor;
-    qcolor.setRed(clr.getRed());
-    qcolor.setGreen(clr.getGreen());
-    qcolor.setBlue(clr.getBlue());
-    qcolor.setAlpha(clr.getAlpha());
-    m_mapDisplay->setBackgroundColor(qcolor);
     m_mapDisplay->refresh();
 
     calculateFrameMargin();
   }
 
-  te::color::RGBAColor** rgba = context.getPixmap();
+  refresh();
 
-  if(!rgba)
-    return;
-
-  QPixmap pixmap;
-  QImage* img = 0;
-
-  if(rgba)
-  {
-    img = te::qt::widgets::GetImage(rgba, box.getWidth(), box.getHeight());
-    pixmap = QPixmap::fromImage(*img);
-  }
-    
-  te::common::Free(rgba, box.getHeight());
-  if(img)
-    delete img;
-  
-  setPixmap(pixmap);
   update();
 }
 
@@ -225,65 +206,41 @@ QPointF remapPointToViewport(const QPointF& point, const QRectF& item, const QRe
   return remappedPoint;
 }
 
-void te::layout::MapItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
-{  
-  Q_UNUSED( option );
-  Q_UNUSED( widget );
-  if ( !painter )
-  {
-    return;
-  }
-
-  drawBackground( painter );
-
-  drawMap(painter);
-
-  drawBorder(painter);
-
-  //Draw Selection
-  if (option->state & QStyle::State_Selected)
-  {
-    drawSelection(painter);
-  }
-}
-
-void te::layout::MapItem::drawMap( QPainter * painter )
+void te::layout::MapItem::drawItem( QPainter * painter )
 {
   if(!m_mapDisplay || !painter)
     return;
 
-  QRectF boundRect;
-  boundRect = boundingRect();
-
-  if( m_pixmap.isNull() || m_changeLayer)
+  MapModel* model = dynamic_cast<MapModel*>(m_model);
+  if(!model)
   {
-    m_changeLayer = false;
-        
-    m_pixmap = QPixmap(m_mapDisplay->width(), m_mapDisplay->height());
-    m_pixmap.fill(Qt::transparent);
+    return;
+  }
 
-    QPainter localPainter(&m_pixmap);
-    m_mapDisplay->render(&localPainter);
-    localPainter.end();
+  QRectF boundRect;
 
-    QImage image = m_pixmap.toImage();
-    image = image.mirrored();
+  if(model->getBox().getWidth() < model->getMapBox().getWidth()
+    || model->getBox().getHeight() < model->getMapBox().getHeight())
+  {
+    boundRect = boundingRect();
+  }
+  else
+  {
+    double x = model->getDisplacementX();
+    double y = model->getDisplacementY();
+    boundRect = QRectF(x, y, model->getMapBox().getWidth(), model->getMapBox().getHeight());
+  }
 
-    m_pixmap = QPixmap::fromImage(image);
-
-    //scene()->update();
+  if( m_pixmapIsDirty == true)
+  {
+    m_pixmapIsDirty = false;
+    generateMapPixmap();
   }
 
   painter->save();
   painter->setClipRect(boundRect);
   painter->drawPixmap(boundRect, m_pixmap, m_pixmap.rect());
-
-  QPen pen;
-  pen.setWidth(1);
-
-  painter->setPen(pen);
-  painter->drawRect(boundRect);
-
+  
   painter->restore();
 }
 
@@ -296,17 +253,9 @@ void te::layout::MapItem::dropEvent( QGraphicsSceneDragDropEvent * event )
 
   getMimeData(event->mimeData());
 
-  te::map::AbstractLayerPtr al = m_treeItem->getLayer();
-  te::gm::Envelope e = al->getExtent();
+  reloadLayers(false);
 
-  std::list<te::map::AbstractLayerPtr> layerList;
-  layerList.push_back(al);
-
-  m_layer = al;
-
-  m_mapDisplay->setLayerList(layerList);
-  m_mapDisplay->setSRID(al->getSRID(), false);
-  m_mapDisplay->setExtent(e, true);
+  redraw();
 }
 
 void te::layout::MapItem::dragEnterEvent( QGraphicsSceneDragDropEvent * event )
@@ -377,7 +326,7 @@ void te::layout::MapItem::mouseMoveEvent( QGraphicsSceneMouseEvent * event )
   if(!iUtils->isCurrentMapTools())
   {
     clearCurrentTool();
-    ParentItem::mouseMoveEvent(event);
+    ParentItem<QGraphicsProxyWidget>::mouseMoveEvent(event);
   }
   else
   {
@@ -391,6 +340,7 @@ void te::layout::MapItem::mouseMoveEvent( QGraphicsSceneMouseEvent * event )
     event->setAccepted(mouseEvent.isAccepted());
 
     this->update();
+    m_pixmapIsDirty = true;
   }
 }
 
@@ -403,7 +353,7 @@ void te::layout::MapItem::mousePressEvent( QGraphicsSceneMouseEvent * event )
   if(!iUtils->isCurrentMapTools())
   {
     clearCurrentTool();
-    ParentItem::mousePressEvent(event);
+    ParentItem<QGraphicsProxyWidget>::mousePressEvent(event);
   }
   else
   {
@@ -414,6 +364,7 @@ void te::layout::MapItem::mousePressEvent( QGraphicsSceneMouseEvent * event )
     QMouseEvent mouseEvent(QEvent::MouseButtonPress, remappedPoint.toPoint(),
     event->button(),event->buttons(), event->modifiers());
     QApplication::sendEvent(m_mapDisplay, &mouseEvent);
+    QGraphicsItem::setCursor(m_mapDisplay->cursor());
     event->setAccepted(mouseEvent.isAccepted());
 
     this->update();
@@ -429,7 +380,7 @@ void te::layout::MapItem::mouseReleaseEvent( QGraphicsSceneMouseEvent * event )
   if(!iUtils->isCurrentMapTools())
   {
     clearCurrentTool();
-    ParentItem::mouseReleaseEvent(event); 
+    ParentItem<QGraphicsProxyWidget>::mouseReleaseEvent(event); 
   }
   else
   {
@@ -456,21 +407,34 @@ void te::layout::MapItem::getMimeData( const QMimeData* mime )
   if(draggedItems->empty())
     return;
 
-  m_treeItem = draggedItems->operator[](0);  
+  MapModel* model = dynamic_cast<MapModel*>(m_model);
+  if(!model)
+  {
+    return;
+  }
+
+  for(unsigned int i = 0 ; i < draggedItems->size() ; ++i)
+  {
+    te::qt::widgets::AbstractTreeItem* treeItem = draggedItems->operator[](i);  
+    model->addLayer(treeItem->getLayer());
+  }
 }
 
 std::list<te::map::AbstractLayerPtr> te::layout::MapItem::getVisibleLayers()
 {
   std::list<te::map::AbstractLayerPtr> visibleLayers;
 
-  if(!m_treeItem)
+  MapModel* model = dynamic_cast<MapModel*>(m_model);
+  if(!model)
+  {
+    return visibleLayers;
+  }
+
+  if(!model->isLoadedLayer())
     return visibleLayers;
 
-  te::map::AbstractLayerPtr al = m_treeItem->getLayer();
-
-  if(al.get() == 0)
-    return visibleLayers;
-
+  std::list<te::map::AbstractLayerPtr> al = model->getLayers();
+  
   std::list<te::map::AbstractLayerPtr> vis;
   te::map::GetVisibleLayers(al, vis);
   // remove folders
@@ -488,41 +452,21 @@ std::list<te::map::AbstractLayerPtr> te::layout::MapItem::getVisibleLayers()
   return visibleLayers;
 }
 
-te::map::AbstractLayerPtr te::layout::MapItem::getLayer()
-{
-  te::map::AbstractLayerPtr layer;
-
-  if(!m_treeItem)
-    return layer;
-
-  layer = m_treeItem->getLayer();
-
-  return layer;
-}
-
 void te::layout::MapItem::onDrawLayersFinished( const QMap<QString, QString>& errors )
 {
   if(!errors.empty())
     return;
 
-  te::map::AbstractLayerPtr layer = getLayer();
-
-  if(!m_controller)
-    return;
-
-  MapController* controller = dynamic_cast<MapController*>(m_controller);
-  if(controller)
+  MapModel* model = dynamic_cast<MapModel*>(m_model);
+  if(!model)
   {
-    bool result = controller->refreshLayer(layer);
-    if(result)
-    {
-      redraw();
-    }
+    return;
   }
 
-  generateMapPixmap();
-
-  m_changeLayer = true;
+  if(!model->isLoadedLayer())
+    return;
+  
+  m_pixmapIsDirty = true;
 
   update();
 }
@@ -556,6 +500,7 @@ void te::layout::MapItem::changeCurrentTool( EnumType* mode )
   {
     te::qt::widgets::Pan* pan = new te::qt::widgets::Pan(m_mapDisplay, Qt::OpenHandCursor, Qt::ClosedHandCursor);	 
     setCurrentTool(pan);
+    m_mapDisplay->setCursor(Qt::OpenHandCursor);
   }
   if(mode == type->getModeMapZoomIn())
   {
@@ -564,6 +509,7 @@ void te::layout::MapItem::changeCurrentTool( EnumType* mode )
     QCursor zoomAreaCursor(QIcon::fromTheme(icon_path_zoom_area.c_str()).pixmap(QSize(10,10)));
     te::qt::widgets::ZoomArea* zoomArea = new te::qt::widgets::ZoomArea(m_mapDisplay, zoomAreaCursor);
     setCurrentTool(zoomArea);
+    m_mapDisplay->setCursor(zoomAreaCursor);
   }
   if(mode == type->getModeMapZoomOut())
   {
@@ -572,13 +518,30 @@ void te::layout::MapItem::changeCurrentTool( EnumType* mode )
     QCursor zoomOutCursor(QIcon::fromTheme(icon_path_zoom_out.c_str()).pixmap(QSize(10,10)));
     te::qt::widgets::ZoomClick* zoomOut = new te::qt::widgets::ZoomClick(m_mapDisplay, zoomOutCursor, 2.0, te::qt::widgets::Zoom::Out);
     setCurrentTool(zoomOut);
+    m_mapDisplay->setCursor(zoomOutCursor);
+  }
+  else if (mode == type->getModeArrowCursor())
+  {
+    m_mapDisplay->setCursor(Qt::ArrowCursor);
   }
 }
 
-te::color::RGBAColor** te::layout::MapItem::getImage()
+te::color::RGBAColor** te::layout::MapItem::getRGBAColorImage(int &w, int &h)
 {
-  QImage img = generateImage();
-  te::color::RGBAColor** teImg = te::qt::widgets::GetImage(&img);
+  te::color::RGBAColor** teImg = 0;
+
+  QImage img = m_pixmap.toImage();
+  img = img.mirrored();
+
+  if(img.isNull())
+  {
+    return teImg;
+  }
+
+  w = img.width();
+  h = img.height();
+
+  teImg = te::qt::widgets::GetImage(&img);
   return teImg;
 }
 
@@ -587,7 +550,7 @@ QImage te::layout::MapItem::generateImage()
   QColor color(0, 0, 255, 0);
 
   QImage generator(m_pixmap.width(), m_pixmap.height(), QImage::Format_ARGB32);
-  generator.fill(color);
+  generator.fill(color.rgba());
 
   QPainter painter;
   painter.begin(&generator);
@@ -601,6 +564,7 @@ QImage te::layout::MapItem::generateImage()
     painter.save();
     painter.drawPixmap(rectF, m_pixmap, rectF);
     painter.restore(); 
+    generator.mirrored();
   }
 
   painter.end();
@@ -612,71 +576,86 @@ void te::layout::MapItem::calculateFrameMargin()
   MapModel* model = dynamic_cast<MapModel*>(m_model);
   if(!model)
     return;
-
-  Utils* utils = Context::getInstance().getUtils();
-
-  if(!utils)
-    return;
-
-  te::gm::Envelope box = utils->viewportBox(m_model->getBox());
-  te::gm::Envelope mapBox = utils->viewportBox(model->getMapBox());
-
-  m_wMargin = (box.getWidth() - mapBox.getWidth()) / 2.;
-  m_hMargin = (box.getHeight() - mapBox.getHeight()) / 2.;
+  
+  m_wMargin = model->getDisplacementX();
+  m_hMargin = model->getDisplacementY();
 }
 
 void te::layout::MapItem::generateMapPixmap()
 {
-  QRegion srcRegion( 0, 0, this->widget()->width(), this->widget()->height());
+  m_pixmap = QPixmap(m_mapDisplay->width(), m_mapDisplay->height());
+  m_pixmap.fill(Qt::transparent);
 
-  QColor color(255, 255, 255, 0);
-  QPixmap img(this->widget()->width(), this->widget()->height());
-  img.fill(Qt::transparent);
+  QPainter localPainter(&m_pixmap);
+  m_mapDisplay->render(&localPainter);
+  localPainter.end();
 
-  QPainter ptr(&img);
-  QPoint pt(0, 0);
-  this->widget()->render(&ptr, pt, srcRegion);
+  QImage image = m_pixmap.toImage();
+  image = image.mirrored();
 
-  m_mapPixmap = img; 
+  m_pixmap = QPixmap::fromImage(image);
 }
 
-void te::layout::MapItem::updateProperties( te::layout::Properties* properties )
+void te::layout::MapItem::updateMapDisplay()
 {
-  if(!m_controller)
-    return;
-
-  m_controller->updateProperties(properties);
-
   MapModel* model = dynamic_cast<MapModel*>(m_model);
   if(!model)
-    return;
-
-  if(model->isLoadedLayer())
   {
-    redraw();
     return;
   }
-
-  std::string name = model->getNameLayer();
-
-  if(name.compare("") == 0)
+  
+  if(model->isLoadedLayer())
+  {
     return;
-
+  }
+  
   AbstractProxyProject* project = Context::getInstance().getProxyProject();
   if(!project)
     return;
 
-  te::map::AbstractLayerPtr layer = project->contains(name);
-  m_mapDisplay->changeData(layer);
+  std::list<te::map::AbstractLayerPtr> layerList;
 
-  MapController* controller = dynamic_cast<MapController*>(m_controller);
-  if(!controller)
-    return;
+  std::vector<std::string> names = model->getLayerNames();
 
-  bool result = controller->refreshLayer(layer);
-  if(result)
+  std::vector<std::string>::const_iterator it = names.begin();
+
+  for( ; it != names.end() ; ++it)
   {
-    redraw();
+    std::string name = (*it);
+    te::map::AbstractLayerPtr layer = project->contains(name);
+    layerList.push_back(layer);
+    model->addLayer(layer);
+  }
+
+  m_mapDisplay->setLayerList(layerList);
+
+  std::list<te::map::AbstractLayerPtr>::const_iterator itl = layerList.begin(); 
+  if(itl != layerList.end())
+  {
+    te::map::AbstractLayerPtr al = (*itl);
+    te::gm::Envelope e = al->getExtent();
+
+    m_mapDisplay->setSRID(al->getSRID(), false);
+    m_mapDisplay->setExtent(e, true);
+  }
+}
+
+void te::layout::MapItem::recalculateBoundingRect()
+{
+  MapModel* model = dynamic_cast<MapModel*>(m_model);
+  te::gm::Envelope box = model->getBox();
+
+  if(m_rect.width() != box.getWidth()
+    || m_rect.height() != box.getHeight())
+  {
+    prepareGeometryChange();
+    m_rect = QRectF(0., 0., box.getWidth(), box.getHeight()); 
+
+    //update model
+    te::gm::Envelope env(m_model->getBox());
+    env.m_urx = env.m_llx + m_rect.width();
+    env.m_ury = env.m_lly + m_rect.height();
+    m_controller->setBox(env);
   }
 }
 
@@ -684,22 +663,304 @@ QRectF te::layout::MapItem::boundingRect() const
 {
   MapModel* model = dynamic_cast<MapModel*>(m_model);
   te::gm::Envelope box = model->getBox();
-  
-  QRectF rect(0., 0., box.getWidth(), box.getHeight());
- 
+
+  QRectF rect(0., 0., box.getWidth(), box.getHeight()); 
   return rect;
 }
 
-void te::layout::MapItem::changeZoomFactor( double currentZoomFactor )
+void te::layout::MapItem::drawBackground( QPainter* painter )
 {
-  QSize currentSize = m_mapDisplay->size();
-  QSize newSize = m_mapSize * currentZoomFactor;
-  if(currentSize != newSize)
+  if ( !painter )
   {
-    m_mapDisplay->resize(newSize);
-    m_changeLayer = true;
+    return;
   }
+
+  MapModel* model = dynamic_cast<MapModel*>(m_model);
+  if(!model)
+    return;
+
+  te::color::RGBAColor clrBack = model->getBackgroundColor();
+  QColor backColor;
+  backColor.setRed(clrBack.getRed());
+  backColor.setGreen(clrBack.getGreen());
+  backColor.setBlue(clrBack.getBlue());
+  backColor.setAlpha(clrBack.getAlpha());
+
+  double x = model->getDisplacementX();
+  double y = model->getDisplacementY();
+  QRectF boundRect = QRectF(x, y, model->getMapBox().getWidth(), model->getMapBox().getHeight());
+
+  painter->save();
+  painter->setPen(Qt::NoPen);
+  painter->setBrush(QBrush(backColor));
+  painter->setBackground(QBrush(backColor));
+  painter->setRenderHint( QPainter::Antialiasing, true );
+  painter->drawRect(boundRect);
+  painter->restore();
 }
 
+void te::layout::MapItem::drawSelection( QPainter* painter )
+{
+  if(!painter)
+  {
+    return;
+  }
+
+  MapModel* model = dynamic_cast<MapModel*>(m_model);
+  if(!model)
+    return;
+
+  double x = model->getDisplacementX();
+  double y = model->getDisplacementY();
+  QRectF boundRect = QRectF(x, y, model->getMapBox().getWidth(), model->getMapBox().getHeight());
+
+  painter->save();
+
+  qreal penWidth = painter->pen().widthF();
+
+  const qreal adj = penWidth / 2;
+  const QColor fgcolor(0,255,0);
+  const QColor backgroundColor(0,0,0);
+
+  QRectF rtAdjusted = boundRect.adjusted(adj, adj, -adj, -adj);
+
+  QPen penBackground(backgroundColor, 0, Qt::SolidLine);
+  painter->setPen(penBackground);
+  painter->setBrush(Qt::NoBrush);
+  painter->drawRect(rtAdjusted);
+
+  QPen penForeground(fgcolor, 0, Qt::DashLine);
+  painter->setPen(penForeground);
+  painter->setBrush(Qt::NoBrush);
+  painter->drawRect(rtAdjusted);
+
+  painter->setPen(Qt::NoPen);
+  QBrush brushEllipse(fgcolor);
+  painter->setBrush(fgcolor);
+
+  double w = 2.0;
+  double h = 2.0;
+  double half = 1.0;
+
+  painter->drawRect(rtAdjusted.center().x() - half, rtAdjusted.center().y() - half, w, h); // center
+  painter->drawRect(rtAdjusted.bottomLeft().x() - half, rtAdjusted.bottomLeft().y() - half, w, h); // left-top
+  painter->drawRect(rtAdjusted.bottomRight().x() - half, rtAdjusted.bottomRight().y() - half, w, h); // right-top
+  painter->drawRect(rtAdjusted.topLeft().x() - half, rtAdjusted.topLeft().y() - half, w, h); // left-bottom
+  painter->drawRect(rtAdjusted.topRight().x() - half, rtAdjusted.topRight().y() - half, w, h); // right-bottom
+
+  painter->restore();
+}
+
+void te::layout::MapItem::drawBorder( QPainter* painter )
+{
+  if ( !painter )
+  {
+    return;
+  }
+
+  if(!m_model)
+    return;
+
+  MapModel* model = dynamic_cast<MapModel*>(m_model);
+  if(!model)
+    return;
+
+  if(!model->isBorder())
+    return;
+
+  te::color::RGBAColor clrBack = model->getFrameColor();
+  QColor borderColor;
+  borderColor.setRed(clrBack.getRed());
+  borderColor.setGreen(clrBack.getGreen());
+  borderColor.setBlue(clrBack.getBlue());
+  borderColor.setAlpha(clrBack.getAlpha());
+
+  double x = model->getDisplacementX();
+  double y = model->getDisplacementY();
+  QRectF boundRect = QRectF(x, y, model->getMapBox().getWidth(), model->getMapBox().getHeight());
+
+  painter->save();
+  QPen penBackground(borderColor, 0, Qt::SolidLine);
+  painter->setPen(penBackground);
+  painter->setBrush(Qt::NoBrush);
+  painter->setRenderHint( QPainter::Antialiasing, true );
+  painter->drawRect(boundRect);
+  painter->restore();
+}
+
+void te::layout::MapItem::reloadLayers(bool draw)
+{
+  MapModel* model = dynamic_cast<MapModel*>(m_model);
+  if(!model)
+  {
+    return;
+  }
+
+  std::list<te::map::AbstractLayerPtr> layerList = model->getLayers();
+
+  if(!m_oldLayers.empty())
+  {
+    if(!hasListLayerChanged())
+    {
+      return;
+    }
+  }
+
+  m_oldLayers = layerList;
+  m_pixmapIsDirty = true;
+
+  m_mapDisplay->setLayerList(layerList);
+
+  if(layerList.empty() == true)
+  {
+    return;
+  }
+
+  std::list<te::map::AbstractLayerPtr>::iterator it = layerList.begin();
+
+  te::map::AbstractLayerPtr al = (*it);
+
+  te::gm::Envelope e = model->maxLayerExtent();  
 
 
+  m_mapDisplay->setSRID(al->getSRID(), false);
+  m_mapDisplay->setExtent(e, draw);
+
+  m_pixmapIsDirty = true;
+}
+
+bool te::layout::MapItem::hasListLayerChanged()
+{
+  bool result = false;
+  MapModel* model = dynamic_cast<MapModel*>(m_model);
+  if(!model)
+  {
+    return false;
+  }
+
+  std::list<te::map::AbstractLayerPtr> layerList = model->getLayers();
+
+  if(layerList.size() != m_oldLayers.size())
+  {
+    return true;
+  }
+
+  std::list<te::map::AbstractLayerPtr>::const_iterator it = layerList.begin();
+  std::list<te::map::AbstractLayerPtr>::const_iterator itOld = m_oldLayers.begin();
+
+  for(; it != layerList.end() ; ++it, ++itOld)
+  {
+    te::map::AbstractLayerPtr layer = (*it);
+    te::map::AbstractLayerPtr layerOld = (*itOld);
+
+    if(layer != layerOld)
+    {
+      result = true;
+      break;
+    }
+  }
+
+  return result;
+}
+
+void te::layout::MapItem::redraw( bool bRefresh /*= true*/ )
+{
+  if(m_oldLayers.empty())
+  {
+    return;
+  }
+
+  ContextItem context;
+  updateObserver(context);
+}
+
+bool te::layout::MapItem::checkTouchesCorner( const double& x, const double& y )
+{  
+  bool result = true;
+
+  MapModel* model = dynamic_cast<MapModel*>(m_model);
+  if(!model)
+  {
+    return result;
+  }
+
+  te::gm::Envelope boxMM = model->getMapBox();
+  
+  QRectF bRect(m_wMargin, m_hMargin, boxMM.getWidth() + m_wMargin, boxMM.getHeight() + m_hMargin);
+  double margin = 3; //precision
+
+  QPointF ll = bRect.bottomLeft();
+  QPointF lr = bRect.bottomRight();
+  QPointF tl = bRect.topLeft();
+  QPointF tr = bRect.topRight();
+
+  if((x >= (ll.x() - margin) && x <= (ll.x() + margin))
+    && (y >= (ll.y() - margin) && y <= (ll.y() + margin)))
+  {
+    QGraphicsItem::setCursor(Qt::SizeFDiagCursor);
+    m_enumSides = TPLowerLeft;
+  }
+  else if((x >= (lr.x() - margin) && x <= (lr.x() + margin))
+    && (y >= (lr.y() - margin) && y <= (lr.y() + margin)))
+  {
+    QGraphicsItem::setCursor(Qt::SizeBDiagCursor);
+    m_enumSides = TPLowerRight;
+  }
+  else if((x >= (tl.x() - margin) && x <= (tl.x() + margin))
+    && (y >= (tl.y() - margin) && y <= (tl.y() + margin)))
+  {
+    QGraphicsItem::setCursor(Qt::SizeBDiagCursor);
+    m_enumSides = TPTopLeft;
+  }
+  else if((x >= (tr.x() - margin) && x <= (tr.x() + margin))
+    && (y >= (tr.y() - margin) && y <= (tr.y() + margin)))
+  {
+    QGraphicsItem::setCursor(Qt::SizeFDiagCursor);
+    m_enumSides = TPTopRight;
+  }
+  else
+  {
+    QGraphicsItem::setCursor(m_mapDisplay->cursor());
+    m_enumSides = TPNoneSide;
+    result = false;
+  }
+
+  return result;
+}
+
+bool te::layout::MapItem::canBeChild( ItemObserver* item )
+{
+  GridMapItem* gItem = dynamic_cast<GridMapItem*>(item);
+  if(gItem)
+  {
+    return true;
+  }
+  return false;
+}
+
+void te::layout::MapItem::contextUpdated()
+{
+  Utils* utils = Context::getInstance().getUtils();
+  te::gm::Envelope box;
+  
+  MapModel* model = dynamic_cast<MapModel*>(m_model);
+  if(model)
+  {
+    box = utils->viewportBox(model->getMapBox());
+  }
+  else
+  {
+    box = utils->viewportBox(m_model->getBox());
+  }
+
+  QSizeF currentSize = this->size();
+  QSizeF newSize(box.getWidth(), box.getHeight());
+  if(currentSize != newSize)
+  {
+    QPointF pt = scenePos();
+
+    this->prepareGeometryChange();
+    m_mapDisplay->setGeometry(pt.x(), pt.y(), newSize.width(), newSize.height());
+    m_pixmapIsDirty = true;
+  }
+}

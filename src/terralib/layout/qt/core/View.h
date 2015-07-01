@@ -1,4 +1,4 @@
-/*  Copyright (C) 2013-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -40,8 +40,8 @@
 #include "Scene.h"
 #include "../outside/PageSetupOutside.h"
 #include "../outside/SystematicScaleOutside.h"
-#include "MenuItem.h"
 #include "../item/MovingItemGroup.h"
+#include "propertybrowser/MenuBuilder.h"
 
 // STL
 #include <string>
@@ -149,23 +149,11 @@ namespace te
         */
         virtual void recompose();
 
-		/*!
-          \brief Method that applies current zoom defined in the Context. 
-        */
-        virtual void zoomPercentage();
-
-		/*!
-          \brief Method that change rulers visibility state.
-		  
-		  \param visible visibility state	  
-        */
-        virtual void changeZoomFactor(double currentZoom);
-
         /*!
           \brief Method that sets View object for the Print function.  
         */
         virtual void exportToPDF();
-                                        
+
       public slots:
 	  
 		/*!
@@ -191,6 +179,17 @@ namespace te
         virtual void onSelectionChanged();
         
         virtual void onSelectionItem(std::string name);
+
+        /*!
+          \brief Sets the zoom of the view to the given value
+        */
+        virtual void setZoom(int zoomFactor);
+
+
+        /*!
+          \brief Sets the zoom of the view to fit the given rect
+        */
+        virtual void fitZoom(const QRectF& rect);
 
       signals:
 
@@ -224,7 +223,7 @@ namespace te
 		/*!
           \brief This signal is emitted when View object changes the zoom factor internally.
         */
-        void changeZoom(double currentFactor);
+        void zoomChanged(int zoom);
 
         /*!
           \brief This signal is emitted when context change.
@@ -312,8 +311,6 @@ namespace te
         virtual void showPageSetup();
 
         virtual void showSystematicScale();
-
-        virtual bool intersectionSelectionItem(int x, int y);
         
         virtual QCursor createCursor(std::string pathIcon);
         
@@ -338,29 +335,29 @@ namespace te
         */
         virtual void exportItemsToImage();
 
-        virtual bool isExceededLimit(double currentScale, double factor, double oldFactor);
+        virtual bool isLimitExceeded(double scale);
 
       protected:
 
-        VisualizationArea*      m_visualizationArea;
-        AbstractViewTool*       m_currentTool;
-        PageSetupOutside*       m_pageSetupOutside;
-        SystematicScaleOutside* m_systematicOutside;
-        te::gm::Coord2D         m_coordSystematic;
-        bool                    m_selectionChange;
-        MenuItem*               m_menuItem;
-        HorizontalRuler*        m_horizontalRuler;
-        VerticalRuler*          m_verticalRuler;
-        double                  m_maxZoomLimit;
-        double                  m_minZoomLimit;
-        double                  m_width;
-        double                  m_height;
-        bool                    m_isMoving;
-        te::layout::MovingItemGroup* m_movingItemGroup;
-        bool                    m_updateItemPos;
-        EnumType*               m_oldMode;
-        WaitView*               m_wait;
-        bool                    m_flag;
+        VisualizationArea*            m_visualizationArea;
+        AbstractViewTool*             m_currentTool;
+        PageSetupOutside*             m_pageSetupOutside;
+        SystematicScaleOutside*       m_systematicOutside;
+        te::gm::Coord2D               m_coordSystematic;
+        bool                          m_selectionChange;
+        MenuBuilder*                  m_menuBuilder;
+        HorizontalRuler*              m_horizontalRuler;
+        VerticalRuler*                m_verticalRuler;
+        double                        m_maxZoomLimit;
+        double                        m_minZoomLimit;
+        double                        m_width;
+        double                        m_height;
+        bool                          m_isMoving;
+        te::layout::MovingItemGroup*  m_movingItemGroup;
+        bool                          m_updateItemPos;
+        EnumType*                     m_oldMode;
+        WaitView*                     m_wait;
+        bool                          m_flag;
     };
   }
 }

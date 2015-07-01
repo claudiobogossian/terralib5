@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of TerraView - A GIS Application.
 
@@ -152,8 +152,6 @@ namespace te
           void drawLayerSelection(te::map::AbstractLayerPtr layer);
 
           void drawDataSet(te::da::DataSet* dataset, const std::string& geomPropertyName, int srid, const QColor& color, bool isLinked = false);
-
-          void drawObjectIdSet(const te::da::ObjectIdSet* oids, int srid, const QColor& color, bool isLinked = false);
 
           void configSRS(const std::list<te::map::AbstractLayerPtr>& layers);
 

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -121,6 +121,8 @@ namespace te
 
           void onChangeLayerDataSourceTriggered();
 
+          void onUpdateLayerDataSourceTriggered();
+
           void onLayerRemoveItemTriggered();
 
           void onRenameLayerTriggered();
@@ -151,6 +153,8 @@ namespace te
 
           void onToolsRasterMultiResolutionTriggered();
 
+          void onToolsFixGeometryTriggered();
+
           void onProjectPropertiesTriggered();
 
           void onAddFolderLayerTriggered();
@@ -168,6 +172,8 @@ namespace te
           void onLinkTriggered(); 
 
           void onLayerScatterTriggered();
+
+          void onLayerTimeSeriesTriggered();
 
           void onLayerChartTriggered();
 
@@ -227,8 +233,6 @@ namespace te
 
           void onLayerExplorerVisibilityChanged(bool visible);
 
-          void onDisplayVisibilityChanged(bool visible);
-
           void onDisplayDataTableChanged(bool visible);
 
           void onStyleExplorerVisibilityChanged(bool visible);
@@ -272,7 +276,6 @@ namespace te
 
           //! Qt components
           QAction* m_viewLayerExplorer;
-          QAction* m_viewMapDisplay;
           QAction* m_viewDataTable;
           QAction* m_viewStyleExplorer;
           //QAction* m_editUndo;
@@ -293,6 +296,7 @@ namespace te
           QAction* m_toolsDataSourceExplorer;
           QAction* m_toolsQueryDataSource;
           QAction* m_toolsRasterMultiResolution;
+          QAction* m_toolsFixGeometry;
           QAction* m_pluginsManager;
           QAction* m_helpContents;
           QAction* m_helpUpdate;
@@ -303,6 +307,7 @@ namespace te
           QAction* m_projectAddLayerGraph;
           QAction* m_projectAddFolderLayer;
           QAction* m_projectChangeLayerDataSource;
+          QAction* m_projectUpdateLayerDataSource;
           QAction* m_projectRemoveLayer;
           QAction* m_projectRenameLayer;
           QAction* m_projectProperties;
@@ -318,6 +323,7 @@ namespace te
           QAction* m_layerToBottom;
           QAction* m_layerChartsHistogram;
           QAction* m_layerChartsScatter;
+          QAction* m_layerChartsTimeSeries;
           QAction* m_layerChart;
           QAction* m_layerLinkTable;
           QAction* m_layerObjectGrouping;

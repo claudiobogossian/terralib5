@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -357,9 +357,12 @@ void te::da::GetOIDDatasetProps(const DataSetType* type, std::pair<std::string, 
   assert(type);
   std::map<std::string, std::pair<int, int> > dsNames;
   std::map<std::string, std::pair<int, int> >::const_iterator dsNamesIt;
+  std::vector<te::dt::Property*> props;
 
-  //Acquiring the primary key of the given DataSetType
-  std::vector<te::dt::Property*> props = type->getPrimaryKey()->getProperties();
+  // Looking for the primary key or unique key properties
+  PrimaryKey* pk = type->getPrimaryKey();
+  if(pk != 0)
+    props = pk->getProperties();
 
   //Getting the name and the number of properties of each dataset involved
   for(size_t i = 0; i < props.size(); ++i)
@@ -406,7 +409,7 @@ void te::da::GetOIDPropertyPos(const te::da::DataSetType* type, std::vector<std:
     ppos.push_back(type->getPropertyPosition(oidprops[i]));
 }
 
-te::da::ObjectIdSet* te::da::GenerateOIDSet(te::da::DataSet* dataset, const te::da::DataSetType* type, const bool& setGeom)
+te::da::ObjectIdSet* te::da::GenerateOIDSet(te::da::DataSet* dataset, const te::da::DataSetType* type)
 {
   assert(dataset);
   assert(type);
@@ -414,10 +417,10 @@ te::da::ObjectIdSet* te::da::GenerateOIDSet(te::da::DataSet* dataset, const te::
   std::vector<std::string> oidprops;
   GetOIDPropertyNames(type, oidprops);
 
-  return te::da::GenerateOIDSet(dataset, oidprops, setGeom);
+  return te::da::GenerateOIDSet(dataset, oidprops);
 }
 
-te::da::ObjectIdSet* te::da::GenerateOIDSet(te::da::DataSet* dataset, const std::vector<std::string>& names, const bool& setGeom)
+te::da::ObjectIdSet* te::da::GenerateOIDSet(te::da::DataSet* dataset, const std::vector<std::string>& names)
 {
   assert(dataset);
   assert(!names.empty());
@@ -435,12 +438,12 @@ te::da::ObjectIdSet* te::da::GenerateOIDSet(te::da::DataSet* dataset, const std:
   }
 
   while(dataset->moveNext())
-    oids->add(GenerateOID(dataset, names, setGeom));
+    oids->add(GenerateOID(dataset, names));
 
   return oids;
 }
 
-te::da::ObjectId* te::da::GenerateOID(te::da::DataSet* dataset, const std::vector<std::string>& names, const bool& setGeom)
+te::da::ObjectId* te::da::GenerateOID(te::da::DataSet* dataset, const std::vector<std::string>& names)
 {
   assert(dataset);
   assert(!names.empty());
@@ -451,12 +454,6 @@ te::da::ObjectId* te::da::GenerateOID(te::da::DataSet* dataset, const std::vecto
   {
     if(!dataset->isNull(names[i]))
       oid->addValue(dataset->getValue(names[i]).release());
-  }
-
-  if(setGeom)
-  {
-    std::size_t pos = te::da::GetFirstSpatialPropertyPos(dataset);
-    oid->setGeom(dataset->getGeometry(pos).release());
   }
 
   return oid;

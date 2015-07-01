@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -49,10 +49,8 @@ void te::da::DataSourceInfoManager::add(const DataSourceInfoPtr& ds)
   if(ds.get() == 0)
     throw Exception(TE_TR("Can not insert a NULL data source into the manager!"));
 
-  if(m_datasources.find(ds->getId()) != m_datasources.end())
-    throw Exception((boost::format(TE_TR("There is already a data source with the given id (%1%) in data source manager!")) % ds->getId()).str());
-
-  m_datasources[ds->getId()] = ds;
+  if(m_datasources.find(ds->getId()) == m_datasources.end())
+    m_datasources[ds->getId()] = ds;
 }
 
 void te::da::DataSourceInfoManager::remove(const std::string& id)

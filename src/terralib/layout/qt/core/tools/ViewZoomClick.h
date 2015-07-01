@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -63,7 +63,7 @@ namespace te
 
             \note The tool will NOT take the ownership of the given pointers.
           */
-          ViewZoomClick(View* view, const QCursor& cursor, const double& zoomFactor = 2.0, const ViewZoomType& type = TypeIn, QObject* parent = 0);
+          ViewZoomClick(View* view, const QCursor& cursor, const double& zoomFactor = 2.0, const ViewZoomType& type = ZoomIn, QObject* parent = 0);
 
           /*! \brief Destructor. */
           ~ViewZoomClick();

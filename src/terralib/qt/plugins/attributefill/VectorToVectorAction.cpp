@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -40,7 +40,8 @@
 te::qt::plugins::attributefill::VectorToVectorAction::VectorToVectorAction(QMenu* menu)
   : te::qt::plugins::attributefill::AbstractAction(menu)
 {
-  createAction(tr("VectorToVector...").toStdString(), "attributefill-vector2vector-icon");
+  createAction(tr("Vector to Vector...").toStdString(), "attributefill-vector2vector-icon");
+  m_action->setObjectName("Processing.Attribute Fill.Vector to Vector");
 }
 
 te::qt::plugins::attributefill::VectorToVectorAction::~VectorToVectorAction()

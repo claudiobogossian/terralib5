@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -36,8 +36,8 @@
 #include "../../../common/STLUtils.h"
 #include "../../item/EllipseModel.h"
 
-te::layout::EllipseItem::EllipseItem( ItemController* controller, Observable* o ) :
-  ObjectItem(controller, o)
+te::layout::EllipseItem::EllipseItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
+  ObjectItem(controller, o, invertedMatrix)
 {
   m_nameClass = std::string(this->metaObject()->className());
 }
@@ -47,29 +47,7 @@ te::layout::EllipseItem::~EllipseItem()
 
 }
 
-void te::layout::EllipseItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
-{
-  Q_UNUSED( option );
-  Q_UNUSED( widget );
-  if ( !painter )
-  {
-    return;
-  }
-
-  drawBackground(painter);
-
-  drawEllipse(painter);
-
-  drawBorder(painter);
-
-  //Draw Selection
-  if (option->state & QStyle::State_Selected)
-  {
-    drawSelection(painter);
-  }
-}
-
-void te::layout::EllipseItem::drawEllipse( QPainter * painter )
+void te::layout::EllipseItem::drawItem( QPainter * painter )
 {
   EllipseModel* model = dynamic_cast<EllipseModel*>(m_model);
   if(!model)
@@ -79,24 +57,26 @@ void te::layout::EllipseItem::drawEllipse( QPainter * painter )
 
   painter->save();
 
+  const te::color::RGBAColor& fillColor = model->getFillColor();
+  const te::color::RGBAColor& contourColor = model->getContourColor();
+
+  QColor qFillColor(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), fillColor.getAlpha());
+  QColor qContourColor(contourColor.getRed(), contourColor.getGreen(), contourColor.getBlue(), contourColor.getAlpha());
+
+  QBrush brush(qFillColor);
+  QPen pen(qContourColor, 0, Qt::SolidLine);
+
+  painter->setPen(pen);
+  painter->setBrush(brush);
+
+  //gets the adjusted boundigng rectangle based of the painter settings
+  QRectF rectAdjusted = getAdjustedBoundingRect(painter);
+
   QPainterPath circle_path;
   circle_path.addEllipse(boundingRect());
 
-  QColor cpen(0,0,0);
-  QPen pn(cpen, 0, Qt::SolidLine);
-  painter->setPen(pn);
-
-  te::color::RGBAColor clrBack = model->getBackgroundColor();
-
-  QColor cbrush;
-  cbrush.setRed(clrBack.getRed());
-  cbrush.setGreen(clrBack.getGreen());
-  cbrush.setBlue(clrBack.getBlue());
-  cbrush.setAlpha(clrBack.getAlpha());
-
-  painter->setBrush(cbrush);
+  //draws the item
   painter->drawPath(circle_path);
 
   painter->restore();
 }
-

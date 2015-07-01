@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -77,7 +77,7 @@ te::st::STDataLoader::getDataSet(const te::st::ObservationDataSetInfo& info, con
   std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getDataSourceInfo().getType()));
   return impl->getDataSet(info, geom, r, travType);
 }
-        
+
 std::auto_ptr<te::st::ObservationDataSet> 
 te::st::STDataLoader::getDataSet(const te::st::ObservationDataSetInfo& info, 
                                  const te::dt::DateTime& dt, te::dt::TemporalRelation r,
@@ -192,6 +192,46 @@ te::st::STDataLoader::getDataSet(const te::st::TimeSeriesDataSetInfo& info,
 {
   std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getObservationDataSetInfo().getDataSourceInfo().getType()));
   return impl->getDataSet(info, dt, r, travType);
+}
+
+std::auto_ptr<te::st::TimeSeriesDataSet> 
+te::st::STDataLoader::getDataSet(const te::st::TimeSeriesDataSetInfo& info, const te::gm::Envelope& e,
+                          te::gm::SpatialRelation r,
+                          te::common::TraverseType travType)
+{
+  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getObservationDataSetInfo().getDataSourceInfo().getType()));
+  return impl->getDataSet(info, e, r, travType);
+}
+        
+std::auto_ptr<te::st::TimeSeriesDataSet> 
+te::st::STDataLoader::getDataSet(const te::st::TimeSeriesDataSetInfo& info, const te::gm::Geometry& geom, 
+                          te::gm::SpatialRelation r,
+                          te::common::TraverseType travType)
+{
+  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getObservationDataSetInfo().getDataSourceInfo().getType()));
+  return impl->getDataSet(info, geom, r, travType);
+}
+
+std::auto_ptr<te::st::TimeSeriesDataSet>
+te::st::STDataLoader::getDataSet(const te::st::TimeSeriesDataSetInfo& info,
+                                            const te::dt::DateTime& dt, 
+                                            te::dt::TemporalRelation tr,
+                                            const te::gm::Envelope& e, 
+                                            te::gm::SpatialRelation sr,
+                                            te::common::TraverseType travType)
+{
+  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getObservationDataSetInfo().getDataSourceInfo().getType()));
+  return impl->getDataSet(info, dt, tr, e, sr, travType);
+}
+
+std::auto_ptr<te::st::TimeSeriesDataSet>
+te::st::STDataLoader::getDataSet(const te::st::TimeSeriesDataSetInfo& info, 
+                          const te::gm::Geometry& geom, te::gm::SpatialRelation sr,
+                          const te::dt::DateTime& dt, te::dt::TemporalRelation tr,
+                          te::common::TraverseType travType)
+{
+  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getObservationDataSetInfo().getDataSourceInfo().getType()));
+  return impl->getDataSet(info, geom, sr, dt, tr, travType);
 }
 
 std::auto_ptr<te::st::CoverageSeries> 

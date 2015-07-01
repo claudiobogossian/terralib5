@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -31,6 +31,7 @@
 #include "../../common/STLUtils.h"
 #include "../../common/Translator.h"
 #include "../../common/UserApplicationSettings.h"
+#include "../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../dataaccess/dataset/ObjectIdSet.h"
 #include "../../maptools/DataSetLayer.h"
 #include "../../maptools/Utils.h"
@@ -42,8 +43,10 @@
 #include "../widgets/charts/ChartLayerDialog.h"
 #include "../widgets/charts/HistogramDialog.h"
 #include "../widgets/charts/ScatterDialog.h"
+#include "../widgets/charts/TimeSeriesDialog.h"
 #include "../widgets/datasource/core/DataSourceType.h"
 #include "../widgets/datasource/core/DataSourceTypeManager.h"
+#include "../widgets/datasource/connector/AbstractDataSourceConnector.h"
 #include "../widgets/datasource/selector/DataSourceExplorerDialog.h"
 #include "../widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../widgets/exchanger/DataExchangerWizard.h"
@@ -78,6 +81,7 @@
 #include "../widgets/tools/ZoomArea.h"
 #include "../widgets/tools/ZoomClick.h"
 #include "../widgets/srs/SRSManagerDialog.h"
+#include "../widgets/vector/FixGeometryDialog.h"
 #include "connectors/ChartDisplayDockWidget.h"
 #include "connectors/DataSetTableDockWidget.h"
 #include "connectors/InterfaceController.h"
@@ -207,9 +211,6 @@ te::qt::af::BaseApplication::BaseApplication(QWidget* parent)
 te::qt::af::BaseApplication::~BaseApplication()
 {
   te::qt::af::SaveState(this);
-
-  if(m_iController)
-    m_iController->removeInteface(m_queryDlg);
 
   delete m_iController;
   delete m_explorer;
@@ -393,6 +394,9 @@ void te::qt::af::BaseApplication::onAddDataSetLayerTriggered()
 {
   try
   {
+    if(m_project == 0)
+      throw Exception(TE_TR("Error: there is no opened project!"));
+
     QApplication::setOverrideCursor(Qt::WaitCursor);
 
     // Get the parent layer where the dataset layer(s) will be added.
@@ -462,12 +466,6 @@ void te::qt::af::BaseApplication::onAddDataSetLayerTriggered()
     QApplication::setOverrideCursor(Qt::WaitCursor);
 
     lselectorw.reset(0);
-
-    if(m_project == 0)
-    {
-      QApplication::restoreOverrideCursor();
-      throw Exception(TE_TR("Error: there is no opened project!"));
-    }
 
     std::list<te::map::AbstractLayerPtr>::const_iterator it = layers.begin();
     std::list<te::map::AbstractLayerPtr>::const_iterator itend = layers.end();
@@ -701,6 +699,60 @@ void te::qt::af::BaseApplication::onChangeLayerDataSourceTriggered()
   }  
 }
 
+void te::qt::af::BaseApplication::onUpdateLayerDataSourceTriggered()
+{
+  try
+  {
+    std::list<te::qt::widgets::AbstractTreeItem*> selectedLayerItems = m_explorer->getExplorer()->getSelectedLayerItems();
+
+    if(selectedLayerItems.empty())
+      return;
+
+    te::map::AbstractLayerPtr layer = selectedLayerItems.front()->getLayer();
+
+    te::map::DataSetLayer* dsl = (te::map::DataSetLayer*)layer.get();
+
+    if(!dsl)
+      return;
+      
+    std::list<te::da::DataSourceInfoPtr> selecteds;
+
+    te::da::DataSourceInfoPtr ds = te::da::DataSourceInfoManager::getInstance().get(dsl->getDataSourceId());
+
+    selecteds.push_back(ds);
+
+    const std::string& dsTypeId = selecteds.front()->getType();
+
+    const te::qt::widgets::DataSourceType* dsType = te::qt::widgets::DataSourceTypeManager::getInstance().get(dsTypeId);
+
+    std::auto_ptr<QWidget> connectorw(dsType->getWidget(te::qt::widgets::DataSourceType::WIDGET_DATASOURCE_CONNECTOR, this));
+
+    if(connectorw.get() == 0)
+    {
+      throw Exception((boost::format(TE_TR("No layer selector widget found for this type of data source: %1%!")) % dsTypeId).str());
+    }
+
+    te::qt::widgets::AbstractDataSourceConnector* connector = dynamic_cast<te::qt::widgets::AbstractDataSourceConnector*>(connectorw.get());
+
+    if(connector == 0)
+    {
+      throw Exception(TE_TR("Wrong type of object for layer selection!"));
+    }
+
+    connector->update(selecteds);
+  }
+  catch(const std::exception& e)
+  {
+    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), e.what());
+  }
+  catch(...)
+  {
+    QMessageBox::warning(this,
+                         te::qt::af::ApplicationController::getInstance().getAppTitle(),
+                         tr("Unknown error while trying to update a layer data source!"));
+  } 
+}
+
 void te::qt::af::BaseApplication::onLayerRemoveItemTriggered()
 {
   std::list<te::qt::widgets::AbstractTreeItem*> selectedItems = m_explorer->getExplorer()->getSelectedItems();
@@ -779,7 +831,7 @@ void te::qt::af::BaseApplication::onNewProjectTriggered()
 
 void te::qt::af::BaseApplication::onOpenProjectTriggered()
 {
-  QString file = QFileDialog::getOpenFileName(this, tr("Open project file"), qApp->applicationDirPath(), tr("XML File (*.xml *.XML)"));
+  QString file = QFileDialog::getOpenFileName(this, tr("Open project file"), qApp->applicationDirPath(), te::qt::af::GetExtensionFilter());
 
   if(file.isEmpty())
     return;
@@ -803,7 +855,7 @@ void te::qt::af::BaseApplication::onSaveProjectTriggered()
 
   if(fName.empty())
   {
-    QString fileName = QFileDialog::getSaveFileName(this, tr("Save Project File"), qApp->applicationDirPath(), tr("XML Files (*.xml *.XML)"));
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save Project File"), qApp->applicationDirPath(), te::qt::af::GetExtensionFilter());
 
     if(!fileName.isEmpty())
     {
@@ -812,8 +864,14 @@ void te::qt::af::BaseApplication::onSaveProjectTriggered()
 
       QFileInfo info(fileName);
 
-      if(info.suffix() != "xml")
-        fileName += ".xml";
+      QString appProjectExtension = te::qt::af::ApplicationController::getInstance().getAppProjectExtension();
+
+      if(info.suffix() != appProjectExtension)
+      {
+        QString s(".");
+        s.append(appProjectExtension);
+        fileName.append(s);
+      }
 
       fName = fileName.toStdString();
       m_project->setFileName(fName);
@@ -847,7 +905,7 @@ void te::qt::af::BaseApplication::onSaveProjectAsTriggered()
   if(m_project == 0)
     return;
 
-  QString fileName = QFileDialog::getSaveFileName(this, tr("Save Project File"), qApp->applicationDirPath(), tr("XML Files (*.xml *.XML)"));
+  QString fileName = QFileDialog::getSaveFileName(this, tr("Save Project File"), qApp->applicationDirPath(), te::qt::af::GetExtensionFilter());
 
   if(fileName.isEmpty())
     return;
@@ -1005,6 +1063,23 @@ void te::qt::af::BaseApplication::onToolsRasterMultiResolutionTriggered()
     dlg.exec();
   }
   catch(const std::exception& e)
+  {
+    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), e.what());
+  }
+}
+
+void te::qt::af::BaseApplication::onToolsFixGeometryTriggered()
+{
+  try
+  {
+    te::qt::widgets::FixGeometryDialog dlg(this);
+
+    std::list<te::map::AbstractLayerPtr> layers = te::qt::af::ApplicationController::getInstance().getProject()->getSingleLayers(false);
+    dlg.setLayerList(layers);
+
+    dlg.exec();
+  }
+  catch (const std::exception& e)
   {
     QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), e.what());
   }
@@ -1400,6 +1475,75 @@ void te::qt::af::BaseApplication::onLayerScatterTriggered()
   }
 }
 
+void te::qt::af::BaseApplication::onLayerTimeSeriesTriggered()
+{
+  try
+  {
+    std::list<te::map::AbstractLayerPtr> selectedLayers = m_explorer->getExplorer()->getSelectedSingleLayers();
+
+    if(selectedLayers.empty())
+    {
+      QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(),
+                           tr("Select a layer in the layer explorer!"));
+      return;
+    }
+    else
+    {
+      std::list<te::map::AbstractLayerPtr>::iterator it = selectedLayers.begin();
+
+      while(it != selectedLayers.end())
+      {
+        if(!it->get()->isValid())
+        {
+          QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(),
+                           tr("There are invalid layers selected!"));
+          return;
+        }
+
+        ++it;
+      }
+    }
+
+    // The TimeSeries will be created based on the first selected layer
+    te::map::AbstractLayerPtr selectedLayer = *(selectedLayers.begin());
+
+    const te::map::LayerSchema* schema = selectedLayer->getSchema().release();
+
+    te::da::DataSet* dataset = selectedLayer->getData().release();
+    te::da::DataSetType* dataType = (te::da::DataSetType*) schema;
+
+    if(!dataType->hasPropertyOfType(te::dt::DATETIME_TYPE))
+    {
+      QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(),
+                        tr("The layer must have a property of type: Date and Time"));
+      return;
+    }
+
+    te::qt::widgets::TimeSeriesDialog dlg(dataset, dataType, this);
+
+    dlg.setWindowTitle(dlg.windowTitle() + " (" + tr("Layer") + ":" + selectedLayer->getTitle().c_str() +")");
+
+    int res = dlg.exec();
+    if (res == QDialog::Accepted)
+    {
+      ChartDisplayDockWidget* doc = new ChartDisplayDockWidget(dlg.getDisplayWidget(), this);
+
+      doc->setSelectionColor(ApplicationController::getInstance().getSelectionColor());
+      doc->setWindowTitle(tr("Time Series"));
+      doc->setWindowIcon(QIcon::fromTheme("chart-time-series"));
+      ApplicationController::getInstance().addListener(doc);
+      doc->setLayer(selectedLayer.get());
+
+      addDockWidget(Qt::RightDockWidgetArea, doc, Qt::Horizontal);
+      doc->show();
+    }
+  }
+  catch(const std::exception& e)
+  {
+    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), e.what());
+  }
+}
+
 void te::qt::af::BaseApplication::onLayerChartTriggered()
 {
  try
@@ -1631,8 +1775,15 @@ void te::qt::af::BaseApplication::onLayerFitOnMapDisplayTriggered()
 
     te::gm::Envelope env = selectedLayer->getExtent();
 
-    if( (display->getSRID() == TE_UNKNOWN_SRS && selectedLayer->getSRID() == TE_UNKNOWN_SRS) || (display->getSRID() == selectedLayer->getSRID()))
+    if ((display->getSRID() == TE_UNKNOWN_SRS && selectedLayer->getSRID() == TE_UNKNOWN_SRS) || (display->getSRID() == selectedLayer->getSRID()))
     {
+      display->setExtent(env, true);
+      return;
+    }
+
+    if (display->getSRID() == TE_UNKNOWN_SRS && selectedLayer->getSRID() != TE_UNKNOWN_SRS)
+    {
+      display->setSRID(selectedLayer->getSRID());
       display->setExtent(env, true);
       return;
     }
@@ -1644,7 +1795,7 @@ void te::qt::af::BaseApplication::onLayerFitOnMapDisplayTriggered()
       return;
     }
 
-    if(display->getSRID() != selectedLayer->getSRID())
+    if (display->getSRID() != selectedLayer->getSRID())
       env.transform(selectedLayer->getSRID(), display->getSRID());
 
     display->setExtent(env, true);
@@ -2013,13 +2164,6 @@ void te::qt::af::BaseApplication::onLayerExplorerVisibilityChanged(bool visible)
   m_viewLayerExplorer->blockSignals(false);
 }
 
-void te::qt::af::BaseApplication::onDisplayVisibilityChanged(bool visible)
-{
-  m_viewMapDisplay->blockSignals(true);
-  m_viewMapDisplay->setChecked(visible);
-  m_viewMapDisplay->blockSignals(false);
-}
-
 void te::qt::af::BaseApplication::onDisplayDataTableChanged(bool visible)
 {
   if(m_tableDocks.empty())
@@ -2284,6 +2428,7 @@ void te::qt::af::BaseApplication::makeDialog()
   treeView->add(m_layerChart);
   treeView->add(m_queryLayer);
   treeView->add(m_layerChartsScatter);
+  treeView->add(m_layerChartsTimeSeries);
   treeView->add(m_layerLinkTable, "", "DATASET_LAYER_ITEM");
 
   QAction* actionChartSep = new QAction(this);
@@ -2365,6 +2510,7 @@ void te::qt::af::BaseApplication::makeDialog()
   // Actions for invalid layers
 
   treeView->add(m_projectChangeLayerDataSource, "", "INVALID_LAYER_ITEM");
+  treeView->add(m_projectUpdateLayerDataSource, "", "INVALID_LAYER_ITEM");
   treeView->add(m_projectRemoveLayer, "", "INVALID_LAYER_ITEM");
 
   /********* Actions to be added to the context menu when there are multiple items selected ***********/
@@ -2396,6 +2542,8 @@ void te::qt::af::BaseApplication::makeDialog()
   //te::qt::widgets::MapDisplay* map = new te::qt::widgets::MapDisplay(QSize(512, 512),this);
   map->setResizePolicy(te::qt::widgets::MapDisplay::Center);
   m_display = new te::qt::af::MapDisplay(map);
+
+  QMainWindow::setCentralWidget(map);
 
   connect(m_display, SIGNAL(hasPreviousExtent(bool)), m_mapPreviousExtent, SLOT(setEnabled(bool)));
   connect(m_display, SIGNAL(hasNextExtent(bool)), m_mapNextExtent, SLOT(setEnabled(bool)));
@@ -2432,13 +2580,6 @@ void te::qt::af::BaseApplication::makeDialog()
   //te::qt::af::ApplicationController::getInstance().addListener(m_viewer);
 
 // initializing connector widgets
-  QDockWidget* doc = new QDockWidget(tr("Map Display"), this);
-  doc->setWidget(map);
-  QMainWindow::setCentralWidget(doc);
-  doc->connect(m_viewMapDisplay, SIGNAL(toggled(bool)), SLOT(setVisible(bool)));
-  m_viewMapDisplay->setChecked(true);
-  connect(doc, SIGNAL(visibilityChanged(bool)), this, SLOT(onDisplayVisibilityChanged(bool)));
-
   // View Data Table
   connect(m_viewDataTable, SIGNAL(toggled(bool)), this, SLOT(onDisplayDataTableChanged(bool)));
 
@@ -2510,7 +2651,6 @@ void te::qt::af::BaseApplication::initActions()
 {
 // Menu -View- actions
   initAction(m_viewLayerExplorer, "view-layer-explorer", "View.Layer Explorer", tr("&Layer Explorer"), tr("Show or hide the layer explorer"), true, true, true, m_menubar);
-  initAction(m_viewMapDisplay, "view-map-display", "View.Map Display", tr("&Map Display"), tr("Show or hide the map display"), true, true, true, m_menubar);
   initAction(m_viewDataTable, "view-data-table", "View.Data Table", tr("&Data Table"), tr("Show or hide the data table"), true, true, true, m_menubar);
   initAction(m_viewStyleExplorer, "style", "View.Style Explorer", tr("&Style Explorer"), tr("Show or hide the style explorer"), true, true, true, m_menubar);
   initAction(m_viewFullScreen, "view-fullscreen", "View.Full Screen", tr("F&ull Screen"), tr(""), true, true, true, m_menubar);
@@ -2527,6 +2667,7 @@ void te::qt::af::BaseApplication::initActions()
     true, false, true, m_menubar);
   initAction(m_toolsQueryDataSource, "datasource-query", "Tools.Query Data Source", tr("&Query Data Source..."), tr("Allows you to query data in a data source"), true, false, true, m_menubar);
   initAction(m_toolsRasterMultiResolution, "raster-multiresolution-icon", "Tools.Raster Multi Resolution", tr("&Raster Multi Resolution..."), tr("Creates multi resolution over a raster..."), true, false, true, m_menubar);
+  //initAction(m_toolsFixGeometry, "fixgeom-icon", "Tools.Fix Geometry", tr("&Fix Geometry..."), tr("Fix geometry..."), true, false, true, m_menubar);
 
 
 // Menu -Edit- actions
@@ -2556,6 +2697,7 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_projectRemoveLayer, "layer-remove", "Project.Remove Layer", tr("&Remove Layer(s)"), tr("Remove layer(s) from the project"), true, false, true, this);
   initAction(m_projectRenameLayer, "layer-rename", "Project.Rename Layer", tr("Rename Layer..."), tr("Rename layer"), true, false, true, this);
   initAction(m_projectChangeLayerDataSource, "", "Project.Change Layer Data Source", tr("&Change Layer Data Source"), tr("Chanage layer Data Source"), true, false, true, this);
+  initAction(m_projectUpdateLayerDataSource, "", "Project.Update Layer Data Source", tr("&Update Layer Data Source"), tr("Update layer Data Source"), true, false, true, this);
   initAction(m_projectProperties, "document-info", "Project.Properties", tr("&Properties..."), tr("Show the project properties"), true, false, true, m_menubar);
   //initAction(m_projectAddLayerGraph, "", "Graph", tr("&Graph"), tr("Add a new layer from a graph"), true, false, false);
 
@@ -2568,6 +2710,7 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_layerShowTable, "view-data-table", "Layer.Show Table", tr("S&how Table"), tr(""), true, false, true, m_menubar);
   initAction(m_layerChartsHistogram, "chart-bar", "Layer.Charts.Histogram", tr("&Histogram..."), tr(""), true, false, true, m_menubar);
   initAction(m_layerChartsScatter, "chart-scatter", "Layer.Charts.Scatter", tr("&Scatter..."), tr(""), true, false, true, m_menubar);
+  initAction(m_layerChartsTimeSeries, "chart-time-series", "Layer.Charts.timeSeries", tr("&Time Series..."), tr(""), true, false, true, m_menubar);
   initAction(m_layerChart, "chart-pie", "Layer.Charts.Chart", tr("&Pie/Bar Chart..."), tr(""), true, false, true, m_menubar);
   initAction(m_layerFitOnMapDisplay, "layer-fit", "Layer.Fit Layer on the Map Display", tr("Fit Layer"), tr("Fit the current layer on the Map Display"), true, false, true, m_menubar);
   initAction(m_layerFitSelectedOnMapDisplay, "zoom-selected-extent", "Layer.Fit Selected Features on the Map Display", tr("Fit Selected Features"), tr("Fit the selected features on the Map Display"), true, false, true, m_menubar);
@@ -2608,7 +2751,7 @@ void te::qt::af::BaseApplication::initActions()
 void te::qt::af::BaseApplication::initMenus()
 {
 // Making menus
-  m_menubar->setObjectName(QString::fromUtf8("menubar"));
+  m_menubar->setObjectName("menubar");
   m_menubar->setGeometry(QRect(0, 0, 640, 21));
 
 // File menu
@@ -2667,7 +2810,6 @@ void te::qt::af::BaseApplication::initMenus()
   //m_viewMenu->addAction(m_viewToolBars);
   m_viewMenu->addAction(m_viewDataTable);
   m_viewMenu->addAction(m_viewLayerExplorer);
-  m_viewMenu->addAction(m_viewMapDisplay);
   m_viewMenu->addAction(m_viewStyleExplorer);
   //m_viewMenu->addAction(m_viewGrid); TODO
   m_viewMenu->addSeparator();
@@ -2704,6 +2846,7 @@ void te::qt::af::BaseApplication::initMenus()
   m_layerMenu->addAction(m_layerChart);
   m_layerMenu->addAction(m_queryLayer);
   m_layerMenu->addAction(m_layerChartsScatter);
+  m_layerMenu->addAction(m_layerChartsTimeSeries);
   m_layerMenu->addSeparator();
   m_layerMenu->addAction(m_layerFitOnMapDisplay);
   m_layerMenu->addAction(m_layerFitSelectedOnMapDisplay);
@@ -2781,6 +2924,7 @@ void te::qt::af::BaseApplication::initMenus()
   m_toolsMenu->addAction(m_toolsQueryDataSource);
   m_toolsMenu->addSeparator();
   m_toolsMenu->addAction(m_toolsRasterMultiResolution);
+  //m_toolsMenu->addAction(m_toolsFixGeometry);
   m_toolsMenu->addSeparator();
   m_toolsMenu->addAction(m_toolsCustomize);  
 
@@ -2877,6 +3021,7 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_projectRenameLayer, SIGNAL(triggered()), SLOT(onRenameLayerTriggered()));
   connect(m_projectProperties, SIGNAL(triggered()), SLOT(onProjectPropertiesTriggered()));
   connect(m_projectChangeLayerDataSource, SIGNAL(triggered()), SLOT(onChangeLayerDataSourceTriggered()));
+  connect(m_projectUpdateLayerDataSource, SIGNAL(triggered()), SLOT(onUpdateLayerDataSourceTriggered()));
   connect(m_pluginsManager, SIGNAL(triggered()), SLOT(onPluginsManagerTriggered()));
   connect(m_recentProjectsMenu, SIGNAL(triggered(QAction*)), SLOT(onRecentProjectsTriggered(QAction*)));
   connect(m_fileNewProject, SIGNAL(triggered()), SLOT(onNewProjectTriggered()));
@@ -2889,10 +3034,12 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_toolsDataExchangerDirectPopUp, SIGNAL(triggered()), SLOT(onToolsDataExchangerDirectPopUpTriggered()));
   connect(m_toolsQueryDataSource, SIGNAL(triggered()), SLOT(onToolsQueryDataSourceTriggered()));
   connect(m_toolsRasterMultiResolution, SIGNAL(triggered()), SLOT(onToolsRasterMultiResolutionTriggered()));
+  //connect(m_toolsFixGeometry, SIGNAL(triggered()), SLOT(onToolsFixGeometryTriggered()));
   connect(m_helpContents, SIGNAL(triggered()), SLOT(onHelpTriggered()));
   connect(m_layerChartsHistogram, SIGNAL(triggered()), SLOT(onLayerHistogramTriggered()));
   connect(m_layerLinkTable, SIGNAL(triggered()), SLOT(onLinkTriggered()));
   connect(m_layerChartsScatter, SIGNAL(triggered()), SLOT(onLayerScatterTriggered()));
+  connect(m_layerChartsTimeSeries, SIGNAL(triggered()), SLOT(onLayerTimeSeriesTriggered()));
   connect(m_layerChart, SIGNAL(triggered()), SLOT(onLayerChartTriggered()));
   connect(m_projectAddFolderLayer, SIGNAL(triggered()), SLOT(onAddFolderLayerTriggered()));
   connect(m_layerProperties, SIGNAL(triggered()), SLOT(onLayerPropertiesTriggered()));

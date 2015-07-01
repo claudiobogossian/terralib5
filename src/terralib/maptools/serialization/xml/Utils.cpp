@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -25,8 +25,8 @@
 
 // TerraLib
 #include "../../../se/serialization/xml/Symbolizer.h"
+#include "../../../xml/AbstractWriter.h"
 #include "../../../xml/Reader.h"
-#include "../../../xml/Writer.h"
 #include "../../AbstractLayer.h"
 #include "../../Chart.h"
 #include "../../Grouping.h"
@@ -491,7 +491,7 @@ std::auto_ptr<te::map::Chart> te::map::serialize::ReadLayerChart(te::xml::Reader
   return chart;
 }
 
-void te::map::serialize::WriteLayerChart(te::map::Chart* chart, te::xml::Writer& writer)
+void te::map::serialize::WriteLayerChart(te::map::Chart* chart, te::xml::AbstractWriter& writer)
 {
   writer.writeStartElement("te_map:Chart");
 
@@ -532,7 +532,7 @@ void te::map::serialize::WriteLayerChart(te::map::Chart* chart, te::xml::Writer&
   writer.writeEndElement("te_map:Chart");
 }
 
-void te::map::serialize::WriteLayerGrouping(te::map::Grouping* g, te::xml::Writer& writer)
+void te::map::serialize::WriteLayerGrouping(te::map::Grouping* g, te::xml::AbstractWriter& writer)
 {
   writer.writeStartElement("te_map:Grouping");
 
@@ -579,7 +579,7 @@ void te::map::serialize::WriteLayerGrouping(te::map::Grouping* g, te::xml::Write
   writer.writeEndElement("te_map:Grouping");
 }
 
-void te::map::serialize::WriteAbstractLayer(const te::map::AbstractLayer* layer, te::xml::Writer& writer)
+void te::map::serialize::WriteAbstractLayer(const te::map::AbstractLayer* layer, te::xml::AbstractWriter& writer)
 {
   writer.writeAttribute("id", layer->getId());
   writer.writeElement("te_map:Title", layer->getTitle());

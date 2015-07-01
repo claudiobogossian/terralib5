@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -31,39 +31,17 @@
 
 #include "../dataaccess/dataset/DataSet.h"
 #include "../dataaccess/utils/Utils.h"
-#include "../datatype/Property.h"
-#include "../datatype/SimpleProperty.h"
-#include "../datatype/StringProperty.h"
 
-#include "../geometry/Geometry.h"
-#include "../geometry/GeometryCollection.h"
 #include "../geometry/GeometryProperty.h"
-#include "../geometry/LineString.h"
-#include "../geometry/MultiLineString.h"
-#include "../geometry/Utils.h"
 
 #include "../memory/DataSet.h"
 #include "../memory/DataSetItem.h"
 
-#include "../statistics/core/SummaryFunctions.h"
-#include "../statistics/core/StringStatisticalSummary.h"
-#include "../statistics/core/NumericStatisticalSummary.h"
-#include "../statistics/core/Utils.h"
-
 #include "PolygonToLineMemory.h"
-#include "Config.h"
-#include "Exception.h"
 #include "Utils.h"
 
 // STL
-#include <map>
-#include <math.h>
 #include <string>
-#include <vector>
-
-// BOOST
-#include <boost/lexical_cast.hpp>
-#include <boost/algorithm/string.hpp>
 
 te::vp::PolygonToLineMemory::PolygonToLineMemory()
 {}
@@ -116,12 +94,21 @@ bool te::vp::PolygonToLineMemory::run() throw(te::common::Exception)
         std::auto_ptr<te::gm::MultiLineString> lineResult = polygon2Line(geom.get());
         if(!lineResult->isValid())
           geomState = false;
+
+        size_t size = lineResult->getNumGeometries();
+        if (size == 0)
+        {
+          int a = 0;
+        }
         
         outDsItem->setGeometry(i, lineResult.release());
       }
     }
-    if(!geomState)
+    if (!geomState)
+    {
+      delete outDsItem;
       continue;
+    }
 
     outDSet->add(outDsItem);
 
@@ -142,15 +129,10 @@ std::auto_ptr<te::gm::MultiLineString> te::vp::PolygonToLineMemory::polygon2Line
 
   getLines(geom, lines);
 
-  if(lines.size() > 1)
-  {
-    for(size_t i = 0; i < lines.size(); ++i)
-      lineResult->Union(lines[i]);
-  }
-  else
-  {
-    lineResult->add(lines[0]);
-  }
+
+  lineResult->add(lines[0]);
+  for (size_t i = 1; i < lines.size(); ++i)
+    lineResult->Union(lines[i]);
 
   return lineResult;
 }

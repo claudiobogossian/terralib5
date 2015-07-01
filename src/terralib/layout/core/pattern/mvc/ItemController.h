@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -99,14 +99,7 @@ namespace te
           \param bounding rectangle
          */
         virtual void setBox(te::gm::Envelope box);
-
-        /*!
-          \brief Updated model state with properties.
-
-          \param properties
-         */
-        virtual void updateProperties(te::layout::Properties* properties);
-
+        
         /*!
           \brief Checks if the coordinate is contained within the bounding rectangle.
 
@@ -129,3 +122,5 @@ namespace te
 }
 
 #endif
+
+

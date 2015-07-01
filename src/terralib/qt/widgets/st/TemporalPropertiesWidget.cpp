@@ -1,4 +1,4 @@
-/*  Copyright (C) 2010-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -118,10 +118,9 @@ std::string te::qt::widgets::TemporalPropertiesWidget::getUserOrdinalType()
   return m_ui->m_ordinalLineEdit->text().toStdString();
 }
 
-std::string te::qt::widgets::TemporalPropertiesWidget::getDateFormat()
+int te::qt::widgets::TemporalPropertiesWidget::getDateFormat()
 {
-  int index = m_ui->m_formatComboBox->currentIndex();
-  return ""; //TODO adapt to use the enum when it is ready
+  return m_ui->m_formatComboBox->itemData(m_ui->m_formatComboBox->currentIndex()).toInt();
 }
 
 void te::qt::widgets::TemporalPropertiesWidget::onTypeCBCurrentIndexChanged(int index)

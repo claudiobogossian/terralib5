@@ -1,4 +1,4 @@
-/*  Copyright (C) 2010-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -24,7 +24,6 @@
 */
 
 //Terralib
-#include "../../../geometry/Envelope.h"
 #include "../../../geometry/GeometryProperty.h"
 #include "../../../qt/widgets/dataset/selector/DataSetSelectorWizardPage.h"
 #include "../../../qt/widgets/datasource/selector/DataSourceSelectorWidget.h"
@@ -140,29 +139,6 @@ void te::qt::widgets::TrajectoryWizard::finish()
 
   try
   {
-    //Generates a random id to the data source
-    boost::uuids::basic_random_generator<boost::mt19937> gen;
-    boost::uuids::uuid u = gen();
-    std::string id = boost::uuids::to_string(u);
-    dataInfo->setId(id);
-
-    //Create the data source and put it into the manager
-    te::da::DataSourceManager::getInstance().open(dataInfo->getId(), dataInfo->getType(), dataInfo->getConnInfo());
-  }
-  catch(const te::common::Exception& e)
-  {
-    std::cout << std::endl << "Failed to create a new data source and put it into the manager: " << e.what() << std::endl;
-    QWizard::finished(1);
-  }
-  catch(...)
-  {
-    std::cout << std::endl << "Failed to create a new data source and put it into the manager: unknown exception!" << std::endl;
-    QWizard::finished(1);
-  }
-
-  try
-  {
-
     std::list<te::st::TrajectoryDataSetInfo*> infos = m_PropWidgetPage->getInfo(dataInfo);
     std::list<te::st::TrajectoryDataSetInfo*>::const_iterator infosBegin = infos.begin();
     std::list<te::st::TrajectoryDataSetInfo*>::const_iterator infosEnd = infos.end();
@@ -174,18 +150,9 @@ void te::qt::widgets::TrajectoryWizard::finish()
     }
     else
     {
-
-      static boost::uuids::basic_random_generator<boost::mt19937> gen;
-      boost::uuids::uuid u = gen();
-      std::string id = boost::uuids::to_string(u);
-
-      te::st::TrajectoryDataSetLayerPtr testParent(new te::st::TrajectoryDataSetLayer());
-      testParent->setId(id);
-
-      m_trajectoryLayers.push_back(testParent);
       while(infosBegin != infosEnd)
       {
-        m_trajectoryLayers.push_back(generateLayer(*typesItBegin, *infosBegin, dataInfo, testParent.get()));
+        m_trajectoryLayers.push_back(generateLayer(*typesItBegin, *infosBegin, dataInfo));
         infosBegin++;
         typesItBegin++;
       }

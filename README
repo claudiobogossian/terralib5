@@ -1,22 +1,25 @@
-This is the TerraLib Platform version 5.0.0-ALPHA
-====================================================
-              (!!UNDER DEVELOPMENT!!)
+This is the TerraLib Platform version 5.0 launched as a Long Term Support (LTS) release
+=======================================================================================
+           
 
 TerraLib is a multiplatform C++ framework for GIS application development.
 
-Documents:
-----------
+Documents to read before:
+-------------------------
 
-BUILD-INSTALL  Notes on how to compile and install Terralib in some platforms.
+BRANCHES  Notes on how to switch to the right branch to work on: 
+          MASTER, DEVELOP, release-5.0.0 or any other branch or tagged release.
 
-CHANGELOG      List of changes.
+BUILD-INSTRUCTIONS  Notes on how to compile and install Terralib in some platforms.
+
+CHANGELOG      List of changes
 
 COPYING        Licence statement in plain txt format
 
 COPYING.html   Licence statement in HTML format
 
-Directories:
-------------
+Main Directories:
+-----------------
 build       Contains the CMake scripts with commands, macros and functions 
 			used to build the environment for compiling libraries and executables
 			in different platforms using the CMake tool.
@@ -28,26 +31,24 @@ installer   Scripts for creating TerraLib installers.
 			
 licenses    Copyright notices of third-party libraries used by terralib.
 
-log			Templates of log configuration files
+resources   Fonts, images, sql, xml files among other resources of general use.
 
-resources   Fonts, images, .xml files among other resources of general use.
-
-schemas		XML Schema (.xsd) and OGC specifications.
+share		XML Schema (.xsd), Json, plugins, translations files and OGC specifications.
                
-src         Contains the source code of TerraLib.
-            In the root of each subdir there is a file called
-            README.txt with notes about each module.
+src         Contains the source code of TerraLib and TerraView as a module.
 
 unittest    Contains some code to test TerraLib.
 
 Bug reporting:
-------------------------------------
+--------------
       
-Any problems encountered with TerraLib 5.0.0-ALPHA should be reported to
-terralib-bugs@terralib.org.
+Any problems should be reported to: 
+terralib-developers@dpi.inpe.br  or terralib-community@dpi.inpe.br
+
 
                            @-TerraLib Team-@
             National Institute For Space Research - INPE
-      P. BOX 515 - Sao Jose dos Campos - SP - Brazil, 12201-970
-                            13/12/2013
+      P. BOX 515 - São Jose dos Campos - SP - Brazil, 12201-970
+                            April 15, 2015 
               
+ 

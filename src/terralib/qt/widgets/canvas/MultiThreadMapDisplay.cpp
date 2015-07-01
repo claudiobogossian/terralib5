@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -38,6 +38,14 @@ te::qt::widgets::MultiThreadMapDisplay::MultiThreadMapDisplay(const QSize& size,
   : te::qt::widgets::MapDisplay(size, parent, f),
     m_showFeedback(showFeedback),
     m_synchronous(false)
+{
+  setAttribute(Qt::WA_OpaquePaintEvent, true);
+}
+
+te::qt::widgets::MultiThreadMapDisplay::MultiThreadMapDisplay(QWidget* parent, const bool& showFeedback, Qt::WindowFlags f)
+: te::qt::widgets::MapDisplay(parent, f),
+m_showFeedback(showFeedback),
+m_synchronous(false)
 {
   setAttribute(Qt::WA_OpaquePaintEvent, true);
 }

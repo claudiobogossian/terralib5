@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -126,8 +126,6 @@ void te::vp::MultipartToSinglepartDialog::onLayerComboBoxChanged(int index)
 
   m_selectedLayer = layer;
 
-  std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
-
   std::string layerID = m_ui->m_layersComboBox->itemData(index, Qt::UserRole).toString().toStdString();
 }
 
@@ -171,11 +169,6 @@ void te::vp::MultipartToSinglepartDialog::onTargetFileToolButtonPressed()
   
   m_toFile = true;
   m_ui->m_newLayerNameLineEdit->setEnabled(false);
-}
-
-void te::vp::MultipartToSinglepartDialog::onHelpPushButtonClicked()
-{
-  QMessageBox::information(this, "Help", "Under development");
 }
 
 void te::vp::MultipartToSinglepartDialog::onOkPushButtonClicked()

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -38,8 +38,8 @@
 // Qt
 #include <QPixmap>
 
-te::layout::LegendChildItem::LegendChildItem( ItemController* controller, Observable* o ) :
-  LegendItem(controller, o)
+te::layout::LegendChildItem::LegendChildItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
+  LegendItem(controller, o, true)
 {  
   this->setFlags(QGraphicsItem::ItemIsMovable
     | QGraphicsItem::ItemIsSelectable
@@ -54,17 +54,8 @@ te::layout::LegendChildItem::~LegendChildItem()
 
 }
 
-void te::layout::LegendChildItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
+void te::layout::LegendChildItem::drawItem( QPainter * painter )
 {
-  Q_UNUSED( option );
-  Q_UNUSED( widget );
-  if ( !painter )
-  {
-    return;
-  }
-
-  drawBackground( painter );
-
   QRectF boundRect;
   boundRect = boundingRect();
 
@@ -73,14 +64,6 @@ void te::layout::LegendChildItem::paint( QPainter * painter, const QStyleOptionG
   QRectF rtSource( 0, 0, m_pixmap.width(), m_pixmap.height() );
   painter->drawPixmap(boundRect, m_pixmap, rtSource);
   painter->restore();  
-
-  drawBorder(painter);
-
-  //Draw Selection
-  if (option->state & QStyle::State_Selected)
-  {
-    drawSelection(painter);
-  }
 }
 
 

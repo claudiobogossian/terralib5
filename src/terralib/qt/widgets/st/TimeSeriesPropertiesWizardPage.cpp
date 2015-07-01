@@ -1,4 +1,4 @@
-/*  Copyright (C) 2010-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -51,8 +51,17 @@ te::qt::widgets:: TimeSeriesPropertiesWizardPage::~ TimeSeriesPropertiesWizardPa
 {
 }
 
+te::st::TimeSeriesDataSetInfo* te::qt::widgets::TimeSeriesPropertiesWizardPage::getInfo(const te::da::DataSourceInfoPtr dsInfo)
+{
+  te::st::TimeSeriesDataSetInfo* timeSeriesInfo;  
+  timeSeriesInfo = new te::st::TimeSeriesDataSetInfo(*dsInfo.get(), m_dataType->getName(), m_tempPropWidget->getPhenomenonTime(), m_propWidget->getValuePropName(), m_propWidget->getGeometryPropName(), m_propWidget->getIdPropName(), "");
+  return timeSeriesInfo;
+}
+
 void te::qt::widgets:: TimeSeriesPropertiesWizardPage::set(const te::da::DataSetTypePtr dataType)
 {
+  m_dataType = dataType;
+  m_tempPropWidget->setUp(dataType);
   m_propWidget->setUp(dataType);
 }
 

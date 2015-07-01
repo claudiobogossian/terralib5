@@ -1,4 +1,4 @@
-/*  Copyright (C) 2014-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -30,6 +30,7 @@
 #include "../../../../core/pattern/mvc/ItemObserver.h"
 #include "../../../../core/enum/EnumType.h"
 #include "../../../../core/pattern/mvc/Observable.h"
+#include "../../Scene.h"
 
 // Qt
 #include <QGraphicsScene>
@@ -51,25 +52,26 @@ te::layout::AddCommand::AddCommand( QGraphicsItem* item, QUndoCommand *parent /*
 
 te::layout::AddCommand::~AddCommand()
 {
-  if(!m_item->scene())
-  {
-    delete m_item;
-    m_item = 0;
-  }
+  
 }
 
 void te::layout::AddCommand::undo()
 {
-  if(m_item->scene() != m_scene)
+  Scene* scene = dynamic_cast<Scene*>(m_scene);
+
+  if(m_item->scene() != scene)
     return;
 
   m_scene->removeItem(m_item);
+  scene->addItemStackWithoutScene(m_item);
   m_scene->update();
 }
 
 void te::layout::AddCommand::redo()
 {
-  if(!m_scene || !m_item)
+  Scene* scene = dynamic_cast<Scene*>(m_scene);
+
+  if(!scene || !m_item)
     return;
 
   /* Checks if the item is already 
@@ -77,7 +79,8 @@ void te::layout::AddCommand::redo()
   if(m_item->scene() == m_scene)
     return;
     
-  m_scene->addItem(m_item);
+  scene->insertItem(m_item);
+  scene->removeItemStackWithoutScene(m_item);
 
   m_item->setPos(m_initialPosition);
   m_scene->clearSelection();
@@ -98,3 +101,6 @@ QString te::layout::AddCommand::createCommandString( QGraphicsItem* item, const 
     .arg(obs->getModel()->getType()->getName().c_str())
     .arg(pos.x()).arg(pos.y());
 }
+
+
+

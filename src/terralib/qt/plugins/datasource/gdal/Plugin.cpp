@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -141,6 +141,14 @@ void te::qt::plugins::gdal::Plugin::shutdown()
 
 void te::qt::plugins::gdal::Plugin::openFileDialog()
 {
+  te::qt::af::Project* proj = te::qt::af::ApplicationController::getInstance().getProject();
+
+  if(proj == 0)
+  {
+    QMessageBox::warning(te::qt::af::ApplicationController::getInstance().getMainWindow(), tr("Raster File"), tr("Error: there is no opened project!"));
+    return;
+  }
+
   QStringList fileNames = QFileDialog::getOpenFileNames(
     te::qt::af::ApplicationController::getInstance().getMainWindow(), 
     tr("Open Raster File"), te::qt::widgets::GetFilePathFromSettings("raster"), 
@@ -162,7 +170,7 @@ void te::qt::plugins::gdal::Plugin::openFileDialog()
     ds->setAccessDriver("GDAL");
 
     std::map<std::string, std::string> dsinfo;
-    dsinfo["URI"] = it->toStdString();
+    dsinfo["URI"] = it->toLatin1().data();
 
     ds->setConnInfo(dsinfo);
 
@@ -205,3 +213,4 @@ void te::qt::plugins::gdal::Plugin::openFileDialog()
 }
 
 PLUGIN_CALL_BACK_IMPL(te::qt::plugins::gdal::Plugin)
+

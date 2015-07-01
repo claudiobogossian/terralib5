@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -43,8 +43,8 @@
 // Qt
 #include <QPixmap>
 
-te::layout::ScaleItem::ScaleItem( ItemController* controller, Observable* o ) :
-  ObjectItem(controller, o)
+te::layout::ScaleItem::ScaleItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
+  ObjectItem(controller, o, invertedMatrix)
 {  
   m_nameClass = std::string(this->metaObject()->className());
 }
@@ -54,17 +54,8 @@ te::layout::ScaleItem::~ScaleItem()
 
 }
 
-void te::layout::ScaleItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
+void te::layout::ScaleItem::drawItem( QPainter * painter )
 {
-  Q_UNUSED( option );
-  Q_UNUSED( widget );
-  if ( !painter )
-  {
-    return;
-  }
-
-  drawBackground(painter);
-
   ScaleModel* model = dynamic_cast<ScaleModel*>(m_model);
 
   if(model)
@@ -83,14 +74,6 @@ void te::layout::ScaleItem::paint( QPainter * painter, const QStyleOptionGraphic
     {
       drawHollowScaleBar(painter);
     }
-  }
-
-  drawBorder(painter);
-
-  //Draw Selection
-  if (option->state & QStyle::State_Selected)
-  {
-    drawSelection(painter);
   }
 }
 
@@ -114,8 +97,6 @@ void te::layout::ScaleItem::drawDoubleAlternatingScaleBar( QPainter * painter )
   {
     unit = 1000.0;
   }
-
-  double half = boundRect.height() / 2.;
 
   //convert millimeters to centimeters
   double mmToCm = model->getScaleGapX()/10;
@@ -143,9 +124,8 @@ void te::layout::ScaleItem::drawDoubleAlternatingScaleBar( QPainter * painter )
   {
     if(x1+gapX >= boundRect.topRight().x())
     {
-      //Draw the remaining rects, near the end
-      double dx = boundRect.width() - x1;
-      gapX = dx;
+      //No draw the remaining rects, near the end
+      break;
     }
 
     painter->setPen(Qt::NoPen);
@@ -179,20 +159,17 @@ void te::layout::ScaleItem::drawDoubleAlternatingScaleBar( QPainter * painter )
     firstRect = secondRect;
     secondRect = changeColor;
   }
-
-  qreal penWidth = painter->pen().widthF();
-  const qreal adj = penWidth / 2;
-
-  newBoxSecond = QRectF(boundRect.x(), boundRect.center().y() - gapY, boundRect.width(), gapY*2);
+  
+  QRectF rectScale = QRectF(boundRect.x(), boundRect.center().y() - gapY, boundRect.x() + newBoxSecond.right(), gapY*2);
 
   //Rect around scale
   QPen penBackground(black, 0, Qt::SolidLine);
   painter->setBrush(Qt::NoBrush);
   painter->setPen(penBackground);
-  painter->drawRect(newBoxSecond);
+  painter->drawRect(rectScale);
 
   //middle-bottom text
-  double centerX = newBoxSecond.center().x();  
+  double centerX = rectScale.center().x();  
   painter->setPen(QPen(textColor));
     
   QPointF coordText(centerX, boundRect.topLeft().y() + 1); 
@@ -222,8 +199,6 @@ void te::layout::ScaleItem::drawAlternatingScaleBar( QPainter * painter )
     unit = 1000.0;
   }
 
-  double half = boundRect.height() / 2.;
-
   //convert millimeters to centimeters
   double mmToCm = model->getScaleGapX()/10;
 
@@ -250,9 +225,8 @@ void te::layout::ScaleItem::drawAlternatingScaleBar( QPainter * painter )
   {
     if(x1+gapX >= boundRect.topRight().x())
     {
-      //Draw the remaining rects, near the end
-      double dx = boundRect.width() - x1;
-      gapX = dx;
+      //No draw the remaining rects, near the end
+      break;
     }
 
     painter->setPen(Qt::NoPen);
@@ -284,19 +258,16 @@ void te::layout::ScaleItem::drawAlternatingScaleBar( QPainter * painter )
     secondRect = changeColor;
   }
 
-  qreal penWidth = painter->pen().widthF();
-  const qreal adj = penWidth / 2;
-
-  newBoxSecond = QRectF(boundRect.x(), boundRect.center().y() - gapY/2, boundRect.width(), gapY);
+  QRectF rectScale = QRectF(boundRect.x(), boundRect.center().y() - gapY/2, boundRect.x() + newBoxSecond.right(), gapY);
 
   //Rect around scale
   QPen penBackground(black, 0, Qt::SolidLine);
   painter->setBrush(Qt::NoBrush);
   painter->setPen(penBackground);
-  painter->drawRect(newBoxSecond);
+  painter->drawRect(rectScale);
 
   //middle-bottom text
-  double centerX = newBoxSecond.center().x();  
+  double centerX = rectScale.center().x();  
   painter->setPen(QPen(textColor));
   
   QPointF coordText(centerX, boundRect.topLeft().y() + 1); 
@@ -325,8 +296,6 @@ void te::layout::ScaleItem::drawHollowScaleBar( QPainter * painter )
   {
     unit = 1000.0;
   }
-
-  double half = boundRect.height() / 2.;
 
   //convert millimeters to centimeters
   double mmToCm = model->getScaleGapX()/10;
@@ -357,9 +326,8 @@ void te::layout::ScaleItem::drawHollowScaleBar( QPainter * painter )
   {
     if(x1+gapX >= boundRect.topRight().x())
     {
-      //Draw the remaining rects, near the end
-      double dx = boundRect.width() - x1;
-      gapX = dx;
+      //No draw the remaining rects, near the end
+      break;
     }
 
     painter->setPen(Qt::NoPen);
@@ -393,18 +361,15 @@ void te::layout::ScaleItem::drawHollowScaleBar( QPainter * painter )
     secondRect = changeColor;
   }
 
-  qreal penWidth = painter->pen().widthF();
-  const qreal adj = penWidth / 2;
-
-  newBoxSecond = QRectF(boundRect.x(), boundRect.center().y() - gapY/2, boundRect.width(), gapY);
+  QRectF rectScale = QRectF(boundRect.x(), boundRect.center().y() - gapY/2, boundRect.x() + newBoxSecond.right(), gapY);
 
   QPen penBackground(black, 0, Qt::SolidLine);
   painter->setBrush(Qt::NoBrush);
   painter->setPen(penBackground);
-  painter->drawRect(newBoxSecond);
+  painter->drawRect(rectScale);
 
   //middle-bottom text
-  double centerX = newBoxSecond.center().x();  
+  double centerX = rectScale.center().x();  
   painter->setPen(QPen(textColor));
 
   QPointF coordText(centerX, boundRect.topLeft().y() + 1); 

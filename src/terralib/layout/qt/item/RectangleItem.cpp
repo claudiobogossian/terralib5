@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -35,9 +35,15 @@
 #include "../../../geometry/Envelope.h"
 #include "../../../common/STLUtils.h"
 #include "../../item/RectangleModel.h"
+#include "../../core/enum/EnumRectangleType.h"
 
-te::layout::RectangleItem::RectangleItem( ItemController* controller, Observable* o ) :
-  ObjectItem(controller, o)
+// Qt
+#include <QColor>
+#include <QPen>
+#include <QRectF>
+
+te::layout::RectangleItem::RectangleItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
+  ObjectItem(controller, o, invertedMatrix)
 {  
   m_nameClass = std::string(this->metaObject()->className());
 }
@@ -47,61 +53,114 @@ te::layout::RectangleItem::~RectangleItem()
 
 }
 
-void te::layout::RectangleItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
+void te::layout::RectangleItem::drawItem( QPainter * painter )
 {
-  Q_UNUSED( option );
-  Q_UNUSED( widget );
-  if ( !painter )
+  RectangleModel* model = dynamic_cast<RectangleModel*>(m_model);
+
+  if(model)
   {
-    return;
-  }
+    EnumRectangleType* enumScale = model->getEnumRectangleType();
 
-  if(m_resizeMode)
-  {
-    ObjectItem::paint(painter, option, widget);
-    return;
-  }
+    if(model->getCurrentRectangleType() == enumScale->getSimpleRectangleType())
+    {
+      drawRectangle(painter);
+    }
+    if(model->getCurrentRectangleType() == enumScale->getRoundedRetangleType())
+    {
+      drawRoundedRectangle(painter);
+    }
 
-  drawBackground(painter);
-
-  drawRectangle(painter);
-
-  drawBorder(painter);
-
-  //Draw Selection
-  if (option->state & QStyle::State_Selected)
-  {
-    drawSelection(painter);
+    if(model->getCurrentRectangleType() == enumScale->getSingleCornerTrimmedRectangleType())
+    {
+      drawSingleCornerTrimmedRectangle(painter);
+    }
   }
 }
 
 void te::layout::RectangleItem::drawRectangle( QPainter * painter )
-{
-  RectangleModel* model = dynamic_cast<RectangleModel*>(m_model);
-  if(!model)
   {
-    return;
+    RectangleModel* model = dynamic_cast<RectangleModel*>(m_model);
+    if(!model)
+    {
+      return;
+    }
+
+    painter->save();
+
+    QPainterPath rect_path;
+    rect_path.addRect(boundingRect());
+
+    QColor cpen(0,0,0);
+    QPen pn(cpen, 0, Qt::SolidLine);
+    painter->setPen(pn);
+
+    te::color::RGBAColor clrBack = model->getBackgroundColor();
+
+    QColor cbrush;
+    cbrush.setRed(clrBack.getRed());
+    cbrush.setGreen(clrBack.getGreen());
+    cbrush.setBlue(clrBack.getBlue());
+    cbrush.setAlpha(clrBack.getAlpha());
+
+    painter->setBrush(cbrush);
+    painter->drawPath(rect_path);
+
+    painter->restore();
   }
 
-  painter->save();
+void te::layout::RectangleItem::drawRoundedRectangle(QPainter * painter)
+{
+	RectangleModel* model = dynamic_cast<RectangleModel*>(m_model);
+	if(!model)
+	{
+		return;
+	}
+	painter->save();
+	QColor cpen(0,0,0);
+	QPen pn(cpen, 0, Qt::SolidLine);
+	painter->setPen(pn);
+	te::color::RGBAColor clrBack = model->getBackgroundColor();
+	QColor cbrush;
+	cbrush.setRed(clrBack.getRed());
+	cbrush.setGreen(clrBack.getGreen());
+	cbrush.setBlue(clrBack.getBlue());
+	cbrush.setAlpha(clrBack.getAlpha());
 
-  QPainterPath rect_path;
-  rect_path.addRect(boundingRect());
+	QRectF roundedRect = boundingRect();
+	QPainterPath rect_path;
+	rect_path.addRoundRect(roundedRect,30,30);
+	painter->drawPath(rect_path);
+	painter->setBrush(cbrush);
+	painter->restore();
+}
 
-  QColor cpen(0,0,0);
-  QPen pn(cpen, 0, Qt::SolidLine);
-  painter->setPen(pn);
+void te::layout::RectangleItem::drawSingleCornerTrimmedRectangle(QPainter * painter)
+{
+	RectangleModel* model = dynamic_cast<RectangleModel*>(m_model);
+	if(!model)
+	{
+		return;
+	}
+	painter->save();
+	QColor cpen(0,0,0);
+	QPen pn(cpen, 0, Qt::SolidLine);
+	painter->setPen(pn);
+	te::color::RGBAColor clrBack = model->getBackgroundColor();
+	QColor cbrush;
+	cbrush.setRed(clrBack.getRed());
+	cbrush.setGreen(clrBack.getGreen());
+	cbrush.setBlue(clrBack.getBlue());
+	cbrush.setAlpha(clrBack.getAlpha());
 
-  te::color::RGBAColor clrBack = model->getBackgroundColor();
+	QPointF p1 = QPointF(boundingRect().width() - boundingRect().width() / 4., boundingRect().center().y()+ boundingRect().height() / 2.);
+	QPointF p2 = QPointF(boundingRect().height()-boundingRect().topRight().y(),boundingRect().topRight().x()-boundingRect().width()/4);
+	QPointF p3 = QPointF(boundingRect().bottomRight().y(),boundingRect().top());
+	QPointF p4 = QPointF(boundingRect().bottomLeft().x(),boundingRect().top());
+	QPointF p5 = QPointF(boundingRect().bottomLeft().x(),boundingRect().bottom());
+	QPolygonF rect;
+	rect<<p1<<p2<<p3<<p4<<p5;
+	painter->drawPolygon(rect);
+	painter->setBrush(cbrush);
+	painter->restore();
 
-  QColor cbrush;
-  cbrush.setRed(clrBack.getRed());
-  cbrush.setGreen(clrBack.getGreen());
-  cbrush.setBlue(clrBack.getBlue());
-  cbrush.setAlpha(clrBack.getAlpha());
-
-  painter->setBrush(cbrush);
-  painter->drawPath(rect_path);
-
-  painter->restore();
 }

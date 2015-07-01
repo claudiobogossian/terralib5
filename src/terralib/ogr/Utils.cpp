@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -40,6 +40,7 @@
 #include "../geometry/Geometry.h"
 #include "../geometry/GeometryProperty.h"
 #include "../geometry/WKBReader.h"
+#include "../srs/SpatialReferenceSystemManager.h"
 #include "../srs/Config.h"
 #include "Utils.h"
 
@@ -126,46 +127,145 @@ int te::ogr::Convert2TerraLibProjection(OGRSpatialReference* osrs)
 {
   if(osrs == 0)
     return TE_UNKNOWN_SRS;
-
-  if(osrs->AutoIdentifyEPSG() != OGRERR_UNSUPPORTED_SRS) 
-    return atoi(osrs->GetAuthorityCode(0));
   
-  // geographic SIRGAS 2000 Datum
-  std::string straux(osrs->GetRoot()->GetChild(0)->GetValue());
+  int srid = 0;
   
-  if (!boost::find_first(straux, "SIRGAS"))
-    return TE_UNKNOWN_SRS;
-  
-  if (osrs->IsGeographic())
-    return TE_SRS_SIRGAS2000;
-  
-  // UTM using SIRGAS 2000 Datum
-  if (boost::find_first(straux, "UTM "))
+  OGRErr ogrReturn = osrs->AutoIdentifyEPSG();
+  if( ogrReturn == OGRERR_NONE )
   {
-    double centralm = osrs->GetProjParm(SRS_PP_CENTRAL_MERIDIAN,-1);
-    if (centralm == -1)
-      return  TE_UNKNOWN_SRS;
-    int zone = (int)(centralm/6 + 31);
+    const char* srsAuth = osrs->GetAuthorityCode(0);
     
-    double fsnorth = osrs->GetProjParm(SRS_PP_FALSE_NORTHING,-1);
-    if (fsnorth > 0)
-      return 31960+zone;
-    else if (fsnorth == 0)
-      return 31954+zone;
+    if (srsAuth)
+    {
+      srid = atoi(srsAuth);
+    }
+  }  
+  
+  if( srid == TE_UNKNOWN_SRS )
+  {
+    char* wktPtr = 0;
+    ogrReturn = osrs->exportToWkt( &wktPtr );
+  
+    if( ogrReturn == OGRERR_NONE )
+    {    
+      std::pair< std::string, unsigned int > customSRID;
+      std::string projRefStr( wktPtr );
+      
+      OGRFree( wktPtr );
+      
+      try
+      {
+        customSRID = te::srs::SpatialReferenceSystemManager::getInstance().getIdFromWkt( 
+          projRefStr );
+        srid = (int)customSRID.second;
+      }
+      catch( te::common::Exception& )
+      {
+      }
+    }
+  }  
+  
+  if( srid == TE_UNKNOWN_SRS )
+  {
+    char* proj4StrPtr = 0;
+    ogrReturn = osrs->exportToProj4( &proj4StrPtr );
+  
+    if( ogrReturn == OGRERR_NONE )
+    {    
+      std::pair< std::string, unsigned int > customSRID;
+      std::string projRefStr( proj4StrPtr );
+      
+      OGRFree( proj4StrPtr );
+      
+      try
+      {
+        customSRID = te::srs::SpatialReferenceSystemManager::getInstance().getIdFromP4Txt( 
+          projRefStr );
+        srid = (int)customSRID.second;
+      }
+      catch( te::common::Exception& )
+      {
+      }
+    }
+  }  
+  
+  if( srid == TE_UNKNOWN_SRS )
+  {
+    // geographic SIRGAS 2000 Datum
+    std::string straux(osrs->GetRoot()->GetChild(0)->GetValue());
+    
+    if (boost::find_first(straux, "SIRGAS"))
+    {
+      if (osrs->IsGeographic())
+        srid = TE_SRS_SIRGAS2000;
+    }
+    else if (boost::find_first(straux, "UTM "))
+    { // UTM using SIRGAS 2000 Datum
+      double centralm = osrs->GetProjParm(SRS_PP_CENTRAL_MERIDIAN,-1);
+      if (centralm != -1)
+      {
+        int zone = (int)(centralm/6 + 31);
+        
+        double fsnorth = osrs->GetProjParm(SRS_PP_FALSE_NORTHING,-1);
+        if (fsnorth > 0)
+          srid = 31960+zone;
+        else if (fsnorth == 0)
+          srid = 31954+zone;
+      }
+    }
   }
-  return TE_UNKNOWN_SRS;
+  
+  return srid;
 }
 
 OGRSpatialReference* te::ogr::Convert2OGRProjection(int srid)
 {
-  OGRSpatialReference* osrs = new OGRSpatialReference();
+  std::auto_ptr< OGRSpatialReference > osrs( new OGRSpatialReference() );
   
   OGRErr error = osrs->importFromEPSG(srid);
+  
+  if( error != OGRERR_NONE )
+  {
+    try
+    {
+      std::string wktStr = 
+        te::srs::SpatialReferenceSystemManager::getInstance().getWkt( srid );
+      
+      if( !wktStr.empty() )
+      {
+        char* wktStrPtr = (char*)wktStr.c_str();
+        error = osrs->importFromWkt( &wktStrPtr );
+      }
+    }
+    catch( te::common::Exception& )
+    {
+      error = OGRERR_UNSUPPORTED_SRS;
+    }
+  }  
+  
+  if( error != OGRERR_NONE )
+  {
+    try
+    {
+      std::string proj4Str = 
+        te::srs::SpatialReferenceSystemManager::getInstance().getP4Txt( srid );
+      
+      if( !proj4Str.empty() )
+      {
+        char* proj4StrPtr = (char*)proj4Str.c_str();
+        error = osrs->importFromProj4( proj4StrPtr );
+      }
+    }
+    catch( te::common::Exception& )
+    {
+      error = OGRERR_UNSUPPORTED_SRS;
+    }
+  }   
   
   if(error != OGRERR_NONE)
     throw(te::common::Exception(TE_TR("Error converting spatial reference system.")));
   
-  return osrs;
+  return osrs.release();
 }
 
 void te::ogr::Convert2TerraLib(OGRFeatureDefn* featDef,  te::da::DataSetType* dt, int srs)

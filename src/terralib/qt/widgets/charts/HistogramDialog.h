@@ -1,4 +1,4 @@
-/*  Copyright (C) 2010-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -35,7 +35,7 @@
 //STL
 #include <memory>
 
-namespace Ui { class HistogramDialogForm; }
+namespace Ui { class ChartDialogForm; }
 
 namespace te
 {
@@ -92,9 +92,9 @@ namespace te
 
         private:
 
-          std::auto_ptr<Ui::HistogramDialogForm>  m_ui;                   //!< The dialog form.
-          HistogramDataWidget*                    m_histogramDataWidget;  //!< The histogram's data widget used to configure the basic parameters of the new histogram.
-          ChartDisplayWidget*                     m_displayWidget;        //!< The display's widget that will be populated by this widget.
+          std::auto_ptr<Ui::ChartDialogForm>  m_ui;                   //!< The dialog form.
+          HistogramDataWidget*                m_histogramDataWidget;  //!< The histogram's data widget used to configure the basic parameters of the new histogram.
+          ChartDisplayWidget*                 m_displayWidget;        //!< The display's widget that will be populated by this widget.
       };
     } // end namespace widgets
   }   // end namespace qt

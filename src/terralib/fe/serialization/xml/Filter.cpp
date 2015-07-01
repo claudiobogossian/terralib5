@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -25,8 +25,8 @@
 
 // TerraLib
 #include "../../../fe/Filter.h"
+#include "../../../xml/AbstractWriter.h"
 #include "../../../xml/Reader.h"
-#include "../../../xml/Writer.h"
 #include "AbstractOp.h"
 #include "Filter.h"
 
@@ -51,7 +51,7 @@ te::fe::Filter* te::fe::serialize::ReadFilter(te::xml::Reader& reader)
   return filter.release();
 }
 
-void te::fe::serialize::Save(const te::fe::Filter* filter, te::xml::Writer& writer)
+void te::fe::serialize::Save(const te::fe::Filter* filter, te::xml::AbstractWriter& writer)
 {
   if(filter == 0)
     return;

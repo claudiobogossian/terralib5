@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -65,10 +65,10 @@ void te::qt::plugins::st::TimeSeriesAction::onActionActivated(bool checked)
   int res = timeWiz->exec();
   if (res == QDialog::Accepted)
   {
-        //Initialize STDataLoader support
+    //Initialize STDataLoader support
     te::st::STDataLoader::initialize();
 
-    //te::qt::af::evt::LayerAdded evt(timeWiz->getTImeSeriesLayer(), 0);
-    //te::qt::af::ApplicationController::getInstance().broadcast(&evt);
+    te::qt::af::evt::LayerAdded evt(timeWiz->getTimeSeriesLayer(), 0);
+    te::qt::af::ApplicationController::getInstance().broadcast(&evt);
   }
 }

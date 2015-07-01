@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -44,6 +44,7 @@ namespace te
     class BuildGraphicsItem;
     class SystematicScaleConfig;
     class ItemUtils;
+    class BuildGraphicsOutside;
 
     class BuildContext 
     {
@@ -66,6 +67,7 @@ namespace te
         BuildGraphicsItem*        m_buildGraphicsItem;
         SystematicScaleConfig*    m_systematicConfig;
         ItemUtils*                m_itemUtils;
+        BuildGraphicsOutside*     m_buildGraphicsOutside;
     };
   }
 }

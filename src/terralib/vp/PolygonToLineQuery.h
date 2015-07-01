@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -30,22 +30,10 @@
 
 //Terralib
 #include "../common/Exception.h"
-#include "../datatype/Property.h"
-#include "../geometry/Geometry.h"
-#include "../memory/DataSet.h"
-#include "../statistics/core/Enums.h"
 
 #include "PolygonToLineOp.h"
 #include "Config.h"
-#include "Enums.h"
 #include "Exception.h"
-
-
-// STL
-#include <map>
-#include <memory>
-#include <string>
-#include <vector>
 
 namespace te
 {

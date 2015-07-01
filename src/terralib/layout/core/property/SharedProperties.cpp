@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -39,8 +39,8 @@ te::layout::SharedProperties::SharedProperties() :
   m_y2("y2"),
   m_zValue("zValue"),
   m_border("border"),
-  m_backgroundcolor("backgroundcolor"),
-  m_bordercolor("bordercolor"),
+  m_backgroundColor("backgroundcolor"),
+  m_frameColor("bordercolor"),
   m_angle("angle"),
   m_width("width"),
   m_height("height")
@@ -98,14 +98,14 @@ std::string te::layout::SharedProperties::getBorder()
   return m_border;
 }
 
-std::string te::layout::SharedProperties::getBackgroundcolor()
+std::string te::layout::SharedProperties::getBackgroundColor()
 {
-  return m_backgroundcolor;
+  return m_backgroundColor;
 }
 
-std::string te::layout::SharedProperties::getBordercolor()
+std::string te::layout::SharedProperties::getFrameColor()
 {
-  return m_bordercolor;
+  return m_frameColor;
 }
 
 std::string te::layout::SharedProperties::getAngle()

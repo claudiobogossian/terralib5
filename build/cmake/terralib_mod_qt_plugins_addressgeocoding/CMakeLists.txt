@@ -26,7 +26,11 @@
 #          Frederico Augusto T. Bede <frederico.bede@funcate.org.br>
 #
 
-include_directories(${Boost_INCLUDE_DIR} ${LOG4CXX_INCLUDE_DIR})
+include_directories(${Boost_INCLUDE_DIR})
+
+if(LOG4CXX_FOUND)
+  include_directories(${LOG4CXX_INCLUDE_DIR})
+endif()
 
 if(WIN32)
   add_definitions(-DTEQTPLUGINADDRESSGEOCODINGDLL)
@@ -62,7 +66,9 @@ else()
 #								  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/addressgeocoding/ImportTableAction.h
 #								  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/addressgeocoding/MainWindowAction.h)
 #
-#  QT4_WRAP_CPP(TERRALIB_GEN_SRC_FILES ${TERRALIB_HDRS_TO_MOC_FILES})
+  set(TERRALIB_HDRS_TO_MOC_FILES  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/addressgeocoding/Plugin.h)
+
+  QT4_WRAP_CPP(TERRALIB_GEN_SRC_FILES ${TERRALIB_HDRS_TO_MOC_FILES})
 
   set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES} ${TERRALIB_GEN_SRC_FILES})
 

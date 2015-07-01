@@ -1,4 +1,4 @@
-/*  Copyright (C) 2010-2014 National Institute For Space Research (INPE) - Brazil. 
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil. 
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -27,9 +27,9 @@
 #define __TERRALIB_QT_WIDGETS_INTERNAL_OBSERVATIONPROPERTIESWIZARDPAGE_H
 
 // TerraLib
-#include "../../../maptools/AbstractLayer.h"
 #include "../Config.h"
-#include "../../../dataaccess/datasource/DataSourceInfo.h"
+#include "terralib/dataaccess/datasource/DataSourceInfo.h"
+#include "terralib/dataaccess/dataset/DataSetType.h"
 
 // Qt
 #include <QWizardPage>

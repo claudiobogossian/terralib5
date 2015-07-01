@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -35,7 +35,7 @@
 #include "../../../layout/qt/core/Scene.h"
 #include "../../../layout/qt/core/BuildGraphicsItem.h"
 #include "../../../layout/qt/core/ItemUtils.h"
-
+#include "../../../layout/qt/core/BuildGraphicsOutside.h"
 
 te::layout::BuildContext::BuildContext() :
   m_itemFactory(0),
@@ -45,7 +45,8 @@ te::layout::BuildContext::BuildContext() :
   m_paperConfig(0),
   m_canvas(0),
   m_buildGraphicsItem(0),
-  m_itemUtils(0)
+  m_itemUtils(0),
+  m_buildGraphicsOutside(0)
 {
 
 }
@@ -98,6 +99,12 @@ te::layout::BuildContext::~BuildContext()
   {
     delete m_itemUtils;
     m_itemUtils = 0;
+  }
+
+  if(m_buildGraphicsOutside)
+  {
+    delete m_buildGraphicsOutside;
+    m_buildGraphicsOutside = 0;
   }
 }
 
@@ -175,5 +182,13 @@ void te::layout::BuildContext::createLayoutContext( int width, int height, View*
       Context::getInstance().setItemUtils(m_itemUtils);
     }
   }
+  if(!Context::getInstance().getAbstractBuildGraphicsOutside())
+  {
+    m_buildGraphicsOutside = new BuildGraphicsOutside;
+    Context::getInstance().setAbstractBuildGraphicsOutside(m_buildGraphicsOutside);
+  }
 }
+
+
+
 

@@ -33,10 +33,10 @@ endif()
 
 file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/rp/*.cpp
   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/rp/radar/*.cpp )
-file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/rp/*.h
-  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/rp/radar/*.h )
+file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/rp/*.h )
+file(GLOB TERRALIB_RADAR_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/rp/radar/*.h )  
 
-set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
+set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES} ${TERRALIB_RADAR_HDR_FILES})
 
 add_library(terralib_mod_rp SHARED ${TERRALIB_FILES})
 
@@ -64,5 +64,7 @@ install(TARGETS terralib_mod_rp
 
 install(FILES ${TERRALIB_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/rp COMPONENT devel)
+install(FILES ${TERRALIB_RADAR_HDR_FILES}
+        DESTINATION ${TERRALIB_DESTINATION_HEADERS}/terralib/rp/radar COMPONENT devel)        
 
 export(TARGETS terralib_mod_rp APPEND FILE ${CMAKE_BINARY_DIR}/terralib-exports.cmake)

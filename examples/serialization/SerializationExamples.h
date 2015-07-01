@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -39,10 +39,7 @@ namespace te
 }
 
 /*! \brief It creates an OGC Symbology Encoding Style and encode it to XML format. */
-std::string EncodeStyle();
-
-/*! \brief It encodes the given OGC Symbology Encoding Style to XML format. */
-std::string EncodeStyle(te::se::Style* style);
+void EncodeStyle(const std::string& path);
 
 /*! \brief It decodes a given OGC Symbology Encoding Style file. */
 te::se::Style* DecodeStyle(const std::string& path);

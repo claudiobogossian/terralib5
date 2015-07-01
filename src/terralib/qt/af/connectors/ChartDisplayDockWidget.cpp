@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -64,7 +64,6 @@ QDockWidget(parent, Qt::Widget),
 
 te::qt::af::ChartDisplayDockWidget::~ChartDisplayDockWidget()
 {
-  delete m_displayWidget;
   emit closed(this);
 }
 

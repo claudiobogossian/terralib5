@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -24,11 +24,13 @@
 */
 
 // TerraLib
+#include "terralib_config.h"
 #include "../../../common/Config.h"
 #include "../../../common/Translator.h"
 #include "../../../common/Logger.h"
 #include "../../af/ApplicationController.h"
 #include "../../af/events/LayerEvents.h"
+#include "../../af/Utils.h"
 #include "RasterToVectorAction.h"
 #include "VectorToRasterAction.h"
 #include "VectorToVectorAction.h"
@@ -52,6 +54,7 @@
 // QT
 #include <QMenu>
 #include <QMenuBar>
+#include <qaction.h>
 
 te::qt::plugins::attributefill::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo)
   : te::plugin::Plugin(pluginInfo), m_attributefillMenu(0)
@@ -109,6 +112,10 @@ void te::qt::plugins::attributefill::Plugin::startup()
   logger->setAdditivity(false);
   logger->addAppender(fileAppender);
 #endif
+
+  te::qt::af::AddActionToCustomToolbars(m_rasterToVector->getAction());
+  te::qt::af::AddActionToCustomToolbars(m_vectorToRaster->getAction());
+  te::qt::af::AddActionToCustomToolbars(m_vectorToVector->getAction());
 
   m_initialized = true;
 }

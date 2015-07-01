@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -41,7 +41,7 @@ te::layout::PaperModel::PaperModel() :
   m_paperColor = te::color::RGBAColor(255, 255, 255, 255);
   m_shadowColor = te::color::RGBAColor(0, 0, 0, 255);
 
-  m_borderColor = te::color::RGBAColor(255, 255, 255, 0);
+  m_frameColor = te::color::RGBAColor(255, 255, 255, 0);
 
   m_border = false;
 
@@ -58,7 +58,7 @@ te::layout::PaperModel::PaperModel( PaperConfig* paperConfig ) :
   m_paperColor = te::color::RGBAColor(255, 255, 255, 255);
   m_shadowColor = te::color::RGBAColor(0, 0, 0, 255);
 
-  m_borderColor = te::color::RGBAColor(255, 255, 255, 0);
+  m_frameColor = te::color::RGBAColor(255, 255, 255, 0);
 
   m_border = false;
 

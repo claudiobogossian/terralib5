@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -29,27 +29,24 @@
 #define __TERRALIB_LAYOUT_INTERNAL_GRID_GEODESIC_MODEL_H
 
 // TerraLib
-#include "GridModel.h"
 #include "../core/Config.h"
+#include "GridMapModel.h"
 
 namespace te
 {
   namespace layout
   {
-    class GeodesicGridSettingsConfigProperties;
-
-    class TELAYOUTEXPORT GridGeodesicModel: public GridModel 
+    class TELAYOUTEXPORT GridGeodesicModel: public GridMapModel 
     {
       public:
 
         GridGeodesicModel();
+
         virtual ~GridGeodesicModel();
 
         virtual void draw(te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box, int srid);
-
-        virtual te::layout::Property getProperty();
-
-        virtual void updateProperty(te::layout::Property property);
+        
+        virtual te::gm::Envelope getPlanarBox();
 
         virtual void setPlanarBox(te::gm::Envelope box);
         
@@ -59,18 +56,24 @@ namespace te
 
         virtual bool isVisibleCornerTextsText();
 
+        virtual void calculateGaps(te::gm::Envelope box);
+
+        bool isDegreesText();
+
+        bool isMinutesText();
+        
+        bool isSecondsText();
+
+        void setSRID(int srid);
+
        protected:
 
          virtual void drawVerticalLines(te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box);
 
          virtual void drawHorizontalLines(te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box);  
 
-         virtual void calculateGaps(te::gm::Envelope box);
-
        protected:
-
-         GeodesicGridSettingsConfigProperties* m_settingsConfig;
-
+         
          te::gm::Envelope m_planarBox;
 
          /*Text: Basic Configuration*/
@@ -107,3 +110,4 @@ namespace te
 }
 
 #endif 
+

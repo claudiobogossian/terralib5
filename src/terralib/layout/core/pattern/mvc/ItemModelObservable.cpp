@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -35,6 +35,7 @@
 #include "../../property/SharedProperties.h"
 #include "../singleton/Context.h"
 #include "../../enum/Enums.h"
+#include "ItemObserver.h"
 
 // STL
 #include <ctime>
@@ -42,6 +43,7 @@
 
 te::layout::ItemModelObservable::ItemModelObservable() :
   m_id(0),
+  m_publicProperties(0),
   m_type(0),
   m_zValue(0),
   m_sharedProps(0),
@@ -50,7 +52,8 @@ te::layout::ItemModelObservable::ItemModelObservable() :
   m_resizable(true),
   m_angle(0),
   m_hashCode(0),
-  m_oldAngle(0)
+  m_oldAngle(0),
+  m_enableChildren(false)
 {
   EnumObjectType* type = Enums::getInstance().getEnumObjectType();
   m_type = type->getObjectUnknown();
@@ -62,13 +65,16 @@ te::layout::ItemModelObservable::ItemModelObservable() :
 
   m_backgroundColor = te::color::RGBAColor(255, 255, 255, 0);
 
-  m_borderColor = te::color::RGBAColor(0, 0, 0, 255);
+  m_frameColor = te::color::RGBAColor(0, 0, 0, 255);
+  
+  m_sharedProps = new SharedProperties;
 
   m_properties = new Properties(m_name);
 
-  m_sharedProps = new SharedProperties;
-
   m_hashCode = calculateHashCode();
+  m_properties->setHashCode(m_hashCode);
+
+  m_publicProperties = new Properties(m_name, 0, m_hashCode);
 }
 
 te::layout::ItemModelObservable::~ItemModelObservable()
@@ -77,6 +83,14 @@ te::layout::ItemModelObservable::~ItemModelObservable()
   {
     delete m_properties;
     m_properties = 0;
+  }
+
+  m_children.clear();
+
+  if(m_publicProperties)
+  {
+    delete m_publicProperties;
+    m_publicProperties = 0;
   }
 
   if(m_sharedProps)
@@ -117,40 +131,40 @@ void te::layout::ItemModelObservable::notifyAll( ContextItem context )
 
 te::layout::Properties* te::layout::ItemModelObservable::getProperties() const
 {  
+  if(!m_properties)
+  {
+    return 0;
+  }
+
   m_properties->clear();
 
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
 
-  Property pro_name;
+  Property pro_name(m_hashCode);
   pro_name.setName(m_sharedProps->getName());
-  pro_name.setId("unknown");
   pro_name.setEditable(false);
   pro_name.setValue(m_name, dataType->getDataTypeString());
   m_properties->addProperty(pro_name);
 
-  Property pro_id;
+  Property pro_id(m_hashCode);
   pro_id.setName(m_sharedProps->getId());
-  pro_id.setId("unknown");
   pro_id.setValue(m_id, dataType->getDataTypeInt());
   m_properties->addProperty(pro_id);
 
-  Property pro_angle;
+  Property pro_angle(m_hashCode);
   pro_angle.setName(m_sharedProps->getAngle());
-  pro_angle.setId("unknown");
   pro_angle.setValue(m_angle, dataType->getDataTypeDouble());
   m_properties->addProperty(pro_angle);
 
-  Property pro_backgroundcolor;
-  pro_backgroundcolor.setName(m_sharedProps->getBackgroundcolor());
-  pro_backgroundcolor.setId("unknown");
+  Property pro_backgroundcolor(m_hashCode);
+  pro_backgroundcolor.setName(m_sharedProps->getBackgroundColor());
   pro_backgroundcolor.setValue(m_backgroundColor, dataType->getDataTypeColor());
   pro_backgroundcolor.setMenu(true);
   m_properties->addProperty(pro_backgroundcolor);
 
-  Property pro_bordercolor;
-  pro_bordercolor.setName(m_sharedProps->getBordercolor());
-  pro_bordercolor.setId("unknown");
-  pro_bordercolor.setValue(m_borderColor, dataType->getDataTypeColor());
+  Property pro_bordercolor(m_hashCode);
+  pro_bordercolor.setName(m_sharedProps->getFrameColor());
+  pro_bordercolor.setValue(m_frameColor, dataType->getDataTypeColor());
   pro_bordercolor.setMenu(true);
   m_properties->addProperty(pro_bordercolor);
   
@@ -161,48 +175,45 @@ te::layout::Properties* te::layout::ItemModelObservable::getProperties() const
   double width = m_box.getWidth();
   double height = m_box.getHeight();
 
-  Property pro_x1;
+  Property pro_x1(m_hashCode);
   pro_x1.setName(m_sharedProps->getX1());
-  pro_x1.setId("unknown");
   pro_x1.setValue(x1, dataType->getDataTypeDouble());
   pro_x1.setEditable(false);
   m_properties->addProperty(pro_x1);
 
-  Property pro_y1;
+  Property pro_y1(m_hashCode);
   pro_y1.setName(m_sharedProps->getY1());
-  pro_y1.setId("unknown");
   pro_y1.setValue(y1, dataType->getDataTypeDouble());
   pro_y1.setEditable(false);
   m_properties->addProperty(pro_y1);
 
-  Property pro_width;
+  Property pro_width(m_hashCode);
   pro_width.setName(m_sharedProps->getWidth());
-  pro_width.setId("unknown");
   pro_width.setValue(width, dataType->getDataTypeDouble());
   pro_width.setEditable(false);
   m_properties->addProperty(pro_width);
 
-  Property pro_height;
+  Property pro_height(m_hashCode);
   pro_height.setName(m_sharedProps->getHeight());
-  pro_height.setId("unknown");
   pro_height.setValue(height, dataType->getDataTypeDouble());
   pro_height.setEditable(false);
   m_properties->addProperty(pro_height);
 
   /* ---------- */
 
-  Property pro_zValue;
+  Property pro_zValue(m_hashCode);
   pro_zValue.setName(m_sharedProps->getZValue());
-  pro_zValue.setId("unknown");
   pro_zValue.setValue(m_zValue, dataType->getDataTypeInt());
   pro_zValue.setEditable(false);
   m_properties->addProperty(pro_zValue);
   
-  Property pro_border;
+  Property pro_border(m_hashCode);
   pro_border.setName(m_sharedProps->getBorder());
-  pro_border.setId("unknown");
   pro_border.setValue(m_border, dataType->getDataTypeBool());
   m_properties->addProperty(pro_border);
+
+  /* Add properties of all children */
+  addChildrenProperties(m_properties);
 
   m_properties->setTypeObj(m_type);
   return m_properties;
@@ -218,31 +229,35 @@ void te::layout::ItemModelObservable::setBox(te::gm::Envelope box)
   m_box = box;
 }
 
-te::color::RGBAColor te::layout::ItemModelObservable::getBackgroundColor()
+const te::color::RGBAColor& te::layout::ItemModelObservable::getBackgroundColor() const
 {
   return m_backgroundColor;
 }
 
-void te::layout::ItemModelObservable::setBackgroundColor( te::color::RGBAColor color )
+void te::layout::ItemModelObservable::setBackgroundColor( const te::color::RGBAColor& color )
 {
   m_backgroundColor = color;
 }
 
-void te::layout::ItemModelObservable::setBorderColor( te::color::RGBAColor color )
+const te::color::RGBAColor& te::layout::ItemModelObservable::getFrameColor() const
 {
-  m_borderColor = color;
+  return m_frameColor;
 }
 
-te::color::RGBAColor te::layout::ItemModelObservable::getBorderColor()
+void te::layout::ItemModelObservable::setFrameColor( const te::color::RGBAColor& color )
 {
-  return m_borderColor;
+  m_frameColor = color;
 }
 
 void te::layout::ItemModelObservable::setName( std::string name )
 {
   m_name = name;
+
   if(m_properties)
     m_properties->setObjectName(m_name);
+
+  if(m_publicProperties)
+    m_publicProperties->setObjectName(m_name);
 }
 
 std::string te::layout::ItemModelObservable::getName()
@@ -275,9 +290,14 @@ bool te::layout::ItemModelObservable::contains( const te::gm::Coord2D &coord ) c
   return false;
 }
 
-void te::layout::ItemModelObservable::updateProperties( te::layout::Properties* properties )
+void te::layout::ItemModelObservable::updateProperties( te::layout::Properties* properties, bool notify )
 {
   Properties* vectorProps = const_cast<Properties*>(properties);
+
+  if(!vectorProps)
+  {
+    return;
+  }
   
   Property pro_name = vectorProps->contains(m_sharedProps->getName());
   if(!pro_name.isNull())
@@ -298,16 +318,16 @@ void te::layout::ItemModelObservable::updateProperties( te::layout::Properties* 
     m_angle = pro_angle.getValue().toDouble();
   }
 
-  Property pro_backgroundcolor = vectorProps->contains(m_sharedProps->getBackgroundcolor());
+  Property pro_backgroundcolor = vectorProps->contains(m_sharedProps->getBackgroundColor());
   if(!pro_backgroundcolor.isNull())
   {
     m_backgroundColor = pro_backgroundcolor.getValue().toColor();
   }
 
-  Property pro_bordercolor = vectorProps->contains(m_sharedProps->getBordercolor());
+  Property pro_bordercolor = vectorProps->contains(m_sharedProps->getFrameColor());
   if(!pro_bordercolor.isNull())
   {
-    m_borderColor = pro_bordercolor.getValue().toColor();
+    m_frameColor = pro_bordercolor.getValue().toColor();
   }
 
   /* Box */
@@ -348,6 +368,14 @@ void te::layout::ItemModelObservable::updateProperties( te::layout::Properties* 
   if(!pro_border.isNull())
   {
     m_border = pro_border.getValue().toBool();
+  }
+
+  updateChildrenProperties(properties);
+
+  if(notify)
+  {
+    ContextItem context;
+    notifyAll(context);
   }
 }
 
@@ -424,7 +452,7 @@ void te::layout::ItemModelObservable::drawBackground( ContextItem context )
   if(m_border)
   {
     canvas->setPolygonContourWidth(1);
-    canvas->setPolygonContourColor(m_borderColor);
+    canvas->setPolygonContourColor(m_frameColor);
   }
   else
   {
@@ -516,4 +544,182 @@ void te::layout::ItemModelObservable::draw( ContextItem context )
 {
 
 }
+
+bool te::layout::ItemModelObservable::isEnableChildren()
+{
+  return m_enableChildren;
+}
+
+void te::layout::ItemModelObservable::setEnableChildren( bool value )
+{
+  m_enableChildren = value;
+}
+
+std::set<te::layout::ItemObserver*> te::layout::ItemModelObservable::getChildren() const
+{
+  return m_children;
+}
+
+bool te::layout::ItemModelObservable::addChildren( ItemObserver* item )
+{
+  bool result = false;
+  if(!item)
+  {
+    return result;
+  }
+
+  if(!m_enableChildren)
+  {
+    return result;
+  }
+
+  if(item->getModel()->getHashCode() == m_hashCode)
+  {
+    return result;
+  }
+
+  std::pair<std::set<ItemObserver*>::iterator,bool> p = m_children.insert(item);
+
+  if(p.second == true)
+  {
+    result = true;
+  }
+
+  return result;
+}
+
+bool te::layout::ItemModelObservable::removeChildren( int hashCode )
+{
+  bool result = false;
+  std::set<ItemObserver*>::iterator it = m_children.begin();
+  
+  for( ; it != m_children.end(); ++it)
+  {
+    if((*it)->getModel()->getHashCode() == hashCode)
+    {
+      int num = m_children.erase(*it);
+
+      if(num == 1)
+      {
+        result = true;
+        break;
+      }
+    }
+  }
+  return result;
+}
+
+te::layout::Properties* te::layout::ItemModelObservable::getPublicProperties() const
+{
+  if(!m_properties || !m_publicProperties)
+  {
+    return 0;
+  }
+
+  getProperties(); //Refresh properties
+
+  m_publicProperties->clear();
+
+  std::vector<Property> props = m_properties->getProperties();
+
+  if(props.empty())
+  {
+    return 0;
+  }
+
+  std::vector<Property>::iterator it = props.begin();
+
+  for( ; it != props.end() ; ++it )
+  {
+    if((*it).isPublic())
+    {
+      m_publicProperties->addProperty(*it);
+    }
+  }
+
+  m_publicProperties->setTypeObj(m_type);
+
+  return m_publicProperties;
+}
+
+void te::layout::ItemModelObservable::addChildrenProperties( te::layout::Properties* properties ) const
+{
+  std::set<ItemObserver*>::iterator it = m_children.begin();
+
+  for( ; it != m_children.end(); ++it)
+  {
+    ItemObserver* item = (*it);
+    Properties* props = item->getModel()->getPublicProperties();
+    if(!props)
+      continue;
+    
+    std::vector<Property> proper = props->getProperties();
+    if(proper.empty())
+    {
+      continue;
+    }
+
+    std::vector<Property>::iterator itProp = proper.begin();
+    for( ; itProp != proper.end(); ++itProp)
+    {
+      Property prop = (*itProp);
+      if(properties->contains(prop))
+        continue;
+
+      properties->addProperty(prop);
+    }
+  }
+}
+
+void te::layout::ItemModelObservable::updateChildrenProperties( Property prop )
+{
+  int hashCode = prop.getParentItemHashCode();
+
+  std::set<ItemObserver*>::iterator it = m_children.begin();
+
+  for( ; it != m_children.end(); ++it)
+  {
+    ItemObserver* item = (*it);
+    if(!item)
+      continue;
+
+    if(item->getModel()->getHashCode() == hashCode)
+    {
+      Properties* props = new Properties("");
+      props->setObjectName(item->getModel()->getProperties()->getObjectName());
+      props->setTypeObj(item->getModel()->getProperties()->getTypeObj());
+      props->setHashCode(item->getModel()->getHashCode());
+      props->addProperty(prop);
+
+      item->getModel()->updateProperties(props);
+      item->redraw();
+
+      delete props;
+      props = 0;
+
+      break;
+    }
+  }
+}
+
+void te::layout::ItemModelObservable::updateChildrenProperties( Properties* properties )
+{
+  std::set<ItemObserver*>::iterator it = m_children.begin();
+
+  for( ; it != m_children.end(); ++it)
+  {
+    ItemObserver* item = (*it);
+    if(!item)
+      continue;
+
+    item->getModel()->updateProperties(properties);
+  }
+}
+
+
+
+
+
+
+
 

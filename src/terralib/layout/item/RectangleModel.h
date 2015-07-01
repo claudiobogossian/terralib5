@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -34,6 +34,12 @@
 #include "../core/pattern/mvc/ItemModelObservable.h"
 #include "../core/ContextItem.h"
 #include "../core/Config.h"
+#include "../../geometry/Envelope.h"
+#include "../../color/RGBAColor.h"
+#include "../../maptools/Canvas.h"
+#include "../core/enum/EnumRectangleType.h"
+#include "../core/enum/EnumType.h"
+#include "../core/property/Properties.h"
 
 namespace te
 {
@@ -62,6 +68,29 @@ namespace te
           \brief Destructor
         */ 
         virtual ~RectangleModel();
+
+				virtual Properties* getProperties() const;
+
+				virtual void updateProperties(te::layout::Properties* properties, bool notify = true);
+
+				virtual EnumRectangleType* getEnumRectangleType();
+
+				virtual EnumType* getCurrentRectangleType();
+
+				virtual double getShapeSize();
+
+				virtual te::color::RGBAColor getRectangleColor();
+
+				virtual void setRectangleColor(te::color::RGBAColor color);
+
+		protected:
+
+			virtual Property rectangleProperty() const;
+
+			EnumRectangleType* m_enumRectangleType;
+			EnumType*      m_currentRectangleType;
+			double         m_shapeSize;
+			te::color::RGBAColor m_rectangleColor;
     };
   }
 }

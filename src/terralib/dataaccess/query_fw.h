@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -59,6 +59,7 @@ namespace te
     class GroupByItem;
     class Having;
     class In;
+    class Insert;
     class IsNull;
     class Join;
     class JoinCondition;
@@ -109,6 +110,7 @@ namespace te
     class ST_Equals;
     class ST_Intersection;
     class ST_Intersects;
+    class ST_IsValid;
     class ST_Length;
     class ST_NumGeometries;
     class ST_Overlaps;

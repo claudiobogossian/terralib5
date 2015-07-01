@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -64,7 +64,8 @@ std::string te::st::TimeSeriesObservation::getString() const
 
 bool te::st::TimeSeriesObservation::operator<(const TimeSeriesObservation& other) const
 {
-  return m_time->operator<(*other.getTime());
+  te::dt::DateTime* dt = other.getTime();
+  return m_time->operator<(*dt);
 }
 
 te::st::TimeSeriesObservation::~TimeSeriesObservation()

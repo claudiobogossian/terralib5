@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of TerraView - A Free and Open Source GIS Application.
 
@@ -64,6 +64,8 @@ class TerraView : public te::qt::af::BaseApplication
     void init();
 
     void init(const std::string& configFile);
+
+    void startProject(const QString& projectFileName);
 
   protected:
 

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -29,7 +29,7 @@
 #include "ContextItem.h"
 
 te::layout::ContextItem::ContextItem() :
-  m_zoomFactor(1.),
+  m_zoom(100),
   m_pixmap(0),
   m_resizeCanvas(true),
   m_show(false),
@@ -42,9 +42,9 @@ te::layout::ContextItem::ContextItem() :
 
 }
 
-te::layout::ContextItem::ContextItem( ParamsCreate params, double zoomFactor ) :
+te::layout::ContextItem::ContextItem( ParamsCreate params, int zoom) :
   m_params(params),
-  m_zoomFactor(zoomFactor),
+  m_zoom(zoom),
   m_pixmap(0),
   m_resizeCanvas(true),
   m_show(false),
@@ -72,14 +72,14 @@ te::layout::ParamsCreate te::layout::ContextItem::getParams()
   return m_params;
 }
 
-void te::layout::ContextItem::setZoomFactor( double zoomFactor )
+void te::layout::ContextItem::setZoom( int zoom )
 {
-  m_zoomFactor = zoomFactor;
+  m_zoom = zoom;
 }
 
-double te::layout::ContextItem::getZoomFactor()
+int te::layout::ContextItem::getZoom()
 {
-  return m_zoomFactor;
+  return m_zoom;
 }
 
 void te::layout::ContextItem::setPixmap( te::color::RGBAColor** pixmap )

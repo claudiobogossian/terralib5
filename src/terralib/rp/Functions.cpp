@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -2475,7 +2475,6 @@ namespace te
           int filterCol = 0;
           int filterRow = 0; 
           double valueOriginal = 0.0;
-          double valuePrev = 0.0;
           double valueNew = 0.0;          
 
           for (convolutionCenterRow = 0; convolutionCenterRow < nLines; convolutionCenterRow++)

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "terralib_config.h"
 #include "../common/Logger.h"
 #include "../common/Translator.h"
 #include "../dataaccess/datasource/DataSourceManager.h"
@@ -55,6 +56,34 @@ void te::ogr::Module::startup()
 {
   if(m_initialized)
     return;
+
+  std::string gdal_data;
+  char* gdata = getenv("GDAL_DATA");
+
+  if(gdata != 0)
+    gdal_data = std::string(gdata);
+
+  if(gdal_data.empty())
+  {
+    char* tDir = getenv("TERRALIB_HOME");
+    std::string teDir;
+
+    if(tDir != 0)
+      teDir = std::string(tDir);
+
+    if(!teDir.empty())
+      gdal_data = teDir + "/share/gdal-data";
+  }
+
+  if(gdal_data.empty())
+    gdal_data = TERRALIB_GDAL_DATA;
+
+  if( !gdal_data.empty() )
+  {
+    CPLSetConfigOption("GDAL_DATA", gdal_data.c_str());
+  }
+  
+  CPLSetConfigOption("GDAL_PAM_ENABLED", "NO");
 
 // registers all format drivers built into OGR.
   OGRRegisterAll();

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -227,7 +227,11 @@ void te::gdal::Raster::open(const std::map<std::string, std::string>& rinfo, te:
 
 std::map<std::string, std::string> te::gdal::Raster::getInfo() const
 {
-  return std::map<std::string, std::string>();
+  std::map<std::string, std::string> info;
+
+  info["URI"] = m_myURI;
+
+  return info;
 }
 
 std::size_t te::gdal::Raster::getNumberOfBands() const

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2010-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -39,8 +39,9 @@ namespace te
       */
       enum ChartType
       {
-        HISTOGRAM_CHART = 1001,  /*!< Histogram.  */
-        SCATTER_CHART = 1002     /*!< Scatter.    */
+        HISTOGRAM_CHART = 1001,   /*!< Histogram.   */
+        SCATTER_CHART = 1002,     /*!< Scatter.     */
+        TIMESERIES_CHART = 1003   /*!< TimeSeries.  */
       };
     }
   } // end namespace dt

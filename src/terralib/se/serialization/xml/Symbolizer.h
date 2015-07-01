@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -41,8 +41,8 @@ namespace te
 {
   namespace xml
   {
+    class AbstractWriter;
     class Reader;
-    class Writer;
   }
 
   namespace se
@@ -58,7 +58,7 @@ namespace te
         public:
 
           typedef boost::function<te::se::Symbolizer* (te::xml::Reader&)> SymbolizerReadFnctType;
-          typedef boost::function<void (const te::se::Symbolizer*, te::xml::Writer&)> SymbolizerWriteFnctType;
+          typedef boost::function<void (const te::se::Symbolizer*, te::xml::AbstractWriter&)> SymbolizerWriteFnctType;
           typedef std::pair<SymbolizerReadFnctType, SymbolizerWriteFnctType> SymbolizerFnctSerializeType;
           typedef std::map<std::string, SymbolizerFnctSerializeType> SymbolizerFnctIdxType;
 
@@ -66,7 +66,7 @@ namespace te
 
           te::se::Symbolizer* read(te::xml::Reader& reader) const;
 
-          void write(const te::se::Symbolizer* symbolizer, te::xml::Writer& writer) const;
+          void write(const te::se::Symbolizer* symbolizer, te::xml::AbstractWriter& writer) const;
 
           ~Symbolizer();
 

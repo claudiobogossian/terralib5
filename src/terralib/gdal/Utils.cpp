@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -36,6 +36,7 @@
 #include "../raster/Grid.h"
 #include "../raster/RasterFactory.h"
 #include "../raster/RasterProperty.h"
+#include "../srs/SpatialReferenceSystemManager.h"
 #include "Band.h"
 #include "Exception.h"
 #include "Raster.h"
@@ -121,19 +122,22 @@ te::rst::Grid* te::gdal::GetGrid(GDALDataset* gds, const int multiResLevel)
   // The calling of GetProjectionRef isn't thread safe, even for distinct datasets
   // under some linuxes
   boost::unique_lock< boost::mutex > lockGuard( getStaticMutex() );
-  char* projWKT = (char*)gds->GetProjectionRef();
+  const char* projRef = gds->GetProjectionRef();
   lockGuard.release();
   getStaticMutex().unlock();
   
-  if (projWKT)
+  if ( ( projRef != 0 ) && ( std::strlen( projRef ) > 0 ) )
   {
-    char** projWKTPtr = &(projWKT);
+    char* projRef2 = (char*)projRef;
+    char** projWKTPtr = &(projRef2);
     OGRSpatialReference oSRS;
-    oSRS.importFromWkt( projWKTPtr );
-    oSRS.AutoIdentifyEPSG();
-    const char* srsAuth = oSRS.GetAuthorityCode(0);
-    if (srsAuth)
-      srid = atoi(srsAuth);
+    
+    OGRErr ogrReturn = oSRS.importFromWkt( projWKTPtr );
+    
+    if( ogrReturn == OGRERR_NONE )
+    {
+      srid = te::ogr::Convert2TerraLibProjection(&oSRS);
+    }
   }
   
   // Defining the number of rows / lines
@@ -566,14 +570,32 @@ GDALDataset* te::gdal::CreateRaster(const std::string& name, te::rst::Grid* g, c
   
   OGRSpatialReference oSRS;
   
-  oSRS.importFromEPSG(g->getSRID());
+  OGRErr osrsErrorReturn = oSRS.importFromEPSG(g->getSRID());
+  CPLErr setProjErrorReturn = CE_Fatal;
   
-  char* projWKTPtr = 0;
-  
-  if(oSRS.exportToWkt(&projWKTPtr) == OGRERR_NONE)
+  if( osrsErrorReturn == OGRERR_NONE )
   {
-    poDataset->SetProjection(projWKTPtr);
+    char* projWKTPtr = 0;
+    
+    osrsErrorReturn = oSRS.exportToWkt(&projWKTPtr);
+    
+    if( osrsErrorReturn == OGRERR_NONE )
+    {
+      setProjErrorReturn = poDataset->SetProjection(projWKTPtr);
+    }
+    
     OGRFree(projWKTPtr);
+  }
+  
+  if( setProjErrorReturn != CE_None )
+  {
+    std::string wktStr = te::srs::SpatialReferenceSystemManager::getInstance().getWkt( 
+      g->getSRID() );
+    
+    if( !wktStr.empty() )
+    {
+      setProjErrorReturn = poDataset->SetProjection(wktStr.c_str());
+    }
   }
   
   int nb = static_cast<int>(bands.size());

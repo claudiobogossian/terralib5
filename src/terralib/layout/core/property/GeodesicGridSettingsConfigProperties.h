@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -30,6 +30,7 @@
 
 // TerraLib
 #include "GridSettingsConfigProperties.h"
+#include "../Config.h"
 
 // STL
 #include <string>
@@ -38,7 +39,7 @@ namespace te
 {
   namespace layout
   {
-    class GeodesicGridSettingsConfigProperties: public GridSettingsConfigProperties
+    class TELAYOUTEXPORT GeodesicGridSettingsConfigProperties: public GridSettingsConfigProperties
     {
       public:
 

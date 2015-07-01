@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -55,8 +55,8 @@
 #include <QGraphicsView>
 #include <QList>
 
-te::layout::TextItem::TextItem( ItemController* controller, Observable* o ) :
-  ParentItem(controller, o, true),
+te::layout::TextItem::TextItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
+  ParentItem<QGraphicsTextItem>(controller, o, true),
   m_editable(false),
   m_move(false)
 {    
@@ -121,6 +121,8 @@ void te::layout::TextItem::updateObserver( ContextItem context )
   std::string txt = model->getText();
   document()->setPlainText(txt.c_str());
 
+  refresh();
+
   update();
 }
 
@@ -139,7 +141,7 @@ void te::layout::TextItem::paint( QPainter * painter, const QStyleOptionGraphics
   
   QGraphicsTextItem::paint(painter, option, widget);
 
-  drawBorder(painter);
+  drawFrame(painter);
        
   //Draw Selection
   if (option->state & QStyle::State_Selected)
@@ -171,7 +173,7 @@ QImage te::layout::TextItem::createImage()
   double h = document()->size().height();
   
   QImage img(w, h, QImage::Format_ARGB32_Premultiplied);
-  img.fill(m_backgroundColor);
+  img.fill(m_backgroundColor.rgba());
 
   QPainter ptr(&img);
   ptr.setFont(ft);
@@ -228,11 +230,15 @@ te::gm::Coord2D te::layout::TextItem::getPosition()
   return coordinate;
 }
 
-te::color::RGBAColor** te::layout::TextItem::getImage()
+te::color::RGBAColor** te::layout::TextItem::getRGBAColorImage(int &w, int &h)
 {
   refreshDocument();
 
   QImage img = createImage();
+
+  w = img.width();
+  h = img.height();
+
   te::color::RGBAColor** teImg = te::qt::widgets::GetImage(&img);
   return teImg;
 }
@@ -247,8 +253,11 @@ QVariant te::layout::TextItem::itemChange( GraphicsItemChange change, const QVar
     double h = 0;
     getDocumentSizeMM(w, h);
 
-    newPos.setX(newPos.x() - transform().dx());
-    newPos.setY(newPos.y() - transform().dy() + h);
+    double tx = transform().dx();
+    double ty = transform().dy();
+
+    newPos.setX(newPos.x() - tx);
+    newPos.setY(newPos.y() - ty);
     return newPos;
   }
   else if(change == QGraphicsItem::ItemPositionHasChanged)
@@ -352,12 +361,12 @@ void te::layout::TextItem::resetEdit()
   {
     if(model->getText().compare(document()->toPlainText().toStdString()) != 0)
     {
-      Properties* beforeProps = getProperties();
+      Properties* beforeProps = model->getProperties();
       Properties* oldCommand = new Properties(*beforeProps);
 
       refreshDocument();
 
-      beforeProps = getProperties();
+      beforeProps = model->getProperties();
       Properties* newCommand = new Properties(*beforeProps);
 
       QUndoCommand* command = new ChangePropertyCommand(this, oldCommand, newCommand);

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -66,7 +66,7 @@ namespace te
 
           \param s The real SubSelect to be associated to this object.
         */
-        SubSelect(const Select& s, const std::string& alias);        
+        SubSelect(const Select& s, const std::string& alias);
 
         /*! \brief Copy constructor. */
         SubSelect(const SubSelect& rhs);

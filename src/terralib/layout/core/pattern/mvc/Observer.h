@@ -1,4 +1,4 @@
-/*  Copyright (C) 2014-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -61,14 +61,6 @@ namespace te
           \param context maintaining the drawing context of a MVC component.
        */ 
 	    virtual void updateObserver(ContextItem context) = 0;
-
-      /*!
-          \brief Returns the model state as properties.
-            Reimplement this function in a ItemObserver subclass to provide the item's getProperties implementation.
-
-          \return properties
-       */
-      virtual te::layout::Properties* getProperties() const = 0;
     };
   }
 }

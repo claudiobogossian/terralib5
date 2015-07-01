@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -149,6 +149,10 @@
 #cmakedefine TERRALIB_BOOST_ENABLED
 
 #cmakedefine TERRALIB_GDAL_ENABLED
+
+#if defined(TERRALIB_GDAL_ENABLED)
+  #define TERRALIB_GDAL_DATA "@GDAL_DATA_DIR@"
+#endif
 
 #cmakedefine TERRALIB_GEOS_ENABLED
 

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -29,9 +29,9 @@
 #define __TERRALIB_LAYOUT_INTERNAL_GRID_PLANAR_MODEL_H
 
 // TerraLib
-#include "GridModel.h"
 #include "../core/enum/AbstractType.h"
 #include "../core/Config.h"
+#include "GridMapModel.h"
 
 namespace te
 {
@@ -39,32 +39,29 @@ namespace te
   {
     class PlanarGridSettingsConfigProperties;
 
-    class TELAYOUTEXPORT GridPlanarModel: public GridModel 
+    class TELAYOUTEXPORT GridPlanarModel: public GridMapModel 
     {
       public:
 
         GridPlanarModel();
+
         virtual ~GridPlanarModel();
 
         virtual void draw(te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box, int srid);
 
-        virtual te::layout::Property getProperty();
+        virtual LayoutUnit getUnit();
 
-        virtual void updateProperty(te::layout::Property property);
-
+        virtual void calculateGaps(te::gm::Envelope box);
+        
        protected:
 
          virtual void drawVerticalLines(te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box);
 
          virtual void drawHorizontalLines(te::map::Canvas* canvas, Utils* utils, te::gm::Envelope box);
 
-         virtual void calculateGaps(te::gm::Envelope box);
-
        protected:
 
          LayoutUnit m_unit;
-
-         PlanarGridSettingsConfigProperties* m_settingsConfig;
     };
   }
 }

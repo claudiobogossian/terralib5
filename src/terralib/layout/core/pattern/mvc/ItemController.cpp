@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -63,8 +63,8 @@ void te::layout::ItemController::redraw()
     return;
 
   ParamsCreate params;
-  double zoomFactor = Context::getInstance().getZoomFactor();
-  ContextItem contxt(params, zoomFactor);
+  int zoom = Context::getInstance().getZoom();
+  ContextItem contxt(params, zoom);
 
   te::map::Canvas* canvas = Context::getInstance().getCanvas();
   Utils* utils = Context::getInstance().getUtils();
@@ -98,16 +98,6 @@ void te::layout::ItemController::setBox( te::gm::Envelope box )
     ItemModelObservable* model = dynamic_cast<ItemModelObservable*>(m_model);
     if(model)
       model->setBox(box);
-  }
-}
-
-void te::layout::ItemController::updateProperties( te::layout::Properties* properties )
-{
-  if(m_model)
-  {
-    ItemModelObservable* model = dynamic_cast<ItemModelObservable*>(m_model);
-    if(model)
-      model->updateProperties(properties);
   }
 }
 

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2010-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -145,7 +145,7 @@ namespace te
         private:
           Scatter*       m_scatter;       //!< The scatter that will be shown on this chart.
           ScatterStyle*  m_scatterStyle;  //!< The symbol that defines the look of a scatter's point.
-          QColor         m_selColor;      //!< THe color used to highlight selected obecjts.
+          QColor         m_selColor;      //!< The color used to highlight selected obecjts.
           QwtPlotCurve*  m_selection;     //!< The PlotItems to be highlighted when a selection occurs;
       };
     } // end namespace widgets

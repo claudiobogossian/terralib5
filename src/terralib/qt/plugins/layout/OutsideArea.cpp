@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -33,11 +33,10 @@
 #include "../../../layout/core/pattern/singleton/Context.h"
 #include "../../../layout/qt/outside/PropertiesOutside.h"
 #include "../../../layout/qt/outside/ObjectInspectorOutside.h"
-#include "../../../layout/qt/outside/ToolbarOutside.h"
 #include "../../../layout/core/enum/Enums.h"
-#include "../../../layout/outside/ToolbarModel.h"
-#include "../../../layout/outside/ToolbarController.h"
 #include "../../../layout/core/pattern/mvc/OutsideObserver.h"
+#include "../../../layout/qt/core/BuildGraphicsItem.h"
+#include "../../../layout/qt/core/BuildGraphicsOutside.h"
 
 // STL
 #include <string>
@@ -53,7 +52,6 @@ te::qt::plugins::layout::OutsideArea::OutsideArea( te::layout::View* view, QWidg
   m_dockProperties(0),
   m_dockInspector(0),
   m_dockEditTemplate(0),
-  m_mainMenu(0),
   m_parentMenu(mnuLayout),
   m_view(view),
   m_toolbar(0),
@@ -130,6 +128,16 @@ void te::qt::plugins::layout::OutsideArea::init()
     connect(m_view, SIGNAL(changeContext()), this, SLOT(onRefreshStatusBar()));
   }
 
+  te::layout::AbstractBuildGraphicsItem* abstractBuildItem = te::layout::Context::getInstance().getAbstractBuildGraphicsItem();
+  if(abstractBuildItem)
+  {
+    te::layout::BuildGraphicsItem* buildItem = dynamic_cast<te::layout::BuildGraphicsItem*>(abstractBuildItem);
+    if(buildItem)
+    {
+      connect(buildItem, SIGNAL(addChildFinalized(QGraphicsItem*, QGraphicsItem*)), this, SLOT(onAddChildFinalized(QGraphicsItem*, QGraphicsItem*)));
+    }
+  }
+
   createPropertiesDock();
 
   createInspectorDock();
@@ -143,7 +151,8 @@ void te::qt::plugins::layout::OutsideArea::init()
   if(m_toolbar)
   {
     connect(m_toolbar, SIGNAL(changeContext(bool)), m_view, SLOT(onToolbarChangeContext(bool)));
-    connect(m_view, SIGNAL(changeZoom(double)), m_toolbar, SLOT(onChangeZoom(double)));
+    connect(m_toolbar, SIGNAL(zoomChangedInComboBox(int)), m_view, SLOT(setZoom(int)));
+    connect(m_view, SIGNAL(zoomChanged(int)), m_toolbar, SLOT(onZoomChanged(int)));
   }
 
   if(m_dockInspector)
@@ -179,13 +188,32 @@ void te::qt::plugins::layout::OutsideArea::createToolbar()
 
   if(!win)
     return;
+  
+  te::layout::AbstractBuildGraphicsOutside* abstractBuildOutside = te::layout::Context::getInstance().getAbstractBuildGraphicsOutside();
+  if(!abstractBuildOutside)
+  {
+    return;
+  }
 
-  //Use the Property Browser Framework for create Object Inspector Window
-  te::layout::ToolbarModel* dockToolbarModel = new te::layout::ToolbarModel();		 
-  te::layout::ToolbarController* dockToolbarController = new te::layout::ToolbarController(dockToolbarModel);
-  te::layout::OutsideObserver* itemDockToolbar = (te::layout::OutsideObserver*)dockToolbarController->getView();
-  m_toolbar = dynamic_cast<te::layout::ToolbarOutside*>(itemDockToolbar); 
+  te::layout::BuildGraphicsOutside* buildOutside = dynamic_cast<te::layout::BuildGraphicsOutside*>(abstractBuildOutside);
+  if(!buildOutside)
+  {
+    return;
+  }
 
+  te::layout::EnumObjectType* objectType = te::layout::Enums::getInstance().getEnumObjectType();
+  if(!objectType)
+  {
+    return;
+  }
+
+  QWidget* widget = buildOutside->createOuside(objectType->getToolbar());
+  if(!widget)
+  {
+    return;
+  }
+
+  m_toolbar = dynamic_cast<te::layout::ToolbarOutside*>(widget);
   win->addToolBar(m_toolbar);
 }
 
@@ -198,19 +226,18 @@ void te::qt::plugins::layout::OutsideArea::createEditTemplateDock()
 
 void te::qt::plugins::layout::OutsideArea::createMainMenu()
 {
-  m_mainMenu = new QMenu("Print Model", m_parentMenu);
-  connect(m_mainMenu, SIGNAL(triggered(QAction*)), this, SLOT(onMainMenuTriggered(QAction*)));
+  connect(m_parentMenu, SIGNAL(triggered(QAction*)), this, SLOT(onMainMenuTriggered(QAction*)));
 
   QAction* actionNew = createAction("New", m_optionNew, "layout-new");
-  m_mainMenu->addAction(actionNew);
+  m_parentMenu->addAction(actionNew);
 
   QAction* actionSave = createAction("Update Template", m_optionUpdate, "layout-save");
-  m_mainMenu->addAction(actionSave);
+  m_parentMenu->addAction(actionSave);
 
-  m_mainMenu->addSeparator();
+  m_parentMenu->addSeparator();
   
-  QMenu* mnuImport = m_mainMenu->addMenu("Import Template");
-  QMenu* mnuExport = m_mainMenu->addMenu("Export Template");
+  QMenu* mnuImport = m_parentMenu->addMenu("Import Template");
+  QMenu* mnuExport = m_parentMenu->addMenu("Export Template");
 
   QAction* actionImportJSON = createAction("Import JSON Template", m_optionImportJSON, "layout-import");
   mnuImport->addAction(actionImportJSON);
@@ -218,35 +245,30 @@ void te::qt::plugins::layout::OutsideArea::createMainMenu()
   QAction* actionExportJSON = createAction("Export JSON Template", m_optionExportJSON, "layout-export");
   mnuExport->addAction(actionExportJSON);
   
-  m_mainMenu->addSeparator();
+  m_parentMenu->addSeparator();
   
   QAction* actionDockInspector = createAction("Dock Inspector", m_optionDockInspector, "");
   actionDockInspector->setCheckable(true);
   actionDockInspector->setChecked(true);
-  m_mainMenu->addAction(actionDockInspector);
+  m_parentMenu->addAction(actionDockInspector);
 
   QAction* actionDockProperties = createAction("Dock Properties", m_optionDockProperties, "");
   actionDockProperties->setCheckable(true);
   actionDockProperties->setChecked(true);
-  m_mainMenu->addAction(actionDockProperties);
+  m_parentMenu->addAction(actionDockProperties);
   
-  QAction* actionDockEditTemplate = createAction("Dock Edit Template", m_optionDockEditTemplate, "");
-  actionDockEditTemplate->setCheckable(true);
-  actionDockEditTemplate->setChecked(false);
-  m_mainMenu->addAction(actionDockEditTemplate);
-
-  m_mainMenu->addSeparator();
+  m_parentMenu->addSeparator();
 
   QAction* actionPageConfig = createAction("Page Config...", m_optionPageConfig, "layout-page-setup");
-  m_mainMenu->addAction(actionPageConfig);
+  m_parentMenu->addAction(actionPageConfig);
 
   QAction* actionPrint = createAction("Print...", m_optionPrint, "layout-printer");
-  m_mainMenu->addAction(actionPrint);
+  m_parentMenu->addAction(actionPrint);
 
-  m_mainMenu->addSeparator();
+  m_parentMenu->addSeparator();
 
   QAction* actionExit = createAction("Exit", m_optionExit, "layout-close");
-  m_mainMenu->addAction(actionExit);
+  m_parentMenu->addAction(actionExit);
 }
 
 void te::qt::plugins::layout::OutsideArea::onMainMenuTriggered( QAction* action )
@@ -319,7 +341,7 @@ void te::qt::plugins::layout::OutsideArea::onMainMenuTriggered( QAction* action 
 
 QAction* te::qt::plugins::layout::OutsideArea::createAction( std::string text, std::string objName, std::string icon, std::string tooltip )
 {
-  QAction *actionMenu = new QAction(text.c_str(), m_mainMenu);
+  QAction *actionMenu = new QAction(text.c_str(), m_parentMenu);
   actionMenu->setObjectName(objName.c_str());
 
   actionMenu->setIcon(QIcon::fromTheme(icon.c_str()));
@@ -427,28 +449,13 @@ void te::qt::plugins::layout::OutsideArea::openMainMenu()
 {
   if(!m_parentMenu)
     return;
-
-  if(!m_mainMenu)
-    return;
-
+  
   bool exist_menu = false;
-  QAction* action = m_mainMenu->menuAction();
   QList<QAction*> acts = m_parentMenu->actions();
-  if(action)
+ 
+  foreach(QAction* act, acts)
   {
-    foreach(QAction* act, acts)
-    {
-      if(act == action)
-      {
-        exist_menu = true;
-      }
-    }
-  }
-
-  if(!exist_menu)
-  {
-    m_parentMenu->addSeparator();
-    m_parentMenu->addMenu(m_mainMenu);
+    act->setVisible(true);
   }
 
   if(!acts.empty())
@@ -464,20 +471,10 @@ void te::qt::plugins::layout::OutsideArea::closeMainMenu()
   if(!m_parentMenu)
     return;
 
-  if(!m_mainMenu)
-    return;
-
-  QAction* action = m_mainMenu->menuAction();
   QList<QAction*> acts = m_parentMenu->actions();
-  if(action)
+  foreach(QAction* act, acts)
   {
-    foreach(QAction* act, acts)
-    {
-      if(act == action)
-      {
-        m_parentMenu->removeAction(action);
-      }
-    }
+    act->setVisible(false);
   }
 
   if(!acts.empty())
@@ -560,3 +557,15 @@ void te::qt::plugins::layout::OutsideArea::onRefreshStatusBar()
   msg += s_mode;
   m_statusBar->showMessage(msg.c_str());
 }
+
+void te::qt::plugins::layout::OutsideArea::onAddChildFinalized( QGraphicsItem* parent, QGraphicsItem* child )
+{
+  QList<QGraphicsItem*> allItems = m_view->scene()->items();
+  //Refresh Inspector Object window
+  if(m_dockInspector)
+    m_dockInspector->getObjectInspectorOutside()->itemsInspector(allItems);
+}
+
+
+
+

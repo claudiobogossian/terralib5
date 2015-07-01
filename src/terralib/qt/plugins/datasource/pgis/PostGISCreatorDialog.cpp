@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -85,31 +85,35 @@ void te::qt::plugins::pgis::PostGISCreatorDialog::applyPushButtonPressed()
     }
 
 // get data source connection info based on form data
-    std::map<std::string, std::string> dsInfo;
-
-    getConnectionInfo(dsInfo);
+    std::map<std::string, std::string> dsInfo = getConnectionInfo(true);
 
 // create database
     te::da::DataSource::create("POSTGIS", dsInfo);
 
-    // Connect
-    std::map<std::string, std::string> connInfo;
-    connInfo["PG_HOST"] = dsInfo["PG_HOST"];
-    connInfo["PG_PORT"] = dsInfo["PG_PORT"];
-    connInfo["PG_USER"] = dsInfo["PG_USER"];
-    connInfo["PG_PASSWORD"] = dsInfo["PG_PASSWORD"];
-    connInfo["PG_DB_NAME"] = dsInfo["PG_NEWDB_NAME"];
-    connInfo["PG_MIN_POOL_SIZE"] = "1";
-    connInfo["PG_MAX_POOL_SIZE"] = "4";
-    connInfo["PG_CONNECT_TIMEOUT"] = "5";
-    if(!dsInfo["PG_NEWDB_ENCODING"].empty())
-      connInfo["PG_CLIENT_ENCODING"] = dsInfo["PG_NEWDB_ENCODING"];
+    {
+      // Connect
+      std::map<std::string, std::string> connInfo;
+      if(!dsInfo["PG_HOST"].empty())
+        connInfo["PG_HOST"] = dsInfo["PG_HOST"];
 
-    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("POSTGIS");
-    ds->setConnectionInfo(connInfo);
-    ds->open();
+      if(!dsInfo["PG_PORT"].empty())
+        connInfo["PG_PORT"] = dsInfo["PG_PORT"];
 
-    m_driver.reset(ds.release());
+      connInfo["PG_USER"] = dsInfo["PG_USER"];
+      connInfo["PG_PASSWORD"] = dsInfo["PG_PASSWORD"];
+      connInfo["PG_DB_NAME"] = dsInfo["PG_NEWDB_NAME"];
+      connInfo["PG_MIN_POOL_SIZE"] = "1";
+      connInfo["PG_MAX_POOL_SIZE"] = "4";
+      connInfo["PG_CONNECT_TIMEOUT"] = "5";
+      if(!dsInfo["PG_NEWDB_ENCODING"].empty())
+        connInfo["PG_CLIENT_ENCODING"] = dsInfo["PG_NEWDB_ENCODING"];
+
+      std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("POSTGIS");
+      ds->setConnectionInfo(connInfo);
+      ds->open();
+
+      m_driver.reset(ds.release());
+    }
 
     if(m_driver.get() == 0)
     {
@@ -118,6 +122,25 @@ void te::qt::plugins::pgis::PostGISCreatorDialog::applyPushButtonPressed()
     }
     
     QString title = m_ui->m_hostNameLineEdit->text().trimmed() + QString::fromStdString("@") + m_ui->m_newDatabaseNameLineEdit->text().trimmed() + QString::fromStdString("@") + m_ui->m_userNameLineEdit->text().trimmed();
+
+    std::map<std::string, std::string> connInfo;
+    if(!dsInfo["PG_HOST"].empty())
+      connInfo["PG_HOST"] = dsInfo["PG_HOST"];
+
+    if(!dsInfo["PG_PORT"].empty())
+      connInfo["PG_PORT"] = dsInfo["PG_PORT"];
+
+    connInfo["PG_USER"] = dsInfo["PG_USER"];
+
+    if(m_ui->m_savePasswordCheckBox)
+      connInfo["PG_PASSWORD"] = dsInfo["PG_PASSWORD"];
+
+    connInfo["PG_DB_NAME"] = dsInfo["PG_NEWDB_NAME"];
+    connInfo["PG_MIN_POOL_SIZE"] = "1";
+    connInfo["PG_MAX_POOL_SIZE"] = "4";
+    connInfo["PG_CONNECT_TIMEOUT"] = "5";
+    if(!dsInfo["PG_NEWDB_ENCODING"].empty())
+    connInfo["PG_CLIENT_ENCODING"] = dsInfo["PG_NEWDB_ENCODING"];
 
     if(m_datasource.get() == 0)
     {
@@ -177,10 +200,9 @@ void te::qt::plugins::pgis::PostGISCreatorDialog::advancedCreationOptionsCheckBo
   m_ui->m_advancedOptionsGroupBox->setVisible(t);
 }
 
-void te::qt::plugins::pgis::PostGISCreatorDialog::getConnectionInfo(std::map<std::string, std::string>& connInfo) const
+std::map<std::string, std::string> te::qt::plugins::pgis::PostGISCreatorDialog::getConnectionInfo(bool getPrivateKeys) const
 {
-// clear input
-  connInfo.clear();
+  std::map<std::string, std::string> connInfo;
 
 // get host
   QString qstr = m_ui->m_hostNameLineEdit->text().trimmed();
@@ -201,10 +223,13 @@ void te::qt::plugins::pgis::PostGISCreatorDialog::getConnectionInfo(std::map<std
     connInfo["PG_USER"] = qstr.toStdString();
 
 // get password
-  qstr = m_ui->m_passwordLineEdit->text().trimmed();
+  if(getPrivateKeys)
+  {
+    qstr = m_ui->m_passwordLineEdit->text().trimmed();
   
-  if(!qstr.isEmpty())
-    connInfo["PG_PASSWORD"] = qstr.toStdString();
+    if(!qstr.isEmpty())
+      connInfo["PG_PASSWORD"] = qstr.toStdString();
+  }
 
 // get dbname
   qstr = m_ui->m_newDatabaseNameLineEdit->text().trimmed();
@@ -249,6 +274,8 @@ void te::qt::plugins::pgis::PostGISCreatorDialog::getConnectionInfo(std::map<std
         connInfo["PG_NEWDB_CONN_LIMIT"] = "-1";
     }
   }
+
+  return connInfo;
 }
 
 const te::da::DataSourceInfoPtr& te::qt::plugins::pgis::PostGISCreatorDialog::getDataSource() const
@@ -267,8 +294,7 @@ void te::qt::plugins::pgis::PostGISCreatorDialog::passwordLineEditEditingFinishe
   {
     if(m_ui->m_userNameLineEdit->text() != "" && m_ui->m_passwordLineEdit->text() != "")
     {
-      std::map<std::string, std::string> dsInfo;
-      getConnectionInfo(dsInfo);
+      std::map<std::string, std::string> dsInfo = getConnectionInfo(true);
 
       // Get Templates/Databases
       std::vector<std::string> templates = te::da::DataSource::getDataSourceNames("POSTGIS", dsInfo);
@@ -289,8 +315,7 @@ void te::qt::plugins::pgis::PostGISCreatorDialog::passwordLineEditEditingFinishe
       // Try to go the owners
       m_ui->m_ownerComboBox->clear();
       std::map<std::string, std::string> info;
-      std::map<std::string, std::string> aux;
-      getConnectionInfo(aux);
+      std::map<std::string, std::string> aux = getConnectionInfo(true);
       info["PG_HOST"] = aux["PG_HOST"].empty()?"localhost":aux["PG_HOST"];
       info["PG_PORT"] = aux["PG_PORT"].empty()?"5432":aux["PG_PORT"];
       info["PG_USER"] = aux["PG_USER"];

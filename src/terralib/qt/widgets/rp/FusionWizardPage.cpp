@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -434,6 +434,13 @@ void te::qt::widgets::FusionWizardPage::fillSensorTypes(QComboBox* combo)
   combo->addItem("CBERS 2B Band 3", QVariant(te::rp::srf::CBERS2BCCDB3Sensor));
   combo->addItem("CBERS 2B Band 4", QVariant(te::rp::srf::CBERS2BCCDB4Sensor));
   combo->addItem("CBERS 2B Band 5", QVariant(te::rp::srf::CBERS2BCCDB5PANSensor));
+  
+  combo->addItem("CBERS 4 MUX Band 5", QVariant(te::rp::srf::CBERS4MUXB5Sensor));
+  combo->addItem("CBERS 4 MUX Band 6", QVariant(te::rp::srf::CBERS4MUXB6Sensor));
+  combo->addItem("CBERS 4 MUX Band 7", QVariant(te::rp::srf::CBERS4MUXB7Sensor));
+  combo->addItem("CBERS 4 MUX Band 8", QVariant(te::rp::srf::CBERS4MUXB8Sensor));
+
+  
   combo->addItem("LANDSAT 8 OLI Band 1", QVariant(te::rp::srf::LANDSAT8OLIB1Sensor));
   combo->addItem("LANDSAT 8 OLI Band 2", QVariant(te::rp::srf::LANDSAT8OLIB2Sensor));
   combo->addItem("LANDSAT 8 OLI Band 3", QVariant(te::rp::srf::LANDSAT8OLIB3Sensor));
@@ -445,6 +452,7 @@ void te::qt::widgets::FusionWizardPage::fillSensorTypes(QComboBox* combo)
   combo->addItem("LANDSAT 8 OLI Band 9", QVariant(te::rp::srf::LANDSAT8OLIB9Sensor));
   combo->addItem("LANDSAT 8 OLI Band 10", QVariant(te::rp::srf::LANDSAT8OLIB10Sensor));
   combo->addItem("LANDSAT 8 OLI Band 11", QVariant(te::rp::srf::LANDSAT8OLIB11Sensor));
+  
   combo->addItem("LANDSAT 7 ETM+ Band 1", QVariant(te::rp::srf::LANDSAT7ETMB1Sensor));
   combo->addItem("LANDSAT 7 ETM+ Band 2", QVariant(te::rp::srf::LANDSAT7ETMB2Sensor));
   combo->addItem("LANDSAT 7 ETM+ Band 3", QVariant(te::rp::srf::LANDSAT7ETMB3Sensor));

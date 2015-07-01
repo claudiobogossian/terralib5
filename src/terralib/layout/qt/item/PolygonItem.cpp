@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -42,8 +42,8 @@
 #include <QStyleOptionGraphicsItem>
 #include <QObject>
 
-te::layout::PolygonItem::PolygonItem( ItemController* controller, Observable* o ) :
-  LineItem(controller, o)
+te::layout::PolygonItem::PolygonItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
+  LineItem(controller, o, invertedMatrix)
 { 
   m_nameClass = std::string(this->metaObject()->className());
 }
@@ -53,29 +53,7 @@ te::layout::PolygonItem::~PolygonItem()
 
 }
 
-void te::layout::PolygonItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
-{
-  Q_UNUSED( option );
-  Q_UNUSED( widget );
-  if ( !painter )
-  {
-    return;
-  }
-
-  drawBackground(painter);
-
-  drawPolygon(painter);
-
-  drawBorder(painter);
-
-  //Draw Selection
-  if (option->state & QStyle::State_Selected)
-  {
-    drawSelection(painter);
-  }
-}
-
-void te::layout::PolygonItem::drawPolygon( QPainter * painter )
+void te::layout::PolygonItem::drawItem( QPainter * painter )
 {
   LineModel* model = dynamic_cast<LineModel*>(m_model);
   if(!model)
@@ -86,19 +64,14 @@ void te::layout::PolygonItem::drawPolygon( QPainter * painter )
   if(m_poly.empty())
     return;
 
-  te::color::RGBAColor clrLne = model->getLineColor();
-
-  QColor cpen;
-  cpen.setRed(clrLne.getRed());
-  cpen.setGreen(clrLne.getGreen());
-  cpen.setBlue(clrLne.getBlue());
-  cpen.setAlpha(clrLne.getAlpha());
-
-  QPen pn(cpen, 0, Qt::SolidLine);
-  painter->setPen(pn);
+  const te::color::RGBAColor& color = model->getColor();
+  QColor qColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
 
   painter->save();
+
+  QPen pn(qColor, 0, Qt::SolidLine);
+  painter->setPen(pn);
+
   painter->drawPolygon(m_poly);
   painter->restore();
 }
-

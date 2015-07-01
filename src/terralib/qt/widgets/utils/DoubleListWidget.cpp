@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -42,6 +42,8 @@ te::qt::widgets::DoubleListWidget::DoubleListWidget(QWidget* parent, Qt::WindowF
   m_ui->m_addAllToolButton->setIcon(QIcon::fromTheme("go-last"));
   m_ui->m_removeToolButton->setIcon(QIcon::fromTheme("go-previous"));
   m_ui->m_removeAllToolButton->setIcon(QIcon::fromTheme("go-first"));
+  m_ui->m_upToolButton->setIcon(QIcon::fromTheme("go-up"));
+  m_ui->m_downToolButton->setIcon(QIcon::fromTheme("go-down"));
 
 // set selection mode
   m_ui->m_leftListWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
@@ -52,6 +54,8 @@ te::qt::widgets::DoubleListWidget::DoubleListWidget(QWidget* parent, Qt::WindowF
   connect(m_ui->m_addAllToolButton, SIGNAL(pressed()), this, SLOT(onAddAllToolButtonPressed()));
   connect(m_ui->m_removeToolButton, SIGNAL(pressed()), this, SLOT(onRemoveToolButtonPressed()));
   connect(m_ui->m_removeAllToolButton, SIGNAL(pressed()), this, SLOT(onRemoveAllToolButtonPressed()));
+  connect(m_ui->m_upToolButton, SIGNAL(pressed()), this, SLOT(onUpToolButtonPressed()));
+  connect(m_ui->m_downToolButton, SIGNAL(pressed()), this, SLOT(onDownToolButtonPressed()));
   connect(m_ui->m_leftListWidget, SIGNAL(itemPressed(QListWidgetItem*)), this, SLOT(onLeftListPressed(QListWidgetItem*)));
   connect(m_ui->m_rightListWidget, SIGNAL(itemPressed(QListWidgetItem*)), this, SLOT(onRightListPressed(QListWidgetItem*)));
 }
@@ -209,6 +213,8 @@ void te::qt::widgets::DoubleListWidget::onRemoveToolButtonPressed()
   {
     m_ui->m_removeToolButton->setEnabled(false);
     m_ui->m_removeAllToolButton->setEnabled(false);
+    m_ui->m_upToolButton->setEnabled(false);
+    m_ui->m_downToolButton->setEnabled(false);
   }
 
   emit itemChanged();
@@ -234,25 +240,107 @@ void te::qt::widgets::DoubleListWidget::onRemoveAllToolButtonPressed()
 
   m_ui->m_removeToolButton->setEnabled(false);
   m_ui->m_removeAllToolButton->setEnabled(false);
+  m_ui->m_upToolButton->setEnabled(false);
+  m_ui->m_downToolButton->setEnabled(false);
 
   emit itemChanged();
 }
 
+void te::qt::widgets::DoubleListWidget::onUpToolButtonPressed()
+{
+  int count = m_ui->m_rightListWidget->count();
+
+  if(count == m_ui->m_rightListWidget->selectedItems().size())
+    return;
+
+  for(int i = 0; i < count; ++i)
+  {
+    QListWidgetItem* currentItem = m_ui->m_rightListWidget->item(i);
+
+    if(i == 0)
+      continue;
+
+    if(currentItem->isSelected())
+    {
+      QListWidgetItem* itemBefore = m_ui->m_rightListWidget->item(i-1);
+
+      bool wasSelected = itemBefore->isSelected();
+
+      m_ui->m_rightListWidget->takeItem(i);
+      m_ui->m_rightListWidget->takeItem(i-1);
+
+      m_ui->m_rightListWidget->insertItem(i-1, currentItem);
+      m_ui->m_rightListWidget->insertItem(i, itemBefore);
+
+      currentItem->setSelected(true);
+
+      if(wasSelected)
+        itemBefore->setSelected(true);
+    }
+  }
+}
+
+void te::qt::widgets::DoubleListWidget::onDownToolButtonPressed()
+{
+  int count = m_ui->m_rightListWidget->count();
+
+  if(count == m_ui->m_rightListWidget->selectedItems().size())
+    return;
+
+  for(int i = count-1; i >= 0; --i)
+  {
+    QListWidgetItem* currentItem = m_ui->m_rightListWidget->item(i);
+
+    if(i == count-1)
+      continue;
+
+    if(currentItem->isSelected())
+    {
+      QListWidgetItem* itemAfter = m_ui->m_rightListWidget->item(i+1);
+
+      bool wasSelected = itemAfter->isSelected();
+
+      m_ui->m_rightListWidget->takeItem(i);
+      m_ui->m_rightListWidget->takeItem(i);
+
+      m_ui->m_rightListWidget->insertItem(i, itemAfter);
+      m_ui->m_rightListWidget->insertItem(i+1, currentItem);
+
+      currentItem->setSelected(true);
+
+      if(wasSelected)
+        itemAfter->setSelected(true);
+    }
+  }
+}
+
 void te::qt::widgets::DoubleListWidget::onLeftListPressed(QListWidgetItem* item)
 {
-  if(item)
+  if(m_ui->m_leftListWidget->selectedItems().size() > 0)
   {
     m_ui->m_addToolButton->setEnabled(true);
     m_ui->m_addAllToolButton->setEnabled(true);
+  }
+  else
+  {
+    m_ui->m_addToolButton->setEnabled(false);
   }
 }
 
 void te::qt::widgets::DoubleListWidget::onRightListPressed(QListWidgetItem* item)
 {
-  if(item)
+  if(m_ui->m_rightListWidget->selectedItems().size() > 0)
   {
     m_ui->m_removeToolButton->setEnabled(true);
     m_ui->m_removeAllToolButton->setEnabled(true);
+    m_ui->m_upToolButton->setEnabled(true);
+    m_ui->m_downToolButton->setEnabled(true);
+  }
+  else
+  {
+    m_ui->m_removeToolButton->setEnabled(false);
+    m_ui->m_upToolButton->setEnabled(false);
+    m_ui->m_downToolButton->setEnabled(false);
   }
 }
 

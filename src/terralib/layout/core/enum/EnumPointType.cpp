@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -42,72 +42,24 @@ te::layout::EnumPointType::EnumPointType() :
 
 te::layout::EnumPointType::~EnumPointType()
 {
-  if(m_noneType)
-  {
-    delete m_noneType;
-    m_noneType = 0;
-  }
-  if(m_star)
-  {
-    delete m_star;
-    m_star = 0;
-  }
-  if(m_circle)
-  {
-    delete m_circle;
-    m_circle = 0;
-  }
-  if(m_x)
-  {
-    delete m_x;
-    m_x = 0;
-  }
-  if(m_square)
-  {
-    delete m_square;
-    m_square = 0;
-  }
-  if(m_rhombus)
-  {
-    delete m_rhombus;
-    m_rhombus = 0;
-  }
-  if(m_cross)
-  {
-    delete m_cross;
-    m_cross = 0;
-  }
+  
 }
 
 void te::layout::EnumPointType::init()
 {
-  m_noneType = new EnumType(0, "NoneScale", this);
-  m_noneType->setLabel("None Scale");
-  m_enums.push_back(m_noneType);
+  m_noneType = createEnum("NoneScale", this, "None Scale");
 
-  m_star = new EnumType(1, "Star", this);
-  m_star->setLabel("Star");
-  m_enums.push_back(m_star);
+  m_star = createEnum("Star", this);
 
-  m_circle = new EnumType(2, "Circle", this);
-  m_circle->setLabel("Circle");
-  m_enums.push_back(m_circle);
+  m_circle = createEnum("Circle", this);
 
-  m_x = new EnumType(3, "X", this);
-  m_x->setLabel("X");
-  m_enums.push_back(m_x);
+  m_x = createEnum("X", this);
 
-  m_square = new EnumType(4, "Square", this);
-  m_square->setLabel("Square");
-  m_enums.push_back(m_square);
+  m_square = createEnum("Square", this);
 
-  m_rhombus = new EnumType(5, "Rhombus", this);
-  m_rhombus->setLabel("Rhombus");
-  m_enums.push_back(m_rhombus);    
+  m_rhombus = createEnum("Rhombus", this);
 
-  m_cross = new EnumType(6, "Cross", this);
-  m_cross->setLabel("Cross");
-  m_enums.push_back(m_cross);  
+  m_cross = createEnum("Cross", this);
 }
 
 te::layout::EnumType* te::layout::EnumPointType::getNoneType() const

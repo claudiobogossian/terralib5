@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -58,6 +58,7 @@
 #include "query/GroupByItem.h"
 #include "query/Having.h"
 #include "query/In.h"
+#include "query/Insert.h"
 #include "query/IsNull.h"
 #include "query/Join.h"
 #include "query/JoinCondition.h"
@@ -109,6 +110,7 @@
 #include "query/ST_Equals.h"
 #include "query/ST_Intersection.h"
 #include "query/ST_Intersects.h"
+#include "query/ST_IsValid.h"
 #include "query/ST_Length.h"
 #include "query/ST_NumGeometries.h"
 #include "query/ST_Overlaps.h"

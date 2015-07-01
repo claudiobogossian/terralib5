@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -127,8 +127,28 @@ namespace te
         std::auto_ptr<TimeSeriesDataSet> getDataSet(const TimeSeriesDataSetInfo& info, 
                               te::common::TraverseType travType = te::common::FORWARDONLY);
 
+        std::auto_ptr<TimeSeriesDataSet> getDataSet(const TimeSeriesDataSetInfo& info,  
+                             const te::gm::Geometry& geom, te::gm::SpatialRelation r,
+                             te::common::TraverseType travType = te::common::FORWARDONLY);
+
+        std::auto_ptr<TimeSeriesDataSet> getDataSet(const TimeSeriesDataSetInfo& info, 
+                                const te::gm::Envelope& e, te::gm::SpatialRelation r,
+                                te::common::TraverseType travType = te::common::FORWARDONLY);
+
         std::auto_ptr<TimeSeriesDataSet> getDataSet(const TimeSeriesDataSetInfo& info, 
                                  const te::dt::DateTime& dt, te::dt::TemporalRelation r = te::dt::DURING,
+                                 te::common::TraverseType travType = te::common::FORWARDONLY);
+
+        std::auto_ptr<TimeSeriesDataSet> getDataSet(const TimeSeriesDataSetInfo& info,
+                                                    const te::dt::DateTime& dt, 
+                                                    te::dt::TemporalRelation tr,
+                                                    const te::gm::Envelope& e, 
+                                                    te::gm::SpatialRelation sr = te::gm::INTERSECTS,
+                                                    te::common::TraverseType travType = te::common::FORWARDONLY);
+
+        std::auto_ptr<TimeSeriesDataSet> getDataSet(const TimeSeriesDataSetInfo& info, 
+                                 const te::gm::Geometry& geom, te::gm::SpatialRelation sr,
+                                 const te::dt::DateTime& dt, te::dt::TemporalRelation tr,
                                  te::common::TraverseType travType = te::common::FORWARDONLY);
 
         std::auto_ptr<te::dt::DateTimePeriod> getTemporalExtent(const ObservationDataSetInfo& info);

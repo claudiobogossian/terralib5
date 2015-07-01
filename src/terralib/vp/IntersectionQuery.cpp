@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -134,20 +134,21 @@ bool te::vp::IntersectionQuery::run() throw(te::common::Exception)
   select->setFields(fields);
   select->setFrom(from);
 
-//Where clause if the object ids were selected.
+// Where clause if the object ids were selected.
   te::da::Where* w_oid = 0;
   if(m_firstOidSet && m_secondOidSet)
   {
-    te::da::And* exp_and = new te::da::And(m_firstOidSet->getExpression(m_inFirstDsetType->getName()), m_secondOidSet->getExpression(m_inSecondDsetType->getName()));
+    te::da::And* exp_and = new te::da::And(m_firstOidSet->getExpressionByInClause(m_inFirstDsetType->getName()), m_secondOidSet->getExpressionByInClause(m_inSecondDsetType->getName()));
     w_oid = new te::da::Where(exp_and);
   }
   else if(m_firstOidSet)
-    w_oid = new te::da::Where(m_firstOidSet->getExpression(m_inFirstDsetType->getName()));
+    w_oid = new te::da::Where(m_firstOidSet->getExpressionByInClause(m_inFirstDsetType->getName()));
   else if(m_secondOidSet)
-    w_oid = new te::da::Where(m_secondOidSet->getExpression(m_inSecondDsetType->getName()));
+    w_oid = new te::da::Where(m_secondOidSet->getExpressionByInClause(m_inSecondDsetType->getName()));
   
   select->setWhere(w_oid);
 
+// Execute Query
   std::auto_ptr<te::da::DataSet> dsQuery = m_inFirstDsrc->query(select);
   dsQuery->moveBeforeFirst();
 

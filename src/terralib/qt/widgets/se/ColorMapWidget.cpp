@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -408,7 +408,7 @@ void te::qt::widgets::ColorMapWidget::buildCategorizationMap()
 
   for(int i = 0; i < m_ui->m_tableWidget->rowCount(); ++i)
   {
-    QColor color = QColor::fromRgb(m_ui->m_tableWidget->item(i, 0)->icon().pixmap(24, 24).toImage().pixel(0,0));
+    QColor color = QColor::fromRgb(m_ui->m_tableWidget->item(i, 0)->icon().pixmap(24, 24).toImage().pixel(1,1));
 
     std::string rangeStr = m_ui->m_tableWidget->item(i, 1)->text().toStdString();
     std::string colorStr = color.name().toStdString();
@@ -504,7 +504,7 @@ void te::qt::widgets::ColorMapWidget::buildInterpolationMap()
 
   for(int i = 0; i < m_ui->m_tableWidget->rowCount(); ++i)
   {
-    QColor color = QColor::fromRgb(m_ui->m_tableWidget->item(i, 0)->icon().pixmap(24, 24).toImage().pixel(0,0));
+    QColor color = QColor::fromRgb(m_ui->m_tableWidget->item(i, 0)->icon().pixmap(24, 24).toImage().pixel(1,1));
 
     if(i == m_ui->m_tableWidget->rowCount() - 1)
     {
@@ -521,7 +521,7 @@ void te::qt::widgets::ColorMapWidget::buildInterpolationMap()
       }
 
       {
-        color = QColor::fromRgb(m_ui->m_tableWidget->item(i, 0)->icon().pixmap(24, 24).toImage().pixel(23,0));
+        color = QColor::fromRgb(m_ui->m_tableWidget->item(i, 0)->icon().pixmap(24, 24).toImage().pixel(22,1));
 
         QString rangeStr = m_ui->m_tableWidget->item(i, 2)->text();
         std::string colorStr = color.name().toLatin1().data();
@@ -766,7 +766,6 @@ void te::qt::widgets::ColorMapWidget::onBandSelected(QString value)
 void te::qt::widgets::ColorMapWidget::onTableWidgetItemDoubleClicked(QTableWidgetItem* item)
 {
   int curCol = m_ui->m_tableWidget->currentColumn();
-  int curRow = m_ui->m_tableWidget->currentRow();
 
   int index = m_ui->m_transformComboBox->currentIndex();
 
@@ -776,7 +775,7 @@ void te::qt::widgets::ColorMapWidget::onTableWidgetItemDoubleClicked(QTableWidge
   {
     if(type == te::se::CATEGORIZE_TRANSFORMATION)
     {
-      QColor bgColor = QColor::fromRgb(item->icon().pixmap(24, 24).toImage().pixel(0,0));
+      QColor bgColor = QColor::fromRgb(item->icon().pixmap(24, 24).toImage().pixel(1,1));
 
       QColor newBgColor = QColorDialog::getColor(bgColor, m_ui->m_tableWidget);
 
@@ -794,14 +793,14 @@ void te::qt::widgets::ColorMapWidget::onTableWidgetItemDoubleClicked(QTableWidge
       QMessageBox::information(this, tr("Classification"), 
         tr("Set the colors for the min and max values of this range. Also necessary to change the colors equivalents at another level to maintain consistency."));
 
-      QColor color1 = QColor::fromRgb(item->icon().pixmap(24, 24).toImage().pixel(0,0));
+      QColor color1 = QColor::fromRgb(item->icon().pixmap(24, 24).toImage().pixel(1,1));
 
       QColor newBgColor = QColorDialog::getColor(color1, m_ui->m_tableWidget);
 
       if(newBgColor.isValid())
         color1 = newBgColor;
 
-      QColor color2 = QColor::fromRgb(item->icon().pixmap(24, 24).toImage().pixel(23,0));
+      QColor color2 = QColor::fromRgb(item->icon().pixmap(24, 24).toImage().pixel(22,1));
 
       newBgColor = QColorDialog::getColor(color2, m_ui->m_tableWidget);
 

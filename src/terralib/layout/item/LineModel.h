@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -47,20 +47,37 @@ namespace te
 
         virtual ~LineModel();
 
-		    virtual void setCoords(std::vector<te::gm::Point*> coords);
+        virtual void setCoords(std::vector<te::gm::Point*> coords);
 
         virtual std::vector<te::gm::Point*> getCoords();
 
-        virtual te::color::RGBAColor getLineColor();
-
         virtual te::layout::Properties* getProperties() const;
 
-        virtual void updateProperties(te::layout::Properties* properties);
-			 
-	    protected:
-		
-		    std::vector<te::gm::Point*> m_coords;
-        te::color::RGBAColor			  m_lineColor; //!< line color
+        virtual void updateProperties(te::layout::Properties* properties, bool notify = true);
+
+        virtual EnumLineStyleType* getEnumLineStyleType();
+
+        virtual EnumType* getCurrentLineStyleType();
+
+        /*!
+          \brief Gets the color of the shape
+        */
+        virtual const te::color::RGBAColor& getColor() const;
+
+        /*!
+          \brief Sets the color of the shape
+        */
+        virtual void setColor(const te::color::RGBAColor& color);
+       
+      protected:
+
+        virtual Property lineProperty() const;
+
+        std::vector<te::gm::Point*> m_coords;
+        EnumType*                   m_currentLineStyleType; //!< store current line style type
+        EnumLineStyleType*          m_enumLineStyleType; //!< line style type
+
+        te::color::RGBAColor        m_color; //!< The color of the shape
     };
   }
 }

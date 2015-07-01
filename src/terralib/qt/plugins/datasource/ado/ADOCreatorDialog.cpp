@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -52,8 +52,12 @@ te::qt::plugins::ado::ADOCreatorDialog::ADOCreatorDialog(QWidget* parent, Qt::Wi
   m_ui->setupUi(this);
 
 // popule providers
+#ifdef _M_IX86
   m_ui->m_providerComboBox->addItem("Microsoft.Jet.OLEDB.4.0");
-  
+#else
+  m_ui->m_providerComboBox->addItem("Microsoft.ACE.OLEDB.12.0");
+#endif
+
 // connect signal and slots
   connect(m_ui->m_applyPushButton, SIGNAL(pressed()), this, SLOT(applyPushButtonPressed()));
   //connect(m_ui->m_helpPushButton, SIGNAL(pressed()), this, SLOT(helpPushButtonPressed()));
@@ -85,31 +89,38 @@ void te::qt::plugins::ado::ADOCreatorDialog::applyPushButtonPressed()
     if(te::da::DataSourceFactory::find("ADO") == 0)
       throw te::qt::widgets::Exception(TE_TR("Sorry! No data access driver loaded for ADO data sources!"));
 
-// get data source connection info based on form data
-    std::map<std::string, std::string> dsInfo;
+    // get data source connection info based on form data
+    std::map<std::string, std::string> dsInfo = getConnectionInfo(true);
 
-    getConnectionInfo(dsInfo);
+    {
+      // create database
+      te::da::DataSource::create("ADO", dsInfo);
 
-    // create database
-    te::da::DataSource::create("ADO", dsInfo);
+      // Connect
+      std::map<std::string, std::string> connInfo;
+      connInfo["DB_NAME"] = dsInfo["DB_NAME"];
+      connInfo["PROVIDER"] = dsInfo["PROVIDER"];
+      if(!dsInfo["PASSWORD"].empty())
+        connInfo["PASSWORD"] = dsInfo["PASSWORD"];
 
-    // Connect
-    std::map<std::string, std::string> connInfo;
-    connInfo["DB_NAME"] = dsInfo["DB_NAME"];
-    connInfo["PROVIDER"] = dsInfo["PROVIDER"];
-    if(!dsInfo["PASSWORD"].empty())
-      connInfo["PASSWORD"] = dsInfo["PASSWORD"];
+      std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("ADO");
+      ds->setConnectionInfo(connInfo);
+      ds->open();
 
-    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("ADO");
-    ds->setConnectionInfo(connInfo);
-    ds->open();
-
-    m_driver.reset(ds.release());
+      m_driver.reset(ds.release());
+    }
 
     if(m_driver.get() == 0)
       throw te::qt::widgets::Exception(TE_TR("Could not open ADO data source due to an unknown error!"));
     
     QString title = m_ui->m_fileLineEdit->text().trimmed();
+
+      // Connect
+      std::map<std::string, std::string> connInfo;
+      connInfo["DB_NAME"] = dsInfo["DB_NAME"];
+      connInfo["PROVIDER"] = dsInfo["PROVIDER"];
+      if(!dsInfo["PASSWORD"].empty() && m_ui->m_savePasswordCheckBox->isChecked())
+        connInfo["PASSWORD"] = dsInfo["PASSWORD"];
 
     if(m_datasource.get() == 0)
     {
@@ -176,20 +187,22 @@ void te::qt::plugins::ado::ADOCreatorDialog::searchDatabaseToolButtonPressed()
   te::qt::widgets::AddFilePathToSettings(info.absolutePath(), "vector");
 }
 
-void te::qt::plugins::ado::ADOCreatorDialog::getConnectionInfo(std::map<std::string, std::string>& connInfo) const
+std::map<std::string, std::string> te::qt::plugins::ado::ADOCreatorDialog::getConnectionInfo(bool getPrivateKeys) const
 {
-// clear input
-  connInfo.clear();
+  std::map<std::string, std::string> connInfo;
 
   QString qstr = m_ui->m_fileLineEdit->text().trimmed();
 
   if(!qstr.isEmpty())
     connInfo["DB_NAME"] = qstr.toStdString();
 
-  qstr = m_ui->m_passwordLineEdit->text().trimmed();
+  if(getPrivateKeys)
+  {
+    qstr = m_ui->m_passwordLineEdit->text().trimmed();
 
-  if(!qstr.isEmpty())
-    connInfo["PASSWORD"] = qstr.toStdString();
+    if(!qstr.isEmpty())
+      connInfo["PASSWORD"] = qstr.toStdString();
+  }
 
   qstr = m_ui->m_providerComboBox->currentText().trimmed();
 
@@ -198,4 +211,6 @@ void te::qt::plugins::ado::ADOCreatorDialog::getConnectionInfo(std::map<std::str
 
   if(m_ui->m_createOGCTablesCheckBox->isChecked())
     connInfo["CREATE_OGC_METADATA_TABLES"] = "TRUE";
+
+  return connInfo;
 }

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2010-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -245,6 +245,12 @@ const std::string& te::st::TrajectoryDataSetLayer::getType() const
 {
   return sm_type;
 }
+
+const std::string& te::st::TrajectoryDataSetLayer::getDataSourceId() const
+{
+  return m_info->getObservationDataSetInfo().getDataSourceInfo().getId();
+}
+
 
 const std::string& te::st::TrajectoryDataSetLayer::getRendererType() const
 {

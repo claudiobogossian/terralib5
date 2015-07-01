@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -33,7 +33,7 @@
 #include "../../core/pattern/mvc/OutsideObserver.h"
 #include "../../core/pattern/mvc/OutsideController.h"
 #include "../../../geometry/Envelope.h"
-#include "../core/PropertiesItemPropertyBrowser.h"
+#include "../core/propertybrowser/PropertyBrowser.h"
 #include "../item/MapItem.h"
 #include "../../core/property/SharedProperties.h"
 #include "../../core/pattern/mvc/ItemModelObservable.h"
@@ -43,6 +43,7 @@
 #include "../../core/enum/Enums.h"
 #include "../core/pattern/command/ChangePropertyCommand.h"
 #include "../core/Scene.h"
+#include "../core/propertybrowser/PropertiesUtils.h"
 
 // Qt
 #include <QGroupBox>
@@ -52,12 +53,16 @@
 #include <QToolButton>
 #include <QLabel>
 #include <QUndoCommand>
+#include <QLineEdit>
 
-te::layout::PropertiesOutside::PropertiesOutside( OutsideController* controller, Observable* o, PropertiesItemPropertyBrowser* propertyBrowser ) :
+#include <QtPropertyBrowser/QtTreePropertyBrowser>
+
+te::layout::PropertiesOutside::PropertiesOutside( OutsideController* controller, Observable* o, PropertyBrowser* propertyBrowser ) :
 	QWidget(0),
 	OutsideObserver(controller, o),
   m_updatingValues(false),
-  m_sharedProps(0)
+  m_sharedProps(0),
+  m_propUtils(0)
 {
 	te::gm::Envelope box = m_model->getBox();	
 	setBaseSize(box.getWidth(), box.getHeight());
@@ -65,16 +70,18 @@ te::layout::PropertiesOutside::PropertiesOutside( OutsideController* controller,
 	setWindowTitle("Properties");
   setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
   
+  m_propUtils = new PropertiesUtils;
+
   if(!propertyBrowser)
-    m_layoutPropertyBrowser = new PropertiesItemPropertyBrowser;
+    m_layoutPropertyBrowser = new PropertyBrowser;
   else
     m_layoutPropertyBrowser = propertyBrowser;
-
-  connect(m_layoutPropertyBrowser, SIGNAL(updateOutside(Property)), 
-    this, SLOT(onChangePropertyValue(Property)));
-
+  
   connect(m_layoutPropertyBrowser,SIGNAL(changePropertyValue(Property)),
     this,SLOT(onChangePropertyValue(Property))); 
+
+  connect(m_layoutPropertyBrowser,SIGNAL(changePropertyValue(std::vector<Property>)),
+    this,SLOT(onChangePropertyValue(std::vector<Property>))); 
 
   createLayout();
 
@@ -83,6 +90,12 @@ te::layout::PropertiesOutside::PropertiesOutside( OutsideController* controller,
 
 te::layout::PropertiesOutside::~PropertiesOutside()
 {
+  if(m_propUtils)
+  {
+    delete m_propUtils;
+    m_propUtils = 0;
+  }
+
   if(m_layoutPropertyBrowser)
   {
     delete m_layoutPropertyBrowser;
@@ -124,7 +137,7 @@ void te::layout::PropertiesOutside::createLayout()
   layout->addWidget(m_nameLabel);
   layout->addWidget(m_layoutPropertyBrowser->getPropertyEditor());
 
-  QGroupBox* groupBox = new QGroupBox;
+  QGroupBox* groupBox = new QGroupBox(this);
   groupBox->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
   groupBox->setLayout(layout);
 
@@ -167,6 +180,7 @@ te::gm::Coord2D te::layout::PropertiesOutside::getPosition()
 void te::layout::PropertiesOutside::itemsSelected(QList<QGraphicsItem*> graphicsItems, QList<QGraphicsItem*> allItems)
 {
   m_updatingValues = false;
+  bool window = false;
 
   m_layoutPropertyBrowser->clearAll();
   m_nameLabel->setText(tr("Component::"));
@@ -178,8 +192,7 @@ void te::layout::PropertiesOutside::itemsSelected(QList<QGraphicsItem*> graphics
   if(m_graphicsItems.empty())
     return;
     
-  bool window = false;
-  Properties* props = intersection(graphicsItems, window);
+  Properties* props = m_propUtils->intersection(graphicsItems, window);
   m_layoutPropertyBrowser->setHasWindows(window);
 
   if(!props)
@@ -189,10 +202,10 @@ void te::layout::PropertiesOutside::itemsSelected(QList<QGraphicsItem*> graphics
   
   foreach( Property prop, props->getProperties()) 
   {
-    if(prop.isMenu() || !prop.isVisible())
-      continue;
+    //if(prop.isMenu() || !prop.isVisible())
+    //  continue;
 
-    checkDynamicProperty(prop, allItems);
+    m_propUtils->checkDynamicProperty(prop, allItems);
     m_layoutPropertyBrowser->addProperty(prop);
   }
    
@@ -208,6 +221,27 @@ void te::layout::PropertiesOutside::onChangePropertyValue( Property property )
 
   Scene* lScene = dynamic_cast<Scene*>(Context::getInstance().getScene()); 
 
+  sendPropertyToSelectedItems(property);
+
+  changeMapVisitable(property);
+  lScene->update();
+}
+
+void te::layout::PropertiesOutside::onChangePropertyValue( std::vector<Property> props )
+{
+  std::vector<Property>::const_iterator it = props.begin();
+  for( ; it != props.end() ; ++it)
+  {
+    Property prop = (*it);
+    onChangePropertyValue(prop);
+  }
+}
+
+bool te::layout::PropertiesOutside::sendPropertyToSelectedItems( Property property )
+{
+  bool result = true;
+  Scene* lScene = dynamic_cast<Scene*>(Context::getInstance().getScene()); 
+
   std::vector<QGraphicsItem*> commandItems;
   std::vector<Properties*> commandOld;
   std::vector<Properties*> commandNew;
@@ -219,20 +253,25 @@ void te::layout::PropertiesOutside::onChangePropertyValue( Property property )
       ItemObserver* lItem = dynamic_cast<ItemObserver*>(item);
       if(lItem)
       {
+        if(!lItem->getModel())
+        {
+          continue;
+        }
+
         Properties* props = new Properties("");
-        Properties* beforeProps = lItem->getProperties();
+        Properties* beforeProps = lItem->getModel()->getProperties();
         Properties* oldCommand = new Properties(*beforeProps);
         if(props)
         {
-          props->setObjectName(lItem->getProperties()->getObjectName());
-          props->setTypeObj(lItem->getProperties()->getTypeObj());
+          props->setObjectName(lItem->getModel()->getProperties()->getObjectName());
+          props->setTypeObj(lItem->getModel()->getProperties()->getTypeObj());
           props->addProperty(property);
 
-          lItem->updateProperties(props);
+          lItem->getModel()->updateProperties(props);
 
           if(beforeProps)
           {
-            beforeProps = lItem->getProperties();
+            beforeProps = lItem->getModel()->getProperties();
             Properties* newCommand = new Properties(*beforeProps);
             commandItems.push_back(item);
             commandOld.push_back(oldCommand);
@@ -248,168 +287,13 @@ void te::layout::PropertiesOutside::onChangePropertyValue( Property property )
     QUndoCommand* command = new ChangePropertyCommand(commandItems, commandOld, commandNew, this);
     lScene->addUndoStack(command);
   }
-
-  changeMapVisitable(property);
-  lScene->update();
+  return result;
 }
 
 void te::layout::PropertiesOutside::closeEvent( QCloseEvent * event )
 {
+  //Closing the PropertiesOutside, all open windows from a property will be closed.
   m_layoutPropertyBrowser->closeAllWindows();
-}
-
-te::layout::Properties* te::layout::PropertiesOutside::intersection( QList<QGraphicsItem*> graphicsItems, bool& window )
-{
-  Properties* props = 0;
-
-  if(graphicsItems.size() == 1)
-  {
-    QGraphicsItem* item = graphicsItems.first();
-    if (item)
-    {			
-      ItemObserver* lItem = dynamic_cast<ItemObserver*>(item);
-      if(lItem)
-      {
-        props = const_cast<Properties*>(lItem->getProperties());
-        window = props->hasWindows();
-      }
-    }
-  }
-  else
-  {
-    props = sameProperties(graphicsItems, window);
-  }
-
-  return props;
-}
-
-te::layout::Properties* te::layout::PropertiesOutside::sameProperties( QList<QGraphicsItem*> graphicsItems, bool& window )
-{
-  Properties* props = 0;
-  std::vector<Properties*> propsVec = getAllProperties(graphicsItems, window);
-
-  QGraphicsItem* firstItem = graphicsItems.first();
-  ItemObserver* lItem = dynamic_cast<ItemObserver*>(firstItem);
-  
-  if(!lItem)
-  {
-    return props;
-  }
-
-  Properties* firstProps = const_cast<Properties*>(lItem->getProperties());
-  if(!firstProps)
-  {
-    return props;
-  }
-
-  std::vector<Properties*>::iterator it = propsVec.begin();
-  std::vector<Properties*>::iterator itend = propsVec.end();
-  bool result = false;
-  foreach( Property prop, firstProps->getProperties()) 
-  {
-    contains(itend, it, prop.getName(), result);
-    if(result)
-    {
-      if(!props)
-      {
-        props = new Properties("");
-      }
-      props->addProperty(prop);
-    }
-  }  
-
-  return props;
-}
-
-void te::layout::PropertiesOutside::contains( std::vector<Properties*>::iterator itend, 
-  std::vector<Properties*>::iterator it, std::string name, bool& result )
-{
-  Property prop = (*it)->contains(name);
-  if(prop.isNull())
-  {
-    result = false;
-    return;
-  }
-  else
-  {
-    ++it;
-    result = true;
-    if(it != itend)
-    {
-      contains(itend, it, name, result);
-    }
-  }
-}
-
-std::vector<te::layout::Properties*> 
-  te::layout::PropertiesOutside::getAllProperties( QList<QGraphicsItem*> graphicsItems, bool& window )
-{
-  std::vector<Properties*> propsVec;
-  bool result = true;
-
-  foreach( QGraphicsItem *item, graphicsItems) 
-  {
-    if (item)
-    {			
-      ItemObserver* lItem = dynamic_cast<ItemObserver*>(item);
-      if(lItem)
-      {
-        Properties* propsItem = const_cast<Properties*>(lItem->getProperties());
-        if(propsItem)
-        {
-          propsVec.push_back(propsItem);
-          if(result)
-          {
-            result = propsItem->hasWindows();
-          }
-        }
-      }
-    }
-  }
-
-  window = result;
-  return propsVec;
-}
-
-void te::layout::PropertiesOutside::addDynamicOptions( Property& property, std::vector<std::string> list )
-{
-  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
-
-  foreach(std::string str, list) 
-  {
-    Variant v;
-    v.setValue(str, dataType->getDataTypeString());
-    property.addOption(v);
-  }
-}
-
-void te::layout::PropertiesOutside::checkDynamicProperty( Property& property, QList<QGraphicsItem*> graphicsItems )
-{
-  if(property.getName().compare(m_sharedProps->getMapName()) == 0)
-  {
-    mapNameDynamicProperty(property, graphicsItems);
-  }
-}
-
-void te::layout::PropertiesOutside::mapNameDynamicProperty( Property& property, QList<QGraphicsItem*> graphicsItems )
-{
-  std::string currentName = property.getValue().toString();
-
-  if(currentName.compare("") == 0)
-  {
-    currentName = property.getOptionByCurrentChoice().toString();
-  }
-
-  ItemUtils* iUtils = Context::getInstance().getItemUtils();
-  std::vector<std::string> strList = iUtils->mapNameList();
-
-  if(std::find(strList.begin(), strList.end(), currentName) != strList.end())
-  {
-    std::vector<std::string>::iterator it = std::find(strList.begin(), strList.end(), currentName);
-    strList.erase(it);
-  }
-
-  addDynamicOptions(property, strList);
 }
 
 void te::layout::PropertiesOutside::changeMapVisitable( Property property )
@@ -479,3 +363,9 @@ void te::layout::PropertiesOutside::onClear( std::vector<std::string> names )
   m_nameLabel->setText(tr("Component::"));
   m_layoutPropertyBrowser->clearAll();
 }
+
+
+
+
+
+

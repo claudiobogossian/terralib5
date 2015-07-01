@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -52,7 +52,28 @@ void te::gdal::Module::startup()
 {
   if(m_initialized)
     return;
-  
+
+  std::string gdal_data;
+
+  char* tDir = getenv("TERRALIB_HOME");
+  std::string teDir;
+
+  if(tDir != 0)
+    teDir = std::string(tDir);
+
+  if(!teDir.empty())
+    gdal_data = teDir + "/share/gdal-data";
+  //}
+
+  if(gdal_data.empty())
+    gdal_data = TERRALIB_GDAL_DATA;
+
+  if( ! gdal_data.empty() )
+  {
+    CPLSetConfigOption("GDAL_DATA", gdal_data.c_str());
+  }
+  CPLSetConfigOption("GDAL_PAM_ENABLED", "NO");
+
   te::da::DataSourceFactory::add(TE_GDAL_DRIVER_IDENTIFIER, te::gdal::Build);
 
   GDALAllRegister();

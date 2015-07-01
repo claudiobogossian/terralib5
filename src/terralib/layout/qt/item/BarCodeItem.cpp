@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -44,8 +44,8 @@
 #include <QAbstractTextDocumentLayout>
 #include <QGraphicsSceneMouseEvent>
 
-te::layout::BarCodeItem::BarCodeItem( ItemController* controller, Observable* o ) :
-  TextItem(controller, o)
+te::layout::BarCodeItem::BarCodeItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
+  TextItem(controller, o, invertedMatrix)
 {
   m_invertedMatrix = true;
   m_nameClass = std::string(this->metaObject()->className());

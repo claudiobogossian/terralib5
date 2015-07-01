@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -42,8 +42,8 @@ namespace te
 {
   namespace xml
   {
+    class AbstractWriter;
     class Reader;
-    class Writer;
   }
 
   namespace fe
@@ -65,7 +65,7 @@ namespace te
 
           te::fe::Expression* read(te::xml::Reader& reader) const;
 
-          void write(const te::fe::Expression* exp, te::xml::Writer& writer);
+          void write(const te::fe::Expression* exp, te::xml::AbstractWriter& writer);
 
           /** @name Visitor Methods
            *  All concrete visitors must implement these methods.
@@ -103,7 +103,7 @@ namespace te
         private:
 
           ExpressionFnctIdxType m_fncts;
-          te::xml::Writer* m_writer;
+          te::xml::AbstractWriter* m_writer;
       };
 
     } // end namespace serialize

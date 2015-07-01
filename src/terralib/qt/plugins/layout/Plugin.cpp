@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -24,11 +24,13 @@
 */
 
 // TerraLib
+#include "terralib_config.h"
 #include "../../../common/Config.h"
 #include "../../../common/Translator.h"
 #include "../../../common/Logger.h"
 #include "../../af/ApplicationController.h"
 #include "Plugin.h"
+#include "../../af/Utils.h"
 
 #if defined(TERRALIB_APACHE_LOG4CXX_ENABLED) && defined(TERRALIB_LOGGER_ENABLED)
 //Log4cxx
@@ -116,6 +118,8 @@ void te::qt::plugins::layout::Plugin::startup()
   logger->addAppender(fileAppender);
 #endif
   m_initialized = true;
+
+  //te::qt::af::AddActionToCustomToolbars(m_layout->getAction());
 }
 
 void te::qt::plugins::layout::Plugin::shutdown()

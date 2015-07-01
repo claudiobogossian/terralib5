@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -26,20 +26,24 @@
 */
 
 // TerraLib
-#include "ArrowItem.h"
-#include "../../core/pattern/mvc/ItemController.h"
-#include "../../core/AbstractScene.h"
-#include "../../core/pattern/mvc/Observable.h"
 #include "../../../color/RGBAColor.h"
-#include "../../../qt/widgets/Utils.h"
-#include "../../../geometry/Envelope.h"
 #include "../../../common/STLUtils.h"
+#include "../../../geometry/Envelope.h"
+#include "../../../qt/widgets/Utils.h"
+#include "../../core/AbstractScene.h"
+#include "../../core/pattern/mvc/ItemController.h"
+#include "../../core/pattern/mvc/Observable.h"
 #include "../../item/ArrowModel.h"
+#include "ArrowItem.h"
 
+// STL
 #include <cmath>
 
-te::layout::ArrowItem::ArrowItem( ItemController* controller, Observable* o ) :
-  ObjectItem(controller, o)
+// Qt
+#include <QPointF>
+
+te::layout::ArrowItem::ArrowItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
+  ObjectItem(controller, o, invertedMatrix)
 {
   m_nameClass = std::string(this->metaObject()->className());
 }
@@ -49,90 +53,116 @@ te::layout::ArrowItem::~ArrowItem()
 
 }
 
-void te::layout::ArrowItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
-{
-  Q_UNUSED( option );
-  Q_UNUSED( widget );
-  if ( !painter )
-  {
-    return;
-  }
-
-  drawBackground(painter);
-
-  drawArrow(painter);
-
-  drawBorder(painter);
-
-  //Draw Selection
-  if (option->state & QStyle::State_Selected)
-  {
-    drawSelection(painter);
-  }
-}
-
-void te::layout::ArrowItem::drawArrow( QPainter * painter )
+void te::layout::ArrowItem::drawItem( QPainter * painter )
 {
   ArrowModel* model = dynamic_cast<ArrowModel*>(m_model);
-  if(!model)
+  if(model)
   {
-    return;
+    EnumArrowType* enumScale = model->getEnumArrowType();
+
+    if(model->getCurrentArrowType() == enumScale->getDoubleArrowType())
+    {
+      drawDoubleArrow(painter);
+    }
+    if(model->getCurrentArrowType() == enumScale->getRightArrowType())
+    {
+      drawRightArrow(painter);
+    }
   }
-
-  painter->save();
-
-  QRectF boundRect = boundingRect();
-
-  QColor cblack(0,0,0);
-  QPen pn(cblack, 0, Qt::SolidLine);
-  painter->setPen(pn);
-
-  double centerY = boundRect.center().y();
-  
-  QLineF lne(boundRect.bottomLeft().x(), centerY, boundRect.width(), centerY);
-
-  painter->drawLine(lne);
-
-  painter->restore();
-
-  /* Draw Arrow Head */
-  drawHeadArrow(painter);
 }
 
-void te::layout::ArrowItem::drawHeadArrow( QPainter * painter )
+void te::layout::ArrowItem::drawRightArrow( QPainter * painter )
 {
   painter->save();
 
-  QBrush bsh(Qt::black);
-  painter->setBrush(bsh);
-  painter->setPen(Qt::NoPen);
+  ArrowModel* model = dynamic_cast<ArrowModel*>(m_model);
 
-  QRectF boundRect = boundingRect();
+  const te::color::RGBAColor& fillColor = model->getFillColor();
+  const te::color::RGBAColor& contourColor = model->getContourColor();
 
-  double w = boundRect.width();
-  double h = boundRect.height();
+  QColor qFillColor(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), fillColor.getAlpha());
+  QColor qContourColor(contourColor.getRed(), contourColor.getGreen(), contourColor.getBlue(), contourColor.getAlpha());
 
-  double centerY = boundRect.center().y();
-  QLineF lne(boundRect.bottomLeft().x(), centerY, boundRect.width(), centerY);
+  QBrush brush(qFillColor);
+  QPen pen(qContourColor, 0, Qt::SolidLine);
 
-  double Pi = 3.14;
-  double sizeHead = (h / 5.);
+  painter->setPen(pen);
+  painter->setBrush(brush);
+  painter->setRenderHint( QPainter::Antialiasing, true );
 
-  double angle = std::acos(lne.dx() / lne.length());
-  if (lne.dy() >= 0)
-    angle = (Pi * 2) - angle;
+  //gets the adjusted boundigng rectangle based of the painter settings
+  QRectF rectAdjusted = getAdjustedBoundingRect(painter);
 
-  QPointF arrowP1 = lne.p1() + QPointF(sin(angle + Pi / 3) * sizeHead,
-    cos(angle + Pi / 3) * sizeHead);
-  QPointF arrowP2 = lne.p1() + QPointF(sin(angle + Pi - Pi / 3) * sizeHead,
-    cos(angle + Pi - Pi / 3) * sizeHead);
+  double w1 = rectAdjusted.width() / 2.;
+  double w3 = rectAdjusted.width() / 40.;
+  double h1 = rectAdjusted.height() / 2.;
+  double h2 = rectAdjusted.height() / 4.;
+  double y1 = rectAdjusted.center().y()-h1;
+  double y2 = rectAdjusted.center().y()+h1;
+  double y3 = rectAdjusted.center().y()-h2;
+  double y4 = rectAdjusted.center().y()+h2;
 
-  QPolygonF trianglePolygon;
-  trianglePolygon << lne.p1() << arrowP1 << arrowP2;
+  QPointF p1 = QPointF(w1,y2);
+  QPointF p2 = QPointF(y2,w1);
+  QPointF p3 = QPointF(w1,y1);
+  QPointF p4 = QPointF(h1,y3);
+  QPointF p5 = QPointF(w3,y3);
+  QPointF p6 = QPointF(w3,y4);
+  QPointF p7 = QPointF(h1,y4);
+  QPolygonF arrowPolygon;
+  arrowPolygon<<p1<<p2<<p3<<p4<<p5<<p6<<p7;
 
-  painter->drawPolygon(trianglePolygon);
+  //draws the item
+  painter->drawPolygon(arrowPolygon);
 
   painter->restore();
 }
 
+void te::layout::ArrowItem::drawDoubleArrow(QPainter * painter)
+{
+  painter->save();
 
+  ArrowModel* model = dynamic_cast<ArrowModel*>(m_model);
+  const te::color::RGBAColor& fillColor = model->getFillColor();
+  const te::color::RGBAColor& contourColor = model->getContourColor();
+
+  QColor qFillColor(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), fillColor.getAlpha());
+  QColor qContourColor(contourColor.getRed(), contourColor.getGreen(), contourColor.getBlue(), contourColor.getAlpha());
+
+  QBrush brush(qFillColor);
+  QPen pen(qContourColor, 0, Qt::SolidLine);
+
+  painter->setPen(pen);
+  painter->setBrush(brush);
+  painter->setRenderHint( QPainter::Antialiasing, true );
+
+  //gets the adjusted boundigng rectangle based of the painter settings
+  QRectF rectAdjusted = getAdjustedBoundingRect(painter);
+
+  double w1 = rectAdjusted.width() / 2.;
+  double w2 = rectAdjusted.width() / 4.;
+  double w3 = rectAdjusted.width() - rectAdjusted.width() / 4.;
+  double h1 = rectAdjusted.height() / 2.;
+  double h2 = rectAdjusted.height() / 4.;
+  double y1 = rectAdjusted.center().y()-h1;
+  double y2 = rectAdjusted.center().y()+h1;
+  double y4 = rectAdjusted.center().y()+h2;
+  
+  QPointF p1 = QPointF(w3,y2);
+  QPointF p2 = QPointF(y2,w1);
+  QPointF p3 = QPointF(w3,y1);
+  QPointF p4 = QPointF(w3,h2);
+  QPointF p5 = QPointF(h2,w2);
+  QPointF p6 = QPointF(w2,y1);
+  QPointF p7 = QPointF(y1,w1);
+  QPointF p8 = QPointF(w2,y2);
+  QPointF p9 = QPointF(h2,y4);
+  QPointF p10 = QPointF(w3,y4);
+  QPolygonF arrowPolygon;
+  arrowPolygon<<p1<<p2<<p3<<p4<<p5<<p6<<p7<<p8<<p9<<p10;
+
+  //draws the item
+  painter->drawPolygon(arrowPolygon);
+
+  painter->restore();
+}

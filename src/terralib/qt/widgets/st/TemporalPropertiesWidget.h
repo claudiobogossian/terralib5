@@ -1,4 +1,4 @@
-/*  Copyright (C) 2010-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -143,7 +143,7 @@ namespace te
 
             \return The format that the indicates how the date will be displayed.
           */
-          std::string getDateFormat();
+          int getDateFormat();
 
           /*!
             \brief Adjusts the widget values according to the given datasettype

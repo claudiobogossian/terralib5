@@ -1,4 +1,4 @@
-/*  Copyright (C) 2010-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -160,11 +160,18 @@ namespace te
         void draw(te::map::Canvas* canvas, const te::gm::Envelope& bbox, int srid);
 
         /*!
-          \brief It returns the layer type: DATASET_LAYER.
+          \brief It returns the layer type: OBSERVATIONDATASETLAYER.
 
-          \return The layer type: DATASET_LAYER.
+          \return The layer type: OBSERVATIONDATASETLAYER.
         */
         const std::string& getType() const;
+
+        /*!
+          \brief
+
+          \return
+        */
+        const std::string& getDataSourceId() const;
 
         /*!
           \brief

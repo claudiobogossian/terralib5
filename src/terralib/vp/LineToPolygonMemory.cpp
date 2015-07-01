@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -31,43 +31,18 @@
 
 #include "../dataaccess/dataset/DataSet.h"
 #include "../dataaccess/utils/Utils.h"
-#include "../datatype/Property.h"
-#include "../datatype/SimpleProperty.h"
-#include "../datatype/StringProperty.h"
 
-#include "../geometry/Envelope.h"
-#include "../geometry/Geometry.h"
-#include "../geometry/GeometryCollection.h"
 #include "../geometry/GeometryProperty.h"
-#include "../geometry/LinearRing.h"
-#include "../geometry/Polygon.h"
-#include "../geometry/MultiLineString.h"
-#include "../geometry/MultiPolygon.h"
-#include "../geometry/Utils.h"
 
 #include "../memory/DataSet.h"
 #include "../memory/DataSetItem.h"
 
-#include "../statistics/core/SummaryFunctions.h"
-#include "../statistics/core/StringStatisticalSummary.h"
-#include "../statistics/core/NumericStatisticalSummary.h"
-#include "../statistics/core/Utils.h"
-
 #include "LineToPolygonMemory.h"
-#include "Config.h"
-#include "Exception.h"
 #include "Utils.h"
 
 // STL
 #include <iostream>
-#include <map>
-#include <math.h>
 #include <string>
-#include <vector>
-
-// BOOST
-#include <boost/lexical_cast.hpp>
-#include <boost/algorithm/string.hpp>
 
 te::vp::LineToPolygonMemory::LineToPolygonMemory()
 {}

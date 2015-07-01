@@ -1,4 +1,4 @@
-/*  Copyright (C) 2014-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -28,11 +28,11 @@
 // TerraLib
 #include "ItemFactory.h"
 #include "../../../../core/pattern/mvc/Observer.h"
+#include "../../../../core/enum/Enums.h"
 #include "../../../item/RectangleItem.h"
 #include "../../../item/ItemGroup.h"
 #include "../../../item/PaperItem.h"
 #include "../../../item/MapItem.h"
-#include "../../../item/MapGridItem.h"
 #include "../../../item/GridMapItem.h"
 #include "../../../item/LegendItem.h"
 #include "../../../item/ScaleItem.h"
@@ -42,7 +42,6 @@
 #include "../../../item/EllipseItem.h"
 #include "../../../item/TitleItem.h"
 #include "../../../item/TextGridItem.h"
-#include "../../../../core/enum/Enums.h"
 #include "../../../item/LegendChildItem.h"
 #include "../../../item/TextItem.h"
 #include "../../../item/MovingItemGroup.h"
@@ -50,6 +49,12 @@
 #include "../../../item/PolygonItem.h"
 #include "../../../item/BalloonItem.h"
 #include "../../../item/BarCodeItem.h"
+#include "../../../item/GridPlanarItem.h"
+#include "../../../item/GridGeodesicItem.h"
+#include "../../../item/NorthItem.h"
+#include "../../../item/MapLocationItem.h"
+#include "../../../item/StarItem.h"
+#include "../../../item/SVGItem.h"
 
 te::layout::ItemFactory::ItemFactory()
 {
@@ -96,11 +101,6 @@ te::layout::Observer* te::layout::ItemFactory::make( EnumType* type, ItemParamsC
   {
     MapItem* map = new MapItem(params.getController(), params.getModel());
     item = (Observer*)map;
-  }
-  else if(type == enumObj->getMapGridItem())
-  {
-    MapGridItem* mapGrid = new MapGridItem(params.getController(), params.getModel());
-    item = (Observer*)mapGrid;
   }
   else if(type == enumObj->getGridMapItem())
   {
@@ -172,6 +172,37 @@ te::layout::Observer* te::layout::ItemFactory::make( EnumType* type, ItemParamsC
     BarCodeItem* barCode = new BarCodeItem(params.getController(), params.getModel());
     item = (Observer*)barCode;
   }
-
+  else if(type == enumObj->getGridPlanarItem())
+  {
+    GridPlanarItem* gridPlanar = new GridPlanarItem(params.getController(), params.getModel());
+    item = (Observer*)gridPlanar;
+  }
+  else if(type == enumObj->getGridGeodesicItem())
+  {
+    GridGeodesicItem* gridGeodesic = new GridGeodesicItem(params.getController(), params.getModel());
+    item = (Observer*)gridGeodesic;
+  }
+  else if(type == enumObj->getNorthItem())
+  {
+    NorthItem* north = new NorthItem(params.getController(), params.getModel());
+    item = (Observer*)north;
+  }
+  else if(type == enumObj->getMapLocationItem())
+  {
+    MapLocationItem* location = new MapLocationItem(params.getController(), params.getModel());
+    item = (Observer*)location;
+  }
+	else if(type == enumObj->getStarItem())
+	{
+		StarItem* point = new StarItem(params.getController(), params.getModel());
+		item = (Observer*)point;
+	}
+  else if(type == enumObj->getSVGItem())
+  {
+    SVGItem* point = new SVGItem(params.getController(), params.getModel());
+    item = (Observer*)point;
+  }
   return item;
 }
+
+

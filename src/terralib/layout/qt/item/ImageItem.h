@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -62,26 +62,16 @@ namespace te
           \param controller "Controller" part of MVC component
           \param o "Model" part of MVC component
         */ 
-        ImageItem( ItemController* controller, Observable* o );
+        ImageItem( ItemController* controller, Observable* o, bool invertedMatrix = false );
 
         /*!
           \brief Destructor
          */
         virtual ~ImageItem();
-        
-        /*!
-          \brief Reimplemented from QGraphicsItem
-         */
-        virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
 
       protected:
-      
-        /*!
-          \brief Drawing method of a ellipse
 
-          \param 
-         */
-        virtual void drawImage(QPainter * painter);
+        virtual void drawItem ( QPainter * painter );
     };
   }
 }

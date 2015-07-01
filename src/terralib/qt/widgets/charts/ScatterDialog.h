@@ -1,4 +1,4 @@
-/*  Copyright (C) 2010-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -35,7 +35,7 @@
 //STL
 #include <memory>
 
-namespace Ui { class ScatterDialogForm; }
+namespace Ui { class ChartDialogForm; }
 
 namespace te
 {
@@ -92,7 +92,7 @@ namespace te
 
         private:
 
-          std::auto_ptr<Ui::ScatterDialogForm>  m_ui;                 //!< The dialog form.
+          std::auto_ptr<Ui::ChartDialogForm>  m_ui;                 //!< The dialog form.
           ScatterDataWidget*                    m_scatterDataWidget;  //!< The scatter's data widget used to configure the basic parameters of the new scatter.
           ChartDisplayWidget*                   m_displayWidget;      //!< The display's widget that will be populated by this widget.
       };

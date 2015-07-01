@@ -1,4 +1,4 @@
-/*  Copyright (C) 2010-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -33,7 +33,7 @@
 #include "HistogramDataWidget.h"
 #include "HistogramDialog.h"
 #include "HistogramStyle.h"
-#include "ui_HistogramDialogForm.h"
+#include "ui_ChartDialogForm.h"
 #include "ui_HistogramDataWidgetForm.h"
 
 //QT
@@ -41,7 +41,7 @@
 
 te::qt::widgets::HistogramDialog::HistogramDialog(te::da::DataSet* dataSet, te::da::DataSetType* dataType, QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
-    m_ui(new Ui::HistogramDialogForm)
+    m_ui(new Ui::ChartDialogForm)
 {
   m_ui->setupUi(this);
 
