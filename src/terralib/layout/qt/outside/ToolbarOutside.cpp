@@ -849,6 +849,10 @@ void te::layout::ToolbarOutside::onGeometryTriggered( QAction* action )
   {
 	  changeAction(type->getModeCreateStar());
   }
+  else if (action->objectName().compare(m_actionSVG.c_str()) == 0) 
+  {
+    changeAction(type->getModeCreateSVG());
+  }
 }
 
 void te::layout::ToolbarOutside::onViewAreaTriggered( QAction* action )

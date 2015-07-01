@@ -73,9 +73,9 @@ namespace te
 
       protected:
 
-        /*virtual void drawStar(QPainter * painter);
+        virtual void drawSVG(QPainter * painter);
 
-        virtual void drawCircle(QPainter * painter);
+        /*virtual void drawCircle(QPainter * painter);
 
         virtual void drawX(QPainter * painter);
 

@@ -45,6 +45,8 @@
 #include "../../../item/MapModel.h"
 #include "../../outside/ColorDialogOutside.h"
 #include "../../../outside/ColorDialogModel.h"
+#include "../../outside/SVGDialogOutside.h"
+#include "../../../outside/SVGDialogModel.h"
 
 // STL
 #include <vector>
@@ -152,6 +154,10 @@ void te::layout::DialogPropertiesBrowser::onSetDlg( QWidget *parent, QtProperty 
   if(propt.getType() == dataType->getDataTypeLegendChoice())
   {
     connect(parent, SIGNAL(showDlg()), this, SLOT(onShowLegendChoiceDlg()));
+  }
+  if(propt.getType() == dataType->getDataTypeSVGView())
+  {
+    connect(parent, SIGNAL(showDlg()), this, SLOT(onShowViewDlg()));
   }
   if(propt.getType() == dataType->getDataTypeColor())
   {
@@ -555,6 +561,46 @@ void te::layout::DialogPropertiesBrowser::onShowLegendChoiceDlg()
   legendChoice->show();
 }
 
+void te::layout::DialogPropertiesBrowser::onShowViewDlg()
+{
+  EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
+  if(!enumObj)
+  {
+    return;
+  }
+
+  QWidget* widget = createOutside(enumObj->getSVGDialog());
+  if(!widget)
+  {
+    return;
+  }
+
+  SVGDialogOutside* svgOutside = dynamic_cast<SVGDialogOutside*>(widget);
+  if(!svgOutside)
+  {
+    return;
+  }
+
+  appendDialog(svgOutside);
+
+  SVGDialogModel* model = dynamic_cast<SVGDialogModel*>(svgOutside->getModel());
+  if(!model)
+  {
+    return;
+  }
+
+  AbstractProxyProject* proxy = Context::getInstance().getProxyProject();
+  if(!proxy)
+  {
+    return;
+  }
+
+  model->setPathsProperty(m_currentPropertyClicked);
+  
+  svgOutside->init();
+  svgOutside->show();
+}
+
 te::layout::Property te::layout::DialogPropertiesBrowser::getProperty( std::string name )
 {
   Property prop;
@@ -757,21 +803,5 @@ void te::layout::DialogPropertiesBrowser::appendDialog( QWidget* widget )
 
   widget->setAttribute(Qt::WA_DeleteOnClose);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

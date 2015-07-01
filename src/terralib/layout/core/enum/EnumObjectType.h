@@ -300,7 +300,7 @@ namespace te
 		  
 		      \return enum value  	  
         */
-        virtual EnumType* getSVGView() const;
+        virtual EnumType* getSVGDialog() const;
 
         /*!
           \brief Returns value that represents north (MVC Component) type belonging to enumeration.
@@ -393,7 +393,7 @@ namespace te
         EnumType* m_barCodeItem; //!< value that represents barcode (MVC Component) type belonging to enumeration
         EnumType* m_gridMapItem; //!< value that represents gridmap (MVC Component) type belonging to enumeration
         EnumType* m_mapLayerChoice; //!< value that represents map layer choice (MVC Component) type belonging to enumeration
-        EnumType* m_svgView; //!< value that represents svgView (MVC Component) type belonging to enumeration
+        EnumType* m_svgDialog; //!< value that represents svgView (MVC Component) type belonging to enumeration
         EnumType* m_northItem; //!< value that represents north (MVC Component) type belonging to enumeration
         EnumType* m_mapLocationItem; //!< value that represents map location (MVC Component) type belonging to enumeration
         EnumType* m_objectUnknown; //!< value that represents unknown type belonging to enumeration

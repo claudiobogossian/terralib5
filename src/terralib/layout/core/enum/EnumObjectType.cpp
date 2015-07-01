@@ -59,7 +59,7 @@ te::layout::EnumObjectType::EnumObjectType() :
   m_barCodeItem(0),
   m_gridMapItem(0),
   m_mapLayerChoice(0),
-  m_svgView(0),
+  m_svgDialog(0),
   m_northItem(0),
   m_mapLocationItem(0),
   m_objectUnknown(0),
@@ -265,6 +265,12 @@ te::layout::EnumObjectType::~EnumObjectType()
     delete m_mapLayerChoice;
     m_mapLayerChoice = 0;
   }
+  
+  if(m_svgDialog)
+  {
+    delete m_svgDialog;
+    m_svgDialog = 0;
+  }
 
   if(m_colorDialog)
   {
@@ -364,6 +370,8 @@ void te::layout::EnumObjectType::init()
   m_gridMapItem = createEnum("GridMap_Item", this);
 
   m_mapLayerChoice = createEnum("Map_Layout_Choice", this);
+
+  m_svgDialog = createEnum("SVG_Dialog", this);
 
   m_northItem = createEnum("North_Item", this);
 
@@ -581,9 +589,9 @@ te::layout::EnumType* te::layout::EnumObjectType::getSVGItem() const
   return m_svgItem;
 }
 
-te::layout::EnumType* te::layout::EnumObjectType::getSVGView() const
+te::layout::EnumType* te::layout::EnumObjectType::getSVGDialog() const
 {
-  return m_svgView;
+  return m_svgDialog;
 }
 
 

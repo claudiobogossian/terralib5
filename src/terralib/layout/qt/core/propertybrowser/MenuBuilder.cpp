@@ -185,6 +185,10 @@ void te::layout::MenuBuilder::onMenuTriggered( QAction* action )
   {
     onShowTextGridSettingsDlg();
   }
+  else if(m_currentPropertyClicked.getType() == dataType->getDataTypeSVGView())
+  {
+    onShowViewDlg();
+  }
 }
 
 void te::layout::MenuBuilder::checkedBool( bool checked )
