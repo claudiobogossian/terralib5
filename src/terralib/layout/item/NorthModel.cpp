@@ -37,15 +37,26 @@ te::layout::NorthModel::NorthModel()
 {
   m_type = Enums::getInstance().getEnumObjectType()->getNorthItem();
 
-  m_borderColor = te::color::RGBAColor(0, 0, 0, 255);
   m_box = te::gm::Envelope(0., 0., 20., 20.);
 
   m_border = true;
+
+  m_color = te::color::RGBAColor(0, 0, 0, 255);
 }
 
 te::layout::NorthModel::~NorthModel()
 {
 
+}
+
+const te::color::RGBAColor& te::layout::LineModel::getColor() const
+{
+  return m_color;
+}
+
+void te::layout::LineModel::setColor(const te::color::RGBAColor& color)
+{
+  m_color = color;
 }
 
 

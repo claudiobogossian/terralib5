@@ -57,22 +57,25 @@ void te::layout::EllipseItem::drawItem( QPainter * painter )
 
   painter->save();
 
+  const te::color::RGBAColor& fillColor = model->getFillColor();
+  const te::color::RGBAColor& contourColor = model->getContourColor();
+
+  QColor qFillColor(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), fillColor.getAlpha());
+  QColor qContourColor(contourColor.getRed(), contourColor.getGreen(), contourColor.getBlue(), contourColor.getAlpha());
+
+  QBrush brush(qFillColor);
+  QPen pen(qContourColor, 0, Qt::SolidLine);
+
+  painter->setPen(pen);
+  painter->setBrush(brush);
+
+  //gets the adjusted boundigng rectangle based of the painter settings
+  QRectF rectAdjusted = getAdjustedBoundingRect(painter);
+
   QPainterPath circle_path;
   circle_path.addEllipse(boundingRect());
 
-  QColor cpen(0,0,0);
-  QPen pn(cpen, 0, Qt::SolidLine);
-  painter->setPen(pn);
-
-  te::color::RGBAColor clrBack = model->getBackgroundColor();
-
-  QColor cbrush;
-  cbrush.setRed(clrBack.getRed());
-  cbrush.setGreen(clrBack.getGreen());
-  cbrush.setBlue(clrBack.getBlue());
-  cbrush.setAlpha(clrBack.getAlpha());
-
-  painter->setBrush(cbrush);
+  //draws the item
   painter->drawPath(circle_path);
 
   painter->restore();

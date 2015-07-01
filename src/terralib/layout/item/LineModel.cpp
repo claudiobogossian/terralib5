@@ -46,15 +46,14 @@ te::layout::LineModel::LineModel() :
 {
   m_type = Enums::getInstance().getEnumObjectType()->getLineItem();
 
-  m_borderColor = te::color::RGBAColor(255, 255, 255, 0);
   m_box = te::gm::Envelope(0., 0., 20., 20.);
-
-  m_lineColor = te::color::RGBAColor(0, 0, 0, 255);
 
   m_enumLineStyleType = new EnumLineStyleType();
   m_currentLineStyleType = m_enumLineStyleType->getStyleSolid();
 
   m_border = false;
+
+  m_color = te::color::RGBAColor(0, 0, 0, 255);
 }
 
 te::layout::LineModel::~LineModel()
@@ -128,27 +127,21 @@ std::vector<te::gm::Point*> te::layout::LineModel::getCoords()
   return m_coords;
 }
 
-te::color::RGBAColor te::layout::LineModel::getLineColor()
-{
-  return m_lineColor;
-}
-
 te::layout::Properties* te::layout::LineModel::getProperties() const
 {
   ItemModelObservable::getProperties();
 
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
 
-  Property pro_linecolor(m_hashCode);
-  pro_linecolor.setName("line_color");
-  pro_linecolor.setLabel("line color");
-  pro_linecolor.setValue(pro_linecolor, dataType->getDataTypeColor());
-  pro_linecolor.setMenu(true);
-  m_properties->addProperty(pro_linecolor);
-
   Property pro_lineStyleType = lineProperty();
   if(!pro_lineStyleType.isNull())
     m_properties->addProperty(pro_lineStyleType);
+
+  Property pro_fillColor(m_hashCode);
+  pro_fillColor.setName("color");
+  pro_fillColor.setValue(m_color, dataType->getDataTypeColor());
+  pro_fillColor.setMenu(true);
+  m_properties->addProperty(pro_fillColor);
 
   return m_properties;
 }
@@ -159,12 +152,6 @@ void te::layout::LineModel::updateProperties( te::layout::Properties* properties
 
   Properties* vectorProps = const_cast<Properties*>(properties);
 
-  Property pro_linecolor = vectorProps->contains("line_color");
-  if(!pro_linecolor.isNull())
-  {
-    m_lineColor = pro_linecolor.getValue().toColor();
-  }
-
   Property pro_lineType = vectorProps->contains("line_style_type");
   if(!pro_lineType.isNull())
   {
@@ -172,6 +159,14 @@ void te::layout::LineModel::updateProperties( te::layout::Properties* properties
     EnumType* enumType = m_enumLineStyleType->searchLabel(label);
     if(enumType)
       m_currentLineStyleType = enumType;
+  }
+
+  {
+    Property prop = vectorProps->contains("color");
+    if(prop.isNull() == false)
+    {
+      m_color = prop.getValue().toColor();
+    }
   }
 
   if(notify)
@@ -226,4 +221,15 @@ te::layout::Property te::layout::LineModel::lineProperty() const
 
   return pro_lineStyleType;
 }
+
+const te::color::RGBAColor& te::layout::LineModel::getColor() const
+{
+  return m_color;
+}
+
+void te::layout::LineModel::setColor(const te::color::RGBAColor& color)
+{
+  m_color = color;
+}
+
 

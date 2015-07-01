@@ -117,7 +117,6 @@ void te::layout::GridMapModel::init()
 
   m_type = Enums::getInstance().getEnumObjectType()->getGridMapItem();
 
-  m_borderColor = te::color::RGBAColor(0, 0, 0, 255);
   m_box = te::gm::Envelope(0., 0., 20., 20.);
   m_border = false;
 

@@ -141,7 +141,7 @@ void te::layout::TextItem::paint( QPainter * painter, const QStyleOptionGraphics
   
   QGraphicsTextItem::paint(painter, option, widget);
 
-  drawBorder(painter);
+  drawFrame(painter);
        
   //Draw Selection
   if (option->state & QStyle::State_Selected)

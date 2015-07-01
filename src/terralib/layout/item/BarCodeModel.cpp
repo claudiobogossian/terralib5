@@ -38,7 +38,6 @@ te::layout::BarCodeModel::BarCodeModel()
 
   m_type = Enums::getInstance().getEnumObjectType()->getBarCodeItem();
 
-  m_borderColor = te::color::RGBAColor(0, 0, 0, 255);
   m_box = te::gm::Envelope(0., 0., 20., 20.);
   m_border = false;
   m_font.setPointSize(12);

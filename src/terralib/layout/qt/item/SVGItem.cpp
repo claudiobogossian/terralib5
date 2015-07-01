@@ -106,7 +106,7 @@ void te::layout::SVGItem::paint( QPainter * painter, const QStyleOptionGraphicsI
     }*/
   }
 
-  drawBorder(painter);
+  drawFrame(painter);
 
   //Draw Selection
   if (option->state & QStyle::State_Selected)
