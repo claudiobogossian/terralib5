@@ -8,6 +8,7 @@
 #include "connectors/MapDisplay.h"
 #include "events/ApplicationEvents.h"
 #include "events/LayerEvents.h"
+#include "Utils.h"
 
 #include "../widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../widgets/datasource/core/DataSourceType.h"
@@ -43,6 +44,8 @@ te::qt::af::BaseApplication::~BaseApplication()
   delete m_layerExplorer;
   delete m_display;
 
+  te::qt::af::UpdateUserSettings();
+
   m_app->finalize();
 }
 
@@ -77,9 +80,6 @@ void te::qt::af::BaseApplication::onAddLayerTriggered()
 {
   try
   {
-    //     if(m_project == 0)
-    //       throw Exception(TE_TR("Error: there is no opened project!"));
-
     QApplication::setOverrideCursor(Qt::WaitCursor);
 
     // Get the parent layer where the dataset layer(s) will be added.

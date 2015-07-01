@@ -104,7 +104,7 @@ namespace te
 
         \param userConfigFile Name of the user configuration file.
       */
-      TEQTAFEXPORT void UpdateUserSettings(const QStringList& prjFiles, const QStringList& prjTitles, const std::string& userConfigFile);
+      TEQTAFEXPORT void UpdateUserSettings();
 
       /*!
         \brief Saves data sources file.
