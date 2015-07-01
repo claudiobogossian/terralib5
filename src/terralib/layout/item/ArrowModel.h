@@ -47,11 +47,11 @@ namespace te
       \brief Class that represents a "Model" part of Arrow MVC component. 
           Its coordinate system is the same of scene (millimeters). 
           This is also son of ItemModelObservable, so it can become observable.
-      	  
-	    \ingroup layout
+          
+      \ingroup layout
 
       \sa te::layout::ItemModelObservable
-	  */
+    */
     class TELAYOUTEXPORT ArrowModel : public ItemModelObservable
     {
       public:
@@ -66,28 +66,45 @@ namespace te
         */ 
         virtual ~ArrowModel();
 
-		    virtual Properties* getProperties() const;
+        virtual Properties* getProperties() const;
 
-		    virtual void updateProperties(te::layout::Properties* properties, bool notify = true);
+        virtual void updateProperties(te::layout::Properties* properties, bool notify = true);
 
-		    virtual EnumArrowType* getEnumArrowType();
+        virtual EnumArrowType* getEnumArrowType();
 
-		    virtual EnumType* getCurrentArrowType();
+        virtual EnumType* getCurrentArrowType();
 
-		    virtual double getShapeSize();
+        virtual double getShapeSize();
 
-		    virtual te::color::RGBAColor getArrowColor();
+        /*!
+          \brief Gets the fill color of the shape
+        */
+        virtual const te::color::RGBAColor& getFillColor() const;
 
-		    virtual void setArrowColor(te::color::RGBAColor color);
+        /*!
+          \brief Sets the fill color of the shape
+        */
+        virtual void setFillColor(const te::color::RGBAColor& color);
 
-		protected:
+        /*!
+          \brief Gets the contour color of the shape
+        */
+        virtual const te::color::RGBAColor& getContourColor() const;
 
-			virtual Property arrowProperty() const;
+        /*!
+          \brief Sets the contour color of the shape
+        */
+        virtual void setContourColor(const te::color::RGBAColor& color);
 
-			EnumArrowType* m_enumArrowType;
-			EnumType*      m_currentArrowType;
-			double         m_shapeSize;
-			te::color::RGBAColor m_arrowColor;
+    protected:
+
+      virtual Property arrowProperty() const;
+
+      EnumArrowType* m_enumArrowType;
+      EnumType*      m_currentArrowType;
+      double         m_shapeSize;
+      te::color::RGBAColor m_fillColor; //!< The fill color of the shape
+      te::color::RGBAColor m_contourColor; //!< The contour color of the shape
 
     };
   }

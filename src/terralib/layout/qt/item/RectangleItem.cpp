@@ -78,35 +78,35 @@ void te::layout::RectangleItem::drawItem( QPainter * painter )
 }
 
 void te::layout::RectangleItem::drawRectangle( QPainter * painter )
-	{
-		RectangleModel* model = dynamic_cast<RectangleModel*>(m_model);
-		if(!model)
-		{
-			return;
-		}
+  {
+    RectangleModel* model = dynamic_cast<RectangleModel*>(m_model);
+    if(!model)
+    {
+      return;
+    }
 
-		painter->save();
+    painter->save();
 
-		QPainterPath rect_path;
-		rect_path.addRect(boundingRect());
+    QPainterPath rect_path;
+    rect_path.addRect(boundingRect());
 
-		QColor cpen(0,0,0);
-		QPen pn(cpen, 0, Qt::SolidLine);
-		painter->setPen(pn);
+    QColor cpen(0,0,0);
+    QPen pn(cpen, 0, Qt::SolidLine);
+    painter->setPen(pn);
 
-		te::color::RGBAColor clrBack = model->getBackgroundColor();
+    te::color::RGBAColor clrBack = model->getBackgroundColor();
 
-		QColor cbrush;
-		cbrush.setRed(clrBack.getRed());
-		cbrush.setGreen(clrBack.getGreen());
-		cbrush.setBlue(clrBack.getBlue());
-		cbrush.setAlpha(clrBack.getAlpha());
+    QColor cbrush;
+    cbrush.setRed(clrBack.getRed());
+    cbrush.setGreen(clrBack.getGreen());
+    cbrush.setBlue(clrBack.getBlue());
+    cbrush.setAlpha(clrBack.getAlpha());
 
-		painter->setBrush(cbrush);
-		painter->drawPath(rect_path);
+    painter->setBrush(cbrush);
+    painter->drawPath(rect_path);
 
-		painter->restore();
-	}
+    painter->restore();
+  }
 
 void te::layout::RectangleItem::drawRoundedRectangle(QPainter * painter)
 {

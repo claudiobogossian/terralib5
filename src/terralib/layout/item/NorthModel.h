@@ -62,6 +62,19 @@ namespace te
           \brief Destructor
         */ 
         virtual ~NorthModel();
+
+        /*!
+          \brief Gets the color of the shape
+        */
+        virtual const te::color::RGBAColor& getColor() const;
+
+        /*!
+          \brief Sets the color of the shape
+        */
+        virtual void setColor(const te::color::RGBAColor& color);
+
+    protected:
+        te::color::RGBAColor m_color; //!< The color of the shape
     };
   }
 }

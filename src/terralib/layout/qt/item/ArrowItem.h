@@ -78,7 +78,7 @@ namespace te
           \param box
          */
         virtual void drawRightArrow(QPainter * painter);
-				/*!
+        /*!
           \brief Drawing method of a Double Arrow
 
           \param canvas

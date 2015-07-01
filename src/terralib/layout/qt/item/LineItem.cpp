@@ -81,6 +81,8 @@ void te::layout::LineItem::updateObserver( ContextItem context )
     QPointF mlocal = mapFromScene(pt);
     m_poly.push_back(mlocal);   
   }
+
+  setRect(m_poly.boundingRect());
 }
 
 void te::layout::LineItem::drawItem( QPainter * painter )
@@ -94,28 +96,25 @@ void te::layout::LineItem::drawItem( QPainter * painter )
   if(m_poly.empty())
     return;
 
-  te::color::RGBAColor clrLne = model->getLineColor();
-
-  QColor cpen;
-  cpen.setRed(clrLne.getRed());
-  cpen.setGreen(clrLne.getGreen());
-  cpen.setBlue(clrLne.getBlue());
-  cpen.setAlpha(clrLne.getAlpha());
-
   QPainterPath path (m_poly[0]);
-
   for(int i = 0; i < m_poly.size() ; ++i)
   {
     path.lineTo(m_poly[i]);
-  } 
+  }
+
+  const te::color::RGBAColor& color = model->getColor();
+  QColor qColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+
+  painter->save();
 
   searchStyle();
 
-  QPen pn(cpen, 0, m_penStyle.style());
+  QPen pn(qColor, 0, m_penStyle.style());
   painter->setPen(pn);
 
-  painter->save();
+  //draws the item
   painter->drawPath(path);
+
   painter->restore();
 }
 

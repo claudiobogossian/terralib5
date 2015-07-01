@@ -768,7 +768,7 @@ void te::layout::MapItem::drawBorder( QPainter* painter )
   if(!model->isBorder())
     return;
 
-  te::color::RGBAColor clrBack = model->getBorderColor();
+  te::color::RGBAColor clrBack = model->getFrameColor();
   QColor borderColor;
   borderColor.setRed(clrBack.getRed());
   borderColor.setGreen(clrBack.getGreen());
@@ -959,6 +959,7 @@ void te::layout::MapItem::contextUpdated()
   {
     QPointF pt = scenePos();
 
+    this->prepareGeometryChange();
     m_mapDisplay->setGeometry(pt.x(), pt.y(), newSize.width(), newSize.height());
     m_pixmapIsDirty = true;
   }

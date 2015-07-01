@@ -64,18 +64,14 @@ void te::layout::PolygonItem::drawItem( QPainter * painter )
   if(m_poly.empty())
     return;
 
-  te::color::RGBAColor clrLne = model->getLineColor();
-
-  QColor cpen;
-  cpen.setRed(clrLne.getRed());
-  cpen.setGreen(clrLne.getGreen());
-  cpen.setBlue(clrLne.getBlue());
-  cpen.setAlpha(clrLne.getAlpha());
-
-  QPen pn(cpen, 0, Qt::SolidLine);
-  painter->setPen(pn);
+  const te::color::RGBAColor& color = model->getColor();
+  QColor qColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
 
   painter->save();
+
+  QPen pn(qColor, 0, Qt::SolidLine);
+  painter->setPen(pn);
+
   painter->drawPolygon(m_poly);
   painter->restore();
 }
