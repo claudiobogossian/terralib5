@@ -59,13 +59,15 @@ te::layout::EnumObjectType::EnumObjectType() :
   m_barCodeItem(0),
   m_gridMapItem(0),
   m_mapLayerChoice(0),
+  m_svgDialog(0),
   m_northItem(0),
   m_mapLocationItem(0),
   m_objectUnknown(0),
   m_colorDialog(0),
   m_fontDialog(0),
   m_legendChoice(0),
-  m_starItem(0)
+  m_starItem(0),
+  m_svgItem(0)
 {
   init();
 }
@@ -258,6 +260,18 @@ te::layout::EnumObjectType::~EnumObjectType()
     m_gridMapItem = 0;
   }
 
+  if(m_mapLayerChoice)
+  {
+    delete m_mapLayerChoice;
+    m_mapLayerChoice = 0;
+  }
+  
+  if(m_svgDialog)
+  {
+    delete m_svgDialog;
+    m_svgDialog = 0;
+  }
+
   if(m_colorDialog)
   {
     delete m_colorDialog;
@@ -280,6 +294,12 @@ te::layout::EnumObjectType::~EnumObjectType()
   {
     delete m_starItem;
     m_starItem = 0;
+  } 
+
+  if(m_svgItem)
+  {
+    delete m_svgItem;
+    m_svgItem = 0;
   } 
 }
 
@@ -351,6 +371,8 @@ void te::layout::EnumObjectType::init()
 
   m_mapLayerChoice = createEnum("Map_Layout_Choice", this);
 
+  m_svgDialog = createEnum("SVG_Dialog", this);
+
   m_northItem = createEnum("North_Item", this);
 
   m_mapLocationItem = createEnum("Map_Location_Item", this);
@@ -362,6 +384,8 @@ void te::layout::EnumObjectType::init()
   m_legendChoice = createEnum("Legend_Choice", this);
 
   m_starItem = createEnum("Star_Item", this);
+
+  m_svgItem = createEnum("SVG_Item", this);
 }
 
 te::layout::EnumType* te::layout::EnumObjectType::getRectangleItem() const
@@ -560,9 +584,15 @@ te::layout::EnumType* te::layout::EnumObjectType::getStarItem() const
   return m_starItem;
 }
 
+te::layout::EnumType* te::layout::EnumObjectType::getSVGItem() const
+{
+  return m_svgItem;
+}
 
-
-
+te::layout::EnumType* te::layout::EnumObjectType::getSVGDialog() const
+{
+  return m_svgDialog;
+}
 
 
 

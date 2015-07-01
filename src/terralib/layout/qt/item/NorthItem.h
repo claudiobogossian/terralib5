@@ -59,13 +59,14 @@ namespace te
           \param controller "Controller" part of MVC component
           \param o "Model" part of MVC component
         */ 
-        NorthItem( ItemController* controller, Observable* o );
+        NorthItem( ItemController* controller, Observable* o, bool invertedMatrix = false );
 
         /*!
           \brief Destructor
          */
         virtual ~NorthItem();
 
+<<<<<<< HEAD
         /*!
           \brief Reimplemented from QGraphicsItem
          */
@@ -76,6 +77,11 @@ namespace te
 				virtual void drawNorthArrow1(QPainter * painter);
 				virtual void drawNorthArrow2(QPainter * painter);
 				virtual void drawNorthArrow3(QPainter * painter);
+=======
+      protected:
+
+        virtual void drawItem(QPainter * painter);
+>>>>>>> 5e560945015893cb5a2da682f359d1a675549014
     };
   }
 }

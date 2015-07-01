@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/qt/widgets/charts/histogramDataWidget.h
+  \file terralib/qt/widgets/charts/HistogramDataWidget.h
 
   \brief A widget used to adjust a histogram's input data.
 */

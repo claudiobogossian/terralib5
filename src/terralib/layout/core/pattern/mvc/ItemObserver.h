@@ -158,14 +158,6 @@ namespace te
         */
         virtual te::color::RGBAColor** getRGBAColorImage(int &w, int &h) = 0;
 
-        
-        /*!
-          \brief It is called immediately by the Scene when the zoom factor is changed in the Context.
-
-          \param currentZoomFactor current zoom factor of the layout module
-         */
-        virtual void changeZoomFactor(double currentZoomFactor);
-
         /*!
           \brief The default implementation does nothing.
          */
@@ -175,6 +167,11 @@ namespace te
           \brief Checks if the object, passed via parameter, can be child.
          */
         virtual bool canBeChild(ItemObserver* item);
+
+        /*!
+          \brief This function is called every time the context is updated. It is usually used by the item to configure its drawings due to changes in the zoom factor or in the DPI of the device.
+        */
+        virtual void contextUpdated();
 
       protected:
 

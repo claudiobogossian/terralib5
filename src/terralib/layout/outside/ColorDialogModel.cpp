@@ -40,4 +40,14 @@ te::layout::ColorDialogModel::~ColorDialogModel()
 
 }
 
+void te::layout::ColorDialogModel::setColorProperty( Property prop )
+{
+  m_colorProperty = prop;
+}
+
+te::layout::Property te::layout::ColorDialogModel::getColorProperty()
+{
+  return m_colorProperty;
+}
+
 

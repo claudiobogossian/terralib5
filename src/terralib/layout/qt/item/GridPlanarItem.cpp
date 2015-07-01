@@ -48,8 +48,8 @@
 #include <QPointF>
 #include <QLineF>
 
-te::layout::GridPlanarItem::GridPlanarItem( ItemController* controller, Observable* o ) :
-  GridMapItem(controller, o)
+te::layout::GridPlanarItem::GridPlanarItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
+  GridMapItem(controller, o, invertedMatrix)
 {  
   m_nameClass = std::string(this->metaObject()->className());
 }

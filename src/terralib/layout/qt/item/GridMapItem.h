@@ -74,14 +74,14 @@ namespace te
           \param controller "Controller" part of MVC component
           \param o "Model" part of MVC component
         */ 
-        GridMapItem( ItemController* controller, Observable* o );
+        GridMapItem( ItemController* controller, Observable* o, bool invertedMatrix = false );
 
         /*!
           \brief Destructor
          */
         virtual ~GridMapItem();
         
-        virtual void paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
+        virtual void drawItem( QPainter * painter );
 
         /*!
           \brief Reimplemented from ParentItem

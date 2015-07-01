@@ -42,9 +42,9 @@
 #include <QObject>
 
 // QtPropertyBrowser
-#include <QtPropertyBrowser/QtStringPropertyManager>
-#include <QtPropertyBrowser/qteditorfactory.h>
-#include <QtPropertyBrowser/QtProperty>
+class QtStringPropertyManager;
+class QtDlgEditorFactory;
+class QtProperty;
 
 class QGraphicsItem;
 class QWidget;
@@ -134,6 +134,8 @@ namespace te
 
         virtual void onShowLegendChoiceDlg();
 
+        virtual void onShowViewDlg();
+
       signals:
 
         void changeDlgProperty(Property property);
@@ -147,6 +149,8 @@ namespace te
         virtual void changeValueQtPropertyDlg(std::string name, QVariant variant);
 
         virtual QWidget* createOutside(EnumType* enumType);
+
+        virtual void appendDialog(QWidget* widget);
       
       protected:
 
@@ -155,6 +159,7 @@ namespace te
         std::map<std::string, Property> m_dlgProps;
         Property                        m_currentPropertyClicked;
         QList<QWidget*>                 m_dialogs;
+
     };
   }
 }

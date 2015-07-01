@@ -60,9 +60,10 @@
 #include "../../core/enum/EnumAlignmentType.h"
 #include "qlabel.h"
 #include "qpainter.h"
+#include "qgraphicsitem.h"
 
 
-te::layout::TextItem::TextItem( ItemController* controller, Observable* o ) :
+te::layout::TextItem::TextItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
   ParentItem<QGraphicsTextItem>(controller, o, true),
   m_editable(false),
   m_move(false)
@@ -205,7 +206,7 @@ QImage te::layout::TextItem::createImage()
   double h = document()->size().height();
   
   QImage img(w, h, QImage::Format_ARGB32_Premultiplied);
-  img.fill(m_backgroundColor);
+  img.fill(m_backgroundColor.rgba());
 
   QPainter ptr(&img);
   ptr.setFont(ft);
@@ -285,8 +286,11 @@ QVariant te::layout::TextItem::itemChange( GraphicsItemChange change, const QVar
     double h = 0;
     getDocumentSizeMM(w, h);
 
-    newPos.setX(newPos.x() - transform().dx());
-    newPos.setY(newPos.y() - transform().dy() + h);
+    double tx = transform().dx();
+    double ty = transform().dy();
+
+    newPos.setX(newPos.x() - tx);
+    newPos.setY(newPos.y() - ty);
     return newPos;
   }
   else if(change == QGraphicsItem::ItemPositionHasChanged)
@@ -475,17 +479,19 @@ void te::layout::TextItem::drawAlignmentCenter(QPainter * painter)
   }
 
   painter->save();
-
   std::string txt = model->getText();
-  QString text;
+  QGraphicsTextItem textItem(txt);
+  painter->setFont(textItem.font());
+  painter->setTransform(textItem.sceneTransform());
+
+  painter->drawText(textItem.boundingRect(), Qt::AlignCenter, textItem.toPlainText());
+
   painter->restore();
 
-  setAlignment(Qt::AlignCenter);
 }
 
 void te::layout::TextItem::drawAlignmentLeft(QPainter * painter)
 {
-  setAlignment(Qt::AlignLeft);
   painter->save();
   painter->restore();
 }

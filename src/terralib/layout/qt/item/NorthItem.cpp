@@ -30,8 +30,8 @@
 #include "../../item/NorthModel.h"
 #include "../../core/enum/EnumNorthArrowType.h"
 
-te::layout::NorthItem::NorthItem( ItemController* controller, Observable* o ) :
-  ObjectItem(controller, o)
+te::layout::NorthItem::NorthItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
+  ObjectItem(controller, o, invertedMatrix)
 {  
   m_nameClass = std::string(this->metaObject()->className());
 }
@@ -41,6 +41,7 @@ te::layout::NorthItem::~NorthItem()
 
 }
 
+<<<<<<< HEAD
 void te::layout::NorthItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
 {
 	Q_UNUSED( option );
@@ -126,6 +127,9 @@ void te::layout::NorthItem::drawNorthArrow1(QPainter * painter)
 }
 
 void te::layout::NorthItem::drawNorthArrow2(QPainter * painter)
+=======
+void te::layout::NorthItem::drawItem( QPainter * painter )
+>>>>>>> 5e560945015893cb5a2da682f359d1a675549014
 {
 	NorthModel* model = dynamic_cast<NorthModel*>(m_model);
 	if(!model)

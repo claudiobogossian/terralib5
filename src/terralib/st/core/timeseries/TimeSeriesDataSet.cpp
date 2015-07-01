@@ -236,6 +236,7 @@ void te::st::TimeSeriesDataSet::getTimeSeriesSet(  te::st::AbstractTimeSeriesInt
   std::set<std::string> seriesIds;
   size_t count = 0;
 
+  ds->moveBeforeFirst();
   while(ds->moveNext())
   {
     //Acquiring the timeSeries identification
@@ -244,6 +245,9 @@ void te::st::TimeSeriesDataSet::getTimeSeriesSet(  te::st::AbstractTimeSeriesInt
     if(seriesIds.insert(tsid->toString()).second)
     {
       TimeSeries* ts = new TimeSeries(interp,tsid->toString());
+      std::auto_ptr<te::dt::DateTime> time(ds->getDateTime(m_obsDs->getType().getBeginTimePropName()));
+      std::auto_ptr<te::dt::AbstractData> value(ds->getValue(m_vlPropNames[0]));
+      ts->add(time.release(), value.release());
       result.push_back(ts);
 
       //Get the time series location if there is one

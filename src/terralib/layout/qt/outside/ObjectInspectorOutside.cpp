@@ -39,11 +39,15 @@
 #include "../core/propertybrowser/VariantPropertiesBrowser.h"
 #include "../core/propertybrowser/DialogPropertiesBrowser.h"
 #include "../item/MovingItemGroup.h"
+#include "../core/propertybrowser/PropertyBrowser.h"
 
 //Qt
 #include <QGraphicsWidget>
 #include <QVBoxLayout>
 #include <QGroupBox>
+
+#include <QtPropertyBrowser/QtProperty>
+#include <QtPropertyBrowser/QtTreePropertyBrowser>
 
 te::layout::ObjectInspectorOutside::ObjectInspectorOutside( OutsideController* controller, Observable* o, PropertyBrowser* propertyBrowser ) :
   QWidget(0),
@@ -215,6 +219,8 @@ bool te::layout::ObjectInspectorOutside::hasMoveItemGroup( QList<QGraphicsItem*>
     if (item)
     {
       ItemObserver* movingItem = dynamic_cast<ItemObserver*>(item);
+      if(!movingItem)
+        continue;
 
       if(movingItem->getModel()->getType() == enumObj->getMovingItemGroup())
       {

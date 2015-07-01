@@ -43,6 +43,10 @@
 #include "../../../core/pattern/proxy/AbstractProxyProject.h"
 #include "../../item/MapItem.h"
 #include "../../../item/MapModel.h"
+#include "../../outside/ColorDialogOutside.h"
+#include "../../../outside/ColorDialogModel.h"
+#include "../../outside/SVGDialogOutside.h"
+#include "../../../outside/SVGDialogModel.h"
 
 // STL
 #include <vector>
@@ -59,6 +63,11 @@
 #include <QDesktopWidget>
 #include <QApplication>
 #include <QByteArray>
+
+// QtPropertyBrowser
+#include <QtPropertyBrowser/QtStringPropertyManager>
+#include <QtPropertyBrowser/qteditorfactory.h>
+#include <QtPropertyBrowser/QtProperty>
 
 te::layout::DialogPropertiesBrowser::DialogPropertiesBrowser(QObject* parent) :
   AbstractPropertiesBrowser(parent),
@@ -145,6 +154,10 @@ void te::layout::DialogPropertiesBrowser::onSetDlg( QWidget *parent, QtProperty 
   if(propt.getType() == dataType->getDataTypeLegendChoice())
   {
     connect(parent, SIGNAL(showDlg()), this, SLOT(onShowLegendChoiceDlg()));
+  }
+  if(propt.getType() == dataType->getDataTypeSVGView())
+  {
+    connect(parent, SIGNAL(showDlg()), this, SLOT(onShowViewDlg()));
   }
   if(propt.getType() == dataType->getDataTypeColor())
   {
@@ -306,12 +319,7 @@ void te::layout::DialogPropertiesBrowser::onShowGridSettingsDlg()
     return;
   }
 
-  m_dialogs.append(gridSettings);
-
-  connect(gridSettings, SIGNAL(updateProperty(Property)), this, SLOT(updateOutside(Property)));
-  connect(gridSettings, SIGNAL(destroyed( QObject *)), this, SLOT(onDestroyed(QObject*)));
-
-  gridSettings->setAttribute(Qt::WA_DeleteOnClose);
+  appendDialog(gridSettings);
 
   GridSettingsModel* model = dynamic_cast<GridSettingsModel*>(gridSettings->getModel());
   if(!model)
@@ -431,44 +439,38 @@ void te::layout::DialogPropertiesBrowser::onShowFontDlg()
 
 void te::layout::DialogPropertiesBrowser::onShowColorDlg()
 {
-  QWidget* wdg = dynamic_cast<QWidget*>(parent());
-
-  if(!wdg)
-    return;
-
-  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
-
-  Property property = m_currentPropertyClicked;
-
-  if(property.getType() != dataType->getDataTypeColor())
-    return;
-
-  bool ok = false;
-  QColor qcolor;
-  te::color::RGBAColor color;
-
-  color = property.getValue().toColor();
-  qcolor.setRed(color.getRed());
-  qcolor.setGreen(color.getGreen());
-  qcolor.setBlue(color.getBlue());
-  qcolor.setAlpha(color.getAlpha());
-
-  QRgb oldRgba = qcolor.rgba();
-
-  QRgb newRgba = QColorDialog::getRgba(oldRgba, &ok, wdg);
-
-  if (!ok || newRgba == oldRgba)
-    return;
-
-  qcolor = QColor::fromRgba(newRgba);
-
-  if(qcolor.isValid()) 
+  EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
+  if(!enumObj)
   {
-    color.setColor(qcolor.red(), qcolor.green(), qcolor.blue(), qcolor.alpha());
-    property.setValue(color, dataType->getDataTypeColor());
-
-    emit changeDlgProperty(property);
+    return;
   }
+
+  QWidget* widget = createOutside(enumObj->getColorDialog());
+  if(!widget)
+  {
+    return;
+  }
+
+  ColorDialogOutside* colorDialog = dynamic_cast<ColorDialogOutside*>(widget);
+  if(!colorDialog)
+  {
+    return;
+  }
+
+  appendDialog(colorDialog);
+
+  ColorDialogModel* model = dynamic_cast<ColorDialogModel*>(colorDialog->getModel());
+  if(!model)
+  {
+    return;
+  }
+    
+  model->setColorProperty(m_currentPropertyClicked);
+
+  colorDialog->init();
+  colorDialog->show(); // modeless dialog
+  colorDialog->raise(); // top of the parent widget's stack
+  colorDialog->activateWindow(); // visible top-level window that has the keyboard input focus
 }
 
 void te::layout::DialogPropertiesBrowser::onShowMapLayerChoiceDlg()
@@ -490,13 +492,8 @@ void te::layout::DialogPropertiesBrowser::onShowMapLayerChoiceDlg()
   {
     return;
   }
-
-  m_dialogs.append(layerChoice);
-
-  connect(layerChoice, SIGNAL(updateProperty(Property)), this, SLOT(updateOutside(Property)));
-  connect(layerChoice, SIGNAL(destroyed( QObject *)), this, SLOT(onDestroyed(QObject*)));
-
-  layerChoice->setAttribute(Qt::WA_DeleteOnClose);
+  
+  appendDialog(layerChoice);
 
   MapLayerChoiceModel* model = dynamic_cast<MapLayerChoiceModel*>(layerChoice->getModel());
   if(!model)
@@ -553,12 +550,7 @@ void te::layout::DialogPropertiesBrowser::onShowLegendChoiceDlg()
     return;
   }
 
-  m_dialogs.append(legendChoice);
-
-  connect(legendChoice, SIGNAL(updateProperty(Property)), this, SLOT(updateOutside(Property)));
-  connect(legendChoice, SIGNAL(destroyed( QObject *)), this, SLOT(onDestroyed(QObject*)));
-
-  legendChoice->setAttribute(Qt::WA_DeleteOnClose);
+  appendDialog(legendChoice);
 
   LegendChoiceModel* model = dynamic_cast<LegendChoiceModel*>(legendChoice->getModel());
   if(!model)
@@ -567,6 +559,46 @@ void te::layout::DialogPropertiesBrowser::onShowLegendChoiceDlg()
   }
   
   legendChoice->show();
+}
+
+void te::layout::DialogPropertiesBrowser::onShowViewDlg()
+{
+  EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
+  if(!enumObj)
+  {
+    return;
+  }
+
+  QWidget* widget = createOutside(enumObj->getSVGDialog());
+  if(!widget)
+  {
+    return;
+  }
+
+  SVGDialogOutside* svgOutside = dynamic_cast<SVGDialogOutside*>(widget);
+  if(!svgOutside)
+  {
+    return;
+  }
+
+  appendDialog(svgOutside);
+
+  SVGDialogModel* model = dynamic_cast<SVGDialogModel*>(svgOutside->getModel());
+  if(!model)
+  {
+    return;
+  }
+
+  AbstractProxyProject* proxy = Context::getInstance().getProxyProject();
+  if(!proxy)
+  {
+    return;
+  }
+
+  model->setPathsProperty(m_currentPropertyClicked);
+  
+  svgOutside->init();
+  svgOutside->show();
 }
 
 te::layout::Property te::layout::DialogPropertiesBrowser::getProperty( std::string name )
@@ -762,18 +794,14 @@ void te::layout::DialogPropertiesBrowser::clearAll()
   closeAllWindows();
 }
 
+void te::layout::DialogPropertiesBrowser::appendDialog( QWidget* widget )
+{
+  m_dialogs.append(widget);
 
+  connect(widget, SIGNAL(updateProperty(Property)), this, SLOT(updateOutside(Property)));
+  connect(widget, SIGNAL(destroyed( QObject *)), this, SLOT(onDestroyed(QObject*)));
 
-
-
-
-
-
-
-
-
-
-
-
+  widget->setAttribute(Qt::WA_DeleteOnClose);
+}
 
 

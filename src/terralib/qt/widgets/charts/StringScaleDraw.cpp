@@ -82,7 +82,6 @@ QwtText te::qt::widgets::StringScaleDraw::label( double value ) const
         ++it;
       }
       lbl = *it;
-      std::string test = lbl.toStdString();
     }
   }
   return  QwtText(lbl);

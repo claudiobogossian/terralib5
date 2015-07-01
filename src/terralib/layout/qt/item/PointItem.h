@@ -59,20 +59,16 @@ namespace te
           \param controller "Controller" part of MVC component
           \param o "Model" part of MVC component
         */ 
-        PointItem( ItemController* controller, Observable* o );
+        PointItem( ItemController* controller, Observable* o, bool invertedMatrix = false );
 
         /*!
           \brief Destructor
          */
         virtual ~PointItem();
-        
-        /*!
-          \brief Reimplemented from QGraphicsItem
-         */
-        virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
 
       protected:
 
+<<<<<<< HEAD
         virtual void drawStar1(QPainter * painter);
 
         virtual void drawStar2(QPainter * painter);
@@ -80,6 +76,11 @@ namespace te
         virtual void drawStar3(QPainter * painter);
 
         virtual void drawStar4(QPainter * painter);
+=======
+        virtual void drawItem ( QPainter * painter );
+
+        virtual void drawStar(QPainter * painter);
+>>>>>>> 5e560945015893cb5a2da682f359d1a675549014
 
         virtual void drawCircle(QPainter * painter);
 

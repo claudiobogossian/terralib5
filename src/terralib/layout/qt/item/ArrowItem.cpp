@@ -26,23 +26,24 @@
 */
 
 // TerraLib
-#include "ArrowItem.h"
-#include "../../core/pattern/mvc/ItemController.h"
-#include "../../core/AbstractScene.h"
-#include "../../core/pattern/mvc/Observable.h"
 #include "../../../color/RGBAColor.h"
-#include "../../../qt/widgets/Utils.h"
-#include "../../../geometry/Envelope.h"
 #include "../../../common/STLUtils.h"
+#include "../../../geometry/Envelope.h"
+#include "../../../qt/widgets/Utils.h"
+#include "../../core/AbstractScene.h"
+#include "../../core/pattern/mvc/ItemController.h"
+#include "../../core/pattern/mvc/Observable.h"
 #include "../../item/ArrowModel.h"
+#include "ArrowItem.h"
 
+// STL
 #include <cmath>
-#include "geos/platform.h"
-#include "qgraphicsitem.h"
-#include "qpoint.h"
 
-te::layout::ArrowItem::ArrowItem( ItemController* controller, Observable* o ) :
-  ObjectItem(controller, o)
+// Qt
+#include <QPointF>
+
+te::layout::ArrowItem::ArrowItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
+  ObjectItem(controller, o, invertedMatrix)
 {
   m_nameClass = std::string(this->metaObject()->className());
 }
@@ -52,8 +53,9 @@ te::layout::ArrowItem::~ArrowItem()
 
 }
 
-void te::layout::ArrowItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
+void te::layout::ArrowItem::drawItem( QPainter * painter )
 {
+<<<<<<< HEAD
   Q_UNUSED( option );
   Q_UNUSED( widget );
   if ( !painter )
@@ -88,8 +90,21 @@ void te::layout::ArrowItem::paint( QPainter * painter, const QStyleOptionGraphic
 
   //Draw Selection
   if (option->state & QStyle::State_Selected)
+=======
+  ArrowModel* model = dynamic_cast<ArrowModel*>(m_model);
+  if(model)
+>>>>>>> 5e560945015893cb5a2da682f359d1a675549014
   {
-    drawSelection(painter);
+    EnumArrowType* enumScale = model->getEnumArrowType();
+
+    if(model->getCurrentArrowType() == enumScale->getDoubleArrowType())
+    {
+      drawDoubleArrow(painter);
+    }
+    if(model->getCurrentArrowType() == enumScale->getRightArrowType())
+    {
+      drawRightArrow(painter);
+    }
   }
 }
 

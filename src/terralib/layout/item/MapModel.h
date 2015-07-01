@@ -120,10 +120,6 @@ namespace te
 
         virtual std::map<te::gm::Point*, std::string> getTextMapAsObjectInfo();
 
-        virtual void setMapBackgroundColor(te::color::RGBAColor color);
-
-        virtual te::color::RGBAColor getMapBackgroundColor();
-
         virtual bool isLoadedLayer();
 
         void clear();
@@ -149,7 +145,6 @@ namespace te
         Systematic*							                m_systematic;
         bool								                    m_fixedScale;
         te::gm::Envelope					              m_worldBox;
-        te::color::RGBAColor				            m_mapbackgroundColor;
         bool								                    m_loadedLayer;
         std::vector<std::string>			          m_layerNames;
     };

@@ -39,7 +39,7 @@
 #include "ScatterDataWidget.h"
 #include "ScatterDialog.h"
 #include "ScatterStyle.h"
-#include "ui_ScatterDialogForm.h"
+#include "ui_ChartDialogForm.h"
 #include "ui_ScatterDataWidgetForm.h"
 
 //QT
@@ -50,7 +50,7 @@
 
 te::qt::widgets::ScatterDialog::ScatterDialog(te::da::DataSet* dataSet, te::da::DataSetType* dataType, QWidget* parent,  Qt::WindowFlags f)
   : QDialog(parent, f),
-    m_ui(new Ui::ScatterDialogForm)
+    m_ui(new Ui::ChartDialogForm)
 {
     m_ui->setupUi(this);
 

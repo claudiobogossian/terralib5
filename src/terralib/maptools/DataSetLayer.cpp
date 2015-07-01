@@ -81,6 +81,9 @@ std::auto_ptr<te::map::LayerSchema> te::map::DataSetLayer::getSchema() const
 
     std::auto_ptr<LayerSchema> type = ds->getDataSetType(m_datasetName);
 
+    if(!type.get())
+      return std::auto_ptr<te::da::DataSetType>();
+
     // Cache the schema from datasource
     m_schema = static_cast<LayerSchema*>(type->clone());
 
