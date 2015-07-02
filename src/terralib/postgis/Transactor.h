@@ -255,7 +255,7 @@ namespace te
                  const std::map<std::string, std::string>& options,
                  std::size_t limit = 0);
 
-        void remove(const std::string& datasetName, const te::da::ObjectIdSet* oids = 0);
+		void remove(const std::string& datasetName, const te::da::ObjectIdSet* oids = 0);
 
         void update(const std::string& datasetName,
                     te::da::DataSet* dataset,
@@ -272,6 +272,7 @@ namespace te
         void optimize(const std::map<std::string, std::string>& opInfo);
 
         te::common::CharEncoding getEncoding();
+
 
         /*!
           \brief It will check in the database catalog the number that identifies the PostGIS Geometry type.
