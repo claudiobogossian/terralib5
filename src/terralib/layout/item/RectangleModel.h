@@ -50,11 +50,11 @@ namespace te
       \brief Class that represents a "Model" part of Rectangle MVC component. 
           Its coordinate system is the same of scene (millimeters). 
           He is also the son of ItemModelObservable, so it can become observable.
-      	  
-	    \ingroup layout
+          
+      \ingroup layout
 
       \sa te::layout::ItemModelObservable
-	  */
+    */
     class TELAYOUTEXPORT RectangleModel : public ItemModelObservable
     {
       public:
@@ -69,28 +69,23 @@ namespace te
         */ 
         virtual ~RectangleModel();
 
-				virtual Properties* getProperties() const;
+        virtual Properties* getProperties() const;
 
-				virtual void updateProperties(te::layout::Properties* properties, bool notify = true);
+        virtual void updateProperties(te::layout::Properties* properties, bool notify = true);
 
-				virtual EnumRectangleType* getEnumRectangleType();
+        virtual EnumRectangleType* getEnumRectangleType();
 
-				virtual EnumType* getCurrentRectangleType();
+        virtual EnumType* getCurrentRectangleType();
 
-				virtual double getShapeSize();
+        virtual double getShapeSize();
 
-				virtual te::color::RGBAColor getRectangleColor();
+    protected:
 
-				virtual void setRectangleColor(te::color::RGBAColor color);
+      virtual Property rectangleProperty() const;
 
-		protected:
-
-			virtual Property rectangleProperty() const;
-
-			EnumRectangleType* m_enumRectangleType;
-			EnumType*      m_currentRectangleType;
-			double         m_shapeSize;
-			te::color::RGBAColor m_rectangleColor;
+      EnumRectangleType* m_enumRectangleType;
+      EnumType*      m_currentRectangleType;
+      double         m_shapeSize;
     };
   }
 }
