@@ -33,6 +33,12 @@
 #include "Plugin.h"
 #include "ToolBar.h"
 
+// QT
+#include <QAction>
+#include <QtCore/QObject>
+#include <QMenu>
+#include <QMenuBar>
+
 te::qt::plugins::edit::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo)
   : te::plugin::Plugin(pluginInfo),
     m_toolbar(0),
@@ -52,13 +58,13 @@ void te::qt::plugins::edit::Plugin::startup()
   // Register the application framework listener
   te::qt::af::ApplicationController::getInstance().addListener(&ApplicationListener::getInstance());
 
-  /* Under development
+  ///* Under development
 
   // Create the main toolbar
   m_toolbar = new ToolBar;
 
   // Add plugin toolbar
-  te::qt::af::ApplicationController::getInstance().addToolBar("EditToolBar", m_toolbar->get());
+  //te::qt::af::ApplicationController::getInstance().addToolBar("EditToolBar", m_toolbar->get());
 
   // Get plugins menu
   QMenu* pluginsMenu = te::qt::af::ApplicationController::getInstance().getMenu("Plugins");
@@ -66,12 +72,18 @@ void te::qt::plugins::edit::Plugin::startup()
   // Create the main menu
   m_menu = new QMenu(pluginsMenu);
   m_menu->setTitle(TE_TR("Edit"));
+  m_menu->setIcon(QIcon::fromTheme("layer-edit"));
 
   // Insert menu before plugins last action
   QAction* lastAction = te::qt::af::ApplicationController::getInstance().findAction("ManagePluginsSeparator");
   pluginsMenu->insertMenu(lastAction, m_menu);
 
-  */
+  m_action = new QAction(m_menu);
+
+  m_action->setText("Enable Edit Buttons");
+  m_menu->addAction(m_action);
+
+  connect(m_action, SIGNAL(triggered(bool)), this, SLOT(onActionActivated(bool)));
 
   TE_LOG_TRACE(TE_TR("TerraLib Edit Qt Plugin startup!"));
 
@@ -90,6 +102,11 @@ void te::qt::plugins::edit::Plugin::shutdown()
   TE_LOG_TRACE(TE_TR("TerraLib Edit Qt Plugin shutdown!"));
 
   m_initialized = false;
+}
+void te::qt::plugins::edit::Plugin::onActionActivated(bool checked)
+{
+  // Add plugin toolbar
+  te::qt::af::ApplicationController::getInstance().addToolBar("EditToolBar", m_toolbar->get());
 }
 
 PLUGIN_CALL_BACK_IMPL(te::qt::plugins::edit::Plugin)
