@@ -29,7 +29,7 @@ namespace te
 
     class TEEDITQTEXPORT SubtractAreaTool : public CreateLineTool
     {
-      //Q_OBJECT
+      Q_OBJECT
 
     public:
       SubtractAreaTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent = 0);

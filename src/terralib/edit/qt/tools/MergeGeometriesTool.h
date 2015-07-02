@@ -56,7 +56,7 @@ namespace te
 
     class TEEDITQTEXPORT MergeGeometriesTool : public te::qt::widgets::AbstractTool
     {
-      //Q_OBJECT
+      Q_OBJECT
 
     public:
 

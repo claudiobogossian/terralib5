@@ -304,7 +304,7 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
     for (std::size_t i = 0; i < oidPropertyNames.size(); ++i)
       oidPropertyPosition.push_back(te::da::GetPropertyPos(memds.get(), oidPropertyNames[i]));
 
-    currentOids = te::da::GenerateOIDSet(memds.get(), schema.get(), true);
+    currentOids = te::da::GenerateOIDSet(memds.get(), schema.get());//te::da::GenerateOIDSet(memds.get(), schema.get(), true);
 
     memds->moveBeforeFirst();
 
@@ -537,14 +537,14 @@ void te::qt::plugins::edit::ToolBar::onDeleteGeometryToolActivated(bool checked)
 
     if (layer.get() == 0)
     {
-    QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Select a layer first!"));
-    return;
+      QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Select a layer first!"));
+      return;
     }
 
     if (layer->getSelected()->size() > 1)
     {
-    QMessageBox::critical(0, tr("Error"), QString(tr("To delete geometry, you must select exactly 1 polygon!")));
-    return;
+      QMessageBox::critical(0, tr("Error"), QString(tr("To delete geometry, you must select exactly 1 polygon!")));
+      return;
     }
 
     QMessageBox::StandardButton reply;
@@ -554,7 +554,7 @@ void te::qt::plugins::edit::ToolBar::onDeleteGeometryToolActivated(bool checked)
     m_deleteGeometryToolAction->setCheckable(false);
     
     if (reply == QMessageBox::No)
-    return;
+     return;
 
     te::qt::af::evt::GetMapDisplay e;
     te::qt::af::ApplicationController::getInstance().broadcast(&e);

@@ -30,7 +30,7 @@ namespace te
     class TEEDITQTEXPORT AggregateAreaTool : public CreateLineTool
       //te::qt::widgets::AbstractTool
     {
-    //Q_OBJECT
+    Q_OBJECT
 
     public:
       AggregateAreaTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent = 0);
