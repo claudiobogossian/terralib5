@@ -36,14 +36,63 @@
 #include "../core/pattern/singleton/Context.h"
 #include "../core/Utils.h"
 #include "../core/pattern/mvc/ItemObserver.h"
+#include "../core/property/Properties.h"
 
 te::layout::PolygonModel::PolygonModel()
 {
   m_type = Enums::getInstance().getEnumObjectType()->getPolygonItem();
+
+  m_fillColor = te::color::RGBAColor(255, 255, 255, 255);
 }
 
 te::layout::PolygonModel::~PolygonModel()
 {
 
+}
+
+te::layout::Properties* te::layout::PolygonModel::getProperties() const
+{
+  LineModel::getProperties();
+
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+
+  Property pro_fillColor(m_hashCode);
+  pro_fillColor.setName("fill_color");
+  pro_fillColor.setValue(m_fillColor, dataType->getDataTypeColor());
+  pro_fillColor.setMenu(true);
+  m_properties->addProperty(pro_fillColor);
+
+  return m_properties;
+}
+
+void te::layout::PolygonModel::updateProperties( te::layout::Properties* properties, bool notify )
+{
+  LineModel::updateProperties(properties, false);
+
+  Properties* vectorProps = const_cast<Properties*>(properties);
+
+  {
+    Property prop = vectorProps->contains("fill_color");
+    if(prop.isNull() == false)
+    {
+      m_fillColor = prop.getValue().toColor();
+    }
+  }
+
+  if(notify)
+  {
+    ContextItem context;
+    notifyAll(context);
+  }
+}
+
+const te::color::RGBAColor& te::layout::PolygonModel::getFillColor() const
+{
+  return m_fillColor;
+}
+
+void te::layout::PolygonModel::setFillColor( const te::color::RGBAColor& color )
+{
+  m_fillColor = color;
 }
 

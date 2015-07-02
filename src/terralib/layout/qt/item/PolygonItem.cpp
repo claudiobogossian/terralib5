@@ -55,7 +55,7 @@ te::layout::PolygonItem::~PolygonItem()
 
 void te::layout::PolygonItem::drawItem( QPainter * painter )
 {
-  LineModel* model = dynamic_cast<LineModel*>(m_model);
+  PolygonModel* model = dynamic_cast<PolygonModel*>(m_model);
   if(!model)
   {
     return;
@@ -64,14 +64,22 @@ void te::layout::PolygonItem::drawItem( QPainter * painter )
   if(m_poly.empty())
     return;
 
+  const te::color::RGBAColor& fillColor = model->getFillColor();
   const te::color::RGBAColor& color = model->getColor();
+
+  QColor qFillColor(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), fillColor.getAlpha());
   QColor qColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+
+  QBrush brush(qFillColor);
+  QPen pen(qColor, 0, Qt::SolidLine);
 
   painter->save();
 
-  QPen pn(qColor, 0, Qt::SolidLine);
-  painter->setPen(pn);
+  painter->setPen(pen);
+  painter->setBrush(brush);
 
+  //draws the item
   painter->drawPolygon(m_poly);
+
   painter->restore();
 }
