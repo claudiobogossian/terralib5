@@ -472,37 +472,15 @@ QRectF te::layout::TextItem::boundingRect() const
 void te::layout::TextItem::drawAlignmentCenter(QPainter * painter)
 {
 
-  TextModel* model = dynamic_cast<TextModel*>(m_model);
-  if(!model)
-  {
-    return;
-  }
-
-  painter->save();
-  std::string txt = model->getText();
-  //QGraphicsTextItem textItem(txt);
-  //painter->setFont(textItem.font());
-  //painter->setTransform(textItem.sceneTransform());
-
-  //painter->drawText(textItem.boundingRect(), Qt::AlignCenter, textItem.toPlainText());
-
-  painter->restore();
-
 }
 
 void te::layout::TextItem::drawAlignmentLeft(QPainter * painter)
 {
-  painter->save();
-  painter->restore();
+
 }
 
 void te::layout::TextItem::drawAlignmentRight(QPainter * painter)
 {
-  setAlignment(Qt::AlignRight);
-  painter->save();
-  painter->restore();
+
 }
 
-void te::layout::TextItem::setAlignment(Qt::Alignment alignment)
-{
-}

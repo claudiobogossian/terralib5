@@ -171,8 +171,6 @@ namespace te
 
         virtual void updateTextConfig();
 
-        void setAlignment(Qt::Alignment alignment);
-
         virtual void drawAlignmentCenter(QPainter * painter);
 
         virtual void drawAlignmentLeft(QPainter * painter);
