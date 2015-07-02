@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>536</width>
+    <width>586</width>
     <height>499</height>
    </rect>
   </property>
@@ -62,7 +62,7 @@
      <item row="1" column="0">
       <widget class="QGroupBox" name="groupBox">
        <property name="title">
-        <string>Classification Parameters</string>
+        <string>Parameters</string>
        </property>
        <layout class="QGridLayout" name="gridLayout_14">
         <item row="0" column="0">
@@ -269,7 +269,7 @@
      <item row="2" column="0">
       <widget class="QGroupBox" name="groupBox_3">
        <property name="title">
-        <string>Classification</string>
+        <string>Legend</string>
        </property>
        <layout class="QGridLayout" name="gridLayout_13">
         <item row="0" column="0">

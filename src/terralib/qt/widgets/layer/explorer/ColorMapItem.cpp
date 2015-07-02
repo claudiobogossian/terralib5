@@ -72,7 +72,7 @@ QVariant te::qt::widgets::ColorMapItem::data(int /*column*/, int role) const
       type = tr("Interpolation");
     }
 
-    QString text = tr("Classification by") + " " + type;
+    QString text = tr("Legend by") + " " + type;
     return QVariant(text);
   }
 
