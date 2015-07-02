@@ -149,23 +149,11 @@ namespace te
         */
         virtual void recompose();
 
-		/*!
-          \brief Method that applies current zoom defined in the Context. 
-        */
-        virtual void zoomPercentage();
-
-		/*!
-          \brief Method that change rulers visibility state.
-		  
-		  \param visible visibility state	  
-        */
-        virtual void changeZoomFactor(double currentZoom);
-
         /*!
           \brief Method that sets View object for the Print function.  
         */
         virtual void exportToPDF();
-                                        
+
       public slots:
 	  
 		/*!
@@ -191,6 +179,17 @@ namespace te
         virtual void onSelectionChanged();
         
         virtual void onSelectionItem(std::string name);
+
+        /*!
+          \brief Sets the zoom of the view to the given value
+        */
+        virtual void setZoom(int zoomFactor);
+
+
+        /*!
+          \brief Sets the zoom of the view to fit the given rect
+        */
+        virtual void fitZoom(const QRectF& rect);
 
       signals:
 
@@ -224,7 +223,7 @@ namespace te
 		/*!
           \brief This signal is emitted when View object changes the zoom factor internally.
         */
-        void changeZoom(double currentFactor);
+        void zoomChanged(int zoom);
 
         /*!
           \brief This signal is emitted when context change.
@@ -336,7 +335,7 @@ namespace te
         */
         virtual void exportItemsToImage();
 
-        virtual bool isExceededLimit(double currentScale, double factor, double oldFactor);
+        virtual bool isLimitExceeded(double scale);
 
       protected:
 

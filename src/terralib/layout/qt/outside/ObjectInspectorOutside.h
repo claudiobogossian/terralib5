@@ -39,8 +39,8 @@
 
 // Qt
 #include <QWidget>
-#include <QtPropertyBrowser/QtProperty>
 
+class QtProperty;
 class QGraphicsItem;
 
 namespace te

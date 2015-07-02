@@ -39,6 +39,9 @@
 // STL
 #include <string>
 
+//avaliar
+#include "../../widgets/tools/AbstractTool.h"
+
 namespace te
 {
   namespace qt
@@ -63,6 +66,10 @@ namespace te
             ~ToolBar();
 
             QToolBar* get() const;
+
+			enum toolsOperation {
+				createOp = 1, updateOp, removeOp, mergeOp
+			}op;
 
           protected:
 
@@ -92,6 +99,21 @@ namespace te
 
             void onSnapOptionsActivated();
 
+			void onAggregateAreaToolActivated(bool checked);
+
+			void onSubtractAreaToolActivated(bool checked);
+
+			void onDeleteGeometryToolActivated(bool checked);
+
+			void onMergeGeometriesToolActivated(bool checked);
+
+		 signals:
+
+			/*! This signal is emitted when the layer selection changed. */
+			void layerSelectedObjectsChanged(const te::map::AbstractLayerPtr& layer);
+
+			void  highlightLayerObjects(te::map::AbstractLayerPtr layer, te::da::DataSet* dataset, const QColor& color);
+
           protected:
 
             QToolBar* m_toolBar;
@@ -103,6 +125,10 @@ namespace te
             QAction* m_createLineToolAction;
             QAction* m_moveGeometryToolAction;
             QAction* m_snapOptionsAction;
+			QAction* m_deleteGeometryToolAction;
+			QAction* m_aggregateAreaToolAction;
+			QAction* m_subtractAreaToolAction;
+			QAction* m_mergeGeometriesToolAction;
 
             QList<QAction*> m_tools;
         };

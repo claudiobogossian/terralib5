@@ -45,6 +45,7 @@
 #include "ItemUtils.h"
 #include "../../item/LineModel.h"
 #include "WaitView.h"
+#include "../item/MapItem.h"
 
 // Qt
 #include <QMouseEvent>
@@ -297,7 +298,7 @@ void te::layout::View::wheelEvent( QWheelEvent *event )
   if(event->modifiers() & Qt::AltModifier)
   {
     double zoomFactor = 1.;
-    double currentZoom = Context::getInstance().getZoomFactor();
+    int currentZoom = Context::getInstance().getZoom();
 
     // Zoom in / Zoom Out
     if(event->delta() > 0) 
@@ -312,15 +313,15 @@ void te::layout::View::wheelEvent( QWheelEvent *event )
 
     if(zoomFactor > 0)
     {
-      Context::getInstance().setOldZoomFactor(currentZoom);
-      Context::getInstance().setZoomFactor(zoomFactor);
-      zoomPercentage();
+      Context::getInstance().setOldZoom(currentZoom);
+      Context::getInstance().setZoom(zoomFactor);
+      //zoomPercentage();
     }
     else
     {
       zoomFactor = currentZoom;
     }
-    emit changeZoom(zoomFactor);
+    emit zoomChanged(zoomFactor);
   }
   
   QGraphicsView::wheelEvent(event);
@@ -404,11 +405,11 @@ void te::layout::View::config()
   te::gm::Envelope box = nscene->getSceneBox();
   centerOn(QPointF(box.m_llx, box.m_ury));
       
-  double zoomFactor = Context::getInstance().getDefaultZoomFactor();
-  scale(zoomFactor, zoomFactor); //Initial zoom out
+  int zoom = Context::getInstance().getDefaultZoom();
+  double newScale = zoom / 100.;
+  scale(newScale, newScale); //Initial zoom out
 
   //----------------------------------------------------------------------------------------------
-    
   if(!m_visualizationArea)
   {
     m_visualizationArea = new VisualizationArea(box);
@@ -418,15 +419,7 @@ void te::layout::View::config()
   setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
-  if(scene())
-  {
-    connect(scene(), SIGNAL(selectionChanged()), this, SLOT(onSelectionChanged()));
-    Scene* sce = dynamic_cast<Scene*>(scene());
-    if(sce)
-    {
-      connect(this, SIGNAL(changeZoom(double)), sce, SLOT(onChangeZoomFactor(double)));
-    }
-  }
+  connect(scene(), SIGNAL(selectionChanged()), this, SLOT(onSelectionChanged()));
 }
 
 void te::layout::View::resizeEvent(QResizeEvent * event)
@@ -544,10 +537,6 @@ void te::layout::View::outsideAreaChangeContext( bool change )
   {
     print();
   }
-  else if(mode == enumMode->getModeSceneZoom())
-  {
-    zoomPercentage();
-  }
   else if(mode == enumMode->getModeZoomIn()) 
   {
     zoomArea();
@@ -567,6 +556,14 @@ void te::layout::View::outsideAreaChangeContext( bool change )
   else if(mode == enumMode->getModeArrowCursor())
   {
     resetDefaultConfig();
+    std::vector<te::layout::MapItem*> list = iUtils->getMapItemList();
+    if (!list.empty())
+    {
+      foreach(MapItem* mit, list)
+      {
+        mit->changeCurrentTool(mode);
+      }
+    }
   }
   else if(mode == enumMode->getModeNewTemplate())
   {
@@ -832,7 +829,8 @@ void te::layout::View::resetView()
   QPointF pt(box.m_llx, box.m_ury);
   centerOn(pt);
 
-  double zoomFactor = Context::getInstance().getDefaultZoomFactor();
+  int zoom = Context::getInstance().getDefaultZoom();
+  double zoomFactor = zoom / 100.;
   scale(zoomFactor, zoomFactor); //Initial zoom out
 }
 
@@ -895,11 +893,11 @@ void te::layout::View::recompose()
 {
   resetDefaultConfig();
 
-  double defaultZoomFactor = Context::getInstance().getDefaultZoomFactor();
-  changeZoomFactor(defaultZoomFactor);
+  int defaultZoomFactor = Context::getInstance().getDefaultZoom();
+  setZoom(defaultZoomFactor);
 }
 
-void te::layout::View::zoomPercentage()
+/*void te::layout::View::zoomPercentage()
 {
   Scene* scne = dynamic_cast<Scene*>(scene());
   if(!scne)
@@ -911,7 +909,7 @@ void te::layout::View::zoomPercentage()
   double oldZoomFactor = Context::getInstance().getOldZoomFactor();
   double scaleMatrix = transform().m11();
 
-  if(isExceededLimit(scaleMatrix, zoomFactor, oldZoomFactor))
+  if(isLimitExceeded(scaleMatrix))
     return;
 
   double factor = zoomFactor;
@@ -922,7 +920,7 @@ void te::layout::View::zoomPercentage()
   mtrx.scale(factor, factor);
   setTransform(mtrx);
   emit changeZoom(zoomFactor);
-}
+}*/
 
 void te::layout::View::exportToPDF()
 {
@@ -941,20 +939,70 @@ void te::layout::View::exportToPDF()
   setUpdatesEnabled(true);
 }
 
-bool te::layout::View::isExceededLimit(double currentScale, double factor, double oldFactor)
+void te::layout::View::setZoom(int newZoom)
 {
-  // Zoom in / Zoom Out
-  if(factor < oldFactor) 
+  int currentZoom = Context::getInstance().getZoom();
+
+  if(newZoom == currentZoom)
+    return;
+
+  if(isLimitExceeded(newZoom) == true)
+    return;
+
+  double rescale = (double)newZoom / (double)currentZoom;
+
+  if(rescale > 0)
   {
-    //Zooming In
-    if(currentScale < m_maxZoomLimit)
-      return false;
+    Context::getInstance().setOldZoom(currentZoom);
+    Context::getInstance().setZoom(newZoom);
+    scale(rescale, rescale);
+
+    Scene* sce = dynamic_cast<Scene*>(scene());
+    if(sce)
+    {
+      sce->onChangeZoomFactor(newZoom);
+    }
+
+    emit zoomChanged(newZoom);
   }
-  else
+}
+
+void te::layout::View::fitZoom(const QRectF& rect)
+{
+  double scaleOld = this->transform().m11();
+  this->fitInView(rect, Qt::KeepAspectRatio);
+  double scaleNew = this->transform().m11();
+
+  double scaleFactor = scaleNew / scaleOld;
+
+  int currentZoom = Context::getInstance().getZoom();
+  int newZoom = (int)(currentZoom * scaleFactor);
+
+  if(newZoom > 0)
   {
-    if(currentScale > m_minZoomLimit)
-      return false;
+    Context::getInstance().setOldZoom(currentZoom);
+    Context::getInstance().setZoom(newZoom);
+
+    Scene* sce = dynamic_cast<Scene*>(scene());
+    if(sce)
+    {
+      sce->onChangeZoomFactor(newZoom);
+    }
+
+    emit zoomChanged(newZoom);
   }
+}
+
+
+bool te::layout::View::isLimitExceeded(double scale)
+{
+  //Zooming In
+  if(scale < m_maxZoomLimit)
+    return false;
+
+  //Zooming Out
+  if(scale > m_minZoomLimit)
+    return false;
 
   return true;
 }
@@ -1090,27 +1138,6 @@ void te::layout::View::exportItemsToImage()
   msgBox.setIcon(QMessageBox::Information);
   msgBox.setText("Successfully exported images!"); 
   msgBox.exec();
-}
-
-void te::layout::View::changeZoomFactor( double currentZoom )
-{
-  double zoomFactor = Context::getInstance().getZoomFactor();
-
-  if(zoomFactor == currentZoom)
-    return;
-
-  double scaleMatrix = transform().m11();
-
-  if(isExceededLimit(scaleMatrix, currentZoom, zoomFactor))
-    return;
-
-  if(currentZoom > 0)
-  {
-    Context::getInstance().setOldZoomFactor(zoomFactor);
-    Context::getInstance().setZoomFactor(currentZoom);
-    scale(zoomFactor, zoomFactor);
-    emit changeZoom(zoomFactor);
-  }
 }
 
 void te::layout::View::onSelectionItem( std::string name )

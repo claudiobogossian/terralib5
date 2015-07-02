@@ -79,7 +79,7 @@ void te::layout::PaperItem::drawItem( QPainter * painter )
   cShadow.setBlue(clrShadow.getBlue());
   cShadow.setAlpha(clrShadow.getAlpha());
 
-  te::color::RGBAColor clrBorder = model->getBorderColor();
+  te::color::RGBAColor clrBorder = model->getFrameColor();
   QColor cBorder;
   cBorder.setRed(clrBorder.getRed());
   cBorder.setGreen(clrBorder.getGreen());

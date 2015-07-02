@@ -140,7 +140,7 @@ namespace te
 
 		      \return new object 
         */
-        QWidget* createSVGView();
+        QWidget* createSVGDialog();
 
         /*!
           \brief Create a widget of Color Dialog type 

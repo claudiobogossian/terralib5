@@ -68,25 +68,14 @@ namespace te
         virtual Properties* getProperties() const;
 
         virtual void updateProperties(te::layout::Properties* properties, bool notify = true);
-
-        virtual EnumPointType* getEnumPointType();
-
-        virtual EnumType* getCurrentPointType();
-
-        virtual double getShapeSize();
-
-        virtual te::color::RGBAColor getPointColor();
-
-        virtual void setPointColor(te::color::RGBAColor color);
+        
+        virtual void setPathsName( std::vector<std::string> pathVector );
 
       protected:
-
-        virtual Property pointProperty() const;
-
-        EnumPointType* m_enumPointType;
-        EnumType*      m_currentPointType;
-        double         m_shapeSize;
-        te::color::RGBAColor m_pointColor;
+                
+        virtual te::layout::Property getSVGPathsProperty() const;
+                                
+        std::vector<std::string> m_pathsName;        
     };
   }
 }

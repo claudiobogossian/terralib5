@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/layout/qt/outside/SVGViewOutside.cpp
+  \file terralib/layout/qt/outside/SVGDialogOutside.cpp
 
   \brief A dialog configure the input layer to address geocoding operation
 */
@@ -26,8 +26,8 @@
 // TerraLib
 #include "../../../common/Logger.h"
 #include "../../../qt/widgets/utils/DoubleListWidget.h"
-#include "SVGViewOutside.h"
-#include "../../outside/SVGViewModel.h"
+#include "SVGDialogOutside.h"
+#include "../../outside/SVGDialogModel.h"
 #include "ui_SVGView.h"
 
 // STL
@@ -36,41 +36,59 @@
 // Qt
 #include <QGridLayout>
 #include <QMessageBox>
+#include <QString>
+#include <QImage>
+#include <QPainter>
+#include <QIcon>
 #include "../../core/enum/Enums.h"
 #include "../../core/property/GenericVariant.h"
 
-te::layout::SVGViewOutside::SVGViewOutside(OutsideController* controller, Observable* o)
+te::layout::SVGDialogOutside::SVGDialogOutside(OutsideController* controller, Observable* o)
   : QDialog(0),
     OutsideObserver(controller, o),
-    m_ui(new Ui::SVGView)
+    m_ui(new Ui::SVGView), 
+    m_property(0)
 {
   m_ui->setupUi(this);
+
+  connect(m_ui->OK, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
+  connect(m_ui->CANCEL, SIGNAL(clicked()), this, SLOT(onCancelPushButtonClicked()));
 }
 
-te::layout::SVGViewOutside::~SVGViewOutside()
+te::layout::SVGDialogOutside::~SVGDialogOutside()
 {
 }
 
-void te::layout::SVGViewOutside::init()
+void te::layout::SVGDialogOutside::init()
 {
-  SVGViewOutside* model = dynamic_cast<SVGViewOutside*>(m_model);
+  m_initFile = "";
+
+  SVGDialogModel* model = dynamic_cast<SVGDialogModel*>(m_model);
   if(!model)
   {
     return;
-  }  
+  }
+
+  std::vector<std::string> paths = model->getPaths();
+
+  QListWidgetItem* item = new QListWidgetItem(m_ui->listWidget);
+
+  item->setData(Qt::DecorationRole, QIcon(QString::fromStdString(m_initFile)));
+
+  m_ui->listWidget->addItem(item);
 }
 
-void te::layout::SVGViewOutside::onOkPushButtonClicked()
+void te::layout::SVGDialogOutside::onOkPushButtonClicked()
 {
   
 }
 
-void te::layout::SVGViewOutside::onCancelPushButtonClicked()
+void te::layout::SVGDialogOutside::onCancelPushButtonClicked()
 {
   reject();
 }
 
-void te::layout::SVGViewOutside::updateObserver( ContextItem context )
+void te::layout::SVGDialogOutside::updateObserver( ContextItem context )
 {
   setVisible(context.isShow());
   if(context.isShow() == true)
@@ -79,13 +97,13 @@ void te::layout::SVGViewOutside::updateObserver( ContextItem context )
     hide();
 }
 
-void te::layout::SVGViewOutside::setPosition( const double& x, const double& y )
+void te::layout::SVGDialogOutside::setPosition( const double& x, const double& y )
 {
   move(x,y);
   refresh();
 }
 
-te::gm::Coord2D te::layout::SVGViewOutside::getPosition()
+te::gm::Coord2D te::layout::SVGDialogOutside::getPosition()
 {
   QPointF posF = pos();
   qreal valuex = posF.x();
@@ -96,5 +114,10 @@ te::gm::Coord2D te::layout::SVGViewOutside::getPosition()
   coordinate.y = valuey;
 
   return coordinate;
+}
+
+void te::layout::SVGDialogOutside::setPathsProperty( Property prop )
+{
+  m_property = prop;
 }
 

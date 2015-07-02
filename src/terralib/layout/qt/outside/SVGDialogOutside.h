@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/layout/qt/outside/SVGViewOutside.h
+  \file terralib/layout/qt/outside/SVGDialogOutside.h
 
   \brief
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_SVGVIEW_OUTSIDE_H
-#define __TERRALIB_LAYOUT_INTERNAL_SVGVIEW_OUTSIDE_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_SVG_OUTSIDE_H
+#define __TERRALIB_LAYOUT_INTERNAL_SVG_OUTSIDE_H
 
 // TerraLib
 #include "../../../qt/widgets/utils/DoubleListWidget.h"
@@ -50,15 +50,15 @@ namespace te
     class OutsideController;
     class Observable;
 
-    class TELAYOUTEXPORT SVGViewOutside : public QDialog, public OutsideObserver 
+    class TELAYOUTEXPORT SVGDialogOutside : public QDialog, public OutsideObserver 
     {
       Q_OBJECT
 
       public:
 
-        SVGViewOutside(OutsideController* controller, Observable* o);
+        SVGDialogOutside(OutsideController* controller, Observable* o);
 
-        ~SVGViewOutside();
+        ~SVGDialogOutside();
 
         /*!
           \brief Load layers in double widget.
@@ -70,6 +70,8 @@ namespace te
         virtual void setPosition( const double& x, const double& y );
 
         virtual te::gm::Coord2D getPosition();
+
+        virtual void setPathsProperty( Property prop );
 
       signals:
 
@@ -86,7 +88,9 @@ namespace te
       private:
 
         std::auto_ptr<Ui::SVGView> m_ui;
-        std::auto_ptr<te::qt::widgets::DoubleListWidget> m_widget;        
+        std::auto_ptr<te::qt::widgets::DoubleListWidget> m_widget;
+        Property m_property;
+        std::string m_initFile;
     };
   }    
 }     

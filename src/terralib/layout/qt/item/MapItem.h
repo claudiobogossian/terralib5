@@ -172,7 +172,7 @@ namespace te
          */
         virtual te::gm::Coord2D getPosition();
 
-		virtual void drawItem(QPainter * painter);
+        virtual void drawItem(QPainter * painter);
 
         /*!
             \brief Reimplemented from ParentItem
@@ -205,7 +205,7 @@ namespace te
 
         virtual void updateMapDisplay();
 
-        virtual void reloadLayers(bool draw = true);
+        virtual bool reloadLayers(bool draw = true);
 
         virtual bool hasListLayerChanged();
 

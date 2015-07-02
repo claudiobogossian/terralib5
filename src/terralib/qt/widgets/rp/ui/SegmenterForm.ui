@@ -136,7 +136,7 @@
       <rect>
        <x>10</x>
        <y>10</y>
-       <width>401</width>
+       <width>440</width>
        <height>141</height>
       </rect>
      </property>
@@ -384,7 +384,12 @@
       </property>
       <item>
        <property name="text">
-        <string>RegionGrowing</string>
+        <string>RegionGrowingMean</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>RegionGrowingBaatz</string>
        </property>
       </item>
      </widget>

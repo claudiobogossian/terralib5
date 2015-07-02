@@ -65,9 +65,9 @@
 #include "../../outside/LegendChoiceModel.h"
 #include "../../outside/LegendChoiceController.h"
 #include "../outside/LegendChoiceOutside.h"
-#include "../../outside/SVGViewModel.h"
-#include "../../outside/SVGViewController.h"
-#include "../outside/SVGViewOutside.h"
+#include "../../outside/SVGDialogModel.h"
+#include "../../outside/SVGDialogController.h"
+#include "../outside/SVGDialogOutside.h"
 
 // Qt
 #include <QWidget>
@@ -128,9 +128,9 @@ QWidget* te::layout::BuildGraphicsOutside::createOuside( te::layout::EnumType* t
   {
     widget = createMapLayerChoice();
   }
-  if (type == enumObj->getSVGView())
+  if (type == enumObj->getSVGDialog())
   {
-    widget = createSVGView();
+    widget = createSVGDialog();
   }
   if (type == enumObj->getColorDialog())
   {
@@ -292,17 +292,16 @@ QWidget* te::layout::BuildGraphicsOutside::createLegendChoice()
   return view;
 }
 
-QWidget* te::layout::BuildGraphicsOutside::createSVGView()
+QWidget* te::layout::BuildGraphicsOutside::createSVGDialog()
 {
-  SVGViewModel* model = new SVGViewModel();
+  SVGDialogModel* model = new SVGDialogModel();
 
-  SVGViewController* controller = new SVGViewController(model);
+  SVGDialogController* controller = new SVGDialogController(model);
   OutsideObserver* itemObs = (OutsideObserver*)controller->getView();
 
-  SVGViewOutside* view = dynamic_cast<SVGViewOutside*>(itemObs);
+  SVGDialogOutside* view = dynamic_cast<SVGDialogOutside*>(itemObs);
 
   return view;
 }
-
 
 

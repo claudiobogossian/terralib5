@@ -58,7 +58,7 @@
                    </sizepolicy>
                   </property>
                   <property name="title">
-                   <string>Region Growing</string>
+                   <string>Region Growing Mean</string>
                   </property>
                   <property name="flat">
                    <bool>true</bool>
@@ -227,7 +227,7 @@
                    </sizepolicy>
                   </property>
                   <property name="title">
-                   <string>Baatz</string>
+                   <string>Region Growing Baatz</string>
                   </property>
                   <property name="flat">
                    <bool>true</bool>

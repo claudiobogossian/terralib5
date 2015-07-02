@@ -184,6 +184,9 @@ void QueryExample();
 /*! \brief Quering a dataset. */
 void QueryExample_2();
 
+/*! \brief Quering Insert clause. */
+void QueryInsertExample();
+
 /*! \brief This example shows how to copy a given dataset from one data source to another one. */
 void CopyingData();
 

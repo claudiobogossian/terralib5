@@ -43,7 +43,6 @@ te::layout::StarModel::StarModel():
 {
   m_type = Enums::getInstance().getEnumObjectType()->getStarItem();
 
-  m_borderColor = te::color::RGBAColor(0, 0, 0, 255);
   m_box = te::gm::Envelope(0., 0., 20., 20.);
 
   m_border = false;
