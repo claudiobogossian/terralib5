@@ -108,6 +108,6 @@ void DataSourceTransactor()
 void GDALExample()
 {
   OpenFile();
-  OpenDirectory();
+ // OpenDirectory();
   DataSourceTransactor();
 }

@@ -30,6 +30,10 @@
 // STL
 #include <cassert>
 
+//GEOS
+#include <geos/algorithm/LineIntersector.h>
+
+
 te::gm::Line::Line(GeomType t, int srid, Envelope* mbr)
   : LineString(2, t, srid, mbr)
 {
@@ -84,4 +88,42 @@ te::dt::AbstractData* te::gm::Line::clone() const
 {
   return new Line(*this);
 }
+
+bool te::gm::Line::intersection(const Line& line, Point& ret) const
+{
+	geos::algorithm::LineIntersector li;
+	geos::geom::Coordinate p0(m_coords[0].x, m_coords[0].y);
+	geos::geom::Coordinate p1(m_coords[1].x, m_coords[1].y);
+	geos::geom::Coordinate lp0(line.m_coords[0].x, line.m_coords[0].y);
+	geos::geom::Coordinate lp1(line.m_coords[1].x, line.m_coords[1].y);
+	li.computeIntersection(p0, p1, lp0, lp1);
+	if (li.hasIntersection())
+	{
+		ret.setX(li.getIntersection(0).x);
+		ret.setY(li.getIntersection(0).y);
+		return true;
+	}
+	return false;
+}
+
+void te::gm::Line::setCoord(int index, double x, double y, double z, double m)
+{
+	m_coords[index].x = x;
+	m_coords[index].y = y;
+	if ((m_gType & 0xF00) == 0x300)
+	{
+		m_zA[index] = z;
+	}
+	else if ((m_gType & 0xF00) == 0x700)
+	{
+		m_mA[index] = m;
+	}
+	else if ((m_gType & 0xF00) == 0xB00)
+	{
+		m_zA[index] = z;
+		m_mA[index] = m;
+	}
+}
+
+
 

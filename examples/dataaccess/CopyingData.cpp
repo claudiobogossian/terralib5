@@ -36,8 +36,8 @@ void CopyingData()
 
 // let's open the destination datasource
   std::map<std::string, std::string> pgisInfo;
-  pgisInfo["PG_HOST"] = "atlas.dpi.inpe.br" ;   // or "localhost";
-  pgisInfo["PG_PORT"] = "5433" ;
+  pgisInfo["PG_HOST"] = "localhost";// "atlas.dpi.inpe.br";   // or "localhost";
+  pgisInfo["PG_PORT"] = "5432";//"5433" ;
   pgisInfo["PG_USER"] = "postgres";
   pgisInfo["PG_PASSWORD"] = "postgres";
   pgisInfo["PG_DB_NAME"] = "terralib4";

@@ -545,28 +545,59 @@ OGRwkbGeometryType te::ogr::Convert2OGR(te::gm::GeomType geomType)
     case te::gm::GeometryCollectionType:
       return wkbGeometryCollection;
 
-    case te::gm::PointMType:
-      return wkbPoint25D;
+	case te::gm::PointZType:
+	case te::gm::PointMType:
+	case te::gm::PointZMType:
+		return wkbPoint25D;
 
-    case te::gm::LineStringMType:
-      return wkbLineString25D;
+	case te::gm::LineStringZType:
+	case te::gm::LineStringMType:
+	case te::gm::LineStringZMType:
+		return wkbLineString25D;
 
-    case te::gm::PolygonMType:
-      return  wkbPolygon25D;
+	case te::gm::PolygonZType:
+	case te::gm::PolygonMType:
+	case te::gm::PolygonZMType:
+		return  wkbPolygon25D;
 
-    case te::gm::MultiPointMType:
-      return wkbMultiPoint25D;
+	case te::gm::MultiPointZType:
+	case te::gm::MultiPointMType:
+	case te::gm::MultiPointZMType:
+		return wkbMultiPoint25D;
 
-    case te::gm::MultiLineStringMType:
-      return wkbMultiLineString25D;
+	case te::gm::MultiLineStringZType:
+	case te::gm::MultiLineStringMType:
+	case te::gm::MultiLineStringZMType:
+		return wkbMultiLineString25D;
 
-    case te::gm::MultiPolygonMType:
-      return wkbMultiPolygon25D;
+	case te::gm::MultiPolygonZType:
+	case te::gm::MultiPolygonMType:
+	case te::gm::MultiPolygonZMType:
+		return wkbMultiPolygon25D;
 
-    case te::gm::GeometryCollectionMType:
-      return wkbGeometryCollection25D;
+	case te::gm::GeometryCollectionZType:
+	case te::gm::GeometryCollectionMType:
+	case te::gm::GeometryCollectionZMType:
+		return wkbGeometryCollection25D;
 
-    default:  
+	case te::gm::PolyhedralSurfaceType:
+	case te::gm::PolyhedralSurfaceZType:
+	case te::gm::PolyhedralSurfaceMType:
+	case te::gm::PolyhedralSurfaceZMType:
+		return wkbMultiPolygon25D;
+
+	case te::gm::TINType:
+	case te::gm::TINZType:
+	case te::gm::TINMType:
+	case te::gm::TINZMType:
+		return wkbMultiPolygon25D;
+
+	case te::gm::TriangleType:
+	case te::gm::TriangleZType:
+	case te::gm::TriangleMType:
+	case te::gm::TriangleZMType:
+
+	default:
       throw(te::common::Exception(TE_TR("Unsupported geometry type by OGR Driver.")));
   }
 }

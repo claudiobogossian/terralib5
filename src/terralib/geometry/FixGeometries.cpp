@@ -37,7 +37,7 @@
 
 te::gm::Geometry* te::gm::FixGeometry(te::gm::Geometry* inputGeom)
 {
-  te::gm::Geometry* outGeom;
+  te::gm::Geometry* outGeom=0;
 
   te::gm::GeomType type = inputGeom->getGeomTypeId();
 
