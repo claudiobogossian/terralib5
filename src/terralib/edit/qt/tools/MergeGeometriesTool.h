@@ -85,7 +85,7 @@ namespace te
       te::gm::Geometry* Union(te::gm::Geometry* g1, te::gm::Geometry* g2);
       const te::gm::Envelope* getRefEnvelope(te::da::DataSet* ds, te::da::ObjectId* oid, te::gm::GeometryProperty* geomProp);
       te::da::ObjectId* getBaseOID(const te::da::ObjectIdSet* objSet, QString msg);
-      te::da::ObjectIdSet* oidRemoved = new te::da::ObjectIdSet;
+      te::da::ObjectIdSet* m_oidRemoved;
 
     private slots:
 

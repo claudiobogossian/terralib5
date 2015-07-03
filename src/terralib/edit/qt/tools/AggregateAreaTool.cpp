@@ -336,15 +336,12 @@ te::gm::Geometry* te::edit::AggregateAreaTool::Union(te::gm::Geometry* g1, Featu
 
         if (colType == te::dt::INT16_TYPE || colType == te::dt::INT32_TYPE || colType == te::dt::INT64_TYPE || colType == te::dt::DOUBLE_TYPE)
         {
-          value = std::to_string(ds->getInt32(oidPropertyNames[0]));
+          value = boost::lexical_cast<std::string>(ds->getInt32(oidPropertyNames[0]));
           }
         else
         {
           value = ds->getString(oidPropertyNames[0]);
         }
-
-        //std::cout << value << std::endl;	g1 = g1->Union(feature_g2->getGeometry());
-        //std::cout << feature_g2->getId()->getValueAsString() << std::endl;
 
         if (value != feature_g2->getId()->getValueAsString())
           g1 = g1->difference(g.get());
