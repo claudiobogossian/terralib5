@@ -61,14 +61,20 @@ te::edit::MergeGeometriesTool::MergeGeometriesTool(te::qt::widgets::MapDisplay* 
 ,m_layer(layer),
 m_feature(0)
 {
+  // Signals & slots
+  connect(m_display, SIGNAL(extentChanged()), SLOT(onExtentChanged()));
+
+  m_oidRemoved = new te::da::ObjectIdSet();
+
   setCursor(cursor);
 
   mergeGeometries();
-
 }
 
 te::edit::MergeGeometriesTool::~MergeGeometriesTool()
 {
+  delete m_oidRemoved;
+
   QPixmap* draft = m_display->getDraftPixmap();
   draft->fill(Qt::transparent);
 
@@ -203,7 +209,7 @@ te::da::ObjectId* te::edit::MergeGeometriesTool::getBaseOID(const te::da::Object
     }
     else
     {
-      oidRemoved->add((*it));
+      m_oidRemoved->add((*it));
     }
   }
 
@@ -226,7 +232,8 @@ const te::gm::Envelope* te::edit::MergeGeometriesTool::getRefEnvelope(te::da::Da
   {
     if (colType == te::dt::INT16_TYPE || colType == te::dt::INT32_TYPE || colType == te::dt::INT64_TYPE || colType == te::dt::DOUBLE_TYPE)
     {
-      refOID = std::to_string(ds->getInt32(oidPropertyNames[0]));
+      
+      refOID = boost::lexical_cast<std::string>(ds->getInt32(oidPropertyNames[0]));
     }
     else
     {
@@ -277,12 +284,17 @@ void te::edit::MergeGeometriesTool::storeMergedFeature()
 {
   std::set<te::da::ObjectId*, te::common::LessCmp<te::da::ObjectId*> >::const_iterator it;
   
-  for (it = oidRemoved->begin(); it != oidRemoved->end(); ++it)
+  for (it = m_oidRemoved->begin(); it != m_oidRemoved->end(); ++it)
   {
     RepositoryManager::getInstance().addGeometry(m_layer->getId(), (*it)->clone(), dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone()));
   }
 
   RepositoryManager::getInstance().addGeometry(m_layer->getId(), m_feature->getId()->clone(), dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone()));
+}
+
+void te::edit::MergeGeometriesTool::onExtentChanged()
+{
+  draw();
 }
 
 bool te::edit::MergeGeometriesTool::mousePressEvent(QMouseEvent* e)

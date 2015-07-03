@@ -53,6 +53,9 @@ te::edit::DeleteGeometryTool::DeleteGeometryTool(te::qt::widgets::MapDisplay* di
     m_layer(layer),
     m_feature(0)
 {
+  // Signals & slots
+  connect(m_display, SIGNAL(extentChanged()), SLOT(onExtentChanged()));
+
   pickFeature(m_layer);
 
   if (m_feature == 0)
