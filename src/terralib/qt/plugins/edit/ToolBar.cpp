@@ -295,7 +295,7 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
     std::set<int> gproperty;
     gproperty.insert(gpos);
 
-    std::vector<std::set<int>> properties;
+    std::vector<std::set<int> > properties;
     for (std::size_t i = 0; i < memds->size(); ++i){
       properties.push_back(gproperty);
     }
