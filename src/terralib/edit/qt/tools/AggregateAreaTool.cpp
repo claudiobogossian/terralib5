@@ -32,7 +32,10 @@ te::edit::AggregateAreaTool::AggregateAreaTool(te::qt::widgets::MapDisplay* disp
 : CreateLineTool(display, layer, Qt::ArrowCursor, 0),
 m_layer(layer),
 m_feature(0)
-{}
+{
+  // Signals & slots
+  connect(m_display, SIGNAL(extentChanged()), SLOT(onExtentChanged()));
+}
 
 te::edit::AggregateAreaTool::~AggregateAreaTool()
 {
@@ -281,7 +284,7 @@ void te::edit::AggregateAreaTool::reset()
 
 void te::edit::AggregateAreaTool::onExtentChanged()
 {
-  //draw();
+  draw();
 }
 
 void te::edit::AggregateAreaTool::storeEditedFeature()
