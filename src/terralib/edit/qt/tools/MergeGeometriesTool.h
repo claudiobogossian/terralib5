@@ -90,7 +90,7 @@ namespace te
 
     private slots:
 
-      //void onExtentChanged();
+      void onExtentChanged();
 
     protected:
       te::map::AbstractLayerPtr m_layer;
