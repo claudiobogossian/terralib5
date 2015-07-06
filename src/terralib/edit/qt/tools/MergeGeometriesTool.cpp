@@ -61,6 +61,9 @@ te::edit::MergeGeometriesTool::MergeGeometriesTool(te::qt::widgets::MapDisplay* 
 ,m_layer(layer),
 m_feature(0)
 {
+  // Signals & slots
+  connect(m_display, SIGNAL(extentChanged()), SLOT(onExtentChanged()));
+
   m_oidRemoved = new te::da::ObjectIdSet();
 
   setCursor(cursor);
@@ -287,6 +290,11 @@ void te::edit::MergeGeometriesTool::storeMergedFeature()
   }
 
   RepositoryManager::getInstance().addGeometry(m_layer->getId(), m_feature->getId()->clone(), dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone()));
+}
+
+void te::edit::MergeGeometriesTool::onExtentChanged()
+{
+  draw();
 }
 
 bool te::edit::MergeGeometriesTool::mousePressEvent(QMouseEvent* e)

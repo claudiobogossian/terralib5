@@ -58,13 +58,8 @@ void te::qt::plugins::edit::Plugin::startup()
   // Register the application framework listener
   te::qt::af::ApplicationController::getInstance().addListener(&ApplicationListener::getInstance());
 
-  ///* Under development
-
   // Create the main toolbar
   m_toolbar = new ToolBar;
-
-  // Add plugin toolbar
-  //te::qt::af::ApplicationController::getInstance().addToolBar("EditToolBar", m_toolbar->get());
 
   // Get plugins menu
   QMenu* pluginsMenu = te::qt::af::ApplicationController::getInstance().getMenu("Plugins");
@@ -79,7 +74,7 @@ void te::qt::plugins::edit::Plugin::startup()
   pluginsMenu->insertMenu(lastAction, m_menu);
 
   m_action = new QAction(m_menu);
-
+  //m_action->setObjectName("Layer.Edit");
   m_action->setText("Enable Edit Buttons");
   m_menu->addAction(m_action);
 

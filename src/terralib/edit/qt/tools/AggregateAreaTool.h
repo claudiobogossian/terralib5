@@ -28,7 +28,7 @@ namespace te
     //class Feature;
 
     class TEEDITQTEXPORT AggregateAreaTool : public CreateLineTool
-      //te::qt::widgets::AbstractTool
+    //te::qt::widgets::AbstractTool
     {
     Q_OBJECT
 
@@ -54,8 +54,7 @@ namespace te
 
       //@}
 
-      private:
-      //void updateCursor();
+    private:
       void drawPolygon();
       void draw();
       void reset();
@@ -69,11 +68,12 @@ namespace te
 
       te::gm::Geometry* Union(te::gm::Geometry* g1, Feature* feature_g2);
 
-      private slots:
+    private slots:
 
       void onExtentChanged();
 
     protected:
+
       te::map::AbstractLayerPtr m_layer;
       Feature* m_feature;
 
