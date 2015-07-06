@@ -105,9 +105,6 @@
 #include "../../item/MapLocationModel.h"
 #include "../../item/MapLocationController.h"
 #include "../item/MapLocationItem.h"
-#include "../../item/StarModel.h"
-#include "../../item/StarController.h"
-#include "../item/StarItem.h"
 #include "../../item/SVGModel.h"
 #include "../../item/SVGController.h"
 #include "../item/SVGItem.h"
@@ -226,10 +223,6 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createItem( te::layout::EnumType* 
   {
     item = createItem(enumObj->getPolygonItem(), draw);
   }
-  else if (mode == enumMode->getModeCreateStar()) 
-  {
-	  item = createItem(enumObj->getStarItem(), draw);
-  }
   else if (mode == enumMode->getModeCreateSVG()) 
   {
     item = createItem(enumObj->getSVGItem(), draw);
@@ -339,10 +332,6 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createItem( te::layout::EnumType* 
   else if(type == enumObj->getPolygonItem())
   {
     item = createPolygon();
-  }
-  else if(type == enumObj->getStarItem())
-  {
-	  item = createStar();
   }
   else if(type == enumObj->getSVGItem())
   {
@@ -1107,33 +1096,6 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createMapLocation()
   return view;
 }
 
-QGraphicsItem* te::layout::BuildGraphicsItem::createStar()
-{
-	StarModel* model = new StarModel;
-	if(m_props)
-	{
-		model->updateProperties(m_props);
-	}
-	else
-	{
-		model->setId(m_id);
-
-		EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
-		std::string name = nameItem(enumObj->getStarItem());
-		model->setName(name);
-	}
-
-	StarController* controller = new StarController(model);
-	ItemObserver* itemObs = (ItemObserver*)controller->getView();
-
-	StarItem* view = dynamic_cast<StarItem*>(itemObs);
-	if(m_props && view)
-	{
-		model->updateProperties(m_props);
-	}
-	return view;
-}
-
 QGraphicsItem* te::layout::BuildGraphicsItem::createSVG()
 {
   SVGModel* model = new SVGModel;
@@ -1160,9 +1122,6 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createSVG()
   }
   return view;
 }
-
-
-
 
 
 

@@ -34,6 +34,7 @@
 #include "../core/pattern/mvc/ItemModelObservable.h"
 #include "../core/ContextItem.h"
 #include "../core/Config.h"
+#include "../core/enum/EnumNorthArrowType.h"
 
 namespace te
 {
@@ -63,18 +64,28 @@ namespace te
         */ 
         virtual ~NorthModel();
 
-        /*!
-          \brief Gets the color of the shape
-        */
-        virtual const te::color::RGBAColor& getColor() const;
+				virtual Properties* getProperties() const;
 
-        /*!
-          \brief Sets the color of the shape
-        */
-        virtual void setColor(const te::color::RGBAColor& color);
+				virtual void updateProperties(te::layout::Properties* properties, bool notify = true);
 
-    protected:
-        te::color::RGBAColor m_color; //!< The color of the shape
+				virtual EnumNorthArrowType* getEnumNorthArrowType();
+
+				virtual EnumType* getCurrentNorthArrowType();
+
+				virtual double getShapeSize();
+
+				virtual te::color::RGBAColor getNorthArrowColor();
+
+				virtual void setNorthArrowColor(te::color::RGBAColor color);
+
+		protected:
+
+			virtual Property northArrowProperty() const;
+
+			EnumNorthArrowType* m_enumNorthArrowType;
+			EnumType*      m_currentNorthArrowType;
+			double         m_shapeSize;
+			te::color::RGBAColor m_northArrowColor;
     };
   }
 }

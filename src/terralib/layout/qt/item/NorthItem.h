@@ -66,11 +66,17 @@ namespace te
          */
         virtual ~NorthItem();
 
+        /*!
+          \brief Reimplemented from QGraphicsItem
+         */
+        virtual void paint (QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
+        
       protected:
 
-        virtual void drawItem(QPainter * painter);
+				virtual void drawNorthArrow1(QPainter * painter);
+				virtual void drawNorthArrow2(QPainter * painter);
+				virtual void drawNorthArrow3(QPainter * painter);
     };
   }
 }
-
 #endif
