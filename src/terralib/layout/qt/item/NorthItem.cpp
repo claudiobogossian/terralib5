@@ -79,7 +79,7 @@ void te::layout::NorthItem::paint( QPainter * painter, const QStyleOptionGraphic
 		}
 
 	}
-		drawBorder(painter);
+		drawFrame(painter);
 
 		//Draw Selection
 		if (option->state & QStyle::State_Selected)
