@@ -81,21 +81,21 @@ namespace te
 
           \param fileName file name
          */
-        virtual void setFileName(std::string fileName);
+        virtual void setFileName(const std::string& fileName);
 
         /*!
           \brief Change file name
 
           \param fileName file name
          */
-        virtual std::string getFileName();
+        virtual const std::string& getFileName() const;
         
         /*!
           \brief Returns the file extension.
 
           \param file extension
          */
-        virtual std::string getFileExtension();
+        virtual const std::string& getFileExtension() const;
 
         /*!
           \brief Returns the type of the image.
