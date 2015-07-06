@@ -39,8 +39,8 @@
 // Qt
 #include <QStyleOptionGraphicsItem>
 
-te::layout::ImageItem::ImageItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
-  ObjectItem(controller, o, invertedMatrix)
+te::layout::ImageItem::ImageItem( ItemController* controller, Observable* o, bool invertedMatrix ) 
+  : ObjectItem(controller, o, invertedMatrix)
 {
   m_nameClass = std::string(this->metaObject()->className());
 }
@@ -50,28 +50,42 @@ te::layout::ImageItem::~ImageItem()
 
 }
 
-void te::layout::ImageItem::drawItem( QPainter * painter )
+void te::layout::ImageItem::updateObserver(ContextItem context)
 {
+  if(!m_model)
+    return;
+
   ImageModel* model = dynamic_cast<ImageModel*>(m_model);
   if(!model)
   {
     return;
   }
 
-  QRectF boundRect = boundingRect();
-  std::string fileName = model->getFileName();
-
+  const std::string& fileName = model->getFileName();
   if(fileName.compare("") == 0)
+  {
+    m_image = QImage();
     return;
+  }
+
+  QImage img(fileName.c_str());
+  m_image = img.mirrored();
+}
+
+void te::layout::ImageItem::drawItem( QPainter * painter )
+{
+  if(m_image.isNull() == true)
+  {
+    return;
+  }
 
   painter->save();
 
-  QImage img(fileName.c_str());
-  img = img.mirrored();
+  QRectF boundRect = boundingRect();
+  QRectF sourceRect(0, 0, m_image.width(), m_image.height());
 
-  QRectF sourceRect(0, 0, img.width(), img.height());
-
-  painter->drawImage(boundRect, img, sourceRect);
+  //draws the item
+  painter->drawImage(boundRect, m_image, sourceRect);
 
   painter->restore();
 }

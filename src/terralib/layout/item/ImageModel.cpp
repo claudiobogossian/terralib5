@@ -57,16 +57,6 @@ te::layout::ImageModel::~ImageModel()
 
 }
 
-void te::layout::ImageModel::setFileName( std::string fileName )
-{
-  m_fileName = fileName;
-}
-
-std::string te::layout::ImageModel::getFileName()
-{
-  return m_fileName;
-}
-
 te::layout::Properties* te::layout::ImageModel::getProperties() const
 {
   ItemModelObservable::getProperties();
@@ -102,7 +92,17 @@ void te::layout::ImageModel::updateProperties( te::layout::Properties* propertie
   }
 }
 
-std::string te::layout::ImageModel::getFileExtension()
+void te::layout::ImageModel::setFileName( const std::string& fileName )
+{
+  m_fileName = fileName;
+}
+
+const std::string& te::layout::ImageModel::getFileName() const
+{
+  return m_fileName;
+}
+
+const std::string& te::layout::ImageModel::getFileExtension() const
 {
   return m_fileExtension;
 }
