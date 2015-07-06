@@ -37,123 +37,112 @@
 
 te::layout::RectangleModel::RectangleModel():
   m_enumRectangleType(0),
-	m_currentRectangleType(0),
-	m_shapeSize(4)
+  m_currentRectangleType(0),
+  m_shapeSize(4)
 {
   m_type = Enums::getInstance().getEnumObjectType()->getRectangleItem();
 
-  m_borderColor = te::color::RGBAColor(0, 0, 0, 255);
   m_box = te::gm::Envelope(0., 0., 20., 20.);
 
   m_border = false;
-	m_enumRectangleType = new EnumRectangleType();
-	m_currentRectangleType = m_enumRectangleType->getSimpleRectangleType();
+  m_enumRectangleType = new EnumRectangleType();
+  m_currentRectangleType = m_enumRectangleType->getSimpleRectangleType();
 }
 
 te::layout::RectangleModel::~RectangleModel()
 {
-	if(m_enumRectangleType)
-	{
-		delete m_enumRectangleType;
-		m_enumRectangleType = 0;
-	}
+  if(m_enumRectangleType)
+  {
+    delete m_enumRectangleType;
+    m_enumRectangleType = 0;
+  }
 }
 
 te::layout::Properties* te::layout::RectangleModel::getProperties() const
 {
-	ItemModelObservable::getProperties();
+  ItemModelObservable::getProperties();
 
-	Property pro_rectangleName = rectangleProperty();
-	if(!pro_rectangleName.isNull())
-	{
-		m_properties->addProperty(pro_rectangleName);
-	}
+  Property pro_rectangleName = rectangleProperty();
+  if(!pro_rectangleName.isNull())
+  {
+    m_properties->addProperty(pro_rectangleName);
+  }
 
-	return m_properties;
+  return m_properties;
 }
 
 void te::layout::RectangleModel::updateProperties( te::layout::Properties* properties, bool notify )
 {
-	ItemModelObservable::updateProperties(properties);
+  ItemModelObservable::updateProperties(properties);
 
-	Properties* vectorProps = const_cast<Properties*>(properties);
+  Properties* vectorProps = const_cast<Properties*>(properties);
 
-	Property pro_rectangleName = vectorProps->contains("rectangle_type");
+  Property pro_rectangleName = vectorProps->contains("rectangle_type");
 
-	if(!pro_rectangleName.isNull())
-	{
-		std::string label = pro_rectangleName.getOptionByCurrentChoice().toString();
-		EnumType* enumType = m_enumRectangleType->searchLabel(label);
-		if(enumType)
-		{
-			m_currentRectangleType = enumType;
-		}
-	}
+  if(!pro_rectangleName.isNull())
+  {
+    std::string label = pro_rectangleName.getOptionByCurrentChoice().toString();
+    EnumType* enumType = m_enumRectangleType->searchLabel(label);
+    if(enumType)
+    {
+      m_currentRectangleType = enumType;
+    }
+  }
 
-	if(notify)
-	{
-		ContextItem context;
-		notifyAll(context);
-	}
+  if(notify)
+  {
+    ContextItem context;
+    notifyAll(context);
+  }
 }
 
 te::layout::EnumRectangleType* te::layout::RectangleModel::getEnumRectangleType()
 {
-	return m_enumRectangleType;
+  return m_enumRectangleType;
 }
 
 te::layout::EnumType* te::layout::RectangleModel::getCurrentRectangleType()
 {
-	return m_currentRectangleType;
+  return m_currentRectangleType;
 }
 
 te::layout::Property te::layout::RectangleModel::rectangleProperty() const
 {
-	Property pro_rectangleName(m_hashCode);
+  Property pro_rectangleName(m_hashCode);
 
-	if(!m_currentRectangleType)
-		return pro_rectangleName;
+  if(!m_currentRectangleType)
+    return pro_rectangleName;
 
-	EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
 
-	if(!dataType)
-		return pro_rectangleName;
+  if(!dataType)
+    return pro_rectangleName;
 
-	pro_rectangleName.setName("rectangle_type");
-	pro_rectangleName.setLabel("graphic type");
-	pro_rectangleName.setValue(m_currentRectangleType->getLabel(), dataType->getDataTypeStringList());
+  pro_rectangleName.setName("rectangle_type");
+  pro_rectangleName.setLabel("graphic type");
+  pro_rectangleName.setValue(m_currentRectangleType->getLabel(), dataType->getDataTypeStringList());
 
-	Variant v;
-	v.setValue(m_currentRectangleType->getLabel(), dataType->getDataTypeString());
-	pro_rectangleName.addOption(v);
-	pro_rectangleName.setOptionChoice(v);
+  Variant v;
+  v.setValue(m_currentRectangleType->getLabel(), dataType->getDataTypeString());
+  pro_rectangleName.addOption(v);
+  pro_rectangleName.setOptionChoice(v);
 
-	for(int i = 0 ; i < m_enumRectangleType->size() ; ++i)
-	{
-		EnumType* enumType = m_enumRectangleType->getEnum(i);
+  for(int i = 0 ; i < m_enumRectangleType->size() ; ++i)
+  {
+    EnumType* enumType = m_enumRectangleType->getEnum(i);
 
-		if(enumType == m_enumRectangleType->getNoneType() || enumType == m_currentRectangleType)
-			continue;
+    if(enumType == m_enumRectangleType->getNoneType() || enumType == m_currentRectangleType)
+      continue;
 
-		Variant v;
-		v.setValue(enumType->getLabel(), dataType->getDataTypeString());
-		pro_rectangleName.addOption(v);
-	}
+    Variant v;
+    v.setValue(enumType->getLabel(), dataType->getDataTypeString());
+    pro_rectangleName.addOption(v);
+  }
 
-	return pro_rectangleName;
+  return pro_rectangleName;
 }
 
 double te::layout::RectangleModel::getShapeSize()
 {
-	return m_shapeSize;
-}
-
-te::color::RGBAColor te::layout::RectangleModel::getRectangleColor()
-{
-	return m_rectangleColor;
-}
-
-void te::layout::RectangleModel::setRectangleColor( te::color::RGBAColor color )
-{
-	m_rectangleColor = color;
+  return m_shapeSize;
 }

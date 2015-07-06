@@ -43,7 +43,6 @@ te::layout::ImageModel::ImageModel() :
 {
   m_type = Enums::getInstance().getEnumObjectType()->getImageItem();
 
-  m_borderColor = te::color::RGBAColor(0, 0, 0, 255);
   m_backgroundColor = te::color::RGBAColor(0, 0, 255, 0);
 
   m_box = te::gm::Envelope(0., 0., 90., 90.);

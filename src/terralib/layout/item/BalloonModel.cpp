@@ -37,7 +37,6 @@ te::layout::BalloonModel::BalloonModel()
 {
   m_type = Enums::getInstance().getEnumObjectType()->getBalloonItem();
 
-  m_borderColor = te::color::RGBAColor(0, 0, 0, 255);
   m_box = te::gm::Envelope(0., 0., 20., 20.);
   m_border = true;
 }

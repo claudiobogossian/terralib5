@@ -38,6 +38,7 @@
 #include "CreateLineTool.h"
 
 // Qt
+#include <QMessageBox>
 #include <QMouseEvent>
 #include <QPainter>
 #include <QPixmap>
@@ -46,10 +47,10 @@
 #include <cassert>
 #include <memory>
 
-te::edit::CreateLineTool::CreateLineTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, QObject* parent) 
-  : AbstractTool(display, parent),
-    m_layer(layer),
-    m_continuousMode(false),
+te::edit::CreateLineTool::CreateLineTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, QObject* parent)
+: AbstractTool(display, parent),
+m_layer(layer),
+m_continuousMode(false),
     m_isFinished(false)
 {
   setCursor(cursor);
@@ -64,6 +65,9 @@ te::edit::CreateLineTool::~CreateLineTool()
 {
   QPixmap* draft = m_display->getDraftPixmap();
   draft->fill(Qt::transparent);
+
+  //avaliar
+  //delete _line;
 }
 
 bool te::edit::CreateLineTool::mousePressEvent(QMouseEvent* e)
@@ -106,11 +110,16 @@ bool te::edit::CreateLineTool::mouseMoveEvent(QMouseEvent* e)
   m_lastPos = te::gm::Coord2D(coord.x, coord.y);
 
   Qt::KeyboardModifiers keys = e->modifiers();
-
-  if(keys == Qt::NoModifier)
+  
+  /*if(keys == Qt::NoModifier)
     m_continuousMode = false;
-  else if(keys == Qt::ShiftModifier)
-    m_continuousMode = true;
+  else if (keys == Qt::ShiftModifier)
+	m_continuousMode = true;*/
+
+  if (e->buttons() & Qt::LeftButton)
+	  m_continuousMode = true;
+  else
+	  m_continuousMode = false;
 
   draw();
 
@@ -159,6 +168,8 @@ void te::edit::CreateLineTool::draw()
 
     if(m_continuousMode == false)
       m_coords.pop_back();
+
+	_line = (te::gm::LineString*)line->clone();//avaliar
   }
 
   renderer.end();
@@ -169,6 +180,8 @@ void te::edit::CreateLineTool::draw()
 void te::edit::CreateLineTool::clear()
 {
   m_coords.clear();
+
+  _line = 0;//avaliar
 }
 
 te::gm::Geometry* te::edit::CreateLineTool::buildLine()
