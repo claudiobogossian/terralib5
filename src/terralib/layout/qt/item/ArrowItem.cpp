@@ -58,8 +58,6 @@ void te::layout::ArrowItem::drawItem( QPainter * painter )
 {
   	ArrowModel* model = dynamic_cast<ArrowModel*>(m_model);
 
-  drawBackground(painter);
-
 	if(model)
 	{
 		EnumArrowType* enumScale = model->getEnumArrowType();
@@ -77,8 +75,6 @@ void te::layout::ArrowItem::drawItem( QPainter * painter )
 			drawLeftArrow(painter);
 		}
 	}
-
-  drawBorder(painter);
 }
 
 void te::layout::ArrowItem::drawRightArrow( QPainter * painter )

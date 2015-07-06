@@ -31,6 +31,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include "../../../dataaccess/dataset/ObjectIdSet.h"
 #include "../../../maptools/AbstractLayer.h"
 #include "../../../qt/widgets/tools/AbstractTool.h"
+#include "../../Feature.h"
 #include "../Config.h"
 
 // STL
@@ -93,7 +94,7 @@ namespace te
 
     protected:
       te::map::AbstractLayerPtr m_layer;
-      Feature* m_feature;
+      te::edit::Feature* m_feature;
 
     };
 
