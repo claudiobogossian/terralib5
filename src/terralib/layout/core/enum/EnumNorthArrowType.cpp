@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file EnumArrowType.cpp
+  \file EnumNorthArrowType.cpp
    
   \brief 
 
@@ -26,50 +26,50 @@
 */
 
 // TerraLib
-#include "EnumArrowType.h"
+#include "EnumNorthArrowType.h"
 
-te::layout::EnumArrowType::EnumArrowType() :
+te::layout::EnumNorthArrowType::EnumNorthArrowType() :
   m_noneType(0),
-  m_rightArrow(0),
-	m_doubleArrow(0),
-	m_leftArrow(0)
+  m_northArrow1(0),
+	m_northArrow2(0),
+	m_northArrow3(0)
 {
   init();
 }
 
-te::layout::EnumArrowType::~EnumArrowType()
+te::layout::EnumNorthArrowType::~EnumNorthArrowType()
 {
   
 }
 
-void te::layout::EnumArrowType::init()
+void te::layout::EnumNorthArrowType::init()
 {
   m_noneType = createEnum("NoneScale", this, "None Scale");
 
-  m_rightArrow = createEnum("Right Arrow", this);
+  m_northArrow1 = createEnum("North Arrow 1", this);
 
-	m_leftArrow = createEnum("Left Arrow", this);
+  m_northArrow2 = createEnum("North Arrow 2", this);
 
-  m_doubleArrow = createEnum("Double Arrow", this);
+	m_northArrow3 = createEnum("North Arrow 3", this);
 
 }
 
-te::layout::EnumType* te::layout::EnumArrowType::getNoneType() const
+te::layout::EnumType* te::layout::EnumNorthArrowType::getNoneType() const
 {
   return m_noneType;
 }
 
-te::layout::EnumType* te::layout::EnumArrowType::getRightArrowType() const
+te::layout::EnumType* te::layout::EnumNorthArrowType::getNorthArrowType1() const
 {
-  return m_rightArrow;
+  return m_northArrow1;
 }
 
-te::layout::EnumType* te::layout::EnumArrowType::getDoubleArrowType() const
+te::layout::EnumType* te::layout::EnumNorthArrowType::getNorthArrowType2() const
 {
-  return m_doubleArrow;
+  return m_northArrow2;
 }
 
-te::layout::EnumType* te::layout::EnumArrowType::getLeftArrowType() const
+te::layout::EnumType* te::layout::EnumNorthArrowType::getNorthArrowType3() const
 {
-	return m_leftArrow;
+	return m_northArrow3;
 }

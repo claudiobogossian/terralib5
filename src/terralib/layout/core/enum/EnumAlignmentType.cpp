@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file EnumStarType.cpp
+  \file EnumAlignmentType.cpp
    
   \brief 
 
@@ -26,58 +26,49 @@
 */
 
 // TerraLib
-#include "EnumStarType.h"
+#include "EnumAlignmentType.h"
 
-te::layout::EnumStarType::EnumStarType() :
+te::layout::EnumAlignmentType::EnumAlignmentType() :
   m_noneType(0),
-  m_star5points(0),
-	m_star6points(0),
-	m_star7points(0),
-	m_star8points(0)
+  m_alignmentCenter(0),
+	m_alignmentLeft(0),
+	m_alignmentRight(0)
 {
   init();
 }
 
-te::layout::EnumStarType::~EnumStarType()
+te::layout::EnumAlignmentType::~EnumAlignmentType()
 {
   
 }
 
-void te::layout::EnumStarType::init()
+void te::layout::EnumAlignmentType::init()
 {
   m_noneType = createEnum("NoneScale", this, "None Scale");
 
-  m_star5points = createEnum("5 points", this);
+  m_alignmentCenter = createEnum("Center", this);
 
-  m_star6points = createEnum("6 points", this);
+  m_alignmentLeft = createEnum("Left", this);
 
-	m_star7points = createEnum("7 points", this);
-
-	m_star8points = createEnum("8 points", this);
-
+	m_alignmentRight = createEnum("Right", this);
 }
 
-te::layout::EnumType* te::layout::EnumStarType::getNoneType() const
+te::layout::EnumType* te::layout::EnumAlignmentType::getNoneType() const
 {
   return m_noneType;
 }
 
-te::layout::EnumType* te::layout::EnumStarType::getStar1Type() const
+te::layout::EnumType* te::layout::EnumAlignmentType::getAlignmentCenterType() const
 {
-  return m_star5points;
+  return m_alignmentCenter;
 }
 
-te::layout::EnumType* te::layout::EnumStarType::getStar2Type() const
+te::layout::EnumType* te::layout::EnumAlignmentType::getAlignmentLeftType() const
 {
-  return m_star6points;
+  return m_alignmentLeft;
 }
 
-te::layout::EnumType* te::layout::EnumStarType::getStar3Type() const
+te::layout::EnumType* te::layout::EnumAlignmentType::getAlignmentRightType() const
 {
-  return m_star7points;
-}
-
-te::layout::EnumType* te::layout::EnumStarType::getStar4Type() const
-{
-  return m_star8points;
+	return m_alignmentRight;
 }

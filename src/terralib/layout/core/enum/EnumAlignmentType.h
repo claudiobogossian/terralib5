@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file EnumArrowType.h
+  \file EnumAlignmentType.h
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_ENUM_ARROW_TYPE_H 
-#define __TERRALIB_LAYOUT_INTERNAL_ENUM_ARROW_TYPE_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_ENUM_ALIGNMENT_TYPE_H 
+#define __TERRALIB_LAYOUT_INTERNAL_ENUM_ALIGNMENT_TYPE_H 
 
 // TerraLib
 #include "AbstractEnum.h"
@@ -36,26 +36,19 @@ namespace te
   {
     class EnumType;
 
-    /*!
-      \brief Class to represent a scale star enumeration.
-	  
-	    \ingroup layout
-
-	    \sa te::layout::AbstractEnum
-	  */
-    class TELAYOUTEXPORT EnumArrowType : public AbstractEnum
+    class TELAYOUTEXPORT EnumAlignmentType : public AbstractEnum
     {
       public:
 
         /*!
           \brief Constructor
         */
-        EnumArrowType(); 
+        EnumAlignmentType(); 
 
         /*!
           \brief Destructor
         */ 
-        virtual ~EnumArrowType();
+        virtual ~EnumAlignmentType();
 
         /*!
           \brief Returns value that represents none type belonging to enumeration.
@@ -65,24 +58,27 @@ namespace te
         virtual EnumType* getNoneType() const;
         
         /*!
-          \brief Returns value that represents right arrow type belonging to enumeration.
+          \brief Returns value that represents alignment center type belonging to enumeration.
 		  
 		      \return enum value  	  
         */
-        virtual EnumType* getRightArrowType() const;
+        virtual EnumType* getAlignmentCenterType() const;
+
 
         /*!
-          \brief Returns value that represents double arrow type belonging to enumeration.
+          \brief Returns value that represents alignment right type belonging to enumeration.
 		  
 		      \return enum value  	  
         */
-        virtual EnumType* getDoubleArrowType() const;
-					/*!
-          \brief Returns value that represents left arrow type belonging to enumeration.
+        virtual EnumType* getAlignmentLeftType() const;
+
+				 /*!
+          \brief Returns value that represents alignment right type belonging to enumeration.
 		  
 		      \return enum value  	  
         */
-        virtual EnumType* getLeftArrowType() const;
+        virtual EnumType* getAlignmentRightType() const;
+				
 		
 			protected:
 
@@ -94,9 +90,9 @@ namespace te
       protected:
 
         EnumType* m_noneType; //!< value that represents none type belonging to enumeration
-        EnumType* m_rightArrow; //!< value that represents right arrow type belonging to enumeration
-				EnumType* m_leftArrow; //!< value that represents left arrow type belonging to enumeration
-				EnumType* m_doubleArrow; //!< value that represents double arrow points type belonging to enumeration
+        EnumType* m_alignmentCenter; //!< value that represents alignment center type belonging to enumeration
+				EnumType* m_alignmentLeft; //!< value that represents alignment left type belonging to enumeration
+				EnumType* m_alignmentRight; //!< value that represents alignment right type belonging to enumeration
  
     };
   }
