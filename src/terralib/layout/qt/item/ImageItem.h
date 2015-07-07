@@ -69,9 +69,18 @@ namespace te
          */
         virtual ~ImageItem();
 
+        /*!
+          \brief Reimplemented from ItemObserver
+         */
+        virtual void updateObserver(ContextItem context);
+
       protected:
 
         virtual void drawItem ( QPainter * painter );
+
+      protected:
+
+        QImage  m_image; //!< Represents the loaded image
     };
   }
 }

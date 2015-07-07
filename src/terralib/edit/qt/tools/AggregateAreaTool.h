@@ -4,6 +4,7 @@
 // TerraLib
 #include "../../../geometry/Envelope.h"
 #include "../../../maptools/AbstractLayer.h"
+#include "../../Feature.h"
 #include "../Config.h"
 
 // Qt
@@ -66,7 +67,7 @@ namespace te
 
       te::gm::Geometry* buildPolygon();
 
-      te::gm::Geometry* Union(te::gm::Geometry* g1, Feature* feature_g2);
+      te::gm::Geometry* Union(te::gm::Geometry* g1, te::edit::Feature* feature_g2);
 
     private slots:
 
@@ -75,7 +76,7 @@ namespace te
     protected:
 
       te::map::AbstractLayerPtr m_layer;
-      Feature* m_feature;
+      te::edit::Feature* m_feature;
 
     };
 

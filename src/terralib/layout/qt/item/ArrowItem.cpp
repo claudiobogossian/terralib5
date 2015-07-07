@@ -41,6 +41,7 @@
 
 // Qt
 #include <QPointF>
+#include "qglobal.h"
 
 te::layout::ArrowItem::ArrowItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
   ObjectItem(controller, o, invertedMatrix)
@@ -55,7 +56,8 @@ te::layout::ArrowItem::~ArrowItem()
 
 void te::layout::ArrowItem::drawItem( QPainter * painter )
 {
-  ArrowModel* model = dynamic_cast<ArrowModel*>(m_model);
+    ArrowModel* model = dynamic_cast<ArrowModel*>(m_model);
+
   if(model)
   {
     EnumArrowType* enumScale = model->getEnumArrowType();
@@ -67,6 +69,10 @@ void te::layout::ArrowItem::drawItem( QPainter * painter )
     if(model->getCurrentArrowType() == enumScale->getRightArrowType())
     {
       drawRightArrow(painter);
+    }
+    if(model->getCurrentArrowType() == enumScale->getLeftArrowType())
+    {
+      drawLeftArrow(painter);
     }
   }
 }
@@ -94,21 +100,70 @@ void te::layout::ArrowItem::drawRightArrow( QPainter * painter )
   QRectF rectAdjusted = getAdjustedBoundingRect(painter);
 
   double w1 = rectAdjusted.width() / 2.;
-  double w3 = rectAdjusted.width() / 40.;
+  double w2 = rectAdjusted.width() / 100.;
   double h1 = rectAdjusted.height() / 2.;
   double h2 = rectAdjusted.height() / 4.;
   double y1 = rectAdjusted.center().y()-h1;
   double y2 = rectAdjusted.center().y()+h1;
   double y3 = rectAdjusted.center().y()-h2;
   double y4 = rectAdjusted.center().y()+h2;
+  double y5 = rectAdjusted.width() - w2;
 
   QPointF p1 = QPointF(w1,y2);
-  QPointF p2 = QPointF(y2,w1);
+  QPointF p2 = QPointF(y5,h1);
   QPointF p3 = QPointF(w1,y1);
-  QPointF p4 = QPointF(h1,y3);
-  QPointF p5 = QPointF(w3,y3);
-  QPointF p6 = QPointF(w3,y4);
-  QPointF p7 = QPointF(h1,y4);
+  QPointF p4 = QPointF(w1,y3);
+  QPointF p5 = QPointF(w2,y3);
+  QPointF p6 = QPointF(w2,y4);
+  QPointF p7 = QPointF(w1,y4);
+  QPolygonF arrowPolygon;
+  arrowPolygon<<p1<<p2<<p3<<p4<<p5<<p6<<p7;
+
+  //draws the item
+  painter->drawPolygon(arrowPolygon);
+
+  painter->restore();
+}
+
+void te::layout::ArrowItem::drawLeftArrow(QPainter * painter)
+{
+  painter->save();
+
+  ArrowModel* model = dynamic_cast<ArrowModel*>(m_model);
+  const te::color::RGBAColor& fillColor = model->getFillColor();
+  const te::color::RGBAColor& contourColor = model->getContourColor();
+
+  QColor qFillColor(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), fillColor.getAlpha());
+  QColor qContourColor(contourColor.getRed(), contourColor.getGreen(), contourColor.getBlue(), contourColor.getAlpha());
+
+  QBrush brush(qFillColor);
+  QPen pen(qContourColor, 0, Qt::SolidLine);
+
+  painter->setPen(pen);
+  painter->setBrush(brush);
+  painter->setRenderHint( QPainter::Antialiasing, true );
+
+  //gets the adjusted boundigng rectangle based of the painter settings
+  QRectF rectAdjusted = getAdjustedBoundingRect(painter);
+
+  double w2 = rectAdjusted.width() / 2.;
+  double w3 = rectAdjusted.width() - rectAdjusted.width() / 100.;
+  double w4 = rectAdjusted.width() / 100.;
+  double h1 = rectAdjusted.height() / 2.;
+  double h2 = rectAdjusted.height() / 4.;
+  double y1 = rectAdjusted.center().y()-h1;
+  double y2 = rectAdjusted.center().y()+h1;
+  double y4 = rectAdjusted.center().y()+h2;
+  double y5 = rectAdjusted.width() - w4;
+  double y6 = rectAdjusted.center().y() + w4;
+  
+  QPointF p1 = QPointF(w3,y4);
+  QPointF p2 = QPointF(w2,y4);
+  QPointF p3 = QPointF(w2,y2);
+  QPointF p4 = QPointF(w4,y6);
+  QPointF p5 = QPointF(w2,y1);
+  QPointF p6 = QPointF(w2,h2);
+  QPointF p7 = QPointF(w3,h2);
   QPolygonF arrowPolygon;
   arrowPolygon<<p1<<p2<<p3<<p4<<p5<<p6<<p7;
 
@@ -139,24 +194,26 @@ void te::layout::ArrowItem::drawDoubleArrow(QPainter * painter)
   //gets the adjusted boundigng rectangle based of the painter settings
   QRectF rectAdjusted = getAdjustedBoundingRect(painter);
 
-  double w1 = rectAdjusted.width() / 2.;
   double w2 = rectAdjusted.width() / 4.;
   double w3 = rectAdjusted.width() - rectAdjusted.width() / 4.;
+  double w4 = rectAdjusted.width() / 100.;
   double h1 = rectAdjusted.height() / 2.;
   double h2 = rectAdjusted.height() / 4.;
   double y1 = rectAdjusted.center().y()-h1;
   double y2 = rectAdjusted.center().y()+h1;
   double y4 = rectAdjusted.center().y()+h2;
-  
+  double y5 = rectAdjusted.width() - w4;
+  double y6 = rectAdjusted.center().y() + w4;
+
   QPointF p1 = QPointF(w3,y2);
-  QPointF p2 = QPointF(y2,w1);
+  QPointF p2 = QPointF(y5,h1);
   QPointF p3 = QPointF(w3,y1);
   QPointF p4 = QPointF(w3,h2);
-  QPointF p5 = QPointF(h2,w2);
+  QPointF p5 = QPointF(w2,h2); 
   QPointF p6 = QPointF(w2,y1);
-  QPointF p7 = QPointF(y1,w1);
+  QPointF p7 = QPointF(w4,y6);
   QPointF p8 = QPointF(w2,y2);
-  QPointF p9 = QPointF(h2,y4);
+  QPointF p9 = QPointF(w2,y4);
   QPointF p10 = QPointF(w3,y4);
   QPolygonF arrowPolygon;
   arrowPolygon<<p1<<p2<<p3<<p4<<p5<<p6<<p7<<p8<<p9<<p10;
@@ -166,3 +223,4 @@ void te::layout::ArrowItem::drawDoubleArrow(QPainter * painter)
 
   painter->restore();
 }
+

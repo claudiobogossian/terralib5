@@ -98,7 +98,6 @@ te::layout::EnumModeType::EnumModeType() :
   m_modeCreateGridGeodesic(0),
   m_modeCreateNorth(0),
   m_modeCreateMapLocation(0),
-	m_modeCreateStar(0),
   m_modeCreateSVG(0)
 {
   init();
@@ -445,12 +444,6 @@ te::layout::EnumModeType::~EnumModeType()
     m_modeCreateGridGeodesic = 0;
   }
 
-	if(m_modeCreateStar)
-	{
-		delete m_modeCreateStar;
-		m_modeCreateStar= 0;
-	}
-
   if(m_modeCreateSVG)
   {
     delete m_modeCreateSVG;
@@ -665,9 +658,6 @@ void te::layout::EnumModeType::init()
 
   m_modeCreateMapLocation = createEnum("Create Map Location", this, "Create Map Location");
   m_modeCreateMapLocation->setType(te::layout::EnumCreate);
-
-	m_modeCreateStar = createEnum("Create Star", this, "Create Star");
-	m_modeCreateStar->setType(te::layout::EnumCreate);
 
   m_modeCreateSVG = createEnum("Create SVG", this, "Create SVG");
   m_modeCreateSVG->setType(te::layout::EnumCreate);
@@ -1011,11 +1001,6 @@ te::layout::EnumType* te::layout::EnumModeType::getModeCreateNorth() const
 te::layout::EnumType* te::layout::EnumModeType::getModeCreateMapLocation() const
 {
   return m_modeCreateMapLocation;
-}
-
-te::layout::EnumType* te::layout::EnumModeType::getModeCreateStar() const
-{
-	return m_modeCreateStar;
 }
 
 te::layout::EnumType* te::layout::EnumModeType::getModeCreateSVG() const

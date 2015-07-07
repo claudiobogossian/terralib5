@@ -77,7 +77,11 @@ else() # QT4_FOUND
   add_definitions(${QT_DEFINITIONS})
 
   # moc'ing
-    set(TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/edit/qt/tools/VertexTool.h
+    set(TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/edit/qt/tools/AggregateAreaTool.h
+								   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/edit/qt/tools/DeleteGeometryTool.h
+								   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/edit/qt/tools/MergeGeometriesTool.h
+								   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/edit/qt/tools/SubtractAreaTool.h
+								   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/edit/qt/tools/VertexTool.h
                                    ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/edit/qt/tools/CreatePolygonTool.h
                                    ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/edit/qt/tools/CreateLineTool.h
                                    ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/edit/qt/tools/MoveGeometryTool.h

@@ -169,11 +169,10 @@ void te::layout::RectangleItem::drawSingleCornerTrimmedRectangle(QPainter * pain
   QRectF rectAdjusted = getAdjustedBoundingRect(painter);
 
   QPointF p1 = QPointF(rectAdjusted.width() - rectAdjusted.width() / 4., rectAdjusted.center().y()+ rectAdjusted.height() / 2.);
-  QPointF p2 = QPointF(rectAdjusted.height()-rectAdjusted.topRight().y(),rectAdjusted.topRight().x()-rectAdjusted.width()/4);
-  QPointF p3 = QPointF(rectAdjusted.bottomRight().y(),rectAdjusted.top());
+  QPointF p2 = QPointF(rectAdjusted.bottomRight().x() - rectAdjusted.bottomRight().x()/100.,rectAdjusted.height() - rectAdjusted.height() / 4.);
+  QPointF p3 = QPointF(rectAdjusted.bottomRight().x(),rectAdjusted.top());
   QPointF p4 = QPointF(rectAdjusted.bottomLeft().x(),rectAdjusted.top());
   QPointF p5 = QPointF(rectAdjusted.bottomLeft().x(),rectAdjusted.bottom());
-
   QPolygonF rect;
   rect<<p1<<p2<<p3<<p4<<p5;
 
@@ -181,4 +180,5 @@ void te::layout::RectangleItem::drawSingleCornerTrimmedRectangle(QPainter * pain
   painter->drawPolygon(rect);
 
   painter->restore();
+
 }

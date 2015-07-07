@@ -18,15 +18,16 @@
  */
 
 /*!
-  \file EnumStarType.h
-   
-  \brief Class to represent a scale point enumeration. Ex.: X, square, circle, etc.
+\file te::layout::EnumType* te::layout::EnumNorthArrowType::getDoubleArrowType() const
+{
+return m_doubleArrow;
+}.h
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_ENUM_STAR_TYPE_H 
-#define __TERRALIB_LAYOUT_INTERNAL_ENUM_STAR_TYPE_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_ENUM_NORTH_ARROW_TYPE_H 
+#define __TERRALIB_LAYOUT_INTERNAL_ENUM_NORTH_ARROW_TYPE_H
 
 // TerraLib
 #include "AbstractEnum.h"
@@ -45,19 +46,19 @@ namespace te
 
 	    \sa te::layout::AbstractEnum
 	  */
-    class TELAYOUTEXPORT EnumStarType : public AbstractEnum
+    class TELAYOUTEXPORT EnumNorthArrowType : public AbstractEnum
     {
       public:
 
         /*!
           \brief Constructor
         */
-        EnumStarType(); 
+        EnumNorthArrowType(); 
 
         /*!
           \brief Destructor
         */ 
-        virtual ~EnumStarType();
+        virtual ~EnumNorthArrowType();
 
         /*!
           \brief Returns value that represents none type belonging to enumeration.
@@ -67,32 +68,25 @@ namespace te
         virtual EnumType* getNoneType() const;
         
         /*!
-          \brief Returns value that represents star 1 type belonging to enumeration.
+          \brief Returns value that represents north arrow type 1 belonging to enumeration.
 		  
 		      \return enum value  	  
         */
-        virtual EnumType* getStar1Type() const;
+        virtual EnumType* getNorthArrowType1() const;
 
         /*!
-          \brief Returns value that represents star 2 type belonging to enumeration.
+          \brief Returns value that represents north arrow type 2 belonging to enumeration.
 		  
 		      \return enum value  	  
         */
-        virtual EnumType* getStar2Type() const;
-
-        /*!
-          \brief Returns value that represents star 3 type belonging to enumeration.
-		  
-		      \return enum value  	  
-        */
-        virtual EnumType* getStar3Type() const;
+        virtual EnumType* getNorthArrowType2() const;
 
 				/*!
-          \brief Returns value that represents star 4 type belonging to enumeration.
+          \brief Returns value that represents north arrow type 3 belonging to enumeration.
 		  
 		      \return enum value  	  
         */
-        virtual EnumType* getStar4Type() const;
+        virtual EnumType* getNorthArrowType3() const;
 		
 			protected:
 
@@ -104,10 +98,9 @@ namespace te
       protected:
 
         EnumType* m_noneType; //!< value that represents none type belonging to enumeration
-        EnumType* m_star5points; //!< value that represents star 5 points type belonging to enumeration
-				EnumType* m_star6points; //!< value that represents star 6 points type belonging to enumeration
-				EnumType* m_star7points; //!< value that represents star 7 points type belonging to enumeration
-				EnumType* m_star8points; //!< value that represents star 8 points type belonging to enumeration
+        EnumType* m_northArrow1; //!< value that represents north arrow type 1 belonging to enumeration
+				EnumType* m_northArrow2; //!< value that represents north arrow type 2 belonging to enumeration
+				EnumType* m_northArrow3; //!< value that represents north arrow type 3 belonging to enumeration
  
     };
   }

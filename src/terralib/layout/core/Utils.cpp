@@ -398,8 +398,8 @@ std::string te::layout::Utils::proj4DescToPlanar( int zone )
   std::string proj4 = "+proj=utm";
   proj4+= " +zone="+ szone.str();
   proj4+= " +south"; // pode ser +noth?
-  proj4+= " +ellps=intl";
-  proj4+= " +towgs84=-206,172,-6,0,0,0,0";
+  proj4+= " +ellps=aust_SA";
+  proj4+= " +towgs84=-57,1,-41,0,0,0,0";
   proj4+= " +units=m"; 
   proj4+= " +no_defs ";
   

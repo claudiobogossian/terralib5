@@ -44,11 +44,11 @@ namespace te
     \brief Class that represents a graphic Rectangle. 
         Its coordinate system is the same of scene (millimeters). 
         He is also the son of ItemObserver and ObjectItem, so it can become observer of a model (Observable). 
-	  
-	    \ingroup layout
+    
+      \ingroup layout
 
-	    \sa te::layout::ObjectItem
-	  */
+      \sa te::layout::ObjectItem
+    */
     class TELAYOUTEXPORT NorthItem : public ObjectItem
     {
       public:
@@ -66,11 +66,17 @@ namespace te
          */
         virtual ~NorthItem();
 
+        /*!
+          \brief Reimplemented from QGraphicsItem
+         */
+        virtual void drawItem (QPainter * painter);
+        
       protected:
 
-        virtual void drawItem(QPainter * painter);
+        virtual void drawNorthArrow1(QPainter * painter);
+        virtual void drawNorthArrow2(QPainter * painter);
+        virtual void drawNorthArrow3(QPainter * painter);
     };
   }
 }
-
 #endif

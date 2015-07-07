@@ -4,6 +4,7 @@
 // TerraLib
 #include "../../../geometry/Envelope.h"
 #include "../../../maptools/AbstractLayer.h"
+#include "../../Feature.h"
 #include "../Config.h"
 
 // Qt
@@ -74,7 +75,7 @@ namespace te
 
     protected:
       te::map::AbstractLayerPtr m_layer;
-      Feature* m_feature;
+      te::edit::Feature* m_feature;
 
     };
 
