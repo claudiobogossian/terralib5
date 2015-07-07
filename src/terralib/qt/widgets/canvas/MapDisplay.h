@@ -192,7 +192,7 @@ namespace te
           /*!
             \brief Defines the scale and calculates envelope based on the requested scale
            */
-          virtual double setScale(const double& scale);
+          virtual void setScale(const double& scale);
           
           
         protected:

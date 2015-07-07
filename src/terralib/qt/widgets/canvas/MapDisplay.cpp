@@ -450,7 +450,7 @@ double te::qt::widgets::MapDisplay::getScale() {
 
   return m_scale;
 }
-double te::qt::widgets::MapDisplay::setScale(const double& scale)
+void te::qt::widgets::MapDisplay::setScale(const double& scale)
 {
-
+  return;
 }
