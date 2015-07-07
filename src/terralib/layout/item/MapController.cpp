@@ -35,6 +35,10 @@
 #include "../core/pattern/factory/ItemParamsCreate.h"
 #include "../core/pattern/mvc/ItemObserver.h"
 #include "../core/enum/Enums.h"
+#include <QList>
+#include <QGraphicsView>
+#include "../qt/core/View.h"
+#include "../qt/core/Scene.h"
 
 te::layout::MapController::MapController( Observable* o ) :
   ItemController(o)
@@ -44,8 +48,21 @@ te::layout::MapController::MapController( Observable* o ) :
 
 te::layout::MapController::~MapController()
 {
-	
+  
 }
+
+void te::layout::MapController::refreshAllProperties()
+{
+  Scene* scene = dynamic_cast<Scene*>(Context::getInstance().getScene());
+  QList<QGraphicsView *> views = scene->views();
+  if(views.size()==0)
+  {
+    return;
+  }
+  View* view = dynamic_cast<View*>(views[0]);
+  view->refreshAllProperties();
+}
+
 
 
 

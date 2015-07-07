@@ -187,7 +187,7 @@ void te::layout::View::mousePressEvent( QMouseEvent * event )
         Context::getInstance().setItem(0);
         Context::getInstance().setWait(mode->getModeNone());
         m_flag = false;
-      }		  
+      }      
     }
   }
   
@@ -379,7 +379,7 @@ void te::layout::View::keyPressEvent( QKeyEvent* keyEvent )
 }
 
 void te::layout::View::config()
-{	
+{  
   //Calculate matrix and centralizes the scene
 
   Scene* nscene = dynamic_cast<Scene*>(scene());
@@ -1150,4 +1150,9 @@ void te::layout::View::onSelectionItem( std::string name )
 
   emit reloadProperties();
   m_selectionChange = false;
+}
+
+void te::layout::View::refreshAllProperties()
+{
+  emit reloadProperties();
 }

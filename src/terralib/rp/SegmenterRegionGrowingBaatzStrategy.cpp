@@ -348,7 +348,7 @@ namespace te
           /
           ( (rg::BaatzFeatureType)( m_parameters.m_segmentsSimIncreaseSteps ) );
           
-	rg::mergeSegments< rg::BaatzFeatureType >( 
+        rg::mergeSegments< rg::BaatzFeatureType >( 
           m_segmentsIdsMatrix,
           disimilarityThreshold, 
           0, 
@@ -381,7 +381,7 @@ namespace te
       
       if( m_parameters.m_minSegmentSize > 1 )
       {
-	rg::mergeSegments< rg::BaatzFeatureType >( 
+        rg::mergeSegments< rg::BaatzFeatureType >( 
           m_segmentsIdsMatrix,
           std::numeric_limits< rg::BaatzFeatureType >::max(),
           m_parameters.m_minSegmentSize,
@@ -647,7 +647,7 @@ namespace te
               
             // updating the neighboorhood info
             
-            segmentPtr->clearNeighborSegments();
+            segmentPtr->removeAllNeighborSegmentsPtrs();
               
             if( blkLine ) 
             { 
@@ -655,9 +655,9 @@ namespace te
                 
               if( neighborSegmentPtr )
               {
-                segmentPtr->addNeighborSegment( neighborSegmentPtr );
+                segmentPtr->addNeighborSegmentPtr( neighborSegmentPtr );
                                     
-                neighborSegmentPtr->addNeighborSegment( segmentPtr );
+                neighborSegmentPtr->addNeighborSegmentPtr( segmentPtr );
               }
             }
             
@@ -667,9 +667,9 @@ namespace te
                 
               if( neighborSegmentPtr )
               {
-                segmentPtr->addNeighborSegment( neighborSegmentPtr );
+                segmentPtr->addNeighborSegmentPtr( neighborSegmentPtr );
                                     
-                neighborSegmentPtr->addNeighborSegment( segmentPtr );
+                neighborSegmentPtr->addNeighborSegmentPtr( segmentPtr );
               }
             }   
             
