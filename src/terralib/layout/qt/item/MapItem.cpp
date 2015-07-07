@@ -90,7 +90,8 @@ te::layout::MapItem::MapItem( ItemController* controller, Observable* o, bool in
   m_tool(0),
   m_wMargin(0),
   m_hMargin(0),
-  m_pixmapIsDirty(false)
+  m_pixmapIsDirty(false),
+  m_currentScale(0)
 {    
   m_nameClass = std::string(this->metaObject()->className());
   
@@ -505,7 +506,7 @@ void te::layout::MapItem::changeCurrentTool( EnumType* mode )
   te::layout::Context::getInstance().setMode(mode);
   if(mode == type->getModeMapPan())
   {
-    te::qt::widgets::Pan* pan = new te::qt::widgets::Pan(m_mapDisplay, Qt::OpenHandCursor, Qt::ClosedHandCursor);	 
+    te::qt::widgets::Pan* pan = new te::qt::widgets::Pan(m_mapDisplay, Qt::OpenHandCursor, Qt::ClosedHandCursor);   
     setCurrentTool(pan);
     m_mapDisplay->setCursor(Qt::OpenHandCursor);
   }
@@ -601,6 +602,8 @@ void te::layout::MapItem::generateMapPixmap()
   image = image.mirrored();
 
   m_pixmap = QPixmap::fromImage(image);
+
+  updateScale();
 }
 
 void te::layout::MapItem::updateMapDisplay()
@@ -876,6 +879,7 @@ void te::layout::MapItem::redraw( bool bRefresh /*= true*/ )
 {
   ContextItem context;
   updateObserver(context);
+
 }
 
 bool te::layout::MapItem::checkTouchesCorner( const double& x, const double& y )
@@ -966,5 +970,30 @@ void te::layout::MapItem::contextUpdated()
     this->prepareGeometryChange();
     m_mapDisplay->setGeometry(pt.x(), pt.y(), newSize.width(), newSize.height());
     m_pixmapIsDirty = true;
+  }
+}
+
+
+void te::layout::MapItem::updateScale()
+{
+  MapModel* model = dynamic_cast<MapModel*>(m_model);
+  double scale = m_mapDisplay->getScale();
+
+  if(m_currentScale != scale)
+  {
+    m_currentScale = scale;
+    EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+
+    Properties* properties = new Properties("");
+
+    Property prop;
+    prop.setName("map_scale");
+    int scale = (int) m_currentScale;
+    prop.setValue(scale, dataType->getDataTypeInt());
+    properties->addProperty(prop);
+
+    model->updateProperties(properties, true);
+    MapController* mapController = dynamic_cast<MapController*>(m_controller);
+    mapController->refreshAllProperties();
   }
 }

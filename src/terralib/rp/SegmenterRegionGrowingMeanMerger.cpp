@@ -41,8 +41,8 @@ namespace te
     
     SegmenterRegionGrowingSegment< rg::MeanFeatureType >::FeatureType
     SegmenterRegionGrowingMeanMerger::getDissimilarity( SegmenterRegionGrowingSegment< rg::MeanFeatureType > const * const segment1Ptr, 
-		  SegmenterRegionGrowingSegment< rg::MeanFeatureType > const * const segment2Ptr, 
-		  SegmenterRegionGrowingSegment< rg::MeanFeatureType > * const ) const
+      SegmenterRegionGrowingSegment< rg::MeanFeatureType > const * const segment2Ptr, 
+      SegmenterRegionGrowingSegment< rg::MeanFeatureType > * const ) const
     {
       assert( segment1Ptr );
       assert( segment1Ptr->m_features );
@@ -67,8 +67,8 @@ namespace te
     }
     
     void SegmenterRegionGrowingMeanMerger::mergeFeatures( SegmenterRegionGrowingSegment< rg::MeanFeatureType > * const segment1Ptr, 
-		  SegmenterRegionGrowingSegment< rg::MeanFeatureType > const * const segment2Ptr, 
-		  SegmenterRegionGrowingSegment< rg::MeanFeatureType > const * const ) const
+      SegmenterRegionGrowingSegment< rg::MeanFeatureType > const * const segment2Ptr, 
+      SegmenterRegionGrowingSegment< rg::MeanFeatureType > const * const ) const
     {
       assert( segment1Ptr );
       assert( segment1Ptr->m_features );

@@ -46,30 +46,30 @@ namespace te
     {
       public:
         /*!
-	        \brief Default constructor.
-	        \param bandsWeights A reference to an external valid structure where each bands weight are stored.
-	        \param segmentsIds //!< A reference to an external valid structure where all segments IDs are stored.
-	        \param segmentsMatrix //!< A reference to an external valid segments matrix.
-	        \param colorWeight //!< The weight given to the color component, deafult:0.5, valid range: [0,1].
-	        \param compactnessWeight //!< The weight given to the compactness component, deafult:0.5, valid range: [0,1].
-	      */
+          \brief Default constructor.
+          \param bandsWeights A reference to an external valid structure where each bands weight are stored.
+          \param segmentsIds //!< A reference to an external valid structure where all segments IDs are stored.
+          \param segmentsMatrix //!< A reference to an external valid segments matrix.
+          \param colorWeight //!< The weight given to the color component, deafult:0.5, valid range: [0,1].
+          \param compactnessWeight //!< The weight given to the compactness component, deafult:0.5, valid range: [0,1].
+        */
         SegmenterRegionGrowingBaatzMerger( const double& colorWeight,
-				  const double& compactnessWeight,
-				  const std::vector< double >& bandsWeights,
-				  const SegmentsIdsMatrixT& segmentsIds );
+          const double& compactnessWeight,
+          const std::vector< double >& bandsWeights,
+          const SegmentsIdsMatrixT& segmentsIds );
       
         ~SegmenterRegionGrowingBaatzMerger();
             
         //overload        
         SegmenterRegionGrowingSegment< rg::BaatzFeatureType >::FeatureType
           getDissimilarity( SegmenterRegionGrowingSegment< rg::BaatzFeatureType > const * const segment1Ptr, 
-			    SegmenterRegionGrowingSegment< rg::BaatzFeatureType > const * const segment2Ptr, 
-			    SegmenterRegionGrowingSegment< rg::BaatzFeatureType > * const mergePreviewSegPtr ) const;
+          SegmenterRegionGrowingSegment< rg::BaatzFeatureType > const * const segment2Ptr, 
+          SegmenterRegionGrowingSegment< rg::BaatzFeatureType > * const mergePreviewSegPtr ) const;
               
         //overload                
         void mergeFeatures( SegmenterRegionGrowingSegment< rg::BaatzFeatureType > * const segment1Ptr, 
-			    SegmenterRegionGrowingSegment< rg::BaatzFeatureType > const * const segment2Ptr, 
-			    SegmenterRegionGrowingSegment< rg::BaatzFeatureType > const * const mergePreviewSegPtr ) const;
+          SegmenterRegionGrowingSegment< rg::BaatzFeatureType > const * const segment2Ptr, 
+          SegmenterRegionGrowingSegment< rg::BaatzFeatureType > const * const mergePreviewSegPtr ) const;
               
         //overload
         void update( SegmenterRegionGrowingSegment< rg::BaatzFeatureType >* const actSegsListHeadPtr );

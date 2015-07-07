@@ -63,26 +63,26 @@ namespace te
 
     /*!
     \brief Properties tree for any item, MVC component, using Qt for presentation and editing.
-	  
-	    \ingroup layout
+    
+      \ingroup layout
 
-	    \sa te::layout::OutsideObserver
-	  */
+      \sa te::layout::OutsideObserver
+    */
     class TELAYOUTEXPORT PropertiesOutside : public QWidget, public OutsideObserver
     {
-	    Q_OBJECT //for slots/signals
+      Q_OBJECT //for slots/signals
 
       public:
 
-	      PropertiesOutside(OutsideController* controller, Observable* o, PropertyBrowser* propertyBrowser = 0);
+        PropertiesOutside(OutsideController* controller, Observable* o, PropertyBrowser* propertyBrowser = 0);
 
-	      virtual ~PropertiesOutside();
+        virtual ~PropertiesOutside();
 
-	      virtual void updateObserver(ContextItem context);
+        virtual void updateObserver(ContextItem context);
 
-	      virtual void setPosition(const double& x, const double& y);
+        virtual void setPosition(const double& x, const double& y);
 
-	      virtual te::gm::Coord2D getPosition();
+        virtual te::gm::Coord2D getPosition();
 
         virtual void itemsSelected(QList<QGraphicsItem*> graphicsItems, QList<QGraphicsItem*> allItems);
 
@@ -100,7 +100,7 @@ namespace te
 
       protected:
 
-        virtual void	closeEvent ( QCloseEvent * event );
+        virtual void  closeEvent ( QCloseEvent * event );
 
         virtual void createLayout();
 

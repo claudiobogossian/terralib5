@@ -50,7 +50,8 @@ te::qt::widgets::MapDisplay::MapDisplay(const QSize& size, QWidget* parent, Qt::
     m_resizePolicy(te::qt::widgets::MapDisplay::Fixed),
     m_timer(new QTimer(this)),
     m_interval(200),
-    m_isDrawing(false)
+    m_isDrawing(false),
+    m_scale(0)
 {
   m_timer->setSingleShot(true);
   connect(m_timer, SIGNAL(timeout()), this, SLOT(onResizeTimeout()));
@@ -413,4 +414,43 @@ void te::qt::widgets::MapDisplay::adjustExtent(const QSize& oldSize, const QSize
   }
 
   setExtent(e);
+}
+double te::qt::widgets::MapDisplay::getScale() {
+
+  double wPixels = this->getWidth();
+  double hPixels = this->getHeight();
+  double wMM = this->getWidthMM();
+  double hMM = this->getHeightMM();
+
+  te::gm::Envelope envelope = this->getExtent();
+  double wdx = envelope.getUpperRightX() - envelope.getLowerLeftX();
+  double wdy = envelope.getLowerLeftY() - envelope.getUpperRightY();
+
+  double dx = wPixels / wdx, dy = hPixels / wdy, f = (dx > dy) ? dx : dy;
+
+  double wT = wMM;
+
+  te::common::UnitOfMeasurePtr unitPtr =
+      te::srs::SpatialReferenceSystemManager::getInstance().getUnit(m_srid);
+
+  if (unitPtr != NULL) {
+    std::string unit = unitPtr->getName();
+    if (unit == "METRE")
+      wT = wMM / 1000.;
+    else if (unit == "KILOMETRE")
+      wT = wMM / 1000000.;
+    else if (unit == "FOOT")
+      wT = wMM / (12. * 25.4);
+    else if (unit == "DEGREE")
+      wT = wMM / 110000000.;
+
+    double wp = wT / wPixels;
+    m_scale = (1. / f) / wp;
+  }
+
+  return m_scale;
+}
+double te::qt::widgets::MapDisplay::setScale(const double& scale)
+{
+
 }
