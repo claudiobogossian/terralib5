@@ -244,13 +244,6 @@ namespace te
         virtual EnumType* getModeExit() const;
 
         /*!
-          \brief Returns value that represents scene zoom mode type belonging to enumeration.
-		  
-		      \return enum value  	  
-        */
-        virtual EnumType* getModeSceneZoom() const;
-
-        /*!
           \brief Returns value that represents bring to front mode type belonging to enumeration.
 		  
 		      \return enum value  	  
@@ -291,6 +284,13 @@ namespace te
 		      \return enum value  	  
         */
         virtual EnumType* getModeSystematicScale() const;
+
+        /*!
+          \brief Returns value that represents svgview mode type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
+        virtual EnumType* getModeSVGView() const;
 
         /*!
           \brief Returns value that represents create point mode type belonging to enumeration.
@@ -544,12 +544,12 @@ namespace te
         */
         virtual EnumType* getModeCreateMapLocation() const;
 
-				/*!
+        /*!
           \brief Returns value that represents create map location mode type belonging to enumeration.
 		  
 		      \return enum value  	  
         */
-        virtual EnumType* getModeCreateStar() const;
+        virtual EnumType* getModeCreateSVG() const;
 
       protected:
 
@@ -586,13 +586,13 @@ namespace te
         EnumType* m_modeOffLinesIntersectionMouse; //!< value that represents off lines intersection mouse mode type belonging to enumeration
         EnumType* m_modePrinter; //!< value that represents printer mode type belonging to enumeration
         EnumType* m_modeExit; //!< value that represents exit mode type belonging to enumeration
-        EnumType* m_modeSceneZoom; //!< value that represents scene zoom mode type belonging to enumeration
         EnumType* m_modeBringToFront; //!< value that represents bring to front mode type belonging to enumeration
         EnumType* m_modeSendToBack; //!< value that represents send to back mode type belonging to enumeration
         EnumType* m_modeRecompose; //!< value that represents recompose mode type belonging to enumeration
         EnumType* m_modeCreateImage; //!< value that represents create image mode type belonging to enumeration
         EnumType* m_modePageConfig; //!< value that represents page configuration mode type belonging to enumeration
         EnumType* m_modeSystematicScale; //!< value that represents systematic scale mode type belonging to enumeration
+        EnumType* m_modeSVGView; //!< value that represents svgview mode type belonging to enumeration
         EnumType* m_modeCreatePoint; //!< value that represents create point mode type belonging to enumeration
         EnumType* m_modeCreateArrow; //!< value that represents create arrow mode type belonging to enumeration
         EnumType* m_modeCreateEllipse; //!< value that represents create ellipse mode type belonging to enumeration
@@ -629,7 +629,7 @@ namespace te
         EnumType* m_modeCreateGridGeodesic; //!< value that represents create grid geodesic mode type belonging to enumeration
         EnumType* m_modeCreateNorth; //!< value that represents create north mode type belonging to enumeration
         EnumType* m_modeCreateMapLocation; //!< value that represents create map location mode type belonging to enumeration
-				EnumType* m_modeCreateStar; //!< value that represents create star type belonging to enumeration
+        EnumType* m_modeCreateSVG; //!< value that represents create SVG type belonging to enumeration
     };
   }
 }

@@ -41,7 +41,6 @@
 #include <QWidget>
 
 class QtProperty;
-
 class QGraphicsItem;
 
 namespace te

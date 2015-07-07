@@ -104,32 +104,32 @@ namespace te
         virtual void setBox(te::gm::Envelope box);
 
         /*!
-          \brief Change the background color of the MVC component.
-
-          \param color background color
-         */
-        virtual void setBackgroundColor(te::color::RGBAColor color);
-
-        /*!
           \brief Returns the background color of the MVC component.
 
           \return background color
          */
-        virtual te::color::RGBAColor getBackgroundColor();
+        virtual const te::color::RGBAColor& getBackgroundColor() const;
 
         /*!
           \brief Change the background color of the MVC component.
 
-          \param color border color
+          \param color background color
          */
-        virtual void setBorderColor(te::color::RGBAColor color);
+        virtual void setBackgroundColor(const te::color::RGBAColor& color);
 
         /*!
-          \brief Returns the border color of the MVC component.
+          \brief Returns the frame color of the MVC component.
 
           \return border color
          */
-        virtual te::color::RGBAColor getBorderColor();
+        virtual const te::color::RGBAColor& getFrameColor() const;
+
+        /*!
+          \brief Change the frame color of the MVC component.
+
+          \param color frame color
+         */
+        virtual void setFrameColor(const te::color::RGBAColor& color);
 
         /*!
           \brief Change the name of the MVC component.
@@ -317,7 +317,7 @@ namespace te
         te::gm::Envelope					 m_box; //!< bounding rectangle 
         te::gm::Coord2D			       m_centerCoordinate; //!< center coordinate of the bounding rectangle
         te::color::RGBAColor			 m_backgroundColor; //!< background color
-        te::color::RGBAColor			 m_borderColor; //!< border color
+        te::color::RGBAColor			 m_frameColor; //!< the colorof the frame of the item
         Properties*                m_properties; //!< properties
         std::set<ItemObserver*>    m_children; //!< children components
         Properties*                m_publicProperties; //!< public properties

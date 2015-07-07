@@ -36,8 +36,8 @@
 #include "../../../common/STLUtils.h"
 #include "../../item/PaperModel.h"
 
-te::layout::PaperItem::PaperItem( ItemController* controller, Observable* o ) :
-  ObjectItem(controller, o)
+te::layout::PaperItem::PaperItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
+  ObjectItem(controller, o, invertedMatrix)
 {  
 
   this->setFlags(QGraphicsItem::ItemSendsGeometryChanges);
@@ -52,29 +52,7 @@ te::layout::PaperItem::~PaperItem()
 
 }
 
-void te::layout::PaperItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
-{
-  Q_UNUSED( option );
-  Q_UNUSED( widget );
-  if ( !painter )
-  {
-    return;
-  }
-
-  drawBackground( painter );
-
-  drawPaper(painter);
-
-  drawBorder(painter);
-
-  //Draw Selection
-  if (option->state & QStyle::State_Selected)
-  {
-    drawSelection(painter);
-  }
-}
-
-void te::layout::PaperItem::drawPaper( QPainter * painter )
+void te::layout::PaperItem::drawItem( QPainter * painter )
 {
   PaperModel* model = dynamic_cast<PaperModel*>(m_model);
   if(!model)
@@ -101,7 +79,7 @@ void te::layout::PaperItem::drawPaper( QPainter * painter )
   cShadow.setBlue(clrShadow.getBlue());
   cShadow.setAlpha(clrShadow.getAlpha());
 
-  te::color::RGBAColor clrBorder = model->getBorderColor();
+  te::color::RGBAColor clrBorder = model->getFrameColor();
   QColor cBorder;
   cBorder.setRed(clrBorder.getRed());
   cBorder.setGreen(clrBorder.getGreen());
@@ -132,5 +110,5 @@ void te::layout::PaperItem::drawPaper( QPainter * painter )
   QRectF boxPaper = QRectF(boundRect.x(), boundRect.y() + shadowPadding, boundRect.width() - shadowPadding, boundRect.height() - shadowPadding);
   painter->drawRect(boxPaper);
 
-  painter->restore();  
+  painter->restore();
 }

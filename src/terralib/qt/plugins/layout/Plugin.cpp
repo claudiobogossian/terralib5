@@ -119,7 +119,7 @@ void te::qt::plugins::layout::Plugin::startup()
 #endif
   m_initialized = true;
 
-  te::qt::af::AddActionToCustomToolbars(m_layout->getAction());
+  //te::qt::af::AddActionToCustomToolbars(m_layout->getAction());
 }
 
 void te::qt::plugins::layout::Plugin::shutdown()

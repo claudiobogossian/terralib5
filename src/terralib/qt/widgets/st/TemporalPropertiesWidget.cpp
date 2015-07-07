@@ -120,7 +120,7 @@ std::string te::qt::widgets::TemporalPropertiesWidget::getUserOrdinalType()
 
 int te::qt::widgets::TemporalPropertiesWidget::getDateFormat()
 {
-	return m_ui->m_formatComboBox->itemData(m_ui->m_formatComboBox->currentIndex()).toInt();
+  return m_ui->m_formatComboBox->itemData(m_ui->m_formatComboBox->currentIndex()).toInt();
 }
 
 void te::qt::widgets::TemporalPropertiesWidget::onTypeCBCurrentIndexChanged(int index)

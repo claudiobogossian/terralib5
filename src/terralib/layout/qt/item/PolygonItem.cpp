@@ -42,8 +42,8 @@
 #include <QStyleOptionGraphicsItem>
 #include <QObject>
 
-te::layout::PolygonItem::PolygonItem( ItemController* controller, Observable* o ) :
-  LineItem(controller, o)
+te::layout::PolygonItem::PolygonItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
+  LineItem(controller, o, invertedMatrix)
 { 
   m_nameClass = std::string(this->metaObject()->className());
 }
@@ -53,31 +53,9 @@ te::layout::PolygonItem::~PolygonItem()
 
 }
 
-void te::layout::PolygonItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
+void te::layout::PolygonItem::drawItem( QPainter * painter )
 {
-  Q_UNUSED( option );
-  Q_UNUSED( widget );
-  if ( !painter )
-  {
-    return;
-  }
-
-  drawBackground(painter);
-
-  drawPolygon(painter);
-
-  drawBorder(painter);
-
-  //Draw Selection
-  if (option->state & QStyle::State_Selected)
-  {
-    drawSelection(painter);
-  }
-}
-
-void te::layout::PolygonItem::drawPolygon( QPainter * painter )
-{
-  LineModel* model = dynamic_cast<LineModel*>(m_model);
+  PolygonModel* model = dynamic_cast<PolygonModel*>(m_model);
   if(!model)
   {
     return;
@@ -86,19 +64,22 @@ void te::layout::PolygonItem::drawPolygon( QPainter * painter )
   if(m_poly.empty())
     return;
 
-  te::color::RGBAColor clrLne = model->getLineColor();
+  const te::color::RGBAColor& fillColor = model->getFillColor();
+  const te::color::RGBAColor& color = model->getColor();
 
-  QColor cpen;
-  cpen.setRed(clrLne.getRed());
-  cpen.setGreen(clrLne.getGreen());
-  cpen.setBlue(clrLne.getBlue());
-  cpen.setAlpha(clrLne.getAlpha());
+  QColor qFillColor(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), fillColor.getAlpha());
+  QColor qColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
 
-  QPen pn(cpen, 0, Qt::SolidLine);
-  painter->setPen(pn);
+  QBrush brush(qFillColor);
+  QPen pen(qColor, 0, Qt::SolidLine);
 
   painter->save();
+
+  painter->setPen(pen);
+  painter->setBrush(brush);
+
+  //draws the item
   painter->drawPolygon(m_poly);
+
   painter->restore();
 }
-

@@ -105,9 +105,9 @@
 #include "../../item/MapLocationModel.h"
 #include "../../item/MapLocationController.h"
 #include "../item/MapLocationItem.h"
-#include "../../item/StarModel.h"
-#include "../../item/StarController.h"
-#include "../item/StarItem.h"
+#include "../../item/SVGModel.h"
+#include "../../item/SVGController.h"
+#include "../item/SVGItem.h"
 
 
 // Qt
@@ -223,9 +223,9 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createItem( te::layout::EnumType* 
   {
     item = createItem(enumObj->getPolygonItem(), draw);
   }
-  else if (mode == enumMode->getModeCreateStar()) 
+  else if (mode == enumMode->getModeCreateSVG()) 
   {
-	  item = createItem(enumObj->getStarItem(), draw);
+    item = createItem(enumObj->getSVGItem(), draw);
   }
   else if (mode == enumMode->getModeCreateBalloon()) 
   {
@@ -333,9 +333,9 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createItem( te::layout::EnumType* 
   {
     item = createPolygon();
   }
-  else if(type == enumObj->getStarItem())
+  else if(type == enumObj->getSVGItem())
   {
-	  item = createStar();
+    item = createSVG();
   }
   else if(type == enumObj->getBalloonItem())
   {
@@ -495,10 +495,20 @@ void te::layout::BuildGraphicsItem::afterBuild( QGraphicsItem* item, bool draw )
   bool result = addChild(item, m_coord.x, m_coord.y);  
   if(!result)
   {
-    item->setPos(QPointF(m_coord.x, m_coord.y));
+    double width = item->boundingRect().width();
+    double height = item->boundingRect().height();
+
+    QPointF pointInSceneCS(m_coord.x, m_coord.y);
+    QPointF pointInItemCS = item->mapFromScene(pointInSceneCS);
+    pointInItemCS.setX(pointInItemCS.x() - (width /2.));
+    pointInItemCS.setY(pointInItemCS.y() - (height / 2.));
+    pointInSceneCS = item->mapToScene(pointInItemCS);
+
+    item->setPos(pointInSceneCS);
   }
   
   if(m_props)
+
   {
     item->setZValue(m_zValue);
   }
@@ -1086,35 +1096,32 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createMapLocation()
   return view;
 }
 
-QGraphicsItem* te::layout::BuildGraphicsItem::createStar()
+QGraphicsItem* te::layout::BuildGraphicsItem::createSVG()
 {
-	StarModel* model = new StarModel;
-	if(m_props)
-	{
-		model->updateProperties(m_props);
-	}
-	else
-	{
-		model->setId(m_id);
+  SVGModel* model = new SVGModel;
+  if(m_props)
+  {
+    model->updateProperties(m_props);
+  }
+  else
+  {
+    model->setId(m_id);
 
-		EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
-		std::string name = nameItem(enumObj->getStarItem());
-		model->setName(name);
-	}
+    EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
+    std::string name = nameItem(enumObj->getSVGItem());
+    model->setName(name);
+  }
 
-	StarController* controller = new StarController(model);
-	ItemObserver* itemObs = (ItemObserver*)controller->getView();
+  SVGController* controller = new SVGController(model);
+  ItemObserver* itemObs = (ItemObserver*)controller->getView();
 
-	StarItem* view = dynamic_cast<StarItem*>(itemObs);
-	if(m_props && view)
-	{
-		model->updateProperties(m_props);
-	}
-	return view;
+  SVGItem* view = dynamic_cast<SVGItem*>(itemObs);
+  if (m_props && view)
+  {
+    model->updateProperties(m_props);
+  }
+  return view;
 }
-
-
-
 
 
 

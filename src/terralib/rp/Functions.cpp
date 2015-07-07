@@ -2475,7 +2475,6 @@ namespace te
           int filterCol = 0;
           int filterRow = 0; 
           double valueOriginal = 0.0;
-          double valuePrev = 0.0;
           double valueNew = 0.0;          
 
           for (convolutionCenterRow = 0; convolutionCenterRow < nLines; convolutionCenterRow++)

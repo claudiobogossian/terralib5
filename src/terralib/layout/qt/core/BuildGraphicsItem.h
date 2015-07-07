@@ -259,13 +259,12 @@ namespace te
         */
         QGraphicsItem* createPolygon();
 
-		       /*!
-          \brief Create graphic object of type StarItem
+        /*!
+          \brief Create graphic object of type SVGItem
 		  		  
 		      \return new object 
         */
-        QGraphicsItem* createStar();
-
+        QGraphicsItem* createSVG();
        /*!
           \brief Create graphic object of type Balloon
 		  		  

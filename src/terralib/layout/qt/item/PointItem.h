@@ -44,11 +44,11 @@ namespace te
     \brief Class that represents a graphic Point. 
         Its coordinate system is the same of scene (millimeters). 
         He is also the son of ItemObserver and ObjectItem, so it can become observer of a model (Observable). 
-	  
-	    \ingroup layout
+    
+      \ingroup layout
 
-	    \sa te::layout::ObjectItem
-	  */
+      \sa te::layout::ObjectItem
+    */
     class TELAYOUTEXPORT PointItem : public ObjectItem
     {
       public:
@@ -59,21 +59,24 @@ namespace te
           \param controller "Controller" part of MVC component
           \param o "Model" part of MVC component
         */ 
-        PointItem( ItemController* controller, Observable* o );
+        PointItem( ItemController* controller, Observable* o, bool invertedMatrix = false );
 
         /*!
           \brief Destructor
          */
         virtual ~PointItem();
-        
-        /*!
-          \brief Reimplemented from QGraphicsItem
-         */
-        virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
 
       protected:
 
-        virtual void drawStar(QPainter * painter);
+        virtual void drawStar1(QPainter * painter);
+
+        virtual void drawStar2(QPainter * painter);
+
+        virtual void drawStar3(QPainter * painter);
+
+        virtual void drawStar4(QPainter * painter);
+
+        virtual void drawItem ( QPainter * painter );
 
         virtual void drawCircle(QPainter * painter);
 

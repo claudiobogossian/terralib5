@@ -56,7 +56,9 @@ else()
   add_definitions(${QT_DEFINITIONS})
 
   # moc'ing
-  set(TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/edit/ToolBar.h)
+  set(TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/edit/Plugin.h
+								 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/edit/ToolBar.h
+								 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/edit/ApplicationListener.h)
 
   QT4_WRAP_CPP(TERRALIB_GEN_SRC_FILES ${TERRALIB_HDRS_TO_MOC_FILES})
 

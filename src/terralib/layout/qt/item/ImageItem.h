@@ -62,26 +62,25 @@ namespace te
           \param controller "Controller" part of MVC component
           \param o "Model" part of MVC component
         */ 
-        ImageItem( ItemController* controller, Observable* o );
+        ImageItem( ItemController* controller, Observable* o, bool invertedMatrix = false );
 
         /*!
           \brief Destructor
          */
         virtual ~ImageItem();
-        
+
         /*!
-          \brief Reimplemented from QGraphicsItem
+          \brief Reimplemented from ItemObserver
          */
-        virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
+        virtual void updateObserver(ContextItem context);
 
       protected:
-      
-        /*!
-          \brief Drawing method of a ellipse
 
-          \param 
-         */
-        virtual void drawImage(QPainter * painter);
+        virtual void drawItem ( QPainter * painter );
+
+      protected:
+
+        QImage  m_image; //!< Represents the loaded image
     };
   }
 }

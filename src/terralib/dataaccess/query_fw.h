@@ -59,6 +59,7 @@ namespace te
     class GroupByItem;
     class Having;
     class In;
+    class Insert;
     class IsNull;
     class Join;
     class JoinCondition;
@@ -109,6 +110,7 @@ namespace te
     class ST_Equals;
     class ST_Intersection;
     class ST_Intersects;
+    class ST_IsValid;
     class ST_Length;
     class ST_NumGeometries;
     class ST_Overlaps;

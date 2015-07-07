@@ -219,6 +219,8 @@ bool te::layout::ObjectInspectorOutside::hasMoveItemGroup( QList<QGraphicsItem*>
     if (item)
     {
       ItemObserver* movingItem = dynamic_cast<ItemObserver*>(item);
+      if(!movingItem)
+        continue;
 
       if(movingItem->getModel()->getType() == enumObj->getMovingItemGroup())
       {

@@ -42,14 +42,11 @@ namespace te
     {
     public:
 
-      BalloonItem( ItemController* controller, Observable* o );
+      BalloonItem( ItemController* controller, Observable* o, bool invertedMatrix = false );
 
       virtual ~BalloonItem();
 
-      /*!
-        \brief Reimplemented from QGraphicsItem
-      */
-      virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
+      virtual void drawItem ( QPainter * painter );
     };
   }
 }

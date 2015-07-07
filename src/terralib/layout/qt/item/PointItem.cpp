@@ -39,15 +39,17 @@
 
 // STL
 #include <cmath>
+#include "qmath.h"
 
 // Qt
 #include <QColor>
 #include <QPen>
 #include <QPolygonF>
 #include <QPainterPath>
+#include "ParentItem.h"
 
-te::layout::PointItem::PointItem( ItemController* controller, Observable* o ) :
-  ObjectItem(controller, o)
+te::layout::PointItem::PointItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
+  ObjectItem(controller, o, invertedMatrix)
 {
   m_nameClass = std::string(this->metaObject()->className());
 }
@@ -57,33 +59,34 @@ te::layout::PointItem::~PointItem()
 
 }
 
-void te::layout::PointItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
+void te::layout::PointItem::drawItem( QPainter * painter )
 {
-  Q_UNUSED( option );
-  Q_UNUSED( widget );
-  if ( !painter )
-  {
-    return;
-  }
-
-  if(m_resizeMode)
-  {
-    ObjectItem::paint(painter, option, widget);
-    return;
-  }
-
-  drawBackground(painter);
-
   PointModel* model = dynamic_cast<PointModel*>(m_model);
 
   if(model)
   {
     EnumPointType* enumScale = model->getEnumPointType();
 
-    if(model->getCurrentPointType() == enumScale->getStarType())
+    if(model->getCurrentPointType() == enumScale->getStar1Type())
     {
-      drawStar(painter);
+      drawStar1(painter);
     }
+
+    if(model->getCurrentPointType() == enumScale->getStar2Type())
+    {
+      drawStar2(painter);
+    }
+
+    if(model->getCurrentPointType() == enumScale->getStar3Type())
+    {
+      drawStar3(painter);
+    }
+
+    if(model->getCurrentPointType() == enumScale->getStar4Type())
+    {
+      drawStar4(painter);
+    }
+
     if(model->getCurrentPointType() == enumScale->getCircleType())
     {
       drawCircle(painter);
@@ -105,17 +108,9 @@ void te::layout::PointItem::paint( QPainter * painter, const QStyleOptionGraphic
       drawCross(painter);
     }
   }
-
-  drawBorder(painter);
-
-  //Draw Selection
-  if (option->state & QStyle::State_Selected)
-  {
-    drawSelection(painter);
-  }
 }
 
-void te::layout::PointItem::drawStar( QPainter * painter )
+void te::layout::PointItem::drawStar1( QPainter * painter )
 {
   PointModel* model = dynamic_cast<PointModel*>(m_model);
   if(!model)
@@ -165,6 +160,126 @@ void te::layout::PointItem::drawStar( QPainter * painter )
 
   painter->restore();
 }
+
+void te::layout::PointItem::drawStar2(QPainter * painter)
+{
+  PointModel* model = dynamic_cast<PointModel*>(m_model);
+  if(!model)
+  {
+    return;
+  }
+
+  painter->save();
+
+  double halfW = boundingRect().width() / 4.;
+  double w = boundingRect().width() / 2.;
+  QPolygonF star;
+  qreal const c = halfW;
+  qreal const d = w;
+  bool inner = true;
+  QPointF center;
+  for ( qreal i = 0 ; i < 2*M_PI; i += M_PI/6.0, inner=!inner ) {
+    qreal const f = inner ? c : d;
+    star << QPointF( f * std::cos(i), f * std::sin(i) );
+    if(i == 0)
+    {
+      center = QPointF( f * std::cos(i), f * std::sin(i) );
+    }
+  }
+  star << center;
+  star.translate(boundingRect().center());
+
+  te::color::RGBAColor clrPoint = model->getPointColor();
+
+  QColor pointColor;
+  pointColor.setRed(clrPoint.getRed());
+  pointColor.setGreen(clrPoint.getGreen());
+  pointColor.setBlue(clrPoint.getBlue());
+  pointColor.setAlpha(clrPoint.getAlpha());
+
+  QPen pn(pointColor, 0, Qt::SolidLine);
+  painter->setPen(pn);
+  painter->setBrush(pointColor);
+  painter->drawPolygon(star);
+  painter->restore();
+}
+
+void te::layout::PointItem::drawStar3(QPainter * painter)
+{
+  PointModel* model = dynamic_cast<PointModel*>(m_model);
+	if(!model)
+	{
+		return;
+	}
+
+	painter->save();
+
+	QPolygonF star;
+	double halfW = boundingRect().width() / 4.;
+	double w = boundingRect().width() / 2.;
+	qreal const c = halfW;
+	qreal const d = w;
+	bool inner = true;
+	for ( qreal i=0; i<2*M_PI; i+=M_PI/7.0, inner=!inner ) {
+		qreal const f = inner ? c : d;
+		star << QPointF( f * cos(i), f * sin(i) );
+	}
+	star.translate(boundingRect().center());
+
+	te::color::RGBAColor clrPoint = model->getPointColor();
+
+	QColor pointColor;
+	pointColor.setRed(clrPoint.getRed());
+	pointColor.setGreen(clrPoint.getGreen());
+	pointColor.setBlue(clrPoint.getBlue());
+	pointColor.setAlpha(clrPoint.getAlpha());
+
+	QPen pn(pointColor, 0, Qt::SolidLine);
+	painter->setPen(pn);
+
+	painter->setBrush(pointColor);
+	painter->drawPolygon(star);
+	painter->restore();
+}
+
+void te::layout::PointItem::drawStar4(QPainter * painter)
+{
+	PointModel* model = dynamic_cast<PointModel*>(m_model);
+	if(!model)
+	{
+		return;
+	}
+
+	painter->save();
+
+	QPolygonF star;
+	double halfW = boundingRect().width() / 4.;
+	double w = boundingRect().width() / 2.;
+	qreal const c = halfW;
+	qreal const d = w;
+	bool inner = true;
+	for ( qreal i=0; i<2*M_PI; i+=M_PI/8.0, inner=!inner ) {
+		qreal const f = inner ? c : d;
+		star << QPointF( f * cos(i), f * sin(i) );
+	}
+	star.translate(boundingRect().center());
+
+	te::color::RGBAColor clrPoint = model->getPointColor();
+
+	QColor pointColor;
+	pointColor.setRed(clrPoint.getRed());
+	pointColor.setGreen(clrPoint.getGreen());
+	pointColor.setBlue(clrPoint.getBlue());
+	pointColor.setAlpha(clrPoint.getAlpha());
+
+	QPen pn(pointColor, 0, Qt::SolidLine);
+	painter->setPen(pn);
+
+	painter->setBrush(pointColor);
+	painter->drawPolygon(star);
+	painter->restore();
+}
+
 
 void te::layout::PointItem::drawCircle( QPainter * painter )
 {
@@ -368,5 +483,6 @@ void te::layout::PointItem::drawCross( QPainter * painter )
   painter->drawPath(painterCross);
   painter->restore();
 }
+
 
 

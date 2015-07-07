@@ -65,7 +65,7 @@ te::layout::ItemModelObservable::ItemModelObservable() :
 
   m_backgroundColor = te::color::RGBAColor(255, 255, 255, 0);
 
-  m_borderColor = te::color::RGBAColor(0, 0, 0, 255);
+  m_frameColor = te::color::RGBAColor(0, 0, 0, 255);
   
   m_sharedProps = new SharedProperties;
 
@@ -157,14 +157,14 @@ te::layout::Properties* te::layout::ItemModelObservable::getProperties() const
   m_properties->addProperty(pro_angle);
 
   Property pro_backgroundcolor(m_hashCode);
-  pro_backgroundcolor.setName(m_sharedProps->getBackgroundcolor());
+  pro_backgroundcolor.setName(m_sharedProps->getBackgroundColor());
   pro_backgroundcolor.setValue(m_backgroundColor, dataType->getDataTypeColor());
   pro_backgroundcolor.setMenu(true);
   m_properties->addProperty(pro_backgroundcolor);
 
   Property pro_bordercolor(m_hashCode);
-  pro_bordercolor.setName(m_sharedProps->getBordercolor());
-  pro_bordercolor.setValue(m_borderColor, dataType->getDataTypeColor());
+  pro_bordercolor.setName(m_sharedProps->getFrameColor());
+  pro_bordercolor.setValue(m_frameColor, dataType->getDataTypeColor());
   pro_bordercolor.setMenu(true);
   m_properties->addProperty(pro_bordercolor);
   
@@ -229,24 +229,24 @@ void te::layout::ItemModelObservable::setBox(te::gm::Envelope box)
   m_box = box;
 }
 
-te::color::RGBAColor te::layout::ItemModelObservable::getBackgroundColor()
+const te::color::RGBAColor& te::layout::ItemModelObservable::getBackgroundColor() const
 {
   return m_backgroundColor;
 }
 
-void te::layout::ItemModelObservable::setBackgroundColor( te::color::RGBAColor color )
+void te::layout::ItemModelObservable::setBackgroundColor( const te::color::RGBAColor& color )
 {
   m_backgroundColor = color;
 }
 
-void te::layout::ItemModelObservable::setBorderColor( te::color::RGBAColor color )
+const te::color::RGBAColor& te::layout::ItemModelObservable::getFrameColor() const
 {
-  m_borderColor = color;
+  return m_frameColor;
 }
 
-te::color::RGBAColor te::layout::ItemModelObservable::getBorderColor()
+void te::layout::ItemModelObservable::setFrameColor( const te::color::RGBAColor& color )
 {
-  return m_borderColor;
+  m_frameColor = color;
 }
 
 void te::layout::ItemModelObservable::setName( std::string name )
@@ -318,16 +318,16 @@ void te::layout::ItemModelObservable::updateProperties( te::layout::Properties* 
     m_angle = pro_angle.getValue().toDouble();
   }
 
-  Property pro_backgroundcolor = vectorProps->contains(m_sharedProps->getBackgroundcolor());
+  Property pro_backgroundcolor = vectorProps->contains(m_sharedProps->getBackgroundColor());
   if(!pro_backgroundcolor.isNull())
   {
     m_backgroundColor = pro_backgroundcolor.getValue().toColor();
   }
 
-  Property pro_bordercolor = vectorProps->contains(m_sharedProps->getBordercolor());
+  Property pro_bordercolor = vectorProps->contains(m_sharedProps->getFrameColor());
   if(!pro_bordercolor.isNull())
   {
-    m_borderColor = pro_bordercolor.getValue().toColor();
+    m_frameColor = pro_bordercolor.getValue().toColor();
   }
 
   /* Box */
@@ -370,7 +370,7 @@ void te::layout::ItemModelObservable::updateProperties( te::layout::Properties* 
     m_border = pro_border.getValue().toBool();
   }
 
-	updateChildrenProperties(properties);
+  updateChildrenProperties(properties);
 
   if(notify)
   {
@@ -452,7 +452,7 @@ void te::layout::ItemModelObservable::drawBackground( ContextItem context )
   if(m_border)
   {
     canvas->setPolygonContourWidth(1);
-    canvas->setPolygonContourColor(m_borderColor);
+    canvas->setPolygonContourColor(m_frameColor);
   }
   else
   {
@@ -704,16 +704,16 @@ void te::layout::ItemModelObservable::updateChildrenProperties( Property prop )
 
 void te::layout::ItemModelObservable::updateChildrenProperties( Properties* properties )
 {
-	std::set<ItemObserver*>::iterator it = m_children.begin();
+  std::set<ItemObserver*>::iterator it = m_children.begin();
 
-	for( ; it != m_children.end(); ++it)
-	{
-		ItemObserver* item = (*it);
-		if(!item)
-			continue;
+  for( ; it != m_children.end(); ++it)
+  {
+    ItemObserver* item = (*it);
+    if(!item)
+      continue;
 
-		item->getModel()->updateProperties(properties);
-	}
+    item->getModel()->updateProperties(properties);
+  }
 }
 
 

@@ -104,7 +104,7 @@ namespace te
           /*!            
             \brief It sets the  histogram bar's stroke
 
-            \param newFill The new stroke.
+            \param newStroke The new stroke.
             \note It will take ownership of the given pointer
           */
           void setStroke(te::se::Stroke* newStroke);

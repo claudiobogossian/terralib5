@@ -179,12 +179,14 @@ te::gm::Envelope te::layout::Utils::viewportBoxFromMM( te::gm::Envelope box )
 {
   te::map::WorldDeviceTransformer transf; // World Device Transformer.
 
-  double zoomFactor = 1.;
+  int zoom = 100;
   if(m_applyZoom)
   {
-    zoomFactor = Context::getInstance().getZoomFactor();
+    zoom = Context::getInstance().getZoom();
   }
-  
+
+  double zoomFactor = (double)zoom / 100.;
+
   int pxwidth = mm2pixel(box.getWidth() * zoomFactor);
   int pxheight = mm2pixel(box.getHeight() * zoomFactor);
     
@@ -396,8 +398,8 @@ std::string te::layout::Utils::proj4DescToPlanar( int zone )
   std::string proj4 = "+proj=utm";
   proj4+= " +zone="+ szone.str();
   proj4+= " +south"; // pode ser +noth?
-  proj4+= " +ellps=intl";
-  proj4+= " +towgs84=-206,172,-6,0,0,0,0";
+  proj4+= " +ellps=aust_SA";
+  proj4+= " +towgs84=-57,1,-41,0,0,0,0";
   proj4+= " +units=m"; 
   proj4+= " +no_defs ";
   

@@ -227,7 +227,7 @@ namespace te
 
       std::string getActionPolygon();
 
-	  std::string getActionStar(); 
+      std::string getActionSVG();
 
       /* View Area */
 
@@ -308,7 +308,9 @@ namespace te
 
       virtual void onLineIntersectionMouse(bool checked);
 
-      virtual void onSceneZoomCurrentIndexChanged(int index);
+      virtual void onComboZoomActivated();
+
+      virtual void onZoomChanged(int factor);
 
       virtual void onBringToFrontClicked(bool checked);
 
@@ -344,10 +346,8 @@ namespace te
 
       void changeContext(bool change);
 
-    protected slots:
+      void zoomChangedInComboBox(int zoomFactor);
 
-      virtual void onChangeZoom(double factor);
-      
     protected:
 
       virtual QToolButton* createMapToolButton();
@@ -436,7 +436,7 @@ namespace te
       std::string m_actionArrow;
       std::string m_actionLine; 
       std::string m_actionPolygon;
-	    std::string m_actionStar;
+      std::string m_actionSVG;
 
       /* View Area */
       std::string m_actionViewPan;

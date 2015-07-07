@@ -117,7 +117,6 @@ void te::layout::GridMapModel::init()
 
   m_type = Enums::getInstance().getEnumObjectType()->getGridMapItem();
 
-  m_borderColor = te::color::RGBAColor(0, 0, 0, 255);
   m_box = te::gm::Envelope(0., 0., 20., 20.);
   m_border = false;
 
@@ -296,7 +295,7 @@ te::layout::Properties* te::layout::GridMapModel::getProperties() const
   Property pro_gridStyle(m_hashCode);
   pro_gridStyle.setName(m_settingsConfig->getStyle());
   pro_gridStyle.setComposeWidget(true);
-  pro_gridStyle.setValue(m_gridStyle->getName(), dataType->getDataTypeString());  
+  pro_gridStyle.setValue(m_gridStyle->getLabel(), dataType->getDataTypeString());  
   m_properties->addProperty(pro_gridStyle);
 
   /* Line */

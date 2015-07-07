@@ -45,8 +45,8 @@
 #include <QStyleOptionGraphicsItem>
 #include <QObject>
 
-te::layout::LineItem::LineItem( ItemController* controller, Observable* o ) :
-  ObjectItem(controller, o)
+te::layout::LineItem::LineItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
+  ObjectItem(controller, o, invertedMatrix)
 {  
   m_nameClass = std::string(this->metaObject()->className());
 }
@@ -81,31 +81,11 @@ void te::layout::LineItem::updateObserver( ContextItem context )
     QPointF mlocal = mapFromScene(pt);
     m_poly.push_back(mlocal);   
   }
+
+  setRect(m_poly.boundingRect());
 }
 
-void te::layout::LineItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
-{
-  Q_UNUSED( option );
-  Q_UNUSED( widget );
-  if ( !painter )
-  {
-    return;
-  }
-
-  drawBackground(painter);
-
-  drawLine(painter);
-
-  drawBorder(painter);
-
-  //Draw Selection
-  if (option->state & QStyle::State_Selected)
-  {
-    drawSelection(painter);
-  }
-}
-
-void te::layout::LineItem::drawLine( QPainter * painter )
+void te::layout::LineItem::drawItem( QPainter * painter )
 {
   LineModel* model = dynamic_cast<LineModel*>(m_model);
   if(!model)
@@ -116,28 +96,25 @@ void te::layout::LineItem::drawLine( QPainter * painter )
   if(m_poly.empty())
     return;
 
-  te::color::RGBAColor clrLne = model->getLineColor();
-
-  QColor cpen;
-  cpen.setRed(clrLne.getRed());
-  cpen.setGreen(clrLne.getGreen());
-  cpen.setBlue(clrLne.getBlue());
-  cpen.setAlpha(clrLne.getAlpha());
-
   QPainterPath path (m_poly[0]);
-
   for(int i = 0; i < m_poly.size() ; ++i)
   {
     path.lineTo(m_poly[i]);
-  } 
+  }
+
+  const te::color::RGBAColor& color = model->getColor();
+  QColor qColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+
+  painter->save();
 
   searchStyle();
 
-  QPen pn(cpen, 0, m_penStyle.style());
+  QPen pn(qColor, 0, m_penStyle.style());
   painter->setPen(pn);
 
-  painter->save();
+  //draws the item
   painter->drawPath(path);
+
   painter->restore();
 }
 

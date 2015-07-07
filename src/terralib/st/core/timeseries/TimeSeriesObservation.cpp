@@ -64,7 +64,8 @@ std::string te::st::TimeSeriesObservation::getString() const
 
 bool te::st::TimeSeriesObservation::operator<(const TimeSeriesObservation& other) const
 {
-  return m_time->operator<(*other.getTime());
+  te::dt::DateTime* dt = other.getTime();
+  return m_time->operator<(*dt);
 }
 
 te::st::TimeSeriesObservation::~TimeSeriesObservation()
