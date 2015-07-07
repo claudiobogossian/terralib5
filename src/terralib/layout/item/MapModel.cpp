@@ -53,7 +53,8 @@ te::layout::MapModel::MapModel() :
   m_mapDisplacementY(0),
   m_systematic(0),
   m_fixedScale(false),
-  m_loadedLayer(false)
+  m_loadedLayer(false),
+  m_mapScale(0)
 {
   m_type = Enums::getInstance().getEnumObjectType()->getMapItem();
 
@@ -116,6 +117,11 @@ te::layout::Properties* te::layout::MapModel::getProperties() const
   pro_mapDisplacementY.setName("map_displacementY");
   pro_mapDisplacementY.setValue(m_mapDisplacementY, dataType->getDataTypeDouble());  
   m_properties->addProperty(pro_mapDisplacementY);
+
+  Property pro_mapScale(m_hashCode);
+  pro_mapScale.setName("map_scale");
+  pro_mapScale.setValue((int)m_mapScale, dataType->getDataTypeInt());
+  m_properties->addProperty(pro_mapScale);
 
   return m_properties;
 }
@@ -198,8 +204,12 @@ void te::layout::MapModel::updateProperties( te::layout::Properties* properties,
     }
     m_mapDisplacementY = pro_mapDisplacementY.getValue().toDouble();
   }
-    
 
+  Property pro_mapScale = vectorProps->contains("map_scale");
+   if(!pro_mapScale.isNull())
+   {
+     m_mapScale = pro_mapScale.getValue().toInt();
+   }
 
   updateVisitors();
 
@@ -237,11 +247,11 @@ double te::layout::MapModel::getScale()
   std::string nameUnit = unitPtr->getName();
   nameUnit = te::common::Convert2UCase(nameUnit);
 
-  double		fx;
-  double		fy;
-  double		wMM;
-  double		factor;
-  double		area;
+  double    fx;
+  double    fy;
+  double    wMM;
+  double    factor;
+  double    area;
 
   wMM = m_box.getWidth();
   fx = m_box.getWidth()/worldBox.getWidth();
@@ -455,11 +465,11 @@ void te::layout::MapModel::generateSystematic( te::gm::Coord2D coord )
 
   setFixedScale(true);
 
-  double			        height = 0.;
-  double			        width = 0.;
-  double			        x = coord.x;
-  double			        y = coord.y;
-  te::gm::Coord2D	    lowerLeft;
+  double              height = 0.;
+  double              width = 0.;
+  double              x = coord.x;
+  double              y = coord.y;
+  te::gm::Coord2D      lowerLeft;
   te::gm::Coord2D     upperRight;
 
   height = m_systematic->getHeight();

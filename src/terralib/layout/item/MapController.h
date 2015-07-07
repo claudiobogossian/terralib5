@@ -43,11 +43,11 @@ namespace te
       \brief Class that represents a "Controller" part of Map MVC component. 
       Its coordinate system is the same of scene (millimeters). 
       This is also the son of ItemController, so it can become a controller.
-      	  
-	    \ingroup layout
+          
+      \ingroup layout
 
       \sa te::layout::ItemController
-	  */
+    */
     class TELAYOUTEXPORT MapController : public ItemController
     {
       public:
@@ -63,6 +63,11 @@ namespace te
           \brief Destructor
         */ 
         virtual ~MapController();
+
+        /*!
+      \brief This method allows to refresh all properties of the selected item.
+    */
+        void refreshAllProperties();
     };
   }
 }
