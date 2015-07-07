@@ -647,7 +647,7 @@ namespace te
               
             // updating the neighboorhood info
             
-            segmentPtr->clearNeighborSegments();
+            segmentPtr->removeAllNeighborSegmentsPtrs();
               
             if( blkLine ) 
             { 
@@ -655,9 +655,9 @@ namespace te
                 
               if( neighborSegmentPtr )
               {
-                segmentPtr->addNeighborSegment( neighborSegmentPtr );
+                segmentPtr->addNeighborSegmentPtr( neighborSegmentPtr );
                                     
-                neighborSegmentPtr->addNeighborSegment( segmentPtr );
+                neighborSegmentPtr->addNeighborSegmentPtr( segmentPtr );
               }
             }
             
@@ -667,9 +667,9 @@ namespace te
                 
               if( neighborSegmentPtr )
               {
-                segmentPtr->addNeighborSegment( neighborSegmentPtr );
+                segmentPtr->addNeighborSegmentPtr( neighborSegmentPtr );
                                     
-                neighborSegmentPtr->addNeighborSegment( segmentPtr );
+                neighborSegmentPtr->addNeighborSegmentPtr( segmentPtr );
               }
             }   
             
