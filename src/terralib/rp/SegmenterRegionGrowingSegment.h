@@ -125,17 +125,17 @@ namespace te
       /*!
         \brief Add a pointer of a neighbor segment (if it is not already there).
       */             
-      void addNeighborSegment( SegmenterRegionGrowingSegment< FeatureDataTypeT > * const nSegPtr );
+      void addNeighborSegmentPtr( SegmenterRegionGrowingSegment< FeatureDataTypeT > * const nSegPtr );
 
       /*!
         \brief Remove all occurrences of a neighbor segment.
       */             
-      void removeNeighborSegment( SegmenterRegionGrowingSegment< FeatureDataTypeT > * const nSegPtr );        
+      void removeNeighborSegmentPtr( SegmenterRegionGrowingSegment< FeatureDataTypeT > * const nSegPtr );        
 
       /*!
         \brief Remove all neighbor segments.
       */             
-      void clearNeighborSegments();    
+      void removeAllNeighborSegmentsPtrs();    
 
       /*!
         \brief Disable this segment ( same as m_mergetIteration = std::numeric_limits< SegmenterRegionGrowingSegment::IterationCounterType>::max() ).
@@ -189,10 +189,10 @@ namespace te
       m_featuresSize = other.m_featuresSize;
 
       return *this;
-    };
+    }
 
     template< typename FeatureDataTypeT >
-    void SegmenterRegionGrowingSegment< FeatureDataTypeT >::addNeighborSegment( 
+    void SegmenterRegionGrowingSegment< FeatureDataTypeT >::addNeighborSegmentPtr( 
       SegmenterRegionGrowingSegment * const nSegPtr )
     {
       if( nSegPtr )
@@ -224,10 +224,10 @@ namespace te
 
         m_neighborSegmentsSize = m_neighborSegmentsSize + 1;
       }
-    };
+    }
 
     template< typename FeatureDataTypeT >
-    void SegmenterRegionGrowingSegment< FeatureDataTypeT >::removeNeighborSegment( 
+    void SegmenterRegionGrowingSegment< FeatureDataTypeT >::removeNeighborSegmentPtr( 
       SegmenterRegionGrowingSegment< FeatureDataTypeT > * const nSegPtr )
     {
       unsigned int numberOfZeroes = 0;
@@ -266,15 +266,15 @@ namespace te
         m_neighborSegments = auxVecPtr;
         m_neighborSegmentsSize = numberOfNonZeroes;
       }
-    };   
+    }  
 
     template< typename FeatureDataTypeT >
-    void SegmenterRegionGrowingSegment< FeatureDataTypeT >::clearNeighborSegments()
+    void SegmenterRegionGrowingSegment< FeatureDataTypeT >::removeAllNeighborSegmentsPtrs()
     {
       free( m_neighborSegments );
       m_neighborSegments = 0;
       m_neighborSegmentsSize = 0;
-    };
+    }
   } // namespace rp
 } // namespace te
 

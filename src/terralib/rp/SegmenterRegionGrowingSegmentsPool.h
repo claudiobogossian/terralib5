@@ -67,7 +67,7 @@ namespace te
       SegmenterRegionGrowingSegment< FeatureDataTypeT >* getNextSegment();
       
       /*!
-        \brief Clear all stored segments.
+        \brief Clear all stored data.
       */          
       void clear();          
 
@@ -124,13 +124,13 @@ namespace te
       m_segsNumber = 0;
       m_featuresNumber = 0;
       m_nextUnusedSegmentIdx = 0;
-    };
+    }
 
     template< typename FeatureDataTypeT >
     SegmenterRegionGrowingSegmentsPool< FeatureDataTypeT >::~SegmenterRegionGrowingSegmentsPool()
     {
       clear();
-    };
+    }
 
     template< typename FeatureDataTypeT >
     bool SegmenterRegionGrowingSegmentsPool< FeatureDataTypeT >::initialize(
@@ -201,7 +201,7 @@ namespace te
       }
       
       return true;
-    };   
+    }  
     
     
     template< typename FeatureDataTypeT >
@@ -225,7 +225,7 @@ namespace te
       {
         return 0;
       }
-    };
+    }
 
     template< typename FeatureDataTypeT >
     void SegmenterRegionGrowingSegmentsPool< FeatureDataTypeT >::clear()
@@ -240,7 +240,7 @@ namespace te
         {
           if( m_segments[ row ][ col ].m_neighborSegments )
           {
-            free( m_segments[ row ][ col ].m_neighborSegments );
+            m_segments[ row ][ col ].removeAllNeighborSegmentsPtrs();
           }
         }
       }      
@@ -250,20 +250,20 @@ namespace te
       m_nextUnusedSegmentIdx = 0;
       m_segments.reset();
       m_segmentsFeatures.reset();
-    };
+    }
     
     template< typename FeatureDataTypeT >
     void SegmenterRegionGrowingSegmentsPool< FeatureDataTypeT >::resetUseCounter()
     {
       m_nextUnusedSegmentIdx = 0;
-    };   
+    }  
     
     template< typename FeatureDataTypeT >
     SegmenterSegmentsBlock::SegmentIdDataType
       SegmenterRegionGrowingSegmentsPool< FeatureDataTypeT >::getSegmentsNumber() const
     {
       return m_segsNumber;
-    };
+    }
   } // namespace rp
 } // namespace te
 
