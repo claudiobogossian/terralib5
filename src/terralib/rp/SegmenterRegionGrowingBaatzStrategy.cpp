@@ -348,7 +348,7 @@ namespace te
           /
           ( (rg::BaatzFeatureType)( m_parameters.m_segmentsSimIncreaseSteps ) );
           
-	rg::mergeSegments< rg::BaatzFeatureType >( 
+        rg::mergeSegments< rg::BaatzFeatureType >( 
           m_segmentsIdsMatrix,
           disimilarityThreshold, 
           0, 
@@ -381,7 +381,7 @@ namespace te
       
       if( m_parameters.m_minSegmentSize > 1 )
       {
-	rg::mergeSegments< rg::BaatzFeatureType >( 
+        rg::mergeSegments< rg::BaatzFeatureType >( 
           m_segmentsIdsMatrix,
           std::numeric_limits< rg::BaatzFeatureType >::max(),
           m_parameters.m_minSegmentSize,

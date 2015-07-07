@@ -43,33 +43,33 @@ namespace te
             
         SegmenterRegionGrowingMeanMerger( const unsigned int featuresNumber );
             
-	      ~SegmenterRegionGrowingMeanMerger();
+        ~SegmenterRegionGrowingMeanMerger();
             
-	      //overload        
-	      SegmenterRegionGrowingSegment< rg::MeanFeatureType >::FeatureType
-	        getDissimilarity( SegmenterRegionGrowingSegment< rg::MeanFeatureType > const * const segment1Ptr, 
-			      SegmenterRegionGrowingSegment< rg::MeanFeatureType > const * const segment2Ptr, 
-			      SegmenterRegionGrowingSegment< rg::MeanFeatureType > * const mergePreviewSegPtr ) const;
+        //overload        
+        SegmenterRegionGrowingSegment< rg::MeanFeatureType >::FeatureType
+          getDissimilarity( SegmenterRegionGrowingSegment< rg::MeanFeatureType > const * const segment1Ptr, 
+            SegmenterRegionGrowingSegment< rg::MeanFeatureType > const * const segment2Ptr, 
+            SegmenterRegionGrowingSegment< rg::MeanFeatureType > * const mergePreviewSegPtr ) const;
               
-	      //overload                
-	      void mergeFeatures( SegmenterRegionGrowingSegment< rg::MeanFeatureType > * const segment1Ptr, 
-			    SegmenterRegionGrowingSegment< rg::MeanFeatureType > const * const segment2Ptr, 
-			    SegmenterRegionGrowingSegment< rg::MeanFeatureType > const * const mergePreviewSegPtr ) const;
+        //overload                
+        void mergeFeatures( SegmenterRegionGrowingSegment< rg::MeanFeatureType > * const segment1Ptr, 
+          SegmenterRegionGrowingSegment< rg::MeanFeatureType > const * const segment2Ptr, 
+          SegmenterRegionGrowingSegment< rg::MeanFeatureType > const * const mergePreviewSegPtr ) const;
               
-	      //overload
-	      void update( SegmenterRegionGrowingSegment< rg::MeanFeatureType >* const ) {};  
+        //overload
+        void update( SegmenterRegionGrowingSegment< rg::MeanFeatureType >* const ) {};  
             
-	      //overload
-	      inline unsigned int getSegmentFeaturesSize() const { return m_featuresNumber; };
+        //overload
+        inline unsigned int getSegmentFeaturesSize() const { return m_featuresNumber; };
             
       protected :
         unsigned int m_featuresNumber; //!< The number of features (bands).
-	      SegmenterRegionGrowingSegment< rg::MeanFeatureType >::FeatureType m_dissimilarityNormFactor;
+        SegmenterRegionGrowingSegment< rg::MeanFeatureType >::FeatureType m_dissimilarityNormFactor;
             
-	      // variables used by the method getDissimilarity
-	      mutable SegmenterRegionGrowingSegment< rg::MeanFeatureType >::FeatureType m_getDissimilarity_dissValue;
-	      mutable SegmenterRegionGrowingSegment< rg::MeanFeatureType >::FeatureType m_getDissimilarity_diffValue; 
-	      mutable unsigned int m_getDissimilarity_meansIdx;
+        // variables used by the method getDissimilarity
+        mutable SegmenterRegionGrowingSegment< rg::MeanFeatureType >::FeatureType m_getDissimilarity_dissValue;
+        mutable SegmenterRegionGrowingSegment< rg::MeanFeatureType >::FeatureType m_getDissimilarity_diffValue; 
+        mutable unsigned int m_getDissimilarity_meansIdx;
     };        
   } // end namespace rp
 }   // end namespace te

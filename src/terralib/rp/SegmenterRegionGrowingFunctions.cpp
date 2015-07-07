@@ -37,62 +37,62 @@ namespace te
     namespace rg
     {
       void exportSegs2Tif( const SegmentsIdsMatrixT& segmentsIds,
-			                     bool normto8bits,
-			                     const std::string& fileName )
+                           bool normto8bits,
+                           const std::string& fileName )
       {
-	      std::map<std::string, std::string> rinfo; 
-	      rinfo["SOURCE"] = fileName;
+        std::map<std::string, std::string> rinfo;
+        rinfo["SOURCE"] = fileName;
       
-	      const unsigned int linesNmb = segmentsIds.getLinesNumber();
-	      const unsigned int colsNmb = segmentsIds.getColumnsNumber();
+        const unsigned int linesNmb = segmentsIds.getLinesNumber();
+        const unsigned int colsNmb = segmentsIds.getColumnsNumber();
  
-	      te::rst::Grid* gridPtr = new te::rst::Grid( colsNmb, linesNmb );
+        te::rst::Grid* gridPtr = new te::rst::Grid( colsNmb, linesNmb );
 
-	      std::vector< te::rst::BandProperty* > bandsProps;
-	      bandsProps.push_back( new te::rst::BandProperty( 0, 
+        std::vector< te::rst::BandProperty* > bandsProps;
+        bandsProps.push_back( new te::rst::BandProperty( 0, 
                 (normto8bits ? te::dt::UCHAR_TYPE : te::dt::UINT32_TYPE) ) );
       
-	      te::rst::Raster* rasterPtr = te::rst::RasterFactory::make( "GDAL", 
-								         gridPtr, bandsProps, rinfo );
-	      TERP_TRUE_OR_THROW( rasterPtr, "Invalid pointer" );
+        te::rst::Raster* rasterPtr = te::rst::RasterFactory::make( "GDAL", 
+                         gridPtr, bandsProps, rinfo );
+        TERP_TRUE_OR_THROW( rasterPtr, "Invalid pointer" );
       
-	      unsigned int col = 0;
-	      unsigned int line = 0;
+        unsigned int col = 0;
+        unsigned int line = 0;
       
-	      double offset = 0.0;
-	      double scale = 1.0;
+        double offset = 0.0;
+        double scale = 1.0;
       
-	      if( normto8bits ) {
-	        double minValue = DBL_MAX;
-	        double maxValue = -1.0 * DBL_MAX;
-	        double value = 0;
+        if( normto8bits ) {
+          double minValue = DBL_MAX;
+          double maxValue = -1.0 * DBL_MAX;
+          double value = 0;
       
-	        for( line = 0 ; line < linesNmb ; ++line ) {
-	          for( col = 0 ; col < colsNmb ; ++col ) {
-	            value = (double)segmentsIds( line, col );
+          for( line = 0 ; line < linesNmb ; ++line ) {
+            for( col = 0 ; col < colsNmb ; ++col ) {
+              value = (double)segmentsIds( line, col );
             
-	            if( value > maxValue ) maxValue = value;
-	            if( value < minValue ) minValue = value;
-	          }
-	        }
+              if( value > maxValue ) maxValue = value;
+              if( value < minValue ) minValue = value;
+            }
+          }
         
-	        offset = minValue;
-	        scale = 254.0 / ( maxValue - minValue );
-	      }
+          offset = minValue;
+          scale = 254.0 / ( maxValue - minValue );
+        }
       
-	      double value = 0;
+        double value = 0;
       
-	      for( line = 0 ; line < linesNmb ; ++line ) {
-	        for( col = 0 ; col < colsNmb ; ++col ) {
-	          value = ( ((double)segmentsIds( line, col )) - offset ) * scale;
-	          TERP_TRUE_OR_THROW( value <= 255.0, "Invalid value:" +
-				      boost::lexical_cast< std::string >( value ) );
+        for( line = 0 ; line < linesNmb ; ++line ) {
+          for( col = 0 ; col < colsNmb ; ++col ) {
+            value = ( ((double)segmentsIds( line, col )) - offset ) * scale;
+            TERP_TRUE_OR_THROW( value <= 255.0, "Invalid value:" +
+              boost::lexical_cast< std::string >( value ) );
           
-	          rasterPtr->setValue( col, line, value , 0 );
-	        }
-	      }
+            rasterPtr->setValue( col, line, value , 0 );
+          }
+        }
       
-	      delete rasterPtr;
+        delete rasterPtr;
       }
     }
   }
