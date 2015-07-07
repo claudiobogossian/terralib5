@@ -77,6 +77,12 @@ namespace te
 		      \return enum value  	  
         */
         virtual EnumType* getDoubleArrowType() const;
+					/*!
+          \brief Returns value that represents left arrow type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
+        virtual EnumType* getLeftArrowType() const;
 		
 			protected:
 
@@ -89,6 +95,7 @@ namespace te
 
         EnumType* m_noneType; //!< value that represents none type belonging to enumeration
         EnumType* m_rightArrow; //!< value that represents right arrow type belonging to enumeration
+				EnumType* m_leftArrow; //!< value that represents left arrow type belonging to enumeration
 				EnumType* m_doubleArrow; //!< value that represents double arrow points type belonging to enumeration
  
     };

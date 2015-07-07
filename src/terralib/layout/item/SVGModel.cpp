@@ -37,8 +37,6 @@ te::layout::SVGModel::SVGModel():
   m_pathsName(0)
 {
   m_type = Enums::getInstance().getEnumObjectType()->getSVGItem();
-  
-  m_borderColor = te::color::RGBAColor(0, 0, 0, 255);
   m_box = te::gm::Envelope(0., 0., 20., 20.);
 }
 

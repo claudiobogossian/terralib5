@@ -205,7 +205,7 @@ namespace te
 
         virtual void updateMapDisplay();
 
-        virtual void reloadLayers(bool draw = true);
+        virtual bool reloadLayers(bool draw = true);
 
         virtual bool hasListLayerChanged();
 

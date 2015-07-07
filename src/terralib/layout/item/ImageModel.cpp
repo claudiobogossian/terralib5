@@ -43,7 +43,6 @@ te::layout::ImageModel::ImageModel() :
 {
   m_type = Enums::getInstance().getEnumObjectType()->getImageItem();
 
-  m_borderColor = te::color::RGBAColor(0, 0, 0, 255);
   m_backgroundColor = te::color::RGBAColor(0, 0, 255, 0);
 
   m_box = te::gm::Envelope(0., 0., 90., 90.);
@@ -56,16 +55,6 @@ te::layout::ImageModel::ImageModel() :
 te::layout::ImageModel::~ImageModel()
 {
 
-}
-
-void te::layout::ImageModel::setFileName( std::string fileName )
-{
-  m_fileName = fileName;
-}
-
-std::string te::layout::ImageModel::getFileName()
-{
-  return m_fileName;
 }
 
 te::layout::Properties* te::layout::ImageModel::getProperties() const
@@ -103,7 +92,17 @@ void te::layout::ImageModel::updateProperties( te::layout::Properties* propertie
   }
 }
 
-std::string te::layout::ImageModel::getFileExtension()
+void te::layout::ImageModel::setFileName( const std::string& fileName )
+{
+  m_fileName = fileName;
+}
+
+const std::string& te::layout::ImageModel::getFileName() const
+{
+  return m_fileName;
+}
+
+const std::string& te::layout::ImageModel::getFileExtension() const
 {
   return m_fileExtension;
 }

@@ -69,6 +69,18 @@
 // libpq
 #include <libpq-fe.h>
 
+//tests
+#include "../datatype/Utils.h"
+#include "../dataaccess/dataset/ObjectId.h"
+
+//#include "../memory/DataSet.h"
+//#include "../memory/DataSetItem.h"
+//
+//#include "../memory.h"
+
+//-----------------------------------------------------------------------
+
+
 te::pgis::Transactor::Transactor(DataSource* ds, Connection* conn)
   : m_ds(ds),
     m_conn(conn),
@@ -1677,85 +1689,43 @@ void te::pgis::Transactor::add(const std::string& datasetName,
   st.commit();
 }
 
-
-void te::pgis::Transactor::remove(const std::string& /*datasetName*/, const te::da::ObjectIdSet* /*oids*/)
+void te::pgis::Transactor::remove(const std::string& datasetName, const te::da::ObjectIdSet* oids)
 {
-  throw Exception(TE_TR("Not implemented yet!"));
-  //std::string sql("DELETE FROM ");
-  //          sql += datasetName);
+  std::string sOid = "";
+  std::string keyProperty = "";
 
-  //m_t->execute(sql);
+  std::auto_ptr<te::da::DataSetType> dt = getDataSetType(datasetName);
+ 
+  if(dt->getPrimaryKey())
+  {
+    keyProperty = dt->getPrimaryKey()->getProperties()[0]->getName();
+  }
+  else
+  {
+    throw Exception(TE_TR("Can not remove dataset items because dataset doesn't have a primary key or unique key!")); 
+  }
 
-//  const std::vector<te::dt::Property*>* keyProperties = 0;
-// 
-//  if(dt->getPrimaryKey())
-//  {
-//    keyProperties = &(dt->getPrimaryKey()->getProperties());
-//  }
-//  else if(dt->getNumberOfUniqueKeys() > 0)
-//  {
-//    keyProperties = &(dt->getUniqueKey(0)->getProperties());
-//  }
-//  else
-//  {
-//    throw Exception(TE_TR("Can not remove dataset items because dataset doesn't have a primary key or unique key!")); 
-//  }
-//
-//// create a prepared statement
-//  std::string sql  = "DELETE FROM ";
-//              sql += dt->getName();
-//              sql += " WHERE ";
-//              sql += GetBindableWhereSQL(*keyProperties);
-//
-//  std::vector<std::size_t> propertiesPos;
-//  
-//  te::dt::GetPropertiesPosition(*keyProperties, dt, propertiesPos);
-//
-//  std::auto_ptr<PreparedQuery> pq(m_t->getPGPrepared("a" + boost::lexical_cast<std::string>((boost::int64_t)(this))));
-//
-//  te::da::ScopedTransaction st(*m_t);
-//
-//  pq->prepare(sql, *keyProperties);
-//
-//  do
-//  {
-//    pq->bind(propertiesPos, dt, d);
-//    pq->execute();
-//
-//  }while(d->moveNext());
-//
-//  st.commit();
+  // create a prepared statement
+  std::string sql = "DELETE FROM ";
+  sql += datasetName;
+  sql += " WHERE ";
+  sql += keyProperty;
+  sql += " in (";
 
-//  const std::vector<te::dt::Property*>* keyProperties = 0;
-// 
-//  if(dt->getPrimaryKey())
-//  {
-//    keyProperties = &(dt->getPrimaryKey()->getProperties());
-//  }
-//  else if(dt->getNumberOfUniqueKeys() > 0)
-//  {
-//    keyProperties = &(dt->getUniqueKey(0)->getProperties());
-//  }
-//  else
-//  {
-//    throw Exception(TE_TR("Can not remove dataset item because dataset type doesn't have a primary key or unique key!")); 
-//  }
-//
-//// create a prepared statement
-//  std::string sql  = "DELETE FROM ";
-//              sql += dt->getName();
-//              sql += " WHERE ";
-//              sql += GetBindableWhereSQL(*keyProperties);
-//
-//  std::vector<std::size_t> propertiesPos;
-//  
-//  te::dt::GetPropertiesPosition(*keyProperties, dt, propertiesPos);
-//
-//  std::auto_ptr<PreparedQuery> pq(m_t->getPGPrepared("a" + boost::lexical_cast<std::string>((boost::int64_t)(this))));
-//
-//  pq->prepare(sql, *keyProperties);
-//  pq->bind(propertiesPos, dt, item);
-//  pq->execute();
+  std::set<te::da::ObjectId*, te::common::LessCmp<te::da::ObjectId*> >::const_iterator it;
+
+  for (it = oids->begin(); it != oids->end(); it++)
+  {
+    sOid = sOid + ((*it)->getValueAsString()) + " ";
+
+    if (oids->size() > 1)
+      sOid = sOid + ",";
+  }
+
+  sql += sOid.substr(0, sOid.length()-1) +")";
+
+  execute(sql);
+
 }
 
 void te::pgis::Transactor::update(const std::string& /*datasetName*/,
@@ -1823,6 +1793,76 @@ void te::pgis::Transactor::update(const std::string& datasetName,
 {
   dataset->moveFirst();
 
+  std::auto_ptr<PreparedQuery> pq(new PreparedQuery(this, "a" + boost::lexical_cast<std::string>((intptr_t)(this))));
+
+  te::da::ScopedTransaction st(*this);
+
+  std::vector<int> paramTypes;
+
+  std::size_t nProcessedRows = 0;
+
+  do
+  {
+    const std::set<int>& setProperties = properties[nProcessedRows];
+
+    std::vector<size_t> vecPropertiesPos;
+    std::vector<te::dt::Property*> vecProperties;
+    std::set<int>::iterator itProperties = setProperties.begin();
+
+    while (itProperties != setProperties.end())
+    {
+      std::string propertyName = dataset->getPropertyName(*itProperties);
+      int dataType = dataset->getPropertyDataType(*itProperties);
+      te::dt::Property* property = new te::dt::SimpleProperty(propertyName, dataType);
+      vecProperties.push_back(property);
+      vecPropertiesPos.push_back(*itProperties);
+
+      paramTypes.push_back(dataType);
+
+      ++itProperties;
+    }
+
+    std::string id;
+    for (size_t j = 0; j<ids.size(); ++j)
+    {
+      if (j>0)
+        id += " AND ";
+
+      id += dataset->getPropertyName(j) += "=";
+
+      if (dataset->getPropertyDataType(j) == te::dt::STRING_TYPE)
+        id += "\'" + dataset->getAsString(j) + "\'";
+      else
+        id += dataset->getAsString(j);
+    }
+
+    // create a prepared statement
+    std::string sql = "UPDATE ";
+    sql += datasetName;
+    sql += " SET ";
+    sql += GetBindableUpdateSQL(vecProperties);
+    sql += " WHERE " + id;
+
+    pq->prepare(sql, paramTypes);
+
+    pq->bind(vecPropertiesPos, dataset);
+    pq->execute();
+
+    ++nProcessedRows;
+
+    for (size_t i = 0; i < vecProperties.size(); ++i)
+    {
+      delete vecProperties[i];
+    }
+
+  } while (dataset->moveNext());
+
+  st.commit();
+	/*
+
+	
+  dataset->moveFirst();
+
   int i=0;
   std::set<int> plst; 
   std::set<int>::iterator it;
@@ -1871,7 +1911,7 @@ void te::pgis::Transactor::update(const std::string& datasetName,
           id += dataset->getAsString(j);
       }
 
-      sql += "(" + pName + ")=(" + value + ") WHERE " + id;
+      sql += "(" + pName + ")=(ST_GeomFromText('" + value + "',4326)) WHERE " + id;
 
       execute(sql);
 
@@ -1885,7 +1925,8 @@ void te::pgis::Transactor::update(const std::string& datasetName,
     rollBack();
 
     throw e;
-  }
+  }*/
+  
 }
 
 void te::pgis::Transactor::optimize(const std::map<std::string, std::string>& /*opInfo*/)

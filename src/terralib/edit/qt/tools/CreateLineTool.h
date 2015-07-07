@@ -102,7 +102,7 @@ namespace te
 
         void draw();
 
-        void clear();
+        //void clear();
 
         te::gm::Geometry* buildLine();
 
@@ -119,6 +119,9 @@ namespace te
         te::gm::Coord2D m_lastPos;              //!< The last position captured on mouse move event.
         bool m_continuousMode;                  //!< A flag that indicates if the tool is working in 'continuous mode'. i.e. the coordinates will be acquired  from each mouseMove.
         bool m_isFinished;                      //!< A flag that indicates if the operations was finished.
+        te::gm::LineString* _line;                //!< The line were the coords are added. It is a copy from the current line and it is used to optimize the feedkback speed.
+
+        void clear();
     };
 
   }   // end namespace edit

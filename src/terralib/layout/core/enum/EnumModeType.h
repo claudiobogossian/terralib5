@@ -544,13 +544,6 @@ namespace te
         */
         virtual EnumType* getModeCreateMapLocation() const;
 
-				/*!
-          \brief Returns value that represents create map location mode type belonging to enumeration.
-		  
-		      \return enum value  	  
-        */
-        virtual EnumType* getModeCreateStar() const;
-
         /*!
           \brief Returns value that represents create map location mode type belonging to enumeration.
 		  
@@ -636,7 +629,6 @@ namespace te
         EnumType* m_modeCreateGridGeodesic; //!< value that represents create grid geodesic mode type belonging to enumeration
         EnumType* m_modeCreateNorth; //!< value that represents create north mode type belonging to enumeration
         EnumType* m_modeCreateMapLocation; //!< value that represents create map location mode type belonging to enumeration
-				EnumType* m_modeCreateStar; //!< value that represents create star type belonging to enumeration
         EnumType* m_modeCreateSVG; //!< value that represents create SVG type belonging to enumeration
     };
   }

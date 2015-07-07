@@ -166,24 +166,33 @@ void te::layout::MapItem::updateObserver( ContextItem context )
       
   updateMapDisplay();
 
-  reloadLayers();
+  bool refreshMap = reloadLayers(false);
 
   MapModel* model = dynamic_cast<MapModel*>(m_model);
   if(model)
   {
     te::gm::Envelope mapBox = utils->viewportBox(model->getMapBox());
-    double w = mapBox.getWidth();
-    double h = mapBox.getHeight();
+    int w = (int)mapBox.getWidth();
+    int h = (int)mapBox.getHeight();
+
+    int mw = m_mapDisplay->getWidth();
+    int mh = m_mapDisplay->getHeight();
 
     /* resize */
     if(w != m_mapDisplay->getWidth() 
       || h != m_mapDisplay->getHeight())
     {
       QPointF pt = scenePos();
+      this->prepareGeometryChange();
       m_mapDisplay->setGeometry(pt.x(), pt.y(), w, h);
+
+      refreshMap = true;
     }
 
-    m_mapDisplay->refresh();
+    if(refreshMap == true)
+    {
+      m_mapDisplay->refresh();
+    }
 
     calculateFrameMargin();
   }
@@ -252,8 +261,6 @@ void te::layout::MapItem::dropEvent( QGraphicsSceneDragDropEvent * event )
     return;
 
   getMimeData(event->mimeData());
-
-  reloadLayers(false);
 
   redraw();
 }
@@ -768,7 +775,7 @@ void te::layout::MapItem::drawBorder( QPainter* painter )
   if(!model->isBorder())
     return;
 
-  te::color::RGBAColor clrBack = model->getBorderColor();
+  te::color::RGBAColor clrBack = model->getFrameColor();
   QColor borderColor;
   borderColor.setRed(clrBack.getRed());
   borderColor.setGreen(clrBack.getGreen());
@@ -788,12 +795,12 @@ void te::layout::MapItem::drawBorder( QPainter* painter )
   painter->restore();
 }
 
-void te::layout::MapItem::reloadLayers(bool draw)
+bool te::layout::MapItem::reloadLayers(bool draw)
 {
   MapModel* model = dynamic_cast<MapModel*>(m_model);
   if(!model)
   {
-    return;
+    return false;
   }
 
   std::list<te::map::AbstractLayerPtr> layerList = model->getLayers();
@@ -802,7 +809,7 @@ void te::layout::MapItem::reloadLayers(bool draw)
   {
     if(!hasListLayerChanged())
     {
-      return;
+      return false;
     }
   }
 
@@ -813,7 +820,7 @@ void te::layout::MapItem::reloadLayers(bool draw)
 
   if(layerList.empty() == true)
   {
-    return;
+    return true;
   }
 
   std::list<te::map::AbstractLayerPtr>::iterator it = layerList.begin();
@@ -827,6 +834,8 @@ void te::layout::MapItem::reloadLayers(bool draw)
   m_mapDisplay->setExtent(e, draw);
 
   m_pixmapIsDirty = true;
+
+  return true;
 }
 
 bool te::layout::MapItem::hasListLayerChanged()
@@ -865,11 +874,6 @@ bool te::layout::MapItem::hasListLayerChanged()
 
 void te::layout::MapItem::redraw( bool bRefresh /*= true*/ )
 {
-  if(m_oldLayers.empty())
-  {
-    return;
-  }
-
   ContextItem context;
   updateObserver(context);
 }
@@ -959,6 +963,7 @@ void te::layout::MapItem::contextUpdated()
   {
     QPointF pt = scenePos();
 
+    this->prepareGeometryChange();
     m_mapDisplay->setGeometry(pt.x(), pt.y(), newSize.width(), newSize.height());
     m_pixmapIsDirty = true;
   }
