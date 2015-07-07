@@ -85,7 +85,7 @@ namespace te
         }
 
         return returnValue;
-      };
+      }
 
       /*!
         \brief Merge closest segments.
@@ -258,7 +258,7 @@ namespace te
               
                 currActSegPtr->m_mergetIteration = globalMergeIterationsCounter;
                 
-                currActSegPtr->removeNeighborSegment( minForwardDissimilaritySegmentPtr );
+                currActSegPtr->removeNeighborSegmentPtr( minForwardDissimilaritySegmentPtr );
                 
                 // updating the max similarity segment neighborhood segments
                 // with the current segment
@@ -274,18 +274,19 @@ namespace te
                     // adding the max similarity neighborhood segments to the 
                     // current one, if it is not already there            
                   
-                    currActSegPtr->addNeighborSegment( 
-                                  minForwardDissimilaritySegmentPtr->m_neighborSegments[ neighborSegIdx ] );
+                    currActSegPtr->addNeighborSegmentPtr( 
+
+                    minForwardDissimilaritySegmentPtr->m_neighborSegments[ neighborSegIdx ] );
                     
                     // adding the current segment into the max similarity 
                     // neighborhood segments list, if it is not already there              
                   
-                    minForwardDissimilaritySegmentPtr->m_neighborSegments[ neighborSegIdx ]->addNeighborSegment( 
+                    minForwardDissimilaritySegmentPtr->m_neighborSegments[ neighborSegIdx ]->addNeighborSegmentPtr( 
                       currActSegPtr );
                     
                     // removing the merged segment reference from its neighbor
                     // list      
-                    minForwardDissimilaritySegmentPtr->m_neighborSegments[ neighborSegIdx ]->removeNeighborSegment( 
+                    minForwardDissimilaritySegmentPtr->m_neighborSegments[ neighborSegIdx ]->removeNeighborSegmentPtr( 
                       minForwardDissimilaritySegmentPtr );
                   }
                 }      
@@ -328,7 +329,7 @@ namespace te
               
                 minForwardDissimilaritySegmentPtr->disable();
               
-                minForwardDissimilaritySegmentPtr->clearNeighborSegments();
+                minForwardDissimilaritySegmentPtr->removeAllNeighborSegmentsPtrs();
                 
                 freeSegmentIds.push_back( minForwardDissimilaritySegmentPtr->m_id );
               
@@ -358,7 +359,7 @@ namespace te
         } while( iterationMergedSegmentsNumber &&
            ( globalMergeIterationsCounter <
              std::numeric_limits< IterationCounterType >::max() ) );
-      };
+      }
     } // end namespace rg
   } // end namespace rp
 } // end namespace te
