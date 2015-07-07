@@ -138,6 +138,10 @@ namespace te
 
         std::vector<std::string> findLayerNames() const;
 
+        virtual void updateMapDisplacementX(double displacementX);
+
+        virtual void updateMapDisplacementY(double displacementY);
+
         std::list<te::map::AbstractLayerPtr>    m_layers;
         te::gm::Envelope					              m_mapBoxMM;
         double								                  m_mapDisplacementX;
