@@ -198,7 +198,7 @@ void te::layout::MapItem::updateObserver( ContextItem context )
   }
 
   refresh();
-  m_changeLayer = true;
+
   update();
 }
 
