@@ -52,6 +52,7 @@
           /*!
             \brief Returns a new segment unique ID.
             \return id A positive new segment ID or zero if an error occurred.
+            \note This method is thread safe.
           */          
           SegmenterSegmentsBlock::SegmentIdDataType getNewID();
           
@@ -60,6 +61,7 @@
             \param idsNumber The number of unique IDs to return.
             \param id The segment IDs.
             \return true if OK, false on errors.
+            \note This method is thread safe.
           */          
           bool getNewIDs( 
             const unsigned int& idsNumber,
@@ -68,12 +70,14 @@
           /*!
             \brief Stores a free unique ID for later use.
             \param id The segment ID.
+            \note This method is thread safe.
           */          
           void addFreeID( const SegmenterSegmentsBlock::SegmentIdDataType& id );
           
           /*!
             \brief Stores free unique IDs for later use.
             \param ids The segment IDs.
+            \note This method is thread safe.
           */          
           void addFreeIDs( 
             const std::vector< SegmenterSegmentsBlock::SegmentIdDataType >& ids );          
@@ -81,6 +85,7 @@
           /*!
             \brief Stores free unique IDs for later use.
             \param ids The segment IDs.
+            \note This method is thread safe.
           */          
           void addFreeIDs( 
             const std::list< SegmenterSegmentsBlock::SegmentIdDataType >& ids );          

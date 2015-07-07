@@ -48,59 +48,59 @@ namespace te
     class TERPEXPORT SegmenterRegionGrowingMerger {
       public:
         virtual ~SegmenterRegionGrowingMerger()
-	      {
-	      };
+        {
+        };
             
-	      /*!
-	        \brief Returns a dimilarity index between this and the other segment.
-	        \param segment1Ptr A pointer to the first segment.
-	        \param segment2Ptr A pointer to the second segment.
-	        \param mergePreviewSegPtr A pointer to a valid segment where the merged features values will be stored (when aplicable).
-	        \return A similarity index between this and the other segment ( normalized between 0 and 1 ).
-	      */              
-	      virtual FeatureDataTypeT
-	        getDissimilarity( SegmenterRegionGrowingSegment< FeatureDataTypeT > const * const segment1Ptr, 
-			          SegmenterRegionGrowingSegment< FeatureDataTypeT > const * const segment2Ptr, 
-			          SegmenterRegionGrowingSegment< FeatureDataTypeT > * const mergePreviewSegPtr ) const = 0;
+        /*!
+          \brief Returns a dimilarity index between this and the other segment.
+          \param segment1Ptr A pointer to the first segment.
+          \param segment2Ptr A pointer to the second segment.
+          \param mergePreviewSegPtr A pointer to a valid segment where the merged features values will be stored (when aplicable).
+          \return A similarity index between this and the other segment ( normalized between 0 and 1 ).
+        */              
+        virtual FeatureDataTypeT
+          getDissimilarity( SegmenterRegionGrowingSegment< FeatureDataTypeT > const * const segment1Ptr, 
+                SegmenterRegionGrowingSegment< FeatureDataTypeT > const * const segment2Ptr, 
+                SegmenterRegionGrowingSegment< FeatureDataTypeT > * const mergePreviewSegPtr ) const = 0;
               
-	      /*!
-	        \brief Merge specific segment features from both segments into the first segment.
-	        \param segment1Ptr The first segment.
-	        \param segment2Ptr A pointer to the second segment.
-	        \param mergePreviewSegPtr A pointer to a valid segment where the merged features values were be stored by calling getDissimilarityIndex (when aplicable).
-	      */                
-	      virtual void mergeFeatures( SegmenterRegionGrowingSegment< FeatureDataTypeT > * const segment1Ptr, 
-	        SegmenterRegionGrowingSegment< FeatureDataTypeT > const * const segment2Ptr, 
-		      SegmenterRegionGrowingSegment< FeatureDataTypeT > const * const mergePreviewSegPtr ) const = 0;
-	
-	      /*!
-	        \brief Update the internal state.
-	        \param actSegsListHeadPtr A pointer the the active segments list head.
-	      */    
-	      virtual void update( SegmenterRegionGrowingSegment< FeatureDataTypeT >* const actSegsListHeadPtr ) = 0;
+        /*!
+          \brief Merge specific segment features from both segments into the first segment.
+          \param segment1Ptr The first segment.
+          \param segment2Ptr A pointer to the second segment.
+          \param mergePreviewSegPtr A pointer to a valid segment where the merged features values were be stored by calling getDissimilarityIndex (when aplicable).
+        */                
+        virtual void mergeFeatures( SegmenterRegionGrowingSegment< FeatureDataTypeT > * const segment1Ptr, 
+          SegmenterRegionGrowingSegment< FeatureDataTypeT > const * const segment2Ptr, 
+          SegmenterRegionGrowingSegment< FeatureDataTypeT > const * const mergePreviewSegPtr ) const = 0;
+  
+        /*!
+          \brief Update the internal state.
+          \param actSegsListHeadPtr A pointer the the active segments list head.
+        */    
+        virtual void update( SegmenterRegionGrowingSegment< FeatureDataTypeT >* const actSegsListHeadPtr ) = 0;
 
-	      /*!
-	        \brief Return the required segments features vector size (numer of elements).
-	        \return Return the required segments features vector size (numer of elements).
-	      */                
-	      virtual unsigned int getSegmentFeaturesSize() const = 0;
+        /*!
+          \brief Return the required segments features vector size (numer of elements).
+          \return Return the required segments features vector size (numer of elements).
+        */                
+        virtual unsigned int getSegmentFeaturesSize() const = 0;
             
       protected :
-	      /*!
-	        \brief Constructor.
-	      */
-	      SegmenterRegionGrowingMerger()
-	      {
-	      };
+        /*!
+          \brief Constructor.
+        */
+        SegmenterRegionGrowingMerger()
+        {
+        };
 
       private :
-	      /*!
-	        \brief Copy Constructor.
-	      */
-	      SegmenterRegionGrowingMerger( const SegmenterRegionGrowingMerger& ) {};
+        /*!
+          \brief Copy Constructor.
+        */
+        SegmenterRegionGrowingMerger( const SegmenterRegionGrowingMerger& ) {};
             
-	      const SegmenterRegionGrowingMerger&
-	        operator=( const SegmenterRegionGrowingMerger& other ) { return other; };
+        const SegmenterRegionGrowingMerger&
+          operator=( const SegmenterRegionGrowingMerger& other ) { return other; };
     };    
   } // end namespace rp
 } // end namespace te

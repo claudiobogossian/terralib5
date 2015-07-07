@@ -68,11 +68,11 @@ namespace te
     but its position in the scene remains in millimeters.
     Drawing starting point is llx, lly.
     He is also the son of ItemObserver, so it can become observer of a model (Observable). "View" part of MVC component.
-	  
-	  \ingroup layout
+    
+    \ingroup layout
 
-	  \sa te::layout::ItemObserver
-	*/
+    \sa te::layout::ItemObserver
+  */
     class TELAYOUTEXPORT MapItem : public ParentItem<QGraphicsProxyWidget>
     {
       Q_OBJECT //for slots/signals
@@ -126,6 +126,8 @@ namespace te
 
         virtual void contextUpdated();
 
+        virtual void updateScale();
+
       protected slots:
 
           void onDrawLayersFinished(const QMap<QString, QString>& errors);
@@ -135,37 +137,37 @@ namespace te
         /*!
             \brief Reimplemented from QGraphicsProxyWidget
          */
-        virtual void	dropEvent ( QGraphicsSceneDragDropEvent * event );
+        virtual void  dropEvent ( QGraphicsSceneDragDropEvent * event );
 
         /*!
             \brief Reimplemented from QGraphicsProxyWidget
          */
-        virtual void	mouseMoveEvent ( QGraphicsSceneMouseEvent * event );
+        virtual void  mouseMoveEvent ( QGraphicsSceneMouseEvent * event );
 
         /*!
             \brief Reimplemented from QGraphicsProxyWidget
          */
-        virtual void	mousePressEvent ( QGraphicsSceneMouseEvent * event );
+        virtual void  mousePressEvent ( QGraphicsSceneMouseEvent * event );
 
         /*!
             \brief Reimplemented from QGraphicsProxyWidget
          */
-        virtual void	mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
+        virtual void  mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
 
         /*!
             \brief Reimplemented from QGraphicsProxyWidget
          */
-        virtual void	dragEnterEvent ( QGraphicsSceneDragDropEvent * event );
+        virtual void  dragEnterEvent ( QGraphicsSceneDragDropEvent * event );
 
         /*!
             \brief Reimplemented from QGraphicsProxyWidget
          */
-        virtual void	dragLeaveEvent ( QGraphicsSceneDragDropEvent * event );
+        virtual void  dragLeaveEvent ( QGraphicsSceneDragDropEvent * event );
 
         /*!
             \brief Reimplemented from QGraphicsProxyWidget
          */
-        virtual void	dragMoveEvent ( QGraphicsSceneDragDropEvent * event );
+        virtual void  dragMoveEvent ( QGraphicsSceneDragDropEvent * event );
                   
         /*!
             \brief Reimplemented from ItemObserver
@@ -226,6 +228,7 @@ namespace te
         te::qt::widgets::ZoomWheel*                   m_zoomWheel;
         bool                                          m_pixmapIsDirty;
         std::list<te::map::AbstractLayerPtr>          m_oldLayers;
+        double                                        m_currentScale;
     };
   }
 }
