@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="90" height="90" xmlns="http://www.w3.org/2000/svg">
+ <!-- Created with Method Draw - http://github.com/duopixel/Method-Draw/ -->
+ <defs>
+  <linearGradient y2="0" x2="1" y1="0" x1="0" spreadMethod="pad" id="svg_14">
+   <stop offset="1" stop-color="#ffffff"/>
+   <stop offset="1" stop-color="#000000"/>
+  </linearGradient>
+ </defs>
+ <g>
+  <title>background</title>
+  <rect fill="url(#svg_14)" id="canvas_background" height="92" width="92" y="-1" x="-1"/>
+  <g display="none" overflow="visible" y="0" x="0" height="100%" width="100%" id="canvasGrid">
+   <rect fill="url(#gridpattern)" stroke-width="0" y="0" x="0" height="100%" width="100%"/>
+  </g>
+ </g>
+ <g>
+  <title>Layer 1</title>
+  <line transform="rotate(90, 0.997991, 67.2246)" stroke-linecap="null" stroke-linejoin="null" id="svg_7" y2="81.725917" x2="0.996595" y1="52.722598" x1="1.000485" stroke-width="4" stroke="#000" fill="none"/>
+  <ellipse transform="rotate(-26.8369, 296.745, 65.9739)" ry="10.749824" rx="12.749791" id="svg_1" cy="65.973919" cx="296.745138" stroke-width="1.5" stroke="#000" fill="#fff"/>
+  <ellipse ry="19.249485" rx="18.997315" id="svg_3" cy="32.474801" cx="67.990137" stroke-width="4" stroke="#000" fill="#0fff0f"/>
+  <rect id="svg_4" height="39" width="39.495476" y="43.225741" x="13.500118" fill-opacity="null" stroke-width="4" stroke="#ffff56" fill="#fff"/>
+  <rect id="svg_5" height="39" width="39.495476" y="48.225659" x="8.000207" fill-opacity="null" stroke-width="5" stroke="#005fbf" fill="#fff"/>
+  <line stroke-linecap="null" stroke-linejoin="null" id="svg_6" y2="40.000459" x2="26.496175" y1="1" x1="26" stroke-width="4" stroke="#000" fill="none"/>
+  <line stroke-linecap="null" stroke-linejoin="null" id="svg_8" y2="65.500287" x2="26.996167" y1="51.999711" x1="26.499992" stroke-width="4" stroke="#000" fill="none"/>
+  <line transform="rotate(90, 20.375, 67.625)" stroke-linecap="null" stroke-linejoin="null" id="svg_10" y2="76.249978" x2="20.250019" y1="59.000072" x1="20.499909" stroke-width="4" stroke="#000" fill="none"/>
+ </g>
+</svg>

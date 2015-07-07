@@ -67,11 +67,32 @@ namespace te
         virtual EnumType* getNoneType() const;
         
         /*!
-          \brief Returns value that represents star type belonging to enumeration.
+          \brief Returns value that represents star 1 type belonging to enumeration.
 		  
 		      \return enum value  	  
         */
-        virtual EnumType* getStarType() const;
+        virtual EnumType* getStar1Type() const;
+
+				/*!
+          \brief Returns value that represents star 2 type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
+        virtual EnumType* getStar2Type() const;
+
+				/*!
+          \brief Returns value that represents star 3 type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
+        virtual EnumType* getStar3Type() const;
+
+				/*!
+          \brief Returns value that represents star 4 type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
+        virtual EnumType* getStar4Type() const;
 
         /*!
           \brief Returns value that represents circle type belonging to enumeration.
@@ -118,7 +139,10 @@ namespace te
       protected:
 
         EnumType* m_noneType; //!< value that represents none type belonging to enumeration
-        EnumType* m_star; //!< value that represents star type belonging to enumeration
+        EnumType* m_star1; //!< value that represents star 1 type belonging to enumeration
+				EnumType* m_star2; //!< value that represents star 2 type belonging to enumeration
+				EnumType* m_star3; //!< value that represents star 3 type belonging to enumeration
+				EnumType* m_star4; //!< value that represents star 4 type belonging to enumeration
         EnumType* m_circle; //!< value that represents circle type belonging to enumeration
         EnumType* m_x; //!< value that represents x type belonging to enumeration
         EnumType* m_square; //!< value that represents square type belonging to enumeration

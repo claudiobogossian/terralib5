@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file StarController.cpp
+  \file EnumObjectType.cpp
    
   \brief 
 
@@ -26,24 +26,29 @@
 */
 
 // TerraLib
-#include "StarController.h"
-#include "../core/pattern/mvc/ItemController.h"
-#include "../core/ContextItem.h"
-#include "../core/pattern/factory/AbstractItemFactory.h"
-#include "../core/pattern/singleton/Context.h"
-#include "../core/pattern/mvc/ItemModelObservable.h"
-#include "../core/pattern/factory/ItemParamsCreate.h"
-#include "../core/pattern/mvc/ItemObserver.h"
-#include "../core/pattern/mvc/Observer.h"
-#include "../core/enum/Enums.h"
+#include "EnumTextType.h"
 
-te::layout::StarController::StarController( Observable* o ) :
-  ItemController(o)
+te::layout::EnumTextType::EnumTextType() :
+  m_fontItem(0)
 {
-  
+  init();
 }
 
-te::layout::StarController::~StarController()
+te::layout::EnumTextType::~EnumTextType()
 {
-	
+  if(m_fontItem)
+  {
+    delete m_fontItem;
+    m_fontItem = 0;
+  } 
+}
+
+void te::layout::EnumTextType::init()
+{
+  m_fontItem = createEnum("Font Item", this);
+}
+
+te::layout::EnumType* te::layout::EnumTextType::getFontItem() const
+{
+  return m_fontItem;
 }

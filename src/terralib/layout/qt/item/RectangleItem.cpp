@@ -78,89 +78,107 @@ void te::layout::RectangleItem::drawItem( QPainter * painter )
 }
 
 void te::layout::RectangleItem::drawRectangle( QPainter * painter )
-	{
-		RectangleModel* model = dynamic_cast<RectangleModel*>(m_model);
-		if(!model)
-		{
-			return;
-		}
+{
+  RectangleModel* model = dynamic_cast<RectangleModel*>(m_model);
+  if(!model)
+  {
+    return;
+  }
 
-		painter->save();
+  painter->save();
 
-		QPainterPath rect_path;
-		rect_path.addRect(boundingRect());
+  const te::color::RGBAColor& fillColor = model->getBackgroundColor();
+  const te::color::RGBAColor& contourColor = model->getFrameColor();
 
-		QColor cpen(0,0,0);
-		QPen pn(cpen, 0, Qt::SolidLine);
-		painter->setPen(pn);
+  QColor qFillColor(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), fillColor.getAlpha());
+  QColor qContourColor(contourColor.getRed(), contourColor.getGreen(), contourColor.getBlue(), contourColor.getAlpha());
 
-		te::color::RGBAColor clrBack = model->getBackgroundColor();
+  QBrush brush(qFillColor);
+  QPen pen(qContourColor, 0, Qt::SolidLine);
 
-		QColor cbrush;
-		cbrush.setRed(clrBack.getRed());
-		cbrush.setGreen(clrBack.getGreen());
-		cbrush.setBlue(clrBack.getBlue());
-		cbrush.setAlpha(clrBack.getAlpha());
+  painter->setPen(pen);
+  painter->setBrush(brush);
 
-		painter->setBrush(cbrush);
-		painter->drawPath(rect_path);
+  //gets the adjusted boundigng rectangle based of the painter settings
+  QRectF rectAdjusted = getAdjustedBoundingRect(painter);
 
-		painter->restore();
-	}
+  QPainterPath rect_path;
+  rect_path.addRect(rectAdjusted);
+
+  //draws the item
+  painter->drawPath(rect_path);
+
+  painter->restore();
+}
 
 void te::layout::RectangleItem::drawRoundedRectangle(QPainter * painter)
 {
-	RectangleModel* model = dynamic_cast<RectangleModel*>(m_model);
-	if(!model)
-	{
-		return;
-	}
-	painter->save();
-	QColor cpen(0,0,0);
-	QPen pn(cpen, 0, Qt::SolidLine);
-	painter->setPen(pn);
-	te::color::RGBAColor clrBack = model->getBackgroundColor();
-	QColor cbrush;
-	cbrush.setRed(clrBack.getRed());
-	cbrush.setGreen(clrBack.getGreen());
-	cbrush.setBlue(clrBack.getBlue());
-	cbrush.setAlpha(clrBack.getAlpha());
+  RectangleModel* model = dynamic_cast<RectangleModel*>(m_model);
+  if(!model)
+  {
+    return;
+  }
+  painter->save();
 
-	QRectF roundedRect = boundingRect();
-	QPainterPath rect_path;
-	rect_path.addRoundRect(roundedRect,30,30);
-	painter->drawPath(rect_path);
-	painter->setBrush(cbrush);
-	painter->restore();
+  const te::color::RGBAColor& fillColor = model->getBackgroundColor();
+  const te::color::RGBAColor& contourColor = model->getFrameColor();
+
+  QColor qFillColor(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), fillColor.getAlpha());
+  QColor qContourColor(contourColor.getRed(), contourColor.getGreen(), contourColor.getBlue(), contourColor.getAlpha());
+
+  QBrush brush(qFillColor);
+  QPen pen(qContourColor, 0, Qt::SolidLine);
+
+  painter->setPen(pen);
+  painter->setBrush(brush);
+
+  //gets the adjusted boundigng rectangle based of the painter settings
+  QRectF rectAdjusted = getAdjustedBoundingRect(painter);
+
+  QPainterPath rect_path;
+  rect_path.addRoundRect(rectAdjusted,30,30);
+
+  //draws the item
+  painter->drawPath(rect_path);
+
+  painter->restore();
 }
 
 void te::layout::RectangleItem::drawSingleCornerTrimmedRectangle(QPainter * painter)
 {
-	RectangleModel* model = dynamic_cast<RectangleModel*>(m_model);
-	if(!model)
-	{
-		return;
-	}
-	painter->save();
-	QColor cpen(0,0,0);
-	QPen pn(cpen, 0, Qt::SolidLine);
-	painter->setPen(pn);
-	te::color::RGBAColor clrBack = model->getBackgroundColor();
-	QColor cbrush;
-	cbrush.setRed(clrBack.getRed());
-	cbrush.setGreen(clrBack.getGreen());
-	cbrush.setBlue(clrBack.getBlue());
-	cbrush.setAlpha(clrBack.getAlpha());
+  RectangleModel* model = dynamic_cast<RectangleModel*>(m_model);
+  if(!model)
+  {
+    return;
+  }
+  painter->save();
 
-	QPointF p1 = QPointF(boundingRect().width() - boundingRect().width() / 4., boundingRect().center().y()+ boundingRect().height() / 2.);
-	QPointF p2 = QPointF(boundingRect().height()-boundingRect().topRight().y(),boundingRect().topRight().x()-boundingRect().width()/4);
-	QPointF p3 = QPointF(boundingRect().bottomRight().y(),boundingRect().top());
-	QPointF p4 = QPointF(boundingRect().bottomLeft().x(),boundingRect().top());
-	QPointF p5 = QPointF(boundingRect().bottomLeft().x(),boundingRect().bottom());
-	QPolygonF rect;
-	rect<<p1<<p2<<p3<<p4<<p5;
-	painter->drawPolygon(rect);
-	painter->setBrush(cbrush);
-	painter->restore();
+  const te::color::RGBAColor& fillColor = model->getBackgroundColor();
+  const te::color::RGBAColor& contourColor = model->getFrameColor();
+
+  QColor qFillColor(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), fillColor.getAlpha());
+  QColor qContourColor(contourColor.getRed(), contourColor.getGreen(), contourColor.getBlue(), contourColor.getAlpha());
+
+  QBrush brush(qFillColor);
+  QPen pen(qContourColor, 0, Qt::SolidLine);
+
+  painter->setPen(pen);
+  painter->setBrush(brush);
+
+  //gets the adjusted boundigng rectangle based of the painter settings
+  QRectF rectAdjusted = getAdjustedBoundingRect(painter);
+
+  QPointF p1 = QPointF(rectAdjusted.width() - rectAdjusted.width() / 4., rectAdjusted.center().y()+ rectAdjusted.height() / 2.);
+  QPointF p2 = QPointF(rectAdjusted.bottomRight().x() - rectAdjusted.bottomRight().x()/100.,rectAdjusted.height() - rectAdjusted.height() / 4.);
+  QPointF p3 = QPointF(rectAdjusted.bottomRight().x(),rectAdjusted.top());
+  QPointF p4 = QPointF(rectAdjusted.bottomLeft().x(),rectAdjusted.top());
+  QPointF p5 = QPointF(rectAdjusted.bottomLeft().x(),rectAdjusted.bottom());
+  QPolygonF rect;
+  rect<<p1<<p2<<p3<<p4<<p5;
+
+  //draws the item
+  painter->drawPolygon(rect);
+
+  painter->restore();
 
 }

@@ -31,6 +31,8 @@
 #include "Config.h"
 
 // Qt
+#include <QAction>
+#include <QtCore/QObject>
 #include <QMenu>
 
 namespace te
@@ -44,8 +46,9 @@ namespace te
 // Forward declaration
         class ToolBar;
 
-        class Plugin : public te::plugin::Plugin
+        class Plugin : public QObject, public te::plugin::Plugin
         {
+          Q_OBJECT
           public:
 
             Plugin(const te::plugin::PluginInfo& pluginInfo);
@@ -56,10 +59,20 @@ namespace te
 
             void shutdown();
 
+          protected slots:
+            /*!
+            \brief Slot function used when a action was selected.
+
+            \param checked Flag used in case a toggle action.
+            */
+            void onActionActivated(bool checked);
+
           protected:
 
             ToolBar* m_toolbar; //!< Main toolbar of TerraLib Edit Qt Plugin.
             QMenu* m_menu;      //!< Main menu of TerraLib Edit Qt Plugin.
+            QAction* m_action;    //!< Action used to call the process
+            //void createAction(std::string name, std::string pixmap = "");
         };
 
       } // end namespace edit

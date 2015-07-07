@@ -54,8 +54,8 @@ namespace te
         std::string getY2();
         std::string getZValue();
         std::string getBorder();
-        std::string getBackgroundcolor();
-        std::string getBordercolor();
+        std::string getBackgroundColor();
+        std::string getFrameColor();
         std::string getAngle();
         std::string getWidth();
         std::string getHeight();
@@ -71,8 +71,8 @@ namespace te
         std::string m_y2;
         std::string m_zValue;
         std::string m_border;
-        std::string m_backgroundcolor;
-        std::string m_bordercolor;
+        std::string m_backgroundColor;
+        std::string m_frameColor;
         std::string m_angle;
         std::string m_width;
         std::string m_height;

@@ -90,7 +90,8 @@ te::layout::MapItem::MapItem( ItemController* controller, Observable* o, bool in
   m_tool(0),
   m_wMargin(0),
   m_hMargin(0),
-  m_pixmapIsDirty(false)
+  m_pixmapIsDirty(false),
+  m_currentScale(0)
 {    
   m_nameClass = std::string(this->metaObject()->className());
   
@@ -166,24 +167,33 @@ void te::layout::MapItem::updateObserver( ContextItem context )
       
   updateMapDisplay();
 
-  reloadLayers();
+  bool refreshMap = reloadLayers(false);
 
   MapModel* model = dynamic_cast<MapModel*>(m_model);
   if(model)
   {
     te::gm::Envelope mapBox = utils->viewportBox(model->getMapBox());
-    double w = mapBox.getWidth();
-    double h = mapBox.getHeight();
+    int w = (int)mapBox.getWidth();
+    int h = (int)mapBox.getHeight();
+
+    int mw = m_mapDisplay->getWidth();
+    int mh = m_mapDisplay->getHeight();
 
     /* resize */
     if(w != m_mapDisplay->getWidth() 
       || h != m_mapDisplay->getHeight())
     {
       QPointF pt = scenePos();
+      this->prepareGeometryChange();
       m_mapDisplay->setGeometry(pt.x(), pt.y(), w, h);
+
+      refreshMap = true;
     }
 
-    m_mapDisplay->refresh();
+    if(refreshMap == true)
+    {
+      m_mapDisplay->refresh();
+    }
 
     calculateFrameMargin();
   }
@@ -252,8 +262,6 @@ void te::layout::MapItem::dropEvent( QGraphicsSceneDragDropEvent * event )
     return;
 
   getMimeData(event->mimeData());
-
-  reloadLayers(false);
 
   redraw();
 }
@@ -498,7 +506,7 @@ void te::layout::MapItem::changeCurrentTool( EnumType* mode )
   te::layout::Context::getInstance().setMode(mode);
   if(mode == type->getModeMapPan())
   {
-    te::qt::widgets::Pan* pan = new te::qt::widgets::Pan(m_mapDisplay, Qt::OpenHandCursor, Qt::ClosedHandCursor);	 
+    te::qt::widgets::Pan* pan = new te::qt::widgets::Pan(m_mapDisplay, Qt::OpenHandCursor, Qt::ClosedHandCursor);   
     setCurrentTool(pan);
     m_mapDisplay->setCursor(Qt::OpenHandCursor);
   }
@@ -594,6 +602,8 @@ void te::layout::MapItem::generateMapPixmap()
   image = image.mirrored();
 
   m_pixmap = QPixmap::fromImage(image);
+
+  updateScale();
 }
 
 void te::layout::MapItem::updateMapDisplay()
@@ -768,7 +778,7 @@ void te::layout::MapItem::drawBorder( QPainter* painter )
   if(!model->isBorder())
     return;
 
-  te::color::RGBAColor clrBack = model->getBorderColor();
+  te::color::RGBAColor clrBack = model->getFrameColor();
   QColor borderColor;
   borderColor.setRed(clrBack.getRed());
   borderColor.setGreen(clrBack.getGreen());
@@ -788,12 +798,12 @@ void te::layout::MapItem::drawBorder( QPainter* painter )
   painter->restore();
 }
 
-void te::layout::MapItem::reloadLayers(bool draw)
+bool te::layout::MapItem::reloadLayers(bool draw)
 {
   MapModel* model = dynamic_cast<MapModel*>(m_model);
   if(!model)
   {
-    return;
+    return false;
   }
 
   std::list<te::map::AbstractLayerPtr> layerList = model->getLayers();
@@ -802,7 +812,7 @@ void te::layout::MapItem::reloadLayers(bool draw)
   {
     if(!hasListLayerChanged())
     {
-      return;
+      return false;
     }
   }
 
@@ -813,7 +823,7 @@ void te::layout::MapItem::reloadLayers(bool draw)
 
   if(layerList.empty() == true)
   {
-    return;
+    return true;
   }
 
   std::list<te::map::AbstractLayerPtr>::iterator it = layerList.begin();
@@ -827,6 +837,8 @@ void te::layout::MapItem::reloadLayers(bool draw)
   m_mapDisplay->setExtent(e, draw);
 
   m_pixmapIsDirty = true;
+
+  return true;
 }
 
 bool te::layout::MapItem::hasListLayerChanged()
@@ -865,13 +877,9 @@ bool te::layout::MapItem::hasListLayerChanged()
 
 void te::layout::MapItem::redraw( bool bRefresh /*= true*/ )
 {
-  if(m_oldLayers.empty())
-  {
-    return;
-  }
-
   ContextItem context;
   updateObserver(context);
+
 }
 
 bool te::layout::MapItem::checkTouchesCorner( const double& x, const double& y )
@@ -959,7 +967,33 @@ void te::layout::MapItem::contextUpdated()
   {
     QPointF pt = scenePos();
 
+    this->prepareGeometryChange();
     m_mapDisplay->setGeometry(pt.x(), pt.y(), newSize.width(), newSize.height());
     m_pixmapIsDirty = true;
+  }
+}
+
+
+void te::layout::MapItem::updateScale()
+{
+  MapModel* model = dynamic_cast<MapModel*>(m_model);
+  double scale = m_mapDisplay->getScale();
+
+  if(m_currentScale != scale)
+  {
+    m_currentScale = scale;
+    EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+
+    Properties* properties = new Properties("");
+
+    Property prop;
+    prop.setName("map_scale");
+    int scale = (int) m_currentScale;
+    prop.setValue(scale, dataType->getDataTypeInt());
+    properties->addProperty(prop);
+
+    model->updateProperties(properties, true);
+    MapController* mapController = dynamic_cast<MapController*>(m_controller);
+    mapController->refreshAllProperties();
   }
 }

@@ -55,11 +55,11 @@ namespace te
     \brief Class that represents a "Model" part of Map MVC component.  
     Its coordinate system is the same of scene (millimeters). 
     This is also son of ItemModelObservable, so it can become observable, and son of Visitable, so it can become visitable.
-      	  
-	    \ingroup layout
+          
+      \ingroup layout
 
       \sa te::layout::ItemModelObservable , te::layout::Visitable
-	  */
+    */
     class TELAYOUTEXPORT MapModel : public ItemModelObservable, public Visitable
     {
       public:
@@ -143,14 +143,15 @@ namespace te
         virtual void updateMapDisplacementY(double displacementY);
 
         std::list<te::map::AbstractLayerPtr>    m_layers;
-        te::gm::Envelope					              m_mapBoxMM;
-        double								                  m_mapDisplacementX;
-        double								                  m_mapDisplacementY;
-        Systematic*							                m_systematic;
-        bool								                    m_fixedScale;
-        te::gm::Envelope					              m_worldBox;
-        bool								                    m_loadedLayer;
-        std::vector<std::string>			          m_layerNames;
+        te::gm::Envelope                        m_mapBoxMM;
+        double                                  m_mapDisplacementX;
+        double                                  m_mapDisplacementY;
+        double                                  m_mapScale;
+        Systematic*                              m_systematic;
+        bool                                    m_fixedScale;
+        te::gm::Envelope                        m_worldBox;
+        bool                                    m_loadedLayer;
+        std::vector<std::string>                m_layerNames;
     };
   }
 }
