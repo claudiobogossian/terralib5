@@ -228,7 +228,8 @@ namespace te
         te::qt::widgets::ZoomWheel*                   m_zoomWheel;
         bool                                          m_pixmapIsDirty;
         std::list<te::map::AbstractLayerPtr>          m_oldLayers;
-        double                                        m_currentScale;
+        int                                           m_currentMapScale;
+        int                                           m_oldMapScale;
     };
   }
 }

@@ -228,7 +228,7 @@ void te::layout::GridMapModel::visitDependent( ContextItem context )
 
     m_srid = layer->getSRID();
 
-    m_mapScale = map->getScale();
+    m_mapScale = map->getFixedScale();
     m_boxMapMM = map->getMapBox();
     m_mapDisplacementX = map->getDisplacementX();
     m_mapDisplacementY = map->getDisplacementY();
