@@ -450,7 +450,58 @@ double te::qt::widgets::MapDisplay::getScale() {
 
   return m_scale;
 }
-void te::qt::widgets::MapDisplay::setScale(const double& scale)
+bool te::qt::widgets::MapDisplay::setScale(const double& scale)
 {
-  return;
+  double wMM = this->getWidthMM();
+  double hMM = this->getHeightMM();
+
+  double wT = wMM;
+
+  te::common::UnitOfMeasurePtr unitPtr =
+       te::srs::SpatialReferenceSystemManager::getInstance().getUnit(m_srid);
+
+   if (unitPtr == NULL) {
+     return false;
+   }
+
+   std::string unit = unitPtr->getName();
+   if (unit == "METRE")
+     wT = wMM / 1000.;
+   else if (unit == "KILOMETRE")
+     wT = wMM / 1000000.;
+   else if (unit == "FOOT")
+     wT = wMM / (12. * 25.4);
+   else if (unit == "DEGREE")
+     wT = wMM / 110000000.;
+
+
+  double ff = scale / m_scale;
+  double xmin, ymin, xmax, ymax;
+
+  te::gm::Envelope envelope = this->getExtent();
+  double wdx = envelope.getUpperRightX() - envelope.getLowerLeftX();
+  double wdy = envelope.getLowerLeftY() - envelope.getUpperRightY();
+
+  if(ff < 1)
+  {
+    double dx = (wdx - (wdx * ff)) / 2.;
+    double dy = (wdy - (wdy * ff)) / 2.;
+    xmin = envelope.getLowerLeftX() + dx;
+    ymin = envelope.getLowerLeftY() + dy;
+    xmax = envelope.getUpperRightX() - dx;
+    ymax = envelope.getUpperRightY() - dy;
+  }
+  else
+  {
+    double dx = ((wdx * ff) - wdx) / 2.;
+    double dy = ((wdy * ff) - wdy) / 2.;
+    xmin = envelope.getLowerLeftX() - dx;
+    ymin = envelope.getLowerLeftY() - dy;
+    xmax = envelope.getUpperRightX() + dx;
+    ymax = envelope.getUpperRightY() + dy;
+  }
+  te::gm::Envelope newEnvelope(xmin, ymin, xmax, ymax);
+
+  this->setExtent(newEnvelope, false);
+  return true;
 }

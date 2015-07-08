@@ -102,7 +102,7 @@ void te::layout::GridPlanarItem::drawGrid( QPainter* painter )
 
   clear();
 
-  double scale = mapModel->getScale();
+  double scale = mapModel->getFixedScale();
   te::gm::Envelope box = mapModel->getWorldInMeters();
   te::gm::Envelope boxMM = mapModel->getMapBox();
 
@@ -216,7 +216,7 @@ void te::layout::GridPlanarItem::calculateVertical( te::gm::Envelope geoBox, te:
   double htxt = 0;
   
   QFont ft(model->getFontFamily().c_str(), model->getTextPointSize());
-
+  
   for( ; y1 < geoBox.getUpperRightY() ; y1 += model->getLneVrtGap())
   {
     if(y1 < geoBox.getLowerLeftY())
@@ -235,15 +235,15 @@ void te::layout::GridPlanarItem::calculateVertical( te::gm::Envelope geoBox, te:
     convert.precision(10);
     double number = y1 / (double)model->getUnit();
     convert << number;
-    
+
     itemUtils->getTextBoundary(ft, wtxt, htxt,convert.str());
         
     // text left
-    QPointF ptLeft(llx - model->getLneHrzDisplacement() - wtxt, y);
+    QPointF ptLeft(llx - wtxt, y);
     m_leftTexts[convert.str()] = ptLeft;
 
     // text right
-    QPointF ptRight(urx + model->getLneHrzDisplacement(), y);
+    QPointF ptRight(urx, y);
     m_rightTexts[convert.str()] = ptRight;
   }
 }
@@ -309,11 +309,11 @@ void te::layout::GridPlanarItem::calculateHorizontal( te::gm::Envelope geoBox, t
     itemUtils->getTextBoundary(ft, wtxt, htxt, convert.str());
 
     // text bottom
-    QPointF ptBottom(x - (wtxt/2.), lly - model->getLneVrtDisplacement() - htxt);
+    QPointF ptBottom(x - (wtxt/2.), lly - htxt);
     m_bottomTexts[convert.str()] = ptBottom;
 
     // text top
-    QPointF ptTop(x - (wtxt/2.), ury + model->getLneVrtDisplacement());
+    QPointF ptTop(x - (wtxt/2.), ury);
     m_topTexts[convert.str()] = ptTop;
   }
 }

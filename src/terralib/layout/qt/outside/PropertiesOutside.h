@@ -31,7 +31,8 @@
 // Qt
 #include <QWidget>
 
-
+// QtPropertyBrowser
+class QtTreePropertyBrowser;
 
 // TerraLib
 #include "../../core/pattern/mvc/OutsideObserver.h"

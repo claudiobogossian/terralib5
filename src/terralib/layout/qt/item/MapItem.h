@@ -220,7 +220,7 @@ namespace te
 
         QSize                                         m_mapSize; //!< The size of the map display in a zoom of 100%. This size is in pixels and is calculated based on the size of the GraphicItem in millimeters.
         QMimeData*                                    m_mime;      
-        te::qt::widgets::MultiThreadMapDisplay*       m_mapDisplay;
+        te::qt::widgets::MapDisplay*                  m_mapDisplay;
         bool                                          m_grabbedByWidget;
         te::qt::widgets::AbstractTool*                m_tool;
         double                                        m_wMargin;
@@ -228,7 +228,8 @@ namespace te
         te::qt::widgets::ZoomWheel*                   m_zoomWheel;
         bool                                          m_pixmapIsDirty;
         std::list<te::map::AbstractLayerPtr>          m_oldLayers;
-        double                                        m_currentScale;
+        int                                           m_currentMapScale;
+        int                                           m_oldMapScale;
     };
   }
 }

@@ -91,10 +91,10 @@ te::layout::MapItem::MapItem( ItemController* controller, Observable* o, bool in
   m_wMargin(0),
   m_hMargin(0),
   m_pixmapIsDirty(false),
-  m_currentScale(0)
+  m_currentMapScale(0)
 {    
   m_nameClass = std::string(this->metaObject()->className());
-  
+  m_oldMapScale = m_currentMapScale;
   Utils* utils = Context::getInstance().getUtils();
   te::gm::Envelope box;
   
@@ -111,8 +111,8 @@ te::layout::MapItem::MapItem( ItemController* controller, Observable* o, bool in
   setFlag(QGraphicsItem::ItemClipsChildrenToShape);
 
   m_mapSize = QSize(box.getWidth(), box.getHeight());
-  m_mapDisplay = new te::qt::widgets::MultiThreadMapDisplay(m_mapSize, true);
-  m_mapDisplay->setSynchronous(true);
+  m_mapDisplay = new te::qt::widgets::MapDisplay(m_mapSize);
+  //m_mapDisplay->setSynchronous(true);
   m_mapDisplay->setAcceptDrops(true);
 
   m_mapDisplay->setBackgroundColor(Qt::transparent);
@@ -190,12 +190,24 @@ void te::layout::MapItem::updateObserver( ContextItem context )
       refreshMap = true;
     }
 
+    if(model->getCurrentScale()!=m_oldMapScale)
+    {
+      if(m_mapDisplay->setScale(model->getCurrentScale()))
+      {
+        refreshMap = true;
+        m_currentMapScale=model->getCurrentScale();
+        m_oldMapScale=m_currentMapScale;
+      }
+    }
+
     if(refreshMap == true)
     {
       m_mapDisplay->refresh();
     }
 
     calculateFrameMargin();
+
+
   }
 
   refresh();
@@ -976,21 +988,22 @@ void te::layout::MapItem::updateScale()
   MapModel* model = dynamic_cast<MapModel*>(m_model);
   double scale = m_mapDisplay->getScale();
 
-  if(m_currentScale != scale)
+  if(m_currentMapScale != scale)
   {
-    m_currentScale = scale;
+    m_currentMapScale = (int)scale;
     EnumDataType* dataType = Enums::getInstance().getEnumDataType();
 
     Properties* properties = new Properties("");
 
     Property prop;
     prop.setName("map_scale");
-    int scale = (int) m_currentScale;
+    int scale = (int) m_currentMapScale;
     prop.setValue(scale, dataType->getDataTypeInt());
     properties->addProperty(prop);
-
+    m_oldMapScale = m_currentMapScale;
     model->updateProperties(properties, true);
     MapController* mapController = dynamic_cast<MapController*>(m_controller);
     mapController->refreshAllProperties();
+
   }
 }

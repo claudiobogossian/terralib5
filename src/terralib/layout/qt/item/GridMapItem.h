@@ -142,6 +142,8 @@ namespace te
         virtual void checkMaxMapDisplacement(QFont ft, std::string text, double& width, double& height);
 
         virtual void changeMapDisplacement(double width, double height);
+        
+        virtual bool drawCrossIntersectMapBorder(QLineF vrt, QLineF hrz, QPainter* painter);
 
         double                    m_maxWidthTextMM;
         double                    m_maxHeigthTextMM;
