@@ -170,39 +170,13 @@ void te::layout::MapModel::updateProperties( te::layout::Properties* properties,
   Property pro_mapDisplacementX = vectorProps->contains("map_displacementX");
   if(!pro_mapDisplacementX.isNull())
   {
-    double d_differenceX = 0;
-    if(m_mapDisplacementX < pro_mapDisplacementX.getValue().toDouble())
-    {
-      d_differenceX = pro_mapDisplacementX.getValue().toDouble() - m_mapDisplacementX;
-      m_box.m_urx = m_box.m_urx + d_differenceX;
-      m_mapBoxMM.m_urx = m_mapBoxMM.m_urx + d_differenceX;
-    }
-    else
-    {
-      d_differenceX = m_mapDisplacementX - pro_mapDisplacementX.getValue().toDouble();
-      m_box.m_urx = m_box.m_urx - d_differenceX;
-      m_mapBoxMM.m_urx = m_mapBoxMM.m_urx - d_differenceX;
-    }
-    m_mapDisplacementX = pro_mapDisplacementX.getValue().toDouble();
+    updateMapDisplacementX(pro_mapDisplacementX.getValue().toDouble());
   }
 
   Property pro_mapDisplacementY = vectorProps->contains("map_displacementY");
   if(!pro_mapDisplacementY.isNull())
   {
-    double d_differenceY = 0;
-    if(m_mapDisplacementY < pro_mapDisplacementY.getValue().toDouble())
-    {
-      d_differenceY = pro_mapDisplacementY.getValue().toDouble() - m_mapDisplacementY; 
-      m_box.m_ury = m_box.m_ury + d_differenceY;
-      m_mapBoxMM.m_ury = m_mapBoxMM.m_ury + d_differenceY;
-    }
-    else
-    {
-      d_differenceY = m_mapDisplacementY - pro_mapDisplacementY.getValue().toDouble();
-      m_box.m_ury = m_box.m_ury - d_differenceY;
-      m_mapBoxMM.m_ury = m_mapBoxMM.m_ury - d_differenceY;
-    }
-    m_mapDisplacementY = pro_mapDisplacementY.getValue().toDouble();
+    updateMapDisplacementY(pro_mapDisplacementY.getValue().toDouble());
   }
 
   Property pro_mapScale = vectorProps->contains("map_scale");
@@ -609,16 +583,12 @@ bool te::layout::MapModel::isLoadedLayer()
 
 void te::layout::MapModel::setDisplacementX( double displacement )
 {
-  m_mapDisplacementX = displacement;
-
-  recalculateMapBoxMM();
+  updateMapDisplacementX(displacement);
 }
 
 void te::layout::MapModel::setDisplacementY( double displacement )
 {
-  m_mapDisplacementY = displacement;
-
-  recalculateMapBoxMM();
+  updateMapDisplacementY(displacement);
 }
 
 void te::layout::MapModel::recalculateMapBoxMM()
@@ -767,6 +737,38 @@ te::gm::Envelope te::layout::MapModel::maxLayerExtent()
   box = layer->getExtent();
 
   return box;
+}
+
+void te::layout::MapModel::updateMapDisplacementX( double displacementX )
+{
+  double d_differenceX = 0;
+  if(m_mapDisplacementX < displacementX)
+  {
+    d_differenceX = displacementX - m_mapDisplacementX;
+    m_box.m_urx = m_box.m_urx + d_differenceX;
+  }
+  else
+  {
+    d_differenceX = m_mapDisplacementX - displacementX;
+    m_box.m_urx = m_box.m_urx - d_differenceX;
+  }
+  m_mapDisplacementX = displacementX;
+}
+
+void te::layout::MapModel::updateMapDisplacementY( double displacementY )
+{
+  double d_differenceY = 0;
+  if(m_mapDisplacementY < displacementY)
+  {
+    d_differenceY = displacementY - m_mapDisplacementY; 
+    m_box.m_ury = m_box.m_ury + d_differenceY;
+  }
+  else
+  {
+    d_differenceY = m_mapDisplacementY - displacementY;
+    m_box.m_ury = m_box.m_ury - d_differenceY;
+  }
+  m_mapDisplacementY = displacementY;
 }
 
 
