@@ -256,10 +256,7 @@ void te::layout::MapItem::drawItem( QPainter * painter )
 
 void te::layout::MapItem::dropEvent( QGraphicsSceneDragDropEvent * event )
 {
-  //Copy the map from layer tree
-  Qt::DropActions actions = event->dropAction();
-  if(actions != Qt::CopyAction)
-    return;
+  event->setDropAction(Qt::CopyAction);
 
   getMimeData(event->mimeData());
 

@@ -327,7 +327,7 @@ void te::qt::widgets::DoubleListWidget::onLeftListPressed(QListWidgetItem* item)
   }
 }
 
-void te::qt::widgets::DoubleListWidget::onRightListPressed(QListWidgetItem* item)
+void te::qt::widgets::DoubleListWidget::onRightListItemSelectionChanged()
 {
   if(m_ui->m_rightListWidget->selectedItems().size() > 0)
   {

@@ -94,8 +94,7 @@ namespace te
 
           void onLeftListPressed(QListWidgetItem* item);
 
-          void onRightListPressed(QListWidgetItem* item);
-
+          void onRightListItemSelectionChanged();
 
         signals:
 
