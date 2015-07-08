@@ -111,8 +111,8 @@ te::layout::MapItem::MapItem( ItemController* controller, Observable* o, bool in
   setFlag(QGraphicsItem::ItemClipsChildrenToShape);
 
   m_mapSize = QSize(box.getWidth(), box.getHeight());
-  m_mapDisplay = new te::qt::widgets::MultiThreadMapDisplay(m_mapSize, true);
-  m_mapDisplay->setSynchronous(true);
+  m_mapDisplay = new te::qt::widgets::MapDisplay(m_mapSize);
+  //m_mapDisplay->setSynchronous(true);
   m_mapDisplay->setAcceptDrops(true);
 
   m_mapDisplay->setBackgroundColor(Qt::transparent);

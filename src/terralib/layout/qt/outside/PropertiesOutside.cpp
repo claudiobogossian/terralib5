@@ -135,7 +135,7 @@ void te::layout::PropertiesOutside::createLayout()
   layout->addLayout(filterLayout);
   m_nameLabel = new QLabel(tr("Component::"), this);
   layout->addWidget(m_nameLabel);
-  layout->addWidget(m_layoutPropertyBrowser->getPropertyEditor());
+  layout->addWidget((QWidget *) m_layoutPropertyBrowser->getPropertyEditor());
 
   QGroupBox* groupBox = new QGroupBox(this);
   groupBox->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
