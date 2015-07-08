@@ -220,7 +220,7 @@ void te::layout::MapModel::updateProperties( te::layout::Properties* properties,
   }  
 }
 
-double te::layout::MapModel::getScale()
+double te::layout::MapModel::getFixedScale()
 {
   if(m_layers.empty())
   {
@@ -283,6 +283,11 @@ double te::layout::MapModel::getScale()
     scale = m_systematic->getScale();
   }
   return scale;
+}
+
+int te::layout::MapModel::getCurrentScale()
+{
+  return m_mapScale;
 }
 
 te::gm::Envelope te::layout::MapModel::getWorldInMeters()

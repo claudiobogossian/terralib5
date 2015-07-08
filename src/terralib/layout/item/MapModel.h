@@ -84,7 +84,9 @@ namespace te
 
         std::list<te::map::AbstractLayerPtr> getLayers();
 
-        virtual double getScale();
+        virtual double getFixedScale();
+
+        virtual int getCurrentScale();
 
         virtual te::gm::Envelope getWorldInMeters();
 
@@ -142,8 +144,8 @@ namespace te
         te::gm::Envelope                        m_mapBoxMM;
         double                                  m_mapDisplacementX;
         double                                  m_mapDisplacementY;
-        double                                  m_mapScale;
-        Systematic*                              m_systematic;
+        int                                     m_mapScale;
+        Systematic*                             m_systematic;
         bool                                    m_fixedScale;
         te::gm::Envelope                        m_worldBox;
         bool                                    m_loadedLayer;
