@@ -46,7 +46,15 @@ namespace te
     class TERPEXPORT SegmenterStrategy
     {
       public:
-        
+        /*!
+         \brief Blocks merging method.
+        */
+        enum BlocksMergingMethod
+        {
+          NoMerging = 0,   //!< No merging.
+          GradientMerging = 1   //!< Gradient Merging.
+        };
+
         virtual ~SegmenterStrategy();
         
         /*!
@@ -108,8 +116,20 @@ namespace te
             \note This value will be used in the case 
             where the image is splitted into blocks for segmentation.
             \return The blocks overlap size.
-        */          
+        */
         virtual unsigned int getOptimalBlocksOverlapSize() const = 0;        
+
+        /*!
+          \brief Returns if the min and max pixel values should be computed.
+          \return True if min and max values should be computed. False otherwise.
+          */
+        virtual bool shouldComputeMinMaxValues() const = 0;
+
+        /*!
+          \brief Return the strategy blocks merging method.
+          \return The blocks merging method.
+        */
+        virtual BlocksMergingMethod getBlocksMergingMethod() const = 0;
 
       protected:
 

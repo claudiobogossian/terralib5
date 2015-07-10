@@ -495,6 +495,17 @@ namespace te
       return (unsigned int)( std::sqrt( (double)m_parameters.m_minSegmentSize) );
     }
     
+    bool SegmenterRegionGrowingBaatzStrategy::shouldComputeMinMaxValues() const
+    {
+      return true;
+    }
+
+    SegmenterStrategy::BlocksMergingMethod
+      SegmenterRegionGrowingBaatzStrategy::getBlocksMergingMethod() const
+    {
+      return SegmenterStrategy::BlocksMergingMethod::GradientMerging;
+    }
+
     bool SegmenterRegionGrowingBaatzStrategy::initializeSegments( 
       SegmenterIdsManager& segmenterIdsManager,
       const te::rp::SegmenterSegmentsBlock& block2ProcessInfo,

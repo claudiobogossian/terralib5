@@ -123,8 +123,14 @@ namespace te
         
         //overload  
         unsigned int getOptimalBlocksOverlapSize() const;
-        
-      protected :
+
+        //overload
+        bool shouldComputeMinMaxValues() const;
+
+        //overload
+        BlocksMergingMethod getBlocksMergingMethod() const;
+
+    protected :
         /*!
           \brief Internal segments ids matrix type definition.
          */          

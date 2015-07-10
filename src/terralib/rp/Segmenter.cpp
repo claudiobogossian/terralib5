@@ -316,6 +316,7 @@ namespace te
         std::vector< double > inputRasterBandMaxValues( 
           m_inputParameters.m_inputRasterBands.size(), 0.0 );
           
+        if( strategyPtr->shouldComputeMinMaxValues() )
         {
           const unsigned int nRows = 
             cachedRasterPtr->getNumberOfRows();
@@ -475,7 +476,8 @@ namespace te
         std::vector< std::vector< unsigned int> > imageVerticalProfiles;
         
         if( m_inputParameters.m_enableBlockProcessing &&
-          ( m_inputParameters.m_blocksOverlapPercent > 0 ) )
+          ( m_inputParameters.m_blocksOverlapPercent > 0 ) &&
+          ( strategyPtr->getBlocksMergingMethod() == SegmenterStrategy::BlocksMergingMethod::GradientMerging ) )
         {
 //          std::cout << std::endl << "Starting CutOff profiles generation" << std::endl;
           

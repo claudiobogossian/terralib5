@@ -158,6 +158,16 @@ namespace te
     {
       return 10;
     }
+
+    bool SegmenterDummyStrategy::shouldComputeMinMaxValues() const
+    {
+      return true;
+    }
+
+    SegmenterStrategy::BlocksMergingMethod SegmenterDummyStrategy::getBlocksMergingMethod() const
+    {
+      return SegmenterStrategy::BlocksMergingMethod::GradientMerging;
+    }
     
     SegmenterDummyStrategyFactory::SegmenterDummyStrategyFactory()
     : te::rp::SegmenterStrategyFactory( "Dummy" )
