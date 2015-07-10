@@ -311,9 +311,9 @@ namespace te
         
         // Finding the input raster normalization parameters
         
-        std::vector< double > inputRasterBandMinValues( 
+        std::vector< std::complex< double > > inputRasterBandMinValues( 
           m_inputParameters.m_inputRasterBands.size(), 0.0 );
-        std::vector< double > inputRasterBandMaxValues( 
+        std::vector< std::complex< double > > inputRasterBandMaxValues( 
           m_inputParameters.m_inputRasterBands.size(), 0.0 );
           
         if( strategyPtr->shouldComputeMinMaxValues() )
@@ -328,7 +328,7 @@ namespace te
           double bandMax = -1.0 * DBL_MAX;
           double value = 0;
           
-          std::vector< double > noDataValues;
+          std::vector< std::complex< double > > noDataValues;
           if( m_inputParameters.m_inputRasterNoDataValues.empty() )
           {
             for( unsigned int inputRasterBandsIdx = 0 ; inputRasterBandsIdx < 

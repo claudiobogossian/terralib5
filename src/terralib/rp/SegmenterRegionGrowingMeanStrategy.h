@@ -110,9 +110,9 @@ namespace te
           const te::rp::SegmenterSegmentsBlock& block2ProcessInfo,
           const te::rst::Raster& inputRaster,
           const std::vector< unsigned int >& inputRasterBands,
-          const std::vector< double >& inputRasterNoDataValues,
-          const std::vector< double >& inputRasterBandMinValues,
-          const std::vector< double >& inputRasterBandMaxValues,
+          const std::vector< std::complex< double > >& inputRasterNoDataValues,
+          const std::vector< std::complex< double > >& inputRasterBandMinValues,
+          const std::vector< std::complex< double > >& inputRasterBandMaxValues,
           te::rst::Raster& outputRaster,
           const unsigned int outputRasterBand,
           const bool enableProgressInterface ) throw( te::rp::Exception );
@@ -169,9 +169,9 @@ namespace te
           const te::rp::SegmenterSegmentsBlock& block2ProcessInfo, 
           const te::rst::Raster& inputRaster,
           const std::vector< unsigned int >& inputRasterBands,
-          const std::vector< double >& inputRasterNoDataValues,
-          const std::vector< double >& inputRasterBandMinValues,
-          const std::vector< double >& inputRasterBandMaxValues,
+          const std::vector< std::complex< double > >& inputRasterNoDataValues,
+          const std::vector< std::complex< double > >& inputRasterBandMinValues,
+          const std::vector< std::complex< double > >& inputRasterBandMaxValues,
           SegmenterRegionGrowingSegment< rg::MeanFeatureType >** actSegsListHeadPtr );
     };
     
