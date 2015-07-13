@@ -211,6 +211,7 @@ void AddRecentProjectToSettings(const QString& prjTitle, const QString& prjPath)
 
 TerraView::TerraView(QWidget* parent)
   : te::qt::af::BaseApplication(parent),
+    m_mapCursorSize(QSize(20, 20)),
     m_helpManager(0),
     m_iController(0),
     m_queryDlg(0),
@@ -1293,22 +1294,22 @@ void TerraView::onSaveProjectAsTriggered()
 
   std::string fName = fileName.toStdString();
 
-  m_project->setFileName(fName);
+  m_project->m_fileName = fName.c_str();
 
-  if (!boost::filesystem::exists(fName) && m_project->getTitle() == "New Project")
+  if (!boost::filesystem::exists(fName) && m_project->m_title == "New Project")
   {
-    m_project->setTitle(boost::filesystem::basename(fName));
+    m_project->m_title = (boost::filesystem::basename(fName)).c_str();
   }
 
   te::qt::af::Save(*m_project, fName);
 
-  m_app->updateRecentProjects(fileName, m_project->getTitle().c_str());
+  m_app->updateRecentProjects(fileName, m_project->m_title);
 
   // Set the project title and its status as "no change"
   //std::string projectTitle = boost::filesystem::basename(m_project->getFileName());
   //m_project->setTitle(projectTitle);
 
-  m_project->setProjectAsChanged(false);
+  m_project->m_changed = false;
 
   // Set the window title
   setWindowTitle(te::qt::af::GetWindowTitle(*m_project));

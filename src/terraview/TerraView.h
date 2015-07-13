@@ -322,6 +322,8 @@ class TerraView : public te::qt::af::BaseApplication
     QMenu* m_viewMenu;
     QMenu* m_viewToolBarsMenu;
 
+    QSize m_mapCursorSize;
+
     QDockWidget* m_progressDockWidget;       //!< Dock widget used to show progress information
 
     te::qt::widgets::HelpManagerImpl* m_helpManager;
