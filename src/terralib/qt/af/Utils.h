@@ -57,7 +57,7 @@ namespace te
   {
     namespace af
     {
-//      class Project;
+      class ApplicationController;
 
       /*!
         \brief Reads and return a te::qt::af::Project from the file.
@@ -147,7 +147,7 @@ namespace te
 
         \param barsParent
       */
-      TEQTAFEXPORT std::vector<QToolBar*> ReadToolBarsFromSettings(QWidget* barsParent=0);
+      TEQTAFEXPORT std::vector<QToolBar*> ReadToolBarsFromSettings(te::qt::af::ApplicationController* appController, QWidget* barsParent=0);
 
       /*
         \brief

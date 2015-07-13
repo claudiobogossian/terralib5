@@ -26,29 +26,9 @@
      <x>0</x>
      <y>0</y>
      <width>1140</width>
-     <height>25</height>
+     <height>21</height>
     </rect>
    </property>
-   <widget class="QMenu" name="m_menuFile">
-    <property name="title">
-     <string>&amp;File</string>
-    </property>
-    <addaction name="m_exitAction"/>
-   </widget>
-   <addaction name="m_menuFile"/>
-  </widget>
-  <widget class="QStatusBar" name="statusbar"/>
-  <widget class="QToolBar" name="m_fileToolbar">
-   <property name="windowTitle">
-    <string>toolBar</string>
-   </property>
-   <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
-   <addaction name="m_addLayerAction"/>
   </widget>
   <widget class="te::qt::widgets::LayerExplorer" name="m_layerExplorer">
    <attribute name="dockWidgetArea">
@@ -83,16 +63,11 @@
    <addaction name="m_selectToolAction"/>
    <addaction name="separator"/>
   </widget>
-  <action name="m_addLayerAction">
-   <property name="icon">
-    <iconset theme="datasource">
-     <normaloff/>
-    </iconset>
-   </property>
-   <property name="text">
-    <string>Add Layer...</string>
-   </property>
-  </action>
+  <widget class="te::qt::widgets::StyleDockWidget" name="m_styleExplorer">
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+  </widget>
   <action name="m_drawAction">
    <property name="icon">
     <iconset theme="map-draw">
@@ -162,18 +137,6 @@
     <string>Fit...</string>
    </property>
   </action>
-  <action name="m_exitAction">
-   <property name="icon">
-    <iconset theme="system-log-out">
-     <normaloff>../../../../../share/terralib/icons/terralib/scalable/system-log-out.svg</normaloff>../../../../../share/terralib/icons/terralib/scalable/system-log-out.svg</iconset>
-   </property>
-   <property name="text">
-    <string>Exit...</string>
-   </property>
-   <property name="toolTip">
-    <string>Quit the application</string>
-   </property>
-  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -188,25 +151,15 @@
    <header>terralib/qt/widgets/canvas/MultiThreadMapDisplay.h</header>
    <container>1</container>
   </customwidget>
+  <customwidget>
+   <class>te::qt::widgets::StyleDockWidget</class>
+   <extends>QDockWidget</extends>
+   <header>terralib/qt/widgets/se/StyleDockWidget.h</header>
+   <container>1</container>
+  </customwidget>
  </customwidgets>
  <resources/>
  <connections>
-  <connection>
-   <sender>m_addLayerAction</sender>
-   <signal>triggered()</signal>
-   <receiver>BaseApplicationForm</receiver>
-   <slot>onAddLayerTriggered()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>569</x>
-     <y>350</y>
-    </hint>
-   </hints>
-  </connection>
   <connection>
    <sender>m_drawAction</sender>
    <signal>triggered()</signal>
@@ -276,22 +229,6 @@
    <signal>triggered()</signal>
    <receiver>BaseApplicationForm</receiver>
    <slot>onFitLayersTriggered()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>569</x>
-     <y>350</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>m_exitAction</sender>
-   <signal>triggered()</signal>
-   <receiver>BaseApplicationForm</receiver>
-   <slot>close()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>

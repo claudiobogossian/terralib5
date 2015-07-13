@@ -76,7 +76,17 @@ class TerraView : public te::qt::af::BaseApplication
 
   protected:
 
-    void makeDialog();
+    virtual void makeDialog();
+
+    virtual void initActions();
+
+    virtual void initMenus();
+
+    virtual void initSlotsConnections();
+
+    void addMenusActions();
+
+    void initToolbars();
 
   protected slots:
 
@@ -104,9 +114,97 @@ class TerraView : public te::qt::af::BaseApplication
 
     void closeEvent(QCloseEvent * event);
 
-    te::qt::widgets::HelpManagerImpl* m_helpManager;
+  protected:
 
-    QMenu* m_dsMenu;
+    QAction* m_fileNewProject;
+    QAction* m_fileSaveProject;
+    QAction* m_fileSaveProjectAs;
+    QAction* m_fileOpenProject;
+    QAction* m_fileExit;
+    QAction* m_filePrint;
+    QAction* m_filePrintPreview;
+    QAction* m_fileRestartSystem;
+    QAction* m_helpAbout;
+    QAction* m_helpContents;
+    QAction* m_helpUpdate;
+    QAction* m_layerEdit;
+    QAction* m_layerRemoveItem;
+    QAction* m_layerExport;
+    QAction* m_layerProperties;
+    QAction* m_layerSRS;
+    QAction* m_layerShowTable;
+    QAction* m_layerRaise;
+    QAction* m_layerLower;
+    QAction* m_layerToTop;
+    QAction* m_layerToBottom;
+    QAction* m_layerChartsHistogram;
+    QAction* m_layerChartsScatter;
+    QAction* m_layerChart;
+    QAction* m_layerLinkTable;
+    QAction* m_layerObjectGrouping;
+    QAction* m_layerFitOnMapDisplay;
+    QAction* m_layerRemoveObjectSelection;
+    QAction* m_layerFitSelectedOnMapDisplay;
+    QAction* m_layerPanToSelectedOnMapDisplay;
+    QAction* m_layerCompositionMode;
+    QAction* m_mapDraw;
+    QAction* m_mapZoomIn;
+    QAction* m_mapZoomOut;
+    QAction* m_mapZoomArea;
+    QAction* m_mapPan;
+    QAction* m_mapZoomExtent;
+    QAction* m_mapPreviousExtent;
+    QAction* m_mapNextExtent;
+    QAction* m_mapInfo;
+    QAction* m_mapRemoveSelection;
+    QAction* m_mapSelection;
+    QAction* m_mapMeasureDistance;
+    QAction* m_mapMeasureArea;
+    QAction* m_mapMeasureAngle;
+    QAction* m_pluginsManager;
+    QAction* m_projectAddLayerDataset;
+    QAction* m_projectAddLayerQueryDataSet;
+    QAction* m_projectAddLayerTabularDataSet;
+    QAction* m_projectAddLayerGraph;
+    QAction* m_projectAddFolderLayer;
+    QAction* m_projectChangeLayerDataSource;
+    QAction* m_projectUpdateLayerDataSource;
+    QAction* m_projectRemoveLayer;
+    QAction* m_projectRenameLayer;
+    QAction* m_projectProperties;
+    QAction* m_queryLayer;
+    QAction* m_toolsCustomize;
+    QAction* m_toolsDataExchanger;
+    QAction* m_toolsDataExchangerDirect;
+    QAction* m_toolsDataExchangerDirectPopUp;
+    QAction* m_toolsDataSourceExplorer;
+    QAction* m_toolsDataSourceManagement;
+    QAction* m_toolsQueryDataSource;
+    QAction* m_toolsRasterMultiResolution;
+    QAction* m_toolsFixGeometry;
+    QAction* m_viewDataTable;
+    QAction* m_viewGrid;
+    QAction* m_viewLayerExplorer;
+    QAction* m_viewStyleExplorer;
+    QAction* m_viewFullScreen;
+    QAction* m_viewRefresh;
+
+    QMenu* m_fileMenu;
+    QMenu* m_helpMenu;
+    QMenu* m_layerMenu;
+    QMenu* m_mapMenu;
+    QMenu* m_pluginsMenu;
+    QMenu* m_projectMenu;
+    QMenu* m_projectAddLayerMenu;
+    QMenu* m_recentProjectsMenu;
+    QMenu* m_toolsMenu;
+    QMenu* m_toolsExchangerMenu;
+    QMenu* m_viewMenu;
+    QMenu* m_viewToolBarsMenu;
+
+    QDockWidget* m_progressDockWidget;       //!< Dock widget used to show progress information
+
+    te::qt::widgets::HelpManagerImpl* m_helpManager;
 
     std::vector<te::qt::af::DataSetTableDockWidget*> m_tables;
 

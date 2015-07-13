@@ -225,7 +225,7 @@ void te::qt::af::RemoveToolBarFromSettings(QToolBar* bar)
   sett.endGroup();
 }
 
-std::vector<QToolBar*> te::qt::af::ReadToolBarsFromSettings(QWidget* barsParent)
+std::vector<QToolBar*> te::qt::af::ReadToolBarsFromSettings(te::qt::af::ApplicationController* appController, QWidget* barsParent)
 {
   std::vector<QToolBar*> bars;
 
@@ -263,7 +263,7 @@ std::vector<QToolBar*> te::qt::af::ReadToolBarsFromSettings(QWidget* barsParent)
       {
         // Fred: revisar
 
-        QAction* a;// = ApplicationController::getInstance().findAction(act);
+        QAction* a = appController->findAction(act);
       
         if(a != 0)
           toolbar->addAction(a);

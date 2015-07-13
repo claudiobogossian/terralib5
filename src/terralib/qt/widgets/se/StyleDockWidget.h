@@ -68,7 +68,7 @@ namespace te
           //@{
 
           /*! \brief Constructs a StyleDockWidget. */
-          StyleDockWidget(const QString& title, QWidget* parent = 0, Qt::WindowFlags flags = 0);
+          StyleDockWidget(QWidget* parent = 0, Qt::WindowFlags flags = 0);
 
           /*! \brief Destructor. */
           ~StyleDockWidget();

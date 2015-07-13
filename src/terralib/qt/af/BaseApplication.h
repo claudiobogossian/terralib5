@@ -32,7 +32,11 @@
 #include "../../maptools/AbstractLayer.h"
 
 
+#include <QLabel>
+#include <QLineEdit>
 #include <QMainWindow>
+#include <QStatusBar>
+
 
 //#include <ui_BaseApplicationForm.h>
 
@@ -60,6 +64,7 @@ namespace te
       class ApplicationController;
       class MapDisplay;
       class LayerExplorer;
+      class StyleExplorer;
 
       class TEQTAFEXPORT BaseApplication : public QMainWindow
       {
@@ -77,8 +82,6 @@ namespace te
 
       public slots:
 
-        void onAddLayerTriggered();
-
         void onDrawTriggered();
 
         void onFitLayersTriggered();
@@ -88,6 +91,12 @@ namespace te
         void onPanTriggered(bool s);
 
         void onSelectionTriggered(bool s);
+
+        void onMapSRIDTriggered();
+
+        void onMapSetUnknwonSRIDTriggered();
+
+        void onStopDrawTriggered();
 
         virtual void onApplicationTriggered(te::qt::af::evt::Event* e);
 
@@ -101,15 +110,40 @@ namespace te
 
       protected:
 
-        virtual void initFramework();
+        virtual void makeDialog();
 
-        QMenu* getMenuFile();
+        virtual void initFramework(const QString& cfgFile);
 
-        QToolBar* getToolbar(const QString& barName);
+        virtual void initStatusBar();
 
+        virtual void initActions();
+
+        virtual void initMenus();
+
+        virtual void initSlotsConnections();
+
+        virtual void initAction(QAction*& act, const QString& icon, const QString& name,
+          const QString& text, const QString& tooltip,
+          bool iconVisibleInMenu, bool isCheckable, bool enabled, QObject* parent);
+
+      protected:
+
+        QMenuBar* m_menubar;
+
+        //main widgets
         ApplicationController* m_app;
-        MapDisplay* m_display;
         LayerExplorer* m_layerExplorer;
+        MapDisplay* m_display;
+        StyleExplorer* m_styleExplorer;
+
+        //status bar widgets
+        QStatusBar* m_statusbar;
+        QLabel* m_selected;
+        QAction* m_mapSRID;
+        QAction* m_mapUnknownSRID;
+        QAction* m_mapStopDrawing;
+        QLineEdit* m_mapSRIDLineEdit;
+        QLineEdit* m_coordinateLineEdit;
 
       private:
         Ui::BaseApplicationForm* m_ui;
