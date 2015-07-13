@@ -70,11 +70,11 @@ void te::layout::GridPlanarModel::calculateGaps( te::gm::Envelope box )
     m_lneVrtGap = m_lneHrzGap;
   }
 
-  if(m_initialGridPointX <= 0)
+  if(m_initialGridPointX == 0)
   {
     m_initialGridPointX = box.getLowerLeftX();
   }
-  if(m_initialGridPointY <= 0)
+  if(m_initialGridPointY == 0)
   {
     m_initialGridPointY = box.getLowerLeftY();
   }
