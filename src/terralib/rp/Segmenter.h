@@ -86,7 +86,7 @@ namespace te
             
             std::vector< unsigned int > m_inputRasterBands; //!< Bands to be processed from the input raster.
             
-            std::vector< double > m_inputRasterNoDataValues; //!< A vector of values to be used as input raster no-data values or an empty vector indicating to use the default values from the input raster..
+            std::vector< std::complex< double > > m_inputRasterNoDataValues; //!< A vector of values to be used as input raster no-data values or an empty vector indicating to use the default values from the input raster..
             
             bool m_enableThreadedProcessing; //!< If true, threaded processing will be performed (best with  multi-core or multi-processor systems (default:true).
             
@@ -233,13 +233,13 @@ namespace te
             unsigned int volatile* m_runningThreadsCounterPtr;        
             
             //! A vector of input raster bands minimum values.
-            std::vector< double > m_inputRasterBandMinValues;
+            std::vector< std::complex< double > > m_inputRasterBandMinValues;
             
             //! A vector of input raster bands maximum values.
-            std::vector< double > m_inputRasterBandMaxValues;
+            std::vector< std::complex< double > > m_inputRasterBandMaxValues;
             
             //! A vector of values to be used as input raster no-data values.
-            std::vector< double > m_inputRasterNoDataValues; 
+            std::vector< std::complex< double > > m_inputRasterNoDataValues; 
             
             //! Enable/Disable the segmentation strategy to use its own progress interface (default:false).
             bool m_enableStrategyProgress;

@@ -195,9 +195,9 @@ namespace te
       const te::rp::SegmenterSegmentsBlock& block2ProcessInfo,
       const te::rst::Raster& inputRaster,
       const std::vector< unsigned int >& inputRasterBands,
-      const std::vector< double >& inputRasterNoDataValues,
-      const std::vector< double >& inputRasterBandMinValues,
-      const std::vector< double >& inputRasterBandMaxValues,
+      const std::vector< std::complex< double > >& inputRasterNoDataValues,
+      const std::vector< std::complex< double > >& inputRasterBandMinValues,
+      const std::vector< std::complex< double > >& inputRasterBandMaxValues,
       te::rst::Raster& outputRaster,
       const unsigned int outputRasterBand,
       const bool enableProgressInterface )
@@ -495,14 +495,25 @@ namespace te
       return (unsigned int)( std::sqrt( (double)m_parameters.m_minSegmentSize) );
     }
     
+    bool SegmenterRegionGrowingBaatzStrategy::shouldComputeMinMaxValues() const
+    {
+      return true;
+    }
+
+    SegmenterStrategy::BlocksMergingMethod
+      SegmenterRegionGrowingBaatzStrategy::getBlocksMergingMethod() const
+    {
+      return SegmenterStrategy::BlocksMergingMethod::GradientMerging;
+    }
+
     bool SegmenterRegionGrowingBaatzStrategy::initializeSegments( 
       SegmenterIdsManager& segmenterIdsManager,
       const te::rp::SegmenterSegmentsBlock& block2ProcessInfo,
       const te::rst::Raster& inputRaster,
       const std::vector< unsigned int >& inputRasterBands,   
-      const std::vector< double >& inputRasterNoDataValues,
-      const std::vector< double >& inputRasterBandMinValues,
-      const std::vector< double >& inputRasterBandMaxValues,
+      const std::vector< std::complex< double > >& inputRasterNoDataValues,
+      const std::vector< std::complex< double > >& inputRasterBandMinValues,
+      const std::vector< std::complex< double > >& inputRasterBandMaxValues,
       SegmenterRegionGrowingSegment< rg::BaatzFeatureType >** actSegsListHeadPtr )
     {
       const unsigned int inputRasterBandsSize = (unsigned int)
@@ -520,8 +531,8 @@ namespace te
           < inputRasterBandMinValues.size() ; ++inputRasterBandMinValuesIdx )
         {
           inputRasterBandGains[ inputRasterBandMinValuesIdx ] = (rg::BaatzFeatureType)
-            ( inputRasterBandMaxValues[ inputRasterBandMinValuesIdx ] -
-              inputRasterBandMinValues[ inputRasterBandMinValuesIdx ] );
+            ( inputRasterBandMaxValues[ inputRasterBandMinValuesIdx ].real() -
+              inputRasterBandMinValues[ inputRasterBandMinValuesIdx ].real() );
             
           if( inputRasterBandGains[ inputRasterBandMinValuesIdx ] != 0.0 )
           {
@@ -594,7 +605,7 @@ namespace te
               }
               else
               {
-                value -= inputRasterBandMinValues[ inputRasterBandsIdx ];
+                value -= inputRasterBandMinValues[ inputRasterBandsIdx ].real();
                 value *= inputRasterBandGains[ inputRasterBandsIdx ];
                 
                 rasterValues[ inputRasterBandsIdx ] = 

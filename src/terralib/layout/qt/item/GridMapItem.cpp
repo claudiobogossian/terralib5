@@ -81,7 +81,7 @@ void te::layout::GridMapItem::drawItem( QPainter * painter )
 void te::layout::GridMapItem::drawText( QPointF point, QPainter* painter, std::string text, bool displacementLeft /*= false*/, bool displacementRight /*= false*/ )
 {
   painter->save();
-
+  
   QTransform t = painter->transform();
   QPointF p = t.map(point);
 
@@ -370,7 +370,7 @@ void te::layout::GridMapItem::drawCrossLines( QPainter* painter )
   {
     return;
   }
-
+  
   painter->save();
 
   configPainter(painter);
@@ -397,6 +397,11 @@ void te::layout::GridMapItem::drawCrossLines( QPainter* painter )
 
         QLineF lneHrz(pot.x() - crossOffSet, pot.y(), pot.x() + crossOffSet, pot.y());
         QLineF lneVrt(pot.x(), pot.y() - crossOffSet, pot.x(), pot.y() + crossOffSet);
+        
+        if(drawCrossIntersectMapBorder(lneVrt, lneHrz, painter))
+        {
+          continue;
+        }
 
         painter->drawLine(lneHrz);
         painter->drawLine(lneVrt);
@@ -437,7 +442,7 @@ void te::layout::GridMapItem::drawTexts( QPainter* painter )
   painter->save();
 
   configTextPainter(painter);
-
+  
   if(model->isLeftText())
   {
     drawLeftTexts(painter);
@@ -495,13 +500,23 @@ void te::layout::GridMapItem::drawBottomTexts( QPainter* painter )
 
 void te::layout::GridMapItem::drawLeftTexts( QPainter* painter )
 {
+  double width = 0;
+  double height = 0;
+
+  QFont ft = painter->font();
+
   std::map<std::string, QPointF>::iterator it = m_leftTexts.begin();
   for( ; it != m_leftTexts.end() ; ++it )
   {
     std::string txt = it->first;
-    QPointF pt = it->second;   
+    QPointF pt = it->second;  
+
+    checkMaxMapDisplacement(ft, txt, width, height);
+
     drawText(pt, painter, txt);
   }
+
+  changeMapDisplacement(width, height);
 }
 
 void te::layout::GridMapItem::drawRightTexts( QPainter* painter )
@@ -545,7 +560,13 @@ void te::layout::GridMapItem::checkMaxMapDisplacement(QFont ft, std::string text
     return;
   }
 
-  MapModel* model = dynamic_cast<MapModel*>(parentItem());
+  MapItem* mapParent = dynamic_cast<MapItem*>(parentItem());
+  if(!mapParent)
+  {
+    return;
+  }
+
+  MapModel* model = dynamic_cast<MapModel*>(mapParent->getModel());
   if(!model)
   {
     return;
@@ -579,7 +600,13 @@ void te::layout::GridMapItem::changeMapDisplacement( double width, double height
     return;
   }
 
-  MapModel* model = dynamic_cast<MapModel*>(parentItem());
+  MapItem* mapParent = dynamic_cast<MapItem*>(parentItem());
+  if(!mapParent)
+  {
+    return;
+  }
+
+  MapModel* model = dynamic_cast<MapModel*>(mapParent->getModel());
   if(!model)
   {
     return;
@@ -597,6 +624,54 @@ void te::layout::GridMapItem::changeMapDisplacement( double width, double height
   {
     model->setDisplacementY(height);
   } 
+}
+
+bool te::layout::GridMapItem::drawCrossIntersectMapBorder( QLineF vrt, QLineF hrz, QPainter* painter )
+{
+  bool result = false;
+
+  MapItem* item = dynamic_cast<MapItem*>(parentItem());
+  if(!item)
+  {
+    return result;    
+  }
+
+  MapModel* mapModel = dynamic_cast<MapModel*>(item->getModel());
+  if(!mapModel)
+  {
+    return result;    
+  }
+
+  GridMapModel* model = dynamic_cast<GridMapModel*>(m_model);
+  if(!model)
+  {
+    return result;
+  }
+
+  painter->save();
+
+  double crossOffSet = model->getCrossOffSet();   
+
+  te::gm::Envelope boxMM = mapModel->getMapBox();
+
+  te::gm::Envelope boxWithOffSet(boxMM.m_llx + crossOffSet, boxMM.m_lly + crossOffSet, boxMM.m_urx - crossOffSet, boxMM.m_ury - crossOffSet);
+  
+  te::gm::Envelope lneHrz(hrz.x1(), hrz.y1(), hrz.x2(), hrz.y2());
+  te::gm::Envelope lneVrt(vrt.x1(), vrt.y1(), vrt.x2(), vrt.y2());
+
+  QRectF recWithOffSet(boxMM.m_llx, boxMM.m_lly, boxMM.m_urx, boxMM.m_ury);
+
+  painter->drawRect(recWithOffSet);
+
+  bool resultMapLneTop = boxWithOffSet.touches(lneHrz);
+  if(!resultMapLneTop)
+  {
+    return true;
+  }
+
+  painter->restore();
+
+  return result;
 }
 
 
