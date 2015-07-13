@@ -356,8 +356,8 @@ void te::layout::MapItem::mouseMoveEvent( QGraphicsSceneMouseEvent * event )
     QApplication::sendEvent(m_mapDisplay, &mouseEvent);
     event->setAccepted(mouseEvent.isAccepted());
 
-    this->update();
     m_pixmapIsDirty = true;
+    QGraphicsItem::update();
   }
 }
 
@@ -384,7 +384,8 @@ void te::layout::MapItem::mousePressEvent( QGraphicsSceneMouseEvent * event )
     QGraphicsItem::setCursor(m_mapDisplay->cursor());
     event->setAccepted(mouseEvent.isAccepted());
 
-    this->update();
+    m_pixmapIsDirty = true;
+    QGraphicsItem::update();
   }
 }
 
@@ -410,9 +411,28 @@ void te::layout::MapItem::mouseReleaseEvent( QGraphicsSceneMouseEvent * event )
     QApplication::sendEvent(m_mapDisplay, &mouseEvent);
     event->setAccepted(mouseEvent.isAccepted());
 
-    this->update();
+    m_pixmapIsDirty = true;
+    QGraphicsItem::update();
   }
   refresh();
+}
+
+void te::layout::MapItem::wheelEvent ( QGraphicsSceneWheelEvent * event )
+{
+  ItemUtils* iUtils = Context::getInstance().getItemUtils();
+  if(!iUtils)
+    return;
+
+  QRectF rect = boundingRect();
+  QPointF point = event->pos();
+  QPointF remappedPoint = remapPointToViewport(point, rect, m_mapDisplay->rect());
+
+  QWheelEvent wheelEvent(remappedPoint.toPoint(), event->delta(),event->buttons(), event->modifiers());
+  QApplication::sendEvent(m_mapDisplay, &wheelEvent);
+  event->setAccepted(wheelEvent.isAccepted());
+
+  m_pixmapIsDirty = true;
+  QGraphicsItem::update();
 }
 
 void te::layout::MapItem::getMimeData( const QMimeData* mime )
