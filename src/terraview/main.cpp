@@ -103,14 +103,6 @@ int main(int argc, char** argv)
 
       splash.show();
 
-      QStringList ithemes = QIcon::themeSearchPaths();
-
-      ithemes <<QString("/home/fred-bd/Documentos/funcate/terralib5_rc/terralib5/share/terralib/icons");
-
-      QIcon::setThemeSearchPaths(ithemes);
-
-      QIcon::setThemeName("terralib");
-
       TerraView tview;
 
 //      tview.resetTerraLib(waitVal != RESTART_CODE);

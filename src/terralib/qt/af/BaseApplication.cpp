@@ -11,14 +11,9 @@
 #include "events/LayerEvents.h"
 #include "Utils.h"
 
-#include "../widgets/datasource/selector/DataSourceSelectorDialog.h"
-#include "../widgets/datasource/core/DataSourceType.h"
-#include "../widgets/datasource/core/DataSourceTypeManager.h"
-#include "../widgets/layer/explorer/AbstractTreeItem.h"
 #include "../widgets/tools/ZoomArea.h"
 #include "../widgets/tools/Pan.h"
 #include "../widgets/tools/Selection.h"
-#include "../widgets/layer/selector/AbstractLayerSelector.h"
 #include "../widgets/srs/SRSManagerDialog.h"
 
 #include "../../common/TerraLib.h"
