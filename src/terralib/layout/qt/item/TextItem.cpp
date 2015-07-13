@@ -38,6 +38,7 @@
 #include "../../item/TextModel.h"
 #include "../../core/property/Properties.h"
 #include "../core/pattern/command/ChangePropertyCommand.h"
+#include "../../core/enum/EnumAlignmentType.h"
 
 // STL
 #include <string>
@@ -52,20 +53,13 @@
 #include <QStyleOptionGraphicsItem>
 #include <QWidget>
 #include <QKeyEvent>
-#include <QGraphicsView>
 #include <QList>
-#include "terralib/qt/widgets/propertybrowser/AbstractPropertyManager.h"
-#include "terralib/se/Utils.h"
-#include "terralib/qt/widgets/se/BasicFillPropertyItem.h"
-#include "../../core/enum/EnumAlignmentType.h"
-#include "qlabel.h"
-#include "qpainter.h"
-#include "qgraphicsitem.h"
-
+#include <QTextOption>
 
 te::layout::TextItem::TextItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
   ParentItem<QGraphicsTextItem>(controller, o, true),
   m_editable(false),
+  m_table(0),
   m_move(false)
 {  
   m_nameClass = std::string(this->metaObject()->className());
@@ -91,6 +85,8 @@ void te::layout::TextItem::init()
   m_fontColor.setRgb(0,0,0);
   setDefaultTextColor(m_fontColor);
   document()->setDefaultFont(ft);
+
+  applyAlignment();
   
   std::string name = m_model->getName();
   TextModel* model = dynamic_cast<TextModel*>(m_model);
@@ -128,6 +124,8 @@ void te::layout::TextItem::updateObserver( ContextItem context )
     return;
 
   updateTextConfig();
+
+  applyAlignment();
   
   std::string txt = model->getText();
   document()->setPlainText(txt.c_str());
@@ -149,7 +147,7 @@ void te::layout::TextItem::paint( QPainter * painter, const QStyleOptionGraphics
   updateTextConfig();
 
   drawBackground( painter );
-  
+
   QGraphicsTextItem::paint(painter, option, widget);
 
   drawFrame(painter);
@@ -158,28 +156,6 @@ void te::layout::TextItem::paint( QPainter * painter, const QStyleOptionGraphics
   if (option->state & QStyle::State_Selected)
   {
     drawSelection(painter);
-  }
-
-   TextModel* model = dynamic_cast<TextModel*>(m_model);
-
-  if(model)
-  {
-    EnumAlignmentType* enumScale = model->getEnumAlignmentType();
-
-    if(model->getCurrentAlignmentType() == enumScale->getAlignmentCenterType())
-    {
-      drawAlignmentCenter(painter);
-    }
-
-    if(model->getCurrentAlignmentType() == enumScale->getAlignmentLeftType())
-    {
-      drawAlignmentLeft(painter);
-    }
-
-    if(model->getCurrentAlignmentType() == enumScale->getAlignmentRightType())
-    {
-      drawAlignmentRight(painter);
-    }
   }
 }
 
@@ -317,25 +293,24 @@ void te::layout::TextItem::keyPressEvent( QKeyEvent * event )
 
 void te::layout::TextItem::mouseDoubleClickEvent( QGraphicsSceneMouseEvent * event )
 {
-  QTextCursor cursor(textCursor());
-  setTextCursor(cursor);
-  setEditable(true);
-  setTextInteractionFlags(Qt::TextEditorInteraction);
-
-  qDebug("mouseDoubleClickEvent '%s'", this->toPlainText().toStdString().c_str());
-  if(textInteractionFlags() == Qt::TextEditorInteraction)
+  if(event->button() == Qt::LeftButton)
   {
-    QGraphicsTextItem::mouseDoubleClickEvent(event);
-    setTextInteractionFlags(Qt::TextEditorInteraction);
-    return;
+    m_editable = !m_editable;
+    if(m_editable)
+    {
+      //If enabled is true, this item will accept hover events
+      setTextInteractionFlags(Qt::TextEditorInteraction);
+      setCursor(Qt::IBeamCursor);
+      QTextCursor cursor(textCursor());
+      cursor.clearSelection();
+      setTextCursor(cursor);
+      setFocus();
+    }
+    else
+    {
+      setCursor(Qt::ArrowCursor);
+    }
   }
-
-  QGraphicsSceneMouseEvent *click = new QGraphicsSceneMouseEvent(QEvent::GraphicsSceneMousePress);
-  click->setButton(event->button());
-  click->setPos(event->pos());
-  QGraphicsTextItem::mousePressEvent(click);
-  delete click;
-
 }
 
 void te::layout::TextItem::mouseMoveEvent( QGraphicsSceneMouseEvent * event )
@@ -417,6 +392,7 @@ void te::layout::TextItem::resetEdit()
   after being completely closed and like this not cause bad behavior.*/
   QTextCursor cursor(textCursor());
   cursor.clearSelection();
+  setTextCursor(cursor);
   setTextInteractionFlags(Qt::NoTextInteraction);
   unsetCursor();
   clearFocus();     
@@ -469,18 +445,34 @@ QRectF te::layout::TextItem::boundingRect() const
   return QGraphicsTextItem::boundingRect();
 }
 
-void te::layout::TextItem::drawAlignmentCenter(QPainter * painter)
+void te::layout::TextItem::applyAlignment()
 {
+  TextModel* model = dynamic_cast<TextModel*>(m_model);
+  if(!model)
+  {
+    return;
+  }
 
+  QTextOption txtOpt = document()->defaultTextOption();
+  EnumAlignmentType* enumScale = model->getEnumAlignmentType();
+
+  if(model->getCurrentAlignmentType() == enumScale->getAlignmentCenterType())
+  {
+    txtOpt.setAlignment(Qt::AlignCenter);
+  }
+
+  if(model->getCurrentAlignmentType() == enumScale->getAlignmentLeftType())
+  {
+    txtOpt.setAlignment(Qt::AlignLeft);
+  }
+
+  if(model->getCurrentAlignmentType() == enumScale->getAlignmentRightType())
+  {
+    txtOpt.setAlignment(Qt::AlignRight);
+  }
+  document()->setDefaultTextOption(txtOpt);
 }
 
-void te::layout::TextItem::drawAlignmentLeft(QPainter * painter)
-{
 
-}
 
-void te::layout::TextItem::drawAlignmentRight(QPainter * painter)
-{
-
-}
 
