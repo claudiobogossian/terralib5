@@ -25,6 +25,9 @@
 #include "../../../dataaccess/query/DataSetName.h"
 #include "../../../dataaccess/query/Field.h"
 #include "../../../dataaccess/query/From.h"
+#include "../../../dataaccess/query/In.h"
+#include "../../../dataaccess/query/Literal.h"
+#include "../../../dataaccess/query/Or.h"
 #include "../../../dataaccess/query/OrderBy.h"
 #include "../../../dataaccess/query/OrderByItem.h"
 #include "../../../dataaccess/query/Select.h"
@@ -1106,13 +1109,26 @@ void te::qt::widgets::DataSetTableView::changeColumnData(const int& column)
     return;
 
   std::auto_ptr<te::da::DataSetType> schema = m_layer->getSchema();
+  te::da::PrimaryKey* pk = schema->getPrimaryKey();
   std::string dsetName = schema->getName();
-  std::string columnName = schema->getProperty(column)->getName();
+  te::dt::Property* prop = schema->getProperty(column);
+  std::string columnName = prop->getName();
   std::vector<QString> cols = GetColumnsNames(m_dset);
+
+  std::map<std::string, int> pkColumnsType;
+
+  std::vector<te::dt::Property*> pkProps = pk->getProperties();
+
+  for (size_t i = 0; i < pkProps.size(); i++)
+  {
+    pkColumnsType[pkProps[i]->getName()] = pkProps[i]->getType();
+  }
 
   AlterDataDialog dlg(parentWidget());
   dlg.setSelectedColumn(columnName.c_str());
   dlg.setDataColumns(cols);
+  if (prop->getType() == te::dt::STRING_TYPE)
+    dlg.setHelpLabelText(tr("This is a string column, use single quotes"));
 
   if(dlg.exec() == QDialog::Accepted)
   {
@@ -1121,13 +1137,105 @@ void te::qt::widgets::DataSetTableView::changeColumnData(const int& column)
     if(dsrc.get() == 0)
       throw Exception(tr("Fail to get data source.").toStdString());
 
-    std::string sql;
-
-    if(dlg.alterAllData())
-      sql = "UPDATE " + dsetName + " SET " + columnName + " = " + dlg.getExpression().toStdString();
+    std::string sql = "UPDATE " + dsetName + " SET " + columnName + " = " + dlg.getExpression().toStdString();
 
     try
     {
+      //TODO: create class Update at dataaccess/query to do this operations
+      //Obs: not working when the dataset primary key has more than two properties
+      if (!dlg.alterAllData())
+      {
+        const te::da::ObjectIdSet* objSet =  m_layer->getSelected();
+
+        std::vector<std::string> pkCols =  objSet->getPropertyNames();
+
+        te::da::Expression* exp = objSet->getExpressionByInClause();
+
+        te::da::In* inExp = dynamic_cast<te::da::In*>(exp);
+        te::da::Or* orExp = dynamic_cast<te::da::Or*>(exp);
+      
+        te::da::In* orFirstInExp = 0;
+        te::da::In* orSecondInExp = 0;
+
+        std::string orFirstInExpStr = " IN (";
+        std::string orSecondInExpStr = " IN (";
+
+        if (orExp) // more than one properties at primary key
+        {
+          orFirstInExp = dynamic_cast<te::da::In*>(orExp->getFirst());
+          orSecondInExp = dynamic_cast<te::da::In*>(orExp->getSecond());
+
+          for (std::size_t i = 0; i < orFirstInExp->getNumArgs(); ++i)
+          {
+            te::da::Expression* a1 = orFirstInExp->getArg(i);
+
+            te::da::Literal* l1 = dynamic_cast<te::da::Literal*>(a1);
+
+            std::string inStr = l1->getValue()->toString();
+
+            if (pkColumnsType[objSet->getPropertyNames()[0]] == te::dt::STRING_TYPE)
+              inStr = "'" + inStr + "'";
+
+            if (i == orFirstInExp->getNumArgs() - 1)
+              orFirstInExpStr += inStr + ")";
+            else
+              orFirstInExpStr += inStr + ",";
+          }
+
+          for (std::size_t i = 0; i < orSecondInExp->getNumArgs(); ++i)
+          {
+            te::da::Expression* a1 = orSecondInExp->getArg(i);
+
+            te::da::Literal* l1 = dynamic_cast<te::da::Literal*>(a1);
+
+            std::string inStr = l1->getValue()->toString();
+
+            if (pkColumnsType[objSet->getPropertyNames()[1]] == te::dt::STRING_TYPE)
+              inStr = "'" + inStr + "'";
+
+            if (i == orSecondInExp->getNumArgs() - 1)
+              orSecondInExpStr += inStr + ")";
+            else
+              orSecondInExpStr += inStr + ",";
+          }
+
+          sql += " WHERE " + objSet->getPropertyNames()[0] + orFirstInExpStr + " AND " + objSet->getPropertyNames()[1] + orSecondInExpStr;
+
+        }
+        else if (inExp)
+        {
+
+          std::string inExpStr = " IN (";
+
+          for (std::size_t i = 0; i < inExp->getNumArgs(); ++i)
+          {
+            te::da::Expression* a1 = inExp->getArg(i);
+
+            te::da::Literal* l1 = dynamic_cast<te::da::Literal*>(a1);          
+
+            std::string inStr = l1->getValue()->toString();
+
+            if (pkColumnsType[objSet->getPropertyNames()[0]] == te::dt::STRING_TYPE)
+              inStr = "'" + inStr + "'";
+
+            if (i == inExp->getNumArgs() - 1)
+            {
+              inExpStr += inStr + ")";
+            }
+            else
+            {
+              inExpStr += inStr + ",";
+            }
+          }
+
+          sql += " WHERE " + objSet->getPropertyNames()[0] + inExpStr;
+        }      
+
+      }
+
+      // Ignore \n
+      std::replace(sql.begin(), sql.end(), '\n', ' ');
+
       dsrc->execute(sql);
 
       m_layer->setOutOfDate();
