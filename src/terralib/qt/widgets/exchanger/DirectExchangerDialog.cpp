@@ -37,6 +37,8 @@
 #include "../../../geometry/GeometryProperty.h"
 #include "../../../maptools/DataSetLayer.h"
 #include "../../widgets/datasource/selector/DataSourceExplorerDialog.h"
+#include "../../widgets/datasource/core/DataSourceType.h"
+#include "../../widgets/datasource/core/DataSourceTypeManager.h"
 #include "../../widgets/srs/SRSManagerDialog.h"
 #include "DirectExchangerDialog.h"
 #include "ui_DirectExchangerDialogForm.h"
@@ -607,7 +609,22 @@ void te::qt::widgets::DirectExchangerDialog::setOutputDataSources()
 {
   m_ui->m_dsTypeComboBox->clear();
 
-  m_ui->m_dsTypeComboBox->addItem(QIcon::fromTheme("datasource-postgis"), tr("PostGIS"), QVariant("POSTGIS"));
-  m_ui->m_dsTypeComboBox->addItem(QIcon::fromTheme("datasource-ado"), tr("Microsoft Access"), QVariant("ADO"));
-  m_ui->m_dsTypeComboBox->addItem(QIcon::fromTheme("datasource-ogr"), tr("File - OGR Formats"), QVariant("OGR"));
+  // add the list of data sources available in the system
+  std::map<std::string, DataSourceType*>::const_iterator it = DataSourceTypeManager::getInstance().begin();
+  std::map<std::string, DataSourceType*>::const_iterator itend = DataSourceTypeManager::getInstance().end();
+
+  while (it != itend)
+  {
+    std::string dataSourceName = it->first;
+
+    if (dataSourceName == "POSTGIS" || dataSourceName == "ADO" || dataSourceName == "OGR")
+    {
+      QIcon icon = it->second->getIcon(DataSourceType::ICON_DATASOURCE_SMALL);
+      QString title = QString::fromStdString(it->second->getTitle());
+
+      m_ui->m_dsTypeComboBox->addItem(icon, title, QVariant(dataSourceName.c_str()));
+    }
+
+    ++it;
+  }
 }
