@@ -156,19 +156,18 @@ void te::layout::LegendItem::drawItem( QPainter * painter )
   double htxtInPixels = 0.;
 
   utils->textBoundingBox(wtxtInPixels, htxtInPixels, title);
-
-  wtxtInPixels = utils->mm2pixel(wtxtInPixels);
-  htxtInPixels = utils->mm2pixel(htxtInPixels);
-
+  
   QRectF rectTitle (x1, y1, wtxtInPixels, htxtInPixels);
 
   painter->setFont(qfont);
   painter->setBrush(qFontColor);
 
-  QPointF pt(x1, y1);
-  drawText(pt, painter, title);
+  painter->drawText(rectTitle, qTitle);
 
   y1 += dispBetweenTitleAndSymbolsInPixels;
+
+  double widthBox = 0.;
+  double heightBox = 0.;
 
   te::map::Grouping* grouping = layer->getGrouping();
 
@@ -206,8 +205,11 @@ void te::layout::LegendItem::drawItem( QPainter * painter )
       painter->setFont(qfont);
       painter->setBrush(qFontColor);
 
-      QPointF pt(labelX1, y1);
-      drawText(pt, painter, label);
+      utils->textBoundingBox(wtxtInPixels, htxtInPixels, label);
+
+      QRectF labelRect (labelX1, y1, wtxtInPixels, htxtInPixels);
+      QString qLabel (label.c_str());
+      painter->drawText(labelRect, qLabel);
 
       painter->restore();
 
@@ -249,15 +251,23 @@ void te::layout::LegendItem::drawItem( QPainter * painter )
         // Configuring...
         te::map::CanvasConfigurer cc(&geomCanvas);
         cc.config(symbol);
-
+        
         // Let's draw!
         geomCanvas.draw(geom);
 
+        if(widthBox < (labelRect.width() + symbolSizeInPixels))
+        {
+          widthBox = labelRect.width() + symbolSizeInPixels;
+        }
+        
+        heightBox+= symbolSizeInPixels + dispBetweenSymbolsInPixels;
       }
 
       y1 += dispBetweenSymbolsInPixels;
     }
   }
+
+  this->setRect(QRectF(0, 0, widthBox, heightBox));
 }
 
 QVariant te::layout::LegendItem::itemChange( GraphicsItemChange change, const QVariant & value )
