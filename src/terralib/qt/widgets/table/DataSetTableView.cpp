@@ -1121,12 +1121,15 @@ void te::qt::widgets::DataSetTableView::changeColumnData(const int& column)
 
   std::auto_ptr<te::da::DataSetType> schema = m_layer->getSchema();
   std::string dsetName = schema->getName();
-  std::string columnName = schema->getProperty(column)->getName();
+  te::dt::Property* prop = schema->getProperty(column);
+  std::string columnName = prop->getName();
   std::vector<QString> cols = GetColumnsNames(m_dset);
 
   AlterDataDialog dlg(parentWidget());
   dlg.setSelectedColumn(columnName.c_str());
   dlg.setDataColumns(cols);
+  if (prop->getType() == te::dt::STRING_TYPE)
+    dlg.setHelpLabelText(tr("This is a string column, use single quotes"));
 
   if(dlg.exec() == QDialog::Accepted)
   {
