@@ -166,7 +166,7 @@ namespace te
 
     SegmenterStrategy::BlocksMergingMethod SegmenterDummyStrategy::getBlocksMergingMethod() const
     {
-      return SegmenterStrategy::BlocksMergingMethod::GradientMerging;
+      return SegmenterStrategy::GradientMerging;
     }
     
     SegmenterDummyStrategyFactory::SegmenterDummyStrategyFactory()
