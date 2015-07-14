@@ -1233,6 +1233,9 @@ void te::qt::widgets::DataSetTableView::changeColumnData(const int& column)
 
       }
 
+      // Ignore \n
+      std::replace(sql.begin(), sql.end(), '\n', ' ');
+
       dsrc->execute(sql);
 
       m_layer->setOutOfDate();
