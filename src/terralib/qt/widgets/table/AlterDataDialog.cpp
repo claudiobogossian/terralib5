@@ -27,6 +27,8 @@ QDialog(parent)
   m_ui.reset(new Ui::AlterDataDialogForm);
   m_ui->setupUi(this);
 
+  m_ui->m_helpLabel->setVisible(false);
+
   connect (m_ui->m_closePushButton, SIGNAL(pressed()), SLOT(reject()));
   connect (m_ui->m_executePushButton, SIGNAL(pressed()), SLOT(accept()));
 
@@ -94,4 +96,10 @@ void te::qt::widgets::AlterDataDialog::divPressed()
 void te::qt::widgets::AlterDataDialog::columnChanged(const QString& col)
 {
   m_ui->m_expressionTextEdit->insertPlainText(col + " ");
+}
+
+void te::qt::widgets::AlterDataDialog::setHelpLabelText(const QString& text)
+{
+  m_ui->m_helpLabel->setVisible(true);
+  m_ui->m_helpLabel->setText(text);
 }

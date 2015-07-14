@@ -60,6 +60,8 @@ namespace te
 
           void setDataColumns(const std::vector<QString>& cols);
 
+          void setHelpLabelText(const QString& text);
+
           bool alterAllData();
 
           QString getExpression();
