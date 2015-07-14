@@ -1120,10 +1120,20 @@ void te::qt::widgets::DataSetTableView::changeColumnData(const int& column)
     return;
 
   std::auto_ptr<te::da::DataSetType> schema = m_layer->getSchema();
+  te::da::PrimaryKey* pk = schema->getPrimaryKey();
   std::string dsetName = schema->getName();
   te::dt::Property* prop = schema->getProperty(column);
   std::string columnName = prop->getName();
   std::vector<QString> cols = GetColumnsNames(m_dset);
+
+  std::map<std::string, int> pkColumnsType;
+
+  std::vector<te::dt::Property*> pkProps = pk->getProperties();
+
+  for (size_t i = 0; i < pkProps.size(); i++)
+  {
+    pkColumnsType[pkProps[i]->getName()] = pkProps[i]->getType();
+  }
 
   AlterDataDialog dlg(parentWidget());
   dlg.setSelectedColumn(columnName.c_str());
@@ -1172,10 +1182,15 @@ void te::qt::widgets::DataSetTableView::changeColumnData(const int& column)
 
             te::da::Literal* l1 = dynamic_cast<te::da::Literal*>(a1);
 
+            std::string inStr = l1->getValue()->toString();
+
+            if (pkColumnsType[objSet->getPropertyNames()[0]] == te::dt::STRING_TYPE)
+              inStr = "'" + inStr + "'";
+
             if (i == orFirstInExp->getNumArgs() - 1)
-              orFirstInExpStr += l1->getValue()->toString() + ")";
+              orFirstInExpStr += inStr + ")";
             else
-              orFirstInExpStr += l1->getValue()->toString() + ",";
+              orFirstInExpStr += inStr + ",";
           }
 
           for (std::size_t i = 0; i < orSecondInExp->getNumArgs(); ++i)
@@ -1184,10 +1199,15 @@ void te::qt::widgets::DataSetTableView::changeColumnData(const int& column)
 
             te::da::Literal* l1 = dynamic_cast<te::da::Literal*>(a1);
 
+            std::string inStr = l1->getValue()->toString();
+
+            if (pkColumnsType[objSet->getPropertyNames()[1]] == te::dt::STRING_TYPE)
+              inStr = "'" + inStr + "'";
+
             if (i == orSecondInExp->getNumArgs() - 1)
-              orSecondInExpStr += l1->getValue()->toString() + ")";
+              orSecondInExpStr += inStr + ")";
             else
-              orSecondInExpStr += l1->getValue()->toString() + ",";
+              orSecondInExpStr += inStr + ",";
           }
 
           sql += " WHERE " + objSet->getPropertyNames()[0] + orFirstInExpStr + " AND " + objSet->getPropertyNames()[1] + orSecondInExpStr;
@@ -1204,10 +1224,19 @@ void te::qt::widgets::DataSetTableView::changeColumnData(const int& column)
 
             te::da::Literal* l1 = dynamic_cast<te::da::Literal*>(a1);          
 
+            std::string inStr = l1->getValue()->toString();
+
+            if (pkColumnsType[objSet->getPropertyNames()[0]] == te::dt::STRING_TYPE)
+              inStr = "'" + inStr + "'";
+
             if (i == inExp->getNumArgs() - 1)
-              inExpStr += l1->getValue()->toString() + ")";
+            {
+              inExpStr += inStr + ")";
+            }
             else
-              inExpStr += l1->getValue()->toString() + ",";
+            {
+              inExpStr += inStr + ",";
+            }
           }
 
           sql += " WHERE " + objSet->getPropertyNames()[0] + inExpStr;
