@@ -612,6 +612,8 @@ te::qt::widgets::Scatter* te::qt::widgets::createScatter(te::da::DataSet* datase
   if(rpos != std::string::npos)
   {
     std::auto_ptr<te::rst::Raster> raster(dataset->getRaster(rpos));
+    double xDummyValue = raster->getBand(propX)->getProperty()->m_noDataValue;
+    double yDummyValue = raster->getBand(propY)->getProperty()->m_noDataValue;
 
     unsigned int nCol = raster->getNumberOfColumns();
     unsigned int nLin = raster->getNumberOfRows();
@@ -638,6 +640,13 @@ te::qt::widgets::Scatter* te::qt::widgets::createScatter(te::da::DataSet* datase
         raster->getValue(pit.getColumn(), pit.getRow(), val1, propX);
         raster->getValue(pit.getColumn(), pit.getRow(), val2, propY);
 
+        if ((val1 == xDummyValue) || (val2 == yDummyValue))
+        {
+          ++pit;
+          task.pulse();
+          continue;
+        }
+
         newScatter->addX(val1);
         newScatter->addY(val2);
         ++pit;
@@ -657,6 +666,9 @@ te::qt::widgets::Scatter* te::qt::widgets::createScatter(te::da::DataSet* datase
           double val1, val2;
           raster->getValue(c, r, val1, propX);
           raster->getValue(c, r, val2, propY);
+
+          if ((val1 == xDummyValue) || (val2 == yDummyValue))
+            continue;
 
           newScatter->addX(val1);
           newScatter->addY(val2);
@@ -781,13 +793,16 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
   if(rpos != std::string::npos)
   {
     std::auto_ptr<te::rst::Raster> rstptr = dataset->getRaster(rpos);
-    std::map<double, unsigned int> values =  rstptr->getBand(propId)->getHistogramR(0, 0, 0, 0, slices);
+    std::map<double, unsigned int> values =  rstptr->getBand(propId)->getHistogramR();
+    double dummyValue = rstptr->getBand(propId)->getProperty()->m_noDataValue;
 
     for(std::map<double, unsigned int>::iterator it = values.begin(); it != values.end(); ++it)
     {
-      newHistogram->insert(std::make_pair(new te::dt::Double(it->first), it->second));
+      if (it->first != dummyValue)
+        newHistogram->insert(std::make_pair(new te::dt::Double(it->first), it->second));
     }
     newHistogram->setMinValue(rstptr->getBand(propId)->getMinValue(true).real());
+    newHistogram->setSummarized(false);
   }
   else
   {
@@ -882,13 +897,16 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
   {
     std::auto_ptr<te::rst::Raster> rstptr = dataset->getRaster(rpos);
     std::map<double, unsigned int> values =  rstptr->getBand(propId)->getHistogramR();
+    double dummyValue = rstptr->getBand(propId)->getProperty()->m_noDataValue;
 
     for(std::map<double, unsigned int>::iterator it = values.begin(); it != values.end(); ++it)
     {
       task.pulse();
-      newHistogram->insert(std::make_pair(new te::dt::Double(it->first), it->second));
+      if (it->first != dummyValue)
+        newHistogram->insert(std::make_pair(new te::dt::Double(it->first), it->second));
     }
     newHistogram->setMinValue(rstptr->getBand(propId)->getMinValue(true).real());
+    newHistogram->setSummarized(false);
   }
   else
   {
