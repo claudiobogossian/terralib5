@@ -203,6 +203,7 @@ void te::layout::MapItem::updateObserver( ContextItem context )
     if(refreshMap == true)
     {
       m_mapDisplay->refresh();
+      m_pixmapIsDirty = true;
     }
 
     calculateFrameMargin();
