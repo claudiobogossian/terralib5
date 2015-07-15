@@ -1562,7 +1562,7 @@ void te::layout::GridSettingsOutside::initCombo( QWidget* widget, std::string na
   QString value = variant.toString();
   variant.setValue(value);
   
-  index = combo->findData(variant);
+  index = combo->findData(variant, Qt::DisplayRole);
   if ( index == -1 ) 
   { 
     index = combo->findText(value);

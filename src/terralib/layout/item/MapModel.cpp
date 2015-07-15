@@ -532,7 +532,7 @@ bool te::layout::MapModel::isPlanar()
   return result;
 }
 
-te::gm::Envelope te::layout::MapModel::getWorldBox()
+te::gm::Envelope te::layout::MapModel::getPlanarWorldBox()
 {
   te::gm::Envelope worldBox;
 
@@ -572,6 +572,11 @@ te::gm::Envelope te::layout::MapModel::getWorldBox()
   }
 
   return worldBox;
+}
+
+te::gm::Envelope te::layout::MapModel::getWorldBox()
+{
+  return m_worldBox;
 }
 
 std::map<te::gm::Point*, std::string> te::layout::MapModel::getTextMapAsObjectInfo()
@@ -776,4 +781,8 @@ void te::layout::MapModel::updateMapDisplacementY( double displacementY )
   m_mapDisplacementY = displacementY;
 }
 
+void te::layout::MapModel::setWorldBox(te::gm::Envelope env)
+{
+  m_worldBox = env;
+}
 

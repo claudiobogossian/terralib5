@@ -235,6 +235,7 @@ namespace te
         std::list<te::map::AbstractLayerPtr>          m_oldLayers;
         int                                           m_currentMapScale;
         int                                           m_oldMapScale;
+        bool                                          m_forceMapRefresh;
     };
   }
 }
