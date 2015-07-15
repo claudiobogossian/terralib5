@@ -78,13 +78,13 @@ std::vector<int> GetHiddenSections(QHeaderView* hView, te::da::DataSet* dset)
 {
   std::vector<int> res;
 
-  int sz = dset->getNumProperties();
+  std::size_t sz = dset->getNumProperties();
 
   if(sz > 0)
   {
     for (int i=0; i<sz; i++)
-      if(hView->isSectionHidden(i) && !IsGeometryColumn(dset, i))
-        res.push_back(i);
+      if(hView->isSectionHidden((int)i) && !IsGeometryColumn(dset, i))
+        res.push_back((int)i);
   }
 
   return res;
@@ -334,7 +334,7 @@ std::auto_ptr<te::gm::Envelope> GetExtent(te::da::DataSet* dset, te::qt::widgets
 
   if(!geoCols.empty())
   {
-    int rpos = p->getLogicalRow(rowPosition);
+    std::size_t rpos = p->getLogicalRow(rowPosition);
 
     dset->move(rpos);
 
@@ -391,7 +391,7 @@ void HideTsVectorColumn(te::da::DataSet* dset, te::qt::widgets::DataSetTableView
    
     for(std::size_t i = 0; i < nProps; ++i)
       if(dset->getPropertyName(i) == "tsvector")
-        view->hideColumn(i);
+        view->hideColumn((int)i);
   }
 }
 
