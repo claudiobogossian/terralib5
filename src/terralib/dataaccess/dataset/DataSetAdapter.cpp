@@ -36,6 +36,7 @@
 #include "../../geometry/GeometryProperty.h"
 #include "../../geometry/Envelope.h"
 #include "../../raster/Raster.h"
+#include "../../srs/Config.h"
 #include "../datasource/DataSourceCapabilities.h"
 #include "../utils/Utils.h"
 #include "../Exception.h"
@@ -292,8 +293,8 @@ te::dt::AbstractData* te::da::DataSetAdapter::getAdaptedValue(std::size_t i) con
   {
     te::gm::Geometry* geom = dynamic_cast<te::gm::Geometry*>(data);
 
-    if(geom)
-      geom->setSRID(m_srid);
+    if (geom && (geom->getSRID() != TE_UNKNOWN_SRS) && (m_srid != TE_UNKNOWN_SRS) && (geom->getSRID() != m_srid))
+      geom->transform(m_srid);
   }
 
   return data;
