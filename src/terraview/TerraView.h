@@ -104,6 +104,8 @@ class TerraView : public te::qt::af::BaseApplication
 
     void onOpenProjectTriggered();
 
+    void onNewProjectTriggered();
+
   protected:
 
     void projectChanged();

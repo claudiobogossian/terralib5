@@ -80,9 +80,14 @@ void te::qt::af::BaseApplication::init(const QString& cfgFile)
   }
 }
 
-te::qt::widgets::LayerExplorer*te::qt::af::BaseApplication::getLayerExplorer()
+te::qt::widgets::LayerExplorer* te::qt::af::BaseApplication::getLayerExplorer()
 {
   return m_ui->m_layerExplorer;
+}
+
+te::qt::widgets::MapDisplay* te::qt::af::BaseApplication::getMapDisplay()
+{
+  return m_ui->m_display;
 }
 
 void te::qt::af::BaseApplication::onDrawTriggered()

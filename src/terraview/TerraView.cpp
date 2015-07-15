@@ -757,6 +757,23 @@ void TerraView::onOpenProjectTriggered()
   openProject(fileName);
 }
 
+void TerraView::onNewProjectTriggered()
+{
+  checkAndSaveProject();
+
+  m_project->m_fileName = "";
+  m_project->m_title = tr("Default Project");
+  m_project->m_changed = false;
+
+  setWindowTitle(m_app->getAppName() + " - " + m_project->m_title);
+
+  std::list<te::map::AbstractLayerPtr> ls;
+
+  getLayerExplorer()->set(ls);
+
+  getMapDisplay()->setLayerList(ls);
+}
+
 void TerraView::projectChanged()
 {
   if(m_project->m_changed)

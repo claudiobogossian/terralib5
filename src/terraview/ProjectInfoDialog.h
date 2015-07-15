@@ -1,94 +1,83 @@
-///*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
-//    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
-//    TerraLib is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Lesser General Public License as published by
-//    the Free Software Foundation, either version 3 of the License,
-//    or (at your option) any later version.
+TerraLib is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License,
+or (at your option) any later version.
 
-//    TerraLib is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-//    GNU Lesser General Public License for more details.
+TerraLib is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Lesser General Public License for more details.
 
-//    You should have received a copy of the GNU Lesser General Public License
-//    along with TerraLib. See COPYING. If not, write to
-//    TerraLib Team at <terralib-team@terralib.org>.
-// */
+You should have received a copy of the GNU Lesser General Public License
+along with TerraLib. See COPYING. If not, write to
+TerraLib Team at <terralib-team@terralib.org>.
+*/
 
-///*!
-//  \file terralib/qt/af/ProjectInfoDialog.h
+/*!
+\file terralib/qt/af/ProjectInfoDialog.h
 
-//  \brief A dialog for edition of te::qt::af::Project informations.
-//*/
+\brief A dialog for edition of te::qt::af::Project informations.
+*/
 
-//#ifndef __TERRALIB_QT_AF_INTERNAL_PROJECTINFODIALOG_H
-//#define __TERRALIB_QT_AF_INTERNAL_PROJECTINFODIALOG_H
+#ifndef __TERRAVIEW_INTERNAL_PROJECTINFODIALOG_H
+#define __TERRAVIEW_INTERNAL_PROJECTINFODIALOG_H
 
-//#include <QDialog>
+#include <QDialog>
 
-//#include "Config.h"
+// Forward declaration
+struct ProjectMetadata;
+class ProjectInfoWidget;
 
-//namespace te
-//{
-//  namespace qt
-//  {
-//    namespace af
-//    {
-//      // Forward declaration
-//      class Project;
-//      class ProjectInfoWidget;
+/*!
+	\class
 
-//      /*!
-//        \class
+	\brief
+*/
+class ProjectInfoDialog : public QDialog
+{
+	Q_OBJECT
 
-//        \brief
-//      */
-//      class TEQTAFEXPORT ProjectInfoDialog : public QDialog
-//      {
-//        Q_OBJECT
+	public:
 
-//        public:
+		/*!
+			\brief Constructor.
 
-//          /*!
-//            \brief Constructor.
+			\param parent QWidget parent.
+		*/
+		ProjectInfoDialog(QWidget* parent=0);
 
-//            \param parent QWidget parent.
-//          */
-//          ProjectInfoDialog(QWidget* parent=0);
+		/*!
+			\brief Destructor.
+		*/
+		~ProjectInfoDialog();
 
-//          /*!
-//            \brief Destructor.
-//          */
-//          ~ProjectInfoDialog();
+		/*!
+			\brief Sets the project to be inspected.
 
-//          /*!
-//            \brief Sets the project to be inspected.
+			\param proj The te::qt::af::Project to be presented.
+		*/
+    void setProject(ProjectMetadata* proj);
 
-//            \param proj The te::qt::af::Project to be presented.
-//          */
-//          void setProject(Project* proj);
+	protected slots:
 
-//        protected slots:
+		/*!
+			\brief Called on ok button pressed.
+		*/
+		void onOkPushButtonPressed();
 
-//          /*!
-//            \brief Called on ok button pressed.
-//          */
-//          void onOkPushButtonPressed();
+		/*!
+			\brief Called on help button pressed.
+		*/
+		void onHelpPushButtonPressed();
 
-//          /*!
-//            \brief Called on help button pressed.
-//          */
-//          void onHelpPushButtonPressed();
+	protected:
 
-//        protected:
-
-//          ProjectInfoWidget* m_info;    //!< Pointer to the widget that contains information about te::qt::af::Project.
-//      };
-//    }
-//  }
-//}
+		ProjectInfoWidget* m_info;    //!< Pointer to the widget that contains information about te::qt::af::Project.
+};
 
 
-//#endif //__TERRALIB_QT_AF_INTERNAL_PROJECTINFODIALOG_H
+#endif //__TERRALIB_QT_AF_INTERNAL_PROJECTINFODIALOG_H

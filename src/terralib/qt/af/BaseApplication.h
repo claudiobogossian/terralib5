@@ -51,6 +51,7 @@ namespace te
     namespace widgets
     {
       class LayerExplorer;
+      class MapDisplay;
     }
 
     namespace af
@@ -79,6 +80,8 @@ namespace te
         virtual void init(const QString& cfgFile);
 
         te::qt::widgets::LayerExplorer* getLayerExplorer();
+
+        te::qt::widgets::MapDisplay* getMapDisplay();
 
       public slots:
 
