@@ -173,12 +173,10 @@ void te::qt::widgets::HistogramChart::setData()
 }
 
 te::qt::widgets::HistogramChart::~HistogramChart()
-{  
+{
   delete m_histogram;
   delete m_histogramStyle;
   delete m_selection;
-  if(m_histogram->getType() == te::dt::DATETIME_TYPE || m_histogram->getType() == te::dt::STRING_TYPE)
-    delete m_histogramScaleDraw;
 }
 
 int  te::qt::widgets::HistogramChart::rtti() const
@@ -195,6 +193,7 @@ void te::qt::widgets::HistogramChart::setScaleDraw( StringScaleDraw* newScaleDra
 {
   delete m_histogramScaleDraw;
   m_histogramScaleDraw = newScaleDraw;
+  plot()->setAxisScaleDraw(QwtPlot::xBottom, m_histogramScaleDraw);
 }
 
 void te::qt::widgets::HistogramChart::attach(QwtPlot* plot)
