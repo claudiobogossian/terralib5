@@ -91,7 +91,8 @@ te::layout::MapItem::MapItem( ItemController* controller, Observable* o, bool in
   m_wMargin(0),
   m_hMargin(0),
   m_pixmapIsDirty(false),
-  m_currentMapScale(0)
+  m_currentMapScale(0),
+  m_forceMapRefresh(false)
 {    
   m_nameClass = std::string(this->metaObject()->className());
   m_oldMapScale = m_currentMapScale;
@@ -200,10 +201,18 @@ void te::layout::MapItem::updateObserver( ContextItem context )
       }
     }
 
+    if(m_forceMapRefresh)
+    {
+      refreshMap = true;
+      te::gm::Envelope env = model->getWorldBox();
+      m_mapDisplay->setExtent(env, false);
+    }
+
     if(refreshMap == true)
     {
       m_mapDisplay->refresh();
       m_pixmapIsDirty = true;
+      m_forceMapRefresh = false;
     }
 
     calculateFrameMargin();
@@ -907,9 +916,9 @@ bool te::layout::MapItem::hasListLayerChanged()
 
 void te::layout::MapItem::redraw( bool bRefresh /*= true*/ )
 {
+  m_forceMapRefresh = true;
   ContextItem context;
   updateObserver(context);
-
 }
 
 bool te::layout::MapItem::checkTouchesCorner( const double& x, const double& y )
