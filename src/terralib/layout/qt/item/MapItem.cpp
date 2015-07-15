@@ -217,7 +217,7 @@ void te::layout::MapItem::updateObserver( ContextItem context )
 
     calculateFrameMargin();
 
-
+    model->setWorldBox(m_mapDisplay->getExtent());
   }
 
   refresh();
