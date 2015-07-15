@@ -336,9 +336,10 @@ void te::layout::DialogPropertiesBrowser::onShowGridSettingsDlg()
   std::vector<te::layout::Properties*> props = utils->getGridMapProperties();
 
   model->setProperties(props);
-
+  
   gridSettings->load();
-  gridSettings->show();
+  gridSettings->show(); // modeless dialog
+  gridSettings->raise(); // top of the parent widget's stack
 }
 
 void te::layout::DialogPropertiesBrowser::onShowImageDlg()

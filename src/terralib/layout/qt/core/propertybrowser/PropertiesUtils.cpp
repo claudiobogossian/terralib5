@@ -56,6 +56,11 @@ te::layout::Properties* te::layout::PropertiesUtils::intersection( QList<QGraphi
 {
   Properties* props = 0;
 
+  if(graphicsItems.empty())
+  {
+    return props;
+  }
+
   if(graphicsItems.size() == 1)
   {
     QGraphicsItem* item = graphicsItems.first();

@@ -103,6 +103,11 @@ namespace te
         virtual bool addSubProperty(QtProperty* prop, QtProperty* subProp);
 
         virtual bool addSubProperty(Property prop, Property subProp);
+
+        /*
+          \brief Verify if have some different property between te::layout::Properties and QtTreePropertyBrowser.
+        */
+        virtual bool equalsProperties(Properties* props);
                     
       protected slots:
 
