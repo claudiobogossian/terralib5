@@ -414,7 +414,8 @@ class TablePopupFilter : public QObject
       m_showOidsColumns(false),
       m_enabled(true),
       m_autoScrollEnabled(false),
-      m_promotionEnabled(false)
+      m_promotionEnabled(false),
+      m_isOGR(false)
     {
       m_view->horizontalHeader()->installEventFilter(this);
       m_view->verticalHeader()->installEventFilter(this);
@@ -561,11 +562,13 @@ class TablePopupFilter : public QObject
                 QAction* act11 = new QAction(m_hMenu);
                 act11->setText(tr("Change column type"));
                 act11->setToolTip(tr("Changes the type of a column of the table."));
+                act11->setEnabled(!m_isOGR);
                 m_hMenu->addAction(act11);
 
                 QAction* act12 = new QAction(m_hMenu);
                 act12->setText(tr("Change column data"));
                 act12->setToolTip(tr("Changes the data of a column of the table."));
+                act12->setEnabled(!m_isOGR);
                 m_hMenu->addAction(act12);
 
                 QAction* act13 = new QAction(m_hMenu);
@@ -656,6 +659,11 @@ class TablePopupFilter : public QObject
     void setPromotionEnabled(const bool& enabled)
     {
       m_promotionEnabled = enabled;
+    }
+
+    void setIsOGR(const bool& isOGR)
+    {
+      m_isOGR = isOGR;
     }
 
   protected slots:
@@ -777,6 +785,7 @@ class TablePopupFilter : public QObject
     int m_columnPressed;
     bool m_autoScrollEnabled;
     bool m_promotionEnabled;
+    bool m_isOGR;
 };
 
 te::qt::widgets::DataSetTableView::DataSetTableView(QWidget* parent) :
@@ -898,8 +907,10 @@ void te::qt::widgets::DataSetTableView::setLayer(te::map::AbstractLayer* layer, 
 
   if(dsc.get() != 0)
   {
-    setSelectionMode((dsc->getType().compare("OGR") == 0) ? SingleSelection : MultiSelection);
-    setSelectionBehavior((dsc->getType().compare("OGR") == 0) ? QAbstractItemView::SelectColumns : QAbstractItemView::SelectItems);
+    bool isOGR = (dsc->getType().compare("OGR") == 0);
+    setSelectionMode(isOGR ? SingleSelection : MultiSelection);
+    setSelectionBehavior(isOGR ? QAbstractItemView::SelectColumns : QAbstractItemView::SelectItems);
+    m_popupFilter->setIsOGR(isOGR);
   }
 
   highlightOIds(m_layer->getSelected());
