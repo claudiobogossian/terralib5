@@ -149,9 +149,6 @@ void te::layout::PageSetupOutside::configurePageSize()
   index = m_ui->cmbPageSize->findData("ISO A5 - 148 x 210 mm");
   m_ui->cmbPageSize->insertItem(index,"ISO A5 - 148 x 210 mm");
 
-  /*index = m_ui->cmbPageSize->findData("Custom");
-  m_ui->cmbPageSize->insertItem(index,"Custom");*/
-
   PaperConfig* pConfig =  Context::getInstance().getPaperConfig();
 
   QString curItem;
@@ -170,7 +167,8 @@ void te::layout::PageSetupOutside::configurePageSize()
   else
     curItem = "Custom"; 
 
-  m_ui->cmbPageSize->setCurrentText(curItem);
+  index = m_ui->cmbPageSize->findText(curItem);
+  m_ui->cmbPageSize->setCurrentIndex(index);
 
   switchSize();
 
