@@ -96,29 +96,14 @@ te::qt::widgets::HistogramDataWidget::HistogramDataWidget(te::da::DataSet* dataS
       //Adjusting the widget to work with a raster file.
       std::auto_ptr<te::rst::Raster> raster =  m_dataSet->getRaster(rpos);
 
-      const te::rst::RasterSummary* rsMin = te::rst::RasterSummaryManager::getInstance().get(raster.get(), te::rst::SUMMARY_MIN, true);
-      const te::rst::RasterSummary* rsMax = te::rst::RasterSummaryManager::getInstance().get(raster.get(), te::rst::SUMMARY_MAX, true);
-
-      const std::complex<double>* cmin = rsMin->at(0).m_minVal;
-      const std::complex<double>* cmax = rsMax->at(0).m_maxVal;
-
-      double min = cmin->real();
-      double max = cmax->real();
-
       size_t size = raster->getNumberOfBands();
-      m_ui->m_slicesSpinBox->setMinimum(0);
-      m_ui->m_slicesSpinBox->setValue(30);
-
-      if (min >= 0 && max <= 255)
-        m_ui->m_slicesSpinBox->setMaximum(255);
-      else
-        m_ui->m_slicesSpinBox->setMaximum(max);
 
       for (size_t i = 0; i < size; i++)
       {
         item = QString::number(i);
         m_ui->m_propertyComboBox->addItem((QString::fromStdString("Band: ") + item), QVariant::fromValue(i));
       }
+      m_ui->m_slicesSpinBox->setEnabled(false);
     }
   else
   {
@@ -221,23 +206,7 @@ void te::qt::widgets::HistogramDataWidget::onPropertyComboBoxIndexChanged (QStri
   }
   else
   {
-    std::auto_ptr<te::rst::Raster> raster =  m_dataSet->getRaster(rpos);
-
-    const te::rst::RasterSummary* rsMin = te::rst::RasterSummaryManager::getInstance().get(raster.get(), te::rst::SUMMARY_MIN, true);
-    const te::rst::RasterSummary* rsMax = te::rst::RasterSummaryManager::getInstance().get(raster.get(), te::rst::SUMMARY_MAX, true);
-
-    const std::complex<double>* cmin = rsMin->at(m_ui->m_propertyComboBox->currentIndex()).m_minVal;
-    const std::complex<double>* cmax = rsMax->at(m_ui->m_propertyComboBox->currentIndex()).m_maxVal;
-
-    double min = cmin->real();
-    double max = cmax->real();
-
-    if (min >= 0 && max <= 255)
-      m_ui->m_slicesSpinBox->setMaximum(255);
-    else
-      m_ui->m_slicesSpinBox->setMaximum(max);
-
-    m_ui->m_slicesSpinBox->setValue(30);
+    m_ui->m_slicesSpinBox->setEnabled(false);
   }
 
   updateSummary(m_dataSet.get(), getForm());
