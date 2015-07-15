@@ -120,6 +120,8 @@ namespace te
 
         virtual te::gm::Envelope getWorldBox();
 
+        virtual te::gm::Envelope getPlanarWorldBox();
+
         virtual std::map<te::gm::Point*, std::string> getTextMapAsObjectInfo();
 
         virtual bool isLoadedLayer();
@@ -129,6 +131,8 @@ namespace te
         std::vector<std::string> getLayerNames();
 
         virtual te::gm::Envelope maxLayerExtent();
+
+        virtual void setWorldBox(te::gm::Envelope);
 
       protected:
 
