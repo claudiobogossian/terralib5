@@ -209,9 +209,7 @@ double te::layout::MapModel::getFixedScale()
   if(layer.get() == 0)
     return 0;
 
-  // World box: coordinates in the same SRS as the layer
-  te::gm::Envelope worldBox = layer->getExtent();
-  
+
   //About units names (SI): terralib5\resources\json\uom.json 
   te::common::UnitOfMeasurePtr unitPtr = unitMeasureLayer();
 
@@ -228,18 +226,18 @@ double te::layout::MapModel::getFixedScale()
   double    area;
 
   wMM = m_box.getWidth();
-  fx = m_box.getWidth()/worldBox.getWidth();
-  fy = m_box.getHeight()/worldBox.getHeight();
+  fx = m_box.getWidth()/m_worldBox.getWidth();
+  fy = m_box.getHeight()/m_worldBox.getHeight();
 
   if (fx > fy)
   {
     factor = fy;
-    area = (int)(factor * worldBox.getWidth() + .5);
+    area = (int)(factor * m_worldBox.getWidth() + .5);
   }
   else
   {
     factor = fx;
-    area = (int)(factor * worldBox.getHeight() + .5);
+    area = (int)(factor * m_worldBox.getHeight() + .5);
   }
   
   if (nameUnit.compare("METRE") == 0)
