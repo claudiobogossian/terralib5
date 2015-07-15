@@ -18,9 +18,9 @@ TerraLib Team at <terralib-team@terralib.org>.
 */
 
 /*!
-\file terralib/qt/af/ProjectInfoDialog.h
+\file ProjectInfoDialog.h
 
-\brief A dialog for edition of te::qt::af::Project informations.
+\brief A dialog for edition of Project informations.
 */
 
 #ifndef __TERRAVIEW_INTERNAL_PROJECTINFODIALOG_H

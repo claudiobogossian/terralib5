@@ -45,10 +45,14 @@ namespace te
     namespace af
     {
       class DataSetTableDockWidget;
+      class InterfaceController;
     }
     namespace widgets
     {
+      class ChartDisplayWidget;
+      class CompositionModeMenuWidget;
       class HelpManagerImpl;
+      class QueryDialog;
     }
   }
 }
@@ -105,6 +109,122 @@ class TerraView : public te::qt::af::BaseApplication
     void onOpenProjectTriggered();
 
     void onNewProjectTriggered();
+
+    void onAddDataSetLayerTriggered();
+
+    void onAddQueryLayerTriggered();
+
+    void onAddTabularLayerTriggered();
+
+    void onChartDisplayCreated(te::qt::widgets::ChartDisplayWidget* chartDisplay, te::map::AbstractLayer* layer);
+
+    void onRemoveLayerTriggered();
+
+    void onChangeLayerDataSourceTriggered();
+
+    void onUpdateLayerDataSourceTriggered();
+
+    void onLayerRemoveItemTriggered();
+
+    void onRenameLayerTriggered();
+
+    void onPluginsManagerTriggered();
+
+    void onRecentProjectsTriggered(QAction* proj);
+
+//    void onNewProjectTriggered();
+
+    void onSaveProjectAsTriggered();
+
+    void onRestartSystemTriggered();
+
+    void onToolsCustomizeTriggered();
+
+    void onToolsDataExchangerTriggered();
+
+    void onToolsDataExchangerDirectTriggered();
+
+    void onToolsDataExchangerDirectPopUpTriggered();
+
+    void onToolsQueryDataSourceTriggered();
+
+    void onToolsRasterMultiResolutionTriggered();
+
+    void onToolsFixGeometryTriggered();
+
+    void onProjectPropertiesTriggered();
+
+    void onAddFolderLayerTriggered();
+
+    void onLayerPropertiesTriggered();
+
+    void onLayerRemoveSelectionTriggered();
+
+    void onLayerSRSTriggered();
+
+    void onLayerShowTableTriggered();
+
+    void onLayerHistogramTriggered();
+
+    void onLinkTriggered();
+
+    void onLayerScatterTriggered();
+
+    void onLayerChartTriggered();
+
+    void onLayerGroupingTriggered();
+
+    void onLayerFitOnMapDisplayTriggered();
+
+    void onLayerFitSelectedOnMapDisplayTriggered();
+
+    void onLayerPanToSelectedOnMapDisplayTriggered();
+
+    void onLayerCompositionModeTriggered();
+
+    void onQueryLayerTriggered();
+
+    void onZoomInToggled(bool checked);
+
+    void onZoomOutToggled(bool checked);
+
+    void onPreviousExtentTriggered();
+
+    void onNextExtentTriggered();
+
+    void onPanToggled(bool checked);
+
+    void onZoomExtentTriggered();
+
+    void onInfoToggled(bool checked);
+
+    void onMapRemoveSelectionTriggered();
+
+    void onSelectionToggled(bool checked);
+
+    void onMeasureDistanceToggled(bool checked);
+
+    void onMeasureAreaToggled(bool checked);
+
+    void onMeasureAngleToggled(bool checked);
+
+    void showProgressDockWidget();
+
+    void onFullScreenToggled(bool checked);
+
+    void onLayerSelectedObjectsChanged(const te::map::AbstractLayerPtr& layer);
+
+    void onHighlightLayerObjects(const te::map::AbstractLayerPtr& layer, te::da::DataSet* dataset, const QColor& color);
+
+    void onLayerExplorerVisibilityChanged(bool visible);
+
+    void onDisplayDataTableChanged(bool visible);
+
+    void onStyleExplorerVisibilityChanged(bool visible);
+
+    void onDataSourceExplorerTriggered();
+
+    void onCreateNewLayer(te::map::AbstractLayerPtr layer);
 
   protected:
 
@@ -204,9 +324,17 @@ class TerraView : public te::qt::af::BaseApplication
     QMenu* m_viewMenu;
     QMenu* m_viewToolBarsMenu;
 
+    QSize m_mapCursorSize;
+
     QDockWidget* m_progressDockWidget;       //!< Dock widget used to show progress information
 
     te::qt::widgets::HelpManagerImpl* m_helpManager;
+
+    te::qt::af::InterfaceController* m_iController;
+
+    te::qt::widgets::QueryDialog* m_queryDlg;
+
+    te::qt::widgets::CompositionModeMenuWidget* m_compModeMenu;
 
     std::vector<te::qt::af::DataSetTableDockWidget*> m_tables;
 
