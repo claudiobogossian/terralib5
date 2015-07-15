@@ -280,7 +280,7 @@ te::gm::Envelope te::layout::MapModel::getWorldInMeters()
     return worldBox;
 
   // World box: coordinates in the same SRS as the layer
-  worldBox = layer->getExtent();
+  worldBox = m_worldBox;
   int srid = layer->getSRID();
   
   //About units names (SI): terralib5\resources\json\uom.json 
