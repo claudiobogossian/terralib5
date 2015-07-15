@@ -634,7 +634,7 @@ void te::layout::MapItem::generateMapPixmap()
   m_pixmap.fill(Qt::transparent);
 
   QPainter localPainter(&m_pixmap);
-  m_mapDisplay->render(&localPainter);
+  m_mapDisplay->render(&localPainter, QPoint(), QRegion(), QWidget::DrawChildren);
   localPainter.end();
 
   QImage image = m_pixmap.toImage();
