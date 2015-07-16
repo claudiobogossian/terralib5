@@ -38,6 +38,8 @@
 #include "PrintScene.h"
 #include "AlignItems.h"
 #include "../item/MovingItemGroup.h"
+#include "../../../geometry/Envelope.h"
+#include "../../core/pattern/mvc/ItemModelObservable.h"
 
 // STL
 #include <string>
@@ -50,6 +52,7 @@
 #include <QColor>
 #include <QPointF>
 #include <QRectF>
+#include <QSize>
 
 class QUndoCommand;
 class QUndoStack;
@@ -65,6 +68,7 @@ namespace te
     class EnumType;
     class Properties;
     class VisualizationArea;
+    class PaperConfig;
 
 	/*!
 	  \brief Class representing the scene. This scene is child of QGraphicsScene, part of Graphics View Framework. 
@@ -134,6 +138,11 @@ namespace te
           \brief Method that deletes all selected items in the scene.
         */
         virtual void deleteItems();
+
+        /*!
+          \brief Method that delete item in the scene.
+        */
+        virtual bool deleteItem(QGraphicsItem *item);
 
 		/*!
           \brief Method that removes all selected items in the scene and creates a Command to Undo/Redo of type DeleteCommand. The item is removed from the scene, but is not deleted.
@@ -240,6 +249,16 @@ namespace te
           \brief Method that clears the scene and the stack of Undo/Redo.
         */
         virtual void reset();
+
+        /*!
+          \brief Method that delete the paper item.
+        */
+        virtual void deletePaperItem();
+
+        /*!
+          \brief Method that delete the paper item.
+        */
+        virtual QGraphicsItem* getPaperItem();
 		
 		/*!
           \brief Method that import a template and build all objects. Ex.: JSON.
@@ -323,6 +342,8 @@ namespace te
         */
         virtual void contextUpdated();
 
+        virtual void applyPaperProportion(QSize oldPaper, QSize newPaper);
+
       public slots:
 
         /*!
@@ -367,6 +388,10 @@ namespace te
 		  \return list of properties
         */
         virtual std::vector<te::layout::Properties*> getItemsProperties();
+
+        virtual void applyProportionAllItems(QSize oldPaper, QSize newPaper);
+
+        virtual void updateBoxFromProperties(te::gm::Envelope box, ItemModelObservable* model);
                 
     protected:
 
