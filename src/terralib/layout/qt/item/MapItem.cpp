@@ -686,6 +686,7 @@ void te::layout::MapItem::updateMapDisplay()
 
     m_mapDisplay->setSRID(al->getSRID(), false);
     m_mapDisplay->setExtent(e, true);
+    model->setWorldBox(m_mapDisplay->getExtent());
   }
 }
 
@@ -874,6 +875,7 @@ bool te::layout::MapItem::reloadLayers(bool draw)
 
   m_mapDisplay->setSRID(al->getSRID(), false);
   m_mapDisplay->setExtent(e, draw);
+  model->setWorldBox(m_mapDisplay->getExtent());
 
   m_pixmapIsDirty = true;
 
