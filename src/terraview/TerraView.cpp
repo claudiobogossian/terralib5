@@ -314,6 +314,8 @@ void TerraView::makeDialog()
 
   addMenusActions();
 
+  addPopUpMenu();
+
   //composition mode
   m_compModeMenu = new te::qt::widgets::CompositionModeMenuWidget();
   m_layerCompositionMode->setMenu(m_compModeMenu->getMenu());
@@ -632,6 +634,142 @@ void TerraView::addMenusActions()
   m_helpMenu->setTitle(tr("&Help"));
 
   m_helpMenu->addAction(m_helpContents);
+}
+
+void TerraView::addPopUpMenu()
+{
+  te::qt::widgets::LayerTreeView* treeView = m_layerExplorer->getExplorer()->getTreeView();
+  treeView->setAnimated(true);
+
+  // Actions to be added to the context menu when there is no item selected
+  treeView->add(m_projectAddLayerMenu->menuAction(), "", "", te::qt::widgets::LayerTreeView::NO_ITEM_SELECTED);
+
+  QAction* noItemSelectedSep = new QAction(this);
+  noItemSelectedSep->setSeparator(true);
+  treeView->add(noItemSelectedSep, "", "", te::qt::widgets::LayerTreeView::NO_ITEM_SELECTED);
+
+  treeView->add(m_projectAddFolderLayer, "", "", te::qt::widgets::LayerTreeView::NO_ITEM_SELECTED);
+
+  // Actions to be added to the context menu when there is a unique item selected
+
+  // Actions for the folder layer item
+  treeView->add(m_projectAddLayerMenu->menuAction(), "", "FOLDER_LAYER_ITEM");
+
+  QAction* folderSep1 = new QAction(this);
+  folderSep1->setSeparator(true);
+  treeView->add(folderSep1, "", "FOLDER_LAYER_ITEM");
+
+  treeView->add(m_projectAddFolderLayer, "", "FOLDER_LAYER_ITEM");
+
+  QAction* folderSep2 = new QAction(this);
+  folderSep2->setSeparator(true);
+  treeView->add(folderSep2, "", "FOLDER_LAYER_ITEM");
+
+  treeView->add(m_projectRemoveLayer, "", "FOLDER_LAYER_ITEM");
+  treeView->add(m_projectRenameLayer, "", "FOLDER_LAYER_ITEM");
+
+  // Actions for the single layer item that is not a raster layer
+  treeView->add(m_layerObjectGrouping);
+  treeView->add(m_toolsDataExchangerDirectPopUp);
+  treeView->add(m_layerChartsHistogram);
+  treeView->add(m_layerChart);
+  treeView->add(m_queryLayer);
+  treeView->add(m_layerChartsScatter);
+  treeView->add(m_layerLinkTable, "", "DATASET_LAYER_ITEM");
+
+  QAction* actionChartSep = new QAction(this);
+  actionChartSep->setSeparator(true);
+  treeView->add(actionChartSep);
+
+  treeView->add(m_layerShowTable);
+  treeView->add(m_viewStyleExplorer);
+
+  QAction* actionStyleSep = new QAction(this);
+  actionStyleSep->setSeparator(true);
+  treeView->add(actionStyleSep);
+
+  treeView->add(m_layerRemoveObjectSelection);
+  treeView->add(m_projectRemoveLayer);
+  treeView->add(m_projectRenameLayer);
+
+  QAction* actionRemoveSep = new QAction(this);
+  actionRemoveSep->setSeparator(true);
+  treeView->add(actionRemoveSep);
+
+  treeView->add(m_layerFitOnMapDisplay);
+  treeView->add(m_layerFitSelectedOnMapDisplay);
+  treeView->add(m_layerPanToSelectedOnMapDisplay);
+
+  QAction* actionFitSep = new QAction(this);
+  actionFitSep->setSeparator(true);
+  treeView->add(actionFitSep);
+
+  treeView->add(m_layerSRS);
+
+  QAction* actionSRSSep = new QAction(this);
+  actionSRSSep->setSeparator(true);
+  treeView->add(actionSRSSep);
+
+  treeView->add(m_layerCompositionMode);
+  treeView->add(m_layerProperties);
+
+  // Actions for the items of a layer item such as the chart item and the grouping item
+  treeView->add(m_layerRemoveItem, "", "ITEM_OF_LAYER");
+
+  // Actions for the raster layer item
+  treeView->add(m_layerObjectGrouping, "", "RASTER_LAYER_ITEM");
+  treeView->add(m_layerChartsHistogram, "", "RASTER_LAYER_ITEM");
+  treeView->add(m_layerChartsScatter, "", "RASTER_LAYER_ITEM");
+
+  QAction* rasterSep1 = new QAction(this);
+  rasterSep1->setSeparator(true);
+  treeView->add(rasterSep1, "", "RASTER_LAYER_ITEM");
+
+  treeView->add(m_viewStyleExplorer, "", "RASTER_LAYER_ITEM");
+
+  QAction* rasterSep2 = new QAction(this);
+  rasterSep2->setSeparator(true);
+  treeView->add(rasterSep2, "", "RASTER_LAYER_ITEM");
+
+  treeView->add(m_projectRemoveLayer, "", "RASTER_LAYER_ITEM");
+  treeView->add(m_projectRenameLayer, "", "RASTER_LAYER_ITEM");
+
+  QAction* rasterSep3 = new QAction(this);
+  rasterSep3->setSeparator(true);
+  treeView->add(rasterSep3, "", "RASTER_LAYER_ITEM");
+
+  treeView->add(m_layerFitOnMapDisplay, "", "RASTER_LAYER_ITEM");
+
+  QAction* rasterSep4 = new QAction(this);
+  rasterSep4->setSeparator(true);
+  treeView->add(rasterSep4, "", "RASTER_LAYER_ITEM");
+
+  treeView->add(m_layerSRS, "", "RASTER_LAYER_ITEM");
+
+  QAction* rasterSep5 = new QAction(this);
+  rasterSep5->setSeparator(true);
+  treeView->add(rasterSep5, "", "RASTER_LAYER_ITEM");
+
+  treeView->add(m_layerCompositionMode, "", "RASTER_LAYER_ITEM");
+  treeView->add(m_layerProperties, "", "RASTER_LAYER_ITEM");
+
+  // Actions for invalid layers
+  treeView->add(m_projectChangeLayerDataSource, "", "INVALID_LAYER_ITEM");
+  treeView->add(m_projectUpdateLayerDataSource, "", "INVALID_LAYER_ITEM");
+  treeView->add(m_projectRemoveLayer, "", "INVALID_LAYER_ITEM");
+
+  // Actions to be added to the context menu when there are multiple items selected
+  treeView->add(m_layerFitSelectedOnMapDisplay, "", "DATASET_LAYER_ITEM", te::qt::widgets::LayerTreeView::MULTIPLE_ITEMS_SELECTED);
+  treeView->add(m_layerPanToSelectedOnMapDisplay, "", "DATASET_LAYER_ITEM", te::qt::widgets::LayerTreeView::MULTIPLE_ITEMS_SELECTED);
+
+  treeView->add(m_layerFitSelectedOnMapDisplay, "", "QUERY_LAYER_ITEM", te::qt::widgets::LayerTreeView::MULTIPLE_ITEMS_SELECTED);
+  treeView->add(m_layerPanToSelectedOnMapDisplay, "", "QUERY_LAYER_ITEM", te::qt::widgets::LayerTreeView::MULTIPLE_ITEMS_SELECTED);
+
+  QAction* multipleSelectedSep = new QAction(this);
+  multipleSelectedSep->setSeparator(true);
+  treeView->add(multipleSelectedSep, "", "", te::qt::widgets::LayerTreeView::MULTIPLE_ITEMS_SELECTED);
+
+  treeView->add(m_projectRemoveLayer, "", "", te::qt::widgets::LayerTreeView::MULTIPLE_ITEMS_SELECTED);
 }
 
 void TerraView::initMenus()

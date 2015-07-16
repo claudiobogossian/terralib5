@@ -90,6 +90,8 @@ class TerraView : public te::qt::af::BaseApplication
 
     void addMenusActions();
 
+    void addPopUpMenu();
+
     void initToolbars();
 
   protected slots:
