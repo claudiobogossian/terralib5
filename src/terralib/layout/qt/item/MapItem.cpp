@@ -1016,11 +1016,15 @@ void te::layout::MapItem::contextUpdated()
 void te::layout::MapItem::updateScale()
 {
   MapModel* model = dynamic_cast<MapModel*>(m_model);
-  double scale = m_mapDisplay->getScale();
+  double displayScale = m_mapDisplay->getScale();
 
-  if(m_currentMapScale != scale)
+  double currentPageZoom = (Context::getInstance().getZoom()/100.);
+
+  double realMapScale = displayScale*currentPageZoom;
+
+  if(m_currentMapScale != realMapScale)
   {
-    m_currentMapScale = (int)scale;
+    m_currentMapScale = (int)realMapScale;
     EnumDataType* dataType = Enums::getInstance().getEnumDataType();
 
     Properties* properties = new Properties("");
