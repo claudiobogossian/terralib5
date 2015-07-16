@@ -368,7 +368,11 @@ void te::layout::View::keyPressEvent( QKeyEvent* keyEvent )
   }
   else if(keyEvent->key() == Qt::Key_Delete)
   {
-    scne->removeSelectedItems();
+    EnumModeType* mode = Enums::getInstance().getEnumModeType();
+    if(Context::getInstance().getMode() != mode->getModeTextEditorInteraction())
+    {
+      scne->removeSelectedItems();
+    }
   }
   else if(keyEvent->key() == Qt::Key_Escape)
   {
