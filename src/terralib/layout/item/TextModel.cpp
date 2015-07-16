@@ -56,7 +56,7 @@ te::layout::TextModel::TextModel() :
   m_border = false;
 
 	m_enumAlignmentType = new EnumAlignmentType();
-	m_currentAlignmentType = m_enumAlignmentType->getAlignmentCenterType();
+	m_currentAlignmentType = m_enumAlignmentType->getAlignmentLeftType();
 }
 
 te::layout::TextModel::~TextModel()

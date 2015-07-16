@@ -144,6 +144,10 @@ void te::layout::TextItem::paint( QPainter * painter, const QStyleOptionGraphics
     return;
   }
 
+  /* The text in a QGraphicsTextItem is only displayed 
+  with any set alignment if the text width for the item is set. */
+  setTextWidth(boundingRect().width());
+
   updateTextConfig();
 
   drawBackground( painter );
@@ -152,6 +156,11 @@ void te::layout::TextItem::paint( QPainter * painter, const QStyleOptionGraphics
 
   drawFrame(painter);
        
+  /* the text will not be broken into multiple lines 
+  unless it is enforced through an explicit line break 
+  or a new paragraph.*/
+  setTextWidth(-1);
+
   //Draw Selection
   if (option->state & QStyle::State_Selected)
   {
@@ -478,6 +487,11 @@ void te::layout::TextItem::applyAlignment()
   {
     txtOpt.setAlignment(Qt::AlignRight);
   }
+
+  /* The text in a QGraphicsTextItem is only displayed 
+  with any set alignment if the text width for the item is set. */
+  setTextWidth(boundingRect().width());
+  
   document()->setDefaultTextOption(txtOpt);
 }
 
