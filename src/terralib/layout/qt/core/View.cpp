@@ -409,6 +409,9 @@ void te::layout::View::config()
   double newScale = zoom / 100.;
   scale(newScale, newScale); //Initial zoom out
 
+  Context::getInstance().setDpiX(this->physicalDpiX());
+  Context::getInstance().setDpiY(this->physicalDpiY());
+
   //----------------------------------------------------------------------------------------------
   if(!m_visualizationArea)
   {
