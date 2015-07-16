@@ -305,6 +305,8 @@ void te::layout::TextItem::mouseDoubleClickEvent( QGraphicsSceneMouseEvent * eve
       cursor.clearSelection();
       setTextCursor(cursor);
       setFocus();
+      EnumModeType* mode = Enums::getInstance().getEnumModeType();
+      Context::getInstance().setMode(mode->getModeTextEditorInteraction());
     }
     else
     {
@@ -396,6 +398,12 @@ void te::layout::TextItem::resetEdit()
   setTextInteractionFlags(Qt::NoTextInteraction);
   unsetCursor();
   clearFocus();     
+
+  EnumModeType* mode = Enums::getInstance().getEnumModeType();
+  if(Context::getInstance().getMode() == mode->getModeTextEditorInteraction())
+  {
+    Context::getInstance().setMode(mode->getModeNone());
+  }
 }
 
 void te::layout::TextItem::updateTextConfig()

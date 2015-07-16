@@ -78,7 +78,7 @@ namespace te
           {
             Fixed,  /*!< Document-me! */
             Cut,    /*!< Document-me! */
-            Center, /*!< Document-me! */
+            Center /*!< Document-me! */
           };
 
           /** @name Initializer Methods

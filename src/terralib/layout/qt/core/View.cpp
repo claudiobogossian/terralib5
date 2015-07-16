@@ -368,7 +368,11 @@ void te::layout::View::keyPressEvent( QKeyEvent* keyEvent )
   }
   else if(keyEvent->key() == Qt::Key_Delete)
   {
-    scne->removeSelectedItems();
+    EnumModeType* mode = Enums::getInstance().getEnumModeType();
+    if(Context::getInstance().getMode() != mode->getModeTextEditorInteraction())
+    {
+      scne->removeSelectedItems();
+    }
   }
   else if(keyEvent->key() == Qt::Key_Escape)
   {
@@ -710,7 +714,12 @@ void te::layout::View::onChangeConfig()
   if(!sc)
     return;
 
-  sc->reset();
+  QGraphicsItem* oldItem = sc->getPaperItem();
+  QRectF oldBoundingRect = oldItem->boundingRect();
+
+  QSize oldSize(oldBoundingRect.width(), oldBoundingRect.height());
+
+  sc->deletePaperItem();
 
   config();
 
@@ -718,6 +727,13 @@ void te::layout::View::onChangeConfig()
   m_visualizationArea->changeBoxArea(boxW);
 
   m_visualizationArea->build();
+
+  QGraphicsItem* newItem = sc->getPaperItem();
+  QRectF newBoundingRect = newItem->boundingRect();
+
+  QSize newSize(newBoundingRect.width(), newBoundingRect.height());
+    
+  sc->applyPaperProportion(oldSize, newSize);
 
   recompose();
 }
@@ -899,31 +915,6 @@ void te::layout::View::recompose()
   int defaultZoomFactor = Context::getInstance().getDefaultZoom();
   setZoom(defaultZoomFactor);
 }
-
-/*void te::layout::View::zoomPercentage()
-{
-  Scene* scne = dynamic_cast<Scene*>(scene());
-  if(!scne)
-    return;
-
-  QTransform mtrx = scne->sceneTransform();
-
-  double zoomFactor = Context::getInstance().getZoomFactor();
-  double oldZoomFactor = Context::getInstance().getOldZoomFactor();
-  double scaleMatrix = transform().m11();
-
-  if(isLimitExceeded(scaleMatrix))
-    return;
-
-  double factor = zoomFactor;
-
-  if(factor <= 0)
-    factor = 1.;
-  
-  mtrx.scale(factor, factor);
-  setTransform(mtrx);
-  emit changeZoom(zoomFactor);
-}*/
 
 void te::layout::View::exportToPDF()
 {

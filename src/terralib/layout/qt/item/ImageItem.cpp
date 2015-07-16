@@ -70,6 +70,8 @@ void te::layout::ImageItem::updateObserver(ContextItem context)
 
   QImage img(fileName.c_str());
   m_image = img.mirrored();
+
+  ObjectItem::updateObserver(context);
 }
 
 void te::layout::ImageItem::drawItem( QPainter * painter )
