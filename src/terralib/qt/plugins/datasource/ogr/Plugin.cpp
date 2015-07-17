@@ -213,6 +213,9 @@ void te::qt::plugins::ogr::Plugin::showWindow()
 
   std::list<te::map::AbstractLayerPtr> layers;
 
+  bool hasErrors = false;
+  QString errorMsg = tr("Error occurred trying to create layer(s):\n\n");
+
   for(QStringList::iterator it = fileNames.begin(); it != fileNames.end(); ++it)
   {
     te::da::DataSourceInfoPtr ds(new te::da::DataSourceInfo);
@@ -251,10 +254,33 @@ void te::qt::plugins::ogr::Plugin::showWindow()
       shpWithoutSpatialIndex[id] = datasetName.toStdString();
     }
 
-    GetLayers(ds, layers);
+    try
+    {
+      GetLayers(ds, layers);
+    }
+    catch (const te::common::Exception& e)
+    {
+      hasErrors = true;
+      errorMsg.append(" - ");
+      errorMsg.append(fileBaseName.c_str());
+      errorMsg.append("\n");
+
+    }
+    catch (std::exception& e)
+    {
+      hasErrors = true;
+      errorMsg.append(" - ");
+      errorMsg.append(fileBaseName.c_str());
+      errorMsg.append("\n");
+    }
   }
 
   QApplication::restoreOverrideCursor();
+
+  if (hasErrors)
+  {
+    QMessageBox::warning(te::qt::af::ApplicationController::getInstance().getMainWindow(), tr("Add Layer"), errorMsg);
+  }
 
   if(!shpWithoutSpatialIndex.empty())
   {

@@ -435,7 +435,7 @@ namespace te
     SegmenterStrategy::BlocksMergingMethod
       SegmenterRegionGrowingMeanStrategy::getBlocksMergingMethod() const
     {
-      return SegmenterStrategy::BlocksMergingMethod::GradientMerging;
+      return SegmenterStrategy::GradientMerging;
     }
 
     bool SegmenterRegionGrowingMeanStrategy::initializeSegments( 
