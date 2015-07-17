@@ -390,6 +390,10 @@ void te::layout::View::config()
 
   if(!nscene)
     return;
+
+  //Initializing the context with the device physical DPI.
+  Context::getInstance().setDpiX(this->physicalDpiX());
+  Context::getInstance().setDpiY(this->physicalDpiY());
   
   double sw = viewport()->widthMM();
   double sh = viewport()->heightMM();
@@ -412,9 +416,6 @@ void te::layout::View::config()
   int zoom = Context::getInstance().getDefaultZoom();
   double newScale = zoom / 100.;
   scale(newScale, newScale); //Initial zoom out
-
-  Context::getInstance().setDpiX(this->physicalDpiX());
-  Context::getInstance().setDpiY(this->physicalDpiY());
 
   //----------------------------------------------------------------------------------------------
   if(!m_visualizationArea)
