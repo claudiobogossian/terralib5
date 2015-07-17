@@ -89,6 +89,7 @@ namespace te
         double m_median;
         double m_varCoeff;
         std::vector<double> m_mode;
+        std::map < double, double > m_percentEachClass;
 
     };
 
