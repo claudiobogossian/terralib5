@@ -204,11 +204,13 @@ void te::layout::Scene::calculateMatrixViewScene()
   double ury = m_box.m_ury;
 
   double dpiX = Context::getInstance().getDpiX();
+  double dpiY = Context::getInstance().getDpiY();
 
-  double factor = (dpiX / 25.4);
+  double factorX = (dpiX / 25.4);
+  double factorY = (dpiY / 25.4);
 
   //inverted Y-Axis
-  m_matrix = QTransform().scale(factor, -factor).translate(-llx, -ury);
+  m_matrix = QTransform().scale(factorX, -factorY).translate(-llx, -ury);
   //World coordinate - mm
   setSceneRect(QRectF(QPointF(llx, lly), QPointF(urx, ury)));
 }
