@@ -80,6 +80,12 @@ std::string te::stat::GetStatSummaryShortName(const int& e)
     case te::stat::MODE:
       return TE_TR("MODE");
 
+    case te::stat::PERCENT_EACH_CLASS_BY_AREA:
+      return TE_TR("PERCENT_EACH_CLASS_BY_AREA");
+
+    case te::stat::PERCENT_TOTAL_AREA:
+      return TE_TR("PERCENT_TOTAL_AREA");
+
     default:
       return ("");
   }
@@ -131,6 +137,12 @@ std::string te::stat::GetStatSummaryFullName(const int& e)
     case te::stat::MODE:
       return TE_TR("Mode");
 
+    case te::stat::PERCENT_EACH_CLASS_BY_AREA:
+      return TE_TR("Percente of each class by area");
+
+    case te::stat::PERCENT_TOTAL_AREA:
+      return TE_TR("Percente of total area.");
+            
     default:
       return ("");
   }
