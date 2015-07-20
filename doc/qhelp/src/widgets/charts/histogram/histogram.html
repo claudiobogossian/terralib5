@@ -51,8 +51,19 @@ Note</font><font style="font-family: Calibri Light;"
 If the attribute chosen is not numeric, all unique values are treated
 as
 intervals.<br>
-Note: When the histogram is based on a raster file, the histogram will
-be divided according to all pixel values.<br>
+<br>
+Note: When the histogram is based on a raster file,&nbsp;</font><font
+ style="font-family: Calibri Light;" face="Calibri Light"> setting the
+number of slices to 0 means all the of the pixel values will be used to
+generate the histogram, otherwise the pixel values will be divided
+within the informed number of slices.<br>
+<br>
+Note: If the histogram is based on a raster file and the selected band
+does not inform the dummy value, or inform a wrong one, than any pixel
+with that value will&nbsp; be used while calculating the histogram's
+intervals and frequencies, which can generate a histogram with
+unexpected frequency values. </font><font
+ style="font-family: Calibri Light;" face="Calibri Light"><br>
 </font>
 </body>
 </html>

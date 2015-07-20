@@ -30,7 +30,8 @@
 
 te::qt::widgets::Histogram::Histogram()
 {
-
+  m_minValue = std::numeric_limits<double>::min();
+  m_interval = std::numeric_limits<double>::max();
 }
 
 te::qt::widgets::Histogram::~Histogram()
