@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../common/Translator.h"
+#include "../geometry/GeometryProperty.h"
 #include "../dataaccess/query/DataSetName.h"
 #include "../dataaccess/query/Field.h"
 #include "../dataaccess/query/Fields.h"
@@ -71,12 +72,40 @@ te::map::DataSetLayer::~DataSetLayer()
   delete m_schema;
 }
 
-std::auto_ptr<te::map::LayerSchema> te::map::DataSetLayer::getSchema() const
+void te::map::DataSetLayer::setSRID(int srid)
 {
-  assert(!m_datasetName.empty());
+  // set the srid associated to the parent AbstractLayer
+  m_srid=srid;
+  
+  // propagate it to my cached dataset schema
+  loadSchema();
+  if(m_schema)
+  {
+    gm::GeometryProperty* myGeom = te::da::GetFirstGeomProperty(m_schema);
+    myGeom->setSRID(srid);
+  }
+}
 
+void te::map::DataSetLayer::loadSchema() const
+{
   if(m_schema == 0)
   {
+    assert(!m_datasetName.empty());
+    te::da::DataSourcePtr ds = te::da::GetDataSource(m_datasourceId, true);
+    
+    std::auto_ptr<LayerSchema> type = ds->getDataSetType(m_datasetName);
+    
+    // Cache the schema from datasource
+    if(type.get())
+      m_schema = static_cast<LayerSchema*>(type->clone());
+  }
+}
+
+std::auto_ptr<te::map::LayerSchema> te::map::DataSetLayer::getSchema() const
+{
+  if(m_schema == 0)
+  {
+    assert(!m_datasetName.empty());
     te::da::DataSourcePtr ds = te::da::GetDataSource(m_datasourceId, true);
 
     std::auto_ptr<LayerSchema> type = ds->getDataSetType(m_datasetName);

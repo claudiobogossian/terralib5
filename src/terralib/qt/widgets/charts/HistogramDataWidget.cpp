@@ -112,6 +112,8 @@ te::qt::widgets::HistogramDataWidget::HistogramDataWidget(te::da::DataSet* dataS
       else
         m_ui->m_slicesSpinBox->setMaximum(max);
 
+      m_ui->m_slicesSpinBox->setValue(255);
+
       for (size_t i = 0; i < size; i++)
       {
         item = QString::number(i);
@@ -184,11 +186,11 @@ te::qt::widgets::Histogram* te::qt::widgets::HistogramDataWidget::getHistogram()
 
     if(propType == te::dt::DATETIME_TYPE || propType == te::dt::STRING_TYPE)
     {
-      histogram = te::qt::widgets::createHistogram(m_dataSet.get(), m_dataType.get(), selectedPropertyIdx, stat);
+      histogram = te::qt::widgets::createHistogram(m_dataSet.get(), m_dataType.get(), (int)selectedPropertyIdx, stat);
     }
     else
     {
-      histogram = te::qt::widgets::createHistogram(m_dataSet.get(), m_dataType.get(), selectedPropertyIdx, m_ui->m_slicesSpinBox->value(), stat);
+      histogram = te::qt::widgets::createHistogram(m_dataSet.get(), m_dataType.get(), (int)selectedPropertyIdx, m_ui->m_slicesSpinBox->value(), stat);
     }
   }
   return histogram;
@@ -205,7 +207,7 @@ void te::qt::widgets::HistogramDataWidget::onPropertyComboBoxIndexChanged (QStri
   std::size_t rpos = te::da::GetFirstPropertyPos(m_dataSet.get(), te::dt::RASTER_TYPE);
   if(rpos == std::string::npos)
   {
-    int selectedPropertyIdx= te::da::GetPropertyPos(m_dataSet.get(),  m_ui->m_propertyComboBox->currentText().toStdString());
+    size_t selectedPropertyIdx= te::da::GetPropertyPos(m_dataSet.get(),  m_ui->m_propertyComboBox->currentText().toStdString());
     int propType = m_dataSet->getPropertyDataType(selectedPropertyIdx);
 
     if(propType == te::dt::DATETIME_TYPE || propType == te::dt::STRING_TYPE)
@@ -219,7 +221,7 @@ void te::qt::widgets::HistogramDataWidget::onPropertyComboBoxIndexChanged (QStri
   }
   else
   {
-    std::auto_ptr<te::rst::Raster> raster =  m_dataSet->getRaster(rpos);
+    std::auto_ptr<te::rst::Raster> raster = m_dataSet->getRaster(rpos);
 
     const te::rst::RasterSummary* rsMin = te::rst::RasterSummaryManager::getInstance().get(raster.get(), te::rst::SUMMARY_MIN, true);
     const te::rst::RasterSummary* rsMax = te::rst::RasterSummaryManager::getInstance().get(raster.get(), te::rst::SUMMARY_MAX, true);
@@ -235,7 +237,7 @@ void te::qt::widgets::HistogramDataWidget::onPropertyComboBoxIndexChanged (QStri
     else
       m_ui->m_slicesSpinBox->setMaximum(max);
 
-    m_ui->m_slicesSpinBox->setValue(30);
+    m_ui->m_slicesSpinBox->setValue(255);
   }
 
   updateSummary(m_dataSet.get(), getForm());

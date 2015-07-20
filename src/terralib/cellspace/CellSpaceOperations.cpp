@@ -145,6 +145,11 @@ void te::cellspace::CellularSpacesOperations::createCellSpace(te::da::DataSource
     }
 
     task.pulse();
+
+    if (!task.isActive())
+    {
+      throw te::common::Exception(TE_TR("Operation canceled!"));
+    }
   }
 
   // Output

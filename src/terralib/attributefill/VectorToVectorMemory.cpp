@@ -65,6 +65,7 @@ void te::attributefill::VectorToVectorMemory::normalizeClassName(std::string& na
     boost::replace_all(name, " ", "_");
     boost::replace_all(name, ".", "");
     boost::replace_all(name, "'", "");
+    boost::replace_all(name, "-", "_");
   }
 }
 
@@ -993,7 +994,7 @@ std::map<std::string, double> te::attributefill::VectorToVectorMemory::getPercen
     if(fromGeom->getSRID() <= 0)
       fromGeom->setSRID(fromSrid);
 
-    if(checkGeometries(fromGeom.get(), dsPos[i], toGeom.get()))
+    if(!checkGeometries(fromGeom.get(), dsPos[i], toGeom.get()))
     {
       m_hasErrors = true;
       continue;

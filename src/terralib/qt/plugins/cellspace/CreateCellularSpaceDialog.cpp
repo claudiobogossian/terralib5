@@ -40,6 +40,7 @@
 #include "../../../qt/widgets/help/HelpPushButton.h"
 #include "../../../qt/widgets/progress/ProgressViewerDialog.h"
 #include "../../../qt/widgets/srs/SRSManagerDialog.h"
+#include "../../../qt/widgets/utils/ScopedCursor.h"
 #include "../../../srs/SpatialReferenceSystemManager.h"
 #include "../../widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "ui_CreateCellularSpaceDialogForm.h"
@@ -364,6 +365,8 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onCreatePushButtonCl
 
   try
   {
+    te::qt::widgets::ScopedCursor cursor(Qt::WaitCursor);
+
     if(isNoReference())
       cellSpaceOp->createCellSpace(m_outDataSourceInfo, m_outputDataSetName, resX, resY, getEnvelope(), m_currentSRID, type);
     else

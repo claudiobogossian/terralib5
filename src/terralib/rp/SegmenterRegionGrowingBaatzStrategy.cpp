@@ -503,7 +503,7 @@ namespace te
     SegmenterStrategy::BlocksMergingMethod
       SegmenterRegionGrowingBaatzStrategy::getBlocksMergingMethod() const
     {
-      return SegmenterStrategy::BlocksMergingMethod::GradientMerging;
+      return SegmenterStrategy::GradientMerging;
     }
 
     bool SegmenterRegionGrowingBaatzStrategy::initializeSegments( 

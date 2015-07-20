@@ -477,7 +477,7 @@ namespace te
         
         if( m_inputParameters.m_enableBlockProcessing &&
           ( m_inputParameters.m_blocksOverlapPercent > 0 ) &&
-          ( strategyPtr->getBlocksMergingMethod() == SegmenterStrategy::BlocksMergingMethod::GradientMerging ) )
+          ( strategyPtr->getBlocksMergingMethod() == SegmenterStrategy::GradientMerging ) )
         {
 //          std::cout << std::endl << "Starting CutOff profiles generation" << std::endl;
           
