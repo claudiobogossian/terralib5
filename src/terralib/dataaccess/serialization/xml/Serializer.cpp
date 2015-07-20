@@ -148,6 +148,10 @@ te::da::DataSourceInfo* te::serialize::xml::ReadDataSourceInfo(te::xml::Reader& 
     reader.next();
   }
 
+  // if only white spaces
+  if (reader.getNodeType() == te::xml::WHITESPACE)
+    reader.next();
+
   assert(reader.getNodeType() == te::xml::END_ELEMENT);
 
   /* ConnectionInfo Element */
