@@ -18,38 +18,29 @@ TerraLib Team at <terralib-team@terralib.org>.
 */
 
 /*!
- * \file LegendItem.h
+ * \file FolderItem.h
  *
- * \brief Defines a legend item.
+ * \brief Defines a folder item, just containing LayerItem.
  */
-#ifndef __TERRALIB_QT_WIDGETS_LAYER_INTERNAL_LEGENDITEM_H
-#define __TERRALIB_QT_WIDGETS_LAYER_INTERNAL_LEGENDITEM_H
+#ifndef __TERRALIB_QT_WIDGETS_LAYER_INTERNAL_FOLDERITEM_H
+#define __TERRALIB_QT_WIDGETS_LAYER_INTERNAL_FOLDERITEM_H
 
 #include "TreeItem.h"
 
-// Qt
-#include <QIcon>
-
-// Forward declarations
 namespace te
 {
-  namespace se
-  {
-    class FeatureTypeStyle;
-  }
-
   namespace qt
   {
     namespace widgets
     {
       /*!
-      * \class LegendItem
+      * \class FolderItem
       *
-      * \brief Represents a lengend in the tree structure.
+      * \brief Represents a folder item that contains layers and / or other folders.
       *
-      * \note The type of the item is "LEGEND".
+      * \note The type of the item is "FOLDER".
       */
-      class TEQTWIDGETSEXPORT LegendItem: public TreeItem
+      class TEQTWIDGETSEXPORT FolderItem: public TreeItem
       {
       public:
         /*!
@@ -63,15 +54,13 @@ namespace te
         * \brief Constructor.
         *
         * \param label Label to be presented in the Qt view.
-        *
-        * \param style The rendering style.
         */
-        LegendItem(const std::string& label, te::se::FeatureTypeStyle* style);
+        FolderItem(const std::string& label);
 
         /*!
         * \brief Destructor.
         */
-        ~LegendItem();
+        ~FolderItem();
         //@}
 
         /*!
@@ -81,22 +70,18 @@ namespace te
         */
         //@{
         std::string getAsString() const;
+
+        VISIBLE isVisible() const;
+
+        void setVisible(const VISIBLE& visible, const bool& updateAncestors = false, const bool& updateDescendents = false);
         //@}
 
-        /*!
-        * \brief Returns the image of the style as an icon.
-        *
-        * \return The style as an icon.
-        */
-        QIcon getIcon() const;
-
       protected:
-
-        std::string m_label;    //!< Label for presenting in the Qt view.
-        QIcon m_icon;           //!< Item icon.
+        std::string m_label;    //!< Label to be presented on the Qt view.
+        VISIBLE m_v;            //!< Visibility of the folder.
       };
     }
   }
 }
 
-#endif //__TERRALIB_QT_WIDGETS_LAYER_INTERNAL_LEGENDITEM_H
+#endif //__TERRALIB_QT_WIDGETS_LAYER_INTERNAL_FOLDERITEM_H

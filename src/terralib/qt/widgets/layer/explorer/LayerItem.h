@@ -18,38 +18,33 @@ TerraLib Team at <terralib-team@terralib.org>.
 */
 
 /*!
- * \file LegendItem.h
+ * \file LayerItem.h
  *
- * \brief Defines a legend item.
+ * \brief Defines a layer item.
  */
-#ifndef __TERRALIB_QT_WIDGETS_LAYER_INTERNAL_LEGENDITEM_H
-#define __TERRALIB_QT_WIDGETS_LAYER_INTERNAL_LEGENDITEM_H
+#ifndef __TERRALIB_QT_WIDGETS_LAYER_INTERNAL_LAYERITEM_H
+#define __TERRALIB_QT_WIDGETS_LAYER_INTERNAL_LAYERITEM_H
 
 #include "TreeItem.h"
 
-// Qt
-#include <QIcon>
+// TerraLib
+#include "../../../../maptools/AbstractLayer.h"
 
-// Forward declarations
+// STL
+#include <memory>
+
 namespace te
 {
-  namespace se
-  {
-    class FeatureTypeStyle;
-  }
-
   namespace qt
   {
     namespace widgets
     {
       /*!
-      * \class LegendItem
+      * \class LayerItem
       *
-      * \brief Represents a lengend in the tree structure.
-      *
-      * \note The type of the item is "LEGEND".
+      * \brief An item that contains a te::map::AbstractLayerPtr.
       */
-      class TEQTWIDGETSEXPORT LegendItem: public TreeItem
+      class TEQTWIDGETSEXPORT LayerItem: public TreeItem
       {
       public:
         /*!
@@ -62,16 +57,14 @@ namespace te
         /*!
         * \brief Constructor.
         *
-        * \param label Label to be presented in the Qt view.
-        *
-        * \param style The rendering style.
+        * \param layer The layer of the item.
         */
-        LegendItem(const std::string& label, te::se::FeatureTypeStyle* style);
+        LayerItem(te::map::AbstractLayerPtr layer);
 
         /*!
         * \brief Destructor.
         */
-        ~LegendItem();
+        ~LayerItem();
         //@}
 
         /*!
@@ -81,22 +74,24 @@ namespace te
         */
         //@{
         std::string getAsString() const;
+
+        VISIBLE isVisible() const;
+
+        void setVisible(const VISIBLE& visible, const bool& updateAncestors = false, const bool& updateDescendents = false);
         //@}
 
         /*!
-        * \brief Returns the image of the style as an icon.
+        * \brief Returns the layer contained in the item.
         *
-        * \return The style as an icon.
+        * \return The layer contained at the item.
         */
-        QIcon getIcon() const;
+        te::map::AbstractLayerPtr getLayer() const;
 
       protected:
-
-        std::string m_label;    //!< Label for presenting in the Qt view.
-        QIcon m_icon;           //!< Item icon.
+        te::map::AbstractLayerPtr m_layer;   //!< The asbtract layer.
       };
     }
   }
 }
 
-#endif //__TERRALIB_QT_WIDGETS_LAYER_INTERNAL_LEGENDITEM_H
+#endif //__TERRALIB_QT_WIDGETS_LAYER_INTERNAL_LAYERITEM_H
