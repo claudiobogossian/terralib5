@@ -75,9 +75,10 @@ te::qt::plugins::edit::ToolBar::ToolBar()
     m_createLineToolAction(0),
     m_moveGeometryToolAction(0),
     m_snapOptionsAction(0),
+    m_deleteGeometryToolAction(0),
     m_aggregateAreaToolAction(0),
-    m_subtractAreaToolAction(0),
-    m_deleteGeometryToolAction(0)
+    m_subtractAreaToolAction(0)
+
 {
     initialize();
 }
