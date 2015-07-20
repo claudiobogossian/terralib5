@@ -639,6 +639,9 @@ p, li { white-space: pre-wrap; }
            <property name="text">
             <string>Close</string>
            </property>
+           <property name="autoDefault">
+            <bool>false</bool>
+           </property>
           </widget>
          </item>
          <item row="0" column="1">
@@ -659,6 +662,9 @@ p, li { white-space: pre-wrap; }
            <property name="text">
             <string>Help</string>
            </property>
+           <property name="autoDefault">
+            <bool>false</bool>
+           </property>
           </widget>
          </item>
         </layout>
@@ -677,6 +683,8 @@ p, li { white-space: pre-wrap; }
   </customwidget>
  </customwidgets>
  <tabstops>
+  <tabstop>m_cancelPushButton</tabstop>
+  <tabstop>m_helpPushButton</tabstop>
   <tabstop>m_dataSourceComboBox</tabstop>
   <tabstop>m_baseDataSetComboBox</tabstop>
   <tabstop>m_sqlEditorTextEdit</tabstop>
@@ -696,9 +704,8 @@ p, li { white-space: pre-wrap; }
   <tabstop>m_repositoryLineEdit</tabstop>
   <tabstop>m_targetFileToolButton</tabstop>
   <tabstop>m_targetDatasourceToolButton</tabstop>
-  <tabstop>m_newLayerNameLineEdit</tabstop>
   <tabstop>m_createLayerlToolButton</tabstop>
-  <tabstop>m_cancelPushButton</tabstop>
+  <tabstop>m_newLayerNameLineEdit</tabstop>
  </tabstops>
  <resources/>
  <connections>
@@ -709,8 +716,8 @@ p, li { white-space: pre-wrap; }
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>962</x>
-     <y>625</y>
+     <x>1003</x>
+     <y>586</y>
     </hint>
     <hint type="destinationlabel">
      <x>997</x>
