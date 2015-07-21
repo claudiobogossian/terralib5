@@ -25,7 +25,6 @@
 
 // TerraLib
 #include "../common/Translator.h"
-#include "../geometry/GeometryProperty.h"
 #include "../dataaccess/query/DataSetName.h"
 #include "../dataaccess/query/Field.h"
 #include "../dataaccess/query/Fields.h"
@@ -35,6 +34,9 @@
 #include "../dataaccess/query/SpatialQueryProcessor.h"
 #include "../dataaccess/query/Where.h"
 #include "../dataaccess/utils/Utils.h"
+#include "../geometry/GeometryProperty.h"
+#include "../raster/Grid.h"
+#include "../raster/RasterProperty.h"
 #include "DataSetLayer.h"
 #include "Exception.h"
 #include "RendererFactory.h"
@@ -81,8 +83,16 @@ void te::map::DataSetLayer::setSRID(int srid)
   loadSchema();
   if(m_schema)
   {
-    gm::GeometryProperty* myGeom = te::da::GetFirstGeomProperty(m_schema);
-    myGeom->setSRID(srid);
+    if (m_schema->hasGeom())
+    {
+      gm::GeometryProperty* myGeom = te::da::GetFirstGeomProperty(m_schema);
+      myGeom->setSRID(srid);
+    }
+    else if (m_schema->hasRaster())
+    {
+      rst::RasterProperty* rstProp = te::da::GetFirstRasterProperty(m_schema);
+      rstProp->getGrid()->setSRID(srid);
+    }
   }
 }
 
