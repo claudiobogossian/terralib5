@@ -46,11 +46,11 @@ void te::layout::EnumAlignmentType::init()
 {
   m_noneType = createEnum("NoneScale", this, "None Scale");
 
-  m_alignmentCenter = createEnum("Center", this);
+  m_alignmentCenter = createEnum("Center", this, "Center");
 
-  m_alignmentLeft = createEnum("Left", this);
+  m_alignmentLeft = createEnum("Left", this, "Left");
 
-	m_alignmentRight = createEnum("Right", this);
+	m_alignmentRight = createEnum("Right", this, "Right");
 }
 
 te::layout::EnumType* te::layout::EnumAlignmentType::getNoneType() const

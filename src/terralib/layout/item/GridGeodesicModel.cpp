@@ -104,11 +104,11 @@ void te::layout::GridGeodesicModel::calculateGaps( te::gm::Envelope box )
   te::gm::Coord2D init = box.getLowerLeft();
   te::gm::Coord2D end = box.getUpperRight();
 
-  if(m_initialGridPointX <= 0)
+  if(m_initialGridPointX == 0)
   {
     m_initialGridPointX = init.x;
   }
-  if(m_initialGridPointY <= 0)
+  if(m_initialGridPointY == 0)
   {
     m_initialGridPointY = init.y;
   }

@@ -551,6 +551,13 @@ namespace te
         */
         virtual EnumType* getModeCreateSVG() const;
 
+        /*!
+          \brief Returns value that represents text editor mode type belonging to enumeration.
+		  
+		      \return enum value  	  
+        */
+        virtual EnumType* getModeTextEditorInteraction() const;
+
       protected:
 
         /*!
@@ -630,6 +637,7 @@ namespace te
         EnumType* m_modeCreateNorth; //!< value that represents create north mode type belonging to enumeration
         EnumType* m_modeCreateMapLocation; //!< value that represents create map location mode type belonging to enumeration
         EnumType* m_modeCreateSVG; //!< value that represents create SVG type belonging to enumeration
+        EnumType* m_modeTextEditorInteraction; //!< value that represents text editor type belonging to enumeration
     };
   }
 }

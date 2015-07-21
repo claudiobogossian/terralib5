@@ -420,11 +420,10 @@ double te::qt::widgets::MapDisplay::getScale() {
   double wPixels = this->getWidth();
   double hPixels = this->getHeight();
   double wMM = this->getWidthMM();
-  double hMM = this->getHeightMM();
 
   te::gm::Envelope envelope = this->getExtent();
-  double wdx = envelope.getUpperRightX() - envelope.getLowerLeftX();
-  double wdy = envelope.getLowerLeftY() - envelope.getUpperRightY();
+  double wdx = envelope.getWidth();
+  double wdy = envelope.getHeight();
 
   double dx = wPixels / wdx, dy = hPixels / wdy, f = (dx > dy) ? dx : dy;
 
@@ -450,7 +449,38 @@ double te::qt::widgets::MapDisplay::getScale() {
 
   return m_scale;
 }
-void te::qt::widgets::MapDisplay::setScale(const double& scale)
+bool te::qt::widgets::MapDisplay::setScale(const double& scale)
 {
-  return;
+
+  double oldScale = this->getScale();
+
+  double ff = scale / oldScale;
+  double xmin, ymin, xmax, ymax;
+
+  te::gm::Envelope envelope = this->getExtent();
+  double wdx = envelope.getWidth();
+  double wdy = envelope.getHeight();
+
+  if(ff < 1)
+  {
+    double dx = (wdx - (wdx * ff)) / 2.;
+    double dy = (wdy - (wdy * ff)) / 2.;
+    xmin = envelope.getLowerLeftX() + dx;
+    ymin = envelope.getLowerLeftY() + dy;
+    xmax = envelope.getUpperRightX() - dx;
+    ymax = envelope.getUpperRightY() - dy;
+  }
+  else
+  {
+    double dx = ((wdx * ff) - wdx) / 2.;
+    double dy = ((wdy * ff) - wdy) / 2.;
+    xmin = envelope.getLowerLeftX() - dx;
+    ymin = envelope.getLowerLeftY() - dy;
+    xmax = envelope.getUpperRightX() + dx;
+    ymax = envelope.getUpperRightY() + dy;
+  }
+  te::gm::Envelope newEnvelope(xmin, ymin, xmax, ymax);
+
+  this->setExtent(newEnvelope, false);
+  return true;
 }

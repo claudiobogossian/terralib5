@@ -152,7 +152,7 @@ void te::layout::ScaleModel::visitDependent(ContextItem context)
 
   if(map)
   {
-    m_mapScale = map->getScale();
+    m_mapScale = map->getCurrentScale();
 
     notifyAll(context);
   }	

@@ -102,7 +102,7 @@ void te::layout::GridPlanarItem::drawGrid( QPainter* painter )
 
   clear();
 
-  double scale = mapModel->getScale();
+  double scale = mapModel->getCurrentScale();
   te::gm::Envelope box = mapModel->getWorldInMeters();
   te::gm::Envelope boxMM = mapModel->getMapBox();
 

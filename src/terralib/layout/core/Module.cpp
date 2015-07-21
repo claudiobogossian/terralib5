@@ -53,9 +53,6 @@ te::layout::Module::~Module()
 
 void te::layout::Module::initialize()
 {
-//#ifdef TE_AUTOMATIC_INITIALIZATION
-//	MainLayout::getInstance().init();
-//#endif
   TE_LOG_TRACE(TE_TR("TerraLib layout module initialized!"));
 }
 

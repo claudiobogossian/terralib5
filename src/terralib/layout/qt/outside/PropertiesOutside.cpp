@@ -135,7 +135,7 @@ void te::layout::PropertiesOutside::createLayout()
   layout->addLayout(filterLayout);
   m_nameLabel = new QLabel(tr("Component::"), this);
   layout->addWidget(m_nameLabel);
-  layout->addWidget(m_layoutPropertyBrowser->getPropertyEditor());
+  layout->addWidget((QWidget *) m_layoutPropertyBrowser->getPropertyEditor());
 
   QGroupBox* groupBox = new QGroupBox(this);
   groupBox->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -179,31 +179,40 @@ te::gm::Coord2D te::layout::PropertiesOutside::getPosition()
 
 void te::layout::PropertiesOutside::itemsSelected(QList<QGraphicsItem*> graphicsItems, QList<QGraphicsItem*> allItems)
 {
+  if(graphicsItems.empty())
+  {
+    clearAll();
+    return;
+  }  
+
   m_updatingValues = false;
   bool window = false;
 
-  m_layoutPropertyBrowser->clearAll();
-  m_nameLabel->setText(tr("Component::"));
-
-  m_graphicsItems = graphicsItems;
-
-  m_allItems = allItems;
-
-  if(m_graphicsItems.empty())
-    return;
-    
   Properties* props = m_propUtils->intersection(graphicsItems, window);
   m_layoutPropertyBrowser->setHasWindows(window);
 
   if(!props)
     return;
 
+  if(updateTree(graphicsItems, props))
+  {
+    return;
+  }
+  else
+  {
+    clearAll();
+  }
+
+  m_graphicsItems = graphicsItems;
+
+  m_allItems = allItems;
+
   m_nameLabel->setText(tr("Component::") + props->getObjectName().c_str());
   
   foreach( Property prop, props->getProperties()) 
   {
-    //if(prop.isMenu() || !prop.isVisible())
-    //  continue;
+    if(!prop.isVisible())
+      continue;
 
     m_propUtils->checkDynamicProperty(prop, allItems);
     m_layoutPropertyBrowser->addProperty(prop);
@@ -354,14 +363,54 @@ te::layout::MapModel* te::layout::PropertiesOutside::getMapModel( std::string na
 
 void te::layout::PropertiesOutside::refreshOutside()
 {
-  itemsSelected(m_graphicsItems, m_allItems);
+  bool window = false;
+
+  Properties* props = m_propUtils->intersection(m_graphicsItems, window);
+  m_layoutPropertyBrowser->setHasWindows(window);
+
+  if(!props)
+    return;
+
+  updatePropertyBrowser(props);
 }
 
 void te::layout::PropertiesOutside::onClear( std::vector<std::string> names )
 {
+  clearAll();
+}
+
+void te::layout::PropertiesOutside::updatePropertyBrowser( Properties* props )
+{
+  m_layoutPropertyBrowser->updateProperties(props);
+}
+
+void te::layout::PropertiesOutside::clearAll()
+{
   m_updatingValues = false;
   m_nameLabel->setText(tr("Component::"));
   m_layoutPropertyBrowser->clearAll();
+  m_graphicsItems.clear();
+  m_allItems.clear();
+}
+
+bool te::layout::PropertiesOutside::updateTree( QList<QGraphicsItem*> graphicsItems, Properties* props )
+{
+  bool result = false;
+
+  ItemUtils* iUtils = Context::getInstance().getItemUtils();
+  if(!iUtils)
+    return result;
+
+  if(m_graphicsItems == graphicsItems)
+  {
+    if(m_layoutPropertyBrowser->equalsProperties(props))
+    {
+      updatePropertyBrowser(props);
+      return true;
+    }
+  }
+
+  return false;
 }
 
 

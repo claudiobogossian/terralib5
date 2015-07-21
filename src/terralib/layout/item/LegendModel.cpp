@@ -52,8 +52,8 @@ te::layout::LegendModel::LegendModel() :
   m_mapName(""),
   m_layer(0),
   m_borderDisplacement(1),
-  m_displacementBetweenSymbols(1),
-  m_displacementBetweenTitleAndSymbols(3),
+  m_displacementBetweenSymbols(7),
+  m_displacementBetweenTitleAndSymbols(7),
   m_displacementBetweenSymbolsAndText(2),
   m_symbolsize(5)
 {

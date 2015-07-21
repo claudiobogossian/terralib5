@@ -415,6 +415,25 @@ bool te::layout::PropertyBrowser::addSubProperty( Property prop, Property subPro
   return addSubProperty(addProp, addSubProp);
 }
 
+bool te::layout::PropertyBrowser::equalsProperties( Properties* props )
+{
+  bool result = true;
+
+  foreach( Property prop, props->getProperties()) 
+  {
+    if(prop.isVisible())
+    {
+      QtProperty* qtprop = findProperty(prop.getName());
+      if(!qtprop)
+      {
+        result = false;
+      }
+    }
+  }
+  
+  return result;
+}
+
 
 
 

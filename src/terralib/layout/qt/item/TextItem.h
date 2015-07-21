@@ -33,8 +33,8 @@
 
 // TerraLib
 #include "../../core/pattern/mvc/ItemObserver.h"
-#include "ObjectItem.h"
 #include "../../core/Config.h"
+#include "ObjectItem.h"
 #include "ParentItem.h"
 
 // Qt
@@ -44,8 +44,6 @@
 #include <QVariant>
 #include <QPointF>
 #include <QRectF>
-#include "QtPropertyBrowser/qtpropertybrowser.h"
-#include "terralib/se/Font.h"
 
 class QTextTable;
 class QGraphicsSceneMouseEvent;
@@ -171,18 +169,13 @@ namespace te
 
         virtual void updateTextConfig();
 
-        virtual void drawAlignmentCenter(QPainter * painter);
-
-        virtual void drawAlignmentLeft(QPainter * painter);
-
-        virtual void drawAlignmentRight(QPainter * painter);
+        virtual void applyAlignment();
 
         QColor         m_backgroundColor;
         QColor         m_fontColor;
         bool           m_editable;
         QTextTable*    m_table;
         bool           m_move;
-        bool           m_update;
     };
   }
 }
