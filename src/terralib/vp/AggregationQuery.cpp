@@ -276,6 +276,8 @@ bool te::vp::AggregationQuery::run() throw(te::common::Exception)
           if (!dsQuery->isNull(i-1))
           {
             std::auto_ptr<te::gm::Geometry> agg_geo(dsQuery->getGeometry(i-1));
+            agg_geo->setSRID(p->getSRID());
+
             if (agg_geo->getGeomTypeId() != geotype)
             {
               te::gm::GeometryCollection* gc = new te::gm::GeometryCollection(1,geotype,agg_geo->getSRID());
