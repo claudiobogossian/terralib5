@@ -282,7 +282,6 @@ te::map::AbstractLayer* DataSetLayerReader(te::xml::Reader& reader)
   reader.next();
 
   std::auto_ptr<te::map::DataSetLayer> layer(new te::map::DataSetLayer(id, title, 0));
-  layer->setSRID(srid);
   layer->setExtent(*mbr.get());
   layer->setVisibility(te::map::serialize::GetVisibility(visible));
   layer->setDataSetName(dataset);
@@ -290,6 +289,7 @@ te::map::AbstractLayer* DataSetLayerReader(te::xml::Reader& reader)
   layer->setRendererType(rendererId);
   layer->setCompositionMode((te::map::CompositionMode)compositionMode);
   layer->setStyle(style.release());
+  layer->setSRID(srid);
     
   if(grouping)
     layer->setGrouping(grouping);

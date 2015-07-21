@@ -318,7 +318,8 @@ bool te::vp::AggregationMemory::run() throw( te::common::Exception )
     }
 
     te::gm::Geometry* geometry = te::vp::GetGeometryUnion(itg->second, geomIdx, outGeoType);
-    
+    geometry->setSRID(geom->getSRID());
+
     // if it returned a valid geometry, include the summarization over non-spatial attributes
     if(geometry)
     {

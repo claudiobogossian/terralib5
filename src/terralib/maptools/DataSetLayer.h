@@ -74,6 +74,11 @@ namespace te
 
         /*! \brief Destructor. */
         ~DataSetLayer();
+      
+        void setSRID(int srid);
+      
+        /* Fills internal the cached schema for the dataset */
+        void loadSchema() const;
 
         std::auto_ptr<LayerSchema> getSchema() const;
 

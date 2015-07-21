@@ -39,7 +39,7 @@ namespace te
     */          
     typedef Matrix< SegmenterSegmentsBlock::SegmentIdDataType >
       SegmentsIdsMatrixT;
-              
+
     /*!
       \class SegmenterRegionGrowingMerger
       \brief Abstract class for the segments merger.

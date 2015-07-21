@@ -134,7 +134,7 @@ void te::qt::widgets::HistogramChart::setData()
     it  = values.begin();
 
     m_histogramScaleDraw = new StringScaleDraw(m_histogram->getStringInterval());
-    QVector<QwtIntervalSample> samples(values.size());
+    QVector<QwtIntervalSample> samples((int)values.size());
     double LabelInterval = 0.0;
 
     while (it != values.end())
@@ -154,12 +154,30 @@ void te::qt::widgets::HistogramChart::setData()
     values = m_histogram->getValues();
     it = values.begin();
 
-    while (it != values.end())
+    // The raster's interval was adjusted
+    if (m_histogram->getInterval() != std::numeric_limits<double>::max())
     {
-      double interval = it->first;
-      QwtInterval qwtInterval(interval, interval+1);
-      samples.push_back(QwtIntervalSample(it->second, qwtInterval));
-      it++;
+      double ini = m_histogram->getMinValue();
+      double vx = ini + m_histogram->getInterval();
+
+      while (it != values.end())
+      {
+        QwtInterval qwtInterval(ini, vx);
+        samples.push_back(QwtIntervalSample(it->second, qwtInterval));
+        it++;
+        ini = vx;
+        vx += m_histogram->getInterval();
+      }
+    }
+    else
+    {
+      while (it != values.end())
+      {
+        double interval = it->first;
+        QwtInterval qwtInterval(interval, interval + 1);
+        samples.push_back(QwtIntervalSample(it->second, qwtInterval));
+        it++;
+      }
     }
 
     QPen blankPen = QPen(Qt::transparent);
@@ -170,15 +188,13 @@ void te::qt::widgets::HistogramChart::setData()
     m_histogramStyle->setStroke(blankStroke);
     setSamples(samples);
   }
-}
+} 
 
 te::qt::widgets::HistogramChart::~HistogramChart()
-{  
+{
   delete m_histogram;
   delete m_histogramStyle;
   delete m_selection;
-  if(m_histogram->getType() == te::dt::DATETIME_TYPE || m_histogram->getType() == te::dt::STRING_TYPE)
-    delete m_histogramScaleDraw;
 }
 
 int  te::qt::widgets::HistogramChart::rtti() const
@@ -195,6 +211,7 @@ void te::qt::widgets::HistogramChart::setScaleDraw( StringScaleDraw* newScaleDra
 {
   delete m_histogramScaleDraw;
   m_histogramScaleDraw = newScaleDraw;
+  plot()->setAxisScaleDraw(QwtPlot::xBottom, m_histogramScaleDraw);
 }
 
 void te::qt::widgets::HistogramChart::attach(QwtPlot* plot)
@@ -304,7 +321,7 @@ void te::qt::widgets::HistogramChart::highlight(const te::da::ObjectIdSet* oids,
       }
     }
 
-    QVector<QwtIntervalSample> highlightedSamples(highlightedIntervals.size());
+    QVector<QwtIntervalSample> highlightedSamples((int)highlightedIntervals.size());
 
     //Acquiring all selected samples:
     for(size_t i = 0; i < values->size(); ++i)
@@ -344,7 +361,7 @@ void te::qt::widgets::HistogramChart::highlight(const te::da::ObjectIdSet* oids,
     }
 
     //A vector containing that will be populated with the samples that match the selected strings
-    QVector<QwtIntervalSample> highlightedSamples(highlightedIntervals.size());
+    QVector<QwtIntervalSample> highlightedSamples((int)highlightedIntervals.size());
 
     //Acquiring all selected samples:
     for(size_t i = 0; i < values->size(); ++i)

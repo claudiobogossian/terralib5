@@ -184,6 +184,9 @@ std::vector<te::stat::StatisticalSummary> te::attributefill::RasterToVectorDialo
         case 13:
           vecStatistics.push_back(te::stat::MODE);
           break;
+        case 14:
+          vecStatistics.push_back(te::stat::PERCENT_EACH_CLASS_BY_AREA);
+          break;
         default:
           continue;
       }
@@ -234,6 +237,7 @@ void te::attributefill::RasterToVectorDialog::onRasterComboBoxChanged(int index)
   m_ui->m_statisticsListWidget->addItem("Median");
   m_ui->m_statisticsListWidget->addItem("Coefficient variation");
   m_ui->m_statisticsListWidget->addItem("Mode");
+  m_ui->m_statisticsListWidget->addItem("Percent of each class by area");
 
 }
 

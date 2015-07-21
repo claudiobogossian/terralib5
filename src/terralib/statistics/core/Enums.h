@@ -38,20 +38,22 @@ namespace te
     */
     enum StatisticalSummary
     {
-      MIN_VALUE,          //!< Minimum value.
-      MAX_VALUE,          //!< Maximum value.
-      MEAN,               //!< Mean.
-      SUM,                //!< Sum of values.
-      COUNT,              //!< Total number of values.
-      VALID_COUNT,        //!< Total not null values.
-      STANDARD_DEVIATION, //!< Standard deviation.
-      VARIANCE,           //!< Variance.
-      SKEWNESS,           //!< Skewness.
-      KURTOSIS,           //!< Kurtosis.
-      AMPLITUDE,          //!< Amplitude.
-      MEDIAN,             //!< Median.
-      VAR_COEFF,          //!< Coefficient variation.
-      MODE                //!< Mode.
+      MIN_VALUE,                  //!< Minimum value.
+      MAX_VALUE,                  //!< Maximum value.
+      MEAN,                       //!< Mean.
+      SUM,                        //!< Sum of values.
+      COUNT,                      //!< Total number of values.
+      VALID_COUNT,                //!< Total not null values.
+      STANDARD_DEVIATION,         //!< Standard deviation.
+      VARIANCE,                   //!< Variance.
+      SKEWNESS,                   //!< Skewness.
+      KURTOSIS,                   //!< Kurtosis.
+      AMPLITUDE,                  //!< Amplitude.
+      MEDIAN,                     //!< Median.
+      VAR_COEFF,                  //!< Coefficient variation.
+      MODE,                       //!< Mode.
+      PERCENT_EACH_CLASS_BY_AREA, //!< Percente of each class by area.
+      PERCENT_TOTAL_AREA          //!< Percente of total area.
     };
   }
 }

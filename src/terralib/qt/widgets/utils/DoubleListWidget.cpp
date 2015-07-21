@@ -54,10 +54,10 @@ te::qt::widgets::DoubleListWidget::DoubleListWidget(QWidget* parent, Qt::WindowF
   connect(m_ui->m_addAllToolButton, SIGNAL(pressed()), this, SLOT(onAddAllToolButtonPressed()));
   connect(m_ui->m_removeToolButton, SIGNAL(pressed()), this, SLOT(onRemoveToolButtonPressed()));
   connect(m_ui->m_removeAllToolButton, SIGNAL(pressed()), this, SLOT(onRemoveAllToolButtonPressed()));
+  connect(m_ui->m_leftListWidget, SIGNAL(itemSelectionChanged()), this, SLOT(onLeftListItemSelectionChanged()));
+  connect(m_ui->m_rightListWidget, SIGNAL(itemSelectionChanged()), this, SLOT(onRightListItemSelectionChanged()));
   connect(m_ui->m_upToolButton, SIGNAL(pressed()), this, SLOT(onUpToolButtonPressed()));
   connect(m_ui->m_downToolButton, SIGNAL(pressed()), this, SLOT(onDownToolButtonPressed()));
-  connect(m_ui->m_leftListWidget, SIGNAL(itemPressed(QListWidgetItem*)), this, SLOT(onLeftListPressed(QListWidgetItem*)));
-  connect(m_ui->m_rightListWidget, SIGNAL(itemPressed(QListWidgetItem*)), this, SLOT(onRightListPressed(QListWidgetItem*)));
 }
 
 te::qt::widgets::DoubleListWidget::~DoubleListWidget()
@@ -246,40 +246,6 @@ void te::qt::widgets::DoubleListWidget::onRemoveAllToolButtonPressed()
   emit itemChanged();
 }
 
-void te::qt::widgets::DoubleListWidget::onUpToolButtonPressed()
-{
-  int count = m_ui->m_rightListWidget->count();
-
-  if(count == m_ui->m_rightListWidget->selectedItems().size())
-    return;
-
-  for(int i = 0; i < count; ++i)
-  {
-    QListWidgetItem* currentItem = m_ui->m_rightListWidget->item(i);
-
-    if(i == 0)
-      continue;
-
-    if(currentItem->isSelected())
-    {
-      QListWidgetItem* itemBefore = m_ui->m_rightListWidget->item(i-1);
-
-      bool wasSelected = itemBefore->isSelected();
-
-      m_ui->m_rightListWidget->takeItem(i);
-      m_ui->m_rightListWidget->takeItem(i-1);
-
-      m_ui->m_rightListWidget->insertItem(i-1, currentItem);
-      m_ui->m_rightListWidget->insertItem(i, itemBefore);
-
-      currentItem->setSelected(true);
-
-      if(wasSelected)
-        itemBefore->setSelected(true);
-    }
-  }
-}
-
 void te::qt::widgets::DoubleListWidget::onDownToolButtonPressed()
 {
   int count = m_ui->m_rightListWidget->count();
@@ -314,7 +280,41 @@ void te::qt::widgets::DoubleListWidget::onDownToolButtonPressed()
   }
 }
 
-void te::qt::widgets::DoubleListWidget::onLeftListPressed(QListWidgetItem* item)
+void te::qt::widgets::DoubleListWidget::onUpToolButtonPressed()
+{
+  int count = m_ui->m_rightListWidget->count();
+
+  if(count == m_ui->m_rightListWidget->selectedItems().size())
+    return;
+
+  for(int i = 0; i < count; ++i)
+  {
+    QListWidgetItem* currentItem = m_ui->m_rightListWidget->item(i);
+
+    if(i == 0)
+      continue;
+
+    if(currentItem->isSelected())
+    {
+      QListWidgetItem* itemBefore = m_ui->m_rightListWidget->item(i-1);
+
+      bool wasSelected = itemBefore->isSelected();
+
+      m_ui->m_rightListWidget->takeItem(i);
+      m_ui->m_rightListWidget->takeItem(i-1);
+
+      m_ui->m_rightListWidget->insertItem(i-1, currentItem);
+      m_ui->m_rightListWidget->insertItem(i, itemBefore);
+
+      currentItem->setSelected(true);
+
+      if(wasSelected)
+        itemBefore->setSelected(true);
+    }
+  }
+}
+
+void te::qt::widgets::DoubleListWidget::onLeftListItemSelectionChanged()
 {
   if(m_ui->m_leftListWidget->selectedItems().size() > 0)
   {
