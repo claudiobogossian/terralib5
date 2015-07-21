@@ -266,8 +266,9 @@ void te::vp::BufferQuery::prepareDataSet(te::da::DataSetType* dataSetType,
                                         const double& distance)
 {
   std::size_t numProps = dataSetQuery->getNumProperties();
+  te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(dataSetType);
   std::size_t firstGeomPos = te::da::GetFirstSpatialPropertyPos(dataSetQuery);
-  int numItems = numProps - firstGeomPos;
+  int numItems = (int)numProps - (int)firstGeomPos;
   int pk = 0;
   dataSetQuery->moveBeforeFirst();
   
@@ -305,6 +306,8 @@ void te::vp::BufferQuery::prepareDataSet(te::da::DataSetType* dataSetType,
               dataSetItem->setDouble(2, distance*(i+1)); //distance
             
               std::auto_ptr<te::gm::Geometry> geom = dataSetQuery->getGeometry(j+numCurrentItem);
+              geom->setSRID(geomProp->getSRID());
+
               if(geom->getGeomTypeId() == te::gm::MultiPolygonType)
               {
                 dataSetItem->setGeometry(j+3, geom.release());
@@ -340,7 +343,8 @@ void te::vp::BufferQuery::prepareDataSet(te::da::DataSetType* dataSetType,
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 const double& distance)
 {
   int pk = 0;
-  
+  te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(dataSetType);
+
   for(std::size_t i = 0; i < vecDissolvedGeom.size(); ++i)
   {
     std::vector<te::gm::Geometry*> vecGeom = vecDissolvedGeom[i];
@@ -350,10 +354,11 @@ void te::vp::BufferQuery::prepareDataSet(te::da::DataSetType* dataSetType,
     {
       te::mem::DataSetItem* dataSetItem = new te::mem::DataSetItem(outputDataSet);
       dataSetItem->setInt32(0, pk); //pk
-      dataSetItem->setInt32(1, i+1); //level
-      dataSetItem->setDouble(2, distance*(i+1)); //distance
+      dataSetItem->setInt32(1, (int)i+1); //level
+      dataSetItem->setDouble(2, distance*((int)i+1)); //distance
 
       std::auto_ptr<te::gm::Geometry> geom(vecGeom[j]);
+      geom->setSRID(geomProp->getSRID());
 
       if(geom->getGeomTypeId() == te::gm::MultiPolygonType)
       {
