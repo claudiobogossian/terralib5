@@ -28,8 +28,8 @@ void LoadTrajectoryDataSetFromKML(boost::ptr_vector<te::st::TrajectoryDataSet>& 
     //Indicates how the trajectories are stored in the data source -> This structure is fixed for OGR driver
     int phTimeIdx = 3;  /* property name: timestamp */
     std::string phTimeName = "timestamp";
-    int geomIdx = 12;    /* property name: geom */
-    std::string geomName = "geom";
+    int geomIdx = 12;    /* property name: OGR_GEOMETRY */
+    std::string geomName = "OGR_GEOMETRY";
 
     //Use the STDataLoader to create a TrajectoryDataSet with all observations
     te::st::TrajectoryDataSetInfo tjinfo40(dsinfo, "40: locations", phTimeName, geomName, "", "40");
@@ -41,8 +41,8 @@ void LoadTrajectoryDataSetFromKML(boost::ptr_vector<te::st::TrajectoryDataSet>& 
     std::auto_ptr<te::st::TrajectoryDataSet> tjDS41 = te::st::STDataLoader::getDataSet(tjinfo41);
     
     //Print the spatial and temporal extent as well as the observations of the loaded trajectories
-    //PrintTrajectoryDataSet(tjDS40.get());
-    //PrintTrajectoryDataSet(tjDS41.get());
+    PrintTrajectoryDataSet(tjDS40.get());
+    PrintTrajectoryDataSet(tjDS41.get());
 
     //Insert into the result container
     tjDS40->moveBeforeFirst();
