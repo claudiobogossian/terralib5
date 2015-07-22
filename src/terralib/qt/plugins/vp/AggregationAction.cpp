@@ -58,7 +58,12 @@ void te::qt::plugins::vp::AggregationAction::onActionActivated(bool checked)
 
   if(prj)
   {
-    dlg.setLayers(prj->getSingleLayers(false));
+    std::list<te::map::AbstractLayerPtr> layers = prj->getSelectedLayers(false);
+
+    if (layers.size() > 0)
+      dlg.setLayers(prj->getSingleLayers(false), *layers.begin());
+    else
+      dlg.setLayers(prj->getSingleLayers(false));
   }
 
   if(dlg.exec() != QDialog::Accepted)
