@@ -63,23 +63,9 @@ void te::layout::VerticalRuler::drawRuler( QGraphicsView* view, QPainter* painte
   if(!paperConfig)
     return;
 
-  m_blockSize = 10;
-  m_middleBlockSize = 5;
-  m_smallBlockSize = 1;
-  m_longLine = 7.;
-  m_mediumLine = 6.5;
-  m_smallLine = 4.5;
-  m_height = 20;
-  m_cornerSize = 20;
-  m_spacingLineText = 9.5;
-
   QBrush brush = painter->brush();
-
-  QBrush bhWhite(QColor(255,255,255,255));
-  QBrush bhGreyBack(QColor(145,145,145,255));
-  QBrush bhGreyBox(QColor(180,180,180,255));
-
-  QPen pen(QColor(0,0,0,255));
+  
+  QPen pen(m_penColor);
   
   double zoomFactor = 1. / scale; //Keeps the appearance of the ruler to 100%
   
@@ -104,35 +90,51 @@ void te::layout::VerticalRuler::drawRuler( QGraphicsView* view, QPainter* painte
   painter->setPen(Qt::NoPen);
   
   //Vertical Ruler
-  painter->setBrush(bhGreyBox);
+  painter->setBrush(m_backgroundRulerColor);
   painter->drawRect(rfV);
 
-  painter->setBrush(bhGreyBack);
+  painter->setBrush(m_middleRulerColor);
   painter->drawRect(rfBackV);
 
-  painter->setBrush(bhWhite);
+  painter->setBrush(m_frontColor);
   painter->drawRect(rfPaperV);
 
   painter->setBrush(brush);
 
-  pen.setWidth(0.1);
+  pen.setWidth(m_penWidth);
   painter->setPen(pen);
 
   painter->drawLine(rfLineV);
 
+  drawMarks(view, painter, rfBackV, zoomFactor);
+
+  painter->setBrush(m_backgroundRulerColor);
+  painter->setPen(Qt::NoPen);
+  painter->drawRect(rfRectCorner);
+
+  painter->restore();
+}
+
+void te::layout::VerticalRuler::drawMarks( QGraphicsView* view, QPainter* painter, QRectF rect, double zoomFactor )
+{
   Utils* utils = Context::getInstance().getUtils();
+
+  if(!utils)
+  {
+    return;
+  }
+
+  painter->save();
+
+  painter->setFont(m_font);
 
   double wtxt = 0;
   double htxt = 0;
 
-  QFont ft("Arial");
-  ft.setPointSizeF(6);
-  painter->setFont(ft);
+  double urx = rect.topRight().x();
+  double ury = rect.bottomLeft().y();
+  double lly = rect.topRight().y();
 
-  double urx = rfBackV.topRight().x();
-  double ury = rfBackV.bottomLeft().y();
-  double lly = rfBackV.topRight().y();
-  
   double x = urx;
 
   //Horizontal Ruler Marks
@@ -147,11 +149,12 @@ void te::layout::VerticalRuler::drawRuler( QGraphicsView* view, QPainter* painte
       std::stringstream ss;//create a stringstream
       ss << i;//add number to the stream
 
-      utils->textBoundingBox(wtxt, htxt, ss.str());
-      QPointF pTranslate = QPointF(x - m_spacingLineText * zoomFactor, i);
+      utils->textBoundingBox(wtxt, htxt, ss.str()); // size in mm
+
+      QPointF pTranslate(x - m_spacingLineText * zoomFactor, i);
 
       QPointF p1 = view->mapFromScene(pTranslate);
-      p1.setY(p1.y() + wtxt/2.);
+      p1.setY(p1.y() + 1 + (wtxt/4.));
 
       painter->save();
 
@@ -162,7 +165,7 @@ void te::layout::VerticalRuler::drawRuler( QGraphicsView* view, QPainter* painte
 
       painter->setMatrixEnabled(false);
       painter->setTransform(m);
-      painter->setFont(ft);
+      painter->setFont(m_font);
       painter->drawText(p1, ss.str().c_str());
 
       painter->restore();
@@ -178,10 +181,6 @@ void te::layout::VerticalRuler::drawRuler( QGraphicsView* view, QPainter* painte
 
     painter->drawLine(box);
   }
-
-  painter->setBrush(bhGreyBox);
-  painter->setPen(Qt::NoPen);
-  painter->drawRect(rfRectCorner);
 
   painter->restore();
 }

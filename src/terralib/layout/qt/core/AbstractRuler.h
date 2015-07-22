@@ -34,6 +34,8 @@
 // Qt
 #include <QGraphicsView>
 #include <QPainter>
+#include <QColor>
+#include <QFont>
 
 namespace te
 {
@@ -92,12 +94,12 @@ namespace te
 
         virtual void setSpacingLineText(double size);
 
-      protected:
-
         virtual void drawRuler(QGraphicsView* view, QPainter* painter, double scale) = 0;
 
+      protected:
+
         virtual void drawText(QPoint p, std::string txt, double angle, QPainter* painter);
-        
+                
       protected:
 
         bool                m_visible;
@@ -111,8 +113,15 @@ namespace te
         double              m_height;
         double              m_cornerSize;
         double              m_spacingLineText;
+        QFont               m_font;
+        QColor              m_frontColor;
+        QColor              m_middleRulerColor;
+        QColor              m_backgroundRulerColor;
+        QColor              m_penColor;
+        double              m_penWidth;
     };
   }
 }
 
 #endif 
+
