@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "../../geometry/Enums.h"
+#include "../../srs/Config.h"
 #include "../datasource/DataSource.h"
 #include "../query/Expression.h"
 #include "../query/Fields.h"
@@ -280,6 +281,8 @@ namespace te
                                    std::size_t limit = 0);
 
     TEDATAACCESSEXPORT DataSetAdapter* CreateAdapter(DataSet* ds, DataSetTypeConverter* converter, bool isOwner = false);
+
+    TEDATAACCESSEXPORT void AssociateDataSetTypeConverterSRID(DataSetTypeConverter* converter, const int& inputSRID, const int& outputSRID = TE_UNKNOWN_SRS);
 
     TEDATAACCESSEXPORT std::string GetSQLValueNames(const DataSetType* dt);
 

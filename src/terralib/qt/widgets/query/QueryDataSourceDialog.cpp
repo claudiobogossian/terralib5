@@ -729,10 +729,10 @@ void te::qt::widgets::QueryDataSourceDialog::onCreateLayerToolButtonClicked()
   //create converter in case property name changed
   te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter(dsType.get(), outputDataSource->getCapabilities());
 
+  te::da::AssociateDataSetTypeConverterSRID(converter, srid);
+
   std::auto_ptr<te::da::DataSetAdapter> dsAdapter(te::da::CreateAdapter(dataSet.get(), converter));
   
-  dsAdapter->setSRID(srid);
-
   //save data
   std::map<std::string, std::string> options;
 

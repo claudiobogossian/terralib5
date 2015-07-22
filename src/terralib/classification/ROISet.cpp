@@ -94,16 +94,11 @@ void te::cl::ROISet::exportToFile(std::string fileName, int srid)
   dsOGR->setConnectionInfo(connInfo);
   dsOGR->open();
 
-  //create converter
-  te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter(dsType.get(), dsOGR->getCapabilities());
-
-  te::da::DataSetType* dsTypeResult = converter->getResult();
-
   boost::filesystem::path uri(fileName);
 
   std::string val = uri.stem().string();
 
-  dsTypeResult->setName(val);
+  dsType->setName(val);
 
   //get dataset
   std::auto_ptr<te::da::DataSet> dataset = getDataSet(srid);
@@ -111,14 +106,10 @@ void te::cl::ROISet::exportToFile(std::string fileName, int srid)
   //exchange
   std::map<std::string,std::string> nopt;
 
-  dsOGR->createDataSet(dsTypeResult, nopt);
-
-  std::auto_ptr<te::da::DataSetAdapter> dsAdapter(te::da::CreateAdapter(dataset.get(), converter));
-
-  dsAdapter->setSRID(srid);
+  dsOGR->createDataSet(dsType.get(), nopt);
 
   if(dataset->moveBeforeFirst())
-    dsOGR->add(dsTypeResult->getName(), dsAdapter.get(), dsOGR->getConnectionInfo());
+    dsOGR->add(dsType->getName(), dataset.get(), dsOGR->getConnectionInfo());
 
   dsOGR->close();
 }

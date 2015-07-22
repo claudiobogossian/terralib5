@@ -155,10 +155,10 @@ void te::qt::widgets::DataExchangerWizard::back()
 
   if(currentId() == PAGE_SUMMARY)
   {
-    this->setButtonText(QWizard::CustomButton1, tr("Apply"));
-    this->setOption(QWizard::HaveCustomButton1, true);
+    //this->setButtonText(QWizard::CustomButton1, tr("Apply"));
+    //this->setOption(QWizard::HaveCustomButton1, true);
 
-    connect(this->button(QWizard::CustomButton1), SIGNAL(clicked()), m_datasetOptionsPage.get(), SLOT(applyChanges()));
+    //connect(this->button(QWizard::CustomButton1), SIGNAL(clicked()), m_datasetOptionsPage.get(), SLOT(applyChanges()));
   }
 
   QWizard::back();
@@ -177,10 +177,10 @@ void te::qt::widgets::DataExchangerWizard::next()
     std::list<te::da::DataSetTypePtr> datasets = m_datasetSelectorPage->getCheckedDataSets();
     m_datasetOptionsPage->set(datasets, getDataSource(), getTargetDataSource());
 
-    this->setButtonText(QWizard::CustomButton1, tr("Apply"));
-    this->setOption(QWizard::HaveCustomButton1, true);
+    //this->setButtonText(QWizard::CustomButton1, tr("Apply"));
+    //this->setOption(QWizard::HaveCustomButton1, true);
 
-    connect(this->button(QWizard::CustomButton1), SIGNAL(clicked()), m_datasetOptionsPage.get(), SLOT(applyChanges()));
+    //connect(this->button(QWizard::CustomButton1), SIGNAL(clicked()), m_datasetOptionsPage.get(), SLOT(applyChanges()));
   }
   else if(currentId() == PAGE_DATASET_OPTIONS)
   {
@@ -227,7 +227,6 @@ void te::qt::widgets::DataExchangerWizard::exchange()
   {
     te::da::DataSetTypePtr idset = it->first;
     te::da::DataSetType* odset = it->second->getResult();
-    te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(odset);
 
     std::auto_ptr<te::da::DataSourceTransactor> t;
 
@@ -247,8 +246,6 @@ void te::qt::widgets::DataExchangerWizard::exchange()
       t->createDataSet(odset, nopt);
 
       std::auto_ptr<te::da::DataSetAdapter> dsAdapter(te::da::CreateAdapter(dataset.get(), it->second));
-      if(geomProp)
-        dsAdapter->setSRID(geomProp->getSRID());
 
       if(dataset->moveBeforeFirst())
         t->add(odset->getName(), dsAdapter.get(), ods->getConnInfo());
