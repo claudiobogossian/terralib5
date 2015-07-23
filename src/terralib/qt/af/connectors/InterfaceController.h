@@ -111,6 +111,10 @@ namespace te
           */
           void layerRemoved(te::map::AbstractLayerPtr layer);
 
+        signals:
+
+          void triggered(te::qt::af::evt::Event* e);
+
         protected:
 
           std::set<te::qt::widgets::InterfaceController*> m_interfaces;

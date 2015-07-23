@@ -186,24 +186,6 @@ class TerraView : public te::qt::af::BaseApplication
 
     void onQueryLayerTriggered();
 
-    void onZoomInToggled(bool checked);
-
-    void onZoomOutToggled(bool checked);
-
-    void onPreviousExtentTriggered();
-
-    void onNextExtentTriggered();
-
-    void onPanToggled(bool checked);
-
-    void onZoomExtentTriggered();
-
-    void onInfoToggled(bool checked);
-
-    void onMapRemoveSelectionTriggered();
-
-    void onSelectionToggled(bool checked);
-
     void onMeasureDistanceToggled(bool checked);
 
     void onMeasureAreaToggled(bool checked);
@@ -326,7 +308,7 @@ class TerraView : public te::qt::af::BaseApplication
     QMenu* m_viewMenu;
     QMenu* m_viewToolBarsMenu;
 
-    QSize m_mapCursorSize;
+    
 
     QDockWidget* m_progressDockWidget;       //!< Dock widget used to show progress information
 

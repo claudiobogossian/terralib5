@@ -86,13 +86,8 @@
 #include <terralib/qt/widgets/raster/MultiResolutionDialog.h>
 #include <terralib/qt/widgets/se/GroupingDialog.h>
 #include <terralib/qt/widgets/se/StyleDockWidget.h>
-#include <terralib/qt/widgets/tools/Info.h>
-#include <terralib/qt/widgets/tools/Measure.h>
-#include <terralib/qt/widgets/tools/Pan.h>
-#include <terralib/qt/widgets/tools/Selection.h>
-#include <terralib/qt/widgets/tools/ZoomArea.h>
-#include <terralib/qt/widgets/tools/ZoomClick.h>
 #include <terralib/qt/widgets/srs/SRSManagerDialog.h>
+#include <terralib/qt/widgets/tools/Measure.h>
 #include <terralib/qt/widgets/vector/FixGeometryDialog.h>
 
 // STL
@@ -212,7 +207,6 @@ void AddRecentProjectToSettings(const QString& prjTitle, const QString& prjPath)
 
 TerraView::TerraView(QWidget* parent)
   : te::qt::af::BaseApplication(parent),
-    m_mapCursorSize(QSize(20, 20)),
     m_helpManager(0),
     m_iController(0),
     m_queryDlg(0),
@@ -2381,114 +2375,6 @@ void TerraView::onQueryLayerTriggered()
   }
 
   m_queryDlg->show();
-}
-
-void TerraView::onZoomInToggled(bool checked)
-{
-  if (!checked)
-    return;
-
-  QCursor zoomAreaCursor(QIcon::fromTheme("zoom-in").pixmap(m_mapCursorSize));
-
-  te::qt::widgets::ZoomArea* zoomArea = new te::qt::widgets::ZoomArea(m_display->getDisplay(), zoomAreaCursor);
-  m_display->setCurrentTool(zoomArea);
-
-  te::qt::af::evt::ZoomInButtonToggled ezoom;
-  m_app->triggered(&ezoom);
-}
-
-void TerraView::onZoomOutToggled(bool checked)
-{
-  if (!checked)
-    return;
-
-  QCursor zoomOutCursor(QIcon::fromTheme("zoom-out").pixmap(m_mapCursorSize));
-
-  te::qt::widgets::ZoomClick* zoomOut = new te::qt::widgets::ZoomClick(m_display->getDisplay(), zoomOutCursor, 2.0, te::qt::widgets::Zoom::Out);
-  m_display->setCurrentTool(zoomOut);
-
-  te::qt::af::evt::ZoomOutButtonToggled ezoom;
-  m_app->triggered(&ezoom);
-}
-
-void TerraView::onPreviousExtentTriggered()
-{
-  m_display->previousExtent();
-}
-
-void TerraView::onNextExtentTriggered()
-{
-  m_display->nextExtent();
-}
-
-void TerraView::onPanToggled(bool checked)
-{
-  if (!checked)
-    return;
-
-  te::qt::widgets::Pan* pan = new te::qt::widgets::Pan(m_display->getDisplay(), Qt::OpenHandCursor, Qt::ClosedHandCursor);
-  m_display->setCurrentTool(pan);
-
-  te::qt::af::evt::PanButtonToggled epan;
-  m_app->triggered(&epan);
-}
-
-void TerraView::onZoomExtentTriggered()
-{
-  if (!m_layerExplorer && m_layerExplorer->getExplorer()->getTopLayers().empty())
-    return;
-
-  //m_display->fit(m_layerExplorer->getExplorer()->getAllLayers());
-  m_display->fit(m_layerExplorer->getExplorer()->getSelectedAndVisibleSingleLayers());
-
-}
-
-void TerraView::onInfoToggled(bool checked)
-{
-  if (!checked)
-    return;
-
-  QPixmap pxmap = QIcon::fromTheme("pointer-info").pixmap(m_mapCursorSize);
-  QCursor infoCursor(pxmap, 0, 0);
-
-  te::qt::widgets::Info* info = new te::qt::widgets::Info(m_display->getDisplay(), infoCursor, m_layerExplorer->getExplorer()->getSelectedSingleLayers());
-  m_display->setCurrentTool(info);
-
-  connect(m_layerExplorer->getExplorer(), SIGNAL(selectedLayersChanged(const std::list<te::map::AbstractLayerPtr>&)), info, SLOT(setLayers(const std::list<te::map::AbstractLayerPtr>&)));
-}
-
-void TerraView::onMapRemoveSelectionTriggered()
-{
-  //std::list<te::map::AbstractLayerPtr> layers = m_layerExplorer->getExplorer()->getAllLayers();
-  std::list<te::map::AbstractLayerPtr> layers = m_layerExplorer->getExplorer()->getTopLayers();
-  std::list<te::map::AbstractLayerPtr>::iterator it = layers.begin();
-
-  while (it != layers.end())
-  {
-    te::map::AbstractLayerPtr layer = (*it);
-
-    layer->clearSelected();
-
-    ++it;
-
-    te::qt::af::evt::LayerSelectedObjectsChanged e(layer);
-    m_app->triggered(&e);
-  }
-}
-
-void TerraView::onSelectionToggled(bool checked)
-{
-  if (!checked)
-    return;
-
-  te::qt::widgets::Selection* selection = new te::qt::widgets::Selection(m_display->getDisplay(), Qt::ArrowCursor, m_layerExplorer->getExplorer()->getSelectedSingleLayers());
-  m_display->setCurrentTool(selection);
-
-  connect(m_layerExplorer->getExplorer(), SIGNAL(selectedLayersChanged(const std::list<te::map::AbstractLayerPtr>&)), selection, SLOT(setLayers(const std::list<te::map::AbstractLayerPtr>&)));
-  connect(selection, SIGNAL(layerSelectedObjectsChanged(const te::map::AbstractLayerPtr&)), SLOT(onLayerSelectedObjectsChanged(const te::map::AbstractLayerPtr&)));
-
-  te::qt::af::evt::SelectionButtonToggled esel;
-  m_app->triggered(&esel);
 }
 
 void TerraView::onMeasureDistanceToggled(bool checked)

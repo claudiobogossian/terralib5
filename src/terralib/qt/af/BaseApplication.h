@@ -85,13 +85,35 @@ namespace te
 
       public slots:
 
+        virtual void onApplicationTriggered(te::qt::af::evt::Event* e);
+
+        void onDrawTriggered();
+
+        void onFitLayersTriggered();
+
+        void onZoomInToggled(bool checked);
+
+        void onZoomOutToggled(bool checked);
+
+        void onPreviousExtentTriggered();
+
+        void onNextExtentTriggered();
+
+        void onPanToggled(bool checked);
+
+        void onZoomExtentTriggered();
+
+        void onInfoToggled(bool checked);
+
+        void onMapRemoveSelectionTriggered();
+
+        void onSelectionToggled(bool checked);
+
         void onMapSRIDTriggered();
 
         void onMapSetUnknwonSRIDTriggered();
 
         void onStopDrawTriggered();
-
-        virtual void onApplicationTriggered(te::qt::af::evt::Event* e);
 
       protected slots:
 
@@ -122,6 +144,8 @@ namespace te
       protected:
 
         QMenuBar* m_menubar;
+
+        QSize m_mapCursorSize;
 
         //main widgets
         ApplicationController* m_app;
