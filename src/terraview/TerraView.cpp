@@ -28,6 +28,7 @@
 #include "TerraView.h"
 #include "Project.h"
 #include "ProjectInfoDialog.h"
+#include "Config.h"
 
 // TerraLib
 #include <terralib/common/Exception.h>
@@ -280,7 +281,7 @@ TerraView::~TerraView()
 
 void TerraView::init()
 {
-  BaseApplication::init(te::common::FindInTerraLibPath(TERRALIB_APPLICATION_CONFIG_FILE).c_str());
+  BaseApplication::init(te::common::FindInTerraLibPath(TERRAVIEW_APPLICATION_CONFIG_FILE).c_str());
 
   QStringList prjTitles,
       prjPaths;
