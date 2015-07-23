@@ -85,16 +85,6 @@ namespace te
 
       public slots:
 
-        void onDrawTriggered();
-
-        void onFitLayersTriggered();
-
-        void onZoomInTriggered(bool s);
-
-        void onPanTriggered(bool s);
-
-        void onSelectionTriggered(bool s);
-
         void onMapSRIDTriggered();
 
         void onMapSetUnknwonSRIDTriggered();

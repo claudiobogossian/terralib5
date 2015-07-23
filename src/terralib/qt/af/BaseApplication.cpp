@@ -60,11 +60,6 @@ void te::qt::af::BaseApplication::init(const QString& cfgFile)
   m_ui = new Ui::BaseApplicationForm;
   m_ui->setupUi(this);
 
-  QActionGroup* grp = new QActionGroup(this);
-  m_ui->m_zoomInAction->setActionGroup(grp);
-  m_ui->m_panAction->setActionGroup(grp);
-  m_ui->m_selectToolAction->setActionGroup(grp);
-
   try
   {
     makeDialog();
@@ -83,49 +78,6 @@ te::qt::widgets::LayerExplorer* te::qt::af::BaseApplication::getLayerExplorer()
 te::qt::widgets::MapDisplay* te::qt::af::BaseApplication::getMapDisplay()
 {
   return m_ui->m_display;
-}
-
-void te::qt::af::BaseApplication::onDrawTriggered()
-{
-  QApplication::setOverrideCursor(Qt::WaitCursor);
-
-  te::qt::af::evt::DrawButtonClicked drawClicked;
-  emit triggered(&drawClicked);
-
-  m_display->draw(m_ui->m_layerExplorer->getTopLayers());
-
-  QApplication::restoreOverrideCursor();
-}
-
-void te::qt::af::BaseApplication::onFitLayersTriggered()
-{
-  QApplication::setOverrideCursor(Qt::BusyCursor);
-
-  m_display->fit(m_ui->m_layerExplorer->getTopLayers());
-
-  QApplication::restoreOverrideCursor();
-}
-
-void te::qt::af::BaseApplication::onPanTriggered(bool s)
-{
-  if(s)
-    m_display->setCurrentTool(new te::qt::widgets::Pan(m_display->getDisplay(), Qt::CrossCursor));
-}
-
-void te::qt::af::BaseApplication::onSelectionTriggered(bool s)
-{
-  if(!s)
-    return;
-
-  te::qt::widgets::Selection* selection = new te::qt::widgets::Selection(m_display->getDisplay(), Qt::ArrowCursor, m_ui->m_layerExplorer->getSelectedSingleLayers());
-  m_display->setCurrentTool(selection);
-
-  connect(m_ui->m_layerExplorer, SIGNAL(selectedLayersChanged(const std::list<te::map::AbstractLayerPtr>&)),
-          selection, SLOT(setLayers(const std::list<te::map::AbstractLayerPtr>&)));
-  connect(selection, SIGNAL(layerSelectedObjectsChanged(const te::map::AbstractLayerPtr&)), SLOT(onLayerSelectionChanged(const te::map::AbstractLayerPtr&)));
-
-  te::qt::af::evt::SelectionButtonToggled esel;
-  emit triggered(&esel);
 }
 
 void te::qt::af::BaseApplication::onMapSRIDTriggered()
@@ -156,12 +108,6 @@ void te::qt::af::BaseApplication::onMapSetUnknwonSRIDTriggered()
 void te::qt::af::BaseApplication::onStopDrawTriggered()
 {
   te::common::ProgressManager::getInstance().cancelTasks(te::common::TaskProgress::DRAW);
-}
-
-void te::qt::af::BaseApplication::onZoomInTriggered(bool s)
-{
-  if(s)
-    m_display->setCurrentTool(new te::qt::widgets::ZoomArea(m_display->getDisplay(), Qt::CrossCursor, this));
 }
 
 void te::qt::af::BaseApplication::onApplicationTriggered(te::qt::af::evt::Event* e)
