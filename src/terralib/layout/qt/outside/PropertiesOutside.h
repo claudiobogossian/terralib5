@@ -31,7 +31,8 @@
 // Qt
 #include <QWidget>
 
-
+// QtPropertyBrowser
+class QtTreePropertyBrowser;
 
 // TerraLib
 #include "../../core/pattern/mvc/OutsideObserver.h"
@@ -87,6 +88,10 @@ namespace te
 
         virtual void refreshOutside();
 
+        virtual void updatePropertyBrowser(Properties* props);
+
+        virtual void clearAll();
+
       protected slots:
 
         virtual void onClear(std::vector<std::string> names);
@@ -108,6 +113,8 @@ namespace te
         virtual MapModel* getMapModel(std::string nameMap);
 
         virtual bool sendPropertyToSelectedItems(Property property);
+
+        virtual bool updateTree(QList<QGraphicsItem*> graphicsItems, Properties* props );
 
       protected:
 

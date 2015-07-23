@@ -98,7 +98,8 @@ te::layout::EnumModeType::EnumModeType() :
   m_modeCreateGridGeodesic(0),
   m_modeCreateNorth(0),
   m_modeCreateMapLocation(0),
-  m_modeCreateSVG(0)
+  m_modeCreateSVG(0),
+  m_modeTextEditorInteraction(0)
 {
   init();
 }
@@ -449,6 +450,12 @@ te::layout::EnumModeType::~EnumModeType()
     delete m_modeCreateSVG;
     m_modeCreateSVG= 0;
   }
+
+  if(m_modeTextEditorInteraction)
+  {
+    delete m_modeTextEditorInteraction;
+    m_modeTextEditorInteraction = 0;
+  }
 }
 
 void te::layout::EnumModeType::init()
@@ -661,6 +668,9 @@ void te::layout::EnumModeType::init()
 
   m_modeCreateSVG = createEnum("Create SVG", this, "Create SVG");
   m_modeCreateSVG->setType(te::layout::EnumCreate);
+
+  m_modeTextEditorInteraction = createEnum("Text Editor Interaction", this, "Text Editor Interaction");
+  m_modeTextEditorInteraction->setType(te::layout::EnumAction);
 }
 
 te::layout::EnumType* te::layout::EnumModeType::getModeSelectByBox() const
@@ -1011,5 +1021,10 @@ te::layout::EnumType* te::layout::EnumModeType::getModeCreateSVG() const
 te::layout::EnumType* te::layout::EnumModeType::getModeSVGView() const
 {
   return m_modeSVGView;
+}
+
+te::layout::EnumType* te::layout::EnumModeType::getModeTextEditorInteraction() const
+{
+  return m_modeTextEditorInteraction;
 }
 

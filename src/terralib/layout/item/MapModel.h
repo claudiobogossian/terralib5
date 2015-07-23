@@ -84,7 +84,9 @@ namespace te
 
         std::list<te::map::AbstractLayerPtr> getLayers();
 
-        virtual double getScale();
+        virtual double getFixedScale();
+
+        virtual int getCurrentScale();
 
         virtual te::gm::Envelope getWorldInMeters();
 
@@ -118,6 +120,8 @@ namespace te
 
         virtual te::gm::Envelope getWorldBox();
 
+        virtual te::gm::Envelope getPlanarWorldBox();
+
         virtual std::map<te::gm::Point*, std::string> getTextMapAsObjectInfo();
 
         virtual bool isLoadedLayer();
@@ -127,6 +131,8 @@ namespace te
         std::vector<std::string> getLayerNames();
 
         virtual te::gm::Envelope maxLayerExtent();
+
+        virtual void setWorldBox(te::gm::Envelope);
 
       protected:
 
@@ -146,8 +152,8 @@ namespace te
         te::gm::Envelope                        m_mapBoxMM;
         double                                  m_mapDisplacementX;
         double                                  m_mapDisplacementY;
-        double                                  m_mapScale;
-        Systematic*                              m_systematic;
+        int                                     m_mapScale;
+        Systematic*                             m_systematic;
         bool                                    m_fixedScale;
         te::gm::Envelope                        m_worldBox;
         bool                                    m_loadedLayer;

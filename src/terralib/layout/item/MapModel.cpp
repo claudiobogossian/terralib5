@@ -194,7 +194,7 @@ void te::layout::MapModel::updateProperties( te::layout::Properties* properties,
   }  
 }
 
-double te::layout::MapModel::getScale()
+double te::layout::MapModel::getFixedScale()
 {
   if(m_layers.empty())
   {
@@ -209,9 +209,7 @@ double te::layout::MapModel::getScale()
   if(layer.get() == 0)
     return 0;
 
-  // World box: coordinates in the same SRS as the layer
-  te::gm::Envelope worldBox = layer->getExtent();
-  
+
   //About units names (SI): terralib5\resources\json\uom.json 
   te::common::UnitOfMeasurePtr unitPtr = unitMeasureLayer();
 
@@ -228,18 +226,18 @@ double te::layout::MapModel::getScale()
   double    area;
 
   wMM = m_box.getWidth();
-  fx = m_box.getWidth()/worldBox.getWidth();
-  fy = m_box.getHeight()/worldBox.getHeight();
+  fx = m_box.getWidth()/m_worldBox.getWidth();
+  fy = m_box.getHeight()/m_worldBox.getHeight();
 
   if (fx > fy)
   {
     factor = fy;
-    area = (int)(factor * worldBox.getWidth() + .5);
+    area = (int)(factor * m_worldBox.getWidth() + .5);
   }
   else
   {
     factor = fx;
-    area = (int)(factor * worldBox.getHeight() + .5);
+    area = (int)(factor * m_worldBox.getHeight() + .5);
   }
   
   if (nameUnit.compare("METRE") == 0)
@@ -257,6 +255,11 @@ double te::layout::MapModel::getScale()
     scale = m_systematic->getScale();
   }
   return scale;
+}
+
+int te::layout::MapModel::getCurrentScale()
+{
+  return m_mapScale;
 }
 
 te::gm::Envelope te::layout::MapModel::getWorldInMeters()
@@ -277,7 +280,7 @@ te::gm::Envelope te::layout::MapModel::getWorldInMeters()
     return worldBox;
 
   // World box: coordinates in the same SRS as the layer
-  worldBox = layer->getExtent();
+  worldBox = m_worldBox;
   int srid = layer->getSRID();
   
   //About units names (SI): terralib5\resources\json\uom.json 
@@ -527,7 +530,7 @@ bool te::layout::MapModel::isPlanar()
   return result;
 }
 
-te::gm::Envelope te::layout::MapModel::getWorldBox()
+te::gm::Envelope te::layout::MapModel::getPlanarWorldBox()
 {
   te::gm::Envelope worldBox;
 
@@ -567,6 +570,11 @@ te::gm::Envelope te::layout::MapModel::getWorldBox()
   }
 
   return worldBox;
+}
+
+te::gm::Envelope te::layout::MapModel::getWorldBox()
+{
+  return m_worldBox;
 }
 
 std::map<te::gm::Point*, std::string> te::layout::MapModel::getTextMapAsObjectInfo()
@@ -771,4 +779,8 @@ void te::layout::MapModel::updateMapDisplacementY( double displacementY )
   m_mapDisplacementY = displacementY;
 }
 
+void te::layout::MapModel::setWorldBox(te::gm::Envelope env)
+{
+  m_worldBox = env;
+}
 

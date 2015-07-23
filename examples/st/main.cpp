@@ -53,10 +53,10 @@ int main(int /*argc*/, char** /*argv*/)
     TrajectoryExamples();
 
     //Examples of coverage series
-    CoverageSeriesExamples();
+  //  CoverageSeriesExamples();
 
     //Examples of TimeSeries
-    TimeSeriesExamples();
+   // TimeSeriesExamples();
 
     //Finalize STDataLoader support
     te::st::STDataLoader::finalize();

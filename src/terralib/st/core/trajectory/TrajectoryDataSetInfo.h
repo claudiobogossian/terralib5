@@ -68,7 +68,7 @@ namespace te
           \param tPropName  The property name that contains the times associated to the trajectory.
           \param gPropName  The property name that contains the geometries associated to the trajectory.
           \param idPropName The property name that contains the identification of each trajectory. 
-          \param id         The identification of the trajectory hat this DataSet contains. 
+          \param id         The identification of the trajectory that this DataSet contains. 
         */
         TrajectoryDataSetInfo(const te::da::DataSourceInfo& dsinfo, const std::string& dsName, 
                               const std::string& tPropName, const std::string& gPropName, 

@@ -31,17 +31,23 @@
 
 te::layout::AbstractRuler::AbstractRuler() :
   m_visible(true),
-  m_longLine(3.),
-  m_mediumLine(2.5),
-  m_smallLine(1.5),
+  m_longLine(7.),
+  m_mediumLine(6.5),
+  m_smallLine(4.5),
   m_blockSize(10),
   m_middleBlockSize(5),
   m_smallBlockSize(1),
-  m_height(7),
-  m_cornerSize(7),
-  m_spacingLineText(3.5)
+  m_height(20),
+  m_cornerSize(20),
+  m_spacingLineText(9.5),
+  m_penWidth(0.1)
 {
-  
+  m_font.setFamily("Arial");
+  m_font.setPointSizeF(6); 
+  m_frontColor.setRgb(255,255,255,255);
+  m_middleRulerColor.setRgb(145,145,145,255);
+  m_backgroundRulerColor.setRgb(180,180,180,255);
+  m_penColor.setRgb(0,0,0,255);
 }
 
 te::layout::AbstractRuler::~AbstractRuler( void )

@@ -78,7 +78,7 @@ namespace te
           {
             Fixed,  /*!< Document-me! */
             Cut,    /*!< Document-me! */
-            Center, /*!< Document-me! */
+            Center /*!< Document-me! */
           };
 
           /** @name Initializer Methods
@@ -192,7 +192,7 @@ namespace te
           /*!
             \brief Defines the scale and calculates envelope based on the requested scale
            */
-          virtual void setScale(const double& scale);
+          virtual bool setScale(const double& scale);
           
           
         protected:

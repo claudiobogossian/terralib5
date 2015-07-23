@@ -55,28 +55,14 @@ void te::layout::HorizontalRuler::drawRuler( QGraphicsView* view, QPainter* pain
   if(!m_visible)
     return;
 
-  m_blockSize = 10;
-  m_middleBlockSize = 5;
-  m_smallBlockSize = 1;
-  m_longLine = 7.;
-  m_mediumLine = 6.5;
-  m_smallLine = 4.5;
-  m_height = 20;
-  m_cornerSize = 20;
-  m_spacingLineText = 9.5;
-
   PaperConfig* paperConfig = Context::getInstance().getPaperConfig();
   if(!paperConfig)
     return;
 
   QBrush brush = painter->brush();
+    
+  QPen pen(m_penColor);
 
-  QBrush bhWhite(QColor(255,255,255,255));
-  QBrush bhGreyBack(QColor(145,145,145,255));
-  QBrush bhGreyBox(QColor(180,180,180,255));
-
-  QPen pen(QColor(0,0,0,255));
-  
   double zoomFactor = 1. / scale; //Keeps the appearance of the ruler to 100%
 
   QPointF ll = view->mapToScene(0, view->height());
@@ -100,36 +86,52 @@ void te::layout::HorizontalRuler::drawRuler( QGraphicsView* view, QPainter* pain
   painter->setPen(Qt::NoPen);
 
   //Horizontal Ruler
-  painter->setBrush(bhGreyBox);
+  painter->setBrush(m_backgroundRulerColor);
   painter->drawRect(rfH);
 
-  painter->setBrush(bhGreyBack);
+  painter->setBrush(m_middleRulerColor);
   painter->drawRect(rfBackH);
 
-  painter->setBrush(bhWhite);
+  painter->setBrush(m_frontColor);
   painter->drawRect(rfPaperH);
 
   painter->setBrush(brush);
 
-  pen.setWidth(0.1);
+  pen.setWidth(m_penWidth);
   painter->setPen(pen);
 
   painter->drawLine(rfLineH);
   
+  drawMarks(view, painter, rfBackH, zoomFactor);
+
+  painter->setBrush(m_backgroundRulerColor);
+  painter->setPen(Qt::NoPen);
+  painter->drawRect(rfRectCorner);
+
+  painter->restore();
+}
+
+void te::layout::HorizontalRuler::drawMarks( QGraphicsView* view, QPainter* painter, QRectF rect, double zoomFactor )
+{
   Utils* utils = Context::getInstance().getUtils();
+
+  if(!utils)
+  {
+    return;
+  }
+
+  painter->save();
 
   double wtxt = 0;
   double htxt = 0;
 
-  QFont ft("Arial");
-  ft.setPointSizeF(6);
-  painter->setFont(ft);
+  painter->setFont(m_font);
 
   std::stringstream ss;
 
-  double llx = rfBackH.bottomLeft().x();
-  double lly = rfBackH.bottomLeft().y();
-  double urx = rfBackH.topRight().x();
+  double llx = rect.bottomLeft().x();
+  double lly = rect.bottomLeft().y();
+  double urx = rect.topRight().x();
 
   double y = lly;
 
@@ -147,7 +149,10 @@ void te::layout::HorizontalRuler::drawRuler( QGraphicsView* view, QPainter* pain
 
       utils->textBoundingBox(wtxt, htxt, ss.str());
 
-      QPoint p = view->mapFromScene(QPointF((double)i - (wtxt/2.), y + m_spacingLineText * zoomFactor));
+      QPointF pTranslate((double)i, y + m_spacingLineText * zoomFactor);
+
+      QPoint p = view->mapFromScene(pTranslate);
+      p.setX(p.x() - 1 - (wtxt/4.));
 
       //Keeps the size of the text.(Aspect)
       painter->setMatrixEnabled(false);
@@ -166,9 +171,6 @@ void te::layout::HorizontalRuler::drawRuler( QGraphicsView* view, QPainter* pain
     painter->drawLine(box);
   }
 
-  painter->setBrush(bhGreyBox);
-  painter->setPen(Qt::NoPen);
-  painter->drawRect(rfRectCorner);
-
   painter->restore();
 }
+

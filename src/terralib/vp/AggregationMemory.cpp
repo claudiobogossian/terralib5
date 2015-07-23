@@ -296,7 +296,7 @@ bool te::vp::AggregationMemory::run() throw( te::common::Exception )
   
   // now calculate the aggregation of non spatial and spatial attributes and save it to the output dataset
   te::common::TaskProgress task("Processing aggregation...");
-  task.setTotalSteps(groups.size());
+  task.setTotalSteps((int)groups.size());
   task.useTimer(true);
   
   itg = groups.begin();
@@ -318,7 +318,8 @@ bool te::vp::AggregationMemory::run() throw( te::common::Exception )
     }
 
     te::gm::Geometry* geometry = te::vp::GetGeometryUnion(itg->second, geomIdx, outGeoType);
-    
+    geometry->setSRID(geom->getSRID());
+
     // if it returned a valid geometry, include the summarization over non-spatial attributes
     if(geometry)
     {
@@ -332,7 +333,7 @@ bool te::vp::AggregationMemory::run() throw( te::common::Exception )
       te::mem::DataSetItem* outDSetItem = new te::mem::DataSetItem(outDataset.get());
       
       outDSetItem->setString(0, value);   // save the group identification (mandatory)
-      outDSetItem->setInt32(1, itg->second.size()); // save the number of objects in the group (mandatory)
+      outDSetItem->setInt32(1, (int)itg->second.size()); // save the number of objects in the group (mandatory)
       
       // save statistics of text attributes
       std::map<std::string, std::string>::iterator itString = resultString.begin();

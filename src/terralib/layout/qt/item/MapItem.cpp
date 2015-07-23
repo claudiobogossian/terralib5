@@ -91,10 +91,11 @@ te::layout::MapItem::MapItem( ItemController* controller, Observable* o, bool in
   m_wMargin(0),
   m_hMargin(0),
   m_pixmapIsDirty(false),
-  m_currentScale(0)
+  m_currentMapScale(0),
+  m_forceMapRefresh(false)
 {    
   m_nameClass = std::string(this->metaObject()->className());
-  
+  m_oldMapScale = m_currentMapScale;
   Utils* utils = Context::getInstance().getUtils();
   te::gm::Envelope box;
   
@@ -111,8 +112,8 @@ te::layout::MapItem::MapItem( ItemController* controller, Observable* o, bool in
   setFlag(QGraphicsItem::ItemClipsChildrenToShape);
 
   m_mapSize = QSize(box.getWidth(), box.getHeight());
-  m_mapDisplay = new te::qt::widgets::MultiThreadMapDisplay(m_mapSize, true);
-  m_mapDisplay->setSynchronous(true);
+  m_mapDisplay = new te::qt::widgets::MapDisplay(m_mapSize);
+  //m_mapDisplay->setSynchronous(true);
   m_mapDisplay->setAcceptDrops(true);
 
   m_mapDisplay->setBackgroundColor(Qt::transparent);
@@ -190,12 +191,33 @@ void te::layout::MapItem::updateObserver( ContextItem context )
       refreshMap = true;
     }
 
+    if(model->getCurrentScale()!=m_oldMapScale)
+    {
+      if(m_mapDisplay->setScale(model->getCurrentScale()))
+      {
+        refreshMap = true;
+        m_currentMapScale=model->getCurrentScale();
+        m_oldMapScale=m_currentMapScale;
+      }
+    }
+
+    if(m_forceMapRefresh)
+    {
+      refreshMap = true;
+      te::gm::Envelope env = model->getWorldBox();
+      m_mapDisplay->setExtent(env, false);
+    }
+
     if(refreshMap == true)
     {
       m_mapDisplay->refresh();
+      m_pixmapIsDirty = true;
+      m_forceMapRefresh = false;
     }
 
     calculateFrameMargin();
+
+    model->setWorldBox(m_mapDisplay->getExtent());
   }
 
   refresh();
@@ -256,10 +278,7 @@ void te::layout::MapItem::drawItem( QPainter * painter )
 
 void te::layout::MapItem::dropEvent( QGraphicsSceneDragDropEvent * event )
 {
-  //Copy the map from layer tree
-  Qt::DropActions actions = event->dropAction();
-  if(actions != Qt::CopyAction)
-    return;
+  event->setDropAction(Qt::CopyAction);
 
   getMimeData(event->mimeData());
 
@@ -347,8 +366,8 @@ void te::layout::MapItem::mouseMoveEvent( QGraphicsSceneMouseEvent * event )
     QApplication::sendEvent(m_mapDisplay, &mouseEvent);
     event->setAccepted(mouseEvent.isAccepted());
 
-    this->update();
     m_pixmapIsDirty = true;
+    QGraphicsItem::update();
   }
 }
 
@@ -375,7 +394,8 @@ void te::layout::MapItem::mousePressEvent( QGraphicsSceneMouseEvent * event )
     QGraphicsItem::setCursor(m_mapDisplay->cursor());
     event->setAccepted(mouseEvent.isAccepted());
 
-    this->update();
+    m_pixmapIsDirty = true;
+    QGraphicsItem::update();
   }
 }
 
@@ -401,9 +421,28 @@ void te::layout::MapItem::mouseReleaseEvent( QGraphicsSceneMouseEvent * event )
     QApplication::sendEvent(m_mapDisplay, &mouseEvent);
     event->setAccepted(mouseEvent.isAccepted());
 
-    this->update();
+    m_pixmapIsDirty = true;
+    QGraphicsItem::update();
   }
   refresh();
+}
+
+void te::layout::MapItem::wheelEvent ( QGraphicsSceneWheelEvent * event )
+{
+  ItemUtils* iUtils = Context::getInstance().getItemUtils();
+  if(!iUtils)
+    return;
+
+  QRectF rect = boundingRect();
+  QPointF point = event->pos();
+  QPointF remappedPoint = remapPointToViewport(point, rect, m_mapDisplay->rect());
+
+  QWheelEvent wheelEvent(remappedPoint.toPoint(), event->delta(),event->buttons(), event->modifiers());
+  QApplication::sendEvent(m_mapDisplay, &wheelEvent);
+  event->setAccepted(wheelEvent.isAccepted());
+
+  m_pixmapIsDirty = true;
+  QGraphicsItem::update();
 }
 
 void te::layout::MapItem::getMimeData( const QMimeData* mime )
@@ -595,7 +634,7 @@ void te::layout::MapItem::generateMapPixmap()
   m_pixmap.fill(Qt::transparent);
 
   QPainter localPainter(&m_pixmap);
-  m_mapDisplay->render(&localPainter);
+  m_mapDisplay->render(&localPainter, QPoint(), QRegion(), QWidget::DrawChildren);
   localPainter.end();
 
   QImage image = m_pixmap.toImage();
@@ -647,6 +686,7 @@ void te::layout::MapItem::updateMapDisplay()
 
     m_mapDisplay->setSRID(al->getSRID(), false);
     m_mapDisplay->setExtent(e, true);
+    model->setWorldBox(m_mapDisplay->getExtent());
   }
 }
 
@@ -835,6 +875,7 @@ bool te::layout::MapItem::reloadLayers(bool draw)
 
   m_mapDisplay->setSRID(al->getSRID(), false);
   m_mapDisplay->setExtent(e, draw);
+  model->setWorldBox(m_mapDisplay->getExtent());
 
   m_pixmapIsDirty = true;
 
@@ -877,9 +918,9 @@ bool te::layout::MapItem::hasListLayerChanged()
 
 void te::layout::MapItem::redraw( bool bRefresh /*= true*/ )
 {
+  m_forceMapRefresh = true;
   ContextItem context;
   updateObserver(context);
-
 }
 
 bool te::layout::MapItem::checkTouchesCorner( const double& x, const double& y )
@@ -977,23 +1018,28 @@ void te::layout::MapItem::contextUpdated()
 void te::layout::MapItem::updateScale()
 {
   MapModel* model = dynamic_cast<MapModel*>(m_model);
-  double scale = m_mapDisplay->getScale();
+  double displayScale = m_mapDisplay->getScale();
 
-  if(m_currentScale != scale)
+  double currentPageZoom = (Context::getInstance().getZoom()/100.);
+
+  double realMapScale = displayScale*currentPageZoom;
+
+  if(m_currentMapScale != realMapScale)
   {
-    m_currentScale = scale;
+    m_currentMapScale = (int)realMapScale;
     EnumDataType* dataType = Enums::getInstance().getEnumDataType();
 
     Properties* properties = new Properties("");
 
     Property prop;
     prop.setName("map_scale");
-    int scale = (int) m_currentScale;
+    int scale = (int) m_currentMapScale;
     prop.setValue(scale, dataType->getDataTypeInt());
     properties->addProperty(prop);
-
+    m_oldMapScale = m_currentMapScale;
     model->updateProperties(properties, true);
     MapController* mapController = dynamic_cast<MapController*>(m_controller);
     mapController->refreshAllProperties();
+
   }
 }

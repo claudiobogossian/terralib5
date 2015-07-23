@@ -173,6 +173,9 @@ te::qt::widgets::TimeSliderWidget::TimeSliderWidget(te::qt::widgets::MapDisplay*
     m_ui->m_playToolButton->setEnabled(false);
     m_ui->m_stopToolButton->setEnabled(false);
     m_ui->m_dateTimeEdit->setEnabled(false);
+	m_ui->m_TemporalHorizontalSlider->setEnabled(false);
+	m_ui->label->setEnabled(false);
+	m_ui->label_2->setEnabled(false);
     m_spd->hide();
   }
   else
@@ -185,6 +188,10 @@ te::qt::widgets::TimeSliderWidget::TimeSliderWidget(te::qt::widgets::MapDisplay*
       m_ui->m_dateTimeEdit->setEnabled(true);
     else
       m_ui->m_dateTimeEdit->setEnabled(false);
+	m_ui->m_TemporalHorizontalSlider->setEnabled(true);
+	m_ui->label->setEnabled(true);
+	m_ui->label_2->setEnabled(true);
+
   }
 
   if(m_display->getExtent().isValid() == false)
@@ -406,7 +413,10 @@ void te::qt::widgets::TimeSliderWidget::removeAnimation(const QString& title)
         m_ui->m_stopToolButton->setEnabled(false);
         m_ui->m_durationSpinBox->setEnabled(false);
         m_ui->m_dateTimeEdit->setEnabled(false);
-        m_display->update();
+		m_ui->m_TemporalHorizontalSlider->setEnabled(false);
+		m_ui->label->setEnabled(false);
+		m_ui->label_2->setEnabled(false);
+		m_display->update();
         removeOnPropertieCombo(title);
         initProperty();
         return;
@@ -461,12 +471,12 @@ void te::qt::widgets::TimeSliderWidget::removeOnPropertieCombo(const QString& ti
   size_t size = m_spd->m_ui->m_animationComboBox->count();
   for(i = 0; i < size; ++i)
   {
-    QString ititle = m_spd->m_ui->m_animationComboBox->itemText(i);
+    QString ititle = m_spd->m_ui->m_animationComboBox->itemText((int)i);
     if(ititle == title)
     {
-      m_spd->m_ui->m_animationComboBox->removeItem(i);
+      m_spd->m_ui->m_animationComboBox->removeItem((int)i);
       if(i > 0)
-        onAnimationComboBoxActivated(i-1);
+        onAnimationComboBoxActivated((int)i-1);
       else if(m_spd->m_ui->m_animationComboBox->count() > 0)
         onAnimationComboBoxActivated(0);
       break;
@@ -513,7 +523,7 @@ void te::qt::widgets::TimeSliderWidget::onAnimationDragEnterEvent(QDragEnterEven
       QString file(path + "/" + files.first());
       FILE* fp = fopen(file.toStdString().c_str(), "r");
       char buf[2000];
-      int c = fread(buf, sizeof(char), 2000, fp);
+      size_t c = fread(buf, sizeof(char), 2000, fp);
       fclose(fp);
       buf[c] = 0;
       QString s(buf);
@@ -571,6 +581,9 @@ void te::qt::widgets::TimeSliderWidget::dropAction()
     m_ui->m_stopToolButton->setEnabled(false);
     m_ui->m_durationSpinBox->setEnabled(false);
     m_ui->m_dateTimeEdit->setEnabled(false);
+	m_ui->m_TemporalHorizontalSlider->setEnabled(false);
+	m_ui->label->setEnabled(false);
+	m_ui->label_2->setEnabled(false);
 
     QList<QGraphicsItem*> list = m_animationScene->items();
     QList<QGraphicsItem*>::iterator it;
@@ -754,6 +767,9 @@ void te::qt::widgets::TimeSliderWidget::addTrajectory(te::st::TrajectoryDataSetL
       m_ui->m_dateTimeEdit->setEnabled(true);
     else
       m_ui->m_dateTimeEdit->setEnabled(false);
+	m_ui->m_TemporalHorizontalSlider->setEnabled(true);
+	m_ui->label->setEnabled(true);
+	m_ui->label_2->setEnabled(true);
   }
 
   //size = m_spd->m_ui->m_animationItemListWidget->count();
@@ -831,6 +847,9 @@ void te::qt::widgets::TimeSliderWidget::addTemporalImages(const QString& filePat
       m_ui->m_dateTimeEdit->setEnabled(true);
     else
       m_ui->m_dateTimeEdit->setEnabled(false);
+	m_ui->m_TemporalHorizontalSlider->setEnabled(true);
+	m_ui->label->setEnabled(true);
+	m_ui->label_2->setEnabled(true);
   }
 
   QDir dir(filePath);
@@ -961,7 +980,7 @@ te::qt::widgets::PixmapItem* te::qt::widgets::TimeSliderWidget::getGoesMetadata(
   te::dt::TimeInstant t;
   for(size_t i = 0; i < count; ++i)
   {
-    QString f = files[i];
+    QString f = files[(int)i];
     t = getGoesTime(f);
     pi->m_time.push_back(t);
     pi->m_files.push_back(f);
@@ -1086,8 +1105,8 @@ void te::qt::widgets::TimeSliderWidget::createAnimations()
   {
     AnimationItem* ai = (AnimationItem*)(*it);
     te::qt::widgets::Animation* a = new te::qt::widgets::Animation(ai, "pos");
-    a->m_spatialExtent = envelopes[i];
-    a->m_temporalExtent = times[i];
+    a->m_spatialExtent = envelopes[(int)i];
+    a->m_temporalExtent = times[(int)i];
     a->m_temporalAnimationExtent = m_temporalAnimationExtent;
     a->createAnimationDataInDisplayProjection(m_temporalAnimationExtent);
     m_parallelAnimation->addAnimation(a);
@@ -1304,6 +1323,10 @@ bool te::qt::widgets::TimeSliderWidget::eventFilter(QObject* obj, QEvent* e)
   //  else if(e->type() == QEvent::Enter)
   //    return false;
   //}
+
+  if(m_animationScene->items().isEmpty())
+	return QObject::eventFilter(obj, e);
+
   if(obj == m_spd->m_ui->m_forwardColorPushButton)
   {
     if(e->type() == QEvent::Paint)
@@ -2917,49 +2940,49 @@ te::qt::widgets::PixmapItem* te::qt::widgets::TimeSliderWidget::getHidroCtlParam
 
   // get UNDEF value
   size_t pos = ss.indexOf("UNDEF ", Qt::CaseInsensitive) + strlen("UNDEF "); 
-  ss.remove(0, pos);
+  ss.remove(0, (int)pos);
   pos = ss.indexOf("TITLE", Qt::CaseInsensitive);
-  s = ss.left(pos);
+  s = ss.left((int)pos);
   pi->m_undef = atoi(s.toStdString().c_str());
-  ss.remove(0, pos);
+  ss.remove(0, (int)pos);
 
   // get XDEF ulx and resX values
   pos = ss.indexOf("XDEF ", Qt::CaseInsensitive) + strlen("XDEF ");
-  ss.remove(0, pos);
+  ss.remove(0, (int)pos);
   pos = ss.indexOf(" ");
-  s = ss.left(pos);
+  s = ss.left((int)pos);
   pi->m_ncols = atoi(s.toStdString().c_str());
-  ss.remove(0, pos);
+  ss.remove(0, (int)pos);
 
   pos = ss.indexOf("LINEAR ", Qt::CaseInsensitive) + strlen("LINEAR ");
-  ss.remove(0, pos);
+  ss.remove(0, (int)pos);
   pos = ss.indexOf(" ");
-  s = ss.left(pos);
+  s = ss.left((int)pos);
   double llx = atof(s.toStdString().c_str()) - 360.;
-  ss.remove(0, pos);
+  ss.remove(0, (int)pos);
   pos = ss.indexOf("YDEF ", Qt::CaseInsensitive);
-  s = ss.left(pos);
+  s = ss.left((int)pos);
   double resX = atof(s.toStdString().c_str());
-  ss.remove(0, pos);
+  ss.remove(0, (int)pos);
 
   // get YDEF uly and resY values
   pos = ss.indexOf("YDEF ", Qt::CaseInsensitive) + strlen("YDEF ");
-  ss.remove(0, pos);
+  ss.remove(0, (int)pos);
   pos = ss.indexOf(" ");
-  s = ss.left(pos);
+  s = ss.left((int)pos);
   pi->m_nlines = atoi(s.toStdString().c_str());
-  ss.remove(0, pos);
+  ss.remove(0, (int)pos);
 
   pos = ss.indexOf("LINEAR ", Qt::CaseInsensitive) + strlen("LINEAR ");
-  ss.remove(0, pos);
+  ss.remove(0, (int)pos);
   pos = ss.indexOf(" ");
-  s = ss.left(pos);
+  s = ss.left((int)pos);
   double lly = atof(s.toStdString().c_str());
-  ss.remove(0, pos);
+  ss.remove(0, (int)pos);
   pos = ss.indexOf("ZDEF ", Qt::CaseInsensitive);
-  s = ss.left(pos);
+  s = ss.left((int)pos);
   double resY = atof(s.toStdString().c_str());
-  ss.remove(0, pos);
+  ss.remove(0, (int)pos);
 
   double w = (double)pi->m_ncols * resX;
   double h = (double)pi->m_nlines * resY;
@@ -3021,49 +3044,49 @@ te::qt::widgets::PixmapItem* te::qt::widgets::TimeSliderWidget::getEtaCtlParamet
 
   // get UNDEF value
   size_t pos = ss.indexOf("undef ", Qt::CaseInsensitive) + strlen("undef "); 
-  ss.remove(0, pos);
+  ss.remove(0, (int)pos);
   pos = ss.indexOf("xdef", Qt::CaseInsensitive);
-  s = ss.left(pos);
+  s = ss.left((int)pos);
   pi->m_undef = atof(s.toStdString().c_str());
-  ss.remove(0, pos);
+  ss.remove(0, (int)pos);
 
   // get XDEF ulx and resX values
   pos = ss.indexOf("xdef ", Qt::CaseInsensitive) + strlen("xdef ");
-  ss.remove(0, pos);
+  ss.remove(0, (int)pos);
   pos = ss.indexOf(" ");
-  s = ss.left(pos);
+  s = ss.left((int)pos);
   pi->m_ncols = atoi(s.toStdString().c_str());
-  ss.remove(0, pos);
+  ss.remove(0, (int)pos);
 
   pos = ss.indexOf("linear ", Qt::CaseInsensitive) + strlen("linear ");
-  ss.remove(0, pos);
+  ss.remove(0, (int)pos);
   pos = ss.indexOf(" ");
-  s = ss.left(pos);
+  s = ss.left((int)pos);
   double llx = atof(s.toStdString().c_str());
-  ss.remove(0, pos);
+  ss.remove(0, (int)pos);
   pos = ss.indexOf("ydef ", Qt::CaseInsensitive);
-  s = ss.left(pos);
+  s = ss.left((int)pos);
   double resX = atof(s.toStdString().c_str());
-  ss.remove(0, pos);
+  ss.remove(0, (int)pos);
 
   // get YDEF uly and resY values
   pos = ss.indexOf("ydef ", Qt::CaseInsensitive) + strlen("ydef ");
-  ss.remove(0, pos);
+  ss.remove(0, (int)pos);
   pos = ss.indexOf(" ");
-  s = ss.left(pos);
+  s = ss.left((int)pos);
   pi->m_nlines = atoi(s.toStdString().c_str());
-  ss.remove(0, pos);
+  ss.remove(0, (int)pos);
 
   pos = ss.indexOf("linear ", Qt::CaseInsensitive) + strlen("linear ");
-  ss.remove(0, pos);
+  ss.remove(0, (int)pos);
   pos = ss.indexOf(" ");
-  s = ss.left(pos);
+  s = ss.left((int)pos);
   double lly = atof(s.toStdString().c_str());
-  ss.remove(0, pos);
+  ss.remove(0, (int)pos);
   pos = ss.indexOf("zdef ", Qt::CaseInsensitive);
-  s = ss.left(pos);
+  s = ss.left((int)pos);
   double resY = atof(s.toStdString().c_str());
-  ss.remove(0, pos);
+  ss.remove(0, (int)pos);
 
   double w = (double)pi->m_ncols * resX;
   double h = (double)pi->m_nlines * resY;
@@ -3164,14 +3187,14 @@ QImage* te::qt::widgets::TimeSliderWidget::getImage(te::qt::widgets::PixmapItem*
     size_t nchars = pi->m_ncols * 2;
     uchar* buf = new uchar[nchars];
     FILE* fp = fopen(file.toStdString().c_str(), "rb");
-    ima = new QImage(pi->m_ncols, pi->m_nlines, QImage::Format_ARGB32);
+	ima = new QImage((int)pi->m_ncols, (int)pi->m_nlines, QImage::Format_ARGB32);
     ima->fill(Qt::transparent);
 
     uchar uc[3];
     uc[2] = 0;
     for(size_t j = 0; j < pi->m_nlines; ++j)
     {
-      uchar* u = ima->scanLine(j);
+		uchar* u = ima->scanLine((int)j);
       fread(buf, nchars, sizeof(char), fp);
       for(size_t i = 0; i < pi->m_ncols; i++)
       {
@@ -3193,13 +3216,13 @@ QImage* te::qt::widgets::TimeSliderWidget::getImage(te::qt::widgets::PixmapItem*
   {
     QString auxFile(file);
     size_t pos = auxFile.indexOf(baseName);
-    auxFile.remove(0, pos);
+	auxFile.remove(0, (int)pos);
     pos = auxFile.indexOf("_");
     size_t pp = auxFile.indexOf(".bin");
-    int offset = atoi(auxFile.mid(pos+1, pp-pos+1).toStdString().c_str());
+	int offset = atoi(auxFile.mid((int)pos + 1, (int)pp - (int)pos + 1).toStdString().c_str());
     size_t fileSize = pi->m_nlines * pi->m_ncols * 4 + 8; // dado é float e desprepreza 4 bytes iniciais e 4 bytes finais
-    offset *= fileSize;
-    auxFile.remove(pos, auxFile.length()-pos);
+	offset *= (int)fileSize;
+	auxFile.remove((int)pos, auxFile.length() - (int)pos);
     auxFile = path + auxFile + pi->m_suffix;
 
     size_t nchars = pi->m_ncols * 4;
@@ -3207,14 +3230,14 @@ QImage* te::qt::widgets::TimeSliderWidget::getImage(te::qt::widgets::PixmapItem*
     FILE* fp = fopen(auxFile.toStdString().c_str(), "rb");
     fseek(fp, offset, SEEK_SET);
     fseek(fp, 4, SEEK_CUR); // despreza 4 bytes da primeira linha
-    ima = new QImage(pi->m_ncols, pi->m_nlines, QImage::Format_ARGB32);
+	ima = new QImage((int)pi->m_ncols, (int)pi->m_nlines, QImage::Format_ARGB32);
     ima->fill(Qt::transparent);
 
     uchar uc[5];
     uc[4] = 0;
     for(size_t j = 0; j < pi->m_nlines; ++j)
     {
-      uchar* u = ima->scanLine(pi->m_nlines-1-j); // origem bottom left
+		uchar* u = ima->scanLine((int)pi->m_nlines - 1 - (int)j); // origem bottom left
       fread(buf, nchars, sizeof(char), fp);
 
       for(size_t i = 0; i < pi->m_ncols; i++)
@@ -3296,7 +3319,7 @@ te::qt::widgets::PixmapItem* te::qt::widgets::TimeSliderWidget::getHidroMetadata
   te::dt::TimeInstant t;
   for(size_t i = 0; i < count; ++i)
   {
-    QString f = files[i];
+	  QString f = files[(int)i];
     t = getHidroTime(f);
     pi->m_time.push_back(t);
     pi->m_files.push_back(f);
@@ -3354,13 +3377,13 @@ te::qt::widgets::PixmapItem* te::qt::widgets::TimeSliderWidget::getEtaMetadata(c
   QString sn, fname;
   for(size_t i = 0; i < count; ++i)
   {
-    QString f = files[i];
+	  QString f = files[(int)i];
     QFileInfo fi(path + "/" + f);
     QString baseName = fi.baseName();
     t = getEtaTime(f);
  
     if(i != count-1)
-      tnext = getEtaTime(files[i+1]);
+		tnext = getEtaTime(files[(int)i + 1]);
     else
       tnext = te::dt::TimeInstant(t.getTimeInstant() + boost::posix_time::seconds(60*60*24*3));
 
@@ -3401,7 +3424,7 @@ te::qt::widgets::PixmapItem* te::qt::widgets::TimeSliderWidget::getEtaMetadata(c
 te::dt::TimeInstant te::qt::widgets::TimeSliderWidget::getHidroTime(const QString& fileName)
 {
   QString file(fileName);
-  int ind = file.indexOf("racc.") + strlen("racc.");
+  int ind = file.indexOf("racc.") + (int)strlen("racc.");
   file.remove(0, ind);
   QString ano = "20" + file.mid(0, 2);
   QString mes = file.mid(2, 2);
@@ -3417,7 +3440,7 @@ te::dt::TimeInstant te::qt::widgets::TimeSliderWidget::getHidroTime(const QStrin
 te::dt::TimeInstant te::qt::widgets::TimeSliderWidget::getEtaTime(const QString& fileName)
 {
   QString file(fileName);
-  int ind = file.indexOf("Prec5km") + strlen("Prec5km");
+  int ind = file.indexOf("Prec5km") + (int)strlen("Prec5km");
   file.remove(0, ind);
   QString ano = file.mid(0, 4);
   QString mes = file.mid(4, 2);
@@ -3457,7 +3480,7 @@ te::qt::widgets::PixmapItem* te::qt::widgets::TimeSliderWidget::getTemporalImage
   te::dt::TimeInstant t;
   for(size_t i = 0; i < count; ++i)
   {
-    QString f = files[i];
+	  QString f = files[(int)i];
     pi->m_files.push_back(f);
     t = getTemporalImageTime(f);
     pi->m_time.push_back(t);
@@ -3506,55 +3529,55 @@ te::qt::widgets::PixmapItem* te::qt::widgets::TimeSliderWidget::getTemporalImage
 
   // get suffix 
   size_t pos = ss.indexOf("suffix ", Qt::CaseInsensitive) + strlen("suffix "); 
-  ss.remove(0, pos);
+  ss.remove(0, (int)pos);
   pos = ss.indexOf(" undef", Qt::CaseInsensitive);
-  s = ss.left(pos);
+  s = ss.left((int)pos);
   pi->m_suffix = s;
-  ss.remove(0, pos);
+  ss.remove(0, (int)pos);
 
   // get undef
-  pos = ss.indexOf("undef ", Qt::CaseInsensitive) + strlen("undef ");
-  ss.remove(0, pos);
+  pos = ss.indexOf("undef ", Qt::CaseInsensitive) + (int)strlen("undef ");
+  ss.remove(0, (int)pos);
   pos = ss.indexOf(" srid", Qt::CaseInsensitive);
-  s = ss.left(pos);
+  s = ss.left((int)pos);
   pi->m_undef = atof(s.toStdString().c_str());
-  ss.remove(0, pos);
+  ss.remove(0, (int)pos);
 
   // get srid
-  pos = ss.indexOf("srid ", Qt::CaseInsensitive) + strlen("srid ");
-  ss.remove(0, pos);
+  pos = ss.indexOf("srid ", Qt::CaseInsensitive) + (int)strlen("srid ");
+  ss.remove(0, (int)pos);
   pos = ss.indexOf(" llx", Qt::CaseInsensitive);
-  s = ss.left(pos);
+  s = ss.left((int)pos);
   pi->m_SRID = atoi(s.toStdString().c_str());
-  ss.remove(0, pos);
+  ss.remove(0, (int)pos);
 
   // get llx
   pos = ss.indexOf("llx ", Qt::CaseInsensitive) + strlen("llx ");
-  ss.remove(0, pos);
+  ss.remove(0, (int)pos);
   pos = ss.indexOf(" lly", Qt::CaseInsensitive);
-  s = ss.left(pos);
+  s = ss.left((int)pos);
   double llx = atof(s.toStdString().c_str());
-  ss.remove(0, pos);
+  ss.remove(0, (int)pos);
 
   // get lly
-  pos = ss.indexOf("lly ", Qt::CaseInsensitive) + strlen("lly ");
-  ss.remove(0, pos);
+  pos = ss.indexOf("lly ", Qt::CaseInsensitive) + (int)strlen("lly ");
+  ss.remove(0, (int)pos);
   pos = ss.indexOf(" urx", Qt::CaseInsensitive);
-  s = ss.left(pos);
+  s = ss.left((int)pos);
   double lly = atof(s.toStdString().c_str());
-  ss.remove(0, pos);
+  ss.remove(0, (int)pos);
 
   // get urx
   pos = ss.indexOf("urx ", Qt::CaseInsensitive) + strlen("urx ");
-  ss.remove(0, pos);
+  ss.remove(0, (int)pos);
   pos = ss.indexOf(" ury", Qt::CaseInsensitive);
-  s = ss.left(pos);
+  s = ss.left((int)pos);
   double urx = atof(s.toStdString().c_str());
-  ss.remove(0, pos);
+  ss.remove(0, (int)pos);
 
   // get ury
   pos = ss.indexOf("ury ", Qt::CaseInsensitive) + strlen("ury ");
-  ss.remove(0, pos);
+  ss.remove(0, (int)pos);
   double ury = atof(ss.toStdString().c_str());
 
   double w = urx - llx;
@@ -3567,7 +3590,7 @@ te::qt::widgets::PixmapItem* te::qt::widgets::TimeSliderWidget::getTemporalImage
 te::dt::TimeInstant te::qt::widgets::TimeSliderWidget::getTemporalImageTime(const QString& fileName)
 {
   QString file(fileName);
-  int ind = file.indexOf("_") + strlen("_");
+  int ind = file.indexOf("_") + (int)strlen("_");
   file.remove(0, ind);
   QString ano = file.mid(0, 4);
   QString mes = file.mid(5, 2);

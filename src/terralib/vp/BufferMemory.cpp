@@ -70,6 +70,7 @@ bool te::vp::BufferMemory::run() throw(te::common::Exception)
 {
   std::auto_ptr<te::da::DataSetType> outDSType(GetDataSetType());
   std::auto_ptr<te::mem::DataSet> outDSet(new te::mem::DataSet(outDSType.get()));
+  te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(outDSType.get());
 
   int type;
   int pk = 0;
@@ -123,6 +124,7 @@ bool te::vp::BufferMemory::run() throw(te::common::Exception)
                 if (currentGeom->isValid())
                 {
                   outGeom.reset(setBuffer(currentGeom.get(), m_distance, i, auxGeom));
+                  outGeom->setSRID(geomProp->getSRID());
                 }
                 else
                 {
@@ -171,6 +173,7 @@ bool te::vp::BufferMemory::run() throw(te::common::Exception)
             if (currentGeom->isValid())
             {
               outGeom.reset(setBuffer(currentGeom.get(), m_distance, i, auxGeom));
+              outGeom->setSRID(geomProp->getSRID());
             }
             else
             {
@@ -280,8 +283,8 @@ void te::vp::BufferMemory::dissolveMemory(te::mem::DataSet* outDSet,
 {
   std::vector<std::vector<te::gm::Geometry*> > vecGeom;
     
-  int levelPos = te::da::GetPropertyPos(outDSet, "level");
-  int geomPos  = te::da::GetPropertyPos(outDSet, "geom");
+  int levelPos = (int)te::da::GetPropertyPos(outDSet, "level");
+  int geomPos  = (int)te::da::GetPropertyPos(outDSet, "geom");
   int level;
 
   //te::common::TaskProgress task1("Dissolving boundaries...");
@@ -290,7 +293,7 @@ void te::vp::BufferMemory::dissolveMemory(te::mem::DataSet* outDSet,
   for(int i = 1; i <= levels; ++i)
   {
     te::sam::rtree::Index<te::gm::Geometry*, 4> rtree;
-      
+
     outDSet->moveBeforeFirst();
     while(outDSet->moveNext())
     {
@@ -375,16 +378,16 @@ void te::vp::BufferMemory::dissolveMemory(te::mem::DataSet* outDSet,
 
   //task1.setTotalSteps(vecSize);
   //task1.setCurrentStep(1);
-  for(std::size_t i = 0; i < vecSize; ++i)
+  for (std::size_t i = 0; i < vecSize; ++i)
   {
     std::vector<te::gm::Geometry*> currentVec = vecGeom[i];
     std::size_t c_vecSize = currentVec.size();
 
-    for(std::size_t j = 0; j < c_vecSize; ++j)
+    for(int j = 0; j < c_vecSize; ++j)
     {
       te::mem::DataSetItem* dataSetItem = new te::mem::DataSetItem(outDSet);
       dataSetItem->setInt32(0, pk); //pk
-      dataSetItem->setInt32(1, i+1); //level
+      dataSetItem->setInt32(1, (int)i+1); //level
       dataSetItem->setDouble(2, 0/*distance*(i)*/); //distance
         
       if(currentVec[j]->getGeomTypeId() == te::gm::MultiPolygonType)

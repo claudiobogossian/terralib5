@@ -45,6 +45,9 @@
 #include "../../../common/STLUtils.h"
 #include "../item/MapItem.h"
 #include "pattern/command/MoveCommand.h"
+#include "../item/PaperItem.h"
+#include "../../core/property/SharedProperties.h"
+#include "../../core/PaperConfig.h"
 
 // STL
 #include <algorithm>
@@ -201,11 +204,13 @@ void te::layout::Scene::calculateMatrixViewScene()
   double ury = m_box.m_ury;
 
   double dpiX = Context::getInstance().getDpiX();
+  double dpiY = Context::getInstance().getDpiY();
 
-  double factor = (dpiX / 25.4);
+  double factorX = (dpiX / 25.4);
+  double factorY = (dpiY / 25.4);
 
   //inverted Y-Axis
-  m_matrix = QTransform().scale(factor, -factor).translate(-llx, -ury);
+  m_matrix = QTransform().scale(factorX, -factorY).translate(-llx, -ury);
   //World coordinate - mm
   setSceneRect(QRectF(QPointF(llx, lly), QPointF(urx, ury)));
 }
@@ -260,21 +265,7 @@ void te::layout::Scene::deleteItems()
   QList<QGraphicsItem*> graphicsItems = selectedItems();
   foreach( QGraphicsItem *item, graphicsItems) 
   {
-    if (item)
-    {
-      removeItem(item);
-      if(item)
-      {
-        ItemObserver* obs = dynamic_cast<ItemObserver*>(item);
-        if(obs)
-        {
-          if(obs->getModel())
-            names.push_back(obs->getModel()->getName());
-        }
-        delete item;
-        item = 0;
-      }
-    }
+    deleteItem(item);
   }
 
   if(!names.empty())
@@ -843,3 +834,135 @@ void te::layout::Scene::contextUpdated()
     }
   }
 }
+
+void te::layout::Scene::deletePaperItem()
+{
+  QGraphicsItem* item = getPaperItem();
+  if(!item)
+  {
+    return;
+  }
+  deleteItem(item);     
+}
+
+bool te::layout::Scene::deleteItem( QGraphicsItem *item )
+{
+  bool result = false;
+
+  if (item)
+  {
+    removeItem(item);
+    if(item)
+    {
+      delete item;
+      item = 0;
+      result = true;
+    }
+  }
+
+  return result;
+}
+
+QGraphicsItem* te::layout::Scene::getPaperItem()
+{
+  QGraphicsItem* paper = 0;
+
+  EnumObjectType* object = Enums::getInstance().getEnumObjectType();
+  QList<QGraphicsItem*> allItems = items();
+  foreach(QGraphicsItem *item, allItems)
+  {
+    if(item)
+    {
+      PaperItem* pItem = dynamic_cast<PaperItem*>(item);
+      if(pItem)
+      {
+        paper = item;
+        break;
+      }
+    }
+  }
+
+  return paper;
+}
+
+void te::layout::Scene::applyPaperProportion(QSize oldPaper, QSize newPaper)
+{
+  applyProportionAllItems(oldPaper, newPaper);
+}
+
+void te::layout::Scene::applyProportionAllItems( QSize oldPaper, QSize newPaper )
+{
+  QGraphicsItem* paper = getPaperItem(); 
+  
+  QList<QGraphicsItem*> allItems = items();
+  foreach(QGraphicsItem *item, allItems)
+  {
+    if(item)
+    {
+      if(item != paper)
+      {
+        ItemObserver* it = dynamic_cast<ItemObserver*>(item);
+        if(it)
+        {
+          te::gm::Envelope box = it->getModel()->getBox();
+          box.m_llx = (box.m_llx * newPaper.width())/oldPaper.width();
+          box.m_urx = (box.m_urx * newPaper.width())/oldPaper.width();
+          box.m_lly = (box.m_lly * newPaper.height())/oldPaper.height();
+          box.m_ury = (box.m_ury * newPaper.height())/oldPaper.height();
+
+          ItemModelObservable* model = dynamic_cast<ItemModelObservable*>(it->getModel());
+          updateBoxFromProperties(box, model);
+          item->setPos(box.m_llx, box.m_lly);
+        }
+      }
+    }
+  }
+}
+
+void te::layout::Scene::updateBoxFromProperties( te::gm::Envelope box, ItemModelObservable* model )
+{
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+
+  SharedProperties* sharedProps = new SharedProperties;
+
+  Properties* props = new Properties(model->getName(), model->getType(), model->getHashCode());
+  
+  double x1 = box.m_llx;
+  double y1 = box.m_lly;
+  double width = box.getWidth();
+  double height = box.getHeight();
+
+  Property pro_x1(model->getHashCode());
+  pro_x1.setName(sharedProps->getX1());
+  pro_x1.setValue(x1, dataType->getDataTypeDouble());
+  pro_x1.setEditable(false);
+  props->addProperty(pro_x1);
+
+  Property pro_y1(model->getHashCode());
+  pro_y1.setName(sharedProps->getY1());
+  pro_y1.setValue(y1, dataType->getDataTypeDouble());
+  pro_y1.setEditable(false);
+  props->addProperty(pro_y1);
+
+  Property pro_width(model->getHashCode());
+  pro_width.setName(sharedProps->getWidth());
+  pro_width.setValue(width, dataType->getDataTypeDouble());
+  pro_width.setEditable(false);
+  props->addProperty(pro_width);
+
+  Property pro_height(model->getHashCode());
+  pro_height.setName(sharedProps->getHeight());
+  pro_height.setValue(height, dataType->getDataTypeDouble());
+  pro_height.setEditable(false);
+  props->addProperty(pro_height);
+
+  model->updateProperties(props);
+
+  if(sharedProps)
+  {
+    delete sharedProps;
+    sharedProps = 0;
+  }
+}
+
+

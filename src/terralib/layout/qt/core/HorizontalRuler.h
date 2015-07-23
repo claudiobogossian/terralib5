@@ -51,6 +51,10 @@ namespace te
 
         virtual void drawRuler( QGraphicsView* view, QPainter* painter, double scale );
 
+      protected:
+
+        virtual void drawMarks( QGraphicsView* view, QPainter* painter, QRectF rect, double zoomFactor );
+
     };
   }
 }

@@ -56,7 +56,7 @@ te::layout::PageSetupOutside::PageSetupOutside( OutsideController* controller, O
   m_ui->setupUi(this);
 
   setWindowFlags( Qt::CustomizeWindowHint | Qt::WindowCloseButtonHint 
-    | Qt::WindowTitleHint | Qt::WindowStaysOnTopHint );
+  | Qt::WindowTitleHint | Qt::WindowStaysOnTopHint );
 
   init();
 }
@@ -68,6 +68,11 @@ te::layout::PageSetupOutside::~PageSetupOutside()
 
 void te::layout::PageSetupOutside::init()
 {
+  m_ui->lneLeft->setValidator(new  QDoubleValidator(this));
+  m_ui->lneTop->setValidator(new  QDoubleValidator(this));
+  m_ui->lneRight->setValidator(new  QDoubleValidator(this));
+  m_ui->lneBottom->setValidator(new  QDoubleValidator(this));
+
   m_ui->lneCustomWidth->setValidator(new  QDoubleValidator(this));
   m_ui->lneCustomHeight->setValidator(new  QDoubleValidator(this));
 }
@@ -114,6 +119,9 @@ void te::layout::PageSetupOutside::load()
 
 void te::layout::PageSetupOutside::configureOrientationPage()
 {
+  PaperConfig* pConfig =  Context::getInstance().getPaperConfig();
+  m_orientation = pConfig->getPaperOrientantion();
+
   if (m_orientation == te::layout::Landscape)
   {
     m_ui->rdbLandscape->setChecked(true);
@@ -146,12 +154,9 @@ void te::layout::PageSetupOutside::configurePageSize()
   index = m_ui->cmbPageSize->findData("ISO A5 - 148 x 210 mm");
   m_ui->cmbPageSize->insertItem(index,"ISO A5 - 148 x 210 mm");
 
-  /*index = m_ui->cmbPageSize->findData("Custom");
-  m_ui->cmbPageSize->insertItem(index,"Custom");*/
-
   PaperConfig* pConfig =  Context::getInstance().getPaperConfig();
 
-  std::string curItem;
+  QString curItem;
   if (pConfig->getPaperType() == te::layout::A0)
     curItem = "ISO A0 - 841 x 1189 mm";
   else if (pConfig->getPaperType() == te::layout::A1)
@@ -166,6 +171,9 @@ void te::layout::PageSetupOutside::configurePageSize()
     curItem = "ISO A5 - 148 x 210 mm";
   else
     curItem = "Custom"; 
+
+  index = m_ui->cmbPageSize->findText(curItem);
+  m_ui->cmbPageSize->setCurrentIndex(index);
 
   switchSize();
 

@@ -70,8 +70,9 @@ namespace te
           \brief Set the layer that can be used
 
           \param layers   List of AbstractLayerPtr
+          \param selectedLayer   Selected AbstractLayerPtr
         */
-        void setLayers(std::list<te::map::AbstractLayerPtr> layers);
+        void setLayers(std::list<te::map::AbstractLayerPtr> layers, te::map::AbstractLayerPtr selectedLayer = 0);
 
         /*!
           \brief Get the Grouping Functions Type based on selected QListWidgetItem.
