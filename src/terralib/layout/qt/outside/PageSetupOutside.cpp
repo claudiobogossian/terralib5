@@ -56,7 +56,7 @@ te::layout::PageSetupOutside::PageSetupOutside( OutsideController* controller, O
   m_ui->setupUi(this);
 
   setWindowFlags( Qt::CustomizeWindowHint | Qt::WindowCloseButtonHint 
-    | Qt::WindowTitleHint | Qt::WindowStaysOnTopHint );
+  | Qt::WindowTitleHint | Qt::WindowStaysOnTopHint );
 
   init();
 }
@@ -68,8 +68,13 @@ te::layout::PageSetupOutside::~PageSetupOutside()
 
 void te::layout::PageSetupOutside::init()
 {
-  m_ui->lneCustomWidth->setValidator(new  QDoubleValidator(m_ui->lneCustomWidth));
-  m_ui->lneCustomHeight->setValidator(new  QDoubleValidator(m_ui->lneCustomHeight));
+  m_ui->lneLeft->setValidator(new  QDoubleValidator(this));
+  m_ui->lneTop->setValidator(new  QDoubleValidator(this));
+  m_ui->lneRight->setValidator(new  QDoubleValidator(this));
+  m_ui->lneBottom->setValidator(new  QDoubleValidator(this));
+
+  m_ui->lneCustomWidth->setValidator(new  QDoubleValidator(this));
+  m_ui->lneCustomHeight->setValidator(new  QDoubleValidator(this));
 }
 
 void te::layout::PageSetupOutside::updateObserver( ContextItem context )
