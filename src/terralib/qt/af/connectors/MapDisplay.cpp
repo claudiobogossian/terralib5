@@ -561,7 +561,8 @@ std::list<te::map::AbstractLayerPtr> te::qt::af::MapDisplay::getSelectedLayer()
 
   std::list<te::map::AbstractLayerPtr> lst;
 
-  lst.push_back(evt.m_layer);
+  if (evt.m_layer)
+    lst.push_back(evt.m_layer);
 
   return lst;
 }
