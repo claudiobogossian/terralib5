@@ -81,6 +81,16 @@ void te::gm::Point::setM(const double& /*m*/)
 {
 }
 
+bool te::gm::Point::operator<(const Point& rhs)
+{
+  if (m_x < rhs.m_x) return true;
+  if (m_x > rhs.m_x) return false;
+  if (m_y < rhs.m_y) return true;
+  if (m_y > rhs.m_y) return false;
+  return false;
+}
+
+
 te::gm::Point::Point(GeomType t, int srid, Envelope* mbr)
   : AbstractPoint(t, srid, mbr),
     m_x(sm_notNumber),

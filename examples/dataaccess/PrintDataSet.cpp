@@ -4,6 +4,8 @@
 // STL
 #include <iostream>
 
+#include <geos.h>
+
 void PrintDataSet(const std::string& datasetName, te::da::DataSet* dataset)
 {
   if(dataset == 0)
@@ -41,6 +43,11 @@ void PrintDataSet(const std::string& datasetName, te::da::DataSet* dataset)
       std::string value = dataset->getAsString(i);
 
       std::cout << value << std::endl;
+
+	  //rosa-teste -tirar depois
+	  std::auto_ptr<te::gm::Geometry> gin = dataset->getGeometry("OGR_GEOMETRY");
+	  std::auto_ptr<geos::geom::Geometry> g(te::gm::GEOSWriter::write(gin.get()));
+
     }
   }
 }

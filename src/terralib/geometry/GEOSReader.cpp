@@ -37,6 +37,8 @@
 #include "MultiPoint.h"
 #include "MultiPolygon.h"
 #include "Point.h"
+#include "PointZ.h"
+#include "PointZM.h"
 #include "Polygon.h"
 
 // GEOS
@@ -93,7 +95,22 @@ te::gm::Point* te::gm::GEOSReader::read(const geos::geom::Point* geosPt)
 {
   assert((geosPt != 0) && (geosPt->getGeometryTypeId() == geos::geom::GEOS_POINT));
 
-  Point* pt = new Point(geosPt->getX(), geosPt->getY(), geosPt->getSRID(), 0);
+  te::gm::GeomType gtype;
+  Point* pt;
+  switch (geosPt->getCoordinateDimension())
+  {
+  case 3:
+    gtype = PointZType;
+    pt = new PointZ(geosPt->getX(), geosPt->getY(), geosPt->getCoordinate()->z, geosPt->getSRID(), 0);
+    break;
+  case 4:
+    gtype = PointZMType;
+    pt = new PointZM(geosPt->getX(), geosPt->getY(), geosPt->getCoordinate()->z, geosPt->getCoordinate()->z, geosPt->getSRID(), 0);
+    break;
+  default:
+    gtype = PointType;
+    pt = new Point(gtype, geosPt->getSRID(), 0, geosPt->getX(), geosPt->getY());
+  }
 
   return pt;
 }
