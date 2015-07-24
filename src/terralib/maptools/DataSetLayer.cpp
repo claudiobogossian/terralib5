@@ -79,8 +79,15 @@ void te::map::DataSetLayer::setSRID(int srid)
   // set the srid associated to the parent AbstractLayer
   m_srid=srid;
   
+  // if there is no shema cached try to retrieve one
+  if (!m_schema)
+  {
+    // this guard is to deal with empty dataset layers
+    if (!m_datasourceId.empty() && !m_datasetName.empty())
+      loadSchema();
+  }
+  
   // propagate it to my cached dataset schema
-  loadSchema();
   if(m_schema)
   {
     if (m_schema->hasGeom())
@@ -98,9 +105,8 @@ void te::map::DataSetLayer::setSRID(int srid)
 
 void te::map::DataSetLayer::loadSchema() const
 {
-  if(m_schema == 0)
+  if(m_schema)
   {
-    assert(!m_datasetName.empty());
     te::da::DataSourcePtr ds = te::da::GetDataSource(m_datasourceId, true);
     
     std::auto_ptr<LayerSchema> type = ds->getDataSetType(m_datasetName);
@@ -113,9 +119,8 @@ void te::map::DataSetLayer::loadSchema() const
 
 std::auto_ptr<te::map::LayerSchema> te::map::DataSetLayer::getSchema() const
 {
-  if(m_schema == 0)
+  if(m_schema == 0 && !m_datasourceId.empty() && !m_datasetName.empty())
   {
-    assert(!m_datasetName.empty());
     te::da::DataSourcePtr ds = te::da::GetDataSource(m_datasourceId, true);
 
     std::auto_ptr<LayerSchema> type = ds->getDataSetType(m_datasetName);
@@ -128,7 +133,6 @@ std::auto_ptr<te::map::LayerSchema> te::map::DataSetLayer::getSchema() const
 
     return type;
   }
-
   return std::auto_ptr<LayerSchema>(static_cast<LayerSchema*>(m_schema->clone()));
 }
 
