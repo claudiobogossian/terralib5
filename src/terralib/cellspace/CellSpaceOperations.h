@@ -79,41 +79,24 @@ namespace te
         ~CellularSpacesOperations();
 
         /*!
-          \brief It create a Cellular Space.
+          \brief It creates a Cellular Space.
 
-          \param name      Name of the DataSet.
-          \param layerbase Layer base for cellular space creation.
-          \param resX      Resolution X.
-          \param resY      Resolution Y.
-          \param useMask   If will use poligons as mask.
-          \param type      Celluar space type (polygon, points or raster).
+          \param outputSource Information about the output datasource.
+          \param name      Name of the output layer.
+          \param resX      Cells resolution in X-dimension.
+          \param resY      Cells resolution in X-dimension.
+          \param env       The bouding box of the cell space.
+          \param srid      The spatial reference for the bouding box.
+          \param type      The type of cell space to be created.
         */
         void createCellSpace(te::da::DataSourceInfoPtr outputSource,
                              const std::string& name,
-                             te::map::AbstractLayerPtr layerBase,
-                             double resX,
-                             double resY,
-                             bool useMask,
-                             CellSpaceType type = CELLSPACE_POLYGONS);
-
-        /*!
-          \brief It create a Cellular Space.
-
-          \param name      Name of the DataSet.
-          \param resX      Resolution X.
-          \param resY      Resolution Y.
-          \param env       Envelope base to creation.
-          \param srid      SRID of the envelope.
-          \param type      Celluar space type (polygon, points or raster).
-        */
-        void createCellSpace(te::da::DataSourceInfoPtr outputSource,
-                             const std::string& name,
-                             const double resX,
-                             const double resY,
+                             const double& resX,
+                             const double& resY,
                              const te::gm::Envelope& env,
                              const int srid,
-                             const CellSpaceType type = CELLSPACE_POLYGONS);
-
+                             CellSpaceType type,
+                             te::map::AbstractLayerPtr layerBase);
       private:
 
         /*!

@@ -42,6 +42,7 @@
 #include "../../../qt/widgets/srs/SRSManagerDialog.h"
 #include "../../../qt/widgets/utils/ScopedCursor.h"
 #include "../../../srs/SpatialReferenceSystemManager.h"
+#include "../../../srs/Converter.h"
 #include "../../widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "ui_CreateCellularSpaceDialogForm.h"
 #include "CreateCellularSpaceDialog.h"
@@ -61,7 +62,7 @@ Q_DECLARE_METATYPE(te::common::UnitOfMeasurePtr);
 
 te::qt::plugins::cellspace::CreateCellularSpaceDialog::CreateCellularSpaceDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
-    m_currentSRID(4618),
+    m_bbSRID(4618),
     m_isFile(false),
     m_outputDataSetName(""),
     m_ui(new Ui::CreateCellularSpaceDialogForm)
@@ -104,7 +105,6 @@ te::qt::plugins::cellspace::CreateCellularSpaceDialog::CreateCellularSpaceDialog
   connect(m_ui->m_targetFileToolButton, SIGNAL(clicked()), this, SLOT(onTargetFileToolButtonClicked()));
   connect(m_ui->m_targetDatasourceToolButton, SIGNAL(clicked()), this, SLOT(onTargetDatasourceToolButtonClicked()));
   connect(m_ui->m_createPushButton, SIGNAL(clicked()), this, SLOT(onCreatePushButtonClicked()));
-  connect(m_ui->m_referenceGroupBox, SIGNAL(toggled(bool)), this, SLOT(onReferenceGroupBoxToggled(bool)));
   connect(m_ui->m_srsToolButton, SIGNAL(clicked()), this, SLOT(onSrsToolButtonClicked()));
 
   m_ui->m_helpPushButton->setNameSpace("dpi.inpe.br.plugins");
@@ -117,213 +117,338 @@ te::qt::plugins::cellspace::CreateCellularSpaceDialog::~CreateCellularSpaceDialo
 
 void te::qt::plugins::cellspace::CreateCellularSpaceDialog::setLayers(std::list<te::map::AbstractLayerPtr> layers)
 {
-  if(layers.empty())
+  if (layers.empty())
   {
-    m_ui->m_srsToolButton->setEnabled(true);
-    m_ui->m_referenceGroupBox->setChecked(false);
-    m_ui->m_referenceGroupBox->setEnabled(false);
-    showSRS();
+    m_ui->m_noMaskToolButton->setChecked(true);
+    m_ui->m_resSRIDLabel->setText("No SRS defined");
+    m_ui->m_layerSRIDLabel->setText("No SRS defined");
+    m_ui->m_unitComboBox->setCurrentIndex(0);
+    m_bbSRID = 0;
     return;
   }
-
-  std::vector<std::string> nonSridLayers;
-  bool hasNonSridLayer = false;
-
+  
   std::list<te::map::AbstractLayerPtr>::iterator it = layers.begin();
-
+  m_bbSRID = it->get()->getSRID();
   while(it != layers.end())
   {
-    if(it->get()->getSRID() > 0)
-    {
-      std::auto_ptr<te::da::DataSetType> dsType = it->get()->getSchema();
-      if(dsType->hasGeom())
-        m_ui->m_layersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant::fromValue(*it));
-    }
-    else
-    {
-      nonSridLayers.push_back(it->get()->getTitle());
-      hasNonSridLayer = true;
-    }
+    m_ui->m_layersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant::fromValue(*it));
     ++it;
   }
-
-  if(hasNonSridLayer)
-  {
-    QString w(tr("Some Layers were not added because they have no SRID:"));
-    w.append("\n");
-    for(std::size_t i = 0; i < nonSridLayers.size(); ++i)
-      w.append(nonSridLayers[i].c_str()).append("\n");
-    QMessageBox::warning(this, tr("Cellular Spaces"), w);
-  }
-
-  if(nonSridLayers.size() == layers.size())
-  {
-    m_ui->m_srsToolButton->setEnabled(true);
-    m_ui->m_referenceGroupBox->setChecked(false);
-    m_ui->m_referenceGroupBox->setEnabled(false);
-    showSRS();
-    return;
-  }
-
-  te::map::AbstractLayerPtr layer = getReferenceLayer();
-  m_currentSRID = layer->getSRID();
-  showSRS();
+  m_ui->m_layersComboBox->setCurrentIndex(0);
 }
 
+te::map::AbstractLayerPtr te::qt::plugins::cellspace::CreateCellularSpaceDialog::getLayer()
+{
+  if(m_isFile)
+  {
+    // let's include the new datasource in the managers
+    boost::uuids::basic_random_generator<boost::mt19937> gen;
+    boost::uuids::uuid u = gen();
+    std::string id_ds = boost::uuids::to_string(u);
+    
+    boost::filesystem::path uri(m_outDataSourceInfo->getConnInfo()["URI"]);
+    
+    te::da::DataSourceInfoPtr ds(new te::da::DataSourceInfo);
+    ds->setConnInfo(m_outDataSourceInfo->getConnInfo());
+    ds->setTitle(uri.stem().string());
+    ds->setAccessDriver("OGR");
+    ds->setType("OGR");
+    ds->setDescription(uri.string());
+    ds->setId(id_ds);
+    
+    te::da::DataSourcePtr newds = te::da::DataSourceManager::getInstance().get(id_ds, "OGR", ds->getConnInfo());
+    newds->open();
+    te::da::DataSourceInfoManager::getInstance().add(ds);
+    m_outDataSourceInfo = ds;
+    
+    m_outputDataSetName = uri.stem().string();
+  }
+  
+  te::da::DataSourcePtr outDataSource = te::da::GetDataSource(m_outDataSourceInfo->getId());
+  outDataSource->open();
+  
+  te::qt::widgets::DataSet2Layer converter(m_outDataSourceInfo->getId());
+  
+  te::da::DataSetTypePtr dt(outDataSource->getDataSetType(m_outputDataSetName).release());
+  
+  te::map::AbstractLayerPtr layer = converter(dt);
+  
+  layer->setSRID(m_bbSRID);
+  
+  return layer;
+}
+
+// whenever the reference layer changes the parameters of the new cellular space will bem modified accordingly
 void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onLayersComboBoxChanged(int index)
 {
   te::map::AbstractLayerPtr layer = getReferenceLayer();
-
   if(!layer)
     return;
-
-  te::gm::Envelope env = layer->getExtent();
-  showEnvelope(env);
-
-  m_currentSRID = layer->getSRID();
-
-  showSRS();
-
-  te::common::UnitOfMeasurePtr unit = te::srs::SpatialReferenceSystemManager::getInstance().getUnit(m_currentSRID);
-
-  m_ui->m_sridLabel->setText(te::srs::SpatialReferenceSystemManager::getInstance().getName(m_currentSRID).c_str());
-
-  if(!unit.get())
+  
+  m_bbSRID = layer->getSRID();
+  int precision = 2;
+  if (m_bbSRID>0)
   {
-    // METRE
-    m_ui->m_unitComboBox->setCurrentIndex(1);
+    te::common::UnitOfMeasurePtr unit = te::srs::SpatialReferenceSystemManager::getInstance().getUnit(m_bbSRID);
+    if (unit->getId() == te::common::UOM_Degree ||
+        unit->getId() == te::common::UOM_Radian)
+      precision = 6;
+    m_ui->m_resSRIDLabel->setText(te::srs::SpatialReferenceSystemManager::getInstance().getName(m_bbSRID).c_str());
+    m_ui->m_layerSRIDLabel->setText(te::srs::SpatialReferenceSystemManager::getInstance().getName(m_bbSRID).c_str());
+    setResolutionUnit(unit);
   }
   else
   {
-    setCurrentUnit(unit);
+    m_ui->m_resSRIDLabel->setText("No SRS defined");
+    m_ui->m_layerSRIDLabel->setText("No SRS defined");
+    m_ui->m_unitComboBox->setCurrentIndex(0);
+    precision = 6;
   }
+  showEnvelope(layer->getExtent(),precision);
+  m_ui->m_maskToolButton->setChecked(true);
+}
+
+
+void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onEnvelopeChanged(const QString & text)
+{
+  clearResolution();
+}
+
+void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onSrsToolButtonClicked()
+{
+  te::qt::widgets::SRSManagerDialog srsDialog(this);
+  srsDialog.setWindowTitle(tr("Choose the SRS"));
+  
+  if(srsDialog.exec() == QDialog::Rejected)
+    return;
+  
+  int newSRID =  srsDialog.getSelectedSRS().first;
+  
+  if (m_ui->m_maskToolButton->isChecked())
+  {
+    te::map::AbstractLayerPtr refLayer = getReferenceLayer();
+    if (refLayer &&
+        ((newSRID <= 0 && refLayer->getSRID()  > 0) ||
+         (newSRID  > 0 && refLayer->getSRID() <= 0) ))
+      m_ui->m_noMaskToolButton->setChecked(true);
+  }
+  
+  if (newSRID <= 0)
+  {
+    m_ui->m_unitComboBox->setCurrentIndex(0);
+    m_ui->m_resSRIDLabel->setText("No SRS defined");
+  }
+  else
+  {
+    std::string name = te::srs::SpatialReferenceSystemManager::getInstance().getName(newSRID);
+    m_ui->m_resSRIDLabel->setText(name.c_str());
+    if (m_bbSRID > 0)
+    {
+      te::gm::Envelope env = getEnvelope();
+      clearEnvelope();
+      if (env.isValid())
+      {
+        int precision = 2;
+        te::common::UnitOfMeasurePtr unit = te::srs::SpatialReferenceSystemManager::getInstance().getUnit(newSRID);
+        if (unit->getId() == te::common::UOM_Degree ||
+            unit->getId() == te::common::UOM_Radian)
+          precision = 6;
+        
+        env.transform(m_bbSRID,newSRID);
+        showEnvelope(env, precision);
+      }
+    }
+  }
+  m_bbSRID = newSRID;
+  te::common::UnitOfMeasurePtr unit = te::srs::SpatialReferenceSystemManager::getInstance().getUnit(m_bbSRID);
+  setResolutionUnit(unit);
+  clearResolution();
+}
+
+// if user change the unit it will have to re-enter resolution
+void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onUnitComboBoxChanged(int index)
+{
+  if (m_bbSRID <= 0 && index != 0)
+  {
+    QMessageBox::warning(this, tr("Cellular Spaces"), tr("There is no no spatial reference defined for the new cellular space. It is not possible to select a unit for the resolution."));
+    m_ui->m_unitComboBox->setCurrentIndex(0);
+    return;
+  }
+  
+  if (index == 0)
+    return;
+  
+  clearResolution();
+  
+  te::common::UnitOfMeasurePtr resUnit = getResolutionUnit();
+  te::common::UnitOfMeasurePtr bbUnit = te::srs::SpatialReferenceSystemManager::getInstance().getUnit(m_bbSRID);
+  
+  if (!resUnit || !bbUnit)
+    return;
+  
+  if (resUnit == bbUnit)
+    return;
+  
+  if ((te::common::UnitsOfMeasureManager::getInstance().areConvertible(bbUnit->getName(), resUnit->getName()) ||  // units are convertible
+       // accepting an exception to deal with the most common case: bounding box in geographic coordinates
+       // and resolution in meters, kilometers or foot
+       (te::srs::SpatialReferenceSystemManager::getInstance().isGeographic(m_bbSRID) &&
+        (resUnit->getId() == te::common::UOM_Metre ||
+         resUnit->getId() == te::common::UOM_Foot  ||
+         resUnit->getId() == te::common::UOM_Kilometre))))
+    return;
+  
+  QMessageBox::warning(this, tr("Cellular Spaces"), tr("Unable to convert between the selected unit for the resolution and the unit of new cell layer SRS"));
+  m_ui->m_unitComboBox->setCurrentText(bbUnit->getName().c_str());
 }
 
 void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onResXLineEditEditingFinished()
 {
-  double resX = getResX();
-
-  te::gm::Envelope env = getOutputEnvelope();
-
+  te::gm::Envelope env = getEnvelope();
   if(!env.isValid())
   {
-    QMessageBox::warning(this, tr("Cellular Spaces"), tr("Invalid envelope!"));
+    QMessageBox::warning(this, tr("Cellular Spaces"), tr("Invalid bounding box."));
     return;
   }
-
-int maxCols = (int)ceil((env.m_urx - env.m_llx)/resX);
-
+  
+  double resX = m_ui->m_resXLineEdit->text().toDouble();
+  unitConvertion(resX, getResolutionUnit(), te::srs::SpatialReferenceSystemManager::getInstance().getUnit(m_bbSRID));
+  
+  int maxCols = (int)ceil((env.m_urx - env.m_llx)/resX);
   m_ui->m_colsLineEdit->setText(QString::number(maxCols));
 }
 
 void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onResYLineEditEditingFinished()
 {
-  double resY = getResY();
-
-  te::gm::Envelope env = getOutputEnvelope();
-
+  te::gm::Envelope env = getEnvelope();
   if(!env.isValid())
   {
-    QMessageBox::warning(this, tr("Cellular Spaces"), tr("Invalid envelope!"));
+    QMessageBox::warning(this, tr("Cellular Spaces"), tr("Invalid bounding box."));
     return;
   }
 
+  double resY = m_ui->m_resXLineEdit->text().toDouble();
+  unitConvertion(resY, getResolutionUnit(), te::srs::SpatialReferenceSystemManager::getInstance().getUnit(m_bbSRID));
+  
   int maxRows = (int)ceil((env.m_ury - env.m_lly)/resY);
-
   m_ui->m_rowsLineEdit->setText(QString::number(maxRows));
 }
 
 void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onColsLineEditEditingFinished()
 {
-  int cols = m_ui->m_colsLineEdit->text().toInt();
-
-  te::gm::Envelope env = getOutputEnvelope();
-
+  te::gm::Envelope env = getEnvelope();
   if(!env.isValid())
   {
-    QMessageBox::warning(this, tr("Cellular Spaces"), tr("Invalid envelope!"));
+    QMessageBox::warning(this, tr("Cellular Spaces"), tr("Invalid bounding box"));
     return;
   }
 
+  int cols = m_ui->m_colsLineEdit->text().toInt();
+  
   double resX = (env.m_urx - env.m_llx)/cols;
-
-  te::map::AbstractLayerPtr layer = getReferenceLayer();
-
-  te::common::UnitOfMeasurePtr layerUnit;
-  te::common::UnitOfMeasurePtr currentUnit = getCurrentUnit();
-
-  if(layer)
+  
+  int precision = 6;
+  te::common::UnitOfMeasurePtr resUnit = getResolutionUnit();
+  if (resUnit)
   {
-    layerUnit = te::srs::SpatialReferenceSystemManager::getInstance().getUnit(layer->getSRID());
+    unitConvertion(resX, te::srs::SpatialReferenceSystemManager::getInstance().getUnit(m_bbSRID), resUnit);
+    if (resUnit->getId() != te::common::UOM_Degree &&
+        resUnit->getId() != te::common::UOM_Radian)
+      precision = 2;
   }
-  else
-  {
-    layerUnit = te::srs::SpatialReferenceSystemManager::getInstance().getUnit(m_currentSRID);
-  }
-
-  if(layerUnit != currentUnit)
-  {
-    try
-    {
-      double factorX = te::common::UnitsOfMeasureManager::getInstance().getConversion(layerUnit->getName(), currentUnit->getName());
-      resX = resX/factorX;
-    }
-    catch(te::common::Exception& /*e*/)
-    {
-      clearResolution();
-    }
-  }
-
-  m_ui->m_resXLineEdit->setText(QString::number(resX));
+  m_ui->m_resXLineEdit->setText(QString::number(resX,'f',precision));
 }
 
 void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onRowsLineEditEditingFinished()
 {
-  int rows = m_ui->m_rowsLineEdit->text().toInt();
-
-  te::gm::Envelope env = getOutputEnvelope();
-
+  te::gm::Envelope env = getEnvelope();
   if(!env.isValid())
   {
     QMessageBox::warning(this, tr("Cellular Spaces"), tr("Invalid envelope!"));
     return;
   }
 
+  int rows = m_ui->m_rowsLineEdit->text().toInt();
+  
   double resY = (env.m_ury - env.m_lly)/rows;
 
-  te::map::AbstractLayerPtr layer = getReferenceLayer();
-
-  te::common::UnitOfMeasurePtr layerUnit;
-  te::common::UnitOfMeasurePtr currentUnit = getCurrentUnit();
-
-  if(layer)
+  int precision = 6;
+  te::common::UnitOfMeasurePtr resUnit = getResolutionUnit();
+  if (resUnit)
   {
-    layerUnit = te::srs::SpatialReferenceSystemManager::getInstance().getUnit(layer->getSRID());
+    unitConvertion(resY, te::srs::SpatialReferenceSystemManager::getInstance().getUnit(m_bbSRID), resUnit);
+    if (resUnit->getId() != te::common::UOM_Degree &&
+        resUnit->getId() != te::common::UOM_Radian)
+      precision = 2;
   }
-  else
-  {
-    layerUnit = te::srs::SpatialReferenceSystemManager::getInstance().getUnit(m_currentSRID);
-  }
-
-  if(layerUnit != currentUnit)
-  {
-    try
-    {
-      double factorY = te::common::UnitsOfMeasureManager::getInstance().getConversion(layerUnit->getName(), currentUnit->getName());
-      resY = resY/factorY;
-    }
-    catch(te::common::Exception& /*e*/)
-    {
-      clearResolution();
-    }
-  }
-
-  m_ui->m_resYLineEdit->setText(QString::number(resY));
+  m_ui->m_resYLineEdit->setText(QString::number(resY,'f',precision));
 }
 
-void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onEnvelopeChanged(const QString & text)
+void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onTargetDatasourceToolButtonClicked()
 {
-  clearResolution();
+  m_ui->m_newLayerNameLineEdit->clear();
+  m_ui->m_repositoryLineEdit->clear();
+  
+  te::qt::widgets::DataSourceSelectorDialog dlg(this);
+  dlg.exec();
+  
+  std::list<te::da::DataSourceInfoPtr> dsPtrList = dlg.getSelecteds();
+  
+  if(dsPtrList.size() <= 0)
+    return;
+  
+  std::list<te::da::DataSourceInfoPtr>::iterator it = dsPtrList.begin();
+  
+  m_outDataSourceInfo = *it;
+  
+  m_ui->m_repositoryLineEdit->setText(QString(it->get()->getTitle().c_str()));
+  
+  m_isFile = false;
+  
+  m_ui->m_newLayerNameLineEdit->setEnabled(true);
+}
+
+void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onTargetFileToolButtonClicked()
+{
+  m_ui->m_newLayerNameLineEdit->clear();
+  m_ui->m_repositoryLineEdit->clear();
+  
+  if (m_ui->m_colsLineEdit->text().isEmpty())
+    onResXLineEditEditingFinished();
+  
+  if (m_ui->m_rowsLineEdit->text().isEmpty())
+    onResYLineEditEditingFinished();
+  
+  QString extension;
+  
+  std::string accessDriver;
+  
+  extension = tr("Shapefile (*.shp *.SHP);;");
+  accessDriver = "OGR";
+  
+  QString fileName = QFileDialog::getSaveFileName(this, tr("Save as..."),
+                                                  QString(), extension, 0, QFileDialog::DontConfirmOverwrite);
+  
+  if (fileName.isEmpty())
+    return;
+  
+  boost::filesystem::path outfile(fileName.toStdString());
+  std::string aux = outfile.leaf().string();
+  m_ui->m_newLayerNameLineEdit->setText(aux.c_str());
+  aux = outfile.string();
+  m_ui->m_repositoryLineEdit->setText(aux.c_str());
+  
+  m_isFile = true;
+  
+  m_ui->m_newLayerNameLineEdit->setEnabled(false);
+  
+  std::map<std::string, std::string> connInfo;
+  connInfo["URI"] = m_ui->m_repositoryLineEdit->text().toStdString();
+  
+  m_outDataSourceInfo.reset(new te::da::DataSourceInfo);
+  
+  m_outDataSourceInfo->setAccessDriver(accessDriver);
+  m_outDataSourceInfo->setConnInfo(connInfo);
 }
 
 void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onCreatePushButtonClicked()
@@ -335,17 +460,6 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onCreatePushButtonCl
     return;
   }
 
-  m_outputDataSetName = m_ui->m_newLayerNameLineEdit->text().toStdString();
-
-  te::map::AbstractLayerPtr referenceLayer;
-  
-  if(!isNoReference())
-    referenceLayer = getReferenceLayer();
-  
-  double resX = getResX();
-  double resY = getResY();
-  bool isPolygonsAsMask = m_ui->m_maskToolButton->isChecked();
-
   std::auto_ptr<te::cellspace::CellularSpacesOperations> cellSpaceOp(new te::cellspace::CellularSpacesOperations());
 
   te::cellspace::CellularSpacesOperations::CellSpaceType type;
@@ -354,11 +468,18 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onCreatePushButtonCl
   {
     type = te::cellspace::CellularSpacesOperations::CELLSPACE_POLYGONS;
   }
-  else if(m_ui->m_pointsToolButton->isChecked())
+  else
   {
     type = te::cellspace::CellularSpacesOperations::CELLSPACE_POINTS;
   }
 
+  te::map::AbstractLayerPtr referenceLayer;
+  if (m_ui->m_maskToolButton->isChecked())
+    referenceLayer = getReferenceLayer();
+  
+  m_outputDataSetName = m_ui->m_newLayerNameLineEdit->text().toStdString();
+  
+  
   //progress
   te::qt::widgets::ProgressViewerDialog v(this);
   int id = te::common::ProgressManager::getInstance().addViewer(&v);
@@ -366,11 +487,10 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onCreatePushButtonCl
   try
   {
     te::qt::widgets::ScopedCursor cursor(Qt::WaitCursor);
-
-    if(isNoReference())
-      cellSpaceOp->createCellSpace(m_outDataSourceInfo, m_outputDataSetName, resX, resY, getEnvelope(), m_currentSRID, type);
-    else
-      cellSpaceOp->createCellSpace(m_outDataSourceInfo, m_outputDataSetName, referenceLayer, resX, resY, isPolygonsAsMask, type);
+    cellSpaceOp->createCellSpace(m_outDataSourceInfo, m_outputDataSetName,
+                                   getResX(), getResY(), getEnvelope(), m_bbSRID,
+                                   type,
+                                   referenceLayer);
   }
   catch(te::common::Exception& e)
   {
@@ -387,140 +507,69 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onCreatePushButtonCl
   accept();
 }
 
-void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onTargetFileToolButtonClicked()
-{
-  m_ui->m_newLayerNameLineEdit->clear();
-  m_ui->m_repositoryLineEdit->clear();
-
-  QString extension;
-
-  std::string accessDriver;
-
-  extension = tr("Shapefile (*.shp *.SHP);;");
-  accessDriver = "OGR";
-
-  QString fileName = QFileDialog::getSaveFileName(this, tr("Save as..."),
-                     QString(), extension, 0, QFileDialog::DontConfirmOverwrite);
-
-  if (fileName.isEmpty())
-    return;
-
-  boost::filesystem::path outfile(fileName.toStdString());
-  std::string aux = outfile.leaf().string();
-  m_ui->m_newLayerNameLineEdit->setText(aux.c_str());
-  aux = outfile.string();
-  m_ui->m_repositoryLineEdit->setText(aux.c_str());
-
-  m_isFile = true;
-
-  m_ui->m_newLayerNameLineEdit->setEnabled(false);
-
-  std::map<std::string, std::string> connInfo;
-  connInfo["URI"] = m_ui->m_repositoryLineEdit->text().toStdString();
-
-  m_outDataSourceInfo.reset(new te::da::DataSourceInfo);
-
-  m_outDataSourceInfo->setAccessDriver(accessDriver);
-  m_outDataSourceInfo->setConnInfo(connInfo);
-}
-
-void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onTargetDatasourceToolButtonClicked()
-{
-  m_ui->m_newLayerNameLineEdit->clear();
-  m_ui->m_repositoryLineEdit->clear();
-
-  te::qt::widgets::DataSourceSelectorDialog dlg(this);
-  dlg.exec();
-
-  std::list<te::da::DataSourceInfoPtr> dsPtrList = dlg.getSelecteds();
-
-  if(dsPtrList.size() <= 0)
-    return;
-
-  std::list<te::da::DataSourceInfoPtr>::iterator it = dsPtrList.begin();
-
-  m_outDataSourceInfo = *it;
-
-  m_ui->m_repositoryLineEdit->setText(QString(it->get()->getTitle().c_str()));
-
-  m_isFile = false;
-
-  m_ui->m_newLayerNameLineEdit->setEnabled(true);
-}
-
-void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onUnitComboBoxChanged(int index)
-{
-  te::map::AbstractLayerPtr layer = getReferenceLayer();
-
-  te::common::UnitOfMeasurePtr layerUnit;
-  te::common::UnitOfMeasurePtr currentUnit = getCurrentUnit();
-
-  if(layer)
-  {
-    layerUnit = te::srs::SpatialReferenceSystemManager::getInstance().getUnit(layer->getSRID());
-  }
-  else
-  {
-    layerUnit = te::srs::SpatialReferenceSystemManager::getInstance().getUnit(m_currentSRID);
-  }
-
-  if(layerUnit != currentUnit)
-  {
-    if (!te::common::UnitsOfMeasureManager::getInstance().areConvertible(layerUnit->getName(), currentUnit->getName()))
-    {
-      QMessageBox::warning(this, tr("Cellular Spaces"), tr("Unable to convert between the measuring unit of the layer projection and the selected!"));
-      clearResolution();
-    }
-  }
-
-  clearResolution();
-}
-
 void te::qt::plugins::cellspace::CreateCellularSpaceDialog::initUnitsOfMeasure()
 {
+  m_ui->m_unitComboBox->addItem("UNIT");
+  
   te::common::UnitsOfMeasureManager::const_iterator it = te::common::UnitsOfMeasureManager::getInstance().begin();
   te::common::UnitsOfMeasureManager::const_iterator itend = te::common::UnitsOfMeasureManager::getInstance().end();
   while (it != itend)
   {
     te::common::UnitOfMeasurePtr uptr = it->second;
-    m_ui->m_unitComboBox->addItem(uptr->getName().c_str(), QVariant::fromValue(uptr));
+    if (it->second->getType() == te::common::Length ||
+        it->second->getType() == te::common::Angle)
+      m_ui->m_unitComboBox->addItem(uptr->getName().c_str(), QVariant::fromValue(uptr));
     ++it;
   }
 
-  if(m_currentSRID > 0)
+  if(m_bbSRID > 0)
   {
-    te::common::UnitOfMeasurePtr unit = te::srs::SpatialReferenceSystemManager::getInstance().getUnit(m_currentSRID);
-    setCurrentUnit(unit);
+    te::common::UnitOfMeasurePtr unit = te::srs::SpatialReferenceSystemManager::getInstance().getUnit(m_bbSRID);
+    if (unit.get())
+      setResolutionUnit(unit);
+    return;
   }
-  else
+  m_ui->m_unitComboBox->setCurrentIndex(0);
+}
+
+void te::qt::plugins::cellspace::CreateCellularSpaceDialog::showEnvelope(const te::gm::Envelope& env, int precision)
+{
+  m_ui->m_llxLineEdit->setText(QString::number(env.m_llx,'f',precision));
+  m_ui->m_llyLineEdit->setText(QString::number(env.m_lly,'f',precision));
+  m_ui->m_urxLineEdit->setText(QString::number(env.m_urx,'f',precision));
+  m_ui->m_uryLineEdit->setText(QString::number(env.m_ury,'f',precision));
+}
+
+void te::qt::plugins::cellspace::CreateCellularSpaceDialog::setResolutionUnit(te::common::UnitOfMeasurePtr unit)
+{
+  if (!unit)
   {
-    m_ui->m_unitComboBox->setCurrentIndex(1);
+    m_ui->m_unitComboBox->setCurrentIndex(0);
+    return;
+  }
+  
+  for(int i = 0; i < m_ui->m_unitComboBox->count(); ++i)
+  {
+    std::string name = m_ui->m_unitComboBox->itemText(i).toStdString();
+    
+    if(unit->getName() == name)
+    {
+      m_ui->m_unitComboBox->setCurrentIndex(i);
+      break;
+    }
   }
 }
 
-te::gm::Envelope te::qt::plugins::cellspace::CreateCellularSpaceDialog::getOutputEnvelope()
+te::common::UnitOfMeasurePtr te::qt::plugins::cellspace::CreateCellularSpaceDialog::getResolutionUnit()
 {
-  te::gm::Envelope env;
-
-  env.m_llx = m_ui->m_llxLineEdit->text().toDouble();
-  env.m_lly = m_ui->m_llyLineEdit->text().toDouble();
-  env.m_urx = m_ui->m_urxLineEdit->text().toDouble();
-  env.m_ury = m_ui->m_uryLineEdit->text().toDouble();
-
-  return env;
+  QVariant varUnit = m_ui->m_unitComboBox->itemData(m_ui->m_unitComboBox->currentIndex(), Qt::UserRole);
+  return varUnit.value<te::common::UnitOfMeasurePtr>();
 }
 
-void te::qt::plugins::cellspace::CreateCellularSpaceDialog::showEnvelope(const te::gm::Envelope env)
+te::map::AbstractLayerPtr te::qt::plugins::cellspace::CreateCellularSpaceDialog::getReferenceLayer()
 {
-  char txt[40];
-  sprintf(txt,"%.8g",env.m_llx);
-  m_ui->m_llxLineEdit->setText(QString(txt));
-  sprintf(txt,"%.8g",env.m_lly);
-  m_ui->m_llyLineEdit->setText(QString(txt));
-  sprintf(txt,"%.8g",env.m_urx);
-  m_ui->m_urxLineEdit->setText(QString(txt));
-  sprintf(txt,"%.8g",env.m_ury);
-  m_ui->m_uryLineEdit->setText(QString(txt));
+  QVariant varLayer = m_ui->m_layersComboBox->itemData(m_ui->m_layersComboBox->currentIndex(), Qt::UserRole);
+  return varLayer.value<te::map::AbstractLayerPtr>();
 }
 
 te::gm::Envelope te::qt::plugins::cellspace::CreateCellularSpaceDialog::getEnvelope()
@@ -535,156 +584,110 @@ te::gm::Envelope te::qt::plugins::cellspace::CreateCellularSpaceDialog::getEnvel
   return env;
 }
 
-te::map::AbstractLayerPtr te::qt::plugins::cellspace::CreateCellularSpaceDialog::getReferenceLayer()
-{
-  QVariant varLayer = m_ui->m_layersComboBox->itemData(m_ui->m_layersComboBox->currentIndex(), Qt::UserRole);
-  return varLayer.value<te::map::AbstractLayerPtr>();
-}
-
-te::common::UnitOfMeasurePtr te::qt::plugins::cellspace::CreateCellularSpaceDialog::getCurrentUnit()
-{
-  QVariant varUnit = m_ui->m_unitComboBox->itemData(m_ui->m_unitComboBox->currentIndex(), Qt::UserRole);
-  return varUnit.value<te::common::UnitOfMeasurePtr>();
-}
-
-void te::qt::plugins::cellspace::CreateCellularSpaceDialog::setCurrentUnit(te::common::UnitOfMeasurePtr unit)
-{
-  for(int i = 0; i < m_ui->m_unitComboBox->count(); ++i)
-  {
-    std::string name = m_ui->m_unitComboBox->itemText(i).toStdString();
-
-    if(unit->getName() == name)
-    {
-      m_ui->m_unitComboBox->setCurrentIndex(i);
-      break;
-    }
-  }
-}
-
-bool te::qt::plugins::cellspace::CreateCellularSpaceDialog::checkList(std::string& errors)
-{
-  bool noErrors = true;
-
-  std::string name = m_ui->m_newLayerNameLineEdit->text().toStdString();
-  te::map::AbstractLayerPtr referenceLayer = getReferenceLayer();
-  double resX = m_ui->m_resXLineEdit->text().toDouble();
-  double resY = m_ui->m_resYLineEdit->text().toDouble();
-
-  errors = tr("Some information is missing:").toStdString();
-
-  if(name.empty())
-  {
-    errors += "\n - " + tr("Output name").toStdString();
-    noErrors = false;
-  }
-
-  if(m_currentSRID <= 0)
-  {
-    errors += "\n - " + tr("Projection").toStdString();
-    noErrors = false;
-  }
-
-  te::gm::Envelope env = getOutputEnvelope();
-
-  if(!env.isValid())
-  {
-    errors += "\n - " + tr("Invalid envelope").toStdString();
-    noErrors = false;
-  }
-
-  double lWidth = env.getWidth();
-  double lHeight = env.getHeight();
-
-  if (resX < 0. || resX >= lWidth)
-  {
-    char txt[40];
-    sprintf(txt,"%.8g",lWidth);
-    errors += "\n - " + tr("Resolution in X must be > 0 and < ").toStdString() + txt;
-    noErrors = false;
-  }
-
-  if (resY < 0. || resY >= lHeight)
-  {
-    char txt[40];
-    sprintf(txt,"%.8g",lHeight);
-    errors += "\n - " + tr("Resolution in X must be > 0 and < ").toStdString() + txt;
-    noErrors = false;
-  }
-
-  return noErrors;
-}
-
-te::map::AbstractLayerPtr te::qt::plugins::cellspace::CreateCellularSpaceDialog::getLayer()
-{
-  if(m_isFile)
-  {
-    // let's include the new datasource in the managers
-    boost::uuids::basic_random_generator<boost::mt19937> gen;
-    boost::uuids::uuid u = gen();
-    std::string id_ds = boost::uuids::to_string(u);
-    
-    boost::filesystem::path uri(m_outDataSourceInfo->getConnInfo()["URI"]);
-
-    te::da::DataSourceInfoPtr ds(new te::da::DataSourceInfo);
-    ds->setConnInfo(m_outDataSourceInfo->getConnInfo());
-    ds->setTitle(uri.stem().string());
-    ds->setAccessDriver("OGR");
-    ds->setType("OGR");
-    ds->setDescription(uri.string());
-    ds->setId(id_ds);
-      
-    te::da::DataSourcePtr newds = te::da::DataSourceManager::getInstance().get(id_ds, "OGR", ds->getConnInfo());
-    newds->open();
-    te::da::DataSourceInfoManager::getInstance().add(ds);
-    m_outDataSourceInfo = ds;
-
-    m_outputDataSetName = uri.stem().string();
-  }
-
-  te::da::DataSourcePtr outDataSource = te::da::GetDataSource(m_outDataSourceInfo->getId());
-
-  // Inserido devido a erro indeterminado na criação do layer
-  outDataSource->open();
-  //-----
-
-  te::qt::widgets::DataSet2Layer converter(m_outDataSourceInfo->getId());
-
-  te::da::DataSetTypePtr dt(outDataSource->getDataSetType(m_outputDataSetName).release());
-
-  te::map::AbstractLayerPtr layer = converter(dt);
-
-  if(isNoReference() || layer->getSRID() <= 0)
-    layer->setSRID(m_currentSRID);
-
-  return layer;
-}
-
-void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onSrsToolButtonClicked()
-{
-  te::qt::widgets::SRSManagerDialog srsDialog(this);
-  srsDialog.setWindowTitle(tr("Choose the SRS"));
-
-  if(srsDialog.exec() == QDialog::Rejected)
-    return;
-
-  m_currentSRID = srsDialog.getSelectedSRS().first;
-
-  showSRS();
-
-  te::common::UnitOfMeasurePtr unit = te::srs::SpatialReferenceSystemManager::getInstance().getUnit(m_currentSRID);
-
-  setCurrentUnit(unit);
-
-  clearEnvelope();
-  clearResolution();
-}
-
 void te::qt::plugins::cellspace::CreateCellularSpaceDialog::clearEnvelope()
 {
   m_ui->m_llxLineEdit->clear();
   m_ui->m_llyLineEdit->clear();
   m_ui->m_urxLineEdit->clear();
   m_ui->m_uryLineEdit->clear();
+}
+
+
+double te::qt::plugins::cellspace::CreateCellularSpaceDialog::getResX()
+{
+  double resX = m_ui->m_resXLineEdit->text().toDouble();
+  if (m_bbSRID <=0) // if there is no output SRS defined
+    return resX;         // no check to be done
+  
+  unitConvertion(resX, getResolutionUnit(), te::srs::SpatialReferenceSystemManager::getInstance().getUnit(m_bbSRID));
+  
+  return resX;
+}
+
+double te::qt::plugins::cellspace::CreateCellularSpaceDialog::getResY()
+{
+  double resY = m_ui->m_resYLineEdit->text().toDouble();
+  if (m_bbSRID <=0) // if there is no output SRS defined
+    return resY;         // no check to be done
+  
+  unitConvertion(resY, getResolutionUnit(), te::srs::SpatialReferenceSystemManager::getInstance().getUnit(m_bbSRID));
+  
+  return resY;
+}
+
+
+bool te::qt::plugins::cellspace::CreateCellularSpaceDialog::unitConvertion(double& res,
+                                                                    te::common::UnitOfMeasurePtr from,
+                                                                    te::common::UnitOfMeasurePtr to)
+{
+  // no need to convert
+  if(from == to)
+    return true;
+  
+  if (!from || !to)
+    return false;
+  
+  // check to see if conversion is possible
+  if (te::common::UnitsOfMeasureManager::getInstance().areConvertible(from->getName(), to->getName()))
+  {
+    try
+    {
+      double factor = te::common::UnitsOfMeasureManager::getInstance().getConversion(from->getName(),to->getName());
+      res *= factor;
+      return true;
+    }
+    catch(te::common::Exception& /*e*/)
+    {
+      return false;
+    }
+  }
+  
+  // try to handle the most common: degree <-> meters and its variations
+  if (from->getId() == te::common::UOM_Degree)
+    return (convertAngleToPlanar(res, to));
+  
+  if (to->getId() == te::common::UOM_Degree)
+    return (convertPlanarToAngle(res, from));
+  
+  return false;
+}
+
+bool te::qt::plugins::cellspace::CreateCellularSpaceDialog::convertAngleToPlanar(double& val, te::common::UnitOfMeasurePtr planar)
+{
+  switch (planar->getId())
+  {
+    case te::common::UOM_Metre:
+      val *= 111000;            // 1 degree = 111.000 meters
+      break;
+    case te::common::UOM_Kilometre:
+      val *= 111;               // 1 degree = 111 kilometers
+      break;
+    case te::common::UOM_Foot:
+      val *= 364173.24;        //  1 feet  = 3.28084 meters
+      break;
+    default:
+      return false;
+  }
+  return true;
+}
+
+bool te::qt::plugins::cellspace::CreateCellularSpaceDialog::convertPlanarToAngle(double& val, te::common::UnitOfMeasurePtr planar)
+{
+  switch (planar->getId())
+  {
+    case te::common::UOM_Metre:
+      val /= 111000;            // 1 degree = 111.000 meters
+      break;
+    case te::common::UOM_Kilometre:
+      val /= 111;               // 1 degree = 111 kilometers
+      break;
+    case te::common::UOM_Foot:
+      val /= 364173.24;        //  1 feet  = 3.28084 meters
+      break;
+    default:
+      return false;
+  }
+  return true;
 }
 
 void te::qt::plugins::cellspace::CreateCellularSpaceDialog::clearResolution()
@@ -697,98 +700,64 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::clearResolution()
 
 void te::qt::plugins::cellspace::CreateCellularSpaceDialog::showSRS()
 {
-  std::string name = te::srs::SpatialReferenceSystemManager::getInstance().getName(m_currentSRID);
-
-  m_ui->m_sridLabel->setText(name.c_str());
-}
-
-double te::qt::plugins::cellspace::CreateCellularSpaceDialog::getResX()
-{
-  double resX = m_ui->m_resXLineEdit->text().toDouble();
-
-  te::map::AbstractLayerPtr layer = getReferenceLayer();
-
-  te::common::UnitOfMeasurePtr layerUnit;
-  te::common::UnitOfMeasurePtr currentUnit = getCurrentUnit();
-
-  if(layer)
+  if (m_bbSRID > 0)
   {
-    layerUnit = te::srs::SpatialReferenceSystemManager::getInstance().getUnit(layer->getSRID());
+    std::string name = te::srs::SpatialReferenceSystemManager::getInstance().getName(m_bbSRID);
+    m_ui->m_resSRIDLabel->setText(name.c_str());
   }
   else
   {
-    layerUnit = te::srs::SpatialReferenceSystemManager::getInstance().getUnit(m_currentSRID);
+    m_ui->m_resSRIDLabel->setText("No SRS defined");
   }
-
-  if(layerUnit != currentUnit)
-  {
-    try
-    {
-      double factorX = te::common::UnitsOfMeasureManager::getInstance().getConversion(layerUnit->getName(), currentUnit->getName());
-      resX = resX/factorX;
-    }
-    catch(te::common::Exception& /*e*/)
-    {
-      clearResolution();
-    }
-  }
-
-  return resX;
 }
 
-double te::qt::plugins::cellspace::CreateCellularSpaceDialog::getResY()
+bool te::qt::plugins::cellspace::CreateCellularSpaceDialog::checkList(std::string& errors)
 {
-  double resY = m_ui->m_resYLineEdit->text().toDouble();
-
-  te::map::AbstractLayerPtr layer = getReferenceLayer();
-
-  te::common::UnitOfMeasurePtr layerUnit;
-  te::common::UnitOfMeasurePtr currentUnit = getCurrentUnit();
-
-  if(layer)
+  bool noErrors = true;
+  errors = tr("Consistency errors:").toStdString();
+  
+  te::gm::Envelope env = getEnvelope();
+  if(!env.isValid())
   {
-    layerUnit = te::srs::SpatialReferenceSystemManager::getInstance().getUnit(layer->getSRID());
+    errors += "\n - " + tr("Invalid bounding box").toStdString();
+    noErrors = false;
   }
-  else
+  
+  double resX = getResX();
+  if (resX < 0. || resX >= env.getWidth())
   {
-    layerUnit = te::srs::SpatialReferenceSystemManager::getInstance().getUnit(m_currentSRID);
+    char txt[40];
+    sprintf(txt,"%.8g",env.getWidth());
+    errors += "\n - " + tr("X resolution must be greater than 0 and smaller than the bounding box Width ").toStdString() + txt;
+    noErrors = false;
   }
-
-  if(layerUnit != currentUnit)
+  
+  double resY = getResY();
+  if (resY < 0. || resY >= env.getHeight())
   {
-    try
+    char txt[40];
+    sprintf(txt,"%.8g",env.getHeight());
+    errors += "\n - " + tr("Y resolution must be greater than 0 and smaller than the bounding box Height ").toStdString() + txt;
+    noErrors = false;
+  }
+  
+  std::string name = m_ui->m_newLayerNameLineEdit->text().toStdString();
+  if (name.empty())
+  {
+    errors += "\n - " + tr("Output layer name is empty").toStdString();
+    noErrors = false;
+  }
+  
+  if (m_ui->m_maskToolButton->isChecked())
+  {
+    te::map::AbstractLayerPtr referenceLayer = getReferenceLayer();
+    if (!((referenceLayer->getSRID() >  0 && m_bbSRID > 0) ||
+          (referenceLayer->getSRID() <= 0 && m_bbSRID <= 0)))
     {
-      double factorY = te::common::UnitsOfMeasureManager::getInstance().getConversion(layerUnit->getName(), currentUnit->getName());
-      resY = resY/factorY;
-    }
-    catch(te::common::Exception& /*e*/)
-    {
-      clearResolution();
+      errors += "\n - " + tr("Reference layer and output layer have incompatible SRSs. It is not possible to create cells using polygons as masks.").toStdString();
+      noErrors = false;
     }
   }
-
-  return resY;
+  return noErrors;
 }
 
-void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onReferenceGroupBoxToggled(bool isToggled)
-{
-  m_ui->m_srsToolButton->setEnabled(!isToggled);
-
-  if(!isToggled)
-  {
-    clearEnvelope();
-    clearResolution();
-  }
-  else
-  {
-    onLayersComboBoxChanged(0);
-  }
-}
-
-bool te::qt::plugins::cellspace::CreateCellularSpaceDialog::isNoReference()
-{
-  if(m_ui->m_referenceGroupBox->isChecked())
-    return false;
-  else
-    return true;
-}

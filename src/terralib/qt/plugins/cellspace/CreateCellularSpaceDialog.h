@@ -61,81 +61,85 @@ namespace te
           public:
 
             CreateCellularSpaceDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
-
+            
             ~CreateCellularSpaceDialog();
 
-            te::map::AbstractLayerPtr getLayer();
-
             void setLayers(std::list<te::map::AbstractLayerPtr> layers);
-
+            
+            te::map::AbstractLayerPtr getLayer();
+            
+          
           protected slots:
-
-            void onEnvelopeChanged(const QString & text);
-
+          
+          
             void onLayersComboBoxChanged(int index);
-
-            void onUnitComboBoxChanged(int index);
-
-
-            void onCreatePushButtonClicked();
-
+            
+            void onEnvelopeChanged(const QString & text);
+            
             void onSrsToolButtonClicked();
-
-            void onTargetDatasourceToolButtonClicked();
-
-            void onTargetFileToolButtonClicked();
-
-
+            
+            
+            void onUnitComboBoxChanged(int index);
+            
             void onResXLineEditEditingFinished();
-
+            
             void onResYLineEditEditingFinished();
-
+            
             void onColsLineEditEditingFinished();
-
+            
             void onRowsLineEditEditingFinished();
+            
+            
+            void onTargetDatasourceToolButtonClicked();
+            
+            void onTargetFileToolButtonClicked();
+            
+          void onCreatePushButtonClicked();
 
-            void onReferenceGroupBoxToggled(bool isToggled);
 
           private:
-
+          
+          
+            void initUnitsOfMeasure();
+            
+            
+            void setResolutionUnit(te::common::UnitOfMeasurePtr unit);
+            
+            te::common::UnitOfMeasurePtr getResolutionUnit();
+            
+            
+            te::da::DataSourceInfoPtr getDataSourceInfo();
+            
+            te::map::AbstractLayerPtr getReferenceLayer();
+            
+            te::gm::Envelope getEnvelope();
+            
+            void showEnvelope(const te::gm::Envelope& env, int precision);
+            
             void clearEnvelope();
+   
+            double getResX();
+            
+            double getResY();
+            
+            bool unitConvertion(double& res,
+                              te::common::UnitOfMeasurePtr from,
+                              te::common::UnitOfMeasurePtr to);
 
             void clearResolution();
-
-
-            te::common::UnitOfMeasurePtr getCurrentUnit();
-
-            te::da::DataSourceInfoPtr getDataSourceInfo();
-
-            te::gm::Envelope getEnvelope();
-
-            te::gm::Envelope getOutputEnvelope();
-
-            te::map::AbstractLayerPtr getReferenceLayer();
-
-            double getResX();
-
-            double getResY();
-
-
-            void initUnitsOfMeasure();
-
-
-            void setCurrentUnit(te::common::UnitOfMeasurePtr unit);
-
-
-            void showEnvelope(const te::gm::Envelope env);
+          
 
             void showSRS();
 
-
-            bool isNoReference();
-
             bool checkList(std::string& errors);
+          
+            bool convertAngleToPlanar(double& val, te::common::UnitOfMeasurePtr planar);
+          
+            bool convertPlanarToAngle(double& val, te::common::UnitOfMeasurePtr planar);
 
           private:
-
-            int                        m_currentSRID;
+          
+            int                        m_bbSRID;
             bool                       m_isFile;
             te::da::DataSourceInfoPtr  m_outDataSourceInfo;
             std::string                m_outputDataSetName;
