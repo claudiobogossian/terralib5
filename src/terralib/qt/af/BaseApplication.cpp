@@ -750,6 +750,8 @@ void te::qt::af::BaseApplication::makeDialog()
   m_display = new MapDisplay(m_ui->m_display);
   m_styleExplorer = new StyleExplorer(m_ui->m_styleExplorer);
 
+  QMainWindow::setCentralWidget(m_ui->m_display);
+
   initMenus();
 
   initActions();

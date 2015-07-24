@@ -275,7 +275,7 @@ void TerraView::initActions()
 
   // Menu -Help- actions
   initAction(m_helpContents, "help-browser", "Help.View Help", tr("&View Help..."), tr("Shows help dialog"), true, false, true, m_menubar);
-  initAction(m_helpAbout, "help-about-browser", "Help.About", tr("&About..."), tr(""), true, false, false, m_menubar);
+  initAction(m_helpAbout, "help-about-browser", "Help.About", tr("&About..."), tr(""), true, false, true, m_menubar);
 
   // Menu -Project- actions
   initAction(m_projectAddLayerDataset, "datasource", "Project.Add Layer.All Sources", tr("&From Data Source..."), tr("Add a new layer from all available data sources"), true, false, true, m_menubar);
@@ -323,6 +323,7 @@ void TerraView::initSlotsConnections()
   connect(m_fileRestartSystem, SIGNAL(triggered()), SLOT(onRestartSystemTriggered()));
 
   connect(m_helpContents, SIGNAL(triggered()), SLOT(onHelpTriggered()));
+  connect(m_helpAbout, SIGNAL(triggered()), SLOT(showAboutDialog()));
 
   connect(m_layerChartsHistogram, SIGNAL(triggered()), SLOT(onLayerHistogramTriggered()));
   connect(m_layerLinkTable, SIGNAL(triggered()), SLOT(onLinkTriggered()));
@@ -508,6 +509,7 @@ void TerraView::addMenusActions()
   m_helpMenu->setTitle(tr("&Help"));
 
   m_helpMenu->addAction(m_helpContents);
+  m_helpMenu->addAction(m_helpAbout);
 }
 
 void TerraView::addPopUpMenu()
@@ -693,6 +695,12 @@ void TerraView::initToolbars()
 void TerraView::showAboutDialog()
 {
   AboutDialog dialog(this);
+
+  std::string logoTVLargeFileName = m_app->getAboutLogo().toStdString();
+  std::string logoTEFileName = m_app->getTlibLogo().toStdString();
+
+  dialog.setTerraViewLogoFilePath(logoTVLargeFileName);
+  dialog.setTerraLibLogoFilePath(logoTEFileName);
 
   dialog.exec();
 }

@@ -42,19 +42,6 @@ AboutDialog::AboutDialog(QWidget* parent, Qt::WindowFlags f)
 {
   m_ui->setupUi(this);
 
-  //Fred: revisar
-  std::string logoTVLargeFileName = "";//te::qt::af::ApplicationController::getInstance().getAboutLogo().toStdString();
-
-  QPixmap pixmapTVLarge(logoTVLargeFileName.c_str());
-  m_ui->m_applicationLargeLogo->setPixmap(pixmapTVLarge);
-
-  std::string logoTEFileName = ""; //te::qt::af::ApplicationController::getInstance().getTlibLogo().toStdString();
-  QPixmap pixmapTE(logoTEFileName.c_str());
-
-  pixmapTE = pixmapTE.scaled(64, 64, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-
-  m_ui->m_terralibLogo->setPixmap(pixmapTE);
-
   std::string copyrightStr = tr("<p>Copyright &copy; 2010-2015 INPE<BR>").toStdString();
   m_ui->m_copyrightLabel->setText(copyrightStr.c_str());
 
@@ -66,9 +53,24 @@ AboutDialog::AboutDialog(QWidget* parent, Qt::WindowFlags f)
 
   std::string buildDateStr = tr("Build Date: ").toStdString() + te::common::Version::buildDate();
   m_ui->m_buildDateLabel->setText(buildDateStr.c_str());
-
 }
 
 AboutDialog::~AboutDialog()
 {
+}
+
+void AboutDialog::setTerraViewLogoFilePath(std::string path)
+{
+  QPixmap pixmapTVLarge(path.c_str());
+
+  m_ui->m_applicationLargeLogo->setPixmap(pixmapTVLarge);
+}
+
+void AboutDialog::setTerraLibLogoFilePath(std::string path)
+{
+  QPixmap pixmapTE(path.c_str());
+
+  pixmapTE = pixmapTE.scaled(64, 64, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+
+  m_ui->m_terralibLogo->setPixmap(pixmapTE);
 }
