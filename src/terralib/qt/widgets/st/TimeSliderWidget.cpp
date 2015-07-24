@@ -485,15 +485,17 @@ void te::qt::widgets::TimeSliderWidget::onAnimationDragEnterEvent(QDragEnterEven
     if(ba.count() != 0)
     {
       QString s(ba);
-      std::vector<te::qt::widgets::AbstractTreeItem*>* ditems = (std::vector<AbstractTreeItem*>*)s.toULongLong();
-      std::vector<te::qt::widgets::AbstractTreeItem*>::iterator it;
-      for(it = ditems->begin(); it != ditems->end(); ++it)
-      {
-        te::qt::widgets::AbstractTreeItem* ati = *it;
-        std::string ltype = ati->getLayer()->getType();
-        if(ltype == "TRAJECTORYDATASETLAYER")
-          accept = true;
-      }
+
+      // Revisar: Fred
+      //std::vector<te::qt::widgets::AbstractTreeItem*>* ditems = (std::vector<AbstractTreeItem*>*)s.toULongLong();
+      //std::vector<te::qt::widgets::AbstractTreeItem*>::iterator it;
+      //for(it = ditems->begin(); it != ditems->end(); ++it)
+      //{
+      //  te::qt::widgets::AbstractTreeItem* ati = *it;
+      //  std::string ltype = ati->getLayer()->getType();
+      //  if(ltype == "TRAJECTORYDATASETLAYER")
+      //    accept = true;
+      //}
     }
   }
   else
@@ -596,24 +598,25 @@ void te::qt::widgets::TimeSliderWidget::dropAction()
   {
     if(m_dropBA.count() != 0)
     {
-      QString s(m_dropBA);
-      std::vector<te::qt::widgets::AbstractTreeItem*>* ditems = (std::vector<AbstractTreeItem*>*)s.toULongLong();
-      std::vector<te::qt::widgets::AbstractTreeItem*>::iterator it;
-      for(it = ditems->begin(); it != ditems->end(); ++it)
-      {
-        te::qt::widgets::AbstractTreeItem* ati = *it;
-        std::string ltype = ati->getLayer()->getType();
-        if(ltype == "TRAJECTORYDATASETLAYER")
-        {
-          te::st::TrajectoryDataSetLayer* tl = dynamic_cast<te::st::TrajectoryDataSetLayer*>(ati->getLayer().get());
-          QString title(tl->getTitle().c_str());
-          QPair<QString, te::st::TrajectoryDataSetLayer*> p(title, tl);
-          if(trajectoryAlreadyExists(p))
-            QMessageBox::information(this, title + " already exists", "This item is already being animated!");
-          else
-            addTrajectory(tl, "");
-        }
-      }
+      // Revisar: Fred
+      //QString s(m_dropBA);
+      //std::vector<te::qt::widgets::AbstractTreeItem*>* ditems = (std::vector<AbstractTreeItem*>*)s.toULongLong();
+      //std::vector<te::qt::widgets::AbstractTreeItem*>::iterator it;
+      //for(it = ditems->begin(); it != ditems->end(); ++it)
+      //{
+      //  te::qt::widgets::AbstractTreeItem* ati = *it;
+      //  std::string ltype = ati->getLayer()->getType();
+      //  if(ltype == "TRAJECTORYDATASETLAYER")
+      //  {
+      //    te::st::TrajectoryDataSetLayer* tl = dynamic_cast<te::st::TrajectoryDataSetLayer*>(ati->getLayer().get());
+      //    QString title(tl->getTitle().c_str());
+      //    QPair<QString, te::st::TrajectoryDataSetLayer*> p(title, tl);
+      //    if(trajectoryAlreadyExists(p))
+      //      QMessageBox::information(this, title + " already exists", "This item is already being animated!");
+      //    else
+      //      addTrajectory(tl, "");
+      //  }
+      //}
     }
   }
   else

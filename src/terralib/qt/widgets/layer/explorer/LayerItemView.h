@@ -47,7 +47,7 @@ namespace te
     {
       class LayerItemModel;
       class LayerViewMenuManager;
-
+      class TreeItem;
 
       /*!
       * \class LayerItemView
@@ -67,7 +67,7 @@ namespace te
       public:
 
         /*!
-        * \brief LayerItemView
+        * \brief 
         * \param parent
         */
         LayerItemView(QWidget* parent = 0);
@@ -78,49 +78,89 @@ namespace te
         ~LayerItemView();
 
         /*!
-        * \brief addLayers
+        * \brief 
         * \param layers
+        * \param idx
+        * \param idxPath
         */
         void addLayers(const std::list<te::map::AbstractLayerPtr>& layers, const QModelIndex& idx, const std::string& idxPath = "./");
 
         /*!
-        * \brief getAllLayers
+        * \brief 
         * \return
         */
         std::list<te::map::AbstractLayerPtr> getAllLayers() const;
 
         /*!
-        * \brief getVisibleLayers
+        * \brief 
         * \return
         */
         std::list<te::map::AbstractLayerPtr> getVisibleLayers() const;
 
         /*!
-        * \brief addFolder
+        * \brief 
+        * \return
+        */
+        std::list<te::qt::widgets::TreeItem*> getSelectedItems() const;
+
+        /*!
+        * \brief 
         * \param name
         */
         void addFolder(const std::string& name, const QModelIndex& idx);
 
+        /*!
+        * \brief
+        * \param
+        */
         void addNoLayerAction(QAction* act);
 
+        /*!
+        * \brief
+        * \param
+        */
         void addAllLayerAction(QAction* act);
 
+        /*!
+        * \brief
+        * \param
+        */
         void addVectorLayerAction(QAction* act);
 
+        /*!
+        * \brief
+        * \param
+        */
         void addRasterLayerAction(QAction* act);
 
+        /*!
+        * \brief
+        * \param
+        */
         void addFolderLayerAction(QAction* act);
 
+        /*!
+        * \brief
+        * \param
+        */
         void addMultipleSelectionAction(QAction* act);
 
+        /*!
+        * \brief
+        * \param
+        */
         void removeItems(const QModelIndexList& idxs);
 
+        /*!
+        * \brief
+        * \param
+        */
         void removeSelectedItems();
 
       protected:
 
-        LayerItemModel* m_model;    //!<
-        LayerViewMenuManager* m_mnuMger;
+        LayerItemModel* m_model;          //!<
+        LayerViewMenuManager* m_mnuMger;  //!<
       };
     }
   }

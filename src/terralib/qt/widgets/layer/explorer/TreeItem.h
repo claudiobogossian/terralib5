@@ -197,6 +197,11 @@ namespace te
         */
         std::string getType() const;
 
+        /*!
+        * \brief
+        */
+        void removeAllChilds();
+
       protected:
 
         std::string m_type;               //!< Item type.

@@ -14,11 +14,16 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout_2">
-    <item row="0" column="0">
-     <widget class="te::qt::widgets::MultiThreadMapDisplay" name="m_display" native="true"/>
-    </item>
-   </layout>
+   <widget class="te::qt::widgets::MultiThreadMapDisplay" name="m_display" native="true">
+    <property name="geometry">
+     <rect>
+      <x>11</x>
+      <y>11</y>
+      <width>743</width>
+      <height>614</height>
+     </rect>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -26,14 +31,9 @@
      <x>0</x>
      <y>0</y>
      <width>1140</width>
-     <height>21</height>
+     <height>26</height>
     </rect>
    </property>
-  </widget>
-  <widget class="te::qt::widgets::LayerExplorer" name="m_layerExplorer">
-   <attribute name="dockWidgetArea">
-    <number>1</number>
-   </attribute>
   </widget>
   <widget class="QToolBar" name="drawBar">
    <property name="windowTitle">
@@ -67,6 +67,18 @@
    <attribute name="dockWidgetArea">
     <number>2</number>
    </attribute>
+  </widget>
+  <widget class="QDockWidget" name="m_layerExplorer">
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents">
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="0">
+      <widget class="te::qt::widgets::LayerItemView" name="m_treeView"/>
+     </item>
+    </layout>
+   </widget>
   </widget>
   <action name="m_drawAction">
    <property name="icon">
@@ -140,12 +152,6 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>te::qt::widgets::LayerExplorer</class>
-   <extends>QDockWidget</extends>
-   <header>terralib/qt/widgets/layer/explorer/LayerExplorer.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>te::qt::widgets::MultiThreadMapDisplay</class>
    <extends>QWidget</extends>
    <header>terralib/qt/widgets/canvas/MultiThreadMapDisplay.h</header>
@@ -156,6 +162,11 @@
    <extends>QDockWidget</extends>
    <header>terralib/qt/widgets/se/StyleDockWidget.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>te::qt::widgets::LayerItemView</class>
+   <extends>QTreeView</extends>
+   <header>terralib/qt/widgets/layer/explorer/LayerItemView.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

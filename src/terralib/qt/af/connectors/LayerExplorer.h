@@ -48,8 +48,8 @@ namespace te
 // Forward declarations
     namespace widgets 
     { 
-      class LayerExplorer;
-      class AbstractTreeItem;
+      class LayerItemView;
+      //class AbstractTreeItem;
     }
 
     namespace af
@@ -78,12 +78,12 @@ namespace te
 
             \param explorer te::qt::widgets::LayerExplorer to be listened.
           */
-          LayerExplorer(te::qt::widgets::LayerExplorer* explorer, QObject* parent = 0);
+          LayerExplorer(te::qt::widgets::LayerItemView* explorer, QObject* parent = 0);
 
           /*! \brief Destructor. */
           ~LayerExplorer();
 
-          te::qt::widgets::LayerExplorer* getExplorer() const;
+          te::qt::widgets::LayerItemView* getExplorer() const;
 
         protected slots:
 
@@ -105,7 +105,7 @@ namespace te
 
           void onLayerOrderChanged();
 
-          void onTreeItemDoubleClicked(te::qt::widgets::AbstractTreeItem* item);
+          //void onTreeItemDoubleClicked(te::qt::widgets::AbstractTreeItem* item);
 
         signals:
 
@@ -115,7 +115,7 @@ namespace te
 
         protected:
 
-          te::qt::widgets::LayerExplorer* m_explorer; //!< Pointer to a component te::qt::widgets::LayerExplorer.
+          te::qt::widgets::LayerItemView* m_explorer; //!< Pointer to a component te::qt::widgets::LayerExplorer.
       };
 
     } // end namespace af

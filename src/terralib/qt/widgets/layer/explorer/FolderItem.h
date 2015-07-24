@@ -76,6 +76,8 @@ namespace te
         void setVisible(const VISIBLE& visible, const bool& updateAncestors = false, const bool& updateDescendents = false);
         //@}
 
+        void setTitle(const std::string& title);
+
       protected:
         std::string m_label;    //!< Label to be presented on the Qt view.
         VISIBLE m_v;            //!< Visibility of the folder.

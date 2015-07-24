@@ -28,7 +28,7 @@
 
 #include "../../../maptools/Enums.h"
 #include "../../../maptools/AbstractLayer.h"
-#include "../../widgets/layer/explorer/AbstractTreeItem.h"
+//#include "../../widgets/layer/explorer/AbstractTreeItem.h"
 #include "Event.h"
 #include "Enums.h"
 
@@ -87,21 +87,21 @@ namespace te
 
           \brief This event signals that a item belonging to a layer will be removed from the layer explorer.
          */
-        struct ItemOfLayerRemoved : public Event
-        {
-          /*!
-            \brief Constructor.
+        //struct ItemOfLayerRemoved : public Event
+        //{
+        //  /*!
+        //    \brief Constructor.
 
-            \param item Item belonging to a layer to be removed from the layer explorer.
-          */
-          ItemOfLayerRemoved(te::qt::widgets::AbstractTreeItem* item)
-            : Event(ITEM_OF_LAYER_REMOVED),
-              m_item(item)
-          {
-          }
+        //    \param item Item belonging to a layer to be removed from the layer explorer.
+        //  */
+        //  ItemOfLayerRemoved(te::qt::widgets::AbstractTreeItem* item)
+        //    : Event(ITEM_OF_LAYER_REMOVED),
+        //      m_item(item)
+        //  {
+        //  }
 
-          te::qt::widgets::AbstractTreeItem* m_item;  //!< Item of the layer to be removed.
-        };
+        //  te::qt::widgets::AbstractTreeItem* m_item;  //!< Item of the layer to be removed.
+        //};
 
         /*!
           \struct LayerRemoved

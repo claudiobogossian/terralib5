@@ -50,7 +50,7 @@ namespace te
   {
     namespace widgets
     {
-      class LayerExplorer;
+      class LayerItemView;
       class MapDisplay;
     }
 
@@ -79,7 +79,7 @@ namespace te
 
         virtual void init(const QString& cfgFile);
 
-        te::qt::widgets::LayerExplorer* getLayerExplorer();
+        te::qt::widgets::LayerItemView* getLayerExplorer();
 
         te::qt::widgets::MapDisplay* getMapDisplay();
 

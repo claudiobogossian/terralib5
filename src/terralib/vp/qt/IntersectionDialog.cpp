@@ -45,7 +45,7 @@
 #include "../IntersectionOp.h"
 #include "../IntersectionQuery.h"
 #include "IntersectionDialog.h"
-#include "LayerTreeModel.h"
+//#include "LayerTreeModel.h"
 #include "ui_IntersectionDialogForm.h"
 #include "Utils.h"
 

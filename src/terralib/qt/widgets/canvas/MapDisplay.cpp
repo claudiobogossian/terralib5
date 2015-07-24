@@ -29,7 +29,7 @@
 #include "../../../geometry/Envelope.h"
 #include "../../../maptools/AbstractLayer.h"
 #include "../../../maptools/Utils.h"
-#include "../../../qt/widgets/layer/explorer/AbstractTreeItem.h"
+//#include "../../../qt/widgets/layer/explorer/AbstractTreeItem.h"
 #include "../utils/ScopedCursor.h"
 #include "Canvas.h"
 #include "MapDisplay.h"

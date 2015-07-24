@@ -75,9 +75,9 @@ void te::qt::af::BaseApplication::init(const QString& cfgFile)
   }
 }
 
-te::qt::widgets::LayerExplorer* te::qt::af::BaseApplication::getLayerExplorer()
+te::qt::widgets::LayerItemView* te::qt::af::BaseApplication::getLayerExplorer()
 {
-  return m_ui->m_layerExplorer;
+  return m_ui->m_treeView;
 }
 
 te::qt::widgets::MapDisplay* te::qt::af::BaseApplication::getMapDisplay()
@@ -92,7 +92,7 @@ void te::qt::af::BaseApplication::onDrawTriggered()
   te::qt::af::evt::DrawButtonClicked drawClicked;
   emit triggered(&drawClicked);
 
-  m_display->draw(m_ui->m_layerExplorer->getTopLayers());
+  m_display->draw(getLayerExplorer()->getVisibleLayers());
 
   QApplication::restoreOverrideCursor();
 }
@@ -101,7 +101,7 @@ void te::qt::af::BaseApplication::onFitLayersTriggered()
 {
   QApplication::setOverrideCursor(Qt::BusyCursor);
 
-  m_display->fit(m_ui->m_layerExplorer->getTopLayers());
+  m_display->fit(getLayerExplorer()->getVisibleLayers());
 
   QApplication::restoreOverrideCursor();
 }
@@ -116,16 +116,16 @@ void te::qt::af::BaseApplication::onSelectionTriggered(bool s)
 {
   if(!s)
     return;
+  //Revisar: Fred
+  //te::qt::widgets::Selection* selection = new te::qt::widgets::Selection(m_display->getDisplay(), Qt::ArrowCursor, m_ui->m_layerExplorer->getSelectedSingleLayers());
+  //m_display->setCurrentTool(selection);
 
-  te::qt::widgets::Selection* selection = new te::qt::widgets::Selection(m_display->getDisplay(), Qt::ArrowCursor, m_ui->m_layerExplorer->getSelectedSingleLayers());
-  m_display->setCurrentTool(selection);
+  //connect(m_ui->m_layerExplorer, SIGNAL(selectedLayersChanged(const std::list<te::map::AbstractLayerPtr>&)),
+  //        selection, SLOT(setLayers(const std::list<te::map::AbstractLayerPtr>&)));
+  //connect(selection, SIGNAL(layerSelectedObjectsChanged(const te::map::AbstractLayerPtr&)), SLOT(onLayerSelectionChanged(const te::map::AbstractLayerPtr&)));
 
-  connect(m_ui->m_layerExplorer, SIGNAL(selectedLayersChanged(const std::list<te::map::AbstractLayerPtr>&)),
-          selection, SLOT(setLayers(const std::list<te::map::AbstractLayerPtr>&)));
-  connect(selection, SIGNAL(layerSelectedObjectsChanged(const te::map::AbstractLayerPtr&)), SLOT(onLayerSelectionChanged(const te::map::AbstractLayerPtr&)));
-
-  te::qt::af::evt::SelectionButtonToggled esel;
-  emit triggered(&esel);
+  //te::qt::af::evt::SelectionButtonToggled esel;
+  //emit triggered(&esel);
 }
 
 void te::qt::af::BaseApplication::onMapSRIDTriggered()
@@ -212,7 +212,7 @@ void te::qt::af::BaseApplication::onLayerSelectionChanged(const te::map::Abstrac
 void te::qt::af::BaseApplication::makeDialog()
 {
   //start main components
-  m_layerExplorer = new LayerExplorer(m_ui->m_layerExplorer);
+  m_layerExplorer = new LayerExplorer(m_ui->m_treeView);
   m_display = new MapDisplay(m_ui->m_display);
   m_styleExplorer = new StyleExplorer(m_ui->m_styleExplorer);
 

@@ -63,3 +63,8 @@ void te::qt::widgets::FolderItem::setVisible(const VISIBLE& visible, const bool&
   if(updateAncestors)
     m_parent->setVisible(m_v, true);
 }
+
+void te::qt::widgets::FolderItem::setTitle(const std::string& title)
+{
+  m_label = title;
+}

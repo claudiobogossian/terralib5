@@ -98,3 +98,9 @@ std::string te::qt::widgets::TreeItem::getType() const
 {
   return m_type;
 }
+
+void te::qt::widgets::TreeItem::removeAllChilds()
+{
+  while(m_children->getSize() > 0)
+    delete m_children->remove(0);
+}

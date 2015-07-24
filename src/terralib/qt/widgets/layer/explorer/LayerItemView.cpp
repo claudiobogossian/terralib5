@@ -77,6 +77,20 @@ std::list<te::map::AbstractLayerPtr> te::qt::widgets::LayerItemView::getVisibleL
   return m_model->getVisibleLayers();
 }
 
+std::list<te::qt::widgets::TreeItem*> te::qt::widgets::LayerItemView::getSelectedItems() const
+{
+  std::list<te::qt::widgets::TreeItem*> res;
+
+  QModelIndexList lst = QTreeView::selectedIndexes();
+
+  qSort(lst);
+
+  for(QModelIndexList::ConstIterator it = lst.begin(); it != lst.end(); ++it)
+    res.push_back(static_cast<te::qt::widgets::TreeItem*>((*it).internalPointer()));
+
+  return res;
+}
+
 void te::qt::widgets::LayerItemView::addFolder(const std::string& name, const QModelIndex& idx)
 {
   m_model->addFolder(name, idx);
