@@ -73,7 +73,6 @@
 #include <terralib/qt/widgets/layer/explorer/LayerTreeView.h>
 #include <terralib/qt/widgets/layer/explorer/AbstractTreeItem.h>
 #include <terralib/qt/widgets/layer/explorer/FolderLayerItem.h>
-#include <terralib/qt/widgets/layer/info/LayerPropertiesInfoWidget.h>
 #include <terralib/qt/widgets/layer/selector/AbstractLayerSelector.h>
 #include <terralib/qt/widgets/layer/utils/CompositionModeMenuWidget.h>
 #include <terralib/qt/widgets/plugin/manager/PluginManagerDialog.h>
@@ -109,17 +108,6 @@
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
-
-te::qt::af::DataSetTableDockWidget* GetLayerDock(const te::map::AbstractLayer* layer, const std::vector<te::qt::af::DataSetTableDockWidget*>& docs)
-{
-  std::vector<te::qt::af::DataSetTableDockWidget*>::const_iterator it;
-
-  for(it=docs.begin(); it!=docs.end(); ++it)
-    if((*it)->getLayer() == layer)
-      return *it;
-
-  return 0;
-}
 
 void GetProjectsFromSettings(QStringList& prjTitles, QStringList& prjPaths)
 {
@@ -212,49 +200,6 @@ TerraView::TerraView(QWidget* parent)
     m_queryDlg(0),
     m_compModeMenu(0)
 {
-  //m_dsMenu = menuBar()->addMenu(tr("Datasources"));
-
-  //QAction* act = new QAction(QIcon::fromTheme("view-data-table"), tr("Show table..."), this);
-  //connect(act, SIGNAL(triggered()), SLOT(onShowTableTriggered()));
-
-  //getLayerExplorer()->add(act, "", "DATASET_LAYER_ITEM", te::qt::widgets::LayerTreeView::UNIQUE_ITEM_SELECTED);
-
-  //QMenu* hmenu = menuBar()->addMenu(tr("&Help"));
-
-  //act = hmenu->addAction(tr("&View Help..."));
-  //act->setObjectName("Help.View Help");
-  //act->setIcon(QIcon::fromTheme("help-browser"));
-
-  //connect(act, SIGNAL(triggered()), this, SLOT(onHelpTriggered()));
-
-  //act = hmenu->addAction(tr("&About..."));
-
-  //act->setObjectName("Help.About");
-  //act->setIcon(QIcon::fromTheme("help-about-browser"));
-
-  //connect(act, SIGNAL(triggered()), this, SLOT(showAboutDialog()));
-
-  //act = new QAction(QIcon::fromTheme("document-save"), tr("Save Project..."), this);
-
-  //QMenu* mnu = 0;// BaseApplication::getMenuFile();
-  //QToolBar* bar = 0;// BaseApplication::getToolbar("m_fileToolbar");
-
-  //if(bar != 0)
-  //  bar->insertAction(bar->actions().at(0), act);
-
-  //mnu->insertAction(mnu->actions().at(0), act);
-
-  //connect(act, SIGNAL(triggered()), SLOT(onSaveProjectTriggered()));
-
-  //QAction* loadProjectAction = new QAction(QIcon::fromTheme("document-open"), tr("Open Project..."), this);
-
-  //if(bar != 0)
-  //  bar->insertAction(act, loadProjectAction);
-
-  //mnu->insertAction(act, loadProjectAction);
-
-  //connect(loadProjectAction, SIGNAL(triggered()), SLOT(onOpenProjectTriggered()));
-
   m_project = new ProjectMetadata;
 
   m_project->m_author = "INPE";
@@ -290,18 +235,10 @@ void TerraView::init()
     setWindowTitle(windowTitle() + " - " + m_project->m_title);
 }
 
-//void TerraView::init(const std::string& configFile)
-//{
-//  te::qt::af::BaseApplication::init(configFile.c_str());
-
-//  m_app->setMsgBoxParentWidget(this);
-
-//  QPixmap pix(m_app->getAppIconName());
-////  pix = pix.scaled(16, 16, Qt::KeepAspectRatio/*, Qt::SmoothTransformation*/);
-//  QIcon icon(m_app->getAppIconName());
-
-//  setWindowIcon(icon);
-//}
+void TerraView::startProject(const QString& projectFileName)
+{
+  openProject(projectFileName);
+}
 
 void TerraView::makeDialog()
 {
@@ -318,22 +255,11 @@ void TerraView::makeDialog()
   //interface controller
   m_iController = new te::qt::af::InterfaceController(this);
   m_app->addListener(m_iController);
-
-  m_viewLayerExplorer->setChecked(true);
-  m_display->getDisplay()->setResizePolicy(te::qt::widgets::MapDisplay::Center);
-  m_viewStyleExplorer->setChecked(false);
-  m_styleExplorer->getExplorer()->setVisible(false);
 }
 
 void TerraView::initActions()
 {
   te::qt::af::BaseApplication::initActions();
-
-  // Menu -View- actions
-  initAction(m_viewLayerExplorer, "view-layer-explorer", "View.Layer Explorer", tr("&Layer Explorer"), tr("Show or hide the layer explorer"), true, true, true, m_menubar);
-  initAction(m_viewDataTable, "view-data-table", "View.Data Table", tr("&Data Table"), tr("Show or hide the data table"), true, true, true, m_menubar);
-  initAction(m_viewStyleExplorer, "style", "View.Style Explorer", tr("&Style Explorer"), tr("Show or hide the style explorer"), true, true, true, m_menubar);
-  initAction(m_viewFullScreen, "view-fullscreen", "View.Full Screen", tr("F&ull Screen"), tr(""), true, true, true, m_menubar);
 
   // Menu -Tools- actions
   initAction(m_toolsCustomize, "preferences-system", "Tools.Customize", tr("&Customize..."), tr("Customize the system preferences"), true, false, true, m_menubar);
@@ -356,26 +282,16 @@ void TerraView::initActions()
   initAction(m_projectAddFolderLayer, "folderlayer-new", "Project.New Folder Layer", tr("Add &Folder Layer..."), tr("Add a new folder layer"), true, false, true, m_menubar);
   initAction(m_projectAddLayerQueryDataSet, "view-filter", "Project.Add Layer.Query Dataset", tr("&Query Dataset..."), tr("Add a new layer from a queried dataset"), true, false, true, m_menubar);
   initAction(m_projectAddLayerTabularDataSet, "view-data-table", "Project.Add Layer.Tabular File", tr("&Tabular File..."), tr("Add a new layer from a Tabular file"), true, false, true, m_menubar);
-  initAction(m_projectRemoveLayer, "layer-remove", "Project.Remove Layer", tr("&Remove Layer(s)"), tr("Remove layer(s) from the project"), true, false, true, this);
-  initAction(m_projectRenameLayer, "layer-rename", "Project.Rename Layer", tr("Rename Layer..."), tr("Rename layer"), true, false, true, this);
   initAction(m_projectChangeLayerDataSource, "", "Project.Change Layer Data Source", tr("&Change Layer Data Source"), tr("Chanage layer Data Source"), true, false, true, this);
   initAction(m_projectUpdateLayerDataSource, "", "Project.Update Layer Data Source", tr("&Update Layer Data Source"), tr("Update layer Data Source"), true, false, true, this);
   initAction(m_projectProperties, "document-info", "Project.Properties", tr("&Properties..."), tr("Show the project properties"), true, false, true, m_menubar);
 
   // Menu -Layer- actions
-  initAction(m_layerRemoveObjectSelection, "pointer-remove-selection", "Layer.Remove Selection", tr("&Remove Selection"), tr(""), true, false, true, m_menubar);
-  initAction(m_layerRemoveItem, "item-remove", "Layer.Remove Item", tr("&Remove Item"), tr(""), true, false, true, m_menubar);
   initAction(m_layerObjectGrouping, "grouping", "Layer.ObjectGrouping", tr("&Edit Legend..."), tr(""), true, false, true, m_menubar);
-  initAction(m_layerProperties, "layer-info", "Layer.Properties", tr("&Properties..."), tr(""), true, false, true, m_menubar);
-  initAction(m_layerSRS, "layer-srs", "Layer.SRS", tr("&Inform SRS..."), tr(""), true, false, true, m_menubar);
-  initAction(m_layerShowTable, "view-data-table", "Layer.Show Table", tr("S&how Table"), tr(""), true, false, true, m_menubar);
   initAction(m_layerChartsHistogram, "chart-bar", "Layer.Charts.Histogram", tr("&Histogram..."), tr(""), true, false, true, m_menubar);
   initAction(m_layerChartsScatter, "chart-scatter", "Layer.Charts.Scatter", tr("&Scatter..."), tr(""), true, false, true, m_menubar);
   initAction(m_layerChart, "chart-pie", "Layer.Charts.Chart", tr("&Pie/Bar Chart..."), tr(""), true, false, true, m_menubar);
-  initAction(m_layerFitOnMapDisplay, "layer-fit", "Layer.Fit Layer on the Map Display", tr("Fit Layer"), tr("Fit the current layer on the Map Display"), true, false, true, m_menubar);
-  initAction(m_layerFitSelectedOnMapDisplay, "zoom-selected-extent", "Layer.Fit Selected Features on the Map Display", tr("Fit Selected Features"), tr("Fit the selected features on the Map Display"), true, false, true, m_menubar);
-  initAction(m_layerPanToSelectedOnMapDisplay, "pan-selected", "Layer.Pan to Selected Features on Map Display", tr("Pan to Selected Features"), tr("Pan to the selected features on the Map Display"), true, false, true, m_menubar);
-  initAction(m_queryLayer, "view-filter", "Layer.Query", tr("Query..."), tr(""), true, false, true, m_menubar);
+  initAction(m_layerQuery, "view-filter", "Layer.Query", tr("Query..."), tr(""), true, false, true, m_menubar);
   initAction(m_layerLinkTable, "layer-link", "Layer.Link", tr("&Link..."), tr(""), true, false, true, m_menubar);
   initAction(m_layerCompositionMode, "layer-compose", "Layer.Composition Mode", tr("&Composition Mode..."), tr("Set the composition mode to renderer the selected layer"), true, false, true, m_menubar);
 
@@ -390,16 +306,6 @@ void TerraView::initActions()
   initAction(m_filePrint, "document-print", "File.Print", tr("&Print..."), tr(""), true, false, false, m_menubar);
 
   // Menu -Map- actions
-  initAction(m_mapDraw, "map-draw", "Map.Draw", tr("&Draw"), tr("Draw the visible layers"), true, false, true, m_menubar);
-  initAction(m_mapZoomIn, "zoom-in", "Map.Zoom In", tr("Zoom &In"), tr(""), true, true, true, m_menubar);
-  initAction(m_mapZoomOut, "zoom-out", "Map.Zoom Out", tr("Zoom &Out"), tr(""), true, true, true, m_menubar);
-  initAction(m_mapPan, "pan", "Map.Pan", tr("&Pan"), tr(""), true, true, true, m_menubar);
-  initAction(m_mapZoomExtent, "zoom-extent", "Map.Zoom Extent", tr("Zoom &Extent"), tr(""), true, false, true, m_menubar);
-  initAction(m_mapPreviousExtent, "edit-undo", "Map.Previous Extent", tr("&Previous Extent"), tr(""), true, false, false, m_menubar);
-  initAction(m_mapNextExtent, "edit-redo", "Map.Next Extent", tr("&Next Extent"), tr(""), true, false, false, m_menubar);
-  initAction(m_mapInfo, "pointer-info", "Map.Info", tr("&Info"), tr(""), true, true, true, m_menubar);
-  initAction(m_mapRemoveSelection, "pointer-remove-selection", "Map.Remove Selection", tr("&Remove Selection"), tr(""), true, false, true, m_menubar);
-  initAction(m_mapSelection, "pointer-selection", "Map.Selection", tr("&Selection"), tr(""), true, true, true, m_menubar);
   initAction(m_mapMeasureDistance, "distance-measure", "Map.Measure Distance", tr("Measure &Distance"), tr(""), true, true, true, m_menubar);
   initAction(m_mapMeasureArea, "area-measure", "Map.Measure Area", tr("Measure &Area"), tr(""), true, true, true, m_menubar);
   initAction(m_mapMeasureAngle, "angle-measure", "Map.Measure Angle", tr("Measure &Angle"), tr(""), true, true, true, m_menubar);
@@ -409,72 +315,45 @@ void TerraView::initSlotsConnections()
 {
   te::qt::af::BaseApplication::initSlotsConnections();
 
-  connect(m_fileExit, SIGNAL(triggered()), SLOT(close()));
-  connect(m_fileRestartSystem, SIGNAL(triggered()), SLOT(onRestartSystemTriggered()));
-  connect(m_projectAddLayerDataset, SIGNAL(triggered()), SLOT(onAddDataSetLayerTriggered()));
-  connect(m_projectAddLayerQueryDataSet, SIGNAL(triggered()), SLOT(onAddQueryLayerTriggered()));
-  connect(m_projectAddLayerTabularDataSet, SIGNAL(triggered()), SLOT(onAddTabularLayerTriggered()));
-  connect(m_projectRemoveLayer, SIGNAL(triggered()), SLOT(onRemoveLayerTriggered()));
-  connect(m_projectRenameLayer, SIGNAL(triggered()), SLOT(onRenameLayerTriggered()));
-  connect(m_projectProperties, SIGNAL(triggered()), SLOT(onProjectPropertiesTriggered()));
-  connect(m_projectChangeLayerDataSource, SIGNAL(triggered()), SLOT(onChangeLayerDataSourceTriggered()));
-  connect(m_projectUpdateLayerDataSource, SIGNAL(triggered()), SLOT(onUpdateLayerDataSourceTriggered()));
-  connect(m_pluginsManager, SIGNAL(triggered()), SLOT(onPluginsManagerTriggered()));
-  connect(m_recentProjectsMenu, SIGNAL(triggered(QAction*)), SLOT(onRecentProjectsTriggered(QAction*)));
   connect(m_fileNewProject, SIGNAL(triggered()), SLOT(onNewProjectTriggered()));
   connect(m_fileOpenProject, SIGNAL(triggered()), SLOT(onOpenProjectTriggered()));
   connect(m_fileSaveProject, SIGNAL(triggered()), SLOT(onSaveProjectTriggered()));
   connect(m_fileSaveProjectAs, SIGNAL(triggered()), SLOT(onSaveProjectAsTriggered()));
+  connect(m_fileExit, SIGNAL(triggered()), SLOT(close()));
+  connect(m_fileRestartSystem, SIGNAL(triggered()), SLOT(onRestartSystemTriggered()));
+
+  connect(m_helpContents, SIGNAL(triggered()), SLOT(onHelpTriggered()));
+
+  connect(m_layerChartsHistogram, SIGNAL(triggered()), SLOT(onLayerHistogramTriggered()));
+  connect(m_layerLinkTable, SIGNAL(triggered()), SLOT(onLinkTriggered()));
+  connect(m_layerChartsScatter, SIGNAL(triggered()), SLOT(onLayerScatterTriggered()));
+  connect(m_layerChart, SIGNAL(triggered()), SLOT(onLayerChartTriggered()));
+  connect(m_layerObjectGrouping, SIGNAL(triggered()), SLOT(onLayerGroupingTriggered()));
+  connect(m_layerCompositionMode, SIGNAL(hovered()), SLOT(onLayerCompositionModeTriggered()));
+  connect(m_layerQuery, SIGNAL(triggered()), SLOT(onQueryLayerTriggered()));
+
+  connect(m_mapMeasureDistance, SIGNAL(toggled(bool)), SLOT(onMeasureDistanceToggled(bool)));
+  connect(m_mapMeasureArea, SIGNAL(toggled(bool)), SLOT(onMeasureAreaToggled(bool)));
+  connect(m_mapMeasureAngle, SIGNAL(toggled(bool)), SLOT(onMeasureAngleToggled(bool)));
+
+  connect(m_projectAddLayerDataset, SIGNAL(triggered()), SLOT(onAddDataSetLayerTriggered()));
+  connect(m_projectAddLayerQueryDataSet, SIGNAL(triggered()), SLOT(onAddQueryLayerTriggered()));
+  connect(m_projectAddLayerTabularDataSet, SIGNAL(triggered()), SLOT(onAddTabularLayerTriggered()));
+  connect(m_projectAddFolderLayer, SIGNAL(triggered()), SLOT(onAddFolderLayerTriggered()));
+  connect(m_projectProperties, SIGNAL(triggered()), SLOT(onProjectPropertiesTriggered()));
+  connect(m_projectChangeLayerDataSource, SIGNAL(triggered()), SLOT(onChangeLayerDataSourceTriggered()));
+  connect(m_projectUpdateLayerDataSource, SIGNAL(triggered()), SLOT(onUpdateLayerDataSourceTriggered()));
+  connect(m_recentProjectsMenu, SIGNAL(triggered(QAction*)), SLOT(onRecentProjectsTriggered(QAction*)));
+
+  connect(m_pluginsManager, SIGNAL(triggered()), SLOT(onPluginsManagerTriggered()));
+
   connect(m_toolsCustomize, SIGNAL(triggered()), SLOT(onToolsCustomizeTriggered()));
   connect(m_toolsDataExchanger, SIGNAL(triggered()), SLOT(onToolsDataExchangerTriggered()));
   connect(m_toolsDataExchangerDirect, SIGNAL(triggered()), SLOT(onToolsDataExchangerDirectTriggered()));
   connect(m_toolsDataExchangerDirectPopUp, SIGNAL(triggered()), SLOT(onToolsDataExchangerDirectPopUpTriggered()));
   connect(m_toolsQueryDataSource, SIGNAL(triggered()), SLOT(onToolsQueryDataSourceTriggered()));
   connect(m_toolsRasterMultiResolution, SIGNAL(triggered()), SLOT(onToolsRasterMultiResolutionTriggered()));
-  connect(m_helpContents, SIGNAL(triggered()), SLOT(onHelpTriggered()));
-  connect(m_layerChartsHistogram, SIGNAL(triggered()), SLOT(onLayerHistogramTriggered()));
-  connect(m_layerLinkTable, SIGNAL(triggered()), SLOT(onLinkTriggered()));
-  connect(m_layerChartsScatter, SIGNAL(triggered()), SLOT(onLayerScatterTriggered()));
-  connect(m_layerChart, SIGNAL(triggered()), SLOT(onLayerChartTriggered()));
-  connect(m_projectAddFolderLayer, SIGNAL(triggered()), SLOT(onAddFolderLayerTriggered()));
-  connect(m_layerProperties, SIGNAL(triggered()), SLOT(onLayerPropertiesTriggered()));
-  connect(m_layerRemoveObjectSelection, SIGNAL(triggered()), SLOT(onLayerRemoveSelectionTriggered()));
-  connect(m_layerRemoveItem, SIGNAL(triggered()), SLOT(onLayerRemoveItemTriggered()));
-  connect(m_layerSRS, SIGNAL(triggered()), SLOT(onLayerSRSTriggered()));
-  connect(m_layerObjectGrouping, SIGNAL(triggered()), SLOT(onLayerGroupingTriggered()));
-  connect(m_mapDraw, SIGNAL(triggered()), SLOT(onDrawTriggered()));
-  connect(m_layerFitOnMapDisplay, SIGNAL(triggered()), SLOT(onLayerFitOnMapDisplayTriggered()));
-  connect(m_layerFitSelectedOnMapDisplay, SIGNAL(triggered()), SLOT(onLayerFitSelectedOnMapDisplayTriggered()));
-  connect(m_layerPanToSelectedOnMapDisplay, SIGNAL(triggered()), SLOT(onLayerPanToSelectedOnMapDisplayTriggered()));
-  connect(m_layerCompositionMode, SIGNAL(hovered()), SLOT(onLayerCompositionModeTriggered()));
-  connect(m_queryLayer, SIGNAL(triggered()), SLOT(onQueryLayerTriggered()));
-  connect(m_mapZoomIn, SIGNAL(toggled(bool)), SLOT(onZoomInToggled(bool)));
-  connect(m_mapZoomOut, SIGNAL(toggled(bool)), SLOT(onZoomOutToggled(bool)));
-  connect(m_mapPreviousExtent, SIGNAL(triggered()), SLOT(onPreviousExtentTriggered()));
-  connect(m_mapNextExtent, SIGNAL(triggered()), SLOT(onNextExtentTriggered()));
-  connect(m_mapPan, SIGNAL(toggled(bool)), SLOT(onPanToggled(bool)));
-  connect(m_mapZoomExtent, SIGNAL(triggered()), SLOT(onZoomExtentTriggered()));
-  connect(m_mapInfo, SIGNAL(toggled(bool)), SLOT(onInfoToggled(bool)));
-  connect(m_mapRemoveSelection, SIGNAL(triggered()), SLOT(onMapRemoveSelectionTriggered()));
-  connect(m_mapSelection, SIGNAL(toggled(bool)), SLOT(onSelectionToggled(bool)));
-  connect(m_mapMeasureDistance, SIGNAL(toggled(bool)), SLOT(onMeasureDistanceToggled(bool)));
-  connect(m_mapMeasureArea, SIGNAL(toggled(bool)), SLOT(onMeasureAreaToggled(bool)));
-  connect(m_mapMeasureAngle, SIGNAL(toggled(bool)), SLOT(onMeasureAngleToggled(bool)));
-  connect(m_layerShowTable, SIGNAL(triggered()), SLOT(onLayerShowTableTriggered()));
-  connect(m_viewFullScreen, SIGNAL(toggled(bool)), SLOT(onFullScreenToggled(bool)));
   connect(m_toolsDataSourceExplorer, SIGNAL(triggered()), SLOT(onDataSourceExplorerTriggered()));
-
-  connect(m_viewLayerExplorer, SIGNAL(toggled(bool)), m_layerExplorer->getExplorer(), SLOT(setVisible(bool)));
-  connect(m_layerExplorer->getExplorer(), SIGNAL(visibilityChanged(bool)), this, SLOT(onLayerExplorerVisibilityChanged(bool)));
-
-  connect(m_display, SIGNAL(hasPreviousExtent(bool)), m_mapPreviousExtent, SLOT(setEnabled(bool)));
-  connect(m_display, SIGNAL(hasNextExtent(bool)), m_mapNextExtent, SLOT(setEnabled(bool)));
-
-  connect(m_viewStyleExplorer, SIGNAL(toggled(bool)), m_styleExplorer->getExplorer(), SLOT(setVisible(bool)));
-  connect(m_styleExplorer->getExplorer(), SIGNAL(visibilityChanged(bool)), this, SLOT(onStyleExplorerVisibilityChanged(bool)));
-  connect(m_styleExplorer->getExplorer(), SIGNAL(repaintMapDisplay()), this, SLOT(onDrawTriggered()));
-
-  connect(m_viewDataTable, SIGNAL(toggled(bool)), this, SLOT(onDisplayDataTableChanged(bool)));
 }
 
 void TerraView::addMenusActions()
@@ -534,8 +413,8 @@ void TerraView::addMenusActions()
   m_projectAddLayerMenu->addSeparator();
   m_projectMenu->addAction(m_projectAddFolderLayer);
   m_projectMenu->addSeparator();
-  m_projectMenu->addAction(m_projectRemoveLayer);
-  m_projectMenu->addAction(m_projectRenameLayer);
+  m_projectMenu->addAction(m_layerRemove);
+  m_projectMenu->addAction(m_layerRename);
   m_projectMenu->addSeparator();
   m_projectMenu->addAction(m_projectProperties);
 
@@ -545,7 +424,7 @@ void TerraView::addMenusActions()
   m_layerMenu->addAction(m_layerObjectGrouping);
   m_layerMenu->addAction(m_layerChartsHistogram);
   m_layerMenu->addAction(m_layerChart);
-  m_layerMenu->addAction(m_queryLayer);
+  m_layerMenu->addAction(m_layerQuery);
   m_layerMenu->addAction(m_layerChartsScatter);
   m_layerMenu->addSeparator();
   m_layerMenu->addAction(m_layerFitOnMapDisplay);
@@ -660,15 +539,15 @@ void TerraView::addPopUpMenu()
   folderSep2->setSeparator(true);
   treeView->add(folderSep2, "", "FOLDER_LAYER_ITEM");
 
-  treeView->add(m_projectRemoveLayer, "", "FOLDER_LAYER_ITEM");
-  treeView->add(m_projectRenameLayer, "", "FOLDER_LAYER_ITEM");
+  treeView->add(m_layerRemove, "", "FOLDER_LAYER_ITEM");
+  treeView->add(m_layerRename, "", "FOLDER_LAYER_ITEM");
 
   // Actions for the single layer item that is not a raster layer
   treeView->add(m_layerObjectGrouping);
   treeView->add(m_toolsDataExchangerDirectPopUp);
   treeView->add(m_layerChartsHistogram);
   treeView->add(m_layerChart);
-  treeView->add(m_queryLayer);
+  treeView->add(m_layerQuery);
   treeView->add(m_layerChartsScatter);
   treeView->add(m_layerLinkTable, "", "DATASET_LAYER_ITEM");
 
@@ -684,8 +563,8 @@ void TerraView::addPopUpMenu()
   treeView->add(actionStyleSep);
 
   treeView->add(m_layerRemoveObjectSelection);
-  treeView->add(m_projectRemoveLayer);
-  treeView->add(m_projectRenameLayer);
+  treeView->add(m_layerRemove);
+  treeView->add(m_layerRename);
 
   QAction* actionRemoveSep = new QAction(this);
   actionRemoveSep->setSeparator(true);
@@ -726,8 +605,8 @@ void TerraView::addPopUpMenu()
   rasterSep2->setSeparator(true);
   treeView->add(rasterSep2, "", "RASTER_LAYER_ITEM");
 
-  treeView->add(m_projectRemoveLayer, "", "RASTER_LAYER_ITEM");
-  treeView->add(m_projectRenameLayer, "", "RASTER_LAYER_ITEM");
+  treeView->add(m_layerRemove, "", "RASTER_LAYER_ITEM");
+  treeView->add(m_layerRename, "", "RASTER_LAYER_ITEM");
 
   QAction* rasterSep3 = new QAction(this);
   rasterSep3->setSeparator(true);
@@ -751,7 +630,7 @@ void TerraView::addPopUpMenu()
   // Actions for invalid layers
   treeView->add(m_projectChangeLayerDataSource, "", "INVALID_LAYER_ITEM");
   treeView->add(m_projectUpdateLayerDataSource, "", "INVALID_LAYER_ITEM");
-  treeView->add(m_projectRemoveLayer, "", "INVALID_LAYER_ITEM");
+  treeView->add(m_layerRemove, "", "INVALID_LAYER_ITEM");
 
   // Actions to be added to the context menu when there are multiple items selected
   treeView->add(m_layerFitSelectedOnMapDisplay, "", "DATASET_LAYER_ITEM", te::qt::widgets::LayerTreeView::MULTIPLE_ITEMS_SELECTED);
@@ -764,7 +643,7 @@ void TerraView::addPopUpMenu()
   multipleSelectedSep->setSeparator(true);
   treeView->add(multipleSelectedSep, "", "", te::qt::widgets::LayerTreeView::MULTIPLE_ITEMS_SELECTED);
 
-  treeView->add(m_projectRemoveLayer, "", "", te::qt::widgets::LayerTreeView::MULTIPLE_ITEMS_SELECTED);
+  treeView->add(m_layerRemove, "", "", te::qt::widgets::LayerTreeView::MULTIPLE_ITEMS_SELECTED);
 }
 
 void TerraView::initMenus()
@@ -810,6 +689,7 @@ void TerraView::initToolbars()
   }
 }
 
+
 void TerraView::showAboutDialog()
 {
   AboutDialog dialog(this);
@@ -817,104 +697,66 @@ void TerraView::showAboutDialog()
   dialog.exec();
 }
 
-void TerraView::onHelpTriggered()
-{
-  te::qt::widgets::HelpManager::getInstance().showHelp("terraview/index.html", "dpi.inpe.br.terraview");
-}
 
 void TerraView::onApplicationTriggered(te::qt::af::evt::Event* e)
 {
-  switch(e->m_id)
+  switch (e->m_id)
   {
-    case te::qt::af::evt::NEW_ACTIONS_AVAILABLE:
+  case te::qt::af::evt::NEW_ACTIONS_AVAILABLE:
+  {
+    te::qt::af::evt::NewActionsAvailable* evt = static_cast<te::qt::af::evt::NewActionsAvailable*>(e);
+
+    if (evt->m_category == "Datasource")
     {
-      te::qt::af::evt::NewActionsAvailable* evt = static_cast<te::qt::af::evt::NewActionsAvailable*>(e);
-
-      if(evt->m_category == "Datasource")
-      {
-        //m_dsMenu->addActions(evt->m_actions);
-      }
+      //m_dsMenu->addActions(evt->m_actions);
     }
-      break;
+  }
+  break;
 
-    case te::qt::af::evt::LAYER_ADDED:
-    case te::qt::af::evt::LAYER_REMOVED:
-    case te::qt::af::evt::LAYER_VISIBILITY_CHANGED:
-      projectChanged();
-      break;
+  case te::qt::af::evt::LAYER_ADDED:
+  case te::qt::af::evt::LAYER_REMOVED:
+  case te::qt::af::evt::LAYER_VISIBILITY_CHANGED:
+    projectChanged();
+    break;
 
-    default:
-      BaseApplication::onApplicationTriggered(e);
+  default:
+    BaseApplication::onApplicationTriggered(e);
   }
 }
 
-void TerraView::onShowTableTriggered()
+
+void TerraView::onRestartSystemTriggered()
 {
-  std::list<te::qt::widgets::AbstractTreeItem*> layers = getLayerExplorer()->getSelectedSingleLayerItems();
+  QMessageBox msgBox(this);
 
-  if(layers.empty())
-  {
-    QMessageBox::warning(this, qApp->applicationName(), tr("There's no selected layer."));
-    return;
-  }
-  else
-    {
-      std::list<te::qt::widgets::AbstractTreeItem*>::iterator it = layers.begin();
+  msgBox.setText(tr("The system will be restarted."));
+  msgBox.setInformativeText(tr("Do you want to continue?"));
+  msgBox.setWindowTitle(tr("Restart system"));
 
-      while(it != layers.end())
-      {
-        if(!(*it)->getLayer()->isValid())
-        {
-          QMessageBox::warning(this, qApp->applicationName(), tr("There are invalid layers selected!"));
-          return;
-        }
+  msgBox.addButton(QMessageBox::No);
+  msgBox.addButton(QMessageBox::Yes);
 
-        ++it;
-      }
-    }
+  msgBox.setDefaultButton(QMessageBox::Yes);
 
-
-  te::map::AbstractLayerPtr lay = (*layers.begin())->getLayer();
-
-  if (lay->getSchema()->hasRaster())
-    return;
-
-  te::qt::af::DataSetTableDockWidget* doc = GetLayerDock(lay.get(), m_tables);
-
-  if(doc == 0)
-  {
-    doc = new te::qt::af::DataSetTableDockWidget(this);
-    doc->setLayer(lay.get());
-    addDockWidget(Qt::BottomDockWidgetArea, doc);
-
-    connect (doc, SIGNAL(closed(te::qt::af::DataSetTableDockWidget*)), SLOT(onLayerTableClose(te::qt::af::DataSetTableDockWidget*)));
-//    connect (doc, SIGNAL(createChartDisplay(te::qt::widgets::ChartDisplayWidget*, te::map::AbstractLayer*)), SLOT(onChartDisplayCreated(te::qt::widgets::ChartDisplayWidget*, te::map::AbstractLayer*)));
-
-    if(!m_tables.empty())
-      tabifyDockWidget(m_tables[m_tables.size()-1], doc);
-
-    m_tables.push_back(doc);
-
-    m_app->addListener(doc);
-  }
-
-  doc->show();
-  doc->raise();
+  if (msgBox.exec() == QMessageBox::Yes)
+    qApp->exit(1000);
 }
 
-void TerraView::onLayerTableClose(te::qt::af::DataSetTableDockWidget* wid)
+void TerraView::onNewProjectTriggered()
 {
-  std::vector<te::qt::af::DataSetTableDockWidget*>::iterator it;
+  checkAndSaveProject();
 
-  for(it=m_tables.begin(); it!=m_tables.end(); ++it)
-    if(*it == wid)
-      break;
+  m_project->m_fileName = "";
+  m_project->m_title = tr("Default Project");
+  m_project->m_changed = false;
 
-  if(it != m_tables.end())
-  {
-    m_app->removeListener(*it);
-    m_tables.erase(it);
-  }
+  setWindowTitle(m_app->getAppName() + " - " + m_project->m_title);
+
+  std::list<te::map::AbstractLayerPtr> ls;
+
+  getLayerExplorer()->set(ls);
+
+  getMapDisplay()->setLayerList(ls);
 }
 
 void TerraView::onOpenProjectTriggered()
@@ -976,445 +818,6 @@ void TerraView::onSaveProjectTriggered()
   te::qt::af::SaveDataSourcesFile();
 }
 
-void TerraView::onAddDataSetLayerTriggered()
-{
-  try
-  {
-    if (m_project == 0)
-      throw te::common::Exception(TE_TR("Error: there is no opened project!"));
-
-    QApplication::setOverrideCursor(Qt::WaitCursor);
-
-    // Get the parent layer where the dataset layer(s) will be added.
-    te::map::AbstractLayerPtr parentLayer(0);
-
-    std::list<te::qt::widgets::AbstractTreeItem*> selectedLayerItems = m_layerExplorer->getExplorer()->getSelectedLayerItems();
-
-    if (selectedLayerItems.size() == 1 && selectedLayerItems.front()->getItemType() == "FOLDER_LAYER_ITEM")
-      parentLayer = selectedLayerItems.front()->getLayer();
-
-    // Get the layer(s) to be added
-    std::auto_ptr<te::qt::widgets::DataSourceSelectorDialog> dselector(new te::qt::widgets::DataSourceSelectorDialog(this));
-
-    QString dsTypeSett = te::qt::af::GetLastDatasourceFromSettings();
-
-    if (!dsTypeSett.isNull() && !dsTypeSett.isEmpty())
-      dselector->setDataSourceToUse(dsTypeSett);
-
-    QApplication::restoreOverrideCursor();
-
-    int retval = dselector->exec();
-
-    QApplication::setOverrideCursor(Qt::WaitCursor);
-
-    if (retval == QDialog::Rejected)
-    {
-      QApplication::restoreOverrideCursor();
-      return;
-    }
-
-    std::list<te::da::DataSourceInfoPtr> selectedDatasources = dselector->getSelecteds();
-
-    if (selectedDatasources.empty())
-    {
-      QApplication::restoreOverrideCursor();
-      return;
-    }
-
-    dselector.reset(0);
-
-    const std::string& dsTypeId = selectedDatasources.front()->getType();
-
-    const te::qt::widgets::DataSourceType* dsType = te::qt::widgets::DataSourceTypeManager::getInstance().get(dsTypeId);
-
-    std::auto_ptr<QWidget> lselectorw(dsType->getWidget(te::qt::widgets::DataSourceType::WIDGET_LAYER_SELECTOR, this));
-
-    if (lselectorw.get() == 0)
-    {
-      QApplication::restoreOverrideCursor();
-      throw te::common::Exception((boost::format(TE_TR("No layer selector widget found for this type of data source: %1%!")) % dsTypeId).str());
-    }
-
-    te::qt::widgets::AbstractLayerSelector* lselector = dynamic_cast<te::qt::widgets::AbstractLayerSelector*>(lselectorw.get());
-
-    if (lselector == 0)
-    {
-      QApplication::restoreOverrideCursor();
-      throw te::common::Exception(TE_TR("Wrong type of object for layer selection!"));
-    }
-
-    lselector->set(selectedDatasources);
-
-    QApplication::restoreOverrideCursor();
-
-    std::list<te::map::AbstractLayerPtr> layers = lselector->getLayers();
-
-    QApplication::setOverrideCursor(Qt::WaitCursor);
-
-    lselectorw.reset(0);
-
-    std::list<te::map::AbstractLayerPtr>::const_iterator it = layers.begin();
-    std::list<te::map::AbstractLayerPtr>::const_iterator itend = layers.end();
-
-    while (it != itend)
-    {
-      if ((m_layerExplorer != 0) && (m_layerExplorer->getExplorer() != 0))
-      {
-        te::qt::af::evt::LayerAdded evt(*it, parentLayer);
-        m_app->triggered(&evt);
-      }
-      ++it;
-    }
-
-    te::qt::af::SaveLastDatasourceOnSettings(dsTypeId.c_str());
-
-    te::qt::af::evt::ProjectUnsaved projectUnsavedEvent;
-    m_app->triggered(&projectUnsavedEvent);
-  }
-  catch (const std::exception& e)
-  {
-    QApplication::restoreOverrideCursor();
-    QMessageBox::warning(this, m_app->getAppTitle(), e.what());
-  }
-  catch (...)
-  {
-    QApplication::restoreOverrideCursor();
-    QMessageBox::warning(this,
-      m_app->getAppTitle(),
-      tr("Unknown error while trying to add a layer from a dataset!"));
-  }
-  QApplication::restoreOverrideCursor();
-}
-
-void TerraView::onAddQueryLayerTriggered()
-{
-  try
-  {
-    if (m_project == 0)
-      throw te::common::Exception(TE_TR("Error: there is no opened project!"));
-
-    // Get the parent layer where the dataset layer(s) will be added.
-    te::map::AbstractLayerPtr parentLayer(0);
-
-    std::list<te::qt::widgets::AbstractTreeItem*> selectedLayerItems = m_layerExplorer->getExplorer()->getSelectedLayerItems();
-
-    if (selectedLayerItems.size() == 1 && selectedLayerItems.front()->getItemType() == "FOLDER_LAYER_ITEM")
-      parentLayer = selectedLayerItems.front()->getLayer();
-
-    std::auto_ptr<te::qt::widgets::QueryLayerBuilderWizard> qlb(new te::qt::widgets::QueryLayerBuilderWizard(this));
-
-    std::list<te::map::AbstractLayerPtr> layers = m_layerExplorer->getExplorer()->getTopLayers();
-
-    qlb->setLayerList(layers);
-
-    int retval = qlb->exec();
-
-    if (retval == QDialog::Rejected)
-      return;
-
-    te::map::AbstractLayerPtr layer = qlb->getQueryLayer();
-
-    if ((m_layerExplorer != 0) && (m_layerExplorer->getExplorer() != 0))
-    {
-      te::qt::af::evt::LayerAdded evt(layer, parentLayer);
-      m_app->triggered(&evt);
-    }
-
-    te::qt::af::evt::ProjectUnsaved projectUnsavedEvent;
-    m_app->triggered(&projectUnsavedEvent);
-  }
-  catch (const std::exception& e)
-  {
-    QMessageBox::warning(this, m_app->getAppTitle(), e.what());
-  }
-  catch (...)
-  {
-    QMessageBox::warning(this,
-      m_app->getAppTitle(),
-      tr("Unknown error while trying to add a layer from a queried dataset!"));
-  }
-}
-
-void TerraView::onAddTabularLayerTriggered()
-{
-  try
-  {
-    if (m_project == 0)
-      throw te::common::Exception(TE_TR("Error: there is no opened project!"));
-
-    // Get the parent layer where the tabular layer will be added.
-    te::map::AbstractLayerPtr parentLayer(0);
-
-    std::list<te::qt::widgets::AbstractTreeItem*> selectedLayerItems = m_layerExplorer->getExplorer()->getSelectedLayerItems();
-
-    if (selectedLayerItems.size() == 1 && selectedLayerItems.front()->getItemType() == "FOLDER_LAYER_ITEM")
-      parentLayer = selectedLayerItems.front()->getLayer();
-
-    te::qt::widgets::DataPropertiesDialog dlg(this);
-    int res = dlg.exec();
-    if (res == QDialog::Accepted)
-    {
-      if ((m_layerExplorer != 0) && (m_layerExplorer->getExplorer() != 0))
-      {
-        te::qt::af::evt::LayerAdded evt(dlg.getDataSetAdapterLayer(), parentLayer);
-        m_app->triggered(&evt);
-      }
-
-      te::qt::af::evt::ProjectUnsaved projectUnsavedEvent;
-      m_app->triggered(&projectUnsavedEvent);
-    }
-  }
-  catch (const std::exception& e)
-  {
-    QMessageBox::warning(this, m_app->getAppTitle(), e.what());
-  }
-  catch (...)
-  {
-    QMessageBox::warning(this,
-      m_app->getAppTitle(),
-      tr("Unknown error while trying to add a layer from a queried dataset!"));
-  }
-}
-
-void TerraView::onChartDisplayCreated(te::qt::widgets::ChartDisplayWidget* chartDisplay, te::map::AbstractLayer* layer)
-{
-  try
-  {
-    te::qt::af::ChartDisplayDockWidget* doc = new te::qt::af::ChartDisplayDockWidget(chartDisplay, this);
-    doc->setSelectionColor(m_app->getSelectionColor());
-    doc->setWindowTitle("Histogram");
-    doc->setWindowIcon(QIcon::fromTheme("chart-bar"));
-    doc->setLayer(layer);
-
-    m_app->addListener(doc);
-    addDockWidget(Qt::RightDockWidgetArea, doc, Qt::Horizontal);
-    doc->show();
-  }
-  catch (const std::exception& e)
-  {
-    QMessageBox::warning(this, m_app->getAppTitle(), e.what());
-  }
-}
-
-void TerraView::onRemoveLayerTriggered()
-{
-  std::list<te::qt::widgets::AbstractTreeItem*> selectedLayerItems = m_layerExplorer->getExplorer()->getSelectedLayerItems();
-
-  if (selectedLayerItems.empty())
-  {
-    QString msg = tr("Select at least one layer to be removed!");
-    QMessageBox::warning(this, tr("Remove Layer"), msg);
-
-    return;
-  }
-
-  QString msg;
-  QString questionTitle;
-
-  if (selectedLayerItems.size() == 1)
-  {
-    msg = tr("Do you really want to remove the selected layer?");
-    questionTitle = tr("Remove Layer");
-  }
-  else
-  {
-    msg = tr("Do you really want to remove the selected layers?");
-    questionTitle = tr("Remove Layers");
-  }
-
-  int reply = QMessageBox::question(this, questionTitle, msg, QMessageBox::No, QMessageBox::Yes);
-
-  if (reply == QMessageBox::No)
-    return;
-
-  std::list<te::qt::widgets::AbstractTreeItem*>::const_iterator it;
-  for (it = selectedLayerItems.begin(); it != selectedLayerItems.end(); ++it)
-  {
-    te::qt::af::evt::LayerRemoved evt((*it)->getLayer());
-    m_app->triggered(&evt);
-  }
-}
-
-void TerraView::onChangeLayerDataSourceTriggered()
-{
-  try
-  {
-    std::list<te::qt::widgets::AbstractTreeItem*> selectedLayerItems = m_layerExplorer->getExplorer()->getSelectedLayerItems();
-
-    // Get Data Source
-    std::auto_ptr<te::qt::widgets::DataSourceSelectorDialog> dselector(new te::qt::widgets::DataSourceSelectorDialog(this));
-
-    QString dsTypeSett = te::qt::af::GetLastDatasourceFromSettings();
-
-    if (!dsTypeSett.isNull() && !dsTypeSett.isEmpty())
-      dselector->setDataSourceToUse(dsTypeSett);
-
-    int retval = dselector->exec();
-
-    if (retval == QDialog::Rejected)
-      return;
-
-    std::list<te::da::DataSourceInfoPtr> selectedDatasources = dselector->getSelecteds();
-
-    if (selectedDatasources.empty())
-      return;
-
-    dselector.reset(0);
-
-    const std::string& dsId = selectedDatasources.front()->getId();
-
-    te::map::AbstractLayerPtr layer = selectedLayerItems.front()->getLayer();
-
-    te::map::DataSetLayer* dsl = (te::map::DataSetLayer*)layer.get();
-
-    if (dsl)
-      dsl->setDataSourceId(dsId);
-
-    te::qt::af::evt::ProjectUnsaved projectUnsavedEvent;
-    m_app->triggered(&projectUnsavedEvent);
-  }
-  catch (const std::exception& e)
-  {
-    QMessageBox::warning(this, m_app->getAppTitle(), e.what());
-  }
-  catch (...)
-  {
-    QMessageBox::warning(this,
-      m_app->getAppTitle(),
-      tr("Unknown error while trying to change a layer data source!"));
-  }
-}
-
-void TerraView::onUpdateLayerDataSourceTriggered()
-{
-  try
-  {
-    std::list<te::qt::widgets::AbstractTreeItem*> selectedLayerItems = m_layerExplorer->getExplorer()->getSelectedLayerItems();
-
-    if (selectedLayerItems.empty())
-      return;
-
-    te::map::AbstractLayerPtr layer = selectedLayerItems.front()->getLayer();
-
-    te::map::DataSetLayer* dsl = (te::map::DataSetLayer*)layer.get();
-
-    if (!dsl)
-      return;
-
-    std::list<te::da::DataSourceInfoPtr> selecteds;
-
-    te::da::DataSourceInfoPtr ds = te::da::DataSourceInfoManager::getInstance().get(dsl->getDataSourceId());
-
-    selecteds.push_back(ds);
-
-    const std::string& dsTypeId = selecteds.front()->getType();
-
-    const te::qt::widgets::DataSourceType* dsType = te::qt::widgets::DataSourceTypeManager::getInstance().get(dsTypeId);
-
-    std::auto_ptr<QWidget> connectorw(dsType->getWidget(te::qt::widgets::DataSourceType::WIDGET_DATASOURCE_CONNECTOR, this));
-
-    if (connectorw.get() == 0)
-    {
-      throw te::common::Exception((boost::format(TE_TR("No layer selector widget found for this type of data source: %1%!")) % dsTypeId).str());
-    }
-
-    te::qt::widgets::AbstractDataSourceConnector* connector = dynamic_cast<te::qt::widgets::AbstractDataSourceConnector*>(connectorw.get());
-
-    if (connector == 0)
-    {
-      throw te::common::Exception(TE_TR("Wrong type of object for layer selection!"));
-    }
-
-    connector->update(selecteds);
-  }
-  catch (const std::exception& e)
-  {
-    QMessageBox::warning(this, m_app->getAppTitle(), e.what());
-  }
-  catch (...)
-  {
-    QMessageBox::warning(this,
-      m_app->getAppTitle(),
-      tr("Unknown error while trying to update a layer data source!"));
-  }
-}
-
-void TerraView::onLayerRemoveItemTriggered()
-{
-  std::list<te::qt::widgets::AbstractTreeItem*> selectedItems = m_layerExplorer->getExplorer()->getSelectedItems();
-
-  std::list<te::qt::widgets::AbstractTreeItem*>::const_iterator it;
-  for (it = selectedItems.begin(); it != selectedItems.end(); ++it)
-  {
-    te::qt::af::evt::ItemOfLayerRemoved evt((*it));
-    m_app->triggered(&evt);
-  }
-}
-
-void TerraView::onRenameLayerTriggered()
-{
-  std::list<te::qt::widgets::AbstractTreeItem*> selectedLayerItems = m_layerExplorer->getExplorer()->getSelectedLayerItems();
-
-  if (selectedLayerItems.empty() ||
-    (selectedLayerItems.size() == 1 && !selectedLayerItems.front()->getLayer()) ||
-    selectedLayerItems.size() > 1)
-  {
-    QString msg = tr("Select only one layer to be renamed!");
-    QMessageBox::warning(this, tr("Rename Layer"), msg);
-
-    return;
-  }
-
-  te::qt::widgets::AbstractTreeItem* selectedLayerItem = selectedLayerItems.front();
-  te::map::AbstractLayerPtr layer = selectedLayerItem->getLayer();
-
-  bool ok;
-  QString text = QInputDialog::getText(this, m_app->getAppTitle(),
-    tr("Rename Layer:"), QLineEdit::Normal,
-    layer->getTitle().c_str(), &ok);
-
-  if (!ok)
-    return;
-
-  if (text.isEmpty())
-  {
-    QMessageBox::warning(this, m_app->getAppTitle(), tr("Enter the new name!"));
-    return;
-  }
-
-  layer->setTitle(text.toStdString());
-
-  te::qt::af::evt::ProjectUnsaved projectUnsavedEvent;
-  m_app->triggered(&projectUnsavedEvent);
-}
-
-void TerraView::onPluginsManagerTriggered()
-{
-  try
-  {
-    te::qt::widgets::PluginManagerDialog dlg(this);
-    dlg.exec();
-  }
-  catch (const std::exception& e)
-  {
-    QMessageBox::warning(this, m_app->getAppTitle(), e.what());
-  }
-}
-
-void TerraView::onRecentProjectsTriggered(QAction* proj)
-{
-  QString projFile = proj->data().toString();
-
-  openProject(projFile);
-}
-
-//void TerraView::onNewProjectTriggered()
-//{
-////  newProject();
-//
-//  //onSaveProjectAsTriggered();
-//}
-
 void TerraView::onSaveProjectAsTriggered()
 {
   if (m_project == 0)
@@ -1434,7 +837,7 @@ void TerraView::onSaveProjectAsTriggered()
     m_project->m_title = (boost::filesystem::basename(fName)).c_str();
   }
 
-//  te::qt::af::Save(*m_project, fName);
+  //  te::qt::af::Save(*m_project, fName);
 
   m_app->updateRecentProjects(fileName, m_project->m_title);
 
@@ -1445,415 +848,17 @@ void TerraView::onSaveProjectAsTriggered()
   m_project->m_changed = false;
 
   // Set the window title
- // setWindowTitle(te::qt::af::GetWindowTitle(*m_project));
+  // setWindowTitle(te::qt::af::GetWindowTitle(*m_project));
 
   te::qt::af::SaveDataSourcesFile();
 }
 
-void TerraView::onRestartSystemTriggered()
+
+void TerraView::onHelpTriggered()
 {
-  QMessageBox msgBox(this);
-
-  msgBox.setText(tr("The system will be restarted."));
-  msgBox.setInformativeText(tr("Do you want to continue?"));
-  msgBox.setWindowTitle(tr("Restart system"));
-
-  msgBox.addButton(QMessageBox::No);
-  msgBox.addButton(QMessageBox::Yes);
-
-  msgBox.setDefaultButton(QMessageBox::Yes);
-
-  if (msgBox.exec() == QMessageBox::Yes)
-    qApp->exit(1000);
+  te::qt::widgets::HelpManager::getInstance().showHelp("terraview/index.html", "dpi.inpe.br.terraview");
 }
 
-void TerraView::onToolsCustomizeTriggered()
-{
-  try
-  {
-    te::qt::af::SettingsDialog dlg(this);
-    dlg.exec();
-  }
-  catch (const std::exception& e)
-  {
-    QMessageBox::warning(this, m_app->getAppTitle(), e.what());
-  }
-}
-
-void TerraView::onToolsDataExchangerTriggered()
-{
-  try
-  {
-    te::qt::widgets::DataExchangerWizard dlg(this);
-    dlg.exec();
-  }
-  catch (const std::exception& e)
-  {
-    QMessageBox::warning(this, m_app->getAppTitle(), e.what());
-  }
-}
-
-void TerraView::onToolsDataExchangerDirectTriggered()
-{
-  try
-  {
-    te::qt::widgets::DirectExchangerDialog dlg(this);
-
-    std::list<te::map::AbstractLayerPtr> layers = m_layerExplorer->getExplorer()->getTopLayers();
-    dlg.setLayers(layers);
-
-    QString dsTypeSett = te::qt::af::GetLastDatasourceFromSettings();
-
-    if (!dsTypeSett.isNull() && !dsTypeSett.isEmpty())
-      dlg.setLastDataSource(dsTypeSett.toStdString());
-
-    dlg.exec();
-  }
-  catch (const std::exception& e)
-  {
-    QMessageBox::warning(this, m_app->getAppTitle(), e.what());
-  }
-}
-
-void TerraView::onToolsDataExchangerDirectPopUpTriggered()
-{
-  try
-  {
-    te::qt::widgets::DirectExchangerDialog dlg(this);
-
-    std::list<te::qt::widgets::AbstractTreeItem*> selectedLayerItems = m_layerExplorer->getExplorer()->getSelectedSingleLayerItems();
-
-    if (selectedLayerItems.empty())
-    {
-      QMessageBox::warning(this, m_app->getAppTitle(),
-        tr("Select a single layer in the layer explorer!"));
-      return;
-    }
-
-    te::qt::widgets::AbstractTreeItem* selectedLayerItem = *(selectedLayerItems.begin());
-    te::map::AbstractLayerPtr selectedLayer = selectedLayerItem->getLayer();
-
-    std::list<te::map::AbstractLayerPtr> layers;
-    layers.push_back(selectedLayer);
-
-    dlg.setLayers(layers);
-
-    dlg.exec();
-  }
-  catch (const std::exception& e)
-  {
-    QMessageBox::warning(this, m_app->getAppTitle(), e.what());
-  }
-}
-
-void TerraView::onToolsQueryDataSourceTriggered()
-{
-  try
-  {
-    te::qt::widgets::QueryDataSourceDialog dlg(this);
-
-    connect(&dlg, SIGNAL(createNewLayer(te::map::AbstractLayerPtr)), this, SLOT(onCreateNewLayer(te::map::AbstractLayerPtr)));
-
-    std::list<te::map::AbstractLayerPtr> layers = m_layerExplorer->getExplorer()->getTopLayers();
-    dlg.setLayerList(layers);
-    dlg.setAppMapDisplay(m_display->getDisplay());
-
-    dlg.exec();
-  }
-  catch (const std::exception& e)
-  {
-    QMessageBox::warning(this, m_app->getAppTitle(), e.what());
-  }
-}
-
-void TerraView::onToolsRasterMultiResolutionTriggered()
-{
-  try
-  {
-    te::qt::widgets::MultiResolutionDialog dlg(this);
-
-    std::list<te::map::AbstractLayerPtr> layers = m_layerExplorer->getExplorer()->getTopLayers();
-    dlg.setLayerList(layers);
-
-    dlg.exec();
-  }
-  catch (const std::exception& e)
-  {
-    QMessageBox::warning(this, m_app->getAppTitle(), e.what());
-  }
-}
-
-void TerraView::onToolsFixGeometryTriggered()
-{
-  try
-  {
-    te::qt::widgets::FixGeometryDialog dlg(this);
-
-    std::list<te::map::AbstractLayerPtr> layers = m_layerExplorer->getExplorer()->getTopLayers();
-    dlg.setLayerList(layers);
-
-    dlg.exec();
-  }
-  catch (const std::exception& e)
-  {
-    QMessageBox::warning(this, m_app->getAppTitle(), e.what());
-  }
-}
-
-void TerraView::onProjectPropertiesTriggered()
-{
-  if (m_project == 0)
-  {
-    QMessageBox::warning(this, m_app->getAppTitle(), tr("There's no current project!"));
-    return;
-  }
-
-  ProjectInfoDialog editor(this);
-  editor.setProject(m_project);
-
-  if (editor.exec() == QDialog::Accepted)
-  {
-    // Set window title
-//    setWindowTitle(te::qt::af::GetWindowTitle(*m_project));
-  }
-}
-
-void TerraView::onAddFolderLayerTriggered()
-{
-  // Get the parent item where the folder layer will be added.
-  te::map::AbstractLayerPtr parentLayer(0);
-
-  std::list<te::qt::widgets::AbstractTreeItem*> selectedLayerItems = m_layerExplorer->getExplorer()->getSelectedLayerItems();
-
-  if (selectedLayerItems.size() == 1 && selectedLayerItems.front()->getItemType() == "FOLDER_LAYER_ITEM")
-    parentLayer = selectedLayerItems.front()->getLayer();
-
-  // Get the folder layer to be added
-  bool ok;
-  QString text = QInputDialog::getText(this, m_app->getAppTitle(),
-    tr("Folder layer name:"), QLineEdit::Normal,
-    tr("Enter folder layer name"), &ok);
-
-  if (!ok)
-    return;
-
-  if (text.isEmpty())
-  {
-    QMessageBox::warning(this, m_app->getAppTitle(), tr("Enter the layer name!"));
-    return;
-  }
-
-  static boost::uuids::basic_random_generator<boost::mt19937> gen;
-  boost::uuids::uuid u = gen();
-  std::string id = boost::uuids::to_string(u);
-
-  te::map::AbstractLayerPtr folderLayer(new te::map::FolderLayer);
-  folderLayer->setTitle(text.toStdString());
-  folderLayer->setId(id);
-
-  te::qt::af::evt::LayerAdded evt(folderLayer, parentLayer);
-  m_app->triggered(&evt);
-
-  te::qt::af::evt::ProjectUnsaved projectUnsavedEvent;
-  m_app->triggered(&projectUnsavedEvent);
-}
-
-void TerraView::onLayerPropertiesTriggered()
-{
-  std::list<te::qt::widgets::AbstractTreeItem*> layers = m_layerExplorer->getExplorer()->getSelectedItems();
-
-  if (layers.empty())
-  {
-    QMessageBox::warning(this, m_app->getAppTitle(), tr("There's no selected layer."));
-    return;
-  }
-
-  // Docking
-  QDockWidget* doc = new QDockWidget(this, Qt::Dialog);
-
-  te::qt::widgets::LayerPropertiesInfoWidget* info = new te::qt::widgets::LayerPropertiesInfoWidget((*(layers.begin()))->getLayer().get(), doc);
-
-  doc->setWidget(info);
-  doc->setWindowTitle(info->windowTitle());
-  doc->setAttribute(Qt::WA_DeleteOnClose, true);
-
-  doc->show();
-}
-
-void TerraView::onLayerRemoveSelectionTriggered()
-{
-  std::list<te::map::AbstractLayerPtr> layers = m_layerExplorer->getExplorer()->getSelectedSingleLayers();
-
-  if (layers.empty())
-  {
-    QMessageBox::warning(this, m_app->getAppTitle(), tr("There's no selected layer."));
-    return;
-  }
-
-  std::list<te::map::AbstractLayerPtr>::iterator it = layers.begin();
-
-  while (it != layers.end())
-  {
-    te::map::AbstractLayerPtr layer = (*it);
-
-    if (!layer->isValid())
-    {
-      ++it;
-      continue;
-    }
-
-    layer->clearSelected();
-
-    ++it;
-
-    te::qt::af::evt::LayerSelectedObjectsChanged e(layer);
-    m_app->triggered(&e);
-  }
-}
-
-void TerraView::onLayerSRSTriggered()
-{
-  std::list<te::qt::widgets::AbstractTreeItem*> layers = m_layerExplorer->getExplorer()->getSelectedItems();
-
-  if (layers.empty())
-  {
-    QMessageBox::warning(this, m_app->getAppTitle(), tr("There's no selected layer."));
-    return;
-  }
-  te::qt::widgets::SRSManagerDialog srsDialog(this);
-  srsDialog.setWindowTitle(tr("Choose the SRS"));
-
-  if (srsDialog.exec() == QDialog::Rejected)
-    return;
-
-  std::pair<int, std::string> srid = srsDialog.getSelectedSRS();
-
-  te::map::AbstractLayerPtr lay = (*layers.begin())->getLayer();
-
-  lay->setSRID(srid.first);
-}
-
-void TerraView::onLayerShowTableTriggered()
-{
-  std::list<te::qt::widgets::AbstractTreeItem*> layers = m_layerExplorer->getExplorer()->getSelectedSingleLayerItems();
-
-  if (layers.empty())
-  {
-    QMessageBox::warning(this, m_app->getAppTitle(), tr("There's no selected layer."));
-    return;
-  }
-  else
-  {
-    std::list<te::qt::widgets::AbstractTreeItem*>::iterator it = layers.begin();
-
-    while (it != layers.end())
-    {
-      if (!(*it)->getLayer()->isValid())
-      {
-        QMessageBox::warning(this, m_app->getAppTitle(),
-          tr("There are invalid layers selected!"));
-        return;
-      }
-
-      ++it;
-    }
-  }
-
-
-  te::map::AbstractLayerPtr lay = (*layers.begin())->getLayer();
-
-  if (lay->getSchema()->hasRaster())
-    return;
-
-  te::qt::af::DataSetTableDockWidget* doc = GetLayerDock(lay.get(), m_tables);
-
-  if (doc == 0)
-  {
-    doc = new te::qt::af::DataSetTableDockWidget(this);
-    doc->setLayer(lay.get());
-    addDockWidget(Qt::BottomDockWidgetArea, doc);
-
-    connect(doc, SIGNAL(closed(te::qt::af::DataSetTableDockWidget*)), SLOT(onLayerTableClose(te::qt::af::DataSetTableDockWidget*)));
-    connect(doc, SIGNAL(createChartDisplay(te::qt::widgets::ChartDisplayWidget*, te::map::AbstractLayer*)), SLOT(onChartDisplayCreated(te::qt::widgets::ChartDisplayWidget*, te::map::AbstractLayer*)));
-
-    if (!m_tables.empty())
-      tabifyDockWidget(m_tables[m_tables.size() - 1], doc);
-
-    m_tables.push_back(doc);
-
-    m_app->addListener(doc);
-  }
-
-  //  doc->get
-
-  doc->show();
-  doc->raise();
-
-  m_viewDataTable->setChecked(true);
-
-  m_viewDataTable->setEnabled(true);
-}
-
-void TerraView::onLayerHistogramTriggered()
-{
-  try
-  {
-    std::list<te::map::AbstractLayerPtr> selectedLayers = m_layerExplorer->getExplorer()->getSelectedSingleLayers();
-
-    if (selectedLayers.empty())
-    {
-      QMessageBox::warning(this, m_app->getAppTitle(),
-        tr("Select a layer in the layer explorer!"));
-      return;
-    }
-    else
-    {
-      std::list<te::map::AbstractLayerPtr>::iterator it = selectedLayers.begin();
-
-      while (it != selectedLayers.end())
-      {
-        if (!it->get()->isValid())
-        {
-          QMessageBox::warning(this, m_app->getAppTitle(),
-            tr("There are invalid layers selected!"));
-          return;
-        }
-
-        ++it;
-      }
-    }
-
-    // The histogram will be created based on the first selected layer
-    te::map::AbstractLayerPtr selectedLayer = *(selectedLayers.begin());
-
-    const te::map::LayerSchema* schema = selectedLayer->getSchema().release();
-
-    te::da::DataSet* dataset = selectedLayer->getData().release();
-    te::da::DataSetType* dataType = (te::da::DataSetType*) schema;
-
-    te::qt::widgets::HistogramDialog dlg(dataset, dataType, this);
-
-    dlg.setWindowTitle(dlg.windowTitle() + " (" + tr("Layer") + ":" + selectedLayer->getTitle().c_str() + ")");
-
-    int res = dlg.exec();
-    if (res == QDialog::Accepted)
-    {
-      te::qt::af::ChartDisplayDockWidget* doc = new te::qt::af::ChartDisplayDockWidget(dlg.getDisplayWidget(), this);
-      doc->setSelectionColor(m_app->getSelectionColor());
-      doc->setWindowTitle(tr("Histogram"));
-      doc->setWindowIcon(QIcon::fromTheme("chart-bar"));
-      doc->setLayer(selectedLayer.get());
-
-      m_app->addListener(doc);
-      addDockWidget(Qt::RightDockWidgetArea, doc, Qt::Horizontal);
-      doc->show();
-    }
-  }
-  catch (const std::exception& e)
-  {
-    QMessageBox::warning(this, m_app->getAppTitle(), e.what());
-  }
-}
 
 void TerraView::onLinkTriggered()
 {
@@ -1925,6 +930,67 @@ void TerraView::onLinkTriggered()
     QMessageBox::warning(this,
       m_app->getAppTitle(),
       tr("Unknown error while trying to add a layer from a queried dataset!"));
+  }
+}
+
+void TerraView::onLayerHistogramTriggered()
+{
+  try
+  {
+    std::list<te::map::AbstractLayerPtr> selectedLayers = m_layerExplorer->getExplorer()->getSelectedSingleLayers();
+
+    if (selectedLayers.empty())
+    {
+      QMessageBox::warning(this, m_app->getAppTitle(),
+        tr("Select a layer in the layer explorer!"));
+      return;
+    }
+    else
+    {
+      std::list<te::map::AbstractLayerPtr>::iterator it = selectedLayers.begin();
+
+      while (it != selectedLayers.end())
+      {
+        if (!it->get()->isValid())
+        {
+          QMessageBox::warning(this, m_app->getAppTitle(),
+            tr("There are invalid layers selected!"));
+          return;
+        }
+
+        ++it;
+      }
+    }
+
+    // The histogram will be created based on the first selected layer
+    te::map::AbstractLayerPtr selectedLayer = *(selectedLayers.begin());
+
+    const te::map::LayerSchema* schema = selectedLayer->getSchema().release();
+
+    te::da::DataSet* dataset = selectedLayer->getData().release();
+    te::da::DataSetType* dataType = (te::da::DataSetType*) schema;
+
+    te::qt::widgets::HistogramDialog dlg(dataset, dataType, this);
+
+    dlg.setWindowTitle(dlg.windowTitle() + " (" + tr("Layer") + ":" + selectedLayer->getTitle().c_str() + ")");
+
+    int res = dlg.exec();
+    if (res == QDialog::Accepted)
+    {
+      te::qt::af::ChartDisplayDockWidget* doc = new te::qt::af::ChartDisplayDockWidget(dlg.getDisplayWidget(), this);
+      doc->setSelectionColor(m_app->getSelectionColor());
+      doc->setWindowTitle(tr("Histogram"));
+      doc->setWindowIcon(QIcon::fromTheme("chart-bar"));
+      doc->setLayer(selectedLayer.get());
+
+      m_app->addListener(doc);
+      addDockWidget(Qt::RightDockWidgetArea, doc, Qt::Horizontal);
+      doc->show();
+    }
+  }
+  catch (const std::exception& e)
+  {
+    QMessageBox::warning(this, m_app->getAppTitle(), e.what());
   }
 }
 
@@ -2151,160 +1217,6 @@ void TerraView::onLayerGroupingTriggered()
   }
 }
 
-void TerraView::onLayerFitOnMapDisplayTriggered()
-{
-  try
-  {
-    std::list<te::map::AbstractLayerPtr> selectedLayers = m_layerExplorer->getExplorer()->getSelectedSingleLayers();
-
-    if (selectedLayers.empty())
-    {
-      QMessageBox::warning(this, m_app->getAppTitle(),
-        tr("Select a layer in the layer explorer!"));
-      return;
-    }
-    else
-    {
-      std::list<te::map::AbstractLayerPtr>::iterator it = selectedLayers.begin();
-
-      while (it != selectedLayers.end())
-      {
-        if (!it->get()->isValid())
-        {
-          QMessageBox::warning(this, m_app->getAppTitle(),
-            tr("There are invalid layers selected!"));
-
-          return;
-        }
-
-        ++it;
-      }
-    }
-
-    // The layer fitting will be accomplished only on the first layer selected
-    te::map::AbstractLayerPtr selectedLayer = *(selectedLayers.begin());
-
-    te::qt::widgets::MapDisplay* display = m_display->getDisplay();
-
-    te::gm::Envelope env = selectedLayer->getExtent();
-
-    if ((display->getSRID() == TE_UNKNOWN_SRS && selectedLayer->getSRID() == TE_UNKNOWN_SRS) || (display->getSRID() == selectedLayer->getSRID()))
-    {
-      display->setExtent(env, true);
-      return;
-    }
-
-    if (display->getSRID() == TE_UNKNOWN_SRS && selectedLayer->getSRID() != TE_UNKNOWN_SRS)
-    {
-      display->setSRID(selectedLayer->getSRID());
-      display->setExtent(env, true);
-      return;
-    }
-
-    if (display->getSRID() == TE_UNKNOWN_SRS || selectedLayer->getSRID() == TE_UNKNOWN_SRS)
-    {
-      QMessageBox::warning(this, m_app->getAppTitle(),
-        TE_TR("The spatial reference system of the map display and the layer are not compatible!"));
-      return;
-    }
-
-    if (display->getSRID() != selectedLayer->getSRID())
-      env.transform(selectedLayer->getSRID(), display->getSRID());
-
-    display->setExtent(env, true);
-  }
-  catch (const std::exception& e)
-  {
-    QMessageBox::warning(this, m_app->getAppTitle(), e.what());
-  }
-}
-
-void TerraView::onLayerFitSelectedOnMapDisplayTriggered()
-{
-  std::list<te::map::AbstractLayerPtr> selectedLayers = m_layerExplorer->getExplorer()->getSelectedSingleLayers();
-  if (selectedLayers.empty())
-  {
-    QString msg = tr("Select at least a layer to accomplish this operation!");
-    QMessageBox::warning(this, m_app->getAppTitle(), msg);
-    return;
-  }
-  else
-  {
-    std::list<te::map::AbstractLayerPtr>::iterator it = selectedLayers.begin();
-
-    while (it != selectedLayers.end())
-    {
-      if (!it->get()->isValid())
-      {
-        QMessageBox::warning(this, m_app->getAppTitle(),
-          tr("There are invalid layers selected!"));
-        return;
-      }
-
-      ++it;
-    }
-  }
-
-  te::gm::Envelope finalEnv = te::map::GetSelectedExtent(selectedLayers, m_display->getDisplay()->getSRID(), false);
-
-  if (!finalEnv.isValid())
-  {
-    QString msg = tr("Select object(s) in the selected layer(s) to accomplish this operation!");
-    QMessageBox::warning(this, m_app->getAppTitle(), msg);
-    return;
-  }
-
-  m_display->getDisplay()->setExtent(finalEnv, true);
-}
-
-void TerraView::onLayerPanToSelectedOnMapDisplayTriggered()
-{
-  std::list<te::map::AbstractLayerPtr> selectedLayers = m_layerExplorer->getExplorer()->getSelectedSingleLayers();
-  if (selectedLayers.empty())
-  {
-    QString msg = tr("Select at least a layer to accomplish this operation!");
-    QMessageBox::warning(this, m_app->getAppTitle(), msg);
-    return;
-  }
-  else
-  {
-    std::list<te::map::AbstractLayerPtr>::iterator it = selectedLayers.begin();
-
-    while (it != selectedLayers.end())
-    {
-      if (!it->get()->isValid())
-      {
-        QMessageBox::warning(this, m_app->getAppTitle(),
-          tr("There are invalid layers selected!"));
-        return;
-      }
-
-      ++it;
-    }
-  }
-
-  te::map::MapDisplay* display = m_display->getDisplay();
-
-  te::gm::Envelope selectedExtent = te::map::GetSelectedExtent(selectedLayers, display->getSRID(), true);
-
-  te::gm::Coord2D centerOfSelectedExtent = selectedExtent.getCenter();
-
-  te::gm::Envelope displayExtent = display->getExtent();
-
-  double halfWidth = displayExtent.getWidth() * 0.5;
-  double halfHeight = displayExtent.getHeight() * 0.5;
-
-  te::gm::Envelope newExtent;
-
-  newExtent.m_llx = centerOfSelectedExtent.x - halfWidth;
-  newExtent.m_lly = centerOfSelectedExtent.y - halfHeight;
-
-  newExtent.m_urx = centerOfSelectedExtent.x + halfWidth;
-  newExtent.m_ury = centerOfSelectedExtent.y + halfHeight;
-
-  display->setExtent(newExtent);
-}
-
 void TerraView::onLayerCompositionModeTriggered()
 {
   std::list<te::map::AbstractLayerPtr> selectedLayers = m_layerExplorer->getExplorer()->getSelectedSingleLayers();
@@ -2377,6 +1289,7 @@ void TerraView::onQueryLayerTriggered()
   m_queryDlg->show();
 }
 
+
 void TerraView::onMeasureDistanceToggled(bool checked)
 {
   if (!checked)
@@ -2410,81 +1323,505 @@ void TerraView::onMeasureAngleToggled(bool checked)
   m_display->setCurrentTool(angle);
 }
 
-void TerraView::showProgressDockWidget()
+
+void TerraView::onAddDataSetLayerTriggered()
 {
-  m_progressDockWidget->setVisible(true);
+  try
+  {
+    if (m_project == 0)
+      throw te::common::Exception(TE_TR("Error: there is no opened project!"));
+
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+
+    // Get the parent layer where the dataset layer(s) will be added.
+    te::map::AbstractLayerPtr parentLayer(0);
+
+    std::list<te::qt::widgets::AbstractTreeItem*> selectedLayerItems = m_layerExplorer->getExplorer()->getSelectedLayerItems();
+
+    if (selectedLayerItems.size() == 1 && selectedLayerItems.front()->getItemType() == "FOLDER_LAYER_ITEM")
+      parentLayer = selectedLayerItems.front()->getLayer();
+
+    // Get the layer(s) to be added
+    std::auto_ptr<te::qt::widgets::DataSourceSelectorDialog> dselector(new te::qt::widgets::DataSourceSelectorDialog(this));
+
+    QString dsTypeSett = te::qt::af::GetLastDatasourceFromSettings();
+
+    if (!dsTypeSett.isNull() && !dsTypeSett.isEmpty())
+      dselector->setDataSourceToUse(dsTypeSett);
+
+    QApplication::restoreOverrideCursor();
+
+    int retval = dselector->exec();
+
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+
+    if (retval == QDialog::Rejected)
+    {
+      QApplication::restoreOverrideCursor();
+      return;
+    }
+
+    std::list<te::da::DataSourceInfoPtr> selectedDatasources = dselector->getSelecteds();
+
+    if (selectedDatasources.empty())
+    {
+      QApplication::restoreOverrideCursor();
+      return;
+    }
+
+    dselector.reset(0);
+
+    const std::string& dsTypeId = selectedDatasources.front()->getType();
+
+    const te::qt::widgets::DataSourceType* dsType = te::qt::widgets::DataSourceTypeManager::getInstance().get(dsTypeId);
+
+    std::auto_ptr<QWidget> lselectorw(dsType->getWidget(te::qt::widgets::DataSourceType::WIDGET_LAYER_SELECTOR, this));
+
+    if (lselectorw.get() == 0)
+    {
+      QApplication::restoreOverrideCursor();
+      throw te::common::Exception((boost::format(TE_TR("No layer selector widget found for this type of data source: %1%!")) % dsTypeId).str());
+    }
+
+    te::qt::widgets::AbstractLayerSelector* lselector = dynamic_cast<te::qt::widgets::AbstractLayerSelector*>(lselectorw.get());
+
+    if (lselector == 0)
+    {
+      QApplication::restoreOverrideCursor();
+      throw te::common::Exception(TE_TR("Wrong type of object for layer selection!"));
+    }
+
+    lselector->set(selectedDatasources);
+
+    QApplication::restoreOverrideCursor();
+
+    std::list<te::map::AbstractLayerPtr> layers = lselector->getLayers();
+
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+
+    lselectorw.reset(0);
+
+    std::list<te::map::AbstractLayerPtr>::const_iterator it = layers.begin();
+    std::list<te::map::AbstractLayerPtr>::const_iterator itend = layers.end();
+
+    while (it != itend)
+    {
+      if ((m_layerExplorer != 0) && (m_layerExplorer->getExplorer() != 0))
+      {
+        te::qt::af::evt::LayerAdded evt(*it, parentLayer);
+        m_app->triggered(&evt);
+      }
+      ++it;
+    }
+
+    te::qt::af::SaveLastDatasourceOnSettings(dsTypeId.c_str());
+
+    te::qt::af::evt::ProjectUnsaved projectUnsavedEvent;
+    m_app->triggered(&projectUnsavedEvent);
+  }
+  catch (const std::exception& e)
+  {
+    QApplication::restoreOverrideCursor();
+    QMessageBox::warning(this, m_app->getAppTitle(), e.what());
+  }
+  catch (...)
+  {
+    QApplication::restoreOverrideCursor();
+    QMessageBox::warning(this,
+      m_app->getAppTitle(),
+      tr("Unknown error while trying to add a layer from a dataset!"));
+  }
+  QApplication::restoreOverrideCursor();
 }
 
-//void TerraView::onLayerTableClose(te::qt::af::DataSetTableDockWidget* wid)
-//{
-//  std::vector<te::qt::af::DataSetTableDockWidget*>::iterator it;
-//
-//  for (it = m_tables.begin(); it != m_tables.end(); ++it)
-//    if (*it == wid)
-//      break;
-//
-//  if (it != m_tables.end())
-//    m_tables.erase(it);
-//
-//  if (m_tables.empty())
-//  {
-//    m_viewDataTable->setChecked(false);
-//    m_viewDataTable->setEnabled(false);
-//  }
-//
-//  m_app->removeListener(wid);
-//}
-
-void TerraView::onFullScreenToggled(bool checked)
+void TerraView::onAddQueryLayerTriggered()
 {
-  checked ? showFullScreen() : showMaximized();
+  try
+  {
+    if (m_project == 0)
+      throw te::common::Exception(TE_TR("Error: there is no opened project!"));
+
+    // Get the parent layer where the dataset layer(s) will be added.
+    te::map::AbstractLayerPtr parentLayer(0);
+
+    std::list<te::qt::widgets::AbstractTreeItem*> selectedLayerItems = m_layerExplorer->getExplorer()->getSelectedLayerItems();
+
+    if (selectedLayerItems.size() == 1 && selectedLayerItems.front()->getItemType() == "FOLDER_LAYER_ITEM")
+      parentLayer = selectedLayerItems.front()->getLayer();
+
+    std::auto_ptr<te::qt::widgets::QueryLayerBuilderWizard> qlb(new te::qt::widgets::QueryLayerBuilderWizard(this));
+
+    std::list<te::map::AbstractLayerPtr> layers = m_layerExplorer->getExplorer()->getTopLayers();
+
+    qlb->setLayerList(layers);
+
+    int retval = qlb->exec();
+
+    if (retval == QDialog::Rejected)
+      return;
+
+    te::map::AbstractLayerPtr layer = qlb->getQueryLayer();
+
+    if ((m_layerExplorer != 0) && (m_layerExplorer->getExplorer() != 0))
+    {
+      te::qt::af::evt::LayerAdded evt(layer, parentLayer);
+      m_app->triggered(&evt);
+    }
+
+    te::qt::af::evt::ProjectUnsaved projectUnsavedEvent;
+    m_app->triggered(&projectUnsavedEvent);
+  }
+  catch (const std::exception& e)
+  {
+    QMessageBox::warning(this, m_app->getAppTitle(), e.what());
+  }
+  catch (...)
+  {
+    QMessageBox::warning(this,
+      m_app->getAppTitle(),
+      tr("Unknown error while trying to add a layer from a queried dataset!"));
+  }
 }
 
-void TerraView::onLayerSelectedObjectsChanged(const te::map::AbstractLayerPtr& layer)
+void TerraView::onAddTabularLayerTriggered()
 {
-  assert(layer.get());
+  try
+  {
+    if (m_project == 0)
+      throw te::common::Exception(TE_TR("Error: there is no opened project!"));
 
-  te::qt::af::evt::LayerSelectedObjectsChanged e(layer);
-  m_app->triggered(&e);
+    // Get the parent layer where the tabular layer will be added.
+    te::map::AbstractLayerPtr parentLayer(0);
+
+    std::list<te::qt::widgets::AbstractTreeItem*> selectedLayerItems = m_layerExplorer->getExplorer()->getSelectedLayerItems();
+
+    if (selectedLayerItems.size() == 1 && selectedLayerItems.front()->getItemType() == "FOLDER_LAYER_ITEM")
+      parentLayer = selectedLayerItems.front()->getLayer();
+
+    te::qt::widgets::DataPropertiesDialog dlg(this);
+    int res = dlg.exec();
+    if (res == QDialog::Accepted)
+    {
+      if ((m_layerExplorer != 0) && (m_layerExplorer->getExplorer() != 0))
+      {
+        te::qt::af::evt::LayerAdded evt(dlg.getDataSetAdapterLayer(), parentLayer);
+        m_app->triggered(&evt);
+      }
+
+      te::qt::af::evt::ProjectUnsaved projectUnsavedEvent;
+      m_app->triggered(&projectUnsavedEvent);
+    }
+  }
+  catch (const std::exception& e)
+  {
+    QMessageBox::warning(this, m_app->getAppTitle(), e.what());
+  }
+  catch (...)
+  {
+    QMessageBox::warning(this,
+      m_app->getAppTitle(),
+      tr("Unknown error while trying to add a layer from a queried dataset!"));
+  }
 }
 
-void TerraView::onHighlightLayerObjects(const te::map::AbstractLayerPtr& layer, te::da::DataSet* dataset, const QColor& color)
+void TerraView::onAddFolderLayerTriggered()
 {
-  assert(layer.get());
-  assert(dataset);
+  // Get the parent item where the folder layer will be added.
+  te::map::AbstractLayerPtr parentLayer(0);
 
-  te::qt::af::evt::HighlightLayerObjects e(layer, dataset, color);
-  m_app->triggered(&e);
-}
+  std::list<te::qt::widgets::AbstractTreeItem*> selectedLayerItems = m_layerExplorer->getExplorer()->getSelectedLayerItems();
 
-void TerraView::onLayerExplorerVisibilityChanged(bool visible)
-{
-  m_viewLayerExplorer->blockSignals(true);
-  m_viewLayerExplorer->setChecked(visible);
-  m_viewLayerExplorer->blockSignals(false);
-}
+  if (selectedLayerItems.size() == 1 && selectedLayerItems.front()->getItemType() == "FOLDER_LAYER_ITEM")
+    parentLayer = selectedLayerItems.front()->getLayer();
 
-void TerraView::onDisplayDataTableChanged(bool visible)
-{
-  if (m_tables.empty())
+  // Get the folder layer to be added
+  bool ok;
+  QString text = QInputDialog::getText(this, m_app->getAppTitle(),
+    tr("Folder layer name:"), QLineEdit::Normal,
+    tr("Enter folder layer name"), &ok);
+
+  if (!ok)
     return;
 
-  for (std::size_t i = 0; i < m_tables.size(); ++i)
+  if (text.isEmpty())
   {
-    if (visible)
-      m_tables[i]->show();
-    else
-      m_tables[i]->hide();
+    QMessageBox::warning(this, m_app->getAppTitle(), tr("Enter the layer name!"));
+    return;
   }
 
-  m_viewDataTable->setChecked(visible);
+  static boost::uuids::basic_random_generator<boost::mt19937> gen;
+  boost::uuids::uuid u = gen();
+  std::string id = boost::uuids::to_string(u);
+
+  te::map::AbstractLayerPtr folderLayer(new te::map::FolderLayer);
+  folderLayer->setTitle(text.toStdString());
+  folderLayer->setId(id);
+
+  te::qt::af::evt::LayerAdded evt(folderLayer, parentLayer);
+  m_app->triggered(&evt);
+
+  te::qt::af::evt::ProjectUnsaved projectUnsavedEvent;
+  m_app->triggered(&projectUnsavedEvent);
 }
 
-void TerraView::onStyleExplorerVisibilityChanged(bool visible)
+void TerraView::onProjectPropertiesTriggered()
 {
-  m_viewStyleExplorer->blockSignals(true);
-  m_viewStyleExplorer->setChecked(visible);
-  m_viewStyleExplorer->blockSignals(false);
+  if (m_project == 0)
+  {
+    QMessageBox::warning(this, m_app->getAppTitle(), tr("There's no current project!"));
+    return;
+  }
+
+  ProjectInfoDialog editor(this);
+  editor.setProject(m_project);
+
+  if (editor.exec() == QDialog::Accepted)
+  {
+    // Set window title
+    //    setWindowTitle(te::qt::af::GetWindowTitle(*m_project));
+  }
+}
+
+void TerraView::onChangeLayerDataSourceTriggered()
+{
+  try
+  {
+    std::list<te::qt::widgets::AbstractTreeItem*> selectedLayerItems = m_layerExplorer->getExplorer()->getSelectedLayerItems();
+
+    // Get Data Source
+    std::auto_ptr<te::qt::widgets::DataSourceSelectorDialog> dselector(new te::qt::widgets::DataSourceSelectorDialog(this));
+
+    QString dsTypeSett = te::qt::af::GetLastDatasourceFromSettings();
+
+    if (!dsTypeSett.isNull() && !dsTypeSett.isEmpty())
+      dselector->setDataSourceToUse(dsTypeSett);
+
+    int retval = dselector->exec();
+
+    if (retval == QDialog::Rejected)
+      return;
+
+    std::list<te::da::DataSourceInfoPtr> selectedDatasources = dselector->getSelecteds();
+
+    if (selectedDatasources.empty())
+      return;
+
+    dselector.reset(0);
+
+    const std::string& dsId = selectedDatasources.front()->getId();
+
+    te::map::AbstractLayerPtr layer = selectedLayerItems.front()->getLayer();
+
+    te::map::DataSetLayer* dsl = (te::map::DataSetLayer*)layer.get();
+
+    if (dsl)
+      dsl->setDataSourceId(dsId);
+
+    te::qt::af::evt::ProjectUnsaved projectUnsavedEvent;
+    m_app->triggered(&projectUnsavedEvent);
+  }
+  catch (const std::exception& e)
+  {
+    QMessageBox::warning(this, m_app->getAppTitle(), e.what());
+  }
+  catch (...)
+  {
+    QMessageBox::warning(this,
+      m_app->getAppTitle(),
+      tr("Unknown error while trying to change a layer data source!"));
+  }
+}
+
+void TerraView::onUpdateLayerDataSourceTriggered()
+{
+  try
+  {
+    std::list<te::qt::widgets::AbstractTreeItem*> selectedLayerItems = m_layerExplorer->getExplorer()->getSelectedLayerItems();
+
+    if (selectedLayerItems.empty())
+      return;
+
+    te::map::AbstractLayerPtr layer = selectedLayerItems.front()->getLayer();
+
+    te::map::DataSetLayer* dsl = (te::map::DataSetLayer*)layer.get();
+
+    if (!dsl)
+      return;
+
+    std::list<te::da::DataSourceInfoPtr> selecteds;
+
+    te::da::DataSourceInfoPtr ds = te::da::DataSourceInfoManager::getInstance().get(dsl->getDataSourceId());
+
+    selecteds.push_back(ds);
+
+    const std::string& dsTypeId = selecteds.front()->getType();
+
+    const te::qt::widgets::DataSourceType* dsType = te::qt::widgets::DataSourceTypeManager::getInstance().get(dsTypeId);
+
+    std::auto_ptr<QWidget> connectorw(dsType->getWidget(te::qt::widgets::DataSourceType::WIDGET_DATASOURCE_CONNECTOR, this));
+
+    if (connectorw.get() == 0)
+    {
+      throw te::common::Exception((boost::format(TE_TR("No layer selector widget found for this type of data source: %1%!")) % dsTypeId).str());
+    }
+
+    te::qt::widgets::AbstractDataSourceConnector* connector = dynamic_cast<te::qt::widgets::AbstractDataSourceConnector*>(connectorw.get());
+
+    if (connector == 0)
+    {
+      throw te::common::Exception(TE_TR("Wrong type of object for layer selection!"));
+    }
+
+    connector->update(selecteds);
+  }
+  catch (const std::exception& e)
+  {
+    QMessageBox::warning(this, m_app->getAppTitle(), e.what());
+  }
+  catch (...)
+  {
+    QMessageBox::warning(this,
+      m_app->getAppTitle(),
+      tr("Unknown error while trying to update a layer data source!"));
+  }
+}
+
+void TerraView::onRecentProjectsTriggered(QAction* proj)
+{
+  QString projFile = proj->data().toString();
+
+  openProject(projFile);
+}
+
+
+void TerraView::onPluginsManagerTriggered()
+{
+  try
+  {
+    te::qt::widgets::PluginManagerDialog dlg(this);
+    dlg.exec();
+  }
+  catch (const std::exception& e)
+  {
+    QMessageBox::warning(this, m_app->getAppTitle(), e.what());
+  }
+}
+
+
+void TerraView::onToolsCustomizeTriggered()
+{
+  try
+  {
+    te::qt::af::SettingsDialog dlg(this);
+    dlg.exec();
+  }
+  catch (const std::exception& e)
+  {
+    QMessageBox::warning(this, m_app->getAppTitle(), e.what());
+  }
+}
+
+void TerraView::onToolsDataExchangerTriggered()
+{
+  try
+  {
+    te::qt::widgets::DataExchangerWizard dlg(this);
+    dlg.exec();
+  }
+  catch (const std::exception& e)
+  {
+    QMessageBox::warning(this, m_app->getAppTitle(), e.what());
+  }
+}
+
+void TerraView::onToolsDataExchangerDirectTriggered()
+{
+  try
+  {
+    te::qt::widgets::DirectExchangerDialog dlg(this);
+
+    std::list<te::map::AbstractLayerPtr> layers = m_layerExplorer->getExplorer()->getTopLayers();
+    dlg.setLayers(layers);
+
+    QString dsTypeSett = te::qt::af::GetLastDatasourceFromSettings();
+
+    if (!dsTypeSett.isNull() && !dsTypeSett.isEmpty())
+      dlg.setLastDataSource(dsTypeSett.toStdString());
+
+    dlg.exec();
+  }
+  catch (const std::exception& e)
+  {
+    QMessageBox::warning(this, m_app->getAppTitle(), e.what());
+  }
+}
+
+void TerraView::onToolsDataExchangerDirectPopUpTriggered()
+{
+  try
+  {
+    te::qt::widgets::DirectExchangerDialog dlg(this);
+
+    std::list<te::qt::widgets::AbstractTreeItem*> selectedLayerItems = m_layerExplorer->getExplorer()->getSelectedSingleLayerItems();
+
+    if (selectedLayerItems.empty())
+    {
+      QMessageBox::warning(this, m_app->getAppTitle(),
+        tr("Select a single layer in the layer explorer!"));
+      return;
+    }
+
+    te::qt::widgets::AbstractTreeItem* selectedLayerItem = *(selectedLayerItems.begin());
+    te::map::AbstractLayerPtr selectedLayer = selectedLayerItem->getLayer();
+
+    std::list<te::map::AbstractLayerPtr> layers;
+    layers.push_back(selectedLayer);
+
+    dlg.setLayers(layers);
+
+    dlg.exec();
+  }
+  catch (const std::exception& e)
+  {
+    QMessageBox::warning(this, m_app->getAppTitle(), e.what());
+  }
+}
+
+void TerraView::onToolsQueryDataSourceTriggered()
+{
+  try
+  {
+    te::qt::widgets::QueryDataSourceDialog dlg(this);
+
+    connect(&dlg, SIGNAL(createNewLayer(te::map::AbstractLayerPtr)), this, SLOT(onCreateNewLayer(te::map::AbstractLayerPtr)));
+
+    std::list<te::map::AbstractLayerPtr> layers = m_layerExplorer->getExplorer()->getTopLayers();
+    dlg.setLayerList(layers);
+    dlg.setAppMapDisplay(m_display->getDisplay());
+
+    dlg.exec();
+  }
+  catch (const std::exception& e)
+  {
+    QMessageBox::warning(this, m_app->getAppTitle(), e.what());
+  }
+}
+
+void TerraView::onToolsRasterMultiResolutionTriggered()
+{
+  try
+  {
+    te::qt::widgets::MultiResolutionDialog dlg(this);
+
+    std::list<te::map::AbstractLayerPtr> layers = m_layerExplorer->getExplorer()->getTopLayers();
+    dlg.setLayerList(layers);
+
+    dlg.exec();
+  }
+  catch (const std::exception& e)
+  {
+    QMessageBox::warning(this, m_app->getAppTitle(), e.what());
+  }
 }
 
 void TerraView::onDataSourceExplorerTriggered()
@@ -2527,28 +1864,35 @@ void TerraView::onDataSourceExplorerTriggered()
   }
 }
 
+
+void TerraView::showProgressDockWidget()
+{
+  m_progressDockWidget->setVisible(true);
+}
+
+void TerraView::onLayerSelectedObjectsChanged(const te::map::AbstractLayerPtr& layer)
+{
+  assert(layer.get());
+
+  te::qt::af::evt::LayerSelectedObjectsChanged e(layer);
+  m_app->triggered(&e);
+}
+
+void TerraView::onHighlightLayerObjects(const te::map::AbstractLayerPtr& layer, te::da::DataSet* dataset, const QColor& color)
+{
+  assert(layer.get());
+  assert(dataset);
+
+  te::qt::af::evt::HighlightLayerObjects e(layer, dataset, color);
+  m_app->triggered(&e);
+}
+
 void TerraView::onCreateNewLayer(te::map::AbstractLayerPtr layer)
 {
   te::qt::af::evt::LayerAdded evt(layer);
   m_app->triggered(&evt);
 }
 
-void TerraView::onNewProjectTriggered()
-{
-  checkAndSaveProject();
-
-  m_project->m_fileName = "";
-  m_project->m_title = tr("Default Project");
-  m_project->m_changed = false;
-
-  setWindowTitle(m_app->getAppName() + " - " + m_project->m_title);
-
-  std::list<te::map::AbstractLayerPtr> ls;
-
-  getLayerExplorer()->set(ls);
-
-  getMapDisplay()->setLayerList(ls);
-}
 
 void TerraView::projectChanged()
 {
@@ -2594,8 +1938,5 @@ void TerraView::closeEvent(QCloseEvent* event)
   QMainWindow::close();
 }
 
-void TerraView::startProject(const QString& projectFileName)
-{
-  openProject(projectFileName);
-}
+
 

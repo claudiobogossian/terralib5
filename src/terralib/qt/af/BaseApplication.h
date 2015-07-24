@@ -50,6 +50,7 @@ namespace te
   {
     namespace widgets
     {
+      class ChartDisplayWidget;
       class LayerExplorer;
       class MapDisplay;
     }
@@ -63,6 +64,7 @@ namespace te
       }
 
       class ApplicationController;
+      class DataSetTableDockWidget;
       class MapDisplay;
       class LayerExplorer;
       class StyleExplorer;
@@ -83,13 +85,13 @@ namespace te
 
         te::qt::widgets::MapDisplay* getMapDisplay();
 
+        te::qt::af::DataSetTableDockWidget* getLayerDock(const te::map::AbstractLayer* layer, const std::vector<te::qt::af::DataSetTableDockWidget*>& docs);
+
       public slots:
 
         virtual void onApplicationTriggered(te::qt::af::evt::Event* e);
 
         void onDrawTriggered();
-
-        void onFitLayersTriggered();
 
         void onZoomInToggled(bool checked);
 
@@ -114,6 +116,38 @@ namespace te
         void onMapSetUnknwonSRIDTriggered();
 
         void onStopDrawTriggered();
+
+        void onLayerRemoveTriggered();
+
+        void onLayerRenameTriggered();
+
+        void onLayerPropertiesTriggered();
+
+        void onLayerRemoveSelectionTriggered();
+
+        void onLayerSRSTriggered();
+
+        void onLayerRemoveItemTriggered();
+
+        void onLayerFitOnMapDisplayTriggered();
+
+        void onLayerFitSelectedOnMapDisplayTriggered();
+
+        void onLayerPanToSelectedOnMapDisplayTriggered();
+
+        void onFullScreenToggled(bool checked);
+
+        void onLayerExplorerVisibilityChanged(bool visible);
+
+        void onStyleExplorerVisibilityChanged(bool visible);
+
+        void onDisplayDataTableChanged(bool visible);
+
+        void onLayerShowTableTriggered();
+
+        void onLayerTableClose(te::qt::af::DataSetTableDockWidget* wid);
+
+        void onChartDisplayCreated(te::qt::widgets::ChartDisplayWidget* chartDisplay, te::map::AbstractLayer* layer);
 
       protected slots:
 
@@ -147,11 +181,41 @@ namespace te
 
         QSize m_mapCursorSize;
 
+        //default actions
+        QAction* m_mapDraw;
+        QAction* m_mapZoomIn;
+        QAction* m_mapZoomOut;
+        QAction* m_mapZoomArea;
+        QAction* m_mapPan;
+        QAction* m_mapZoomExtent;
+        QAction* m_mapPreviousExtent;
+        QAction* m_mapNextExtent;
+        QAction* m_mapInfo;
+        QAction* m_mapRemoveSelection;
+        QAction* m_mapSelection;
+
+        QAction* m_layerShowTable;
+        QAction* m_layerRemove;
+        QAction* m_layerRename;
+        QAction* m_layerRemoveItem;
+        QAction* m_layerRemoveObjectSelection;
+        QAction* m_layerProperties;
+        QAction* m_layerSRS;
+        QAction* m_layerFitOnMapDisplay;
+        QAction* m_layerFitSelectedOnMapDisplay;
+        QAction* m_layerPanToSelectedOnMapDisplay;
+
+        QAction* m_viewDataTable;
+        QAction* m_viewLayerExplorer;
+        QAction* m_viewStyleExplorer;
+        QAction* m_viewFullScreen;
+
         //main widgets
         ApplicationController* m_app;
         LayerExplorer* m_layerExplorer;
         MapDisplay* m_display;
         StyleExplorer* m_styleExplorer;
+        std::vector<te::qt::af::DataSetTableDockWidget*> m_tables;
 
         //status bar widgets
         QStatusBar* m_statusbar;
