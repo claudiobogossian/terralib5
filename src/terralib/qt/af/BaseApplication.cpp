@@ -206,6 +206,7 @@ void te::qt::af::BaseApplication::onZoomExtentTriggered()
     return;
 
   //m_display->fit(m_layerExplorer->getExplorer()->getAllLayers());
+  // TODO: Change to get only visible single layers, not selected.
   m_display->fit(m_layerExplorer->getExplorer()->getSelectedAndVisibleSingleLayers());
 
 }
