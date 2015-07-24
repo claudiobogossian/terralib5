@@ -67,6 +67,11 @@ void te::qt::widgets::LayerItemView::addLayers(const std::list<te::map::Abstract
   selectionModel()->clearSelection();
 }
 
+void te::qt::widgets::LayerItemView::setLayers(const std::list<te::map::AbstractLayerPtr>& layers)
+{
+  m_model->setLayers(layers);
+}
+
 std::list<te::map::AbstractLayerPtr> te::qt::widgets::LayerItemView::getAllLayers() const
 {
   return m_model->getAllLayers();

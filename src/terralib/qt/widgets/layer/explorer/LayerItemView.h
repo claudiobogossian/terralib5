@@ -85,6 +85,8 @@ namespace te
         */
         void addLayers(const std::list<te::map::AbstractLayerPtr>& layers, const QModelIndex& idx, const std::string& idxPath = "./");
 
+        void setLayers(const std::list<te::map::AbstractLayerPtr>& layers);
+
         /*!
         * \brief 
         * \return

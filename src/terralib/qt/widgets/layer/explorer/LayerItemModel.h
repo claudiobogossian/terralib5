@@ -105,6 +105,8 @@ namespace te
 
         void addLayers(const std::list<te::map::AbstractLayerPtr>& layers, const QModelIndex& parent, const std::string& idxPath = "./");
 
+        void setLayers(const std::list<te::map::AbstractLayerPtr>& layers);
+
         /*!
         * \brief Adds the set of items to the \a parent at the position \a pos.
         *

@@ -294,6 +294,17 @@ void te::qt::widgets::LayerItemModel::addLayers(const std::list<te::map::Abstrac
   endInsertRows();
 }
 
+void te::qt::widgets::LayerItemModel::setLayers(const std::list<te::map::AbstractLayerPtr>& layers)
+{
+  beginResetModel();
+
+  m_root->removeAllChilds();
+
+  endResetModel();
+
+  addLayers(layers);
+}
+
 void te::qt::widgets::LayerItemModel::addItems(const std::vector<TreeItem*> items, TreeItem* parent, const int& pos)
 {
   std::vector<TreeItem*> aux;

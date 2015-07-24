@@ -2123,233 +2123,220 @@ void TerraView::onLayerGroupingTriggered()
 
 void TerraView::onLayerFitOnMapDisplayTriggered()
 {
-  //Revisar: Fred
-  //try
-  //{
-  //  std::list<te::map::AbstractLayerPtr> selectedLayers = m_layerExplorer->getExplorer()->getSelectedSingleLayers();
+  try
+  {
+    std::list<te::map::AbstractLayerPtr> selectedLayers = GetSelectedLayersOnly(getLayerExplorer());
 
-  //  if (selectedLayers.empty())
-  //  {
-  //    QMessageBox::warning(this, m_app->getAppTitle(),
-  //      tr("Select a layer in the layer explorer!"));
-  //    return;
-  //  }
-  //  else
-  //  {
-  //    std::list<te::map::AbstractLayerPtr>::iterator it = selectedLayers.begin();
+    if (selectedLayers.empty())
+    {
+      QMessageBox::warning(this, m_app->getAppTitle(),
+        tr("Select a layer in the layer explorer!"));
+      return;
+    }
+    else
+    {
+      std::list<te::map::AbstractLayerPtr>::iterator it = selectedLayers.begin();
 
-  //    while (it != selectedLayers.end())
-  //    {
-  //      if (!it->get()->isValid())
-  //      {
-  //        QMessageBox::warning(this, m_app->getAppTitle(),
-  //          tr("There are invalid layers selected!"));
+      while (it != selectedLayers.end())
+      {
+        if (!it->get()->isValid())
+        {
+          QMessageBox::warning(this, m_app->getAppTitle(),
+            tr("There are invalid layers selected!"));
 
-  //        return;
-  //      }
+          return;
+        }
 
-  //      ++it;
-  //    }
-  //  }
+        ++it;
+      }
+    }
 
-  //  // The layer fitting will be accomplished only on the first layer selected
-  //  te::map::AbstractLayerPtr selectedLayer = *(selectedLayers.begin());
+    // The layer fitting will be accomplished only on the first layer selected
+    te::map::AbstractLayerPtr selectedLayer = *(selectedLayers.begin());
 
-  //  te::qt::widgets::MapDisplay* display = m_display->getDisplay();
+    te::qt::widgets::MapDisplay* display = m_display->getDisplay();
 
-  //  te::gm::Envelope env = selectedLayer->getExtent();
+    te::gm::Envelope env = selectedLayer->getExtent();
 
-  //  if ((display->getSRID() == TE_UNKNOWN_SRS && selectedLayer->getSRID() == TE_UNKNOWN_SRS) || (display->getSRID() == selectedLayer->getSRID()))
-  //  {
-  //    display->setExtent(env, true);
-  //    return;
-  //  }
+    if ((display->getSRID() == TE_UNKNOWN_SRS && selectedLayer->getSRID() == TE_UNKNOWN_SRS) || (display->getSRID() == selectedLayer->getSRID()))
+    {
+      display->setExtent(env, true);
+      return;
+    }
 
-  //  if (display->getSRID() == TE_UNKNOWN_SRS && selectedLayer->getSRID() != TE_UNKNOWN_SRS)
-  //  {
-  //    display->setSRID(selectedLayer->getSRID());
-  //    display->setExtent(env, true);
-  //    return;
-  //  }
+    if (display->getSRID() == TE_UNKNOWN_SRS && selectedLayer->getSRID() != TE_UNKNOWN_SRS)
+    {
+      display->setSRID(selectedLayer->getSRID());
+      display->setExtent(env, true);
+      return;
+    }
 
-  //  if (display->getSRID() == TE_UNKNOWN_SRS || selectedLayer->getSRID() == TE_UNKNOWN_SRS)
-  //  {
-  //    QMessageBox::warning(this, m_app->getAppTitle(),
-  //      TE_TR("The spatial reference system of the map display and the layer are not compatible!"));
-  //    return;
-  //  }
+    if (display->getSRID() == TE_UNKNOWN_SRS || selectedLayer->getSRID() == TE_UNKNOWN_SRS)
+    {
+      QMessageBox::warning(this, m_app->getAppTitle(),
+        TE_TR("The spatial reference system of the map display and the layer are not compatible!"));
+      return;
+    }
 
-  //  if (display->getSRID() != selectedLayer->getSRID())
-  //    env.transform(selectedLayer->getSRID(), display->getSRID());
+    if (display->getSRID() != selectedLayer->getSRID())
+      env.transform(selectedLayer->getSRID(), display->getSRID());
 
-  //  display->setExtent(env, true);
-  //}
-  //catch (const std::exception& e)
-  //{
-  //  QMessageBox::warning(this, m_app->getAppTitle(), e.what());
-  //}
+    display->setExtent(env, true);
+  }
+  catch (const std::exception& e)
+  {
+    QMessageBox::warning(this, m_app->getAppTitle(), e.what());
+  }
 }
 
 void TerraView::onLayerFitSelectedOnMapDisplayTriggered()
 {
-  //Revisar: Fred
-  //std::list<te::map::AbstractLayerPtr> selectedLayers = m_layerExplorer->getExplorer()->getSelectedSingleLayers();
-  //if (selectedLayers.empty())
-  //{
-  //  QString msg = tr("Select at least a layer to accomplish this operation!");
-  //  QMessageBox::warning(this, m_app->getAppTitle(), msg);
-  //  return;
-  //}
-  //else
-  //{
-  //  std::list<te::map::AbstractLayerPtr>::iterator it = selectedLayers.begin();
+  std::list<te::map::AbstractLayerPtr> selectedLayers = GetSelectedLayersOnly(getLayerExplorer());
+  if (selectedLayers.empty())
+  {
+    QString msg = tr("Select at least a layer to accomplish this operation!");
+    QMessageBox::warning(this, m_app->getAppTitle(), msg);
+    return;
+  }
+  else
+  {
+    std::list<te::map::AbstractLayerPtr>::iterator it = selectedLayers.begin();
 
-  //  while (it != selectedLayers.end())
-  //  {
-  //    if (!it->get()->isValid())
-  //    {
-  //      QMessageBox::warning(this, m_app->getAppTitle(),
-  //        tr("There are invalid layers selected!"));
-  //      return;
-  //    }
+    while (it != selectedLayers.end())
+    {
+      if (!it->get()->isValid())
+      {
+        QMessageBox::warning(this, m_app->getAppTitle(),
+          tr("There are invalid layers selected!"));
+        return;
+      }
 
-  //    ++it;
-  //  }
-  //}
+      ++it;
+    }
+  }
 
-  //te::gm::Envelope finalEnv = te::map::GetSelectedExtent(selectedLayers, m_display->getDisplay()->getSRID(), false);
+  te::gm::Envelope finalEnv = te::map::GetSelectedExtent(selectedLayers, m_display->getDisplay()->getSRID(), false);
 
-  //if (!finalEnv.isValid())
-  //{
-  //  QString msg = tr("Select object(s) in the selected layer(s) to accomplish this operation!");
-  //  QMessageBox::warning(this, m_app->getAppTitle(), msg);
-  //  return;
-  //}
+  if (!finalEnv.isValid())
+  {
+    QString msg = tr("Select object(s) in the selected layer(s) to accomplish this operation!");
+    QMessageBox::warning(this, m_app->getAppTitle(), msg);
+    return;
+  }
 
-  //m_display->getDisplay()->setExtent(finalEnv, true);
+  m_display->getDisplay()->setExtent(finalEnv, true);
 }
 
 void TerraView::onLayerPanToSelectedOnMapDisplayTriggered()
 {
-  //Revisar: Fred
-  //std::list<te::map::AbstractLayerPtr> selectedLayers = m_layerExplorer->getExplorer()->getSelectedSingleLayers();
-  //if (selectedLayers.empty())
-  //{
-  //  QString msg = tr("Select at least a layer to accomplish this operation!");
-  //  QMessageBox::warning(this, m_app->getAppTitle(), msg);
-  //  return;
-  //}
-  //else
-  //{
-  //  std::list<te::map::AbstractLayerPtr>::iterator it = selectedLayers.begin();
+  std::list<te::map::AbstractLayerPtr> selectedLayers = GetSelectedLayersOnly(getLayerExplorer());
+  if (selectedLayers.empty())
+  {
+    QString msg = tr("Select at least a layer to accomplish this operation!");
+    QMessageBox::warning(this, m_app->getAppTitle(), msg);
+    return;
+  }
+  else
+  {
+    std::list<te::map::AbstractLayerPtr>::iterator it = selectedLayers.begin();
 
-  //  while (it != selectedLayers.end())
-  //  {
-  //    if (!it->get()->isValid())
-  //    {
-  //      QMessageBox::warning(this, m_app->getAppTitle(),
-  //        tr("There are invalid layers selected!"));
-  //      return;
-  //    }
+    while (it != selectedLayers.end())
+    {
+      if (!it->get()->isValid())
+      {
+        QMessageBox::warning(this, m_app->getAppTitle(),
+          tr("There are invalid layers selected!"));
+        return;
+      }
 
-  //    ++it;
-  //  }
-  //}
+      ++it;
+    }
+  }
 
-  //te::map::MapDisplay* display = m_display->getDisplay();
+  te::map::MapDisplay* display = m_display->getDisplay();
 
-  //te::gm::Envelope selectedExtent = te::map::GetSelectedExtent(selectedLayers, display->getSRID(), true);
+  te::gm::Envelope selectedExtent = te::map::GetSelectedExtent(selectedLayers, display->getSRID(), true);
 
-  //te::gm::Coord2D centerOfSelectedExtent = selectedExtent.getCenter();
+  te::gm::Coord2D centerOfSelectedExtent = selectedExtent.getCenter();
 
-  //te::gm::Envelope displayExtent = display->getExtent();
+  te::gm::Envelope displayExtent = display->getExtent();
 
-  //double halfWidth = displayExtent.getWidth() * 0.5;
-  //double halfHeight = displayExtent.getHeight() * 0.5;
+  double halfWidth = displayExtent.getWidth() * 0.5;
+  double halfHeight = displayExtent.getHeight() * 0.5;
 
-  //te::gm::Envelope newExtent;
+  te::gm::Envelope newExtent;
 
-  //newExtent.m_llx = centerOfSelectedExtent.x - halfWidth;
-  //newExtent.m_lly = centerOfSelectedExtent.y - halfHeight;
+  newExtent.m_llx = centerOfSelectedExtent.x - halfWidth;
+  newExtent.m_lly = centerOfSelectedExtent.y - halfHeight;
 
-  //newExtent.m_urx = centerOfSelectedExtent.x + halfWidth;
-  //newExtent.m_ury = centerOfSelectedExtent.y + halfHeight;
+  newExtent.m_urx = centerOfSelectedExtent.x + halfWidth;
+  newExtent.m_ury = centerOfSelectedExtent.y + halfHeight;
 
-  //display->setExtent(newExtent);
+  display->setExtent(newExtent);
 }
 
 void TerraView::onLayerCompositionModeTriggered()
 {
-  //Revisar: Fred
-  //std::list<te::map::AbstractLayerPtr> selectedLayers = m_layerExplorer->getExplorer()->getSelectedSingleLayers();
+  std::list<te::map::AbstractLayerPtr> selectedLayers = GetSelectedLayersOnly(getLayerExplorer());
 
-  //if (!selectedLayers.empty())
-  //{
-  //  std::list<te::map::AbstractLayerPtr>::iterator it = selectedLayers.begin();
+  if (!selectedLayers.empty())
+  {
+    std::list<te::map::AbstractLayerPtr>::iterator it = selectedLayers.begin();
 
-  //  m_compModeMenu->setLayer(*it);
-  //}
+    m_compModeMenu->setLayer(*it);
+  }
 }
 
 void TerraView::onQueryLayerTriggered()
 {
-  //Revisar: Fred
-  //std::list<te::map::AbstractLayerPtr> selectedLayers = m_layerExplorer->getExplorer()->getSelectedSingleLayers();
+  std::list<te::map::AbstractLayerPtr> selectedLayers = GetSelectedLayersOnly(getLayerExplorer());
 
-  //if (selectedLayers.empty())
-  //{
-  //  QMessageBox::warning(this, m_app->getAppTitle(),
-  //    tr("Select a layer in the layer explorer!"));
-  //  return;
-  //}
-  //else
-  //{
-  //  std::list<te::map::AbstractLayerPtr>::iterator it = selectedLayers.begin();
+  if (selectedLayers.empty())
+  {
+    QMessageBox::warning(this, m_app->getAppTitle(),
+      tr("Select a layer in the layer explorer!"));
+    return;
+  }
+  else
+  {
+    std::list<te::map::AbstractLayerPtr>::iterator it = selectedLayers.begin();
 
-  //  while (it != selectedLayers.end())
-  //  {
-  //    if (!it->get()->isValid())
-  //    {
-  //      QMessageBox::warning(this, m_app->getAppTitle(),
-  //        tr("There are invalid layers selected!"));
-  //      return;
-  //    }
+    while (it != selectedLayers.end())
+    {
+      if (!it->get()->isValid())
+      {
+        QMessageBox::warning(this, m_app->getAppTitle(),
+          tr("There are invalid layers selected!"));
+        return;
+      }
 
-  //    ++it;
-  //  }
-  //}
+      ++it;
+    }
+  }
 
-  //if (!m_queryDlg)
-  //{
-  //  m_queryDlg = new te::qt::widgets::QueryDialog(this);
+  if (!m_queryDlg)
+  {
+    m_queryDlg = new te::qt::widgets::QueryDialog(this);
 
-  //  connect(m_queryDlg, SIGNAL(highlightLayerObjects(const te::map::AbstractLayerPtr&, te::da::DataSet*, const QColor&)),
-  //    SLOT(onHighlightLayerObjects(const te::map::AbstractLayerPtr&, te::da::DataSet*, const QColor&)));
+    connect(m_queryDlg, SIGNAL(highlightLayerObjects(const te::map::AbstractLayerPtr&, te::da::DataSet*, const QColor&)),
+      SLOT(onHighlightLayerObjects(const te::map::AbstractLayerPtr&, te::da::DataSet*, const QColor&)));
 
-  //  connect(m_queryDlg, SIGNAL(layerSelectedObjectsChanged(const te::map::AbstractLayerPtr&)),
-  //    SLOT(onLayerSelectedObjectsChanged(const te::map::AbstractLayerPtr&)));
+    connect(m_queryDlg, SIGNAL(layerSelectedObjectsChanged(const te::map::AbstractLayerPtr&)),
+      SLOT(onLayerSelectedObjectsChanged(const te::map::AbstractLayerPtr&)));
 
-  //  if (m_iController)
-  //    m_iController->addInterface(m_queryDlg);
-  //}
+    if (m_iController)
+      m_iController->addInterface(m_queryDlg);
+  }
 
-  //if (m_project)
-  //{
-  //  std::list<te::map::AbstractLayerPtr> allLayersList = m_layerExplorer->getExplorer()->getTopLayers();
-  //  m_queryDlg->setLayerList(allLayersList);
-  //}
+  std::list<te::map::AbstractLayerPtr> allLayersList = getLayerExplorer()->getAllLayers();
+  m_queryDlg->setLayerList(allLayersList);
 
-  //std::list<te::qt::widgets::AbstractTreeItem*> selectedLayerItems = m_layerExplorer->getExplorer()->getSelectedSingleLayerItems();
+  selectedLayers = GetSelectedLayersOnly(getLayerExplorer());
 
-  //if (!selectedLayerItems.empty())
-  //{
-  //  te::qt::widgets::AbstractTreeItem* selectedLayerItem = *(selectedLayerItems.begin());
-  //  te::map::AbstractLayerPtr selectedLayer = selectedLayerItem->getLayer();
+  if(!selectedLayers.empty())
+    m_queryDlg->setCurrentLayer(*(selectedLayers.begin()));
 
-  //  m_queryDlg->setCurrentLayer(selectedLayer);
-  //}
-
-  //m_queryDlg->show();
+  m_queryDlg->show();
 }
 
 void TerraView::onZoomInToggled(bool checked)
@@ -2404,13 +2391,12 @@ void TerraView::onPanToggled(bool checked)
 
 void TerraView::onZoomExtentTriggered()
 {
-  //Revisar: Fred
-  //if (!m_layerExplorer && m_layerExplorer->getExplorer()->getTopLayers().empty())
-  //  return;
+  std::list<te::map::AbstractLayerPtr> ls = getLayerExplorer()->getVisibleLayers();
 
-  ////m_display->fit(m_layerExplorer->getExplorer()->getAllLayers());
-  //m_display->fit(m_layerExplorer->getExplorer()->getSelectedAndVisibleSingleLayers());
+  if(ls.empty())
+    return;
 
+  m_display->fit(ls);
 }
 
 void TerraView::onInfoToggled(bool checked)
@@ -2631,8 +2617,7 @@ void TerraView::onNewProjectTriggered()
 
   std::list<te::map::AbstractLayerPtr> ls;
 
-  //Revisar: Fred
-//  getLayerExplorer()->set(ls);
+  getLayerExplorer()->setLayers(ls);
 
   getMapDisplay()->setLayerList(ls);
 }
@@ -2665,8 +2650,7 @@ void TerraView::openProject(const QString& prjFileName)
 
   LoadProject(prjFileName, *m_project, lst);
 
-  //Revisar: Fred
-//  getLayerExplorer()->set(lst);
+  getLayerExplorer()->setLayers(lst);
 
   m_project->m_changed = false;
 
