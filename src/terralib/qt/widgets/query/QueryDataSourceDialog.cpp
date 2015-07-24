@@ -105,6 +105,7 @@ te::qt::widgets::QueryDataSourceDialog::QueryDataSourceDialog(QWidget* parent, Q
   connect(m_ui->m_createLayerlToolButton, SIGNAL(pressed()), this, SLOT(onCreateLayerToolButtonClicked()));
   connect(m_ui->m_targetDatasourceToolButton, SIGNAL(pressed()), this, SLOT(onTargetDatasourceToolButtonPressed()));
   connect(m_ui->m_targetFileToolButton, SIGNAL(pressed()), this,  SLOT(onTargetFileToolButtonPressed()));
+  connect(m_ui->m_pkTableComboBox, SIGNAL(activated(int)), this, SLOT(onPkTableComboBoxSelected(int)));
 
   //load data sources information
   loadDataSourcesInformation();
@@ -191,6 +192,8 @@ void te::qt::widgets::QueryDataSourceDialog::onDataSourceSelected(int index)
   m_ui->m_baseDataSetComboBox->clear();
   m_ui->m_dataSetListWidget->clear();
   m_ui->m_attrDataSetListWidget->clear();
+  m_ui->m_pkTableComboBox->clear();
+  m_ui->m_pkAttrComboBox->clear();
 
   std::string dataSourceId = m_ui->m_dataSourceComboBox->itemData(index).toString().toStdString();
 
@@ -206,10 +209,14 @@ void te::qt::widgets::QueryDataSourceDialog::onDataSourceSelected(int index)
   {
     m_ui->m_baseDataSetComboBox->addItem(dataSetNames[t].c_str());
     m_ui->m_dataSetListWidget->addItem(dataSetNames[t].c_str());
+    m_ui->m_pkTableComboBox->addItem(dataSetNames[t].c_str());
   }
 
   if(m_ui->m_baseDataSetComboBox->count() > 0)
     onBaseDataSetSelected(0);
+
+  if (m_ui->m_pkTableComboBox->count() > 0)
+    onPkTableComboBoxSelected(0);
 
   buildMap();
 }
@@ -255,6 +262,24 @@ void te::qt::widgets::QueryDataSourceDialog::onDataSetItemClicked(QListWidgetIte
   for(std::size_t t = 0; t < propVec.size(); ++t)
   {
     m_ui->m_attrDataSetListWidget->addItem(propVec[t]->getName().c_str());
+  }
+
+  delete dsType;
+}
+
+void te::qt::widgets::QueryDataSourceDialog::onPkTableComboBoxSelected(int index)
+{
+  std::string dataSetName = m_ui->m_pkTableComboBox->itemText(index).toStdString();
+
+  std::string dataSourceId = m_ui->m_dataSourceComboBox->itemData(m_ui->m_dataSourceComboBox->currentIndex()).toString().toStdString();
+
+  te::da::DataSetType* dsType = te::da::GetDataSetType(dataSetName, dataSourceId);
+
+  std::vector<te::dt::Property*> propVec = dsType->getProperties();
+
+  for (std::size_t t = 0; t < propVec.size(); ++t)
+  {
+    m_ui->m_pkAttrComboBox->addItem(propVec[t]->getName().c_str());
   }
 
   delete dsType;
@@ -715,6 +740,19 @@ void te::qt::widgets::QueryDataSourceDialog::onCreateLayerToolButtonClicked()
     if(p)
     {
       dsType->add(p);
+
+      //check primary key
+      if (m_ui->m_pkCheckBox->isChecked())
+      {
+        std::string pkAttrName = m_ui->m_pkAttrComboBox->itemText(m_ui->m_pkAttrComboBox->currentIndex()).toStdString();
+
+        if (te::common::Convert2UCase(pkAttrName) == te::common::Convert2UCase(p->getName()))
+        {
+          std::string pkName = dataSetName + "_" + p->getName() + "_pk";
+          te::da::PrimaryKey* pk = new te::da::PrimaryKey(pkName, dsType.get());
+          pk->add(p->clone());
+        }
+      }
     }
     else
     {
@@ -727,7 +765,7 @@ void te::qt::widgets::QueryDataSourceDialog::onCreateLayerToolButtonClicked()
   dataSet->moveBeforeFirst();
 
   //create converter in case property name changed
-  te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter(dsType.get(), outputDataSource->getCapabilities());
+  te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter(dsType.get(), outputDataSource->getCapabilities(), outputDataSource->getEncoding());
 
   te::da::AssociateDataSetTypeConverterSRID(converter, srid);
 
