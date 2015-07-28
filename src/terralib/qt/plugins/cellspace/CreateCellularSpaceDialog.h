@@ -85,10 +85,6 @@ namespace te
             
             void onResYLineEditEditingFinished();
             
-            void onColsLineEditEditingFinished();
-            
-            void onRowsLineEditEditingFinished();
-            
             
             void onTargetDatasourceToolButtonClicked();
             
