@@ -94,7 +94,6 @@ void te::qt::widgets::TimeSeriesChart::setData()
     {
       std::auto_ptr<te::dt::TimeInstant> ti ((te::dt::TimeInstant*)dateTime);
       boost::gregorian::date_duration days = ti->getDate().getDate() - basedate;
-      long long int seconds = ti->getTime().getTimeDuration().total_seconds();
       long long int boostDays = days.days();
       date = (double) boostDays;
       dates.insert(boost::gregorian::to_iso_extended_string(ti->getDate().getDate()));
