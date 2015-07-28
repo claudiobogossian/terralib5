@@ -71,10 +71,16 @@ te::qt::plugins::cellspace::CreateCellularSpaceDialog::CreateCellularSpaceDialog
   m_ui->setupUi(this);
 
 // Set icons
-  m_ui->m_maskToolButton->setIcon(QIcon::fromTheme("cellspace-mask-hint"));
-  m_ui->m_noMaskToolButton->setIcon(QIcon::fromTheme("cellspace-no-mask-hint"));
-  m_ui->m_polygonsToolButton->setIcon(QIcon::fromTheme("cellspace-polygons-hint"));
-  m_ui->m_pointsToolButton->setIcon(QIcon::fromTheme("cellspace-points-hint"));
+  QSize iconSize(32, 32);
+
+  m_ui->m_maskRadioButton->setIconSize(iconSize);
+  m_ui->m_maskRadioButton->setIcon(QIcon::fromTheme("cellspace-mask-hint"));
+  m_ui->m_noMaskRadioButton->setIconSize(iconSize);
+  m_ui->m_noMaskRadioButton->setIcon(QIcon::fromTheme("cellspace-no-mask-hint"));
+  m_ui->m_polygonsRadioButton->setIconSize(iconSize);
+  m_ui->m_polygonsRadioButton->setIcon(QIcon::fromTheme("cellspace-polygons-hint"));
+  m_ui->m_pointsRadioButton->setIconSize(iconSize);
+  m_ui->m_pointsRadioButton->setIcon(QIcon::fromTheme("cellspace-points-hint"));
   m_ui->m_targetDatasourceToolButton->setIcon(QIcon::fromTheme("datasource"));
   m_ui->m_srsToolButton->setIcon(QIcon::fromTheme("srs"));
 
@@ -85,8 +91,6 @@ te::qt::plugins::cellspace::CreateCellularSpaceDialog::CreateCellularSpaceDialog
   m_ui->m_uryLineEdit->setValidator(new QDoubleValidator(this));
   m_ui->m_resXLineEdit->setValidator(new QDoubleValidator(0, 99999999, 8, this));
   m_ui->m_resYLineEdit->setValidator(new QDoubleValidator(0, 99999999, 8, this));
-  m_ui->m_rowsLineEdit->setValidator(new QIntValidator(this));
-  m_ui->m_colsLineEdit->setValidator(new QIntValidator(this));
 
   initUnitsOfMeasure();
 
@@ -95,8 +99,6 @@ te::qt::plugins::cellspace::CreateCellularSpaceDialog::CreateCellularSpaceDialog
 
   connect(m_ui->m_resXLineEdit, SIGNAL(editingFinished()), this, SLOT(onResXLineEditEditingFinished()));
   connect(m_ui->m_resYLineEdit, SIGNAL(editingFinished()), this, SLOT(onResYLineEditEditingFinished()));
-  connect(m_ui->m_colsLineEdit, SIGNAL(editingFinished()), this, SLOT(onColsLineEditEditingFinished()));
-  connect(m_ui->m_rowsLineEdit, SIGNAL(editingFinished()), this, SLOT(onRowsLineEditEditingFinished()));
   connect(m_ui->m_llxLineEdit, SIGNAL(textChanged(const QString &)), this, SLOT(onEnvelopeChanged(const QString &)));
   connect(m_ui->m_llyLineEdit, SIGNAL(textChanged(const QString &)), this, SLOT(onEnvelopeChanged(const QString &)));
   connect(m_ui->m_urxLineEdit, SIGNAL(textChanged(const QString &)), this, SLOT(onEnvelopeChanged(const QString &)));
@@ -119,7 +121,8 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::setLayers(std::list<
 {
   if (layers.empty())
   {
-    m_ui->m_noMaskToolButton->setChecked(true);
+    m_ui->m_noMaskRadioButton->setChecked(true);
+    m_ui->m_maskRadioButton->setEnabled(false);
     m_ui->m_resSRIDLabel->setText("No SRS defined");
     m_ui->m_layerSRIDLabel->setText("No SRS defined");
     m_ui->m_unitComboBox->setCurrentIndex(0);
@@ -205,7 +208,7 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onLayersComboBoxChan
     precision = 6;
   }
   showEnvelope(layer->getExtent(),precision);
-  m_ui->m_maskToolButton->setChecked(true);
+  m_ui->m_maskRadioButton->setChecked(true);
 }
 
 
@@ -224,13 +227,13 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onSrsToolButtonClick
   
   int newSRID =  srsDialog.getSelectedSRS().first;
   
-  if (m_ui->m_maskToolButton->isChecked())
+  if (m_ui->m_maskRadioButton->isChecked())
   {
     te::map::AbstractLayerPtr refLayer = getReferenceLayer();
     if (refLayer &&
         ((newSRID <= 0 && refLayer->getSRID()  > 0) ||
          (newSRID  > 0 && refLayer->getSRID() <= 0) ))
-      m_ui->m_noMaskToolButton->setChecked(true);
+      m_ui->m_noMaskRadioButton->setChecked(true);
   }
   
   if (newSRID <= 0)
@@ -295,7 +298,10 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onUnitComboBoxChange
        (te::srs::SpatialReferenceSystemManager::getInstance().isGeographic(m_bbSRID) &&
         (resUnit->getId() == te::common::UOM_Metre ||
          resUnit->getId() == te::common::UOM_Foot  ||
-         resUnit->getId() == te::common::UOM_Kilometre))))
+         resUnit->getId() == te::common::UOM_Kilometre)) ||
+       (!te::srs::SpatialReferenceSystemManager::getInstance().isGeographic(m_bbSRID) &&
+         (resUnit->getId() == te::common::UOM_Radian ||
+         resUnit->getId() == te::common::UOM_Degree ))))
     return;
   
   QMessageBox::warning(this, tr("Cellular Spaces"), tr("Unable to convert between the selected unit for the resolution and the unit of new cell layer SRS"));
@@ -332,56 +338,6 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onResYLineEditEditin
   
   int maxRows = (int)ceil((env.m_ury - env.m_lly)/resY);
   m_ui->m_rowsLineEdit->setText(QString::number(maxRows));
-}
-
-void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onColsLineEditEditingFinished()
-{
-  te::gm::Envelope env = getEnvelope();
-  if(!env.isValid())
-  {
-    QMessageBox::warning(this, tr("Cellular Spaces"), tr("Invalid bounding box"));
-    return;
-  }
-
-  int cols = m_ui->m_colsLineEdit->text().toInt();
-  
-  double resX = (env.m_urx - env.m_llx)/cols;
-  
-  int precision = 6;
-  te::common::UnitOfMeasurePtr resUnit = getResolutionUnit();
-  if (resUnit)
-  {
-    unitConvertion(resX, te::srs::SpatialReferenceSystemManager::getInstance().getUnit(m_bbSRID), resUnit);
-    if (resUnit->getId() != te::common::UOM_Degree &&
-        resUnit->getId() != te::common::UOM_Radian)
-      precision = 2;
-  }
-  m_ui->m_resXLineEdit->setText(QString::number(resX,'f',precision));
-}
-
-void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onRowsLineEditEditingFinished()
-{
-  te::gm::Envelope env = getEnvelope();
-  if(!env.isValid())
-  {
-    QMessageBox::warning(this, tr("Cellular Spaces"), tr("Invalid envelope!"));
-    return;
-  }
-
-  int rows = m_ui->m_rowsLineEdit->text().toInt();
-  
-  double resY = (env.m_ury - env.m_lly)/rows;
-
-  int precision = 6;
-  te::common::UnitOfMeasurePtr resUnit = getResolutionUnit();
-  if (resUnit)
-  {
-    unitConvertion(resY, te::srs::SpatialReferenceSystemManager::getInstance().getUnit(m_bbSRID), resUnit);
-    if (resUnit->getId() != te::common::UOM_Degree &&
-        resUnit->getId() != te::common::UOM_Radian)
-      precision = 2;
-  }
-  m_ui->m_resYLineEdit->setText(QString::number(resY,'f',precision));
 }
 
 void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onTargetDatasourceToolButtonClicked()
@@ -464,7 +420,7 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onCreatePushButtonCl
 
   te::cellspace::CellularSpacesOperations::CellSpaceType type;
 
-  if(m_ui->m_polygonsToolButton->isChecked())
+  if(m_ui->m_polygonsRadioButton->isChecked())
   {
     type = te::cellspace::CellularSpacesOperations::CELLSPACE_POLYGONS;
   }
@@ -474,7 +430,7 @@ void te::qt::plugins::cellspace::CreateCellularSpaceDialog::onCreatePushButtonCl
   }
 
   te::map::AbstractLayerPtr referenceLayer;
-  if (m_ui->m_maskToolButton->isChecked())
+  if (m_ui->m_maskRadioButton->isChecked())
     referenceLayer = getReferenceLayer();
   
   m_outputDataSetName = m_ui->m_newLayerNameLineEdit->text().toStdString();
@@ -575,7 +531,6 @@ te::map::AbstractLayerPtr te::qt::plugins::cellspace::CreateCellularSpaceDialog:
 te::gm::Envelope te::qt::plugins::cellspace::CreateCellularSpaceDialog::getEnvelope()
 {
   te::gm::Envelope env;
-
   env.m_llx = m_ui->m_llxLineEdit->text().toDouble();
   env.m_lly = m_ui->m_llyLineEdit->text().toDouble();
   env.m_urx = m_ui->m_urxLineEdit->text().toDouble();
@@ -748,7 +703,7 @@ bool te::qt::plugins::cellspace::CreateCellularSpaceDialog::checkList(std::strin
     noErrors = false;
   }
   
-  if (m_ui->m_maskToolButton->isChecked())
+  if (m_ui->m_maskRadioButton->isChecked())
   {
     te::map::AbstractLayerPtr referenceLayer = getReferenceLayer();
     if (!((referenceLayer->getSRID() >  0 && m_bbSRID > 0) ||
