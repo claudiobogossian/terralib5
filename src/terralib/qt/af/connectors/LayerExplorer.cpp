@@ -62,7 +62,7 @@ te::qt::af::LayerExplorer::LayerExplorer(te::qt::widgets::LayerItemView* explore
   connect(m_explorer, SIGNAL(selectedLayersChanged(std::list<te::map::AbstractLayerPtr>)), SLOT(onSelectedLayersChanged(std::list<te::map::AbstractLayerPtr>)));
   connect(m_explorer, SIGNAL(visibilityChanged()), SLOT(onLayerVisibilityChanged()));
   connect(m_explorer, SIGNAL(layerOrderChanged()), SLOT(onLayerOrderChanged()));
-  connect(m_explorer, SIGNAL(doubleClicked(te::qt::widgets::AbstractTreeItem*)), SLOT(onTreeItemDoubleClicked(te::qt::widgets::AbstractTreeItem*)));
+  connect(m_explorer, SIGNAL(doubleClicked(te::map::AbstractLayerPtr)), SLOT(onTreeItemDoubleClicked(te::map::AbstractLayerPtr)));
 }
 
 te::qt::af::LayerExplorer::~LayerExplorer()
@@ -240,19 +240,8 @@ void te::qt::af::LayerExplorer::onLayerOrderChanged()
   emit triggered(&projectUnsavedEvent);
 }
 
-//Revisar: Fred
-//void te::qt::af::LayerExplorer::onTreeItemDoubleClicked(te::qt::widgets::AbstractTreeItem* item)
-//{
-//  te::qt::widgets::LegendItem* legendItem = dynamic_cast<te::qt::widgets::LegendItem*>(item);
-//  if(legendItem == 0)
-//    return;
-//
-//  te::qt::widgets::AbstractTreeItem* layerItem = dynamic_cast<te::qt::widgets::AbstractTreeItem*>(item->parent());
-//  assert(layerItem);
-//
-//  te::map::AbstractLayer* layer = layerItem->getLayer().get();
-//  assert(layer);
-//
-//  te::qt::af::evt::LayerStyleSelected layerStyleSelected(layer);
-//  emit triggered(&layerStyleSelected);
-//}
+void te::qt::af::LayerExplorer::onTreeItemDoubleClicked(te::map::AbstractLayerPtr layer)
+{
+  te::qt::af::evt::LayerStyleSelected layerStyleSelected(layer);
+  emit triggered(&layerStyleSelected);
+}

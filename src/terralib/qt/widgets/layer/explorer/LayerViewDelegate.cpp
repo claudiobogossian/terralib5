@@ -1,7 +1,10 @@
 ﻿#include "LayerViewDelegate.h"
+#include "LayerItem.h"
 #include "LegendItem.h"
 #include "ColorMapSliceItem.h"
 #include "ChartSliceItem.h"
+
+#include "../../../../maptools/AbstractLayer.h"
 
 // Qt
 #include <QPainter>
@@ -15,6 +18,9 @@ te::common::Decorator<QStyledItemDelegate>(decorated)
   m_folder = QIcon::fromTheme("folder");
   m_colorMap = QIcon::fromTheme("grouping");
   m_chart = QIcon::fromTheme("chart-pie");
+  m_queryLayer = QIcon::fromTheme("query-layer");
+  m_tabularLayer = QIcon::fromTheme("dataset-layer-tabular");
+  m_invalidLayer = QIcon::fromTheme("dataset-layer-invalid");
 }
 
 te::qt::widgets::LayerViewDelegate::~LayerViewDelegate()
@@ -35,7 +41,7 @@ void te::qt::widgets::LayerViewDelegate::paint(QPainter * painter, const QStyleO
     (item->getType() == "COLORMAPSLICE") ? ((ColorMapSliceItem*)item)->getIcon() :
     (item->getType() == "CHART") ? m_chart :
     (item->getType() == "CHARTSLICE") ? ((ChartSliceItem*)item)->getIcon() :
-    (item->getType() == "FOLDER") ? m_folder : m_layer;
+    (item->getType() == "FOLDER") ? m_folder : getIcon(index);
 
   QSize s(16, 16);
     
@@ -50,4 +56,30 @@ void te::qt::widgets::LayerViewDelegate::paint(QPainter * painter, const QStyleO
   }
 
   QStyledItemDelegate::paint(painter, opt, index);
+}
+
+QIcon te::qt::widgets::LayerViewDelegate::getIcon(const QModelIndex & index) const
+{
+  if(!index.isValid())
+    throw;
+
+  TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
+  
+  if(item->getType() != "LAYER")
+    throw;
+
+  te::map::AbstractLayerPtr l = ((LayerItem*)item)->getLayer();
+
+  if(!l->isValid())
+    return m_invalidLayer;
+
+  if(l->getType() == "QUERYLAYER")
+    return m_queryLayer;
+
+  std::auto_ptr<te::da::DataSetType> schema = l->getSchema();
+
+  if(!schema->hasGeom() && !schema->hasRaster() || l->getType() == "DATASETADAPTERLAYER")
+    return m_tabularLayer;
+
+  return m_layer;
 }

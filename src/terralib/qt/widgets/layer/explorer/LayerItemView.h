@@ -182,7 +182,7 @@ namespace te
 
         //void clicked(te::qt::widgets::AbstractTreeItem* item);
 
-//        void doubleClicked(te::qt::widgets::AbstractTreeItem* item);
+        void doubleClicked(te::map::AbstractLayerPtr layer);
 
         //void entered(te::qt::widgets::AbstractTreeItem* item);
 
@@ -199,6 +199,8 @@ namespace te
         void selectionChanged(const QItemSelection & selected, const QItemSelection & deselected);
 
         void dropEvent(QDropEvent * event);
+
+        void mouseDoubleClickEvent(QMouseEvent* event);
 
         LayerItemModel* m_model;          //!<
 

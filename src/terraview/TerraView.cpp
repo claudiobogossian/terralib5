@@ -266,6 +266,31 @@ void GetValidLayers(QAbstractItemModel* model, const QModelIndex& parent, std::v
   }
 }
 
+void GetValidLayers(QAbstractItemModel* model, const QModelIndex& parent, std::list<te::map::AbstractLayerPtr>& layers)
+{
+  int cs = model->rowCount(parent);
+
+  for(int i = 0; i < cs; i++)
+  {
+    QModelIndex idx = model->index(i, 0, parent);
+
+    if(idx.isValid())
+    {
+      te::qt::widgets::TreeItem* item = static_cast<te::qt::widgets::TreeItem*>(idx.internalPointer());
+
+      if(item->getType() == "LAYER")
+      {
+        te::map::AbstractLayerPtr l = ((te::qt::widgets::LayerItem*)item)->getLayer();
+
+        if(l->isValid())
+          layers.push_back(l);
+      }
+      else if(item->getType() == "FOLDER")
+        GetValidLayers(model, idx, layers);
+    }
+  }
+}
+
 TerraView::TerraView(QWidget* parent)
   : te::qt::af::BaseApplication(parent),
     m_mapCursorSize(QSize(20, 20)),
@@ -527,7 +552,7 @@ void TerraView::initSlotsConnections()
   connect(m_toolsDataSourceExplorer, SIGNAL(triggered()), SLOT(onDataSourceExplorerTriggered()));
 
   connect(m_viewLayerExplorer, SIGNAL(toggled(bool)), m_layerExplorer->getExplorer(), SLOT(setVisible(bool)));
-  connect(m_layerExplorer->getExplorer(), SIGNAL(visibilityChanged(bool)), this, SLOT(onLayerExplorerVisibilityChanged(bool)));
+//  connect(m_layerExplorer->getExplorer(), SIGNAL(visibilityChanged(bool)), this, SLOT(onLayerExplorerVisibilityChanged(bool)));
 
   connect(m_display, SIGNAL(hasPreviousExtent(bool)), m_mapPreviousExtent, SLOT(setEnabled(bool)));
   connect(m_display, SIGNAL(hasNextExtent(bool)), m_mapNextExtent, SLOT(setEnabled(bool)));
@@ -816,8 +841,8 @@ void TerraView::addPopUpMenu()
   //treeView->add(m_projectRemoveLayer, "", "INVALID_LAYER_ITEM");
 
   //// Actions to be added to the context menu when there are multiple items selected
-  treeView->addMultipleSelectionAction(m_layerFitSelectedOnMapDisplay);
-  treeView->addMultipleSelectionAction(m_layerPanToSelectedOnMapDisplay);
+  //treeView->addMultipleSelectionAction(m_layerFitSelectedOnMapDisplay);
+  //treeView->addMultipleSelectionAction(m_layerPanToSelectedOnMapDisplay);
 
   //treeView->add(m_layerFitSelectedOnMapDisplay, "", "QUERY_LAYER_ITEM", te::qt::widgets::LayerTreeView::MULTIPLE_ITEMS_SELECTED);
   //treeView->add(m_layerPanToSelectedOnMapDisplay, "", "QUERY_LAYER_ITEM", te::qt::widgets::LayerTreeView::MULTIPLE_ITEMS_SELECTED);
@@ -1146,7 +1171,8 @@ void TerraView::onAddQueryLayerTriggered()
 
     std::auto_ptr<te::qt::widgets::QueryLayerBuilderWizard> qlb(new te::qt::widgets::QueryLayerBuilderWizard(this));
 
-    std::list<te::map::AbstractLayerPtr> layers = getLayerExplorer()->getAllLayers();
+    std::list<te::map::AbstractLayerPtr> layers;
+    GetValidLayers(getLayerExplorer()->model(), QModelIndex(), layers);
 
     qlb->setLayerList(layers);
 
@@ -1532,7 +1558,9 @@ void TerraView::onToolsDataExchangerDirectTriggered()
   {
     te::qt::widgets::DirectExchangerDialog dlg(this);
 
-    std::list<te::map::AbstractLayerPtr> layers = getLayerExplorer()->getAllLayers();
+    std::list<te::map::AbstractLayerPtr> layers;
+    GetValidLayers(getLayerExplorer()->model(), QModelIndex(), layers);
+
     dlg.setLayers(layers);
 
     QString dsTypeSett = te::qt::af::GetLastDatasourceFromSettings();
@@ -1584,7 +1612,9 @@ void TerraView::onToolsQueryDataSourceTriggered()
 
     connect(&dlg, SIGNAL(createNewLayer(te::map::AbstractLayerPtr)), this, SLOT(onCreateNewLayer(te::map::AbstractLayerPtr)));
 
-    std::list<te::map::AbstractLayerPtr> layers = getLayerExplorer()->getAllLayers();
+    std::list<te::map::AbstractLayerPtr> layers;
+    GetValidLayers(getLayerExplorer()->model(), QModelIndex(), layers);
+
     dlg.setLayerList(layers);
     dlg.setAppMapDisplay(m_display->getDisplay());
 
@@ -1602,7 +1632,9 @@ void TerraView::onToolsRasterMultiResolutionTriggered()
   {
     te::qt::widgets::MultiResolutionDialog dlg(this);
 
-    std::list<te::map::AbstractLayerPtr> layers = getLayerExplorer()->getAllLayers();
+    std::list<te::map::AbstractLayerPtr> layers;
+    GetValidLayers(getLayerExplorer()->model(), QModelIndex(), layers);
+
     dlg.setLayerList(layers);
 
     dlg.exec();
@@ -2281,7 +2313,9 @@ void TerraView::onQueryLayerTriggered()
       m_iController->addInterface(m_queryDlg);
   }
 
-  std::list<te::map::AbstractLayerPtr> allLayersList = getLayerExplorer()->getAllLayers();
+  std::list<te::map::AbstractLayerPtr> allLayersList;
+  GetValidLayers(getLayerExplorer()->model(), QModelIndex(), allLayersList);
+
   m_queryDlg->setLayerList(allLayersList);
 
   selectedLayers = GetSelectedLayersOnly(getLayerExplorer());

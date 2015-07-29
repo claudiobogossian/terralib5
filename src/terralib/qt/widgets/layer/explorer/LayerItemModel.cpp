@@ -203,19 +203,7 @@ QModelIndex FindInsertInformation(const QModelIndex& par, int& row, te::qt::widg
     return model->parent(par);
   }
 
-  // If the parent is a LegendItem
-  QModelIndex parP = model->parent(par);
-  row = parP.row() + 1;
-
-  return model->parent(parP);
-}
-
-te::qt::widgets::TreeItem* FindParent(te::qt::widgets::TreeItem* item)
-{
-  if(item->getType() == "FOLDER")
-    return item;
-
-  return FindParent(item->getParent());
+  return FindInsertInformation(model->parent(par), row, model);
 }
 
 te::qt::widgets::LayerItemModel::LayerItemModel(QObject *parent):
@@ -243,7 +231,7 @@ void te::qt::widgets::LayerItemModel::addLayer(te::map::AbstractLayerPtr layer, 
 
   if(layer->getType() == "FOLDERLAYER")
     item->insertChild(GetFolder(layer, idxPath), (size_t)row);
-  else if(layer->getType() == "DATASETLAYER")
+  else
   {
     item->insertChild(new LayerItem(layer), (size_t)row);
 
@@ -279,7 +267,7 @@ void te::qt::widgets::LayerItemModel::addLayers(const std::list<te::map::Abstrac
 
       if(layer->getType() == "FOLDERLAYER")
         item->insertChild(GetFolder(layer, idxPath), (size_t)cont);
-      else if(layer->getType() == "DATASETLAYER")
+      else 
       {
         item->insertChild(new LayerItem(layer), (size_t)cont);
 
@@ -537,36 +525,14 @@ bool te::qt::widgets::LayerItemModel::dropMimeData(const QMimeData* data, Qt::Dr
 
   TreeItem* newPar;
 
-  if(row == -1) // Dropped over an item
+  if(parent.isValid())
   {
-    if(parent.isValid())
-    {
-      TreeItem* aux = static_cast<TreeItem*>(parent.internalPointer());
+    QModelIndex nP = FindInsertInformation(parent, row, this);
 
-      if(aux->getType() == "LAYER")
-      {
-        row = parent.row() + 1;
-        if(parent.parent().isValid())
-          newPar = static_cast<TreeItem*>(parent.parent().internalPointer());
-        else
-          newPar = m_root.get();
-      }
-      else if(aux->getType() == "FOLDER")
-      {
-        newPar = aux;
-        row = (int)newPar->getChildrenCount("");
-      }
-      else if(aux->getType() == "LEGEND")
-      {
-        newPar = aux->getParent()->getParent();
-        row = aux->getParent()->getPosition() + 1;
-      }
-    }
-    else
-      newPar = m_root.get();
+    newPar = (!nP.isValid()) ? m_root.get() : static_cast<TreeItem*>(nP.internalPointer());
   }
-  else // Dropped on a line
-    newPar = (parent.isValid()) ? FindParent(static_cast<TreeItem*>(parent.internalPointer())) : m_root.get();
+  else
+    newPar = m_root.get();
 
   addItems(*changed.get(), newPar, row);
 
@@ -636,7 +602,7 @@ QVariant te::qt::widgets::LayerItemModel::headerData(int section, Qt::Orientatio
                                     int role) const
 {
   if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
-    return tr("Layer name");
+    return tr("Layers");
 
   return QVariant();
 }

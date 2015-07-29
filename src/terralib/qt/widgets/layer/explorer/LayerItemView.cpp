@@ -5,6 +5,9 @@
 #include "LayerViewMenuManager.h"
 #include "LayerItem.h"
 
+// Qt
+#include <QMouseEvent>
+
 bool Expand(const QModelIndex& idx, te::qt::widgets::LayerItemView* view)
 {
   te::qt::widgets::TreeItem* item = static_cast<te::qt::widgets::TreeItem*>(idx.internalPointer());
@@ -223,4 +226,18 @@ void te::qt::widgets::LayerItemView::dropEvent(QDropEvent * event)
   QTreeView::dropEvent(event);
 
   emit layerOrderChanged();
+}
+
+void te::qt::widgets::LayerItemView::mouseDoubleClickEvent(QMouseEvent* event)
+{
+  QPoint pos = event->globalPos();
+  QModelIndex idx = indexAt(viewport()->mapFromGlobal(pos));
+
+  if(idx.isValid())
+  {
+    TreeItem* item = static_cast<TreeItem*>(idx.internalPointer());
+
+    if(item->getType() == "LEGEND" && item->getParent()->getType() == "LAYER")
+      emit doubleClicked(((LayerItem*)item->getParent())->getLayer());
+  }
 }

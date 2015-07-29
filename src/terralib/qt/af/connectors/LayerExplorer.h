@@ -105,7 +105,7 @@ namespace te
 
           void onLayerOrderChanged();
 
-          //void onTreeItemDoubleClicked(te::qt::widgets::AbstractTreeItem* item);
+          void onTreeItemDoubleClicked(te::map::AbstractLayerPtr layer);
 
         signals:
 

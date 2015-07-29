@@ -54,10 +54,15 @@ namespace te
 
       protected:
 
+        QIcon getIcon(const QModelIndex & index) const;
+
         QIcon m_layer;
         QIcon m_folder;
         QIcon m_colorMap;
         QIcon m_chart;
+        QIcon m_queryLayer;
+        QIcon m_tabularLayer;
+        QIcon m_invalidLayer;
       };
     }
   }
