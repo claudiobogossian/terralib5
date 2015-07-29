@@ -287,10 +287,15 @@ void te::qt::widgets::QueryDataSourceDialog::onPkTableComboBoxSelected(int index
 
 void te::qt::widgets::QueryDataSourceDialog::onApplyPushButtonClicked()
 {
+  QApplication::setOverrideCursor(Qt::WaitCursor);
+
   m_ui->m_sqlEditorTextEdit->setFocus();
 
-  if(m_ui->m_sqlEditorTextEdit->toPlainText().isEmpty())
+  if (m_ui->m_sqlEditorTextEdit->toPlainText().isEmpty())
+  {
+    QApplication::restoreOverrideCursor();
     return;
+  }
 
   std::string dataSourceId = m_ui->m_dataSourceComboBox->itemData(m_ui->m_dataSourceComboBox->currentIndex()).toString().toStdString();
 
@@ -316,6 +321,7 @@ void te::qt::widgets::QueryDataSourceDialog::onApplyPushButtonClicked()
   }
   catch(const std::exception& e)
   {
+    QApplication::restoreOverrideCursor();
     m_dataSetDisplay->clear();
     m_tableModel->setDataSet(0, ds->getEncoding());
 
@@ -362,6 +368,8 @@ void te::qt::widgets::QueryDataSourceDialog::onApplyPushButtonClicked()
   m_tableModel->setDataSet(dataSet.release(), ds->getEncoding());
 
   m_ui->m_tabWidget->setCurrentIndex(0);
+
+  QApplication::restoreOverrideCursor();
 }
 
 void te::qt::widgets::QueryDataSourceDialog::onClearPushButtonClicked()
