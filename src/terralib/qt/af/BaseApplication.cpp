@@ -50,7 +50,7 @@ te::qt::af::BaseApplication::~BaseApplication()
   te::qt::af::UpdateUserSettings();
 
   if (m_app)
-  m_app->finalize();
+    m_app->finalize();
 }
 
 void te::qt::af::BaseApplication::init(const QString& cfgFile)
@@ -227,7 +227,7 @@ void te::qt::af::BaseApplication::makeDialog()
   //connect components
   m_app->addListener(m_layerExplorer);
   m_app->addListener(m_display);
-  m_app->addListener(m_styleExplorer);
+  m_app->addListener(m_styleExplorer, te::qt::af::RECEIVER);
   m_app->addListener(this);
 
   //set app info

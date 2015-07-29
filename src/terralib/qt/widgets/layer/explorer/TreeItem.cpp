@@ -61,19 +61,28 @@ size_t te::qt::widgets::TreeItem::getChildrenCount(const std::string& type) cons
   if(type.empty())
     return (size_t) m_children->getSize();
 
-  size_t count = 0;
+  std::vector<TreeItem*> items;
+
+  getChildren(items, type);
+
+  return items.size();
+}
+
+void te::qt::widgets::TreeItem::getChildren(std::vector<TreeItem*>& items, const std::string& type) const
+{
   te::common::NodeT<TreeItem*>* aux = m_children->m_first;
 
-  while (aux != NULL)
+  items.clear();
+
+  while(aux != NULL)
   {
-    if(aux->m_value->m_type == type)
-      count++;
+    if(aux->m_value->m_type == type || type.empty())
+      items.push_back(aux->m_value);
 
     aux = aux->m_next;
   }
-
-  return count;
 }
+
 
 bool te::qt::widgets::TreeItem::hasChildren() const
 {
@@ -103,4 +112,9 @@ void te::qt::widgets::TreeItem::removeAllChilds()
 {
   while(m_children->getSize() > 0)
     delete m_children->remove(0);
+}
+
+Qt::ItemFlags te::qt::widgets::TreeItem::flags()
+{
+  return Qt::ItemIsSelectable | Qt::ItemIsDropEnabled | Qt::ItemIsEnabled;
 }

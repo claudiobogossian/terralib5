@@ -35,7 +35,8 @@ namespace te
 {
   namespace se
   {
-    class FeatureTypeStyle;
+    class Rule;
+    class Symbolizer;
   }
 
   namespace qt
@@ -62,11 +63,18 @@ namespace te
         /*!
         * \brief Constructor.
         *
-        * \param label Label to be presented in the Qt view.
-        *
-        * \param style The rendering style.
+        * \param rule.
         */
-        LegendItem(const std::string& label, te::se::FeatureTypeStyle* style);
+        LegendItem(const te::se::Rule* rule);
+
+        /*!
+        * \brief Constructor.
+        *
+        * \param label.
+        *
+        * \param symbolizers.
+        */
+        LegendItem(const std::string& label, const std::vector<te::se::Symbolizer*>& symbolizers);
 
         /*!
         * \brief Destructor.

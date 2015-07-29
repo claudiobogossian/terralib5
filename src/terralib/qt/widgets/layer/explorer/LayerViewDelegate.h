@@ -56,6 +56,8 @@ namespace te
 
         QIcon m_layer;
         QIcon m_folder;
+        QIcon m_colorMap;
+        QIcon m_chart;
       };
     }
   }

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
+﻿/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
 This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -41,6 +41,11 @@ class QAction;
 
 namespace te
 {
+  namespace map
+  {
+    class Chart;
+  }
+
   namespace qt
   {
     namespace widgets
@@ -113,6 +118,18 @@ namespace te
 
         /*!
         * \brief
+        * \param idx
+        */
+        void updateChart(const QModelIndex& idx);
+
+        /*!
+        * \brief
+        * \param idx
+        */
+        void updateGrouping(const QModelIndex& idx);
+
+        /*!
+        * \brief
         * \param
         */
         void addNoLayerAction(QAction* act);
@@ -159,9 +176,32 @@ namespace te
         */
         void removeSelectedItems();
 
+      Q_SIGNALS:
+
+        //void activated(te::qt::widgets::AbstractTreeItem* item);
+
+        //void clicked(te::qt::widgets::AbstractTreeItem* item);
+
+//        void doubleClicked(te::qt::widgets::AbstractTreeItem* item);
+
+        //void entered(te::qt::widgets::AbstractTreeItem* item);
+
+        //void pressed(te::qt::widgets::AbstractTreeItem* item);
+
+        void visibilityChanged();
+
+        void selectedLayersChanged(const std::list<te::map::AbstractLayerPtr>&);
+
+        void layerOrderChanged();
+
       protected:
 
+        void selectionChanged(const QItemSelection & selected, const QItemSelection & deselected);
+
+        void dropEvent(QDropEvent * event);
+
         LayerItemModel* m_model;          //!<
+
         LayerViewMenuManager* m_mnuMger;  //!<
       };
     }

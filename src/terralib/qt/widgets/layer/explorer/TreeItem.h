@@ -32,8 +32,12 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include "../../../../common/Exception.h"
 #include "../../../../common/GenericQueue.h"
 
+// Qt
+#include <qnamespace.h>
+
 // STL
 #include <memory>
+#include <vector>
 
 // Forward declarations
 namespace te
@@ -151,6 +155,8 @@ namespace te
         */
         size_t getChildrenCount(const std::string& type) const;
 
+        void getChildren(std::vector<TreeItem*>& items, const std::string& type) const;
+
         /*!
         * \brief Tells us if the item has children or not.
         *
@@ -201,6 +207,8 @@ namespace te
         * \brief
         */
         void removeAllChilds();
+
+        virtual Qt::ItemFlags flags();
 
       protected:
 

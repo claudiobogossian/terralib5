@@ -149,7 +149,7 @@ bool te::qt::widgets::LayerViewMenuManager::eventFilter(QObject* watched, QEvent
             if(item->getType() == "FOLDER")
               GetMenu(&mnu, m_FL_actions.get(), m_AL_actions.get());
             else if(item->getType() == "LAYER" )
-              GetMenu(&mnu, (IsRasterLayer(item)) ? m_VL_actions.get() :  m_RL_actions.get(), m_AL_actions.get());
+              GetMenu(&mnu, (IsRasterLayer(item)) ? m_RL_actions.get() :  m_VL_actions.get(), m_AL_actions.get());
           }
 
           mnu.exec(pos);

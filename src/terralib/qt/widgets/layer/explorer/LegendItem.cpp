@@ -7,17 +7,21 @@
 #include "../../../../geometry/Point.h"
 #include "../../../../geometry/Polygon.h"
 #include "../../../../maptools/CanvasConfigurer.h"
+#include "../../../../se/Description.h"
 #include "../../../../se/FeatureTypeStyle.h"
 #include "../../../../se/Rule.h"
 #include "../../../../se/Symbolizer.h"
 
+// Qt
+#include <QObject>
 
-te::gm::Geometry* GetGeometry(te::se::FeatureTypeStyle* style)
+
+te::gm::Geometry* GetGeometry(const te::se::Symbolizer* s)
 {
-  if(style->getRule(0)->getSymbolizer(0)->getType() == "PointSymbolizer")
+  if(s->getType() == "PointSymbolizer")
     return new te::gm::Point(10, 10);
 
-  if(style->getRule(0)->getSymbolizer(0)->getType() == "LineSymbolizer")
+  if(s->getType() == "LineSymbolizer")
   {
     te::gm::LineString* gm = new te::gm::LineString(4, te::gm::LineStringType);
 
@@ -43,52 +47,56 @@ te::gm::Geometry* GetGeometry(te::se::FeatureTypeStyle* style)
   return gm;
 }
 
-
-QIcon GetIcon(te::se::FeatureTypeStyle* style)
+QIcon GetIcon(const std::vector<te::se::Symbolizer*>& symbolizers)
 {
-  QIcon icon;
-
   te::qt::widgets::Canvas canvas(20, 20);
-
-  std::auto_ptr<te::gm::Geometry> gm(GetGeometry(style));
 
   // create a canvas configurer
   te::map::CanvasConfigurer cc(&canvas);
 
   // number of rules defined on feature type style
-  std::size_t nRules = style->getRules().size();
+  std::size_t nSymbolizers = symbolizers.size();
 
-  for(std::size_t i = 0; i < nRules; ++i) // for each <Rule>
+  for(std::size_t j = 0; j < nSymbolizers; ++j) // for each <Symbolizer>
   {
-    // the current rule
-    const te::se::Rule* rule = style->getRule(i);
-    // get the set of symbolizers defined on current rule
+    // the current symbolizer
+    te::se::Symbolizer* symb = symbolizers[j];
 
-    const std::vector<te::se::Symbolizer*>& symbolizers = rule->getSymbolizers();
-    std::size_t nSymbolizers = symbolizers.size();
+    // let's config de canvas based on the current symbolizer
+    cc.config(symb);
 
-    for(std::size_t j = 0; j < nSymbolizers; ++j) // for each <Symbolizer>
-    {
-      // the current symbolizer
-      te::se::Symbolizer* symb = symbolizers[j];
+    std::auto_ptr<te::gm::Geometry> gm(GetGeometry(symb));
 
-      // let's config de canvas based on the current symbolizer
-      cc.config(symb);
+    canvas.draw(gm.get());
+  } // end for each <Symbolizer>
 
-      canvas.draw(gm.get());
-    } // end for each <Symbolizer>
-  }   // end for each <Rule>
-
-  icon = QIcon(*canvas.getPixmap());
-
-  return icon;
+  return QIcon(*canvas.getPixmap());
 }
 
-te::qt::widgets::LegendItem::LegendItem(const std::string& label, te::se::FeatureTypeStyle* style) :
+QIcon GetIcon(const te::se::Rule* rule)
+{
+  return GetIcon(rule->getSymbolizers());
+}
+
+te::qt::widgets::LegendItem::LegendItem(const te::se::Rule* rule) :
+TreeItem("LEGEND")
+{
+  m_icon = GetIcon(rule);
+
+  if(rule->getDescription())
+    m_label = rule->getDescription()->getTitle();
+
+  if(rule->getName())
+    m_label = *rule->getName();
+
+  m_label = QObject::tr("Style").toStdString();
+}
+
+te::qt::widgets::LegendItem::LegendItem(const std::string& label, const std::vector<te::se::Symbolizer*>& symbolizers):
 TreeItem("LEGEND"),
 m_label(label)
 {
-  m_icon = GetIcon(style);
+  m_icon = GetIcon(symbolizers);
 }
 
 te::qt::widgets::LegendItem::~LegendItem()

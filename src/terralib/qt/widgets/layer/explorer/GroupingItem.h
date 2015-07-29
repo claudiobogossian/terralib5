@@ -18,29 +18,34 @@ TerraLib Team at <terralib-team@terralib.org>.
 */
 
 /*!
- * \file FolderItem.h
+ * \file GroupingItem.h
  *
- * \brief Defines a folder item, just containing LayerItem.
+ * \brief A class that represents a grouping of a layer in a LayerTreeModel.
  */
-#ifndef __TERRALIB_QT_WIDGETS_LAYER_INTERNAL_FOLDERITEM_H
-#define __TERRALIB_QT_WIDGETS_LAYER_INTERNAL_FOLDERITEM_H
+#ifndef __TERRALIB_QT_WIDGETS_LAYER_INTERNAL_GROUPINGITEM_H
+#define __TERRALIB_QT_WIDGETS_LAYER_INTERNAL_GROUPINGITEM_H
 
 #include "TreeItem.h"
 
 namespace te
 {
+  namespace map
+  {
+    class Grouping;
+  }
+
   namespace qt
   {
     namespace widgets
     {
       /*!
-      * \class FolderItem
+      * \class GroupingItem
       *
-      * \brief Represents a folder item that contains layers and / or other folders.
+      * \brief A class that represents a grouping of a layer in a LayerTreeModel.
       *
-      * \note The type of the item is "FOLDER".
+      * \note The type of the item is "GROUPING".
       */
-      class TEQTWIDGETSEXPORT FolderItem: public TreeItem
+      class TEQTWIDGETSEXPORT GroupingItem: public TreeItem
       {
       public:
         /*!
@@ -53,14 +58,14 @@ namespace te
         /*!
         * \brief Constructor.
         *
-        * \param label Label to be presented in the Qt view.
+        * \param map Color map.
         */
-        FolderItem(const std::string& label);
+        GroupingItem(te::map::Grouping* g);
 
         /*!
         * \brief Destructor.
         */
-        ~FolderItem();
+        ~GroupingItem();
         //@}
 
         /*!
@@ -78,14 +83,14 @@ namespace te
         Qt::ItemFlags flags();
         //@}
 
-        void setTitle(const std::string& title);
-
       protected:
+
         std::string m_label;    //!< Label to be presented on the Qt view.
-        VISIBLE m_v;            //!< Visibility of the folder.
+
+        te::map::Grouping* m_grouping;
       };
     }
   }
 }
 
-#endif //__TERRALIB_QT_WIDGETS_LAYER_INTERNAL_FOLDERITEM_H
+#endif //__TERRALIB_QT_WIDGETS_LAYER_INTERNAL_GROUPINGITEM_H

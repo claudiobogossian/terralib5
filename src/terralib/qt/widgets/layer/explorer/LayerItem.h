@@ -78,6 +78,8 @@ namespace te
         VISIBLE isVisible() const;
 
         void setVisible(const VISIBLE& visible, const bool& updateAncestors = false, const bool& updateDescendents = false);
+
+        Qt::ItemFlags flags();
         //@}
 
         /*!
@@ -86,6 +88,10 @@ namespace te
         * \return The layer contained at the item.
         */
         te::map::AbstractLayerPtr getLayer() const;
+
+        void updateChart();
+
+        int updateGrouping();
 
       protected:
         te::map::AbstractLayerPtr m_layer;   //!< The asbtract layer.

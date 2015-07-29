@@ -138,15 +138,10 @@ namespace te
 
             \param visibility The new visibility state: VISIBLE, NOT_VISIBLE, PARTIALLY_VISIBLE.
           */
-          LayerVisibilityChanged(te::map::AbstractLayerPtr layer, te::map::Visibility visibility)
-            : Event(LAYER_VISIBILITY_CHANGED),
-              m_layer(layer),
-              m_visibility(visibility)
+          LayerVisibilityChanged()
+            : Event(LAYER_VISIBILITY_CHANGED)
           {
           }
-
-          te::map::AbstractLayerPtr m_layer;     //!< Layer whose visibility has changed.
-          te::map::Visibility m_visibility;      //!< Layer visibility.
         };
 
         /*!

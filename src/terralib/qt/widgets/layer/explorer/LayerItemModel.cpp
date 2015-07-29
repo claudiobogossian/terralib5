@@ -300,9 +300,10 @@ void te::qt::widgets::LayerItemModel::setLayers(const std::list<te::map::Abstrac
 
   m_root->removeAllChilds();
 
-  endResetModel();
+  if(!layers.empty())
+    addLayers(layers);
 
-  addLayers(layers);
+  endResetModel();
 }
 
 void te::qt::widgets::LayerItemModel::addItems(const std::vector<TreeItem*> items, TreeItem* parent, const int& pos)
@@ -333,7 +334,9 @@ void te::qt::widgets::LayerItemModel::addItems(const std::vector<TreeItem*> item
 
     TreeItem* item = static_cast<TreeItem*>((*it).internalPointer());
 
-    if((item->getParent() == parent) && (item->getPosition() < pos))
+    bool sameParent = item->getParent() == parent;
+
+    if((sameParent && (item->getPosition() < pos)) || (sameParent && pos < 0))
       beforePos++;
 
     aux.push_back(auxPar->removeChild((*it).row()));
@@ -436,7 +439,12 @@ bool te::qt::widgets::LayerItemModel::setData(const QModelIndex& index, const QV
       l = l.child(count - 1, 0);
     }
 
-    emit dataChanged(f, l);
+    QVector<int> roles;
+    roles << Qt::CheckStateRole;
+
+    emit dataChanged(f, l, roles);
+
+    emit visibilityChanged();
   }
 
   return true;
@@ -454,6 +462,15 @@ bool te::qt::widgets::LayerItemModel::removeRows(int row, int count, const QMode
     std::auto_ptr<TreeItem> aux(parItem->removeChild(i));
 
   endRemoveRows();
+
+  return true;
+}
+
+bool te::qt::widgets::LayerItemModel::insertRows(int row, int count, const QModelIndex& parent)
+{
+  beginInsertRows(parent, row, row + count);
+
+  endInsertRows();
 
   return true;
 }
@@ -591,10 +608,10 @@ QVariant te::qt::widgets::LayerItemModel::data(const QModelIndex &index, int rol
 
   if(role == Qt::CheckStateRole)
   {
-    if(item->getType() == "LEGEND")
-      return QVariant();
-    else
+    if(item->flags() & Qt::ItemIsUserCheckable)
       return QVariant((item->isVisible() == NONE) ? Qt::Unchecked : (item->isVisible() == PARTIALLY) ? Qt::PartiallyChecked : Qt::Checked);
+
+    return QVariant();
   }
 
   if(role == Qt::DisplayRole)
@@ -605,21 +622,14 @@ QVariant te::qt::widgets::LayerItemModel::data(const QModelIndex &index, int rol
 
 Qt::ItemFlags te::qt::widgets::LayerItemModel::flags(const QModelIndex &index) const
 {
-  Qt::ItemFlags def;
-
   if(index.isValid())
   {
     TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
 
-    if(item->getType() == "LAYER" || item->getType() == "FOLDER")
-      def = Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsDragEnabled | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled | Qt::ItemIsDropEnabled;
-    else
-      def = Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsDropEnabled | Qt::ItemIsEnabled;
+    return item->flags();
   }
-  else
-    def = Qt::ItemIsDropEnabled;
 
-  return def;
+  return Qt::ItemIsDropEnabled;
 }
 
 QVariant te::qt::widgets::LayerItemModel::headerData(int section, Qt::Orientation orientation,

@@ -64,6 +64,11 @@ void te::qt::widgets::FolderItem::setVisible(const VISIBLE& visible, const bool&
     m_parent->setVisible(m_v, true);
 }
 
+Qt::ItemFlags te::qt::widgets::FolderItem::flags()
+{
+  return TreeItem::flags() | Qt::ItemIsEditable | Qt::ItemIsDragEnabled | Qt::ItemIsUserCheckable;
+}
+
 void te::qt::widgets::FolderItem::setTitle(const std::string& title)
 {
   m_label = title;

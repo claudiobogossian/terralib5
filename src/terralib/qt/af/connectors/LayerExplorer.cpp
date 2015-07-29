@@ -51,6 +51,7 @@ std::list<te::map::AbstractLayerPtr> GetSelectedLayers(QTreeView* view)
   return res;
 }
 
+//GetSelectedFolders
 
 te::qt::af::LayerExplorer::LayerExplorer(te::qt::widgets::LayerItemView* explorer, QObject* parent)
   : QObject(parent),
@@ -59,7 +60,7 @@ te::qt::af::LayerExplorer::LayerExplorer(te::qt::widgets::LayerItemView* explore
   assert(m_explorer);
 
   connect(m_explorer, SIGNAL(selectedLayersChanged(std::list<te::map::AbstractLayerPtr>)), SLOT(onSelectedLayersChanged(std::list<te::map::AbstractLayerPtr>)));
-  connect(m_explorer, SIGNAL(visibilityChanged(te::map::AbstractLayerPtr)), SLOT(onLayerVisibilityChanged(te::map::AbstractLayerPtr)));
+  connect(m_explorer, SIGNAL(visibilityChanged()), SLOT(onLayerVisibilityChanged()));
   connect(m_explorer, SIGNAL(layerOrderChanged()), SLOT(onLayerOrderChanged()));
   connect(m_explorer, SIGNAL(doubleClicked(te::qt::widgets::AbstractTreeItem*)), SLOT(onTreeItemDoubleClicked(te::qt::widgets::AbstractTreeItem*)));
 }
@@ -93,24 +94,27 @@ void te::qt::af::LayerExplorer::onApplicationTriggered(te::qt::af::evt::Event* e
     case te::qt::af::evt::LAYER_ADDED:
     {
       te::qt::af::evt::LayerAdded* e = static_cast<te::qt::af::evt::LayerAdded*>(evt);
+      std::list<te::map::AbstractLayerPtr> layers;
+      QModelIndexList lst = m_explorer->selectionModel()->selectedIndexes();
 
-      // Update the project
-      te::map::AbstractLayerPtr parentLayer = e->m_parentLayer;
+      layers.push_back(e->m_layer);
 
-      // Fred: revisar
-//      ApplicationController::getInstance().getProject()->add(e->m_layer, parentLayer);
+      if(!lst.isEmpty())
+      {
+        QModelIndex par = *lst.begin();
+        te::qt::widgets::TreeItem* item = static_cast<te::qt::widgets::TreeItem*>(par.internalPointer());
 
-      // Add the layer in the layer explorer
-      //Revisar: Fred
-      //te::qt::widgets::AbstractTreeItem* parentItem = m_explorer->getLayerItem(parentLayer);
+        if(item->getType() == "FOLDER")
+        {
+          m_explorer->addLayers(layers, par);
+          m_explorer->expand(par);
+        }
+        else
+          m_explorer->addLayers(layers, QModelIndex());
 
-      //m_explorer->add(e->m_layer, parentItem);
-
-      //if(parentItem)
-      //  m_explorer->expand(parentItem);
-
-      //te::qt::af::evt::ProjectUnsaved projectUnsavedEvent;
-      //emit triggered(&projectUnsavedEvent);
+        te::qt::af::evt::ProjectUnsaved projectUnsavedEvent;
+        emit triggered(&projectUnsavedEvent);
+      }
     }
     break;
 
@@ -216,9 +220,6 @@ void te::qt::af::LayerExplorer::onSelectedLayersChanged(const std::list<te::map:
   if(selectedLayers.empty())
     return;
 
-  // Fred: revisar
-//  ApplicationController::getInstance().getProject()->setSelectedLayers(selectedLayers);
-
   std::list<te::map::AbstractLayerPtr>::const_iterator it;
   for(it = selectedLayers.begin(); it != selectedLayers.end(); ++it)
   {
@@ -227,22 +228,16 @@ void te::qt::af::LayerExplorer::onSelectedLayersChanged(const std::list<te::map:
   }
 }
 
-void te::qt::af::LayerExplorer::onLayerVisibilityChanged(te::map::AbstractLayerPtr layer)
+void te::qt::af::LayerExplorer::onLayerVisibilityChanged()
 {
-  te::qt::af::evt::LayerVisibilityChanged layerVisibilityChangedEvent(layer, layer->getVisibility());
+  te::qt::af::evt::LayerVisibilityChanged layerVisibilityChangedEvent;
   emit triggered(&layerVisibilityChangedEvent);
-
-  te::qt::af::evt::ProjectUnsaved projectUnsavedEvent;
-  emit triggered(&projectUnsavedEvent);
 }
 
 void te::qt::af::LayerExplorer::onLayerOrderChanged()
 {
-  // Fred: revisar
-//  ApplicationController::getInstance().getProject()->setTopLayers(m_explorer->getTopLayers());
-
-  //te::qt::af::evt::ProjectUnsaved projectUnsavedEvent;
-  //emit triggered(&projectUnsavedEvent);
+  te::qt::af::evt::ProjectUnsaved projectUnsavedEvent;
+  emit triggered(&projectUnsavedEvent);
 }
 
 //Revisar: Fred

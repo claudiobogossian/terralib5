@@ -259,8 +259,10 @@ void te::qt::af::MapDisplay::onDrawLayersFinished(const QMap<QString, QString>& 
   m_lastDisplayContent = QPixmap(*m_display->getDisplayPixmap());
 
   // Draw the layers selection
-  // Fred: revisar
-  drawLayersSelection(getSelectedLayer());
+  std::list<te::map::AbstractLayerPtr> ls = getSelectedLayer();
+
+  if(!ls.empty())
+    drawLayersSelection(ls);
 
   // Informs the end of drawing
   te::qt::af::evt::DrawingFinished drawingFinished(this);
@@ -561,7 +563,8 @@ std::list<te::map::AbstractLayerPtr> te::qt::af::MapDisplay::getSelectedLayer()
 
   std::list<te::map::AbstractLayerPtr> lst;
 
-  lst.push_back(evt.m_layer);
+  if(evt.m_layer != 0)
+    lst.push_back(evt.m_layer);
 
   return lst;
 }

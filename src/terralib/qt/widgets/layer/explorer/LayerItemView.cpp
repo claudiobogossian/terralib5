@@ -1,11 +1,9 @@
-#include "LayerItemView.h"
+﻿#include "LayerItemView.h"
 
 #include "LayerItemModel.h"
 #include "LayerViewDelegate.h"
-#include "RasterLayerDelegate.h"
-#include "ThemeViewDelegate.h"
 #include "LayerViewMenuManager.h"
-#include "TreeItem.h"
+#include "LayerItem.h"
 
 bool Expand(const QModelIndex& idx, te::qt::widgets::LayerItemView* view)
 {
@@ -14,6 +12,17 @@ bool Expand(const QModelIndex& idx, te::qt::widgets::LayerItemView* view)
   return (item->getType() == "FOLDER");
 }
 
+std::list<te::map::AbstractLayerPtr> GetSelectedLayersOnly(te::qt::widgets::LayerItemView* view)
+{
+  std::list<te::map::AbstractLayerPtr> res;
+  std::list<te::qt::widgets::TreeItem*> items = view->getSelectedItems();
+
+  for(std::list<te::qt::widgets::TreeItem*>::iterator it = items.begin(); it != items.end(); ++it)
+  if((*it)->getType() == "LAYER")
+    res.push_back(((te::qt::widgets::LayerItem*)(*it))->getLayer());
+
+  return res;
+}
 
 te::qt::widgets::LayerItemView::LayerItemView(QWidget* parent):
   QTreeView(parent)
@@ -30,26 +39,15 @@ te::qt::widgets::LayerItemView::LayerItemView(QWidget* parent):
 
   m_model = new LayerItemModel(this);
 
-//  m_delegate = new LayerViewDelegate((QStyledItemDelegate*)itemDelegate(), this);
-
   m_mnuMger = new LayerViewMenuManager(this);
 
   installEventFilter(m_mnuMger);
 
   setModel(m_model);
 
-  // Mostrando icone só pro raster
-//  setItemDelegate((new ThemeViewDelegate(((QStyledItemDelegate*)itemDelegate()), this)));
-  setItemDelegate(new RasterLayerDelegate(new ThemeViewDelegate(new LayerViewDelegate(((QStyledItemDelegate*)itemDelegate()), this), this), this));
+  setItemDelegate(new LayerViewDelegate((QStyledItemDelegate*)itemDelegate(), this));
 
-  //Mostrando icones do terraamazon
-//  setItemDelegate(new LayerViewDelegate((QStyledItemDelegate*)itemDelegate(), this));
-
-  //Mostrando icones do terraamazon e do raster
-//  setItemDelegate(new RasterLayerDelegate(m_delegate, this));
-
-  // Mostrando icones do terraview
-//  setItemDelegate(new RasterLayerDelegate(new ThemeViewDelegate(m_delegate, this), this));
+  connect(m_model, SIGNAL(visibilityChanged()), SIGNAL(visibilityChanged()));
 }
 
 te::qt::widgets::LayerItemView::~LayerItemView()
@@ -106,6 +104,72 @@ void te::qt::widgets::LayerItemView::addFolder(const std::string& name, const QM
   selectionModel()->clearSelection();
 }
 
+void te::qt::widgets::LayerItemView::updateChart(const QModelIndex& idx)
+{
+  std::vector<TreeItem*> items;
+  TreeItem* item = static_cast<TreeItem*>(idx.internalPointer());
+
+  item->getChildren(items, "CHART");
+
+  if(!items.empty())
+  {
+    TreeItem* chart = *items.begin();
+    int pos = chart->getPosition();
+
+    QModelIndex cIdx = idx.child(pos, 0);
+
+    QModelIndexList ls;
+
+    ls << cIdx;
+
+    removeItems(ls);
+  }
+
+  ((LayerItem*)item)->updateChart();
+
+  m_model->insertRows(1, 1, idx);
+
+  QTreeView::expand(idx.child(1, 0));
+}
+
+void te::qt::widgets::LayerItemView::updateGrouping(const QModelIndex& idx)
+{
+  std::vector<TreeItem*> items;
+  TreeItem* item = static_cast<TreeItem*>(idx.internalPointer());
+  QModelIndexList ls;
+
+  item->getChildren(items, "GROUPING");
+
+  if(!items.empty())
+  {
+    TreeItem* g = *items.begin();
+    int pos = g->getPosition();
+
+    QModelIndex cIdx = idx.child(pos, 0);
+    ls << cIdx;
+  }
+
+  item->getChildren(items, "COLORMAP");
+
+  if(!items.empty())
+  {
+    TreeItem* c = *items.begin();
+    int pos = c->getPosition();
+
+    QModelIndex cIdx = idx.child(pos, 0);
+    ls << cIdx;
+  }
+
+  if(!ls.isEmpty())
+    removeItems(ls);
+
+  int pos = ((LayerItem*)item)->updateGrouping();
+
+  m_model->insertRows(pos, 1, idx);
+
+  QTreeView::expand(idx.child(pos, 0));
+}
+
 void te::qt::widgets::LayerItemView::addNoLayerAction(QAction* act)
 {
   m_mnuMger->addAction(LayerViewMenuManager::NO_LAYERS, act);
@@ -145,4 +209,18 @@ void te::qt::widgets::LayerItemView::removeItems(const QModelIndexList& idxs)
 void te::qt::widgets::LayerItemView::removeSelectedItems()
 {
   removeItems(selectionModel()->selectedIndexes());
+}
+
+void te::qt::widgets::LayerItemView::selectionChanged(const QItemSelection & selected, const QItemSelection & deselected)
+{
+  QTreeView::selectionChanged(selected, deselected);
+
+  emit selectedLayersChanged(GetSelectedLayersOnly(this));
+}
+
+void te::qt::widgets::LayerItemView::dropEvent(QDropEvent * event)
+{
+  QTreeView::dropEvent(event);
+
+  emit layerOrderChanged();
 }

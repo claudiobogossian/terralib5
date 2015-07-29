@@ -18,14 +18,17 @@ TerraLib Team at <terralib-team@terralib.org>.
 */
 
 /*!
- * \file FolderItem.h
+ * \file ChartSliceItem.h
  *
- * \brief Defines a folder item, just containing LayerItem.
+ * \brief A class that represents a chart slice in a LayerItemModel.
  */
-#ifndef __TERRALIB_QT_WIDGETS_LAYER_INTERNAL_FOLDERITEM_H
-#define __TERRALIB_QT_WIDGETS_LAYER_INTERNAL_FOLDERITEM_H
+#ifndef __TERRALIB_QT_WIDGETS_LAYER_INTERNAL_CHARTSLICEITEM_H
+#define __TERRALIB_QT_WIDGETS_LAYER_INTERNAL_CHARTSLICEITEM_H
 
 #include "TreeItem.h"
+
+// Qt
+#include <QIcon>
 
 namespace te
 {
@@ -34,13 +37,13 @@ namespace te
     namespace widgets
     {
       /*!
-      * \class FolderItem
+      * \class ChartSliceItem
       *
-      * \brief Represents a folder item that contains layers and / or other folders.
+      * \brief A class that represents a chart slice in a LayerItemModel.
       *
-      * \note The type of the item is "FOLDER".
+      * \note The type of the item is "CHARTSLICE".
       */
-      class TEQTWIDGETSEXPORT FolderItem: public TreeItem
+      class TEQTWIDGETSEXPORT ChartSliceItem: public TreeItem
       {
       public:
         /*!
@@ -53,14 +56,15 @@ namespace te
         /*!
         * \brief Constructor.
         *
-        * \param label Label to be presented in the Qt view.
+        * \param map Color map.
         */
-        FolderItem(const std::string& label);
+        ChartSliceItem(const QString& propertyName, const QColor& color,
+                       const QColor& contourColor, const int& contourWidth);
 
         /*!
         * \brief Destructor.
         */
-        ~FolderItem();
+        ~ChartSliceItem();
         //@}
 
         /*!
@@ -70,22 +74,18 @@ namespace te
         */
         //@{
         std::string getAsString() const;
-
-        VISIBLE isVisible() const;
-
-        void setVisible(const VISIBLE& visible, const bool& updateAncestors = false, const bool& updateDescendents = false);
-
-        Qt::ItemFlags flags();
         //@}
 
-        void setTitle(const std::string& title);
+        QIcon getIcon() const;
 
       protected:
+
         std::string m_label;    //!< Label to be presented on the Qt view.
-        VISIBLE m_v;            //!< Visibility of the folder.
+
+        QIcon m_icon;
       };
     }
   }
 }
 
-#endif //__TERRALIB_QT_WIDGETS_LAYER_INTERNAL_FOLDERITEM_H
+#endif //__TERRALIB_QT_WIDGETS_LAYER_INTERNAL_CHARTSLICEITEM_H

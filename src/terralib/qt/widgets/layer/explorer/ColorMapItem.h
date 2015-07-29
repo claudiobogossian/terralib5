@@ -18,29 +18,35 @@ TerraLib Team at <terralib-team@terralib.org>.
 */
 
 /*!
- * \file FolderItem.h
+ * \file ColorMapItem.h
  *
- * \brief Defines a folder item, just containing LayerItem.
+ \brief A class that represents a color map of rastersymbolizer of a layer in a LayerItemModel.
  */
-#ifndef __TERRALIB_QT_WIDGETS_LAYER_INTERNAL_FOLDERITEM_H
-#define __TERRALIB_QT_WIDGETS_LAYER_INTERNAL_FOLDERITEM_H
+#ifndef __TERRALIB_QT_WIDGETS_LAYER_INTERNAL_COLORMAPITEM_H
+#define __TERRALIB_QT_WIDGETS_LAYER_INTERNAL_COLORMAPITEM_H
 
 #include "TreeItem.h"
 
 namespace te
 {
+  // Forward declarations
+  namespace se
+  {
+    class ColorMap;
+  }
+
   namespace qt
   {
     namespace widgets
     {
       /*!
-      * \class FolderItem
+      * \class ColorMapItem
       *
       * \brief Represents a folder item that contains layers and / or other folders.
       *
       * \note The type of the item is "FOLDER".
       */
-      class TEQTWIDGETSEXPORT FolderItem: public TreeItem
+      class TEQTWIDGETSEXPORT ColorMapItem: public TreeItem
       {
       public:
         /*!
@@ -53,14 +59,14 @@ namespace te
         /*!
         * \brief Constructor.
         *
-        * \param label Label to be presented in the Qt view.
+        * \param map Color map.
         */
-        FolderItem(const std::string& label);
+        ColorMapItem(const te::se::ColorMap* map);
 
         /*!
         * \brief Destructor.
         */
-        ~FolderItem();
+        ~ColorMapItem();
         //@}
 
         /*!
@@ -70,22 +76,16 @@ namespace te
         */
         //@{
         std::string getAsString() const;
-
-        VISIBLE isVisible() const;
-
-        void setVisible(const VISIBLE& visible, const bool& updateAncestors = false, const bool& updateDescendents = false);
-
-        Qt::ItemFlags flags();
         //@}
 
-        void setTitle(const std::string& title);
-
       protected:
+
         std::string m_label;    //!< Label to be presented on the Qt view.
-        VISIBLE m_v;            //!< Visibility of the folder.
+
+//        const te::se::ColorMap* m_colorMap;
       };
     }
   }
 }
 
-#endif //__TERRALIB_QT_WIDGETS_LAYER_INTERNAL_FOLDERITEM_H
+#endif //__TERRALIB_QT_WIDGETS_LAYER_INTERNAL_COLORMAPITEM_H

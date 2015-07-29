@@ -101,7 +101,7 @@ namespace te
           */
           void onSelectedLayersChanged(const std::list<te::map::AbstractLayerPtr>& selectedLayers);
 
-          void onLayerVisibilityChanged(te::map::AbstractLayerPtr layer);
+          void onLayerVisibilityChanged();
 
           void onLayerOrderChanged();
 

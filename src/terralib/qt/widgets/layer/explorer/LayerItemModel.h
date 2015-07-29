@@ -180,6 +180,8 @@ namespace te
 
         bool removeRows(int row, int count, const QModelIndex & parent = QModelIndex()) Q_DECL_OVERRIDE;
 
+        bool insertRows(int row, int count, const QModelIndex& parent = QModelIndex()) Q_DECL_OVERRIDE;
+          
         Qt::DropActions supportedDropActions() const Q_DECL_OVERRIDE;
 
         QStringList mimeTypes() const Q_DECL_OVERRIDE;
@@ -197,6 +199,10 @@ namespace te
         * \param lst List of indexes of the items to be removed.
         */
         void removeItems(const QModelIndexList& lst);
+
+      Q_SIGNALS:
+
+          void visibilityChanged();
 
       protected:
 
