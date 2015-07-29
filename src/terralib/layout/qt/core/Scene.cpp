@@ -323,6 +323,8 @@ QUndoStack* te::layout::Scene::getUndoStack()
 
 QGraphicsItemGroup* te::layout::Scene::createItemGroup( const QList<QGraphicsItem *> & items )
 {
+  this->clearSelection();
+
   //The scene create a new group with important restriction
   QGraphicsItemGroup* p = QGraphicsScene::createItemGroup(items);
 

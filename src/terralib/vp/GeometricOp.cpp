@@ -156,6 +156,15 @@ te::da::DataSetType* te::vp::GeometricOp::GetDataSetType( te::vp::GeometricOpObj
   {
     dsType = new te::da::DataSetType(m_outDsetName);
     dsType->setTitle(m_outDsetName);
+
+    // Primary key
+    te::dt::SimpleProperty* pkProperty = new te::dt::SimpleProperty(m_outDsetName + "_id", te::dt::INT32_TYPE);
+    pkProperty->setAutoNumber(true);
+    dsType->add(pkProperty);
+
+    te::da::PrimaryKey* pk = new te::da::PrimaryKey(m_outDsetName + "_res_pk", dsType);
+    pk->add(pkProperty);
+    dsType->setPrimaryKey(pk);
   }
 
 
