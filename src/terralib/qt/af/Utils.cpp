@@ -72,6 +72,7 @@
 #include <QMainWindow>
 #include <QMessageBox>
 #include <QToolBar>
+#include <QStandardPaths>
 
 
 void te::qt::af::UpdateUserSettings()
@@ -146,19 +147,25 @@ void te::qt::af::SaveDataSourcesFile()
 {
   QSettings usettings(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
   
-  QVariant fileName = usettings.value("data_sources/data_file");
+  QString fileName = usettings.value("data_sources/data_file").toString();
 
   if(fileName.isNull())
   {
-    // Fred: revisar
-    const QString& udir=""; //= ApplicationController::getInstance().getUserDataDir();
+    const QString& udir = QStandardPaths::writableLocation(QStandardPaths::DataLocation);
     
     fileName = udir + "/" + QString(TERRALIB_APPLICATION_DATASOURCE_FILE_NAME);
     
-    usettings.setValue("data_sources/data_file", fileName);
+    usettings.setValue("data_sources/data_file", QVariant(fileName));
   }
 
-  te::serialize::xml::Save(fileName.toString().toStdString());
+  QFileInfo info(fileName);
+
+  QDir d = info.absoluteDir();
+
+  if(!d.exists())
+    d.mkpath(d.path());
+
+  te::serialize::xml::Save(fileName.toStdString());
 }
 
 

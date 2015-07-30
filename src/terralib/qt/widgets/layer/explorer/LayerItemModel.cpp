@@ -630,7 +630,7 @@ QModelIndex te::qt::widgets::LayerItemModel::index(int row, int column, const QM
   if(parentItem == 0)
     throw te::common::Exception(tr("Invalid data associated to the layer model!").toStdString());
 
-  if(row >= (size_t)parentItem->getChildrenCount(""))
+  if(row >= (int)parentItem->getChildrenCount(""))
     return QModelIndex();
 
   TreeItem* item = parentItem->getChild(row);

@@ -78,7 +78,7 @@ QIcon te::qt::widgets::LayerViewDelegate::getIcon(const QModelIndex & index) con
 
   std::auto_ptr<te::da::DataSetType> schema = l->getSchema();
 
-  if(!schema->hasGeom() && !schema->hasRaster() || l->getType() == "DATASETADAPTERLAYER")
+  if((!schema->hasGeom() && !schema->hasRaster()) || l->getType() == "DATASETADAPTERLAYER")
     return m_tabularLayer;
 
   return m_layer;

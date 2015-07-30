@@ -79,12 +79,12 @@ void te::qt::widgets::LayerViewMenuManager::addAction(LayerViewMenuManager::LMEN
       q = m_ML_actions.get();
       break;
 
-    case NO_LAYERS:
-      q = m_NL_actions.get();
-      break;
-
     case ALL_LAYERS:
       q = m_AL_actions.get();
+      break;
+
+    default:
+      q = m_NL_actions.get();
       break;
   }
 
