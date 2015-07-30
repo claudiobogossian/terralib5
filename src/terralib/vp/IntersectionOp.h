@@ -73,7 +73,7 @@ namespace te
                     const te::da::ObjectIdSet* firstOidSet = 0,
                     const te::da::ObjectIdSet* secondOidSet = 0);
 
-      void setParams(const bool& copyInputColumns, std::size_t inSRID);
+      void setParams(const bool& copyInputColumns, std::vector<int> inSRID);
 
       void setOutput(te::da::DataSourcePtr outDsrc, std::string dsname);
 
@@ -94,7 +94,7 @@ namespace te
       const te::da::ObjectIdSet* m_secondOidSet;
 
       bool m_copyInputColumns;
-      std::size_t m_SRID;
+      std::vector<int> m_SRID;
 
       te::da::DataSourcePtr m_outDsrc;
       std::string m_outDsetName;

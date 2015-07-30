@@ -64,7 +64,7 @@ void te::vp::IntersectionOp::setInput(te::da::DataSourcePtr inFirstDsrc,
 }
 
 void te::vp::IntersectionOp::setParams( const bool& copyInputColumns,
-                                        std::size_t inSRID)
+                                        std::vector<int> inSRID)
 {
   m_copyInputColumns = copyInputColumns;
   m_SRID = inSRID;

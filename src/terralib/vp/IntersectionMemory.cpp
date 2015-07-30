@@ -76,10 +76,15 @@ te::vp::IntersectionMemory::~IntersectionMemory()
 
 bool te::vp::IntersectionMemory::run() throw(te::common::Exception)
 {  
-  if(m_SRID == 0)
+  if(m_SRID[0] == 0)
   {
     te::gm::GeometryProperty* geom = te::da::GetFirstGeomProperty(m_inFirstDsetType.get());
-    m_SRID = geom->getSRID();
+    m_SRID[0] = geom->getSRID();
+  }
+  if (m_SRID[1] == 0)
+  {
+    te::gm::GeometryProperty* geom = te::da::GetFirstGeomProperty(m_inFirstDsetType.get());
+    m_SRID[1] = geom->getSRID();
   }
 
   std::vector<te::dt::Property*> firstProps = getTabularProps(m_inFirstDsetType.get());
@@ -118,12 +123,13 @@ bool te::vp::IntersectionMemory::run() throw(te::common::Exception)
 std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionMemory::pairwiseIntersection(std::string newName, 
                                                                                                   IntersectionMember firstMember, 
                                                                                                   IntersectionMember secondMember,
-                                                                                                  std::size_t outputSRID)
+                                                                                                  std::vector<int> outputSRID)
 {
 
   //Creating the RTree with the secound layer geometries
   DataSetRTree rtree(new te::sam::rtree::Index<size_t, 8>);
   size_t secGeomPropPos = secondMember.dt->getPropertyPosition(secondMember.dt->findFirstPropertyOfType(te::dt::GEOMETRY_TYPE));
+  te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(secondMember.dt);
 
   size_t secondDsCount = 0;
   int sridSecond = -1;
@@ -133,7 +139,7 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionMemory::pa
     std::auto_ptr<te::gm::Geometry> g = secondMember.ds->getGeometry(secGeomPropPos);
     
     if(sridSecond == -1)
-      sridSecond = g->getSRID();
+      sridSecond = geomProp->getSRID();
 
     rtree->insert(*g->getMBR(), secondDsCount);
 
@@ -152,10 +158,10 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionMemory::pa
   std::pair<te::da::DataSetType*, te::da::DataSet*> resultPair;
 
   te::common::TaskProgress task("Processing intersection...");
-  task.setTotalSteps(firstMember.ds->size());
+  task.setTotalSteps((int)firstMember.ds->size());
   task.useTimer(true);
 
-  std::size_t pk = 0;
+  int pk = 0;
 
   while(firstMember.ds->moveNext())
   {
@@ -168,15 +174,16 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionMemory::pa
     rtree->search(*currGeom->getMBR(), report);
 
     if(!report.empty())
-      currGeom->transform(outputSRID);
+      currGeom->transform(outputSRID[0]);
 
     for(size_t i = 0; i < report.size(); ++i)
     {
       secondMember.ds->move(report[i]);
       std::auto_ptr<te::gm::Geometry> secGeom = secondMember.ds->getGeometry(secGeomPropPos);
+      secGeom->setSRID(outputSRID[1]);
 
-      if(secGeom->getSRID() != outputSRID)
-        secGeom->transform(outputSRID);
+      if(secGeom->getSRID() != outputSRID[0])
+        secGeom->transform(outputSRID[0]);
 
       if(!currGeom->intersects(secGeom.get()))
         continue;
@@ -268,7 +275,7 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionMemory::pa
 
       outputDs->moveNext();
 
-      int aux = te::da::GetFirstSpatialPropertyPos(outputDs);
+      std::size_t aux = te::da::GetFirstSpatialPropertyPos(outputDs);
 
       if(!item->isNull(aux))
         outputDs->add(item);
