@@ -71,6 +71,7 @@ const std::string te::da::FunctionNames::sm_ST_Touches("st_touches");
 const std::string te::da::FunctionNames::sm_ST_Union("st_union");
 const std::string te::da::FunctionNames::sm_ST_Within("st_within");
 
+const std::string te::da::FunctionNames::sm_ST_SetSRID("st_setsrid");
 const std::string te::da::FunctionNames::sm_ST_Transform("st_transform");
 
 const std::string te::da::FunctionNames::sm_Substring("substring");

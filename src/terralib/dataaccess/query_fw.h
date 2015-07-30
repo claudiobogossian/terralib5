@@ -116,6 +116,7 @@ namespace te
     class ST_Overlaps;
     class ST_Perimeter;
     class ST_Relate;
+    class ST_SetSRID;
     class ST_Touches;
     class ST_Transform;
     class ST_Union;

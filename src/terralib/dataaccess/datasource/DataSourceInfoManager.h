@@ -57,7 +57,7 @@ namespace te
 
           DataSourceInfoPtr get(const std::string& id) const;
 
-          void add(const DataSourceInfoPtr& ds);
+          bool add(const DataSourceInfoPtr& ds);
 
           void remove(const std::string& id);
 

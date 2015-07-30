@@ -257,6 +257,7 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAllObjects( te::da::DataSetType*
                                                             std::vector<int> geoVec)
 {
   std::auto_ptr<te::mem::DataSet> outDSet(new te::mem::DataSet(dsType));
+  te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(dsType);
   
   int pk = 0;
   std::auto_ptr<te::da::DataSet> inDset = m_inDsrc->getDataSet(m_inDsetName);
@@ -330,7 +331,7 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAllObjects( te::da::DataSetType*
               if(pos < dsType->size())
               {
                 std::auto_ptr<te::gm::Geometry> convexHull(in_geom->convexHull());
-                convexHull->setSRID(in_geom->getSRID());
+                convexHull->setSRID(geomProp->getSRID());
 
                 if(convexHull->getGeomTypeId() == te::gm::PolygonType)
                 {
@@ -349,7 +350,7 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAllObjects( te::da::DataSetType*
               {
                 const te::gm::Envelope* env = in_geom->getMBR();
                 te::gm::Coord2D center = env->getCenter();
-                te::gm::Point* point = new te::gm::Point(center.x, center.y, in_geom->getSRID());
+                te::gm::Point* point = new te::gm::Point(center.x, center.y, geomProp->getSRID());
                 item->setGeometry("centroid", point);
               }
             }
@@ -360,7 +361,7 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAllObjects( te::da::DataSetType*
               if(pos < dsType->size())
               {
                 std::auto_ptr<te::gm::Geometry> mbr(in_geom->getEnvelope());
-                mbr->setSRID(in_geom->getSRID());
+                mbr->setSRID(geomProp->getSRID());
                 if(mbr->getGeomTypeId() == te::gm::PolygonType)
                   item->setGeometry("mbr", mbr.release());
                 else
@@ -380,6 +381,7 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAllObjects( te::da::DataSetType*
     else
     {
       std::auto_ptr<te::gm::Geometry> g(in_geom.release());
+      g->setSRID(geomProp->getSRID());
       te::gm::GeometryCollection* teGeomColl = new te::gm::GeometryCollection(0, te::gm::GeometryCollectionType, g->getSRID());
 
       switch(g->getGeomTypeId())
@@ -431,6 +433,7 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAggregObj(te::da::DataSetType* d
                                                           std::vector<int> geoVec)
 {
   std::auto_ptr<te::mem::DataSet> outDSet(new te::mem::DataSet(dsType));
+  te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(dsType);
 
   int pk = 0;
   std::auto_ptr<te::da::DataSet> inDset = m_inDsrc->getDataSet(m_inDsetName);
@@ -510,7 +513,7 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAggregObj(te::da::DataSetType* d
             if(pos < dsType->size())
             {
               std::auto_ptr<te::gm::Geometry> convexHull(seedGeom->convexHull());
-              convexHull->setSRID(seedGeom->getSRID());
+              convexHull->setSRID(geomProp->getSRID());
               item->setGeometry("convex_hull", convexHull.release());
             }
           }
@@ -522,7 +525,7 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAggregObj(te::da::DataSetType* d
             {
               const te::gm::Envelope* env = seedGeom->getMBR();
               te::gm::Coord2D center = env->getCenter();
-              te::gm::Point* point = new te::gm::Point(center.x, center.y, seedGeom->getSRID());
+              te::gm::Point* point = new te::gm::Point(center.x, center.y, geomProp->getSRID());
               item->setGeometry("centroid", point);
             }
           }
@@ -533,7 +536,7 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAggregObj(te::da::DataSetType* d
             if(pos < dsType->size())
             {
               std::auto_ptr<te::gm::Geometry> mbr(seedGeom->getEnvelope());
-              mbr->setSRID(seedGeom->getSRID());
+              mbr->setSRID(geomProp->getSRID());
               item->setGeometry("mbr", mbr.release());
             }
           }
@@ -550,6 +553,7 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAggregObj(te::da::DataSetType* d
   else
   {
     std::auto_ptr<te::gm::Geometry> g(seedGeom.release());
+    g->setSRID(geomProp->getSRID());
     te::gm::GeometryCollection* teGeomColl = new te::gm::GeometryCollection(0, te::gm::GeometryCollectionType, g->getSRID());
 
     switch(g->getGeomTypeId())
@@ -604,6 +608,7 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAggregByAttribute(te::da::DataSe
   // move first to take a seed geom.
   inDset->moveFirst();
   std::auto_ptr<te::gm::Geometry> seedGeom = inDset->getGeometry(geom_pos);
+  seedGeom->setSRID(propGeom->getSRID());
 
   if(inDset->size() > 1)
   {
@@ -755,7 +760,7 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAggregByAttribute(te::da::DataSe
               {
                 const te::gm::Envelope* env = itGeom->second->getMBR();
                 te::gm::Coord2D center = env->getCenter();
-                te::gm::Point* point = new te::gm::Point(center.x, center.y, itGeom->second->getSRID());
+                te::gm::Point* point = new te::gm::Point(center.x, center.y, seedGeom->getSRID());
                 outItem->setGeometry("centroid", point);
               }
             }
@@ -782,7 +787,7 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAggregByAttribute(te::da::DataSe
     }
     else
     {
-      te::gm::GeometryCollection* teGeomColl = new te::gm::GeometryCollection(0, te::gm::GeometryCollectionType, itGeom->second->getSRID());
+      te::gm::GeometryCollection* teGeomColl = new te::gm::GeometryCollection(0, te::gm::GeometryCollectionType, seedGeom->getSRID());
 
       switch(itGeom->second->getGeomTypeId())
       {

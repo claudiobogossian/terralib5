@@ -96,6 +96,7 @@ namespace te
         static const std::string sm_ST_Within;
 
 // srs operators
+        static const std::string sm_ST_SetSRID;
         static const std::string sm_ST_Transform;
 
 // string functions
