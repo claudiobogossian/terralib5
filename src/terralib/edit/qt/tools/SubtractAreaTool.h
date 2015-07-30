@@ -2,9 +2,9 @@
 #define __TERRALIB_EDIT_QT_INTERNAL_SUBTRACTAREATOOL_H
 
 // TerraLib
+#include "../../../edit/qt/core/EditionManager.h"
 #include "../../../geometry/Envelope.h"
 #include "../../../maptools/AbstractLayer.h"
-#include "../../Feature.h"
 #include "../Config.h"
 
 // Qt
@@ -25,15 +25,13 @@ namespace te
 
   namespace edit
   {
-    // Forward declaration
-    //class Feature;
 
     class TEEDITQTEXPORT SubtractAreaTool : public CreateLineTool
     {
       Q_OBJECT
 
     public:
-      SubtractAreaTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent = 0);
+      SubtractAreaTool(te::edit::EditionManager* editionManager, te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent = 0);
 
       ~SubtractAreaTool();
 
@@ -75,7 +73,9 @@ namespace te
 
     protected:
       te::map::AbstractLayerPtr m_layer;
-      te::edit::Feature* m_feature;
+      Feature* m_feature;
+      te::edit::EditionManager* m_editionManager;
+      std::vector<Feature*> m_updateWatches;
 
     };
 

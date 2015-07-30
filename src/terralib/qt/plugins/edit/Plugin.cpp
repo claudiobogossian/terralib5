@@ -61,6 +61,9 @@ void te::qt::plugins::edit::Plugin::startup()
   // Create the main toolbar
   m_toolbar = new ToolBar;
 
+  // Add plugin toolbar
+  //te::qt::af::ApplicationController::getInstance().addToolBar("EditToolBar", m_toolbar->get());
+
   // Get plugins menu
   QMenu* pluginsMenu = te::qt::af::ApplicationController::getInstance().getMenu("Plugins");
 

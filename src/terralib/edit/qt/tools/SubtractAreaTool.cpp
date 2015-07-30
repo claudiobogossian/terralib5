@@ -13,6 +13,7 @@
 #include "../../Utils.h"
 #include "../Renderer.h"
 #include "../Utils.h"
+#include "../core/command/UpdateCommand.h"
 #include "SubtractAreaTool.h"
 
 // Qt
@@ -26,10 +27,11 @@
 #include <cassert>
 #include <memory>
 
-te::edit::SubtractAreaTool::SubtractAreaTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent)
-: CreateLineTool(display, layer, Qt::ArrowCursor, 0),
+te::edit::SubtractAreaTool::SubtractAreaTool(te::edit::EditionManager* editionManager, te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent)
+: CreateLineTool(editionManager, display, layer, Qt::ArrowCursor, 0),
 m_layer(layer),
-m_feature(0)
+m_feature(0),
+m_editionManager(editionManager)
 {
 }
 
@@ -54,7 +56,6 @@ bool te::edit::SubtractAreaTool::mousePressEvent(QMouseEvent* e)
     QMessageBox::critical(m_display, tr("Warning"), QString(tr("You must select polygon!")));
     return false;
   }
-
 
   if (m_feature == 0)
   {
@@ -106,6 +107,11 @@ bool te::edit::SubtractAreaTool::mouseDoubleClickEvent(QMouseEvent* e)
 
     storeEditedFeature();
 
+    m_updateWatches.push_back(m_feature->clone());
+
+    QUndoCommand* command = new UpdateCommand(m_editionManager, m_updateWatches, m_feature->clone(), m_display, m_layer);
+    m_editionManager->addUndoStack(command);
+
     return true;
   }
   catch (std::exception& e)
@@ -117,6 +123,7 @@ bool te::edit::SubtractAreaTool::mouseDoubleClickEvent(QMouseEvent* e)
 
 void te::edit::SubtractAreaTool::draw()
 {
+
   const te::gm::Envelope& env = m_display->getExtent();
   if (!env.isValid())
     return;
@@ -130,7 +137,7 @@ void te::edit::SubtractAreaTool::draw()
   renderer.begin(draft, env, m_display->getSRID());
 
   // Draw the layer edited geometries
-  renderer.drawRepository(m_layer->getId(), env, m_display->getSRID());
+  renderer.drawRepository(m_editionManager,m_layer->getId(), env, m_display->getSRID());
 
   if (!m_coords.empty())
   {
@@ -204,7 +211,7 @@ void te::edit::SubtractAreaTool::pickFeature(const te::map::AbstractLayerPtr& la
 
   try
   {
-    m_feature = PickFeature(m_layer, env, m_display->getSRID());
+    m_feature = PickFeature(m_editionManager,m_layer, env, m_display->getSRID());
 
     if (m_feature == 0)
     {
@@ -238,7 +245,7 @@ void te::edit::SubtractAreaTool::pickFeature(const te::map::AbstractLayerPtr& la
         // Build the search envelope
         te::gm::Envelope e(coord.getX() , coord.getY() , coord.getX() , coord.getY());
 
-        m_feature = PickFeature(m_layer, e, m_display->getSRID());
+        m_feature = PickFeature(m_editionManager,m_layer, e, m_display->getSRID());
       }
     }
 
@@ -280,7 +287,9 @@ void te::edit::SubtractAreaTool::onExtentChanged()
 
 void te::edit::SubtractAreaTool::storeEditedFeature()
 {
-  RepositoryManager::getInstance().addGeometry(m_layer->getId(), m_feature->getId()->clone(), buildPolygon());//m_feature->getGeometry()/*buildPolygon()*/);
+  m_editionManager->m_repository->addGeometry(m_layer->getId(), m_feature->getId()->clone(), buildPolygon());
+
+  m_editionManager->m_operation[m_feature->getId()->getValueAsString()] = m_editionManager->updateOp;
 }
 
 te::gm::Geometry* te::edit::SubtractAreaTool::Difference(te::gm::Geometry* g1, te::gm::Geometry* g2)
