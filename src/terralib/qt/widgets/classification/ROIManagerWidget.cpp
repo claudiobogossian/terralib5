@@ -474,7 +474,10 @@ void te::qt::widgets::ROIManagerWidget::onExportROISetToolButtonClicked()
     QMessageBox::warning(this, tr("Warning"), tr("ROI Set is empty."));
     return;
   }
-  int srid = m_layer->getSRID();
+
+  te::qt::widgets::MapDisplay* mapDisplay = m_navigator->getDisplay();
+
+  int srid = mapDisplay->getSRID();
 
   try
   {
