@@ -147,6 +147,8 @@ void te::vp::IntersectionDialog::onSecondLayerComboBoxChanged(int index)
 
 void te::vp::IntersectionDialog::onOkPushButtonClicked()
 {
+  std::vector<int> inSRID;
+
   if(m_ui->m_firstLayerComboBox->currentText().isEmpty())
   {
     QMessageBox::warning(this, TE_TR("Intersection"), TE_TR("Select a first input layer."));
@@ -159,6 +161,8 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
     QMessageBox::information(this, "Intersection", "Can not execute this operation on this type of first layer.");
     return;
   }
+
+  inSRID.push_back(firstDataSetLayer->getSRID());
 
   const te::da::ObjectIdSet* firstOidSet = 0;
   if(m_ui->m_firstSelectedCheckBox->isChecked())
@@ -190,6 +194,8 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
     QMessageBox::information(this, "Intersection", "Can not execute this operation on this type of second layer.");
     return;
   }
+
+  inSRID.push_back(secondDataSetLayer->getSRID());
 
   const te::da::ObjectIdSet* secondOidSet = 0;
   if(m_ui->m_secondSelectedCheckBox->isChecked())
@@ -288,7 +294,7 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
                                 secondDataSource, secondDataSetLayer->getDataSetName(), secondDataSetLayer->getSchema(),
                                 firstOidSet, secondOidSet);
       intersectionOp->setOutput(dsOGR, outputdataset);
-      intersectionOp->setParams(copyInputColumns, firstDataSetLayer->getSRID());
+      intersectionOp->setParams(copyInputColumns, inSRID);
 
       if (!intersectionOp->paramsAreValid())
         res = false;
@@ -360,7 +366,7 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
                                 secondDataSource, secondDataSetLayer->getDataSetName(), secondDataSetLayer->getSchema(),
                                 firstOidSet, secondOidSet);
       intersectionOp->setOutput(aux, outputdataset);
-      intersectionOp->setParams(copyInputColumns, firstDataSetLayer->getSRID());
+      intersectionOp->setParams(copyInputColumns, inSRID);
 
       if (!intersectionOp->paramsAreValid())
         res = false;

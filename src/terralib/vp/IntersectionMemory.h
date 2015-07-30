@@ -79,7 +79,7 @@ namespace te
       std::pair<te::da::DataSetType*, te::da::DataSet*> pairwiseIntersection(std::string newName, 
                                                                             IntersectionMember firstMember, 
                                                                             IntersectionMember secondMember,
-                                                                            std::size_t outputSRID);
+                                                                            std::vector<int> outputSRID);
 
       te::da::DataSetType* createDataSetType(std::string newName, 
                                             te::da::DataSetType* firstDt,
