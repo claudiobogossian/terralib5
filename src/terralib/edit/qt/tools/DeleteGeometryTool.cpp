@@ -43,20 +43,22 @@
 #include <QPainter>
 #include <QPixmap>
 
+#include "../../../dataaccess/dataset/ObjectIdSet.h"
+
 // STL
 #include <cassert>
 #include <memory>
 
-
-te::edit::DeleteGeometryTool::DeleteGeometryTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent)
+te::edit::DeleteGeometryTool::DeleteGeometryTool(te::edit::EditionManager* editionManager, te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent)
   : AbstractTool(display, parent),
     m_layer(layer),
-    m_feature(0)
+    m_feature(0),
+    m_editionManager(editionManager)
 {
   // Signals & slots
   connect(m_display, SIGNAL(extentChanged()), SLOT(onExtentChanged()));
-
-  pickFeature(m_layer);
+  
+  pickFeature(m_layer, QPointF());
 
   if (m_feature == 0)
   {
@@ -65,10 +67,11 @@ te::edit::DeleteGeometryTool::DeleteGeometryTool(te::qt::widgets::MapDisplay* di
   }
 
   storeRemovedFeature();
+
 }
 
 te::edit::DeleteGeometryTool::~DeleteGeometryTool()
-{ 
+{
   delete m_feature;
 }
 
@@ -98,7 +101,7 @@ void te::edit::DeleteGeometryTool::reset()
   m_feature = 0;
 }
 
-void te::edit::DeleteGeometryTool::pickFeature(const te::map::AbstractLayerPtr& layer)
+void te::edit::DeleteGeometryTool::pickFeature(const te::map::AbstractLayerPtr& layer, const QPointF& pos)
 {
   reset();
 
@@ -112,39 +115,19 @@ void te::edit::DeleteGeometryTool::pickFeature(const te::map::AbstractLayerPtr& 
 
     te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(dt.get());
 
-    while (ds->moveNext())
+    if (ds->moveNext())
     {
 
       std::auto_ptr<te::gm::Geometry> geom = ds->getGeometry(geomProp->getName());
       te::gm::Envelope auxEnv(*geom->getMBR());
-      /*
-      m_feature = PickFeature(m_layer, auxEnv, m_display->getSRID());
-      */
 
-      te::gm::Coord2D coord(0, 0);
-
-      // Try finds the geometry centroid
-      if (geom->getGeomTypeId() == te::gm::PolygonType)
-      {
-        te::gm::Polygon* p = dynamic_cast<te::gm::Polygon*>(geom.get());
-        coord = *p->getCentroidCoord();
-      }
-      else if (geom->getGeomTypeId() == te::gm::MultiPolygonType)
-      {
-        te::gm::MultiPolygon* mp = dynamic_cast<te::gm::MultiPolygon*>(geom.get());
-        coord = *mp->getCentroidCoord();
-      }
-
-      // Build the search envelope
-      te::gm::Envelope e(coord.getX(), coord.getY(), coord.getX(), coord.getY());
-
-      m_feature = PickFeature(m_layer, e, m_display->getSRID());
+      m_feature = PickFeature(m_editionManager, m_layer, auxEnv, m_display->getSRID());
 
     }
 
-      draw();
+    draw();
   }
-  catch(std::exception& e)
+  catch (std::exception& e)
   {
     QMessageBox::critical(m_display, tr("Error"), QString(tr("The geometry cannot be selected from the layer. Details:") + " %1.").arg(e.what()));
   }
@@ -182,26 +165,23 @@ void te::edit::DeleteGeometryTool::draw()
   renderer.begin(draft, env, m_display->getSRID());
 
   // Draw the layer edited geometries
-  renderer.drawRepository(m_layer->getId(), env, m_display->getSRID());
+  renderer.drawRepository(m_editionManager, m_layer->getId(), env, m_display->getSRID());
 
-  if(m_feature == 0)//if (m_feature.size()==0)
+  if(m_feature == 0)
   {
     renderer.end();
     m_display->repaint();
     return;
   }
 
-  renderer.setPolygonStyle(Qt::white, Qt::black, 4);
+  renderer.setPolygonStyle(Qt::white, Qt::black, 1);
 
   renderer.draw(m_feature->getGeometry(), false);
-  /*for (int i = 0; i < m_feature.size(); ++i) {
-    renderer.draw(m_feature[i]->getGeometry(), false);
-  }*/
-
 
   renderer.end();
 
   m_display->repaint();
+
 }
 
 void te::edit::DeleteGeometryTool::onExtentChanged()
@@ -211,7 +191,8 @@ void te::edit::DeleteGeometryTool::onExtentChanged()
 
 void te::edit::DeleteGeometryTool::storeRemovedFeature()
 {
+  m_editionManager->m_repository->addGeometry(m_layer->getId(), m_feature->getId()->clone(), dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone()));
 
-  RepositoryManager::getInstance().addGeometry(m_layer->getId(), m_feature->getId()->clone(), dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone())); //m_feature->getGeometry());
+  m_editionManager->m_operation[m_feature->getId()->getValueAsString()] = m_editionManager->removeOp;
 
 }

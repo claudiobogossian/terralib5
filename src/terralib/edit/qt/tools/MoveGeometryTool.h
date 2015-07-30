@@ -27,6 +27,7 @@
 #define __TERRALIB_EDIT_QT_INTERNAL_MOVEGEOMETRYTOOL_H
 
 // TerraLib
+#include "../../../edit/qt/core/EditionManager.h"
 #include "../../../geometry/Envelope.h"
 #include "../../../maptools/AbstractLayer.h"
 #include "../../../qt/widgets/tools/AbstractTool.h"
@@ -34,6 +35,12 @@
 
 // Qt
 #include <QPointF>
+#include <QUndoCommand>
+
+//STL
+#include <map>
+
+
 
 namespace te
 {
@@ -75,8 +82,7 @@ namespace te
 
           \note The tool will NOT take the ownership of the given pointers.
         */
-        MoveGeometryTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent = 0);
-
+        MoveGeometryTool(te::edit::EditionManager* editionManager, te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject *parent = 0);
         /*! \brief Destructor. */
         ~MoveGeometryTool();
 
@@ -122,6 +128,9 @@ namespace te
         bool m_moveStarted;                 //!< Flag that indicates if move operation was started.
         QPointF m_origin;                   //!< Origin point on mouse pressed.
         QPointF m_delta;                    //!< Difference between pressed point and destination point on mouse move.
+        QPointF m_deltaSum;                 //!< Sum of all delta
+        std::map<std::string, QList<QPointF>> m_moveWatches;
+        te::edit::EditionManager* m_editionManager;
     };
 
   }   // end namespace edit

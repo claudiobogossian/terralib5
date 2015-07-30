@@ -53,17 +53,22 @@ namespace te
 // Forward declaration
     class Feature;
     class Repository;
-
     /*!
       \class RepositoryManager
 
       \brief This is a singleton for managing edit repositories.
     */
-    class TEEDITEXPORT RepositoryManager : public te::common::Singleton<RepositoryManager>
+    class TEEDITEXPORT RepositoryManager //: public te::common::Singleton<RepositoryManager>
     {
-      friend class te::common::Singleton<RepositoryManager>;
-
+      //friend class te::common::Singleton<RepositoryManager>;
+      
       public:
+
+        /*! \brief It initializes the singleton instance of the repository manager. */
+        RepositoryManager();
+
+        /*! \brief Singleton destructor. */
+        ~RepositoryManager();
 
         void addGeometry(const std::string& source, te::gm::Geometry* geom);
 
@@ -89,13 +94,10 @@ namespace te
 
         void remove(const std::string& source);
 
+        void removeFeature(const std::string& source, te::da::ObjectId* id);
+
       protected:
-
-        /*! \brief It initializes the singleton instance of the repository manager. */
-        RepositoryManager();
-
-        /*! \brief Singleton destructor. */
-        ~RepositoryManager();
+        int value;
 
       private:
 

@@ -56,10 +56,11 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include <memory>
 
 
-te::edit::MergeGeometriesTool::MergeGeometriesTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, QObject* parent)
+te::edit::MergeGeometriesTool::MergeGeometriesTool(te::edit::EditionManager* editionManager, te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, QObject* parent)
 : AbstractTool(display, parent)
 ,m_layer(layer),
-m_feature(0)
+m_feature(0),
+m_editionManager(editionManager)
 {
   // Signals & slots
   connect(m_display, SIGNAL(extentChanged()), SLOT(onExtentChanged()));
@@ -73,11 +74,10 @@ m_feature(0)
 
 te::edit::MergeGeometriesTool::~MergeGeometriesTool()
 {
-  delete m_oidRemoved;
-
   QPixmap* draft = m_display->getDraftPixmap();
   draft->fill(Qt::transparent);
 
+  m_oidRemoved = 0;
   m_feature = 0;
 }
 
@@ -117,7 +117,7 @@ void te::edit::MergeGeometriesTool::mergeGeometries()
 
   ev = getRefEnvelope(ds.get(), m_refOid, geomProp);
 
-  m_feature = PickFeature(m_layer, *ev, m_display->getSRID());
+  m_feature = PickFeature(m_editionManager, m_layer, *ev, m_display->getSRID());
 
   g = gc->getGeometryN(0);
 
@@ -256,6 +256,7 @@ te::gm::Geometry* te::edit::MergeGeometriesTool::Union(te::gm::Geometry* g1, te:
 
 void te::edit::MergeGeometriesTool::draw()
 {
+
   const te::gm::Envelope& env = m_display->getExtent();
   if (!env.isValid())
     return;
@@ -269,7 +270,7 @@ void te::edit::MergeGeometriesTool::draw()
   renderer.begin(draft, env, m_display->getSRID());
 
   // Draw the layer edited geometries
-  renderer.drawRepository(m_layer->getId(), env, m_display->getSRID());
+  renderer.drawRepository(m_editionManager, m_layer->getId(), env, m_display->getSRID());
 
   // Draw the current geometry and the vertexes
   renderer.setPolygonStyle(Qt::red, Qt::black, 2);
@@ -278,6 +279,7 @@ void te::edit::MergeGeometriesTool::draw()
   renderer.end();
 
   m_display->repaint();
+
 }
 
 void te::edit::MergeGeometriesTool::storeMergedFeature()
@@ -286,10 +288,12 @@ void te::edit::MergeGeometriesTool::storeMergedFeature()
   
   for (it = m_oidRemoved->begin(); it != m_oidRemoved->end(); ++it)
   {
-    RepositoryManager::getInstance().addGeometry(m_layer->getId(), (*it)->clone(), dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone()));
+    m_editionManager->m_repository->addGeometry(m_layer->getId(), (*it)->clone(), dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone()));
+    m_editionManager->m_operation[(*it)->clone()->getValueAsString()] = m_editionManager->removeOp;
   }
 
-  RepositoryManager::getInstance().addGeometry(m_layer->getId(), m_feature->getId()->clone(), dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone()));
+  m_editionManager->m_repository->addGeometry(m_layer->getId(), m_feature->getId()->clone(), dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone()));
+  m_editionManager->m_operation[m_feature->getId()->getValueAsString()] = m_editionManager->updateOp;
 }
 
 void te::edit::MergeGeometriesTool::onExtentChanged()
