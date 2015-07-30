@@ -1294,7 +1294,27 @@ void TerraView::onRemoveLayerTriggered()
   if (reply == QMessageBox::No)
     return;
 
+  std::list<te::map::AbstractLayerPtr> lays = GetSelectedLayersOnly(getLayerExplorer());
+
   getLayerExplorer()->removeSelectedItems();
+
+  bool needRefresh = false;
+  for(std::list<te::map::AbstractLayerPtr>::iterator it = lays.begin(); it != lays.end(); ++it)
+  {
+    if((*it)->getVisibility() == te::map::VISIBLE)
+      needRefresh = true;
+
+    te::qt::af::evt::LayerRemoved e(*it);
+    emit triggered(&e);
+  }
+
+  if(needRefresh)
+  {
+    lays.clear();
+    GetValidLayers(getLayerExplorer()->model(), QModelIndex(), lays);
+    getMapDisplay()->setLayerList(lays);
+    getMapDisplay()->refresh();
+  }
 
   projectChanged();
 }

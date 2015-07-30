@@ -127,6 +127,8 @@ namespace te
           */
           void closed(te::qt::af::ChartDisplayDockWidget*);
 
+          void triggered(te::qt::af::evt::Event* e);
+
         protected:
 
           te::qt::widgets::ChartDisplayWidget* m_displayWidget;  //!< The widget containing the display

@@ -327,10 +327,14 @@ void te::qt::af::MapDisplay::onApplicationTriggered(te::qt::af::evt::Event* e)
     break;
 
     case te::qt::af::evt::ITEM_OF_LAYER_REMOVED:
+      draw(getSelectedLayer());
+    break;
+
     case te::qt::af::evt::LAYER_REMOVED:
     {
-      // Fred: revisar
-      draw(getSelectedLayer());
+      //te::qt::af::evt::LayerRemoved* evt = static_cast<te::qt::af::evt::LayerRemoved*>(e);
+      //m_display->set
+      //if(evt->m_layer->getVisibility())
     }
     break;
 

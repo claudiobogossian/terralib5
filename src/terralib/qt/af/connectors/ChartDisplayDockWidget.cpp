@@ -179,16 +179,14 @@ void te::qt::af::ChartDisplayDockWidget::selectionChanged(te::da::ObjectIdSet* o
     m_layer->select(added);
     te::qt::af::evt::LayerSelectedObjectsChanged e(m_layer, computeDataSetEnvelope(ds, geomPos));
 
-    // Fred: revisar
-
-//    ApplicationController::getInstance().broadcast(&e);
+    emit triggered(&e);
   }
   else
   {
     m_layer->select(added);
     te::qt::af::evt::LayerSelectedObjectsChanged e(m_layer);
-    // Fred: revisar
-//    ApplicationController::getInstance().broadcast(&e);
+
+    emit triggered(&e);
   }
   oids->clear();
 }

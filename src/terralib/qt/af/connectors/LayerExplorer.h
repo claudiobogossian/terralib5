@@ -111,8 +111,6 @@ namespace te
 
           void triggered(te::qt::af::evt::Event* e);
 
-          //void selectedLayersChanged(const std::list<te::map::AbstractLayerPtr>& selectedLayers);
-
         protected:
 
           te::qt::widgets::LayerItemView* m_explorer; //!< Pointer to a component te::qt::widgets::LayerExplorer.

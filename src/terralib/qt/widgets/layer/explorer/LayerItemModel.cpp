@@ -471,7 +471,7 @@ Qt::DropActions te::qt::widgets::LayerItemModel::supportedDropActions() const
 QStringList te::qt::widgets::LayerItemModel::mimeTypes() const
 {
   QStringList types;
-  types << "application/layers";
+  types << "application/x-terralib;value=\"DraggedItems\"";
   return types;
 }
 
@@ -489,7 +489,7 @@ QMimeData* te::qt::widgets::LayerItemModel::mimeData(const QModelIndexList& inde
 
   QByteArray encodedData(s.toStdString().c_str());
 
-  mimeData->setData("application/layers", encodedData);
+  mimeData->setData("application/x-terralib;value=\"DraggedItems\"", encodedData);
 
   return mimeData;
 }
@@ -500,7 +500,7 @@ bool te::qt::widgets::LayerItemModel::canDropMimeData(const QMimeData* data, Qt:
   Q_UNUSED(row);
   Q_UNUSED(parent);
 
-  if (!data->hasFormat("application/layers"))
+  if(!data->hasFormat("application/x-terralib;value=\"DraggedItems\""))
     return false;
 
   if (column > 0)
@@ -517,7 +517,7 @@ bool te::qt::widgets::LayerItemModel::dropMimeData(const QMimeData* data, Qt::Dr
   if (action == Qt::IgnoreAction)
     return true;
 
-  QByteArray encodedData = data->data("application/layers");
+  QByteArray encodedData = data->data("application/x-terralib;value=\"DraggedItems\"");
 
   qulonglong dataValue = encodedData.toULongLong();
 
