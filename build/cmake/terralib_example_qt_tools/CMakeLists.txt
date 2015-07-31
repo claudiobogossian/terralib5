@@ -40,8 +40,8 @@ if(Qt5_FOUND)
 
   target_link_libraries(terralib_example_qt_tools terralib_mod_common
                                                   terralib_mod_geometry
-												  terralib_mod_maptools
-												  terralib_mod_plugin
+                                                  terralib_mod_maptools
+                                                  terralib_mod_plugin
                                                   terralib_mod_qt_widgets)
 
   qt5_use_modules(terralib_example_qt_tools Widgets)
@@ -78,12 +78,6 @@ endif()
 set_target_properties(terralib_example_qt_tools
                       PROPERTIES VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}
                                  SOVERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR})
-
-install(TARGETS terralib_example_qt_tools
-        EXPORT terralib-targets
-        RUNTIME DESTINATION ${TERRALIB_DESTINATION_RUNTIME} COMPONENT runtime
-        LIBRARY DESTINATION ${TERRALIB_DESTINATION_LIBRARY} COMPONENT runtime
-        ARCHIVE DESTINATION ${TERRALIB_DESTINATION_ARCHIVE} COMPONENT runtime)
 
 install(FILES ${TERRALIB_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_EXAMPLES}/qt/tools COMPONENT devel)
