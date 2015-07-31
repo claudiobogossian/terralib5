@@ -327,7 +327,7 @@ void te::qt::af::MapDisplay::onApplicationTriggered(te::qt::af::evt::Event* e)
     break;
 
     case te::qt::af::evt::ITEM_OF_LAYER_REMOVED:
-      draw(getSelectedLayer());
+//      draw(getSelectedLayer());
     break;
 
     case te::qt::af::evt::LAYER_REMOVED:

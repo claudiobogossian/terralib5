@@ -53,6 +53,15 @@ te::qt::widgets::ChartItem::ChartItem(te::map::Chart* chart) :
 
 te::qt::widgets::ChartItem::~ChartItem()
 {
+  if(m_parent == 0)
+    return;
+
+  te::map::AbstractLayerPtr layer = ((LayerItem*)m_parent)->getLayer();
+
+  te::map::Chart* chart = layer->getChart();
+
+  if(chart == m_chart)
+    layer->setChart(0);
 }
 
 std::string te::qt::widgets::ChartItem::getAsString() const

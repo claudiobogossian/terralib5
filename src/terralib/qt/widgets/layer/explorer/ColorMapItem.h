@@ -76,13 +76,15 @@ namespace te
         */
         //@{
         std::string getAsString() const;
+
+        Qt::ItemFlags flags();
         //@}
 
       protected:
 
         std::string m_label;    //!< Label to be presented on the Qt view.
 
-//        const te::se::ColorMap* m_colorMap;
+        const te::se::ColorMap* m_colorMap;
       };
     }
   }

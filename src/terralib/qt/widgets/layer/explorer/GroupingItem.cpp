@@ -6,6 +6,7 @@
 #include "../../../../maptools/Grouping.h"
 #include "../../../../maptools/GroupingItem.h"
 
+#include "LayerItem.h"
 #include "LegendItem.h"
 
 // Qt
@@ -30,6 +31,15 @@ te::qt::widgets::GroupingItem::GroupingItem(te::map::Grouping* g) :
 
 te::qt::widgets::GroupingItem::~GroupingItem()
 {
+  if(m_parent == 0)
+    return;
+
+  te::map::AbstractLayerPtr layer = ((LayerItem*)m_parent)->getLayer();
+
+  te::map::Grouping* group = layer->getGrouping();
+
+  if(group == m_grouping)
+    layer->setGrouping(0);
 }
 
 std::string te::qt::widgets::GroupingItem::getAsString() const

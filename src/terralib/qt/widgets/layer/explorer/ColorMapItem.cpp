@@ -85,7 +85,8 @@ void AddSliceItems(te::qt::widgets::ColorMapItem* item, const te::se::ColorMap* 
 }
 
 te::qt::widgets::ColorMapItem::ColorMapItem(const te::se::ColorMap* map) :
-  TreeItem("COLORMAP")
+  TreeItem("COLORMAP"),
+  m_colorMap(map)
 {
   QString type;
 
@@ -96,22 +97,34 @@ te::qt::widgets::ColorMapItem::ColorMapItem(const te::se::ColorMap* map) :
 
   m_label = (QObject::tr("Classification by") + " " + type).toStdString();
 
-  AddSliceItems(this, map);
+  AddSliceItems(this, m_colorMap);
 }
 
 te::qt::widgets::ColorMapItem::~ColorMapItem()
 {
-  te::map::AbstractLayerPtr l = ((LayerItem*)m_parent)->getLayer();
+  if(m_parent == 0)
+    return;
 
-  // If the item is a color map item, remove the all style from the layer associated to the parent of this color map item.
-  l->setStyle(0);
+  te::map::AbstractLayerPtr layer = ((LayerItem*)m_parent)->getLayer();
+  te::se::RasterSymbolizer* rs = te::se::GetRasterSymbolizer(layer->getStyle());
 
-  te::se::RasterSymbolizer* rs = te::se::GetRasterSymbolizer(l->getStyle());
+  te::se::ColorMap* map = rs->getColorMap();
 
-  rs->setColorMap(0);
+  if(map == m_colorMap)
+  {
+    // If the item is a color map item, remove the all style from the layer associated to the parent of this color map item.
+    layer->setStyle(0);
+
+    rs->setColorMap(0);
+  }
 }
 
 std::string te::qt::widgets::ColorMapItem::getAsString() const
 {
   return m_label;
+}
+
+Qt::ItemFlags te::qt::widgets::ColorMapItem::flags()
+{
+  return Qt::ItemIsDropEnabled | Qt::ItemIsEnabled;
 }

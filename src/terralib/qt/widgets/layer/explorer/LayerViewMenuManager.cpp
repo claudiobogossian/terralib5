@@ -41,6 +41,13 @@ bool IsRasterLayer(te::qt::widgets::TreeItem* item)
   return layer->getSchema()->hasRaster();
 }
 
+bool IsValidLayer(te::qt::widgets::TreeItem* item)
+{
+  te::map::AbstractLayerPtr layer = (static_cast<te::qt::widgets::LayerItem*>(item))->getLayer();
+
+  return layer->isValid();
+}
+
 te::qt::widgets::LayerViewMenuManager::LayerViewMenuManager(LayerItemView* view):
   QObject(view),
   m_view(view)
@@ -51,6 +58,7 @@ te::qt::widgets::LayerViewMenuManager::LayerViewMenuManager(LayerItemView* view)
   m_ML_actions.reset(new QueueAction);
   m_NL_actions.reset(new QueueAction);
   m_AL_actions.reset(new QueueAction);
+  m_IL_actions.reset(new QueueAction);
 }
 
 te::qt::widgets::LayerViewMenuManager::~LayerViewMenuManager()
@@ -81,6 +89,10 @@ void te::qt::widgets::LayerViewMenuManager::addAction(LayerViewMenuManager::LMEN
 
     case ALL_LAYERS:
       q = m_AL_actions.get();
+      break;
+
+    case INVALID_LAYERS:
+      q = m_IL_actions.get();
       break;
 
     default:
@@ -137,11 +149,15 @@ bool te::qt::widgets::LayerViewMenuManager::eventFilter(QObject* watched, QEvent
         else
         {
           QModelIndexList ls = m_view->selectionModel()->selectedIndexes();
+
+          if(ls.isEmpty())
+            return true;
+
           QMenu mnu;
           int si = ls.size();
 
           if(si > 1)
-            GetMenu(&mnu, m_ML_actions.get(), 0);
+            GetMenu(&mnu, m_ML_actions.get(), m_AL_actions.get());
           else
           {
             TreeItem* item = static_cast<TreeItem*>(ls.at(0).internalPointer());
@@ -149,7 +165,9 @@ bool te::qt::widgets::LayerViewMenuManager::eventFilter(QObject* watched, QEvent
             if(item->getType() == "FOLDER")
               GetMenu(&mnu, m_FL_actions.get(), m_AL_actions.get());
             else if(item->getType() == "LAYER" )
-              GetMenu(&mnu, (IsRasterLayer(item)) ? m_RL_actions.get() :  m_VL_actions.get(), m_AL_actions.get());
+              GetMenu(&mnu, (!IsValidLayer(item)) ? m_IL_actions.get() : (IsRasterLayer(item)) ? m_RL_actions.get() : m_VL_actions.get(), m_AL_actions.get());
+            else
+              GetMenu(&mnu, 0, m_AL_actions.get());
           }
 
           mnu.exec(pos);

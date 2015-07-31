@@ -168,6 +168,12 @@ namespace te
         * \brief
         * \param
         */
+        void addInvalidLayerAction(QAction* act);
+
+        /*!
+        * \brief
+        * \param
+        */
         void removeItems(const QModelIndexList& idxs);
 
         /*!

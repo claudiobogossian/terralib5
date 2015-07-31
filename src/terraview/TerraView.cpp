@@ -291,6 +291,28 @@ void GetValidLayers(QAbstractItemModel* model, const QModelIndex& parent, std::l
   }
 }
 
+void GetChangedAndVisibleLayers(const QModelIndexList& idxs, std::list<te::map::AbstractLayerPtr>& layers)
+{
+  for(QModelIndexList::const_iterator it = idxs.begin(); it != idxs.end(); ++it)
+  {
+    te::qt::widgets::TreeItem* item = static_cast<te::qt::widgets::TreeItem*>((*it).internalPointer());
+
+    if(item->getType() == "CHART" || item->getType() == "GROUPING" || item->getType() == "COLORMAP")
+    {
+      QModelIndex parent = (*it).model()->parent(*it);
+
+      if(!idxs.contains(parent))
+      {
+        te::qt::widgets::TreeItem* lI = static_cast<te::qt::widgets::TreeItem*>(parent.internalPointer());
+
+        if(lI->isVisible() == te::qt::widgets::TOTALLY)
+          layers.push_back(((te::qt::widgets::LayerItem*)lI)->getLayer());
+      }
+    }
+  }
+}
+
+
 TerraView::TerraView(QWidget* parent)
   : te::qt::af::BaseApplication(parent),
     m_mapCursorSize(QSize(20, 20)),
@@ -443,7 +465,7 @@ void TerraView::initActions()
   initAction(m_projectAddFolderLayer, "folderlayer-new", "Project.New Folder Layer", tr("Add &Folder Layer..."), tr("Add a new folder layer"), true, false, true, m_menubar);
   initAction(m_projectAddLayerQueryDataSet, "view-filter", "Project.Add Layer.Query Dataset", tr("&Query Dataset..."), tr("Add a new layer from a queried dataset"), true, false, true, m_menubar);
   initAction(m_projectAddLayerTabularDataSet, "view-data-table", "Project.Add Layer.Tabular File", tr("&Tabular File..."), tr("Add a new layer from a Tabular file"), true, false, true, m_menubar);
-  initAction(m_projectRemoveLayer, "layer-remove", "Project.Remove Layer", tr("&Remove Layer(s)"), tr("Remove layer(s) from the project"), true, false, true, this);
+  initAction(m_projectRemoveLayer, "layer-remove", "Project.Remove Item", tr("&Remove Item(s)"), tr("Remove item(s) from the project"), true, false, true, this);
   initAction(m_projectRenameLayer, "layer-rename", "Project.Rename Layer", tr("Rename Layer..."), tr("Rename layer"), true, false, true, this);
   initAction(m_projectChangeLayerDataSource, "", "Project.Change Layer Data Source", tr("&Change Layer Data Source"), tr("Chanage layer Data Source"), true, false, true, this);
   initAction(m_projectUpdateLayerDataSource, "", "Project.Update Layer Data Source", tr("&Update Layer Data Source"), tr("Update layer Data Source"), true, false, true, this);
@@ -734,7 +756,10 @@ void TerraView::addPopUpMenu()
 
   //// Actions to be added to the context menu when there is a unique item selected
 
+  treeView->addAllLayerAction(m_projectRemoveLayer);
+
   //// Actions for the folder layer item
+  treeView->addFolderLayerAction(m_projectRenameLayer);
   treeView->addFolderLayerAction(m_projectAddLayerMenu->menuAction());
 
   QAction* folderSep1 = new QAction(this);
@@ -747,10 +772,14 @@ void TerraView::addPopUpMenu()
   folderSep2->setSeparator(true);
   treeView->addFolderLayerAction(folderSep2);
 
-  treeView->addFolderLayerAction(m_projectRemoveLayer);
-  treeView->addFolderLayerAction(m_projectRenameLayer);
-
   //// Actions for the single layer item that is not a raster layer
+  treeView->addVectorLayerAction(m_layerRemoveObjectSelection);
+  treeView->addVectorLayerAction(m_projectRenameLayer);
+
+  QAction* actionStyleSep1 = new QAction(this);
+  actionStyleSep1->setSeparator(true);
+  treeView->addVectorLayerAction(actionStyleSep1);
+
   treeView->addVectorLayerAction(m_layerObjectGrouping);
   treeView->addVectorLayerAction(m_toolsDataExchangerDirectPopUp);
   treeView->addVectorLayerAction(m_layerChartsHistogram);
@@ -770,9 +799,8 @@ void TerraView::addPopUpMenu()
   actionStyleSep->setSeparator(true);
   treeView->addVectorLayerAction(actionStyleSep);
 
-  treeView->addVectorLayerAction(m_layerRemoveObjectSelection);
-  treeView->addVectorLayerAction(m_projectRemoveLayer);
-  treeView->addVectorLayerAction(m_projectRenameLayer);
+//  treeView->addVectorLayerAction(m_layerRemoveObjectSelection);
+//  treeView->addVectorLayerAction(m_projectRenameLayer);
 
   QAction* actionRemoveSep = new QAction(this);
   actionRemoveSep->setSeparator(true);
@@ -799,6 +827,12 @@ void TerraView::addPopUpMenu()
   //treeView->add(m_layerRemoveItem, "", "ITEM_OF_LAYER");
 
   //// Actions for the raster layer item
+  treeView->addRasterLayerAction(m_projectRenameLayer);
+
+  actionStyleSep1 = new QAction(this);
+  actionStyleSep1->setSeparator(true);
+  treeView->addVectorLayerAction(actionStyleSep1);
+
   treeView->addRasterLayerAction(m_layerObjectGrouping);
   treeView->addRasterLayerAction(m_layerChartsHistogram);
   treeView->addRasterLayerAction(m_layerChartsScatter);
@@ -813,8 +847,8 @@ void TerraView::addPopUpMenu()
   rasterSep2->setSeparator(true);
   treeView->addRasterLayerAction(rasterSep2);
 
-  treeView->addRasterLayerAction(m_projectRemoveLayer);
-  treeView->addRasterLayerAction(m_projectRenameLayer);
+//  treeView->addRasterLayerAction(m_projectRemoveLayer);
+//  treeView->addRasterLayerAction(m_projectRenameLayer);
 
   QAction* rasterSep3 = new QAction(this);
   rasterSep3->setSeparator(true);
@@ -836,9 +870,8 @@ void TerraView::addPopUpMenu()
   treeView->addRasterLayerAction(m_layerProperties);
 
   //// Actions for invalid layers
-  //treeView->add(m_projectChangeLayerDataSource, "", "INVALID_LAYER_ITEM");
-  //treeView->add(m_projectUpdateLayerDataSource, "", "INVALID_LAYER_ITEM");
-  //treeView->add(m_projectRemoveLayer, "", "INVALID_LAYER_ITEM");
+  treeView->addInvalidLayerAction(m_projectChangeLayerDataSource);
+  treeView->addInvalidLayerAction(m_projectUpdateLayerDataSource);
 
   //// Actions to be added to the context menu when there are multiple items selected
   //treeView->addMultipleSelectionAction(m_layerFitSelectedOnMapDisplay);
@@ -847,11 +880,11 @@ void TerraView::addPopUpMenu()
   //treeView->add(m_layerFitSelectedOnMapDisplay, "", "QUERY_LAYER_ITEM", te::qt::widgets::LayerTreeView::MULTIPLE_ITEMS_SELECTED);
   //treeView->add(m_layerPanToSelectedOnMapDisplay, "", "QUERY_LAYER_ITEM", te::qt::widgets::LayerTreeView::MULTIPLE_ITEMS_SELECTED);
 
-  QAction* multipleSelectedSep = new QAction(this);
-  multipleSelectedSep->setSeparator(true);
-  treeView->addMultipleSelectionAction(multipleSelectedSep);
+  //QAction* multipleSelectedSep = new QAction(this);
+  //multipleSelectedSep->setSeparator(true);
+  //treeView->addMultipleSelectionAction(multipleSelectedSep);
 
-  treeView->addMultipleSelectionAction(m_projectRemoveLayer);
+//  treeView->addMultipleSelectionAction(m_projectRemoveLayer);
 }
 
 void TerraView::initMenus()
@@ -1269,8 +1302,8 @@ void TerraView::onRemoveLayerTriggered()
 
   if (ls.isEmpty())
   {
-    QString msg = tr("Select at least one layer to be removed!");
-    QMessageBox::warning(this, tr("Remove Layer"), msg);
+    QString msg = tr("Select at least one item to be removed!");
+    QMessageBox::warning(this, tr("Remove item"), msg);
 
     return;
   }
@@ -1280,13 +1313,13 @@ void TerraView::onRemoveLayerTriggered()
 
   if(ls.size() == 1)
   {
-    msg = tr("Do you really want to remove the selected layer?");
-    questionTitle = tr("Remove Layer");
+    msg = tr("Do you really want to remove the selected item?");
+    questionTitle = tr("Remove Item");
   }
   else
   {
-    msg = tr("Do you really want to remove the selected layers?");
-    questionTitle = tr("Remove Layers");
+    msg = tr("Do you really want to remove the selected items?");
+    questionTitle = tr("Remove Items");
   }
 
   int reply = QMessageBox::question(this, questionTitle, msg, QMessageBox::No, QMessageBox::Yes);
@@ -1295,16 +1328,21 @@ void TerraView::onRemoveLayerTriggered()
     return;
 
   std::list<te::map::AbstractLayerPtr> lays = GetSelectedLayersOnly(getLayerExplorer());
+  std::list<te::map::AbstractLayerPtr> lays2;
+
+  GetChangedAndVisibleLayers(getLayerExplorer()->selectionModel()->selectedIndexes(), lays2);
 
   getLayerExplorer()->removeSelectedItems();
 
-  bool needRefresh = false;
-  for(std::list<te::map::AbstractLayerPtr>::iterator it = lays.begin(); it != lays.end(); ++it)
-  {
+  bool needRefresh = !lays2.empty();
+
+  for(std::list<te::map::AbstractLayerPtr>::iterator it = lays.begin(); it != lays.end() && !needRefresh; ++it)
     if((*it)->getVisibility() == te::map::VISIBLE)
       needRefresh = true;
 
-    te::qt::af::evt::LayerRemoved e(*it);
+  if(!lays.empty())
+  {
+    te::qt::af::evt::LayerRemoved e(lays);
     emit triggered(&e);
   }
 

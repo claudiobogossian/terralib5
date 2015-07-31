@@ -70,7 +70,8 @@ namespace te
           FOLDER_LAYER,
           MULTI_LAYERS,
           NO_LAYERS,
-          ALL_LAYERS
+          ALL_LAYERS,
+          INVALID_LAYERS
         };
 
         /*!
@@ -107,6 +108,7 @@ namespace te
         std::auto_ptr<QueueAction> m_ML_actions;
         std::auto_ptr<QueueAction> m_NL_actions;
         std::auto_ptr<QueueAction> m_AL_actions;
+        std::auto_ptr<QueueAction> m_IL_actions;
       };
 
     }

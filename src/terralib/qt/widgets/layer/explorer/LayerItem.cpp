@@ -15,6 +15,9 @@ te::qt::widgets::LayerItem::LayerItem(te::map::AbstractLayerPtr layer) :
   TreeItem("LAYER"),
   m_layer(layer)
 {
+  if(!m_layer->isValid())
+    return;
+
   bool raster = m_layer->getSchema()->hasRaster();
 
   if(m_layer->getStyle() != 0 && !raster)
@@ -41,6 +44,23 @@ te::qt::widgets::LayerItem::LayerItem(te::map::AbstractLayerPtr layer) :
 
 te::qt::widgets::LayerItem::~LayerItem()
 {
+  std::vector<TreeItem*> items;
+  getChildren(items, "CHART");
+
+  if(!items.empty())
+    ((*items.begin())->setParent(0));
+
+  items.clear();
+  getChildren(items, "GROUPING");
+
+  if(!items.empty())
+    ((*items.begin())->setParent(0));
+
+  items.clear();
+  getChildren(items, "COLORMAP");
+
+  if(!items.empty())
+    ((*items.begin())->setParent(0));
 }
 
 std::string te::qt::widgets::LayerItem::getAsString() const

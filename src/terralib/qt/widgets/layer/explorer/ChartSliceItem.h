@@ -74,6 +74,8 @@ namespace te
         */
         //@{
         std::string getAsString() const;
+
+        Qt::ItemFlags flags();
         //@}
 
         QIcon getIcon() const;

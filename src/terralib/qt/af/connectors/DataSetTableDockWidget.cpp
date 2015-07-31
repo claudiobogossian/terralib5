@@ -123,11 +123,13 @@ void te::qt::af::DataSetTableDockWidget::onApplicationTriggered(te::qt::af::evt:
       {
         te::qt::af::evt::LayerRemoved* ev = static_cast<te::qt::af::evt::LayerRemoved*>(evt);
 
-        if(ev->m_layer->getId() == m_layer->getId())
+        for(std::list<te::map::AbstractLayerPtr>::iterator it = ev->m_layers.begin(); it != ev->m_layers.end(); ++it)
+        if((*it)->getId() == m_layer->getId())
         {
           this->close();
+          return;
         }
-      }
+    }
       break;
 
   }

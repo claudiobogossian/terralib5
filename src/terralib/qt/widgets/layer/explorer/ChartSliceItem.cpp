@@ -50,6 +50,11 @@ std::string te::qt::widgets::ChartSliceItem::getAsString() const
   return m_label;
 }
 
+Qt::ItemFlags te::qt::widgets::ChartSliceItem::flags()
+{
+  return Qt::ItemIsDropEnabled | Qt::ItemIsEnabled;
+}
+
 QIcon te::qt::widgets::ChartSliceItem::getIcon() const
 {
   return m_icon;

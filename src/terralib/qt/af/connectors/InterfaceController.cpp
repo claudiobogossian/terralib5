@@ -80,7 +80,8 @@ void te::qt::af::InterfaceController::onApplicationTriggered(te::qt::af::evt::Ev
     {
       te::qt::af::evt::LayerRemoved* ev = static_cast<te::qt::af::evt::LayerRemoved*>(evt);
 
-      layerRemoved( ev->m_layer);
+      for(std::list<te::map::AbstractLayerPtr>::iterator it = ev->m_layers.begin(); it != ev->m_layers.end(); ++it)
+        layerRemoved(*it);
     }
     break;
 

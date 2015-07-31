@@ -108,6 +108,11 @@ std::string te::qt::widgets::LegendItem::getAsString() const
   return m_label;
 }
 
+Qt::ItemFlags te::qt::widgets::LegendItem::flags()
+{
+  return Qt::ItemIsDropEnabled | Qt::ItemIsEnabled;
+}
+
 QIcon te::qt::widgets::LegendItem::getIcon() const
 {
   return m_icon;

@@ -115,13 +115,13 @@ namespace te
 
             \param layer Layer to be removed.
           */
-          LayerRemoved(te::map::AbstractLayerPtr layer)
+          LayerRemoved(const std::list<te::map::AbstractLayerPtr>& layers)
             : Event(LAYER_REMOVED),
-              m_layer(layer)
+              m_layers(layers)
           {
           }
 
-          te::map::AbstractLayerPtr m_layer;  //!< Layer removed.
+          std::list<te::map::AbstractLayerPtr> m_layers;  //!< Layer removed.
         };
 
         /*!

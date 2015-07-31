@@ -112,11 +112,12 @@ void te::qt::af::ChartDisplayDockWidget::onApplicationTriggered(te::qt::af::evt:
     case te::qt::af::evt::LAYER_REMOVED:
       {
         te::qt::af::evt::LayerRemoved* ev = static_cast<te::qt::af::evt::LayerRemoved*>(evt);
-
-        if(ev->m_layer->getId() == m_layer->getId())
-        {
-          this->close();
-        }
+        for(std::list<te::map::AbstractLayerPtr>::iterator it = ev->m_layers.begin(); it != ev->m_layers.end(); ++it)
+          if((*it)->getId() == m_layer->getId())
+          {
+            this->close();
+            return;
+          }
       }
     break;
 

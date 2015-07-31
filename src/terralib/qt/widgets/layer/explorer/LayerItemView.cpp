@@ -132,6 +132,7 @@ void te::qt::widgets::LayerItemView::updateChart(const QModelIndex& idx)
 
   m_model->insertRows(1, 1, idx);
 
+  QTreeView::expand(idx);
   QTreeView::expand(idx.child(1, 0));
 }
 
@@ -170,6 +171,7 @@ void te::qt::widgets::LayerItemView::updateGrouping(const QModelIndex& idx)
 
   m_model->insertRows(pos, 1, idx);
 
+  QTreeView::expand(idx);
   QTreeView::expand(idx.child(pos, 0));
 }
 
@@ -201,6 +203,11 @@ void te::qt::widgets::LayerItemView::addFolderLayerAction(QAction* act)
 void te::qt::widgets::LayerItemView::addMultipleSelectionAction(QAction* act)
 {
   m_mnuMger->addAction(LayerViewMenuManager::MULTI_LAYERS, act);
+}
+
+void te::qt::widgets::LayerItemView::addInvalidLayerAction(QAction* act)
+{
+  m_mnuMger->addAction(LayerViewMenuManager::INVALID_LAYERS, act);
 }
 
 void te::qt::widgets::LayerItemView::removeItems(const QModelIndexList& idxs)
