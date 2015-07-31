@@ -129,7 +129,7 @@ namespace te
         QPointF m_origin;                   //!< Origin point on mouse pressed.
         QPointF m_delta;                    //!< Difference between pressed point and destination point on mouse move.
         QPointF m_deltaSum;                 //!< Sum of all delta
-        std::map<std::string, QList<QPointF>> m_moveWatches;
+        std::map<std::string, QList<QPointF> > m_moveWatches;
         te::edit::EditionManager* m_editionManager;
     };
 
