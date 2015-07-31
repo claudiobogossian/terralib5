@@ -96,6 +96,8 @@ namespace te
 
           void onDataSetItemClicked(QListWidgetItem* item);
 
+          void onPkTableComboBoxSelected(int index);
+
           void onApplyPushButtonClicked();
 
           void onClearPushButtonClicked();

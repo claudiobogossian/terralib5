@@ -69,8 +69,13 @@ te::qt::widgets::DataSetOptionsWizardPage::DataSetOptionsWizardPage(QWidget* par
   dataSetLayout->addWidget(m_dataSetAdapterWidget.get());
   dataSetLayout->setContentsMargins(0,0,0,0);
 
+  m_ui->m_sridInputPushButton->setIcon(QIcon::fromTheme("srs"));
+  m_ui->m_sridOutputPushButton->setIcon(QIcon::fromTheme("srs"));
+
 // connect signals and slots
-  connect(m_ui->m_sridSearchToolButton, SIGNAL(pressed()), this, SLOT(sridSearchToolButtonPressed()));
+  connect(m_ui->m_sridInputPushButton, SIGNAL(clicked()), this, SLOT(sridInputSearchToolButtonPressed()));
+  connect(m_ui->m_sridOutputPushButton, SIGNAL(clicked()), this, SLOT(sridOutputSearchToolButtonPressed()));
+  connect(m_ui->m_applyPushButton, SIGNAL(clicked()), this, SLOT(applyChanges()));
 
   connect(m_ui->m_selectedDatasetListWidget, SIGNAL(itemPressed(QListWidgetItem*)), this, SLOT(datasetPressed(QListWidgetItem*)));
 
@@ -174,6 +179,24 @@ void te::qt::widgets::DataSetOptionsWizardPage::applyChanges()
   if(item == 0)
     return;
 
+  if (!m_ui->m_sridInputLineEdit->text().isEmpty())
+  {
+    int inputSRID = m_ui->m_sridInputLineEdit->text().toInt();
+    int outputSRID = m_ui->m_sridOutputLineEdit->text().toInt();
+
+    if (inputSRID != outputSRID && outputSRID == TE_UNKNOWN_SRS)
+    {
+      QMessageBox::warning(this, tr("Warning"), tr("Invalid output Layer SRID."));
+      return;
+    }
+
+    if (inputSRID != outputSRID && inputSRID == TE_UNKNOWN_SRS)
+    {
+      QMessageBox::warning(this, tr("Warning"), tr("Invalid input Layer SRID."));
+      return;
+    }
+  }
+
   std::string dataSetAdapterName = item->text().toStdString();
 
   std::map<te::da::DataSetTypePtr, te::da::DataSetTypeConverter*>::iterator it = m_datasets.begin();
@@ -185,12 +208,19 @@ void te::qt::widgets::DataSetOptionsWizardPage::applyChanges()
       it->second->getResult()->setName(m_ui->m_datasetNameLineEdit->text().trimmed().toStdString());
       it->second->getResult()->setTitle(m_ui->m_datasetTitleLineEdit->text().trimmed().toStdString());
 
-      if(it->second->getResult()->hasGeom())
+      //get srid information
+      if (!m_ui->m_sridInputLineEdit->text().isEmpty())
       {
-        te::gm::GeometryProperty* geomProp = dynamic_cast<te::gm::GeometryProperty*>(it->second->getResult()->findFirstPropertyOfType(te::dt::GEOMETRY_TYPE));
+        int inputSRID = m_ui->m_sridInputLineEdit->text().toInt();
 
-        if(geomProp)
-          geomProp->setSRID(boost::lexical_cast<int>(m_ui->m_sridLineEdit->text().trimmed().toStdString()));
+        int outputSRID = TE_UNKNOWN_SRS;
+
+        if (!m_ui->m_sridOutputLineEdit->text().isEmpty())
+        {
+          outputSRID = m_ui->m_sridOutputLineEdit->text().toInt();
+        }
+
+        te::da::AssociateDataSetTypeConverterSRID(it->second, inputSRID, outputSRID);
       }
 
       if(it->second->getResult()->getPrimaryKey())
@@ -208,7 +238,7 @@ void te::qt::widgets::DataSetOptionsWizardPage::applyChanges()
   }
 }
 
-void te::qt::widgets::DataSetOptionsWizardPage::sridSearchToolButtonPressed()
+void te::qt::widgets::DataSetOptionsWizardPage::sridInputSearchToolButtonPressed()
 {
   te::qt::widgets::SRSManagerDialog srsDialog(this);
   srsDialog.setWindowTitle(tr("Choose the SRS"));
@@ -216,7 +246,19 @@ void te::qt::widgets::DataSetOptionsWizardPage::sridSearchToolButtonPressed()
   if(srsDialog.exec() != QDialog::Rejected)
   {
     std::pair<int, std::string> srid = srsDialog.getSelectedSRS();
-    m_ui->m_sridLineEdit->setText(QString::number(srid.first));
+    m_ui->m_sridInputLineEdit->setText(QString::number(srid.first));
+  }
+}
+
+void te::qt::widgets::DataSetOptionsWizardPage::sridOutputSearchToolButtonPressed()
+{
+  te::qt::widgets::SRSManagerDialog srsDialog(this);
+  srsDialog.setWindowTitle(tr("Choose the SRS"));
+
+  if (srsDialog.exec() != QDialog::Rejected)
+  {
+    std::pair<int, std::string> srid = srsDialog.getSelectedSRS();
+    m_ui->m_sridOutputLineEdit->setText(QString::number(srid.first));
   }
 }
 
@@ -244,18 +286,37 @@ void te::qt::widgets::DataSetOptionsWizardPage::datasetPressed(QListWidgetItem* 
 
       if(dataset->hasGeom())
       {
-        m_ui->m_sridSearchToolButton->setEnabled(true);
-        m_ui->m_sridLineEdit->setEnabled(true);
+        m_ui->m_sridInputPushButton->setEnabled(true);
+        m_ui->m_sridInputLineEdit->clear();
+        m_ui->m_sridInputLineEdit->setEnabled(true);
 
-        te::gm::GeometryProperty* geomProp = dynamic_cast<te::gm::GeometryProperty*>(dataset->findFirstPropertyOfType(te::dt::GEOMETRY_TYPE));
+        m_ui->m_sridOutputPushButton->setEnabled(true);
+        m_ui->m_sridOutputLineEdit->clear();
+        m_ui->m_sridOutputLineEdit->setEnabled(true);
 
-        if(geomProp)
-          m_ui->m_sridLineEdit->setText(QString::fromStdString(boost::lexical_cast<std::string>(geomProp->getSRID())));
+        te::gm::GeometryProperty* geomPropIn = dynamic_cast<te::gm::GeometryProperty*>(it->second->getConvertee()->findFirstPropertyOfType(te::dt::GEOMETRY_TYPE));
+
+        if (geomPropIn)
+        {
+          m_ui->m_sridInputLineEdit->setText(QString::fromStdString(boost::lexical_cast<std::string>(geomPropIn->getSRID())));
+        }
+
+        te::gm::GeometryProperty* geomPropOut = dynamic_cast<te::gm::GeometryProperty*>(dataset->findFirstPropertyOfType(te::dt::GEOMETRY_TYPE));
+
+        if (geomPropOut)
+        {
+          m_ui->m_sridOutputLineEdit->setText(QString::fromStdString(boost::lexical_cast<std::string>(geomPropOut->getSRID())));
+        }
       }
       else
       {
-        m_ui->m_sridSearchToolButton->setEnabled(false);
-        m_ui->m_sridLineEdit->setEnabled(false);
+        m_ui->m_sridInputPushButton->setEnabled(false);
+        m_ui->m_sridInputLineEdit->clear();
+        m_ui->m_sridInputLineEdit->setEnabled(false);
+
+        m_ui->m_sridOutputPushButton->setEnabled(false);
+        m_ui->m_sridOutputLineEdit->clear();
+        m_ui->m_sridOutputLineEdit->setEnabled(false);
       }
 
       // fill property table
@@ -350,15 +411,18 @@ void te::qt::widgets::DataSetOptionsWizardPage::clearForm()
 {
   m_ui->m_datasetNameLineEdit->clear();
   m_ui->m_datasetTitleLineEdit->clear();
-  m_ui->m_sridLineEdit->clear();
+  m_ui->m_sridInputLineEdit->clear();
+  m_ui->m_sridOutputLineEdit->clear();
 }
 
 void te::qt::widgets::DataSetOptionsWizardPage::setControlsEnabled(bool enabled)
 {
   m_ui->m_datasetNameLineEdit->setEnabled(enabled);
   m_ui->m_datasetTitleLineEdit->setEnabled(enabled);
-  m_ui->m_sridLineEdit->setEnabled(enabled);
-  m_ui->m_sridSearchToolButton->setEnabled(enabled);
+  m_ui->m_sridInputLineEdit->setEnabled(enabled);
+  m_ui->m_sridInputPushButton->setEnabled(enabled);
+  m_ui->m_sridOutputLineEdit->setEnabled(enabled);
+  m_ui->m_sridOutputPushButton->setEnabled(enabled);
 }
 
 te::qt::widgets::DataSetOptionsWizardPage::FindByName::FindByName(const QString& name)

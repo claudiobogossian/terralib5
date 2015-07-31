@@ -213,10 +213,13 @@ te::map::AbstractLayerPtr te::qt::widgets::QueryLayerBuilderWizard::getQueryLaye
   // SRID
   std::auto_ptr<const te::map::LayerSchema> schema(layer->getSchema());
   te::gm::GeometryProperty* gp = te::da::GetFirstGeomProperty(schema.get());
-  layer->setSRID(gp->getSRID());
-  
-  // style
-  layer->setStyle(te::se::CreateFeatureTypeStyle(gp->getGeometryType()));
+  if (gp)
+  {
+    layer->setSRID(gp->getSRID());
+
+    // style
+    layer->setStyle(te::se::CreateFeatureTypeStyle(gp->getGeometryType()));
+  }
 
   return layer;
 }

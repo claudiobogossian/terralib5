@@ -35,9 +35,15 @@ TerraLib Team at <terralib-team@terralib.org>.
 te::edit::UpdateCommand::UpdateCommand(te::edit::EditionManager* editionManager, std::vector<Feature*> items, te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer,
   QUndoCommand *parent) :
   QUndoCommand(parent)
+<<<<<<< HEAD
 , m_display(display)
 , m_layer(layer)
+=======
+, m_item(item)
+>>>>>>> e23035ac569bba01a015a5343ac6e9f2dd4061f7
 , m_updateItems(items)
+, m_display(display)
+, m_layer(layer)
 , m_editionManager(editionManager)
 {
 

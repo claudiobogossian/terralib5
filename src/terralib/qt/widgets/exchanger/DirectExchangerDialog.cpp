@@ -36,7 +36,10 @@
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../geometry/GeometryProperty.h"
 #include "../../../maptools/DataSetLayer.h"
+#include "../../../srs/Config.h"
 #include "../../widgets/datasource/selector/DataSourceExplorerDialog.h"
+#include "../../widgets/datasource/core/DataSourceType.h"
+#include "../../widgets/datasource/core/DataSourceTypeManager.h"
 #include "../../widgets/srs/SRSManagerDialog.h"
 #include "DirectExchangerDialog.h"
 #include "ui_DirectExchangerDialogForm.h"
@@ -73,7 +76,9 @@ te::qt::widgets::DirectExchangerDialog::DirectExchangerDialog(QWidget* parent, Q
   connect(m_ui->m_dsToolButton, SIGNAL(clicked()), this, SLOT(onDataSoruceToolButtonClicked()));
   connect(m_ui->m_dsTypeComboBox, SIGNAL(activated(int)), this, SLOT(onDataSourceTypeActivated(int)));
   connect(m_ui->m_inputLayerComboBox, SIGNAL(activated(QString)), this, SLOT(onInputLayerActivated(QString)));
+  connect(m_ui->m_outputSRIDToolButton, SIGNAL(clicked()), SLOT(onOutputLayerSRSTriggered()));
 
+  m_ui->m_outputSRIDToolButton->setIcon(QIcon::fromTheme("srs"));
   m_ui->m_helpPushButton->setPageReference("widgets/exchanger_direct/exchanger_direct.html");
 
   //starup interface
@@ -170,6 +175,11 @@ bool te::qt::widgets::DirectExchangerDialog::exchangeToFile()
     return false;
   }
 
+  //get srid information
+  int inputSRID = m_ui->m_inputSRIDLineEdit->text().toInt();
+
+  int outputSRID = m_ui->m_outputSRIDLineEdit->text().toInt();
+
   try
   {
     //create adapter
@@ -185,15 +195,9 @@ bool te::qt::widgets::DirectExchangerDialog::exchangeToFile()
 
     te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter(dsType.get(), dsOGR->getCapabilities(), dsOGR->getEncoding());
 
+    te::da::AssociateDataSetTypeConverterSRID(converter, inputSRID, outputSRID);
+
     te::da::DataSetType* dsTypeResult = converter->getResult();
-
-    te::gm::GeometryProperty* p = te::da::GetFirstGeomProperty(dsTypeResult);
-
-    //check srid
-    if(p && (p->getSRID() != layer->getSRID()))
-    {
-        p->setSRID(layer->getSRID());
-    }
 
     boost::filesystem::path uri(m_ui->m_dataSetLineEdit->text().toStdString());
 
@@ -274,8 +278,6 @@ bool te::qt::widgets::DirectExchangerDialog::exchangeToFile()
 
     std::auto_ptr<te::da::DataSetAdapter> dsAdapter(te::da::CreateAdapter(dataset.get(), converter));
 
-    dsAdapter->setSRID(layer->getSRID());
-
     if(dataset->moveBeforeFirst())
       dsOGR->add(dsTypeResult->getName(), dsAdapter.get(), dsOGR->getConnectionInfo());
 
@@ -339,6 +341,11 @@ bool te::qt::widgets::DirectExchangerDialog::exchangeToDatabase()
     return false;
   }
 
+  //get srid information
+  int inputSRID = m_ui->m_inputSRIDLineEdit->text().toInt();
+
+  int outputSRID = m_ui->m_outputSRIDLineEdit->text().toInt();
+
   std::auto_ptr<te::da::DataSourceTransactor> transactor;
 
   try
@@ -353,6 +360,8 @@ bool te::qt::widgets::DirectExchangerDialog::exchangeToDatabase()
     transactor = targetDSPtr->getTransactor();
 
     te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter(dsType.get(), targetDSPtr->getCapabilities(), targetDSPtr->getEncoding());
+
+    te::da::AssociateDataSetTypeConverterSRID(converter, inputSRID, outputSRID);
 
     te::da::DataSetType* dsTypeResult = converter->getResult();
     
@@ -427,12 +436,6 @@ bool te::qt::widgets::DirectExchangerDialog::exchangeToDatabase()
     {
       te::gm::GeometryProperty* p = te::da::GetFirstGeomProperty(dsTypeResult);
 
-      //check srid
-      if(p && (p->getSRID() != layer->getSRID()))
-      {
-          p->setSRID(layer->getSRID());
-      }
-
       if(p)
       {
         te::da::Index* idx = new te::da::Index(dsTypeResult);
@@ -482,9 +485,7 @@ bool te::qt::widgets::DirectExchangerDialog::exchangeToDatabase()
 
     std::auto_ptr<te::da::DataSetAdapter> dsAdapter(te::da::CreateAdapter(dataset.get(), converter));
 
-    dsAdapter->setSRID(layer->getSRID());
-
-     if(dataset->moveBeforeFirst())
+    if(dataset->moveBeforeFirst())
        transactor->add(dsTypeResult->getName(), dsAdapter.get(), targetDSPtr->getConnectionInfo());
 
      transactor->commit();
@@ -565,6 +566,31 @@ void te::qt::widgets::DirectExchangerDialog::onInputLayerActivated(QString value
 
   if(m_ui->m_dataSetLineEdit->isEnabled())
     m_ui->m_dataSetLineEdit->setText(value);
+
+  QVariant varLayer = m_ui->m_inputLayerComboBox->itemData(m_ui->m_inputLayerComboBox->currentIndex(), Qt::UserRole);
+  te::map::AbstractLayerPtr layer = varLayer.value<te::map::AbstractLayerPtr>();
+
+  if (!layer.get())
+  {
+    QMessageBox::warning(this, tr("Warning"), tr("Error getting selected layer."));
+    return;
+  }
+
+  int inputSRID = layer->getSRID();
+
+  m_ui->m_inputSRIDLineEdit->setText(QString::number(inputSRID));
+  m_ui->m_outputSRIDLineEdit->setText(QString::number(inputSRID));
+
+  if (inputSRID = TE_UNKNOWN_SRS)
+  {
+    m_ui->m_outputSRIDLineEdit->setEnabled(false);
+    m_ui->m_outputSRIDToolButton->setEnabled(false);
+  }
+  else
+  {
+    m_ui->m_outputSRIDLineEdit->setEnabled(true);
+    m_ui->m_outputSRIDToolButton->setEnabled(true);
+  }
 }
 
 void te::qt::widgets::DirectExchangerDialog::onDirToolButtonClicked()
@@ -592,6 +618,27 @@ void te::qt::widgets::DirectExchangerDialog::onDataSoruceToolButtonClicked()
 
 void te::qt::widgets::DirectExchangerDialog::onOkPushButtonClicked()
 {
+  if (m_ui->m_outputSRIDLineEdit->text().isEmpty())
+  {
+    QMessageBox::warning(this, tr("Warning"), tr("Output Layer SRID not defined."));
+    return;
+  }
+
+  int inputSRID = m_ui->m_inputSRIDLineEdit->text().toInt();
+  int outputSRID = m_ui->m_outputSRIDLineEdit->text().toInt();
+
+  if (inputSRID != outputSRID && outputSRID == TE_UNKNOWN_SRS)
+  {
+    QMessageBox::warning(this, tr("Warning"), tr("Invalid output Layer SRID."));
+    return;
+  }
+
+  if (inputSRID != outputSRID && inputSRID == TE_UNKNOWN_SRS)
+  {
+    QMessageBox::warning(this, tr("Warning"), tr("Invalid input Layer SRID."));
+    return;
+  }
+
   bool res = false;
 
   if(m_exchangeToFile)
@@ -607,7 +654,35 @@ void te::qt::widgets::DirectExchangerDialog::setOutputDataSources()
 {
   m_ui->m_dsTypeComboBox->clear();
 
-  m_ui->m_dsTypeComboBox->addItem(QIcon::fromTheme("datasource-postgis"), tr("PostGIS"), QVariant("POSTGIS"));
-  m_ui->m_dsTypeComboBox->addItem(QIcon::fromTheme("datasource-ado"), tr("Microsoft Access"), QVariant("ADO"));
-  m_ui->m_dsTypeComboBox->addItem(QIcon::fromTheme("datasource-ogr"), tr("File - OGR Formats"), QVariant("OGR"));
+  // add the list of data sources available in the system
+  std::map<std::string, DataSourceType*>::const_iterator it = DataSourceTypeManager::getInstance().begin();
+  std::map<std::string, DataSourceType*>::const_iterator itend = DataSourceTypeManager::getInstance().end();
+
+  while (it != itend)
+  {
+    std::string dataSourceName = it->first;
+
+    if (dataSourceName == "POSTGIS" || dataSourceName == "ADO" || dataSourceName == "OGR")
+    {
+      QIcon icon = it->second->getIcon(DataSourceType::ICON_DATASOURCE_SMALL);
+      QString title = QString::fromStdString(it->second->getTitle());
+
+      m_ui->m_dsTypeComboBox->addItem(icon, title, QVariant(dataSourceName.c_str()));
+    }
+
+    ++it;
+  }
+}
+
+void te::qt::widgets::DirectExchangerDialog::onOutputLayerSRSTriggered()
+{
+  te::qt::widgets::SRSManagerDialog srsDialog(this);
+  srsDialog.setWindowTitle(tr("Choose the SRS"));
+
+  if (srsDialog.exec() == QDialog::Rejected)
+    return;
+
+  std::pair<int, std::string> srid = srsDialog.getSelectedSRS();
+
+  m_ui->m_outputSRIDLineEdit->setText(QString::number(srid.first));
 }
