@@ -51,26 +51,8 @@ bool te::edit::SubtractAreaTool::mousePressEvent(QMouseEvent* e)
     m_isFinished = false;
   }
 
-  if (m_layer->getSelected() == 0)
-  {
-    QMessageBox::critical(m_display, tr("Warning"), QString(tr("You must select polygon!")));
-    return false;
-  }
-
   if (m_feature == 0)
-  {
     pickFeature(m_layer, GetPosition(e));
-  }
-
-  if (m_feature != 0)
-  {
-    if ((m_feature->getGeometry()->getGeomTypeId() != te::gm::MultiPolygonType) && (m_feature->getGeometry()->getGeomTypeId() != te::gm::PolygonType))
-    {
-      QMessageBox::critical(m_display, tr("Warning"), QString(tr("You must start click on polygon!")));
-
-      return false;
-    }
-  }
 
   return te::edit::CreateLineTool::mousePressEvent(e);
 }
@@ -179,19 +161,10 @@ te::gm::Geometry* te::edit::SubtractAreaTool::buildPolygon()
 
   te::gm::Geometry* mpol = 0;
 
-  if (m_feature->getGeometry()->getGeomTypeId() == te::gm::MultiPolygonType)
-  {
-    te::gm::MultiPolygon* mpolygon = new te::gm::MultiPolygon(1, te::gm::MultiPolygonType);
-    mpolygon->setGeometryN(0, Difference(m_feature->getGeometry(), pHole));
+  if (!pHole->intersects(m_feature->getGeometry()))
+    return m_feature->getGeometry();
 
-    mpolygon->setSRID(pHole->getSRID());
-
-    mpol = mpolygon;
-  }
-  else
-  {
-    mpol = Difference(m_feature->getGeometry(), pHole);
-  }
+  mpol = Difference(m_feature->getGeometry(), pHole);
 
   //projection
   if (mpol->getSRID() == m_layer->getSRID())
@@ -207,46 +180,24 @@ void te::edit::SubtractAreaTool::pickFeature(const te::map::AbstractLayerPtr& la
 {
   reset();
 
-  te::gm::Envelope env = buildEnvelope(pos);
-
   try
   {
-    m_feature = PickFeature(m_editionManager,m_layer, env, m_display->getSRID());
+    std::auto_ptr<te::da::DataSetType> dt(layer->getSchema());
 
-    if (m_feature == 0)
+    const te::da::ObjectIdSet* objSet = layer->getSelected();
+
+    std::auto_ptr<te::da::DataSet> ds(layer->getData(objSet));
+
+    te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(dt.get());
+
+    if (ds->moveNext())
     {
-      std::auto_ptr<te::da::DataSetType> dt(layer->getSchema());
 
-      const te::da::ObjectIdSet* objSet = layer->getSelected();
+      std::auto_ptr<te::gm::Geometry> geom = ds->getGeometry(geomProp->getName());
+      te::gm::Envelope Env(*geom->getMBR());
 
-      std::auto_ptr<te::da::DataSet> ds(layer->getData(objSet));
+      m_feature = PickFeature(m_editionManager, m_layer, Env, m_display->getSRID());
 
-      te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(dt.get());
-
-      if (ds->moveNext())
-      {
-        std::auto_ptr<te::gm::Geometry> geom = ds->getGeometry(geomProp->getName());
-        te::gm::Envelope auxEnv(*geom->getMBR());
-
-        te::gm::Coord2D coord(0,0);
-
-        // Try finds the geometry centroid
-        if (geom->getGeomTypeId() == te::gm::PolygonType)
-        {
-        te::gm::Polygon* p = dynamic_cast<te::gm::Polygon*>(geom.get());
-          coord = *p->getCentroidCoord();
-        }
-        else if (geom->getGeomTypeId() == te::gm::MultiPolygonType)
-        {
-          te::gm::MultiPolygon* mp = dynamic_cast<te::gm::MultiPolygon*>(geom.get());
-          coord = *mp->getCentroidCoord();
-        }
-
-        // Build the search envelope
-        te::gm::Envelope e(coord.getX() , coord.getY() , coord.getX() , coord.getY());
-
-        m_feature = PickFeature(m_editionManager,m_layer, e, m_display->getSRID());
-      }
     }
 
   }
@@ -287,7 +238,7 @@ void te::edit::SubtractAreaTool::onExtentChanged()
 
 void te::edit::SubtractAreaTool::storeEditedFeature()
 {
-  m_editionManager->m_repository->addGeometry(m_layer->getId(), m_feature->getId()->clone(), buildPolygon());
+  m_editionManager->m_repository->addGeometry(m_layer->getId(), m_feature->getId()->clone(), dynamic_cast<te::gm::Geometry*>(buildPolygon()->clone()));
 
   m_editionManager->m_operation[m_feature->getId()->getValueAsString()] = m_editionManager->updateOp;
 }
