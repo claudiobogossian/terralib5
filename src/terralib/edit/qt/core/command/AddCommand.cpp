@@ -36,8 +36,8 @@ te::edit::AddCommand::AddCommand(te::edit::EditionManager* editionManager, std::
   QUndoCommand *parent) :
   QUndoCommand(parent)
 , m_display(display)
-, m_layer(layer)
 , m_item(item)
+, m_layer(layer)
 , m_addItems(items)
 , m_editionManager(editionManager)
 {

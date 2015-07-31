@@ -32,12 +32,11 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include "../../Renderer.h"
 #include "UpdateCommand.h"
 
-te::edit::UpdateCommand::UpdateCommand(te::edit::EditionManager* editionManager, std::vector<Feature*> items, Feature* item, te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer,
+te::edit::UpdateCommand::UpdateCommand(te::edit::EditionManager* editionManager, std::vector<Feature*> items, te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer,
   QUndoCommand *parent) :
   QUndoCommand(parent)
 , m_display(display)
 , m_layer(layer)
-, m_item(item)
 , m_updateItems(items)
 , m_editionManager(editionManager)
 {

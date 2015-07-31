@@ -109,7 +109,7 @@ bool te::edit::SubtractAreaTool::mouseDoubleClickEvent(QMouseEvent* e)
 
     m_updateWatches.push_back(m_feature->clone());
 
-    QUndoCommand* command = new UpdateCommand(m_editionManager, m_updateWatches, m_feature->clone(), m_display, m_layer);
+    QUndoCommand* command = new UpdateCommand(m_editionManager, m_updateWatches, m_display, m_layer);
     m_editionManager->addUndoStack(command);
 
     return true;

@@ -34,7 +34,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include "../../Renderer.h"
 #include "MoveCommand.h"
 
-te::edit::MoveCommand::MoveCommand(te::edit::EditionManager* editionManager, std::map<std::string, QList<QPointF>> items, Feature* item, te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer,
+te::edit::MoveCommand::MoveCommand(te::edit::EditionManager* editionManager, std::map<std::string, QList<QPointF> > items, Feature* item, te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer,
   QUndoCommand *parent) :
   QUndoCommand(parent)
 , m_display(display)
@@ -44,7 +44,7 @@ te::edit::MoveCommand::MoveCommand(te::edit::EditionManager* editionManager, std
 , m_editionManager(editionManager)
 {
 
-  std::map<std::string, QList<QPointF>>::iterator it;
+  std::map<std::string, QList<QPointF> >::iterator it;
 
   for (it = items.begin(); it != items.end(); it++)
   {
@@ -72,7 +72,7 @@ void  te::edit::MoveCommand::undo()
   if (m_moveItems.empty())
     return;
 
-  std::map<std::string, QList<QPointF>>::iterator it;
+  std::map<std::string, QList<QPointF> >::iterator it;
 
   for (it = m_moveItems.begin(); it != m_moveItems.end(); ++it)
   {
@@ -124,7 +124,7 @@ void te::edit::MoveCommand::redo()
   if (resultFound)
   {
 
-    std::map<std::string, QList<QPointF>>::iterator it;
+    std::map<std::string, QList<QPointF> >::iterator it;
 
     for (it = m_moveItems.begin(); it != m_moveItems.end(); ++it)
     {

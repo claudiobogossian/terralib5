@@ -114,7 +114,7 @@ bool te::edit::CreatePolygonTool::mouseMoveEvent(QMouseEvent* e)
 
   m_lastPos = te::gm::Coord2D(coord.x, coord.y);
 
-  Qt::KeyboardModifiers keys = e->modifiers();
+  //Qt::KeyboardModifiers keys = e->modifiers();
 
   /*if(keys == Qt::NoModifier)
     m_continuousMode = false;

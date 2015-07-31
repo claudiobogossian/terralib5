@@ -50,7 +50,7 @@ namespace te
     {
       public:
         // Pass all parameters that the command need to fulfill its task in the constructor
-        MoveCommand(te::edit::EditionManager* editionManager, std::map<std::string, QList<QPointF>> items, Feature* item, te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QUndoCommand *parent = 0);
+        MoveCommand(te::edit::EditionManager* editionManager, std::map<std::string, QList<QPointF> > items, Feature* item, te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QUndoCommand *parent = 0);
 
         /*!
         \brief Destructor
@@ -75,7 +75,7 @@ namespace te
         Feature*           m_item;
         QPointF            m_oldPos;
         QPointF            m_newPos;
-        std::map<std::string, QList<QPointF>> m_moveItems;
+        std::map<std::string, QList<QPointF> > m_moveItems;
         QList<QPointF>     m_itemsPoints;
         te::qt::widgets::MapDisplay* m_display;
         te::map::AbstractLayerPtr m_layer;
