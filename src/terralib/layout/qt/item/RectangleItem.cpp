@@ -27,14 +27,7 @@
 
 // TerraLib
 #include "RectangleItem.h"
-#include "../../core/pattern/mvc/ItemController.h"
-#include "../../core/AbstractScene.h"
-#include "../../core/pattern/mvc/Observable.h"
 #include "../../../color/RGBAColor.h"
-#include "../../../qt/widgets/Utils.h"
-#include "../../../geometry/Envelope.h"
-#include "../../../common/STLUtils.h"
-#include "../../item/RectangleModel.h"
 #include "../../core/enum/EnumRectangleType.h"
 
 // Qt
@@ -42,10 +35,9 @@
 #include <QPen>
 #include <QRectF>
 
-te::layout::RectangleItem::RectangleItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
-  ObjectItem(controller, o, invertedMatrix)
-{  
-  m_nameClass = std::string(this->metaObject()->className());
+te::layout::RectangleItem::RectangleItem( AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix ) 
+  : AbstractItem<QGraphicsItem>(controller, model)
+{
 }
 
 te::layout::RectangleItem::~RectangleItem()
@@ -55,22 +47,24 @@ te::layout::RectangleItem::~RectangleItem()
 
 void te::layout::RectangleItem::drawItem( QPainter * painter )
 {
-  RectangleModel* model = dynamic_cast<RectangleModel*>(m_model);
-
-  if(model)
+  const Property& property = m_model->getProperty("rectangle_type");
+  if(property.isNull() == false)
   {
-    EnumRectangleType* enumScale = model->getEnumRectangleType();
+    EnumRectangleType enumRectangleType;
 
-    if(model->getCurrentRectangleType() == enumScale->getSimpleRectangleType())
+    const std::string& label = property.getOptionByCurrentChoice().toString();
+    EnumType* currentRectangleType = enumRectangleType.searchLabel(label);
+
+    if(currentRectangleType == enumRectangleType.getSimpleRectangleType())
     {
       drawRectangle(painter);
     }
-    if(model->getCurrentRectangleType() == enumScale->getRoundedRetangleType())
+    if(currentRectangleType == enumRectangleType.getRoundedRetangleType())
     {
       drawRoundedRectangle(painter);
     }
 
-    if(model->getCurrentRectangleType() == enumScale->getSingleCornerTrimmedRectangleType())
+    if(currentRectangleType == enumRectangleType.getSingleCornerTrimmedRectangleType())
     {
       drawSingleCornerTrimmedRectangle(painter);
     }
@@ -79,19 +73,16 @@ void te::layout::RectangleItem::drawItem( QPainter * painter )
 
 void te::layout::RectangleItem::drawRectangle( QPainter * painter )
 {
-  RectangleModel* model = dynamic_cast<RectangleModel*>(m_model);
-  if(!model)
-  {
-    return;
-  }
-
   painter->save();
 
-  const te::color::RGBAColor& fillColor = model->getBackgroundColor();
-  const te::color::RGBAColor& contourColor = model->getFrameColor();
+  const Property& pBackgroundColor = m_model->getProperty("background_color");
+  const Property& pFrameColor = m_model->getProperty("frame_color");
 
-  QColor qFillColor(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), fillColor.getAlpha());
-  QColor qContourColor(contourColor.getRed(), contourColor.getGreen(), contourColor.getBlue(), contourColor.getAlpha());
+  const te::color::RGBAColor& backgroundColor = pBackgroundColor.getValue().toColor();
+  const te::color::RGBAColor& frameColor = pFrameColor.getValue().toColor();
+
+  QColor qFillColor(backgroundColor.getRed(), backgroundColor.getGreen(), backgroundColor.getBlue(), backgroundColor.getAlpha());
+  QColor qContourColor(frameColor.getRed(), frameColor.getGreen(), frameColor.getBlue(), frameColor.getAlpha());
 
   QBrush brush(qFillColor);
   QPen pen(qContourColor, 0, Qt::SolidLine);
@@ -113,18 +104,16 @@ void te::layout::RectangleItem::drawRectangle( QPainter * painter )
 
 void te::layout::RectangleItem::drawRoundedRectangle(QPainter * painter)
 {
-  RectangleModel* model = dynamic_cast<RectangleModel*>(m_model);
-  if(!model)
-  {
-    return;
-  }
   painter->save();
 
-  const te::color::RGBAColor& fillColor = model->getBackgroundColor();
-  const te::color::RGBAColor& contourColor = model->getFrameColor();
+  const Property& pBackgroundColor = m_model->getProperty("background_color");
+  const Property& pFrameColor = m_model->getProperty("frame_color");
 
-  QColor qFillColor(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), fillColor.getAlpha());
-  QColor qContourColor(contourColor.getRed(), contourColor.getGreen(), contourColor.getBlue(), contourColor.getAlpha());
+  const te::color::RGBAColor& backgroundColor = pBackgroundColor.getValue().toColor();
+  const te::color::RGBAColor& frameColor = pFrameColor.getValue().toColor();
+
+  QColor qFillColor(backgroundColor.getRed(), backgroundColor.getGreen(), backgroundColor.getBlue(), backgroundColor.getAlpha());
+  QColor qContourColor(frameColor.getRed(), frameColor.getGreen(), frameColor.getBlue(), frameColor.getAlpha());
 
   QBrush brush(qFillColor);
   QPen pen(qContourColor, 0, Qt::SolidLine);
@@ -146,18 +135,16 @@ void te::layout::RectangleItem::drawRoundedRectangle(QPainter * painter)
 
 void te::layout::RectangleItem::drawSingleCornerTrimmedRectangle(QPainter * painter)
 {
-  RectangleModel* model = dynamic_cast<RectangleModel*>(m_model);
-  if(!model)
-  {
-    return;
-  }
   painter->save();
 
-  const te::color::RGBAColor& fillColor = model->getBackgroundColor();
-  const te::color::RGBAColor& contourColor = model->getFrameColor();
+  const Property& pBackgroundColor = m_model->getProperty("background_color");
+  const Property& pFrameColor = m_model->getProperty("frame_color");
 
-  QColor qFillColor(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), fillColor.getAlpha());
-  QColor qContourColor(contourColor.getRed(), contourColor.getGreen(), contourColor.getBlue(), contourColor.getAlpha());
+  const te::color::RGBAColor& backgroundColor = pBackgroundColor.getValue().toColor();
+  const te::color::RGBAColor& frameColor = pFrameColor.getValue().toColor();
+
+  QColor qFillColor(backgroundColor.getRed(), backgroundColor.getGreen(), backgroundColor.getBlue(), backgroundColor.getAlpha());
+  QColor qContourColor(frameColor.getRed(), frameColor.getGreen(), frameColor.getBlue(), frameColor.getAlpha());
 
   QBrush brush(qFillColor);
   QPen pen(qContourColor, 0, Qt::SolidLine);
@@ -180,5 +167,4 @@ void te::layout::RectangleItem::drawSingleCornerTrimmedRectangle(QPainter * pain
   painter->drawPolygon(rect);
 
   painter->restore();
-
 }

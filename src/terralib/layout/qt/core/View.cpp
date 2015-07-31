@@ -394,6 +394,8 @@ void te::layout::View::config()
   //Initializing the context with the device physical DPI.
   Context::getInstance().setDpiX(this->physicalDpiX());
   Context::getInstance().setDpiY(this->physicalDpiY());
+  Context::getInstance().setDpiX(141.7);
+  Context::getInstance().setDpiY(136.2);
   
   double sw = viewport()->widthMM();
   double sh = viewport()->heightMM();

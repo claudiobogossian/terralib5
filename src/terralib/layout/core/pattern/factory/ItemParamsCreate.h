@@ -38,6 +38,9 @@ namespace te
     class ItemController;
     class Observable;
 
+    class AbstractItemController;
+    class AbstractItemModel;
+
     /*!
 	  \brief Parameters to creation new object. Ex.: "Model" and "Controller" of the new object (MVC component).
 	  
@@ -84,15 +87,22 @@ namespace te
         protected:
         ItemController*	m_controller; //!< "Controller" part of MVC component.
         Observable*		m_model; //!< "Model" part of MVC component.
+
+        //temporary
+      public:
+        AbstractItemController* m_newController; //!< "Controller" part of MVC component.
+        AbstractItemModel*      m_newModel; //!< "Model" part of MVC component.
     };
 
     /*
     ** ---------------------------------------------------------------
     ** Inline methods:
     */
-    inline ItemParamsCreate::ItemParamsCreate(ItemController* controller, Observable* model) :
-    m_controller(controller),
-    m_model(model)
+    inline ItemParamsCreate::ItemParamsCreate(ItemController* controller, Observable* model) 
+      : m_controller(controller)
+      , m_model(model)
+      , m_newController(0)
+      , m_newModel(0)
     {
     }
 

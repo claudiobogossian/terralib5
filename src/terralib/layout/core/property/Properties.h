@@ -72,7 +72,7 @@ namespace te
           \param property specified property
           \return true if add, false otherwise 
         */
-        virtual bool addProperty(Property property);
+        virtual bool addProperty(const Property& property);
 
         /*!
           \brief Removes a property from the set of properties of this object.
@@ -80,7 +80,16 @@ namespace te
           \param property specified property
           \return true if remove, false otherwise 
         */
-        virtual bool removeProperty(std::string name);
+        virtual bool removeProperty(const std::string& name);
+
+        /*!
+          \brief Updates the value of the given property name.
+
+          \param name the name of the property
+          \param value the new value of the property
+          \return true if remove, false otherwise 
+        */
+        virtual bool updatePropertyValue(const std::string& name, const Variant& value);
 
         /*!
           \brief Clear set of properties of this object.
@@ -94,7 +103,7 @@ namespace te
 
           \return set of all properties
         */
-        virtual std::vector<Property> getProperties();
+        virtual const std::vector<Property>& getProperties() const;
 
         /*!
           \brief Returns object name that owns these properties.
@@ -115,7 +124,7 @@ namespace te
 
           \return object type that owns these properties
         */
-        virtual EnumType* getTypeObj();
+        virtual EnumType* getTypeObj() const;
 
         /*!
           \brief Sets object type that owns these properties.
@@ -152,7 +161,7 @@ namespace te
           \param name name of the property
           \return true if contained, false otherwise
         */
-        virtual Property contains(std::string name);
+        virtual const Property& getProperty( const std::string& name ) const;
 
         /*!
           \brief Returns the hashcode of a MVC component.
@@ -175,6 +184,7 @@ namespace te
         EnumType* m_typeObj; //!< Object type that owns these properties
         bool m_hasWindows; //!<
         int  m_hashcode;
+        Property m_nullProperty; //!< Represents a null property
 
     };
 
@@ -190,7 +200,7 @@ namespace te
     {
     }
 
-    inline bool Properties::addProperty(Property property)
+    inline bool Properties::addProperty(const Property& property)
     {
       unsigned int total = m_properties.size();
       m_properties.push_back(property);   
@@ -201,13 +211,13 @@ namespace te
     }
 
 
-    inline bool Properties::removeProperty(std::string name)
+    inline bool Properties::removeProperty(const std::string& name)
     {
       bool result = false;
 
-      for(std::vector<Property>::iterator it = m_properties.begin(); it != m_properties.end(); it++)
+      for(std::vector<Property>::iterator it = m_properties.begin(); it != m_properties.end(); ++it)
       {
-        if((*it).getName().compare(name) == 0)
+        if(it->getName().compare(name) == 0)
         {
           m_properties.erase(it);
           result = true;
@@ -217,14 +227,30 @@ namespace te
       return result;
     }
 
-    inline std::vector<Property> Properties::getProperties()
+    inline bool Properties::updatePropertyValue(const std::string& name, const Variant& value)
+    {
+      bool result = false;
+
+      for(std::vector<Property>::iterator it = m_properties.begin(); it != m_properties.end(); ++it)
+      {
+        if(it->getName().compare(name) == 0)
+        {
+          it->setValue(value);
+          result = true;
+          break;
+        }
+      }
+      return result;
+    }
+
+    inline const std::vector<Property>& Properties::getProperties() const
     {
       return m_properties;
     }
 
     inline bool Properties::clear()
     {
-	    m_properties.clear();
+      m_properties.clear();
       return m_properties.empty();
     }
 
@@ -238,7 +264,7 @@ namespace te
       m_objName = name;
     }
 
-    inline te::layout::EnumType* Properties::getTypeObj()
+    inline te::layout::EnumType* Properties::getTypeObj() const
     {
       return m_typeObj;
     }
@@ -260,21 +286,18 @@ namespace te
       return is_present;
     }
 
-    inline te::layout::Property Properties::contains( std::string name )
+    inline const te::layout::Property& Properties::getProperty( const std::string& name ) const
     {
       Property property(0);
       property.setName(name);
 
-      if(std::find(m_properties.begin(), m_properties.end(), property) != m_properties.end())
+      std::vector<Property>::const_iterator it = std::find(m_properties.begin(), m_properties.end(), property);
+      if(it != m_properties.end())
       {
-        std::vector<Property>::iterator it = std::find(m_properties.begin(), m_properties.end(), property);
-
-        property = (*it);
+        return *it;
       }
-      else
-        property.setName("");
 
-      return property;
+      return m_nullProperty;
     }
 
     inline void te::layout::Properties::setHasWindows( bool windows )

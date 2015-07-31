@@ -18,51 +18,58 @@
  */
 
 /*!
-  \file RectangleModel.h
+  \file Observer.h
    
-   \brief Class that represents a "Model" part of Rectangle MVC component. 
-      Its coordinate system is the same of scene (millimeters). 
-      This is also son of ItemModelObservable, so it can become observable.
+  \brief Abstract class to represent an observer. "View" part of MVC component.
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_RECTANGLE_MODEL_H
-#define __TERRALIB_LAYOUT_INTERNAL_RECTANGLE_MODEL_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_NEWOBSERVER_H
+#define __TERRALIB_LAYOUT_INTERNAL_NEWOBSERVER_H
 
-// TerraLib
-#include "../core/pattern/mvc/AbstractItemModel.h"
-#include "../core/Config.h"
+//TerraLib
+#include "../../Config.h"
 
 namespace te
 {
   namespace layout
   {
+    class Subject;
 
     /*!
-      \brief Class that represents a "Model" part of Rectangle MVC component. 
-          Its coordinate system is the same of scene (millimeters). 
-          He is also the son of AbstractItemModel, so it can become subject (observer pattern).
-          
+      \brief Abstract class to represent an observer. "View" part of MVC component.
+    
       \ingroup layout
-
-      \sa te::layout::AbstractItemModel
     */
-    class TELAYOUTEXPORT RectangleModel : public AbstractItemModel
+    class TELAYOUTEXPORT NewObserver
     {
+
       public:
 
         /*!
-          \brief Constructor
-        */
-        RectangleModel();
+            \brief Constructor
+         */ 
+        NewObserver();
 
         /*!
-          \brief Destructor
-        */ 
-        virtual ~RectangleModel();
+            \brief Destructor
+         */ 
+        virtual ~NewObserver();
+
+        /*!
+            \brief This method is called when a change has occurred in the state of the observable.
+              Reimplement this function in a ItemObserver subclass to provide the item's updateObserver implementation.
+
+            \param context maintaining the drawing context of a MVC component.
+         */ 
+        virtual void update(const Subject* subject) = 0;
+
+      protected:
+
+        Subject*  m_subject;
     };
   }
 }
 
-#endif
+#endif //__TERRALIB_LAYOUT_INTERNAL_NEWOBSERVER_H

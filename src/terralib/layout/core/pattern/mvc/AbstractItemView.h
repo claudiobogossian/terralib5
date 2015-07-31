@@ -18,51 +18,63 @@
  */
 
 /*!
-  \file RectangleModel.h
+  \file Observable.h
    
-   \brief Class that represents a "Model" part of Rectangle MVC component. 
-      Its coordinate system is the same of scene (millimeters). 
-      This is also son of ItemModelObservable, so it can become observable.
+  \brief Abstract class to represent an observable. "Model" part of MVC component. 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_RECTANGLE_MODEL_H
-#define __TERRALIB_LAYOUT_INTERNAL_RECTANGLE_MODEL_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_ABSTRACTITEMVIEW_H
+#define __TERRALIB_LAYOUT_INTERNAL_ABSTRACTITEMVIEW_H
 
 // TerraLib
-#include "../core/pattern/mvc/AbstractItemModel.h"
-#include "../core/Config.h"
+#include "../observer/NewObserver.h"
+#include "../../Config.h"
 
 namespace te
 {
   namespace layout
   {
 
-    /*!
-      \brief Class that represents a "Model" part of Rectangle MVC component. 
-          Its coordinate system is the same of scene (millimeters). 
-          He is also the son of AbstractItemModel, so it can become subject (observer pattern).
-          
-      \ingroup layout
+    class AbstractItemController;
+    class AbstractItemModel;
 
-      \sa te::layout::AbstractItemModel
+    /*!
+      \brief Abstract class to represent an observable. "Model" part of MVC component. 
+    
+      \ingroup layout
     */
-    class TELAYOUTEXPORT RectangleModel : public AbstractItemModel
+    class TELAYOUTEXPORT AbstractItemView : public NewObserver
     {
       public:
 
         /*!
           \brief Constructor
-        */
-        RectangleModel();
+        */ 
+        AbstractItemView(AbstractItemController* controller, AbstractItemModel* model);
 
         /*!
           \brief Destructor
         */ 
-        virtual ~RectangleModel();
+        virtual ~AbstractItemView();
+
+        /*!
+          \brief Gets the controller
+        */ 
+        virtual AbstractItemController* getController() const;
+
+        /*!
+          \brief Gets the model
+        */ 
+        virtual AbstractItemModel* getModel() const;
+
+      protected:
+
+        AbstractItemController* m_controller; //!< The controller
+        AbstractItemModel*      m_model; //!< The model
     };
   }
 }
 
-#endif
+#endif //__TERRALIB_LAYOUT_INTERNAL_ABSTRACTITEMVIEW_H

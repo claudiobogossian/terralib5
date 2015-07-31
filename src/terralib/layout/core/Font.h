@@ -39,10 +39,10 @@ namespace te
   namespace layout
   {
     /*!
-	    \brief Class specifies a font.
-	  
-	    \ingroup layout
-	  */
+      \brief Class specifies a font.
+    
+      \ingroup layout
+    */
     class Font 
     {
       public:
@@ -59,113 +59,113 @@ namespace te
 
         /*!
           \brief Returns font family name.
-		  
-		      \param font family name 		  
+      
+          \param font family name       
         */ 
         void setFamily(std::string family);
 
         /*!
           \brief Sets font family name.
-		  
-		      \return font family name 		  
+      
+          \return font family name       
         */
         std::string getFamily();
 
         /*!
           \brief Sets point size of the font.
-		  
-		      \param point size of the font		  
+      
+          \param point size of the font      
         */
         void setPointSize(int point);
 
         /*!
           \brief Returns point size of the font.
-		  
-		      \return point size of the font 		  
+      
+          \return point size of the font       
         */
         int getPointSize();
 
         /*!
           \brief Sets font with bold style.
-		  
-		      \param true if font use bold, false otherwise
+      
+          \param true if font use bold, false otherwise
         */
         void setBold(bool bold);
 
         /*!
-          \brief Returns true if font use bold, false otherwise	
-		  
-		      \return true if font use bold, false otherwise		  
+          \brief Returns true if font use bold, false otherwise  
+      
+          \return true if font use bold, false otherwise      
         */
         bool isBold();
 
         /*!
           \brief Sets font with italic style.
-		  
-		      \param true if font use italic, false otherwise		  
+      
+          \param true if font use italic, false otherwise      
         */
         void setItalic(bool italic);
 
         /*!
-          \brief Returns true if font use italic, false otherwise	
-		  
-		      \return true if font use italic, false otherwise			  
+          \brief Returns true if font use italic, false otherwise  
+      
+          \return true if font use italic, false otherwise        
         */
         bool isItalic();
 
         /*!
           \brief Sets font with underline style.
-		  
-		      \param true if font use underline, false otherwise			  
+      
+          \param true if font use underline, false otherwise        
         */
         void setUnderline(bool underline);
 
         /*!
-          \brief Returns true if font use underline, false otherwise	
-		  
-		      \return true if font use underline, false otherwise 		  
+          \brief Returns true if font use underline, false otherwise  
+      
+          \return true if font use underline, false otherwise       
         */
         bool isUnderline();
 
         /*!
           \brief Sets font with strikeout style.
-		  
-		      \param true if font use strikeout, false otherwise		  
+      
+          \param true if font use strikeout, false otherwise      
         */
         void setStrikeout(bool strikeout);
 
         /*!
-          \brief Returns true if font use strikeout, false otherwise	
-		  
-		      \return true if font use strikeout, false otherwise		  
+          \brief Returns true if font use strikeout, false otherwise  
+      
+          \return true if font use strikeout, false otherwise      
         */
         bool isStrikeout();
 
         /*!
           \brief Sets font with kerning style.
-		  
-		      \param true if font use kerning, false otherwise			  
+      
+          \param true if font use kerning, false otherwise        
         */
         void setKerning(bool kerning);
 
         /*!
-          \brief Returns true if font use kerning, false otherwise	
-		  
-		      \return true if font use kerning, false otherwise				  
+          \brief Returns true if font use kerning, false otherwise  
+      
+          \return true if font use kerning, false otherwise          
         */
         bool isKerning();
 
         /*!
           \brief Serialize font object.
-		  
-		      \return font object serialized 		  
+      
+          \return font object serialized       
         */
-        virtual std::string toString();
+        virtual std::string toString() const;
 
         /*!
           \brief Sets this object state from a string.
-		  
-		      \param font object serialized  		  
+      
+          \param font object serialized        
         */
         virtual void fromString(std::string font);
 
@@ -173,21 +173,21 @@ namespace te
 
         /*!
           \brief State boolean to string.
-		  
-		      \param font style option		  
+      
+          \param font style option      
         */
-        virtual std::string toString(bool flag);
+        virtual std::string toString(bool flag) const;
 
         /*!
           \brief State string to boolean.
-		  
-		      \param font style option			  
+      
+          \param font style option        
         */
         virtual bool toBool(std::string str);
 
         std::string m_family; //!< font family name
         int m_pointSize; //!< point size of the font
-        bool m_bold; //!< true if font use bold, false otherwise	
+        bool m_bold; //!< true if font use bold, false otherwise  
         bool m_italic; //!< true if font use italic, false otherwise
         bool m_underline; //!< true if font use underline, false otherwise
         bool m_strikeout; //!< true if font use strikeout, false otherwise

@@ -71,12 +71,7 @@ te::layout::Observer* te::layout::ItemFactory::make( EnumType* type, ItemParamsC
 
   EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
 
-  if(type == enumObj->getRectangleItem())
-  {
-    RectangleItem* rectangle = new RectangleItem(params.getController(), params.getModel());
-    item = (Observer*)rectangle;
-  }
-  else if(type == enumObj->getLegendItem())
+  if(type == enumObj->getLegendItem())
   {
     LegendItem* legend = new LegendItem(params.getController(), params.getModel());
     item = (Observer*)legend;
@@ -106,11 +101,6 @@ te::layout::Observer* te::layout::ItemFactory::make( EnumType* type, ItemParamsC
     GridMapItem* gridMap = new GridMapItem(params.getController(), params.getModel());
     item = (Observer*)gridMap;
   }
-  else if(type == enumObj->getScaleItem())
-  {
-    ScaleItem* scale = new ScaleItem(params.getController(), params.getModel());
-    item = (Observer*)scale;
-  }
   else if(type == enumObj->getImageItem())
   {
     ImageItem* scale = new ImageItem(params.getController(), params.getModel());
@@ -120,16 +110,6 @@ te::layout::Observer* te::layout::ItemFactory::make( EnumType* type, ItemParamsC
   {
     PointItem* point = new PointItem(params.getController(), params.getModel());
     item = (Observer*)point;
-  }
-  else if(type == enumObj->getArrowItem())
-  {
-    ArrowItem* arrow = new ArrowItem(params.getController(), params.getModel());
-    item = (Observer*)arrow;
-  }
-  else if(type == enumObj->getEllipseItem())
-  {
-    EllipseItem* ellipse = new EllipseItem(params.getController(), params.getModel());
-    item = (Observer*)ellipse;
   }
   else if(type == enumObj->getTitleItem())
   {
@@ -199,4 +179,29 @@ te::layout::Observer* te::layout::ItemFactory::make( EnumType* type, ItemParamsC
   return item;
 }
 
+te::layout::AbstractItemView* te::layout::ItemFactory::makeNew(EnumType* type, ItemParamsCreate params)
+{
+  AbstractItemView* item = 0;
+
+  EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
+
+  if(type == enumObj->getRectangleItem())
+  {
+    item = new RectangleItem(params.m_newController, params.m_newModel);
+  }
+  else if(type == enumObj->getEllipseItem())
+  {
+    item = new EllipseItem(params.m_newController, params.m_newModel);
+  }
+  else if(type == enumObj->getArrowItem())
+  {
+    item = new ArrowItem(params.m_newController, params.m_newModel);
+  }
+  else if(type == enumObj->getScaleItem())
+  {
+    item = new ScaleItem(params.m_newController, params.m_newModel);
+  }
+
+  return item;
+}
 

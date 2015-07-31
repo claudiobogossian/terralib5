@@ -265,11 +265,11 @@ te::layout::Properties* te::layout::OutsideModelObservable::getPublicProperties(
 
   m_publicProperties->clear();
 
-  std::vector<Property>::iterator it = m_properties->getProperties().begin();
+  std::vector<Property>::const_iterator it = m_properties->getProperties().begin();
 
   for( ; it != m_properties->getProperties().end() ; ++it )
   {
-    if((*it).isPublic())
+    if(it->isPublic())
     {
       m_publicProperties->addProperty(*it);
     }

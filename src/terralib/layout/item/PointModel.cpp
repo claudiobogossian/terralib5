@@ -76,7 +76,7 @@ void te::layout::PointModel::updateProperties( te::layout::Properties* propertie
 
   Properties* vectorProps = const_cast<Properties*>(properties);
 
-  Property pro_pointName = vectorProps->contains("point_type");
+  Property pro_pointName = vectorProps->getProperty("point_type");
 
   if(!pro_pointName.isNull())
   {

@@ -132,7 +132,7 @@ void te::layout::MapModel::updateProperties( te::layout::Properties* properties,
 
   Properties* vectorProps = const_cast<Properties*>(properties);  
   
-  Property pro_layerNames = vectorProps->contains("layerNames");
+  Property pro_layerNames = vectorProps->getProperty("layerNames");
   if(!pro_layerNames.isNull())
   {
     m_layerNames.clear();
@@ -146,7 +146,7 @@ void te::layout::MapModel::updateProperties( te::layout::Properties* properties,
     }
   }
 
-  Property pro_layers = vectorProps->contains("layers");
+  Property pro_layers = vectorProps->getProperty("layers");
   if(!pro_layers.isNull())
   {
     GenericVariant v = pro_layers.getValue().toGenericVariant();
@@ -161,25 +161,25 @@ void te::layout::MapModel::updateProperties( te::layout::Properties* properties,
     }
   }
 
-  Property pro_fixed = vectorProps->contains("fixedScale");
+  Property pro_fixed = vectorProps->getProperty("fixedScale");
   if(!pro_fixed.isNull())
   {
     m_fixedScale = pro_fixed.getValue().toBool();
   }
 
-  Property pro_mapDisplacementX = vectorProps->contains("map_displacementX");
+  Property pro_mapDisplacementX = vectorProps->getProperty("map_displacementX");
   if(!pro_mapDisplacementX.isNull())
   {
     updateMapDisplacementX(pro_mapDisplacementX.getValue().toDouble());
   }
 
-  Property pro_mapDisplacementY = vectorProps->contains("map_displacementY");
+  Property pro_mapDisplacementY = vectorProps->getProperty("map_displacementY");
   if(!pro_mapDisplacementY.isNull())
   {
     updateMapDisplacementY(pro_mapDisplacementY.getValue().toDouble());
   }
 
-  Property pro_mapScale = vectorProps->contains("map_scale");
+  Property pro_mapScale = vectorProps->getProperty("map_scale");
    if(!pro_mapScale.isNull())
    {
      m_mapScale = pro_mapScale.getValue().toInt();

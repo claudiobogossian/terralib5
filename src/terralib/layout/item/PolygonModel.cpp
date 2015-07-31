@@ -72,7 +72,7 @@ void te::layout::PolygonModel::updateProperties( te::layout::Properties* propert
   Properties* vectorProps = const_cast<Properties*>(properties);
 
   {
-    Property prop = vectorProps->contains("fill_color");
+    Property prop = vectorProps->getProperty("fill_color");
     if(prop.isNull() == false)
     {
       m_fillColor = prop.getValue().toColor();

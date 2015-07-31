@@ -152,7 +152,7 @@ void te::layout::LineModel::updateProperties( te::layout::Properties* properties
 
   Properties* vectorProps = const_cast<Properties*>(properties);
 
-  Property pro_lineType = vectorProps->contains("line_style_type");
+  Property pro_lineType = vectorProps->getProperty("line_style_type");
   if(!pro_lineType.isNull())
   {
     std::string label = pro_lineType.getOptionByCurrentChoice().toString();
@@ -162,7 +162,7 @@ void te::layout::LineModel::updateProperties( te::layout::Properties* properties
   }
 
   {
-    Property prop = vectorProps->contains("color");
+    Property prop = vectorProps->getProperty("color");
     if(prop.isNull() == false)
     {
       m_color = prop.getValue().toColor();

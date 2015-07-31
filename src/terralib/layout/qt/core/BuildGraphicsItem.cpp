@@ -108,7 +108,10 @@
 #include "../../item/SVGModel.h"
 #include "../../item/SVGController.h"
 #include "../item/SVGItem.h"
-
+#include "../item/NewRectangleItem.h"
+#include "../item/NewElipseItem.h"
+#include "../item/NewElipseItemModel.h"
+#include "../../core/pattern/mvc/AbstractItemController.h"
 
 // Qt
 #include <QGraphicsItem>
@@ -512,7 +515,8 @@ void te::layout::BuildGraphicsItem::afterBuild( QGraphicsItem* item, bool draw )
   {
     item->setZValue(m_zValue);
   }
-  
+
+
   ItemObserver* itemObs = dynamic_cast<ItemObserver*>(item);
   if(itemObs && draw)
   {
@@ -614,25 +618,31 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createText()
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createRectangle()
 {
-  RectangleModel* model = new RectangleModel();	
+  RectangleModel* model = new RectangleModel();
   if(!m_props)
   {
-    model->setId(m_id);
-    
     EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
-    std::string name = nameItem(enumObj->getRectangleItem());
-    model->setName(name);
+    std::string strName = nameItem(enumObj->getRectangleItem());
+
+    Property proertyId(0);
+    proertyId.setName("id");
+    proertyId.setValue(m_id, Enums::getInstance().getEnumDataType()->getDataTypeInt());
+    model->setProperty(proertyId);
+
+    Property propertyName(0);
+    propertyName.setName("name");
+    propertyName.setValue(strName, Enums::getInstance().getEnumDataType()->getDataTypeString());
+    model->setProperty(propertyName);
   }
 
-  RectangleController* controller = new RectangleController(model);
-  ItemObserver* itemObs = (ItemObserver*)controller->getView();
+  AbstractItemController* controller = new AbstractItemController(model);
+  AbstractItemView* view = controller->getView();
 
-  RectangleItem* view = dynamic_cast<RectangleItem*>(itemObs); 
-  if(m_props && view)
+  if(m_props)
   {
-    model->updateProperties(m_props);
+    model->setProperties(*m_props);
   }
-  return view;
+  return dynamic_cast<QGraphicsItem*>(view);
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createLegend()
@@ -660,30 +670,36 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createLegend()
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createScale()
 {
-  ScaleModel* model = new ScaleModel();	
+  ScaleModel* model = new ScaleModel();
   if(!m_props)
   {
-    model->setId(m_id);
-    
     EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
-    std::string name = nameItem(enumObj->getScaleItem());
-    model->setName(name);
+    std::string strName = nameItem(enumObj->getRectangleItem());
+
+    Property proertyId(0);
+    proertyId.setName("id");
+    proertyId.setValue(m_id, Enums::getInstance().getEnumDataType()->getDataTypeInt());
+    model->setProperty(proertyId);
+
+    Property propertyName(0);
+    propertyName.setName("name");
+    propertyName.setValue(strName, Enums::getInstance().getEnumDataType()->getDataTypeString());
+    model->setProperty(propertyName);
   }
 
-  ScaleController* controller = new ScaleController(model);
-  ItemObserver* itemObs = (ItemObserver*)controller->getView();
+  AbstractItemController* controller = new AbstractItemController(model);
+  AbstractItemView* view = controller->getView();
 
-  ScaleItem* view = dynamic_cast<ScaleItem*>(itemObs); 
-  if(m_props && view)
+  if(m_props)
   {
-    model->updateProperties(m_props);
+    model->setProperties(*m_props);
   }
-  return view;
+  return dynamic_cast<QGraphicsItem*>(view);
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createItemGroup()
 {
-  ItemGroupModel* model = new ItemGroupModel();	
+  ItemGroupModel* model = new ItemGroupModel();
   if(!m_props)
   {
     model->setId(m_id);
@@ -752,48 +768,60 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createImage()
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createArrow()
 {
-  ArrowModel* model = new ArrowModel();	
+  ArrowModel* model = new ArrowModel();
   if(!m_props)
   {
-    model->setId(m_id);
-    
     EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
-    std::string name = nameItem(enumObj->getArrowItem());
-    model->setName(name);
+    std::string strName = nameItem(enumObj->getRectangleItem());
+
+    Property proertyId(0);
+    proertyId.setName("id");
+    proertyId.setValue(m_id, Enums::getInstance().getEnumDataType()->getDataTypeInt());
+    model->setProperty(proertyId);
+
+    Property propertyName(0);
+    propertyName.setName("name");
+    propertyName.setValue(strName, Enums::getInstance().getEnumDataType()->getDataTypeString());
+    model->setProperty(propertyName);
   }
 
-  ArrowController* controller = new ArrowController(model);
-  ItemObserver* itemObs = (ItemObserver*)controller->getView();
+  AbstractItemController* controller = new AbstractItemController(model);
+  AbstractItemView* view = controller->getView();
 
-  ArrowItem* view = dynamic_cast<ArrowItem*>(itemObs); 
-  if(m_props && view)
+  if(m_props)
   {
-    model->updateProperties(m_props);
+    model->setProperties(*m_props);
   }
-  return view;
+  return dynamic_cast<QGraphicsItem*>(view);
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createEllipse()
 {
-  EllipseModel* model = new EllipseModel();	
+  EllipseModel* model = new EllipseModel();
   if(!m_props)
   {
-    model->setId(m_id);
-    
     EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
-    std::string name = nameItem(enumObj->getEllipseItem());
-    model->setName(name);
+    std::string strName = nameItem(enumObj->getRectangleItem());
+
+    Property proertyId(0);
+    proertyId.setName("id");
+    proertyId.setValue(m_id, Enums::getInstance().getEnumDataType()->getDataTypeInt());
+    model->setProperty(proertyId);
+
+    Property propertyName(0);
+    propertyName.setName("name");
+    propertyName.setValue(strName, Enums::getInstance().getEnumDataType()->getDataTypeString());
+    model->setProperty(propertyName);
   }
 
-  EllipseController* controller = new EllipseController(model);
-  ItemObserver* itemObs = (ItemObserver*)controller->getView();
+  AbstractItemController* controller = new AbstractItemController(model);
+  AbstractItemView* view = controller->getView();
 
-  EllipseItem* view = dynamic_cast<EllipseItem*>(itemObs); 
-  if(m_props && view)
+  if(m_props)
   {
-    model->updateProperties(m_props);
+    model->setProperties(*m_props);
   }
-  return view;
+  return dynamic_cast<QGraphicsItem*>(view);
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createPoint()

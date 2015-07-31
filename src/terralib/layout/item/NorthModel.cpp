@@ -81,7 +81,7 @@ void te::layout::NorthModel::updateProperties( te::layout::Properties* propertie
 
 	Properties* vectorProps = const_cast<Properties*>(properties);
 
-	Property pro_northArrowName = vectorProps->contains("northArrow_type");
+	Property pro_northArrowName = vectorProps->getProperty("northArrow_type");
 
 	if(!pro_northArrowName.isNull())
 	{

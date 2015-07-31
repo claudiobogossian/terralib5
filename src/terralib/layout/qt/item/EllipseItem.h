@@ -22,7 +22,7 @@
    
    \brief Class that represents a graphic Ellipse. 
       Its coordinate system is the same of scene (millimeters). 
-      This is also son of ItemObserver and ObjectItem, so it can become observer of a model (Observable). 
+      This is also son of AbstractItem, so it can become observer of a model (Observable). 
 
   \ingroup layout
 */
@@ -31,25 +31,25 @@
 #define __TERRALIB_LAYOUT_INTERNAL_ELLIPSE_ITEM_H
 
 // TerraLib
-#include "ObjectItem.h"
+#include "AbstractItem.h"
 #include "../../core/Config.h"
+
+#include <QGraphicsItem>
 
 namespace te
 {
   namespace layout
   {
-    class Observable;
-
     /*!
     \brief Class that represents a graphic Ellipse. 
         Its coordinate system is the same of scene (millimeters). 
-        He is also the son of ItemObserver and ObjectItem, so it can become observer of a model (Observable). 
+        He is also the son of AbstractItem, so it can become observer of a model (Observable). 
 
       \ingroup layout
 
-      \sa te::layout::ObjectItem
+      \sa te::layout::AbstractItem
     */
-    class TELAYOUTEXPORT EllipseItem : public ObjectItem
+    class TELAYOUTEXPORT EllipseItem : public AbstractItem<QGraphicsItem>
     {
       public:
 
@@ -59,7 +59,7 @@ namespace te
           \param controller "Controller" part of MVC component
           \param o "Model" part of MVC component
         */
-        EllipseItem( ItemController* controller, Observable* o, bool invertedMatrix = false );
+        EllipseItem( AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix = false );
 
         /*!
           \brief Destructor

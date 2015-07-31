@@ -26,27 +26,17 @@
 */
 
 // TerraLib
-#include "../../../color/RGBAColor.h"
-#include "../../../common/STLUtils.h"
-#include "../../../geometry/Envelope.h"
-#include "../../../qt/widgets/Utils.h"
-#include "../../core/AbstractScene.h"
-#include "../../core/pattern/mvc/ItemController.h"
-#include "../../core/pattern/mvc/Observable.h"
-#include "../../item/ArrowModel.h"
 #include "ArrowItem.h"
-
-// STL
-#include <cmath>
+#include "../../../color/RGBAColor.h"
+#include "../../core/enum/EnumArrowType.h"
 
 // Qt
 #include <QPointF>
 #include "qglobal.h"
 
-te::layout::ArrowItem::ArrowItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
-  ObjectItem(controller, o, invertedMatrix)
+te::layout::ArrowItem::ArrowItem( AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix ) 
+  : AbstractItem<QGraphicsItem>(controller, model)
 {
-  m_nameClass = std::string(this->metaObject()->className());
 }
 
 te::layout::ArrowItem::~ArrowItem()
@@ -56,21 +46,23 @@ te::layout::ArrowItem::~ArrowItem()
 
 void te::layout::ArrowItem::drawItem( QPainter * painter )
 {
-    ArrowModel* model = dynamic_cast<ArrowModel*>(m_model);
-
-  if(model)
+  const Property& property = m_model->getProperty("arrow_type");
+  if(property.isNull() == false)
   {
-    EnumArrowType* enumScale = model->getEnumArrowType();
+    EnumArrowType enumArrowType;
 
-    if(model->getCurrentArrowType() == enumScale->getDoubleArrowType())
+    const std::string& label = property.getOptionByCurrentChoice().toString();
+    EnumType* currentArrowType = enumArrowType.searchLabel(label);
+
+    if(currentArrowType == enumArrowType.getDoubleArrowType())
     {
       drawDoubleArrow(painter);
     }
-    if(model->getCurrentArrowType() == enumScale->getRightArrowType())
+    if(currentArrowType == enumArrowType.getRightArrowType())
     {
       drawRightArrow(painter);
     }
-    if(model->getCurrentArrowType() == enumScale->getLeftArrowType())
+    if(currentArrowType == enumArrowType.getLeftArrowType())
     {
       drawLeftArrow(painter);
     }
@@ -81,10 +73,11 @@ void te::layout::ArrowItem::drawRightArrow( QPainter * painter )
 {
   painter->save();
 
-  ArrowModel* model = dynamic_cast<ArrowModel*>(m_model);
+  const Property& pFillColor = m_model->getProperty("fill_color");
+  const Property& pContourColor = m_model->getProperty("contour_color");
 
-  const te::color::RGBAColor& fillColor = model->getFillColor();
-  const te::color::RGBAColor& contourColor = model->getContourColor();
+  const te::color::RGBAColor& fillColor = pFillColor.getValue().toColor();
+  const te::color::RGBAColor& contourColor = pContourColor.getValue().toColor();
 
   QColor qFillColor(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), fillColor.getAlpha());
   QColor qContourColor(contourColor.getRed(), contourColor.getGreen(), contourColor.getBlue(), contourColor.getAlpha());
@@ -129,9 +122,11 @@ void te::layout::ArrowItem::drawLeftArrow(QPainter * painter)
 {
   painter->save();
 
-  ArrowModel* model = dynamic_cast<ArrowModel*>(m_model);
-  const te::color::RGBAColor& fillColor = model->getFillColor();
-  const te::color::RGBAColor& contourColor = model->getContourColor();
+  const Property& pFillColor = m_model->getProperty("fill_color");
+  const Property& pContourColor = m_model->getProperty("contour_color");
+
+  const te::color::RGBAColor& fillColor = pFillColor.getValue().toColor();
+  const te::color::RGBAColor& contourColor = pContourColor.getValue().toColor();
 
   QColor qFillColor(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), fillColor.getAlpha());
   QColor qContourColor(contourColor.getRed(), contourColor.getGreen(), contourColor.getBlue(), contourColor.getAlpha());
@@ -177,9 +172,11 @@ void te::layout::ArrowItem::drawDoubleArrow(QPainter * painter)
 {
   painter->save();
 
-  ArrowModel* model = dynamic_cast<ArrowModel*>(m_model);
-  const te::color::RGBAColor& fillColor = model->getFillColor();
-  const te::color::RGBAColor& contourColor = model->getContourColor();
+  const Property& pFillColor = m_model->getProperty("fill_color");
+  const Property& pContourColor = m_model->getProperty("contour_color");
+
+  const te::color::RGBAColor& fillColor = pFillColor.getValue().toColor();
+  const te::color::RGBAColor& contourColor = pContourColor.getValue().toColor();
 
   QColor qFillColor(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), fillColor.getAlpha());
   QColor qContourColor(contourColor.getRed(), contourColor.getGreen(), contourColor.getBlue(), contourColor.getAlpha());
@@ -223,4 +220,3 @@ void te::layout::ArrowItem::drawDoubleArrow(QPainter * painter)
 
   painter->restore();
 }
-

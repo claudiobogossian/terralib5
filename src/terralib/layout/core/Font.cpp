@@ -123,7 +123,7 @@ bool te::layout::Font::isKerning()
   return m_kerning;
 }
 
-std::string te::layout::Font::toString()
+std::string te::layout::Font::toString() const
 {
   std::string s_convert;
   std::stringstream ss;//create a stringstream
@@ -169,7 +169,7 @@ void te::layout::Font::fromString( std::string font )
   m_kerning = toBool(strings[6]);;  
 }
 
-std::string te::layout::Font::toString( bool flag )
+std::string te::layout::Font::toString( bool flag ) const
 {
   return flag ? "true" : "false"; 
 }

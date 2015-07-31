@@ -32,6 +32,8 @@
 #include "../../../core/property/SharedProperties.h"
 #include "../../../core/enum/Enums.h"
 #include "../../../core/pattern/singleton/Context.h"
+#include "../../../core/pattern/mvc/AbstractItemView.h"
+#include "../../../core/pattern/mvc/AbstractItemModel.h"
 #include "../ItemUtils.h"
 #include "../Scene.h"
 #include "../pattern/command/ChangePropertyCommand.h"
@@ -65,7 +67,7 @@ te::layout::Properties* te::layout::PropertiesUtils::intersection( QList<QGraphi
   {
     QGraphicsItem* item = graphicsItems.first();
     if (item)
-    {			
+    {
       ItemObserver* lItem = dynamic_cast<ItemObserver*>(item);
       if(lItem)
       {
@@ -73,6 +75,14 @@ te::layout::Properties* te::layout::PropertiesUtils::intersection( QList<QGraphi
         {
           props = const_cast<Properties*>(lItem->getModel()->getProperties());
           window = props->hasWindows();
+        }
+      }
+      else
+      {
+        AbstractItemView* absItem = dynamic_cast<AbstractItemView*>(item);
+        if(absItem != 0)
+        {
+          props = (Properties*)(&(absItem->getModel()->getProperties()));
         }
       }
     }
@@ -132,7 +142,7 @@ te::layout::Properties* te::layout::PropertiesUtils::sameProperties( QList<QGrap
 
 void te::layout::PropertiesUtils::contains( std::vector<Properties*>::iterator itend, std::vector<Properties*>::iterator it, std::string name, bool& result )
 {
-  Property prop = (*it)->contains(name);
+  Property prop = (*it)->getProperty(name);
   if(prop.isNull())
   {
     result = false;

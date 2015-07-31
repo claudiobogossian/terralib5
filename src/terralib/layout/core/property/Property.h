@@ -63,7 +63,7 @@ namespace te
 
           \return name of this property
         */
-        std::string getName();
+        const std::string& getName() const;
 
         /*!
           \brief Sets the name of this property.
@@ -77,7 +77,7 @@ namespace te
 
           \return type of this property
         */
-        EnumType* getType();
+        EnumType* getType() const;
 
 	      std::vector<te::layout::Property> getSubProperty();
         
@@ -100,14 +100,14 @@ namespace te
 
           \param te::layout::Variant object
         */
-        void setValue(Variant variant);
+        void setValue(const Variant& variant);
 
         /*!
           \brief Returns stored value
 
           \return te::layout::Variant object
         */
-        Variant getValue();
+        const Variant& getValue() const;
 
         /*!
           \brief Returns true if property is editable, false otherwise. 
@@ -133,10 +133,10 @@ namespace te
 
         void setOptionChoice(int numberOption);
 
-        Variant getOptionByCurrentChoice();   
+        const Variant& getOptionByCurrentChoice() const;
 
-        std::vector<Variant> getOptionChoices();  
-        
+        const std::vector<Variant>& getOptionChoices() const;
+
         //Ex.: For font information
         void addSubProperty( Property property );
 
@@ -147,7 +147,7 @@ namespace te
 
           \return true if no value has been set, false otherwise 
         */
-        bool isNull();
+        bool isNull() const;
 
         /*!
           \brief Reset state of this object. Null state.  
@@ -262,7 +262,7 @@ namespace te
 
           \return true if property compose a widget, false otherwise 
         */
-        bool isPublic();
+        bool isPublic() const;
 
         /*!
           \brief Sets true if property is public, false otherwise
@@ -273,7 +273,7 @@ namespace te
         */
         void setPublic(bool publicProperty);
       
-        bool operator ==(const Property& other); 
+        bool operator ==(const Property& other) const;
 
     protected:
 
@@ -304,11 +304,9 @@ namespace te
       m_type = type;
     }
 
-    inline bool te::layout::Property::operator ==(const Property& other) 
+    inline bool te::layout::Property::operator ==(const Property& other) const
     { 
-      Property& otherProp = const_cast<Property&>(other);
-
-      if(getName().compare(otherProp.getName()) == 0)
+      if(getName().compare(other.getName()) == 0)
       {
         return true;
       }

@@ -37,6 +37,7 @@ namespace te
   namespace layout
   {
     class Observer;
+    class AbstractItemView;
 
     /*!
 	  \brief Abstract Factory provide an interface for creating families of related or dependent graphic objects (MVC components) without specifying their concrete classes.
@@ -59,6 +60,8 @@ namespace te
           \param params parameters to creation new object. Ex.: "Model" and "Controller" of the new object (MVC component).
         */
         virtual Observer* make(EnumType* type, ItemParamsCreate params = ItemParamsCreate()) = 0;
+
+        virtual AbstractItemView* makeNew(EnumType* type, ItemParamsCreate params = ItemParamsCreate()) = 0;
       };
   }
 }

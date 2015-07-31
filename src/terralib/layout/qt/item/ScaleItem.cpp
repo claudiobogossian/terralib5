@@ -27,26 +27,12 @@
 
 // TerraLib
 #include "ScaleItem.h"
-#include "../../core/pattern/mvc/ItemController.h"
-#include "../core/Scene.h"
-#include "../../core/pattern/mvc/Observable.h"
 #include "../../../color/RGBAColor.h"
-#include "../../../qt/widgets/Utils.h"
-#include "../../../geometry/Envelope.h"
-#include "../../../common/STLUtils.h"
-#include "../../item/ScaleModel.h"
+#include "../../core/enum/EnumScaleType.h"
 
-// STL
-#include <string>
-#include <sstream> // std::stringstream
-
-// Qt
-#include <QPixmap>
-
-te::layout::ScaleItem::ScaleItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
-  ObjectItem(controller, o, invertedMatrix)
+te::layout::ScaleItem::ScaleItem( AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix )
+  : AbstractItem<QGraphicsItem>(controller, model)
 {  
-  m_nameClass = std::string(this->metaObject()->className());
 }
 
 te::layout::ScaleItem::~ScaleItem()
@@ -56,21 +42,23 @@ te::layout::ScaleItem::~ScaleItem()
 
 void te::layout::ScaleItem::drawItem( QPainter * painter )
 {
-  ScaleModel* model = dynamic_cast<ScaleModel*>(m_model);
-
-  if(model)
+  const Property& property = m_model->getProperty("scale_type");
+  if(property.isNull() == false)
   {
-    EnumScaleType* enumScale = model->getEnumScaleType();
+    EnumScaleType enumScale;
 
-    if(model->getCurrentScaleType() == enumScale->getDoubleAlternatingScaleBarType())
+    const std::string& label = property.getOptionByCurrentChoice().toString();
+    EnumType* currentScaleType = enumScale.searchLabel(label);
+
+    if(currentScaleType == enumScale.getDoubleAlternatingScaleBarType())
     {
       drawDoubleAlternatingScaleBar(painter);
     }
-    if(model->getCurrentScaleType() == enumScale->getAlternatingScaleBarType())
+    if(currentScaleType == enumScale.getAlternatingScaleBarType())
     {
       drawAlternatingScaleBar(painter);
     }
-    if(model->getCurrentScaleType() == enumScale->getHollowScaleBarType())
+    if(currentScaleType == enumScale.getHollowScaleBarType())
     {
       drawHollowScaleBar(painter);
     }
@@ -83,12 +71,18 @@ void te::layout::ScaleItem::drawDoubleAlternatingScaleBar( QPainter * painter )
   
   painter->save();
 
-  double			unit=1000.0;
+  double unit=1000.0;
   std::string strUnit="(Km)";
 
-  ScaleModel* model = dynamic_cast<ScaleModel*>(m_model);
+  const Property& pScale = m_model->getProperty("scale");
+  const Property& pScaleGapX = m_model->getProperty("scale_width_rect_gap");
+  const Property& pScaleGapY = m_model->getProperty("scale_height_rect_gap");
+  
+  double scale = pScale.getValue().toDouble();
+  double gapX = pScaleGapX.getValue().toDouble();
+  double gapY = pScaleGapY.getValue().toDouble();
 
-  if(model->getMapScale() < 1000)
+  if(scale < 1000)
   {
     unit = 1.0;
     strUnit="(m)";
@@ -99,9 +93,9 @@ void te::layout::ScaleItem::drawDoubleAlternatingScaleBar( QPainter * painter )
   }
 
   //convert millimeters to centimeters
-  double mmToCm = model->getScaleGapX()/10;
+  double mmToCm = gapX/10.;
 
-  double spacing = model->getMapScale()/100;
+  double spacing = scale/100.;
   
   double value = 0.;
   double width = 0.;
@@ -117,9 +111,6 @@ void te::layout::ScaleItem::drawDoubleAlternatingScaleBar( QPainter * painter )
   QRectF newBoxFirst;
   QRectF newBoxSecond;
 
-  double gapX = model->getScaleGapX();
-  double gapY = model->getScaleGapY();
-    
   for( ; x1 < boundRect.topRight().x(); x1 += width)
   {
     if(x1+gapX >= boundRect.topRight().x())
@@ -154,7 +145,7 @@ void te::layout::ScaleItem::drawDoubleAlternatingScaleBar( QPainter * painter )
     QPointF coordText(x1, newBoxSecond.topLeft().y() - 5);
 
     drawText(coordText, painter, ss_value.str());
-    
+
     changeColor = firstRect;
     firstRect = secondRect;
     secondRect = changeColor;
@@ -169,10 +160,10 @@ void te::layout::ScaleItem::drawDoubleAlternatingScaleBar( QPainter * painter )
   painter->drawRect(rectScale);
 
   //middle-bottom text
-  double centerX = rectScale.center().x();  
+  double centerX = rectScale.center().x();
   painter->setPen(QPen(textColor));
     
-  QPointF coordText(centerX, boundRect.topLeft().y() + 1); 
+  QPointF coordText(centerX, boundRect.topLeft().y() + 1);
   drawText(coordText, painter, strUnit);
 
   painter->restore();
@@ -187,9 +178,15 @@ void te::layout::ScaleItem::drawAlternatingScaleBar( QPainter * painter )
   double			unit=1000.0;
   std::string strUnit="(Km)";
 
-  ScaleModel* model = dynamic_cast<ScaleModel*>(m_model);
+  const Property& pScale = m_model->getProperty("scale");
+  const Property& pScaleGapX = m_model->getProperty("scale_width_rect_gap");
+  const Property& pScaleGapY = m_model->getProperty("scale_height_rect_gap");
+  
+  double scale = pScale.getValue().toDouble();
+  double gapX = pScaleGapX.getValue().toDouble();
+  double gapY = pScaleGapY.getValue().toDouble();
 
-  if(model->getMapScale() < 1000)
+  if(scale < 1000)
   {
     unit = 1.0;
     strUnit="(m)";
@@ -200,9 +197,9 @@ void te::layout::ScaleItem::drawAlternatingScaleBar( QPainter * painter )
   }
 
   //convert millimeters to centimeters
-  double mmToCm = model->getScaleGapX()/10;
+  double mmToCm = gapX/10;
 
-  double spacing = model->getMapScale()/100;
+  double spacing = scale/100;
 
   double value = 0.;
   double width = 0.;
@@ -217,9 +214,6 @@ void te::layout::ScaleItem::drawAlternatingScaleBar( QPainter * painter )
 
   QRectF newBoxFirst;
   QRectF newBoxSecond;
-
-  double gapX = model->getScaleGapX();
-  double gapY = model->getScaleGapY();
 
   for( ; x1 < boundRect.topRight().x(); x1 += width)
   {
@@ -285,9 +279,15 @@ void te::layout::ScaleItem::drawHollowScaleBar( QPainter * painter )
   double			unit=1000.0;
   std::string strUnit="(Km)";
 
-  ScaleModel* model = dynamic_cast<ScaleModel*>(m_model);
+  const Property& pScale = m_model->getProperty("scale");
+  const Property& pScaleGapX = m_model->getProperty("scale_width_rect_gap");
+  const Property& pScaleGapY = m_model->getProperty("scale_height_rect_gap");
+  
+  double scale = pScale.getValue().toDouble();
+  double gapX = pScaleGapX.getValue().toDouble();
+  double gapY = pScaleGapY.getValue().toDouble();
 
-  if(model->getMapScale() < 1000)
+  if(scale < 1000)
   {
     unit = 1.0;
     strUnit="(m)";
@@ -298,9 +298,9 @@ void te::layout::ScaleItem::drawHollowScaleBar( QPainter * painter )
   }
 
   //convert millimeters to centimeters
-  double mmToCm = model->getScaleGapX()/10;
+  double mmToCm = gapX/10;
 
-  double spacing = model->getMapScale()/100;
+  double spacing = scale/100;
 
   double value = 0.;
   double width = 0.;
@@ -316,9 +316,6 @@ void te::layout::ScaleItem::drawHollowScaleBar( QPainter * painter )
   QRectF newBoxFirst;
   QRectF newBoxSecond;
 
-  double gapX = model->getScaleGapX();
-  double gapY = model->getScaleGapY();
-  
   //Rect around scale
   QPen pn(black, 0, Qt::SolidLine);
 
@@ -377,7 +374,3 @@ void te::layout::ScaleItem::drawHollowScaleBar( QPainter * painter )
 
   painter->restore();
 }
-
-
-
-

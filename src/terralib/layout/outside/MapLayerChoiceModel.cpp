@@ -100,7 +100,7 @@ std::list<te::map::AbstractLayerPtr> te::layout::MapLayerChoiceModel::searchLaye
   for( ; itProp != m_mapProperties.end() ; ++itProp)
   {
     Properties* prop = (*itProp);
-    Property pp = prop->contains("layers");
+    Property pp = prop->getProperty("layers");
 
     if(pp.isNull())
     {

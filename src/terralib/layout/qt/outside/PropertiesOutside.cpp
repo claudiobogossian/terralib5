@@ -39,6 +39,8 @@
 #include "../../core/pattern/mvc/ItemModelObservable.h"
 #include "../../item/MapModel.h"
 #include "../core/ItemUtils.h"
+#include "../../core/pattern/mvc/AbstractItemView.h"
+#include "../../core/pattern/mvc/AbstractItemModel.h"
 #include "../../core/pattern/derivativevisitor/VisitorUtils.h"
 #include "../../core/enum/Enums.h"
 #include "../core/pattern/command/ChangePropertyCommand.h"
@@ -258,7 +260,7 @@ bool te::layout::PropertiesOutside::sendPropertyToSelectedItems( Property proper
   foreach( QGraphicsItem *item, m_graphicsItems) 
   {
     if (item)
-    {			
+    {
       ItemObserver* lItem = dynamic_cast<ItemObserver*>(item);
       if(lItem)
       {
@@ -286,7 +288,22 @@ bool te::layout::PropertiesOutside::sendPropertyToSelectedItems( Property proper
             commandOld.push_back(oldCommand);
             commandNew.push_back(newCommand);
           }
-        }       
+        }
+      }
+      else
+      {
+        AbstractItemView* absItem = dynamic_cast<AbstractItemView*>(item);
+        if(absItem)
+        {
+          Properties* oldCommand = new Properties(absItem->getModel()->getProperties());
+
+          absItem->getModel()->setProperty(property);
+
+          Properties* newCommand = new Properties(absItem->getModel()->getProperties());
+          commandItems.push_back(item);
+          commandOld.push_back(oldCommand);
+          commandNew.push_back(newCommand);
+        }
       }
     }
   }

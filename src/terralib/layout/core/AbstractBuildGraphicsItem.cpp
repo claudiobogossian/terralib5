@@ -56,14 +56,14 @@ te::gm::Coord2D te::layout::AbstractBuildGraphicsItem::findCoordinate( te::layou
   double x1 = 0;
   double y1 = 0;
 
-  Property pro_x1 = props->contains(m_sharedProps->getX1());
+  Property pro_x1 = props->getProperty(m_sharedProps->getX1());
 
   if(!pro_x1.isNull())
   {
     x1 = pro_x1.getValue().toDouble();
   }
 
-  Property pro_y1 = props->contains(m_sharedProps->getY1());
+  Property pro_y1 = props->getProperty(m_sharedProps->getY1());
 
   if(!pro_y1.isNull())
   {
@@ -78,7 +78,7 @@ int te::layout::AbstractBuildGraphicsItem::findZValue( te::layout::Properties* p
 {
   int zValue = 0;
 
-  Property pro_zValue = props->contains(m_sharedProps->getZValue());
+  Property pro_zValue = props->getProperty(m_sharedProps->getZValue());
 
   if(!pro_zValue.isNull())
   {

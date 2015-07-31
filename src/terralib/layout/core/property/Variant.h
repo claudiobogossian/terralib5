@@ -119,99 +119,99 @@ namespace te
         /*!
           \brief Returns data type of this object.
         */ 
-        EnumType* getType();
+        EnumType* getType() const;
 
         /*!
           \brief Return true if value is not of common C++ data type, false otherwise.
 
           \param true if value is not of common C++ data type, false otherwise
         */ 
-        virtual bool isComplex();
+        virtual bool isComplex() const;
         
         /*!
           \brief Returns the value of string type. (The setValue method received a string)
 
           \return value of string type
         */
-        std::string toString();
+        const std::string& toString() const;
 
         /*!
           \brief Returns the value of double type. (The setValue method received a double)
 
           \return value of double type
         */
-        double toDouble();
+        double toDouble() const;
 
         /*!
           \brief Returns the value of int type. (The setValue method received a int)
 
           \return value of int type
         */
-        int toInt();
+        int toInt() const;
 
         /*!
           \brief Returns the value of long type. (The setValue method received a long)
 
           \return value of long type
         */
-        long toLong();
+        long toLong() const;
 
         /*!
           \brief Returns the value of float type. (The setValue method received a float)
 
           \return value of float type
         */
-        float toFloat();
+        float toFloat() const;
 
         /*!
           \brief Returns the value of boolean type. (The setValue method received a boolean)
 
           \return value of boolean type
         */
-        bool toBool();
+        bool toBool() const;
 
         /*!
           \brief Returns the value of te::color::RGBAColor type. (The setValue method received a te::color::RGBAColor). Complex type.
 
           \return value of te::color::RGBAColor type
         */
-        te::color::RGBAColor toColor(); 
+        const te::color::RGBAColor& toColor() const;
 
         /*!
           \brief Returns the value of te::layout::Font type. (The setValue method received a te::layout::Font). Complex type.
 
           \return value of te::layout::Font type
         */
-        Font toFont();
+        const Font& toFont() const;
 
         /*!
           \brief Returns the value of te::layout::GenericVariant type. (The setValue method received a te::layout::GenericVariant). Complex type.
 
           \return value of te::layout::Font type
         */
-        GenericVariant toGenericVariant();
+        const GenericVariant& toGenericVariant() const;
 
         /*!
           \brief Converts the value to a string.
 
           \return Value as a string
         */
-        virtual std::string convertToString();
+        virtual std::string convertToString() const;
 
         /*!
           \brief Returns true if no value has been set, false otherwise.
 
           \return true if no value has been set, false otherwise
         */
-        bool isNull();
+        bool isNull() const;
 
         /*!
           \brief Reset state of object. Null state.
         */
         virtual void clear();
                 
-        bool operator ==(const Variant& other); 
-        bool operator !=(const Variant& other); 
+        bool operator ==(const Variant& other) const;
+        bool operator !=(const Variant& other) const;
 
     protected:
 
@@ -271,7 +271,7 @@ namespace te
           \param value int value
           \return string representation of a number
        */
-      virtual std::string toString(int value);
+      virtual std::string toString(int value) const;
 
       /*!
           \brief Convert a string value into a boolean representation of a string. Ex.: true, false.
@@ -310,7 +310,7 @@ namespace te
       v = Variant(type, &value);      
     }
     
-    inline bool te::layout::Variant::operator ==(const Variant& other) 
+    inline bool te::layout::Variant::operator ==(const Variant& other) const
     { 
       Variant& otherProp = const_cast<Variant&>(other);
 
@@ -331,7 +331,7 @@ namespace te
       return false;
     }
 
-    inline bool te::layout::Variant::operator !=(const Variant& other) 
+    inline bool te::layout::Variant::operator !=(const Variant& other) const
     { 
       Variant& otherProp = const_cast<Variant&>(other);
 

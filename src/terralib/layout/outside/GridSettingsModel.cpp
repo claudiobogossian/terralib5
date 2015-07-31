@@ -60,7 +60,7 @@ te::layout::Property te::layout::GridSettingsModel::containsProperty( std::strin
     return prop;
   }
 
-  prop = props->contains(name);
+  prop = props->getProperty(name);
   return prop;
 }
 

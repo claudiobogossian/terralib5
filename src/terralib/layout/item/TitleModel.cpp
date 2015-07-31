@@ -172,7 +172,7 @@ void te::layout::TitleModel::updateProperties( te::layout::Properties* propertie
 
   Properties* vectorProps = const_cast<Properties*>(properties);
 
-  Property pro_textGrid = vectorProps->contains(m_textgridProperties->getName());
+  Property pro_textGrid = vectorProps->getProperty(m_textgridProperties->getName());
 
   Property pro_spacing = pro_textGrid.containsSubProperty(m_textgridProperties->getSpacing());
 

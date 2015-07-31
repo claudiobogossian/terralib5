@@ -426,6 +426,8 @@ QGraphicsItem* te::layout::Scene::createItem( const te::gm::Coord2D& coord )
     }
   }
 
+  this->insertItem(item);
+
   Context::getInstance().setMode(type->getModeNone());
 
   return item;

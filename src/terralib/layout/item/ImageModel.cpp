@@ -78,7 +78,7 @@ void te::layout::ImageModel::updateProperties( te::layout::Properties* propertie
 
   Properties* vectorProps = const_cast<Properties*>(properties);
 
-  Property pro_fileName = vectorProps->contains("fileName");
+  Property pro_fileName = vectorProps->getProperty("fileName");
 
   if(!pro_fileName.isNull())
   {

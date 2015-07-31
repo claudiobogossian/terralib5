@@ -28,6 +28,8 @@
 // TerraLib
 #include "ItemUtils.h"
 #include "../../core/pattern/mvc/ItemModelObservable.h"
+#include "../../core/pattern/mvc/AbstractItemView.h"
+#include "../../core/pattern/mvc/AbstractItemModel.h"
 #include "../../core/pattern/singleton/Context.h"
 #include "../../core/enum/Enums.h"
 #include "../item/MapItem.h"
@@ -157,11 +159,15 @@ int te::layout::ItemUtils::countType( te::layout::EnumType* type )
     if(!item)
       continue;
 
-    ItemObserver* obs = dynamic_cast<ItemObserver*>(item);
-    if(!obs)
+    te::layout::AbstractItemView* absItem = dynamic_cast<te::layout::AbstractItemView*>(item);
+    if(absItem == 0)
       continue;
 
-    if(obs->getModel()->getType() == type)
+    te::layout::AbstractItemModel* model = absItem->getModel();
+    if(model == 0)
+      continue;
+
+    if(model->getProperties().getTypeObj() == type)
     {
       count+=1;
     }
@@ -180,25 +186,27 @@ int te::layout::ItemUtils::maxTypeId( te::layout::EnumType* type )
     if(!item)
       continue;
 
-    ItemObserver* obs = dynamic_cast<ItemObserver*>(item);
-    if(!obs)
+    te::layout::AbstractItemView* absItem = dynamic_cast<te::layout::AbstractItemView*>(item);
+    if(absItem == 0)
       continue;
 
-    ItemModelObservable* model = dynamic_cast<ItemModelObservable*>(obs->getModel());
-    if(!model)
+    te::layout::AbstractItemModel* model = absItem->getModel();
+    if(model == 0)
       continue;
 
-    if(obs->getModel()->getType() == type)
+    int currentId = model->getProperty("id").getValue().toInt();
+
+    if(model->getProperties().getTypeObj() == type)
     {
       if(id == -1)
       {
-        id = model->getId();
+        id = currentId;
       }
       else
       {
-        if(model->getId() > id)
+        if(currentId > id)
         {
-          id = model->getId();
+          id = currentId;
         }
       }
     }

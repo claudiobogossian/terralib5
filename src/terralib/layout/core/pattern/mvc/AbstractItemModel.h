@@ -18,51 +18,58 @@
  */
 
 /*!
-  \file RectangleModel.h
+  \file Observable.h
    
-   \brief Class that represents a "Model" part of Rectangle MVC component. 
-      Its coordinate system is the same of scene (millimeters). 
-      This is also son of ItemModelObservable, so it can become observable.
+  \brief Abstract class to represent an observable. "Model" part of MVC component. 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_RECTANGLE_MODEL_H
-#define __TERRALIB_LAYOUT_INTERNAL_RECTANGLE_MODEL_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_ABSTRACTITEMMODEL_H
+#define __TERRALIB_LAYOUT_INTERNAL_ABSTRACTITEMMODEL_H
 
 // TerraLib
-#include "../core/pattern/mvc/AbstractItemModel.h"
-#include "../core/Config.h"
+#include "../observer/Subject.h"
+#include "../../Config.h"
+#include "../../property/Properties.h"
 
 namespace te
 {
   namespace layout
   {
 
-    /*!
-      \brief Class that represents a "Model" part of Rectangle MVC component. 
-          Its coordinate system is the same of scene (millimeters). 
-          He is also the son of AbstractItemModel, so it can become subject (observer pattern).
-          
-      \ingroup layout
+    class Property;
 
-      \sa te::layout::AbstractItemModel
+    /*!
+      \brief Abstract class to represent an observable. "Model" part of MVC component. 
+    
+      \ingroup layout
     */
-    class TELAYOUTEXPORT RectangleModel : public AbstractItemModel
+    class TELAYOUTEXPORT AbstractItemModel : public Subject
     {
       public:
 
         /*!
           \brief Constructor
-        */
-        RectangleModel();
+        */ 
+        AbstractItemModel();
 
         /*!
           \brief Destructor
         */ 
-        virtual ~RectangleModel();
+        virtual ~AbstractItemModel();
+
+        virtual const Property& getProperty(const std::string& propertyName) const;
+        virtual void setProperty(const Property& property);
+
+        virtual const Properties& getProperties() const;
+        virtual void setProperties(const Properties& properties);
+
+      protected:
+
+        Properties            m_properties; //!< The properties of the item
     };
   }
 }
 
-#endif
+#endif //__TERRALIB_LAYOUT_INTERNAL_ABSTRACTITEMMODEL_H

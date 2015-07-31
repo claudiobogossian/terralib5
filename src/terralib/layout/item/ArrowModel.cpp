@@ -27,174 +27,78 @@
 
 // TerraLib
 #include "ArrowModel.h"
-#include "../core/ContextItem.h"
 #include "../core/enum/Enums.h"
-
-// STL
-#include <cmath>
+#include "../core/enum/EnumArrowType.h"
 #include "../core/property/Properties.h"
-#include "../core/pattern/mvc/ItemModelObservable.h"
+#include "../core/property/Property.h"
 
-te::layout::ArrowModel::ArrowModel():
-  m_enumArrowType(0),
-  m_currentArrowType(0),
-  m_shapeSize(4)
+te::layout::ArrowModel::ArrowModel()
+  : AbstractItemModel()
 {
-  m_type = Enums::getInstance().getEnumObjectType()->getArrowItem();
+  te::color::RGBAColor fillColor(255, 255, 255, 255);
+  te::color::RGBAColor contourColor(0, 0, 0, 255);
 
-  m_box = te::gm::Envelope(0., 0., 20., 20.);
+  this->m_properties.setTypeObj(Enums::getInstance().getEnumObjectType()->getArrowItem());
 
-  m_border = false;
-  m_enumArrowType = new EnumArrowType();
-  m_currentArrowType = m_enumArrowType->getRightArrowType();
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+  
+//adding properties
+  {
+    EnumArrowType arrowType;
+    EnumType* currentType = arrowType.getRightArrowType();
 
-  m_fillColor = te::color::RGBAColor(255, 255, 255, 255);
-  m_contourColor = te::color::RGBAColor(0, 0, 0, 255);
+    Property property(0);
+    property.setName("arrow_type");
+    property.setLabel("graphic type");
+    property.setValue(currentType->getLabel(), dataType->getDataTypeStringList());
+
+    Variant v;
+    v.setValue(currentType->getLabel(), dataType->getDataTypeString());
+    property.addOption(v);
+    property.setOptionChoice(v);
+
+    for(int i = 0 ; i < arrowType.size() ; ++i)
+    {
+      EnumType* enumType = arrowType.getEnum(i);
+
+      if(enumType == arrowType.getNoneType() || enumType == currentType)
+        continue;
+
+      Variant v;
+      v.setValue(enumType->getLabel(), dataType->getDataTypeString());
+      property.addOption(v);
+    }
+
+    this->m_properties.addProperty(property);
+  }
+
+  {
+    Property property(0);
+    property.setName("fill_color");
+    property.setLabel("Fill Color");
+    property.setValue(fillColor, dataType->getDataTypeColor());
+    property.setMenu(true);
+    m_properties.addProperty(property);
+  }
+
+  {
+    Property property(0);
+    property.setName("contour_color");
+    property.setLabel("Contour Color");
+    property.setValue(contourColor, dataType->getDataTypeColor());
+    property.setMenu(true);
+    m_properties.addProperty(property);
+  }
+
+//updating properties
+  {
+    Property property(0);
+    property.setName("show_frame");
+    property.setValue(false, dataType->getDataTypeBool());
+    this->m_properties.updatePropertyValue(property.getName(), property.getValue());
+  }
 }
 
 te::layout::ArrowModel::~ArrowModel()
 {
-  if(m_enumArrowType)
-  {
-    delete m_enumArrowType;
-    m_enumArrowType = 0;
-  }
-}
-
-te::layout::Properties* te::layout::ArrowModel::getProperties() const
-{
-  ItemModelObservable::getProperties();
-
-  Property pro_arrowName = arrowProperty();
-  if(!pro_arrowName.isNull())
-  {
-    m_properties->addProperty(pro_arrowName);
-  }
-
-  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
-
-  Property pro_fillColor(m_hashCode);
-  pro_fillColor.setName("fill_color");
-  pro_fillColor.setValue(m_fillColor, dataType->getDataTypeColor());
-  pro_fillColor.setMenu(true);
-  m_properties->addProperty(pro_fillColor);
-
-  Property pro_bordercolor(m_hashCode);
-  pro_bordercolor.setName("contour_color");
-  pro_bordercolor.setValue(m_contourColor, dataType->getDataTypeColor());
-  pro_bordercolor.setMenu(true);
-  m_properties->addProperty(pro_bordercolor);
-
-  return m_properties;
-}
-
-void te::layout::ArrowModel::updateProperties( te::layout::Properties* properties, bool notify)
-{
-  ItemModelObservable::updateProperties(properties);
-
-  Properties* vectorProps = const_cast<Properties*>(properties);
-
-  Property pro_arrowName = vectorProps->contains("arrow_type");
-
-  if(!pro_arrowName.isNull())
-  {
-    std::string label = pro_arrowName.getOptionByCurrentChoice().toString();
-    EnumType* enumType = m_enumArrowType->searchLabel(label);
-    if(enumType)
-    {
-      m_currentArrowType = enumType;
-    }
-  }
-
-  {
-    Property prop = vectorProps->contains("fill_color");
-    if(prop.isNull() == false)
-    {
-      m_fillColor = prop.getValue().toColor();
-    }
-  }
-  {
-    Property prop = vectorProps->contains("contour_color");
-    if(prop.isNull() == false)
-    {
-      m_contourColor = prop.getValue().toColor();
-    }
-  }
-
-  if(notify)
-  {
-    ContextItem context;
-    notifyAll(context);
-  }
-}
-
-te::layout::EnumArrowType* te::layout::ArrowModel::getEnumArrowType()
-{
-  return m_enumArrowType;
-}
-
-te::layout::EnumType* te::layout::ArrowModel::getCurrentArrowType()
-{
-  return m_currentArrowType;
-}
-
-te::layout::Property te::layout::ArrowModel::arrowProperty() const
-{
-  Property pro_arrowName(m_hashCode);
-
-  if(!m_currentArrowType)
-    return pro_arrowName;
-
-  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
-
-  if(!dataType)
-    return pro_arrowName;
-
-  pro_arrowName.setName("arrow_type");
-  pro_arrowName.setLabel("graphic type");
-  pro_arrowName.setValue(m_currentArrowType->getLabel(), dataType->getDataTypeStringList());
-
-  Variant v;
-  v.setValue(m_currentArrowType->getLabel(), dataType->getDataTypeString());
-  pro_arrowName.addOption(v);
-  pro_arrowName.setOptionChoice(v);
-
-  for(int i = 0 ; i < m_enumArrowType->size() ; ++i)
-  {
-    EnumType* enumType = m_enumArrowType->getEnum(i);
-
-    if(enumType == m_enumArrowType->getNoneType() || enumType == m_currentArrowType)
-      continue;
-
-    Variant v;
-    v.setValue(enumType->getLabel(), dataType->getDataTypeString());
-    pro_arrowName.addOption(v);
-  }
-
-  return pro_arrowName;
-}
-
-double te::layout::ArrowModel::getShapeSize()
-{
-  return m_shapeSize;
-}
-
-const te::color::RGBAColor& te::layout::ArrowModel::getFillColor() const
-{
-  return m_fillColor;
-}
-
-void te::layout::ArrowModel::setFillColor( const te::color::RGBAColor& color )
-{
-  m_fillColor = color;
-}
-
-const te::color::RGBAColor& te::layout::ArrowModel::getContourColor() const
-{
-  return m_contourColor;
-}
-
-void te::layout::ArrowModel::setContourColor(const te::color::RGBAColor& color)
-{
-  m_contourColor = color;
 }

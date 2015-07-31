@@ -27,99 +27,66 @@
 
 // TerraLib
 #include "EllipseModel.h"
-#include "../core/ContextItem.h"
-#include "../../geometry/Envelope.h"
-#include "../../color/RGBAColor.h"
-#include "../../maptools/Canvas.h"
 #include "../core/enum/Enums.h"
 #include "../core/property/Properties.h"
+#include "../../color/RGBAColor.h"
+#include "../../geometry/Envelope.h"
 
-// STL
-#include <cmath>
-
-te::layout::EllipseModel::EllipseModel() 
+te::layout::EllipseModel::EllipseModel()
+  : AbstractItemModel()
 {
-  m_type = Enums::getInstance().getEnumObjectType()->getEllipseItem();
+  te::color::RGBAColor fillColor(255, 255, 255, 255);
+  te::color::RGBAColor contourColor(0, 0, 0, 255);
+  double width = 22.;
+  double height = 20.;
 
-  m_box = te::gm::Envelope(0., 0., 22., 20.);
+  this->m_properties.setTypeObj(Enums::getInstance().getEnumObjectType()->getEllipseItem());
 
-  m_border = false;
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
 
-  m_fillColor = te::color::RGBAColor(255, 255, 255, 255);
-  m_contourColor = te::color::RGBAColor(0, 0, 0, 255);
+//adding properties
+  {
+    Property property(0);
+    property.setName("fill_color");
+    property.setLabel("Fill Color");
+    property.setValue(fillColor, dataType->getDataTypeColor());
+    property.setMenu(true);
+    m_properties.addProperty(property);
+  }
+
+  {
+    Property property(0);
+    property.setName("contour_color");
+    property.setLabel("Contour Color");
+    property.setValue(contourColor, dataType->getDataTypeColor());
+    property.setMenu(true);
+    m_properties.addProperty(property);
+  }
+
+//updating properties
+  {
+    Property property(0);
+    property.setName("width");
+    property.setValue(width, dataType->getDataTypeDouble());
+    this->m_properties.updatePropertyValue(property.getName(), property.getValue());
+  }
+
+  {
+    Property property(0);
+    property.setName("height");
+    property.setValue(height, dataType->getDataTypeDouble());
+    this->m_properties.updatePropertyValue(property.getName(), property.getValue());
+  }
+
+  {
+    Property property(0);
+    property.setName("show_frame");
+    property.setValue(false, dataType->getDataTypeBool());
+    this->m_properties.updatePropertyValue(property.getName(), property.getValue());
+  }
 }
 
 te::layout::EllipseModel::~EllipseModel()
 {
 
 }
-
-te::layout::Properties* te::layout::EllipseModel::getProperties() const
-{
-  ItemModelObservable::getProperties();
-
-  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
-
-  Property pro_fillColor(m_hashCode);
-  pro_fillColor.setName("fill_color");
-  pro_fillColor.setValue(m_fillColor, dataType->getDataTypeColor());
-  pro_fillColor.setMenu(true);
-  m_properties->addProperty(pro_fillColor);
-
-  Property pro_bordercolor(m_hashCode);
-  pro_bordercolor.setName("contour_color");
-  pro_bordercolor.setValue(m_contourColor, dataType->getDataTypeColor());
-  pro_bordercolor.setMenu(true);
-  m_properties->addProperty(pro_bordercolor);
-
-  return m_properties;
-}
-
-void te::layout::EllipseModel::updateProperties( te::layout::Properties* properties, bool notify)
-{
-  ItemModelObservable::updateProperties(properties);
-
-  Properties* vectorProps = const_cast<Properties*>(properties);
-
-  {
-    Property prop = vectorProps->contains("fill_color");
-    if(prop.isNull() == false)
-    {
-      m_fillColor = prop.getValue().toColor();
-    }
-  }
-  {
-    Property prop = vectorProps->contains("contour_color");
-    if(prop.isNull() == false)
-    {
-      m_contourColor = prop.getValue().toColor();
-    }
-  }
-
-  if(notify)
-  {
-    ContextItem context;
-    notifyAll(context);
-  }
-}
-
-const te::color::RGBAColor& te::layout::EllipseModel::getFillColor() const
-{
-  return m_fillColor;
-}
-
-void te::layout::EllipseModel::setFillColor( const te::color::RGBAColor& color )
-{
-  m_fillColor = color;
-}
-
-const te::color::RGBAColor& te::layout::EllipseModel::getContourColor() const
-{
-  return m_contourColor;
-}
-
-void te::layout::EllipseModel::setContourColor(const te::color::RGBAColor& color)
-{
-  m_contourColor = color;
-}
-

@@ -423,45 +423,45 @@ void te::layout::GridMapModel::updateProperties( te::layout::Properties* propert
     return;
   }
 
-  Property pro_mapName = vectorProps->contains(m_sharedProps->getMapName());
+  Property pro_mapName = vectorProps->getProperty(m_sharedProps->getMapName());
 
   if(!pro_mapName.isNull())
   {
     m_mapName = pro_mapName.getOptionByCurrentChoice().toString();
   }
 
-  Property pro_visible = vectorProps->contains(m_settingsConfig->getVisible());
+  Property pro_visible = vectorProps->getProperty(m_settingsConfig->getVisible());
 
   if(!pro_visible.isNull())
   {
     m_visible = pro_visible.getValue().toBool();
   }
 
-  Property pro_lneHrzGap = vectorProps->contains(m_settingsConfig->getLneHrzGap());
+  Property pro_lneHrzGap = vectorProps->getProperty(m_settingsConfig->getLneHrzGap());
   if(!pro_lneHrzGap.isNull())
   {
     m_lneHrzGap = pro_lneHrzGap.getValue().toDouble();
   }
 
-  Property pro_lneVrtGap = vectorProps->contains(m_settingsConfig->getLneVrtGap());
+  Property pro_lneVrtGap = vectorProps->getProperty(m_settingsConfig->getLneVrtGap());
   if(!pro_lneVrtGap.isNull())
   {
     m_lneVrtGap = pro_lneVrtGap.getValue().toDouble();
   }
 
-  Property pro_initialGridPointX = vectorProps->contains(m_settingsConfig->getInitialGridPointX());
+  Property pro_initialGridPointX = vectorProps->getProperty(m_settingsConfig->getInitialGridPointX());
   if(!pro_initialGridPointX.isNull())
   {
     m_initialGridPointX = pro_initialGridPointX.getValue().toDouble();
   }
 
-  Property pro_initialGridPointY = vectorProps->contains(m_settingsConfig->getInitialGridPointY());
+  Property pro_initialGridPointY = vectorProps->getProperty(m_settingsConfig->getInitialGridPointY());
   if(!pro_initialGridPointY.isNull())
   {
     m_initialGridPointY = pro_initialGridPointY.getValue().toDouble();
   }
 
-  Property pro_gridStyle = vectorProps->contains(m_settingsConfig->getStyle());
+  Property pro_gridStyle = vectorProps->getProperty(m_settingsConfig->getStyle());
   if(!pro_gridStyle.isNull())
   {
     std::string style = pro_gridStyle.getValue().toString();
@@ -474,7 +474,7 @@ void te::layout::GridMapModel::updateProperties( te::layout::Properties* propert
       m_gridStyle = styleType;
   }
 
-  Property pro_lineStyle = vectorProps->contains(m_settingsConfig->getLineStyle());
+  Property pro_lineStyle = vectorProps->getProperty(m_settingsConfig->getLineStyle());
   if(!pro_lineStyle.isNull())
   {
     std::string style = pro_lineStyle.getValue().toString();
@@ -487,103 +487,103 @@ void te::layout::GridMapModel::updateProperties( te::layout::Properties* propert
       m_lineStyle = lineStyle;
   }
 
-  Property pro_lineColor = vectorProps->contains(m_settingsConfig->getLineColor());
+  Property pro_lineColor = vectorProps->getProperty(m_settingsConfig->getLineColor());
   if(!pro_lineColor.isNull())
   {
     m_lineColor = pro_lineColor.getValue().toColor();
   }
 
-  Property pro_lineWidth = vectorProps->contains(m_settingsConfig->getLineWidth());
+  Property pro_lineWidth = vectorProps->getProperty(m_settingsConfig->getLineWidth());
   if(!pro_lineWidth.isNull())
   {
     m_lineWidth = pro_lineWidth.getValue().toInt();
   }
 
-  Property pro_pointTextSize = vectorProps->contains(m_settingsConfig->getPointTextSize());
+  Property pro_pointTextSize = vectorProps->getProperty(m_settingsConfig->getPointTextSize());
   if(!pro_pointTextSize.isNull())
   {
     m_pointTextSize = pro_pointTextSize.getValue().toInt();
   }
 
-  Property pro_fontText = vectorProps->contains(m_settingsConfig->getFontText());
+  Property pro_fontText = vectorProps->getProperty(m_settingsConfig->getFontText());
   if(!pro_fontText.isNull())
   {
     m_fontText= pro_fontText.getValue().toString();
   }
 
-  Property pro_textColor = vectorProps->contains(m_settingsConfig->getTextColor());
+  Property pro_textColor = vectorProps->getProperty(m_settingsConfig->getTextColor());
   if(!pro_textColor.isNull())
   {
     m_textColor = pro_textColor.getValue().toColor();
   }
 
-  Property pro_visibleAllTexts = vectorProps->contains(m_settingsConfig->getVisibleAllTexts());
+  Property pro_visibleAllTexts = vectorProps->getProperty(m_settingsConfig->getVisibleAllTexts());
   if(!pro_visibleAllTexts.isNull())
   {
     m_visibleAllTexts = pro_visibleAllTexts.getValue().toBool();
   }
 
-  Property pro_superscriptText = vectorProps->contains(m_settingsConfig->getSuperscriptText());
+  Property pro_superscriptText = vectorProps->getProperty(m_settingsConfig->getSuperscriptText());
   if(!pro_superscriptText.isNull())
   {
     m_superscriptText = pro_superscriptText.getValue().toBool();
   }
 
-  Property pro_lneVrtDisplacement = vectorProps->contains(m_settingsConfig->getLneVrtDisplacement());
+  Property pro_lneVrtDisplacement = vectorProps->getProperty(m_settingsConfig->getLneVrtDisplacement());
   if(!pro_lneVrtDisplacement.isNull())
   {
     m_lneVrtDisplacement = pro_lneVrtDisplacement.getValue().toInt();
   }
 
-  Property pro_lneHrzDisplacement = vectorProps->contains(m_settingsConfig->getLneHrzDisplacement());
+  Property pro_lneHrzDisplacement = vectorProps->getProperty(m_settingsConfig->getLneHrzDisplacement());
   if(!pro_lneHrzDisplacement.isNull())
   {
     m_lneHrzDisplacement = pro_lneHrzDisplacement.getValue().toInt();
   }
 
-  Property pro_bottomText = vectorProps->contains(m_settingsConfig->getBottomText());
+  Property pro_bottomText = vectorProps->getProperty(m_settingsConfig->getBottomText());
   if(!pro_bottomText.isNull())
   {
     m_bottomText = pro_bottomText.getValue().toBool();
   }
 
-  Property pro_leftText = vectorProps->contains(m_settingsConfig->getLeftText());
+  Property pro_leftText = vectorProps->getProperty(m_settingsConfig->getLeftText());
   if(!pro_leftText.isNull())
   {
     m_leftText = pro_leftText.getValue().toBool();
   }
 
-  Property pro_rightText = vectorProps->contains(m_settingsConfig->getRightText());
+  Property pro_rightText = vectorProps->getProperty(m_settingsConfig->getRightText());
   if(!pro_rightText.isNull())
   {
     m_rightText = pro_rightText.getValue().toBool();
   }
 
-  Property pro_topText = vectorProps->contains(m_settingsConfig->getTopText());
+  Property pro_topText = vectorProps->getProperty(m_settingsConfig->getTopText());
   if(!pro_topText.isNull())
   {
     m_topText = pro_topText.getValue().toBool();
   }
 
-  Property pro_bottomRotateText = vectorProps->contains(m_settingsConfig->getBottomRotateText());
+  Property pro_bottomRotateText = vectorProps->getProperty(m_settingsConfig->getBottomRotateText());
   if(!pro_bottomRotateText.isNull())
   {
     m_bottomRotateText = pro_bottomRotateText.getValue().toBool();
   }
 
-  Property pro_leftRotateText = vectorProps->contains(m_settingsConfig->getLeftRotateText());
+  Property pro_leftRotateText = vectorProps->getProperty(m_settingsConfig->getLeftRotateText());
   if(!pro_leftRotateText.isNull())
   {
     m_leftRotateText = pro_leftRotateText.getValue().toBool();
   }
 
-  Property pro_rightRotateText = vectorProps->contains(m_settingsConfig->getRightRotateText());
+  Property pro_rightRotateText = vectorProps->getProperty(m_settingsConfig->getRightRotateText());
   if(!pro_rightRotateText.isNull())
   {
     m_rightRotateText = pro_rightRotateText.getValue().toBool();
   }
 
-  Property pro_topRotateText = vectorProps->contains(m_settingsConfig->getTopRotateText());
+  Property pro_topRotateText = vectorProps->getProperty(m_settingsConfig->getTopRotateText());
   if(!pro_topRotateText.isNull())
   {
     m_topRotateText = pro_topRotateText.getValue().toBool();

@@ -18,51 +18,62 @@
  */
 
 /*!
-  \file RectangleModel.h
+  \file Observable.h
    
-   \brief Class that represents a "Model" part of Rectangle MVC component. 
-      Its coordinate system is the same of scene (millimeters). 
-      This is also son of ItemModelObservable, so it can become observable.
+  \brief Abstract class to represent an observable. "Model" part of MVC component. 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_RECTANGLE_MODEL_H
-#define __TERRALIB_LAYOUT_INTERNAL_RECTANGLE_MODEL_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_ABSTRACTITEMCONTROLLER_H
+#define __TERRALIB_LAYOUT_INTERNAL_ABSTRACTITEMCONTROLLER_H
 
 // TerraLib
-#include "../core/pattern/mvc/AbstractItemModel.h"
-#include "../core/Config.h"
+#include "../../Config.h"
 
 namespace te
 {
   namespace layout
   {
 
-    /*!
-      \brief Class that represents a "Model" part of Rectangle MVC component. 
-          Its coordinate system is the same of scene (millimeters). 
-          He is also the son of AbstractItemModel, so it can become subject (observer pattern).
-          
-      \ingroup layout
+    class AbstractItemModel;
+    class AbstractItemView;
 
-      \sa te::layout::AbstractItemModel
+    /*!
+      \brief Abstract class to represent an observable. "Model" part of MVC component. 
+    
+      \ingroup layout
     */
-    class TELAYOUTEXPORT RectangleModel : public AbstractItemModel
+    class TELAYOUTEXPORT AbstractItemController
     {
       public:
 
         /*!
           \brief Constructor
-        */
-        RectangleModel();
+        */ 
+        AbstractItemController(AbstractItemModel* model);
 
         /*!
           \brief Destructor
         */ 
-        virtual ~RectangleModel();
+        virtual ~AbstractItemController();
+
+        /*!
+          \brief Gets the model of this view
+        */ 
+        virtual AbstractItemModel* getModel() const;
+
+        /*!
+          \brief Gets the model of this view
+        */ 
+        virtual AbstractItemView* getView() const;
+
+      protected:
+
+        AbstractItemModel*    m_model; //!< The model of the view
+        AbstractItemView*     m_view; //!< The view
     };
   }
 }
 
-#endif
+#endif //__TERRALIB_LAYOUT_INTERNAL_ABSTRACTITEMCONTROLLER_H

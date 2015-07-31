@@ -118,21 +118,21 @@ void te::layout::LegendModel::updateProperties( te::layout::Properties* properti
 
   Properties* vectorProps = const_cast<Properties*>(properties);
 
-  Property pro_mapName = vectorProps->contains(m_sharedProps->getMapName());
+  Property pro_mapName = vectorProps->getProperty(m_sharedProps->getMapName());
 
   if(!pro_mapName.isNull())
   {
     m_mapName = pro_mapName.getOptionByCurrentChoice().toString();
   }
 
-  Property pro_font = vectorProps->contains("Font");
+  Property pro_font = vectorProps->getProperty("Font");
 
   if(!pro_font.isNull())
   {
     m_font = pro_font.getValue().toFont();
   }
 
-  Property pro_fontColor = vectorProps->contains("font_color");
+  Property pro_fontColor = vectorProps->getProperty("font_color");
 
   if(!pro_fontColor.isNull())
   {

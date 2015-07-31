@@ -299,32 +299,32 @@ void te::layout::ItemModelObservable::updateProperties( te::layout::Properties* 
     return;
   }
   
-  Property pro_name = vectorProps->contains(m_sharedProps->getName());
+  Property pro_name = vectorProps->getProperty(m_sharedProps->getName());
   if(!pro_name.isNull())
   {
     m_name = pro_name.getValue().toString();
   }
 
-  Property pro_id = vectorProps->contains(m_sharedProps->getId());
+  Property pro_id = vectorProps->getProperty(m_sharedProps->getId());
   if(!pro_id.isNull())
   {
     m_id = pro_id.getValue().toInt();
   }
 
-  Property pro_angle = vectorProps->contains(m_sharedProps->getAngle());
+  Property pro_angle = vectorProps->getProperty(m_sharedProps->getAngle());
   if(!pro_angle.isNull())
   {
     m_oldAngle = m_angle;
     m_angle = pro_angle.getValue().toDouble();
   }
 
-  Property pro_backgroundcolor = vectorProps->contains(m_sharedProps->getBackgroundColor());
+  Property pro_backgroundcolor = vectorProps->getProperty(m_sharedProps->getBackgroundColor());
   if(!pro_backgroundcolor.isNull())
   {
     m_backgroundColor = pro_backgroundcolor.getValue().toColor();
   }
 
-  Property pro_bordercolor = vectorProps->contains(m_sharedProps->getFrameColor());
+  Property pro_bordercolor = vectorProps->getProperty(m_sharedProps->getFrameColor());
   if(!pro_bordercolor.isNull())
   {
     m_frameColor = pro_bordercolor.getValue().toColor();
@@ -332,39 +332,39 @@ void te::layout::ItemModelObservable::updateProperties( te::layout::Properties* 
 
   /* Box */
   
-  Property pro_x1 = vectorProps->contains(m_sharedProps->getX1());
+  Property pro_x1 = vectorProps->getProperty(m_sharedProps->getX1());
   if(!pro_x1.isNull())
   {
     m_oldPos.x = m_box.m_llx;
     m_box.m_llx = pro_x1.getValue().toDouble();
   }
 
-  Property pro_y1 = vectorProps->contains(m_sharedProps->getY1());
+  Property pro_y1 = vectorProps->getProperty(m_sharedProps->getY1());
   if(!pro_y1.isNull())
   {
     m_oldPos.y = m_box.m_lly;
     m_box.m_lly = pro_y1.getValue().toDouble();
   }
 
-  Property pro_width = vectorProps->contains(m_sharedProps->getWidth());
+  Property pro_width = vectorProps->getProperty(m_sharedProps->getWidth());
   if(!pro_width.isNull())
   {
     m_box.m_urx = m_box.m_llx + pro_width.getValue().toDouble();
   }
 
-  Property pro_height = vectorProps->contains(m_sharedProps->getHeight());
+  Property pro_height = vectorProps->getProperty(m_sharedProps->getHeight());
   if(!pro_height.isNull())
   {
     m_box.m_ury = m_box.m_lly + pro_height.getValue().toDouble();
   }
 
-  Property pro_zValue = vectorProps->contains(m_sharedProps->getZValue());
+  Property pro_zValue = vectorProps->getProperty(m_sharedProps->getZValue());
   if(!pro_zValue.isNull())
   {
     m_zValue = pro_zValue.getValue().toInt();
   }
 
-  Property pro_border = vectorProps->contains(m_sharedProps->getBorder());
+  Property pro_border = vectorProps->getProperty(m_sharedProps->getBorder());
   if(!pro_border.isNull())
   {
     m_border = pro_border.getValue().toBool();

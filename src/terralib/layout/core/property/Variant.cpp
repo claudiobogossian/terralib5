@@ -74,7 +74,7 @@ te::layout::Variant::~Variant()
   
 }
 
-te::layout::EnumType* te::layout::Variant::getType()
+te::layout::EnumType* te::layout::Variant::getType() const
 {
   return m_type;
 }
@@ -324,47 +324,47 @@ void te::layout::Variant::fromPtree( boost::property_tree::ptree tree, EnumType*
   m_null = null;
 }
 
-std::string te::layout::Variant::toString()
+const std::string& te::layout::Variant::toString() const
 {
   return m_sValue;
 }
 
-double te::layout::Variant::toDouble()
+double te::layout::Variant::toDouble() const
 {
   return m_dValue;
 }
 
-int te::layout::Variant::toInt()
+int te::layout::Variant::toInt() const
 {
   return m_iValue;
 }
 
-long te::layout::Variant::toLong()
+long te::layout::Variant::toLong() const
 {
   return m_lValue;
 }
 
-float te::layout::Variant::toFloat()
+float te::layout::Variant::toFloat() const
 {
   return m_fValue;
 }
 
-bool te::layout::Variant::toBool()
+bool te::layout::Variant::toBool() const
 {
   return m_bValue;
 }
 
-te::color::RGBAColor te::layout::Variant::toColor()
+const te::color::RGBAColor& te::layout::Variant::toColor() const
 {
   return m_colorValue;
 }
 
-te::layout::Font te::layout::Variant::toFont()
+const te::layout::Font& te::layout::Variant::toFont() const
 {
   return m_fontValue;
 }
 
-bool te::layout::Variant::isNull()
+bool te::layout::Variant::isNull() const
 {
   return m_null;
 }
@@ -382,7 +382,7 @@ void te::layout::Variant::clear()
   m_generic.clear();
 }
 
-std::string te::layout::Variant::convertToString()
+std::string te::layout::Variant::convertToString() const
 {
   std::stringstream ss;//create a stringstream
   std::string s_convert;
@@ -526,12 +526,12 @@ long te::layout::Variant::string2Long( std::string str )
   return result;
 }
 
-bool te::layout::Variant::isComplex()
+bool te::layout::Variant::isComplex() const
 {
   return m_complex;
 }
 
-std::string te::layout::Variant::toString( int value )
+std::string te::layout::Variant::toString( int value ) const
 {
   std::stringstream ss;//create a stringstream
   ss << value;//add number to the stream
@@ -551,7 +551,7 @@ bool te::layout::Variant::toBool( std::string str )
   }
 }
 
-te::layout::GenericVariant te::layout::Variant::toGenericVariant()
+const te::layout::GenericVariant& te::layout::Variant::toGenericVariant() const
 {
   return m_generic;
 }
