@@ -74,9 +74,9 @@ te::qt::plugins::edit::ToolBar::ToolBar()
     m_createLineToolAction(0),
     m_moveGeometryToolAction(0),
     m_snapOptionsAction(0),
+    m_deleteGeometryToolAction(0),
     m_aggregateAreaToolAction(0),
     m_subtractAreaToolAction(0),
-    m_deleteGeometryToolAction(0),
     m_undoToolAction(0),
     m_redoToolAction(0),
     m_undoView(0)
@@ -367,7 +367,7 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
 
       if (updateds->size())
       {
-        std::vector<std::set<int>> properties;
+        std::vector<std::set<int> > properties;
         for (std::size_t i = 0; i < updateds->size(); ++i){
           properties.push_back(gproperty);
         }

@@ -36,9 +36,9 @@ project(terralib)
 # variables that control the system versioning
 set(TERRALIB_VERSION_MAJOR 5)
 set(TERRALIB_VERSION_MINOR 0)
-set(TERRALIB_VERSION_PATCH 0)
+set(TERRALIB_VERSION_PATCH 1)
 set(TERRALIB_VERSION_STRING "${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}.${TERRALIB_VERSION_PATCH}")
-set(TERRALIB_VERSION "0x050000")
+set(TERRALIB_VERSION "0x050001")
 set(TERRALIB_PKG_VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}.${TERRALIB_VERSION_PATCH})
 
 # variable indicating that it will search for 3rd-party libraries and install them
@@ -1319,7 +1319,7 @@ install ( # -- images folder
   DIRECTORY ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/images
   DESTINATION ${TERRALIB_DESTINATION_SHARE}/terralib 
   COMPONENT runtime
-  PATTERN "*icns*" EXCLUDE
+  #PATTERN "*icns*" EXCLUDE
 )
 
 if(WIN32)

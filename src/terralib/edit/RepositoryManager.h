@@ -58,9 +58,8 @@ namespace te
 
       \brief This is a singleton for managing edit repositories.
     */
-    class TEEDITEXPORT RepositoryManager //: public te::common::Singleton<RepositoryManager>
+    class TEEDITEXPORT RepositoryManager
     {
-      //friend class te::common::Singleton<RepositoryManager>;
       
       public:
 
@@ -95,9 +94,6 @@ namespace te
         void remove(const std::string& source);
 
         void removeFeature(const std::string& source, te::da::ObjectId* id);
-
-      protected:
-        int value;
 
       private:
 

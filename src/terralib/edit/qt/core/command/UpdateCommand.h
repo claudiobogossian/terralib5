@@ -74,9 +74,9 @@ namespace te
 
         void draw();
 
-        std::vector<Feature*> m_updateItems;
         te::qt::widgets::MapDisplay* m_display;
         te::map::AbstractLayerPtr m_layer;
+        std::vector<Feature*> m_updateItems;
         te::edit::EditionManager* m_editionManager;
         te::gm::Coord2D    m_initialPosition;
 

@@ -159,9 +159,9 @@ bool te::edit::MergeGeometriesTool::spatialRelationDisjoint(te::gm::GeometryColl
 
   for (std::size_t i = 0; i < gc->getNumGeometries(); i++)
   {
-    te::gm::Geometry* g1 = gc->getGeometryN(i);
-
     aux = 0;
+
+    te::gm::Geometry* g1 = gc->getGeometryN(i);
 
     for (j = 0; j < gc->getNumGeometries(); j++)
     {

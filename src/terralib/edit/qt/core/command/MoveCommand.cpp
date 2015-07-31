@@ -37,10 +37,10 @@ TerraLib Team at <terralib-team@terralib.org>.
 te::edit::MoveCommand::MoveCommand(te::edit::EditionManager* editionManager, std::map<std::string, QList<QPointF> > items, Feature* item, te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer,
   QUndoCommand *parent) :
   QUndoCommand(parent)
-, m_display(display)
-, m_layer(layer)
 , m_item(item)
 , m_moveItems(items)
+, m_display(display)
+, m_layer(layer)
 , m_editionManager(editionManager)
 {
 
