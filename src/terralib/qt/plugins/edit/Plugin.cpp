@@ -34,7 +34,8 @@
 #include "ToolBar.h"
 
 te::qt::plugins::edit::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo)
-  : te::plugin::Plugin(pluginInfo),
+  : QObject(),
+  te::plugin::Plugin(pluginInfo),
     m_toolbar(0),
     m_menu(0)
 {
@@ -50,7 +51,10 @@ void te::qt::plugins::edit::Plugin::startup()
     return;
 
   // Register the application framework listener
-  te::qt::af::AppCtrlSingleton::getInstance().addListener(&ApplicationListener::getInstance());
+  te::qt::af::AppCtrlSingleton::getInstance().addListener(&ApplicationListener::getInstance(), te::qt::af::RECEIVER);
+  te::qt::af::AppCtrlSingleton::getInstance().addListener(this, te::qt::af::SENDER);
+
+  connect(m_toolbar, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
 
   /* Under development
 

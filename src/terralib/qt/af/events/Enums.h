@@ -71,6 +71,7 @@ namespace te
           GET_MAPDISPLAY,
           DRAWING_FINISHED,
           NEW_ACTIONS_AVAILABLE,
+          GET_AVAILABLE_LAYERS,
           CUSTOM = 1024
         };
 

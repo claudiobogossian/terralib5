@@ -44,8 +44,10 @@ namespace te
 // Forward declaration
         class ToolBar;
 
-        class Plugin : public te::plugin::Plugin
+        class Plugin : public QObject, public te::plugin::Plugin
         {
+          Q_OBJECT
+
           public:
 
             Plugin(const te::plugin::PluginInfo& pluginInfo);
@@ -56,7 +58,11 @@ namespace te
 
             void shutdown();
 
-          protected:
+          Q_SIGNALS:
+
+            void triggered(te::qt::af::evt::Event* e);
+
+        protected:
 
             ToolBar* m_toolbar; //!< Main toolbar of TerraLib Edit Qt Plugin.
             QMenu* m_menu;      //!< Main menu of TerraLib Edit Qt Plugin.
@@ -67,6 +73,6 @@ namespace te
   }     // end namespace qt
 }       // end namespace te
 
-PLUGIN_CALL_BACK_DECLARATION(TEQTPLUGINEDITEXPORT);
+PLUGIN_CALL_BACK_DECLARATION(TEQTPLUGINEDITEXPORT)
 
 #endif //__TE_QT_PLUGINS_EDIT_INTERNAL_PLUGIN_H

@@ -51,6 +51,26 @@ std::list<te::map::AbstractLayerPtr> GetSelectedLayers(QTreeView* view)
   return res;
 }
 
+void GetAvailableLayers(const QModelIndex& parent, te::qt::widgets::LayerItemView* view, std::list<te::map::AbstractLayerPtr>& layers)
+{
+  int s = view->model()->rowCount(parent);
+
+  for(int i = 0; i < s; i++)
+  {
+    QModelIndex childIdx = view->model()->index(i, 0, parent);
+
+    if(childIdx.isValid())
+    {
+      te::qt::widgets::TreeItem* item = static_cast<te::qt::widgets::TreeItem*>(childIdx.internalPointer());
+
+      if(item->getType() == "LAYER")
+        layers.push_back(((te::qt::widgets::LayerItem*)item)->getLayer());
+      else if(item->getType() == "FOLDER")
+        GetAvailableLayers(childIdx, view, layers);
+    }
+  }
+}
+
 //GetSelectedFolders
 
 te::qt::af::LayerExplorer::LayerExplorer(te::qt::widgets::LayerItemView* explorer, QObject* parent)
@@ -207,6 +227,13 @@ void te::qt::af::LayerExplorer::onApplicationTriggered(te::qt::af::evt::Event* e
 
       if(list.empty() == false)
         e->m_layer = list.front();
+    }
+    break;
+
+    case te::qt::af::evt::GET_AVAILABLE_LAYERS:
+    {
+      te::qt::af::evt::GetAvailableLayers* e = static_cast<te::qt::af::evt::GetAvailableLayers*>(evt);
+      GetAvailableLayers(QModelIndex(), m_explorer, e->m_layers);
     }
     break;
 

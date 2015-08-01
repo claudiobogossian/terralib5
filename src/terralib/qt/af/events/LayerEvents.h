@@ -302,6 +302,15 @@ namespace te
   
           te::map::AbstractLayerPtr m_layer;  //!< Layer selected.
         };
+
+        struct GetAvailableLayers: public Event
+        {
+          GetAvailableLayers(): Event(GET_AVAILABLE_LAYERS)
+          {
+          }
+
+          std::list<te::map::AbstractLayerPtr> m_layers;
+        };
       }
     }
   }

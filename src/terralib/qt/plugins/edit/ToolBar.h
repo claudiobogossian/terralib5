@@ -43,6 +43,13 @@ namespace te
 {
   namespace qt
   {
+    namespace af
+    {
+      namespace evt
+      {
+        struct Event;
+      }
+    }
     namespace plugins
     {
       namespace edit
@@ -91,6 +98,10 @@ namespace te
             void onMoveGeometryToolActivated(bool checked);
 
             void onSnapOptionsActivated();
+
+          Q_SIGNALS:
+
+            void triggered(te::qt::af::evt::Event* e);
 
           protected:
 

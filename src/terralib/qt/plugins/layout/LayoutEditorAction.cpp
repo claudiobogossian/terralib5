@@ -26,7 +26,6 @@
 // Terralib
 #include "LayoutEditorAction.h"
 #include "../../af/ApplicationController.h"
-#include "../../af/Project.h"
 #include "MainLayout.h"
 #include "../../../common/TerraLib.h"
 #include "../../../layout/core/Config.h"
