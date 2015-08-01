@@ -56,12 +56,12 @@ void te::qt::plugins::terralib4::Plugin::startup()
   TE_LOG_TRACE(TE_TR("TerraLib Qt TERRALIB4 Plugin startup!"));
 
 // add plugin menu
-  //m_terralib4Menu = te::qt::af::ApplicationController::getInstance().getMenu("Terralib4");
+  //m_terralib4Menu = te::qt::af::AppCtrlSingleton::getInstance().getMenu("Terralib4");
 
 // register actions
   //registerActions();
-  QMenu* mnu = te::qt::af::ApplicationController::getInstance().findMenu("Tools");
-  QAction* act = te::qt::af::ApplicationController::getInstance().findAction("Tools.Customize");
+  QMenu* mnu = te::qt::af::AppCtrlSingleton::getInstance().findMenu("Tools");
+  QAction* act = te::qt::af::AppCtrlSingleton::getInstance().findAction("Tools.Customize");
 
   if(act)
   {
@@ -92,7 +92,7 @@ void te::qt::plugins::terralib4::Plugin::shutdown()
 
 void te::qt::plugins::terralib4::Plugin::showWindow()
 {
-  QWidget* parent = te::qt::af::ApplicationController::getInstance().getMainWindow();
+  QWidget* parent = te::qt::af::AppCtrlSingleton::getInstance().getMainWindow();
   te::qt::plugins::terralib4::TL4ConverterWizard dlg(parent);
 
   if(dlg.exec() != QDialog::Accepted)

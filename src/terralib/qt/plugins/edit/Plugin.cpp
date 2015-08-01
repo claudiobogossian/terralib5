@@ -50,7 +50,7 @@ void te::qt::plugins::edit::Plugin::startup()
     return;
 
   // Register the application framework listener
-  te::qt::af::ApplicationController::getInstance().addListener(&ApplicationListener::getInstance());
+  te::qt::af::AppCtrlSingleton::getInstance().addListener(&ApplicationListener::getInstance());
 
   /* Under development
 
@@ -58,17 +58,17 @@ void te::qt::plugins::edit::Plugin::startup()
   m_toolbar = new ToolBar;
 
   // Add plugin toolbar
-  te::qt::af::ApplicationController::getInstance().addToolBar("EditToolBar", m_toolbar->get());
+  te::qt::af::AppCtrlSingleton::getInstance().addToolBar("EditToolBar", m_toolbar->get());
 
   // Get plugins menu
-  QMenu* pluginsMenu = te::qt::af::ApplicationController::getInstance().getMenu("Plugins");
+  QMenu* pluginsMenu = te::qt::af::AppCtrlSingleton::getInstance().getMenu("Plugins");
 
   // Create the main menu
   m_menu = new QMenu(pluginsMenu);
   m_menu->setTitle(TE_TR("Edit"));
 
   // Insert menu before plugins last action
-  QAction* lastAction = te::qt::af::ApplicationController::getInstance().findAction("ManagePluginsSeparator");
+  QAction* lastAction = te::qt::af::AppCtrlSingleton::getInstance().findAction("ManagePluginsSeparator");
   pluginsMenu->insertMenu(lastAction, m_menu);
 
   */

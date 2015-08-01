@@ -196,7 +196,7 @@ void te::qt::plugins::ogr::Plugin::shutdown()
 void te::qt::plugins::ogr::Plugin::showWindow()
 {
 //  QString filter = GetSupportedFiles();
-//  QStringList fileNames = QFileDialog::getOpenFileNames(te::qt::af::ApplicationController::getInstance().getMainWindow(), tr("Open Vector File"), te::qt::af::GetFilePathFromSettings("vector"), filter);
+//  QStringList fileNames = QFileDialog::getOpenFileNames(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow(), tr("Open Vector File"), te::qt::af::GetFilePathFromSettings("vector"), filter);
   
 //  te::qt::af::Project* proj = te::qt::af::AppCtrlSingleton::getInstance().getProject();
 

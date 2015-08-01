@@ -126,7 +126,7 @@ void te::qt::plugins::rp::Plugin::startup()
 
   //add to application layer tree pop up menu
   //te::qt::af::evt::LayerPopUpAddAction evt(m_popupAction, "RASTER_LAYER_ITEM", 2 /*UNIQUE_ITEM_SELECTED*/);
-  //te::qt::af::ApplicationController::getInstance().broadcast(&evt);
+  //te::qt::af::AppCtrlSingleton::getInstance().broadcast(&evt);
 
   m_rpPopupMenu = new QMenu(m_rpMenu);
   m_popupAction->setMenu(m_rpPopupMenu);
@@ -144,7 +144,7 @@ void te::qt::plugins::rp::Plugin::shutdown()
 
 //remove from application layer tree pop up menu
   //te::qt::af::evt::LayerPopUpRemoveAction evt(m_popupAction);
-  //te::qt::af::ApplicationController::getInstance().broadcast(&evt);
+  //te::qt::af::AppCtrlSingleton::getInstance().broadcast(&evt);
 
 // remove menu
   delete m_rpMenu;

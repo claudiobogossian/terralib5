@@ -50,7 +50,7 @@ te::qt::plugins::vp::GeometricOpAction::~GeometricOpAction()
 
 void te::qt::plugins::vp::GeometricOpAction::onActionActivated(bool checked)
 {
-  te::vp::GeometricOpWizard dlg(te::qt::af::ApplicationController::getInstance().getMainWindow());
+  te::vp::GeometricOpWizard dlg(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
 
   std::list<te::map::AbstractLayerPtr> layersList = getLayers();
 
@@ -71,7 +71,7 @@ void te::qt::plugins::vp::GeometricOpAction::onActionActivated(bool checked)
     for(std::size_t i = 0; i < layers.size(); ++i)
     {
       te::qt::af::evt::LayerAdded evt(layers[i]);
-      te::qt::af::ApplicationController::getInstance().broadcast(&evt);
+      te::qt::af::AppCtrlSingleton::getInstance().broadcast(&evt);
     }
   }
 }

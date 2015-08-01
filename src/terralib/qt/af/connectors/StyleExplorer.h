@@ -85,6 +85,10 @@ namespace te
           */
           void onApplicationTriggered(te::qt::af::evt::Event* evt);
 
+        signals:
+
+          void triggered(te::qt::af::evt::Event* e);
+
         protected:
 
           te::qt::widgets::StyleDockWidget* m_explorer; //!< Pointer to a component te::qt::widgets::StyleDockWidget.

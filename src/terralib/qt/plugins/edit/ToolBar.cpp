@@ -83,7 +83,7 @@ QToolBar* te::qt::plugins::edit::ToolBar::get() const
 te::map::AbstractLayerPtr te::qt::plugins::edit::ToolBar::getSelectedLayer()
 {
   te::qt::af::evt::GetLayerSelected e;
-  te::qt::af::ApplicationController::getInstance().broadcast(&e);
+  te::qt::af::AppCtrlSingleton::getInstance().broadcast(&e);
 
   te::map::AbstractLayerPtr layer = e.m_layer;
 
@@ -92,7 +92,7 @@ te::map::AbstractLayerPtr te::qt::plugins::edit::ToolBar::getSelectedLayer()
 
 te::map::AbstractLayerPtr te::qt::plugins::edit::ToolBar::getLayer(const std::string& id)
 {
-  std::list<te::map::AbstractLayerPtr> layers = te::qt::af::ApplicationController::getInstance().getProject()->getSingleLayers();
+  std::list<te::map::AbstractLayerPtr> layers = te::qt::af::AppCtrlSingleton::getInstance().getProject()->getSingleLayers();
 
   std::list<te::map::AbstractLayerPtr>::iterator it;
   for(it = layers.begin(); it != layers.end(); ++it)
@@ -131,7 +131,7 @@ void te::qt::plugins::edit::ToolBar::initializeActions()
   createAction(m_moveGeometryToolAction, tr("Move Geometry"), "edit-move-geometry", true, false,  SLOT(onMoveGeometryToolActivated(bool)));
 
   // Get the action group of map tools.
-  QActionGroup* toolsGroup = te::qt::af::ApplicationController::getInstance().findActionGroup("Map.ToolsGroup");
+  QActionGroup* toolsGroup = te::qt::af::AppCtrlSingleton::getInstance().findActionGroup("Map.ToolsGroup");
   assert(toolsGroup);
 
   // Adding the new tools
@@ -276,7 +276,7 @@ void te::qt::plugins::edit::ToolBar::onVertexToolActivated(bool checked)
   }
 
   te::qt::af::evt::GetMapDisplay e;
-  te::qt::af::ApplicationController::getInstance().broadcast(&e);
+  te::qt::af::AppCtrlSingleton::getInstance().broadcast(&e);
 
   assert(e.m_display);
 
@@ -294,7 +294,7 @@ void te::qt::plugins::edit::ToolBar::onCreatePolygonToolActivated(bool checked)
   }
 
   te::qt::af::evt::GetMapDisplay e;
-  te::qt::af::ApplicationController::getInstance().broadcast(&e);
+  te::qt::af::AppCtrlSingleton::getInstance().broadcast(&e);
 
   assert(e.m_display);
 
@@ -312,7 +312,7 @@ void te::qt::plugins::edit::ToolBar::onCreateLineToolActivated(bool checked)
   }
 
   te::qt::af::evt::GetMapDisplay e;
-  te::qt::af::ApplicationController::getInstance().broadcast(&e);
+  te::qt::af::AppCtrlSingleton::getInstance().broadcast(&e);
 
   assert(e.m_display);
 
@@ -330,7 +330,7 @@ void te::qt::plugins::edit::ToolBar::onMoveGeometryToolActivated(bool checked)
   }
 
   te::qt::af::evt::GetMapDisplay e;
-  te::qt::af::ApplicationController::getInstance().broadcast(&e);
+  te::qt::af::AppCtrlSingleton::getInstance().broadcast(&e);
 
   assert(e.m_display);
 
@@ -341,6 +341,6 @@ void te::qt::plugins::edit::ToolBar::onMoveGeometryToolActivated(bool checked)
 void te::qt::plugins::edit::ToolBar::onSnapOptionsActivated()
 {
   te::edit::SnapOptionsDialog options(m_toolBar);
-  options.setLayers(te::qt::af::ApplicationController::getInstance().getProject()->getAllLayers(false));
+  options.setLayers(te::qt::af::AppCtrlSingleton::getInstance().getProject()->getAllLayers(false));
   options.exec();
 }

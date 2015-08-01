@@ -67,7 +67,7 @@ void te::qt::plugins::terralib4::TL4ConverterAction::createAction(const std::str
 
 void te::qt::plugins::terralib4::TL4ConverterAction::onActionActivated(bool checked)
 {
-  QWidget* parent = te::qt::af::ApplicationController::getInstance().getMainWindow();
+  QWidget* parent = te::qt::af::AppCtrlSingleton::getInstance().getMainWindow();
   te::qt::plugins::terralib4::TL4ConverterWizard dlg(parent);
 
   if(dlg.exec() != QDialog::Accepted)

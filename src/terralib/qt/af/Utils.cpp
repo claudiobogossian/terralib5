@@ -194,7 +194,7 @@ void te::qt::af::UpdateToolBarsInTheSettings()
 {
   // Fred: revisar
 
-  std::vector<QToolBar*> bars;// = te::qt::af::ApplicationController::getInstance().getToolBars();
+  std::vector<QToolBar*> bars;// = te::qt::af::AppCtrlSingleton::getInstance().getToolBars();
   std::vector<QToolBar*>::const_iterator it;
   QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
 
@@ -562,7 +562,7 @@ std::vector<std::string> te::qt::af::GetDefaultPluginsNames()
 
 // Finding the Default plugins file.
   // Fred: revisar
-  std::string pluginsPath; //= te::qt::af::ApplicationController::getInstance().getAppPluginsPath().toStdString();
+  std::string pluginsPath; //= te::qt::af::AppCtrlSingleton::getInstance().getAppPluginsPath().toStdString();
 
   if (pluginsPath == "")
     return res;
@@ -700,7 +700,7 @@ QString te::qt::af::GetGenerationDate()
 //QString te::qt::af::GetWindowTitle(const te::qt::af::Project& project)
 //{
 //  // Fred: revisar
-//  QString title;// = te::qt::af::ApplicationController::getInstance().getAppTitle() + " - ";
+//  QString title;// = te::qt::af::AppCtrlSingleton::getInstance().getAppTitle() + " - ";
 //  title += TE_TR("Project:");
 //  title += " ";
 //  title += project.getTitle().c_str();
@@ -718,8 +718,8 @@ QString te::qt::af::GetGenerationDate()
 QString te::qt::af::GetExtensionFilter()
 {
   // Fred: revisar
-  QString appName;// = te::qt::af::ApplicationController::getInstance().getAppName();
-  QString appProjectExtension;// = te::qt::af::ApplicationController::getInstance().getAppProjectExtension();
+  QString appName;// = te::qt::af::AppCtrlSingleton::getInstance().getAppName();
+  QString appProjectExtension;// = te::qt::af::AppCtrlSingleton::getInstance().getAppProjectExtension();
   QString extensionFilter = appName;
   extensionFilter += QString(" (*.");
   extensionFilter += appProjectExtension + ")";

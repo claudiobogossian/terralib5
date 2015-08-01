@@ -31,11 +31,13 @@
 #include "../../color/RGBAColor.h"
 #include "../../geometry/Enums.h"
 #include "../../maptools/Enums.h"
+#include "../../maptools/AbstractLayer.h"
 #include "Config.h"
 #include "Globals.h"
 
 // Qt
 #include <QColor>
+#include <QModelIndex>
 #include <QObject>
 #include <QPixmap>
 #include <QString>
@@ -44,6 +46,7 @@
 #include <string>
 
 // Forward declarations
+class QAbstractItemModel;
 class QAction;
 class QActionGroup;
 class QImage;
@@ -62,6 +65,8 @@ namespace te
   {
     namespace widgets
     {
+      class LayerItemView;
+
       /*!
         \brief It sets the check state for the children of a item.
       */
@@ -317,8 +322,15 @@ namespace te
 
         \return Returns a disk raster file selection filter base on current supported formats.
       */
-      TEQTWIDGETSEXPORT QString GetDiskRasterFileSelFilter();      
+      TEQTWIDGETSEXPORT QString GetDiskRasterFileSelFilter();  
 
+      TEQTWIDGETSEXPORT std::list<te::map::AbstractLayerPtr> GetSelectedLayersOnly(te::qt::widgets::LayerItemView* view);
+
+      TEQTWIDGETSEXPORT void GetValidLayers(QAbstractItemModel* model, const QModelIndex& parent, std::vector<te::map::AbstractLayerPtr>& layers);
+
+      TEQTWIDGETSEXPORT void GetValidLayers(QAbstractItemModel* model, const QModelIndex& parent, std::list<te::map::AbstractLayerPtr>& layers);
+
+      TEQTWIDGETSEXPORT void GetChangedAndVisibleLayers(const QModelIndexList& idxs, std::list<te::map::AbstractLayerPtr>& layers);
     } // end namespace widgets
   }   // end namespace qt
 }     // end namespace te

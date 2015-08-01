@@ -41,7 +41,7 @@ te::qt::plugins::sa::BayesGlobalAction::~BayesGlobalAction()
 
 void te::qt::plugins::sa::BayesGlobalAction::onActionActivated(bool checked)
 {
-  te::sa::BayesGlobalDialog dlg(te::qt::af::ApplicationController::getInstance().getMainWindow());
+  te::sa::BayesGlobalDialog dlg(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
 
   std::list<te::map::AbstractLayerPtr> layersList = getLayers();
 

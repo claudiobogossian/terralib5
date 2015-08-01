@@ -49,7 +49,7 @@ te::qt::plugins::rp::MixtureModelAction::~MixtureModelAction()
 
 void te::qt::plugins::rp::MixtureModelAction::onActionActivated(bool checked)
 {
-  te::qt::widgets::MixtureModelWizard dlg(te::qt::af::ApplicationController::getInstance().getMainWindow());
+  te::qt::widgets::MixtureModelWizard dlg(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
 
   std::list<te::map::AbstractLayerPtr> layersList = getLayers();
 
@@ -68,7 +68,7 @@ void te::qt::plugins::rp::MixtureModelAction::onPopUpActionActivated(bool checke
 
   if(layer.get())
   {
-    te::qt::widgets::MixtureModelWizard dlg(te::qt::af::ApplicationController::getInstance().getMainWindow());
+    te::qt::widgets::MixtureModelWizard dlg(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
 
     dlg.setLayer(layer);
 
@@ -80,6 +80,6 @@ void te::qt::plugins::rp::MixtureModelAction::onPopUpActionActivated(bool checke
   }
   else
   {
-    QMessageBox::warning(te::qt::af::ApplicationController::getInstance().getMainWindow(), tr("Warning"), tr("The layer selected is invalid or does not have an raster representation."));
+    QMessageBox::warning(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow(), tr("Warning"), tr("The layer selected is invalid or does not have an raster representation."));
   }
 }

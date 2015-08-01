@@ -14,11 +14,16 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout_2">
-    <item row="0" column="0">
-     <widget class="te::qt::widgets::MultiThreadMapDisplay" name="m_display" native="true"/>
-    </item>
-   </layout>
+   <widget class="te::qt::widgets::MultiThreadMapDisplay" name="m_display" native="true">
+    <property name="geometry">
+     <rect>
+      <x>11</x>
+      <y>11</y>
+      <width>926</width>
+      <height>654</height>
+     </rect>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -30,120 +35,23 @@
     </rect>
    </property>
   </widget>
-  <widget class="QToolBar" name="drawBar">
-   <property name="windowTitle">
-    <string>toolBar_2</string>
-   </property>
-   <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
-   <addaction name="m_drawAction"/>
-   <addaction name="m_fitLayersAction"/>
-  </widget>
-  <widget class="QToolBar" name="basicTools_bar">
-   <property name="windowTitle">
-    <string>toolBar_2</string>
-   </property>
-   <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
-   <addaction name="m_zoomInAction"/>
-   <addaction name="m_panAction"/>
-   <addaction name="m_selectToolAction"/>
-   <addaction name="separator"/>
-  </widget>
   <widget class="te::qt::widgets::StyleDockWidget" name="m_styleExplorer">
    <attribute name="dockWidgetArea">
     <number>2</number>
    </attribute>
   </widget>
-  <widget class="QDockWidget" name="m_layerExplorer">
+  <widget class="QDockWidget" name="dockWidget">
    <attribute name="dockWidgetArea">
     <number>1</number>
    </attribute>
    <widget class="QWidget" name="dockWidgetContents">
     <layout class="QGridLayout" name="gridLayout">
      <item row="0" column="0">
-      <widget class="te::qt::widgets::LayerItemView" name="m_treeView"/>
+      <widget class="te::qt::widgets::LayerItemView" name="m_layerExplorer"/>
      </item>
     </layout>
    </widget>
   </widget>
-  <action name="m_drawAction">
-   <property name="icon">
-    <iconset theme="map-draw">
-     <normaloff>../../../../../share/terralib/icons/terralib/scalable/map-draw.svg</normaloff>../../../../../share/terralib/icons/terralib/scalable/map-draw.svg</iconset>
-   </property>
-   <property name="text">
-    <string>Draw...</string>
-   </property>
-   <property name="toolTip">
-    <string>Draw visible layers...</string>
-   </property>
-  </action>
-  <action name="m_zoomInAction">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="icon">
-    <iconset theme="zoom-area">
-     <normaloff>../../../../../share/terralib/icons/terralib/scalable/zoom-area.svg</normaloff>../../../../../share/terralib/icons/terralib/scalable/zoom-area.svg</iconset>
-   </property>
-   <property name="text">
-    <string>Zoom in..</string>
-   </property>
-   <property name="toolTip">
-    <string>Zoom in</string>
-   </property>
-  </action>
-  <action name="m_panAction">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="icon">
-    <iconset theme="pan">
-     <normaloff>../../../../../share/terralib/icons/terralib/scalable/pan.svg</normaloff>../../../../../share/terralib/icons/terralib/scalable/pan.svg</iconset>
-   </property>
-   <property name="text">
-    <string>Pan...</string>
-   </property>
-   <property name="toolTip">
-    <string>Pan</string>
-   </property>
-  </action>
-  <action name="m_selectToolAction">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="icon">
-    <iconset theme="pointer-selection">
-     <normaloff>../../../../../share/terralib/icons/terralib/scalable/pointer-selection.svg</normaloff>../../../../../share/terralib/icons/terralib/scalable/pointer-selection.svg</iconset>
-   </property>
-   <property name="text">
-    <string>Select features...</string>
-   </property>
-   <property name="toolTip">
-    <string>Select features...</string>
-   </property>
-  </action>
-  <action name="m_fitLayersAction">
-   <property name="icon">
-    <iconset theme="zoom-extent">
-     <normaloff>../../../../../share/terralib/icons/terralib/scalable/zoom-extent.svg</normaloff>../../../../../share/terralib/icons/terralib/scalable/zoom-extent.svg</iconset>
-   </property>
-   <property name="text">
-    <string>Fit layers...</string>
-   </property>
-   <property name="toolTip">
-    <string>Fit...</string>
-   </property>
-  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -165,88 +73,7 @@
   </customwidget>
  </customwidgets>
  <resources/>
- <connections>
-  <connection>
-   <sender>m_drawAction</sender>
-   <signal>triggered()</signal>
-   <receiver>BaseApplicationForm</receiver>
-   <slot>onDrawTriggered()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>569</x>
-     <y>350</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>m_zoomInAction</sender>
-   <signal>triggered(bool)</signal>
-   <receiver>BaseApplicationForm</receiver>
-   <slot>onZoomInTriggered(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>569</x>
-     <y>350</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>m_panAction</sender>
-   <signal>triggered(bool)</signal>
-   <receiver>BaseApplicationForm</receiver>
-   <slot>onPanTriggered(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>569</x>
-     <y>350</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>m_selectToolAction</sender>
-   <signal>triggered(bool)</signal>
-   <receiver>BaseApplicationForm</receiver>
-   <slot>onSelectionTriggered(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>569</x>
-     <y>350</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>m_fitLayersAction</sender>
-   <signal>triggered()</signal>
-   <receiver>BaseApplicationForm</receiver>
-   <slot>onFitLayersTriggered()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>569</x>
-     <y>350</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
  <slots>
   <slot>onAddLayerTriggered()</slot>
   <slot>onDrawTriggered()</slot>

@@ -30,7 +30,7 @@
 #include "../../../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../../../wms/qt/WMSLayerItem.h"
 #include "../../../widgets/datasource/core/DataSourceTypeManager.h"
-#include "../../../widgets/layer/explorer/AbstractTreeItemFactory.h"
+//#include "../../../widgets/layer/explorer/AbstractTreeItemFactory.h"
 #include "WMSType.h"
 #include "Plugin.h"
 
@@ -52,7 +52,7 @@ void te::qt::plugins::wms::Plugin::startup()
   if(m_initialized)
     return;
 
-  te::qt::widgets::AbstractTreeItemFactory::reg("WMSLAYER", boost::bind(boost::factory<te::wms::WMSLayerItem*>(), _1, _2));
+//  te::qt::widgets::AbstractTreeItemFactory::reg("WMSLAYER", boost::bind(boost::factory<te::wms::WMSLayerItem*>(), _1, _2));
 
   te::qt::widgets::DataSourceTypeManager::getInstance().add(new WMSType);
 

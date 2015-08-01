@@ -851,7 +851,7 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::finish()
 
       te::qt::af::evt::LayerAdded evt(layer);
 
-      te::qt::af::ApplicationController::getInstance().broadcast(&evt);
+      te::qt::af::AppCtrlSingleton::getInstance().broadcast(&evt);
     }
 
     std::vector<::terralib4::ThemeInfo> themes = m_themeSelection->getThemes();
@@ -937,7 +937,7 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::finish()
 
       te::qt::af::evt::LayerAdded evt(layer);
 
-      te::qt::af::ApplicationController::getInstance().broadcast(&evt);
+      te::qt::af::AppCtrlSingleton::getInstance().broadcast(&evt);
     }
   }
   catch(const te::da::Exception& e)

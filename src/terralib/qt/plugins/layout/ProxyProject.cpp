@@ -42,13 +42,13 @@ te::qt::plugins::layout::ProxyProject::~ProxyProject()
 
 std::list<te::map::AbstractLayerPtr> te::qt::plugins::layout::ProxyProject::getAllLayers( bool invalid /*= true*/ )
 {
-  std::list<te::map::AbstractLayerPtr> layers = te::qt::af::ApplicationController::getInstance().getProject()->getAllLayers(false);
+  std::list<te::map::AbstractLayerPtr> layers = te::qt::af::AppCtrlSingleton::getInstance().getProject()->getAllLayers(false);
   return layers;
 }
 
 const std::list<te::map::AbstractLayerPtr> te::qt::plugins::layout::ProxyProject::getSelectedLayers( bool invalid /*= true*/ ) const
 {
-  std::list<te::map::AbstractLayerPtr> layers = te::qt::af::ApplicationController::getInstance().getProject()->getSelectedLayers(false);
+  std::list<te::map::AbstractLayerPtr> layers = te::qt::af::AppCtrlSingleton::getInstance().getProject()->getSelectedLayers(false);
   return layers;
 }
 
@@ -56,7 +56,7 @@ te::map::AbstractLayerPtr te::qt::plugins::layout::ProxyProject::contains( std::
 {
   te::map::AbstractLayerPtr layer;
 
-  std::list<te::map::AbstractLayerPtr> layers = te::qt::af::ApplicationController::getInstance().getProject()->getAllLayers(false);
+  std::list<te::map::AbstractLayerPtr> layers = te::qt::af::AppCtrlSingleton::getInstance().getProject()->getAllLayers(false);
 
   std::list<te::map::AbstractLayerPtr>::iterator it;
 

@@ -83,12 +83,12 @@ void te::qt::plugins::vp::Plugin::startup()
   TE_LOG_TRACE(TE_TR("TerraLib Qt VP Plugin startup!"));
 
 // add plugin menu
-  QMenu* pluginMenu = te::qt::af::ApplicationController::getInstance().getMenu("Processing");
+  QMenu* pluginMenu = te::qt::af::AppCtrlSingleton::getInstance().getMenu("Processing");
   m_vpMenu = new QMenu(pluginMenu);
   m_vpMenu->setIcon(QIcon::fromTheme("vp-vectorprocessing-icon"));
 
   // Insert action before plugin manager action
-  QAction* pluginsSeparator = te::qt::af::ApplicationController::getInstance().findAction("ManagePluginsSeparator");
+  QAction* pluginsSeparator = te::qt::af::AppCtrlSingleton::getInstance().findAction("ManagePluginsSeparator");
 
   pluginMenu->insertMenu(pluginsSeparator, m_vpMenu);
 
@@ -98,7 +98,7 @@ void te::qt::plugins::vp::Plugin::startup()
   registerActions();
 
 // vp log startup
-  std::string path = te::qt::af::ApplicationController::getInstance().getUserDataDir().toStdString();
+  std::string path = te::qt::af::AppCtrlSingleton::getInstance().getUserDataDir().toStdString();
   path += "/log/terralib_vp.log";
 
 #if defined(TERRALIB_APACHE_LOG4CXX_ENABLED) && defined(TERRALIB_LOGGER_ENABLED)
