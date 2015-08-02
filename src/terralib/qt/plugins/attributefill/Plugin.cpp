@@ -57,7 +57,9 @@
 #include <qaction.h>
 
 te::qt::plugins::attributefill::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo)
-  : te::plugin::Plugin(pluginInfo), m_attributefillMenu(0)
+  : QObject(),
+  te::plugin::Plugin(pluginInfo), 
+  m_attributefillMenu(0)
 {
 }
 
@@ -118,6 +120,8 @@ void te::qt::plugins::attributefill::Plugin::startup()
   te::qt::af::AddActionToCustomToolbars(m_vectorToVector->getAction());
 
   m_initialized = true;
+
+  te::qt::af::AppCtrlSingleton::getInstance().addListener(this, te::qt::af::SENDER);
 }
 
 void te::qt::plugins::attributefill::Plugin::shutdown()
@@ -138,6 +142,8 @@ void te::qt::plugins::attributefill::Plugin::shutdown()
   TE_LOG_TRACE(TE_TR("TerraLib Qt Attribute Fill Plugin shutdown!"));
 
   m_initialized = false;
+
+  te::qt::af::AppCtrlSingleton::getInstance().removeListener(this);
 }
 
 void te::qt::plugins::attributefill::Plugin::registerActions()
@@ -145,6 +151,10 @@ void te::qt::plugins::attributefill::Plugin::registerActions()
   m_rasterToVector = new te::qt::plugins::attributefill::RasterToVectorAction(m_attributefillMenu);
   m_vectorToRaster = new te::qt::plugins::attributefill::VectorToRasterAction(m_attributefillMenu);
   m_vectorToVector = new te::qt::plugins::attributefill::VectorToVectorAction(m_attributefillMenu);
+
+  connect(m_rasterToVector, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
+  connect(m_vectorToRaster, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
+  connect(m_vectorToVector, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
 }
 
 void te::qt::plugins::attributefill::Plugin::unRegisterActions()

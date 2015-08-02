@@ -76,6 +76,8 @@ void te::qt::plugins::terralib4::Plugin::startup()
   te::qt::af::AddActionToCustomToolbars(m_showWindow);
 
   m_initialized = true;
+
+  te::qt::af::AppCtrlSingleton::getInstance().addListener(this, te::qt::af::SENDER);
 }
 
 void te::qt::plugins::terralib4::Plugin::shutdown()
@@ -88,12 +90,16 @@ void te::qt::plugins::terralib4::Plugin::shutdown()
   TE_LOG_TRACE(TE_TR("TerraLib Qt TERRALIB4 Plugin shutdown!"));
 
   m_initialized = false;
+
+  te::qt::af::AppCtrlSingleton::getInstance().removeListener(this);
 }
 
 void te::qt::plugins::terralib4::Plugin::showWindow()
 {
   QWidget* parent = te::qt::af::AppCtrlSingleton::getInstance().getMainWindow();
   te::qt::plugins::terralib4::TL4ConverterWizard dlg(parent);
+
+  connect(&dlg, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
 
   if(dlg.exec() != QDialog::Accepted)
     return;

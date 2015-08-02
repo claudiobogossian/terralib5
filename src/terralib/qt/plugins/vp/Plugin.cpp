@@ -120,6 +120,8 @@ void te::qt::plugins::vp::Plugin::startup()
 
 #endif
   m_initialized = true;
+
+  te::qt::af::AppCtrlSingleton::getInstance().addListener(this, te::qt::af::SENDER);
 }
 
 void te::qt::plugins::vp::Plugin::shutdown()
@@ -140,6 +142,8 @@ void te::qt::plugins::vp::Plugin::shutdown()
   TE_LOG_TRACE(TE_TR("TerraLib Qt VP Plugin shutdown!"));
 
   m_initialized = false;
+
+  te::qt::af::AppCtrlSingleton::getInstance().removeListener(this);
 }
 
 void te::qt::plugins::vp::Plugin::registerActions()
@@ -151,6 +155,14 @@ void te::qt::plugins::vp::Plugin::registerActions()
   m_multipart2singlepart = new te::qt::plugins::vp::MultipartToSinglepartAction(m_vpMenu);
   m_lineToPolygon = new te::qt::plugins::vp::LineToPolygonAction(m_vpMenu);
   m_polygonToLine = new te::qt::plugins::vp::PolygonToLineAction(m_vpMenu);
+
+  connect(m_aggregation, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
+  connect(m_buffer, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
+  connect(m_geometricOp, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
+  connect(m_intersection, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
+  connect(m_multipart2singlepart, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
+  connect(m_lineToPolygon, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
+  connect(m_polygonToLine, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
   //m_summarization = new te::qt::plugins::vp::SummarizationAction(m_vpMenu);
   //m_transformation = new te::qt::plugins::vp::TransformationAction(m_vpMenu);
 

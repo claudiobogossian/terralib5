@@ -27,7 +27,6 @@
 #include "../../../vp/qt/GeometricOpWizard.h"
 #include "../../af/ApplicationController.h"
 #include "../../af/events/LayerEvents.h"
-#include "../../af/Project.h"
 #include "GeometricOpAction.h"
 
 // Qt
@@ -69,9 +68,6 @@ void te::qt::plugins::vp::GeometricOpAction::onActionActivated(bool checked)
   if(reply == QMessageBox::Yes)
   {
     for(std::size_t i = 0; i < layers.size(); ++i)
-    {
-      te::qt::af::evt::LayerAdded evt(layers[i]);
-      te::qt::af::AppCtrlSingleton::getInstance().broadcast(&evt);
-    }
+      addNewLayer(layers[i]);
   }
 }

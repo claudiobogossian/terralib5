@@ -31,7 +31,6 @@
 #include "../../../common/Logger.h"
 #include "../../af/ApplicationController.h"
 #include "../../af/events/LayerEvents.h"
-#include "../../af/Project.h"
 #include "../../af/Utils.h"
 #include "Plugin.h"
 
@@ -58,7 +57,8 @@
 #include <QMessageBox>
 
 te::qt::plugins::addressgeocoding::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo)
-  : te::plugin::Plugin(pluginInfo)
+  : QObject(),
+  te::plugin::Plugin(pluginInfo)
 {
 }
 
@@ -111,6 +111,8 @@ void te::qt::plugins::addressgeocoding::Plugin::startup()
 
   te::qt::af::AddActionToCustomToolbars(m_action);
 
+  te::qt::af::AppCtrlSingleton::getInstance().addListener(this, te::qt::af::SENDER);
+
   m_initialized = true;
 }
 
@@ -129,6 +131,8 @@ void te::qt::plugins::addressgeocoding::Plugin::shutdown()
   TE_LOG_TRACE(TE_TR("TerraLib Qt Address Geocoding Plugin shutdown!"));
 
   m_initialized = false;
+
+  te::qt::af::AppCtrlSingleton::getInstance().removeListener(this);
 }
 
 void te::qt::plugins::addressgeocoding::Plugin::onActionActivated(bool checked)
@@ -137,41 +141,37 @@ void te::qt::plugins::addressgeocoding::Plugin::onActionActivated(bool checked)
   te::addressgeocoding::MainWindowDialog dlg(parent);
 
   // get the list of layers from current project
-  te::qt::af::Project* prj = te::qt::af::AppCtrlSingleton::getInstance().getProject();
+  te::qt::af::evt::GetAvailableLayers e;
 
-  if(prj)
-  {
-    dlg.setLayers(prj->getSingleLayers(false));
-  }
+  emit triggered(&e);
+
+  dlg.setLayers(e.m_layers);
 
   if(dlg.exec() != QDialog::Accepted)
     return;
 
   te::map::AbstractLayerPtr layer = dlg.getLayer();
 
-  if(!layer)
+  if(layer.get() == 0)
     return;
 
   int reply = QMessageBox::question(0, tr("Address Geocoding Result"), tr("The operation was concluded successfully. Would you like to add the layer to the project?"), QMessageBox::No, QMessageBox::Yes);
 
-  if(prj && reply == QMessageBox::Yes)
+  if(reply == QMessageBox::Yes)
   {
     te::qt::af::evt::LayerAdded evt(layer);
 
-    te::qt::af::AppCtrlSingleton::getInstance().broadcast(&evt);
+    emit triggered(&evt);
   }
 }
 
 std::list<te::map::AbstractLayerPtr> te::qt::plugins::addressgeocoding::Plugin::getLayers()
 {
-  std::list<te::map::AbstractLayerPtr> list;
+  te::qt::af::evt::GetAvailableLayers e;
 
-  te::qt::af::Project* prj = te::qt::af::AppCtrlSingleton::getInstance().getProject();
+  emit triggered(&e);
 
-  if(prj)
-    list = prj->getAllLayers(false);
-
-  return list;
+  return e.m_layers;
 }
 
 

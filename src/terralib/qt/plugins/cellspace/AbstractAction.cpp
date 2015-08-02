@@ -26,13 +26,15 @@
 // Terralib
 #include "../../af/events/LayerEvents.h"
 #include "../../af/ApplicationController.h"
-#include "../../af/Project.h"
 #include "AbstractAction.h"
 
 // STL
 #include <cassert>
 
-te::qt::plugins::cellspace::AbstractAction::AbstractAction(QMenu* menu): m_menu(menu), m_action(0)
+te::qt::plugins::cellspace::AbstractAction::AbstractAction(QMenu* menu): 
+QObject(), 
+m_menu(menu), 
+m_action(0)
 {
 }
 
@@ -60,7 +62,7 @@ void te::qt::plugins::cellspace::AbstractAction::addNewLayer(te::map::AbstractLa
 {
   te::qt::af::evt::LayerAdded evt(layer.get());
 
-  te::qt::af::AppCtrlSingleton::getInstance().broadcast(&evt);
+  emit triggered(&evt);
 }
 
 te::map::AbstractLayerPtr te::qt::plugins::cellspace::AbstractAction::getCurrentLayer()
@@ -69,7 +71,7 @@ te::map::AbstractLayerPtr te::qt::plugins::cellspace::AbstractAction::getCurrent
 
   te::qt::af::evt::GetLayerSelected evt;
 
-  te::qt::af::AppCtrlSingleton::getInstance().broadcast(&evt);
+  emit triggered(&evt);
 
   if(evt.m_layer.get())
   {
@@ -84,12 +86,9 @@ te::map::AbstractLayerPtr te::qt::plugins::cellspace::AbstractAction::getCurrent
 
 std::list<te::map::AbstractLayerPtr> te::qt::plugins::cellspace::AbstractAction::getLayers()
 {
-  std::list<te::map::AbstractLayerPtr> list;
+  te::qt::af::evt::GetAvailableLayers e;
 
-  te::qt::af::Project* prj = te::qt::af::AppCtrlSingleton::getInstance().getProject();
+  emit triggered(&e);
 
-  if(prj)
-    list = prj->getAllLayers(false);
-
-  return list;
+  return e.m_layers;
 }

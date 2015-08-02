@@ -26,7 +26,6 @@
 // Terralib
 #include "../../../af/ApplicationController.h"
 #include "../../../af/events/LayerEvents.h"
-#include "../../../af/Project.h"
 #include "TL4ConverterAction.h"
 #include "TL4ConverterWizard.h"
 

@@ -27,7 +27,6 @@
 #include "../../../vp/qt/MultipartToSinglepartDialog.h"
 #include "../../af/ApplicationController.h"
 #include "../../af/events/LayerEvents.h"
-#include "../../af/Project.h"
 #include "MultipartToSinglepartAction.h"
 
 // Qt
@@ -53,13 +52,7 @@ void te::qt::plugins::vp::MultipartToSinglepartAction::onActionActivated(bool ch
   QWidget* parent = te::qt::af::AppCtrlSingleton::getInstance().getMainWindow();
   te::vp::MultipartToSinglepartDialog dlg(parent);
 
-  // get the list of layers from current project
-  te::qt::af::Project* prj = te::qt::af::AppCtrlSingleton::getInstance().getProject();
-
-  if(prj)
-  {
-    dlg.setLayers(prj->getSingleLayers(false));
-  }
+  dlg.setLayers(getLayers());
 
   if(dlg.exec() != QDialog::Accepted)
     return;
@@ -71,10 +64,6 @@ void te::qt::plugins::vp::MultipartToSinglepartAction::onActionActivated(bool ch
 
   int reply = QMessageBox::question(0, tr("Result"), tr("The operation was concluded successfully. Would you like to add the layer to the project?"), QMessageBox::No, QMessageBox::Yes);
 
-  if(prj && reply == QMessageBox::Yes)
-  {
-    te::qt::af::evt::LayerAdded evt(layer);
-
-    te::qt::af::AppCtrlSingleton::getInstance().broadcast(&evt);
-  }
+  if(reply == QMessageBox::Yes)
+    addNewLayer(layer);
 }

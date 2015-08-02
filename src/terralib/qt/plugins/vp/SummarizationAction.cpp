@@ -26,7 +26,6 @@
 // Terralib
 #include "../../../vp/qt/SummarizationDialog.h"
 #include "../../af/ApplicationController.h"
-#include "../../af/Project.h"
 #include "SummarizationAction.h"
 
 // Qt
@@ -50,13 +49,7 @@ void te::qt::plugins::vp::SummarizationAction::onActionActivated(bool checked)
 {
   te::vp::SummarizationDialog dlg(0);
 
-  // get the list of layers from current project
-  te::qt::af::Project* prj = te::qt::af::AppCtrlSingleton::getInstance().getProject();
-
-  if(prj)
-  {
-    dlg.setLayers(prj->getSingleLayers(false));
-  }
+  dlg.setLayers(getLayers());
 
   dlg.exec();
 }

@@ -74,7 +74,8 @@
 #include <QMenuBar>
 
 te::qt::plugins::sa::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo)
-  : te::plugin::Plugin(pluginInfo), m_saMenu(0)
+  : QObject(),
+  te::plugin::Plugin(pluginInfo), m_saMenu(0)
 {
 }
 
@@ -109,6 +110,8 @@ void te::qt::plugins::sa::Plugin::startup()
   registerActions();
 
   m_initialized = true;
+
+  te::qt::af::AppCtrlSingleton::getInstance().addListener(this, te::qt::af::SENDER);
 }
 
 void te::qt::plugins::sa::Plugin::shutdown()
@@ -125,6 +128,8 @@ void te::qt::plugins::sa::Plugin::shutdown()
   TE_LOG_TRACE(TE_TR("TerraLib Qt SA Plugin shutdown!"));
 
   m_initialized = false;
+
+  te::qt::af::AppCtrlSingleton::getInstance().removeListener(this);
 }
 
 void te::qt::plugins::sa::Plugin::registerActions()
@@ -133,52 +138,61 @@ void te::qt::plugins::sa::Plugin::registerActions()
 #ifdef TE_QT_PLUGIN_SA_HAVE_PROXIMITYMATRIXCREATOR
   m_proxMatrixCreator = new te::qt::plugins::sa::ProximityMatrixCreatorAction(m_saMenu);
   te::qt::af::AddActionToCustomToolbars(m_proxMatrixCreator->getAction());
+  connect(m_proxMatrixCreator, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
 #endif
 
 #ifdef TE_QT_PLUGIN_SA_HAVE_SPATIALSTATISTICS
   m_saMenu->addSeparator();
   m_spatialStatistics = new te::qt::plugins::sa::SpatialStatisticsAction(m_saMenu);
   te::qt::af::AddActionToCustomToolbars(m_spatialStatistics->getAction());
+  connect(m_spatialStatistics, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
 #endif
 
 #ifdef TE_QT_PLUGIN_SA_HAVE_BAYESGLOBAL
   m_saMenu->addSeparator();
   m_bayesGlobal = new te::qt::plugins::sa::BayesGlobalAction(m_saMenu);
   te::qt::af::AddActionToCustomToolbars(m_bayesGlobal->getAction());
+  connect(m_bayesGlobal, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
 #endif
 
 #ifdef TE_QT_PLUGIN_SA_HAVE_BAYESLOCAL
     m_bayesLocal = new te::qt::plugins::sa::BayesLocalAction(m_saMenu);
     te::qt::af::AddActionToCustomToolbars(m_bayesLocal->getAction());
+    connect(m_bayesLocal, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
 #endif
 
 #ifdef TE_QT_PLUGIN_SA_HAVE_KERNELMAP
   m_saMenu->addSeparator();
   m_kernelMap = new te::qt::plugins::sa::KernelMapAction(m_saMenu);
   te::qt::af::AddActionToCustomToolbars(m_kernelMap->getAction());
+  connect(m_kernelMap, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
 #endif
 
 #ifdef TE_QT_PLUGIN_SA_HAVE_KERNELRATIO
   m_kernelRatio = new te::qt::plugins::sa::KernelRatioAction(m_saMenu);
   te::qt::af::AddActionToCustomToolbars(m_kernelRatio->getAction());
+  connect(m_kernelRatio, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
 #endif
 
 #ifdef TE_QT_PLUGIN_SA_HAVE_SKATER
   m_saMenu->addSeparator();
   m_skater = new te::qt::plugins::sa::SkaterAction(m_saMenu);
   te::qt::af::AddActionToCustomToolbars(m_skater->getAction());
+  connect(m_skater, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
 #endif
 
 #ifdef TE_QT_PLUGIN_SA_HAVE_GEOSTATISTICALMETHODS
   m_saMenu->addSeparator();
   m_geostatistics = new te::qt::plugins::sa::GeostatisticalMethodsAction(m_saMenu);
   te::qt::af::AddActionToCustomToolbars(m_geostatistics->getAction());
+  connect(m_geostatistics, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
 #endif
 
 #ifdef TE_QT_PLUGIN_SA_HAVE_SAMPLEPOINTSGENERATOR
   m_saMenu->addSeparator();
   m_samplePointsGenerator = new te::qt::plugins::sa::SamplePointsGeneratorAction(m_saMenu);
   te::qt::af::AddActionToCustomToolbars(m_samplePointsGenerator->getAction());
+  connect(m_samplePointsGenerator, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
 #endif
 
 }
