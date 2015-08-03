@@ -53,8 +53,7 @@ bool te::vp::PolygonToLineMemory::run() throw(te::common::Exception)
 {
   std::auto_ptr<te::da::DataSetType> outDsType = buildOutDataSetType();
 
-  std::auto_ptr<te::da::DataSetType> inDsType = m_inDsrc->getDataSetType(m_inDsetName);
-  te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(inDsType.get());
+  te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(m_inDsetType.get());
   std::string geomName = geomProp->getName();
 
   std::auto_ptr<te::da::DataSet> inDset;
@@ -67,7 +66,7 @@ bool te::vp::PolygonToLineMemory::run() throw(te::common::Exception)
   std::auto_ptr<te::mem::DataSet> outDSet(new te::mem::DataSet(outDsType.get()));
 
   te::common::TaskProgress task("Processing...");
-  task.setTotalSteps(inDset->size());
+  task.setTotalSteps((int)inDset->size());
   task.useTimer(true);
 
   inDset->moveBeforeFirst();
@@ -101,6 +100,7 @@ bool te::vp::PolygonToLineMemory::run() throw(te::common::Exception)
           int a = 0;
         }
         
+        lineResult->setSRID(geomProp->getSRID());
         outDsItem->setGeometry(i, lineResult.release());
       }
     }

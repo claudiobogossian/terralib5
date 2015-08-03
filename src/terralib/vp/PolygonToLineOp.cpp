@@ -22,6 +22,8 @@
  */
 
 // Terralib
+#include "../common/StringUtils.h"
+
 #include "../datatype/Enums.h"
 #include "../datatype/Property.h"
 
@@ -40,10 +42,12 @@ te::vp::PolygonToLineOp::PolygonToLineOp():
 
 void te::vp::PolygonToLineOp::setInput(te::da::DataSourcePtr inDsrc,
                                      std::string inDsetName,
+                                     std::auto_ptr<te::da::DataSetType> inDSetType,
                                      const te::da::ObjectIdSet* oidSet)
 {
   m_inDsrc = inDsrc;
   m_inDsetName = inDsetName;
+  m_inDsetType = inDSetType;
   m_oidSet = oidSet;
 }
 
@@ -55,14 +59,13 @@ void te::vp::PolygonToLineOp::setOutput(te::da::DataSourcePtr outDsrc, std::stri
 
 std::auto_ptr<te::da::DataSetType> te::vp::PolygonToLineOp::buildOutDataSetType()
 {
-  std::auto_ptr<te::da::DataSetType> inDsType = m_inDsrc->getDataSetType(m_inDsetName);
   std::auto_ptr<te::da::DataSetType> outDsType(new te::da::DataSetType(m_outDset));
 
   std::string dSourceType = m_outDsrc->getType();
 
-  std::vector<te::dt::Property*> vecProps = inDsType->getProperties();
+  std::vector<te::dt::Property*> vecProps = m_inDsetType->getProperties();
 
-  std::vector<te::dt::Property*> inPk = inDsType->getPrimaryKey()->getProperties();
+  std::vector<te::dt::Property*> inPk = m_inDsetType->getPrimaryKey()->getProperties();
   std::string namePk = m_outDset;
 
   for (std::size_t p = 0; p < inPk.size(); ++p)
@@ -74,7 +77,7 @@ std::auto_ptr<te::da::DataSetType> te::vp::PolygonToLineOp::buildOutDataSetType(
   {
     for(std::size_t i = 0; i < vecProps.size(); ++i)
     {
-      if(vecProps[i]->getType() != te::dt::GEOMETRY_TYPE && vecProps[i]->getName() != "FID")
+      if (vecProps[i]->getType() != te::dt::GEOMETRY_TYPE && vecProps[i]->getName() != "FID")
       {
         outDsType->add(vecProps[i]->clone());
       }
@@ -93,7 +96,7 @@ std::auto_ptr<te::da::DataSetType> te::vp::PolygonToLineOp::buildOutDataSetType(
   {
     for(std::size_t i = 0; i < vecProps.size(); ++i)
     {
-      if(vecProps[i]->getType() != te::dt::GEOMETRY_TYPE)
+      if (vecProps[i]->getType() != te::dt::GEOMETRY_TYPE)
       {
         outDsType->add(vecProps[i]->clone());
 

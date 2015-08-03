@@ -100,7 +100,7 @@ bool te::vp::IntersectionQuery::run() throw(te::common::Exception)
   std::string firstTableName = te::vp::GetSimpleTableName(m_inFirstDsetType->getTitle());
   std::string secondTableName = te::vp::GetSimpleTableName(m_inSecondDsetType->getTitle());
 
-// Get DataSetType from DataSource to compare geometry SRID with DataSetType from Layer.
+// Get DataSetType from DataSource to compare geometry SRID with DataSetType of Layer.
   std::auto_ptr<te::da::DataSetType>firstDsTypeSource(m_inFirstDsrc->getDataSetType(firstTableName));
   std::auto_ptr<te::da::DataSetType>secondDsTypeSource(m_inSecondDsrc->getDataSetType(secondTableName));
 

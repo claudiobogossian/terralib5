@@ -100,7 +100,7 @@ bool te::vp::MultipartToSinglepart::runAll()
 
   inDs->moveBeforeFirst();
 
-  std::size_t pkCount = 0;
+  int pkCount = 0;
 
   while(inDs->moveNext())
   {
@@ -173,7 +173,7 @@ bool te::vp::MultipartToSinglepart::runSelected()
 
   inDs->moveBeforeFirst();
 
-  std::size_t pkCount = 0;
+  int pkCount = 0;
 
   while(inDs->moveNext())
   {

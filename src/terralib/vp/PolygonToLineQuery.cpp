@@ -37,14 +37,19 @@
 #include "../dataaccess/query/FromItem.h"
 #include "../dataaccess/query/GroupBy.h"
 #include "../dataaccess/query/GroupByItem.h"
+#include "../dataaccess/query/LiteralInt32.h"
 #include "../dataaccess/query/PropertyName.h"
 #include "../dataaccess/query/Select.h"
 #include "../dataaccess/query/ST_Boundary.h"
 #include "../dataaccess/query/ST_Collect.h"
 #include "../dataaccess/query/ST_Dump.h"
 #include "../dataaccess/query/ST_DumpRings.h"
+#include "../dataaccess/query/ST_SetSRID.h"
 #include "../dataaccess/query/SubSelect.h"
 #include "../dataaccess/query/Where.h"
+#include "../dataaccess/utils/Utils.h"
+
+#include "../geometry/GeometryProperty.h"
 
 #include "PolygonToLineQuery.h"
 #include "Utils.h"
@@ -62,8 +67,15 @@ te::vp::PolygonToLineQuery::~PolygonToLineQuery()
 
 bool te::vp::PolygonToLineQuery::run() throw(te::common::Exception)
 {
+// Set output DataSetType
   std::auto_ptr<te::da::DataSetType> outDsType = buildOutDataSetType();
   std::vector<te::dt::Property*> props = outDsType->getProperties();
+
+// Get DataSetType from DataSource to compare geometry SRID with DataSetType of Layer.
+  std::auto_ptr<te::da::DataSetType> sourceDSetType(m_inDsrc->getDataSetType(m_inDsetName));
+  te::gm::GeometryProperty* geomPropSource = te::da::GetFirstGeomProperty(sourceDSetType.get());
+
+  te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(m_inDsetType.get());
 
 // Subselect that apply the ST_Dump function in geometric column to separate multi polygons.
   te::da::Fields* pol_fields = new te::da::Fields;
@@ -77,8 +89,19 @@ bool te::vp::PolygonToLineQuery::run() throw(te::common::Exception)
     }
     else
     {
-      te::da::PropertyName* gName = new te::da::PropertyName(props[i]->getName());
-      te::da::Expression* e_dump = new te::da::ST_Dump(gName);
+      te::da::Expression* e_geometry;
+
+      if (geomPropSource->getSRID() != geomProp->getSRID())
+      {
+        te::da::LiteralInt32* srid = new te::da::LiteralInt32(geomProp->getSRID());
+        e_geometry = new te::da::ST_SetSRID(new te::da::PropertyName(props[i]->getName()), srid);
+      }
+      else
+      {
+        e_geometry = new te::da::PropertyName(props[i]->getName());
+      }
+
+      te::da::Expression* e_dump = new te::da::ST_Dump(e_geometry);
       te::da::Field* f_dump = new te::da::Field(*e_dump, " polygon");
       pol_fields->push_back(f_dump);
     }
