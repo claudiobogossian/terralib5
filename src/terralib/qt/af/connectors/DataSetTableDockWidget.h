@@ -103,6 +103,13 @@ namespace te
           */
           te::map::AbstractLayer* getLayer() const;
 
+          /*!
+          \brief Defines the color to be used as Highlight.
+
+          \param color the Highlight color;
+          */
+          void setHighlightColor(QColor color);
+
         protected slots:
 
           /*!

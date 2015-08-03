@@ -61,8 +61,9 @@
 #include <memory>
 #include <utility>
 
-te::qt::af::MapDisplay::MapDisplay(te::qt::widgets::MapDisplay* display)
+te::qt::af::MapDisplay::MapDisplay(te::qt::widgets::MapDisplay* display, te::qt::af::ApplicationController* app)
   : QObject(display),
+    m_app(app),
     m_display(display),
     m_tool(0),
     m_menu(0),
@@ -84,15 +85,13 @@ te::qt::af::MapDisplay::MapDisplay(te::qt::widgets::MapDisplay* display)
   connect(m_display, SIGNAL(extentChanged()), SLOT(onExtentChanged()));
 
   // Gets the popup menu
-  // Fred: revisar
-//  m_menu = ApplicationController::getInstance().findMenu("Map");
+  m_menu = m_app->findMenu("Map");
 
   // To show popup menu
   m_display->installEventFilter(this);
 
   // Config the default SRS
-  // Fred: revisar
-//  m_display->setSRID(ApplicationController::getInstance().getDefaultSRID(), false);
+  m_display->setSRID(m_app->getDefaultSRID(), false);
   
   // Getting default display color
   m_display->setBackgroundColor(te::qt::af::GetDefaultDisplayColorFromSettings());
@@ -420,8 +419,7 @@ void te::qt::af::MapDisplay::drawLayerSelection(te::map::AbstractLayerPtr layer)
           // Try to retrieve the layer selection batch
           std::auto_ptr<te::da::DataSet> selected(layer->getData(oidsBatch.get()));
 
-          // Fred: revisar
-          drawDataSet(selected.get(), layer->getGeomPropertyName(), layer->getSRID(), Qt::blue, te::da::HasLinkedTable(layer->getSchema().get()));
+          drawDataSet(selected.get(), layer->getGeomPropertyName(), layer->getSRID(), m_app->getSelectionColor(), te::da::HasLinkedTable(layer->getSchema().get()));
 
           // Prepares to next batch
           oidsBatch->clear();
@@ -433,8 +431,7 @@ void te::qt::af::MapDisplay::drawLayerSelection(te::map::AbstractLayerPtr layer)
     {
       std::auto_ptr<te::da::DataSet> selected(layer->getData(oids->getExpression()));
 
-      // Fred: revisar
-      drawDataSet(selected.get(), layer->getGeomPropertyName(), layer->getSRID(), Qt::blue, te::da::HasLinkedTable(layer->getSchema().get()));
+      drawDataSet(selected.get(), layer->getGeomPropertyName(), layer->getSRID(), m_app->getSelectionColor(), te::da::HasLinkedTable(layer->getSchema().get()));
     }
   }
   catch(std::exception& e)

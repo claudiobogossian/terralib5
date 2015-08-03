@@ -35,9 +35,6 @@ te::qt::af::DataSetTableDockWidget::DataSetTableDockWidget(QWidget* parent)
 {
   m_view = new te::qt::widgets::DataSetTableView(this);
 
-  // Fred: revisar
-  m_view->setHighlightColor(Qt::blue);
-
   setWidget(m_view);
 
   setAttribute(Qt::WA_DeleteOnClose, true);
@@ -83,6 +80,11 @@ void te::qt::af::DataSetTableDockWidget::setLayer(te::map::AbstractLayer* layer)
 te::map::AbstractLayer* te::qt::af::DataSetTableDockWidget::getLayer() const
 {
   return m_layer;
+}
+
+void te::qt::af::DataSetTableDockWidget::setHighlightColor(QColor color)
+{
+  m_view->setHighlightColor(color);
 }
 
 void te::qt::af::DataSetTableDockWidget::chartDisplayCreated(te::qt::widgets::ChartDisplayWidget* chartWidget)

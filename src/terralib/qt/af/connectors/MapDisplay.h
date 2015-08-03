@@ -60,6 +60,8 @@ namespace te
 
     namespace af
     {
+      class ApplicationController;
+
       namespace evt
       {
         // Forward declaration
@@ -85,7 +87,7 @@ namespace te
 
             \param display te::qt::widgets::MapDisplay to be listened.
           */
-          MapDisplay(te::qt::widgets::MapDisplay* display);
+          MapDisplay(te::qt::widgets::MapDisplay* display, te::qt::af::ApplicationController* app);
 
           /*! \brief destructor. */
           ~MapDisplay();
@@ -167,6 +169,8 @@ namespace te
 
         protected:
 
+
+          te::qt::af::ApplicationController* m_app;                  //!< Pointer to applicatin controller;
           te::qt::widgets::MapDisplay* m_display;                    //!< Pointer to a component te::qt::widgets::MapDisplay.
           te::qt::widgets::AbstractTool* m_tool;                     //!< Pointer to the current tool being used.
           QMenu* m_menu;                                             //!< The map display popup menu.

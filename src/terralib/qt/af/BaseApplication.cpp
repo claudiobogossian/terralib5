@@ -718,6 +718,7 @@ void te::qt::af::BaseApplication::onLayerShowTableTriggered()
   {
     doc = new te::qt::af::DataSetTableDockWidget(this);
     doc->setLayer(lay.get());
+    doc->setHighlightColor(m_app->getSelectionColor());
     addDockWidget(Qt::BottomDockWidgetArea, doc);
 
     connect(doc, SIGNAL(closed(te::qt::af::DataSetTableDockWidget*)), SLOT(onLayerTableClose(te::qt::af::DataSetTableDockWidget*)));
@@ -763,6 +764,7 @@ void te::qt::af::BaseApplication::onChartDisplayCreated(te::qt::widgets::ChartDi
     doc->setWindowTitle("Histogram");
     doc->setWindowIcon(QIcon::fromTheme("chart-bar"));
     doc->setLayer(layer);
+    doc->setAppController(m_app);
 
     m_app->addListener(doc);
     addDockWidget(Qt::RightDockWidgetArea, doc, Qt::Horizontal);
@@ -784,7 +786,7 @@ void te::qt::af::BaseApplication::makeDialog()
 {
   //start main components
   m_layerExplorer = new LayerExplorer(m_ui->m_layerExplorer);
-  m_display = new MapDisplay(m_ui->m_display);
+  m_display = new MapDisplay(m_ui->m_display, m_app);
   m_styleExplorer = new StyleExplorer(m_ui->m_styleExplorer);
 
   QMainWindow::setCentralWidget(m_ui->m_display);

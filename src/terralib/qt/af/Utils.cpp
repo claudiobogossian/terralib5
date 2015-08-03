@@ -143,7 +143,7 @@ void te::qt::af::UpdateUserSettings()
   user_settings.endGroup();
 }
 
-void te::qt::af::SaveDataSourcesFile()
+void te::qt::af::SaveDataSourcesFile(te::qt::af::ApplicationController* appController)
 {
   QSettings usettings(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
   
@@ -151,7 +151,7 @@ void te::qt::af::SaveDataSourcesFile()
 
   if(fileName.isNull())
   {
-    const QString& udir = QStandardPaths::writableLocation(QStandardPaths::DataLocation);
+    const QString& udir = appController->getUserDataDir();
     
     fileName = udir + "/" + QString(TERRALIB_APPLICATION_DATASOURCE_FILE_NAME);
     
@@ -190,11 +190,9 @@ void AddToolbarAndActions(QToolBar* bar, QSettings& sett)
   sett.endGroup();
 }
 
-void te::qt::af::UpdateToolBarsInTheSettings()
+void te::qt::af::UpdateToolBarsInTheSettings(te::qt::af::ApplicationController* appController)
 {
-  // Fred: revisar
-
-  std::vector<QToolBar*> bars;// = te::qt::af::AppCtrlSingleton::getInstance().getToolBars();
+  std::vector<QToolBar*> bars = appController->getToolBars();
   std::vector<QToolBar*>::const_iterator it;
   QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
 
@@ -268,8 +266,6 @@ std::vector<QToolBar*> te::qt::af::ReadToolBarsFromSettings(te::qt::af::Applicat
       }
       else
       {
-        // Fred: revisar
-
         QAction* a = appController->findAction(act);
       
         if(a != 0)
@@ -504,7 +500,7 @@ bool te::qt::af::GetAlternateRowColorsFromSettings()
   return isChecked;
 }
 
-void te::qt::af::AddActionToCustomToolbars(QAction* act)
+void te::qt::af::AddActionToCustomToolbars(te::qt::af::ApplicationController* appController, QAction* act)
 {
   QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
 
@@ -524,8 +520,7 @@ void te::qt::af::AddActionToCustomToolbars(QAction* act)
 
       if (v == act->objectName())
       {
-        // Fred: revisar
-//        ApplicationController::getInstance().getToolBar(*it)->addAction(act);
+        appController->getToolBar(*it)->addAction(act);
         break;
       }
     }
@@ -556,13 +551,12 @@ std::vector<std::string> te::qt::af::GetPluginsFiles()
   return res;
 }
 
-std::vector<std::string> te::qt::af::GetDefaultPluginsNames()
+std::vector<std::string> te::qt::af::GetDefaultPluginsNames(te::qt::af::ApplicationController* appController)
 {
   std::vector<std::string> res;
 
 // Finding the Default plugins file.
-  // Fred: revisar
-  std::string pluginsPath; //= te::qt::af::AppCtrlSingleton::getInstance().getAppPluginsPath().toStdString();
+  std::string pluginsPath = appController->getAppPluginsPath().toStdString();
 
   if (pluginsPath == "")
     return res;
@@ -697,29 +691,10 @@ QString te::qt::af::GetGenerationDate()
   return s;
 }
 
-//QString te::qt::af::GetWindowTitle(const te::qt::af::Project& project)
-//{
-//  // Fred: revisar
-//  QString title;// = te::qt::af::AppCtrlSingleton::getInstance().getAppTitle() + " - ";
-//  title += TE_TR("Project:");
-//  title += " ";
-//  title += project.getTitle().c_str();
-//  title += " - ";
-
-//  boost::filesystem::path p(project.getFileName());
-
-//  std::string filename = p.filename().string();
-
-//  title += filename.c_str();
-
-//  return title;
-//}
-
-QString te::qt::af::GetExtensionFilter()
+QString te::qt::af::GetExtensionFilter(te::qt::af::ApplicationController* appController)
 {
-  // Fred: revisar
-  QString appName;// = te::qt::af::AppCtrlSingleton::getInstance().getAppName();
-  QString appProjectExtension;// = te::qt::af::AppCtrlSingleton::getInstance().getAppProjectExtension();
+  QString appName = appController->getAppName();
+  QString appProjectExtension = appController->getAppProjectExtension();
   QString extensionFilter = appName;
   extensionFilter += QString(" (*.");
   extensionFilter += appProjectExtension + ")";
