@@ -119,9 +119,13 @@ void te::qt::af::LayerExplorer::onApplicationTriggered(te::qt::af::evt::Event* e
 
       layers.push_back(e->m_layer);
 
+      QModelIndex par;
       if(!lst.isEmpty())
+        par = *lst.begin();
+
+
+      if(par.isValid())
       {
-        QModelIndex par = *lst.begin();
         te::qt::widgets::TreeItem* item = static_cast<te::qt::widgets::TreeItem*>(par.internalPointer());
 
         if(item->getType() == "FOLDER")
@@ -131,10 +135,12 @@ void te::qt::af::LayerExplorer::onApplicationTriggered(te::qt::af::evt::Event* e
         }
         else
           m_explorer->addLayers(layers, QModelIndex());
-
-        te::qt::af::evt::ProjectUnsaved projectUnsavedEvent;
-        emit triggered(&projectUnsavedEvent);
       }
+      else
+        m_explorer->addLayers(layers, par);
+
+      te::qt::af::evt::ProjectUnsaved projectUnsavedEvent;
+      emit triggered(&projectUnsavedEvent);
     }
     break;
 
