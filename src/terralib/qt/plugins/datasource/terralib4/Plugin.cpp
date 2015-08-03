@@ -73,7 +73,7 @@ void te::qt::plugins::terralib4::Plugin::startup()
     connect(m_showWindow, SIGNAL(triggered()), SLOT(showWindow()));
   }
 
-  te::qt::af::AddActionToCustomToolbars(m_showWindow);
+  te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_showWindow);
 
   m_initialized = true;
 

@@ -109,7 +109,7 @@ void te::qt::plugins::addressgeocoding::Plugin::startup()
   logger->addAppender(fileAppender);
 #endif
 
-  te::qt::af::AddActionToCustomToolbars(m_action);
+  te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_action);
 
   te::qt::af::AppCtrlSingleton::getInstance().addListener(this, te::qt::af::SENDER);
 

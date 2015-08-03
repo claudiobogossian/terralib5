@@ -115,9 +115,9 @@ void te::qt::plugins::attributefill::Plugin::startup()
   logger->addAppender(fileAppender);
 #endif
 
-  te::qt::af::AddActionToCustomToolbars(m_rasterToVector->getAction());
-  te::qt::af::AddActionToCustomToolbars(m_vectorToRaster->getAction());
-  te::qt::af::AddActionToCustomToolbars(m_vectorToVector->getAction());
+  te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_rasterToVector->getAction());
+  te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_vectorToRaster->getAction());
+  te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_vectorToVector->getAction());
 
   m_initialized = true;
 

@@ -137,61 +137,61 @@ void te::qt::plugins::sa::Plugin::registerActions()
 
 #ifdef TE_QT_PLUGIN_SA_HAVE_PROXIMITYMATRIXCREATOR
   m_proxMatrixCreator = new te::qt::plugins::sa::ProximityMatrixCreatorAction(m_saMenu);
-  te::qt::af::AddActionToCustomToolbars(m_proxMatrixCreator->getAction());
+  te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_proxMatrixCreator->getAction());
   connect(m_proxMatrixCreator, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
 #endif
 
 #ifdef TE_QT_PLUGIN_SA_HAVE_SPATIALSTATISTICS
   m_saMenu->addSeparator();
   m_spatialStatistics = new te::qt::plugins::sa::SpatialStatisticsAction(m_saMenu);
-  te::qt::af::AddActionToCustomToolbars(m_spatialStatistics->getAction());
+  te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_spatialStatistics->getAction());
   connect(m_spatialStatistics, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
 #endif
 
 #ifdef TE_QT_PLUGIN_SA_HAVE_BAYESGLOBAL
   m_saMenu->addSeparator();
   m_bayesGlobal = new te::qt::plugins::sa::BayesGlobalAction(m_saMenu);
-  te::qt::af::AddActionToCustomToolbars(m_bayesGlobal->getAction());
+  te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_bayesGlobal->getAction());
   connect(m_bayesGlobal, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
 #endif
 
 #ifdef TE_QT_PLUGIN_SA_HAVE_BAYESLOCAL
     m_bayesLocal = new te::qt::plugins::sa::BayesLocalAction(m_saMenu);
-    te::qt::af::AddActionToCustomToolbars(m_bayesLocal->getAction());
+    te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_bayesLocal->getAction());
     connect(m_bayesLocal, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
 #endif
 
 #ifdef TE_QT_PLUGIN_SA_HAVE_KERNELMAP
   m_saMenu->addSeparator();
   m_kernelMap = new te::qt::plugins::sa::KernelMapAction(m_saMenu);
-  te::qt::af::AddActionToCustomToolbars(m_kernelMap->getAction());
+  te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_kernelMap->getAction());
   connect(m_kernelMap, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
 #endif
 
 #ifdef TE_QT_PLUGIN_SA_HAVE_KERNELRATIO
   m_kernelRatio = new te::qt::plugins::sa::KernelRatioAction(m_saMenu);
-  te::qt::af::AddActionToCustomToolbars(m_kernelRatio->getAction());
+  te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_kernelRatio->getAction());
   connect(m_kernelRatio, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
 #endif
 
 #ifdef TE_QT_PLUGIN_SA_HAVE_SKATER
   m_saMenu->addSeparator();
   m_skater = new te::qt::plugins::sa::SkaterAction(m_saMenu);
-  te::qt::af::AddActionToCustomToolbars(m_skater->getAction());
+  te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_skater->getAction());
   connect(m_skater, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
 #endif
 
 #ifdef TE_QT_PLUGIN_SA_HAVE_GEOSTATISTICALMETHODS
   m_saMenu->addSeparator();
   m_geostatistics = new te::qt::plugins::sa::GeostatisticalMethodsAction(m_saMenu);
-  te::qt::af::AddActionToCustomToolbars(m_geostatistics->getAction());
+  te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_geostatistics->getAction());
   connect(m_geostatistics, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
 #endif
 
 #ifdef TE_QT_PLUGIN_SA_HAVE_SAMPLEPOINTSGENERATOR
   m_saMenu->addSeparator();
   m_samplePointsGenerator = new te::qt::plugins::sa::SamplePointsGeneratorAction(m_saMenu);
-  te::qt::af::AddActionToCustomToolbars(m_samplePointsGenerator->getAction());
+  te::qt::af::AddActionToCustomToolbars(&te::qt::af::AppCtrlSingleton::getInstance(), m_samplePointsGenerator->getAction());
   connect(m_samplePointsGenerator, SIGNAL(triggered(te::qt::af::evt::Event*)), SIGNAL(triggered(te::qt::af::evt::Event*)));
 #endif
 
