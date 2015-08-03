@@ -88,8 +88,7 @@ void te::qt::af::GeneralConfigWidget::saveChanges()
   settings.setValue("toolbars/icon_size", m_ui->m_toolBarIconSizeSpinBox->value());
   settings.setValue("icon_theme/selected_theme", m_ui->m_iconThemeComboBox->currentText());
 
-  // Fred: revisar
-//  ApplicationController::getInstance().setSelectionColor(m_colorPicker->getColor());
+  m_app->setSelectionColor(m_colorPicker->getColor());
 
   changeApplyButtonState(false);
 }

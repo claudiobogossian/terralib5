@@ -108,6 +108,22 @@
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
+QString GetWindowTitle(const ProjectMetadata& project, te::qt::af::ApplicationController* app)
+{
+  QString title = app->getAppTitle() + " - ";
+  title += TE_TR("Project:");
+  title += " ";
+  title += project.m_title;
+  title += " - ";
+
+  boost::filesystem::path p(project.m_fileName.toStdString());
+
+  std::string filename = p.filename().string();
+
+  title += filename.c_str();
+
+  return title;
+}
 
 void GetProjectsFromSettings(QStringList& prjTitles, QStringList& prjPaths)
 {
@@ -771,7 +787,7 @@ void TerraView::onOpenProjectTriggered()
 {
   checkAndSaveProject();
 
-  QString file = QFileDialog::getOpenFileName(this, tr("Open project file"), qApp->applicationDirPath(), te::qt::af::GetExtensionFilter());
+  QString file = QFileDialog::getOpenFileName(this, tr("Open project file"), qApp->applicationDirPath(), te::qt::af::GetExtensionFilter(m_app));
 
   if (file.isEmpty())
     return;
@@ -823,7 +839,7 @@ void TerraView::onSaveProjectTriggered()
 
   m_app->updateRecentProjects(m_project->m_fileName, m_project->m_title);
 
-  te::qt::af::SaveDataSourcesFile();
+  te::qt::af::SaveDataSourcesFile(m_app);
 }
 
 void TerraView::onSaveProjectAsTriggered()
@@ -831,7 +847,7 @@ void TerraView::onSaveProjectAsTriggered()
   if (m_project == 0)
     return;
 
-  QString fileName = QFileDialog::getSaveFileName(this, tr("Save Project File"), qApp->applicationDirPath(), te::qt::af::GetExtensionFilter());
+  QString fileName = QFileDialog::getSaveFileName(this, tr("Save Project File"), qApp->applicationDirPath(), te::qt::af::GetExtensionFilter(m_app));
 
   if (fileName.isEmpty())
     return;
@@ -856,9 +872,9 @@ void TerraView::onSaveProjectAsTriggered()
   m_project->m_changed = false;
 
   // Set the window title
-  // setWindowTitle(te::qt::af::GetWindowTitle(*m_project));
+  setWindowTitle(GetWindowTitle(*m_project, m_app));
 
-  te::qt::af::SaveDataSourcesFile();
+  te::qt::af::SaveDataSourcesFile(m_app);
 }
 
 
@@ -990,6 +1006,7 @@ void TerraView::onLayerHistogramTriggered()
       doc->setWindowTitle(tr("Histogram"));
       doc->setWindowIcon(QIcon::fromTheme("chart-bar"));
       doc->setLayer(selectedLayer.get());
+      doc->setAppController(m_app);
 
       m_app->addListener(doc);
       addDockWidget(Qt::RightDockWidgetArea, doc, Qt::Horizontal);
@@ -1053,6 +1070,7 @@ void TerraView::onLayerScatterTriggered()
       doc->setWindowIcon(QIcon::fromTheme("chart-scatter"));
       m_app->addListener(doc);
       doc->setLayer(selectedLayer.get());
+      doc->setAppController(m_app);
 
       addDockWidget(Qt::RightDockWidgetArea, doc, Qt::Horizontal);
       doc->show();
@@ -1586,7 +1604,7 @@ void TerraView::onProjectPropertiesTriggered()
   if (editor.exec() == QDialog::Accepted)
   {
     // Set window title
-    //    setWindowTitle(te::qt::af::GetWindowTitle(*m_project));
+    setWindowTitle(GetWindowTitle(*m_project, m_app));
   }
 }
 
@@ -1721,6 +1739,7 @@ void TerraView::onToolsCustomizeTriggered()
   try
   {
     te::qt::af::SettingsDialog dlg(this);
+    dlg.setApplicationController(m_app);
     dlg.exec();
   }
   catch (const std::exception& e)

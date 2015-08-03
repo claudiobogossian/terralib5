@@ -50,6 +50,8 @@ namespace te
     
     namespace af
     {
+      class ApplicationController;
+
       namespace evt
       {
         // Forward declarations
@@ -79,6 +81,13 @@ namespace te
             \brief Destructor.
           */
           ~ChartDisplayDockWidget();
+
+          /*!
+          \brief Sets the app controller to emit signal to app. This DOES NOT takes the ownership of \a app controller.
+
+          \param app The app controller instance from application.
+          */
+          void setAppController(ApplicationController* app);
 
           /*!
             \brief Sets the layer to be showed on view. This DOES NOT takes the ownership of \a layer.
@@ -132,6 +141,8 @@ namespace te
           te::qt::widgets::ChartDisplayWidget* m_displayWidget;  //!< The widget containing the display
 
           te::map::AbstractLayer* m_layer;                       //!< Layer being visualized.
+
+          ApplicationController* m_app;
       };
     }
   }

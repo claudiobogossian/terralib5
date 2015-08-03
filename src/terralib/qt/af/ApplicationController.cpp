@@ -521,7 +521,7 @@ void te::qt::af::ApplicationController::initializePlugins()
   {
     SplashScreenManager::getInstance().showMessage(tr("Reading application plugins list..."));
 
-    std::vector<std::string> default_plg = GetDefaultPluginsNames();
+    std::vector<std::string> default_plg = GetDefaultPluginsNames(this);
     plgFiles = GetPluginsFiles();
 
     //SplashScreenManager::getInstance().showMessage(tr("Plugins list read!"));

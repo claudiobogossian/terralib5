@@ -52,7 +52,8 @@ te::gm::Envelope* computeDataSetEnvelope(std::auto_ptr<te::da::DataSet> dataset,
 te::qt::af::ChartDisplayDockWidget::ChartDisplayDockWidget(te::qt::widgets::ChartDisplayWidget* displayWidget, QWidget* parent) :
 QDockWidget(parent, Qt::Widget),
   m_displayWidget(displayWidget),
-  m_layer(0)
+  m_layer(0), 
+  m_app(0)
 {
   setWidget(m_displayWidget);
   m_displayWidget->setParent(this);
@@ -82,6 +83,11 @@ void te::qt::af::ChartDisplayDockWidget::setLayer(te::map::AbstractLayer* layer)
     return;
 
   setWindowTitle(m_layer->getTitle().c_str());
+}
+
+void te::qt::af::ChartDisplayDockWidget::setAppController(te::qt::af::ApplicationController* app)
+{
+  m_app = app;
 }
 
 void te::qt::af::ChartDisplayDockWidget::setSelectionColor(QColor selColor)
@@ -179,16 +185,20 @@ void te::qt::af::ChartDisplayDockWidget::selectionChanged(te::da::ObjectIdSet* o
     m_layer->select(added);
     te::qt::af::evt::LayerSelectedObjectsChanged e(m_layer, computeDataSetEnvelope(ds, geomPos));
 
-    // Fred: revisar
-
-//    ApplicationController::getInstance().broadcast(&e);
+    if (m_app)
+    {
+      m_app->triggered(&e);
+    }
   }
   else
   {
     m_layer->select(added);
     te::qt::af::evt::LayerSelectedObjectsChanged e(m_layer);
-    // Fred: revisar
-//    ApplicationController::getInstance().broadcast(&e);
+
+    if (m_app)
+    {
+      m_app->triggered(&e);
+    }
   }
   oids->clear();
 }
