@@ -106,28 +106,28 @@ void te::layout::TextModel::updateProperties( te::layout::Properties* properties
 
   Properties* vectorProps = const_cast<Properties*>(properties);
   
-  Property pro_text = vectorProps->contains("Text");
+  Property pro_text = vectorProps->getProperty("Text");
 
   if(!pro_text.isNull())
   {
     m_text = pro_text.getValue().toString();
   }
 
-  Property pro_font = vectorProps->contains("Font");
+  Property pro_font = vectorProps->getProperty("Font");
 
   if(!pro_font.isNull())
   {
     m_font = pro_font.getValue().toFont();
 	}
 
-	Property pro_fontColor = vectorProps->contains("Font Color");
+	Property pro_fontColor = vectorProps->getProperty("Font Color");
 
 	if(!pro_fontColor.isNull())
 	{
 		m_fontColor = pro_fontColor.getValue().toColor();
 	}
 
-	Property pro_alignmentName = vectorProps->contains("Alignment");
+	Property pro_alignmentName = vectorProps->getProperty("Alignment");
 
 	if(!pro_alignmentName.isNull())
 	{

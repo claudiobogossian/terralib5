@@ -36,6 +36,7 @@
 #include "../../core/property/GeodesicGridSettingsConfigProperties.h"
 #include "../../core/enum/Enums.h"
 #include "../../outside/GridSettingsModel.h"
+#include "../../../common/StringUtils.h"
 
 // STL
 #include <string>
@@ -423,6 +424,116 @@ void te::layout::GridSettingsOutside::load()
   initDouble(m_ui->lneY3, m_geodesicGridSettings->getLneY3(), m_geodesicType);
 
   initDouble(m_ui->lneY4, m_geodesicGridSettings->getLneY4(), m_geodesicType);
+
+  //m_ui->chkDegreesGeoText->setChecked(true);
+  setGeodesicValues();
+}
+
+void te::layout::GridSettingsOutside::setGeodesicValues()
+{
+  setMask(m_ui->yGridInitialPoint_geo_textField, m_ui->xGridInitialPoint_geo_textField);
+  setMask(m_ui->lneVerticalGap, m_ui->lneHorizontalGap);
+  if (m_ui->chkDegreesGeoText->isChecked())
+  {
+    setGeodesicValues2GMS();
+  }
+  else
+  {
+    setGeodesicValues2Degrees();
+  }
+}
+
+void te::layout::GridSettingsOutside::setGeodesicValues2GMS()
+{
+  QString y = m_ui->yGridInitialPoint_geo_textField->text();
+  QString x = m_ui->xGridInitialPoint_geo_textField->text();
+  m_ui->yGridInitialPoint_geo_textField->setText(DD2DMS(y));
+  m_ui->xGridInitialPoint_geo_textField->setText(DD2DMS(x));
+
+  y = m_ui->lneVerticalGap->text();
+  x = m_ui->lneHorizontalGap->text();
+  m_ui->lneVerticalGap->setText(DD2DMS(y));
+  m_ui->lneHorizontalGap->setText(DD2DMS(x));
+}
+
+void te::layout::GridSettingsOutside::setGeodesicValues2Degrees()
+{
+  QString y = m_ui->yGridInitialPoint_geo_textField->text();
+  QString x = m_ui->xGridInitialPoint_geo_textField->text();
+  m_ui->yGridInitialPoint_geo_textField->setText(DMS2DD(y));
+  m_ui->xGridInitialPoint_geo_textField->setText(DMS2DD(x));
+
+  y = m_ui->lneVerticalGap->text();
+  x = m_ui->lneHorizontalGap->text();
+  m_ui->lneVerticalGap->setText(DMS2DD(y));
+  m_ui->lneHorizontalGap->setText(DMS2DD(x));
+}
+
+QString te::layout::GridSettingsOutside::DD2DMS(const QString dd)
+{
+  int degree;
+  int minute;
+  double second;
+  double ll;
+
+  double value = dd.toDouble();
+
+  degree = (int) value;
+  ll = value - degree;
+  minute = (int) (ll * 60.);
+  ll = (ll * 60.) - minute;
+  second = ll * 60.;
+
+  QString output;
+  if(degree < 0)
+  {
+    output = ("-" + te::common::Convert2String(abs(degree)) + "°" + te::common::Convert2String(abs(minute))+ "'" + te::common::Convert2String(fabs(second), 2) + "''").c_str();
+  }
+  else
+  {
+    output = (te::common::Convert2String(abs(degree)) + "°" + te::common::Convert2String(abs(minute))+ "'" + te::common::Convert2String(fabs(second), 2) + "''").c_str();
+  }
+  return output;
+}
+
+QString te::layout::GridSettingsOutside::DMS2DD(const QString dms)
+{
+  int a = dms.indexOf('°');
+  int b = dms.indexOf('\'');
+  double deg = dms.mid(1, a-1).toDouble();
+  double min = dms.mid(a + 1, 2).toDouble();
+  double sec = dms.mid(b + 1, 6).toDouble();
+  double coord = deg + (min / 60.0) + (sec / 3600.0);
+  if (dms.mid(0, a).toDouble() < 0)
+  {
+    coord *= -1;
+  }
+
+  std::string output = te::common::Convert2String(coord, 2);
+  return QString(output.c_str());
+}
+
+
+void te::layout::GridSettingsOutside::setMask(QLineEdit *lat, QLineEdit *lon)
+{
+  if(m_ui->chkDegreesGeoText->isChecked() == false)
+  {
+    lat->setValidator(0);
+    lon->setValidator(0);
+  }
+  else
+  {
+    QRegExp regExpLat("[\\+\\-\\s]{1}[ \\d]{2}°[ \\d]{2}'[ \\d]{2}.[ \\d]{2}''");
+    QValidator* validatorLat = new QRegExpValidator(regExpLat, 0);
+    lat->setValidator(validatorLat);
+
+    QRegExp regExpLong("[\\+\\-\\s]{1}[ \\d]{3}°[ \\d]{2}'[ \\d]{2}.[ \\d]{2}''");
+    QValidator* validatorLong = new QRegExpValidator(regExpLong, 0);
+    lon->setValidator(validatorLong);
+
+    lat->setInputMask("#99°99'99.99''");
+    lon->setInputMask("#999°99'99.99''");
+  }
 }
 
 void te::layout::GridSettingsOutside::on_pbClose_clicked()
@@ -1109,6 +1220,7 @@ void te::layout::GridSettingsOutside::on_chkDegreesGeoText_clicked()
     variant.setValue(m_ui->chkDegreesGeoText->isChecked(), dataType->getDataTypeBool());
     Property prop = controller->updateProperty(m_geodesicGridSettings->getDegreesText(), variant, m_geodesicType);
     emit updateProperty(prop);
+    setGeodesicValues();
   }
 }
 
@@ -1576,6 +1688,4 @@ void te::layout::GridSettingsOutside::initCombo( QWidget* widget, std::string na
     combo->setCurrentIndex(index);
   }
 }
-
-
 
