@@ -172,6 +172,7 @@ bool te::attributefill::VectorToRaster::run()
     while(vectorIt != vectorMap.end())
     {
       te::gm::Polygon* polygon = static_cast<te::gm::Polygon*>(vectorIt->first);
+      polygon->setSRID(geomProp->getSRID());
 
       if(!polygon)
         continue;
