@@ -13316,12 +13316,12 @@ The layer must have an attribute with the same name of the attribute used to mak
 <context>
     <name>te::qt::widgets::TimeSliderWidget</name>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/st/TimeSliderWidget.cpp" line="1423"/>
+        <location filename="../../../src/terralib/qt/widgets/st/TimeSliderWidget.cpp" line="1446"/>
         <source>Select File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/st/TimeSliderWidget.cpp" line="1423"/>
+        <location filename="../../../src/terralib/qt/widgets/st/TimeSliderWidget.cpp" line="1446"/>
         <source>Images (*.png *.xpm *.jpg *.gif)</source>
         <translation type="unfinished"></translation>
     </message>

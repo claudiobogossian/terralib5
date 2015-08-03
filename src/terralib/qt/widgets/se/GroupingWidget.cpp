@@ -425,7 +425,7 @@ void te::qt::widgets::GroupingWidget::onApplyPushButtonClicked()
 {
   if(m_manual)
   {
-      int reply = QMessageBox::question(this, tr("Classification"), tr("Manual changes will be lost. Continue?"), QMessageBox::Yes | QMessageBox::Cancel);
+      int reply = QMessageBox::question(this, tr("Edit Legend"), tr("Manual changes will be lost. Continue?"), QMessageBox::Yes | QMessageBox::Cancel);
 
       if(reply != QMessageBox::Yes)
         return;

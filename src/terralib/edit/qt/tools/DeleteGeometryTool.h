@@ -27,6 +27,7 @@
 #define __TERRALIB_EDIT_QT_INTERNAL_DELETEGEOMETRYTOOL_H
 
 // TerraLib
+#include "../../../edit/qt/core/EditionManager.h"
 #include "../../../geometry/Envelope.h"
 #include "../../../maptools/AbstractLayer.h"
 #include "../../../qt/widgets/tools/AbstractTool.h"
@@ -75,7 +76,7 @@ namespace te
 
           \note The tool will NOT take the ownership of the given pointers.
         */
-        DeleteGeometryTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent = 0);
+        DeleteGeometryTool(te::edit::EditionManager* editionManager, te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent = 0);
 
         /*! \brief Destructor. */
         ~DeleteGeometryTool();
@@ -101,7 +102,7 @@ namespace te
 
         void reset();
 
-        void pickFeature(const te::map::AbstractLayerPtr& layer);
+        void pickFeature(const te::map::AbstractLayerPtr& layer, const QPointF& pos);
 
         te::gm::Envelope buildEnvelope(const QPointF& pos);
 
@@ -117,8 +118,7 @@ namespace te
 
         te::map::AbstractLayerPtr m_layer;
         Feature* m_feature;
-
-    //QList<Feature*> m_feature;// m_tools;
+        te::edit::EditionManager* m_editionManager;
 
     };
 

@@ -1855,12 +1855,14 @@ void te::pgis::Transactor::update(const std::string& datasetName,
       delete vecProperties[i];
     }
 
+    paramTypes.clear();
+
   } while (dataset->moveNext());
 
   st.commit();
-	/*
+  /*
 
-	
+  
   dataset->moveFirst();
 
   int i=0;

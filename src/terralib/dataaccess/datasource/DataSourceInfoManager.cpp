@@ -63,10 +63,9 @@ bool te::da::DataSourceInfoManager::add(const DataSourceInfoPtr& ds)
 
       ++dsInfoIt;
     }
-
     m_datasources[ds->getId()] = ds;
-    return true;
   }
+  return true;
 }
 
 void te::da::DataSourceInfoManager::remove(const std::string& id)

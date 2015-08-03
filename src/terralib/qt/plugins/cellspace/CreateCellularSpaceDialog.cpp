@@ -73,6 +73,7 @@ te::qt::plugins::cellspace::CreateCellularSpaceDialog::CreateCellularSpaceDialog
 // Set icons
   QSize iconSize(32, 32);
 
+  m_ui->m_imgLabel->setPixmap(QIcon::fromTheme("cellspace-no-mask-hint").pixmap(48, 48));
   m_ui->m_maskRadioButton->setIconSize(iconSize);
   m_ui->m_maskRadioButton->setIcon(QIcon::fromTheme("cellspace-mask-hint"));
   m_ui->m_noMaskRadioButton->setIconSize(iconSize);

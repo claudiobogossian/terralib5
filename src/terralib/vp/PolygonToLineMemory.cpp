@@ -91,15 +91,11 @@ bool te::vp::PolygonToLineMemory::run() throw(te::common::Exception)
         }
 
         std::auto_ptr<te::gm::MultiLineString> lineResult = polygon2Line(geom.get());
-        if(!lineResult->isValid())
-          geomState = false;
-
-        size_t size = lineResult->getNumGeometries();
-        if (size == 0)
+        if (!lineResult->isValid())
         {
-          int a = 0;
+          geomState = false;
+          continue;
         }
-        
         lineResult->setSRID(geomProp->getSRID());
         outDsItem->setGeometry(i, lineResult.release());
       }
