@@ -57,7 +57,7 @@ bool te::da::DataSourceInfoManager::add(const DataSourceInfoPtr& ds)
     while (dsInfoIt != m_datasources.end())
     {
       std::string dsConInfo = dsInfoIt->second->getConnInfoAsString();
-
+       
       if (conInfo == dsConInfo)
         return false;
 
@@ -102,6 +102,21 @@ void te::da::DataSourceInfoManager::getByType(const std::string& dsTypeName, std
 
     ++it;
   }
+}
+
+te::da::DataSourceInfoPtr te::da::DataSourceInfoManager::getByConnInfo(std::string connInfo)
+{
+  std::map<std::string, DataSourceInfoPtr>::const_iterator dsInfoIt = m_datasources.begin();
+  while (dsInfoIt != m_datasources.end())
+  {
+    std::string dsConInfo = dsInfoIt->second->getConnInfoAsString();
+
+    if (connInfo == dsConInfo)
+      return dsInfoIt->second;
+
+    ++dsInfoIt;
+  }
+  return  DataSourceInfoPtr();
 }
 
 std::size_t te::da::DataSourceInfoManager::size() const
