@@ -66,6 +66,9 @@ te::qt::af::BaseApplication::BaseApplication(QWidget* parent) :
 
 te::qt::af::BaseApplication::~BaseApplication()
 {
+  while(!m_tables.empty())
+    delete *m_tables.begin();
+
   delete m_ui;
   delete m_layerExplorer;
   delete m_display;
@@ -73,8 +76,8 @@ te::qt::af::BaseApplication::~BaseApplication()
 
   te::qt::af::UpdateUserSettings();
 
-  if (m_app)
-  m_app->finalize();
+  if(m_app)
+    m_app->finalize();
 }
 
 void te::qt::af::BaseApplication::init(const QString& cfgFile)
