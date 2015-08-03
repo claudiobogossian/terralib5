@@ -51,7 +51,6 @@
 
 // QT
 #include <QAction>
-#include <QtCore/QObject>
 #include <QMenu>
 #include <QMenuBar>
 #include <QMessageBox>

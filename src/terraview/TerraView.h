@@ -188,7 +188,7 @@ class TerraView : public te::qt::af::BaseApplication
 
     void closeEvent(QCloseEvent * event);
 
-  protected:
+    void addActions(const QString& name, const QString& category, const QList<QAction*>& acts);
 
     QAction* m_fileNewProject;
     QAction* m_fileSaveProject;

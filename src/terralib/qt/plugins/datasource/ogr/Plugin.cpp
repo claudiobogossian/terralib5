@@ -164,15 +164,10 @@ void te::qt::plugins::ogr::Plugin::startup()
     m_showWindow->setObjectName("Project.Add Layer.Vector File");
 
     te::qt::af::evt::NewActionsAvailable e;
-    e.m_category = "Datasource";
+    e.m_category = "Dataaccess";
     e.m_actions << m_showWindow;
 
     emit triggered(&e);
-
-//    mnu->insertAction(act, m_showWindow);
-//    //mnu->addAction(m_showWindow);
-
-//    te::qt::af::AddActionToCustomToolbars(m_showWindow);
 
     connect (m_showWindow, SIGNAL(triggered()), SLOT(showWindow()));
   }

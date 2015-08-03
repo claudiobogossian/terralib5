@@ -206,11 +206,13 @@ namespace te
         struct NewActionsAvailable : public Event
         {
           NewActionsAvailable() :
-          Event(NEW_ACTIONS_AVAILABLE)
+          Event(NEW_ACTIONS_AVAILABLE),
+          m_toolbar(0)
           {
 
           }
 
+          std::string m_plgName;
           std::string m_category;
           QToolBar* m_toolbar;
           QList<QAction*> m_actions;

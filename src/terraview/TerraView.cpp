@@ -761,11 +761,7 @@ void TerraView::onApplicationTriggered(te::qt::af::evt::Event* e)
   case te::qt::af::evt::NEW_ACTIONS_AVAILABLE:
   {
     te::qt::af::evt::NewActionsAvailable* evt = static_cast<te::qt::af::evt::NewActionsAvailable*>(e);
-
-    if (evt->m_category == "Datasource")
-    {
-      //m_dsMenu->addActions(evt->m_actions);
-    }
+    addActions(evt->m_plgName.c_str(), evt->m_category.c_str(), evt->m_actions);
   }
   break;
 
@@ -1874,5 +1870,31 @@ void TerraView::closeEvent(QCloseEvent* event)
   QMainWindow::close();
 }
 
+void TerraView::addActions(const QString& plgName, const QString& category, const QList<QAction*>& acts)
+{
+  if(category.compare("Processing") == 0)
+  {
+    QMenu* mnu = m_app->getMenu("Processing");
 
+    if(mnu == 0)
+      return;
+
+    QMenu* p = new QMenu(plgName, mnu);
+
+    for(QList<QAction*>::const_iterator it = acts.begin(); it != acts.end(); ++it)
+      p->addAction(*it);
+
+    mnu->addMenu(p);
+  }
+  else if(category.compare("Dataaccess") == 0)
+  {
+    for(QList<QAction*>::const_iterator it = acts.begin(); it != acts.end(); ++it)
+      m_projectAddLayerMenu->addAction(*it);
+  }
+  else
+  {
+    for(QList<QAction*>::const_iterator it = acts.begin(); it != acts.end(); ++it)
+      m_pluginsMenu->addAction(*it);
+  }
+}
 

@@ -41,10 +41,10 @@
 //#include <boost/noncopyable.hpp>
 
 // Qt
-#include <QtCore/QObject>
-#include <QtCore/QStringList>
-#include <QtCore/QSettings>
-#include <QtGui/QColor>
+#include <QObject>
+#include <QStringList>
+#include <QSettings>
+#include <QColor>
 
 // Forward declarations
 class QAction;
@@ -490,7 +490,9 @@ namespace te
 
       };
 
-      typedef te::common::Singleton<ApplicationController> AppCtrlSingleton;
+      class TEQTAFEXPORT AppCtrlSingleton: public te::common::Singleton<ApplicationController>
+      {
+      };
     } // end namespace af
   }   // end namespace qt
 }     // end namespace te

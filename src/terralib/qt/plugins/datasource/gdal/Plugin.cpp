@@ -113,7 +113,7 @@ void te::qt::plugins::gdal::Plugin::startup()
   m_openFile->setObjectName("Project.Add Layer.Raster File");
 
   te::qt::af::evt::NewActionsAvailable e;
-  e.m_category = "Datasource";
+  e.m_category = "Dataaccess";
   e.m_actions << m_openFile;
 
   emit triggered(&e);

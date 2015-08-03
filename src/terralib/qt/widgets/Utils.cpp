@@ -465,24 +465,6 @@ QString te::qt::widgets::GetDiskRasterFileSelFilter()
   return filter;
 }
 
-//QModelIndex GetParent(QTreeView* view)
-//{
-//  QModelIndex res;
-//
-//  QModelIndexList idxs = view->selectionModel()->selectedIndexes();
-//
-//  if(idxs.size() == 1)
-//  {
-//    QModelIndex idx = idxs.at(0);
-//    te::qt::widgets::TreeItem* item = static_cast<te::qt::widgets::TreeItem*>(idx.internalPointer());
-//
-//    if(item->getType() == "FOLDER")
-//      res = idx;
-//  }
-//
-//  return res;
-//}
-
 std::list<te::map::AbstractLayerPtr> te::qt::widgets::GetSelectedLayersOnly(te::qt::widgets::LayerItemView* view)
 {
   std::list<te::map::AbstractLayerPtr> res;
