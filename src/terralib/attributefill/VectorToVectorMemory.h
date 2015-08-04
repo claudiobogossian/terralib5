@@ -184,7 +184,8 @@ namespace te
         */
         std::vector<std::size_t> getIntersections(te::da::DataSet* toDs,
                                                   te::da::DataSet* fromDs,
-                                                  te::sam::rtree::Index<size_t, 8>* rtree);
+                                                  te::sam::rtree::Index<size_t, 8>* rtree,
+                                                  bool& hasInvalid);
 
         /*!
           \brief It get the value of all positions in "To" data set that has intersection with

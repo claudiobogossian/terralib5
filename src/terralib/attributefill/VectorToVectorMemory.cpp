@@ -66,6 +66,7 @@ void te::attributefill::VectorToVectorMemory::normalizeClassName(std::string& na
     boost::replace_all(name, ".", "");
     boost::replace_all(name, "'", "");
     boost::replace_all(name, "-", "_");
+    boost::replace_all(name, "&", "e");
   }
 }
 
@@ -133,7 +134,24 @@ bool te::attributefill::VectorToVectorMemory::run()
         }
       }
 
-      std::vector<std::size_t> intersections = getIntersections(toDs.get(), fromDs.get(), rtree);
+      bool hasInvalid = false;
+      std::vector<std::size_t> intersections = getIntersections(toDs.get(), fromDs.get(), rtree, hasInvalid);
+
+      if (hasInvalid)
+      {
+        te::da::PrimaryKey* toPk = toSchema->getPrimaryKey();
+        te::dt::Property* pkProp = toPk->getProperties()[0];
+
+#ifdef TERRALIB_LOGGER_ENABLED
+        std::string ex = "The \"To\" layer geometry (" + pkProp->getName() + ": " + toDs->getValue(pkProp->getName())->toString() + ") has intersection candidate invalid!";
+        te::common::Logger::logDebug("attributefill", ex.c_str());
+#endif //TERRALIB_LOGGER_ENABLED
+
+        m_hasErrors = true;
+        outDs->add(item);
+        continue;
+      }
+
 
       if(intersections.empty() && !hasNoIntersectionOperations())
       {
@@ -328,7 +346,8 @@ bool te::attributefill::VectorToVectorMemory::run()
     }
   }
 
-  save(outDs, outDst);
+  if (!outDs->isEmpty())
+    save(outDs, outDst);
 
   if(rtree)
     delete rtree;
@@ -553,7 +572,8 @@ std::string te::attributefill::VectorToVectorMemory::getPropertyName(te::dt::Pro
 
 std::vector<std::size_t> te::attributefill::VectorToVectorMemory::getIntersections(te::da::DataSet* toDs,
                                                                              te::da::DataSet* fromDs,
-                                                                             te::sam::rtree::Index<size_t, 8>* rtree)
+                                                                             te::sam::rtree::Index<size_t, 8>* rtree,
+                                                                             bool& hasInvalid)
 {
   int toSpatialPos = te::da::GetFirstSpatialPropertyPos(toDs);
   int fromSpatialPos = te::da::GetFirstSpatialPropertyPos(fromDs);
@@ -574,6 +594,9 @@ std::vector<std::size_t> te::attributefill::VectorToVectorMemory::getIntersectio
     std::auto_ptr<te::gm::Geometry> g = fromDs->getGeometry(fromSpatialPos);
     g->setSRID(m_fromLayer->getSRID());
     
+    if (!g->isValid())
+      hasInvalid = true;
+
     if(geom->intersects(g.get()))
     {
       interVec.push_back(report[i]);
