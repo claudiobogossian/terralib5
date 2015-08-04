@@ -176,9 +176,10 @@ namespace te
         /*!
           \brief It verify all intersection between the "From" and "To" data sets.
 
-          \param toDs   The "To" data set.
-          \param fromDs The "From" data set.
-          \param rtree  A generated RTree based on the "From" data set.
+          \param toDs       The "To" data set.
+          \param fromDs     The "From" data set.
+          \param rtree      A generated RTree based on the "From" data set.
+          \param hasInvalid Set true if there are any invalid geometry as intersection candidate.
           
           \return A vector of positions that "To" data set has intersection with "From".
         */
