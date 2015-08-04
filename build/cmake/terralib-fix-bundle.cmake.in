@@ -202,6 +202,16 @@ elseif(APPLE)
     if(TERRALIB_TERRAVIEW_ENABLED)
       set(TERRALIB_APPLICATION "${CMAKE_INSTALL_PREFIX}/terraview.app")
       set(QT_PLUGINS "${TERRALIB_APPLICATION}/Contents/qtplugins")
+
+      file(WRITE "${CMAKE_INSTALL_PREFIX}/terraview.app/Contents/MacOS/Assistant.app/Contents/Resources/qt.conf"
+          "[Paths]\nPlugins = plugins")
+
+      #EXECUTE_PROCESS(COMMAND ln -s ../../../Frameworks Frameworks
+      #                WORKING_DIRECTORY "${CMAKE_INSTALL_PREFIX}/terraview.app/Contents/MacOS/Assistant.app/Contents")
+
+      #EXECUTE_PROCESS(COMMAND ln -s ../../../qtplugins plugins
+      #                WORKING_DIRECTORY "${CMAKE_INSTALL_PREFIX}/terraview.app/Contents/MacOS/Assistant.app/Contents")
+
     endif()
   else()
     if(TERRALIB_TERRAVIEW_ENABLED)
@@ -282,3 +292,12 @@ endif()
 
 # Call fixup_bundle
 fixup_bundle("${TERRALIB_APPLICATION}" "${TERRALIB_LIBRARIES}" "${TERRALIB_DIRS}")
+
+if(APPLE AND TERRALIB_BUILD_AS_BUNDLE AND TERRALIB_TERRAVIEW_ENABLED)
+  EXECUTE_PROCESS(COMMAND ln -s ../../../Frameworks Frameworks
+                  WORKING_DIRECTORY "${CMAKE_INSTALL_PREFIX}/terraview.app/Contents/MacOS/Assistant.app/Contents")
+
+  EXECUTE_PROCESS(COMMAND ln -s ../../../qtplugins plugins
+                  WORKING_DIRECTORY "${CMAKE_INSTALL_PREFIX}/terraview.app/Contents/MacOS/Assistant.app/Contents")
+
+endif()

@@ -28,7 +28,7 @@
 
 // TerraLib
 #include "../../geometry/Coord2D.h"
-#include "Config.h"
+#include "../Config.h"
 
 // Qt
 #include <QMouseEvent>
@@ -36,14 +36,37 @@
 
 // STL
 #include <vector>
+//----------------------------------------
+
+// TerraLib
+#include "../../maptools/AbstractLayer.h"
+#include "Config.h"
+#include "../../edit/qt/core/EditionManager.h"
+
+// STL
+#include <string>
+#include <vector>
 
 namespace te
 {
+  // Forward declaration
+  class Feature;
+
+  // Forward declarations
+  namespace da
+  {
+    class ObjectId;
+  }
+
 // Forward declarations
   namespace gm
   {
     class Geometry;
     class LineString;
+    struct Coord2D;
+    class Envelope;
+    class GeometryCollection;
+    class Polygon;
   }
 
   namespace qt
@@ -57,6 +80,7 @@ namespace te
   namespace edit
   {
     TEEDITQTEXPORT QPointF GetPosition(QMouseEvent* e);
+    TEEDITQTEXPORT Feature* PickFeature(te::edit::EditionManager* editionManager, const te::map::AbstractLayerPtr& layer, const te::gm::Envelope& env, int srid);
 
   } // end namespace edit
 }   // end namespace te

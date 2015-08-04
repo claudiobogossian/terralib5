@@ -42,7 +42,7 @@ if(APPLE)
 
   if(TERRALIB_BUILD_AS_BUNDLE)
     set(MACOSX_BUNDLE_BUNDLE_NAME "TerraView")
-    set(MACOSX_BUNDLE_COPYRIGHT "Copyright 2001-2014")
+    set(MACOSX_BUNDLE_COPYRIGHT "Copyright 2001-2015")
     set(MACOSX_BUNDLE_SIGNATURE "TerraView")
     set(MACOSX_BUNDLE_GUI_IDENTIFIER "http://www.terraview.org")
     set(MACOSX_BUNDLE_EXECUTABLE_NAME "TerraView")
@@ -163,8 +163,8 @@ if(TERRALIB_TRACK_3RDPARTY_DEPENDENCIES)
   if(APPLE)
 
     file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/qt.conf
-         "[Paths]\nBinaries = .\nPlugins = qtplugins\nTranslations = share/terralib/translations")
-         
+         "[Paths]\nBinaries = MacOS\nPlugins = qtplugins\nTranslations = share/terralib/translations")
+
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/qt.conf
             DESTINATION terraview.app/Contents/Resources COMPONENT runtime)
 

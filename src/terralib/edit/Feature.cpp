@@ -58,6 +58,7 @@ te::edit::Feature::Feature(te::da::ObjectId* id, te::gm::Geometry* geom)
 te::edit::Feature::~Feature()
 {
   delete m_id;
+  m_geom = 0;
   delete m_geom;
   te::common::FreeContents(m_data);
 }

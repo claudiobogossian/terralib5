@@ -706,7 +706,7 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::commit()
 
         int finalSrid = tl4Ds->getLayerSRID(sourceName);
 
-        ds_adapter->setSRID(finalSrid);
+        te::da::AssociateDataSetTypeConverterSRID(dt_adapter.get(), finalSrid);
 
         std::map<std::string, std::string> opt;
 

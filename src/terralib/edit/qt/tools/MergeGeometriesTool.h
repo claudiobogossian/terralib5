@@ -27,11 +27,11 @@ TerraLib Team at <terralib-team@terralib.org>.
 #define __TERRALIB_EDIT_QT_INTERNAL_MERGEGEOMETRIESTOOL_H
 
 // TerraLib
+#include "../../../edit/qt/core/EditionManager.h"
 #include "../../../geometry/Coord2D.h"
 #include "../../../dataaccess/dataset/ObjectIdSet.h"
 #include "../../../maptools/AbstractLayer.h"
 #include "../../../qt/widgets/tools/AbstractTool.h"
-#include "../../Feature.h"
 #include "../Config.h"
 
 // STL
@@ -61,7 +61,7 @@ namespace te
 
     public:
 
-      MergeGeometriesTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, QObject* parent = 0);
+      MergeGeometriesTool(te::edit::EditionManager* editionManager, te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, QObject* parent = 0);
 
       /*! \brief Destructor. */
       ~MergeGeometriesTool();
@@ -76,8 +76,8 @@ namespace te
 
 
     private:
-      te::da::ObjectId* m_refOid;
 
+      te::da::ObjectId* m_refOid;
       void draw();
       void storeMergedFeature();
       void mergeGeometries();
@@ -93,8 +93,10 @@ namespace te
       void onExtentChanged();
 
     protected:
+
       te::map::AbstractLayerPtr m_layer;
-      te::edit::Feature* m_feature;
+      Feature* m_feature;
+      te::edit::EditionManager* m_editionManager;
 
     };
 

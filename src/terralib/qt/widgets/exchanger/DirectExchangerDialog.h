@@ -96,6 +96,8 @@ namespace te
 
           void setOutputDataSources();
 
+          void onOutputLayerSRSTriggered();
+
         private:
 
           std::auto_ptr<Ui::DirectExchangerDialogForm> m_ui;

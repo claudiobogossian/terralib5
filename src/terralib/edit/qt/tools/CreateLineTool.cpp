@@ -47,11 +47,12 @@
 #include <cassert>
 #include <memory>
 
-te::edit::CreateLineTool::CreateLineTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, QObject* parent)
+te::edit::CreateLineTool::CreateLineTool(te::edit::EditionManager* editionManager, te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, QObject* parent)
 : AbstractTool(display, parent),
-m_layer(layer),
-m_continuousMode(false),
-    m_isFinished(false)
+  m_layer(layer),
+  m_continuousMode(false),
+  m_isFinished(false),
+  m_editionManager(editionManager)
 {
   setCursor(cursor);
 
@@ -66,7 +67,6 @@ te::edit::CreateLineTool::~CreateLineTool()
   QPixmap* draft = m_display->getDraftPixmap();
   draft->fill(Qt::transparent);
 
-  //avaliar
   //delete _line;
 }
 
@@ -109,17 +109,17 @@ bool te::edit::CreateLineTool::mouseMoveEvent(QMouseEvent* e)
 
   m_lastPos = te::gm::Coord2D(coord.x, coord.y);
 
-  Qt::KeyboardModifiers keys = e->modifiers();
+  //Qt::KeyboardModifiers keys = e->modifiers();
   
   /*if(keys == Qt::NoModifier)
     m_continuousMode = false;
   else if (keys == Qt::ShiftModifier)
-	m_continuousMode = true;*/
+  m_continuousMode = true;*/
 
   if (e->buttons() & Qt::LeftButton)
-	  m_continuousMode = true;
+    m_continuousMode = true;
   else
-	  m_continuousMode = false;
+    m_continuousMode = false;
 
   draw();
 
@@ -145,6 +145,7 @@ bool te::edit::CreateLineTool::mouseDoubleClickEvent(QMouseEvent* e)
 
 void te::edit::CreateLineTool::draw()
 {
+  
   const te::gm::Envelope& env = m_display->getExtent();
   if(!env.isValid())
     return;
@@ -158,7 +159,7 @@ void te::edit::CreateLineTool::draw()
   renderer.begin(draft, env, m_display->getSRID());
 
   // Draw the layer edited geometries
-  renderer.drawRepository(m_layer->getId(), env, m_display->getSRID());
+  renderer.drawRepository(m_editionManager,m_layer->getId(), env, m_display->getSRID());
 
   if(!m_coords.empty())
   {
@@ -169,19 +170,20 @@ void te::edit::CreateLineTool::draw()
     if(m_continuousMode == false)
       m_coords.pop_back();
 
-	_line = (te::gm::LineString*)line->clone();//avaliar
+	_line = (te::gm::LineString*)line->clone();
   }
 
   renderer.end();
 
   m_display->repaint();
+  
 }
 
 void te::edit::CreateLineTool::clear()
 {
   m_coords.clear();
 
-  _line = 0;//avaliar
+  _line = 0;
 }
 
 te::gm::Geometry* te::edit::CreateLineTool::buildLine()
@@ -203,7 +205,7 @@ te::gm::Geometry* te::edit::CreateLineTool::buildLine()
 
 void te::edit::CreateLineTool::storeNewGeometry()
 {
-  RepositoryManager::getInstance().addGeometry(m_layer->getId(), buildLine());
+  m_editionManager->m_repository->addGeometry(m_layer->getId(), buildLine());
 }
 
 void te::edit::CreateLineTool::onExtentChanged()
