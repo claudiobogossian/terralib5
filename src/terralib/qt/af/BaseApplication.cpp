@@ -90,6 +90,9 @@ void te::qt::af::BaseApplication::init(const QString& cfgFile)
   try
   {
     makeDialog();
+
+    //register menubar and load plugins
+    m_app->initializePlugins();
   }
   catch(te::common::Exception& e)
   {
@@ -817,10 +820,6 @@ void te::qt::af::BaseApplication::makeDialog()
   setWindowTitle(m_app->getAppTitle());
   setWindowIcon(QIcon(m_app->getAppIconName()));
   setWindowIconText(m_app->getAppTitle());
-
-  //register menubar and load plugins
-  m_app->registerMenuBar(m_menubar);
-  m_app->initializePlugins();
 }
 
 void te::qt::af::BaseApplication::initFramework(const QString& cfgFile)
@@ -918,6 +917,8 @@ void te::qt::af::BaseApplication::initMenus()
   m_menubar->setGeometry(QRect(0, 0, 640, 21));
 
   setMenuBar(m_menubar);
+
+  m_app->registerMenuBar(m_menubar);
 }
 
 void te::qt::af::BaseApplication::initSlotsConnections()

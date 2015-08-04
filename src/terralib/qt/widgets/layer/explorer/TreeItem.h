@@ -34,6 +34,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 
 // Qt
 #include <qnamespace.h>
+#include <QString>
 
 // STL
 #include <memory>
@@ -203,6 +204,8 @@ namespace te
         */
         std::string getType() const;
 
+        std::string getToolTip() const;
+
         /*!
         * \brief
         */
@@ -215,6 +218,7 @@ namespace te
         std::string m_type;               //!< Item type.
         std::auto_ptr<Queue> m_children;  //!< Queue of items (children).
         TreeItem* m_parent;               //!< Pointer to the parent.
+        std::string m_toolTip;
       };
     }
   }

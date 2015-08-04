@@ -7,9 +7,72 @@
 
 #include "../../se/SymbologyPreview.h"
 
+#include "../../../../dataaccess/datasource/DataSourceInfoManager.h"
+#include "../../../../maptools/DataSetLayer.h"
+#include "../../../../maptools/DataSetAdapterLayer.h"
+#include "../../../../maptools/Utils.h"
+
 #include "../../../../se/RasterSymbolizer.h"
 #include "../../../../se/Style.h"
 #include "../../../../se/Utils.h"
+
+QString GetDataSetName(te::map::AbstractLayerPtr l)
+{
+  // Gets the data set name
+  QString toolTip = QObject::tr("DataSet") + ": " + ((l->getType() == "DATASETADAPTERLAYER") ?
+                                              ((te::map::DataSetAdapterLayer*)l.get())->getDataSetName().c_str() :
+                                              (l->getType() == "DATASETLAYER") ?
+                                              ((te::map::DataSetLayer*)l.get())->getDataSetName().c_str() :
+                                              "" + QString("\n"));
+  return toolTip;
+}
+
+QString GetDataSetInfo(te::map::AbstractLayerPtr l)
+{
+  // Gets the connection info
+  const std::string& id = ((l->getType() == "DATASETADAPTERLAYER") ?
+   ((te::map::DataSetAdapterLayer*)l.get())->getDataSourceId() :
+   (l->getType() == "DATASETLAYER") ?
+   ((te::map::DataSetLayer*)l.get())->getDataSourceId() :
+   "");
+
+  te::da::DataSourceInfoPtr info = te::da::DataSourceInfoManager::getInstance().get(id);
+  const std::map<std::string, std::string>& connInfo = info->getConnInfo();
+
+  QString toolTip = QObject::tr("Connection Info") + ":\n";
+
+  std::size_t i = 0;
+  std::map<std::string, std::string>::const_iterator it;
+  for(it = connInfo.begin(); it != connInfo.end(); ++it)
+  {
+    toolTip += it->first.c_str();
+    toolTip += ": ";
+    toolTip += it->second.c_str();
+    ++i;
+    if(i != connInfo.size())
+      toolTip += "\n";
+  }
+
+  toolTip += '\n';
+
+  toolTip += QObject::tr("SRID: ");
+  toolTip += QString::number(l->getSRID());
+
+  return toolTip;
+}
+
+
+QString BuildToolIip(te::qt::widgets::LayerItem* item)
+{
+  te::map::AbstractLayerPtr l = item->getLayer();
+
+  if(!l->isValid())
+    return QObject::tr("Invalid Layer");
+
+  QString toolTip = GetDataSetName(l) +"\n"+ GetDataSetInfo(l);
+
+  return toolTip;
+}
 
 te::qt::widgets::LayerItem::LayerItem(te::map::AbstractLayerPtr layer) :
   TreeItem("LAYER"),
@@ -40,6 +103,8 @@ te::qt::widgets::LayerItem::LayerItem(te::map::AbstractLayerPtr layer) :
     addChild(new GroupingItem(m_layer->getGrouping()));
 
   updateChart();
+
+  m_toolTip = BuildToolIip(this).toStdString();
 }
 
 te::qt::widgets::LayerItem::~LayerItem()

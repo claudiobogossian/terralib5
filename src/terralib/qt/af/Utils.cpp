@@ -518,9 +518,11 @@ void te::qt::af::AddActionToCustomToolbars(te::qt::af::ApplicationController* ap
 
       QString v = sett.value("action").toString(); 
 
-      if (v == act->objectName())
+      if (!v.isNull() && v.compare(act->objectName()) == 0)
       {
-        appController->getToolBar(*it)->addAction(act);
+        QToolBar* bar = appController->getToolBar(*it);
+        bar->addAction(act);
+      
         break;
       }
     }

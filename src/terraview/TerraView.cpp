@@ -720,8 +720,10 @@ void TerraView::initMenus()
   m_toolsMenu->addAction(m_toolsExchangerMenu->menuAction());
   m_menubar->addAction(m_toolsMenu->menuAction());
   m_pluginsMenu = new QMenu(m_menubar);
-  m_menubar->addAction(m_pluginsMenu->menuAction());
+  m_pluginsMenu->setObjectName("Plugins");
+  m_menubar->addMenu(m_pluginsMenu);
   m_helpMenu = new QMenu(m_menubar);
+  m_helpMenu->setObjectName("Help");
   m_menubar->addAction(m_helpMenu->menuAction());
 }
 
@@ -1894,7 +1896,7 @@ void TerraView::addActions(const QString& plgName, const QString& category, cons
   else
   {
     for(QList<QAction*>::const_iterator it = acts.begin(); it != acts.end(); ++it)
-      m_pluginsMenu->addAction(*it);
+      m_pluginsMenu->insertAction(m_app->findAction("ManagePluginsSeparator"), *it);
   }
 }
 

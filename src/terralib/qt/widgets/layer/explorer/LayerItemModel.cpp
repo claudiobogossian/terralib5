@@ -580,6 +580,9 @@ QVariant te::qt::widgets::LayerItemModel::data(const QModelIndex &index, int rol
     return QVariant();
   }
 
+  if(role == Qt::ToolTipRole)
+    return QString::fromStdString(item->getToolTip());
+
   if(role == Qt::DisplayRole)
     return QString::fromStdString(item->getAsString());
 

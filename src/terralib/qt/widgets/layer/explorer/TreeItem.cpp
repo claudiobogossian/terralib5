@@ -108,6 +108,11 @@ std::string te::qt::widgets::TreeItem::getType() const
   return m_type;
 }
 
+std::string te::qt::widgets::TreeItem::getToolTip() const
+{
+  return m_toolTip;
+}
+
 void te::qt::widgets::TreeItem::removeAllChilds()
 {
   while(m_children->getSize() > 0)
