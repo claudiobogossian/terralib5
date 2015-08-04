@@ -36,6 +36,7 @@
 #include "../../geometry/GeometryProperty.h"
 #include "../../geometry/Envelope.h"
 #include "../../raster/Raster.h"
+#include "../../srs/Config.h"
 #include "../datasource/DataSourceCapabilities.h"
 #include "../utils/Utils.h"
 #include "../Exception.h"
@@ -50,7 +51,6 @@ te::da::DataSetAdapter::DataSetAdapter(DataSet* dataset, bool isOwner)
   : m_ds(dataset, isOwner)
 {
   assert(dataset);
-  m_srid = 0;
 }
 
 te::da::DataSetAdapter::~DataSetAdapter()
@@ -263,11 +263,6 @@ bool te::da::DataSetAdapter::isNull(std::size_t i) const
   return data.get() == 0;
 }
 
-void te::da::DataSetAdapter::setSRID(int srid)
-{
-  m_srid = srid;
-}
-
 te::da::DataSet* te::da::DataSetAdapter::getAdaptee() const
 {
   return m_ds.get();
@@ -287,14 +282,6 @@ void te::da::DataSetAdapter::add(const std::string& newPropertyName,
 te::dt::AbstractData* te::da::DataSetAdapter::getAdaptedValue(std::size_t i) const
 {
   te::dt::AbstractData* data = m_converters[i](m_ds.get(), m_propertyIndexes[i], m_datatypes[i]);
-
-  if(data && data->getTypeCode() == te::dt::GEOMETRY_TYPE)
-  {
-    te::gm::Geometry* geom = dynamic_cast<te::gm::Geometry*>(data);
-
-    if(geom)
-      geom->setSRID(m_srid);
-  }
 
   return data;
 }

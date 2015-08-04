@@ -80,8 +80,6 @@ namespace te
       std::size_t m_pos;
     };
 
-    TEEDITEXPORT Feature* PickFeature(const te::map::AbstractLayerPtr& layer, const te::gm::Envelope& env, int srid);
-
     TEEDITEXPORT void GetLines(te::gm::Geometry* geom, std::vector<te::gm::LineString*>& lines);
 
     TEEDITEXPORT void GetLines(te::gm::GeometryCollection* gc, std::vector<te::gm::LineString*>& lines);

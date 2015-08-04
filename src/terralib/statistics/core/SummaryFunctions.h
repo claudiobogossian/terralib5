@@ -87,7 +87,8 @@ namespace te
                                                   double& resolutionX,
                                                   double& resolutionY,
                                                   double& area,
-                                                  te::stat::NumericStatisticalSummary& ss);
+                                                  te::stat::NumericStatisticalSummary& ss,
+                                                  bool fullIntersection = true);
     
     /*! Returns the mode of set of numerical values.
      

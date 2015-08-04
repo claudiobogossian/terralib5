@@ -245,7 +245,8 @@ void te::qt::plugins::ogr::Plugin::showWindow()
     std::string id = boost::uuids::to_string(u);
     
     ds->setId(id);
-    te::da::DataSourceInfoManager::getInstance().add(ds);
+    if (!te::da::DataSourceInfoManager::getInstance().add(ds))
+      ds = te::da::DataSourceInfoManager::getInstance().getByConnInfo(ds->getConnInfoAsString());
 
     if(IsShapeFile(*it) && !HasShapeFileSpatialIndex(*it))
     {

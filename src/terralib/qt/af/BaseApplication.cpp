@@ -1735,17 +1735,34 @@ void te::qt::af::BaseApplication::onDrawTriggered()
   te::qt::af::evt::DrawButtonClicked drawClicked;
   ApplicationController::getInstance().broadcast(&drawClicked);
 
-  m_display->draw(ApplicationController::getInstance().getProject()->getVisibleSingleLayers());
+  std::list<te::map::AbstractLayerPtr> visibleLayers = ApplicationController::getInstance().getProject()->getVisibleSingleLayers();
+
+  m_display->draw(visibleLayers);
+
+  if (visibleLayers.size() > 0)
+    m_layerFitOnMapDisplay->setEnabled(true);
+  else
+    m_layerFitOnMapDisplay->setEnabled(false);
 }
 
 void te::qt::af::BaseApplication::onLayerFitOnMapDisplayTriggered()
 {
   try
   {
+    std::list<te::map::AbstractLayerPtr> visibleLayers = ApplicationController::getInstance().getProject()->getVisibleSingleLayers();
+
+    if (visibleLayers.size() > 0)
+      m_layerFitOnMapDisplay->setEnabled(true);
+    else
+      m_layerFitOnMapDisplay->setEnabled(false);
+
+
     std::list<te::map::AbstractLayerPtr> selectedLayers = m_explorer->getExplorer()->getSelectedSingleLayers();
 
     if(selectedLayers.empty())
     {
+      m_layerFitOnMapDisplay->setEnabled(false);
+
       QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(),
                            tr("Select a layer in the layer explorer!"));
       return;
@@ -2019,8 +2036,15 @@ void te::qt::af::BaseApplication::onZoomExtentTriggered()
   if(!m_project && m_project->getTopLayers().empty())
     return;
 
+  std::list<te::map::AbstractLayerPtr> visibleLayers = ApplicationController::getInstance().getProject()->getVisibleSingleLayers();
+
   //m_display->fit(m_explorer->getExplorer()->getAllLayers());
-  m_display->fit(te::qt::af::ApplicationController::getInstance().getProject()->getVisibleSingleLayers());
+  m_display->fit(visibleLayers);
+
+  if (visibleLayers.size() > 0)
+    m_layerFitOnMapDisplay->setEnabled(true);
+  else
+    m_layerFitOnMapDisplay->setEnabled(false);
 
 }
 
@@ -2704,7 +2728,7 @@ void te::qt::af::BaseApplication::initActions()
 // Menu -Layer- actions
   initAction(m_layerRemoveObjectSelection, "pointer-remove-selection", "Layer.Remove Selection", tr("&Remove Selection"), tr(""), true, false, true, m_menubar);
   initAction(m_layerRemoveItem, "item-remove", "Layer.Remove Item", tr("&Remove Item"), tr(""), true, false, true, m_menubar);
-  initAction(m_layerObjectGrouping, "grouping", "Layer.ObjectGrouping", tr("&Classification..."), tr(""), true, false, true, m_menubar);
+  initAction(m_layerObjectGrouping, "grouping", "Layer.ObjectGrouping", tr("&Edit Legend..."), tr(""), true, false, true, m_menubar);
   initAction(m_layerProperties, "layer-info", "Layer.Properties", tr("&Properties..."), tr(""), true, false, true, m_menubar);
   initAction(m_layerSRS, "layer-srs", "Layer.SRS", tr("&Inform SRS..."), tr(""), true, false, true, m_menubar);  
   initAction(m_layerShowTable, "view-data-table", "Layer.Show Table", tr("S&how Table"), tr(""), true, false, true, m_menubar);
@@ -2712,7 +2736,7 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_layerChartsScatter, "chart-scatter", "Layer.Charts.Scatter", tr("&Scatter..."), tr(""), true, false, true, m_menubar);
   initAction(m_layerChartsTimeSeries, "chart-time-series", "Layer.Charts.timeSeries", tr("&Time Series..."), tr(""), true, false, true, m_menubar);
   initAction(m_layerChart, "chart-pie", "Layer.Charts.Chart", tr("&Pie/Bar Chart..."), tr(""), true, false, true, m_menubar);
-  initAction(m_layerFitOnMapDisplay, "layer-fit", "Layer.Fit Layer on the Map Display", tr("Fit Layer"), tr("Fit the current layer on the Map Display"), true, false, true, m_menubar);
+  initAction(m_layerFitOnMapDisplay, "layer-fit", "Layer.Fit Layer on the Map Display", tr("Fit Layer"), tr("Fit the current layer on the Map Display"), true, false, false, m_menubar);
   initAction(m_layerFitSelectedOnMapDisplay, "zoom-selected-extent", "Layer.Fit Selected Features on the Map Display", tr("Fit Selected Features"), tr("Fit the selected features on the Map Display"), true, false, true, m_menubar);
   initAction(m_layerPanToSelectedOnMapDisplay, "pan-selected", "Layer.Pan to Selected Features on Map Display", tr("Pan to Selected Features"), tr("Pan to the selected features on the Map Display"), true, false, true, m_menubar);
   initAction(m_queryLayer, "view-filter", "Layer.Query", tr("Query..."), tr(""), true, false, true, m_menubar);

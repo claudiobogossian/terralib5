@@ -278,7 +278,7 @@ void te::vp::PolygonToLineDialog::onOkPushButtonClicked()
       else
         pol2LineOp = new te::vp::PolygonToLineMemory();
 
-      pol2LineOp->setInput(inDataSource, dsLayer->getDataSetName(), oidSet);
+      pol2LineOp->setInput(inDataSource, dsLayer->getDataSetName(), dsLayer->getSchema(), oidSet);
       pol2LineOp->setOutput(dsOGR, outputDataSet);
 
       if(!pol2LineOp->paramsAreValid())
@@ -342,7 +342,7 @@ void te::vp::PolygonToLineDialog::onOkPushButtonClicked()
       else
         pol2LineOp = new te::vp::PolygonToLineMemory();
 
-      pol2LineOp->setInput(inDataSource, dsLayer->getDataSetName(), oidSet);
+      pol2LineOp->setInput(inDataSource, dsLayer->getDataSetName(), dsLayer->getSchema(), oidSet);
       pol2LineOp->setOutput(dsOGR, outputDataSet);
 
       if(!pol2LineOp->paramsAreValid())

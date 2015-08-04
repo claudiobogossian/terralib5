@@ -22,6 +22,8 @@
  */
 
 // Terralib
+#include "../common/StringUtils.h"
+
 #include "../datatype/Enums.h"
 #include "../datatype/Property.h"
 
@@ -54,10 +56,12 @@ bool te::vp::LineToPolygonOp::paramsAreValid()
 
 void te::vp::LineToPolygonOp::setInput(te::da::DataSourcePtr inDsrc,
                                      std::string inDsetName,
+                                     std::auto_ptr<te::da::DataSetType> inDsetType,
                                      const te::da::ObjectIdSet* oidSet)
 {
   m_inDsrc = inDsrc;
   m_inDsetName = inDsetName;
+  m_inDsetType = inDsetType;
   m_oidSet = oidSet;
 }
 
@@ -74,9 +78,9 @@ std::auto_ptr<te::da::DataSetType> te::vp::LineToPolygonOp::buildOutDataSetType(
 
   std::string dSourceType = m_outDsrc->getType();
 
-  std::vector<te::dt::Property*> vecProps = inDsType->getProperties();
+  std::vector<te::dt::Property*> vecProps = m_inDsetType->getProperties();
 
-  std::vector<te::dt::Property*> inPk = inDsType->getPrimaryKey()->getProperties();
+  std::vector<te::dt::Property*> inPk = m_inDsetType->getPrimaryKey()->getProperties();
   std::string namePk = m_outDset;
 
   for (std::size_t p = 0; p < inPk.size(); ++p)
@@ -88,7 +92,7 @@ std::auto_ptr<te::da::DataSetType> te::vp::LineToPolygonOp::buildOutDataSetType(
   {
     for(std::size_t i = 0; i < vecProps.size(); ++i)
     {
-      if(vecProps[i]->getType() != te::dt::GEOMETRY_TYPE && vecProps[i]->getName() != "FID")
+      if (vecProps[i]->getType() != te::dt::GEOMETRY_TYPE && vecProps[i]->getName() != "FID")
       {
         outDsType->add(vecProps[i]->clone());
       }
@@ -126,9 +130,8 @@ std::auto_ptr<te::da::DataSetType> te::vp::LineToPolygonOp::buildOutDataSetType(
         outDsType->add(outGeom);
       }
     }
+    outDsType->setPrimaryKey(pk);
   }
-
-  outDsType->setPrimaryKey(pk);
 
   return outDsType;
 }

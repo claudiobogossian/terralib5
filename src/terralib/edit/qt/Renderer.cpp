@@ -32,7 +32,6 @@
 #include "../../srs/Config.h"
 #include "../Feature.h"
 #include "../Repository.h"
-#include "../RepositoryManager.h"
 #include "../Utils.h"
 #include "Renderer.h"
 
@@ -61,18 +60,18 @@ void te::edit::Renderer::begin(QPaintDevice* device, const te::gm::Envelope& e, 
   m_srid = srid;
 }
 
-void te::edit::Renderer::drawRepositories(const te::gm::Envelope& e, int srid)
+void te::edit::Renderer::drawRepositories(te::edit::EditionManager* editionManager, const te::gm::Envelope& e, int srid)
 {
-  const std::map<std::string, Repository*>& repositories = RepositoryManager::getInstance().getRepositories();
+  const std::map<std::string, Repository*>& repositories = editionManager->m_repository->getRepositories();
 
   std::map<std::string, Repository*>::const_iterator it;
   for(it = repositories.begin(); it != repositories.end(); ++it)
-    drawRepository(it->first, e, srid);
+    drawRepository(editionManager, it->first, e, srid);
 }
 
-void te::edit::Renderer::drawRepository(const std::string& source, const te::gm::Envelope& e, int srid)
+void te::edit::Renderer::drawRepository(te::edit::EditionManager* editionManager, const std::string& source, const te::gm::Envelope& e, int srid)
 {
-  Repository* repository = RepositoryManager::getInstance().getRepository(source);
+  Repository* repository = editionManager->m_repository->getRepository(source);
 
   if(repository == 0)
     return;
