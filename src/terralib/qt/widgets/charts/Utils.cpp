@@ -498,7 +498,7 @@ void buildNumericFrequencies(int slices, int stat, std::map<std::string, std::ve
         for(size_t k= 0; k < summarizedValuesToOId[i].second.size(); ++k)
           intervalToOIds.at(intervals[j]).push_back(summarizedValuesToOId[i].second[k]);
 
-        frequencies[j] =  frequencies[j]++;
+        ++frequencies[j];
         break;
       }
     }
