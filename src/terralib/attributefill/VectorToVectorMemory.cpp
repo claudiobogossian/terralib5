@@ -107,7 +107,7 @@ bool te::attributefill::VectorToVectorMemory::run()
   toDs->moveBeforeFirst();
 
   te::common::TaskProgress task("Processing Vector to Vector...");
-  task.setTotalSteps(toDs->size());
+  task.setTotalSteps((int)toDs->size());
   task.useTimer(true);
 
   std::string logInfo1 = "";
@@ -576,8 +576,8 @@ std::vector<std::size_t> te::attributefill::VectorToVectorMemory::getIntersectio
                                                                              te::sam::rtree::Index<size_t, 8>* rtree,
                                                                              bool& hasInvalid)
 {
-  int toSpatialPos = te::da::GetFirstSpatialPropertyPos(toDs);
-  int fromSpatialPos = te::da::GetFirstSpatialPropertyPos(fromDs);
+  std::size_t toSpatialPos = te::da::GetFirstSpatialPropertyPos(toDs);
+  std::size_t fromSpatialPos = te::da::GetFirstSpatialPropertyPos(fromDs);
 
   std::map<std::size_t, std::vector<std::size_t> > intersections;
 
@@ -841,7 +841,7 @@ te::dt::AbstractData* te::attributefill::VectorToVectorMemory::getClassWithHighe
 
   std::auto_ptr<te::gm::Geometry> toGeom = toDs->getGeometry(toGeomPos);
   if(toGeom->getSRID() <= 0)
-      toGeom->setSRID(toSrid);
+      toGeom->setSRID((int)toSrid);
 
   std::map<std::string, double> classAreaMap;
   for(std::size_t i = 0; i < dsPos.size(); ++i)
@@ -850,7 +850,7 @@ te::dt::AbstractData* te::attributefill::VectorToVectorMemory::getClassWithHighe
 
     std::auto_ptr<te::gm::Geometry> fromGeom = fromDs->getGeometry(fromGeomPos);
     if(fromGeom->getSRID() <= 0)
-      fromGeom->setSRID(fromSrid);
+      fromGeom->setSRID((int)fromSrid);
 
     std::auto_ptr<te::gm::Geometry> interGeom;
 
@@ -965,7 +965,7 @@ double te::attributefill::VectorToVectorMemory::getPercentageOfTotalArea(te::da:
 
   std::auto_ptr<te::gm::Geometry> toGeom = toDs->getGeometry(toGeomPos);
   if(toGeom->getSRID() <= 0)
-      toGeom->setSRID(toSrid);
+    toGeom->setSRID((int)toSrid);
 
   double classArea = 0;
   for(std::size_t i = 0; i < dsPos.size(); ++i)
@@ -974,7 +974,7 @@ double te::attributefill::VectorToVectorMemory::getPercentageOfTotalArea(te::da:
 
     std::auto_ptr<te::gm::Geometry> fromGeom = fromDs->getGeometry(fromGeomPos);
     if(fromGeom->getSRID() <= 0)
-      fromGeom->setSRID(fromSrid);
+      fromGeom->setSRID((int)fromSrid);
 
     if(checkGeometries(fromGeom.get(), dsPos[i], toGeom.get()))
     {
@@ -1006,7 +1006,7 @@ std::map<std::string, double> te::attributefill::VectorToVectorMemory::getPercen
 
   std::auto_ptr<te::gm::Geometry> toGeom = toDs->getGeometry(toGeomPos);
   if(toGeom->getSRID() <= 0)
-      toGeom->setSRID(toSrid);
+    toGeom->setSRID((int)toSrid);
 
   double toGeomArea = getArea(toGeom.get());
 
@@ -1016,7 +1016,7 @@ std::map<std::string, double> te::attributefill::VectorToVectorMemory::getPercen
 
     std::auto_ptr<te::gm::Geometry> fromGeom = fromDs->getGeometry(fromGeomPos);
     if(fromGeom->getSRID() <= 0)
-      fromGeom->setSRID(fromSrid);
+      fromGeom->setSRID((int)fromSrid);
 
     if(!checkGeometries(fromGeom.get(), dsPos[i], toGeom.get()))
     {
@@ -1055,7 +1055,7 @@ double te::attributefill::VectorToVectorMemory::getWeightedByArea(te::da::DataSe
 
   std::auto_ptr<te::gm::Geometry> toGeom = toDs->getGeometry(toGeomPos);
   if(toGeom->getSRID() <= 0)
-      toGeom->setSRID(toSrid);
+    toGeom->setSRID((int)toSrid);
 
   double toGeomArea = getArea(toGeom.get());
 
@@ -1067,7 +1067,7 @@ double te::attributefill::VectorToVectorMemory::getWeightedByArea(te::da::DataSe
 
     std::auto_ptr<te::gm::Geometry> fromGeom = fromDs->getGeometry(fromGeomPos);
     if(fromGeom->getSRID() <= 0)
-      fromGeom->setSRID(fromSrid);
+      fromGeom->setSRID((int)fromSrid);
 
     if(checkGeometries(fromGeom.get(), dsPos[i], toGeom.get()))
     {
@@ -1105,7 +1105,7 @@ double te::attributefill::VectorToVectorMemory::getWeightedSumByArea(te::da::Dat
 
   std::auto_ptr<te::gm::Geometry> toGeom = toDs->getGeometry(toGeomPos);
   if(toGeom->getSRID() <= 0)
-      toGeom->setSRID(toSrid);
+    toGeom->setSRID((int)toSrid);
 
   double weigh = 0;
 
@@ -1115,7 +1115,7 @@ double te::attributefill::VectorToVectorMemory::getWeightedSumByArea(te::da::Dat
 
     std::auto_ptr<te::gm::Geometry> fromGeom = fromDs->getGeometry(fromGeomPos);
     if(fromGeom->getSRID() <= 0)
-      fromGeom->setSRID(fromSrid);
+      fromGeom->setSRID((int)fromSrid);
 
     double fromGeomArea = getArea(fromGeom.get());
 
@@ -1334,7 +1334,7 @@ KD_ADAPTATIVE_TREE* te::attributefill::VectorToVectorMemory::getKDtree(te::da::D
 
       if(p->getSRID() != toSrid)
       {
-        p->transform(toSrid);
+        p->transform((int)toSrid);
       }
 
       te::gm::Coord2D coord(p->getX(), p->getY());
