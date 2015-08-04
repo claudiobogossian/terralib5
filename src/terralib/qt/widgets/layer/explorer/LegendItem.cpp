@@ -65,6 +65,9 @@ QIcon GetIcon(const std::vector<te::se::Symbolizer*>& symbolizers)
     // let's config de canvas based on the current symbolizer
     cc.config(symb);
 
+    if(symb->getType() == "RasterSymbolizer")
+      return QIcon::fromTheme("raster-symbolizer");
+  
     std::auto_ptr<te::gm::Geometry> gm(GetGeometry(symb));
 
     canvas.draw(gm.get());

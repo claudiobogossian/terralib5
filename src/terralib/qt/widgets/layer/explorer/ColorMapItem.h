@@ -76,8 +76,6 @@ namespace te
         */
         //@{
         std::string getAsString() const;
-
-        Qt::ItemFlags flags();
         //@}
 
       protected:

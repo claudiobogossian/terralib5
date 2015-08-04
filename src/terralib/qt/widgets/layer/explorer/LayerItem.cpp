@@ -81,9 +81,7 @@ te::qt::widgets::LayerItem::LayerItem(te::map::AbstractLayerPtr layer) :
   if(!m_layer->isValid())
     return;
 
-  bool raster = m_layer->getSchema()->hasRaster();
-
-  if(m_layer->getStyle() != 0 && !raster)
+  if(m_layer->getStyle() != 0)
   {
     std::vector<te::se::Rule*> rules = m_layer->getStyle()->getRules();
 
@@ -198,9 +196,14 @@ int te::qt::widgets::LayerItem::updateGrouping()
     if(rs && rs->getColorMap())
     {
       if(pos >= 0)
-        insertChild(new ColorMapItem(rs->getColorMap()), pos + 1);
+        insertChild(new ColorMapItem(rs->getColorMap()), pos);
       else
-        addChild(new ColorMapItem(rs->getColorMap()));
+      {
+        TreeItem* aux = new ColorMapItem(rs->getColorMap());
+        addChild(aux);
+
+        pos = aux->getPosition();
+      }
     }
   }
 

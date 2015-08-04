@@ -113,18 +113,14 @@ te::qt::widgets::ColorMapItem::~ColorMapItem()
   if(map == m_colorMap)
   {
     // If the item is a color map item, remove the all style from the layer associated to the parent of this color map item.
-    layer->setStyle(0);
 
     rs->setColorMap(0);
+
+    layer->setStyle(0);
   }
 }
 
 std::string te::qt::widgets::ColorMapItem::getAsString() const
 {
   return m_label;
-}
-
-Qt::ItemFlags te::qt::widgets::ColorMapItem::flags()
-{
-  return Qt::ItemIsDropEnabled | Qt::ItemIsEnabled;
 }
