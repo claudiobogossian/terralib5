@@ -1759,6 +1759,15 @@ namespace te
                     );
                 } 
               }
+              else
+              {
+                for( inputRasterBandsIdx = 0 ; inputRasterBandsIdx < inputRasterBandsSize ;
+                  ++inputRasterBandsIdx )
+                {              
+                  outDoubleBuffers[ inputRasterBandsIdx ][ elementIdx ] =
+                    outputBandsNoDataValues[ inputRasterBandsIdx ] ;
+                } 
+              }
             }
             
             // Writing the remmaped blocks
