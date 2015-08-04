@@ -72,9 +72,7 @@ namespace te
 
     protected:
 
-      te::map::AbstractLayerPtr m_layer;
       Feature* m_feature;
-      te::edit::EditionManager* m_editionManager;
       std::vector<Feature*> m_updateWatches;
 
     };

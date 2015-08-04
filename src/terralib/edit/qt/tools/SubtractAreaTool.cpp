@@ -29,10 +29,11 @@
 
 te::edit::SubtractAreaTool::SubtractAreaTool(te::edit::EditionManager* editionManager, te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent)
 : CreateLineTool(editionManager, display, layer, Qt::ArrowCursor, 0),
-m_layer(layer),
-m_feature(0),
-m_editionManager(editionManager)
+m_feature(0)
 {
+
+  // Signals & slots
+  connect(m_display, SIGNAL(extentChanged()), SLOT(onExtentChanged()));
 }
 
 te::edit::SubtractAreaTool::~SubtractAreaTool()
@@ -162,7 +163,7 @@ te::gm::Geometry* te::edit::SubtractAreaTool::buildPolygon()
   te::gm::Geometry* mpol = 0;
 
   if (!pHole->intersects(m_feature->getGeometry()))
-    return m_feature->getGeometry();
+    return dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone());
 
   mpol = Difference(m_feature->getGeometry(), pHole);
 
@@ -194,9 +195,9 @@ void te::edit::SubtractAreaTool::pickFeature(const te::map::AbstractLayerPtr& la
     {
 
       std::auto_ptr<te::gm::Geometry> geom = ds->getGeometry(geomProp->getName());
-      te::gm::Envelope Env(*geom->getMBR());
+      te::gm::Envelope env(*geom->getMBR());
 
-      m_feature = PickFeature(m_editionManager, m_layer, Env, m_display->getSRID());
+      m_feature = PickFeature(m_editionManager, m_layer, env, m_display->getSRID());
 
     }
 
