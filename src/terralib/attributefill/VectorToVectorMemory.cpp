@@ -210,7 +210,8 @@ bool te::attributefill::VectorToVectorMemory::run()
           else if(funcs[i] == te::attributefill::HIGHEST_OCCURRENCE)
           {
             te::dt::AbstractData* value = getClassWithHighestOccurrence(fromDs.get(), intersections, prop->getName());
-            item->setValue(outPropName, value);
+            if (value)
+              item->setValue(outPropName, value);
           }
           else if(funcs[i] == te::attributefill::PERCENT_CLASS)
           {
@@ -819,7 +820,7 @@ te::dt::AbstractData* te::attributefill::VectorToVectorMemory::getClassWithHighe
   }
   else
   {
-    data = new te::dt::SimpleData<std::string, te::dt::STRING_TYPE>("");
+    return 0;
   }
 
   return data;
@@ -1268,32 +1269,38 @@ te::dt::AbstractData* te::attributefill::VectorToVectorMemory::getDataBasedOnTyp
     }
     case te::dt::INT16_TYPE:
     {
-      data = new te::dt::SimpleData<std::string, te::dt::INT16_TYPE>(strValue);
+      int16_t v = boost::lexical_cast<int16_t>(strValue);
+      data = new te::dt::SimpleData<int16_t, te::dt::INT16_TYPE>(v);
       break;
     }
     case te::dt::INT32_TYPE:
     {
-      data = new te::dt::SimpleData<std::string, te::dt::INT32_TYPE>(strValue);
+      int32_t v = boost::lexical_cast<int32_t>(strValue);
+      data = new te::dt::SimpleData<int32_t, te::dt::INT32_TYPE>(v);
       break;
     }
     case te::dt::INT64_TYPE:
     {
-      data = new te::dt::SimpleData<std::string, te::dt::INT64_TYPE>(strValue);
+      int64_t v = boost::lexical_cast<int64_t>(strValue);
+      data = new te::dt::SimpleData<int64_t, te::dt::INT64_TYPE>(v);
       break;
     }
     case te::dt::UINT16_TYPE:
     {
-      data = new te::dt::SimpleData<std::string, te::dt::UINT16_TYPE>(strValue);
+      uint16_t v = boost::lexical_cast<uint16_t>(strValue);
+      data = new te::dt::SimpleData<uint16_t, te::dt::INT16_TYPE>(v);
       break;
     }
     case te::dt::UINT32_TYPE:
     {
-      data = new te::dt::SimpleData<std::string, te::dt::UINT32_TYPE>(strValue);
+      uint32_t v = boost::lexical_cast<uint32_t>(strValue);
+      data = new te::dt::SimpleData<uint32_t, te::dt::INT32_TYPE>(v);
       break;
     }
     case te::dt::UINT64_TYPE:
     {
-      data = new te::dt::SimpleData<std::string, te::dt::UINT64_TYPE>(strValue);
+      uint64_t v = boost::lexical_cast<uint64_t>(strValue);
+      data = new te::dt::SimpleData<uint64_t, te::dt::INT64_TYPE>(v);
       break;
     }
     default:
