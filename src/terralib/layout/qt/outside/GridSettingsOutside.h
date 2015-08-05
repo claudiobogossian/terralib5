@@ -277,7 +277,7 @@ namespace te
         void setGeodesicValues2GMS();
         void setGeodesicValues2Degrees();
         void setMask(QLineEdit *lat, QLineEdit *lon);
-        QString DD2DMS(const QString dd);
+        QString DD2DMS(QString dd);
         QString DMS2DD(const QString dms);
 
       private:
