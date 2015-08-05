@@ -41,7 +41,7 @@ void te::qt::widgets::Animation::setDataKeyValues()
   setStartValue(ai->m_animationRoute[0]);
 
   boost::posix_time::ptime itime = ai->m_animationTime[0].getTimeInstant();
-  boost::posix_time::ptime ftime = ai->m_animationTime[size-1].getTimeInstant();
+  boost::posix_time::ptime ftime = ai->m_animationTime[(int)size-1].getTimeInstant();
 
   // if the initial time is greater than the total initial time,
   // be stopped until the time be equal to the initial time this animation.
@@ -62,14 +62,14 @@ void te::qt::widgets::Animation::setDataKeyValues()
 
   for(size_t i = 1; i < size-1; ++i)
   {
-    te::dt::TimeInstant tinstant = ai->m_animationTime[i]; // animation time instant
+    te::dt::TimeInstant tinstant = ai->m_animationTime[(int)i]; // animation time instant
     boost::posix_time::ptime time = tinstant.getTimeInstant();
     diff = time - iTime;
     double seconds = diff.total_seconds();
 
     // normalizing the time
     double t = seconds / totalSeconds;
-    setKeyValueAt(t, ai->m_animationRoute[i]);
+    setKeyValueAt(t, ai->m_animationRoute[(int)i]);
   }
 
   // if the final time is shorter than the total final time,
@@ -85,11 +85,11 @@ void te::qt::widgets::Animation::setDataKeyValues()
     // normalizing the time
     double t = seconds / totalSeconds;
     ai->m_norFinalTime = t;
-    setKeyValueAt(t, ai->m_animationRoute[size-1]);  // add a new key value
+    setKeyValueAt(t, ai->m_animationRoute[(int)size-1]);  // add a new key value
   }
 
   // set last animation point
-  setEndValue(ai->m_animationRoute[size-1]);
+  setEndValue(ai->m_animationRoute[(int)size-1]);
 }
 
 int te::qt::widgets::Animation::getAnimationDataIndex(const double& trel)
@@ -117,12 +117,12 @@ int te::qt::widgets::Animation::getAnimationDataIndex(const double& trel)
   double afSeconds = diff.total_seconds();
   double ftrel = afSeconds / totalSeconds;
   if(trel > ftrel)
-    return count-1;
+    return (int)count-1;
 
   size_t i;
   for(i = 0; i < count; ++i)
   {
-    te::dt::TimeInstant tinstant = ai->m_animationTime[i]; // animation time instant
+    te::dt::TimeInstant tinstant = ai->m_animationTime[(int)i]; // animation time instant
     boost::posix_time::ptime time = tinstant.getTimeInstant();
     diff = time - iTime;
     double seconds = diff.total_seconds();
@@ -133,12 +133,12 @@ int te::qt::widgets::Animation::getAnimationDataIndex(const double& trel)
     if(t >= trel)
     {
       if(direction() == QAbstractAnimation::Forward && i != 0)
-        return i - 1;
+        return (int)i - 1;
       else
-        return i;
+        return (int)i;
     }
   }
   if(i == count)
-    return count - 1;
+    return (int)count - 1;
   return 0;
 }

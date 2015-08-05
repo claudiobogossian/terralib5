@@ -30,7 +30,7 @@ te::qt::widgets::PixmapItem::PixmapItem(const QString& title, const QString& fil
     m_suffix = ".bin";
 
   for(size_t i = 0; i < 256; ++i)
-    m_lut[i] = QColor(i, i, i, 255);
+    m_lut[(uchar)i] = QColor((int)i, (int)i, (int)i, 255);
 }
 
 te::qt::widgets::PixmapItem::~PixmapItem()
@@ -63,7 +63,7 @@ void te::qt::widgets::PixmapItem::createAnimationDataInDisplayProjection()
   size_t ini = 0;
   size_t size = m_time.size();
   size_t fim = size;
-  for(size_t i = 0; i < size; ++i)
+  for(int i = 0; i < (int)size; ++i)
   {
     if(m_time[i] == iTime || m_time[i] > iTime)
     {
@@ -71,7 +71,7 @@ void te::qt::widgets::PixmapItem::createAnimationDataInDisplayProjection()
       break;
     }
   }
-  for(size_t i = size-1; i >= 0; --i)
+  for(int i = (int)size-1; i >= 0; --i)
   {
     if(m_time[i] == fTime || m_time[i] < fTime)
     {
@@ -82,7 +82,7 @@ void te::qt::widgets::PixmapItem::createAnimationDataInDisplayProjection()
   size = fim - ini + 1;
   size_t tfim = ini + size;
 
-  for(size_t i = ini; i < tfim; ++i)
+  for(int i = (int)ini; i < (int)tfim; ++i)
   {
     QString f = m_files[i];
     m_animationFiles.push_back(f);
@@ -145,10 +145,10 @@ void te::qt::widgets::PixmapItem::setLUT(const std::vector<std::pair<int, QColor
   std::vector<std::pair<int, QColor> >::const_iterator it = tab.begin();
   size_t v = (*it).first;
   QColor c = (*it).second;
-  while(i <= 255)
+  while(i < 256)
   {
     while(i <= v)
-      m_lut[i++] = c;
+      m_lut[(uchar)i++] = c;
 
     ++it;
     if(it == tab.end())
@@ -158,8 +158,8 @@ void te::qt::widgets::PixmapItem::setLUT(const std::vector<std::pair<int, QColor
     c = (*it).second;
   }
 
-  while(i <= 255)
-    m_lut[i++] = c;
+  while(i < 256)
+    m_lut[(uchar)i++] = c;
 
 }
 
