@@ -80,10 +80,9 @@ namespace te
     protected:
 
       std::vector<te::dt::Property*> getTabularProps(te::da::DataSetType* dsType);
-
-
-      // it defines the type of the result considering the input geometries being aggregated
-      te::gm::GeomType getGeomResultType(te::gm::GeomType geom);
+      
+      // it defines the type of the result considering the input geometries.
+      te::gm::GeomType te::vp::IntersectionOp::setGeomResultType(te::gm::GeomType firstGeom, te::gm::GeomType secondGeom);
       
       te::da::DataSourcePtr m_inFirstDsrc;
       std::string m_inFirstDsetName;
