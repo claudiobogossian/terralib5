@@ -10,7 +10,6 @@
 #include <QtGui/QPainter>
 #include <QtCore/QVector>
 
-
 te::qt::widgets::AnimationItem::AnimationItem(const QString& title, te::qt::widgets::MapDisplay* display)
   : QObject(),
   QGraphicsPixmapItem(),
@@ -82,7 +81,7 @@ void te::qt::widgets::AnimationItem::createAnimationDataInDisplayProjection()
   size_t fim = size;
   for(size_t i = 0; i < size; ++i)
   {
-    if(m_time[i] == iTime || m_time[i] > iTime)
+    if(m_time[(int)i] == iTime || m_time[(int)i] > iTime)
     {
       ini = i;
       break;
@@ -90,7 +89,7 @@ void te::qt::widgets::AnimationItem::createAnimationDataInDisplayProjection()
   }
   for(size_t i = size-1; i >= 0; --i)
   {
-    if(m_time[i] == fTime || m_time[i] < fTime)
+    if (m_time[(int)i] == fTime || m_time[(int)i] < fTime)
     {
       fim = i;
       break;
@@ -112,7 +111,7 @@ void te::qt::widgets::AnimationItem::createAnimationDataInDisplayProjection()
     {
       std::auto_ptr<te::gm::Point> p(line.getPointN(i));
       m_animationRoute.push_back(QPointF(p->getX(), p->getY()));
-      m_animationTime.push_back(m_time[i]);
+      m_animationTime.push_back(m_time[(int)i]);
     }
   }
   else
@@ -121,7 +120,7 @@ void te::qt::widgets::AnimationItem::createAnimationDataInDisplayProjection()
     {
       std::auto_ptr<te::gm::Point> p(m_route->getPointN(i));
       m_animationRoute.push_back(QPointF(p->getX(), p->getY()));
-      m_animationTime.push_back(m_time[i]);
+      m_animationTime.push_back(m_time[(int)i]);
     }
   }
 }

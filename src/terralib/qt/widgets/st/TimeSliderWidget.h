@@ -123,6 +123,7 @@ namespace te
           void addTemporalImages(const QString& filePath);
 
           te::qt::widgets::PixmapItem* getMetadata(const QString& path);
+          void generateImageRoute(PixmapItem* pi, const Animation* animation, const size_t& count);
 
           te::qt::widgets::PixmapItem* getGoesMetadata(const QString& path);
           te::dt::TimeInstant getGoesTime(const QString& file);
