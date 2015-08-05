@@ -242,6 +242,9 @@ void te::qt::widgets::QueryDataSourceDialog::onBaseDataSetSelected(int index)
 
     ++it;
   }
+
+  m_ui->m_pkTableComboBox->setCurrentIndex(index);
+  onPkTableComboBoxSelected(index);
 }
 
 void te::qt::widgets::QueryDataSourceDialog::onDataSetItemClicked(QListWidgetItem* item)

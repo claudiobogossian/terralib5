@@ -176,15 +176,17 @@ namespace te
         /*!
           \brief It verify all intersection between the "From" and "To" data sets.
 
-          \param toDs   The "To" data set.
-          \param fromDs The "From" data set.
-          \param rtree  A generated RTree based on the "From" data set.
+          \param toDs       The "To" data set.
+          \param fromDs     The "From" data set.
+          \param rtree      A generated RTree based on the "From" data set.
+          \param hasInvalid Set true if there are any invalid geometry as intersection candidate.
           
           \return A vector of positions that "To" data set has intersection with "From".
         */
         std::vector<std::size_t> getIntersections(te::da::DataSet* toDs,
                                                   te::da::DataSet* fromDs,
-                                                  te::sam::rtree::Index<size_t, 8>* rtree);
+                                                  te::sam::rtree::Index<size_t, 8>* rtree,
+                                                  bool& hasInvalid);
 
         /*!
           \brief It get the value of all positions in "To" data set that has intersection with

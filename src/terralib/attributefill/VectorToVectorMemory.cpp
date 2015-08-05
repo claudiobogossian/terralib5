@@ -66,6 +66,7 @@ void te::attributefill::VectorToVectorMemory::normalizeClassName(std::string& na
     boost::replace_all(name, ".", "");
     boost::replace_all(name, "'", "");
     boost::replace_all(name, "-", "_");
+    boost::replace_all(name, "&", "e");
   }
 }
 
@@ -106,7 +107,7 @@ bool te::attributefill::VectorToVectorMemory::run()
   toDs->moveBeforeFirst();
 
   te::common::TaskProgress task("Processing Vector to Vector...");
-  task.setTotalSteps(toDs->size());
+  task.setTotalSteps((int)toDs->size());
   task.useTimer(true);
 
   std::string logInfo1 = "";
@@ -133,7 +134,24 @@ bool te::attributefill::VectorToVectorMemory::run()
         }
       }
 
-      std::vector<std::size_t> intersections = getIntersections(toDs.get(), fromDs.get(), rtree);
+      bool hasInvalid = false;
+      std::vector<std::size_t> intersections = getIntersections(toDs.get(), fromDs.get(), rtree, hasInvalid);
+
+      if (hasInvalid)
+      {
+        te::da::PrimaryKey* toPk = toSchema->getPrimaryKey();
+        te::dt::Property* pkProp = toPk->getProperties()[0];
+
+#ifdef TERRALIB_LOGGER_ENABLED
+        std::string ex = "The \"To\" layer geometry (" + pkProp->getName() + ": " + toDs->getValue(pkProp->getName())->toString() + ") has intersection candidate invalid!";
+        te::common::Logger::logDebug("attributefill", ex.c_str());
+#endif //TERRALIB_LOGGER_ENABLED
+
+        m_hasErrors = true;
+        outDs->add(item);
+        continue;
+      }
+
 
       if(intersections.empty() && !hasNoIntersectionOperations())
       {
@@ -192,7 +210,8 @@ bool te::attributefill::VectorToVectorMemory::run()
           else if(funcs[i] == te::attributefill::HIGHEST_OCCURRENCE)
           {
             te::dt::AbstractData* value = getClassWithHighestOccurrence(fromDs.get(), intersections, prop->getName());
-            item->setValue(outPropName, value);
+            if (value)
+              item->setValue(outPropName, value);
           }
           else if(funcs[i] == te::attributefill::PERCENT_CLASS)
           {
@@ -328,7 +347,8 @@ bool te::attributefill::VectorToVectorMemory::run()
     }
   }
 
-  save(outDs, outDst);
+  if (!outDs->isEmpty())
+    save(outDs, outDst);
 
   if(rtree)
     delete rtree;
@@ -553,10 +573,11 @@ std::string te::attributefill::VectorToVectorMemory::getPropertyName(te::dt::Pro
 
 std::vector<std::size_t> te::attributefill::VectorToVectorMemory::getIntersections(te::da::DataSet* toDs,
                                                                              te::da::DataSet* fromDs,
-                                                                             te::sam::rtree::Index<size_t, 8>* rtree)
+                                                                             te::sam::rtree::Index<size_t, 8>* rtree,
+                                                                             bool& hasInvalid)
 {
-  int toSpatialPos = te::da::GetFirstSpatialPropertyPos(toDs);
-  int fromSpatialPos = te::da::GetFirstSpatialPropertyPos(fromDs);
+  std::size_t toSpatialPos = te::da::GetFirstSpatialPropertyPos(toDs);
+  std::size_t fromSpatialPos = te::da::GetFirstSpatialPropertyPos(fromDs);
 
   std::map<std::size_t, std::vector<std::size_t> > intersections;
 
@@ -574,6 +595,9 @@ std::vector<std::size_t> te::attributefill::VectorToVectorMemory::getIntersectio
     std::auto_ptr<te::gm::Geometry> g = fromDs->getGeometry(fromSpatialPos);
     g->setSRID(m_fromLayer->getSRID());
     
+    if (!g->isValid())
+      hasInvalid = true;
+
     if(geom->intersects(g.get()))
     {
       interVec.push_back(report[i]);
@@ -796,7 +820,7 @@ te::dt::AbstractData* te::attributefill::VectorToVectorMemory::getClassWithHighe
   }
   else
   {
-    data = new te::dt::SimpleData<std::string, te::dt::STRING_TYPE>("");
+    return 0;
   }
 
   return data;
@@ -817,7 +841,7 @@ te::dt::AbstractData* te::attributefill::VectorToVectorMemory::getClassWithHighe
 
   std::auto_ptr<te::gm::Geometry> toGeom = toDs->getGeometry(toGeomPos);
   if(toGeom->getSRID() <= 0)
-      toGeom->setSRID(toSrid);
+      toGeom->setSRID((int)toSrid);
 
   std::map<std::string, double> classAreaMap;
   for(std::size_t i = 0; i < dsPos.size(); ++i)
@@ -826,7 +850,7 @@ te::dt::AbstractData* te::attributefill::VectorToVectorMemory::getClassWithHighe
 
     std::auto_ptr<te::gm::Geometry> fromGeom = fromDs->getGeometry(fromGeomPos);
     if(fromGeom->getSRID() <= 0)
-      fromGeom->setSRID(fromSrid);
+      fromGeom->setSRID((int)fromSrid);
 
     std::auto_ptr<te::gm::Geometry> interGeom;
 
@@ -941,7 +965,7 @@ double te::attributefill::VectorToVectorMemory::getPercentageOfTotalArea(te::da:
 
   std::auto_ptr<te::gm::Geometry> toGeom = toDs->getGeometry(toGeomPos);
   if(toGeom->getSRID() <= 0)
-      toGeom->setSRID(toSrid);
+    toGeom->setSRID((int)toSrid);
 
   double classArea = 0;
   for(std::size_t i = 0; i < dsPos.size(); ++i)
@@ -950,7 +974,7 @@ double te::attributefill::VectorToVectorMemory::getPercentageOfTotalArea(te::da:
 
     std::auto_ptr<te::gm::Geometry> fromGeom = fromDs->getGeometry(fromGeomPos);
     if(fromGeom->getSRID() <= 0)
-      fromGeom->setSRID(fromSrid);
+      fromGeom->setSRID((int)fromSrid);
 
     if(checkGeometries(fromGeom.get(), dsPos[i], toGeom.get()))
     {
@@ -982,7 +1006,7 @@ std::map<std::string, double> te::attributefill::VectorToVectorMemory::getPercen
 
   std::auto_ptr<te::gm::Geometry> toGeom = toDs->getGeometry(toGeomPos);
   if(toGeom->getSRID() <= 0)
-      toGeom->setSRID(toSrid);
+    toGeom->setSRID((int)toSrid);
 
   double toGeomArea = getArea(toGeom.get());
 
@@ -992,7 +1016,7 @@ std::map<std::string, double> te::attributefill::VectorToVectorMemory::getPercen
 
     std::auto_ptr<te::gm::Geometry> fromGeom = fromDs->getGeometry(fromGeomPos);
     if(fromGeom->getSRID() <= 0)
-      fromGeom->setSRID(fromSrid);
+      fromGeom->setSRID((int)fromSrid);
 
     if(!checkGeometries(fromGeom.get(), dsPos[i], toGeom.get()))
     {
@@ -1031,7 +1055,7 @@ double te::attributefill::VectorToVectorMemory::getWeightedByArea(te::da::DataSe
 
   std::auto_ptr<te::gm::Geometry> toGeom = toDs->getGeometry(toGeomPos);
   if(toGeom->getSRID() <= 0)
-      toGeom->setSRID(toSrid);
+    toGeom->setSRID((int)toSrid);
 
   double toGeomArea = getArea(toGeom.get());
 
@@ -1043,7 +1067,7 @@ double te::attributefill::VectorToVectorMemory::getWeightedByArea(te::da::DataSe
 
     std::auto_ptr<te::gm::Geometry> fromGeom = fromDs->getGeometry(fromGeomPos);
     if(fromGeom->getSRID() <= 0)
-      fromGeom->setSRID(fromSrid);
+      fromGeom->setSRID((int)fromSrid);
 
     if(checkGeometries(fromGeom.get(), dsPos[i], toGeom.get()))
     {
@@ -1081,7 +1105,7 @@ double te::attributefill::VectorToVectorMemory::getWeightedSumByArea(te::da::Dat
 
   std::auto_ptr<te::gm::Geometry> toGeom = toDs->getGeometry(toGeomPos);
   if(toGeom->getSRID() <= 0)
-      toGeom->setSRID(toSrid);
+    toGeom->setSRID((int)toSrid);
 
   double weigh = 0;
 
@@ -1091,7 +1115,7 @@ double te::attributefill::VectorToVectorMemory::getWeightedSumByArea(te::da::Dat
 
     std::auto_ptr<te::gm::Geometry> fromGeom = fromDs->getGeometry(fromGeomPos);
     if(fromGeom->getSRID() <= 0)
-      fromGeom->setSRID(fromSrid);
+      fromGeom->setSRID((int)fromSrid);
 
     double fromGeomArea = getArea(fromGeom.get());
 
@@ -1245,32 +1269,38 @@ te::dt::AbstractData* te::attributefill::VectorToVectorMemory::getDataBasedOnTyp
     }
     case te::dt::INT16_TYPE:
     {
-      data = new te::dt::SimpleData<std::string, te::dt::INT16_TYPE>(strValue);
+      int16_t v = boost::lexical_cast<int16_t>(strValue);
+      data = new te::dt::SimpleData<int16_t, te::dt::INT16_TYPE>(v);
       break;
     }
     case te::dt::INT32_TYPE:
     {
-      data = new te::dt::SimpleData<std::string, te::dt::INT32_TYPE>(strValue);
+      int32_t v = boost::lexical_cast<int32_t>(strValue);
+      data = new te::dt::SimpleData<int32_t, te::dt::INT32_TYPE>(v);
       break;
     }
     case te::dt::INT64_TYPE:
     {
-      data = new te::dt::SimpleData<std::string, te::dt::INT64_TYPE>(strValue);
+      int64_t v = boost::lexical_cast<int64_t>(strValue);
+      data = new te::dt::SimpleData<int64_t, te::dt::INT64_TYPE>(v);
       break;
     }
     case te::dt::UINT16_TYPE:
     {
-      data = new te::dt::SimpleData<std::string, te::dt::UINT16_TYPE>(strValue);
+      uint16_t v = boost::lexical_cast<uint16_t>(strValue);
+      data = new te::dt::SimpleData<uint16_t, te::dt::INT16_TYPE>(v);
       break;
     }
     case te::dt::UINT32_TYPE:
     {
-      data = new te::dt::SimpleData<std::string, te::dt::UINT32_TYPE>(strValue);
+      uint32_t v = boost::lexical_cast<uint32_t>(strValue);
+      data = new te::dt::SimpleData<uint32_t, te::dt::INT32_TYPE>(v);
       break;
     }
     case te::dt::UINT64_TYPE:
     {
-      data = new te::dt::SimpleData<std::string, te::dt::UINT64_TYPE>(strValue);
+      uint64_t v = boost::lexical_cast<uint64_t>(strValue);
+      data = new te::dt::SimpleData<uint64_t, te::dt::INT64_TYPE>(v);
       break;
     }
     default:
@@ -1304,7 +1334,7 @@ KD_ADAPTATIVE_TREE* te::attributefill::VectorToVectorMemory::getKDtree(te::da::D
 
       if(p->getSRID() != toSrid)
       {
-        p->transform(toSrid);
+        p->transform((int)toSrid);
       }
 
       te::gm::Coord2D coord(p->getX(), p->getY());
