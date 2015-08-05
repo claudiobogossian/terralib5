@@ -32,6 +32,8 @@
 #include "../common/STLUtils.h"
 #include "../common/StringUtils.h"
 #include "../common/Translator.h"
+#include "../dataaccess/dataset/DataSetAdapter.h"
+#include "../dataaccess/dataset/DataSetTypeConverter.h"
 #include "../dataaccess/utils/Utils.h"
 #include "../datatype/StringProperty.h"
 #include "../datatype/SimpleData.h"
@@ -82,15 +84,30 @@ te::attributefill::VectorToVectorMemory::~VectorToVectorMemory()
 
 bool te::attributefill::VectorToVectorMemory::run()
 {
-  te::gm::Envelope fromEnv = m_fromLayer->getExtent();
-  std::auto_ptr<te::da::DataSet> fromDs = m_fromLayer->getData();
   int fromSrid = m_fromLayer->getSRID();
-  std::auto_ptr<te::da::DataSetType> fromSchema = m_fromLayer->getSchema();
+  int toSrid = m_toLayer->getSRID();
+
+  std::auto_ptr<te::da::DataSetType> fromSchemaOrigin = m_fromLayer->getSchema();
+
+
+  te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter(fromSchemaOrigin.get(), m_outDsrc->getCapabilities(), m_outDsrc->getEncoding());
+
+  te::da::AssociateDataSetTypeConverterSRID(converter, fromSrid, toSrid);
+
+  std::auto_ptr<te::da::DataSetType> fromSchema(converter->getResult());
+
+  std::auto_ptr<te::da::DataSet> fromDsOrigin = m_fromLayer->getData();
+
+  std::auto_ptr<te::da::DataSetAdapter> fromDs(te::da::CreateAdapter(fromDsOrigin.get(), converter));
+
+  te::gm::Envelope fromEnv = m_fromLayer->getExtent();
 
   te::gm::Envelope toEnv = m_toLayer->getExtent();
   std::auto_ptr<te::da::DataSet> toDs = m_toLayer->getData();
   std::auto_ptr<te::da::DataSetType> toSchema = m_toLayer->getSchema();
-  int toSrid = m_toLayer->getSRID();
+
+  if (fromSrid != toSrid)
+    fromEnv.transform(fromSrid, toSrid);
 
   if(!fromEnv.intersects(toEnv))
   {
@@ -368,6 +385,7 @@ te::da::DataSetType* te::attributefill::VectorToVectorMemory::getOutputDataSetTy
 
   te::da::DataSetType* dst = new te::da::DataSetType(*toScheme.get());
   dst->setName(m_outDset);
+  dst->setTitle(m_outDset);
 
   std::vector<te::dt::Property*> outProps = dst->getProperties();
   std::vector<te::dt::Property*> pkProps = dst->getPrimaryKey()->getProperties();
@@ -584,10 +602,13 @@ std::vector<std::size_t> te::attributefill::VectorToVectorMemory::getIntersectio
   std::map<std::size_t, std::vector<std::size_t> > intersections;
 
   std::auto_ptr<te::gm::Geometry> geom = toDs->getGeometry(toSpatialPos);
-  geom->setSRID(m_toLayer->getSRID());
 
   std::vector<size_t> report;
   rtree->search(*geom->getMBR(), report);
+
+  te::common::TaskProgress task("Check intersection...");
+  task.setTotalSteps((int)report.size());
+  task.useTimer(true);
 
   std::vector<std::size_t> interVec;
   for(std::size_t i = 0; i < report.size(); ++i)
@@ -595,7 +616,6 @@ std::vector<std::size_t> te::attributefill::VectorToVectorMemory::getIntersectio
     fromDs->move(report[i]);
 
     std::auto_ptr<te::gm::Geometry> g = fromDs->getGeometry(fromSpatialPos);
-    g->setSRID(m_fromLayer->getSRID());
     
     if (!g->isValid())
       hasInvalid = true;
@@ -604,6 +624,8 @@ std::vector<std::size_t> te::attributefill::VectorToVectorMemory::getIntersectio
     {
       interVec.push_back(report[i]);
     }
+
+    task.pulse();
   }
   return interVec;
 }
@@ -861,8 +883,6 @@ te::dt::AbstractData* te::attributefill::VectorToVectorMemory::getClassWithHighe
     fromDs->move(dsPos[i]);
 
     std::auto_ptr<te::gm::Geometry> fromGeom = fromDs->getGeometry(fromGeomPos);
-    if(fromGeom->getSRID() <= 0)
-      fromGeom->setSRID((int)fromSrid);
 
     std::auto_ptr<te::gm::Geometry> interGeom;
 
@@ -985,8 +1005,6 @@ double te::attributefill::VectorToVectorMemory::getPercentageOfTotalArea(te::da:
     fromDs->move(dsPos[i]);
 
     std::auto_ptr<te::gm::Geometry> fromGeom = fromDs->getGeometry(fromGeomPos);
-    if(fromGeom->getSRID() <= 0)
-      fromGeom->setSRID((int)fromSrid);
 
     if(checkGeometries(fromGeom.get(), dsPos[i], toGeom.get()))
     {
@@ -1027,8 +1045,6 @@ std::map<std::string, double> te::attributefill::VectorToVectorMemory::getPercen
     fromDs->move(dsPos[i]);
 
     std::auto_ptr<te::gm::Geometry> fromGeom = fromDs->getGeometry(fromGeomPos);
-    if(fromGeom->getSRID() <= 0)
-      fromGeom->setSRID((int)fromSrid);
 
     if(!checkGeometries(fromGeom.get(), dsPos[i], toGeom.get()))
     {
@@ -1078,8 +1094,6 @@ double te::attributefill::VectorToVectorMemory::getWeightedByArea(te::da::DataSe
     fromDs->move(dsPos[i]);
 
     std::auto_ptr<te::gm::Geometry> fromGeom = fromDs->getGeometry(fromGeomPos);
-    if(fromGeom->getSRID() <= 0)
-      fromGeom->setSRID((int)fromSrid);
 
     if(checkGeometries(fromGeom.get(), dsPos[i], toGeom.get()))
     {
@@ -1126,8 +1140,6 @@ double te::attributefill::VectorToVectorMemory::getWeightedSumByArea(te::da::Dat
     fromDs->move(dsPos[i]);
 
     std::auto_ptr<te::gm::Geometry> fromGeom = fromDs->getGeometry(fromGeomPos);
-    if(fromGeom->getSRID() <= 0)
-      fromGeom->setSRID((int)fromSrid);
 
     double fromGeomArea = getArea(fromGeom.get());
 
