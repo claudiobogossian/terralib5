@@ -108,9 +108,6 @@
 #include "../../item/SVGModel.h"
 #include "../../item/SVGController.h"
 #include "../item/SVGItem.h"
-#include "../item/NewRectangleItem.h"
-#include "../item/NewElipseItem.h"
-#include "../item/NewElipseItemModel.h"
 #include "../../core/pattern/mvc/AbstractItemController.h"
 #include "../item/TextController1.h"
 

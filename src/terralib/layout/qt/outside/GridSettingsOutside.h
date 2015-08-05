@@ -39,6 +39,8 @@
 #include "../../../color/RGBAColor.h"
 #include "../../core/property/Property.h"
 
+class QLineEdit;
+
 namespace Ui { class GridSettings; }
 
 namespace te
@@ -263,13 +265,20 @@ namespace te
         virtual void initColor( QWidget* widget, std::string nameComponent, EnumType* gridType );
 
         virtual void initCombo(QWidget* widget, std::string nameComponent, EnumType* gridType);
-                
+
       protected:
 
         PlanarGridSettingsConfigProperties* m_planarGridSettings;
         GeodesicGridSettingsConfigProperties* m_geodesicGridSettings;
         EnumType* m_planarType;
         EnumType* m_geodesicType;
+
+        void setGeodesicValues();
+        void setGeodesicValues2GMS();
+        void setGeodesicValues2Degrees();
+        void setMask(QLineEdit *lat, QLineEdit *lon);
+        QString DD2DMS(QString dd);
+        QString DMS2DD(const QString dms);
 
       private:
 
