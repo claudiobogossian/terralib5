@@ -55,7 +55,7 @@ namespace te
           \param controller "Controller" part of MVC component
           \param o "Model" part of MVC component
         */
-        TitleItem( ItemController* controller, Observable* o, bool invertedMatrix = false );
+        TitleItem( AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix = false );
 
         /*!
           \brief Destructor

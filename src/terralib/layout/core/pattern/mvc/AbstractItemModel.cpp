@@ -34,8 +34,8 @@ te::layout::AbstractItemModel::AbstractItemModel()
 
   {
     Property property(0);
-    property.setName("x1");
-    property.setLabel("x1");
+    property.setName("x");
+    property.setLabel("X");
     property.setValue(boundingBox.getLowerLeftX(), dataType->getDataTypeDouble());
     property.setEditable(false);
     m_properties.addProperty(property);
@@ -43,8 +43,8 @@ te::layout::AbstractItemModel::AbstractItemModel()
 
   {
     Property property(0);
-    property.setName("y1");
-    property.setLabel("y1");
+    property.setName("y");
+    property.setLabel("Y");
     property.setValue(boundingBox.getLowerLeftY(), dataType->getDataTypeDouble());
     property.setEditable(false);
     m_properties.addProperty(property);

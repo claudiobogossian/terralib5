@@ -160,7 +160,7 @@ void te::layout::Scene::insertItem( QGraphicsItem* item )
     {
       QTransform transf = m_matrix.inverted();
       item->setTransform(transf);
-    }    
+    }
   }
 
   item->setZValue(total);
@@ -425,8 +425,6 @@ QGraphicsItem* te::layout::Scene::createItem( const te::gm::Coord2D& coord )
       }
     }
   }
-
-  this->insertItem(item);
 
   Context::getInstance().setMode(type->getModeNone());
 

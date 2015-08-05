@@ -49,6 +49,7 @@ te::layout::TitleModel::TitleModel() :
   m_borderWidth(0.5)
 
 {
+  /*
 
   m_type = Enums::getInstance().getEnumObjectType()->getTitleItem();
 
@@ -61,6 +62,7 @@ te::layout::TitleModel::TitleModel() :
 
   m_textgridProperties = new TextGridSettingsConfigProperties;
   m_text = "Text";
+  */
 }
 
 te::layout::TitleModel::~TitleModel()
@@ -71,7 +73,7 @@ te::layout::TitleModel::~TitleModel()
     m_textgridProperties = 0;
   }
 }
-
+/*
 te::layout::Properties* te::layout::TitleModel::getProperties() const
 {
   TextModel::getProperties();
@@ -92,7 +94,7 @@ te::layout::Properties* te::layout::TitleModel::getProperties() const
   pro_textGrid.setMenu(true);
   pro_textGrid.setValue(sValuePlanar, dataType->getDataTypeTextGridSettings());
 
-  /* Subproperties of DataTypeGridSettings property */
+  // Subproperties of DataTypeGridSettings property 
 
   Property pro_spacing(m_hashCode);
   pro_spacing.setName(m_textgridProperties->getSpacing());
@@ -271,6 +273,7 @@ void te::layout::TitleModel::updateProperties( te::layout::Properties* propertie
     notifyAll(context);
   }
 }
+*/
 
 void te::layout::TitleModel::setTitle( std::string title )
 {

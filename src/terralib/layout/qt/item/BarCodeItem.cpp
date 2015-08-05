@@ -44,9 +44,10 @@
 #include <QAbstractTextDocumentLayout>
 #include <QGraphicsSceneMouseEvent>
 
-te::layout::BarCodeItem::BarCodeItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
-  TextItem(controller, o, invertedMatrix)
+te::layout::BarCodeItem::BarCodeItem( AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix ) :
+  TextItem(controller, model)
 {
+  /*
   m_invertedMatrix = true;
   m_nameClass = std::string(this->metaObject()->className());
 
@@ -57,7 +58,7 @@ te::layout::BarCodeItem::BarCodeItem( ItemController* controller, Observable* o,
     QFont ft(font.getFamily().c_str(), font.getPointSize());
     document()->setDefaultFont(ft);
     document()->setPlainText("Teste BarCode");
-  }  
+  } */ 
 }
 
 te::layout::BarCodeItem::~BarCodeItem()

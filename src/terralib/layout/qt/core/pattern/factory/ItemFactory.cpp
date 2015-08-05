@@ -76,11 +76,6 @@ te::layout::Observer* te::layout::ItemFactory::make( EnumType* type, ItemParamsC
     LegendItem* legend = new LegendItem(params.getController(), params.getModel());
     item = (Observer*)legend;
   }
-  else if(type == enumObj->getTextItem())
-  {
-    TextItem* txt = new TextItem(params.getController(), params.getModel());
-    item = (Observer*)txt;
-  }
   else if(type == enumObj->getItemGroup())
   {
     ItemGroup* group = new ItemGroup(params.getController(), params.getModel());
@@ -111,16 +106,6 @@ te::layout::Observer* te::layout::ItemFactory::make( EnumType* type, ItemParamsC
     PointItem* point = new PointItem(params.getController(), params.getModel());
     item = (Observer*)point;
   }
-  else if(type == enumObj->getTitleItem())
-  {
-    TitleItem* title = new TitleItem(params.getController(), params.getModel());
-    item = (Observer*)title;
-  }
-  else if(type == enumObj->getTextGridItem())
-  {
-    TextGridItem* txtGrid = new TextGridItem(params.getController(), params.getModel());
-    item = (Observer*)txtGrid;
-  }
   else if(type == enumObj->getLegendChildItem())
   {
     LegendChildItem* mText = new LegendChildItem(params.getController(), params.getModel());
@@ -145,11 +130,6 @@ te::layout::Observer* te::layout::ItemFactory::make( EnumType* type, ItemParamsC
   {
     BalloonItem* balloon = new BalloonItem(params.getController(), params.getModel());
     item = (Observer*)balloon;
-  }
-  else if(type == enumObj->getBarCodeItem())
-  {
-    BarCodeItem* barCode = new BarCodeItem(params.getController(), params.getModel());
-    item = (Observer*)barCode;
   }
   else if(type == enumObj->getGridPlanarItem())
   {
@@ -200,6 +180,22 @@ te::layout::AbstractItemView* te::layout::ItemFactory::makeNew(EnumType* type, I
   else if(type == enumObj->getScaleItem())
   {
     item = new ScaleItem(params.m_newController, params.m_newModel);
+  }
+  else if(type == enumObj->getTextItem())
+  {
+    item = new TextItem(params.m_newController, params.m_newModel);
+  }
+  else if(type == enumObj->getTitleItem())
+  {
+    item = new TitleItem(params.m_newController, params.m_newModel);
+  }
+  else if(type == enumObj->getTextGridItem())
+  {
+    item = new TextGridItem(params.m_newController, params.m_newModel);
+  }
+  else if(type == enumObj->getBarCodeItem())
+  {
+    item = new BarCodeItem(params.m_newController, params.m_newModel);
   }
 
   return item;

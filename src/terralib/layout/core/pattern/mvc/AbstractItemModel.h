@@ -56,10 +56,14 @@ namespace te
 
         /*!
           \brief Destructor
-        */ 
+        */
         virtual ~AbstractItemModel();
 
+        /*!
+          \brief Gets the given property
+        */
         virtual const Property& getProperty(const std::string& propertyName) const;
+
         virtual void setProperty(const Property& property);
 
         virtual const Properties& getProperties() const;

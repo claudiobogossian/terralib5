@@ -33,6 +33,7 @@
 #include "../../../core/enum/Enums.h"
 #include "../../../core/pattern/singleton/Context.h"
 #include "../../../core/pattern/mvc/AbstractItemView.h"
+#include "../../../core/pattern/mvc/AbstractItemController.h"
 #include "../../../core/pattern/mvc/AbstractItemModel.h"
 #include "../ItemUtils.h"
 #include "../Scene.h"
@@ -82,7 +83,7 @@ te::layout::Properties* te::layout::PropertiesUtils::intersection( QList<QGraphi
         AbstractItemView* absItem = dynamic_cast<AbstractItemView*>(item);
         if(absItem != 0)
         {
-          props = (Properties*)(&(absItem->getModel()->getProperties()));
+          props = (Properties*)(&(absItem->getController()->getModel()->getProperties()));
         }
       }
     }

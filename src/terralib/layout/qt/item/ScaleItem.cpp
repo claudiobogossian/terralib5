@@ -42,7 +42,7 @@ te::layout::ScaleItem::~ScaleItem()
 
 void te::layout::ScaleItem::drawItem( QPainter * painter )
 {
-  const Property& property = m_model->getProperty("scale_type");
+  const Property& property = m_controller->getProperty("scale_type");
   if(property.isNull() == false)
   {
     EnumScaleType enumScale;
@@ -74,9 +74,9 @@ void te::layout::ScaleItem::drawDoubleAlternatingScaleBar( QPainter * painter )
   double unit=1000.0;
   std::string strUnit="(Km)";
 
-  const Property& pScale = m_model->getProperty("scale");
-  const Property& pScaleGapX = m_model->getProperty("scale_width_rect_gap");
-  const Property& pScaleGapY = m_model->getProperty("scale_height_rect_gap");
+  const Property& pScale = m_controller->getProperty("scale");
+  const Property& pScaleGapX = m_controller->getProperty("scale_width_rect_gap");
+  const Property& pScaleGapY = m_controller->getProperty("scale_height_rect_gap");
   
   double scale = pScale.getValue().toDouble();
   double gapX = pScaleGapX.getValue().toDouble();
@@ -178,9 +178,9 @@ void te::layout::ScaleItem::drawAlternatingScaleBar( QPainter * painter )
   double			unit=1000.0;
   std::string strUnit="(Km)";
 
-  const Property& pScale = m_model->getProperty("scale");
-  const Property& pScaleGapX = m_model->getProperty("scale_width_rect_gap");
-  const Property& pScaleGapY = m_model->getProperty("scale_height_rect_gap");
+  const Property& pScale = m_controller->getProperty("scale");
+  const Property& pScaleGapX = m_controller->getProperty("scale_width_rect_gap");
+  const Property& pScaleGapY = m_controller->getProperty("scale_height_rect_gap");
   
   double scale = pScale.getValue().toDouble();
   double gapX = pScaleGapX.getValue().toDouble();
@@ -279,9 +279,9 @@ void te::layout::ScaleItem::drawHollowScaleBar( QPainter * painter )
   double			unit=1000.0;
   std::string strUnit="(Km)";
 
-  const Property& pScale = m_model->getProperty("scale");
-  const Property& pScaleGapX = m_model->getProperty("scale_width_rect_gap");
-  const Property& pScaleGapY = m_model->getProperty("scale_height_rect_gap");
+  const Property& pScale = m_controller->getProperty("scale");
+  const Property& pScaleGapX = m_controller->getProperty("scale_width_rect_gap");
+  const Property& pScaleGapY = m_controller->getProperty("scale_height_rect_gap");
   
   double scale = pScale.getValue().toDouble();
   double gapX = pScaleGapX.getValue().toDouble();

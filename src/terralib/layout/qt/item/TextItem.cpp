@@ -27,6 +27,7 @@
 
 // TerraLib
 #include "TextItem.h"
+#include "TextController1.h"
 #include "../../core/pattern/mvc/ItemController.h"
 #include "../core/Scene.h"
 #include "../../core/pattern/mvc/Observable.h"
@@ -56,29 +57,28 @@
 #include <QList>
 #include <QTextOption>
 
-te::layout::TextItem::TextItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
-  ParentItem<QGraphicsTextItem>(controller, o, true),
-  m_editable(false),
-  m_table(0),
-  m_move(false)
+te::layout::TextItem::TextItem( AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix ) 
+  : AbstractItem<QGraphicsTextItem>(controller, model, true)
+  , m_table(0)
+  , m_move(false)
 {  
-  m_nameClass = std::string(this->metaObject()->className());
-  
   //If enabled is true, this item will accept hover events
   setAcceptHoverEvents(false);
+
+  document()->setPlainText("Mario");
   
-  m_backgroundColor.setAlpha(0);
-  init();
+//  m_backgroundColor.setAlpha(0);
+  //init();
 }
 
 te::layout::TextItem::~TextItem()
 {
-  if(m_editable)
+  /*if(m_editable)
   {
     resetEdit();
-  }
+  }*/
 }
-
+/*
 void te::layout::TextItem::init()
 {
   QFont ft("Arial", 12);
@@ -108,8 +108,9 @@ void te::layout::TextItem::init()
   }
 
   resetEdit();
-}
+}*/
 
+/*
 void te::layout::TextItem::updateObserver( ContextItem context )
 {
   if(!m_model)
@@ -133,7 +134,7 @@ void te::layout::TextItem::updateObserver( ContextItem context )
   refresh();
 
   update();
-}
+}*/
 
 void te::layout::TextItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
 {
@@ -144,11 +145,30 @@ void te::layout::TextItem::paint( QPainter * painter, const QStyleOptionGraphics
     return;
   }
 
+  QPointF position = this->pos();
+  QPointF positionScene = this->scenePos();
+
   /* The text in a QGraphicsTextItem is only displayed 
   with any set alignment if the text width for the item is set. */
   setTextWidth(boundingRect().width());
 
-  updateTextConfig();
+  //updateTextConfig();
+  const Property& pText = m_controller->getProperty("text");
+  const Property& pFont = m_controller->getProperty("font");
+  const std::string& text = pText.getValue().toString();
+  Font ft = pFont.getValue().toFont();
+
+  QFont qft;
+  qft.setFamily(ft.getFamily().c_str());
+  qft.setBold(ft.isBold());
+  qft.setItalic(ft.isItalic());
+  qft.setPointSizeF(ft.getPointSize());
+  qft.setKerning(ft.isKerning());
+  qft.setStrikeOut(ft.isStrikeout());
+  qft.setUnderline(ft.isUnderline());
+
+  document()->setDefaultFont(qft);
+  document()->setPlainText(text.c_str());
 
   drawBackground( painter );
 
@@ -168,6 +188,29 @@ void te::layout::TextItem::paint( QPainter * painter, const QStyleOptionGraphics
   }
 }
 
+QVariant te::layout::TextItem::itemChange ( QGraphicsItem::GraphicsItemChange change, const QVariant & value )
+{
+  TextController1* controller = dynamic_cast<TextController1*>(m_controller);
+  if(controller != 0)
+  {
+    QVariant newValue;
+    bool valueHasChanged = controller->itemChange(change, value, newValue);
+    if(valueHasChanged == true)
+    {
+      return newValue;
+    }
+  }
+
+  return AbstractItem<QGraphicsTextItem>::itemChange(change, value);
+}
+
+/*QRectF te::layout::TextItem::boundingRect() const
+{
+  QRectF rect = QGraphicsTextItem::boundingRect();
+  return rect;
+}*/
+
+/*
 QImage te::layout::TextItem::createImage()
 {
   TextModel* model = dynamic_cast<TextModel*>(m_model);
@@ -201,7 +244,8 @@ QImage te::layout::TextItem::createImage()
 
   return img;
 }
-
+*/
+/*
 void te::layout::TextItem::refreshDocument()
 {
   if(!m_model)
@@ -229,7 +273,8 @@ void te::layout::TextItem::refreshDocument()
   model->setBox(box);
   model->setText(document()->toPlainText().toStdString());
 }
-
+*/
+/*
 te::gm::Coord2D te::layout::TextItem::getPosition()
 {
   QPointF posF = scenePos();
@@ -246,8 +291,9 @@ te::gm::Coord2D te::layout::TextItem::getPosition()
   coordinate.y = valuey;
 
   return coordinate;
-}
+}*/
 
+/*
 te::color::RGBAColor** te::layout::TextItem::getRGBAColorImage(int &w, int &h)
 {
   refreshDocument();
@@ -260,7 +306,8 @@ te::color::RGBAColor** te::layout::TextItem::getRGBAColorImage(int &w, int &h)
   te::color::RGBAColor** teImg = te::qt::widgets::GetImage(&img);
   return teImg;
 }
-
+*/
+/*
 QVariant te::layout::TextItem::itemChange( GraphicsItemChange change, const QVariant & value )
 {
   if(change == QGraphicsItem::ItemPositionChange && !m_move)
@@ -293,7 +340,9 @@ QVariant te::layout::TextItem::itemChange( GraphicsItemChange change, const QVar
 
   return QGraphicsTextItem::itemChange(change, value);
 }
+*/
 
+/*
 void te::layout::TextItem::keyPressEvent( QKeyEvent * event )
 {
   if(m_editable == true)
@@ -355,21 +404,12 @@ void te::layout::TextItem::mouseReleaseEvent( QGraphicsSceneMouseEvent * event )
   QGraphicsTextItem::mouseReleaseEvent(event);
 }
 
-bool te::layout::TextItem::isEditable()
-{
-  return m_editable;
-}
 
 void te::layout::TextItem::getDocumentSizeMM( double &w, double &h )
 {
   QImage img = createImage();
   w = img.widthMM();
   h = img.heightMM();
-}
-
-void te::layout::TextItem::setEditable( bool editable )
-{
-  m_editable = editable;
 }
 
 void te::layout::TextItem::resetEdit()
@@ -399,8 +439,8 @@ void te::layout::TextItem::resetEdit()
     }
   }
 
-  /*Necessary clear the selection and focus of the edit 
-  after being completely closed and like this not cause bad behavior.*/
+  //Necessary clear the selection and focus of the edit 
+  //after being completely closed and like this not cause bad behavior.
   QTextCursor cursor(textCursor());
   cursor.clearSelection();
   setTextCursor(cursor);
@@ -457,11 +497,6 @@ void te::layout::TextItem::updateTextConfig()
   document()->setDefaultFont(qft);
 }
 
-QRectF te::layout::TextItem::boundingRect() const
-{
-  return QGraphicsTextItem::boundingRect();
-}
-
 void te::layout::TextItem::applyAlignment()
 {
   TextModel* model = dynamic_cast<TextModel*>(m_model);
@@ -488,13 +523,13 @@ void te::layout::TextItem::applyAlignment()
     txtOpt.setAlignment(Qt::AlignRight);
   }
 
-  /* The text in a QGraphicsTextItem is only displayed 
-  with any set alignment if the text width for the item is set. */
+  // The text in a QGraphicsTextItem is only displayed 
+  //with any set alignment if the text width for the item is set. 
   setTextWidth(boundingRect().width());
   
   document()->setDefaultTextOption(txtOpt);
 }
 
-
+*/
 
 
