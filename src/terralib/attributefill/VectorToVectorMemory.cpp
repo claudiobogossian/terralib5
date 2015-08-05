@@ -419,6 +419,8 @@ te::da::DataSetType* te::attributefill::VectorToVectorMemory::getOutputDataSetTy
       {
         newProp = dynamic_cast<te::dt::SimpleProperty*>(currentProperty->clone());
         newProp->setRequired(false);
+        newProp->setAutoNumber(false);
+        newProp->setDefaultValue(0);
         newProp->setName(newName);
       }
       else if(funcs[i] == te::attributefill::PERCENT_CLASS || funcs[i] == te::attributefill::PERCENT_EACH_CLASS)
@@ -770,60 +772,70 @@ te::dt::AbstractData* te::attributefill::VectorToVectorMemory::getClassWithHighe
   int propIndex = te::da::GetPropertyIndex(fromDs, propertyName);
   int propType = fromDs->getPropertyDataType(propIndex);
 
+  std::size_t highOccur = 0;
+  std::vector<std::string> highValues;
+
   std::map<std::string, std::size_t> counter;
-  for(std::size_t i = 0; i < dsPos.size(); ++i)
+  for (std::size_t i = 0; i < dsPos.size(); ++i)
   {
     fromDs->move(dsPos[i]);
 
+    if (fromDs->isNull(propIndex))
+      continue;
+
     std::string value = fromDs->getAsString(propIndex);
 
-    if(counter.find(value) == counter.end())
+    if (counter.find(value) == counter.end())
     {
       counter[value] = 1;
+      highOccur = 1;
     }
     else
     {
       std::size_t aux = counter[value] + 1;
       counter[value] = aux;
+
+      if (aux > highOccur)
+        highOccur = aux;
     }
   }
 
   std::map<std::string, std::size_t>::iterator it = counter.begin();
-  std::string value;
-  std::size_t aux = 0;
-  while(it != counter.end())
+  while (it != counter.end())
   {
-    if(aux < it->second)
+    if (it->second == highOccur)
+      highValues.push_back(it->first);
+    ++it;
+  }
+
+  if (highValues.size() > 1)
+  {
+    std::vector<double> intVec;
+
+    if (propType == te::dt::STRING_TYPE)
     {
-      aux = it->second;
-      value = it->first;
+      te::stat::StringStatisticalSummary ssStr;
+      te::stat::GetStringStatisticalSummary(highValues, ssStr);
+
+      return getDataBasedOnType(ssStr.m_minVal, propType);
     }
+    else
+    {
+      for (std::size_t i = 0; i < highValues.size(); ++i)
+      {
+        intVec.push_back(boost::lexical_cast<double>(highValues[i]));
+      }
 
-    ++it;
+      te::stat::NumericStatisticalSummary ssNum;
+      te::stat::GetNumericStatisticalSummary(intVec, ssNum);
+      std::string strVal = boost::lexical_cast<std::string>(ssNum.m_minVal);
+      return getDataBasedOnType(strVal, propType);
+    }
   }
-
-  // Checks if there is a tie between classes
-  std::size_t aux2 = 0;
-  it = counter.begin();
-  while(it != counter.end())
-  {
-    if(it->second == aux)
-      ++aux2;
-
-    ++it;
-  }
-
-  te::dt::AbstractData* data = 0;
-  if(aux2 == 1)
-  {
-    data = getDataBasedOnType(value, propType);
-  }
+  else if (!highValues.empty())
+    return getDataBasedOnType(highValues[0], propType);
   else
-  {
     return 0;
-  }
-
-  return data;
 }
 
 te::dt::AbstractData* te::attributefill::VectorToVectorMemory::getClassWithHighestIntersectionArea(te::da::DataSet* toDs,
