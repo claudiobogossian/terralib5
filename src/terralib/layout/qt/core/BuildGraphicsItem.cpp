@@ -140,8 +140,6 @@ QGraphicsItem* te::layout::BuildGraphicsItem::rebuildItem( te::layout::Propertie
   m_coord = findCoordinate(props);
   m_zValue = findZValue(props);
 
-  EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
-
   EnumType* type = props->getTypeObj();
 
   item = createItem(type, draw);

@@ -58,8 +58,8 @@ te::edit::CreatePolygonTool::CreatePolygonTool(te::edit::EditionManager* edition
     m_layer(layer),
     m_continuousMode(false),
     m_isFinished(false),
-    m_feature(0),
-    m_editionManager(editionManager)
+    m_editionManager(editionManager),
+    m_feature(0)
 {
   setCursor(cursor);
 

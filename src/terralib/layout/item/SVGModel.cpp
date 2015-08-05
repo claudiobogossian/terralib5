@@ -73,10 +73,6 @@ void te::layout::SVGModel::updateProperties( te::layout::Properties* properties,
 {
   ItemModelObservable::updateProperties(properties, false);
 
-  Properties* vectorProps = const_cast<Properties*>(properties);  
-
-  //updateVisitors();
-
   if(notify)
   {
     ContextItem context;

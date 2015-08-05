@@ -72,7 +72,6 @@ te::layout::LegendModel::~LegendModel()
 
 void te::layout::LegendModel::draw( ContextItem context )
 {
-  te::map::Canvas* canvas = context.getCanvas();
   notifyAll(context);
 }
 

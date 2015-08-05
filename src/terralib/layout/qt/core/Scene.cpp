@@ -590,8 +590,6 @@ void te::layout::Scene::redrawSelectionMap()
 
 void te::layout::Scene::exportItemsToImage(std::string dir)
 {
-  Utils* utils = Context::getInstance().getUtils();
-
   QList<QGraphicsItem*> selected = selectedItems();
   foreach(QGraphicsItem *item, selected) 
   {
@@ -869,7 +867,6 @@ QGraphicsItem* te::layout::Scene::getPaperItem()
 {
   QGraphicsItem* paper = 0;
 
-  EnumObjectType* object = Enums::getInstance().getEnumObjectType();
   QList<QGraphicsItem*> allItems = items();
   foreach(QGraphicsItem *item, allItems)
   {

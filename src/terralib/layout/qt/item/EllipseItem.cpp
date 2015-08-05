@@ -69,9 +69,6 @@ void te::layout::EllipseItem::drawItem( QPainter * painter )
   painter->setPen(pen);
   painter->setBrush(brush);
 
-  //gets the adjusted boundigng rectangle based of the painter settings
-  QRectF rectAdjusted = getAdjustedBoundingRect(painter);
-
   QPainterPath circle_path;
   circle_path.addEllipse(boundingRect());
 

@@ -209,9 +209,6 @@ void te::layout::GridGeodesicItem::calculateVertical( te::gm::Envelope geoBox, t
   // Draw a horizontal line and the y coordinate change(vertical)
 
   Utils* utils = Context::getInstance().getUtils();
-  ItemUtils* itemUtils = Context::getInstance().getItemUtils();
-
-  te::gm::Envelope planarBox = model->getPlanarBox();
 
   WorldTransformer transf = utils->getTransformGeo(model->getPlanarBox(), boxMM);
   transf.setMirroring(false);
@@ -269,8 +266,7 @@ void te::layout::GridGeodesicItem::calculateHorizontal( te::gm::Envelope geoBox,
   // Draw a vertical line and the x coordinate change(horizontal)
 
   Utils* utils = Context::getInstance().getUtils();
-  ItemUtils* itemUtils = Context::getInstance().getItemUtils();
-
+  
   te::gm::Envelope planarBox = model->getPlanarBox();
 
   WorldTransformer transf = utils->getTransformGeo(planarBox, boxMM);
