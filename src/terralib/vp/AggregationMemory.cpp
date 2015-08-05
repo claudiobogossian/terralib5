@@ -304,7 +304,7 @@ bool te::vp::AggregationMemory::run() throw( te::common::Exception )
   {
     // calculate the spatial aggregation
     std::string value = itg->first;
-    te::gm::GeomType outGeoType = te::vp::GeomOpResultType(geom->getGeometryType());
+    te::gm::GeomType outGeoType = getGeomResultType(geom->getGeometryType());
 
     //verify geometries
     for (size_t i = 0; i < itg->second.size(); ++i)

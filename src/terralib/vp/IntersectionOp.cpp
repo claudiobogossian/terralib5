@@ -76,18 +76,56 @@ void te::vp::IntersectionOp::setOutput(te::da::DataSourcePtr outDsrc, std::strin
   m_outDsetName = dsname;
 }
 
-te::gm::GeomType te::vp::IntersectionOp::getGeomResultType(te::gm::GeomType geom)
+te::gm::GeomType te::vp::IntersectionOp::setGeomResultType(te::gm::GeomType firstGeom, te::gm::GeomType secondGeom)
 {
-  if (geom == te::gm::PolygonType)
-    return te::gm::MultiPolygonType;
-  
-  if (geom == te::gm::LineStringType)
-    return te::gm::MultiLineStringType;
-  
-  if (geom == te::gm::PointType)
+  if ((firstGeom == te::gm::PointType) ||
+    (firstGeom == te::gm::PointZType) ||
+    (firstGeom == te::gm::PointMType) ||
+    (firstGeom == te::gm::PointZMType) ||
+    (firstGeom == te::gm::PointKdType) ||
+
+    (secondGeom == te::gm::PointType) ||
+    (secondGeom == te::gm::PointZType) ||
+    (secondGeom == te::gm::PointMType) ||
+    (secondGeom == te::gm::PointZMType) ||
+    (secondGeom == te::gm::PointKdType) ||
+
+    (firstGeom == te::gm::MultiPointType) ||
+    (firstGeom == te::gm::MultiPointZType) ||
+    (firstGeom == te::gm::MultiPointMType) ||
+    (firstGeom == te::gm::MultiPointZMType) ||
+
+    (secondGeom == te::gm::MultiPointType) ||
+    (secondGeom == te::gm::MultiPointZType) ||
+    (secondGeom == te::gm::MultiPointMType) ||
+    (secondGeom == te::gm::MultiPointZMType))
+
     return te::gm::MultiPointType;
-  
-  return geom;
+
+  else if ((firstGeom == te::gm::LineStringType) ||
+    (firstGeom == te::gm::LineStringZType) ||
+    (firstGeom == te::gm::LineStringMType) ||
+    (firstGeom == te::gm::LineStringZMType) ||
+
+    (secondGeom == te::gm::LineStringType) ||
+    (secondGeom == te::gm::LineStringZType) ||
+    (secondGeom == te::gm::LineStringMType) ||
+    (secondGeom == te::gm::LineStringZMType) ||
+
+    (firstGeom == te::gm::MultiLineStringType) ||
+    (firstGeom == te::gm::MultiLineStringZType) ||
+    (firstGeom == te::gm::MultiLineStringMType) ||
+    (firstGeom == te::gm::MultiLineStringZMType) ||
+
+    (secondGeom == te::gm::MultiLineStringType) ||
+    (secondGeom == te::gm::MultiLineStringZType) ||
+    (secondGeom == te::gm::MultiLineStringMType) ||
+    (secondGeom == te::gm::MultiLineStringZMType))
+
+    return te::gm::MultiLineStringType;
+
+  else
+    return te::gm::MultiPolygonType;
 }
 
 bool te::vp::IntersectionOp::paramsAreValid()
@@ -127,3 +165,5 @@ std::vector<te::dt::Property*> te::vp::IntersectionOp::getTabularProps(te::da::D
 
   return props;
 }
+
+
