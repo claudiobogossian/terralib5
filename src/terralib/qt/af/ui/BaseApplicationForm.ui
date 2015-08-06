@@ -31,7 +31,7 @@
      <x>0</x>
      <y>0</y>
      <width>1140</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>
@@ -41,6 +41,9 @@
    </attribute>
   </widget>
   <widget class="QDockWidget" name="dockWidget">
+   <property name="windowTitle">
+    <string>Layer Explorer</string>
+   </property>
    <attribute name="dockWidgetArea">
     <number>1</number>
    </attribute>
