@@ -59,7 +59,7 @@ te::layout::PointItem::~PointItem()
 
 }
 
-void te::layout::PointItem::drawItem( QPainter * painter )
+void te::layout::PointItem::drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget )
 {
   PointModel* model = dynamic_cast<PointModel*>(m_model);
 

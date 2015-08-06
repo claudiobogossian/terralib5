@@ -109,6 +109,7 @@
 #include "../../item/SVGController.h"
 #include "../item/SVGItem.h"
 #include "../../core/pattern/mvc/AbstractItemController.h"
+#include "../item/TextController1.h"
 
 // Qt
 #include <QGraphicsItem>
@@ -362,6 +363,16 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createItem( te::layout::EnumType* 
     item = createMapLocation();
   }
 
+  AbstractScene* abstScene = Context::getInstance().getScene();
+  if(abstScene)
+  {
+    Scene* sc = dynamic_cast<Scene*>(abstScene);
+    if(sc)
+    {
+      sc->insertItem(item);
+    }
+  }
+
   afterBuild(item, draw);
 
   return item;
@@ -492,7 +503,7 @@ void te::layout::BuildGraphicsItem::afterBuild( QGraphicsItem* item, bool draw )
     return;
   }
   
-  bool result = addChild(item, m_coord.x, m_coord.y);  
+  bool result = addChild(item, m_coord.x, m_coord.y);
   if(!result)
   {
     double width = item->boundingRect().width();
@@ -592,25 +603,31 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createGridMap()
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createText()
 {
-  TextModel* model = new TextModel();	
+  TextModel* model = new TextModel();
   if(!m_props)
   {
-    model->setId(m_id);
-    
     EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
-    std::string name = nameItem(enumObj->getTextItem());
-    model->setName(name);
+    std::string strName = nameItem(enumObj->getRectangleItem());
+
+    Property proertyId(0);
+    proertyId.setName("id");
+    proertyId.setValue(m_id, Enums::getInstance().getEnumDataType()->getDataTypeInt());
+    model->setProperty(proertyId);
+
+    Property propertyName(0);
+    propertyName.setName("name");
+    propertyName.setValue(strName, Enums::getInstance().getEnumDataType()->getDataTypeString());
+    model->setProperty(propertyName);
   }
 
-  TextController* controller = new TextController(model);
-  ItemObserver* itemObs = (ItemObserver*)controller->getView();
+  AbstractItemController* controller = new TextController1(model);
+  AbstractItemView* view = controller->getView();
 
-  TextItem* view = dynamic_cast<TextItem*>(itemObs); 
-  if(m_props && view)
+  if(m_props)
   {
-    model->updateProperties(m_props);
+    model->setProperties(*m_props);
   }
-  return view;
+  return dynamic_cast<QGraphicsItem*>(view);
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createRectangle()
@@ -846,6 +863,7 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createPoint()
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createTextGrid()
 {
+  /*
   TextGridModel* model = new TextGridModel();	
   if(!m_props)
   {
@@ -865,10 +883,13 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createTextGrid()
     model->updateProperties(m_props);
   }
   return view;
+  */
+  return 0;
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createTitle()
 {
+  /*
   TitleModel* model = new TitleModel();	
   if(!m_props)
   {
@@ -888,6 +909,8 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createTitle()
     model->updateProperties(m_props);
   }
   return view;
+  */
+  return 0;
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createLegendChild()
@@ -996,6 +1019,7 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createBalloon()
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createBarCode()
 {
+  /*
   BarCodeModel* model = new BarCodeModel;
   if(m_props)
   {
@@ -1019,6 +1043,8 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createBarCode()
     model->updateProperties(m_props);
   }  
   return view;
+  */
+  return 0;
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createGridPlanar()

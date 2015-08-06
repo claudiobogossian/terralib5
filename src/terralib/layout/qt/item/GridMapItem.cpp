@@ -62,7 +62,7 @@ te::layout::GridMapItem::~GridMapItem()
 
 }
 
-void te::layout::GridMapItem::drawItem( QPainter * painter )
+void te::layout::GridMapItem::drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget )
 {
   GridMapModel* model = dynamic_cast<GridMapModel*>(m_model);
   if(model)

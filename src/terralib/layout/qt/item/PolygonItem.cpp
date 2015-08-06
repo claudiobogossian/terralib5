@@ -53,7 +53,7 @@ te::layout::PolygonItem::~PolygonItem()
 
 }
 
-void te::layout::PolygonItem::drawItem( QPainter * painter )
+void te::layout::PolygonItem::drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget )
 {
   PolygonModel* model = dynamic_cast<PolygonModel*>(m_model);
   if(!model)

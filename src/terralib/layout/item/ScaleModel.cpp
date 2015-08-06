@@ -120,21 +120,21 @@ te::layout::ScaleModel::ScaleModel()
     Property property(0);
     property.setName("width");
     property.setValue(width, dataType->getDataTypeDouble());
-    this->m_properties.updatePropertyValue(property.getName(), property.getValue());
+    this->m_properties.updateProperty(property);
   }
 
   {
     Property property(0);
     property.setName("height");
     property.setValue(height, dataType->getDataTypeDouble());
-    this->m_properties.updatePropertyValue(property.getName(), property.getValue());
+    this->m_properties.updateProperty(property);
   }
 
   {
     Property property(0);
     property.setName("show_frame");
     property.setValue(false, dataType->getDataTypeBool());
-    this->m_properties.updatePropertyValue(property.getName(), property.getValue());
+    this->m_properties.updateProperty(property);
   }
 }
 

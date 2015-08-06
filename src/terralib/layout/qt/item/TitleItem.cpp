@@ -49,38 +49,26 @@
 #include <QTextCharFormat>
 #include <QTextList>
 
-te::layout::TitleItem::TitleItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
-  TextItem(controller, o, true)
+te::layout::TitleItem::TitleItem( AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix) :
+  TextItem(controller, model)
 {
   init();
 }
 
 te::layout::TitleItem::~TitleItem()
 {
-  if(m_table)
-  {
-    delete m_table;
-    m_table = 0;
-  }
 }
 
 void te::layout::TitleItem::init()
 {
-  TitleModel* model = dynamic_cast<TitleModel*>(m_model);
-
-  if(!model)
-    return;
 
   updateDocument();
 
-  resetEdit();
+  //resetEdit();
 }
 
 void te::layout::TitleItem::updateObserver( ContextItem context )
 {
-  if(!m_model)
-    return;
-
   if(!document())
     return;
  
@@ -88,13 +76,14 @@ void te::layout::TitleItem::updateObserver( ContextItem context )
 
   refreshDocument();
 
-  refresh();
+  //refresh();
 
-  update();
+  //update();
 }
 
 void te::layout::TitleItem::updateDocument()
 {
+  /*
   TitleModel* model = dynamic_cast<TitleModel*>(m_model);
 
   if(!model)
@@ -167,10 +156,12 @@ void te::layout::TitleItem::updateDocument()
   std::string txt = model->getText();
   QTextCursor cellCursorOne = cellOne.firstCursorPosition();  
   cellCursorOne.insertText(txt.c_str(), format);
+  */
 }
 
 void te::layout::TitleItem::refreshDocument()
 {
+  /*
   if(!m_model)
     return;
 
@@ -198,4 +189,5 @@ void te::layout::TitleItem::refreshDocument()
   QTextCursor cellCursorTwo = cellTwo.firstCursorPosition();
   std::string txtTwo = cellCursorTwo.block().text().toStdString();
   model->setText(txtTwo);
+  */
 }

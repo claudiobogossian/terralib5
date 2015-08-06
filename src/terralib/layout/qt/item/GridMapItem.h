@@ -81,20 +81,20 @@ namespace te
          */
         virtual ~GridMapItem();
         
-        virtual void drawItem( QPainter * painter );
+        virtual void drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
 
         /*!
           \brief Reimplemented from ParentItem
          */
         virtual QRectF boundingRect() const;
-                        
+
       protected:
 
         /*!
           \brief Reimplemented from QGraphicsItem
          */
-        virtual QVariant	itemChange ( QGraphicsItem::GraphicsItemChange change, const QVariant & value );
-                        
+        virtual QVariant itemChange ( QGraphicsItem::GraphicsItemChange change, const QVariant & value );
+
         virtual void drawGrid(QPainter* painter);
 
         virtual void drawDefaultGrid(QPainter* painter);

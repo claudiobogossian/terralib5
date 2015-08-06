@@ -63,9 +63,9 @@ namespace te
         */ 
         virtual ~TitleModel();
 
-        virtual te::layout::Properties* getProperties() const;
+        //virtual te::layout::Properties* getProperties() const;
 
-        virtual void updateProperties(te::layout::Properties* properties, bool notify = true); 
+        //virtual void updateProperties(te::layout::Properties* properties, bool notify = true); 
 
         virtual void setTitle(std::string title);
 

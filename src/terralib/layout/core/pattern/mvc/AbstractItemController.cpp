@@ -21,12 +21,14 @@
 #include "AbstractItemController.h"
 
 #include "AbstractItemModel.h"
+#include "AbstractItemView.h"
 #include "../singleton/Context.h"
 #include "../factory/ItemParamsCreate.h"
 #include "../factory/AbstractItemFactory.h"
 
 te::layout::AbstractItemController::AbstractItemController(AbstractItemModel* model)
-  : m_model(model)
+  : NewObserver()
+  , m_model(model)
   , m_view(0)
 {
   AbstractItemFactory* factory = Context::getInstance().getItemFactory(); 
@@ -35,10 +37,25 @@ te::layout::AbstractItemController::AbstractItemController(AbstractItemModel* mo
   params.m_newModel = m_model;
 
   m_view = factory->makeNew(m_model->getProperties().getTypeObj(), params);
+
+  if(m_model != 0)
+  {
+    m_model->attach(this);
+  }
 }
 
 te::layout::AbstractItemController::~AbstractItemController()
 {
+  if(m_model != 0)
+  {
+    m_model->detach(this);
+    delete m_model;
+  }
+}
+
+te::layout::AbstractItemView* te::layout::AbstractItemController::getView() const
+{
+  return m_view;
 }
 
 te::layout::AbstractItemModel* te::layout::AbstractItemController::getModel() const
@@ -46,7 +63,12 @@ te::layout::AbstractItemModel* te::layout::AbstractItemController::getModel() co
   return m_model;
 }
 
-te::layout::AbstractItemView* te::layout::AbstractItemController::getView() const
+const te::layout::Property& te::layout::AbstractItemController::getProperty(const std::string& propertyName) const
 {
-  return m_view;
+  return m_model->getProperty(propertyName);
+}
+
+void te::layout::AbstractItemController::update(const te::layout::Subject* subject)
+{
+  m_view->refresh();
 }

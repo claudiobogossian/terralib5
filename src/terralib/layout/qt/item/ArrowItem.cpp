@@ -44,9 +44,9 @@ te::layout::ArrowItem::~ArrowItem()
 
 }
 
-void te::layout::ArrowItem::drawItem( QPainter * painter )
+void te::layout::ArrowItem::drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget )
 {
-  const Property& property = m_model->getProperty("arrow_type");
+  const Property& property = m_controller->getProperty("arrow_type");
   if(property.isNull() == false)
   {
     EnumArrowType enumArrowType;
@@ -73,8 +73,8 @@ void te::layout::ArrowItem::drawRightArrow( QPainter * painter )
 {
   painter->save();
 
-  const Property& pFillColor = m_model->getProperty("fill_color");
-  const Property& pContourColor = m_model->getProperty("contour_color");
+  const Property& pFillColor = m_controller->getProperty("fill_color");
+  const Property& pContourColor = m_controller->getProperty("contour_color");
 
   const te::color::RGBAColor& fillColor = pFillColor.getValue().toColor();
   const te::color::RGBAColor& contourColor = pContourColor.getValue().toColor();
@@ -122,8 +122,8 @@ void te::layout::ArrowItem::drawLeftArrow(QPainter * painter)
 {
   painter->save();
 
-  const Property& pFillColor = m_model->getProperty("fill_color");
-  const Property& pContourColor = m_model->getProperty("contour_color");
+  const Property& pFillColor = m_controller->getProperty("fill_color");
+  const Property& pContourColor = m_controller->getProperty("contour_color");
 
   const te::color::RGBAColor& fillColor = pFillColor.getValue().toColor();
   const te::color::RGBAColor& contourColor = pContourColor.getValue().toColor();
@@ -172,8 +172,8 @@ void te::layout::ArrowItem::drawDoubleArrow(QPainter * painter)
 {
   painter->save();
 
-  const Property& pFillColor = m_model->getProperty("fill_color");
-  const Property& pContourColor = m_model->getProperty("contour_color");
+  const Property& pFillColor = m_controller->getProperty("fill_color");
+  const Property& pContourColor = m_controller->getProperty("contour_color");
 
   const te::color::RGBAColor& fillColor = pFillColor.getValue().toColor();
   const te::color::RGBAColor& contourColor = pContourColor.getValue().toColor();

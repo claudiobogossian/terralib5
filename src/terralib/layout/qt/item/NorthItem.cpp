@@ -41,7 +41,7 @@ te::layout::NorthItem::~NorthItem()
 
 }
 
-void te::layout::NorthItem::drawItem( QPainter * painter )
+void te::layout::NorthItem::drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget )
 {
   NorthModel* model = dynamic_cast<NorthModel*>(m_model);
 
