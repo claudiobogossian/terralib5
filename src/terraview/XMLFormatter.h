@@ -43,7 +43,7 @@ namespace te {
   }
 }
 
-class ProjectMetadata;
+struct ProjectMetadata;
 
 /*!
          \class XMLFormatter

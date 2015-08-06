@@ -175,8 +175,10 @@ void te::qt::plugins::st::Plugin::shutdown()
 
   if(!stls.isEmpty())
   {
+    std::list<te::map::AbstractLayerPtr> ls = GetLayers(stls);
+
     e.m_layerExplorer->removeItems(stls);
-    te::qt::af::evt::LayerRemoved evt(GetLayers(stls));
+    te::qt::af::evt::LayerRemoved evt(ls);
 
     emit triggered(&evt);
   }

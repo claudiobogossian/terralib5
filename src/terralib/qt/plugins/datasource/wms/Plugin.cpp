@@ -134,8 +134,11 @@ void te::qt::plugins::wms::Plugin::shutdown()
 
   if(!wls.isEmpty())
   {
+    std::list<te::map::AbstractLayerPtr> lst = GetLayers(wls);
+
     e.m_layerExplorer->removeItems(wls);
-    te::qt::af::evt::LayerRemoved evt(GetLayers(wls));
+
+    te::qt::af::evt::LayerRemoved evt(lst);
 
     emit triggered(&evt);
   }

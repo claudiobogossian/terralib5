@@ -66,6 +66,8 @@ te::qt::af::BaseApplication::BaseApplication(QWidget* parent) :
 
 te::qt::af::BaseApplication::~BaseApplication()
 {
+  te::qt::af::UpdateUserSettings();
+
   if(m_app)
     m_app->finalize();
 
@@ -76,8 +78,6 @@ te::qt::af::BaseApplication::~BaseApplication()
   delete m_layerExplorer;
   delete m_display;
   delete m_styleExplorer;
-
-  te::qt::af::UpdateUserSettings();
 }
 
 void te::qt::af::BaseApplication::init(const QString& cfgFile)
