@@ -45,6 +45,7 @@ namespace te
     {
       // Forward declarations
       class MapDisplay;
+      class LayerItemView;
     }
 
     namespace af
@@ -216,6 +217,18 @@ namespace te
           std::string m_category;
           QToolBar* m_toolbar;
           QList<QAction*> m_actions;
+        };
+
+        struct GetLayerExplorer : public Event
+        {
+          GetLayerExplorer() :
+            Event(GET_LAYERS_VIEW),
+            m_layerExplorer(0)
+          {
+
+          }
+
+          te::qt::widgets::LayerItemView* m_layerExplorer;
         };
       }
     }

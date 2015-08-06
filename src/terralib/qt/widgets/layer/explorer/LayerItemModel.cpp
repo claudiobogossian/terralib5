@@ -3,12 +3,13 @@
 #include "FolderItem.h"
 #include "LayerItem.h"
 
+#include "TreeItemFactory.h"
+
 #include "../../../../dataaccess/datasource/DataSourceManager.h"
 #include "../../../../dataaccess/datasource/DataSourceInfoManager.h"
 
 #include "../../../../maptools/FolderLayer.h"
 #include "../../../../maptools/DataSetLayer.h"
-
 
 // Qt
 #include <QMimeData>
@@ -20,20 +21,20 @@
 // STL
 #include <memory>
 
-void LoadLayer(te::map::AbstractLayerPtr layer, const std::string& idxPath)
-{
-  if(layer->getType() != "DATASETLAYER")
-    return;
+//void LoadLayer(te::map::AbstractLayerPtr layer, const std::string& idxPath)
+//{
+//  if(layer->getType() != "DATASETLAYER")
+//    return;
 
-  te::map::DataSetLayer* l = dynamic_cast<te::map::DataSetLayer*>(layer.get());
+//  te::map::DataSetLayer* l = dynamic_cast<te::map::DataSetLayer*>(layer.get());
 
-  te::da::DataSourceInfoPtr info = te::da::DataSourceInfoManager::getInstance().get(l->getDataSourceId());
+//  te::da::DataSourceInfoPtr info = te::da::DataSourceInfoManager::getInstance().get(l->getDataSourceId());
 
-  te::da::DataSourcePtr dsrc = te::da::DataSourceManager::getInstance().get(info->getId(), info->getType(), info->getConnInfo());
+//  te::da::DataSourcePtr dsrc = te::da::DataSourceManager::getInstance().get(info->getId(), info->getType(), info->getConnInfo());
 
-  //if(!l->hasIndex())
-  //  l->loadIndex(idxPath);
-}
+//  //if(!l->hasIndex())
+//  //  l->loadIndex(idxPath);
+//}
 
 te::qt::widgets::TreeItem* GetFolder(te::common::TreeItemPtr l, const std::string& idxPath)
 {
@@ -51,8 +52,8 @@ te::qt::widgets::TreeItem* GetFolder(te::common::TreeItemPtr l, const std::strin
       folder->addChild(GetFolder(layer, idxPath));
     else if(layer->getType() == "DATASETLAYER")
     {
-      folder->addChild(new te::qt::widgets::LayerItem(layer));
-      LoadLayer(layer, idxPath);
+      folder->addChild(te::qt::widgets::TreeItemFactory::make(layer));
+//      LoadLayer(layer, idxPath);
     }
   }
 
@@ -65,11 +66,11 @@ void GetRootFolder(std::list<te::map::AbstractLayerPtr> layers, te::qt::widgets:
   {
     if((*it).get()->getType() == "FOLDERLAYER")
       root->addChild(GetFolder((*it), idxPath));
-    else if((*it).get()->getType() == "DATASETLAYER")
+    else
     {
-      root->addChild(new te::qt::widgets::LayerItem((*it)));
+      root->addChild(te::qt::widgets::TreeItemFactory::make(*it));
 
-      LoadLayer((*it), idxPath);
+//      LoadLayer((*it), idxPath);
     }
   }
 }
@@ -233,7 +234,7 @@ void te::qt::widgets::LayerItemModel::addLayer(te::map::AbstractLayerPtr layer, 
     item->insertChild(GetFolder(layer, idxPath), (size_t)row);
   else
   {
-    item->insertChild(new LayerItem(layer), (size_t)row);
+    item->insertChild(TreeItemFactory::make(layer), (size_t)row);
 
     //if(!layer->hasIndex())
     //  layer->loadIndex(idxPath);
@@ -269,7 +270,7 @@ void te::qt::widgets::LayerItemModel::addLayers(const std::list<te::map::Abstrac
         item->insertChild(GetFolder(layer, idxPath), (size_t)cont);
       else 
       {
-        item->insertChild(new LayerItem(layer), (size_t)cont);
+        item->insertChild(TreeItemFactory::make(layer), (size_t)cont);
 
         //if(!layer->hasIndex())
         //  layer->loadIndex(idxPath);

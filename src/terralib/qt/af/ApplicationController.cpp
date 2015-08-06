@@ -51,7 +51,7 @@
 //#include "Project.h"
 #include "SplashScreenManager.h"
 #include "Utils.h"
-#include "XMLFormatter.h"
+//#include "XMLFormatter.h"
 
 // Qt
 #include <QApplication>
@@ -463,7 +463,7 @@ void  te::qt::af::ApplicationController::initialize()
 
       te::serialize::xml::ReadDataSourceInfo(m_appDatasourcesFile);
 
-      XMLFormatter::formatDataSourceInfos(false);
+//      XMLFormatter::formatDataSourceInfos(false);
 
       SplashScreenManager::getInstance().showMessage(tr("Known data sources loaded!"));
     }
@@ -485,7 +485,7 @@ void  te::qt::af::ApplicationController::initialize()
 
           te::serialize::xml::ReadDataSourceInfo(dataSourcesFile);
 
-          XMLFormatter::formatDataSourceInfos(false);
+//          XMLFormatter::formatDataSourceInfos(false);
 
           SplashScreenManager::getInstance().showMessage(tr("Known data sources loaded!"));
         }

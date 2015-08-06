@@ -66,6 +66,9 @@ te::qt::af::BaseApplication::BaseApplication(QWidget* parent) :
 
 te::qt::af::BaseApplication::~BaseApplication()
 {
+  if(m_app)
+    m_app->finalize();
+
   while(!m_tables.empty())
     delete *m_tables.begin();
 
@@ -75,9 +78,6 @@ te::qt::af::BaseApplication::~BaseApplication()
   delete m_styleExplorer;
 
   te::qt::af::UpdateUserSettings();
-
-  if(m_app)
-    m_app->finalize();
 }
 
 void te::qt::af::BaseApplication::init(const QString& cfgFile)
@@ -411,6 +411,12 @@ void te::qt::af::BaseApplication::onLayerRenameTriggered()
     ((te::qt::widgets::LayerItem*)item)->getLayer()->setTitle(text.toStdString());
   else if(item->getType() == "FOLDER")
     ((te::qt::widgets::FolderItem*)item)->setTitle(text.toStdString());
+
+  std::list<te::map::AbstractLayerPtr> ls;
+
+  te::qt::af::evt::LayerRemoved e(ls);
+//  e.
+  emit triggered(&e);
 }
 
 void te::qt::af::BaseApplication::onLayerRemoveItemTriggered()

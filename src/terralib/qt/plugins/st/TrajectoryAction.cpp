@@ -28,7 +28,7 @@
 #include "../../../qt/af/events/LayerEvents.h"
 #include "../../../qt/widgets/dataset/selector/DataSetSelectorWizardPage.h"
 #include "../../../qt/widgets/datasource/selector/DataSourceSelectorWizardPage.h"
-#include "../../../qt/widgets/layer/explorer/AbstractTreeItemFactory.h"
+//#include "../../../qt/widgets/layer/explorer/AbstractTreeItemFactory.h"
 #include "../../../qt/widgets/st/TrajectoryWizard.h"
 #include "../../../st/loader/STDataLoader.h"
 #include "../../af/ApplicationController.h"
@@ -51,7 +51,7 @@ te::qt::plugins::st::TrajectoryAction::TrajectoryAction(QMenu* menu)
 : te::qt::plugins::st::AbstractAction(menu)
 {
   createAction(tr("Trajectory...").toStdString(), "trajectory-layer");
-  te::qt::widgets::AbstractTreeItemFactory::reg("TRAJECTORYDATASETLAYER", boost::bind(boost::factory<TrajectoryLayerItem*>(),_1, _2));
+  //te::qt::widgets::AbstractTreeItemFactory::reg("TRAJECTORYDATASETLAYER", boost::bind(boost::factory<TrajectoryLayerItem*>(),_1, _2));
 }
 
  te::qt::plugins::st::TrajectoryAction::~TrajectoryAction()
@@ -60,7 +60,7 @@ te::qt::plugins::st::TrajectoryAction::TrajectoryAction(QMenu* menu)
 
 void te::qt::plugins::st::TrajectoryAction::onActionActivated(bool checked)
 {
-  QWidget* parent = te::qt::af::ApplicationController::getInstance().getMainWindow();
+  QWidget* parent = te::qt::af::AppCtrlSingleton::getInstance().getMainWindow();
 
   std::auto_ptr<te::qt::widgets::TrajectoryWizard> trajWiz;
   trajWiz.reset( new te::qt::widgets::TrajectoryWizard(parent));
@@ -77,8 +77,8 @@ void te::qt::plugins::st::TrajectoryAction::onActionActivated(bool checked)
 
     while(layerItB != layerItE)
     {
-      te::qt::af::evt::LayerAdded evt(*layerItB, 0);
-      te::qt::af::ApplicationController::getInstance().broadcast(&evt);
+//      te::qt::af::evt::LayerAdded evt(*layerItB, 0);
+//      te::qt::af::AppCtrlSingleton::getInstance().broadcast(&evt);
       layerItB++;
     }
   }

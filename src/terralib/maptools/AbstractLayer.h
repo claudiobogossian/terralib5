@@ -503,6 +503,20 @@ namespace te
         */
         virtual void setOutOfDate();
 
+        /*!
+          \brief
+
+          \return
+        */
+        virtual const std::string& getDataSourceId() const;
+
+        /*!
+          \brief
+
+          \param id
+        */
+        virtual void setDataSourceId(const std::string& id);
+
       protected:
 
         std::string m_id;                 //!< Layer id.
@@ -517,6 +531,7 @@ namespace te
         te::map::Chart* m_chart;          //!< The chart information.
         std::string m_geomPropertyName;   //!< The name of the referenced geometry property.
         te::map::CompositionMode m_compositionMode; //!< The composition mode used to merged the canvas.
+        std::string m_datasourceId;               //!< DataSource id;
     };
 
     typedef boost::intrusive_ptr<AbstractLayer> AbstractLayerPtr;

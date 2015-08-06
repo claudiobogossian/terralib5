@@ -77,37 +77,37 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="93"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="94"/>
         <source>ESRI Shapefile (*.shp *.SHP)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="95"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="96"/>
         <source>MapInfo File (*.mif *.MIF)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="97"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="98"/>
         <source>DGN File (*.dgn *.DGN)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="101"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="102"/>
         <source>GML File (*.gml *.GML)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="103"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="104"/>
         <source>KML File (*.kml *.KML)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="105"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="106"/>
         <source>GeoJSON File (*.geojson *.GEOJSON)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="107"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="108"/>
         <source>DXF File (*.dxf *.DXF)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -189,38 +189,38 @@ We will provide it soon!</source>
 <context>
     <name>te::qt::plugins::ogr::Plugin</name>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="161"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="163"/>
         <source>Vector File...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="192"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="204"/>
         <source>Open Vector File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="192"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="204"/>
         <source>Esri Shapefile (*.shp *.SHP);; Mapinfo File (*.mif *.MIF);; GeoJSON (*.geojson *.GeoJSON);; GML (*.gml *.GML);; KML (*.kml *.KML);; All Files (*.*)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="254"/>
-        <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="271"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="266"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="283"/>
         <source>Spatial Index</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="254"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="266"/>
         <source>Do you want create spatial index to the selected ESRI ShapeFiles?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="291"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="303"/>
         <source>Layer %1 has SRID %2 that is not recognized by TerraLib. Setting it to unknown.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="296"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/ogr/Plugin.cpp" line="308"/>
         <source>Layer SRS check</source>
         <translation type="unfinished"></translation>
     </message>

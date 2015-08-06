@@ -169,6 +169,8 @@ namespace te
 
         protected:
 
+          std::list<te::map::AbstractLayerPtr> getVisibleLayers();
+
 
           te::qt::af::ApplicationController* m_app;                  //!< Pointer to applicatin controller;
           te::qt::widgets::MapDisplay* m_display;                    //!< Pointer to a component te::qt::widgets::MapDisplay.

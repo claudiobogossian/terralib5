@@ -27,7 +27,7 @@
 #include "../../../qt/af/events/LayerEvents.h"
 #include "../../../qt/widgets/dataset/selector/DataSetSelectorWizardPage.h"
 #include "../../../qt/widgets/datasource/selector/DataSourceSelectorWizardPage.h"
-#include "../../../qt/widgets/layer/explorer/AbstractTreeItemFactory.h"
+//#include "../../../qt/widgets/layer/explorer/AbstractTreeItemFactory.h"
 #include "../../../qt/widgets/st/ObservationWizard.h"
 #include "../../../st/loader/STDataLoader.h"
 #include "../../af/ApplicationController.h"
@@ -48,7 +48,7 @@ te::qt::plugins::st::ObservationAction::ObservationAction(QMenu* menu)
 : te::qt::plugins::st::AbstractAction(menu)
 {
   createAction(tr("Observation...").toStdString(), "observation-layer");
-  te::qt::widgets::AbstractTreeItemFactory::reg("OBSERVATIONDATASETLAYER", boost::bind(boost::factory<ObservationLayerItem*>(),_1, _2));
+  //te::qt::widgets::AbstractTreeItemFactory::reg("OBSERVATIONDATASETLAYER", boost::bind(boost::factory<ObservationLayerItem*>(),_1, _2));
 }
 
  te::qt::plugins::st::ObservationAction::~ObservationAction()
@@ -57,7 +57,7 @@ te::qt::plugins::st::ObservationAction::ObservationAction(QMenu* menu)
 
 void te::qt::plugins::st::ObservationAction::onActionActivated(bool checked)
 {
-  QWidget* parent = te::qt::af::ApplicationController::getInstance().getMainWindow();
+  QWidget* parent = te::qt::af::AppCtrlSingleton::getInstance().getMainWindow();
 
   std::auto_ptr<te::qt::widgets::ObservationWizard> obsWiz;
   obsWiz.reset( new te::qt::widgets::ObservationWizard(parent));
@@ -74,8 +74,8 @@ void te::qt::plugins::st::ObservationAction::onActionActivated(bool checked)
 
     while(layerItB != layerItE)
     {
-      te::qt::af::evt::LayerAdded evt(*layerItB, 0);
-      te::qt::af::ApplicationController::getInstance().broadcast(&evt);
+//      te::qt::af::evt::LayerAdded evt(*layerItB, 0);
+//      te::qt::af::AppCtrlSingleton::getInstance().broadcast(&evt);
       layerItB++;
     }
   }

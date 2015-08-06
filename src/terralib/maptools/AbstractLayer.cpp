@@ -334,3 +334,13 @@ void te::map::AbstractLayer::setCompositionMode(te::map::CompositionMode mode)
 void te::map::AbstractLayer::setOutOfDate()
 {
 }
+
+const std::string& te::map::AbstractLayer::getDataSourceId() const
+{
+  return m_datasourceId;
+}
+
+void te::map::AbstractLayer::setDataSourceId(const std::string& id)
+{
+  m_datasourceId = id;
+}

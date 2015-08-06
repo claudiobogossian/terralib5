@@ -38,10 +38,12 @@
 #include "../../widgets/canvas/EyeBirdMapDisplayWidget.h"
 #include "../../widgets/canvas/MapDisplay.h"
 #include "../../widgets/canvas/ZoomInMapDisplayWidget.h"
+#include "../../widgets/layer/explorer/LayerItemView.h"
 #include "../../widgets/tools/AbstractTool.h"
 #include "../../widgets/tools/ZoomWheel.h"
 #include "../../widgets/tools/CoordTracking.h"
 #include "../../widgets/Utils.h"
+#include "../events/ApplicationEvents.h"
 #include "../events/LayerEvents.h"
 #include "../events/MapEvents.h"
 #include "../events/ProjectEvents.h"
@@ -60,6 +62,10 @@
 #include <cassert>
 #include <memory>
 #include <utility>
+
+
+
+
 
 te::qt::af::MapDisplay::MapDisplay(te::qt::widgets::MapDisplay* display, te::qt::af::ApplicationController* app)
   : QObject(display),
@@ -331,9 +337,8 @@ void te::qt::af::MapDisplay::onApplicationTriggered(te::qt::af::evt::Event* e)
 
     case te::qt::af::evt::LAYER_REMOVED:
     {
-      //te::qt::af::evt::LayerRemoved* evt = static_cast<te::qt::af::evt::LayerRemoved*>(e);
-      //m_display->set
-      //if(evt->m_layer->getVisibility())
+      m_display->setLayerList(getVisibleLayers());
+      m_display->refresh();
     }
     break;
 
@@ -568,4 +573,21 @@ std::list<te::map::AbstractLayerPtr> te::qt::af::MapDisplay::getSelectedLayer()
     lst.push_back(evt.m_layer);
 
   return lst;
+}
+
+std::list<te::map::AbstractLayerPtr> te::qt::af::MapDisplay::getVisibleLayers()
+{
+  std::list<te::map::AbstractLayerPtr> layers;
+
+  te::qt::af::evt::GetLayerExplorer evt;
+  emit triggered(&evt);
+
+  if(evt.m_layerExplorer == 0)
+    return layers;
+
+  te::qt::widgets::LayerItemView* view = evt.m_layerExplorer;
+
+  te::qt::widgets::GetValidLayers(view->model(), QModelIndex(), layers);
+
+  return layers;
 }

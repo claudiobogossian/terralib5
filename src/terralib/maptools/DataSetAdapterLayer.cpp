@@ -282,16 +282,6 @@ void te::map::DataSetAdapterLayer::setDataSetName(const std::string& name)
   m_datasetName = name;
 }
 
-const std::string& te::map::DataSetAdapterLayer::getDataSourceId() const
-{
-  return m_datasourceId;
-}
-
-void te::map::DataSetAdapterLayer::setDataSourceId(const std::string& id)
-{
-  m_datasourceId = id;
-}
-
 const std::string& te::map::DataSetAdapterLayer::getRendererType() const
 {
   return m_rendererType;

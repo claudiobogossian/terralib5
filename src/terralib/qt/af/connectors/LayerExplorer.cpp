@@ -28,11 +28,13 @@
 #include "../../widgets/layer/explorer/LayerItemView.h"
 //#include "../../widgets/layer/explorer/LegendItem.h"
 #include "../events/Event.h"
+#include "../events/ApplicationEvents.h"
 #include "../events/ProjectEvents.h"
 #include "../events/LayerEvents.h"
 #include "../ApplicationController.h"
 //#include "../Project.h"
 #include "LayerExplorer.h"
+
 
 std::list<te::map::AbstractLayerPtr> GetSelectedLayers(QTreeView* view)
 {
@@ -122,7 +124,6 @@ void te::qt::af::LayerExplorer::onApplicationTriggered(te::qt::af::evt::Event* e
       QModelIndex par;
       if(!lst.isEmpty())
         par = *lst.begin();
-
 
       if(par.isValid())
       {
@@ -242,6 +243,12 @@ void te::qt::af::LayerExplorer::onApplicationTriggered(te::qt::af::evt::Event* e
       GetAvailableLayers(QModelIndex(), m_explorer, e->m_layers);
     }
     break;
+
+    case te::qt::af::evt::GET_LAYERS_VIEW:
+    {
+      te::qt::af::evt::GetLayerExplorer* e = static_cast<te::qt::af::evt::GetLayerExplorer*>(evt);
+      e->m_layerExplorer = m_explorer;
+    }
 
     default:
     break;

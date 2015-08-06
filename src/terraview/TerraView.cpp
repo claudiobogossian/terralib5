@@ -28,6 +28,7 @@
 #include "TerraView.h"
 #include "Project.h"
 #include "ProjectInfoDialog.h"
+#include "XMLFormatter.h"
 #include "Config.h"
 
 // TerraLib
@@ -131,9 +132,9 @@ QString GetWindowTitle(const ProjectMetadata& project, te::qt::af::ApplicationCo
 void GetProjectsFromSettings(QStringList& prjTitles, QStringList& prjPaths)
 {
   QSettings s(QSettings::IniFormat,
-                          QSettings::UserScope,
-                          qApp->organizationName(),
-                          qApp->applicationName());
+              QSettings::UserScope,
+              qApp->organizationName(),
+              qApp->applicationName());
 
   s.beginGroup("projects");
 
@@ -169,9 +170,9 @@ void GetProjectsFromSettings(QStringList& prjTitles, QStringList& prjPaths)
 void WriteProjectsToSettings(const QStringList& prjTitles, const QStringList& prjPaths)
 {
   QSettings s(QSettings::IniFormat,
-                          QSettings::UserScope,
-                          qApp->organizationName(),
-                          qApp->applicationName());
+              QSettings::UserScope,
+              qApp->organizationName(),
+              qApp->applicationName());
 
   s.beginGroup("projects");
   s.beginGroup("most_recent");
@@ -760,21 +761,32 @@ void TerraView::onApplicationTriggered(te::qt::af::evt::Event* e)
 {
   switch (e->m_id)
   {
-  case te::qt::af::evt::NEW_ACTIONS_AVAILABLE:
-  {
-    te::qt::af::evt::NewActionsAvailable* evt = static_cast<te::qt::af::evt::NewActionsAvailable*>(e);
-    addActions(evt->m_plgName.c_str(), evt->m_category.c_str(), evt->m_actions);
-  }
-  break;
+    case te::qt::af::evt::NEW_ACTIONS_AVAILABLE:
+    {
+      te::qt::af::evt::NewActionsAvailable* evt = static_cast<te::qt::af::evt::NewActionsAvailable*>(e);
+      addActions(evt->m_plgName.c_str(), evt->m_category.c_str(), evt->m_actions);
+    }
+      break;
 
-  case te::qt::af::evt::LAYER_ADDED:
-  case te::qt::af::evt::LAYER_REMOVED:
-  case te::qt::af::evt::LAYER_VISIBILITY_CHANGED:
-    projectChanged();
-    break;
+    case te::qt::af::evt::LAYER_REMOVED:
+    {
+      std::list<te::map::AbstractLayerPtr> layers;
+      te::qt::widgets::GetValidLayers(getLayerExplorer()->model(), QModelIndex(), layers);
 
-  default:
-    BaseApplication::onApplicationTriggered(e);
+      getMapDisplay()->setLayerList(layers);
+      getMapDisplay()->refresh();
+
+      projectChanged();
+    }
+      break;
+
+    case te::qt::af::evt::LAYER_ADDED:
+    case te::qt::af::evt::LAYER_VISIBILITY_CHANGED:
+      projectChanged();
+      break;
+
+    default:
+      BaseApplication::onApplicationTriggered(e);
   }
 }
 
@@ -859,7 +871,7 @@ void TerraView::onSaveProjectTriggered()
     m_project->m_title = info.baseName();
   }
 
-  SaveProject(*m_project, getLayerExplorer()->getAllLayers());
+  std::list<te::map::AbstractLayerPtr> lays = getLayerExplorer()->getAllLayers();
 
   m_project->m_changed = false;
 
@@ -869,7 +881,15 @@ void TerraView::onSaveProjectTriggered()
 
   m_app->updateRecentProjects(m_project->m_fileName, m_project->m_title);
 
+  XMLFormatter::format(m_project, lays, true);
+  XMLFormatter::formatDataSourceInfos(true);
+
+  SaveProject(*m_project, lays);
+
   te::qt::af::SaveDataSourcesFile(m_app);
+
+  XMLFormatter::format(m_project, lays, false);
+  XMLFormatter::formatDataSourceInfos(false);
 }
 
 void TerraView::onSaveProjectAsTriggered()
@@ -1793,8 +1813,8 @@ void TerraView::onDataSourceExplorerTriggered()
   catch (...)
   {
     QMessageBox::warning(this,
-      m_app->getAppTitle(),
-      tr("DataSetExplorer Error!"));
+                         m_app->getAppTitle(),
+                         tr("DataSetExplorer Error!"));
   }
 }
 
@@ -1855,6 +1875,9 @@ void TerraView::openProject(const QString& prjFileName)
   std::list<te::map::AbstractLayerPtr> lst;
 
   LoadProject(prjFileName, *m_project, lst);
+
+  XMLFormatter::format(m_project, lst, false);
+  XMLFormatter::formatDataSourceInfos(false);
 
   getLayerExplorer()->setLayers(lst);
 

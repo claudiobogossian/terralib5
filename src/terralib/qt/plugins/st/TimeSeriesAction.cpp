@@ -27,7 +27,7 @@
 #include "../../../qt/af/events/LayerEvents.h"
 #include "../../../qt/widgets/dataset/selector/DataSetSelectorWizardPage.h"
 #include "../../../qt/widgets/datasource/selector/DataSourceSelectorWizardPage.h"
-#include "../../../qt/widgets/layer/explorer/AbstractTreeItemFactory.h"
+//#include "../../../qt/widgets/layer/explorer/AbstractTreeItemFactory.h"
 #include "../../../qt/widgets/st/TimeSeriesWizard.h"
 #include "../../../st/loader/STDataLoader.h"
 #include "../../af/ApplicationController.h"
@@ -48,7 +48,7 @@ te::qt::plugins::st::TimeSeriesAction::TimeSeriesAction(QMenu* menu)
 : te::qt::plugins::st::AbstractAction(menu)
 {
   createAction(tr("Time Series...").toStdString(), "timeseries-layer");
-  te::qt::widgets::AbstractTreeItemFactory::reg("TIMESERIESDATASETLAYER", boost::bind(boost::factory<TimeSeriesLayerItem*>(),_1, _2));
+//  te::qt::widgets::AbstractTreeItemFactory::reg("TIMESERIESDATASETLAYER", boost::bind(boost::factory<TimeSeriesLayerItem*>(),_1, _2));
 }
 
  te::qt::plugins::st::TimeSeriesAction::~TimeSeriesAction()
@@ -57,7 +57,7 @@ te::qt::plugins::st::TimeSeriesAction::TimeSeriesAction(QMenu* menu)
 
 void te::qt::plugins::st::TimeSeriesAction::onActionActivated(bool checked)
 {
-  QWidget* parent = te::qt::af::ApplicationController::getInstance().getMainWindow();
+  QWidget* parent = te::qt::af::AppCtrlSingleton::getInstance().getMainWindow();
 
   std::auto_ptr<te::qt::widgets::TimeSeriesWizard> timeWiz;
   timeWiz.reset( new te::qt::widgets::TimeSeriesWizard(parent));
@@ -68,7 +68,7 @@ void te::qt::plugins::st::TimeSeriesAction::onActionActivated(bool checked)
     //Initialize STDataLoader support
     te::st::STDataLoader::initialize();
 
-    te::qt::af::evt::LayerAdded evt(timeWiz->getTimeSeriesLayer(), 0);
-    te::qt::af::ApplicationController::getInstance().broadcast(&evt);
+//    te::qt::af::evt::LayerAdded evt(timeWiz->getTimeSeriesLayer(), 0);
+//    te::qt::af::ApplicationController::getInstance().broadcast(&evt);
   }
 }

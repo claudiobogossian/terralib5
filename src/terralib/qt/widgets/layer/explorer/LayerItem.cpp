@@ -27,14 +27,10 @@ QString GetDataSetName(te::map::AbstractLayerPtr l)
   return toolTip;
 }
 
-QString GetDataSetInfo(te::map::AbstractLayerPtr l)
+QString GetTooltip(te::map::AbstractLayerPtr l)
 {
   // Gets the connection info
-  const std::string& id = ((l->getType() == "DATASETADAPTERLAYER") ?
-   ((te::map::DataSetAdapterLayer*)l.get())->getDataSourceId() :
-   (l->getType() == "DATASETLAYER") ?
-   ((te::map::DataSetLayer*)l.get())->getDataSourceId() :
-   "");
+  const std::string& id = l->getDataSourceId();
 
   te::da::DataSourceInfoPtr info = te::da::DataSourceInfoManager::getInstance().get(id);
   const std::map<std::string, std::string>& connInfo = info->getConnInfo();
@@ -49,6 +45,7 @@ QString GetDataSetInfo(te::map::AbstractLayerPtr l)
     toolTip += ": ";
     toolTip += it->second.c_str();
     ++i;
+
     if(i != connInfo.size())
       toolTip += "\n";
   }
@@ -69,7 +66,7 @@ QString BuildToolIip(te::qt::widgets::LayerItem* item)
   if(!l->isValid())
     return QObject::tr("Invalid Layer");
 
-  QString toolTip = GetDataSetName(l) +"\n"+ GetDataSetInfo(l);
+  QString toolTip = GetDataSetName(l) +"\n"+ GetTooltip(l);
 
   return toolTip;
 }

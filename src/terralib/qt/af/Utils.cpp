@@ -47,7 +47,6 @@
 #include "Exception.h"
 //#include "Project.h"
 #include "Utils.h"
-#include "XMLFormatter.h"
 
 // STL
 #include <cassert>

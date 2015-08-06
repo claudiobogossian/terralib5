@@ -72,6 +72,7 @@ namespace te
           DRAWING_FINISHED,
           NEW_ACTIONS_AVAILABLE,
           GET_AVAILABLE_LAYERS,
+          GET_LAYERS_VIEW,
           CUSTOM = 1024
         };
 

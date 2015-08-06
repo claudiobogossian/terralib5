@@ -28,22 +28,24 @@
 
 #include "Config.h"
 
+#include <terralib/maptools/AbstractLayer.h>
+
 //STL
+#include <list>
 #include <string>
 
 namespace te {
 
   //Forward declarations
-  namespace map { class AbstractLayer; }
-  namespace da { class DataSourceInfo; }
+  namespace da
+  {
+    class DataSourceInfo;
+  }
+}
 
-  namespace qt {
-    namespace af {
+class ProjectMetadata;
 
-      // Forward declaration
-      class Project;
-      
-      /*!
+/*!
          \class XMLFormatter
 
          \brief A class that formats strings.
@@ -52,20 +54,20 @@ namespace te {
 
          \ingroup af
        */
-      class TEQTAFEXPORT XMLFormatter
-      {
-        public:
+class XMLFormatter
+{
+public:
 
-          /*!
+  /*!
             \brief Formats the project informations.
 
             \param p The project.
 
             \param encode \a Pass true to change for XML percentage format and \a false for human readable format.
            */
-          static void format(Project* p, const bool& encode);
+  static void format(ProjectMetadata* p, const std::list<te::map::AbstractLayerPtr>& layers, const bool& encode);
 
-          /*!
+  /*!
             \brief Formats the layer informations.
 
             \param l The layer.
@@ -74,38 +76,34 @@ namespace te {
 
             \note The sublayers will be formatted too, using the \a encode passed.
            */
-          static void format(te::map::AbstractLayer* l, const bool& encode);
+  static void format(te::map::AbstractLayer* l, const bool& encode);
 
-          /*!
+  /*!
             \brief Formats the data source informations.
 
             \param d The data source info.
 
             \param encode \a Pass true to change for XML percentage format and \a false for human readable format.
            */
-          static void format(te::da::DataSourceInfo* d, const bool& encode);
+  static void format(te::da::DataSourceInfo* d, const bool& encode);
 
-          /*!
+  /*!
             \brief Formats all data source informations registered in the \a te::da::DataSourceInfoManager object.
 
             \param encode \a Pass true to change for XML percentage format and \a false for human readable format.
 
             \sa te::da::DataSourceInfoManager
            */
-          static void formatDataSourceInfos(const bool& encode);
+  static void formatDataSourceInfos(const bool& encode);
 
-          /*!
+  /*!
             \brief Formats the string.
 
             \param s The string.
 
             \param encode \a Pass true to change for XML percentage format and \a false for human readable format.
            */
-          static std::string format (const std::string& s, const bool& encode);
-      };
-      
-    } // namespace af
-  } // namespace qt
-} // namespace te
+  static std::string format (const std::string& s, const bool& encode);
+};
 
 #endif // TE_QT_AF_XMLFORMATTER_H

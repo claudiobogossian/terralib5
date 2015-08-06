@@ -70,7 +70,7 @@ void te::qt::plugins::st::Plugin::startup()
   TE_LOG_TRACE(TE_TR("TerraLib Qt ST Plugin startup!"));
 
 // add plugin menu
-  m_stMenu = te::qt::af::ApplicationController::getInstance().getMenu("Project.Add Layer.Add Temporal Layer");
+  m_stMenu = te::qt::af::AppCtrlSingleton::getInstance().getMenu("Project.Add Layer.Add Temporal Layer");
 
   m_stMenu->setTitle(TE_TR("Add Temporal Layer"));
 
@@ -99,7 +99,7 @@ void te::qt::plugins::st::Plugin::shutdown()
 void te::qt::plugins::st::Plugin::registerActions()
 {
 #ifdef TE_QT_PLUGIN_ST_HAVE_SLIDER
-    m_sliderAction = new te::qt::plugins::st::TimeSliderWidgetAction(te::qt::af::ApplicationController::getInstance().findMenu("View"));
+    m_sliderAction = new te::qt::plugins::st::TimeSliderWidgetAction(te::qt::af::AppCtrlSingleton::getInstance().findMenu("View"));
 #endif
 
 #ifdef TE_QT_PLUGIN_ST_HAVE_OBSERVATION

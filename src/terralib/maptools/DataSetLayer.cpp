@@ -218,16 +218,6 @@ void te::map::DataSetLayer::setDataSetName(const std::string& name)
   m_datasetName = name;
 }
 
-const std::string& te::map::DataSetLayer::getDataSourceId() const
-{
-  return m_datasourceId;
-}
-
-void te::map::DataSetLayer::setDataSourceId(const std::string& id)
-{
-  m_datasourceId = id;
-}
-
 const std::string& te::map::DataSetLayer::getRendererType() const
 {
   return m_rendererType;

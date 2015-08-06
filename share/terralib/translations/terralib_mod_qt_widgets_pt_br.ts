@@ -433,6 +433,29 @@
     </message>
 </context>
 <context>
+    <name>ChartDialogForm</name>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/charts/ui/ChartDialogForm.ui" line="14"/>
+        <source>Chart creation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/charts/ui/ChartDialogForm.ui" line="50"/>
+        <source>Help</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/charts/ui/ChartDialogForm.ui" line="70"/>
+        <source>OK</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/charts/ui/ChartDialogForm.ui" line="77"/>
+        <source>Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>ChartDisplayWidgetForm</name>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/ChartDisplayWidgetForm.ui" line="14"/>
@@ -2762,29 +2785,6 @@
     </message>
 </context>
 <context>
-    <name>HistogramDialogForm</name>
-    <message>
-        <location filename="../../../src/terralib/qt/widgets/charts/ui/HistogramDialogForm.ui" line="14"/>
-        <source>Histogram</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../src/terralib/qt/widgets/charts/ui/HistogramDialogForm.ui" line="50"/>
-        <source>Help</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../src/terralib/qt/widgets/charts/ui/HistogramDialogForm.ui" line="70"/>
-        <source>OK</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../src/terralib/qt/widgets/charts/ui/HistogramDialogForm.ui" line="77"/>
-        <source>Cancel</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>HistogramFrameWidgetForm</name>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/HistogramFrameWidgetForm.ui" line="14"/>
@@ -4585,6 +4585,67 @@ p, li { white-space: pre-wrap; }
         <source>Remove</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/layer/explorer/ChartItem.cpp" line="40"/>
+        <source>Pie Chart</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/layer/explorer/ChartItem.cpp" line="44"/>
+        <source>Bar Chart</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/layer/explorer/ChartItem.cpp" line="48"/>
+        <source>Chart</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/layer/explorer/ChartSliceItem.cpp" line="39"/>
+        <source>Property</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/layer/explorer/ColorMapItem.cpp" line="94"/>
+        <source>Categorization</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/layer/explorer/ColorMapItem.cpp" line="96"/>
+        <source>Interpolation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/layer/explorer/ColorMapItem.cpp" line="98"/>
+        <location filename="../../../src/terralib/qt/widgets/layer/explorer/GroupingItem.cpp" line="27"/>
+        <source>Classification by</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/layer/explorer/LayerItem.cpp" line="22"/>
+        <source>DataSet</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/layer/explorer/LayerItem.cpp" line="42"/>
+        <source>Connection Info</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/layer/explorer/LayerItem.cpp" line="58"/>
+        <source>SRID: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/layer/explorer/LayerItem.cpp" line="70"/>
+        <source>Invalid Layer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/layer/explorer/LegendItem.cpp" line="95"/>
+        <source>Style</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>QueryBuilderWizardForm</name>
@@ -5711,29 +5772,6 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ui/ScatterDataWidgetForm.ui" line="114"/>
         <source>Read all data</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ScatterDialogForm</name>
-    <message>
-        <location filename="../../../src/terralib/qt/widgets/charts/ui/ScatterDialogForm.ui" line="14"/>
-        <source>Scatter</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../src/terralib/qt/widgets/charts/ui/ScatterDialogForm.ui" line="47"/>
-        <source>Help</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../src/terralib/qt/widgets/charts/ui/ScatterDialogForm.ui" line="67"/>
-        <source>OK</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../src/terralib/qt/widgets/charts/ui/ScatterDialogForm.ui" line="74"/>
-        <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -7551,6 +7589,42 @@ p, li { white-space: pre-wrap; }
     </message>
 </context>
 <context>
+    <name>TimeSeriesDataWidgetForm</name>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/charts/ui/TimeSeriesDataWidgetForm.ui" line="14"/>
+        <source>Form</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/charts/ui/TimeSeriesDataWidgetForm.ui" line="22"/>
+        <source>Value:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/charts/ui/TimeSeriesDataWidgetForm.ui" line="35"/>
+        <source>Date &amp; Time:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/charts/ui/TimeSeriesDataWidgetForm.ui" line="51"/>
+        <source>Id:</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>TimeSeriesFrameWidgetForm</name>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/charts/ui/TimeSeriesFrameWidgetForm.ui" line="14"/>
+        <source>Form</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/charts/ui/TimeSeriesFrameWidgetForm.ui" line="27"/>
+        <source>TimeSeries Style</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>TimeSeriesPropertiesWidgetForm</name>
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/TimeSeriesPropertiesWidgetForm.ui" line="14"/>
@@ -7580,6 +7654,24 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/st/ui/TimeSeriesPropertiesWidgetForm.ui" line="67"/>
         <source>Localtion:</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>TimeSeriesStyleWidgetForm</name>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/charts/ui/TimeSeriesStyleWidgetForm.ui" line="14"/>
+        <source>Form</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/charts/ui/TimeSeriesStyleWidgetForm.ui" line="28"/>
+        <source>Stroke:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/charts/ui/TimeSeriesStyleWidgetForm.ui" line="44"/>
+        <source>Stroke...</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -8074,24 +8166,6 @@ p, li { white-space: pre-wrap; }
     </message>
 </context>
 <context>
-    <name>te::qt::widgets::ChartItem</name>
-    <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/explorer/ChartItem.cpp" line="65"/>
-        <source>Pie Chart</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/explorer/ChartItem.cpp" line="68"/>
-        <source>Bar Chart</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/explorer/ChartItem.cpp" line="71"/>
-        <source>Chart</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>te::qt::widgets::ChartLayerWidget</name>
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ChartLayerWidget.cpp" line="123"/>
@@ -8117,14 +8191,6 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/charts/ChartLayerWidget.cpp" line="246"/>
         <source>Attribute already selected.</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>te::qt::widgets::ChartSliceItem</name>
-    <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/explorer/ChartSliceItem.cpp" line="63"/>
-        <source>Property</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -8296,24 +8362,6 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/rp/ClippingWizardPage.cpp" line="458"/>
         <source>Layer</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>te::qt::widgets::ColorMapItem</name>
-    <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/explorer/ColorMapItem.cpp" line="68"/>
-        <source>Categorization</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/explorer/ColorMapItem.cpp" line="72"/>
-        <source>Interpolation</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/explorer/ColorMapItem.cpp" line="75"/>
-        <source>Classification by</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -8954,24 +9002,6 @@ p, li { white-space: pre-wrap; }
     </message>
 </context>
 <context>
-    <name>te::qt::widgets::DataSetAdapterLayerItem</name>
-    <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/explorer/DataSetAdapterLayerItem.cpp" line="161"/>
-        <source>Invalid Layer</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/explorer/DataSetAdapterLayerItem.cpp" line="166"/>
-        <source>DataSet</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/explorer/DataSetAdapterLayerItem.cpp" line="173"/>
-        <source>Connection Info</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>te::qt::widgets::DataSetAdapterWidget</name>
     <message>
         <location filename="../../../src/terralib/qt/widgets/property/DataSetAdapterWidget.cpp" line="156"/>
@@ -9156,24 +9186,6 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../../src/terralib/qt/widgets/datasource/explorer/DataSetItem.cpp" line="105"/>
         <source>&amp;Open dataset</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>te::qt::widgets::DataSetLayerItem</name>
-    <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/explorer/DataSetLayerItem.cpp" line="191"/>
-        <source>Invalid Layer</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/explorer/DataSetLayerItem.cpp" line="196"/>
-        <source>DataSet</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/explorer/DataSetLayerItem.cpp" line="203"/>
-        <source>Connection Info</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -10481,14 +10493,6 @@ This may be an error on the connector implementation!</source>
     </message>
 </context>
 <context>
-    <name>te::qt::widgets::GroupingItem</name>
-    <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/explorer/GroupingItem.cpp" line="59"/>
-        <source>Classification by</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>te::qt::widgets::GroupingWidget</name>
     <message>
         <location filename="../../../src/terralib/qt/widgets/se/GroupingWidget.cpp" line="149"/>
@@ -10708,10 +10712,20 @@ The layer must have an attribute with the same name of the attribute used to mak
     </message>
 </context>
 <context>
-    <name>te::qt::widgets::LayerExplorer</name>
+    <name>te::qt::widgets::LayerItemModel</name>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/explorer/LayerExplorer.cpp" line="37"/>
-        <source>Layer Explorer</source>
+        <location filename="../../../src/terralib/qt/widgets/layer/explorer/LayerItemModel.cpp" line="608"/>
+        <source>Layers</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/layer/explorer/LayerItemModel.cpp" line="634"/>
+        <source>Invalid data associated to the layer model!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/layer/explorer/LayerItemModel.cpp" line="642"/>
+        <source>The layer item is not an AbstractTreeItem!</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -10928,14 +10942,6 @@ The layer must have an attribute with the same name of the attribute used to mak
     <message>
         <location filename="../../../src/terralib/qt/widgets/layer/search/LayerSearchWizardPage.cpp" line="48"/>
         <source>Allows selection of layers using filters for selection.</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>te::qt::widgets::LegendItem</name>
-    <message>
-        <location filename="../../../src/terralib/qt/widgets/layer/explorer/LegendItem.cpp" line="73"/>
-        <source>Style</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -13316,12 +13322,12 @@ The layer must have an attribute with the same name of the attribute used to mak
 <context>
     <name>te::qt::widgets::TimeSliderWidget</name>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/st/TimeSliderWidget.cpp" line="1423"/>
+        <location filename="../../../src/terralib/qt/widgets/st/TimeSliderWidget.cpp" line="1426"/>
         <source>Select File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/st/TimeSliderWidget.cpp" line="1423"/>
+        <location filename="../../../src/terralib/qt/widgets/st/TimeSliderWidget.cpp" line="1426"/>
         <source>Images (*.png *.xpm *.jpg *.gif)</source>
         <translation type="unfinished"></translation>
     </message>
