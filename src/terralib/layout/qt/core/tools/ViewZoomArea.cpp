@@ -95,7 +95,9 @@ bool te::layout::ViewZoomArea::mouseReleaseEvent(QMouseEvent* e)
   QRectF bounding = poly.boundingRect();
   if(bounding.width() == 0. || bounding.height() == 0.)
   {
-    return false;
+    m_view->setZoom(Context::getInstance().getZoom() * 1.5);
+    //m_view->centerOn(e->pos());
+    return true;
   }
 
 
