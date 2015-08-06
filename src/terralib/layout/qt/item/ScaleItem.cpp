@@ -40,7 +40,7 @@ te::layout::ScaleItem::~ScaleItem()
 
 }
 
-void te::layout::ScaleItem::drawItem( QPainter * painter )
+void te::layout::ScaleItem::drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget )
 {
   const Property& property = m_controller->getProperty("scale_type");
   if(property.isNull() == false)

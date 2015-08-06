@@ -40,7 +40,7 @@ te::layout::EllipseItem::~EllipseItem()
 
 }
 
-void te::layout::EllipseItem::drawItem( QPainter * painter )
+void te::layout::EllipseItem::drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget )
 {
   painter->save();
 

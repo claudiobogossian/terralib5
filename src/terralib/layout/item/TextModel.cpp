@@ -65,7 +65,7 @@ te::layout::TextModel::TextModel()
   {
     Property property(0);
     property.setName("color");
-    property.setName("Color");
+    property.setLabel("Color");
     property.setValue(color, dataType->getDataTypeColor());
     m_properties.addProperty(property);
   }
@@ -94,8 +94,8 @@ te::layout::TextModel::TextModel()
       Variant v;
       v.setValue(enumType->getLabel(), dataType->getDataTypeString());
       property.addOption(v);
-      m_properties.addProperty(property);
     }
+    m_properties.addProperty(property);
   }
 
 //updating properties
@@ -103,28 +103,28 @@ te::layout::TextModel::TextModel()
     Property property(0);
     property.setName("width");
     property.setValue(width, dataType->getDataTypeDouble());
-    this->m_properties.updatePropertyValue(property.getName(), property.getValue());
+    this->m_properties.updateProperty(property);
   }
 
   {
     Property property(0);
     property.setName("height");
     property.setValue(height, dataType->getDataTypeDouble());
-    this->m_properties.updatePropertyValue(property.getName(), property.getValue());
+    this->m_properties.updateProperty(property);
   }
 
   {
     Property property(0);
     property.setName("show_frame");
     property.setValue(false, dataType->getDataTypeBool());
-    this->m_properties.updatePropertyValue(property.getName(), property.getValue());
+    this->m_properties.updateProperty(property);
   }
 
   {
     Property property(0);
     property.setName("resizable");
     property.setValue(false, dataType->getDataTypeBool());
-    this->m_properties.updatePropertyValue(property.getName(), property.getValue());
+    this->m_properties.updateProperty(property);
   }
 }
 

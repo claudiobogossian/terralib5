@@ -238,7 +238,7 @@ QPointF remapPointToViewport(const QPointF& point, const QRectF& item, const QRe
   return remappedPoint;
 }
 
-void te::layout::MapItem::drawItem( QPainter * painter )
+void te::layout::MapItem::drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget )
 {
   if(!m_mapDisplay || !painter)
     return;

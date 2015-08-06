@@ -57,11 +57,6 @@ te::layout::TitleItem::TitleItem( AbstractItemController* controller, AbstractIt
 
 te::layout::TitleItem::~TitleItem()
 {
-  if(m_table)
-  {
-    delete m_table;
-    m_table = 0;
-  }
 }
 
 void te::layout::TitleItem::init()

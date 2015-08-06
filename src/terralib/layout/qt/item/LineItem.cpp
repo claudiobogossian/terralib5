@@ -85,7 +85,7 @@ void te::layout::LineItem::updateObserver( ContextItem context )
   setRect(m_poly.boundingRect());
 }
 
-void te::layout::LineItem::drawItem( QPainter * painter )
+void te::layout::LineItem::drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget )
 {
   LineModel* model = dynamic_cast<LineModel*>(m_model);
   if(!model)

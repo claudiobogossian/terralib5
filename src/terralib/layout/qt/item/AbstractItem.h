@@ -45,7 +45,6 @@
 #include <QGraphicsScene>
 #include <QGraphicsView>
 
-
 #include "../../core/pattern/mvc/AbstractItemController.h"
 #include "../../core/pattern/mvc/AbstractItemView.h"
 
@@ -117,7 +116,7 @@ namespace te
         /*!
           \brief For any specific drawing, the item must reimplement this function
          */
-        virtual void drawItem( QPainter* painter ) = 0;
+        virtual void drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 ) = 0;
 
         /*!
           \brief Draws the background of the item
@@ -219,7 +218,7 @@ namespace te
       drawBackground( painter );
 
       //Draws the item
-      drawItem( painter );
+      drawItem( painter, option, widget );
 
       //Draws the frame
       drawFrame(painter);
@@ -385,24 +384,6 @@ namespace te
     inline QVariant te::layout::AbstractItem<T>::itemChange ( QGraphicsItem::GraphicsItemChange change, const QVariant & value )
     {
       return T::itemChange(change, value);
-
-      /*
-      else if(change == QGraphicsItem::ItemPositionChange)
-      {
-        if(m_invertedMatrix)
-        {
-           // value is the new position.
-          QPointF newPos = value.toPointF();
-          //newPos = this->mapFromScene(newPos);
-
-          double tx = transform().dx();
-          double ty = transform().dy();
-
-          //newPos.setX(newPos.x() - tx);
-          //newPos.setY(newPos.y() - ty);
-          return newPos;
-        }
-      }*/
     }
   }
 }

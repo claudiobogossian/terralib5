@@ -74,7 +74,7 @@ void te::layout::ImageItem::updateObserver(ContextItem context)
   ObjectItem::updateObserver(context);
 }
 
-void te::layout::ImageItem::drawItem( QPainter * painter )
+void te::layout::ImageItem::drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget )
 {
   if(m_image.isNull() == true)
   {

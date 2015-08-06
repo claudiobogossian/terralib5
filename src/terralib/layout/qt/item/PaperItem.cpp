@@ -52,7 +52,7 @@ te::layout::PaperItem::~PaperItem()
 
 }
 
-void te::layout::PaperItem::drawItem( QPainter * painter )
+void te::layout::PaperItem::drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget )
 {
   PaperModel* model = dynamic_cast<PaperModel*>(m_model);
   if(!model)

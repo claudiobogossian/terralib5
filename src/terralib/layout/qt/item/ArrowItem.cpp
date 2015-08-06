@@ -44,7 +44,7 @@ te::layout::ArrowItem::~ArrowItem()
 
 }
 
-void te::layout::ArrowItem::drawItem( QPainter * painter )
+void te::layout::ArrowItem::drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget )
 {
   const Property& property = m_controller->getProperty("arrow_type");
   if(property.isNull() == false)

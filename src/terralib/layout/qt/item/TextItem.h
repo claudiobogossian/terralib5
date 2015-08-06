@@ -38,11 +38,6 @@
 // Qt
 #include <QGraphicsTextItem>
 
-class QTextTable;
-class QGraphicsSceneMouseEvent;
-class QKeyEvent;
-class QGraphicsSceneContextMenuEvent;
-
 namespace te
 {
   namespace layout
@@ -60,6 +55,8 @@ namespace te
   */
     class TELAYOUTEXPORT TextItem : public AbstractItem<QGraphicsTextItem>
     {
+      Q_OBJECT
+
       public:
 
         /*!
@@ -75,86 +72,45 @@ namespace te
         */ 
         virtual ~TextItem();
 
-        virtual void drawItem ( QPainter * painter ){}
-
         /*!
-          \brief Reimplemented from ItemObserver
+          \brief For any specific drawing, the item must reimplement this function
          */
-        //virtual void updateObserver( ContextItem context );
-
-        /*!
-          \brief Reimplemented from QGraphicsTextItem
-         */
-        virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
+        virtual void drawItem ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
 
         /*!
           \brief Reimplemented from QGraphicsItem to capture changes in the item
          */
         virtual QVariant itemChange ( QGraphicsItem::GraphicsItemChange change, const QVariant & value );
-                
-        //virtual void refreshDocument();
 
         /*!
           \brief Reimplemented from QGraphicsItem
          */
-        //virtual QRectF boundingRect() const;
+        virtual QRectF boundingRect() const;
 
-        /*!
-          \brief Reimplemented from ItemObserver
-         */
-        //virtual te::color::RGBAColor** getRGBAColorImage(int &w, int &h);
-                
       protected:
 
         /*!
           \brief Reimplemented from QGraphicsTextItem
          */
-        //virtual QVariant itemChange ( GraphicsItemChange change, const QVariant & value );
-                
-        /*!
-          \brief Reimplemented from QGraphicsTextItem
-         */
-        //virtual void keyPressEvent ( QKeyEvent * event );
+        virtual void mouseDoubleClickEvent ( QGraphicsSceneMouseEvent * event );
 
         /*!
-          \brief Reimplemented from QGraphicsTextItem
+          \brief Enters the edition mode
          */
-        //virtual void mouseDoubleClickEvent ( QGraphicsSceneMouseEvent * event );
+        void enterEditionMode();
 
         /*!
-          \brief Reimplemented from QGraphicsTextItem
+          \brief Leaves edition mode
          */
-        //virtual void mouseMoveEvent ( QGraphicsSceneMouseEvent * event );
+        void leaveEditionMode();
 
-        /*!
-          \brief Reimplemented from QGraphicsTextItem
-         */
-       // virtual void mousePressEvent ( QGraphicsSceneMouseEvent * event );
+protected slots:
 
-        /*!
-          \brief Reimplemented from QGraphicsTextItem
-         */
-        //virtual void mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
-                
-        //virtual void init();
-        
-        //virtual QImage createImage();
+        void updateGeometry( int position, int charsRemoved, int charsAdded );
 
-        /*!
-          \brief Reimplemented from ItemObserver
-         */
-        //virtual te::gm::Coord2D getPosition();
-        
-        //virtual void getDocumentSizeMM(double &w, double &h);
+protected:
 
-        //virtual void resetEdit();
-
-        //virtual void updateTextConfig();
-
-        //virtual void applyAlignment();
-
-        QTextTable*    m_table;
-        bool           m_move;
+        bool           m_isInEdition;
     };
   }
 }

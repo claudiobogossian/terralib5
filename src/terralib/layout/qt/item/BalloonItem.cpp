@@ -50,7 +50,7 @@ te::layout::BalloonItem::~BalloonItem()
 
 }
 
-void te::layout::BalloonItem::drawItem( QPainter * painter )
+void te::layout::BalloonItem::drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget )
 {
 
 }

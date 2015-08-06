@@ -78,10 +78,20 @@ namespace te
         virtual void updateModel(const QSizeF& size);
 
         /*!
-          \brief This function will be called by the view every time the view is being changed
-                 If the return 'newValue' has been changed, the return value must be true
+          \brief Synchronizes the information between the model and the view
+          \return TRUE if the size of the view changed due to the changes in the model. FALSE if the size did not change
          */
-        bool itemChange ( QGraphicsItem::GraphicsItemChange change, const QVariant & currentValue, QVariant& newValue );
+        virtual bool sync();
+
+        /*!
+          \brief This function will be called by the view every time the item´s scene was changed
+         */
+        virtual void sceneChanged();
+
+        /*!
+          \brief This function will be called by the view every time the item´s text was changed
+         */
+        virtual void textChanged();
     };
   }
 }

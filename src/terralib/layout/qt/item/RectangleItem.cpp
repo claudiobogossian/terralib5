@@ -46,7 +46,7 @@ te::layout::RectangleItem::~RectangleItem()
 
 }
 
-void te::layout::RectangleItem::drawItem( QPainter * painter )
+void te::layout::RectangleItem::drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget )
 {
   const Property& property = m_controller->getProperty("rectangle_type");
   if(property.isNull() == false)
