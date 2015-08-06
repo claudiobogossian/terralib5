@@ -33,7 +33,6 @@
 #include "../../../st/loader/STDataLoader.h"
 #include "../../af/ApplicationController.h"
 #include "TrajectoryAction.h"
-#include "TrajectoryLayerItem.h"
 
 // Qt
 #include <QMessageBox>

@@ -32,7 +32,6 @@
 #include "../../../st/loader/STDataLoader.h"
 #include "../../af/ApplicationController.h"
 #include "TimeSeriesAction.h"
-#include "TimeSeriesLayerItem.h"
 
 // Qt
 #include <QMessageBox>
