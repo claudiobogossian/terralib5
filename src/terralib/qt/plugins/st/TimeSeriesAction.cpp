@@ -68,7 +68,7 @@ void te::qt::plugins::st::TimeSeriesAction::onActionActivated(bool checked)
     //Initialize STDataLoader support
     te::st::STDataLoader::initialize();
 
-//    te::qt::af::evt::LayerAdded evt(timeWiz->getTimeSeriesLayer(), 0);
-//    te::qt::af::ApplicationController::getInstance().broadcast(&evt);
+    te::qt::af::evt::LayerAdded evt(timeWiz->getTimeSeriesLayer(), 0);
+    emit triggered(&evt);
   }
 }

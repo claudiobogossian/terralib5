@@ -28,7 +28,6 @@
 #include "../../../../common/Translator.h"
 #include "../../../../common/Logger.h"
 #include "../../../../dataaccess/datasource/DataSourceInfoManager.h"
-#include "../../../../wms/qt/WMSLayerItem.h"
 #include "../../../af/ApplicationController.h"
 #include "../../../af/events/ApplicationEvents.h"
 #include "../../../af/events/LayerEvents.h"
@@ -160,15 +159,9 @@ void te::qt::plugins::wms::Plugin::updateDelegate(const bool& add)
   }
   else
   {
-    QStyledItemDelegate* aux = m_delegate->removeDecorator(m_delegate);
-
-    if(aux != 0)
-      e.m_layerExplorer->setItemDelegate(aux);
-    else
-    {
-      delete m_delegate;
-      m_delegate = 0;
-    }
+    e.m_layerExplorer->removeDelegate(m_delegate);
+    delete m_delegate;
+    m_delegate = 0;
   }
 }
 

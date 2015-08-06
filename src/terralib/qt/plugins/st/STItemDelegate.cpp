@@ -17,25 +17,27 @@
     TerraLib Team at <terralib-team@terralib.org>.
  */
 
-#include "WMSItemDelegate.h"
+#include "STItemDelegate.h"
 
 // TerraLib
-#include "../../../widgets/layer/explorer/LayerItem.h"
+#include "../../widgets/layer/explorer/LayerItem.h"
 
-te::qt::plugins::wms::WMSItemDelegate::WMSItemDelegate(QStyledItemDelegate* decorated, QObject* parent) :
+te::qt::plugins::st::STItemDelegate::STItemDelegate(QStyledItemDelegate* decorated, QObject* parent) :
   te::common::Decorator<QStyledItemDelegate>(decorated, false)
 {
   setParent(parent);
 
-  m_icon = QIcon::fromTheme("datasource-wms");
+  m_obsIcon = QIcon::fromTheme("observation-layer");
+  m_tmsIcon = QIcon::fromTheme("timeseries-layer");
+  m_trjIcon = QIcon::fromTheme("trajectory-layer");
 }
 
-te::qt::plugins::wms::WMSItemDelegate::~WMSItemDelegate()
+te::qt::plugins::st::STItemDelegate::~STItemDelegate()
 {
 
 }
 
-void te::qt::plugins::wms::WMSItemDelegate::paint(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const
+void te::qt::plugins::st::STItemDelegate::paint(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const
 {
   te::qt::widgets::TreeItem* item = static_cast<te::qt::widgets::TreeItem*>(index.internalPointer());
 
@@ -43,17 +45,22 @@ void te::qt::plugins::wms::WMSItemDelegate::paint(QPainter * painter, const QSty
   {
     te::qt::widgets::LayerItem* li = (te::qt::widgets::LayerItem*)item;
 
-    if(li->getLayer()->isValid() && li->getLayer()->getType() == "WMSLAYER")
+    if(li->getLayer()->isValid())
     {
-      QStyleOptionViewItem opt = option;
-      opt.decorationSize = QSize(16, 16);
-      opt.features |= QStyleOptionViewItem::HasDecoration;
+      QIcon ic = getIcon(li->getLayer().get());
 
-      opt.icon = m_icon;
+      if(!ic.isNull())
+      {
+        QStyleOptionViewItem opt = option;
+        opt.decorationSize = QSize(16, 16);
+        opt.features |= QStyleOptionViewItem::HasDecoration;
 
-      QStyledItemDelegate::paint(painter, opt, index);
+        opt.icon = ic;
 
-      return;
+        QStyledItemDelegate::paint(painter, opt, index);
+
+        return;
+      }
     }
   }
 
@@ -61,4 +68,12 @@ void te::qt::plugins::wms::WMSItemDelegate::paint(QPainter * painter, const QSty
     m_decorated->paint(painter, option, index);
   else
     QStyledItemDelegate::paint(painter, option, index);
+}
+
+QIcon te::qt::plugins::st::STItemDelegate::getIcon(const te::map::AbstractLayer* l) const
+{
+  return (l->getType() == "TRAJECTORYDATASETLAYER") ? m_trjIcon :
+  (l->getType() == "OBSERVATIONDATASETLAYER") ? m_obsIcon :
+  (l->getType() == "TIMESERIESDATASETLAYER") ? m_tmsIcon :
+  QIcon();
 }

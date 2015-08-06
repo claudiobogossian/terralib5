@@ -1897,7 +1897,7 @@ void TerraView::closeEvent(QCloseEvent* event)
 
 void TerraView::addActions(const QString& plgName, const QString& category, const QList<QAction*>& acts)
 {
-  if(category.compare("Processing") == 0)
+  if(category == "Processing")
   {
     QMenu* mnu = m_app->getMenu("Processing");
 
@@ -1911,7 +1911,7 @@ void TerraView::addActions(const QString& plgName, const QString& category, cons
 
     mnu->addMenu(p);
   }
-  else if(category.compare("Dataaccess") == 0)
+  else if(category == "Dataaccess")
   {
     for(QList<QAction*>::const_iterator it = acts.begin(); it != acts.end(); ++it)
       m_projectAddLayerMenu->addAction(*it);

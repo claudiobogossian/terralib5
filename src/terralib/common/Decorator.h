@@ -89,7 +89,7 @@ namespace te
          * \brief Removes The decorator of the \a decorated.
          * \param decorated The item that we are searching for the decorator.
          *
-         * \return The new item to be used or zero if the item is not the root.
+         * \return The new item to be used as new Delegate or NULL.
          */
         T* removeDecorator(T* decorated);
 
@@ -167,8 +167,6 @@ namespace te
       {
         aux->m_delDecorated = false;
         ((Decorator<T>*)fd)->m_decorated = aux->m_decorated;
-
-        delete aux;
       }
 
       return 0;

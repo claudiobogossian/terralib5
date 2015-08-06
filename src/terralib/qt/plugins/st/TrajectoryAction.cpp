@@ -77,8 +77,9 @@ void te::qt::plugins::st::TrajectoryAction::onActionActivated(bool checked)
 
     while(layerItB != layerItE)
     {
-//      te::qt::af::evt::LayerAdded evt(*layerItB, 0);
-//      te::qt::af::AppCtrlSingleton::getInstance().broadcast(&evt);
+      te::qt::af::evt::LayerAdded evt(*layerItB, 0);
+      emit triggered(&evt);
+
       layerItB++;
     }
   }

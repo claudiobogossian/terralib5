@@ -38,6 +38,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 
 // Forward declarations
 class QAction;
+class QStyledItemDelegate;
 
 namespace te
 {
@@ -181,6 +182,8 @@ namespace te
         * \param
         */
         void removeSelectedItems();
+
+        void removeDelegate(QStyledItemDelegate* d);
 
       Q_SIGNALS:
 

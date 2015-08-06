@@ -221,6 +221,20 @@ void te::qt::widgets::LayerItemView::removeSelectedItems()
   removeItems(selectionModel()->selectedIndexes());
 }
 
+void te::qt::widgets::LayerItemView::removeDelegate(QStyledItemDelegate* d)
+{
+  te::common::Decorator<QStyledItemDelegate>* delegate =
+      dynamic_cast< te::common::Decorator<QStyledItemDelegate>* >(itemDelegate());
+
+  if(delegate != 0)
+  {
+    QStyledItemDelegate* newDelegate = delegate->removeDecorator(d);
+
+    if(newDelegate != 0)
+      setItemDelegate(newDelegate);
+  }
+}
+
 void te::qt::widgets::LayerItemView::selectionChanged(const QItemSelection & selected, const QItemSelection & deselected)
 {
   QTreeView::selectionChanged(selected, deselected);

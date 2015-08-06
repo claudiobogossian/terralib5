@@ -37,48 +37,66 @@ namespace te
 {
   namespace qt
   {
+    namespace af
+    {
+      namespace evt
+      { // Forward declarations
+        struct Event;
+      }
+    }
+
     namespace plugins
     {
       namespace st
       {
         class TimeSliderWidgetAction;
-		class ObservationAction;
+        class ObservationAction;
         class TimeSeriesAction;
         class TrajectoryAction;
+        class STItemDelegate;
 
-        class Plugin : public te::plugin::Plugin
+        class Plugin : public QObject, public te::plugin::Plugin
         {
-          public:
+          Q_OBJECT
 
-            Plugin(const te::plugin::PluginInfo& pluginInfo);
+        public:
 
-            ~Plugin();
+          Plugin(const te::plugin::PluginInfo& pluginInfo);
 
-            void startup();
+          ~Plugin();
 
-            void shutdown();
+          void startup();
 
-          protected:
+          void shutdown();
 
-            /*!
+        protected:
+
+          /*!
               \brief Function used to register all raster processing actions.
 
             */
-            void registerActions();
+          void registerActions();
 
-            /*!
+          /*!
               \brief Function used to unregister all raster processing actions.
 
             */
-            void unRegisterActions();
+          void unRegisterActions();
 
-          protected:
+        Q_SIGNALS:
 
-            QMenu*                                        m_stMenu;              //!< ST Main Menu registered.
-            te::qt::plugins::st::TimeSliderWidgetAction*  m_sliderAction;        //!< Slider Process Action
-            te::qt::plugins::st::ObservationAction*       m_observactionAction;  //!< Observation Layer Action
-            te::qt::plugins::st::TimeSeriesAction*        m_timeSeriesAction;    //!< TimeSeries Layer Action
-            te::qt::plugins::st::TrajectoryAction*        m_trajectoryAction;    //!< Trajectory Layer Action
+          void triggered(te::qt::af::evt::Event* e);
+
+        protected:
+
+          void updateDelegate(const bool& add);
+
+          QMenu*                                        m_stMenu;              //!< ST Main Menu registered.
+          te::qt::plugins::st::TimeSliderWidgetAction*  m_sliderAction;        //!< Slider Process Action
+          te::qt::plugins::st::ObservationAction*       m_observactionAction;  //!< Observation Layer Action
+          te::qt::plugins::st::TimeSeriesAction*        m_timeSeriesAction;    //!< TimeSeries Layer Action
+          te::qt::plugins::st::TrajectoryAction*        m_trajectoryAction;    //!< Trajectory Layer Action
+          STItemDelegate*                               m_delegate;            //!< Item delegate.
         };
 
       } // end namespace st
@@ -86,6 +104,6 @@ namespace te
   }     // end namespace qt
 }       // end namespace te
 
-PLUGIN_CALL_BACK_DECLARATION(TEQTPLUGINSTEXPORT);
+PLUGIN_CALL_BACK_DECLARATION(TEQTPLUGINSTEXPORT)
 
 #endif //__TE_QT_PLUGINS_ST_INTERNAL_PLUGIN_H
