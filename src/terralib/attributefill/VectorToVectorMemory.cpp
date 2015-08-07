@@ -335,6 +335,11 @@ bool te::attributefill::VectorToVectorMemory::run()
         ++it;
       }
 
+      for (std::size_t a = 0; a < dataValues.size(); ++a)
+        te::common::FreeContents(dataValues[a]);
+
+      dataValues.clear();
+
       outDs->add(item);
 
       if (task.isActive() == false)
