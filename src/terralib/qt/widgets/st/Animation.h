@@ -75,10 +75,10 @@ namespace te
 
         /*!
           \brief 
-          It creates animation data for a given period;
+          It adjust animation data for a given period;
           /param period The temporal period.
         */
-        void createAnimationDataInDisplayProjection(const te::dt::TimePeriod& period);
+        void adjustDataToAnimationTemporalExtent(const te::dt::TimePeriod& period);
 
         /*!
           \brief 

@@ -18,7 +18,7 @@ te::qt::widgets::PixmapItem::PixmapItem()
 te::qt::widgets::PixmapItem::PixmapItem(const QString& title, const QString& file, te::qt::widgets::MapDisplay* display)
   : te::qt::widgets::AnimationItem(title, display)
 {
-  setMatrix();
+  //setMatrix();
 
   m_dir = QDir(file);
 
@@ -52,9 +52,9 @@ void te::qt::widgets::PixmapItem::setImagePosition(const QPointF& p, const QRect
   m_imaRect.moveCenter(p); 
 }
 
-void te::qt::widgets::PixmapItem::createAnimationDataInDisplayProjection()
+void te::qt::widgets::PixmapItem::adjustDataToAnimationTemporalExtent()
 {
-  te::qt::widgets::AnimationItem::createAnimationDataInDisplayProjection();
+  te::qt::widgets::AnimationItem::adjustDataToAnimationTemporalExtent();
   m_animationFiles.clear();
 
   te::dt::TimeInstant iTime = m_animation->m_temporalAnimationExtent.getInitialTimeInstant();
@@ -86,13 +86,6 @@ void te::qt::widgets::PixmapItem::createAnimationDataInDisplayProjection()
   {
     QString f = m_files[i];
     m_animationFiles.push_back(f);
-  }
-
-  if(m_SRID != m_display->getSRID())
-  {
-    te::gm::Envelope env(m_imaRect.left(), m_imaRect.top(), m_imaRect.right(), m_imaRect.bottom());
-    env.transform(m_SRID, m_display->getSRID());
-    m_imaRect = QRectF(env.m_llx, env.m_lly, env.getWidth(), env.getHeight());
   }
 }
 
@@ -135,8 +128,15 @@ void te::qt::widgets::PixmapItem::calculateCurrentFile(const unsigned int& curTi
 
 QRect te::qt::widgets::PixmapItem::getRect()
 {
-  QRect r = m_matrix.mapRect(m_imaRect).toRect();
-  return r;
+  QRectF r = m_imaRect;
+  if(m_display->getSRID() != TE_UNKNOWN_SRS && m_display->getSRID() != m_SRID)
+  {
+    te::gm::Envelope e(r.x(), r.y(), r.x() + r.width(), r.y() + r.height());
+    e.transform(m_SRID, m_display->getSRID());
+    r.setRect(e.getLowerLeftX(), e.getLowerLeftY(), e.getWidth(), e.getHeight());
+  }
+
+  return m_matrix.mapRect(r).toRect();
 }
 
 void te::qt::widgets::PixmapItem::setLUT(const std::vector<std::pair<int, QColor> >& tab)
