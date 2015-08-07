@@ -200,9 +200,8 @@ namespace te
 
           \return A vector of values.
         */
-        std::vector<te::dt::AbstractData*> getDataValues(te::da::DataSet* fromDs,
-                                                         std::vector<std::size_t> dsPos,
-                                                         const std::string& propertyName);
+        std::vector<std::vector<te::dt::AbstractData*> > getDataValues(te::da::DataSet* fromDs,
+                                                         std::vector<std::size_t> dsPos);
 
         /*!
           \brief It get the numeric values of a vector of abstract data.
@@ -211,7 +210,7 @@ namespace te
 
           \return A vector of double values.
         */
-        std::vector<double> getNumValues(std::vector<te::dt::AbstractData*> data);
+        std::vector<double> getNumValues(std::vector< std::vector<te::dt::AbstractData*> > dataValues, std::size_t pos);
 
         /*!
           \brief It get the string values of a vector of abstract data.
@@ -220,7 +219,7 @@ namespace te
 
           \return A vector of string values.
         */
-        std::vector<std::string> getStrValues(std::vector<te::dt::AbstractData*> data);
+        std::vector<std::string> getStrValues(std::vector< std::vector<te::dt::AbstractData*> > dataValues, std::size_t pos);
 
         /*!
           \brief It get the value of required operation type from numeric statistical summary
@@ -257,12 +256,14 @@ namespace te
           \param fromDs       The "From" data set.
           \param dsPos        Vector of "To" data set positions that intersect "From".
           \param propertyName Required property name.
+          \param dataValues   Vector that contains all values of the item that intersects the "To" data set. (line and columns).
 
           \return The class value.
         */
         te::dt::AbstractData* getClassWithHighestOccurrence(te::da::DataSet* fromDs,
                                                             std::vector<std::size_t> dsPos,
-                                                            const std::string& propertyName);
+                                                            const std::string& propertyName,
+                                                            std::vector< std::vector<te::dt::AbstractData*> >& dataValues);
 
         /*!
           \brief It get the class with highest intersection area from "From" data set in "To" data set.
@@ -273,6 +274,7 @@ namespace te
           \param fromSrid     The "From" data set srid.
           \param dsPos        Vector of "To" data set positions that intersect "From".
           \param propertyName Required property name.
+          \param dataValues   Vector that contains all values of the item that intersects the "To" data set. (line and columns).
 
           \return The class value.
         */
@@ -281,7 +283,8 @@ namespace te
                                                                   te::da::DataSet* fromDs,
                                                                   std::size_t fromSrid,
                                                                   std::vector<std::size_t> dsPos,
-                                                                  const std::string& propertyName);
+                                                                  const std::string& propertyName,
+                                                                  std::vector< std::vector<te::dt::AbstractData*> >& dataValues);
 
         /*!
           \brief It get a abstract data with the value based on the type.
@@ -299,12 +302,14 @@ namespace te
           \param fromDs       The "From" data set.
           \param dsPos        Vector of "To" data set positions that intersect "From".
           \param propertyName Required property name.
+          \param dataValues   Vector that contains all values of the item that intersects the "To" data set. (line and columns).
 
           \return Map with class value and percentage.
         */
         std::map<std::string, double> getPercentagePerClass(te::da::DataSet* fromDs,
                                                             std::vector<std::size_t> dsPos,
-                                                            const std::string& propertyName);
+                                                            const std::string& propertyName,
+                                                            std::vector< std::vector<te::dt::AbstractData*> >& dataValues);
 
         /*!
           \brief It get the percentage of intersection area in the total area.
@@ -315,6 +320,7 @@ namespace te
           \param fromSrid     The "From" data set srid.
           \param dsPos        Vector of "To" data set positions that intersect "From".
           \param propertyName Required property name.
+          \param dataValues   Vector that contains all values of the item that intersects the "To" data set. (line and columns).
 
           \return The percentage.
         */
@@ -323,7 +329,8 @@ namespace te
                                         te::da::DataSet* fromDs,
                                         std::size_t fromSrid,
                                         std::vector<std::size_t> dsPos,
-                                        const std::string& propertyName);
+                                        const std::string& propertyName,
+                                        std::vector< std::vector<te::dt::AbstractData*> >& dataValues);
 
         /*!
           \brief It get the percentage of each class intersection area in the total area.
@@ -334,6 +341,7 @@ namespace te
           \param fromSrid     The "From" data set srid.
           \param dsPos        Vector of "To" data set positions that intersect "From".
           \param propertyName Required property name.
+          \param dataValues   Vector that contains all values of the item that intersects the "To" data set. (line and columns).
 
           \return Map of class and percentage.
         */
@@ -342,7 +350,8 @@ namespace te
                                                                      te::da::DataSet* fromDs,
                                                                      std::size_t fromSrid,
                                                                      std::vector<std::size_t> dsPos,
-                                                                     const std::string& propertyName);
+                                                                     const std::string& propertyName,
+                                                                     std::vector< std::vector<te::dt::AbstractData*> >& dataValues);
 
         /*!
           \brief It get the weighted average if intersections values.
@@ -353,6 +362,7 @@ namespace te
           \param fromSrid     The "From" data set srid.
           \param dsPos        Vector of "To" data set positions that intersect "From".
           \param propertyName Required property name.
+          \param dataValues   Vector that contains all values of the item that intersects the "To" data set. (line and columns).
 
           \return The weighted average.
         */
@@ -361,7 +371,8 @@ namespace te
                                  te::da::DataSet* fromDs,
                                  std::size_t fromSrid,
                                  std::vector<std::size_t> dsPos,
-                                 const std::string& propertyName);
+                                 const std::string& propertyName,
+                                 std::vector< std::vector<te::dt::AbstractData*> >& dataValues);
 
         /*!
           \brief It get the sum of weighted average if intersections values.
@@ -372,6 +383,7 @@ namespace te
           \param fromSrid     The "From" data set srid.
           \param dsPos        Vector of "To" data set positions that intersect "From".
           \param propertyName Required property name.
+          \param dataValues   Vector that contains all values of the item that intersects the "To" data set. (line and columns).
 
           \return The sum of weighted average.
         */
@@ -380,7 +392,8 @@ namespace te
                                     te::da::DataSet* fromDs,
                                     std::size_t fromSrid,
                                     std::vector<std::size_t> dsPos,
-                                    const std::string& propertyName);
+                                    const std::string& propertyName,
+                                    std::vector< std::vector<te::dt::AbstractData*> >& dataValues);
 
         /*!
           \brief It get the minimum distance of objects that not intersect.
@@ -481,6 +494,10 @@ namespace te
         void normalizeClassName(std::string& name);
 
         bool checkGeometries(te::gm::Geometry* fromGeom, std::size_t fromPos, te::gm::Geometry* toGeom);
+
+      private:
+
+        std::map<std::size_t, te::gm::Geometry*> m_mapGeom; // All geometries of "From" Layer.
     };
   }
 }

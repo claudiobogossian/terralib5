@@ -47,13 +47,15 @@
 #include "../rp/RasterAttributes.h"
 #include "../rp/Texture.h"
 
-#include "../statistics/core/Utils.h"
+#include "../statistics.h"
 
 #include "Exception.h"
 #include "RasterToVector.h"
 
 // Boost
+#include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
+
 
 te::attributefill::RasterToVector::RasterToVector()
 {
@@ -105,28 +107,48 @@ bool te::attributefill::RasterToVector::paramsAreValid()
 
 bool te::attributefill::RasterToVector::run()
 {
-// get output DataSetType.
-  std::auto_ptr<te::da::DataSetType> outDsType = getDataSetType();
-// create the output dataset in memory
-  std::auto_ptr<te::mem::DataSet> outDataset(new te::mem::DataSet(outDsType.get()));
-
+// prepare vector
+  te::gm::GeometryProperty* vectorProp = te::da::GetFirstGeomProperty(m_inVectorDsType.get());
+  std::auto_ptr<te::da::DataSet> dsVector = m_inVectorDsrc->getDataSet(m_inVectorName);
+  
 // prepare raster
   te::rst::RasterProperty* rasterProp = te::da::GetFirstRasterProperty(m_inRasterDsType.get());
   
   std::auto_ptr<te::da::DataSet> dsRaster = m_inRasterDsrc->getDataSet(m_inRasterName);
   std::auto_ptr<te::rst::Raster> raster = dsRaster->getRaster(rasterProp->getName());
-  
-// prepare vector
-  te::gm::GeometryProperty* vectorProp = te::da::GetFirstGeomProperty(m_inVectorDsType.get());
+  double resX = raster->getResolutionX();
+  double resY = raster->getResolutionY();
 
-  std::auto_ptr<te::da::DataSet> dsVector = m_inVectorDsrc->getDataSet(m_inVectorName);
-
-// Raster Attributes
+// raster Attributes
   te::rp::RasterAttributes* rasterAtt = 0;
 
+
+// Parameters to get the percentage of classes by area
+  bool percentByArea = false;
+  std::vector<std::set<int> > pixelDistinct;
+  std::vector<te::stat::StatisticalSummary>::iterator it = std::find(m_statSum.begin(), m_statSum.end(), te::stat::PERCENT_EACH_CLASS_BY_AREA);
+  if (it != m_statSum.end())
+  {
+    pixelDistinct = getPixelDistinct(raster.get(), m_bands);
+    percentByArea = true;
+  }
+
+
+// get output DataSetType.
+  std::auto_ptr<te::da::DataSetType> outDsType;
+  if (percentByArea)
+    outDsType = getDataSetType(pixelDistinct);
+  else
+    outDsType = getDataSetType();
+// create the output dataset in memory
+  std::auto_ptr<te::mem::DataSet> outDataset(new te::mem::DataSet(outDsType.get()));
+
+
+// task progress
   te::common::TaskProgress task("Processing Operation...");
-  task.setTotalSteps(dsVector->size() * m_statSum.size() * m_bands.size());
+  task.setTotalSteps((int)dsVector->size() * (int)m_statSum.size() * (int)m_bands.size());
   task.useTimer(true);
+
 
   dsVector->moveBeforeFirst();
   while(dsVector->moveNext())
@@ -141,6 +163,7 @@ bool te::attributefill::RasterToVector::run()
 
 // Geometry
     std::auto_ptr<te::gm::Geometry> geom = dsVector->getGeometry(vectorProp->getName());
+    double area = 0;
 
 // Values from raster
     std::vector<std::vector<double> > valuesFromRaster;
@@ -149,6 +172,10 @@ bool te::attributefill::RasterToVector::run()
     if(geom->getGeomTypeId() == te::gm::MultiPolygonType)
     {
       te::gm::MultiPolygon* mPolygon = dynamic_cast< te::gm::MultiPolygon* >(geom.get());
+      
+      if (percentByArea)
+        area = mPolygon->getArea();
+
       std::size_t n_geom = mPolygon->getNumGeometries();
 
       for(std::size_t n = 0; n < n_geom; ++n)
@@ -170,7 +197,12 @@ bool te::attributefill::RasterToVector::run()
     else if(geom->getGeomTypeId() == te::gm::PolygonType)
     {
       te::gm::Polygon* polygon = dynamic_cast< te::gm::Polygon* >(geom.get());
+
+      if (percentByArea)
+        area = polygon->getArea();
+
       valuesFromRaster = rasterAtt->getValuesFromRaster(*raster, *polygon, m_bands);
+      
     }
     else
     {
@@ -183,9 +215,14 @@ bool te::attributefill::RasterToVector::run()
     for(std::size_t band = 0; band < valuesFromRaster.size(); ++band)
     {
       te::stat::NumericStatisticalSummary summary = rasterAtt->getStatistics(valuesFromRaster[band]);
-      int current_index = init_index + m_statSum.size();
+      
+      if (percentByArea)
+        te::stat::GetPercentOfEachClassByArea(valuesFromRaster[band], resX, resY, area, summary);
 
-      for(int it = 0, i = init_index; i < current_index; ++it, ++i)
+
+      std::size_t current_index = init_index + m_statSum.size();
+
+      for(std::size_t it = 0, i = init_index; i < current_index; ++it, ++i)
       {
         te::stat::StatisticalSummary ss = m_statSum[it];
 
@@ -250,6 +287,38 @@ bool te::attributefill::RasterToVector::run()
             }
             break;
           }
+          case te::stat::PERCENT_EACH_CLASS_BY_AREA:
+          {
+            std::set<int>::iterator itPixelDistinct = pixelDistinct[band].begin();
+            std::map<double, double>::iterator itPercent = summary.m_percentEachClass.begin();
+
+            while (itPixelDistinct != pixelDistinct[band].end())
+            {
+              if (itPercent != summary.m_percentEachClass.end())
+              {
+                std::string name = outDSetItem->getPropertyName(i);
+                std::vector<std::string> splitString;
+                boost::split(splitString, name, boost::is_any_of("_"));
+                if (splitString[1] == boost::lexical_cast<std::string>(itPercent->first))
+                {
+                  outDSetItem->setDouble(i, itPercent->second);
+                  ++itPercent;
+                }
+                else
+                {
+                  outDSetItem->setDouble(i, 0);
+                }
+              }
+              else
+              {
+                outDSetItem->setDouble(i, 0);
+              }
+              ++itPixelDistinct;
+              ++i;
+            }
+            current_index += pixelDistinct[band].size() - 1;
+            break;
+          }
           default:
             continue;
         }
@@ -262,9 +331,9 @@ bool te::attributefill::RasterToVector::run()
 
       if(m_texture == true)
       {
-        metrics = getTexture(raster.get(), geom.get(), m_bands.size());
+        metrics = getTexture(raster.get(), geom.get(), (int)m_bands.size());
         current_index += 5;
-        for(int t = 0, i = init_index; i < current_index; ++t,++i)
+        for (std::size_t t = 0, i = init_index; i < current_index; ++t, ++i)
         {
           switch (t)
           {
@@ -309,8 +378,33 @@ bool te::attributefill::RasterToVector::run()
   return save(outDataset,outDsType);
 }
 
+std::vector<std::set<int> > te::attributefill::RasterToVector::getPixelDistinct(te::rst::Raster* rst, std::vector<unsigned int> bands)
+{
+  std::vector<std::set<int> > pixelDistinct;
+  int numRows = rst->getNumberOfRows();
+  int numCols = rst->getNumberOfColumns();
 
-std::auto_ptr<te::da::DataSetType> te::attributefill::RasterToVector::getDataSetType()
+  for (std::size_t b = 0; b < bands.size(); ++b)
+  {
+    std::set<int> pixelBandDistinct;
+  
+    for (int i = 0; i < numRows; ++i)
+    {
+      for (int j = 0; j < numCols; ++j)
+      {
+        double value;
+        rst->getValue(j, i, value, bands[b]);
+        pixelBandDistinct.insert((int)value);
+      }
+    }
+
+    pixelDistinct.push_back(pixelBandDistinct);
+  }
+
+  return pixelDistinct;
+}
+
+std::auto_ptr<te::da::DataSetType> te::attributefill::RasterToVector::getDataSetType(std::vector<std::set<int> > pixelDistinct)
 {
   std::auto_ptr<te::da::DataSetType> outdsType(new te::da::DataSetType(*m_inVectorDsType));
   outdsType->setCompositeName(m_outDset);
@@ -385,6 +479,17 @@ std::auto_ptr<te::da::DataSetType> te::attributefill::RasterToVector::getDataSet
         case 13:
           prop = new te::dt::StringProperty("B"+ boost::lexical_cast<std::string>(m_bands[b]) +"_Mode");
           outdsType->add(prop);
+          break;
+        case 14:
+          {
+            std::set<int>::iterator it = pixelDistinct[b].begin();
+            while (it != pixelDistinct[b].end())
+            {
+              prop = new te::dt::SimpleProperty("B"+ boost::lexical_cast<std::string>(m_bands[b]) +"_"+ boost::lexical_cast<std::string>(*it), te::dt::DOUBLE_TYPE);
+              outdsType->add(prop);
+              ++it;
+            }
+          }
           break;
         default:
           continue;
