@@ -20,9 +20,9 @@
 /*!
   \file NorthModel.h
    
-   \brief Class that represents a "Model" part of Rectangle MVC component. 
+   \brief Class that represents a "Model" part of MVC component. 
       Its coordinate system is the same of scene (millimeters). 
-      This is also son of ItemModelObservable, so it can become observable.
+      This is also son of AbstractItemModel, so it can become observable.
 
   \ingroup layout
 */
@@ -31,10 +31,8 @@
 #define __TERRALIB_LAYOUT_INTERNAL_NORTH_MODEL_H
 
 // TerraLib
-#include "../core/pattern/mvc/ItemModelObservable.h"
-#include "../core/ContextItem.h"
+#include "../core/pattern/mvc/AbstractItemModel.h"
 #include "../core/Config.h"
-#include "../core/enum/EnumNorthArrowType.h"
 
 namespace te
 {
@@ -42,15 +40,15 @@ namespace te
   {
 
     /*!
-      \brief Class that represents a "Model" part of Rectangle MVC component. 
+      \brief Class that represents a "Model" part of  MVC component. 
           Its coordinate system is the same of scene (millimeters). 
-          He is also the son of ItemModelObservable, so it can become observable.
+          He is also the son of AbstractItemModel, so it can become observable.
       	  
 	    \ingroup layout
 
-      \sa te::layout::ItemModelObservable
+      \sa te::layout::AbstractItemModel
 	  */
-    class TELAYOUTEXPORT NorthModel : public ItemModelObservable
+    class TELAYOUTEXPORT NorthModel : public AbstractItemModel
     {
       public:
 
@@ -63,29 +61,6 @@ namespace te
           \brief Destructor
         */ 
         virtual ~NorthModel();
-
-				virtual Properties* getProperties() const;
-
-				virtual void updateProperties(te::layout::Properties* properties, bool notify = true);
-
-				virtual EnumNorthArrowType* getEnumNorthArrowType();
-
-				virtual EnumType* getCurrentNorthArrowType();
-
-				virtual double getShapeSize();
-
-				virtual te::color::RGBAColor getNorthArrowColor();
-
-				virtual void setNorthArrowColor(te::color::RGBAColor color);
-
-		protected:
-
-			virtual Property northArrowProperty() const;
-
-			EnumNorthArrowType* m_enumNorthArrowType;
-			EnumType*      m_currentNorthArrowType;
-			double         m_shapeSize;
-			te::color::RGBAColor m_northArrowColor;
     };
   }
 }

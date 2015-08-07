@@ -141,11 +141,6 @@ te::layout::Observer* te::layout::ItemFactory::make( EnumType* type, ItemParamsC
     GridGeodesicItem* gridGeodesic = new GridGeodesicItem(params.getController(), params.getModel());
     item = (Observer*)gridGeodesic;
   }
-  else if(type == enumObj->getNorthItem())
-  {
-    NorthItem* north = new NorthItem(params.getController(), params.getModel());
-    item = (Observer*)north;
-  }
   else if(type == enumObj->getMapLocationItem())
   {
     MapLocationItem* location = new MapLocationItem(params.getController(), params.getModel());
@@ -196,6 +191,10 @@ te::layout::AbstractItemView* te::layout::ItemFactory::makeNew(EnumType* type, I
   else if(type == enumObj->getBarCodeItem())
   {
     item = new BarCodeItem(params.m_newController, params.m_newModel);
+  }
+  else if(type == enumObj->getNorthItem())
+  {
+    item = new NorthItem(params.m_newController, params.m_newModel);
   }
 
   return item;

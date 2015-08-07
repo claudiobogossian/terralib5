@@ -71,7 +71,6 @@
 #include "../../item/LegendChildModel.h"
 #include "../../item/LegendChildController.h"
 #include "../item/LegendChildItem.h"
-#include "../../item/TextController.h"
 #include "../item/TextItem.h"
 #include "../../item/TextModel.h"
 #include "../../core/property/Properties.h"
@@ -1096,28 +1095,30 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createGridGeodesic()
 QGraphicsItem* te::layout::BuildGraphicsItem::createNorth()
 {
   NorthModel* model = new NorthModel;
+  if(!m_props)
+  {
+    EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
+    std::string strName = nameItem(enumObj->getNorthItem());
+
+    Property proertyId(0);
+    proertyId.setName("id");
+    proertyId.setValue(m_id, Enums::getInstance().getEnumDataType()->getDataTypeInt());
+    model->setProperty(proertyId);
+
+    Property propertyName(0);
+    propertyName.setName("name");
+    propertyName.setValue(strName, Enums::getInstance().getEnumDataType()->getDataTypeString());
+    model->setProperty(propertyName);
+  }
+
+  AbstractItemController* controller = new AbstractItemController(model);
+  AbstractItemView* view = controller->getView();
+
   if(m_props)
   {
-    model->updateProperties(m_props);
+    model->setProperties(*m_props);
   }
-  else
-  {
-    model->setId(m_id);
-    
-    EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
-    std::string name = nameItem(enumObj->getNorthItem());
-    model->setName(name);
-  }
-
-  NorthController* controller = new NorthController(model);
-  ItemObserver* itemObs = (ItemObserver*)controller->getView();
-
-  NorthItem* view = dynamic_cast<NorthItem*>(itemObs);
-  if(m_props && view)
-  {
-    model->updateProperties(m_props);
-  }
-  return view;
+  return dynamic_cast<QGraphicsItem*>(view);
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createMapLocation()
