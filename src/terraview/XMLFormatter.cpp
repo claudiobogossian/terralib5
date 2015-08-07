@@ -33,9 +33,6 @@ void XMLFormatter::format(ProjectMetadata* p, const std::list<te::map::AbstractL
   p->m_author = QString::fromStdString(format(p->m_author.toStdString(), encode).c_str());
   p->m_title = QString::fromStdString(format(p->m_title.toStdString(), encode));
 
-//  std::list<te::map::AbstractLayerPtr> ls = p->getTopLayers();
-//  std::list<te::map::AbstractLayerPtr>::iterator it;
-
   for(std::list<te::map::AbstractLayerPtr>::const_iterator it = layers.begin(); it != layers.end(); ++it)
     format((*it).get(), encode);
 }

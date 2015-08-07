@@ -8,6 +8,7 @@ ProjectInfoWidget::ProjectInfoWidget(QWidget* parent) :
   m_ui(new Ui::ProjectInfoWidgetForm)
 {
   m_ui->setupUi(this);
+  m_ui->m_description->setEnabled(false);
 }
 
 ProjectInfoWidget::~ProjectInfoWidget()
@@ -32,5 +33,6 @@ void ProjectInfoWidget::updateProjectInfo()
   {
     m_proj->m_title = m_ui->m_title->text();
     m_proj->m_author = m_ui->m_author->text();
+    m_proj->m_changed = true;
   }
 }

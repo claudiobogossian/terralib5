@@ -219,7 +219,7 @@
 <context>
     <name>te::qt::plugins::terralib4::TL4ConverterAction</name>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterAction.cpp" line="44"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterAction.cpp" line="43"/>
         <source>TerraLib4 Converter...</source>
         <translation type="unfinished"></translation>
     </message>
@@ -227,180 +227,180 @@
 <context>
     <name>te::qt::plugins::terralib4::TL4ConverterWizard</name>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="104"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="103"/>
         <source>TerraLib 4.x Database</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="105"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="104"/>
         <source>Connect to a TerraLib 4.x database.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="108"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="107"/>
         <source>Layer Selection</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="109"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="108"/>
         <source>Select the layers to be added to the project</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="112"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="111"/>
         <source>Target Data Source</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="113"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="112"/>
         <source>Select a data source to store the converted data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="118"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="117"/>
         <source>Target Raster Folder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="119"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="118"/>
         <source>Select folder to store raster data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="122"/>
-        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="323"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="121"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="322"/>
         <source>Resolve Name Conflicts</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="123"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="122"/>
         <source>Some layer names clashes with target data source names. Please, give a new name for the layers showed below</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="132"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="131"/>
         <source>Source Names</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="132"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="131"/>
         <source>Target Names</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="136"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="135"/>
         <source>Layer Creation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="137"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="136"/>
         <source>Select the TerraLib 4.x Layer converted that you want to create a TerraLib 5 Project Layer.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="140"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="139"/>
         <source>Theme Creation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="141"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="140"/>
         <source>Select the TerraLib 4.x Theme of converted Layers that you want to create a TerraLib 5 Project Layer, with informations like Visual and Grouping.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="324"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="323"/>
         <source>Some layer names clash with target data source dataset names. Please, give a new name for the layers showed below</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="328"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="327"/>
         <source>No Name Conflicts</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="329"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="328"/>
         <source>You can change the layer names in the target data source</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="335"/>
-        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="340"/>
-        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="363"/>
-        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="369"/>
-        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="383"/>
-        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="410"/>
-        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="415"/>
-        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="436"/>
-        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="441"/>
-        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="512"/>
-        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="517"/>
-        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="600"/>
-        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="606"/>
-        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="813"/>
-        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="819"/>
-        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="947"/>
-        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="954"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="334"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="339"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="362"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="368"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="382"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="409"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="414"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="435"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="440"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="511"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="516"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="599"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="605"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="812"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="818"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="946"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="953"/>
         <source>Warning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="340"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="339"/>
         <source>Could not valid this page!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="369"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="368"/>
         <source>A connection to the informed Terralib 4.x database could not be established. Please, verify the informed parameters.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="384"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="383"/>
         <source>Please, select at least one layer for conversion!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="415"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="414"/>
         <source>Could not valid layer selection!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="441"/>
-        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="606"/>
-        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="819"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="440"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="605"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="818"/>
         <source>Could not connect to TerraLib 5 data source!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="517"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="516"/>
         <source>Could not valid layer names in target data source!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="524"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="523"/>
         <source>There still have name conflicts. Please, resolve the indicated conflicts before continue!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="526"/>
-        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="767"/>
-        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="962"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="525"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="766"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="961"/>
         <source>TerraLib 4.x Converter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="757"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="756"/>
         <source>Some TerraLib 4.x Layers could not be converted: 
 
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="954"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="953"/>
         <source>Automatic layer creation failed!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="963"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/terralib4/TL4ConverterWizard.cpp" line="962"/>
         <source>This option is not implemented yet!
 We will provide it soon!</source>
         <translation type="unfinished"></translation>

@@ -206,8 +206,13 @@ void AddRecentProjectToSettings(const QString& prjTitle, const QString& prjPath)
   }
   else
   {
-    prjTitles.move(prjTitles.indexOf(prjTitle), 0);
-    prjPaths.move(prjPaths.indexOf(prjPath), 0);
+    int prjPathIdx = prjPaths.indexOf(prjPath);
+
+    if(!prjTitles.contains(prjTitle))
+      prjTitles.replace(prjPathIdx, prjTitle);
+
+    prjTitles.move(prjPathIdx, 0);
+    prjPaths.move(prjPathIdx, 0);
   }
 
   WriteProjectsToSettings(prjTitles, prjPaths);
@@ -231,6 +236,13 @@ QModelIndex GetParent(QTreeView* view)
   return res;
 }
 
+void ResetProject(ProjectMetadata* p)
+{
+  p->m_author = "INPE";
+  p->m_title = QObject::tr("Default project");
+  p->m_changed = false;
+}
+
 TerraView::TerraView(QWidget* parent)
   : te::qt::af::BaseApplication(parent),
     m_helpManager(0),
@@ -240,9 +252,7 @@ TerraView::TerraView(QWidget* parent)
 {
   m_project = new ProjectMetadata;
 
-  m_project->m_author = "INPE";
-  m_project->m_title = tr("Default project");
-  m_project->m_changed = false;
+  ResetProject(m_project);
 }
 
 TerraView::~TerraView()
@@ -271,6 +281,8 @@ void TerraView::init()
     openProject(*prjPaths.begin());
   else
     setWindowTitle(windowTitle() + " - " + m_project->m_title);
+
+  XMLFormatter::formatDataSourceInfos(false);
 }
 
 void TerraView::startProject(const QString& projectFileName)
@@ -1529,7 +1541,8 @@ void TerraView::onProjectPropertiesTriggered()
   if (editor.exec() == QDialog::Accepted)
   {
     // Set window title
-    setWindowTitle(GetWindowTitle(*m_project, m_app));
+    if(m_project->m_changed)
+      projectChanged();
   }
 }
 
@@ -1850,12 +1863,9 @@ void TerraView::onCreateNewLayer(te::map::AbstractLayerPtr layer)
 
 void TerraView::projectChanged()
 {
-  if(m_project->m_changed)
-    return;
-
   m_project->m_changed = true;
 
-  setWindowTitle(windowTitle() + " *");
+  setWindowTitle(qApp->applicationName() + " - " + m_project->m_title + " *");
 }
 
 void TerraView::checkAndSaveProject()
@@ -1874,18 +1884,25 @@ void TerraView::openProject(const QString& prjFileName)
 {
   std::list<te::map::AbstractLayerPtr> lst;
 
-  LoadProject(prjFileName, *m_project, lst);
+  try
+  {
+    LoadProject(prjFileName, *m_project, lst);
 
-  XMLFormatter::format(m_project, lst, false);
-  XMLFormatter::formatDataSourceInfos(false);
+    XMLFormatter::format(m_project, lst, false);
+    XMLFormatter::formatDataSourceInfos(false);
 
-  getLayerExplorer()->setLayers(lst);
+    getLayerExplorer()->setLayers(lst);
 
-  m_project->m_changed = false;
+    m_project->m_changed = false;
 
-  setWindowTitle(m_app->getAppName() + " - " + m_project->m_title);
+    setWindowTitle(m_app->getAppName() + " - " + m_project->m_title);
 
-  AddRecentProjectToSettings(m_project->m_title, m_project->m_fileName);
+    AddRecentProjectToSettings(m_project->m_title, m_project->m_fileName);
+  }
+  catch(te::common::Exception&)
+  {
+    ResetProject(m_project);
+  }
 }
 
 void TerraView::closeEvent(QCloseEvent* event)
