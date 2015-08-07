@@ -110,6 +110,7 @@
 #include "../item/SVGItem.h"
 #include "../../core/pattern/mvc/AbstractItemController.h"
 #include "../item/TextController1.h"
+#include "../item/TitleController1.h"
 
 // Qt
 #include <QGraphicsItem>
@@ -889,28 +890,31 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createTextGrid()
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createTitle()
 {
-  /*
-  TitleModel* model = new TitleModel();	
+  TitleModel* model = new TitleModel();
   if(!m_props)
   {
-    model->setId(m_id);
-    
     EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
-    std::string name = nameItem(enumObj->getTitleItem());
-    model->setName(name);
+    std::string strName = nameItem(enumObj->getRectangleItem());
+
+    Property proertyId(0);
+    proertyId.setName("id");
+    proertyId.setValue(m_id, Enums::getInstance().getEnumDataType()->getDataTypeInt());
+    model->setProperty(proertyId);
+
+    Property propertyName(0);
+    propertyName.setName("name");
+    propertyName.setValue(strName, Enums::getInstance().getEnumDataType()->getDataTypeString());
+    model->setProperty(propertyName);
   }
 
-  TitleController* controller = new TitleController(model);
-  ItemObserver* itemObs = (ItemObserver*)controller->getView();
+  AbstractItemController* controller = new TitleController1(model);
+  AbstractItemView* view = controller->getView();
 
-  TitleItem* view = dynamic_cast<TitleItem*>(itemObs); 
-  if(m_props && view)
+  if(m_props)
   {
-    model->updateProperties(m_props);
+    model->setProperties(*m_props);
   }
-  return view;
-  */
-  return 0;
+  return dynamic_cast<QGraphicsItem*>(view);
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createLegendChild()

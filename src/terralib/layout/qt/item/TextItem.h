@@ -106,7 +106,7 @@ namespace te
 
 protected slots:
 
-        void updateGeometry( int position, int charsRemoved, int charsAdded );
+        virtual void updateGeometry( int position, int charsRemoved, int charsAdded );
 
 protected:
 
