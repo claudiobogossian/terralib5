@@ -18,30 +18,34 @@
  */
 
 /*!
-  \file TitleItem.h
+  \file TextController.h
    
-  \brief Class daughter of te::layout::TextItem representing a grid with two cells which can be inserted texts.
-
+  \brief Class that represents text controller.
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_TITLE_ITEM_H 
-#define __TERRALIB_LAYOUT_INTERNAL_TITLE_ITEM_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_TITLE_CONTROLLER1_H
+#define __TERRALIB_LAYOUT_INTERNAL_TITLE_CONTROLLER1_H
 
 // TerraLib
-#include "TextItem.h"
+#include "TextController1.h"
 #include "../../core/Config.h"
+
+
+class QSizeF;
+class QTextTable;
 
 namespace te
 {
   namespace layout
   {
     /*!
-      \brief Class daughter of te::layout::TextItem representing a grid with two cells which can be inserted texts.
-      \ingroup layout
-      \sa te::layout::TextItem
+    \brief Class that represents text controller.
+    
+    \ingroup layout
+    \sa te::layout::TextController1
     */
-    class TELAYOUTEXPORT TitleItem : public TextItem
+    class TELAYOUTEXPORT TitleController1 : public TextController1
     {
       public:
 
@@ -50,19 +54,30 @@ namespace te
 
           \param controller "Controller" part of MVC component
           \param o "Model" part of MVC component
-        */
-        TitleItem( AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix = false );
+        */ 
+        TitleController1( AbstractItemModel* model);
 
         /*!
           \brief Destructor
+        */ 
+        virtual ~TitleController1();
+
+        /*!
+          \brief Updates the view with the current configuration of the model
+          \return The new size of the view
+        */
+        virtual QSizeF updateView();
+
+        /*!
+          \brief This function will be called by the view every time the item´s text was changed
          */
-        virtual ~TitleItem();
+        virtual void textChanged();
 
-      protected slots:
+    protected:
 
-        virtual void updateGeometry( int position, int charsRemoved, int charsAdded );
+      QTextTable* m_table;
+
     };
   }
 }
-
-#endif
+#endif //__TERRALIB_LAYOUT_INTERNAL_TEXT_CONTROLLER_H

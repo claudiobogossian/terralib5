@@ -68,7 +68,7 @@ void te::layout::Font::setPointSize( int point )
   m_pointSize = point;
 }
 
-int te::layout::Font::getPointSize()
+int te::layout::Font::getPointSize() const
 {
   return m_pointSize;
 }

@@ -22,7 +22,7 @@
    
    \brief Class that represents a "Model" part of Title MVC component.  
    Its coordinate system is the same of scene (millimeters). 
-   This is also son of ItemModelObservable, so it can become observable.
+   This is also son of TextModel, so it can become observable.
 
   \ingroup layout
 */
@@ -38,17 +38,15 @@ namespace te
 {
   namespace layout
   {
-    class TextGridSettingsConfigProperties;
-
     /*!
     \brief Class that represents a "Model" part of Title MVC component.  
     Its coordinate system is the same of scene (millimeters). 
-    This is also son of ItemModelObservable, so it can become observable.
-      	  
-	    \ingroup layout
+    This is also son of TextModel, so it can become observable.
+
+      \ingroup layout
 
       \sa te::layout::TextModel
-	  */
+    */
     class TELAYOUTEXPORT TitleModel : public TextModel
     {
       public:
@@ -62,111 +60,6 @@ namespace te
           \brief Destructor
         */ 
         virtual ~TitleModel();
-
-        //virtual te::layout::Properties* getProperties() const;
-
-        //virtual void updateProperties(te::layout::Properties* properties, bool notify = true); 
-
-        virtual void setTitle(std::string title);
-
-        virtual std::string getTitle();
-
-        virtual void setSpacing(double value);
-
-        virtual double getSpacing();
-
-        virtual void setPadding(double value);
-
-        virtual double getPadding();
-
-        virtual void setNumberColumns(int value);
-
-        virtual int getNumberColumns();
-
-        virtual void setNumberRows(int value);
-
-        virtual int getNumberRows();
-
-        virtual void setTableColor(te::color::RGBAColor color);
-
-        virtual te::color::RGBAColor getTableColor();
-
-        virtual void setWidth(double width);
-
-        virtual double getWidth();
-
-        virtual void setEvenRow(te::color::RGBAColor color);
-
-        virtual te::color::RGBAColor getEvenRow();
-
-        virtual void setOddRow(te::color::RGBAColor color);
-
-        virtual te::color::RGBAColor getOddRow();
-
-        virtual void setColumnWidth(double width);
-
-        virtual double getColumnWidth();
-
-        virtual void setBorderWidth(double width);
-
-        virtual double getBorderWidth();
-
-        virtual void setBorderGridColor(te::color::RGBAColor color);
-
-        virtual te::color::RGBAColor getBorderGridColor();
-
-        virtual void setHeaderHorizontalColor(te::color::RGBAColor color);
-
-        virtual te::color::RGBAColor getHeaderHorizontalColor();
-
-        virtual void setHeaderVerticalColor(te::color::RGBAColor color);
-
-        virtual te::color::RGBAColor getHeaderVerticalColor();
-
-      protected:
-
-        TextGridSettingsConfigProperties* m_textgridProperties;
-
-        std::string m_title;
-
-        /* Text Table Settings */
-
-        /* General */
-
-        double m_spacing;
-        double m_padding;
-        te::color::RGBAColor m_tableColor;
-        //EnumType* m_widthConstraints;
-        double m_width;
-
-        /* Rows */
-        bool m_addRow;
-        int m_rowNumber;
-        te::color::RGBAColor m_evenRow;
-        te::color::RGBAColor m_oddRow;
-
-        /* Columns */
-
-        bool m_addColumn;
-        int m_columnNumber;
-        double m_columnWidth;
-        //EnumType* m_columnWidthConstraints;
-
-        /* Border */
-
-        double m_borderWidth;
-        te::color::RGBAColor m_borderGridColor;
-        //EnumType* m_borderStyle;
-
-        /* Header */
-
-        //EnumType* m_headerAlignment; 
-        te::color::RGBAColor m_headerHorizontalColor;
-        te::color::RGBAColor m_headerVerticalColor;
-
-        /* Cell */
-
-        //EnumType* m_cellAlignment;
     };
   }
 }
