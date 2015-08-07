@@ -17,40 +17,37 @@
     TerraLib Team at <terralib-team@terralib.org>.
  */
 
-#ifndef __TERRALIB_QT_PLUGINS_DATASOURCE_WMS_INTERNAL_ITEMDELEGATE_H
-#define __TERRALIB_QT_PLUGINS_DATASOURCE_WMS_INTERNAL_ITEMDELEGATE_H
+#ifndef __TERRALIB_QT_PLUGINS_DATASOURCE_WMS_INTERNAL_ITEMLAYERPOPUPHANDLER_H
+#define __TERRALIB_QT_PLUGINS_DATASOURCE_WMS_INTERNAL_ITEMLAYERPOPUPHANDLER_H
 
 // TerraLib
 #include "../../../../common/Decorator.h"
 
 // Qt
-#include <QIcon>
-#include <QStyledItemDelegate>
+#include <QObject>
 
 namespace te
 {
   namespace qt
   {
-    // Forward declarations
     namespace plugins
     {
       namespace wms
       {
-        class WMSItemDelegate : public te::common::Decorator<QStyledItemDelegate>
+        class WMSLayerPopupHandler : public te::common::Decorator<QObject>
         {
+
         public:
-          WMSItemDelegate(QStyledItemDelegate* decorated, QObject* parent = 0);
 
-          ~WMSItemDelegate();
+          WMSLayerPopupHandler(QObject* decorated, QObject* parent = 0);
 
-          void paint(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const;
+          ~WMSLayerPopupHandler();
 
-        protected:
-          QIcon m_icon;
+          bool eventFilter(QObject* watched, QEvent* event);
         };
       }
     }
   }
 }
 
-#endif //__TERRALIB_QT_PLUGINS_DATASOURCE_WMS_INTERNAL_ITEMDELEGATE_H
+#endif //__TERRALIB_QT_PLUGINS_DATASOURCE_WMS_INTERNAL_ITEMLAYERPOPUPHANDLER_H

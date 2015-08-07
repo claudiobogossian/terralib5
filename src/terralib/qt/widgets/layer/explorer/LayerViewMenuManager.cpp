@@ -126,19 +126,19 @@ bool te::qt::widgets::LayerViewMenuManager::eventFilter(QObject* watched, QEvent
 
       int rows = m_view->model()->rowCount();
       QModelIndex idx = m_view->indexAt(m_view->viewport()->mapFromGlobal(pos));
+      QModelIndexList ls = m_view->selectionModel()->selectedIndexes();
+      int si = ls.size();
 
       if(rows == 0) // List is empty
       {
         QMenu mnu;
         GetMenu(&mnu, m_NL_actions.get(), 0);
 
-        mnu.exec(pos);
+        if(!mnu.isEmpty())
+          mnu.exec(pos);
       }
       else         // List not empty
       {
-        QModelIndexList ls = m_view->selectionModel()->selectedIndexes();
-        int si = ls.size();
-
         if(!idx.isValid())
         {
           QMenu mnu;
@@ -148,13 +148,10 @@ bool te::qt::widgets::LayerViewMenuManager::eventFilter(QObject* watched, QEvent
         }
         else
         {
-          QModelIndexList ls = m_view->selectionModel()->selectedIndexes();
-
           if(ls.isEmpty())
-            return true;
+            return false;
 
           QMenu mnu;
-          int si = ls.size();
 
           if(si > 1)
             GetMenu(&mnu, m_ML_actions.get(), m_AL_actions.get());

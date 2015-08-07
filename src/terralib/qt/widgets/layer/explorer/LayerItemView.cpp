@@ -28,7 +28,8 @@ std::list<te::map::AbstractLayerPtr> GetSelectedLayersOnly(te::qt::widgets::Laye
 }
 
 te::qt::widgets::LayerItemView::LayerItemView(QWidget* parent):
-  QTreeView(parent)
+  QTreeView(parent),
+  m_outterFilter(0)
 {
   setAcceptDrops(true);
   setDragEnabled(true);
@@ -232,6 +233,40 @@ void te::qt::widgets::LayerItemView::removeDelegate(QStyledItemDelegate* d)
 
     if(newDelegate != 0)
       setItemDelegate(newDelegate);
+  }
+}
+
+void te::qt::widgets::LayerItemView::setMenuEventHandler(QObject* obj)
+{
+  if(obj != m_mnuMger)
+  {
+    removeEventFilter(m_mnuMger);
+    m_outterFilter = obj;
+  }
+  else
+    m_outterFilter = 0;
+
+  installEventFilter(obj);
+}
+
+QObject* te::qt::widgets::LayerItemView::getMenuEventHandler() const
+{
+  return (m_outterFilter != 0) ? m_outterFilter : m_mnuMger;
+}
+
+void te::qt::widgets::LayerItemView::removeMenuEventHandler(QObject* handler)
+{
+  if(m_outterFilter == 0)
+    return;
+
+  te::common::Decorator<QObject>* h = dynamic_cast< te::common::Decorator<QObject>* >(m_outterFilter);
+
+  if(h != 0)
+  {
+    QObject* newH = h->removeDecorator(handler);
+
+    if(newH != 0)
+      setMenuEventHandler(newH);
   }
 }
 

@@ -183,24 +183,50 @@ namespace te
         */
         void removeSelectedItems();
 
+        /*!
+         * \brief removeDelegate
+         * \param d
+         */
         void removeDelegate(QStyledItemDelegate* d);
+
+        /*!
+         * \brief setMenuEventHandler
+         * \param obj
+         */
+        void setMenuEventHandler(QObject* obj);
+
+        /*!
+         * \brief getMenuEventHandler
+         * \return
+         */
+        QObject* getMenuEventHandler() const;
+
+        /*!
+         * \brief removeMenuEventHandler
+         */
+        void removeMenuEventHandler(QObject* handler);
 
       Q_SIGNALS:
 
-        //void activated(te::qt::widgets::AbstractTreeItem* item);
-
-        //void clicked(te::qt::widgets::AbstractTreeItem* item);
-
+        /*!
+         * \brief doubleClicked
+         * \param layer
+         */
         void doubleClicked(te::map::AbstractLayerPtr layer);
 
-        //void entered(te::qt::widgets::AbstractTreeItem* item);
-
-        //void pressed(te::qt::widgets::AbstractTreeItem* item);
-
+        /*!
+         * \brief visibilityChanged
+         */
         void visibilityChanged();
 
+        /*!
+         * \brief selectedLayersChanged
+         */
         void selectedLayersChanged(const std::list<te::map::AbstractLayerPtr>&);
 
+        /*!
+         * \brief layerOrderChanged
+         */
         void layerOrderChanged();
 
       protected:
@@ -214,6 +240,8 @@ namespace te
         LayerItemModel* m_model;          //!<
 
         LayerViewMenuManager* m_mnuMger;  //!<
+
+        QObject* m_outterFilter;          //!<
       };
     }
   }

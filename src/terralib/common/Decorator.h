@@ -153,6 +153,12 @@ namespace te
     template<class T>
     T* Decorator<T>::removeDecorator(T* decorated)
     {
+      if(decorated == this)
+      {
+        m_delDecorated = false;
+        return m_decorated;
+      }
+
       T* fd = findDecorator(decorated);
 
       if(fd == this)

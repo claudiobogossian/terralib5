@@ -22,6 +22,7 @@
 
   \brief Plugin implementation for the OGC Web Map Service (WMS) data source widget.
 */
+#include "Plugin.h"
 
 // TerraLib
 #include "../../../../common/Config.h"
@@ -35,9 +36,9 @@
 #include "../../../widgets/datasource/core/DataSourceTypeManager.h"
 #include "../../../widgets/layer/explorer/LayerItem.h"
 #include "../../../widgets/layer/explorer/LayerItemView.h"
-#include "WMSType.h"
 #include "WMSItemDelegate.h"
-#include "Plugin.h"
+#include "WMSLayerPopupHandler.h"
+#include "WMSType.h"
 
 // Boost
 #include <boost/functional/factory.hpp>
@@ -83,7 +84,9 @@ std::list<te::map::AbstractLayerPtr> GetLayers(const QModelIndexList& lst)
 
 te::qt::plugins::wms::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo)
   : QObject(),
-    te::plugin::Plugin(pluginInfo)
+    te::plugin::Plugin(pluginInfo),
+    m_delegate(0),
+    m_handler(0)
 {
 }
 
@@ -152,19 +155,29 @@ void te::qt::plugins::wms::Plugin::updateDelegate(const bool& add)
 
   emit triggered(&e);
 
-  if(e.m_layerExplorer == 0)
+  te::qt::widgets::LayerItemView* view = e.m_layerExplorer;
+
+  if(view == 0)
     return;
 
   if(add)
   {
-    m_delegate = new WMSItemDelegate((QStyledItemDelegate*)e.m_layerExplorer->itemDelegate(), this);
-    e.m_layerExplorer->setItemDelegate(m_delegate);
+    m_delegate = new WMSItemDelegate((QStyledItemDelegate*)view->itemDelegate(), this);
+    view->setItemDelegate(m_delegate);
+
+    m_handler = new WMSLayerPopupHandler(view->getMenuEventHandler(), this);
+    view->setMenuEventHandler(m_handler);
   }
   else
   {
-    e.m_layerExplorer->removeDelegate(m_delegate);
+    view->removeDelegate(m_delegate);
     delete m_delegate;
     m_delegate = 0;
+
+
+    view->removeMenuEventHandler(m_handler);
+    delete m_handler;
+    m_handler = 0;
   }
 }
 
