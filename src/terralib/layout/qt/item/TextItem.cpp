@@ -39,6 +39,8 @@
 #include "../../core/property/Properties.h"
 #include "../core/pattern/command/ChangePropertyCommand.h"
 #include "../../core/enum/EnumAlignmentType.h"
+#include "../core/ItemUtils.h"
+#include "../core/ContextObject.h"
 
 // STL
 #include <string>
@@ -315,7 +317,9 @@ void te::layout::TextItem::mouseDoubleClickEvent( QGraphicsSceneMouseEvent * eve
       setTextCursor(cursor);
       setFocus();
       EnumModeType* mode = Enums::getInstance().getEnumModeType();
-      Context::getInstance().setMode(mode->getModeTextEditorInteraction());
+
+      ItemUtils* utils = Context::getInstance().getItemUtils();
+      utils->changeViewMode(mode->getModeTextEditorInteraction());
     }
     else
     {
@@ -374,6 +378,12 @@ void te::layout::TextItem::setEditable( bool editable )
 
 void te::layout::TextItem::resetEdit()
 {
+  Scene* sc = dynamic_cast<Scene*>(scene());
+  if(!sc)
+  {
+    return;
+  }
+
   m_editable = false;
 
   TextModel* model = dynamic_cast<TextModel*>(m_model);
@@ -390,12 +400,7 @@ void te::layout::TextItem::resetEdit()
       Properties* newCommand = new Properties(*beforeProps);
 
       QUndoCommand* command = new ChangePropertyCommand(this, oldCommand, newCommand);
-
-      Scene* sc = dynamic_cast<Scene*>(scene());
-      if(sc)
-      {
-        sc->addUndoStack(command);
-      }
+      sc->addUndoStack(command);
     }
   }
 
@@ -408,10 +413,14 @@ void te::layout::TextItem::resetEdit()
   unsetCursor();
   clearFocus();     
 
+  ContextObject context = sc->getContext();
+
+  ItemUtils* utils = Context::getInstance().getItemUtils();
+
   EnumModeType* mode = Enums::getInstance().getEnumModeType();
-  if(Context::getInstance().getMode() == mode->getModeTextEditorInteraction())
+  if(context.getCurrentMode() == mode->getModeTextEditorInteraction())
   {
-    Context::getInstance().setMode(mode->getModeNone());
+    utils->changeViewMode(mode->getModeNone());
   }
 }
 

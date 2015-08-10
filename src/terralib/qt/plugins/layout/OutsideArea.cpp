@@ -124,7 +124,7 @@ void te::qt::plugins::layout::OutsideArea::init()
     connect(m_view, SIGNAL(hideView()), this, SLOT(onHideView()));
     connect(m_view, SIGNAL(closeView()), this, SLOT(onCloseView()));
     connect(m_view, SIGNAL(showView()), this, SLOT(onShowView()));
-    connect(this, SIGNAL(changeMenuContext(bool)), m_view, SLOT(onMainMenuChangeContext(bool)));
+    connect(this, SIGNAL(changeMenuMode(te::layout::EnumType*)), m_view, SLOT(onMainMenuChangeMode(te::layout::EnumType*)));
     connect(m_view, SIGNAL(changeContext()), this, SLOT(onRefreshStatusBar()));
   }
 
@@ -150,7 +150,7 @@ void te::qt::plugins::layout::OutsideArea::init()
 
   if(m_toolbar)
   {
-    connect(m_toolbar, SIGNAL(changeContext(bool)), m_view, SLOT(onToolbarChangeContext(bool)));
+    connect(m_toolbar, SIGNAL(changeMode(te::layout::EnumType*)), m_view, SLOT(onToolbarChangeMode(te::layout::EnumType*)));
     connect(m_toolbar, SIGNAL(zoomChangedInComboBox(int)), m_view, SLOT(setZoom(int)));
     connect(m_view, SIGNAL(zoomChanged(int)), m_toolbar, SLOT(onZoomChanged(int)));
   }
@@ -353,18 +353,12 @@ QAction* te::qt::plugins::layout::OutsideArea::createAction( std::string text, s
 void te::qt::plugins::layout::OutsideArea::changeAction( te::layout::EnumType* mode )
 {
   bool result = true;
-  te::layout::EnumType* layoutMode = te::layout::Context::getInstance().getMode();
+  te::layout::EnumType* layoutMode = m_view->getCurrentMode();
 
   if(mode != layoutMode)
   {
-    te::layout::Context::getInstance().setMode(mode);
+    emit changeMenuMode(mode);
   }
-  else
-  {
-    result = false;
-  }
-
-  emit changeMenuContext(result);
 }
 
 te::qt::plugins::layout::PropertiesDock* te::qt::plugins::layout::OutsideArea::getPropertiesDock()
@@ -536,7 +530,7 @@ void te::qt::plugins::layout::OutsideArea::onRefreshStatusBar()
     return;
   }
 
-  te::layout::EnumType* mode = te::layout::Context::getInstance().getMode();
+  te::layout::EnumType* mode = m_view->getCurrentMode();
 
   std::string msg;
 

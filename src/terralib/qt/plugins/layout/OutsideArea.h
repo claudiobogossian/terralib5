@@ -89,7 +89,7 @@ namespace te
 
         signals:
 
-          void changeMenuContext(bool change);
+          void changeMenuMode(te::layout::EnumType* newMode);
 
           void exit();
 

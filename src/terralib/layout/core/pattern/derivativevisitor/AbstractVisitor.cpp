@@ -27,10 +27,12 @@
 
 // TerraLib
 #include "AbstractVisitor.h"
-#include "Visitable.h"
-#include "../singleton/Context.h"
 #include "../../../../maptools/Canvas.h"
+#include "../../../qt/core/ContextObject.h"
 #include "../../Utils.h"
+#include "../../AbstractScene.h"
+#include "../singleton/Context.h"
+#include "Visitable.h"
 
 te::layout::AbstractVisitor::AbstractVisitor() :
   m_visitable(0)
@@ -76,13 +78,21 @@ void te::layout::AbstractVisitor::disassociate()
 
 te::layout::ContextItem te::layout::AbstractVisitor::getContextItem()
 {
+  ContextItem context;
+  AbstractScene* scene = Context::getInstance().getScene();
+  if(!scene)
+  {
+    return context;
+  }
+
+  ContextObject contextObj = scene->getContext();
+
   te::map::Canvas* canvas = Context::getInstance().getCanvas();
   Utils* utils = Context::getInstance().getUtils();
-  int zoom = Context::getInstance().getZoom();
-  double dpiX = Context::getInstance().getDpiX();
-  double dpiY = Context::getInstance().getDpiY();
+  int zoom = contextObj.getZoom();
+  int dpiX = contextObj.getDpiX();
+  int dpiY = contextObj.getDpiY();
 
-  ContextItem context;
   context.setCanvas(canvas);
   context.setUtils(utils);
   context.setZoom(zoom);

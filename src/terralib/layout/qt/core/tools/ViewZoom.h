@@ -22,7 +22,7 @@
 
 // TerraLib
 #include "../../../core/Config.h"
-#include "../AbstractViewTool.h"
+#include "AbstractLayoutTool.h"
 
 namespace te
 {
@@ -38,7 +38,7 @@ namespace te
 
         \ingroup widgets
       */
-      class TELAYOUTEXPORT ViewZoom : public AbstractViewTool
+      class TELAYOUTEXPORT ViewZoom : public AbstractLayoutTool
       {
         public:
 

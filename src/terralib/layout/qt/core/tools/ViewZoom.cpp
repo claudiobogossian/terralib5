@@ -22,15 +22,14 @@
 #include "../../../../geometry/Envelope.h"
 #include "../View.h"
 #include "../Scene.h"
-#include "../../../core/pattern/singleton/Context.h"
- 
+
 // Qt
 #include <QtGui/QMouseEvent>
 #include <QtGui/QPainter>
 #include <QtGui/QPixmap>
 
 te::layout::ViewZoom::ViewZoom(View* view, const double& zoomFactor, const ViewZoomType& type, QObject* parent) 
-  : AbstractViewTool(view, parent),
+  : AbstractLayoutTool(view, parent),
   m_zoomFactor(zoomFactor),
   m_zoomType(type)
 {
@@ -67,11 +66,11 @@ void te::layout::ViewZoom::applyZoom(const QPointF& point)
   int newZoom = 100;
   if(m_zoomType == ZoomIn)
   {
-    newZoom = Context::getInstance().getZoom() / m_zoomFactor;
+    newZoom = m_view->getCurrentZoom() / m_zoomFactor;
   }
   else
   {
-    newZoom = Context::getInstance().getZoom() * m_zoomFactor;
+    newZoom = m_view->getCurrentZoom() * m_zoomFactor;
   }
 
   m_view->setZoom(newZoom);

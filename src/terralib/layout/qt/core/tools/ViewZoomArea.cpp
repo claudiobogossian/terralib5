@@ -22,7 +22,6 @@
 #include "../../../../geometry/Envelope.h"
 #include "../View.h"
 #include "../Scene.h"
-#include "../../../core/pattern/singleton/Context.h"
 
 // Qt
 #include <QtGui/QMouseEvent>
@@ -97,8 +96,7 @@ bool te::layout::ViewZoomArea::mouseReleaseEvent(QMouseEvent* e)
   {
     return false;
   }
-
-
+  
   /*
   Zoom In Area:
   Scales the view matrix. The view is scaled according to aspectRatioMode.

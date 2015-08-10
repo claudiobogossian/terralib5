@@ -44,6 +44,7 @@
 #include <QWidget>
 #include <QTransform>
 #include <QColor>
+#include <QGraphicsScene>
 
 // TerraLib
 #include "../../core/pattern/mvc/ItemObserver.h"
@@ -61,6 +62,7 @@
 #include "../../../common/STLUtils.h"
 #include "../../core/ContextItem.h"
 #include "../../../geometry/Coord2D.h"
+#include "../core/ContextObject.h"
 
 // STL
 
@@ -346,7 +348,11 @@ namespace te
       QTransform t = painter->transform();
       QPointF p = t.map(point);
 
-      int zoom = Context::getInstance().getZoom();
+      QGraphicsScene* scn = T::scene();
+      AbstractScene* sc = dynamic_cast<AbstractScene*>(scn);
+      ContextObject context = sc->getContext();
+
+      int zoom = context.getZoom();
       double zoomFactor = zoom / 100.;
 
       QFont ft = painter->font();

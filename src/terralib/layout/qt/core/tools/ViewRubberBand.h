@@ -22,7 +22,7 @@
 
 // TerraLib
 #include "../../../core/Config.h"
-#include "../AbstractViewTool.h"
+#include "AbstractLayoutTool.h"
 
 // Qt
 #include <QRectF>
@@ -46,7 +46,7 @@ namespace te
 
         \ingroup widgets
       */
-      class TELAYOUTEXPORT ViewRubberBand : public AbstractViewTool
+      class TELAYOUTEXPORT ViewRubberBand : public AbstractLayoutTool
       {
         public:
 

@@ -31,11 +31,12 @@
 #include "../../item/PaperController.h"
 #include "../item/PaperItem.h"
 #include "../../core/pattern/mvc/ItemObserver.h"
-#include "../../core/pattern/singleton/Context.h"
 
-te::layout::VisualizationArea::VisualizationArea(te::gm::Envelope boxArea)
+te::layout::VisualizationArea::VisualizationArea( Scene* scene, te::gm::Envelope boxArea ) :
+  m_scene(scene),
+  m_boxArea(boxArea)
 {
-  m_boxArea = boxArea;
+  build();
 }
 
 te::layout::VisualizationArea::~VisualizationArea()
@@ -45,18 +46,14 @@ te::layout::VisualizationArea::~VisualizationArea()
 
 void te::layout::VisualizationArea::build()
 {
-  init();
-}
-
-void te::layout::VisualizationArea::init()
-{
   createPaper();
 }
 
 void te::layout::VisualizationArea::createPaper()
 {
+  PaperConfig* pConfig = m_scene->getPaperConfig();
   //Paper
-  PaperModel* modelPaper = new PaperModel(te::layout::Context::getInstance().getPaperConfig());	
+  PaperModel* modelPaper = new PaperModel(pConfig);	
 
   double x = modelPaper->getBox().getLowerLeftX();
   double y = modelPaper->getBox().getLowerLeftY();

@@ -136,7 +136,7 @@ void te::layout::ItemObserver::recalculateBoundingRect()
   //do nothing
 }
 
-void te::layout::ItemObserver::contextUpdated()
+void te::layout::ItemObserver::contextUpdated(ContextObject context)
 {
   //do nothing
 }

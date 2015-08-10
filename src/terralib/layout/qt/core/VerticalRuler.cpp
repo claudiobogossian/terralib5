@@ -30,6 +30,7 @@
 #include "../../core/PaperConfig.h"
 #include "../../core/pattern/singleton/Context.h"
 #include "../../core/Utils.h"
+#include "Scene.h"
 
 // STL
 #include <sstream>
@@ -59,7 +60,11 @@ void te::layout::VerticalRuler::drawRuler( QGraphicsView* view, QPainter* painte
   if(!m_visible)
     return;
 
-  PaperConfig* paperConfig = Context::getInstance().getPaperConfig();
+  Scene* sc = searchScene(view);
+  if(!sc)
+    return;
+
+  PaperConfig* paperConfig = sc->getPaperConfig();
   if(!paperConfig)
     return;
 
@@ -183,4 +188,17 @@ void te::layout::VerticalRuler::drawMarks( QGraphicsView* view, QPainter* painte
   }
 
   painter->restore();
+}
+
+te::layout::Scene* te::layout::VerticalRuler::searchScene(QGraphicsView* view)
+{
+  Scene* sc = 0;
+  QGraphicsScene* qScene = view->scene();
+  if(!qScene)
+  {
+    return sc;
+  }
+
+  sc = dynamic_cast<Scene*>(qScene);
+  return sc;
 }

@@ -67,14 +67,11 @@ te::layout::View::View( QWidget* widget) :
   m_systematicOutside(0),
   m_selectionChange(false),
   m_menuBuilder(0),
-  m_maxZoomLimit(29.),
-  m_minZoomLimit(0.9),
   m_width(-1),
   m_height(-1),
   m_isMoving(false),
   m_movingItemGroup(0),
   m_updateItemPos(false),
-  m_oldMode(0),
   m_wait(0),
   m_flag(false)
 {
@@ -83,11 +80,6 @@ te::layout::View::View( QWidget* widget) :
   m_horizontalRuler = new HorizontalRuler;
   m_verticalRuler = new VerticalRuler;
   m_wait = new WaitView(this);
-
-  if(Enums::getInstance().getEnumModeType())
-  {
-    m_oldMode = Enums::getInstance().getEnumModeType()->getModeNone();
-  }
 }
 
 te::layout::View::~View()
@@ -191,12 +183,12 @@ void te::layout::View::mousePressEvent( QMouseEvent * event )
     }
   }
   
-  if(Context::getInstance().getMode() == mode->getModeNone())
+  if(getCurrentMode() == mode->getModeNone())
     return;
 
   QGraphicsItem* it = 0;
 
-  if(Context::getInstance().getMode()->getType() == te::layout::EnumCreate)
+  if(getCurrentMode()->getType() == te::layout::EnumCreate)
   {
     it = sc->createItem(coord);
   }
@@ -239,12 +231,6 @@ void te::layout::View::mouseMoveEvent( QMouseEvent * event )
   QPointF pt = mapToScene(event->pos());
    
   emit changeSceneCoordMouse(pt);
-
-  if(m_oldMode != Context::getInstance().getMode())
-  {
-    m_oldMode = Context::getInstance().getMode();
-    emit changeContext();
-  }
 }
 
 void te::layout::View::mouseReleaseEvent( QMouseEvent * event )
@@ -297,31 +283,21 @@ void te::layout::View::wheelEvent( QWheelEvent *event )
   
   if(event->modifiers() & Qt::AltModifier)
   {
-    double zoomFactor = 1.;
-    int currentZoom = Context::getInstance().getZoom();
+    int zoom = 0;
+    int currentZoom = getCurrentZoom();
 
     // Zoom in / Zoom Out
     if(event->delta() > 0) 
     {
       //Zooming In
-      zoomFactor = nextFactor(currentZoom);
+      zoom = nextZoom();
     }
     else
     {
-      zoomFactor = previousFactor(currentZoom);
+      zoom = previousZoom();
     }
 
-    if(zoomFactor > 0)
-    {
-      Context::getInstance().setOldZoom(currentZoom);
-      Context::getInstance().setZoom(zoomFactor);
-      //zoomPercentage();
-    }
-    else
-    {
-      zoomFactor = currentZoom;
-    }
-    emit zoomChanged(zoomFactor);
+    setZoom(zoom);
   }
   
   QGraphicsView::wheelEvent(event);
@@ -335,12 +311,7 @@ void te::layout::View::keyPressEvent( QKeyEvent* keyEvent )
 
   if((keyEvent->modifiers() & Qt::ControlModifier) && (keyEvent->key() == Qt::Key_P))
   {
-    EnumModeType* enumMode = Enums::getInstance().getEnumModeType();
-    Context::getInstance().setMode(enumMode->getModePrinter());
-    
     print();
-
-    Context::getInstance().setMode(enumMode->getModeNone());
   }
   else if((keyEvent->modifiers() & Qt::AltModifier) && (keyEvent->key() == Qt::Key_0))
   {
@@ -369,7 +340,7 @@ void te::layout::View::keyPressEvent( QKeyEvent* keyEvent )
   else if(keyEvent->key() == Qt::Key_Delete)
   {
     EnumModeType* mode = Enums::getInstance().getEnumModeType();
-    if(Context::getInstance().getMode() != mode->getModeTextEditorInteraction())
+    if(getCurrentMode() != mode->getModeTextEditorInteraction())
     {
       scne->removeSelectedItems();
     }
@@ -390,13 +361,7 @@ void te::layout::View::config()
 
   if(!nscene)
     return;
-
-  //Initializing the context with the device physical DPI.
-  Context::getInstance().setDpiX(this->physicalDpiX());
-  Context::getInstance().setDpiY(this->physicalDpiY());
-  Context::getInstance().setDpiX(141.7);
-  Context::getInstance().setDpiY(136.2);
-  
+    
   double sw = viewport()->widthMM();
   double sh = viewport()->heightMM();
 
@@ -415,15 +380,22 @@ void te::layout::View::config()
   te::gm::Envelope box = nscene->getSceneBox();
   centerOn(QPointF(box.m_llx, box.m_ury));
       
-  int zoom = Context::getInstance().getDefaultZoom();
+  int zoom = getDefaultZoom();
   double newScale = zoom / 100.;
   scale(newScale, newScale); //Initial zoom out
 
   //----------------------------------------------------------------------------------------------
   if(!m_visualizationArea)
   {
-    m_visualizationArea = new VisualizationArea(box);
-    m_visualizationArea->build();
+    m_visualizationArea = new VisualizationArea(nscene, box);
+  }
+
+  if(!getCurrentMode())
+  {
+    if(Enums::getInstance().getEnumModeType())
+    {
+      setCurrentMode(Enums::getInstance().getEnumModeType()->getModeNone());
+    }
   }
           
   setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -437,9 +409,9 @@ void te::layout::View::resizeEvent(QResizeEvent * event)
   QGraphicsView::resizeEvent(event);
 }
 
-void te::layout::View::onToolbarChangeContext( bool change )
+void te::layout::View::onToolbarChangeMode( te::layout::EnumType* newMode )
 {
-  outsideAreaChangeContext(change);
+  changeMode(newMode);
 }
 
 void te::layout::View::createItemGroup()
@@ -509,13 +481,20 @@ void te::layout::View::resetDefaultConfig()
   }
 }
 
-void te::layout::View::onMainMenuChangeContext( bool change )
+void te::layout::View::onMainMenuChangeMode( te::layout::EnumType* newMode )
 {
-  outsideAreaChangeContext(change);
+  changeMode(newMode);
 }
 
-void te::layout::View::outsideAreaChangeContext( bool change )
+void te::layout::View::changeMode( EnumType* newMode )
 {
+  if(newMode == getCurrentMode())
+  {
+    return;
+  }
+
+  setCurrentMode(newMode);
+
   resetDefaultConfig();
 
   Scene* sc = dynamic_cast<Scene*>(scene());
@@ -524,9 +503,10 @@ void te::layout::View::outsideAreaChangeContext( bool change )
     return;
 
   EnumModeType* enumMode = Enums::getInstance().getEnumModeType();
-  EnumType* mode = Context::getInstance().getMode();
   ItemUtils* iUtils = Context::getInstance().getItemUtils();
-    
+
+  EnumType* mode = getCurrentMode();
+
   if(mode == enumMode->getModeUnitsMetricsChange())
   {
     
@@ -666,6 +646,14 @@ void te::layout::View::outsideAreaChangeContext( bool change )
   {
     exportToPDF();
   }
+
+  Scene* sce = dynamic_cast<Scene*>(scene());
+  if(sce)
+  {
+    sce->onChangeMode(mode);
+  }
+
+  emit changeContext();
 }
 
 void te::layout::View::hideEvent( QHideEvent * event )
@@ -851,7 +839,7 @@ void te::layout::View::resetView()
   QPointF pt(box.m_llx, box.m_ury);
   centerOn(pt);
 
-  int zoom = Context::getInstance().getDefaultZoom();
+  int zoom = getDefaultZoom();
   double zoomFactor = zoom / 100.;
   scale(zoomFactor, zoomFactor); //Initial zoom out
 }
@@ -896,27 +884,28 @@ void te::layout::View::zoomOut()
 
 void te::layout::View::print()
 {
+  EnumModeType* enumMode = Enums::getInstance().getEnumModeType();
+
   Scene* scne = dynamic_cast<Scene*>(scene());
+  if(!scne)
+  {
+    return;
+  }
+
+  setCurrentMode(enumMode->getModePrinter());
 
   resetDefaultConfig();
   
   // No update Widget while print is running
-  setUpdatesEnabled(false);
-
   // Rulers aren't print
-  m_visibleRulers = false;
-  scne->getPrintScene()->printPreview();
-  m_visibleRulers = true;
+  disableUpdate();
+  
+  PrintScene printer(scne);
+  printer.printPreview();
 
-  setUpdatesEnabled(true);
-}
+  enableUpdate();
 
-void te::layout::View::recompose()
-{
-  resetDefaultConfig();
-
-  int defaultZoomFactor = Context::getInstance().getDefaultZoom();
-  setZoom(defaultZoomFactor);
+  setCurrentMode(enumMode->getModeNone());
 }
 
 void te::layout::View::exportToPDF()
@@ -926,19 +915,26 @@ void te::layout::View::exportToPDF()
   resetDefaultConfig();
 
   // No update Widget while print is running
-  setUpdatesEnabled(false);
-
   // Rulers aren't print
-  m_visibleRulers = false;
-  scne->getPrintScene()->exportToPDF();
-  m_visibleRulers = true;
+  disableUpdate();
 
-  setUpdatesEnabled(true);
+  PrintScene printer(scne);
+  printer.exportToPDF();
+
+  enableUpdate();
+}
+
+void te::layout::View::recompose()
+{
+  resetDefaultConfig();
+
+  int zoom = getDefaultZoom();
+  setZoom(zoom);
 }
 
 void te::layout::View::setZoom(int newZoom)
 {
-  int currentZoom = Context::getInstance().getZoom();
+  int currentZoom = getCurrentZoom();
 
   if(newZoom == currentZoom)
     return;
@@ -950,18 +946,28 @@ void te::layout::View::setZoom(int newZoom)
 
   if(rescale > 0)
   {
-    Context::getInstance().setOldZoom(currentZoom);
-    Context::getInstance().setZoom(newZoom);
-    scale(rescale, rescale);
+    setCurrentZoom(newZoom);
+
+    applyScale(rescale);
 
     Scene* sce = dynamic_cast<Scene*>(scene());
     if(sce)
     {
-      sce->onChangeZoomFactor(newZoom);
+      sce->onChangeZoom(newZoom);
     }
 
     emit zoomChanged(newZoom);
   }
+}
+
+void te::layout::View::applyScale( double newScale )
+{
+  if(newScale <= 0)
+  {
+    return;
+  }
+
+  scale(newScale, newScale);
 }
 
 void te::layout::View::fitZoom(const QRectF& rect)
@@ -972,36 +978,21 @@ void te::layout::View::fitZoom(const QRectF& rect)
 
   double scaleFactor = scaleNew / scaleOld;
 
-  int currentZoom = Context::getInstance().getZoom();
+  int currentZoom = getCurrentZoom();
   int newZoom = (int)(currentZoom * scaleFactor);
 
   if(newZoom > 0)
   {
-    Context::getInstance().setOldZoom(currentZoom);
-    Context::getInstance().setZoom(newZoom);
+    setCurrentZoom(newZoom);
 
     Scene* sce = dynamic_cast<Scene*>(scene());
     if(sce)
     {
-      sce->onChangeZoomFactor(newZoom);
+      sce->onChangeZoom(newZoom);
     }
 
     emit zoomChanged(newZoom);
   }
-}
-
-
-bool te::layout::View::isLimitExceeded(double scale)
-{
-  //Zooming In
-  if(scale < m_maxZoomLimit)
-    return false;
-
-  //Zooming Out
-  if(scale > m_minZoomLimit)
-    return false;
-
-  return true;
 }
 
 void te::layout::View::drawForeground( QPainter * painter, const QRectF & rect )
@@ -1153,3 +1144,24 @@ void te::layout::View::refreshAllProperties()
 {
   emit reloadProperties();
 }
+
+void te::layout::View::disableUpdate()
+{
+  // No update Widget while print is running
+  setUpdatesEnabled(false);
+  // Rulers aren't print
+  m_visibleRulers = false;  
+}
+
+void te::layout::View::enableUpdate()
+{
+  m_visibleRulers = true;
+  setUpdatesEnabled(true);
+}
+
+
+
+
+
+
+

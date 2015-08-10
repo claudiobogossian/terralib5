@@ -124,7 +124,7 @@ namespace te
         virtual bool canBeChild(ItemObserver* item);
                                         
 
-        virtual void contextUpdated();
+        virtual void contextUpdated(ContextObject context);
 
         virtual void updateScale();
 

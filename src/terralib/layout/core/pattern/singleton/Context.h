@@ -82,22 +82,7 @@ namespace te
           \brief Destructor
         */ 
         virtual ~Context();
-
-        /*!
-          \brief Returns value of the enumeration of mode type.
-		  
-		      \return value of the enumeration of mode type 	  
-        */
-        EnumType*	 getMode();
-
-        /*!
-        \brief Change value of the enumeration of mode type. Ex.: select, pan, create text, etc.
-            The type of mode is used by the context to know what should be done. The mode in context could be modified by the user interaction.
-		  
-		      \param value of the enumeration of mode type 	  
-        */
-        void setMode(EnumType* mode);
-
+        
         LayoutUnitsMetrics getUnitMetric();
 
         void setUnitMetric(LayoutUnitsMetrics unit);
@@ -115,41 +100,6 @@ namespace te
 		      \param scene 	  
         */
         void setScene(AbstractScene* scene);
-
-        /*!
-          \brief Default zoom  Ex.: 50 (50%)
-          \return default zoom         */
-        int getDefaultZoom();
-
-        /*!
-          \brief Change default zoom  Ex.: 50 (50%)
-          \param zoom default zoom
-        */
-        void setDefaultZoom(int zoomFactor);
-
-        /*!
-          \brief Returns current zoom. Ex.: 50 (50%)
-          \return current zoom
-        */
-        int getZoom();
-
-        /*!
-          \brief Change current zoom factor. Ex.: 50 (50%)
-          \param zoom current zoom
-        */
-        void setZoom(int zoom);
-
-        /*!
-          \brief Returns previous zoom. Ex.: 50 (50%)
-          \return previous zoom
-        */
-        int getOldZoom();
-
-        /*!
-          \brief Change previous zoom. Ex.: 50 (50%)
-          \param zoom previous zoom
-        */
-        void setOldZoom(int zoom);
 
         /*! 
           \brief Returns Abstract Factory that provide an interface for creating families of related or dependent graphic objects (MVC components).
@@ -221,35 +171,13 @@ namespace te
         */
         void setUtils(Utils* utils);
 
-        double getDpiX();
-
-        void setDpiX(double dpiX);
-
-        double getDpiY();
-
-        void setDpiY(double dpiY);
-
         /*!
           \brief Template structure version.
 		  
 		      \param version		  
         */
         std::string getVersion();
-
-        /*!
-          \brief Returns paper setting. 
-		  
-		      \return A te::layout::PaperConfig pointer		  
-        */
-        PaperConfig* getPaperConfig() const;
-
-        /*!
-          \brief Change paper setting. 
-		  
-		      \param A te::layout::PaperConfig pointer		  
-        */
-        void setPaperConfig(PaperConfig* config);
-
+        
         /*!
           \brief Returns pointer for build graphics MVC components. 
 		  
@@ -341,23 +269,16 @@ namespace te
             Context& operator=(const Context& rhs);
 
       protected:
-        
-        EnumType*                     m_mode; //!< value of the enumeration of mode type
+
         EnumType*                     m_lineIntersectionMouseMode; //!<
         LayoutUnitsMetrics            m_unitMetric; //!<
         AbstractScene*                m_scene; //!< abstract scene for QGraphicsScene class, part of Graphics View Framework.
-        int                           m_zoom; //!< current zoom. Ex.: 55 (50%)
-        int                           m_defaultZoom; //!< default zoom. Ex.: 50 (50%) 
-        int                           m_oldZoom; //!< previous zoom. Ex.: 50 (50%)
         te::map::Canvas*              m_canvas; //!< abstraction of a drawing area
         AbstractItemFactory*          m_itemFactory; //!< factory that provide an interface for creating families of related or dependent graphic objects (MVC components)
         AbstractOutsideFactory*	      m_outsideFactory; //!< factory provide an interface for creating families of related or dependent graphic widgets (MVC widgets)
         AbstractTemplateFactory*      m_templateFactory; //!< factory provide an interface for creating families of related or dependent templates
         Utils*                        m_utils; //!< pointer with functions to manipulate the canvas and conversion between projections
-        double                        m_dpiX; //!<
-        double                        m_dpiY; //!<
         std::string                   m_version; //!< template structure version
-        PaperConfig*                  m_paperConfig; //!< paper settings
         AbstractBuildGraphicsItem*    m_buildGraphicsItem; //!< build graphics MVC components. 
         SystematicScaleConfig*        m_systematicConfig; //!<
         AbstractProxyProject*         m_proxyProject; //!< provide a surrogate or placeholder for te::qt::af::Project to control access to it

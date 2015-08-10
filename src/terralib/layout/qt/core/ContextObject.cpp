@@ -18,47 +18,64 @@
  */
 
 /*!
-  \file VerticalRuler.h
+  \file ContextObject.cpp
    
-  \brief Class that represents a vertical ruler with the coordinate system in mm.
+  \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_VERTICAL_RULER_H
-#define __TERRALIB_LAYOUT_INTERNAL_VERTICAL_RULER_H
-
 // TerraLib
-#include "AbstractRuler.h"
-#include "../../core/Config.h"
+#include "ContextObject.h"
 
-namespace te
+te::layout::ContextObject::ContextObject( int zoom, int dpiX, int dpiY, PaperConfig* config, EnumType* mode ):
+  m_zoom(zoom),
+  m_dpiX(dpiX),
+  m_dpiY(dpiY),
+  m_config(config),
+  m_mode(mode)
 {
-  namespace layout
-  {
-    class Scene;
-    /*!
-	  \brief Class that represents a vertical ruler with the coordinate system in mm.
-	  
-	  \ingroup layout
-	  */
-    class TELAYOUTEXPORT VerticalRuler : public AbstractRuler
-    {
-      public:
-
-        VerticalRuler();
-
-        virtual ~VerticalRuler();    
-
-        virtual void drawRuler( QGraphicsView* view, QPainter* painter, double scale );
-
-      protected:
-
-        virtual void drawMarks( QGraphicsView* view, QPainter* painter, QRectF rect, double zoomFactor );
-
-        Scene* searchScene(QGraphicsView* view);
-    };
-  }
+ 
 }
 
-#endif 
+te::layout::ContextObject::~ContextObject()
+{
+
+}
+
+int te::layout::ContextObject::getZoom()
+{
+  return m_zoom;
+}
+
+int te::layout::ContextObject::getDpiX()
+{
+  return m_dpiX;
+}
+
+int te::layout::ContextObject::getDpiY()
+{
+  return m_dpiY;
+}
+
+te::layout::PaperConfig* te::layout::ContextObject::getPaperConfig()
+{
+  return m_config;
+}
+
+te::layout::EnumType* te::layout::ContextObject::getCurrentMode()
+{
+  return m_mode;
+}
+
+bool te::layout::ContextObject::isValid()
+{
+  bool result = true;
+  if(m_zoom <= 0 || m_dpiX <= 0 || 
+    m_dpiY <= 0 || m_config == 0 || m_mode == 0)
+  {
+    result = false;
+  }
+  return result;
+}
+

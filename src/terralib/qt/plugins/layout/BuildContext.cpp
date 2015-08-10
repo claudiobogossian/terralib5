@@ -42,7 +42,6 @@ te::layout::BuildContext::BuildContext() :
   m_outsideFactory(0),
   m_templateFactory(0),
   m_utils(0),
-  m_paperConfig(0),
   m_canvas(0),
   m_buildGraphicsItem(0),
   m_itemUtils(0),
@@ -76,13 +75,7 @@ te::layout::BuildContext::~BuildContext()
     delete m_utils;
     m_utils = 0;
   }
-
-  if(m_paperConfig)
-  {
-    delete m_paperConfig;
-    m_paperConfig = 0;
-  }
-
+  
   if(m_buildGraphicsItem)
   {
     delete m_buildGraphicsItem;
@@ -133,13 +126,7 @@ void te::layout::BuildContext::createLayoutContext( int width, int height, View*
     m_utils = new Utils;
     Context::getInstance().setUtils(m_utils);
   } 
-
-  if(!Context::getInstance().getPaperConfig())
-  {
-    m_paperConfig = new PaperConfig;
-    Context::getInstance().setPaperConfig(m_paperConfig);
-  } 
-
+  
   if(!Context::getInstance().getCanvas())
   {
     Scene* lScene = dynamic_cast<Scene*>(view->scene());

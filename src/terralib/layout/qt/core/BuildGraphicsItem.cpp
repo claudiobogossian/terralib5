@@ -523,7 +523,24 @@ void te::layout::BuildGraphicsItem::afterBuild( QGraphicsItem* item, bool draw )
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createPaper()
 {
-  PaperModel* model = new PaperModel(te::layout::Context::getInstance().getPaperConfig());
+  AbstractScene* abScene = Context::getInstance().getScene();
+  if(!abScene)
+  {
+    return 0;
+  }
+
+  Scene* sc = dynamic_cast<Scene*>(abScene);
+  if(!sc)
+  {
+    return 0;
+  }
+
+  PaperConfig* pConfig = sc->getPaperConfig();
+  if(!pConfig)
+  {
+    return 0;
+  }
+  PaperModel* model = new PaperModel(pConfig);
   if(!m_props)
   {
     model->setId(m_id);

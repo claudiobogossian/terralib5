@@ -172,6 +172,8 @@ namespace te
           \param h
         */
         virtual void getTextBoundary(QFont ft, double& w, double& h, std::string txt);
+
+        void changeViewMode(EnumType* mode);
           
       protected:
 

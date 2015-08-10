@@ -34,14 +34,17 @@
 #ifndef __TERRALIB_LAYOUT_INTERNAL_ABSTRACT_ITEM_H
 #define __TERRALIB_LAYOUT_INTERNAL_ABSTRACT_ITEM_H
 
+// TerraLib
+#include "../../core/pattern/mvc/AbstractItemModel.h"
+#include "../../core/pattern/mvc/AbstractItemView.h"
+#include "../../core/pattern/singleton/Context.h"
+#include "../../core/AbstractScene.h"
+#include "../core/ContextObject.h"
+
 //Qt
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
-
-#include "../../core/pattern/mvc/AbstractItemModel.h"
-#include "../../core/pattern/mvc/AbstractItemView.h"
-
-#include "../../core/pattern/singleton/Context.h"
+#include <QGraphicsScene>
 
 class QWidget;
 
@@ -337,7 +340,11 @@ namespace te
       QTransform t = painter->transform();
       QPointF p = t.map(point);
 
-      int zoom = Context::getInstance().getZoom();
+      QGraphicsScene* scn = T::scene();
+      AbstractScene* sc = dynamic_cast<AbstractScene*>(scn);
+      ContextObject context = sc->getContext();
+
+      int zoom = context.getZoom();
       double zoomFactor = zoom / 100.;
 
       QFont ft = painter->font();

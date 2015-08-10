@@ -55,6 +55,7 @@ namespace te
   namespace layout
   {
     class EnumType;
+    class Scene;
 
     /*!
     \brief Standard Toolbar for Layout. Includes Qt components for interaction between the user and the plugin/app, via events, made from the Layout module. 
@@ -344,9 +345,9 @@ namespace te
       
     signals:
 
-      void changeContext(bool change);
+      void changeMode(te::layout::EnumType* newMode);
 
-      void zoomChangedInComboBox(int zoomFactor);
+      void zoomChangedInComboBox(int zoom);
 
     protected:
 
@@ -405,6 +406,8 @@ namespace te
       virtual QPushButton* createPushButton(std::string text, std::string tooltip, std::string icon);
       
       virtual QAction* createAction(std::string text, std::string objName, std::string icon, std::string tooltip = "", QWidget* parent = 0);
+
+      Scene* getScene();
 
     protected:
 

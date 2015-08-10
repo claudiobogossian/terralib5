@@ -18,8 +18,8 @@
  */
 
 // TerraLib
-#include "AbstractViewTool.h"
-#include "View.h"
+#include "AbstractLayoutTool.h"
+#include "../View.h"
 
 // Qt
 #include <QtGui/QMouseEvent>
@@ -27,7 +27,7 @@
 // STL
 #include <cassert>
 
-te::layout::AbstractViewTool::AbstractViewTool(View* view, QObject* parent)
+te::layout::AbstractLayoutTool::AbstractLayoutTool(View* view, QObject* parent)
   : QObject(parent),
     m_view(view),
     m_cursor(Qt::BlankCursor)
@@ -35,13 +35,13 @@ te::layout::AbstractViewTool::AbstractViewTool(View* view, QObject* parent)
   assert(m_view);
 }
 
-te::layout::AbstractViewTool::~AbstractViewTool()
+te::layout::AbstractLayoutTool::~AbstractLayoutTool()
 {
   // Roll back the default map display cursor
   m_view->viewport()->setCursor(Qt::ArrowCursor);
 }
 
-bool te::layout::AbstractViewTool::eventFilter(QObject* watched, QEvent* e)
+bool te::layout::AbstractLayoutTool::eventFilter(QObject* watched, QEvent* e)
 {
   switch(e->type())
   {
@@ -69,27 +69,27 @@ bool te::layout::AbstractViewTool::eventFilter(QObject* watched, QEvent* e)
   }
 }
 
-bool te::layout::AbstractViewTool::mousePressEvent(QMouseEvent* e)
+bool te::layout::AbstractLayoutTool::mousePressEvent(QMouseEvent* e)
 {
   return false;
 }
 
-bool te::layout::AbstractViewTool::mouseMoveEvent(QMouseEvent* e)
+bool te::layout::AbstractLayoutTool::mouseMoveEvent(QMouseEvent* e)
 {
   return false;
 }
 
-bool te::layout::AbstractViewTool::mouseReleaseEvent(QMouseEvent* e)
+bool te::layout::AbstractLayoutTool::mouseReleaseEvent(QMouseEvent* e)
 {
   return false;
 }
 
-bool te::layout::AbstractViewTool::mouseDoubleClickEvent(QMouseEvent* e)
+bool te::layout::AbstractLayoutTool::mouseDoubleClickEvent(QMouseEvent* e)
 {
   return false;
 }
 
-void te::layout::AbstractViewTool::setCursor(const QCursor& cursor)
+void te::layout::AbstractLayoutTool::setCursor(const QCursor& cursor)
 {
   m_cursor = cursor;
 }

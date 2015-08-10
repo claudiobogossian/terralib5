@@ -31,7 +31,7 @@
 #include <QRubberBand>
 
 te::layout::ViewRubberBand::ViewRubberBand(View* view, QObject* parent) : 
-    AbstractViewTool(view, parent),
+    AbstractLayoutTool(view, parent),
     m_started(false),
     m_draft(0),
     m_rubberBand(0)
