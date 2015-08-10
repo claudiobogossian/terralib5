@@ -1,9 +1,12 @@
+//TerraLib Includes
+#include "../Utils.h"
 #include "ui_ProjectWidgetForm.h"
 #include "ProjectWidget.h"
 
-#include "../Utils.h"
 
-te::qt::af::ProjectWidget::ProjectWidget(QWidget* parent)
+#include <terralib/qt/af/Utils.h>
+
+ProjectWidget::ProjectWidget(QWidget* parent)
   : AbstractSettingWidget(parent),
     m_ui(new Ui::ProjectWidgetForm)
 {
@@ -19,18 +22,18 @@ te::qt::af::ProjectWidget::ProjectWidget(QWidget* parent)
   resetState();
 }
 
-void te::qt::af::ProjectWidget::getHelpInformations(QString& ns, QString& helpFile)
+void ProjectWidget::getHelpInformations(QString& ns, QString& helpFile)
 {
   ns = "dpi.inpe.br.apf";
   helpFile = "apf/settings/project/ProjectConfig.html";
 }
 
-te::qt::af::ProjectWidget::~ProjectWidget()
+ProjectWidget::~ProjectWidget()
 {
   delete m_ui;
 }
 
-void te::qt::af::ProjectWidget::saveChanges()
+void ProjectWidget::saveChanges()
 {
   QString author = m_ui->m_authorLineEdit->text();
   int maxSaved = m_ui->m_numRecentProjectsSpinBox->value();
@@ -42,7 +45,7 @@ void te::qt::af::ProjectWidget::saveChanges()
   changeApplyButtonState(false);
 }
 
-void te::qt::af::ProjectWidget::resetState()
+void ProjectWidget::resetState()
 {
   QString author;
   int maxSaved;
@@ -55,17 +58,17 @@ void te::qt::af::ProjectWidget::resetState()
   changeApplyButtonState(false);
 }
 
-void te::qt::af::ProjectWidget::authorChanged(const QString& text)
+void ProjectWidget::authorChanged(const QString& text)
 {
   changeApplyButtonState(true);
 }
 
-void te::qt::af::ProjectWidget::maxSavedChanged(int i)
+void ProjectWidget::maxSavedChanged(int i)
 {
   changeApplyButtonState(true);
 }
 
-void te::qt::af::ProjectWidget::onOpeningOptionChanged()
+void ProjectWidget::onOpeningOptionChanged()
 {
   changeApplyButtonState(true);
 }

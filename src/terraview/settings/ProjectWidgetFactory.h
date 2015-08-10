@@ -28,45 +28,38 @@
 
 // TerraLib
 #include "../Config.h"
-#include "SettingsWidgetsFactory.h"
+#include <terralib/qt/af/settings/AbstractSettingWidget.h>
+#include <terralib/qt/af/settings/SettingsWidgetsFactory.h>
 
 // Forward declarations
 class QWidget;
 
-namespace te
+/*!
+  \class ProjectWidgetFactory
+
+  \brief A factory to build the project frame object.
+*/
+class ProjectWidgetFactory : public te::qt::af::SettingsWidgetsFactory
 {
-  namespace qt
-  {   
-    namespace af
-    {
-      /*!
-        \class ProjectWidgetFactory
+  public:
 
-        \brief A factory to build the project frame object.
-      */
-      class TEQTAFEXPORT ProjectWidgetFactory : public SettingsWidgetsFactory
-      {
-        public:
+    static void initialize();
 
-          static void initialize();
+    static void finalize();
 
-          static void finalize();
+    ~ProjectWidgetFactory();
 
-          ~ProjectWidgetFactory();
+  protected:        
 
-        protected:        
+    te::qt::af::AbstractSettingWidget* build();
 
-          AbstractSettingWidget* build();
+    ProjectWidgetFactory();
 
-          ProjectWidgetFactory();
+    virtual te::qt::af::AbstractSettingWidget* create(QWidget* parent = 0);
 
-          virtual AbstractSettingWidget* create(QWidget* parent = 0);
+  private:
 
-        private:
+    static ProjectWidgetFactory* sm_factory; 
+};
 
-          static ProjectWidgetFactory* sm_factory; 
-      };
-    } // end namespace af
-  }   // end namespace qt
-}     // end namespace te
 #endif // __TERRALIB_QT_AF_PROJECTWIDGETFACTORY_H

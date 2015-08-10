@@ -47,7 +47,6 @@
 #include <terralib/qt/af/events/ApplicationEvents.h>
 #include <terralib/qt/af/events/LayerEvents.h>
 #include <terralib/qt/af/events/MapEvents.h>
-#include <terralib/qt/af/events/ProjectEvents.h>
 #include <terralib/qt/af/events/ToolEvents.h>
 #include <terralib/qt/af/settings/SettingsDialog.h>
 #include <terralib/qt/af/Utils.h>
@@ -91,6 +90,9 @@
 #include <terralib/qt/widgets/srs/SRSManagerDialog.h>
 #include <terralib/qt/widgets/tools/Measure.h>
 #include <terralib/qt/widgets/vector/FixGeometryDialog.h>
+
+#include "events/ProjectEvents.h"
+#include "settings/ProjectWidgetFactory.h"
 
 // STL
 #include <memory>
@@ -248,7 +250,8 @@ TerraView::TerraView(QWidget* parent)
     m_helpManager(0),
     m_iController(0),
     m_queryDlg(0),
-    m_compModeMenu(0)
+    m_compModeMenu(0),
+    m_tvController(0)
 {
   m_project = new ProjectMetadata;
 
@@ -264,11 +267,19 @@ TerraView::~TerraView()
   delete m_compModeMenu;
   delete m_queryDlg;
   delete m_project;
+  delete m_tvController;
+
+  //register settings for project
+  ProjectWidgetFactory::finalize();
 }
 
 void TerraView::init()
 {
   BaseApplication::init(te::common::FindInTerraLibPath(TERRAVIEW_APPLICATION_CONFIG_FILE).c_str());
+
+  m_tvController = new TerraViewController(m_app, te::common::FindInTerraLibPath(TERRAVIEW_APPLICATION_CONFIG_FILE).c_str());
+
+  m_tvController->initializeProjectMenus();
 
   QStringList prjTitles,
       prjPaths;
@@ -305,6 +316,9 @@ void TerraView::makeDialog()
   //interface controller
   m_iController = new te::qt::af::InterfaceController(this);
   m_app->addListener(m_iController);
+
+  //register settings for project
+  ProjectWidgetFactory::initialize();
 }
 
 void TerraView::initActions()
@@ -841,7 +855,7 @@ void TerraView::onOpenProjectTriggered()
 {
   checkAndSaveProject();
 
-  QString file = QFileDialog::getOpenFileName(this, tr("Open project file"), qApp->applicationDirPath(), te::qt::af::GetExtensionFilter(m_app));
+  QString file = QFileDialog::getOpenFileName(this, tr("Open project file"), qApp->applicationDirPath(), m_tvController->getExtensionFilter());
 
   if (file.isEmpty())
     return;
@@ -867,7 +881,7 @@ void TerraView::onSaveProjectTriggered()
   {
     QFileDialog d(this);
 
-    QString filter = tr("TerraView project(*.") + m_app->getAppProjectExtension() + ")";
+    QString filter = tr("TerraView project(*.") + m_tvController->getAppProjectExtension() + ")";
 
     QString fileName = d.getSaveFileName(this, tr("Save project"), qApp->applicationDirPath(), filter);
 
@@ -877,7 +891,7 @@ void TerraView::onSaveProjectTriggered()
     QFileInfo info(fileName);
 
     if(info.suffix().isEmpty())
-      fileName.append("." + m_app->getAppProjectExtension());
+      fileName.append("." + m_tvController->getAppProjectExtension());
 
     m_project->m_fileName = fileName;
     m_project->m_title = info.baseName();
@@ -891,7 +905,7 @@ void TerraView::onSaveProjectTriggered()
 
   AddRecentProjectToSettings(m_project->m_title, m_project->m_fileName);
 
-  m_app->updateRecentProjects(m_project->m_fileName, m_project->m_title);
+  m_tvController->updateRecentProjects(m_project->m_fileName, m_project->m_title);
 
   XMLFormatter::format(m_project, lays, true);
   XMLFormatter::formatDataSourceInfos(true);
@@ -909,7 +923,7 @@ void TerraView::onSaveProjectAsTriggered()
   if (m_project == 0)
     return;
 
-  QString fileName = QFileDialog::getSaveFileName(this, tr("Save Project File"), qApp->applicationDirPath(), te::qt::af::GetExtensionFilter(m_app));
+  QString fileName = QFileDialog::getSaveFileName(this, tr("Save Project File"), qApp->applicationDirPath(), m_tvController->getExtensionFilter());
 
   if (fileName.isEmpty())
     return;
@@ -925,7 +939,7 @@ void TerraView::onSaveProjectAsTriggered()
 
   //  te::qt::af::Save(*m_project, fName);
 
-  m_app->updateRecentProjects(fileName, m_project->m_title);
+  m_tvController->updateRecentProjects(fileName, m_project->m_title);
 
   // Set the project title and its status as "no change"
   //std::string projectTitle = boost::filesystem::basename(m_project->getFileName());

@@ -27,6 +27,7 @@
 #define __TERRAVIEW_INTERNAL_TERRAVIEW_H
 
 // TerraLib
+#include "TerraViewController.h"
 #include <terralib/qt/af/BaseApplication.h>
 
 // STL
@@ -261,6 +262,8 @@ class TerraView : public te::qt::af::BaseApplication
     te::qt::widgets::CompositionModeMenuWidget* m_compModeMenu;
 
     ProjectMetadata* m_project;
+
+    TerraViewController* m_tvController;
 };
 
 #endif  // __TERRAVIEW_INTERNAL_TERRAVIEW_H

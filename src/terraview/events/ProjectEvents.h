@@ -25,8 +25,8 @@
 #ifndef __TERRALIB_QT_AF_EVENTS_INTERNAL_PROJECTEVENTS_H
 #define __TERRALIB_QT_AF_EVENTS_INTERNAL_PROJECTEVENTS_H
 
-#include "Event.h"
-#include "Enums.h"
+#include <terralib/qt/af/events/Event.h>
+#include <terralib/qt/af/events/Enums.h>
 
 namespace te
 {

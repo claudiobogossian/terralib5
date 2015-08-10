@@ -83,7 +83,6 @@ list(APPEND TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terrali
                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/af/settings/DisplayWidget.h
                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/af/settings/GeneralConfigWidget.h
                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/af/settings/MenuBarModel.h
-                                       ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/af/settings/ProjectWidget.h
                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/af/settings/SettingsDialog.h
                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/af/settings/TableWidget.h
                                        ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/af/settings/ToolbarsWidget.h)
