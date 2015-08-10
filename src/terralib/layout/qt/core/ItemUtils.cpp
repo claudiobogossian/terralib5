@@ -29,6 +29,7 @@
 #include "ItemUtils.h"
 #include "../../core/pattern/mvc/ItemModelObservable.h"
 #include "../../core/pattern/mvc/AbstractItemView.h"
+#include "../../core/pattern/mvc/AbstractItemController.h"
 #include "../../core/pattern/mvc/AbstractItemModel.h"
 #include "../../core/pattern/singleton/Context.h"
 #include "../../core/enum/Enums.h"
@@ -164,7 +165,7 @@ int te::layout::ItemUtils::countType( te::layout::EnumType* type )
     if(absItem == 0)
       continue;
 
-    te::layout::AbstractItemModel* model = absItem->getModel();
+    te::layout::AbstractItemModel* model = absItem->getController()->getModel();
     if(model == 0)
       continue;
 
@@ -191,7 +192,7 @@ int te::layout::ItemUtils::maxTypeId( te::layout::EnumType* type )
     if(absItem == 0)
       continue;
 
-    te::layout::AbstractItemModel* model = absItem->getModel();
+    te::layout::AbstractItemModel* model = absItem->getController()->getModel();
     if(model == 0)
       continue;
 
@@ -325,6 +326,7 @@ void te::layout::ItemUtils::createTextMapAsObject()
 
 void te::layout::ItemUtils::createTextItemFromObject( std::map<te::gm::Point*, std::string> map, QFont* ft )
 {
+  /*
   Scene* scne = dynamic_cast<Scene*>(m_scene);
 
   if(!scne)
@@ -365,6 +367,7 @@ void te::layout::ItemUtils::createTextItemFromObject( std::map<te::gm::Point*, s
       }
     }
   }
+  */
 }
 
 void te::layout::ItemUtils::createLegendChildItemFromLegend( std::map<te::gm::Point*, std::string> map, te::layout::MapModel* visitable )

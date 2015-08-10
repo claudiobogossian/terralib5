@@ -158,7 +158,7 @@ namespace te
         /*!
           \brief For any specific drawing, the item must reimplement this function
          */
-        virtual void drawItem( QPainter* painter );
+        virtual void drawItem ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
 
         /*!
           \brief Draws the background of the item
@@ -328,7 +328,7 @@ namespace te
       drawBackground( painter );
 
       //Draws the item
-      drawItem( painter );
+      drawItem( painter, option, widget );
 
       //Draws the frame
       drawFrame(painter);
@@ -405,8 +405,8 @@ namespace te
       QGraphicsItem::update();
     }
 
-	template <class T>
-    inline void te::layout::ParentItem<T>::drawItem( QPainter * painter )
+    template <class T>
+    inline void te::layout::ParentItem<T>::drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget )
     {
       if ( !painter )
       {

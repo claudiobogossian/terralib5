@@ -30,6 +30,13 @@
 
 // TerraLib
 #include "../../Config.h"
+#include "../observer/NewObserver.h"
+
+#include <QGraphicsItem>
+
+#include <string>
+
+class QVariant;
 
 namespace te
 {
@@ -38,35 +45,44 @@ namespace te
 
     class AbstractItemModel;
     class AbstractItemView;
+    class Property;
 
     /*!
       \brief Abstract class to represent an observable. "Model" part of MVC component. 
     
       \ingroup layout
     */
-    class TELAYOUTEXPORT AbstractItemController
+    class TELAYOUTEXPORT AbstractItemController : public NewObserver
     {
       public:
 
         /*!
           \brief Constructor
         */ 
-        AbstractItemController(AbstractItemModel* model);
+        AbstractItemController( AbstractItemModel* model );
 
-        /*!
-          \brief Destructor
-        */ 
+        
         virtual ~AbstractItemController();
 
         /*!
-          \brief Gets the model of this view
+          \brief Gets the view
+        */ 
+        virtual AbstractItemView* getView() const;
+
+        /*!
+          \brief Gets the model
         */ 
         virtual AbstractItemModel* getModel() const;
 
         /*!
-          \brief Gets the model of this view
+          \brief Gets the given property
+        */
+        virtual const Property& getProperty(const std::string& propertyName) const;
+
+        /*!
+          \brief Method called by the subject to inform changes in the model
         */ 
-        virtual AbstractItemView* getView() const;
+        virtual void update(const Subject* subject);
 
       protected:
 

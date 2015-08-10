@@ -18,62 +18,66 @@
  */
 
 /*!
-  \file Observable.h
+  \file TextController.h
    
-  \brief Abstract class to represent an observable. "Model" part of MVC component. 
-
+  \brief Class that represents text controller.
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_ABSTRACTITEMMODEL_H
-#define __TERRALIB_LAYOUT_INTERNAL_ABSTRACTITEMMODEL_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_TITLE_CONTROLLER1_H
+#define __TERRALIB_LAYOUT_INTERNAL_TITLE_CONTROLLER1_H
 
 // TerraLib
-#include "../observer/Subject.h"
-#include "../../Config.h"
-#include "../../property/Properties.h"
+#include "TextController1.h"
+#include "../../core/Config.h"
+
+
+class QSizeF;
+class QTextTable;
 
 namespace te
 {
   namespace layout
   {
-
-    class Property;
-
     /*!
-      \brief Abstract class to represent an observable. "Model" part of MVC component. 
+    \brief Class that represents text controller.
     
-      \ingroup layout
+    \ingroup layout
+    \sa te::layout::TextController1
     */
-    class TELAYOUTEXPORT AbstractItemModel : public Subject
+    class TELAYOUTEXPORT TitleController1 : public TextController1
     {
       public:
 
         /*!
           \brief Constructor
+
+          \param controller "Controller" part of MVC component
+          \param o "Model" part of MVC component
         */ 
-        AbstractItemModel();
+        TitleController1( AbstractItemModel* model);
 
         /*!
           \brief Destructor
-        */
-        virtual ~AbstractItemModel();
+        */ 
+        virtual ~TitleController1();
 
         /*!
-          \brief Gets the given property
+          \brief Updates the view with the current configuration of the model
+          \return The new size of the view
         */
-        virtual const Property& getProperty(const std::string& propertyName) const;
+        virtual QSizeF updateView();
 
-        virtual void setProperty(const Property& property);
+        /*!
+          \brief This function will be called by the view every time the item´s text was changed
+         */
+        virtual void textChanged();
 
-        virtual const Properties& getProperties() const;
-        virtual void setProperties(const Properties& properties);
+    protected:
 
-      protected:
+      QTextTable* m_table;
 
-        Properties            m_properties; //!< The properties of the item
     };
   }
 }
-
-#endif //__TERRALIB_LAYOUT_INTERNAL_ABSTRACTITEMMODEL_H
+#endif //__TERRALIB_LAYOUT_INTERNAL_TEXT_CONTROLLER_H

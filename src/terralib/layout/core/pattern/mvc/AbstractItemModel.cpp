@@ -34,8 +34,8 @@ te::layout::AbstractItemModel::AbstractItemModel()
 
   {
     Property property(0);
-    property.setName("x1");
-    property.setLabel("x1");
+    property.setName("x");
+    property.setLabel("X");
     property.setValue(boundingBox.getLowerLeftX(), dataType->getDataTypeDouble());
     property.setEditable(false);
     m_properties.addProperty(property);
@@ -43,8 +43,8 @@ te::layout::AbstractItemModel::AbstractItemModel()
 
   {
     Property property(0);
-    property.setName("y1");
-    property.setLabel("y1");
+    property.setName("y");
+    property.setLabel("Y");
     property.setValue(boundingBox.getLowerLeftY(), dataType->getDataTypeDouble());
     property.setEditable(false);
     m_properties.addProperty(property);
@@ -114,7 +114,7 @@ const te::layout::Property& te::layout::AbstractItemModel::getProperty(const std
 
 void te::layout::AbstractItemModel::setProperty(const Property& property)
 {
-  m_properties.updatePropertyValue(property.getName(), property.getValue());
+  m_properties.updateProperty(property);
   notify();
 }
 
@@ -129,7 +129,7 @@ void te::layout::AbstractItemModel::setProperties(const Properties& properties)
   for(unsigned int i = 0; i < vecProperties.size(); ++i)
   {
     const Property& property = vecProperties[i];
-    m_properties.updatePropertyValue(property.getName(), property.getValue());
+    m_properties.updateProperty(property);
   }
 
   notify();

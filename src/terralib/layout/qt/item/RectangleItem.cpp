@@ -38,6 +38,7 @@
 te::layout::RectangleItem::RectangleItem( AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix ) 
   : AbstractItem<QGraphicsItem>(controller, model)
 {
+
 }
 
 te::layout::RectangleItem::~RectangleItem()
@@ -45,9 +46,9 @@ te::layout::RectangleItem::~RectangleItem()
 
 }
 
-void te::layout::RectangleItem::drawItem( QPainter * painter )
+void te::layout::RectangleItem::drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget )
 {
-  const Property& property = m_model->getProperty("rectangle_type");
+  const Property& property = m_controller->getProperty("rectangle_type");
   if(property.isNull() == false)
   {
     EnumRectangleType enumRectangleType;
@@ -75,8 +76,8 @@ void te::layout::RectangleItem::drawRectangle( QPainter * painter )
 {
   painter->save();
 
-  const Property& pBackgroundColor = m_model->getProperty("background_color");
-  const Property& pFrameColor = m_model->getProperty("frame_color");
+  const Property& pBackgroundColor = m_controller->getProperty("background_color");
+  const Property& pFrameColor = m_controller->getProperty("frame_color");
 
   const te::color::RGBAColor& backgroundColor = pBackgroundColor.getValue().toColor();
   const te::color::RGBAColor& frameColor = pFrameColor.getValue().toColor();
@@ -106,8 +107,8 @@ void te::layout::RectangleItem::drawRoundedRectangle(QPainter * painter)
 {
   painter->save();
 
-  const Property& pBackgroundColor = m_model->getProperty("background_color");
-  const Property& pFrameColor = m_model->getProperty("frame_color");
+  const Property& pBackgroundColor = m_controller->getProperty("background_color");
+  const Property& pFrameColor = m_controller->getProperty("frame_color");
 
   const te::color::RGBAColor& backgroundColor = pBackgroundColor.getValue().toColor();
   const te::color::RGBAColor& frameColor = pFrameColor.getValue().toColor();
@@ -137,8 +138,8 @@ void te::layout::RectangleItem::drawSingleCornerTrimmedRectangle(QPainter * pain
 {
   painter->save();
 
-  const Property& pBackgroundColor = m_model->getProperty("background_color");
-  const Property& pFrameColor = m_model->getProperty("frame_color");
+  const Property& pBackgroundColor = m_controller->getProperty("background_color");
+  const Property& pFrameColor = m_controller->getProperty("frame_color");
 
   const te::color::RGBAColor& backgroundColor = pBackgroundColor.getValue().toColor();
   const te::color::RGBAColor& frameColor = pFrameColor.getValue().toColor();

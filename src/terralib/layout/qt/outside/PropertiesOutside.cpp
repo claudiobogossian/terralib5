@@ -40,6 +40,7 @@
 #include "../../item/MapModel.h"
 #include "../core/ItemUtils.h"
 #include "../../core/pattern/mvc/AbstractItemView.h"
+#include "../../core/pattern/mvc/AbstractItemController.h"
 #include "../../core/pattern/mvc/AbstractItemModel.h"
 #include "../../core/pattern/derivativevisitor/VisitorUtils.h"
 #include "../../core/enum/Enums.h"
@@ -295,11 +296,11 @@ bool te::layout::PropertiesOutside::sendPropertyToSelectedItems( Property proper
         AbstractItemView* absItem = dynamic_cast<AbstractItemView*>(item);
         if(absItem)
         {
-          Properties* oldCommand = new Properties(absItem->getModel()->getProperties());
+          Properties* oldCommand = new Properties(absItem->getController()->getModel()->getProperties());
 
-          absItem->getModel()->setProperty(property);
+          absItem->getController()->getModel()->setProperty(property);
 
-          Properties* newCommand = new Properties(absItem->getModel()->getProperties());
+          Properties* newCommand = new Properties(absItem->getController()->getModel()->getProperties());
           commandItems.push_back(item);
           commandOld.push_back(oldCommand);
           commandNew.push_back(newCommand);

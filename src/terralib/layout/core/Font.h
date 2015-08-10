@@ -83,7 +83,7 @@ namespace te
       
           \return point size of the font       
         */
-        int getPointSize();
+        int getPointSize() const;
 
         /*!
           \brief Sets font with bold style.

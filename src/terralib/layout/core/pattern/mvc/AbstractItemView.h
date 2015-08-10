@@ -29,7 +29,6 @@
 #define __TERRALIB_LAYOUT_INTERNAL_ABSTRACTITEMVIEW_H
 
 // TerraLib
-#include "../observer/NewObserver.h"
 #include "../../Config.h"
 
 namespace te
@@ -45,7 +44,7 @@ namespace te
     
       \ingroup layout
     */
-    class TELAYOUTEXPORT AbstractItemView : public NewObserver
+    class TELAYOUTEXPORT AbstractItemView
     {
       public:
 
@@ -65,14 +64,13 @@ namespace te
         virtual AbstractItemController* getController() const;
 
         /*!
-          \brief Gets the model
+          \brief Refreshes the drawings of the view
         */ 
-        virtual AbstractItemModel* getModel() const;
+        virtual void refresh() = 0;
 
       protected:
 
         AbstractItemController* m_controller; //!< The controller
-        AbstractItemModel*      m_model; //!< The model
     };
   }
 }
