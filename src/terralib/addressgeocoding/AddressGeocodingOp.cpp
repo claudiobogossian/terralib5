@@ -110,8 +110,6 @@ bool te::addressgeocoding::AddressGeocodingOp::paramsAreValid()
 
 bool te::addressgeocoding::AddressGeocodingOp::run()
 {
-// Input layer encoding
-  te::common::CharEncoding dSourceEncoding = m_inDsrc->getEncoding();
 // Input layer DataSetType
   std::auto_ptr<te::da::DataSetType> inDataSetType = m_inDsrc->getDataSetType(m_inDsetName);
 

@@ -611,7 +611,6 @@ std::vector<std::size_t> te::attributefill::VectorToVectorMemory::getIntersectio
                                                                              bool& hasInvalid)
 {
   std::size_t toSpatialPos = te::da::GetFirstSpatialPropertyPos(toDs);
-  std::size_t fromSpatialPos = te::da::GetFirstSpatialPropertyPos(fromDs);
 
   std::auto_ptr<te::gm::Geometry> geom = toDs->getGeometry(toSpatialPos);
 
@@ -886,7 +885,6 @@ te::dt::AbstractData* te::attributefill::VectorToVectorMemory::getClassWithHighe
                                                                                                    const std::string& propertyName,
                                                                                                    std::vector< std::vector<te::dt::AbstractData*> >& dataValues)
 {
-  std::size_t fromGeomPos = te::da::GetFirstSpatialPropertyPos(fromDs);
   std::size_t toGeomPos =   te::da::GetFirstSpatialPropertyPos(toDs);
 
   int propIndex = te::da::GetPropertyIndex(fromDs, propertyName);
@@ -1018,10 +1016,7 @@ double te::attributefill::VectorToVectorMemory::getPercentageOfTotalArea(te::da:
                                                                          const std::string& propertyName,
                                                                          std::vector< std::vector<te::dt::AbstractData*> >& dataValues)
 {
-  std::size_t fromGeomPos = te::da::GetFirstSpatialPropertyPos(fromDs);
   std::size_t toGeomPos =   te::da::GetFirstSpatialPropertyPos(toDs);
-
-  int propIndex = te::da::GetPropertyIndex(fromDs, propertyName);
 
   std::auto_ptr<te::gm::Geometry> toGeom = toDs->getGeometry(toGeomPos);
   if(toGeom->getSRID() <= 0)
@@ -1060,7 +1055,6 @@ std::map<std::string, double> te::attributefill::VectorToVectorMemory::getPercen
 {
   std::map<std::string, double> result;
 
-  std::size_t fromGeomPos = te::da::GetFirstSpatialPropertyPos(fromDs);
   std::size_t toGeomPos =   te::da::GetFirstSpatialPropertyPos(toDs);
 
   int propIndex = te::da::GetPropertyIndex(fromDs, propertyName);
@@ -1110,7 +1104,6 @@ double te::attributefill::VectorToVectorMemory::getWeightedByArea(te::da::DataSe
                                                                   const std::string& propertyName,
                                                                   std::vector< std::vector<te::dt::AbstractData*> >& dataValues)
 {
-  std::size_t fromGeomPos = te::da::GetFirstSpatialPropertyPos(fromDs);
   std::size_t toGeomPos =   te::da::GetFirstSpatialPropertyPos(toDs);
 
   int propIndex = te::da::GetPropertyIndex(fromDs, propertyName);
@@ -1161,7 +1154,6 @@ double te::attributefill::VectorToVectorMemory::getWeightedSumByArea(te::da::Dat
                                                                      const std::string& propertyName,
                                                                      std::vector< std::vector<te::dt::AbstractData*> >& dataValues)
 {
-  std::size_t fromGeomPos = te::da::GetFirstSpatialPropertyPos(fromDs);
   std::size_t toGeomPos =   te::da::GetFirstSpatialPropertyPos(toDs);
 
   int propIndex = te::da::GetPropertyIndex(fromDs, propertyName);
