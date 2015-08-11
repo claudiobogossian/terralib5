@@ -17,11 +17,11 @@
     TerraLib Team at <terralib-team@terralib.org>.
  */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_ABSTRACTTOOL_H
-#define __TERRALIB_LAYOUT_INTERNAL_ABSTRACTTOOL_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_ABSTRACTLAYOUT_TOOL_H
+#define __TERRALIB_LAYOUT_INTERNAL_ABSTRACTLAYOUT_TOOL_H
 
 // TerraLib
-#include "../../core/Config.h"
+#include "../../../core/Config.h"
 
 // Boost
 #include <boost/noncopyable.hpp>
@@ -39,7 +39,7 @@ namespace te
   {
     class View;
 
-      class TELAYOUTEXPORT AbstractViewTool : public QObject, public boost::noncopyable
+      class TELAYOUTEXPORT AbstractLayoutTool : public QObject, public boost::noncopyable
       {
         public:
 
@@ -57,10 +57,10 @@ namespace te
             \note The tool will NOT take the ownership of the given pointers.
             \note If the given cursor is different of Qt::BlankCursor, it will be setted on map display.
           */
-          AbstractViewTool(View* view, QObject* parent = 0);
+          AbstractLayoutTool(View* view, QObject* parent = 0);
 
           /*! \brief Destructor. */
-          virtual ~AbstractViewTool();
+          virtual ~AbstractLayoutTool();
 
           //@}
 
@@ -144,4 +144,4 @@ namespace te
   }   // end namespace layout
 }     // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_INTERNAL_ABSTRACTTOOL_H
+#endif  // __TERRALIB_LAYOUT_INTERNAL_ABSTRACTLAYOUT_TOOL_H

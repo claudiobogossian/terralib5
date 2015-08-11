@@ -85,11 +85,10 @@ namespace te
         /*!
           \brief Updates the value of the given property name.
 
-          \param name the name of the property
-          \param value the new value of the property
+          \param property the property to be updated
           \return true if remove, false otherwise 
         */
-        virtual bool updatePropertyValue(const std::string& name, const Variant& value);
+        virtual bool updateProperty(const Property& property);
 
         /*!
           \brief Clear set of properties of this object.
@@ -227,15 +226,16 @@ namespace te
       return result;
     }
 
-    inline bool Properties::updatePropertyValue(const std::string& name, const Variant& value)
+    inline bool Properties::updateProperty(const Property& property)
     {
       bool result = false;
 
       for(std::vector<Property>::iterator it = m_properties.begin(); it != m_properties.end(); ++it)
       {
-        if(it->getName().compare(name) == 0)
+        if(it->getName().compare(property.getName()) == 0)
         {
-          it->setValue(value);
+          it->setValue(property.getValue());
+          it->setOptionChoice(property.getOptionByCurrentChoice());
           result = true;
           break;
         }

@@ -44,6 +44,7 @@
 #include <QWidget>
 #include <QTransform>
 #include <QColor>
+#include <QGraphicsScene>
 
 // TerraLib
 #include "../../core/pattern/mvc/ItemObserver.h"
@@ -61,6 +62,7 @@
 #include "../../../common/STLUtils.h"
 #include "../../core/ContextItem.h"
 #include "../../../geometry/Coord2D.h"
+#include "../core/ContextObject.h"
 
 // STL
 
@@ -156,7 +158,7 @@ namespace te
         /*!
           \brief For any specific drawing, the item must reimplement this function
          */
-        virtual void drawItem( QPainter* painter );
+        virtual void drawItem ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
 
         /*!
           \brief Draws the background of the item
@@ -326,7 +328,7 @@ namespace te
       drawBackground( painter );
 
       //Draws the item
-      drawItem( painter );
+      drawItem( painter, option, widget );
 
       //Draws the frame
       drawFrame(painter);
@@ -346,7 +348,11 @@ namespace te
       QTransform t = painter->transform();
       QPointF p = t.map(point);
 
-      int zoom = Context::getInstance().getZoom();
+      QGraphicsScene* scn = T::scene();
+      AbstractScene* sc = dynamic_cast<AbstractScene*>(scn);
+      ContextObject context = sc->getContext();
+
+      int zoom = context.getZoom();
       double zoomFactor = zoom / 100.;
 
       QFont ft = painter->font();
@@ -399,8 +405,8 @@ namespace te
       QGraphicsItem::update();
     }
 
-	template <class T>
-    inline void te::layout::ParentItem<T>::drawItem( QPainter * painter )
+    template <class T>
+    inline void te::layout::ParentItem<T>::drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget )
     {
       if ( !painter )
       {

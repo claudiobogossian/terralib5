@@ -54,7 +54,7 @@ te::layout::LegendChildItem::~LegendChildItem()
 
 }
 
-void te::layout::LegendChildItem::drawItem( QPainter * painter )
+void te::layout::LegendChildItem::drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget )
 {
   QRectF boundRect;
   boundRect = boundingRect();

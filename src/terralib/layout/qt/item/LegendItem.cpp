@@ -106,7 +106,7 @@ void te::layout::LegendItem::updateObserver( ContextItem context )
   update();
 }
 
-void te::layout::LegendItem::drawItem( QPainter * painter )
+void te::layout::LegendItem::drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget )
 {
   LegendModel* legendModel = dynamic_cast<LegendModel*> (m_model);
 

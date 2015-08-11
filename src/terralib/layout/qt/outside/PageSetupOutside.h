@@ -46,6 +46,7 @@ namespace te
   {
     class OutsideController;
     class Observable;
+    class Scene;
 
     class TELAYOUTEXPORT PageSetupOutside : public QDialog, public OutsideObserver 
     {
@@ -92,6 +93,8 @@ namespace te
 	      virtual void configurePageSize();
 
         virtual void switchSize();
+
+        Scene* getScene();
 
         te::layout::LayoutOrientationType m_orientation;
         te::layout::LayoutAbstractPaperType m_paperType;

@@ -30,6 +30,7 @@
 
 // TerraLib
 #include "../../geometry/Envelope.h"
+#include "../qt/core/ContextObject.h"
 #include "Config.h"
 
 namespace te
@@ -80,7 +81,13 @@ namespace te
 		  \param screenHMM height of physical screen in millimeters
         */
         virtual void init(double screenWMM, double screenHMM) = 0;
-                
+
+        /*!
+          \brief The most important common data.
+          \return most important common data between te::layout::View and te::layout::Scene
+        */
+        virtual ContextObject getContext() = 0;
+                        
       protected:
         
 		/*!

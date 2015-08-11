@@ -22,7 +22,6 @@
 #include "../../../../geometry/Envelope.h"
 #include "../View.h"
 #include "../Scene.h"
-#include "../../../core/pattern/singleton/Context.h"
 
 // Qt
 #include <QtGui/QMouseEvent>
@@ -95,10 +94,16 @@ bool te::layout::ViewZoomArea::mouseReleaseEvent(QMouseEvent* e)
   QRectF bounding = poly.boundingRect();
   if(bounding.width() == 0. || bounding.height() == 0.)
   {
+    View* view = dynamic_cast<View*>(m_view);
+    if(view)
+    {
+      int newZoom = view->getCurrentZoom() * 1.5;
+      view->setZoom(newZoom);
+      return true;
+    }
     return false;
   }
-
-
+  
   /*
   Zoom In Area:
   Scales the view matrix. The view is scaled according to aspectRatioMode.

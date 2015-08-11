@@ -34,14 +34,30 @@
 #ifndef __TERRALIB_LAYOUT_INTERNAL_ABSTRACT_ITEM_H
 #define __TERRALIB_LAYOUT_INTERNAL_ABSTRACT_ITEM_H
 
+// TerraLib
+#include "../../core/pattern/mvc/AbstractItemModel.h"
+#include "../../core/pattern/mvc/AbstractItemView.h"
+#include "../../core/pattern/singleton/Context.h"
+#include "../../core/AbstractScene.h"
+#include "../core/ContextObject.h"
+
 //Qt
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
+#include <QRectF>
+#include <QPolygonF>
+#include <QVariant>
+#include <QPolygonF>
+#include <QGraphicsItem>
+#include <QGraphicsScene>
+#include <QGraphicsView>
 
-#include "../../core/pattern/mvc/AbstractItemModel.h"
+#include "../../core/pattern/mvc/AbstractItemController.h"
 #include "../../core/pattern/mvc/AbstractItemView.h"
 
+
 #include "../../core/pattern/singleton/Context.h"
+#include "../../qt/core/Scene.h"
 
 class QWidget;
 
@@ -74,14 +90,12 @@ namespace te
           \param controller "Controller" part of MVC component
           \param o "Model" part of MVC component
         */
-        AbstractItem(AbstractItemController* controller, AbstractItemModel* model);
+        AbstractItem(AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix = false);
 
         /*!
           \brief Destructor
         */
         virtual ~AbstractItem();
-
-        virtual void update(const Subject* subject);
 
         /*!
           \brief Gets the bounding rect of the item, in local coordinate system
@@ -89,9 +103,9 @@ namespace te
         virtual QRectF boundingRect() const;
 
         /*!
-          \brief Sets the bounding rect of the item, in local coordinate system
-        */
-        virtual void setBoundingRect(const QRectF& rect);
+          \brief Refreshes the drawings of the view
+        */ 
+        virtual void refresh();
 
         /*!
           \brief Reimplemented from QGraphicsItem
@@ -109,7 +123,7 @@ namespace te
         /*!
           \brief For any specific drawing, the item must reimplement this function
          */
-        virtual void drawItem( QPainter* painter ) = 0;
+        virtual void drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 ) = 0;
 
         /*!
           \brief Draws the background of the item
@@ -131,15 +145,21 @@ namespace te
          */
         virtual void drawText( const QPointF& point, QPainter* painter, const std::string& text );
 
+        /*!
+          \brief Reimplemented from QGraphicsItem to capture changes in the item
+         */
+        virtual QVariant itemChange ( QGraphicsItem::GraphicsItemChange change, const QVariant & value );
+
     protected:
 
-      QRectF                m_rect;//!< The bounding rect of the item, in local coordinate system
+        bool m_invertedMatrix;
     };
 
     template <class T>
-    inline te::layout::AbstractItem<T>::AbstractItem(AbstractItemController* controller, AbstractItemModel* model)
+    inline te::layout::AbstractItem<T>::AbstractItem(AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix)
       : T()
       , AbstractItemView(controller, model)
+      , m_invertedMatrix(invertedMatrix)
     {
       T::setFlags(QGraphicsItem::ItemIsMovable
         | QGraphicsItem::ItemIsSelectable
@@ -152,28 +172,43 @@ namespace te
     {
     }
 
+    /*
     template <class T>
     inline void te::layout::AbstractItem<T>::update(const Subject* subject)
     {
+      double x = m_model->getProperty("x").getValue().toDouble();
+      double y = m_model->getProperty("y").getValue().toDouble();
+
+      if(x != this->x() || y != this->y())
+      {
+        this->prepareGeometryChange();
+        this->setPos(x, y);
+      }
+
       T::update();
-    }
+    }*/
 
     template <class T>
     inline QRectF te::layout::AbstractItem<T>::boundingRect() const
     {
-      double x1 = m_model->getProperty("x1").getValue().toDouble();
-      double y1 = m_model->getProperty("y1").getValue().toDouble();
-      double width = m_model->getProperty("width").getValue().toDouble();
-      double height = m_model->getProperty("height").getValue().toDouble();
+      //models stores information in scene CS.
+      //To ensure that everything works fine, we must convert the coordinates from scene CS to item CS
+      double x = 0.;
+      double y = 0.;
+      double width = m_controller->getProperty("width").getValue().toDouble();
+      double height = m_controller->getProperty("height").getValue().toDouble();
 
-      QRectF rect(x1, y1, width, height);
-      return rect;
+      QRectF rectSceneCS(x, y, width, height);
+      QRectF rectItemCS = this->mapRectFromScene(rectSceneCS);
+
+      QRectF boundingRect(0, 0, rectItemCS.width(), rectItemCS.height());
+      return boundingRect;
     }
 
     template <class T>
-    inline void te::layout::AbstractItem<T>::setBoundingRect(const QRectF& rect)
+    inline void te::layout::AbstractItem<T>::refresh()
     {
-      m_rect = rect;
+      T::update();
     }
 
     template <class T>
@@ -190,7 +225,7 @@ namespace te
       drawBackground( painter );
 
       //Draws the item
-      drawItem( painter );
+      drawItem( painter, option, widget );
 
       //Draws the frame
       drawFrame(painter);
@@ -229,7 +264,7 @@ namespace te
         return;
       }
 
-      const Property& pBackgroundColor = m_model->getProperty("background_color");
+      const Property& pBackgroundColor = m_controller->getProperty("background_color");
       const te::color::RGBAColor& backgroundColor = pBackgroundColor.getValue().toColor();
       QColor qBackgroundColor(backgroundColor.getRed(), backgroundColor.getGreen(), backgroundColor.getBlue(), backgroundColor.getAlpha());
       
@@ -256,12 +291,12 @@ namespace te
         return;
       }
 
-      if(m_model->getProperty("show_frame").getValue().toBool() == false)
+      if(m_controller->getProperty("show_frame").getValue().toBool() == false)
       {
         return;
       }
 
-      const Property& pFrameColor = m_model->getProperty("frame_color");
+      const Property& pFrameColor = m_controller->getProperty("frame_color");
       const te::color::RGBAColor& frameColor = pFrameColor.getValue().toColor();
       QColor qFrameColor(frameColor.getRed(), frameColor.getGreen(), frameColor.getBlue(), frameColor.getAlpha());
 
@@ -337,7 +372,11 @@ namespace te
       QTransform t = painter->transform();
       QPointF p = t.map(point);
 
-      int zoom = Context::getInstance().getZoom();
+      QGraphicsScene* scn = T::scene();
+      AbstractScene* sc = dynamic_cast<AbstractScene*>(scn);
+      ContextObject context = sc->getContext();
+
+      int zoom = context.getZoom();
       double zoomFactor = zoom / 100.;
 
       QFont ft = painter->font();
@@ -350,6 +389,12 @@ namespace te
       painter->setMatrixEnabled(true);
 
       painter->restore();
+    }
+
+    template <class T>
+    inline QVariant te::layout::AbstractItem<T>::itemChange ( QGraphicsItem::GraphicsItemChange change, const QVariant & value )
+    {
+      return T::itemChange(change, value);
     }
   }
 }

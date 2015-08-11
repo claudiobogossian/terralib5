@@ -48,7 +48,7 @@ te::layout::PointItem::~PointItem()
 
 }
 
-void te::layout::PointItem::drawItem( QPainter * painter )
+void te::layout::PointItem::drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget )
 {
   const Property& property = m_model->getProperty("point_type");
   if(property.isNull() == false)

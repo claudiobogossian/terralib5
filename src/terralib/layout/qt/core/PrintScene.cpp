@@ -29,7 +29,7 @@
 #include "PrintScene.h"
 #include "../../core/pattern/mvc/ItemObserver.h"
 #include "../../core/PaperConfig.h"
-#include "../../core/pattern/singleton/Context.h"
+#include "../../core/enum/Enums.h"
 #include "Scene.h"
 
 // STL
@@ -45,9 +45,8 @@
 #include <QApplication>
 #include <QMessageBox>
 
-te::layout::PrintScene::PrintScene( QGraphicsScene* scene, PaperConfig* config ):
+te::layout::PrintScene::PrintScene( QGraphicsScene* scene ):
   m_scene(scene),
-  m_config(config),
   m_printState(te::layout::NoPrinter)
 {
  
@@ -105,44 +104,42 @@ void te::layout::PrintScene::printPaper( QPrinter* printer )
   if(!sc)
     return;
 
-  double dpiX = Context::getInstance().getDpiX();
-  double dpiY = Context::getInstance().getDpiY();
+  ContextObject oldContext = sc->getContext();
+  
+  ContextObject context = createNewContext(printer);
 
-  int zoom = Context::getInstance().getZoom();
-  Context::getInstance().setZoom(100);
-  Context::getInstance().setDpiX(printer->logicalDpiX());
-  Context::getInstance().setDpiY(printer->logicalDpiY());
-
-  sc->contextUpdated();
+  sc->contextUpdated(context);
 
   renderScene(&newPainter, printer);
 
-  Context::getInstance().setZoom(zoom);
-  Context::getInstance().setDpiX(dpiX);
-  Context::getInstance().setDpiY(dpiY);
-  
-  sc->contextUpdated();
+  sc->contextUpdated(oldContext);
 }
 
 QPrinter* te::layout::PrintScene::createPrinter()
 {
+  QPrinter* printer = 0;
+
   if(!m_scene)
-    return 0;
+    return printer;
 
-  PaperConfig* conf = Context::getInstance().getPaperConfig();
+  Scene* sc = dynamic_cast<Scene*>(m_scene);
+  if(!sc)
+    return printer;
 
-  if(!conf)
+  PaperConfig* config = sc->getPaperConfig();
+
+  if(!config)
     return 0;
 
   double w = 0;
   double h = 0;
-  conf->getPaperSize(w, h);
+  config->getPaperSize(w, h);
 
-  QPrinter* printer = new QPrinter(QPrinter::HighResolution);
+  printer = new QPrinter(QPrinter::HighResolution);
   QSizeF sf(w, h);
   printer->setPaperSize(sf, QPrinter::Millimeter);
 
-  if(conf->getPaperOrientantion() == Portrait)
+  if(config->getPaperOrientantion() == Portrait)
   {
     printer->setOrientation( QPrinter::Portrait );
   }
@@ -159,6 +156,12 @@ void te::layout::PrintScene::renderScene( QPainter* newPainter, QPrinter* printe
 {
   if(!m_scene)
     return;
+
+  Scene* sc = dynamic_cast<Scene*>(m_scene);
+  if(!sc)
+  {
+    return;
+  }
 
   if(!newPainter)
     return;
@@ -178,7 +181,7 @@ void te::layout::PrintScene::renderScene( QPainter* newPainter, QPrinter* printe
   double w = 0;
   double h = 0;
 
-  PaperConfig* conf = Context::getInstance().getPaperConfig();
+  PaperConfig* conf = sc->getPaperConfig();
   conf->getPaperSize(w, h);
         
   //Box Paper in the Scene (Source)
@@ -198,9 +201,32 @@ void te::layout::PrintScene::renderScene( QPainter* newPainter, QPrinter* printe
   newPainter->scale( 1, -1 );
   newPainter->translate( -(paperPixelBox.width() / 2), -(paperPixelBox.height() / 2) );
 
-  deselectAllItems();
+  sc->deselectAllItems();
 
   m_scene->render(newPainter, pxTargetRect, mmSourceRect); 
+}
+
+void te::layout::PrintScene::print()
+{
+  m_printState = PrintingScene;
+
+  QPrinter* printer = createPrinter();
+    
+  printPaper(printer);
+
+  if(printer)
+  {
+    delete printer;
+    printer = 0;
+  }
+
+  Scene* sc = dynamic_cast<Scene*>(m_scene);
+  if(sc)
+  {
+    sc->redrawItems();
+  }
+
+  m_printState = NoPrinter;
 }
 
 bool te::layout::PrintScene::exportToPDF()
@@ -217,6 +243,9 @@ bool te::layout::PrintScene::exportToPDF()
 
   printer->setOutputFormat(QPrinter::PdfFormat);
   printer->setOutputFileName(fileName); 
+
+  m_printState = PrintingScene;
+
   printPaper(printer);
 
   if(printer)
@@ -230,22 +259,15 @@ bool te::layout::PrintScene::exportToPDF()
   msgBox.setText("PDF exported successfully!");    
   msgBox.exec();
 
-  return true;
-}
-
-void te::layout::PrintScene::deselectAllItems()
-{
-  if(!m_scene)
-    return;
-
-  QList<QGraphicsItem*> graphicsItems = m_scene->items();
-  foreach( QGraphicsItem *item, graphicsItems) 
+  Scene* sc = dynamic_cast<Scene*>(m_scene);
+  if(sc)
   {
-    if (item)
-    {
-      item->setSelected(false);
-    }
+    sc->redrawItems();
   }
+
+  m_printState = NoPrinter;
+
+  return true;
 }
 
 void te::layout::PrintScene::contextUpdated()
@@ -259,3 +281,27 @@ void te::layout::PrintScene::contextUpdated()
 
   sc->contextUpdated();
 }
+
+te::layout::ContextObject te::layout::PrintScene::createNewContext( QPrinter* printer )
+{
+  ContextObject invalidContext(0,0,0,0,0);
+
+  if(!m_scene)
+    return invalidContext;
+
+  Scene* sc = dynamic_cast<Scene*>(m_scene);
+  if(!sc)
+    return invalidContext;
+
+  double dpiX = printer->logicalDpiX();
+  double dpiY = printer->logicalDpiY();
+  int zoom = 100;
+  PaperConfig* config = sc->getPaperConfig();
+  EnumModeType* enumMode = Enums::getInstance().getEnumModeType();
+  EnumType* mode = enumMode->getModePrinter();
+
+  ContextObject context(zoom, dpiX, dpiY, config, mode);
+  return context;
+}
+
+

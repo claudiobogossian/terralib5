@@ -27,30 +27,29 @@
   \ingroup layout
 */
 
-
 #ifndef __TERRALIB_LAYOUT_INTERNAL_POINT_ITEM_H 
 #define __TERRALIB_LAYOUT_INTERNAL_POINT_ITEM_H
 
 // TerraLib
-#include "AbstractItem.h"
+#include "ObjectItem.h"
 #include "../../core/Config.h"
-
-#include <QGraphicsItem>
 
 namespace te
 {
   namespace layout
   {
-    /*!
-    \brief Class that represents a graphic Rectangle. 
-        Its coordinate system is the same of scene (millimeters). 
-        He is also the son of AbstractItem, so it can become observer of a model (Observable). 
+    class Observable;
 
+    /*!
+    \brief Class that represents a graphic Point. 
+        Its coordinate system is the same of scene (millimeters). 
+        He is also the son of ItemObserver and ObjectItem, so it can become observer of a model (Observable). 
+    
       \ingroup layout
 
-      \sa te::layout::AbstractItem
+      \sa te::layout::ObjectItem
     */
-    class TELAYOUTEXPORT PointItem : public AbstractItem<QGraphicsItem>
+    class TELAYOUTEXPORT PointItem : public ObjectItem
     {
       public:
 
@@ -60,7 +59,7 @@ namespace te
           \param controller "Controller" part of MVC component
           \param o "Model" part of MVC component
         */ 
-        PointItem( AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix = false );
+        PointItem( ItemController* controller, Observable* o, bool invertedMatrix = false );
 
         /*!
           \brief Destructor
@@ -69,16 +68,24 @@ namespace te
 
       protected:
 
-        virtual void drawItem ( QPainter * painter );
-
         virtual void drawStar1(QPainter * painter);
+
         virtual void drawStar2(QPainter * painter);
+
         virtual void drawStar3(QPainter * painter);
+
         virtual void drawStar4(QPainter * painter);
+
+        virtual void drawItem ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
+
         virtual void drawCircle(QPainter * painter);
+
         virtual void drawX(QPainter * painter);
+
         virtual void drawSquare(QPainter * painter);
+
         virtual void drawRhombus(QPainter * painter);
+
         virtual void drawCross(QPainter * painter);
     };
   }

@@ -40,6 +40,7 @@
 #include "../../item/MapModel.h"
 #include "../../core/pattern/singleton/Context.h"
 #include "../core/ItemUtils.h"
+#include "../core/ContextObject.h"
 
 // Qt
 #include <QStyleOptionGraphicsItem>
@@ -62,7 +63,7 @@ te::layout::GridMapItem::~GridMapItem()
 
 }
 
-void te::layout::GridMapItem::drawItem( QPainter * painter )
+void te::layout::GridMapItem::drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget )
 {
   GridMapModel* model = dynamic_cast<GridMapModel*>(m_model);
   if(model)
@@ -85,7 +86,10 @@ void te::layout::GridMapItem::drawText( QPointF point, QPainter* painter, std::s
   QTransform t = painter->transform();
   QPointF p = t.map(point);
 
-  int zoom = Context::getInstance().getZoom();
+  AbstractScene* sc = dynamic_cast<AbstractScene*>(scene());
+  ContextObject context = sc->getContext();
+
+  int zoom = context.getZoom();
   double zoomFactor = zoom / 100.;
 
   QFont ft = painter->font();

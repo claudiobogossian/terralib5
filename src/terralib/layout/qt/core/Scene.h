@@ -33,13 +33,12 @@
 #define __TERRALIB_LAYOUT_INTERNAL_SCENE_H
 
 // TerraLib
-#include "../../core/AbstractScene.h"
-#include "../../core/Config.h"
-#include "PrintScene.h"
-#include "AlignItems.h"
-#include "../item/MovingItemGroup.h"
 #include "../../../geometry/Envelope.h"
 #include "../../core/pattern/mvc/ItemModelObservable.h"
+#include "../../core/AbstractScene.h"
+#include "../../core/Config.h"
+#include "../item/MovingItemGroup.h"
+#include "AlignItems.h"
 
 // STL
 #include <string>
@@ -69,6 +68,7 @@ namespace te
     class Properties;
     class VisualizationArea;
     class PaperConfig;
+    class View;
 
 	/*!
 	  \brief Class representing the scene. This scene is child of QGraphicsScene, part of Graphics View Framework. 
@@ -95,10 +95,9 @@ namespace te
         /*!
           \brief Constructor. The ownership of objects passed via parameter becomes the scene.
 
-          \param align applying the alignment of one or more objects 
-          \param print printing the entire content or part of the scene
+          \param align applying the alignment of one or more objects
         */ 
-        Scene(AlignItems* align, PrintScene* print, QObject* object = 0);
+        Scene(AlignItems* align, PaperConfig* paperConfig, QObject* object = 0);
 
 		    /*!
           \brief Destructor
@@ -210,20 +209,6 @@ namespace te
 		  \param heightMM height of physical screen in millimeters
         */
         virtual void calculateSceneMeasures(double widthMM, double heightMM);
-
-		/*!
-          \brief Method that returns the object responsible for printing the scene.
-		  
-		  \return print object
-        */
-        virtual PrintScene* getPrintScene();
-
-		/*!
-          \brief Method that returns the object responsible for aligning objects in the scene.
-		  
-		  \return align object
-        */
-        virtual AlignItems* getAlignItems();
 
 		/*!
           \brief Method that exports all the objects in the scene to a template. Ex.: JSON.
@@ -342,7 +327,40 @@ namespace te
         */
         virtual void contextUpdated();
 
+        /*!
+          \brief It will sign to all items that a change in the context had ocurred.
+        */
+        virtual void contextUpdated(ContextObject context);
+
         virtual void applyPaperProportion(QSize oldPaper, QSize newPaper);
+
+        /*!
+          \brief Context between te::layout::View and te::layout::Scene: zoom, dpix, dpiy, paper config and mode.
+        */
+        virtual ContextObject getContext();
+        
+        /*!
+          \brief Method that returns the object responsible for aligning objects in the scene.
+		  
+		      \return align object
+        */
+        virtual AlignItems* getAlignItems();
+
+        /*!
+          \brief Method that returns the first view in the list.
+		  
+		      \return view object
+        */
+        View* getView();
+        
+        virtual void deselectAllItems();
+
+        /*!
+          \brief Returns paper setting. 
+		  
+		      \return A te::layout::PaperConfig pointer		  
+        */
+        PaperConfig* getPaperConfig();
 
       public slots:
 
@@ -351,7 +369,9 @@ namespace te
 
           \param zoom current zoom factor of the layout module
          */
-        virtual void onChangeZoomFactor(int zoom);
+        virtual void onChangeZoom(int zoom);
+
+        virtual void onChangeMode(EnumType* mode);
         
       signals:
 
@@ -392,6 +412,8 @@ namespace te
         virtual void applyProportionAllItems(QSize oldPaper, QSize newPaper);
 
         virtual void updateBoxFromProperties(te::gm::Envelope box, ItemModelObservable* model);
+
+        virtual void changeViewMode(EnumType* mode);
                 
     protected:
 
@@ -400,10 +422,10 @@ namespace te
         QUndoStack*                        m_undoStack; //!< Undo/Redo stack
         int                                m_undoStackLimit; //!< Undo/Redo limit size
         AlignItems*                        m_align; //!< object responsible for aligning objects in the scene.
-        PrintScene*                        m_print; //!< object responsible for printing the scene.
         bool                               m_moveWatched;
         std::map<QGraphicsItem*, QPointF>  m_moveWatches;
         QList<QGraphicsItem*>              m_itemStackWithoutScene; //!< Items that are not included in any scene 
+        PaperConfig*                       m_paperConfig; //!< paper settings
     };
   }
 }

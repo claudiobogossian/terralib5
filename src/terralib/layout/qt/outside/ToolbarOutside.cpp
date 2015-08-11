@@ -36,6 +36,7 @@
 #include "../../core/pattern/mvc/OutsideController.h"
 #include "../../../geometry/Envelope.h"
 #include "../../core/enum/Enums.h"
+#include "../core/ContextObject.h"
 
 //STL
 #include <string>
@@ -457,7 +458,12 @@ QComboBox* te::layout::ToolbarOutside::createSceneZoomCombobox()
   connect(m_comboZoom, SIGNAL(activated(const QString &)), this, SLOT(onComboZoomActivated()));
   connect(m_comboZoom->lineEdit(), SIGNAL(returnPressed()), this, SLOT(onComboZoomActivated()));
 
-  onZoomChanged(Context::getInstance().getZoom());
+  Scene* sc = getScene();
+
+  ContextObject context = sc->getContext();
+
+  int zoom = context.getZoom();
+  onZoomChanged(zoom);
 
   m_actionComboZoom = this->addWidget(m_comboZoom);
   
@@ -637,7 +643,11 @@ QToolButton* te::layout::ToolbarOutside::createUndoToolButton()
 
   QMenu* menu = new QMenu(btn);
   
-  Scene* lScene = dynamic_cast<Scene*>(Context::getInstance().getScene());
+  Scene* lScene = getScene();
+  if(!lScene)
+  {
+    return btn;
+  }
 
   QUndoStack* undoStack = lScene->getUndoStack();
 
@@ -900,25 +910,29 @@ void te::layout::ToolbarOutside::onItemToolsTriggered( QAction* action )
 void te::layout::ToolbarOutside::onLineIntersectionMouse( bool checked )
 {
   EnumModeType* type = Enums::getInstance().getEnumModeType();
-  bool result = false;
   EnumType* mouseMode = Context::getInstance().getLineIntersectionMouseMode();
+
+  EnumType* newMode = 0;
 
   if(checked)
   {
     if(type->getModeActiveLinesIntersectionMouse() != mouseMode)
     {
-      Context::getInstance().setLineIntersectionMouseMode(type->getModeActiveLinesIntersectionMouse());
+      newMode = type->getModeActiveLinesIntersectionMouse();
     }
   }
   else
   {
     if(type->getModeOffLinesIntersectionMouse() != mouseMode)
     {
-      Context::getInstance().setLineIntersectionMouseMode(type->getModeOffLinesIntersectionMouse() );
+      newMode = type->getModeOffLinesIntersectionMouse();
     }
   }
 
-  emit changeContext(result);
+  if(newMode)
+  {
+    emit changeMode(newMode);
+  }
 }
 
 void te::layout::ToolbarOutside::onComboZoomActivated()
@@ -977,7 +991,15 @@ void te::layout::ToolbarOutside::onSendToBackClicked( bool checked )
 
 void te::layout::ToolbarOutside::onRecomposeClicked( bool checked )
 {
-  onZoomChanged(Context::getInstance().getDefaultZoom());
+  Scene* sc = getScene();
+  if(!sc)
+  {
+    return;
+  }
+  ContextObject context = sc->getContext();
+
+  int zoom = context.getZoom();
+  onZoomChanged(zoom);
   onComboZoomActivated();
 }
 
@@ -1082,21 +1104,9 @@ void te::layout::ToolbarOutside::onExportToPDFClicked( bool checked )
   changeAction(type->getModeExportToPDF());
 }
 
-void te::layout::ToolbarOutside::changeAction( EnumType* mode )
+void te::layout::ToolbarOutside::changeAction( te::layout::EnumType* mode )
 {
-  bool result = true;
-  EnumType* layoutMode = Context::getInstance().getMode();
-
-  if(mode != layoutMode)
-  {
-    Context::getInstance().setMode(mode);
-  }
-  else
-  {
-    result = false;
-  }
-
-  emit changeContext(result);
+  emit changeMode(mode);
 }
 
 QToolButton* te::layout::ToolbarOutside::createToolButton( std::string text, std::string tooltip, std::string icon )
@@ -1611,6 +1621,19 @@ QAction* te::layout::ToolbarOutside::getActionComboBoxZoom()
 std::string te::layout::ToolbarOutside::getActionSVG()
 {
   return m_actionSVG;
+}
+
+te::layout::Scene* te::layout::ToolbarOutside::getScene()
+{
+  Scene* sc = 0;
+  AbstractScene* abScene = Context::getInstance().getScene();
+  if(!abScene)
+  {
+    return sc;
+  }
+
+  sc = dynamic_cast<Scene*>(abScene);
+  return sc;
 }
 
 

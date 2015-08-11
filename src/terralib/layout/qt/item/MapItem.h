@@ -124,7 +124,7 @@ namespace te
         virtual bool canBeChild(ItemObserver* item);
                                         
 
-        virtual void contextUpdated();
+        virtual void contextUpdated(ContextObject context);
 
         virtual void updateScale();
 
@@ -179,7 +179,7 @@ namespace te
          */
         virtual te::gm::Coord2D getPosition();
 
-        virtual void drawItem(QPainter * painter);
+        virtual void drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
 
         /*!
             \brief Reimplemented from ParentItem

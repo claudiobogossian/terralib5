@@ -39,6 +39,7 @@ namespace te
 {
   namespace layout
   {
+    class EnumType;
   /*!
       \class AbstractView
 
@@ -80,36 +81,89 @@ namespace te
         virtual void config() = 0; 
 
 		/*!
-          \brief Method that adds new zoom factor. Ex.: 0.5 - 50%.
+          \brief Method that adds new zoom factor. Ex.: 50 - 50%.
 		  
 		  \param factor factor  
 		  \param text percentage
         */
-        virtual void addZoomFactor(double factor, std::string text);
+        virtual void addZoom(int zoom, std::string text);
 
-		/*!
-          \brief Method that clears the zoom factor list.	  
-        */
-        virtual void clearZoomFactors();
-
-		/*!
-          \brief Method that returns the next zoom factor in the list.
+        /*!
+          \brief Method that remove a zoom factor. Ex.: 50 - 50%.
 		  
-		  \param currentFactor current factor	  
+		      \param factor zoom factor  
         */
-        virtual double nextFactor(double currentFactor);
+        virtual void removeZoom(int zoom);
 
 		/*!
-          \brief Method that returns the previous zoom factor in the list.
-		  
-		  \param currentFactor current factor	  
+          \brief Method that clears the zoom list.	  
         */
-        virtual double previousFactor(double currentFactor);
+        virtual void clearZoomList();
+
+		/*!
+          \brief Change the current factor with the next zoom factor in the list.
+        */
+        virtual int nextZoom();
+
+		/*!
+          \brief Change the current factor with the previous zoom factor in the list.	  
+        */
+        virtual int previousZoom();
+
+        int getCurrentZoom();
+
+        int getOldZoom();
+
+        void setDefaultZoom(int zoom);
+
+        int getDefaultZoom();
+
+        void setMaxZoomLimit(int zoom);
+
+        int getMaxZoomLimit();
+
+        void setMinZoomLimit(int zoom);
+
+        int getMinZoomLimit();
+
+        /*!
+          \brief Sets the zoom of the View to the given value. Change the current zoom.
+        */
+        virtual void setZoom(int zoom) = 0;
+
+        /*!
+        \brief Change value of the enumeration of mode type. Ex.: printing.
+          The type of mode is used by the context to know what should be done. 
+          The mode in context could be modified by the user interaction.
+        */
+        EnumType* getCurrentMode();
+
+        EnumType* getOldMode();
+
+      protected:
+
+        virtual void applyScale(double newScale) = 0;
+
+        virtual bool isLimitExceeded(int newZoom);
+
+        virtual void setCurrentZoom(int zoom);
+
+        virtual void setCurrentMode(EnumType* mode);
 
       protected:
 
         bool                          m_visibleRulers; //!< rulers visibility state
-        std::map<double, std::string> m_zoomFactors; //!< zoom factor list
+        std::map<int, std::string>    m_zooms; //!< zoom factor list
+
+      private:
+        
+        int                           m_currentZoom; //!< current zoom
+        int                           m_defaultZoom; //!< default zoom
+        int                           m_oldZoom; //!< old zoom
+        int                           m_maxZoomLimit;
+        int                           m_minZoomLimit;
+        EnumType*                     m_currentMode; //!< current value of the enumeration of mode type
+        EnumType*                     m_oldMode; //!< old value of the enumeration of mode type
     };
   }
 }

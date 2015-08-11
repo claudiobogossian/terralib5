@@ -48,6 +48,7 @@
 #include "../item/PaperItem.h"
 #include "../../core/property/SharedProperties.h"
 #include "../../core/PaperConfig.h"
+#include "View.h"
 
 // STL
 #include <algorithm>
@@ -65,21 +66,24 @@ te::layout::Scene::Scene( QObject* object):
   QGraphicsScene(object),
   m_undoStack(0),
   m_align(0),
-  m_print(0),
-  m_moveWatched(false)
+  m_moveWatched(false),
+  m_paperConfig(0)
 {
   m_backgroundColor = QColor(109,109,109);
   setBackgroundBrush(QBrush(m_backgroundColor));
   
+  m_paperConfig = new PaperConfig;
+  m_align = new AlignItems(this, m_paperConfig);
+  
   m_undoStack = new QUndoStack(this);
 }
 
-te::layout::Scene::Scene( AlignItems* align, PrintScene* print, QObject* object /*= 0*/ ) :
+te::layout::Scene::Scene( AlignItems* align, PaperConfig* paperConfig, QObject* object /*= 0*/ ) :
   QGraphicsScene(object),
   m_undoStack(0),
   m_align(align),
-  m_print(print),
-  m_moveWatched(false)
+  m_moveWatched(false),
+  m_paperConfig(paperConfig)
 {
 
 }
@@ -108,11 +112,11 @@ te::layout::Scene::~Scene()
     delete m_align;
     m_align = 0;
   }
-
-  if(m_print)
+  
+  if(m_paperConfig)
   {
-    delete m_print;
-    m_print = 0;
+    delete m_paperConfig;
+    m_paperConfig = 0;
   }
 }
 
@@ -160,7 +164,7 @@ void te::layout::Scene::insertItem( QGraphicsItem* item )
     {
       QTransform transf = m_matrix.inverted();
       item->setTransform(transf);
-    }    
+    }
   }
 
   item->setZValue(total);
@@ -180,19 +184,15 @@ void te::layout::Scene::insertItem( QGraphicsItem* item )
 void te::layout::Scene::init( double screenWMM, double screenHMM )
 {
   calculateSceneMeasures(screenWMM, screenHMM);
-
-  PaperConfig* config = Context::getInstance().getPaperConfig();
-  if(!config)
-    return;
+  
+  if(!m_paperConfig)
+  {
+    m_paperConfig = new PaperConfig;
+  }
 
   if(!m_align)
   {
-    m_align = new AlignItems(this, config);
-  }
-
-  if(!m_print)
-  {
-    m_print = new PrintScene(this, config);
+    m_align = new AlignItems(this, m_paperConfig);
   }
 }
 
@@ -203,8 +203,10 @@ void te::layout::Scene::calculateMatrixViewScene()
   double urx = m_box.m_urx;
   double ury = m_box.m_ury;
 
-  double dpiX = Context::getInstance().getDpiX();
-  double dpiY = Context::getInstance().getDpiY();
+  ContextObject context = getContext();
+
+  double dpiX = context.getDpiX();
+  double dpiY = context.getDpiY();
 
   double factorX = (dpiX / 25.4);
   double factorY = (dpiY / 25.4);
@@ -220,8 +222,7 @@ void te::layout::Scene::calculateWindow( double wMM, double hMM )
   double ppSizeWMM;
   double ppSizeHMM;
 
-  PaperConfig* config = Context::getInstance().getPaperConfig();
-  config->getPaperSize(ppSizeWMM, ppSizeHMM);
+  m_paperConfig->getPaperSize(ppSizeWMM, ppSizeHMM);
 
   double x1 = 0;
   double y1 = 0;
@@ -408,8 +409,10 @@ QGraphicsItem* te::layout::Scene::createItem( const te::gm::Coord2D& coord )
   if(!build)
     return item;
 
+  ContextObject context = getContext();
+
   EnumModeType* type = Enums::getInstance().getEnumModeType();
-  EnumType* mode = Context::getInstance().getMode();
+  EnumType* mode = context.getCurrentMode();
 
   item = build->createItem(mode, coord);
 
@@ -426,9 +429,7 @@ QGraphicsItem* te::layout::Scene::createItem( const te::gm::Coord2D& coord )
     }
   }
 
-  this->insertItem(item);
-
-  Context::getInstance().setMode(type->getModeNone());
+  changeViewMode(type->getModeNone());
 
   return item;
 }
@@ -443,16 +444,6 @@ void te::layout::Scene::calculateSceneMeasures( double widthMM, double heightMM 
   calculateWindow(w,h);
 
   calculateMatrixViewScene();
-}
-
-te::layout::PrintScene* te::layout::Scene::getPrintScene()
-{
-  return m_print;
-}
-
-te::layout::AlignItems* te::layout::Scene::getAlignItems()
-{
-  return m_align;
 }
 
 bool te::layout::Scene::exportPropertiesToTemplate( EnumType* type, std::string fileName )
@@ -786,7 +777,12 @@ void te::layout::Scene::updateSelectedItemsPositions()
   }
 }
 
-void te::layout::Scene::onChangeZoomFactor( int zoom )
+void te::layout::Scene::onChangeZoom( int zoom )
+{
+  contextUpdated();
+}
+
+void te::layout::Scene::onChangeMode( EnumType* mode )
 {
   contextUpdated();
 }
@@ -821,22 +817,6 @@ bool te::layout::Scene::removeItemStackWithoutScene( QGraphicsItem* item )
   }
 
   return m_itemStackWithoutScene.removeOne(item);
-}
-
-void te::layout::Scene::contextUpdated()
-{
-  QList<QGraphicsItem*> allItems = items();
-  foreach(QGraphicsItem *item, allItems)
-  {
-    if(item)
-    {
-      ItemObserver* it = dynamic_cast<ItemObserver*>(item);
-      if(it)
-      {
-        it->contextUpdated();
-      }
-    }
-  }
 }
 
 void te::layout::Scene::deletePaperItem()
@@ -968,5 +948,101 @@ void te::layout::Scene::updateBoxFromProperties( te::gm::Envelope box, ItemModel
     sharedProps = 0;
   }
 }
+
+te::layout::ContextObject te::layout::Scene::getContext()
+{
+  View* view = getView();
+  if(!view)
+  {
+    ContextObject nullContext(0,0,0,0,0);
+    return nullContext;
+  }
+
+  double dpiX = view->physicalDpiX();
+  double dpiY = view->physicalDpiY();
+  int zoom = view->getCurrentZoom();
+  EnumType* mode = view->getCurrentMode();
+
+  ContextObject context(zoom, dpiX, dpiY, m_paperConfig, mode);
+  return context;
+}
+
+void te::layout::Scene::contextUpdated()
+{
+  ContextObject context = getContext();
+
+  contextUpdated(context);
+}
+
+void te::layout::Scene::contextUpdated( ContextObject context )
+{
+  QList<QGraphicsItem*> allItems = items();
+  foreach(QGraphicsItem *item, allItems)
+  {
+    if(item)
+    {
+      ItemObserver* it = dynamic_cast<ItemObserver*>(item);
+      if(it)
+      {
+        it->contextUpdated(context);
+      }
+    }
+  }
+}
+
+te::layout::AlignItems* te::layout::Scene::getAlignItems()
+{
+  return m_align;
+}
+
+void te::layout::Scene::changeViewMode( EnumType* mode )
+{
+  View* view = getView();
+  if(!view)
+  {
+    return;
+  }
+  view->changeMode(mode);
+}
+
+te::layout::View* te::layout::Scene::getView()
+{
+  View* view = 0;
+  QList<QGraphicsView*> viewList = views();
+
+  QGraphicsView* gview = viewList.first();
+  if(!gview)
+  {
+    return view;
+  }
+
+  view = dynamic_cast<View*>(gview);
+  if(!view)
+  {
+    return view;
+  }
+  return view;
+}
+
+void te::layout::Scene::deselectAllItems()
+{
+  QList<QGraphicsItem*> graphicsItems = items();
+  foreach( QGraphicsItem *item, graphicsItems) 
+  {
+    if (item)
+    {
+      item->setSelected(false);
+    }
+  }
+}
+
+te::layout::PaperConfig* te::layout::Scene::getPaperConfig()
+{
+  return m_paperConfig;
+}
+
+
+
+
 
 

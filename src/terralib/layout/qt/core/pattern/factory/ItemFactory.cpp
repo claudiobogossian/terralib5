@@ -76,11 +76,6 @@ te::layout::Observer* te::layout::ItemFactory::make( EnumType* type, ItemParamsC
     LegendItem* legend = new LegendItem(params.getController(), params.getModel());
     item = (Observer*)legend;
   }
-  else if(type == enumObj->getTextItem())
-  {
-    TextItem* txt = new TextItem(params.getController(), params.getModel());
-    item = (Observer*)txt;
-  }
   else if(type == enumObj->getItemGroup())
   {
     ItemGroup* group = new ItemGroup(params.getController(), params.getModel());
@@ -105,16 +100,6 @@ te::layout::Observer* te::layout::ItemFactory::make( EnumType* type, ItemParamsC
   {
     ImageItem* scale = new ImageItem(params.getController(), params.getModel());
     item = (Observer*)scale;
-  }
-  else if(type == enumObj->getTitleItem())
-  {
-    TitleItem* title = new TitleItem(params.getController(), params.getModel());
-    item = (Observer*)title;
-  }
-  else if(type == enumObj->getTextGridItem())
-  {
-    TextGridItem* txtGrid = new TextGridItem(params.getController(), params.getModel());
-    item = (Observer*)txtGrid;
   }
   else if(type == enumObj->getLegendChildItem())
   {
@@ -141,11 +126,6 @@ te::layout::Observer* te::layout::ItemFactory::make( EnumType* type, ItemParamsC
     BalloonItem* balloon = new BalloonItem(params.getController(), params.getModel());
     item = (Observer*)balloon;
   }
-  else if(type == enumObj->getBarCodeItem())
-  {
-    BarCodeItem* barCode = new BarCodeItem(params.getController(), params.getModel());
-    item = (Observer*)barCode;
-  }
   else if(type == enumObj->getGridPlanarItem())
   {
     GridPlanarItem* gridPlanar = new GridPlanarItem(params.getController(), params.getModel());
@@ -155,11 +135,6 @@ te::layout::Observer* te::layout::ItemFactory::make( EnumType* type, ItemParamsC
   {
     GridGeodesicItem* gridGeodesic = new GridGeodesicItem(params.getController(), params.getModel());
     item = (Observer*)gridGeodesic;
-  }
-  else if(type == enumObj->getNorthItem())
-  {
-    NorthItem* north = new NorthItem(params.getController(), params.getModel());
-    item = (Observer*)north;
   }
   else if(type == enumObj->getMapLocationItem())
   {
@@ -196,10 +171,49 @@ te::layout::AbstractItemView* te::layout::ItemFactory::makeNew(EnumType* type, I
   {
     item = new ScaleItem(params.m_newController, params.m_newModel);
   }
+<<<<<<< .mine
   else if(type == enumObj->getPointItem())
   {
     item = new PointItem(params.m_newController, params.m_newModel);
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+=======
+  else if(type == enumObj->getTextItem())
+  {
+    item = new TextItem(params.m_newController, params.m_newModel);
+  }
+  else if(type == enumObj->getTitleItem())
+  {
+    item = new TitleItem(params.m_newController, params.m_newModel);
+  }
+  else if(type == enumObj->getTextGridItem())
+  {
+    item = new TextGridItem(params.m_newController, params.m_newModel);
+  }
+  else if(type == enumObj->getBarCodeItem())
+  {
+    item = new BarCodeItem(params.m_newController, params.m_newModel);
+  }
+  else if(type == enumObj->getNorthItem())
+  {
+    item = new NorthItem(params.m_newController, params.m_newModel);
+  }
+>>>>>>> .theirs
 
   return item;
 }

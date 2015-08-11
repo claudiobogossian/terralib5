@@ -27,16 +27,18 @@
 
 // TerraLib
 #include "Utils.h"
-#include "pattern/singleton/Context.h"
 #include "../../color/RGBAColor.h"
 #include "../../geometry/Polygon.h"
 #include "../../geometry/Enums.h"
 #include "../../geometry/LinearRing.h"
 #include "../../geometry/Point.h"
 #include "../../qt/widgets/canvas/Canvas.h"
-#include "enum/AbstractType.h"
 #include "../../srs/SpatialReferenceSystemManager.h"
 #include "../../common/Translator.h"
+#include "../qt/core/ContextObject.h"
+#include "enum/AbstractType.h"
+#include "pattern/singleton/Context.h"
+#include "AbstractScene.h"
 
 // STL
 #include <math.h> 
@@ -130,7 +132,14 @@ te::color::RGBAColor** te::layout::Utils::getImageW( te::gm::Envelope boxmm )
 
 int te::layout::Utils::mm2pixel( double mm )
 {
-  int devDpi = Context::getInstance().getDpiX();
+  AbstractScene* scene = Context::getInstance().getScene();
+  if(!scene)
+  {
+    return -1;
+  }
+  ContextObject context = scene->getContext();
+
+  int devDpi = context.getDpiX();
   int px = (mm * devDpi) / 25.4 ;
   return px;
 }
@@ -182,7 +191,14 @@ te::gm::Envelope te::layout::Utils::viewportBoxFromMM( te::gm::Envelope box )
   int zoom = 100;
   if(m_applyZoom)
   {
-    zoom = Context::getInstance().getZoom();
+    AbstractScene* scene = Context::getInstance().getScene();
+    if(!scene)
+    {
+      te::gm::Envelope env;
+      return env;
+    }
+    ContextObject context = scene->getContext();
+    zoom = context.getZoom();
   }
 
   double zoomFactor = (double)zoom / 100.;

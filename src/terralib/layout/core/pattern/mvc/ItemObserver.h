@@ -32,6 +32,7 @@
 #include "Observer.h"
 #include "../../../../geometry/Coord2D.h"
 #include "../../../../color/RGBAColor.h"
+#include "../../../qt/core/ContextObject.h"
 #include "../../Config.h"
 
 namespace te
@@ -171,7 +172,7 @@ namespace te
         /*!
           \brief This function is called every time the context is updated. It is usually used by the item to configure its drawings due to changes in the zoom factor or in the DPI of the device.
         */
-        virtual void contextUpdated();
+        virtual void contextUpdated(ContextObject context);
 
       protected:
 

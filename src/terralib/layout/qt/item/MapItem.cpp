@@ -55,6 +55,7 @@
 #include "../../core/pattern/proxy/AbstractProxyProject.h"
 #include "../../../qt/widgets/layer/explorer/AbstractTreeItem.h"
 #include "GridMapItem.h"
+#include "../core/ContextObject.h"
 
 // STL
 #include <vector>
@@ -238,7 +239,7 @@ QPointF remapPointToViewport(const QPointF& point, const QRectF& item, const QRe
   return remappedPoint;
 }
 
-void te::layout::MapItem::drawItem( QPainter * painter )
+void te::layout::MapItem::drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget )
 {
   if(!m_mapDisplay || !painter)
     return;
@@ -542,7 +543,9 @@ void te::layout::MapItem::changeCurrentTool( EnumType* mode )
 
   EnumModeType* type = Enums::getInstance().getEnumModeType();
 
-  te::layout::Context::getInstance().setMode(mode);
+  ItemUtils* utils = Context::getInstance().getItemUtils();
+
+  utils->changeViewMode(mode);
   if(mode == type->getModeMapPan())
   {
     te::qt::widgets::Pan* pan = new te::qt::widgets::Pan(m_mapDisplay, Qt::OpenHandCursor, Qt::ClosedHandCursor);   
@@ -987,7 +990,7 @@ bool te::layout::MapItem::canBeChild( ItemObserver* item )
   return false;
 }
 
-void te::layout::MapItem::contextUpdated()
+void te::layout::MapItem::contextUpdated(ContextObject context)
 {
   Utils* utils = Context::getInstance().getUtils();
   te::gm::Envelope box;
@@ -1020,7 +1023,11 @@ void te::layout::MapItem::updateScale()
   MapModel* model = dynamic_cast<MapModel*>(m_model);
   double displayScale = m_mapDisplay->getScale();
 
-  double currentPageZoom = (Context::getInstance().getZoom()/100.);
+  AbstractScene* sc = dynamic_cast<AbstractScene*>(scene());
+  ContextObject context = sc->getContext();
+
+  int zoom = context.getZoom();
+  double currentPageZoom = (zoom/100.);
 
   double realMapScale = displayScale*currentPageZoom;
 

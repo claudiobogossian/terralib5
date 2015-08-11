@@ -34,6 +34,8 @@
 #include "../../../../maptools/Canvas.h"
 #include "../factory/ItemParamsCreate.h"
 #include "../factory/AbstractItemFactory.h"
+#include "../../../qt/core/ContextObject.h"
+#include "../../AbstractScene.h"
 #include "Observer.h"
 
 te::layout::ItemController::ItemController( Observable* o ) :
@@ -63,13 +65,16 @@ void te::layout::ItemController::redraw()
     return;
 
   ParamsCreate params;
-  int zoom = Context::getInstance().getZoom();
+  AbstractScene* sc = Context::getInstance().getScene();
+  ContextObject context = sc->getContext();
+
+  int zoom = context.getZoom();
   ContextItem contxt(params, zoom);
 
   te::map::Canvas* canvas = Context::getInstance().getCanvas();
   Utils* utils = Context::getInstance().getUtils();
-  double dpiX = Context::getInstance().getDpiX();
-  double dpiY = Context::getInstance().getDpiY();
+  double dpiX = context.getDpiX();
+  double dpiY = context.getDpiY();
 
   contxt.setCanvas(canvas);
   contxt.setUtils(utils);

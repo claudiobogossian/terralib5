@@ -40,7 +40,6 @@ namespace te
     class OutsideFactory;
     class TemplateFactory;
     class Utils;
-    class PaperConfig;
     class BuildGraphicsItem;
     class SystematicScaleConfig;
     class ItemUtils;
@@ -62,7 +61,6 @@ namespace te
         OutsideFactory*           m_outsideFactory;
         TemplateFactory*          m_templateFactory;
         Utils*                    m_utils;
-        PaperConfig*              m_paperConfig;
         te::qt::widgets::Canvas*  m_canvas;
         BuildGraphicsItem*        m_buildGraphicsItem;
         SystematicScaleConfig*    m_systematicConfig;

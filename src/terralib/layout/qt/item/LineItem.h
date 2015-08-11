@@ -60,7 +60,7 @@ namespace te
 
       protected:
 
-        virtual void drawItem(QPainter * painter);
+        virtual void drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
 
         virtual void searchStyle();
 

@@ -29,6 +29,7 @@
 #include "ItemUtils.h"
 #include "../../core/pattern/mvc/ItemModelObservable.h"
 #include "../../core/pattern/mvc/AbstractItemView.h"
+#include "../../core/pattern/mvc/AbstractItemController.h"
 #include "../../core/pattern/mvc/AbstractItemModel.h"
 #include "../../core/pattern/singleton/Context.h"
 #include "../../core/enum/Enums.h"
@@ -45,6 +46,7 @@
 #include "../../item/GridPlanarModel.h"
 #include "Scene.h"
 #include "../item/GridMapItem.h"
+#include "View.h"
 
 // STL
 #include <stddef.h>  // defines NULL
@@ -163,7 +165,7 @@ int te::layout::ItemUtils::countType( te::layout::EnumType* type )
     if(absItem == 0)
       continue;
 
-    te::layout::AbstractItemModel* model = absItem->getModel();
+    te::layout::AbstractItemModel* model = absItem->getController()->getModel();
     if(model == 0)
       continue;
 
@@ -190,7 +192,7 @@ int te::layout::ItemUtils::maxTypeId( te::layout::EnumType* type )
     if(absItem == 0)
       continue;
 
-    te::layout::AbstractItemModel* model = absItem->getModel();
+    te::layout::AbstractItemModel* model = absItem->getController()->getModel();
     if(model == 0)
       continue;
 
@@ -219,7 +221,21 @@ bool te::layout::ItemUtils::isCurrentMapTools()
 {
   bool result = false;
 
-  te::layout::EnumType* mode = te::layout::Context::getInstance().getMode();
+  AbstractScene* abScene = Context::getInstance().getScene();
+  if(!abScene)
+  {
+    return result;
+  }
+
+  Scene* sc = dynamic_cast<Scene*>(abScene);
+  if(!sc)
+  {
+    return result;
+  }
+
+  ContextObject context = sc->getContext();
+
+  te::layout::EnumType* mode = context.getCurrentMode();
   te::layout::EnumModeType* type = te::layout::Enums::getInstance().getEnumModeType();
 
   if(mode == type->getModeMapPan())
@@ -310,6 +326,7 @@ void te::layout::ItemUtils::createTextMapAsObject()
 
 void te::layout::ItemUtils::createTextItemFromObject( std::map<te::gm::Point*, std::string> map, QFont* ft )
 {
+  /*
   Scene* scne = dynamic_cast<Scene*>(m_scene);
 
   if(!scne)
@@ -323,8 +340,6 @@ void te::layout::ItemUtils::createTextItemFromObject( std::map<te::gm::Point*, s
   {
     te::gm::Point* pt = it->first;
     std::string text = it->second;
-
-    Context::getInstance().setMode(mode->getModeCreateText());
 
     QGraphicsItem* item = 0;
     
@@ -352,8 +367,7 @@ void te::layout::ItemUtils::createTextItemFromObject( std::map<te::gm::Point*, s
       }
     }
   }
-
-  Context::getInstance().setMode(mode->getModeNone());
+  */
 }
 
 void te::layout::ItemUtils::createLegendChildItemFromLegend( std::map<te::gm::Point*, std::string> map, te::layout::MapModel* visitable )
@@ -374,9 +388,7 @@ void te::layout::ItemUtils::createLegendChildItemFromLegend( std::map<te::gm::Po
   {
     te::gm::Point* pt = it->first;
     std::string text = it->second;
-
-    Context::getInstance().setMode(mode->getModeCreateLegendChild());
-
+    
     QGraphicsItem* item = 0;
     te::gm::Coord2D coord(pt->getX(), pt->getY());
     item = scne->createItem(coord);
@@ -391,8 +403,6 @@ void te::layout::ItemUtils::createLegendChildItemFromLegend( std::map<te::gm::Po
       te::layout::VisitorUtils::getInstance().changeMapVisitable(legends, visitable);
     }
   }
-
-  Context::getInstance().setMode(mode->getModeNone());
 }
 
 std::vector<te::layout::Properties*> te::layout::ItemUtils::getGridMapProperties()
@@ -528,6 +538,30 @@ void te::layout::ItemUtils::getTextBoundary( QFont ft, double& w, double& h, std
   
   w = wrec.width();
   h = wrec.height();
+}
+
+void te::layout::ItemUtils::changeViewMode( EnumType* mode )
+{
+  AbstractScene* abScene = Context::getInstance().getScene();
+
+  if(!abScene)
+  {
+    return;
+  }
+
+  Scene* scene = dynamic_cast<Scene*>(abScene);
+  if(!scene)
+  {
+    return;
+  }
+
+  View* view = scene->getView();
+  if(!view)
+  {
+    return;
+  }
+
+  view->changeMode(mode);
 }
 
 
