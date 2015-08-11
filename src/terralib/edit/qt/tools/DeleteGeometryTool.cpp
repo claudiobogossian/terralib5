@@ -49,11 +49,10 @@
 #include <cassert>
 #include <memory>
 
-te::edit::DeleteGeometryTool::DeleteGeometryTool(te::edit::EditionManager* editionManager, te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent)
+te::edit::DeleteGeometryTool::DeleteGeometryTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent)
   : AbstractTool(display, parent),
     m_layer(layer),
-    m_feature(0),
-    m_editionManager(editionManager)
+    m_feature(0)
 {
   // Signals & slots
   connect(m_display, SIGNAL(extentChanged()), SLOT(onExtentChanged()));
@@ -121,7 +120,7 @@ void te::edit::DeleteGeometryTool::pickFeature(const te::map::AbstractLayerPtr& 
       std::auto_ptr<te::gm::Geometry> geom = ds->getGeometry(geomProp->getName());
       te::gm::Envelope auxEnv(*geom->getMBR());
 
-      m_feature = PickFeature(m_editionManager, m_layer, auxEnv, m_display->getSRID());
+      m_feature = PickFeature(m_layer, auxEnv, m_display->getSRID());
 
     }
 
@@ -165,7 +164,7 @@ void te::edit::DeleteGeometryTool::draw()
   renderer.begin(draft, env, m_display->getSRID());
 
   // Draw the layer edited geometries
-  renderer.drawRepository(m_editionManager, m_layer->getId(), env, m_display->getSRID());
+  renderer.drawRepository(m_layer->getId(), env, m_display->getSRID());
 
   if(m_feature == 0)
   {
@@ -191,8 +190,5 @@ void te::edit::DeleteGeometryTool::onExtentChanged()
 
 void te::edit::DeleteGeometryTool::storeRemovedFeature()
 {
-  m_editionManager->m_repository->addGeometry(m_layer->getId(), m_feature->getId()->clone(), dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone()));
-
-  m_editionManager->m_operation[m_feature->getId()->getValueAsString()] = m_editionManager->removeOp;
-
+  RepositoryManager::getInstance().addGeometry(m_layer->getId(), m_feature->getId()->clone(), dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone()));
 }

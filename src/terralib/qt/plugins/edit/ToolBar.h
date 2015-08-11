@@ -40,8 +40,6 @@
 // STL
 #include <string>
 
-#include "../../../edit/qt/core/EditionManager.h"
-
 namespace te
 {
   namespace qt
@@ -66,10 +64,6 @@ namespace te
             ~ToolBar();
 
             QToolBar* get() const;
-
-          private:
-
-            void createUndoView(bool checked);
 
           protected slots:
 
@@ -114,21 +108,13 @@ namespace te
             QAction* m_aggregateAreaToolAction;
             QAction* m_subtractAreaToolAction;
             QAction* m_mergeGeometriesToolAction;
-            QAction* m_undoToolAction;
-            QAction* m_redoToolAction;
             QList<QAction*> m_tools;
-            QUndoView* m_undoView;
-            te::edit::EditionManager* m_editionManager;
 
             te::map::AbstractLayerPtr getSelectedLayer();
             te::map::AbstractLayerPtr getLayer(const std::string& id);
             void initialize();
             void initializeActions();
             void createAction(QAction*& action, const QString& tooltip, const QString& icon, bool checkable, bool enabled, const QString& objName, const char* member);
-
-            #define EDT_CREATE                      1
-            #define EDT_UPDATE                      2
-            #define EDT_REMOVE                      3
 
         };
 

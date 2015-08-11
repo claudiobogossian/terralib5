@@ -47,12 +47,11 @@
 #include <cassert>
 #include <memory>
 
-te::edit::CreateLineTool::CreateLineTool(te::edit::EditionManager* editionManager, te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, QObject* parent)
+te::edit::CreateLineTool::CreateLineTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, QObject* parent)
 : AbstractTool(display, parent),
   m_layer(layer),
   m_continuousMode(false),
-  m_isFinished(false),
-  m_editionManager(editionManager)
+  m_isFinished(false)
 {
   setCursor(cursor);
 
@@ -109,13 +108,6 @@ bool te::edit::CreateLineTool::mouseMoveEvent(QMouseEvent* e)
 
   m_lastPos = te::gm::Coord2D(coord.x, coord.y);
 
-  //Qt::KeyboardModifiers keys = e->modifiers();
-  
-  /*if(keys == Qt::NoModifier)
-    m_continuousMode = false;
-  else if (keys == Qt::ShiftModifier)
-  m_continuousMode = true;*/
-
   if (e->buttons() & Qt::LeftButton)
     m_continuousMode = true;
   else
@@ -159,7 +151,7 @@ void te::edit::CreateLineTool::draw()
   renderer.begin(draft, env, m_display->getSRID());
 
   // Draw the layer edited geometries
-  renderer.drawRepository(m_editionManager,m_layer->getId(), env, m_display->getSRID());
+  renderer.drawRepository(m_layer->getId(), env, m_display->getSRID());
 
   if(!m_coords.empty())
   {
@@ -170,7 +162,7 @@ void te::edit::CreateLineTool::draw()
     if(m_continuousMode == false)
       m_coords.pop_back();
 
-	_line = (te::gm::LineString*)line->clone();
+  _line = (te::gm::LineString*)line->clone();
   }
 
   renderer.end();
@@ -205,7 +197,7 @@ te::gm::Geometry* te::edit::CreateLineTool::buildLine()
 
 void te::edit::CreateLineTool::storeNewGeometry()
 {
-  m_editionManager->m_repository->addGeometry(m_layer->getId(), buildLine());
+  RepositoryManager::getInstance().addGeometry(m_layer->getId(), buildLine());
 }
 
 void te::edit::CreateLineTool::onExtentChanged()

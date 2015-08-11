@@ -41,7 +41,6 @@
 // TerraLib
 #include "../../maptools/AbstractLayer.h"
 #include "Config.h"
-#include "../../edit/qt/core/EditionManager.h"
 
 // STL
 #include <string>
@@ -80,7 +79,6 @@ namespace te
   namespace edit
   {
     TEEDITQTEXPORT QPointF GetPosition(QMouseEvent* e);
-    TEEDITQTEXPORT Feature* PickFeature(te::edit::EditionManager* editionManager, const te::map::AbstractLayerPtr& layer, const te::gm::Envelope& env, int srid);
 
   } // end namespace edit
 }   // end namespace te
