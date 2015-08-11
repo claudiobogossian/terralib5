@@ -171,28 +171,10 @@ te::layout::AbstractItemView* te::layout::ItemFactory::makeNew(EnumType* type, I
   {
     item = new ScaleItem(params.m_newController, params.m_newModel);
   }
-<<<<<<< .mine
   else if(type == enumObj->getPointItem())
   {
     item = new PointItem(params.m_newController, params.m_newModel);
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-=======
   else if(type == enumObj->getTextItem())
   {
     item = new TextItem(params.m_newController, params.m_newModel);
@@ -213,7 +195,6 @@ te::layout::AbstractItemView* te::layout::ItemFactory::makeNew(EnumType* type, I
   {
     item = new NorthItem(params.m_newController, params.m_newModel);
   }
->>>>>>> .theirs
 
   return item;
 }

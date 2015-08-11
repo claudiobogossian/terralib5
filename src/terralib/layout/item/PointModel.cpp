@@ -98,7 +98,7 @@ te::layout::PointModel::PointModel()
     Property property(0);
     property.setName("show_frame");
     property.setValue(false, dataType->getDataTypeBool());
-    this->m_properties.updatePropertyValue(property.getName(), property.getValue());
+    this->m_properties.updateProperty(property);
   }
 }
 

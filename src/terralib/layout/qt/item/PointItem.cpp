@@ -50,7 +50,7 @@ te::layout::PointItem::~PointItem()
 
 void te::layout::PointItem::drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget )
 {
-  const Property& property = m_model->getProperty("point_type");
+  const Property& property = m_controller->getProperty("point_type");
   if(property.isNull() == false)
   {
     EnumPointType enumPointType;
@@ -101,8 +101,8 @@ void te::layout::PointItem::drawStar1( QPainter * painter )
 {
   painter->save();
 
-  const Property& pFillColor = m_model->getProperty("fill_color");
-  const Property& pContourColor = m_model->getProperty("contour_color");
+  const Property& pFillColor = m_controller->getProperty("fill_color");
+  const Property& pContourColor = m_controller->getProperty("contour_color");
 
   const te::color::RGBAColor& fillColor = pFillColor.getValue().toColor();
   const te::color::RGBAColor& contourColor = pContourColor.getValue().toColor();
@@ -149,8 +149,8 @@ void te::layout::PointItem::drawStar2(QPainter * painter)
 {
   painter->save();
 
-  const Property& pFillColor = m_model->getProperty("fill_color");
-  const Property& pContourColor = m_model->getProperty("contour_color");
+  const Property& pFillColor = m_controller->getProperty("fill_color");
+  const Property& pContourColor = m_controller->getProperty("contour_color");
 
   const te::color::RGBAColor& fillColor = pFillColor.getValue().toColor();
   const te::color::RGBAColor& contourColor = pContourColor.getValue().toColor();
@@ -191,8 +191,8 @@ void te::layout::PointItem::drawStar3(QPainter * painter)
 {
   painter->save();
 
-  const Property& pFillColor = m_model->getProperty("fill_color");
-  const Property& pContourColor = m_model->getProperty("contour_color");
+  const Property& pFillColor = m_controller->getProperty("fill_color");
+  const Property& pContourColor = m_controller->getProperty("contour_color");
 
   const te::color::RGBAColor& fillColor = pFillColor.getValue().toColor();
   const te::color::RGBAColor& contourColor = pContourColor.getValue().toColor();
@@ -227,8 +227,8 @@ void te::layout::PointItem::drawStar4(QPainter * painter)
 {
   painter->save();
 
-  const Property& pFillColor = m_model->getProperty("fill_color");
-  const Property& pContourColor = m_model->getProperty("contour_color");
+  const Property& pFillColor = m_controller->getProperty("fill_color");
+  const Property& pContourColor = m_controller->getProperty("contour_color");
 
   const te::color::RGBAColor& fillColor = pFillColor.getValue().toColor();
   const te::color::RGBAColor& contourColor = pContourColor.getValue().toColor();
@@ -264,8 +264,8 @@ void te::layout::PointItem::drawCircle( QPainter * painter )
 {
   painter->save();
 
-  const Property& pFillColor = m_model->getProperty("fill_color");
-  const Property& pContourColor = m_model->getProperty("contour_color");
+  const Property& pFillColor = m_controller->getProperty("fill_color");
+  const Property& pContourColor = m_controller->getProperty("contour_color");
 
   const te::color::RGBAColor& fillColor = pFillColor.getValue().toColor();
   const te::color::RGBAColor& contourColor = pContourColor.getValue().toColor();
@@ -301,8 +301,8 @@ void te::layout::PointItem::drawX( QPainter * painter )
 {
   painter->save();
 
-  const Property& pFillColor = m_model->getProperty("fill_color");
-  const Property& pContourColor = m_model->getProperty("contour_color");
+  const Property& pFillColor = m_controller->getProperty("fill_color");
+  const Property& pContourColor = m_controller->getProperty("contour_color");
 
   const te::color::RGBAColor& fillColor = pFillColor.getValue().toColor();
   const te::color::RGBAColor& contourColor = pContourColor.getValue().toColor();
@@ -339,8 +339,8 @@ void te::layout::PointItem::drawSquare( QPainter * painter )
 {
   painter->save();
 
-  const Property& pFillColor = m_model->getProperty("fill_color");
-  const Property& pContourColor = m_model->getProperty("contour_color");
+  const Property& pFillColor = m_controller->getProperty("fill_color");
+  const Property& pContourColor = m_controller->getProperty("contour_color");
 
   const te::color::RGBAColor& fillColor = pFillColor.getValue().toColor();
   const te::color::RGBAColor& contourColor = pContourColor.getValue().toColor();
@@ -377,8 +377,8 @@ void te::layout::PointItem::drawRhombus( QPainter * painter )
 {
   painter->save();
 
-  const Property& pFillColor = m_model->getProperty("fill_color");
-  const Property& pContourColor = m_model->getProperty("contour_color");
+  const Property& pFillColor = m_controller->getProperty("fill_color");
+  const Property& pContourColor = m_controller->getProperty("contour_color");
 
   const te::color::RGBAColor& fillColor = pFillColor.getValue().toColor();
   const te::color::RGBAColor& contourColor = pContourColor.getValue().toColor();
@@ -418,8 +418,8 @@ void te::layout::PointItem::drawCross( QPainter * painter )
 {
   painter->save();
 
-  const Property& pFillColor = m_model->getProperty("fill_color");
-  const Property& pContourColor = m_model->getProperty("contour_color");
+  const Property& pFillColor = m_controller->getProperty("fill_color");
+  const Property& pContourColor = m_controller->getProperty("contour_color");
 
   const te::color::RGBAColor& fillColor = pFillColor.getValue().toColor();
   const te::color::RGBAColor& contourColor = pContourColor.getValue().toColor();
