@@ -812,9 +812,11 @@ std::string te::gdal::GetGDALConnectionInfo(const std::map<std::string, std::str
 void te::gdal::Vectorize(GDALRasterBand* band, std::vector<te::gm::Geometry*>& geometries)
 {
 // create data source of geometries in memory
-  OGRSFDriver *ogrDriver = OGRSFDriverRegistrar::GetRegistrar()->GetDriverByName("Memory");
+  //OGRSFDriver *ogrDriver = OGRSFDriverRegistrar::GetRegistrar()->GetDriverByName("Memory");
+  GDALDriver* ogrDriver = GetGDALDriverManager()->GetDriverByName("Memory");
 
-  OGRDataSource* ds = ogrDriver->CreateDataSource("ds_vectorize", NULL);
+  //OGRDataSource* ds = ogrDriver->CreateDataSource("ds_vectorize", NULL);
+  GDALDataset* ds = ogrDriver->Create("ds_vectorize", 0, 0, 0, GDT_Unknown, NULL);
 
   OGRLayer* ogrLayer = ds->CreateLayer("vectorization", NULL, wkbMultiPolygon, NULL);
 
@@ -828,7 +830,8 @@ void te::gdal::Vectorize(GDALRasterBand* band, std::vector<te::gm::Geometry*>& g
   for (int g = 0; g < ogrLayer->GetFeatureCount(); g++)
     geometries.push_back(te::ogr::Convert2TerraLib(ogrLayer->GetFeature(g)->GetGeometryRef()));
 
-  OGRDataSource::DestroyDataSource(ds);
+  //OGRDataSource::DestroyDataSource(ds);
+  GDALClose(ds);
 }
 
 void te::gdal::Rasterize(std::vector<te::gm::Geometry*> geometries, GDALDataset* outraster)

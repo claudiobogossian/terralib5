@@ -333,6 +333,10 @@ te::dt::Property* te::ogr::Convert2TerraLib(OGRFieldDefn* fieldDef)
       p = new te::dt::SimpleProperty(name, te::dt::INT32_TYPE);
     break;
 
+    case OFTInteger64:
+      p = new te::dt::SimpleProperty(name, te::dt::INT64_TYPE);
+      break;
+
     case OFTIntegerList:
       p = new te::dt::ArrayProperty(name, new te::dt::SimpleProperty(name, te::dt::INT32_TYPE));
     break;
@@ -601,21 +605,40 @@ std::string te::ogr::GetDriverName(const std::string& path)
   return "";
 }
 
-std::vector<std::string> te::ogr::GetOGRDrivers(bool filterCreate
-                                                )
+//std::vector<std::string> te::ogr::GetOGRDrivers(bool filterCreate)
+//{
+//  std::vector<std::string> drivernames;
+//  
+//  int ndrivers = OGRSFDriverRegistrar::GetRegistrar()->GetDriverCount();
+//  
+//  for (int i = 0; i < ndrivers; ++i)
+//  {
+//    OGRSFDriver* driver = OGRSFDriverRegistrar::GetRegistrar()->GetDriver(i);
+//    if (filterCreate && !driver->TestCapability(ODrCCreateDataSource))
+//      continue;
+//    if (filterCreate && !driver->GetMetadataItem(ODrCCreateDataSource))
+//      continue;
+//    drivernames.push_back(driver->GetName());
+//  }
+//  
+//  return drivernames;
+//}
+
+std::vector<std::string> te::ogr::GetOGRDrivers(bool filterCreate)
 {
   std::vector<std::string> drivernames;
-  
+
   int ndrivers = OGRSFDriverRegistrar::GetRegistrar()->GetDriverCount();
-  
+
   for (int i = 0; i < ndrivers; ++i)
   {
-    OGRSFDriver* driver = OGRSFDriverRegistrar::GetRegistrar()->GetDriver(i);
-    if (filterCreate && !driver->TestCapability(ODrCCreateDataSource))
-      continue;
-    drivernames.push_back(driver->GetName());
+    GDALDriver* driver = GetGDALDriverManager()->GetDriver(i);
+    //if (filterCreate && !driver->GetMetadataItem(ODrCCreateDataSource))
+    if (filterCreate && !OGR_Dr_TestCapability(driver, ODrCCreateDataSource))
+        continue;
+    drivernames.push_back(driver->GetDescription());
   }
-  
+
   return drivernames;
 }
 

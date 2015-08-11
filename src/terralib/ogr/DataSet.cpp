@@ -47,7 +47,8 @@
 #include <cassert>
 #include <memory>
 
-te::ogr::DataSet::DataSet(OGRDataSource* dsrc, OGRLayer* layer) :
+//te::ogr::DataSet::DataSet(OGRDataSource* dsrc, OGRLayer* layer) :
+te::ogr::DataSet::DataSet(GDALDataset* dsrc, OGRLayer* layer) :
 te::da::DataSet(),
 m_dt(0),
 m_ogrDs(dsrc),
@@ -84,7 +85,8 @@ te::ogr::DataSet::~DataSet()
 
   m_ogrDs->ReleaseResultSet(m_layer);
 
-  OGRDataSource::DestroyDataSource(m_ogrDs);
+  //OGRDataSource::DestroyDataSource(m_ogrDs);
+  GDALClose(m_ogrDs);
 }
 
 std::size_t te::ogr::DataSet::getNumProperties() const
