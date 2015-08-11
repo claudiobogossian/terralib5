@@ -123,16 +123,16 @@ void te::qt::widgets::AnimationView::setMatrix()
     AnimationItem* ai = (AnimationItem*)(*it);
     ai->m_matrix = matrix;
   }
-
-  QRectF sceneRec = scene()->sceneRect();
-  setSceneRect(sceneRec);
   QGraphicsView::setMatrix(matrix);
 
+  QRectF sceneRec = scene()->sceneRect();
+  if (sceneRec != sceneRect())
+    updateSceneRect(sceneRec);
+
+  // ensure the paint event
   // set bigger box to ensure paint event
-  double ew = e.getWidth();
-  double eh = e.getHeight();
-  QRectF rec(e.m_llx - ew/2, e.m_lly - eh/2, 2*ew, 2*eh);
-  fitInView(rec);
+  QRectF srec(sceneRec.x() - 10*sceneRec.width(), sceneRec.y() - 10*sceneRec.height(), 20 * sceneRec.width(), 20 * sceneRec.height());
+  fitInView(srec);
 }
 
 //bool te::qt::widgets::AnimationView::eventFilter(QObject* obj, QEvent* e)
