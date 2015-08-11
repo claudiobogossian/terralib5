@@ -100,6 +100,7 @@
 #include "ProjectInfoDialog.h"
 #include "SplashScreenManager.h"
 #include "Utils.h"
+#include "XMLFormatter.h"
 
 // Qt
 #include <QDir>
@@ -891,6 +892,9 @@ void te::qt::af::BaseApplication::onSaveProjectTriggered()
   
   m_project->setProjectAsChanged(false);
   
+  XMLFormatter::format(m_project, true);
+  XMLFormatter::formatDataSourceInfos(true);
+
   // Save the project
   te::qt::af::Save(*m_project, m_project->getFileName());
 
@@ -900,6 +904,9 @@ void te::qt::af::BaseApplication::onSaveProjectTriggered()
   te::qt::af::ApplicationController::getInstance().updateRecentProjects(m_project->getFileName().c_str(), m_project->getTitle().c_str());
 
   te::qt::af::SaveDataSourcesFile();
+
+  XMLFormatter::format(m_project, false);
+  XMLFormatter::formatDataSourceInfos(false);
 }
 
 void te::qt::af::BaseApplication::onSaveProjectAsTriggered()
@@ -921,6 +928,9 @@ void te::qt::af::BaseApplication::onSaveProjectAsTriggered()
     m_project->setTitle(boost::filesystem::basename(fName));
   }
 
+  XMLFormatter::format(m_project, true);
+  XMLFormatter::formatDataSourceInfos(true);
+
   te::qt::af::Save(*m_project, fName);
 
   ApplicationController::getInstance().updateRecentProjects(fileName, m_project->getTitle().c_str());
@@ -935,6 +945,9 @@ void te::qt::af::BaseApplication::onSaveProjectAsTriggered()
   setWindowTitle(te::qt::af::GetWindowTitle(*m_project));
   
   te::qt::af::SaveDataSourcesFile();
+
+  XMLFormatter::format(m_project, true);
+  XMLFormatter::formatDataSourceInfos(true);
 }
 
 void te::qt::af::BaseApplication::onRestartSystemTriggered()

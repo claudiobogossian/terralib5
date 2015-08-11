@@ -56,7 +56,7 @@ boost::numeric::ublas::matrix<double> te::sa::GeostatisticalModelSpherical::calc
     }
     else 
     {
-      sphericalValues.push_back(m_nugget + (m_sill - m_nugget) * (1.5 * (abs(matrix(t, 0)) / m_range)) - 0.5 * (pow(abs(matrix(t, 0)) / m_range, 3)));
+      sphericalValues.push_back(m_nugget + (m_sill - m_nugget) * (1.5 * (std::abs(matrix(t, 0)) / m_range)) - 0.5 * (pow(std::abs(matrix(t, 0)) / m_range, 3)));
     }
     m(t, 0) = matrix(t, 0);
     m(t, 1) = sphericalValues[t];

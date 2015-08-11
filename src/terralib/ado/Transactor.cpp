@@ -516,7 +516,7 @@ void te::ado::Transactor::addProperty(const std::string& datasetName, te::dt::Pr
       {
         const te::dt::StringProperty* sp = static_cast<const te::dt::StringProperty*>(p);
 
-        long ssize = 0;
+        std::size_t ssize = 0;
 
         if(sp->size() != 0)
           ssize = sp->size();
