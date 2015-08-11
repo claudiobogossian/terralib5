@@ -35,9 +35,9 @@
 te::layout::RectangleModel::RectangleModel()
   : AbstractItemModel()
 {
-  te::color::RGBAColor fillColor(255, 255, 255, 255);
+  te::color::RGBAColor fillColor(0, 0, 0, 255);
   te::color::RGBAColor contourColor(0, 0, 0, 255);
-  te::color::RGBAColor backgroundColor(255, 0, 0, 255);
+  te::color::RGBAColor backgroundColor(255, 255, 255, 255);
 
   double width = 22.;
   double height = 20.;
