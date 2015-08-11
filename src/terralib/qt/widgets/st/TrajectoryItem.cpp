@@ -293,6 +293,13 @@ void te::qt::widgets::TrajectoryItem::draw()
     return;
 
   //setMatrix();
+  int w = m_display->getDisplayPixmap()->width();
+  int h = m_display->getDisplayPixmap()->height();
+  te::qt::widgets::Canvas canvas(w, h);
+  te::gm::Envelope e = m_display->getExtent();
+  canvas.calcAspectRatio(e.m_llx, e.m_lly, e.m_urx, e.m_ury);
+  canvas.setWindow(e.m_llx, e.m_lly, e.m_urx, e.m_ury);
+  m_matrix = canvas.getMatrix();
 
   int count = m_animationRoute.size();
   int ind = m_animation->getAnimationDataIndex((double)m_curTimeDuration / (double)m_duration);
