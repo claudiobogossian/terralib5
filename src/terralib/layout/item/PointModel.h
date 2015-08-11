@@ -27,31 +27,29 @@
   \ingroup layout
 */
 
+
 #ifndef __TERRALIB_LAYOUT_INTERNAL_POINT_MODEL_H
 #define __TERRALIB_LAYOUT_INTERNAL_POINT_MODEL_H
 
 // TerraLib
-#include "../core/pattern/mvc/ItemModelObservable.h"
-#include "../core/ContextItem.h"
+#include "../core/pattern/mvc/AbstractItemModel.h"
 #include "../core/Config.h"
-#include "../core/enum/EnumPointType.h"
-#include "../core/property/Property.h"
-#include "../core/property/Properties.h"
 
 namespace te
 {
   namespace layout
   {
+
     /*!
-      \brief Class that represents a "Model" part of Point MVC component. 
+      \brief Class that represents a "Model" part of Rectangle MVC component. 
           Its coordinate system is the same of scene (millimeters). 
-          He is also the son of ItemModelObservable, so it can become observable.
+          He is also the son of AbstractItemModel, so it can become subject (observer pattern).
+          
+      \ingroup layout
 
-    \ingroup layout
-
-      \sa te::layout::ItemModelObservable
-  */
-    class TELAYOUTEXPORT PointModel : public ItemModelObservable
+      \sa te::layout::AbstractItemModel
+    */
+    class TELAYOUTEXPORT PointModel : public AbstractItemModel
     {
       public:
 
@@ -64,31 +62,8 @@ namespace te
           \brief Destructor
         */ 
         virtual ~PointModel();
-
-        virtual Properties* getProperties() const;
-
-        virtual void updateProperties(te::layout::Properties* properties, bool notify = true);
-
-        virtual EnumPointType* getEnumPointType();
-
-        virtual EnumType* getCurrentPointType();
-
-        virtual double getShapeSize();
-
-        virtual te::color::RGBAColor getPointColor();
-
-        virtual void setPointColor(te::color::RGBAColor color);
-
-      protected:
-
-        virtual Property pointProperty() const;
-
-        EnumPointType* m_enumPointType;
-        EnumType*      m_currentPointType;
-        double         m_shapeSize;
-        te::color::RGBAColor m_pointColor;
     };
   }
 }
 
-#endif 
+#endif

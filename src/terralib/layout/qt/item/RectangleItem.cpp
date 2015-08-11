@@ -47,6 +47,23 @@ te::layout::RectangleItem::~RectangleItem()
 
 void te::layout::RectangleItem::drawItem( QPainter * painter )
 {
+  painter->save();
+
+  const Property& pFillColor = m_model->getProperty("fill_color");
+  const Property& pContourColor = m_model->getProperty("contour_color");
+
+  const te::color::RGBAColor& fillColor = pFillColor.getValue().toColor();
+  const te::color::RGBAColor& contourColor = pContourColor.getValue().toColor();
+
+  QColor qFillColor(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), fillColor.getAlpha());
+  QColor qContourColor(contourColor.getRed(), contourColor.getGreen(), contourColor.getBlue(), contourColor.getAlpha());
+
+  QBrush brush(qFillColor);
+  QPen pen(qContourColor, 0, Qt::SolidLine);
+
+  painter->setPen(pen);
+  painter->setBrush(brush);
+
   const Property& property = m_model->getProperty("rectangle_type");
   if(property.isNull() == false)
   {
@@ -75,11 +92,17 @@ void te::layout::RectangleItem::drawRectangle( QPainter * painter )
 {
   painter->save();
 
+  const Property& pFillColor = m_model->getProperty("fill_color");
+  const Property& pContourColor = m_model->getProperty("contour_color");
+
   const Property& pBackgroundColor = m_model->getProperty("background_color");
   const Property& pFrameColor = m_model->getProperty("frame_color");
 
   const te::color::RGBAColor& backgroundColor = pBackgroundColor.getValue().toColor();
   const te::color::RGBAColor& frameColor = pFrameColor.getValue().toColor();
+
+  const te::color::RGBAColor& fillColor = pFillColor.getValue().toColor();
+  const te::color::RGBAColor& contourColor = pContourColor.getValue().toColor();
 
   QColor qFillColor(backgroundColor.getRed(), backgroundColor.getGreen(), backgroundColor.getBlue(), backgroundColor.getAlpha());
   QColor qContourColor(frameColor.getRed(), frameColor.getGreen(), frameColor.getBlue(), frameColor.getAlpha());
@@ -106,11 +129,17 @@ void te::layout::RectangleItem::drawRoundedRectangle(QPainter * painter)
 {
   painter->save();
 
+  const Property& pFillColor = m_model->getProperty("fill_color");
+  const Property& pContourColor = m_model->getProperty("contour_color");
+
   const Property& pBackgroundColor = m_model->getProperty("background_color");
   const Property& pFrameColor = m_model->getProperty("frame_color");
 
   const te::color::RGBAColor& backgroundColor = pBackgroundColor.getValue().toColor();
   const te::color::RGBAColor& frameColor = pFrameColor.getValue().toColor();
+
+  const te::color::RGBAColor& fillColor = pFillColor.getValue().toColor();
+  const te::color::RGBAColor& contourColor = pContourColor.getValue().toColor();
 
   QColor qFillColor(backgroundColor.getRed(), backgroundColor.getGreen(), backgroundColor.getBlue(), backgroundColor.getAlpha());
   QColor qContourColor(frameColor.getRed(), frameColor.getGreen(), frameColor.getBlue(), frameColor.getAlpha());
@@ -120,6 +149,7 @@ void te::layout::RectangleItem::drawRoundedRectangle(QPainter * painter)
 
   painter->setPen(pen);
   painter->setBrush(brush);
+
 
   //gets the adjusted boundigng rectangle based of the painter settings
   QRectF rectAdjusted = getAdjustedBoundingRect(painter);
@@ -137,11 +167,17 @@ void te::layout::RectangleItem::drawSingleCornerTrimmedRectangle(QPainter * pain
 {
   painter->save();
 
+  const Property& pFillColor = m_model->getProperty("fill_color");
+  const Property& pContourColor = m_model->getProperty("contour_color");
+
   const Property& pBackgroundColor = m_model->getProperty("background_color");
   const Property& pFrameColor = m_model->getProperty("frame_color");
 
   const te::color::RGBAColor& backgroundColor = pBackgroundColor.getValue().toColor();
   const te::color::RGBAColor& frameColor = pFrameColor.getValue().toColor();
+
+  const te::color::RGBAColor& fillColor = pFillColor.getValue().toColor();
+  const te::color::RGBAColor& contourColor = pContourColor.getValue().toColor();
 
   QColor qFillColor(backgroundColor.getRed(), backgroundColor.getGreen(), backgroundColor.getBlue(), backgroundColor.getAlpha());
   QColor qContourColor(frameColor.getRed(), frameColor.getGreen(), frameColor.getBlue(), frameColor.getAlpha());

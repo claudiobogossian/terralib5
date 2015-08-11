@@ -106,11 +106,6 @@ te::layout::Observer* te::layout::ItemFactory::make( EnumType* type, ItemParamsC
     ImageItem* scale = new ImageItem(params.getController(), params.getModel());
     item = (Observer*)scale;
   }
-  else if(type == enumObj->getPointItem())
-  {
-    PointItem* point = new PointItem(params.getController(), params.getModel());
-    item = (Observer*)point;
-  }
   else if(type == enumObj->getTitleItem())
   {
     TitleItem* title = new TitleItem(params.getController(), params.getModel());
@@ -200,6 +195,10 @@ te::layout::AbstractItemView* te::layout::ItemFactory::makeNew(EnumType* type, I
   else if(type == enumObj->getScaleItem())
   {
     item = new ScaleItem(params.m_newController, params.m_newModel);
+  }
+  else if(type == enumObj->getPointItem())
+  {
+    item = new PointItem(params.m_newController, params.m_newModel);
   }
 
   return item;
