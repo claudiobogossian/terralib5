@@ -644,12 +644,14 @@ void te::qt::af::BaseApplication::onRemoveLayerTriggered()
   if(reply == QMessageBox::No)
     return;
 
-  std::list<te::qt::widgets::AbstractTreeItem*>::const_iterator it;
-  for(it = selectedLayerItems.begin();  it != selectedLayerItems.end(); ++it)
-  {
-    te::qt::af::evt::LayerRemoved evt((*it)->getLayer());
-    te::qt::af::ApplicationController::getInstance().broadcast(&evt);
-  }
+  m_explorer->removeLayers(selectedLayerItems);
+
+//  std::list<te::qt::widgets::AbstractTreeItem*>::const_iterator it;
+//  for(it = selectedLayerItems.begin();  it != selectedLayerItems.end(); ++it)
+//  {
+//    te::qt::af::evt::LayerRemoved evt((*it)->getLayer());
+//    te::qt::af::ApplicationController::getInstance().broadcast(&evt);
+//  }
 }
 
 void te::qt::af::BaseApplication::onChangeLayerDataSourceTriggered()
@@ -2247,6 +2249,9 @@ void te::qt::af::BaseApplication::openProject(const QString& projectFileName)
     CloseAllTables(m_tableDocks);
 
     Project* nproject = te::qt::af::ReadProject(projectFileName.toStdString());
+
+    te::qt::af::XMLFormatter::format(nproject, false);
+    te::qt::af::XMLFormatter::formatDataSourceInfos(false);
 
     delete m_project;
 
