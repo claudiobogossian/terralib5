@@ -717,10 +717,18 @@ void te::qt::af::BaseApplication::onUpdateLayerDataSourceTriggered()
 
     if(!dsl)
       return;
-      
-    std::list<te::da::DataSourceInfoPtr> selecteds;
 
     te::da::DataSourceInfoPtr ds = te::da::DataSourceInfoManager::getInstance().get(dsl->getDataSourceId());
+    
+    if (!ds)
+    {
+      QMessageBox::warning(this,
+                           te::qt::af::ApplicationController::getInstance().getAppTitle(),
+                           tr("Layer data source can not be recovered. Remove the layer or change the data source."));
+      return;
+    }
+    
+    std::list<te::da::DataSourceInfoPtr> selecteds;
 
     selecteds.push_back(ds);
 
@@ -889,9 +897,7 @@ void te::qt::af::BaseApplication::onSaveProjectTriggered()
   // Set the project title and its status as "no change"
   //std::string projectTitle = boost::filesystem::basename(m_project->getFileName());
   //m_project->setTitle(projectTitle);
-  
-  m_project->setProjectAsChanged(false);
-  
+
   XMLFormatter::format(m_project, true);
   XMLFormatter::formatDataSourceInfos(true);
 
@@ -907,6 +913,8 @@ void te::qt::af::BaseApplication::onSaveProjectTriggered()
 
   XMLFormatter::format(m_project, false);
   XMLFormatter::formatDataSourceInfos(false);
+
+  m_project->setProjectAsChanged(false);
 }
 
 void te::qt::af::BaseApplication::onSaveProjectAsTriggered()
@@ -938,8 +946,6 @@ void te::qt::af::BaseApplication::onSaveProjectAsTriggered()
   // Set the project title and its status as "no change"
   //std::string projectTitle = boost::filesystem::basename(m_project->getFileName());
   //m_project->setTitle(projectTitle);
-  
-  m_project->setProjectAsChanged(false);
 
   // Set the window title
   setWindowTitle(te::qt::af::GetWindowTitle(*m_project));
@@ -948,6 +954,8 @@ void te::qt::af::BaseApplication::onSaveProjectAsTriggered()
 
   XMLFormatter::format(m_project, true);
   XMLFormatter::formatDataSourceInfos(true);
+
+  m_project->setProjectAsChanged(false);
 }
 
 void te::qt::af::BaseApplication::onRestartSystemTriggered()
@@ -2247,6 +2255,9 @@ void te::qt::af::BaseApplication::openProject(const QString& projectFileName)
     CloseAllTables(m_tableDocks);
 
     Project* nproject = te::qt::af::ReadProject(projectFileName.toStdString());
+    
+    te::qt::af::XMLFormatter::format(nproject, false);
+    te::qt::af::XMLFormatter::formatDataSourceInfos(false);
 
     delete m_project;
 
