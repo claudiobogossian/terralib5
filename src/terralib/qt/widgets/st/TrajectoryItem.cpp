@@ -52,17 +52,33 @@ te::qt::widgets::TrajectoryItem::TrajectoryItem(const QString& title, te::qt::wi
     painter.end();
     setPixmap(pix);
   }
-  setMatrix();
+  //setMatrix();
 }
 
 te::qt::widgets::TrajectoryItem::~TrajectoryItem()
 {
 }
 
-void te::qt::widgets::TrajectoryItem::createAnimationDataInDisplayProjection()
+void te::qt::widgets::TrajectoryItem::adjustDataToAnimationTemporalExtent()
 {
-  te::qt::widgets::AnimationItem::createAnimationDataInDisplayProjection();
+  te::qt::widgets::AnimationItem::adjustDataToAnimationTemporalExtent();
 }
+
+//void te::qt::widgets::TrajectoryItem::transformToDisplayProjection(QVector<QPointF>& vec)
+//{
+//  if (m_display->getSRID() != TE_UNKNOWN_SRS && m_display->getSRID() != m_SRID)
+//  {
+//    size_t size = vec.count();
+//    te::gm::LineString* line = new te::gm::LineString(size, te::gm::LineStringType, m_SRID);
+//    for (size_t i = 0; i < size; ++i)
+//      line->setPoint(i, vec[(int)i].x(), vec[(int)i].y());
+//    line->transform(m_display->getSRID());
+//
+//    vec.clear();
+//    for (size_t i = 0; i < size; ++i)
+//      vec.push_back(QPointF(line->getPointN(i)->getX(), line->getPointN(i)->getY()));
+//  }
+//}
 
 void te::qt::widgets::TrajectoryItem::paint(QPainter*, const QStyleOptionGraphicsItem*, QWidget*) 
 {
@@ -158,7 +174,7 @@ void te::qt::widgets::TrajectoryItem::drawForward(const unsigned int& curTime)
   if(m_animationRoute.empty())
     return;
 
-  setMatrix();
+  //setMatrix();
 
   int indold = m_animation->getAnimationDataIndex((double)m_curTimeDuration / (double)m_duration);
   int ind = m_animation->getAnimationDataIndex((double)curTime / (double)m_duration);
@@ -186,8 +202,11 @@ void te::qt::widgets::TrajectoryItem::drawForward(const unsigned int& curTime)
       vec.push_back(m_pos);
   }
 
-  if(vec.count() > 1)
+  size_t size = vec.count();
+  if (size > 1)
   {
+    transformToDisplayProjection(vec);
+
     QPolygonF polf(vec);
     QPolygon pol = m_matrix.map(polf).toPolygon();
 
@@ -216,7 +235,7 @@ void te::qt::widgets::TrajectoryItem::erase(const unsigned int& curTime)
   if(m_animationRoute.empty())
     return;
 
-  setMatrix();
+  //setMatrix();
 
   int indold = m_animation->getAnimationDataIndex((double)m_curTimeDuration / (double)m_duration);
   int ind = m_animation->getAnimationDataIndex((double)curTime / (double)m_duration);
@@ -243,8 +262,11 @@ void te::qt::widgets::TrajectoryItem::erase(const unsigned int& curTime)
     vec.push_back(m_pos);
   }
 
-  if(vec.count() > 1)
+  size_t size = vec.count();
+  if (size > 1)
   {
+    transformToDisplayProjection(vec);
+
     QPolygonF polf(vec);
     QPolygon pol = m_matrix.map(polf).toPolygon();
 
@@ -271,6 +293,13 @@ void te::qt::widgets::TrajectoryItem::draw()
     return;
 
   //setMatrix();
+  int w = m_display->getDisplayPixmap()->width();
+  int h = m_display->getDisplayPixmap()->height();
+  te::qt::widgets::Canvas canvas(w, h);
+  te::gm::Envelope e = m_display->getExtent();
+  canvas.calcAspectRatio(e.m_llx, e.m_lly, e.m_urx, e.m_ury);
+  canvas.setWindow(e.m_llx, e.m_lly, e.m_urx, e.m_ury);
+  m_matrix = canvas.getMatrix();
 
   int count = m_animationRoute.size();
   int ind = m_animation->getAnimationDataIndex((double)m_curTimeDuration / (double)m_duration);
@@ -299,8 +328,11 @@ void te::qt::widgets::TrajectoryItem::draw()
     }
   }
 
-  if(vec.count() > 1)
+  size_t size = vec.count();
+  if(size > 1)
   {
+    transformToDisplayProjection(vec);
+
     QPolygonF polf(vec);
     QPolygon pol = m_matrix.map(polf).toPolygon();
 

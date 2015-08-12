@@ -100,7 +100,7 @@ te::dt::SimpleProperty* getConvertedproperty(std::string name, int dataType, std
 
     case te::dt::STRING_TYPE:
     {
-      newProperty = new te::dt::StringProperty(name, te::dt::STRING, isRequired, new std::string(defaultValue));
+      newProperty = new te::dt::StringProperty(name, te::dt::STRING, 0, isRequired, new std::string(defaultValue));
       break;
     }
 

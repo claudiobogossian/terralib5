@@ -88,17 +88,17 @@ long te::dt::GetDistance(const te::dt::DateTime* t1, const te::dt::DateTime* t2)
   {
     case DATE:
       output = dynamic_cast<const Date*>(t1)->operator-(*(dynamic_cast<const Date*>(t2))); 
-      return abs(output);
+      return std::abs(output);
     case TIME_INSTANT:
       output = dynamic_cast<const TimeInstant*>(t1)->operator-(*(dynamic_cast<const TimeInstant*>(t2))); 
-      return abs(output);  
+      return std::abs(output);
     case TIME_INSTANT_TZ:
       output = dynamic_cast<const TimeInstantTZ*>(t1)->operator-(*(dynamic_cast<const TimeInstantTZ*>(t2)));  
-      return abs(output);
+      return std::abs(output);
     case ORDINAL_TIME_INSTANT:
-      output =  (long)abs(dynamic_cast<const OrdinalInstant*>(t1)->getTimeInstant().getValue() - 
+      output =  (long)std::abs(dynamic_cast<const OrdinalInstant*>(t1)->getTimeInstant().getValue() -
                     dynamic_cast<const OrdinalInstant*>(t2)->getTimeInstant().getValue());  
-      return abs(output);
+      return std::abs(output);
 
     default:
     break;
@@ -113,7 +113,7 @@ long te::dt::GetDistance(const te::dt::DateTime* t1, const te::dt::DateTime* t2)
         date1 = dynamic_cast<const DatePeriod*>(t2)->getFinalDate();
         date2 = dynamic_cast<const DatePeriod*>(t1)->getInitialDate();
       }
-      return abs(date2 - date1);    
+     return std::abs(date2 - date1);
    }
 
    if(timeType==TIME_PERIOD)
@@ -125,7 +125,7 @@ long te::dt::GetDistance(const te::dt::DateTime* t1, const te::dt::DateTime* t2)
         instant1 = dynamic_cast<const TimePeriod*>(t2)->getFinalTimeInstant();
         instant2 = dynamic_cast<const TimePeriod*>(t1)->getInitialTimeInstant();
       }
-      return abs(instant2 - instant1);    
+     return std::abs(instant2 - instant1);
    }
 
    if(timeType==TIME_PERIOD_TZ)
@@ -137,7 +137,7 @@ long te::dt::GetDistance(const te::dt::DateTime* t1, const te::dt::DateTime* t2)
         instant1 = dynamic_cast<const TimePeriodTZ*>(t2)->getFinalTimeInstant();
         instant2 = dynamic_cast<const TimePeriodTZ*>(t1)->getInitialTimeInstant();
       }
-      return abs(instant2 - instant1);    
+     return std::abs(instant2 - instant1);
    }
    
    if(timeType==ORDINAL_TIME_PERIOD)
@@ -149,7 +149,7 @@ long te::dt::GetDistance(const te::dt::DateTime* t1, const te::dt::DateTime* t2)
         instant1 = dynamic_cast<const OrdinalPeriod*>(t2)->getFinalTime().getValue();
         instant2 = dynamic_cast<const OrdinalPeriod*>(t1)->getInitialTime().getValue();
       }
-      return (long)abs(instant2 - instant1);    
+     return (long)std::abs(instant2 - instant1);
    }
   
    return output;

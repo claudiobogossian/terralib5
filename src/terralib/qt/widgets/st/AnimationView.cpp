@@ -1,5 +1,8 @@
 #include "AnimationView.h"
+#include "AnimationScene.h"
+#include "AnimationItem.h"
 #include "../canvas/MapDisplay.h"
+#include "../canvas/Canvas.h"
 
 //QT
 #include <QtCore/QEvent>
@@ -16,7 +19,7 @@ te::qt::widgets::AnimationView::AnimationView(te::qt::widgets::MapDisplay* paren
   setAcceptDrops(true);
   setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-  setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
+  setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
   setResizeAnchor(QGraphicsView::NoAnchor);
   //installEventFilter(this);
 }
@@ -70,22 +73,8 @@ void te::qt::widgets::AnimationView::resizeEvent(QResizeEvent *e)
   QGraphicsScene* scene = this->scene();
   if(scene)
   {
-    //te::gm::Envelope box =  m_display->getExtent();
-    //QRectF r(box.getLowerLeftX()-box.getWidth(), box.getLowerLeftY()-box.getHeight(), 4*box.getWidth(), 4*box.getHeight());
-    //ensureVisible(r, 0, 0);
-
     QRectF r = scene->sceneRect();
     fitInView(r);
-    //ensureVisible(r, 0, 0);
-
-    //double xScale = static_cast<double>(width()) / (r.width());
-    //double yScale = static_cast<double>(height()) / (r.height());
-
-    //QMatrix matrix;
-    //matrix.scale(xScale, -yScale);
-    //matrix.translate(-r.left(), -r.top());
-
-    //setMatrix(matrix);
   }
 }
 
@@ -111,6 +100,40 @@ void te::qt::widgets::AnimationView::dropEvent(QDropEvent* e)
       emit animationDropEvent(e);
 }
 
+void te::qt::widgets::AnimationView::paintEvent(QPaintEvent* e)
+{
+  setMatrix();
+  QGraphicsView::paintEvent(e);
+}
+
+void te::qt::widgets::AnimationView::setMatrix()
+{
+  int w = m_display->getDisplayPixmap()->width();
+  int h = m_display->getDisplayPixmap()->height();
+  te::qt::widgets::Canvas canvas(w, h);
+  te::gm::Envelope e = m_display->getExtent();
+  canvas.calcAspectRatio(e.m_llx, e.m_lly, e.m_urx, e.m_ury);
+  canvas.setWindow(e.m_llx, e.m_lly, e.m_urx, e.m_ury);
+  QMatrix matrix = canvas.getMatrix();
+
+  QList<QGraphicsItem*> list = scene()->items();
+  QList<QGraphicsItem*>::iterator it;
+  for(it = list.begin(); it != list.end(); ++it)
+  {
+    AnimationItem* ai = (AnimationItem*)(*it);
+    ai->m_matrix = matrix;
+  }
+  QGraphicsView::setMatrix(matrix);
+
+  QRectF sceneRec = scene()->sceneRect();
+  if (sceneRec != sceneRect())
+    updateSceneRect(sceneRec);
+
+  // ensure the paint event
+  // set bigger box to ensure paint event
+  QRectF srec(sceneRec.x() - 10*sceneRec.width(), sceneRec.y() - 10*sceneRec.height(), 20 * sceneRec.width(), 20 * sceneRec.height());
+  fitInView(srec);
+}
 
 //bool te::qt::widgets::AnimationView::eventFilter(QObject* obj, QEvent* e)
 //{

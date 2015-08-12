@@ -155,12 +155,12 @@ namespace te
           /*!
             \brief It calculates the spatial extent.
           */
-          void calculateSpatialExtent();
+          void calculateAllSpatialExtent();
 
           /*!
             \brief It calculates the temporal extent.
           */
-          void calculateTemporalExtent();
+          void calculateAllTemporalExtent();
 
           /*!
             \brief Change direction.
@@ -309,7 +309,8 @@ namespace te
           /param dwrect The rect of map display in world coordinates.
           /param painter The painter.
         */
-        void drawPixmapItem(PixmapItem* pi, const QRectF& dwrect, QPainter* painter);
+        void drawPixmapItem(PixmapItem* pi, QPainter* painter);
+        //void drawPixmapItem(PixmapItem* pi, const QRectF& dwrect, QPainter* painter);
 
         QImage* getImage(te::qt::widgets::PixmapItem* pi);
 

@@ -37,7 +37,9 @@
 #include "../../../dataaccess/query/SQLDialect.h"
 #include "../../../dataaccess/query/SQLFunctionEncoder.h"
 #include "../../../dataaccess/utils/Utils.h"
+#include "../../../datatype/NumericProperty.h"
 #include "../../../datatype/SimpleProperty.h"
+#include "../../../datatype/StringProperty.h"
 #include "../../../geometry/GeometryProperty.h"
 #include "../../../maptools/DataSetLayer.h"
 #include "../datasource/selector/DataSourceSelectorDialog.h"
@@ -736,7 +738,16 @@ void te::qt::widgets::QueryDataSourceDialog::onCreateLayerToolButtonClicked()
     te::dt::Property* p = 0;
     if(dataSet->getPropertyDataType(t) != te::dt::GEOMETRY_TYPE)
     {
-      p = new te::dt::SimpleProperty(propName, dataSet->getPropertyDataType(t));
+      if (dataSet->getPropertyDataType(t) == te::dt::STRING_TYPE)
+      {
+        p = new te::dt::StringProperty(propName, te::dt::VAR_STRING, 255, false);
+      }
+      else if (dataSet->getPropertyDataType(t) == te::dt::NUMERIC_TYPE)
+      {
+        p = new te::dt::NumericProperty(propName, 0, 0, false);
+      }      
+      else
+        p = new te::dt::SimpleProperty(propName, dataSet->getPropertyDataType(t));
     }
     else
     {

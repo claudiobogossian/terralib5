@@ -85,10 +85,10 @@ namespace te
         */
         void clear();
 
-        /*!
-          \brief It sets the transformation matrix.
-        */
-        void setMatrix();
+        ///*!
+        //  \brief It sets the transformation matrix.
+        //*/
+        //void setMatrix();
 
         /*!
           \brief It sets the trajectory duration.

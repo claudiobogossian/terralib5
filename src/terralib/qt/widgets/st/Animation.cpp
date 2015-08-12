@@ -12,7 +12,7 @@ te::qt::widgets::Animation::~Animation()
 {
 }
 
-void te::qt::widgets::Animation::createAnimationDataInDisplayProjection(const te::dt::TimePeriod& period)
+void te::qt::widgets::Animation::adjustDataToAnimationTemporalExtent(const te::dt::TimePeriod& period)
 {
   if(m_temporalAnimationExtent != period)
     m_temporalAnimationExtent = te::dt::TimePeriod(period.getInitialTimeInstant(), period.getFinalTimeInstant());
@@ -20,7 +20,7 @@ void te::qt::widgets::Animation::createAnimationDataInDisplayProjection(const te
   AnimationItem* ai = (AnimationItem*)targetObject();
 
   // create route points in display projection
-  ai->createAnimationDataInDisplayProjection();
+  ai->adjustDataToAnimationTemporalExtent();
 
   setDataKeyValues();
 }

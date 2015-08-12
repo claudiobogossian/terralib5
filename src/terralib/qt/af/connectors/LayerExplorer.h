@@ -85,6 +85,8 @@ namespace te
 
           te::qt::widgets::LayerExplorer* getExplorer() const;
 
+          void removeLayers(const std::list<te::qt::widgets::AbstractTreeItem*>& items);
+
         protected slots:
 
           /*!
