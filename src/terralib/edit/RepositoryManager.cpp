@@ -175,8 +175,7 @@ void te::edit::RepositoryManager::remove(const std::string& source)
 }
 
 te::edit::RepositoryManager::RepositoryManager()
-{
-}
+{}
 
 te::edit::RepositoryManager::~RepositoryManager()
 {
@@ -186,6 +185,7 @@ te::edit::RepositoryManager::~RepositoryManager()
 void te::edit::RepositoryManager::removeFeature(const std::string& source, te::da::ObjectId* id)
 {
   Repository* repository = getRepository(source);
+
 
   if (repository == 0)
   {

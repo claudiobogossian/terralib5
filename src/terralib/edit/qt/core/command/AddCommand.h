@@ -74,10 +74,10 @@ namespace te
 
         void draw();
 
-        Feature*  m_item;
-        std::map<std::string, Feature*> m_addItems;
         te::qt::widgets::MapDisplay* m_display;
+        Feature*  m_item;
         te::map::AbstractLayerPtr m_layer;
+        std::map<std::string, Feature*> m_addItems;
         te::edit::EditionManager* m_editionManager;
         te::gm::Coord2D    m_initialPosition;
 

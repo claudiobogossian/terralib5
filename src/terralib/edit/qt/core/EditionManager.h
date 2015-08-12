@@ -98,7 +98,7 @@ namespace te
         createOp = 1, 
         updateOp, 
         removeOp
-      }op;
+      };
 
     private:
 

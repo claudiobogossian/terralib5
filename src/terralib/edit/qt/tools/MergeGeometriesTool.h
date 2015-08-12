@@ -77,7 +77,6 @@ namespace te
 
     private:
 
-      te::da::ObjectId* m_refOid;
       void draw();
       void storeMergedFeature();
       void mergeGeometries();
@@ -86,7 +85,6 @@ namespace te
       te::gm::Geometry* Union(te::gm::Geometry* g1, te::gm::Geometry* g2);
       const te::gm::Envelope* getRefEnvelope(te::da::DataSet* ds, te::da::ObjectId* oid, te::gm::GeometryProperty* geomProp);
       te::da::ObjectId* getBaseOID(const te::da::ObjectIdSet* objSet, QString msg);
-      te::da::ObjectIdSet* m_oidRemoved;
 
     private slots:
 
@@ -95,7 +93,13 @@ namespace te
     protected:
 
       te::map::AbstractLayerPtr m_layer;
+
       Feature* m_feature;
+      //std::vector<Feature*> m_updateWatches;
+
+      te::da::ObjectId* m_oidRef;
+      te::da::ObjectIdSet* m_oidsRemoved;
+
       te::edit::EditionManager* m_editionManager;
 
     };
