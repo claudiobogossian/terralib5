@@ -325,7 +325,7 @@ te::da::DataSetType* te::vp::IntersectionMemory::createDataSetType(std::string n
     outputDt->add(prop);
   }
 
-  te::gm::GeomType newType = te::vp::GeomOpResultType(te::da::GetFirstGeomProperty(firstDt)->getGeometryType(), te::da::GetFirstGeomProperty(secondDt)->getGeometryType());
+  te::gm::GeomType newType = setGeomResultType(te::da::GetFirstGeomProperty(firstDt)->getGeometryType(), te::da::GetFirstGeomProperty(secondDt)->getGeometryType());
 
   te::gm::GeometryProperty* newGeomProp = new te::gm::GeometryProperty("geom");
   newGeomProp->setGeometryType(newType);

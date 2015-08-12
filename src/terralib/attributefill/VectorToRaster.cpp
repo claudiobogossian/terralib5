@@ -128,7 +128,6 @@ bool te::attributefill::VectorToRaster::run()
 
   for(std::size_t i = 0; i < m_selectedAttVec.size(); ++i)
   {
-    te::dt::Property* prop =  m_inVectorDsType->getProperty(m_selectedAttVec[i]);
     te::rst::BandProperty* bProp = new te::rst::BandProperty(i, te::dt::DOUBLE_TYPE, "");
     
     if(m_setDummy == true)
@@ -172,6 +171,7 @@ bool te::attributefill::VectorToRaster::run()
     while(vectorIt != vectorMap.end())
     {
       te::gm::Polygon* polygon = static_cast<te::gm::Polygon*>(vectorIt->first);
+      polygon->setSRID(geomProp->getSRID());
 
       if(!polygon)
         continue;

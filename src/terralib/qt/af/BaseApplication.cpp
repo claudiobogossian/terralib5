@@ -100,6 +100,7 @@
 #include "ProjectInfoDialog.h"
 #include "SplashScreenManager.h"
 #include "Utils.h"
+#include "XMLFormatter.h"
 
 // Qt
 #include <QDir>
@@ -716,10 +717,18 @@ void te::qt::af::BaseApplication::onUpdateLayerDataSourceTriggered()
 
     if(!dsl)
       return;
-      
-    std::list<te::da::DataSourceInfoPtr> selecteds;
 
     te::da::DataSourceInfoPtr ds = te::da::DataSourceInfoManager::getInstance().get(dsl->getDataSourceId());
+    
+    if (!ds)
+    {
+      QMessageBox::warning(this,
+                           te::qt::af::ApplicationController::getInstance().getAppTitle(),
+                           tr("Layer data source can not be recovered. Remove the layer or change the data source."));
+      return;
+    }
+    
+    std::list<te::da::DataSourceInfoPtr> selecteds;
 
     selecteds.push_back(ds);
 
@@ -891,6 +900,9 @@ void te::qt::af::BaseApplication::onSaveProjectTriggered()
   
   m_project->setProjectAsChanged(false);
   
+  XMLFormatter::format(m_project, true);
+  XMLFormatter::formatDataSourceInfos(true);
+
   // Save the project
   te::qt::af::Save(*m_project, m_project->getFileName());
 
@@ -900,6 +912,9 @@ void te::qt::af::BaseApplication::onSaveProjectTriggered()
   te::qt::af::ApplicationController::getInstance().updateRecentProjects(m_project->getFileName().c_str(), m_project->getTitle().c_str());
 
   te::qt::af::SaveDataSourcesFile();
+
+  XMLFormatter::format(m_project, false);
+  XMLFormatter::formatDataSourceInfos(false);
 }
 
 void te::qt::af::BaseApplication::onSaveProjectAsTriggered()
@@ -921,6 +936,9 @@ void te::qt::af::BaseApplication::onSaveProjectAsTriggered()
     m_project->setTitle(boost::filesystem::basename(fName));
   }
 
+  XMLFormatter::format(m_project, true);
+  XMLFormatter::formatDataSourceInfos(true);
+
   te::qt::af::Save(*m_project, fName);
 
   ApplicationController::getInstance().updateRecentProjects(fileName, m_project->getTitle().c_str());
@@ -935,6 +953,9 @@ void te::qt::af::BaseApplication::onSaveProjectAsTriggered()
   setWindowTitle(te::qt::af::GetWindowTitle(*m_project));
   
   te::qt::af::SaveDataSourcesFile();
+
+  XMLFormatter::format(m_project, true);
+  XMLFormatter::formatDataSourceInfos(true);
 }
 
 void te::qt::af::BaseApplication::onRestartSystemTriggered()
@@ -1668,17 +1689,34 @@ void te::qt::af::BaseApplication::onDrawTriggered()
   te::qt::af::evt::DrawButtonClicked drawClicked;
   ApplicationController::getInstance().broadcast(&drawClicked);
 
-  m_display->draw(ApplicationController::getInstance().getProject()->getVisibleSingleLayers());
+  std::list<te::map::AbstractLayerPtr> visibleLayers = ApplicationController::getInstance().getProject()->getVisibleSingleLayers();
+
+  m_display->draw(visibleLayers);
+
+  if (visibleLayers.size() > 0)
+    m_layerFitOnMapDisplay->setEnabled(true);
+  else
+    m_layerFitOnMapDisplay->setEnabled(false);
 }
 
 void te::qt::af::BaseApplication::onLayerFitOnMapDisplayTriggered()
 {
   try
   {
+    std::list<te::map::AbstractLayerPtr> visibleLayers = ApplicationController::getInstance().getProject()->getVisibleSingleLayers();
+
+    if (visibleLayers.size() > 0)
+      m_layerFitOnMapDisplay->setEnabled(true);
+    else
+      m_layerFitOnMapDisplay->setEnabled(false);
+
+
     std::list<te::map::AbstractLayerPtr> selectedLayers = m_explorer->getExplorer()->getSelectedSingleLayers();
 
     if(selectedLayers.empty())
     {
+      m_layerFitOnMapDisplay->setEnabled(false);
+
       QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(),
                            tr("Select a layer in the layer explorer!"));
       return;
@@ -1952,8 +1990,15 @@ void te::qt::af::BaseApplication::onZoomExtentTriggered()
   if(!m_project && m_project->getTopLayers().empty())
     return;
 
+  std::list<te::map::AbstractLayerPtr> visibleLayers = ApplicationController::getInstance().getProject()->getVisibleSingleLayers();
+
   //m_display->fit(m_explorer->getExplorer()->getAllLayers());
-  m_display->fit(te::qt::af::ApplicationController::getInstance().getProject()->getVisibleSingleLayers());
+  m_display->fit(visibleLayers);
+
+  if (visibleLayers.size() > 0)
+    m_layerFitOnMapDisplay->setEnabled(true);
+  else
+    m_layerFitOnMapDisplay->setEnabled(false);
 
 }
 
@@ -2210,6 +2255,9 @@ void te::qt::af::BaseApplication::openProject(const QString& projectFileName)
     CloseAllTables(m_tableDocks);
 
     Project* nproject = te::qt::af::ReadProject(projectFileName.toStdString());
+    
+    te::qt::af::XMLFormatter::format(nproject, false);
+    te::qt::af::XMLFormatter::formatDataSourceInfos(false);
 
     delete m_project;
 
@@ -2636,14 +2684,14 @@ void te::qt::af::BaseApplication::initActions()
 // Menu -Layer- actions
   initAction(m_layerRemoveObjectSelection, "pointer-remove-selection", "Layer.Remove Selection", tr("&Remove Selection"), tr(""), true, false, true, m_menubar);
   initAction(m_layerRemoveItem, "item-remove", "Layer.Remove Item", tr("&Remove Item"), tr(""), true, false, true, m_menubar);
-  initAction(m_layerObjectGrouping, "grouping", "Layer.ObjectGrouping", tr("&Classification..."), tr(""), true, false, true, m_menubar);
+  initAction(m_layerObjectGrouping, "grouping", "Layer.ObjectGrouping", tr("&Edit Legend..."), tr(""), true, false, true, m_menubar);
   initAction(m_layerProperties, "layer-info", "Layer.Properties", tr("&Properties..."), tr(""), true, false, true, m_menubar);
   initAction(m_layerSRS, "layer-srs", "Layer.SRS", tr("&Inform SRS..."), tr(""), true, false, true, m_menubar);  
   initAction(m_layerShowTable, "view-data-table", "Layer.Show Table", tr("S&how Table"), tr(""), true, false, true, m_menubar);
   initAction(m_layerChartsHistogram, "chart-bar", "Layer.Charts.Histogram", tr("&Histogram..."), tr(""), true, false, true, m_menubar);
   initAction(m_layerChartsScatter, "chart-scatter", "Layer.Charts.Scatter", tr("&Scatter..."), tr(""), true, false, true, m_menubar);
   initAction(m_layerChart, "chart-pie", "Layer.Charts.Chart", tr("&Pie/Bar Chart..."), tr(""), true, false, true, m_menubar);
-  initAction(m_layerFitOnMapDisplay, "layer-fit", "Layer.Fit Layer on the Map Display", tr("Fit Layer"), tr("Fit the current layer on the Map Display"), true, false, true, m_menubar);
+  initAction(m_layerFitOnMapDisplay, "layer-fit", "Layer.Fit Layer on the Map Display", tr("Fit Layer"), tr("Fit the current layer on the Map Display"), true, false, false, m_menubar);
   initAction(m_layerFitSelectedOnMapDisplay, "zoom-selected-extent", "Layer.Fit Selected Features on the Map Display", tr("Fit Selected Features"), tr("Fit the selected features on the Map Display"), true, false, true, m_menubar);
   initAction(m_layerPanToSelectedOnMapDisplay, "pan-selected", "Layer.Pan to Selected Features on Map Display", tr("Pan to Selected Features"), tr("Pan to the selected features on the Map Display"), true, false, true, m_menubar);
   initAction(m_queryLayer, "view-filter", "Layer.Query", tr("Query..."), tr(""), true, false, true, m_menubar);

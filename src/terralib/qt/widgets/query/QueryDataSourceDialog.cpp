@@ -37,7 +37,9 @@
 #include "../../../dataaccess/query/SQLDialect.h"
 #include "../../../dataaccess/query/SQLFunctionEncoder.h"
 #include "../../../dataaccess/utils/Utils.h"
+#include "../../../datatype/NumericProperty.h"
 #include "../../../datatype/SimpleProperty.h"
+#include "../../../datatype/StringProperty.h"
 #include "../../../geometry/GeometryProperty.h"
 #include "../../../maptools/DataSetLayer.h"
 #include "../datasource/selector/DataSourceSelectorDialog.h"
@@ -105,6 +107,7 @@ te::qt::widgets::QueryDataSourceDialog::QueryDataSourceDialog(QWidget* parent, Q
   connect(m_ui->m_createLayerlToolButton, SIGNAL(pressed()), this, SLOT(onCreateLayerToolButtonClicked()));
   connect(m_ui->m_targetDatasourceToolButton, SIGNAL(pressed()), this, SLOT(onTargetDatasourceToolButtonPressed()));
   connect(m_ui->m_targetFileToolButton, SIGNAL(pressed()), this,  SLOT(onTargetFileToolButtonPressed()));
+  connect(m_ui->m_pkTableComboBox, SIGNAL(activated(int)), this, SLOT(onPkTableComboBoxSelected(int)));
 
   //load data sources information
   loadDataSourcesInformation();
@@ -191,6 +194,8 @@ void te::qt::widgets::QueryDataSourceDialog::onDataSourceSelected(int index)
   m_ui->m_baseDataSetComboBox->clear();
   m_ui->m_dataSetListWidget->clear();
   m_ui->m_attrDataSetListWidget->clear();
+  m_ui->m_pkTableComboBox->clear();
+  m_ui->m_pkAttrComboBox->clear();
 
   std::string dataSourceId = m_ui->m_dataSourceComboBox->itemData(index).toString().toStdString();
 
@@ -206,10 +211,14 @@ void te::qt::widgets::QueryDataSourceDialog::onDataSourceSelected(int index)
   {
     m_ui->m_baseDataSetComboBox->addItem(dataSetNames[t].c_str());
     m_ui->m_dataSetListWidget->addItem(dataSetNames[t].c_str());
+    m_ui->m_pkTableComboBox->addItem(dataSetNames[t].c_str());
   }
 
   if(m_ui->m_baseDataSetComboBox->count() > 0)
     onBaseDataSetSelected(0);
+
+  if (m_ui->m_pkTableComboBox->count() > 0)
+    onPkTableComboBoxSelected(0);
 
   buildMap();
 }
@@ -235,6 +244,9 @@ void te::qt::widgets::QueryDataSourceDialog::onBaseDataSetSelected(int index)
 
     ++it;
   }
+
+  m_ui->m_pkTableComboBox->setCurrentIndex(index);
+  onPkTableComboBoxSelected(index);
 }
 
 void te::qt::widgets::QueryDataSourceDialog::onDataSetItemClicked(QListWidgetItem* item)
@@ -260,10 +272,35 @@ void te::qt::widgets::QueryDataSourceDialog::onDataSetItemClicked(QListWidgetIte
   delete dsType;
 }
 
+void te::qt::widgets::QueryDataSourceDialog::onPkTableComboBoxSelected(int index)
+{
+  std::string dataSetName = m_ui->m_pkTableComboBox->itemText(index).toStdString();
+
+  std::string dataSourceId = m_ui->m_dataSourceComboBox->itemData(m_ui->m_dataSourceComboBox->currentIndex()).toString().toStdString();
+
+  te::da::DataSetType* dsType = te::da::GetDataSetType(dataSetName, dataSourceId);
+
+  std::vector<te::dt::Property*> propVec = dsType->getProperties();
+
+  for (std::size_t t = 0; t < propVec.size(); ++t)
+  {
+    m_ui->m_pkAttrComboBox->addItem(propVec[t]->getName().c_str());
+  }
+
+  delete dsType;
+}
+
 void te::qt::widgets::QueryDataSourceDialog::onApplyPushButtonClicked()
 {
-  if(m_ui->m_sqlEditorTextEdit->toPlainText().isEmpty())
+  QApplication::setOverrideCursor(Qt::WaitCursor);
+
+  m_ui->m_sqlEditorTextEdit->setFocus();
+
+  if (m_ui->m_sqlEditorTextEdit->toPlainText().isEmpty())
+  {
+    QApplication::restoreOverrideCursor();
     return;
+  }
 
   std::string dataSourceId = m_ui->m_dataSourceComboBox->itemData(m_ui->m_dataSourceComboBox->currentIndex()).toString().toStdString();
 
@@ -289,6 +326,7 @@ void te::qt::widgets::QueryDataSourceDialog::onApplyPushButtonClicked()
   }
   catch(const std::exception& e)
   {
+    QApplication::restoreOverrideCursor();
     m_dataSetDisplay->clear();
     m_tableModel->setDataSet(0, ds->getEncoding());
 
@@ -335,6 +373,8 @@ void te::qt::widgets::QueryDataSourceDialog::onApplyPushButtonClicked()
   m_tableModel->setDataSet(dataSet.release(), ds->getEncoding());
 
   m_ui->m_tabWidget->setCurrentIndex(0);
+
+  QApplication::restoreOverrideCursor();
 }
 
 void te::qt::widgets::QueryDataSourceDialog::onClearPushButtonClicked()
@@ -500,6 +540,8 @@ void te::qt::widgets::QueryDataSourceDialog::onApplySelToolButtonClicked()
     return;
   }
 
+  QApplication::setOverrideCursor(Qt::WaitCursor);
+
   std::string dataSourceId = m_ui->m_dataSourceComboBox->itemData(m_ui->m_dataSourceComboBox->currentIndex()).toString().toStdString();
 
   te::da::DataSourcePtr ds = te::da::GetDataSource(dataSourceId);
@@ -525,6 +567,7 @@ void te::qt::widgets::QueryDataSourceDialog::onApplySelToolButtonClicked()
   catch(...)
   {
     QMessageBox::warning(this, tr("Query DataSource"), tr("Error executing SQL."));
+    QApplication::restoreOverrideCursor();
     return;
   }
 
@@ -560,8 +603,11 @@ void te::qt::widgets::QueryDataSourceDialog::onApplySelToolButtonClicked()
   catch(te::common::Exception& e)
   {
     QMessageBox::warning(this, tr("Query DataSource"), tr("Error selecting objects: ") + e.what());
+    QApplication::restoreOverrideCursor();
     return;
   }
+
+  QApplication::restoreOverrideCursor();
 
   QMessageBox::information(this, tr("Query DataSource"), tr("Selection done."));
 }
@@ -588,6 +634,8 @@ void te::qt::widgets::QueryDataSourceDialog::onCreateLayerToolButtonClicked()
     return;
   }
 
+  QApplication::setOverrideCursor(Qt::WaitCursor);
+
   //create dataset
   std::string dataSourceId = m_ui->m_dataSourceComboBox->itemData(m_ui->m_dataSourceComboBox->currentIndex()).toString().toStdString();
 
@@ -613,6 +661,14 @@ void te::qt::widgets::QueryDataSourceDialog::onCreateLayerToolButtonClicked()
   catch(...)
   {
     QMessageBox::warning(this, tr("Query DataSource"), tr("Error executing SQL."));
+    QApplication::restoreOverrideCursor();
+    return;
+  }
+
+  if (dataSet->size() == 0)
+  {
+    QMessageBox::warning(this, tr("Query DataSource"), tr("Query result is empty."));
+    QApplication::restoreOverrideCursor();
     return;
   }
 
@@ -682,7 +738,16 @@ void te::qt::widgets::QueryDataSourceDialog::onCreateLayerToolButtonClicked()
     te::dt::Property* p = 0;
     if(dataSet->getPropertyDataType(t) != te::dt::GEOMETRY_TYPE)
     {
-      p = new te::dt::SimpleProperty(propName, dataSet->getPropertyDataType(t));
+      if (dataSet->getPropertyDataType(t) == te::dt::STRING_TYPE)
+      {
+        p = new te::dt::StringProperty(propName, te::dt::VAR_STRING, 255, false);
+      }
+      else if (dataSet->getPropertyDataType(t) == te::dt::NUMERIC_TYPE)
+      {
+        p = new te::dt::NumericProperty(propName, 0, 0, false);
+      }      
+      else
+        p = new te::dt::SimpleProperty(propName, dataSet->getPropertyDataType(t));
     }
     else
     {
@@ -697,10 +762,24 @@ void te::qt::widgets::QueryDataSourceDialog::onCreateLayerToolButtonClicked()
     if(p)
     {
       dsType->add(p);
+
+      //check primary key
+      if (m_ui->m_pkCheckBox->isChecked())
+      {
+        std::string pkAttrName = m_ui->m_pkAttrComboBox->itemText(m_ui->m_pkAttrComboBox->currentIndex()).toStdString();
+
+        if (te::common::Convert2UCase(pkAttrName) == te::common::Convert2UCase(p->getName()))
+        {
+          std::string pkName = dataSetName + "_" + p->getName() + "_pk";
+          te::da::PrimaryKey* pk = new te::da::PrimaryKey(pkName, dsType.get());
+          pk->add(p->clone());
+        }
+      }
     }
     else
     {
        QMessageBox::warning(this, tr("Query DataSource"), tr("Error creating output dataset."));
+       QApplication::restoreOverrideCursor();
       return;
     }
   }
@@ -708,12 +787,12 @@ void te::qt::widgets::QueryDataSourceDialog::onCreateLayerToolButtonClicked()
   dataSet->moveBeforeFirst();
 
   //create converter in case property name changed
-  te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter(dsType.get(), outputDataSource->getCapabilities());
+  te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter(dsType.get(), outputDataSource->getCapabilities(), outputDataSource->getEncoding());
+
+  te::da::AssociateDataSetTypeConverterSRID(converter, srid);
 
   std::auto_ptr<te::da::DataSetAdapter> dsAdapter(te::da::CreateAdapter(dataSet.get(), converter));
   
-  dsAdapter->setSRID(srid);
-
   //save data
   std::map<std::string, std::string> options;
 
@@ -735,8 +814,11 @@ void te::qt::widgets::QueryDataSourceDialog::onCreateLayerToolButtonClicked()
   catch(te::common::Exception& e)
   {
     QMessageBox::warning(this, tr("Query DataSource"), tr("Error creating layer. ") + e.what());
+    QApplication::restoreOverrideCursor();
     return;
   }
+
+  QApplication::restoreOverrideCursor();
 
   QMessageBox::information(this, tr("Query DataSource"), tr("Layer created."));
 }

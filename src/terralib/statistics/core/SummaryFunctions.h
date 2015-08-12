@@ -73,6 +73,21 @@ namespace te
      \param ss      to return the statistical summary.
      */
     TESTATEXPORT void GetNumericStatisticalSummary(std::vector<double>& values, te::stat::NumericStatisticalSummary& ss);
+
+    /*! Fills the percentage of each class by area.
+
+    \param values       a vector of numerical values, representing pixels from a raster. Do not pass empty.
+    \param resolutionX  a raster horizontal (x-axis) resolution.
+    \param resolutionY  a raster vertical (y-axis) resolution.
+    \param area         area of a geometry that intersects the raster.
+    \param ss           to return the percentage of each class by area.
+    
+    */
+    TESTATEXPORT void GetPercentOfEachClassByArea(std::vector<double>& values,
+                                                  double& resolutionX,
+                                                  double& resolutionY,
+                                                  double& area,
+                                                  te::stat::NumericStatisticalSummary& ss);
     
     /*! Returns the mode of set of numerical values.
      

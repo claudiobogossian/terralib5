@@ -91,9 +91,9 @@ namespace te
         void draw();
 
         /*!
-          \brief Create route points making reprojection if necessary.
+          \brief Adjust data for a given time animation period.
         */
-        void createAnimationDataInDisplayProjection();
+        void adjustDataToAnimationTemporalExtent();
 
         /*!
           \brief Draw a piece of tracktrajectory trail.

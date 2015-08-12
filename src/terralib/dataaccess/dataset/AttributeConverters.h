@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "../../common/CharEncodingConv.h"
+#include "../../srs/Config.h"
 #include "../Config.h"
 
 // Boost
@@ -94,6 +95,22 @@ namespace te
       te::dt::AbstractData* operator()(DataSet* dataset, const std::vector<std::size_t>& indexes, int dstType);
 
       te::common::CharEncoding m_toCode;
+    };
+
+    struct TEDATAACCESSEXPORT SRIDAssociation
+    {
+      SRIDAssociation(const int& inputSRID, const int& outputSRID = TE_UNKNOWN_SRS) :
+        m_inputSRID(inputSRID),
+        m_outputSRID(outputSRID)
+      {
+      }
+
+      ~SRIDAssociation() {}
+
+      te::dt::AbstractData* operator()(DataSet* dataset, const std::vector<std::size_t>& indexes, int dstType);
+
+      int m_inputSRID;
+      int m_outputSRID;
     };
 
   } // end namespace da

@@ -81,7 +81,9 @@ namespace te
 
     protected:
 
-      std::auto_ptr<te::da::DataSetType> getDataSetType();
+      std::vector<std::set<int> > getPixelDistinct(te::rst::Raster* rst, std::vector<unsigned int> bands);
+
+      std::auto_ptr<te::da::DataSetType> getDataSetType(std::vector<std::set<int> > pixelDistinct = std::vector<std::set<int> >());
 
       std::vector<te::rp::Texture> getTexture(te::rst::Raster* rst,
                                               te::gm::Geometry* geom,

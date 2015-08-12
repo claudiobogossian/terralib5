@@ -180,8 +180,8 @@ bool te::vp::IntersectionQuery::run() throw(te::common::Exception)
     outDataSetType->add(prop);
   }
 
-  te::gm::GeomType newType = te::vp::GeomOpResultType(te::da::GetFirstGeomProperty(m_inFirstDsetType.get())->getGeometryType(), 
-                                                      te::da::GetFirstGeomProperty(m_inSecondDsetType.get())->getGeometryType());
+  te::gm::GeomType newType = setGeomResultType( te::da::GetFirstGeomProperty(m_inFirstDsetType.get())->getGeometryType(), 
+                                                te::da::GetFirstGeomProperty(m_inSecondDsetType.get())->getGeometryType());
 
   te::gm::GeometryProperty* newGeomProp = new te::gm::GeometryProperty("geom");
   newGeomProp->setGeometryType(newType);

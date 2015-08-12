@@ -76,6 +76,7 @@ te::stat::NumericStatisticalSummary::NumericStatisticalSummary(const NumericStat
   m_varCoeff = rhs.m_varCoeff;
   m_mode.resize(rhs.m_mode.size());
   std::copy(rhs.m_mode.begin(), rhs.m_mode.end(), m_mode.begin());
+  m_percentEachClass = rhs.m_percentEachClass;
 }
 
 te::stat::NumericStatisticalSummary::~NumericStatisticalSummary()
@@ -105,6 +106,7 @@ te::stat::NumericStatisticalSummary& te::stat::NumericStatisticalSummary::operat
     m_varCoeff = rhs.m_varCoeff;
     m_mode.resize(rhs.m_mode.size());
     std::copy(rhs.m_mode.begin(), rhs.m_mode.end(), m_mode.begin());
+    m_percentEachClass = rhs.m_percentEachClass;
   }
 
   return *this;
@@ -127,5 +129,6 @@ void te::stat::NumericStatisticalSummary::clear()
   m_median = 0;
   m_varCoeff = 0;
   m_mode.clear();
+  m_percentEachClass.clear();
 }
 

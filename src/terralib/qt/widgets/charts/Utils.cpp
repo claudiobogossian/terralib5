@@ -475,7 +475,7 @@ void buildNumericFrequencies(int slices, int stat, std::map<std::string, std::ve
   }
 
   //Adjusting the interval to the user-defined number of slices.
-  interval = ((maxValue - minValue)/slices);
+  interval = ((maxValue * 1.000001 - minValue) / slices);
 
   //Adjusting the histogram's intervals
   for (double i = minValue; i <(maxValue+interval); i+=interval)
@@ -498,7 +498,7 @@ void buildNumericFrequencies(int slices, int stat, std::map<std::string, std::ve
         for(size_t k= 0; k < summarizedValuesToOId[i].second.size(); ++k)
           intervalToOIds.at(intervals[j]).push_back(summarizedValuesToOId[i].second[k]);
 
-        frequencies[j] =  frequencies[j]++;
+        ++frequencies[j];
         break;
       }
     }
@@ -612,6 +612,8 @@ te::qt::widgets::Scatter* te::qt::widgets::createScatter(te::da::DataSet* datase
   if(rpos != std::string::npos)
   {
     std::auto_ptr<te::rst::Raster> raster(dataset->getRaster(rpos));
+    double xDummyValue = raster->getBand(propX)->getProperty()->m_noDataValue;
+    double yDummyValue = raster->getBand(propY)->getProperty()->m_noDataValue;
 
     unsigned int nCol = raster->getNumberOfColumns();
     unsigned int nLin = raster->getNumberOfRows();
@@ -638,6 +640,13 @@ te::qt::widgets::Scatter* te::qt::widgets::createScatter(te::da::DataSet* datase
         raster->getValue(pit.getColumn(), pit.getRow(), val1, propX);
         raster->getValue(pit.getColumn(), pit.getRow(), val2, propY);
 
+        if ((val1 == xDummyValue) || (val2 == yDummyValue))
+        {
+          ++pit;
+          task.pulse();
+          continue;
+        }
+
         newScatter->addX(val1);
         newScatter->addY(val2);
         ++pit;
@@ -657,6 +666,9 @@ te::qt::widgets::Scatter* te::qt::widgets::createScatter(te::da::DataSet* datase
           double val1, val2;
           raster->getValue(c, r, val1, propX);
           raster->getValue(c, r, val2, propY);
+
+          if ((val1 == xDummyValue) || (val2 == yDummyValue))
+            continue;
 
           newScatter->addX(val1);
           newScatter->addY(val2);
@@ -680,7 +692,7 @@ te::qt::widgets::Scatter* te::qt::widgets::createScatter(te::da::DataSet* datase
     std::map<std::string, std::vector<std::pair<double, double> > > valuesToSummarize;
 
     te::common::TaskProgress task;
-    task.setTotalSteps(dataset->getNumProperties());
+    task.setTotalSteps((int)dataset->getNumProperties());
     task.setMessage("Scatter creation");
 
     while(dataset->moveNext())
@@ -783,11 +795,24 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
     std::auto_ptr<te::rst::Raster> rstptr = dataset->getRaster(rpos);
     std::map<double, unsigned int> values =  rstptr->getBand(propId)->getHistogramR(0, 0, 0, 0, slices);
 
+    const te::rst::RasterSummary* rsMin = te::rst::RasterSummaryManager::getInstance().get(rstptr.get(), te::rst::SUMMARY_MIN, true);
+    const te::rst::RasterSummary* rsMax = te::rst::RasterSummaryManager::getInstance().get(rstptr.get(), te::rst::SUMMARY_MAX, true);
+
+    const std::complex<double>* cmin = rsMin->at(0).m_minVal;
+    const std::complex<double>* cmax = rsMax->at(0).m_maxVal;
+
+    double min = cmin->real();
+    double max = cmax->real();
+
     for(std::map<double, unsigned int>::iterator it = values.begin(); it != values.end(); ++it)
     {
-      newHistogram->insert(std::make_pair(new te::dt::Double(it->first), it->second));
+        newHistogram->insert(std::make_pair(new te::dt::Double(it->first), it->second));
     }
+
     newHistogram->setMinValue(rstptr->getBand(propId)->getMinValue(true).real());
+    if (slices != 0)
+      newHistogram->setInterval((max * 1.000001 - min) / slices);
+    newHistogram->setSummarized(false);
   }
   else
   {
@@ -810,7 +835,7 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
 
       te::common::TaskProgress task;
       task.setMessage("Histogram creation");
-      task.setTotalSteps((dataset->getNumProperties()) * 2);
+      task.setTotalSteps(((int)dataset->getNumProperties()) * 2);
 
       dataset->moveBeforeFirst();
 
@@ -836,7 +861,7 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
       //The minimum value
       double minValue = std::numeric_limits<double>::max();
 
-      //The interval (testing)
+      //The interval
       double interval = std::numeric_limits<double>::max();
 
       //A vector containing the intervals
@@ -889,6 +914,7 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
       newHistogram->insert(std::make_pair(new te::dt::Double(it->first), it->second));
     }
     newHistogram->setMinValue(rstptr->getBand(propId)->getMinValue(true).real());
+    newHistogram->setSummarized(false);
   }
   else
   {
@@ -1078,13 +1104,13 @@ QwtSymbol* te::qt::widgets::Terralib2Qwt(te::se::Graphic* graphic)
     image = te::map::ExternalGraphicRendererManager::getInstance().render(graphic->getExternalGraphics()[0], height, width);
   }
 
-  QImage* qimg = te::qt::widgets::GetImage(image, height, width);
+  QImage* qimg = te::qt::widgets::GetImage(image, (int)height, (int)width);
   QPixmap pixmap;
   pixmap = QPixmap::fromImage(*qimg);
 
   //Adjusting the symbol
   symbol->setPixmap(pixmap);
-  symbol->setSize(width, height);
+  symbol->setSize((int)width, (int)height);
 
   delete image;
   delete qimg;
@@ -1096,7 +1122,7 @@ te::qt::widgets::ChartDisplayWidget* te::qt::widgets::createNormalDistribution(t
 {
   te::common::TaskProgress task;
   task.setMessage("Histogram creation");
-  task.setTotalSteps(dataset->getNumProperties());
+  task.setTotalSteps((int)dataset->getNumProperties());
 
   QwtPlotCurve *baseCurve = new QwtPlotCurve("Base Values");
   baseCurve->setOrientation( Qt::Horizontal );

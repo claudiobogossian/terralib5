@@ -42,6 +42,8 @@ bool AggregOGRToOGR()
 
   std::auto_ptr<te::da::DataSet> inDset = srcDs->getDataSet(inDsetName);
   std::auto_ptr<te::da::DataSetType> inDsetType = srcDs->getDataSetType(inDsetName);
+
+  std::auto_ptr<te::da::DataSetTypeConverter> converter(new te::da::DataSetTypeConverter(inDsetType.get(), srcDs->getCapabilities(), srcDs->getEncoding()));
   
   std::string attAgreg = "grupo";
   std::auto_ptr<te::dt::Property> aggregBy = srcDs->getProperty(inDsetName, attAgreg);
@@ -78,7 +80,7 @@ bool AggregOGRToOGR()
   // sera feito por algum tipo de factory
   te::vp::AggregationOp* aggregOp = new te::vp::AggregationMemory();
 
-  aggregOp->setInput(srcDs, inDsetName, inDsetType);
+  aggregOp->setInput(srcDs, inDsetName, converter);
   aggregOp->setOutput(trgDs, outDS);
   aggregOp->setParams(groupingProperties, stats);
   
@@ -121,6 +123,8 @@ bool AggregOGRToPGIS()
   
   std::auto_ptr<te::da::DataSet> inDset = srcDs->getDataSet(inDsetName);
   std::auto_ptr<te::da::DataSetType> inDsetType = srcDs->getDataSetType(inDsetName);
+
+  std::auto_ptr<te::da::DataSetTypeConverter> converter(new te::da::DataSetTypeConverter(inDsetType.get(), srcDs->getCapabilities(), srcDs->getEncoding()));
   
   std::string attAgreg = "grupo";
   std::auto_ptr<te::dt::Property> aggregBy = srcDs->getProperty(inDsetName, attAgreg);
@@ -160,7 +164,7 @@ bool AggregOGRToPGIS()
   // sera feito por algum tipo de factory
   te::vp::AggregationOp* aggregOp = new te::vp::AggregationMemory();
 
-  aggregOp->setInput(srcDs, inDsetName, inDsetType);
+  aggregOp->setInput(srcDs, inDsetName, converter);
   aggregOp->setOutput(trgDs, outDS);
   aggregOp->setParams(groupingProperties, stats);
   
@@ -202,6 +206,8 @@ bool AggregPGISToPGIS()
   
   std::auto_ptr<te::da::DataSet> inDset = srcDs->getDataSet(inDsetName);
   std::auto_ptr<te::da::DataSetType> inDsetType = srcDs->getDataSetType(inDsetName);
+
+  std::auto_ptr<te::da::DataSetTypeConverter> converter(new te::da::DataSetTypeConverter(inDsetType.get(), srcDs->getCapabilities(), srcDs->getEncoding()));
   
   std::string attAgreg = "nomemeso";
   std::auto_ptr<te::dt::Property> aggregBy = srcDs->getProperty(inDsetName, attAgreg);
@@ -232,7 +238,7 @@ bool AggregPGISToPGIS()
   // sera feito por algum tipo de factory
   te::vp::AggregationOp* aggregOp = new te::vp::AggregationQuery();
 
-  aggregOp->setInput(srcDs, inDsetName, inDsetType);
+  aggregOp->setInput(srcDs, inDsetName, converter);
   aggregOp->setOutput(outDsource, outDSet);
   aggregOp->setParams(groupingProperties, stats);
   
@@ -274,6 +280,8 @@ bool AggregPGISToOGR()
   
   std::auto_ptr<te::da::DataSet> inDset = srcDs->getDataSet(inDsetName);
   std::auto_ptr<te::da::DataSetType> inDsetType = srcDs->getDataSetType(inDsetName);
+
+  std::auto_ptr<te::da::DataSetTypeConverter> converter(new te::da::DataSetTypeConverter(inDsetType.get(), srcDs->getCapabilities(), srcDs->getEncoding()));
   
   std::string attAgreg = "nomemeso";
   std::auto_ptr<te::dt::Property> aggregBy = srcDs->getProperty(inDsetName, attAgreg);
@@ -312,7 +320,7 @@ bool AggregPGISToOGR()
   // sera feito por algum tipo de factory
   te::vp::AggregationOp* aggregOp = new te::vp::AggregationQuery();
 
-  aggregOp->setInput(srcDs, inDsetName, inDsetType);
+  aggregOp->setInput(srcDs, inDsetName, converter);
   aggregOp->setOutput(trgDs, outDSet);
   aggregOp->setParams(groupingProperties, stats);
   

@@ -77,7 +77,9 @@ namespace te
 
         protected slots:
 
-          void sridSearchToolButtonPressed();
+          void sridInputSearchToolButtonPressed();
+
+          void sridOutputSearchToolButtonPressed();
 
           void datasetPressed(QListWidgetItem* item);
 

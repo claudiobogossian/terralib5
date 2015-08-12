@@ -82,6 +82,9 @@ te::plugin::AbstractPlugin* te::plugin::CppPluginEngine::load(const PluginInfo& 
 // if not loaded yet, load it!
 
 // the plugin library file may be in a special dir informed by pInfo.m_folder
+    
+    std::string errorMessage;
+    
     boost::filesystem::path pluginFile(libName);
 
     slib.reset(new te::common::Library(pluginFile.string(), true));
@@ -90,8 +93,9 @@ te::plugin::AbstractPlugin* te::plugin::CppPluginEngine::load(const PluginInfo& 
     {
       slib->load();
     }
-    catch(...)
+    catch(te::common::Exception& exc)
     {
+      errorMessage = libName;
     }
 
     if(!slib->isLoaded())
@@ -120,10 +124,13 @@ te::plugin::AbstractPlugin* te::plugin::CppPluginEngine::load(const PluginInfo& 
           pluginFile /= libName;
           slib.reset(new te::common::Library(pluginFile.string(), true));
           slib->load();
+          errorMessage.clear();
           break;
         }
-        catch(...)
+        catch(te::common::Exception& exc)
         {
+          errorMessage += '\n';
+          errorMessage += pluginFile.string();
         }
 
         try
@@ -133,10 +140,13 @@ te::plugin::AbstractPlugin* te::plugin::CppPluginEngine::load(const PluginInfo& 
           pluginFile /= libName;
           slib.reset(new te::common::Library(pluginFile.string(), true));
           slib->load();
+          errorMessage.clear();
           break;
         }
-        catch(...)
+        catch(te::common::Exception& exc)
         {
+          errorMessage += '\n';
+          errorMessage += pluginFile.string();
         }
 
 #if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
@@ -147,10 +157,13 @@ te::plugin::AbstractPlugin* te::plugin::CppPluginEngine::load(const PluginInfo& 
           pluginFile /= libName;
           slib.reset(new te::common::Library(pluginFile.string(), true));
           slib->load();
+          errorMessage.clear();
           break;
         }
-        catch(...)
+        catch(te::common::Exception& exc)
         {
+          errorMessage += '\n';
+          errorMessage += pluginFile.string();
         }
 
         try
@@ -160,18 +173,25 @@ te::plugin::AbstractPlugin* te::plugin::CppPluginEngine::load(const PluginInfo& 
           pluginFile /= libName;
           slib.reset(new te::common::Library(pluginFile.string(), true));
           slib->load();
+          errorMessage.clear();
           break;
         }
-        catch(...)
+        catch(te::common::Exception& exc)
         {
+          errorMessage += '\n';
+          errorMessage += pluginFile.string();
         }
 #endif
       }
 
       if(!slib->isLoaded())
       {
-        std::string m  = TE_TR("Could not find shared library: ");
-                    m += pInfo.m_name;
+        std::string m  = TE_TR("Could not find shared library as: ");
+        if (!errorMessage.empty())
+          m = m + "\n" + errorMessage.c_str();
+        else
+          m = m + ' '+ TE_TR("descried in ") + pInfo.m_name + '.';
+        
         throw te::common::Exception(m);
       }
     }
@@ -179,7 +199,7 @@ te::plugin::AbstractPlugin* te::plugin::CppPluginEngine::load(const PluginInfo& 
 
   if(slib.get() == 0)
   {
-    std::string m  = TE_TR("Could not find shared library: ");
+    std::string m  = TE_TR("Could not find shared library described in ");
                 m += pInfo.m_name;
     throw te::common::Exception(m);
   }  

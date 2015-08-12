@@ -197,15 +197,15 @@ bool te::vp::AggregationQuery::run() throw(te::common::Exception)
     }
     ++itStat;
   }
-  
-  te::gm::GeometryProperty* geom = te::da::GetFirstGeomProperty(m_inDsetType.get());
+
+  te::gm::GeometryProperty* geom = te::da::GetFirstGeomProperty(m_converter->getResult());
     
   te::da::Expression* e_union = new te::da::ST_Union(te::da::PropertyName(geom->getName()));
   te::da::Field* f_union = new te::da::Field(*e_union, "geom");
   fields->push_back(f_union);
   
   // define the resulting spatial property
-  te::gm::GeometryProperty* p = static_cast<te::gm::GeometryProperty*>(m_inDsetType->findFirstPropertyOfType(te::dt::GEOMETRY_TYPE));
+  te::gm::GeometryProperty* p = static_cast<te::gm::GeometryProperty*>(m_converter->getResult()->findFirstPropertyOfType(te::dt::GEOMETRY_TYPE));
   
   // creates the output geometry property
   te::gm::GeometryProperty* geometry = new te::gm::GeometryProperty("geom");
@@ -214,7 +214,7 @@ bool te::vp::AggregationQuery::run() throw(te::common::Exception)
   geometry->setSRID(p->getSRID());
   outDSetType->add(geometry);
   
-  te::da::FromItem* fromItem = new te::da::DataSetName(m_inDsetType->getName());
+  te::da::FromItem* fromItem = new te::da::DataSetName(m_converter->getResult()->getName());
   te::da::From* from = new te::da::From;
   from->push_back(fromItem);
   
@@ -276,6 +276,8 @@ bool te::vp::AggregationQuery::run() throw(te::common::Exception)
           if (!dsQuery->isNull(i-1))
           {
             std::auto_ptr<te::gm::Geometry> agg_geo(dsQuery->getGeometry(i-1));
+            agg_geo->setSRID(p->getSRID());
+
             if (agg_geo->getGeomTypeId() != geotype)
             {
               te::gm::GeometryCollection* gc = new te::gm::GeometryCollection(1,geotype,agg_geo->getSRID());
