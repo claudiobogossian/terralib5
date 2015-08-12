@@ -34,14 +34,19 @@ te::layout::Enums::Enums() :
   m_gridStyleType(0),
   m_lineStyleType(0),
   m_modeType(0),
-  m_templateType(0)
+  m_templateType(0),
+	m_toolType(new EnumToolType())
 {
 
 }
 
 te::layout::Enums::~Enums()
 {
-  
+	if (m_toolType)
+	{
+		delete m_toolType;
+		m_toolType = 0;
+	}
 }
 
 void te::layout::Enums::setEnumDataType( EnumDataType* type )
@@ -103,3 +108,10 @@ te::layout::EnumTemplateType* te::layout::Enums::getEnumTemplateType()
 {
   return m_templateType;
 }
+
+te::layout::EnumToolType* te::layout::Enums::getEnumToolType()
+{
+	return m_toolType;
+}
+
+

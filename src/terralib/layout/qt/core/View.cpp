@@ -33,7 +33,6 @@
 #include "VisualizationArea.h"
 #include "../item/ItemGroup.h"
 #include "tools/ViewZoomClick.h"
-#include "tools/ViewZoomArea.h"
 #include "../../outside/PageSetupController.h"
 #include "../../outside/PageSetupModel.h"
 #include "../../outside/SystematicScaleController.h"
@@ -46,6 +45,8 @@
 #include "../../item/LineModel.h"
 #include "WaitView.h"
 #include "../item/MapItem.h"
+#include "pattern/factory/ToolFactoryParamsCreate.h"
+#include "pattern/factory/ToolFactory.h"
 
 // Qt
 #include <QMouseEvent>
@@ -84,6 +85,13 @@ te::layout::View::View( QWidget* widget) :
 
 te::layout::View::~View()
 {
+	if (m_currentTool)
+	{
+		viewport()->removeEventFilter(m_currentTool);
+		delete m_currentTool;
+		m_currentTool = 0;
+	}
+
   if(m_wait)
   {
     delete m_wait;
@@ -816,13 +824,22 @@ QImage te::layout::View::createImage()
 
 QCursor te::layout::View::createCursor( std::string pathIcon )
 {
-  QSize sz;
-  QIcon ico(QIcon::fromTheme(pathIcon.c_str()));
-  ico.actualSize(sz);
-  QPixmap pix = ico.pixmap(sz);
-  QCursor cur(pix);
+	QIcon ico(QIcon::fromTheme(pathIcon.c_str()));
 
-  return cur;
+	//search icon size
+	QList<QSize> sizes = ico.availableSizes();
+	int maximum = sizes[0].width();
+	for (int i = 1; i < sizes.size(); ++i)
+	{
+		maximum = qMax(maximum, sizes[i].width());
+	}
+
+	QSize sz(maximum, maximum);
+	QPixmap pixmap = ico.pixmap(sz);
+
+	QCursor cur(pixmap);
+
+	return cur;
 }
 
 void te::layout::View::resetView()
@@ -859,11 +876,13 @@ void te::layout::View::pan()
 void te::layout::View::zoomArea()
 {
   resetDefaultConfig();
-
-  // Active ZoomArea Tool
-  QCursor curIn = createCursor("layout-paper-zoom-in");
    
-  m_currentTool = new ViewZoomArea(this, curIn);
+	EnumToolType* tools = Enums::getInstance().getEnumToolType();
+
+	std::string toolName = tools->getZoomAreaTool()->getName();
+	ToolFactoryParamsCreate params(this);
+
+	m_currentTool = te::layout::ToolFactory::make(toolName, params);
 
   setInteractive(false);
   viewport()->installEventFilter(m_currentTool);

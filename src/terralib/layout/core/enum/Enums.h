@@ -40,6 +40,7 @@
 #include "EnumLineStyleType.h"
 #include "EnumModeType.h"
 #include "EnumTemplateType.h"
+#include "EnumToolType.h"
 
 namespace te
 {
@@ -149,6 +150,13 @@ namespace te
         */
         virtual EnumTemplateType* getEnumTemplateType();
 
+				/*!
+				\brief Returns tool type enumeration
+
+				\return tool type enumeration
+				*/
+				virtual EnumToolType* getEnumToolType();
+
       protected:
 
         /*!
@@ -164,6 +172,7 @@ namespace te
         EnumLineStyleType* m_lineStyleType; //!< line style type enumeration
         EnumModeType* m_modeType; //!< mode type enumeration
         EnumTemplateType* m_templateType; //!< template type enumeration
+				EnumToolType* m_toolType; //!< tool type enumeration
 
       private:
       
