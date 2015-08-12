@@ -76,14 +76,14 @@ void te::layout::RectangleItem::drawRectangle( QPainter * painter )
 {
   painter->save();
 
-  const Property& pBackgroundColor = m_controller->getProperty("background_color");
-  const Property& pFrameColor = m_controller->getProperty("frame_color");
+  const Property& pFillColor = m_controller->getProperty("fill_color");
+  const Property& pContourColor = m_controller->getProperty("contour_color");
 
-  const te::color::RGBAColor& backgroundColor = pBackgroundColor.getValue().toColor();
-  const te::color::RGBAColor& frameColor = pFrameColor.getValue().toColor();
+  const te::color::RGBAColor& fillColor = pFillColor.getValue().toColor();
+  const te::color::RGBAColor& contourColor = pContourColor.getValue().toColor();
 
-  QColor qFillColor(backgroundColor.getRed(), backgroundColor.getGreen(), backgroundColor.getBlue(), backgroundColor.getAlpha());
-  QColor qContourColor(frameColor.getRed(), frameColor.getGreen(), frameColor.getBlue(), frameColor.getAlpha());
+  QColor qFillColor(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), fillColor.getAlpha());
+  QColor qContourColor(contourColor.getRed(), contourColor.getGreen(), contourColor.getBlue(), contourColor.getAlpha());
 
   QBrush brush(qFillColor);
   QPen pen(qContourColor, 0, Qt::SolidLine);
@@ -107,20 +107,21 @@ void te::layout::RectangleItem::drawRoundedRectangle(QPainter * painter)
 {
   painter->save();
 
-  const Property& pBackgroundColor = m_controller->getProperty("background_color");
-  const Property& pFrameColor = m_controller->getProperty("frame_color");
+  const Property& pFillColor = m_controller->getProperty("fill_color");
+  const Property& pContourColor = m_controller->getProperty("contour_color");
 
-  const te::color::RGBAColor& backgroundColor = pBackgroundColor.getValue().toColor();
-  const te::color::RGBAColor& frameColor = pFrameColor.getValue().toColor();
+  const te::color::RGBAColor& fillColor = pFillColor.getValue().toColor();
+  const te::color::RGBAColor& contourColor = pContourColor.getValue().toColor();
 
-  QColor qFillColor(backgroundColor.getRed(), backgroundColor.getGreen(), backgroundColor.getBlue(), backgroundColor.getAlpha());
-  QColor qContourColor(frameColor.getRed(), frameColor.getGreen(), frameColor.getBlue(), frameColor.getAlpha());
+  QColor qFillColor(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), fillColor.getAlpha());
+  QColor qContourColor(contourColor.getRed(), contourColor.getGreen(), contourColor.getBlue(), contourColor.getAlpha());
 
   QBrush brush(qFillColor);
   QPen pen(qContourColor, 0, Qt::SolidLine);
 
   painter->setPen(pen);
   painter->setBrush(brush);
+
 
   //gets the adjusted boundigng rectangle based of the painter settings
   QRectF rectAdjusted = getAdjustedBoundingRect(painter);
@@ -138,14 +139,14 @@ void te::layout::RectangleItem::drawSingleCornerTrimmedRectangle(QPainter * pain
 {
   painter->save();
 
-  const Property& pBackgroundColor = m_controller->getProperty("background_color");
-  const Property& pFrameColor = m_controller->getProperty("frame_color");
+  const Property& pFillColor = m_controller->getProperty("fill_color");
+  const Property& pContourColor = m_controller->getProperty("contour_color");
 
-  const te::color::RGBAColor& backgroundColor = pBackgroundColor.getValue().toColor();
-  const te::color::RGBAColor& frameColor = pFrameColor.getValue().toColor();
+  const te::color::RGBAColor& fillColor = pFillColor.getValue().toColor();
+  const te::color::RGBAColor& contourColor = pContourColor.getValue().toColor();
 
-  QColor qFillColor(backgroundColor.getRed(), backgroundColor.getGreen(), backgroundColor.getBlue(), backgroundColor.getAlpha());
-  QColor qContourColor(frameColor.getRed(), frameColor.getGreen(), frameColor.getBlue(), frameColor.getAlpha());
+  QColor qFillColor(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), fillColor.getAlpha());
+  QColor qContourColor(contourColor.getRed(), contourColor.getGreen(), contourColor.getBlue(), contourColor.getAlpha());
 
   QBrush brush(qFillColor);
   QPen pen(qContourColor, 0, Qt::SolidLine);
@@ -157,7 +158,7 @@ void te::layout::RectangleItem::drawSingleCornerTrimmedRectangle(QPainter * pain
   QRectF rectAdjusted = getAdjustedBoundingRect(painter);
 
   QPointF p1 = QPointF(rectAdjusted.width() - rectAdjusted.width() / 4., rectAdjusted.center().y()+ rectAdjusted.height() / 2.);
-  QPointF p2 = QPointF(rectAdjusted.bottomRight().x() - rectAdjusted.bottomRight().x()/100.,rectAdjusted.height() - rectAdjusted.height() / 4.);
+  QPointF p2 = QPointF(rectAdjusted.bottomRight().x() - rectAdjusted.bottomRight().x()/250.,rectAdjusted.height() - rectAdjusted.height() / 4.);
   QPointF p3 = QPointF(rectAdjusted.bottomRight().x(),rectAdjusted.top());
   QPointF p4 = QPointF(rectAdjusted.bottomLeft().x(),rectAdjusted.top());
   QPointF p5 = QPointF(rectAdjusted.bottomLeft().x(),rectAdjusted.bottom());

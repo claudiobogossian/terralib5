@@ -56,6 +56,7 @@
 te::edit::CreatePolygonTool::CreatePolygonTool(te::edit::EditionManager* editionManager, te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, QObject* parent)
   : AbstractTool(display, parent),
     m_layer(layer),
+    m_feature(0),
     m_continuousMode(false),
     m_isFinished(false),
     m_editionManager(editionManager)
@@ -114,7 +115,7 @@ bool te::edit::CreatePolygonTool::mouseMoveEvent(QMouseEvent* e)
 
   m_lastPos = te::gm::Coord2D(coord.x, coord.y);
 
-  Qt::KeyboardModifiers keys = e->modifiers();
+  //Qt::KeyboardModifiers keys = e->modifiers();
 
   /*if(keys == Qt::NoModifier)
     m_continuousMode = false;

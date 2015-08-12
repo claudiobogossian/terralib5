@@ -35,7 +35,7 @@
 te::layout::EllipseModel::EllipseModel()
   : AbstractItemModel()
 {
-  te::color::RGBAColor fillColor(255, 255, 255, 255);
+  te::color::RGBAColor fillColor(0, 0, 0, 255);
   te::color::RGBAColor contourColor(0, 0, 0, 255);
   double width = 22.;
   double height = 20.;

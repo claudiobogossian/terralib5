@@ -27,31 +27,20 @@
 
 // TerraLib
 #include "PointItem.h"
-#include "../../core/pattern/mvc/ItemController.h"
-#include "../../core/AbstractScene.h"
-#include "../../core/pattern/mvc/Observable.h"
 #include "../../../color/RGBAColor.h"
-#include "../../../qt/widgets/Utils.h"
-#include "../../../geometry/Envelope.h"
-#include "../../../common/STLUtils.h"
-#include "../../item/PointModel.h"
 #include "../../core/enum/EnumPointType.h"
 
-// STL
-#include <cmath>
-#include "qmath.h"
 
 // Qt
 #include <QColor>
 #include <QPen>
 #include <QPolygonF>
 #include <QPainterPath>
-#include "ParentItem.h"
+#include "geos/platform.h"
 
-te::layout::PointItem::PointItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
-  ObjectItem(controller, o, invertedMatrix)
+te::layout::PointItem::PointItem( AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix ) 
+  : AbstractItem<QGraphicsItem>(controller, model)
 {
-  m_nameClass = std::string(this->metaObject()->className());
 }
 
 te::layout::PointItem::~PointItem()
@@ -61,64 +50,72 @@ te::layout::PointItem::~PointItem()
 
 void te::layout::PointItem::drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget )
 {
-  PointModel* model = dynamic_cast<PointModel*>(m_model);
-
-  if(model)
+  const Property& property = m_controller->getProperty("point_type");
+  if(property.isNull() == false)
   {
-    EnumPointType* enumScale = model->getEnumPointType();
+    EnumPointType enumPointType;
 
-    if(model->getCurrentPointType() == enumScale->getStar1Type())
+    const std::string& label = property.getOptionByCurrentChoice().toString();
+    EnumType* currentPointType = enumPointType.searchLabel(label);
+
+    if(currentPointType == enumPointType.getStar1Type())
     {
       drawStar1(painter);
     }
-
-    if(model->getCurrentPointType() == enumScale->getStar2Type())
+    if(currentPointType == enumPointType.getStar2Type())
     {
       drawStar2(painter);
     }
-
-    if(model->getCurrentPointType() == enumScale->getStar3Type())
+    if(currentPointType == enumPointType.getStar3Type())
     {
       drawStar3(painter);
     }
-
-    if(model->getCurrentPointType() == enumScale->getStar4Type())
+    if(currentPointType == enumPointType.getStar4Type())
     {
       drawStar4(painter);
     }
-
-    if(model->getCurrentPointType() == enumScale->getCircleType())
+    if(currentPointType == enumPointType.getCircleType())
     {
       drawCircle(painter);
     }
-    if(model->getCurrentPointType() == enumScale->getXType())
+    if(currentPointType == enumPointType.getCrossType())
     {
-      drawX(painter);
+      drawCross(painter);
     }
-    if(model->getCurrentPointType() == enumScale->getSquareType())
-    {
-      drawSquare(painter);
-    }
-    if(model->getCurrentPointType() == enumScale->getRhombusType())
+    if(currentPointType == enumPointType.getRhombusType())
     {
       drawRhombus(painter);
     }
-    if(model->getCurrentPointType() == enumScale->getCrossType())
+    if(currentPointType == enumPointType.getSquareType())
     {
-      drawCross(painter);
+      drawSquare(painter);
+    }
+    if(currentPointType == enumPointType.getXType())
+    {
+      drawX(painter);
     }
   }
 }
 
 void te::layout::PointItem::drawStar1( QPainter * painter )
 {
-  PointModel* model = dynamic_cast<PointModel*>(m_model);
-  if(!model)
-  {
-    return;
-  }
-
   painter->save();
+
+  const Property& pFillColor = m_controller->getProperty("fill_color");
+  const Property& pContourColor = m_controller->getProperty("contour_color");
+
+  const te::color::RGBAColor& fillColor = pFillColor.getValue().toColor();
+  const te::color::RGBAColor& contourColor = pContourColor.getValue().toColor();
+
+  QColor qFillColor(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), fillColor.getAlpha());
+  QColor qContourColor(contourColor.getRed(), contourColor.getGreen(), contourColor.getBlue(), contourColor.getAlpha());
+
+  QBrush brush(qFillColor);
+  QPen pen(qContourColor, 0, Qt::SolidLine);
+
+  painter->setPen(pen);
+  painter->setBrush(brush);
+  painter->setRenderHint( QPainter::Antialiasing, true );
 
   double halfW = boundingRect().width() / 4.;
 
@@ -144,32 +141,29 @@ void te::layout::PointItem::drawStar1( QPainter * painter )
 
   rhombus_path.addPolygon(poly);
 
-  te::color::RGBAColor clrPoint = model->getPointColor();
-
-  QColor pointColor;
-  pointColor.setRed(clrPoint.getRed());
-  pointColor.setGreen(clrPoint.getGreen());
-  pointColor.setBlue(clrPoint.getBlue());
-  pointColor.setAlpha(clrPoint.getAlpha());
-
-  QPen pn(pointColor, 0, Qt::SolidLine);
-  painter->setPen(pn);
-
-  painter->setBrush(pointColor);
   painter->drawPath(rhombus_path);
-
   painter->restore();
 }
 
 void te::layout::PointItem::drawStar2(QPainter * painter)
 {
-  PointModel* model = dynamic_cast<PointModel*>(m_model);
-  if(!model)
-  {
-    return;
-  }
-
   painter->save();
+
+  const Property& pFillColor = m_controller->getProperty("fill_color");
+  const Property& pContourColor = m_controller->getProperty("contour_color");
+
+  const te::color::RGBAColor& fillColor = pFillColor.getValue().toColor();
+  const te::color::RGBAColor& contourColor = pContourColor.getValue().toColor();
+
+  QColor qFillColor(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), fillColor.getAlpha());
+  QColor qContourColor(contourColor.getRed(), contourColor.getGreen(), contourColor.getBlue(), contourColor.getAlpha());
+
+  QBrush brush(qFillColor);
+  QPen pen(qContourColor, 0, Qt::SolidLine);
+
+  painter->setPen(pen);
+  painter->setBrush(brush);
+  painter->setRenderHint( QPainter::Antialiasing, true );
 
   double halfW = boundingRect().width() / 4.;
   double w = boundingRect().width() / 2.;
@@ -189,30 +183,29 @@ void te::layout::PointItem::drawStar2(QPainter * painter)
   star << center;
   star.translate(boundingRect().center());
 
-  te::color::RGBAColor clrPoint = model->getPointColor();
-
-  QColor pointColor;
-  pointColor.setRed(clrPoint.getRed());
-  pointColor.setGreen(clrPoint.getGreen());
-  pointColor.setBlue(clrPoint.getBlue());
-  pointColor.setAlpha(clrPoint.getAlpha());
-
-  QPen pn(pointColor, 0, Qt::SolidLine);
-  painter->setPen(pn);
-  painter->setBrush(pointColor);
   painter->drawPolygon(star);
   painter->restore();
 }
 
 void te::layout::PointItem::drawStar3(QPainter * painter)
 {
-  PointModel* model = dynamic_cast<PointModel*>(m_model);
-	if(!model)
-	{
-		return;
-	}
+  painter->save();
 
-	painter->save();
+  const Property& pFillColor = m_controller->getProperty("fill_color");
+  const Property& pContourColor = m_controller->getProperty("contour_color");
+
+  const te::color::RGBAColor& fillColor = pFillColor.getValue().toColor();
+  const te::color::RGBAColor& contourColor = pContourColor.getValue().toColor();
+
+  QColor qFillColor(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), fillColor.getAlpha());
+  QColor qContourColor(contourColor.getRed(), contourColor.getGreen(), contourColor.getBlue(), contourColor.getAlpha());
+
+  QBrush brush(qFillColor);
+  QPen pen(qContourColor, 0, Qt::SolidLine);
+
+  painter->setPen(pen);
+  painter->setBrush(brush);
+  painter->setRenderHint( QPainter::Antialiasing, true );
 
 	QPolygonF star;
 	double halfW = boundingRect().width() / 4.;
@@ -226,31 +219,29 @@ void te::layout::PointItem::drawStar3(QPainter * painter)
 	}
 	star.translate(boundingRect().center());
 
-	te::color::RGBAColor clrPoint = model->getPointColor();
-
-	QColor pointColor;
-	pointColor.setRed(clrPoint.getRed());
-	pointColor.setGreen(clrPoint.getGreen());
-	pointColor.setBlue(clrPoint.getBlue());
-	pointColor.setAlpha(clrPoint.getAlpha());
-
-	QPen pn(pointColor, 0, Qt::SolidLine);
-	painter->setPen(pn);
-
-	painter->setBrush(pointColor);
 	painter->drawPolygon(star);
 	painter->restore();
 }
 
 void te::layout::PointItem::drawStar4(QPainter * painter)
 {
-	PointModel* model = dynamic_cast<PointModel*>(m_model);
-	if(!model)
-	{
-		return;
-	}
+  painter->save();
 
-	painter->save();
+  const Property& pFillColor = m_controller->getProperty("fill_color");
+  const Property& pContourColor = m_controller->getProperty("contour_color");
+
+  const te::color::RGBAColor& fillColor = pFillColor.getValue().toColor();
+  const te::color::RGBAColor& contourColor = pContourColor.getValue().toColor();
+
+  QColor qFillColor(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), fillColor.getAlpha());
+  QColor qContourColor(contourColor.getRed(), contourColor.getGreen(), contourColor.getBlue(), contourColor.getAlpha());
+
+  QBrush brush(qFillColor);
+  QPen pen(qContourColor, 0, Qt::SolidLine);
+
+  painter->setPen(pen);
+  painter->setBrush(brush);
+  painter->setRenderHint( QPainter::Antialiasing, true );
 
 	QPolygonF star;
 	double halfW = boundingRect().width() / 4.;
@@ -264,18 +255,6 @@ void te::layout::PointItem::drawStar4(QPainter * painter)
 	}
 	star.translate(boundingRect().center());
 
-	te::color::RGBAColor clrPoint = model->getPointColor();
-
-	QColor pointColor;
-	pointColor.setRed(clrPoint.getRed());
-	pointColor.setGreen(clrPoint.getGreen());
-	pointColor.setBlue(clrPoint.getBlue());
-	pointColor.setAlpha(clrPoint.getAlpha());
-
-	QPen pn(pointColor, 0, Qt::SolidLine);
-	painter->setPen(pn);
-
-	painter->setBrush(pointColor);
 	painter->drawPolygon(star);
 	painter->restore();
 }
@@ -283,13 +262,23 @@ void te::layout::PointItem::drawStar4(QPainter * painter)
 
 void te::layout::PointItem::drawCircle( QPainter * painter )
 {
-  PointModel* model = dynamic_cast<PointModel*>(m_model);
-  if(!model)
-  {
-    return;
-  }
-
   painter->save();
+
+  const Property& pFillColor = m_controller->getProperty("fill_color");
+  const Property& pContourColor = m_controller->getProperty("contour_color");
+
+  const te::color::RGBAColor& fillColor = pFillColor.getValue().toColor();
+  const te::color::RGBAColor& contourColor = pContourColor.getValue().toColor();
+
+  QColor qFillColor(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), fillColor.getAlpha());
+  QColor qContourColor(contourColor.getRed(), contourColor.getGreen(), contourColor.getBlue(), contourColor.getAlpha());
+
+  QBrush brush(qFillColor);
+  QPen pen(qContourColor, 0, Qt::SolidLine);
+
+  painter->setPen(pen);
+  painter->setBrush(brush);
+  painter->setRenderHint( QPainter::Antialiasing, true );
 
   double halfW = boundingRect().width() / 4.;
   double halfH = boundingRect().height() / 4.;
@@ -303,19 +292,6 @@ void te::layout::PointItem::drawCircle( QPainter * painter )
 
   QPainterPath circle_path;
   circle_path.addEllipse(pointRect);
-
-  te::color::RGBAColor clrPoint = model->getPointColor();
-
-  QColor pointColor;
-  pointColor.setRed(clrPoint.getRed());
-  pointColor.setGreen(clrPoint.getGreen());
-  pointColor.setBlue(clrPoint.getBlue());
-  pointColor.setAlpha(clrPoint.getAlpha());
-
-  QPen pn(pointColor, 0, Qt::SolidLine);
-  painter->setPen(pn);
-
-  painter->setBrush(pointColor);
   painter->drawPath(circle_path);
 
   painter->restore();
@@ -323,13 +299,23 @@ void te::layout::PointItem::drawCircle( QPainter * painter )
 
 void te::layout::PointItem::drawX( QPainter * painter )
 {
-  PointModel* model = dynamic_cast<PointModel*>(m_model);
-  if(!model)
-  {
-    return;
-  }
-
   painter->save();
+
+  const Property& pFillColor = m_controller->getProperty("fill_color");
+  const Property& pContourColor = m_controller->getProperty("contour_color");
+
+  const te::color::RGBAColor& fillColor = pFillColor.getValue().toColor();
+  const te::color::RGBAColor& contourColor = pContourColor.getValue().toColor();
+
+  QColor qFillColor(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), fillColor.getAlpha());
+  QColor qContourColor(contourColor.getRed(), contourColor.getGreen(), contourColor.getBlue(), contourColor.getAlpha());
+
+  QBrush brush(qFillColor);
+  QPen pen(qContourColor, 0, Qt::SolidLine);
+
+  painter->setPen(pen);
+  painter->setBrush(brush);
+  painter->setRenderHint( QPainter::Antialiasing, true );
   
   double centerX = boundingRect().center().x();
   double centerY = boundingRect().center().y();
@@ -343,19 +329,7 @@ void te::layout::PointItem::drawX( QPainter * painter )
   rect_path.lineTo(centerX + halfW, halfH);
   rect_path.moveTo(halfW, centerY - halfH);
   rect_path.lineTo(centerX + halfW, centerY + halfH);
-  
-  te::color::RGBAColor clrPoint = model->getPointColor();
-
-  QColor pointColor;
-  pointColor.setRed(clrPoint.getRed());
-  pointColor.setGreen(clrPoint.getGreen());
-  pointColor.setBlue(clrPoint.getBlue());
-  pointColor.setAlpha(clrPoint.getAlpha());
-
-  QPen pn(pointColor, 1, Qt::SolidLine);
-  painter->setPen(pn);
-
-  painter->setBrush(pointColor);
+ 
   painter->drawPath(rect_path);
 
   painter->restore();
@@ -363,13 +337,23 @@ void te::layout::PointItem::drawX( QPainter * painter )
 
 void te::layout::PointItem::drawSquare( QPainter * painter )
 {
-  PointModel* model = dynamic_cast<PointModel*>(m_model);
-  if(!model)
-  {
-    return;
-  }
-
   painter->save();
+
+  const Property& pFillColor = m_controller->getProperty("fill_color");
+  const Property& pContourColor = m_controller->getProperty("contour_color");
+
+  const te::color::RGBAColor& fillColor = pFillColor.getValue().toColor();
+  const te::color::RGBAColor& contourColor = pContourColor.getValue().toColor();
+
+  QColor qFillColor(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), fillColor.getAlpha());
+  QColor qContourColor(contourColor.getRed(), contourColor.getGreen(), contourColor.getBlue(), contourColor.getAlpha());
+
+  QBrush brush(qFillColor);
+  QPen pen(qContourColor, 0, Qt::SolidLine);
+
+  painter->setPen(pen);
+  painter->setBrush(brush);
+  painter->setRenderHint( QPainter::Antialiasing, true );
   
   double halfW = boundingRect().width() / 4.;
   double halfH = boundingRect().height() / 4.;
@@ -384,18 +368,6 @@ void te::layout::PointItem::drawSquare( QPainter * painter )
   QPainterPath rect_path;
   rect_path.addRect(pointRect);
 
-  te::color::RGBAColor clrPoint = model->getPointColor();
-
-  QColor pointColor;
-  pointColor.setRed(clrPoint.getRed());
-  pointColor.setGreen(clrPoint.getGreen());
-  pointColor.setBlue(clrPoint.getBlue());
-  pointColor.setAlpha(clrPoint.getAlpha());
-
-  QPen pn(pointColor, 0, Qt::SolidLine);
-  painter->setPen(pn);
-
-  painter->setBrush(pointColor);
   painter->drawPath(rect_path);
 
   painter->restore();
@@ -403,14 +375,24 @@ void te::layout::PointItem::drawSquare( QPainter * painter )
 
 void te::layout::PointItem::drawRhombus( QPainter * painter )
 {
-  PointModel* model = dynamic_cast<PointModel*>(m_model);
-  if(!model)
-  {
-    return;
-  }
-
   painter->save();
-  
+
+  const Property& pFillColor = m_controller->getProperty("fill_color");
+  const Property& pContourColor = m_controller->getProperty("contour_color");
+
+  const te::color::RGBAColor& fillColor = pFillColor.getValue().toColor();
+  const te::color::RGBAColor& contourColor = pContourColor.getValue().toColor();
+
+  QColor qFillColor(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), fillColor.getAlpha());
+  QColor qContourColor(contourColor.getRed(), contourColor.getGreen(), contourColor.getBlue(), contourColor.getAlpha());
+
+  QBrush brush(qFillColor);
+  QPen pen(qContourColor, 0, Qt::SolidLine);
+
+  painter->setPen(pen);
+  painter->setBrush(brush);
+  painter->setRenderHint( QPainter::Antialiasing, true );
+
   double centerX = boundingRect().center().x();
   double centerY = boundingRect().center().y();
 
@@ -427,18 +409,6 @@ void te::layout::PointItem::drawRhombus( QPainter * painter )
   QPainterPath rhombus_path;
   rhombus_path.addPolygon(poly);
 
-  te::color::RGBAColor clrPoint = model->getPointColor();
-
-  QColor pointColor;
-  pointColor.setRed(clrPoint.getRed());
-  pointColor.setGreen(clrPoint.getGreen());
-  pointColor.setBlue(clrPoint.getBlue());
-  pointColor.setAlpha(clrPoint.getAlpha());
-
-  QPen pn(pointColor, 0, Qt::SolidLine);
-  painter->setPen(pn);
-
-  painter->setBrush(pointColor);
   painter->drawPath(rhombus_path);
 
   painter->restore();
@@ -446,34 +416,31 @@ void te::layout::PointItem::drawRhombus( QPainter * painter )
 
 void te::layout::PointItem::drawCross( QPainter * painter )
 {
-  PointModel* model = dynamic_cast<PointModel*>(m_model);
-  if(!model)
-  {
-    return;
-  }
-
   painter->save();
-  
+
+  const Property& pFillColor = m_controller->getProperty("fill_color");
+  const Property& pContourColor = m_controller->getProperty("contour_color");
+
+  const te::color::RGBAColor& fillColor = pFillColor.getValue().toColor();
+  const te::color::RGBAColor& contourColor = pContourColor.getValue().toColor();
+
+  QColor qFillColor(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), fillColor.getAlpha());
+  QColor qContourColor(contourColor.getRed(), contourColor.getGreen(), contourColor.getBlue(), contourColor.getAlpha());
+
+  QBrush brush(qFillColor);
+  QPen pen(qContourColor, 0, Qt::SolidLine);
+
+  painter->setPen(pen);
+  painter->setBrush(brush);
+  painter->setRenderHint( QPainter::Antialiasing, true );
+
   double centerX = boundingRect().center().x();
   double centerY = boundingRect().center().y();
   
   double halfW = boundingRect().width() / 4.;
   double halfH = boundingRect().height() / 4.;
-    
-  te::color::RGBAColor clrPoint = model->getPointColor();
 
   QPainterPath painterCross;
-
-  QColor pointColor;
-  pointColor.setRed(clrPoint.getRed());
-  pointColor.setGreen(clrPoint.getGreen());
-  pointColor.setBlue(clrPoint.getBlue());
-  pointColor.setAlpha(clrPoint.getAlpha());
-
-  QPen pn(pointColor, 0, Qt::SolidLine);
-  painter->setPen(pn);
-
-  painter->setBrush(pointColor);
   
   painterCross.moveTo(centerX - halfW, centerY);
   painterCross.lineTo(centerX + halfW, centerY);
