@@ -47,6 +47,7 @@
 #include "../enum/EnumType.h"
 #include "../Config.h"
 #include "GenericVariant.h"
+#include "../../../geometry/Geometry.h"
 
 // STL
 #include <string>
@@ -192,6 +193,13 @@ namespace te
         const GenericVariant& toGenericVariant() const;
 
         /*!
+          \brief Returns the shared pointer of te::gm::Geometry type. (The setValue method received a shared pointer of te::gm::Geometry).
+
+          \return shared poiniter of te::gm::Geometry type
+        */
+        const te::gm::GeometryShrPtr toGeometry() const;
+
+        /*!
           \brief Converts the value to a string.
 
           \return Value as a string
@@ -293,6 +301,7 @@ namespace te
       bool m_null; //!< true if no value has been set, false otherwise
       bool m_complex; //!< true if value is not of common C++ data type, false otherwise
       GenericVariant m_generic; //!< value of te::layout::GenericVariant type
+      te::gm::GeometryShrPtr m_geometryPtr; //!< shared pointer of te::gm::Geometry type
     };
 
     template<typename ValueType>
@@ -322,7 +331,7 @@ namespace te
           m_lValue == otherProp.toLong() &&
           m_fValue == otherProp.toFloat() &&
           m_bValue == otherProp.toBool() &&
-          m_colorValue == otherProp.toColor() /*&&
+          m_colorValue == otherProp.toColor()/*&&
           m_fontValue == otherProp.toFont()*/)
         {
           return true;

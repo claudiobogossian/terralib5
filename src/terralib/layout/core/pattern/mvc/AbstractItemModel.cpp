@@ -89,9 +89,10 @@ te::layout::AbstractItemModel::AbstractItemModel()
   {
     Property property(0);
     property.setName("show_frame");
-    property.setLabel("Show Frame");
-    property.setValue(true, dataType->getDataTypeBool());
-    m_properties.addProperty(property);
+    property.setLabel("show_frame");
+    property.setValue(false, dataType->getDataTypeBool());
+    property.setMenu(true);
+    this->m_properties.addProperty(property);
   }
 
   {
@@ -104,7 +105,7 @@ te::layout::AbstractItemModel::AbstractItemModel()
 }
 
 te::layout::AbstractItemModel::~AbstractItemModel()
-{
+{ 
 }
 
 const te::layout::Property& te::layout::AbstractItemModel::getProperty(const std::string& propertyName) const

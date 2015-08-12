@@ -102,12 +102,6 @@ te::layout::RectangleModel::RectangleModel()
     property.setValue(backgroundColor, dataType->getDataTypeColor());
     this->m_properties.updateProperty(property);
   }
-  {
-    Property property(0);
-    property.setName("show_frame");
-    property.setValue(false, dataType->getDataTypeBool());
-    this->m_properties.updateProperty(property);
-  }
 }
 
 te::layout::RectangleModel::~RectangleModel()

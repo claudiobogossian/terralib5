@@ -45,6 +45,7 @@
 #include "../../item/LineModel.h"
 #include "WaitView.h"
 #include "../item/MapItem.h"
+
 #include "pattern/factory/ToolFactoryParamsCreate.h"
 #include "pattern/factory/ToolFactory.h"
 
@@ -182,7 +183,6 @@ void te::layout::View::mousePressEvent( QMouseEvent * event )
       if (oItem)
       {
         LineModel* lm = dynamic_cast<LineModel*>(oItem->getModel());
-        lm->setCoords(m_wait->getCoordsW());
         m_wait->clear();
         Context::getInstance().setItem(0);
         Context::getInstance().setWait(mode->getModeNone());

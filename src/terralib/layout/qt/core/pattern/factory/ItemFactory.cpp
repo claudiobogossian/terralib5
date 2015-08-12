@@ -111,16 +111,6 @@ te::layout::Observer* te::layout::ItemFactory::make( EnumType* type, ItemParamsC
     MovingItemGroup* mItemGroup = new MovingItemGroup(params.getController(), params.getModel());
     item = (Observer*) mItemGroup;
   }
-  else if(type == enumObj->getLineItem())
-  {
-    LineItem* line = new LineItem(params.getController(), params.getModel());
-    item = (Observer*)line;
-  }
-  else if(type == enumObj->getPolygonItem())
-  {
-    PolygonItem* polygon = new PolygonItem(params.getController(), params.getModel());
-    item = (Observer*)polygon;
-  }
   else if(type == enumObj->getBalloonItem())
   {
     BalloonItem* balloon = new BalloonItem(params.getController(), params.getModel());
@@ -194,6 +184,14 @@ te::layout::AbstractItemView* te::layout::ItemFactory::makeNew(EnumType* type, I
   else if(type == enumObj->getNorthItem())
   {
     item = new NorthItem(params.m_newController, params.m_newModel);
+  }
+  else if(type == enumObj->getLineItem())
+  {
+    item = new LineItem(params.m_newController, params.m_newModel);
+  }
+  else if(type == enumObj->getPolygonItem())
+  {
+    item = new PolygonItem(params.m_newController, params.m_newModel);
   }
 
   return item;
