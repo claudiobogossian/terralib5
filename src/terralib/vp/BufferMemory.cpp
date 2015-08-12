@@ -31,6 +31,7 @@
 #include "../common/Translator.h"
 
 #include "../dataaccess/dataset/DataSet.h"
+#include "../dataaccess/dataset/DataSetAdapter.h"
 #include "../dataaccess/utils/Utils.h"
 #include "../datatype/Property.h"
 #include "../datatype/SimpleProperty.h"
@@ -74,13 +75,15 @@ bool te::vp::BufferMemory::run() throw(te::common::Exception)
   int type;
   int pk = 0;
 
-  std::auto_ptr<te::da::DataSet> inDset;
+  std::auto_ptr<te::da::DataSet> inDsetSrc;
   
   if(m_oidSet == 0)
-    inDset = m_inDsrc->getDataSet(m_inDsetName);
+    inDsetSrc = m_inDsrc->getDataSet(m_inDsetName);
   else
-    inDset = m_inDsrc->getDataSet(m_inDsetName, m_oidSet);
+    inDsetSrc = m_inDsrc->getDataSet(m_inDsetName, m_oidSet);
   
+  std::auto_ptr<te::da::DataSetAdapter> inDset(te::da::CreateAdapter(inDsetSrc.get(), m_converter.get()));
+
   inDset->moveBeforeFirst();
 
   while(inDset->moveNext())
@@ -280,8 +283,8 @@ void te::vp::BufferMemory::dissolveMemory(te::mem::DataSet* outDSet,
 {
   std::vector<std::vector<te::gm::Geometry*> > vecGeom;
     
-  int levelPos = te::da::GetPropertyPos(outDSet, "level");
-  int geomPos  = te::da::GetPropertyPos(outDSet, "geom");
+  int levelPos = (int)te::da::GetPropertyPos(outDSet, "level");
+  int geomPos  = (int)te::da::GetPropertyPos(outDSet, "geom");
   int level;
 
   //te::common::TaskProgress task1("Dissolving boundaries...");
@@ -380,11 +383,11 @@ void te::vp::BufferMemory::dissolveMemory(te::mem::DataSet* outDSet,
     std::vector<te::gm::Geometry*> currentVec = vecGeom[i];
     std::size_t c_vecSize = currentVec.size();
 
-    for(std::size_t j = 0; j < c_vecSize; ++j)
+    for(int j = 0; j < c_vecSize; ++j)
     {
       te::mem::DataSetItem* dataSetItem = new te::mem::DataSetItem(outDSet);
       dataSetItem->setInt32(0, pk); //pk
-      dataSetItem->setInt32(1, i+1); //level
+      dataSetItem->setInt32(1, (int)i+1); //level
       dataSetItem->setDouble(2, 0/*distance*(i)*/); //distance
         
       if(currentVec[j]->getGeomTypeId() == te::gm::MultiPolygonType)

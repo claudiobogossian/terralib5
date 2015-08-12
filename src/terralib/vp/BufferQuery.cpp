@@ -30,6 +30,8 @@
 #include "../common/Translator.h"
 
 #include "../dataaccess/dataset/DataSet.h"
+#include "../dataaccess/dataset/DataSetAdapter.h"
+#include "../dataaccess/dataset/DataSetTypeConverter.h"
 
 #include "../datatype/Property.h"
 #include "../datatype/SimpleProperty.h"
@@ -86,7 +88,7 @@ bool te::vp::BufferQuery::run() throw(te::common::Exception)
 
   if(m_copyInputColumns)
   {
-    std::vector<te::dt::Property*> props = m_inDsetType->getProperties();
+    std::vector<te::dt::Property*> props = m_converter->getResult()->getProperties();
     for(std::size_t i=0; i < props.size(); ++i)
     {
       if(props[i]->getType() != te::dt::GEOMETRY_TYPE)
@@ -97,7 +99,7 @@ bool te::vp::BufferQuery::run() throw(te::common::Exception)
     }
   }
 
-  te::gm::GeometryProperty* geom = te::da::GetFirstGeomProperty(m_inDsetType.get());
+  te::gm::GeometryProperty* geom = te::da::GetFirstGeomProperty(m_converter->getResult());
 
   te::da::Expression* e_buffer = 0;
   te::da::Expression* e_aux = 0;
@@ -147,7 +149,7 @@ bool te::vp::BufferQuery::run() throw(te::common::Exception)
     }
   }
 
-  te::da::FromItem* fromItem = new te::da::DataSetName(m_inDsetType->getName());
+  te::da::FromItem* fromItem = new te::da::DataSetName(m_converter->getResult()->getName());
   te::da::From* from = new te::da::From;
   from->push_back(fromItem);
 
@@ -174,7 +176,16 @@ bool te::vp::BufferQuery::run() throw(te::common::Exception)
     prepareDataSet(outDSType.get(), dsQuery.get(), outDSet.get(), m_distance);
   }
 
-  te::vp::Save(m_outDsrc.get(), outDSet.get(), outDSType.get());
+// Converter to use SRID from layer.
+  te::gm::GeometryProperty* geomPropertyLayer = te::da::GetFirstGeomProperty(m_converter->getResult());
+  int layerSRID = geomPropertyLayer->getSRID();
+  
+  te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter(outDSType.get(), m_outDsrc->getCapabilities(), m_outDsrc->getEncoding());
+  te::da::AssociateDataSetTypeConverterSRID(converter, layerSRID);
+  te::da::DataSetType* dsTypeResult = converter->getResult();
+  std::auto_ptr<te::da::DataSetAdapter> dsAdapter(te::da::CreateAdapter(outDSet.get(), converter));
+
+  te::vp::Save(m_outDsrc.get(), dsAdapter.get(), dsTypeResult);
   return true;
 
 }
@@ -267,7 +278,7 @@ void te::vp::BufferQuery::prepareDataSet(te::da::DataSetType* dataSetType,
 {
   std::size_t numProps = dataSetQuery->getNumProperties();
   std::size_t firstGeomPos = te::da::GetFirstSpatialPropertyPos(dataSetQuery);
-  int numItems = numProps - firstGeomPos;
+  int numItems = (int)numProps - (int)firstGeomPos;
   int pk = 0;
   dataSetQuery->moveBeforeFirst();
   
@@ -350,8 +361,8 @@ void te::vp::BufferQuery::prepareDataSet(te::da::DataSetType* dataSetType,
     {
       te::mem::DataSetItem* dataSetItem = new te::mem::DataSetItem(outputDataSet);
       dataSetItem->setInt32(0, pk); //pk
-      dataSetItem->setInt32(1, i+1); //level
-      dataSetItem->setDouble(2, distance*(i+1)); //distance
+      dataSetItem->setInt32(1, (int)i+1); //level
+      dataSetItem->setDouble(2, distance*((int)i+1)); //distance
 
       std::auto_ptr<te::gm::Geometry> geom(vecGeom[j]);
 

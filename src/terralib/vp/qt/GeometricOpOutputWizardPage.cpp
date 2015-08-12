@@ -154,7 +154,7 @@ te::vp::GeometricOpObjStrategy te::vp::GeometricOpOutputWizardPage::getObjectStr
 
 bool te::vp::GeometricOpOutputWizardPage::hasOutputLayer()
 {
-  return m_ui->m_outputGroupBox->isChecked();
+  return true;
 }
 
 std::string te::vp::GeometricOpOutputWizardPage::getOutDsName()

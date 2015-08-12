@@ -30,6 +30,7 @@
 #include "../common/Translator.h"
 
 #include "../dataaccess/dataset/DataSet.h"
+#include "../dataaccess/dataset/DataSetAdapter.h"
 
 #include "../datatype/Property.h"
 #include "../datatype/SimpleProperty.h"
@@ -243,6 +244,7 @@ bool te::vp::AggregationQuery::run() throw(te::common::Exception)
 
   int key = 0;
   dsQuery->moveBeforeFirst();
+
   while (dsQuery->moveNext())
   {
     te::mem::DataSetItem* outDSetItem = new te::mem::DataSetItem(outDSet.get());
@@ -253,30 +255,29 @@ bool te::vp::AggregationQuery::run() throw(te::common::Exception)
       switch (outDSetType->getProperty(i)->getType())
       {
         case te::dt::STRING_TYPE:
-          if (!dsQuery->isNull(i-1))
-            outDSetItem->setString(i,dsQuery->getAsString(i-1));
+          if (!dsQuery->isNull(i - 1))
+            outDSetItem->setString(i, dsQuery->getAsString(i - 1));
           break;
         case te::dt::INT32_TYPE:
-          if (!dsQuery->isNull(i-1))
-            outDSetItem->setInt32(i, boost::lexical_cast<int>(dsQuery->getAsString(i-1)));
+          if (!dsQuery->isNull(i - 1))
+            outDSetItem->setInt32(i, boost::lexical_cast<int>(dsQuery->getAsString(i - 1)));
           break;
         case te::dt::INT64_TYPE:
-          if (!dsQuery->isNull(i-1))
-            outDSetItem->setInt64(i,dsQuery->getInt64(i-1));
+          if (!dsQuery->isNull(i - 1))
+            outDSetItem->setInt64(i, dsQuery->getInt64(i - 1));
           break;
         case te::dt::DOUBLE_TYPE:
-          if (!dsQuery->isNull(i-1))
-            outDSetItem->setDouble(i,dsQuery->getDouble(i-1));
+          if (!dsQuery->isNull(i - 1))
+            outDSetItem->setDouble(i, dsQuery->getDouble(i - 1));
           break;
         case te::dt::NUMERIC_TYPE:
-          if (!dsQuery->isNull(i-1))
-            outDSetItem->setNumeric(i,dsQuery->getNumeric(i-1));
+          if (!dsQuery->isNull(i - 1))
+            outDSetItem->setNumeric(i, dsQuery->getNumeric(i - 1));
           break;
         case te::dt::GEOMETRY_TYPE:
-          if (!dsQuery->isNull(i-1))
+          if (!dsQuery->isNull(i - 1))
           {
-            std::auto_ptr<te::gm::Geometry> agg_geo(dsQuery->getGeometry(i-1));
-            agg_geo->setSRID(p->getSRID());
+            std::auto_ptr<te::gm::Geometry> agg_geo(dsQuery->getGeometry(i - 1));
 
             if (agg_geo->getGeomTypeId() != geotype)
             {
@@ -295,7 +296,12 @@ bool te::vp::AggregationQuery::run() throw(te::common::Exception)
     outDSet->add(outDSetItem);
     ++key;
   }
-  
-  te::vp::Save(m_outDsrc.get(), outDSet.get(), outDSetType.get());
+
+  te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter(outDSetType.get(), m_outDsrc->getCapabilities(), m_outDsrc->getEncoding());
+  te::da::AssociateDataSetTypeConverterSRID(converter, geom->getSRID());
+  te::da::DataSetType* dsTypeResult = converter->getResult();
+  std::auto_ptr<te::da::DataSetAdapter> dsAdapter(te::da::CreateAdapter(outDSet.get(), converter));
+
+  te::vp::Save(m_outDsrc.get(), dsAdapter.get(), outDSetType.get());
   return true;
 }
