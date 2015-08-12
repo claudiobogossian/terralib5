@@ -25,24 +25,19 @@
 
 //Terralib
 #include "../../../st/maptools/TrajectoryDataSetLayer.h"
-#include "SliderPropertiesDialog.h"
+#include "../../../st/core/trajectory/TrajectoryDataSet.h"
 #include "../canvas/MapDisplay.h"
+#include "../layer/explorer/AbstractTreeItem.h"
+#include "../utils/ScopedCursor.h"
 #include "AnimationView.h"
 #include "Animation.h"
 #include "AnimationScene.h"
 #include "TrajectoryItem.h"
 #include "PixmapItem.h"
 #include "TimeSliderWidget.h"
+#include "SliderPropertiesDialog.h"
 #include "ui_TimeSliderWidgetForm.h"
 #include "ui_SliderPropertiesDialogForm.h"
-#include <terralib/dataaccess.h>
-#include <terralib/stmemory.h>
-#include <terralib/st.h>
-#include <terralib/st/maptools/TrajectoryDataSetLayer.h>
-#include <terralib/qt/widgets/utils/ScopedCursor.h>
-#include <terralib/qt/widgets.h>
-#include <terralib/maptools.h>
-#include <terralib/dataaccess.h>
 
 //QT
 #include <QGraphicsEffect>
