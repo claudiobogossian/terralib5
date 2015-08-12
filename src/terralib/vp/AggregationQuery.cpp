@@ -299,7 +299,6 @@ bool te::vp::AggregationQuery::run() throw(te::common::Exception)
 
   te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter(outDSetType.get(), m_outDsrc->getCapabilities(), m_outDsrc->getEncoding());
   te::da::AssociateDataSetTypeConverterSRID(converter, geom->getSRID());
-  te::da::DataSetType* dsTypeResult = converter->getResult();
   std::auto_ptr<te::da::DataSetAdapter> dsAdapter(te::da::CreateAdapter(outDSet.get(), converter));
 
   te::vp::Save(m_outDsrc.get(), dsAdapter.get(), outDSetType.get());
