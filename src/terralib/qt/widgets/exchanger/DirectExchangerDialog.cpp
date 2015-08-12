@@ -581,7 +581,7 @@ void te::qt::widgets::DirectExchangerDialog::onInputLayerActivated(QString value
   m_ui->m_inputSRIDLineEdit->setText(QString::number(inputSRID));
   m_ui->m_outputSRIDLineEdit->setText(QString::number(inputSRID));
 
-  if (inputSRID = TE_UNKNOWN_SRS)
+  if (inputSRID == TE_UNKNOWN_SRS)
   {
     m_ui->m_outputSRIDLineEdit->setEnabled(false);
     m_ui->m_outputSRIDToolButton->setEnabled(false);
