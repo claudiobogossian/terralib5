@@ -717,10 +717,18 @@ void te::qt::af::BaseApplication::onUpdateLayerDataSourceTriggered()
 
     if(!dsl)
       return;
-      
-    std::list<te::da::DataSourceInfoPtr> selecteds;
 
     te::da::DataSourceInfoPtr ds = te::da::DataSourceInfoManager::getInstance().get(dsl->getDataSourceId());
+    
+    if (!ds)
+    {
+      QMessageBox::warning(this,
+                           te::qt::af::ApplicationController::getInstance().getAppTitle(),
+                           tr("Layer data source can not be recovered. Remove the layer or change the data source."));
+      return;
+    }
+    
+    std::list<te::da::DataSourceInfoPtr> selecteds;
 
     selecteds.push_back(ds);
 
@@ -2247,6 +2255,9 @@ void te::qt::af::BaseApplication::openProject(const QString& projectFileName)
     CloseAllTables(m_tableDocks);
 
     Project* nproject = te::qt::af::ReadProject(projectFileName.toStdString());
+    
+    te::qt::af::XMLFormatter::format(nproject, false);
+    te::qt::af::XMLFormatter::formatDataSourceInfos(false);
 
     delete m_project;
 
