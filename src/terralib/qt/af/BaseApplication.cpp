@@ -212,26 +212,38 @@ te::qt::af::BaseApplication::~BaseApplication()
 {
   te::qt::af::SaveState(this);
 
+  while(!m_tableDocks.empty())
+    delete *m_tableDocks.begin();
+
+  std::list<te::map::AbstractLayerPtr> ept;
+
+  m_project->setTopLayers(ept);
+
+  m_explorer->getExplorer()->set(ept);
+
+  delete m_display->getDisplay();
+
+  te::qt::af::ApplicationController::getInstance().finalize();
+
   if(m_iController)
     m_iController->removeInteface(m_queryDlg);
 
+  delete m_explorer->getExplorer();
+
   delete m_iController;
-  delete m_explorer;
-  delete m_display;
   delete m_styleExplorer;
   delete m_queryDlg;
   delete m_compModeMenu;
-  delete m_project;
   delete m_progressDockWidget;
   delete m_zoomInDisplaysDockWidget;
   delete m_eyeBirdDisplaysDockWidget;
+
+  delete m_project;
 
   while(!m_tableDocks.empty())
     delete *m_tableDocks.begin();
 
   te::common::ProgressManager::getInstance().clearAll();
-
-  te::qt::af::ApplicationController::getInstance().finalize();
 }
 
 void te::qt::af::BaseApplication::init()
@@ -2509,7 +2521,9 @@ void te::qt::af::BaseApplication::makeDialog()
   m_viewLayerExplorer->setChecked(true);
   connect(lexplorer, SIGNAL(visibilityChanged(bool)), this, SLOT(onLayerExplorerVisibilityChanged(bool)));
 
-  m_explorer = new te::qt::af::LayerExplorer(lexplorer, this);
+  m_explorer = new te::qt::af::LayerExplorer(lexplorer);
+
+  m_explorer->setParent(lexplorer);
 
 // 2. Map Display
   te::qt::widgets::MapDisplay* map = new te::qt::widgets::MultiThreadMapDisplay(QSize(512, 512),true, this);

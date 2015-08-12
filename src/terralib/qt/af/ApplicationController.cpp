@@ -796,6 +796,8 @@ void te::qt::af::ApplicationController::finalize()
 
   te::plugin::PluginManager::getInstance().clear();
 
+//  delete m_project;
+
   if(m_resetTerralib)
     TerraLib::getInstance().finalize();
 
@@ -847,8 +849,6 @@ void te::qt::af::ApplicationController::finalize()
   
   m_selectionColor = QColor();
 
-  m_project = 0;
-  
   m_initialized = false;
 }
 

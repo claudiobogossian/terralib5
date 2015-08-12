@@ -58,7 +58,7 @@ te::qt::widgets::LayerTreeModel::LayerTreeModel(const std::list<te::map::Abstrac
 
 te::qt::widgets::LayerTreeModel::~LayerTreeModel()
 {
-  te::common::FreeContents(m_items);
+//  te::common::FreeContents(m_items);
 }
 
 void te::qt::widgets::LayerTreeModel::set(const std::list<te::map::AbstractLayerPtr>& layers)
