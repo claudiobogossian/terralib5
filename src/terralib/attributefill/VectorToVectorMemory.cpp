@@ -158,10 +158,10 @@ bool te::attributefill::VectorToVectorMemory::run()
 
       if (hasInvalid)
       {
+#ifdef TERRALIB_LOGGER_ENABLED
         te::da::PrimaryKey* toPk = toSchema->getPrimaryKey();
         te::dt::Property* pkProp = toPk->getProperties()[0];
 
-#ifdef TERRALIB_LOGGER_ENABLED
         std::string ex = "The \"To\" layer geometry (" + pkProp->getName() + ": " + toDs->getValue(pkProp->getName())->toString() + ") has intersection candidate invalid!";
         te::common::Logger::logDebug("attributefill", ex.c_str());
 #endif //TERRALIB_LOGGER_ENABLED
@@ -1552,10 +1552,10 @@ bool te::attributefill::VectorToVectorMemory::checkGeometries(te::gm::Geometry* 
 {
   if(!fromGeom->isValid())
   {
+#ifdef TERRALIB_LOGGER_ENABLED
     std::string ex = TE_TR("\"From\" layer geometry at position ");
     ex += boost::lexical_cast<std::string>(fromPos);
     ex += TE_TR(" is invalid.");
-#ifdef TERRALIB_LOGGER_ENABLED
     te::common::Logger::logDebug("attributefill", ex.c_str());
 #endif //TERRALIB_LOGGER_ENABLED
     
@@ -1563,8 +1563,8 @@ bool te::attributefill::VectorToVectorMemory::checkGeometries(te::gm::Geometry* 
   }
   else if(!toGeom->isValid())
   {
-    std::string ex = TE_TR("\"To\" layer geometry is invalid.");
 #ifdef TERRALIB_LOGGER_ENABLED
+    std::string ex = TE_TR("\"To\" layer geometry is invalid.");
     te::common::Logger::logDebug("attributefill", ex.c_str());
 #endif //TERRALIB_LOGGER_ENABLED
 
