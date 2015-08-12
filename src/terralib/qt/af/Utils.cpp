@@ -424,12 +424,8 @@ void te::qt::af::SaveDataSourcesFile()
     
     usettings.setValue("data_sources/data_file", fileName);
   }
-  
-  te::qt::af::XMLFormatter::formatDataSourceInfos(true);
 
   te::serialize::xml::Save(fileName.toString().toStdString());
-  
-  te::qt::af::XMLFormatter::formatDataSourceInfos(false);
 }
 
 
