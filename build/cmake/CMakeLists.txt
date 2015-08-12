@@ -157,7 +157,7 @@ endif()
 
 
 include_directories(${CMAKE_BINARY_DIR})
-include_directories(${TERRALIB_ABSOLUTE_ROOT_DIR}/src ${CMAKE_INSTALL_PREFIX}/include)
+
 
 #
 # Build will generate files into a single folder
@@ -202,7 +202,7 @@ include(terralib_macros.cmake)
 # first check of libraries
 #
 
-find_package(Boost 1.53.0 REQUIRED system date_time chrono timer filesystem thread unit_test_framework)
+find_package(Boost 1.53.0 REQUIRED system date_time chrono timer filesystem thread)
 
 if(NOT Boost_FOUND)
   message(FATAL_ERROR "TerraLib: could not find required Boost libraries!")

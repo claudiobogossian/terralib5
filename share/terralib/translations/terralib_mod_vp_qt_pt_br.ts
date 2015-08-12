@@ -887,12 +887,12 @@
 <context>
     <name>te::vp::AggregationDialog</name>
     <message>
-        <location filename="../../../src/terralib/vp/qt/AggregationDialog.cpp" line="581"/>
+        <location filename="../../../src/terralib/vp/qt/AggregationDialog.cpp" line="604"/>
         <source>Save as...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/AggregationDialog.cpp" line="582"/>
+        <location filename="../../../src/terralib/vp/qt/AggregationDialog.cpp" line="605"/>
         <source>Shapefile (*.shp *.SHP);;</source>
         <translation type="unfinished"></translation>
     </message>
