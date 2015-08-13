@@ -1926,9 +1926,10 @@ void te::qt::widgets::TimeSliderWidget::drawPixmapItem(te::qt::widgets::PixmapIt
     return;
 
   painter->save();
-  // set rotation and shear
+  // set shear, rotation and scale
   if (m_display->getSRID() != TE_UNKNOWN_SRS && m_display->getSRID() != pi->m_SRID)
   {
+    // convert image rect in display projection
     te::gm::LineString line(6, te::gm::LineStringType, pi->m_SRID);
     line.setPoint(0, pi->m_imaRect.x(), pi->m_imaRect.y());
     line.setPoint(1, pi->m_imaRect.x(), pi->m_imaRect.y() + pi->m_imaRect.height());
@@ -1938,64 +1939,79 @@ void te::qt::widgets::TimeSliderWidget::drawPixmapItem(te::qt::widgets::PixmapIt
     line.setPoint(5, pi->m_imaRect.x() +  pi->m_imaRect.width(), pi->m_imaRect.center().y());
     line.transform(m_display->getSRID());
 
+    // transform in device coordinate
     QPointF p0 = pi->m_matrix.map(QPointF(line.getPointN(0)->getX(), line.getPointN(0)->getY()));
     QPointF p1 = pi->m_matrix.map(QPointF(line.getPointN(1)->getX(), line.getPointN(1)->getY()));
     QPointF p2 = pi->m_matrix.map(QPointF(line.getPointN(2)->getX(), line.getPointN(2)->getY()));
     QPointF p3 = pi->m_matrix.map(QPointF(line.getPointN(3)->getX(), line.getPointN(3)->getY()));
-    QPointF p4 = pi->m_matrix.map(QPointF(line.getPointN(4)->getX(), line.getPointN(4)->getY()));
-    QPointF p5 = pi->m_matrix.map(QPointF(line.getPointN(5)->getX(), line.getPointN(5)->getY()));
     QPointF ph1 = p1 - p0;
     QPointF ph2 = p2 - p3;
     QPointF pw1 = p2 - p1;
     QPointF pw2 = p3 - p0;
+    double w = (fabs(pw1.x()) + fabs(pw2.x())) / 2.;
+    double h = (fabs(ph1.y()) + fabs(ph2.y())) / 2.;
+
+    // calculate the image rotation
+    QPointF p4 = pi->m_matrix.map(QPointF(line.getPointN(4)->getX(), line.getPointN(4)->getY()));
+    QPointF p5 = pi->m_matrix.map(QPointF(line.getPointN(5)->getX(), line.getPointN(5)->getY()));
     QPointF prot = p5 - p4;
 
     double pi = 3.14159265;
-    double rot = 0;
-    painter->translate(r.center());
+    double rad = 0;
+    painter->translate(p4.toPoint());
+
+    if (prot.x() == 0)
+    {
+      if (prot.y() >= 0)
+        rad = pi / 2.;
+      else
+        rad = -pi / 2.;
+    }
+    else if (prot.y() == 0)
+    {
+      if (prot.x() >= 0)
+        rad = 0;
+      else
+        rad = -pi;
+    }
+    else
+    {
+      rad = atan(prot.y() / prot.x());
+      if (prot.x() < 0)
+      {
+        if (prot.y() < 0)
+          rad -= pi;
+        else
+          rad += pi;
+      }
+    }
+
+    // set scale indirectly - calculate a new image rect
+    if (rad != 0)
+    {
+      w /= fabs(cos(rad));
+      h /= fabs(cos(pi + rad));
+    }
+
+    r = QRect(0, 0, w, h);
+    r.moveCenter(p4.toPoint()); // move to center
+
     if (ph1.x() != 0 && ph2.x() != 0 && ph1.y() == ph2.y()) // make horizontal shear
     {
-      double h = ph1.x() + ph2.x();
-      painter->shear(-h / (double)r.width(), 0);
+      double horiz = (ph1.x() + ph2.x()) / 1.5;
+      painter->shear(-horiz / w, 0);
     }
     else if (pw1.y() != 0 && pw2.y() != 0 && pw1.x() == pw2.x()) // make vertical shear
     {
-      double v = pw1.y() + pw2.y();
-      painter->shear(0, v / (double)r.height());
+      double vert = (pw1.y() + pw2.y()) / 1.5;
+      painter->shear(0, -vert / h);
     }
-    else // make rotation
+    else if (rad != 0) // make rotation
     {
-      if (prot.x() == 0)
-      {
-        if (prot.y() >= 0)
-          rot = pi / 2.;
-        else
-          rot = -pi / 2.;
-      }
-      else if (prot.y() == 0)
-      {
-        if (prot.x() >= 0)
-          rot = 0;
-        else
-          rot = -pi;
-      }
-      else
-      {
-        rot = atan(prot.y() / prot.x());
-        if (prot.x() < 0)
-        {   
-          if (prot.y() < 0)
-            rot = pi + rot;
-          else
-            rot = pi - rot;
-        }
-      }
-
-      if (rot != 0)
-        rot *= 180. / pi;
-      painter->rotate(rot);
+      double degree = rad * 180. / pi;
+      painter->rotate(degree);
     }
-    painter->translate(-r.center());
+    painter->translate(-p4.toPoint());
   }
 
   QImage* ima = getImage(pi);

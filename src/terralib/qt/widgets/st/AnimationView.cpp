@@ -129,10 +129,15 @@ void te::qt::widgets::AnimationView::setMatrix()
   if (sceneRec != sceneRect())
     updateSceneRect(sceneRec);
 
+
   // ensure the paint event
   // set bigger box to ensure paint event
-  QRectF srec(sceneRec.x() - 10*sceneRec.width(), sceneRec.y() - 10*sceneRec.height(), 20 * sceneRec.width(), 20 * sceneRec.height());
-  fitInView(srec);
+  QRectF newRec(sceneRec.x() - 10 * sceneRec.width(), sceneRec.y() - 10 * sceneRec.height(), 30 * sceneRec.width(), 30 * sceneRec.height());
+  QRectF srec(e.m_llx - 10 * e.getWidth(), e.m_lly - 10 * e.getHeight(), 30 * e.getWidth(), 30 * e.getHeight());
+  if (srec.contains(newRec))
+    fitInView(srec);
+  else
+    fitInView(newRec);
 }
 
 //bool te::qt::widgets::AnimationView::eventFilter(QObject* obj, QEvent* e)
