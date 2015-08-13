@@ -69,7 +69,7 @@ terralib4::TableDataSet::TableDataSet( TeDatabase* db, TeTable table)
     m_db(db)
 {
 
-  m_nCols = m_table.attributeList().size();
+  m_nCols = (int)m_table.attributeList().size();
 
   m_dt = new te::da::DataSetType(m_table.name());
 
@@ -318,7 +318,7 @@ boost::int64_t terralib4::TableDataSet::getInt64(std::size_t i) const
 
 bool terralib4::TableDataSet::getBool(std::size_t i) const
 {
-  return m_portal->getBool(i);
+  return m_portal->getBool((int)i);
 }
 
 float terralib4::TableDataSet::getFloat(std::size_t i) const
@@ -377,7 +377,7 @@ bool terralib4::TableDataSet::isNull(std::size_t i) const
 {
 
   return false;
-  std::string val = m_portal->getData(i);
+  std::string val = m_portal->getData((int)i);
 
   if(val.empty())
     return true;

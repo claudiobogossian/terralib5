@@ -76,7 +76,7 @@ terralib4::VectorDataSet::VectorDataSet(TeLayer* layer)
 
   m_querier->loadInstances();
 
-  m_nCols = m_querier->getAttrList().size();
+  m_nCols = (int)m_querier->getAttrList().size();
 
   m_size = m_querier->numElemInstances();
 
