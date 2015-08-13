@@ -20,51 +20,55 @@
 /*!
 	\file terralib/layout/qt/pattern/factory/ToolFactory.h
 
-	\brief This is the abstract factory for tools.
+	\brief This is the abstract factory for items.
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_TOOL_FACTORY_H 
-#define __TERRALIB_LAYOUT_INTERNAL_TOOL_FACTORY_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_NEW_ITEM_FACTORY_H 
+#define __TERRALIB_LAYOUT_INTERNAL_NEW_ITEM_FACTORY_H
 
 // TerraLib
+#include "terralib/geometry/Coord2D.h"
 #include "../../../../../common/ParameterizedAbstractFactory.h"
 #include "../../../../core/Config.h"
-#include "../../tools/AbstractLayoutTool.h"
-#include "ToolFactoryParamsCreate.h"
+#include "../../../../core/pattern/mvc/AbstractItemView.h"
+#include "ItemFactoryParamsCreate.h"
+
+// Qt
+#include <QGraphicsItem>
 
 namespace te
 {
   namespace layout
   {
 		/*!
-			\class ToolFactory
+			\class NewItemFactory
 
-			\brief This is the abstract factory for tools.
+			\brief This is the abstract factory for items.
 
-			It will create objects of type AbstractLayoutTool and will pass
-			parameters of type ToolFactoryParamsCreate to their factories constructors.
+			It will create objects of type AbstractItemView and will pass
+			parameters of type ItemFactoryParamsCreate to their factories constructors.
 
-			If you want a new tool you can use a command like:
+			If you want a new item you can use a command like:
 			<code>
-			  te::layout::AbstractLayoutTool* pEngine = te::layout::ToolFactory::make("PANTOOL");
+			  te::layout::AbstractItem* pEngine = te::layout::NewItemFactory::make("RECTANGLE_ITEM");
 			</code>
 			Or
 			<code>
-				te::layout::EnumToolType* tool = Enums::getInstance().getEnumToolType();
-				te::layout::EnumType* panTool = tool->getToolTypePan();
-				te::layout::AbstractLayoutTool* pEngine = te::layout::ToolFactory::make(panTool->getName());
+				te::layout::EnumObjectType* item = Enums::getInstance().getEnumObjectType();
+				te::layout::EnumType* rectItem = item->getRectangleItem();
+				te::layout::AbstractItem* pEngine = te::layout::NewItemFactory::make(rectItem->getName());
 			</code>
 
-			\note The caller of the method make will take the ownership of the returned tool.
+			\note The caller of the method make will take the ownership of the returned item.
 
-			\sa AbstractLayoutTool, AbstractFactory
+			\sa AbstractItemView, AbstractFactory, ParameterizedAbstractFactory
 		*/
-		class TELAYOUTEXPORT ToolFactory : public te::common::ParameterizedAbstractFactory<AbstractLayoutTool, std::string, ToolFactoryParamsCreate>
+		class TELAYOUTEXPORT NewItemFactory : public te::common::ParameterizedAbstractFactory<AbstractItemView, std::string, ItemFactoryParamsCreate>
 		{
 			public:
 
 				/*! \brief Virtual destructor. */
-				virtual ~ToolFactory();
+				virtual ~NewItemFactory();
 
 			protected:
 
@@ -75,7 +79,8 @@ namespace te
 
 				\param factoryKey The key that identifies the factory.
 				*/
-				ToolFactory(const std::string& factoryKey);
+				NewItemFactory(const std::string& factoryKey);
+				
     };
   }
 }

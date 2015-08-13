@@ -31,9 +31,6 @@
 #include "ItemUtils.h"
 #include "../../core/pattern/singleton/Context.h"
 #include "../../core/property/SharedProperties.h"
-#include "../../item/RectangleModel.h"
-#include "../../item/RectangleController.h"
-#include "../item/RectangleItem.h"
 #include "../../item/MapModel.h"
 #include "../../item/MapController.h"
 #include "../item/MapItem.h"
@@ -110,6 +107,9 @@
 #include "../../core/pattern/mvc/AbstractItemController.h"
 #include "../item/TextController1.h"
 #include "../item/TitleController1.h"
+#include "pattern/factory/NewItemFactory.h"
+#include "pattern/factory/ItemFactoryParamsCreate.h"
+#include "../../core/enum/EnumObjectType.h"
 
 // Qt
 #include <QGraphicsItem>
@@ -649,31 +649,16 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createText()
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createRectangle()
 {
-  RectangleModel* model = new RectangleModel();
-  if(!m_props)
-  {
-    EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
-    std::string strName = nameItem(enumObj->getRectangleItem());
+	te::layout::EnumObjectType* obj = Enums::getInstance().getEnumObjectType();
 
-    Property proertyId(0);
-    proertyId.setName("id");
-    proertyId.setValue(m_id, Enums::getInstance().getEnumDataType()->getDataTypeInt());
-    model->setProperty(proertyId);
+	std::string strName = nameItem(obj->getRectangleItem());
 
-    Property propertyName(0);
-    propertyName.setName("name");
-    propertyName.setValue(strName, Enums::getInstance().getEnumDataType()->getDataTypeString());
-    model->setProperty(propertyName);
-  }
+	ItemFactoryParamsCreate params(strName, m_zValue, m_id, m_coord);
 
-  AbstractItemController* controller = new AbstractItemController(model);
-  AbstractItemView* view = controller->getView();
+	std::string name = obj->getRectangleItem()->getName();
 
-  if(m_props)
-  {
-    model->setProperties(*m_props);
-  }
-  return dynamic_cast<QGraphicsItem*>(view);
+	AbstractItemView* abstractItem = te::layout::NewItemFactory::make(name, params);
+	return dynamic_cast<QGraphicsItem*>(abstractItem);
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createLegend()

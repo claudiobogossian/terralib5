@@ -23,8 +23,10 @@ TerraLib Team at <terralib-team@terralib.org>.
 \brief Initialize all tool factories.
 */
 
+// TerraLib
 #include "InitFactories.h"
 #include "pattern/factory/ZoomAreaToolFactory.h"
+#include "pattern/factory/RectangleItemFactory.h"
 
 namespace te
 {
@@ -40,5 +42,17 @@ namespace te
 				static ZoomAreaToolFactory ZoomAreaToolFactory_instance;
 			}
 		}
-  }
+
+		void TELAYOUTEXPORT initItemFactories()
+		{
+			static bool ItemFactoryInitalized = false;
+
+			if (!ItemFactoryInitalized)
+			{
+				ItemFactoryInitalized = true;
+				static RectangleItemFactory RectangleItemFactory_instance;
+			}
+		}
+
+	}
 }

@@ -26,6 +26,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 #ifndef __TERRALIB_LAYOUT_INTERNAL_INIT_FACTORIES_H 
 #define __TERRALIB_LAYOUT_INTERNAL_INIT_FACTORIES_H
 
+// TerraLib
 #include "../../core/Config.h"
 
 namespace te
@@ -33,6 +34,8 @@ namespace te
   namespace layout
   {
 		void TELAYOUTEXPORT initToolFactories();
+
+		void TELAYOUTEXPORT initItemFactories();
   }
 }
 #endif
