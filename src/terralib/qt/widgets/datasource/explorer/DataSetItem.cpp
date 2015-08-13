@@ -133,9 +133,9 @@ void te::qt::widgets::DataSetItem::fetchMore()
   if(m_dataset->size() != 0)
     new PropertyGroupItem(this);
 
-  if((!m_dataset->getNumberOfCheckConstraints() != 0) ||
-      (!m_dataset->getNumberOfUniqueKeys() != 0) ||
-      (!m_dataset->getPrimaryKey() != 0))
+  if ((m_dataset->getNumberOfCheckConstraints() != 0) ||
+      (m_dataset->getNumberOfUniqueKeys() != 0) ||
+      (m_dataset->getPrimaryKey() != 0))
     new ConstraintsItem(this);
 
   if(m_dataset->getNumberOfIndexes() != 0)
