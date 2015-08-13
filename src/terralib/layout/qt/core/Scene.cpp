@@ -958,8 +958,8 @@ te::layout::ContextObject te::layout::Scene::getContext()
     return nullContext;
   }
 
-  double dpiX = view->physicalDpiX();
-  double dpiY = view->physicalDpiY();
+  double dpiX = view->logicalDpiX();
+  double dpiY = view->logicalDpiY();
   int zoom = view->getCurrentZoom();
   EnumType* mode = view->getCurrentMode();
 
