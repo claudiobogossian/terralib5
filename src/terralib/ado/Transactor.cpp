@@ -521,12 +521,12 @@ void te::ado::Transactor::addProperty(const std::string& datasetName, te::dt::Pr
         if(sp->size() != 0)
           ssize = sp->size();
 
-        newColumn->DefinedSize = ssize;
+        newColumn->DefinedSize = (long)ssize;
 
         if(!sp->isRequired())
           newColumn->PutAttributes(ADOX::adColNullable);
 
-        pTable->Columns->Append(_variant_t ((IDispatch*)newColumn), ado_type, ssize);
+        pTable->Columns->Append(_variant_t ((IDispatch*)newColumn), ado_type, (long)ssize);
 
         break;
       }

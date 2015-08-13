@@ -244,7 +244,7 @@ char te::ado::DataSet::getChar(std::size_t i) const
 {
   _variant_t vtIndex;
   vtIndex.vt = VT_I4;
-  vtIndex.lVal = i;
+  vtIndex.lVal = (long)i;
 
   char ival;
 
@@ -269,7 +269,7 @@ boost::int16_t te::ado::DataSet::getInt16(std::size_t i) const
 {
   _variant_t vtIndex;
   vtIndex.vt = VT_I4;
-  vtIndex.lVal = i;
+  vtIndex.lVal = (long)i;
 
   int16_t ival;
 
@@ -289,7 +289,7 @@ boost::int32_t te::ado::DataSet::getInt32(std::size_t i) const
 {
   _variant_t vtIndex;
   vtIndex.vt = VT_I4;
-  vtIndex.lVal = i;
+  vtIndex.lVal = (long)i;
 
   int32_t ival;
 
@@ -309,7 +309,7 @@ boost::int64_t te::ado::DataSet::getInt64(std::size_t i) const
 {
   _variant_t vtIndex;
   vtIndex.vt = VT_I4;
-  vtIndex.lVal = i;
+  vtIndex.lVal = (long)i;
 
   int64_t ival;
 
@@ -329,7 +329,7 @@ bool te::ado::DataSet::getBool(std::size_t i) const
 {
   _variant_t vtIndex;
   vtIndex.vt = VT_I4;
-  vtIndex.lVal = i;
+  vtIndex.lVal = (long)i;
 
   bool ival;
 
@@ -351,7 +351,7 @@ float te::ado::DataSet::getFloat(std::size_t i) const
 
   _variant_t vtIndex;
   vtIndex.vt = VT_I4;
-  vtIndex.lVal = i;
+  vtIndex.lVal = (long)i;
 
   try
   {
@@ -371,7 +371,7 @@ double te::ado::DataSet::getDouble(std::size_t i) const
 
   _variant_t vtIndex;
   vtIndex.vt = VT_I4;
-  vtIndex.lVal = i;
+  vtIndex.lVal = (long)i;
 
   try
   {
@@ -394,7 +394,7 @@ std::string te::ado::DataSet::getString(std::size_t i) const
 {
   _variant_t vtIndex;
   vtIndex.vt = VT_I4;
-  vtIndex.lVal = i;
+  vtIndex.lVal = (long)i;
 
   std::string ival;
 
@@ -414,7 +414,7 @@ std::auto_ptr<te::dt::ByteArray> te::ado::DataSet::getByteArray(std::size_t i) c
 {
   _variant_t vtIndex;
   vtIndex.vt = VT_I4;
-  vtIndex.lVal = i;
+  vtIndex.lVal = (long)i;
 
   _variant_t varBLOB;
   char *cdata = 0;
@@ -487,7 +487,7 @@ std::auto_ptr<te::dt::DateTime> te::ado::DataSet::getDateTime(std::size_t i) con
   _variant_t value;
 
   vtIndex.vt = VT_I4;
-  vtIndex.lVal = i;
+  vtIndex.lVal = (long)i;
 
   te::dt::DateTime* dateTime = 0;
 

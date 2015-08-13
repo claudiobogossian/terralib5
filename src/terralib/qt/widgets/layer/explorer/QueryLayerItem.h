@@ -71,6 +71,8 @@ namespace te
         */
           const std::string getItemType() const;
 
+          QString buildToolTip() const;
+
         private:
 
           bool hasGroupingItem() const;

@@ -38,6 +38,7 @@
 #include "../../../geometry/GeometryProperty.h"
 #include "../../../maptools/QueryLayer.h"
 #include "../../../memory/DataSet.h"
+#include "../../../qt/widgets/utils/ScopedCursor.h"
 #include "../../../se/Utils.h"
 #include "../table/DataSetTableView.h"
 #include "FieldsDialog.h"
@@ -149,6 +150,8 @@ te::da::Select te::qt::widgets::TableLinkDialog::getSelectQuery()
 
 te::map::AbstractLayerPtr te::qt::widgets::TableLinkDialog::getQueryLayer()
 {
+  te::qt::widgets::ScopedCursor c(Qt::WaitCursor);
+
   static boost::uuids::basic_random_generator<boost::mt19937> gen;
   boost::uuids::uuid u = gen();
   std::string id = boost::uuids::to_string(u);
@@ -174,7 +177,7 @@ te::map::AbstractLayerPtr te::qt::widgets::TableLinkDialog::getQueryLayer()
 
 void te::qt::widgets::TableLinkDialog::getDataSets()
 {
-  QApplication::setOverrideCursor(Qt::WaitCursor);
+  te::qt::widgets::ScopedCursor c(Qt::WaitCursor);
 
   std::string dsId = m_ds->getId();
 
@@ -194,8 +197,6 @@ void te::qt::widgets::TableLinkDialog::getDataSets()
     m_ui->m_dataSetAliasLineEdit->setText(QString::fromStdString(DsName.substr(pos + 1, DsName.size() - 1)));
   else
     m_ui->m_dataSetAliasLineEdit->setText(QString::fromStdString(DsName));
-
-  QApplication::restoreOverrideCursor();
 }
 
 void te::qt::widgets::TableLinkDialog::getProperties()

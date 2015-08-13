@@ -214,7 +214,7 @@ std::string te::ado::GetAdoStringType(const int& terralib)
 
 void te::ado::Convert2Ado(const te::gm::Geometry* geo, _variant_t & var)
 {
-  long size = geo->getWkbSize();
+  long size = (long)geo->getWkbSize();
 
   char* wkb = new char[size];
 
@@ -1002,11 +1002,11 @@ std::string te::ado::GetSystemDateTimeFormat(std::string& indAM, std::string& in
 
   //DATE
   //first
-  int pos = rdateFormat.find(rdateSeparator);
+  int pos = (int)rdateFormat.find(rdateSeparator);
   std::string firstD = rdateFormat.substr(0,pos);
   std::string temp = rdateFormat.substr(pos+1);
   //second and third
-  pos = temp.find(rdateSeparator);
+  pos = (int)temp.find(rdateSeparator);
   std::string secondD = temp.substr(0,pos);
   std::string thirdD = temp.substr(pos+1);
 
@@ -1020,13 +1020,13 @@ std::string te::ado::GetSystemDateTimeFormat(std::string& indAM, std::string& in
 
   //TIME
   //first
-  pos = rtimeFormat.find(rtimeSeparator);
+  pos = (int)rtimeFormat.find(rtimeSeparator);
   std::string firstT = rtimeFormat.substr(0,pos);
   temp = rtimeFormat.substr(pos+1);
   //second and third
-  pos = temp.find(rtimeSeparator);
+  pos = (int)temp.find(rtimeSeparator);
   std::string secondT = temp.substr(0,pos);
-  int posEmpth = temp.find(" ");
+  int posEmpth = (int)temp.find(" ");
   std::string thirdT;
 
   if(posEmpth==-1)
