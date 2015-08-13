@@ -54,6 +54,25 @@ te::qt::widgets::LayerExplorer* te::qt::af::LayerExplorer::getExplorer() const
   return m_explorer;
 }
 
+void te::qt::af::LayerExplorer::removeLayers(const std::list<te::qt::widgets::AbstractTreeItem*>& layers)
+{
+  for(std::list<te::qt::widgets::AbstractTreeItem*>::const_iterator it = layers.begin(); it != layers.end(); ++it)
+  {
+    te::map::AbstractLayerPtr l = (*it)->getLayer();
+
+    m_explorer->remove(*it);
+
+    ApplicationController::getInstance().getProject()->remove(l);
+
+    te::qt::af::evt::LayerRemoved e(l);
+
+    ApplicationController::getInstance().broadcast(&e);
+  }
+
+  te::qt::af::evt::ProjectUnsaved projectUnsavedEvent;
+  ApplicationController::getInstance().broadcast(&projectUnsavedEvent);
+}
+
 void te::qt::af::LayerExplorer::onApplicationTriggered(te::qt::af::evt::Event* evt)
 {
   switch(evt->m_id)
@@ -93,22 +112,22 @@ void te::qt::af::LayerExplorer::onApplicationTriggered(te::qt::af::evt::Event* e
     }
     break;
 
-    case te::qt::af::evt::LAYER_REMOVED:
-    {
-      te::qt::af::evt::LayerRemoved* e = static_cast<te::qt::af::evt::LayerRemoved*>(evt);
+//    case te::qt::af::evt::LAYER_REMOVED:
+//    {
+//      te::qt::af::evt::LayerRemoved* e = static_cast<te::qt::af::evt::LayerRemoved*>(evt);
 
-      te::map::AbstractLayerPtr layer = e->m_layer;
+//      te::map::AbstractLayerPtr layer = e->m_layer;
 
-      // Remove the item from the layer explorer
-      te::qt::widgets::AbstractTreeItem* layerItem = m_explorer->getLayerItem(layer);
-      m_explorer->remove(layerItem);
+//      // Remove the item from the layer explorer
+//      te::qt::widgets::AbstractTreeItem* layerItem = m_explorer->getLayerItem(layer);
+//      m_explorer->remove(layerItem);
 
-      ApplicationController::getInstance().getProject()->remove(layer);
+//      ApplicationController::getInstance().getProject()->remove(layer);
 
-      te::qt::af::evt::ProjectUnsaved projectUnsavedEvent;
-      ApplicationController::getInstance().broadcast(&projectUnsavedEvent);
-    }
-    break;
+//      te::qt::af::evt::ProjectUnsaved projectUnsavedEvent;
+//      ApplicationController::getInstance().broadcast(&projectUnsavedEvent);
+//    }
+//    break;
 
     case te::qt::af::evt::ITEM_OF_LAYER_REMOVED:
     {

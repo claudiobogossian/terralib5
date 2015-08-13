@@ -29,6 +29,7 @@
 include_directories(${Boost_INCLUDE_DIR})
 include_directories(${GDAL_INCLUDE_DIR})
 include_directories(${CPPUNIT_INCLUDE_DIR})
+include_directories(${TERRALIB_ABSOLUTE_ROOT_DIR}/src)
 
 if(WIN32)
   add_definitions(-D_SCL_SECURE_NO_WARNINGS)

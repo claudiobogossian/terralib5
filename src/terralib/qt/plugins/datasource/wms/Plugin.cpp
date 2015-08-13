@@ -31,12 +31,38 @@
 #include "../../../../wms/qt/WMSLayerItem.h"
 #include "../../../widgets/datasource/core/DataSourceTypeManager.h"
 #include "../../../widgets/layer/explorer/AbstractTreeItemFactory.h"
+#include "../../../widgets/layer/explorer/LayerExplorer.h"
+#include "../../../widgets/layer/explorer/LayerTreeModel.h"
+#include "../../../af/ApplicationController.h"
+#include "../../../af/BaseApplication.h"
+#include "../../../af/connectors/LayerExplorer.h"
 #include "WMSType.h"
 #include "Plugin.h"
+
+// Qt
+#include <QTreeView>
 
 // Boost
 #include <boost/functional/factory.hpp>
 #include <boost/bind.hpp>
+
+void GetWMSLayers(QAbstractItemModel* model, const QModelIndex& parent, std::list<te::qt::widgets::AbstractTreeItem*>& layers)
+{
+  int cc = model->rowCount(parent);
+
+  for(int i = 0; i < cc; i++)
+  {
+    QModelIndex cIdx = model->index(i, 0, parent);
+
+    te::qt::widgets::AbstractTreeItem* cItem = static_cast<te::qt::widgets::AbstractTreeItem*>(cIdx.internalPointer());
+
+    if(cItem->getItemType() == "WMS_LAYER_ITEM")
+      layers.push_back(cItem);
+    else if(cItem->getItemType() == "FOLDER_LAYER_ITEM")
+      GetWMSLayers(model, cIdx, layers);
+  }
+}
+
 
 te::qt::plugins::wms::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo)
   : te::plugin::Plugin(pluginInfo)
@@ -72,6 +98,14 @@ void te::qt::plugins::wms::Plugin::shutdown()
   TE_LOG_TRACE(TE_TR("TerraLib Qt OGC Web Map Service (WMS) widget shutdown!"));
 
   m_initialized = false;
+
+  te::qt::af::LayerExplorer* exp = ((te::qt::af::BaseApplication*)te::qt::af::ApplicationController::getInstance().getMainWindow())->getLayerExplorer();
+
+  std::list<te::qt::widgets::AbstractTreeItem*> wms;
+
+  GetWMSLayers(exp->getExplorer()->getTreeModel(), QModelIndex(), wms);
+
+  exp->removeLayers(wms);
 }
 
 PLUGIN_CALL_BACK_IMPL(te::qt::plugins::wms::Plugin)

@@ -212,26 +212,38 @@ te::qt::af::BaseApplication::~BaseApplication()
 {
   te::qt::af::SaveState(this);
 
+  while(!m_tableDocks.empty())
+    delete *m_tableDocks.begin();
+
+  std::list<te::map::AbstractLayerPtr> ept;
+
+  m_project->setTopLayers(ept);
+
+  m_explorer->getExplorer()->set(ept);
+
+  delete m_display->getDisplay();
+
+  te::qt::af::ApplicationController::getInstance().finalize();
+
   if(m_iController)
     m_iController->removeInteface(m_queryDlg);
 
+  delete m_explorer->getExplorer();
+
   delete m_iController;
-  delete m_explorer;
-  delete m_display;
   delete m_styleExplorer;
   delete m_queryDlg;
   delete m_compModeMenu;
-  delete m_project;
   delete m_progressDockWidget;
   delete m_zoomInDisplaysDockWidget;
   delete m_eyeBirdDisplaysDockWidget;
+
+  delete m_project;
 
   while(!m_tableDocks.empty())
     delete *m_tableDocks.begin();
 
   te::common::ProgressManager::getInstance().clearAll();
-
-  te::qt::af::ApplicationController::getInstance().finalize();
 }
 
 void te::qt::af::BaseApplication::init()
@@ -644,12 +656,14 @@ void te::qt::af::BaseApplication::onRemoveLayerTriggered()
   if(reply == QMessageBox::No)
     return;
 
-  std::list<te::qt::widgets::AbstractTreeItem*>::const_iterator it;
-  for(it = selectedLayerItems.begin();  it != selectedLayerItems.end(); ++it)
-  {
-    te::qt::af::evt::LayerRemoved evt((*it)->getLayer());
-    te::qt::af::ApplicationController::getInstance().broadcast(&evt);
-  }
+  m_explorer->removeLayers(selectedLayerItems);
+
+//  std::list<te::qt::widgets::AbstractTreeItem*>::const_iterator it;
+//  for(it = selectedLayerItems.begin();  it != selectedLayerItems.end(); ++it)
+//  {
+//    te::qt::af::evt::LayerRemoved evt((*it)->getLayer());
+//    te::qt::af::ApplicationController::getInstance().broadcast(&evt);
+//  }
 }
 
 void te::qt::af::BaseApplication::onChangeLayerDataSourceTriggered()
@@ -889,9 +903,7 @@ void te::qt::af::BaseApplication::onSaveProjectTriggered()
   // Set the project title and its status as "no change"
   //std::string projectTitle = boost::filesystem::basename(m_project->getFileName());
   //m_project->setTitle(projectTitle);
-  
-  m_project->setProjectAsChanged(false);
-  
+
   XMLFormatter::format(m_project, true);
   XMLFormatter::formatDataSourceInfos(true);
 
@@ -907,6 +919,8 @@ void te::qt::af::BaseApplication::onSaveProjectTriggered()
 
   XMLFormatter::format(m_project, false);
   XMLFormatter::formatDataSourceInfos(false);
+
+  m_project->setProjectAsChanged(false);
 }
 
 void te::qt::af::BaseApplication::onSaveProjectAsTriggered()
@@ -938,8 +952,6 @@ void te::qt::af::BaseApplication::onSaveProjectAsTriggered()
   // Set the project title and its status as "no change"
   //std::string projectTitle = boost::filesystem::basename(m_project->getFileName());
   //m_project->setTitle(projectTitle);
-  
-  m_project->setProjectAsChanged(false);
 
   // Set the window title
   setWindowTitle(te::qt::af::GetWindowTitle(*m_project));
@@ -948,6 +960,8 @@ void te::qt::af::BaseApplication::onSaveProjectAsTriggered()
 
   XMLFormatter::format(m_project, true);
   XMLFormatter::formatDataSourceInfos(true);
+
+  m_project->setProjectAsChanged(false);
 }
 
 void te::qt::af::BaseApplication::onRestartSystemTriggered()
@@ -2248,6 +2262,9 @@ void te::qt::af::BaseApplication::openProject(const QString& projectFileName)
 
     Project* nproject = te::qt::af::ReadProject(projectFileName.toStdString());
 
+    te::qt::af::XMLFormatter::format(nproject, false);
+    te::qt::af::XMLFormatter::formatDataSourceInfos(false);
+
     delete m_project;
 
     m_project = nproject;
@@ -2504,7 +2521,9 @@ void te::qt::af::BaseApplication::makeDialog()
   m_viewLayerExplorer->setChecked(true);
   connect(lexplorer, SIGNAL(visibilityChanged(bool)), this, SLOT(onLayerExplorerVisibilityChanged(bool)));
 
-  m_explorer = new te::qt::af::LayerExplorer(lexplorer, this);
+  m_explorer = new te::qt::af::LayerExplorer(lexplorer);
+
+  m_explorer->setParent(lexplorer);
 
 // 2. Map Display
   te::qt::widgets::MapDisplay* map = new te::qt::widgets::MultiThreadMapDisplay(QSize(512, 512),true, this);

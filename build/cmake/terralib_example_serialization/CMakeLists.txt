@@ -25,7 +25,7 @@
 #          Frederico Augusto T. Bede <frederico.bede@funcate.org.br>
 #
 
-include_directories(${Boost_INCLUDE_DIR})
+include_directories(${Boost_INCLUDE_DIR} ${TERRALIB_ABSOLUTE_ROOT_DIR}/src)
 
 file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/serialization/*.cpp)
 file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/serialization/*.h)
@@ -34,10 +34,10 @@ add_executable(terralib_example_serialization ${TERRALIB_SRC_FILES} ${TERRALIB_H
 
 target_link_libraries(terralib_example_serialization terralib_mod_common
                                                      terralib_mod_filter
-													 terralib_mod_plugin
+                                                     terralib_mod_plugin
                                                      terralib_mod_symbology
-													 terralib_mod_xml
-													 terralib_mod_xsd)
+                                                     terralib_mod_xml
+                                                     terralib_mod_xsd)
 
 install(FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_EXAMPLES}/serialization COMPONENT devel)
