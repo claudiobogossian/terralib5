@@ -1924,14 +1924,17 @@ void te::qt::widgets::TimeSliderWidget::drawPixmapItem(te::qt::widgets::PixmapIt
   // set shear, rotation and scale
   if (m_display->getSRID() != TE_UNKNOWN_SRS && m_display->getSRID() != pi->m_SRID)
   {
-    // convert image rect in display projection
-    te::gm::LineString line(6, te::gm::LineStringType, pi->m_SRID);
+    // get width, height and rotation
+    te::gm::LineString line(9, te::gm::LineStringType, pi->m_SRID);
     line.setPoint(0, pi->m_imaRect.x(), pi->m_imaRect.y());
     line.setPoint(1, pi->m_imaRect.x(), pi->m_imaRect.y() + pi->m_imaRect.height());
     line.setPoint(2, pi->m_imaRect.x() + pi->m_imaRect.width(), pi->m_imaRect.y() + pi->m_imaRect.height());
     line.setPoint(3, pi->m_imaRect.x() + pi->m_imaRect.width(), pi->m_imaRect.y());
     line.setPoint(4, pi->m_imaRect.center().x(), pi->m_imaRect.center().y());
-    line.setPoint(5, pi->m_imaRect.x() +  pi->m_imaRect.width(), pi->m_imaRect.center().y());
+    line.setPoint(5, pi->m_imaRect.x(), pi->m_imaRect.center().y());
+    line.setPoint(6, pi->m_imaRect.x() +  pi->m_imaRect.width(), pi->m_imaRect.center().y());
+    line.setPoint(7, pi->m_imaRect.center().x(), pi->m_imaRect.y());
+    line.setPoint(8, pi->m_imaRect.center().x(), pi->m_imaRect.y() + pi->m_imaRect.height());
     line.transform(m_display->getSRID());
 
     // transform in device coordinate
@@ -1939,35 +1942,39 @@ void te::qt::widgets::TimeSliderWidget::drawPixmapItem(te::qt::widgets::PixmapIt
     QPointF p1 = pi->m_matrix.map(QPointF(line.getPointN(1)->getX(), line.getPointN(1)->getY()));
     QPointF p2 = pi->m_matrix.map(QPointF(line.getPointN(2)->getX(), line.getPointN(2)->getY()));
     QPointF p3 = pi->m_matrix.map(QPointF(line.getPointN(3)->getX(), line.getPointN(3)->getY()));
-    QPointF ph1 = p1 - p0;
-    QPointF ph2 = p2 - p3;
-    QPointF pw1 = p2 - p1;
-    QPointF pw2 = p3 - p0;
-    double w = (fabs(pw1.x()) + fabs(pw2.x())) / 2.;
-    double h = (fabs(ph1.y()) + fabs(ph2.y())) / 2.;
-
-    // calculate the image rotation
-    QPointF p4 = pi->m_matrix.map(QPointF(line.getPointN(4)->getX(), line.getPointN(4)->getY()));
+    QPointF c = pi->m_matrix.map(QPointF(line.getPointN(4)->getX(), line.getPointN(4)->getY()));
     QPointF p5 = pi->m_matrix.map(QPointF(line.getPointN(5)->getX(), line.getPointN(5)->getY()));
-    QPointF prot = p5 - p4;
+    QPointF p6 = pi->m_matrix.map(QPointF(line.getPointN(6)->getX(), line.getPointN(6)->getY()));
+    QPointF p7 = pi->m_matrix.map(QPointF(line.getPointN(7)->getX(), line.getPointN(7)->getY()));
+    QPointF p8 = pi->m_matrix.map(QPointF(line.getPointN(8)->getX(), line.getPointN(8)->getY()));
+    QPointF ph(p8 - p7);
+    QPointF ph1(p0 - p1);
+    QPointF ph2(p3 - p2);
+    QPointF pw(p6 - p5);
+    QPointF pw1(p2 - p1);
+    QPointF pw2(p3 - p0);
+    QPointF prot(p6 - c);
 
-    double pi = 3.14159265;
+    double w = fabs(pw.x());
+    double h = fabs(ph.y());
+
+    double PI = 3.14159265;
     double rad = 0;
-    painter->translate(p4.toPoint());
+    painter->translate(c.toPoint());
 
     if (prot.x() == 0)
     {
       if (prot.y() >= 0)
-        rad = pi / 2.;
+        rad = PI / 2.;
       else
-        rad = -pi / 2.;
+        rad = -PI / 2.;
     }
     else if (prot.y() == 0)
     {
       if (prot.x() >= 0)
         rad = 0;
       else
-        rad = -pi;
+        rad = -PI;
     }
     else
     {
@@ -1975,9 +1982,9 @@ void te::qt::widgets::TimeSliderWidget::drawPixmapItem(te::qt::widgets::PixmapIt
       if (prot.x() < 0)
       {
         if (prot.y() < 0)
-          rad -= pi;
+          rad -= PI;
         else
-          rad += pi;
+          rad += PI;
       }
     }
 
@@ -1985,28 +1992,28 @@ void te::qt::widgets::TimeSliderWidget::drawPixmapItem(te::qt::widgets::PixmapIt
     if (rad != 0)
     {
       w /= fabs(cos(rad));
-      h /= fabs(cos(pi + rad));
+      h /= fabs(cos(PI + rad));
     }
 
     r = QRect(0, 0, w, h);
-    r.moveCenter(p4.toPoint()); // move to center
+    r.moveCenter(c.toPoint()); // move to center
 
     if (ph1.x() != 0 && ph2.x() != 0 && ph1.y() == ph2.y()) // make horizontal shear
     {
-      double horiz = (ph1.x() + ph2.x()) / 1.5;
-      painter->shear(-horiz / w, 0);
+      double horiz = (ph1.x() + ph2.x()) / 1.3;
+      painter->shear(horiz / w, 0);
     }
     else if (pw1.y() != 0 && pw2.y() != 0 && pw1.x() == pw2.x()) // make vertical shear
     {
-      double vert = (pw1.y() + pw2.y()) / 1.5;
-      painter->shear(0, -vert / h);
+      double vert = (pw1.y() + pw2.y()) / 1.3;
+      painter->shear(0, vert / h);
     }
     else if (rad != 0) // make rotation
     {
-      double degree = rad * 180. / pi;
+      double degree = rad * 180. / PI;
       painter->rotate(degree);
     }
-    painter->translate(-p4.toPoint());
+    painter->translate(-c.toPoint());
   }
 
   QImage* ima = getImage(pi);
