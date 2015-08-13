@@ -48,7 +48,7 @@ te::qt::plugins::vp::MultipartToSinglepartAction::~MultipartToSinglepartAction()
 {
 }
 
-void te::qt::plugins::vp::MultipartToSinglepartAction::onActionActivated(bool checked)
+void te::qt::plugins::vp::MultipartToSinglepartAction::onActionActivated(bool)
 {
   QWidget* parent = te::qt::af::ApplicationController::getInstance().getMainWindow();
   te::vp::MultipartToSinglepartDialog dlg(parent);

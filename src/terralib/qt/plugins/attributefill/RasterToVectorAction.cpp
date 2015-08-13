@@ -48,7 +48,7 @@ te::qt::plugins::attributefill::RasterToVectorAction::~RasterToVectorAction()
 {
 }
 
-void te::qt::plugins::attributefill::RasterToVectorAction::onActionActivated(bool checked)
+void te::qt::plugins::attributefill::RasterToVectorAction::onActionActivated(bool)
 {
   QWidget* parent = te::qt::af::ApplicationController::getInstance().getMainWindow();
   te::attributefill::RasterToVectorDialog dlg(parent);

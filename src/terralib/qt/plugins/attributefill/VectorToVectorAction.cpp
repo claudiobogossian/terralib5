@@ -48,7 +48,7 @@ te::qt::plugins::attributefill::VectorToVectorAction::~VectorToVectorAction()
 {
 }
 
-void te::qt::plugins::attributefill::VectorToVectorAction::onActionActivated(bool checked)
+void te::qt::plugins::attributefill::VectorToVectorAction::onActionActivated(bool)
 {
   QWidget* parent = te::qt::af::ApplicationController::getInstance().getMainWindow();
   te::attributefill::VectorToVectorDialog dlg(parent);

@@ -683,7 +683,7 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAggregByAttribute(te::da::DataSe
           outItem->setString(1, itGeom->first);
           break;
       case te::dt::INT16_TYPE:
-          outItem->setInt16(1, boost::lexical_cast<int>(itGeom->first));
+          outItem->setInt16(1, boost::lexical_cast<int16_t>(itGeom->first));
           break;
       case te::dt::INT32_TYPE:
           outItem->setInt32(1, boost::lexical_cast<int>(itGeom->first));

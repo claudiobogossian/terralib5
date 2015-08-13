@@ -136,12 +136,12 @@ const te::da::SQLDialect* terralib4::DataSource::getDialect() const
   return sm_dialect;
 }
 
-void terralib4::DataSource::create(const std::map<std::string, std::string>& dsInfo)
+void terralib4::DataSource::create(const std::map<std::string, std::string>&)
 {
   throw Exception(TE_TR("This driver is read-only!"));
 }
 
-void terralib4::DataSource::drop(const std::map<std::string, std::string>& dsInfo)
+void terralib4::DataSource::drop(const std::map<std::string, std::string>&)
 {
   throw Exception(TE_TR("This driver is read-only!"));
 }
@@ -166,7 +166,7 @@ std::vector<std::string> terralib4::DataSource::getDataSourceNames(const std::ma
   return dbnames;
 }
 
-std::vector<te::common::CharEncoding> terralib4::DataSource::getEncodings(const std::map<std::string, std::string>& dsInfo)
+std::vector<te::common::CharEncoding> terralib4::DataSource::getEncodings(const std::map<std::string, std::string>&)
 {
   std::vector<te::common::CharEncoding> result;
   result.push_back(te::common::LATIN1);

@@ -48,7 +48,7 @@ te::qt::plugins::cellspace::CreateCellLayerAction::~CreateCellLayerAction()
 {
 }
 
-void te::qt::plugins::cellspace::CreateCellLayerAction::onActionActivated(bool checked)
+void te::qt::plugins::cellspace::CreateCellLayerAction::onActionActivated(bool)
 {
   QWidget* parent = te::qt::af::ApplicationController::getInstance().getMainWindow();
   te::qt::plugins::cellspace::CreateCellularSpaceDialog dlg(parent);

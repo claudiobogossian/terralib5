@@ -475,7 +475,6 @@ bool te::qt::plugins::terralib4::TL4ConverterWizard::validLayerNames()
         if(boost::filesystem::exists(m_rasterFolderPath + "/" + targetName + ".tif"))
         {
           hasConflict = true;
-          QTableWidgetItem *nonconflictItem = new QTableWidgetItem(QIcon::fromTheme("delete"), "");
         }
         else
         {
@@ -497,7 +496,6 @@ bool te::qt::plugins::terralib4::TL4ConverterWizard::validLayerNames()
         if(tl5ds->dataSetExists(targetDatasetNameAux))
         {
           hasConflict = true;
-          QTableWidgetItem *nonconflictItem = new QTableWidgetItem(QIcon::fromTheme("delete"), "");
         }
         else
         {
