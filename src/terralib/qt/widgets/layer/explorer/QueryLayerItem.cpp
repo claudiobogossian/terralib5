@@ -201,7 +201,7 @@ QString te::qt::widgets::QueryLayerItem::buildToolTip() const
   //The restriction
   toolTip += tr("Restriction: ");
   std::string query = m_layer->getQueryAsString();
-  boost::replace_all(query, " ", "\n");
+  boost::replace_all(query, ", ", ",\n");
 
   toolTip += QString::fromStdString(query);
   return toolTip;
