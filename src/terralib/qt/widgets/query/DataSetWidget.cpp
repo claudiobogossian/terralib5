@@ -175,7 +175,7 @@ void te::qt::widgets::DataSetWidget::onDataSetComboBoxActivated(const QString& v
     std::string dataSetName = value.toStdString();
     std::string aliasName = value.toStdString();
 
-    int pos = dataSetName.find(".");
+    std::size_t pos = dataSetName.find(".");
     if(pos != std::string::npos)
     {
       aliasName = dataSetName.substr(pos + 1, dataSetName.size() - 1);
@@ -246,7 +246,7 @@ void te::qt::widgets::DataSetWidget::onRemoveDataSetPushButtonClicked()
     for(int i = 0; i < m_ui->m_dataSetTableWidget->rowCount(); ++i)
     {
       QWidget* w = m_ui->m_dataSetTableWidget->cellWidget(i, 0);
-      QToolButton* btn = dynamic_cast<QToolButton*>(w);
+
       if(button == w)
       {
         row = i;
