@@ -199,13 +199,20 @@ namespace te
         */
         virtual EnumType* getDataTypeSVGView() const;
 
+        /*!
+          \brief Returns shared pointer of the type te::gm::Geometry belonging to enumeration.
+		  
+		      \return enum value   	  
+        */
+        virtual EnumType* getDataTypeGeometry() const;
+
       protected:
 
         /*!
           \brief Reimplemented from AbstractEnum
         */
         virtual void init();
-
+        
       protected:
 
         EnumType* m_dataTypeNone; //!< value that represents type none belonging to enumeration
@@ -228,6 +235,7 @@ namespace te
         EnumType* m_dataTypeLayerList; //!< value that represents type Layer List (te::map::AbstractLayerPtr) belonging to enumeration
         EnumType* m_dataTypeStringVector; //!< value that represents type string vector (std::vector<std::string>) belonging to enumeration
         EnumType* m_dataTypeSVGView; //!< value that represents type SVGView (string) belonging to enumeration
+        EnumType* m_dataTypeGeometry; //!< shared pointer to te::gm::Geometry belonging to enumeration
     };
   }
 }

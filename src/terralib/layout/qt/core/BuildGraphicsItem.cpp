@@ -949,56 +949,60 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createLegendChild()
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createLine() 
 {
-  LineModel* model = new LineModel();	
+  LineModel* model = new LineModel();
+  if(!m_props)
+  {
+    EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
+    std::string strName = nameItem(enumObj->getLineItem());
+
+    Property proertyId(0);
+    proertyId.setName("id");
+    proertyId.setValue(m_id, Enums::getInstance().getEnumDataType()->getDataTypeInt());
+    model->setProperty(proertyId);
+
+    Property propertyName(0);
+    propertyName.setName("name");
+    propertyName.setValue(strName, Enums::getInstance().getEnumDataType()->getDataTypeString());
+    model->setProperty(propertyName);
+  }
+
+  AbstractItemController* controller = new AbstractItemController(model);
+  AbstractItemView* view = controller->getView();
+
   if(m_props)
   {
-    model->updateProperties(m_props);
+    model->setProperties(*m_props);
   }
-  else
-  {
-    model->setId(m_id);
-
-    EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
-    std::string name = nameItem(enumObj->getLineItem());
-    model->setName(name);
-  }
-
-  LineController* controller = new LineController(model);
-  ItemObserver* itemObs = (ItemObserver*)controller->getView();
-
-  LineItem* view = dynamic_cast<LineItem*>(itemObs); 
-  if(m_props && view)
-  {
-    model->updateProperties(m_props);
-  }
-  return view;
+  return dynamic_cast<QGraphicsItem*>(view);
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createPolygon() 
 {
-  PolygonModel* model = new PolygonModel();	
+  PolygonModel* model = new PolygonModel();
+  if(!m_props)
+  {
+    EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
+    std::string strName = nameItem(enumObj->getPolygonItem());
+
+    Property proertyId(0);
+    proertyId.setName("id");
+    proertyId.setValue(m_id, Enums::getInstance().getEnumDataType()->getDataTypeInt());
+    model->setProperty(proertyId);
+
+    Property propertyName(0);
+    propertyName.setName("name");
+    propertyName.setValue(strName, Enums::getInstance().getEnumDataType()->getDataTypeString());
+    model->setProperty(propertyName);
+  }
+
+  AbstractItemController* controller = new AbstractItemController(model);
+  AbstractItemView* view = controller->getView();
+
   if(m_props)
   {
-    model->updateProperties(m_props);
+    model->setProperties(*m_props);
   }
-  else
-  {
-    model->setId(m_id);
-    
-    EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
-    std::string name = nameItem(enumObj->getPolygonItem());
-    model->setName(name);
-  }
-
-  PolygonController* controller = new PolygonController(model);
-  ItemObserver* itemObs = (ItemObserver*)controller->getView();
-
-  PolygonItem* view = dynamic_cast<PolygonItem*>(itemObs); 
-  if(m_props && view)
-  {
-    model->updateProperties(m_props);
-  }
-  return view;
+  return dynamic_cast<QGraphicsItem*>(view);
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createBalloon() 

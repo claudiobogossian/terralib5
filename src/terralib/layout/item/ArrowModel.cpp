@@ -89,14 +89,6 @@ te::layout::ArrowModel::ArrowModel()
     property.setMenu(true);
     m_properties.addProperty(property);
   }
-
-//updating properties
-  {
-    Property property(0);
-    property.setName("show_frame");
-    property.setValue(false, dataType->getDataTypeBool());
-    this->m_properties.updateProperty(property);
-  }
 }
 
 te::layout::ArrowModel::~ArrowModel()

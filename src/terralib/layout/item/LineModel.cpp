@@ -27,209 +27,111 @@
 
 // TerraLib
 #include "LineModel.h"
-#include "../core/ContextItem.h"
-#include "../../geometry/Envelope.h"
-#include "../../color/RGBAColor.h"
-#include "../../maptools/Canvas.h"
 #include "../core/enum/Enums.h"
 #include "../../geometry/Point.h"
-#include "../core/pattern/singleton/Context.h"
-#include "../core/Utils.h"
-#include "../core/pattern/mvc/ItemObserver.h"
 #include "../core/property/Property.h"
 #include "../core/property/Properties.h"
 #include "../core/enum/EnumLineStyleType.h"
+#include "../core/enum/EnumType.h"
 
-te::layout::LineModel::LineModel() :
-  m_currentLineStyleType(0),
-  m_enumLineStyleType(0)
+te::layout::LineModel::LineModel() 
+  : AbstractItemModel()
 {
-  m_type = Enums::getInstance().getEnumObjectType()->getLineItem();
+  te::color::RGBAColor color(0, 0, 0, 255);
+  te::gm::LineString* lineString = new te::gm::LineString(0, te::gm::LineStringType);
+  te::gm::GeometryShrPtr line(lineString);
 
-  m_box = te::gm::Envelope(0., 0., 20., 20.);
+  this->m_properties.setTypeObj(Enums::getInstance().getEnumObjectType()->getLineItem());
 
-  m_enumLineStyleType = new EnumLineStyleType();
-  m_currentLineStyleType = m_enumLineStyleType->getStyleSolid();
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
 
-  m_border = false;
+  //adding properties
+  {
+    EnumLineStyleType lineStyleType;
+    EnumType* currentType = lineStyleType.getStyleSolid();
 
-  m_color = te::color::RGBAColor(0, 0, 0, 255);
+    Property property(0);
+    property.setName("line_style_type");
+    property.setLabel("line style type");
+    property.setValue(currentType->getLabel(), dataType->getDataTypeStringList());
+
+    Variant v;
+    v.setValue(currentType->getLabel(), dataType->getDataTypeString());
+    property.addOption(v);
+    property.setOptionChoice(v);
+
+    for(int i = 0; i < lineStyleType.size(); i++)
+    {
+      EnumType* enumType = lineStyleType.getEnum(i);
+
+      if(enumType == lineStyleType.getStyleNone() || enumType == currentType || enumType == lineStyleType.getStyleCustomDash())
+        continue;
+
+      Variant v;
+      v.setValue(enumType->getLabel(), dataType->getDataTypeString());
+      property.addOption(v);
+    }
+    this->m_properties.addProperty(property);
+  }
+  {
+    Property property(0);
+    property.setName("color");
+    property.setLabel("color");
+    property.setValue(color, dataType->getDataTypeColor());
+    this->m_properties.addProperty(property);
+  }
+
+  {
+    Property property(0);
+    property.setName("geometry");
+    property.setLabel("geometry");
+    property.setVisible(false);
+    property.setValue(line, dataType->getDataTypeGeometry());
+    this->m_properties.addProperty(property);
+  }
 }
 
 te::layout::LineModel::~LineModel()
 {
-  if(!m_coords.empty())
-  {
-    std::vector<te::gm::Point*>::iterator ito;
 
-    for(ito = m_coords.begin() ; ito != m_coords.end() ; ++ito)
-    { 
-      if(*ito)
-      {
-        te::gm::Point* pt = *ito;
-        if(pt)
-        {
-          delete pt;
-          pt = 0;
-        }
-      }
-    }
-
-    m_coords.clear();
-  }
 }
 
-void te::layout::LineModel::setCoords( std::vector<te::gm::Point*> coords )
+void te::layout::LineModel::setProperty(const Property& property)
 {
-  m_coords = coords;
-
-  int sizeMCoords = m_coords.size();
-
-  te::gm::LinearRing *lineOfPoints = new te::gm::LinearRing(sizeMCoords, te::gm::LineStringType);
-  
-  for(int i = 0; i < sizeMCoords ; ++i)
-  {
-    lineOfPoints->setPointN( i, te::gm::Point(m_coords[i]->getX(), m_coords[i]->getY()));    
-  }
-
-  const te::gm::Envelope *returnBox = lineOfPoints->getMBR();
-  double x1 = 0;
-  double y1 = 0;
-  double x2 = 0;
-  double y2 = 0;
-  x1 = returnBox->getLowerLeftX();
-  y1 = returnBox->getLowerLeftY();
-  x2 = returnBox->getUpperRightX();
-  y2 = returnBox->getUpperRightY();
-
-  m_box = te::gm::Envelope(x1, y1, x2, y2);
-
-  if (lineOfPoints)
-  {
-    delete lineOfPoints;
-    lineOfPoints = 0;
-  }  
-
-  double x = m_box.getLowerLeftX();
-  double y = m_box.getLowerLeftY();
-
-  te::gm::Coord2D coord (x, y);
-
-  ContextItem context;
-  context.setPos(coord);
-  context.setChangePos(true);
-
-  notifyAll(context);
+  Properties properties("");
+  properties.addProperty(property);
+  updateProperties(property, properties);
 }
 
-std::vector<te::gm::Point*> te::layout::LineModel::getCoords()
+void te::layout::LineModel::setProperties(const Properties& props)
 {
-  return m_coords;
+  Properties properties = props;
+  Property property = properties.getProperty("geometry");
+  updateProperties(property, properties);
 }
 
-te::layout::Properties* te::layout::LineModel::getProperties() const
+void te::layout::LineModel::updateProperties( const Property& property, Properties& properties )
 {
-  ItemModelObservable::getProperties();
-
-  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
-
-  Property pro_lineStyleType = lineProperty();
-  if(!pro_lineStyleType.isNull())
-    m_properties->addProperty(pro_lineStyleType);
-
-  Property pro_fillColor(m_hashCode);
-  pro_fillColor.setName("color");
-  pro_fillColor.setValue(m_color, dataType->getDataTypeColor());
-  pro_fillColor.setMenu(true);
-  m_properties->addProperty(pro_fillColor);
-
-  return m_properties;
-}
-
-void te::layout::LineModel::updateProperties( te::layout::Properties* properties, bool notify )
-{
-  ItemModelObservable::updateProperties(properties, false);
-
-  Properties* vectorProps = const_cast<Properties*>(properties);
-
-  Property pro_lineType = vectorProps->getProperty("line_style_type");
-  if(!pro_lineType.isNull())
+  if ((property.getName() == "geometry"))
   {
-    std::string label = pro_lineType.getOptionByCurrentChoice().toString();
-    EnumType* enumType = m_enumLineStyleType->searchLabel(label);
-    if(enumType)
-      m_currentLineStyleType = enumType;
-  }
-
-  {
-    Property prop = vectorProps->getProperty("color");
-    if(prop.isNull() == false)
+    const te::gm::GeometryShrPtr geometryPtr = property.getValue().toGeometry();
+    te::gm::LineString const* lineString = dynamic_cast< te::gm::LineString const * > (geometryPtr.get());
+    const te::gm::Envelope* env = lineString->getMBR();
+    double width = env->getWidth();
+    double height = env->getHeight();
+    EnumDataType* dataType = Enums::getInstance().getEnumDataType();
     {
-      m_color = prop.getValue().toColor();
+      Property property(0);
+      property.setName("width");
+      property.setValue(width, dataType->getDataTypeDouble());
+      properties.addProperty(property);
+    }
+    {
+      Property property(0);
+      property.setName("height");
+      property.setValue(height, dataType->getDataTypeDouble());
+      properties.addProperty(property);
     }
   }
-
-  if(notify)
-  {
-    ContextItem context;
-    notifyAll(context);
-  }
+  AbstractItemModel::setProperties(properties);
 }
-
-te::layout::EnumLineStyleType* te::layout::LineModel::getEnumLineStyleType()
-{
-  return m_enumLineStyleType;
-}
-
-te::layout::EnumType* te::layout::LineModel::getCurrentLineStyleType()
-{
-  return m_currentLineStyleType;
-}
-
-te::layout::Property te::layout::LineModel::lineProperty() const
-{
-  Property pro_lineStyleType(m_hashCode);
-
-  if(!m_currentLineStyleType)
-    return pro_lineStyleType;
-
-  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
-
-  if(!dataType)
-    return pro_lineStyleType;
-
-  pro_lineStyleType.setName("line_style_type");
-  pro_lineStyleType.setLabel("line style type");
-  pro_lineStyleType.setValue(m_currentLineStyleType->getLabel(), dataType->getDataTypeStringList());
-
-  Variant v;
-  v.setValue(m_currentLineStyleType->getLabel(), dataType->getDataTypeString());
-  pro_lineStyleType.addOption(v);
-  pro_lineStyleType.setOptionChoice(v);
-
-  for(int i = 0; i < m_enumLineStyleType->size(); i++)
-  {
-    EnumType* enumType = m_enumLineStyleType->getEnum(i);
-
-    if(enumType == m_enumLineStyleType->getStyleNone() || enumType == m_currentLineStyleType || enumType == m_enumLineStyleType->getStyleCustomDash())
-      continue;
-
-    Variant v;
-    v.setValue(enumType->getLabel(), dataType->getDataTypeString());
-    pro_lineStyleType.addOption(v);
-  }
-
-  return pro_lineStyleType;
-}
-
-const te::color::RGBAColor& te::layout::LineModel::getColor() const
-{
-  return m_color;
-}
-
-void te::layout::LineModel::setColor(const te::color::RGBAColor& color)
-{
-  m_color = color;
-}
-
-

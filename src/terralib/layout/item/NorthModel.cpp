@@ -70,7 +70,6 @@ te::layout::NorthModel::NorthModel()
 
     this->m_properties.addProperty(property);
   }
-
   {
     Property property(0);
     property.setName("color");

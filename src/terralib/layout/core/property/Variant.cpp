@@ -47,7 +47,8 @@ te::layout::Variant::Variant() :
   m_bValue(false),
   m_type(0),
   m_null(true),
-  m_complex(false)
+  m_complex(false),
+  m_geometryPtr(0)
 {
   m_type = Enums::getInstance().getEnumDataType()->getDataTypeNone();
 }
@@ -94,6 +95,7 @@ void te::layout::Variant::convertValue( const void* valueCopy )
   te::color::RGBAColor* colorValue = 0;
   Font* fontValue = 0;
   GenericVariant* generic = 0;
+  te::gm::GeometryShrPtr geometryPtr(0);
 
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
 
@@ -200,6 +202,17 @@ void te::layout::Variant::convertValue( const void* valueCopy )
      {
        null = false;
        m_generic = *generic;
+       m_complex = true;
+     }
+   }
+   else if(m_type == dataType->getDataTypeGeometry())
+   {
+     // Cast it back to a shared pointer of a te::gm::Geometry.
+     te::gm::GeometryShrPtr* geoPtrRef = static_cast<te::gm::GeometryShrPtr*>(value);
+     if(geoPtrRef)
+     {
+       null = false;
+       m_geometryPtr = *geoPtrRef;
        m_complex = true;
      }
    }
@@ -554,6 +567,11 @@ bool te::layout::Variant::toBool( std::string str )
 const te::layout::GenericVariant& te::layout::Variant::toGenericVariant() const
 {
   return m_generic;
+}
+
+const te::gm::GeometryShrPtr te::layout::Variant::toGeometry() const
+{
+  return m_geometryPtr;
 }
 
 
