@@ -597,7 +597,7 @@ void te::layout::Scene::redrawSelectionMap()
 
 void te::layout::Scene::exportItemsToImage(std::string dir)
 {
-  Utils* utils = Context::getInstance().getUtils();
+  //Utils* utils = Context::getInstance().getUtils();
 
   QList<QGraphicsItem*> selected = selectedItems();
   foreach(QGraphicsItem *item, selected) 

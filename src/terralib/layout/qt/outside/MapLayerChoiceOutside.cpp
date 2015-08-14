@@ -102,7 +102,7 @@ void te::layout::MapLayerChoiceOutside::setLayers(std::list<te::map::AbstractLay
     if(dsType->hasGeom())
     {
       te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(dsType.get());
-      int type = geomProp->getGeometryType();        
+      //int type = geomProp->getGeometryType();
     }
       
     ++it;

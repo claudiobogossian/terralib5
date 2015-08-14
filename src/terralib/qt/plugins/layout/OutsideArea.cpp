@@ -448,8 +448,7 @@ void te::qt::plugins::layout::OutsideArea::openMainMenu()
 {
   if(!m_parentMenu)
     return;
-  
-  bool exist_menu = false;
+
   QList<QAction*> acts = m_parentMenu->actions();
  
   foreach(QAction* act, acts)
