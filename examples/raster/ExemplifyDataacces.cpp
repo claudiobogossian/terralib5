@@ -134,7 +134,7 @@ void DataSetPersistence()
     std::auto_ptr<te::da::DataSetType> dt_tiff = tr->getDataSetType("test.tif");
     std::auto_ptr<te::da::DataSet> ds_tiff = tr->getDataSet("test.tif");
 
-    te::da::DataSetType* dt_tiff2 = new te::da::DataSetType("test2.tif");
+    //te::da::DataSetType* dt_tiff2 = new te::da::DataSetType("test2.tif");
     te::rst::RasterProperty* rstp = static_cast<te::rst::RasterProperty*>(dt_tiff->getProperties()[0]->clone());
     rstp->setName("test2.tif");
     //dt_tiff2->add(rstp);
