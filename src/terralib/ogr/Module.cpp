@@ -26,6 +26,7 @@
 // TerraLib
 #include "../BuildConfig.h"
 #include "../common/Logger.h"
+#include "../common/PlatformUtils.h"
 #include "../common/Translator.h"
 #include "../dataaccess/datasource/DataSourceManager.h"
 #include "../dataaccess/datasource/DataSourceFactory.h"
@@ -57,30 +58,27 @@ void te::ogr::Module::startup()
   if(m_initialized)
     return;
 
-  std::string gdal_data;
-  char* gdata = getenv("GDAL_DATA");
-
-  if(gdata != 0)
-    gdal_data = std::string(gdata);
-
-  if(gdal_data.empty())
+// for all platforms, first look at TERRALIB_GDAL_DATA detected by CMAKE
+// note: installed versions on developers machine may look for this version of GDAL
+  std::string gdal_data_dir(TERRALIB_GDAL_DATA);
+  
+  if(gdal_data_dir.empty())
   {
-    char* tDir = getenv("TERRALIB_HOME");
-    std::string teDir;
-
-    if(tDir != 0)
-      teDir = std::string(tDir);
-
-    if(!teDir.empty())
-      gdal_data = teDir + "/share/gdal-data";
+    // search for GDAL in TerraLib PATH
+#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
+    gdal_data_dir = te::common::FindInTerraLibPath("/share/data");
+#elif TE_PLATFORM == TE_PLATFORMCODE_APPLE
+    gdal_data_dir = te::common::FindInTerraLibPath("/share/gdal");
+#elif TE_PLATFORM == TE_PLATFORMCODE_LINUX
+    gdal_data_dir= te::common::FindInTerraLibPath("/share/gdal");
+#else
+#error "unsupported plataform: please, contact terralib-team@terralib.org"
+#endif
   }
-
-  if(gdal_data.empty())
-    gdal_data = TERRALIB_GDAL_DATA;
-
-  if( !gdal_data.empty() )
+  
+  if(!gdal_data_dir.empty())
   {
-    CPLSetConfigOption("GDAL_DATA", gdal_data.c_str());
+    CPLSetConfigOption("GDAL_DATA", gdal_data_dir.c_str());
   }
   
   CPLSetConfigOption("GDAL_PAM_ENABLED", "NO");
