@@ -26,9 +26,6 @@
 #ifndef __TERRALIB_GRAPH_INTERNAL_CONFIG_H
 #define __TERRALIB_GRAPH_INTERNAL_CONFIG_H
 
-// TerraLib
-#include "../Config.h"
-
 #define TE_GRAPH_MODULE_NAME "te.graph"
 
 /** @name Graph Module Main Defines

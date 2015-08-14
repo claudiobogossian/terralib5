@@ -26,9 +26,6 @@
 #ifndef __TERRALIB_EDIT_QT_INTERNAL_CONFIG_H
 #define __TERRALIB_EDIT_QT_INTERNAL_CONFIG_H
 
-// TerraLib
-#include "../../Config.h"
-
 /** @name DLL/LIB Module
  *  Flags for building TerraLib as a DLL or as a Static Library
  */

@@ -26,8 +26,6 @@
 #ifndef __TERRALIB_POSTGIS_INTERNAL_CONFIG_H
 #define __TERRALIB_POSTGIS_INTERNAL_CONFIG_H
 
-#include "../Config.h"
-
 /** @name General Defines
  *  Configuring PostGIS support.
  */

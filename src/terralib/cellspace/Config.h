@@ -26,9 +26,6 @@
 #ifndef __TERRALIB_CELLSPACE_INTERNAL_CONFIG_H
 #define __TERRALIB_CELLSPACE_INTERNAL_CONFIG_H
 
-// TerraLib
-#include "../Config.h"
-
 #define TE_CELLSPACE_MODULE_NAME "te.cellspace"
 
 /** @name DLL/LIB Module

@@ -25,7 +25,7 @@
 
 //Terralib
 
-#include "terralib_config.h"
+#include "../BuildConfig.h"
 #include "../common/progress/TaskProgress.h"
 #include "../common/Logger.h"
 #include "../common/Translator.h"

@@ -27,7 +27,7 @@
 #define __TERRALIB_GEOMETRY_INTERNAL_GEOSREADER_H
 
 // TerraLib
-#include "terralib_config.h"
+#include "../BuildConfig.h"
 #include "../common/Static.h"
 #include "Config.h"
 

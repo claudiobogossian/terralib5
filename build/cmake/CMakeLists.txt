@@ -691,8 +691,8 @@ configure_file(${CMAKE_SOURCE_DIR}/terralib-config-version.cmake.in
 configure_file(${CMAKE_SOURCE_DIR}/terralib-config.cmake.in
                ${CMAKE_BINARY_DIR}/terralib-config.cmake @ONLY)
 
-configure_file(${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/Config.h.in
-               ${CMAKE_BINARY_DIR}/terralib_config.h @ONLY)
+configure_file(${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/BuildConfig.h.in
+               ${CMAKE_BINARY_DIR}/terralib_buildconfig.h @ONLY)
 
 configure_file(${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/Defines.h.in
                ${CMAKE_BINARY_DIR}/terralib_defines.h @ONLY)
@@ -1261,7 +1261,7 @@ endif()
 
 file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/*.h)
 
-install(FILES ${CMAKE_BINARY_DIR}/terralib_config.h
+install(FILES ${CMAKE_BINARY_DIR}/terralib_buildconfig.h
               ${CMAKE_BINARY_DIR}/terralib_defines.h
               ${CMAKE_BINARY_DIR}/terralib_version.h
               ${TERRALIB_HDR_FILES}

@@ -27,9 +27,9 @@
 #define __TERRALIB_GEOMETRY_INTERNAL_GEOSWRITER_H
 
 // TerraLib
+#include "../BuildConfig.h"
 #include "../common/Static.h"
 #include "Config.h"
-#include "terralib_config.h"
 
 #ifdef TERRALIB_GEOS_ENABLED
 

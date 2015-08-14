@@ -26,9 +26,6 @@
 #ifndef __TERRALIB_VP_CORE_INTERNAL_CONFIG_H
 #define __TERRALIB_VP_CORE_INTERNAL_CONFIG_H
 
-// TerraLib
-#include "../Config.h"
-
 #define TE_VP_MODULE_NAME "te.vp"
 
 /** @name DLL/LIB Module
