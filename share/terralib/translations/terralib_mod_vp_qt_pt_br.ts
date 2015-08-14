@@ -931,7 +931,7 @@
 <context>
     <name>te::vp::GeometricOpWizard</name>
     <message>
-        <location filename="../../../src/terralib/vp/qt/GeometricOpWizard.cpp" line="74"/>
+        <location filename="../../../src/terralib/vp/qt/GeometricOpWizard.cpp" line="75"/>
         <source>Geometric Operation</source>
         <translation type="unfinished"></translation>
     </message>
@@ -952,12 +952,12 @@
 <context>
     <name>te::vp::IntersectionDialog</name>
     <message>
-        <location filename="../../../src/terralib/vp/qt/IntersectionDialog.cpp" line="434"/>
+        <location filename="../../../src/terralib/vp/qt/IntersectionDialog.cpp" line="453"/>
         <source>Save as...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/IntersectionDialog.cpp" line="435"/>
+        <location filename="../../../src/terralib/vp/qt/IntersectionDialog.cpp" line="454"/>
         <source>Shapefile (*.shp *.SHP);;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1039,12 +1039,12 @@
 <context>
     <name>te::vp::PolygonToLineDialog</name>
     <message>
-        <location filename="../../../src/terralib/vp/qt/PolygonToLineDialog.cpp" line="175"/>
+        <location filename="../../../src/terralib/vp/qt/PolygonToLineDialog.cpp" line="176"/>
         <source>Save as...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/vp/qt/PolygonToLineDialog.cpp" line="176"/>
+        <location filename="../../../src/terralib/vp/qt/PolygonToLineDialog.cpp" line="177"/>
         <source>Shapefile (*.shp *.SHP);;</source>
         <translation type="unfinished"></translation>
     </message>
