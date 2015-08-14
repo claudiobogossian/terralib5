@@ -42,6 +42,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include "../../Utils.h"
 #include "../Renderer.h"
 #include "../Utils.h"
+#include "../core/command/UpdateCommand.h"
 #include "MergeGeometriesTool.h"
 
 // Qt
@@ -60,12 +61,13 @@ te::edit::MergeGeometriesTool::MergeGeometriesTool(te::edit::EditionManager* edi
 : AbstractTool(display, parent)
 ,m_layer(layer),
 m_feature(0),
+//m_updateWatches(std::vector<Feature*>()),
+m_oidRef(0),
+m_oidsRemoved(0),
 m_editionManager(editionManager)
 {
   // Signals & slots
   connect(m_display, SIGNAL(extentChanged()), SLOT(onExtentChanged()));
-
-  m_oidRemoved = new te::da::ObjectIdSet();
 
   setCursor(cursor);
 
@@ -74,11 +76,7 @@ m_editionManager(editionManager)
 
 te::edit::MergeGeometriesTool::~MergeGeometriesTool()
 {
-  QPixmap* draft = m_display->getDraftPixmap();
-  draft->fill(Qt::transparent);
-
-  m_oidRemoved = 0;
-  m_feature = 0;
+  delete m_feature;
 }
 
 void te::edit::MergeGeometriesTool::mergeGeometries()
@@ -110,16 +108,16 @@ void te::edit::MergeGeometriesTool::mergeGeometries()
     return;
   }
   
-  m_refOid = getBaseOID(objSet, tr("Allow to merge geometries selecting the geom_id that will keep the attributes."));
+  m_oidRef = getBaseOID(objSet, tr("Allow to merge geometries selecting the geom_id that will keep the attributes."));
 
-  if (m_refOid->getValueAsString() == "")
+  if (m_oidRef->getValueAsString() == "")
     return;
 
-  ev = getRefEnvelope(ds.get(), m_refOid, geomProp);
+  ev = getRefEnvelope(ds.get(), m_oidRef, geomProp);
 
   m_feature = PickFeature(m_editionManager, m_layer, *ev, m_display->getSRID());
 
-  g = gc->getGeometryN(0);
+  g = dynamic_cast<te::gm::Geometry*>(gc->getGeometryN(0)->clone());
 
   for (std::size_t i = 1; i < gc->getNumGeometries(); i++)
   {
@@ -143,12 +141,17 @@ void te::edit::MergeGeometriesTool::mergeGeometries()
       break;
   }
 
-  m_feature->setId(m_refOid);
-  m_feature->setGeometry(g);
+  m_feature->setId(m_oidRef->clone());
+  m_feature->setGeometry(dynamic_cast<te::gm::Geometry*>(g->clone()));
 
   draw();
 
   storeMergedFeature();
+
+  //m_updateWatches.push_back(m_feature->clone());
+
+  //QUndoCommand* command = new UpdateCommand(m_editionManager, m_updateWatches, m_display, m_layer);
+  //m_editionManager->addUndoStack(command);
 }
 
 bool te::edit::MergeGeometriesTool::spatialRelationDisjoint(te::gm::GeometryCollection* gc)
@@ -159,9 +162,9 @@ bool te::edit::MergeGeometriesTool::spatialRelationDisjoint(te::gm::GeometryColl
 
   for (std::size_t i = 0; i < gc->getNumGeometries(); i++)
   {
-    te::gm::Geometry* g1 = gc->getGeometryN(i);
-
     aux = 0;
+
+    te::gm::Geometry* g1 = gc->getGeometryN(i);
 
     for (j = 0; j < gc->getNumGeometries(); j++)
     {
@@ -187,7 +190,9 @@ te::da::ObjectId* te::edit::MergeGeometriesTool::getBaseOID(const te::da::Object
 {
   bool ok;
   QStringList qValues;
-  te::da::ObjectId* objValue;
+  te::da::ObjectId* objValue = 0;
+
+  m_oidsRemoved = new te::da::ObjectIdSet;
 
   std::set<te::da::ObjectId*, te::common::LessCmp<te::da::ObjectId*> >::const_iterator it;
 
@@ -205,11 +210,11 @@ te::da::ObjectId* te::edit::MergeGeometriesTool::getBaseOID(const te::da::Object
   {
     if ((*it)->getValueAsString() == qValue.toStdString())
     {
-      objValue = (*it);
+      objValue = (*it)->clone();
     }
     else
     {
-      m_oidRemoved->add((*it));
+      m_oidsRemoved->add((*it)->clone());
     }
   }
 
@@ -240,7 +245,7 @@ const te::gm::Envelope* te::edit::MergeGeometriesTool::getRefEnvelope(te::da::Da
       refOID = ds->getString(oidPropertyNames[0]);
     }
 
-    if (m_refOid->getValueAsString() == refOID)
+    if (m_oidRef->getValueAsString() == refOID)
     {
       env = (ds->getGeometry(geomProp->getName()).release())->getMBR();
     }
@@ -286,7 +291,7 @@ void te::edit::MergeGeometriesTool::storeMergedFeature()
 {
   std::set<te::da::ObjectId*, te::common::LessCmp<te::da::ObjectId*> >::const_iterator it;
   
-  for (it = m_oidRemoved->begin(); it != m_oidRemoved->end(); ++it)
+  for (it = m_oidsRemoved->begin(); it != m_oidsRemoved->end(); ++it)
   {
     m_editionManager->m_repository->addGeometry(m_layer->getId(), (*it)->clone(), dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone()));
     m_editionManager->m_operation[(*it)->clone()->getValueAsString()] = m_editionManager->removeOp;

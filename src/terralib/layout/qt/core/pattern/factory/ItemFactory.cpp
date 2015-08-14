@@ -96,6 +96,11 @@ te::layout::Observer* te::layout::ItemFactory::make( EnumType* type, ItemParamsC
     GridMapItem* gridMap = new GridMapItem(params.getController(), params.getModel());
     item = (Observer*)gridMap;
   }
+  else if(type == enumObj->getImageItem())
+  {
+    ImageItem* scale = new ImageItem(params.getController(), params.getModel());
+    item = (Observer*)scale;
+  }
   else if(type == enumObj->getLegendChildItem())
   {
     LegendChildItem* mText = new LegendChildItem(params.getController(), params.getModel());
@@ -105,16 +110,6 @@ te::layout::Observer* te::layout::ItemFactory::make( EnumType* type, ItemParamsC
   {
     MovingItemGroup* mItemGroup = new MovingItemGroup(params.getController(), params.getModel());
     item = (Observer*) mItemGroup;
-  }
-  else if(type == enumObj->getLineItem())
-  {
-    LineItem* line = new LineItem(params.getController(), params.getModel());
-    item = (Observer*)line;
-  }
-  else if(type == enumObj->getPolygonItem())
-  {
-    PolygonItem* polygon = new PolygonItem(params.getController(), params.getModel());
-    item = (Observer*)polygon;
   }
   else if(type == enumObj->getBalloonItem())
   {
@@ -190,9 +185,13 @@ te::layout::AbstractItemView* te::layout::ItemFactory::makeNew(EnumType* type, I
   {
     item = new NorthItem(params.m_newController, params.m_newModel);
   }
-  else if(type == enumObj->getImageItem())
+  else if(type == enumObj->getLineItem())
   {
-    item = new ImageItem(params.m_newController, params.m_newModel);
+    item = new LineItem(params.m_newController, params.m_newModel);
+  }
+  else if(type == enumObj->getPolygonItem())
+  {
+    item = new PolygonItem(params.m_newController, params.m_newModel);
   }
 
   return item;

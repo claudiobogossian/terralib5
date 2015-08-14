@@ -29,11 +29,13 @@
 #include <QtGui/QPixmap>
 #include <QRubberBand>
 
-te::layout::ViewZoomArea::ViewZoomArea(View* view, const QCursor& cursor, QObject* parent) 
+te::layout::ViewZoomArea::ViewZoomArea(View* view, QObject* parent) 
   : ViewRubberBand(view, parent),
     m_zoomStarted(false)
 {
-  setCursor(cursor);
+	// Active ZoomArea Tool
+	QCursor newCursor = createCursor("layout-paper-zoom-in");
+	setCursor(newCursor);
 }
 
 te::layout::ViewZoomArea::~ViewZoomArea()

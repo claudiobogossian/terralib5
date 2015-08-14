@@ -51,7 +51,7 @@ namespace te
     {
       public:
         // Pass all parameters that the command need to fulfill its task in the constructor
-        UpdateCommand(te::edit::EditionManager* editionManager, std::vector<Feature*> items, Feature* item, te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QUndoCommand *parent = 0);
+        UpdateCommand(te::edit::EditionManager* editionManager, std::vector<Feature*> items, te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QUndoCommand *parent = 0);
 
         /*!
         \brief Destructor
@@ -74,10 +74,9 @@ namespace te
 
         void draw();
 
-        Feature*  m_item;
-        std::vector<Feature*> m_updateItems;
         te::qt::widgets::MapDisplay* m_display;
         te::map::AbstractLayerPtr m_layer;
+        std::vector<Feature*> m_updateItems;
         te::edit::EditionManager* m_editionManager;
         te::gm::Coord2D    m_initialPosition;
 

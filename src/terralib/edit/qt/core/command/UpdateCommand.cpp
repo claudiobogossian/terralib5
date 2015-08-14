@@ -32,14 +32,13 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include "../../Renderer.h"
 #include "UpdateCommand.h"
 
-te::edit::UpdateCommand::UpdateCommand(te::edit::EditionManager* editionManager, std::vector<Feature*> items, Feature* item, te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer,
+te::edit::UpdateCommand::UpdateCommand(te::edit::EditionManager* editionManager, std::vector<Feature*> items, te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer,
   QUndoCommand *parent) :
   QUndoCommand(parent)
-, m_display(display)
-, m_layer(layer)
-, m_item(item)
-, m_updateItems(items)
-, m_editionManager(editionManager)
+  , m_display(display)
+  , m_layer(layer)
+  , m_updateItems(items)
+  , m_editionManager(editionManager)
 {
 
   m_pos = 1;
@@ -72,9 +71,9 @@ void te::edit::UpdateCommand::redo()
 {
   bool resultFound = false;
 
-  if(!m_editionManager->getUndoStack())
+  if (!m_editionManager->getUndoStack())
     return;
-  
+
   for (int i = 0; i < m_editionManager->getUndoStack()->count(); ++i)
   {
     const QUndoCommand* cmd = m_editionManager->getUndoStack()->command(i);
@@ -94,7 +93,7 @@ void te::edit::UpdateCommand::redo()
     draw();
 
   }
-  
+
 }
 
 QString te::edit::UpdateCommand::createCommandString(QString oid)
@@ -118,10 +117,14 @@ void te::edit::UpdateCommand::draw()
   renderer.begin(draft, env, m_display->getSRID());
 
   // Draw the layer edited geometries
-  renderer.drawRepository(m_editionManager,m_layer->getId(), env, m_display->getSRID());
+  renderer.drawRepository(m_editionManager, m_layer->getId(), env, m_display->getSRID());
 
   if (m_updateItems.size() >= m_pos)
+  {
     renderer.draw(m_updateItems[m_updateItems.size() - m_pos]->getGeometry(), false);
+
+    m_editionManager->m_repository->addFeature(m_layer->getId(), m_updateItems[m_updateItems.size() - m_pos]->clone());
+  }
 
   renderer.end();
 

@@ -27,14 +27,9 @@
 
 // TerraLib
 #include "PolygonItem.h"
-#include "../../core/pattern/mvc/ItemController.h"
-#include "../../core/AbstractScene.h"
-#include "../../core/pattern/mvc/Observable.h"
 #include "../../../color/RGBAColor.h"
-#include "../../../qt/widgets/Utils.h"
-#include "../../../geometry/Envelope.h"
-#include "../../../common/STLUtils.h"
 #include "../../item/PolygonModel.h"
+#include "AbstractItem.h"
 
 // Qt
 #include <QPointF>
@@ -42,10 +37,10 @@
 #include <QStyleOptionGraphicsItem>
 #include <QObject>
 
-te::layout::PolygonItem::PolygonItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
-  LineItem(controller, o, invertedMatrix)
+te::layout::PolygonItem::PolygonItem( AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix ) 
+  : LineItem(controller, model)
 { 
-  m_nameClass = std::string(this->metaObject()->className());
+  //m_nameClass = std::string(this->metaObject()->className());
 }
 
 te::layout::PolygonItem::~PolygonItem()
@@ -55,17 +50,18 @@ te::layout::PolygonItem::~PolygonItem()
 
 void te::layout::PolygonItem::drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget )
 {
-  PolygonModel* model = dynamic_cast<PolygonModel*>(m_model);
-  if(!model)
+  QPolygonF poly = getQPolygon();
+
+  if (poly.empty())
   {
     return;
   }
 
-  if(m_poly.empty())
-    return;
+  const Property& pColor = m_controller->getProperty("contour_color");
+  const Property& pFillColor = m_controller->getProperty("fill_color");
 
-  const te::color::RGBAColor& fillColor = model->getFillColor();
-  const te::color::RGBAColor& color = model->getColor();
+  const te::color::RGBAColor& fillColor = pFillColor.getValue().toColor();
+  const te::color::RGBAColor& color = pColor.getValue().toColor();
 
   QColor qFillColor(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), fillColor.getAlpha());
   QColor qColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
@@ -79,7 +75,7 @@ void te::layout::PolygonItem::drawItem( QPainter * painter, const QStyleOptionGr
   painter->setBrush(brush);
 
   //draws the item
-  painter->drawPolygon(m_poly);
+  painter->drawPolygon(poly);
 
   painter->restore();
 }

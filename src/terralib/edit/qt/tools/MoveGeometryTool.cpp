@@ -217,7 +217,7 @@ void te::edit::MoveGeometryTool::draw()
 
 void te::edit::MoveGeometryTool::updateCursor()
 {
-  m_display->setCursor(Qt::ArrowCursor);
+  m_display->setCursor(Qt::OpenHandCursor);
 }
 
 void te::edit::MoveGeometryTool::onExtentChanged()

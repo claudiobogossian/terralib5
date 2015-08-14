@@ -18,51 +18,68 @@
  */
 
 /*!
-  \file ImageModel.h
+  \file ToolFactoryParamsCreate.h
    
-   \brief Class that represents a "Model" part of Image MVC component. 
-      Its coordinate system is the same of scene (millimeters). 
-      This is also son of ItemModelObservable, so it can become observable.
+  \brief Parameters to create a new tool. 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_IMAGE_MODEL_H
-#define __TERRALIB_LAYOUT_INTERNAL_IMAGE_MODEL_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_TOOL_FACTORY_PARAMS_CREATE_H 
+#define __TERRALIB_LAYOUT_INTERNAL_TOOL_FACTORY_PARAMS_CREATE_H
 
 // TerraLib
-#include "../core/pattern/mvc/AbstractItemModel.h"
-#include "../core/Config.h"
+#include "terralib/common/AbstractParameters.h"
+#include "../../../../core/Config.h"
 
 namespace te
 {
   namespace layout
   {
+		class View;
     /*!
-      \brief Class that represents a "Model" part of Arrow MVC component. 
-          Its coordinate system is the same of scene (millimeters). 
-          This is also son of AbstractItemModel, so it can become observable.
-          
-      \ingroup layout
+	  \brief Parameters to create a new tool. 
+	  
+	  \ingroup layout
 
-      \sa te::layout::AbstractItemModel
-    */
-    class TELAYOUTEXPORT ImageModel : public AbstractItemModel
+	  \sa te::layout::ParamsCreate
+	  */
+		class TELAYOUTEXPORT ToolFactoryParamsCreate : public te::common::AbstractParameters
     {
       public:
-           
+				
+
+				/*! \brief Copy constructor. */
+				ToolFactoryParamsCreate(const ToolFactoryParamsCreate& rhs);
+
         /*!
           \brief Constructor
-        */
-        ImageModel();
+
+          \param view
+        */ 
+				ToolFactoryParamsCreate(View* view);
 
         /*!
           \brief Destructor
         */ 
-        virtual ~ImageModel();
+				virtual ~ToolFactoryParamsCreate();
+
+				te::common::AbstractParameters* clone() const;
+
+				void reset() throw(te::common::Exception);
+
+        /*!
+          \brief Returns the te::layout::View
+
+          \return view
+        */
+        View*	getView();
+				
+			protected:
+
+        View* m_view; //!< View object
     };
   }
 }
-
-#endif 
+#endif
 

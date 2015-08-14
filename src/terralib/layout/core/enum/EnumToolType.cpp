@@ -18,39 +18,54 @@
  */
 
 /*!
-  \file PolygonItem.h
+  \file EnumTemplateType.cpp
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_POLYGON_ITEM_H 
-#define __TERRALIB_LAYOUT_INTERNAL_POLYGON_ITEM_H
-
 // TerraLib
-#include "AbstractItem.h"
-#include "LineItem.h"
+#include "EnumToolType.h"
 
-class QGraphicsSceneMouseEvent;
-
-namespace te
+te::layout::EnumToolType::EnumToolType() :
+  m_noneTool(0),
+	m_zoomAreaTool(0)
 {
-  namespace layout
+  init();
+}
+
+te::layout::EnumToolType::~EnumToolType()
+{
+	if (m_noneTool)
   {
-    class PolygonItem : public LineItem
-    {
-      public:
-
-        PolygonItem ( AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix = false );
-
-        virtual ~PolygonItem ();
-
-      protected:
-
-        virtual void drawItem ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
-    };
+		delete m_noneTool;
+		m_noneTool = 0;
+  }
+	if (m_zoomAreaTool)
+  {
+		delete m_zoomAreaTool;
+		m_zoomAreaTool = 0;
   }
 }
 
-#endif
+void te::layout::EnumToolType::init()
+{
+	m_noneTool = createEnum("NoneTool", this);
+
+	m_zoomAreaTool = createEnum("ZoomAreaTool", this);
+}
+
+te::layout::EnumType* te::layout::EnumToolType::getNoneTool() const
+{
+	return m_noneTool;
+}
+
+te::layout::EnumType* te::layout::EnumToolType::getZoomAreaTool() const
+{
+	return m_zoomAreaTool;
+}
+
+
+
+

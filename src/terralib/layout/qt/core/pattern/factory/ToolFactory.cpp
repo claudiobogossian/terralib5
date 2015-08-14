@@ -18,39 +18,23 @@
  */
 
 /*!
-  \file PolygonItem.h
+  \file ToolFactory.cpp
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_POLYGON_ITEM_H 
-#define __TERRALIB_LAYOUT_INTERNAL_POLYGON_ITEM_H
-
 // TerraLib
-#include "AbstractItem.h"
-#include "LineItem.h"
+#include "ToolFactory.h"
 
-class QGraphicsSceneMouseEvent;
-
-namespace te
+te::layout::ToolFactory::~ToolFactory()
 {
-  namespace layout
-  {
-    class PolygonItem : public LineItem
-    {
-      public:
 
-        PolygonItem ( AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix = false );
-
-        virtual ~PolygonItem ();
-
-      protected:
-
-        virtual void drawItem ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
-    };
-  }
 }
 
-#endif
+te::layout::ToolFactory::ToolFactory(const std::string& factoryKey)
+: te::common::ParameterizedAbstractFactory<AbstractLayoutTool, std::string, ToolFactoryParamsCreate>(factoryKey)
+{
+
+}

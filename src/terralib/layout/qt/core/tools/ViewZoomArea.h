@@ -62,7 +62,7 @@ namespace te
             \note The tool will NOT take the ownership of the given pointers.
             \note If the given cursor is different of Qt::BlankCursor, it will be setted on map display.
           */
-          ViewZoomArea(View* view, const QCursor& cursor, QObject* parent = 0);
+          ViewZoomArea(View* view, QObject* parent = 0);
 
           /*! \brief Destructor. */
           ~ViewZoomArea();

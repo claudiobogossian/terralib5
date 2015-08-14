@@ -38,11 +38,11 @@
 
 // Qt
 #include <QStyleOptionGraphicsItem>
+#include "AbstractItem.h"
 
-te::layout::ImageItem::ImageItem( ItemController* controller, Observable* o, bool invertedMatrix ) 
-  : ObjectItem(controller, o, invertedMatrix)
+te::layout::ImageItem::ImageItem( AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix ) 
+  : AbstractItem<QGraphicsItem>(controller, model)
 {
-  m_nameClass = std::string(this->metaObject()->className());
 }
 
 te::layout::ImageItem::~ImageItem()
@@ -50,32 +50,26 @@ te::layout::ImageItem::~ImageItem()
 
 }
 
-void te::layout::ImageItem::updateObserver(ContextItem context)
-{
-  if(!m_model)
-    return;
-
-  ImageModel* model = dynamic_cast<ImageModel*>(m_model);
-  if(!model)
-  {
-    return;
-  }
-
-  const std::string& fileName = model->getFileName();
-  if(fileName.compare("") == 0)
-  {
-    m_image = QImage();
-    return;
-  }
-
-  QImage img(fileName.c_str());
-  m_image = img.mirrored();
-
-  ObjectItem::updateObserver(context);
-}
-
 void te::layout::ImageItem::drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget )
 {
+  painter->save();
+
+  const Property& pContourColor = m_controller->getProperty("contour_color");
+  const Property& pBackgroundColor = m_controller->getProperty("background_color");
+
+  const te::color::RGBAColor& contourColor = pContourColor.getValue().toColor();
+  const te::color::RGBAColor& backgroundColor = pBackgroundColor.getValue().toColor();
+
+  QColor qContourColor(contourColor.getRed(), contourColor.getGreen(), contourColor.getBlue(), contourColor.getAlpha());
+  QColor qBackgroundColor(backgroundColor.getRed(), backgroundColor.getGreen(), backgroundColor.getBlue(), backgroundColor.getAlpha());
+  
+  QPen pen(qContourColor, 0, Qt::SolidLine);
+  QBrush brush(qBackgroundColor);
+
+  painter->setPen(pen);
+  painter->setBrush(brush);
+  painter->setRenderHint( QPainter::Antialiasing, true );
+
   if(m_image.isNull() == true)
   {
     return;
@@ -88,6 +82,5 @@ void te::layout::ImageItem::drawItem( QPainter * painter, const QStyleOptionGrap
 
   //draws the item
   painter->drawImage(boundRect, m_image, sourceRect);
-
   painter->restore();
 }

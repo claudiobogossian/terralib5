@@ -18,39 +18,46 @@
  */
 
 /*!
-  \file PolygonItem.h
-   
-  \brief 
+  \file terralib/layout/qt/core/pattern/factory/ToolFactoryParamsCreate.cpp
 
-  \ingroup layout
+  \brief Parameters to create a new tool. 
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_POLYGON_ITEM_H 
-#define __TERRALIB_LAYOUT_INTERNAL_POLYGON_ITEM_H
-
 // TerraLib
-#include "AbstractItem.h"
-#include "LineItem.h"
+#include "ToolFactoryParamsCreate.h"
 
-class QGraphicsSceneMouseEvent;
-
-namespace te
+te::layout::ToolFactoryParamsCreate::ToolFactoryParamsCreate(View* view) :
+	m_view(view)
 {
-  namespace layout
-  {
-    class PolygonItem : public LineItem
-    {
-      public:
 
-        PolygonItem ( AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix = false );
-
-        virtual ~PolygonItem ();
-
-      protected:
-
-        virtual void drawItem ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
-    };
-  }
 }
 
-#endif
+te::layout::ToolFactoryParamsCreate::ToolFactoryParamsCreate(const ToolFactoryParamsCreate& rhs)
+{
+	this->operator=(rhs);
+}
+
+te::layout::ToolFactoryParamsCreate::~ToolFactoryParamsCreate()
+{
+
+}
+
+te::common::AbstractParameters* te::layout::ToolFactoryParamsCreate::clone() const
+{
+	return new ToolFactoryParamsCreate(*this);
+}
+
+void te::layout::ToolFactoryParamsCreate::reset() throw(te::common::Exception)
+{
+
+}
+
+te::layout::View* te::layout::ToolFactoryParamsCreate::getView()
+{
+	return m_view;
+}
+
+
+
+
+

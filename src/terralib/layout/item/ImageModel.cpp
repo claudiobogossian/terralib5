@@ -37,78 +37,48 @@
 #include "../core/enum/Enums.h"
 #include "../core/pattern/singleton/Context.h"
 
-te::layout::ImageModel::ImageModel() :
-  m_fileName(""),
-  m_imgType(te::map::JPEG)
+te::layout::ImageModel::ImageModel()
+  : AbstractItemModel()
 {
-  m_type = Enums::getInstance().getEnumObjectType()->getImageItem();
+  std::string fileName("");
+  te::color::RGBAColor backgroundColor(0, 0, 255, 0);
+  te::gm::Envelope box(0., 0., 90., 90.);
+  te::color::RGBAColor contourColor(0, 0, 0, 255);
 
-  m_backgroundColor = te::color::RGBAColor(0, 0, 255, 0);
+  this->m_properties.setTypeObj(Enums::getInstance().getEnumObjectType()->getImageItem());
 
-  m_box = te::gm::Envelope(0., 0., 90., 90.);
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
 
-  m_properties->setHasWindows(true);
+  //adding properties
+  {
+    Property property(0);
+    property.setName("contour_color");
+    property.setLabel("Contour Color");
+    property.setValue(contourColor, dataType->getDataTypeColor());
+    property.setMenu(true);
+    m_properties.addProperty(property);
+  }
 
-  m_border = true;
+  {
+    Property property(0);
+    property.setName("fileName");
+    property.setValue(fileName, dataType->getDataTypeImage());
+    property.setMenu(true);
+    m_properties.addProperty(property);
+  }
+
+  //updating properties
+  {
+    Property property(0);
+    property.setName("show_frame");
+    property.setValue(false, dataType->getDataTypeBool());
+    this->m_properties.updateProperty(property);
+  }
+
 }
 
 te::layout::ImageModel::~ImageModel()
 {
 
-}
-
-te::layout::Properties* te::layout::ImageModel::getProperties() const
-{
-  ItemModelObservable::getProperties();
-
-  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
-
-  Property pro_fileName(m_hashCode);
-  pro_fileName.setName("fileName");
-  pro_fileName.setValue(m_fileName, dataType->getDataTypeImage());
-  pro_fileName.setMenu(true);
-  m_properties->addProperty(pro_fileName);
-  
-  return m_properties;
-}
-
-void te::layout::ImageModel::updateProperties( te::layout::Properties* properties, bool notify )
-{
-  ItemModelObservable::updateProperties(properties, false);
-
-  Properties* vectorProps = const_cast<Properties*>(properties);
-
-  Property pro_fileName = vectorProps->getProperty("fileName");
-
-  if(!pro_fileName.isNull())
-  {
-    m_fileName = pro_fileName.getValue().toString();
-  }
-
-  if(notify)
-  {
-    ContextItem context;
-    notifyAll(context);
-  }
-}
-
-void te::layout::ImageModel::setFileName( const std::string& fileName )
-{
-  m_fileName = fileName;
-}
-
-const std::string& te::layout::ImageModel::getFileName() const
-{
-  return m_fileName;
-}
-
-const std::string& te::layout::ImageModel::getFileExtension() const
-{
-  return m_fileExtension;
-}
-
-te::map::ImageType te::layout::ImageModel::getFileType()
-{
-  return m_imgType;
 }
 

@@ -23,6 +23,9 @@
 
 // Qt
 #include <QtGui/QMouseEvent>
+#include <QSize>
+#include <QIcon>
+#include <QPixmap>
 
 // STL
 #include <cassert>
@@ -92,4 +95,24 @@ bool te::layout::AbstractLayoutTool::mouseDoubleClickEvent(QMouseEvent* e)
 void te::layout::AbstractLayoutTool::setCursor(const QCursor& cursor)
 {
   m_cursor = cursor;
+}
+
+QCursor te::layout::AbstractLayoutTool::createCursor(std::string pathIcon)
+{
+	QIcon ico(QIcon::fromTheme(pathIcon.c_str()));
+
+	//search icon size
+	QList<QSize> sizes = ico.availableSizes();
+	int maximum = sizes[0].width();
+	for (int i = 1; i < sizes.size(); ++i)
+	{
+		maximum = qMax(maximum, sizes[i].width());
+	}
+
+	QSize sz(maximum, maximum);
+	QPixmap pixmap = ico.pixmap(sz);
+
+	QCursor cur(pixmap);
+
+	return cur;
 }

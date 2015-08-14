@@ -53,7 +53,7 @@ namespace te
       //@}
 
     private:
-      //void updateCursor();
+
       void drawPolygon();
       void draw();
       void reset();
@@ -72,10 +72,9 @@ namespace te
       void onExtentChanged();
 
     protected:
-      te::map::AbstractLayerPtr m_layer;
+
       Feature* m_feature;
-      te::edit::EditionManager* m_editionManager;
-      std::vector<Feature*> m_updateWatches;
+      //std::vector<Feature*> m_updateWatches;
 
     };
 

@@ -18,39 +18,29 @@
  */
 
 /*!
-  \file PolygonItem.h
-   
-  \brief 
+  \file terralib/layout/qt/core/pattern/factory/ZoomAreaToolFactory.cpp
 
-  \ingroup layout
+  \brief This is the concrete factory for zoom area tools.
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_POLYGON_ITEM_H 
-#define __TERRALIB_LAYOUT_INTERNAL_POLYGON_ITEM_H
-
 // TerraLib
-#include "AbstractItem.h"
-#include "LineItem.h"
+#include "ZoomAreaToolFactory.h"
+#include "../../../../core/enum/Enums.h"
+#include "../../tools/ViewZoomArea.h"
+#include "../../View.h"
 
-class QGraphicsSceneMouseEvent;
-
-namespace te
+te::layout::AbstractLayoutTool* te::layout::ZoomAreaToolFactory::build(ToolFactoryParamsCreate params)
 {
-  namespace layout
-  {
-    class PolygonItem : public LineItem
-    {
-      public:
-
-        PolygonItem ( AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix = false );
-
-        virtual ~PolygonItem ();
-
-      protected:
-
-        virtual void drawItem ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
-    };
-  }
+	return new ViewZoomArea(params.getView(), params.getView());
 }
 
-#endif
+te::layout::ZoomAreaToolFactory::ZoomAreaToolFactory() :
+	ToolFactory(Enums::getInstance().getEnumToolType()->getZoomAreaTool()->getName())
+{
+
+}
+
+te::layout::ZoomAreaToolFactory::~ZoomAreaToolFactory()
+{
+
+}
