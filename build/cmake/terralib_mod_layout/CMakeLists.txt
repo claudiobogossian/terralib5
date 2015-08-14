@@ -154,6 +154,7 @@ else()
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/layout/qt/outside/PropertiesOutside.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/layout/qt/outside/ObjectInspectorOutside.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/layout/qt/outside/ToolbarOutside.h
+								 ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/layout/qt/outside/ToolbarController.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/layout/qt/core/View.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/layout/qt/item/ObjectItem.h
                                  ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/layout/qt/item/MapItem.h

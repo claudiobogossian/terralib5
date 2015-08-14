@@ -33,7 +33,7 @@
 #include "../../core/pattern/mvc/OutsideObserver.h"
 #include "../outside/GridSettingsOutside.h"
 #include "../../outside/ToolbarModel.h"
-#include "../../outside/ToolbarController.h"
+#include "../outside/ToolbarController.h"
 #include "../outside/ToolbarOutside.h"
 #include "../../outside/PropertiesModel.h"
 #include "../../outside/PropertiesController.h"
@@ -168,6 +168,7 @@ QWidget* te::layout::BuildGraphicsOutside::createToolbar()
   OutsideObserver* itemObs = (OutsideObserver*)controller->getView();
 
   ToolbarOutside* view = dynamic_cast<ToolbarOutside*>(itemObs);
+	view->createToolbar();
 
   return view;
 }

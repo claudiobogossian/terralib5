@@ -37,6 +37,7 @@
 #include "../../../geometry/Envelope.h"
 #include "../../core/enum/Enums.h"
 #include "../core/ContextObject.h"
+#include "ToolbarController.h"
 
 //STL
 #include <string>
@@ -86,7 +87,6 @@ te::layout::ToolbarOutside::ToolbarOutside( OutsideController* controller, Obser
   m_actionViewZoomOut("view_zoom_out"),
   m_actionGroup("items_group"),
   m_actionUngroup("items_ungroup"),
-  m_actionLineIntersectionMouse("items_intersection_mouse"),
   m_actionSceneZoom("scene_zoom"),
   m_actionRemoveObject("remove_item"),
   m_actionTextDefault("text_default"),
@@ -113,7 +113,6 @@ te::layout::ToolbarOutside::ToolbarOutside( OutsideController* controller, Obser
   m_viewAreaToolButton(0),
   m_arrowCursorButton(0),
   m_itemTools(0),
-  m_lineIntersectionToolButton(0),
   m_bringToFrontToolButton(0),
   m_sendToBackToolButton(0),
   m_recomposeToolButton(0),
@@ -137,7 +136,6 @@ te::layout::ToolbarOutside::ToolbarOutside( OutsideController* controller, Obser
   m_actionViewAreaToolButton(0),
   m_actionArrowCursorButton(0),
   m_actionItemTools(0),
-  m_actionLineIntersectionToolButton(0),
   m_actionBringToFrontToolButton(0),
   m_actionSendToBackToolButton(0),
   m_actionRecomposeToolButton(0),
@@ -278,7 +276,8 @@ QToolButton* te::layout::ToolbarOutside::createMapToolButton()
   btnMap->setPopupMode(QToolButton::MenuButtonPopup);
   btnMap->setDefaultAction(actionDefaultMenu);
 
-  connect(btnMap, SIGNAL(triggered(QAction*)), this, SLOT(onMapTriggered(QAction*)));
+	ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
+  connect(btnMap, SIGNAL(triggered(QAction*)), controller, SLOT(onMapTriggered(QAction*)));
   m_actionMapToolButton = this->addWidget(btnMap);
 
   m_mapToolButton = btnMap;
@@ -317,7 +316,8 @@ QToolButton* te::layout::ToolbarOutside::createMapToolsToolButton()
   btnMapTools->setPopupMode(QToolButton::MenuButtonPopup);
   btnMapTools->setDefaultAction(actionPan);
 
-  connect(btnMapTools, SIGNAL(triggered(QAction*)), this, SLOT(onMapToolsTriggered(QAction*)));
+	ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
+  connect(btnMapTools, SIGNAL(triggered(QAction*)), controller, SLOT(onMapToolsTriggered(QAction*)));
   m_actionMapToolsToolButton = this->addWidget(btnMapTools);
 
   m_mapToolsToolButton = btnMapTools;
@@ -356,7 +356,8 @@ QToolButton* te::layout::ToolbarOutside::createGeometryToolButton()
   btnGeometry->setPopupMode(QToolButton::MenuButtonPopup);
   btnGeometry->setDefaultAction(actionRectagle);
 
-  connect(btnGeometry, SIGNAL(triggered(QAction*)), this, SLOT(onGeometryTriggered(QAction*)));
+	ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
+  connect(btnGeometry, SIGNAL(triggered(QAction*)), controller, SLOT(onGeometryTriggered(QAction*)));
   m_actionGeometryToolButton = this->addWidget(btnGeometry);
 
   m_geometryToolButton = btnGeometry;
@@ -383,7 +384,8 @@ QToolButton* te::layout::ToolbarOutside::createViewAreaToolButton()
   btnViewArea->setPopupMode(QToolButton::MenuButtonPopup);
   btnViewArea->setDefaultAction(actionPan);
 
-  connect(btnViewArea, SIGNAL(triggered(QAction*)), this, SLOT(onViewAreaTriggered(QAction*)));
+	ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
+  connect(btnViewArea, SIGNAL(triggered(QAction*)), controller, SLOT(onViewAreaTriggered(QAction*)));
   m_actionViewAreaToolButton = this->addWidget(btnViewArea);
 
   m_viewAreaToolButton = btnViewArea;
@@ -395,7 +397,9 @@ QToolButton* te::layout::ToolbarOutside::createArrowCursorButton()
 {
   QToolButton *btnArrowCursor = createToolButton("Arrow Cursor", "Arrow Cursor", "layout-default-cursor");
   btnArrowCursor->setCheckable(false);
-  connect(btnArrowCursor, SIGNAL(clicked(bool)), this, SLOT(onArrowCursorClicked(bool)));
+
+	ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
+  connect(btnArrowCursor, SIGNAL(clicked(bool)), controller, SLOT(onArrowCursorClicked(bool)));
 
   m_actionArrowCursorButton = this->addWidget(btnArrowCursor);
 
@@ -420,24 +424,13 @@ QToolButton* te::layout::ToolbarOutside::createItemTools()
   btnTools->setPopupMode(QToolButton::MenuButtonPopup);
   btnTools->setDefaultAction(actionGroup);
 
-  connect(btnTools, SIGNAL(triggered(QAction*)), this, SLOT(onItemToolsTriggered(QAction*)));
+	ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
+  connect(btnTools, SIGNAL(triggered(QAction*)), controller, SLOT(onItemToolsTriggered(QAction*)));
   m_actionItemTools = this->addWidget(btnTools);
 
   m_itemTools = btnTools;
 
   return btnTools;
-}
-
-QToolButton* te::layout::ToolbarOutside::createLineIntersectionToolButton()
-{
-  QToolButton *btnLineMouse = createToolButton("Draw Line Intersection Mouse", "Draw Line Intersection Mouse", "layout-draw-line-mouse-intersection");
-  connect(btnLineMouse, SIGNAL(toggled(bool)), this, SLOT(onLineIntersectionMouse(bool)));
-
-  m_actionLineIntersectionToolButton = this->addWidget(btnLineMouse);
-
-  m_lineIntersectionToolButton = btnLineMouse;
-
-  return btnLineMouse;
 }
 
 QComboBox* te::layout::ToolbarOutside::createSceneZoomCombobox()
@@ -455,15 +448,17 @@ QComboBox* te::layout::ToolbarOutside::createSceneZoomCombobox()
   m_comboZoom->addItem("200%", 2.);
   m_comboZoom->addItem("300%", 3.); 
 
-  connect(m_comboZoom, SIGNAL(activated(const QString &)), this, SLOT(onComboZoomActivated()));
-  connect(m_comboZoom->lineEdit(), SIGNAL(returnPressed()), this, SLOT(onComboZoomActivated()));
+	ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
+	connect(m_comboZoom, SIGNAL(activated(const QString &)), controller, SLOT(onComboZoomActivated()));
+	connect(m_comboZoom->lineEdit(), SIGNAL(returnPressed()), controller, SLOT(onComboZoomActivated()));
 
   Scene* sc = getScene();
 
   ContextObject context = sc->getContext();
 
   int zoom = context.getZoom();
-  onZoomChanged(zoom);
+
+  controller->onZoomChanged(zoom);
 
   m_actionComboZoom = this->addWidget(m_comboZoom);
   
@@ -474,7 +469,9 @@ QToolButton* te::layout::ToolbarOutside::createBringToFrontToolButton()
 {
   QToolButton *btn = createToolButton("Bring to front", "Bring to front", "layout-in-front");
   btn->setCheckable(false);
-  connect(btn, SIGNAL(clicked(bool)), this, SLOT(onBringToFrontClicked(bool)));
+
+	ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
+  connect(btn, SIGNAL(clicked(bool)), controller, SLOT(onBringToFrontClicked(bool)));
 
   m_actionBringToFrontToolButton = this->addWidget(btn);
 
@@ -487,7 +484,9 @@ QToolButton* te::layout::ToolbarOutside::createSendToBackToolButton()
 {
   QToolButton *btn = createToolButton("Send to back", "Send to back", "layout-to-back");
   btn->setCheckable(false);
-  connect(btn, SIGNAL(clicked(bool)), this, SLOT(onSendToBackClicked(bool)));
+
+	ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
+  connect(btn, SIGNAL(clicked(bool)), controller, SLOT(onSendToBackClicked(bool)));
 
   m_actionSendToBackToolButton = this->addWidget(btn);
 
@@ -501,7 +500,9 @@ QToolButton* te::layout::ToolbarOutside::createRecomposeToolButton()
 {
   QToolButton *btn = createToolButton("Recompose", "Recompose", "layout-recompose");
   btn->setCheckable(false);
-  connect(btn, SIGNAL(clicked(bool)), this, SLOT(onRecomposeClicked(bool)));
+
+	ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
+  connect(btn, SIGNAL(clicked(bool)), controller, SLOT(onRecomposeClicked(bool)));
 
   m_actionRecomposeToolButton = this->addWidget(btn);
 
@@ -538,7 +539,8 @@ QToolButton* te::layout::ToolbarOutside::createTextToolButton()
   btn->setPopupMode(QToolButton::MenuButtonPopup);
   btn->setDefaultAction(actionTxtDefault);
 
-  connect(btn, SIGNAL(triggered(QAction*)), this, SLOT(onTextToolsTriggered(QAction*)));
+	ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
+  connect(btn, SIGNAL(triggered(QAction*)), controller, SLOT(onTextToolsTriggered(QAction*)));
   m_actionTextToolButton = this->addWidget(btn);
 
   m_textToolButton = btn;
@@ -550,7 +552,9 @@ QToolButton* te::layout::ToolbarOutside::createAlignLeftToolButton()
 {
   QToolButton *btn = createToolButton("Align Left", "Align Left", "layout-alignleft");
   btn->setCheckable(false);
-  connect(btn, SIGNAL(clicked(bool)), this, SLOT(onAlignLeftClicked(bool)));
+
+	ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
+  connect(btn, SIGNAL(clicked(bool)), controller, SLOT(onAlignLeftClicked(bool)));
 
   m_actionAlignLeftToolButton = this->addWidget(btn);
 
@@ -563,7 +567,9 @@ QToolButton* te::layout::ToolbarOutside::createAlignRightToolButton()
 {
   QToolButton *btn = createToolButton("Align Right", "Align Right", "layout-alignright");
   btn->setCheckable(false);
-  connect(btn, SIGNAL(clicked(bool)), this, SLOT(onAlignRightClicked(bool)));
+
+	ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
+  connect(btn, SIGNAL(clicked(bool)), controller, SLOT(onAlignRightClicked(bool)));
 
   m_actionAlignRightToolButton = this->addWidget(btn);
 
@@ -576,7 +582,9 @@ QToolButton* te::layout::ToolbarOutside::createAlignTopToolButton()
 {
   QToolButton *btn = createToolButton("Align Top", "Align Top", "layout-aligntop");
   btn->setCheckable(false);
-  connect(btn, SIGNAL(clicked(bool)), this, SLOT(onAlignTopClicked(bool)));
+
+	ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
+  connect(btn, SIGNAL(clicked(bool)), controller, SLOT(onAlignTopClicked(bool)));
 
   m_actionAlignTopToolButton = this->addWidget(btn);
 
@@ -589,7 +597,9 @@ QToolButton* te::layout::ToolbarOutside::createAlignBottomToolButton()
 {
   QToolButton *btn = createToolButton("Align Bottom", "Align Bottom", "layout-alignbottom");
   btn->setCheckable(false);
-  connect(btn, SIGNAL(clicked(bool)), this, SLOT(onAlignBottomClicked(bool)));
+
+	ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
+  connect(btn, SIGNAL(clicked(bool)), controller, SLOT(onAlignBottomClicked(bool)));
 
   m_actionAlignBottomToolButton = this->addWidget(btn);
 
@@ -602,7 +612,9 @@ QToolButton* te::layout::ToolbarOutside::createAlignCenterHorizontalToolButton()
 {
   QToolButton *btn = createToolButton("Align Center Horizontal", "Align Center Horizontal", "layout-alignhrzcenter");
   btn->setCheckable(false);
-  connect(btn, SIGNAL(clicked(bool)), this, SLOT(onAlignCenterHorizontalClicked(bool)));
+
+	ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
+  connect(btn, SIGNAL(clicked(bool)), controller, SLOT(onAlignCenterHorizontalClicked(bool)));
 
   m_actionAlignCenterHorizontalToolButton = this->addWidget(btn);
 
@@ -615,7 +627,9 @@ QToolButton* te::layout::ToolbarOutside::createAlignCenterVerticalToolButton()
 {
   QToolButton *btn = createToolButton("Align Center Vertical", "Align Center Vertical", "layout-alignvrtcenter");
   btn->setCheckable(false);
-  connect(btn, SIGNAL(clicked(bool)), this, SLOT(onAlignCenterVerticalClicked(bool)));
+
+	ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
+  connect(btn, SIGNAL(clicked(bool)), controller, SLOT(onAlignCenterVerticalClicked(bool)));
 
   m_actionAlignCenterVerticalToolButton = this->addWidget(btn);
 
@@ -628,7 +642,9 @@ QToolButton* te::layout::ToolbarOutside::createRemoveObjectToolButton()
 {
   QToolButton *btn = createToolButton("Remove Object", "Remove Object", "layout-empty-trash");
   btn->setCheckable(false);
-  connect(btn, SIGNAL(clicked(bool)), this, SLOT(onRemoveObjectClicked(bool)));
+
+	ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
+  connect(btn, SIGNAL(clicked(bool)), controller, SLOT(onRemoveObjectClicked(bool)));
 
   m_actionRemoveObjectToolButton = this->addWidget(btn);
 
@@ -683,7 +699,9 @@ QToolButton* te::layout::ToolbarOutside::createDrawMapToolButton()
 {
   QToolButton *btn = createToolButton("Redraw Selection Map", "Redraw Selection Map", "layout-draw-map");
   btn->setCheckable(false);
-  connect(btn, SIGNAL(clicked(bool)), this, SLOT(onDrawMapClicked(bool)));
+
+	ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
+  connect(btn, SIGNAL(clicked(bool)), controller, SLOT(onDrawMapClicked(bool)));
 
   m_actionDrawMapToolButton = this->addWidget(btn);
 
@@ -696,7 +714,9 @@ QToolButton* te::layout::ToolbarOutside::createObjectToImageButton()
 {
   QToolButton *btn = createToolButton("Object To Image", "Export all selected objects to image", "layout-object-to-image");
   btn->setCheckable(false);
-  connect(btn, SIGNAL(clicked(bool)), this, SLOT(onObjectToImageClicked(bool)));
+
+	ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
+  connect(btn, SIGNAL(clicked(bool)), controller, SLOT(onObjectToImageClicked(bool)));
 
   m_actionObjectToImageButton = this->addWidget(btn);
 
@@ -709,7 +729,9 @@ QToolButton* te::layout::ToolbarOutside::createExitButton()
 {
   QToolButton *btn = createToolButton("Exit", "Exit", "layout-close");
   btn->setCheckable(false);
-  connect(btn, SIGNAL(clicked(bool)), this, SLOT(onExitClicked(bool)));
+
+	ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
+  connect(btn, SIGNAL(clicked(bool)), controller, SLOT(onExitClicked(bool)));
 
   m_actionExitButton = this->addWidget(btn);
 
@@ -722,7 +744,9 @@ QToolButton* te::layout::ToolbarOutside::createExportToPDFButton()
 {
   QToolButton *btn = createToolButton("Export To PDF", "Export to PDF", "layout-pdf");
   btn->setCheckable(false);
-  connect(btn, SIGNAL(clicked(bool)), this, SLOT(onExportToPDFClicked(bool)));
+
+	ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
+  connect(btn, SIGNAL(clicked(bool)), controller, SLOT(onExportToPDFClicked(bool)));
 
   m_actionExportToPDFButton = this->addWidget(btn);
 
@@ -731,382 +755,9 @@ QToolButton* te::layout::ToolbarOutside::createExportToPDFButton()
   return btn;
 }
 
-void te::layout::ToolbarOutside::onMapTriggered( QAction* action )
-{
-  QToolButton* button = dynamic_cast<QToolButton*>(sender());
-  if(button)
-  {
-    button->setDefaultAction(action);
-  }
-
-  EnumModeType* type = Enums::getInstance().getEnumModeType();
-
-  if(action->objectName().compare(m_actionMapDefault.c_str()) == 0)
-  {
-    changeAction(type->getModeCreateMap());
-  }
-  else if(action->objectName().compare(m_actionGridMap.c_str()) == 0)
-  {
-    changeAction(type->getModeCreateGridMap());
-  }
-  else if(action->objectName().compare(m_actionGridPlanar.c_str()) == 0)
-  {
-    changeAction(type->getModeCreateGridPlanar());
-  }
-  else if(action->objectName().compare(m_actionGridGeodesic.c_str()) == 0)
-  {
-    changeAction(type->getModeCreateGridGeodesic());
-  }
-  else if(action->objectName().compare(m_actionLegendDefault.c_str()) == 0)
-  {
-    changeAction(type->getModeCreateLegend());
-  }
-  else if(action->objectName().compare(m_actionScale.c_str()) == 0)
-  {
-    changeAction(type->getModeCreateScale());
-  }
-  else if(action->objectName().compare(m_actionNorth.c_str()) == 0)
-  {
-    changeAction(type->getModeCreateNorth());
-  }
-  else if(action->objectName().compare(m_actionMapLocation.c_str()) == 0)
-  {
-    changeAction(type->getModeCreateMapLocation());
-  }
-}
-
-void te::layout::ToolbarOutside::onMapToolsTriggered( QAction* action )
-{
-  QToolButton* button = dynamic_cast<QToolButton*>(sender());
-  if(button)
-  {
-    button->setDefaultAction(action);
-  }
-
-  EnumModeType* type = Enums::getInstance().getEnumModeType();
-
-  if(action->objectName().compare(m_actionMapPan.c_str()) == 0)
-  {
-    changeAction(type->getModeMapPan());
-  }
-  else if(action->objectName().compare(m_actionMapZoomIn.c_str()) == 0)
-  {
-    changeAction(type->getModeMapZoomIn());
-  }
-  else if(action->objectName().compare(m_actionMapZoomOut.c_str()) == 0)
-  {
-    changeAction(type->getModeMapZoomOut());
-  }
-  else if(action->objectName().compare(m_actionMapSystematicScale.c_str()) == 0)
-  {
-    changeAction(type->getModeSystematicScale());
-  }
-  else if(action->objectName().compare(m_actionMapCreateTextGrid.c_str()) == 0)
-  {
-    changeAction(type->getModeMapCreateTextGrid());
-  }
-  else if(action->objectName().compare(m_actionMapCreateMapText.c_str()) == 0)
-  {
-    changeAction(type->getModeMapCreateTextMap());
-  }
-  else if(action->objectName().compare(m_actionMapCreateLegendChildAsObject.c_str()) == 0)
-  {
-    changeAction(type->getModeLegendChildAsObject());
-  }
-}
-
-void te::layout::ToolbarOutside::onGeometryTriggered( QAction* action )
-{
-  QToolButton* button = dynamic_cast<QToolButton*>(sender());
-  if(button)
-  {
-    button->setDefaultAction(action);
-  }
-
-  EnumModeType* type = Enums::getInstance().getEnumModeType();
-
-  if(action->objectName().compare(m_actionRectangle.c_str()) == 0)
-  {
-    changeAction(type->getModeCreateRectangle());
-  }
-  else if(action->objectName().compare(m_actionArrow.c_str()) == 0)
-  {
-    changeAction(type->getModeCreateArrow());
-  }
-  else if(action->objectName().compare(m_actionEllipse.c_str()) == 0)
-  {
-    changeAction(type->getModeCreateEllipse());
-  }
-  else if(action->objectName().compare(m_actionPoint.c_str()) == 0)
-  {
-    changeAction(type->getModeCreatePoint());
-  }
-  else if (action->objectName().compare(m_actionLine.c_str()) == 0) 
-  {
-    changeAction(type->getModeCreateLine());
-    Context::getInstance().setWait(type->getModeCoordWait());
-  }
-  else if (action->objectName().compare(m_actionPolygon.c_str()) == 0) 
-  {
-    changeAction(type->getModeCreatePolygon());
-    Context::getInstance().setWait(type->getModeCoordWait());
-  }
-  else if (action->objectName().compare(m_actionSVG.c_str()) == 0) 
-  {
-    changeAction(type->getModeCreateSVG());
-  }
-}
-
-void te::layout::ToolbarOutside::onViewAreaTriggered( QAction* action )
-{
-  QToolButton* button = dynamic_cast<QToolButton*>(sender());
-  if(button)
-  {
-    button->setDefaultAction(action);
-  }
-
-  EnumModeType* type = Enums::getInstance().getEnumModeType();
-
-  if(action->objectName().compare(m_actionViewPan.c_str()) == 0)
-  {
-    changeAction(type->getModePan());
-  }
-  else if(action->objectName().compare(m_actionViewZoomIn.c_str()) == 0)
-  {
-    changeAction(type->getModeZoomIn());
-  }
-  else if(action->objectName().compare(m_actionViewZoomOut.c_str()) == 0)
-  {
-    changeAction(type->getModeZoomOut());
-  }
-}
-
-void te::layout::ToolbarOutside::onArrowCursorClicked(bool checked)
-{
-  EnumModeType* type = Enums::getInstance().getEnumModeType();
-  changeAction(type->getModeArrowCursor());
-}
-
-void te::layout::ToolbarOutside::onItemToolsTriggered( QAction* action )
-{
-  QToolButton* button = dynamic_cast<QToolButton*>(sender());
-  if(button)
-  {
-    button->setDefaultAction(action);
-  }
-
-  EnumModeType* type = Enums::getInstance().getEnumModeType();
-
-  if(action->objectName().compare(m_actionGroup.c_str()) == 0)
-  {
-    changeAction(type->getModeGroup());
-  }
-  else if(action->objectName().compare(m_actionUngroup.c_str()) == 0)
-  {
-    changeAction(type->getModeUngroup());
-  }
-}
-
-void te::layout::ToolbarOutside::onLineIntersectionMouse( bool checked )
-{
-  EnumModeType* type = Enums::getInstance().getEnumModeType();
-  EnumType* mouseMode = Context::getInstance().getLineIntersectionMouseMode();
-
-  EnumType* newMode = 0;
-
-  if(checked)
-  {
-    if(type->getModeActiveLinesIntersectionMouse() != mouseMode)
-    {
-      newMode = type->getModeActiveLinesIntersectionMouse();
-    }
-  }
-  else
-  {
-    if(type->getModeOffLinesIntersectionMouse() != mouseMode)
-    {
-      newMode = type->getModeOffLinesIntersectionMouse();
-    }
-  }
-
-  if(newMode)
-  {
-    emit changeMode(newMode);
-  }
-}
-
-void te::layout::ToolbarOutside::onComboZoomActivated()
-{
-  QString text = m_comboZoom->currentText();
-  if(text.isEmpty() == true)
-  {
-    return;
-  }
-
-  QString textCopy = text;
-  std::string cText = textCopy.toStdString();
-
-  textCopy.replace(QString("%"), QString(""));
-
-  std::string cText2 = textCopy.toStdString();
-
-  bool converted = false;
-  int newZoom = textCopy.toInt(&converted);
-  if(converted == false)
-  {
-    m_comboZoom->setEditText("");
-    return;
-  }
-
+void te::layout::ToolbarOutside::notifyChangedZoom(int newZoom)
+{  
   emit zoomChangedInComboBox(newZoom);
-}
-
-void te::layout::ToolbarOutside::onZoomChanged( int zoom )
-{
-  if(zoom <= 0)
-  {
-    return;
-  }
-
-  QString value = QString::number(zoom) + "%";
-  if(m_comboZoom->currentText() == value)
-  {
-    return;
-  }
-
-  m_comboZoom->setEditText(value);
-}
-
-void te::layout::ToolbarOutside::onBringToFrontClicked( bool checked )
-{
-  EnumModeType* type = Enums::getInstance().getEnumModeType();
-  changeAction(type->getModeBringToFront());
-}
-
-void te::layout::ToolbarOutside::onSendToBackClicked( bool checked )
-{
-  EnumModeType* type = Enums::getInstance().getEnumModeType();
-  changeAction(type->getModeSendToBack());
-}
-
-void te::layout::ToolbarOutside::onRecomposeClicked( bool checked )
-{
-  Scene* sc = getScene();
-  if(!sc)
-  {
-    return;
-  }
-  ContextObject context = sc->getContext();
-
-  int zoom = context.getZoom();
-  onZoomChanged(zoom);
-  onComboZoomActivated();
-}
-
-void te::layout::ToolbarOutside::onTextToolsTriggered( QAction* action )
-{
-  QToolButton* button = dynamic_cast<QToolButton*>(sender());
-  if(button)
-  {
-    button->setDefaultAction(action);
-  }
-
-  EnumModeType* type = Enums::getInstance().getEnumModeType();
-  if(action->objectName().compare(m_actionTextDefault.c_str()) == 0)
-  {
-    changeAction(type->getModeCreateText());
-  }
-  else if(action->objectName().compare(m_actionStringGrid.c_str()) == 0)
-  {
-    changeAction(type->getModeCreateTextGrid());
-  }
-  else if(action->objectName().compare(m_actionTitle.c_str()) == 0)
-  {
-    changeAction(type->getModeCreateTitle());
-  }
-  else if(action->objectName().compare(m_actionImage.c_str()) == 0)
-  {
-    changeAction(type->getModeCreateImage());
-  }
-  else if(action->objectName().compare(m_actionBalloon.c_str()) == 0)
-  {
-    changeAction(type->getModeCreateBalloon());
-  }
-  else if(action->objectName().compare(m_actionBarCode.c_str()) == 0)
-  {
-    changeAction(type->getModeCreateBarCode());
-  }
-}
-
-void te::layout::ToolbarOutside::onAlignLeftClicked( bool checked )
-{
-  EnumModeType* type = Enums::getInstance().getEnumModeType();
-  changeAction(type->getModeAlignLeft());
-}
-
-void te::layout::ToolbarOutside::onAlignRightClicked( bool checked )
-{
-  EnumModeType* type = Enums::getInstance().getEnumModeType();
-  changeAction(type->getModeAlignRight());
-}
-
-void te::layout::ToolbarOutside::onAlignTopClicked( bool checked )
-{
-  EnumModeType* type = Enums::getInstance().getEnumModeType();
-  changeAction(type->getModeAlignTop());
-}
-
-void te::layout::ToolbarOutside::onAlignBottomClicked( bool checked )
-{
-  EnumModeType* type = Enums::getInstance().getEnumModeType();
-  changeAction(type->getModeAlignBottom());
-}
-
-void te::layout::ToolbarOutside::onAlignCenterHorizontalClicked( bool checked )
-{
-  EnumModeType* type = Enums::getInstance().getEnumModeType();
-  changeAction(type->getModeAlignCenterHorizontal());
-}
-
-void te::layout::ToolbarOutside::onAlignCenterVerticalClicked( bool checked )
-{
-  EnumModeType* type = Enums::getInstance().getEnumModeType();
-  changeAction(type->getModeAlignCenterVertical());
-}
-
-void te::layout::ToolbarOutside::onRemoveObjectClicked( bool checked )
-{
-  EnumModeType* type = Enums::getInstance().getEnumModeType();
-  changeAction(type->getModeRemoveObject());
-}
-
-void te::layout::ToolbarOutside::onDrawMapClicked( bool checked )
-{
-  EnumModeType* type = Enums::getInstance().getEnumModeType();
-  changeAction(type->getModeDrawSelectionMap());
-}
-
-void te::layout::ToolbarOutside::onObjectToImageClicked( bool checked )
-{
-  EnumModeType* type = Enums::getInstance().getEnumModeType();
-  changeAction(type->getModeObjectToImage());
-}
-
-void te::layout::ToolbarOutside::onExitClicked( bool checked )
-{
-  EnumModeType* type = Enums::getInstance().getEnumModeType();
-  changeAction(type->getModeExit());
-}
-
-void te::layout::ToolbarOutside::onExportToPDFClicked( bool checked )
-{
-  EnumModeType* type = Enums::getInstance().getEnumModeType();
-  changeAction(type->getModeExportToPDF());
-}
-
-void te::layout::ToolbarOutside::changeAction( te::layout::EnumType* mode )
-{
-  emit changeMode(mode);
 }
 
 QToolButton* te::layout::ToolbarOutside::createToolButton( std::string text, std::string tooltip, std::string icon )
@@ -1153,6 +804,11 @@ QAction* te::layout::ToolbarOutside::createAction( std::string text, std::string
   return actionMenu;
 }
 
+void te::layout::ToolbarOutside::changeAction(EnumType* mode)
+{
+	emit changeMode(mode);
+}
+
 QComboBox* te::layout::ToolbarOutside::getComboBoxZoom()
 {
   return m_comboZoom;
@@ -1186,11 +842,6 @@ QToolButton* te::layout::ToolbarOutside::getArrowCursorButton()
 QToolButton* te::layout::ToolbarOutside::getItemTools()
 {
   return m_itemTools;
-}
-
-QToolButton* te::layout::ToolbarOutside::getLineIntersectionToolButton()
-{
-  return m_lineIntersectionToolButton;
 }
 
 QToolButton* te::layout::ToolbarOutside::getBringToFrontToolButton()
@@ -1398,11 +1049,6 @@ std::string te::layout::ToolbarOutside::getActionUngroup()
   return m_actionUngroup;
 }
 
-std::string te::layout::ToolbarOutside::getActionLineIntersectionMouse()
-{
-  return m_actionLineIntersectionMouse;
-}
-
 std::string te::layout::ToolbarOutside::getActionSceneZoom()
 {
   return m_actionSceneZoom;
@@ -1531,11 +1177,6 @@ QAction* te::layout::ToolbarOutside::getActionArrowCursorButton()
 QAction* te::layout::ToolbarOutside::getActionItemTools()
 {
   return m_actionItemTools;
-}
-
-QAction* te::layout::ToolbarOutside::getActionLineIntersectionToolButton()
-{
-  return m_actionLineIntersectionToolButton;
 }
 
 QAction* te::layout::ToolbarOutside::getActionBringToFrontToolButton()
