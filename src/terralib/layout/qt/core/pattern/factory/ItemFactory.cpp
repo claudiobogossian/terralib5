@@ -96,11 +96,6 @@ te::layout::Observer* te::layout::ItemFactory::make( EnumType* type, ItemParamsC
     GridMapItem* gridMap = new GridMapItem(params.getController(), params.getModel());
     item = (Observer*)gridMap;
   }
-  else if(type == enumObj->getImageItem())
-  {
-    ImageItem* scale = new ImageItem(params.getController(), params.getModel());
-    item = (Observer*)scale;
-  }
   else if(type == enumObj->getLegendChildItem())
   {
     LegendChildItem* mText = new LegendChildItem(params.getController(), params.getModel());
@@ -193,6 +188,10 @@ te::layout::AbstractItemView* te::layout::ItemFactory::makeNew(EnumType* type, I
   {
     item = new PolygonItem(params.m_newController, params.m_newModel);
   }
+	else if (type == enumObj->getImageItem())
+	{
+		item = new ImageItem(params.m_newController, params.m_newModel);
+	}
 
   return item;
 }
