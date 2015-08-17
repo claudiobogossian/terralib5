@@ -52,7 +52,7 @@ te::layout::ImageItem::~ImageItem()
 
 void te::layout::ImageItem::drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget )
 {
-  painter->save();
+  /*painter->save();
 
   const Property& pContourColor = m_controller->getProperty("contour_color");
   const Property& pBackgroundColor = m_controller->getProperty("background_color");
@@ -82,5 +82,5 @@ void te::layout::ImageItem::drawItem( QPainter * painter, const QStyleOptionGrap
 
   //draws the item
   painter->drawImage(boundRect, m_image, sourceRect);
-  painter->restore();
+  painter->restore();*/
 }

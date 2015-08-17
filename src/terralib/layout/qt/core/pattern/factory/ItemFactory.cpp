@@ -71,12 +71,7 @@ te::layout::Observer* te::layout::ItemFactory::make( EnumType* type, ItemParamsC
 
   EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
 
-  if(type == enumObj->getLegendItem())
-  {
-    LegendItem* legend = new LegendItem(params.getController(), params.getModel());
-    item = (Observer*)legend;
-  }
-  else if(type == enumObj->getItemGroup())
+  if(type == enumObj->getItemGroup())
   {
     ItemGroup* group = new ItemGroup(params.getController(), params.getModel());
     item = (Observer*)group;
@@ -96,25 +91,10 @@ te::layout::Observer* te::layout::ItemFactory::make( EnumType* type, ItemParamsC
     GridMapItem* gridMap = new GridMapItem(params.getController(), params.getModel());
     item = (Observer*)gridMap;
   }
-  else if(type == enumObj->getImageItem())
-  {
-    ImageItem* scale = new ImageItem(params.getController(), params.getModel());
-    item = (Observer*)scale;
-  }
-  else if(type == enumObj->getLegendChildItem())
-  {
-    LegendChildItem* mText = new LegendChildItem(params.getController(), params.getModel());
-    item = (Observer*)mText;
-  }
   else if (type == enumObj->getMovingItemGroup())
   {
     MovingItemGroup* mItemGroup = new MovingItemGroup(params.getController(), params.getModel());
     item = (Observer*) mItemGroup;
-  }
-  else if(type == enumObj->getBalloonItem())
-  {
-    BalloonItem* balloon = new BalloonItem(params.getController(), params.getModel());
-    item = (Observer*)balloon;
   }
   else if(type == enumObj->getGridPlanarItem())
   {
@@ -131,11 +111,7 @@ te::layout::Observer* te::layout::ItemFactory::make( EnumType* type, ItemParamsC
     MapLocationItem* location = new MapLocationItem(params.getController(), params.getModel());
     item = (Observer*)location;
   }
-  else if(type == enumObj->getSVGItem())
-  {
-    SVGItem* point = new SVGItem(params.getController(), params.getModel());
-    item = (Observer*)point;
-  }
+
   return item;
 }
 
@@ -193,7 +169,27 @@ te::layout::AbstractItemView* te::layout::ItemFactory::makeNew(EnumType* type, I
   {
     item = new PolygonItem(params.m_newController, params.m_newModel);
   }
-
+  else if(type == enumObj->getImageItem())
+  {
+    item = new ImageItem(params.m_newController, params.m_newModel);
+  }
+  else if(type == enumObj->getLegendItem())
+  {
+    item = new LegendItem(params.m_newController, params.m_newModel);
+  }
+  else if(type == enumObj->getLegendChildItem())
+  {
+    item = new LegendChildItem(params.m_newController, params.m_newModel);
+  }
+  else if(type == enumObj->getSVGItem())
+  {
+    item = new SVGItem(params.m_newController, params.m_newModel);
+  }
+  else if(type == enumObj->getBalloonItem())
+  {
+    item = new BarCodeItem(params.m_newController, params.m_newModel);
+  }
+  
   return item;
 }
 

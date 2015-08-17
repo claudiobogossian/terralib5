@@ -31,12 +31,12 @@
 #define __TERRALIB_LAYOUT_INTERNAL_SVG_MODEL_H
 
 // TerraLib
-#include "../core/pattern/mvc/ItemModelObservable.h"
 #include "../core/ContextItem.h"
 #include "../core/Config.h"
 #include "../core/enum/EnumPointType.h"
 #include "../core/property/Property.h"
 #include "../core/property/Properties.h"
+#include "../core/pattern/mvc/AbstractItemModel.h"
 
 namespace te
 {
@@ -51,7 +51,7 @@ namespace te
 
       \sa te::layout::ItemModelObservable
 	  */
-    class TELAYOUTEXPORT SVGModel : public ItemModelObservable
+    class TELAYOUTEXPORT SVGModel : public AbstractItemModel
     {
       public:
 
@@ -64,18 +64,6 @@ namespace te
           \brief Destructor
         */ 
         virtual ~SVGModel();
-
-        virtual Properties* getProperties() const;
-
-        virtual void updateProperties(te::layout::Properties* properties, bool notify = true);
-        
-        virtual void setPathsName( std::vector<std::string> pathVector );
-
-      protected:
-                
-        virtual te::layout::Property getSVGPathsProperty() const;
-                                
-        std::vector<std::string> m_pathsName;        
     };
   }
 }
