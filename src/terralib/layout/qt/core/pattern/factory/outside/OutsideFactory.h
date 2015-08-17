@@ -36,7 +36,6 @@ namespace te
 {
   namespace layout
   {
-
     /*!
 	  \brief Factory for creating families of related or dependent widgets (MVC widgets).
 	  
@@ -61,7 +60,7 @@ namespace te
       /*!
           \brief Reimplemented from AbstractItemFactory
        */
-	    virtual Observer* make(EnumType* type, OutsideParamsCreate params = OutsideParamsCreate());
+			virtual AbstractOutsideView* make(EnumType* type, OutsideParamsCreate params = OutsideParamsCreate());
     };
   }
 }

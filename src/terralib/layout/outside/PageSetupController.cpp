@@ -28,8 +28,8 @@
 // TerraLib
 #include "PageSetupController.h"
 
-te::layout::PageSetupController::PageSetupController( Observable* o ) :
-	OutsideController(o)
+te::layout::PageSetupController::PageSetupController(AbstractOutsideModel* o) :
+	AbstractOutsideController(o)
 {
   
 }

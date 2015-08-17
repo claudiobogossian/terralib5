@@ -34,7 +34,7 @@
 #include <QToolBar>
 
 // TerraLib
-#include "../../core/pattern/mvc/OutsideObserver.h"
+#include "../../core/pattern/mvc/AbstractOutsideView.h"
 #include "../../../geometry/Envelope.h"
 #include "../../core/Config.h"
 
@@ -56,6 +56,7 @@ namespace te
   {
     class EnumType;
     class Scene;
+		class AbstractOutsideController;
 
     /*!
     \brief Standard Toolbar for Layout. Includes Qt components for interaction between the user and the plugin/app, via events, made from the Layout module. 
@@ -66,18 +67,16 @@ namespace te
 
 	    \sa te::layout::OutsideObserver
 	  */
-    class TELAYOUTEXPORT ToolbarOutside : public QToolBar, public OutsideObserver
+		class TELAYOUTEXPORT ToolbarOutside : public QToolBar, public AbstractOutsideView
     {
 	    Q_OBJECT //for slots/signals
 
     public:
 
-	    ToolbarOutside(OutsideController* controller, Observable* o);
+			ToolbarOutside(AbstractOutsideController* controller);
 
 	    virtual ~ToolbarOutside();
-
-	    virtual void updateObserver(ContextItem context);
-
+			
 	    virtual void setPosition(const double& x, const double& y);
 
 	    virtual te::gm::Coord2D getPosition();

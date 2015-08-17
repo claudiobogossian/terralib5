@@ -37,8 +37,8 @@
 #include <QAction>
 #include <QComboBox>
 
-te::layout::ToolbarController::ToolbarController( Observable* o ) :
-	OutsideController(o)
+te::layout::ToolbarController::ToolbarController(AbstractOutsideModel* o) :
+	AbstractOutsideController(o)
 {
   
 }

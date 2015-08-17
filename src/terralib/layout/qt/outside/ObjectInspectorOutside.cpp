@@ -30,10 +30,9 @@
 #include "../../core/pattern/singleton/Context.h"
 #include "../../core/AbstractScene.h"
 #include "../core/Scene.h"
-#include "../../core/pattern/mvc/OutsideModelObservable.h"
 #include "../../core/pattern/mvc/ItemObserver.h"
-#include "../../core/pattern/mvc/OutsideObserver.h"
-#include "../../core/pattern/mvc/OutsideController.h"
+#include "../../core/pattern/mvc/AbstractOutsideModel.h"
+#include "../../core/pattern/mvc/AbstractOutsideController.h"
 #include "../../../geometry/Envelope.h"
 #include "../../core/enum/Enums.h"
 #include "../core/propertybrowser/VariantPropertiesBrowser.h"
@@ -49,11 +48,12 @@
 #include <QtPropertyBrowser/QtProperty>
 #include <QtPropertyBrowser/QtTreePropertyBrowser>
 
-te::layout::ObjectInspectorOutside::ObjectInspectorOutside( OutsideController* controller, Observable* o, PropertyBrowser* propertyBrowser ) :
+te::layout::ObjectInspectorOutside::ObjectInspectorOutside(AbstractOutsideController* controller, PropertyBrowser* propertyBrowser) :
   QWidget(0),
-  OutsideObserver(controller, o)
+	AbstractOutsideView(controller)
 {
-  te::gm::Envelope box = m_model->getBox();
+	AbstractOutsideModel* abstractModel = const_cast<AbstractOutsideModel*>(m_controller->getModel());
+	te::gm::Envelope box = abstractModel->getBox();
   setBaseSize(box.getWidth(), box.getHeight());
   setVisible(false);
   setWindowTitle("Object Inspector");
@@ -85,15 +85,6 @@ te::layout::ObjectInspectorOutside::ObjectInspectorOutside( OutsideController* c
 te::layout::ObjectInspectorOutside::~ObjectInspectorOutside()
 {
 
-}
-
-void te::layout::ObjectInspectorOutside::updateObserver( ContextItem context )
-{
-  setVisible(context.isShow());
-  if(context.isShow() == true)
-    show();
-  else
-    hide();
 }
 
 void te::layout::ObjectInspectorOutside::setPosition( const double& x, const double& y )

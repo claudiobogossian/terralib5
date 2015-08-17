@@ -54,76 +54,76 @@ te::layout::OutsideFactory::~OutsideFactory()
 
 }
 
-te::layout::Observer* te::layout::OutsideFactory::make( EnumType* type, OutsideParamsCreate params /*= LayoutItemParamsCreate()*/ )
+te::layout::AbstractOutsideView* te::layout::OutsideFactory::make( EnumType* type, OutsideParamsCreate params /*= LayoutItemParamsCreate()*/ )
 {
-	Observer* outside = 0;
+	AbstractOutsideView* outside = 0;
 
   EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
 
   if(type == enumObj->getToolbar())
   {
-    ToolbarOutside* toolbar = new ToolbarOutside(params.getController(), params.getModel());		
-    outside = (Observer*)toolbar;
+    ToolbarOutside* toolbar = new ToolbarOutside(params.getController());		
+    outside = toolbar;
   }
   else if(type == enumObj->getPropertiesWindow())
   {
-    PropertiesOutside* window = new PropertiesOutside(params.getController(), params.getModel());		
-    outside = (Observer*)window;
+    PropertiesOutside* window = new PropertiesOutside(params.getController());		
+    outside = window;
   }
   else if(type == enumObj->getObjectInspectorWindow())
   {
-    ObjectInspectorOutside* inspector = new ObjectInspectorOutside(params.getController(), params.getModel());		
-    outside = (Observer*)inspector;
+    ObjectInspectorOutside* inspector = new ObjectInspectorOutside(params.getController());		
+    outside = inspector;
   }
   else if(type == enumObj->getGridSettings())
   {
-    GridSettingsOutside* gridSettings = new GridSettingsOutside(params.getController(), params.getModel());		
-    outside = (Observer*)gridSettings;
+    GridSettingsOutside* gridSettings = new GridSettingsOutside(params.getController());		
+    outside = gridSettings;
   }
   else if(type == enumObj->getPageSetup())
   {
-    PageSetupOutside* pageSetup = new PageSetupOutside(params.getController(), params.getModel());		
-    outside = (Observer*)pageSetup;
+    PageSetupOutside* pageSetup = new PageSetupOutside(params.getController());		
+    outside = pageSetup;
   }
   else if(type == enumObj->getSystematicScale())
   {
-    SystematicScaleOutside* systematic = new SystematicScaleOutside(params.getController(), params.getModel());		
-    outside = (Observer*)systematic;
+    SystematicScaleOutside* systematic = new SystematicScaleOutside(params.getController());		
+    outside = systematic;
   }
   else if(type == enumObj->getSVGDialog())
   {
-    SVGDialogOutside* svgdialog = new SVGDialogOutside(params.getController(), params.getModel());		
-    outside = (Observer*)svgdialog;
+    SVGDialogOutside* svgdialog = new SVGDialogOutside(params.getController());		
+    outside = svgdialog;
   }
   else if(type == enumObj->getEditTemplate())
   {
-    EditTemplateOutside* editTemplate = new EditTemplateOutside(params.getController(), params.getModel());		
-    outside = (Observer*)editTemplate;
+    EditTemplateOutside* editTemplate = new EditTemplateOutside(params.getController());		
+    outside = editTemplate;
   }
   else if(type == enumObj->getTextGridSettings())
   {
-    TextGridSettingsOutside* textGridSettings = new TextGridSettingsOutside(params.getController(), params.getModel());		
-    outside = (Observer*)textGridSettings;
+    TextGridSettingsOutside* textGridSettings = new TextGridSettingsOutside(params.getController());		
+    outside = textGridSettings;
   }
   else if(type == enumObj->getMapLayerChoice())
   {
-    MapLayerChoiceOutside* mapLayerChoice = new MapLayerChoiceOutside(params.getController(), params.getModel());		
-    outside = (Observer*)mapLayerChoice;
+    MapLayerChoiceOutside* mapLayerChoice = new MapLayerChoiceOutside(params.getController());		
+    outside = mapLayerChoice;
   }
   else if(type == enumObj->getLegendChoice())
   {
-    LegendChoiceOutside* legendChoice = new LegendChoiceOutside(params.getController(), params.getModel());		
-    outside = (Observer*)legendChoice;
+    LegendChoiceOutside* legendChoice = new LegendChoiceOutside(params.getController());		
+    outside = legendChoice;
   }
   else if(type == enumObj->getColorDialog())
   {
-    ColorDialogOutside* colorDialog = new ColorDialogOutside(params.getController(), params.getModel());		
-    outside = (Observer*)colorDialog;
+    ColorDialogOutside* colorDialog = new ColorDialogOutside(params.getController());		
+    outside = colorDialog;
   }
   else if(type == enumObj->getFontDialog())
   {
-    FontDialogOutside* fontDialog = new FontDialogOutside(params.getController(), params.getModel());		
-    outside = (Observer*)fontDialog;
+    FontDialogOutside* fontDialog = new FontDialogOutside(params.getController());		
+    outside = fontDialog;
   }
 
 	return outside;

@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file OutsideModelObservable.cpp
+  \file AbstractOutsideModel.cpp
    
   \brief 
 
@@ -26,7 +26,7 @@
 */
 
 // TerraLib
-#include "OutsideModelObservable.h"
+#include "AbstractOutsideModel.h"
 #include "Observer.h"
 #include "../../property/Property.h"
 #include "../../property/Properties.h"
@@ -37,7 +37,7 @@
 #include <ctime>
 #include <iostream>
 
-te::layout::OutsideModelObservable::OutsideModelObservable() :
+te::layout::AbstractOutsideModel::AbstractOutsideModel() :
   m_color(0),
   m_publicProperties(0),
   m_type(0),
@@ -57,7 +57,7 @@ te::layout::OutsideModelObservable::OutsideModelObservable() :
   m_publicProperties = new Properties(m_name, 0, m_hashCode);
 }
 
-te::layout::OutsideModelObservable::~OutsideModelObservable()
+te::layout::AbstractOutsideModel::~AbstractOutsideModel()
 {
   if(m_properties)
   {
@@ -72,56 +72,27 @@ te::layout::OutsideModelObservable::~OutsideModelObservable()
   }
 }
 
-bool te::layout::OutsideModelObservable::addObserver( Observer* o )
-{
-	std::pair<std::set<Observer*>::iterator,bool> p = m_observers.insert(o);
-
-	if(p.second == true)
-		return true;
-
-	return false;
-}
-
-bool te::layout::OutsideModelObservable::removeObserver( Observer* o )
-{
-	int num = m_observers.erase(o);
-
-	if(num == 1)
-		return true;
-
-	return false;
-}
-
-void te::layout::OutsideModelObservable::notifyAll( ContextItem context )
-{
-	std::set<Observer*>::iterator it;
-	for(it = m_observers.begin(); it != m_observers.end(); ++it)
-	{
-		(*it)->updateObserver(context);
-	}
-}
-
-te::gm::Envelope te::layout::OutsideModelObservable::getBox()
+te::gm::Envelope te::layout::AbstractOutsideModel::getBox()
 {
 	return m_box;
 }
 
-void te::layout::OutsideModelObservable::setBox(te::gm::Envelope box)
+void te::layout::AbstractOutsideModel::setBox(te::gm::Envelope box)
 {
 	m_box = box;
 }
 
-int te::layout::OutsideModelObservable::getColor()
+int te::layout::AbstractOutsideModel::getColor()
 {
 	return m_color;
 }
 
-void te::layout::OutsideModelObservable::setColor( int color )
+void te::layout::AbstractOutsideModel::setColor(int color)
 {
 	m_color = color;
 }
 
-void te::layout::OutsideModelObservable::setPosition( const double& x, const double& y )
+void te::layout::AbstractOutsideModel::setPosition(const double& x, const double& y)
 {
   //Initial point to draw is : x1, y1, that corresponds 0,0 of local coordinate of a item  
   double x1 = x; 
@@ -133,7 +104,7 @@ void te::layout::OutsideModelObservable::setPosition( const double& x, const dou
   m_box = te::gm::Envelope(x1, y1, x2, y2);
 }
 
-te::layout::Properties* te::layout::OutsideModelObservable::getProperties() const
+te::layout::Properties* te::layout::AbstractOutsideModel::getProperties() const
 {
   m_properties->clear();
 
@@ -146,27 +117,27 @@ te::layout::Properties* te::layout::OutsideModelObservable::getProperties() cons
   return m_properties;
 }
 
-te::layout::EnumType* te::layout::OutsideModelObservable::getType()
+te::layout::EnumType* te::layout::AbstractOutsideModel::getType()
 {
   return m_type;
 }
 
-void te::layout::OutsideModelObservable::setType( EnumType* type )
+void te::layout::AbstractOutsideModel::setType(EnumType* type)
 {
   m_type = type;
 }
 
-int te::layout::OutsideModelObservable::getZValue()
+int te::layout::AbstractOutsideModel::getZValue()
 {
   return m_zValue;
 }
 
-void te::layout::OutsideModelObservable::setZValue( int zValue )
+void te::layout::AbstractOutsideModel::setZValue(int zValue)
 {
   m_zValue = zValue;
 }
 
-void te::layout::OutsideModelObservable::updateProperties( te::layout::Properties* properties, bool notify )
+void te::layout::AbstractOutsideModel::updateProperties(te::layout::Properties* properties, bool notify)
 {
   Properties* vectorProps = const_cast<Properties*>(properties);
 
@@ -175,42 +146,41 @@ void te::layout::OutsideModelObservable::updateProperties( te::layout::Propertie
   
   if(notify)
   {
-    ContextItem context;
-    notifyAll(context);
+		Subject::notify();
   }
 }
 
-std::string te::layout::OutsideModelObservable::getName()
+std::string te::layout::AbstractOutsideModel::getName()
 {
   return m_name;
 }
 
-int te::layout::OutsideModelObservable::getId()
+int te::layout::AbstractOutsideModel::getId()
 {
   return m_id;
 }
 
-void te::layout::OutsideModelObservable::setId( int id )
+void te::layout::AbstractOutsideModel::setId(int id)
 {
   m_id = id;
 }
 
-void te::layout::OutsideModelObservable::setResizable( bool resize )
+void te::layout::AbstractOutsideModel::setResizable(bool resize)
 {
   m_resizable = resize;
 }
 
-bool te::layout::OutsideModelObservable::isResizable()
+bool te::layout::AbstractOutsideModel::isResizable()
 {
   return m_resizable;
 }
 
-int te::layout::OutsideModelObservable::getHashCode()
+int te::layout::AbstractOutsideModel::getHashCode()
 {
   return m_hashCode;
 }
 
-int te::layout::OutsideModelObservable::calculateHashCode()
+int te::layout::AbstractOutsideModel::calculateHashCode()
 {
   int nameLength = m_name.length();
   int id = m_id;
@@ -256,7 +226,7 @@ int te::layout::OutsideModelObservable::calculateHashCode()
   return hashcode;
 }
 
-te::layout::Properties* te::layout::OutsideModelObservable::getPublicProperties() const
+te::layout::Properties* te::layout::AbstractOutsideModel::getPublicProperties() const
 {
   if(!m_properties || m_publicProperties)
   {

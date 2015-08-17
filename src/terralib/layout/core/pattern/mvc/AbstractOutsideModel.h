@@ -18,23 +18,23 @@
  */
 
 /*!
-  \file OutsideModelObservable.h
+  \file AbstractOutsideModel.h
    
   \brief Abstract class to represent an observable. "Model" part of MVC widget. All classes representing the model of a widget must inherit from this class.
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_OUTSIDE_MODEL_H 
-#define __TERRALIB_LAYOUT_INTERNAL_OUTSIDE_MODEL_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_ABSTRACT_OUTSIDE_MODEL_H 
+#define __TERRALIB_LAYOUT_INTERNAL_ABSTRACT_OUTSIDE_MODEL_H
 
 // TerraLib
-#include "Observable.h"
 #include "../../property/Properties.h"
 #include "../../ContextItem.h"
 #include "../../../../geometry/Envelope.h"
 #include "../../../../geometry/Coord2D.h"
 #include "../../Config.h"
+#include "../observer/Subject.h"
 
 // STL
 #include <set>
@@ -52,30 +52,20 @@ namespace te
 
       \sa te::layout::Observable
 	  */
-    class TELAYOUTEXPORT OutsideModelObservable : public Observable
+		class TELAYOUTEXPORT AbstractOutsideModel : public Subject
     {
     public:
 
       /*!
           \brief Constructor
        */ 
-      OutsideModelObservable();
+			AbstractOutsideModel();
 
       /*!
           \brief Destructor
        */ 
-      virtual ~OutsideModelObservable();
-
-      /*!
-          \brief Reimplemented from Observable
-       */
-      virtual bool addObserver(Observer* o);
-
-      /*!
-          \brief Reimplemented from Observable
-       */
-      virtual bool removeObserver(Observer* o);
-
+			virtual ~AbstractOutsideModel();
+			
       /*!
           \brief Reimplemented from Observable
        */
@@ -176,30 +166,25 @@ namespace te
       virtual bool isResizable();
 
     protected:
-
-      /*!
-          \brief Reimplemented from Observable
-       */
-      virtual void notifyAll(ContextItem context);
-
+			
       virtual int calculateHashCode();
 
     protected:
 
-      std::set<Observer*>	      m_observers; //!< set of observers of this object
-      te::gm::Envelope		      m_box; //!< bounding rectangle 
-      te::gm::Coord2D 		      m_centerCoordinate; //!< center coordinate of the bounding rectangle
-      int							          m_color; //!< background color
-      Properties*               m_properties; //!< properties
-      Properties*               m_publicProperties; //!< public properties
-      EnumType*                 m_type; //!< type of the MVC widget
-      int                       m_zValue; //!< The Z value decides the stacking order of drawing
-      int                       m_id; //!< hashcode
-      bool                      m_resizable; //!< true if resizable, false otherwise
-      int                       m_hashCode;
-      std::string               m_name; //!< name of the MVC widget     
+      te::gm::Envelope								m_box; //!< bounding rectangle 
+      te::gm::Coord2D 								m_centerCoordinate; //!< center coordinate of the bounding rectangle
+      int															m_color; //!< background color
+      Properties*											m_properties; //!< properties
+      Properties*											m_publicProperties; //!< public properties
+      EnumType*												m_type; //!< type of the MVC widget
+      int															m_zValue; //!< The Z value decides the stacking order of drawing
+      int															m_id; //!< hashcode
+      bool														m_resizable; //!< true if resizable, false otherwise
+      int															m_hashCode;
+      std::string											m_name; //!< name of the MVC widget     
     };
   }
 }
 
 #endif
+

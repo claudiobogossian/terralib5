@@ -26,42 +26,31 @@
 */
 
 // TerraLib
-#include "OutsideObserver.h"
-#include "Observable.h"
-#include "../singleton/Context.h"
-#include "../../AbstractScene.h"
-#include "OutsideController.h"
+#include "AbstractOutsideView.h"
+#include "AbstractOutsideController.h"
 
-te::layout::OutsideObserver::OutsideObserver(OutsideController* controller, Observable* o) :
-  m_controller(controller),
-  m_model(o)
+te::layout::AbstractOutsideView::AbstractOutsideView(AbstractOutsideController* controller) :
+  m_controller(controller)
 {
-	m_model->addObserver(this);
+	
 }
 
-te::layout::OutsideObserver::~OutsideObserver()
+te::layout::AbstractOutsideView::~AbstractOutsideView()
 {
 	if(m_controller)
-		delete (OutsideController*)m_controller;
+		delete (AbstractOutsideController*)m_controller;
 }
 
-void te::layout::OutsideObserver::refresh()
+void te::layout::AbstractOutsideView::refresh()
 {
 	te::gm::Coord2D coord = getPosition();
 	m_controller->setPosition(coord.x, coord.y);
 }
 
-te::layout::Properties* te::layout::OutsideObserver::getProperties() const
-{
-  return m_model->getProperties();
-}
-
-te::layout::OutsideController* te::layout::OutsideObserver::getController()
+te::layout::AbstractOutsideController* te::layout::AbstractOutsideView::getController()
 {
   return m_controller;
 }
 
-te::layout::Observable* te::layout::OutsideObserver::getModel()
-{
-  return m_model;
-}
+
+

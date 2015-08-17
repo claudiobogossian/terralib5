@@ -28,16 +28,16 @@
 #ifndef __TERRALIB_LAYOUT_INTERNAL_GRID_SETTINGS_OUTSIDE_H
 #define __TERRALIB_LAYOUT_INTERNAL_GRID_SETTINGS_OUTSIDE_H
 
-// Qt
-#include <QDialog>
-
 // TerraLib
-#include "../../core/pattern/mvc/OutsideObserver.h"
+#include "../../core/pattern/mvc/AbstractOutsideView.h"
 #include "../../core/property/GridSettingsConfigProperties.h"
 #include "../../core/Config.h"
 #include "../../../geometry/Envelope.h"
 #include "../../../color/RGBAColor.h"
 #include "../../core/property/Property.h"
+
+// Qt
+#include <QDialog>
 
 class QLineEdit;
 
@@ -47,8 +47,7 @@ namespace te
 {
   namespace layout
   {
-    class OutsideController;
-    class Observable;
+		class AbstractOutsideController;
     class PlanarGridSettingsConfigProperties;
     class GeodesicGridSettingsConfigProperties;
 
@@ -59,18 +58,16 @@ namespace te
 
 	    \sa te::layout::OutsideObserver
 	  */
-    class TELAYOUTEXPORT GridSettingsOutside : public QDialog, public OutsideObserver 
+		class TELAYOUTEXPORT GridSettingsOutside : public QDialog, public AbstractOutsideView
     {
 	    Q_OBJECT
     
       public:
         
-        GridSettingsOutside(OutsideController* controller, Observable* o);
+				GridSettingsOutside(AbstractOutsideController* controller);
 
 		    virtual ~GridSettingsOutside();
-
-        virtual void updateObserver(ContextItem context);
-
+				
         virtual void setPosition(const double& x, const double& y);
 
         virtual te::gm::Coord2D getPosition();

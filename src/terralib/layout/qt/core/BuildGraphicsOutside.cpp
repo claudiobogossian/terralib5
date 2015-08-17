@@ -30,7 +30,7 @@
 #include "../../core/enum/Enums.h"
 #include "../../outside/GridSettingsModel.h"
 #include "../../outside/GridSettingsController.h"
-#include "../../core/pattern/mvc/OutsideObserver.h"
+#include "../../core/pattern/mvc/AbstractOutsideView.h"
 #include "../outside/GridSettingsOutside.h"
 #include "../../outside/ToolbarModel.h"
 #include "../outside/ToolbarController.h"
@@ -153,7 +153,7 @@ QWidget* te::layout::BuildGraphicsOutside::createGridSettings()
   GridSettingsModel* model = new GridSettingsModel();
 
   GridSettingsController* controller = new GridSettingsController(model);
-  OutsideObserver* itemObs = (OutsideObserver*)controller->getView();
+  AbstractOutsideView* itemObs = const_cast<AbstractOutsideView*>(controller->getView());
 
   GridSettingsOutside* view = dynamic_cast<GridSettingsOutside*>(itemObs);
   
@@ -165,7 +165,7 @@ QWidget* te::layout::BuildGraphicsOutside::createToolbar()
   ToolbarModel* model = new ToolbarModel();
 
   ToolbarController* controller = new ToolbarController(model);
-  OutsideObserver* itemObs = (OutsideObserver*)controller->getView();
+	AbstractOutsideView* itemObs = const_cast<AbstractOutsideView*>(controller->getView());
 
   ToolbarOutside* view = dynamic_cast<ToolbarOutside*>(itemObs);
 	view->createToolbar();
@@ -178,7 +178,7 @@ QWidget* te::layout::BuildGraphicsOutside::createProperties()
   PropertiesModel* model = new PropertiesModel();
 
   PropertiesController* controller = new PropertiesController(model);
-  OutsideObserver* itemObs = (OutsideObserver*)controller->getView();
+	AbstractOutsideView* itemObs = const_cast<AbstractOutsideView*>(controller->getView());
 
   PropertiesOutside* view = dynamic_cast<PropertiesOutside*>(itemObs);
 
@@ -190,7 +190,7 @@ QWidget* te::layout::BuildGraphicsOutside::createObjectInspector()
   ObjectInspectorModel* model = new ObjectInspectorModel();
 
   ObjectInspectorController* controller = new ObjectInspectorController(model);
-  OutsideObserver* itemObs = (OutsideObserver*)controller->getView();
+	AbstractOutsideView* itemObs = const_cast<AbstractOutsideView*>(controller->getView());
 
   ObjectInspectorOutside* view = dynamic_cast<ObjectInspectorOutside*>(itemObs);
 
@@ -202,7 +202,7 @@ QWidget* te::layout::BuildGraphicsOutside::createPageSetup()
   PageSetupModel* model = new PageSetupModel();
 
   PageSetupController* controller = new PageSetupController(model);
-  OutsideObserver* itemObs = (OutsideObserver*)controller->getView();
+	AbstractOutsideView* itemObs = const_cast<AbstractOutsideView*>(controller->getView());
 
   PageSetupOutside* view = dynamic_cast<PageSetupOutside*>(itemObs);
 
@@ -214,7 +214,7 @@ QWidget* te::layout::BuildGraphicsOutside::createSystematicScale()
   SystematicScaleModel* model = new SystematicScaleModel();
 
   SystematicScaleController* controller = new SystematicScaleController(model);
-  OutsideObserver* itemObs = (OutsideObserver*)controller->getView();
+	AbstractOutsideView* itemObs = const_cast<AbstractOutsideView*>(controller->getView());
 
   SystematicScaleOutside* view = dynamic_cast<SystematicScaleOutside*>(itemObs);
 
@@ -226,7 +226,7 @@ QWidget* te::layout::BuildGraphicsOutside::createEditTemplate()
   EditTemplateModel* model = new EditTemplateModel();
 
   EditTemplateController* controller = new EditTemplateController(model);
-  OutsideObserver* itemObs = (OutsideObserver*)controller->getView();
+	AbstractOutsideView* itemObs = const_cast<AbstractOutsideView*>(controller->getView());
 
   EditTemplateOutside* view = dynamic_cast<EditTemplateOutside*>(itemObs);
 
@@ -238,7 +238,7 @@ QWidget* te::layout::BuildGraphicsOutside::createTextGridSettingss()
   TextGridSettingsModel* model = new TextGridSettingsModel();
 
   TextGridSettingsController* controller = new TextGridSettingsController(model);
-  OutsideObserver* itemObs = (OutsideObserver*)controller->getView();
+	AbstractOutsideView* itemObs = const_cast<AbstractOutsideView*>(controller->getView());
 
   TextGridSettingsOutside* view = dynamic_cast<TextGridSettingsOutside*>(itemObs);
 
@@ -250,7 +250,7 @@ QWidget* te::layout::BuildGraphicsOutside::createMapLayerChoice()
   MapLayerChoiceModel* model = new MapLayerChoiceModel();
 
   MapLayerChoiceController* controller = new MapLayerChoiceController(model);
-  OutsideObserver* itemObs = (OutsideObserver*)controller->getView();
+	AbstractOutsideView* itemObs = const_cast<AbstractOutsideView*>(controller->getView());
 
   MapLayerChoiceOutside* view = dynamic_cast<MapLayerChoiceOutside*>(itemObs);
 
@@ -262,7 +262,7 @@ QWidget* te::layout::BuildGraphicsOutside::createColorDialog()
   ColorDialogModel* model = new ColorDialogModel();
 
   ColorDialogController* controller = new ColorDialogController(model);
-  OutsideObserver* itemObs = (OutsideObserver*)controller->getView();
+	AbstractOutsideView* itemObs = const_cast<AbstractOutsideView*>(controller->getView());
 
   ColorDialogOutside* view = dynamic_cast<ColorDialogOutside*>(itemObs);
 
@@ -274,7 +274,7 @@ QWidget* te::layout::BuildGraphicsOutside::createFontDialog()
   FontDialogModel* model = new FontDialogModel();
 
   FontDialogController* controller = new FontDialogController(model);
-  OutsideObserver* itemObs = (OutsideObserver*)controller->getView();
+	AbstractOutsideView* itemObs = const_cast<AbstractOutsideView*>(controller->getView());
 
   FontDialogOutside* view = dynamic_cast<FontDialogOutside*>(itemObs);
 
@@ -286,7 +286,7 @@ QWidget* te::layout::BuildGraphicsOutside::createLegendChoice()
   LegendChoiceModel* model = new LegendChoiceModel();
 
   LegendChoiceController* controller = new LegendChoiceController(model);
-  OutsideObserver* itemObs = (OutsideObserver*)controller->getView();
+	AbstractOutsideView* itemObs = const_cast<AbstractOutsideView*>(controller->getView());
 
   LegendChoiceOutside* view = dynamic_cast<LegendChoiceOutside*>(itemObs);
 
@@ -298,7 +298,7 @@ QWidget* te::layout::BuildGraphicsOutside::createSVGDialog()
   SVGDialogModel* model = new SVGDialogModel();
 
   SVGDialogController* controller = new SVGDialogController(model);
-  OutsideObserver* itemObs = (OutsideObserver*)controller->getView();
+	AbstractOutsideView* itemObs = const_cast<AbstractOutsideView*>(controller->getView());
 
   SVGDialogOutside* view = dynamic_cast<SVGDialogOutside*>(itemObs);
 

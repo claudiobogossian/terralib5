@@ -583,8 +583,8 @@ void te::layout::View::showPageSetup()
   {
     PageSetupModel* model = new PageSetupModel;
     PageSetupController* controller = new PageSetupController(model);
-    OutsideObserver* obsever = (OutsideObserver*)(controller->getView());
-    m_pageSetupOutside = dynamic_cast<PageSetupOutside*>(obsever);
+		AbstractOutsideView* observer = const_cast<AbstractOutsideView*>(controller->getView());
+		m_pageSetupOutside = dynamic_cast<PageSetupOutside*>(observer);
     connect(m_pageSetupOutside, SIGNAL(changeConfig()), this, SLOT(onChangeConfig()));
   }
 
@@ -628,8 +628,8 @@ void te::layout::View::showSystematicScale()
   {
     SystematicScaleModel* model = new SystematicScaleModel;
     SystematicScaleController* controller = new SystematicScaleController(model);
-    OutsideObserver* obsever = (OutsideObserver*)(controller->getView());
-    m_systematicOutside = dynamic_cast<SystematicScaleOutside*>(obsever);
+		AbstractOutsideView* observer = const_cast<AbstractOutsideView*>(controller->getView());
+    m_systematicOutside = dynamic_cast<SystematicScaleOutside*>(observer);
     connect(m_systematicOutside, SIGNAL(systematicApply(double,SystematicScaleType)), this, SLOT(onSystematicApply(double,SystematicScaleType)));
   }
 

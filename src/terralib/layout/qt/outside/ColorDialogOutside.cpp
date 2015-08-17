@@ -27,21 +27,17 @@
 
 // TerraLib
 #include "ColorDialogOutside.h"
-#include "../../core/pattern/singleton/Context.h"
-#include "../../core/pattern/mvc/ItemObserver.h"
-#include "../item/MapItem.h"
-#include "../../core/pattern/mvc/ItemModelObservable.h"
-#include "../../item/MapModel.h"
-#include "../core/ItemUtils.h"
 #include "../../outside/ColorDialogModel.h"
 #include "../../../color/RGBAColor.h"
+#include "../../core/pattern/mvc/AbstractOutsideController.h"
+#include "../../core/pattern/mvc/AbstractOutsideModel.h"
 
 // Qt
 #include <QColor>
 
-te::layout::ColorDialogOutside::ColorDialogOutside( OutsideController* controller, Observable* o ) :
+te::layout::ColorDialogOutside::ColorDialogOutside(AbstractOutsideController* controller) :
   QColorDialog(0),
-	OutsideObserver(controller, o),
+	AbstractOutsideView(controller),
   m_okClicked(false)
 {
 	connect(this, SIGNAL(currentColorChanged(const QColor&)), this, SLOT(onCurrentColorChanged(const QColor&)));
@@ -54,7 +50,8 @@ te::layout::ColorDialogOutside::~ColorDialogOutside()
 
 void te::layout::ColorDialogOutside::init()
 {
-  ColorDialogModel* model = dynamic_cast<ColorDialogModel*>(m_model);
+	AbstractOutsideModel* abstractModel = const_cast<AbstractOutsideModel*>(m_controller->getModel());
+	ColorDialogModel* model = dynamic_cast<ColorDialogModel*>(abstractModel);
   if(!model)
     return;
 
@@ -69,15 +66,6 @@ void te::layout::ColorDialogOutside::init()
   color.setAlpha(rgbColor.getAlpha());
 
   setCurrentColor(color);
-}
-
-void te::layout::ColorDialogOutside::updateObserver( ContextItem context )
-{
-  setVisible(context.isShow());
-  if(context.isShow() == true)
-    show();
-  else
-    hide();
 }
 
 void te::layout::ColorDialogOutside::setPosition( const double& x, const double& y )
@@ -103,7 +91,8 @@ void te::layout::ColorDialogOutside::accept()
 {
   m_okClicked = true;
 
-  ColorDialogModel* model = dynamic_cast<ColorDialogModel*>(m_model);
+	AbstractOutsideModel* abstractModel = const_cast<AbstractOutsideModel*>(m_controller->getModel());
+	ColorDialogModel* model = dynamic_cast<ColorDialogModel*>(abstractModel);
   if(!model)
     return;
 

@@ -29,19 +29,20 @@
 #define __TERRALIB_LAYOUT_INTERNAL_SYSTEMATIC_SCALE_CONTROLLER_H
 
 // TerraLib
-#include "../core/pattern/mvc/OutsideController.h"
-#include "../core/property/Property.h"
+#include "../core/pattern/mvc/AbstractOutsideController.h"
 #include "../core/Config.h"
 
 namespace te
 {
   namespace layout
   {
-    class TELAYOUTEXPORT SystematicScaleController : public OutsideController
+		class AbstractOutsideModel;
+
+		class TELAYOUTEXPORT SystematicScaleController : public AbstractOutsideController
     {
       public:
 
-	      SystematicScaleController( Observable* o );
+				SystematicScaleController(AbstractOutsideModel* o);
 
 	      virtual ~SystematicScaleController();
     };

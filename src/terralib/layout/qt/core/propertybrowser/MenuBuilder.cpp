@@ -30,7 +30,7 @@
 #include "../../../core/pattern/mvc/ItemObserver.h"
 #include "../../../outside/GridSettingsModel.h"
 #include "../../../outside/GridSettingsController.h"
-#include "../../../core/pattern/mvc/OutsideObserver.h"
+#include "../../../core/pattern/mvc/AbstractOutsideView.h"
 #include "../../outside/GridSettingsOutside.h"
 #include "../../../core/pattern/mvc/ItemController.h"
 #include "../../../core/enum/Enums.h"

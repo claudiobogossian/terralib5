@@ -30,10 +30,7 @@
 #include "../../core/pattern/singleton/Context.h"
 #include "../../core/AbstractScene.h"
 #include "../core/Scene.h"
-#include "../../core/pattern/mvc/OutsideModelObservable.h"
 #include "../../core/pattern/mvc/ItemObserver.h"
-#include "../../core/pattern/mvc/OutsideObserver.h"
-#include "../../core/pattern/mvc/OutsideController.h"
 #include "../../../geometry/Envelope.h"
 #include "../../core/enum/Enums.h"
 #include "../core/ContextObject.h"
@@ -56,9 +53,9 @@
 #include <QUndoStack>
 #include <QLineEdit>
 
-te::layout::ToolbarOutside::ToolbarOutside( OutsideController* controller, Observable* o ) :
+te::layout::ToolbarOutside::ToolbarOutside(AbstractOutsideController* controller) :
   QToolBar(0),
-  OutsideObserver(controller, o),
+	AbstractOutsideView(controller),
   m_comboZoom(0),
   m_actionMapDefault("map_default"),
   m_actionLegendDefault("legend_default"),
@@ -161,15 +158,6 @@ te::layout::ToolbarOutside::ToolbarOutside( OutsideController* controller, Obser
 te::layout::ToolbarOutside::~ToolbarOutside()
 {
 
-}
-
-void te::layout::ToolbarOutside::updateObserver( ContextItem context )
-{
-	setVisible(context.isShow());
-	if(context.isShow() == true)
-		show();
-	else
-		hide();
 }
 
 void te::layout::ToolbarOutside::setPosition( const double& x, const double& y )

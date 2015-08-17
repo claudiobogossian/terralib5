@@ -29,11 +29,8 @@
 #define __TERRALIB_LAYOUT_INTERNAL_SVG_DIALOG_MODEL_H
 
 // TerraLib
-#include "../core/pattern/mvc/OutsideModelObservable.h"
-#include "../core/ContextItem.h"
-#include "../core/property/Properties.h"
+#include "../core/pattern/mvc/AbstractOutsideModel.h"
 #include "../core/Config.h"
-#include "../../maptools/AbstractLayer.h"
 #include "../core/property/Property.h"
 
 // STL
@@ -44,7 +41,9 @@ namespace te
 {
   namespace layout
   {
-    class TELAYOUTEXPORT SVGDialogModel : public OutsideModelObservable
+		class Properties;
+
+		class TELAYOUTEXPORT SVGDialogModel : public AbstractOutsideModel
     {
     public:
 
@@ -68,3 +67,4 @@ namespace te
 }
 
 #endif
+

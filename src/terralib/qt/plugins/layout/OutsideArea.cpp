@@ -34,7 +34,6 @@
 #include "../../../layout/qt/outside/PropertiesOutside.h"
 #include "../../../layout/qt/outside/ObjectInspectorOutside.h"
 #include "../../../layout/core/enum/Enums.h"
-#include "../../../layout/core/pattern/mvc/OutsideObserver.h"
 #include "../../../layout/qt/core/BuildGraphicsItem.h"
 #include "../../../layout/qt/core/BuildGraphicsOutside.h"
 #include "terralib/layout/qt/outside/ToolbarController.h"

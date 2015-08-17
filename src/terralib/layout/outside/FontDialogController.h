@@ -29,18 +29,20 @@
 #define __TERRALIB_LAYOUT_INTERNAL_FONT_DIALOG_CONTROLLER_H
 
 // TerraLib
-#include "../core/pattern/mvc/OutsideController.h"
+#include "../core/pattern/mvc/AbstractOutsideController.h"
 #include "../core/Config.h"
 
 namespace te
 {
   namespace layout
   {
-    class TELAYOUTEXPORT FontDialogController : public OutsideController
+		class AbstractOutsideModel;
+
+    class TELAYOUTEXPORT FontDialogController : public AbstractOutsideController
     {
       public:
 
-	      FontDialogController( Observable* o );
+				FontDialogController(AbstractOutsideModel* o);
 
 	      virtual ~FontDialogController();
     };

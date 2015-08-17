@@ -28,9 +28,8 @@
 
 // TerraLib
 #include "../../../qt/widgets/utils/DoubleListWidget.h"
-#include "../../../maptools/AbstractLayer.h"
 #include "../../core/Config.h"
-#include "../../core/pattern/mvc/OutsideObserver.h"
+#include "../../core/pattern/mvc/AbstractOutsideView.h"
 
 // STL
 #include <memory>
@@ -47,16 +46,15 @@ namespace te
 {
   namespace layout
   {
-    class OutsideController;
-    class Observable;
+		class AbstractOutsideController;
 
-    class TELAYOUTEXPORT SVGDialogOutside : public QDialog, public OutsideObserver 
+		class TELAYOUTEXPORT SVGDialogOutside : public QDialog, public AbstractOutsideView
     {
       Q_OBJECT
 
       public:
 
-        SVGDialogOutside(OutsideController* controller, Observable* o);
+				SVGDialogOutside(AbstractOutsideController* controller);
 
         ~SVGDialogOutside();
 
@@ -65,8 +63,6 @@ namespace te
         */
         virtual void init();
         
-        virtual void updateObserver( ContextItem context );
-
         virtual void setPosition( const double& x, const double& y );
 
         virtual te::gm::Coord2D getPosition();

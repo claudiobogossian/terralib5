@@ -28,8 +28,8 @@
 // TerraLib
 #include "FontDialogController.h"
 
-te::layout::FontDialogController::FontDialogController( Observable* o ) :
-	OutsideController(o)
+te::layout::FontDialogController::FontDialogController(AbstractOutsideModel* o) :
+	AbstractOutsideController(o)
 {
   
 }

@@ -30,7 +30,7 @@
 #include "../../../qt/widgets/utils/DoubleListWidget.h"
 #include "../../../maptools/AbstractLayer.h"
 #include "../../core/Config.h"
-#include "../../core/pattern/mvc/OutsideObserver.h"
+#include "../../core/pattern/mvc/AbstractOutsideView.h"
 
 // STL
 #include <memory>
@@ -47,16 +47,15 @@ namespace te
 {
   namespace layout
   {
-    class OutsideController;
-    class Observable;
+		class AbstractOutsideController;
 
-    class TELAYOUTEXPORT MapLayerChoiceOutside : public QDialog, public OutsideObserver 
+		class TELAYOUTEXPORT MapLayerChoiceOutside : public QDialog, public AbstractOutsideView
     {
       Q_OBJECT
 
       public:
 
-        MapLayerChoiceOutside(OutsideController* controller, Observable* o);
+				MapLayerChoiceOutside(AbstractOutsideController* controller);
 
         ~MapLayerChoiceOutside();
 
@@ -65,8 +64,6 @@ namespace te
         */
         virtual void init();
         
-        virtual void updateObserver( ContextItem context );
-
         virtual void setPosition( const double& x, const double& y );
 
         virtual te::gm::Coord2D getPosition();

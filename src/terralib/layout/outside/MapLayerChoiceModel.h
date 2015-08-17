@@ -29,9 +29,7 @@
 #define __TERRALIB_LAYOUT_INTERNAL_MAP_LAYER_CHOICE_MODEL_H
 
 // TerraLib
-#include "../core/pattern/mvc/OutsideModelObservable.h"
-#include "../core/ContextItem.h"
-#include "../core/property/Properties.h"
+#include "../core/pattern/mvc/AbstractOutsideModel.h"
 #include "../core/Config.h"
 #include "../../maptools/AbstractLayer.h"
 #include "../core/property/Property.h"
@@ -44,7 +42,9 @@ namespace te
 {
   namespace layout
   {
-    class TELAYOUTEXPORT MapLayerChoiceModel : public OutsideModelObservable
+		class Properties;
+
+		class TELAYOUTEXPORT MapLayerChoiceModel : public AbstractOutsideModel
     {
     public:
 

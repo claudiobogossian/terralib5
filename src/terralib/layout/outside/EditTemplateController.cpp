@@ -28,8 +28,8 @@
 // TerraLib
 #include "EditTemplateController.h"
 
-te::layout::EditTemplateController::EditTemplateController( Observable* o ) :
-	OutsideController(o)
+te::layout::EditTemplateController::EditTemplateController(AbstractOutsideModel* o) :
+	AbstractOutsideController(o)
 {
   
 }

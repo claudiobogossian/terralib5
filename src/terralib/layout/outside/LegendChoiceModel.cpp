@@ -31,7 +31,8 @@
 #include "../core/property/Properties.h"
 #include "../core/enum/Enums.h"
 
-te::layout::LegendChoiceModel::LegendChoiceModel() 
+te::layout::LegendChoiceModel::LegendChoiceModel() :
+	AbstractOutsideModel()
 {
   m_type = Enums::getInstance().getEnumObjectType()->getMapLayerChoice();
   m_box = te::gm::Envelope(0., 0., 200., 200.);

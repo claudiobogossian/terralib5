@@ -30,7 +30,7 @@
 
 // TerraLib
 #include "../core/propertybrowser/PropertyBrowser.h"
-#include "../../core/pattern/mvc/OutsideObserver.h"
+#include "../../core/pattern/mvc/AbstractOutsideView.h"
 #include "../../../geometry/Envelope.h"
 #include "../../core/Config.h"
 
@@ -47,7 +47,9 @@ namespace te
 {
   namespace layout
   {
-    class ItemObserver;
+		class AbstractOutsideController;
+		class ItemObserver;
+
     /*!
     \brief Tree of names of all the items entered on the scene, MVC components, using Qt to present the name of each item and its class. Object Inspector.
 	  
@@ -55,18 +57,16 @@ namespace te
 
 	    \sa te::layout::OutsideObserver
 	  */
-    class TELAYOUTEXPORT ObjectInspectorOutside : public QWidget, public OutsideObserver
+		class TELAYOUTEXPORT ObjectInspectorOutside : public QWidget, public AbstractOutsideView
     {
 	    Q_OBJECT //for slots/signals
 
     public:
 
-	    ObjectInspectorOutside(OutsideController* controller, Observable* o, PropertyBrowser* propertyBrowser = 0);
+			ObjectInspectorOutside(AbstractOutsideController* controller, PropertyBrowser* propertyBrowser = 0);
 	    
       virtual ~ObjectInspectorOutside();
-
-	    virtual void updateObserver(ContextItem context);
-	    
+				    
       virtual void setPosition(const double& x, const double& y);
 	    
       virtual te::gm::Coord2D getPosition();

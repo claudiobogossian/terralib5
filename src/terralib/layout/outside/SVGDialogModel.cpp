@@ -27,7 +27,6 @@
 
 // TerraLib
 #include "SVGDialogModel.h"
-#include "../core/property/Property.h"
 #include "../core/property/Properties.h"
 #include "../core/enum/Enums.h"
 #include "../core/property/GenericVariant.h"
@@ -35,7 +34,8 @@
 // STL
 #include <algorithm>
 
-te::layout::SVGDialogModel::SVGDialogModel() 
+te::layout::SVGDialogModel::SVGDialogModel() :
+	AbstractOutsideModel()
 {
   m_type = Enums::getInstance().getEnumObjectType()->getSVGDialog();
   m_box = te::gm::Envelope(0., 0., 200., 200.);

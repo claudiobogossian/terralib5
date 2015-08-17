@@ -28,8 +28,8 @@
 // TerraLib
 #include "PropertiesController.h"
 
-te::layout::PropertiesController::PropertiesController( Observable* o ) :
-	OutsideController(o)
+te::layout::PropertiesController::PropertiesController(AbstractOutsideModel* o) :
+	AbstractOutsideController(o)
 {
   
 }

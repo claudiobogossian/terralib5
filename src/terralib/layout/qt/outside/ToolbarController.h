@@ -29,7 +29,7 @@
 #define __TERRALIB_LAYOUT_INTERNAL_TOOLBAR_CONTROLLER_H_H
 
 // TerraLib
-#include "../../core/pattern/mvc/OutsideController.h"
+#include "../../core/pattern/mvc/AbstractOutsideController.h"
 #include "../../core/Config.h"
 
 // Qt
@@ -42,14 +42,15 @@ namespace te
   namespace layout
   {
 		class Scene;
+		class AbstractOutsideModel;
 
-    class TELAYOUTEXPORT ToolbarController : public QObject, public OutsideController
+		class TELAYOUTEXPORT ToolbarController : public QObject, public AbstractOutsideController
     {
 			Q_OBJECT //for slots/signals
 
       public:
 
-	      ToolbarController( Observable* o );
+				ToolbarController(AbstractOutsideModel* o);
 
 	      virtual ~ToolbarController();
 
