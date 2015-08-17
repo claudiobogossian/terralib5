@@ -27,18 +27,20 @@
 
 // TerraLib
 #include "BalloonModel.h"
-#include "../core/ContextItem.h"
-#include "../../geometry/Envelope.h"
-#include "../../color/RGBAColor.h"
-#include "../../maptools/Canvas.h"
+//#include "../core/ContextItem.h"
+//#include "../../geometry/Envelope.h"
+//#include "../../color/RGBAColor.h"
+//#include "../../maptools/Canvas.h"
 #include "../core/enum/Enums.h"
+#include "../core/pattern/mvc/AbstractItemModel.h"
 
-te::layout::BalloonModel::BalloonModel() 
+te::layout::BalloonModel::BalloonModel()
+  : AbstractItemModel()
 {
-  m_type = Enums::getInstance().getEnumObjectType()->getBalloonItem();
+  /*m_type = Enums::getInstance().getEnumObjectType()->getBalloonItem();
 
   m_box = te::gm::Envelope(0., 0., 20., 20.);
-  m_border = true;
+  m_border = true;*/
 }
 
 te::layout::BalloonModel::~BalloonModel()

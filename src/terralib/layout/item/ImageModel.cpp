@@ -40,7 +40,7 @@
 te::layout::ImageModel::ImageModel()
   : AbstractItemModel()
 {
-  std::string fileName("");
+  /*std::string fileName("");
   te::color::RGBAColor backgroundColor(0, 0, 255, 0);
   te::gm::Envelope box(0., 0., 90., 90.);
   te::color::RGBAColor contourColor(0, 0, 0, 255);
@@ -73,7 +73,7 @@ te::layout::ImageModel::ImageModel()
     property.setName("show_frame");
     property.setValue(false, dataType->getDataTypeBool());
     this->m_properties.updateProperty(property);
-  }
+  }*/
 
 }
 

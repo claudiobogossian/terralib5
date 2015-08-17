@@ -32,31 +32,24 @@
 #define __TERRALIB_LAYOUT_INTERNAL_LEGEND_MODEL_H
 
 // TerraLib
-#include "../core/pattern/mvc/ItemModelObservable.h"
-#include "../core/ContextItem.h"
-#include "../core/pattern/derivativevisitor/AbstractVisitor.h"
-#include "../core/Utils.h"
-#include "../core/Font.h"
+#include "../core/pattern/mvc/AbstractItemModel.h"
 #include "../core/Config.h"
-
-// STL
-#include <map>
 
 namespace te
 {
   namespace layout
   {
-    /*!
-    \brief Class that represents a "Model" part of Legend MVC component.  
-    Its coordinate system is the same of scene (millimeters). 
-    This is also son of ItemModelObservable, so it can become observable, and son of AbstractVisitor, so it can become visitor.
-    It is must visit the map, via te::layout::Visitable*, to get the layers.
-      	  
-	    \ingroup layout
 
-      \sa te::layout::ItemModelObservable , te::layout::AbstractVisitor
-	  */
-    class TELAYOUTEXPORT LegendModel : public ItemModelObservable, public AbstractVisitor
+    /*!
+      \brief Class that represents a "Model" part of Rectangle MVC component. 
+          Its coordinate system is the same of scene (millimeters). 
+          He is also the son of AbstractItemModel, so it can become subject (observer pattern).
+          
+      \ingroup layout
+
+      \sa te::layout::AbstractItemModel
+    */
+    class TELAYOUTEXPORT LegendModel : public AbstractItemModel
     {
       public:
 
@@ -69,52 +62,8 @@ namespace te
           \brief Destructor
         */ 
         virtual ~LegendModel();
-
-        virtual void draw( ContextItem context );
-
-        virtual Properties* getProperties() const;
-        
-        virtual void updateProperties(te::layout::Properties* properties, bool notify = true);
-
-        virtual void setBorderDisplacement(double value);
-        
-        virtual double getBorderDisplacement();
-
-        virtual void setDisplacementBetweenSymbols(double value);
-
-        virtual double getDisplacementBetweenSymbols();
-
-        virtual void setDisplacementBetweenTitleAndSymbols(double value);
-
-        virtual double getDisplacementBetweenTitleAndSymbols();
-
-        virtual void setDisplacementBetweenSymbolAndText(double value);
-
-        virtual double getDisplacementBetweenSymbolAndText();
-        
-        virtual te::map::AbstractLayerPtr getLayer();
-
-        virtual Font getFont();
-
-        virtual te::color::RGBAColor getFontColor();
-
-        virtual double getSymbolSize();
-        
-    protected:
-
-        virtual void visitDependent(ContextItem context);
-
-        std::string               m_mapName;
-        te::map::AbstractLayerPtr m_layer;
-        double                    m_borderDisplacement;
-        double                    m_displacementBetweenSymbols;
-        double                    m_displacementBetweenTitleAndSymbols;
-        double                    m_displacementBetweenSymbolsAndText;
-        double                    m_symbolsize;
-        Font                      m_font;
-        te::color::RGBAColor			m_fontColor;
     };
   }
 }
 
-#endif 
+#endif

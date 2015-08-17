@@ -27,27 +27,31 @@
 
 // TerraLib
 #include "LegendChildItem.h"
-#include "../../core/pattern/mvc/ItemController.h"
-#include "../core/Scene.h"
-#include "../../core/pattern/mvc/Observable.h"
-#include "../../../color/RGBAColor.h"
-#include "../../../qt/widgets/Utils.h"
-#include "../../../geometry/Envelope.h"
-#include "../../../common/STLUtils.h"
+//#include "../../core/pattern/mvc/ItemController.h"
+//#include "../core/Scene.h"
+//#include "../../core/pattern/mvc/Observable.h"
+//#include "../../../color/RGBAColor.h"
+//#include "../../../qt/widgets/Utils.h"
+//#include "../../../geometry/Envelope.h"
+//#include "../../../common/STLUtils.h"
 
 // Qt
 #include <QPixmap>
+#include "../../core/pattern/mvc/AbstractItemController.h"
+#include "../../core/pattern/mvc/AbstractItemModel.h"
+#include "AbstractItem.h"
 
-te::layout::LegendChildItem::LegendChildItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
-  LegendItem(controller, o, true)
+te::layout::LegendChildItem::LegendChildItem( AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix ) 
+  : AbstractItem<QGraphicsItem>(controller, model)
 {  
-  this->setFlags(QGraphicsItem::ItemIsMovable
+  /*this->setFlags(QGraphicsItem::ItemIsMovable
     | QGraphicsItem::ItemIsSelectable
     | QGraphicsItem::ItemSendsGeometryChanges
     | QGraphicsItem::ItemIsFocusable);
 
-  m_nameClass = std::string(this->metaObject()->className());
+  m_nameClass = std::string(this->metaObject()->className());*/
 }
+
 
 te::layout::LegendChildItem::~LegendChildItem()
 {
@@ -56,14 +60,14 @@ te::layout::LegendChildItem::~LegendChildItem()
 
 void te::layout::LegendChildItem::drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget )
 {
-  QRectF boundRect;
+  /*QRectF boundRect;
   boundRect = boundingRect();
 
   painter->save();
   painter->translate( -boundRect.bottomLeft().x(), -boundRect.topRight().y() );  
   QRectF rtSource( 0, 0, m_pixmap.width(), m_pixmap.height() );
   painter->drawPixmap(boundRect, m_pixmap, rtSource);
-  painter->restore();  
+  painter->restore();  */
 }
 
 
