@@ -18,36 +18,47 @@
  */
 
 /*!
-  \file TemplateEditor.cpp
-   
-  \brief 
+  \file terralib/layout/core/template/TemplateFactoryParamsCreate.cpp
 
-  \ingroup layout
+  \brief Parameters to create a new template. 
 */
 
 // TerraLib
-#include "TemplateEditor.h"
-#include "../enum/Enums.h"
-#include "AbstractTemplate.h"
-#include "TemplateFactory.h"
 #include "TemplateFactoryParamsCreate.h"
 
-te::layout::TemplateEditor::TemplateEditor( EnumType* type, std::string path ) 
+te::layout::TemplateFactoryParamsCreate::TemplateFactoryParamsCreate(std::string path) :
+m_path(path)
 {
-  TemplateFactoryParamsCreate params(path);
-	m_template = te::layout::TemplateFactory::make(type->getName(), params);
+
 }
 
-te::layout::TemplateEditor::~TemplateEditor()
+te::layout::TemplateFactoryParamsCreate::TemplateFactoryParamsCreate(const TemplateFactoryParamsCreate& rhs)
 {
-  if(m_template)
-  {
-    delete m_template;
-    m_template = 0;
-  }
+	this->operator=(rhs);
 }
 
-te::layout::AbstractTemplate* te::layout::TemplateEditor::getTemplate()
+te::layout::TemplateFactoryParamsCreate::~TemplateFactoryParamsCreate()
 {
-  return m_template;
+
 }
+
+te::common::AbstractParameters* te::layout::TemplateFactoryParamsCreate::clone() const
+{
+	return new TemplateFactoryParamsCreate(*this);
+}
+
+void te::layout::TemplateFactoryParamsCreate::reset() throw(te::common::Exception)
+{
+	m_path.clear();
+}
+
+std::string te::layout::TemplateFactoryParamsCreate::getFilePath()
+{
+	return m_path;
+}
+
+
+
+
+
+

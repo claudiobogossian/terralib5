@@ -18,50 +18,65 @@
  */
 
 /*!
-  \file AbstractTemplateFactory.h
+  \file ToolFactoryParamsCreate.h
    
-  \brief Abstract Factory provide an interface for creating families of related or dependent templates without specifying their concrete classes.
+  \brief Parameters to create a new template. 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_ABSTRACT_TEMPLATE_FACTORY_H
-#define __TERRALIB_LAYOUT_INTERNAL_ABSTRACT_TEMPLATE_FACTORY_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_TEMPLATE_FACTORY_PARAMS_CREATE_H 
+#define __TERRALIB_LAYOUT_INTERNAL_TEMPLATE_FACTORY_PARAMS_CREATE_H
 
 // TerraLib
-#include "TemplateParamsCreate.h"
-#include "../../enum/AbstractType.h"
+#include "terralib/common/AbstractParameters.h"
+#include "../../core/Config.h"
+
+// STL
+#include <string>
 
 namespace te
 {
   namespace layout
   {
-    class AbstractTemplate;
-    class EnumType;
-
     /*!
-	  \brief Abstract Factory provide an interface for creating families of related or dependent templates without specifying their concrete classes.
+	  \brief Parameters to create a new template. 
 	  
 	  \ingroup layout
+
+	  \sa te::layout::ParamsCreate
 	  */
-    class AbstractTemplateFactory 
+		class TELAYOUTEXPORT TemplateFactoryParamsCreate : public te::common::AbstractParameters
     {
       public:
+				
+
+				/*! \brief Copy constructor. */
+				TemplateFactoryParamsCreate(const TemplateFactoryParamsCreate& rhs);
 
         /*!
           \brief Constructor
-       */
-        virtual ~AbstractTemplateFactory(void) {}
+
+          \param file path
+        */ 
+				TemplateFactoryParamsCreate(std::string path);
 
         /*!
-          \brief Method that builds and returns a new template of the type defined as parameter.
+          \brief Destructor
+        */ 
+				virtual ~TemplateFactoryParamsCreate();
 
-          \param type type of the new object
-          \param params 
-       */
-        virtual AbstractTemplate* make(EnumType* type, TemplateParamsCreate params = TemplateParamsCreate()) = 0;
-      };
+				te::common::AbstractParameters* clone() const;
+
+				void reset() throw(te::common::Exception);
+								
+				std::string getFilePath();
+
+			protected:
+
+				std::string m_path; //!< file path
+    };
   }
 }
-
 #endif
+

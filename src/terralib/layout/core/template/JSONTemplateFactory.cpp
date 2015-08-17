@@ -18,36 +18,28 @@
  */
 
 /*!
-  \file TemplateEditor.cpp
-   
-  \brief 
+  \file terralib/layout/qt/core/template/ZoomAreaToolFactory.cpp
 
-  \ingroup layout
+  \brief This is the concrete factory for zoom area tools.
 */
 
 // TerraLib
-#include "TemplateEditor.h"
-#include "../enum/Enums.h"
-#include "AbstractTemplate.h"
-#include "TemplateFactory.h"
-#include "TemplateFactoryParamsCreate.h"
+#include "JSONTemplateFactory.h"
+#include "../../core/enum/Enums.h"
+#include "JSONTemplate.h"
 
-te::layout::TemplateEditor::TemplateEditor( EnumType* type, std::string path ) 
+te::layout::AbstractTemplate* te::layout::JSONTemplateFactory::build(TemplateFactoryParamsCreate params)
 {
-  TemplateFactoryParamsCreate params(path);
-	m_template = te::layout::TemplateFactory::make(type->getName(), params);
+	return new JSONTemplate(params.getFilePath());
 }
 
-te::layout::TemplateEditor::~TemplateEditor()
+te::layout::JSONTemplateFactory::JSONTemplateFactory() :
+	TemplateFactory(Enums::getInstance().getEnumTemplateType()->getJsonType()->getName())
 {
-  if(m_template)
-  {
-    delete m_template;
-    m_template = 0;
-  }
+
 }
 
-te::layout::AbstractTemplate* te::layout::TemplateEditor::getTemplate()
+te::layout::JSONTemplateFactory::~JSONTemplateFactory()
 {
-  return m_template;
+
 }
