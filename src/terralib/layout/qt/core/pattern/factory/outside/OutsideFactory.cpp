@@ -27,22 +27,22 @@
 
 // TerraLib
 #include "OutsideFactory.h"
-#include "../../../../core/enum/AbstractType.h"
-#include "../../../../core/pattern/factory/OutsideParamsCreate.h"
-#include "../../../outside/ToolbarOutside.h"
-#include "../../../outside/PropertiesOutside.h"
-#include "../../../outside/ObjectInspectorOutside.h"
-#include "../../../outside/GridSettingsOutside.h"
-#include "../../../outside/PageSetupOutside.h"
-#include "../../../outside/SystematicScaleOutside.h"
-#include "../../../outside/EditTemplateOutside.h"
-#include "../../../outside/TextGridSettingsOutside.h"
-#include "../../../../core/enum/Enums.h"
-#include "../../../outside/MapLayerChoiceOutside.h"
-#include "../../../outside/LegendChoiceOutside.h"
-#include "../../../outside/SVGDialogOutside.h"
-#include "../../../outside/ColorDialogOutside.h"
-#include "../../../outside/FontDialogOutside.h"
+#include "../../../../../core/enum/AbstractType.h"
+#include "../../../../../core/pattern/factory/OutsideParamsCreate.h"
+#include "../../../../outside/ToolbarOutside.h"
+#include "../../../../outside/PropertiesOutside.h"
+#include "../../../../outside/ObjectInspectorOutside.h"
+#include "../../../../outside/GridSettingsOutside.h"
+#include "../../../../outside/PageSetupOutside.h"
+#include "../../../../outside/SystematicScaleOutside.h"
+#include "../../../../outside/EditTemplateOutside.h"
+#include "../../../../outside/TextGridSettingsOutside.h"
+#include "../../../../../core/enum/Enums.h"
+#include "../../../../outside/MapLayerChoiceOutside.h"
+#include "../../../../outside/LegendChoiceOutside.h"
+#include "../../../../outside/SVGDialogOutside.h"
+#include "../../../../outside/ColorDialogOutside.h"
+#include "../../../../outside/FontDialogOutside.h"
 
 te::layout::OutsideFactory::OutsideFactory()
 {
@@ -63,7 +63,6 @@ te::layout::Observer* te::layout::OutsideFactory::make( EnumType* type, OutsideP
   if(type == enumObj->getToolbar())
   {
     ToolbarOutside* toolbar = new ToolbarOutside(params.getController(), params.getModel());		
-    toolbar->createToolbar();
     outside = (Observer*)toolbar;
   }
   else if(type == enumObj->getPropertiesWindow())

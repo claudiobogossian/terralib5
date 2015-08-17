@@ -28,8 +28,8 @@
 // TerraLib
 #include "BuildContext.h"
 #include "../../../layout/core/pattern/singleton/Context.h"
-#include "../../../layout/qt/core/pattern/factory/ItemFactory.h"
-#include "../../../layout/qt/core/pattern/factory/OutsideFactory.h"
+#include "../../../layout/qt/core/pattern/factory/item/ItemFactory.h"
+#include "../../../layout/qt/core/pattern/factory/outside/OutsideFactory.h"
 #include "../../../layout/core/template/TemplateFactory.h"
 #include "../../../layout/core/Utils.h"
 #include "../../../layout/qt/core/Scene.h"

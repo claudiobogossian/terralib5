@@ -46,8 +46,8 @@
 #include "WaitView.h"
 #include "../item/MapItem.h"
 
-#include "pattern/factory/ToolFactoryParamsCreate.h"
-#include "pattern/factory/ToolFactory.h"
+#include "pattern/factory/tool/ToolFactoryParamsCreate.h"
+#include "pattern/factory/tool/ToolFactory.h"
 
 // Qt
 #include <QMouseEvent>

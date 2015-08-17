@@ -18,68 +18,53 @@
  */
 
 /*!
-  \file ToolFactoryParamsCreate.h
+  \file ItemFactory.h
    
-  \brief Parameters to create a new tool. 
+  \brief Factory for creating families of related or dependent graphic objects (MVC components).
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_TOOL_FACTORY_PARAMS_CREATE_H 
-#define __TERRALIB_LAYOUT_INTERNAL_TOOL_FACTORY_PARAMS_CREATE_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_ITEM_FACTORY_H 
+#define __TERRALIB_LAYOUT_INTERNAL_ITEM_FACTORY_H
 
 // TerraLib
-#include "terralib/common/AbstractParameters.h"
-#include "../../../../core/Config.h"
+#include "../../../../../core/pattern/factory/AbstractItemFactory.h"
+#include "../../../../../core/Config.h"
 
 namespace te
 {
   namespace layout
   {
-		class View;
     /*!
-	  \brief Parameters to create a new tool. 
+	  \brief Factory for creating families of related or dependent graphic objects (MVC components).
 	  
 	  \ingroup layout
 
-	  \sa te::layout::ParamsCreate
+    \sa te::layout::AbstractItemFactory
 	  */
-		class TELAYOUTEXPORT ToolFactoryParamsCreate : public te::common::AbstractParameters
+    class TELAYOUTEXPORT ItemFactory : public AbstractItemFactory
     {
       public:
-				
-
-				/*! \brief Copy constructor. */
-				ToolFactoryParamsCreate(const ToolFactoryParamsCreate& rhs);
 
         /*!
           \brief Constructor
-
-          \param view
-        */ 
-				ToolFactoryParamsCreate(View* view);
+        */
+        ItemFactory();
 
         /*!
           \brief Destructor
-        */ 
-				virtual ~ToolFactoryParamsCreate();
-
-				te::common::AbstractParameters* clone() const;
-
-				void reset() throw(te::common::Exception);
+        */
+        virtual ~ItemFactory();
 
         /*!
-          \brief Returns the te::layout::View
-
-          \return view
+          \brief Reimplemented from AbstractItemFactory
         */
-        View*	getView();
-				
-			protected:
+        virtual Observer* make(EnumType* type, ItemParamsCreate params = ItemParamsCreate());
 
-        View* m_view; //!< View object
+        virtual AbstractItemView* makeNew(EnumType* type, ItemParamsCreate params = ItemParamsCreate());
     };
   }
 }
-#endif
 
+#endif

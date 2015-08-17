@@ -18,40 +18,40 @@
  */
 
 /*!
-  \file terralib/layout/qt/core/pattern/factory/ZoomAreaToolFactory.h
+  \file terralib/layout/qt/core/pattern/factory/RectangleItemFactory.h
 
-  \brief This is the concrete factory for zoom area tools.
+  \brief This is the concrete factory for rectangle item.
  */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_ZOOM_AREA_TOOL_FACTORY_H
-#define __TERRALIB_LAYOUT_INTERNAL_ZOOM_AREA_TOOL_FACTORY_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_RECTANGLE_ITEM_FACTORY_H
+#define __TERRALIB_LAYOUT_INTERNAL_RECTANGLE_ITEM_FACTORY_H
 
 // TerraLib
-#include "../../../../core/Config.h"
-#include "ToolFactory.h"
-#include "ToolFactoryParamsCreate.h"
+#include "../../../../../core/Config.h"
+#include "NewItemFactory.h"
+#include "ItemFactoryParamsCreate.h"
 
 namespace te
 {
   namespace layout
   {
-		class AbstractLayoutTool;
+		class AbstractItemView;
     /*!
-      \class ZoomAreaToolFactory
+      \class RectangleItemFactory
 
-      \brief This is the concrete factory for zoom area tools.
+      \brief This is the concrete factory for rectangle item.
 
-      \sa ToolFactory, ParameterizedAbstractFactory, AbstractLayoutTool
+      \sa NewItemFactory, ParameterizedAbstractFactory, AbstractItemView
     */
-		class TELAYOUTEXPORT ZoomAreaToolFactory : public ToolFactory
+		class TELAYOUTEXPORT RectangleItemFactory : public NewItemFactory
     {
 			public:
 
 				/*! It register the factory in the abstract dictionary. */
-				ZoomAreaToolFactory();
+				RectangleItemFactory();
 
 				/*! \brief Destructor. */
-				~ZoomAreaToolFactory();
+				~RectangleItemFactory();
 
       protected:
 
@@ -60,12 +60,14 @@ namespace te
 
           \return It returns zoom area tool.
         */
-				AbstractLayoutTool* build(ToolFactoryParamsCreate params);
+				AbstractItemView* build(ItemFactoryParamsCreate params);
     };
 
   } // end namespace layout
 }   // end namespace te
 
 
-#endif  // __TERRALIB_LAYOUT_INTERNAL_ZOOM_AREA_TOOL_FACTORY_H
+#endif  // __TERRALIB_LAYOUT_INTERNAL_RECTANGLE_ITEM_FACTORY_H
+
+
 

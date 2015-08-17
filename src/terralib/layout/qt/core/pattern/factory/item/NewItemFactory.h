@@ -28,9 +28,9 @@
 
 // TerraLib
 #include "terralib/geometry/Coord2D.h"
-#include "../../../../../common/ParameterizedAbstractFactory.h"
-#include "../../../../core/Config.h"
-#include "../../../../core/pattern/mvc/AbstractItemView.h"
+#include "../../../../../../common/ParameterizedAbstractFactory.h"
+#include "../../../../../core/Config.h"
+#include "../../../../../core/pattern/mvc/AbstractItemView.h"
 #include "ItemFactoryParamsCreate.h"
 
 // Qt

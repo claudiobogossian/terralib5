@@ -25,9 +25,9 @@
 
 // TerraLib
 #include "RectangleItemFactory.h"
-#include "../../../../core/enum/Enums.h"
-#include "../../../../item/RectangleModel.h"
-#include "../../../../core/pattern/mvc/AbstractItemController.h"
+#include "../../../../../core/enum/Enums.h"
+#include "../../../../../item/RectangleModel.h"
+#include "../../../../../core/pattern/mvc/AbstractItemController.h"
 
 te::layout::AbstractItemView* te::layout::RectangleItemFactory::build(ItemFactoryParamsCreate params)
 {

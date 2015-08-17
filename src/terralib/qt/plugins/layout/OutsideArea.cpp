@@ -37,6 +37,7 @@
 #include "../../../layout/core/pattern/mvc/OutsideObserver.h"
 #include "../../../layout/qt/core/BuildGraphicsItem.h"
 #include "../../../layout/qt/core/BuildGraphicsOutside.h"
+#include "terralib/layout/qt/outside/ToolbarController.h"
 
 // STL
 #include <string>
@@ -152,7 +153,9 @@ void te::qt::plugins::layout::OutsideArea::init()
   {
     connect(m_toolbar, SIGNAL(changeMode(te::layout::EnumType*)), m_view, SLOT(onToolbarChangeMode(te::layout::EnumType*)));
     connect(m_toolbar, SIGNAL(zoomChangedInComboBox(int)), m_view, SLOT(setZoom(int)));
-    connect(m_view, SIGNAL(zoomChanged(int)), m_toolbar, SLOT(onZoomChanged(int)));
+
+		te::layout::ToolbarController* controller = dynamic_cast<te::layout::ToolbarController*>(m_toolbar->getController());
+		connect(m_view, SIGNAL(zoomChanged(int)), controller, SLOT(onZoomChanged(int)));
   }
 
   if(m_dockInspector)

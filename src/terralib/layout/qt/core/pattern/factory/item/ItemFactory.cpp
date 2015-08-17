@@ -54,6 +54,7 @@
 #include "../../../item/NorthItem.h"
 #include "../../../item/MapLocationItem.h"
 #include "../../../item/SVGItem.h"
+#include "../../../../../core/enum/EnumObjectType.h"
 
 te::layout::ItemFactory::ItemFactory()
 {

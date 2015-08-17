@@ -18,52 +18,68 @@
  */
 
 /*!
-  \file OutsideFactory.h
+  \file ToolFactoryParamsCreate.h
    
-  \brief Factory for creating families of related or dependent widgets (MVC widgets).
+  \brief Parameters to create a new tool. 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_OUTSIDE_FACTORY_H 
-#define __TERRALIB_LAYOUT_INTERNAL_OUTSIDE_FACTORY_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_TOOL_FACTORY_PARAMS_CREATE_H 
+#define __TERRALIB_LAYOUT_INTERNAL_TOOL_FACTORY_PARAMS_CREATE_H
 
 // TerraLib
-#include "../../../../core/pattern/factory/AbstractOutsideFactory.h"
-#include "../../../../core/Config.h"
+#include "terralib/common/AbstractParameters.h"
+#include "../../../../../core/Config.h"
 
 namespace te
 {
   namespace layout
   {
-
+		class View;
     /*!
-	  \brief Factory for creating families of related or dependent widgets (MVC widgets).
+	  \brief Parameters to create a new tool. 
 	  
 	  \ingroup layout
 
-    \sa te::layout::AbstractItemFactory
+	  \sa te::layout::ParamsCreate
 	  */
-    class TELAYOUTEXPORT OutsideFactory : public AbstractOutsideFactory
+		class TELAYOUTEXPORT ToolFactoryParamsCreate : public te::common::AbstractParameters
     {
-    public:
+      public:
+				
 
-      /*!
+				/*! \brief Copy constructor. */
+				ToolFactoryParamsCreate(const ToolFactoryParamsCreate& rhs);
+
+        /*!
           \brief Constructor
-       */
-	    OutsideFactory();
 
-      /*!
+          \param view
+        */ 
+				ToolFactoryParamsCreate(View* view);
+
+        /*!
           \brief Destructor
-       */
-	    virtual ~OutsideFactory();
+        */ 
+				virtual ~ToolFactoryParamsCreate();
 
-      /*!
-          \brief Reimplemented from AbstractItemFactory
-       */
-	    virtual Observer* make(EnumType* type, OutsideParamsCreate params = OutsideParamsCreate());
+				te::common::AbstractParameters* clone() const;
+
+				void reset() throw(te::common::Exception);
+
+        /*!
+          \brief Returns the te::layout::View
+
+          \return view
+        */
+        View*	getView();
+				
+			protected:
+
+        View* m_view; //!< View object
     };
   }
 }
-
 #endif
+
