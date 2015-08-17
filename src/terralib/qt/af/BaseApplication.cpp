@@ -2258,6 +2258,7 @@ void te::qt::af::BaseApplication::openProject(const QString& projectFileName)
     {
       QApplication::restoreOverrideCursor();
       QMessageBox::critical(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), (boost::format(TE_TR("This project could not be found: %1%.")) % projectFileName.toStdString()).str().c_str());
+      newProject();
       return;
     }
 
