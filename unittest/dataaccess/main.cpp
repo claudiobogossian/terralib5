@@ -52,7 +52,7 @@ int main(int /*argc*/, char** /*argv*/)
   LoadModules();
 
   std::string report_dir = TERRALIB_REPORT_DIR;
-  bool resultStatus;
+  bool resultStatus = false;
  
   boost::property_tree::ptree drivers;
 
