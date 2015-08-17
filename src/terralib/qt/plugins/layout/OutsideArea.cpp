@@ -280,31 +280,33 @@ void te::qt::plugins::layout::OutsideArea::onMainMenuTriggered( QAction* action 
 
   if(action->objectName().compare(m_optionNew.c_str()) == 0)
   {
-    changeAction(type->getModeNewTemplate());
+		m_view->newTemplate();
   }
   else if(action->objectName().compare(m_optionUpdate.c_str()) == 0)
   {
-    //changeAction(TypeSaveCurrentTemplate);
+    //changeAction wiil be TypeSaveCurrentTemplate
   }
   else if(action->objectName().compare(m_optionImportJSON.c_str()) == 0)
   {
-    changeAction(type->getModeImportJSONProps());
+		te::layout::EnumTemplateType* enumTemplate = te::layout::Enums::getInstance().getEnumTemplateType();
+		m_view->importTemplate(enumTemplate->getJsonType());
   }
   else if(action->objectName().compare(m_optionExportJSON.c_str()) == 0)
   {
-    changeAction(type->getModeExportPropsJSON());
+		te::layout::EnumTemplateType* enumTemplate = te::layout::Enums::getInstance().getEnumTemplateType();
+		m_view->exportProperties(enumTemplate->getJsonType());
   }
   else if(action->objectName().compare(m_optionPageConfig.c_str()) == 0)
-  {
-    changeAction(type->getModePageConfig());
+  {    
+		m_view->showPageSetup();
   }
   else if(action->objectName().compare(m_optionPrint.c_str()) == 0)
   {
-    changeAction(type->getModePrinter());
+		m_view->print();
   }
   else if(action->objectName().compare(m_optionExit.c_str()) == 0)
   {
-    changeAction(type->getModeExit());
+		m_view->close();
     emit exit();
   }
   else if(action->objectName().compare(m_optionDockInspector.c_str()) == 0)
@@ -351,17 +353,6 @@ QAction* te::qt::plugins::layout::OutsideArea::createAction( std::string text, s
   actionMenu->setToolTip(tooltip.c_str());
 
   return actionMenu;
-}
-
-void te::qt::plugins::layout::OutsideArea::changeAction( te::layout::EnumType* mode )
-{
-  bool result = true;
-  te::layout::EnumType* layoutMode = m_view->getCurrentMode();
-
-  if(mode != layoutMode)
-  {
-    emit changeMenuMode(mode);
-  }
 }
 
 te::qt::plugins::layout::PropertiesDock* te::qt::plugins::layout::OutsideArea::getPropertiesDock()

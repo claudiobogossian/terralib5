@@ -28,6 +28,7 @@
 // TerraLib
 #include "../core/Scene.h"
 #include "../../core/pattern/singleton/Context.h"
+#include "../core/View.h"
 #include "ToolbarController.h"
 #include "ToolbarOutside.h"
 
@@ -186,29 +187,27 @@ void te::layout::ToolbarController::onViewAreaTriggered(QAction* action)
 	}
 
 	ToolbarOutside* toolbar = dynamic_cast<ToolbarOutside*>(m_view);
-
-	EnumModeType* type = Enums::getInstance().getEnumModeType();
+	
+	View* viewport = getScene()->getView();
 
 	if (action->objectName().compare(toolbar->getActionViewPan().c_str()) == 0)
 	{
-		toolbar->changeAction(type->getModePan());
+		viewport->pan();
 	}
 	else if (action->objectName().compare(toolbar->getActionViewZoomIn().c_str()) == 0)
 	{
-		toolbar->changeAction(type->getModeZoomIn());
+		viewport->zoomArea();
 	}
 	else if (action->objectName().compare(toolbar->getActionViewZoomOut().c_str()) == 0)
 	{
-		toolbar->changeAction(type->getModeZoomOut());
+		viewport->zoomOut();
 	}
 }
 
 void te::layout::ToolbarController::onArrowCursorClicked(bool checked)
 {
-	ToolbarOutside* toolbar = dynamic_cast<ToolbarOutside*>(m_view);
-
-	EnumModeType* type = Enums::getInstance().getEnumModeType();
-	toolbar->changeAction(type->getModeArrowCursor());
+	View* viewport = getScene()->getView();
+	viewport->arrowCursor();
 }
 
 void te::layout::ToolbarController::onItemToolsTriggered(QAction* action)
@@ -221,15 +220,15 @@ void te::layout::ToolbarController::onItemToolsTriggered(QAction* action)
 		button->setDefaultAction(action);
 	}
 
-	EnumModeType* type = Enums::getInstance().getEnumModeType();
+	View* viewport = getScene()->getView();
 
 	if (action->objectName().compare(toolbar->getActionGroup().c_str()) == 0)
-	{
-		toolbar->changeAction(type->getModeGroup());
+	{		
+		viewport->createItemGroup();
 	}
 	else if (action->objectName().compare(toolbar->getActionUngroup().c_str()) == 0)
 	{
-		toolbar->changeAction(type->getModeUngroup());
+		viewport->destroyItemGroup();
 	}
 }
 
@@ -280,19 +279,13 @@ void te::layout::ToolbarController::onZoomChanged(int zoom)
 }
 
 void te::layout::ToolbarController::onBringToFrontClicked(bool checked)
-{
-	ToolbarOutside* toolbar = dynamic_cast<ToolbarOutside*>(m_view);
-
-	EnumModeType* type = Enums::getInstance().getEnumModeType();
-	toolbar->changeAction(type->getModeBringToFront());
+{		
+	getScene()->getAlignItems()->bringToFront();
 }
 
 void te::layout::ToolbarController::onSendToBackClicked(bool checked)
 {
-	ToolbarOutside* toolbar = dynamic_cast<ToolbarOutside*>(m_view);
-
-	EnumModeType* type = Enums::getInstance().getEnumModeType();
-	toolbar->changeAction(type->getModeSendToBack());
+	getScene()->getAlignItems()->sendToBack();
 }
 
 void te::layout::ToolbarController::onRecomposeClicked(bool checked)
@@ -309,6 +302,9 @@ void te::layout::ToolbarController::onRecomposeClicked(bool checked)
 	int zoom = context.getZoom();
 	onZoomChanged(zoom);
 	onComboZoomActivated();
+
+	View* viewport = getScene()->getView();
+	viewport->recompose();
 }
 
 void te::layout::ToolbarController::onTextToolsTriggered(QAction* action)
@@ -350,90 +346,60 @@ void te::layout::ToolbarController::onTextToolsTriggered(QAction* action)
 
 void te::layout::ToolbarController::onAlignLeftClicked(bool checked)
 {
-	ToolbarOutside* toolbar = dynamic_cast<ToolbarOutside*>(m_view);
-
-	EnumModeType* type = Enums::getInstance().getEnumModeType();
-	toolbar->changeAction(type->getModeAlignLeft());
+	getScene()->getAlignItems()->alignLeft();
 }
 
 void te::layout::ToolbarController::onAlignRightClicked(bool checked)
 {
-	ToolbarOutside* toolbar = dynamic_cast<ToolbarOutside*>(m_view);
-
-	EnumModeType* type = Enums::getInstance().getEnumModeType();
-	toolbar->changeAction(type->getModeAlignRight());
+	getScene()->getAlignItems()->alignRight();
 }
 
 void te::layout::ToolbarController::onAlignTopClicked(bool checked)
 {
-	ToolbarOutside* toolbar = dynamic_cast<ToolbarOutside*>(m_view);
-
-	EnumModeType* type = Enums::getInstance().getEnumModeType();
-	toolbar->changeAction(type->getModeAlignTop());
+	getScene()->getAlignItems()->alignTop();
 }
 
 void te::layout::ToolbarController::onAlignBottomClicked(bool checked)
 {
-	ToolbarOutside* toolbar = dynamic_cast<ToolbarOutside*>(m_view);
-
-	EnumModeType* type = Enums::getInstance().getEnumModeType();
-	toolbar->changeAction(type->getModeAlignBottom());
+	getScene()->getAlignItems()->alignBottom();
 }
 
 void te::layout::ToolbarController::onAlignCenterHorizontalClicked(bool checked)
-{
-	ToolbarOutside* toolbar = dynamic_cast<ToolbarOutside*>(m_view);
-
-	EnumModeType* type = Enums::getInstance().getEnumModeType();
-	toolbar->changeAction(type->getModeAlignCenterHorizontal());
+{	
+	getScene()->getAlignItems()->alignCenterHorizontal();
 }
 
 void te::layout::ToolbarController::onAlignCenterVerticalClicked(bool checked)
 {
-	ToolbarOutside* toolbar = dynamic_cast<ToolbarOutside*>(m_view);
-
-	EnumModeType* type = Enums::getInstance().getEnumModeType();
-	toolbar->changeAction(type->getModeAlignCenterVertical());
+	getScene()->getAlignItems()->alignCenterVertical();
 }
 
 void te::layout::ToolbarController::onRemoveObjectClicked(bool checked)
 {
-	ToolbarOutside* toolbar = dynamic_cast<ToolbarOutside*>(m_view);
-
-	EnumModeType* type = Enums::getInstance().getEnumModeType();
-	toolbar->changeAction(type->getModeRemoveObject());
+	getScene()->removeSelectedItems();
 }
 
 void te::layout::ToolbarController::onDrawMapClicked(bool checked)
 {
-	ToolbarOutside* toolbar = dynamic_cast<ToolbarOutside*>(m_view);
-
-	EnumModeType* type = Enums::getInstance().getEnumModeType();
-	toolbar->changeAction(type->getModeDrawSelectionMap());
+	getScene()->redrawSelectionMap();
 }
 
 void te::layout::ToolbarController::onObjectToImageClicked(bool checked)
 {
-	ToolbarOutside* toolbar = dynamic_cast<ToolbarOutside*>(m_view);
-
-	EnumModeType* type = Enums::getInstance().getEnumModeType();
-	toolbar->changeAction(type->getModeObjectToImage());
+	View* viewport = getScene()->getView();
+	viewport->exportItemsToImage();
 }
 
 void te::layout::ToolbarController::onExitClicked(bool checked)
 {
-	ToolbarOutside* toolbar = dynamic_cast<ToolbarOutside*>(m_view);
-
-	EnumModeType* type = Enums::getInstance().getEnumModeType();
-	toolbar->changeAction(type->getModeExit());
+	View* viewport = getScene()->getView();
+	viewport->close();
 }
 
 void te::layout::ToolbarController::onExportToPDFClicked(bool checked)
 {
-	ToolbarOutside* toolbar = dynamic_cast<ToolbarOutside*>(m_view);
-
-	EnumModeType* type = Enums::getInstance().getEnumModeType();
-	toolbar->changeAction(type->getModeExportToPDF());
+	View* viewport = getScene()->getView();
+	viewport->exportToPDF();
 }
 
 te::layout::Scene* te::layout::ToolbarController::getScene()
@@ -448,4 +414,6 @@ te::layout::Scene* te::layout::ToolbarController::getScene()
 	sc = dynamic_cast<Scene*>(abScene);
 	return sc;
 }
+
+
 

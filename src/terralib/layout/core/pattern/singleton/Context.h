@@ -191,11 +191,7 @@ namespace te
 		      \param a AbstractBuildGraphicsItem pointer		  
         */
         void setAbstractBuildGraphicsItem(AbstractBuildGraphicsItem* build);
-
-        EnumType* getLineIntersectionMouseMode();
-
-        void setLineIntersectionMouseMode(EnumType* mode);
-
+				
         SystematicScaleConfig* getSystematicScaleConfig();
 
         void setSystematicScaleConfig(SystematicScaleConfig* scale);
@@ -270,7 +266,6 @@ namespace te
 
       protected:
 
-        EnumType*                     m_lineIntersectionMouseMode; //!<
         LayoutUnitsMetrics            m_unitMetric; //!<
         AbstractScene*                m_scene; //!< abstract scene for QGraphicsScene class, part of Graphics View Framework.
         te::map::Canvas*              m_canvas; //!< abstraction of a drawing area

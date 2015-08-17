@@ -36,7 +36,6 @@
 #include "../proxy/AbstractProxyProject.h"
 
 te::layout::Context::Context() :
-  m_lineIntersectionMouseMode(0),
   m_scene(0),
   m_canvas(0),
   m_itemFactory(0),
@@ -52,11 +51,7 @@ te::layout::Context::Context() :
   m_item(0),
   m_buildGraphicsOutside(0)
 {
-  EnumModeType* type = Enums::getInstance().getEnumModeType();
-  if(type)
-  {
-    m_lineIntersectionMouseMode = type->getModeOffLinesIntersectionMouse();
-  }
+  
 }
 
 te::layout::Context::~Context()
@@ -147,16 +142,6 @@ te::layout::AbstractBuildGraphicsItem* te::layout::Context::getAbstractBuildGrap
 void te::layout::Context::setAbstractBuildGraphicsItem( AbstractBuildGraphicsItem* build )
 {
   m_buildGraphicsItem = build;
-}
-
-te::layout::EnumType* te::layout::Context::getLineIntersectionMouseMode()
-{
-  return m_lineIntersectionMouseMode;
-}
-
-void te::layout::Context::setLineIntersectionMouseMode( EnumType* mode )
-{
-  m_lineIntersectionMouseMode = mode;
 }
 
 te::layout::SystematicScaleConfig* te::layout::Context::getSystematicScaleConfig()

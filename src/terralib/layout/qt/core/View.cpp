@@ -514,71 +514,8 @@ void te::layout::View::changeMode( EnumType* newMode )
   ItemUtils* iUtils = Context::getInstance().getItemUtils();
 
   EnumType* mode = getCurrentMode();
-
-  if(mode == enumMode->getModeUnitsMetricsChange())
-  {
-    
-  }
-  else if(mode == enumMode->getModePan()) 
-  {
-    pan();
-  }
-  else if(mode == enumMode->getModeGroup())
-  {
-    createItemGroup();
-  }
-  else if(mode == enumMode->getModeUngroup()) 
-  {
-    destroyItemGroup();
-  }
-  else if(mode == enumMode->getModePrinter()) 
-  {
-    print();
-  }
-  else if(mode == enumMode->getModeZoomIn()) 
-  {
-    zoomArea();
-  }
-  else if(mode == enumMode->getModeZoomOut()) 
-  {
-    zoomOut();
-  }
-  else if(mode == enumMode->getModeRecompose()) 
-  {
-    recompose();
-  }
-  else if(mode == enumMode->getModePageConfig()) 
-  {
-    showPageSetup();
-  }
-  else if(mode == enumMode->getModeArrowCursor())
-  {
-    resetDefaultConfig();
-    std::vector<te::layout::MapItem*> list = iUtils->getMapItemList();
-    if (!list.empty())
-    {
-      foreach(MapItem* mit, list)
-      {
-        mit->changeCurrentTool(mode);
-      }
-    }
-  }
-  else if(mode == enumMode->getModeNewTemplate())
-  {
-    sc->reset();
-    m_visualizationArea->build();
-  }
-  else if(mode == enumMode->getModeExportPropsJSON())
-  {
-    EnumTemplateType* enumTemplate = Enums::getInstance().getEnumTemplateType();
-    exportProperties(enumTemplate->getJsonType());
-  }
-  else if(mode == enumMode->getModeImportJSONProps())
-  {
-    EnumTemplateType* enumTemplate = Enums::getInstance().getEnumTemplateType();
-    importTemplate(enumTemplate->getJsonType());
-  }
-  else if(mode == enumMode->getModeMapPan())
+	
+	if(mode == enumMode->getModeMapPan())
   {
     iUtils->setCurrentToolInSelectedMapItems(enumMode->getModeMapPan());
   }
@@ -590,14 +527,6 @@ void te::layout::View::changeMode( EnumType* newMode )
   {
     iUtils->setCurrentToolInSelectedMapItems(enumMode->getModeMapZoomOut());
   }
-  else if(mode == enumMode->getModeBringToFront()) 
-  {
-    sc->getAlignItems()->bringToFront();
-  }
-  else if(mode == enumMode->getModeSendToBack()) 
-  {
-    sc->getAlignItems()->sendToBack();
-  }
   else if(mode == enumMode->getModeMapCreateTextGrid()) 
   {
     iUtils->createTextGridAsObject();
@@ -606,53 +535,9 @@ void te::layout::View::changeMode( EnumType* newMode )
   {
     iUtils->createTextMapAsObject();
   }
-  else if(mode == enumMode->getModeAlignLeft()) 
-  {
-    sc->getAlignItems()->alignLeft();
-  }
-  else if(mode == enumMode->getModeAlignRight()) 
-  {
-    sc->getAlignItems()->alignRight();
-  }
-  else if(mode == enumMode->getModeAlignTop()) 
-  {
-    sc->getAlignItems()->alignTop();
-  }
-  else if(mode == enumMode->getModeAlignBottom()) 
-  {
-    sc->getAlignItems()->alignBottom();
-  }
-  else if(mode == enumMode->getModeAlignCenterHorizontal()) 
-  {
-    sc->getAlignItems()->alignCenterHorizontal();
-  }
-  else if(mode == enumMode->getModeAlignCenterVertical()) 
-  {
-    sc->getAlignItems()->alignCenterVertical();
-  }
-  else if(mode == enumMode->getModeRemoveObject()) 
-  {
-    sc->removeSelectedItems();
-  }
-  else if(mode == enumMode->getModeDrawSelectionMap()) 
-  {
-    sc->redrawSelectionMap();
-  }
   else if(mode == enumMode->getModeLegendChildAsObject()) 
   {
 
-  }
-  else if(mode == enumMode->getModeObjectToImage())
-  {
-    exportItemsToImage();
-  }
-  else if(mode == enumMode->getModeExit())
-  {
-    close();
-  }
-  else if(mode == enumMode->getModeExportToPDF())
-  {
-    exportToPDF();
   }
 
   Scene* sce = dynamic_cast<Scene*>(scene());
@@ -951,6 +836,31 @@ void te::layout::View::recompose()
   setZoom(zoom);
 }
 
+void te::layout::View::arrowCursor()
+{
+	EnumModeType* enumMode = Enums::getInstance().getEnumModeType();
+	ItemUtils* iUtils = Context::getInstance().getItemUtils();
+
+	EnumType* mode = enumMode->getModeArrowCursor();
+
+	resetDefaultConfig();
+	std::vector<te::layout::MapItem*> list = iUtils->getMapItemList();
+	if (!list.empty())
+	{
+		foreach(MapItem* mit, list)
+		{
+			mit->changeCurrentTool(mode);
+		}
+	}
+}
+
+void te::layout::View::newTemplate()
+{
+	Scene* sc = dynamic_cast<Scene*>(scene());
+	sc->reset();
+	m_visualizationArea->build();
+}
+
 void te::layout::View::setZoom(int newZoom)
 {
   int currentZoom = getCurrentZoom();
@@ -1147,7 +1057,7 @@ void te::layout::View::exportItemsToImage()
   msgBox.exec();
 }
 
-void te::layout::View::onSelectionItem( std::string name )
+void te::layout::View::onSelectionItem(std::string name)
 {
   Scene* scne = dynamic_cast<Scene*>(scene());
   if(!scne)
@@ -1177,6 +1087,7 @@ void te::layout::View::enableUpdate()
   m_visibleRulers = true;
   setUpdatesEnabled(true);
 }
+
 
 
 

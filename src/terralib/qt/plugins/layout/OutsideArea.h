@@ -103,9 +103,7 @@ namespace te
           virtual void createEditTemplateDock();
 
           virtual QAction* createAction(std::string text, std::string objName, std::string icon, std::string tooltip = "");
-
-          virtual void changeAction(te::layout::EnumType* mode);
-
+					
         protected:
 
           QWidget* m_dockParent;
