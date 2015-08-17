@@ -25,9 +25,9 @@
 
 // TerraLib
 #include "ZoomAreaToolFactory.h"
-#include "../../../../core/enum/Enums.h"
-#include "../../tools/ViewZoomArea.h"
-#include "../../View.h"
+#include "../../../../../core/enum/Enums.h"
+#include "../../../tools/ViewZoomArea.h"
+#include "../../../View.h"
 
 te::layout::AbstractLayoutTool* te::layout::ZoomAreaToolFactory::build(ToolFactoryParamsCreate params)
 {

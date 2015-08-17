@@ -107,8 +107,8 @@
 #include "../../core/pattern/mvc/AbstractItemController.h"
 #include "../item/TextController1.h"
 #include "../item/TitleController1.h"
-#include "pattern/factory/NewItemFactory.h"
-#include "pattern/factory/ItemFactoryParamsCreate.h"
+#include "pattern/factory/item/NewItemFactory.h"
+#include "pattern/factory/item/ItemFactoryParamsCreate.h"
 #include "../../core/enum/EnumObjectType.h"
 
 // Qt

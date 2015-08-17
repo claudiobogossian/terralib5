@@ -18,51 +18,50 @@
  */
 
 /*!
-  \file ItemFactory.h
+  \file OutsideFactory.h
    
-  \brief Factory for creating families of related or dependent graphic objects (MVC components).
+  \brief Factory for creating families of related or dependent widgets (MVC widgets).
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_ITEM_FACTORY_H 
-#define __TERRALIB_LAYOUT_INTERNAL_ITEM_FACTORY_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_OUTSIDE_FACTORY_H 
+#define __TERRALIB_LAYOUT_INTERNAL_OUTSIDE_FACTORY_H
 
 // TerraLib
-#include "../../../../core/pattern/factory/AbstractItemFactory.h"
-#include "../../../../core/Config.h"
+#include "../../../../../core/pattern/factory/AbstractOutsideFactory.h"
+#include "../../../../../core/Config.h"
 
 namespace te
 {
   namespace layout
   {
+
     /*!
-	  \brief Factory for creating families of related or dependent graphic objects (MVC components).
+	  \brief Factory for creating families of related or dependent widgets (MVC widgets).
 	  
 	  \ingroup layout
 
     \sa te::layout::AbstractItemFactory
 	  */
-    class TELAYOUTEXPORT ItemFactory : public AbstractItemFactory
+    class TELAYOUTEXPORT OutsideFactory : public AbstractOutsideFactory
     {
-      public:
+    public:
 
-        /*!
+      /*!
           \brief Constructor
-        */
-        ItemFactory();
+       */
+	    OutsideFactory();
 
-        /*!
+      /*!
           \brief Destructor
-        */
-        virtual ~ItemFactory();
+       */
+	    virtual ~OutsideFactory();
 
-        /*!
+      /*!
           \brief Reimplemented from AbstractItemFactory
-        */
-        virtual Observer* make(EnumType* type, ItemParamsCreate params = ItemParamsCreate());
-
-        virtual AbstractItemView* makeNew(EnumType* type, ItemParamsCreate params = ItemParamsCreate());
+       */
+	    virtual Observer* make(EnumType* type, OutsideParamsCreate params = OutsideParamsCreate());
     };
   }
 }

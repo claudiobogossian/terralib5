@@ -31,7 +31,7 @@
 // TerraLib
 #include "terralib/common/AbstractParameters.h"
 #include "terralib/geometry/Coord2D.h"
-#include "../../../../core/Config.h"
+#include "../../../../../core/Config.h"
 
 // STL
 #include <string>

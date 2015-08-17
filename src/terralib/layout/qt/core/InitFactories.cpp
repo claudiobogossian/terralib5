@@ -25,8 +25,8 @@ TerraLib Team at <terralib-team@terralib.org>.
 
 // TerraLib
 #include "InitFactories.h"
-#include "pattern/factory/ZoomAreaToolFactory.h"
-#include "pattern/factory/RectangleItemFactory.h"
+#include "pattern/factory/tool/ZoomAreaToolFactory.h"
+#include "pattern/factory/item/RectangleItemFactory.h"
 
 namespace te
 {
@@ -56,3 +56,5 @@ namespace te
 
 	}
 }
+
+
