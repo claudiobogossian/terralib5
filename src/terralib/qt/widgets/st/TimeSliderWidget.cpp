@@ -1389,16 +1389,14 @@ void te::qt::widgets::TimeSliderWidget::onExtentChanged()
   if(state == QAbstractAnimation::Running)
   {
     m_parallelAnimation->pause();
-    //createNewPixmap();
     draw();
-    m_display->update();
+    //m_display->update();
     m_parallelAnimation->resume();
   }
   else
   {
-    //createNewPixmap();
     draw();
-    m_display->update();
+    //m_display->update();
   }
 }
 
@@ -2000,12 +1998,12 @@ void te::qt::widgets::TimeSliderWidget::drawPixmapItem(te::qt::widgets::PixmapIt
 
     if (ph1.x() != 0 && ph2.x() != 0 && ph1.y() == ph2.y()) // make horizontal shear
     {
-      double horiz = (ph1.x() + ph2.x()) / 1.3;
+      double horiz = (ph1.x() + ph2.x()) / 1.35;
       painter->shear(horiz / w, 0);
     }
     else if (pw1.y() != 0 && pw2.y() != 0 && pw1.x() == pw2.x()) // make vertical shear
     {
-      double vert = (pw1.y() + pw2.y()) / 1.3;
+      double vert = (pw1.y() + pw2.y()) / 1.35;
       painter->shear(0, vert / h);
     }
     else if (rad != 0) // make rotation

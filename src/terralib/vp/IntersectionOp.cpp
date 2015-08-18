@@ -35,8 +35,10 @@
 
 #include "IntersectionOp.h"
 
-te::vp::IntersectionOp::IntersectionOp():
-  m_outDsetName("")
+te::vp::IntersectionOp::IntersectionOp()
+  : m_firstOidSet(0),
+  m_secondOidSet(0),
+  m_copyInputColumns(false)
 {
 }
 

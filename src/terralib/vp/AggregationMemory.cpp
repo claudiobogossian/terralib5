@@ -192,10 +192,10 @@ std::auto_ptr<te::da::DataSetType> te::vp::AggregationMemory::buildOutDataSetTyp
   std::string functionResult;
   std::vector<te::stat::StatisticalSummary> vectorResult;
   std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >::const_iterator it = m_statSum.begin();
-  std::string propResult, funcResult;
+  std::string propResult = "";
+  std::string funcResult = "";
   while(it != m_statSum.end())
   {
-    propResult = "";
     propResult = it->first->getName();
     propResult += "_";
     

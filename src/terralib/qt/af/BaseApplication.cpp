@@ -79,6 +79,7 @@
 #include "../widgets/tools/Selection.h"
 #include "../widgets/tools/ZoomArea.h"
 #include "../widgets/tools/ZoomClick.h"
+#include "../widgets/utils/ScopedCursor.h"
 #include "../widgets/srs/SRSManagerDialog.h"
 #include "../widgets/vector/FixGeometryDialog.h"
 #include "connectors/ChartDisplayDockWidget.h"
@@ -1199,6 +1200,8 @@ void te::qt::af::BaseApplication::onLayerPropertiesTriggered()
 
 void te::qt::af::BaseApplication::onLayerRemoveSelectionTriggered()
 {
+  te::qt::widgets::ScopedCursor cursor(Qt::WaitCursor);
+
   std::list<te::map::AbstractLayerPtr> layers =  m_explorer->getExplorer()->getSelectedSingleLayers();
 
   if(layers.empty())
@@ -2027,6 +2030,7 @@ void te::qt::af::BaseApplication::onInfoToggled(bool checked)
 
 void te::qt::af::BaseApplication::onMapRemoveSelectionTriggered()
 {
+
   //std::list<te::map::AbstractLayerPtr> layers = m_explorer->getExplorer()->getAllLayers();
   std::list<te::map::AbstractLayerPtr> layers = te::qt::af::ApplicationController::getInstance().getProject()->getAllLayers(false);
   std::list<te::map::AbstractLayerPtr>::iterator it = layers.begin();
@@ -2258,6 +2262,7 @@ void te::qt::af::BaseApplication::openProject(const QString& projectFileName)
     {
       QApplication::restoreOverrideCursor();
       QMessageBox::critical(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), (boost::format(TE_TR("This project could not be found: %1%.")) % projectFileName.toStdString()).str().c_str());
+      newProject();
       return;
     }
 

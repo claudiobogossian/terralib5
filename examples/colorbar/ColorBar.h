@@ -24,7 +24,7 @@ protected:
 private:
   te::color::ColorBar* m_colorBar;
   te::color::RGBAColor m_color;
-  Qt::CursorShape m_cursorShape;
+  //Qt::CursorShape m_cursorShape;
   int m_slices;
   QPoint m_point;
   int m_width;
