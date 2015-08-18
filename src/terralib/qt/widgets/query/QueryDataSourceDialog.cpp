@@ -44,6 +44,7 @@
 #include "../../../maptools/DataSetLayer.h"
 #include "../datasource/selector/DataSourceSelectorDialog.h"
 #include "../layer/utils/DataSet2Layer.h"
+#include "../utils/ScopedCursor.h"
 #include "QueryDataSourceDialog.h"
 #include "ui_QueryDataSourceDialogForm.h"
 
@@ -292,13 +293,12 @@ void te::qt::widgets::QueryDataSourceDialog::onPkTableComboBoxSelected(int index
 
 void te::qt::widgets::QueryDataSourceDialog::onApplyPushButtonClicked()
 {
-  QApplication::setOverrideCursor(Qt::WaitCursor);
+  te::qt::widgets::ScopedCursor cursor(Qt::WaitCursor);
 
   m_ui->m_sqlEditorTextEdit->setFocus();
 
   if (m_ui->m_sqlEditorTextEdit->toPlainText().isEmpty())
   {
-    QApplication::restoreOverrideCursor();
     return;
   }
 
@@ -326,7 +326,6 @@ void te::qt::widgets::QueryDataSourceDialog::onApplyPushButtonClicked()
   }
   catch(const std::exception& e)
   {
-    QApplication::restoreOverrideCursor();
     m_dataSetDisplay->clear();
     m_tableModel->setDataSet(0, ds->getEncoding());
 
@@ -373,8 +372,6 @@ void te::qt::widgets::QueryDataSourceDialog::onApplyPushButtonClicked()
   m_tableModel->setDataSet(dataSet.release(), ds->getEncoding());
 
   m_ui->m_tabWidget->setCurrentIndex(0);
-
-  QApplication::restoreOverrideCursor();
 }
 
 void te::qt::widgets::QueryDataSourceDialog::onClearPushButtonClicked()
@@ -540,7 +537,7 @@ void te::qt::widgets::QueryDataSourceDialog::onApplySelToolButtonClicked()
     return;
   }
 
-  QApplication::setOverrideCursor(Qt::WaitCursor);
+  te::qt::widgets::ScopedCursor cursor(Qt::WaitCursor);
 
   std::string dataSourceId = m_ui->m_dataSourceComboBox->itemData(m_ui->m_dataSourceComboBox->currentIndex()).toString().toStdString();
 
@@ -567,7 +564,6 @@ void te::qt::widgets::QueryDataSourceDialog::onApplySelToolButtonClicked()
   catch(...)
   {
     QMessageBox::warning(this, tr("Query DataSource"), tr("Error executing SQL."));
-    QApplication::restoreOverrideCursor();
     return;
   }
 
@@ -603,12 +599,8 @@ void te::qt::widgets::QueryDataSourceDialog::onApplySelToolButtonClicked()
   catch(te::common::Exception& e)
   {
     QMessageBox::warning(this, tr("Query DataSource"), tr("Error selecting objects: ") + e.what());
-    QApplication::restoreOverrideCursor();
     return;
   }
-
-  QApplication::restoreOverrideCursor();
-
   QMessageBox::information(this, tr("Query DataSource"), tr("Selection done."));
 }
 
@@ -634,7 +626,7 @@ void te::qt::widgets::QueryDataSourceDialog::onCreateLayerToolButtonClicked()
     return;
   }
 
-  QApplication::setOverrideCursor(Qt::WaitCursor);
+  te::qt::widgets::ScopedCursor cursor(Qt::WaitCursor);
 
   //create dataset
   std::string dataSourceId = m_ui->m_dataSourceComboBox->itemData(m_ui->m_dataSourceComboBox->currentIndex()).toString().toStdString();
@@ -661,14 +653,12 @@ void te::qt::widgets::QueryDataSourceDialog::onCreateLayerToolButtonClicked()
   catch(...)
   {
     QMessageBox::warning(this, tr("Query DataSource"), tr("Error executing SQL."));
-    QApplication::restoreOverrideCursor();
     return;
   }
 
   if (dataSet->size() == 0)
   {
     QMessageBox::warning(this, tr("Query DataSource"), tr("Query result is empty."));
-    QApplication::restoreOverrideCursor();
     return;
   }
 
@@ -779,7 +769,6 @@ void te::qt::widgets::QueryDataSourceDialog::onCreateLayerToolButtonClicked()
     else
     {
        QMessageBox::warning(this, tr("Query DataSource"), tr("Error creating output dataset."));
-       QApplication::restoreOverrideCursor();
       return;
     }
   }
@@ -814,12 +803,8 @@ void te::qt::widgets::QueryDataSourceDialog::onCreateLayerToolButtonClicked()
   catch(te::common::Exception& e)
   {
     QMessageBox::warning(this, tr("Query DataSource"), tr("Error creating layer. ") + e.what());
-    QApplication::restoreOverrideCursor();
     return;
   }
-
-  QApplication::restoreOverrideCursor();
-
   QMessageBox::information(this, tr("Query DataSource"), tr("Layer created."));
 }
 
