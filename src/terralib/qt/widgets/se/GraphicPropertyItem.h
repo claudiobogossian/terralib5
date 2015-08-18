@@ -101,8 +101,8 @@ namespace te
           QtProperty* m_sizeProperty;
           QtProperty* m_angleProperty;
           QtProperty* m_opacityProperty;
-          QtProperty* m_displacementProperty;
-          QtProperty* m_anchorProperty;
+          //QtProperty* m_displacementProperty;
+          //QtProperty* m_anchorProperty;
 
           bool m_setLocalGraphic;
 

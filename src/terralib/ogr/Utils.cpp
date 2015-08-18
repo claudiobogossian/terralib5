@@ -495,7 +495,7 @@ te::gm::GeomType te::ogr::Convert2TerraLib(OGRwkbGeometryType ogrGeomType)
       return te::gm::LineStringMType;
 
     case wkbPolygon25D:
-      return te::gm::PolygonMType;
+      return te::gm::MultiPolygonType;
 
     case wkbMultiPoint25D:
       return te::gm::MultiPointMType;
