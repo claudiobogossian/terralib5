@@ -36,16 +36,17 @@
 #include <cassert>
 #include <queue>
 
-te::sa::SkaterPartition::SkaterPartition(te::graph::AbstractGraph* graph, std::vector<std::string> attrs)
+te::sa::SkaterPartition::SkaterPartition(te::graph::AbstractGraph* graph, std::vector<std::string> attrs) : 
+  m_graph(graph),
+  m_attrs(attrs),
+  m_popAttr(""),
+  m_popMin(0)
 {
-  m_graph = graph;
-
-  m_attrs = attrs;
 }
 
 te::sa::SkaterPartition::~SkaterPartition()
 {
-
+  m_SSDiValues.clear();
 }
 
 std::vector<std::size_t> te::sa::SkaterPartition::execute(std::size_t nGroups, std::string popAttr, std::size_t minPop)
