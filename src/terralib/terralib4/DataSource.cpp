@@ -227,7 +227,7 @@ std::vector<::terralib4::ThemeInfo> terralib4::DataSource::getTL4Themes()
   return themes;
 }
 
-TeTheme* terralib4::DataSource::getTL4Theme(const ::terralib4::ThemeInfo theme)
+TeTheme* terralib4::DataSource::getTL4Theme(const ::terralib4::ThemeInfo& theme)
 {
   TeTheme* tl4Theme = 0;
 

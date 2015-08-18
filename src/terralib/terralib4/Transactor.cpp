@@ -894,7 +894,7 @@ std::vector<::terralib4::ThemeInfo> terralib4::Transactor::getTL4Themes()
   return themes;
 }
 
-TeTheme* terralib4::Transactor::getTL4Theme(const ::terralib4::ThemeInfo theme)
+TeTheme* terralib4::Transactor::getTL4Theme(const ::terralib4::ThemeInfo& theme)
 {
   std::map<int, TeAbstractTheme*>::iterator it = m_themeMap.begin();
 

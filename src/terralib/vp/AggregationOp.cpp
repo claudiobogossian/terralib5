@@ -37,7 +37,8 @@
 
 #include "AggregationOp.h"
 
-te::vp::AggregationOp::AggregationOp():
+te::vp::AggregationOp::AggregationOp()
+  : m_oidSet(0),
   m_outDset("")
 {
 }

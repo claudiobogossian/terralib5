@@ -63,6 +63,7 @@
 #include <boost/algorithm/string.hpp>
 
 te::vp::MultipartToSinglepart::MultipartToSinglepart()
+  : m_oidSet(0)
 {
 }
 

@@ -75,6 +75,7 @@ terralib4::Raster::Raster(TeRaster* iraster)
 }
 
 terralib4::Raster::Raster(te::rst::Grid*, te::common::AccessPolicy)
+  : m_pImpl(0)
 {
 }
 
