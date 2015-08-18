@@ -314,7 +314,7 @@ void te::attributefill::VectorToVectorDialog::onCancelPushButtonClicked()
   reject();
 }
 
-void te::attributefill::VectorToVectorDialog::onFromLayerComboBoxCurrentIndexChanged(int index)
+void te::attributefill::VectorToVectorDialog::onFromLayerComboBoxCurrentIndexChanged(int)
 {
 
   if(m_ui->m_toLayerComboBox->count() <= 1 || m_ui->m_fromLayerComboBox->count() <= 1 )
@@ -333,7 +333,7 @@ void te::attributefill::VectorToVectorDialog::onFromLayerComboBoxCurrentIndexCha
   setFunctionsByLayer(getCurrentFromLayer());
 }
 
-void te::attributefill::VectorToVectorDialog::onToLayerComboBoxCurrentIndexChanged(int index)
+void te::attributefill::VectorToVectorDialog::onToLayerComboBoxCurrentIndexChanged(int)
 {
   if(m_ui->m_toLayerComboBox->count() <= 1 || m_ui->m_fromLayerComboBox->count() <= 1 )
     return;
@@ -529,7 +529,7 @@ void te::attributefill::VectorToVectorDialog::onTargetDatasourceToolButtonPresse
 
   std::list<te::da::DataSourceInfoPtr> dsPtrList = dlg.getSelecteds();
 
-  if(dsPtrList.size() <= 0)
+  if(dsPtrList.empty())
     return;
 
   std::list<te::da::DataSourceInfoPtr>::iterator it = dsPtrList.begin();

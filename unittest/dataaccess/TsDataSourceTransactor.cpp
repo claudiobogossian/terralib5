@@ -170,7 +170,7 @@ void TsDataSourceTransactor::tcGetDataSetByGeometry()
   {
     dt = t->getDataSet((*it),propname, &m_pt,te::gm::INTERSECTS);
     CPPUNIT_ASSERT_NO_THROW(dt = t->getDataSet((*it),propname, &m_pt,te::gm::INTERSECTS)); //point
-    int nprop = dt->getNumProperties();
+    //int nprop = dt->getNumProperties();
     int pos = static_cast<int>(te::da::GetFirstSpatialPropertyPos(dt.get()));
     dt->moveNext();
     m_geom = static_cast<te::gm::Geometry*>(dt->getGeometry(pos)->clone());

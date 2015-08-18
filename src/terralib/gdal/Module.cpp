@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../BuildConfig.h"
 #include "../common/Logger.h"
 #include "../plugin/PluginInfo.h"
 #include "../common/Translator.h"
@@ -37,8 +38,6 @@
 #include "Module.h"
 #include "RasterFactory.h"
 #include "Utils.h"
-
-#include "terralib_config.h"
 
 // STL
 #include <cstdlib>

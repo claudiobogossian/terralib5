@@ -111,7 +111,7 @@ void te::qt::widgets::AnimationItem::adjustDataToAnimationTemporalExtent()
       break;
     }
   }
-  for(size_t i = size-1; i >= 0; --i)
+  for(size_t i = size-1; i == 0; --i)
   {
     if (m_time[(int)i] == fTime || m_time[(int)i] < fTime)
     {

@@ -26,9 +26,6 @@
 #ifndef __TERRALIB_XSD_INTERNAL_CONFIG_H
 #define __TERRALIB_XSD_INTERNAL_CONFIG_H
 
-// TerraLib
-#include "../Config.h"
-
 #define TE_XSD_BUILD_WITH_XML_PARSER 1
 
 #define TE_XSD_MODULE_NAME "te.xsd"

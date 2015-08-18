@@ -41,8 +41,8 @@
 
 #include <sstream>
 
-te::vp::GeometricOp::GeometricOp():
-  m_outDsetName("")
+te::vp::GeometricOp::GeometricOp()
+  : m_outputLayer(false)
 {
 }
 

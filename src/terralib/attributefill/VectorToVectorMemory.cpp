@@ -26,7 +26,7 @@
  */
 
 //Terralib
-#include "terralib_config.h"
+#include "../BuildConfig.h"
 #include "../common/Logger.h"
 #include "../common/progress/TaskProgress.h"
 #include "../common/STLUtils.h"
@@ -212,7 +212,6 @@ bool te::attributefill::VectorToVectorMemory::run()
 
         for(std::size_t i = 0; i < funcs.size(); ++i)
         {
-          logInfo2 = funcs[i];
           std::string outPropName = getPropertyName(prop, funcs[i]);
 
           if(funcs[i] == te::attributefill::VALUE)
@@ -606,7 +605,7 @@ std::string te::attributefill::VectorToVectorMemory::getPropertyName(te::dt::Pro
 }
 
 std::vector<std::size_t> te::attributefill::VectorToVectorMemory::getIntersections(te::da::DataSet* toDs,
-                                                                             te::da::DataSet* fromDs,
+                                                                             te::da::DataSet*,
                                                                              te::sam::rtree::Index<size_t, 8>* rtree,
                                                                              bool& hasInvalid)
 {
@@ -880,7 +879,7 @@ te::dt::AbstractData* te::attributefill::VectorToVectorMemory::getClassWithHighe
 te::dt::AbstractData* te::attributefill::VectorToVectorMemory::getClassWithHighestIntersectionArea(te::da::DataSet* toDs,
                                                                                                    std::size_t toSrid,
                                                                                                    te::da::DataSet* fromDs,
-                                                                                                   std::size_t fromSrid,
+                                                                                                   std::size_t,
                                                                                                    std::vector<std::size_t> dsPos,
                                                                                                    const std::string& propertyName,
                                                                                                    std::vector< std::vector<te::dt::AbstractData*> >& dataValues)
@@ -1010,11 +1009,11 @@ std::map<std::string, double> te::attributefill::VectorToVectorMemory::getPercen
 
 double te::attributefill::VectorToVectorMemory::getPercentageOfTotalArea(te::da::DataSet* toDs,
                                                                          std::size_t toSrid,
-                                                                         te::da::DataSet* fromDs,
-                                                                         std::size_t fromSrid,
+                                                                         te::da::DataSet*,
+                                                                         std::size_t,
                                                                          std::vector<std::size_t> dsPos,
-                                                                         const std::string& propertyName,
-                                                                         std::vector< std::vector<te::dt::AbstractData*> >& dataValues)
+                                                                         const std::string&,
+                                                                         std::vector< std::vector<te::dt::AbstractData*> >&)
 {
   std::size_t toGeomPos =   te::da::GetFirstSpatialPropertyPos(toDs);
 
@@ -1048,7 +1047,7 @@ double te::attributefill::VectorToVectorMemory::getPercentageOfTotalArea(te::da:
 std::map<std::string, double> te::attributefill::VectorToVectorMemory::getPercentageOfEachClassByArea(te::da::DataSet* toDs,
                                                                                                       std::size_t toSrid,
                                                                                                       te::da::DataSet* fromDs,
-                                                                                                      std::size_t fromSrid,
+                                                                                                      std::size_t,
                                                                                                       std::vector<std::size_t> dsPos,
                                                                                                       const std::string& propertyName,
                                                                                                       std::vector< std::vector<te::dt::AbstractData*> >& dataValues)
@@ -1099,7 +1098,7 @@ std::map<std::string, double> te::attributefill::VectorToVectorMemory::getPercen
 double te::attributefill::VectorToVectorMemory::getWeightedByArea(te::da::DataSet* toDs,
                                                                   std::size_t toSrid,
                                                                   te::da::DataSet* fromDs,
-                                                                  std::size_t fromSrid,
+                                                                  std::size_t,
                                                                   std::vector<std::size_t> dsPos,
                                                                   const std::string& propertyName,
                                                                   std::vector< std::vector<te::dt::AbstractData*> >& dataValues)
@@ -1149,7 +1148,7 @@ double te::attributefill::VectorToVectorMemory::getWeightedByArea(te::da::DataSe
 double te::attributefill::VectorToVectorMemory::getWeightedSumByArea(te::da::DataSet* toDs,
                                                                      std::size_t toSrid,
                                                                      te::da::DataSet* fromDs,
-                                                                     std::size_t fromSrid,
+                                                                     std::size_t,
                                                                      std::vector<std::size_t> dsPos,
                                                                      const std::string& propertyName,
                                                                      std::vector< std::vector<te::dt::AbstractData*> >& dataValues)
@@ -1401,9 +1400,9 @@ KD_ADAPTATIVE_TREE* te::attributefill::VectorToVectorMemory::getKDtree(te::da::D
 }
 
 double te::attributefill::VectorToVectorMemory::getMinimumDistance(te::da::DataSet* toDs,
-                                                                  std::size_t toSrid,
-                                                                  te::da::DataSet* fromDs,
-                                                                  std::size_t fromSrid,
+                                                                  std::size_t,
+                                                                  te::da::DataSet*,
+                                                                  std::size_t,
                                                                   KD_ADAPTATIVE_TREE* kdtree)
 {
   std::size_t toGeomPos = te::da::GetFirstSpatialPropertyPos(toDs);

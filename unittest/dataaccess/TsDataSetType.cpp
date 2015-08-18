@@ -163,7 +163,7 @@ void TsDataSetType::tcCreateDataSetTypeAndChecks()
       dt.add(new te::dt::DateTimeProperty("attr_time_period_tz", te::dt::TIME_PERIOD_TZ));
       dt.add(new te::dt::DateTimeProperty("attr_ordinal_instant", te::dt::ORDINAL_TIME_INSTANT));
       dt.add(new te::dt::DateTimeProperty("attr_ordinal_period", te::dt::ORDINAL_TIME_PERIOD));
-      int i = 0;
+      //int i = 0;
   }
 
   {

@@ -137,7 +137,7 @@ terralib4::TableDataSet::TableDataSet( TeDatabase* db, TeTable table)
           }
           else if(subType == te::dt::TIME_INSTANT)
           {
-            te::dt::Date dt(y, m, d);
+			te::dt::Date dt((unsigned short)y, (unsigned short)m, (unsigned short)d);
             te::dt::TimeDuration td(h, min, s);
             dateTime = new te::dt::TimeInstant(dt, td);
           }
@@ -195,7 +195,7 @@ te::common::AccessPolicy terralib4::TableDataSet::getAccessPolicy() const
   throw;
 }
 
-std::auto_ptr<te::gm::Envelope> terralib4::TableDataSet::getExtent(std::size_t i)
+std::auto_ptr<te::gm::Envelope> terralib4::TableDataSet::getExtent(std::size_t)
 {
   throw;
 }
@@ -210,18 +210,18 @@ int terralib4::TableDataSet::getPropertyDataType(std::size_t i) const
   return m_dt->getProperty(i)->getType();
 }
 
-std::string terralib4::TableDataSet::getPropertyName(std::size_t i) const
+std::string terralib4::TableDataSet::getPropertyName(std::size_t) const
 {
   //return m_dt->getProperty(i)->getName();
   throw;
 }
 
-te::common::CharEncoding terralib4::TableDataSet::getPropertyCharEncoding(std::size_t i) const
+te::common::CharEncoding terralib4::TableDataSet::getPropertyCharEncoding(std::size_t) const
 {
   return te::common::UNKNOWN_CHAR_ENCODING; // TODO
 }
 
-std::string terralib4::TableDataSet::getDatasetNameOfProperty(std::size_t i) const
+std::string terralib4::TableDataSet::getDatasetNameOfProperty(std::size_t) const
 {
   throw;
 }
@@ -291,12 +291,12 @@ bool terralib4::TableDataSet::isAfterEnd() const
   return false;
 }
 
-char terralib4::TableDataSet::getChar(std::size_t i) const
+char terralib4::TableDataSet::getChar(std::size_t) const
 {
   throw;
 }
 
-unsigned char terralib4::TableDataSet::getUChar(std::size_t i) const
+unsigned char terralib4::TableDataSet::getUChar(std::size_t) const
 {
   throw;
 }
@@ -341,7 +341,7 @@ std::string terralib4::TableDataSet::getString(std::size_t i) const
   return m_data->getString(i);
 }
 
-std::auto_ptr<te::dt::ByteArray> terralib4::TableDataSet::getByteArray(std::size_t i) const
+std::auto_ptr<te::dt::ByteArray> terralib4::TableDataSet::getByteArray(std::size_t) const
 {
   /*unsigned char * data;
   long size;
@@ -351,36 +351,36 @@ std::auto_ptr<te::dt::ByteArray> terralib4::TableDataSet::getByteArray(std::size
   throw;
 }
 
-std::auto_ptr<te::gm::Geometry> terralib4::TableDataSet::getGeometry(std::size_t i) const
+std::auto_ptr<te::gm::Geometry> terralib4::TableDataSet::getGeometry(std::size_t) const
 {
   throw;
 }
 
-std::auto_ptr<te::rst::Raster> terralib4::TableDataSet::getRaster(std::size_t i) const
+std::auto_ptr<te::rst::Raster> terralib4::TableDataSet::getRaster(std::size_t) const
 {
   throw;
 }
 
-std::auto_ptr<te::dt::DateTime> terralib4::TableDataSet::getDateTime(std::size_t i) const
+std::auto_ptr<te::dt::DateTime> terralib4::TableDataSet::getDateTime(std::size_t) const
 {
   //TeTime time = m_result->getDate(i);
   //time.
   throw;
 }
 
-std::auto_ptr<te::dt::Array> terralib4::TableDataSet::getArray(std::size_t i) const
+std::auto_ptr<te::dt::Array> terralib4::TableDataSet::getArray(std::size_t) const
 {
   return std::auto_ptr<te::dt::Array>(0);
 }
 
-bool terralib4::TableDataSet::isNull(std::size_t i) const
+bool terralib4::TableDataSet::isNull(std::size_t) const
 {
 
   return false;
-  std::string val = m_portal->getData((int)i);
+  /*std::string val = m_portal->getData((int)i);
 
   if(val.empty())
     return true;
 
-  return false;
+  return false;*/
 }

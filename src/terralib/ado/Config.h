@@ -26,9 +26,6 @@
 #ifndef __TERRALIB_ADO_INTERNAL_CONFIG_H
 #define __TERRALIB_ADO_INTERNAL_CONFIG_H
 
-// TerraLib
-#include "../Config.h"
-
 /** @name General Defines
  *  Configuring ADO support.
  */

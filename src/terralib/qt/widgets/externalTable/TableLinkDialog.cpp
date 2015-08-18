@@ -201,6 +201,8 @@ void te::qt::widgets::TableLinkDialog::getDataSets()
 
 void te::qt::widgets::TableLinkDialog::getProperties()
 {
+  te::qt::widgets::ScopedCursor c(Qt::WaitCursor);
+
   //Clearing contents
   int index = m_ui->m_dataset1ColumnComboBox->currentIndex();
   m_ui->m_dataset1ColumnComboBox->clear();

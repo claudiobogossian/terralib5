@@ -135,10 +135,10 @@ void GribPolygonExample()
     // create rectangle
     const te::gm::Envelope* mbr = iraster->getExtent();
 
-    te::gm::Coord2D center = mbr->getCenter();
+    //te::gm::Coord2D center = mbr->getCenter();
 
-    double w = mbr->getWidth();
-    double h = mbr->getHeight();
+    //ouble w = mbr->getWidth();
+    //double h = mbr->getHeight();
 
     std::auto_ptr<te::gm::Polygon> poly(createPolygon(mbr->getLowerLeftX() + 500.0, mbr->getLowerLeftY() + 500.0, mbr->getUpperRightX() - 500.0, mbr->getUpperRightY() - 500.0));
 

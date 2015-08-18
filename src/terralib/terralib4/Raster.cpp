@@ -74,9 +74,9 @@ terralib4::Raster::Raster(TeRaster* iraster)
   delete prop;
 }
 
-terralib4::Raster::Raster(te::rst::Grid* /*grid*/, te::common::AccessPolicy /*p*/)
+terralib4::Raster::Raster(te::rst::Grid*, te::common::AccessPolicy)
+  : m_pImpl(0)
 {
-  throw Exception(TE_TR("This method is not supported by TerraLib 4.x driver!"));
 }
 
 terralib4::Raster::~Raster()
@@ -84,8 +84,8 @@ terralib4::Raster::~Raster()
   delete m_pImpl;
 }
 
-void terralib4::Raster::open(const std::map<std::string, std::string>& /*rinfo*/,
-                             te::common::AccessPolicy /*p*/)
+void terralib4::Raster::open(const std::map<std::string, std::string>&,
+                             te::common::AccessPolicy)
 {
   throw Exception(TE_TR("This method is not supported by TerraLib 4.x driver!"));
 }

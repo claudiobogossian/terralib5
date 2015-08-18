@@ -37,7 +37,10 @@
 #include <QMenuBar>
 
 te::qt::plugins::cellspace::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo)
-  : te::plugin::Plugin(pluginInfo), m_cellSpaceMenu(0)
+  : te::plugin::Plugin(pluginInfo),
+    m_cellSpaceMenu(0),
+    m_popupAction(0),
+    m_createCellLayer(0)
 {
 }
 

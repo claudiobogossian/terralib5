@@ -93,20 +93,6 @@ te::layout::MapLayerChoiceOutside::~MapLayerChoiceOutside()
 void te::layout::MapLayerChoiceOutside::setLayers(std::list<te::map::AbstractLayerPtr> layers)
 {
   m_layers = layers;
-  
-  std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
-
-  while(it != m_layers.end())
-  {
-    std::auto_ptr<te::da::DataSetType> dsType = it->get()->getSchema();
-    if(dsType->hasGeom())
-    {
-      te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(dsType.get());
-      int type = geomProp->getGeometryType();        
-    }
-      
-    ++it;
-  }
 }
 
 te::map::AbstractLayerPtr te::layout::MapLayerChoiceOutside::getLayer()

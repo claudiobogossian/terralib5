@@ -27,7 +27,7 @@
 #define __TERRALIB_COMMON_INTERNAL_LOGGER_H
 
 // TerraLib
-#include "terralib_config.h"
+#include "../BuildConfig.h"
 #include "Config.h"
 
 

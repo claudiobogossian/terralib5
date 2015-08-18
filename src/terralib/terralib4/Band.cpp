@@ -93,7 +93,7 @@ void terralib4::Band::read(int x, int y, void* buffer) const
   decDb->getRasterBlock(bdIdx, buffer);
 }
 
-void* terralib4::Band::read(int x, int y)
+void* terralib4::Band::read(int, int)
 {
   throw;
 }

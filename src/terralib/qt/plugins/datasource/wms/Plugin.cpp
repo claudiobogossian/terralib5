@@ -100,6 +100,9 @@ void te::qt::plugins::wms::Plugin::shutdown()
   m_initialized = false;
 
   te::qt::af::LayerExplorer* exp = ((te::qt::af::BaseApplication*)te::qt::af::ApplicationController::getInstance().getMainWindow())->getLayerExplorer();
+  
+  if((exp == 0) || (exp->getExplorer() == 0) || exp->getExplorer()->getTreeModel())
+    return;
 
   std::list<te::qt::widgets::AbstractTreeItem*> wms;
 

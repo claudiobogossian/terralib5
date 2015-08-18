@@ -297,7 +297,7 @@ void te::vp::BufferDialog::onTargetDatasourceToolButtonPressed()
 
   std::list<te::da::DataSourceInfoPtr> dsPtrList = dlg.getSelecteds();
 
-  if(dsPtrList.size() <= 0)
+  if(dsPtrList.empty())
     return;
 
   std::list<te::da::DataSourceInfoPtr>::iterator it = dsPtrList.begin();

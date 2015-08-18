@@ -26,9 +26,6 @@
 #ifndef __TERRALIB_SRS_INTERNAL_CONFIG_H
 #define __TERRALIB_SRS_INTERNAL_CONFIG_H
 
-// TerraLib
-#include "../Config.h"
-
 /*!
  \def TE_SRS_MODULE_NAME
  

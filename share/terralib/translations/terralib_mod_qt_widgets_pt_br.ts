@@ -12385,6 +12385,29 @@ The layer must have an attribute with the same name of the attribute used to mak
     </message>
 </context>
 <context>
+    <name>te::qt::widgets::QueryLayerItem</name>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/layer/explorer/QueryLayerItem.cpp" line="171"/>
+        <source>Invalid Layer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/layer/explorer/QueryLayerItem.cpp" line="180"/>
+        <source>Connection Info</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/layer/explorer/QueryLayerItem.cpp" line="196"/>
+        <source>SRID: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/widgets/layer/explorer/QueryLayerItem.cpp" line="202"/>
+        <source>Restriction: </source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>te::qt::widgets::ROIManagerWidget</name>
     <message>
         <location filename="../../../src/terralib/qt/widgets/classification/ROIManagerWidget.cpp" line="275"/>
@@ -13082,34 +13105,34 @@ The layer must have an attribute with the same name of the attribute used to mak
 <context>
     <name>te::qt::widgets::TableLinkDialog</name>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/externalTable/TableLinkDialog.cpp" line="63"/>
+        <location filename="../../../src/terralib/qt/widgets/externalTable/TableLinkDialog.cpp" line="64"/>
         <source>View dataset rows</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/externalTable/TableLinkDialog.cpp" line="65"/>
+        <location filename="../../../src/terralib/qt/widgets/externalTable/TableLinkDialog.cpp" line="66"/>
         <source>View advanced options</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/externalTable/TableLinkDialog.cpp" line="312"/>
-        <location filename="../../../src/terralib/qt/widgets/externalTable/TableLinkDialog.cpp" line="317"/>
+        <location filename="../../../src/terralib/qt/widgets/externalTable/TableLinkDialog.cpp" line="313"/>
+        <location filename="../../../src/terralib/qt/widgets/externalTable/TableLinkDialog.cpp" line="318"/>
         <source>Tabular File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/externalTable/TableLinkDialog.cpp" line="337"/>
-        <location filename="../../../src/terralib/qt/widgets/externalTable/TableLinkDialog.cpp" line="343"/>
+        <location filename="../../../src/terralib/qt/widgets/externalTable/TableLinkDialog.cpp" line="338"/>
+        <location filename="../../../src/terralib/qt/widgets/externalTable/TableLinkDialog.cpp" line="344"/>
         <source>Table link error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/externalTable/TableLinkDialog.cpp" line="338"/>
+        <location filename="../../../src/terralib/qt/widgets/externalTable/TableLinkDialog.cpp" line="339"/>
         <source>This function is not available for the selected datasource</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/externalTable/TableLinkDialog.cpp" line="344"/>
+        <location filename="../../../src/terralib/qt/widgets/externalTable/TableLinkDialog.cpp" line="345"/>
         <source>This function is not available for datasets without a primary key</source>
         <translation type="unfinished"></translation>
     </message>
@@ -13380,12 +13403,12 @@ The layer must have an attribute with the same name of the attribute used to mak
 <context>
     <name>te::qt::widgets::TimeSliderWidget</name>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/st/TimeSliderWidget.cpp" line="1176"/>
+        <location filename="../../../src/terralib/qt/widgets/st/TimeSliderWidget.cpp" line="1171"/>
         <source>Select File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/widgets/st/TimeSliderWidget.cpp" line="1176"/>
+        <location filename="../../../src/terralib/qt/widgets/st/TimeSliderWidget.cpp" line="1171"/>
         <source>Images (*.png *.xpm *.jpg *.gif)</source>
         <translation type="unfinished"></translation>
     </message>

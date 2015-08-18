@@ -26,9 +26,6 @@
 #ifndef __TERRALIB_SE_INTERNAL_CONFIG_H
 #define __TERRALIB_SE_INTERNAL_CONFIG_H
 
-// TerraLib
-#include "../Config.h"
-
 #define TE_SE_MODULE_NAME "te.symbology_encoding"
 
 /** @name General Defines

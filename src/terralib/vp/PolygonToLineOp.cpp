@@ -35,8 +35,8 @@
 // STL
 #include <vector>
 
-te::vp::PolygonToLineOp::PolygonToLineOp():
-  m_outDset("")
+te::vp::PolygonToLineOp::PolygonToLineOp()
+  : m_oidSet(0)
 {
 }
 

@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/terralib_config.h
+  \file terralib/terralib_buildconfig.h
 
-  \brief Global configuration flags for TerraLib.
+  \brief Build configuration flags of TerraLib.
 */
 
-#ifndef __TERRALIB_INTERNAL_TERRALIB_CONFIG_H__
-#define __TERRALIB_INTERNAL_TERRALIB_CONFIG_H__
+#ifndef __TERRALIB_INTERNAL_TERRALIB_BUILDCONFIG_H__
+#define __TERRALIB_INTERNAL_TERRALIB_BUILDCONFIG_H__
 
 #define TERRALIB_DATA_DIR "@TERRALIB_DATA_DIR@"
 
@@ -214,4 +214,4 @@
 #cmakedefine TERRALIB_CHARENCODING_ENABLED
 #endif
 
-#endif  // __TERRALIB_INTERNAL_TERRALIB_CONFIG_H__
+#endif  // __TERRALIB_INTERNAL_TERRALIB_BUILDCONFIG_H__

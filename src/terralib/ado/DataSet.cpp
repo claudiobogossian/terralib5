@@ -135,7 +135,7 @@ std::string te::ado::DataSet::getPropertyName(std::size_t i) const
   return m_colNames[i];
 }
 
-te::common::CharEncoding te::ado::DataSet::getPropertyCharEncoding(std::size_t i) const
+te::common::CharEncoding te::ado::DataSet::getPropertyCharEncoding(std::size_t) const
 {
   return te::common::LATIN1; // TODO
 }
@@ -166,7 +166,6 @@ bool te::ado::DataSet::moveNext()
     TESTHR(m_result->MoveNext());
 
   ++m_i;
-  bool teste = (m_i < m_size);
   return (m_i < m_size);
 }
 
@@ -419,7 +418,7 @@ std::auto_ptr<te::dt::ByteArray> te::ado::DataSet::getByteArray(std::size_t i) c
   _variant_t varBLOB;
   char *cdata = 0;
   long size;
-  char* data;
+  char* data = 0;
 
   try
   {
@@ -488,8 +487,6 @@ std::auto_ptr<te::dt::DateTime> te::ado::DataSet::getDateTime(std::size_t i) con
 
   vtIndex.vt = VT_I4;
   vtIndex.lVal = (long)i;
-
-  te::dt::DateTime* dateTime = 0;
 
   std::string strDate;
   try

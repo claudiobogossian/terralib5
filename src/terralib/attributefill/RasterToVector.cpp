@@ -58,6 +58,7 @@
 
 
 te::attributefill::RasterToVector::RasterToVector()
+  : m_texture(false)
 {
 }
 

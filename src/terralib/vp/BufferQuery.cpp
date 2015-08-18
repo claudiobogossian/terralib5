@@ -271,7 +271,7 @@ std::vector<std::vector<te::gm::Geometry*> > te::vp::BufferQuery::dissolveQuery(
   return vecGeom;
 }
 
-void te::vp::BufferQuery::prepareDataSet(te::da::DataSetType* dataSetType, 
+void te::vp::BufferQuery::prepareDataSet(te::da::DataSetType*, 
                                         te::da::DataSet* dataSetQuery,
                                         te::mem::DataSet* outputDataSet,
                                         const double& distance)
@@ -345,7 +345,7 @@ void te::vp::BufferQuery::prepareDataSet(te::da::DataSetType* dataSetType,
   }
 }
 
-void te::vp::BufferQuery::prepareDataSet(te::da::DataSetType* dataSetType, 
+void te::vp::BufferQuery::prepareDataSet(te::da::DataSetType*, 
                                         std::vector<std::vector<te::gm::Geometry*> > vecDissolvedGeom,
                                         te::mem::DataSet* outputDataSet,
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 const double& distance)

@@ -26,9 +26,6 @@
 #ifndef __TERRALIB_ADDRESSGEOCODING_CORE_INTERNAL_CONFIG_H
 #define __TERRALIB_ADDRESSGEOCODING_CORE_INTERNAL_CONFIG_H
 
-// TerraLib
-#include "../Config.h"
-
 #define TE_ADDRESSGEOCODING_MODULE_NAME "te.addressgeocoding"
 
 /** @name DLL/LIB Module

@@ -28,9 +28,6 @@
 #ifndef __TERRALIB_XLINK_INTERNAL_CONFIG_H
 #define __TERRALIB_XLINK_INTERNAL_CONFIG_H
 
-// TerraLib
-#include "../Config.h"
-
 #define TE_XL_MODULE_NAME "te.xlinks"
 
 # define TE_ENABLED_XML 1

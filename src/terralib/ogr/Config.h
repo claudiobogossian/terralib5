@@ -26,8 +26,6 @@
 #ifndef __TERRALIB_OGR_INTERNAL_CONFIG_H
 #define __TERRALIB_OGR_INTERNAL_CONFIG_H
 
-#include "../Config.h"
-
 /*!
   \def OGR_DRIVER_IDENTIFIER
 
