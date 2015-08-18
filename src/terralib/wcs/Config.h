@@ -26,9 +26,6 @@
 #ifndef __TERRALIB_WCS_INTERNAL_CONFIG_H
 #define __TERRALIB_WCS_INTERNAL_CONFIG_H
 
-// TerraLib
-#include "../Config.h"
-
 #define TE_WCS_MODULE_NAME "te.wcs"
 
 /*!

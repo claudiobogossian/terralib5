@@ -154,8 +154,6 @@ te::vp::GeometricOpObjStrategy te::vp::GeometricOpOutputWizardPage::getObjectStr
 
 bool te::vp::GeometricOpOutputWizardPage::hasOutputLayer()
 {
-  // In case to add new geometric columns in the input layer. set false (under development)
-  //return m_ui->m_outputGroupBox->isChecked();
   return true;
 }
 

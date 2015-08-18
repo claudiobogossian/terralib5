@@ -26,9 +26,6 @@
 #ifndef __TERRALIB_WFS_INTERNAL_CONFIG_H
 #define __TERRALIB_WFS_INTERNAL_CONFIG_H
 
-// TerraLib
-#include "../Config.h"
-
 #define TE_WFS_MODULE_NAME "te.wfs"
 
 /*!

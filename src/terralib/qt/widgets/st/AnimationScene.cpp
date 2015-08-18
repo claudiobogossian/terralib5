@@ -86,16 +86,16 @@ void te::qt::widgets::AnimationScene::clear()
   m_numberOfTrajectories = 0;
 }
 
-void te::qt::widgets::AnimationScene::setMatrix()
-{
-  QList<QGraphicsItem*> list = items();
-  QList<QGraphicsItem*>::iterator it;
-  for(it = list.begin(); it != list.end(); ++it)
-  {
-    AnimationItem* ai = (AnimationItem*)(*it);
-    ai->setMatrix();
-  }
-}
+//void te::qt::widgets::AnimationScene::setMatrix()
+//{
+//  QList<QGraphicsItem*> list = items();
+//  QList<QGraphicsItem*>::iterator it;
+//  for(it = list.begin(); it != list.end(); ++it)
+//  {
+//    AnimationItem* ai = (AnimationItem*)(*it);
+//    ai->setMatrix();
+//  }
+//}
 
 void te::qt::widgets::AnimationScene::setDuration(const int& duration)
 {

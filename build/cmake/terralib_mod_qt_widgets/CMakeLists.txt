@@ -28,6 +28,7 @@
 include_directories(${Boost_INCLUDE_DIR})
 include_directories(${QWT_INCLUDE_DIR})
 include_directories(${QTPROPERTYBROWSER_INCLUDE_DIR})
+include_directories(${TERRALIB_ABSOLUTE_ROOT_DIR}/src)
 
 add_definitions(-D_SCL_SECURE_NO_WARNINGS -DTEQTWIDGETSDLL -DUNICODE -DQWT_DLL)
 

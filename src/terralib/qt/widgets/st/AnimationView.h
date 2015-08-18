@@ -74,6 +74,8 @@ namespace te
         void dragLeaveEvent(QDragLeaveEvent*);
         void dragMoveEvent(QDragMoveEvent*);
         void dropEvent(QDropEvent*);
+        void paintEvent(QPaintEvent*);
+        void setMatrix();
 
       signals:
         void animationDragEnterEvent(QDragEnterEvent*);

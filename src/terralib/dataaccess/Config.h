@@ -26,9 +26,6 @@
 #ifndef __TERRALIB_DATAACCESS_INTERNAL_CONFIG_H
 #define __TERRALIB_DATAACCESS_INTERNAL_CONFIG_H
 
-// TerraLib
-#include "../Config.h"
-
 /** @name General Defines for the DataAccess module
  *  Defines for configuring DataAccess module.
  */

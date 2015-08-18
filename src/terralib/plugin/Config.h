@@ -26,9 +26,6 @@
 #ifndef __TERRALIB_PLUGIN_INTERNAL_CONFIG_H
 #define __TERRALIB_PLUGIN_INTERNAL_CONFIG_H
 
-// TerraLib
-#include "../Config.h"
-
 /** @name Plugin Specific Macros
  *  Macros used by plugin module.
  */

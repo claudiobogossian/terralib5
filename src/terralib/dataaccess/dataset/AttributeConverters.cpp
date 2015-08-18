@@ -176,6 +176,9 @@ te::dt::AbstractData* te::da::CharEncodingConverter::operator()(DataSet* dataset
   assert(dataset->getPropertyDataType(pos) == te::dt::STRING_TYPE);
   assert(dstType == te::dt::STRING_TYPE);
 
+  if (dataset->isNull(pos))
+    return 0;
+
   std::string value = dataset->getString(pos);
   te::common::CharEncoding fromCode = dataset->getPropertyCharEncoding(pos);
 

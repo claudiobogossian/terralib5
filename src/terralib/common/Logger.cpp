@@ -24,6 +24,7 @@
  */
 
 // TerraLib
+#include "../BuildConfig.h"
 #include "Logger.h"
 
 #ifdef TERRALIB_LOGGER_ENABLED
@@ -31,8 +32,6 @@
 // TerraLib
 #include "Exception.h"
 #include "Translator.h"
-
-#include "terralib_config.h"
 
 // STL
 #include <cassert>

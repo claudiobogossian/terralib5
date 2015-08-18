@@ -611,16 +611,16 @@ namespace te
 // Band Iterator With Mask implementation
     template<class T> te::rst::BandIteratorWithMask<T>::BandIteratorWithMask()
       : te::rst::BandIterator<T>(),
-        m_currentpixelindex(0),
+        m_mask(0),
         m_masksize(0),
-        m_mask(0)
+        m_currentpixelindex(0)
     {
     }
 
     template<class T> te::rst::BandIteratorWithMask<T>::BandIteratorWithMask(te::rst::Band* b, te::rst::Raster* m)
       : te::rst::BandIterator<T>(b),
-        m_currentpixelindex(0),
-        m_mask(0)
+        m_mask(0),
+        m_currentpixelindex(0)
     {
 // fill bitset maks with raster values
       te::rst::BandIterator<unsigned char> it = te::rst::BandIterator<unsigned char>::begin(m->getBand(0));

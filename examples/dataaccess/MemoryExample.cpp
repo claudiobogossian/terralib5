@@ -11,7 +11,7 @@
 void MemoryExample()
 {
   te::da::DataSet* ds = 0;
-  te::da::DataSetType* dt =0;
+  //te::da::DataSetType* dt =0;
   try
   {
     std::auto_ptr<te::da::DataSource> dsMem = te::da::DataSourceFactory::make("MEM");

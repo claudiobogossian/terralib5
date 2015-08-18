@@ -238,12 +238,15 @@ bool IntersectionOGRToOGR()
     return false;
   }
 
+  std::auto_ptr<te::da::DataSetTypeConverter> firstConverter(new te::da::DataSetTypeConverter(inDsetType1.get(), trgDs->getCapabilities(), trgDs->getEncoding()));
+  std::auto_ptr<te::da::DataSetTypeConverter> secondConverter(new te::da::DataSetTypeConverter(inDsetType2.get(), trgDs->getCapabilities(), trgDs->getEncoding()));
+
   // sera feito por algum tipo de factory
   te::vp::IntersectionOp* intersectionOp = new te::vp::IntersectionMemory();
 
-  intersectionOp->setInput(srcDs1, inDsetName1, inDsetType1, srcDs2, inDsetName2, inDsetType2);
+  intersectionOp->setInput(srcDs1, inDsetName1, firstConverter, srcDs2, inDsetName2, secondConverter);
   intersectionOp->setOutput(trgDs, outDS);
-  intersectionOp->setParams(copyInputColumns, inSRID);
+  intersectionOp->setParams(copyInputColumns);
   
   bool result;
 
@@ -329,12 +332,15 @@ bool IntersectionOGRToPGIS()
     return false;
   }
 
+  std::auto_ptr<te::da::DataSetTypeConverter> firstConverter(new te::da::DataSetTypeConverter(inDsetType1.get(), trgDs->getCapabilities(), trgDs->getEncoding()));
+  std::auto_ptr<te::da::DataSetTypeConverter> secondConverter(new te::da::DataSetTypeConverter(inDsetType2.get(), trgDs->getCapabilities(), trgDs->getEncoding()));
+
   // sera feito por algum tipo de factory
   te::vp::IntersectionOp* intersectionOp = new te::vp::IntersectionMemory();
 
-  intersectionOp->setInput(srcDs1, inDsetName1, inDsetType1, srcDs2, inDsetName2, inDsetType2);
+  intersectionOp->setInput(srcDs1, inDsetName1, firstConverter, srcDs2, inDsetName2, secondConverter);
   intersectionOp->setOutput(trgDs, outDS);
-  intersectionOp->setParams(copyInputColumns, inSRID);
+  intersectionOp->setParams(copyInputColumns);
   
   bool result;
 
@@ -406,12 +412,15 @@ bool IntersectionPGISToPGIS()
     return false;
   }
 
+  std::auto_ptr<te::da::DataSetTypeConverter> firstConverter(new te::da::DataSetTypeConverter(inDsetType1.get(), trgDs->getCapabilities(), trgDs->getEncoding()));
+  std::auto_ptr<te::da::DataSetTypeConverter> secondConverter(new te::da::DataSetTypeConverter(inDsetType2.get(), trgDs->getCapabilities(), trgDs->getEncoding()));
+
   // sera feito por algum tipo de factory
   te::vp::IntersectionOp* intersectionOp = new te::vp::IntersectionMemory();
 
-  intersectionOp->setInput(srcDs1, inDsetName1, inDsetType1, srcDs2, inDsetName2, inDsetType2);
+  intersectionOp->setInput(srcDs1, inDsetName1, firstConverter, srcDs2, inDsetName2, secondConverter);
   intersectionOp->setOutput(trgDs, outDS);
-  intersectionOp->setParams(copyInputColumns, inSRID);
+  intersectionOp->setParams(copyInputColumns);
   
   bool result;
 
@@ -493,12 +502,15 @@ bool IntersectionPGISToOGR()
     return false;
   }
   
+  std::auto_ptr<te::da::DataSetTypeConverter> firstConverter(new te::da::DataSetTypeConverter(inDsetType1.get(), trgDs->getCapabilities(), trgDs->getEncoding()));
+  std::auto_ptr<te::da::DataSetTypeConverter> secondConverter(new te::da::DataSetTypeConverter(inDsetType2.get(), trgDs->getCapabilities(), trgDs->getEncoding()));
+
   // sera feito por algum tipo de factory
   te::vp::IntersectionOp* intersectionOp = new te::vp::IntersectionQuery();
 
-  intersectionOp->setInput(srcDs1, inDsetName1, inDsetType1, srcDs2, inDsetName2, inDsetType2);
+  intersectionOp->setInput(srcDs1, inDsetName1, firstConverter, srcDs2, inDsetName2, secondConverter);
   intersectionOp->setOutput(trgDs, outDSet);
-  intersectionOp->setParams(copyInputColumns, inSRID);
+  intersectionOp->setParams(copyInputColumns);
   
   bool result;
 

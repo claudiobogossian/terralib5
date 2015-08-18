@@ -18,9 +18,9 @@
  */
 
 /*!
-  \file terralib/Config.h
+  \file terralib/BuildConfig.h
 
-  \brief Proxy file for the real global configuration file terralib_config.h.
+  \brief Proxy file for the real global build configuration flags file (terralib_buildconfig.h).
  */
 
 /*!
@@ -39,10 +39,10 @@
   Wiki Page <www.dpi.inpe.br/terralib5> or contact the Terralib Team at <terralib-team@terralib.org>.
  */
 
-#ifndef __TERRALIB_INTERNAL_CONFIG_H
-#define __TERRALIB_INTERNAL_CONFIG_H
+#ifndef __TERRALIB_INTERNAL_BUILDCONFIG_H
+#define __TERRALIB_INTERNAL_BUILDCONFIG_H
 
 // TerraLib
-//#include "terralib_config.h"
+#include "terralib_buildconfig.h"
 
-#endif  // __TERRALIB_INTERNAL_CONFIG_H
+#endif  // __TERRALIB_INTERNAL_BUILDCONFIG_H

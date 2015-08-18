@@ -40,6 +40,7 @@
 #include "../dataaccess/query/LiteralEnvelope.h"
 #include "../dataaccess/query/PropertyName.h"
 #include "../dataaccess/query/Select.h"
+#include "../dataaccess/query/SQLVisitor.h"
 #include "../dataaccess/query/ST_Intersects.h"
 #include "../dataaccess/query/ST_EnvelopeIntersects.h"
 #include "../dataaccess/query/Where.h"
@@ -340,6 +341,28 @@ const std::string& te::map::QueryLayer::getType() const
 te::da::Select* te::map::QueryLayer::getQuery() const
 {
   return m_query;
+}
+
+std::string te::map::QueryLayer::getQueryAsString() const
+{
+  std::string sql;
+
+  if (m_query)
+  {
+    te::da::DataSourcePtr ds = te::da::GetDataSource(m_datasourceId, true);
+    te::da::SQLVisitor visitor(*ds->getDialect(), sql);
+
+    try
+    {
+      m_query->accept(visitor);
+    }
+    catch (...)
+    {
+      return "";
+    }
+  }
+
+  return sql;
 }
 
 void te::map::QueryLayer::setQuery(te::da::Select* s)

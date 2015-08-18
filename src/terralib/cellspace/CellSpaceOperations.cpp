@@ -198,7 +198,8 @@ te::da::DataSetType* te::cellspace::CellularSpacesOperations::createCellularData
 {
   te::da::DataSetType* dst = new te::da::DataSetType(name);
 
-  te::dt::Property* idProp = new te::dt::StringProperty("id");
+  te::dt::StringProperty* idProp = new te::dt::StringProperty("id");
+  idProp->setSize(255);
   te::dt::Property* colProp = new te::dt::SimpleProperty("col", te::dt::INT32_TYPE);
   te::dt::Property* rowProp = new te::dt::SimpleProperty("row", te::dt::INT32_TYPE);
   te::dt::Property* geomProp = 0;

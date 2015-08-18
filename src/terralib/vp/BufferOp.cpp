@@ -24,7 +24,6 @@
 #include "../dataaccess/dataset/DataSet.h"
 #include "../dataaccess/dataset/DataSetAdapter.h"
 #include "../dataaccess/dataset/DataSetType.h"
-#include "../dataaccess/dataset/DataSetTypeConverter.h"
 #include "../dataaccess/datasource/DataSource.h"
 #include "../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../dataaccess/utils/Utils.h"
@@ -46,12 +45,12 @@ te::vp::BufferOp::BufferOp():
 
 void te::vp::BufferOp::setInput(te::da::DataSourcePtr inDsrc,
                                 std::string inDsetName,
-                                std::auto_ptr<te::da::DataSetType> inDsetType,
+                                std::auto_ptr<te::da::DataSetTypeConverter> converter,
                                 const te::da::ObjectIdSet* oidSet)
 {
   m_inDsrc = inDsrc;
   m_inDsetName = inDsetName;
-  m_inDsetType = inDsetType;
+  m_converter = converter;
   m_oidSet = oidSet;
 }
 
@@ -76,7 +75,7 @@ void te::vp::BufferOp::setOutput(te::da::DataSourcePtr outDsrc, std::string dsna
 
 bool te::vp::BufferOp::paramsAreValid()
 {
-  if (!m_inDsetType->hasGeom())
+  if (!m_converter->getResult()->hasGeom())
     return false;
 
   if (m_outDsetName.empty() || !m_outDsrc.get())
@@ -107,7 +106,7 @@ te::da::DataSetType* te::vp::BufferOp::GetDataSetType()
   
   if(m_copyInputColumns)
   {
-    std::vector<te::dt::Property*> props = m_inDsetType->getProperties();
+    std::vector<te::dt::Property*> props = m_converter->getResult()->getProperties();
 
     for(std::size_t i = 0; i < props.size(); ++i)
     {
@@ -122,7 +121,7 @@ te::da::DataSetType* te::vp::BufferOp::GetDataSetType()
     }
   }
 
-  te::gm::GeometryProperty* gp = te::da::GetFirstGeomProperty(m_inDsetType.get());
+  te::gm::GeometryProperty* gp = te::da::GetFirstGeomProperty(m_converter->getResult());
   std::auto_ptr<te::gm::GeometryProperty> p (static_cast<te::gm::GeometryProperty*>(gp->clone()));
   te::gm::GeometryProperty* geometry = new te::gm::GeometryProperty("geom");
   geometry->setGeometryType(te::gm::MultiPolygonType);

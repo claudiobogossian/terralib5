@@ -26,9 +26,6 @@
 #ifndef __TERRALIB_LAYOUT_INTERNAL_CONFIG_H
 #define __TERRALIB_LAYOUT_INTERNAL_CONFIG_H
 
-// TerraLib
-#include "../../Config.h"
-
 #define TE_LAYOUT_MODULE_NAME "te.layout"
 
 /** @name Internationalization Defines

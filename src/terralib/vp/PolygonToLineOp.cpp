@@ -42,12 +42,12 @@ te::vp::PolygonToLineOp::PolygonToLineOp():
 
 void te::vp::PolygonToLineOp::setInput(te::da::DataSourcePtr inDsrc,
                                      std::string inDsetName,
-                                     std::auto_ptr<te::da::DataSetType> inDSetType,
+                                     std::auto_ptr<te::da::DataSetTypeConverter> converter,
                                      const te::da::ObjectIdSet* oidSet)
 {
   m_inDsrc = inDsrc;
   m_inDsetName = inDsetName;
-  m_inDsetType = inDSetType;
+  m_converter = converter;
   m_oidSet = oidSet;
 }
 
@@ -63,9 +63,10 @@ std::auto_ptr<te::da::DataSetType> te::vp::PolygonToLineOp::buildOutDataSetType(
 
   std::string dSourceType = m_outDsrc->getType();
 
-  std::vector<te::dt::Property*> vecProps = m_inDsetType->getProperties();
+  std::vector<te::dt::Property*> vecProps = m_converter->getResult()->getProperties();
 
-  std::vector<te::dt::Property*> inPk = m_inDsetType->getPrimaryKey()->getProperties();
+  std::vector<te::dt::Property*> inPk = m_converter->getResult()->getPrimaryKey()->getProperties();
+
   std::string namePk = m_outDset;
 
   for (std::size_t p = 0; p < inPk.size(); ++p)

@@ -29,6 +29,7 @@
 #include "../dataaccess/dataset/ObjectIdSet.h"
 #include "../dataaccess/datasource/DataSource.h"
 #include "../dataaccess/datasource/DataSourceCapabilities.h"
+#include "../dataaccess/datasource/DataSourceTransactor.h"
 #include "../dataaccess/utils/Utils.h"
 
 #include "../datatype/Property.h"
@@ -88,7 +89,7 @@ bool te::attributefill::VectorToVectorOp::paramsAreValid()
 
 bool  te::attributefill::VectorToVectorOp::save(std::auto_ptr<te::mem::DataSet> result, std::auto_ptr<te::da::DataSetType> outDsType)
 {
-
+  std::auto_ptr<te::da::DataSourceTransactor> t;
   try
   {
     // do any adaptation necessary to persist the output dataset
@@ -105,6 +106,10 @@ bool  te::attributefill::VectorToVectorOp::save(std::auto_ptr<te::mem::DataSet> 
       outDsType->setPrimaryKey(pk);
     }
 
+    t = m_outDsrc->getTransactor();
+
+    t->begin();
+
     std::map<std::string, std::string> options;
     // create the dataset
     m_outDsrc->createDataSet(dsTypeResult, options);
@@ -112,25 +117,28 @@ bool  te::attributefill::VectorToVectorOp::save(std::auto_ptr<te::mem::DataSet> 
     // copy from memory to output datasource
     result->moveBeforeFirst();
     m_outDsrc->add(dsTypeResult->getName(),result.get(), options);
+
+    t->commit();
   }
   catch(te::common::Exception& e)
   {
 #ifdef TERRALIB_LOGGER_ENABLED
     std::string ex = e.what();
-    ex += " | Ref: SAVE";
+    ex += " | Ref: Error while persisting in the DataSource";
     te::common::Logger::logDebug("attributefill", ex.c_str());
 #endif //TERRALIB_LOGGER_ENABLED
-    
+    t->rollBack();
     m_hasErrors = true;
   }
   catch(std::exception& e)
   {
 #ifdef TERRALIB_LOGGER_ENABLED
     std::string ex = e.what();
-    ex += " | Ref: SAVE";
+    ex += " | Ref: Error while persisting in the DataSource";
     te::common::Logger::logDebug("attributefill", ex.c_str());
 #endif //TERRALIB_LOGGER_ENABLED
     
+    t->rollBack();
     m_hasErrors = true;
   }
 

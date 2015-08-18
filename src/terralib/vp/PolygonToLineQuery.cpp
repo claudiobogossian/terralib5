@@ -24,11 +24,8 @@
 */
 
 //Terralib
-
 #include "../dataaccess/dataset/DataSet.h"
-
-#include "../datatype/Property.h"
-
+#include "../dataaccess/dataset/DataSetAdapter.h"
 #include "../dataaccess/query/DataSetName.h"
 #include "../dataaccess/query/Expression.h"
 #include "../dataaccess/query/Field.h"
@@ -50,7 +47,6 @@
 #include "../dataaccess/utils/Utils.h"
 
 #include "../geometry/GeometryProperty.h"
-
 #include "PolygonToLineQuery.h"
 #include "Utils.h"
 
@@ -75,7 +71,7 @@ bool te::vp::PolygonToLineQuery::run() throw(te::common::Exception)
   std::auto_ptr<te::da::DataSetType> sourceDSetType(m_inDsrc->getDataSetType(m_inDsetName));
   te::gm::GeometryProperty* geomPropSource = te::da::GetFirstGeomProperty(sourceDSetType.get());
 
-  te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(m_inDsetType.get());
+  te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(m_converter->getResult());
 
 // Subselect that apply the ST_Dump function in geometric column to separate multi polygons.
   te::da::Fields* pol_fields = new te::da::Fields;
@@ -104,6 +100,7 @@ bool te::vp::PolygonToLineQuery::run() throw(te::common::Exception)
       te::da::Expression* e_dump = new te::da::ST_Dump(e_geometry);
       te::da::Field* f_dump = new te::da::Field(*e_dump, " polygon");
       pol_fields->push_back(f_dump);
+
     }
   }
 

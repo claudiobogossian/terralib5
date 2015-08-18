@@ -48,7 +48,7 @@ te::qt::plugins::vp::GeometricOpAction::~GeometricOpAction()
 {
 }
 
-void te::qt::plugins::vp::GeometricOpAction::onActionActivated(bool checked)
+void te::qt::plugins::vp::GeometricOpAction::onActionActivated(bool)
 {
   te::vp::GeometricOpWizard dlg(te::qt::af::ApplicationController::getInstance().getMainWindow());
 

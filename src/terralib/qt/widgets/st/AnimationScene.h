@@ -85,10 +85,10 @@ namespace te
         */
         void clear();
 
-        /*!
-          \brief It sets the transformation matrix.
-        */
-        void setMatrix();
+        ///*!
+        //  \brief It sets the transformation matrix.
+        //*/
+        //void setMatrix();
 
         /*!
           \brief It sets the trajectory duration.
@@ -113,7 +113,7 @@ namespace te
         QPixmap* m_trajectoryPixmap;            //!< QPixmap where all the trajectory item are drawn.
         QMutex m_mutex;                         //!< To not use the scene pixmap simultaneously
         int m_numberOfTrajectories;             //!< Number of trajectory items.
-        int m_numberOfCoverages;                  //!< Number of coverage items.
+        int m_numberOfCoverages;                //!< Number of coverage items.
       };
     } // end namespace widgets
   }   // end namespace qt

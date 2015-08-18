@@ -176,7 +176,7 @@ void te::qt::widgets::DataSetTableHorizontalHeader::mousePressEvent(QMouseEvent 
       drag.setPixmap(pixmap);
       drag.setHotSpot(hotSpot);
 
-      Qt::DropAction dropAction = drag.exec(Qt::LinkAction);    
+      /*Qt::DropAction dropAction = */drag.exec(Qt::LinkAction);
     }
   }
   //else if(e->button() == Qt::MiddleButton) // code for drag and drop test

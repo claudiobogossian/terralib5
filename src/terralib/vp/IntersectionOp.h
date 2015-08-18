@@ -31,7 +31,7 @@
 //Terralib
 
 #include "../dataaccess/dataset/DataSet.h"
-#include "../dataaccess/dataset/DataSetType.h"
+#include "../dataaccess/dataset/DataSetTypeConverter.h"
 #include "../dataaccess/datasource/DataSource.h"
 
 #include "../datatype/Property.h"
@@ -66,36 +66,34 @@ namespace te
       
       void setInput(te::da::DataSourcePtr inFirstDsrc,
                     std::string inFirstDsetName,
-                    std::auto_ptr<te::da::DataSetType> inFirstDsetType,
+                    std::auto_ptr<te::da::DataSetTypeConverter> firstConverter,
                     te::da::DataSourcePtr inSecondDsrc,
                     std::string inSecondDsetName,
-                    std::auto_ptr<te::da::DataSetType> inSecondDsetType,
+                    std::auto_ptr<te::da::DataSetTypeConverter> secondConverter,
                     const te::da::ObjectIdSet* firstOidSet = 0,
                     const te::da::ObjectIdSet* secondOidSet = 0);
 
-      void setParams(const bool& copyInputColumns, std::vector<int> inSRID);
+      void setParams(const bool& copyInputColumns);
 
       void setOutput(te::da::DataSourcePtr outDsrc, std::string dsname);
 
     protected:
 
       std::vector<te::dt::Property*> getTabularProps(te::da::DataSetType* dsType);
-
-
-      // it defines the type of the result considering the input geometries being aggregated
-      te::gm::GeomType getGeomResultType(te::gm::GeomType geom);
+      
+      // it defines the type of the result considering the input geometries.
+      te::gm::GeomType setGeomResultType(te::gm::GeomType firstGeom, te::gm::GeomType secondGeom);
       
       te::da::DataSourcePtr m_inFirstDsrc;
       std::string m_inFirstDsetName;
-      std::auto_ptr<te::da::DataSetType> m_inFirstDsetType;
+      std::auto_ptr<te::da::DataSetTypeConverter> m_firstConverter;
       te::da::DataSourcePtr m_inSecondDsrc;
       std::string m_inSecondDsetName;
-      std::auto_ptr<te::da::DataSetType> m_inSecondDsetType;
+      std::auto_ptr<te::da::DataSetTypeConverter> m_secondConverter;
       const te::da::ObjectIdSet* m_firstOidSet;
       const te::da::ObjectIdSet* m_secondOidSet;
 
       bool m_copyInputColumns;
-      std::vector<int> m_SRID;
 
       te::da::DataSourcePtr m_outDsrc;
       std::string m_outDsetName;
