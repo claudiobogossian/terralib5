@@ -38,8 +38,13 @@
 
 #include "BufferOp.h"
 
-te::vp::BufferOp::BufferOp():
-  m_outDsetName("")
+te::vp::BufferOp::BufferOp()
+  : m_oidSet(0),
+  m_distance(-1.f),
+  m_bufferPolygonRule(-1),
+  m_bufferBoundariesRule(-1),
+  m_copyInputColumns(false),
+  m_levels(-1)
 {
 }
 

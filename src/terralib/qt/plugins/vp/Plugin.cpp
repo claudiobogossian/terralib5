@@ -64,7 +64,15 @@
 #include <string>
 
 te::qt::plugins::vp::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo)
-  : te::plugin::Plugin(pluginInfo), m_vpMenu(0)
+  : te::plugin::Plugin(pluginInfo),
+    m_vpMenu(0),
+    m_aggregation(0),
+    m_buffer(0),
+    m_geometricOp(0),
+    m_intersection(0),
+    m_lineToPolygon(0),
+    m_multipart2singlepart(0),
+    m_polygonToLine(0)
 {
 }
 
