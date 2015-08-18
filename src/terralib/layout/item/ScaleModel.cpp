@@ -129,13 +129,6 @@ te::layout::ScaleModel::ScaleModel()
     property.setValue(height, dataType->getDataTypeDouble());
     this->m_properties.updateProperty(property);
   }
-
-  {
-    Property property(0);
-    property.setName("show_frame");
-    property.setValue(false, dataType->getDataTypeBool());
-    this->m_properties.updateProperty(property);
-  }
 }
 
 te::layout::ScaleModel::~ScaleModel()

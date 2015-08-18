@@ -30,8 +30,8 @@
 #include "../../core/pattern/singleton/Context.h"
 #include "../../core/pattern/mvc/Observable.h"
 #include "../../core/pattern/mvc/ItemObserver.h"
-#include "../../core/pattern/mvc/OutsideObserver.h"
-#include "../../core/pattern/mvc/OutsideController.h"
+#include "../../core/pattern/mvc/AbstractOutsideModel.h"
+#include "../../core/pattern/mvc/AbstractOutsideController.h"
 #include "../../../geometry/Envelope.h"
 #include "../core/propertybrowser/PropertyBrowser.h"
 #include "../item/MapItem.h"
@@ -60,14 +60,15 @@
 
 #include <QtPropertyBrowser/QtTreePropertyBrowser>
 
-te::layout::PropertiesOutside::PropertiesOutside( OutsideController* controller, Observable* o, PropertyBrowser* propertyBrowser ) :
+te::layout::PropertiesOutside::PropertiesOutside(AbstractOutsideController* controller, PropertyBrowser* propertyBrowser) :
 	QWidget(0),
-	OutsideObserver(controller, o),
+	AbstractOutsideView(controller),
   m_updatingValues(false),
   m_sharedProps(0),
   m_propUtils(0)
 {
-	te::gm::Envelope box = m_model->getBox();	
+	AbstractOutsideModel* abstractModel = const_cast<AbstractOutsideModel*>(m_controller->getModel());
+	te::gm::Envelope box = abstractModel->getBox();
 	setBaseSize(box.getWidth(), box.getHeight());
 	setVisible(false);
 	setWindowTitle("Properties");
@@ -150,15 +151,6 @@ void te::layout::PropertiesOutside::createLayout()
   layoutAll->addWidget(groupBox);
 
   setLayout(layoutAll);
-}
-
-void te::layout::PropertiesOutside::updateObserver( ContextItem context )
-{
-	setVisible(context.isShow());
-	if(context.isShow() == true)
-		show();
-	else
-		hide();
 }
 
 void te::layout::PropertiesOutside::setPosition( const double& x, const double& y )

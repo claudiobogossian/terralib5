@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file OutsideObserver.cpp
+  \file EnumTemplateType.cpp
    
   \brief 
 
@@ -26,42 +26,46 @@
 */
 
 // TerraLib
-#include "OutsideObserver.h"
-#include "Observable.h"
-#include "../singleton/Context.h"
-#include "../../AbstractScene.h"
-#include "OutsideController.h"
+#include "EnumToolType.h"
 
-te::layout::OutsideObserver::OutsideObserver(OutsideController* controller, Observable* o) :
-  m_controller(controller),
-  m_model(o)
+te::layout::EnumToolType::EnumToolType() :
+  m_noneTool(0),
+	m_zoomAreaTool(0)
 {
-	m_model->addObserver(this);
+  init();
 }
 
-te::layout::OutsideObserver::~OutsideObserver()
+te::layout::EnumToolType::~EnumToolType()
 {
-	if(m_controller)
-		delete (OutsideController*)m_controller;
+	if (m_noneTool)
+  {
+		delete m_noneTool;
+		m_noneTool = 0;
+  }
+	if (m_zoomAreaTool)
+  {
+		delete m_zoomAreaTool;
+		m_zoomAreaTool = 0;
+  }
 }
 
-void te::layout::OutsideObserver::refresh()
+void te::layout::EnumToolType::init()
 {
-	te::gm::Coord2D coord = getPosition();
-	m_controller->setPosition(coord.x, coord.y);
+	m_noneTool = createEnum("NoneTool", this);
+
+	m_zoomAreaTool = createEnum("ZoomAreaTool", this);
 }
 
-te::layout::Properties* te::layout::OutsideObserver::getProperties() const
+te::layout::EnumType* te::layout::EnumToolType::getNoneTool() const
 {
-  return m_model->getProperties();
+	return m_noneTool;
 }
 
-te::layout::OutsideController* te::layout::OutsideObserver::getController()
+te::layout::EnumType* te::layout::EnumToolType::getZoomAreaTool() const
 {
-  return m_controller;
+	return m_zoomAreaTool;
 }
 
-te::layout::Observable* te::layout::OutsideObserver::getModel()
-{
-  return m_model;
-}
+
+
+

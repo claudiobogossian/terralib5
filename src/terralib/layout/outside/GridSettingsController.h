@@ -29,7 +29,7 @@
 #define __TERRALIB_LAYOUT_INTERNAL_GRID_SETTINGS_CONTROLLER_H
 
 // TerraLib
-#include "../core/pattern/mvc/OutsideController.h"
+#include "../core/pattern/mvc/AbstractOutsideController.h"
 #include "../core/property/Property.h"
 #include "../core/Config.h"
 
@@ -37,13 +37,13 @@ namespace te
 {
   namespace layout
   {
-    class GridSettingsModel;
+		class AbstractOutsideModel;
 
-    class TELAYOUTEXPORT GridSettingsController : public OutsideController
+		class TELAYOUTEXPORT GridSettingsController : public AbstractOutsideController
     {
       public:
 
-	      GridSettingsController( Observable* o );
+				GridSettingsController(AbstractOutsideModel* o);
 
 	      virtual ~GridSettingsController();
         

@@ -29,19 +29,20 @@
 #define __TERRALIB_LAYOUT_INTERNAL_SVG_DIALOG_CONTROLLER_H
 
 // TerraLib
-#include "../core/pattern/mvc/OutsideController.h"
-#include "../core/property/Property.h"
+#include "../core/pattern/mvc/AbstractOutsideController.h"
 #include "../core/Config.h"
 
 namespace te
 {
   namespace layout
   {
-    class TELAYOUTEXPORT SVGDialogController : public OutsideController
+		class AbstractOutsideModel;
+
+		class TELAYOUTEXPORT SVGDialogController : public AbstractOutsideController
     {
       public:
 
-	      SVGDialogController( Observable* o );
+				SVGDialogController(AbstractOutsideModel* o);
 
 	      virtual ~SVGDialogController();
     };

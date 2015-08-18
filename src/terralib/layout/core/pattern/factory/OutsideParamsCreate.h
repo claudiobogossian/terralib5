@@ -35,8 +35,7 @@ namespace te
 {
   namespace layout
   {
-    class OutsideController;
-    class Observable;
+		class AbstractOutsideController;
 
     /*!
 	  \brief Parameters to creation new object. Ex.: "Model" and "Controller" of the new object (MVC widget).
@@ -60,7 +59,7 @@ namespace te
           \param controller "Controller" part of MVC widget
           \param o "Model" part of MVC widget
        */ 
-      OutsideParamsCreate(OutsideController* controller, Observable* model);
+      OutsideParamsCreate(AbstractOutsideController* controller);
 
       /*!
           \brief Destructor
@@ -72,27 +71,18 @@ namespace te
 
           \return controller
        */
-      OutsideController*	getController();
-
-      /*!
-          \brief Returns the "Model" part of the MVC.
-
-          \return model
-       */
-      Observable*		getModel();
-
+      AbstractOutsideController*	getController();
+			
     protected:
-      OutsideController*	m_controller; //!< "Controller" part of MVC widget.
-      Observable*		m_model; //!< "Model" part of MVC widget.
+      AbstractOutsideController*	m_controller; //!< "Controller" part of MVC widget.
     };
 
     /*
     ** ---------------------------------------------------------------
     ** Inline methods:
     */
-    inline OutsideParamsCreate::OutsideParamsCreate(OutsideController* controller, Observable* model) :
-	    m_controller(controller),
-	    m_model(model)
+		inline OutsideParamsCreate::OutsideParamsCreate(AbstractOutsideController* controller) :
+	    m_controller(controller)
     {
     }
 
@@ -100,14 +90,9 @@ namespace te
     {
     }
 
-    inline OutsideController* OutsideParamsCreate::getController()
+		inline AbstractOutsideController* OutsideParamsCreate::getController()
     {
 	    return m_controller;
-    }
-
-    inline Observable* OutsideParamsCreate::getModel()
-    {
-	    return m_model;
     }
   }
 }

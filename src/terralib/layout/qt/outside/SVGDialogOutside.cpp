@@ -24,10 +24,14 @@
 */
 
 // TerraLib
+#include "SVGDialogOutside.h"
 #include "../../../common/Logger.h"
 #include "../../../qt/widgets/utils/DoubleListWidget.h"
-#include "SVGDialogOutside.h"
 #include "../../outside/SVGDialogModel.h"
+#include "../../core/enum/Enums.h"
+#include "../../core/property/GenericVariant.h"
+#include "../../core/pattern/mvc/AbstractOutsideController.h"
+#include "../../core/pattern/mvc/AbstractOutsideModel.h"
 #include "ui_SVGView.h"
 
 // STL
@@ -40,12 +44,10 @@
 #include <QImage>
 #include <QPainter>
 #include <QIcon>
-#include "../../core/enum/Enums.h"
-#include "../../core/property/GenericVariant.h"
 
-te::layout::SVGDialogOutside::SVGDialogOutside(OutsideController* controller, Observable* o)
+te::layout::SVGDialogOutside::SVGDialogOutside(AbstractOutsideController* controller)
   : QDialog(0),
-    OutsideObserver(controller, o),
+		AbstractOutsideView(controller),
     m_ui(new Ui::SVGView), 
     m_property(0)
 {
@@ -63,7 +65,8 @@ void te::layout::SVGDialogOutside::init()
 {
   m_initFile = "";
 
-  SVGDialogModel* model = dynamic_cast<SVGDialogModel*>(m_model);
+	AbstractOutsideModel* abstractModel = const_cast<AbstractOutsideModel*>(m_controller->getModel());
+	SVGDialogModel* model = dynamic_cast<SVGDialogModel*>(abstractModel);
   if(!model)
   {
     return;
@@ -86,15 +89,6 @@ void te::layout::SVGDialogOutside::onOkPushButtonClicked()
 void te::layout::SVGDialogOutside::onCancelPushButtonClicked()
 {
   reject();
-}
-
-void te::layout::SVGDialogOutside::updateObserver( ContextItem context )
-{
-  setVisible(context.isShow());
-  if(context.isShow() == true)
-    show();
-  else
-    hide();
 }
 
 void te::layout::SVGDialogOutside::setPosition( const double& x, const double& y )

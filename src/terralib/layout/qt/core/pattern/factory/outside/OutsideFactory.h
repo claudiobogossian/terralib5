@@ -18,49 +18,50 @@
  */
 
 /*!
-  \file AbstractTemplateFactory.h
+  \file OutsideFactory.h
    
-  \brief Abstract Factory provide an interface for creating families of related or dependent templates without specifying their concrete classes.
+  \brief Factory for creating families of related or dependent widgets (MVC widgets).
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_ABSTRACT_TEMPLATE_FACTORY_H
-#define __TERRALIB_LAYOUT_INTERNAL_ABSTRACT_TEMPLATE_FACTORY_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_OUTSIDE_FACTORY_H 
+#define __TERRALIB_LAYOUT_INTERNAL_OUTSIDE_FACTORY_H
 
 // TerraLib
-#include "TemplateParamsCreate.h"
-#include "../../enum/AbstractType.h"
+#include "../../../../../core/pattern/factory/AbstractOutsideFactory.h"
+#include "../../../../../core/Config.h"
 
 namespace te
 {
   namespace layout
   {
-    class AbstractTemplate;
-    class EnumType;
-
     /*!
-	  \brief Abstract Factory provide an interface for creating families of related or dependent templates without specifying their concrete classes.
+	  \brief Factory for creating families of related or dependent widgets (MVC widgets).
 	  
 	  \ingroup layout
-	  */
-    class AbstractTemplateFactory 
-    {
-      public:
 
-        /*!
+    \sa te::layout::AbstractItemFactory
+	  */
+    class TELAYOUTEXPORT OutsideFactory : public AbstractOutsideFactory
+    {
+    public:
+
+      /*!
           \brief Constructor
        */
-        virtual ~AbstractTemplateFactory(void) {}
+	    OutsideFactory();
 
-        /*!
-          \brief Method that builds and returns a new template of the type defined as parameter.
-
-          \param type type of the new object
-          \param params 
+      /*!
+          \brief Destructor
        */
-        virtual AbstractTemplate* make(EnumType* type, TemplateParamsCreate params = TemplateParamsCreate()) = 0;
-      };
+	    virtual ~OutsideFactory();
+
+      /*!
+          \brief Reimplemented from AbstractItemFactory
+       */
+			virtual AbstractOutsideView* make(EnumType* type, OutsideParamsCreate params = OutsideParamsCreate());
+    };
   }
 }
 

@@ -18,20 +18,18 @@
  */
 
 /*!
-  \file OutsideObserver.h
+  \file AbstractOutsideView.h
    
   \brief Abstract class to represent an observer. "View" part of MVC widget. All classes representing the graphics widget must inherit from this class.
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_OUTSIDE_OBSERVER_H 
-#define __TERRALIB_LAYOUT_INTERNAL_OUTSIDE_OBSERVER_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_ABSTRACT_OUTSIDE_OBSERVER_H 
+#define __TERRALIB_LAYOUT_INTERNAL_ABSTRACT_OUTSIDE_OBSERVER_H
 
 // TerraLib
-#include "Observer.h"
 #include "../../property/Properties.h"
-#include "../../ContextItem.h"
 #include "../../../../geometry/Coord2D.h"
 #include "../../Config.h"
 
@@ -39,8 +37,7 @@ namespace te
 {
   namespace layout
   {
-    class OutsideController;
-    class Observable;
+		class AbstractOutsideController;
 
     /*!
       \brief Abstract class to represent an observer. "View" part of MVC widget. All classes representing the graphics component must inherit from this class.
@@ -49,7 +46,7 @@ namespace te
 
 	    \sa te::layout::Observer
 	  */
-    class TELAYOUTEXPORT OutsideObserver : public Observer
+		class TELAYOUTEXPORT AbstractOutsideView 
     {
     public:
 
@@ -59,18 +56,13 @@ namespace te
           \param controller "Controller" part of MVC widget
           \param o "Model" part of MVC widget
       */ 
-      OutsideObserver(OutsideController* controller, Observable* o);
+			AbstractOutsideView(AbstractOutsideController* controller);
 
       /*!
           \brief Destructor
        */
-      virtual ~OutsideObserver();
-
-      /*!
-          \brief Reimplemented from Observer
-       */
-      virtual void updateObserver(ContextItem context) = 0;
-
+			virtual ~AbstractOutsideView();
+			
       /*!
           \brief Change coordinate llx,lly of the MVC widget.
             Reimplement this function in a ItemController subclass to provide the controller's create implementation.
@@ -94,30 +86,17 @@ namespace te
           \param true if refresh the current position, false otherwise
        */
       virtual void refresh();
-
-      /*!
-          \brief Reimplemented from Observer
-       */
-      virtual Properties* getProperties() const;
-
+			
       /*!
           \brief Returns the "Controller" part of the MVC.
 
           \return controller
        */
-      virtual OutsideController* getController();
-
-      /*!
-          \brief Returns the "Model" part of the MVC.
-
-          \return model
-       */
-      virtual Observable* getModel();
-
+      virtual AbstractOutsideController* getController();
+			
     protected:
 
-      OutsideController*	m_controller; //!< "Controller" part of MVC widget.
-      Observable*		m_model; //!< "Model" part of MVC widget.
+			AbstractOutsideController*	m_controller; //!< "Controller" part of MVC widget.
     };
   }
 }

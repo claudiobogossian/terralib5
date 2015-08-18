@@ -49,7 +49,6 @@ namespace te
     class AbstractScene;
     class AbstractItemFactory;
     class AbstractOutsideFactory;
-    class AbstractTemplateFactory;
     class AbstractBuildGraphicsItem;
     class EnumType;
     class AbstractProxyProject;
@@ -128,21 +127,7 @@ namespace te
 		      \param factory provide an interface for creating families of related or dependent graphic widgets (MVC widgets)  
         */
         void setOutsideFactory(AbstractOutsideFactory* factory);
-
-        /*!
-          \brief Returns Abstract Factory provide an interface for creating families of related or dependent templates.
-		  
-		      \return factory provide an interface for creating families of related or dependent templates. 		  
-        */
-        AbstractTemplateFactory* getTemplateFactory();
-
-        /*!
-          \brief Change factory provide an interface for creating families of related or dependent templates.
-		  
-		      \param factory provide an interface for creating families of related or dependent templates. 		  
-        */
-        void setTemplateFactory(AbstractTemplateFactory* factory);
-                
+				                
         /*!
           \brief Returns abstraction of a drawing area.
 		  
@@ -191,11 +176,7 @@ namespace te
 		      \param a AbstractBuildGraphicsItem pointer		  
         */
         void setAbstractBuildGraphicsItem(AbstractBuildGraphicsItem* build);
-
-        EnumType* getLineIntersectionMouseMode();
-
-        void setLineIntersectionMouseMode(EnumType* mode);
-
+				
         SystematicScaleConfig* getSystematicScaleConfig();
 
         void setSystematicScaleConfig(SystematicScaleConfig* scale);
@@ -270,13 +251,11 @@ namespace te
 
       protected:
 
-        EnumType*                     m_lineIntersectionMouseMode; //!<
         LayoutUnitsMetrics            m_unitMetric; //!<
         AbstractScene*                m_scene; //!< abstract scene for QGraphicsScene class, part of Graphics View Framework.
         te::map::Canvas*              m_canvas; //!< abstraction of a drawing area
         AbstractItemFactory*          m_itemFactory; //!< factory that provide an interface for creating families of related or dependent graphic objects (MVC components)
         AbstractOutsideFactory*	      m_outsideFactory; //!< factory provide an interface for creating families of related or dependent graphic widgets (MVC widgets)
-        AbstractTemplateFactory*      m_templateFactory; //!< factory provide an interface for creating families of related or dependent templates
         Utils*                        m_utils; //!< pointer with functions to manipulate the canvas and conversion between projections
         std::string                   m_version; //!< template structure version
         AbstractBuildGraphicsItem*    m_buildGraphicsItem; //!< build graphics MVC components. 

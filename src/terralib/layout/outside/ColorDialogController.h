@@ -29,18 +29,20 @@
 #define __TERRALIB_LAYOUT_INTERNAL_COLOR_DIALOG_CONTROLLER_H
 
 // TerraLib
-#include "../core/pattern/mvc/OutsideController.h"
+#include "../core/pattern/mvc/AbstractOutsideController.h"
 #include "../core/Config.h"
 
 namespace te
 {
   namespace layout
   {
-    class TELAYOUTEXPORT ColorDialogController : public OutsideController
+		class AbstractOutsideModel;
+
+    class TELAYOUTEXPORT ColorDialogController : public AbstractOutsideController
     {
       public:
 
-	      ColorDialogController( Observable* o );
+				ColorDialogController(AbstractOutsideModel* o);
 
 	      virtual ~ColorDialogController();
     };

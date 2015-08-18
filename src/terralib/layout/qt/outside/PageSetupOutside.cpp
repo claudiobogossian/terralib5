@@ -28,8 +28,6 @@
 // TerraLib
 #include "PageSetupOutside.h"
 #include "ui_PageSetup.h"
-#include "../../core/pattern/mvc/OutsideObserver.h"
-#include "../../core/pattern/mvc/OutsideController.h"
 #include "../../core/pattern/singleton/Context.h"
 #include "../core/Scene.h"
 
@@ -47,9 +45,9 @@
 #include <QMessageBox>
 #include <QObjectList>
 
-te::layout::PageSetupOutside::PageSetupOutside( OutsideController* controller, Observable* o ) :
+te::layout::PageSetupOutside::PageSetupOutside(AbstractOutsideController* controller) :
   QDialog(0),
-  OutsideObserver(controller, o),
+	AbstractOutsideView(controller),
   m_orientation(te::layout::Portrait),
   m_paperType(te::layout::A4),
   m_ui(new Ui::PageSetup)
@@ -76,15 +74,6 @@ void te::layout::PageSetupOutside::init()
 
   m_ui->lneCustomWidth->setValidator(new  QDoubleValidator(this));
   m_ui->lneCustomHeight->setValidator(new  QDoubleValidator(this));
-}
-
-void te::layout::PageSetupOutside::updateObserver( ContextItem context )
-{
-  setVisible(context.isShow());
-  if(context.isShow() == true)
-    show();
-  else
-    hide();
 }
 
 void te::layout::PageSetupOutside::setPosition( const double& x, const double& y )
@@ -288,3 +277,5 @@ te::layout::Scene* te::layout::PageSetupOutside::getScene()
   sc = dynamic_cast<Scene*>(abScene);
   return sc;
 }
+
+

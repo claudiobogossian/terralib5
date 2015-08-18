@@ -27,17 +27,15 @@
 
 // TerraLib
 #include "TemplateEditor.h"
-#include "../pattern/factory/TemplateParamsCreate.h"
-#include "../pattern/singleton/Context.h"
-#include "../pattern/factory/AbstractTemplateFactory.h"
 #include "../enum/Enums.h"
 #include "AbstractTemplate.h"
+#include "TemplateFactory.h"
+#include "TemplateFactoryParamsCreate.h"
 
 te::layout::TemplateEditor::TemplateEditor( EnumType* type, std::string path ) 
 {
-  AbstractTemplateFactory* factory = Context::getInstance().getTemplateFactory(); 
-  TemplateParamsCreate params(path);
-  m_template = factory->make(type, params);
+  TemplateFactoryParamsCreate params(path);
+	m_template = te::layout::TemplateFactory::make(type->getName(), params);
 }
 
 te::layout::TemplateEditor::~TemplateEditor()

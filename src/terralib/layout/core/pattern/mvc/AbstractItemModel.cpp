@@ -9,6 +9,7 @@ te::layout::AbstractItemModel::AbstractItemModel()
   te::gm::Envelope boundingBox(0., 0., 20., 20.);
   te::color::RGBAColor backgroundColor(0, 0, 0, 0);
   te::color::RGBAColor frameColor(0, 0, 0, 255);
+  double rotation = 0;
 
   m_properties.setTypeObj(Enums::getInstance().getEnumObjectType()->getObjectUnknown());
 
@@ -89,9 +90,10 @@ te::layout::AbstractItemModel::AbstractItemModel()
   {
     Property property(0);
     property.setName("show_frame");
-    property.setLabel("Show Frame");
-    property.setValue(true, dataType->getDataTypeBool());
-    m_properties.addProperty(property);
+    property.setLabel("show_frame");
+    property.setValue(false, dataType->getDataTypeBool());
+    property.setMenu(true);
+    this->m_properties.addProperty(property);
   }
 
   {
@@ -101,10 +103,18 @@ te::layout::AbstractItemModel::AbstractItemModel()
     property.setValue(true, dataType->getDataTypeBool());
     m_properties.addProperty(property);
   }
+  
+  {
+    Property property(0);
+    property.setName("rotation");
+    property.setLabel("Rotation");
+    property.setValue(rotation, dataType->getDataTypeDouble());
+    m_properties.addProperty(property);
+  }
 }
 
 te::layout::AbstractItemModel::~AbstractItemModel()
-{
+{ 
 }
 
 const te::layout::Property& te::layout::AbstractItemModel::getProperty(const std::string& propertyName) const

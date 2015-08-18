@@ -28,8 +28,8 @@
 // TerraLib
 #include "ColorDialogController.h"
 
-te::layout::ColorDialogController::ColorDialogController( Observable* o ) :
-	OutsideController(o)
+te::layout::ColorDialogController::ColorDialogController( AbstractOutsideModel* o ) :
+	AbstractOutsideController(o)
 {
   
 }

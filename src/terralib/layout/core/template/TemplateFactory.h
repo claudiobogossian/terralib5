@@ -18,51 +18,64 @@
  */
 
 /*!
-  \file TemplateFactory.h
-   
-  \brief Factory for creating families of related or dependent templates.
+	\file terralib/layout/core/template/TemplateFactory.h
 
-  \ingroup layout
+	\brief This is the abstract factory for tools.
 */
 
 #ifndef __TERRALIB_LAYOUT_INTERNAL_TEMPLATE_FACTORY_H 
 #define __TERRALIB_LAYOUT_INTERNAL_TEMPLATE_FACTORY_H
 
 // TerraLib
-#include "../pattern/factory/AbstractTemplateFactory.h"
-#include "../Config.h"
+#include "../../../common/ParameterizedAbstractFactory.h"
+#include "../../core/Config.h"
+#include "TemplateFactoryParamsCreate.h"
+#include "AbstractTemplate.h"
 
 namespace te
 {
   namespace layout
   {
-    class EnumType;
+		/*!
+			\class ToolFactory
 
-    /*!
-	  \brief Factory for creating families of related or dependent templates.
-	  
-	  \ingroup layout
+			\brief This is the abstract factory for templates.
 
-    \sa te::layout::AbstractItemFactory
-	  */
-    class TELAYOUTEXPORT TemplateFactory : public AbstractTemplateFactory
-    {
-      public:
+			It will create objects of type AbstractTemplate and will pass
+			parameters of type ToolFactoryParamsCreate to their factories constructors.
 
-        /*!
-          \brief Constructor
-         */
-        TemplateFactory();
+			If you want a new tool you can use a command like:
+			<code>
+			  te::layout::AbstractTemplate* pEngine = te::layout::TemplateFactory::make("JSON");
+			</code>
+			Or
+			<code>
+				te::layout::EnumTemplateType* tool = Enums::getInstance().getEnumTemplateType();
+				te::layout::EnumType* template = tool->getToolTypeJSON();
+				te::layout::AbstractTemplate* pEngine = te::layout::TemplateFactory::make(template->getName());
+			</code>
 
-        /*!
-          \brief Destructor
-         */
-        virtual ~TemplateFactory();
+			\note The caller of the method make will take the ownership of the returned tool.
 
-        /*!
-          \brief Reimplemented from AbstractItemFactory
-         */
-        virtual AbstractTemplate* make(EnumType* type, TemplateParamsCreate params = TemplateParamsCreate());
+			\sa AbstractTemplate, AbstractFactory
+		*/
+		class TELAYOUTEXPORT TemplateFactory : public te::common::ParameterizedAbstractFactory<AbstractTemplate, std::string, TemplateFactoryParamsCreate>
+		{
+			public:
+
+				/*! \brief Virtual destructor. */
+				virtual ~TemplateFactory();
+
+			protected:
+
+				/*!
+				\brief It creates the factory.
+
+				The key of a ToolFactory is a string.
+
+				\param factoryKey The key that identifies the factory.
+				*/
+				TemplateFactory(const std::string& factoryKey);
     };
   }
 }

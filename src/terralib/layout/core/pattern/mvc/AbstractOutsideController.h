@@ -18,26 +18,27 @@
  */
 
 /*!
-  \file OutsideController.h
+  \file AbstractOutsideController.h
    
   \brief Abstract class to represent a controller. "Controller" part of MVC widget. All classes representing the controller of a widget must inherit from this class.
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_OUTSIDE_CONTROLLER_H 
-#define __TERRALIB_LAYOUT_INTERNAL_OUTSIDE_CONTROLLER_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_ABSTRACT_OUTSIDE_CONTROLLER_H 
+#define __TERRALIB_LAYOUT_INTERNAL_ABSTRACT_OUTSIDE_CONTROLLER_H
 
 // TerraLib
-#include "../../enum/AbstractType.h"
 #include "../../Config.h"
+#include "../observer/NewObserver.h"
 
 namespace te
 {
   namespace layout
   {
-    class Observable;
-    class Observer;
+		class Subject;
+		class AbstractOutsideView;
+		class AbstractOutsideModel;
     class EnumType;
 
     /*!
@@ -45,7 +46,7 @@ namespace te
 	  
 	    \ingroup layout
 	  */
-    class TELAYOUTEXPORT OutsideController 
+		class TELAYOUTEXPORT AbstractOutsideController : public NewObserver
     {
     public:
 
@@ -54,7 +55,7 @@ namespace te
 
           \param o "Model" part of MVC widget
        */
-      OutsideController(Observable* o);
+			AbstractOutsideController(AbstractOutsideModel* o);
 
       /*!
           \brief Constructor
@@ -62,12 +63,12 @@ namespace te
           \param o "Model" part of MVC widget
           \param type type of the MVC widget.
        */
-      OutsideController(Observable* o, EnumType* type);
+			AbstractOutsideController(AbstractOutsideModel* o, EnumType* type);
 
       /*!
           \brief Destructor
        */ 
-      virtual ~OutsideController();
+			virtual ~AbstractOutsideController();
 
       /*!
           \brief Change coordinate llx,lly of the MVC widget.
@@ -82,14 +83,16 @@ namespace te
 
           \return model
        */
-      const Observable* getModel();
+			const AbstractOutsideModel* getModel();
 
       /*!
           \brief Returns the "View" part of the MVC widget.
 
           \return view 
        */
-      const Observer* getView();
+			const AbstractOutsideView* getView();
+
+			virtual void update(const Subject* subject) override;
 
     protected:
 
@@ -98,8 +101,8 @@ namespace te
          */
       virtual void create();
 
-      Observable* m_model; //!< "Model" part of the MVC widget.
-      Observer* m_view; //!< "View" part of the MVC widget.
+      AbstractOutsideModel* m_model; //!< "Model" part of the MVC widget.
+      AbstractOutsideView* m_view; //!< "View" part of the MVC widget.
     };
   }
 }

@@ -29,10 +29,9 @@
 #define __TERRALIB_LAYOUT_INTERNAL_GRID_SETTINGS_MODEL_H
 
 // TerraLib
-#include "../core/pattern/mvc/OutsideModelObservable.h"
-#include "../core/ContextItem.h"
-#include "../core/property/Properties.h"
+#include "../core/pattern/mvc/AbstractOutsideModel.h"
 #include "../core/Config.h"
+#include "../core/property/Property.h"
 
 // STL
 #include <vector>
@@ -43,8 +42,9 @@ namespace te
   {
     class PlanarGridSettingsConfigProperties;
     class GeodesicGridSettingsConfigProperties;
+		class Properties;
 
-    class TELAYOUTEXPORT GridSettingsModel : public OutsideModelObservable
+		class TELAYOUTEXPORT GridSettingsModel : public AbstractOutsideModel
     {
     public:
 
@@ -68,3 +68,4 @@ namespace te
 }
 
 #endif
+

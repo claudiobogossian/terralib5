@@ -27,11 +27,10 @@
 
 // TerraLib
 #include "EditTemplateModel.h"
-#include "../core/property/Property.h"
-#include "../core/property/Properties.h"
 #include "../core/enum/Enums.h"
 
-te::layout::EditTemplateModel::EditTemplateModel() 
+te::layout::EditTemplateModel::EditTemplateModel() :
+	AbstractOutsideModel()
 {
   m_type = Enums::getInstance().getEnumObjectType()->getEditTemplate();
 }

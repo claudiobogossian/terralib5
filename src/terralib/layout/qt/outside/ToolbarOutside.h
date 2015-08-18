@@ -34,7 +34,7 @@
 #include <QToolBar>
 
 // TerraLib
-#include "../../core/pattern/mvc/OutsideObserver.h"
+#include "../../core/pattern/mvc/AbstractOutsideView.h"
 #include "../../../geometry/Envelope.h"
 #include "../../core/Config.h"
 
@@ -56,6 +56,7 @@ namespace te
   {
     class EnumType;
     class Scene;
+		class AbstractOutsideController;
 
     /*!
     \brief Standard Toolbar for Layout. Includes Qt components for interaction between the user and the plugin/app, via events, made from the Layout module. 
@@ -66,23 +67,25 @@ namespace te
 
 	    \sa te::layout::OutsideObserver
 	  */
-    class TELAYOUTEXPORT ToolbarOutside : public QToolBar, public OutsideObserver
+		class TELAYOUTEXPORT ToolbarOutside : public QToolBar, public AbstractOutsideView
     {
 	    Q_OBJECT //for slots/signals
 
     public:
 
-	    ToolbarOutside(OutsideController* controller, Observable* o);
+			ToolbarOutside(AbstractOutsideController* controller);
 
 	    virtual ~ToolbarOutside();
-
-	    virtual void updateObserver(ContextItem context);
-
+			
 	    virtual void setPosition(const double& x, const double& y);
 
 	    virtual te::gm::Coord2D getPosition();
 
       virtual void createToolbar();
+
+			virtual void notifyChangedZoom(int newZoom);
+
+			virtual void changeAction(EnumType* mode);
 
       virtual QToolButton* getMapToolButton();
 
@@ -95,9 +98,7 @@ namespace te
       virtual QToolButton* getArrowCursorButton();
 
       virtual QToolButton* getItemTools();
-
-      virtual QToolButton* getLineIntersectionToolButton();
-      
+			      
       virtual QToolButton* getBringToFrontToolButton();
 
       virtual QToolButton* getSendToBackToolButton();
@@ -143,9 +144,7 @@ namespace te
       virtual QAction* getActionArrowCursorButton();
 
       virtual QAction* getActionItemTools();
-
-      virtual QAction* getActionLineIntersectionToolButton();
-
+			
       virtual QAction* getActionBringToFrontToolButton();
 
       virtual QAction* getActionSendToBackToolButton();
@@ -243,9 +242,7 @@ namespace te
       std::string getActionGroup();
 
       std::string getActionUngroup();
-
-      std::string getActionLineIntersectionMouse();
-
+			
       std::string getActionSceneZoom();
 
       std::string getActionRemoveObject();
@@ -292,60 +289,10 @@ namespace te
       std::string getActionExit();
 
       std::string getActionExportToPDF();
-      
-    public slots:
-      
-      virtual void onMapTriggered(QAction* action);
-
-      virtual void onMapToolsTriggered(QAction* action);
-
-      virtual void onGeometryTriggered(QAction* action);
-
-      virtual void onViewAreaTriggered(QAction* action);
-      
-      virtual void onArrowCursorClicked(bool checked);
-
-      virtual void onItemToolsTriggered(QAction* action);
-
-      virtual void onLineIntersectionMouse(bool checked);
-
-      virtual void onComboZoomActivated();
-
-      virtual void onZoomChanged(int factor);
-
-      virtual void onBringToFrontClicked(bool checked);
-
-      virtual void onSendToBackClicked(bool checked);
-
-      virtual void onRecomposeClicked(bool checked);
-
-      virtual void onTextToolsTriggered(QAction* action);
-
-      virtual void onAlignLeftClicked(bool checked);
-
-      virtual void onAlignRightClicked(bool checked);
-
-      virtual void onAlignTopClicked(bool checked);
-
-      virtual void onAlignBottomClicked(bool checked);
-
-      virtual void onAlignCenterHorizontalClicked(bool checked);
-
-      virtual void onAlignCenterVerticalClicked(bool checked);
-
-      virtual void onRemoveObjectClicked(bool checked);
-
-      virtual void onDrawMapClicked(bool checked);
-
-      virtual void onObjectToImageClicked(bool checked);
-
-      virtual void onExitClicked(bool checked);
-
-      virtual void onExportToPDFClicked(bool checked);
-      
+      			      
     signals:
-
-      void changeMode(te::layout::EnumType* newMode);
+			
+			void changeMode(te::layout::EnumType* newMode);
 
       void zoomChangedInComboBox(int zoom);
 
@@ -362,9 +309,7 @@ namespace te
       virtual QToolButton* createArrowCursorButton();
 
       virtual QToolButton* createItemTools();
-
-      virtual QToolButton* createLineIntersectionToolButton();
-      
+			      
       virtual QToolButton* createBringToFrontToolButton();
 
       virtual QComboBox* createSceneZoomCombobox();
@@ -398,9 +343,7 @@ namespace te
       virtual QToolButton* createExitButton();
 
       virtual QToolButton* createExportToPDFButton();
-
-      virtual void changeAction(EnumType* mode);
-
+			
       virtual QToolButton* createToolButton(std::string text, std::string tooltip, std::string icon);
 
       virtual QPushButton* createPushButton(std::string text, std::string tooltip, std::string icon);
@@ -450,9 +393,7 @@ namespace te
 
       std::string m_actionGroup;
       std::string m_actionUngroup;
-
-      std::string m_actionLineIntersectionMouse;
-
+			
       std::string m_actionSceneZoom;
 
       std::string m_actionRemoveObject;
@@ -490,7 +431,6 @@ namespace te
       QToolButton* m_viewAreaToolButton;
       QToolButton* m_arrowCursorButton;
       QToolButton* m_itemTools;
-      QToolButton* m_lineIntersectionToolButton;
       QToolButton* m_bringToFrontToolButton;
       QToolButton* m_sendToBackToolButton;
       QToolButton* m_recomposeToolButton;
@@ -517,7 +457,6 @@ namespace te
       QAction* m_actionViewAreaToolButton;
       QAction* m_actionArrowCursorButton;
       QAction* m_actionItemTools;
-      QAction* m_actionLineIntersectionToolButton;
       QAction* m_actionBringToFrontToolButton;
       QAction* m_actionSendToBackToolButton;
       QAction* m_actionRecomposeToolButton;

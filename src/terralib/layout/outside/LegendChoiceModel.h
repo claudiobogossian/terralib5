@@ -29,16 +29,16 @@
 #define __TERRALIB_LAYOUT_INTERNAL_LEGEND_CHOICE_MODEL_H
 
 // TerraLib
-#include "../core/pattern/mvc/OutsideModelObservable.h"
-#include "../core/ContextItem.h"
-#include "../core/property/Properties.h"
+#include "../core/pattern/mvc/AbstractOutsideModel.h"
 #include "../core/Config.h"
 
 namespace te
 {
   namespace layout
   {
-    class TELAYOUTEXPORT LegendChoiceModel : public OutsideModelObservable
+		class Properties;
+
+		class TELAYOUTEXPORT LegendChoiceModel : public AbstractOutsideModel
     {
     public:
 

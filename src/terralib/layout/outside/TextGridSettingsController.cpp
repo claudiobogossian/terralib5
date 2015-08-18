@@ -27,12 +27,11 @@
 
 // TerraLib
 #include "TextGridSettingsController.h"
-#include "../core/pattern/mvc/OutsideModelObservable.h"
-#include "../core/pattern/mvc/Observable.h"
+#include "../core/pattern/mvc/AbstractOutsideModel.h"
 #include "TextGridSettingsModel.h"
 
-te::layout::TextGridSettingsController::TextGridSettingsController( Observable* o ) :
-	OutsideController(o)
+te::layout::TextGridSettingsController::TextGridSettingsController(AbstractOutsideModel* o) :
+	AbstractOutsideController(o)
 {
  
 }
@@ -53,7 +52,7 @@ void te::layout::TextGridSettingsController::addUpdateProperty( std::string name
 
   if(m_model)
   {
-    OutsideModelObservable* model = dynamic_cast<OutsideModelObservable*>(m_model);
+		AbstractOutsideModel* model = dynamic_cast<AbstractOutsideModel*>(m_model);
     outsideModel = dynamic_cast<TextGridSettingsModel*>(model);    
   }
 
@@ -109,7 +108,7 @@ void te::layout::TextGridSettingsController::addUpdateTextGridProperty( Property
 
   if(m_model)
   {
-    OutsideModelObservable* model = dynamic_cast<OutsideModelObservable*>(m_model);
+		AbstractOutsideModel* model = dynamic_cast<AbstractOutsideModel*>(m_model);
     outsideModel = dynamic_cast<TextGridSettingsModel*>(model);    
   }
 
@@ -154,7 +153,7 @@ te::layout::Property te::layout::TextGridSettingsController::getProperty( std::s
 
   if(m_model)
   {
-    OutsideModelObservable* model = dynamic_cast<OutsideModelObservable*>(m_model);
+		AbstractOutsideModel* model = dynamic_cast<AbstractOutsideModel*>(m_model);
     outsideModel = dynamic_cast<TextGridSettingsModel*>(model);    
   }
 

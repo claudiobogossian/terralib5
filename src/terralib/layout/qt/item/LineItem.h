@@ -29,13 +29,12 @@
 #define __TERRALIB_LAYOUT_INTERNAL_LINE_ITEM_H
 
 // TerraLib
-#include "ObjectItem.h"
-#include "../../../geometry/Point.h"
+#include "AbstractItem.h"
 
 // Qt 
-#include <QVector>
-#include <QPolygonF>
-#include <QPen>
+#include <QGraphicsItem>
+
+class QPen;
 
 class QGraphicsSceneMouseEvent;
 
@@ -43,29 +42,21 @@ namespace te
 {
   namespace layout
   {
-    class Observable;
-
-    class LineItem : public ObjectItem
+    class LineItem : public AbstractItem<QGraphicsItem>
     {
       public:
 
-        LineItem ( ItemController* controller, Observable* o, bool invertedMatrix = false );
+        LineItem ( AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix = false );
 
         virtual ~LineItem ();
-
-        /*!
-          \brief Reimplemented from ItemObserver
-         */
-        virtual void updateObserver(ContextItem context);
 
       protected:
 
         virtual void drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
 
-        virtual void searchStyle();
+        virtual QPolygonF getQPolygon();
 
-        QPolygonF   m_poly;
-        QPen        m_penStyle;
+        virtual QPen searchStyle();
 	  };
   }
 }

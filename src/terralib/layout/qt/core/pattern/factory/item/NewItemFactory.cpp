@@ -18,33 +18,24 @@
  */
 
 /*!
-  \file ToolbarController.h
+  \file NewItemFactory.cpp
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_TOOLBAR_CONTROLLER_H_H 
-#define __TERRALIB_LAYOUT_INTERNAL_TOOLBAR_CONTROLLER_H_H
-
 // TerraLib
-#include "../core/pattern/mvc/OutsideController.h"
-#include "../core/Config.h"
+#include "NewItemFactory.h"
 
-namespace te
+te::layout::NewItemFactory::~NewItemFactory()
 {
-  namespace layout
-  {
-    class TELAYOUTEXPORT ToolbarController : public OutsideController
-    {
-      public:
 
-	      ToolbarController( Observable* o );
-
-	      virtual ~ToolbarController();
-    };
-  }
 }
 
-#endif
+te::layout::NewItemFactory::NewItemFactory(const std::string& factoryKey)
+: te::common::ParameterizedAbstractFactory<AbstractItemView, std::string, ItemFactoryParamsCreate>(factoryKey)
+{
+
+}
+

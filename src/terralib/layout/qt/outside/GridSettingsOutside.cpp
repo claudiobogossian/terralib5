@@ -28,8 +28,6 @@
 // TerraLib
 #include "GridSettingsOutside.h"
 #include "ui_GridSettings.h"
-#include "../../core/pattern/mvc/OutsideObserver.h"
-#include "../../core/pattern/mvc/OutsideController.h"
 #include "../../outside/GridSettingsController.h"
 #include "../../core/property/Variant.h"
 #include "../../core/property/PlanarGridSettingsConfigProperties.h"
@@ -37,6 +35,7 @@
 #include "../../core/enum/Enums.h"
 #include "../../outside/GridSettingsModel.h"
 #include "../../../common/StringUtils.h"
+#include "../../core/pattern/mvc/AbstractOutsideModel.h"
 
 // STL
 #include <string>
@@ -52,9 +51,9 @@
 #include <QMessageBox>
 #include <QObjectList>
 
-te::layout::GridSettingsOutside::GridSettingsOutside( OutsideController* controller, Observable* o ) :
+te::layout::GridSettingsOutside::GridSettingsOutside(AbstractOutsideController* controller) :
   QDialog(0),
-  OutsideObserver(controller, o),
+	AbstractOutsideView(controller),
   m_ui(new Ui::GridSettings)
 {
   m_planarGridSettings = new PlanarGridSettingsConfigProperties;
@@ -120,19 +119,6 @@ void te::layout::GridSettingsOutside::init()
   m_ui->fraGridTextGeoColor->setAutoFillBackground(true);
   m_ui->fraGridTextPlanarColor->setAutoFillBackground(true);
   m_ui->fraPlanarLineColor->setAutoFillBackground(true);  
-}
-
-void te::layout::GridSettingsOutside::updateObserver( ContextItem context )
-{
-  setVisible(context.isShow());
-  if(context.isShow() == true)
-    show();
-  else
-    hide();
-
-  GridSettingsController* controller = dynamic_cast<GridSettingsController*>(m_controller);
-  if(!controller)
-    return;
 }
 
 void te::layout::GridSettingsOutside::setPosition( const double& x, const double& y )
@@ -253,7 +239,8 @@ te::color::RGBAColor te::layout::GridSettingsOutside::configColor( QWidget* widg
 
 void te::layout::GridSettingsOutside::load()
 {
-  GridSettingsModel* model = dynamic_cast<GridSettingsModel*>(m_model);
+	AbstractOutsideModel* abstractModel = const_cast<AbstractOutsideModel*>(m_controller->getModel());
+  GridSettingsModel* model = dynamic_cast<GridSettingsModel*>(abstractModel);
   if(!model)
     return;
 

@@ -70,5 +70,8 @@ const te::layout::Property& te::layout::AbstractItemController::getProperty(cons
 
 void te::layout::AbstractItemController::update(const te::layout::Subject* subject)
 {
-  m_view->refresh();
+  const Property& property = m_model->getProperty("rotation");
+  if(property.getValue().toDouble() != m_view->getItemRotation()){
+    m_view->setItemRotation(property.getValue().toDouble());
+  }
 }
