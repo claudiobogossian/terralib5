@@ -174,8 +174,6 @@ void te::qt::widgets::TrajectoryItem::drawForward(const unsigned int& curTime)
   if(m_animationRoute.empty())
     return;
 
-  //setMatrix();
-
   int indold = m_animation->getAnimationDataIndex((double)m_curTimeDuration / (double)m_duration);
   int ind = m_animation->getAnimationDataIndex((double)curTime / (double)m_duration);
   m_curTimeDuration = curTime;
