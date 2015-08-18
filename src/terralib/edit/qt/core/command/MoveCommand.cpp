@@ -30,18 +30,19 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include "../../../../geometry/Geometry.h"
 #include "../../../Feature.h"
 #include "../../../Utils.h"
+#include "../../../RepositoryManager.h"
 #include "../../Utils.h"
 #include "../../Renderer.h"
+#include "../UndoStackManager.h"
 #include "MoveCommand.h"
 
-te::edit::MoveCommand::MoveCommand(te::edit::EditionManager* editionManager, std::map<std::string, QList<QPointF> > items, Feature* item, te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer,
+te::edit::MoveCommand::MoveCommand(std::map<std::string, QList<QPointF> > items, Feature* item, te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer,
   QUndoCommand *parent) :
   QUndoCommand(parent)
 , m_item(item)
 , m_moveItems(items)
 , m_display(display)
 , m_layer(layer)
-, m_editionManager(editionManager)
 {
 
   std::map<std::string, QList<QPointF> >::iterator it;
@@ -106,14 +107,14 @@ void te::edit::MoveCommand::redo()
   if (m_moveItems.empty())
     return;
 
-  if(!m_editionManager->getUndoStack())
+  if (!UndoStackManager::getInstance().getUndoStack())
     return;
   
   bool resultFound = false;
 
-  for (int i = 0; i < m_editionManager->getUndoStack()->count(); ++i)
+  for (int i = 0; i < UndoStackManager::getInstance().getUndoStack()->count(); ++i)
   {
-    const QUndoCommand* cmd = m_editionManager->getUndoStack()->command(i);
+    const QUndoCommand* cmd = UndoStackManager::getInstance().getUndoStack()->command(i);
     if (cmd == this)
     {
       resultFound = true;
@@ -175,15 +176,15 @@ void te::edit::MoveCommand::draw(Feature* feat)
   Renderer& renderer = Renderer::getInstance();
   renderer.begin(draft, env, m_display->getSRID());
 
-  m_editionManager->m_repository->addFeature(m_layer->getId(), feat->clone());
+  RepositoryManager::getInstance().addFeature(m_layer->getId(), feat->clone());
 
-  if (m_editionManager->m_repository->hasIdentify(m_layer->getId(), feat->getId()) == true)
+  if (RepositoryManager::getInstance().hasIdentify(m_layer->getId(), feat->getId()) == true)
   {
-    m_editionManager->m_repository->removeFeature(m_layer->getId(), feat->getId());
+    RepositoryManager::getInstance().removeFeature(m_layer->getId(), feat->getId());
   }
 
   // Draw the layer edited geometries
-  renderer.drawRepository(m_editionManager, m_layer->getId(), env, m_display->getSRID());
+  renderer.drawRepository(m_layer->getId(), env, m_display->getSRID());
 
   renderer.draw(feat->getGeometry(), true);
 
@@ -191,6 +192,6 @@ void te::edit::MoveCommand::draw(Feature* feat)
 
   m_display->repaint();
 
-  m_editionManager->m_repository->addFeature(m_layer->getId(), feat->clone());
+  RepositoryManager::getInstance().addFeature(m_layer->getId(), feat->clone());
 
 }

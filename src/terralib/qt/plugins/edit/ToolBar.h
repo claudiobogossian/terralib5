@@ -40,7 +40,6 @@
 // STL
 #include <string>
 
-#include "../../../edit/qt/core/EditionManager.h"
 
 namespace te
 {
@@ -118,7 +117,6 @@ namespace te
             QAction* m_redoToolAction;
             QList<QAction*> m_tools;
             QUndoView* m_undoView;
-            te::edit::EditionManager* m_editionManager;
 
             te::map::AbstractLayerPtr getSelectedLayer();
             te::map::AbstractLayerPtr getLayer(const std::string& id);

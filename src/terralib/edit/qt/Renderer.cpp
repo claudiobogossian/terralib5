@@ -1,26 +1,26 @@
 /*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
-    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
-    TerraLib is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License as published by
-    the Free Software Foundation, either version 3 of the License,
-    or (at your option) any later version.
+TerraLib is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License,
+or (at your option) any later version.
 
-    TerraLib is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License for more details.
+TerraLib is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU Lesser General Public License
-    along with TerraLib. See COPYING. If not, write to
-    TerraLib Team at <terralib-team@terralib.org>.
- */
+You should have received a copy of the GNU Lesser General Public License
+along with TerraLib. See COPYING. If not, write to
+TerraLib Team at <terralib-team@terralib.org>.
+*/
 
 /*!
-  \file terralib/edit/qt/Renderer.cpp
+\file terralib/edit/qt/Renderer.cpp
 
-  \brief This is a singleton for rendering geometries and features.
+\brief This is a singleton for rendering geometries and features.
 */
 
 // TerraLib
@@ -32,6 +32,7 @@
 #include "../../srs/Config.h"
 #include "../Feature.h"
 #include "../Repository.h"
+#include "../RepositoryManager.h"
 #include "../Utils.h"
 #include "Renderer.h"
 
@@ -39,9 +40,9 @@
 #include <map>
 
 te::edit::Renderer::Renderer()
-  : m_canvas(0),
-    m_srid(TE_UNKNOWN_SRS),
-    m_currentGeomType(te::gm::UnknownGeometryType)
+: m_canvas(0),
+m_srid(TE_UNKNOWN_SRS),
+m_currentGeomType(te::gm::UnknownGeometryType)
 {
   setupDefaultStyle();
 }
@@ -60,25 +61,25 @@ void te::edit::Renderer::begin(QPaintDevice* device, const te::gm::Envelope& e, 
   m_srid = srid;
 }
 
-void te::edit::Renderer::drawRepositories(te::edit::EditionManager* editionManager, const te::gm::Envelope& e, int srid)
+void te::edit::Renderer::drawRepositories(const te::gm::Envelope& e, int srid)
 {
-  const std::map<std::string, Repository*>& repositories = editionManager->m_repository->getRepositories();
+  const std::map<std::string, Repository*>& repositories = RepositoryManager::getInstance().getRepositories();
 
   std::map<std::string, Repository*>::const_iterator it;
-  for(it = repositories.begin(); it != repositories.end(); ++it)
-    drawRepository(editionManager, it->first, e, srid);
+  for (it = repositories.begin(); it != repositories.end(); ++it)
+    drawRepository(it->first, e, srid);
 }
 
-void te::edit::Renderer::drawRepository(te::edit::EditionManager* editionManager, const std::string& source, const te::gm::Envelope& e, int srid)
+void te::edit::Renderer::drawRepository(const std::string& source, const te::gm::Envelope& e, int srid)
 {
-  Repository* repository = editionManager->m_repository->getRepository(source);
+  Repository* repository = RepositoryManager::getInstance().getRepository(source);
 
-  if(repository == 0)
+  if (repository == 0)
     return;
 
   std::vector<Feature*> features = repository->getFeatures(e, srid);
 
-  for(std::size_t i = 0; i < features.size(); ++i)
+  for (std::size_t i = 0; i < features.size(); ++i)
     draw(features[i]->getGeometry());
 }
 
@@ -86,54 +87,54 @@ void te::edit::Renderer::prepare(te::gm::GeomType type)
 {
   assert(m_canvas);
 
-  if(m_currentGeomType == type && m_styleChanged == false)
+  if (m_currentGeomType == type && m_styleChanged == false)
     return; // No need reconfigure the canvas
 
   m_currentGeomType = type;
 
-  switch(type)
+  switch (type)
   {
-    case te::gm::PolygonType:
-    case te::gm::PolygonZType:
-    case te::gm::PolygonMType:
-    case te::gm::PolygonZMType:
-    case te::gm::MultiPolygonType:
-    case te::gm::MultiPolygonZType:
-    case te::gm::MultiPolygonMType:
-    case te::gm::MultiPolygonZMType:
-    {
-      te::qt::widgets::Config2DrawPolygons(m_canvas, m_polygonFillColor, m_polygonContourColor, m_polygonContourWidth);
-    }
+  case te::gm::PolygonType:
+  case te::gm::PolygonZType:
+  case te::gm::PolygonMType:
+  case te::gm::PolygonZMType:
+  case te::gm::MultiPolygonType:
+  case te::gm::MultiPolygonZType:
+  case te::gm::MultiPolygonMType:
+  case te::gm::MultiPolygonZMType:
+  {
+                                   te::qt::widgets::Config2DrawPolygons(m_canvas, m_polygonFillColor, m_polygonContourColor, m_polygonContourWidth);
+  }
     break;
 
-    case te::gm::LineStringType:
-    case te::gm::LineStringZType:
-    case te::gm::LineStringMType:
-    case te::gm::LineStringZMType:
-    case te::gm::MultiLineStringType:
-    case te::gm::MultiLineStringZType:
-    case te::gm::MultiLineStringMType:
-    case te::gm::MultiLineStringZMType:
-    {
-      te::qt::widgets::Config2DrawLines(m_canvas, m_lineColor, m_lineWidth);
-    }
+  case te::gm::LineStringType:
+  case te::gm::LineStringZType:
+  case te::gm::LineStringMType:
+  case te::gm::LineStringZMType:
+  case te::gm::MultiLineStringType:
+  case te::gm::MultiLineStringZType:
+  case te::gm::MultiLineStringMType:
+  case te::gm::MultiLineStringZMType:
+  {
+                                      te::qt::widgets::Config2DrawLines(m_canvas, m_lineColor, m_lineWidth);
+  }
     break;
 
-    case te::gm::PointType:
-    case te::gm::PointZType:
-    case te::gm::PointMType:
-    case te::gm::PointZMType:
-    case te::gm::MultiPointType:
-    case te::gm::MultiPointZType:
-    case te::gm::MultiPointMType:
-    case te::gm::MultiPointZMType:
-    {
-      te::qt::widgets::Config2DrawPoints(m_canvas, m_pointMark, m_pointSize, m_pointFillColor, m_pointContourColor, m_pointContourWidth);
-    }
+  case te::gm::PointType:
+  case te::gm::PointZType:
+  case te::gm::PointMType:
+  case te::gm::PointZMType:
+  case te::gm::MultiPointType:
+  case te::gm::MultiPointZType:
+  case te::gm::MultiPointMType:
+  case te::gm::MultiPointZMType:
+  {
+                                 te::qt::widgets::Config2DrawPoints(m_canvas, m_pointMark, m_pointSize, m_pointFillColor, m_pointContourColor, m_pointContourWidth);
+  }
     break;
 
-    default:
-      return;
+  default:
+    return;
   }
 }
 
@@ -142,14 +143,14 @@ void te::edit::Renderer::draw(te::gm::Geometry* geom, bool showVertexes)
   assert(m_canvas);
   assert(geom);
 
-  if((geom->getSRID() != TE_UNKNOWN_SRS) && (m_srid != TE_UNKNOWN_SRS) && (geom->getSRID() != m_srid))
+  if ((geom->getSRID() != TE_UNKNOWN_SRS) && (m_srid != TE_UNKNOWN_SRS) && (geom->getSRID() != m_srid))
     geom->transform(m_srid);
 
   prepare(geom->getGeomTypeId());
 
   m_canvas->draw(geom);
 
-  if(showVertexes)
+  if (showVertexes)
     drawVertexes(geom);
 }
 
@@ -167,7 +168,7 @@ void te::edit::Renderer::drawVertexes(te::gm::Geometry* geom)
 
 void te::edit::Renderer::drawVertexes(const std::vector<te::gm::LineString*>& lines)
 {
-  for(std::size_t i = 0; i < lines.size(); ++i)
+  for (std::size_t i = 0; i < lines.size(); ++i)
     drawVertexes(lines[i]);
 }
 
@@ -176,10 +177,10 @@ void te::edit::Renderer::drawVertexes(te::gm::LineString* line)
   assert(m_canvas);
   assert(line);
 
-  if((line->getSRID() != TE_UNKNOWN_SRS) && (m_srid != TE_UNKNOWN_SRS) && (line->getSRID() != m_srid))
+  if ((line->getSRID() != TE_UNKNOWN_SRS) && (m_srid != TE_UNKNOWN_SRS) && (line->getSRID() != m_srid))
     line->transform(m_srid);
 
-  for(std::size_t j = 0; j < line->getNPoints(); ++j)
+  for (std::size_t j = 0; j < line->getNPoints(); ++j)
   {
     std::auto_ptr<te::gm::Point> point(line->getPointN(j));
     m_canvas->draw(point.get());
@@ -208,7 +209,7 @@ void te::edit::Renderer::setPolygonStyle(const QColor& fillColor, const QColor& 
 }
 
 void te::edit::Renderer::setPointStyle(const QString& mark, const QColor& fillColor, const QColor& contourColor,
-                                       const std::size_t& contourWidth, const std::size_t& size)
+  const std::size_t& contourWidth, const std::size_t& size)
 {
   m_pointMark = mark;
   m_pointFillColor = fillColor;

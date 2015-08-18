@@ -11,9 +11,11 @@
 #include "../../../qt/widgets/canvas/MapDisplay.h"
 #include "../../Feature.h"
 #include "../../RepositoryManager.h"
+#include "../../Utils.h"
 #include "../Renderer.h"
 #include "../Utils.h"
 #include "../core/command/UpdateCommand.h"
+#include "../core/UndoStackManager.h"
 #include "AggregateAreaTool.h"
 
 // Qt
@@ -28,8 +30,8 @@
 #include <memory>
 #include <iostream>
 
-te::edit::AggregateAreaTool::AggregateAreaTool(te::edit::EditionManager* editionManager, te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent)
-: CreateLineTool(editionManager, display, layer, Qt::ArrowCursor, 0),
+te::edit::AggregateAreaTool::AggregateAreaTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent)
+: CreateLineTool(display, layer, Qt::ArrowCursor, 0),
 m_feature(0)
 //,m_updateWatches(std::vector<Feature*>())
 {
@@ -93,10 +95,7 @@ bool te::edit::AggregateAreaTool::mouseDoubleClickEvent(QMouseEvent* e)
 
     storeEditedFeature();
 
-    //m_updateWatches.push_back(m_feature->clone());
-
-    //QUndoCommand* command = new UpdateCommand(m_editionManager, m_updateWatches, m_display, m_layer);
-    //m_editionManager->addUndoStack(command);
+    storeUndoCommand();
 
     return true;
   }
@@ -123,7 +122,7 @@ void te::edit::AggregateAreaTool::draw()
   renderer.begin(draft, env, m_display->getSRID());
 
   // Draw the layer edited geometries
-  renderer.drawRepository(m_editionManager, m_layer->getId(), env, m_display->getSRID());
+  renderer.drawRepository(m_layer->getId(), env, m_display->getSRID());
 
   if (!m_coords.empty())
   {
@@ -199,12 +198,34 @@ void te::edit::AggregateAreaTool::pickFeature(const te::map::AbstractLayerPtr& l
     if (ds->moveNext())
     {
 
+      te::gm::Coord2D coord(0, 0);
+
       std::auto_ptr<te::gm::Geometry> geom = ds->getGeometry(geomProp->getName());
-      te::gm::Envelope env(*geom->getMBR());
+      te::gm::Envelope auxEnv(*geom->getMBR());
 
-      m_feature = PickFeature(m_editionManager, m_layer, env, m_display->getSRID());
+      // Try finds the geometry centroid
+      switch (geom->getGeomTypeId())
+      {
+        case te::gm::PolygonType:
+        {
+          te::gm::Polygon* p = dynamic_cast<te::gm::Polygon*>(geom.get());
+          coord = *p->getCentroidCoord();
 
-      std::string f = m_feature->getId()->getValueAsString();
+          break;
+        }
+        case te::gm::MultiPolygonType:
+        {
+          te::gm::MultiPolygon* mp = dynamic_cast<te::gm::MultiPolygon*>(geom.get());
+          coord = *mp->getCentroidCoord();
+        
+          break;
+        }
+      }
+
+      // Build the search envelope
+      te::gm::Envelope e(coord.getX(), coord.getY(), coord.getX(), coord.getY());
+
+      m_feature = PickFeature(m_layer, e, m_display->getSRID(), te::edit::GEOMETRY_UPDATE);
 
     }
 
@@ -245,9 +266,7 @@ void te::edit::AggregateAreaTool::onExtentChanged()
 
 void te::edit::AggregateAreaTool::storeEditedFeature()
 {
-  m_editionManager->m_repository->addGeometry(m_layer->getId(), m_feature->getId()->clone(), dynamic_cast<te::gm::Geometry*>(buildPolygon()->clone()));
-
-  m_editionManager->m_operation[m_feature->getId()->getValueAsString()] = m_editionManager->updateOp;
+  RepositoryManager::getInstance().addGeometry(m_layer->getId(), m_feature->getId()->clone(), dynamic_cast<te::gm::Geometry*>(buildPolygon()->clone()), te::edit::GEOMETRY_UPDATE);
 }
 
 te::gm::Geometry* te::edit::AggregateAreaTool::Union(te::gm::Geometry* g1, Feature* feature_g2)
@@ -311,4 +330,13 @@ te::gm::Geometry* te::edit::AggregateAreaTool::Union(te::gm::Geometry* g1, Featu
   }
 
   return g1;
+}
+
+void te::edit::AggregateAreaTool::storeUndoCommand()
+{
+  //m_updateWatches.push_back(m_feature->clone());
+
+  //QUndoCommand* command = new UpdateCommand(m_updateWatches, m_display, m_layer);
+  //UndoStackManager::getInstance().addUndoStack(command);
+
 }

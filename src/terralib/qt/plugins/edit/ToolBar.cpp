@@ -30,6 +30,8 @@
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../edit/Feature.h"
 #include "../../../edit/Repository.h"
+#include "../../../edit/RepositoryManager.h"
+#include "../../../edit/qt/core/UndoStackManager.h"
 #include "../../../edit/qt/tools/CreateLineTool.h"
 #include "../../../edit/qt/tools/CreatePolygonTool.h"
 #include "../../../edit/qt/tools/MoveGeometryTool.h"
@@ -87,7 +89,6 @@ te::qt::plugins::edit::ToolBar::ToolBar()
 te::qt::plugins::edit::ToolBar::~ToolBar()
 {
   delete m_toolBar;
-  delete m_editionManager;
   delete m_undoView;
 }
 
@@ -126,7 +127,7 @@ void te::qt::plugins::edit::ToolBar::initialize()
   m_toolBar = new QToolBar;
 
   // Initialize the Edition Manager
-  m_editionManager = new te::edit::EditionManager();
+  //m_StackManager = new te::edit::StackManager();
 
   initializeActions();
 }
@@ -143,10 +144,7 @@ void te::qt::plugins::edit::ToolBar::initializeActions()
   m_toolBar->addAction(m_saveAction);
 
   // Undo/Redo
-  te::qt::af::evt::GetMapDisplay e;
-  te::qt::af::ApplicationController::getInstance().broadcast(&e);
-
-  QUndoStack* undoStack = m_editionManager->getUndoStack();
+  QUndoStack* undoStack = te::edit::UndoStackManager::getInstance().getUndoStack();
 
   if (undoStack)
   {
@@ -239,7 +237,7 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
 {
   try
   {
-    std::map<std::string, te::edit::Repository*> repositories = m_editionManager->m_repository->getRepositories();
+    std::map<std::string, te::edit::Repository*> repositories = te::edit::RepositoryManager::getInstance().getRepositories();
 
     std::map<std::string, te::edit::Repository*>::iterator it;
 
@@ -276,12 +274,13 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
         return;
 
       // Build the DataSet that will be used to update
-      std::auto_ptr<te::mem::DataSet> createds(new te::mem::DataSet(schema.get()));
-      std::auto_ptr<te::mem::DataSet> updateds(new te::mem::DataSet(schema.get()));
-      std::auto_ptr<te::mem::DataSet> removeds(new te::mem::DataSet(schema.get()));
+      std::map<te::edit::OperationType, te::mem::DataSet* > operationds ;
+
+      for (std::size_t i = 0; i < te::edit::NumberOfOperationTypes; i++)
+        operationds[te::edit::OperationType(i)] = new te::mem::DataSet(schema.get());
 
       // Get the geometry property position
-      std::size_t gpos = te::da::GetFirstSpatialPropertyPos(createds.get());
+      std::size_t gpos = te::da::GetFirstSpatialPropertyPos(operationds[te::edit::GEOMETRY_CREATE]);
       assert(gpos != std::string::npos);
 
       // Get the geometry type
@@ -292,7 +291,7 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
       {
 
           // Create the new item
-          te::mem::DataSetItem* item = new te::mem::DataSetItem(createds.get());
+          te::mem::DataSetItem* item = new te::mem::DataSetItem(operationds[te::edit::GEOMETRY_CREATE]);
 
           // Get the object id
           te::da::ObjectId* oid = features[i]->getId();
@@ -322,27 +321,22 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
             item->setGeometry(gpos, static_cast<te::gm::Geometry*>(geom->clone()));
           }
 
-          std::map<std::string, std::size_t>::iterator it;
-
-          for (it = m_editionManager->m_operation.begin(); it != m_editionManager->m_operation.end(); ++it)
+          switch (features[i]->getOperationType())
           {
-            if (oid->getValueAsString() == it->first)
-            {
-              switch (it->second)
-              {
-                case EDT_CREATE:
-                  createds->add(item);
-                  break;
+            case te::edit::GEOMETRY_CREATE:
 
-                case EDT_UPDATE:
-                  updateds->add(item);
-                  break;
+              operationds[te::edit::GEOMETRY_CREATE]->add(item);
+              break;
 
-                case EDT_REMOVE:
-                  removeds->add(item);
-                  break;
-              }
-            }
+            case te::edit::GEOMETRY_UPDATE:
+
+              operationds[te::edit::GEOMETRY_UPDATE]->add(item);
+              break;
+
+            case te::edit::GEOMETRY_DELETE:
+
+              operationds[te::edit::GEOMETRY_DELETE]->add(item);
+              break;
           }
 
       }
@@ -350,47 +344,48 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
       std::set<int> gproperty;
       gproperty.insert(gpos);
 
-      te::da::ObjectIdSet* currentOidsCreated = new te::da::ObjectIdSet();
-      te::da::ObjectIdSet* currentOidsUpdated = new te::da::ObjectIdSet();
-      te::da::ObjectIdSet* currentOidsRemoved = new te::da::ObjectIdSet();
+      std::map<te::edit::OperationType, te::da::ObjectIdSet* > currentOids;
 
-      if (createds->size())
+      for (std::size_t i = 0; i < te::edit::NumberOfOperationTypes; i++)
+        currentOids[te::edit::OperationType(i)] = new te::da::ObjectIdSet();
+
+      if (operationds[te::edit::GEOMETRY_CREATE]->size() > 0)
       {
-        currentOidsCreated = te::da::GenerateOIDSet(createds.get(), schema.get());
+        currentOids[te::edit::GEOMETRY_CREATE] = te::da::GenerateOIDSet(operationds[te::edit::GEOMETRY_CREATE], schema.get());
 
-        createds->moveBeforeFirst();
+        operationds[te::edit::GEOMETRY_CREATE]->moveBeforeFirst();
 
         std::map<std::string, std::string> options;
 
-        dsource->add(dslayer->getDataSetName(), createds.get(), options, 0);
+        dsource->add(dslayer->getDataSetName(), operationds[te::edit::GEOMETRY_CREATE], options, 0);
       }
 
-      if (updateds->size())
+      if (operationds[te::edit::GEOMETRY_UPDATE]->size() > 0)
       {
         std::vector<std::set<int> > properties;
-        for (std::size_t i = 0; i < updateds->size(); ++i){
+        for (std::size_t i = 0; i < operationds[te::edit::GEOMETRY_UPDATE]->size(); ++i){
           properties.push_back(gproperty);
         }
 
         std::vector<std::size_t> oidPropertyPosition;
         for (std::size_t i = 0; i < oidPropertyNames.size(); ++i)
-          oidPropertyPosition.push_back(te::da::GetPropertyPos(updateds.get(), oidPropertyNames[i]));
+          oidPropertyPosition.push_back(te::da::GetPropertyPos(operationds[te::edit::GEOMETRY_UPDATE], oidPropertyNames[i]));
 
-        currentOidsUpdated = te::da::GenerateOIDSet(updateds.get(), schema.get());
+        currentOids[te::edit::GEOMETRY_UPDATE] = te::da::GenerateOIDSet(operationds[te::edit::GEOMETRY_UPDATE], schema.get());
 
-        updateds->moveBeforeFirst();
+        operationds[te::edit::GEOMETRY_UPDATE]->moveBeforeFirst();
 
-        dsource->update(dslayer->getDataSetName(), updateds.get(), properties, oidPropertyPosition);
+        dsource->update(dslayer->getDataSetName(), operationds[te::edit::GEOMETRY_UPDATE], properties, oidPropertyPosition);
 
       }
 
-      if (removeds->size())
+      if (operationds[te::edit::GEOMETRY_DELETE]->size() > 0)
       {
-        currentOidsRemoved = te::da::GenerateOIDSet(removeds.get(), schema.get());
+        currentOids[te::edit::GEOMETRY_DELETE] = te::da::GenerateOIDSet(operationds[te::edit::GEOMETRY_DELETE], schema.get());
 
-        removeds->moveBeforeFirst();
+        operationds[te::edit::GEOMETRY_DELETE]->moveBeforeFirst();
 
-        dsource->remove(dslayer->getDataSetName(), currentOidsRemoved);
+        dsource->remove(dslayer->getDataSetName(), currentOids[te::edit::GEOMETRY_DELETE]);
 
       }
 
@@ -398,14 +393,14 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
 
       layer->clearSelected();
 
-      if (currentOidsCreated->size())
+      if (currentOids[te::edit::GEOMETRY_CREATE]->size())
       {
-        layer->select(currentOidsCreated->clone());
+        layer->select(currentOids[te::edit::GEOMETRY_CREATE]->clone());
       }
         
-      if (currentOidsUpdated->size())
+      if (currentOids[te::edit::GEOMETRY_UPDATE]->size())
       {
-        layer->select(currentOidsUpdated->clone());
+        layer->select(currentOids[te::edit::GEOMETRY_UPDATE]->clone());
       }
 
       emit layerSelectedObjectsChanged(layer);
@@ -418,7 +413,7 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
     
     e.m_display->getDisplay()->refresh();
 
-    m_editionManager->getUndoStack()->clear();
+    te::edit::UndoStackManager::getInstance().getUndoStack()->clear();
 
     }
     catch(te::common::Exception& e)
@@ -442,14 +437,15 @@ void te::qt::plugins::edit::ToolBar::onVertexToolActivated(bool checked)
 
   assert(e.m_display);
 
-  te::edit::VertexTool* tool = new te::edit::VertexTool(m_editionManager, e.m_display->getDisplay(), layer, 0);
-  e.m_display->setCurrentTool(tool);
+//  te::edit::VertexTool* tool = new te::edit::VertexTool(e.m_display->getDisplay(), layer, 0);
+ // e.m_display->setCurrentTool(tool);
   
 }
 
 void te::qt::plugins::edit::ToolBar::onCreatePolygonToolActivated(bool checked)
 {
   te::map::AbstractLayerPtr layer = getSelectedLayer();
+
   if(layer.get() == 0)
   {
     QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Select a layer first!"));
@@ -461,7 +457,7 @@ void te::qt::plugins::edit::ToolBar::onCreatePolygonToolActivated(bool checked)
 
   assert(e.m_display);
 
-  te::edit::CreatePolygonTool* tool = new te::edit::CreatePolygonTool(m_editionManager, e.m_display->getDisplay(), layer, Qt::ArrowCursor, 0);
+  te::edit::CreatePolygonTool* tool = new te::edit::CreatePolygonTool(e.m_display->getDisplay(), layer, Qt::ArrowCursor, 0);
   e.m_display->setCurrentTool(tool);
 
 }
@@ -480,7 +476,7 @@ void te::qt::plugins::edit::ToolBar::onCreateLineToolActivated(bool checked)
 
   assert(e.m_display);
 
-  te::edit::CreateLineTool* tool = new te::edit::CreateLineTool(m_editionManager, e.m_display->getDisplay(), layer, Qt::ArrowCursor, 0);
+  te::edit::CreateLineTool* tool = new te::edit::CreateLineTool(e.m_display->getDisplay(), layer, Qt::ArrowCursor, 0);
   e.m_display->setCurrentTool(tool);
 
 }
@@ -499,7 +495,7 @@ void te::qt::plugins::edit::ToolBar::onMoveGeometryToolActivated(bool checked)
 
   assert(e.m_display);
 
-  te::edit::MoveGeometryTool* tool = new te::edit::MoveGeometryTool(m_editionManager, e.m_display->getDisplay(), layer, 0);
+  te::edit::MoveGeometryTool* tool = new te::edit::MoveGeometryTool(e.m_display->getDisplay(), layer, 0);
   e.m_display->setCurrentTool(tool);
 
 }
@@ -538,7 +534,7 @@ void te::qt::plugins::edit::ToolBar::onAggregateAreaToolActivated(bool checked)
 
   assert(e.m_display);
 
-  te::edit::AggregateAreaTool* tool = new te::edit::AggregateAreaTool(m_editionManager, e.m_display->getDisplay(), layer, 0);
+  te::edit::AggregateAreaTool* tool = new te::edit::AggregateAreaTool(e.m_display->getDisplay(), layer, 0);
   e.m_display->setCurrentTool(tool);
 
 }
@@ -569,7 +565,7 @@ void te::qt::plugins::edit::ToolBar::onSubtractAreaToolActivated(bool checked)
 
   assert(e.m_display);
 
-  te::edit::SubtractAreaTool* tool = new te::edit::SubtractAreaTool(m_editionManager,e.m_display->getDisplay(), layer, 0);
+  te::edit::SubtractAreaTool* tool = new te::edit::SubtractAreaTool(e.m_display->getDisplay(), layer, 0);
   e.m_display->setCurrentTool(tool);
 
 }
@@ -608,7 +604,7 @@ void te::qt::plugins::edit::ToolBar::onDeleteGeometryToolActivated(bool checked)
 
     assert(e.m_display);
 
-    te::edit::DeleteGeometryTool* tool = new te::edit::DeleteGeometryTool(m_editionManager, e.m_display->getDisplay(), layer, 0);
+    te::edit::DeleteGeometryTool* tool = new te::edit::DeleteGeometryTool(e.m_display->getDisplay(), layer, 0);
     e.m_display->setCurrentTool(tool);
 
   }
@@ -646,7 +642,7 @@ void te::qt::plugins::edit::ToolBar::onMergeGeometriesToolActivated(bool checked
 
   assert(e.m_display);
 
-  te::edit::MergeGeometriesTool* tool = new te::edit::MergeGeometriesTool(m_editionManager, e.m_display->getDisplay(), layer, Qt::ArrowCursor, 0 );
+  te::edit::MergeGeometriesTool* tool = new te::edit::MergeGeometriesTool(e.m_display->getDisplay(), layer, Qt::ArrowCursor, 0 );
   e.m_display->setCurrentTool(tool);
 
 }
@@ -657,7 +653,7 @@ void te::qt::plugins::edit::ToolBar::createUndoView(bool checked)
   if (!checked)
     return;
 
-  m_undoView = new QUndoView(m_editionManager->getUndoStack());
+  m_undoView = new QUndoView(te::edit::UndoStackManager::getInstance().getUndoStack());
   m_undoView->setWindowTitle(tr("Edition List"));
   m_undoView->setFixedSize(QSize(300, 300));
   m_undoView->show();

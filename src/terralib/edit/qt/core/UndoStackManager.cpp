@@ -18,9 +18,9 @@ TerraLib Team at <terralib-team@terralib.org>.
 */
 
 /*!
-\file terralib/edit/qt/core/EditionManager.cpp
+\file terralib/edit/qt/core/UndoStackManager.cpp
 
-\brief This class manager the edition.
+\brief This class manager the undo stack.
 */
 
 // TerraLib
@@ -31,32 +31,33 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include "../../Utils.h"
 #include "../Renderer.h"
 #include "../Utils.h"
-#include "EditionManager.h"
+#include "UndoStackManager.h"
 
 //QT
 #include <QUndoCommand>
 #include <QUndoStack>
 
-te::edit::EditionManager::EditionManager()
+
+void te::edit::UndoStackManager::addUndoStack(QUndoCommand* command)
 {
-
-  m_repository = new te::edit::RepositoryManager();
-  m_undoStack = new QUndoStack();
-
-}
-
-te::edit::EditionManager::~EditionManager()
-{
-  delete m_undoStack;
-  delete m_repository;
-}
-
-void te::edit::EditionManager::addUndoStack(QUndoCommand* command)
-{
+  //  Repository* repository = getRepository(source);
   m_undoStack->push(command);
 }
 
-QUndoStack* te::edit::EditionManager::getUndoStack()
+QUndoStack* te::edit::UndoStackManager::getUndoStack()
 {
+  if (m_undoStack == 0)
+  {
+    m_undoStack = new QUndoStack();
+  }
+
   return m_undoStack;
+}
+
+te::edit::UndoStackManager::UndoStackManager()
+{}
+
+te::edit::UndoStackManager::~UndoStackManager()
+{
+  delete m_undoStack;
 }

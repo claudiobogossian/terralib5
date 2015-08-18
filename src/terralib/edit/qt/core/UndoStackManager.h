@@ -18,13 +18,13 @@ TerraLib Team at <terralib-team@terralib.org>.
 */
 
 /*!
-\file terralib/edit/qt/core/EditionManager.h
+\file terralib/edit/qt/core/UndoStackManager.h
 
 \brief
 */
 
-#ifndef __TERRALIB_EDIT_QT_INTERNAL_EDITIONMANAGER_H
-#define __TERRALIB_EDIT_QT_INTERNAL_EDITIONMANAGER_H
+#ifndef __TERRALIB_EDIT_QT_INTERNAL_UNDOSTACKMANAGER_H
+#define __TERRALIB_EDIT_QT_INTERNAL_UNDOSTACKMANAGER_H
 
 // TerraLib
 #include "../../../geometry/Envelope.h"
@@ -51,60 +51,37 @@ namespace te
     class Feature;
 
     /*!
-    \class EditionManager
+    \class UndoStackManager
 
     \brief
     */
-    class TEEDITQTEXPORT EditionManager
+    class TEEDITQTEXPORT UndoStackManager : public te::common::Singleton<UndoStackManager>
     {
-
+      friend class te::common::Singleton<UndoStackManager>;
+    
     public:
-
-      /** @name Initializer Methods
-      *  Methods related to instantiation and destruction.
-      */
-      //@{
-
-      /*!
-      \brief 
-
-      \param 
-
-      \note 
-      */
-      EditionManager();
-      /*! \brief Destructor. */
-      ~EditionManager();
 
       /*!
       \brief Method that insert command Undo/Redo of type AddCommand in the Undo/Redo stack.
 
       \param command command
       */
-      virtual void addUndoStack(QUndoCommand* command);
+      void addUndoStack(QUndoCommand* command);
 
       /*!
       \brief Method that return stack of Undo/Redo.
 
       \return stack
       */
-      virtual QUndoStack* getUndoStack();
-
-      te::edit::RepositoryManager* m_repository;
-
-      std::map<std::string, std::size_t> m_operation;  //!< Map to see which operations.... new, update, merge...
-
-      enum toolsOperation {
-        createOp = 1, 
-        updateOp, 
-        removeOp
-      };
-
-    private:
-
-      void updatecursor();
+      QUndoStack* getUndoStack();
 
     protected:
+
+      /*! \brief It initializes the singleton instance of the repository manager. */
+      UndoStackManager();
+
+      /*! \brief Singleton destructor. */
+      ~UndoStackManager();
 
       QUndoStack* m_undoStack;                               //!< Undo/Redo stack
 
@@ -113,4 +90,4 @@ namespace te
   }   // end namespace edit
 }     // end namespace te
 
-#endif  // __TERRALIB_EDIT_QT_INTERNAL_EDITIONMANAGER_H
+#endif  // __TERRALIB_EDIT_QT_INTERNAL_UNDOSTACKMANAGER_H

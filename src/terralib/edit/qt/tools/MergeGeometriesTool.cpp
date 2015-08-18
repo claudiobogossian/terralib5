@@ -57,14 +57,13 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include <memory>
 
 
-te::edit::MergeGeometriesTool::MergeGeometriesTool(te::edit::EditionManager* editionManager, te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, QObject* parent)
+te::edit::MergeGeometriesTool::MergeGeometriesTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, QObject* parent)
 : AbstractTool(display, parent)
 ,m_layer(layer),
 m_feature(0),
 //m_updateWatches(std::vector<Feature*>()),
 m_oidRef(0),
-m_oidsRemoved(0),
-m_editionManager(editionManager)
+m_oidsRemoved(0)
 {
   // Signals & slots
   connect(m_display, SIGNAL(extentChanged()), SLOT(onExtentChanged()));
@@ -115,7 +114,7 @@ void te::edit::MergeGeometriesTool::mergeGeometries()
 
   ev = getRefEnvelope(ds.get(), m_oidRef, geomProp);
 
-  m_feature = PickFeature(m_editionManager, m_layer, *ev, m_display->getSRID());
+  m_feature = PickFeature(m_layer, *ev, m_display->getSRID(), te::edit::GEOMETRY_UPDATE);
 
   g = dynamic_cast<te::gm::Geometry*>(gc->getGeometryN(0)->clone());
 
@@ -148,10 +147,8 @@ void te::edit::MergeGeometriesTool::mergeGeometries()
 
   storeMergedFeature();
 
-  //m_updateWatches.push_back(m_feature->clone());
+  storeUndoCommand();
 
-  //QUndoCommand* command = new UpdateCommand(m_editionManager, m_updateWatches, m_display, m_layer);
-  //m_editionManager->addUndoStack(command);
 }
 
 bool te::edit::MergeGeometriesTool::spatialRelationDisjoint(te::gm::GeometryCollection* gc)
@@ -235,9 +232,9 @@ const te::gm::Envelope* te::edit::MergeGeometriesTool::getRefEnvelope(te::da::Da
 
   while (ds->moveNext())
   {
-    if (colType == te::dt::INT16_TYPE || colType == te::dt::INT32_TYPE || colType == te::dt::INT64_TYPE || colType == te::dt::DOUBLE_TYPE)
+    if (colType == te::dt::INT16_TYPE || colType == te::dt::INT32_TYPE ||
+      colType == te::dt::INT64_TYPE || colType == te::dt::DOUBLE_TYPE)
     {
-      
       refOID = boost::lexical_cast<std::string>(ds->getInt32(oidPropertyNames[0]));
     }
     else
@@ -275,7 +272,7 @@ void te::edit::MergeGeometriesTool::draw()
   renderer.begin(draft, env, m_display->getSRID());
 
   // Draw the layer edited geometries
-  renderer.drawRepository(m_editionManager, m_layer->getId(), env, m_display->getSRID());
+  renderer.drawRepository(m_layer->getId(), env, m_display->getSRID());
 
   // Draw the current geometry and the vertexes
   renderer.setPolygonStyle(Qt::red, Qt::black, 2);
@@ -293,17 +290,23 @@ void te::edit::MergeGeometriesTool::storeMergedFeature()
   
   for (it = m_oidsRemoved->begin(); it != m_oidsRemoved->end(); ++it)
   {
-    m_editionManager->m_repository->addGeometry(m_layer->getId(), (*it)->clone(), dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone()));
-    m_editionManager->m_operation[(*it)->clone()->getValueAsString()] = m_editionManager->removeOp;
+    RepositoryManager::getInstance().addGeometry(m_layer->getId(), (*it)->clone(), dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone()),te::edit::GEOMETRY_DELETE);
   }
 
-  m_editionManager->m_repository->addGeometry(m_layer->getId(), m_feature->getId()->clone(), dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone()));
-  m_editionManager->m_operation[m_feature->getId()->getValueAsString()] = m_editionManager->updateOp;
+  RepositoryManager::getInstance().addGeometry(m_layer->getId(), m_feature->getId()->clone(), dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone()), te::edit::GEOMETRY_UPDATE);
 }
 
 void te::edit::MergeGeometriesTool::onExtentChanged()
 {
   draw();
+}
+
+void te::edit::MergeGeometriesTool::storeUndoCommand()
+{
+  //m_updateWatches.push_back(m_feature->clone());
+
+  //QUndoCommand* command = new UpdateCommand(m_StackManager, m_updateWatches, m_display, m_layer);
+  //m_StackManager->addUndoStack(command);
 }
 
 bool te::edit::MergeGeometriesTool::mousePressEvent(QMouseEvent* e)

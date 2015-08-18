@@ -28,18 +28,19 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include "../../../../dataaccess/dataset/ObjectId.h"
 #include "../../../../geometry/Geometry.h"
 #include "../../../Utils.h"
+#include "../../../RepositoryManager.h"
 #include "../../Utils.h"
 #include "../../Renderer.h"
+#include "../UndoStackManager.h"
 #include "AddCommand.h"
 
-te::edit::AddCommand::AddCommand(te::edit::EditionManager* editionManager, std::map<std::string, Feature*> items, Feature* item, te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer,
+te::edit::AddCommand::AddCommand(std::map<std::string, Feature*> items, Feature* item, te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer,
   QUndoCommand *parent) :
   QUndoCommand(parent)
 , m_display(display)
 , m_item(item)
 , m_layer(layer)
 , m_addItems(items)
-, m_editionManager(editionManager)
 {
 
   if (!m_item)
@@ -72,7 +73,7 @@ void  te::edit::AddCommand::undo()
   {
     if (it->first == m_item->getId()->getValueAsString()) 
     {
-      m_editionManager->m_repository->removeFeature(m_layer->getId(), m_item->getId()->clone());
+      RepositoryManager::getInstance().removeFeature(m_layer->getId(), m_item->getId()->clone());
 
       draw();
 
@@ -95,12 +96,12 @@ void te::edit::AddCommand::redo()
   if (m_addItems.empty())
     return;
 
-  if(!m_editionManager->getUndoStack())
+  if (!UndoStackManager::getInstance().getUndoStack())
     return;
   
-  for (int i = 0; i < m_editionManager->getUndoStack()->count(); ++i)
+  for (int i = 0; i < UndoStackManager::getInstance().getUndoStack()->count(); ++i)
   {
-    const QUndoCommand* cmd = m_editionManager->getUndoStack()->command(i);
+    const QUndoCommand* cmd = UndoStackManager::getInstance().getUndoStack()->command(i);
     if (cmd == this)
     {
       resultFound = true;
@@ -117,7 +118,7 @@ void te::edit::AddCommand::redo()
     {
       if (it->first == m_item->getId()->getValueAsString())
       {
-        m_editionManager->m_repository->addFeature(m_layer->getId(), m_item->clone());
+        RepositoryManager::getInstance().addFeature(m_layer->getId(), m_item->clone());
 
         draw();
 
@@ -155,7 +156,7 @@ void te::edit::AddCommand::draw()
   renderer.begin(draft, env, m_display->getSRID());
 
   // Draw the layer edited geometries
-  renderer.drawRepository(m_editionManager,m_layer->getId(), env, m_display->getSRID());
+  renderer.drawRepository(m_layer->getId(), env, m_display->getSRID());
 
   renderer.end();
 

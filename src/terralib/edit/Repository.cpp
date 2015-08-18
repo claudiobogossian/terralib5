@@ -36,7 +36,6 @@
 #include "../geometry/Utils.h"
 #include "Feature.h"
 #include "Repository.h"
-#include "Utils.h"
 
 // STL
 #include <cassert>
@@ -53,7 +52,7 @@ te::edit::Repository::~Repository()
   clear();
 }
 
-void te::edit::Repository::add(te::gm::Geometry* geom)
+void te::edit::Repository::add(te::gm::Geometry* geom, OperationType operation)
 {
   assert(geom);
 
@@ -61,17 +60,19 @@ void te::edit::Repository::add(te::gm::Geometry* geom)
 
   assert(!hasIdentifier(id));
 
-  add(id, geom);
+  add(id, geom, operation);
+
 }
 
-void te::edit::Repository::add(te::da::ObjectId* id, te::gm::Geometry* geom)
+void te::edit::Repository::add(te::da::ObjectId* id, te::gm::Geometry* geom, OperationType operation)
 {
   assert(id);
   assert(geom);
 
-  Feature* f = new Feature(id, geom);
+  Feature* f = new Feature(id, geom, operation);
 
   add(f);
+
 }
 
 void te::edit::Repository::add(Feature* f)
@@ -94,12 +95,13 @@ void te::edit::Repository::add(Feature* f)
   set(pos, f);
 }
 
-void te::edit::Repository::set(te::da::ObjectId* id, te::gm::Geometry* geom)
+void te::edit::Repository::set(te::da::ObjectId* id, te::gm::Geometry* geom, OperationType operation)
 {
   assert(id);
   assert(geom);
+  assert(operation);
 
-  Feature* f = new Feature(id, geom);
+  Feature* f = new Feature(id, geom, operation);
 
   set(f);
 }

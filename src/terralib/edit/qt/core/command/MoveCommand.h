@@ -31,7 +31,6 @@ TerraLib Team at <terralib-team@terralib.org>.
 // TerraLib
 #include "../../Config.h"
 #include "../../../../qt/widgets/canvas/MapDisplay.h"
-#include "../EditionManager.h"
 
 // Qt
 #include <QUndoCommand>
@@ -50,7 +49,7 @@ namespace te
     {
       public:
         // Pass all parameters that the command need to fulfill its task in the constructor
-        MoveCommand(te::edit::EditionManager* editionManager, std::map<std::string, QList<QPointF> > items, Feature* item, te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QUndoCommand *parent = 0);
+        MoveCommand(std::map<std::string, QList<QPointF> > items, Feature* item, te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QUndoCommand *parent = 0);
 
         /*!
         \brief Destructor
@@ -79,7 +78,6 @@ namespace te
         QList<QPointF>     m_itemsPoints;
         te::qt::widgets::MapDisplay* m_display;
         te::map::AbstractLayerPtr m_layer;
-        te::edit::EditionManager* m_editionManager;
 
     };
   }

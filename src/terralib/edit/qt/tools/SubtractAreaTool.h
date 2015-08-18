@@ -2,7 +2,6 @@
 #define __TERRALIB_EDIT_QT_INTERNAL_SUBTRACTAREATOOL_H
 
 // TerraLib
-#include "../../../edit/qt/core/EditionManager.h"
 #include "../../../geometry/Envelope.h"
 #include "../../../maptools/AbstractLayer.h"
 #include "../Config.h"
@@ -31,7 +30,7 @@ namespace te
       Q_OBJECT
 
     public:
-      SubtractAreaTool(te::edit::EditionManager* editionManager, te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent = 0);
+      SubtractAreaTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent = 0);
 
       ~SubtractAreaTool();
 
@@ -58,6 +57,7 @@ namespace te
       void draw();
       void reset();
       void storeEditedFeature();
+      void storeUndoCommand();
 
       void pickFeature(const te::map::AbstractLayerPtr& layer, const QPointF& pos);
 

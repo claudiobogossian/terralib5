@@ -27,7 +27,6 @@ TerraLib Team at <terralib-team@terralib.org>.
 #define __TERRALIB_EDIT_QT_INTERNAL_MERGEGEOMETRIESTOOL_H
 
 // TerraLib
-#include "../../../edit/qt/core/EditionManager.h"
 #include "../../../geometry/Coord2D.h"
 #include "../../../dataaccess/dataset/ObjectIdSet.h"
 #include "../../../maptools/AbstractLayer.h"
@@ -61,7 +60,7 @@ namespace te
 
     public:
 
-      MergeGeometriesTool(te::edit::EditionManager* editionManager, te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, QObject* parent = 0);
+      MergeGeometriesTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, QObject* parent = 0);
 
       /*! \brief Destructor. */
       ~MergeGeometriesTool();
@@ -79,6 +78,7 @@ namespace te
 
       void draw();
       void storeMergedFeature();
+      void storeUndoCommand();
       void mergeGeometries();
       bool spatialRelationDisjoint(te::gm::GeometryCollection* gc);
 
@@ -99,8 +99,6 @@ namespace te
 
       te::da::ObjectId* m_oidRef;
       te::da::ObjectIdSet* m_oidsRemoved;
-
-      te::edit::EditionManager* m_editionManager;
 
     };
 
