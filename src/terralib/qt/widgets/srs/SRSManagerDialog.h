@@ -100,6 +100,9 @@ namespace te
         void onHelpPushButtonClicked();
         void onSearchLineEditTextChanged(const QString& text);
         void onSRSRecentTableWidgetItemClicked(QTableWidgetItem*);
+        void onAddSRSPushButtonClicked();
+        void onEditSRSPushButtonClicked();
+        void onRemoveSRSPushButtonClicked();
         
       private:
         
