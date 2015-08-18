@@ -428,10 +428,9 @@ namespace te
             )->getProperty()->m_noDataValue;
           te::rst::Band& outBand =
             (*outputRasterPtr->getBand( inputRastersBandsIdx ));
-          unsigned int validPixelsNumber = 0;
+          unsigned long int validPixelsNumber = 0;
 
-          double& mean = mosaicTargetMeans[ inputRastersBandsIdx ];
-          mean = 0;
+          double mean = 0;
 
           for( outRow = outRowStart ; outRow < outRowsBound ; ++outRow )
           {
@@ -452,12 +451,13 @@ namespace te
             }
           }
 
-          mean /= ( (double)validPixelsNumber );
-
           // variance calcule
 
-          if( m_inputParameters.m_autoEqualize )
+          if( m_inputParameters.m_autoEqualize && ( validPixelsNumber > 0 ) )
           {
+            mean /= ( (double)validPixelsNumber );            
+            mosaicTargetMeans[ inputRastersBandsIdx ] = mean;
+            
             double& variance = mosaicTargetVariances[ inputRastersBandsIdx ];
             variance = 0;
 
@@ -617,8 +617,8 @@ namespace te
 
         // Generating the offset and gain info for eath band from the current raster
 
-        std::vector< double > currentRasterBandsOffsets;
-        std::vector< double > currentRasterBandsScales;
+        std::vector< double > currentRasterBandsOffsets = dummyRasterOffsets;
+        std::vector< double > currentRasterBandsScales = dummyRasterScales;
 
         if( m_inputParameters.m_autoEqualize )
         {
@@ -632,24 +632,36 @@ namespace te
             const unsigned int inputBandIdx = m_inputParameters.m_inputRastersBands[ inputRasterIdx ][
               inputRastersBandsIdx ];
 
-            calcBandStatistics( (*inputRasterPtr->getBand( inputBandIdx ) ),
-              m_inputParameters.m_forceInputNoDataValue,
-              m_inputParameters.m_noDataValue,
-              currentRasterMean,
-              currentRasterVariance );
+            if( 
+                ( mosaicTargetMeans[ inputRastersBandsIdx ] != 0.0 )
+                &&
+                ( mosaicTargetVariances[ inputRastersBandsIdx ] != 0.0 )
+              )
+            {
+              calcBandStatistics( (*inputRasterPtr->getBand( inputBandIdx ) ),
+                m_inputParameters.m_forceInputNoDataValue,
+                m_inputParameters.m_noDataValue,
+                currentRasterMean,
+                currentRasterVariance );
 
-            currentRasterBandsScales.push_back( 
-                std::sqrt( mosaicTargetVariances[ inputRastersBandsIdx ] )
-                 /
-                std::sqrt( currentRasterVariance ) );
-            currentRasterBandsOffsets.push_back( mosaicTargetMeans[ inputRastersBandsIdx ]
-               - ( currentRasterBandsScales[ inputRastersBandsIdx ] * currentRasterMean ) );
+              currentRasterBandsScales[ inputRastersBandsIdx ] = 
+                ( 
+                  std::sqrt( mosaicTargetVariances[ inputRastersBandsIdx ] )
+                   /
+                  std::sqrt( currentRasterVariance ) 
+                );
+              currentRasterBandsOffsets[ inputRastersBandsIdx ] =
+                ( 
+                  mosaicTargetMeans[ inputRastersBandsIdx ]
+                   - 
+                  ( 
+                    currentRasterBandsScales[ inputRastersBandsIdx ] 
+                    * 
+                    currentRasterMean 
+                  ) 
+                );
+            }
           }
-        }
-        else
-        {
-          currentRasterBandsOffsets = dummyRasterOffsets;
-          currentRasterBandsScales = dummyRasterScales;
         }
 
          // blending
