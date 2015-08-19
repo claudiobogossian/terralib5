@@ -60,13 +60,23 @@ namespace te
         virtual ~AbstractItemModel();
 
         /*!
-          \brief Gets the given property
+          \brief Gets the property from the given propertyName
         */
         virtual const Property& getProperty(const std::string& propertyName) const;
 
+        /*!
+          \brief Sets the new value of the given property
+        */
         virtual void setProperty(const Property& property);
 
+        /*!
+          \brief Gets all the properties
+        */
         virtual const Properties& getProperties() const;
+
+        /*!
+          \brief Sets the new values of the given properties
+        */
         virtual void setProperties(const Properties& properties);
 
       protected:

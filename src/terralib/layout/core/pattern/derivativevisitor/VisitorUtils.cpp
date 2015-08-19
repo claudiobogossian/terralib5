@@ -52,7 +52,7 @@ te::layout::VisitorUtils::~VisitorUtils()
 bool te::layout::VisitorUtils::changeMapVisitable( QList<QGraphicsItem*> graphicsItems, Visitable* visitable )
 {
   bool result = true;
-  te::layout::MapModel* mpModel = dynamic_cast<te::layout::MapModel*>(visitable);
+  /*te::layout::MapModel* mpModel = dynamic_cast<te::layout::MapModel*>(visitable);
 
   if(!mpModel)
     return false;
@@ -79,6 +79,7 @@ bool te::layout::VisitorUtils::changeMapVisitable( QList<QGraphicsItem*> graphic
 
     mpModel->acceptVisitor(visit);
   }
+  */
 
   return result;
 }

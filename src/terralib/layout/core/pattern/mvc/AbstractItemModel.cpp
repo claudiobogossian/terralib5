@@ -6,7 +6,7 @@ te::layout::AbstractItemModel::AbstractItemModel()
   : Subject()
   , m_properties("")
 {
-  te::gm::Envelope boundingBox(0., 0., 20., 20.);
+  te::gm::Envelope boundingBox(0., 0., 80., 80.);
   te::color::RGBAColor backgroundColor(0, 0, 0, 0);
   te::color::RGBAColor frameColor(0, 0, 0, 255);
   double rotation = 0;
@@ -122,7 +122,7 @@ const te::layout::Property& te::layout::AbstractItemModel::getProperty(const std
   return m_properties.getProperty(propertyName);
 }
 
-void te::layout::AbstractItemModel::setProperty(const Property& property)
+void te::layout::AbstractItemModel::setProperty(const te::layout::Property& property)
 {
   m_properties.updateProperty(property);
   notify();
@@ -133,7 +133,7 @@ const te::layout::Properties& te::layout::AbstractItemModel::getProperties() con
   return m_properties;
 }
 
-void te::layout::AbstractItemModel::setProperties(const Properties& properties)
+void te::layout::AbstractItemModel::setProperties(const te::layout::Properties& properties)
 {
   const std::vector<Property>& vecProperties = properties.getProperties();
   for(unsigned int i = 0; i < vecProperties.size(); ++i)

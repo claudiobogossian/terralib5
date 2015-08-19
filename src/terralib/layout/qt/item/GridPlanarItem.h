@@ -32,24 +32,21 @@
 
 // TerraLib
 #include "GridMapItem.h"
-#include "../../core/Config.h"
-#include "../../../geometry/Envelope.h"
 
 namespace te
 {
   namespace layout
   {
-    class Observable;
 
     /*!
     \brief Class that represents a graphic GridMap. 
         Its coordinate system is the same of scene (millimeters). 
         He is also the son of ItemObserver and ObjectItem, so it can become observer of a model (Observable). 
-	  
-	    \ingroup layout
+    
+      \ingroup layout
 
-	    \sa te::layout::ObjectItem
-	  */
+      \sa te::layout::ObjectItem
+    */
     class TELAYOUTEXPORT GridPlanarItem : public GridMapItem
     {
       public:
@@ -60,7 +57,7 @@ namespace te
           \param controller "Controller" part of MVC component
           \param o "Model" part of MVC component
         */ 
-        GridPlanarItem( ItemController* controller, Observable* o, bool invertedMatrix = false );
+        GridPlanarItem( AbstractItemController* controller, AbstractItemModel* model );
 
         /*!
           \brief Destructor
@@ -68,16 +65,16 @@ namespace te
         virtual ~GridPlanarItem();
         
       protected:
-        
+
         virtual void drawGrid(QPainter* painter);
 
-        virtual void calculateVertical(te::gm::Envelope geoBox, te::gm::Envelope boxMM, double scale);
+        virtual void calculateVertical(const te::gm::Envelope& geoBox, const te::gm::Envelope& boxMM);
 
-        virtual void calculateHorizontal(te::gm::Envelope geoBox, te::gm::Envelope boxMM, double scale);
+        virtual void calculateHorizontal(const te::gm::Envelope& geoBox, const te::gm::Envelope& boxMM);
 
-        virtual double initVerticalLines(te::gm::Envelope geoBox);
+        virtual double initVerticalLines(const te::gm::Envelope& geoBox);
 
-        virtual double initHorizontalLines(te::gm::Envelope geoBox);
+        virtual double initHorizontalLines(const te::gm::Envelope& geoBox);
     };
   }
 }

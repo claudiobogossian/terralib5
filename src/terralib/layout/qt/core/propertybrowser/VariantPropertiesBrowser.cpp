@@ -191,7 +191,7 @@ te::layout::Property te::layout::VariantPropertiesBrowser::getProperty( std::str
   }
   else if(type == dataType->getDataTypeFont())
   {
-    qfont = variant.value<QFont>();    
+    qfont = variant.value<QFont>();
     font.setFamily(qfont.family().toStdString());
     font.setPointSize(qfont.pointSize());
     font.setBold(qfont.bold());
@@ -200,6 +200,13 @@ te::layout::Property te::layout::VariantPropertiesBrowser::getProperty( std::str
     font.setStrikeout(qfont.strikeOut());
     font.setKerning(qfont.kerning());
     prop.setValue(font, type);
+  }
+  else if(type == dataType->getDataTypeEnvelope())
+  {
+    QRectF rect = variant.value<QRectF>();
+
+    te::gm::Envelope envelope(rect.left(), rect.bottom(), rect.right(), rect.top());
+    prop.setValue(envelope, dataType->getDataTypeEnvelope());
   }
 
   return prop;
@@ -253,6 +260,9 @@ te::layout::EnumType* te::layout::VariantPropertiesBrowser::getLayoutType( QVari
     case QVariant::Font:
       dataType = dtType->getDataTypeFont();
       break;
+    case QVariant::RectF:
+      dataType = dtType->getDataTypeEnvelope();
+      break;
     default:
       dataType = dtType->getDataTypeNone();
   }
@@ -302,6 +312,10 @@ int te::layout::VariantPropertiesBrowser::getVariantType( te::layout::EnumType* 
   else if(dataType == dtType->getDataTypeFont())
   {
     type = QVariant::Font;
+  }
+  else if(dataType == dtType->getDataTypeEnvelope())
+  {
+    type = QVariant::RectF;
   }
 
   return type;
@@ -370,6 +384,13 @@ bool te::layout::VariantPropertiesBrowser::changeQtVariantPropertyValue( QtVaria
     qfont.setStrikeOut(font.isStrikeout());
     qfont.setKerning(font.isKerning());
     vproperty->setValue(qfont);    
+  }
+  else if(property.getType() == dataType->getDataTypeEnvelope())
+  {
+    const te::gm::Envelope& envelope  = property.getValue().toEnvelope();
+    QRectF rect(envelope.getLowerLeftX(), envelope.getUpperRightY(), envelope.getWidth(), envelope.getHeight());
+
+    vproperty->setValue(rect);
   }
   else
   {

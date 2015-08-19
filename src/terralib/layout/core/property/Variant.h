@@ -186,6 +186,13 @@ namespace te
         const Font& toFont() const;
 
         /*!
+          \brief Returns the value of te::layout::Font type. (The setValue method received a te::layout::Font). Complex type.
+
+          \return value of te::layout::Font type
+        */
+        const te::gm::Envelope& toEnvelope() const;
+
+        /*!
           \brief Returns the value of te::layout::GenericVariant type. (The setValue method received a te::layout::GenericVariant). Complex type.
 
           \return value of te::layout::Font type
@@ -297,6 +304,7 @@ namespace te
       bool m_bValue; //!< value of boolean type 
       te::color::RGBAColor m_colorValue; //!< value of te::color::RGBAColor type
       Font m_fontValue; //!< value of te::layout::Font type
+      te::gm::Envelope m_envelopeValue; //!< value of the envelope type
       EnumType* m_type; //!< data type of this object
       bool m_null; //!< true if no value has been set, false otherwise
       bool m_complex; //!< true if value is not of common C++ data type, false otherwise

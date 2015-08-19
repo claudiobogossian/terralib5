@@ -563,6 +563,7 @@ bool te::layout::Scene::buildTemplate( VisualizationArea* vzArea, EnumType* type
 
 void te::layout::Scene::redrawSelectionMap()
 {
+  /*
   QList<QGraphicsItem*> selected = selectedItems();
   foreach(QGraphicsItem *item, selected) 
   {
@@ -579,6 +580,7 @@ void te::layout::Scene::redrawSelectionMap()
       }
     }
   }
+  */
 }
 
 void te::layout::Scene::exportItemsToImage(std::string dir)
@@ -981,10 +983,10 @@ void te::layout::Scene::contextUpdated( ContextObject context )
   {
     if(item)
     {
-      ItemObserver* it = dynamic_cast<ItemObserver*>(item);
-      if(it)
+      AbstractItemView* absItem = dynamic_cast<AbstractItemView*>(item);
+      if(absItem)
       {
-        it->contextUpdated(context);
+        absItem->contextUpdated(context);
       }
     }
   }

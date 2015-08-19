@@ -483,6 +483,7 @@ void te::layout::DialogPropertiesBrowser::onShowColorDlg()
 
 void te::layout::DialogPropertiesBrowser::onShowMapLayerChoiceDlg()
 {
+  /*
   EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
   if(!enumObj)
   {
@@ -538,6 +539,7 @@ void te::layout::DialogPropertiesBrowser::onShowMapLayerChoiceDlg()
 
   layerChoice->init();
   layerChoice->show();
+  */
 }
 
 void te::layout::DialogPropertiesBrowser::onShowLegendChoiceDlg()

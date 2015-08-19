@@ -35,8 +35,8 @@
 
 te::layout::MapLocationModel::MapLocationModel() 
 {
-  m_type = Enums::getInstance().getEnumObjectType()->getMapLocationItem();
-  m_enableChildren = false;
+  //m_type = Enums::getInstance().getEnumObjectType()->getMapLocationItem();
+  //m_enableChildren = false;
 }
 
 te::layout::MapLocationModel::~MapLocationModel()

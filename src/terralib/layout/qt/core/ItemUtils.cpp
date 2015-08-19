@@ -97,27 +97,36 @@ te::layout::MapItem* te::layout::ItemUtils::getMapItem( std::string name )
 {
   te::layout::MapItem* map = 0;
 
+  te::layout::EnumObjectType* objectType = te::layout::Enums::getInstance().getEnumObjectType();
+
+  std::vector<std::string> strList;
+
   QList<QGraphicsItem*> graphicsItems = getItems(false);
   foreach( QGraphicsItem *item, graphicsItems) 
   {
     if(!item)
       continue;
 
-    te::layout::ItemObserver* lItem = dynamic_cast<te::layout::ItemObserver*>(item);
-    if(!lItem)
+    te::layout::AbstractItemView* itemView = dynamic_cast<te::layout::AbstractItemView*>(item);
+    if(itemView == 0)
       continue;
 
-    te::layout::MapItem* mit = dynamic_cast<te::layout::MapItem*>(lItem);
-    if(!mit)
+    te::layout::AbstractItemModel* model = itemView->getController()->getModel();
+
+    if(model == 0)
       continue;
 
-    if(!mit->getModel())
+    if(model->getProperties().getTypeObj() != objectType->getMapItem())
+    {
+      continue;
+    }
+
+    const Property& pName = model->getProperty("name");
+    if(pName.getValue().toString().compare(name) != 0)
       continue;
 
-    if(mit->getModel()->getName().compare(name) != 0)
-      continue;
-
-    map = mit;
+    map = dynamic_cast<te::layout::MapItem*>(itemView);
+    break;
   }
 
   return map;
@@ -125,6 +134,8 @@ te::layout::MapItem* te::layout::ItemUtils::getMapItem( std::string name )
 
 std::vector<std::string> te::layout::ItemUtils::mapNameList(bool selected)
 {
+  te::layout::EnumObjectType* objectType = te::layout::Enums::getInstance().getEnumObjectType();
+
   std::vector<std::string> strList;
 
   QList<QGraphicsItem*> graphicsItems = getItems(selected);
@@ -133,19 +144,22 @@ std::vector<std::string> te::layout::ItemUtils::mapNameList(bool selected)
     if(!item)
       continue;
 
-    te::layout::ItemObserver* lItem = dynamic_cast<te::layout::ItemObserver*>(item);
-    if(!lItem)
+    te::layout::AbstractItemView* itemView = dynamic_cast<te::layout::AbstractItemView*>(item);
+    if(itemView == 0)
       continue;
 
-    te::layout::MapItem* mit = dynamic_cast<te::layout::MapItem*>(lItem);
-    if(!mit)
+    te::layout::AbstractItemModel* model = itemView->getController()->getModel();
+
+    if(model == 0)
       continue;
 
-    if(!mit->getModel())
+    if(model->getProperties().getTypeObj() != objectType->getMapItem())
+    {
       continue;
+    }
 
-    std::string name = mit->getModel()->getName();
-    strList.push_back(name);
+    const Property& pName = model->getProperty("name");
+    strList.push_back(pName.getValue().toString());
   }
 
   return strList;
@@ -271,6 +285,7 @@ QList<QGraphicsItem*> te::layout::ItemUtils::getItems( bool selected )
 
 void te::layout::ItemUtils::setCurrentToolInSelectedMapItems( EnumType* mode )
 {
+  /*
   if(!mode)
     return;
 
@@ -298,6 +313,7 @@ void te::layout::ItemUtils::setCurrentToolInSelectedMapItems( EnumType* mode )
 
     mit->changeCurrentTool(mode);
   }
+  */
 }
 
 void te::layout::ItemUtils::createTextGridAsObject()
@@ -307,6 +323,7 @@ void te::layout::ItemUtils::createTextGridAsObject()
 
 void te::layout::ItemUtils::createTextMapAsObject()
 {
+  /*
   QGraphicsItem *item = m_scene->selectedItems().first();
   if(item)
   {
@@ -322,6 +339,7 @@ void te::layout::ItemUtils::createTextMapAsObject()
       }
     }
   }
+  */
 }
 
 void te::layout::ItemUtils::createTextItemFromObject( std::map<te::gm::Point*, std::string> map, QFont* ft )
@@ -372,6 +390,7 @@ void te::layout::ItemUtils::createTextItemFromObject( std::map<te::gm::Point*, s
 
 void te::layout::ItemUtils::createLegendChildItemFromLegend( std::map<te::gm::Point*, std::string> map, te::layout::MapModel* visitable )
 {
+  /*
   Scene* scne = dynamic_cast<Scene*>(m_scene);
 
   if(!scne)
@@ -403,12 +422,14 @@ void te::layout::ItemUtils::createLegendChildItemFromLegend( std::map<te::gm::Po
       te::layout::VisitorUtils::getInstance().changeMapVisitable(legends, visitable);
     }
   }
+  */
 }
 
 std::vector<te::layout::Properties*> te::layout::ItemUtils::getGridMapProperties()
 {
   std::vector<te::layout::Properties*> props;
 
+  /*
   std::vector<te::layout::GridMapItem*> gridMapItems = getMapChildren();
 
   std::vector<te::layout::GridMapItem*>::iterator it = gridMapItems.begin();
@@ -427,6 +448,7 @@ std::vector<te::layout::Properties*> te::layout::ItemUtils::getGridMapProperties
     Properties* prop = (*it)->getModel()->getProperties();
     props.push_back(prop);
   }
+  */
 
   return props;
 }
