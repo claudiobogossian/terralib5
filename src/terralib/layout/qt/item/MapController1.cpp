@@ -1,0 +1,109 @@
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
+
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License,
+    or (at your option) any later version.
+
+    TerraLib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
+ */
+
+// TerraLib
+#include "MapController1.h"
+
+#include "MapItem.h"
+#include "../../../qt/widgets/canvas/MapDisplay.h"
+
+
+te::layout::MapController1::MapController1( te::layout::AbstractItemModel* model)
+  : AbstractItemController(model)
+{
+}
+
+te::layout::MapController1::~MapController1()
+{
+}
+
+
+void te::layout::MapController1::update(const te::layout::Subject* subject)
+{
+  MapItem* view = dynamic_cast<MapItem*>(m_view);
+  if(view == 0)
+  {
+    AbstractItemController::update(subject);
+    return;
+  }
+
+  const Property& pLayers = getProperty("layers");
+  const Property& pSrid = getProperty("srid");
+  const Property& pWorldBox = getProperty("world_box");
+
+  const std::list<te::map::AbstractLayerPtr>& listLayers = pLayers.getValue().toGenericVariant().toLayerList();
+  int srid = pSrid.getValue().toInt();
+  te::gm::Envelope envelope = pWorldBox.getValue().toEnvelope();
+
+
+  view->getMapDisplay()->setLayerList(listLayers);
+  if(view->getMapDisplay()->getSRID() != srid)
+  {
+    view->getMapDisplay()->setSRID(srid);
+  }
+
+  if(view->getMapDisplay()->getExtent().equals(envelope) == false)
+  {
+    view->getMapDisplay()->setExtent(envelope);
+  }
+
+  AbstractItemController::update(subject);
+}
+
+void te::layout::MapController1::addLayers(const std::list<te::map::AbstractLayerPtr>& listLayers)
+{
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+
+  GenericVariant gv;
+  gv.setList(listLayers, dataType->getDataTypeLayerList());
+
+  Property property;
+  property.setName("layers");
+  property.setValue(gv, dataType->getDataTypeGenericVariant());
+
+  m_model->setProperty(property);
+}
+
+void te::layout::MapController1::extentChanged(const te::gm::Envelope& envelope, double scale)
+{
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+
+  const Property& pWorldBox = getProperty("world_box");
+  te::gm::Envelope currentEnvelope = pWorldBox.getValue().toEnvelope();
+
+  if(envelope.equals(currentEnvelope) == false)
+  {
+    Properties properties("");
+
+    {
+      Property property;
+      property.setName("world_box");
+      property.setValue(envelope, dataType->getDataTypeEnvelope());
+      properties.addProperty(property);
+    }
+    {
+      Property property;
+      property.setName("scale");
+      property.setValue(scale, dataType->getDataTypeDouble());
+      properties.addProperty(property);
+    }
+    
+    m_model->setProperties(properties);
+  }
+}

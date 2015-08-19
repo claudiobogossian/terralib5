@@ -262,49 +262,17 @@ bool te::layout::PropertiesOutside::sendPropertyToSelectedItems( Property proper
   {
     if (item)
     {
-      ItemObserver* lItem = dynamic_cast<ItemObserver*>(item);
-      if(lItem)
+      AbstractItemView* absItem = dynamic_cast<AbstractItemView*>(item);
+      if(absItem)
       {
-        if(!lItem->getModel())
-        {
-          continue;
-        }
+        Properties* oldCommand = new Properties(absItem->getController()->getModel()->getProperties());
 
-        Properties* props = new Properties("");
-        Properties* beforeProps = lItem->getModel()->getProperties();
-        Properties* oldCommand = new Properties(*beforeProps);
-        if(props)
-        {
-          props->setObjectName(lItem->getModel()->getProperties()->getObjectName());
-          props->setTypeObj(lItem->getModel()->getProperties()->getTypeObj());
-          props->addProperty(property);
+        absItem->getController()->getModel()->setProperty(property);
 
-          lItem->getModel()->updateProperties(props);
-
-          if(beforeProps)
-          {
-            beforeProps = lItem->getModel()->getProperties();
-            Properties* newCommand = new Properties(*beforeProps);
-            commandItems.push_back(item);
-            commandOld.push_back(oldCommand);
-            commandNew.push_back(newCommand);
-          }
-        }
-      }
-      else
-      {
-        AbstractItemView* absItem = dynamic_cast<AbstractItemView*>(item);
-        if(absItem)
-        {
-          Properties* oldCommand = new Properties(absItem->getController()->getModel()->getProperties());
-
-          absItem->getController()->getModel()->setProperty(property);
-
-          Properties* newCommand = new Properties(absItem->getController()->getModel()->getProperties());
-          commandItems.push_back(item);
-          commandOld.push_back(oldCommand);
-          commandNew.push_back(newCommand);
-        }
+        Properties* newCommand = new Properties(absItem->getController()->getModel()->getProperties());
+        commandItems.push_back(item);
+        commandOld.push_back(oldCommand);
+        commandNew.push_back(newCommand);
       }
     }
   }
@@ -341,6 +309,46 @@ void te::layout::PropertiesOutside::changeMapVisitable( Property property )
   if(!iUtils)
     return;
 
+  MapItem* mapItem = iUtils->getMapItem(name);
+  if(!mapItem)
+    return;
+
+  //the selected item will now be the observer and the mapItem will be the subject
+  foreach( QGraphicsItem* selectedItem, m_graphicsItems) 
+  {
+    if(selectedItem)
+    {
+      AbstractItemView* selectedAbsView = dynamic_cast<AbstractItemView*>(selectedItem);
+      if(selectedAbsView != 0)
+      {
+        NewObserver* selectedObserver = dynamic_cast<NewObserver*>(selectedAbsView->getController()->getModel());
+        if(selectedObserver != 0)
+        {
+          mapItem->getController()->getModel()->attach(selectedObserver);
+        }
+      }
+    }
+  }
+
+
+
+  /*
+  if(property.getName().compare(m_sharedProps->getMapName()) != 0)
+    return;
+
+  std::string name = property.getValue().toString();
+  if(name.compare("") == 0)
+  {
+    name = property.getOptionByCurrentChoice().toString();
+  }
+
+  if(name.compare("") == 0)
+    return;
+
+  ItemUtils* iUtils = Context::getInstance().getItemUtils();
+  if(!iUtils)
+    return;
+
   MapItem* item = iUtils->getMapItem(name);
   if(!item)
     return;
@@ -355,12 +363,14 @@ void te::layout::PropertiesOutside::changeMapVisitable( Property property )
     return;
 
   te::layout::VisitorUtils::getInstance().changeMapVisitable(m_graphicsItems, model);
+  */
 }
 
 te::layout::MapModel* te::layout::PropertiesOutside::getMapModel( std::string nameMap )
 {
   MapModel* map = 0;
 
+  /*
   ItemUtils* iUtils = Context::getInstance().getItemUtils();
   if(!iUtils)
     return map;
@@ -375,6 +385,7 @@ te::layout::MapModel* te::layout::PropertiesOutside::getMapModel( std::string na
 
   MapModel* model = dynamic_cast<MapModel*>(obsMdl);
   map = model;
+  */
 
   return map;
 }

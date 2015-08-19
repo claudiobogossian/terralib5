@@ -34,6 +34,7 @@
 
 te::layout::ScaleModel::ScaleModel()
   : AbstractItemModel()
+  , NewObserver()
 {
   this->m_properties.setTypeObj(Enums::getInstance().getEnumObjectType()->getScaleItem());
 
@@ -110,9 +111,9 @@ te::layout::ScaleModel::ScaleModel()
       Variant v;
       v.setValue(enumType->getLabel(), dataType->getDataTypeString());
       property.addOption(v);
-
-      m_properties.addProperty(property);
     }
+
+    m_properties.addProperty(property);
   }
 
 //updating properties
@@ -133,4 +134,23 @@ te::layout::ScaleModel::ScaleModel()
 
 te::layout::ScaleModel::~ScaleModel()
 {
+}
+
+void te::layout::ScaleModel::update(const Subject* subject)
+{
+  const AbstractItemModel* subjectModel = dynamic_cast<const AbstractItemModel*>(subject);
+  if(subjectModel == 0)
+  {
+    return;
+  }
+
+  const Property& pScaleNew = subjectModel->getProperty("scale");
+  const Property& pScaleCurrent = this->getProperty("scale");
+  double scaleNew = pScaleNew.getValue().toDouble();
+  double scaleCurrent = pScaleCurrent.getValue().toDouble();
+
+  if(scaleNew != scaleCurrent)
+  {
+    setProperty(pScaleNew);
+  }
 }

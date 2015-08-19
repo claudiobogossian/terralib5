@@ -38,6 +38,7 @@ namespace te
 
     class AbstractItemController;
     class AbstractItemModel;
+    class ContextObject;
 
     /*!
       \brief Abstract class to represent an observable. "Model" part of MVC component. 
@@ -65,8 +66,13 @@ namespace te
 
         /*!
           \brief Refreshes the drawings of the view
-        */ 
+        */
         virtual void refresh() = 0;
+
+        /*!
+          \brief Informs the item that the context has changed
+        */
+        virtual void contextUpdated(const ContextObject& context) = 0;
 
       protected:
 

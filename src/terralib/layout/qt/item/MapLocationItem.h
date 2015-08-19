@@ -64,7 +64,7 @@ namespace te
           \param controller "Controller" part of MVC component
           \param o "Model" part of MVC component
         */
-        MapLocationItem( ItemController* controller, Observable* o, bool invertedMatrix = false );
+        MapLocationItem( AbstractItemController* controller, AbstractItemModel* model );
 
         /*!
           \brief Destructor

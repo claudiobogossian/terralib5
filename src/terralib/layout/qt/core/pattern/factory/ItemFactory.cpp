@@ -86,16 +86,6 @@ te::layout::Observer* te::layout::ItemFactory::make( EnumType* type, ItemParamsC
     PaperItem* paper = new PaperItem(params.getController(), params.getModel());
     item = (Observer*)paper;
   }
-  else if(type == enumObj->getMapItem())
-  {
-    MapItem* map = new MapItem(params.getController(), params.getModel());
-    item = (Observer*)map;
-  }
-  else if(type == enumObj->getGridMapItem())
-  {
-    GridMapItem* gridMap = new GridMapItem(params.getController(), params.getModel());
-    item = (Observer*)gridMap;
-  }
   else if(type == enumObj->getImageItem())
   {
     ImageItem* scale = new ImageItem(params.getController(), params.getModel());
@@ -115,21 +105,6 @@ te::layout::Observer* te::layout::ItemFactory::make( EnumType* type, ItemParamsC
   {
     BalloonItem* balloon = new BalloonItem(params.getController(), params.getModel());
     item = (Observer*)balloon;
-  }
-  else if(type == enumObj->getGridPlanarItem())
-  {
-    GridPlanarItem* gridPlanar = new GridPlanarItem(params.getController(), params.getModel());
-    item = (Observer*)gridPlanar;
-  }
-  else if(type == enumObj->getGridGeodesicItem())
-  {
-    GridGeodesicItem* gridGeodesic = new GridGeodesicItem(params.getController(), params.getModel());
-    item = (Observer*)gridGeodesic;
-  }
-  else if(type == enumObj->getMapLocationItem())
-  {
-    MapLocationItem* location = new MapLocationItem(params.getController(), params.getModel());
-    item = (Observer*)location;
   }
   else if(type == enumObj->getSVGItem())
   {
@@ -192,6 +167,26 @@ te::layout::AbstractItemView* te::layout::ItemFactory::makeNew(EnumType* type, I
   else if(type == enumObj->getPolygonItem())
   {
     item = new PolygonItem(params.m_newController, params.m_newModel);
+  }
+  else if(type == enumObj->getMapItem())
+  {
+    item = new MapItem(params.m_newController, params.m_newModel);
+  }
+  else if(type == enumObj->getMapLocationItem())
+  {
+    item = new MapLocationItem(params.m_newController, params.m_newModel);
+  }
+  else if(type == enumObj->getGridMapItem())
+  {
+    item = new GridMapItem(params.m_newController, params.m_newModel);
+  }
+  else if(type == enumObj->getGridPlanarItem())
+  {
+    item = new GridPlanarItem(params.m_newController, params.m_newModel);
+  }
+  else if(type == enumObj->getGridGeodesicItem())
+  {
+    item = new GridGeodesicItem(params.m_newController, params.m_newModel);
   }
 
   return item;

@@ -102,7 +102,7 @@ namespace te
         
     protected:
 
-        virtual void visitDependent(ContextItem context);
+        //virtual void visitDependent(ContextItem context);
 
         std::string               m_mapName;
         te::map::AbstractLayerPtr m_layer;

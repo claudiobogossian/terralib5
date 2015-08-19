@@ -27,6 +27,17 @@
 
 // TerraLib
 #include "MapItem.h"
+#include "MapController1.h"
+
+#include "../../../qt/widgets/canvas/MapDisplay.h"
+
+#include "../../../qt/widgets/layer/explorer/AbstractTreeItem.h" //rever esta dependencia
+
+#include <QGraphicsSceneMouseEvent>
+#include <QGraphicsSceneDragDropEvent>
+#include <QMimeData>
+
+/*
 #include "../../core/pattern/singleton/Context.h"
 #include "../../core/AbstractScene.h"
 #include "../../core/pattern/mvc/ItemModelObservable.h"
@@ -76,15 +87,19 @@
 #include <QDebug>
 #include <QApplication>
 #include <QGraphicsSceneMouseEvent>
+
 #include <QStyleOptionGraphicsItem>
 #include <QEvent>
 #include <QPoint>
 #include <QMimeData>
 #include <QColor>
 #include <QTextEdit>
+*/
 
-te::layout::MapItem::MapItem( ItemController* controller, Observable* o, bool invertedMatrix ) :
-  ParentItem<QGraphicsProxyWidget>(controller, o, invertedMatrix),
+te::layout::MapItem::MapItem( AbstractItemController* controller, AbstractItemModel* model )
+  : AbstractItem<QGraphicsProxyWidget>(controller, model)
+  , m_mapDisplay(0)
+  /*,
   m_mime(0),
   m_mapDisplay(0),
   m_grabbedByWidget(false),
@@ -93,8 +108,25 @@ te::layout::MapItem::MapItem( ItemController* controller, Observable* o, bool in
   m_hMargin(0),
   m_pixmapIsDirty(false),
   m_currentMapScale(0),
-  m_forceMapRefresh(false)
-{    
+  m_forceMapRefresh(false)*/
+{
+  m_mapDisplay = new te::qt::widgets::MapDisplay();
+  m_mapDisplay->setAcceptDrops(true);
+  m_mapDisplay->setBackgroundColor(Qt::transparent);
+  m_mapDisplay->setResizeInterval(0);
+  m_mapDisplay->setMouseTracking(true);
+
+  setWidget(m_mapDisplay);
+
+  m_mapDisplay->show();
+
+  this->prepareGeometryChange();
+  this->setGeometry(boundingRect());
+
+  connect(m_mapDisplay, SIGNAL(extentChanged()), this, SLOT(extentChanged()));
+
+
+  /*
   m_nameClass = std::string(this->metaObject()->className());
   m_oldMapScale = m_currentMapScale;
   Utils* utils = Context::getInstance().getUtils();
@@ -135,25 +167,203 @@ te::layout::MapItem::MapItem( ItemController* controller, Observable* o, bool in
 
   m_mapDisplay->show();
 
-  /*
-    MapItem will handle all the events. 
-    For example, the event of mouse click on the child item 
-    won't be handled by child item.
-  */
+  // MapItem will handle all the events. 
+  // For example, the event of mouse click on the child item 
+  // won't be handled by child item.
   setHandlesChildEvents(true);
+  */
 }
 
 te::layout::MapItem::~MapItem()
 {
+  /*
   clearCurrentTool();
   if(m_zoomWheel)
   {
     m_mapDisplay->removeEventFilter(m_zoomWheel);
     delete m_zoomWheel;
     m_zoomWheel = 0;
+  }*/
+}
+
+te::qt::widgets::MapDisplay* te::layout::MapItem::getMapDisplay()
+{
+  return m_mapDisplay;
+}
+
+void te::layout::MapItem::contextUpdated(const ContextObject& context)
+{
+  Utils* utils = Context::getInstance().getUtils();
+
+  QRectF boxMM = boundingRect();
+
+  te::gm::Envelope box(0, 0, boxMM.width(), boxMM.height());
+  box = utils->viewportBox(box);
+
+  QSizeF currentSize = m_mapDisplay->size();
+  QSizeF newSize(box.getWidth(), box.getHeight());
+  if(currentSize != newSize)
+  {
+    QPointF pt = scenePos();
+
+    this->prepareGeometryChange();
+    m_mapDisplay->setGeometry(pt.x(), pt.y(), newSize.width(), newSize.height());
+    refresh();
   }
 }
 
+void te::layout::MapItem::drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget )
+{
+  QPixmap pixmap(m_mapDisplay->width(), m_mapDisplay->height());
+  pixmap.fill(Qt::transparent);
+
+  QPainter localPainter(&pixmap);
+  m_mapDisplay->render(&localPainter, QPoint(), QRegion(), QWidget::DrawChildren);
+  localPainter.end();
+
+  QImage image = pixmap.toImage();
+  image = image.mirrored();
+  pixmap = QPixmap::fromImage(image);
+
+  painter->save();
+  
+  painter->setClipRect(boundingRect());
+  painter->drawPixmap(boundingRect(), pixmap, pixmap.rect());
+  
+  painter->restore();
+
+  //pixmap = QPixmap::fromImage(image);
+
+  //QGraphicsProxyWidget::paint(painter, option, widget);
+
+  /*
+  if(!m_mapDisplay || !painter)
+    return;
+
+  MapModel* model = dynamic_cast<MapModel*>(m_model);
+  if(!model)
+  {
+    return;
+  }
+
+  QRectF boundRect;
+
+  if(model->getBox().getWidth() < model->getMapBox().getWidth()
+    || model->getBox().getHeight() < model->getMapBox().getHeight())
+  {
+    boundRect = boundingRect();
+  }
+  else
+  {
+    double x = model->getDisplacementX();
+    double y = model->getDisplacementY();
+    boundRect = QRectF(x, y, model->getMapBox().getWidth(), model->getMapBox().getHeight());
+  }
+
+  if( m_pixmapIsDirty == true)
+  {
+    m_pixmapIsDirty = false;
+    generateMapPixmap();
+  }
+
+  painter->save();
+  painter->setClipRect(boundRect);
+  painter->drawPixmap(boundRect, m_pixmap, m_pixmap.rect());
+  
+  painter->restore();*/
+}
+
+QVariant te::layout::MapItem::itemChange ( QGraphicsItem::GraphicsItemChange change, const QVariant & value )
+{
+  if(change == QGraphicsItem::ItemSceneHasChanged)
+  {
+    Scene* myScene = dynamic_cast<Scene*>(this->scene());
+    if(myScene != 0)
+    {
+      contextUpdated(myScene->getContext());
+    }
+  }
+  return AbstractItem<QGraphicsProxyWidget>::itemChange(change, value);
+}
+
+void te::layout::MapItem::mousePressEvent ( QGraphicsSceneMouseEvent * event )
+{
+  //by default, we send the event directly to the graphicsItem and not the proxy. This is done in order to make the item answer to the mouse events, and not the map display
+  QGraphicsItem::mousePressEvent(event);
+}
+
+void  te::layout::MapItem::mouseMoveEvent ( QGraphicsSceneMouseEvent * event )
+{
+  //by default, we send the event directly to the graphicsItem and not the proxy. This is done in order to make the item answer to the mouse events, and not the map display
+  QGraphicsItem::mouseMoveEvent(event);
+}
+
+void  te::layout::MapItem::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event )
+{
+  //by default, we send the event directly to the graphicsItem and not the proxy. This is done in order to make the item answer to the mouse events, and not the map display
+  QGraphicsItem::mouseReleaseEvent(event);
+}
+
+void te::layout::MapItem::dragEnterEvent( QGraphicsSceneDragDropEvent * event )
+{
+  //Copy the map from layer tree
+  Qt::DropActions actions = event->dropAction();
+  if(actions != Qt::CopyAction)
+    return;
+
+  const QMimeData* mime = event->mimeData();
+  QString s = mime->data("application/x-terralib;value=\"DraggedItems\"").constData();
+  if(s.isEmpty())
+    return;
+
+  event->acceptProposedAction();
+}
+
+void te::layout::MapItem::dragLeaveEvent( QGraphicsSceneDragDropEvent * event )
+{
+}
+
+void te::layout::MapItem::dragMoveEvent( QGraphicsSceneDragDropEvent * event )
+{
+
+}
+
+void te::layout::MapItem::dropEvent( QGraphicsSceneDragDropEvent * event )
+{
+  event->setDropAction(Qt::CopyAction);
+
+  QString s = event->mimeData()->data("application/x-terralib;value=\"DraggedItems\"").constData();
+  unsigned long v = s.toULongLong();
+  std::vector<te::qt::widgets::AbstractTreeItem*>* vecItems = reinterpret_cast<std::vector<te::qt::widgets::AbstractTreeItem*>*>(v);
+
+  if(vecItems->empty())
+    return;
+
+  std::list<te::map::AbstractLayerPtr> listLayers;
+  for(size_t i = 0 ; i < vecItems->size(); ++i)
+  {
+    te::qt::widgets::AbstractTreeItem* treeItem = vecItems->operator[](i);
+    te::map::AbstractLayerPtr layer = treeItem->getLayer();
+    listLayers.push_back(layer);
+  }
+
+  MapController1* mapController = dynamic_cast<MapController1*>(m_controller);
+  if(mapController != 0)
+  {
+    mapController->addLayers(listLayers);
+  }
+}
+
+void te::layout::MapItem::extentChanged()
+{
+  MapController1* mapController = dynamic_cast<MapController1*>(m_controller);
+  if(mapController != 0)
+  {
+    mapController->extentChanged(m_mapDisplay->getExtent(), m_mapDisplay->getScale());
+  }
+}
+
+/*
 void te::layout::MapItem::updateObserver( ContextItem context )
 {
   if(!m_model)
@@ -181,7 +391,7 @@ void te::layout::MapItem::updateObserver( ContextItem context )
     int mw = m_mapDisplay->getWidth();
     int mh = m_mapDisplay->getHeight();
 
-    /* resize */
+    // resize
     if(w != m_mapDisplay->getWidth() 
       || h != m_mapDisplay->getHeight())
     {
@@ -317,7 +527,7 @@ void te::layout::MapItem::setPixmap( const QPixmap& pixmap )
 
 te::gm::Coord2D te::layout::MapItem::getPosition()
 {
-  /* Correctly position the object and change the origin for bottomLeft */
+  // Correctly position the object and change the origin for bottomLeft
   double x = 0;
   double y = 0;
   MapModel* model = dynamic_cast<MapModel*>(m_model);
@@ -919,7 +1129,7 @@ bool te::layout::MapItem::hasListLayerChanged()
   return result;
 }
 
-void te::layout::MapItem::redraw( bool bRefresh /*= true*/ )
+void te::layout::MapItem::redraw( bool bRefresh  )
 {
   m_forceMapRefresh = true;
   ContextItem context;
@@ -1050,3 +1260,4 @@ void te::layout::MapItem::updateScale()
 
   }
 }
+*/

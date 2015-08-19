@@ -553,6 +553,7 @@ void te::layout::View::changeMode( EnumType* newMode )
   }
   else if(mode == enumMode->getModeArrowCursor())
   {
+    /*
     resetDefaultConfig();
     std::vector<te::layout::MapItem*> list = iUtils->getMapItemList();
     if (!list.empty())
@@ -562,6 +563,7 @@ void te::layout::View::changeMode( EnumType* newMode )
         mit->changeCurrentTool(mode);
       }
     }
+    */
   }
   else if(mode == enumMode->getModeNewTemplate())
   {

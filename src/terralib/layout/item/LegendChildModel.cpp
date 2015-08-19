@@ -140,6 +140,7 @@ void te::layout::LegendChildModel::drawLegend( te::map::Canvas* canvas, Utils* u
   } // end for each <Symbolizer>
 }
 
+/*
 void te::layout::LegendChildModel::visitDependent(ContextItem context)
 {
   MapModel* map = dynamic_cast<MapModel*>(m_visitable);
@@ -164,6 +165,7 @@ void te::layout::LegendChildModel::visitDependent(ContextItem context)
     draw(context);
   }	
 }
+*/
 
 te::se::Rule* te::layout::LegendChildModel::getRule()
 {

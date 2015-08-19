@@ -146,6 +146,7 @@ void te::layout::LegendModel::updateProperties( te::layout::Properties* properti
   }
 }
 
+/*
 void te::layout::LegendModel::visitDependent(ContextItem context)
 {
   MapModel* map = dynamic_cast<MapModel*>(m_visitable);
@@ -168,6 +169,7 @@ void te::layout::LegendModel::visitDependent(ContextItem context)
     draw(context);
   }	
 }
+*/
 
 void te::layout::LegendModel::setBorderDisplacement( double value )
 {

@@ -57,7 +57,7 @@ te::layout::TextItem::~TextItem()
 
 }
 
-void te::layout::TextItem::drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
+void te::layout::TextItem::drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget )
 {
   //asks the item to paint itself
   QGraphicsTextItem::paint(painter, option, widget);

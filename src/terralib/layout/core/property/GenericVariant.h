@@ -98,7 +98,7 @@ namespace te
 
           \return value of string type
         */
-        std::list<te::map::AbstractLayerPtr>  toLayerList();
+        const std::list<te::map::AbstractLayerPtr>& toLayerList() const;
         
         /*!
           \brief Converts the value to a string.
