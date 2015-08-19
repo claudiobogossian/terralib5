@@ -95,11 +95,6 @@ namespace te
         void draw();
 
         /*!
-          \brief Adjust data for a given time animation period.
-        */
-        void adjustDataToAnimationTemporalExtent();
-
-        /*!
           \brief Draw a piece of tracktrajectory trail.
           It draws from the previous time to the current time.
 
