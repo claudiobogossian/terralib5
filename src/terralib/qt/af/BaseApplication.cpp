@@ -145,7 +145,7 @@ void CloseAllTables(std::vector<te::qt::af::DataSetTableDockWidget*>& tables)
 {
   std::vector<te::qt::af::DataSetTableDockWidget*>::iterator it;
 
-  for(it=tables.begin(); it!=tables.end(); ++it)
+  for (it = tables.begin(); it != tables.end(); ++it)
     (*it)->close();
 
   tables.clear();
@@ -215,8 +215,9 @@ te::qt::af::BaseApplication::~BaseApplication()
   te::qt::af::SaveState(this);
 
 // release data tables
-  te::common::FreeContents(m_tableDocks);
-  m_tableDocks.clear();
+  while (!m_tableDocks.empty())
+    delete *m_tableDocks.begin();
+
 
 // ????
   if(m_iController)
@@ -2114,7 +2115,7 @@ void te::qt::af::BaseApplication::onLayerTableClose(te::qt::af::DataSetTableDock
     if(*it == wid)
       break;
 
-  if(it != m_tableDocks.end())
+  if (it != m_tableDocks.end())
     m_tableDocks.erase(it);
 
   if(m_tableDocks.empty())
