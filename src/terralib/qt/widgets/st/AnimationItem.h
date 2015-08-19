@@ -52,7 +52,11 @@ namespace te
       /*!
         \class AnimationItem
 
-        \brief This class is a dialog for the Pixmap Item.
+        \brief An abstract class for animation Item.
+        
+        It is the base class that stores data of time and route.
+
+        \sa PixmapItem, TrajectoryItem
       */
       class TEQTWIDGETSEXPORT AnimationItem : public QObject, public QGraphicsPixmapItem
       {
@@ -75,22 +79,11 @@ namespace te
         */
         virtual ~AnimationItem();
 
-        ///*!
-        //  \brief It sets the internal matrix.
-        //*/
-        //void setMatrix();
-
         /*!
           \brief It returns the Animation Item position in device coordinate.
           \return Position in device coordinate.
         */
         QPoint getPosInDeviceCoordinate();
-
-        /*!
-        \brief It transform coodinates to map display projection coodinates.
-        \param vec Coordinates in native projection.
-        */
-        void transformToDisplayProjection(QVector<QPointF>& vec);
 
         /*!
           \brief Paint a Animation Item.
@@ -146,24 +139,24 @@ namespace te
         virtual void erase(const unsigned int& curTime) = 0;
 
       public:
-        QString m_title;                                    //!< The icon item title.
-        te::qt::widgets::MapDisplay* m_display;             //!< Indicates where the icon item is displayed.
-        int m_SRID;                                         //!< The input route srid.
-        QPointF m_pos;                                      //!< The icon position.
-        QVector<te::dt::TimeInstant> m_time;                //!< The input time.
-        QVector<te::dt::TimeInstant> m_animationTime;       //!< The animation time. It contains only the portions to be animated.
-        te::gm::LineString* m_route;                        //!< The input path in world coordenates.
-        QVector<QPointF> m_animationRoute;                  //!< It contains only the portions to be animated.
-        QMatrix m_matrix;                                   //!< The display transformation matrix.
-        bool m_automaticPan;                                //!< True if automatic pan over this item.
-        double m_panFactor;                                 //!< the range is between 0.05 and 0.5 
-        unsigned int m_curTimeDuration;                     //!< Current time (ms). Its value is between 0 and the total duration.
-        double m_norInitialTime;                            //!< Normalized initial time (between 0 and 1).
-        double m_norFinalTime;                              //!< Normalized final time (between 0 and 1).
-        Animation* m_animation;                             //!< The animation this item.
-        unsigned int m_duration;                            //!< The duration this item.
-        QAbstractAnimation::Direction m_direction;          //!< The direction
-        int m_opacity;                                      //!< Opacity.
+        QString m_title;                              //!< The icon item title.
+        te::qt::widgets::MapDisplay* m_display;       //!< Indicates where the icon item is displayed.
+        int m_SRID;                                   //!< The input route srid.
+        QPointF m_pos;                                //!< The icon position.
+        QVector<te::dt::TimeInstant> m_time;          //!< The input time.
+        QVector<te::dt::TimeInstant> m_animationTime; //!< The animation time. It contains only the portions to be animated.
+        te::gm::LineString* m_route;                  //!< The input path in world coordenates.
+        QVector<QPointF> m_animationRoute;            //!< It contains only the portions to be animated.
+        QMatrix m_matrix;                             //!< The display transformation matrix.
+        bool m_automaticPan;                          //!< True if automatic pan over this item.
+        double m_panFactor;                           //!< the range is between 0.05 and 0.5 
+        unsigned int m_curTimeDuration;               //!< Current time (ms). Its value is between 0 and the total duration.
+        double m_norInitialTime;                      //!< Normalized initial time (between 0 and 1).
+        double m_norFinalTime;                        //!< Normalized final time (between 0 and 1).
+        Animation* m_animation;                       //!< The animation this item.
+        unsigned int m_duration;                      //!< The duration this item.
+        QAbstractAnimation::Direction m_direction;    //!< The direction
+        int m_opacity;                                //!< Opacity.
       };
     } // end namespace widgets
   }   // end namespace qt

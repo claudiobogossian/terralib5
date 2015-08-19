@@ -29,17 +29,6 @@ te::qt::widgets::AnimationItem::~AnimationItem()
   delete m_route;
 }
 
-//void te::qt::widgets::AnimationItem::setMatrix()
-//{
-//  int w = m_display->getDisplayPixmap()->width();
-//  int h = m_display->getDisplayPixmap()->height();
-//  te::qt::widgets::Canvas canvas(w, h);
-//  te::gm::Envelope e = m_display->getExtent();
-//  canvas.calcAspectRatio(e.m_llx, e.m_lly, e.m_urx, e.m_ury);
-//  canvas.setWindow(e.m_llx, e.m_lly, e.m_urx, e.m_ury);
-//  m_matrix = canvas.getMatrix();
-//}
-
 QPoint te::qt::widgets::AnimationItem::getPosInDeviceCoordinate()
 {
   QPointF p = m_pos;
@@ -51,22 +40,6 @@ QPoint te::qt::widgets::AnimationItem::getPosInDeviceCoordinate()
     p.setY(point.getY());
   }
   return m_matrix.map(p).toPoint();
-}
-
-void te::qt::widgets::AnimationItem::transformToDisplayProjection(QVector<QPointF>& vec)
-{
-  if (m_display->getSRID() != TE_UNKNOWN_SRS && m_display->getSRID() != m_SRID)
-  {
-    size_t size = vec.count();
-    te::gm::LineString line(size, te::gm::LineStringType, m_SRID);
-    for (size_t i = 0; i < size; ++i)
-      line.setPoint(i, vec[(int)i].x(), vec[(int)i].y());
-    line.transform(m_display->getSRID());
-
-    vec.clear();
-    for (size_t i = 0; i < size; ++i)
-      vec.push_back(QPointF(line.getPointN(i)->getX(), line.getPointN(i)->getY()));
-  }
 }
 
 void te::qt::widgets::AnimationItem::setDuration(const unsigned int& duration)

@@ -168,9 +168,9 @@ te::qt::widgets::TimeSliderWidget::TimeSliderWidget(te::qt::widgets::MapDisplay*
     m_ui->m_playToolButton->setEnabled(false);
     m_ui->m_stopToolButton->setEnabled(false);
     m_ui->m_dateTimeEdit->setEnabled(false);
-	m_ui->m_TemporalHorizontalSlider->setEnabled(false);
-	m_ui->label->setEnabled(false);
-	m_ui->label_2->setEnabled(false);
+	  m_ui->m_TemporalHorizontalSlider->setEnabled(false);
+	  m_ui->label->setEnabled(false);
+	  m_ui->label_2->setEnabled(false);
     m_spd->hide();
   }
   else
@@ -179,14 +179,15 @@ te::qt::widgets::TimeSliderWidget::TimeSliderWidget(te::qt::widgets::MapDisplay*
     m_ui->m_settingsToolButton->setEnabled(true);
     m_ui->m_playToolButton->setEnabled(true);
     m_ui->m_stopToolButton->setEnabled(true);
+
     if(m_parallelAnimation->state() == QAbstractAnimation::Paused)
       m_ui->m_dateTimeEdit->setEnabled(true);
     else
       m_ui->m_dateTimeEdit->setEnabled(false);
-	m_ui->m_TemporalHorizontalSlider->setEnabled(true);
-	m_ui->label->setEnabled(true);
-	m_ui->label_2->setEnabled(true);
 
+	  m_ui->m_TemporalHorizontalSlider->setEnabled(true);
+	  m_ui->label->setEnabled(true);
+	  m_ui->label_2->setEnabled(true);
   }
 
   if(m_display->getExtent().isValid() == false)
@@ -956,7 +957,6 @@ void te::qt::widgets::TimeSliderWidget::onDisplayPaintEvent(QPainter* painter)
         // draw pixmap itens
         PixmapItem* pi = (PixmapItem*)ai;
         drawPixmapItem(pi, painter);
-        //drawPixmapItem(pi, drect, painter);
       }
     }
   }
@@ -1029,7 +1029,6 @@ void te::qt::widgets::TimeSliderWidget::createNewPixmap()
 void te::qt::widgets::TimeSliderWidget::draw()
 {
   m_animationScene->createNewPixmap();
-//  m_animationScene->setMatrix();
   m_animationScene->draw(m_currentTime);
 }
 
@@ -1390,13 +1389,11 @@ void te::qt::widgets::TimeSliderWidget::onExtentChanged()
   {
     m_parallelAnimation->pause();
     draw();
-    //m_display->update();
     m_parallelAnimation->resume();
   }
   else
   {
     draw();
-    //m_display->update();
   }
 }
 
@@ -1405,7 +1402,6 @@ void te::qt::widgets::TimeSliderWidget::onSridChanged()
   int state = m_parallelAnimation->state();
   if(state == QAbstractAnimation::Running)
   {
-    //createNewPixmap();
     calculateAllSpatialExtent();
     createAnimations();
     draw();
@@ -1414,7 +1410,6 @@ void te::qt::widgets::TimeSliderWidget::onSridChanged()
   }
   else
   {
-    //createNewPixmap();
     calculateAllSpatialExtent();
     createAnimations();
     draw();
@@ -1919,7 +1914,9 @@ void te::qt::widgets::TimeSliderWidget::drawPixmapItem(te::qt::widgets::PixmapIt
     return;
 
   painter->save();
-  // set shear, rotation and scale
+
+  // If the projection is different, do an approximation using affine transformation.
+  // Note: For small areas it gives a good result, however, for larger areas the result is not good.
   if (m_display->getSRID() != TE_UNKNOWN_SRS && m_display->getSRID() != pi->m_SRID)
   {
     // get width, height and rotation
@@ -1935,7 +1932,7 @@ void te::qt::widgets::TimeSliderWidget::drawPixmapItem(te::qt::widgets::PixmapIt
     line.setPoint(8, pi->m_imaRect.center().x(), pi->m_imaRect.y() + pi->m_imaRect.height());
     line.transform(m_display->getSRID());
 
-    // transform in device coordinate
+    // transform to device coordinate
     QPointF p0 = pi->m_matrix.map(QPointF(line.getPointN(0)->getX(), line.getPointN(0)->getY()));
     QPointF p1 = pi->m_matrix.map(QPointF(line.getPointN(1)->getX(), line.getPointN(1)->getY()));
     QPointF p2 = pi->m_matrix.map(QPointF(line.getPointN(2)->getX(), line.getPointN(2)->getY()));
@@ -2851,7 +2848,7 @@ QImage* te::qt::widgets::TimeSliderWidget::getImage(te::qt::widgets::PixmapItem*
     size_t nchars = pi->m_ncols * 2;
     uchar* buf = new uchar[nchars];
     FILE* fp = fopen(file.toStdString().c_str(), "rb");
-	ima = new QImage((int)pi->m_ncols, (int)pi->m_nlines, QImage::Format_ARGB32);
+	  ima = new QImage((int)pi->m_ncols, (int)pi->m_nlines, QImage::Format_ARGB32);
     ima->fill(Qt::transparent);
 
     uchar uc[3];
@@ -2880,13 +2877,13 @@ QImage* te::qt::widgets::TimeSliderWidget::getImage(te::qt::widgets::PixmapItem*
   {
     QString auxFile(file);
     size_t pos = auxFile.indexOf(baseName);
-	auxFile.remove(0, (int)pos);
+	  auxFile.remove(0, (int)pos);
     pos = auxFile.indexOf("_");
     size_t pp = auxFile.indexOf(".bin");
-	int offset = atoi(auxFile.mid((int)pos + 1, (int)pp - (int)pos + 1).toStdString().c_str());
+	  int offset = atoi(auxFile.mid((int)pos + 1, (int)pp - (int)pos + 1).toStdString().c_str());
     size_t fileSize = pi->m_nlines * pi->m_ncols * 4 + 8; // dado é float e desprepreza 4 bytes iniciais e 4 bytes finais
-	offset *= (int)fileSize;
-	auxFile.remove((int)pos, auxFile.length() - (int)pos);
+	  offset *= (int)fileSize;
+	  auxFile.remove((int)pos, auxFile.length() - (int)pos);
     auxFile = path + auxFile + pi->m_suffix;
 
     size_t nchars = pi->m_ncols * 4;
@@ -2894,7 +2891,7 @@ QImage* te::qt::widgets::TimeSliderWidget::getImage(te::qt::widgets::PixmapItem*
     FILE* fp = fopen(auxFile.toStdString().c_str(), "rb");
     fseek(fp, offset, SEEK_SET);
     fseek(fp, 4, SEEK_CUR); // despreza 4 bytes da primeira linha
-	ima = new QImage((int)pi->m_ncols, (int)pi->m_nlines, QImage::Format_ARGB32);
+	  ima = new QImage((int)pi->m_ncols, (int)pi->m_nlines, QImage::Format_ARGB32);
     ima->fill(Qt::transparent);
 
     uchar uc[5];

@@ -41,6 +41,9 @@ namespace te
       class MapDisplay;
       /*!
         \brief This class is a animation view.
+
+        This is where the animation should occur, however, the paint event 
+        is modified so that the animation happen on the map display.
       */
       class TEQTWIDGETSEXPORT AnimationView : public QGraphicsView
       {
@@ -80,9 +83,6 @@ namespace te
       signals:
         void animationDragEnterEvent(QDragEnterEvent*);
         void animationDropEvent(QDropEvent*);
-
-
-        //bool eventFilter(QObject*, QEvent*);
 
       private:
         MapDisplay* m_display;
