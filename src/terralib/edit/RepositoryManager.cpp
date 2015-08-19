@@ -35,50 +35,49 @@
 // STL
 #include <cassert>
 
-void te::edit::RepositoryManager::addGeometry(const std::string& source, te::gm::Geometry* geom, OperationType operation)
+void te::edit::RepositoryManager::addGeometry(const std::string& source, te::gm::Geometry* geom)
 {
   Repository* repository = getRepository(source);
 
-  if (repository == 0)
+  if(repository == 0)
   {
     // Not found! Create a new repository associated with the given source
     repository = new Repository(source);
 
     // Add the geometry
-    repository->add(geom, operation);
+    repository->add(geom);
 
     // Store!
     m_repositories[source] = repository;
-
   }
   else
-    repository->add(geom, operation);
+    repository->add(geom);
 }
 
-void te::edit::RepositoryManager::addGeometry(const std::string& source, te::da::ObjectId* id, te::gm::Geometry* geom, OperationType operation)
+void te::edit::RepositoryManager::addGeometry(const std::string& source, te::da::ObjectId* id, te::gm::Geometry* geom)
 {
   Repository* repository = getRepository(source);
 
-  if (repository == 0)
+  if(repository == 0)
   {
     // Not found! Create a new repository associated with the given source
     repository = new Repository(source);
 
     // Add the geometry
-    repository->add(id, geom, operation);
+    repository->add(id, geom);
 
     // Store!
     m_repositories[source] = repository;
   }
   else
-    repository->add(id, geom, operation);
+    repository->add(id, geom);
 }
 
 void te::edit::RepositoryManager::addFeature(const std::string& source, Feature* f)
 {
-  Repository* repository = getRepository(source);
+   Repository* repository = getRepository(source);
 
-  if (repository == 0)
+  if(repository == 0)
   {
     // Not found! Create a new repository associated with the given source
     repository = new Repository(source);
@@ -99,7 +98,7 @@ bool te::edit::RepositoryManager::hasIdentify(const std::string& source, te::da:
 
   Repository* repository = getRepository(source);
 
-  if (repository == 0)
+  if(repository == 0)
     return false;
 
   return repository->hasIdentifier(id);
@@ -114,9 +113,9 @@ te::edit::Repository* te::edit::RepositoryManager::getRepository(const std::stri
 {
   std::map<std::string, Repository*>::const_iterator it = m_repositories.find(source);
 
-  if (it == m_repositories.end())
+  if(it == m_repositories.end())
     return 0;
-
+  
   return it->second;
 }
 
@@ -124,7 +123,7 @@ std::vector<te::edit::Feature*> te::edit::RepositoryManager::getFeatures(const s
 {
   Repository* repository = getRepository(source);
 
-  if (repository == 0)
+  if(repository == 0)
     return std::vector<te::edit::Feature*>();
 
   return repository->getFeatures(e, srid);
@@ -134,7 +133,7 @@ te::edit::Feature* te::edit::RepositoryManager::getFeature(const std::string& so
 {
   Repository* repository = getRepository(source);
 
-  if (repository == 0)
+  if(repository == 0)
     return 0;
 
   return repository->getFeature(e, srid);
@@ -143,7 +142,7 @@ te::edit::Feature* te::edit::RepositoryManager::getFeature(const std::string& so
 void te::edit::RepositoryManager::clearAll()
 {
   std::map<std::string, Repository*>::const_iterator it;
-  for (it = m_repositories.begin(); it != m_repositories.end(); ++it)
+  for(it = m_repositories.begin(); it != m_repositories.end(); ++it)
     it->second->clear();
 }
 
@@ -151,7 +150,7 @@ void te::edit::RepositoryManager::clear(const std::string& source)
 {
   Repository* repository = getRepository(source);
 
-  if (repository == 0)
+  if(repository == 0)
     return;
 
   repository->clear();
@@ -167,31 +166,12 @@ void te::edit::RepositoryManager::remove(const std::string& source)
 {
   std::map<std::string, Repository*>::iterator it = m_repositories.find(source);
 
-  if (it == m_repositories.end())
+  if(it == m_repositories.end())
     return;
 
   m_repositories.erase(it);
 
   delete it->second;
-}
-
-void te::edit::RepositoryManager::removeFeature(const std::string& source, te::da::ObjectId* id)
-{
-  Repository* repository = getRepository(source);
-
-  if (repository == 0)
-  {
-    // Not found! Create a new repository associated with the given source
-    repository = new Repository(source);
-
-    // Remove the feature
-    repository->remove(id);
-
-    // Store!
-    m_repositories[source] = repository;
-  }
-  else
-    repository->remove(id);
 }
 
 te::edit::RepositoryManager::RepositoryManager()
@@ -202,5 +182,3 @@ te::edit::RepositoryManager::~RepositoryManager()
 {
   removeAll();
 }
-
-

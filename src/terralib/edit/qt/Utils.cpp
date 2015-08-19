@@ -24,29 +24,13 @@
 */
 
 // TerraLib
-#include "../../dataaccess/dataset/DataSet.h"
-#include "../../dataaccess/dataset/ObjectId.h"
-#include "../../dataaccess/utils/Utils.h"
-#include "../../datatype/SimpleData.h"
-#include "../../geometry/Coord2D.h"
-#include "../../geometry/Envelope.h"
 #include "../../geometry/Geometry.h"
-#include "../../geometry/GeometryCollection.h"
-#include "../../geometry/GeometryProperty.h"
 #include "../../geometry/LineString.h"
-#include "../../geometry/MultiPoint.h"
 #include "../../geometry/Point.h"
-#include "../../geometry/Polygon.h"
-#include "../../geometry/Utils.h"
 #include "../../qt/widgets/canvas/Canvas.h"
 #include "../../qt/widgets/Utils.h"
 #include "../../srs/Config.h"
 #include "../Utils.h"
-#include "Utils.h"
-
-//#include "../../srs/Config.h"
-#include "../Feature.h"
-//#include "../SnapManager.h"
 #include "Utils.h"
 
 // Qt

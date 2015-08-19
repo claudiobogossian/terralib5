@@ -32,8 +32,6 @@
 #include "../../Utils.h"
 #include "../Renderer.h"
 #include "../Utils.h"
-#include "../core/command/MoveCommand.h"
-#include "../core/UndoStackManager.h"
 #include "MoveGeometryTool.h"
 
 // Qt
@@ -41,15 +39,13 @@
 #include <QMouseEvent>
 #include <QPainter>
 #include <QPixmap>
-#include <QDebug>
 
-// STL 
+// STL
 #include <cassert>
 #include <memory>
 
-
 te::edit::MoveGeometryTool::MoveGeometryTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent)
-: AbstractTool(display, parent),
+  : AbstractTool(display, parent),
     m_layer(layer),
     m_feature(0),
     m_moveStarted(false)
@@ -60,31 +56,26 @@ te::edit::MoveGeometryTool::MoveGeometryTool(te::qt::widgets::MapDisplay* displa
   updateCursor();
 
   draw();
-
 }
 
 te::edit::MoveGeometryTool::~MoveGeometryTool()
 {
-  QPixmap* draft = m_display->getDraftPixmap();
-  draft->fill(Qt::transparent);
-
   delete m_feature;
 }
 
 bool te::edit::MoveGeometryTool::mousePressEvent(QMouseEvent* e)
 {
-  if (e->button() != Qt::LeftButton)
+  if(e->button() != Qt::LeftButton)
     return false;
 
   pickFeature(m_layer, GetPosition(e));
 
-  if (m_feature)
+  if(m_feature)
     m_moveStarted = true;
 
   m_origin = m_display->transform(GetPosition(e));
 
   m_delta *= 0;
-  m_deltaSum *= 0;
 
   return true;
 }
@@ -108,23 +99,14 @@ bool te::edit::MoveGeometryTool::mouseMoveEvent(QMouseEvent* e)
 
   m_origin = currentPosition;
 
-  m_deltaSum = m_deltaSum - m_delta;
-
   return false;
 }
 
 bool te::edit::MoveGeometryTool::mouseReleaseEvent(QMouseEvent* e)
 {
-
   m_moveStarted = false;
 
-  if(m_feature == 0)
-    return false;
-
-  storeUndoCommand();
-
   return false;
-
 }
 
 bool te::edit::MoveGeometryTool::mouseDoubleClickEvent(QMouseEvent* e)
@@ -151,7 +133,7 @@ void te::edit::MoveGeometryTool::pickFeature(const te::map::AbstractLayerPtr& la
 
   try
   {
-    m_feature = PickFeature(m_layer, env, m_display->getSRID(), te::edit::GEOMETRY_UPDATE);
+    m_feature = PickFeature(m_layer, env, m_display->getSRID());
 
     draw();
   }
@@ -203,7 +185,7 @@ void te::edit::MoveGeometryTool::draw()
   }
 
   // Draw the vertexes
-  if (RepositoryManager::getInstance().hasIdentify(m_layer->getId(), m_feature->getId()) == false)
+  if(RepositoryManager::getInstance().hasIdentify(m_layer->getId(), m_feature->getId()) == false)
     renderer.draw(m_feature->getGeometry(), true);
   else
     renderer.drawVertexes(m_feature->getGeometry());
@@ -215,7 +197,7 @@ void te::edit::MoveGeometryTool::draw()
 
 void te::edit::MoveGeometryTool::updateCursor()
 {
-  m_display->setCursor(Qt::OpenHandCursor);
+  m_display->setCursor(Qt::ArrowCursor);
 }
 
 void te::edit::MoveGeometryTool::onExtentChanged()
@@ -225,16 +207,5 @@ void te::edit::MoveGeometryTool::onExtentChanged()
 
 void te::edit::MoveGeometryTool::storeEditedFeature()
 {
-  RepositoryManager::getInstance().addGeometry(m_layer->getId(), m_feature->getId()->clone(), dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone()),te::edit::GEOMETRY_UPDATE);
-
-}
-
-void te::edit::MoveGeometryTool::storeUndoCommand()
-{
-  m_moveWatches[m_feature->getId()->clone()->getValueAsString()].push_back(m_deltaSum);
-
-  QUndoCommand* command = new MoveCommand(m_moveWatches, m_feature->clone(), m_display, m_layer);
-
-  UndoStackManager::getInstance().addUndoStack(command);
-
+  RepositoryManager::getInstance().addGeometry(m_layer->getId(), m_feature->getId()->clone(), dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone()));
 }

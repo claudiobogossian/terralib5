@@ -154,7 +154,6 @@ namespace te
           VertexIndex m_currentVertexIndex;
           te::sam::rtree::Index<VertexIndex, 8> m_rtree;
           StageType m_currentStage;
-
     };
 
   }   // end namespace edit

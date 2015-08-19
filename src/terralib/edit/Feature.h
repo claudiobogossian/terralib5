@@ -28,7 +28,6 @@
 
 // TerraLib
 #include "Config.h"
-#include "Utils.h"
 
 // STL
 #include <map>
@@ -61,11 +60,11 @@ namespace te
 
         Feature(te::da::ObjectId* id);
 
-        Feature(te::da::ObjectId* id, te::gm::Geometry* geom, OperationType operation);
+        Feature(te::da::ObjectId* id, te::gm::Geometry* geom);
 
         ~Feature();
 
-        void set(te::da::ObjectId* id, te::gm::Geometry* geom, OperationType operation);
+        void set(te::da::ObjectId* id, te::gm::Geometry* geom);
 
         void setId(te::da::ObjectId* id);
 
@@ -73,15 +72,11 @@ namespace te
 
         void setData(const std::map<std::size_t, te::dt::AbstractData*>& data);
 
-        void setOperation(OperationType operation);
-
         te::da::ObjectId* getId() const;
 
         te::gm::Geometry* getGeometry() const;
 
         const std::map<std::size_t, te::dt::AbstractData*>& getData() const;
-
-        OperationType getOperationType() const;
 
         bool isEquals(te::da::ObjectId* id);
 
@@ -92,8 +87,6 @@ namespace te
         te::da::ObjectId* m_id;
         te::gm::Geometry* m_geom;
         std::map<std::size_t, te::dt::AbstractData*> m_data;
-        OperationType m_operationType;
-
     };
 
   } // end namespace edit

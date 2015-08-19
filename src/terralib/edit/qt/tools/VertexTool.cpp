@@ -271,7 +271,7 @@ void te::edit::VertexTool::pickFeature(const te::map::AbstractLayerPtr& layer, c
 
   try
   {
-    m_feature = PickFeature(m_layer, env, m_display->getSRID(), te::edit::GEOMETRY_UPDATE);
+    m_feature = PickFeature(m_layer, env, m_display->getSRID());
 
     m_lines.clear();
 
@@ -290,7 +290,6 @@ void te::edit::VertexTool::pickFeature(const te::map::AbstractLayerPtr& layer, c
 
 void te::edit::VertexTool::draw(te::gm::Point* virtualVertex)
 {
-
   const te::gm::Envelope& env = m_display->getExtent();
   if(!env.isValid())
     return;
@@ -314,7 +313,7 @@ void te::edit::VertexTool::draw(te::gm::Point* virtualVertex)
   }
 
   // Draw the vertexes
-  if (RepositoryManager::getInstance().hasIdentify(m_layer->getId(), m_feature->getId()) == false)
+  if(RepositoryManager::getInstance().hasIdentify(m_layer->getId(), m_feature->getId()) == false)
     renderer.draw(m_feature->getGeometry(), true);
   else
     renderer.drawVertexes(m_feature->getGeometry());
@@ -341,7 +340,6 @@ void te::edit::VertexTool::draw(te::gm::Point* virtualVertex)
   renderer.end();
 
   m_display->repaint();
-
 }
 
 void te::edit::VertexTool::onExtentChanged()
@@ -416,6 +414,5 @@ void te::edit::VertexTool::updateCursor()
 
 void te::edit::VertexTool::storeEditedFeature()
 {
-  RepositoryManager::getInstance().addGeometry(m_layer->getId(), m_feature->getId()->clone(), dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone()), te::edit::GEOMETRY_UPDATE);
-
+  RepositoryManager::getInstance().addGeometry(m_layer->getId(), m_feature->getId()->clone(), dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone()));
 }

@@ -29,8 +29,6 @@
 // TerraLib
 #include "../common/Singleton.h"
 #include "Config.h"
-#include "Utils.h"
-
 
 // STL
 #include <map>
@@ -38,7 +36,7 @@
 
 namespace te
 {
-  // Forward declarations
+// Forward declarations
   namespace da
   {
     class ObjectId;
@@ -52,46 +50,44 @@ namespace te
 
   namespace edit
   {
-    // Forward declaration
+// Forward declaration
     class Feature;
     class Repository;
 
     /*!
-    \class RepositoryManager
+      \class RepositoryManager
 
-    \brief This is a singleton for managing edit repositories.
+      \brief This is a singleton for managing edit repositories.
     */
     class TEEDITEXPORT RepositoryManager : public te::common::Singleton<RepositoryManager>
     {
       friend class te::common::Singleton<RepositoryManager>;
 
-    public:
+      public:
 
-      void addGeometry(const std::string& source, te::gm::Geometry* geom, OperationType operation);
+        void addGeometry(const std::string& source, te::gm::Geometry* geom);
 
-      void addGeometry(const std::string& source, te::da::ObjectId* id, te::gm::Geometry* geom, OperationType operation);
+        void addGeometry(const std::string& source, te::da::ObjectId* id, te::gm::Geometry* geom);
 
-      void addFeature(const std::string& source, Feature* f);
+        void addFeature(const std::string& source, Feature* f);
 
-      bool hasIdentify(const std::string& source, te::da::ObjectId* id);
+        bool hasIdentify(const std::string& source, te::da::ObjectId* id);
 
-      const std::map<std::string, Repository*>& getRepositories() const;
+        const std::map<std::string, Repository*>& getRepositories() const;
 
-      Repository* getRepository(const std::string& source) const;
+        Repository* getRepository(const std::string& source) const;
 
-      std::vector<Feature*> getFeatures(const std::string& source, const te::gm::Envelope& e, int srid) const;
+        std::vector<Feature*> getFeatures(const std::string& source, const te::gm::Envelope& e, int srid) const;
 
-      Feature* getFeature(const std::string& source, const te::gm::Envelope& e, int srid) const;
+        Feature* getFeature(const std::string& source, const te::gm::Envelope& e, int srid) const;
 
-      void clearAll();
+        void clearAll();
 
-      void clear(const std::string& source);
+        void clear(const std::string& source);
 
-      void removeAll();
+        void removeAll();
 
-      void remove(const std::string& source);
-
-      void removeFeature(const std::string& source, te::da::ObjectId* id);
+        void remove(const std::string& source);
 
       protected:
 
@@ -104,7 +100,6 @@ namespace te
       private:
 
         std::map<std::string, Repository*> m_repositories;
-
     };
 
   } // end namespace edit

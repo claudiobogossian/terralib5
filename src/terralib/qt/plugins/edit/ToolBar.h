@@ -35,11 +35,9 @@
 #include <QIcon>
 #include <QList>
 #include <QToolBar>
-#include <QUndoView>
 
 // STL
 #include <string>
-
 
 namespace te
 {
@@ -66,9 +64,17 @@ namespace te
 
             QToolBar* get() const;
 
-          private:
+          protected:
 
-            void createUndoView(bool checked);
+            te::map::AbstractLayerPtr getSelectedLayer();
+
+            te::map::AbstractLayerPtr getLayer(const std::string& id);
+
+            void initialize();
+
+            void initializeActions();
+
+            void createAction(QAction*& action, const QString& tooltip, const QString& icon, bool checkable, bool enabled, const char* member);
 
           protected slots:
 
@@ -86,22 +92,10 @@ namespace te
 
             void onSnapOptionsActivated();
 
-            void onAggregateAreaToolActivated(bool checked);
-
-            void onSubtractAreaToolActivated(bool checked);
-
-            void onDeleteGeometryToolActivated(bool checked);
-
-            void onMergeGeometriesToolActivated(bool checked);
-
-          signals:
-
-            /*! This signal is emitted when the layer selection changed. */
-            void layerSelectedObjectsChanged(const te::map::AbstractLayerPtr& layer);
-
           protected:
 
             QToolBar* m_toolBar;
+
             QAction* m_editAction;
             QAction* m_saveAction;
             QAction* m_vertexToolAction;
@@ -109,25 +103,8 @@ namespace te
             QAction* m_createLineToolAction;
             QAction* m_moveGeometryToolAction;
             QAction* m_snapOptionsAction;
-            QAction* m_deleteGeometryToolAction;
-            QAction* m_aggregateAreaToolAction;
-            QAction* m_subtractAreaToolAction;
-            QAction* m_mergeGeometriesToolAction;
-            QAction* m_undoToolAction;
-            QAction* m_redoToolAction;
+
             QList<QAction*> m_tools;
-            QUndoView* m_undoView;
-
-            te::map::AbstractLayerPtr getSelectedLayer();
-            te::map::AbstractLayerPtr getLayer(const std::string& id);
-            void initialize();
-            void initializeActions();
-            void createAction(QAction*& action, const QString& tooltip, const QString& icon, bool checkable, bool enabled, const QString& objName, const char* member);
-
-            #define EDT_CREATE                      1
-            #define EDT_UPDATE                      2
-            #define EDT_REMOVE                      3
-
         };
 
       } // end namespace edit
