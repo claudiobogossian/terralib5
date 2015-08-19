@@ -31,7 +31,7 @@
 // TerraLib
 #include "../../core/Config.h"
 #include "../../core/enum/AbstractType.h"
-#include "ContextObject.h"
+#include "../../core/ContextObject.h"
 
 // Qt
 #include <QObject>

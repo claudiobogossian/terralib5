@@ -30,7 +30,7 @@
 
 // TerraLib
 #include "../../geometry/Envelope.h"
-#include "../qt/core/ContextObject.h"
+#include "../core/ContextObject.h"
 #include "Config.h"
 
 namespace te

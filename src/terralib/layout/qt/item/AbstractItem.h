@@ -39,7 +39,7 @@
 #include "../../core/pattern/mvc/AbstractItemView.h"
 #include "../../core/pattern/singleton/Context.h"
 #include "../../core/AbstractScene.h"
-#include "../core/ContextObject.h"
+#include "../../core/ContextObject.h"
 
 //Qt
 #include <QPainter>

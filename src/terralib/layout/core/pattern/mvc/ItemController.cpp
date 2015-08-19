@@ -34,7 +34,7 @@
 #include "../../../../maptools/Canvas.h"
 #include "../factory/ItemParamsCreate.h"
 #include "../factory/AbstractItemFactory.h"
-#include "../../../qt/core/ContextObject.h"
+#include "../../../core/ContextObject.h"
 #include "../../AbstractScene.h"
 #include "Observer.h"
 

@@ -55,7 +55,7 @@
 #include "../../core/pattern/proxy/AbstractProxyProject.h"
 #include "../../../qt/widgets/layer/explorer/AbstractTreeItem.h"
 #include "GridMapItem.h"
-#include "../core/ContextObject.h"
+#include "../../core/ContextObject.h"
 
 // STL
 #include <vector>

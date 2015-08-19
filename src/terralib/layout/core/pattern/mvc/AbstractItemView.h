@@ -30,7 +30,7 @@
 
 // TerraLib
 #include "../../Config.h"
-#include "../../../qt/core/ContextObject.h"
+#include "../../../core/ContextObject.h"
 
 namespace te
 {

@@ -62,7 +62,7 @@
 #include "../../../common/STLUtils.h"
 #include "../../core/ContextItem.h"
 #include "../../../geometry/Coord2D.h"
-#include "../core/ContextObject.h"
+#include "../../core/ContextObject.h"
 
 // STL
 

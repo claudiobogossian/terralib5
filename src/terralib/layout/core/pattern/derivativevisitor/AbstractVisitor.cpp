@@ -28,7 +28,7 @@
 // TerraLib
 #include "AbstractVisitor.h"
 #include "../../../../maptools/Canvas.h"
-#include "../../../qt/core/ContextObject.h"
+#include "../../../core/ContextObject.h"
 #include "../../Utils.h"
 #include "../../AbstractScene.h"
 #include "../singleton/Context.h"
