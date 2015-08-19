@@ -51,7 +51,7 @@ namespace te
       class Animation;
 
       /*!
-      \class This class is used to make animation of trajectory.
+      \class This class lets to make trajectory animation on the map display.
       */
       class TEQTWIDGETSEXPORT TrajectoryItem : public AnimationItem
       {

@@ -41,9 +41,6 @@ namespace te
       class MapDisplay;
       /*!
         \brief This class is a animation view.
-
-        This is where the animation should occur, however, the paint event 
-        is modified so that the animation happen on the map display.
       */
       class TEQTWIDGETSEXPORT AnimationView : public QGraphicsView
       {
@@ -53,13 +50,13 @@ namespace te
         /*!
           \brief Constructor
           It constructs a AnimationView.
-          \param parent Parent of this object.
+          \param md the map display where the animation is done.
         */
         AnimationView(te::qt::widgets::MapDisplay* md);
 
         /*!
           \brief Destructor
-          It destructs a Animation.
+          It destructs a AnimationView.
         */
         virtual ~AnimationView();
 
