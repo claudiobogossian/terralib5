@@ -58,11 +58,6 @@ te::qt::widgets::TrajectoryItem::~TrajectoryItem()
 {
 }
 
-void te::qt::widgets::TrajectoryItem::adjustDataToAnimationTemporalExtent()
-{
-  te::qt::widgets::AnimationItem::adjustDataToAnimationTemporalExtent();
-}
-
 void te::qt::widgets::TrajectoryItem::paint(QPainter*, const QStyleOptionGraphicsItem*, QWidget*) 
 {
   m_posOld = m_pos;

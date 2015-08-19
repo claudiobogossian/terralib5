@@ -51,7 +51,7 @@ namespace te
       class Animation;
 
       /*!
-      \class This class is used to make animation of trajectory.
+      \class This class lets to make trajectory animation on the map display.
       */
       class TEQTWIDGETSEXPORT TrajectoryItem : public AnimationItem
       {
@@ -93,11 +93,6 @@ namespace te
           The beginning depends on the direction (forward or backward).
         */
         void draw();
-
-        /*!
-          \brief Adjust data for a given time animation period.
-        */
-        void adjustDataToAnimationTemporalExtent();
 
         /*!
           \brief Draw a piece of tracktrajectory trail.

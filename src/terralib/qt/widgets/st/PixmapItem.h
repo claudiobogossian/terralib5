@@ -52,12 +52,12 @@ namespace te
       class Animation;
 
       /*!
-        \class This class is used to make animation of temporal images.
+        \class This class is used to make animation of temporal image on map display.
         
         Note: It does not use QPixmap. It uses an array of images already 
         processed to make the animation. Therefore, the pixmap() method 
-        returns null. Anyway is an artifice used to animate images instead 
-        trajectory.
+        returns null. Anyway is an artifice used to animate temporal image 
+        instead trajectory.
       */
       class TEQTWIDGETSEXPORT PixmapItem : public AnimationItem
       {
