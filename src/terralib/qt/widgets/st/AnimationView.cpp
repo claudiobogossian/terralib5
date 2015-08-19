@@ -21,7 +21,6 @@ te::qt::widgets::AnimationView::AnimationView(te::qt::widgets::MapDisplay* paren
   setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
   setResizeAnchor(QGraphicsView::NoAnchor);
-  //installEventFilter(this);
 }
 
 te::qt::widgets::AnimationView::~AnimationView()
@@ -125,7 +124,6 @@ void te::qt::widgets::AnimationView::setMatrix()
   }
   QGraphicsView::setMatrix(matrix);
 
-
   QRectF sceneRec = scene()->sceneRect(); // The scene rect is already on display projection
   if (sceneRec != sceneRect())
     updateSceneRect(sceneRec);
@@ -140,13 +138,3 @@ void te::qt::widgets::AnimationView::setMatrix()
   else
     fitInView(newRec);
 }
-
-//bool te::qt::widgets::AnimationView::eventFilter(QObject* obj, QEvent* e)
-//{
-//  if(obj == this)
-//  {
-//    QCoreApplication::sendEvent(m_display, e);
-//    return true;
-//  }
-//  return QObject::eventFilter(obj, e);;
-//}

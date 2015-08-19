@@ -51,9 +51,7 @@ namespace te
       class Animation;
 
       /*!
-        \class TrajectoryItem
-
-        \brief This class is a dialog for the Trajectory Icon Item.
+      \class This class is used to make animation of trajectory.
       */
       class TEQTWIDGETSEXPORT TrajectoryItem : public AnimationItem
       {
@@ -82,6 +80,12 @@ namespace te
           \brief Paint a piece of trajectory trail.
         */
         void paint(QPainter*, const QStyleOptionGraphicsItem*, QWidget*);
+
+        /*!
+        \brief It transform coodinates to map display projection coodinates.
+        \param vec Coordinates in native projection.
+        */
+        void transformToDisplayProjection(QVector<QPointF>& vec);
 
         /*!
           \brief Draw the trajectory long trail. 

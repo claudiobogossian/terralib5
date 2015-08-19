@@ -648,7 +648,7 @@ std::auto_ptr<te::da::PrimaryKey> te::pgis::Transactor::getPrimaryKey(const std:
 
   for(std::size_t i = 0; i < idxNames.size(); ++i)
   {
-    if(pk->getName() == idxNames[i])
+    if(pk && pk->getName() == idxNames[i])
     {
       pk->setAssociatedIndex(getIndex(fullDatasetName, idxNames[i]).get());
       break;

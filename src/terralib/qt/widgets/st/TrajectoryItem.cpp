@@ -52,7 +52,6 @@ te::qt::widgets::TrajectoryItem::TrajectoryItem(const QString& title, te::qt::wi
     painter.end();
     setPixmap(pix);
   }
-  //setMatrix();
 }
 
 te::qt::widgets::TrajectoryItem::~TrajectoryItem()
@@ -63,22 +62,6 @@ void te::qt::widgets::TrajectoryItem::adjustDataToAnimationTemporalExtent()
 {
   te::qt::widgets::AnimationItem::adjustDataToAnimationTemporalExtent();
 }
-
-//void te::qt::widgets::TrajectoryItem::transformToDisplayProjection(QVector<QPointF>& vec)
-//{
-//  if (m_display->getSRID() != TE_UNKNOWN_SRS && m_display->getSRID() != m_SRID)
-//  {
-//    size_t size = vec.count();
-//    te::gm::LineString* line = new te::gm::LineString(size, te::gm::LineStringType, m_SRID);
-//    for (size_t i = 0; i < size; ++i)
-//      line->setPoint(i, vec[(int)i].x(), vec[(int)i].y());
-//    line->transform(m_display->getSRID());
-//
-//    vec.clear();
-//    for (size_t i = 0; i < size; ++i)
-//      vec.push_back(QPointF(line->getPointN(i)->getX(), line->getPointN(i)->getY()));
-//  }
-//}
 
 void te::qt::widgets::TrajectoryItem::paint(QPainter*, const QStyleOptionGraphicsItem*, QWidget*) 
 {
@@ -169,6 +152,22 @@ void te::qt::widgets::TrajectoryItem::paint(QPainter*, const QStyleOptionGraphic
   m_display->update();
 }
 
+void te::qt::widgets::TrajectoryItem::transformToDisplayProjection(QVector<QPointF>& vec)
+{
+  if (m_display->getSRID() != TE_UNKNOWN_SRS && m_display->getSRID() != m_SRID)
+  {
+    size_t size = vec.count();
+    te::gm::LineString line(size, te::gm::LineStringType, m_SRID);
+    for (size_t i = 0; i < size; ++i)
+      line.setPoint(i, vec[(int)i].x(), vec[(int)i].y());
+    line.transform(m_display->getSRID());
+
+    vec.clear();
+    for (size_t i = 0; i < size; ++i)
+      vec.push_back(QPointF(line.getPointN(i)->getX(), line.getPointN(i)->getY()));
+  }
+}
+
 void te::qt::widgets::TrajectoryItem::drawForward(const unsigned int& curTime)
 {
   if(m_animationRoute.empty())
@@ -233,8 +232,6 @@ void te::qt::widgets::TrajectoryItem::erase(const unsigned int& curTime)
   if(m_animationRoute.empty())
     return;
 
-  //setMatrix();
-
   int indold = m_animation->getAnimationDataIndex((double)m_curTimeDuration / (double)m_duration);
   int ind = m_animation->getAnimationDataIndex((double)curTime / (double)m_duration);
   m_curTimeDuration = curTime;
@@ -290,7 +287,6 @@ void te::qt::widgets::TrajectoryItem::draw()
   if(m_animationRoute.empty())
     return;
 
-  //setMatrix();
   int w = m_display->getDisplayPixmap()->width();
   int h = m_display->getDisplayPixmap()->height();
   te::qt::widgets::Canvas canvas(w, h);

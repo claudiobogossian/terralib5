@@ -143,12 +143,13 @@ std::auto_ptr<te::map::LayerSchema> te::map::QueryLayer::getSchema() const
     te::dt::Property* pRef = input->getProperty(tokens[1]);
     assert(pRef);
 
-    std::auto_ptr<te::dt::Property> p(pRef->clone());
+    te::dt::Property* p = (pRef->clone());
     p->setDatasetName(name);
-    output->add(p.release());
+    p->setId(i);
+    output->add(p);
 
     if(input->getPrimaryKey()->has(pRef))
-      outKey->add(output->getProperty(pRef->getName()));
+      outKey->add(output->getProperty(p->getId()));
   }
 
   if(!outKey->getProperties().empty())

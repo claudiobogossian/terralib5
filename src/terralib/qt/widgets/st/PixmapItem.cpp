@@ -18,8 +18,6 @@ te::qt::widgets::PixmapItem::PixmapItem()
 te::qt::widgets::PixmapItem::PixmapItem(const QString& title, const QString& file, te::qt::widgets::MapDisplay* display)
   : te::qt::widgets::AnimationItem(title, display)
 {
-  //setMatrix();
-
   m_dir = QDir(file);
 
   QFileInfo fi(file);
@@ -162,7 +160,3 @@ void te::qt::widgets::PixmapItem::setLUT(const std::vector<std::pair<int, QColor
     m_lut[(uchar)i++] = c;
 
 }
-
-//void te::qt::widgets::PixmapItem::reproject()
-//{
-//}
