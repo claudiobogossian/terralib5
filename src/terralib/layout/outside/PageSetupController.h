@@ -29,19 +29,20 @@
 #define __TERRALIB_LAYOUT_INTERNAL_PAGE_SETUP_CONTROLLER_H
 
 // TerraLib
-#include "../core/pattern/mvc/OutsideController.h"
-#include "../core/property/Property.h"
+#include "../core/pattern/mvc/AbstractOutsideController.h"
 #include "../core/Config.h"
 
 namespace te
 {
   namespace layout
   {
-    class TELAYOUTEXPORT PageSetupController : public OutsideController
+		class AbstractOutsideModel;
+
+		class TELAYOUTEXPORT PageSetupController : public AbstractOutsideController
     {
       public:
 
-	      PageSetupController( Observable* o );
+				PageSetupController(AbstractOutsideModel* o);
 
 	      virtual ~PageSetupController();
     };

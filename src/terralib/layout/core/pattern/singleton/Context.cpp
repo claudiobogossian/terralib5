@@ -36,12 +36,10 @@
 #include "../proxy/AbstractProxyProject.h"
 
 te::layout::Context::Context() :
-  m_lineIntersectionMouseMode(0),
   m_scene(0),
   m_canvas(0),
   m_itemFactory(0),
   m_outsideFactory(0),
-  m_templateFactory(0),
   m_utils(0),
   m_version("MAPLayoutQt5_1.0.0"),
   m_buildGraphicsItem(0),
@@ -52,11 +50,7 @@ te::layout::Context::Context() :
   m_item(0),
   m_buildGraphicsOutside(0)
 {
-  EnumModeType* type = Enums::getInstance().getEnumModeType();
-  if(type)
-  {
-    m_lineIntersectionMouseMode = type->getModeOffLinesIntersectionMouse();
-  }
+  
 }
 
 te::layout::Context::~Context()
@@ -92,16 +86,6 @@ te::layout::AbstractOutsideFactory* te::layout::Context::getOutsideFactory()
 void te::layout::Context::setOutsideFactory( AbstractOutsideFactory* factory )
 {
   m_outsideFactory = factory;
-}
-
-te::layout::AbstractTemplateFactory* te::layout::Context::getTemplateFactory()
-{
-  return m_templateFactory;
-}
-
-void te::layout::Context::setTemplateFactory( te::layout::AbstractTemplateFactory* factory )
-{
-  m_templateFactory = factory;
 }
 
 te::map::Canvas* te::layout::Context::getCanvas()
@@ -147,16 +131,6 @@ te::layout::AbstractBuildGraphicsItem* te::layout::Context::getAbstractBuildGrap
 void te::layout::Context::setAbstractBuildGraphicsItem( AbstractBuildGraphicsItem* build )
 {
   m_buildGraphicsItem = build;
-}
-
-te::layout::EnumType* te::layout::Context::getLineIntersectionMouseMode()
-{
-  return m_lineIntersectionMouseMode;
-}
-
-void te::layout::Context::setLineIntersectionMouseMode( EnumType* mode )
-{
-  m_lineIntersectionMouseMode = mode;
 }
 
 te::layout::SystematicScaleConfig* te::layout::Context::getSystematicScaleConfig()

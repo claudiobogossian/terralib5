@@ -27,13 +27,11 @@
 
 // TerraLib
 #include "GridSettingsController.h"
-#include "../core/pattern/mvc/OutsideModelObservable.h"
-#include "../core/pattern/singleton/Context.h"
-#include "../core/pattern/mvc/Observable.h"
+#include "../core/pattern/mvc/AbstractOutsideModel.h"
 #include "GridSettingsModel.h"
 
-te::layout::GridSettingsController::GridSettingsController( Observable* o ) :
-	OutsideController(o)
+te::layout::GridSettingsController::GridSettingsController(AbstractOutsideModel* o) :
+	AbstractOutsideController(o)
 {
   
 }
@@ -49,7 +47,7 @@ te::layout::Property te::layout::GridSettingsController::updateProperty( std::st
 
   if(m_model)
   {
-    OutsideModelObservable* model = dynamic_cast<OutsideModelObservable*>(m_model);
+		AbstractOutsideModel* model = dynamic_cast<AbstractOutsideModel*>(m_model);
     outsideModel = dynamic_cast<GridSettingsModel*>(model);    
   }
  
@@ -99,7 +97,7 @@ te::layout::Property te::layout::GridSettingsController::getProperty( std::strin
 
   if(m_model)
   {
-    OutsideModelObservable* model = dynamic_cast<OutsideModelObservable*>(m_model);
+		AbstractOutsideModel* model = dynamic_cast<AbstractOutsideModel*>(m_model);
     outsideModel = dynamic_cast<GridSettingsModel*>(model);    
   }
 

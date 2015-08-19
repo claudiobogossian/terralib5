@@ -429,7 +429,7 @@ QGraphicsItem* te::layout::Scene::createItem( const te::gm::Coord2D& coord )
     }
   }
 
-  changeViewMode(type->getModeNone());
+  //changeViewMode(type->getModeNone());
 
   return item;
 }
@@ -501,7 +501,7 @@ std::vector<te::layout::Properties*> te::layout::Scene::getItemsProperties()
   foreach( QGraphicsItem *item, graphicsItems) 
   {
     if (item)
-    {		
+    {    
       ItemObserver* lItem = dynamic_cast<ItemObserver*>(item);
       if(lItem)
       {

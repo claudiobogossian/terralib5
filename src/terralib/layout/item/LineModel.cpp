@@ -28,7 +28,6 @@
 // TerraLib
 #include "LineModel.h"
 #include "../core/enum/Enums.h"
-#include "../../geometry/Point.h"
 #include "../core/property/Property.h"
 #include "../core/property/Properties.h"
 #include "../core/enum/EnumLineStyleType.h"

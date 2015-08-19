@@ -35,6 +35,7 @@
 // TerraLib
 #include "ObjectItem.h"
 #include "../../core/Config.h"
+#include "AbstractItem.h"
 
 namespace te
 {
@@ -51,7 +52,7 @@ namespace te
 
 	    \sa te::layout::ObjectItem
 	  */
-    class TELAYOUTEXPORT LegendItem : public ObjectItem
+    class TELAYOUTEXPORT LegendItem : public AbstractItem<QGraphicsItem>
     {
       public:
 
@@ -61,27 +62,12 @@ namespace te
           \param controller "Controller" part of MVC component
           \param o "Model" part of MVC component
         */ 
-        LegendItem( ItemController* controller, Observable* o, bool invertedMatrix = false );
+        LegendItem( AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix = false );
 
         /*!
           \brief Destructor
          */
         virtual ~LegendItem();
-        
-        /*!
-          \brief Reimplemented from ObjectItem
-         */
-        virtual void updateObserver(ContextItem context);
-
-        /*!
-          \brief Reimplemented from QGraphicsItem
-         */
-        virtual QVariant	itemChange ( GraphicsItemChange change, const QVariant & value );
-
-         /*!
-          \brief Reimplemented from QGraphicsItem
-         */
-        virtual void	mouseMoveEvent ( QGraphicsSceneMouseEvent * event );
 
     protected:
 

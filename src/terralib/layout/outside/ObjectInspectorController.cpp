@@ -28,8 +28,8 @@
 // TerraLib
 #include "ObjectInspectorController.h"
 
-te::layout::ObjectInspectorController::ObjectInspectorController( Observable* o ) :
-	OutsideController(o)
+te::layout::ObjectInspectorController::ObjectInspectorController(AbstractOutsideModel* o) :
+	AbstractOutsideController(o)
 {
   
 }

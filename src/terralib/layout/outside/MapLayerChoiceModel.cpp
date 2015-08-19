@@ -27,7 +27,6 @@
 
 // TerraLib
 #include "MapLayerChoiceModel.h"
-#include "../core/property/Property.h"
 #include "../core/property/Properties.h"
 #include "../core/enum/Enums.h"
 #include "../core/property/GenericVariant.h"
@@ -35,7 +34,8 @@
 // STL
 #include <algorithm>
 
-te::layout::MapLayerChoiceModel::MapLayerChoiceModel() 
+te::layout::MapLayerChoiceModel::MapLayerChoiceModel() :
+	AbstractOutsideModel()
 {
   m_type = Enums::getInstance().getEnumObjectType()->getMapLayerChoice();
   m_box = te::gm::Envelope(0., 0., 200., 200.);

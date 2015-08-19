@@ -25,34 +25,40 @@ TerraLib Team at <terralib-team@terralib.org>.
 
 // TerraLib
 #include "InitFactories.h"
-#include "pattern/factory/ZoomAreaToolFactory.h"
-#include "pattern/factory/RectangleItemFactory.h"
+#include "pattern/factory/tool/ZoomAreaToolFactory.h"
+#include "pattern/factory/item/RectangleItemFactory.h"
+#include "pattern/factory/tool/CreateLineItemToolFactory.h"
+#include "pattern/factory/tool/CreatePolygonItemToolFactory.h"
 
 namespace te
 {
   namespace layout
   {
-		void TELAYOUTEXPORT initToolFactories()
-		{
-			static bool ToolFactoryInitalized = false;
+    void TELAYOUTEXPORT initToolFactories()
+    {
+      static bool ToolFactoryInitalized = false;
 
-			if (!ToolFactoryInitalized)
-			{
-				ToolFactoryInitalized = true;
-				static ZoomAreaToolFactory ZoomAreaToolFactory_instance;
-			}
-		}
+      if (!ToolFactoryInitalized)
+      {
+        ToolFactoryInitalized = true;
+        static ZoomAreaToolFactory ZoomAreaToolFactory_instance;
+        static CreateLineItemToolFactory CreateLineItemToolFactory_instance;
+        static CreatePolygonItemToolFactory CreatePolygonItemToolFactory_instance;
+      }
+    }
 
-		void TELAYOUTEXPORT initItemFactories()
-		{
-			static bool ItemFactoryInitalized = false;
+    void TELAYOUTEXPORT initItemFactories()
+    {
+      static bool ItemFactoryInitalized = false;
 
-			if (!ItemFactoryInitalized)
-			{
-				ItemFactoryInitalized = true;
-				static RectangleItemFactory RectangleItemFactory_instance;
-			}
-		}
+      if (!ItemFactoryInitalized)
+      {
+        ItemFactoryInitalized = true;
+        static RectangleItemFactory RectangleItemFactory_instance;
+      }
+    }
 
-	}
+  }
 }
+
+

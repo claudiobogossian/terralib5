@@ -28,11 +28,9 @@
 // TerraLib
 #include "FontDialogOutside.h"
 
-// Qt
-
-te::layout::FontDialogOutside::FontDialogOutside( OutsideController* controller, Observable* o ) :
+te::layout::FontDialogOutside::FontDialogOutside(AbstractOutsideController* controller) :
 	QFontDialog(0),
-	OutsideObserver(controller, o)
+	AbstractOutsideView(controller)
 {
   
 }
@@ -40,11 +38,6 @@ te::layout::FontDialogOutside::FontDialogOutside( OutsideController* controller,
 te::layout::FontDialogOutside::~FontDialogOutside()
 {
 
-}
-
-void te::layout::FontDialogOutside::updateObserver( ContextItem context )
-{
-  
 }
 
 void te::layout::FontDialogOutside::createLayout()

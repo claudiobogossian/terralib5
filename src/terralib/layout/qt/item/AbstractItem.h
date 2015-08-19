@@ -108,6 +108,16 @@ namespace te
         virtual void contextUpdated(const ContextObject& context);
 
         /*!
+          \brief Gets the rotation
+        */ 
+        virtual double getItemRotation() const;
+
+        /*!
+          \brief Sets the rotation
+        */ 
+        virtual void setItemRotation(double rotation);
+
+        /*!
           \brief Reimplemented from QGraphicsItem
          */
         virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
@@ -215,6 +225,34 @@ namespace te
     template <class T>
     inline void te::layout::AbstractItem<T>::contextUpdated(const ContextObject& context)
     {
+    }
+
+    template <class T>
+    inline double te::layout::AbstractItem<T>::getItemRotation() const
+    {
+      return T::rotation();
+    }
+
+
+    template <class T>
+    inline void te::layout::AbstractItem<T>::setItemRotation(double angle)
+    {
+      double w = boundingRect().width();
+      double h = boundingRect().height();
+
+      QTransform transf = T::transform();
+
+      if(m_invertedMatrix)
+      {
+        angle = -angle;
+      }
+
+      transf.translate(w/2, h/2);
+      transf.rotate(angle);
+      T::setTransform(transf);
+      T::setRotation(angle);
+      transf.translate(-(w/2), -(h/2));
+      T::setTransform(transf);
     }
 
     template <class T>

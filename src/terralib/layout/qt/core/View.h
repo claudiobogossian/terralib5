@@ -174,6 +174,45 @@ namespace te
 
         virtual void enableUpdate();
 
+				virtual void arrowCursor();
+
+				/*!
+				\brief Groups selected objects
+				*/
+				virtual void createItemGroup();
+
+				/*!
+				\brief Method that delete Grouping object selected, but the individual objects continue to exist.
+				*/
+				virtual void destroyItemGroup();
+
+				/*!
+				\brief Saves each item in the scene as image. Ex .: .png
+				*/
+				virtual void exportItemsToImage();
+
+				virtual void newTemplate();
+
+				/*!
+				\brief Method that exports all the objects in the scene to a template. Ex.: JSON.
+
+				\param type type of template. Ex .: JSON type
+				\return true if exported, false otherwise
+				*/
+				virtual bool exportProperties(EnumType* type);
+
+				/*!
+				\brief Method that import a template and build all objects. Ex.: JSON.
+
+				\return true if exported, false otherwise
+				*/
+				virtual bool importTemplate(EnumType* type);
+
+				/*!
+				\brief Method that instantiates and shows the Page Setup window.
+				*/
+				virtual void showPageSetup();
+
       public slots:
     
     /*!
@@ -209,6 +248,10 @@ namespace te
           \brief Sets the zoom of the View to the given value
         */
         virtual void setZoom(int zoom);
+
+        virtual void createLineItem();
+
+        virtual void createPolygonItem();
 
       signals:
 
@@ -310,46 +353,10 @@ namespace te
           \brief Reimplemented from QGraphicsView
         */
         virtual void drawForeground ( QPainter * painter, const QRectF & rect );
-            
-    /*!
-          \brief Groups selected objects
-        */
-        virtual void createItemGroup();
-
-    /*!
-          \brief Method that delete Grouping object selected, but the individual objects continue to exist.
-        */
-        virtual void destroyItemGroup();
-        
-    /*!
-          \brief Method that instantiates and shows the Page Setup window.
-        */
-        virtual void showPageSetup();
 
         virtual void showSystematicScale();
         
         virtual QCursor createCursor(std::string pathIcon);
-        
-    /*!
-          \brief Method that exports all the objects in the scene to a template. Ex.: JSON.
-      
-      \param type type of template. Ex .: JSON type
-      
-      \return true if exported, false otherwise
-        */
-        virtual bool exportProperties(EnumType* type);
-
-    /*!
-          \brief Method that import a template and build all objects. Ex.: JSON.
-            
-      \return true if exported, false otherwise
-        */
-        virtual bool importTemplate(EnumType* type);
-
-    /*!
-          \brief Saves each item in the scene as image. Ex .: .png
-        */
-        virtual void exportItemsToImage();
 
       protected:
 

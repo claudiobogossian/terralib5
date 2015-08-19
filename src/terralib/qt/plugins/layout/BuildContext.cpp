@@ -28,9 +28,8 @@
 // TerraLib
 #include "BuildContext.h"
 #include "../../../layout/core/pattern/singleton/Context.h"
-#include "../../../layout/qt/core/pattern/factory/ItemFactory.h"
-#include "../../../layout/qt/core/pattern/factory/OutsideFactory.h"
-#include "../../../layout/core/template/TemplateFactory.h"
+#include "../../../layout/qt/core/pattern/factory/item/ItemFactory.h"
+#include "../../../layout/qt/core/pattern/factory/outside/OutsideFactory.h"
 #include "../../../layout/core/Utils.h"
 #include "../../../layout/qt/core/Scene.h"
 #include "../../../layout/qt/core/BuildGraphicsItem.h"
@@ -40,7 +39,6 @@
 te::layout::BuildContext::BuildContext() :
   m_itemFactory(0),
   m_outsideFactory(0),
-  m_templateFactory(0),
   m_utils(0),
   m_canvas(0),
   m_buildGraphicsItem(0),
@@ -63,13 +61,7 @@ te::layout::BuildContext::~BuildContext()
     delete m_outsideFactory;
     m_outsideFactory = 0;
   }
-
-  if(m_templateFactory)
-  {
-    delete m_templateFactory;
-    m_templateFactory = 0;
-  }
-
+	
   if(m_utils)
   {
     delete m_utils;
@@ -113,12 +105,6 @@ void te::layout::BuildContext::createLayoutContext( int width, int height, View*
   {
     m_outsideFactory = new OutsideFactory;
     Context::getInstance().setOutsideFactory(m_outsideFactory);
-  }
-
-  if(!Context::getInstance().getTemplateFactory())
-  {
-    m_templateFactory = new TemplateFactory;
-    Context::getInstance().setTemplateFactory(m_templateFactory);
   }
 
   if(!Context::getInstance().getUtils())

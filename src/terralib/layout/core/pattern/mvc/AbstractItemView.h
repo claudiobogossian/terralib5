@@ -74,6 +74,16 @@ namespace te
         */
         virtual void contextUpdated(const ContextObject& context) = 0;
 
+        /*!
+          \brief Gets the rotation
+        */ 
+        virtual double getItemRotation() const = 0;
+
+        /*!
+          \brief Sets the rotation
+        */ 
+        virtual void setItemRotation(double rotation) = 0;
+
       protected:
 
         AbstractItemController* m_controller; //!< The controller

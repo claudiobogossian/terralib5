@@ -30,15 +30,12 @@
 #include "../../../geometry/LineString.h"
 #include "../../../geometry/Point.h"
 #include "../../../geometry/Polygon.h"
-#include "../../../dataaccess/dataset/ObjectId.h"
-#include "../../../dataaccess/utils/Utils.h"
 #include "../../../qt/widgets/canvas/MapDisplay.h"
 #include "../../../qt/widgets/Utils.h"
 #include "../../RepositoryManager.h"
 #include "../../Utils.h"
 #include "../Renderer.h"
 #include "../Utils.h"
-#include "../core/command/AddCommand.h"
 #include "CreatePolygonTool.h"
 
 // Qt
@@ -50,16 +47,11 @@
 #include <cassert>
 #include <memory>
 
-//test remove
-#include <QMessageBox>
-
-te::edit::CreatePolygonTool::CreatePolygonTool(te::edit::EditionManager* editionManager, te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, QObject* parent)
+te::edit::CreatePolygonTool::CreatePolygonTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, QObject* parent) 
   : AbstractTool(display, parent),
     m_layer(layer),
-    m_feature(0),
     m_continuousMode(false),
-    m_isFinished(false),
-    m_editionManager(editionManager)
+    m_isFinished(false)
 {
   setCursor(cursor);
 
@@ -115,17 +107,12 @@ bool te::edit::CreatePolygonTool::mouseMoveEvent(QMouseEvent* e)
 
   m_lastPos = te::gm::Coord2D(coord.x, coord.y);
 
-  //Qt::KeyboardModifiers keys = e->modifiers();
+  Qt::KeyboardModifiers keys = e->modifiers();
 
-  /*if(keys == Qt::NoModifier)
+  if(keys == Qt::NoModifier)
     m_continuousMode = false;
   else if(keys == Qt::ShiftModifier)
-    m_continuousMode = true;*/
-  
-  if (e->buttons() & Qt::LeftButton)
     m_continuousMode = true;
-  else
-    m_continuousMode = false;
 
   draw();
 
@@ -149,17 +136,11 @@ bool te::edit::CreatePolygonTool::mouseDoubleClickEvent(QMouseEvent* e)
 
   storeNewGeometry();
 
-  m_addWatches[m_feature->getId()->getValueAsString()] = (m_feature->clone());
-
-  QUndoCommand* command = new AddCommand(m_editionManager, m_addWatches, m_feature->clone(), m_display, m_layer);
-  m_editionManager->addUndoStack(command);
-
   return true;
 }
 
 void te::edit::CreatePolygonTool::draw()
 {
-
   const te::gm::Envelope& env = m_display->getExtent();
   if(!env.isValid())
     return;
@@ -173,7 +154,7 @@ void te::edit::CreatePolygonTool::draw()
   renderer.begin(draft, env, m_display->getSRID());
 
   // Draw the layer edited geometries
-  renderer.drawRepository(m_editionManager,m_layer->getId(), env, m_display->getSRID());
+  renderer.drawRepository(m_layer->getId(), env, m_display->getSRID());
 
   if(!m_coords.empty())
   {
@@ -190,7 +171,6 @@ void te::edit::CreatePolygonTool::draw()
   renderer.end();
 
   m_display->repaint();
-
 }
 
 void te::edit::CreatePolygonTool::drawPolygon()
@@ -263,11 +243,7 @@ te::gm::Geometry* te::edit::CreatePolygonTool::buildLine()
 
 void te::edit::CreatePolygonTool::storeNewGeometry()
 {
-  m_editionManager->m_repository->addGeometry(m_layer->getId(), buildPolygon());
-
-  m_feature = m_editionManager->m_repository->getFeature(m_layer->getId(), *buildPolygon()->getMBR(), buildPolygon()->getSRID());
-
-  m_editionManager->m_operation[m_feature->getId()->getValueAsString()] = m_editionManager->createOp;
+  RepositoryManager::getInstance().addGeometry(m_layer->getId(), buildPolygon());
 }
 
 void te::edit::CreatePolygonTool::onExtentChanged()

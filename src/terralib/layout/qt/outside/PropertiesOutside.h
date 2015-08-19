@@ -35,7 +35,7 @@
 class QtTreePropertyBrowser;
 
 // TerraLib
-#include "../../core/pattern/mvc/OutsideObserver.h"
+#include "../../core/pattern/mvc/AbstractOutsideView.h"
 #include "../../../geometry/Envelope.h"
 #include "../../core/Config.h"
 
@@ -60,6 +60,7 @@ namespace te
     class MapItem;
     class MapModel;
     class PropertiesUtils;
+		class AbstractOutsideController;
 
     /*!
     \brief Properties tree for any item, MVC component, using Qt for presentation and editing.
@@ -68,18 +69,16 @@ namespace te
 
       \sa te::layout::OutsideObserver
     */
-    class TELAYOUTEXPORT PropertiesOutside : public QWidget, public OutsideObserver
+		class TELAYOUTEXPORT PropertiesOutside : public QWidget, public AbstractOutsideView
     {
       Q_OBJECT //for slots/signals
 
       public:
 
-        PropertiesOutside(OutsideController* controller, Observable* o, PropertyBrowser* propertyBrowser = 0);
+				PropertiesOutside(AbstractOutsideController* controller, PropertyBrowser* propertyBrowser = 0);
 
         virtual ~PropertiesOutside();
-
-        virtual void updateObserver(ContextItem context);
-
+				
         virtual void setPosition(const double& x, const double& y);
 
         virtual te::gm::Coord2D getPosition();

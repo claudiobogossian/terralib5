@@ -45,7 +45,7 @@ namespace te
 
       \sa te::layout::AbstractTemplate
 	  */
-    class TELAYOUTEXPORT JSONTemplate : AbstractTemplate
+    class TELAYOUTEXPORT JSONTemplate : public AbstractTemplate
     {
       public:
 

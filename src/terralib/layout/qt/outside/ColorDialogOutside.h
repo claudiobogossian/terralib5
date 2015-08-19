@@ -32,7 +32,7 @@
 #include <QColorDialog>
 
 // TerraLib
-#include "../../core/pattern/mvc/OutsideObserver.h"
+#include "../../core/pattern/mvc/AbstractOutsideView.h"
 #include "../../../geometry/Envelope.h"
 #include "../../core/Config.h"
 
@@ -48,7 +48,7 @@ namespace te
 {
   namespace layout
   {
-    
+		class AbstractOutsideController;
     /*!
     \brief 
 	  
@@ -56,20 +56,18 @@ namespace te
 
 	    \sa te::layout::OutsideObserver
 	  */
-    class TELAYOUTEXPORT ColorDialogOutside : public QColorDialog, public OutsideObserver
+		class TELAYOUTEXPORT ColorDialogOutside : public QColorDialog, public AbstractOutsideView
     {
 	    Q_OBJECT //for slots/signals
 
       public:
 
-	      ColorDialogOutside(OutsideController* controller, Observable* o);
+				ColorDialogOutside(AbstractOutsideController* controller);
 
 	      virtual ~ColorDialogOutside();
 
         virtual void init();
-
-	      virtual void updateObserver(ContextItem context);
-
+				
 	      virtual void setPosition(const double& x, const double& y);
 
 	      virtual te::gm::Coord2D getPosition();

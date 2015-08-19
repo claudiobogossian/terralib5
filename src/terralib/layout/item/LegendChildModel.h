@@ -29,39 +29,38 @@
 #define __TERRALIB_LAYOUT_INTERNAL_LEGEND_MODEL_MODEL_H
 
 // TerraLib
-#include "LegendModel.h"
-#include "../../se/Rule.h"
+#include "../core/pattern/mvc/AbstractItemModel.h"
 #include "../core/Config.h"
 
 namespace te
 {
   namespace layout
   {
-    class TELAYOUTEXPORT LegendChildModel : public LegendModel
+
+    /*!
+      \brief Class that represents a "Model" part of Rectangle MVC component. 
+          Its coordinate system is the same of scene (millimeters). 
+          He is also the son of AbstractItemModel, so it can become subject (observer pattern).
+          
+      \ingroup layout
+
+      \sa te::layout::AbstractItemModel
+    */
+    class TELAYOUTEXPORT LegendChildModel : public AbstractItemModel
     {
       public:
 
+        /*!
+          \brief Constructor
+        */
         LegendChildModel();
 
+        /*!
+          \brief Destructor
+        */ 
         virtual ~LegendChildModel();
-
-        virtual void draw( ContextItem context );
-        
-        virtual te::se::Rule* getRule();
-
-        virtual void setRule(te::se::Rule* rule);
-        
-       protected:
-
-        //virtual void visitDependent(ContextItem context);
-
-        virtual void drawLegend(te::map::Canvas* canvas, Utils* utils);
-
-        virtual void refreshRule();
-
-        te::se::Rule* m_rule;
     };
   }
 }
 
-#endif //__TERRALIB_LAYOUT_INTERNAL_MAPLAYOUT_MODEL_H
+#endif

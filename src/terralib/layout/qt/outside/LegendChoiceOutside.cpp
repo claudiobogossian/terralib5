@@ -33,9 +33,9 @@
 // Qt
 #include <QGridLayout>
 
-te::layout::LegendChoiceOutside::LegendChoiceOutside(OutsideController* controller, Observable* o)
+te::layout::LegendChoiceOutside::LegendChoiceOutside(AbstractOutsideController* controller)
   : QDialog(0),
-    OutsideObserver(controller, o),
+		AbstractOutsideView(controller),
     m_ui(new Ui::LegendChoice)
 {
   // add controls
@@ -66,15 +66,6 @@ void te::layout::LegendChoiceOutside::onOkPushButtonClicked()
 void te::layout::LegendChoiceOutside::onCancelPushButtonClicked()
 {
   reject();
-}
-
-void te::layout::LegendChoiceOutside::updateObserver( ContextItem context )
-{
-  setVisible(context.isShow());
-  if(context.isShow() == true)
-    show();
-  else
-    hide();
 }
 
 void te::layout::LegendChoiceOutside::setPosition( const double& x, const double& y )

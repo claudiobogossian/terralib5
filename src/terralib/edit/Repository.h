@@ -111,7 +111,6 @@ namespace te
         int m_srid;                                    //!< The SRS of the features.
         std::vector<Feature*> m_features;              //!< The repository features.
         te::sam::rtree::Index<std::size_t, 8> m_rtree; //!< Internal index used to retrieve geometries spatially.
-
     };
 
   } // end namespace edit

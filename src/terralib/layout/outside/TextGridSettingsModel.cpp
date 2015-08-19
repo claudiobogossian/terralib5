@@ -31,7 +31,8 @@
 #include "../core/property/Properties.h"
 #include "../core/enum/Enums.h"
 
-te::layout::TextGridSettingsModel::TextGridSettingsModel() 
+te::layout::TextGridSettingsModel::TextGridSettingsModel() :
+	AbstractOutsideModel()
 {
   m_type = Enums::getInstance().getEnumObjectType()->getTextGridSettings();
 }
