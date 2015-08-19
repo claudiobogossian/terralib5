@@ -34,14 +34,24 @@
 
 // Forward declarations
 class QWidget;
+class QMenu;
+
+struct ProjectMetadata;
 
 namespace te
 {
   namespace qt
   {
+    namespace af
+    {
+      class InterfaceController;
+    }
     namespace widgets
     {
+      class ChartDisplayWidget;
+      class CompositionModeMenuWidget;
       class HelpManagerImpl;
+      class QueryDialog;
     }
   }
 }
@@ -63,23 +73,194 @@ class TerraView : public te::qt::af::BaseApplication
 
     void init();
 
-    void init(const std::string& configFile);
-
     void startProject(const QString& projectFileName);
 
   protected:
 
-    void makeDialog();
+    virtual void makeDialog();
+
+    virtual void initActions();
+
+    virtual void initMenus();
+
+    virtual void initSlotsConnections();
+
+    void addMenusActions();
+
+    void addPopUpMenu();
+
+    void initToolbars();
 
   protected slots:
 
     void showAboutDialog();
 
+
+    void onApplicationTriggered(te::qt::af::evt::Event* e);
+
+
+    void onRestartSystemTriggered();
+
+    void onNewProjectTriggered();
+
+    void onOpenProjectTriggered();
+
+    void onSaveProjectTriggered();
+
+    void onSaveProjectAsTriggered();
+
+
     void onHelpTriggered();
+
+
+    void onLinkTriggered();
+
+    void onLayerHistogramTriggered();
+
+    void onLayerScatterTriggered();
+
+    void onLayerChartTriggered();
+
+    void onLayerGroupingTriggered();
+
+    void onLayerCompositionModeTriggered();
+
+    void onQueryLayerTriggered();
+
+
+    void onMeasureDistanceToggled(bool checked);
+
+    void onMeasureAreaToggled(bool checked);
+
+    void onMeasureAngleToggled(bool checked);
+
+
+    void onAddDataSetLayerTriggered();
+
+    void onAddQueryLayerTriggered();
+
+    void onAddTabularLayerTriggered();
+
+    void onAddFolderLayerTriggered();
+
+    void onProjectPropertiesTriggered();
+
+    void onChangeLayerDataSourceTriggered();
+
+    void onUpdateLayerDataSourceTriggered();
+
+    void onRecentProjectsTriggered(QAction* proj);
+
+
+    void onPluginsManagerTriggered();
+
+
+    void onToolsCustomizeTriggered();
+
+    void onToolsDataExchangerTriggered();
+
+    void onToolsDataExchangerDirectTriggered();
+
+    void onToolsDataExchangerDirectPopUpTriggered();
+
+    void onToolsQueryDataSourceTriggered();
+
+    void onToolsRasterMultiResolutionTriggered();
+
+    void onDataSourceExplorerTriggered();
+
+
+    void showProgressDockWidget();
+
+    void onLayerSelectedObjectsChanged(const te::map::AbstractLayerPtr& layer);
+
+    void onHighlightLayerObjects(const te::map::AbstractLayerPtr& layer, te::da::DataSet* dataset, const QColor& color);
+
+    void onCreateNewLayer(te::map::AbstractLayerPtr layer);
 
   protected:
 
+    void projectChanged();
+
+    void checkAndSaveProject();
+
+    void openProject(const QString& prjFileName);
+
+    void closeEvent(QCloseEvent * event);
+
+    void addActions(const QString& name, const QString& category, const QList<QAction*>& acts);
+
+    QAction* m_fileNewProject;
+    QAction* m_fileSaveProject;
+    QAction* m_fileSaveProjectAs;
+    QAction* m_fileOpenProject;
+    QAction* m_fileExit;
+    QAction* m_filePrint;
+    QAction* m_filePrintPreview;
+    QAction* m_fileRestartSystem;
+
+    QAction* m_helpAbout;
+    QAction* m_helpContents;
+    QAction* m_helpUpdate;
+   
+    QAction* m_layerChartsHistogram;
+    QAction* m_layerChartsScatter;
+    QAction* m_layerChart;
+    QAction* m_layerLinkTable;
+    QAction* m_layerObjectGrouping;
+    QAction* m_layerCompositionMode;
+    QAction* m_layerQuery;
+
+    QAction* m_mapMeasureDistance;
+    QAction* m_mapMeasureArea;
+    QAction* m_mapMeasureAngle;
+
+    QAction* m_pluginsManager;
+
+    QAction* m_projectAddLayerDataset;
+    QAction* m_projectAddLayerQueryDataSet;
+    QAction* m_projectAddLayerTabularDataSet;
+    QAction* m_projectAddLayerGraph;
+    QAction* m_projectAddFolderLayer;
+    QAction* m_projectChangeLayerDataSource;
+    QAction* m_projectUpdateLayerDataSource;
+    QAction* m_projectProperties;
+
+    QAction* m_toolsCustomize;
+    QAction* m_toolsDataExchanger;
+    QAction* m_toolsDataExchangerDirect;
+    QAction* m_toolsDataExchangerDirectPopUp;
+    QAction* m_toolsDataSourceExplorer;
+    QAction* m_toolsDataSourceManagement;
+    QAction* m_toolsQueryDataSource;
+    QAction* m_toolsRasterMultiResolution;
+    QAction* m_toolsFixGeometry;
+
+    QMenu* m_fileMenu;
+    QMenu* m_helpMenu;
+    QMenu* m_layerMenu;
+    QMenu* m_mapMenu;
+    QMenu* m_pluginsMenu;
+    QMenu* m_projectMenu;
+    QMenu* m_projectAddLayerMenu;
+    QMenu* m_recentProjectsMenu;
+    QMenu* m_toolsMenu;
+    QMenu* m_toolsExchangerMenu;
+    QMenu* m_viewMenu;
+    QMenu* m_viewToolBarsMenu;
+
+
+    QDockWidget* m_progressDockWidget;       //!< Dock widget used to show progress information
+
     te::qt::widgets::HelpManagerImpl* m_helpManager;
+
+    te::qt::af::InterfaceController* m_iController;
+
+    te::qt::widgets::QueryDialog* m_queryDlg;
+
+    te::qt::widgets::CompositionModeMenuWidget* m_compModeMenu;
+
+    ProjectMetadata* m_project;
 };
 
 #endif  // __TERRAVIEW_INTERNAL_TERRAVIEW_H

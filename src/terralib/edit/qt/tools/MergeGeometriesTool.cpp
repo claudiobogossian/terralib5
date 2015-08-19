@@ -58,8 +58,8 @@ TerraLib Team at <terralib-team@terralib.org>.
 
 
 te::edit::MergeGeometriesTool::MergeGeometriesTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, QObject* parent)
-: AbstractTool(display, parent)
-,m_layer(layer),
+  : GeometriesUpdateTool(display, layer.get(), parent),
+m_layer(layer),
 m_feature(0),
 //m_updateWatches(std::vector<Feature*>()),
 m_oidRef(0),
@@ -137,6 +137,9 @@ void te::edit::MergeGeometriesTool::mergeGeometries()
     }
     case  te::gm::PolygonType:
       g = dynamic_cast<te::gm::Polygon*>(g);
+      break;
+
+    default:
       break;
   }
 
@@ -294,6 +297,7 @@ void te::edit::MergeGeometriesTool::storeMergedFeature()
   }
 
   RepositoryManager::getInstance().addGeometry(m_layer->getId(), m_feature->getId()->clone(), dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone()), te::edit::GEOMETRY_UPDATE);
+  emit geometriesEdited();
 }
 
 void te::edit::MergeGeometriesTool::onExtentChanged()

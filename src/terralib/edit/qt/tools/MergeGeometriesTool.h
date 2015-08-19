@@ -30,7 +30,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include "../../../geometry/Coord2D.h"
 #include "../../../dataaccess/dataset/ObjectIdSet.h"
 #include "../../../maptools/AbstractLayer.h"
-#include "../../../qt/widgets/tools/AbstractTool.h"
+#include "GeometriesUpdateTool.h"
 #include "../Config.h"
 
 // STL
@@ -54,7 +54,7 @@ namespace te
   namespace edit
   {
 
-    class TEEDITQTEXPORT MergeGeometriesTool : public te::qt::widgets::AbstractTool
+    class TEEDITQTEXPORT MergeGeometriesTool : public GeometriesUpdateTool
     {
       Q_OBJECT
 

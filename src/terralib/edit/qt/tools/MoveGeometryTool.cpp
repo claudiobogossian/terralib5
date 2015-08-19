@@ -49,7 +49,7 @@
 
 
 te::edit::MoveGeometryTool::MoveGeometryTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent)
-: AbstractTool(display, parent),
+  : GeometriesUpdateTool(display, layer.get(), parent),
     m_layer(layer),
     m_feature(0),
     m_moveStarted(false)
@@ -221,7 +221,7 @@ void te::edit::MoveGeometryTool::onExtentChanged()
 void te::edit::MoveGeometryTool::storeEditedFeature()
 {
   RepositoryManager::getInstance().addGeometry(m_layer->getId(), m_feature->getId()->clone(), dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone()),te::edit::GEOMETRY_UPDATE);
-
+  emit geometriesEdited();
 }
 
 void te::edit::MoveGeometryTool::storeUndoCommand()

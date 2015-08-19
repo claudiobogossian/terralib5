@@ -27,7 +27,6 @@
 #include "../../../attributefill/qt/VectorToVectorDialog.h"
 #include "../../af/ApplicationController.h"
 #include "../../af/events/LayerEvents.h"
-#include "../../af/Project.h"
 #include "VectorToVectorAction.h"
 
 // Qt
@@ -50,25 +49,20 @@ te::qt::plugins::attributefill::VectorToVectorAction::~VectorToVectorAction()
 
 void te::qt::plugins::attributefill::VectorToVectorAction::onActionActivated(bool checked)
 {
-  QWidget* parent = te::qt::af::ApplicationController::getInstance().getMainWindow();
+  QWidget* parent = te::qt::af::AppCtrlSingleton::getInstance().getMainWindow();
   te::attributefill::VectorToVectorDialog dlg(parent);
 
   // get the list of layers from current project
-  te::qt::af::Project* prj = te::qt::af::ApplicationController::getInstance().getProject();
+  std::list<te::map::AbstractLayerPtr> layers = getLayers();
 
-  if(prj)
+  if(layers.size() < 2)
   {
-    std::list<te::map::AbstractLayerPtr> layers = prj->getSingleLayers(false);
-
-    if(layers.size() < 2)
-    {
-      QMessageBox::warning(0, tr("Vector To Vector"), tr("It is necessary at least two layers to perform the operations!"));
-      return;
-    }
-    dlg.setLayers(prj->getSingleLayers(false));
+    QMessageBox::warning(0, tr("Vector To Vector"), tr("It is necessary at least two layers to perform the operations!"));
+    return;
   }
+  dlg.setLayers(layers);
 
-  QString logPath = te::qt::af::ApplicationController::getInstance().getUserDataDir();
+  QString logPath = te::qt::af::AppCtrlSingleton::getInstance().getUserDataDir();
   logPath += "/log/terralib_attributefill.log";
 
   dlg.setLogPath(logPath.toStdString());
@@ -83,10 +77,10 @@ void te::qt::plugins::attributefill::VectorToVectorAction::onActionActivated(boo
 
   int reply = QMessageBox::question(0, tr("Attribute Fill Result"), tr("The operation was concluded successfully. Would you like to add the layer to the project?"), QMessageBox::No, QMessageBox::Yes);
 
-  if(prj && reply == QMessageBox::Yes)
+  if(reply == QMessageBox::Yes)
   {
     te::qt::af::evt::LayerAdded evt(layer);
 
-    te::qt::af::ApplicationController::getInstance().broadcast(&evt);
+    emit triggered(&evt);
   }
 }

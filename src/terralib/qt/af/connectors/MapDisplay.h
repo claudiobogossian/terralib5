@@ -60,6 +60,8 @@ namespace te
 
     namespace af
     {
+      class ApplicationController;
+
       namespace evt
       {
         // Forward declaration
@@ -85,7 +87,7 @@ namespace te
 
             \param display te::qt::widgets::MapDisplay to be listened.
           */
-          MapDisplay(te::qt::widgets::MapDisplay* display);
+          MapDisplay(te::qt::widgets::MapDisplay* display, te::qt::af::ApplicationController* app);
 
           /*! \brief destructor. */
           ~MapDisplay();
@@ -113,9 +115,11 @@ namespace te
 
             \param tool The new te::qt::widgets::AbstractTool.
 
+            \param delPrevious True for delete the old tool.
+
             \note The class will take the ownership of the given pointer.
           */
-          void setCurrentTool(te::qt::widgets::AbstractTool* tool);
+          void setCurrentTool(te::qt::widgets::AbstractTool* tool, const bool& delPrevious = true);
 
           void nextExtent();
 
@@ -155,14 +159,22 @@ namespace te
 
           void configSRS(const std::list<te::map::AbstractLayerPtr>& layers);
 
+          std::list<te::map::AbstractLayerPtr> getSelectedLayer();
+
         signals:
 
           void hasNextExtent(bool value);
 
           void hasPreviousExtent(bool value);
 
+          void triggered(te::qt::af::evt::Event* e);
+
         protected:
 
+          std::list<te::map::AbstractLayerPtr> getVisibleLayers();
+
+
+          te::qt::af::ApplicationController* m_app;                  //!< Pointer to applicatin controller;
           te::qt::widgets::MapDisplay* m_display;                    //!< Pointer to a component te::qt::widgets::MapDisplay.
           te::qt::widgets::AbstractTool* m_tool;                     //!< Pointer to the current tool being used.
           QMenu* m_menu;                                             //!< The map display popup menu.

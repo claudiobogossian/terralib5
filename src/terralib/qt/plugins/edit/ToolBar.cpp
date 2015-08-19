@@ -28,6 +28,7 @@
 #include "../../../dataaccess/dataset/ObjectId.h"
 #include "../../../dataaccess/dataset/ObjectIdSet.h"
 #include "../../../dataaccess/utils/Utils.h"
+#include "../../../datatype/SimpleData.h"
 #include "../../../edit/Feature.h"
 #include "../../../edit/Repository.h"
 #include "../../../edit/RepositoryManager.h"
@@ -46,16 +47,17 @@
 #include "../../../maptools/DataSetLayer.h"
 #include "../../../memory/DataSet.h"
 #include "../../../memory/DataSetItem.h"
-#include "../../../qt/af/events/LayerEvents.h"
-#include "../../../qt/widgets/canvas/MapDisplay.h"
+#include "../../widgets/canvas/MapDisplay.h"
+#include "../../af/ApplicationController.h"
 #include "../../af/events/LayerEvents.h"
 #include "../../af/events/MapEvents.h"
-#include "../../af/ApplicationController.h"
-#include "../../af/Project.h"
+
 #include "ToolBar.h"
+#include "Stasher.h"
 
 // Qt
 #include <QActionGroup>
+#include <QApplication>
 #include <QMessageBox>
 
 // Boost
@@ -66,28 +68,50 @@
 #include <list>
 #include <vector>
 
-
-te::qt::plugins::edit::ToolBar::ToolBar()
-  : m_toolBar(0),
-    m_editAction(0),
-    m_saveAction(0),
-    m_vertexToolAction(0),
-    m_createPolygonToolAction(0),
-    m_createLineToolAction(0),
-    m_moveGeometryToolAction(0),
-    m_snapOptionsAction(0),
-    m_deleteGeometryToolAction(0),
-    m_aggregateAreaToolAction(0),
-    m_subtractAreaToolAction(0),
-    m_undoToolAction(0),
-    m_redoToolAction(0),
-    m_undoView(0)
+void EnableActions(QList<QAction*> acts, const bool& enable)
 {
-    initialize();
+  for(QList<QAction*>::iterator it = acts.begin(); it != acts.end(); ++it)
+    (*it)->setEnabled(enable);
+}
+
+
+te::qt::plugins::edit::ToolBar::ToolBar(QObject* parent) :
+QObject(parent),
+m_toolBar(0),
+  m_editAction(0),
+  m_saveAction(0),
+  m_vertexToolAction(0),
+  m_createPolygonToolAction(0),
+  m_createLineToolAction(0),
+  m_moveGeometryToolAction(0),
+  m_snapOptionsAction(0),
+  m_deleteGeometryToolAction(0),
+  m_aggregateAreaToolAction(0),
+  m_subtractAreaToolAction(0),
+  m_undoToolAction(0),
+  m_redoToolAction(0),
+  m_undoView(0),
+  m_currentTool(0),
+  m_usingStash(true)
+{
+  initialize();
 }
 
 te::qt::plugins::edit::ToolBar::~ToolBar()
 {
+  if(m_currentTool != 0)
+  {
+    if(m_toolBar->isEnabled())
+    {
+      te::qt::af::evt::GetMapDisplay e;
+      emit triggered(&e);
+
+      e.m_display->setCurrentTool(0);
+    }
+    else
+      delete m_currentTool;
+  }
+
   delete m_toolBar;
   delete m_undoView;
 }
@@ -97,10 +121,44 @@ QToolBar* te::qt::plugins::edit::ToolBar::get() const
   return m_toolBar;
 }
 
+void te::qt::plugins::edit::ToolBar::updateLayer(te::map::AbstractLayer* layer, const bool& stashed)
+{
+  if(layer == 0 || layer->getSRID() == 0)
+  {
+    m_toolBar->setEnabled(false);
+    return;
+  }
+  else
+    m_toolBar->setEnabled(true);
+
+  if(m_currentTool != 0)
+    m_currentTool->setLayer(layer);
+
+  if (stashed && te::edit::RepositoryManager::getInstance().getRepository(layer->getTitle()) == 0)
+  {
+    std::map<std::string, int> ops;
+    std::map<std::string, te::gm::Geometry*> gms;
+
+    int count = 0;
+
+    GetStashedGeometries(layer, gms, ops);
+
+    for(std::map<std::string, te::gm::Geometry*>::iterator it = gms.begin(); it != gms.end(); ++it)
+    {
+      te::dt::String* data = new te::dt::String(it->first);
+      te::da::ObjectId* oid = new te::da::ObjectId;
+
+      oid->addValue(data);
+
+      te::edit::RepositoryManager::getInstance().addGeometry(layer->getId(), oid, it->second,te::edit::GEOMETRY_UPDATE);
+    }
+  }
+}
+
 te::map::AbstractLayerPtr te::qt::plugins::edit::ToolBar::getSelectedLayer()
 {
   te::qt::af::evt::GetLayerSelected e;
-  te::qt::af::ApplicationController::getInstance().broadcast(&e);
+  emit triggered(&e);
 
   te::map::AbstractLayerPtr layer = e.m_layer;
 
@@ -109,10 +167,11 @@ te::map::AbstractLayerPtr te::qt::plugins::edit::ToolBar::getSelectedLayer()
 
 te::map::AbstractLayerPtr te::qt::plugins::edit::ToolBar::getLayer(const std::string& id)
 {
-  std::list<te::map::AbstractLayerPtr> layers = te::qt::af::ApplicationController::getInstance().getProject()->getSingleLayers();
+  te::qt::af::evt::GetAvailableLayers evt;
+  emit triggered(&evt);
 
   std::list<te::map::AbstractLayerPtr>::iterator it;
-  for(it = layers.begin(); it != layers.end(); ++it)
+  for(it = evt.m_layers.begin(); it != evt.m_layers.end(); ++it)
   {
     if((*it)->getId() == id)
     return *it;
@@ -127,12 +186,23 @@ void te::qt::plugins::edit::ToolBar::initialize()
   m_toolBar = new QToolBar;
 
   initializeActions();
+
+  m_saveAction->setEnabled(true);
+
+  for(int i = 0; i < m_tools.size(); ++i)
+    m_tools[i]->setEnabled(true);
+
+  m_snapOptionsAction->setEnabled(true);
+
+  createUndoView(true);
+
+  EnableActions(m_tools, false);
 }
 
 void te::qt::plugins::edit::ToolBar::initializeActions()
 {
   // Enable Edition Mode
-  createAction(m_editAction, tr("Turn on/off edition mode"), "edit-enable",true, true,"edit_enable",SLOT(onEditActivated(bool)));
+  createAction(m_editAction, tr("Turn on/off edition mode"), QString("edit-enable"),true, true,"edit_enable",SLOT(onEditActivated(bool)));
   
   m_toolBar->addAction(m_editAction);
 
@@ -141,6 +211,8 @@ void te::qt::plugins::edit::ToolBar::initializeActions()
   m_toolBar->addAction(m_saveAction);
 
   // Undo/Redo
+  te::qt::af::evt::GetMapDisplay e;
+  emit triggered(&e);
   QUndoStack* undoStack = te::edit::UndoStackManager::getInstance().getUndoStack();
 
   if (undoStack)
@@ -173,7 +245,7 @@ void te::qt::plugins::edit::ToolBar::initializeActions()
   createAction(m_mergeGeometriesToolAction, tr("Merge Geometries"), "edition_mergeGeometries", true, false,"merge_geometries",SLOT(onMergeGeometriesToolActivated(bool)));
 
   // Get the action group of map tools.
-  QActionGroup* toolsGroup = te::qt::af::ApplicationController::getInstance().findActionGroup("Map.ToolsGroup");
+  QActionGroup* toolsGroup = te::qt::af::AppCtrlSingleton::getInstance().findActionGroup("Map.ToolsGroup");
   assert(toolsGroup);
 
   // Adding the new tools
@@ -204,7 +276,6 @@ void te::qt::plugins::edit::ToolBar::initializeActions()
   createAction(m_snapOptionsAction, tr("Snap Options"), "edit_snap", false, false,"snap_option",SLOT(onSnapOptionsActivated()));
   m_toolBar->addSeparator();
   m_toolBar->addAction(m_snapOptionsAction);
-
 }
 
 void te::qt::plugins::edit::ToolBar::createAction(QAction*& action, const QString& tooltip, const QString& icon, bool checkable, bool enabled, const QString& objName, const char* member)
@@ -220,18 +291,69 @@ void te::qt::plugins::edit::ToolBar::createAction(QAction*& action, const QStrin
 
 void te::qt::plugins::edit::ToolBar::onEditActivated(bool checked)
 {
-  m_saveAction->setEnabled(checked);
+  EnableActions(m_tools, checked);
+//  m_saveAction->setEnabled(checked);
 
-  for(int i = 0; i < m_tools.size(); ++i)
-    m_tools[i]->setEnabled(checked);
+//  for(int i = 0; i < m_tools.size(); ++i)
+//    m_tools[i]->setEnabled(checked);
 
-  m_snapOptionsAction->setEnabled(checked);
+//  m_snapOptionsAction->setEnabled(checked);
 
-  createUndoView(checked);
+//  createUndoView(checked);
+//  m_toolBar->setEnabled(checked);
+
+  enableCurrentTool(checked);
 }
 
 void te::qt::plugins::edit::ToolBar::onSaveActivated()
 {
+  if(m_usingStash)
+  {
+    std::map<std::string, te::edit::Repository*> repositories = te::edit::RepositoryManager::getInstance().getRepositories();
+
+    std::map<std::string, te::edit::Repository*>::iterator it;
+
+    std::map<std::string, int> ops;
+
+    for (it = repositories.begin(); it != repositories.end(); ++it) // for each repository
+    {
+      // The current repository
+      te::edit::Repository* repo = it->second;
+      assert(repo);
+
+      // Retrieve the layer associated with the current repository
+      te::map::AbstractLayerPtr layer = getLayer(it->first);
+      assert(layer.get());
+
+      // Get the edited geometries
+      const std::vector<te::edit::Feature*>& features = repo->getAllFeatures();
+
+      std::map<std::string, te::gm::Geometry*> gs;
+
+      for(std::vector<te::edit::Feature*>::const_iterator fIt=features.begin(); fIt != features.end(); ++fIt)
+      {
+        te::da::ObjectId* oid = (*fIt)->getId();
+        assert(oid);
+
+        // Get the edited geometry
+        te::gm::Geometry* geom = (*fIt)->getGeometry();
+        assert(geom);
+
+        std::string sOid = oid->getValueAsString();
+
+        gs[sOid] = geom;
+
+        ops[sOid] = (*fIt)->getOperationType();
+      }
+
+      StashGeometries(layer.get(), gs, ops);
+      
+      emit stashed(layer.get());
+    }
+
+    return;
+  }
+
   try
   {
     std::map<std::string, te::edit::Repository*> repositories = te::edit::RepositoryManager::getInstance().getRepositories();
@@ -406,7 +528,7 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
 
     // repaint and clear
     te::qt::af::evt::GetMapDisplay e;
-    te::qt::af::ApplicationController::getInstance().broadcast(&e);
+    emit triggered(&e);
     
     e.m_display->getDisplay()->refresh();
 
@@ -430,19 +552,16 @@ void te::qt::plugins::edit::ToolBar::onVertexToolActivated(bool)
   }
 
   te::qt::af::evt::GetMapDisplay e;
-  te::qt::af::ApplicationController::getInstance().broadcast(&e);
+  emit triggered(&e);
 
   assert(e.m_display);
 
-//  te::edit::VertexTool* tool = new te::edit::VertexTool(e.m_display->getDisplay(), layer, 0);
- // e.m_display->setCurrentTool(tool);
-  
+  setCurrentTool(new te::edit::VertexTool(e.m_display->getDisplay(), layer, 0), e.m_display);
 }
 
 void te::qt::plugins::edit::ToolBar::onCreatePolygonToolActivated(bool)
 {
   te::map::AbstractLayerPtr layer = getSelectedLayer();
-
   if(layer.get() == 0)
   {
     QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Select a layer first!"));
@@ -450,13 +569,11 @@ void te::qt::plugins::edit::ToolBar::onCreatePolygonToolActivated(bool)
   }
 
   te::qt::af::evt::GetMapDisplay e;
-  te::qt::af::ApplicationController::getInstance().broadcast(&e);
+  emit triggered(&e);
 
   assert(e.m_display);
 
-  te::edit::CreatePolygonTool* tool = new te::edit::CreatePolygonTool(e.m_display->getDisplay(), layer, Qt::ArrowCursor, 0);
-  e.m_display->setCurrentTool(tool);
-
+  setCurrentTool(new te::edit::CreatePolygonTool(e.m_display->getDisplay(), layer, Qt::ArrowCursor, 0), e.m_display);
 }
 
 void te::qt::plugins::edit::ToolBar::onCreateLineToolActivated(bool)
@@ -469,13 +586,11 @@ void te::qt::plugins::edit::ToolBar::onCreateLineToolActivated(bool)
   }
 
   te::qt::af::evt::GetMapDisplay e;
-  te::qt::af::ApplicationController::getInstance().broadcast(&e);
+  emit triggered(&e);
 
   assert(e.m_display);
 
-  te::edit::CreateLineTool* tool = new te::edit::CreateLineTool(e.m_display->getDisplay(), layer, Qt::ArrowCursor, 0);
-  e.m_display->setCurrentTool(tool);
-
+  setCurrentTool(new te::edit::CreateLineTool(e.m_display->getDisplay(), layer, Qt::ArrowCursor, 0), e.m_display);
 }
 
 void te::qt::plugins::edit::ToolBar::onMoveGeometryToolActivated(bool)
@@ -488,19 +603,21 @@ void te::qt::plugins::edit::ToolBar::onMoveGeometryToolActivated(bool)
   }
 
   te::qt::af::evt::GetMapDisplay e;
-  te::qt::af::ApplicationController::getInstance().broadcast(&e);
+  emit triggered(&e);
 
   assert(e.m_display);
 
-  te::edit::MoveGeometryTool* tool = new te::edit::MoveGeometryTool(e.m_display->getDisplay(), layer, 0);
-  e.m_display->setCurrentTool(tool);
-
+  setCurrentTool(new te::edit::MoveGeometryTool(e.m_display->getDisplay(), layer, 0), e.m_display);
 }
 
 void te::qt::plugins::edit::ToolBar::onSnapOptionsActivated()
 {
   te::edit::SnapOptionsDialog options(m_toolBar);
-  options.setLayers(te::qt::af::ApplicationController::getInstance().getProject()->getAllLayers(false));
+
+  te::qt::af::evt::GetAvailableLayers evt;
+  emit triggered(&evt);
+
+  options.setLayers(evt.m_layers);
   options.exec();
 }
 
@@ -527,13 +644,11 @@ void te::qt::plugins::edit::ToolBar::onAggregateAreaToolActivated(bool)
   }
 
   te::qt::af::evt::GetMapDisplay e;
-  te::qt::af::ApplicationController::getInstance().broadcast(&e);
+  emit triggered(&e);
 
   assert(e.m_display);
 
-  te::edit::AggregateAreaTool* tool = new te::edit::AggregateAreaTool(e.m_display->getDisplay(), layer, 0);
-  e.m_display->setCurrentTool(tool);
-
+  setCurrentTool(new te::edit::AggregateAreaTool(e.m_display->getDisplay(), layer, 0), e.m_display);
 }
 
 void te::qt::plugins::edit::ToolBar::onSubtractAreaToolActivated(bool)
@@ -558,13 +673,11 @@ void te::qt::plugins::edit::ToolBar::onSubtractAreaToolActivated(bool)
   }
 
   te::qt::af::evt::GetMapDisplay e;
-  te::qt::af::ApplicationController::getInstance().broadcast(&e);
+  emit triggered(&e);
 
   assert(e.m_display);
 
-  te::edit::SubtractAreaTool* tool = new te::edit::SubtractAreaTool(e.m_display->getDisplay(), layer, 0);
-  e.m_display->setCurrentTool(tool);
-
+  setCurrentTool(new te::edit::SubtractAreaTool(e.m_display->getDisplay(), layer, 0), e.m_display);
 }
 
 
@@ -597,13 +710,11 @@ void te::qt::plugins::edit::ToolBar::onDeleteGeometryToolActivated(bool)
     m_deleteGeometryToolAction->setChecked(true);
 
     te::qt::af::evt::GetMapDisplay e;
-    te::qt::af::ApplicationController::getInstance().broadcast(&e);
+    emit triggered(&e);
 
     assert(e.m_display);
 
-    te::edit::DeleteGeometryTool* tool = new te::edit::DeleteGeometryTool(e.m_display->getDisplay(), layer, 0);
-    e.m_display->setCurrentTool(tool);
-
+    setCurrentTool(new te::edit::DeleteGeometryTool(e.m_display->getDisplay(), layer, 0), e.m_display);
   }
   catch (te::common::Exception& e)
   {
@@ -635,26 +746,56 @@ void te::qt::plugins::edit::ToolBar::onMergeGeometriesToolActivated(bool)
   }
 
   te::qt::af::evt::GetMapDisplay e;
-  te::qt::af::ApplicationController::getInstance().broadcast(&e);
+  emit triggered(&e);
 
   assert(e.m_display);
 
-  te::edit::MergeGeometriesTool* tool = new te::edit::MergeGeometriesTool(e.m_display->getDisplay(), layer, Qt::ArrowCursor, 0 );
-  e.m_display->setCurrentTool(tool);
+  setCurrentTool(new te::edit::MergeGeometriesTool(e.m_display->getDisplay(), layer, Qt::ArrowCursor, 0 ), e.m_display);
+}
 
+void te::qt::plugins::edit::ToolBar::onToolDeleted()
+{
+  m_currentTool = 0;
+}
+
+void te::qt::plugins::edit::ToolBar::enableCurrentTool(const bool& enable)
+{
+  if(m_currentTool == 0)
+    return;
+
+  te::qt::af::evt::GetMapDisplay e;
+  emit triggered(&e);
+
+  if(e.m_display == 0)
+    return;
+
+  if(enable)
+    e.m_display->setCurrentTool(m_currentTool);
+  else
+    e.m_display->setCurrentTool(0, false);
+}
+
+void te::qt::plugins::edit::ToolBar::setCurrentTool(te::edit::GeometriesUpdateTool* tool, te::qt::af::MapDisplay* display)
+{
+  display->setCurrentTool(tool);
+
+  m_currentTool = tool;
+
+  connect(m_currentTool, SIGNAL(geometriesEdited()), SIGNAL(geometriesEdited()));
+  connect(m_currentTool, SIGNAL(toolDeleted()), SLOT(onToolDeleted()));
 }
 
 
 void te::qt::plugins::edit::ToolBar::createUndoView(bool checked)
 {
-  if (!checked)
-    return;
+  //if (!checked)
+  //  return;
 
-  m_undoView = new QUndoView(te::edit::UndoStackManager::getInstance().getUndoStack());
-  m_undoView->setWindowTitle(tr("Edition List"));
-  m_undoView->setFixedSize(QSize(300, 300));
-  m_undoView->show();
-  m_undoView->setAttribute(Qt::WA_QuitOnClose, false);
+  //m_undoView = new QUndoView(te::edit::UndoStackManager::getInstance().getUndoStack());
+  //m_undoView->setWindowTitle(tr("Edition List"));
+  //m_undoView->setFixedSize(QSize(300, 300));
+  //m_undoView->show();
+  //m_undoView->setAttribute(Qt::WA_QuitOnClose, false);
 
 }
 

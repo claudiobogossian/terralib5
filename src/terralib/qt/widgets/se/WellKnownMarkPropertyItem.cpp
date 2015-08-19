@@ -55,7 +55,9 @@ te::qt::widgets::WellKnownMarkPropertyItem::WellKnownMarkPropertyItem(QtTreeProp
   connect(m_bs, SIGNAL(strokeChanged()), SLOT(onStrokeChanged()));
 
   // Setups initial mark
-  m_mark->setWellKnownName(new std::string(m_supportedMarks[0]));
+  if (!m_supportedMarks.empty())
+    m_mark->setWellKnownName(new std::string(m_supportedMarks[0]));
+
   m_mark->setFill(m_bf->getFill());
   m_mark->setStroke(m_bs->getStroke());
 

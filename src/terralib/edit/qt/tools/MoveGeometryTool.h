@@ -29,7 +29,7 @@
 // TerraLib
 #include "../../../geometry/Envelope.h"
 #include "../../../maptools/AbstractLayer.h"
-#include "../../../qt/widgets/tools/AbstractTool.h"
+#include "GeometriesUpdateTool.h"
 #include "../Config.h"
 
 // Qt
@@ -62,7 +62,7 @@ namespace te
 
       \brief This class implements a concrete tool to move geometries.
     */
-    class TEEDITQTEXPORT MoveGeometryTool : public te::qt::widgets::AbstractTool
+    class TEEDITQTEXPORT MoveGeometryTool : public GeometriesUpdateTool
     {
       Q_OBJECT
 

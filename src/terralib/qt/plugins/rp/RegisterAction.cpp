@@ -46,7 +46,7 @@ te::qt::plugins::rp::RegisterAction::~RegisterAction()
 
 void te::qt::plugins::rp::RegisterAction::onActionActivated(bool checked)
 {
-  te::qt::widgets::RegisterWizard dlg(te::qt::af::ApplicationController::getInstance().getMainWindow());
+  te::qt::widgets::RegisterWizard dlg(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
   
   std::list<te::map::AbstractLayerPtr> layersList = getLayers();
 

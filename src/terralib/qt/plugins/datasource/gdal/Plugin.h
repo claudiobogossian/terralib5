@@ -40,6 +40,14 @@ namespace te
 {
   namespace qt
   {
+    namespace af
+    {
+      namespace evt
+      {
+        struct Event;
+      }
+    }
+
     namespace plugins
     {
       namespace gdal
@@ -61,6 +69,10 @@ namespace te
           protected slots:
 
             void openFileDialog();
+
+        signals:
+
+            void triggered(te::qt::af::evt::Event* e);
 
           protected:
 

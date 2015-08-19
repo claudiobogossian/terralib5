@@ -50,7 +50,7 @@
 #include <memory>
 
 te::edit::DeleteGeometryTool::DeleteGeometryTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent)
-  : AbstractTool(display, parent),
+  : GeometriesUpdateTool(display, layer.get(), parent),
     m_layer(layer),
     m_feature(0)
 {
@@ -195,6 +195,6 @@ void te::edit::DeleteGeometryTool::onExtentChanged()
 void te::edit::DeleteGeometryTool::storeRemovedFeature()
 {
   RepositoryManager::getInstance().addGeometry(m_layer->getId(), m_feature->getId()->clone(), dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone()),te::edit::GEOMETRY_DELETE);
-
+  emit geometriesEdited();
 }
 

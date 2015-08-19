@@ -508,7 +508,7 @@ if(Qt5_FOUND)
   # end of Qt5 uic'ing
 
   # Adding all external dependencies to rpath
-  TeAddExternalLibrariesToRPATH(${TERRALIB_LIBRARIES_DEPENDENCIES})
+  addExternalLibrariesToRPATH(${TERRALIB_LIBRARIES_DEPENDENCIES})
 
   add_library(terralib_mod_qt_widgets SHARED ${TERRALIB_FILES})
 
@@ -976,7 +976,7 @@ else() # QT4_FOUND
 
   QT4_WRAP_CPP(TERRALIB_GEN_SRC_FILES ${TERRALIB_HDRS_TO_MOC_FILES} OPTIONS -DBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
 
-  TeAddExternalLibrariesToRPATH("${TERRALIB_LIBRARIES_DEPENDENCIES}")
+  addExternalLibrariesToRPATH("${TERRALIB_LIBRARIES_DEPENDENCIES}")
 
   add_library(terralib_mod_qt_widgets SHARED ${TERRALIB_FILES} ${TERRALIB_GEN_SRC_FILES} DataSetTableView.moc)
 

@@ -701,18 +701,16 @@ void te::qt::widgets::Canvas::draw(const te::gm::Polygon* poly)
 
       m_painter.drawPath(path);
     }
-   // if(m_polyColor.alpha() != 0)
-   // {
-      QBrush brush(m_polyColor);
-      m_painter.setBrush(brush);
 
-      if(m_polyContourPen.brush().style() == Qt::TexturePattern)
-        m_painter.setPen(Qt::NoPen);
-      else
-        m_painter.setPen(m_polyContourPen);
+    m_polyDefaultBrush.setMatrix(this->getMatrix().inverted());
+    m_painter.setBrush(m_polyDefaultBrush);
 
-      m_painter.drawPath(path);
-   // }
+    if(m_polyContourPen.brush().style() == Qt::TexturePattern)
+      m_painter.setPen(Qt::NoPen);
+    else
+      m_painter.setPen(m_polyContourPen);
+
+    m_painter.drawPath(path);
 
     // draw contour
     if(m_polyContourPen.brush().style() == Qt::TexturePattern)
@@ -1733,8 +1731,18 @@ void te::qt::widgets::Canvas::setPolygonFillColor(const te::color::RGBAColor& co
 {
   QColor cor(color.getRgba());
   cor.setAlpha(qAlpha(color.getRgba()));
-  m_polyColor = cor;
+
+  QBrush b(cor, Qt::SolidPattern);
+
+  setPolygonFillColor(b);
 }
+
+void te::qt::widgets::Canvas::setPolygonFillColor(const QBrush& color)
+{
+  m_polyDefaultBrush = color;
+  m_polyColor = color.color();
+}
+
 
 void te::qt::widgets::Canvas::setPolygonFillPattern(te::color::RGBAColor** pattern, int ncols, int nrows)
 {
@@ -2128,6 +2136,11 @@ QMatrix te::qt::widgets::Canvas::getMatrix()
 void  te::qt::widgets::Canvas::setRenderHint(QPainter::RenderHint hint, bool on)
 {
   m_painter.setRenderHint(hint, on);
+}
+
+QPainter* te::qt::widgets::Canvas::getPainter()
+{
+  return &m_painter;
 }
 
 void te::qt::widgets::Canvas::setLineDashStyle(QPen& pen, const std::vector<double>& style)

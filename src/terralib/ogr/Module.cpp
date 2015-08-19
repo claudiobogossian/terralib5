@@ -39,6 +39,8 @@
 #include "Globals.h"
 #include "Module.h"
 
+#include <terralib_config.h>
+
 // OGR
 #include <cpl_conv.h>
 #include <ogr_api.h>

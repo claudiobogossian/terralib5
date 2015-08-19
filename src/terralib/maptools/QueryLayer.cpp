@@ -349,16 +349,6 @@ void te::map::QueryLayer::setQuery(te::da::Select* s)
   m_query = s;
 }
 
-const std::string& te::map::QueryLayer::getDataSourceId() const
-{
-  return m_datasourceId;
-}
-
-void te::map::QueryLayer::setDataSourceId(const std::string& id)
-{
-  m_datasourceId = id;
-}
-
 const std::string& te::map::QueryLayer::getRendererType() const
 {
   return m_rendererType;

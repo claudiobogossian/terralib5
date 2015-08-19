@@ -133,20 +133,6 @@ namespace te
 
           \return
         */
-        const std::string& getDataSourceId() const;
-
-        /*!
-          \brief
-
-          \param id
-        */
-        void setDataSourceId(const std::string& id);
-
-        /*!
-          \brief
-
-          \return
-        */
         const std::string& getRendererType() const;
 
         /*!
@@ -166,7 +152,6 @@ namespace te
 
       private:
 
-        std::string m_datasourceId;        //!< The DataSource associated to this Layer2.
         std::string m_rendererType;        //!< A pointer to the internal renderer used to paint this layer.
         te::da::Select* m_query;           //!< The dataset name where we will retrieve the layer objects.
 

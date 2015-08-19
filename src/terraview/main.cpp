@@ -84,7 +84,6 @@ int main(int argc, char** argv)
   int waitVal = EXIT_FAILURE;
 
   const int RESTART_CODE = 1000;
-
   try
   {
     do 
@@ -105,7 +104,7 @@ int main(int argc, char** argv)
 
       TerraView tview;
 
-      tview.resetTerraLib(waitVal != RESTART_CODE);
+      //tview.resetTerraLib(waitVal != RESTART_CODE);
       
 #if TE_PLATFORM == TE_PLATFORMCODE_APPLE
       CFBundleRef mainBundle = CFBundleGetMainBundle();
@@ -131,7 +130,7 @@ int main(int argc, char** argv)
 
       tview.showMaximized();
 
-      tview.resetState();
+      //tview.resetState();
 
       // Start TerraView from project file(.tview)
       if(argc > 1)
@@ -144,7 +143,7 @@ int main(int argc, char** argv)
 
       waitVal = app.exec();
 
-      tview.resetTerraLib(waitVal != RESTART_CODE);
+      //tview.resetTerraLib(waitVal != RESTART_CODE);
 
     } while(waitVal == RESTART_CODE);
   }

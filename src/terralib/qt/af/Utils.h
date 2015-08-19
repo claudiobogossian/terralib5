@@ -57,7 +57,7 @@ namespace te
   {
     namespace af
     {
-      class Project;
+      class ApplicationController;
 
       /*!
         \brief Reads and return a te::qt::af::Project from the file.
@@ -66,7 +66,7 @@ namespace te
 
         \return A pointer to the te::qt::af::Project defined in the \a uri file.
       */
-      TEQTAFEXPORT Project* ReadProject(const std::string& uri);
+//      TEQTAFEXPORT Project* ReadProject(const std::string& uri);
 
       /*!
         \brief Reads and return a te::qt::af::Project using \a reader XML reader.
@@ -75,7 +75,7 @@ namespace te
 
         \return A pointer to the te::qt::af::Project.
       */
-      TEQTAFEXPORT Project* ReadProject(te::xml::Reader& reader);
+//      TEQTAFEXPORT Project* ReadProject(te::xml::Reader& reader);
 
       /*!
         \brief Saves the informations of the project in the \a uri file.
@@ -84,7 +84,7 @@ namespace te
 
         \param uri File location.
       */
-      TEQTAFEXPORT void Save(const Project& project, const std::string& uri);
+//      TEQTAFEXPORT void Save(const Project& project, const std::string& uri);
 
       /*!
         \brief Saves the informations of the te::qt::af::Project using \a writer XML writer.
@@ -93,7 +93,7 @@ namespace te
 
         \param writer The XML writer to be used.
       */
-      TEQTAFEXPORT void Save(const Project& project, te::xml::AbstractWriter& writer);
+//      TEQTAFEXPORT void Save(const Project& project, te::xml::AbstractWriter& writer);
 
       /*!
         \brief Updates user settings file section about information of the projects.
@@ -104,12 +104,12 @@ namespace te
 
         \param userConfigFile Name of the user configuration file.
       */
-      TEQTAFEXPORT void UpdateUserSettings(const QStringList& prjFiles, const QStringList& prjTitles, const std::string& userConfigFile);
+      TEQTAFEXPORT void UpdateUserSettings();
 
       /*!
         \brief Saves data sources file.
       */
-      TEQTAFEXPORT void SaveDataSourcesFile();
+      TEQTAFEXPORT void SaveDataSourcesFile(te::qt::af::ApplicationController* appController);
 
       /*!
         \brief Unsaved star
@@ -126,7 +126,7 @@ namespace te
 
         \param bars Set with the existing tool bars.
       */
-      TEQTAFEXPORT void UpdateToolBarsInTheSettings();
+      TEQTAFEXPORT void UpdateToolBarsInTheSettings(te::qt::af::ApplicationController* appController);
 
       /*!
         \brief Update settings with a new tool bar.
@@ -147,7 +147,7 @@ namespace te
 
         \param barsParent
       */
-      TEQTAFEXPORT std::vector<QToolBar*> ReadToolBarsFromSettings(QWidget* barsParent=0);
+      TEQTAFEXPORT std::vector<QToolBar*> ReadToolBarsFromSettings(te::qt::af::ApplicationController* appController, QWidget* barsParent=0);
 
       /*
         \brief
@@ -247,7 +247,7 @@ namespace te
 
         \param act Action to be inserted.
       */
-      TEQTAFEXPORT void AddActionToCustomToolbars(QAction* act);
+      TEQTAFEXPORT void AddActionToCustomToolbars(te::qt::af::ApplicationController* appController, QAction* act);
 
       /*!
         \brief Returns the complete path of the configuration file or an empty value if it not exists.
@@ -280,7 +280,7 @@ namespace te
 
       TEQTAFEXPORT std::vector<std::string> GetPluginsFiles();
 
-      TEQTAFEXPORT std::vector<std::string> GetDefaultPluginsNames();
+      TEQTAFEXPORT std::vector<std::string> GetDefaultPluginsNames(te::qt::af::ApplicationController* appController);
       
       TEQTAFEXPORT std::vector<std::string> GetPluginsNames(const std::vector<std::string>& plgFiles);
 
@@ -329,11 +329,6 @@ namespace te
       TEQTAFEXPORT void WriteDefaultProjectFile(const QString& fileName);
 
       /*!
-        \brief Return a QString with the new window title based on the project informations.
-      */
-      TEQTAFEXPORT QString GetWindowTitle(const Project& project);
-
-      /*!
         \brief Returns the date and time of generated binary.
       */
       TEQTAFEXPORT QString GetGenerationDate();
@@ -341,7 +336,7 @@ namespace te
       /*!
         \brief Return extension filter string
       */
-      TEQTAFEXPORT QString GetExtensionFilter();
+      TEQTAFEXPORT QString GetExtensionFilter(te::qt::af::ApplicationController* appController);
     } // end namespace af
   }   // end namespace qt
 }     // end namespace te

@@ -35,6 +35,8 @@
 #include "../../dataaccess/datasource/DataSourceFactory.h"
 #include "../../dataaccess/datasource/DataSource.h"
 #include "../../common/StringUtils.h"
+#include "layer/explorer/LayerItem.h"
+#include "layer/explorer/LayerItemView.h"
 #include "Utils.h"
 
 // Qt
@@ -238,20 +240,20 @@ QColor te::qt::widgets::Convert2Qt(const te::color::RGBAColor& color)
 
 void te::qt::widgets::Config2DrawPolygons(te::map::Canvas* canvas, const QColor& fillColor, const QColor& contourColor, const std::size_t& contourWidth)
 {
-  canvas->setPolygonContourWidth(contourWidth);
+  canvas->setPolygonContourWidth((int)contourWidth);
   canvas->setPolygonContourColor(Convert2TerraLib(contourColor));
   canvas->setPolygonFillColor(Convert2TerraLib(fillColor));
 }
 
 void te::qt::widgets::Config2DrawLines(te::map::Canvas* canvas, const QColor& color, const std::size_t& width)
 {
-  canvas->setLineWidth(width);
+  canvas->setLineWidth((int)width);
   canvas->setLineColor(Convert2TerraLib(color));
 }
 
 void te::qt::widgets::Config2DrawPoints(te::map::Canvas* canvas, const QColor& color, const std::size_t& width)
 {
-  canvas->setPointWidth(width);
+  canvas->setPointWidth((int)width);
   canvas->setPointColor(Convert2TerraLib(color));
 }
 
@@ -270,7 +272,7 @@ void te::qt::widgets::Config2DrawPoints(te::map::Canvas* canvas, const QString& 
   te::color::RGBAColor** rgba = te::map::MarkRendererManager::getInstance().render(mark, size);
 
   canvas->setPointColor(te::color::RGBAColor(0, 0, 0, TE_TRANSPARENT));
-  canvas->setPointPattern(rgba, size, size);
+  canvas->setPointPattern(rgba, (int)size, (int)size);
 
   te::common::Free(rgba, size);
 
@@ -463,3 +465,85 @@ QString te::qt::widgets::GetDiskRasterFileSelFilter()
   return filter;
 }
 
+std::list<te::map::AbstractLayerPtr> te::qt::widgets::GetSelectedLayersOnly(te::qt::widgets::LayerItemView* view)
+{
+  std::list<te::map::AbstractLayerPtr> res;
+  std::list<te::qt::widgets::TreeItem*> items = view->getSelectedItems();
+
+  for(std::list<te::qt::widgets::TreeItem*>::iterator it = items.begin(); it != items.end(); ++it)
+  if((*it)->getType() == "LAYER")
+    res.push_back(((te::qt::widgets::LayerItem*)(*it))->getLayer());
+
+  return res;
+}
+
+void te::qt::widgets::GetValidLayers(QAbstractItemModel* model, const QModelIndex& parent, std::vector<te::map::AbstractLayerPtr>& layers)
+{
+  int cs = model->rowCount(parent);
+
+  for(int i = 0; i < cs; i++)
+  {
+    QModelIndex idx = model->index(i, 0, parent);
+
+    if(idx.isValid())
+    {
+      te::qt::widgets::TreeItem* item = static_cast<te::qt::widgets::TreeItem*>(idx.internalPointer());
+
+      if(item->getType() == "LAYER")
+      {
+        te::map::AbstractLayerPtr l = ((te::qt::widgets::LayerItem*)item)->getLayer();
+
+        if(l->isValid())
+          layers.push_back(l);
+      }
+      else if(item->getType() == "FOLDER")
+        GetValidLayers(model, idx, layers);
+    }
+  }
+}
+
+void te::qt::widgets::GetValidLayers(QAbstractItemModel* model, const QModelIndex& parent, std::list<te::map::AbstractLayerPtr>& layers)
+{
+  int cs = model->rowCount(parent);
+
+  for(int i = 0; i < cs; i++)
+  {
+    QModelIndex idx = model->index(i, 0, parent);
+
+    if(idx.isValid())
+    {
+      te::qt::widgets::TreeItem* item = static_cast<te::qt::widgets::TreeItem*>(idx.internalPointer());
+
+      if(item->getType() == "LAYER")
+      {
+        te::map::AbstractLayerPtr l = ((te::qt::widgets::LayerItem*)item)->getLayer();
+
+        if(l->isValid())
+          layers.push_back(l);
+      }
+      else if(item->getType() == "FOLDER")
+        GetValidLayers(model, idx, layers);
+    }
+  }
+}
+
+void te::qt::widgets::GetChangedAndVisibleLayers(const QModelIndexList& idxs, std::list<te::map::AbstractLayerPtr>& layers)
+{
+  for(QModelIndexList::const_iterator it = idxs.begin(); it != idxs.end(); ++it)
+  {
+    te::qt::widgets::TreeItem* item = static_cast<te::qt::widgets::TreeItem*>((*it).internalPointer());
+
+    if(item->getType() == "CHART" || item->getType() == "GROUPING" || item->getType() == "COLORMAP")
+    {
+      QModelIndex parent = (*it).model()->parent(*it);
+
+      if(!idxs.contains(parent))
+      {
+        te::qt::widgets::TreeItem* lI = static_cast<te::qt::widgets::TreeItem*>(parent.internalPointer());
+
+        if(lI->isVisible() == te::qt::widgets::TOTALLY)
+          layers.push_back(((te::qt::widgets::LayerItem*)lI)->getLayer());
+      }
+    }
+  }
+}

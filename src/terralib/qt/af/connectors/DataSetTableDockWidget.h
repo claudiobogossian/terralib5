@@ -103,6 +103,13 @@ namespace te
           */
           te::map::AbstractLayer* getLayer() const;
 
+          /*!
+          \brief Defines the color to be used as Highlight.
+
+          \param color the Highlight color;
+          */
+          void setHighlightColor(QColor color);
+
         protected slots:
 
           /*!
@@ -154,6 +161,8 @@ namespace te
             \brief Emitted before this widget was closed.
           */
           void closed(te::qt::af::DataSetTableDockWidget*);
+
+          void triggered(te::qt::af::evt::Event* e);
 
         protected:
 

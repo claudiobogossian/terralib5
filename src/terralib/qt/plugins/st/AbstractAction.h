@@ -38,6 +38,14 @@ namespace te
 {
   namespace qt
   {
+    namespace af
+    {
+      namespace evt
+      { // Forward declarations
+        struct Event;
+      }
+    }
+
     namespace plugins
     {
       namespace st
@@ -52,44 +60,46 @@ namespace te
         {
           Q_OBJECT
 
-          public:
+        public:
 
-            /*!
+          /*!
               \brief Constructor.
 
               \param menu The parent menu object.
             */
-            AbstractAction(QMenu* menu);
+          AbstractAction(QMenu* menu);
 
-            /*! 
-              \brief Destructor. 
+          /*!
+              \brief Destructor.
             */
-            virtual ~AbstractAction();
+          virtual ~AbstractAction();
 
-          protected slots:
+        protected slots:
 
-            /*!
+          /*!
               \brief Slot function used when a action was selected.
 
               \param checked Flag used in case a toggle action.
             */
-            virtual void onActionActivated(bool checked) = 0;
+          virtual void onActionActivated(bool checked) = 0;
 
-          protected:
+        Q_SIGNALS:
 
-            /*!
+          void triggered(te::qt::af::evt::Event* e);
+
+        protected:
+
+          /*!
               \brief Create and set the actions parameters.
 
               \param name The action name.
 
               \param pixmap The action pixmap name.
             */
-            void createAction(std::string name, std::string pixmap = "");
+          void createAction(std::string name, std::string pixmap = "");
 
-          protected:
-
-            QMenu* m_menu;        //!< Parent Menu.
-            QAction* m_action;    //!< Action used to call the process.
+          QMenu* m_menu;        //!< Parent Menu.
+          QAction* m_action;    //!< Action used to call the process.
         };
 
       } // end namespace st

@@ -40,6 +40,13 @@ namespace te
 {
   namespace qt
   {
+    namespace af
+    {
+      namespace evt
+      {
+        struct Event;
+      }
+    }
     namespace plugins
     {
       namespace ogr
@@ -61,6 +68,10 @@ namespace te
           protected slots:
           
             void showWindow();
+
+        signals:
+
+            void triggered(te::qt::af::evt::Event* e);
             
           protected:
           

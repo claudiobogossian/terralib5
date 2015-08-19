@@ -31,7 +31,7 @@
 #include <iostream>
 
 te::edit::AggregateAreaTool::AggregateAreaTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent)
-: CreateLineTool(display, layer, Qt::ArrowCursor, parent),
+  : CreateLineTool(display, layer, Qt::ArrowCursor, parent),
 m_feature(0)
 //,m_updateWatches(0)//std::vector<Feature*>())
 {
@@ -308,7 +308,7 @@ te::gm::Geometry* te::edit::AggregateAreaTool::Union(te::gm::Geometry* g1, Featu
 
   std::auto_ptr<const te::map::LayerSchema> schema(m_layer->getSchema());
   if (!schema->hasGeom())
-    return false;
+    return 0;
 
   te::gm::GeometryProperty* gp = te::da::GetFirstGeomProperty(schema.get());
 

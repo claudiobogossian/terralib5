@@ -62,6 +62,8 @@ namespace te
 
           virtual void getHelpInformations(QString& ns, QString& helpFile);
 
+          virtual void setApplicationController(te::qt::af::ApplicationController* app);
+
         protected slots:
 
           void currentToolbarChanged(int idx);

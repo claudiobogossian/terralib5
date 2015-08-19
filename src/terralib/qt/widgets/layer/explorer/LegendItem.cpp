@@ -1,164 +1,122 @@
-/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
-
-    This file is part of the TerraLib - a Framework for building GIS enabled applications.
-
-    TerraLib is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License as published by
-    the Free Software Foundation, either version 3 of the License,
-    or (at your option) any later version.
-
-    TerraLib is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License for more details.
-
-    You should have received a copy of the GNU Lesser General Public License
-    along with TerraLib. See COPYING. If not, write to
-    TerraLib Team at <terralib-team@terralib.org>.
- */
-
-/*!
-  \file terralib/qt/widgets/layer/explorer/LegendItem.cpp
-
-  \brief ???
-*/
-
-// TerraLib
-#include "../../../../common/Translator.h"
-#include "../../../../se/Description.h"
-#include "../../../../se/Rule.h"
-#include "../../se/SymbologyPreview.h"
-#include "../../Exception.h"
 #include "LegendItem.h"
 
-// Qt
-#include <QMenu>
-#include <QPixmap>
-#include <QWidget>
+// TerraLib
+#include "../../canvas/Canvas.h"
+#include "../../canvas/MapDisplay.h"
+#include "../../../../geometry/LineString.h"
+#include "../../../../geometry/Point.h"
+#include "../../../../geometry/Polygon.h"
+#include "../../../../maptools/CanvasConfigurer.h"
+#include "../../../../se/Description.h"
+#include "../../../../se/FeatureTypeStyle.h"
+#include "../../../../se/Rule.h"
+#include "../../../../se/Symbolizer.h"
 
-te::qt::widgets::LegendItem::LegendItem(const te::se::Rule* rule, QObject* parent)
-  : AbstractTreeItem(parent),
-    m_rule(rule),
-    m_isCheckable(false),
-    m_isChecked(false)
+// Qt
+#include <QObject>
+
+
+te::gm::Geometry* GetGeometry(const te::se::Symbolizer* s)
 {
+  if(s->getType() == "PointSymbolizer")
+    return new te::gm::Point(10, 10);
+
+  if(s->getType() == "LineSymbolizer")
+  {
+    te::gm::LineString* gm = new te::gm::LineString(4, te::gm::LineStringType);
+
+    gm->setPoint(0, 0, 15);
+    gm->setPoint(1, 6, 6);
+    gm->setPoint(2, 12, 15);
+    gm->setPoint(3, 18, 6);
+
+    return gm;
+  }
+
+  te::gm::Polygon* gm = new te::gm::Polygon(1, te::gm::PolygonType);
+  te::gm::LinearRing* ring = new te::gm::LinearRing(5, te::gm::LineStringType);
+
+  ring->setPoint(0, 2, 18);
+  ring->setPoint(1, 2, 2);
+  ring->setPoint(2, 18, 2);
+  ring->setPoint(3, 18, 18);
+  ring->setPoint(4, 2, 18);
+
+  gm->setRingN(0, ring);
+
+  return gm;
+}
+
+QIcon GetIcon(const std::vector<te::se::Symbolizer*>& symbolizers)
+{
+  te::qt::widgets::Canvas canvas(20, 20);
+
+  // create a canvas configurer
+  te::map::CanvasConfigurer cc(&canvas);
+
+  // number of rules defined on feature type style
+  std::size_t nSymbolizers = symbolizers.size();
+
+  for(std::size_t j = 0; j < nSymbolizers; ++j) // for each <Symbolizer>
+  {
+    // the current symbolizer
+    te::se::Symbolizer* symb = symbolizers[j];
+
+    // let's config de canvas based on the current symbolizer
+    cc.config(symb);
+
+    if(symb->getType() == "RasterSymbolizer")
+      return QIcon::fromTheme("raster-symbolizer");
+  
+    std::auto_ptr<te::gm::Geometry> gm(GetGeometry(symb));
+
+    canvas.draw(gm.get());
+  } // end for each <Symbolizer>
+
+  return QIcon(*canvas.getPixmap());
+}
+
+QIcon GetIcon(const te::se::Rule* rule)
+{
+  return GetIcon(rule->getSymbolizers());
+}
+
+te::qt::widgets::LegendItem::LegendItem(const te::se::Rule* rule) :
+TreeItem("LEGEND")
+{
+  m_icon = GetIcon(rule);
+
+  if(rule->getDescription())
+    m_label = rule->getDescription()->getTitle();
+
+  if(rule->getName())
+    m_label = *rule->getName();
+
+  m_label = QObject::tr("Style").toStdString();
+}
+
+te::qt::widgets::LegendItem::LegendItem(const std::string& label, const std::vector<te::se::Symbolizer*>& symbolizers):
+TreeItem("LEGEND"),
+m_label(label)
+{
+  m_icon = GetIcon(symbolizers);
 }
 
 te::qt::widgets::LegendItem::~LegendItem()
 {
 }
 
-int te::qt::widgets::LegendItem::columnCount() const
+std::string te::qt::widgets::LegendItem::getAsString() const
 {
-  return 1;
+  return m_label;
 }
 
-QVariant te::qt::widgets::LegendItem::data(int column, int role) const
+Qt::ItemFlags te::qt::widgets::LegendItem::flags()
 {
-  if(role == Qt::DecorationRole && column == 0)
-  {
-    return QVariant(QIcon(SymbologyPreview::build(m_rule, QSize(16, 16))));
-  }
-
-  if(role == Qt::DisplayRole)
-  {
-    if(column == 0)
-    {
-      if(m_rule->getDescription())
-        return QVariant(QString::fromStdString(m_rule->getDescription()->getTitle()));
-
-      if(m_rule->getName())
-        return QVariant(QString::fromStdString(*(m_rule->getName())));
-
-      return QVariant(QString(tr("Style")));
-    }
-  }
-
-  if(role == Qt::CheckStateRole && m_isCheckable && column == 0)
-    return QVariant(m_isChecked ? Qt::Checked : Qt::Unchecked);
-
-  //if(role == Qt::CheckStateRole)
-  //  return QVariant(m_layer->getVisibility() == te::map::VISIBLE ? Qt::Checked : Qt::Unchecked);
-
-  return QVariant();
+  return Qt::ItemIsDropEnabled | Qt::ItemIsEnabled;
 }
 
-QMenu* te::qt::widgets::LegendItem::getMenu(QWidget* /*parent*/) const
+QIcon te::qt::widgets::LegendItem::getIcon() const
 {
-  //QMenu* m = new QMenu(parent);
-
-  //QAction* aOpenDataSource = m->addAction(tr("&Open data source"));
-
-  //connect(aOpenDataSource, SIGNAL(triggered()), this, SLOT(openDataSource()));
-
-  //return m;
-  return 0;
-}
-
-bool te::qt::widgets::LegendItem::canFetchMore() const
-{
-  return false;
-}
-
-Qt::ItemFlags te::qt::widgets::LegendItem::flags() const
-{
-  return (m_isCheckable ? (Qt::ItemIsEnabled | Qt::ItemIsUserCheckable) : Qt::ItemIsEnabled);
-}
-
-void te::qt::widgets::LegendItem::fetchMore()
-{
-}
-
-bool te::qt::widgets::LegendItem::hasChildren() const
-{
-  return false;
-}
-
-bool te::qt::widgets::LegendItem::setData(int column, const QVariant& value, int role)
-{
-  if(role == Qt::CheckStateRole && m_isCheckable)
-  {
-    bool ok = false;
-    Qt::CheckState checkState = static_cast<Qt::CheckState>(value.toInt(&ok));
-    
-    if(!ok)
-      return false;
-
-    m_isChecked = (checkState == Qt::Checked ? true : false);
-  }
-
-  //if(role == Qt::CheckStateRole)
-  //{
-  //  bool vis = value.toBool();
-
-  //  m_layer->setVisibility(vis ? te::map::VISIBLE : te::map::NOT_VISIBLE);
-  //  return true;
-  //}
-
-  return false;
-}
-
-te::map::AbstractLayerPtr te::qt::widgets::LegendItem::getLayer() const
-{
-  return te::map::AbstractLayerPtr(0);
-}
-
-const std::string te::qt::widgets::LegendItem::getItemType() const
-{
-  return "LEGEND_ITEM";
-}
-
-//te::qt::widgets::AbstractTreeItem* te::qt::widgets::LegendItem::clone(QObject* parent)
-//{
-//  return new LegendItem(m_rule, parent);
-//}
-
-void te::qt::widgets::LegendItem::setCheckable(bool checkable)
-{
-  m_isCheckable = checkable;
-}
-
-bool te::qt::widgets::LegendItem::getCheckable()
-{
-  return m_isCheckable;
+  return m_icon;
 }

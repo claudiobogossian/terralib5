@@ -52,7 +52,7 @@
 #include <string>
 
 te::edit::VertexTool::VertexTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent)
-  : AbstractTool(display, parent),
+  : GeometriesUpdateTool(display, layer.get(), parent),
     m_layer(layer),
     m_feature(0),
     m_currentStage(FEATURE_SELECTION)
@@ -417,5 +417,6 @@ void te::edit::VertexTool::updateCursor()
 void te::edit::VertexTool::storeEditedFeature()
 {
   RepositoryManager::getInstance().addGeometry(m_layer->getId(), m_feature->getId()->clone(), dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone()), te::edit::GEOMETRY_UPDATE);
+  emit geometriesEdited();
 
 }

@@ -50,7 +50,7 @@ te::qt::plugins::rp::ClippingAction::~ClippingAction()
 
 void te::qt::plugins::rp::ClippingAction::onActionActivated(bool checked)
 {
-  te::qt::widgets::ClippingWizard dlg(te::qt::af::ApplicationController::getInstance().getMainWindow());
+  te::qt::widgets::ClippingWizard dlg(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
 
   std::list<te::map::AbstractLayerPtr> layersList = getLayers();
 
@@ -71,7 +71,7 @@ void te::qt::plugins::rp::ClippingAction::onPopUpActionActivated(bool checked)
 
   if(layer.get())
   {
-    te::qt::widgets::ClippingWizard dlg(te::qt::af::ApplicationController::getInstance().getMainWindow());
+    te::qt::widgets::ClippingWizard dlg(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
 
     dlg.setLayer(layer);
 
@@ -85,6 +85,6 @@ void te::qt::plugins::rp::ClippingAction::onPopUpActionActivated(bool checked)
   }
   else
   {
-    QMessageBox::warning(te::qt::af::ApplicationController::getInstance().getMainWindow(), tr("Warning"), tr("The layer selected is invalid or does not have an raster representation."));
+    QMessageBox::warning(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow(), tr("Warning"), tr("The layer selected is invalid or does not have an raster representation."));
   }
 }

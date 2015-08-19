@@ -29,7 +29,7 @@
 // TerraLib
 #include "../../../geometry/Coord2D.h"
 #include "../../../maptools/AbstractLayer.h"
-#include "../../../qt/widgets/tools/AbstractTool.h"
+#include "GeometriesUpdateTool.h"
 #include "../Config.h"
 
 // STL
@@ -57,7 +57,7 @@ namespace te
 
       \brief This class implements a concrete tool to create polygons.
     */
-    class TEEDITQTEXPORT CreatePolygonTool : public te::qt::widgets::AbstractTool
+    class TEEDITQTEXPORT CreatePolygonTool : public GeometriesUpdateTool
     {
       Q_OBJECT
 

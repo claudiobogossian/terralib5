@@ -48,7 +48,7 @@
 #include <memory>
 
 te::edit::CreateLineTool::CreateLineTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, QObject* parent)
-: AbstractTool(display, parent),
+  : GeometriesUpdateTool(display, layer.get(), parent),
   m_layer(layer),
   m_continuousMode(false),
   m_isFinished(false)
@@ -190,6 +190,7 @@ te::gm::Geometry* te::edit::CreateLineTool::buildLine()
 void te::edit::CreateLineTool::storeNewGeometry()
 {
   RepositoryManager::getInstance().addGeometry(m_layer->getId(), buildLine(), te::edit::GEOMETRY_CREATE);
+  emit geometriesEdited();
 }
 
 void te::edit::CreateLineTool::onExtentChanged()

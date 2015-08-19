@@ -28,7 +28,7 @@
 
 #include "../../../maptools/Enums.h"
 #include "../../../maptools/AbstractLayer.h"
-#include "../../widgets/layer/explorer/AbstractTreeItem.h"
+//#include "../../widgets/layer/explorer/AbstractTreeItem.h"
 #include "Event.h"
 #include "Enums.h"
 
@@ -87,21 +87,21 @@ namespace te
 
           \brief This event signals that a item belonging to a layer will be removed from the layer explorer.
          */
-        struct ItemOfLayerRemoved : public Event
-        {
-          /*!
-            \brief Constructor.
+        //struct ItemOfLayerRemoved : public Event
+        //{
+        //  /*!
+        //    \brief Constructor.
 
-            \param item Item belonging to a layer to be removed from the layer explorer.
-          */
-          ItemOfLayerRemoved(te::qt::widgets::AbstractTreeItem* item)
-            : Event(ITEM_OF_LAYER_REMOVED),
-              m_item(item)
-          {
-          }
+        //    \param item Item belonging to a layer to be removed from the layer explorer.
+        //  */
+        //  ItemOfLayerRemoved(te::qt::widgets::AbstractTreeItem* item)
+        //    : Event(ITEM_OF_LAYER_REMOVED),
+        //      m_item(item)
+        //  {
+        //  }
 
-          te::qt::widgets::AbstractTreeItem* m_item;  //!< Item of the layer to be removed.
-        };
+        //  te::qt::widgets::AbstractTreeItem* m_item;  //!< Item of the layer to be removed.
+        //};
 
         /*!
           \struct LayerRemoved
@@ -115,13 +115,13 @@ namespace te
 
             \param layer Layer to be removed.
           */
-          LayerRemoved(te::map::AbstractLayerPtr layer)
+          LayerRemoved(const std::list<te::map::AbstractLayerPtr>& layers)
             : Event(LAYER_REMOVED),
-              m_layer(layer)
+              m_layers(layers)
           {
           }
 
-          te::map::AbstractLayerPtr m_layer;  //!< Layer removed.
+          std::list<te::map::AbstractLayerPtr> m_layers;  //!< Layer removed.
         };
 
         /*!
@@ -138,15 +138,10 @@ namespace te
 
             \param visibility The new visibility state: VISIBLE, NOT_VISIBLE, PARTIALLY_VISIBLE.
           */
-          LayerVisibilityChanged(te::map::AbstractLayerPtr layer, te::map::Visibility visibility)
-            : Event(LAYER_VISIBILITY_CHANGED),
-              m_layer(layer),
-              m_visibility(visibility)
+          LayerVisibilityChanged()
+            : Event(LAYER_VISIBILITY_CHANGED)
           {
           }
-
-          te::map::AbstractLayerPtr m_layer;     //!< Layer whose visibility has changed.
-          te::map::Visibility m_visibility;      //!< Layer visibility.
         };
 
         /*!
@@ -306,6 +301,15 @@ namespace te
           }
   
           te::map::AbstractLayerPtr m_layer;  //!< Layer selected.
+        };
+
+        struct GetAvailableLayers: public Event
+        {
+          GetAvailableLayers(): Event(GET_AVAILABLE_LAYERS)
+          {
+          }
+
+          std::list<te::map::AbstractLayerPtr> m_layers;
         };
       }
     }

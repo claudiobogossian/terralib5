@@ -41,10 +41,10 @@
 //#include <boost/noncopyable.hpp>
 
 // Qt
-#include <QtCore/QObject>
-#include <QtCore/QStringList>
-#include <QtCore/QSettings>
-#include <QtGui/QColor>
+#include <QObject>
+#include <QStringList>
+#include <QSettings>
+#include <QColor>
 
 // Forward declarations
 class QAction;
@@ -60,13 +60,20 @@ namespace te
   {
     namespace af
     {
-      class Project;
+//      class Project;
 
       namespace evt
       {
       // Forward declarations
         struct Event;
       }
+
+      enum ListenerType
+      {
+        SENDER,
+        RECEIVER,
+        BOTH
+      };
 
       /*!
         \class ApplicationController
@@ -77,7 +84,7 @@ namespace te
 
         \ingroup af
       */
-      class TEQTAFEXPORT ApplicationController : public QObject, public te::common::Singleton<ApplicationController>
+      class TEQTAFEXPORT ApplicationController : public QObject//, public te::common::Singleton<ApplicationController>
       {
         Q_OBJECT
 
@@ -265,7 +272,7 @@ namespace te
 
             \note If the \a obj was previously registered, nothing will be done.
           */
-          void addListener(QObject* obj);
+          void addListener(QObject* obj, const ListenerType& type = BOTH);
 
           /*!
             \brief Remove the \a obj from the list of event listeners.
@@ -327,7 +334,7 @@ namespace te
             \param prj Pointer to a current project.
 
           */
-          void set(te::qt::af::Project* prj);
+//          void set(te::qt::af::Project* prj);
 
           /*!
             \brief Get the current project.
@@ -335,7 +342,7 @@ namespace te
             \return Pointer to a current project if defined or a null pointer in other case.
 
           */
-          te::qt::af::Project* getProject();
+//          te::qt::af::Project* getProject();
 
           /*!
             \brief Finalize the application framework.
@@ -360,7 +367,7 @@ namespace te
 
             \param evt Event to be sent.
           */
-          void broadcast(te::qt::af::evt::Event* evt);
+//          void broadcast(te::qt::af::evt::Event* evt);
 
         signals:
 
@@ -475,16 +482,17 @@ namespace te
 
           bool m_initialized;                         //!< A flag indicating if the controller is initialized.
 
-          Project* m_project;                         //!< Pointer to current project.
+//          Project* m_project;                         //!< Pointer to current project.
 
           QSettings m_appSettings;
 
           bool m_resetTerralib;
 
-// Singleton instance
-//          static ApplicationController* sm_instance;  //!< There can be only one object of class Application.
       };
 
+      class TEQTAFEXPORT AppCtrlSingleton: public te::common::Singleton<ApplicationController>
+      {
+      };
     } // end namespace af
   }   // end namespace qt
 }     // end namespace te

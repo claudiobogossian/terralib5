@@ -55,7 +55,7 @@
 #include <QMessageBox>
 
 te::edit::CreatePolygonTool::CreatePolygonTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, QObject* parent)
-: AbstractTool(display, parent),
+  : GeometriesUpdateTool(display, layer.get(), parent),
     m_layer(layer),
     m_feature(0),
     m_continuousMode(false),
@@ -250,6 +250,7 @@ te::gm::Geometry* te::edit::CreatePolygonTool::buildLine()
 void te::edit::CreatePolygonTool::storeNewGeometry()
 {
   RepositoryManager::getInstance().addGeometry(m_layer->getId(), buildPolygon(),te::edit::GEOMETRY_CREATE);
+  emit geometriesEdited();
 }
 
 void te::edit::CreatePolygonTool::onExtentChanged()

@@ -47,7 +47,7 @@ te::qt::plugins::rp::FusionAction::~FusionAction()
 
 void te::qt::plugins::rp::FusionAction::onActionActivated(bool checked)
 {
-  te::qt::widgets::FusionWizard dlg(te::qt::af::ApplicationController::getInstance().getMainWindow());
+  te::qt::widgets::FusionWizard dlg(te::qt::af::AppCtrlSingleton::getInstance().getMainWindow());
 
   std::list<te::map::AbstractLayerPtr> layersList = getLayers();
 

@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../../../common/URL.h"
 #include "../../../geometry/serialization/xml/Serializer.h"
 #include "../../../maptools/serialization/xml/Utils.h"
 #include "../../../se/serialization/xml/Style.h"
@@ -60,6 +61,9 @@ te::map::AbstractLayer* te::wms::serialize::LayerReader(te::xml::Reader& reader)
   assert(reader.getElementLocalName() == "DataSetName");
   reader.next();
   assert(reader.getNodeType() == te::xml::VALUE);
+
+
+//  url.setEncodedString(reader.getElementValue());
   std::string dataset = reader.getElementValue();
   reader.next();
   assert(reader.getNodeType() == te::xml::END_ELEMENT);

@@ -21,12 +21,13 @@ void GetFactoriesNames (QVector<QString>& facNames)
     facNames.append(it->first.c_str());
 }
 
-QWidget* GetWidget(const QString& facName, QWidget* parent)
+QWidget* GetWidget(const QString& facName, QWidget* parent, te::qt::af::ApplicationController* app)
 {
   QScrollArea* scr = new QScrollArea(parent);
   std::string value = facName.toStdString();
 
-  QWidget* wid = te::qt::af::SettingsWidgetsFactory::make(value, scr);
+  te::qt::af::AbstractSettingWidget* wid = te::qt::af::SettingsWidgetsFactory::make(value, scr);
+  wid->setApplicationController(app);
 
   QGridLayout* lay = new QGridLayout(scr);
 
@@ -40,29 +41,16 @@ QWidget* GetWidget(const QString& facName, QWidget* parent)
 
 te::qt::af::SettingsDialog::SettingsDialog(QWidget* parent) :
 QDialog(parent),
+m_app(0),
 m_ui(new Ui::SettingsDialogForm)
 {
   m_ui->setupUi(this);
-
-  DisplayWidgetFactory::initialize();
-  TableWidgetFactory::initialize();
-  ProjectWidgetFactory::initialize();
-  ToolbarsWidgetFactory::initialize();
-  GeneralConfigWidgetFactory::initialize();
-
-  QVector<QString> facNames;
-  QVector<QString>::Iterator it;
-
-  GetFactoriesNames(facNames);
-
-  for(it = facNames.begin(); it != facNames.end(); ++it)
-    m_ui->m_settingsListView->addItem(*it);
 
   // Signal/Slots connections
   connect (m_ui->m_closePushButton, SIGNAL(pressed()), SLOT(close()));
   connect (m_ui->m_settingsListView, SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)), SLOT(settingsChanged (QListWidgetItem*, QListWidgetItem*)));
 
-  m_ui->m_settingsListView->setCurrentRow(0);
+
 }
 
 te::qt::af::SettingsDialog::~SettingsDialog()
@@ -76,6 +64,27 @@ te::qt::af::SettingsDialog::~SettingsDialog()
   delete m_ui;
 }
 
+void te::qt::af::SettingsDialog::setApplicationController(te::qt::af::ApplicationController* app)
+{
+  m_app = app;
+
+  DisplayWidgetFactory::initialize();
+  TableWidgetFactory::initialize();
+  ProjectWidgetFactory::initialize();
+  ToolbarsWidgetFactory::initialize();
+  GeneralConfigWidgetFactory::initialize();
+
+  QVector<QString> facNames;
+  QVector<QString>::Iterator it;
+
+  GetFactoriesNames(facNames);
+
+  for (it = facNames.begin(); it != facNames.end(); ++it)
+    m_ui->m_settingsListView->addItem(*it);
+
+  m_ui->m_settingsListView->setCurrentRow(0);
+}
+
 void te::qt::af::SettingsDialog::settingsChanged (QListWidgetItem* current, QListWidgetItem* previous)
 {
   QString sett = current->text();
@@ -83,7 +92,7 @@ void te::qt::af::SettingsDialog::settingsChanged (QListWidgetItem* current, QLis
 
   if(m_widPos.find(sett) == m_widPos.end())
   {
-    QWidget* wid = GetWidget(sett, this);
+    QWidget* wid = GetWidget(sett, this, m_app);
     pos =  m_ui->m_widgetStack->addWidget(wid);
 
     m_widPos[sett] = pos;

@@ -32,4 +32,11 @@
 // TerraView
 #include "terraview_config.h"
 
+/*!
+  \def TERRALIB_APPLICATION_CONFIG_FILE
+
+  \brief The file that contains the application plugins.
+*/
+#define TERRAVIEW_APPLICATION_CONFIG_FILE "share/terraview/config/config.xml"
+
 #endif // __TERRAVIEW_INTERNAL_CONFIG_H
