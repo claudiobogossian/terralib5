@@ -22,18 +22,28 @@
 #include "../View.h"
 #include "../Scene.h"
 #include "../../../../geometry/Point.h"
-#include "../../item/LineItem.h"
 #include "../../../core/pattern/mvc/AbstractItemView.h"
+#include "../BuildGraphicsItem.h"
+#include "../../../core/AbstractBuildGraphicsItem.h"
+#include "../../../core/enum/Enums.h"
+#include "../../../core/enum/EnumObjectType.h"
+#include "../../../core/enum/EnumType.h"
+#include "../../../core/pattern/singleton/Context.h"
+#include "../../../core/pattern/mvc/AbstractItemModel.h"
 
 // Qt
 #include <QtGui/QMouseEvent>
 #include <QtGui/QPainter>
+#include "../../item/AbstractItem.h"
+#include "../src/gui/graphicsview/qgraphicsitem.h"
 
 te::layout::CreateLineItemTool::CreateLineItemTool(View* view, QObject* parent) 
   : AbstractLayoutTool(view, parent),
   m_model(NULL),
   m_item(NULL)
 {
+  EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
+  m_type = enumObj->getLineItem();
   setCursor(Qt::ArrowCursor);
 }
 
@@ -57,9 +67,9 @@ bool te::layout::CreateLineItemTool::mousePressEvent(QMouseEvent* e)
   if (!scne)
     return false;
 
-  QPointF scenePos = m_view->mapToScene(e->pos());
-  createItem(scenePos, scne);
+  createItem();
 
+  QPointF scenePos = m_view->mapToScene(e->pos());
   //QPointF itemPos = m_item->mapFromScene(scenePos);
   te::gm::Point p(scenePos.x(), scenePos.y());
   m_coords.push_back(p);
@@ -117,12 +127,13 @@ void te::layout::CreateLineItemTool::setGeometry()
   m_model->setProperty(property);
 }
 
-void te::layout::CreateLineItemTool::createItem( QPointF &scenePos, Scene* scne )
+void te::layout::CreateLineItemTool::createItem()
 {
   if (m_coords.empty())
   {
-    te::gm::Coord2D coord(scenePos.x(), scenePos.y());
-    m_item = scne->createItem(coord);
+    AbstractBuildGraphicsItem* abstractBuild = Context::getInstance().getAbstractBuildGraphicsItem();
+    BuildGraphicsItem* build = dynamic_cast<BuildGraphicsItem*>(abstractBuild);
+    m_item = build->createItem(m_type);
     AbstractItem<QGraphicsItem> * itemView = dynamic_cast<AbstractItem<QGraphicsItem> *> (m_item);
     m_model = itemView->getController()->getModel();
   }

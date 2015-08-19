@@ -59,8 +59,6 @@ te::layout::EnumModeType::EnumModeType() :
   m_modeCreateLegendChild(0),
   m_modeLegendChildAsObject(0),
   m_inspectorCurrentItemChanged(0),
-  m_modeCreateLineItem(0),
-  m_modeCreatePolygonItem(0),
   m_modeCreateBalloon(0),
   m_modeCreateBarCode(0),
   m_modeCreateGridMap(0),
@@ -222,17 +220,6 @@ te::layout::EnumModeType::~EnumModeType()
     delete m_inspectorCurrentItemChanged;
     m_inspectorCurrentItemChanged = 0;
   }
-  if(m_modeCreateLineItem)
-  {
-    delete m_modeCreateLineItem;
-    m_modeCreateLineItem = 0;
-  }
-    
-  if(m_modeCreatePolygonItem)
-  {
-    delete m_modeCreatePolygonItem;
-    m_modeCreatePolygonItem = 0;
-  }
 
   if(m_modeCreateBalloon)
   {
@@ -372,12 +359,6 @@ void te::layout::EnumModeType::init()
 
   m_inspectorCurrentItemChanged = createEnum("InspectorItemChanged", this, "Inspector Item Changed");
   m_inspectorCurrentItemChanged->setType(te::layout::EnumAction);
-
-  m_modeCreateLineItem = createEnum("Create Line Item", this, "Create Line Item"); 
-  m_modeCreateLineItem->setType(te::layout::EnumCreate);
-
-  m_modeCreatePolygonItem = createEnum("Create Polygon Item", this, "Create Polygon Item"); 
-  m_modeCreatePolygonItem->setType(te::layout::EnumCreate);
 
   m_modeCreateBalloon = createEnum("Create Balloon", this, "Create Balloon"); 
   m_modeCreateBalloon->setType(te::layout::EnumCreate);
@@ -553,16 +534,6 @@ te::layout::EnumType* te::layout::EnumModeType::getModeLegendChildAsObject() con
 te::layout::EnumType* te::layout::EnumModeType::getModeInspectorCurrentItemChanged() const
 {
   return m_inspectorCurrentItemChanged;
-}
-
-te::layout::EnumType* te::layout::EnumModeType::getModeCreateLineItem() const
-{
-  return m_modeCreateLineItem;
-}
-
-te::layout::EnumType* te::layout::EnumModeType::getModeCreatePolygonItem() const
-{
-  return m_modeCreatePolygonItem;
 }
 
 te::layout::EnumType* te::layout::EnumModeType::getModeCreateBalloon() const

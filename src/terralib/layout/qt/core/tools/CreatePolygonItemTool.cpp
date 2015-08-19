@@ -19,10 +19,16 @@
 
 // TerraLib
 #include "CreatePolygonItemTool.h"
+#include "../../../core/enum/Enums.h"
+#include "../../../core/enum/EnumObjectType.h"
+#include "../../../core/enum/EnumType.h"
+#include "../../../core/pattern/singleton/Context.h"
 
 te::layout::CreatePolygonItemTool::CreatePolygonItemTool(View* view, QObject* parent) 
   : CreateLineItemTool(view, parent)
 {
+  EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
+  m_type = enumObj->getPolygonItem();
 }
 
 te::layout::CreatePolygonItemTool::~CreatePolygonItemTool()

@@ -148,6 +148,8 @@ void te::layout::ToolbarController::onGeometryTriggered(QAction* action)
 
   EnumModeType* type = Enums::getInstance().getEnumModeType();
 
+  View* viewport = getScene()->getView();
+
   if (action->objectName().compare(toolbar->getActionRectangle().c_str()) == 0)
   {
     toolbar->changeAction(type->getModeCreateRectangle());
@@ -166,11 +168,11 @@ void te::layout::ToolbarController::onGeometryTriggered(QAction* action)
   }
   else if (action->objectName().compare(toolbar->getActionLine().c_str()) == 0)
   {
-    toolbar->changeAction(type->getModeCreateLineItem());
+    viewport->createLineItem();
   }
   else if (action->objectName().compare(toolbar->getActionPolygon().c_str()) == 0)
   {
-    toolbar->changeAction(type->getModeCreatePolygonItem());
+    viewport->createPolygonItem();
   }
   else if (action->objectName().compare(toolbar->getActionSVG().c_str()) == 0)
   {

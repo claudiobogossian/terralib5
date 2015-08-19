@@ -67,7 +67,7 @@ namespace te
           \return enum value      
         */
         virtual EnumType* getModeNone() const;
-								
+                
         /*!
           \brief Returns value that represents map pan mode type belonging to enumeration.
       
@@ -123,14 +123,14 @@ namespace te
           \return enum value      
         */
         virtual EnumType* getModeCreateItemGroup() const;
-				
+        
         /*!
           \brief Returns value that represents create scale mode type belonging to enumeration.
       
           \return enum value      
         */
         virtual EnumType* getModeCreateScale() const;
-								
+                
         /*!
           \brief Returns value that represents printer mode type belonging to enumeration.
       
@@ -144,7 +144,7 @@ namespace te
           \return enum value      
         */
         virtual EnumType* getModeCreateImage() const;
-				
+        
         /*!
           \brief Returns value that represents systematic scale mode type belonging to enumeration.
       
@@ -249,7 +249,7 @@ namespace te
           \return enum value      
         */
         virtual EnumType* getModeRedo() const;
-				
+        
         /*!
           \brief Returns value that represents create legend child mode type belonging to enumeration.
       
@@ -263,28 +263,14 @@ namespace te
           \return enum value      
         */
         virtual EnumType* getModeLegendChildAsObject() const;
-				
+        
         /*!
           \brief Returns value that represents object inspector current item changed type belonging to enumeration.
       
           \return enum value      
         */
         virtual EnumType* getModeInspectorCurrentItemChanged() const;
-				
-        /*!
-          \brief Returns value that represents create line mode type belonging to enumeration.
-      
-          \return enum value      
-        */
-        virtual EnumType* getModeCreateLineItem() const; 
-
-        /*!
-          \brief Returns value that represents create polygon mode type belonging to enumeration.
-      
-          \return enum value      
-        */
-        virtual EnumType* getModeCreatePolygonItem() const; 
-
+        
         /*!
           \brief Returns value that represents create balloon mode type belonging to enumeration.
       
@@ -348,12 +334,12 @@ namespace te
         */
         virtual EnumType* getModeTextEditorInteraction() const;
 
-				/*!
-				\brief Returns value that represents arrow mode type belonging to enumeration.
+        /*!
+        \brief Returns value that represents arrow mode type belonging to enumeration.
 
-				\return enum value
-				*/
-				virtual EnumType* getModeArrowCursor() const;
+        \return enum value
+        */
+        virtual EnumType* getModeArrowCursor() const;
 
       protected:
 
@@ -394,8 +380,6 @@ namespace te
         EnumType* m_modeCreateLegendChild; //!< value that represents create legend child mode type belonging to enumeration
         EnumType* m_modeLegendChildAsObject; //!< value that represents legend child as object (vectorize) mode type belonging to enumeration
         EnumType* m_inspectorCurrentItemChanged;//!< value that represents object inspector current item changed type belonging to enumeration
-        EnumType* m_modeCreateLineItem; //!< value that represents create line mode type belonging to enumeration
-        EnumType* m_modeCreatePolygonItem; //!< value that represents create polygon mode type belonging to enumeration
         EnumType* m_modeCreateBalloon; //!< value that represents create balloon mode type belonging to enumeration
         EnumType* m_modeCreateBarCode; //!< value that represents create barcode mode type belonging to enumeration
         EnumType* m_modeCreateGridMap; //!< value that represents create gridmap mode type belonging to enumeration
@@ -406,7 +390,7 @@ namespace te
         EnumType* m_modeCreateMapLocation; //!< value that represents create map location mode type belonging to enumeration
         EnumType* m_modeCreateSVG; //!< value that represents create SVG type belonging to enumeration
         EnumType* m_modeTextEditorInteraction; //!< value that represents text editor type belonging to enumeration
-				EnumType* m_modeArrowCursor; //!< value that represents arrow mode type belonging to enumeration
+        EnumType* m_modeArrowCursor; //!< value that represents arrow mode type belonging to enumeration
     };
   }
 }

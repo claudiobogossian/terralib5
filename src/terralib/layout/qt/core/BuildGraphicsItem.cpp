@@ -216,14 +216,6 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createItem( te::layout::EnumType* 
   {
     item = createItem(enumObj->getLegendChildItem(), draw);
   }
-  else if (mode == enumMode->getModeCreateLineItem()) 
-  {
-    item = createItem(enumObj->getLineItem(), draw);
-  }
-  else if (mode == enumMode->getModeCreatePolygonItem()) 
-  {
-    item = createItem(enumObj->getPolygonItem(), draw);
-  }
   else if (mode == enumMode->getModeCreateSVG()) 
   {
     item = createItem(enumObj->getSVGItem(), draw);

@@ -164,7 +164,7 @@ void te::layout::View::mousePressEvent( QMouseEvent * event )
 
   QGraphicsItem* it = 0;
 
-  if(getCurrentMode()->getType() == te::layout::EnumCreate && (getCurrentMode() != mode->getModeCreateLineItem() || getCurrentMode() != mode->getModeCreatePolygonItem()))
+  if(getCurrentMode()->getType() == te::layout::EnumCreate)
   {
     it = sc->createItem(coord);
   }
@@ -498,14 +498,6 @@ void te::layout::View::changeMode( EnumType* newMode )
   else if(mode == enumMode->getModeLegendChildAsObject()) 
   {
 
-  }
-  else if(mode == enumMode->getModeCreateLineItem())
-  {
-    createLineItem();
-  }
-  else if(mode == enumMode->getModeCreatePolygonItem())
-  {
-    createPolygonItem();
   }
 
   Scene* sce = dynamic_cast<Scene*>(scene());

@@ -42,8 +42,8 @@ namespace te
   {
 // Forward declarations
     class View;
-    class Scene;
     class AbstractItemModel;
+    class EnumType;
 
       /*!
         \class CreateLineItemTool
@@ -79,7 +79,7 @@ namespace te
 
           bool mousePressEvent(QMouseEvent* e);
 
-          void createItem( QPointF &scenePos, Scene* scne );
+          void createItem();
 
           bool mouseMoveEvent(QMouseEvent* e);
 
@@ -96,6 +96,7 @@ namespace te
 
           AbstractItemModel* m_model;
           QGraphicsItem* m_item;
+          EnumType* m_type;
       };
 
   }   // end namespace layout
