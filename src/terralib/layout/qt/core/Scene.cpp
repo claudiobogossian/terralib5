@@ -62,6 +62,7 @@
 #include <QStyleOptionGraphicsItem>
 #include <QPrinter>
 #include <QGraphicsTextItem>
+#include <QGraphicsSceneMouseEvent>
 
 te::layout::Scene::Scene( QObject* object): 
   QGraphicsScene(object),
@@ -185,13 +186,7 @@ void te::layout::Scene::insertItem(QGraphicsItem* item)
 
   item->setZValue(total);
 	this->addItem(item); 
-
-  QGraphicsObject* qObj = dynamic_cast<QGraphicsObject*>(item);
-  if(qObj)
-  {
-    qObj->installEventFilter(this);
-  }
-
+	
 	abstractItem->refresh();
 
   removeItemStackWithoutScene(item);
@@ -637,69 +632,47 @@ void te::layout::Scene::exportItemsToImage(std::string dir)
   }
 }
 
-bool te::layout::Scene::eventFilter( QObject * watched, QEvent * event )
+void te::layout::Scene::mouseMoveEvent(QGraphicsSceneMouseEvent * mouseEvent)
 {
-  if(event->type() == QEvent::GraphicsSceneMousePress)
-  {
-    QGraphicsItem* item = dynamic_cast<QGraphicsItem*>(watched);
-    if(item)
-    {
-      QList<QGraphicsItem*> its = selectedItems();
-      m_moveWatches.clear();
-      if(its.empty())
-      {
-        QPointF pt = item->scenePos();
-        m_moveWatches[item] = pt;
-      }
-      foreach(QGraphicsItem *item, its) 
-      {
-        QPointF pt = item->scenePos();
-        m_moveWatches[item] = pt;
-      }
-    }
-  }
+	QGraphicsItem* item = mouseGrabberItem();
+	if (item)
+	{
+		m_moveWatched = true;
+	}
+	QGraphicsScene::mouseMoveEvent(mouseEvent);
+}
 
-  if(event->type() == QEvent::GraphicsSceneMouseMove)
-  {
-    QGraphicsItem* item = dynamic_cast<QGraphicsItem*>(watched);
-    if(item)
-    {
-      bool resultFound = false;
-      std::map<QGraphicsItem*, QPointF>::iterator it;
-      for(it = m_moveWatches.begin() ; it != m_moveWatches.end() ; ++it)
-      {
-        if(it->first == item)
-        {
-          resultFound = true;
-        }
-      }
+void te::layout::Scene::mousePressEvent(QGraphicsSceneMouseEvent * mouseEvent)
+{
+	QGraphicsScene::mousePressEvent(mouseEvent);
 
-      if(!resultFound)
-      {
-        m_moveWatches.clear();
-        QPointF pt = item->scenePos();
-        m_moveWatches[item] = pt;
-      }
+	QGraphicsItem* item = mouseGrabberItem();
+	if (item)
+	{
+		QList<QGraphicsItem*> its = selectedItems();
+		m_moveWatches.clear();
+		foreach(QGraphicsItem *item, its)
+		{
+			QPointF pt = item->scenePos();
+			m_moveWatches[item] = pt;
+		}
+	}
+}
 
-      m_moveWatched = true;
-    }
-  }
-
-  if(event->type() == QEvent::GraphicsSceneMouseRelease)
-  {
-    QGraphicsItem* item = dynamic_cast<QGraphicsItem*>(watched);
-    if(item)
-    {
-      if(m_moveWatched)
-      {
-        QUndoCommand* command = new MoveCommand(m_moveWatches);
-        addUndoStack(command);
-        m_moveWatched = false;
-      }
-    }
-  }
-
-  return QGraphicsScene::eventFilter(watched, event);
+void te::layout::Scene::mouseReleaseEvent(QGraphicsSceneMouseEvent * mouseEvent)
+{
+	QGraphicsItem* item = mouseGrabberItem();
+	if (item)
+	{
+		if (m_moveWatched)
+		{
+			QUndoCommand* command = new MoveCommand(m_moveWatches);
+			addUndoStack(command);
+			m_moveWatched = false;
+		}
+	}
+	m_moveWatches.clear();
+	QGraphicsScene::mouseReleaseEvent(mouseEvent);
 }
 
 void te::layout::Scene::selectItem( std::string name )

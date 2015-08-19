@@ -58,6 +58,7 @@ class QGraphicsItemGroup;
 class QPainter;
 class QWidget;
 class QStyleOptionGraphicsItem;
+class QGraphicsSceneMouseEvent;
 
 namespace te
 {
@@ -275,12 +276,7 @@ namespace te
 		  \param dir Full path where the images will be saved
         */
         virtual void exportItemsToImage(std::string dir);
-
-		/*!
-          \brief Reimplemented from QGraphicsScene
-        */
-        virtual bool eventFilter ( QObject * watched, QEvent * event );
-
+				
 		/*!
        \brief Select an item an item by name.
 		  
@@ -397,6 +393,21 @@ namespace te
          void deleteFinalized(std::vector<std::string> names);
         
       protected:
+
+				/*!
+				\brief Reimplemented from QGraphicsScene
+				*/
+				virtual void	mouseMoveEvent(QGraphicsSceneMouseEvent * mouseEvent);
+				
+				/*!
+				\brief Reimplemented from QGraphicsScene
+				*/
+				virtual void	mousePressEvent(QGraphicsSceneMouseEvent * mouseEvent);
+				
+				/*!
+				\brief Reimplemented from QGraphicsScene
+				*/
+				virtual void	mouseReleaseEvent(QGraphicsSceneMouseEvent * mouseEvent);
 
 		/*!
           \brief Method that calculates the transformation matrix of the scene. This matrix will be set in each QGraphicsView class that watches this scene.
