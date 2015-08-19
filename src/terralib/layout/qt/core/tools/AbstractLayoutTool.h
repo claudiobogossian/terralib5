@@ -32,6 +32,7 @@
 
 // Forward declarations
 class QMouseEvent;
+class QKeyEvent;
 
 namespace te
 {
@@ -125,6 +126,8 @@ namespace te
                   It is up to the developer to ensure that the application interprets these events correctly.
           */
           virtual bool mouseDoubleClickEvent(QMouseEvent* e);
+
+          virtual bool keyPressEvent(QKeyEvent* e);
 
           //@}
 

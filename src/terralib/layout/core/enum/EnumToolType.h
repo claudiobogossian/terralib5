@@ -40,38 +40,42 @@ namespace te
 
     /*!
       \brief Class to represent a tool type enumeration. Ex.: zoom area, etc.
-	  
-	    \ingroup layout
+    
+      \ingroup layout
 
-	    \sa te::layout::AbstractEnum
-	  */
-		class TELAYOUTEXPORT EnumToolType : public AbstractEnum
+      \sa te::layout::AbstractEnum
+    */
+    class TELAYOUTEXPORT EnumToolType : public AbstractEnum
     {
       public:
 
         /*!
           \brief Constructor
         */
-				EnumToolType();
+        EnumToolType();
 
         /*!
           \brief Destructor
         */ 
-				virtual ~EnumToolType();
+        virtual ~EnumToolType();
         
-				/*!
-				\brief Returns value that represents none type belonging to enumeration.
+        /*!
+        \brief Returns value that represents none type belonging to enumeration.
 
-				\return enum value
-				*/
-				virtual EnumType* getNoneTool() const;
+        \return enum value
+        */
+        virtual EnumType* getNoneTool() const;
 
         /*!
           \brief Returns value that represents zoom area tool type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getZoomAreaTool() const;
+
+        virtual EnumType* getCreateLineItemTool() const;
+
+        virtual EnumType* getCreatePolygonItemTool() const;
 
       protected:
 
@@ -82,8 +86,10 @@ namespace te
 
       protected:
 
-				EnumType* m_noneTool; //!< value that represents none type belonging to enumeration
+        EnumType* m_noneTool; //!< value that represents none type belonging to enumeration
         EnumType* m_zoomAreaTool; //!< value that represents zoom area type belonging to enumeration
+        EnumType* m_createLineItemTool;
+        EnumType* m_createPolygonItemTool;
     };
   }
 }

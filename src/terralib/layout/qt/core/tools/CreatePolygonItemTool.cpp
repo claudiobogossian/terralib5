@@ -17,60 +17,15 @@
     TerraLib Team at <terralib-team@terralib.org>.
  */
 
-/*!
-  \file WaitView.cpp
-   
-  \brief 
-
-  \ingroup layout
-*/
-
 // TerraLib
-#include "WaitView.h"
-#include "View.h"
+#include "CreatePolygonItemTool.h"
 
-te::layout::WaitView::WaitView()
+te::layout::CreatePolygonItemTool::CreatePolygonItemTool(View* view, QObject* parent) 
+  : CreateLineItemTool(view, parent)
 {
-
 }
 
-te::layout::WaitView::WaitView(View *view) : 
- m_view(view)
+te::layout::CreatePolygonItemTool::~CreatePolygonItemTool()
 {
-
 }
 
-te::layout::WaitView::~WaitView()
-{  
-  
-}
-
-void te::layout::WaitView::addCoord( QPointF point )
-{
-  if(!m_view)
-    return;
-  
-  QPointF poinT = m_view->mapToScene(point.toPoint());
-  te::gm::Point* p = new te::gm::Point(poinT.x(), poinT.y());
-  m_coords.push_back(p);
-  QPoint received(point.x(), point.y());
-  m_points.push_back(received);
-
-  m_view->viewport()->update();
-}
-
-void te::layout::WaitView::clear()
-{
-  m_coords.clear();
-  m_points.clear();
-}
-
-QVector<QPoint> te::layout::WaitView::getCoords()
-{
-  return m_points;
-}
-
-std::vector<te::gm::Point*> te::layout::WaitView::getCoordsW()
-{
-  return m_coords;
-}

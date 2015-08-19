@@ -18,60 +18,29 @@
  */
 
 /*!
-  \file WaitView.h
-   
-  \brief 
+  \file terralib/layout/qt/core/pattern/factory/CreateLineItemToolFactory.cpp
 
-  \ingroup layout
+  \brief This is the concrete factory for zoom area tools.
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_WAIT_VIEW_H
-#define __TERRALIB_LAYOUT_INTERNAL_WAIT_VIEW_H
+// TerraLib
+#include "CreateLineItemToolFactory.h"
+#include "../../../../../core/enum/Enums.h"
+#include "../../../tools/CreateLineItemTool.h"
+#include "../../../View.h"
 
-//TerraLib
-#include "../../core/Config.h"
-#include "../../../geometry/Point.h"
-
-//STL
-#include <vector>
-
-//Qt
-#include <QVector>
-#include <QPoint>
-#include <QPointF>
-
-namespace te
+te::layout::AbstractLayoutTool* te::layout::CreateLineItemToolFactory::build(ToolFactoryParamsCreate params)
 {
-  namespace layout
-  {
-    class View;
-
-    class TELAYOUTEXPORT WaitView 
-    {
-      public:
-
-        WaitView ();
-
-        WaitView(View *view);
-
-        virtual ~WaitView();
-
-        virtual void addCoord ( QPointF point);
-
-        virtual void clear ();
-
-        virtual QVector<QPoint> getCoords ();
-
-        virtual std::vector<te::gm::Point*> getCoordsW ();
-
-      protected:
-
-        std::vector<te::gm::Point*> m_coords;
-        QVector<QPoint> m_points;
-        View *m_view;
-               
-    };
-  }
+	return new CreateLineItemTool(params.getView(), params.getView());
 }
 
-#endif
+te::layout::CreateLineItemToolFactory::CreateLineItemToolFactory() :
+	ToolFactory(Enums::getInstance().getEnumToolType()->getCreateLineItemTool()->getName())
+{
+
+}
+
+te::layout::CreateLineItemToolFactory::~CreateLineItemToolFactory()
+{
+
+}

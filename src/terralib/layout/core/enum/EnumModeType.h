@@ -42,11 +42,11 @@ namespace te
     /*!
     \brief Class to represent a mode type enumeration. Ex.: select, pan, create text, etc.
       The type of mode is used by the context to know what should be done. The mode in context could be modified by the user interaction.
-	  
-	    \ingroup layout
+    
+      \ingroup layout
 
-	    \sa te::layout::AbstractEnum
-	  */
+      \sa te::layout::AbstractEnum
+    */
     class TELAYOUTEXPORT EnumModeType : public AbstractEnum
     {
       public:
@@ -63,295 +63,288 @@ namespace te
         
         /*!
           \brief Returns value that represents none mode type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getModeNone() const;
 								
         /*!
           \brief Returns value that represents map pan mode type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getModeMapPan() const;
         
         /*!
           \brief Returns value that represents map zoom in mode type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getModeMapZoomIn() const;
         
         /*!
           \brief Returns value that represents map zoom out mode type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getModeMapZoomOut() const;
 
         /*!
           \brief Returns value that represents create map mode type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getModeCreateMap() const;
         
         /*!
           \brief Returns value that represents create legend mode type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getModeCreateLegend() const;
 
         /*!
           \brief Returns value that represents create rectangle mode type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getModeCreateRectangle() const;
 
         /*!
           \brief Returns value that represents create text mode type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getModeCreateText() const;
 
         /*!
           \brief Returns value that represents create item group mode type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getModeCreateItemGroup() const;
 				
         /*!
           \brief Returns value that represents create scale mode type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getModeCreateScale() const;
 								
         /*!
           \brief Returns value that represents printer mode type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getModePrinter() const;
 
         /*!
           \brief Returns value that represents create image mode type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getModeCreateImage() const;
 				
         /*!
           \brief Returns value that represents systematic scale mode type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getModeSystematicScale() const;
 
         /*!
           \brief Returns value that represents svgview mode type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getModeSVGView() const;
 
         /*!
           \brief Returns value that represents create point mode type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getModeCreatePoint() const;
 
         /*!
           \brief Returns value that represents create arrow mode type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getModeCreateArrow() const;
 
         /*!
           \brief Returns value that represents create ellipse mode type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getModeCreateEllipse() const;
 
         /*!
           \brief Returns value that represents create title mode type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getModeCreateTitle() const;
 
         /*!
           \brief Returns value that represents create text grid mode type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getModeCreateTextGrid() const;
 
         /*!
           \brief Returns value that represents QGraphicsView widget mode type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getModeWidgetView() const;
 
         /*!
           \brief Returns value that represents Object Inspector widget mode type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getModeWidgetInspector() const;
 
         /*!
           \brief Returns value that represents Properties widget mode type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getModeWidgetProperties() const;
 
         /*!
           \brief Returns value that represents Toolbar widget mode type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getModeWidgetToolbar() const;
 
         /*!
           \brief Returns value that represents create text grid (vectorize) mode type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getModeMapCreateTextGrid() const;
 
         /*!
           \brief Returns value that represents create text map (vectorize) mode type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getModeMapCreateTextMap() const;
 
         /*!
           \brief Returns value that represents undo mode type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getModeUndo() const;
 
         /*!
           \brief Returns value that represents redo mode type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getModeRedo() const;
 				
         /*!
           \brief Returns value that represents create legend child mode type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getModeCreateLegendChild() const;
 
         /*!
           \brief Returns value that represents legend child as object (vectorize) mode type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getModeLegendChildAsObject() const;
 				
         /*!
           \brief Returns value that represents object inspector current item changed type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getModeInspectorCurrentItemChanged() const;
 				
         /*!
           \brief Returns value that represents create line mode type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
-        virtual EnumType* getModeCreateLine() const; 
+        virtual EnumType* getModeCreateLineItem() const; 
 
         /*!
           \brief Returns value that represents create polygon mode type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
-        virtual EnumType* getModeCreatePolygon() const; 
+        virtual EnumType* getModeCreatePolygonItem() const; 
 
         /*!
           \brief Returns value that represents create balloon mode type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getModeCreateBalloon() const; 
 
         /*!
           \brief Returns value that represents wait coordinate mode type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getModeCreateBarCode() const; 
 
         /*!
           \brief Returns value that represents wait coordinate mode type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getModeCreateGridMap() const;
 
         /*!
-          \brief Returns value that represents wait coordinate mode type belonging to enumeration.
-		  
-		      \return enum value  	  
-        */
-        virtual EnumType* getModeCoordWait() const;
-
-        /*!
           \brief Returns value that represents create grid planar mode type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getModeCreateGridPlanar() const;
 
         /*!
           \brief Returns value that represents create grid geodesic mode type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getModeCreateGridGeodesic() const;
 
         /*!
           \brief Returns value that represents create north mode type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getModeCreateNorth() const;
 
         /*!
           \brief Returns value that represents create map location mode type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getModeCreateMapLocation() const;
 
         /*!
           \brief Returns value that represents create map location mode type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getModeCreateSVG() const;
 
         /*!
           \brief Returns value that represents text editor mode type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getModeTextEditorInteraction() const;
 
@@ -401,8 +394,8 @@ namespace te
         EnumType* m_modeCreateLegendChild; //!< value that represents create legend child mode type belonging to enumeration
         EnumType* m_modeLegendChildAsObject; //!< value that represents legend child as object (vectorize) mode type belonging to enumeration
         EnumType* m_inspectorCurrentItemChanged;//!< value that represents object inspector current item changed type belonging to enumeration
-        EnumType* m_modeCreateLine; //!< value that represents create line mode type belonging to enumeration
-        EnumType* m_modeCreatePolygon; //!< value that represents create polygon mode type belonging to enumeration
+        EnumType* m_modeCreateLineItem; //!< value that represents create line mode type belonging to enumeration
+        EnumType* m_modeCreatePolygonItem; //!< value that represents create polygon mode type belonging to enumeration
         EnumType* m_modeCreateBalloon; //!< value that represents create balloon mode type belonging to enumeration
         EnumType* m_modeCreateBarCode; //!< value that represents create barcode mode type belonging to enumeration
         EnumType* m_modeCreateGridMap; //!< value that represents create gridmap mode type belonging to enumeration

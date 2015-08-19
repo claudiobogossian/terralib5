@@ -744,7 +744,7 @@ QToolButton* te::layout::ToolbarOutside::createExportToPDFButton()
 }
 
 void te::layout::ToolbarOutside::notifyChangedZoom(int newZoom)
-{  
+{
   emit zoomChangedInComboBox(newZoom);
 }
 

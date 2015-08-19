@@ -33,9 +33,9 @@ te::layout::ViewZoomArea::ViewZoomArea(View* view, QObject* parent)
   : ViewRubberBand(view, parent),
     m_zoomStarted(false)
 {
-	// Active ZoomArea Tool
-	QCursor newCursor = createCursor("layout-paper-zoom-in");
-	setCursor(newCursor);
+  // Active ZoomArea Tool
+  QCursor newCursor = createCursor("layout-paper-zoom-in");
+  setCursor(newCursor);
 }
 
 te::layout::ViewZoomArea::~ViewZoomArea()

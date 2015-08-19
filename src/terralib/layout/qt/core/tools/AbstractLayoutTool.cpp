@@ -23,6 +23,7 @@
 
 // Qt
 #include <QtGui/QMouseEvent>
+#include <QtGui/QKeyEvent>
 #include <QSize>
 #include <QIcon>
 #include <QPixmap>
@@ -60,6 +61,9 @@ bool te::layout::AbstractLayoutTool::eventFilter(QObject* watched, QEvent* e)
     case QEvent::MouseButtonDblClick:
       return mouseDoubleClickEvent(static_cast<QMouseEvent*>(e));
 
+    case QEvent::KeyPress:
+      return keyPressEvent(static_cast<QKeyEvent*>(e));
+
     case QEvent::Enter:
     {
       if(m_cursor.shape() != Qt::BlankCursor)
@@ -92,6 +96,11 @@ bool te::layout::AbstractLayoutTool::mouseDoubleClickEvent(QMouseEvent* e)
   return false;
 }
 
+bool te::layout::AbstractLayoutTool::keyPressEvent(QKeyEvent* e)
+{
+  return false;
+}
+
 void te::layout::AbstractLayoutTool::setCursor(const QCursor& cursor)
 {
   m_cursor = cursor;
@@ -99,20 +108,20 @@ void te::layout::AbstractLayoutTool::setCursor(const QCursor& cursor)
 
 QCursor te::layout::AbstractLayoutTool::createCursor(std::string pathIcon)
 {
-	QIcon ico(QIcon::fromTheme(pathIcon.c_str()));
+  QIcon ico(QIcon::fromTheme(pathIcon.c_str()));
 
-	//search icon size
-	QList<QSize> sizes = ico.availableSizes();
-	int maximum = sizes[0].width();
-	for (int i = 1; i < sizes.size(); ++i)
-	{
-		maximum = qMax(maximum, sizes[i].width());
-	}
+  //search icon size
+  QList<QSize> sizes = ico.availableSizes();
+  int maximum = sizes[0].width();
+  for (int i = 1; i < sizes.size(); ++i)
+  {
+    maximum = qMax(maximum, sizes[i].width());
+  }
 
-	QSize sz(maximum, maximum);
-	QPixmap pixmap = ico.pixmap(sz);
+  QSize sz(maximum, maximum);
+  QPixmap pixmap = ico.pixmap(sz);
 
-	QCursor cur(pixmap);
+  QCursor cur(pixmap);
 
-	return cur;
+  return cur;
 }

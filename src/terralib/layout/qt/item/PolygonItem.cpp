@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file PolygonItemItem.cpp
+  \file PolygonItem.cpp
    
   \brief 
 

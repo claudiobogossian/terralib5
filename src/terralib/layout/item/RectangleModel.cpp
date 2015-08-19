@@ -39,9 +39,6 @@ te::layout::RectangleModel::RectangleModel()
   te::color::RGBAColor contourColor(0, 0, 0, 255);
   te::color::RGBAColor backgroundColor(255, 255, 255, 255);
 
-  double width = 22.;
-  double height = 20.;
-  
   this->m_properties.setTypeObj(Enums::getInstance().getEnumObjectType()->getRectangleItem());
   
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();

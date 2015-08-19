@@ -43,7 +43,6 @@
 #include "../../core/enum/EnumTemplateType.h"
 #include "ItemUtils.h"
 #include "../../item/LineModel.h"
-#include "WaitView.h"
 #include "../item/MapItem.h"
 
 #include "pattern/factory/tool/ToolFactoryParamsCreate.h"
@@ -73,31 +72,23 @@ te::layout::View::View( QWidget* widget) :
   m_height(-1),
   m_isMoving(false),
   m_movingItemGroup(0),
-  m_updateItemPos(false),
-  m_wait(0),
-  m_flag(false)
+  m_updateItemPos(false)
 {
   setDragMode(RubberBandDrag);
 
   m_horizontalRuler = new HorizontalRuler;
   m_verticalRuler = new VerticalRuler;
-  m_wait = new WaitView(this);
 }
 
 te::layout::View::~View()
 {
-	if (m_currentTool)
-	{
-		viewport()->removeEventFilter(m_currentTool);
-		delete m_currentTool;
-		m_currentTool = 0;
-	}
-
-  if(m_wait)
+  if (m_currentTool)
   {
-    delete m_wait;
-    m_wait = 0;
+    viewport()->removeEventFilter(m_currentTool);
+    delete m_currentTool;
+    m_currentTool = 0;
   }
+
   if(m_visualizationArea)
   {
     delete m_visualizationArea;
@@ -168,49 +159,15 @@ void te::layout::View::mousePressEvent( QMouseEvent * event )
   }
 
   EnumModeType* mode = Enums::getInstance().getEnumModeType();
-
-  if(m_flag && Context::getInstance().getWait() == mode->getModeCoordWait())
-  {
-    QPointF posPixel = event->pos();
-    m_wait->addCoord(posPixel);
-  } 
-  else
-  {
-    if(Context::getInstance().getWait() == mode->getModeCoordWait())
-    {
-      ItemObserver* oItem = Context::getInstance().getItem();
-
-      if (oItem)
-      {
-        LineModel* lm = dynamic_cast<LineModel*>(oItem->getModel());
-        m_wait->clear();
-        Context::getInstance().setItem(0);
-        Context::getInstance().setWait(mode->getModeNone());
-        m_flag = false;
-      }      
-    }
-  }
-  
   if(getCurrentMode() == mode->getModeNone())
     return;
 
   QGraphicsItem* it = 0;
 
-  if(getCurrentMode()->getType() == te::layout::EnumCreate)
+  if(getCurrentMode()->getType() == te::layout::EnumCreate && (getCurrentMode() != mode->getModeCreateLineItem() || getCurrentMode() != mode->getModeCreatePolygonItem()))
   {
     it = sc->createItem(coord);
   }
-
-  if(Context::getInstance().getWait() == mode->getModeCoordWait())
-  {
-    ItemObserver* iob = dynamic_cast<ItemObserver*>(it);
-
-    if (!iob)
-      return;
-
-    Context::getInstance().setItem(iob);
-    m_flag = true;
-  } 
 }
 
 void te::layout::View::mouseMoveEvent( QMouseEvent * event )
@@ -317,6 +274,8 @@ void te::layout::View::keyPressEvent( QKeyEvent* keyEvent )
 {
   Scene* scne = dynamic_cast<Scene*>(scene());
 
+  EnumModeType* mode = Enums::getInstance().getEnumModeType();
+
   if((keyEvent->modifiers() & Qt::ControlModifier) && (keyEvent->key() == Qt::Key_P))
   {
     print();
@@ -347,7 +306,6 @@ void te::layout::View::keyPressEvent( QKeyEvent* keyEvent )
   }
   else if(keyEvent->key() == Qt::Key_Delete)
   {
-    EnumModeType* mode = Enums::getInstance().getEnumModeType();
     if(getCurrentMode() != mode->getModeTextEditorInteraction())
     {
       scne->removeSelectedItems();
@@ -355,9 +313,11 @@ void te::layout::View::keyPressEvent( QKeyEvent* keyEvent )
   }
   else if(keyEvent->key() == Qt::Key_Escape)
   {
-    m_flag = false;
+    if (m_currentTool != NULL)
+    {
+      m_currentTool->keyPressEvent(keyEvent);
+    }
   }
-
   QGraphicsView::keyPressEvent(keyEvent);
 }
 
@@ -514,8 +474,8 @@ void te::layout::View::changeMode( EnumType* newMode )
   ItemUtils* iUtils = Context::getInstance().getItemUtils();
 
   EnumType* mode = getCurrentMode();
-	
-	if(mode == enumMode->getModeMapPan())
+  
+  if(mode == enumMode->getModeMapPan())
   {
     iUtils->setCurrentToolInSelectedMapItems(enumMode->getModeMapPan());
   }
@@ -538,6 +498,14 @@ void te::layout::View::changeMode( EnumType* newMode )
   else if(mode == enumMode->getModeLegendChildAsObject()) 
   {
 
+  }
+  else if(mode == enumMode->getModeCreateLineItem())
+  {
+    createLineItem();
+  }
+  else if(mode == enumMode->getModeCreatePolygonItem())
+  {
+    createPolygonItem();
   }
 
   Scene* sce = dynamic_cast<Scene*>(scene());
@@ -583,8 +551,8 @@ void te::layout::View::showPageSetup()
   {
     PageSetupModel* model = new PageSetupModel;
     PageSetupController* controller = new PageSetupController(model);
-		AbstractOutsideView* observer = const_cast<AbstractOutsideView*>(controller->getView());
-		m_pageSetupOutside = dynamic_cast<PageSetupOutside*>(observer);
+    AbstractOutsideView* observer = const_cast<AbstractOutsideView*>(controller->getView());
+    m_pageSetupOutside = dynamic_cast<PageSetupOutside*>(observer);
     connect(m_pageSetupOutside, SIGNAL(changeConfig()), this, SLOT(onChangeConfig()));
   }
 
@@ -628,7 +596,7 @@ void te::layout::View::showSystematicScale()
   {
     SystematicScaleModel* model = new SystematicScaleModel;
     SystematicScaleController* controller = new SystematicScaleController(model);
-		AbstractOutsideView* observer = const_cast<AbstractOutsideView*>(controller->getView());
+    AbstractOutsideView* observer = const_cast<AbstractOutsideView*>(controller->getView());
     m_systematicOutside = dynamic_cast<SystematicScaleOutside*>(observer);
     connect(m_systematicOutside, SIGNAL(systematicApply(double,SystematicScaleType)), this, SLOT(onSystematicApply(double,SystematicScaleType)));
   }
@@ -709,22 +677,22 @@ QImage te::layout::View::createImage()
 
 QCursor te::layout::View::createCursor( std::string pathIcon )
 {
-	QIcon ico(QIcon::fromTheme(pathIcon.c_str()));
+  QIcon ico(QIcon::fromTheme(pathIcon.c_str()));
 
-	//search icon size
-	QList<QSize> sizes = ico.availableSizes();
-	int maximum = sizes[0].width();
-	for (int i = 1; i < sizes.size(); ++i)
-	{
-		maximum = qMax(maximum, sizes[i].width());
-	}
+  //search icon size
+  QList<QSize> sizes = ico.availableSizes();
+  int maximum = sizes[0].width();
+  for (int i = 1; i < sizes.size(); ++i)
+  {
+    maximum = qMax(maximum, sizes[i].width());
+  }
 
-	QSize sz(maximum, maximum);
-	QPixmap pixmap = ico.pixmap(sz);
+  QSize sz(maximum, maximum);
+  QPixmap pixmap = ico.pixmap(sz);
 
-	QCursor cur(pixmap);
+  QCursor cur(pixmap);
 
-	return cur;
+  return cur;
 }
 
 void te::layout::View::resetView()
@@ -762,12 +730,12 @@ void te::layout::View::zoomArea()
 {
   resetDefaultConfig();
    
-	EnumToolType* tools = Enums::getInstance().getEnumToolType();
+  EnumToolType* tools = Enums::getInstance().getEnumToolType();
 
-	std::string toolName = tools->getZoomAreaTool()->getName();
-	ToolFactoryParamsCreate params(this);
+  std::string toolName = tools->getZoomAreaTool()->getName();
+  ToolFactoryParamsCreate params(this);
 
-	m_currentTool = te::layout::ToolFactory::make(toolName, params);
+  m_currentTool = te::layout::ToolFactory::make(toolName, params);
 
   setInteractive(false);
   viewport()->installEventFilter(m_currentTool);
@@ -838,27 +806,52 @@ void te::layout::View::recompose()
 
 void te::layout::View::arrowCursor()
 {
-	EnumModeType* enumMode = Enums::getInstance().getEnumModeType();
-	ItemUtils* iUtils = Context::getInstance().getItemUtils();
+  EnumModeType* enumMode = Enums::getInstance().getEnumModeType();
+  ItemUtils* iUtils = Context::getInstance().getItemUtils();
 
-	EnumType* mode = enumMode->getModeArrowCursor();
+  EnumType* mode = enumMode->getModeArrowCursor();
 
-	resetDefaultConfig();
-	std::vector<te::layout::MapItem*> list = iUtils->getMapItemList();
-	if (!list.empty())
-	{
-		foreach(MapItem* mit, list)
-		{
-			mit->changeCurrentTool(mode);
-		}
-	}
+  resetDefaultConfig();
+  std::vector<te::layout::MapItem*> list = iUtils->getMapItemList();
+  if (!list.empty())
+  {
+    foreach(MapItem* mit, list)
+    {
+      mit->changeCurrentTool(mode);
+    }
+  }
 }
 
 void te::layout::View::newTemplate()
 {
-	Scene* sc = dynamic_cast<Scene*>(scene());
-	sc->reset();
-	m_visualizationArea->build();
+  Scene* sc = dynamic_cast<Scene*>(scene());
+  sc->reset();
+  m_visualizationArea->build();
+}
+
+void te::layout::View::fitZoom(const QRectF& rect)
+{
+  double scaleOld = this->transform().m11();
+  this->fitInView(rect, Qt::KeepAspectRatio);
+  double scaleNew = this->transform().m11();
+
+  double scaleFactor = scaleNew / scaleOld;
+
+  int currentZoom = getCurrentZoom();
+  int newZoom = (int)(currentZoom * scaleFactor);
+
+  if(newZoom > 0)
+  {
+    setCurrentZoom(newZoom);
+
+    Scene* sce = dynamic_cast<Scene*>(scene());
+    if(sce)
+    {
+      sce->onChangeZoom(newZoom);
+    }
+
+    emit zoomChanged(newZoom);
+  }
 }
 
 void te::layout::View::setZoom(int newZoom)
@@ -889,6 +882,36 @@ void te::layout::View::setZoom(int newZoom)
   }
 }
 
+void te::layout::View::createLineItem()
+{
+  resetDefaultConfig();
+
+  EnumToolType* tools = Enums::getInstance().getEnumToolType();
+
+  std::string toolName = tools->getCreateLineItemTool()->getName();
+  ToolFactoryParamsCreate params(this);
+
+  m_currentTool = te::layout::ToolFactory::make(toolName, params);
+
+  setInteractive(false);
+  viewport()->installEventFilter(m_currentTool);
+}
+
+void te::layout::View::createPolygonItem()
+{
+  resetDefaultConfig();
+
+  EnumToolType* tools = Enums::getInstance().getEnumToolType();
+
+  std::string toolName = tools->getCreatePolygonItemTool()->getName();
+  ToolFactoryParamsCreate params(this);
+
+  m_currentTool = te::layout::ToolFactory::make(toolName, params);
+
+  setInteractive(false);
+  viewport()->installEventFilter(m_currentTool);
+}
+
 void te::layout::View::applyScale( double newScale )
 {
   if(newScale <= 0)
@@ -899,59 +922,12 @@ void te::layout::View::applyScale( double newScale )
   scale(newScale, newScale);
 }
 
-void te::layout::View::fitZoom(const QRectF& rect)
-{
-  double scaleOld = this->transform().m11();
-  this->fitInView(rect, Qt::KeepAspectRatio);
-  double scaleNew = this->transform().m11();
-
-  double scaleFactor = scaleNew / scaleOld;
-
-  int currentZoom = getCurrentZoom();
-  int newZoom = (int)(currentZoom * scaleFactor);
-
-  if(newZoom > 0)
-  {
-    setCurrentZoom(newZoom);
-
-    Scene* sce = dynamic_cast<Scene*>(scene());
-    if(sce)
-    {
-      sce->onChangeZoom(newZoom);
-    }
-
-    emit zoomChanged(newZoom);
-  }
-}
-
 void te::layout::View::drawForeground( QPainter * painter, const QRectF & rect )
 {
   if ( !painter )
     return;
 
   QGraphicsView::drawForeground(painter, rect);
-  
-  painter->save();
-  painter->setMatrixEnabled(false);
-  painter->setPen(Qt::SolidLine);
-
-  QPainterPath path;
-
-  if(!m_wait->getCoords().empty())
-  {
-    QPainterPath pathZero (m_wait->getCoords()[0]);
-    path = pathZero;
-  }
-
-  for(int i = 0; i < m_wait->getCoords().size() ; ++i)
-  {
-    path.lineTo(m_wait->getCoords()[i]);
-  }
-
-  painter->drawPath(path);
-  painter->setMatrixEnabled(true);
-  painter->restore();
-
   if(!m_visibleRulers)
     return;
     
@@ -1087,11 +1063,3 @@ void te::layout::View::enableUpdate()
   m_visibleRulers = true;
   setUpdatesEnabled(true);
 }
-
-
-
-
-
-
-
-

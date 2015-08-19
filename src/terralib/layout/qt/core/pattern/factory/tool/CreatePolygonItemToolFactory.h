@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/layout/qt/core/pattern/factory/ZoomAreaToolFactory.h
+  \file terralib/layout/qt/core/pattern/factory/CreatePolygonItemToolFactory.h
 
   \brief This is the concrete factory for zoom area tools.
  */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_ZOOM_AREA_TOOL_FACTORY_H
-#define __TERRALIB_LAYOUT_INTERNAL_ZOOM_AREA_TOOL_FACTORY_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_CREATE_POLYGON_ITEM_TOOL_FACTORY_H
+#define __TERRALIB_LAYOUT_INTERNAL_CREATE_POLYGON_ITEM_TOOL_FACTORY_H
 
 // TerraLib
 #include "../../../../../core/Config.h"
@@ -37,28 +37,28 @@ namespace te
   {
     class AbstractLayoutTool;
     /*!
-      \class ZoomAreaToolFactory
+      \class CreatePolygonItemToolFactory
 
-      \brief This is the concrete factory for zoom area tools.
+      \brief This is the concrete factory for create polygon tool.
 
       \sa ToolFactory, ParameterizedAbstractFactory, AbstractLayoutTool
     */
-    class TELAYOUTEXPORT ZoomAreaToolFactory : public ToolFactory
+    class TELAYOUTEXPORT CreatePolygonItemToolFactory : public ToolFactory
     {
       public:
 
         /*! It register the factory in the abstract dictionary. */
-        ZoomAreaToolFactory();
+        CreatePolygonItemToolFactory();
 
         /*! \brief Destructor. */
-        ~ZoomAreaToolFactory();
+        ~CreatePolygonItemToolFactory();
 
       protected:
 
         /*!
-          \brief It creates a new zoom area tool.
+          \brief It creates a new create polygon item tool.
 
-          \return It returns zoom area tool.
+          \return It returns create polygon item tool.
         */
         AbstractLayoutTool* build(ToolFactoryParamsCreate params);
     };
@@ -67,5 +67,5 @@ namespace te
 }   // end namespace te
 
 
-#endif  // __TERRALIB_LAYOUT_INTERNAL_ZOOM_AREA_TOOL_FACTORY_H
+#endif  // __TERRALIB_LAYOUT_INTERNAL_CREATE_POLYGON_ITEM_TOOL_FACTORY_H
 

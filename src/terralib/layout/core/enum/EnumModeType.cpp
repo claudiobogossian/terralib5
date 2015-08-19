@@ -59,19 +59,18 @@ te::layout::EnumModeType::EnumModeType() :
   m_modeCreateLegendChild(0),
   m_modeLegendChildAsObject(0),
   m_inspectorCurrentItemChanged(0),
-  m_modeCreateLine(0),
-  m_modeCreatePolygon(0),
+  m_modeCreateLineItem(0),
+  m_modeCreatePolygonItem(0),
   m_modeCreateBalloon(0),
   m_modeCreateBarCode(0),
   m_modeCreateGridMap(0),
-  m_coordWait(0),
   m_modeCreateGridPlanar(0),
   m_modeCreateGridGeodesic(0),
   m_modeCreateNorth(0),
   m_modeCreateMapLocation(0),
   m_modeCreateSVG(0),
   m_modeTextEditorInteraction(0),
-	m_modeArrowCursor(0)
+  m_modeArrowCursor(0)
 {
   init();
 }
@@ -223,16 +222,16 @@ te::layout::EnumModeType::~EnumModeType()
     delete m_inspectorCurrentItemChanged;
     m_inspectorCurrentItemChanged = 0;
   }
-  if(m_modeCreateLine)
+  if(m_modeCreateLineItem)
   {
-    delete m_modeCreateLine;
-    m_modeCreateLine = 0;
+    delete m_modeCreateLineItem;
+    m_modeCreateLineItem = 0;
   }
     
-  if(m_modeCreatePolygon)
+  if(m_modeCreatePolygonItem)
   {
-    delete m_modeCreatePolygon;
-    m_modeCreatePolygon = 0;
+    delete m_modeCreatePolygonItem;
+    m_modeCreatePolygonItem = 0;
   }
 
   if(m_modeCreateBalloon)
@@ -251,12 +250,6 @@ te::layout::EnumModeType::~EnumModeType()
   {
     delete m_modeCreateGridMap;
     m_modeCreateGridMap = 0;
-  }
-    
-  if(m_coordWait)
-  {
-    delete m_coordWait;
-    m_coordWait = 0;
   }
 
   if(m_modeCreateGridPlanar)
@@ -282,11 +275,11 @@ te::layout::EnumModeType::~EnumModeType()
     delete m_modeTextEditorInteraction;
     m_modeTextEditorInteraction = 0;
   }
-	if (m_modeArrowCursor)
-	{
-		delete m_modeArrowCursor;
-		m_modeArrowCursor = 0;
-	}
+  if (m_modeArrowCursor)
+  {
+    delete m_modeArrowCursor;
+    m_modeArrowCursor = 0;
+  }
 }
 
 void te::layout::EnumModeType::init()
@@ -319,7 +312,7 @@ void te::layout::EnumModeType::init()
 
   m_modeCreateScale = createEnum("CreateScale", this, "Create Scale Component");
   m_modeCreateScale->setType(te::layout::EnumCreate);
-	
+  
   m_modePrinter = createEnum("Printer", this, "Printer");
   m_modePrinter->setType(te::layout::EnumDialog);
 
@@ -380,11 +373,11 @@ void te::layout::EnumModeType::init()
   m_inspectorCurrentItemChanged = createEnum("InspectorItemChanged", this, "Inspector Item Changed");
   m_inspectorCurrentItemChanged->setType(te::layout::EnumAction);
 
-  m_modeCreateLine = createEnum("Create Line", this, "Create Line"); 
-  m_modeCreateLine->setType(te::layout::EnumCreate);
+  m_modeCreateLineItem = createEnum("Create Line Item", this, "Create Line Item"); 
+  m_modeCreateLineItem->setType(te::layout::EnumCreate);
 
-  m_modeCreatePolygon = createEnum("Create Polygon", this, "Create Polygon"); 
-  m_modeCreatePolygon->setType(te::layout::EnumCreate);
+  m_modeCreatePolygonItem = createEnum("Create Polygon Item", this, "Create Polygon Item"); 
+  m_modeCreatePolygonItem->setType(te::layout::EnumCreate);
 
   m_modeCreateBalloon = createEnum("Create Balloon", this, "Create Balloon"); 
   m_modeCreateBalloon->setType(te::layout::EnumCreate);
@@ -394,9 +387,6 @@ void te::layout::EnumModeType::init()
 
   m_modeCreateGridMap = createEnum("Create GridMap", this, "Create GridMap");
   m_modeCreateGridMap->setType(te::layout::EnumCreate);
-
-  m_coordWait = createEnum("Wait View", this, "Wait View"); 
-  m_coordWait->setType(te::layout::EnumAction);
 
   m_modeCreateGridPlanar = createEnum("Create Grid Planar", this, "Create Grid Planar");
   m_modeCreateGridPlanar->setType(te::layout::EnumCreate);
@@ -416,8 +406,8 @@ void te::layout::EnumModeType::init()
   m_modeTextEditorInteraction = createEnum("Text Editor Interaction", this, "Text Editor Interaction");
   m_modeTextEditorInteraction->setType(te::layout::EnumAction);
 
-	m_modeArrowCursor = createEnum("Arrow Cursor", this, "Arrow Cursor");
-	m_modeArrowCursor->setType(te::layout::EnumAction);
+  m_modeArrowCursor = createEnum("Arrow Cursor", this, "Arrow Cursor");
+  m_modeArrowCursor->setType(te::layout::EnumAction);
 }
 
 te::layout::EnumType* te::layout::EnumModeType::getModeMapPan() const
@@ -565,24 +555,19 @@ te::layout::EnumType* te::layout::EnumModeType::getModeInspectorCurrentItemChang
   return m_inspectorCurrentItemChanged;
 }
 
-te::layout::EnumType* te::layout::EnumModeType::getModeCreateLine() const
+te::layout::EnumType* te::layout::EnumModeType::getModeCreateLineItem() const
 {
-  return m_modeCreateLine;
+  return m_modeCreateLineItem;
 }
 
-te::layout::EnumType* te::layout::EnumModeType::getModeCreatePolygon() const
+te::layout::EnumType* te::layout::EnumModeType::getModeCreatePolygonItem() const
 {
-  return m_modeCreatePolygon;
+  return m_modeCreatePolygonItem;
 }
 
 te::layout::EnumType* te::layout::EnumModeType::getModeCreateBalloon() const
 {
   return m_modeCreateBalloon;
-}
-
-te::layout::EnumType* te::layout::EnumModeType::getModeCoordWait() const
-{
-  return m_coordWait;
 }
 
 te::layout::EnumType* te::layout::EnumModeType::getModeCreateBarCode() const
@@ -632,6 +617,6 @@ te::layout::EnumType* te::layout::EnumModeType::getModeTextEditorInteraction() c
 
 te::layout::EnumType* te::layout::EnumModeType::getModeArrowCursor() const
 {
-	return m_modeArrowCursor;
+  return m_modeArrowCursor;
 }
 

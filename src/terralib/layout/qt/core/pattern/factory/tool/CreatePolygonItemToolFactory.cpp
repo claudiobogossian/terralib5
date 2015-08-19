@@ -18,47 +18,29 @@
  */
 
 /*!
-  \file LineItem.h
-   
-  \brief 
+  \file terralib/layout/qt/core/pattern/factory/CreatePolygonItemToolFactory.cpp
 
-  \ingroup layout
+  \brief This is the concrete factory for zoom area tools.
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_LINE_ITEM_H 
-#define __TERRALIB_LAYOUT_INTERNAL_LINE_ITEM_H
-
 // TerraLib
-#include "AbstractItem.h"
+#include "CreatePolygonItemToolFactory.h"
+#include "../../../../../core/enum/Enums.h"
+#include "../../../tools/CreatePolygonItemTool.h"
+#include "../../../View.h"
 
-// Qt 
-#include <QGraphicsItem>
-
-class QPen;
-
-class QGraphicsSceneMouseEvent;
-
-namespace te
+te::layout::AbstractLayoutTool* te::layout::CreatePolygonItemToolFactory::build(ToolFactoryParamsCreate params)
 {
-  namespace layout
-  {
-    class LineItem : public AbstractItem<QGraphicsItem>
-    {
-      public:
-
-        LineItem ( AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix = false );
-
-        virtual ~LineItem ();
-
-      protected:
-
-        virtual void drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
-
-        virtual QPolygonF getQPolygon();
-
-        virtual QPen searchStyle();
-    };
-  }
+  return new CreatePolygonItemTool(params.getView(), params.getView());
 }
 
-#endif
+te::layout::CreatePolygonItemToolFactory::CreatePolygonItemToolFactory() :
+  ToolFactory(Enums::getInstance().getEnumToolType()->getCreatePolygonItemTool()->getName())
+{
+
+}
+
+te::layout::CreatePolygonItemToolFactory::~CreatePolygonItemToolFactory()
+{
+
+}

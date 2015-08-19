@@ -81,13 +81,14 @@ else() # QT4_FOUND
                                    ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/edit/qt/tools/CreatePolygonTool.h
                                    ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/edit/qt/tools/CreateLineTool.h
                                    ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/edit/qt/tools/MoveGeometryTool.h
-                                   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/edit/qt/SnapOptionsDialog.h)
+                                   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/edit/qt/SnapOptionsDialog.h
+								   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/edit/qt/FeatureAttributesDialog.h)
 
     QT4_WRAP_CPP(TERRALIB_GEN_SRC_FILES ${TERRALIB_HDRS_TO_MOC_FILES})
 
      set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES}
                         ${TERRALIB_TOOLS_SRC_FILES} ${TERRALIB_TOOLS_HDR_FILES}
-                        ${TERRALIB_GEN_HDR_FILES})
+                        ${TERRALIB_GEN_SRC_FILES} ${TERRALIB_GEN_HDR_FILES})
 
     add_library(terralib_mod_edit_qt SHARED ${TERRALIB_FILES})
 

@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/layout/qt/core/pattern/factory/ZoomAreaToolFactory.h
+  \file terralib/layout/qt/core/pattern/factory/CreateLineItemToolFactory.h
 
   \brief This is the concrete factory for zoom area tools.
  */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_ZOOM_AREA_TOOL_FACTORY_H
-#define __TERRALIB_LAYOUT_INTERNAL_ZOOM_AREA_TOOL_FACTORY_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_CREATE_LINE_ITEM_TOOL_FACTORY_H
+#define __TERRALIB_LAYOUT_INTERNAL_CREATE_LINE_ITEM_TOOL_FACTORY_H
 
 // TerraLib
 #include "../../../../../core/Config.h"
@@ -37,28 +37,28 @@ namespace te
   {
     class AbstractLayoutTool;
     /*!
-      \class ZoomAreaToolFactory
+      \class CreateLineItemToolFactory
 
-      \brief This is the concrete factory for zoom area tools.
+      \brief This is the concrete factory for create line tool.
 
       \sa ToolFactory, ParameterizedAbstractFactory, AbstractLayoutTool
     */
-    class TELAYOUTEXPORT ZoomAreaToolFactory : public ToolFactory
+    class TELAYOUTEXPORT CreateLineItemToolFactory : public ToolFactory
     {
       public:
 
         /*! It register the factory in the abstract dictionary. */
-        ZoomAreaToolFactory();
+        CreateLineItemToolFactory();
 
         /*! \brief Destructor. */
-        ~ZoomAreaToolFactory();
+        ~CreateLineItemToolFactory();
 
       protected:
 
         /*!
-          \brief It creates a new zoom area tool.
+          \brief It creates a new create line item tool.
 
-          \return It returns zoom area tool.
+          \return It returns create line item tool.
         */
         AbstractLayoutTool* build(ToolFactoryParamsCreate params);
     };
@@ -67,5 +67,5 @@ namespace te
 }   // end namespace te
 
 
-#endif  // __TERRALIB_LAYOUT_INTERNAL_ZOOM_AREA_TOOL_FACTORY_H
+#endif  // __TERRALIB_LAYOUT_INTERNAL_CREATE_LINE_ITEM_TOOL_FACTORY_H
 
