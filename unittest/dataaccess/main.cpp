@@ -139,7 +139,7 @@ int main(int /*argc*/, char** /*argv*/)
   }
 
 // finalize TerraLib Plataform
-  te::plugin::PluginManager::getInstance().unloadAll();
+
   TerraLib::getInstance().finalize();
 
   return resultStatus ? EXIT_SUCCESS : EXIT_FAILURE;
