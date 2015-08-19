@@ -40,6 +40,7 @@ te::layout::EnumDataType::EnumDataType() :
   m_dataTypeGridSettings(0),
   m_dataTypeStringList(0),
   m_dataTypeFont(0),
+  m_dataTypeEnvelope(0),
   m_dataTypeImage(0),
   m_dataTypeTextGridSettings(0),
   m_dataTypeGroup(0),
@@ -105,6 +106,11 @@ te::layout::EnumDataType::~EnumDataType()
   {
     delete m_dataTypeFont;
     m_dataTypeFont = 0;
+  }
+  if(m_dataTypeEnvelope)
+  {
+    delete m_dataTypeEnvelope;
+    m_dataTypeEnvelope = 0;
   }
   if(m_dataTypeImage)
   {
@@ -182,6 +188,8 @@ void te::layout::EnumDataType::init()
 
   m_dataTypeFont = createEnum("Font", this);
 
+  m_dataTypeEnvelope = createEnum("Envelope", this);
+
   m_dataTypeImage = createEnum("Image", this);
 
   m_dataTypeTextGridSettings = createEnum("TextGridSettings", this);
@@ -256,6 +264,11 @@ te::layout::EnumType* te::layout::EnumDataType::getDataTypeStringList() const
 te::layout::EnumType* te::layout::EnumDataType::getDataTypeFont() const
 {
   return m_dataTypeFont;
+}
+
+te::layout::EnumType* te::layout::EnumDataType::getDataTypeEnvelope() const
+{
+  return m_dataTypeEnvelope;
 }
 
 te::layout::EnumType* te::layout::EnumDataType::getDataTypeImage() const

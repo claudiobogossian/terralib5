@@ -38,7 +38,7 @@
 #include <QComboBox>
 
 te::layout::ToolbarController::ToolbarController(AbstractOutsideModel* o) :
-	AbstractOutsideController(o)
+  AbstractOutsideController(o)
 {
   
 }
@@ -50,369 +50,369 @@ te::layout::ToolbarController::~ToolbarController()
 
 void te::layout::ToolbarController::onMapTriggered(QAction* action)
 {
-	QToolButton* button = dynamic_cast<QToolButton*>(sender());
-	if (button)
-	{
-		button->setDefaultAction(action);
-	}
-	
-	ToolbarOutside* toolbar = dynamic_cast<ToolbarOutside*>(m_view);
+  QToolButton* button = dynamic_cast<QToolButton*>(sender());
+  if (button)
+  {
+    button->setDefaultAction(action);
+  }
+  
+  ToolbarOutside* toolbar = dynamic_cast<ToolbarOutside*>(m_view);
 
-	EnumModeType* type = Enums::getInstance().getEnumModeType();
+  EnumModeType* type = Enums::getInstance().getEnumModeType();
 
-	if (action->objectName().compare(toolbar->getActionMapDefault().c_str()) == 0)
-	{
-		toolbar->changeAction(type->getModeCreateMap());
-	}
-	else if (action->objectName().compare(toolbar->getActionGridMap().c_str()) == 0)
-	{
-		toolbar->changeAction(type->getModeCreateGridMap());
-	}
-	else if (action->objectName().compare(toolbar->getActionGridPlanar().c_str()) == 0)
-	{
-		toolbar->changeAction(type->getModeCreateGridPlanar());
-	}
-	else if (action->objectName().compare(toolbar->getActionGridGeodesic().c_str()) == 0)
-	{
-		toolbar->changeAction(type->getModeCreateGridGeodesic());
-	}
-	else if (action->objectName().compare(toolbar->getActionLegendDefault().c_str()) == 0)
-	{
-		toolbar->changeAction(type->getModeCreateLegend());
-	}
-	else if (action->objectName().compare(toolbar->getActionScale().c_str()) == 0)
-	{
-		toolbar->changeAction(type->getModeCreateScale());
-	}
-	else if (action->objectName().compare(toolbar->getActionNorth().c_str()) == 0)
-	{
-		toolbar->changeAction(type->getModeCreateNorth());
-	}
-	else if (action->objectName().compare(toolbar->getActionMapLocation().c_str()) == 0)
-	{
-		toolbar->changeAction(type->getModeCreateMapLocation());
-	}
+  if (action->objectName().compare(toolbar->getActionMapDefault().c_str()) == 0)
+  {
+    toolbar->changeAction(type->getModeCreateMap());
+  }
+  else if (action->objectName().compare(toolbar->getActionGridMap().c_str()) == 0)
+  {
+    toolbar->changeAction(type->getModeCreateGridMap());
+  }
+  else if (action->objectName().compare(toolbar->getActionGridPlanar().c_str()) == 0)
+  {
+    toolbar->changeAction(type->getModeCreateGridPlanar());
+  }
+  else if (action->objectName().compare(toolbar->getActionGridGeodesic().c_str()) == 0)
+  {
+    toolbar->changeAction(type->getModeCreateGridGeodesic());
+  }
+  else if (action->objectName().compare(toolbar->getActionLegendDefault().c_str()) == 0)
+  {
+    toolbar->changeAction(type->getModeCreateLegend());
+  }
+  else if (action->objectName().compare(toolbar->getActionScale().c_str()) == 0)
+  {
+    toolbar->changeAction(type->getModeCreateScale());
+  }
+  else if (action->objectName().compare(toolbar->getActionNorth().c_str()) == 0)
+  {
+    toolbar->changeAction(type->getModeCreateNorth());
+  }
+  else if (action->objectName().compare(toolbar->getActionMapLocation().c_str()) == 0)
+  {
+    toolbar->changeAction(type->getModeCreateMapLocation());
+  }
 }
 
 void te::layout::ToolbarController::onMapToolsTriggered(QAction* action)
 {
-	QToolButton* button = dynamic_cast<QToolButton*>(sender());
-	if (button)
-	{
-		button->setDefaultAction(action);
-	}
+  QToolButton* button = dynamic_cast<QToolButton*>(sender());
+  if (button)
+  {
+    button->setDefaultAction(action);
+  }
 
-	ToolbarOutside* toolbar = dynamic_cast<ToolbarOutside*>(m_view);
+  ToolbarOutside* toolbar = dynamic_cast<ToolbarOutside*>(m_view);
 
-	EnumModeType* type = Enums::getInstance().getEnumModeType();
+  EnumModeType* type = Enums::getInstance().getEnumModeType();
 
-	if (action->objectName().compare(toolbar->getActionMapPan().c_str()) == 0)
-	{
-		toolbar->changeAction(type->getModeMapPan());
-	}
-	else if (action->objectName().compare(toolbar->getActionMapZoomIn().c_str()) == 0)
-	{
-		toolbar->changeAction(type->getModeMapZoomIn());
-	}
-	else if (action->objectName().compare(toolbar->getActionMapZoomOut().c_str()) == 0)
-	{
-		toolbar->changeAction(type->getModeMapZoomOut());
-	}
-	else if (action->objectName().compare(toolbar->getActionMapSystematicScale().c_str()) == 0)
-	{
-		toolbar->changeAction(type->getModeSystematicScale());
-	}
-	else if (action->objectName().compare(toolbar->getActionMapCreateTextGrid().c_str()) == 0)
-	{
-		toolbar->changeAction(type->getModeMapCreateTextGrid());
-	}
-	else if (action->objectName().compare(toolbar->getActionMapCreateMapText().c_str()) == 0)
-	{
-		toolbar->changeAction(type->getModeMapCreateTextMap());
-	}
-	else if (action->objectName().compare(toolbar->getActionMapCreateLegendChildAsObject().c_str()) == 0)
-	{
-		toolbar->changeAction(type->getModeLegendChildAsObject());
-	}
+  if (action->objectName().compare(toolbar->getActionMapPan().c_str()) == 0)
+  {
+    toolbar->changeAction(type->getModeMapPan());
+  }
+  else if (action->objectName().compare(toolbar->getActionMapZoomIn().c_str()) == 0)
+  {
+    toolbar->changeAction(type->getModeMapZoomIn());
+  }
+  else if (action->objectName().compare(toolbar->getActionMapZoomOut().c_str()) == 0)
+  {
+    toolbar->changeAction(type->getModeMapZoomOut());
+  }
+  else if (action->objectName().compare(toolbar->getActionMapSystematicScale().c_str()) == 0)
+  {
+    toolbar->changeAction(type->getModeSystematicScale());
+  }
+  else if (action->objectName().compare(toolbar->getActionMapCreateTextGrid().c_str()) == 0)
+  {
+    toolbar->changeAction(type->getModeMapCreateTextGrid());
+  }
+  else if (action->objectName().compare(toolbar->getActionMapCreateMapText().c_str()) == 0)
+  {
+    toolbar->changeAction(type->getModeMapCreateTextMap());
+  }
+  else if (action->objectName().compare(toolbar->getActionMapCreateLegendChildAsObject().c_str()) == 0)
+  {
+    toolbar->changeAction(type->getModeLegendChildAsObject());
+  }
 }
 
 void te::layout::ToolbarController::onGeometryTriggered(QAction* action)
 {
-	QToolButton* button = dynamic_cast<QToolButton*>(sender());
-	if (button)
-	{
-		button->setDefaultAction(action);
-	}
+  QToolButton* button = dynamic_cast<QToolButton*>(sender());
+  if (button)
+  {
+    button->setDefaultAction(action);
+  }
 
-	ToolbarOutside* toolbar = dynamic_cast<ToolbarOutside*>(m_view);
+  ToolbarOutside* toolbar = dynamic_cast<ToolbarOutside*>(m_view);
 
-	EnumModeType* type = Enums::getInstance().getEnumModeType();
+  EnumModeType* type = Enums::getInstance().getEnumModeType();
 
-	if (action->objectName().compare(toolbar->getActionRectangle().c_str()) == 0)
-	{
-		toolbar->changeAction(type->getModeCreateRectangle());
-	}
-	else if (action->objectName().compare(toolbar->getActionArrow().c_str()) == 0)
-	{
-		toolbar->changeAction(type->getModeCreateArrow());
-	}
-	else if (action->objectName().compare(toolbar->getActionEllipse().c_str()) == 0)
-	{
-		toolbar->changeAction(type->getModeCreateEllipse());
-	}
-	else if (action->objectName().compare(toolbar->getActionPoint().c_str()) == 0)
-	{
-		toolbar->changeAction(type->getModeCreatePoint());
-	}
-	else if (action->objectName().compare(toolbar->getActionLine().c_str()) == 0)
-	{
-		toolbar->changeAction(type->getModeCreateLine());
-	}
-	else if (action->objectName().compare(toolbar->getActionPolygon().c_str()) == 0)
-	{
-		toolbar->changeAction(type->getModeCreatePolygon());
-	}
-	else if (action->objectName().compare(toolbar->getActionSVG().c_str()) == 0)
-	{
-		toolbar->changeAction(type->getModeCreateSVG());
-	}
+  if (action->objectName().compare(toolbar->getActionRectangle().c_str()) == 0)
+  {
+    toolbar->changeAction(type->getModeCreateRectangle());
+  }
+  else if (action->objectName().compare(toolbar->getActionArrow().c_str()) == 0)
+  {
+    toolbar->changeAction(type->getModeCreateArrow());
+  }
+  else if (action->objectName().compare(toolbar->getActionEllipse().c_str()) == 0)
+  {
+    toolbar->changeAction(type->getModeCreateEllipse());
+  }
+  else if (action->objectName().compare(toolbar->getActionPoint().c_str()) == 0)
+  {
+    toolbar->changeAction(type->getModeCreatePoint());
+  }
+  else if (action->objectName().compare(toolbar->getActionLine().c_str()) == 0)
+  {
+    toolbar->changeAction(type->getModeCreateLineItem());
+  }
+  else if (action->objectName().compare(toolbar->getActionPolygon().c_str()) == 0)
+  {
+    toolbar->changeAction(type->getModeCreatePolygonItem());
+  }
+  else if (action->objectName().compare(toolbar->getActionSVG().c_str()) == 0)
+  {
+    toolbar->changeAction(type->getModeCreateSVG());
+  }
 }
 
 void te::layout::ToolbarController::onViewAreaTriggered(QAction* action)
 {
-	QToolButton* button = dynamic_cast<QToolButton*>(sender());
-	if (button)
-	{
-		button->setDefaultAction(action);
-	}
+  QToolButton* button = dynamic_cast<QToolButton*>(sender());
+  if (button)
+  {
+    button->setDefaultAction(action);
+  }
 
-	ToolbarOutside* toolbar = dynamic_cast<ToolbarOutside*>(m_view);
-	
-	View* viewport = getScene()->getView();
+  ToolbarOutside* toolbar = dynamic_cast<ToolbarOutside*>(m_view);
+  
+  View* viewport = getScene()->getView();
 
-	if (action->objectName().compare(toolbar->getActionViewPan().c_str()) == 0)
-	{
-		viewport->pan();
-	}
-	else if (action->objectName().compare(toolbar->getActionViewZoomIn().c_str()) == 0)
-	{
-		viewport->zoomArea();
-	}
-	else if (action->objectName().compare(toolbar->getActionViewZoomOut().c_str()) == 0)
-	{
-		viewport->zoomOut();
-	}
+  if (action->objectName().compare(toolbar->getActionViewPan().c_str()) == 0)
+  {
+    viewport->pan();
+  }
+  else if (action->objectName().compare(toolbar->getActionViewZoomIn().c_str()) == 0)
+  {
+    viewport->zoomArea();
+  }
+  else if (action->objectName().compare(toolbar->getActionViewZoomOut().c_str()) == 0)
+  {
+    viewport->zoomOut();
+  }
 }
 
 void te::layout::ToolbarController::onArrowCursorClicked(bool checked)
 {
-	View* viewport = getScene()->getView();
-	viewport->arrowCursor();
+  View* viewport = getScene()->getView();
+  viewport->arrowCursor();
 }
 
 void te::layout::ToolbarController::onItemToolsTriggered(QAction* action)
 {
-	ToolbarOutside* toolbar = dynamic_cast<ToolbarOutside*>(m_view);
+  ToolbarOutside* toolbar = dynamic_cast<ToolbarOutside*>(m_view);
 
-	QToolButton* button = dynamic_cast<QToolButton*>(sender());
-	if (button)
-	{
-		button->setDefaultAction(action);
-	}
+  QToolButton* button = dynamic_cast<QToolButton*>(sender());
+  if (button)
+  {
+    button->setDefaultAction(action);
+  }
 
-	View* viewport = getScene()->getView();
+  View* viewport = getScene()->getView();
 
-	if (action->objectName().compare(toolbar->getActionGroup().c_str()) == 0)
-	{		
-		viewport->createItemGroup();
-	}
-	else if (action->objectName().compare(toolbar->getActionUngroup().c_str()) == 0)
-	{
-		viewport->destroyItemGroup();
-	}
+  if (action->objectName().compare(toolbar->getActionGroup().c_str()) == 0)
+  {    
+    viewport->createItemGroup();
+  }
+  else if (action->objectName().compare(toolbar->getActionUngroup().c_str()) == 0)
+  {
+    viewport->destroyItemGroup();
+  }
 }
 
 void te::layout::ToolbarController::onComboZoomActivated()
 {
-	ToolbarOutside* toolbar = dynamic_cast<ToolbarOutside*>(m_view);
+  ToolbarOutside* toolbar = dynamic_cast<ToolbarOutside*>(m_view);
 
-	QString text = toolbar->getComboBoxZoom()->currentText();
-	if (text.isEmpty() == true)
-	{
-		return;
-	}
+  QString text = toolbar->getComboBoxZoom()->currentText();
+  if (text.isEmpty() == true)
+  {
+    return;
+  }
 
-	QString textCopy = text;
-	std::string cText = textCopy.toStdString();
+  QString textCopy = text;
+  std::string cText = textCopy.toStdString();
 
-	textCopy.replace(QString("%"), QString(""));
+  textCopy.replace(QString("%"), QString(""));
 
-	std::string cText2 = textCopy.toStdString();
+  std::string cText2 = textCopy.toStdString();
 
-	bool converted = false;
-	int newZoom = textCopy.toInt(&converted);
-	if (converted == false)
-	{
-		toolbar->getComboBoxZoom()->setEditText("");
-		return;
-	}
+  bool converted = false;
+  int newZoom = textCopy.toInt(&converted);
+  if (converted == false)
+  {
+    toolbar->getComboBoxZoom()->setEditText("");
+    return;
+  }
 
-	toolbar->notifyChangedZoom(newZoom);
+  toolbar->notifyChangedZoom(newZoom);
 }
 
 void te::layout::ToolbarController::onZoomChanged(int zoom)
 {
-	ToolbarOutside* toolbar = dynamic_cast<ToolbarOutside*>(m_view);
+  ToolbarOutside* toolbar = dynamic_cast<ToolbarOutside*>(m_view);
 
-	if (zoom <= 0)
-	{
-		return;
-	}
+  if (zoom <= 0)
+  {
+    return;
+  }
 
-	QString value = QString::number(zoom) + "%";
-	if (toolbar->getComboBoxZoom()->currentText() == value)
-	{
-		return;
-	}
+  QString value = QString::number(zoom) + "%";
+  if (toolbar->getComboBoxZoom()->currentText() == value)
+  {
+    return;
+  }
 
-	toolbar->getComboBoxZoom()->setEditText(value);
+  toolbar->getComboBoxZoom()->setEditText(value);
 }
 
 void te::layout::ToolbarController::onBringToFrontClicked(bool checked)
-{		
-	getScene()->getAlignItems()->bringToFront();
+{    
+  getScene()->getAlignItems()->bringToFront();
 }
 
 void te::layout::ToolbarController::onSendToBackClicked(bool checked)
 {
-	getScene()->getAlignItems()->sendToBack();
+  getScene()->getAlignItems()->sendToBack();
 }
 
 void te::layout::ToolbarController::onRecomposeClicked(bool checked)
 {
-	ToolbarOutside* toolbar = dynamic_cast<ToolbarOutside*>(m_view);
+  ToolbarOutside* toolbar = dynamic_cast<ToolbarOutside*>(m_view);
 
-	Scene* sc = getScene();
-	if (!sc)
-	{
-		return;
-	}
-	ContextObject context = sc->getContext();
+  Scene* sc = getScene();
+  if (!sc)
+  {
+    return;
+  }
+  ContextObject context = sc->getContext();
 
-	int zoom = context.getZoom();
-	onZoomChanged(zoom);
-	onComboZoomActivated();
+  int zoom = context.getZoom();
+  onZoomChanged(zoom);
+  onComboZoomActivated();
 
-	View* viewport = getScene()->getView();
-	viewport->recompose();
+  View* viewport = getScene()->getView();
+  viewport->recompose();
 }
 
 void te::layout::ToolbarController::onTextToolsTriggered(QAction* action)
 {
-	ToolbarOutside* toolbar = dynamic_cast<ToolbarOutside*>(m_view);
+  ToolbarOutside* toolbar = dynamic_cast<ToolbarOutside*>(m_view);
 
-	QToolButton* button = dynamic_cast<QToolButton*>(sender());
-	if (button)
-	{
-		button->setDefaultAction(action);
-	}
+  QToolButton* button = dynamic_cast<QToolButton*>(sender());
+  if (button)
+  {
+    button->setDefaultAction(action);
+  }
 
-	EnumModeType* type = Enums::getInstance().getEnumModeType();
-	if (action->objectName().compare(toolbar->getActionTextDefault().c_str()) == 0)
-	{
-		toolbar->changeAction(type->getModeCreateText());
-	}
-	else if (action->objectName().compare(toolbar->getActionStringGrid().c_str()) == 0)
-	{
-		toolbar->changeAction(type->getModeCreateTextGrid());
-	}
-	else if (action->objectName().compare(toolbar->getActionTitle().c_str()) == 0)
-	{
-		toolbar->changeAction(type->getModeCreateTitle());
-	}
-	else if (action->objectName().compare(toolbar->getActionImage().c_str()) == 0)
-	{
-		toolbar->changeAction(type->getModeCreateImage());
-	}
-	else if (action->objectName().compare(toolbar->getActionBalloon().c_str()) == 0)
-	{
-		toolbar->changeAction(type->getModeCreateBalloon());
-	}
-	else if (action->objectName().compare(toolbar->getActionBarCode().c_str()) == 0)
-	{
-		toolbar->changeAction(type->getModeCreateBarCode());
-	}
+  EnumModeType* type = Enums::getInstance().getEnumModeType();
+  if (action->objectName().compare(toolbar->getActionTextDefault().c_str()) == 0)
+  {
+    toolbar->changeAction(type->getModeCreateText());
+  }
+  else if (action->objectName().compare(toolbar->getActionStringGrid().c_str()) == 0)
+  {
+    toolbar->changeAction(type->getModeCreateTextGrid());
+  }
+  else if (action->objectName().compare(toolbar->getActionTitle().c_str()) == 0)
+  {
+    toolbar->changeAction(type->getModeCreateTitle());
+  }
+  else if (action->objectName().compare(toolbar->getActionImage().c_str()) == 0)
+  {
+    toolbar->changeAction(type->getModeCreateImage());
+  }
+  else if (action->objectName().compare(toolbar->getActionBalloon().c_str()) == 0)
+  {
+    toolbar->changeAction(type->getModeCreateBalloon());
+  }
+  else if (action->objectName().compare(toolbar->getActionBarCode().c_str()) == 0)
+  {
+    toolbar->changeAction(type->getModeCreateBarCode());
+  }
 }
 
 void te::layout::ToolbarController::onAlignLeftClicked(bool checked)
 {
-	getScene()->getAlignItems()->alignLeft();
+  getScene()->getAlignItems()->alignLeft();
 }
 
 void te::layout::ToolbarController::onAlignRightClicked(bool checked)
 {
-	getScene()->getAlignItems()->alignRight();
+  getScene()->getAlignItems()->alignRight();
 }
 
 void te::layout::ToolbarController::onAlignTopClicked(bool checked)
 {
-	getScene()->getAlignItems()->alignTop();
+  getScene()->getAlignItems()->alignTop();
 }
 
 void te::layout::ToolbarController::onAlignBottomClicked(bool checked)
 {
-	getScene()->getAlignItems()->alignBottom();
+  getScene()->getAlignItems()->alignBottom();
 }
 
 void te::layout::ToolbarController::onAlignCenterHorizontalClicked(bool checked)
-{	
-	getScene()->getAlignItems()->alignCenterHorizontal();
+{  
+  getScene()->getAlignItems()->alignCenterHorizontal();
 }
 
 void te::layout::ToolbarController::onAlignCenterVerticalClicked(bool checked)
 {
-	getScene()->getAlignItems()->alignCenterVertical();
+  getScene()->getAlignItems()->alignCenterVertical();
 }
 
 void te::layout::ToolbarController::onRemoveObjectClicked(bool checked)
 {
-	getScene()->removeSelectedItems();
+  getScene()->removeSelectedItems();
 }
 
 void te::layout::ToolbarController::onDrawMapClicked(bool checked)
 {
-	getScene()->redrawSelectionMap();
+  getScene()->redrawSelectionMap();
 }
 
 void te::layout::ToolbarController::onObjectToImageClicked(bool checked)
 {
-	View* viewport = getScene()->getView();
-	viewport->exportItemsToImage();
+  View* viewport = getScene()->getView();
+  viewport->exportItemsToImage();
 }
 
 void te::layout::ToolbarController::onExitClicked(bool checked)
 {
-	View* viewport = getScene()->getView();
-	viewport->close();
+  View* viewport = getScene()->getView();
+  viewport->close();
 }
 
 void te::layout::ToolbarController::onExportToPDFClicked(bool checked)
 {
-	View* viewport = getScene()->getView();
-	viewport->exportToPDF();
+  View* viewport = getScene()->getView();
+  viewport->exportToPDF();
 }
 
 te::layout::Scene* te::layout::ToolbarController::getScene()
 {
-	Scene* sc = 0;
-	AbstractScene* abScene = Context::getInstance().getScene();
-	if (!abScene)
-	{
-		return sc;
-	}
+  Scene* sc = 0;
+  AbstractScene* abScene = Context::getInstance().getScene();
+  if (!abScene)
+  {
+    return sc;
+  }
 
-	sc = dynamic_cast<Scene*>(abScene);
-	return sc;
+  sc = dynamic_cast<Scene*>(abScene);
+  return sc;
 }
 
 

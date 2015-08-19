@@ -29,8 +29,5 @@ bool te::layout::AbstractItemView::isInverted()
 	return m_invertedMatrix;
 }
 
-void te::layout::AbstractItemView::contextUpdated(ContextObject context)
-{
-	//do nothing
-}
+
 

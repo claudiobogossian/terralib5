@@ -57,7 +57,7 @@ namespace te
         virtual QPolygonF getQPolygon();
 
         virtual QPen searchStyle();
-	  };
+    };
   }
 }
 

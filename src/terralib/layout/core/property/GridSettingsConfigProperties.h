@@ -71,6 +71,7 @@ namespace te
         std::string getLeftRotateText();
         std::string getRightRotateText();
         std::string getTopRotateText();
+        std::string getCrossOffset();
               
       protected:
 
@@ -109,7 +110,8 @@ namespace te
         std::string m_bottomRotateText;
         std::string m_leftRotateText;
         std::string m_rightRotateText;
-        std::string m_topRotateText;   
+        std::string m_topRotateText;
+        std::string m_crossOffset;
     };
   }
 }

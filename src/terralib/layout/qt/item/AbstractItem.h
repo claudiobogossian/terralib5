@@ -66,6 +66,7 @@ namespace te
   namespace layout
   {
     class AbstractItemController;
+    class ContextObject;
 
     /*!
     \brief Abstract class that represents a graphic item.  
@@ -102,10 +103,9 @@ namespace te
         */
         virtual QRectF boundingRect() const;
 
-        /*!
-          \brief Refreshes the drawings of the view
-        */ 
         virtual void refresh();
+
+        virtual void contextUpdated(const ContextObject& context);
 
         /*!
           \brief Gets the rotation
@@ -219,6 +219,12 @@ namespace te
     inline void te::layout::AbstractItem<T>::refresh()
     {
       T::update();
+    }
+
+
+    template <class T>
+    inline void te::layout::AbstractItem<T>::contextUpdated(const ContextObject& context)
+    {
     }
 
     template <class T>

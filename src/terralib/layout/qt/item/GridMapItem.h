@@ -31,6 +31,10 @@
 #define __TERRALIB_LAYOUT_INTERNAL_GRIDMAP_ITEM_H
 
 // TerraLib
+#include "AbstractItem.h"
+#include "../../core/Config.h"
+
+/*
 #include "ObjectItem.h"
 #include "../../core/Config.h"
 #include "../../../color/RGBAColor.h"
@@ -48,6 +52,7 @@
 #include <QString>
 #include <QPainter>
 #include <QFont>
+*/
 
 namespace te
 {
@@ -58,13 +63,13 @@ namespace te
     /*!
     \brief Class that represents a graphic GridMap. 
         Its coordinate system is the same of scene (millimeters). 
-        He is also the son of ItemObserver and ObjectItem, so it can become observer of a model (Observable). 
+        He is also the son of ItemObserver and AbstractItem, so it can become observer of a model (Observable). 
 	  
 	    \ingroup layout
 
-	    \sa te::layout::ObjectItem
+	    \sa te::layout::AbstractItem
 	  */
-    class TELAYOUTEXPORT GridMapItem : public ObjectItem
+    class TELAYOUTEXPORT GridMapItem : public AbstractItem<QGraphicsItem>
     {
       public:
 
@@ -74,13 +79,16 @@ namespace te
           \param controller "Controller" part of MVC component
           \param o "Model" part of MVC component
         */ 
-        GridMapItem( ItemController* controller, Observable* o, bool invertedMatrix = false );
+        GridMapItem( AbstractItemController* controller, AbstractItemModel* model );
 
         /*!
           \brief Destructor
          */
         virtual ~GridMapItem();
-        
+
+        /*!
+          \brief For any specific drawing, the item must reimplement this function
+        */
         virtual void drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
 
         /*!
@@ -91,17 +99,30 @@ namespace te
       protected:
 
         /*!
-          \brief Reimplemented from QGraphicsItem
-         */
-        virtual QVariant itemChange ( QGraphicsItem::GraphicsItemChange change, const QVariant & value );
-
+          \brief Draws the grid
+        */
         virtual void drawGrid(QPainter* painter);
 
+        /*!
+          \brief Draws the default grid
+        */
         virtual void drawDefaultGrid(QPainter* painter);
+
+        virtual void drawText( QPointF point, QPainter* painter, std::string text, bool displacementLeft = false, bool displacementRight = false);
+
+        virtual void configPainter(QPainter* painter);
+
+        virtual void configTextPainter(QPainter* painter);
+
+        virtual void clear();
 
         virtual void drawContinuousLines(QPainter* painter);
 
-        virtual void drawCrossLines(QPainter* painter);
+        virtual void drawVerticalLines(QPainter* painter);
+
+        virtual void drawHorizontalLines(QPainter* painter);
+
+        virtual void drawTexts(QPainter* painter);
 
         virtual void drawTopTexts(QPainter* painter);
 
@@ -111,40 +132,42 @@ namespace te
 
         virtual void drawRightTexts(QPainter* painter);
 
-        virtual void drawVerticalLines(QPainter* painter);
+        virtual void drawCrossLines(QPainter* painter);
 
-        virtual void drawHorizontalLines(QPainter* painter);
+        virtual bool drawCrossIntersectMapBorder(QLineF vrt, QLineF hrz, QPainter* painter);
+
+        /*!
+          \brief Reimplemented from QGraphicsItem
+         */
+        /*
+        virtual QVariant itemChange ( QGraphicsItem::GraphicsItemChange change, const QVariant & value );
+
+        virtual void drawGrid(QPainter* painter);
+
+        virtual void drawDefaultGrid(QPainter* painter);
 
         virtual void calculateVertical(te::gm::Envelope geoBox, te::gm::Envelope boxMM, double scale);
 
         virtual void calculateHorizontal(te::gm::Envelope geoBox, te::gm::Envelope boxMM, double scale);
 
-        virtual void drawTexts(QPainter* painter);
-                
-        virtual void drawText( QPointF point, QPainter* painter, std::string text, bool displacementLeft = false, bool displacementRight = false);
-
         virtual void recalculateBoundingRect();
 
         virtual bool hasLayer();
 
-        virtual void configPainter(QPainter* painter);
-
-        virtual void configTextPainter(QPainter* painter);
-
-        virtual void clear();
-
+        */
         /*!
           \brief Check if is necessary change map displacement.
 
           \param width text width in mm
           \param height text height in mm
          */
+        /*
         virtual void checkMaxMapDisplacement(QFont ft, std::string text, double& width, double& height);
 
         virtual void changeMapDisplacement(double width, double height);
         
         virtual bool drawCrossIntersectMapBorder(QLineF vrt, QLineF hrz, QPainter* painter);
-
+        */
         double                    m_maxWidthTextMM;
         double                    m_maxHeigthTextMM;
         double                    m_onePointMM;
@@ -157,6 +180,8 @@ namespace te
         std::map<std::string, QPointF>    m_bottomTexts;
         std::map<std::string, QPointF>    m_rightTexts;
         std::map<std::string, QPointF>    m_leftTexts;
+
+        te::gm::Envelope          m_boundingBox;
     };
   }
 }

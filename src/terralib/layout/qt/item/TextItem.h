@@ -74,17 +74,17 @@ namespace te
 
         /*!
           \brief For any specific drawing, the item must reimplement this function
-         */
+        */
         virtual void drawItem ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
 
         /*!
           \brief Reimplemented from QGraphicsItem to capture changes in the item
-         */
+        */
         virtual QVariant itemChange ( QGraphicsItem::GraphicsItemChange change, const QVariant & value );
 
         /*!
           \brief Reimplemented from QGraphicsItem
-         */
+        */
         virtual QRectF boundingRect() const;
 
       protected:

@@ -249,6 +249,10 @@ namespace te
         */
         virtual void setZoom(int zoom);
 
+        virtual void createLineItem();
+
+        virtual void createPolygonItem();
+
       signals:
 
     /*!

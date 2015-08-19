@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file LineItemItem.cpp
+  \file LineItem.cpp
    
   \brief 
 
@@ -27,6 +27,7 @@
 
 // TerraLib
 #include "LineItem.h"
+#include "../../core/property/Property.h"
 
 // STL
 #include <vector>
@@ -52,22 +53,17 @@ te::layout::LineItem::~LineItem()
 void te::layout::LineItem::drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget )
 {
   QPolygonF poly = getQPolygon();
-
   if (poly.empty())
   {
     return;
   }
 
   const Property& pColor = m_controller->getProperty("color");
-
   const te::color::RGBAColor& color = pColor.getValue().toColor();
-
   QColor qColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
 
   painter->save();
-
   QPen penStyle = searchStyle();
-
   QPen pn(qColor, 0, penStyle.style());
   painter->setPen(pn);
 
@@ -76,7 +72,6 @@ void te::layout::LineItem::drawItem( QPainter * painter, const QStyleOptionGraph
 
   //draws the item
   painter->drawPath(path);
-
   painter->restore();
 }
 
@@ -134,7 +129,7 @@ QPolygonF te::layout::LineItem::getQPolygon()
   {
     QPointF pt(coordsPtr[pIdx].getX(), coordsPtr[pIdx].getY());
     //QPointF mlocal = mapFromScene(pt);
-    poly.push_back(pt);   
+    poly.push_back(pt);
   }
   return poly;
 }

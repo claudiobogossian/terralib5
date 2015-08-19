@@ -33,6 +33,7 @@
 
 // TerraLib
 #include "../core/pattern/mvc/AbstractItemModel.h"
+#include "../core/pattern/observer/NewObserver.h"
 #include "../core/Config.h"
 
 namespace te
@@ -47,9 +48,9 @@ namespace te
       	  
 	    \ingroup layout
 
-      \sa te::layout::AbstractItemModel
+      \sa te::layout::AbstractItemModel, NewObserver
 	  */
-    class TELAYOUTEXPORT ScaleModel : public AbstractItemModel
+    class TELAYOUTEXPORT ScaleModel : public AbstractItemModel, public NewObserver
     {
       public:
 
@@ -62,6 +63,8 @@ namespace te
           \brief Destructor
         */
         virtual ~ScaleModel();
+
+        virtual void update(const Subject* subject);
     };
   }
 }

@@ -440,7 +440,7 @@ QGraphicsItem* te::layout::Scene::createItem( const te::gm::Coord2D& coord )
 		addUndoStack(command);
   }
 
-  changeViewMode(type->getModeNone());
+  //changeViewMode(type->getModeNone());
 
   return item;
 }
@@ -512,7 +512,7 @@ std::vector<te::layout::Properties> te::layout::Scene::getItemsProperties()
   foreach( QGraphicsItem *item, graphicsItems) 
   {
     if (item)
-    {		
+    {    
 			AbstractItemView* lItem = dynamic_cast<AbstractItemView*>(item);
       if(lItem)
       {
@@ -573,6 +573,7 @@ bool te::layout::Scene::buildTemplate( VisualizationArea* vzArea, EnumType* type
 
 void te::layout::Scene::redrawSelectionMap()
 {
+  /*
   QList<QGraphicsItem*> selected = selectedItems();
   foreach(QGraphicsItem *item, selected) 
   {
@@ -589,6 +590,7 @@ void te::layout::Scene::redrawSelectionMap()
       }
     }
   }
+  */
 }
 
 void te::layout::Scene::exportItemsToImage(std::string dir)

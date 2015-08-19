@@ -39,6 +39,7 @@ namespace te
 
     class AbstractItemController;
     class AbstractItemModel;
+    class ContextObject;
 
     /*!
       \brief Abstract class to represent an observable. "Model" part of MVC component. 
@@ -66,8 +67,13 @@ namespace te
 
         /*!
           \brief Refreshes the drawings of the view
-        */ 
+        */
         virtual void refresh() = 0;
+
+				/*!
+				\brief This function is called every time the context is updated. It is usually used by the item to configure its drawings due to changes in the zoom factor or in the DPI of the device.
+				*/
+        virtual void contextUpdated(const ContextObject& context) = 0;
 
         /*!
           \brief Gets the rotation
@@ -85,12 +91,7 @@ namespace te
 				\return true if inverted, false otherwise
 				*/
 				bool isInverted();
-
-				/*!
-				\brief This function is called every time the context is updated. It is usually used by the item to configure its drawings due to changes in the zoom factor or in the DPI of the device.
-				*/
-				virtual void contextUpdated(ContextObject context);
-
+				
       protected:
 
         AbstractItemController* m_controller; //!< The controller

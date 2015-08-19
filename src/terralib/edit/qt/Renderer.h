@@ -40,8 +40,6 @@
 #include <string>
 #include <vector>
 
-#include "../../edit/qt/core/EditionManager.h"
-
 namespace te
 {
   namespace gm
@@ -74,9 +72,9 @@ namespace te
 
         void begin(QPaintDevice* device, const te::gm::Envelope& e, int srid);
 
-        void drawRepositories(te::edit::EditionManager* editionManager, const te::gm::Envelope& e, int srid);
+        void drawRepositories(const te::gm::Envelope& e, int srid);
 
-        void drawRepository(te::edit::EditionManager* editionManager, const std::string& source, const te::gm::Envelope& e, int srid);
+        void drawRepository(const std::string& source, const te::gm::Envelope& e, int srid);
 
         void prepare(te::gm::GeomType type);
 
@@ -127,7 +125,6 @@ namespace te
 
         te::gm::GeomType m_currentGeomType;
         bool m_styleChanged;
-
     };
 
   } // end namespace edit

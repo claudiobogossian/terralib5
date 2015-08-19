@@ -94,6 +94,7 @@ void te::layout::Variant::convertValue( const void* valueCopy )
   bool* bValue = 0;
   te::color::RGBAColor* colorValue = 0;
   Font* fontValue = 0;
+  te::gm::Envelope* envelopeValue = 0;
   GenericVariant* generic = 0;
   te::gm::GeometryShrPtr geometryPtr(0);
 
@@ -191,6 +192,17 @@ void te::layout::Variant::convertValue( const void* valueCopy )
       {
         null = false;
         m_fontValue = *fontValue;
+        m_complex = true;
+      }
+   }
+   else if(m_type == dataType->getDataTypeEnvelope())
+   {
+      // Cast it back to a string pointer.
+      envelopeValue = static_cast<te::gm::Envelope*>(value);
+      if(envelopeValue)
+      {
+        null = false;
+        m_envelopeValue = *envelopeValue;
         m_complex = true;
       }
    }
@@ -318,6 +330,31 @@ void te::layout::Variant::fromPtree( boost::property_tree::ptree tree, EnumType*
       m_complex = true;
       null = false;
     }
+    else if(type == dataType->getDataTypeEnvelope())
+    {
+      std::string color = tree.data();
+
+      std::vector<std::string> strings;
+      std::istringstream f(color);
+      std::string s;    
+      while (std::getline(f, s, ',')) 
+      {
+        strings.push_back(s);
+      }
+
+      if(strings.empty() || strings.size() > 4)
+        return;
+
+      int x1 = std::atoi(strings[0].c_str());
+      int y1 = std::atoi(strings[1].c_str());
+      int x2 = std::atoi(strings[2].c_str());
+      int y2 = std::atoi(strings[3].c_str());
+
+      m_envelopeValue.init(x1, y1, x2, y2);
+
+      m_complex = true;
+      null = false;
+    }
     else if(type == dataType->getDataTypeGenericVariant())
     {
       m_generic.fromPtree(tree);
@@ -375,6 +412,11 @@ const te::color::RGBAColor& te::layout::Variant::toColor() const
 const te::layout::Font& te::layout::Variant::toFont() const
 {
   return m_fontValue;
+}
+
+const te::gm::Envelope& te::layout::Variant::toEnvelope() const
+{
+  return m_envelopeValue;
 }
 
 bool te::layout::Variant::isNull() const
@@ -442,6 +484,13 @@ std::string te::layout::Variant::convertToString() const
   else if(m_type == dataType->getDataTypeFont())
   {
     s_convert = m_fontValue.toString();
+  }
+  else if(m_type == dataType->getDataTypeEnvelope())
+  {
+    s_convert = toString(m_envelopeValue.getLowerLeftX());
+		s_convert += "," + toString(m_envelopeValue.getLowerLeftY());
+		s_convert += "," + toString(m_envelopeValue.getUpperRightX());
+		s_convert += "," + toString(m_envelopeValue.getUpperRightY());
   }
   else if(m_type == dataType->getDataTypeBool()) 
   {
@@ -550,6 +599,14 @@ std::string te::layout::Variant::toString( int value ) const
   ss << value;//add number to the stream
   
   return ss.str();
+}
+
+std::string te::layout::Variant::toString(double value) const
+{
+	std::stringstream ss;//create a stringstream
+	ss << value;//add number to the stream
+
+	return ss.str();
 }
 
 bool te::layout::Variant::toBool( std::string str )

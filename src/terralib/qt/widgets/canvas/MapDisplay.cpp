@@ -415,8 +415,8 @@ void te::qt::widgets::MapDisplay::adjustExtent(const QSize& oldSize, const QSize
 
   setExtent(e);
 }
-double te::qt::widgets::MapDisplay::getScale() {
-
+double te::qt::widgets::MapDisplay::getScale() const
+{
   double wPixels = this->getWidth();
   double hPixels = this->getHeight();
   double wMM = this->getWidthMM();

@@ -30,40 +30,71 @@
 
 te::layout::EnumToolType::EnumToolType() :
   m_noneTool(0),
-	m_zoomAreaTool(0)
+  m_zoomAreaTool(0),
+  m_createLineItemTool(0),
+  m_createPolygonItemTool(0)
 {
   init();
 }
 
 te::layout::EnumToolType::~EnumToolType()
 {
-	if (m_noneTool)
+  if (m_noneTool)
   {
-		delete m_noneTool;
-		m_noneTool = 0;
+    delete m_noneTool;
+    m_noneTool = 0;
   }
-	if (m_zoomAreaTool)
+  if (m_zoomAreaTool)
   {
-		delete m_zoomAreaTool;
-		m_zoomAreaTool = 0;
+    delete m_zoomAreaTool;
+    m_zoomAreaTool = 0;
+  }
+  if (m_createLineItemTool)
+  {
+    delete m_createLineItemTool;
+    m_createLineItemTool = 0;
+  }
+  if (m_createLineItemTool)
+  {
+    delete m_createLineItemTool;
+    m_createLineItemTool = 0;
+  }
+  if (m_createPolygonItemTool)
+  {
+    delete m_createPolygonItemTool;
+    m_createPolygonItemTool = 0;
   }
 }
 
 void te::layout::EnumToolType::init()
 {
-	m_noneTool = createEnum("NoneTool", this);
+  m_noneTool = createEnum("NoneTool", this);
 
-	m_zoomAreaTool = createEnum("ZoomAreaTool", this);
+  m_zoomAreaTool = createEnum("ZoomAreaTool", this);
+
+  m_createLineItemTool = createEnum("CreateLineItemTool", this);
+
+  m_createPolygonItemTool = createEnum("CreatePolygonItemTool", this);
 }
 
 te::layout::EnumType* te::layout::EnumToolType::getNoneTool() const
 {
-	return m_noneTool;
+  return m_noneTool;
 }
 
 te::layout::EnumType* te::layout::EnumToolType::getZoomAreaTool() const
 {
-	return m_zoomAreaTool;
+  return m_zoomAreaTool;
+}
+
+te::layout::EnumType* te::layout::EnumToolType::getCreateLineItemTool() const
+{
+  return m_createLineItemTool;
+}
+
+te::layout::EnumType* te::layout::EnumToolType::getCreatePolygonItemTool() const
+{
+  return m_createPolygonItemTool;
 }
 
 

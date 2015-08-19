@@ -140,7 +140,7 @@ const te::layout::Property& te::layout::AbstractItemModel::getProperty(const std
 	return m_properties.getProperty(propertyName);
 }
 
-void te::layout::AbstractItemModel::setProperty(const Property& property)
+void te::layout::AbstractItemModel::setProperty(const te::layout::Property& property)
 {
 	m_properties.updateProperty(property);
 	notify();
@@ -151,7 +151,7 @@ const te::layout::Properties& te::layout::AbstractItemModel::getProperties() con
 	return m_properties;
 }
 
-void te::layout::AbstractItemModel::setProperties(const Properties& properties)
+void te::layout::AbstractItemModel::setProperties(const te::layout::Properties& properties)
 {
 	const std::vector<Property>& vecProperties = properties.getProperties();
 	for (unsigned int i = 0; i < vecProperties.size(); ++i)

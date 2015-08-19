@@ -43,18 +43,6 @@ source_group("Header Files\\tools"  FILES ${TERRALIB_TOOLS_HDR_FILES})
 
 file(GLOB TERRALIB_UI_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/edit/qt/ui/*.ui)
 
-file(GLOB TERRALIB_CORE_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/edit/qt/core/*.cpp)
-file(GLOB TERRALIB_CORE_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/edit/qt/core/*.h)
-
-source_group("Source Files\\core"  FILES ${TERRALIB_CORE_SRC_FILES})
-source_group("Header Files\\core"  FILES ${TERRALIB_CORE_HDR_FILES})
-
-file(GLOB TERRALIB_CORE_COMMAND_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/edit/qt/core/command/*.cpp)
-file(GLOB TERRALIB_CORE_COMMAND_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/edit/qt/core/command/*.h)
-
-source_group("Source Files\\core\\command"  FILES ${TERRALIB_CORE_COMMAND_SRC_FILES})
-source_group("Header Files\\core\\command"  FILES ${TERRALIB_CORE_COMMAND_HDR_FILES})
-
 if(Qt5_FOUND)
 
 # uic'ing
@@ -66,9 +54,7 @@ if(Qt5_FOUND)
 
   set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES}
                      ${TERRALIB_TOOLS_SRC_FILES} ${TERRALIB_TOOLS_HDR_FILES}
-                     ${TERRALIB_GEN_HDR_FILES} 
-					 ${TERRALIB_CORE_SRC_FILES} ${TERRALIB_CORE_HDR_FILES}
-					 ${TERRALIB_CORE_COMMAND_SRC_FILES} ${TERRALIB_CORE_COMMAND_HDR_FILES})
+                     ${TERRALIB_GEN_HDR_FILES})
 
   add_library(terralib_mod_edit_qt SHARED ${TERRALIB_FILES})
 
@@ -91,11 +77,7 @@ else() # QT4_FOUND
   add_definitions(${QT_DEFINITIONS})
 
   # moc'ing
-    set(TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/edit/qt/tools/AggregateAreaTool.h
-								   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/edit/qt/tools/DeleteGeometryTool.h
-								   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/edit/qt/tools/MergeGeometriesTool.h
-								   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/edit/qt/tools/SubtractAreaTool.h
-								   ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/edit/qt/tools/VertexTool.h
+    set(TERRALIB_HDRS_TO_MOC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/edit/qt/tools/VertexTool.h
                                    ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/edit/qt/tools/CreatePolygonTool.h
                                    ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/edit/qt/tools/CreateLineTool.h
                                    ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/edit/qt/tools/MoveGeometryTool.h
@@ -104,11 +86,9 @@ else() # QT4_FOUND
 
     QT4_WRAP_CPP(TERRALIB_GEN_SRC_FILES ${TERRALIB_HDRS_TO_MOC_FILES})
 
-   set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES}
-                     ${TERRALIB_TOOLS_SRC_FILES} ${TERRALIB_TOOLS_HDR_FILES}
-                     ${TERRALIB_GEN_HDR_FILES} ${TERRALIB_GEN_SRC_FILES}
-					 ${TERRALIB_CORE_SRC_FILES} ${TERRALIB_CORE_HDR_FILES}
-					 ${TERRALIB_CORE_COMMAND_SRC_FILES} ${TERRALIB_CORE_COMMAND_HDR_FILES})
+     set(TERRALIB_FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES}
+                        ${TERRALIB_TOOLS_SRC_FILES} ${TERRALIB_TOOLS_HDR_FILES}
+                        ${TERRALIB_GEN_SRC_FILES} ${TERRALIB_GEN_HDR_FILES})
 
     add_library(terralib_mod_edit_qt SHARED ${TERRALIB_FILES})
 

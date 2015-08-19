@@ -187,7 +187,7 @@ namespace te
           /*!
             \brief Calculates and return the current scale
           */
-          virtual double getScale();
+          virtual double getScale() const;
 
           /*!
             \brief Defines the scale and calculates envelope based on the requested scale
@@ -303,7 +303,7 @@ namespace te
           int m_interval;              //!< Timeout interval in milliseconds to redraw.
           bool m_isDrawing;            //!< A flag that indicates if the map display is drawing.
           std::map<te::map::AbstractLayer*, te::qt::widgets::Canvas*> m_layerCanvasMap; //!< A map that associates a layer to a canvas.
-          double m_scale;              //!< Current calculated scale
+          mutable double m_scale;      //!< Current calculated scale
       };
 
     } // end namespace widgets

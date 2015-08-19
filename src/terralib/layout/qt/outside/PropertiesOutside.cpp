@@ -278,21 +278,6 @@ bool te::layout::PropertiesOutside::sendPropertyToSelectedItems( Property proper
 
 				}
 			}
-      else
-      {
-        AbstractItemView* absItem = dynamic_cast<AbstractItemView*>(item);
-        if(absItem)
-        {
-          Properties oldCommand = absItem->getController()->getModel()->getProperties();
-
-          absItem->getController()->getModel()->setProperty(property);
-
-          Properties newCommand = absItem->getController()->getModel()->getProperties();
-          commandItems.push_back(item);
-          commandOld.push_back(oldCommand);
-          commandNew.push_back(newCommand);
-        }
-      }
    }
 
   if(!m_graphicsItems.isEmpty())
@@ -327,6 +312,46 @@ void te::layout::PropertiesOutside::changeMapVisitable( Property property )
   if(!iUtils)
     return;
 
+  MapItem* mapItem = iUtils->getMapItem(name);
+  if(!mapItem)
+    return;
+
+  //the selected item will now be the observer and the mapItem will be the subject
+  foreach( QGraphicsItem* selectedItem, m_graphicsItems) 
+  {
+    if(selectedItem)
+    {
+      AbstractItemView* selectedAbsView = dynamic_cast<AbstractItemView*>(selectedItem);
+      if(selectedAbsView != 0)
+      {
+        NewObserver* selectedObserver = dynamic_cast<NewObserver*>(selectedAbsView->getController()->getModel());
+        if(selectedObserver != 0)
+        {
+          mapItem->getController()->getModel()->attach(selectedObserver);
+        }
+      }
+    }
+  }
+
+
+
+  /*
+  if(property.getName().compare(m_sharedProps->getMapName()) != 0)
+    return;
+
+  std::string name = property.getValue().toString();
+  if(name.compare("") == 0)
+  {
+    name = property.getOptionByCurrentChoice().toString();
+  }
+
+  if(name.compare("") == 0)
+    return;
+
+  ItemUtils* iUtils = Context::getInstance().getItemUtils();
+  if(!iUtils)
+    return;
+
   MapItem* item = iUtils->getMapItem(name);
   if(!item)
     return;
@@ -341,12 +366,14 @@ void te::layout::PropertiesOutside::changeMapVisitable( Property property )
     return;
 
   te::layout::VisitorUtils::getInstance().changeMapVisitable(m_graphicsItems, model);
+  */
 }
 
 te::layout::MapModel* te::layout::PropertiesOutside::getMapModel( std::string nameMap )
 {
   MapModel* map = 0;
 
+  /*
   ItemUtils* iUtils = Context::getInstance().getItemUtils();
   if(!iUtils)
     return map;
@@ -361,6 +388,7 @@ te::layout::MapModel* te::layout::PropertiesOutside::getMapModel( std::string na
 
   MapModel* model = dynamic_cast<MapModel*>(obsMdl);
   map = model;
+  */
 
   return map;
 }

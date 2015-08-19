@@ -248,14 +248,14 @@ namespace te
 		  		  
 		      \return new object 
         */
-        QGraphicsItem* createLine();
+        QGraphicsItem* createLineItem();
 
        /*!
           \brief Create graphic object of type PolygonItem
 		  		  
 		      \return new object 
         */
-        QGraphicsItem* createPolygon();
+        QGraphicsItem* createPolygonItem();
 
         /*!
           \brief Create graphic object of type SVGItem

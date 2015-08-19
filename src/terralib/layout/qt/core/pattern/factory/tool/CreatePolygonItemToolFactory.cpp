@@ -18,47 +18,29 @@
  */
 
 /*!
-  \file terralib/edit/qt/Utils.h
-   
-  \brief Utility Qt functions for TerraLib Edit module.
+  \file terralib/layout/qt/core/pattern/factory/CreatePolygonItemToolFactory.cpp
+
+  \brief This is the concrete factory for zoom area tools.
 */
 
-#ifndef __TERRALIB_EDIT_INTERNAL_QTUTILS_H
-#define __TERRALIB_EDIT_INTERNAL_QTUTILS_H
-
 // TerraLib
-#include "../../geometry/Coord2D.h"
-#include "Config.h"
+#include "CreatePolygonItemToolFactory.h"
+#include "../../../../../core/enum/Enums.h"
+#include "../../../tools/CreatePolygonItemTool.h"
+#include "../../../View.h"
 
-// Qt
-#include <QMouseEvent>
-#include <QPointF>
-
-// STL
-#include <vector>
-
-namespace te
+te::layout::AbstractLayoutTool* te::layout::CreatePolygonItemToolFactory::build(ToolFactoryParamsCreate params)
 {
-// Forward declarations
-  namespace gm
-  {
-    class Geometry;
-    class LineString;
-  }
+  return new CreatePolygonItemTool(params.getView(), params.getView());
+}
 
-  namespace qt
-  {
-    namespace widgets
-    {
-      class Canvas;
-    }
-  }
+te::layout::CreatePolygonItemToolFactory::CreatePolygonItemToolFactory() :
+  ToolFactory(Enums::getInstance().getEnumToolType()->getCreatePolygonItemTool()->getName())
+{
 
-  namespace edit
-  {
-    TEEDITQTEXPORT QPointF GetPosition(QMouseEvent* e);
+}
 
-  } // end namespace edit
-}   // end namespace te
+te::layout::CreatePolygonItemToolFactory::~CreatePolygonItemToolFactory()
+{
 
-#endif  // __TERRALIB_EDIT_INTERNAL_QTUTILS_H
+}
