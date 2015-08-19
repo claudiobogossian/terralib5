@@ -83,6 +83,14 @@ namespace te
 
 				virtual te::gm::Envelope getBoundingRect();
 
+				/*!
+				\brief Checks if the coordinate is contained within the bounding rectangle.
+
+				\param coord coordinated to be verified
+				\return true if contains, false otherwise
+				*/
+				virtual bool contains(const te::gm::Coord2D &coord) const;
+
       protected:
 
         Properties            m_properties; //!< The properties of the item

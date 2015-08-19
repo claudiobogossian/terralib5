@@ -51,8 +51,6 @@ te::layout::ChangePropertyCommand::ChangePropertyCommand( std::vector<QGraphicsI
   std::vector<Properties> allNew, PropertiesOutside* outside /*= 0*/, QUndoCommand *parent /*= 0 */ ) :
   QUndoCommand(parent),
   m_item(0),
-  m_oldProperties(0),
-  m_newProperties(0),
   m_outside(outside),
   m_items(items),
   m_allOldProperties(allOld),

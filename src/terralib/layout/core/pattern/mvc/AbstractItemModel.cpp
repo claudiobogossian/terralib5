@@ -201,3 +201,29 @@ te::gm::Envelope te::layout::AbstractItemModel::getBoundingRect()
 	return box;
 }
 
+bool te::layout::AbstractItemModel::contains(const te::gm::Coord2D &coord) const
+{
+	te::gm::Envelope env(coord.x, coord.y, coord.x, coord.y);
+
+	std::string propertyX = "x";
+	std::string propertyY = "y";
+	std::string propertyWidth = "width";
+	std::string propertyHeight = "height";
+
+	Property prop_x = m_properties.getProperty(propertyX);
+	Property prop_y = m_properties.getProperty(propertyY);
+	Property prop_width = m_properties.getProperty(propertyWidth);
+	Property prop_height = m_properties.getProperty(propertyHeight);
+
+	te::gm::Envelope box;
+	box.m_llx = prop_x.getValue().toDouble();
+	box.m_lly = prop_y.getValue().toDouble();
+	box.m_urx = box.m_llx + prop_width.getValue().toDouble();
+	box.m_ury = box.m_lly + prop_height.getValue().toDouble();
+	
+	if (env.isValid())
+		return box.contains(env);
+
+	return false;
+}
+
