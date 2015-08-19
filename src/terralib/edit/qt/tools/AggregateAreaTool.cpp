@@ -14,6 +14,8 @@
 #include "../../Utils.h"
 #include "../Renderer.h"
 #include "../Utils.h"
+#include "../core/command/UpdateCommand.h"
+#include "../core/UndoStackManager.h"
 #include "AggregateAreaTool.h"
 
 // Qt
@@ -29,8 +31,9 @@
 #include <iostream>
 
 te::edit::AggregateAreaTool::AggregateAreaTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent)
-: CreateLineTool(display, layer, Qt::ArrowCursor, 0),
+: CreateLineTool(display, layer, Qt::ArrowCursor, parent),
 m_feature(0)
+//,m_updateWatches(0)//std::vector<Feature*>())
 {
 
   // Signals & slots
@@ -55,19 +58,43 @@ bool te::edit::AggregateAreaTool::mousePressEvent(QMouseEvent* e)
   }
 
   if (m_feature == 0)
-    pickFeature(m_layer, GetPosition(e));
+    pickFeature(m_layer);
 
   return te::edit::CreateLineTool::mousePressEvent(e);
 }
 
 bool te::edit::AggregateAreaTool::mouseMoveEvent(QMouseEvent* e)
 {
-  return te::edit::CreateLineTool::mouseMoveEvent(e);
+  if (m_coords.size() < 1 || m_isFinished)
+    return false;
+
+  QPointF pos = GetPosition(e);
+
+  QPointF pw = m_display->transform(pos);
+
+  te::gm::Coord2D coord = te::gm::Coord2D(pw.x(), pw.y());
+
+  TrySnap(coord, m_display->getSRID());
+
+  m_coords.push_back(coord);
+
+  m_lastPos = te::gm::Coord2D(coord.x, coord.y);
+
+  if (e->buttons() & Qt::LeftButton)
+    m_continuousMode = true;
+  else
+    m_continuousMode = false;
+
+  draw(true);
+
+  return false;
 }
 
 bool te::edit::AggregateAreaTool::mouseReleaseEvent(QMouseEvent* e)
 {
-  return true;
+  storeUndoCommand();
+
+  return false;
 }
 
 bool te::edit::AggregateAreaTool::mouseDoubleClickEvent(QMouseEvent* e)
@@ -88,7 +115,7 @@ bool te::edit::AggregateAreaTool::mouseDoubleClickEvent(QMouseEvent* e)
 
     m_isFinished = true;
 
-    draw();
+    draw(false);
 
     storeEditedFeature();
 
@@ -101,7 +128,7 @@ bool te::edit::AggregateAreaTool::mouseDoubleClickEvent(QMouseEvent* e)
   }
 }
 
-void te::edit::AggregateAreaTool::draw()
+void te::edit::AggregateAreaTool::draw(bool drawline)
 {
   
   const te::gm::Envelope& env = m_display->getExtent();
@@ -121,6 +148,14 @@ void te::edit::AggregateAreaTool::draw()
 
   if (!m_coords.empty())
   {
+    if (drawline)
+    {
+      // Draw the geometry being created
+      te::gm::Geometry* line = te::edit::CreateLineTool::buildLine();
+      renderer.draw(line, true);
+    }
+
+    // Draw the geometry being created
     if (m_coords.size() > 3)
       drawPolygon();
 
@@ -176,7 +211,7 @@ te::gm::Geometry* te::edit::AggregateAreaTool::buildPolygon()
 
 }
 
-void te::edit::AggregateAreaTool::pickFeature(const te::map::AbstractLayerPtr& layer, const QPointF& pos)
+void te::edit::AggregateAreaTool::pickFeature(const te::map::AbstractLayerPtr& layer)
 {
   reset();
 
@@ -193,12 +228,34 @@ void te::edit::AggregateAreaTool::pickFeature(const te::map::AbstractLayerPtr& l
     if (ds->moveNext())
     {
 
+      te::gm::Coord2D coord(0, 0);
+
       std::auto_ptr<te::gm::Geometry> geom = ds->getGeometry(geomProp->getName());
-      te::gm::Envelope env(*geom->getMBR());
+      te::gm::Envelope auxEnv(*geom->getMBR());
 
-      m_feature = PickFeature(m_layer, env, m_display->getSRID());
+      // Try finds the geometry centroid
+      switch (geom->getGeomTypeId())
+      {
+        case te::gm::PolygonType:
+        {
+          te::gm::Polygon* p = dynamic_cast<te::gm::Polygon*>(geom.get());
+          coord = *p->getCentroidCoord();
 
-      std::string f = m_feature->getId()->getValueAsString();
+          break;
+        }
+        case te::gm::MultiPolygonType:
+        {
+          te::gm::MultiPolygon* mp = dynamic_cast<te::gm::MultiPolygon*>(geom.get());
+          coord = *mp->getCentroidCoord();
+        
+          break;
+        }
+      }
+
+      // Build the search envelope
+      te::gm::Envelope e(coord.getX(), coord.getY(), coord.getX(), coord.getY());
+
+      m_feature = PickFeature(m_layer, e, m_display->getSRID(), te::edit::GEOMETRY_UPDATE);
 
     }
 
@@ -234,12 +291,12 @@ void te::edit::AggregateAreaTool::reset()
 
 void te::edit::AggregateAreaTool::onExtentChanged()
 {
-  draw();
+  draw(true);
 }
 
 void te::edit::AggregateAreaTool::storeEditedFeature()
 {
-  RepositoryManager::getInstance().addGeometry(m_layer->getId(), m_feature->getId()->clone(), dynamic_cast<te::gm::Geometry*>(buildPolygon()->clone()));
+  RepositoryManager::getInstance().addGeometry(m_layer->getId(), m_feature->getId()->clone(), dynamic_cast<te::gm::Geometry*>(buildPolygon()->clone()), te::edit::GEOMETRY_UPDATE);
 }
 
 te::gm::Geometry* te::edit::AggregateAreaTool::Union(te::gm::Geometry* g1, Feature* feature_g2)
@@ -303,4 +360,14 @@ te::gm::Geometry* te::edit::AggregateAreaTool::Union(te::gm::Geometry* g1, Featu
   }
 
   return g1;
+}
+
+void te::edit::AggregateAreaTool::storeUndoCommand()
+{
+
+  //m_updateWatches.push_back(te::edit::CreateLineTool::buildLine());
+
+  //QUndoCommand* command = new UpdateCommand(m_updateWatches, m_display, m_layer);
+  //UndoStackManager::getInstance().addUndoStack(command);
+
 }

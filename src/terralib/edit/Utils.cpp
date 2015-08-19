@@ -52,7 +52,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include <cmath>
 #include <memory>
 
-te::edit::Feature* te::edit::PickFeature(const te::map::AbstractLayerPtr& layer, const te::gm::Envelope& env, int srid)
+te::edit::Feature* te::edit::PickFeature(const te::map::AbstractLayerPtr& layer, const te::gm::Envelope& env, int srid, OperationType operation)
 {
   if (layer->getVisibility() != te::map::VISIBLE || !layer->isValid())
     return 0;
@@ -100,7 +100,7 @@ te::edit::Feature* te::edit::PickFeature(const te::map::AbstractLayerPtr& layer,
     std::auto_ptr<te::gm::Geometry> g(dataset->getGeometry(gp->getName()));
 
     if (g->contains(&point) || g->crosses(geometryFromEnvelope.get()) || geometryFromEnvelope->contains(g.get())) // Geometry found!
-      return new Feature(te::da::GenerateOID(dataset.get(), oidPropertyNames), g.release());
+      return new Feature(te::da::GenerateOID(dataset.get(), oidPropertyNames), g.release(), operation);
   }
 
   return 0;

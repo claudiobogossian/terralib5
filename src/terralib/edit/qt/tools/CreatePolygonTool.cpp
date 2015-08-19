@@ -38,6 +38,8 @@
 #include "../../Utils.h"
 #include "../Renderer.h"
 #include "../Utils.h"
+#include "../core/command/AddCommand.h"
+#include "../core/UndoStackManager.h"
 #include "CreatePolygonTool.h"
 
 // Qt
@@ -53,11 +55,11 @@
 #include <QMessageBox>
 
 te::edit::CreatePolygonTool::CreatePolygonTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, QObject* parent)
-  : AbstractTool(display, parent),
+: AbstractTool(display, parent),
     m_layer(layer),
+    m_feature(0),
     m_continuousMode(false),
-    m_isFinished(false),
-    m_feature(0)
+    m_isFinished(false)
 {
   setCursor(cursor);
 
@@ -123,11 +125,6 @@ bool te::edit::CreatePolygonTool::mouseMoveEvent(QMouseEvent* e)
   return false;
 }
 
-bool te::edit::CreatePolygonTool::mouseReleaseEvent(QMouseEvent* e)
-{
-  return false;
-}
-
 bool te::edit::CreatePolygonTool::mouseDoubleClickEvent(QMouseEvent* e)
 {
   if(e->button() != Qt::LeftButton)
@@ -139,6 +136,9 @@ bool te::edit::CreatePolygonTool::mouseDoubleClickEvent(QMouseEvent* e)
   m_isFinished = true;
 
   storeNewGeometry();
+
+  storeUndoCommand();
+
 
   return true;
 }
@@ -249,7 +249,7 @@ te::gm::Geometry* te::edit::CreatePolygonTool::buildLine()
 
 void te::edit::CreatePolygonTool::storeNewGeometry()
 {
-  RepositoryManager::getInstance().addGeometry(m_layer->getId(), buildPolygon());
+  RepositoryManager::getInstance().addGeometry(m_layer->getId(), buildPolygon(),te::edit::GEOMETRY_CREATE);
 }
 
 void te::edit::CreatePolygonTool::onExtentChanged()
@@ -260,4 +260,15 @@ void te::edit::CreatePolygonTool::onExtentChanged()
   m_coords.push_back(m_lastPos);
 
   draw();
+}
+
+void te::edit::CreatePolygonTool::storeUndoCommand()
+{
+  m_feature = RepositoryManager::getInstance().getFeature(m_layer->getId(), *buildPolygon()->getMBR(), buildPolygon()->getSRID());
+
+  m_addWatches[m_feature->getId()->getValueAsString()] = (m_feature->clone());
+
+  QUndoCommand* command = new AddCommand(m_addWatches, m_feature->clone(), m_display, m_layer);
+
+  UndoStackManager::getInstance().addUndoStack(command);
 }

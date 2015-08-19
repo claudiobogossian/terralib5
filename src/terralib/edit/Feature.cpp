@@ -29,7 +29,6 @@
 #include "../datatype/AbstractData.h"
 #include "../geometry/Geometry.h"
 #include "Feature.h"
-#include "Utils.h"
 
 // STL
 #include <cassert>
@@ -47,9 +46,10 @@ te::edit::Feature::Feature(te::da::ObjectId* id)
   assert(m_id);
 }
 
-te::edit::Feature::Feature(te::da::ObjectId* id, te::gm::Geometry* geom)
+te::edit::Feature::Feature(te::da::ObjectId* id, te::gm::Geometry* geom, OperationType operation)
   : m_id(id),
-    m_geom(geom)
+    m_geom(geom),
+    m_operationType(operation)
 {
   assert(m_id);
   assert(m_geom);
@@ -63,10 +63,11 @@ te::edit::Feature::~Feature()
   te::common::FreeContents(m_data);
 }
 
-void te::edit::Feature::set(te::da::ObjectId* id, te::gm::Geometry* geom)
+void te::edit::Feature::set(te::da::ObjectId* id, te::gm::Geometry* geom, OperationType operation)
 {
   setId(id);
   setGeometry(geom);
+  m_operationType = operation;
 }
 
 void te::edit::Feature::setId(te::da::ObjectId* id)
@@ -91,6 +92,11 @@ void te::edit::Feature::setData(const std::map<std::size_t, te::dt::AbstractData
   m_data = data;
 }
 
+void te::edit::Feature::setOperation(OperationType operation)
+{
+  m_operationType = operation;
+}
+
 te::da::ObjectId* te::edit::Feature::getId() const
 {
   return m_id;
@@ -104,6 +110,11 @@ te::gm::Geometry* te::edit::Feature::getGeometry() const
 const std::map<std::size_t, te::dt::AbstractData*>& te::edit::Feature::getData() const
 {
   return m_data;
+}
+
+te::edit::OperationType te::edit::Feature::getOperationType() const
+{
+  return m_operationType;
 }
 
 bool te::edit::Feature::isEquals(te::da::ObjectId* id)
@@ -134,6 +145,8 @@ te::edit::Feature* te::edit::Feature::clone() const
   }
 
   f->setData(data);
+
+  f->setOperation(m_operationType);
 
   return f;
 }

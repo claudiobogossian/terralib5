@@ -98,8 +98,6 @@ namespace te
 
         bool mouseReleaseEvent(QMouseEvent* e);
 
-        bool mouseDoubleClickEvent(QMouseEvent* e);
-
         //@}
 
       private:
@@ -116,6 +114,8 @@ namespace te
 
         void storeEditedFeature();
 
+        void storeUndoCommand();
+
       private slots:
 
         void onExtentChanged();
@@ -128,6 +128,7 @@ namespace te
         QPointF m_origin;                   //!< Origin point on mouse pressed.
         QPointF m_delta;                    //!< Difference between pressed point and destination point on mouse move.
         QPointF m_deltaSum;                 //!< Sum of all delta
+        std::map<std::string, QList<QPointF> > m_moveWatches;
     };
 
   }   // end namespace edit

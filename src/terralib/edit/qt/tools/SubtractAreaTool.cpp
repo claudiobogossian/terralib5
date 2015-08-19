@@ -13,6 +13,7 @@
 #include "../../Utils.h"
 #include "../Renderer.h"
 #include "../Utils.h"
+#include "../core/command/UpdateCommand.h"
 #include "SubtractAreaTool.h"
 
 // Qt
@@ -27,8 +28,9 @@
 #include <memory>
 
 te::edit::SubtractAreaTool::SubtractAreaTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent)
-: CreateLineTool( display, layer, Qt::ArrowCursor, 0),
+: CreateLineTool(display, layer, Qt::ArrowCursor, parent),
 m_feature(0)
+//,m_updateWatches(std::vector<Feature*>())
 {
 
   // Signals & slots
@@ -52,7 +54,7 @@ bool te::edit::SubtractAreaTool::mousePressEvent(QMouseEvent* e)
   }
 
   if (m_feature == 0)
-    pickFeature(m_layer, GetPosition(e));
+    pickFeature(m_layer);
 
   return te::edit::CreateLineTool::mousePressEvent(e);
 }
@@ -60,11 +62,6 @@ bool te::edit::SubtractAreaTool::mousePressEvent(QMouseEvent* e)
 bool te::edit::SubtractAreaTool::mouseMoveEvent(QMouseEvent* e)
 {
   return te::edit::CreateLineTool::mouseMoveEvent(e);
-}
-
-bool te::edit::SubtractAreaTool::mouseReleaseEvent(QMouseEvent* e)
-{
-  return true;
 }
 
 bool te::edit::SubtractAreaTool::mouseDoubleClickEvent(QMouseEvent* e)
@@ -88,6 +85,8 @@ bool te::edit::SubtractAreaTool::mouseDoubleClickEvent(QMouseEvent* e)
     draw();
 
     storeEditedFeature();
+
+    storeUndoCommand();
 
     return true;
   }
@@ -171,7 +170,7 @@ te::gm::Geometry* te::edit::SubtractAreaTool::buildPolygon()
   return mpol;
 }
 
-void te::edit::SubtractAreaTool::pickFeature(const te::map::AbstractLayerPtr& layer, const QPointF& pos)
+void te::edit::SubtractAreaTool::pickFeature(const te::map::AbstractLayerPtr& layer)
 {
   reset();
 
@@ -187,11 +186,34 @@ void te::edit::SubtractAreaTool::pickFeature(const te::map::AbstractLayerPtr& la
 
     if (ds->moveNext())
     {
+      te::gm::Coord2D coord(0, 0);
 
       std::auto_ptr<te::gm::Geometry> geom = ds->getGeometry(geomProp->getName());
-      te::gm::Envelope env(*geom->getMBR());
+      te::gm::Envelope auxEnv(*geom->getMBR());
 
-      m_feature = PickFeature(m_layer, env, m_display->getSRID());
+      // Try finds the geometry centroid
+      switch (geom->getGeomTypeId())
+      {
+        case te::gm::PolygonType:
+        {
+          te::gm::Polygon* p = dynamic_cast<te::gm::Polygon*>(geom.get());
+          coord = *p->getCentroidCoord();
+
+          break;
+        }
+        case te::gm::MultiPolygonType:
+        {
+          te::gm::MultiPolygon* mp = dynamic_cast<te::gm::MultiPolygon*>(geom.get());
+          coord = *mp->getCentroidCoord();
+
+          break;
+        }
+      }
+
+      // Build the search envelope
+      te::gm::Envelope e(coord.getX(), coord.getY(), coord.getX(), coord.getY());
+
+      m_feature = PickFeature(m_layer, e, m_display->getSRID(), te::edit::GEOMETRY_UPDATE);
 
     }
 
@@ -233,10 +255,20 @@ void te::edit::SubtractAreaTool::onExtentChanged()
 
 void te::edit::SubtractAreaTool::storeEditedFeature()
 {
-  RepositoryManager::getInstance().addGeometry(m_layer->getId(), m_feature->getId()->clone(), dynamic_cast<te::gm::Geometry*>(buildPolygon()->clone()));
+  RepositoryManager::getInstance().addGeometry(m_layer->getId(), m_feature->getId()->clone(), dynamic_cast<te::gm::Geometry*>(buildPolygon()->clone()), te::edit::GEOMETRY_UPDATE);
+
 }
 
 te::gm::Geometry* te::edit::SubtractAreaTool::Difference(te::gm::Geometry* g1, te::gm::Geometry* g2)
 {
   return g1->difference(g2);
 }
+
+void te::edit::SubtractAreaTool::storeUndoCommand()
+{
+  //m_updateWatches.push_back(m_feature->clone());
+
+  //QUndoCommand* command = new UpdateCommand(m_StackManager, m_updateWatches, m_display, m_layer);
+  //m_StackManager->addUndoStack(command);
+}
+

@@ -57,7 +57,7 @@ te::edit::DeleteGeometryTool::DeleteGeometryTool(te::qt::widgets::MapDisplay* di
   // Signals & slots
   connect(m_display, SIGNAL(extentChanged()), SLOT(onExtentChanged()));
   
-  pickFeature(m_layer, QPointF());
+  pickFeature(m_layer);
 
   if (m_feature == 0)
   {
@@ -74,33 +74,13 @@ te::edit::DeleteGeometryTool::~DeleteGeometryTool()
   delete m_feature;
 }
 
-bool te::edit::DeleteGeometryTool::mousePressEvent(QMouseEvent* e)
-{
-  return false;
-}
-
-bool te::edit::DeleteGeometryTool::mouseMoveEvent(QMouseEvent* e)
-{
-  return false;
-}
-
-bool te::edit::DeleteGeometryTool::mouseReleaseEvent(QMouseEvent* e)
-{
-  return false;
-}
-
-bool te::edit::DeleteGeometryTool::mouseDoubleClickEvent(QMouseEvent* e)
-{
-  return false;
-}
-
 void te::edit::DeleteGeometryTool::reset()
 {
   delete m_feature;
   m_feature = 0;
 }
 
-void te::edit::DeleteGeometryTool::pickFeature(const te::map::AbstractLayerPtr& layer, const QPointF& pos)
+void te::edit::DeleteGeometryTool::pickFeature(const te::map::AbstractLayerPtr& layer)
 {
   reset();
 
@@ -117,10 +97,34 @@ void te::edit::DeleteGeometryTool::pickFeature(const te::map::AbstractLayerPtr& 
     if (ds->moveNext())
     {
 
+      te::gm::Coord2D coord(0, 0);
+
       std::auto_ptr<te::gm::Geometry> geom = ds->getGeometry(geomProp->getName());
       te::gm::Envelope auxEnv(*geom->getMBR());
 
-      m_feature = PickFeature(m_layer, auxEnv, m_display->getSRID());
+      // Try finds the geometry centroid
+      switch (geom->getGeomTypeId())
+      {
+        case te::gm::PolygonType:
+        {
+          te::gm::Polygon* p = dynamic_cast<te::gm::Polygon*>(geom.get());
+          coord = *p->getCentroidCoord();
+
+          break;
+        }
+        case te::gm::MultiPolygonType:
+        {
+          te::gm::MultiPolygon* mp = dynamic_cast<te::gm::MultiPolygon*>(geom.get());
+          coord = *mp->getCentroidCoord();
+
+          break;
+        }
+      }
+
+      // Build the search envelope
+      te::gm::Envelope e(coord.getX(), coord.getY(), coord.getX(), coord.getY());
+
+      m_feature = PickFeature(m_layer, e, m_display->getSRID(), te::edit::GEOMETRY_DELETE);
 
     }
 
@@ -190,5 +194,7 @@ void te::edit::DeleteGeometryTool::onExtentChanged()
 
 void te::edit::DeleteGeometryTool::storeRemovedFeature()
 {
-  RepositoryManager::getInstance().addGeometry(m_layer->getId(), m_feature->getId()->clone(), dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone()));
+  RepositoryManager::getInstance().addGeometry(m_layer->getId(), m_feature->getId()->clone(), dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone()),te::edit::GEOMETRY_DELETE);
+
 }
+

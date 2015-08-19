@@ -32,6 +32,8 @@
 #include "../../Utils.h"
 #include "../Renderer.h"
 #include "../Utils.h"
+#include "../core/command/MoveCommand.h"
+#include "../core/UndoStackManager.h"
 #include "MoveGeometryTool.h"
 
 // Qt
@@ -119,13 +121,10 @@ bool te::edit::MoveGeometryTool::mouseReleaseEvent(QMouseEvent* e)
   if(m_feature == 0)
     return false;
 
+  storeUndoCommand();
+
   return false;
 
-}
-
-bool te::edit::MoveGeometryTool::mouseDoubleClickEvent(QMouseEvent* e)
-{
-  return false;
 }
 
 void te::edit::MoveGeometryTool::reset()
@@ -147,7 +146,7 @@ void te::edit::MoveGeometryTool::pickFeature(const te::map::AbstractLayerPtr& la
 
   try
   {
-    m_feature = PickFeature(m_layer, env, m_display->getSRID());
+    m_feature = PickFeature(layer, env, m_display->getSRID(), te::edit::GEOMETRY_UPDATE);
 
     draw();
   }
@@ -221,5 +220,16 @@ void te::edit::MoveGeometryTool::onExtentChanged()
 
 void te::edit::MoveGeometryTool::storeEditedFeature()
 {
-  RepositoryManager::getInstance().addGeometry(m_layer->getId(), m_feature->getId()->clone(), dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone()));
+  RepositoryManager::getInstance().addGeometry(m_layer->getId(), m_feature->getId()->clone(), dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone()),te::edit::GEOMETRY_UPDATE);
+
+}
+
+void te::edit::MoveGeometryTool::storeUndoCommand()
+{
+  m_moveWatches[m_feature->getId()->clone()->getValueAsString()].push_back(m_deltaSum);
+
+  QUndoCommand* command = new MoveCommand(m_moveWatches, m_feature->clone(), m_display, m_layer);
+
+  UndoStackManager::getInstance().addUndoStack(command);
+
 }

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,9 +18,9 @@
  */
 
 /*!
-  \file terralib/edit/qt/tools/DeleteGeometryTool.h
+  \file terralib/edit/qt/tools/MoveGeometryTool.h
 
-  \brief This class implements a concrete tool to delete geometries.
+  \brief This class implements a concrete tool to move geometries.
 */
 
 #ifndef __TERRALIB_EDIT_QT_INTERNAL_DELETEGEOMETRYTOOL_H
@@ -82,26 +82,11 @@ namespace te
 
         //@}
 
-        /** @name AbstractTool Methods
-          *  Methods related with tool behavior.
-          */
-        //@{
-
-        bool mousePressEvent(QMouseEvent* e);
-
-        bool mouseMoveEvent(QMouseEvent* e);
-
-        bool mouseReleaseEvent(QMouseEvent* e);
-
-        bool mouseDoubleClickEvent(QMouseEvent* e);
-
-        //@}
-
       private:
 
         void reset();
 
-        void pickFeature(const te::map::AbstractLayerPtr& layer, const QPointF& pos);
+        void pickFeature(const te::map::AbstractLayerPtr& layer);
 
         te::gm::Envelope buildEnvelope(const QPointF& pos);
 

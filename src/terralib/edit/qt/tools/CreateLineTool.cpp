@@ -118,11 +118,6 @@ bool te::edit::CreateLineTool::mouseMoveEvent(QMouseEvent* e)
   return false;
 }
 
-bool te::edit::CreateLineTool::mouseReleaseEvent(QMouseEvent* e)
-{
-  return false;
-}
-
 bool te::edit::CreateLineTool::mouseDoubleClickEvent(QMouseEvent* e)
 {
   if(e->button() != Qt::LeftButton)
@@ -162,7 +157,6 @@ void te::edit::CreateLineTool::draw()
     if(m_continuousMode == false)
       m_coords.pop_back();
 
-  _line = (te::gm::LineString*)line->clone();
   }
 
   renderer.end();
@@ -174,8 +168,6 @@ void te::edit::CreateLineTool::draw()
 void te::edit::CreateLineTool::clear()
 {
   m_coords.clear();
-
-  _line = 0;
 }
 
 te::gm::Geometry* te::edit::CreateLineTool::buildLine()
@@ -197,7 +189,7 @@ te::gm::Geometry* te::edit::CreateLineTool::buildLine()
 
 void te::edit::CreateLineTool::storeNewGeometry()
 {
-  RepositoryManager::getInstance().addGeometry(m_layer->getId(), buildLine());
+  RepositoryManager::getInstance().addGeometry(m_layer->getId(), buildLine(), te::edit::GEOMETRY_CREATE);
 }
 
 void te::edit::CreateLineTool::onExtentChanged()

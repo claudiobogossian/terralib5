@@ -1,26 +1,26 @@
 /*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
-    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
-    TerraLib is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License as published by
-    the Free Software Foundation, either version 3 of the License,
-    or (at your option) any later version.
+TerraLib is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License,
+or (at your option) any later version.
 
-    TerraLib is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License for more details.
+TerraLib is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU Lesser General Public License
-    along with TerraLib. See COPYING. If not, write to
-    TerraLib Team at <terralib-team@terralib.org>.
+You should have received a copy of the GNU Lesser General Public License
+along with TerraLib. See COPYING. If not, write to
+TerraLib Team at <terralib-team@terralib.org>.
 */
 
 /*!
-  \file terralib/edit/qt/Renderer.cpp
+\file terralib/edit/qt/Renderer.cpp
 
-  \brief This is a singleton for rendering geometries and features.
+\brief This is a singleton for rendering geometries and features.
 */
 
 // TerraLib
@@ -94,43 +94,43 @@ void te::edit::Renderer::prepare(te::gm::GeomType type)
 
   switch (type)
   {
-    case te::gm::PolygonType:
-    case te::gm::PolygonZType:
-    case te::gm::PolygonMType:
-    case te::gm::PolygonZMType:
-    case te::gm::MultiPolygonType:
-    case te::gm::MultiPolygonZType:
-    case te::gm::MultiPolygonMType:
-    case te::gm::MultiPolygonZMType:
-   {
-      te::qt::widgets::Config2DrawPolygons(m_canvas, m_polygonFillColor, m_polygonContourColor, m_polygonContourWidth);
-   }
+  case te::gm::PolygonType:
+  case te::gm::PolygonZType:
+  case te::gm::PolygonMType:
+  case te::gm::PolygonZMType:
+  case te::gm::MultiPolygonType:
+  case te::gm::MultiPolygonZType:
+  case te::gm::MultiPolygonMType:
+  case te::gm::MultiPolygonZMType:
+  {
+                                   te::qt::widgets::Config2DrawPolygons(m_canvas, m_polygonFillColor, m_polygonContourColor, m_polygonContourWidth);
+  }
     break;
 
-    case te::gm::LineStringType:
-    case te::gm::LineStringZType:
-    case te::gm::LineStringMType:
-    case te::gm::LineStringZMType:
-    case te::gm::MultiLineStringType:
-    case te::gm::MultiLineStringZType:
-    case te::gm::MultiLineStringMType:
-    case te::gm::MultiLineStringZMType:
-   {
-      te::qt::widgets::Config2DrawLines(m_canvas, m_lineColor, m_lineWidth);
-   }
+  case te::gm::LineStringType:
+  case te::gm::LineStringZType:
+  case te::gm::LineStringMType:
+  case te::gm::LineStringZMType:
+  case te::gm::MultiLineStringType:
+  case te::gm::MultiLineStringZType:
+  case te::gm::MultiLineStringMType:
+  case te::gm::MultiLineStringZMType:
+  {
+                                      te::qt::widgets::Config2DrawLines(m_canvas, m_lineColor, m_lineWidth);
+  }
     break;
 
-    case te::gm::PointType:
-    case te::gm::PointZType:
-    case te::gm::PointMType:
-    case te::gm::PointZMType:
-    case te::gm::MultiPointType:
-    case te::gm::MultiPointZType:
-    case te::gm::MultiPointMType:
-    case te::gm::MultiPointZMType:
-   {
-      te::qt::widgets::Config2DrawPoints(m_canvas, m_pointMark, m_pointSize, m_pointFillColor, m_pointContourColor, m_pointContourWidth);
-   }
+  case te::gm::PointType:
+  case te::gm::PointZType:
+  case te::gm::PointMType:
+  case te::gm::PointZMType:
+  case te::gm::MultiPointType:
+  case te::gm::MultiPointZType:
+  case te::gm::MultiPointMType:
+  case te::gm::MultiPointZMType:
+  {
+                                 te::qt::widgets::Config2DrawPoints(m_canvas, m_pointMark, m_pointSize, m_pointFillColor, m_pointContourColor, m_pointContourWidth);
+  }
     break;
 
   default:

@@ -42,7 +42,8 @@
 te::qt::plugins::edit::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo)
   : te::plugin::Plugin(pluginInfo),
     m_toolbar(0),
-    m_menu(0)
+    m_menu(0),
+    m_action(0)
 {
 }
 

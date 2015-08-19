@@ -42,6 +42,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include "../../Utils.h"
 #include "../Renderer.h"
 #include "../Utils.h"
+#include "../core/command/UpdateCommand.h"
 #include "MergeGeometriesTool.h"
 
 // Qt
@@ -60,6 +61,7 @@ te::edit::MergeGeometriesTool::MergeGeometriesTool(te::qt::widgets::MapDisplay* 
 : AbstractTool(display, parent)
 ,m_layer(layer),
 m_feature(0),
+//m_updateWatches(std::vector<Feature*>()),
 m_oidRef(0),
 m_oidsRemoved(0)
 {
@@ -110,9 +112,9 @@ void te::edit::MergeGeometriesTool::mergeGeometries()
   if (m_oidRef->getValueAsString() == "")
     return;
 
-  ev = getRefEnvelope(ds.get(), m_oidRef, geomProp);
+  ev = getRefEnvelope(ds.get(), geomProp);
 
-  m_feature = PickFeature(m_layer, *ev, m_display->getSRID());
+  m_feature = PickFeature(m_layer, *ev, m_display->getSRID(), te::edit::GEOMETRY_UPDATE);
 
   g = dynamic_cast<te::gm::Geometry*>(gc->getGeometryN(0)->clone());
 
@@ -144,6 +146,8 @@ void te::edit::MergeGeometriesTool::mergeGeometries()
   draw();
 
   storeMergedFeature();
+
+  storeUndoCommand();
 
 }
 
@@ -214,11 +218,11 @@ te::da::ObjectId* te::edit::MergeGeometriesTool::getBaseOID(const te::da::Object
   return objValue;
 }
 
-const te::gm::Envelope* te::edit::MergeGeometriesTool::getRefEnvelope(te::da::DataSet* ds, te::da::ObjectId* oid, te::gm::GeometryProperty* geomProp)
+const te::gm::Envelope* te::edit::MergeGeometriesTool::getRefEnvelope(te::da::DataSet* ds, te::gm::GeometryProperty* geomProp)
 {
   std::string refOID;
   std::vector<std::string> oidPropertyNames;
-  const te::gm::Envelope* env;
+  const te::gm::Envelope* env = new te::gm::Envelope();
   
   te::da::GetOIDPropertyNames(m_layer->getSchema().get(), oidPropertyNames);
 
@@ -228,9 +232,9 @@ const te::gm::Envelope* te::edit::MergeGeometriesTool::getRefEnvelope(te::da::Da
 
   while (ds->moveNext())
   {
-    if (colType == te::dt::INT16_TYPE || colType == te::dt::INT32_TYPE || colType == te::dt::INT64_TYPE || colType == te::dt::DOUBLE_TYPE)
+    if (colType == te::dt::INT16_TYPE || colType == te::dt::INT32_TYPE ||
+      colType == te::dt::INT64_TYPE || colType == te::dt::DOUBLE_TYPE)
     {
-      
       refOID = boost::lexical_cast<std::string>(ds->getInt32(oidPropertyNames[0]));
     }
     else
@@ -282,17 +286,14 @@ void te::edit::MergeGeometriesTool::draw()
 
 void te::edit::MergeGeometriesTool::storeMergedFeature()
 {
-  /*std::set<te::da::ObjectId*, te::common::LessCmp<te::da::ObjectId*> >::const_iterator it;
+  std::set<te::da::ObjectId*, te::common::LessCmp<te::da::ObjectId*> >::const_iterator it;
   
   for (it = m_oidsRemoved->begin(); it != m_oidsRemoved->end(); ++it)
   {
-    m_editionManager->m_repository->addGeometry(m_layer->getId(), (*it)->clone(), dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone()));
-    m_editionManager->m_operation[(*it)->clone()->getValueAsString()] = m_editionManager->removeOp;
+    RepositoryManager::getInstance().addGeometry(m_layer->getId(), (*it)->clone(), dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone()),te::edit::GEOMETRY_DELETE);
   }
 
-  m_editionManager->m_repository->addGeometry(m_layer->getId(), m_feature->getId()->clone(), dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone()));
-  m_editionManager->m_operation[m_feature->getId()->getValueAsString()] = m_editionManager->updateOp;
-  */
+  RepositoryManager::getInstance().addGeometry(m_layer->getId(), m_feature->getId()->clone(), dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone()), te::edit::GEOMETRY_UPDATE);
 }
 
 void te::edit::MergeGeometriesTool::onExtentChanged()
@@ -300,22 +301,11 @@ void te::edit::MergeGeometriesTool::onExtentChanged()
   draw();
 }
 
-bool te::edit::MergeGeometriesTool::mousePressEvent(QMouseEvent* e)
+void te::edit::MergeGeometriesTool::storeUndoCommand()
 {
-  return false;
+  //m_updateWatches.push_back(m_feature->clone());
+
+  //QUndoCommand* command = new UpdateCommand(m_StackManager, m_updateWatches, m_display, m_layer);
+  //m_StackManager->addUndoStack(command);
 }
 
-bool te::edit::MergeGeometriesTool::mouseMoveEvent(QMouseEvent* e)
-{
-  return false;
-}
-
-bool te::edit::MergeGeometriesTool::mouseReleaseEvent(QMouseEvent* e)
-{
-  return false;
-}
-
-bool te::edit::MergeGeometriesTool::mouseDoubleClickEvent(QMouseEvent* e)
-{
-  return false;
-}

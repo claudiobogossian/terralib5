@@ -63,4 +63,3 @@ QPointF te::edit::GetPosition(QMouseEvent* e)
   return e->posF();
 #endif
 }
-

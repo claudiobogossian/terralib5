@@ -80,7 +80,20 @@ namespace te
       std::size_t m_pos;
     };
 
-    TEEDITEXPORT Feature* PickFeature(const te::map::AbstractLayerPtr& layer, const te::gm::Envelope& env, int srid);
+    /*!
+    \enum OperationsType
+
+    \brief Defines the operations (CUD - Create, Update ad Remove) to this tool.
+    */
+    enum OperationType
+    {
+      GEOMETRY_CREATE,       /*!< New Features        */
+      GEOMETRY_UPDATE,       /*!< Features to update. */
+      GEOMETRY_DELETE,       /*!< Features to delete. */
+      NumberOfOperationTypes /*!< Size of Enum */
+    };
+
+    TEEDITEXPORT Feature* PickFeature(const te::map::AbstractLayerPtr& layer, const te::gm::Envelope& env, int srid, OperationType operation);
 
     TEEDITEXPORT void GetLines(te::gm::Geometry* geom, std::vector<te::gm::LineString*>& lines);
 
