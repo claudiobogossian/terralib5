@@ -538,7 +538,7 @@ void TsDataSource::tcGetDataSetByEnvRec2()
   std::vector<std::pair<std::string, te::gm::Envelope> >::iterator itpair;
   std::vector<std::pair<std::string, size_t> >::iterator itsize;
 
-  for(itpair = m_vecNamesAndRecs.begin(), itsize = m_vecNamesSizesRec.begin() ; itpair < m_vecNamesAndRecs.end(), itsize < m_vecNamesSizesRec.end() ; itpair++, itsize++)
+  for(itpair = m_vecNamesAndRecs.begin(), itsize = m_vecNamesSizesRec.begin() ; itpair < m_vecNamesAndRecs.end(); itpair++, itsize++)
   {
     try
     { 
