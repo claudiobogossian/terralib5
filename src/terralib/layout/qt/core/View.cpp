@@ -811,13 +811,14 @@ void te::layout::View::arrowCursor()
 
   EnumType* mode = enumMode->getModeArrowCursor();
 
+  setCurrentMode(enumMode->getModeNone());
   resetDefaultConfig();
   std::vector<te::layout::MapItem*> list = iUtils->getMapItemList();
   if (!list.empty())
   {
     foreach(MapItem* mit, list)
     {
-      mit->changeCurrentTool(mode);
+      //mit->changeCurrentTool(mode);
     }
   }
 }
