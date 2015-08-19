@@ -30,6 +30,7 @@
 
 // TerraLib
 #include "../../Config.h"
+#include "../../../qt/core/ContextObject.h"
 
 namespace te
 {
@@ -51,7 +52,7 @@ namespace te
         /*!
           \brief Constructor
         */ 
-        AbstractItemView(AbstractItemController* controller, AbstractItemModel* model);
+				AbstractItemView(AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix = false);
 
         /*!
           \brief Destructor
@@ -78,9 +79,22 @@ namespace te
         */ 
         virtual void setItemRotation(double rotation) = 0;
 
+				/*!
+				\brief Returns whether the graph component has the inverted matrix, otherwise the matrix scene.
+
+				\return true if inverted, false otherwise
+				*/
+				bool isInverted();
+
+				/*!
+				\brief This function is called every time the context is updated. It is usually used by the item to configure its drawings due to changes in the zoom factor or in the DPI of the device.
+				*/
+				virtual void contextUpdated(ContextObject context);
+
       protected:
 
         AbstractItemController* m_controller; //!< The controller
+				bool										m_invertedMatrix;
     };
   }
 }

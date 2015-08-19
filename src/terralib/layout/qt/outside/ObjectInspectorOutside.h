@@ -48,7 +48,7 @@ namespace te
   namespace layout
   {
 		class AbstractOutsideController;
-		class ItemObserver;
+		class AbstractItemView;
 
     /*!
     \brief Tree of names of all the items entered on the scene, MVC components, using Qt to present the name of each item and its class. Object Inspector.
@@ -87,7 +87,7 @@ namespace te
       
       virtual QtProperty* addProperty(QGraphicsItem* item);
 
-      virtual Property createProperty(ItemObserver* item);
+      virtual Property createProperty(AbstractItemView* item);
 
       virtual void createSubProperty(QGraphicsItem* item, QtProperty* prop);
 

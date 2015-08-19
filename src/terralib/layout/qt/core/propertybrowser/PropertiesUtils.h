@@ -32,6 +32,7 @@
 #include <QObject>
 
 // TerraLib
+#include "../../../core/property/Properties.h"
 #include "../../../core/property/Property.h"
 #include "../../../core/Config.h"
 
@@ -45,8 +46,6 @@ namespace te
 {
   namespace layout
   {
-    class Properties;
-
     /*!
 	  \brief Utility class with functions to facilitate handling of qt properties and properties layout module.
 	  
@@ -60,22 +59,20 @@ namespace te
 
 	    virtual ~PropertiesUtils();
       
-      virtual Properties* intersection(QList<QGraphicsItem*> graphicsItems, bool& window);
+      virtual Properties intersection(QList<QGraphicsItem*> graphicsItems, bool& window);
 
-      virtual Properties* sameProperties(QList<QGraphicsItem*> graphicsItems, bool& window);
+      virtual Properties sameProperties(QList<QGraphicsItem*> graphicsItems, bool& window);
 
-      virtual void contains(std::vector<Properties*>::iterator itend, 
-        std::vector<Properties*>::iterator it, std::string name, bool& result);
+      virtual void contains(std::vector<Properties>::iterator itend, 
+        std::vector<Properties>::iterator it, std::string name, bool& result);
 
-      virtual std::vector<Properties*> getAllProperties(QList<QGraphicsItem*> graphicsItems, bool& window);
+      virtual std::vector<Properties> getAllProperties(QList<QGraphicsItem*> graphicsItems, bool& window);
       
       virtual void addDynamicOptions(Property& property, std::vector<std::string> list);
 
       virtual void checkDynamicProperty(Property& property, QList<QGraphicsItem*> graphicsItems);
 
       virtual void mapNameDynamicProperty(Property& property, QList<QGraphicsItem*> graphicsItems);
-
-      virtual QGraphicsItem* equalsHashCode(Property property, QList<QGraphicsItem*> graphicsItems);
     };
   }
 }

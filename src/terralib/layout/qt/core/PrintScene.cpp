@@ -27,7 +27,6 @@
 
 // TerraLib
 #include "PrintScene.h"
-#include "../../core/pattern/mvc/ItemObserver.h"
 #include "../../core/PaperConfig.h"
 #include "../../core/enum/Enums.h"
 #include "Scene.h"

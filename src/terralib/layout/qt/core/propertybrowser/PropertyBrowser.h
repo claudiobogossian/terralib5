@@ -32,6 +32,7 @@
 // TerraLib
 #include "../../../core/property/Property.h"
 #include "../../../core/Config.h"
+#include "../../../core/property/Properties.h"
 
 //STL
 #include <vector>
@@ -53,7 +54,6 @@ namespace te
 {
   namespace layout
   {
-    class Properties;
     class EnumType;
     class VariantPropertiesBrowser;
     class DialogPropertiesBrowser;
@@ -90,9 +90,9 @@ namespace te
 
         virtual bool updateProperty(Property property);
 
-        virtual void updateProperties(Properties* props);
+        virtual void updateProperties(Properties props);
 
-        virtual Properties* getProperties();
+        virtual Properties getProperties();
       
         virtual void setHasWindows(bool hasWindows = false);
 
@@ -107,7 +107,7 @@ namespace te
         /*
           \brief Verify if have some different property between te::layout::Properties and QtTreePropertyBrowser.
         */
-        virtual bool equalsProperties(Properties* props);
+        virtual bool equalsProperties(Properties props);
                     
       protected slots:
 

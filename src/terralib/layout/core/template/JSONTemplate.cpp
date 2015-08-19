@@ -46,7 +46,7 @@ te::layout::JSONTemplate::~JSONTemplate()
 
 }
 
-bool te::layout::JSONTemplate::exportTemplate( std::vector<te::layout::Properties*> properties )
+bool te::layout::JSONTemplate::exportTemplate( std::vector<te::layout::Properties> properties )
 {
   bool is_save = false;
   /*If the file is opened for output operations and it already existed, 
@@ -70,13 +70,13 @@ bool te::layout::JSONTemplate::exportTemplate( std::vector<te::layout::Propertie
   return is_save;
 }
 
-std::vector<te::layout::Properties*> te::layout::JSONTemplate::importTemplate()
+std::vector<te::layout::Properties> te::layout::JSONTemplate::importTemplate()
 {
   JSON* json = new JSON;
   json->loadFromPath(m_path);
   json->setSerializationPath(m_path); 
   
-  std::vector<te::layout::Properties*> props = json->retrieve();
+  std::vector<te::layout::Properties> props = json->retrieve();
 
   if(json)
   {

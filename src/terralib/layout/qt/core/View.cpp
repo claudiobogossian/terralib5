@@ -45,7 +45,7 @@
 #include "../../item/LineModel.h"
 #include "WaitView.h"
 #include "../item/MapItem.h"
-
+#include "../../core/pattern/mvc/AbstractItemView.h"
 #include "pattern/factory/tool/ToolFactoryParamsCreate.h"
 #include "pattern/factory/tool/ToolFactory.h"
 
@@ -149,10 +149,10 @@ void te::layout::View::mousePressEvent( QMouseEvent * event )
       bool isInvertedMatrix = false;
       foreach(QGraphicsItem* item, selectedItems)
       {
-        ItemObserver* observer = dynamic_cast<ItemObserver*> (item);
+				AbstractItemView* observer = dynamic_cast<AbstractItemView*> (item);
         if (observer)
         {
-          if (observer->isInvertedMatrix() == true)
+          if (observer->isInverted() == true)
           {
             isInvertedMatrix = true;
           }

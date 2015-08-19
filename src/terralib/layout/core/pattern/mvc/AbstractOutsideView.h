@@ -74,7 +74,7 @@ namespace te
 
       /*!
           \brief Method that returns the position llx, lly
-            Reimplement this function in a ItemObserver subclass to provide the item's getPosition implementation.
+            Reimplement this function in a AbstractOusideView subclass to provide the item's getPosition implementation.
 
           \return coordinate
        */ 

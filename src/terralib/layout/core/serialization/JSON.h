@@ -62,13 +62,13 @@ namespace te
 
         virtual boost::property_tree::ptree retrievePTree();
 
-        virtual std::vector<te::layout::Properties*> retrieve();
+        virtual std::vector<te::layout::Properties> retrieve();
 
         virtual bool isEmpty();
 
         virtual void loadFromPath( std::string loadPath );
 
-        virtual void loadFromProperties( std::vector<te::layout::Properties*> properties );
+        virtual void loadFromProperties( std::vector<te::layout::Properties> properties );
 
       protected:
 

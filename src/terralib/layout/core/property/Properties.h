@@ -53,6 +53,11 @@ namespace te
     {
       public:
 
+				/*!
+				\brief Constructor
+				*/
+				Properties();
+
         /*!
           \brief Constructor
 
@@ -187,16 +192,27 @@ namespace te
 
     };
 
+		inline Properties::Properties() :
+			m_objName("unknown"),
+			m_typeObj(0),
+			m_hasWindows(false),
+			m_hashcode(0)
+		{
+
+		}
+
     inline Properties::Properties(std:: string objectName, te::layout::EnumType* type, int hashCode) :
       m_objName(objectName),
       m_typeObj(type),
       m_hasWindows(false),
       m_hashcode(hashCode)
     {
+
     }
 
-    inline Properties::~Properties( void )
+		inline Properties::~Properties(void)
     {
+
     }
 
     inline bool Properties::addProperty(const Property& property)

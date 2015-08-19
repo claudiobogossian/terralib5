@@ -38,6 +38,7 @@ class QtTreePropertyBrowser;
 #include "../../core/pattern/mvc/AbstractOutsideView.h"
 #include "../../../geometry/Envelope.h"
 #include "../../core/Config.h"
+#include "../../core/property/Properties.h"
 
 // STL
 #include <vector>
@@ -55,7 +56,6 @@ namespace te
   namespace layout
   {
     class PropertyBrowser;
-    class Properties;
     class SharedProperties;
     class MapItem;
     class MapModel;
@@ -87,7 +87,7 @@ namespace te
 
         virtual void refreshOutside();
 
-        virtual void updatePropertyBrowser(Properties* props);
+        virtual void updatePropertyBrowser(Properties props);
 
         virtual void clearAll();
 
@@ -113,7 +113,7 @@ namespace te
 
         virtual bool sendPropertyToSelectedItems(Property property);
 
-        virtual bool updateTree(QList<QGraphicsItem*> graphicsItems, Properties* props );
+        virtual bool updateTree(QList<QGraphicsItem*> graphicsItems, Properties props );
 
       protected:
 

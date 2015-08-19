@@ -30,6 +30,7 @@
 
 // TerraLib
 #include "../../geometry/Coord2D.h"
+#include "property/Properties.h"
 #include "Config.h"
 
 // STL
@@ -42,7 +43,6 @@ namespace te
   {
     class Properties;
     class EnumType;
-    class SharedProperties;
 
 	/*!
       \class AbstractBuildGraphicsItem
@@ -80,7 +80,7 @@ namespace te
 
           \return coordinate
         */
-        virtual te::gm::Coord2D findCoordinate(te::layout::Properties* props);
+        virtual te::gm::Coord2D findCoordinate(te::layout::Properties props);
 
 		    /*!
           \brief Search for property of a graphic object that represent Z Value.
@@ -89,7 +89,7 @@ namespace te
 
           \return z value
         */
-        virtual int findZValue(te::layout::Properties* props);
+        virtual int findZValue(te::layout::Properties props);
 
 		    /*!
           \brief Creates the name of the new graphic object. Adds the number that corresponds to how many objects of this type have already been created.
@@ -103,8 +103,7 @@ namespace te
 
       protected:
 
-        SharedProperties*       m_sharedProps; //!< Default properties of all graphics objects.
-        te::layout::Properties* m_props; //!< Properties of a graphic object.
+        te::layout::Properties m_props; //!< Properties of a graphic object.
         te::gm::Coord2D         m_coord; //!< Coordinate of a graphic object.
         int                     m_zValue; //!< Z Value of a graphic object.
         int                     m_id; //!< Id of a graphic object.

@@ -22,7 +22,7 @@
    
    \brief Abstract class that represents a graphic item.  
    Its coordinate system is the same of scene (millimeters). Knows rotate and resize. Stores a pixmap drawn by model.
-   This is also son of ItemObserver, so it can become observer of a model (Observable). 
+   This is also son of AbstractItemView, so it can become observer of a model (Observable). 
    This class will be inherited and will became the view part of the MVC component.
    Who inherits it is required the implementation of updateObserver(ContextItem context) method.
    Drawing starting point is llx, lly.
@@ -70,14 +70,14 @@ namespace te
     /*!
     \brief Abstract class that represents a graphic item.  
       Its coordinate system is the same of scene (millimeters). Knows rotate and resize. Stores a pixmap drawn by model.
-      This is also son of ItemObserver, so it can become observer of a model (Observable). 
+      This is also son of AbstractItemView, so it can become observer of a model (Observable). 
       This class will be inherited and will became the view part of the MVC component.
       Who inherits it is required the implementation of updateObserver(ContextItem context) method.
       Drawing starting point is llx, lly.
       Can't add signals and slots in this class because moc(Qt) doesn't support templates.
       \ingroup layout
 
-      \sa te::layout::ItemObserver
+      \sa te::layout::AbstractItemView
     */
     template <class T>
     class AbstractItem : public T, public AbstractItemView
@@ -159,17 +159,12 @@ namespace te
           \brief Reimplemented from QGraphicsItem to capture changes in the item
          */
         virtual QVariant itemChange ( QGraphicsItem::GraphicsItemChange change, const QVariant & value );
-
-    protected:
-
-        bool m_invertedMatrix;
     };
 
     template <class T>
     inline te::layout::AbstractItem<T>::AbstractItem(AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix)
       : T()
-      , AbstractItemView(controller, model)
-      , m_invertedMatrix(invertedMatrix)
+      , AbstractItemView(controller, model, invertedMatrix)
     {
       T::setFlags(QGraphicsItem::ItemIsMovable
         | QGraphicsItem::ItemIsSelectable

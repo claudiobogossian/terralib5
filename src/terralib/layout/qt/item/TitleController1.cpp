@@ -171,9 +171,9 @@ void te::layout::TitleController1::textChanged()
       properties.addProperty(propertyTitle);
       properties.addProperty(propertyText);
 
-      Properties* oldCommand = new Properties(m_model->getProperties());
+      Properties oldCommand = m_model->getProperties();
       m_model->setProperties(properties);
-      Properties* newCommand = new Properties(m_model->getProperties());
+      Properties newCommand = m_model->getProperties();
 
       QUndoCommand* command = new ChangePropertyCommand(view, oldCommand, newCommand);
 

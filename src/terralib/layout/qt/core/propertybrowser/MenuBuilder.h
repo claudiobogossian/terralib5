@@ -33,6 +33,7 @@
 
 // TerraLib
 #include "../../../core/Config.h"
+#include "../../../core/property/Properties.h"
 #include "DialogPropertiesBrowser.h"
 
 // STL
@@ -90,7 +91,7 @@ namespace te
 
       QMenu*                m_menu;
       QList<QGraphicsItem*> m_graphicsItems;
-      Properties*           m_properties;
+      Properties            m_properties;
       PropertiesUtils*      m_propUtils;
     };
   }

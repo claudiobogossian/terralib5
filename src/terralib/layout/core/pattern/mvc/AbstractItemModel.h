@@ -32,6 +32,10 @@
 #include "../observer/Subject.h"
 #include "../../Config.h"
 #include "../../property/Properties.h"
+#include "terralib/geometry/Envelope.h"
+
+// STL
+#include <string>
 
 namespace te
 {
@@ -39,6 +43,7 @@ namespace te
   {
 
     class Property;
+		class EnumType;
 
     /*!
       \brief Abstract class to represent an observable. "Model" part of MVC component. 
@@ -67,7 +72,16 @@ namespace te
         virtual void setProperty(const Property& property);
 
         virtual const Properties& getProperties() const;
+
         virtual void setProperties(const Properties& properties);
+
+				virtual EnumType* getType();
+
+				virtual std::string getName();
+
+				bool isPrintable();
+
+				virtual te::gm::Envelope getBoundingRect();
 
       protected:
 
