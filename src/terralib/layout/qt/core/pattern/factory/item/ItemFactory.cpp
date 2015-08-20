@@ -73,20 +73,10 @@ te::layout::Observer* te::layout::ItemFactory::make( EnumType* type, ItemParamsC
 
   EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
 
-  if(type == enumObj->getItemGroup())
-  {
-    ItemGroup* group = new ItemGroup(params.getController(), params.getModel());
-    item = (Observer*)group;
-  }
-  else if(type == enumObj->getPaperItem())
+  if(type == enumObj->getPaperItem())
   {
     PaperItem* paper = new PaperItem(params.getController(), params.getModel());
     item = (Observer*)paper;
-  }
-  else if (type == enumObj->getMovingItemGroup())
-  {
-    MovingItemGroup* mItemGroup = new MovingItemGroup(params.getController(), params.getModel());
-    item = (Observer*) mItemGroup;
   }
 
   return item;
@@ -185,6 +175,14 @@ te::layout::AbstractItemView* te::layout::ItemFactory::makeNew(EnumType* type, I
   else if(type == enumObj->getBalloonItem())
   {
     item = new BarCodeItem(params.m_newController, params.m_newModel);
+  }
+  else if(type == enumObj->getItemGroup())
+  {
+    item = new ItemGroup(params.m_newController, params.m_newModel);
+  }
+  else if (type == enumObj->getMovingItemGroup())
+  {
+    item = new MovingItemGroup(params.m_newController, params.m_newModel);
   }
   
   return item;

@@ -23,7 +23,9 @@
 #include "../core/pattern/command/ChangePropertyCommand.h"
 #include "../../core/enum/EnumAlignmentType.h"
 #include "../../core/pattern/mvc/AbstractItemModel.h"
+#include "../../qt/core/Scene.h"
 #include "../../qt/item/TextItem.h"
+
 
 #include <QGraphicsTextItem>
 #include <QTextDocument>

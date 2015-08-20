@@ -24,6 +24,7 @@
 #include "../../core/enum/EnumAlignmentType.h"
 #include "../../core/pattern/mvc/AbstractItemModel.h"
 #include "../../core/property/TextGridSettingsConfigProperties.h"
+#include "../../qt/core/Scene.h"
 #include "../../qt/item/TitleItem.h"
 
 #include <QGraphicsTextItem>

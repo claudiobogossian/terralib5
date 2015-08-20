@@ -24,6 +24,7 @@
 #include "../../../../geometry/Point.h"
 #include "../../item/LineItem.h"
 #include "../../../core/pattern/mvc/AbstractItemView.h"
+#include "../../../core/pattern/mvc/AbstractItemModel.h"
 
 // Qt
 #include <QtGui/QMouseEvent>

@@ -29,8 +29,10 @@
 #include "MapItem.h"
 #include "MapController1.h"
 
+#include "../core/ItemUtils.h"
+#include "../../core/pattern/singleton/Context.h"
+#include "../../qt/core/Scene.h"
 #include "../../../qt/widgets/canvas/MapDisplay.h"
-
 #include "../../../qt/widgets/layer/explorer/AbstractTreeItem.h" //rever esta dependencia
 
 #include <QGraphicsSceneMouseEvent>
