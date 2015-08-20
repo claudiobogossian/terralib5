@@ -32,7 +32,7 @@
 #include "Observer.h"
 #include "../../../../geometry/Coord2D.h"
 #include "../../../../color/RGBAColor.h"
-#include "../../../qt/core/ContextObject.h"
+#include "../../../core/ContextObject.h"
 #include "../../Config.h"
 
 namespace te

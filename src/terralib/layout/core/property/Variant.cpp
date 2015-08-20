@@ -488,9 +488,9 @@ std::string te::layout::Variant::convertToString() const
   else if(m_type == dataType->getDataTypeEnvelope())
   {
     s_convert = toString(m_envelopeValue.getLowerLeftX());
-    s_convert += "," + toString(m_envelopeValue.getLowerLeftY());
-    s_convert += "," + toString(m_envelopeValue.getUpperRightX());
-    s_convert += "," + toString(m_envelopeValue.getUpperRightY());
+		s_convert += "," + toString(m_envelopeValue.getLowerLeftY());
+		s_convert += "," + toString(m_envelopeValue.getUpperRightX());
+		s_convert += "," + toString(m_envelopeValue.getUpperRightY());
   }
   else if(m_type == dataType->getDataTypeBool()) 
   {
@@ -599,6 +599,14 @@ std::string te::layout::Variant::toString( int value ) const
   ss << value;//add number to the stream
   
   return ss.str();
+}
+
+std::string te::layout::Variant::toString(double value) const
+{
+	std::stringstream ss;//create a stringstream
+	ss << value;//add number to the stream
+
+	return ss.str();
 }
 
 bool te::layout::Variant::toBool( std::string str )

@@ -51,7 +51,7 @@ namespace te
 
         virtual void loadFromPath(std::string loadPath) = 0;
 
-        virtual void loadFromProperties(std::vector<te::layout::Properties*> properties) = 0;
+        virtual void loadFromProperties(std::vector<te::layout::Properties> properties) = 0;
 
         virtual void setSerializationPath(std::string path);
 
@@ -61,7 +61,7 @@ namespace te
 
         virtual bool serialize() = 0;
 
-        virtual std::vector<te::layout::Properties*> retrieve() = 0;
+        virtual std::vector<te::layout::Properties> retrieve() = 0;
 
         virtual bool isEmpty() = 0;
 
@@ -73,7 +73,7 @@ namespace te
 
          std::string m_loadPath;
          std::string m_serializationPath;
-         std::vector<te::layout::Properties*> m_properties;
+         std::vector<te::layout::Properties> m_properties;
          std::string m_rootKey;
     };
   }

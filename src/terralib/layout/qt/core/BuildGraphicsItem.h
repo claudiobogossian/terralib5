@@ -43,8 +43,6 @@ namespace te
 {
   namespace layout
   {
-    class ItemModelObservable;
-
 	/*!
   \brief Class responsible for creating or building graphics objects. All objects are children of QGraphicsItem and ItemObserver.
     An object of a type is created from a coordinated. Also an object of a type can be built from the properties saved in a template.
@@ -78,7 +76,7 @@ namespace te
 		  
 		  \return z value
         */
-        QGraphicsItem* rebuildItem(te::layout::Properties* props, bool draw = true);
+        QGraphicsItem* rebuildItem(te::layout::Properties props, bool draw = true);
 		
 		   /*!
          \brief Method to create a graphic object from the properties.

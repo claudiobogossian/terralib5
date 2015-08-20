@@ -31,6 +31,7 @@
 // TerraLib
 #include "terralib/common/AbstractParameters.h"
 #include "terralib/geometry/Coord2D.h"
+#include "../../../../../core/property/Properties.h"
 #include "../../../../../core/Config.h"
 
 // STL
@@ -64,7 +65,7 @@ namespace te
 					\param
 					\param
         */ 
-				ItemFactoryParamsCreate(std::string name, int zValue, int id, te::gm::Coord2D coord = te::gm::Coord2D(), Properties* props = 0);
+				ItemFactoryParamsCreate(std::string name, int zValue, int id, te::gm::Coord2D coord = te::gm::Coord2D(), Properties props = Properties());
 
 				/*!
 				\brief Constructor
@@ -82,7 +83,7 @@ namespace te
 				\param
 				\param
 				*/
-				ItemFactoryParamsCreate(Properties* props);
+				ItemFactoryParamsCreate(Properties props);
 
         /*!
           \brief Destructor
@@ -95,7 +96,7 @@ namespace te
 
 				std::string getName();
 
-				Properties* getProperties();
+				Properties getProperties();
 
 				te::gm::Coord2D getCoord();
 
@@ -105,11 +106,11 @@ namespace te
 
 			protected:
 
-				std::string							m_name;
-				Properties*							m_props; //!< Properties of a graphic object.
-				te::gm::Coord2D         m_coord; //!< Coordinate of a graphic object.
-				int                     m_zValue; //!< Z Value of a graphic object.
-				int                     m_id; //!< Id of a graphic object.
+				std::string						m_name;
+				Properties						m_props; //!< Properties of a graphic object.
+				te::gm::Coord2D       m_coord; //!< Coordinate of a graphic object.
+				int                   m_zValue; //!< Z Value of a graphic object.
+				int                   m_id; //!< Id of a graphic object.
     };
   }
 }

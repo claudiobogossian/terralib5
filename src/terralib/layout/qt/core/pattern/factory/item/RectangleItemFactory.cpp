@@ -32,13 +32,13 @@
 te::layout::AbstractItemView* te::layout::RectangleItemFactory::build(ItemFactoryParamsCreate params)
 {
 	std::string			name = params.getName();
-	Properties*			props = params.getProperties(); 
+	Properties			props = params.getProperties(); 
 	te::gm::Coord2D coord = params.getCoord(); 
 	int             zValue = params.getZValue(); 
 	int             id = params.getId(); 
 
 	RectangleModel* model = new RectangleModel();
-	if (!props)
+	if (props.getProperties().empty())
 	{
 		EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
 
@@ -56,9 +56,9 @@ te::layout::AbstractItemView* te::layout::RectangleItemFactory::build(ItemFactor
 	AbstractItemController* controller = new AbstractItemController(model);
 	AbstractItemView* view = controller->getView();
 
-	if (props)
+	if (!props.getProperties().empty())
 	{
-		model->setProperties(*props);
+		model->setProperties(props);
 	}
 	return dynamic_cast<AbstractItemView*>(view);
 }

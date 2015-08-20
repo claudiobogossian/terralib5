@@ -30,7 +30,7 @@
 #define __TERRALIB_LAYOUT_INTERNAL_CONTEXT_OBJECT_H
 
 // TerraLib
-#include "../../core/Config.h"
+#include "Config.h"
 
 namespace te
 {

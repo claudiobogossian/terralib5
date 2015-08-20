@@ -35,7 +35,7 @@
 #include "../../qt/widgets/canvas/Canvas.h"
 #include "../../srs/SpatialReferenceSystemManager.h"
 #include "../../common/Translator.h"
-#include "../qt/core/ContextObject.h"
+#include "../core/ContextObject.h"
 #include "enum/AbstractType.h"
 #include "pattern/singleton/Context.h"
 #include "AbstractScene.h"

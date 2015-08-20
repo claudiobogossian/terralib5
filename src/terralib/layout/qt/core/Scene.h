@@ -34,7 +34,6 @@
 
 // TerraLib
 #include "../../../geometry/Envelope.h"
-#include "../../core/pattern/mvc/ItemModelObservable.h"
 #include "../../core/AbstractScene.h"
 #include "../../core/Config.h"
 #include "../item/MovingItemGroup.h"
@@ -59,6 +58,7 @@ class QGraphicsItemGroup;
 class QPainter;
 class QWidget;
 class QStyleOptionGraphicsItem;
+class QGraphicsSceneMouseEvent;
 
 namespace te
 {
@@ -69,6 +69,9 @@ namespace te
     class VisualizationArea;
     class PaperConfig;
     class View;
+		class AbstractItemView;
+		class ItemObserver;
+		class AbstractItemModel;
 
   /*!
     \brief Class representing the scene. This scene is child of QGraphicsScene, part of Graphics View Framework. 
@@ -104,12 +107,19 @@ namespace te
         */ 
         virtual ~Scene();
 
-        /*!
+				/*!
+				\brief Method that inserts a graphic object in the scene. Inverts the matrix of the object if necessary, ex.: TextItem.
+
+				\param item graphic object
+				*/
+				virtual void insertItem(ItemObserver* item);
+
+		    /*!
           \brief Method that inserts a graphic object in the scene. Inverts the matrix of the object if necessary, ex.: TextItem.
       
           \param item graphic object      
         */ 
-        virtual void insertItem(ItemObserver* item);
+				virtual void insertItem(AbstractItemView* item);
 
         /*!
           \brief Method that inserts a graphic object in the scene. Inverts the matrix of the object if necessary, ex.: TextItem.
@@ -228,7 +238,7 @@ namespace te
       
       \return true list of properties, false list of empty properties
         */
-        virtual std::vector<te::layout::Properties*> importTemplateToProperties(EnumType* type, std::string fileName);
+        virtual std::vector<te::layout::Properties> importTemplateToProperties(EnumType* type, std::string fileName);
         
     /*!
           \brief Method that clears the scene and the stack of Undo/Redo.
@@ -266,12 +276,7 @@ namespace te
       \param dir Full path where the images will be saved
         */
         virtual void exportItemsToImage(std::string dir);
-
-    /*!
-          \brief Reimplemented from QGraphicsScene
-        */
-        virtual bool eventFilter ( QObject * watched, QEvent * event );
-
+				
     /*!
        \brief Select an item an item by name.
       
@@ -389,7 +394,22 @@ namespace te
         
       protected:
 
-    /*!
+				/*!
+				\brief Reimplemented from QGraphicsScene
+				*/
+				virtual void	mouseMoveEvent(QGraphicsSceneMouseEvent * mouseEvent);
+				
+				/*!
+				\brief Reimplemented from QGraphicsScene
+				*/
+				virtual void	mousePressEvent(QGraphicsSceneMouseEvent * mouseEvent);
+				
+				/*!
+				\brief Reimplemented from QGraphicsScene
+				*/
+				virtual void	mouseReleaseEvent(QGraphicsSceneMouseEvent * mouseEvent);
+
+		/*!
           \brief Method that calculates the transformation matrix of the scene. This matrix will be set in each QGraphicsView class that watches this scene.
         */
         virtual void calculateMatrixViewScene();
@@ -407,11 +427,11 @@ namespace te
       
       \return list of properties
         */
-        virtual std::vector<te::layout::Properties*> getItemsProperties();
+        virtual std::vector<te::layout::Properties> getItemsProperties();
 
         virtual void applyProportionAllItems(QSize oldPaper, QSize newPaper);
 
-        virtual void updateBoxFromProperties(te::gm::Envelope box, ItemModelObservable* model);
+				virtual void updateBoxFromProperties(te::gm::Envelope box, AbstractItemModel* model);
 
         virtual void changeViewMode(EnumType* mode);
                 

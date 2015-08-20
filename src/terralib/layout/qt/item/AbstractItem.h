@@ -38,7 +38,7 @@
 #include "../../core/pattern/mvc/AbstractItemController.h"
 #include "../../core/pattern/mvc/AbstractItemView.h"
 #include "../../core/AbstractScene.h"
-#include "../core/ContextObject.h"
+#include "../../core/ContextObject.h"
 #include "../../core/property/Property.h"
 #include "../../core/property/Properties.h"
 
@@ -62,14 +62,14 @@ namespace te
     /*!
     \brief Abstract class that represents a graphic item.  
       Its coordinate system is the same of scene (millimeters). Knows rotate and resize. Stores a pixmap drawn by model.
-      This is also son of ItemObserver, so it can become observer of a model (Observable). 
+      This is also son of AbstractItemView, so it can become observer of a model (Observable). 
       This class will be inherited and will became the view part of the MVC component.
       Who inherits it is required the implementation of updateObserver(ContextItem context) method.
       Drawing starting point is llx, lly.
       Can't add signals and slots in this class because moc(Qt) doesn't support templates.
       \ingroup layout
 
-      \sa te::layout::ItemObserver
+      \sa te::layout::AbstractItemView
     */
     template <class T>
     class AbstractItem : public T, public AbstractItemView
@@ -113,6 +113,11 @@ namespace te
          */
         virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
 
+				/*!
+				\brief Reimplemented from QGraphicsItem. World coordinates(mm).
+				*/
+				virtual bool	contains(const QPointF & point) const;
+
     protected:
 
         /*!
@@ -150,17 +155,12 @@ namespace te
           \brief Reimplemented from QGraphicsItem to capture changes in the item
          */
         virtual QVariant itemChange ( QGraphicsItem::GraphicsItemChange change, const QVariant & value );
-
-    protected:
-
-        bool m_invertedMatrix;
     };
 
     template <class T>
     inline te::layout::AbstractItem<T>::AbstractItem(AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix)
       : T()
-      , AbstractItemView(controller, model)
-      , m_invertedMatrix(invertedMatrix)
+      , AbstractItemView(controller, model, invertedMatrix)
     {
       T::setFlags(QGraphicsItem::ItemIsMovable
         | QGraphicsItem::ItemIsSelectable
@@ -271,6 +271,13 @@ namespace te
         drawSelection(painter);
       }
     }
+
+		template <class T>
+		inline bool te::layout::AbstractItem<T>::contains(const QPointF & point) const
+		{
+			te::gm::Coord2D coord(point.x(), point.y());
+			return m_controller->contains(coord);
+		}
 
     template <class T>
     inline QRectF te::layout::AbstractItem<T>::getAdjustedBoundingRect(QPainter* painter) const

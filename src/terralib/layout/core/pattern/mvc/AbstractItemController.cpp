@@ -75,3 +75,10 @@ void te::layout::AbstractItemController::update(const te::layout::Subject* subje
     m_view->setItemRotation(property.getValue().toDouble());
   }
 }
+
+bool te::layout::AbstractItemController::contains(const te::gm::Coord2D &coord) const
+{
+	return m_model->contains(coord);
+}
+
+

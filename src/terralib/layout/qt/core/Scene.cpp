@@ -27,8 +27,9 @@
 
 // TerraLib
 #include "Scene.h"
-#include "../../core/pattern/mvc/ItemObserver.h"
-#include "../../core/pattern/mvc/Observable.h"
+#include "../../core/pattern/mvc/AbstractItemView.h"
+#include "../../core/pattern/mvc/AbstractItemController.h"
+#include "../../core/pattern/mvc/AbstractItemModel.h"
 #include "../../core/pattern/singleton/Context.h"
 #include "../../core/enum/Enums.h"
 #include "pattern/command/DeleteCommand.h"
@@ -61,6 +62,7 @@
 #include <QStyleOptionGraphicsItem>
 #include <QPrinter>
 #include <QGraphicsTextItem>
+#include <QGraphicsSceneMouseEvent>
 
 te::layout::Scene::Scene( QObject* object): 
   QGraphicsScene(object),
@@ -120,19 +122,31 @@ te::layout::Scene::~Scene()
   }
 }
 
-void te::layout::Scene::insertItem( ItemObserver* item )
+void te::layout::Scene::insertItem(ItemObserver* item)
 {
-  if(!item)
-  {
-    return;
-  }
+	if (!item)
+	{
+		return;
+	}
 
-  QGraphicsItem* qitem = ((QGraphicsItem*)item);
-  
-  insertItem(qitem);
+	QGraphicsItem* qitem = ((QGraphicsItem*)item);
+
+	insertItem(qitem);
 }
 
-void te::layout::Scene::insertItem( QGraphicsItem* item )
+void te::layout::Scene::insertItem(AbstractItemView* item)
+{
+	if (!item)
+	{
+		return;
+	}
+
+	QGraphicsItem* qitem = ((QGraphicsItem*)item);
+
+	insertItem(qitem);
+}
+
+void te::layout::Scene::insertItem(QGraphicsItem* item)
 {
   if(!item)
   {
@@ -147,16 +161,19 @@ void te::layout::Scene::insertItem( QGraphicsItem* item )
   int total = 0;
 
   total = this->items().count();
-
-  this->addItem(item);
-
-  ItemObserver* obs = dynamic_cast<ItemObserver*>(item);
-  if(!obs)
+	
+	AbstractItemView* abstractItem = dynamic_cast<AbstractItemView*>(item);
+	if (!abstractItem)
   {
+		ItemObserver* obs = dynamic_cast<ItemObserver*>(item);
+		if (obs)
+		{
+			this->addItem(item);
+		}
     return;
   }
 
-  if(obs->isInvertedMatrix())
+	if (abstractItem->isInverted())
   {
     QTransform transfItem = item->transform();
     // Check if the item had been inserted
@@ -168,13 +185,9 @@ void te::layout::Scene::insertItem( QGraphicsItem* item )
   }
 
   item->setZValue(total);
-  QGraphicsObject* qObj = dynamic_cast<QGraphicsObject*>(item);
-  if(qObj)
-  {
-    qObj->installEventFilter(this);
-  }
-
-  obs->refresh(false);
+	this->addItem(item); 
+	
+	abstractItem->refresh();
 
   removeItemStackWithoutScene(item);
 
@@ -286,11 +299,11 @@ void te::layout::Scene::removeSelectedItems()
   {
     if (item)
     {
-      ItemObserver* obs = dynamic_cast<ItemObserver*>(item);
-      if(obs)
+			AbstractItemView* abstractItem = dynamic_cast<AbstractItemView*>(item);
+			if (abstractItem)
       {
-        if(obs->getModel())
-          names.push_back(obs->getModel()->getName());
+				if (abstractItem->getController()->getModel())
+					names.push_back(abstractItem->getController()->getModel()->getName());
       }
     }
   }
@@ -441,15 +454,8 @@ QGraphicsItem* te::layout::Scene::createItem( const te::gm::Coord2D& coord )
 
   if(item)
   {
-    ItemObserver* obs = dynamic_cast<ItemObserver*>(item);
-    if(obs)
-    {
-      if(obs->isCanChangeGraphicOrder())
-      {
-        QUndoCommand* command = new AddCommand(item);
-        addUndoStack(command);
-      }
-    }
+		QUndoCommand* command = new AddCommand(item);
+		addUndoStack(command);
   }
 
   //changeViewMode(type->getModeNone());
@@ -478,7 +484,7 @@ bool te::layout::Scene::exportPropertiesToTemplate( EnumType* type, std::string 
     return is_export;
   }
   
-  std::vector<te::layout::Properties*> props = getItemsProperties();
+  std::vector<te::layout::Properties> props = getItemsProperties();
 
   if(props.empty())
     return is_export;
@@ -495,9 +501,9 @@ bool te::layout::Scene::exportPropertiesToTemplate( EnumType* type, std::string 
   return is_export;
 }
 
-std::vector<te::layout::Properties*> te::layout::Scene::importTemplateToProperties( EnumType* type, std::string fileName )
+std::vector<te::layout::Properties> te::layout::Scene::importTemplateToProperties( EnumType* type, std::string fileName )
 {
-  std::vector<te::layout::Properties*> props;
+  std::vector<te::layout::Properties> props;
 
   if(fileName.compare("") == 0)
   {
@@ -516,23 +522,22 @@ std::vector<te::layout::Properties*> te::layout::Scene::importTemplateToProperti
   return props;
 }
 
-std::vector<te::layout::Properties*> te::layout::Scene::getItemsProperties()
+std::vector<te::layout::Properties> te::layout::Scene::getItemsProperties()
 {
-  std::vector<te::layout::Properties*> props;
+  std::vector<te::layout::Properties> props;
 
   QList<QGraphicsItem*> graphicsItems = items();
   foreach( QGraphicsItem *item, graphicsItems) 
   {
     if (item)
     {    
-      ItemObserver* lItem = dynamic_cast<ItemObserver*>(item);
+			AbstractItemView* lItem = dynamic_cast<AbstractItemView*>(item);
       if(lItem)
       {
-        if(!lItem->isPrintable())
+        if(!lItem->getController()->getModel()->isPrintable())
           continue;
-
-        if(lItem->getModel())
-          props.push_back(lItem->getModel()->getProperties());
+				
+				props.push_back(lItem->getController()->getModel()->getProperties());
       }
     }
   }
@@ -559,23 +564,23 @@ bool te::layout::Scene::buildTemplate( VisualizationArea* vzArea, EnumType* type
   if(!build)
     return false;
 
-  std::vector<te::layout::Properties*> props = importTemplateToProperties(type, fileName);
+  std::vector<te::layout::Properties> props = importTemplateToProperties(type, fileName);
 
   if(props.empty())
     return false;
 
   reset();
 
-  std::vector<te::layout::Properties*>::iterator it;
+  std::vector<te::layout::Properties>::iterator it;
 
   te::gm::Envelope boxW = getSceneBox();
   vzArea->changeBoxArea(boxW);
 
   for(it = props.begin() ; it != props.end() ; ++it)
   {
-    te::layout::Properties* proper = (*it);
+    te::layout::Properties proper = (*it);
 
-    if(!proper)
+    if(proper.getProperties().empty())
       continue;
 
     build->rebuildItem(proper);
@@ -650,69 +655,47 @@ void te::layout::Scene::exportItemsToImage(std::string dir)
   }
 }
 
-bool te::layout::Scene::eventFilter( QObject * watched, QEvent * event )
+void te::layout::Scene::mouseMoveEvent(QGraphicsSceneMouseEvent * mouseEvent)
 {
-  if(event->type() == QEvent::GraphicsSceneMousePress)
-  {
-    QGraphicsItem* item = dynamic_cast<QGraphicsItem*>(watched);
-    if(item)
-    {
-      QList<QGraphicsItem*> its = selectedItems();
-      m_moveWatches.clear();
-      if(its.empty())
-      {
-        QPointF pt = item->scenePos();
-        m_moveWatches[item] = pt;
-      }
-      foreach(QGraphicsItem *item, its) 
-      {
-        QPointF pt = item->scenePos();
-        m_moveWatches[item] = pt;
-      }
-    }
-  }
+	QGraphicsItem* item = mouseGrabberItem();
+	if (item)
+	{
+		m_moveWatched = true;
+	}
+	QGraphicsScene::mouseMoveEvent(mouseEvent);
+}
 
-  if(event->type() == QEvent::GraphicsSceneMouseMove)
-  {
-    QGraphicsItem* item = dynamic_cast<QGraphicsItem*>(watched);
-    if(item)
-    {
-      bool resultFound = false;
-      std::map<QGraphicsItem*, QPointF>::iterator it;
-      for(it = m_moveWatches.begin() ; it != m_moveWatches.end() ; ++it)
-      {
-        if(it->first == item)
-        {
-          resultFound = true;
-        }
-      }
+void te::layout::Scene::mousePressEvent(QGraphicsSceneMouseEvent * mouseEvent)
+{
+	QGraphicsScene::mousePressEvent(mouseEvent);
 
-      if(!resultFound)
-      {
-        m_moveWatches.clear();
-        QPointF pt = item->scenePos();
-        m_moveWatches[item] = pt;
-      }
+	QGraphicsItem* item = mouseGrabberItem();
+	if (item)
+	{
+		QList<QGraphicsItem*> its = selectedItems();
+		m_moveWatches.clear();
+		foreach(QGraphicsItem *item, its)
+		{
+			QPointF pt = item->scenePos();
+			m_moveWatches[item] = pt;
+		}
+	}
+}
 
-      m_moveWatched = true;
-    }
-  }
-
-  if(event->type() == QEvent::GraphicsSceneMouseRelease)
-  {
-    QGraphicsItem* item = dynamic_cast<QGraphicsItem*>(watched);
-    if(item)
-    {
-      if(m_moveWatched)
-      {
-        QUndoCommand* command = new MoveCommand(m_moveWatches);
-        addUndoStack(command);
-        m_moveWatched = false;
-      }
-    }
-  }
-
-  return QGraphicsScene::eventFilter(watched, event);
+void te::layout::Scene::mouseReleaseEvent(QGraphicsSceneMouseEvent * mouseEvent)
+{
+	QGraphicsItem* item = mouseGrabberItem();
+	if (item)
+	{
+		if (m_moveWatched)
+		{
+			QUndoCommand* command = new MoveCommand(m_moveWatches);
+			addUndoStack(command);
+			m_moveWatched = false;
+		}
+	}
+	m_moveWatches.clear();
+	QGraphicsScene::mouseReleaseEvent(mouseEvent);
 }
 
 void te::layout::Scene::selectItem( std::string name )
@@ -722,15 +705,15 @@ void te::layout::Scene::selectItem( std::string name )
   {
     if(item)
     {
-      ItemObserver* it = dynamic_cast<ItemObserver*>(item);
+			AbstractItemView* it = dynamic_cast<AbstractItemView*>(item);
       if(it)
       {
-        if(!it->getModel())
+				if (!it->getController())
         {
           continue;
         }
 
-        if(it->getModel()->getName().compare(name) == 0)
+        if(it->getController()->getModel()->getName().compare(name) == 0)
         {
           item->setSelected(true);
         }
@@ -774,12 +757,12 @@ void te::layout::Scene::redrawItems()
   {
     if(item)
     {
-      ItemObserver* it = dynamic_cast<ItemObserver*>(item);
+			AbstractItemView* it = dynamic_cast<AbstractItemView*>(item);
       if(it)
       {
-        if(it->isPrintable())
+        if(it->getController()->getModel()->isPrintable())
         {
-          it->redraw();
+					it->refresh();
         }
       }
     }
@@ -788,15 +771,32 @@ void te::layout::Scene::redrawItems()
 
 void te::layout::Scene::updateSelectedItemsPositions()
 {
+	EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+
   QList<QGraphicsItem*> allItems = selectedItems();
   foreach(QGraphicsItem *item, allItems) 
   {
     if(item)
     {
-      ItemObserver* it = dynamic_cast<ItemObserver*>(item);
+			AbstractItemView* it = dynamic_cast<AbstractItemView*>(item);
       if(it)
       {
-        it->refresh(); 
+				QPointF posItem = item->scenePos();		
+
+				Properties props;
+				Property prop_x(0);
+				prop_x.setName("x");
+				prop_x.setLabel("x");
+				prop_x.setValue(posItem.x(), dataType->getDataTypeDouble());
+				props.addProperty(prop_x);
+
+				Property prop_y(0);
+				prop_y.setName("y");
+				prop_y.setLabel("y");
+				prop_y.setValue(posItem.y(), dataType->getDataTypeDouble());
+				props.addProperty(prop_y);
+
+				it->getController()->getModel()->setProperties(props);
       }
     }
   }
@@ -910,16 +910,12 @@ void te::layout::Scene::applyProportionAllItems( QSize oldPaper, QSize newPaper 
     {
       if(item != paper)
       {
-        ItemObserver* it = dynamic_cast<ItemObserver*>(item);
+				AbstractItemView* it = dynamic_cast<AbstractItemView*>(item);
         if(it)
         {
-          te::gm::Envelope box = it->getModel()->getBox();
-          box.m_llx = (box.m_llx * newPaper.width())/oldPaper.width();
-          box.m_urx = (box.m_urx * newPaper.width())/oldPaper.width();
-          box.m_lly = (box.m_lly * newPaper.height())/oldPaper.height();
-          box.m_ury = (box.m_ury * newPaper.height())/oldPaper.height();
+					te::gm::Envelope box = it->getController()->getModel()->getBoundingRect();
 
-          ItemModelObservable* model = dynamic_cast<ItemModelObservable*>(it->getModel());
+					AbstractItemModel* model = it->getController()->getModel();
           updateBoxFromProperties(box, model);
           item->setPos(box.m_llx, box.m_lly);
         }
@@ -928,50 +924,42 @@ void te::layout::Scene::applyProportionAllItems( QSize oldPaper, QSize newPaper 
   }
 }
 
-void te::layout::Scene::updateBoxFromProperties( te::gm::Envelope box, ItemModelObservable* model )
+void te::layout::Scene::updateBoxFromProperties(te::gm::Envelope box, AbstractItemModel* model)
 {
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
-
-  SharedProperties* sharedProps = new SharedProperties;
-
-  Properties* props = new Properties(model->getName(), model->getType(), model->getHashCode());
+	
+  Properties props(model->getName(), model->getType());
   
-  double x1 = box.m_llx;
-  double y1 = box.m_lly;
+  double x = box.m_llx;
+  double y = box.m_lly;
   double width = box.getWidth();
   double height = box.getHeight();
 
-  Property pro_x1(model->getHashCode());
-  pro_x1.setName(sharedProps->getX1());
-  pro_x1.setValue(x1, dataType->getDataTypeDouble());
-  pro_x1.setEditable(false);
-  props->addProperty(pro_x1);
+  Property pro_x;
+	pro_x.setName("x");
+	pro_x.setValue(x, dataType->getDataTypeDouble());
+	pro_x.setEditable(false);
+	props.addProperty(pro_x);
 
-  Property pro_y1(model->getHashCode());
-  pro_y1.setName(sharedProps->getY1());
-  pro_y1.setValue(y1, dataType->getDataTypeDouble());
-  pro_y1.setEditable(false);
-  props->addProperty(pro_y1);
+  Property pro_y;
+	pro_y.setName("y");
+	pro_y.setValue(y, dataType->getDataTypeDouble());
+	pro_y.setEditable(false);
+  props.addProperty(pro_y);
 
-  Property pro_width(model->getHashCode());
-  pro_width.setName(sharedProps->getWidth());
+  Property pro_width;
+  pro_width.setName("width");
   pro_width.setValue(width, dataType->getDataTypeDouble());
   pro_width.setEditable(false);
-  props->addProperty(pro_width);
+  props.addProperty(pro_width);
 
-  Property pro_height(model->getHashCode());
-  pro_height.setName(sharedProps->getHeight());
+  Property pro_height;
+  pro_height.setName("height");
   pro_height.setValue(height, dataType->getDataTypeDouble());
   pro_height.setEditable(false);
-  props->addProperty(pro_height);
+  props.addProperty(pro_height);
 
-  model->updateProperties(props);
-
-  if(sharedProps)
-  {
-    delete sharedProps;
-    sharedProps = 0;
-  }
+  model->setProperties(props);
 }
 
 te::layout::ContextObject te::layout::Scene::getContext()
@@ -1006,10 +994,10 @@ void te::layout::Scene::contextUpdated( ContextObject context )
   {
     if(item)
     {
-      AbstractItemView* absItem = dynamic_cast<AbstractItemView*>(item);
-      if(absItem)
+			AbstractItemView* it = dynamic_cast<AbstractItemView*>(item);
+      if(it)
       {
-        absItem->contextUpdated(context);
+        it->contextUpdated(context);
       }
     }
   }

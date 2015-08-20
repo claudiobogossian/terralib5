@@ -31,13 +31,15 @@
 // TerraLib
 #include "AbstractTemplate.h"
 #include "../Config.h"
+#include "../property/Properties.h"
+
+// STL
+#include <vector>
 
 namespace te
 {
   namespace layout
   {
-    class Properties;
-
     /*!
       \brief Implementation of AbstractTemplate. Template that creates, saves, or change a .json file.
 	  
@@ -53,9 +55,9 @@ namespace te
 
         virtual ~JSONTemplate();
 
-        virtual bool exportTemplate(std::vector<te::layout::Properties*> properties);
+        virtual bool exportTemplate(std::vector<te::layout::Properties> properties);
 
-        virtual std::vector<te::layout::Properties*> importTemplate();
+        virtual std::vector<te::layout::Properties> importTemplate();
 
         virtual bool deleteTemplate();
     };

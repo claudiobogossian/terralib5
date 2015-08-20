@@ -29,7 +29,6 @@
 #include "PropertiesOutside.h"
 #include "../../core/pattern/singleton/Context.h"
 #include "../../core/pattern/mvc/Observable.h"
-#include "../../core/pattern/mvc/ItemObserver.h"
 #include "../../core/pattern/mvc/AbstractOutsideModel.h"
 #include "../../core/pattern/mvc/AbstractOutsideController.h"
 #include "../../../geometry/Envelope.h"
@@ -183,10 +182,10 @@ void te::layout::PropertiesOutside::itemsSelected(QList<QGraphicsItem*> graphics
   m_updatingValues = false;
   bool window = false;
 
-  Properties* props = m_propUtils->intersection(graphicsItems, window);
+  Properties props = m_propUtils->intersection(graphicsItems, window);
   m_layoutPropertyBrowser->setHasWindows(window);
 
-  if(!props)
+  if(props.getProperties().empty())
     return;
 
   if(updateTree(graphicsItems, props))
@@ -202,9 +201,9 @@ void te::layout::PropertiesOutside::itemsSelected(QList<QGraphicsItem*> graphics
 
   m_allItems = allItems;
 
-  m_nameLabel->setText(tr("Component::") + props->getObjectName().c_str());
+  m_nameLabel->setText(tr("Component::") + props.getObjectName().c_str());
   
-  foreach( Property prop, props->getProperties()) 
+  foreach( Property prop, props.getProperties()) 
   {
     if(!prop.isVisible())
       continue;
@@ -247,27 +246,39 @@ bool te::layout::PropertiesOutside::sendPropertyToSelectedItems( Property proper
   Scene* lScene = dynamic_cast<Scene*>(Context::getInstance().getScene()); 
 
   std::vector<QGraphicsItem*> commandItems;
-  std::vector<Properties*> commandOld;
-  std::vector<Properties*> commandNew;
+  std::vector<Properties> commandOld;
+  std::vector<Properties> commandNew;
 
-  foreach( QGraphicsItem *item, m_graphicsItems) 
-  {
-    if (item)
-    {
-      AbstractItemView* absItem = dynamic_cast<AbstractItemView*>(item);
-      if(absItem)
-      {
-        Properties* oldCommand = new Properties(absItem->getController()->getModel()->getProperties());
+	foreach(QGraphicsItem* item, m_graphicsItems)
+	{
+		if (item)
+		{
+			AbstractItemView* lItem = dynamic_cast<AbstractItemView*>(item);
+			if (lItem)
+			{
+				if (!lItem->getController()->getModel())
+				{
+					continue;
+				}
 
-        absItem->getController()->getModel()->setProperty(property);
+				Properties beforeProps = lItem->getController()->getModel()->getProperties();
 
-        Properties* newCommand = new Properties(absItem->getController()->getModel()->getProperties());
-        commandItems.push_back(item);
-        commandOld.push_back(oldCommand);
-        commandNew.push_back(newCommand);
-      }
-    }
-  }
+				Properties props("");
+				props.setObjectName(beforeProps.getObjectName());
+				props.setTypeObj(beforeProps.getTypeObj());
+				props.setHashCode(beforeProps.getHashCode());
+				props.addProperty(property);
+
+				lItem->getController()->getModel()->setProperties(props);
+
+				Properties afterProps = lItem->getController()->getModel()->getProperties();
+				commandItems.push_back(item);
+				commandOld.push_back(beforeProps);
+				commandNew.push_back(afterProps);
+
+				}
+			}
+   }
 
   if(!m_graphicsItems.isEmpty())
   {
@@ -386,10 +397,10 @@ void te::layout::PropertiesOutside::refreshOutside()
 {
   bool window = false;
 
-  Properties* props = m_propUtils->intersection(m_graphicsItems, window);
+  Properties props = m_propUtils->intersection(m_graphicsItems, window);
   m_layoutPropertyBrowser->setHasWindows(window);
 
-  if(!props)
+  if(props.getProperties().empty())
     return;
 
   updatePropertyBrowser(props);
@@ -400,7 +411,7 @@ void te::layout::PropertiesOutside::onClear( std::vector<std::string> names )
   clearAll();
 }
 
-void te::layout::PropertiesOutside::updatePropertyBrowser( Properties* props )
+void te::layout::PropertiesOutside::updatePropertyBrowser( Properties props )
 {
   m_layoutPropertyBrowser->updateProperties(props);
 }
@@ -414,7 +425,7 @@ void te::layout::PropertiesOutside::clearAll()
   m_allItems.clear();
 }
 
-bool te::layout::PropertiesOutside::updateTree( QList<QGraphicsItem*> graphicsItems, Properties* props )
+bool te::layout::PropertiesOutside::updateTree( QList<QGraphicsItem*> graphicsItems, Properties props )
 {
   bool result = false;
 

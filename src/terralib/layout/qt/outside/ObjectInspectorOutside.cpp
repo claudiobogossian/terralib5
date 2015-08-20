@@ -30,7 +30,7 @@
 #include "../../core/pattern/singleton/Context.h"
 #include "../../core/AbstractScene.h"
 #include "../core/Scene.h"
-#include "../../core/pattern/mvc/ItemObserver.h"
+#include "../../core/pattern/mvc/AbstractItemView.h"
 #include "../../core/pattern/mvc/AbstractOutsideModel.h"
 #include "../../core/pattern/mvc/AbstractOutsideController.h"
 #include "../../../geometry/Envelope.h"
@@ -39,6 +39,8 @@
 #include "../core/propertybrowser/DialogPropertiesBrowser.h"
 #include "../item/MovingItemGroup.h"
 #include "../core/propertybrowser/PropertyBrowser.h"
+#include "../../core/pattern/mvc/AbstractItemController.h"
+#include "../../core/pattern/mvc/AbstractItemModel.h"
 
 //Qt
 #include <QGraphicsWidget>
@@ -126,15 +128,15 @@ void te::layout::ObjectInspectorOutside::itemsInspector(QList<QGraphicsItem*> gr
   {
     if (item)
     {
-      ItemObserver* lItem = dynamic_cast<ItemObserver*>(item);
+			AbstractItemView* lItem = dynamic_cast<AbstractItemView*>(item);
       if(lItem)
       {        
-        if(!lItem->getModel())
+        if(!lItem->getController()->getModel())
         {
           continue;
         }
 
-        if(lItem->getModel()->getType() == enumObj->getPaperItem())
+        if(lItem->getController()->getModel()->getType() == enumObj->getPaperItem())
         {
           continue;
         }
@@ -177,12 +179,12 @@ void te::layout::ObjectInspectorOutside::selectItems( QList<QGraphicsItem*> grap
   {
     if (item)
     {
-      ItemObserver* iOb = dynamic_cast<ItemObserver*>(item);
+			AbstractItemView* iOb = dynamic_cast<AbstractItemView*>(item);
       if(iOb)
       {
-        if(iOb->getModel())
+        if(iOb->getController()->getModel())
         {
-          m_layoutPropertyBrowser->selectProperty(iOb->getModel()->getName());
+          m_layoutPropertyBrowser->selectProperty(iOb->getController()->getModel()->getName());
         }
       }
     }
@@ -209,11 +211,11 @@ bool te::layout::ObjectInspectorOutside::hasMoveItemGroup( QList<QGraphicsItem*>
   {
     if (item)
     {
-      ItemObserver* movingItem = dynamic_cast<ItemObserver*>(item);
+			AbstractItemView* movingItem = dynamic_cast<AbstractItemView*>(item);
       if(!movingItem)
         continue;
 
-      if(movingItem->getModel()->getType() == enumObj->getMovingItemGroup())
+      if(movingItem->getController()->getModel()->getType() == enumObj->getMovingItemGroup())
       {
         result = true;
         break;
@@ -233,7 +235,7 @@ QtProperty* te::layout::ObjectInspectorOutside::addProperty( QGraphicsItem* item
     return prop;
   }
 
-  ItemObserver* lItem = dynamic_cast<ItemObserver*>(item);
+	AbstractItemView* lItem = dynamic_cast<AbstractItemView*>(item);
   if(!lItem)
   {
     return prop;
@@ -275,7 +277,7 @@ void te::layout::ObjectInspectorOutside::createSubProperty( QGraphicsItem* item,
       continue;
     }
 
-    ItemObserver* lItem = dynamic_cast<ItemObserver*>(item);
+		AbstractItemView* lItem = dynamic_cast<AbstractItemView*>(item);
     if(!lItem)
     {
       continue;
@@ -297,7 +299,7 @@ void te::layout::ObjectInspectorOutside::createSubProperty( QGraphicsItem* item,
   }  
 }
 
-te::layout::Property te::layout::ObjectInspectorOutside::createProperty( ItemObserver* item )
+te::layout::Property te::layout::ObjectInspectorOutside::createProperty(AbstractItemView* item)
 {
   Property pro_class;
   if(!item)
@@ -305,7 +307,7 @@ te::layout::Property te::layout::ObjectInspectorOutside::createProperty( ItemObs
     return pro_class;
   }
 
-  if(!item->getModel())
+  if(!item->getController()->getModel())
   {
     return pro_class;
   }
@@ -316,8 +318,11 @@ te::layout::Property te::layout::ObjectInspectorOutside::createProperty( ItemObs
     return pro_class;
   }
 
-  pro_class.setName(item->getModel()->getName());
-  pro_class.setValue(item->getNameClass(), dataType->getDataTypeString());
+	std::string name = item->getController()->getModel()->getName();
+	std::string typeName = item->getController()->getModel()->getType()->getName();
+
+	pro_class.setName(name);
+	pro_class.setValue(typeName, dataType->getDataTypeString());
   pro_class.setEditable(false);
 
   return pro_class;

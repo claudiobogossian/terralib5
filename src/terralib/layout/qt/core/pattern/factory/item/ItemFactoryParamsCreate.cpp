@@ -31,9 +31,8 @@ te::layout::ItemFactoryParamsCreate::ItemFactoryParamsCreate(const ItemFactoryPa
 	this->operator=(rhs);
 }
 
-te::layout::ItemFactoryParamsCreate::ItemFactoryParamsCreate(std::string name, int zValue, int id, te::gm::Coord2D coord /*= te::gm::Coord2D()*/, Properties* props /*= 0*/) :
+te::layout::ItemFactoryParamsCreate::ItemFactoryParamsCreate(std::string name, int zValue, int id, te::gm::Coord2D coord /*= te::gm::Coord2D()*/, Properties props /*= 0*/) :
   m_name(name),
-	m_props(props),
 	m_coord(coord),
 	m_zValue(zValue),
 	m_id(id)
@@ -43,7 +42,6 @@ te::layout::ItemFactoryParamsCreate::ItemFactoryParamsCreate(std::string name, i
 
 te::layout::ItemFactoryParamsCreate::ItemFactoryParamsCreate(std::string name, int zValue, te::gm::Coord2D coord /*= te::gm::Coord2D()*/) :
 	m_name(name),
-	m_props(0),
 	m_coord(coord),
 	m_zValue(zValue),
 	m_id(0)
@@ -51,7 +49,7 @@ te::layout::ItemFactoryParamsCreate::ItemFactoryParamsCreate(std::string name, i
 
 }
 
-te::layout::ItemFactoryParamsCreate::ItemFactoryParamsCreate(Properties* props):
+te::layout::ItemFactoryParamsCreate::ItemFactoryParamsCreate(Properties props):
 	m_name("unknown"),
 	m_props(props),
 	m_zValue(0),
@@ -75,7 +73,7 @@ void te::layout::ItemFactoryParamsCreate::reset() throw(te::common::Exception)
 	m_name.clear();
 	m_zValue = 0;
 	m_id = 0;
-	m_props = 0;
+	m_props.clear();
 }
 
 std::string te::layout::ItemFactoryParamsCreate::getName()
@@ -83,7 +81,7 @@ std::string te::layout::ItemFactoryParamsCreate::getName()
 	return m_name;
 }
 
-te::layout::Properties* te::layout::ItemFactoryParamsCreate::getProperties()
+te::layout::Properties te::layout::ItemFactoryParamsCreate::getProperties()
 {
 	return m_props;
 }

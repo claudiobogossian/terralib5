@@ -201,9 +201,9 @@ void te::layout::TextController1::textChanged()
       propertyText.setName("text");
       propertyText.setValue(qNewText.toStdString(), dataType->getDataTypeString());
 
-      Properties* oldCommand = new Properties(m_model->getProperties());
+      Properties oldCommand = m_model->getProperties();
       m_model->setProperty(propertyText);
-      Properties* newCommand = new Properties(m_model->getProperties());
+      Properties newCommand = m_model->getProperties();
 
       QUndoCommand* command = new ChangePropertyCommand(view, oldCommand, newCommand);
 

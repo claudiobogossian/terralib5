@@ -30,6 +30,7 @@
 
 // TerraLib
 #include "../../../../core/Config.h"
+#include "../../../../core/property/Properties.h"
 
 // STL
 #include <vector>
@@ -43,7 +44,6 @@ namespace te
 {
   namespace layout
   {
-    class Properties;
     class PropertiesOutside;
 
     /*!
@@ -64,8 +64,8 @@ namespace te
           \param outside
           \param parent
         */
-        ChangePropertyCommand( QGraphicsItem* item, Properties* oldProperties, 
-                          Properties* newProperties, PropertiesOutside* outside = 0, QUndoCommand *parent = 0 );
+        ChangePropertyCommand( QGraphicsItem* item, Properties oldProperties, 
+                          Properties newProperties, PropertiesOutside* outside = 0, QUndoCommand *parent = 0 );
 
         /*!
           \brief Constructor
@@ -76,8 +76,8 @@ namespace te
           \param outside
           \param parent
         */
-        ChangePropertyCommand( std::vector<QGraphicsItem*> items, std::vector<Properties*> allOld, 
-                    std::vector<Properties*> allNew, PropertiesOutside* outside = 0, QUndoCommand *parent = 0 );
+        ChangePropertyCommand( std::vector<QGraphicsItem*> items, std::vector<Properties> allOld, 
+                    std::vector<Properties> allNew, PropertiesOutside* outside = 0, QUndoCommand *parent = 0 );
 
         /*!
           \brief Destructor. Delete all properties.
@@ -98,19 +98,19 @@ namespace te
 
         virtual QString createCommandString(QGraphicsItem* item);
 
-        virtual bool equals(Properties*  props1, Properties* props2);
+        virtual bool equals(Properties  props1, Properties props2);
 
-        virtual bool checkItem(QGraphicsItem* item, Properties* props); 
+        virtual bool checkItem(QGraphicsItem* item, Properties props); 
 
         virtual bool checkVectors();
 
-        QGraphicsItem*                  m_item;
-        Properties*                     m_oldProperties;
-        Properties*                     m_newProperties;
-        PropertiesOutside*              m_outside;
-        std::vector<QGraphicsItem*>     m_items;
-        std::vector<Properties*>        m_allOldProperties;
-        std::vector<Properties*>        m_allNewProperties;
+        QGraphicsItem*                m_item;
+        Properties                    m_oldProperties;
+        Properties                    m_newProperties;
+        PropertiesOutside*            m_outside;
+        std::vector<QGraphicsItem*>   m_items;
+        std::vector<Properties>       m_allOldProperties;
+        std::vector<Properties>       m_allNewProperties;
     };
   }
 }

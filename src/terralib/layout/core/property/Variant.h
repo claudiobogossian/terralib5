@@ -288,6 +288,14 @@ namespace te
        */
       virtual std::string toString(int value) const;
 
+			/*!
+			\brief Convert a double value into a string representation of a number.
+
+			\param value int value
+			\return string representation of a number
+			*/
+			virtual std::string toString(double value) const;
+
       /*!
           \brief Convert a string value into a boolean representation of a string. Ex.: true, false.
 
