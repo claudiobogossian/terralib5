@@ -457,9 +457,7 @@ QGraphicsItem* te::layout::Scene::createItem( const te::gm::Coord2D& coord )
     QUndoCommand* command = new AddCommand(item);
     addUndoStack(command);
   }
-
-  //changeViewMode(type->getModeNone());
-
+  
   return item;
 }
 

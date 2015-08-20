@@ -483,37 +483,37 @@ void te::layout::DialogPropertiesBrowser::onShowColorDlg()
 
 void te::layout::DialogPropertiesBrowser::onShowMapLayerChoiceDlg()
 {
-  /*
+
   EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
-  if(!enumObj)
+  if (!enumObj)
   {
     return;
   }
 
   QWidget* widget = createOutside(enumObj->getMapLayerChoice());
-  if(!widget)
+  if (!widget)
   {
     return;
   }
 
   MapLayerChoiceOutside* layerChoice = dynamic_cast<MapLayerChoiceOutside*>(widget);
-  if(!layerChoice)
+  if (!layerChoice)
   {
     return;
   }
-  
+
   appendDialog(layerChoice);
 
   AbstractOutsideController* abstractController = const_cast<AbstractOutsideController*>(layerChoice->getController());
   AbstractOutsideModel* abstractModel = const_cast<AbstractOutsideModel*>(abstractController->getModel());
   MapLayerChoiceModel* model = dynamic_cast<MapLayerChoiceModel*>(abstractModel);
-  if(!model)
+  if (!model)
   {
     return;
   }
 
   AbstractProxyProject* proxy = Context::getInstance().getProxyProject();
-  if(!proxy)
+  if (!proxy)
   {
     return;
   }
@@ -524,14 +524,14 @@ void te::layout::DialogPropertiesBrowser::onShowMapLayerChoiceDlg()
   ItemUtils* utils = Context::getInstance().getItemUtils();
 
   std::vector<MapItem*> mapList = utils->getMapItemList(true);
-  
-  std::vector<Properties*> props;
+
+  std::vector<Properties> props;
 
   std::vector<MapItem*>::const_iterator it = mapList.begin();
-  for( ; it != mapList.end() ; ++it)
+  for (; it != mapList.end(); ++it)
   {
     MapItem* mIt = (*it);
-    MapModel* mapModel = dynamic_cast<MapModel*>(mIt->getModel());
+    MapModel* mapModel = dynamic_cast<MapModel*>(mIt->getController()->getModel());
     props.push_back(mapModel->getProperties());
   }
 
@@ -539,7 +539,7 @@ void te::layout::DialogPropertiesBrowser::onShowMapLayerChoiceDlg()
 
   layerChoice->init();
   layerChoice->show();
-  */
+
 }
 
 void te::layout::DialogPropertiesBrowser::onShowLegendChoiceDlg()
