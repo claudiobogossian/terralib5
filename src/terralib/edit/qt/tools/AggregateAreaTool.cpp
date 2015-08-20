@@ -65,29 +65,7 @@ bool te::edit::AggregateAreaTool::mousePressEvent(QMouseEvent* e)
 
 bool te::edit::AggregateAreaTool::mouseMoveEvent(QMouseEvent* e)
 {
-  if (m_coords.size() < 1 || m_isFinished)
-    return false;
-
-  QPointF pos = GetPosition(e);
-
-  QPointF pw = m_display->transform(pos);
-
-  te::gm::Coord2D coord = te::gm::Coord2D(pw.x(), pw.y());
-
-  TrySnap(coord, m_display->getSRID());
-
-  m_coords.push_back(coord);
-
-  m_lastPos = te::gm::Coord2D(coord.x, coord.y);
-
-  if (e->buttons() & Qt::LeftButton)
-    m_continuousMode = true;
-  else
-    m_continuousMode = false;
-
-  draw(true);
-
-  return false;
+  return te::edit::CreateLineTool::mouseMoveEvent(e);
 }
 
 bool te::edit::AggregateAreaTool::mouseReleaseEvent(QMouseEvent* e)
@@ -115,7 +93,7 @@ bool te::edit::AggregateAreaTool::mouseDoubleClickEvent(QMouseEvent* e)
 
     m_isFinished = true;
 
-    draw(false);
+    draw();
 
     storeEditedFeature();
 
@@ -128,7 +106,7 @@ bool te::edit::AggregateAreaTool::mouseDoubleClickEvent(QMouseEvent* e)
   }
 }
 
-void te::edit::AggregateAreaTool::draw(bool drawline)
+void te::edit::AggregateAreaTool::draw()
 {
   
   const te::gm::Envelope& env = m_display->getExtent();
@@ -148,14 +126,6 @@ void te::edit::AggregateAreaTool::draw(bool drawline)
 
   if (!m_coords.empty())
   {
-    if (drawline)
-    {
-      // Draw the geometry being created
-      te::gm::Geometry* line = te::edit::CreateLineTool::buildLine();
-      renderer.draw(line, true);
-    }
-
-    // Draw the geometry being created
     if (m_coords.size() > 3)
       drawPolygon();
 
@@ -291,7 +261,7 @@ void te::edit::AggregateAreaTool::reset()
 
 void te::edit::AggregateAreaTool::onExtentChanged()
 {
-  draw(true);
+  draw();
 }
 
 void te::edit::AggregateAreaTool::storeEditedFeature()

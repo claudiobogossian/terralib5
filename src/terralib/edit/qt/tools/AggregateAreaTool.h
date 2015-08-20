@@ -53,7 +53,7 @@ namespace te
 
     private:
       void drawPolygon();
-      void draw(bool drawline);
+      void draw();
       void reset();
       void storeEditedFeature();
       void storeUndoCommand();
