@@ -788,14 +788,15 @@ void te::qt::plugins::edit::ToolBar::setCurrentTool(te::edit::GeometriesUpdateTo
 
 void te::qt::plugins::edit::ToolBar::createUndoView(bool checked)
 {
-  //if (!checked)
-  //  return;
+  /*
+  if (!checked)
+    return;
 
-  //m_undoView = new QUndoView(te::edit::UndoStackManager::getInstance().getUndoStack());
-  //m_undoView->setWindowTitle(tr("Edition List"));
-  //m_undoView->setFixedSize(QSize(300, 300));
-  //m_undoView->show();
-  //m_undoView->setAttribute(Qt::WA_QuitOnClose, false);
-
+  m_undoView = new QUndoView(te::edit::UndoStackManager::getInstance().getUndoStack());
+  m_undoView->setWindowTitle(tr("Edition List"));
+  m_undoView->setFixedSize(QSize(300, 300));
+  m_undoView->show();
+  m_undoView->setAttribute(Qt::WA_QuitOnClose, false);
+  */
 }
 

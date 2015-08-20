@@ -73,7 +73,7 @@ namespace te
     protected:
 
       Feature* m_feature;
-      //std::map<te::da::ObjectId*, std::vector<te::gm::Geometry*> > m_updateWatches;
+      std::vector<Feature*> m_updateWatches;
 
     };
 

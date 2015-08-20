@@ -34,7 +34,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include "../UndoStackManager.h"
 #include "UpdateCommand.h"
 
-te::edit::UpdateCommand::UpdateCommand(std::map<te::da::ObjectId*, std::vector<te::gm::Geometry*> > items, te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer,
+te::edit::UpdateCommand::UpdateCommand(std::vector<Feature*> items, te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer,
   QUndoCommand *parent) :
   QUndoCommand(parent)
   , m_display(display)
@@ -42,9 +42,7 @@ te::edit::UpdateCommand::UpdateCommand(std::map<te::da::ObjectId*, std::vector<t
   , m_updateItems(items)
 {
 
-  m_pos = 1;
-
-  //setText(QObject::tr("Update %1").arg(createCommandString(m_updateItems[m_updateItems.size() - 1]->getId()->getValueAsString().c_str())));
+  setText(QObject::tr("Update %1").arg(createCommandString(m_updateItems[m_updateItems.size() - 1]->getId()->getValueAsString().c_str())));
 
 }
 
@@ -57,34 +55,16 @@ void  te::edit::UpdateCommand::undo()
   if (m_updateItems.empty())
     return;
 
-  std::map<te::da::ObjectId*, std::vector<te::gm::Geometry*>>::iterator it;
-
-  for (it = m_updateItems.begin(); it != m_updateItems.end(); ++it)
+  if (RepositoryManager::getInstance().hasIdentify(m_layer->getId(), m_updateItems[m_updateItems.size() - 2]->getId()->clone()) == true)
   {
-    if(RepositoryManager::getInstance().hasIdentify(m_layer->getId(), it->first->clone()) == true)
-    {
-      //RepositoryManager::getInstance().removeFeature(m_layer->getId(), m_updateItems[m_updateItems.size() - m_pos]->getId()->clone());
-      
-      //Feature* f = new Feature(it->first->clone(), geom, operation);
 
-      //RepositoryManager::getInstance().addFeature(m_layer->getId(),)
-    }
+    Feature* f = new Feature(m_updateItems[m_updateItems.size() - 2]->getId()->clone(), m_updateItems[m_updateItems.size() - 2]->getGeometry(), m_updateItems[m_updateItems.size() - 2]->getOperationType());
 
-    draw();
+    RepositoryManager::getInstance().addFeature(m_layer->getId(), f);
 
-    break;
+    draw(true);
+
   }
-
- // if (RepositoryManager::getInstance().hasIdentify(m_layer->getId(), m_updateItems[m_updateItems.size() - m_pos]->getId()->clone()) == true)
-  //{
-    //RepositoryManager::getInstance().removeFeature(m_layer->getId(), m_updateItems[m_updateItems.size() - m_pos]->getId()->clone());
- // }
-
-
-
-  m_pos++;
-
-  draw();
 
 }
 
@@ -107,17 +87,17 @@ void te::edit::UpdateCommand::redo()
   //no makes redo while the command is not on the stack
   if (resultFound)
   {
-    m_pos--;
+    Feature* f = new Feature(m_updateItems[m_updateItems.size() - 1]->getId()->clone(), m_updateItems[m_updateItems.size() - 1]->getGeometry(), m_updateItems[m_updateItems.size() - 1]->getOperationType());
 
-    //RepositoryManager::getInstance().addFeature(m_layer->getId(), m_updateItems[m_updateItems.size() - m_pos]->clone());
+    RepositoryManager::getInstance().addFeature(m_layer->getId(), f);
 
-    draw();
+    draw(false);
 
   }
 
 }
 
-void te::edit::UpdateCommand::draw()
+void te::edit::UpdateCommand::draw(bool redo)
 {
   const te::gm::Envelope& env = m_display->getExtent();
   if (!env.isValid())
@@ -132,13 +112,13 @@ void te::edit::UpdateCommand::draw()
   renderer.begin(draft, env, m_display->getSRID());
 
   // Draw the layer edited geometries
-  renderer.drawRepository(m_layer->getId(), env, m_display->getSRID());
-
-  if (m_updateItems.size() >= m_pos)
+  if (redo)
   {
-    //renderer.draw(m_updateItems[m_updateItems.size() - m_pos]->getGeometry(), false);
-
-    //RepositoryManager::getInstance().addFeature(m_layer->getId(), m_updateItems[m_updateItems.size() - m_pos]->clone());
+      renderer.draw(m_updateItems[m_updateItems.size() - 2]->getGeometry(), true);
+  }
+  else
+  {
+      renderer.draw(m_updateItems[m_updateItems.size() - 1]->getGeometry(), true);
   }
 
   renderer.end();

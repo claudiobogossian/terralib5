@@ -70,8 +70,6 @@ bool te::edit::AggregateAreaTool::mouseMoveEvent(QMouseEvent* e)
 
 bool te::edit::AggregateAreaTool::mouseReleaseEvent(QMouseEvent* e)
 {
-  storeUndoCommand();
-
   return false;
 }
 
@@ -96,6 +94,8 @@ bool te::edit::AggregateAreaTool::mouseDoubleClickEvent(QMouseEvent* e)
     draw();
 
     storeEditedFeature();
+
+    storeUndoCommand();
 
     return true;
   }
@@ -227,6 +227,8 @@ void te::edit::AggregateAreaTool::pickFeature(const te::map::AbstractLayerPtr& l
 
       m_feature = PickFeature(m_layer, e, m_display->getSRID(), te::edit::GEOMETRY_UPDATE);
 
+      m_updateWatches.push_back(m_feature->clone());
+
     }
 
   }
@@ -334,10 +336,9 @@ te::gm::Geometry* te::edit::AggregateAreaTool::Union(te::gm::Geometry* g1, Featu
 
 void te::edit::AggregateAreaTool::storeUndoCommand()
 {
+  m_updateWatches.push_back(m_feature->clone());
 
-  //m_updateWatches.push_back(te::edit::CreateLineTool::buildLine());
-
-  //QUndoCommand* command = new UpdateCommand(m_updateWatches, m_display, m_layer);
-  //UndoStackManager::getInstance().addUndoStack(command);
+  QUndoCommand* command = new UpdateCommand(m_updateWatches, m_display, m_layer);
+  UndoStackManager::getInstance().addUndoStack(command);
 
 }

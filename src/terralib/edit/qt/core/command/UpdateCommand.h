@@ -49,37 +49,34 @@ namespace te
     */
     class TEEDITQTEXPORT UpdateCommand : public QUndoCommand
     {
-      public:
-        // Pass all parameters that the command need to fulfill its task in the constructor
-        UpdateCommand(std::map<te::da::ObjectId*, std::vector<te::gm::Geometry*> > items, te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QUndoCommand *parent = 0);
+    public:
+      // Pass all parameters that the command need to fulfill its task in the constructor
+      UpdateCommand(std::vector<Feature*> items, te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QUndoCommand *parent = 0);
 
-        /*!
-        \brief Destructor
-        */
-        virtual ~UpdateCommand();
+      /*!
+      \brief Destructor
+      */
+      virtual ~UpdateCommand();
 
-        /*!
-        \brief Reimplemented from QUndoCommand
-        */
-        virtual void undo();
+      /*!
+      \brief Reimplemented from QUndoCommand
+      */
+      virtual void undo();
 
-        /*!
-        \brief Reimplemented from QUndoCommand
-        */
-        virtual void redo();
+      /*!
+      \brief Reimplemented from QUndoCommand
+      */
+      virtual void redo();
 
-      private:
+    private:
 
-        virtual QString createCommandString(QString oid);
+      virtual QString createCommandString(QString oid);
 
-        void draw();
+      void draw(bool redo);
 
-        te::qt::widgets::MapDisplay* m_display;
-        te::map::AbstractLayerPtr m_layer;
-        std::map<te::da::ObjectId*, std::vector<te::gm::Geometry*> > m_updateItems;
-        te::gm::Coord2D    m_initialPosition;
-
-        std::size_t m_pos;
+      te::qt::widgets::MapDisplay* m_display;
+      te::map::AbstractLayerPtr m_layer;
+      std::vector<Feature*> m_updateItems;
 
     };
   }
