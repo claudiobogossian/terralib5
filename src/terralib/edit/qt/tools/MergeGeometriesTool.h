@@ -83,9 +83,6 @@ namespace te
 
     protected:
 
-      te::map::AbstractLayerPtr m_layer;
-
-      Feature* m_feature;
       //std::vector<Feature*> m_updateWatches;
 
       te::da::ObjectId* m_oidRef;

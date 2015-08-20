@@ -59,8 +59,6 @@ TerraLib Team at <terralib-team@terralib.org>.
 
 te::edit::MergeGeometriesTool::MergeGeometriesTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, QObject* parent)
   : GeometriesUpdateTool(display, layer.get(), parent),
-m_layer(layer),
-m_feature(0),
 //m_updateWatches(std::vector<Feature*>()),
 m_oidRef(0),
 m_oidsRemoved(0)

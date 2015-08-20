@@ -53,11 +53,8 @@
 
 te::edit::VertexTool::VertexTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent)
   : GeometriesUpdateTool(display, layer.get(), parent),
-    m_layer(layer),
-    m_feature(0),
-    m_currentStage(FEATURE_SELECTION)
+  m_currentStage(FEATURE_SELECTION)
 {
-  assert(m_layer.get());
 
   // Signals & slots
   connect(m_display, SIGNAL(extentChanged()), SLOT(onExtentChanged()));

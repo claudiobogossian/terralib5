@@ -1,5 +1,6 @@
 
 //TerraLib
+#include "../../../common/STLUtils.h"
 #include "../../../geometry/GeometryProperty.h"
 #include "../../../geometry/MultiPolygon.h"
 #include "../../../dataaccess/dataset/ObjectId.h"
@@ -26,19 +27,24 @@
 // STL
 #include <cassert>
 #include <memory>
+#include <iostream>
+/////////////////////////////////
 
 te::edit::SubtractAreaTool::SubtractAreaTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent)
 : CreateLineTool(display, layer, Qt::ArrowCursor, parent),
-m_feature(0)
-//,m_updateWatches(std::vector<Feature*>())
+  m_updateWatches(0) 
 {
-
   // Signals & slots
   connect(m_display, SIGNAL(extentChanged()), SLOT(onExtentChanged()));
 }
 
 te::edit::SubtractAreaTool::~SubtractAreaTool()
 {
+  UndoStackManager::getInstance().getUndoStack()->clear();
+
+  te::common::FreeContents(m_updateWatches);
+  m_updateWatches.clear();
+  
   delete m_feature;
 }
 
@@ -153,21 +159,21 @@ te::gm::Geometry* te::edit::SubtractAreaTool::buildPolygon()
 
   pHole->setSRID(m_display->getSRID());
 
-  te::gm::Geometry* mpol = 0;
+  te::gm::Geometry* geo = 0;
 
   if (!pHole->intersects(m_feature->getGeometry()))
     return dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone());
 
-  mpol = Difference(m_feature->getGeometry(), pHole);
+  geo = Difference(m_feature->getGeometry(), pHole);
 
   //projection
-  if (mpol->getSRID() == m_layer->getSRID())
-    return mpol;
+  if (geo->getSRID() == m_layer->getSRID())
+    return geo;
 
   // else, need conversion...
-  mpol->transform(m_layer->getSRID());
+  geo->transform(m_layer->getSRID());
 
-  return mpol;
+  return geo;
 }
 
 void te::edit::SubtractAreaTool::pickFeature(const te::map::AbstractLayerPtr& layer)
@@ -215,6 +221,8 @@ void te::edit::SubtractAreaTool::pickFeature(const te::map::AbstractLayerPtr& la
 
       m_feature = PickFeature(m_layer, e, m_display->getSRID(), te::edit::GEOMETRY_UPDATE);
 
+      m_updateWatches.push_back(m_feature->clone());
+
     }
 
   }
@@ -252,7 +260,6 @@ void te::edit::SubtractAreaTool::onExtentChanged()
   draw();
 }
 
-
 void te::edit::SubtractAreaTool::storeEditedFeature()
 {
   RepositoryManager::getInstance().addGeometry(m_layer->getId(), m_feature->getId()->clone(), dynamic_cast<te::gm::Geometry*>(buildPolygon()->clone()), te::edit::GEOMETRY_UPDATE);
@@ -266,9 +273,9 @@ te::gm::Geometry* te::edit::SubtractAreaTool::Difference(te::gm::Geometry* g1, t
 
 void te::edit::SubtractAreaTool::storeUndoCommand()
 {
-  //m_updateWatches.push_back(m_feature->clone());
+  m_updateWatches.push_back(m_feature->clone());
 
-  //QUndoCommand* command = new UpdateCommand(m_StackManager, m_updateWatches, m_display, m_layer);
-  //m_StackManager->addUndoStack(command);
+  QUndoCommand* command = new UpdateCommand(m_updateWatches, m_display, m_layer);
+  UndoStackManager::getInstance().addUndoStack(command);
 }
 

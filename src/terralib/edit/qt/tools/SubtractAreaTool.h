@@ -11,6 +11,7 @@
 
 #include "CreateLineTool.h"
 
+
 namespace te
 {
   namespace qt
@@ -65,14 +66,13 @@ namespace te
 
       te::gm::Geometry* Difference(te::gm::Geometry* g1, te::gm::Geometry* g2);
 
-      private slots:
+    private slots:
 
       void onExtentChanged();
 
     protected:
 
-      Feature* m_feature;
-      //std::vector<Feature*> m_updateWatches;
+      std::vector<Feature*> m_updateWatches;
 
     };
 

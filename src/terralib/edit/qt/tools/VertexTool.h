@@ -148,8 +148,6 @@ namespace te
 
       private:
 
-          te::map::AbstractLayerPtr m_layer;
-          Feature* m_feature;
           std::vector<te::gm::LineString*> m_lines;
           VertexIndex m_currentVertexIndex;
           te::sam::rtree::Index<VertexIndex, 8> m_rtree;

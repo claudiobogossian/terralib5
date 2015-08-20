@@ -1,5 +1,6 @@
 
 //TerraLib
+#include "../../../common/STLUtils.h"
 #include "../../../geometry/GeometryProperty.h"
 #include "../../../geometry/MultiPolygon.h"
 #include "../../../geometry/Utils.h"
@@ -32,8 +33,7 @@
 
 te::edit::AggregateAreaTool::AggregateAreaTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent)
   : CreateLineTool(display, layer, Qt::ArrowCursor, parent),
-m_feature(0)
-//,m_updateWatches(0)//std::vector<Feature*>())
+  m_updateWatches(0)
 {
 
   // Signals & slots
@@ -43,6 +43,11 @@ m_feature(0)
 
 te::edit::AggregateAreaTool::~AggregateAreaTool()
 {
+  UndoStackManager::getInstance().getUndoStack()->clear();
+
+  te::common::FreeContents(m_updateWatches);
+  m_updateWatches.clear();
+
   delete m_feature;
 }
 

@@ -50,8 +50,6 @@
 
 te::edit::MoveGeometryTool::MoveGeometryTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent)
   : GeometriesUpdateTool(display, layer.get(), parent),
-    m_layer(layer),
-    m_feature(0),
     m_moveStarted(false)
 {
   // Signals & slots

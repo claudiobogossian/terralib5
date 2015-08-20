@@ -72,7 +72,6 @@ namespace te
 
     protected:
 
-      Feature* m_feature;
       std::vector<Feature*> m_updateWatches;
 
     };

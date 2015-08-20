@@ -68,11 +68,16 @@ namespace te
       */
       virtual void redo();
 
+    protected:
+
+      const int m_undoCommandType = 1;
+      const int m_redoCommandType = 2;
+
+      void draw(const int commandType);
+
     private:
 
       virtual QString createCommandString(QString oid);
-
-      void draw(bool redo);
 
       te::qt::widgets::MapDisplay* m_display;
       te::map::AbstractLayerPtr m_layer;

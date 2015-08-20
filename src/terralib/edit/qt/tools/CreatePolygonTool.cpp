@@ -56,8 +56,6 @@
 
 te::edit::CreatePolygonTool::CreatePolygonTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, QObject* parent)
   : GeometriesUpdateTool(display, layer.get(), parent),
-    m_layer(layer),
-    m_feature(0),
     m_continuousMode(false),
     m_isFinished(false)
 {

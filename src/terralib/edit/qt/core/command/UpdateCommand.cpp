@@ -62,7 +62,7 @@ void  te::edit::UpdateCommand::undo()
 
     RepositoryManager::getInstance().addFeature(m_layer->getId(), f);
 
-    draw(true);
+    draw(m_undoCommandType);
 
   }
 
@@ -87,17 +87,18 @@ void te::edit::UpdateCommand::redo()
   //no makes redo while the command is not on the stack
   if (resultFound)
   {
+
     Feature* f = new Feature(m_updateItems[m_updateItems.size() - 1]->getId()->clone(), m_updateItems[m_updateItems.size() - 1]->getGeometry(), m_updateItems[m_updateItems.size() - 1]->getOperationType());
 
     RepositoryManager::getInstance().addFeature(m_layer->getId(), f);
 
-    draw(false);
+    draw(m_redoCommandType);
 
   }
 
 }
 
-void te::edit::UpdateCommand::draw(bool redo)
+void te::edit::UpdateCommand::draw(const int commandType)
 {
   const te::gm::Envelope& env = m_display->getExtent();
   if (!env.isValid())
@@ -112,14 +113,10 @@ void te::edit::UpdateCommand::draw(bool redo)
   renderer.begin(draft, env, m_display->getSRID());
 
   // Draw the layer edited geometries
-  if (redo)
-  {
+  if (commandType == m_undoCommandType)
       renderer.draw(m_updateItems[m_updateItems.size() - 2]->getGeometry(), true);
-  }
   else
-  {
       renderer.draw(m_updateItems[m_updateItems.size() - 1]->getGeometry(), true);
-  }
 
   renderer.end();
 

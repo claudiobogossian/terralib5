@@ -50,9 +50,7 @@
 #include <memory>
 
 te::edit::DeleteGeometryTool::DeleteGeometryTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent)
-  : GeometriesUpdateTool(display, layer.get(), parent),
-    m_layer(layer),
-    m_feature(0)
+  : GeometriesUpdateTool(display, layer.get(), parent)
 {
   // Signals & slots
   connect(m_display, SIGNAL(extentChanged()), SLOT(onExtentChanged()));

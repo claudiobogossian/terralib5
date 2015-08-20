@@ -49,7 +49,6 @@
 
 te::edit::CreateLineTool::CreateLineTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, QObject* parent)
   : GeometriesUpdateTool(display, layer.get(), parent),
-  m_layer(layer),
   m_continuousMode(false),
   m_isFinished(false)
 {

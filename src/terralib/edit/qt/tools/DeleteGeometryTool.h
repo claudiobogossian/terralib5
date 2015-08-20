@@ -100,9 +100,6 @@ namespace te
 
       protected:
 
-        te::map::AbstractLayerPtr m_layer;
-        Feature* m_feature;
-
     };
 
   }   // end namespace edit
