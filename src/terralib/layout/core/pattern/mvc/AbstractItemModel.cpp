@@ -170,7 +170,8 @@ te::layout::EnumType* te::layout::AbstractItemModel::getType()
 
 std::string te::layout::AbstractItemModel::getName()
 {
-	return m_properties.getObjectName();
+	std::string prop = "name";
+	return m_properties.getProperty(prop).getValue().toString();
 }
 
 bool te::layout::AbstractItemModel::isPrintable()
