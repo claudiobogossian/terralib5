@@ -53,7 +53,7 @@
 
 te::layout::GridSettingsOutside::GridSettingsOutside(AbstractOutsideController* controller) :
   QDialog(0),
-	AbstractOutsideView(controller),
+  AbstractOutsideView(controller),
   m_ui(new Ui::GridSettings)
 {
   m_planarGridSettings = new PlanarGridSettingsConfigProperties;
@@ -180,14 +180,14 @@ void te::layout::GridSettingsOutside::unblockComponents()
 
 bool te::layout::GridSettingsOutside::checkValidDegreeValue(const QString &value)
 {
-  int									degree = 0, minute = 0;
-  float								second = 0;
-  int									status = 0;
-  std::basic_string <char>::size_type		index;
-  std::string							strDegree = "";
+  int                  degree = 0, minute = 0;
+  float                second = 0;
+  int                  status = 0;
+  std::basic_string <char>::size_type    index;
+  std::string              strDegree = "";
 
   strDegree = std::string(value.toLatin1());
-  if((index=strDegree.find("º")) !=std::string::npos)	
+  if((index=strDegree.find("º")) !=std::string::npos)  
   {
     strDegree.replace(index,1,"");
   }
@@ -196,17 +196,17 @@ bool te::layout::GridSettingsOutside::checkValidDegreeValue(const QString &value
     strDegree.replace(index,1,"");
   }
 
-  if((index=strDegree.find("'")) !=std::string::npos)	
+  if((index=strDegree.find("'")) !=std::string::npos)  
   {
     strDegree.replace(index,1,"");
   }
-  if((index=strDegree.find("'")) !=std::string::npos)	
+  if((index=strDegree.find("'")) !=std::string::npos)  
   {
     strDegree.replace(index,1,"");
   }
 
   status=sscanf(strDegree.c_str(),"%d %d %f",&degree,&minute,&second);
-  if(status!=3)	return false;
+  if(status!=3)  return false;
 
   return true;
 
@@ -224,7 +224,7 @@ te::color::RGBAColor te::layout::GridSettingsOutside::configColor( QWidget* widg
 
   QColor color = QColorDialog::getColor(brush.color(),this, "Color" );
 
-  if(!color.isValid())	
+  if(!color.isValid())  
     return rgbaColor;
 
   QPalette paltt(widget->palette());
@@ -239,7 +239,7 @@ te::color::RGBAColor te::layout::GridSettingsOutside::configColor( QWidget* widg
 
 void te::layout::GridSettingsOutside::load()
 {
-	AbstractOutsideModel* abstractModel = const_cast<AbstractOutsideModel*>(m_controller->getModel());
+  AbstractOutsideModel* abstractModel = const_cast<AbstractOutsideModel*>(m_controller->getModel());
   GridSettingsModel* model = dynamic_cast<GridSettingsModel*>(abstractModel);
   if(!model)
     return;
@@ -633,7 +633,7 @@ void te::layout::GridSettingsOutside::on_lneHorizontalGap_editingFinished()
 {
   /*if(checkValidDegreeValue(m_ui->lneHorizontalGap->text()) == false)
   {
-    QMessageBox::information(this, tr("Information"), tr("Invalid Geodesic value! Try for example 0° 1' 0''"));	
+    QMessageBox::information(this, tr("Information"), tr("Invalid Geodesic value! Try for example 0° 1' 0''"));  
     m_ui->lneHorizontalGap->setFocus();
     return;
   }*/
@@ -658,7 +658,7 @@ void te::layout::GridSettingsOutside::on_lneVerticalGap_editingFinished()
 {
   /*if(checkValidDegreeValue(m_ui->lneVerticalGap->text()) == false)
   {
-    QMessageBox::information(this, tr("Information"), tr("Invalid Geodesic value! Try for example 0° 1' 0''"));	
+    QMessageBox::information(this, tr("Information"), tr("Invalid Geodesic value! Try for example 0° 1' 0''"));  
     m_ui->lneVerticalGap->setFocus();
     return;
   }*/
@@ -883,7 +883,7 @@ void te::layout::GridSettingsOutside::on_yGridInitialPoint_planar_textField_edit
   /*  
   if(checkValidDegreeValue(m_ui->yGridInitialPoint_geo_textField->text()) == false)
   {
-    QMessageBox::information(this, tr("Information"), tr("Invalid Geodesic value! Try for example 0° 1' 0''"));	
+    QMessageBox::information(this, tr("Information"), tr("Invalid Geodesic value! Try for example 0° 1' 0''"));  
     m_ui->lneVerticalGap->setFocus();
     return;
   }*/
@@ -903,7 +903,7 @@ void te::layout::GridSettingsOutside::on_xGridInitialPoint_geo_textField_editing
 {
   /*if(checkValidDegreeValue(m_ui->xGridInitialPoint_geo_textField->text()) == false)
   {
-    QMessageBox::information(this, tr("Information"), tr("Invalid Geodesic value! Try for example 0° 1' 0''"));	
+    QMessageBox::information(this, tr("Information"), tr("Invalid Geodesic value! Try for example 0° 1' 0''"));  
     m_ui->lneVerticalGap->setFocus();
     return;
   }*/
@@ -1635,7 +1635,7 @@ void te::layout::GridSettingsOutside::initColor( QWidget* widget, std::string na
   te::color::RGBAColor color = prop.getValue().toColor();
   QColor qcolor(color.getRed(), color.getGreen(), color.getBlue());
 
-  if(!qcolor.isValid())	
+  if(!qcolor.isValid())  
     return;
 
   if(!widget)

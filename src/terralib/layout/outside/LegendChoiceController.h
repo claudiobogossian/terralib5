@@ -36,15 +36,15 @@ namespace te
 {
   namespace layout
   {
-		class AbstractOutsideModel;
+    class AbstractOutsideModel;
 
-		class TELAYOUTEXPORT LegendChoiceController : public AbstractOutsideController
+    class TELAYOUTEXPORT LegendChoiceController : public AbstractOutsideController
     {
       public:
 
-				LegendChoiceController(AbstractOutsideModel* o);
+        LegendChoiceController(AbstractOutsideModel* o);
 
-	      virtual ~LegendChoiceController();
+        virtual ~LegendChoiceController();
     };
   }
 }

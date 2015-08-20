@@ -29,7 +29,7 @@
 #include "PropertiesController.h"
 
 te::layout::PropertiesController::PropertiesController(AbstractOutsideModel* o) :
-	AbstractOutsideController(o)
+  AbstractOutsideController(o)
 {
   
 }

@@ -62,7 +62,7 @@ te::layout::ChangePropertyCommand::ChangePropertyCommand( std::vector<QGraphicsI
 te::layout::ChangePropertyCommand::~ChangePropertyCommand()
 {
   m_allOldProperties.clear();
-	m_allNewProperties.clear();
+  m_allNewProperties.clear();
 }
 
 void te::layout::ChangePropertyCommand::undo()
@@ -144,7 +144,7 @@ QString te::layout::ChangePropertyCommand::createCommandString( QGraphicsItem* i
     return QObject::tr("%1");
   }
     
-	AbstractItemView* obs = dynamic_cast<AbstractItemView*>(item);
+  AbstractItemView* obs = dynamic_cast<AbstractItemView*>(item);
 
   if(!obs)
     return QObject::tr("%1");
@@ -192,12 +192,12 @@ bool te::layout::ChangePropertyCommand::checkItem( QGraphicsItem* item, Properti
   if(!item)
     return false;
 
-	AbstractItemView* obs = dynamic_cast<AbstractItemView*>(item);
+  AbstractItemView* obs = dynamic_cast<AbstractItemView*>(item);
 
   if(!obs)
     return false;
 
-	AbstractItemModel* model = dynamic_cast<AbstractItemModel*>(obs->getController()->getModel());
+  AbstractItemModel* model = dynamic_cast<AbstractItemModel*>(obs->getController()->getModel());
 
   if(!model)
     return false;

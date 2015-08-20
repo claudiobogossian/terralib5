@@ -44,9 +44,9 @@ namespace te
 
     /*!
       \brief Abstract class that represents a Template.
-	  
-	    \ingroup layout
-	  */
+    
+      \ingroup layout
+    */
     class TELAYOUTEXPORT AbstractTemplate
     {
       public:

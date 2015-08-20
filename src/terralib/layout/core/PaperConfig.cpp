@@ -102,7 +102,7 @@ void te::layout::PaperConfig::getPaperSize( double &w, double &h )
       w=105;
       h=148;
       break;
-    case A7	:
+    case A7  :
       w=74;
       h=105;
       break;
@@ -110,7 +110,7 @@ void te::layout::PaperConfig::getPaperSize( double &w, double &h )
       w=52;
       h=74;
       break;
-    case A9 :	
+    case A9 :  
       w=37;
       h=52;
       break;

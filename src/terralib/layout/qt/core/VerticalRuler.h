@@ -38,10 +38,10 @@ namespace te
   {
     class Scene;
     /*!
-	  \brief Class that represents a vertical ruler with the coordinate system in mm.
-	  
-	  \ingroup layout
-	  */
+    \brief Class that represents a vertical ruler with the coordinate system in mm.
+    
+    \ingroup layout
+    */
     class TELAYOUTEXPORT VerticalRuler : public AbstractRuler
     {
       public:

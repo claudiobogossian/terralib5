@@ -140,7 +140,7 @@ namespace te
 
         protected:
 
-					virtual QCursor createCursor(std::string pathIcon);
+          virtual QCursor createCursor(std::string pathIcon);
 
           View* m_view; //!< The QGraphicsView associated with the tool.
           QCursor m_cursor;      //!< The default tool cursor.

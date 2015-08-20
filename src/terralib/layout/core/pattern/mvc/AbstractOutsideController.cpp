@@ -37,12 +37,12 @@
 te::layout::AbstractOutsideController::AbstractOutsideController(AbstractOutsideModel* o) :
   m_model(o)
 {
-	create();
+  create();
 
-	if (m_model != 0)
-	{
-		m_model->attach(this);
-	}
+  if (m_model != 0)
+  {
+    m_model->attach(this);
+  }
 }
 
 te::layout::AbstractOutsideController::AbstractOutsideController(AbstractOutsideModel* o, EnumType* type) :
@@ -56,42 +56,42 @@ te::layout::AbstractOutsideController::AbstractOutsideController(AbstractOutside
 
 te::layout::AbstractOutsideController::~AbstractOutsideController()
 {
-	if (m_model != 0)
-	{
-		m_model->detach(this);
-		delete m_model;
-		m_model = 0;
-	}
+  if (m_model != 0)
+  {
+    m_model->detach(this);
+    delete m_model;
+    m_model = 0;
+  }
 }
 
 const te::layout::AbstractOutsideModel* te::layout::AbstractOutsideController::getModel()
 {
-	return m_model;
+  return m_model;
 }
 
 const te::layout::AbstractOutsideView* te::layout::AbstractOutsideController::getView()
 {
-	return m_view;
+  return m_view;
 }
 
 void te::layout::AbstractOutsideController::create()
 {
-	AbstractOutsideFactory* factory = Context::getInstance().getOutsideFactory();
-	OutsideParamsCreate params(this);
+  AbstractOutsideFactory* factory = Context::getInstance().getOutsideFactory();
+  OutsideParamsCreate params(this);
 
-	m_view = factory->make(m_model->getType(), params);
+  m_view = factory->make(m_model->getType(), params);
 }
 
 void te::layout::AbstractOutsideController::update(const Subject* subject)
 {
-	
+  
 }
 
 void te::layout::AbstractOutsideController::setPosition(const double& x, const double& y)
 {
   if(m_model)
   {
-		AbstractOutsideModel* model = dynamic_cast<AbstractOutsideModel*>(m_model);
+    AbstractOutsideModel* model = dynamic_cast<AbstractOutsideModel*>(m_model);
     if(model)
       return model->setPosition(x, y);
   }

@@ -47,27 +47,27 @@ namespace te
 {
   namespace layout
   {
-		class AbstractOutsideController;
+    class AbstractOutsideController;
     class PlanarGridSettingsConfigProperties;
     class GeodesicGridSettingsConfigProperties;
 
     /*!
     \brief Window (QDialog) map grid setting (MapItem).
-	  
-	    \ingroup layout
+    
+      \ingroup layout
 
-	    \sa te::layout::OutsideObserver
-	  */
-		class TELAYOUTEXPORT GridSettingsOutside : public QDialog, public AbstractOutsideView
+      \sa te::layout::OutsideObserver
+    */
+    class TELAYOUTEXPORT GridSettingsOutside : public QDialog, public AbstractOutsideView
     {
-	    Q_OBJECT
+      Q_OBJECT
     
       public:
         
-				GridSettingsOutside(AbstractOutsideController* controller);
+        GridSettingsOutside(AbstractOutsideController* controller);
 
-		    virtual ~GridSettingsOutside();
-				
+        virtual ~GridSettingsOutside();
+        
         virtual void setPosition(const double& x, const double& y);
 
         virtual te::gm::Coord2D getPosition();

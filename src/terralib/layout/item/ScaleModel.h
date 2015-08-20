@@ -45,11 +45,11 @@ namespace te
     Its coordinate system is the same of scene (millimeters). 
     This is also son of AbstractItemModel, so it can become observable, and son of AbstractVisitor, so it can become visitor.
     It is must visit the map, via te::layout::Visitable*, to get the scale value.
-      	  
-	    \ingroup layout
+          
+      \ingroup layout
 
       \sa te::layout::AbstractItemModel, NewObserver
-	  */
+    */
     class TELAYOUTEXPORT ScaleModel : public AbstractItemModel, public NewObserver
     {
       public:

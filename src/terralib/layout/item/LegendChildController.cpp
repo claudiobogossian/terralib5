@@ -43,5 +43,5 @@ te::layout::LegendChildController::LegendChildController( Observable* o ) :
 
 te::layout::LegendChildController::~LegendChildController()
 {
-	
+  
 }

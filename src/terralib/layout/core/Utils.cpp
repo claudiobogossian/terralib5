@@ -330,10 +330,10 @@ te::layout::WorldTransformer te::layout::Utils::getTransformGeo(te::gm::Envelope
 
 std::string te::layout::Utils::convertDecimalToDegree( const double& value, bool bDegrees, bool bMinutes, bool bSeconds )
 {
-  std::string		degreeValue;
-  double			dbValue;
-  double			sec;
-  double			min;
+  std::string    degreeValue;
+  double      dbValue;
+  double      sec;
+  double      min;
 
   dbValue = std::fabs(180.* value/(4.*atan(1.)));
   min = std::fabs((dbValue-(int)dbValue)*60.);

@@ -47,7 +47,7 @@
 
 te::layout::PageSetupOutside::PageSetupOutside(AbstractOutsideController* controller) :
   QDialog(0),
-	AbstractOutsideView(controller),
+  AbstractOutsideView(controller),
   m_orientation(te::layout::Portrait),
   m_paperType(te::layout::A4),
   m_ui(new Ui::PageSetup)

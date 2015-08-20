@@ -36,5 +36,5 @@ te::layout::PolygonController::PolygonController( Observable* o ) :
 
 te::layout::PolygonController::~PolygonController()
 {
-	
+  
 }

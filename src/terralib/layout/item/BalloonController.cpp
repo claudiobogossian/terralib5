@@ -36,6 +36,6 @@ te::layout::BalloonController::BalloonController( Observable* o ) :
 
 te::layout::BalloonController::~BalloonController()
 {
-	
+  
 }
 

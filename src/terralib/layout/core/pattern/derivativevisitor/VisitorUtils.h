@@ -42,10 +42,10 @@ namespace te
   namespace layout
   {
     /*!
-	    \brief Utility class for visitor.
-	  
-	    \ingroup layout
-	  */
+      \brief Utility class for visitor.
+    
+      \ingroup layout
+    */
     class TELAYOUTEXPORT VisitorUtils : public te::common::Singleton<VisitorUtils>
     {
       friend class te::common::Singleton<VisitorUtils>;

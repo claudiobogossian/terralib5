@@ -40,41 +40,41 @@ namespace te
   namespace layout
   {
     /*!
-	  \brief Parameters to create a new template. 
-	  
-	  \ingroup layout
+    \brief Parameters to create a new template. 
+    
+    \ingroup layout
 
-	  \sa te::layout::ParamsCreate
-	  */
-		class TELAYOUTEXPORT TemplateFactoryParamsCreate : public te::common::AbstractParameters
+    \sa te::layout::ParamsCreate
+    */
+    class TELAYOUTEXPORT TemplateFactoryParamsCreate : public te::common::AbstractParameters
     {
       public:
-				
+        
 
-				/*! \brief Copy constructor. */
-				TemplateFactoryParamsCreate(const TemplateFactoryParamsCreate& rhs);
+        /*! \brief Copy constructor. */
+        TemplateFactoryParamsCreate(const TemplateFactoryParamsCreate& rhs);
 
         /*!
           \brief Constructor
 
           \param file path
         */ 
-				TemplateFactoryParamsCreate(std::string path);
+        TemplateFactoryParamsCreate(std::string path);
 
         /*!
           \brief Destructor
         */ 
-				virtual ~TemplateFactoryParamsCreate();
+        virtual ~TemplateFactoryParamsCreate();
 
-				te::common::AbstractParameters* clone() const;
+        te::common::AbstractParameters* clone() const;
 
-				void reset() throw(te::common::Exception);
-								
-				std::string getFilePath();
+        void reset() throw(te::common::Exception);
+                
+        std::string getFilePath();
 
-			protected:
+      protected:
 
-				std::string m_path; //!< file path
+        std::string m_path; //!< file path
     };
   }
 }

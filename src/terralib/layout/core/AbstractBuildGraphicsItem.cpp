@@ -86,7 +86,7 @@ void te::layout::AbstractBuildGraphicsItem::clear()
 {
   m_id = 0;
   m_zValue = 0;
-	m_props.clear();
+  m_props.clear();
 }
 
 

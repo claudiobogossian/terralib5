@@ -35,7 +35,7 @@
 #include <algorithm>
 
 te::layout::MapLayerChoiceModel::MapLayerChoiceModel() :
-	AbstractOutsideModel()
+  AbstractOutsideModel()
 {
   m_type = Enums::getInstance().getEnumObjectType()->getMapLayerChoice();
   m_box = te::gm::Envelope(0., 0., 200., 200.);

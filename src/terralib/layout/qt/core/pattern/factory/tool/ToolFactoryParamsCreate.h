@@ -36,46 +36,46 @@ namespace te
 {
   namespace layout
   {
-		class View;
+    class View;
     /*!
-	  \brief Parameters to create a new tool. 
-	  
-	  \ingroup layout
+    \brief Parameters to create a new tool. 
+    
+    \ingroup layout
 
-	  \sa te::layout::ParamsCreate
-	  */
-		class TELAYOUTEXPORT ToolFactoryParamsCreate : public te::common::AbstractParameters
+    \sa te::layout::ParamsCreate
+    */
+    class TELAYOUTEXPORT ToolFactoryParamsCreate : public te::common::AbstractParameters
     {
       public:
-				
+        
 
-				/*! \brief Copy constructor. */
-				ToolFactoryParamsCreate(const ToolFactoryParamsCreate& rhs);
+        /*! \brief Copy constructor. */
+        ToolFactoryParamsCreate(const ToolFactoryParamsCreate& rhs);
 
         /*!
           \brief Constructor
 
           \param view
         */ 
-				ToolFactoryParamsCreate(View* view);
+        ToolFactoryParamsCreate(View* view);
 
         /*!
           \brief Destructor
         */ 
-				virtual ~ToolFactoryParamsCreate();
+        virtual ~ToolFactoryParamsCreate();
 
-				te::common::AbstractParameters* clone() const;
+        te::common::AbstractParameters* clone() const;
 
-				void reset() throw(te::common::Exception);
+        void reset() throw(te::common::Exception);
 
         /*!
           \brief Returns the te::layout::View
 
           \return view
         */
-        View*	getView();
-				
-			protected:
+        View*  getView();
+        
+      protected:
 
         View* m_view; //!< View object
     };

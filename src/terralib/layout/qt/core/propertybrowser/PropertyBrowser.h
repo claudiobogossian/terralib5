@@ -61,18 +61,18 @@ namespace te
     /*!
     \brief Manage properties variants values. Maps the QProperty properties (Qt) and Property (Layout) and add to a tree (QtTreePropertyBrowser) for presentation to the user, 
     allowing the modification and interactive update. 
-	  
-	  \ingroup layout
-	  */
+    
+    \ingroup layout
+    */
     class TELAYOUTEXPORT PropertyBrowser : public QObject
     {
-	    Q_OBJECT //for slots/signals
+      Q_OBJECT //for slots/signals
 
       public:
 
-	      PropertyBrowser(QObject *parent = 0);
+        PropertyBrowser(QObject *parent = 0);
 
-	      virtual ~PropertyBrowser();
+        virtual ~PropertyBrowser();
 
         QtTreePropertyBrowser* getPropertyEditor();
 

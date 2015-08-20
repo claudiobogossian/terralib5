@@ -35,7 +35,7 @@ namespace te
 {
   namespace layout
   {
-		class AbstractItemView;
+    class AbstractItemView;
     /*!
       \class RectangleItemFactory
 
@@ -43,15 +43,15 @@ namespace te
 
       \sa NewItemFactory, ParameterizedAbstractFactory, AbstractItemView
     */
-		class TELAYOUTEXPORT RectangleItemFactory : public NewItemFactory
+    class TELAYOUTEXPORT RectangleItemFactory : public NewItemFactory
     {
-			public:
+      public:
 
-				/*! It register the factory in the abstract dictionary. */
-				RectangleItemFactory();
+        /*! It register the factory in the abstract dictionary. */
+        RectangleItemFactory();
 
-				/*! \brief Destructor. */
-				~RectangleItemFactory();
+        /*! \brief Destructor. */
+        ~RectangleItemFactory();
 
       protected:
 
@@ -60,7 +60,7 @@ namespace te
 
           \return It returns zoom area tool.
         */
-				AbstractItemView* build(ItemFactoryParamsCreate params);
+        AbstractItemView* build(ItemFactoryParamsCreate params);
     };
 
   } // end namespace layout

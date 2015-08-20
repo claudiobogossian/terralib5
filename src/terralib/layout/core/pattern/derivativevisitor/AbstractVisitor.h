@@ -38,10 +38,10 @@ namespace te
     class Visitable;
 
     /*!
-	    \brief Abstract class to represent a visitor. All classes representing a visitor must inherit from this class.
-	  
-	    \ingroup layout
-	  */
+      \brief Abstract class to represent a visitor. All classes representing a visitor must inherit from this class.
+    
+      \ingroup layout
+    */
     class AbstractVisitor
     {
       public:

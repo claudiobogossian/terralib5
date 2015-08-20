@@ -40,10 +40,10 @@ namespace te
     class AbstractItemView;
 
     /*!
-	  \brief Abstract Factory provide an interface for creating families of related or dependent graphic objects (MVC components) without specifying their concrete classes.
-	  
-	  \ingroup layout
-	  */
+    \brief Abstract Factory provide an interface for creating families of related or dependent graphic objects (MVC components) without specifying their concrete classes.
+    
+    \ingroup layout
+    */
     class AbstractItemFactory 
     {
       public:

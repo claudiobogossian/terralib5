@@ -43,9 +43,9 @@ namespace te
 
     /*!
       \brief Calls the factory to create a template of the specified type and keep. Responsible for delete the created template.
-	  
-	    \ingroup layout
-	  */
+    
+      \ingroup layout
+    */
     class TELAYOUTEXPORT TemplateEditor
     {
       public:

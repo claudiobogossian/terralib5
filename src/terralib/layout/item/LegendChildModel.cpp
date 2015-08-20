@@ -163,7 +163,7 @@ te::layout::LegendChildModel::~LegendChildModel()
 //    refreshRule();
 //
 //    draw(context);
-//  }	
+//  }  
 //}
 //
 //te::se::Rule* te::layout::LegendChildModel::getRule()

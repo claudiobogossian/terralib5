@@ -41,70 +41,70 @@ namespace te
 {
   namespace layout
   {
-		class Scene;
-		class AbstractOutsideModel;
+    class Scene;
+    class AbstractOutsideModel;
 
-		class TELAYOUTEXPORT ToolbarController : public QObject, public AbstractOutsideController
+    class TELAYOUTEXPORT ToolbarController : public QObject, public AbstractOutsideController
     {
-			Q_OBJECT //for slots/signals
+      Q_OBJECT //for slots/signals
 
       public:
 
-				ToolbarController(AbstractOutsideModel* o);
+        ToolbarController(AbstractOutsideModel* o);
 
-	      virtual ~ToolbarController();
+        virtual ~ToolbarController();
 
-			public slots:
+      public slots:
 
-				virtual void onMapTriggered(QAction* action);
+        virtual void onMapTriggered(QAction* action);
 
-				virtual void onMapToolsTriggered(QAction* action);
+        virtual void onMapToolsTriggered(QAction* action);
 
-				virtual void onGeometryTriggered(QAction* action);
+        virtual void onGeometryTriggered(QAction* action);
 
-				virtual void onViewAreaTriggered(QAction* action);
+        virtual void onViewAreaTriggered(QAction* action);
 
-				virtual void onArrowCursorClicked(bool checked);
+        virtual void onArrowCursorClicked(bool checked);
 
-				virtual void onItemToolsTriggered(QAction* action);
-				
-				virtual void onComboZoomActivated();
+        virtual void onItemToolsTriggered(QAction* action);
+        
+        virtual void onComboZoomActivated();
 
-				virtual void onZoomChanged(int zoom);
+        virtual void onZoomChanged(int zoom);
 
-				virtual void onBringToFrontClicked(bool checked);
+        virtual void onBringToFrontClicked(bool checked);
 
-				virtual void onSendToBackClicked(bool checked);
+        virtual void onSendToBackClicked(bool checked);
 
-				virtual void onRecomposeClicked(bool checked);
+        virtual void onRecomposeClicked(bool checked);
 
-				virtual void onTextToolsTriggered(QAction* action);
+        virtual void onTextToolsTriggered(QAction* action);
 
-				virtual void onAlignLeftClicked(bool checked);
+        virtual void onAlignLeftClicked(bool checked);
 
-				virtual void onAlignRightClicked(bool checked);
+        virtual void onAlignRightClicked(bool checked);
 
-				virtual void onAlignTopClicked(bool checked);
+        virtual void onAlignTopClicked(bool checked);
 
-				virtual void onAlignBottomClicked(bool checked);
+        virtual void onAlignBottomClicked(bool checked);
 
-				virtual void onAlignCenterHorizontalClicked(bool checked);
+        virtual void onAlignCenterHorizontalClicked(bool checked);
 
-				virtual void onAlignCenterVerticalClicked(bool checked);
+        virtual void onAlignCenterVerticalClicked(bool checked);
 
-				virtual void onRemoveObjectClicked(bool checked);
+        virtual void onRemoveObjectClicked(bool checked);
 
-				virtual void onDrawMapClicked(bool checked);
+        virtual void onDrawMapClicked(bool checked);
 
-				virtual void onObjectToImageClicked(bool checked);
+        virtual void onObjectToImageClicked(bool checked);
 
-				virtual void onExitClicked(bool checked);
+        virtual void onExitClicked(bool checked);
 
-				virtual void onExportToPDFClicked(bool checked);
+        virtual void onExportToPDFClicked(bool checked);
 
-			protected:
+      protected:
 
-				Scene* getScene();
+        Scene* getScene();
     };
   }
 }

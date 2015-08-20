@@ -175,7 +175,7 @@ void te::layout::ScaleItem::drawAlternatingScaleBar( QPainter * painter )
 
   painter->save();
 
-  double			unit=1000.0;
+  double      unit=1000.0;
   std::string strUnit="(Km)";
 
   const Property& pScale = m_controller->getProperty("scale");
@@ -276,7 +276,7 @@ void te::layout::ScaleItem::drawHollowScaleBar( QPainter * painter )
 
   painter->save();
 
-  double			unit=1000.0;
+  double      unit=1000.0;
   std::string strUnit="(Km)";
 
   const Property& pScale = m_controller->getProperty("scale");

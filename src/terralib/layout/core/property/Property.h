@@ -41,9 +41,9 @@ namespace te
     /*!
       \brief A property acts like a attribute member of a object and stores the state of this attribute. A set of properties stores the state of an object.
       Any data type, not included in the convertValue method in the class te::layout::Variant, it will be by default "std::string" value.
-	  
-	    \ingroup layout
-	  */
+    
+      \ingroup layout
+    */
     class TELAYOUTEXPORT Property
     {
       public:
@@ -79,7 +79,7 @@ namespace te
         */
         EnumType* getType() const;
 
-	      std::vector<te::layout::Property> getSubProperty();
+        std::vector<te::layout::Property> getSubProperty();
         
         /*
           To use this method, you need to declare a variable with 

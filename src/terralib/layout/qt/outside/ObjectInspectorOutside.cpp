@@ -52,10 +52,10 @@
 
 te::layout::ObjectInspectorOutside::ObjectInspectorOutside(AbstractOutsideController* controller, PropertyBrowser* propertyBrowser) :
   QWidget(0),
-	AbstractOutsideView(controller)
+  AbstractOutsideView(controller)
 {
-	AbstractOutsideModel* abstractModel = const_cast<AbstractOutsideModel*>(m_controller->getModel());
-	te::gm::Envelope box = abstractModel->getBox();
+  AbstractOutsideModel* abstractModel = const_cast<AbstractOutsideModel*>(m_controller->getModel());
+  te::gm::Envelope box = abstractModel->getBox();
   setBaseSize(box.getWidth(), box.getHeight());
   setVisible(false);
   setWindowTitle("Object Inspector");
@@ -128,7 +128,7 @@ void te::layout::ObjectInspectorOutside::itemsInspector(QList<QGraphicsItem*> gr
   {
     if (item)
     {
-			AbstractItemView* lItem = dynamic_cast<AbstractItemView*>(item);
+      AbstractItemView* lItem = dynamic_cast<AbstractItemView*>(item);
       if(lItem)
       {        
         if(!lItem->getController()->getModel())
@@ -179,7 +179,7 @@ void te::layout::ObjectInspectorOutside::selectItems( QList<QGraphicsItem*> grap
   {
     if (item)
     {
-			AbstractItemView* iOb = dynamic_cast<AbstractItemView*>(item);
+      AbstractItemView* iOb = dynamic_cast<AbstractItemView*>(item);
       if(iOb)
       {
         if(iOb->getController()->getModel())
@@ -211,7 +211,7 @@ bool te::layout::ObjectInspectorOutside::hasMoveItemGroup( QList<QGraphicsItem*>
   {
     if (item)
     {
-			AbstractItemView* movingItem = dynamic_cast<AbstractItemView*>(item);
+      AbstractItemView* movingItem = dynamic_cast<AbstractItemView*>(item);
       if(!movingItem)
         continue;
 
@@ -235,7 +235,7 @@ QtProperty* te::layout::ObjectInspectorOutside::addProperty( QGraphicsItem* item
     return prop;
   }
 
-	AbstractItemView* lItem = dynamic_cast<AbstractItemView*>(item);
+  AbstractItemView* lItem = dynamic_cast<AbstractItemView*>(item);
   if(!lItem)
   {
     return prop;
@@ -277,7 +277,7 @@ void te::layout::ObjectInspectorOutside::createSubProperty( QGraphicsItem* item,
       continue;
     }
 
-		AbstractItemView* lItem = dynamic_cast<AbstractItemView*>(item);
+    AbstractItemView* lItem = dynamic_cast<AbstractItemView*>(item);
     if(!lItem)
     {
       continue;
@@ -318,11 +318,11 @@ te::layout::Property te::layout::ObjectInspectorOutside::createProperty(Abstract
     return pro_class;
   }
 
-	std::string name = item->getController()->getModel()->getName();
-	std::string typeName = item->getController()->getModel()->getType()->getName();
+  std::string name = item->getController()->getModel()->getName();
+  std::string typeName = item->getController()->getModel()->getType()->getName();
 
-	pro_class.setName(name);
-	pro_class.setValue(typeName, dataType->getDataTypeString());
+  pro_class.setName(name);
+  pro_class.setValue(typeName, dataType->getDataTypeString());
   pro_class.setEditable(false);
 
   return pro_class;

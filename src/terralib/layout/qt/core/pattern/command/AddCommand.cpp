@@ -94,7 +94,7 @@ QString te::layout::AddCommand::createCommandString( QGraphicsItem* item, const 
   if(!m_item)
     return QObject::tr("%1");
 
-	AbstractItemView* obs = dynamic_cast<AbstractItemView*>(item);
+  AbstractItemView* obs = dynamic_cast<AbstractItemView*>(item);
 
   if(!obs)
     return QObject::tr("%1");

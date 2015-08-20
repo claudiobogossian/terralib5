@@ -47,11 +47,11 @@ namespace te
     but its position in the scene remains in millimeters.
     Drawing starting point is llx, lly.
     He is also the son of ItemObserver, so it can become observer of a model (Observable). "View" part of MVC component.
-	  
-	  \ingroup layout
+    
+    \ingroup layout
 
-	  \sa te::layout::ItemObserver
-	*/
+    \sa te::layout::ItemObserver
+  */
     class TELAYOUTEXPORT MapLocationItem : public MapItem
     {
       Q_OBJECT //for slots/signals

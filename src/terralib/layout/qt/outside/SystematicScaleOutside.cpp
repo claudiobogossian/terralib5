@@ -45,7 +45,7 @@
 
 te::layout::SystematicScaleOutside::SystematicScaleOutside(AbstractOutsideController* controller) :
   QDialog(0),
-	AbstractOutsideView(controller),
+  AbstractOutsideView(controller),
   m_ui(new Ui::SystematicScale)
 {
   m_ui->setupUi(this);

@@ -35,7 +35,7 @@
 
 te::layout::EditTemplateOutside::EditTemplateOutside(AbstractOutsideController* controller) :
   QWidget(0),
-	AbstractOutsideView(controller),
+  AbstractOutsideView(controller),
   m_ui(new Ui::EditTemplate)
 {
   m_ui->setupUi(this);

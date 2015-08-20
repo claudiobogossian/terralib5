@@ -47,17 +47,17 @@ namespace te
   namespace layout
   {
     /*!
-	  \brief Utility class with functions to facilitate handling of qt properties and properties layout module.
-	  
-	  \ingroup layout
-	  */
+    \brief Utility class with functions to facilitate handling of qt properties and properties layout module.
+    
+    \ingroup layout
+    */
     class TELAYOUTEXPORT PropertiesUtils
     {
     public:
 
-	    PropertiesUtils();
+      PropertiesUtils();
 
-	    virtual ~PropertiesUtils();
+      virtual ~PropertiesUtils();
       
       virtual Properties intersection(QList<QGraphicsItem*> graphicsItems, bool& window);
 

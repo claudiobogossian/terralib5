@@ -32,19 +32,19 @@
 te::layout::AbstractOutsideView::AbstractOutsideView(AbstractOutsideController* controller) :
   m_controller(controller)
 {
-	
+  
 }
 
 te::layout::AbstractOutsideView::~AbstractOutsideView()
 {
-	if(m_controller)
-		delete (AbstractOutsideController*)m_controller;
+  if(m_controller)
+    delete (AbstractOutsideController*)m_controller;
 }
 
 void te::layout::AbstractOutsideView::refresh()
 {
-	te::gm::Coord2D coord = getPosition();
-	m_controller->setPosition(coord.x, coord.y);
+  te::gm::Coord2D coord = getPosition();
+  m_controller->setPosition(coord.x, coord.y);
 }
 
 te::layout::AbstractOutsideController* te::layout::AbstractOutsideView::getController()

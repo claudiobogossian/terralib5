@@ -53,7 +53,7 @@ void te::layout::VisualizationArea::createPaper()
 {
   PaperConfig* pConfig = m_scene->getPaperConfig();
   //Paper
-  PaperModel* modelPaper = new PaperModel(pConfig);	
+  PaperModel* modelPaper = new PaperModel(pConfig);  
 
   double x = modelPaper->getBox().getLowerLeftX();
   double y = modelPaper->getBox().getLowerLeftY();

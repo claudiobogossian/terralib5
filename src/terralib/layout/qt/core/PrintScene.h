@@ -46,10 +46,10 @@ namespace te
   namespace layout
   {
     /*!
-	  \brief Class responsible for printing the entire content or part of the scene. As the scene is upside down, it is necessary to invert the y of the painter before printing.
-	  
-	  \ingroup layout
-	  */
+    \brief Class responsible for printing the entire content or part of the scene. As the scene is upside down, it is necessary to invert the y of the painter before printing.
+    
+    \ingroup layout
+    */
     class TELAYOUTEXPORT PrintScene : public QObject
     {
       Q_OBJECT //for slots/signals
@@ -58,8 +58,8 @@ namespace te
 
         /*!
           \brief Constructor
-		  
-		      \param scene
+      
+          \param scene
         */
         PrintScene( QGraphicsScene* scene );
 

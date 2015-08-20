@@ -37,15 +37,15 @@ namespace te
 {
   namespace layout
   {
-		class AbstractOutsideModel;
+    class AbstractOutsideModel;
 
-		class TELAYOUTEXPORT GridSettingsController : public AbstractOutsideController
+    class TELAYOUTEXPORT GridSettingsController : public AbstractOutsideController
     {
       public:
 
-				GridSettingsController(AbstractOutsideModel* o);
+        GridSettingsController(AbstractOutsideModel* o);
 
-	      virtual ~GridSettingsController();
+        virtual ~GridSettingsController();
         
         virtual Property updateProperty(std::string name, Variant variant, EnumType* enumType);
         

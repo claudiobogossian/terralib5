@@ -42,11 +42,11 @@ namespace te
   {
     /*!
       \brief Implementation of AbstractTemplate. Template that creates, saves, or change a .json file.
-	  
-	    \ingroup layout
+    
+      \ingroup layout
 
       \sa te::layout::AbstractTemplate
-	  */
+    */
     class TELAYOUTEXPORT JSONTemplate : public AbstractTemplate
     {
       public:

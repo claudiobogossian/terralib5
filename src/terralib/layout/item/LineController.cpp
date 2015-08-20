@@ -36,5 +36,5 @@ te::layout::LineController::LineController( Observable* o ) :
 
 te::layout::LineController::~LineController()
 {
-	
+  
 }

@@ -47,7 +47,7 @@
 
 te::layout::SVGDialogOutside::SVGDialogOutside(AbstractOutsideController* controller)
   : QDialog(0),
-		AbstractOutsideView(controller),
+    AbstractOutsideView(controller),
     m_ui(new Ui::SVGView), 
     m_property(0)
 {
@@ -65,8 +65,8 @@ void te::layout::SVGDialogOutside::init()
 {
   m_initFile = "";
 
-	AbstractOutsideModel* abstractModel = const_cast<AbstractOutsideModel*>(m_controller->getModel());
-	SVGDialogModel* model = dynamic_cast<SVGDialogModel*>(abstractModel);
+  AbstractOutsideModel* abstractModel = const_cast<AbstractOutsideModel*>(m_controller->getModel());
+  SVGDialogModel* model = dynamic_cast<SVGDialogModel*>(abstractModel);
   if(!model)
   {
     return;

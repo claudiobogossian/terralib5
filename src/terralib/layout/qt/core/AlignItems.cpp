@@ -66,7 +66,7 @@ void te::layout::AlignItems::bringToFront()
   {
     if(item)
     {
-			AbstractItemView* it = dynamic_cast<AbstractItemView*>(item);
+      AbstractItemView* it = dynamic_cast<AbstractItemView*>(item);
       if(it)
       {        
         if((item->zValue() >= zValue))
@@ -100,7 +100,7 @@ void te::layout::AlignItems::sendToBack()
   {
     if(item)
     {
-			AbstractItemView* it = dynamic_cast<AbstractItemView*>(item);
+      AbstractItemView* it = dynamic_cast<AbstractItemView*>(item);
       if(it)
       {
         if (item->zValue() <= zValue)

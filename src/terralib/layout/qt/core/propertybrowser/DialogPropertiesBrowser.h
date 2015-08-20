@@ -59,20 +59,20 @@ namespace te
 
     /*!
     \brief Manage properties dialogs values. 
-	  
-	  \ingroup layout
-	  */
+    
+    \ingroup layout
+    */
     class TELAYOUTEXPORT DialogPropertiesBrowser : public AbstractPropertiesBrowser
     {
-	    Q_OBJECT //for slots/signals
+      Q_OBJECT //for slots/signals
 
       public:
 
-	      DialogPropertiesBrowser(QObject *parent = 0);
+        DialogPropertiesBrowser(QObject *parent = 0);
 
         DialogPropertiesBrowser(QtDlgEditorFactory* factory, QtStringPropertyManager* manager, QObject *parent = 0);
 
-	      virtual ~DialogPropertiesBrowser();
+        virtual ~DialogPropertiesBrowser();
 
         QtStringPropertyManager* getStringPropertyManager();
 

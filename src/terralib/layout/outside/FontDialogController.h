@@ -36,15 +36,15 @@ namespace te
 {
   namespace layout
   {
-		class AbstractOutsideModel;
+    class AbstractOutsideModel;
 
     class TELAYOUTEXPORT FontDialogController : public AbstractOutsideController
     {
       public:
 
-				FontDialogController(AbstractOutsideModel* o);
+        FontDialogController(AbstractOutsideModel* o);
 
-	      virtual ~FontDialogController();
+        virtual ~FontDialogController();
     };
   }
 }

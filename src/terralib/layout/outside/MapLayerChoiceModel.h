@@ -42,9 +42,9 @@ namespace te
 {
   namespace layout
   {
-		class Properties;
+    class Properties;
 
-		class TELAYOUTEXPORT MapLayerChoiceModel : public AbstractOutsideModel
+    class TELAYOUTEXPORT MapLayerChoiceModel : public AbstractOutsideModel
     {
     public:
 
@@ -62,19 +62,19 @@ namespace te
 
       virtual std::list<te::map::AbstractLayerPtr> getLayers();
 
-	    virtual std::list<te::map::AbstractLayerPtr> getSelectedLayers();
+      virtual std::list<te::map::AbstractLayerPtr> getSelectedLayers();
 
       virtual std::vector<Property> getLayerProperties();
 
       virtual void refresh();
-	  
+    
     protected:
 
-	    virtual std::list<te::map::AbstractLayerPtr> searchLayers();
+      virtual std::list<te::map::AbstractLayerPtr> searchLayers();
 
       std::list<te::map::AbstractLayerPtr> m_layers;
       std::vector<te::layout::Properties*> m_mapProperties;
-	    std::list<te::map::AbstractLayerPtr> m_selectedLayers;
+      std::list<te::map::AbstractLayerPtr> m_selectedLayers;
       std::vector<Property> m_layerProperties;
     };
   }

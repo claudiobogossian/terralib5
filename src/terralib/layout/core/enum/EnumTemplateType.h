@@ -40,11 +40,11 @@ namespace te
 
     /*!
       \brief Class to represent a template type enumeration. Ex.: json, etc.
-	  
-	    \ingroup layout
+    
+      \ingroup layout
 
-	    \sa te::layout::AbstractEnum
-	  */
+      \sa te::layout::AbstractEnum
+    */
     class TELAYOUTEXPORT EnumTemplateType : public AbstractEnum
     {
       public:
@@ -61,15 +61,15 @@ namespace te
         
         /*!
           \brief Returns value that represents json type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getJsonType() const;
 
         /*!
           \brief Returns value that represents none type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getNoneType() const;
 

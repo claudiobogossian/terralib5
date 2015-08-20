@@ -344,12 +344,12 @@ namespace te
 
     inline double WorldTransformer::getTranslateX()
     {
-	    return m_translateX;
+      return m_translateX;
     }
 
     inline double WorldTransformer::getTranslateY()
     {
-	    return m_translateY;
+      return m_translateY;
     }
 
     inline double WorldTransformer::getS1llx()

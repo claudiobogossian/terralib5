@@ -38,9 +38,9 @@ namespace te
   {
     /*!
       \brief Abstract class for serialization properties in any file extension.
-	  
-	    \ingroup layout
-	  */
+    
+      \ingroup layout
+    */
     class TELAYOUTEXPORT Serialization
     {
       public:

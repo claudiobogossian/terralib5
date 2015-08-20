@@ -27,14 +27,14 @@
 #include "ToolFactoryParamsCreate.h"
 
 te::layout::ToolFactoryParamsCreate::ToolFactoryParamsCreate(View* view) :
-	m_view(view)
+  m_view(view)
 {
 
 }
 
 te::layout::ToolFactoryParamsCreate::ToolFactoryParamsCreate(const ToolFactoryParamsCreate& rhs)
 {
-	this->operator=(rhs);
+  this->operator=(rhs);
 }
 
 te::layout::ToolFactoryParamsCreate::~ToolFactoryParamsCreate()
@@ -44,7 +44,7 @@ te::layout::ToolFactoryParamsCreate::~ToolFactoryParamsCreate()
 
 te::common::AbstractParameters* te::layout::ToolFactoryParamsCreate::clone() const
 {
-	return new ToolFactoryParamsCreate(*this);
+  return new ToolFactoryParamsCreate(*this);
 }
 
 void te::layout::ToolFactoryParamsCreate::reset() throw(te::common::Exception)
@@ -54,7 +54,7 @@ void te::layout::ToolFactoryParamsCreate::reset() throw(te::common::Exception)
 
 te::layout::View* te::layout::ToolFactoryParamsCreate::getView()
 {
-	return m_view;
+  return m_view;
 }
 
 

@@ -18,9 +18,9 @@
  */
 
 /*!
-	\file terralib/layout/core/template/TemplateFactory.h
+  \file terralib/layout/core/template/TemplateFactory.h
 
-	\brief This is the abstract factory for tools.
+  \brief This is the abstract factory for tools.
 */
 
 #ifndef __TERRALIB_LAYOUT_INTERNAL_TEMPLATE_FACTORY_H 
@@ -36,46 +36,46 @@ namespace te
 {
   namespace layout
   {
-		/*!
-			\class ToolFactory
+    /*!
+      \class ToolFactory
 
-			\brief This is the abstract factory for templates.
+      \brief This is the abstract factory for templates.
 
-			It will create objects of type AbstractTemplate and will pass
-			parameters of type ToolFactoryParamsCreate to their factories constructors.
+      It will create objects of type AbstractTemplate and will pass
+      parameters of type ToolFactoryParamsCreate to their factories constructors.
 
-			If you want a new tool you can use a command like:
-			<code>
-			  te::layout::AbstractTemplate* pEngine = te::layout::TemplateFactory::make("JSON");
-			</code>
-			Or
-			<code>
-				te::layout::EnumTemplateType* tool = Enums::getInstance().getEnumTemplateType();
-				te::layout::EnumType* template = tool->getToolTypeJSON();
-				te::layout::AbstractTemplate* pEngine = te::layout::TemplateFactory::make(template->getName());
-			</code>
+      If you want a new tool you can use a command like:
+      <code>
+        te::layout::AbstractTemplate* pEngine = te::layout::TemplateFactory::make("JSON");
+      </code>
+      Or
+      <code>
+        te::layout::EnumTemplateType* tool = Enums::getInstance().getEnumTemplateType();
+        te::layout::EnumType* template = tool->getToolTypeJSON();
+        te::layout::AbstractTemplate* pEngine = te::layout::TemplateFactory::make(template->getName());
+      </code>
 
-			\note The caller of the method make will take the ownership of the returned tool.
+      \note The caller of the method make will take the ownership of the returned tool.
 
-			\sa AbstractTemplate, AbstractFactory
-		*/
-		class TELAYOUTEXPORT TemplateFactory : public te::common::ParameterizedAbstractFactory<AbstractTemplate, std::string, TemplateFactoryParamsCreate>
-		{
-			public:
+      \sa AbstractTemplate, AbstractFactory
+    */
+    class TELAYOUTEXPORT TemplateFactory : public te::common::ParameterizedAbstractFactory<AbstractTemplate, std::string, TemplateFactoryParamsCreate>
+    {
+      public:
 
-				/*! \brief Virtual destructor. */
-				virtual ~TemplateFactory();
+        /*! \brief Virtual destructor. */
+        virtual ~TemplateFactory();
 
-			protected:
+      protected:
 
-				/*!
-				\brief It creates the factory.
+        /*!
+        \brief It creates the factory.
 
-				The key of a ToolFactory is a string.
+        The key of a ToolFactory is a string.
 
-				\param factoryKey The key that identifies the factory.
-				*/
-				TemplateFactory(const std::string& factoryKey);
+        \param factoryKey The key that identifies the factory.
+        */
+        TemplateFactory(const std::string& factoryKey);
     };
   }
 }

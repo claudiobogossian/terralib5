@@ -35,7 +35,7 @@
 te::layout::TemplateEditor::TemplateEditor( EnumType* type, std::string path ) 
 {
   TemplateFactoryParamsCreate params(path);
-	m_template = te::layout::TemplateFactory::make(type->getName(), params);
+  m_template = te::layout::TemplateFactory::make(type->getName(), params);
 }
 
 te::layout::TemplateEditor::~TemplateEditor()

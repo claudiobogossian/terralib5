@@ -31,7 +31,7 @@
 #include "TextGridSettingsModel.h"
 
 te::layout::TextGridSettingsController::TextGridSettingsController(AbstractOutsideModel* o) :
-	AbstractOutsideController(o)
+  AbstractOutsideController(o)
 {
  
 }
@@ -52,7 +52,7 @@ void te::layout::TextGridSettingsController::addUpdateProperty( std::string name
 
   if(m_model)
   {
-		AbstractOutsideModel* model = dynamic_cast<AbstractOutsideModel*>(m_model);
+    AbstractOutsideModel* model = dynamic_cast<AbstractOutsideModel*>(m_model);
     outsideModel = dynamic_cast<TextGridSettingsModel*>(model);    
   }
 
@@ -108,7 +108,7 @@ void te::layout::TextGridSettingsController::addUpdateTextGridProperty( Property
 
   if(m_model)
   {
-		AbstractOutsideModel* model = dynamic_cast<AbstractOutsideModel*>(m_model);
+    AbstractOutsideModel* model = dynamic_cast<AbstractOutsideModel*>(m_model);
     outsideModel = dynamic_cast<TextGridSettingsModel*>(model);    
   }
 
@@ -153,7 +153,7 @@ te::layout::Property te::layout::TextGridSettingsController::getProperty( std::s
 
   if(m_model)
   {
-		AbstractOutsideModel* model = dynamic_cast<AbstractOutsideModel*>(m_model);
+    AbstractOutsideModel* model = dynamic_cast<AbstractOutsideModel*>(m_model);
     outsideModel = dynamic_cast<TextGridSettingsModel*>(model);    
   }
 

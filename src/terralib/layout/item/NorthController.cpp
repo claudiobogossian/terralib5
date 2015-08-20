@@ -36,5 +36,5 @@ te::layout::NorthController::NorthController( Observable* o ) :
 
 te::layout::NorthController::~NorthController()
 {
-	
+  
 }

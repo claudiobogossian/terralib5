@@ -170,7 +170,7 @@ te::layout::LegendModel::~LegendModel()
 //    m_layer = layer;
 //    
 //    draw(context);
-//  }	
+//  }  
 //}
 //
 //void te::layout::LegendModel::setBorderDisplacement( double value )

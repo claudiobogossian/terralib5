@@ -113,10 +113,10 @@ namespace te
          */
         virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
 
-				/*!
-				\brief Reimplemented from QGraphicsItem. World coordinates(mm).
-				*/
-				virtual bool	contains(const QPointF & point) const;
+        /*!
+        \brief Reimplemented from QGraphicsItem. World coordinates(mm).
+        */
+        virtual bool  contains(const QPointF & point) const;
 
     protected:
 
@@ -272,12 +272,12 @@ namespace te
       }
     }
 
-		template <class T>
-		inline bool te::layout::AbstractItem<T>::contains(const QPointF & point) const
-		{
-			te::gm::Coord2D coord(point.x(), point.y());
-			return m_controller->contains(coord);
-		}
+    template <class T>
+    inline bool te::layout::AbstractItem<T>::contains(const QPointF & point) const
+    {
+      te::gm::Coord2D coord(point.x(), point.y());
+      return m_controller->contains(coord);
+    }
 
     template <class T>
     inline QRectF te::layout::AbstractItem<T>::getAdjustedBoundingRect(QPainter* painter) const

@@ -46,8 +46,8 @@ te::layout::Module::Module()
 // it initializes the Translator support for the TerraLib Intersection Operation support
   TE_ADD_TEXT_DOMAIN(TE_LAYOUT_TEXT_DOMAIN, TE_LAYOUT_TEXT_DOMAIN, "UTF-8");
 
-	te::layout::initToolFactories(); // init all tool factories
-	te::layout::initItemFactories(); // init all item factories
+  te::layout::initToolFactories(); // init all tool factories
+  te::layout::initItemFactories(); // init all item factories
 }
 
 te::layout::Module::~Module()

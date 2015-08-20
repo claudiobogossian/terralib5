@@ -44,19 +44,19 @@ namespace te
 {
   namespace layout
   {
-		class AbstractOutsideController;
+    class AbstractOutsideController;
     class TextGridSettingsConfigProperties;
 
-		class TELAYOUTEXPORT TextGridSettingsOutside : public QDialog, public AbstractOutsideView
+    class TELAYOUTEXPORT TextGridSettingsOutside : public QDialog, public AbstractOutsideView
     {
-	    Q_OBJECT
+      Q_OBJECT
     
       public:
         
-				TextGridSettingsOutside(AbstractOutsideController* controller);
+        TextGridSettingsOutside(AbstractOutsideController* controller);
 
-		    virtual ~TextGridSettingsOutside();
-				
+        virtual ~TextGridSettingsOutside();
+        
         virtual void setPosition(const double& x, const double& y);
 
         virtual te::gm::Coord2D getPosition();
@@ -67,7 +67,7 @@ namespace te
        
         virtual void load();
 
-        virtual bool	eventFilter ( QObject * watched, QEvent * event );
+        virtual bool  eventFilter ( QObject * watched, QEvent * event );
 
       signals:
 

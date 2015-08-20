@@ -38,19 +38,19 @@ namespace te
   {
     class Scene;
     /*!
-	  \brief Creates the viewing area. Ex.: creation of the sheet of paper.
-	  
-	  \ingroup layout
-	  */
+    \brief Creates the viewing area. Ex.: creation of the sheet of paper.
+    
+    \ingroup layout
+    */
     class TELAYOUTEXPORT VisualizationArea : public QObject
     {
-	    Q_OBJECT //for slots/signals
+      Q_OBJECT //for slots/signals
 
     public:
 
-	    VisualizationArea(Scene* scene, te::gm::Envelope boxArea);
+      VisualizationArea(Scene* scene, te::gm::Envelope boxArea);
 
-	    virtual ~VisualizationArea();
+      virtual ~VisualizationArea();
 
       virtual void changeBoxArea(te::gm::Envelope boxArea);
 

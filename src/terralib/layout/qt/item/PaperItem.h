@@ -44,11 +44,11 @@ namespace te
     \brief Class that represents a graphic sheet of paper. 
     Its coordinate system is the same of scene (millimeters). 
     This is also son of ItemObserver and ObjectItem, so it can become observer of a model (Observable). 
-	  
-	  \ingroup layout
+    
+    \ingroup layout
 
     \sa te::layout::ObjectItem
-	  */
+    */
     class TELAYOUTEXPORT PaperItem : public ObjectItem
     {
       public:

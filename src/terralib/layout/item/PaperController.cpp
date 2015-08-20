@@ -45,6 +45,6 @@ te::layout::PaperController::PaperController( Observable* o ) :
 
 te::layout::PaperController::~PaperController()
 {
-	
+  
 }
 

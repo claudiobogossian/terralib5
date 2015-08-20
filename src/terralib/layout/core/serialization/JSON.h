@@ -45,11 +45,11 @@ namespace te
   {
     /*!
       \brief Implementation of .json for Serialization. It is a JSON file. Save or change a file .json and serializes the properties of the objects, MVC component.
-	  
-	    \ingroup layout
+    
+      \ingroup layout
 
       \sa te::layout::Serialization
-	  */
+    */
     class TELAYOUTEXPORT JSON : public Serialization
     {
       public:

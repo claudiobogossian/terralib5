@@ -29,7 +29,7 @@
 #include "ObjectInspectorController.h"
 
 te::layout::ObjectInspectorController::ObjectInspectorController(AbstractOutsideModel* o) :
-	AbstractOutsideController(o)
+  AbstractOutsideController(o)
 {
   
 }

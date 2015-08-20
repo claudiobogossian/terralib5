@@ -18,9 +18,9 @@
  */
 
 /*!
-	\file terralib/layout/qt/pattern/factory/ToolFactory.h
+  \file terralib/layout/qt/pattern/factory/ToolFactory.h
 
-	\brief This is the abstract factory for tools.
+  \brief This is the abstract factory for tools.
 */
 
 #ifndef __TERRALIB_LAYOUT_INTERNAL_TOOL_FACTORY_H 
@@ -36,46 +36,46 @@ namespace te
 {
   namespace layout
   {
-		/*!
-			\class ToolFactory
+    /*!
+      \class ToolFactory
 
-			\brief This is the abstract factory for tools.
+      \brief This is the abstract factory for tools.
 
-			It will create objects of type AbstractLayoutTool and will pass
-			parameters of type ToolFactoryParamsCreate to their factories constructors.
+      It will create objects of type AbstractLayoutTool and will pass
+      parameters of type ToolFactoryParamsCreate to their factories constructors.
 
-			If you want a new tool you can use a command like:
-			<code>
-			  te::layout::AbstractLayoutTool* pEngine = te::layout::ToolFactory::make("PANTOOL");
-			</code>
-			Or
-			<code>
-				te::layout::EnumToolType* tool = Enums::getInstance().getEnumToolType();
-				te::layout::EnumType* panTool = tool->getToolTypePan();
-				te::layout::AbstractLayoutTool* pEngine = te::layout::ToolFactory::make(panTool->getName());
-			</code>
+      If you want a new tool you can use a command like:
+      <code>
+        te::layout::AbstractLayoutTool* pEngine = te::layout::ToolFactory::make("PANTOOL");
+      </code>
+      Or
+      <code>
+        te::layout::EnumToolType* tool = Enums::getInstance().getEnumToolType();
+        te::layout::EnumType* panTool = tool->getToolTypePan();
+        te::layout::AbstractLayoutTool* pEngine = te::layout::ToolFactory::make(panTool->getName());
+      </code>
 
-			\note The caller of the method make will take the ownership of the returned tool.
+      \note The caller of the method make will take the ownership of the returned tool.
 
-			\sa AbstractLayoutTool, AbstractFactory
-		*/
-		class TELAYOUTEXPORT ToolFactory : public te::common::ParameterizedAbstractFactory<AbstractLayoutTool, std::string, ToolFactoryParamsCreate>
-		{
-			public:
+      \sa AbstractLayoutTool, AbstractFactory
+    */
+    class TELAYOUTEXPORT ToolFactory : public te::common::ParameterizedAbstractFactory<AbstractLayoutTool, std::string, ToolFactoryParamsCreate>
+    {
+      public:
 
-				/*! \brief Virtual destructor. */
-				virtual ~ToolFactory();
+        /*! \brief Virtual destructor. */
+        virtual ~ToolFactory();
 
-			protected:
+      protected:
 
-				/*!
-				\brief It creates the factory.
+        /*!
+        \brief It creates the factory.
 
-				The key of a ToolFactory is a string.
+        The key of a ToolFactory is a string.
 
-				\param factoryKey The key that identifies the factory.
-				*/
-				ToolFactory(const std::string& factoryKey);
+        \param factoryKey The key that identifies the factory.
+        */
+        ToolFactory(const std::string& factoryKey);
     };
   }
 }
