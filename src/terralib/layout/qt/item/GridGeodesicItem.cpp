@@ -28,7 +28,11 @@
 // TerraLib
 #include "GridGeodesicItem.h"
 
+#include "../core/ItemUtils.h"
+#include "../../core/pattern/singleton/Context.h"
 #include "../../core/property/GridSettingsConfigProperties.h"
+
+
 /*
 #include "../../core/pattern/mvc/ItemController.h"
 #include "../../core/AbstractScene.h"

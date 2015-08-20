@@ -18,52 +18,48 @@
  */
 
 /*!
-  \file ItemGroupModel.h
+  \file TextController.h
    
-   \brief Class that represents a "Model" part of ItemGroup MVC component.  
-   Its coordinate system is the same of scene (millimeters). 
-   This is also son of ItemModelObservable, so it can become observable.
-
+  \brief Class that represents text controller.
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_ITEMGROUP_MODEL_H
-#define __TERRALIB_LAYOUT_INTERNAL_ITEMGROUP_MODEL_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_ITEMGROUP_CONTROLLER1_H
+#define __TERRALIB_LAYOUT_INTERNAL_ITEMGROUP_CONTROLLER1_H
 
 // TerraLib
-#include "../core/Config.h"
-#include "../core/pattern/mvc/AbstractItemModel.h"
+#include "../../core/Config.h"
+#include "../../core/pattern/mvc/AbstractItemController.h"
 
 namespace te
 {
   namespace layout
   {
     /*!
-    \brief Class that represents a "Model" part of ItemGroup MVC component.  
-    Its coordinate system is the same of scene (millimeters). 
-    This is also son of ItemModelObservable, so it can become observable.
-      	  
-	    \ingroup layout
-
-      \sa te::layout::ItemModelObservable
-	  */
-    class TELAYOUTEXPORT ItemGroupModel : public AbstractItemModel
+    \brief Class that represents text controller.
+    
+    \ingroup layout
+    \sa te::layout::AbstractItemController
+    */
+    class TELAYOUTEXPORT ItemGroupController1 : public AbstractItemController
     {
       public:
 
         /*!
           \brief Constructor
-        */
-        ItemGroupModel();
+
+          \param controller "Controller" part of MVC component
+          \param o "Model" part of MVC component
+        */ 
+        ItemGroupController1( AbstractItemModel* model);
 
         /*!
           \brief Destructor
         */ 
-        virtual ~ItemGroupModel();
+        virtual ~ItemGroupController1();
+
+        void itemAdded();
     };
   }
 }
-
-#endif 
-
-
+#endif //__TERRALIB_LAYOUT_INTERNAL_ITEMGROUP_CONTROLLER1_H

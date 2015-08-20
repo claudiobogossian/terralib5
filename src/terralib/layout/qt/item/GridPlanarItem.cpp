@@ -29,6 +29,7 @@
 #include "GridPlanarItem.h"
 
 #include "../core/ItemUtils.h"
+#include "../../core/pattern/singleton/Context.h"
 #include "../../core/property/GridSettingsConfigProperties.h"
 
 

@@ -111,6 +111,7 @@
 #include "pattern/factory/item/ItemFactoryParamsCreate.h"
 #include "../../core/enum/EnumObjectType.h"
 #include "../item/MapController1.h"
+#include "../item/ItemGroupController1.h"
 
 // Qt
 #include <QGraphicsItem>
@@ -734,45 +735,57 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createItemGroup()
   ItemGroupModel* model = new ItemGroupModel();
   if(!m_props)
   {
-    model->setId(m_id);
-    
     EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
-    std::string name = nameItem(enumObj->getItemGroup());
-    model->setName(name);
+    std::string strName = nameItem(enumObj->getItemGroup());
+
+    Property proertyId(0);
+    proertyId.setName("id");
+    proertyId.setValue(m_id, Enums::getInstance().getEnumDataType()->getDataTypeInt());
+    model->setProperty(proertyId);
+
+    Property propertyName(0);
+    propertyName.setName("name");
+    propertyName.setValue(strName, Enums::getInstance().getEnumDataType()->getDataTypeString());
+    model->setProperty(propertyName);
   }
 
-  ItemGroupController* controller = new ItemGroupController(model);
-  ItemObserver* itemObs = (ItemObserver*)controller->getView();
+  AbstractItemController* controller = new ItemGroupController1(model);
+  AbstractItemView* view = controller->getView();
 
-  ItemGroup* view = dynamic_cast<ItemGroup*>(itemObs); 
-  if(m_props && view)
+  if(m_props)
   {
-    model->updateProperties(m_props);
+    model->setProperties(*m_props);
   }
-  return view;
+  return dynamic_cast<QGraphicsItem*>(view);
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createMovingItemGroup()
 {
-  MovingItemGroupModel* model = new MovingItemGroupModel();  
+  MovingItemGroupModel* model = new MovingItemGroupModel();
   if(!m_props)
   {
-    model->setId(m_id);
-    
     EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
-    std::string name = nameItem(enumObj->getMovingItemGroup());
-    model->setName(name);
+    std::string strName = nameItem(enumObj->getMovingItemGroup());
+
+    Property proertyId(0);
+    proertyId.setName("id");
+    proertyId.setValue(m_id, Enums::getInstance().getEnumDataType()->getDataTypeInt());
+    model->setProperty(proertyId);
+
+    Property propertyName(0);
+    propertyName.setName("name");
+    propertyName.setValue(strName, Enums::getInstance().getEnumDataType()->getDataTypeString());
+    model->setProperty(propertyName);
   }
 
-  MovingItemGroupController* controller = new MovingItemGroupController(model);
-  ItemObserver* itemObs = (ItemObserver*)controller->getView();
+  AbstractItemController* controller = new AbstractItemController(model);
+  AbstractItemView* view = controller->getView();
 
-  MovingItemGroup* view = dynamic_cast<MovingItemGroup*>(itemObs); 
-  if(m_props && view)
+  if(m_props)
   {
-    model->updateProperties(m_props);
+    model->setProperties(*m_props);
   }
-  return view;
+  return dynamic_cast<QGraphicsItem*>(view);
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createImage()

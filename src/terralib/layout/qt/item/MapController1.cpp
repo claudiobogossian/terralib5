@@ -21,6 +21,7 @@
 #include "MapController1.h"
 
 #include "MapItem.h"
+#include "../../core/pattern/mvc/AbstractItemModel.h"
 #include "../../../qt/widgets/canvas/MapDisplay.h"
 
 

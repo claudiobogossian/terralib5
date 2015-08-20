@@ -30,6 +30,8 @@
 #include "TextController1.h"
 #include "../../item/TextModel.h"
 
+#include "../../qt/core/Scene.h"
+
 // STL
 #include <string>
 

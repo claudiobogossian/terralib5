@@ -27,6 +27,9 @@
 
 // TerraLib
 #include "ItemGroup.h"
+#include "ItemGroupController1.h"
+
+/*
 #include "../../core/pattern/singleton/Context.h"
 #include "../../core/pattern/mvc/ItemModelObservable.h"
 #include "../../core/pattern/mvc/ItemController.h"
@@ -36,23 +39,18 @@
 #include "../../../common/STLUtils.h"
 #include "../../core/AbstractScene.h"
 #include "../../core/pattern/mvc/ItemObserver.h"
+*/
 
 // Qt
 #include <QGraphicsSceneMouseEvent>
 #include <QStyleOptionGraphicsItem>
 
-te::layout::ItemGroup::ItemGroup( ItemController* controller, Observable* o ) :
-  QGraphicsItemGroup(0),
-  ItemObserver(controller, o)
+te::layout::ItemGroup::ItemGroup( AbstractItemController* controller, AbstractItemModel* model )
+  : AbstractItem<QGraphicsItemGroup> ( controller, model )
 {
   this->setFlags(QGraphicsItem::ItemIsMovable
     | QGraphicsItem::ItemIsSelectable
     | QGraphicsItem::ItemSendsGeometryChanges);
-
-  QGraphicsItem* item = this;
-  Context::getInstance().getScene()->insertItem((ItemObserver*)item);
-
-  m_nameClass = "ItemGroup";
 
   //If enabled is true, this item will accept hover events
   setAcceptHoverEvents(true);
@@ -63,6 +61,24 @@ te::layout::ItemGroup::~ItemGroup()
 
 }
 
+void te::layout::ItemGroup::drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget )
+{
+  QGraphicsItemGroup::paint(painter, option, widget);
+}
+
+void te::layout::ItemGroup::addToGroup( QGraphicsItem * item )
+{
+  QGraphicsItemGroup::addToGroup(item);
+
+  //updates the box
+  ItemGroupController1* controller = dynamic_cast<ItemGroupController1*>(m_controller);
+  if(controller != 0)
+  {
+    controller->itemAdded();
+  }
+}
+
+/*
 void te::layout::ItemGroup::updateObserver( ContextItem context )
 {
   if(!m_model)
@@ -122,17 +138,6 @@ te::gm::Coord2D te::layout::ItemGroup::getPosition()
   return coordinate;
 }
 
-void te::layout::ItemGroup::addToGroup( QGraphicsItem * item )
-{
-  QGraphicsItemGroup::addToGroup(item);
-
-  QRectF chRect = childrenBoundingRect();
-
-  ItemModelObservable* model = (ItemModelObservable*)m_controller->getModel();
-  model->setBox(te::gm::Envelope(chRect.x(), chRect.y(), chRect.x() + childrenBoundingRect().width(), 
-    chRect.y() + childrenBoundingRect().height()));
-}
-
 void te::layout::ItemGroup::mouseMoveEvent( QGraphicsSceneMouseEvent* event )
 {
   QGraphicsItem::mouseMoveEvent(event);
@@ -165,7 +170,7 @@ void te::layout::ItemGroup::setPixmap( const QPixmap& pixmap )
   m_pixmap = pixmap;
 }
 
-void te::layout::ItemGroup::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget /*= 0 */ )
+void te::layout::ItemGroup::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget )
 {
   Q_UNUSED( option );
   Q_UNUSED( widget );
@@ -274,5 +279,4 @@ te::color::RGBAColor** te::layout::ItemGroup::getRGBAColorImage(int &w, int &h)
   te::color::RGBAColor** teImg = te::qt::widgets::GetImage(&img);
   return teImg;
 }
-
-
+*/

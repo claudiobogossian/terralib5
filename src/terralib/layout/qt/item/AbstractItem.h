@@ -35,29 +35,23 @@
 #define __TERRALIB_LAYOUT_INTERNAL_ABSTRACT_ITEM_H
 
 // TerraLib
-#include "../../core/pattern/mvc/AbstractItemModel.h"
+#include "../../core/pattern/mvc/AbstractItemController.h"
 #include "../../core/pattern/mvc/AbstractItemView.h"
-#include "../../core/pattern/singleton/Context.h"
 #include "../../core/AbstractScene.h"
 #include "../core/ContextObject.h"
+#include "../../core/property/Property.h"
+#include "../../core/property/Properties.h"
 
 //Qt
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
 #include <QRectF>
-#include <QPolygonF>
 #include <QVariant>
-#include <QPolygonF>
-#include <QGraphicsItem>
+//#include <QGraphicsItem>
 #include <QGraphicsScene>
-#include <QGraphicsView>
+#include <QColor>
 
-#include "../../core/pattern/mvc/AbstractItemController.h"
-#include "../../core/pattern/mvc/AbstractItemView.h"
-
-
-#include "../../core/pattern/singleton/Context.h"
-#include "../../qt/core/Scene.h"
+class AbstractItemModel;
 
 class QWidget;
 
@@ -65,9 +59,6 @@ namespace te
 {
   namespace layout
   {
-    class AbstractItemController;
-    class ContextObject;
-
     /*!
     \brief Abstract class that represents a graphic item.  
       Its coordinate system is the same of scene (millimeters). Knows rotate and resize. Stores a pixmap drawn by model.

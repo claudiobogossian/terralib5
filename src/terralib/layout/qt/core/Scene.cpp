@@ -341,7 +341,30 @@ QGraphicsItemGroup* te::layout::Scene::createItemGroup( const QList<QGraphicsIte
   te::gm::Coord2D coord(0,0);
   QGraphicsItem* item = build->createItem(mode->getModeCreateItemGroup(), coord, false);
 
+  double x = 0.;
+  double y = 0.;
+  for(int i = 0; i <  items.size(); ++i)
+  {
+    QGraphicsItem* currentItem = items[i];
+    if(i == 0)
+    {
+      x = currentItem->pos().x();
+      y = currentItem->pos().y();
+      continue;
+    }
+    
+    if(currentItem->pos().x() < x)
+    {
+      x = currentItem->pos().x();
+    }
+    if(currentItem->pos().y() < y)
+    {
+      y = currentItem->pos().y();
+    }
+  }
+
   ItemGroup* group = dynamic_cast<ItemGroup*>(item);
+  group->setPos(QPointF(x, y));
 
   if(p)
   {

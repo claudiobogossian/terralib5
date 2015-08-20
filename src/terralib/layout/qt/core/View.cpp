@@ -399,7 +399,7 @@ void te::layout::View::createItemGroup()
     if(!layoutGroup)
       return;
 
-    layoutGroup->redraw();
+    //layoutGroup->redraw();
 
     /*If "enabled=true", QGraphicsItemGroup will handle all the events. For example, 
     the event of mouse click on the child item won't be handled by child item.
