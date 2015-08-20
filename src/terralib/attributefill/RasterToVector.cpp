@@ -174,12 +174,7 @@ bool te::attributefill::RasterToVector::run()
     if(geom->getGeomTypeId() == te::gm::MultiPolygonType)
     {
       te::gm::MultiPolygon* mPolygon = dynamic_cast< te::gm::MultiPolygon* >(geom.get());
-<<<<<<< HEAD
-      contains = env->contains(*mPolygon->getMBR());
 
-=======
-      
->>>>>>> remotes/origin/release-5.0
       if (percentByArea)
         area = mPolygon->getArea();
 
@@ -205,10 +200,6 @@ bool te::attributefill::RasterToVector::run()
     else if(geom->getGeomTypeId() == te::gm::PolygonType)
     {
       te::gm::Polygon* polygon = dynamic_cast< te::gm::Polygon* >(geom.get());
-<<<<<<< HEAD
-      contains = env->contains(*polygon->getMBR());
-=======
->>>>>>> remotes/origin/release-5.0
 
       if (percentByArea)
         area = polygon->getArea();
@@ -229,18 +220,10 @@ bool te::attributefill::RasterToVector::run()
       te::stat::NumericStatisticalSummary summary = rasterAtt->getStatistics(valuesFromRaster[band]);
       
       if (percentByArea)
-<<<<<<< HEAD
-        te::stat::GetPercentOfEachClassByArea(valuesFromRaster[band], resX, resY, area, summary, contains);
-
-      std::size_t current_index = init_index + m_statSum.size();
-
-=======
         te::stat::GetPercentOfEachClassByArea(valuesFromRaster[band], resX, resY, area, summary);
 
-
       std::size_t current_index = init_index + m_statSum.size();
 
->>>>>>> remotes/origin/release-5.0
       for(std::size_t it = 0, i = init_index; i < current_index; ++it, ++i)
       {
         te::stat::StatisticalSummary ss = m_statSum[it];
