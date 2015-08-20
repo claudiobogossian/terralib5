@@ -153,8 +153,8 @@ void te::qt::plugins::layout::OutsideArea::init()
     connect(m_toolbar, SIGNAL(changeMode(te::layout::EnumType*)), m_view, SLOT(onToolbarChangeMode(te::layout::EnumType*)));
     connect(m_toolbar, SIGNAL(zoomChangedInComboBox(int)), m_view, SLOT(setZoom(int)));
 
-		te::layout::ToolbarController* controller = dynamic_cast<te::layout::ToolbarController*>(m_toolbar->getController());
-		connect(m_view, SIGNAL(zoomChanged(int)), controller, SLOT(onZoomChanged(int)));
+    te::layout::ToolbarController* controller = dynamic_cast<te::layout::ToolbarController*>(m_toolbar->getController());
+    connect(m_view, SIGNAL(zoomChanged(int)), controller, SLOT(onZoomChanged(int)));
   }
 
   if(m_dockInspector)
@@ -279,7 +279,7 @@ void te::qt::plugins::layout::OutsideArea::onMainMenuTriggered( QAction* action 
 
   if(action->objectName().compare(m_optionNew.c_str()) == 0)
   {
-		m_view->newTemplate();
+    m_view->newTemplate();
   }
   else if(action->objectName().compare(m_optionUpdate.c_str()) == 0)
   {
@@ -287,25 +287,25 @@ void te::qt::plugins::layout::OutsideArea::onMainMenuTriggered( QAction* action 
   }
   else if(action->objectName().compare(m_optionImportJSON.c_str()) == 0)
   {
-		te::layout::EnumTemplateType* enumTemplate = te::layout::Enums::getInstance().getEnumTemplateType();
-		m_view->importTemplate(enumTemplate->getJsonType());
+    te::layout::EnumTemplateType* enumTemplate = te::layout::Enums::getInstance().getEnumTemplateType();
+    m_view->importTemplate(enumTemplate->getJsonType());
   }
   else if(action->objectName().compare(m_optionExportJSON.c_str()) == 0)
   {
-		te::layout::EnumTemplateType* enumTemplate = te::layout::Enums::getInstance().getEnumTemplateType();
-		m_view->exportProperties(enumTemplate->getJsonType());
+    te::layout::EnumTemplateType* enumTemplate = te::layout::Enums::getInstance().getEnumTemplateType();
+    m_view->exportProperties(enumTemplate->getJsonType());
   }
   else if(action->objectName().compare(m_optionPageConfig.c_str()) == 0)
   {    
-		m_view->showPageSetup();
+    m_view->showPageSetup();
   }
   else if(action->objectName().compare(m_optionPrint.c_str()) == 0)
   {
-		m_view->print();
+    m_view->print();
   }
   else if(action->objectName().compare(m_optionExit.c_str()) == 0)
   {
-		m_view->close();
+    m_view->close();
     emit exit();
   }
   else if(action->objectName().compare(m_optionDockInspector.c_str()) == 0)

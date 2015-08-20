@@ -208,8 +208,8 @@ namespace te
 
         /*!
           \brief Returns shared pointer of the type te::gm::Geometry belonging to enumeration.
-		  
-		      \return enum value   	  
+      
+          \return enum value       
         */
         virtual EnumType* getDataTypeGeometry() const;
 
