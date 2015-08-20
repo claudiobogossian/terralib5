@@ -20,6 +20,7 @@ te::qt::widgets::AnimationItem::AnimationItem(const QString& title, te::qt::widg
   m_automaticPan(false),
   m_panFactor(.01),
   m_curTimeDuration(0),
+  m_animation(0),
   m_opacity(255)
 {
 }

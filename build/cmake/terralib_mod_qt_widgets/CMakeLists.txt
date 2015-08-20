@@ -915,7 +915,7 @@ else() # QT4_FOUND
                                            ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/AnimationItem.h
                                            ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/AnimationScene.h
                                            ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/AnimationView.h
-                                           ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/PixmapItem.h
+                                           ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/ImageItem.h
                                            ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/SliderPropertiesDialog.h
                                            ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/TrajectoryItem.h
                                            ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/TimeSliderWidget.h

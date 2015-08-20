@@ -30,6 +30,7 @@
 #include "../Config.h"
 #include "../../../geometry.h"
 #include "../../../datatype.h"
+
 // Qt
 #include <QGraphicsPixmapItem>
 #include <QAbstractAnimation>
@@ -52,11 +53,11 @@ namespace te
       /*!
         \class AnimationItem
 
-        \brief An abstract class for animation Item.
+        \brief An abstract class for Animation Item.
         
         It is the base class that stores data of time and route.
 
-        \sa PixmapItem, TrajectoryItem
+        \sa ImageItem, TrajectoryItem
       */
       class TEQTWIDGETSEXPORT AnimationItem : public QObject, public QGraphicsPixmapItem
       {

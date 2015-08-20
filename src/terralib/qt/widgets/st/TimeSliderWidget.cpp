@@ -33,7 +33,10 @@
 #include "Animation.h"
 #include "AnimationScene.h"
 #include "TrajectoryItem.h"
-#include "PixmapItem.h"
+#include "Eta5kmItem.h"
+#include "HidroItem.h"
+#include "GoesItem.h"
+#include "QtKnowItem.h"
 #include "TimeSliderWidget.h"
 #include "SliderPropertiesDialog.h"
 #include "ui_TimeSliderWidgetForm.h"
@@ -675,12 +678,14 @@ void te::qt::widgets::TimeSliderWidget::addTemporalImages(const QString& filePat
   if(state == QAbstractAnimation::Running)
     onPlayToolButtonnClicked();
 
-  te::qt::widgets::PixmapItem* pi = getMetadata(filePath);
+  te::qt::widgets::ImageItem* pi = loadImageData(filePath);
   if(pi == 0)
   {
     QMessageBox::information(this, "Error", "Load error: " + filePath);
     return;
   }
+  m_animationScene->addItem(pi);
+  m_parallelAnimation->addAnimation(pi->m_animation);
 
   calculateAllSpatialExtent();
   calculateAllTemporalExtent();
@@ -714,66 +719,6 @@ void te::qt::widgets::TimeSliderWidget::addTemporalImages(const QString& filePat
   int count = m_spd->m_ui->m_animationComboBox->count();
   m_spd->m_ui->m_animationComboBox->setCurrentIndex(count-1);
   onAnimationComboBoxActivated(count-1);
-}
-
-void te::qt::widgets::TimeSliderWidget::generateImageRoute(PixmapItem* pi, const Animation* animation, const size_t& count)
-{
-  pi->m_route = new te::gm::LineString(count, te::gm::LineStringType, pi->m_SRID);
-
-  // crie valores não repetitivos e nem muito grandes ou pequenos
-  QPointF pos(animation->m_spatialExtent.m_llx, animation->m_spatialExtent.m_lly);
-  double w = animation->m_spatialExtent.getWidth();
-  double h = animation->m_spatialExtent.getHeight();
-  int tam = 8;
-  double dw = w / (double)tam;
-  double dh = h / (double)tam;
-  size_t i = 0;
-  while (i < count)
-  {
-    pi->m_route->setPoint(i, pos.x(), pos.y());
-    if (i++ & tam)
-      pos -= QPointF(dw, dh);
-    else
-      pos += QPointF(dw, dh);
-  }
-}
-
-te::qt::widgets::PixmapItem* te::qt::widgets::TimeSliderWidget::getGoesMetadata(const QString& path)
-{
-  PixmapItem* pi = getTemporalImageCtlParameters(path);
-  if(pi == 0)
-    return 0;
-
-  m_animationScene->addItem(pi);
-  Animation* animation = new Animation(pi, "pos");
-  animation->m_spatialExtent = te::gm::Envelope(pi->m_imaRect.x(), pi->m_imaRect.y(), pi->m_imaRect.right(), pi->m_imaRect.bottom());
-  animation->setEasingCurve(QEasingCurve::Linear);
-  m_parallelAnimation->addAnimation(animation);
-
-  QString suffix = "." + pi->m_suffix;
-  QStringList nameFilter;
-  nameFilter.append("*" + suffix);
-  QDir dir(path);
-  QStringList files = dir.entryList(nameFilter, QDir::Files, QDir::Name);
-  size_t count = files.count();
-
-  // get time extent
-  te::dt::TimeInstant ti = getGoesTime(path + "/" + files.first());
-  te::dt::TimeInstant tf = getGoesTime(path +  "/" + files.last());
-  animation->m_temporalExtent = te::dt::TimePeriod(ti, tf);
-
-  // set data
-  te::dt::TimeInstant t;
-  for(size_t i = 0; i < count; ++i)
-  {
-    QString f = files[(int)i];
-    t = getGoesTime(f);
-    pi->m_time.push_back(t);
-    pi->m_files.push_back(f);
-  }
-
-  generateImageRoute(pi, animation, count);
-  return pi;
 }
 
 void te::qt::widgets::TimeSliderWidget::calculateAllSpatialExtent()
@@ -955,8 +900,8 @@ void te::qt::widgets::TimeSliderWidget::onDisplayPaintEvent(QPainter* painter)
           continue;
 
         // draw pixmap itens
-        PixmapItem* pi = (PixmapItem*)ai;
-        drawPixmapItem(pi, painter);
+        ImageItem* pi = (ImageItem*)ai;
+        drawImageItem(pi, painter);
       }
     }
   }
@@ -1904,7 +1849,7 @@ QDateTime te::qt::widgets::TimeSliderWidget::fixDateTimeEdit(QDateTimeEdit* dte,
   return t;
 }
 
-void te::qt::widgets::TimeSliderWidget::drawPixmapItem(te::qt::widgets::PixmapItem* pi, QPainter* painter)
+void te::qt::widgets::TimeSliderWidget::drawImageItem(te::qt::widgets::ImageItem* pi, QPainter* painter)
 {
   if(pi->m_currentImageFile.isEmpty())
     return;
@@ -2011,50 +1956,8 @@ void te::qt::widgets::TimeSliderWidget::drawPixmapItem(te::qt::widgets::PixmapIt
     painter->translate(-c.toPoint());
   }
 
-  QImage* ima = getImage(pi);
-
-  if(pi->m_opacity == 255)
-    painter->drawImage(r, *ima);
-  else
-  {
-    QSize size = ima->size();
-    int width = size.width();
-    int height = size.height();
-
-    if(ima->format() == QImage::Format_ARGB32)
-    {
-      for(int i = 0; i < height; ++i)
-      {
-        unsigned char* u = ima->scanLine(i);
-        for(int j = 0; j < width; ++j)
-        {
-          QRgb* v = (QRgb*)(u + (j << 2));
-          if(qAlpha(*v) > 50)
-            *v =  qRgba(qRed(*v), qGreen(*v), qBlue(*v) , pi->m_opacity);
-        }
-      }
-      painter->drawImage(r, *ima);
-    }
-    else
-    {
-      QImage img(size, QImage::Format_ARGB32);
-      for(int i = 0; i < height; ++i)
-      {
-        unsigned char* u = ima->scanLine(i);
-        unsigned char* uu = img.scanLine(i);
-
-        for(int j = 0; j < width; ++j)
-        {
-          QRgb* v = (QRgb*)(u + (j << 2));
-          QRgb* uv = (QRgb*)(uu + (j << 2));
-          if(qAlpha(*v) > 50)
-            *uv =  qRgba(qRed(*v), qGreen(*v), qBlue(*v) , pi->m_opacity);
-        }
-      }
-      painter->drawImage(r, img);
-    }
-  }
-  delete ima;
+  pi->loadCurrentImage();
+  pi->drawCurrentImage(painter, r);
   painter->restore();
 }
 
@@ -2545,389 +2448,15 @@ void te::qt::widgets::TimeSliderWidget::adjustTrajectoryGroupBox(te::qt::widgets
   }
 }
 
-te::dt::TimeInstant te::qt::widgets::TimeSliderWidget::getGoesTime(const QString& fileName)
-{
-  QString file(fileName);
-  int ind = file.indexOf("_");
-  if(file.indexOf("_", ind+1) != -1)
-    ind = file.indexOf("_", ind+1);
-  file.remove(0, ind+1);
-  QString ano(file), mes(file), dia(file), hour(file), min(file);
-  ano.remove(4, ano.length()-4);
-  mes.remove(0, 4);
-  mes.remove(2, mes.length()-2);
-  dia.remove(0, 6);
-  dia.remove(2, dia.length()-2);
-  hour.remove(0, 8);
-  hour.remove(2, hour.length()-2);
-  min.remove(0, 10);
-  min.remove(2, min.length()-2);
-
-  te::dt::Date date(ano.toInt(), mes.toInt(), dia.toInt());
-  te::dt::TimeDuration dur(hour.toInt(), min.toInt(), 0);
-  return te::dt::TimeInstant(date, dur);
-}
-
 void te::qt::widgets::TimeSliderWidget::onAutoPanCheckBoxClicked(bool)
 {
   QString title = m_spd->m_ui->m_animationComboBox->currentText();
   setAutomaticPan(title);
 }
 
-te::qt::widgets::PixmapItem* te::qt::widgets::TimeSliderWidget::getHidroCtlParameters(const QString& path)
+te::qt::widgets::ImageItem* te::qt::widgets::TimeSliderWidget::loadImageData(const QString& path)
 {
-  char buf[2000];
-  QString file(path + "/racc.ctl");
-  FILE* fp = fopen(file.toStdString().c_str(), "r");
-  if(fp == 0)
-    return 0;
-
-  fread(buf, 2000, sizeof(char), fp);
-  fclose(fp);
-  QString ss(QString(buf).simplified());
-
-  // validation
-  if(!(ss.contains("undef ", Qt::CaseInsensitive) && ss.contains("title", Qt::CaseInsensitive) && 
-    ss.contains("xdef", Qt::CaseInsensitive) && ss.contains("ydef", Qt::CaseInsensitive) && 
-    ss.contains("linear", Qt::CaseInsensitive) && ss.contains("zdef", Qt::CaseInsensitive)))
-    return 0;
-
-  QString s;
-  QDir dir(path);
-  te::qt::widgets::PixmapItem* pi = new PixmapItem(dir.dirName(), path, m_display);
-
-  // CHUTE SRID 4326 WGS84
-  pi->m_SRID = 4326;
-
-  // get UNDEF value
-  size_t pos = ss.indexOf("UNDEF ", Qt::CaseInsensitive) + strlen("UNDEF "); 
-  ss.remove(0, (int)pos);
-  pos = ss.indexOf("TITLE", Qt::CaseInsensitive);
-  s = ss.left((int)pos);
-  pi->m_undef = atoi(s.toStdString().c_str());
-  ss.remove(0, (int)pos);
-
-  // get XDEF ulx and resX values
-  pos = ss.indexOf("XDEF ", Qt::CaseInsensitive) + strlen("XDEF ");
-  ss.remove(0, (int)pos);
-  pos = ss.indexOf(" ");
-  s = ss.left((int)pos);
-  pi->m_ncols = atoi(s.toStdString().c_str());
-  ss.remove(0, (int)pos);
-
-  pos = ss.indexOf("LINEAR ", Qt::CaseInsensitive) + strlen("LINEAR ");
-  ss.remove(0, (int)pos);
-  pos = ss.indexOf(" ");
-  s = ss.left((int)pos);
-  double llx = atof(s.toStdString().c_str()) - 360.;
-  ss.remove(0, (int)pos);
-  pos = ss.indexOf("YDEF ", Qt::CaseInsensitive);
-  s = ss.left((int)pos);
-  double resX = atof(s.toStdString().c_str());
-  ss.remove(0, (int)pos);
-
-  // get YDEF uly and resY values
-  pos = ss.indexOf("YDEF ", Qt::CaseInsensitive) + strlen("YDEF ");
-  ss.remove(0, (int)pos);
-  pos = ss.indexOf(" ");
-  s = ss.left((int)pos);
-  pi->m_nlines = atoi(s.toStdString().c_str());
-  ss.remove(0, (int)pos);
-
-  pos = ss.indexOf("LINEAR ", Qt::CaseInsensitive) + strlen("LINEAR ");
-  ss.remove(0, (int)pos);
-  pos = ss.indexOf(" ");
-  s = ss.left((int)pos);
-  double lly = atof(s.toStdString().c_str());
-  ss.remove(0, (int)pos);
-  pos = ss.indexOf("ZDEF ", Qt::CaseInsensitive);
-  s = ss.left((int)pos);
-  double resY = atof(s.toStdString().c_str());
-  ss.remove(0, (int)pos);
-
-  double w = (double)pi->m_ncols * resX;
-  double h = (double)pi->m_nlines * resY;
-  pi->m_imaRect = QRectF(llx, lly, w, h);
-
-  return pi;
-}
-
-void te::qt::widgets::TimeSliderWidget::setHidroLUT(te::qt::widgets::PixmapItem* pi)
-{
-  std::vector<std::pair<int, QColor> > tab;
-  int i = 0;
-  tab.push_back(std::pair<int, QColor>(i+=3, QColor(2, 1, 201, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=3, QColor(1, 71, 254, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=3, QColor(3, 148, 250, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=3, QColor(5, 200, 251, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=3, QColor(2, 254, 233, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=3, QColor(1, 254, 151, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=3, QColor(2, 254, 4, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=3, QColor(99, 254, 2, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=3, QColor(200, 255, 1, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=3, QColor(237, 255, 0, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=3, QColor(251, 232, 2, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=3, QColor(254, 199, 2, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=3, QColor(252, 179, 2, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=3, QColor(254, 147, 4, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=3, QColor(253, 99, 2, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=3, QColor(254, 1, 2, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=3, QColor(254, 0, 49, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=3, QColor(255, 5, 1, 255)));
-
-  pi->setLUT(tab);
-}
-
-te::qt::widgets::PixmapItem* te::qt::widgets::TimeSliderWidget::getEtaCtlParameters(const QString& path)
-{
-  char buf[2000];
-  QString file(path + "/Prec5km.ctl");
-  FILE* fp = fopen(file.toStdString().c_str(), "r");
-  if(fp == 0)
-    return 0;
-
-  fread(buf, 2000, sizeof(char), fp);
-  fclose(fp);
-  QString ss(QString(buf).simplified());
-
-  // validation
-  if(!(ss.contains("undef ", Qt::CaseInsensitive) && ss.contains("xdef", Qt::CaseInsensitive) 
-    && ss.contains("ydef", Qt::CaseInsensitive) && ss.contains("linear", Qt::CaseInsensitive)
-    && ss.contains("zdef", Qt::CaseInsensitive)))
-    return 0;
-
-  QString s;
-  QDir dir(path);
-  te::qt::widgets::PixmapItem* pi = new PixmapItem(dir.dirName(), path, m_display);
-
-  // CHUTE SRID 4326 WGS84
-  pi->m_SRID = 4326;
-
-  // get UNDEF value
-  size_t pos = ss.indexOf("undef ", Qt::CaseInsensitive) + strlen("undef "); 
-  ss.remove(0, (int)pos);
-  pos = ss.indexOf("xdef", Qt::CaseInsensitive);
-  s = ss.left((int)pos);
-  pi->m_undef = atof(s.toStdString().c_str());
-  ss.remove(0, (int)pos);
-
-  // get XDEF ulx and resX values
-  pos = ss.indexOf("xdef ", Qt::CaseInsensitive) + strlen("xdef ");
-  ss.remove(0, (int)pos);
-  pos = ss.indexOf(" ");
-  s = ss.left((int)pos);
-  pi->m_ncols = atoi(s.toStdString().c_str());
-  ss.remove(0, (int)pos);
-
-  pos = ss.indexOf("linear ", Qt::CaseInsensitive) + strlen("linear ");
-  ss.remove(0, (int)pos);
-  pos = ss.indexOf(" ");
-  s = ss.left((int)pos);
-  double llx = atof(s.toStdString().c_str());
-  ss.remove(0, (int)pos);
-  pos = ss.indexOf("ydef ", Qt::CaseInsensitive);
-  s = ss.left((int)pos);
-  double resX = atof(s.toStdString().c_str());
-  ss.remove(0, (int)pos);
-
-  // get YDEF uly and resY values
-  pos = ss.indexOf("ydef ", Qt::CaseInsensitive) + strlen("ydef ");
-  ss.remove(0, (int)pos);
-  pos = ss.indexOf(" ");
-  s = ss.left((int)pos);
-  pi->m_nlines = atoi(s.toStdString().c_str());
-  ss.remove(0, (int)pos);
-
-  pos = ss.indexOf("linear ", Qt::CaseInsensitive) + strlen("linear ");
-  ss.remove(0, (int)pos);
-  pos = ss.indexOf(" ");
-  s = ss.left((int)pos);
-  double lly = atof(s.toStdString().c_str());
-  ss.remove(0, (int)pos);
-  pos = ss.indexOf("zdef ", Qt::CaseInsensitive);
-  s = ss.left((int)pos);
-  double resY = atof(s.toStdString().c_str());
-  ss.remove(0, (int)pos);
-
-  double w = (double)pi->m_ncols * resX;
-  double h = (double)pi->m_nlines * resY;
-  pi->m_imaRect = QRectF(llx, lly, w, h);
-
-  return pi;
-}
-
-void te::qt::widgets::TimeSliderWidget::setEtaLUT(te::qt::widgets::PixmapItem* pi)
-{
-  std::vector<std::pair<int, QColor> > tab;
-  int i = 0;
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(2, 1, 201, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(2, 18, 213, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(1, 24, 220, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(1, 36, 227, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(1, 54, 240, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(1, 71, 254, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(1, 90, 252, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(3, 106, 251, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(3, 130, 253, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(3, 148, 250, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(3, 160, 250, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(4, 174, 250, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(4, 186, 250, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(5, 200, 251, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(5, 214, 246, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(3, 227, 241, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(3, 240, 237, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(2, 254, 233, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(2, 254, 212, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(1, 254, 190, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(1, 254, 170, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(1, 254, 160, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(1, 254, 151, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(1, 254, 105, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(1, 254, 72, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(1, 254, 37, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(2, 254, 4, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(25, 254, 4, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(56, 254, 3, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(71, 254, 3, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(99, 254, 2, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(125, 254, 2, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(150, 254, 2, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(175, 254, 2, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(200, 255, 1, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(209, 255, 1, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(218, 255, 1, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(229, 255, 1, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(237, 255, 0, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(240, 248, 0, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(244, 241, 0, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(250, 237, 0, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(251, 232, 2, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(251, 226, 2, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(252, 215, 2, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(253, 208, 2, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(254, 199, 2, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(254, 194, 2, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(253, 190, 2, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(253, 184, 2, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(252, 179, 2, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(252, 172, 2, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(253, 164, 2, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(253, 155, 2, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(254, 147, 4, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(254, 136, 4, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(254, 125, 3, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(254, 112, 3, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(253, 99, 2, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(253, 75, 2, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(253, 50, 2, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(253, 25, 2, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(254, 1, 2, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(254, 1, 12, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(254, 1, 25, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(254, 1, 37, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(254, 0, 49, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(254, 2, 37, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(254, 3, 25, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(254, 4, 12, 255)));
-  tab.push_back(std::pair<int, QColor>(i+=1, QColor(255, 5, 1, 255)));
-
-  pi->setLUT(tab);
-}
-
-QImage* te::qt::widgets::TimeSliderWidget::getImage(te::qt::widgets::PixmapItem* pi)
-{
-  QString path = pi->m_dir.absolutePath() + "/";
-  QString file = pi->m_currentImageFile;
-  QFileInfo fi(file);
-  QString baseName = fi.baseName();
-  QImage* ima;
-
-  if(pi->m_suffix == ".bin" && baseName == "racc")
-  {
-    size_t nchars = pi->m_ncols * 2;
-    uchar* buf = new uchar[nchars];
-    FILE* fp = fopen(file.toStdString().c_str(), "rb");
-	  ima = new QImage((int)pi->m_ncols, (int)pi->m_nlines, QImage::Format_ARGB32);
-    ima->fill(Qt::transparent);
-
-    uchar uc[3];
-    uc[2] = 0;
-    for(size_t j = 0; j < pi->m_nlines; ++j)
-    {
-		uchar* u = ima->scanLine((int)j);
-      fread(buf, nchars, sizeof(char), fp);
-      for(size_t i = 0; i < pi->m_ncols; i++)
-      {
-        uc[0] = *(buf + (i<<1));
-        uc[1] = *(buf + (1+(i<<1)));
-        ushort b = *(ushort*)uc;
-        if(b != pi->m_undef)
-        {
-          b = (b+5) / 10;
-          QRgb* v = (QRgb*)(u + (i << 2));
-          *v = qRgba(pi->m_lut[b].red(), pi->m_lut[b].green(), pi->m_lut[b].blue(), 255);
-        }
-      }
-    }
-    fclose(fp);
-    delete []buf;
-  }
-  else if(pi->m_suffix == ".bin" && baseName.contains("Prec5km"))
-  {
-    QString auxFile(file);
-    size_t pos = auxFile.indexOf(baseName);
-	  auxFile.remove(0, (int)pos);
-    pos = auxFile.indexOf("_");
-    size_t pp = auxFile.indexOf(".bin");
-	  int offset = atoi(auxFile.mid((int)pos + 1, (int)pp - (int)pos + 1).toStdString().c_str());
-    size_t fileSize = pi->m_nlines * pi->m_ncols * 4 + 8; // dado é float e desprepreza 4 bytes iniciais e 4 bytes finais
-	  offset *= (int)fileSize;
-	  auxFile.remove((int)pos, auxFile.length() - (int)pos);
-    auxFile = path + auxFile + pi->m_suffix;
-
-    size_t nchars = pi->m_ncols * 4;
-    uchar* buf = new uchar[nchars];
-    FILE* fp = fopen(auxFile.toStdString().c_str(), "rb");
-    fseek(fp, offset, SEEK_SET);
-    fseek(fp, 4, SEEK_CUR); // despreza 4 bytes da primeira linha
-	  ima = new QImage((int)pi->m_ncols, (int)pi->m_nlines, QImage::Format_ARGB32);
-    ima->fill(Qt::transparent);
-
-    uchar uc[5];
-    uc[4] = 0;
-    for(size_t j = 0; j < pi->m_nlines; ++j)
-    {
-		uchar* u = ima->scanLine((int)pi->m_nlines - 1 - (int)j); // origem bottom left
-      fread(buf, nchars, sizeof(char), fp);
-
-      for(size_t i = 0; i < pi->m_ncols; i++)
-      {
-        uc[0] = *(buf + (i<<2));
-        uc[1] = *(buf + (1+(i<<2)));
-        uc[2] = *(buf + (2+(i<<2)));
-        uc[3] = *(buf + (3+(i<<2)));
-        float b = *(float*)uc;
-        if(b != pi->m_undef)
-        {
-          uchar a = (uchar) (b * 10000. + .5);
-          QRgb* v = (QRgb*)(u + (i << 2));
-          *v = qRgba(pi->m_lut[a].red(), pi->m_lut[a].green(), pi->m_lut[a].blue(), 255);
-        }
-      }
-    }
-    fclose(fp);
-    delete []buf;
-  }
-  else
-    ima = new QImage(file);
-
-  return ima;
-}
-
-te::qt::widgets::PixmapItem* te::qt::widgets::TimeSliderWidget::getMetadata(const QString& path)
-{
-  te::qt::widgets::PixmapItem* pi;
+  te::qt::widgets::ImageItem* pi = 0;
   QDir dir(path);
   QString d = dir.dirName();
   QStringList nameFilter;
@@ -2936,285 +2465,26 @@ te::qt::widgets::PixmapItem* te::qt::widgets::TimeSliderWidget::getMetadata(cons
   QString ctlFile = files.first();
 
   if(ctlFile == "racc.ctl")
-    pi = getHidroMetadata(path);
-  else if(ctlFile == "Prec5km.ctl")
-    pi = getEtaMetadata(path);
+    pi = new te::qt::widgets::HidroItem(d, path, m_display);
+  else if (ctlFile == "Prec5km.ctl")
+    pi = new te::qt::widgets::Eta5kmItem(d, path, m_display);
   else
   {
     nameFilter.clear();
     nameFilter.append("S11*.jpg");
     QStringList files = dir.entryList(nameFilter, QDir::Files, QDir::Name);
     if(files.empty() == false && files.first().length() == 26)
-      pi = getGoesMetadata(path);
+      pi = new te::qt::widgets::GoesItem(d, path, m_display);
     else
-      pi = getTemporalImageMetadata(path);
+      pi = new te::qt::widgets::QtKnowItem(d, path, m_display);;
   }
-
-  return pi;
-}
-
-te::qt::widgets::PixmapItem* te::qt::widgets::TimeSliderWidget::getHidroMetadata(const QString& path)
-{
-  PixmapItem* pi = getHidroCtlParameters(path);
-  if(pi == 0)
-    return 0;
-
-  m_animationScene->addItem(pi);
-  Animation* animation = new Animation(pi, "pos");
-  animation->m_spatialExtent = te::gm::Envelope(pi->m_imaRect.x(), pi->m_imaRect.y(), pi->m_imaRect.right(), pi->m_imaRect.bottom());
-  animation->setEasingCurve(QEasingCurve::Linear);
-  m_parallelAnimation->addAnimation(animation);
-
-  QStringList nameFilter;
-  nameFilter.append("*.bin");
-  QDir dir(path);
-  QStringList files = dir.entryList(nameFilter, QDir::Files, QDir::Name);
-  size_t count = files.count();
-
-  // get time extent
-  te::dt::TimeInstant ti = getHidroTime(path + "/" + files.first());
-  te::dt::TimeInstant tf = getHidroTime(path + "/" + files.last());
-  animation->m_temporalExtent = te::dt::TimePeriod(ti, tf);
-
-  // set data
-  te::dt::TimeInstant t;
-  for(size_t i = 0; i < count; ++i)
+  
+  if(pi->loadData() == false)
   {
-	  QString f = files[(int)i];
-    t = getHidroTime(f);
-    pi->m_time.push_back(t);
-    pi->m_files.push_back(f);
+    delete pi;
+    return 0;
   }
-
-  generateImageRoute(pi, animation, count);
-  setHidroLUT(pi);
   return pi;
-}
-
-te::qt::widgets::PixmapItem* te::qt::widgets::TimeSliderWidget::getEtaMetadata(const QString& path)
-{
-  PixmapItem* pi = getEtaCtlParameters(path);
-  if(pi == 0)
-    return 0;
-
-  m_animationScene->addItem(pi);
-  Animation* animation = new Animation(pi, "pos");
-  animation->m_spatialExtent = te::gm::Envelope(pi->m_imaRect.x(), pi->m_imaRect.y(), pi->m_imaRect.right(), pi->m_imaRect.bottom());
-  animation->setEasingCurve(QEasingCurve::Linear);
-  m_parallelAnimation->addAnimation(animation);
-
-  QStringList nameFilter;
-  nameFilter.append("*.bin");
-  QDir dir(path);
-  QStringList files = dir.entryList(nameFilter, QDir::Files, QDir::Name);
-  size_t count = files.count();
-
-  // get time extent
-  te::dt::TimeInstant ti = getEtaTime(path + "/" + files.first());
-  te::dt::TimeInstant tf = getEtaTime(path + "/" + files.last());
-  // the file contains 3 days of data
-  tf = te::dt::TimeInstant(tf.getTimeInstant() + boost::posix_time::seconds(60*60*24*3 - 3600));
-  animation->m_temporalExtent = te::dt::TimePeriod(ti, tf);
-
-  // set data
-  te::dt::TimeInstant tnext, t;
-  QString sn, fname;
-  for(size_t i = 0; i < count; ++i)
-  {
-	  QString f = files[(int)i];
-    QFileInfo fi(path + "/" + f);
-    QString baseName = fi.baseName();
-    t = getEtaTime(f);
- 
-    if(i != count-1)
-		tnext = getEtaTime(files[(int)i + 1]);
-    else
-      tnext = te::dt::TimeInstant(t.getTimeInstant() + boost::posix_time::seconds(60*60*24*3));
-
-    size_t n = 1;
-    while((t < tnext || t == tnext) && n <= 72)
-    {
-      pi->m_time.push_back(t);
-      t = te::dt::TimeInstant(t.getTimeInstant() + boost::posix_time::seconds(60*60));
-      sn.setNum(n++);
-      fname = path + "/" + baseName + "_" + sn + "." + fi.suffix();
-      pi->m_files.push_back(fname);
-    }
-  }
-
-  count = pi->m_files.count();
-  generateImageRoute(pi, animation, count);
-  setEtaLUT(pi);
-  return pi;
-}
-
-te::dt::TimeInstant te::qt::widgets::TimeSliderWidget::getHidroTime(const QString& fileName)
-{
-  QString file(fileName);
-  int ind = file.indexOf("racc.") + (int)strlen("racc.");
-  file.remove(0, ind);
-  QString ano = "20" + file.mid(0, 2);
-  QString mes = file.mid(2, 2);
-  QString dia = file.mid(4, 2);
-  QString hour = file.mid(7, 2);
-  QString min = file.mid(9, 2);
-
-  te::dt::Date date(ano.toInt(), mes.toInt(), dia.toInt());
-  te::dt::TimeDuration dur(hour.toInt(), min.toInt(), 0);
-  return te::dt::TimeInstant(date, dur);
-}
-
-te::dt::TimeInstant te::qt::widgets::TimeSliderWidget::getEtaTime(const QString& fileName)
-{
-  QString file(fileName);
-  int ind = file.indexOf("Prec5km") + (int)strlen("Prec5km");
-  file.remove(0, ind);
-  QString ano = file.mid(0, 4);
-  QString mes = file.mid(4, 2);
-  QString dia = file.mid(6, 2);
-  QString hour = file.mid(8, 2);
-
-  te::dt::Date date(ano.toInt(), mes.toInt(), dia.toInt());
-  te::dt::TimeDuration dur(hour.toInt() + 1, 0, 0); // tem deslocamento de 1 hora
-  return te::dt::TimeInstant(date, dur);
-}
-
-te::qt::widgets::PixmapItem* te::qt::widgets::TimeSliderWidget::getTemporalImageMetadata(const QString& path)
-{
-  PixmapItem* pi = getTemporalImageCtlParameters(path);
-  if(pi == 0)
-    return 0;
-
-  m_animationScene->addItem(pi);
-  Animation* animation = new Animation(pi, "pos");
-  animation->m_spatialExtent = te::gm::Envelope(pi->m_imaRect.x(), pi->m_imaRect.y(), pi->m_imaRect.right(), pi->m_imaRect.bottom());
-  animation->setEasingCurve(QEasingCurve::Linear);
-  m_parallelAnimation->addAnimation(animation);
-
-  QString suffix = "." + pi->m_suffix;
-  QStringList nameFilter;
-  nameFilter.append("*" + suffix);
-  QDir dir(path);
-  QStringList files = dir.entryList(nameFilter, QDir::Files, QDir::Name);
-  size_t count = files.count();
-
-  // get time extent
-  te::dt::TimeInstant ti = getTemporalImageTime(path + "/" + files.first());
-  te::dt::TimeInstant tf = getTemporalImageTime(path + "/" + files.last());
-  animation->m_temporalExtent = te::dt::TimePeriod(ti, tf);
-
-  // set data
-  te::dt::TimeInstant t;
-  for(size_t i = 0; i < count; ++i)
-  {
-	  QString f = files[(int)i];
-    pi->m_files.push_back(f);
-    t = getTemporalImageTime(f);
-    pi->m_time.push_back(t);
-  }
-
-  generateImageRoute(pi, animation, count);
-  return pi;
-}
-
-te::qt::widgets::PixmapItem* te::qt::widgets::TimeSliderWidget::getTemporalImageCtlParameters(const QString& path)
-{
-  char buf[2000];
-  QString file(path + "/image.ctl");
-  FILE* fp = fopen(file.toStdString().c_str(), "r");
-  if(fp == 0)
-    return 0;
-
-  fread(buf, 2000, sizeof(char), fp);
-  fclose(fp);
-  QString ss(QString(buf).simplified());
-
-  // validation
-  if(!(ss.contains("suffix ", Qt::CaseInsensitive) && ss.contains("undef", Qt::CaseInsensitive) && 
-    ss.contains("srid", Qt::CaseInsensitive) && ss.contains("llx", Qt::CaseInsensitive) && 
-    ss.contains("lly", Qt::CaseInsensitive) && ss.contains("urx", Qt::CaseInsensitive) && 
-    ss.contains("ury", Qt::CaseInsensitive)))
-    return 0;
-
-  QString s;
-  QDir dir(path);
-  te::qt::widgets::PixmapItem* pi = new PixmapItem(dir.dirName(), path, m_display);
-
-  // get suffix 
-  size_t pos = ss.indexOf("suffix ", Qt::CaseInsensitive) + strlen("suffix "); 
-  ss.remove(0, (int)pos);
-  pos = ss.indexOf(" undef", Qt::CaseInsensitive);
-  s = ss.left((int)pos);
-  pi->m_suffix = s;
-  ss.remove(0, (int)pos);
-
-  // get undef
-  pos = ss.indexOf("undef ", Qt::CaseInsensitive) + (int)strlen("undef ");
-  ss.remove(0, (int)pos);
-  pos = ss.indexOf(" srid", Qt::CaseInsensitive);
-  s = ss.left((int)pos);
-  pi->m_undef = atof(s.toStdString().c_str());
-  ss.remove(0, (int)pos);
-
-  // get srid
-  pos = ss.indexOf("srid ", Qt::CaseInsensitive) + (int)strlen("srid ");
-  ss.remove(0, (int)pos);
-  pos = ss.indexOf(" llx", Qt::CaseInsensitive);
-  s = ss.left((int)pos);
-  pi->m_SRID = atoi(s.toStdString().c_str());
-  ss.remove(0, (int)pos);
-
-  // get llx
-  pos = ss.indexOf("llx ", Qt::CaseInsensitive) + strlen("llx ");
-  ss.remove(0, (int)pos);
-  pos = ss.indexOf(" lly", Qt::CaseInsensitive);
-  s = ss.left((int)pos);
-  double llx = atof(s.toStdString().c_str());
-  ss.remove(0, (int)pos);
-
-  // get lly
-  pos = ss.indexOf("lly ", Qt::CaseInsensitive) + (int)strlen("lly ");
-  ss.remove(0, (int)pos);
-  pos = ss.indexOf(" urx", Qt::CaseInsensitive);
-  s = ss.left((int)pos);
-  double lly = atof(s.toStdString().c_str());
-  ss.remove(0, (int)pos);
-
-  // get urx
-  pos = ss.indexOf("urx ", Qt::CaseInsensitive) + strlen("urx ");
-  ss.remove(0, (int)pos);
-  pos = ss.indexOf(" ury", Qt::CaseInsensitive);
-  s = ss.left((int)pos);
-  double urx = atof(s.toStdString().c_str());
-  ss.remove(0, (int)pos);
-
-  // get ury
-  pos = ss.indexOf("ury ", Qt::CaseInsensitive) + strlen("ury ");
-  ss.remove(0, (int)pos);
-  double ury = atof(ss.toStdString().c_str());
-
-  double w = urx - llx;
-  double h = ury - lly;
-  pi->m_imaRect = QRectF(llx, lly, w, h);
-
-  return pi;
-}
-
-te::dt::TimeInstant te::qt::widgets::TimeSliderWidget::getTemporalImageTime(const QString& fileName)
-{
-  QString file(fileName);
-  int ind = file.indexOf("_") + (int)strlen("_");
-  file.remove(0, ind);
-  QString ano = file.mid(0, 4);
-  QString mes = file.mid(5, 2);
-  QString dia = file.mid(8, 2);
-  QString hour = file.mid(11, 2);
-  QString min = file.mid(14, 2);
-  QString sec = file.mid(17, 2);
-
-  te::dt::Date date(ano.toInt(), mes.toInt(), dia.toInt());
-  te::dt::TimeDuration dur(hour.toInt(), min.toInt(), sec.toInt());
-  return te::dt::TimeInstant(date, dur);
 }
 
 void te::qt::widgets::TimeSliderWidget::onHelpPushButtonClicked()

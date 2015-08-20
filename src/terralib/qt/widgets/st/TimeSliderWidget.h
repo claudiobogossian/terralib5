@@ -73,7 +73,7 @@ namespace te
       class Animation;
       class AnimationItem;
       class TrajectoryItem;
-      class PixmapItem;
+      class ImageItem;
       class AnimationScene;
 
       /*!
@@ -122,26 +122,7 @@ namespace te
 
           void addTemporalImages(const QString& filePath);
 
-          te::qt::widgets::PixmapItem* getMetadata(const QString& path);
-          void generateImageRoute(PixmapItem* pi, const Animation* animation, const size_t& count);
-
-          te::qt::widgets::PixmapItem* getGoesMetadata(const QString& path);
-          te::dt::TimeInstant getGoesTime(const QString& file);
-
-          te::qt::widgets::PixmapItem* getHidroMetadata(const QString& path);
-          te::qt::widgets::PixmapItem* getHidroCtlParameters(const QString& path);
-          void setHidroLUT(te::qt::widgets::PixmapItem* pi);
-          te::dt::TimeInstant getHidroTime(const QString& file);
-
-          te::qt::widgets::PixmapItem* getEtaMetadata(const QString& path);
-          te::qt::widgets::PixmapItem* getEtaCtlParameters(const QString& path);
-          void setEtaLUT(te::qt::widgets::PixmapItem* pi);
-          te::dt::TimeInstant getEtaTime(const QString& file);
-
-          te::qt::widgets::PixmapItem* getTemporalImageMetadata(const QString& path);
-          te::qt::widgets::PixmapItem* getTemporalImageCtlParameters(const QString& path);
-          te::dt::TimeInstant getTemporalImageTime(const QString& file);
-
+          te::qt::widgets::ImageItem* loadImageData(const QString& path);
 
           /*!
             \brief Add trajectory to animation scene.
@@ -309,10 +290,9 @@ namespace te
           /param dwrect The rect of map display in world coordinates.
           /param painter The painter.
         */
-        void drawPixmapItem(PixmapItem* pi, QPainter* painter);
-        //void drawPixmapItem(PixmapItem* pi, const QRectF& dwrect, QPainter* painter);
+        void drawImageItem(ImageItem* pi, QPainter* painter);
 
-        QImage* getImage(te::qt::widgets::PixmapItem* pi);
+        QImage* getImage(te::qt::widgets::ImageItem* pi);
 
         void loadAnimation(const QString& title);
 
@@ -351,17 +331,6 @@ namespace te
             \return true = changed, false = not changed
           */
           bool isSettingChanged();
-
-          /*!
-            \brief Remove animation item from the opacity combo box and trajectory color combo box.
-
-            \param ai The item to be removed.
-          */
-          //void removeComboItem(te::qt::widgets::AnimationItem* ai);
-
-          //void getAuxInfo(te::qt::widgets::AnimationItem* ai, int index = -1);
-
-          //void setAuxInfo(te::qt::widgets::AnimationItem* ai, int index = -1);
           
           void adjustTrajectoryGroupBox(te::qt::widgets::AnimationItem*);
 
@@ -453,14 +422,7 @@ namespace te
             \param b True if the button is checked, or false if the button is unchecked
           */
           void onDrawTrailCheckBoxClicked(bool b);         
-
-          /*!
-            \brief Apply animation items push button clicked. It Sets the visibility of animations.
-
-            \param b True if the button is checked, or false if the button is unchecked
-          */
-          //void onApplyAnimationItemPushButtonClicked(bool);
-          
+       
           /*!
             \brief Forward radio button clicked.
 
@@ -495,13 +457,6 @@ namespace te
             \param b True if the button is checked, or false if the button is unchecked
           */
           void onApplyTimeIntervalPushButtonClicked(bool b);
-
-          /*!
-            \brief Trajectory color combo box activated.
-
-            \param i The index of combo box.
-          */
-          //void onTrajectoryColorComboBoxActivated(int i);
 
           /*!
             \brief Opacity combo box activated.
