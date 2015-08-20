@@ -50,12 +50,12 @@ namespace te
       {
         class EditTemplateDock : public QDockWidget
         {
-	        Q_OBJECT //for slots/signals
+          Q_OBJECT //for slots/signals
 
         public:
 
-	        EditTemplateDock( QWidget * parent = 0, Qt::WindowFlags flags = 0 );
-	        virtual ~EditTemplateDock();
+          EditTemplateDock( QWidget * parent = 0, Qt::WindowFlags flags = 0 );
+          virtual ~EditTemplateDock();
 
           te::layout::EditTemplateOutside* getEditTemplateOutside();
 

@@ -43,12 +43,12 @@ namespace te
       {
         class DisplayDock : public QDockWidget
         {
-	        Q_OBJECT //for slots/signals
+          Q_OBJECT //for slots/signals
 
         public:
 
-	        DisplayDock(QWidget * parent = 0, Qt::WindowFlags flags = 0);
-	        virtual ~DisplayDock();
+          DisplayDock(QWidget * parent = 0, Qt::WindowFlags flags = 0);
+          virtual ~DisplayDock();
                 
           void setPreviousCentralWidget(QWidget* previous);
       
@@ -60,7 +60,7 @@ namespace te
       
         protected:
 
-          virtual void	closeEvent ( QCloseEvent * event );
+          virtual void  closeEvent ( QCloseEvent * event );
 
           QWidget* m_previousCentralWidget; /* Previous central display of application */
           bool     m_previousCentralWidgetVisibilite;

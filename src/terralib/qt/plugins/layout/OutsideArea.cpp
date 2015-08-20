@@ -173,14 +173,14 @@ void te::qt::plugins::layout::OutsideArea::init()
 void te::qt::plugins::layout::OutsideArea::createPropertiesDock()
 {
   m_dockProperties = new PropertiesDock;  
-  m_dockProperties->setFeatures(QDockWidget::DockWidgetMovable |	
+  m_dockProperties->setFeatures(QDockWidget::DockWidgetMovable |  
     QDockWidget::DockWidgetFloatable);
 }
 
 void te::qt::plugins::layout::OutsideArea::createInspectorDock()
 {
   m_dockInspector = new ObjectInspectorDock;
-  m_dockInspector->setFeatures(QDockWidget::DockWidgetMovable |	
+  m_dockInspector->setFeatures(QDockWidget::DockWidgetMovable |  
     QDockWidget::DockWidgetFloatable);
 }
 

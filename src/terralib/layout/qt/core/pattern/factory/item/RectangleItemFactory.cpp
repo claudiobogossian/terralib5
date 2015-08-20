@@ -31,7 +31,7 @@
 
 te::layout::AbstractItemView* te::layout::RectangleItemFactory::build(ItemFactoryParamsCreate params)
 {
-  std::string      name = params.getName();
+  std::string     name = params.getName();
   Properties      props = params.getProperties(); 
   te::gm::Coord2D coord = params.getCoord(); 
   int             zValue = params.getZValue(); 
