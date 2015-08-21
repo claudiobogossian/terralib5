@@ -92,8 +92,6 @@ namespace te
 
         bool mouseMoveEvent(QMouseEvent* e);
 
-        bool mouseReleaseEvent(QMouseEvent* e);
-
         bool mouseDoubleClickEvent(QMouseEvent* e);
 
         //@}
@@ -121,12 +119,11 @@ namespace te
       protected:
 
         te::map::AbstractLayerPtr m_layer;      //!< The layer used by this tool.
+        Feature* m_feature;
         std::vector<te::gm::Coord2D> m_coords;  //!< The coord list managed by this tool.
         te::gm::Coord2D m_lastPos;              //!< The last position captured on mouse move event.
         bool m_continuousMode;                  //!< A flag that indicates if the tool is working in 'continuous mode'. i.e. the coordinates will be acquired  from each mouseMove.
         bool m_isFinished;                      //!< A flag that indicates if the operations was finished.
-        Feature* m_feature;
-
     };
 
   }   // end namespace edit

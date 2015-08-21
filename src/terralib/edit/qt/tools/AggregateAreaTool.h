@@ -70,8 +70,6 @@ namespace te
 
       bool mouseMoveEvent(QMouseEvent* e);
 
-      bool mouseReleaseEvent(QMouseEvent* e);
-
       bool mouseDoubleClickEvent(QMouseEvent* e);
 
       //@}
@@ -82,7 +80,7 @@ namespace te
       void reset();
       void storeEditedFeature();
 
-      void pickFeature(const te::map::AbstractLayerPtr& layer, const QPointF& pos);
+      void pickFeature(const te::map::AbstractLayerPtr& layer);
 
       te::gm::Envelope buildEnvelope(const QPointF& pos);
 

@@ -85,8 +85,6 @@ namespace te
 
             void onSubtractAreaToolActivated(bool checked);
 
-            void onDeleteGeometryToolActivated(bool checked);
-
             void onMergeGeometriesToolActivated(bool checked);
 
           signals:
@@ -104,7 +102,6 @@ namespace te
             QAction* m_createLineToolAction;
             QAction* m_moveGeometryToolAction;
             QAction* m_snapOptionsAction;
-            QAction* m_deleteGeometryToolAction;
             QAction* m_aggregateAreaToolAction;
             QAction* m_subtractAreaToolAction;
             QAction* m_mergeGeometriesToolAction;
