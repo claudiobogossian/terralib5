@@ -46,11 +46,11 @@ namespace te
       \brief Class that represents a "Model" part of Paper MVC component. 
           Its coordinate system is the same of scene (millimeters). 
           This is also son of ItemModelObservable, so it can become observable.
-      	  
-	    \ingroup layout
+          
+      \ingroup layout
 
       \sa te::layout::ItemModelObservable
-	  */
+    */
     class TELAYOUTEXPORT PaperModel : public ItemModelObservable
     {
       public:

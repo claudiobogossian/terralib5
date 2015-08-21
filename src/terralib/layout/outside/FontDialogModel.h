@@ -36,7 +36,7 @@ namespace te
 {
   namespace layout
   {
-		class TELAYOUTEXPORT FontDialogModel : public AbstractOutsideModel
+    class TELAYOUTEXPORT FontDialogModel : public AbstractOutsideModel
     {
     public:
 

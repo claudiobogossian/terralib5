@@ -43,7 +43,7 @@
 
 te::layout::MapLayerChoiceOutside::MapLayerChoiceOutside(AbstractOutsideController* controller)
   : QDialog(0),
-		AbstractOutsideView(controller),
+    AbstractOutsideView(controller),
     m_ui(new Ui::MapLayerChoice)
 {
 // add controls
@@ -67,7 +67,7 @@ te::layout::MapLayerChoiceOutside::~MapLayerChoiceOutside()
 
 void te::layout::MapLayerChoiceOutside::init()
 {
-	AbstractOutsideModel* abstractModel = const_cast<AbstractOutsideModel*>(m_controller->getModel());
+  AbstractOutsideModel* abstractModel = const_cast<AbstractOutsideModel*>(m_controller->getModel());
   MapLayerChoiceModel* model = dynamic_cast<MapLayerChoiceModel*>(abstractModel);
   if(!model)
   {
@@ -115,7 +115,7 @@ void te::layout::MapLayerChoiceOutside::init()
 
 void te::layout::MapLayerChoiceOutside::onOkPushButtonClicked()
 {
-	AbstractOutsideModel* abstractModel = const_cast<AbstractOutsideModel*>(m_controller->getModel());
+  AbstractOutsideModel* abstractModel = const_cast<AbstractOutsideModel*>(m_controller->getModel());
   MapLayerChoiceModel* model = dynamic_cast<MapLayerChoiceModel*>(abstractModel);
   if(!model)
   {

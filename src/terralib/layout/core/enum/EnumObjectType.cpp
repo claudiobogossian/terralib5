@@ -395,7 +395,7 @@ te::layout::EnumType* te::layout::EnumObjectType::getRectangleItem() const
 
 te::layout::EnumType* te::layout::EnumObjectType::getLineItem() const 
 {
-	return m_lineItem;
+  return m_lineItem;
 }
 
 te::layout::EnumType* te::layout::EnumObjectType::getPolygonItem() const 

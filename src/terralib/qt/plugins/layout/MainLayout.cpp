@@ -114,7 +114,7 @@ void te::qt::plugins::layout::MainLayout::init(QWidget* mainWindow, QMenu* mnuLa
     m_view->setScene(new te::layout::Scene(m_view));
   }
       
-  //Resize the dialog and put it in the screen center	
+  //Resize the dialog and put it in the screen center  
   m_view->move( screen.center() - m_view->rect().center() );
 
   createEnums();

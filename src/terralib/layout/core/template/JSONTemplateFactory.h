@@ -35,7 +35,7 @@ namespace te
 {
   namespace layout
   {
-		class AbstractTemplate;
+    class AbstractTemplate;
     /*!
       \class ZoomAreaToolFactory
 
@@ -43,15 +43,15 @@ namespace te
 
       \sa TemplateFactory, ParameterizedAbstractFactory, AbstractTemplate
     */
-		class TELAYOUTEXPORT JSONTemplateFactory : public TemplateFactory
+    class TELAYOUTEXPORT JSONTemplateFactory : public TemplateFactory
     {
-			public:
+      public:
 
-				/*! It register the factory in the abstract dictionary. */
-				JSONTemplateFactory();
+        /*! It register the factory in the abstract dictionary. */
+        JSONTemplateFactory();
 
-				/*! \brief Destructor. */
-				~JSONTemplateFactory();
+        /*! \brief Destructor. */
+        ~JSONTemplateFactory();
 
       protected:
 
@@ -60,7 +60,7 @@ namespace te
 
           \return It returns json template.
         */
-				AbstractTemplate* build(TemplateFactoryParamsCreate params);
+        AbstractTemplate* build(TemplateFactoryParamsCreate params);
     };
 
   } // end namespace layout

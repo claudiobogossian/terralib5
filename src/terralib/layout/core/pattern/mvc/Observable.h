@@ -50,9 +50,9 @@ namespace te
 
     /*!
       \brief Abstract class to represent an observable. "Model" part of MVC component. 
-	  
-	    \ingroup layout
-	  */
+    
+      \ingroup layout
+    */
     class TELAYOUTEXPORT Observable 
     {
       public:

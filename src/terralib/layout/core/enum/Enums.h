@@ -50,11 +50,11 @@ namespace te
       \brief Singleton class responsible for keeping active objects of Enum while the plugin is loaded in memory 
              and make them available for access anywhere in the plugin or layout module.
         Ex .: Enum for data type, enum for object type, enum for mode type, enum for template type, etc.
-	  
-	    \ingroup layout
+    
+      \ingroup layout
 
-	    \sa te::common::Singleton
-	  */
+      \sa te::common::Singleton
+    */
     class TELAYOUTEXPORT Enums : public te::common::Singleton<Enums>
     {
       friend class te::common::Singleton<Enums>;
@@ -150,12 +150,12 @@ namespace te
         */
         virtual EnumTemplateType* getEnumTemplateType();
 
-				/*!
-				\brief Returns tool type enumeration
+        /*!
+        \brief Returns tool type enumeration
 
-				\return tool type enumeration
-				*/
-				virtual EnumToolType* getEnumToolType();
+        \return tool type enumeration
+        */
+        virtual EnumToolType* getEnumToolType();
 
       protected:
 
@@ -172,7 +172,7 @@ namespace te
         EnumLineStyleType* m_lineStyleType; //!< line style type enumeration
         EnumModeType* m_modeType; //!< mode type enumeration
         EnumTemplateType* m_templateType; //!< template type enumeration
-				EnumToolType* m_toolType; //!< tool type enumeration
+        EnumToolType* m_toolType; //!< tool type enumeration
 
       private:
       

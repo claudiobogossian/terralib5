@@ -124,26 +124,26 @@ te::layout::Scene::~Scene()
 
 void te::layout::Scene::insertItem(ItemObserver* item)
 {
-	if (!item)
-	{
-		return;
-	}
+  if (!item)
+  {
+    return;
+  }
 
-	QGraphicsItem* qitem = ((QGraphicsItem*)item);
+  QGraphicsItem* qitem = ((QGraphicsItem*)item);
 
-	insertItem(qitem);
+  insertItem(qitem);
 }
 
 void te::layout::Scene::insertItem(AbstractItemView* item)
 {
-	if (!item)
-	{
-		return;
-	}
+  if (!item)
+  {
+    return;
+  }
 
-	QGraphicsItem* qitem = ((QGraphicsItem*)item);
+  QGraphicsItem* qitem = ((QGraphicsItem*)item);
 
-	insertItem(qitem);
+  insertItem(qitem);
 }
 
 void te::layout::Scene::insertItem(QGraphicsItem* item)
@@ -161,19 +161,19 @@ void te::layout::Scene::insertItem(QGraphicsItem* item)
   int total = 0;
 
   total = this->items().count();
-	
-	AbstractItemView* abstractItem = dynamic_cast<AbstractItemView*>(item);
-	if (!abstractItem)
+  
+  AbstractItemView* abstractItem = dynamic_cast<AbstractItemView*>(item);
+  if (!abstractItem)
   {
-		ItemObserver* obs = dynamic_cast<ItemObserver*>(item);
-		if (obs)
-		{
-			this->addItem(item);
-		}
+    ItemObserver* obs = dynamic_cast<ItemObserver*>(item);
+    if (obs)
+    {
+      this->addItem(item);
+    }
     return;
   }
 
-	if (abstractItem->isInverted())
+  if (abstractItem->isInverted())
   {
     QTransform transfItem = item->transform();
     // Check if the item had been inserted
@@ -185,9 +185,9 @@ void te::layout::Scene::insertItem(QGraphicsItem* item)
   }
 
   item->setZValue(total);
-	this->addItem(item); 
-	
-	abstractItem->refresh();
+  this->addItem(item); 
+  
+  abstractItem->refresh();
 
   removeItemStackWithoutScene(item);
 
@@ -299,11 +299,11 @@ void te::layout::Scene::removeSelectedItems()
   {
     if (item)
     {
-			AbstractItemView* abstractItem = dynamic_cast<AbstractItemView*>(item);
-			if (abstractItem)
+      AbstractItemView* abstractItem = dynamic_cast<AbstractItemView*>(item);
+      if (abstractItem)
       {
-				if (abstractItem->getController()->getModel())
-					names.push_back(abstractItem->getController()->getModel()->getName());
+        if (abstractItem->getController()->getModel())
+          names.push_back(abstractItem->getController()->getModel()->getName());
       }
     }
   }
@@ -454,12 +454,10 @@ QGraphicsItem* te::layout::Scene::createItem( const te::gm::Coord2D& coord )
 
   if(item)
   {
-		QUndoCommand* command = new AddCommand(item);
-		addUndoStack(command);
+    QUndoCommand* command = new AddCommand(item);
+    addUndoStack(command);
   }
-
-  //changeViewMode(type->getModeNone());
-
+  
   return item;
 }
 
@@ -531,13 +529,13 @@ std::vector<te::layout::Properties> te::layout::Scene::getItemsProperties()
   {
     if (item)
     {    
-			AbstractItemView* lItem = dynamic_cast<AbstractItemView*>(item);
+      AbstractItemView* lItem = dynamic_cast<AbstractItemView*>(item);
       if(lItem)
       {
         if(!lItem->getController()->getModel()->isPrintable())
           continue;
-				
-				props.push_back(lItem->getController()->getModel()->getProperties());
+        
+        props.push_back(lItem->getController()->getModel()->getProperties());
       }
     }
   }
@@ -657,45 +655,45 @@ void te::layout::Scene::exportItemsToImage(std::string dir)
 
 void te::layout::Scene::mouseMoveEvent(QGraphicsSceneMouseEvent * mouseEvent)
 {
-	QGraphicsItem* item = mouseGrabberItem();
-	if (item)
-	{
-		m_moveWatched = true;
-	}
-	QGraphicsScene::mouseMoveEvent(mouseEvent);
+  QGraphicsItem* item = mouseGrabberItem();
+  if (item)
+  {
+    m_moveWatched = true;
+  }
+  QGraphicsScene::mouseMoveEvent(mouseEvent);
 }
 
 void te::layout::Scene::mousePressEvent(QGraphicsSceneMouseEvent * mouseEvent)
 {
-	QGraphicsScene::mousePressEvent(mouseEvent);
+  QGraphicsScene::mousePressEvent(mouseEvent);
 
-	QGraphicsItem* item = mouseGrabberItem();
-	if (item)
-	{
-		QList<QGraphicsItem*> its = selectedItems();
-		m_moveWatches.clear();
-		foreach(QGraphicsItem *item, its)
-		{
-			QPointF pt = item->scenePos();
-			m_moveWatches[item] = pt;
-		}
-	}
+  QGraphicsItem* item = mouseGrabberItem();
+  if (item)
+  {
+    QList<QGraphicsItem*> its = selectedItems();
+    m_moveWatches.clear();
+    foreach(QGraphicsItem *item, its)
+    {
+      QPointF pt = item->scenePos();
+      m_moveWatches[item] = pt;
+    }
+  }
 }
 
 void te::layout::Scene::mouseReleaseEvent(QGraphicsSceneMouseEvent * mouseEvent)
 {
-	QGraphicsItem* item = mouseGrabberItem();
-	if (item)
-	{
-		if (m_moveWatched)
-		{
-			QUndoCommand* command = new MoveCommand(m_moveWatches);
-			addUndoStack(command);
-			m_moveWatched = false;
-		}
-	}
-	m_moveWatches.clear();
-	QGraphicsScene::mouseReleaseEvent(mouseEvent);
+  QGraphicsItem* item = mouseGrabberItem();
+  if (item)
+  {
+    if (m_moveWatched)
+    {
+      QUndoCommand* command = new MoveCommand(m_moveWatches);
+      addUndoStack(command);
+      m_moveWatched = false;
+    }
+  }
+  m_moveWatches.clear();
+  QGraphicsScene::mouseReleaseEvent(mouseEvent);
 }
 
 void te::layout::Scene::selectItem( std::string name )
@@ -705,10 +703,10 @@ void te::layout::Scene::selectItem( std::string name )
   {
     if(item)
     {
-			AbstractItemView* it = dynamic_cast<AbstractItemView*>(item);
+      AbstractItemView* it = dynamic_cast<AbstractItemView*>(item);
       if(it)
       {
-				if (!it->getController())
+        if (!it->getController())
         {
           continue;
         }
@@ -757,12 +755,12 @@ void te::layout::Scene::redrawItems()
   {
     if(item)
     {
-			AbstractItemView* it = dynamic_cast<AbstractItemView*>(item);
+      AbstractItemView* it = dynamic_cast<AbstractItemView*>(item);
       if(it)
       {
         if(it->getController()->getModel()->isPrintable())
         {
-					it->refresh();
+          it->refresh();
         }
       }
     }
@@ -771,32 +769,32 @@ void te::layout::Scene::redrawItems()
 
 void te::layout::Scene::updateSelectedItemsPositions()
 {
-	EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
 
   QList<QGraphicsItem*> allItems = selectedItems();
   foreach(QGraphicsItem *item, allItems) 
   {
     if(item)
     {
-			AbstractItemView* it = dynamic_cast<AbstractItemView*>(item);
+      AbstractItemView* it = dynamic_cast<AbstractItemView*>(item);
       if(it)
       {
-				QPointF posItem = item->scenePos();		
+        QPointF posItem = item->scenePos();    
 
-				Properties props;
-				Property prop_x(0);
-				prop_x.setName("x");
-				prop_x.setLabel("x");
-				prop_x.setValue(posItem.x(), dataType->getDataTypeDouble());
-				props.addProperty(prop_x);
+        Properties props;
+        Property prop_x(0);
+        prop_x.setName("x");
+        prop_x.setLabel("x");
+        prop_x.setValue(posItem.x(), dataType->getDataTypeDouble());
+        props.addProperty(prop_x);
 
-				Property prop_y(0);
-				prop_y.setName("y");
-				prop_y.setLabel("y");
-				prop_y.setValue(posItem.y(), dataType->getDataTypeDouble());
-				props.addProperty(prop_y);
+        Property prop_y(0);
+        prop_y.setName("y");
+        prop_y.setLabel("y");
+        prop_y.setValue(posItem.y(), dataType->getDataTypeDouble());
+        props.addProperty(prop_y);
 
-				it->getController()->getModel()->setProperties(props);
+        it->getController()->getModel()->setProperties(props);
       }
     }
   }
@@ -910,12 +908,12 @@ void te::layout::Scene::applyProportionAllItems( QSize oldPaper, QSize newPaper 
     {
       if(item != paper)
       {
-				AbstractItemView* it = dynamic_cast<AbstractItemView*>(item);
+        AbstractItemView* it = dynamic_cast<AbstractItemView*>(item);
         if(it)
         {
-					te::gm::Envelope box = it->getController()->getModel()->getBoundingRect();
+          te::gm::Envelope box = it->getController()->getModel()->getBoundingRect();
 
-					AbstractItemModel* model = it->getController()->getModel();
+          AbstractItemModel* model = it->getController()->getModel();
           updateBoxFromProperties(box, model);
           item->setPos(box.m_llx, box.m_lly);
         }
@@ -927,7 +925,7 @@ void te::layout::Scene::applyProportionAllItems( QSize oldPaper, QSize newPaper 
 void te::layout::Scene::updateBoxFromProperties(te::gm::Envelope box, AbstractItemModel* model)
 {
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
-	
+  
   Properties props(model->getName(), model->getType());
   
   double x = box.m_llx;
@@ -936,15 +934,15 @@ void te::layout::Scene::updateBoxFromProperties(te::gm::Envelope box, AbstractIt
   double height = box.getHeight();
 
   Property pro_x;
-	pro_x.setName("x");
-	pro_x.setValue(x, dataType->getDataTypeDouble());
-	pro_x.setEditable(false);
-	props.addProperty(pro_x);
+  pro_x.setName("x");
+  pro_x.setValue(x, dataType->getDataTypeDouble());
+  pro_x.setEditable(false);
+  props.addProperty(pro_x);
 
   Property pro_y;
-	pro_y.setName("y");
-	pro_y.setValue(y, dataType->getDataTypeDouble());
-	pro_y.setEditable(false);
+  pro_y.setName("y");
+  pro_y.setValue(y, dataType->getDataTypeDouble());
+  pro_y.setEditable(false);
   props.addProperty(pro_y);
 
   Property pro_width;
@@ -994,7 +992,7 @@ void te::layout::Scene::contextUpdated( ContextObject context )
   {
     if(item)
     {
-			AbstractItemView* it = dynamic_cast<AbstractItemView*>(item);
+      AbstractItemView* it = dynamic_cast<AbstractItemView*>(item);
       if(it)
       {
         it->contextUpdated(context);

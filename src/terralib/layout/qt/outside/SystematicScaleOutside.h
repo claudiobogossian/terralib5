@@ -44,18 +44,18 @@ namespace te
 {
   namespace layout
   {
-		class AbstractOutsideController;
+    class AbstractOutsideController;
 
-		class TELAYOUTEXPORT SystematicScaleOutside : public QDialog, public AbstractOutsideView
+    class TELAYOUTEXPORT SystematicScaleOutside : public QDialog, public AbstractOutsideView
     {
-	    Q_OBJECT
+      Q_OBJECT
     
       public:
         
-				SystematicScaleOutside(AbstractOutsideController* controller);
+        SystematicScaleOutside(AbstractOutsideController* controller);
 
-		    virtual ~SystematicScaleOutside();
-				
+        virtual ~SystematicScaleOutside();
+        
         virtual void setPosition(const double& x, const double& y);
 
         virtual te::gm::Coord2D getPosition();

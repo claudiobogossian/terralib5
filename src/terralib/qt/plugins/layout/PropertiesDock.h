@@ -50,18 +50,18 @@ namespace te
       {
         class PropertiesDock : public QDockWidget
         {
-	        Q_OBJECT //for slots/signals
+          Q_OBJECT //for slots/signals
 
         public:
 
-	        PropertiesDock( QWidget * parent = 0, Qt::WindowFlags flags = 0 );
-	        virtual ~PropertiesDock();
+          PropertiesDock( QWidget * parent = 0, Qt::WindowFlags flags = 0 );
+          virtual ~PropertiesDock();
 
           te::layout::PropertiesOutside* getPropertiesOutside();
 
         protected:
           
-          virtual void	closeEvent ( QCloseEvent * event );
+          virtual void  closeEvent ( QCloseEvent * event );
 
           virtual void create();
 

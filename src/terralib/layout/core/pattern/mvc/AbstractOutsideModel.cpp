@@ -74,22 +74,22 @@ te::layout::AbstractOutsideModel::~AbstractOutsideModel()
 
 te::gm::Envelope te::layout::AbstractOutsideModel::getBox()
 {
-	return m_box;
+  return m_box;
 }
 
 void te::layout::AbstractOutsideModel::setBox(te::gm::Envelope box)
 {
-	m_box = box;
+  m_box = box;
 }
 
 int te::layout::AbstractOutsideModel::getColor()
 {
-	return m_color;
+  return m_color;
 }
 
 void te::layout::AbstractOutsideModel::setColor(int color)
 {
-	m_color = color;
+  m_color = color;
 }
 
 void te::layout::AbstractOutsideModel::setPosition(const double& x, const double& y)
@@ -146,7 +146,7 @@ void te::layout::AbstractOutsideModel::updateProperties(te::layout::Properties* 
   
   if(notify)
   {
-		Subject::notify();
+    Subject::notify();
   }
 }
 

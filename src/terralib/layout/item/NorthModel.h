@@ -43,11 +43,11 @@ namespace te
       \brief Class that represents a "Model" part of  MVC component. 
           Its coordinate system is the same of scene (millimeters). 
           He is also the son of AbstractItemModel, so it can become observable.
-      	  
-	    \ingroup layout
+          
+      \ingroup layout
 
       \sa te::layout::AbstractItemModel
-	  */
+    */
     class TELAYOUTEXPORT NorthModel : public AbstractItemModel
     {
       public:

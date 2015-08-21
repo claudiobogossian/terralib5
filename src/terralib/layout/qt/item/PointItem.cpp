@@ -207,20 +207,20 @@ void te::layout::PointItem::drawStar3(QPainter * painter)
   painter->setBrush(brush);
   painter->setRenderHint( QPainter::Antialiasing, true );
 
-	QPolygonF star;
-	double halfW = boundingRect().width() / 4.;
-	double w = boundingRect().width() / 2.;
-	qreal const c = halfW;
-	qreal const d = w;
-	bool inner = true;
-	for ( qreal i=0; i<2*M_PI; i+=M_PI/7.0, inner=!inner ) {
-		qreal const f = inner ? c : d;
-		star << QPointF( f * cos(i), f * sin(i) );
-	}
-	star.translate(boundingRect().center());
+  QPolygonF star;
+  double halfW = boundingRect().width() / 4.;
+  double w = boundingRect().width() / 2.;
+  qreal const c = halfW;
+  qreal const d = w;
+  bool inner = true;
+  for ( qreal i=0; i<2*M_PI; i+=M_PI/7.0, inner=!inner ) {
+    qreal const f = inner ? c : d;
+    star << QPointF( f * cos(i), f * sin(i) );
+  }
+  star.translate(boundingRect().center());
 
-	painter->drawPolygon(star);
-	painter->restore();
+  painter->drawPolygon(star);
+  painter->restore();
 }
 
 void te::layout::PointItem::drawStar4(QPainter * painter)
@@ -243,20 +243,20 @@ void te::layout::PointItem::drawStar4(QPainter * painter)
   painter->setBrush(brush);
   painter->setRenderHint( QPainter::Antialiasing, true );
 
-	QPolygonF star;
-	double halfW = boundingRect().width() / 4.;
-	double w = boundingRect().width() / 2.;
-	qreal const c = halfW;
-	qreal const d = w;
-	bool inner = true;
-	for ( qreal i=0; i<2*M_PI; i+=M_PI/8.0, inner=!inner ) {
-		qreal const f = inner ? c : d;
-		star << QPointF( f * cos(i), f * sin(i) );
-	}
-	star.translate(boundingRect().center());
+  QPolygonF star;
+  double halfW = boundingRect().width() / 4.;
+  double w = boundingRect().width() / 2.;
+  qreal const c = halfW;
+  qreal const d = w;
+  bool inner = true;
+  for ( qreal i=0; i<2*M_PI; i+=M_PI/8.0, inner=!inner ) {
+    qreal const f = inner ? c : d;
+    star << QPointF( f * cos(i), f * sin(i) );
+  }
+  star.translate(boundingRect().center());
 
-	painter->drawPolygon(star);
-	painter->restore();
+  painter->drawPolygon(star);
+  painter->restore();
 }
 
 

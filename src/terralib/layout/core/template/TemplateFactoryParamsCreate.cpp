@@ -34,7 +34,7 @@ m_path(path)
 
 te::layout::TemplateFactoryParamsCreate::TemplateFactoryParamsCreate(const TemplateFactoryParamsCreate& rhs)
 {
-	this->operator=(rhs);
+  this->operator=(rhs);
 }
 
 te::layout::TemplateFactoryParamsCreate::~TemplateFactoryParamsCreate()
@@ -44,17 +44,17 @@ te::layout::TemplateFactoryParamsCreate::~TemplateFactoryParamsCreate()
 
 te::common::AbstractParameters* te::layout::TemplateFactoryParamsCreate::clone() const
 {
-	return new TemplateFactoryParamsCreate(*this);
+  return new TemplateFactoryParamsCreate(*this);
 }
 
 void te::layout::TemplateFactoryParamsCreate::reset() throw(te::common::Exception)
 {
-	m_path.clear();
+  m_path.clear();
 }
 
 std::string te::layout::TemplateFactoryParamsCreate::getFilePath()
 {
-	return m_path;
+  return m_path;
 }
 
 

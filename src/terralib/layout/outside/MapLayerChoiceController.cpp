@@ -29,7 +29,7 @@
 #include "MapLayerChoiceController.h"
 
 te::layout::MapLayerChoiceController::MapLayerChoiceController(AbstractOutsideModel* o) :
-	AbstractOutsideController(o)
+  AbstractOutsideController(o)
 {
   
 }

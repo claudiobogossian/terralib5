@@ -61,7 +61,7 @@ te::layout::BuildContext::~BuildContext()
     delete m_outsideFactory;
     m_outsideFactory = 0;
   }
-	
+  
   if(m_utils)
   {
     delete m_utils;

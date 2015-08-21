@@ -69,7 +69,7 @@
 #include <QDesktopWidget>
 
 te::layout::MenuBuilder::MenuBuilder( QObject * parent ) :
-	DialogPropertiesBrowser(0,0,parent),
+  DialogPropertiesBrowser(0,0,parent),
   m_menu(0),
   m_propUtils(0)
 {
@@ -227,8 +227,8 @@ void te::layout::MenuBuilder::changePropertyValue( Property property )
   foreach(QGraphicsItem* item, m_graphicsItems) 
   {
     if (item)
-    {			
-			AbstractItemView* lItem = dynamic_cast<AbstractItemView*>(item);
+    {      
+      AbstractItemView* lItem = dynamic_cast<AbstractItemView*>(item);
       if(lItem)
       {
         if(!lItem->getController()->getModel())
@@ -236,21 +236,21 @@ void te::layout::MenuBuilder::changePropertyValue( Property property )
           continue;
         }
 
-				Properties beforeProps = lItem->getController()->getModel()->getProperties();
+        Properties beforeProps = lItem->getController()->getModel()->getProperties();
         
-				Properties props("");
-				props.setObjectName(beforeProps.getObjectName());
-				props.setTypeObj(beforeProps.getTypeObj());
-				props.setHashCode(beforeProps.getHashCode());
-				props.addProperty(property);
+        Properties props("");
+        props.setObjectName(beforeProps.getObjectName());
+        props.setTypeObj(beforeProps.getTypeObj());
+        props.setHashCode(beforeProps.getHashCode());
+        props.addProperty(property);
 
-				lItem->getController()->getModel()->setProperties(props);
+        lItem->getController()->getModel()->setProperties(props);
 
-				Properties afterProps = lItem->getController()->getModel()->getProperties();
-				commandItems.push_back(item);
-				commandOld.push_back(beforeProps);
-				commandNew.push_back(afterProps);
-				
+        Properties afterProps = lItem->getController()->getModel()->getProperties();
+        commandItems.push_back(item);
+        commandOld.push_back(beforeProps);
+        commandNew.push_back(afterProps);
+        
       }
     }
   }

@@ -46,11 +46,11 @@ namespace te
       \brief Class that represents a "Model" part of Point MVC component. 
           Its coordinate system is the same of scene (millimeters). 
           He is also the son of ItemModelObservable, so it can become observable.
-      	  
-	    \ingroup layout
+          
+      \ingroup layout
 
       \sa te::layout::ItemModelObservable
-	  */
+    */
     class TELAYOUTEXPORT SVGModel : public AbstractItemModel
     {
       public:

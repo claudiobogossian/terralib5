@@ -29,7 +29,7 @@
 #include "FontDialogController.h"
 
 te::layout::FontDialogController::FontDialogController(AbstractOutsideModel* o) :
-	AbstractOutsideController(o)
+  AbstractOutsideController(o)
 {
   
 }

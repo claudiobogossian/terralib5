@@ -33,13 +33,13 @@
 #include "../../../layout/qt/outside/PropertiesOutside.h"
 
 te::qt::plugins::layout::PropertiesDock::PropertiesDock( QWidget * parent, Qt::WindowFlags flags ) :
-	QDockWidget(parent, flags)
+  QDockWidget(parent, flags)
 {
   setVisible(false);
   setWindowTitle("Properties");
   setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
 
-	create();
+  create();
 
   setWidget(m_properties);
 }

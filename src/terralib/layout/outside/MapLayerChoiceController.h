@@ -36,15 +36,15 @@ namespace te
 {
   namespace layout
   {
-		class AbstractOutsideModel;
+    class AbstractOutsideModel;
 
-		class TELAYOUTEXPORT MapLayerChoiceController : public AbstractOutsideController
+    class TELAYOUTEXPORT MapLayerChoiceController : public AbstractOutsideController
     {
       public:
 
-				MapLayerChoiceController(AbstractOutsideModel* o);
+        MapLayerChoiceController(AbstractOutsideModel* o);
 
-	      virtual ~MapLayerChoiceController();
+        virtual ~MapLayerChoiceController();
     };
   }
 }

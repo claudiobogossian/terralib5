@@ -42,9 +42,9 @@ namespace te
   {
     class PlanarGridSettingsConfigProperties;
     class GeodesicGridSettingsConfigProperties;
-		class Properties;
+    class Properties;
 
-		class TELAYOUTEXPORT GridSettingsModel : public AbstractOutsideModel
+    class TELAYOUTEXPORT GridSettingsModel : public AbstractOutsideModel
     {
     public:
 

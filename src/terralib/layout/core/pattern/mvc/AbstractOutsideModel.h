@@ -47,25 +47,25 @@ namespace te
 
     /*!
       \brief Abstract class to represent an observable. "Model" part of MVC widget. All classes representing the model of a widget must inherit from this class.
-	  
-	    \ingroup layout
+    
+      \ingroup layout
 
       \sa te::layout::Observable
-	  */
-		class TELAYOUTEXPORT AbstractOutsideModel : public Subject
+    */
+    class TELAYOUTEXPORT AbstractOutsideModel : public Subject
     {
     public:
 
       /*!
           \brief Constructor
        */ 
-			AbstractOutsideModel();
+      AbstractOutsideModel();
 
       /*!
           \brief Destructor
        */ 
-			virtual ~AbstractOutsideModel();
-			
+      virtual ~AbstractOutsideModel();
+      
       /*!
           \brief Reimplemented from Observable
        */
@@ -166,22 +166,22 @@ namespace te
       virtual bool isResizable();
 
     protected:
-			
+      
       virtual int calculateHashCode();
 
     protected:
 
-      te::gm::Envelope								m_box; //!< bounding rectangle 
-      te::gm::Coord2D 								m_centerCoordinate; //!< center coordinate of the bounding rectangle
-      int															m_color; //!< background color
-      Properties*											m_properties; //!< properties
-      Properties*											m_publicProperties; //!< public properties
-      EnumType*												m_type; //!< type of the MVC widget
-      int															m_zValue; //!< The Z value decides the stacking order of drawing
-      int															m_id; //!< hashcode
-      bool														m_resizable; //!< true if resizable, false otherwise
-      int															m_hashCode;
-      std::string											m_name; //!< name of the MVC widget     
+      te::gm::Envelope                m_box; //!< bounding rectangle 
+      te::gm::Coord2D                 m_centerCoordinate; //!< center coordinate of the bounding rectangle
+      int                              m_color; //!< background color
+      Properties*                      m_properties; //!< properties
+      Properties*                      m_publicProperties; //!< public properties
+      EnumType*                        m_type; //!< type of the MVC widget
+      int                              m_zValue; //!< The Z value decides the stacking order of drawing
+      int                              m_id; //!< hashcode
+      bool                            m_resizable; //!< true if resizable, false otherwise
+      int                              m_hashCode;
+      std::string                      m_name; //!< name of the MVC widget     
     };
   }
 }

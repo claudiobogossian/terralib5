@@ -36,15 +36,15 @@ namespace te
 {
   namespace layout
   {
-		class AbstractOutsideModel;
+    class AbstractOutsideModel;
 
-		class TELAYOUTEXPORT PropertiesController : public AbstractOutsideController
+    class TELAYOUTEXPORT PropertiesController : public AbstractOutsideController
     {
       public:
 
-				PropertiesController(AbstractOutsideModel* o);
+        PropertiesController(AbstractOutsideModel* o);
 
-	      virtual ~PropertiesController();
+        virtual ~PropertiesController();
     };
   }
 }

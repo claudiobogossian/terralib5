@@ -53,11 +53,11 @@ namespace te
   {
     /*!
     \brief Abstract class that represents a graphic item. This object is of type QGraphicsObject.
-	  
-	  \ingroup layout
+    
+    \ingroup layout
 
-	  \sa te::layout::ItemObserver
-	*/
+    \sa te::layout::ItemObserver
+  */
     class TELAYOUTEXPORT ObjectItem : public ParentItem<QGraphicsObject>
     {
       Q_OBJECT //for slots/signals

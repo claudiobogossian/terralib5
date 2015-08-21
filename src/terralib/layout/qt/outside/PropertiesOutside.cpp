@@ -60,17 +60,17 @@
 #include <QtPropertyBrowser/QtTreePropertyBrowser>
 
 te::layout::PropertiesOutside::PropertiesOutside(AbstractOutsideController* controller, PropertyBrowser* propertyBrowser) :
-	QWidget(0),
-	AbstractOutsideView(controller),
+  QWidget(0),
+  AbstractOutsideView(controller),
   m_updatingValues(false),
   m_sharedProps(0),
   m_propUtils(0)
 {
-	AbstractOutsideModel* abstractModel = const_cast<AbstractOutsideModel*>(m_controller->getModel());
-	te::gm::Envelope box = abstractModel->getBox();
-	setBaseSize(box.getWidth(), box.getHeight());
-	setVisible(false);
-	setWindowTitle("Properties");
+  AbstractOutsideModel* abstractModel = const_cast<AbstractOutsideModel*>(m_controller->getModel());
+  te::gm::Envelope box = abstractModel->getBox();
+  setBaseSize(box.getWidth(), box.getHeight());
+  setVisible(false);
+  setWindowTitle("Properties");
   setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
   
   m_propUtils = new PropertiesUtils;
@@ -154,8 +154,8 @@ void te::layout::PropertiesOutside::createLayout()
 
 void te::layout::PropertiesOutside::setPosition( const double& x, const double& y )
 {
-	move(x,y);
-	refresh();
+  move(x,y);
+  refresh();
 }
 
 te::gm::Coord2D te::layout::PropertiesOutside::getPosition()
@@ -249,35 +249,35 @@ bool te::layout::PropertiesOutside::sendPropertyToSelectedItems( Property proper
   std::vector<Properties> commandOld;
   std::vector<Properties> commandNew;
 
-	foreach(QGraphicsItem* item, m_graphicsItems)
-	{
-		if (item)
-		{
-			AbstractItemView* lItem = dynamic_cast<AbstractItemView*>(item);
-			if (lItem)
-			{
-				if (!lItem->getController()->getModel())
-				{
-					continue;
-				}
+  foreach(QGraphicsItem* item, m_graphicsItems)
+  {
+    if (item)
+    {
+      AbstractItemView* lItem = dynamic_cast<AbstractItemView*>(item);
+      if (lItem)
+      {
+        if (!lItem->getController()->getModel())
+        {
+          continue;
+        }
 
-				Properties beforeProps = lItem->getController()->getModel()->getProperties();
+        Properties beforeProps = lItem->getController()->getModel()->getProperties();
 
-				Properties props("");
-				props.setObjectName(beforeProps.getObjectName());
-				props.setTypeObj(beforeProps.getTypeObj());
-				props.setHashCode(beforeProps.getHashCode());
-				props.addProperty(property);
+        Properties props("");
+        props.setObjectName(beforeProps.getObjectName());
+        props.setTypeObj(beforeProps.getTypeObj());
+        props.setHashCode(beforeProps.getHashCode());
+        props.addProperty(property);
 
-				lItem->getController()->getModel()->setProperties(props);
+        lItem->getController()->getModel()->setProperties(props);
 
-				Properties afterProps = lItem->getController()->getModel()->getProperties();
-				commandItems.push_back(item);
-				commandOld.push_back(beforeProps);
-				commandNew.push_back(afterProps);
+        Properties afterProps = lItem->getController()->getModel()->getProperties();
+        commandItems.push_back(item);
+        commandOld.push_back(beforeProps);
+        commandNew.push_back(afterProps);
 
-				}
-			}
+        }
+      }
    }
 
   if(!m_graphicsItems.isEmpty())

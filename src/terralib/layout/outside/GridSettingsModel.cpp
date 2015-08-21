@@ -33,7 +33,7 @@
 #include "../core/enum/Enums.h"
 
 te::layout::GridSettingsModel::GridSettingsModel() :
-	AbstractOutsideModel()
+  AbstractOutsideModel()
 {
   m_type = Enums::getInstance().getEnumObjectType()->getGridSettings();
 

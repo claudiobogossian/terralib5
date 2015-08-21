@@ -47,11 +47,11 @@ namespace te
 
     /*!
       \brief Abstract class to represent an observable. "Model" part of MVC component. All classes representing the model of a component must inherit from this class.
-	  
-	    \ingroup layout
+    
+      \ingroup layout
 
       \sa te::layout::Observable
-	  */
+    */
     class TELAYOUTEXPORT ItemModelObservable : public Observable
     {
       public:
@@ -309,15 +309,15 @@ namespace te
 
         virtual void updateChildrenProperties(Property prop);
 
-		virtual void updateChildrenProperties(Properties* properties);
+    virtual void updateChildrenProperties(Properties* properties);
                 
       protected:
-        std::set<Observer*>	       m_observers; //!< set of observers of this object
-        int							           m_id; //!< hashcode
-        te::gm::Envelope					 m_box; //!< bounding rectangle 
-        te::gm::Coord2D			       m_centerCoordinate; //!< center coordinate of the bounding rectangle
-        te::color::RGBAColor			 m_backgroundColor; //!< background color
-        te::color::RGBAColor			 m_frameColor; //!< the colorof the frame of the item
+        std::set<Observer*>         m_observers; //!< set of observers of this object
+        int                         m_id; //!< hashcode
+        te::gm::Envelope           m_box; //!< bounding rectangle 
+        te::gm::Coord2D             m_centerCoordinate; //!< center coordinate of the bounding rectangle
+        te::color::RGBAColor       m_backgroundColor; //!< background color
+        te::color::RGBAColor       m_frameColor; //!< the colorof the frame of the item
         Properties*                m_properties; //!< properties
         std::set<ItemObserver*>    m_children; //!< children components
         Properties*                m_publicProperties; //!< public properties

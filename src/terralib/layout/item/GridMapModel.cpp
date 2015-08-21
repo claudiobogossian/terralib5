@@ -500,7 +500,7 @@ void te::layout::GridMapModel::visitDependent( ContextItem context )
     m_mapDisplacementX = map->getDisplacementX();
     m_mapDisplacementY = map->getDisplacementY();
     m_mapName = map->getName();
-  }	
+  }  
 }
 
 

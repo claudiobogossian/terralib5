@@ -42,9 +42,9 @@ namespace te
     class AbstractEnum;
     /*!
       \brief Class that represents the value of an enumeration. An enumeration is made of "1..n" objects EnumType.
-	  
-	    \ingroup layout
-	  */
+    
+      \ingroup layout
+    */
     class TELAYOUTEXPORT EnumType 
     {
       public:
@@ -64,57 +64,57 @@ namespace te
 
         /*!
           \brief Returns numeric value assigned
-		  
-		      \return numeric value assigned 		  
+      
+          \return numeric value assigned       
         */
         int getId();
 
         /*!
           \brief Returns name
-		  
-		      \return name 		  
+      
+          \return name       
         */
         std::string getName();
 
         /*!
           \brief Change name. Name parameter will be uppercase.
-		  
-		      \return new name 		  
+      
+          \return new name       
         */
         void setName(std::string name); 
 
         /*!
           \brief Returns label
-		  
-		      \return label 		  
+      
+          \return label       
         */
         std::string getLabel();
         
         /*!
           \brief Change label 
-		  
-		      \return new label 		  
+      
+          \return new label       
         */
         void setLabel(std::string label);
 
         /*!
           \brief Returns enum type
-		  
-		      \return enum type	  
+      
+          \return enum type    
         */
         AbstractEnum* getParent();
 
         /*!
           \brief Returns enum type
-		  
-		      \return enum type	  
+      
+          \return enum type    
         */
         te::layout::EnumTypeFlags getType();
 
         /*!
           \brief Sets enum type
-		  
-		      \return enum type	  
+      
+          \return enum type    
         */
         void setType(te::layout::EnumTypeFlags type);
                 

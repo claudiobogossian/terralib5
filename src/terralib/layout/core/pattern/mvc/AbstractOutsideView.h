@@ -37,16 +37,16 @@ namespace te
 {
   namespace layout
   {
-		class AbstractOutsideController;
+    class AbstractOutsideController;
 
     /*!
       \brief Abstract class to represent an observer. "View" part of MVC widget. All classes representing the graphics component must inherit from this class.
-	  
-	    \ingroup layout
+    
+      \ingroup layout
 
-	    \sa te::layout::Observer
-	  */
-		class TELAYOUTEXPORT AbstractOutsideView 
+      \sa te::layout::Observer
+    */
+    class TELAYOUTEXPORT AbstractOutsideView 
     {
     public:
 
@@ -56,13 +56,13 @@ namespace te
           \param controller "Controller" part of MVC widget
           \param o "Model" part of MVC widget
       */ 
-			AbstractOutsideView(AbstractOutsideController* controller);
+      AbstractOutsideView(AbstractOutsideController* controller);
 
       /*!
           \brief Destructor
        */
-			virtual ~AbstractOutsideView();
-			
+      virtual ~AbstractOutsideView();
+      
       /*!
           \brief Change coordinate llx,lly of the MVC widget.
             Reimplement this function in a ItemController subclass to provide the controller's create implementation.
@@ -86,17 +86,17 @@ namespace te
           \param true if refresh the current position, false otherwise
        */
       virtual void refresh();
-			
+      
       /*!
           \brief Returns the "Controller" part of the MVC.
 
           \return controller
        */
       virtual AbstractOutsideController* getController();
-			
+      
     protected:
 
-			AbstractOutsideController*	m_controller; //!< "Controller" part of MVC widget.
+      AbstractOutsideController*  m_controller; //!< "Controller" part of MVC widget.
     };
   }
 }

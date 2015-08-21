@@ -65,7 +65,7 @@ namespace te
   namespace layout
   {
     /*!
-	    \brief Class acts like a union for some C++/TerraLib5 data types. Responsible for storing the value.
+      \brief Class acts like a union for some C++/TerraLib5 data types. Responsible for storing the value.
        Any data type, not included in the convertValue method in this class, it will be by default "std::string".
        Storing value types:
 
@@ -78,9 +78,9 @@ namespace te
         - te::color::RGBAColor 
         - te::layout::Font 
         - te::layout::GenericVariant
-	  
-	    \ingroup layout
-	  */
+    
+      \ingroup layout
+    */
     class TELAYOUTEXPORT Variant
     {
       public:
@@ -288,13 +288,13 @@ namespace te
        */
       virtual std::string toString(int value) const;
 
-			/*!
-			\brief Convert a double value into a string representation of a number.
+      /*!
+      \brief Convert a double value into a string representation of a number.
 
-			\param value int value
-			\return string representation of a number
-			*/
-			virtual std::string toString(double value) const;
+      \param value int value
+      \return string representation of a number
+      */
+      virtual std::string toString(double value) const;
 
       /*!
           \brief Convert a string value into a boolean representation of a string. Ex.: true, false.

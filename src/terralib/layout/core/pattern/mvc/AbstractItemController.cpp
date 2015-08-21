@@ -78,7 +78,7 @@ void te::layout::AbstractItemController::update(const te::layout::Subject* subje
 
 bool te::layout::AbstractItemController::contains(const te::gm::Coord2D &coord) const
 {
-	return m_model->contains(coord);
+  return m_model->contains(coord);
 }
 
 

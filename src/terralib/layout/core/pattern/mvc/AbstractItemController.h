@@ -87,13 +87,13 @@ namespace te
         */ 
         virtual void update(const Subject* subject);
 
-				/*!
-				\brief Checks if the coordinate is contained within the bounding rectangle.
+        /*!
+        \brief Checks if the coordinate is contained within the bounding rectangle.
 
-				\param coord coordinated to be verified
-				\return true if contains, false otherwise
-				*/
-				virtual bool contains(const te::gm::Coord2D &coord) const;
+        \param coord coordinated to be verified
+        \return true if contains, false otherwise
+        */
+        virtual bool contains(const te::gm::Coord2D &coord) const;
 
       protected:
 

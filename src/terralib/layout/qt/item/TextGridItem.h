@@ -40,11 +40,11 @@ namespace te
 
     /*!
       \brief Class daughter of te::layout::TitleItem representing a grid with cells which can be inserted texts.
-	  
-	    \ingroup layout
+    
+      \ingroup layout
 
-	    \sa te::layout::TitleItem
-	  */
+      \sa te::layout::TitleItem
+    */
     class TELAYOUTEXPORT TextGridItem : public TitleItem
     {
       public:

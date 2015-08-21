@@ -29,7 +29,7 @@
 #include "ColorDialogController.h"
 
 te::layout::ColorDialogController::ColorDialogController( AbstractOutsideModel* o ) :
-	AbstractOutsideController(o)
+  AbstractOutsideController(o)
 {
   
 }

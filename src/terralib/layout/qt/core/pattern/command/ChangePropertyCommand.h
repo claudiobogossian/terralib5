@@ -48,9 +48,9 @@ namespace te
 
     /*!
       \brief Undo/Redo for changes in component properties.
-	  
-	    \ingroup layout
-	  */
+    
+      \ingroup layout
+    */
     class TELAYOUTEXPORT ChangePropertyCommand : public QUndoCommand
     {
       public:

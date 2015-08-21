@@ -51,62 +51,62 @@ namespace te
     {
       public:
         
-		/*!
+    /*!
           \brief Constructor
         */ 
         AbstractView();
 
-		/*!
+    /*!
           \brief Destructor
         */ 
         virtual ~AbstractView(void){}
         
-		/*!
+    /*!
           \brief Method that return rulers visibility state.
-		  
-		  \return true if visible, false otherwise	  
+      
+      \return true if visible, false otherwise    
         */
         virtual bool isVisibleRulers();
 
-		/*!
+    /*!
           \brief Method that change rulers visibility state.
-		  
-		  \param visible visibility state	  
+      
+      \param visible visibility state    
         */
         virtual void setVisibleRulers(bool visible);
 
-		/*!
-          \brief Initialization method that configures the View and sets the transformation matrix of the scene in the View object.	  
+    /*!
+          \brief Initialization method that configures the View and sets the transformation matrix of the scene in the View object.    
         */
         virtual void config() = 0; 
 
-		/*!
+    /*!
           \brief Method that adds new zoom factor. Ex.: 50 - 50%.
-		  
-		  \param factor factor  
-		  \param text percentage
+      
+      \param factor factor  
+      \param text percentage
         */
         virtual void addZoom(int zoom, std::string text);
 
         /*!
           \brief Method that remove a zoom factor. Ex.: 50 - 50%.
-		  
-		      \param factor zoom factor  
+      
+          \param factor zoom factor  
         */
         virtual void removeZoom(int zoom);
 
-		/*!
-          \brief Method that clears the zoom list.	  
+    /*!
+          \brief Method that clears the zoom list.    
         */
         virtual void clearZoomList();
 
-		/*!
+    /*!
           \brief Change the current factor with the next zoom factor in the list.
         */
         virtual int nextZoom();
 
-		/*!
-          \brief Change the current factor with the previous zoom factor in the list.	  
+    /*!
+          \brief Change the current factor with the previous zoom factor in the list.    
         */
         virtual int previousZoom();
 

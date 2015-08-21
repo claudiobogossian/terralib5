@@ -267,7 +267,7 @@ void te::layout::JSON::loadFromProperties( std::vector<te::layout::Properties> p
   
   int count = 0;
   for(it = m_properties.begin(); it != m_properties.end(); ++it)
-  {		
+  {    
     Properties props = (*it);
     if(props.getProperties().empty())
       continue;
@@ -314,7 +314,7 @@ void te::layout::JSON::searchProperty( Property& property, boost::property_tree:
     std::vector<Property>::iterator it;
 
     for(it = props.begin(); it != props.end(); ++it)
-    {		
+    {    
       Property prop = (*it);
 
       boost::property_tree::ptree childArray;

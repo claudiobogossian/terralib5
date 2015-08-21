@@ -46,15 +46,15 @@ namespace te
 {
   namespace layout
   {
-		class AbstractOutsideController;
+    class AbstractOutsideController;
 
-		class TELAYOUTEXPORT SVGDialogOutside : public QDialog, public AbstractOutsideView
+    class TELAYOUTEXPORT SVGDialogOutside : public QDialog, public AbstractOutsideView
     {
       Q_OBJECT
 
       public:
 
-				SVGDialogOutside(AbstractOutsideController* controller);
+        SVGDialogOutside(AbstractOutsideController* controller);
 
         ~SVGDialogOutside();
 

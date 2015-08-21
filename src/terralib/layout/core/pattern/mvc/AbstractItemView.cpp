@@ -6,7 +6,7 @@
 
 te::layout::AbstractItemView::AbstractItemView(AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix)
   : m_controller(controller)
-	, m_invertedMatrix(invertedMatrix)
+  , m_invertedMatrix(invertedMatrix)
 {
 
 }
@@ -26,7 +26,7 @@ te::layout::AbstractItemController* te::layout::AbstractItemView::getController(
 
 bool te::layout::AbstractItemView::isInverted()
 {
-	return m_invertedMatrix;
+  return m_invertedMatrix;
 }
 
 

@@ -45,6 +45,6 @@ te::layout::ItemGroupController::ItemGroupController( Observable* o ) :
 
 te::layout::ItemGroupController::~ItemGroupController()
 {
-	
+  
 }
 

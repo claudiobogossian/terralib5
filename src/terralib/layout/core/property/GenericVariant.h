@@ -51,9 +51,9 @@ namespace te
   namespace layout
   {
     /*!
-	  
-	    \ingroup layout
-	  */
+    
+      \ingroup layout
+    */
     class TELAYOUTEXPORT GenericVariant
     {
       public:

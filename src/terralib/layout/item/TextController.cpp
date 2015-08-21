@@ -43,6 +43,6 @@ te::layout::TextController::TextController( Observable* o ) :
 
 te::layout::TextController::~TextController()
 {
-	
+  
 }
 

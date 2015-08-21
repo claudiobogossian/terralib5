@@ -68,7 +68,7 @@ te::layout::Properties te::layout::PropertiesUtils::intersection( QList<QGraphic
     QGraphicsItem* item = graphicsItems.first();
     if (item)
     {
-			AbstractItemView* lItem = dynamic_cast<AbstractItemView*>(item);
+      AbstractItemView* lItem = dynamic_cast<AbstractItemView*>(item);
       if(lItem)
       {
         if(lItem->getController()->getModel())
@@ -97,11 +97,11 @@ te::layout::Properties te::layout::PropertiesUtils::intersection( QList<QGraphic
 
 te::layout::Properties te::layout::PropertiesUtils::sameProperties( QList<QGraphicsItem*> graphicsItems, bool& window )
 {
-	Properties props("");
+  Properties props("");
   std::vector<Properties> propsVec = getAllProperties(graphicsItems, window);
 
   QGraphicsItem* firstItem = graphicsItems.first();
-	AbstractItemView* lItem = dynamic_cast<AbstractItemView*>(firstItem);
+  AbstractItemView* lItem = dynamic_cast<AbstractItemView*>(firstItem);
 
   if(!lItem)
   {
@@ -129,7 +129,7 @@ te::layout::Properties te::layout::PropertiesUtils::sameProperties( QList<QGraph
     if(result)
     {
       prop.setParentItemHashCode(0);
-			props. addProperty(prop);
+      props. addProperty(prop);
     }
   }  
 
@@ -163,8 +163,8 @@ std::vector<te::layout::Properties> te::layout::PropertiesUtils::getAllPropertie
   foreach( QGraphicsItem *item, graphicsItems) 
   {
     if (item)
-    {			
-			AbstractItemView* lItem = dynamic_cast<AbstractItemView*>(item);
+    {      
+      AbstractItemView* lItem = dynamic_cast<AbstractItemView*>(item);
       if(lItem)
       {
         if(!lItem->getController()->getModel())

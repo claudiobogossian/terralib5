@@ -29,8 +29,8 @@
 #include "FontDialogOutside.h"
 
 te::layout::FontDialogOutside::FontDialogOutside(AbstractOutsideController* controller) :
-	QFontDialog(0),
-	AbstractOutsideView(controller)
+  QFontDialog(0),
+  AbstractOutsideView(controller)
 {
   
 }

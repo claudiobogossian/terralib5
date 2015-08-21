@@ -80,11 +80,11 @@ namespace te
       Who inherits it is required the implementation of updateObserver(ContextItem context) method.
       Drawing starting point is llx, lly.
       Can't add signals and slots in this class because moc(Qt) doesn't support templates.
-	  
-	    \ingroup layout
+    
+      \ingroup layout
 
-	    \sa te::layout::ItemObserver
-	  */
+      \sa te::layout::ItemObserver
+    */
     template <class T>
     class ParentItem : public T, public ItemObserver
     {
@@ -141,7 +141,7 @@ namespace te
 
           \param drawing order
         */
-        void	setZValue ( qreal z );
+        void  setZValue ( qreal z );
 
         /*!
           \brief Reimplemented from ItemObserver
@@ -178,37 +178,37 @@ namespace te
         /*!
           \brief Reimplemented from QGraphicsItem
          */
-        virtual void	mousePressEvent ( QGraphicsSceneMouseEvent * event );
+        virtual void  mousePressEvent ( QGraphicsSceneMouseEvent * event );
 
         /*!
           \brief Reimplemented from QGraphicsItem
          */
-        virtual void	mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
+        virtual void  mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
 
         /*!
           \brief Reimplemented from QGraphicsItem
          */
-        virtual void	mouseMoveEvent ( QGraphicsSceneMouseEvent * event );
+        virtual void  mouseMoveEvent ( QGraphicsSceneMouseEvent * event );
 
         /*!
           \brief Reimplemented from QGraphicsItem
          */
-        virtual void	hoverEnterEvent ( QGraphicsSceneHoverEvent * event );
+        virtual void  hoverEnterEvent ( QGraphicsSceneHoverEvent * event );
 
         /*!
           \brief Reimplemented from QGraphicsItem
          */
-        virtual void	hoverLeaveEvent ( QGraphicsSceneHoverEvent * event );
+        virtual void  hoverLeaveEvent ( QGraphicsSceneHoverEvent * event );
 
         /*!
           \brief Reimplemented from QGraphicsItem
          */
-        virtual void	hoverMoveEvent ( QGraphicsSceneHoverEvent * event );
+        virtual void  hoverMoveEvent ( QGraphicsSceneHoverEvent * event );
 
         /*!
           \brief Reimplemented from QGraphicsItem
          */
-        virtual QVariant	itemChange ( QGraphicsItem::GraphicsItemChange change, const QVariant & value );
+        virtual QVariant  itemChange ( QGraphicsItem::GraphicsItemChange change, const QVariant & value );
 
         virtual bool checkTouchesCorner(const double& x, const double& y);
 

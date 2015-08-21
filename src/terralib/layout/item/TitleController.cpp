@@ -45,6 +45,6 @@ te::layout::TitleController::TitleController( Observable* o ) :
 
 te::layout::TitleController::~TitleController()
 {
-	
+  
 }
 

@@ -45,11 +45,11 @@ namespace te
 
     /*!
       \brief Abstract class to represent an observer. "View" part of MVC component. All classes representing the graphics component must inherit from this class.
-	  
-	    \ingroup layout
+    
+      \ingroup layout
 
-	    \sa te::layout::Observer
-	  */
+      \sa te::layout::Observer
+    */
     class TELAYOUTEXPORT ItemObserver : Observer
     {
       public:
@@ -125,14 +125,14 @@ namespace te
 
           \return controller
         */
-        virtual ItemController*	getController();
+        virtual ItemController*  getController();
 
         /*!
           \brief Returns the "Model" part of the MVC.
 
           \return model
         */
-        virtual Observable*	getModel();
+        virtual Observable*  getModel();
         
         /*!
           \brief Updated model state.
@@ -197,8 +197,8 @@ namespace te
         */
         virtual void applyRotation() = 0;
 
-        te::layout::ItemController*	m_controller; //!< "Controller" part of MVC component.
-        te::layout::Observable*		m_model; //!< "Model" part of MVC component.
+        te::layout::ItemController*  m_controller; //!< "Controller" part of MVC component.
+        te::layout::Observable*    m_model; //!< "Model" part of MVC component.
         bool            m_printable; //!< State of the graphic component to be or not printable.
         bool            m_canChangeGraphicOrder; //!< Define if item can send to back or bring to front
         std::string     m_nameClass; //!< Class name

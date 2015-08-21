@@ -69,9 +69,9 @@ namespace te
     class VisualizationArea;
     class PaperConfig;
     class View;
-		class AbstractItemView;
-		class ItemObserver;
-		class AbstractItemModel;
+    class AbstractItemView;
+    class ItemObserver;
+    class AbstractItemModel;
 
   /*!
     \brief Class representing the scene. This scene is child of QGraphicsScene, part of Graphics View Framework. 
@@ -107,19 +107,19 @@ namespace te
         */ 
         virtual ~Scene();
 
-				/*!
-				\brief Method that inserts a graphic object in the scene. Inverts the matrix of the object if necessary, ex.: TextItem.
+        /*!
+        \brief Method that inserts a graphic object in the scene. Inverts the matrix of the object if necessary, ex.: TextItem.
 
-				\param item graphic object
-				*/
-				virtual void insertItem(ItemObserver* item);
+        \param item graphic object
+        */
+        virtual void insertItem(ItemObserver* item);
 
-		    /*!
+        /*!
           \brief Method that inserts a graphic object in the scene. Inverts the matrix of the object if necessary, ex.: TextItem.
       
           \param item graphic object      
         */ 
-				virtual void insertItem(AbstractItemView* item);
+        virtual void insertItem(AbstractItemView* item);
 
         /*!
           \brief Method that inserts a graphic object in the scene. Inverts the matrix of the object if necessary, ex.: TextItem.
@@ -276,7 +276,7 @@ namespace te
       \param dir Full path where the images will be saved
         */
         virtual void exportItemsToImage(std::string dir);
-				
+        
     /*!
        \brief Select an item an item by name.
       
@@ -394,22 +394,22 @@ namespace te
         
       protected:
 
-				/*!
-				\brief Reimplemented from QGraphicsScene
-				*/
-				virtual void	mouseMoveEvent(QGraphicsSceneMouseEvent * mouseEvent);
-				
-				/*!
-				\brief Reimplemented from QGraphicsScene
-				*/
-				virtual void	mousePressEvent(QGraphicsSceneMouseEvent * mouseEvent);
-				
-				/*!
-				\brief Reimplemented from QGraphicsScene
-				*/
-				virtual void	mouseReleaseEvent(QGraphicsSceneMouseEvent * mouseEvent);
+        /*!
+        \brief Reimplemented from QGraphicsScene
+        */
+        virtual void  mouseMoveEvent(QGraphicsSceneMouseEvent * mouseEvent);
+        
+        /*!
+        \brief Reimplemented from QGraphicsScene
+        */
+        virtual void  mousePressEvent(QGraphicsSceneMouseEvent * mouseEvent);
+        
+        /*!
+        \brief Reimplemented from QGraphicsScene
+        */
+        virtual void  mouseReleaseEvent(QGraphicsSceneMouseEvent * mouseEvent);
 
-		/*!
+    /*!
           \brief Method that calculates the transformation matrix of the scene. This matrix will be set in each QGraphicsView class that watches this scene.
         */
         virtual void calculateMatrixViewScene();
@@ -431,7 +431,7 @@ namespace te
 
         virtual void applyProportionAllItems(QSize oldPaper, QSize newPaper);
 
-				virtual void updateBoxFromProperties(te::gm::Envelope box, AbstractItemModel* model);
+        virtual void updateBoxFromProperties(te::gm::Envelope box, AbstractItemModel* model);
 
         virtual void changeViewMode(EnumType* mode);
                 

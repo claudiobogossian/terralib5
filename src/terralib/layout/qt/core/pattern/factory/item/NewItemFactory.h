@@ -18,9 +18,9 @@
  */
 
 /*!
-	\file terralib/layout/qt/pattern/factory/ToolFactory.h
+  \file terralib/layout/qt/pattern/factory/ToolFactory.h
 
-	\brief This is the abstract factory for items.
+  \brief This is the abstract factory for items.
 */
 
 #ifndef __TERRALIB_LAYOUT_INTERNAL_NEW_ITEM_FACTORY_H 
@@ -40,47 +40,47 @@ namespace te
 {
   namespace layout
   {
-		/*!
-			\class NewItemFactory
+    /*!
+      \class NewItemFactory
 
-			\brief This is the abstract factory for items.
+      \brief This is the abstract factory for items.
 
-			It will create objects of type AbstractItemView and will pass
-			parameters of type ItemFactoryParamsCreate to their factories constructors.
+      It will create objects of type AbstractItemView and will pass
+      parameters of type ItemFactoryParamsCreate to their factories constructors.
 
-			If you want a new item you can use a command like:
-			<code>
-			  te::layout::AbstractItem* pEngine = te::layout::NewItemFactory::make("RECTANGLE_ITEM");
-			</code>
-			Or
-			<code>
-				te::layout::EnumObjectType* item = Enums::getInstance().getEnumObjectType();
-				te::layout::EnumType* rectItem = item->getRectangleItem();
-				te::layout::AbstractItem* pEngine = te::layout::NewItemFactory::make(rectItem->getName());
-			</code>
+      If you want a new item you can use a command like:
+      <code>
+        te::layout::AbstractItem* pEngine = te::layout::NewItemFactory::make("RECTANGLE_ITEM");
+      </code>
+      Or
+      <code>
+        te::layout::EnumObjectType* item = Enums::getInstance().getEnumObjectType();
+        te::layout::EnumType* rectItem = item->getRectangleItem();
+        te::layout::AbstractItem* pEngine = te::layout::NewItemFactory::make(rectItem->getName());
+      </code>
 
-			\note The caller of the method make will take the ownership of the returned item.
+      \note The caller of the method make will take the ownership of the returned item.
 
-			\sa AbstractItemView, AbstractFactory, ParameterizedAbstractFactory
-		*/
-		class TELAYOUTEXPORT NewItemFactory : public te::common::ParameterizedAbstractFactory<AbstractItemView, std::string, ItemFactoryParamsCreate>
-		{
-			public:
+      \sa AbstractItemView, AbstractFactory, ParameterizedAbstractFactory
+    */
+    class TELAYOUTEXPORT NewItemFactory : public te::common::ParameterizedAbstractFactory<AbstractItemView, std::string, ItemFactoryParamsCreate>
+    {
+      public:
 
-				/*! \brief Virtual destructor. */
-				virtual ~NewItemFactory();
+        /*! \brief Virtual destructor. */
+        virtual ~NewItemFactory();
 
-			protected:
+      protected:
 
-				/*!
-				\brief It creates the factory.
+        /*!
+        \brief It creates the factory.
 
-				The key of a ToolFactory is a string.
+        The key of a ToolFactory is a string.
 
-				\param factoryKey The key that identifies the factory.
-				*/
-				NewItemFactory(const std::string& factoryKey);
-				
+        \param factoryKey The key that identifies the factory.
+        */
+        NewItemFactory(const std::string& factoryKey);
+        
     };
   }
 }

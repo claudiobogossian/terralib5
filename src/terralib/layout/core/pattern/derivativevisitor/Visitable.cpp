@@ -32,7 +32,7 @@
 void te::layout::Visitable::acceptVisitor( AbstractVisitor* visitor )
 {
   m_visitors.insert(visitor);
-	
+  
   //allow the incoming visitor to start visiting
   visitor->visit(this);
 }

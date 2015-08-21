@@ -45,9 +45,9 @@ namespace te
   {
     /*!
       \brief Undo/Redo for add one components.
-	  
-	    \ingroup layout
-	  */
+    
+      \ingroup layout
+    */
     class TELAYOUTEXPORT AddCommand : public QUndoCommand
     {
       public:

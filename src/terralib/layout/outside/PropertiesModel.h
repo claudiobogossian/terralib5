@@ -36,7 +36,7 @@ namespace te
 {
   namespace layout
   {
-		class TELAYOUTEXPORT PropertiesModel : public AbstractOutsideModel
+    class TELAYOUTEXPORT PropertiesModel : public AbstractOutsideModel
     {
     public:
 

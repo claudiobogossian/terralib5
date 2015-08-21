@@ -30,7 +30,7 @@
 #include "../core/enum/Enums.h"
 
 te::layout::EditTemplateModel::EditTemplateModel() :
-	AbstractOutsideModel()
+  AbstractOutsideModel()
 {
   m_type = Enums::getInstance().getEnumObjectType()->getEditTemplate();
 }

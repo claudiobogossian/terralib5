@@ -140,7 +140,7 @@ void te::layout::View::mousePressEvent( QMouseEvent * event )
       bool isInvertedMatrix = false;
       foreach(QGraphicsItem* item, selectedItems)
       {
-				AbstractItemView* observer = dynamic_cast<AbstractItemView*> (item);
+        AbstractItemView* observer = dynamic_cast<AbstractItemView*> (item);
         if (observer)
         {
           if (observer->isInverted() == true)

@@ -37,6 +37,6 @@ te::layout::GridPlanarController::GridPlanarController( Observable* o ) :
 
 te::layout::GridPlanarController::~GridPlanarController()
 {
-	
+  
 }
 

@@ -42,9 +42,9 @@ namespace te
     /*!
     \brief Class with the most important common data. These data could be used in other module layers or accessed from outside. 
     The common data reported here are some state attributes in te::layout::View and te::layout::Scene.
-	  
-	  \ingroup layout
-	  */
+    
+    \ingroup layout
+    */
     class TELAYOUTEXPORT ContextObject
     {
       public:

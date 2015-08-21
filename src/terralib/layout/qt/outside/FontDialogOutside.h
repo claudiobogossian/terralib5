@@ -43,24 +43,24 @@ namespace te
 {
   namespace layout
   {
-		class AbstractOutsideController;
+    class AbstractOutsideController;
     /*!
     \brief Properties tree for any item, MVC component, using Qt for presentation and editing.
-	  
-	    \ingroup layout
+    
+      \ingroup layout
 
-	    \sa te::layout::OutsideObserver
-	  */
-		class TELAYOUTEXPORT FontDialogOutside : public QFontDialog, public AbstractOutsideView
+      \sa te::layout::OutsideObserver
+    */
+    class TELAYOUTEXPORT FontDialogOutside : public QFontDialog, public AbstractOutsideView
     {
-	    Q_OBJECT //for slots/signals
+      Q_OBJECT //for slots/signals
 
       public:
 
-				FontDialogOutside(AbstractOutsideController* controller);
+        FontDialogOutside(AbstractOutsideController* controller);
 
         virtual ~FontDialogOutside();
-				
+        
         virtual void setPosition( const double& x, const double& y );
 
         virtual te::gm::Coord2D getPosition();

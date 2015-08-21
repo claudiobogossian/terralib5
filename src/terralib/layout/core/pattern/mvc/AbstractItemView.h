@@ -53,7 +53,7 @@ namespace te
         /*!
           \brief Constructor
         */ 
-				AbstractItemView(AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix = false);
+        AbstractItemView(AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix = false);
 
         /*!
           \brief Destructor
@@ -70,9 +70,9 @@ namespace te
         */
         virtual void refresh() = 0;
 
-				/*!
-				\brief This function is called every time the context is updated. It is usually used by the item to configure its drawings due to changes in the zoom factor or in the DPI of the device.
-				*/
+        /*!
+        \brief This function is called every time the context is updated. It is usually used by the item to configure its drawings due to changes in the zoom factor or in the DPI of the device.
+        */
         virtual void contextUpdated(const ContextObject& context) = 0;
 
         /*!
@@ -85,17 +85,17 @@ namespace te
         */ 
         virtual void setItemRotation(double rotation) = 0;
 
-				/*!
-				\brief Returns whether the graph component has the inverted matrix, otherwise the matrix scene.
+        /*!
+        \brief Returns whether the graph component has the inverted matrix, otherwise the matrix scene.
 
-				\return true if inverted, false otherwise
-				*/
-				bool isInverted();
-				
+        \return true if inverted, false otherwise
+        */
+        bool isInverted();
+        
       protected:
 
         AbstractItemController* m_controller; //!< The controller
-				bool										m_invertedMatrix;
+        bool                    m_invertedMatrix;
     };
   }
 }

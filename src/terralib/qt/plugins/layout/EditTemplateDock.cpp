@@ -39,7 +39,7 @@
 #include <QString>
 
 te::qt::plugins::layout::EditTemplateDock::EditTemplateDock( QWidget * parent, Qt::WindowFlags flags ) :
-	QDockWidget(parent, flags),
+  QDockWidget(parent, flags),
   m_editTemplate(0),
   m_tab(0),
   m_currentTab(-1),
@@ -49,7 +49,7 @@ te::qt::plugins::layout::EditTemplateDock::EditTemplateDock( QWidget * parent, Q
   setAllowedAreas(Qt::RightDockWidgetArea);
   setFeatures(QDockWidget::DockWidgetVerticalTitleBar);
     
-	create();
+  create();
   
   m_editTemplateSize.setWidth(m_editTemplate->geometry().width());
   m_editTemplateSize.setHeight(m_editTemplate->geometry().height());

@@ -45,5 +45,5 @@ te::layout::GridMapController::GridMapController( Observable* o ) :
 
 te::layout::GridMapController::~GridMapController()
 {
-	
+  
 }

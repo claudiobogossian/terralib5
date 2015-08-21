@@ -38,10 +38,10 @@ namespace te
     class AbstractVisitor;
 
     /*!
-	    \brief Class to represent a visitable. All classes representing a visitable must inherit from this class.
-	  
-	    \ingroup layout
-	  */
+      \brief Class to represent a visitable. All classes representing a visitable must inherit from this class.
+    
+      \ingroup layout
+    */
     class Visitable
     {
       public:
@@ -82,7 +82,7 @@ namespace te
 
       protected:
 
-        std::set<AbstractVisitor*>	m_visitors; //!< set of visitors of this object
+        std::set<AbstractVisitor*>  m_visitors; //!< set of visitors of this object
     };
   }
 }

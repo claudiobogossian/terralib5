@@ -37,12 +37,12 @@ namespace te
   namespace layout
   {
     /*!
-	  \brief Factory for creating families of related or dependent graphic objects (MVC components).
-	  
-	  \ingroup layout
+    \brief Factory for creating families of related or dependent graphic objects (MVC components).
+    
+    \ingroup layout
 
     \sa te::layout::AbstractItemFactory
-	  */
+    */
     class TELAYOUTEXPORT ItemFactory : public AbstractItemFactory
     {
       public:

@@ -42,9 +42,9 @@ namespace te
 
     /*!
       \brief Abstract class to represent an observer. "View" part of MVC component.
-	  
-	    \ingroup layout
-	  */
+    
+      \ingroup layout
+    */
     class TELAYOUTEXPORT Observer
     {
     public:
@@ -52,7 +52,7 @@ namespace te
       /*!
           \brief Destructor
        */ 
-	    virtual ~Observer(void) {}
+      virtual ~Observer(void) {}
 
       /*!
           \brief This method is called when a change has occurred in the state of the observable.
@@ -60,7 +60,7 @@ namespace te
 
           \param context maintaining the drawing context of a MVC component.
        */ 
-	    virtual void updateObserver(ContextItem context) = 0;
+      virtual void updateObserver(ContextItem context) = 0;
     };
   }
 }

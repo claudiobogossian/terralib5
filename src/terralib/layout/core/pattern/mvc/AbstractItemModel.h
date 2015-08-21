@@ -43,7 +43,7 @@ namespace te
   {
 
     class Property;
-		class EnumType;
+    class EnumType;
 
     /*!
       \brief Abstract class to represent an observable. "Model" part of MVC component. 
@@ -84,21 +84,21 @@ namespace te
         */
         virtual void setProperties(const Properties& properties);
 
-				virtual EnumType* getType();
+        virtual EnumType* getType();
 
-				virtual std::string getName();
+        virtual std::string getName();
 
-				bool isPrintable();
+        bool isPrintable();
 
-				virtual te::gm::Envelope getBoundingRect();
+        virtual te::gm::Envelope getBoundingRect();
 
-				/*!
-				\brief Checks if the coordinate is contained within the bounding rectangle.
+        /*!
+        \brief Checks if the coordinate is contained within the bounding rectangle.
 
-				\param coord coordinated to be verified
-				\return true if contains, false otherwise
-				*/
-				virtual bool contains(const te::gm::Coord2D &coord) const;
+        \param coord coordinated to be verified
+        \return true if contains, false otherwise
+        */
+        virtual bool contains(const te::gm::Coord2D &coord) const;
 
       protected:
 

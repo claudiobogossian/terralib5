@@ -37,15 +37,15 @@ namespace te
 {
   namespace layout
   {
-		class AbstractOutsideModel;
+    class AbstractOutsideModel;
 
     class TELAYOUTEXPORT EditTemplateController : public AbstractOutsideController
     {
       public:
 
-				EditTemplateController(AbstractOutsideModel* o);
+        EditTemplateController(AbstractOutsideModel* o);
 
-	      virtual ~EditTemplateController();
+        virtual ~EditTemplateController();
     };
   }
 }

@@ -54,7 +54,7 @@
 
 te::layout::ToolbarOutside::ToolbarOutside(AbstractOutsideController* controller) :
   QToolBar(0),
-	AbstractOutsideView(controller),
+  AbstractOutsideView(controller),
   m_comboZoom(0),
   m_actionMapDefault("map_default"),
   m_actionLegendDefault("legend_default"),
@@ -149,8 +149,8 @@ te::layout::ToolbarOutside::ToolbarOutside(AbstractOutsideController* controller
   m_actionExitButton(0),
   m_actionExportToPDFButton(0)
 {
-	setVisible(false);
-	setWindowTitle("Layout - Toolbar");
+  setVisible(false);
+  setWindowTitle("Layout - Toolbar");
   setMinimumSize(200, 10);
 }
 
@@ -161,8 +161,8 @@ te::layout::ToolbarOutside::~ToolbarOutside()
 
 void te::layout::ToolbarOutside::setPosition( const double& x, const double& y )
 {
-	move(x,y);
-	refresh();
+  move(x,y);
+  refresh();
 }
 
 te::gm::Coord2D te::layout::ToolbarOutside::getPosition()
@@ -263,7 +263,7 @@ QToolButton* te::layout::ToolbarOutside::createMapToolButton()
   btnMap->setPopupMode(QToolButton::MenuButtonPopup);
   btnMap->setDefaultAction(actionDefaultMenu);
 
-	ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
+  ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
   connect(btnMap, SIGNAL(triggered(QAction*)), controller, SLOT(onMapTriggered(QAction*)));
   m_actionMapToolButton = this->addWidget(btnMap);
 
@@ -303,7 +303,7 @@ QToolButton* te::layout::ToolbarOutside::createMapToolsToolButton()
   btnMapTools->setPopupMode(QToolButton::MenuButtonPopup);
   btnMapTools->setDefaultAction(actionPan);
 
-	ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
+  ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
   connect(btnMapTools, SIGNAL(triggered(QAction*)), controller, SLOT(onMapToolsTriggered(QAction*)));
   m_actionMapToolsToolButton = this->addWidget(btnMapTools);
 
@@ -343,7 +343,7 @@ QToolButton* te::layout::ToolbarOutside::createGeometryToolButton()
   btnGeometry->setPopupMode(QToolButton::MenuButtonPopup);
   btnGeometry->setDefaultAction(actionRectagle);
 
-	ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
+  ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
   connect(btnGeometry, SIGNAL(triggered(QAction*)), controller, SLOT(onGeometryTriggered(QAction*)));
   m_actionGeometryToolButton = this->addWidget(btnGeometry);
 
@@ -371,7 +371,7 @@ QToolButton* te::layout::ToolbarOutside::createViewAreaToolButton()
   btnViewArea->setPopupMode(QToolButton::MenuButtonPopup);
   btnViewArea->setDefaultAction(actionPan);
 
-	ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
+  ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
   connect(btnViewArea, SIGNAL(triggered(QAction*)), controller, SLOT(onViewAreaTriggered(QAction*)));
   m_actionViewAreaToolButton = this->addWidget(btnViewArea);
 
@@ -385,7 +385,7 @@ QToolButton* te::layout::ToolbarOutside::createArrowCursorButton()
   QToolButton *btnArrowCursor = createToolButton("Arrow Cursor", "Arrow Cursor", "layout-default-cursor");
   btnArrowCursor->setCheckable(false);
 
-	ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
+  ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
   connect(btnArrowCursor, SIGNAL(clicked(bool)), controller, SLOT(onArrowCursorClicked(bool)));
 
   m_actionArrowCursorButton = this->addWidget(btnArrowCursor);
@@ -411,7 +411,7 @@ QToolButton* te::layout::ToolbarOutside::createItemTools()
   btnTools->setPopupMode(QToolButton::MenuButtonPopup);
   btnTools->setDefaultAction(actionGroup);
 
-	ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
+  ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
   connect(btnTools, SIGNAL(triggered(QAction*)), controller, SLOT(onItemToolsTriggered(QAction*)));
   m_actionItemTools = this->addWidget(btnTools);
 
@@ -435,9 +435,9 @@ QComboBox* te::layout::ToolbarOutside::createSceneZoomCombobox()
   m_comboZoom->addItem("200%", 2.);
   m_comboZoom->addItem("300%", 3.); 
 
-	ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
-	connect(m_comboZoom, SIGNAL(activated(const QString &)), controller, SLOT(onComboZoomActivated()));
-	connect(m_comboZoom->lineEdit(), SIGNAL(returnPressed()), controller, SLOT(onComboZoomActivated()));
+  ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
+  connect(m_comboZoom, SIGNAL(activated(const QString &)), controller, SLOT(onComboZoomActivated()));
+  connect(m_comboZoom->lineEdit(), SIGNAL(returnPressed()), controller, SLOT(onComboZoomActivated()));
 
   Scene* sc = getScene();
 
@@ -457,7 +457,7 @@ QToolButton* te::layout::ToolbarOutside::createBringToFrontToolButton()
   QToolButton *btn = createToolButton("Bring to front", "Bring to front", "layout-in-front");
   btn->setCheckable(false);
 
-	ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
+  ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
   connect(btn, SIGNAL(clicked(bool)), controller, SLOT(onBringToFrontClicked(bool)));
 
   m_actionBringToFrontToolButton = this->addWidget(btn);
@@ -472,7 +472,7 @@ QToolButton* te::layout::ToolbarOutside::createSendToBackToolButton()
   QToolButton *btn = createToolButton("Send to back", "Send to back", "layout-to-back");
   btn->setCheckable(false);
 
-	ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
+  ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
   connect(btn, SIGNAL(clicked(bool)), controller, SLOT(onSendToBackClicked(bool)));
 
   m_actionSendToBackToolButton = this->addWidget(btn);
@@ -488,7 +488,7 @@ QToolButton* te::layout::ToolbarOutside::createRecomposeToolButton()
   QToolButton *btn = createToolButton("Recompose", "Recompose", "layout-recompose");
   btn->setCheckable(false);
 
-	ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
+  ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
   connect(btn, SIGNAL(clicked(bool)), controller, SLOT(onRecomposeClicked(bool)));
 
   m_actionRecomposeToolButton = this->addWidget(btn);
@@ -526,7 +526,7 @@ QToolButton* te::layout::ToolbarOutside::createTextToolButton()
   btn->setPopupMode(QToolButton::MenuButtonPopup);
   btn->setDefaultAction(actionTxtDefault);
 
-	ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
+  ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
   connect(btn, SIGNAL(triggered(QAction*)), controller, SLOT(onTextToolsTriggered(QAction*)));
   m_actionTextToolButton = this->addWidget(btn);
 
@@ -540,7 +540,7 @@ QToolButton* te::layout::ToolbarOutside::createAlignLeftToolButton()
   QToolButton *btn = createToolButton("Align Left", "Align Left", "layout-alignleft");
   btn->setCheckable(false);
 
-	ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
+  ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
   connect(btn, SIGNAL(clicked(bool)), controller, SLOT(onAlignLeftClicked(bool)));
 
   m_actionAlignLeftToolButton = this->addWidget(btn);
@@ -555,7 +555,7 @@ QToolButton* te::layout::ToolbarOutside::createAlignRightToolButton()
   QToolButton *btn = createToolButton("Align Right", "Align Right", "layout-alignright");
   btn->setCheckable(false);
 
-	ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
+  ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
   connect(btn, SIGNAL(clicked(bool)), controller, SLOT(onAlignRightClicked(bool)));
 
   m_actionAlignRightToolButton = this->addWidget(btn);
@@ -570,7 +570,7 @@ QToolButton* te::layout::ToolbarOutside::createAlignTopToolButton()
   QToolButton *btn = createToolButton("Align Top", "Align Top", "layout-aligntop");
   btn->setCheckable(false);
 
-	ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
+  ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
   connect(btn, SIGNAL(clicked(bool)), controller, SLOT(onAlignTopClicked(bool)));
 
   m_actionAlignTopToolButton = this->addWidget(btn);
@@ -585,7 +585,7 @@ QToolButton* te::layout::ToolbarOutside::createAlignBottomToolButton()
   QToolButton *btn = createToolButton("Align Bottom", "Align Bottom", "layout-alignbottom");
   btn->setCheckable(false);
 
-	ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
+  ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
   connect(btn, SIGNAL(clicked(bool)), controller, SLOT(onAlignBottomClicked(bool)));
 
   m_actionAlignBottomToolButton = this->addWidget(btn);
@@ -600,7 +600,7 @@ QToolButton* te::layout::ToolbarOutside::createAlignCenterHorizontalToolButton()
   QToolButton *btn = createToolButton("Align Center Horizontal", "Align Center Horizontal", "layout-alignhrzcenter");
   btn->setCheckable(false);
 
-	ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
+  ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
   connect(btn, SIGNAL(clicked(bool)), controller, SLOT(onAlignCenterHorizontalClicked(bool)));
 
   m_actionAlignCenterHorizontalToolButton = this->addWidget(btn);
@@ -615,7 +615,7 @@ QToolButton* te::layout::ToolbarOutside::createAlignCenterVerticalToolButton()
   QToolButton *btn = createToolButton("Align Center Vertical", "Align Center Vertical", "layout-alignvrtcenter");
   btn->setCheckable(false);
 
-	ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
+  ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
   connect(btn, SIGNAL(clicked(bool)), controller, SLOT(onAlignCenterVerticalClicked(bool)));
 
   m_actionAlignCenterVerticalToolButton = this->addWidget(btn);
@@ -630,7 +630,7 @@ QToolButton* te::layout::ToolbarOutside::createRemoveObjectToolButton()
   QToolButton *btn = createToolButton("Remove Object", "Remove Object", "layout-empty-trash");
   btn->setCheckable(false);
 
-	ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
+  ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
   connect(btn, SIGNAL(clicked(bool)), controller, SLOT(onRemoveObjectClicked(bool)));
 
   m_actionRemoveObjectToolButton = this->addWidget(btn);
@@ -687,7 +687,7 @@ QToolButton* te::layout::ToolbarOutside::createDrawMapToolButton()
   QToolButton *btn = createToolButton("Redraw Selection Map", "Redraw Selection Map", "layout-draw-map");
   btn->setCheckable(false);
 
-	ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
+  ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
   connect(btn, SIGNAL(clicked(bool)), controller, SLOT(onDrawMapClicked(bool)));
 
   m_actionDrawMapToolButton = this->addWidget(btn);
@@ -702,7 +702,7 @@ QToolButton* te::layout::ToolbarOutside::createObjectToImageButton()
   QToolButton *btn = createToolButton("Object To Image", "Export all selected objects to image", "layout-object-to-image");
   btn->setCheckable(false);
 
-	ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
+  ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
   connect(btn, SIGNAL(clicked(bool)), controller, SLOT(onObjectToImageClicked(bool)));
 
   m_actionObjectToImageButton = this->addWidget(btn);
@@ -717,7 +717,7 @@ QToolButton* te::layout::ToolbarOutside::createExitButton()
   QToolButton *btn = createToolButton("Exit", "Exit", "layout-close");
   btn->setCheckable(false);
 
-	ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
+  ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
   connect(btn, SIGNAL(clicked(bool)), controller, SLOT(onExitClicked(bool)));
 
   m_actionExitButton = this->addWidget(btn);
@@ -732,7 +732,7 @@ QToolButton* te::layout::ToolbarOutside::createExportToPDFButton()
   QToolButton *btn = createToolButton("Export To PDF", "Export to PDF", "layout-pdf");
   btn->setCheckable(false);
 
-	ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
+  ToolbarController* controller = dynamic_cast<ToolbarController*>(m_controller);
   connect(btn, SIGNAL(clicked(bool)), controller, SLOT(onExportToPDFClicked(bool)));
 
   m_actionExportToPDFButton = this->addWidget(btn);
@@ -756,7 +756,7 @@ QToolButton* te::layout::ToolbarOutside::createToolButton( std::string text, std
   btn->setToolTip(tooltip.c_str());
   
   if(!icon.empty())
-	btn->setIcon(QIcon::fromTheme(icon.c_str()));
+  btn->setIcon(QIcon::fromTheme(icon.c_str()));
 
   return btn;
 }
@@ -779,7 +779,7 @@ QAction* te::layout::ToolbarOutside::createAction( std::string text, std::string
   QWidget* parentToUse = parent;
   if(parentToUse == 0)
   {
-	parentToUse = this;
+  parentToUse = this;
   }
 
   QAction *actionMenu = new QAction(text.c_str(), parentToUse);
@@ -793,7 +793,7 @@ QAction* te::layout::ToolbarOutside::createAction( std::string text, std::string
 
 void te::layout::ToolbarOutside::changeAction(EnumType* mode)
 {
-	emit changeMode(mode);
+  emit changeMode(mode);
 }
 
 QComboBox* te::layout::ToolbarOutside::getComboBoxZoom()

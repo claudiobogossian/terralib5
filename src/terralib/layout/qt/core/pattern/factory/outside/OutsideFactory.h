@@ -37,12 +37,12 @@ namespace te
   namespace layout
   {
     /*!
-	  \brief Factory for creating families of related or dependent widgets (MVC widgets).
-	  
-	  \ingroup layout
+    \brief Factory for creating families of related or dependent widgets (MVC widgets).
+    
+    \ingroup layout
 
     \sa te::layout::AbstractItemFactory
-	  */
+    */
     class TELAYOUTEXPORT OutsideFactory : public AbstractOutsideFactory
     {
     public:
@@ -50,17 +50,17 @@ namespace te
       /*!
           \brief Constructor
        */
-	    OutsideFactory();
+      OutsideFactory();
 
       /*!
           \brief Destructor
        */
-	    virtual ~OutsideFactory();
+      virtual ~OutsideFactory();
 
       /*!
           \brief Reimplemented from AbstractItemFactory
        */
-			virtual AbstractOutsideView* make(EnumType* type, OutsideParamsCreate params = OutsideParamsCreate());
+      virtual AbstractOutsideView* make(EnumType* type, OutsideParamsCreate params = OutsideParamsCreate());
     };
   }
 }

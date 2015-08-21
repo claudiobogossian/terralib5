@@ -174,44 +174,44 @@ namespace te
 
         virtual void enableUpdate();
 
-				virtual void arrowCursor();
+        virtual void arrowCursor();
 
-				/*!
-				\brief Groups selected objects
-				*/
-				virtual void createItemGroup();
+        /*!
+        \brief Groups selected objects
+        */
+        virtual void createItemGroup();
 
-				/*!
-				\brief Method that delete Grouping object selected, but the individual objects continue to exist.
-				*/
-				virtual void destroyItemGroup();
+        /*!
+        \brief Method that delete Grouping object selected, but the individual objects continue to exist.
+        */
+        virtual void destroyItemGroup();
 
-				/*!
-				\brief Saves each item in the scene as image. Ex .: .png
-				*/
-				virtual void exportItemsToImage();
+        /*!
+        \brief Saves each item in the scene as image. Ex .: .png
+        */
+        virtual void exportItemsToImage();
 
-				virtual void newTemplate();
+        virtual void newTemplate();
 
-				/*!
-				\brief Method that exports all the objects in the scene to a template. Ex.: JSON.
+        /*!
+        \brief Method that exports all the objects in the scene to a template. Ex.: JSON.
 
-				\param type type of template. Ex .: JSON type
-				\return true if exported, false otherwise
-				*/
-				virtual bool exportProperties(EnumType* type);
+        \param type type of template. Ex .: JSON type
+        \return true if exported, false otherwise
+        */
+        virtual bool exportProperties(EnumType* type);
 
-				/*!
-				\brief Method that import a template and build all objects. Ex.: JSON.
+        /*!
+        \brief Method that import a template and build all objects. Ex.: JSON.
 
-				\return true if exported, false otherwise
-				*/
-				virtual bool importTemplate(EnumType* type);
+        \return true if exported, false otherwise
+        */
+        virtual bool importTemplate(EnumType* type);
 
-				/*!
-				\brief Method that instantiates and shows the Page Setup window.
-				*/
-				virtual void showPageSetup();
+        /*!
+        \brief Method that instantiates and shows the Page Setup window.
+        */
+        virtual void showPageSetup();
 
       public slots:
     
