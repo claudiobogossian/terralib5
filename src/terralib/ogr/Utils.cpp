@@ -512,6 +512,9 @@ te::gm::GeomType te::ogr::Convert2TerraLib(OGRwkbGeometryType ogrGeomType)
 
     case wkbGeometryCollection25D:
       return te::gm::GeometryCollectionMType;
+
+    case wkbMultiSurface:
+      return te::gm::MultiSurfaceType;
       
     case wkbUnknown:
       return te::gm::GeometryType;
