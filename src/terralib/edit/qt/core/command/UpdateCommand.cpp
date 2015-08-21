@@ -40,6 +40,10 @@ te::edit::UpdateCommand::UpdateCommand(std::vector<Feature*> items, te::qt::widg
   , m_display(display)
   , m_layer(layer)
   , m_updateItems(items)
+  , m_nextFeature(0)
+  , m_previousFeature(0)
+  , m_redoCommandType(1)
+  , m_undoCommandType(2)
 {
 
   setText(QObject::tr("Update %1").arg(createCommandString(m_updateItems[m_updateItems.size() - 1]->getId()->getValueAsString().c_str())));
@@ -55,10 +59,12 @@ void  te::edit::UpdateCommand::undo()
   if (m_updateItems.empty())
     return;
 
-  if (RepositoryManager::getInstance().hasIdentify(m_layer->getId(), m_updateItems[m_updateItems.size() - 2]->getId()) == true)
+  m_previousFeature = m_updateItems.size() - 2;
+
+  if (RepositoryManager::getInstance().hasIdentify(m_layer->getId(), m_updateItems[m_previousFeature]->getId()) == true)
   {
 
-    Feature* f = new Feature(m_updateItems[m_updateItems.size() - 2]->getId(), m_updateItems[m_updateItems.size() - 2]->getGeometry(), m_updateItems[m_updateItems.size() - 2]->getOperationType());
+    Feature* f = new Feature(m_updateItems[m_previousFeature]->getId(), m_updateItems[m_previousFeature]->getGeometry(), m_updateItems[m_previousFeature]->getOperationType());
 
     RepositoryManager::getInstance().addFeature(m_layer->getId(), f->clone());
 
@@ -84,11 +90,13 @@ void te::edit::UpdateCommand::redo()
     }
   }
 
+  m_nextFeature = m_updateItems.size() - 1;
+
   //no makes redo while the command is not on the stack
   if (resultFound)
   {
 
-    Feature* f = new Feature(m_updateItems[m_updateItems.size() - 1]->getId(), m_updateItems[m_updateItems.size() - 1]->getGeometry(), m_updateItems[m_updateItems.size() - 1]->getOperationType());
+    Feature* f = new Feature(m_updateItems[m_nextFeature]->getId(), m_updateItems[m_nextFeature]->getGeometry(), m_updateItems[m_nextFeature]->getOperationType());
 
     RepositoryManager::getInstance().addFeature(m_layer->getId(), f->clone());
 
@@ -114,9 +122,9 @@ void te::edit::UpdateCommand::draw(const int commandType)
 
   // Draw the layer edited geometries
   if (commandType == m_undoCommandType)
-      renderer.draw(m_updateItems[m_updateItems.size() - 2]->getGeometry(), true);
+    renderer.draw(m_updateItems[m_previousFeature]->getGeometry(), true);
   else
-      renderer.draw(m_updateItems[m_updateItems.size() - 1]->getGeometry(), true);
+    renderer.draw(m_updateItems[m_nextFeature]->getGeometry(), true);
 
   renderer.end();
 

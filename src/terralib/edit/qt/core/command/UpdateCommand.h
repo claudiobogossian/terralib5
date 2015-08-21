@@ -68,20 +68,18 @@ namespace te
       */
       virtual void redo();
 
-    protected:
-
-      const int m_undoCommandType = 1;
-      const int m_redoCommandType = 2;
-
-      void draw(const int commandType);
-
     private:
-
-      virtual QString createCommandString(QString oid);
 
       te::qt::widgets::MapDisplay* m_display;
       te::map::AbstractLayerPtr m_layer;
       std::vector<Feature*> m_updateItems;
+      QString createCommandString(QString oid);
+      void draw(const int commandType);
+
+      int m_nextFeature;
+      int m_previousFeature;
+      const int m_redoCommandType;
+      const int m_undoCommandType;
 
     };
   }

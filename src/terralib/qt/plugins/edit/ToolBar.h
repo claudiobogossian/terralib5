@@ -35,6 +35,7 @@
 #include <QIcon>
 #include <QList>
 #include <QToolBar>
+#include <QUndoCommand>
 #include <QUndoView>
 
 // STL

@@ -34,12 +34,9 @@
 
 // Qt
 #include <QPointF>
-#include <QUndoCommand>
 
 //STL
 #include <map>
-
-
 
 namespace te
 {

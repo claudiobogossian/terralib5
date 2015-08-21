@@ -57,33 +57,33 @@ namespace te
     */
     class TEEDITQTEXPORT UndoStackManager : public te::common::Singleton<UndoStackManager>
     {
-      friend class te::common::Singleton<UndoStackManager>;
-    
-    public:
+        friend class te::common::Singleton<UndoStackManager>;
 
-      /*!
-      \brief Method that insert command Undo/Redo of type AddCommand in the Undo/Redo stack.
+      public:
 
-      \param command command
-      */
-      void addUndoStack(QUndoCommand* command);
+        /*!
+        \brief Method that insert command Undo/Redo of type AddCommand in the Undo/Redo stack.
 
-      /*!
-      \brief Method that return stack of Undo/Redo.
+        \param command command
+        */
+        void addUndoStack(QUndoCommand* command);
 
-      \return stack
-      */
-      QUndoStack* getUndoStack();
+        /*!
+        \brief Method that return stack of Undo/Redo.
 
-    protected:
+        \return stack
+        */
+        QUndoStack* getUndoStack();
 
-      /*! \brief It initializes the singleton instance of the repository manager. */
-      UndoStackManager();
+      protected:
 
-      /*! \brief Singleton destructor. */
-      ~UndoStackManager();
+        /*! \brief It initializes the singleton instance of the repository manager. */
+        UndoStackManager();
 
-      QUndoStack* m_undoStack;                               //!< Undo/Redo stack
+        /*! \brief Singleton destructor. */
+        ~UndoStackManager();
+
+        QUndoStack* m_undoStack;                               //!< Undo/Redo stack
 
     };
 

@@ -77,7 +77,7 @@ void EnableActions(QList<QAction*> acts, const bool& enable)
 
 te::qt::plugins::edit::ToolBar::ToolBar(QObject* parent) :
 QObject(parent),
-m_toolBar(0),
+  m_toolBar(0),
   m_editAction(0),
   m_saveAction(0),
   m_vertexToolAction(0),
@@ -88,6 +88,7 @@ m_toolBar(0),
   m_deleteGeometryToolAction(0),
   m_aggregateAreaToolAction(0),
   m_subtractAreaToolAction(0),
+  m_mergeGeometriesToolAction(0),
   m_undoToolAction(0),
   m_redoToolAction(0),
   m_undoView(0),

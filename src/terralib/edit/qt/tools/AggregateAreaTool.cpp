@@ -162,21 +162,21 @@ te::gm::Geometry* te::edit::AggregateAreaTool::buildPolygon()
 
     polygon->setSRID(m_display->getSRID());
 
-    te::gm::Geometry* mpol = 0;
+    te::gm::Geometry* geo = 0;
 
     if (!polygon->intersects(m_feature->getGeometry()))
       return dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone());
 
-    mpol = Union(polygon, m_feature);
+    geo = Union(polygon, m_feature);
 
     //projection
     if(polygon->getSRID() == m_layer->getSRID())
-      return mpol;
+      return geo;
 
     //else, need conversion...
-    mpol->transform(m_layer->getSRID());
+    geo->transform(m_layer->getSRID());
 
-    return mpol;
+    return geo;
 
 }
 

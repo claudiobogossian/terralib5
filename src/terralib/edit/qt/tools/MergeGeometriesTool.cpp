@@ -76,11 +76,25 @@ te::edit::MergeGeometriesTool::~MergeGeometriesTool()
   delete m_feature;
 }
 
+bool te::edit::MergeGeometriesTool::mousePressEvent(QMouseEvent* e)
+{
+  if (e->button() != Qt::LeftButton)
+    return false;
+
+  //mergeGeometries();
+
+  //pickFeature(m_layer, GetPosition(e));
+
+  //if (m_feature)
+
+  return true;
+}
+
 void te::edit::MergeGeometriesTool::mergeGeometries()
 {
   bool disjoint = false;
-  const te::gm::Envelope* ev;
-  te::gm::Geometry* g;
+  const te::gm::Envelope* env;
+  te::gm::Geometry* geo;
 
   const te::da::ObjectIdSet* objSet = m_layer->getSelected();
 
@@ -110,15 +124,15 @@ void te::edit::MergeGeometriesTool::mergeGeometries()
   if (m_oidRef->getValueAsString() == "")
     return;
 
-  ev = getRefEnvelope(ds.get(), geomProp);
+  env = getRefEnvelope(ds.get(), geomProp);
 
-  m_feature = PickFeature(m_layer, *ev, m_display->getSRID(), te::edit::GEOMETRY_UPDATE);
+  m_feature = PickFeature(m_layer, *env, m_display->getSRID(), te::edit::GEOMETRY_UPDATE);
 
-  g = dynamic_cast<te::gm::Geometry*>(gc->getGeometryN(0)->clone());
+  geo = dynamic_cast<te::gm::Geometry*>(gc->getGeometryN(0)->clone());
 
   for (std::size_t i = 1; i < gc->getNumGeometries(); i++)
   {
-    g = Union(g, gc->getGeometryN(i));
+    geo = Union(geo, gc->getGeometryN(i));
   }
 
   switch (geomProp->getGeometryType())
@@ -126,15 +140,16 @@ void te::edit::MergeGeometriesTool::mergeGeometries()
     case  te::gm::MultiPolygonType:
     {
       te::gm::MultiPolygon* newGeo = new te::gm::MultiPolygon(1, te::gm::MultiPolygonType);
-      newGeo->setGeometryN(0, g);
+      newGeo->setGeometryN(0, geo);
       newGeo->setSRID(m_layer->getSRID());
 
-      g = newGeo;
+      geo = newGeo;
 
       break;
     }
     case  te::gm::PolygonType:
-      g = dynamic_cast<te::gm::Polygon*>(g);
+      geo = dynamic_cast<te::gm::Polygon*>(geo);
+
       break;
 
     default:
@@ -142,7 +157,7 @@ void te::edit::MergeGeometriesTool::mergeGeometries()
   }
 
   m_feature->setId(m_oidRef->clone());
-  m_feature->setGeometry(dynamic_cast<te::gm::Geometry*>(g->clone()));
+  m_feature->setGeometry(dynamic_cast<te::gm::Geometry*>(geo->clone()));
 
   draw();
 
