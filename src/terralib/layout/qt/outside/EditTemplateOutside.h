@@ -42,18 +42,18 @@ namespace te
 {
   namespace layout
   {
-		class AbstractOutsideController;
+    class AbstractOutsideController;
 
-		class TELAYOUTEXPORT EditTemplateOutside : public QWidget, public AbstractOutsideView
+    class TELAYOUTEXPORT EditTemplateOutside : public QWidget, public AbstractOutsideView
     {
-	    Q_OBJECT
+      Q_OBJECT
     
       public:
         
-				EditTemplateOutside(AbstractOutsideController* controller);
+        EditTemplateOutside(AbstractOutsideController* controller);
 
-		    virtual ~EditTemplateOutside();
-				
+        virtual ~EditTemplateOutside();
+        
         virtual void setPosition(const double& x, const double& y);
 
         virtual te::gm::Coord2D getPosition();

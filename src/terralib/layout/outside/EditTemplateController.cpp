@@ -29,7 +29,7 @@
 #include "EditTemplateController.h"
 
 te::layout::EditTemplateController::EditTemplateController(AbstractOutsideModel* o) :
-	AbstractOutsideController(o)
+  AbstractOutsideController(o)
 {
   
 }

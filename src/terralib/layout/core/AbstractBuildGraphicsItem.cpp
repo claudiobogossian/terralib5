@@ -32,38 +32,35 @@
 #include "property/Properties.h"
 
 te::layout::AbstractBuildGraphicsItem::AbstractBuildGraphicsItem() :
-  m_sharedProps(0),
-  m_props(0),
   m_zValue(0),
-  m_id(0)
+  m_id(0),
+  m_width(0),
+  m_height(0),
+  m_name("unknown")
 {
-  m_sharedProps = new SharedProperties;
+
 }
 
 te::layout::AbstractBuildGraphicsItem::~AbstractBuildGraphicsItem()
 {
-  if(m_sharedProps)
-  {
-    delete m_sharedProps;
-    m_sharedProps = 0;
-  }
+  
 }
 
-te::gm::Coord2D te::layout::AbstractBuildGraphicsItem::findCoordinate( te::layout::Properties* props )
+te::gm::Coord2D te::layout::AbstractBuildGraphicsItem::findCoordinate( te::layout::Properties props )
 {
   /* Coordinate - x1, y1*/
 
   double x1 = 0;
   double y1 = 0;
 
-  Property pro_x1 = props->getProperty(m_sharedProps->getX1());
+  Property pro_x1 = props.getProperty("x");
 
   if(!pro_x1.isNull())
   {
     x1 = pro_x1.getValue().toDouble();
   }
 
-  Property pro_y1 = props->getProperty(m_sharedProps->getY1());
+  Property pro_y1 = props.getProperty("y");
 
   if(!pro_y1.isNull())
   {
@@ -74,11 +71,11 @@ te::gm::Coord2D te::layout::AbstractBuildGraphicsItem::findCoordinate( te::layou
   return coord;
 }
 
-int te::layout::AbstractBuildGraphicsItem::findZValue( te::layout::Properties* props )
+int te::layout::AbstractBuildGraphicsItem::findZValue( te::layout::Properties props )
 {
   int zValue = 0;
 
-  Property pro_zValue = props->getProperty(m_sharedProps->getZValue());
+  Property pro_zValue = props.getProperty("zValue");
 
   if(!pro_zValue.isNull())
   {
@@ -92,5 +89,10 @@ void te::layout::AbstractBuildGraphicsItem::clear()
 {
   m_id = 0;
   m_zValue = 0;
-  m_props = 0;
+  m_props.clear();
+  m_width = 0;
+  m_height = 0;
+  m_name = "unknown";
 }
+
+

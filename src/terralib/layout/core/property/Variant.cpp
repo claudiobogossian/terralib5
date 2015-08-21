@@ -601,6 +601,14 @@ std::string te::layout::Variant::toString( int value ) const
   return ss.str();
 }
 
+std::string te::layout::Variant::toString(double value) const
+{
+  std::stringstream ss;//create a stringstream
+  ss << value;//add number to the stream
+
+  return ss.str();
+}
+
 bool te::layout::Variant::toBool( std::string str )
 {
   if(str.compare("true") == 0)

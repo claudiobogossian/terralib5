@@ -30,7 +30,7 @@
 #include "../core/enum/Enums.h"
 
 te::layout::FontDialogModel::FontDialogModel():
-	AbstractOutsideModel()
+  AbstractOutsideModel()
 {
   m_type = Enums::getInstance().getEnumObjectType()->getFontDialog();
   m_box = te::gm::Envelope(0., 0., 200., 200.);

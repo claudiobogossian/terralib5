@@ -37,15 +37,15 @@ namespace te
 {
   namespace layout
   {
-		class AbstractOutsideModel;
+    class AbstractOutsideModel;
 
-		class TELAYOUTEXPORT TextGridSettingsController : public AbstractOutsideController
+    class TELAYOUTEXPORT TextGridSettingsController : public AbstractOutsideController
     {
       public:
 
-				TextGridSettingsController(AbstractOutsideModel* o);
+        TextGridSettingsController(AbstractOutsideModel* o);
 
-	      virtual ~TextGridSettingsController();
+        virtual ~TextGridSettingsController();
 
         virtual Property updateProperty();
 

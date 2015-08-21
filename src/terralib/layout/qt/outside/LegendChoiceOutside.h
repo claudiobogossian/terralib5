@@ -45,15 +45,15 @@ namespace te
 {
   namespace layout
   {
-		class AbstractOutsideController;
+    class AbstractOutsideController;
 
-		class TELAYOUTEXPORT LegendChoiceOutside : public QDialog, public AbstractOutsideView
+    class TELAYOUTEXPORT LegendChoiceOutside : public QDialog, public AbstractOutsideView
     {
       Q_OBJECT
 
       public:
 
-				LegendChoiceOutside(AbstractOutsideController* controller);
+        LegendChoiceOutside(AbstractOutsideController* controller);
 
         ~LegendChoiceOutside();
         

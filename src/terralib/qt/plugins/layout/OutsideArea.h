@@ -59,12 +59,12 @@ namespace te
 
         class OutsideArea : public QObject
         {
-	        Q_OBJECT //for slots/signals
+          Q_OBJECT //for slots/signals
 
         public:
 
-	        OutsideArea(te::layout::View* view, QWidget* dockParent = 0, QMenu* mnuLayout = 0, QStatusBar* status = 0);
-	        virtual ~OutsideArea();
+          OutsideArea(te::layout::View* view, QWidget* dockParent = 0, QMenu* mnuLayout = 0, QStatusBar* status = 0);
+          virtual ~OutsideArea();
 
           PropertiesDock* getPropertiesDock();
           ObjectInspectorDock* getObjectInspectorDock();
@@ -103,7 +103,7 @@ namespace te
           virtual void createEditTemplateDock();
 
           virtual QAction* createAction(std::string text, std::string objName, std::string icon, std::string tooltip = "");
-					
+          
         protected:
 
           QWidget* m_dockParent;

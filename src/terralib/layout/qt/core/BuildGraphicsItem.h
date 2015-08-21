@@ -43,8 +43,7 @@ namespace te
 {
   namespace layout
   {
-    class ItemModelObservable;
-
+    class AbstractItemModel;
   /*!
   \brief Class responsible for creating or building graphics objects. All objects are children of QGraphicsItem and ItemObserver.
     An object of a type is created from a coordinated. Also an object of a type can be built from the properties saved in a template.
@@ -78,18 +77,18 @@ namespace te
       
       \return z value
         */
-        QGraphicsItem* rebuildItem(te::layout::Properties* props, bool draw = true);
+        QGraphicsItem* rebuildItem(te::layout::Properties props, bool draw = true);
     
        /*!
          \brief Method to create a graphic object from the properties.
       
-         \param mode type of the object will created
+         \param itemType type of the object that will be created
          \param coordinate represent the x,y coordinate
          \param draw graphics object has or not to be drawing
       
          \return z value
         */
-        QGraphicsItem* createItem(te::layout::EnumType* mode, const te::gm::Coord2D& coordinate, bool draw = true);
+        QGraphicsItem* createItem(te::layout::EnumType* itemType, const te::gm::Coord2D& coordinate, double width = 0, double height = 0, bool draw = true);
 
         /*!
           \brief Method to create a graphic object from the type.
@@ -98,7 +97,7 @@ namespace te
       
           \return item value
         */
-        QGraphicsItem* createItem(te::layout::EnumType* type, bool draw = true);
+        QGraphicsItem* createItem(te::layout::EnumType* itemType, bool draw = true);
 
         /*!
           \brief Checks whether the coordinated intersects an item and adds a child. 
@@ -132,6 +131,8 @@ namespace te
           \param draw if true the component will be redraw, false otherwise
         */
         virtual void afterBuild(QGraphicsItem* item, bool draw = true);
+
+        virtual void setProperties(AbstractItemModel* model);
 
         /*!
           \brief Create graphic object of type PaperItem

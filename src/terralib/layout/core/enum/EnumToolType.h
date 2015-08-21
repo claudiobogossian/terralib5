@@ -77,6 +77,8 @@ namespace te
 
         virtual EnumType* getCreatePolygonItemTool() const;
 
+        virtual EnumType* getCreateItemTool() const;
+
       protected:
 
         /*!
@@ -90,6 +92,7 @@ namespace te
         EnumType* m_zoomAreaTool; //!< value that represents zoom area type belonging to enumeration
         EnumType* m_createLineItemTool;
         EnumType* m_createPolygonItemTool;
+        EnumType* m_createItemTool;
     };
   }
 }

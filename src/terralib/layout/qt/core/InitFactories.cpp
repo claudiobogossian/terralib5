@@ -29,6 +29,30 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include "pattern/factory/item/RectangleItemFactory.h"
 #include "pattern/factory/tool/CreateLineItemToolFactory.h"
 #include "pattern/factory/tool/CreatePolygonItemToolFactory.h"
+#include "pattern/factory/tool/CreateItemToolFactory.h"
+#include "pattern/factory/item/ArrowItemFactory.h"
+#include "pattern/factory/item/BalloonItemFactory.h"
+#include "pattern/factory/item/BarCodeItemFactory.h"
+#include "pattern/factory/item/EllipseItemFactory.h"
+#include "pattern/factory/item/GridGeodesicItemFactory.h"
+#include "pattern/factory/item/GridMapItemFactory.h"
+#include "pattern/factory/item/GridPlanarItemFactory.h"
+#include "pattern/factory/item/ImageItemFactory.h"
+#include "pattern/factory/item/ItemGroupItemFactory.h"
+#include "pattern/factory/item/LegendChildItemFactory.h"
+#include "pattern/factory/item/LegendItemFactory.h"
+#include "pattern/factory/item/MapItemFactory.h"
+#include "pattern/factory/item/MapLocationItemFactory.h"
+#include "pattern/factory/item/MovingItemGroupItemFactory.h"
+#include "pattern/factory/item/NorthItemFactory.h"
+#include "pattern/factory/item/PointItemFactory.h"
+#include "pattern/factory/item/ScaleItemFactory.h"
+#include "pattern/factory/item/SVGItemFactory.h"
+#include "pattern/factory/item/TextGridItemFactory.h"
+#include "pattern/factory/item/TextItemFactory.h"
+#include "pattern/factory/item/TitleItemFactory.h"
+#include "pattern/factory/item/PolygonItemFactory.h"
+#include "pattern/factory/item/LineItemFactory.h"
 
 namespace te
 {
@@ -44,6 +68,7 @@ namespace te
         static ZoomAreaToolFactory ZoomAreaToolFactory_instance;
         static CreateLineItemToolFactory CreateLineItemToolFactory_instance;
         static CreatePolygonItemToolFactory CreatePolygonItemToolFactory_instance;
+        static CreateItemToolFactory CreateItemToolFactory_instance;
       }
     }
 
@@ -55,9 +80,31 @@ namespace te
       {
         ItemFactoryInitalized = true;
         static RectangleItemFactory RectangleItemFactory_instance;
+        static ArrowItemFactory ArrowItemFactory_instance;
+        static BalloonItemFactory BalloonItemFactory_instance;
+        static BarCodeItemFactory BarCodeItemFactory_instance;
+        static EllipseItemFactory EllipseItemFactory_instance;
+        static GridGeodesicItemFactory GridGeodesicItemFactory_instance;
+        static GridMapItemFactory GridMapItemFactory_instance;
+        static GridPlanarItemFactory GridPlanarItemFactory_instance;
+        static ImageItemFactory ImageItemFactory_instance;
+        static ItemGroupItemFactory ItemGroupItemFactory_instance;
+        static LegendChildItemFactory LegendChildItemFactory_instance;
+        static LegendItemFactory LegendItemFactory_instance;
+        static MapItemFactory MapItemFactory_instance;
+        static MapLocationItemFactory MapLocationItemFactory_instance;
+        static MovingItemGroupItemFactory MovingItemGroupItemFactory_instance;
+        static NorthItemFactory NorthItemFactory_instance;
+        static PointItemFactory PointItemFactory_instance;
+        static ScaleItemFactory ScaleItemFactory_instance;
+        static SVGItemFactory SVGItemFactory_instance;
+        static TextGridItemFactory TextGridItemFactory_instance;
+        static TextItemFactory TextItemFactory_instance;
+        static TitleItemFactory TitleItemFactory_instance;
+        static PolygonItemFactory PolygonItemFactory_instance;
+        static LineItemFactory LineItemFactory_instance;
       }
     }
-
   }
 }
 

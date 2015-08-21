@@ -29,7 +29,7 @@
 #include "SystematicScaleController.h"
 
 te::layout::SystematicScaleController::SystematicScaleController(AbstractOutsideModel* o) :
-	AbstractOutsideController(o)
+  AbstractOutsideController(o)
 {
   
 }

@@ -30,11 +30,11 @@
 
 te::layout::AbstractTemplate* te::layout::JSONTemplateFactory::build(TemplateFactoryParamsCreate params)
 {
-	return new JSONTemplate(params.getFilePath());
+  return new JSONTemplate(params.getFilePath());
 }
 
 te::layout::JSONTemplateFactory::JSONTemplateFactory() :
-	TemplateFactory(Enums::getInstance().getEnumTemplateType()->getJsonType()->getName())
+  TemplateFactory(Enums::getInstance().getEnumTemplateType()->getJsonType()->getName())
 {
 
 }

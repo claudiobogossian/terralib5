@@ -29,7 +29,7 @@
 #include "SVGDialogController.h"
 
 te::layout::SVGDialogController::SVGDialogController(AbstractOutsideModel* o) :
-	AbstractOutsideController(o)
+  AbstractOutsideController(o)
 {
   
 }

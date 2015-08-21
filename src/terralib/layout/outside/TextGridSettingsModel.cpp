@@ -32,7 +32,7 @@
 #include "../core/enum/Enums.h"
 
 te::layout::TextGridSettingsModel::TextGridSettingsModel() :
-	AbstractOutsideModel()
+  AbstractOutsideModel()
 {
   m_type = Enums::getInstance().getEnumObjectType()->getTextGridSettings();
 }

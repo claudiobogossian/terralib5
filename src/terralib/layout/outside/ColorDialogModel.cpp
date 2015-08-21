@@ -30,7 +30,7 @@
 #include "../core/enum/Enums.h"
 
 te::layout::ColorDialogModel::ColorDialogModel() :
-	AbstractOutsideModel()
+  AbstractOutsideModel()
 {
   m_type = Enums::getInstance().getEnumObjectType()->getColorDialog();
   m_box = te::gm::Envelope(0., 0., 200., 200.);

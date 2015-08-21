@@ -51,12 +51,12 @@ namespace te
 
     /*!
     \brief Manage properties variants values.  
-	  
-	  \ingroup layout
-	  */
+    
+    \ingroup layout
+    */
     class TELAYOUTEXPORT VariantPropertiesBrowser : public AbstractPropertiesBrowser
     {
-	    Q_OBJECT //for slots/signals
+      Q_OBJECT //for slots/signals
 
       public:
 

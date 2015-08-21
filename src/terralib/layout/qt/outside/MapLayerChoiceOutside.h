@@ -47,15 +47,15 @@ namespace te
 {
   namespace layout
   {
-		class AbstractOutsideController;
+    class AbstractOutsideController;
 
-		class TELAYOUTEXPORT MapLayerChoiceOutside : public QDialog, public AbstractOutsideView
+    class TELAYOUTEXPORT MapLayerChoiceOutside : public QDialog, public AbstractOutsideView
     {
       Q_OBJECT
 
       public:
 
-				MapLayerChoiceOutside(AbstractOutsideController* controller);
+        MapLayerChoiceOutside(AbstractOutsideController* controller);
 
         ~MapLayerChoiceOutside();
 

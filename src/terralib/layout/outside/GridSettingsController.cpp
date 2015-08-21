@@ -31,7 +31,7 @@
 #include "GridSettingsModel.h"
 
 te::layout::GridSettingsController::GridSettingsController(AbstractOutsideModel* o) :
-	AbstractOutsideController(o)
+  AbstractOutsideController(o)
 {
   
 }
@@ -47,7 +47,7 @@ te::layout::Property te::layout::GridSettingsController::updateProperty( std::st
 
   if(m_model)
   {
-		AbstractOutsideModel* model = dynamic_cast<AbstractOutsideModel*>(m_model);
+    AbstractOutsideModel* model = dynamic_cast<AbstractOutsideModel*>(m_model);
     outsideModel = dynamic_cast<GridSettingsModel*>(model);    
   }
  
@@ -97,7 +97,7 @@ te::layout::Property te::layout::GridSettingsController::getProperty( std::strin
 
   if(m_model)
   {
-		AbstractOutsideModel* model = dynamic_cast<AbstractOutsideModel*>(m_model);
+    AbstractOutsideModel* model = dynamic_cast<AbstractOutsideModel*>(m_model);
     outsideModel = dynamic_cast<GridSettingsModel*>(model);    
   }
 

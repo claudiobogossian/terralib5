@@ -35,15 +35,15 @@ namespace te
 {
   namespace layout
   {
-		class AbstractOutsideController;
+    class AbstractOutsideController;
 
     /*!
-	  \brief Parameters to creation new object. Ex.: "Model" and "Controller" of the new object (MVC widget).
-	  
-	  \ingroup layout
+    \brief Parameters to creation new object. Ex.: "Model" and "Controller" of the new object (MVC widget).
+    
+    \ingroup layout
 
-	  \sa te::layout::ParamsCreate
-	  */
+    \sa te::layout::ParamsCreate
+    */
     class OutsideParamsCreate : public ParamsCreate 
     {
     public:
@@ -71,18 +71,18 @@ namespace te
 
           \return controller
        */
-      AbstractOutsideController*	getController();
-			
+      AbstractOutsideController*  getController();
+      
     protected:
-      AbstractOutsideController*	m_controller; //!< "Controller" part of MVC widget.
+      AbstractOutsideController*  m_controller; //!< "Controller" part of MVC widget.
     };
 
     /*
     ** ---------------------------------------------------------------
     ** Inline methods:
     */
-		inline OutsideParamsCreate::OutsideParamsCreate(AbstractOutsideController* controller) :
-	    m_controller(controller)
+    inline OutsideParamsCreate::OutsideParamsCreate(AbstractOutsideController* controller) :
+      m_controller(controller)
     {
     }
 
@@ -90,9 +90,9 @@ namespace te
     {
     }
 
-		inline AbstractOutsideController* OutsideParamsCreate::getController()
+    inline AbstractOutsideController* OutsideParamsCreate::getController()
     {
-	    return m_controller;
+      return m_controller;
     }
   }
 }

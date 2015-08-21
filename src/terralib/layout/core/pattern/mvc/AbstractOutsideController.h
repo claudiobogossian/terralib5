@@ -36,17 +36,17 @@ namespace te
 {
   namespace layout
   {
-		class Subject;
-		class AbstractOutsideView;
-		class AbstractOutsideModel;
+    class Subject;
+    class AbstractOutsideView;
+    class AbstractOutsideModel;
     class EnumType;
 
     /*!
       \brief Abstract class to represent a controller. "Controller" part of MVC widget. All classes representing the controller of a widget must inherit from this class.
-	  
-	    \ingroup layout
-	  */
-		class TELAYOUTEXPORT AbstractOutsideController : public NewObserver
+    
+      \ingroup layout
+    */
+    class TELAYOUTEXPORT AbstractOutsideController : public NewObserver
     {
     public:
 
@@ -55,7 +55,7 @@ namespace te
 
           \param o "Model" part of MVC widget
        */
-			AbstractOutsideController(AbstractOutsideModel* o);
+      AbstractOutsideController(AbstractOutsideModel* o);
 
       /*!
           \brief Constructor
@@ -63,12 +63,12 @@ namespace te
           \param o "Model" part of MVC widget
           \param type type of the MVC widget.
        */
-			AbstractOutsideController(AbstractOutsideModel* o, EnumType* type);
+      AbstractOutsideController(AbstractOutsideModel* o, EnumType* type);
 
       /*!
           \brief Destructor
        */ 
-			virtual ~AbstractOutsideController();
+      virtual ~AbstractOutsideController();
 
       /*!
           \brief Change coordinate llx,lly of the MVC widget.
@@ -83,16 +83,16 @@ namespace te
 
           \return model
        */
-			const AbstractOutsideModel* getModel();
+      const AbstractOutsideModel* getModel();
 
       /*!
           \brief Returns the "View" part of the MVC widget.
 
           \return view 
        */
-			const AbstractOutsideView* getView();
+      const AbstractOutsideView* getView();
 
-			virtual void update(const Subject* subject) override;
+      virtual void update(const Subject* subject) override;
 
     protected:
 

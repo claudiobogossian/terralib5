@@ -32,6 +32,10 @@
 #include "../observer/Subject.h"
 #include "../../Config.h"
 #include "../../property/Properties.h"
+#include "terralib/geometry/Envelope.h"
+
+// STL
+#include <string>
 
 namespace te
 {
@@ -39,6 +43,7 @@ namespace te
   {
 
     class Property;
+    class EnumType;
 
     /*!
       \brief Abstract class to represent an observable. "Model" part of MVC component. 
@@ -78,6 +83,22 @@ namespace te
           \brief Sets the new values of the given properties
         */
         virtual void setProperties(const Properties& properties);
+
+        virtual EnumType* getType();
+
+        virtual std::string getName();
+
+        bool isPrintable();
+
+        virtual te::gm::Envelope getBoundingRect();
+
+        /*!
+        \brief Checks if the coordinate is contained within the bounding rectangle.
+
+        \param coord coordinated to be verified
+        \return true if contains, false otherwise
+        */
+        virtual bool contains(const te::gm::Coord2D &coord) const;
 
       protected:
 

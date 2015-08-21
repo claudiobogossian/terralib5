@@ -33,6 +33,7 @@
 
 // TerraLib
 #include "../../../core/Config.h"
+#include "../../../core/property/Properties.h"
 #include "DialogPropertiesBrowser.h"
 
 // STL
@@ -50,19 +51,19 @@ namespace te
     class PropertiesUtils;
 
     /*!
-	  \brief Class responsible for creating the menu, right mouse button, and dynamically add menu options.
-	  
-	  \ingroup layout
-	  */
+    \brief Class responsible for creating the menu, right mouse button, and dynamically add menu options.
+    
+    \ingroup layout
+    */
     class TELAYOUTEXPORT MenuBuilder : public DialogPropertiesBrowser
     {
-	    Q_OBJECT //for slots/signals
+      Q_OBJECT //for slots/signals
 
     public:
 
-	    MenuBuilder( QObject * parent = 0 );
+      MenuBuilder( QObject * parent = 0 );
 
-	    virtual ~MenuBuilder();
+      virtual ~MenuBuilder();
          
       virtual void createMenu(QList<QGraphicsItem*> items);
 
@@ -90,7 +91,7 @@ namespace te
 
       QMenu*                m_menu;
       QList<QGraphicsItem*> m_graphicsItems;
-      Properties*           m_properties;
+      Properties            m_properties;
       PropertiesUtils*      m_propUtils;
     };
   }

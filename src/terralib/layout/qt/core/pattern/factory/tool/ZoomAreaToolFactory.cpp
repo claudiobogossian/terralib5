@@ -26,16 +26,16 @@
 // TerraLib
 #include "ZoomAreaToolFactory.h"
 #include "../../../../../core/enum/Enums.h"
-#include "../../../tools/ViewZoomArea.h"
+#include "../../../tools/ZoomAreaTool.h"
 #include "../../../View.h"
 
 te::layout::AbstractLayoutTool* te::layout::ZoomAreaToolFactory::build(ToolFactoryParamsCreate params)
 {
-	return new ViewZoomArea(params.getView(), params.getView());
+  return new ZoomAreaTool(params.getView(), params.getView());
 }
 
 te::layout::ZoomAreaToolFactory::ZoomAreaToolFactory() :
-	ToolFactory(Enums::getInstance().getEnumToolType()->getZoomAreaTool()->getName())
+  ToolFactory(Enums::getInstance().getEnumToolType()->getZoomAreaTool()->getName())
 {
 
 }

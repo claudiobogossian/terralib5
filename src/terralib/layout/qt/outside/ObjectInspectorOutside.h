@@ -47,28 +47,28 @@ namespace te
 {
   namespace layout
   {
-		class AbstractOutsideController;
-		class ItemObserver;
+    class AbstractOutsideController;
+    class AbstractItemView;
 
     /*!
     \brief Tree of names of all the items entered on the scene, MVC components, using Qt to present the name of each item and its class. Object Inspector.
-	  
-	    \ingroup layout
+    
+      \ingroup layout
 
-	    \sa te::layout::OutsideObserver
-	  */
-		class TELAYOUTEXPORT ObjectInspectorOutside : public QWidget, public AbstractOutsideView
+      \sa te::layout::OutsideObserver
+    */
+    class TELAYOUTEXPORT ObjectInspectorOutside : public QWidget, public AbstractOutsideView
     {
-	    Q_OBJECT //for slots/signals
+      Q_OBJECT //for slots/signals
 
     public:
 
-			ObjectInspectorOutside(AbstractOutsideController* controller, PropertyBrowser* propertyBrowser = 0);
-	    
+      ObjectInspectorOutside(AbstractOutsideController* controller, PropertyBrowser* propertyBrowser = 0);
+      
       virtual ~ObjectInspectorOutside();
-				    
+            
       virtual void setPosition(const double& x, const double& y);
-	    
+      
       virtual te::gm::Coord2D getPosition();
 
       virtual void itemsInspector(QList<QGraphicsItem*> graphicsItems);
@@ -87,7 +87,7 @@ namespace te
       
       virtual QtProperty* addProperty(QGraphicsItem* item);
 
-      virtual Property createProperty(ItemObserver* item);
+      virtual Property createProperty(AbstractItemView* item);
 
       virtual void createSubProperty(QGraphicsItem* item, QtProperty* prop);
 

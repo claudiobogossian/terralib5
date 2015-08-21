@@ -44,19 +44,19 @@ namespace te
 {
   namespace layout
   {
-		class AbstractOutsideController;
+    class AbstractOutsideController;
     class Scene;
 
-		class TELAYOUTEXPORT PageSetupOutside : public QDialog, public AbstractOutsideView
+    class TELAYOUTEXPORT PageSetupOutside : public QDialog, public AbstractOutsideView
     {
-	    Q_OBJECT
+      Q_OBJECT
     
       public:
         
-				PageSetupOutside(AbstractOutsideController* controller);
+        PageSetupOutside(AbstractOutsideController* controller);
 
-		    virtual ~PageSetupOutside();
-				
+        virtual ~PageSetupOutside();
+        
         virtual void setPosition(const double& x, const double& y);
 
         virtual te::gm::Coord2D getPosition();
@@ -83,11 +83,11 @@ namespace te
 
         /** \brief Configures the orientation page getting from layout 
         */
-	      virtual void configureOrientationPage();
+        virtual void configureOrientationPage();
 
-	      /** \brief Configures the page size getting from layout
-	      */
-	      virtual void configurePageSize();
+        /** \brief Configures the page size getting from layout
+        */
+        virtual void configurePageSize();
 
         virtual void switchSize();
 

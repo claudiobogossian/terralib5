@@ -43,7 +43,7 @@
 
 te::layout::TextGridSettingsOutside::TextGridSettingsOutside(AbstractOutsideController* controller) :
   QDialog(0),
-	AbstractOutsideView(controller),
+  AbstractOutsideView(controller),
   m_ui(new Ui::TextGridSettings)
 {
   m_ui->setupUi(this);
@@ -164,7 +164,7 @@ te::color::RGBAColor te::layout::TextGridSettingsOutside::configColor( QWidget* 
 
   QColor color = QColorDialog::getColor(brush.color(),this, "Color" );
 
-  if(!color.isValid())	
+  if(!color.isValid())  
     return rgbaColor;
 
   QPalette paltt(widget->palette());
@@ -454,7 +454,7 @@ void te::layout::TextGridSettingsOutside::initColor( QWidget* widget, std::strin
   te::color::RGBAColor color = prop.getValue().toColor();
   QColor qcolor(color.getRed(), color.getGreen(), color.getBlue());
 
-  if(!qcolor.isValid())	
+  if(!qcolor.isValid())  
     return;
 
   if(!widget)

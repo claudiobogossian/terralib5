@@ -46,9 +46,9 @@ namespace te
 
     /*!
       \brief Abstract class to represent a controller. "Controller" part of MVC component. All classes representing the controller of a component must inherit from this class.
-	  
-	    \ingroup layout
-	  */
+    
+      \ingroup layout
+    */
     class TELAYOUTEXPORT ItemController 
     {
       public:

@@ -21,6 +21,7 @@
 #include "MapController1.h"
 
 #include "MapItem.h"
+#include "../../core/pattern/mvc/AbstractItemModel.h"
 #include "../../../qt/widgets/canvas/MapDisplay.h"
 
 
@@ -47,12 +48,12 @@ void te::layout::MapController1::update(const te::layout::Subject* subject)
   const Property& pSrid = getProperty("srid");
   const Property& pWorldBox = getProperty("world_box");
 
-  const std::list<te::map::AbstractLayerPtr>& listLayers = pLayers.getValue().toGenericVariant().toLayerList();
+  const std::list<te::map::AbstractLayerPtr>& layerList = pLayers.getValue().toGenericVariant().toLayerList();
   int srid = pSrid.getValue().toInt();
   te::gm::Envelope envelope = pWorldBox.getValue().toEnvelope();
 
 
-  view->getMapDisplay()->setLayerList(listLayers);
+  view->getMapDisplay()->setLayerList(layerList);
   if(view->getMapDisplay()->getSRID() != srid)
   {
     view->getMapDisplay()->setSRID(srid);
@@ -66,12 +67,12 @@ void te::layout::MapController1::update(const te::layout::Subject* subject)
   AbstractItemController::update(subject);
 }
 
-void te::layout::MapController1::addLayers(const std::list<te::map::AbstractLayerPtr>& listLayers)
+void te::layout::MapController1::addLayers(const std::list<te::map::AbstractLayerPtr>& layerList)
 {
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
 
   GenericVariant gv;
-  gv.setList(listLayers, dataType->getDataTypeLayerList());
+  gv.setList(layerList, dataType->getDataTypeLayerList());
 
   Property property;
   property.setName("layers");

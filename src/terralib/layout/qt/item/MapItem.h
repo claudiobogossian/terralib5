@@ -194,7 +194,7 @@ namespace te
       //  /*!
       //      \brief Reimplemented from QGraphicsProxyWidget
       //   */
-      //  virtual void	wheelEvent ( QGraphicsSceneWheelEvent * event );
+      //  virtual void  wheelEvent ( QGraphicsSceneWheelEvent * event );
 
       //  /*!
       //      \brief Reimplemented from QGraphicsProxyWidget

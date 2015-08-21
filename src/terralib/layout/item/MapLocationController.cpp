@@ -38,7 +38,7 @@ te::layout::MapLocationController::MapLocationController( Observable* o ) :
 
 te::layout::MapLocationController::~MapLocationController()
 {
-	
+  
 }
 
 

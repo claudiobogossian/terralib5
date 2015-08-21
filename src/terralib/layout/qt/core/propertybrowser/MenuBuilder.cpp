@@ -27,7 +27,7 @@
 
 // TerraLib
 #include "MenuBuilder.h"
-#include "../../../core/pattern/mvc/ItemObserver.h"
+#include "../../../core/pattern/mvc/AbstractItemView.h"
 #include "../../../outside/GridSettingsModel.h"
 #include "../../../outside/GridSettingsController.h"
 #include "../../../core/pattern/mvc/AbstractOutsideView.h"
@@ -41,6 +41,8 @@
 #include "../../../core/pattern/singleton/Context.h"
 #include "../Scene.h"
 #include "PropertiesUtils.h"
+#include "../../../core/pattern/mvc/AbstractItemController.h"
+#include "../../../core/pattern/mvc/AbstractItemModel.h"
 
 //STL
 #include <string>
@@ -67,11 +69,11 @@
 #include <QDesktopWidget>
 
 te::layout::MenuBuilder::MenuBuilder( QObject * parent ) :
-	DialogPropertiesBrowser(0,0,parent),
+  DialogPropertiesBrowser(0,0,parent),
   m_menu(0),
   m_propUtils(0)
 {
-  m_propUtils = new PropertiesUtils;
+  m_propUtils = new PropertiesUtils; 
   connect(this, SIGNAL(changeDlgProperty(Property)), this, SLOT(onChangeDlgProperty(Property)));
 }
 
@@ -100,7 +102,7 @@ void te::layout::MenuBuilder::createMenu( QList<QGraphicsItem*> items )
   bool window = false;
   m_properties = m_propUtils->intersection(items, window);
   
-  if(!m_properties)
+  if(m_properties.getProperties().empty())
     return;
 
   if(m_menu)
@@ -114,7 +116,7 @@ void te::layout::MenuBuilder::createMenu( QList<QGraphicsItem*> items )
 
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
 
-  foreach(Property prop, m_properties->getProperties()) 
+  foreach(Property prop, m_properties.getProperties()) 
   {
     if(!prop.isMenu() || !prop.isVisible())
       continue;
@@ -219,44 +221,36 @@ void te::layout::MenuBuilder::changePropertyValue( Property property )
   Scene* lScene = dynamic_cast<Scene*>(Context::getInstance().getScene()); 
 
   std::vector<QGraphicsItem*> commandItems;
-  std::vector<Properties*> commandOld;
-  std::vector<Properties*> commandNew;
+  std::vector<Properties> commandOld;
+  std::vector<Properties> commandNew;
 
   foreach(QGraphicsItem* item, m_graphicsItems) 
   {
     if (item)
-    {			
-      ItemObserver* lItem = dynamic_cast<ItemObserver*>(item);
+    {      
+      AbstractItemView* lItem = dynamic_cast<AbstractItemView*>(item);
       if(lItem)
       {
-        if(!lItem->getModel())
+        if(!lItem->getController()->getModel())
         {
           continue;
         }
 
-        Properties* props = new Properties("");
-        Properties* beforeProps = lItem->getModel()->getProperties();
-        Properties* oldCommand = new Properties(*beforeProps);
-        if(props)
-        {
-          props->setObjectName(lItem->getModel()->getProperties()->getObjectName());
-          props->setTypeObj(lItem->getModel()->getProperties()->getTypeObj());
-          props->setHashCode(lItem->getModel()->getHashCode());
-          props->addProperty(property);
+        Properties beforeProps = lItem->getController()->getModel()->getProperties();
+        
+        Properties props("");
+        props.setObjectName(beforeProps.getObjectName());
+        props.setTypeObj(beforeProps.getTypeObj());
+        props.setHashCode(beforeProps.getHashCode());
+        props.addProperty(property);
 
-          lItem->getModel()->updateProperties(props);
+        lItem->getController()->getModel()->setProperties(props);
 
-          if(beforeProps)
-          {
-            beforeProps = lItem->getModel()->getProperties();
-            Properties* newCommand = new Properties(*beforeProps);
-            commandItems.push_back(item);
-            commandOld.push_back(oldCommand);
-            commandNew.push_back(newCommand);
-          }
-          delete props;
-          props = 0;
-        }       
+        Properties afterProps = lItem->getController()->getModel()->getProperties();
+        commandItems.push_back(item);
+        commandOld.push_back(beforeProps);
+        commandNew.push_back(afterProps);
+        
       }
     }
   }
@@ -275,7 +269,7 @@ te::layout::Property te::layout::MenuBuilder::findMnuProperty( te::layout::EnumT
 
   std::map<std::string, Property>::iterator it;
 
-  foreach( Property pro, m_properties->getProperties()) 
+  foreach( Property pro, m_properties.getProperties()) 
   {
     if(pro.getType() == dataType)
     {
@@ -293,7 +287,7 @@ te::layout::Property te::layout::MenuBuilder::findMnuProperty( std::string name 
 
   std::map<std::string, Property>::iterator it;
 
-  foreach( Property pro, m_properties->getProperties()) 
+  foreach( Property pro, m_properties.getProperties()) 
   {
     if(pro.getName().compare(name) == 0)
     {

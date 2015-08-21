@@ -45,6 +45,6 @@ te::layout::TextGridController::TextGridController( Observable* o ) :
 
 te::layout::TextGridController::~TextGridController()
 {
-	
+  
 }
 

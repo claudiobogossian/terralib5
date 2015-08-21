@@ -36,15 +36,15 @@ namespace te
 {
   namespace layout
   {
-		class AbstractOutsideModel;
+    class AbstractOutsideModel;
 
     class TELAYOUTEXPORT ColorDialogController : public AbstractOutsideController
     {
       public:
 
-				ColorDialogController(AbstractOutsideModel* o);
+        ColorDialogController(AbstractOutsideModel* o);
 
-	      virtual ~ColorDialogController();
+        virtual ~ColorDialogController();
     };
   }
 }

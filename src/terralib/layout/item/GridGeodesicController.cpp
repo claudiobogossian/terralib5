@@ -36,5 +36,5 @@ te::layout::GridGeodesicController::GridGeodesicController( Observable* o ) :
 
 te::layout::GridGeodesicController::~GridGeodesicController()
 {
-	
+  
 }

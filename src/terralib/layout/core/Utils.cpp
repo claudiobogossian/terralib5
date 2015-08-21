@@ -35,7 +35,7 @@
 #include "../../qt/widgets/canvas/Canvas.h"
 #include "../../srs/SpatialReferenceSystemManager.h"
 #include "../../common/Translator.h"
-#include "../qt/core/ContextObject.h"
+#include "../core/ContextObject.h"
 #include "enum/AbstractType.h"
 #include "pattern/singleton/Context.h"
 #include "AbstractScene.h"
@@ -330,10 +330,10 @@ te::layout::WorldTransformer te::layout::Utils::getTransformGeo(te::gm::Envelope
 
 std::string te::layout::Utils::convertDecimalToDegree( const double& value, bool bDegrees, bool bMinutes, bool bSeconds )
 {
-  std::string		degreeValue;
-  double			dbValue;
-  double			sec;
-  double			min;
+  std::string    degreeValue;
+  double      dbValue;
+  double      sec;
+  double      min;
 
   dbValue = std::fabs(180.* value/(4.*atan(1.)));
   min = std::fabs((dbValue-(int)dbValue)*60.);

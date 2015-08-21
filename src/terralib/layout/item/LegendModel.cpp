@@ -26,6 +26,13 @@
 */
 
 // TerraLib
+#include "LegendModel.h"
+#include "../core/enum/Enums.h"
+#include "../core/property/Properties.h"
+#include "../core/property/Property.h"
+#include "../core/property/SharedProperties.h"
+
+
 //#include "LegendModel.h"
 //#include "MapModel.h"
 //#include "../core/property/Property.h"
@@ -41,10 +48,7 @@
 //#include "../core/enum/Enums.h"
 //#include "../../maptools/GroupingItem.h"
 //#include "../../maptools/Enums.h"
-#include "LegendModel.h"
-#include "../core/enum/Enums.h"
-#include "../core/property/Properties.h"
-#include "../core/property/Property.h"
+
 // STL
 #include <string>
 #include <sstream> 
@@ -53,6 +57,7 @@
 
 te::layout::LegendModel::LegendModel()
   : AbstractItemModel()
+  , NewObserver()
   /*m_mapName(""),
   m_layer(0),
   m_borderDisplacement(1),
@@ -61,18 +66,119 @@ te::layout::LegendModel::LegendModel()
   m_displacementBetweenSymbolsAndText(2),
   m_symbolsize(5)*/
 {
-  /*m_type = Enums::getInstance().getEnumObjectType()->getLegendItem();
+  m_properties.setTypeObj(Enums::getInstance().getEnumObjectType()->getLegendItem());
 
-  m_box = te::gm::Envelope(0., 0., 70., 50.);
+  std::string name = "";
+  std::string mapName = "";
+  Font font;
+  font.setPointSize(8);
+  te::color::RGBAColor fontColor(0, 0, 0, 255);
+  std::list<te::map::AbstractLayerPtr> layerList;
+  double borderDisplacement(1);
+  double displacementBetweenSymbols(7);
+  double displacementBetweenTitleAndSymbols(7);
+  double displacementBetweenSymbolsAndText(2);
+  double symbolsize(5);
 
-  m_font.setPointSize(8);
-  m_fontColor.setColor(0,0,0);*/
+  double width = 70.;
+  double height = 50.;
+
+  SharedProperties sharedProps;
+
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+
+  //adding properties
+  {
+    Property property(0);
+    property.setName("legendChoice");
+    property.setValue(name, dataType->getDataTypeLegendChoice());
+    property.setMenu(true);
+    m_properties.addProperty(property);
+  }
+  {
+    GenericVariant gv;
+    gv.setList(layerList, dataType->getDataTypeLayerList());
+
+    Property property;
+    property.setName("layers");
+    property.setValue(gv, dataType->getDataTypeGenericVariant());
+    property.setEditable(false);
+    property.setVisible(false);
+    m_properties.addProperty(property);
+  }
+
+  {
+    Property property(0);
+    property.setName(sharedProps.getMapName());
+    property.setValue(mapName, dataType->getDataTypeStringList());
+    Variant v;
+    v.setValue(mapName, dataType->getDataTypeString());
+    property.addOption(v);
+  
+    m_properties.addProperty(property);
+  }
+  {
+    Property property(0);
+    property.setName("font");
+    property.setValue(font, dataType->getDataTypeFont());
+    property.setMenu(true);
+    m_properties.addProperty(property);
+  }
+  {
+    Property property(0);
+    property.setName("font_color");
+    property.setValue(fontColor, dataType->getDataTypeColor());
+    property.setMenu(true);
+    m_properties.addProperty(property);
+  }
+
+  //updating properties
+  {
+    Property property(0);
+    property.setName("width");
+    property.setValue(width, dataType->getDataTypeDouble());
+    m_properties.updateProperty(property);
+  }
+  {
+    Property property(0);
+    property.setName("height");
+    property.setValue(height, dataType->getDataTypeDouble());
+    m_properties.updateProperty(property);
+  }
+  {
+    Property property(0);
+    property.setName("show_frame");
+    property.setValue(true, dataType->getDataTypeBool());
+    m_properties.updateProperty(property);
+  }
+
 }
 
 te::layout::LegendModel::~LegendModel()
 {
 
 }
+
+void te::layout::LegendModel::update(const Subject* subject)
+{
+  const AbstractItemModel* subjectModel = dynamic_cast<const AbstractItemModel*>(subject);
+  if(subjectModel == 0)
+  {
+    return;
+  }
+
+  const Property& pLayersNew = subjectModel->getProperty("layers");
+  const Property& pLayersCurrent = this->getProperty("layers");
+
+  const std::list<te::map::AbstractLayerPtr>& layersNew = pLayersNew.getValue().toGenericVariant().toLayerList();
+  const std::list<te::map::AbstractLayerPtr>& layersCurrent = pLayersCurrent.getValue().toGenericVariant().toLayerList();
+
+  if(layersNew != layersCurrent)
+  {
+    setProperty(pLayersNew);
+  }
+}
+
 
 //void te::layout::LegendModel::draw( ContextItem context )
 //{
@@ -170,7 +276,7 @@ te::layout::LegendModel::~LegendModel()
 //    m_layer = layer;
 //    
 //    draw(context);
-//  }	
+//  }  
 //}
 //
 //void te::layout::LegendModel::setBorderDisplacement( double value )

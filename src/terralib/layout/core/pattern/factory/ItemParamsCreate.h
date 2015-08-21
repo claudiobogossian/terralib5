@@ -42,12 +42,12 @@ namespace te
     class AbstractItemModel;
 
     /*!
-	  \brief Parameters to creation new object. Ex.: "Model" and "Controller" of the new object (MVC component).
-	  
-	  \ingroup layout
+    \brief Parameters to creation new object. Ex.: "Model" and "Controller" of the new object (MVC component).
+    
+    \ingroup layout
 
-	  \sa te::layout::ParamsCreate
-	  */
+    \sa te::layout::ParamsCreate
+    */
     class ItemParamsCreate : public ParamsCreate 
     {
       public:
@@ -75,18 +75,18 @@ namespace te
 
           \return controller
         */
-        ItemController*	getController();
+        ItemController*  getController();
 
         /*!
           \brief Returns the "Model" part of the MVC.
 
           \return model
         */
-        Observable*		getModel();
+        Observable*    getModel();
         
         protected:
-        ItemController*	m_controller; //!< "Controller" part of MVC component.
-        Observable*		m_model; //!< "Model" part of MVC component.
+        ItemController*  m_controller; //!< "Controller" part of MVC component.
+        Observable*    m_model; //!< "Model" part of MVC component.
 
         //temporary
       public:

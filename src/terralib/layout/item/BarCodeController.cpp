@@ -36,5 +36,5 @@ te::layout::BarCodeController::BarCodeController( Observable* o ) :
 
 te::layout::BarCodeController::~BarCodeController()
 {
-	
+  
 }

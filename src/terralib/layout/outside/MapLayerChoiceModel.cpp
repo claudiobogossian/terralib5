@@ -27,7 +27,6 @@
 
 // TerraLib
 #include "MapLayerChoiceModel.h"
-#include "../core/property/Properties.h"
 #include "../core/enum/Enums.h"
 #include "../core/property/GenericVariant.h"
 
@@ -35,7 +34,7 @@
 #include <algorithm>
 
 te::layout::MapLayerChoiceModel::MapLayerChoiceModel() :
-	AbstractOutsideModel()
+  AbstractOutsideModel()
 {
   m_type = Enums::getInstance().getEnumObjectType()->getMapLayerChoice();
   m_box = te::gm::Envelope(0., 0., 200., 200.);
@@ -59,12 +58,12 @@ te::layout::Properties* te::layout::MapLayerChoiceModel::getProperties() const
   return m_properties;
 }
 
-void te::layout::MapLayerChoiceModel::updateProperties( te::layout::Properties* properties, bool notify )
+void te::layout::MapLayerChoiceModel::updateProperties( te::layout::Properties properties, bool notify )
 {
 
 }
 
-void te::layout::MapLayerChoiceModel::setPropertiesMaps( std::vector<te::layout::Properties*> properties )
+void te::layout::MapLayerChoiceModel::setPropertiesMaps( std::vector<te::layout::Properties> properties )
 {
   m_mapProperties = properties;
   m_selectedLayers = searchLayers();
@@ -94,13 +93,13 @@ std::list<te::map::AbstractLayerPtr> te::layout::MapLayerChoiceModel::searchLaye
     return layers; 
   }
   
-  std::vector<te::layout::Properties*>::const_iterator itProp;
+  std::vector<te::layout::Properties>::const_iterator itProp;
   itProp = m_mapProperties.begin();
 
   for( ; itProp != m_mapProperties.end() ; ++itProp)
   {
-    Properties* prop = (*itProp);
-    Property pp = prop->getProperty("layers");
+    Properties prop = (*itProp);
+    Property pp = prop.getProperty("layers");
 
     if(pp.isNull())
     {

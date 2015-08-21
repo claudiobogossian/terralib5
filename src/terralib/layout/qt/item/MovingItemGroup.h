@@ -28,12 +28,12 @@
   \ingroup layout
 */
 
-#ifndef	__TERRALIB_LAYOUT_INTERNAL_MOVINGITEMGROUP_H
+#ifndef  __TERRALIB_LAYOUT_INTERNAL_MOVINGITEMGROUP_H
 #define __TERRALIB_LAYOUT_INTERNAL_MOVINGITEMGROUP_H
 
 //TerraLib
-#include "../../core/Config.h"
 #include "ItemGroup.h"
+#include "../../core/Config.h"
 
 namespace te
 {
@@ -54,14 +54,13 @@ namespace te
     {
     public:
 
-      MovingItemGroup(te::layout::ItemController* controller, te::layout::Observable* o);
+      MovingItemGroup( AbstractItemController* controller, AbstractItemModel* model );
 
       virtual ~MovingItemGroup();
 
-      virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
+      //virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
     };
   }
 }
 
-#endif
-
+#endif //__TERRALIB_LAYOUT_INTERNAL_MOVINGITEMGROUP_H

@@ -36,9 +36,9 @@ namespace te
 {
   namespace layout
   {
-		class Properties;
+    class Properties;
 
-		class TELAYOUTEXPORT PageSetupModel : public AbstractOutsideModel
+    class TELAYOUTEXPORT PageSetupModel : public AbstractOutsideModel
     {
     public:
 

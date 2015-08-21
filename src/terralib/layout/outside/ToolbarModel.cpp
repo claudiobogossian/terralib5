@@ -31,7 +31,7 @@
 #include "../core/enum/Enums.h"
 
 te::layout::ToolbarModel::ToolbarModel() :
-	AbstractOutsideModel()
+  AbstractOutsideModel()
 {
   m_type = Enums::getInstance().getEnumObjectType()->getToolbar();
   m_box = te::gm::Envelope(0., 0., 40., 200.);

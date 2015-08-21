@@ -32,7 +32,7 @@
 #include "../../../geometry/Envelope.h"
 #include "VisualizationArea.h"
 #include "../item/ItemGroup.h"
-#include "tools/ViewZoomClick.h"
+#include "tools/ZoomClickTool.h"
 #include "../../outside/PageSetupController.h"
 #include "../../outside/PageSetupModel.h"
 #include "../../outside/SystematicScaleController.h"
@@ -44,7 +44,7 @@
 #include "ItemUtils.h"
 #include "../../item/LineModel.h"
 #include "../item/MapItem.h"
-
+#include "../../core/pattern/mvc/AbstractItemView.h"
 #include "pattern/factory/tool/ToolFactoryParamsCreate.h"
 #include "pattern/factory/tool/ToolFactory.h"
 
@@ -140,10 +140,10 @@ void te::layout::View::mousePressEvent( QMouseEvent * event )
       bool isInvertedMatrix = false;
       foreach(QGraphicsItem* item, selectedItems)
       {
-        ItemObserver* observer = dynamic_cast<ItemObserver*> (item);
+        AbstractItemView* observer = dynamic_cast<AbstractItemView*> (item);
         if (observer)
         {
-          if (observer->isInvertedMatrix() == true)
+          if (observer->isInverted() == true)
           {
             isInvertedMatrix = true;
           }
@@ -156,17 +156,6 @@ void te::layout::View::mousePressEvent( QMouseEvent * event )
         m_isMoving = true;
       }
     }
-  }
-
-  EnumModeType* mode = Enums::getInstance().getEnumModeType();
-  if(getCurrentMode() == mode->getModeNone())
-    return;
-
-  QGraphicsItem* it = 0;
-
-  if(getCurrentMode()->getType() == te::layout::EnumCreate)
-  {
-    it = sc->createItem(coord);
   }
 }
 
@@ -399,7 +388,7 @@ void te::layout::View::createItemGroup()
     if(!layoutGroup)
       return;
 
-    layoutGroup->redraw();
+    //layoutGroup->redraw();
 
     /*If "enabled=true", QGraphicsItemGroup will handle all the events. For example, 
     the event of mouse click on the child item won't be handled by child item.
@@ -740,7 +729,7 @@ void te::layout::View::zoomOut()
   // #Active ZoomClick (Out) Tool
 
   QCursor curOut = createCursor("layout-paper-zoom-out");
-  m_currentTool = new ViewZoomClick(this, curOut);
+  m_currentTool = new ZoomClickTool(this, curOut);
 
   setInteractive(false);
   viewport()->installEventFilter(m_currentTool);
@@ -905,7 +894,22 @@ void te::layout::View::createPolygonItem()
   viewport()->installEventFilter(m_currentTool);
 }
 
-void te::layout::View::applyScale( double newScale )
+void te::layout::View::createItem(EnumType* itemType)
+{
+  resetDefaultConfig();
+
+  EnumToolType* tools = Enums::getInstance().getEnumToolType();
+
+  std::string toolName = tools->getCreateItemTool()->getName();
+  ToolFactoryParamsCreate params(this, itemType);
+
+  m_currentTool = te::layout::ToolFactory::make(toolName, params);
+
+  setInteractive(false);
+  viewport()->installEventFilter(m_currentTool);
+}
+
+void te::layout::View::applyScale(double newScale)
 {
   if(newScale <= 0)
   {

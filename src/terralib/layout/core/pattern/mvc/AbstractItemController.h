@@ -31,10 +31,13 @@
 // TerraLib
 #include "../../Config.h"
 #include "../observer/NewObserver.h"
+#include "terralib/geometry/Coord2D.h"
 
-#include <QGraphicsItem>
-
+// STL
 #include <string>
+
+// Qt
+#include <QGraphicsItem>
 
 class QVariant;
 
@@ -83,6 +86,14 @@ namespace te
           \brief Method called by the subject to inform changes in the model
         */ 
         virtual void update(const Subject* subject);
+
+        /*!
+        \brief Checks if the coordinate is contained within the bounding rectangle.
+
+        \param coord coordinated to be verified
+        \return true if contains, false otherwise
+        */
+        virtual bool contains(const te::gm::Coord2D &coord) const;
 
       protected:
 

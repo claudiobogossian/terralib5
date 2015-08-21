@@ -69,7 +69,7 @@ namespace te
       
           \return font family name       
         */
-        std::string getFamily();
+        std::string getFamily() const;
 
         /*!
           \brief Sets point size of the font.
@@ -97,7 +97,7 @@ namespace te
       
           \return true if font use bold, false otherwise      
         */
-        bool isBold();
+        bool isBold() const;
 
         /*!
           \brief Sets font with italic style.
@@ -111,7 +111,7 @@ namespace te
       
           \return true if font use italic, false otherwise        
         */
-        bool isItalic();
+        bool isItalic() const;
 
         /*!
           \brief Sets font with underline style.
@@ -125,7 +125,7 @@ namespace te
       
           \return true if font use underline, false otherwise       
         */
-        bool isUnderline();
+        bool isUnderline() const;
 
         /*!
           \brief Sets font with strikeout style.
@@ -139,7 +139,7 @@ namespace te
       
           \return true if font use strikeout, false otherwise      
         */
-        bool isStrikeout();
+        bool isStrikeout() const;
 
         /*!
           \brief Sets font with kerning style.
@@ -153,7 +153,7 @@ namespace te
       
           \return true if font use kerning, false otherwise          
         */
-        bool isKerning();
+        bool isKerning() const;
 
         /*!
           \brief Serialize font object.

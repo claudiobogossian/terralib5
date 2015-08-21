@@ -335,9 +335,9 @@ bool te::layout::PropertyBrowser::updateProperty( Property property )
   return result;
 }
 
-void te::layout::PropertyBrowser::updateProperties( Properties* props )
+void te::layout::PropertyBrowser::updateProperties( Properties props )
 {
-  foreach( Property prop, props->getProperties()) 
+  foreach( Property prop, props.getProperties()) 
   {
     updateProperty(prop);
   }
@@ -358,9 +358,9 @@ void te::layout::PropertyBrowser::closeAllWindows()
   m_dialogPropertiesBrowser->closeAllWindows();
 }
 
-te::layout::Properties* te::layout::PropertyBrowser::getProperties()
+te::layout::Properties te::layout::PropertyBrowser::getProperties()
 {
-  Properties* properties = new Properties("");
+  Properties properties("");
 
   QList<QtProperty*> props = m_propertyEditor->properties();
   foreach( QtProperty* prop, props) 
@@ -372,7 +372,7 @@ te::layout::Properties* te::layout::PropertyBrowser::getProperties()
       property = m_dialogPropertiesBrowser->getProperty(prop->propertyName().toStdString());
     }
 
-    properties->addProperty(property);
+    properties.addProperty(property);
   }
 
   return properties;
@@ -415,11 +415,11 @@ bool te::layout::PropertyBrowser::addSubProperty( Property prop, Property subPro
   return addSubProperty(addProp, addSubProp);
 }
 
-bool te::layout::PropertyBrowser::equalsProperties( Properties* props )
+bool te::layout::PropertyBrowser::equalsProperties( Properties props )
 {
   bool result = true;
 
-  foreach( Property prop, props->getProperties()) 
+  foreach( Property prop, props.getProperties()) 
   {
     if(prop.isVisible())
     {

@@ -30,6 +30,7 @@
 
 // TerraLib
 #include "../../geometry/Coord2D.h"
+#include "property/Properties.h"
 #include "Config.h"
 
 // STL
@@ -42,9 +43,8 @@ namespace te
   {
     class Properties;
     class EnumType;
-    class SharedProperties;
 
-	/*!
+  /*!
       \class AbstractBuildGraphicsItem
 
       \brief Abstract class for build graphics MVC components. 
@@ -55,13 +55,13 @@ namespace te
     class TELAYOUTEXPORT AbstractBuildGraphicsItem
     {
       public:
-	  
-	      /*!
+    
+        /*!
           \brief Constructor
         */       
         AbstractBuildGraphicsItem();
-		
-		    /*!
+    
+        /*!
           \brief Destructor
         */
         virtual ~AbstractBuildGraphicsItem();
@@ -73,29 +73,29 @@ namespace te
 
       protected:
         
-		    /*!
+        /*!
           \brief Search for property of a graphic object that represent the x,y coordinate.
 
           \param props properties
 
           \return coordinate
         */
-        virtual te::gm::Coord2D findCoordinate(te::layout::Properties* props);
+        virtual te::gm::Coord2D findCoordinate(te::layout::Properties props);
 
-		    /*!
+        /*!
           \brief Search for property of a graphic object that represent Z Value.
 
           \param props properties
 
           \return z value
         */
-        virtual int findZValue(te::layout::Properties* props);
+        virtual int findZValue(te::layout::Properties props);
 
-		    /*!
+        /*!
           \brief Creates the name of the new graphic object. Adds the number that corresponds to how many objects of this type have already been created.
 
           \param name name of the class type of the graphic object
-		      \param type type of the object
+          \param type type of the object
 
           \return name
         */
@@ -103,11 +103,13 @@ namespace te
 
       protected:
 
-        SharedProperties*       m_sharedProps; //!< Default properties of all graphics objects.
-        te::layout::Properties* m_props; //!< Properties of a graphic object.
+        te::layout::Properties  m_props; //!< Properties of a graphic object.
         te::gm::Coord2D         m_coord; //!< Coordinate of a graphic object.
         int                     m_zValue; //!< Z Value of a graphic object.
         int                     m_id; //!< Id of a graphic object.
+        double                  m_width;
+        double                  m_height;
+        std::string             m_name;
     };
   }
 }

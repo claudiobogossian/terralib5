@@ -22,30 +22,37 @@
    
    \brief Class that represents the grouping of objects of type QGraphicsItem, MVC components.
    Its coordinate system is the same of scene (millimeters). 
-   He is also the son of ItemObserver and ObjectItem, so it can become observer of a model (Observable). 
+   He is also the son of AbstractItem, so it can become observer of a model (Observable). 
 
   \ingroup layout
 */
 
-#ifndef	__TERRALIB_LAYOUT_INTERNAL_ITEMGROUP_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_ITEMGROUP_H
 #define __TERRALIB_LAYOUT_INTERNAL_ITEMGROUP_H
 
+//TerraLib
+#include "../../core/Config.h"
+#include "AbstractItem.h"
+
 // Qt
-#include <QGraphicsItemGroup>
-#include <QPainter>
-#include <QPixmap>
+//#include <QGraphicsItemGroup>
+#include <QGraphicsItem>
+//#include <QPainter>
+//#include <QPixmap>
 
 // TerraLib
+/*
 #include "../../core/pattern/mvc/ItemObserver.h"
 #include "../../core/enum/AbstractType.h"
 #include "../../../geometry/Envelope.h"
 #include "../../../color/RGBAColor.h"
 #include "../../core/Config.h"
+*/
 
-class QMouseEvent;
-class QWheelEvent;
-class QKeyEvent;
-class QString;
+//class QMouseEvent;
+//class QWheelEvent;
+//class QKeyEvent;
+//class QString;
 
 namespace te
 {
@@ -54,20 +61,33 @@ namespace te
     /*!
     \brief Class that represents the grouping of objects of type QGraphicsItem, MVC components.
         Its coordinate system is the same of scene (millimeters). 
-        He is also the son of ItemObserver and ObjectItem, so it can become observer of a model (Observable).  
-	  
-	    \ingroup layout
+        He is also the son of AbstractItem, so it can become observer of a model (Observable).  
+    
+      \ingroup layout
 
-	    \sa te::layout::ItemObserver
-	  */
-    class TELAYOUTEXPORT ItemGroup : public QGraphicsItemGroup, public ItemObserver
+      \sa te::layout::ItemObserver
+    */
+    class TELAYOUTEXPORT ItemGroup : public AbstractItem < QGraphicsItemGroup >
     {
       public:
 
-        ItemGroup( ItemController* controller, Observable* o );
+        ItemGroup( AbstractItemController* controller, AbstractItemModel* model );
 
         virtual ~ItemGroup();
 
+        /*!
+          \brief For any specific drawing, the item must reimplement this function
+        */
+        virtual void drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
+
+        //virtual void  addToGroup ( QGraphicsItem * item );
+
+        /*!
+          \brief Reimplemented from QGraphicsItem to capture changes in the item
+         */
+        virtual QVariant itemChange ( QGraphicsItem::GraphicsItemChange change, const QVariant & value );
+
+        /*
         virtual void updateObserver(ContextItem context);
 
         virtual te::gm::Coord2D getPosition();
@@ -76,11 +96,9 @@ namespace te
 
         virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
 
-        virtual void	addToGroup ( QGraphicsItem * item );
-
         virtual bool contains(const QPointF &point) const;
 
-        void	setZValue ( qreal z );
+        void  setZValue ( qreal z );
 
         virtual te::color::RGBAColor** getRGBAColorImage(int &w, int &h);
 
@@ -104,8 +122,9 @@ namespace te
         
       protected:
 
-        QPixmap m_pixmap;
+        QPixmap m_pixmap;*/
     };
   }
 }
-#endif
+
+#endif //__TERRALIB_LAYOUT_INTERNAL_ITEMGROUP_H

@@ -27,9 +27,6 @@
 
 // TerraLib
 #include "DeleteCommand.h"
-#include "../../../../core/pattern/mvc/ItemObserver.h"
-#include "../../../../core/enum/EnumType.h"
-#include "../../../../core/pattern/mvc/Observable.h"
 #include "../../Scene.h"
 
 // Qt

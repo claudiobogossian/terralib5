@@ -35,9 +35,8 @@
 te::layout::RectangleModel::RectangleModel()
   : AbstractItemModel()
 {
-  te::color::RGBAColor fillColor(0, 0, 0, 255);
+  te::color::RGBAColor fillColor(255, 255, 255, 255);
   te::color::RGBAColor contourColor(0, 0, 0, 255);
-  te::color::RGBAColor backgroundColor(255, 255, 255, 255);
 
   this->m_properties.setTypeObj(Enums::getInstance().getEnumObjectType()->getRectangleItem());
   
@@ -90,14 +89,6 @@ te::layout::RectangleModel::RectangleModel()
     property.setValue(contourColor, dataType->getDataTypeColor());
     property.setMenu(true);
     m_properties.addProperty(property);
-  }
-
-//updating properties
-  {
-    Property property(0);
-    property.setName("background_color");
-    property.setValue(backgroundColor, dataType->getDataTypeColor());
-    this->m_properties.updateProperty(property);
   }
 }
 

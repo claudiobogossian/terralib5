@@ -21,30 +21,31 @@
 #include "CreateLineItemTool.h"
 #include "../View.h"
 #include "../Scene.h"
-#include "../../../../geometry/Point.h"
-#include "../../../core/pattern/mvc/AbstractItemView.h"
 #include "../BuildGraphicsItem.h"
-#include "../../../core/AbstractBuildGraphicsItem.h"
-#include "../../../core/enum/Enums.h"
-#include "../../../core/enum/EnumObjectType.h"
-#include "../../../core/enum/EnumType.h"
+#include "terralib/common/Singleton.h"
+#include "../../item/LineItem.h"
 #include "../../../core/pattern/singleton/Context.h"
+#include "../../../core/pattern/mvc/AbstractItemView.h"
 #include "../../../core/pattern/mvc/AbstractItemModel.h"
+#include "../../../core/enum/Enums.h"
+#include "../../../../geometry/Point.h"
+
 
 // Qt
 #include <QtGui/QMouseEvent>
 #include <QtGui/QPainter>
-#include "../../item/AbstractItem.h"
-#include "../src/gui/graphicsview/qgraphicsitem.h"
 
-te::layout::CreateLineItemTool::CreateLineItemTool(View* view, QObject* parent) 
+te::layout::CreateLineItemTool::CreateLineItemTool(View* view, EnumType* itemType, QObject* parent)
   : AbstractLayoutTool(view, parent),
   m_model(NULL),
-  m_item(NULL)
+  m_itemType(itemType)
 {
-  EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
-  m_type = enumObj->getLineItem();
   setCursor(Qt::ArrowCursor);
+
+  if (!m_itemType)
+  {
+    m_itemType = Enums::getInstance().getEnumObjectType()->getLineItem();
+  }
 }
 
 te::layout::CreateLineItemTool::~CreateLineItemTool()
@@ -133,8 +134,9 @@ void te::layout::CreateLineItemTool::createItem()
   {
     AbstractBuildGraphicsItem* abstractBuild = Context::getInstance().getAbstractBuildGraphicsItem();
     BuildGraphicsItem* build = dynamic_cast<BuildGraphicsItem*>(abstractBuild);
-    m_item = build->createItem(m_type);
+    m_item = build->createItem(m_itemType);
     AbstractItem<QGraphicsItem> * itemView = dynamic_cast<AbstractItem<QGraphicsItem> *> (m_item);
     m_model = itemView->getController()->getModel();
   }
 }
+

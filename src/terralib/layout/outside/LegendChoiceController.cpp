@@ -29,7 +29,7 @@
 #include "LegendChoiceController.h"
 
 te::layout::LegendChoiceController::LegendChoiceController(AbstractOutsideModel* o) :
-	AbstractOutsideController(o)
+  AbstractOutsideController(o)
 {
   
 }

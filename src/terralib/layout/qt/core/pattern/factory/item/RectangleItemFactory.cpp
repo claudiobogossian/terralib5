@@ -25,46 +25,32 @@
 
 // TerraLib
 #include "RectangleItemFactory.h"
-#include "../../../../../core/enum/Enums.h"
 #include "../../../../../item/RectangleModel.h"
 #include "../../../../../core/pattern/mvc/AbstractItemController.h"
+#include "../../../../../core/property/Properties.h"
 
 te::layout::AbstractItemView* te::layout::RectangleItemFactory::build(ItemFactoryParamsCreate params)
 {
-	std::string			name = params.getName();
-	Properties*			props = params.getProperties(); 
-	te::gm::Coord2D coord = params.getCoord(); 
-	int             zValue = params.getZValue(); 
-	int             id = params.getId(); 
+  Properties props = params.getProperties();
 
-	RectangleModel* model = new RectangleModel();
-	if (!props)
-	{
-		EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
+  RectangleModel* model = new RectangleModel();
+  if (props.getProperties().empty())
+  {
+    setProperties(model, params);
+  }
 
-		Property proertyId(0);
-		proertyId.setName("id");
-		proertyId.setValue(id, Enums::getInstance().getEnumDataType()->getDataTypeInt());
-		model->setProperty(proertyId);
+  AbstractItemController* controller = new AbstractItemController(model);
+  AbstractItemView* view = controller->getView();
 
-		Property propertyName(0);
-		propertyName.setName("name");
-		propertyName.setValue(name, Enums::getInstance().getEnumDataType()->getDataTypeString());
-		model->setProperty(propertyName);
-	}
-
-	AbstractItemController* controller = new AbstractItemController(model);
-	AbstractItemView* view = controller->getView();
-
-	if (props)
-	{
-		model->setProperties(*props);
-	}
-	return dynamic_cast<AbstractItemView*>(view);
+  if (!props.getProperties().empty())
+  {
+    model->setProperties(props);
+  }
+  return dynamic_cast<AbstractItemView*>(view);
 }
 
 te::layout::RectangleItemFactory::RectangleItemFactory() :
-	NewItemFactory(Enums::getInstance().getEnumObjectType()->getRectangleItem()->getName())
+  NewItemFactory(Enums::getInstance().getEnumObjectType()->getRectangleItem()->getName())
 {
 
 }

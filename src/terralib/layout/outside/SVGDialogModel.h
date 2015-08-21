@@ -41,9 +41,9 @@ namespace te
 {
   namespace layout
   {
-		class Properties;
+    class Properties;
 
-		class TELAYOUTEXPORT SVGDialogModel : public AbstractOutsideModel
+    class TELAYOUTEXPORT SVGDialogModel : public AbstractOutsideModel
     {
     public:
 
@@ -58,7 +58,7 @@ namespace te
       virtual void setPathsProperty(Property property);
 
       virtual std::vector<std::string> getPaths();
-	  
+    
     protected:
 
       Property m_svgProperty;

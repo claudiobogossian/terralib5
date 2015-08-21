@@ -40,11 +40,11 @@ namespace te
 
     /*!
       \brief Class to represent a line style type enumeration. Ex.: solid, dash, dot, etc.
-	  
-	    \ingroup layout
+    
+      \ingroup layout
 
-	    \sa te::layout::AbstractEnum
-	  */
+      \sa te::layout::AbstractEnum
+    */
     class TELAYOUTEXPORT EnumLineStyleType : public AbstractEnum
     {
       public:
@@ -61,50 +61,50 @@ namespace te
         
         /*!
           \brief Returns value that represents none style type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getStyleNone() const;
 
         /*!
           \brief Returns value that represents solid style type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getStyleSolid() const;
 
         /*!
           \brief Returns value that represents dash style type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getStyleDash() const;
 
         /*!
           \brief Returns value that represents dot style type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getStyleDot() const;
 
         /*!
           \brief Returns value that represents dash dot style type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getStyleDashDot() const;
 
         /*!
           \brief Returns value that represents dash dot dot style type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getStyleDashDotDot() const;
 
         /*!
           \brief Returns value that represents custom dash style type belonging to enumeration.
-		  
-		      \return enum value  	  
+      
+          \return enum value      
         */
         virtual EnumType* getStyleCustomDash() const;
 

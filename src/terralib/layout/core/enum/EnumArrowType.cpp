@@ -31,8 +31,8 @@
 te::layout::EnumArrowType::EnumArrowType() :
   m_noneType(0),
   m_rightArrow(0),
-	m_doubleArrow(0),
-	m_leftArrow(0)
+  m_doubleArrow(0),
+  m_leftArrow(0)
 {
   init();
 }
@@ -48,7 +48,7 @@ void te::layout::EnumArrowType::init()
 
   m_rightArrow = createEnum("Right Arrow", this);
 
-	m_leftArrow = createEnum("Left Arrow", this);
+  m_leftArrow = createEnum("Left Arrow", this);
 
   m_doubleArrow = createEnum("Double Arrow", this);
 
@@ -71,5 +71,5 @@ te::layout::EnumType* te::layout::EnumArrowType::getDoubleArrowType() const
 
 te::layout::EnumType* te::layout::EnumArrowType::getLeftArrowType() const
 {
-	return m_leftArrow;
+  return m_leftArrow;
 }

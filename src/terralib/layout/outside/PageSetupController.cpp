@@ -29,7 +29,7 @@
 #include "PageSetupController.h"
 
 te::layout::PageSetupController::PageSetupController(AbstractOutsideModel* o) :
-	AbstractOutsideController(o)
+  AbstractOutsideController(o)
 {
   
 }

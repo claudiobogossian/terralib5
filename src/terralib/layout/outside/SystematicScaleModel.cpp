@@ -32,7 +32,7 @@
 #include "../core/enum/Enums.h"
 
 te::layout::SystematicScaleModel::SystematicScaleModel() :
-	AbstractOutsideModel()
+  AbstractOutsideModel()
 {
   m_type = Enums::getInstance().getEnumObjectType()->getSystematicScale();
   m_box = te::gm::Envelope(0., 0., 200., 200.);

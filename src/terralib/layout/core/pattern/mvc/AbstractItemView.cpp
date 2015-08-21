@@ -4,9 +4,11 @@
 #include "AbstractItemController.h"
 #include "AbstractItemModel.h"
 
-te::layout::AbstractItemView::AbstractItemView(AbstractItemController* controller, AbstractItemModel* model)
+te::layout::AbstractItemView::AbstractItemView(AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix)
   : m_controller(controller)
+  , m_invertedMatrix(invertedMatrix)
 {
+
 }
 
 te::layout::AbstractItemView::~AbstractItemView()
@@ -21,4 +23,11 @@ te::layout::AbstractItemController* te::layout::AbstractItemView::getController(
 {
   return m_controller;
 }
+
+bool te::layout::AbstractItemView::isInverted()
+{
+  return m_invertedMatrix;
+}
+
+
 

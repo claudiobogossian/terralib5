@@ -33,9 +33,9 @@ namespace te
 {
   namespace layout
   {
-		void TELAYOUTEXPORT initToolFactories();
+    void TELAYOUTEXPORT initToolFactories();
 
-		void TELAYOUTEXPORT initItemFactories();
+    void TELAYOUTEXPORT initItemFactories();
   }
 }
 #endif

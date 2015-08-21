@@ -37,10 +37,10 @@
 
 te::layout::ColorDialogOutside::ColorDialogOutside(AbstractOutsideController* controller) :
   QColorDialog(0),
-	AbstractOutsideView(controller),
+  AbstractOutsideView(controller),
   m_okClicked(false)
 {
-	connect(this, SIGNAL(currentColorChanged(const QColor&)), this, SLOT(onCurrentColorChanged(const QColor&)));
+  connect(this, SIGNAL(currentColorChanged(const QColor&)), this, SLOT(onCurrentColorChanged(const QColor&)));
 }
 
 te::layout::ColorDialogOutside::~ColorDialogOutside()
@@ -50,8 +50,8 @@ te::layout::ColorDialogOutside::~ColorDialogOutside()
 
 void te::layout::ColorDialogOutside::init()
 {
-	AbstractOutsideModel* abstractModel = const_cast<AbstractOutsideModel*>(m_controller->getModel());
-	ColorDialogModel* model = dynamic_cast<ColorDialogModel*>(abstractModel);
+  AbstractOutsideModel* abstractModel = const_cast<AbstractOutsideModel*>(m_controller->getModel());
+  ColorDialogModel* model = dynamic_cast<ColorDialogModel*>(abstractModel);
   if(!model)
     return;
 
@@ -91,8 +91,8 @@ void te::layout::ColorDialogOutside::accept()
 {
   m_okClicked = true;
 
-	AbstractOutsideModel* abstractModel = const_cast<AbstractOutsideModel*>(m_controller->getModel());
-	ColorDialogModel* model = dynamic_cast<ColorDialogModel*>(abstractModel);
+  AbstractOutsideModel* abstractModel = const_cast<AbstractOutsideModel*>(m_controller->getModel());
+  ColorDialogModel* model = dynamic_cast<ColorDialogModel*>(abstractModel);
   if(!model)
     return;
 

@@ -31,11 +31,11 @@
 
 te::layout::AbstractLayoutTool* te::layout::CreateLineItemToolFactory::build(ToolFactoryParamsCreate params)
 {
-	return new CreateLineItemTool(params.getView(), params.getView());
+  return new CreateLineItemTool(params.getView(), params.getItemType(), params.getView());
 }
 
 te::layout::CreateLineItemToolFactory::CreateLineItemToolFactory() :
-	ToolFactory(Enums::getInstance().getEnumToolType()->getCreateLineItemTool()->getName())
+  ToolFactory(Enums::getInstance().getEnumToolType()->getCreateLineItemTool()->getName())
 {
 
 }

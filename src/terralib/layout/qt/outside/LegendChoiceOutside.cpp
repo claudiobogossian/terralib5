@@ -35,7 +35,7 @@
 
 te::layout::LegendChoiceOutside::LegendChoiceOutside(AbstractOutsideController* controller)
   : QDialog(0),
-		AbstractOutsideView(controller),
+    AbstractOutsideView(controller),
     m_ui(new Ui::LegendChoice)
 {
   // add controls

@@ -27,18 +27,17 @@
 
 // TerraLib
 #include "ChangePropertyCommand.h"
-#include "../../../../core/pattern/mvc/ItemObserver.h"
-#include "../../../../core/pattern/mvc/Observable.h"
-#include "../../../../core/pattern/mvc/ItemModelObservable.h"
+#include "../../../../core/pattern/mvc/AbstractItemView.h"
+#include "../../../../core/pattern/mvc/AbstractItemModel.h"
+#include "../../../../core/pattern/mvc/AbstractItemController.h"
 #include "../../../outside/PropertiesOutside.h"
-#include "../../../../core/property/Properties.h"
 
 // Qt
 #include <QGraphicsItem>
 #include <QPointF>
 
-te::layout::ChangePropertyCommand::ChangePropertyCommand( QGraphicsItem* item, Properties* oldProperties, 
-  Properties* newProperties, PropertiesOutside* outside /*= 0*/, QUndoCommand *parent /*= 0 */ ) :
+te::layout::ChangePropertyCommand::ChangePropertyCommand( QGraphicsItem* item, Properties oldProperties, 
+  Properties newProperties, PropertiesOutside* outside /*= 0*/, QUndoCommand *parent /*= 0 */ ) :
   QUndoCommand(parent),
   m_item(item),
   m_oldProperties(oldProperties),
@@ -48,12 +47,10 @@ te::layout::ChangePropertyCommand::ChangePropertyCommand( QGraphicsItem* item, P
 
 }
 
-te::layout::ChangePropertyCommand::ChangePropertyCommand( std::vector<QGraphicsItem*> items, std::vector<Properties*> allOld, 
-  std::vector<Properties*> allNew, PropertiesOutside* outside /*= 0*/, QUndoCommand *parent /*= 0 */ ) :
+te::layout::ChangePropertyCommand::ChangePropertyCommand( std::vector<QGraphicsItem*> items, std::vector<Properties> allOld, 
+  std::vector<Properties> allNew, PropertiesOutside* outside /*= 0*/, QUndoCommand *parent /*= 0 */ ) :
   QUndoCommand(parent),
   m_item(0),
-  m_oldProperties(0),
-  m_newProperties(0),
   m_outside(outside),
   m_items(items),
   m_allOldProperties(allOld),
@@ -64,53 +61,8 @@ te::layout::ChangePropertyCommand::ChangePropertyCommand( std::vector<QGraphicsI
 
 te::layout::ChangePropertyCommand::~ChangePropertyCommand()
 {
-  if(m_oldProperties)
-  {
-    delete m_oldProperties;
-    m_oldProperties = 0;
-  }
-
-  if(m_newProperties)
-  {
-    delete m_newProperties;
-    m_newProperties = 0;
-  }
-
-  if(!m_allOldProperties.empty())
-  {
-    std::vector<Properties*>::iterator ito;
-    for(ito = m_allOldProperties.begin() ; ito != m_allOldProperties.end() ; ++ito)
-    { 
-      if(*ito)
-      {
-        Properties* props = *ito;
-        if(props)
-        {
-          delete props;
-          props = 0;
-        }
-      }
-    }
-    m_allOldProperties.clear();
-  }
-
-  if(!m_allNewProperties.empty())
-  {
-    std::vector<Properties*>::iterator itn;
-    for(itn = m_allNewProperties.begin() ; itn != m_allNewProperties.end() ; ++itn)
-    { 
-      if(*itn)
-      {
-        Properties* props = *itn;
-        if(props)
-        {
-          delete props;
-          props = 0;
-        }
-      }
-    }
-    m_allNewProperties.clear();
-  }
+  m_allOldProperties.clear();
+  m_allNewProperties.clear();
 }
 
 void te::layout::ChangePropertyCommand::undo()
@@ -131,7 +83,7 @@ void te::layout::ChangePropertyCommand::undo()
   for(unsigned int i = 0 ; i < m_items.size() ; ++i)
   {
     QGraphicsItem* item = m_items[i];
-    Properties* props = m_allOldProperties[i];
+    Properties props = m_allOldProperties[i];
     if (item)
     {
       checkItem(item, props);
@@ -165,7 +117,7 @@ void te::layout::ChangePropertyCommand::redo()
   for(unsigned int i = 0 ; i < m_items.size() ; ++i)
   {
     QGraphicsItem* item = m_items[i];
-    Properties* props = m_allNewProperties[i];
+    Properties props = m_allNewProperties[i];
     if (item)
     {
       checkItem(item, props);
@@ -192,7 +144,7 @@ QString te::layout::ChangePropertyCommand::createCommandString( QGraphicsItem* i
     return QObject::tr("%1");
   }
     
-  ItemObserver* obs = dynamic_cast<ItemObserver*>(item);
+  AbstractItemView* obs = dynamic_cast<AbstractItemView*>(item);
 
   if(!obs)
     return QObject::tr("%1");
@@ -200,21 +152,21 @@ QString te::layout::ChangePropertyCommand::createCommandString( QGraphicsItem* i
   QPointF pos = m_item->scenePos();
 
   return QObject::tr("%1 at (%2, %3)")
-    .arg(obs->getModel()->getType()->getName().c_str())
+    .arg(obs->getController()->getModel()->getType()->getName().c_str())
     .arg(pos.x()).arg(pos.y());
 }
 
-bool te::layout::ChangePropertyCommand::equals( Properties* props1, Properties* props2 )
+bool te::layout::ChangePropertyCommand::equals( Properties props1, Properties props2 )
 {
   bool result = true;
 
-  if(props1->getProperties().size() != props2->getProperties().size())
+  if(props1.getProperties().size() != props2.getProperties().size())
     return false;
 
-  std::vector<Property> prop1 = props1->getProperties();
-  std::vector<Property> prop2 = props2->getProperties();
+  std::vector<Property> prop1 = props1.getProperties();
+  std::vector<Property> prop2 = props2.getProperties();
 
-  for(unsigned int i = 0 ; i < props1->getProperties().size() ; ++i)
+  for(unsigned int i = 0 ; i < props1.getProperties().size() ; ++i)
   {
     Property proper1 = prop1[i];
     Property proper2 = prop2[i];
@@ -235,27 +187,27 @@ bool te::layout::ChangePropertyCommand::equals( Properties* props1, Properties* 
   return result;
 }
 
-bool te::layout::ChangePropertyCommand::checkItem( QGraphicsItem* item, Properties* props )
+bool te::layout::ChangePropertyCommand::checkItem( QGraphicsItem* item, Properties props )
 {
   if(!item)
     return false;
 
-  ItemObserver* obs = dynamic_cast<ItemObserver*>(item);
+  AbstractItemView* obs = dynamic_cast<AbstractItemView*>(item);
 
   if(!obs)
     return false;
 
-  ItemModelObservable* model = dynamic_cast<ItemModelObservable*>(obs->getModel());
+  AbstractItemModel* model = dynamic_cast<AbstractItemModel*>(obs->getController()->getModel());
 
   if(!model)
     return false;
 
-  Properties* propsModel = model->getProperties();  
+  Properties propsModel = model->getProperties();  
   if(equals(props, propsModel))
     return false;
 
-  model->updateProperties(props);
-  obs->redraw();
+  model->setProperties(props);
+  obs->refresh();
 
   return true;
 }
@@ -270,3 +222,5 @@ bool te::layout::ChangePropertyCommand::checkVectors()
 
   return true;
 }
+
+

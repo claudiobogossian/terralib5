@@ -31,6 +31,7 @@
 // TerraLib
 #include "terralib/common/AbstractParameters.h"
 #include "terralib/geometry/Coord2D.h"
+#include "../../../../../core/property/Properties.h"
 #include "../../../../../core/Config.h"
 
 // STL
@@ -40,76 +41,82 @@ namespace te
 {
   namespace layout
   {
-		class Properties;
+    class Properties;
     /*!
-	  \brief Parameters to create a new item object (MVC graphic Object).  
-	  
-	  \ingroup layout
+    \brief Parameters to create a new item object (MVC graphic Object).  
+    
+    \ingroup layout
 
-	  \sa te::common::AbstractParameters
-	  */
-		class TELAYOUTEXPORT ItemFactoryParamsCreate : public te::common::AbstractParameters
+    \sa te::common::AbstractParameters
+    */
+    class TELAYOUTEXPORT ItemFactoryParamsCreate : public te::common::AbstractParameters
     {
       public:
-				
+        
 
-				/*! \brief Copy constructor. */
-				ItemFactoryParamsCreate(const ItemFactoryParamsCreate& rhs);
+        /*! \brief Copy constructor. */
+        ItemFactoryParamsCreate(const ItemFactoryParamsCreate& rhs);
 
         /*!
           \brief Constructor
 
           \param 
-					\param
-					\param
-					\param
+          \param
+          \param
+          \param
         */ 
-				ItemFactoryParamsCreate(std::string name, int zValue, int id, te::gm::Coord2D coord = te::gm::Coord2D(), Properties* props = 0);
+        ItemFactoryParamsCreate(std::string name, int zValue, int id, te::gm::Coord2D coord = te::gm::Coord2D(), double width = 0, double heigth = 0);
 
-				/*!
-				\brief Constructor
+        /*!
+        \brief Constructor
 
-				\param
-				\param
-				*/
-				ItemFactoryParamsCreate(std::string name, int zValue, te::gm::Coord2D coord = te::gm::Coord2D());
+        \param
+        \param
+        */
+        ItemFactoryParamsCreate(std::string name, int zValue, te::gm::Coord2D coord = te::gm::Coord2D(), double width = 0, double heigth = 0);
 
-				/*!
-				\brief Constructor
+        /*!
+        \brief Constructor
 
-				\param
-				\param
-				\param
-				\param
-				*/
-				ItemFactoryParamsCreate(Properties* props);
+        \param
+        \param
+        \param
+        \param
+        */
+        ItemFactoryParamsCreate(Properties props);
 
         /*!
           \brief Destructor
         */ 
-				virtual ~ItemFactoryParamsCreate();
+        virtual ~ItemFactoryParamsCreate();
 
-				te::common::AbstractParameters* clone() const;
+        te::common::AbstractParameters* clone() const;
 
-				void reset() throw(te::common::Exception);
+        void reset() throw(te::common::Exception);
 
-				std::string getName();
+        std::string getName();
 
-				Properties* getProperties();
+        Properties getProperties();
 
-				te::gm::Coord2D getCoord();
+        te::gm::Coord2D getCoord();
 
-				int getZValue();
+        int getZValue();
 
-				int getId();
+        int getId();
 
-			protected:
+        double getWidth();
 
-				std::string							m_name;
-				Properties*							m_props; //!< Properties of a graphic object.
-				te::gm::Coord2D         m_coord; //!< Coordinate of a graphic object.
-				int                     m_zValue; //!< Z Value of a graphic object.
-				int                     m_id; //!< Id of a graphic object.
+        double getHeight();
+
+      protected:
+
+        std::string           m_name;
+        Properties            m_props; //!< Properties of a graphic object.
+        te::gm::Coord2D       m_coord; //!< Coordinate of a graphic object.
+        int                   m_zValue; //!< Z Value of a graphic object.
+        int                   m_id; //!< Id of a graphic object.
+        double                m_width;
+        double                m_height;
     };
   }
 }

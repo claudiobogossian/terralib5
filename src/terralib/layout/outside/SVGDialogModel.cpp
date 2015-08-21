@@ -35,7 +35,7 @@
 #include <algorithm>
 
 te::layout::SVGDialogModel::SVGDialogModel() :
-	AbstractOutsideModel()
+  AbstractOutsideModel()
 {
   m_type = Enums::getInstance().getEnumObjectType()->getSVGDialog();
   m_box = te::gm::Envelope(0., 0., 200., 200.);

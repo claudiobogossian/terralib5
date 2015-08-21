@@ -44,9 +44,9 @@ namespace te
     \brief Abstract class to provide a surrogate or placeholder for te::qt::af::Project to control access to it. 
       A wrapper to access without complexity. This abstract proxy is required because module not must have dependence te::qt::af.
       Useful to access the Layers belonging to the project.
-	  
-	  \ingroup layout
-	  */
+    
+    \ingroup layout
+    */
     class TELAYOUTEXPORT AbstractProxyProject
     {
       public:

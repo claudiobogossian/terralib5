@@ -38,6 +38,7 @@ class QtTreePropertyBrowser;
 #include "../../core/pattern/mvc/AbstractOutsideView.h"
 #include "../../../geometry/Envelope.h"
 #include "../../core/Config.h"
+#include "../../core/property/Properties.h"
 
 // STL
 #include <vector>
@@ -55,12 +56,11 @@ namespace te
   namespace layout
   {
     class PropertyBrowser;
-    class Properties;
     class SharedProperties;
     class MapItem;
     class MapModel;
     class PropertiesUtils;
-		class AbstractOutsideController;
+    class AbstractOutsideController;
 
     /*!
     \brief Properties tree for any item, MVC component, using Qt for presentation and editing.
@@ -69,16 +69,16 @@ namespace te
 
       \sa te::layout::OutsideObserver
     */
-		class TELAYOUTEXPORT PropertiesOutside : public QWidget, public AbstractOutsideView
+    class TELAYOUTEXPORT PropertiesOutside : public QWidget, public AbstractOutsideView
     {
       Q_OBJECT //for slots/signals
 
       public:
 
-				PropertiesOutside(AbstractOutsideController* controller, PropertyBrowser* propertyBrowser = 0);
+        PropertiesOutside(AbstractOutsideController* controller, PropertyBrowser* propertyBrowser = 0);
 
         virtual ~PropertiesOutside();
-				
+        
         virtual void setPosition(const double& x, const double& y);
 
         virtual te::gm::Coord2D getPosition();
@@ -87,7 +87,7 @@ namespace te
 
         virtual void refreshOutside();
 
-        virtual void updatePropertyBrowser(Properties* props);
+        virtual void updatePropertyBrowser(Properties props);
 
         virtual void clearAll();
 
@@ -113,7 +113,7 @@ namespace te
 
         virtual bool sendPropertyToSelectedItems(Property property);
 
-        virtual bool updateTree(QList<QGraphicsItem*> graphicsItems, Properties* props );
+        virtual bool updateTree(QList<QGraphicsItem*> graphicsItems, Properties props );
 
       protected:
 

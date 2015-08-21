@@ -32,12 +32,12 @@
 #include <QMainWindow>
 
 te::qt::plugins::layout::DisplayDock::DisplayDock( QWidget * parent, Qt::WindowFlags flags ) :
-	QDockWidget(parent, flags),
+  QDockWidget(parent, flags),
   m_previousCentralWidget(0),
   m_previousCentralWidgetVisibilite(true)
 {  
-	setVisible(false);
-	setWindowTitle("Layout Display");
+  setVisible(false);
+  setWindowTitle("Layout Display");
 }
 
 te::qt::plugins::layout::DisplayDock::~DisplayDock()

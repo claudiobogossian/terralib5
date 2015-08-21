@@ -64,11 +64,11 @@ namespace te
     \brief Class that represents a graphic GridMap. 
         Its coordinate system is the same of scene (millimeters). 
         He is also the son of ItemObserver and AbstractItem, so it can become observer of a model (Observable). 
-	  
-	    \ingroup layout
+    
+      \ingroup layout
 
-	    \sa te::layout::AbstractItem
-	  */
+      \sa te::layout::AbstractItem
+    */
     class TELAYOUTEXPORT GridMapItem : public AbstractItem<QGraphicsItem>
     {
       public:

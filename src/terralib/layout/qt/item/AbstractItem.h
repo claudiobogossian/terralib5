@@ -35,29 +35,24 @@
 #define __TERRALIB_LAYOUT_INTERNAL_ABSTRACT_ITEM_H
 
 // TerraLib
-#include "../../core/pattern/mvc/AbstractItemModel.h"
+#include "../../core/pattern/mvc/AbstractItemController.h"
 #include "../../core/pattern/mvc/AbstractItemView.h"
-#include "../../core/pattern/singleton/Context.h"
 #include "../../core/AbstractScene.h"
-#include "../core/ContextObject.h"
+#include "../../core/ContextObject.h"
+#include "../../core/property/Property.h"
+#include "../../core/property/Properties.h"
 
 //Qt
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
 #include <QRectF>
-#include <QPolygonF>
 #include <QVariant>
-#include <QPolygonF>
-#include <QGraphicsItem>
+//#include <QGraphicsItem>
 #include <QGraphicsScene>
-#include <QGraphicsView>
+#include <QColor>
+#include <QGraphicsSceneHoverEvent>
 
-#include "../../core/pattern/mvc/AbstractItemController.h"
-#include "../../core/pattern/mvc/AbstractItemView.h"
-
-
-#include "../../core/pattern/singleton/Context.h"
-#include "../../qt/core/Scene.h"
+class AbstractItemModel;
 
 class QWidget;
 
@@ -65,20 +60,17 @@ namespace te
 {
   namespace layout
   {
-    class AbstractItemController;
-    class ContextObject;
-
     /*!
     \brief Abstract class that represents a graphic item.  
       Its coordinate system is the same of scene (millimeters). Knows rotate and resize. Stores a pixmap drawn by model.
-      This is also son of ItemObserver, so it can become observer of a model (Observable). 
+      This is also son of AbstractItemView, so it can become observer of a model (Observable). 
       This class will be inherited and will became the view part of the MVC component.
       Who inherits it is required the implementation of updateObserver(ContextItem context) method.
       Drawing starting point is llx, lly.
       Can't add signals and slots in this class because moc(Qt) doesn't support templates.
       \ingroup layout
 
-      \sa te::layout::ItemObserver
+      \sa te::layout::AbstractItemView
     */
     template <class T>
     class AbstractItem : public T, public AbstractItemView
@@ -122,6 +114,11 @@ namespace te
          */
         virtual void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
 
+        /*!
+        \brief Reimplemented from QGraphicsItem. World coordinates(mm).
+        */
+        virtual bool  contains(const QPointF & point) const;
+
     protected:
 
         /*!
@@ -160,21 +157,27 @@ namespace te
          */
         virtual QVariant itemChange ( QGraphicsItem::GraphicsItemChange change, const QVariant & value );
 
-    protected:
+        virtual void te::layout::AbstractItem<T>::hoverMoveEvent( QGraphicsSceneHoverEvent * event );
 
-        bool m_invertedMatrix;
+        virtual bool checkTouchesCorner( const double& x, const double& y );
+
+        bool          m_toResizeItem;
+        LayoutAlign   m_enumSides;
     };
 
     template <class T>
     inline te::layout::AbstractItem<T>::AbstractItem(AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix)
       : T()
-      , AbstractItemView(controller, model)
-      , m_invertedMatrix(invertedMatrix)
+      , AbstractItemView(controller, model, invertedMatrix)
+      , m_toResizeItem(false)
     {
       T::setFlags(QGraphicsItem::ItemIsMovable
         | QGraphicsItem::ItemIsSelectable
         | QGraphicsItem::ItemSendsGeometryChanges
         | QGraphicsItem::ItemIsFocusable);
+
+      //If enabled is true, this item will accept hover events
+      QGraphicsItem::setAcceptHoverEvents(true);
     }
 
     template <class T>
@@ -279,6 +282,13 @@ namespace te
       {
         drawSelection(painter);
       }
+    }
+
+    template <class T>
+    inline bool te::layout::AbstractItem<T>::contains(const QPointF & point) const
+    {
+      te::gm::Coord2D coord(point.x(), point.y());
+      return m_controller->contains(coord);
     }
 
     template <class T>
@@ -440,7 +450,65 @@ namespace te
     {
       return T::itemChange(change, value);
     }
+
+    template <class T>
+    inline void te::layout::AbstractItem<T>::hoverMoveEvent( QGraphicsSceneHoverEvent * event )
+    {
+      if(m_controller->getProperty("resizable").getValue().toBool())
+      {
+        m_toResizeItem = checkTouchesCorner(event->pos().x(), event->pos().y());
+      }
+      QGraphicsItem::hoverMoveEvent(event);
+    }
   }
 }
+
+template <class T>
+inline bool te::layout::AbstractItem<T>::checkTouchesCorner( const double& x, const double& y )
+{
+  bool result = true;
+  QRectF bRect = boundingRect();
+  double margin = 2.; //precision
+
+  QPointF ll = bRect.bottomLeft();
+  QPointF lr = bRect.bottomRight();
+  QPointF tl = bRect.topLeft();
+  QPointF tr = bRect.topRight();
+
+  if((x >= (ll.x() - margin) && x <= (ll.x() + margin))
+    && (y >= (ll.y() - margin) && y <= (ll.y() + margin)))
+  {
+    T::setCursor(Qt::SizeFDiagCursor);
+    m_enumSides = TPLowerLeft;
+  }
+  else if((x >= (lr.x() - margin) && x <= (lr.x() + margin))
+    && (y >= (lr.y() - margin) && y <= (lr.y() + margin)))
+  {
+    T::setCursor(Qt::SizeBDiagCursor);
+    m_enumSides = TPLowerRight;
+  }
+  else if((x >= (tl.x() - margin) && x <= (tl.x() + margin))
+    && (y >= (tl.y() - margin) && y <= (tl.y() + margin)))
+  {
+    T::setCursor(Qt::SizeBDiagCursor);
+    m_enumSides = TPTopLeft;
+  }
+  else if((x >= (tr.x() - margin) && x <= (tr.x() + margin))
+    && (y >= (tr.y() - margin) && y <= (tr.y() + margin)))
+  {
+    T::setCursor(Qt::SizeFDiagCursor);
+    m_enumSides = TPTopRight;
+  }
+  else
+  {
+    T::setCursor(Qt::ArrowCursor);
+    m_enumSides = TPNoneSide;
+    result = false;
+  }
+
+  return result;
+}
+
+
 
 #endif //__TERRALIB_LAYOUT_INTERNAL_ABSTRACT_ITEM_H
