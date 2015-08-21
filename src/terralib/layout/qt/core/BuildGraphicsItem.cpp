@@ -411,14 +411,18 @@ void te::layout::BuildGraphicsItem::afterBuild( QGraphicsItem* item, bool draw )
   bool result = addChild(item, m_coord.x, m_coord.y);
   if(!result)
   {
-    double width = item->boundingRect().width();
-    double height = item->boundingRect().height();
-
     QPointF pointInSceneCS(m_coord.x, m_coord.y);
-    QPointF pointInItemCS = item->mapFromScene(pointInSceneCS);
-    pointInItemCS.setX(pointInItemCS.x() - (width /2.));
-    pointInItemCS.setY(pointInItemCS.y() - (height / 2.));
-    pointInSceneCS = item->mapToScene(pointInItemCS);
+
+    if (m_width == 0 && m_height == 0)
+    {
+      double width = item->boundingRect().width();
+      double height = item->boundingRect().height();
+
+      QPointF pointInItemCS = item->mapFromScene(pointInSceneCS);
+      pointInItemCS.setX(pointInItemCS.x() - (width / 2.));
+      pointInItemCS.setY(pointInItemCS.y() - (height / 2.));
+      pointInSceneCS = item->mapToScene(pointInItemCS);
+    }
 
     item->setPos(pointInSceneCS);
   }
