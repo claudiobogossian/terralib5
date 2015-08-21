@@ -295,7 +295,8 @@ int te::qt::widgets::Canvas::getHeight() const
 
 void te::qt::widgets::Canvas::draw(const te::gm::Geometry* geom)
 {
-  switch(geom->getGeomTypeId())
+  int geomType = geom->getGeomTypeId();
+  switch (geomType)
   {
     case te::gm::MultiPolygonType:
     case te::gm::MultiPolygonZType:
@@ -345,8 +346,16 @@ void te::qt::widgets::Canvas::draw(const te::gm::Geometry* geom)
     case te::gm::GeometryCollectionZMType:
       draw(static_cast<const te::gm::GeometryCollection*>(geom));
     break;
-    default:
+
+    case te::gm::MultiSurfaceType:
+    case te::gm::MultiSurfaceZType:
+    case te::gm::MultiSurfaceMType:
+    case te::gm::MultiSurfaceZMType:
+      draw(static_cast<const te::gm::MultiSurface*>(geom));
     break;
+
+    default:
+      break;
   }
 }
 
@@ -930,6 +939,13 @@ void te::qt::widgets::Canvas::draw(const te::gm::GeometryCollection* g)
 {
   const std::size_t size = g->getNumGeometries();
   for(size_t i = 0; i < size; ++i)
+    draw(g->getGeometryN(i));
+}
+
+void te::qt::widgets::Canvas::draw(const te::gm::MultiSurface* g)
+{
+  const std::size_t size = g->getNumGeometries();
+  for (size_t i = 0; i < size; ++i)
     draw(g->getGeometryN(i));
 }
 

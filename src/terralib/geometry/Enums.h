@@ -111,6 +111,11 @@ namespace te
         TriangleMType  = 2017,              /*!< A Triangle in R3 with coordinate values for x, y and m.    */
         TriangleZMType = 3017,              /*!< A Triangle in R4 with coordinate values for x, y, z and m. */
 
+        MultiSurfaceType = 12,               /*!< A MultiSurface in R2 with coordinate values for x and y.       */
+        MultiSurfaceZType = 1012,       /*!< A MultiSurface in R3 with coordinate values for x, y and z.    */
+        MultiSurfaceMType = 2012,       /*!< A MultiSurface in R3 with coordinate values for x, y and m.    */
+        MultiSurfaceZMType = 3012,      /*!< A MultiSurface in R4 with coordinate values for x, y, z and m. */
+
         UnknownGeometryType = 0xFFFFFFFF    /*!< Just a marker for an unknown geometry type. */
     };
 
