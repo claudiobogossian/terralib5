@@ -57,40 +57,42 @@ void te::layout::ToolbarController::onMapTriggered(QAction* action)
   }
   
   ToolbarOutside* toolbar = dynamic_cast<ToolbarOutside*>(m_view);
+  
+  EnumObjectType* itemType = Enums::getInstance().getEnumObjectType();
 
-  EnumModeType* type = Enums::getInstance().getEnumModeType();
+  View* viewport = getScene()->getView();
 
   if (action->objectName().compare(toolbar->getActionMapDefault().c_str()) == 0)
   {
-    toolbar->changeAction(type->getModeCreateMap());
+    viewport->createItem(itemType->getMapItem());
   }
   else if (action->objectName().compare(toolbar->getActionGridMap().c_str()) == 0)
   {
-    toolbar->changeAction(type->getModeCreateGridMap());
+    viewport->createItem(itemType->getGridMapItem());
   }
   else if (action->objectName().compare(toolbar->getActionGridPlanar().c_str()) == 0)
   {
-    toolbar->changeAction(type->getModeCreateGridPlanar());
+    viewport->createItem(itemType->getGridPlanarItem());
   }
   else if (action->objectName().compare(toolbar->getActionGridGeodesic().c_str()) == 0)
   {
-    toolbar->changeAction(type->getModeCreateGridGeodesic());
+    viewport->createItem(itemType->getGridGeodesicItem());
   }
   else if (action->objectName().compare(toolbar->getActionLegendDefault().c_str()) == 0)
   {
-    toolbar->changeAction(type->getModeCreateLegend());
+    viewport->createItem(itemType->getLegendItem());
   }
   else if (action->objectName().compare(toolbar->getActionScale().c_str()) == 0)
   {
-    toolbar->changeAction(type->getModeCreateScale());
+    viewport->createItem(itemType->getScaleItem());
   }
   else if (action->objectName().compare(toolbar->getActionNorth().c_str()) == 0)
   {
-    toolbar->changeAction(type->getModeCreateNorth());
+    viewport->createItem(itemType->getNorthItem());
   }
   else if (action->objectName().compare(toolbar->getActionMapLocation().c_str()) == 0)
   {
-    toolbar->changeAction(type->getModeCreateMapLocation());
+    viewport->createItem(itemType->getMapLocationItem());
   }
 }
 
@@ -145,36 +147,38 @@ void te::layout::ToolbarController::onGeometryTriggered(QAction* action)
   }
 
   ToolbarOutside* toolbar = dynamic_cast<ToolbarOutside*>(m_view);
+  
+  EnumObjectType* itemType = Enums::getInstance().getEnumObjectType();
 
-  EnumModeType* type = Enums::getInstance().getEnumModeType();
+  View* viewport = getScene()->getView();
 
   if (action->objectName().compare(toolbar->getActionRectangle().c_str()) == 0)
   {
-    toolbar->changeAction(type->getModeCreateRectangle());
+    viewport->createItem(itemType->getRectangleItem());
   }
   else if (action->objectName().compare(toolbar->getActionArrow().c_str()) == 0)
   {
-    toolbar->changeAction(type->getModeCreateArrow());
+    viewport->createItem(itemType->getArrowItem());
   }
   else if (action->objectName().compare(toolbar->getActionEllipse().c_str()) == 0)
   {
-    toolbar->changeAction(type->getModeCreateEllipse());
+    viewport->createItem(itemType->getEllipseItem());
   }
   else if (action->objectName().compare(toolbar->getActionPoint().c_str()) == 0)
   {
-    toolbar->changeAction(type->getModeCreatePoint());
+    viewport->createItem(itemType->getPointItem());
   }
   else if (action->objectName().compare(toolbar->getActionLine().c_str()) == 0)
   {
-    toolbar->changeAction(type->getModeCreateLineItem());
+    viewport->createLineItem();
   }
   else if (action->objectName().compare(toolbar->getActionPolygon().c_str()) == 0)
   {
-    toolbar->changeAction(type->getModeCreatePolygonItem());
+    viewport->createPolygonItem();
   }
   else if (action->objectName().compare(toolbar->getActionSVG().c_str()) == 0)
   {
-    toolbar->changeAction(type->getModeCreateSVG());
+    viewport->createItem(itemType->getSVGItem());
   }
 }
 
@@ -316,31 +320,34 @@ void te::layout::ToolbarController::onTextToolsTriggered(QAction* action)
   {
     button->setDefaultAction(action);
   }
+  
+  EnumObjectType* itemType = Enums::getInstance().getEnumObjectType();
 
-  EnumModeType* type = Enums::getInstance().getEnumModeType();
+  View* viewport = getScene()->getView();
+
   if (action->objectName().compare(toolbar->getActionTextDefault().c_str()) == 0)
   {
-    toolbar->changeAction(type->getModeCreateText());
+    viewport->createItem(itemType->getTextItem());
   }
   else if (action->objectName().compare(toolbar->getActionStringGrid().c_str()) == 0)
   {
-    toolbar->changeAction(type->getModeCreateTextGrid());
+    viewport->createItem(itemType->getTextGridItem());
   }
   else if (action->objectName().compare(toolbar->getActionTitle().c_str()) == 0)
   {
-    toolbar->changeAction(type->getModeCreateTitle());
+    viewport->createItem(itemType->getTitleItem());
   }
   else if (action->objectName().compare(toolbar->getActionImage().c_str()) == 0)
   {
-    toolbar->changeAction(type->getModeCreateImage());
+    viewport->createItem(itemType->getImageItem());
   }
   else if (action->objectName().compare(toolbar->getActionBalloon().c_str()) == 0)
   {
-    toolbar->changeAction(type->getModeCreateBalloon());
+    viewport->createItem(itemType->getBalloonItem());
   }
   else if (action->objectName().compare(toolbar->getActionBarCode().c_str()) == 0)
   {
-    toolbar->changeAction(type->getModeCreateBarCode());
+    viewport->createItem(itemType->getBarCodeItem());
   }
 }
 

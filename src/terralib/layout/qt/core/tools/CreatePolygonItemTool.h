@@ -33,35 +33,36 @@ namespace te
 {
   namespace layout
   {
-// Forward declarations
+      // Forward declarations
+    class EnumType;
 
       /*!
         \class CreatePolygonItemTool
 
         \brief This class implements a concrete tool to create polygon in a QGraphics Item.
       */
-      class TELAYOUTEXPORT CreatePolygonItemTool : public CreateLineItemTool
-      {
-        public:
+    class TELAYOUTEXPORT CreatePolygonItemTool : public CreateLineItemTool
+    {
+      public:
 
-          /** @name Initializer Methods
-           *  Methods related to instantiation and destruction.
-           */
-          //@{
-
-          /*!
-            \brief It constructs a create polygon item tool associate with a View.
-
-            \param view The tool's view.
-            \param parent The tool's parent..
+        /** @name Initializer Methods
+          *  Methods related to instantiation and destruction.
           */
-          CreatePolygonItemTool(View* view, QObject* parent = 0);
+        //@{
 
-          /*! \brief Destructor. */
-          ~CreatePolygonItemTool();
+        /*!
+          \brief It constructs a create polygon item tool associate with a View.
 
-          //@}
-      };
+          \param view The tool's view.
+          \param parent The tool's parent..
+        */
+        CreatePolygonItemTool(View* view, EnumType* itemType = 0, QObject* parent = 0);
+
+        /*! \brief Destructor. */
+        ~CreatePolygonItemTool();
+
+        //@}
+    };
 
   }   // end namespace layout
 }     // end namespace te

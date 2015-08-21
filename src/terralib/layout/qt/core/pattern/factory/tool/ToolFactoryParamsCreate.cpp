@@ -26,8 +26,9 @@
 // TerraLib
 #include "ToolFactoryParamsCreate.h"
 
-te::layout::ToolFactoryParamsCreate::ToolFactoryParamsCreate(View* view) :
-  m_view(view)
+te::layout::ToolFactoryParamsCreate::ToolFactoryParamsCreate(View* view, EnumType* itemType) :
+  m_view(view),
+  m_itemType(itemType)
 {
 
 }
@@ -57,6 +58,10 @@ te::layout::View* te::layout::ToolFactoryParamsCreate::getView()
   return m_view;
 }
 
+te::layout::EnumType* te::layout::ToolFactoryParamsCreate::getItemType()
+{
+  return m_itemType;
+}
 
 
 

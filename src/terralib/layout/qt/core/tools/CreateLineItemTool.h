@@ -44,6 +44,7 @@ namespace te
     class View;
     class Scene;
     class AbstractItemModel;
+    class EnumType;
 
       /*!
         \class CreateLineItemTool
@@ -65,8 +66,8 @@ namespace te
             \param view The tool's view.
             \param parent The tool's parent..
           */
-          CreateLineItemTool(View* view, QObject* parent = 0);
-
+          CreateLineItemTool(View* view, EnumType* itemType = 0, QObject* parent = 0);
+          
           /*! \brief Destructor. */
           ~CreateLineItemTool();
 
@@ -92,10 +93,10 @@ namespace te
 
           virtual void setGeometry();
 
-          std::vector<te::gm::Point> m_coords;
-
-          AbstractItemModel* m_model;
-          QGraphicsItem* m_item;
+          std::vector<te::gm::Point>  m_coords;
+          AbstractItemModel*          m_model;
+          QGraphicsItem*              m_item;
+          EnumType*                   m_itemType;
       };
 
   }   // end namespace layout

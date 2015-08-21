@@ -65,7 +65,7 @@ namespace te
           \param
           \param
         */ 
-        ItemFactoryParamsCreate(std::string name, int zValue, int id, te::gm::Coord2D coord = te::gm::Coord2D(), Properties props = Properties());
+        ItemFactoryParamsCreate(std::string name, int zValue, int id, te::gm::Coord2D coord = te::gm::Coord2D(), double width = 0, double heigth = 0);
 
         /*!
         \brief Constructor
@@ -73,7 +73,7 @@ namespace te
         \param
         \param
         */
-        ItemFactoryParamsCreate(std::string name, int zValue, te::gm::Coord2D coord = te::gm::Coord2D());
+        ItemFactoryParamsCreate(std::string name, int zValue, te::gm::Coord2D coord = te::gm::Coord2D(), double width = 0, double heigth = 0);
 
         /*!
         \brief Constructor
@@ -104,13 +104,19 @@ namespace te
 
         int getId();
 
+        double getWidth();
+
+        double getHeight();
+
       protected:
 
-        std::string            m_name;
+        std::string           m_name;
         Properties            m_props; //!< Properties of a graphic object.
         te::gm::Coord2D       m_coord; //!< Coordinate of a graphic object.
         int                   m_zValue; //!< Z Value of a graphic object.
         int                   m_id; //!< Id of a graphic object.
+        double                m_width;
+        double                m_height;
     };
   }
 }

@@ -37,6 +37,7 @@ namespace te
   namespace layout
   {
     class View;
+    class EnumType;
     /*!
     \brief Parameters to create a new tool. 
     
@@ -57,7 +58,7 @@ namespace te
 
           \param view
         */ 
-        ToolFactoryParamsCreate(View* view);
+        ToolFactoryParamsCreate(View* view, EnumType* itemType = 0);
 
         /*!
           \brief Destructor
@@ -74,10 +75,13 @@ namespace te
           \return view
         */
         View*  getView();
+
+        EnumType* getItemType();
         
       protected:
 
-        View* m_view; //!< View object
+        View*       m_view; //!< View object
+        EnumType*   m_itemType;
     };
   }
 }

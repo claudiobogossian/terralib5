@@ -31,20 +31,26 @@ te::layout::ItemFactoryParamsCreate::ItemFactoryParamsCreate(const ItemFactoryPa
   this->operator=(rhs);
 }
 
-te::layout::ItemFactoryParamsCreate::ItemFactoryParamsCreate(std::string name, int zValue, int id, te::gm::Coord2D coord /*= te::gm::Coord2D()*/, Properties props /*= 0*/) :
-  m_name(name),
-  m_coord(coord),
-  m_zValue(zValue),
-  m_id(id)
+te::layout::ItemFactoryParamsCreate::ItemFactoryParamsCreate(std::string name, int zValue, int id, te::gm::Coord2D coord,
+  double width, double heigth) 
+  : m_name(name),
+    m_coord(coord),
+    m_zValue(zValue),
+    m_id(id),
+    m_width(width),
+    m_height(heigth)
 {
 
 }
 
-te::layout::ItemFactoryParamsCreate::ItemFactoryParamsCreate(std::string name, int zValue, te::gm::Coord2D coord /*= te::gm::Coord2D()*/) :
-  m_name(name),
-  m_coord(coord),
-  m_zValue(zValue),
-  m_id(0)
+te::layout::ItemFactoryParamsCreate::ItemFactoryParamsCreate(std::string name, int zValue, te::gm::Coord2D coord,
+  double width, double heigth) 
+  : m_name(name),
+    m_coord(coord),
+    m_zValue(zValue),
+    m_id(0),
+    m_width(width),
+    m_height(heigth)
 {
 
 }
@@ -101,5 +107,14 @@ int te::layout::ItemFactoryParamsCreate::getId()
   return m_id;
 }
 
+double te::layout::ItemFactoryParamsCreate::getWidth()
+{
+  return m_width;
+}
+
+double te::layout::ItemFactoryParamsCreate::getHeight()
+{
+  return m_height;
+}
 
 

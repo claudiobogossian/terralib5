@@ -18,7 +18,7 @@
  */
 
 // TerraLib
-#include "ViewRubberBand.h"
+#include "RubberBandTool.h"
 #include "../../../../geometry/Envelope.h"
 #include "../View.h"
 #include "../Scene.h"
@@ -30,7 +30,7 @@
 #include <QtGui/QPixmap>
 #include <QRubberBand>
 
-te::layout::ViewRubberBand::ViewRubberBand(View* view, QObject* parent) : 
+te::layout::RubberBandTool::RubberBandTool(View* view, QObject* parent) :
     AbstractLayoutTool(view, parent),
     m_started(false),
     m_draft(0),
@@ -43,12 +43,12 @@ te::layout::ViewRubberBand::ViewRubberBand(View* view, QObject* parent) :
   m_brush.setColor(QColor(100, 177, 216, 80));
 }
 
-te::layout::ViewRubberBand::~ViewRubberBand()
+te::layout::RubberBandTool::~RubberBandTool()
 {
 
 }
 
-bool te::layout::ViewRubberBand::mousePressEvent(QMouseEvent* e)
+bool te::layout::RubberBandTool::mousePressEvent(QMouseEvent* e)
 {
   if(!m_view)
     return false;
@@ -64,7 +64,7 @@ bool te::layout::ViewRubberBand::mousePressEvent(QMouseEvent* e)
   return true;
 }
 
-bool te::layout::ViewRubberBand::mouseMoveEvent(QMouseEvent* e)
+bool te::layout::RubberBandTool::mouseMoveEvent(QMouseEvent* e)
 {
   if(!m_view)
     return false;
@@ -82,7 +82,7 @@ bool te::layout::ViewRubberBand::mouseMoveEvent(QMouseEvent* e)
   return true;
 }
 
-bool te::layout::ViewRubberBand::mouseReleaseEvent(QMouseEvent* e)
+bool te::layout::RubberBandTool::mouseReleaseEvent(QMouseEvent* e)
 {
   m_started = false;
 

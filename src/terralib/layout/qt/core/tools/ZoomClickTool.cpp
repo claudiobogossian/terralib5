@@ -18,25 +18,22 @@
  */
 
 // TerraLib
-#include "ViewZoomClick.h"
-#include "../../../../geometry/Envelope.h"
-#include "../View.h"
-#include "../Scene.h"
+#include "ZoomClickTool.h"
 
 // Qt
 #include <QtGui/QMouseEvent>
 
-te::layout::ViewZoomClick::ViewZoomClick(View* view, const QCursor& cursor, const double& zoomFactor, const ViewZoomType& type, QObject* parent) 
-  : ViewZoom(view, zoomFactor, type, parent)
+te::layout::ZoomClickTool::ZoomClickTool(View* view, const QCursor& cursor, const double& zoomFactor, const ZoomType& type, QObject* parent)
+  : ZoomTool(view, zoomFactor, type, parent)
 {
   setCursor(cursor);
 }
 
-te::layout::ViewZoomClick::~ViewZoomClick()
+te::layout::ZoomClickTool::~ZoomClickTool()
 {
 }
 
-bool te::layout::ViewZoomClick::mousePressEvent(QMouseEvent* e)
+bool te::layout::ZoomClickTool::mousePressEvent(QMouseEvent* e)
 {
   if(e->button() != Qt::LeftButton)
     return false;

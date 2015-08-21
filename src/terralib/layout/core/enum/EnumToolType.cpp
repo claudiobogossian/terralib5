@@ -32,7 +32,8 @@ te::layout::EnumToolType::EnumToolType() :
   m_noneTool(0),
   m_zoomAreaTool(0),
   m_createLineItemTool(0),
-  m_createPolygonItemTool(0)
+  m_createPolygonItemTool(0),
+  m_createItemTool(0)
 {
   init();
 }
@@ -64,6 +65,11 @@ te::layout::EnumToolType::~EnumToolType()
     delete m_createPolygonItemTool;
     m_createPolygonItemTool = 0;
   }
+  if (m_createItemTool)
+  {
+    delete m_createItemTool;
+    m_createItemTool = 0;
+  }
 }
 
 void te::layout::EnumToolType::init()
@@ -75,6 +81,8 @@ void te::layout::EnumToolType::init()
   m_createLineItemTool = createEnum("CreateLineItemTool", this);
 
   m_createPolygonItemTool = createEnum("CreatePolygonItemTool", this);
+
+  m_createItemTool = createEnum("CreateItemTool", this);
 }
 
 te::layout::EnumType* te::layout::EnumToolType::getNoneTool() const
@@ -97,6 +105,10 @@ te::layout::EnumType* te::layout::EnumToolType::getCreatePolygonItemTool() const
   return m_createPolygonItemTool;
 }
 
+te::layout::EnumType* te::layout::EnumToolType::getCreateItemTool() const
+{
+  return m_createItemTool;
+}
 
 
 

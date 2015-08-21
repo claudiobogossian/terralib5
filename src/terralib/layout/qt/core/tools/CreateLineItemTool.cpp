@@ -25,17 +25,24 @@
 #include "../../item/LineItem.h"
 #include "../../../core/pattern/mvc/AbstractItemView.h"
 #include "../../../core/pattern/mvc/AbstractItemModel.h"
+#include "../../../core/enum/Enums.h"
 
 // Qt
 #include <QtGui/QMouseEvent>
 #include <QtGui/QPainter>
 
-te::layout::CreateLineItemTool::CreateLineItemTool(View* view, QObject* parent) 
+te::layout::CreateLineItemTool::CreateLineItemTool(View* view, EnumType* itemType, QObject* parent)
   : AbstractLayoutTool(view, parent),
   m_model(NULL),
-  m_item(NULL)
+  m_item(NULL),
+  m_itemType(itemType)
 {
   setCursor(Qt::ArrowCursor);
+
+  if (!m_itemType)
+  {
+    m_itemType = Enums::getInstance().getEnumObjectType()->getLineItem();
+  }
 }
 
 te::layout::CreateLineItemTool::~CreateLineItemTool()
@@ -123,8 +130,14 @@ void te::layout::CreateLineItemTool::createItem( QPointF &scenePos, Scene* scne 
   if (m_coords.empty())
   {
     te::gm::Coord2D coord(scenePos.x(), scenePos.y());
-    m_item = scne->createItem(coord);
+
+    m_item = scne->createItem(m_itemType, coord);
+
+    if (!m_item)
+      return;
+
     AbstractItem<QGraphicsItem> * itemView = dynamic_cast<AbstractItem<QGraphicsItem> *> (m_item);
     m_model = itemView->getController()->getModel();
   }
 }
+

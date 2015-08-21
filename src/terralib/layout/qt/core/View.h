@@ -213,6 +213,12 @@ namespace te
         */
         virtual void showPageSetup();
 
+        virtual void createLineItem();
+
+        virtual void createPolygonItem();
+
+        virtual void createItem(EnumType* itemType);
+
       public slots:
     
     /*!
@@ -248,10 +254,6 @@ namespace te
           \brief Sets the zoom of the View to the given value
         */
         virtual void setZoom(int zoom);
-
-        virtual void createLineItem();
-
-        virtual void createPolygonItem();
 
       signals:
 

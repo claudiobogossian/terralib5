@@ -18,7 +18,7 @@
  */
 
 // TerraLib
-#include "ViewZoomArea.h"
+#include "ZoomAreaTool.h"
 #include "../../../../geometry/Envelope.h"
 #include "../View.h"
 #include "../Scene.h"
@@ -29,8 +29,8 @@
 #include <QtGui/QPixmap>
 #include <QRubberBand>
 
-te::layout::ViewZoomArea::ViewZoomArea(View* view, QObject* parent) 
-  : ViewRubberBand(view, parent),
+te::layout::ZoomAreaTool::ZoomAreaTool(View* view, QObject* parent)
+: RubberBandTool(view, parent),
     m_zoomStarted(false)
 {
   // Active ZoomArea Tool
@@ -38,12 +38,12 @@ te::layout::ViewZoomArea::ViewZoomArea(View* view, QObject* parent)
   setCursor(newCursor);
 }
 
-te::layout::ViewZoomArea::~ViewZoomArea()
+te::layout::ZoomAreaTool::~ZoomAreaTool()
 {
 
 }
 
-bool te::layout::ViewZoomArea::mousePressEvent(QMouseEvent* e)
+bool te::layout::ZoomAreaTool::mousePressEvent(QMouseEvent* e)
 {
   if(e->button() != Qt::LeftButton)
     return false;
@@ -51,18 +51,18 @@ bool te::layout::ViewZoomArea::mousePressEvent(QMouseEvent* e)
   m_zoomStarted = true;
   m_rect = QRectF();
 
-  return ViewRubberBand::mousePressEvent(e);
+  return RubberBandTool::mousePressEvent(e);
 }
 
-bool te::layout::ViewZoomArea::mouseMoveEvent(QMouseEvent* e)
+bool te::layout::ZoomAreaTool::mouseMoveEvent(QMouseEvent* e)
 {
   if(!m_zoomStarted)
     return false;
 
-  return ViewRubberBand::mouseMoveEvent(e);
+  return RubberBandTool::mouseMoveEvent(e);
 }
 
-bool te::layout::ViewZoomArea::mouseReleaseEvent(QMouseEvent* e)
+bool te::layout::ZoomAreaTool::mouseReleaseEvent(QMouseEvent* e)
 {
   m_zoomStarted = false;
 
@@ -87,7 +87,7 @@ bool te::layout::ViewZoomArea::mouseReleaseEvent(QMouseEvent* e)
 
   QRect rect = m_rubberBand->geometry().normalized();
 
-  ViewRubberBand::mouseReleaseEvent(e);
+  RubberBandTool::mouseReleaseEvent(e);
 
   //Conversion to world coordinates
   QPolygonF poly = m_view->mapToScene(rect);
