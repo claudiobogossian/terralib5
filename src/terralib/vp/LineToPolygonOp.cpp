@@ -35,8 +35,8 @@
 // STL
 #include <vector>
 
-te::vp::LineToPolygonOp::LineToPolygonOp():
-  m_outDset("")
+te::vp::LineToPolygonOp::LineToPolygonOp()
+  : m_oidSet(0)
 {
 }
 
@@ -56,12 +56,12 @@ bool te::vp::LineToPolygonOp::paramsAreValid()
 
 void te::vp::LineToPolygonOp::setInput(te::da::DataSourcePtr inDsrc,
                                      std::string inDsetName,
-                                     std::auto_ptr<te::da::DataSetType> inDsetType,
+                                     std::auto_ptr<te::da::DataSetTypeConverter> converter,
                                      const te::da::ObjectIdSet* oidSet)
 {
   m_inDsrc = inDsrc;
   m_inDsetName = inDsetName;
-  m_inDsetType = inDsetType;
+  m_converter = converter;
   m_oidSet = oidSet;
 }
 
@@ -73,14 +73,13 @@ void te::vp::LineToPolygonOp::setOutput(te::da::DataSourcePtr outDsrc, std::stri
 
 std::auto_ptr<te::da::DataSetType> te::vp::LineToPolygonOp::buildOutDataSetType()
 {
-  std::auto_ptr<te::da::DataSetType> inDsType = m_inDsrc->getDataSetType(m_inDsetName);
   std::auto_ptr<te::da::DataSetType> outDsType(new te::da::DataSetType(m_outDset));
 
   std::string dSourceType = m_outDsrc->getType();
 
-  std::vector<te::dt::Property*> vecProps = m_inDsetType->getProperties();
+  std::vector<te::dt::Property*> vecProps = m_converter->getResult()->getProperties();
 
-  std::vector<te::dt::Property*> inPk = m_inDsetType->getPrimaryKey()->getProperties();
+  std::vector<te::dt::Property*> inPk = m_converter->getResult()->getPrimaryKey()->getProperties();
   std::string namePk = m_outDset;
 
   for (std::size_t p = 0; p < inPk.size(); ++p)
@@ -92,7 +91,7 @@ std::auto_ptr<te::da::DataSetType> te::vp::LineToPolygonOp::buildOutDataSetType(
   {
     for(std::size_t i = 0; i < vecProps.size(); ++i)
     {
-      if (vecProps[i]->getType() != te::dt::GEOMETRY_TYPE && vecProps[i]->getName() != "FID")
+      if(vecProps[i]->getType() != te::dt::GEOMETRY_TYPE && vecProps[i]->getName() != "FID")
       {
         outDsType->add(vecProps[i]->clone());
       }
@@ -132,6 +131,8 @@ std::auto_ptr<te::da::DataSetType> te::vp::LineToPolygonOp::buildOutDataSetType(
     }
     outDsType->setPrimaryKey(pk);
   }
+
+  
 
   return outDsType;
 }

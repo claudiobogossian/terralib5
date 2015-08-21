@@ -26,8 +26,6 @@
 #ifndef __TERRALIB_STMEMORY_INTERNAL_CONFIG_H
 #define __TERRALIB_STMEMORY_INTERNAL_CONFIG_H
 
-#include "../Config.h"
-
 /*!
   \def TE_STMEMORY_MODULE_NAME
 

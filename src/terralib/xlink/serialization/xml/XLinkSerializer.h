@@ -27,7 +27,7 @@
 #define __TERRALIB_XLINK_INTERNAL_XLINKSERIALIZER_H
 
 // TerraLib
-#include "terralib_config.h"
+#include "../../../BuildConfig.h"
 #include "../../Config.h"
 
 #ifdef TERRALIB_MOD_XML_ENABLED

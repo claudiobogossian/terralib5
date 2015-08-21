@@ -157,7 +157,7 @@ endif()
 
 
 include_directories(${CMAKE_BINARY_DIR})
-include_directories(${TERRALIB_ABSOLUTE_ROOT_DIR}/src ${CMAKE_INSTALL_PREFIX}/include)
+
 
 #
 # Build will generate files into a single folder
@@ -202,7 +202,7 @@ include(terralib_macros.cmake)
 # first check of libraries
 #
 
-find_package(Boost 1.53.0 REQUIRED system date_time chrono timer filesystem thread unit_test_framework)
+find_package(Boost 1.53.0 REQUIRED system date_time chrono timer filesystem thread)
 
 if(NOT Boost_FOUND)
   message(FATAL_ERROR "TerraLib: could not find required Boost libraries!")
@@ -693,8 +693,8 @@ configure_file(${CMAKE_SOURCE_DIR}/terralib-config-version.cmake.in
 configure_file(${CMAKE_SOURCE_DIR}/terralib-config.cmake.in
                ${CMAKE_BINARY_DIR}/terralib-config.cmake @ONLY)
 
-configure_file(${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/Config.h.in
-               ${CMAKE_BINARY_DIR}/terralib_config.h @ONLY)
+configure_file(${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/BuildConfig.h.in
+               ${CMAKE_BINARY_DIR}/terralib_buildconfig.h @ONLY)
 
 configure_file(${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/Defines.h.in
                ${CMAKE_BINARY_DIR}/terralib_defines.h @ONLY)
@@ -1267,7 +1267,7 @@ endif()
 
 file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/*.h)
 
-install(FILES ${CMAKE_BINARY_DIR}/terralib_config.h
+install(FILES ${CMAKE_BINARY_DIR}/terralib_buildconfig.h
               ${CMAKE_BINARY_DIR}/terralib_defines.h
               ${CMAKE_BINARY_DIR}/terralib_version.h
               ${TERRALIB_HDR_FILES}

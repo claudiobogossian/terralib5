@@ -26,9 +26,6 @@
 #ifndef __TERRALIB_QT_PLUGINS_EDIT_INTERNAL_CONFIG_H
 #define __TERRALIB_QT_PLUGINS_EDIT_INTERNAL_CONFIG_H
 
-// TerraLib
-#include "../../../Config.h"
-
 /*!
   \def TE_QT_PLUGIN_EDIT_PLUGIN_NAME
 

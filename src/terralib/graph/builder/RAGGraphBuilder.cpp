@@ -90,7 +90,7 @@ int  te::graph::RAGGraphBuilder::getEdgeId()
 }
 
 
-std::auto_ptr<te::da::DataSource> te::graph::RAGGraphBuilder::getDataSource(const std::string fileName)
+std::auto_ptr<te::da::DataSource> te::graph::RAGGraphBuilder::getDataSource(const std::string& fileName)
 {
   // Creates and connects data source
   std::map<std::string, std::string> connInfo;

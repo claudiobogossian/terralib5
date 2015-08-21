@@ -42,9 +42,8 @@
 #include <cassert>
 #include <memory>
 
-te::edit::Repository::Repository(const std::string& source, int srid)
-  : m_source(source),
-    m_srid(srid)
+te::edit::Repository::Repository(const std::string& source)
+  : m_source(source)
 {
 }
 

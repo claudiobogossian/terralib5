@@ -60,8 +60,8 @@ void ObjectId()
   std::auto_ptr<te::da::DataSet> identified = transactor->getDataSet("public.br_munic_2001",oids);
   assert(identified.get());
   assert(dataset->size() == identified->size());
-  bool ini = identified->moveBeforeFirst();
-  bool ini1 = dataset->moveBeforeFirst(); //otherwise if will be at the end of the dataset and nothing will be printed
+  /*bool ini = */identified->moveBeforeFirst();
+  /*bool ini1 = */dataset->moveBeforeFirst(); //otherwise if will be at the end of the dataset and nothing will be printed
  
   std::cout << "== DataSet Retrieved From Box == " << std::endl;
   PrintDataSet("public.br_munic_2001", dataset.get());
@@ -70,7 +70,7 @@ void ObjectId()
   PrintDataSet("munic_2001_identified",identified.get());
 
 // Another way to get oids using DataSetType...tries to use the pk, uk or all properties (less geom) if pk and uk do not exist.
-  bool ini2 = dataset->moveBeforeFirst();
+  /*bool ini2 =*/ dataset->moveBeforeFirst();
   std::auto_ptr<te::da::DataSetType> dt1 =  transactor->getDataSetType("public.br_munic_2001");
   te::da::ObjectIdSet* oids1 = te::da::GenerateOIDSet( dataset.get(), dt1.get());
   std::auto_ptr<te::da::DataSet> identified1 = transactor->getDataSet("public.br_munic_2001",oids1);
@@ -136,7 +136,7 @@ void ObjectId_query()
   std::cout << "DataSet size: " << dataset->size() << std::endl;
 
 // Building Select from oids and property names, and using transactor->query(buildselect.get());
-  bool ini2 = dataset->moveBeforeFirst();
+  /*bool ini2 = */dataset->moveBeforeFirst();
   std::auto_ptr<te::da::DataSetType> dt1 =  transactor->getDataSetType("br_munic_2001_wout_pk");
 
   std::vector<std::string> pnames;
@@ -145,7 +145,7 @@ void ObjectId_query()
   te::da::ObjectIdSet* oids = te::da::GenerateOIDSet( dataset.get(), pnames);
 
 // Building te::da::Select expression from oids and property names
-  bool ini1 = dataset->moveBeforeFirst();
+  /*bool ini1 =*/ dataset->moveBeforeFirst();
   std::vector<std::string> pnames1;
   std::vector<int> ptypes1;
   te::da::GetPropertyInfo(dataset.get(), pnames1,ptypes1);

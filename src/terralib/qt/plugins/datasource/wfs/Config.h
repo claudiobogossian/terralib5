@@ -26,9 +26,6 @@
 #ifndef __TERRALIB_QT_PLUGINS_DATASOURCE_WFS_INTERNAL_CONFIG_H
 #define __TERRALIB_QT_PLUGINS_DATASOURCE_WFS_INTERNAL_CONFIG_H
 
-// TerraLib
-#include "../../../../Config.h"
-
 #define TE_QT_PLUGIN_DATASOURCE_WFS_PLUGIN_NAME "te.qt.datasource.wfs"
 
 /*!

@@ -1199,7 +1199,7 @@ void TsGeometry::tcCreatePolygon()
   CPPUNIT_ASSERT(poly.is3D() == false);
   CPPUNIT_ASSERT(poly.isMeasured() == false);
   std::auto_ptr<te::gm::Geometry> boundary(poly.getBoundary());
-  size_t np = poly.getNPoints();
+  /*size_t np = */poly.getNPoints();
   //CPPUNIT_ASSERT(poly.getNPoints() == 1);
 
   std::auto_ptr<te::gm::Geometry> clone(static_cast<te::gm::Geometry*>(poly.clone()));

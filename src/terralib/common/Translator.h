@@ -27,9 +27,8 @@
 #define __TERRALIB_COMMON_INTERNAL_TRANSLATOR_H
 
 // TerraLib
+#include "../BuildConfig.h"
 #include "Config.h"
-
-#include "terralib_config.h"
 
 #ifdef TERRALIB_TRANSLATOR_ENABLED
 #include "Singleton.h"

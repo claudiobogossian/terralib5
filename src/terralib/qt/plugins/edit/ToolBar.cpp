@@ -270,7 +270,7 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
       assert(ds.get());
 
       std::set<int> gproperty;
-      gproperty.insert(gpos);
+      gproperty.insert((const int)gpos);
 
       std::vector<std::set<int> > properties;
       for (std::size_t i = 0; i < memds->size(); ++i)

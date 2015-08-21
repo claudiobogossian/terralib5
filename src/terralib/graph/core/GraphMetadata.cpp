@@ -26,6 +26,7 @@
 // TerraLib Includes
 #include "../../geometry/Envelope.h"
 #include "../../dataaccess/datasource/DataSource.h"
+#include "../../srs/Config.h"
 #include "../Globals.h"
 #include "EdgeProperty.h"
 #include "VertexProperty.h"
@@ -33,6 +34,7 @@
 
 te::graph::GraphMetadata::GraphMetadata(te::da::DataSource* ds) : 
   m_id(-1),
+  m_srid(TE_UNKNOWN_SRS),
   m_extent(0),
   m_type(""),
   m_ds(ds),

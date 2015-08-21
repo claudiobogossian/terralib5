@@ -53,9 +53,8 @@
 #include "../Exception.h"
 #include "LDDGraphBuilder.h"
 
-te::graph::LDDGraphBuilder::LDDGraphBuilder() : AbstractGraphBuilder()
+te::graph::LDDGraphBuilder::LDDGraphBuilder() : AbstractGraphBuilder(), m_raster(0), m_edgeId(0)
 {
-  m_edgeId = 0;
 }
 
 te::graph::LDDGraphBuilder::~LDDGraphBuilder()

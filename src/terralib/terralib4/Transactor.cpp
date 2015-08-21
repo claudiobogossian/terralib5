@@ -187,33 +187,33 @@ std::auto_ptr<te::da::DataSet> terralib4::Transactor::getDataSet(const std::stri
   }
 }
 
-std::auto_ptr<te::da::DataSet> terralib4::Transactor::getDataSet(const std::string& name,
-                                                                 const std::string& propertyName,
-                                                                 const te::gm::Envelope* e,
-                                                                 te::gm::SpatialRelation r,
-                                                                 te::common::TraverseType travType,
-                                                                 bool /*connected*/,
-                                                                 const te::common::AccessPolicy /*accessPolicy*/)
+std::auto_ptr<te::da::DataSet> terralib4::Transactor::getDataSet(const std::string&,
+                                                                 const std::string&,
+                                                                 const te::gm::Envelope*,
+                                                                 te::gm::SpatialRelation,
+                                                                 te::common::TraverseType,
+                                                                 bool,
+                                                                 const te::common::AccessPolicy)
 {
   throw Exception(TE_TR("This method is not supported by TerraLib 4.x driver!"));
 }
 
-std::auto_ptr<te::da::DataSet> terralib4::Transactor::getDataSet(const std::string& name,
-                                                                 const std::string& propertyName,
-                                                                 const te::gm::Geometry* g,
-                                                                 te::gm::SpatialRelation r,
-                                                                 te::common::TraverseType travType,
-                                                                 bool /*connected*/,
-                                                                 const te::common::AccessPolicy /*accessPolicy*/)
+std::auto_ptr<te::da::DataSet> terralib4::Transactor::getDataSet(const std::string&,
+                                                                 const std::string&,
+                                                                 const te::gm::Geometry*,
+                                                                 te::gm::SpatialRelation,
+                                                                 te::common::TraverseType,
+                                                                 bool,
+                                                                 const te::common::AccessPolicy)
 {
   throw Exception(TE_TR("This method is not supported by TerraLib 4.x driver!"));
 }
 
-std::auto_ptr<te::da::DataSet> terralib4::Transactor::getDataSet(const std::string& name,
-                                                                 const ObjectIdSet* oids, 
-                                                                 te::common::TraverseType travType, 
-                                                                 bool /*connected*/,
-                                                                 const te::common::AccessPolicy /*accessPolicy*/)
+std::auto_ptr<te::da::DataSet> terralib4::Transactor::getDataSet(const std::string&,
+                                                                 const ObjectIdSet*, 
+                                                                 te::common::TraverseType, 
+                                                                 bool,
+                                                                 const te::common::AccessPolicy)
 {
   throw Exception(TE_TR("This method is not supported by TerraLib 4.x driver!"));
 }
@@ -246,7 +246,7 @@ void terralib4::Transactor::execute(const std::string& /*command*/)
   throw Exception(TE_TR("TerraLib 4.x driver doesn't support command execution!"));
 }
 
-std::auto_ptr<te::da::PreparedQuery> terralib4::Transactor::getPrepared(const std::string& qName)
+std::auto_ptr<te::da::PreparedQuery> terralib4::Transactor::getPrepared(const std::string&)
 {
   throw Exception(TE_TR("TerraLib 4.x driver doesn't support prepared queries!"));
 }
@@ -265,7 +265,7 @@ boost::int64_t terralib4::Transactor::getLastGeneratedId()
   throw Exception(TE_TR("TerraLib 4.x driver is read-only!"));
 }
 
-std::string terralib4::Transactor::escape(const std::string& value)
+std::string terralib4::Transactor::escape(const std::string&)
 {
   throw Exception(TE_TR("This method is not supported by TerraLib 4.x driver!"));
 }
@@ -524,8 +524,6 @@ void terralib4::Transactor::addProperty(const std::string& datasetName, te::dt::
   if(propertyExists(datasetName, name))
     throw Exception((boost::format(TE_TR("The dataset already \"%1%\" has a property with this name \"%2%\"!")) % datasetName % name).str());
 
-  int pType = p->getType();
-
   TeAttributeRep newProperty;
 
   newProperty.name_ = name;
@@ -559,14 +557,14 @@ void terralib4::Transactor::addProperty(const std::string& datasetName, te::dt::
   m_db->addColumn(tableName, newProperty);
 }
 
-void terralib4::Transactor::dropProperty(const std::string& datasetName, const std::string& name)
+void terralib4::Transactor::dropProperty(const std::string&, const std::string&)
 {
   throw;
 }
 
-void terralib4::Transactor::renameProperty(const std::string& datasetName,
-                    const std::string& propertyName,
-                    const std::string& newPropertyName)
+void terralib4::Transactor::renameProperty(const std::string&,
+                    const std::string&,
+                    const std::string&)
 {
   throw Exception(TE_TR("This method is not supported by TerraLib 4.x driver!"));
 }
@@ -588,118 +586,118 @@ bool terralib4::Transactor::primaryKeyExists(const std::string& datasetName, con
   return false;
 }
 
-void terralib4::Transactor::addPrimaryKey(const std::string& datasetName, te::da::PrimaryKey* pk)
+void terralib4::Transactor::addPrimaryKey(const std::string&, te::da::PrimaryKey*)
 {
   throw Exception(TE_TR("This method is not supported by TerraLib 4.x driver!"));
 }
 
-void terralib4::Transactor::dropPrimaryKey(const std::string& datasetName)
+void terralib4::Transactor::dropPrimaryKey(const std::string&)
 {
   throw Exception(TE_TR("This method is not supported by TerraLib 4.x driver!"));
 }
 
-std::auto_ptr<te::da::ForeignKey> terralib4::Transactor::getForeignKey(const std::string& datasetName, const std::string& name)
+std::auto_ptr<te::da::ForeignKey> terralib4::Transactor::getForeignKey(const std::string&, const std::string&)
 {
   throw Exception(TE_TR("This method is not supported by TerraLib 4.x driver!"));
 }
 
-std::vector<std::string> terralib4::Transactor::getForeignKeyNames(const std::string& datasetName)
+std::vector<std::string> terralib4::Transactor::getForeignKeyNames(const std::string&)
 {
   throw Exception(TE_TR("This method is not supported by TerraLib 4.x driver!"));
 }
 
-bool terralib4::Transactor::foreignKeyExists(const std::string& datasetName, const std::string& name)
+bool terralib4::Transactor::foreignKeyExists(const std::string&, const std::string&)
 {
   throw Exception(TE_TR("This method is not supported by TerraLib 4.x driver!"));
 }
 
-void terralib4::Transactor::addForeignKey(const std::string& datasetName, te::da::ForeignKey* fk)
+void terralib4::Transactor::addForeignKey(const std::string&, te::da::ForeignKey*)
 {
   throw Exception(TE_TR("This method is not supported by TerraLib 4.x driver!"));
 }
 
-void terralib4::Transactor::dropForeignKey(const std::string& datasetName, const std::string& fkName)
+void terralib4::Transactor::dropForeignKey(const std::string&, const std::string&)
 {
   throw Exception(TE_TR("This method is not supported by TerraLib 4.x driver!"));
 }
 
-std::auto_ptr<te::da::UniqueKey> terralib4::Transactor::getUniqueKey(const std::string& datasetName, const std::string& name)
+std::auto_ptr<te::da::UniqueKey> terralib4::Transactor::getUniqueKey(const std::string&, const std::string&)
 {
   throw Exception(TE_TR("This method is not supported by TerraLib 4.x driver!"));
 }
 
-std::vector<std::string> terralib4::Transactor::getUniqueKeyNames(const std::string& datasetName)
+std::vector<std::string> terralib4::Transactor::getUniqueKeyNames(const std::string&)
 {
   throw Exception(TE_TR("This method is not supported by TerraLib 4.x driver!"));
 }
 
-bool terralib4::Transactor::uniqueKeyExists(const std::string& datasetName, const std::string& name)
+bool terralib4::Transactor::uniqueKeyExists(const std::string&, const std::string&)
 {
   throw Exception(TE_TR("This method is not supported by TerraLib 4.x driver!"));
 }
 
-void terralib4::Transactor::addUniqueKey(const std::string& datasetName, te::da::UniqueKey* uk)
+void terralib4::Transactor::addUniqueKey(const std::string&, te::da::UniqueKey*)
 {
   throw Exception(TE_TR("This method is not supported by TerraLib 4.x driver!"));
 }
 
-void terralib4::Transactor::dropUniqueKey(const std::string& datasetName, const std::string& name)
+void terralib4::Transactor::dropUniqueKey(const std::string&, const std::string&)
 {
   throw Exception(TE_TR("This method is not supported by TerraLib 4.x driver!"));
 }
 
-std::auto_ptr<te::da::CheckConstraint> terralib4::Transactor::getCheckConstraint(const std::string& datasetName, const std::string& name)
+std::auto_ptr<te::da::CheckConstraint> terralib4::Transactor::getCheckConstraint(const std::string&, const std::string&)
 {
   throw Exception(TE_TR("This method is not supported by TerraLib 4.x driver!"));
 }
 
-std::vector<std::string> terralib4::Transactor::getCheckConstraintNames(const std::string& datasetName)
+std::vector<std::string> terralib4::Transactor::getCheckConstraintNames(const std::string&)
 {
   throw Exception(TE_TR("This method is not supported by TerraLib 4.x driver!"));
 }
 
-bool terralib4::Transactor::checkConstraintExists(const std::string& datasetName, const std::string& name)
+bool terralib4::Transactor::checkConstraintExists(const std::string&, const std::string&)
 {
   throw Exception(TE_TR("This method is not supported by TerraLib 4.x driver!"));
 }
 
-void terralib4::Transactor::addCheckConstraint(const std::string& datasetName, te::da::CheckConstraint* cc)
+void terralib4::Transactor::addCheckConstraint(const std::string&, te::da::CheckConstraint*)
 {
   throw Exception(TE_TR("This method is not supported by TerraLib 4.x driver!"));
 }
 
-void terralib4::Transactor::dropCheckConstraint(const std::string& datasetName, const std::string& name)
+void terralib4::Transactor::dropCheckConstraint(const std::string&, const std::string&)
 {
   throw Exception(TE_TR("This method is not supported by TerraLib 4.x driver!"));
 }
 
-std::auto_ptr<te::da::Index> terralib4::Transactor::getIndex(const std::string& datasetName, const std::string& name)
+std::auto_ptr<te::da::Index> terralib4::Transactor::getIndex(const std::string&, const std::string&)
 {
   throw Exception(TE_TR("This method is not supported by TerraLib 4.x driver!"));
 }
 
-std::vector<std::string> terralib4::Transactor::getIndexNames(const std::string& datasetName)
+std::vector<std::string> terralib4::Transactor::getIndexNames(const std::string&)
 {
   throw Exception(TE_TR("This method is not supported by TerraLib 4.x driver!"));
 }
 
-bool terralib4::Transactor::indexExists(const std::string& datasetName, const std::string& name)
+bool terralib4::Transactor::indexExists(const std::string&, const std::string&)
 {
   throw Exception(TE_TR("This method is not supported by TerraLib 4.x driver!"));
 }
 
-void terralib4::Transactor::addIndex(const std::string& datasetName, te::da::Index* idx,
-              const std::map<std::string, std::string>& options)
+void terralib4::Transactor::addIndex(const std::string&, te::da::Index*,
+              const std::map<std::string, std::string>&)
 {
   throw Exception(TE_TR("This method is not supported by TerraLib 4.x driver!"));
 }
 
-void terralib4::Transactor::dropIndex(const std::string& datasetName, const std::string& idxName)
+void terralib4::Transactor::dropIndex(const std::string&, const std::string&)
 {
   throw Exception(TE_TR("This method is not supported by TerraLib 4.x driver!"));
 }
 
-std::auto_ptr<te::da::Sequence> terralib4::Transactor::getSequence(const std::string& name)
+std::auto_ptr<te::da::Sequence> terralib4::Transactor::getSequence(const std::string&)
 {
   throw Exception(TE_TR("This method is not supported by TerraLib 4.x driver!"));
 }
@@ -709,34 +707,34 @@ std::vector<std::string> terralib4::Transactor::getSequenceNames()
   throw Exception(TE_TR("This method is not supported by TerraLib 4.x driver!"));
 }
 
-bool terralib4::Transactor::sequenceExists(const std::string& name)
+bool terralib4::Transactor::sequenceExists(const std::string&)
 {
   throw Exception(TE_TR("This method is not supported by TerraLib 4.x driver!"));
 }
 
-void terralib4::Transactor::addSequence(te::da::Sequence* sequence)
+void terralib4::Transactor::addSequence(te::da::Sequence*)
 {
   throw Exception(TE_TR("This method is not supported by TerraLib 4.x driver!"));
 }
 
-void terralib4::Transactor::dropSequence(const std::string& name)
+void terralib4::Transactor::dropSequence(const std::string&)
 {
   throw Exception(TE_TR("This method is not supported by TerraLib 4.x driver!"));
 }
 
-std::auto_ptr<te::gm::Envelope> terralib4::Transactor::getExtent(const std::string& datasetName,
-                                          const std::string& /*propertyName*/)
+std::auto_ptr<te::gm::Envelope> terralib4::Transactor::getExtent(const std::string&,
+                                          const std::string&)
 {
   throw Exception(TE_TR("This method is not supported by TerraLib 4.x driver!"));
 }
 
-std::auto_ptr<te::gm::Envelope> terralib4::Transactor::getExtent(const std::string& datasetName,
-                                                               std::size_t /*propertyPos*/)
+std::auto_ptr<te::gm::Envelope> terralib4::Transactor::getExtent(const std::string&,
+                                                               std::size_t)
 {
   throw Exception(TE_TR("This method is not supported by TerraLib 4.x driver!"));
 }
 
-std::size_t terralib4::Transactor::getNumberOfItems(const std::string& datasetName)
+std::size_t terralib4::Transactor::getNumberOfItems(const std::string&)
 {
   throw Exception(TE_TR("This method is not supported by TerraLib 4.x driver!"));
 }
@@ -757,52 +755,52 @@ bool terralib4::Transactor::dataSetExists(const std::string& name)
   return false;
 }
 
-void terralib4::Transactor::createDataSet(te::da::DataSetType* dt, const std::map<std::string, std::string>& options)
+void terralib4::Transactor::createDataSet(te::da::DataSetType*, const std::map<std::string, std::string>&)
 {
   throw Exception(TE_TR("This method is not supported by TerraLib 4.x driver!"));
 }
 
-void terralib4::Transactor::cloneDataSet(const std::string& name,
-                  const std::string& cloneName,
-                  const std::map<std::string, std::string>& options)
+void terralib4::Transactor::cloneDataSet(const std::string&,
+                  const std::string&,
+                  const std::map<std::string, std::string>&)
 {
   throw Exception(TE_TR("This method is not supported by TerraLib 4.x driver!"));
 }
 
-void terralib4::Transactor::dropDataSet(const std::string& name)
+void terralib4::Transactor::dropDataSet(const std::string&)
 {
   throw Exception(TE_TR("This method is not supported by TerraLib 4.x driver!"));
 }
 
-void terralib4::Transactor::renameDataSet(const std::string& name, const std::string& newName)
+void terralib4::Transactor::renameDataSet(const std::string&, const std::string&)
 {
   throw Exception(TE_TR("This method is not supported by TerraLib 4.x driver!"));
 }
 
-void terralib4::Transactor::add(const std::string& datasetName,
-                              te::da::DataSet* d,
-                              const std::map<std::string, std::string>& options,
-                              std::size_t limit)
+void terralib4::Transactor::add(const std::string&,
+                              te::da::DataSet*,
+                              const std::map<std::string, std::string>&,
+                              std::size_t)
 {
   throw Exception(TE_TR("This method is not supported by TerraLib 4.x driver!"));
 }
 
-void terralib4::Transactor::remove(const std::string& datasetName, const te::da::ObjectIdSet* oids)
+void terralib4::Transactor::remove(const std::string&, const te::da::ObjectIdSet*)
 {
   throw Exception(TE_TR("This method is not supported by TerraLib 4.x driver!"));
 }
 
-void terralib4::Transactor::update(const std::string& datasetName,
-                                 te::da::DataSet* dataset,
-                                 const std::vector<std::size_t>& properties,
-                                 const te::da::ObjectIdSet* oids,
-                                 const std::map<std::string, std::string>& options,
-                                 std::size_t limit)
+void terralib4::Transactor::update(const std::string&,
+                                 te::da::DataSet*,
+                                 const std::vector<std::size_t>&,
+                                 const te::da::ObjectIdSet*,
+                                 const std::map<std::string, std::string>&,
+                                 std::size_t)
 {
   throw Exception(TE_TR("This method is not supported by TerraLib 4.x driver!"));
 }
 
-void terralib4::Transactor::optimize(const std::map<std::string, std::string>& opInfo)
+void terralib4::Transactor::optimize(const std::map<std::string, std::string>&)
 {
   throw Exception(TE_TR("This method is not supported by TerraLib 4.x driver!"));
 }
@@ -896,7 +894,7 @@ std::vector<::terralib4::ThemeInfo> terralib4::Transactor::getTL4Themes()
   return themes;
 }
 
-TeTheme* terralib4::Transactor::getTL4Theme(const ::terralib4::ThemeInfo theme)
+TeTheme* terralib4::Transactor::getTL4Theme(const ::terralib4::ThemeInfo& theme)
 {
   std::map<int, TeAbstractTheme*>::iterator it = m_themeMap.begin();
 

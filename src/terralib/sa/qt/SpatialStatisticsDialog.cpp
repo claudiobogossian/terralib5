@@ -395,7 +395,8 @@ void te::sa::SpatialStatisticsDialog::onOkPushButtonClicked()
 
   //associate the input geometry attribute to the GPM
   te::gm::GeometryProperty* gmProp = te::da::GetFirstGeomProperty(dataSetType.get());
-  te::sa::AssociateGPMVertexAttribute(gpm.get(), ds.get(), dsLayer->getDataSetName(), attrLink, gmProp->getName(), gmProp->getType(), gmProp->getSRID(), gmProp->getGeometryType());
+
+  /*int geomIdx = */te::sa::AssociateGPMVertexAttribute(gpm.get(), ds.get(), dsLayer->getDataSetName(), attrLink, gmProp->getName(), gmProp->getType(), gmProp->getSRID(), gmProp->getGeometryType());
 
   try
   {
@@ -517,7 +518,7 @@ void te::sa::SpatialStatisticsDialog::onTargetDatasourceToolButtonPressed()
 
   std::list<te::da::DataSourceInfoPtr> dsPtrList = dlg.getSelecteds();
 
-  if(dsPtrList.size() <= 0)
+  if(dsPtrList.empty())
     return;
 
   std::list<te::da::DataSourceInfoPtr>::iterator it = dsPtrList.begin();

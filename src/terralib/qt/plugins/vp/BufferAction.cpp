@@ -48,7 +48,7 @@ te::qt::plugins::vp::BufferAction::~BufferAction()
 {
 }
 
-void te::qt::plugins::vp::BufferAction::onActionActivated(bool checked)
+void te::qt::plugins::vp::BufferAction::onActionActivated(bool)
 {
   QWidget* parent = te::qt::af::ApplicationController::getInstance().getMainWindow();
   te::vp::BufferDialog dlg(parent);

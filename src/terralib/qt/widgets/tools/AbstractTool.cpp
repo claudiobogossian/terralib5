@@ -44,7 +44,7 @@ te::qt::widgets::AbstractTool::AbstractTool(te::qt::widgets::MapDisplay* display
 te::qt::widgets::AbstractTool::~AbstractTool()
 {
   // Roll back the default map display cursor
-  m_display->setCursor(Qt::ArrowCursor);
+  //m_display->setCursor(Qt::ArrowCursor);
 }
 
 bool te::qt::widgets::AbstractTool::eventFilter(QObject* watched, QEvent* e)

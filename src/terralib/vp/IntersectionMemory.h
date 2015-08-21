@@ -30,6 +30,7 @@
 
 //Terralib
 #include "../common/Exception.h"
+#include "../common/STLUtils.h"
 #include "../datatype/Property.h"
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../geometry/Geometry.h"
@@ -69,7 +70,7 @@ namespace te
       struct IntersectionMember
       {
         te::da::DataSetType* dt;
-        te::da::DataSet* ds;
+        te::da::DataSet* ds;                    //gets the ownership of the dataset
         std::vector<te::dt::Property*> props;
       };
 
@@ -77,9 +78,8 @@ namespace te
 
 
       std::pair<te::da::DataSetType*, te::da::DataSet*> pairwiseIntersection(std::string newName, 
-                                                                            IntersectionMember firstMember, 
-                                                                            IntersectionMember secondMember,
-                                                                            std::vector<int> outputSRID);
+                                                                             IntersectionMember firstMember, 
+                                                                             IntersectionMember secondMember);
 
       te::da::DataSetType* createDataSetType(std::string newName, 
                                             te::da::DataSetType* firstDt,

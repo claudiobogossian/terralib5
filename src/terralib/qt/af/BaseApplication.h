@@ -105,6 +105,11 @@ namespace te
 
           void resetTerraLib(const bool& status);
 
+          LayerExplorer* getLayerExplorer() const
+          {
+            return m_explorer;
+          }
+
         protected slots:
 
           void onApplicationTriggered(te::qt::af::evt::Event* evt);
