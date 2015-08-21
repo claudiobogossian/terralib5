@@ -40,11 +40,6 @@ te::edit::SubtractAreaTool::SubtractAreaTool(te::qt::widgets::MapDisplay* displa
 
 te::edit::SubtractAreaTool::~SubtractAreaTool()
 {
-  UndoStackManager::getInstance().getUndoStack()->clear();
-
-  te::common::FreeContents(m_updateWatches);
-  m_updateWatches.clear();
-  
   delete m_feature;
 }
 
@@ -59,8 +54,7 @@ bool te::edit::SubtractAreaTool::mousePressEvent(QMouseEvent* e)
     m_isFinished = false;
   }
 
-  if (m_feature == 0)
-    pickFeature(m_layer);
+  pickFeature(m_layer);
 
   return te::edit::CreateLineTool::mousePressEvent(e);
 }

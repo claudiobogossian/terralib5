@@ -43,11 +43,6 @@ te::edit::AggregateAreaTool::AggregateAreaTool(te::qt::widgets::MapDisplay* disp
 
 te::edit::AggregateAreaTool::~AggregateAreaTool()
 {
-  UndoStackManager::getInstance().getUndoStack()->clear();
-
-  te::common::FreeContents(m_updateWatches);
-  m_updateWatches.clear();
-
   delete m_feature;
 }
 
@@ -62,8 +57,7 @@ bool te::edit::AggregateAreaTool::mousePressEvent(QMouseEvent* e)
     m_isFinished = false;
   }
 
-  if (m_feature == 0)
-    pickFeature(m_layer);
+  pickFeature(m_layer);
 
   return te::edit::CreateLineTool::mousePressEvent(e);
 }

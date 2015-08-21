@@ -55,12 +55,12 @@ void  te::edit::UpdateCommand::undo()
   if (m_updateItems.empty())
     return;
 
-  if (RepositoryManager::getInstance().hasIdentify(m_layer->getId(), m_updateItems[m_updateItems.size() - 2]->getId()->clone()) == true)
+  if (RepositoryManager::getInstance().hasIdentify(m_layer->getId(), m_updateItems[m_updateItems.size() - 2]->getId()) == true)
   {
 
-    Feature* f = new Feature(m_updateItems[m_updateItems.size() - 2]->getId()->clone(), m_updateItems[m_updateItems.size() - 2]->getGeometry(), m_updateItems[m_updateItems.size() - 2]->getOperationType());
+    Feature* f = new Feature(m_updateItems[m_updateItems.size() - 2]->getId(), m_updateItems[m_updateItems.size() - 2]->getGeometry(), m_updateItems[m_updateItems.size() - 2]->getOperationType());
 
-    RepositoryManager::getInstance().addFeature(m_layer->getId(), f);
+    RepositoryManager::getInstance().addFeature(m_layer->getId(), f->clone());
 
     draw(m_undoCommandType);
 
@@ -88,9 +88,9 @@ void te::edit::UpdateCommand::redo()
   if (resultFound)
   {
 
-    Feature* f = new Feature(m_updateItems[m_updateItems.size() - 1]->getId()->clone(), m_updateItems[m_updateItems.size() - 1]->getGeometry(), m_updateItems[m_updateItems.size() - 1]->getOperationType());
+    Feature* f = new Feature(m_updateItems[m_updateItems.size() - 1]->getId(), m_updateItems[m_updateItems.size() - 1]->getGeometry(), m_updateItems[m_updateItems.size() - 1]->getOperationType());
 
-    RepositoryManager::getInstance().addFeature(m_layer->getId(), f);
+    RepositoryManager::getInstance().addFeature(m_layer->getId(), f->clone());
 
     draw(m_redoCommandType);
 

@@ -59,9 +59,9 @@ TerraLib Team at <terralib-team@terralib.org>.
 
 te::edit::MergeGeometriesTool::MergeGeometriesTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, QObject* parent)
   : GeometriesUpdateTool(display, layer.get(), parent),
-//m_updateWatches(std::vector<Feature*>()),
-m_oidRef(0),
-m_oidsRemoved(0)
+//m_updateWatches(0),
+  m_oidRef(0),
+  m_oidsRemoved(0)
 {
   // Signals & slots
   connect(m_display, SIGNAL(extentChanged()), SLOT(onExtentChanged()));
@@ -307,7 +307,7 @@ void te::edit::MergeGeometriesTool::storeUndoCommand()
 {
   //m_updateWatches.push_back(m_feature->clone());
 
-  //QUndoCommand* command = new UpdateCommand(m_StackManager, m_updateWatches, m_display, m_layer);
+  //QUndoCommand* command = new AggregateCommand(m_StackManager, m_updateWatches, m_display, m_layer);
   //m_StackManager->addUndoStack(command);
 }
 
