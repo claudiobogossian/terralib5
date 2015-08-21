@@ -51,10 +51,10 @@ namespace te
         \brief Constructor
         It constructs a Hidro Item.
         \param title The item title.
-        \param file The absolute file path name.
+        \param folder The absolute folder path name.
         \param display Where the item is displayed.
         */
-        HidroItem(const QString& title, const QString& file, te::qt::widgets::MapDisplay* display);
+        HidroItem(const QString& title, const QString& folder, te::qt::widgets::MapDisplay* display);
 
         /*!
         \brief Destructor

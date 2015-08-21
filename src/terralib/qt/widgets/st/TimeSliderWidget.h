@@ -122,7 +122,22 @@ namespace te
 
           void addTemporalImages(const QString& filePath);
 
+          /*!
+            \brief This method is used to load a temporal image data.
+            NOTE: It should be edited to enter with new types of temporal images.
+
+            Param path The folder that has temporal images and the control file.
+          */
           te::qt::widgets::ImageItem* loadImageData(const QString& path);
+          /*!
+            \brief This method is used to find out the type of temporal image has the folder.
+            NOTE: It should be edited to enter with new types of temporal images.
+            NOTE: You must find a way to discover its kind.
+
+            \param path The folder that has temporal images and the control file.
+            \return The temporal image type.
+          */
+          QString getTemporalImageType(const QString& path);
 
           /*!
             \brief Add trajectory to animation scene.
@@ -282,35 +297,13 @@ namespace te
         */
         QDateTime fixDateTimeEdit(QDateTimeEdit* dte, const QDateTime& t);
 
-        /*!
-          \brief
-          Draw the pixmap item.
-
-          /param pi The pixmap item.
-          /param dwrect The rect of map display in world coordinates.
-          /param painter The painter.
-        */
-        void drawImageItem(ImageItem* pi, QPainter* painter);
-
-        QImage* getImage(te::qt::widgets::ImageItem* pi);
-
         void loadAnimation(const QString& title);
 
         void removeAnimation(const QString& title);
 
         void removeOnPropertieCombo(const QString& title);
 
-        /*!
-          \brief
-          Draw the trajectory icon.
-
-          /param t The trajectory item.
-          /param pos The top left position in device coordinates.
-          /param painter The painter.
-        */
-        void drawTrajectoryIcon(const TrajectoryItem* t, const QPoint& pos, QPainter* painter);
-
-        bool trajectoryAlreadyExists(QPair<QString, te::st::TrajectoryDataSetLayer*>& item);
+        bool trajectoryAlreadyExists(QPair<QString, QString>& item);
         bool coverageAlreadyExists(QPair<QString, QString>& item);
 
           /*!

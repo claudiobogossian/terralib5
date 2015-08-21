@@ -75,10 +75,10 @@ namespace te
         \brief Constructor
         It constructs a Image Item.
         \param title The image item title.
-        \param file The absolute file path name.
+        \param folder The absolute folder path name.
         \param display Where the pixmap item is displayed.
         */
-        ImageItem(const QString& title, const QString& file, te::qt::widgets::MapDisplay* display);
+        ImageItem(const QString& title, const QString& folder, te::qt::widgets::MapDisplay* display);
 
         /*!
         \brief Destructor
@@ -111,6 +111,14 @@ namespace te
         void draw();
 
         /*!
+        \brief It try do reprojection using affine transfom.
+        For small areas it gives a good result, however, for larger areas the result is not good.
+
+        \param painter Painter that will be configured to try do reprojection.
+        */
+        void tryDoReprojectionUsingAffineTransform(QPainter* painter);
+
+        /*!
         \brief Adjust data for a given time animation period.
         */
         void adjustDataToAnimationTemporalExtent();
@@ -136,7 +144,7 @@ namespace te
         \Param r Image rect in device coordinate.
         \Param ima Pointer to QImage.
         */
-        void drawCurrentImage(QPainter* p, QRect& r);
+        virtual void drawCurrentImage(QPainter* p);
 
         /*!
         \brief It gets image rect in device coordinate.

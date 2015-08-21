@@ -13,14 +13,15 @@
 #include <QtCore/QMutex>
 
 
-te::qt::widgets::TrajectoryItem::TrajectoryItem(const QString& title, te::qt::widgets::MapDisplay* display, const QString& file, const QSize& size)
+te::qt::widgets::TrajectoryItem::TrajectoryItem(const QString& title, const QString& id, te::qt::widgets::MapDisplay* display, const QString& file, const QSize& size)
   : te::qt::widgets::AnimationItem(title, display),
     m_iconFile(file),
     m_iconSize(size),
     m_drawTrail(true),
     m_forwardColor(Qt::blue),
     m_backwardColor(Qt::magenta),
-    m_lineWidth(2)
+    m_lineWidth(2),
+    m_layerId(id)
 {
   if(m_iconSize.isValid() == false)
     m_iconSize = QSize(20, 20);
@@ -345,4 +346,62 @@ void te::qt::widgets::TrajectoryItem::draw()
     as->m_mutex.unlock();
   }
   m_display->update();
+}
+
+void te::qt::widgets::TrajectoryItem::drawIcon(QPainter* painter)
+{
+  QPoint p = getPosInDeviceCoordinate();
+  QRect r = pixmap().rect();
+  r.moveCenter(p);
+  QRect dr = m_display->rect();
+  if (dr.intersects(r))
+  {
+    QPoint pos(r.topLeft());
+    if (m_opacity == 255)
+      painter->drawPixmap(pos, pixmap());
+    else
+    {
+      QSize size = pixmap().size();
+      int width = size.width();
+      int height = size.height();
+      QImage ima = pixmap().toImage();
+
+      if (ima.format() == QImage::Format_ARGB32)
+      {
+        for (int i = 0; i < height; ++i)
+        {
+          unsigned char* u = ima.scanLine(i);
+          for (int j = 0; j < width; ++j)
+          {
+            QRgb* v = (QRgb*)(u + (j << 2));
+            if (qAlpha(*v) < 50)
+              *v = qRgba(255, 255, 255, 0);
+            else
+              *v = qRgba(qRed(*v), qGreen(*v), qBlue(*v), m_opacity);
+          }
+        }
+        painter->drawImage(pos, ima);
+      }
+      else
+      {
+        QImage img(size, QImage::Format_ARGB32);
+        for (int i = 0; i < height; ++i)
+        {
+          unsigned char* u = ima.scanLine(i);
+          unsigned char* uu = img.scanLine(i);
+
+          for (int j = 0; j < width; ++j)
+          {
+            QRgb* v = (QRgb*)(u + (j << 2));
+            QRgb* uv = (QRgb*)(uu + (j << 2));
+            if (qAlpha(*v) < 50)
+              *uv = qRgba(255, 255, 255, 0);
+            else
+              *uv = qRgba(qRed(*v), qGreen(*v), qBlue(*v), m_opacity);
+          }
+        }
+        painter->drawImage(pos, img);
+      }
+    }
+  }
 }
