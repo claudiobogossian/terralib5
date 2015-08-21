@@ -262,7 +262,7 @@ void te::edit::VertexTool::reset()
 void te::edit::VertexTool::pickFeature(const te::map::AbstractLayerPtr& layer, const QPointF& pos)
 {
   te::gm::Envelope env = buildEnvelope(pos);
-  pickFeature(m_layer, env);
+  pickFeature(layer, env);
 }
 
 void te::edit::VertexTool::pickFeature(const te::map::AbstractLayerPtr& layer, const te::gm::Envelope& env)
@@ -271,7 +271,7 @@ void te::edit::VertexTool::pickFeature(const te::map::AbstractLayerPtr& layer, c
 
   try
   {
-    m_feature = PickFeature(m_layer, env, m_display->getSRID());
+    m_feature = PickFeature(layer, env, m_display->getSRID());
 
     m_lines.clear();
 

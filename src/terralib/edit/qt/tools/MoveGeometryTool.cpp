@@ -123,11 +123,6 @@ bool te::edit::MoveGeometryTool::mouseReleaseEvent(QMouseEvent* e)
 
 }
 
-bool te::edit::MoveGeometryTool::mouseDoubleClickEvent(QMouseEvent* e)
-{
-  return false;
-}
-
 void te::edit::MoveGeometryTool::reset()
 {
   delete m_feature;
@@ -147,7 +142,7 @@ void te::edit::MoveGeometryTool::pickFeature(const te::map::AbstractLayerPtr& la
 
   try
   {
-    m_feature = PickFeature(m_layer, env, m_display->getSRID());
+    m_feature = PickFeature(layer, env, m_display->getSRID());
 
     draw();
   }

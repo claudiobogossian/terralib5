@@ -98,8 +98,6 @@ namespace te
 
         bool mouseReleaseEvent(QMouseEvent* e);
 
-        bool mouseDoubleClickEvent(QMouseEvent* e);
-
         //@}
 
       private:

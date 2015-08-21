@@ -37,7 +37,6 @@
 #include "../../../edit/qt/tools/VertexTool.h"
 #include "../../../edit/qt/tools/AggregateAreaTool.h"
 #include "../../../edit/qt/tools/SubtractAreaTool.h"
-#include "../../../edit/qt/tools/DeleteGeometryTool.h"
 #include "../../../edit/qt/tools/MergeGeometriesTool.h"
 #include "../../../edit/qt/SnapOptionsDialog.h"
 #include "../../../geometry/GeometryProperty.h"
@@ -75,7 +74,6 @@ te::qt::plugins::edit::ToolBar::ToolBar()
     m_createLineToolAction(0),
     m_moveGeometryToolAction(0),
     m_snapOptionsAction(0),
-    m_deleteGeometryToolAction(0),
     m_aggregateAreaToolAction(0),
     m_subtractAreaToolAction(0)
 {
@@ -147,7 +145,6 @@ void te::qt::plugins::edit::ToolBar::initializeActions()
   createAction(m_moveGeometryToolAction, tr("Move Geometry"), "edit-move-geometry", true, false,"move_geometry",SLOT(onMoveGeometryToolActivated(bool)));
   createAction(m_aggregateAreaToolAction, tr("Aggregate Area"), "vector-processing-aggregation", true, false,"aggregate_area", SLOT(onAggregateAreaToolActivated(bool)));
   createAction(m_subtractAreaToolAction, tr("Subtract Area"), "vector-processing-subtraction", true, false,"subtract_area",SLOT(onSubtractAreaToolActivated(bool)));
-  createAction(m_deleteGeometryToolAction, tr("Delete Geometry"), "edit_delete", true, false,"delete_geometry",SLOT(onDeleteGeometryToolActivated(bool)));
   createAction(m_mergeGeometriesToolAction, tr("Merge Geometries"), "edition_mergeGeometries", true, false,"merge_geometries",SLOT(onMergeGeometriesToolActivated(bool)));
 
   // Get the action group of map tools.
@@ -161,7 +158,6 @@ void te::qt::plugins::edit::ToolBar::initializeActions()
   toolsGroup->addAction(m_moveGeometryToolAction);
   toolsGroup->addAction(m_aggregateAreaToolAction);
   toolsGroup->addAction(m_subtractAreaToolAction);
-  toolsGroup->addAction(m_deleteGeometryToolAction);
   toolsGroup->addAction(m_mergeGeometriesToolAction);
 
   // Grouping...
@@ -171,7 +167,6 @@ void te::qt::plugins::edit::ToolBar::initializeActions()
   m_tools.push_back(m_moveGeometryToolAction);
   m_tools.push_back(m_aggregateAreaToolAction);
   m_tools.push_back(m_subtractAreaToolAction);
-  m_tools.push_back(m_deleteGeometryToolAction);
   m_tools.push_back(m_mergeGeometriesToolAction);
   
   // Adding tools to toolbar
@@ -209,9 +204,6 @@ void te::qt::plugins::edit::ToolBar::onEditActivated(bool checked)
 
 void te::qt::plugins::edit::ToolBar::onSaveActivated()
 {
-  QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Under development"));
-  return;
-  /*
   try
   {
     std::map<std::string, te::edit::Repository*> repositories = te::edit::RepositoryManager::getInstance().getRepositories();
@@ -298,10 +290,9 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
     QMessageBox::critical(0, tr("TerraLib Edit Qt Plugin"), e.what());
     return;
   }
-  */
 }
 
-void te::qt::plugins::edit::ToolBar::onVertexToolActivated(bool checked)
+void te::qt::plugins::edit::ToolBar::onVertexToolActivated(bool)
 {
   te::map::AbstractLayerPtr layer = getSelectedLayer();
   if(layer.get() == 0)
@@ -320,7 +311,7 @@ void te::qt::plugins::edit::ToolBar::onVertexToolActivated(bool checked)
   
 }
 
-void te::qt::plugins::edit::ToolBar::onCreatePolygonToolActivated(bool checked)
+void te::qt::plugins::edit::ToolBar::onCreatePolygonToolActivated(bool)
 {
   te::map::AbstractLayerPtr layer = getSelectedLayer();
   if(layer.get() == 0)
@@ -339,7 +330,7 @@ void te::qt::plugins::edit::ToolBar::onCreatePolygonToolActivated(bool checked)
 
 }
 
-void te::qt::plugins::edit::ToolBar::onCreateLineToolActivated(bool checked)
+void te::qt::plugins::edit::ToolBar::onCreateLineToolActivated(bool)
 {
   te::map::AbstractLayerPtr layer = getSelectedLayer();
   if(layer.get() == 0)
@@ -358,7 +349,7 @@ void te::qt::plugins::edit::ToolBar::onCreateLineToolActivated(bool checked)
 
 }
 
-void te::qt::plugins::edit::ToolBar::onMoveGeometryToolActivated(bool checked)
+void te::qt::plugins::edit::ToolBar::onMoveGeometryToolActivated(bool)
 {
   te::map::AbstractLayerPtr layer = getSelectedLayer();
   if(layer.get() == 0)
@@ -385,7 +376,7 @@ void te::qt::plugins::edit::ToolBar::onSnapOptionsActivated()
 }
 
 
-void te::qt::plugins::edit::ToolBar::onAggregateAreaToolActivated(bool checked)
+void te::qt::plugins::edit::ToolBar::onAggregateAreaToolActivated(bool)
 {
   te::map::AbstractLayerPtr layer = getSelectedLayer();
   if (layer.get() == 0)
@@ -416,7 +407,7 @@ void te::qt::plugins::edit::ToolBar::onAggregateAreaToolActivated(bool checked)
 
 }
 
-void te::qt::plugins::edit::ToolBar::onSubtractAreaToolActivated(bool checked)
+void te::qt::plugins::edit::ToolBar::onSubtractAreaToolActivated(bool)
 {
   te::map::AbstractLayerPtr layer = getSelectedLayer();
   if (layer.get() == 0)
@@ -447,53 +438,7 @@ void te::qt::plugins::edit::ToolBar::onSubtractAreaToolActivated(bool checked)
 
 }
 
-
-void te::qt::plugins::edit::ToolBar::onDeleteGeometryToolActivated(bool checked)
-{
-  try
-  {
-    te::map::AbstractLayerPtr layer = getSelectedLayer();
-
-    m_deleteGeometryToolAction->setChecked(false);
-
-    if (layer.get() == 0)
-    {
-      QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Select a layer first!"));
-      return;
-    }
-
-    if (layer->getSelected() == 0)
-    {
-      QMessageBox::critical(0, tr("Error"), QString(tr("To delete geometry, you must select a polygon!")));
-      return;
-    }
-
-    if (layer->getSelected()->size() != 1)
-    {
-      QMessageBox::critical(0, tr("Error"), QString(tr("To delete geometry, you must select a polygon!")));
-      return;
-    }
-
-    m_deleteGeometryToolAction->setChecked(true);
-
-    te::qt::af::evt::GetMapDisplay e;
-    te::qt::af::ApplicationController::getInstance().broadcast(&e);
-
-    assert(e.m_display);
-
-    te::edit::DeleteGeometryTool* tool = new te::edit::DeleteGeometryTool(e.m_display->getDisplay(), layer, 0);
-    e.m_display->setCurrentTool(tool);
-
-  }
-  catch (te::common::Exception& e)
-  {
-    QMessageBox::critical(0, tr("TerraLib Edit Qt Plugin"), e.what());
-    return;
-  }
-
-}
-
-void te::qt::plugins::edit::ToolBar::onMergeGeometriesToolActivated(bool checked)
+void te::qt::plugins::edit::ToolBar::onMergeGeometriesToolActivated(bool)
 {
   te::map::AbstractLayerPtr layer = getSelectedLayer();
   if (layer.get() == 0)

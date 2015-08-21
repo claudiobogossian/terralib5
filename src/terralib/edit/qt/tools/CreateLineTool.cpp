@@ -118,11 +118,6 @@ bool te::edit::CreateLineTool::mouseMoveEvent(QMouseEvent* e)
   return false;
 }
 
-bool te::edit::CreateLineTool::mouseReleaseEvent(QMouseEvent* e)
-{
-  return false;
-}
-
 bool te::edit::CreateLineTool::mouseDoubleClickEvent(QMouseEvent* e)
 {
   if(e->button() != Qt::LeftButton)

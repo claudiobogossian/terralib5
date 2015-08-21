@@ -123,11 +123,6 @@ bool te::edit::CreatePolygonTool::mouseMoveEvent(QMouseEvent* e)
   return false;
 }
 
-bool te::edit::CreatePolygonTool::mouseReleaseEvent(QMouseEvent* e)
-{
-  return false;
-}
-
 bool te::edit::CreatePolygonTool::mouseDoubleClickEvent(QMouseEvent* e)
 {
   if(e->button() != Qt::LeftButton)
