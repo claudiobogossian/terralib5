@@ -24,7 +24,7 @@
 */
 
 // TerraLib
-#include "terralib_config.h"
+#include "../../../BuildConfig.h"
 #include "../../../common/Config.h"
 #include "../../../common/Translator.h"
 #include "../../../common/Logger.h"
@@ -57,7 +57,12 @@
 #include <qaction.h>
 
 te::qt::plugins::attributefill::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo)
-  : te::plugin::Plugin(pluginInfo), m_attributefillMenu(0)
+  : te::plugin::Plugin(pluginInfo),
+    m_attributefillMenu(0),
+    m_popupAction(0),
+    m_rasterToVector(0),
+    m_vectorToRaster(0),
+    m_vectorToVector(0)
 {
 }
 

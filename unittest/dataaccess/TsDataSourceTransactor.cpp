@@ -170,7 +170,7 @@ void TsDataSourceTransactor::tcGetDataSetByGeometry()
   {
     dt = t->getDataSet((*it),propname, &m_pt,te::gm::INTERSECTS);
     CPPUNIT_ASSERT_NO_THROW(dt = t->getDataSet((*it),propname, &m_pt,te::gm::INTERSECTS)); //point
-    int nprop = dt->getNumProperties();
+    //int nprop = dt->getNumProperties();
     int pos = static_cast<int>(te::da::GetFirstSpatialPropertyPos(dt.get()));
     dt->moveNext();
     m_geom = static_cast<te::gm::Geometry*>(dt->getGeometry(pos)->clone());
@@ -345,7 +345,7 @@ void TsDataSourceTransactor::tcGetDataSetByEnvRec2()
   std::vector<std::pair<std::string, te::gm::Envelope> >::iterator itpair;
   std::vector<std::pair<std::string, size_t> >::iterator itsize;
 
-  for(itpair = m_vecNamesAndRecs.begin(), itsize = m_vecNamesSizesRec.begin() ; itpair < m_vecNamesAndRecs.end(), itsize < m_vecNamesSizesRec.end() ; itpair++, itsize++)
+  for(itpair = m_vecNamesAndRecs.begin(), itsize = m_vecNamesSizesRec.begin() ; itpair < m_vecNamesAndRecs.end() ; itpair++, itsize++)
   {
     try
     { 

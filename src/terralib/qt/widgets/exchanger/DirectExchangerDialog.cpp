@@ -355,6 +355,32 @@ bool te::qt::widgets::DirectExchangerDialog::exchangeToDatabase()
     //create adapter
     std::auto_ptr<te::da::DataSetType> dsType = layer->getSchema();
 
+    bool isLinked = te::da::HasLinkedTable(dsType.get());
+
+    if (isLinked)
+    {
+      te::da::PrimaryKey* pk = dsType->getPrimaryKey();
+
+      if (pk)
+      {
+        std::vector<te::dt::Property*> props = pk->getProperties();
+
+        for (size_t t = 0; t < props.size(); ++t)
+        {
+          te::dt::SimpleProperty* p = dynamic_cast<te::dt::SimpleProperty*>(props[t]);
+
+          if (p)
+          {
+            p->setRequired(false);
+            p->setAutoNumber(false);
+            p->setDefaultValue(0);
+          }
+        }
+
+        dsType->setPrimaryKey(0);
+      }
+    }
+
     te::da::DataSourcePtr targetDSPtr = te::da::DataSourceManager::getInstance().get(dsInfo->getId(), dsInfo->getType(), dsInfo->getConnInfo()); 
 
     transactor = targetDSPtr->getTransactor();
@@ -431,6 +457,28 @@ bool te::qt::widgets::DirectExchangerDialog::exchangeToDatabase()
       }
     }
 
+    //fix repeated names
+    std::set<std::string> names;
+
+    props = dsTypeResult->getProperties();
+
+    for (std::size_t i = 0; i < props.size(); ++i)
+    {
+      //check if the property name its duplicated
+      std::string propName = props[i]->getName();
+
+      int count = 1;
+      while (names.find(te::common::Convert2UCase(propName)) != names.end())
+      {
+        propName += "_";
+        propName += te::common::Convert2String(count);
+      }
+
+      names.insert(te::common::Convert2UCase(propName));
+
+      props[i]->setName(propName);
+    }
+
     //create index
     if(m_ui->m_spatialIndexCheckBox->isChecked())
     {
@@ -453,24 +501,27 @@ bool te::qt::widgets::DirectExchangerDialog::exchangeToDatabase()
       }
     }
 
-    //create primary key
-    if(dsType->getPrimaryKey())
+    if (!isLinked)
     {
-      te::da::PrimaryKey* pk = new te::da::PrimaryKey(dsTypeResult);
-      
-      std::string name = m_ui->m_dataSetLineEdit->text().toStdString() + "_" + dsType->getPrimaryKey()->getName() + "_pk";
-
-      boost::replace_all(name, ".", "_");
-
-      pk->setName(name);
-
-      std::vector<te::dt::Property*> props =  dsType->getPrimaryKey()->getProperties();
-
-      for(size_t t = 0; t < props.size(); ++ t)
+      //create primary key
+      if (dsType->getPrimaryKey())
       {
-        te::dt::Property* p = props[t]->clone();
+        te::da::PrimaryKey* pk = new te::da::PrimaryKey(dsTypeResult);
 
-        pk->add(p);
+        std::string name = m_ui->m_dataSetLineEdit->text().toStdString() + "_" + dsType->getPrimaryKey()->getName() + "_pk";
+
+        boost::replace_all(name, ".", "_");
+
+        pk->setName(name);
+
+        std::vector<te::dt::Property*> props = dsType->getPrimaryKey()->getProperties();
+
+        for (size_t t = 0; t < props.size(); ++t)
+        {
+          te::dt::Property* p = props[t]->clone();
+
+          pk->add(p);
+        }
       }
     }
 
@@ -487,6 +538,28 @@ bool te::qt::widgets::DirectExchangerDialog::exchangeToDatabase()
 
     if(dataset->moveBeforeFirst())
        transactor->add(dsTypeResult->getName(), dsAdapter.get(), targetDSPtr->getConnectionInfo());
+
+    if (isLinked)
+    {
+      std::string name = m_ui->m_dataSetLineEdit->text().toStdString() + "_id";
+
+      te::dt::SimpleProperty* p = new te::dt::SimpleProperty(name, te::dt::INT32_TYPE);
+      p->setAutoNumber(true);
+
+      transactor->addProperty(dsTypeResult->getName(), p);
+
+      te::da::PrimaryKey* pk = new te::da::PrimaryKey(dsTypeResult);
+
+      name += "_pk";
+
+      boost::replace_all(name, ".", "_");
+
+      pk->setName(name);
+
+      pk->add(p);
+
+      transactor->addPrimaryKey(dsTypeResult->getName(), pk);
+    }
 
      transactor->commit();
 
@@ -581,7 +654,7 @@ void te::qt::widgets::DirectExchangerDialog::onInputLayerActivated(QString value
   m_ui->m_inputSRIDLineEdit->setText(QString::number(inputSRID));
   m_ui->m_outputSRIDLineEdit->setText(QString::number(inputSRID));
 
-  if (inputSRID = TE_UNKNOWN_SRS)
+  if (inputSRID == TE_UNKNOWN_SRS)
   {
     m_ui->m_outputSRIDLineEdit->setEnabled(false);
     m_ui->m_outputSRIDToolButton->setEnabled(false);

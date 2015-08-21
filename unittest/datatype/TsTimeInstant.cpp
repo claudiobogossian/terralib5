@@ -86,7 +86,7 @@ void TsTimeInstant::tcGetTimeInstant()
 {
 //#ifdef TE_COMPILE_ALL
 
-  boost::posix_time::ptime b = TT.getTimeInstant();
+  //boost::posix_time::ptime b = TT.getTimeInstant();
   te::dt::TimeInstant tt(ds,td);
 
   CPPUNIT_ASSERT(tt.getDate().getYear() == 2010 && tt.getDate().getMonth() == 1 && tt.getDate().getDay() == 1 );

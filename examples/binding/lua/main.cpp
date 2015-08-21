@@ -28,6 +28,7 @@
 
 // STL
 #include <iostream>
+#include <cstdlib>
 
 // Lua
 #include <lua.hpp>

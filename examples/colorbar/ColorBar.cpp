@@ -40,7 +40,7 @@
 ColorBar::ColorBar(QWidget* parent)
   : QDialog(parent),
     m_colorBar(0),
-    m_cursorShape(Qt::ArrowCursor),
+    //m_cursorShape(Qt::ArrowCursor),
     m_slices(5),
     m_hoffset(20),
     m_voffset(120),

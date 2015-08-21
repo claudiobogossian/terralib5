@@ -71,8 +71,8 @@ bool te::vp::LineToPolygonQuery::run() throw (te::common::Exception)
   std::auto_ptr<te::da::DataSetType> sourceDSetType(m_inDsrc->getDataSetType(m_inDsetName));
   te::gm::GeometryProperty* geomPropSource = te::da::GetFirstGeomProperty(sourceDSetType.get());
 
-  te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(m_inDsetType.get());
-
+  te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(m_converter->getResult());
+  
 // Subselect that apply the ST_Dump function in geometric column to separate multi polygons.
   te::da::Fields* pol_fields = new te::da::Fields;
   for(std::size_t i = 0; i < props.size(); ++i)

@@ -66,7 +66,7 @@ te::rst::Raster* terralib4::Band::getRaster() const
 
 void terralib4::Band::getValue(unsigned int c, unsigned int r, double& value) const
 {
-  m_pImpl->m_raster->getElement(c, r, value, m_idx);
+  m_pImpl->m_raster->getElement(c, r, value, (int)m_idx);
 }
 
 void terralib4::Band::setValue(unsigned int /*c*/, unsigned int /*r*/, const double /*value*/)
@@ -88,12 +88,12 @@ void terralib4::Band::read(int x, int y, void* buffer) const
 {
   TeDecoderDatabase* decDb = dynamic_cast<TeDecoderDatabase*>(m_pImpl->m_raster->decoder());
 
-  std::string bdIdx = decDb->codifyId(x, y, m_idx, 1, 0);
+  std::string bdIdx = decDb->codifyId(x, y, (int)m_idx, 1, 0);
 
   decDb->getRasterBlock(bdIdx, buffer);
 }
 
-void* terralib4::Band::read(int x, int y)
+void* terralib4::Band::read(int, int)
 {
   throw;
 }

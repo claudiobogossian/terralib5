@@ -26,9 +26,6 @@
 #ifndef __TERRALIB_MAPTOOLS_INTERNAL_CONFIG_H
 #define __TERRALIB_MAPTOOLS_INTERNAL_CONFIG_H
 
-// TerraLib
-#include "../Config.h"
-
 #define TE_MAPTOOLS_MODULE_NAME "te.maptools"
 
 /** @name DLL/LIB Module

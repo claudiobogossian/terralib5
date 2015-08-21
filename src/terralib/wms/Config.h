@@ -26,9 +26,6 @@
 #ifndef __TERRALIB_WMS_INTERNAL_CONFIG_H
 #define __TERRALIB_WMS_INTERNAL_CONFIG_H
 
-// TerraLib
-#include "../Config.h"
-
 #define TE_WMS_MODULE_NAME "te.wms"
 
 /*!

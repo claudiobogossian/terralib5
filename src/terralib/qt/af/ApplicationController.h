@@ -27,15 +27,13 @@
 #define __TERRALIB_QT_AF_INTERNAL_APPLICATIONCONTROLLER_H
 
 // Terralib
+#include "../../common/Singleton.h"
 #include "Config.h"
 
 // STL
 #include <map>
 #include <set>
 #include <vector>
-
-// TerraLib
-#include <terralib/common/Singleton.h>
 
 // Boost
 //#include <boost/noncopyable.hpp>

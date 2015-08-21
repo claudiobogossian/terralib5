@@ -26,9 +26,6 @@
 #ifndef __TERRALIB_METADATA_INTERNAL_CONFIG_H
 #define __TERRALIB_METADATA_INTERNAL_CONFIG_H
 
-// TerraLib
-#include "../Config.h"
-
 #define TE_MD_MODULE_NAME "te.metadata"
 
 

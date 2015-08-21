@@ -62,7 +62,7 @@ namespace terralib4
 
       te::dt::AbstractData* clone() const;
 
-      bool createMultiResolution( const unsigned int levels, const te::rst::InterpolationMethod interpMethod )
+      bool createMultiResolution( const unsigned int, const te::rst::InterpolationMethod )
       {
         return false;
       };
@@ -74,7 +74,7 @@ namespace terralib4
         return 0;        
       }
       
-      te::rst::Raster* getMultiResLevel( const unsigned int level ) const
+      te::rst::Raster* getMultiResLevel( const unsigned int ) const
       {
         return 0;         
       }

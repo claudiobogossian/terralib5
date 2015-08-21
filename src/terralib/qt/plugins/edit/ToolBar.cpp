@@ -278,7 +278,7 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
       assert(ds.get());
 
       std::set<int> gproperty;
-      gproperty.insert(gpos);
+      gproperty.insert((const int)gpos);
 
       std::vector<std::set<int> > properties;
       for (std::size_t i = 0; i < memds->size(); ++i)
@@ -301,7 +301,7 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
   */
 }
 
-void te::qt::plugins::edit::ToolBar::onVertexToolActivated(bool checked)
+void te::qt::plugins::edit::ToolBar::onVertexToolActivated(bool)
 {
   te::map::AbstractLayerPtr layer = getSelectedLayer();
   if(layer.get() == 0)
@@ -320,7 +320,7 @@ void te::qt::plugins::edit::ToolBar::onVertexToolActivated(bool checked)
   
 }
 
-void te::qt::plugins::edit::ToolBar::onCreatePolygonToolActivated(bool checked)
+void te::qt::plugins::edit::ToolBar::onCreatePolygonToolActivated(bool)
 {
   te::map::AbstractLayerPtr layer = getSelectedLayer();
   if(layer.get() == 0)
@@ -339,7 +339,7 @@ void te::qt::plugins::edit::ToolBar::onCreatePolygonToolActivated(bool checked)
 
 }
 
-void te::qt::plugins::edit::ToolBar::onCreateLineToolActivated(bool checked)
+void te::qt::plugins::edit::ToolBar::onCreateLineToolActivated(bool)
 {
   te::map::AbstractLayerPtr layer = getSelectedLayer();
   if(layer.get() == 0)
@@ -358,7 +358,7 @@ void te::qt::plugins::edit::ToolBar::onCreateLineToolActivated(bool checked)
 
 }
 
-void te::qt::plugins::edit::ToolBar::onMoveGeometryToolActivated(bool checked)
+void te::qt::plugins::edit::ToolBar::onMoveGeometryToolActivated(bool)
 {
   te::map::AbstractLayerPtr layer = getSelectedLayer();
   if(layer.get() == 0)

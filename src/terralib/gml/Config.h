@@ -26,9 +26,6 @@
 #ifndef __TERRALIB_GML_INTERNAL_CONFIG_H
 #define __TERRALIB_GML_INTERNAL_CONFIG_H
 
-// TerraLib
-#include "../Config.h"
-
 #define TE_GML_MODULE_NAME "te.gml"
 
 

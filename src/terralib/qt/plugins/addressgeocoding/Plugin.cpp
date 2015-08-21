@@ -24,7 +24,7 @@
 */
 
 // TerraLib
-#include "terralib_config.h"
+#include "../../../BuildConfig.h"
 #include "../../../addressgeocoding/qt/MainWindowDialog.h"
 #include "../../../common/Config.h"
 #include "../../../common/Translator.h"

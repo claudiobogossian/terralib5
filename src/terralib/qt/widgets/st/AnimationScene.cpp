@@ -50,7 +50,6 @@ void te::qt::widgets::AnimationScene::createNewPixmap()
     {
       QGraphicsView* view = *(views().begin());
       view->resize(m_display->width(), m_display->height());
-      //view->resize(m_display->width()*2, m_display->height()*2);
     }
   }
   else
@@ -84,17 +83,6 @@ void te::qt::widgets::AnimationScene::clear()
   QGraphicsScene::clear();
   m_numberOfCoverages = 0;
   m_numberOfTrajectories = 0;
-}
-
-void te::qt::widgets::AnimationScene::setMatrix()
-{
-  QList<QGraphicsItem*> list = items();
-  QList<QGraphicsItem*>::iterator it;
-  for(it = list.begin(); it != list.end(); ++it)
-  {
-    AnimationItem* ai = (AnimationItem*)(*it);
-    ai->setMatrix();
-  }
 }
 
 void te::qt::widgets::AnimationScene::setDuration(const int& duration)

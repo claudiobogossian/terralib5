@@ -110,8 +110,6 @@
   \ingroup rp_radar
 */
 
-// TerraLib
-#include "../Config.h"
 
 #define TE_RP_MODULE_NAME "te.rasterprocessing"
 

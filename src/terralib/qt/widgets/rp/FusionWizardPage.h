@@ -140,7 +140,7 @@ namespace te
 
           void listBandsHigher();
 
-          std::map<double, double> getSRFMap(te::rp::srf::SensorType st, std::string stName);
+          std::map<double, double> getSRFMap(const int& st, std::string stName);
 
         private:
 

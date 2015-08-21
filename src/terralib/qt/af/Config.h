@@ -26,9 +26,6 @@
 #ifndef __TERRALIB_QT_AF_INTERNAL_CONFIG_H
 #define __TERRALIB_QT_AF_INTERNAL_CONFIG_H
 
-// TerraLib
-#include "../../Config.h"
-
 /*!
   \def TERRALIB_APPLICATION_CONFIG_FILE
 
