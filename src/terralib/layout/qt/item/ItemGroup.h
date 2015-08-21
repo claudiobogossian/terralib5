@@ -80,7 +80,12 @@ namespace te
         */
         virtual void drawItem( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
 
-        virtual void  addToGroup ( QGraphicsItem * item );
+        //virtual void  addToGroup ( QGraphicsItem * item );
+
+        /*!
+          \brief Reimplemented from QGraphicsItem to capture changes in the item
+         */
+        virtual QVariant itemChange ( QGraphicsItem::GraphicsItemChange change, const QVariant & value );
 
         /*
         virtual void updateObserver(ContextItem context);

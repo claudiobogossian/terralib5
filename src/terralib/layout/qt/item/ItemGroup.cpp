@@ -66,16 +66,18 @@ void te::layout::ItemGroup::drawItem( QPainter * painter, const QStyleOptionGrap
   QGraphicsItemGroup::paint(painter, option, widget);
 }
 
-void te::layout::ItemGroup::addToGroup( QGraphicsItem * item )
+QVariant te::layout::ItemGroup::itemChange ( QGraphicsItem::GraphicsItemChange change, const QVariant & value )
 {
-  QGraphicsItemGroup::addToGroup(item);
-
-  //updates the box
-  ItemGroupController1* controller = dynamic_cast<ItemGroupController1*>(m_controller);
-  if(controller != 0)
+  if(change == QGraphicsItem::ItemChildAddedChange)
   {
-    controller->itemAdded();
+    ItemGroupController1* controller = dynamic_cast<ItemGroupController1*>(m_controller);
+    if(controller != 0)
+    {
+      controller->itemAdded();
+    }
   }
+
+  return AbstractItem<QGraphicsItemGroup>::itemChange(change, value);
 }
 
 /*

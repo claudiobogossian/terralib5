@@ -68,7 +68,7 @@ namespace te
         /*!
           \brief Method called by the view to inform that new layers have been added
         */
-        virtual void addLayers(const std::list<te::map::AbstractLayerPtr>& listLayers);
+        virtual void addLayers(const std::list<te::map::AbstractLayerPtr>& layerList);
 
         /*!
           \brief Method called by the view to inform that the extent and scale have been changed

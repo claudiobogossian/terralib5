@@ -69,7 +69,7 @@ te::layout::MapModel::MapModel()
   int srid = -1;
   bool fixedScale = false;
   double scale = 0;
-  std::list<te::map::AbstractLayerPtr> m_layers;
+  std::list<te::map::AbstractLayerPtr> layerList;
   double width = 120.;
   double height = 120.;
   //double mapDisplacementX = 0.;
@@ -90,7 +90,7 @@ te::layout::MapModel::MapModel()
 
   {
     GenericVariant gv;
-    gv.setList(m_layers, dataType->getDataTypeLayerList());
+    gv.setList(layerList, dataType->getDataTypeLayerList());
 
     Property property;
     property.setName("layers");

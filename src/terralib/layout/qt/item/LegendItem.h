@@ -30,19 +30,16 @@
 #ifndef __TERRALIB_LAYOUT_INTERNAL_LEGEND_ITEM_H
 #define __TERRALIB_LAYOUT_INTERNAL_LEGEND_ITEM_H
 
-#include <QVariant>
-
 // TerraLib
-#include "ObjectItem.h"
-#include "../../core/Config.h"
 #include "AbstractItem.h"
+#include "../../core/Config.h"
+
+#include <QGraphicsItem>
 
 namespace te
 {
   namespace layout
   {
-    class Observable;
-
     /*!
     \brief Class that represents a graphic legend of a map.
         Its coordinate system is the same of scene (millimeters). 
@@ -62,7 +59,7 @@ namespace te
           \param controller "Controller" part of MVC component
           \param o "Model" part of MVC component
         */ 
-        LegendItem( AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix = false );
+        LegendItem( AbstractItemController* controller, AbstractItemModel* model );
 
         /*!
           \brief Destructor

@@ -27,7 +27,9 @@ bool te::layout::Subject::attach(NewObserver* observer)
     }
     ++it;
   }
-  
+
+  observer->update(this);
+
   m_observers.push_back(observer);
 
   return true;
