@@ -31,28 +31,13 @@
 
 te::layout::AbstractItemView* te::layout::TextGridItemFactory::build(ItemFactoryParamsCreate params)
 {
-  std::string     name = params.getName();
   Properties      props = params.getProperties(); 
-  te::gm::Coord2D coord = params.getCoord(); 
-  int             zValue = params.getZValue(); 
-  int             id = params.getId(); 
 
   TextGridModel* model = new TextGridModel();
   if (props.getProperties().empty())
   {
-    EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
-
-    Property proertyId(0);
-    proertyId.setName("id");
-    proertyId.setValue(id, Enums::getInstance().getEnumDataType()->getDataTypeInt());
-    model->setProperty(proertyId);
-
-    Property propertyName(0);
-    propertyName.setName("name");
-    propertyName.setValue(name, Enums::getInstance().getEnumDataType()->getDataTypeString());
-    model->setProperty(propertyName);
+    setProperties(model, params);
   }
-
   AbstractItemController* controller = new AbstractItemController(model);
   AbstractItemView* view = controller->getView();
 
