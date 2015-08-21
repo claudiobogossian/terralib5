@@ -28,7 +28,7 @@
 
 te::edit::SubtractAreaTool::SubtractAreaTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent)
 : CreateLineTool(display, layer, Qt::ArrowCursor, parent),
-m_feature(0)
+  m_feature(0)
 {
 
   // Signals & slots

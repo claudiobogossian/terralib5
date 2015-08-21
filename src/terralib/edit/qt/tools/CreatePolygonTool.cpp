@@ -53,11 +53,11 @@
 #include <QMessageBox>
 
 te::edit::CreatePolygonTool::CreatePolygonTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, QObject* parent)
-  : AbstractTool(display, parent),
-    m_layer(layer),
-    m_continuousMode(false),
-    m_isFinished(false),
-    m_feature(0)
+: AbstractTool(display, parent),
+  m_layer(layer),
+  m_feature(0),
+  m_continuousMode(false),
+  m_isFinished(false)
 {
   setCursor(cursor);
 
