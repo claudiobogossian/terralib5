@@ -339,6 +339,14 @@ te::layout::GridMapModel::GridMapModel()
     property.setValue(crossOffSet, dataType->getDataTypeDouble());
     m_properties.addProperty(property);
   }
+
+//updating properties
+  {
+    Property property(0);
+    property.setName("connect_item_position");
+    property.setValue(true, dataType->getDataTypeBool());
+    m_properties.updateProperty(property);
+  }
 }
 
 te::layout::GridMapModel::~GridMapModel()

@@ -206,7 +206,7 @@ void te::layout::MapItem::contextUpdated(const ContextObject& context)
   QSizeF newSize(box.getWidth(), box.getHeight());
   if(currentSize != newSize)
   {
-    QPointF pt = scenePos();
+    QPointF pt = this->pos();
 
     this->prepareGeometryChange();
     m_mapDisplay->setGeometry(pt.x(), pt.y(), newSize.width(), newSize.height());

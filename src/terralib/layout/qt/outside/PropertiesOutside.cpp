@@ -316,6 +316,9 @@ void te::layout::PropertiesOutside::changeMapVisitable( Property property )
   if(!mapItem)
     return;
 
+  QList<QGraphicsItem*> listItemsToConnect;
+  bool connectItem = false;
+
   //the selected item will now be the observer and the mapItem will be the subject
   foreach( QGraphicsItem* selectedItem, m_graphicsItems) 
   {
@@ -328,45 +331,28 @@ void te::layout::PropertiesOutside::changeMapVisitable( Property property )
         if(selectedObserver != 0)
         {
           mapItem->getController()->getModel()->attach(selectedObserver);
+
+          const Property& pConnectItemPos = selectedAbsView->getController()->getProperty("connect_item_position");
+          connectItem = pConnectItemPos.getValue().toBool();
+          if(connectItem == true)
+          {
+            selectedItem->setPos(mapItem->pos());
+            listItemsToConnect.push_back(selectedItem);
+          }
         }
       }
     }
   }
 
-
-
-  /*
-  if(property.getName().compare(m_sharedProps->getMapName()) != 0)
-    return;
-
-  std::string name = property.getValue().toString();
-  if(name.compare("") == 0)
+  if(listItemsToConnect.empty() == false)
   {
-    name = property.getOptionByCurrentChoice().toString();
+    listItemsToConnect.push_front(mapItem);
+    Scene* lScene = dynamic_cast<Scene*>(Context::getInstance().getScene()); 
+    if(lScene != 0)
+    {
+      lScene->createItemGroup(listItemsToConnect);
+    }
   }
-
-  if(name.compare("") == 0)
-    return;
-
-  ItemUtils* iUtils = Context::getInstance().getItemUtils();
-  if(!iUtils)
-    return;
-
-  MapItem* item = iUtils->getMapItem(name);
-  if(!item)
-    return;
-
-  ItemModelObservable* obsMdl = dynamic_cast<ItemModelObservable*>(item->getModel());
-  if(!obsMdl)
-    return;
-
-  MapModel* model = dynamic_cast<MapModel*>(obsMdl);
- 
-  if(!model)
-    return;
-
-  te::layout::VisitorUtils::getInstance().changeMapVisitable(m_graphicsItems, model);
-  */
 }
 
 te::layout::MapModel* te::layout::PropertiesOutside::getMapModel( std::string nameMap )
