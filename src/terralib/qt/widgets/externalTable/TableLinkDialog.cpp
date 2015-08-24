@@ -266,10 +266,6 @@ void te::qt::widgets::TableLinkDialog::getProperties()
         std::string propName = dsType->getProperty(i)->getName();
         std::string fullName = alias + "." + propName;
 
-        std::auto_ptr<te::da::DataSet> dataSet = m_ds->getDataSet(alias);
-
-        dataSetProperties.push_back(i);
-
         if((dsType->getProperty(i)->getType() == te::dt::GEOMETRY_TYPE) || (pk->has(dsType->getProperty(i))))
           fixedProperties.push_back(fullName);
         else
@@ -280,13 +276,6 @@ void te::qt::widgets::TableLinkDialog::getProperties()
         else
         {
           m_ui->m_dataset2ColumnComboBox->addItem(QString::fromStdString(fullName), QVariant(dsType->getProperty(i)->getType()));
-
-          if(i == dsType->size() - 1)
-          {
-            //Adjusting the table that will display the tabular dataset
-            m_tabularView->setDataSet(new te::mem::DataSet(*dataSet.get(), dataSetProperties, 5), m_ds->getEncoding());
-            m_tabularView->resizeColumnsToContents();
-          }
         }
       }
     }
@@ -365,6 +354,35 @@ void te::qt::widgets::TableLinkDialog::onDataCBIndexChanged(int index)
 
 void te::qt::widgets::TableLinkDialog::onDataToolButtonnClicked()
 {
+  std::string aux = m_ui->m_dataset2ColumnComboBox->currentText().toStdString();
+  std::string alias = "";
+  size_t pos = aux.find(".");
+
+  if (pos != std::string::npos)
+    alias = aux.substr(0, pos);
+  else
+    alias = aux;
+
+  //get datasettype
+  std::auto_ptr<te::da::DataSetType> dsType(0);
+  dsType = m_ds->getDataSetType(alias);
+
+  //Get Dataset
+
+  std::auto_ptr<te::da::DataSet> dataSet = m_ds->getDataSet(alias);
+  
+  //Acquiring the dataSet properties
+  std::vector<std::size_t> dataSetProperties;
+
+  for (size_t i = 0; i < dsType->size(); ++i)
+  {
+    dataSetProperties.push_back(i);
+  }
+
+  //Adjusting the table that will display the tabular dataset
+  m_tabularView->setDataSet(new te::mem::DataSet(*dataSet.get(), dataSetProperties, 5), m_ds->getEncoding());
+  m_tabularView->resizeColumnsToContents();
+
   if(m_ui->m_tabularFrame->isHidden())
   {
     m_tabularView->show();

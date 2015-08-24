@@ -269,16 +269,12 @@ std::auto_ptr<te::da::DataSet> GetDataSet(const te::map::AbstractLayer* layer, c
     if (l != 0)
     {
       query.reset(new te::da::Select(l->getQuery()));
-      bool isLinked = te::da::HasLinkedTable(l->getSchema().get());
-      if(!isLinked)
-      {
-        te::da::OrderBy* order_by = new te::da::OrderBy();
+      te::da::OrderBy* order_by = new te::da::OrderBy();
 
-        for (size_t i = 0; i<colsNames.size(); i++)
-          order_by->push_back(std::auto_ptr<te::da::OrderByItem>(new te::da::OrderByItem(colsNames[i], (asc) ? te::da::ASC : te::da::DESC)));
+      for (size_t i = 0; i<colsNames.size(); i++)
+        order_by->push_back(std::auto_ptr<te::da::OrderByItem>(new te::da::OrderByItem(colsNames[i], (asc) ? te::da::ASC : te::da::DESC)));
 
-        query->setOrderBy(order_by);
-      }
+      query->setOrderBy(order_by);
     }
   }
   else if(layer->getType() == "OBSERVATIONDATASETLAYER")
@@ -1024,7 +1020,7 @@ void te::qt::widgets::DataSetTableView::createHistogram(const int& column)
 
   int res = dialog->exec();
   if (res == QDialog::Accepted)
-    emit createChartDisplay(te::qt::widgets::createHistogramDisplay(dataset,dataType, column, histogramWidget->getHistogram()));
+    emit createChartDisplay(te::qt::widgets::createHistogramDisplay(dataset, dataType, column, histogramWidget->getSummaryFunction(), histogramWidget->getHistogram()));
 
   delete dialog;
 }
