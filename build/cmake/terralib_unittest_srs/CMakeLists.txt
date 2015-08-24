@@ -27,7 +27,8 @@
 
 
 include_directories(${Boost_INCLUDE_DIR}
-                    ${CPPUNIT_INCLUDE_DIR})
+                    ${CPPUNIT_INCLUDE_DIR}
+                    ${TERRALIB_ABSOLUTE_ROOT_DIR}/src)
 
 
 file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/unittest/srs/*.cpp)

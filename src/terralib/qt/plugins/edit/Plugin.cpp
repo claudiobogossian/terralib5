@@ -42,7 +42,8 @@
 te::qt::plugins::edit::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo)
   : te::plugin::Plugin(pluginInfo),
     m_toolbar(0),
-    m_menu(0)
+    m_menu(0),
+    m_action(0)
 {
 }
 
@@ -101,7 +102,7 @@ void te::qt::plugins::edit::Plugin::shutdown()
 
   m_initialized = false;
 }
-void te::qt::plugins::edit::Plugin::onActionActivated(bool checked)
+void te::qt::plugins::edit::Plugin::onActionActivated(bool)
 {
   // Add plugin toolbar
   te::qt::af::ApplicationController::getInstance().addToolBar("EditToolBar", m_toolbar->get());

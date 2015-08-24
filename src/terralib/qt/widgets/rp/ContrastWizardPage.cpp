@@ -565,7 +565,7 @@ void te::qt::widgets::ContrastWizardPage::onMaxValueSelected(int value, int band
     {
       double mean = m_ui->m_bandTableWidget->item(band, 1)->text().toDouble();
 
-      double stdDev = abs(mean - value);
+      double stdDev = std::abs(mean - (double)value); 
 
       m_ui->m_bandTableWidget->item(band, 2)->setText(QString::number(stdDev));
       m_ui->m_bandTableWidget->setCurrentCell(band, 2);

@@ -78,7 +78,7 @@ void TsRTree::tcRTreeUnsignedInts()
     pointVec.push_back(pt);
     rtree.insert(*(pt->getMBR()), i);
   }
-  size_t size = rtree.size();
+  //size_t size = rtree.size();
 
   for(int i = 0; i < 100; ++i)
   {
@@ -108,7 +108,7 @@ void TsRTree::tcRTreeInts()
     pointVec.push_back(pt);
     rtree.insert(*(pt->getMBR()), i);
   }
-  size_t size = rtree.size();
+  //size_t size = rtree.size();
 
   for(int i = 0; i < 100; ++i)
   {
@@ -155,7 +155,7 @@ void TsRTree::tcRTreePointers()
     rtree.insert(*(pt->getMBR()), id++);
 
   }
-  size_t size = rtree.size();
+  //size_t size = rtree.size();
 
   for(int i = 0; i < 100; ++i)
   {
@@ -196,7 +196,7 @@ void TsRTree::tcRTreeGradeInts()
     }
   }
 
-  size_t size = rtree.size();
+  //size_t size = rtree.size();
 
   for(int i = 0; i < 100; ++i)
   {
@@ -209,7 +209,7 @@ void TsRTree::tcRTreeGradeInts()
   const te::gm::Envelope* mbr1 = new te::gm::Envelope(0.0,0.0,3.5,3.5);
   std::vector<int> report1;
   size_t ss;
-  size_t searchResult =rtree.search(*mbr1, report1);
+  //size_t searchResult =rtree.search(*mbr1, report1);
   CPPUNIT_ASSERT(rtree.search(*mbr1, report1) == 16);
   ss = report1.size();
   report1.clear();
@@ -638,7 +638,7 @@ void TsRTree::tcRTreeBox_2()
   envelopeVec.push_back(boxInsert1);
   rtree.insert(*(boxInsert1), k++);
   env_size = envelopeVec.size();
-  size_t size = rtree.size();
+  //size_t size = rtree.size();
 
 // Searching again ...
   report1.clear();

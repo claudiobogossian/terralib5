@@ -92,7 +92,9 @@ void te::ado::DataSource::open()
 
   std::auto_ptr<Connection> conn(new te::ado::Connection(connInfo));
 
-  loadGeometryColumnsCache(conn->getConn());
+  _ConnectionPtr connection = conn->getConn();
+
+  loadGeometryColumnsCache(connection);
 
   m_isOpened = true;
 }
@@ -215,12 +217,12 @@ bool te::ado::DataSource::exists(const std::map<std::string, std::string>& dsInf
   return boost::filesystem::exists(path);
 }
 
-std::vector<std::string> te::ado::DataSource::getDataSourceNames(const std::map<std::string, std::string>& dsInfo)
+std::vector<std::string> te::ado::DataSource::getDataSourceNames(const std::map<std::string, std::string>&)
 {
   return std::vector<std::string>(); // The DataSource is a File.
 }
 
-std::vector<te::common::CharEncoding> te::ado::DataSource::getEncodings(const std::map<std::string, std::string>& dsInfo)
+std::vector<te::common::CharEncoding> te::ado::DataSource::getEncodings(const std::map<std::string, std::string>&)
 {
   return std::vector<te::common::CharEncoding>(); //TODO how?
 }

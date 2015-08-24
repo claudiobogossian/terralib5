@@ -61,6 +61,8 @@ namespace te
     class TEGDALEXPORT Raster : public te::rst::Raster
     {
     public:
+      
+      using te::rst::Raster::transform;
 
       Raster();
 

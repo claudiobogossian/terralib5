@@ -572,10 +572,10 @@ void te::qt::widgets::FusionWizardPage::listBandsHigher()
   }
 }
 
-std::map<double, double> te::qt::widgets::FusionWizardPage::getSRFMap(te::rp::srf::SensorType st, std::string stName)
+std::map<double, double> te::qt::widgets::FusionWizardPage::getSRFMap(const int& st, std::string stName)
 {
   std::map<double, double> srfMap;
-
+   
   if(st == -1) //from csv file
   {
     std::ifstream file(stName.c_str());
@@ -606,7 +606,7 @@ std::map<double, double> te::qt::widgets::FusionWizardPage::getSRFMap(te::rp::sr
   }
   else if(st != te::rp::srf::InvalidSensor) //hardcode defined
   {
-    te::rp::srf::getSRF(st, srfMap);
+    te::rp::srf::getSRF((te::rp::srf::SensorType) st, srfMap);
   }
 
   return srfMap;

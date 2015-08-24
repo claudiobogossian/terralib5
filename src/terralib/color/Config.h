@@ -26,9 +26,6 @@
 #ifndef __TERRALIB_COLOR_INTERNAL_CONFIG_H
 #define __TERRALIB_COLOR_INTERNAL_CONFIG_H
 
-// TerraLib
-#include "../Config.h"
-
 #define TE_COLOR_MODULE_NAME "te.color"
 
 /*!

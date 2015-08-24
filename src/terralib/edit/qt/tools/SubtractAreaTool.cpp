@@ -27,8 +27,8 @@
 #include <memory>
 
 te::edit::SubtractAreaTool::SubtractAreaTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent)
-: CreateLineTool( display, layer, Qt::ArrowCursor, 0),
-m_feature(0)
+: CreateLineTool(display, layer, Qt::ArrowCursor, parent),
+  m_feature(0)
 {
 
   // Signals & slots
@@ -52,7 +52,7 @@ bool te::edit::SubtractAreaTool::mousePressEvent(QMouseEvent* e)
   }
 
   if (m_feature == 0)
-    pickFeature(m_layer, GetPosition(e));
+    pickFeature(m_layer);
 
   return te::edit::CreateLineTool::mousePressEvent(e);
 }
@@ -60,11 +60,6 @@ bool te::edit::SubtractAreaTool::mousePressEvent(QMouseEvent* e)
 bool te::edit::SubtractAreaTool::mouseMoveEvent(QMouseEvent* e)
 {
   return te::edit::CreateLineTool::mouseMoveEvent(e);
-}
-
-bool te::edit::SubtractAreaTool::mouseReleaseEvent(QMouseEvent* e)
-{
-  return true;
 }
 
 bool te::edit::SubtractAreaTool::mouseDoubleClickEvent(QMouseEvent* e)
@@ -154,24 +149,24 @@ te::gm::Geometry* te::edit::SubtractAreaTool::buildPolygon()
 
   pHole->setSRID(m_display->getSRID());
 
-  te::gm::Geometry* mpol = 0;
+  te::gm::Geometry* geo = 0;
 
   if (!pHole->intersects(m_feature->getGeometry()))
     return dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone());
 
-  mpol = Difference(m_feature->getGeometry(), pHole);
+  geo = Difference(m_feature->getGeometry(), pHole);
 
   //projection
-  if (mpol->getSRID() == m_layer->getSRID())
-    return mpol;
+  if (geo->getSRID() == m_layer->getSRID())
+    return geo;
 
   // else, need conversion...
-  mpol->transform(m_layer->getSRID());
+  geo->transform(m_layer->getSRID());
 
-  return mpol;
+  return geo;
 }
 
-void te::edit::SubtractAreaTool::pickFeature(const te::map::AbstractLayerPtr& layer, const QPointF& pos)
+void te::edit::SubtractAreaTool::pickFeature(const te::map::AbstractLayerPtr& layer)
 {
   reset();
 
@@ -187,11 +182,34 @@ void te::edit::SubtractAreaTool::pickFeature(const te::map::AbstractLayerPtr& la
 
     if (ds->moveNext())
     {
+      te::gm::Coord2D coord(0, 0);
 
       std::auto_ptr<te::gm::Geometry> geom = ds->getGeometry(geomProp->getName());
-      te::gm::Envelope env(*geom->getMBR());
+      te::gm::Envelope auxEnv(*geom->getMBR());
 
-      m_feature = PickFeature(m_layer, env, m_display->getSRID());
+      // Try finds the geometry centroid
+      switch (geom->getGeomTypeId())
+      {
+        case te::gm::PolygonType:
+        {
+          te::gm::Polygon* p = dynamic_cast<te::gm::Polygon*>(geom.get());
+          coord = *p->getCentroidCoord();
+
+          break;
+        }
+        case te::gm::MultiPolygonType:
+        {
+          te::gm::MultiPolygon* mp = dynamic_cast<te::gm::MultiPolygon*>(geom.get());
+          coord = *mp->getCentroidCoord();
+
+          break;
+        }
+      }
+
+      // Build the search envelope
+      te::gm::Envelope e(coord.getX(), coord.getY(), coord.getX(), coord.getY());
+
+      m_feature = PickFeature(m_layer, e, m_display->getSRID());
 
     }
 
@@ -229,7 +247,6 @@ void te::edit::SubtractAreaTool::onExtentChanged()
 {
   draw();
 }
-
 
 void te::edit::SubtractAreaTool::storeEditedFeature()
 {

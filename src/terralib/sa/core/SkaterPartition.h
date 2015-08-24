@@ -55,7 +55,16 @@ namespace te
     struct EdgeRemovalInfo
     {
       /*! \brief Default constructor. */
-      EdgeRemovalInfo(){};
+      EdgeRemovalInfo()
+      {
+        m_SSDT = 0.;
+        m_SSDTa = 0.;
+        m_SSDTb = 0.;
+        m_SSDi = 0.;
+        m_l = 0.;
+        m_popa = 0;
+        m_popb = 0;
+      };
 
        /*! \brief Destructor. */
       ~EdgeRemovalInfo(){};

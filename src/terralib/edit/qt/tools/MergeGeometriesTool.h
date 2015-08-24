@@ -65,15 +65,6 @@ namespace te
       /*! \brief Destructor. */
       ~MergeGeometriesTool();
 
-      bool mousePressEvent(QMouseEvent* e);
-
-      bool mouseMoveEvent(QMouseEvent* e);
-
-      bool mouseReleaseEvent(QMouseEvent* e);
-
-      bool mouseDoubleClickEvent(QMouseEvent* e);
-
-
     private:
 
       void draw();
@@ -82,7 +73,7 @@ namespace te
       bool spatialRelationDisjoint(te::gm::GeometryCollection* gc);
 
       te::gm::Geometry* Union(te::gm::Geometry* g1, te::gm::Geometry* g2);
-      const te::gm::Envelope* getRefEnvelope(te::da::DataSet* ds, te::da::ObjectId* oid, te::gm::GeometryProperty* geomProp);
+      const te::gm::Envelope* getRefEnvelope(te::da::DataSet* ds, te::gm::GeometryProperty* geomProp);
       te::da::ObjectId* getBaseOID(const te::da::ObjectIdSet* objSet, QString msg);
 
     private slots:

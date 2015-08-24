@@ -51,9 +51,10 @@ namespace te
     namespace widgets
     {
       /*!
-        \class AnimationScene
+        \class Animation.
 
-        \brief This class is a dialog for the Animation.
+        \Brief This class is responsible for making the animation of a trajectory or temporal image. 
+        It has controls like loop, forward, backward and pause.
       */
       class TEQTWIDGETSEXPORT Animation : public QPropertyAnimation
       {
@@ -75,10 +76,10 @@ namespace te
 
         /*!
           \brief 
-          It creates animation data for a given period;
+          It adjust animation data for a given period;
           /param period The temporal period.
         */
-        void createAnimationDataInDisplayProjection(const te::dt::TimePeriod& period);
+        void adjustDataToAnimationTemporalExtent(const te::dt::TimePeriod& period);
 
         /*!
           \brief 

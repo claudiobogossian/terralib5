@@ -204,10 +204,6 @@ std::auto_ptr<te::gm::Geometry> terralib4::GeomReader::getGeometry(const TeGeome
     }
 
     default:
-      throw Exception(TE_TR("Geometry Type Not supported!"));
-    
-  }
-
-
-  return std::auto_ptr<te::gm::Geometry>(0);
+		return std::auto_ptr<te::gm::Geometry>(0);    
+  }  
 }

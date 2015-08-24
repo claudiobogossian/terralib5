@@ -612,7 +612,6 @@ void te::layout::Scene::exportItemsToImage(std::string dir)
         if(!rgba)
           continue;
         
-        //QRectF rect = item->boundingRect();               
         img = te::qt::widgets::GetImage(rgba, w, h);
         if(!img)
           continue;

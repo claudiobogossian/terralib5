@@ -29,6 +29,7 @@
 #include "../../common/progress/ProgressManager.h"
 #include "../../dataaccess/dataset/DataSet.h"
 #include "../../dataaccess/dataset/DataSetType.h"
+#include "../../dataaccess/dataset/DataSetTypeConverter.h"
 #include "../../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../dataaccess/datasource/DataSourceInfoManager.h"
@@ -290,6 +291,9 @@ bool te::vp::GeometricOpWizard::execute()
         return false;
       }
 
+      std::auto_ptr<te::da::DataSetTypeConverter> converter(new te::da::DataSetTypeConverter(dsLayer->getSchema().get(), dsOGR->getCapabilities(), dsOGR->getEncoding()));
+      te::da::AssociateDataSetTypeConverterSRID(converter.get(), dsLayer->getSRID());
+
       this->setCursor(Qt::WaitCursor);
 
       // sera feito por algum tipo de factory
@@ -307,7 +311,7 @@ bool te::vp::GeometricOpWizard::execute()
         geomOp = new te::vp::GeometricOpMemory();
       }
 
-      geomOp->setInput(inDataSource, dsLayer->getDataSetName(), dsLayer->getSchema());
+      geomOp->setInput(inDataSource, dsLayer->getDataSetName(), converter);
       geomOp->setOutput(dsOGR, outputdataset);
       geomOp->setParams(geoProps, 
                         m_ops, 
@@ -368,6 +372,11 @@ bool te::vp::GeometricOpWizard::execute()
         return false;
       }
 
+      std::auto_ptr<te::da::DataSetTypeConverter> converter(new te::da::DataSetTypeConverter(dsLayer->getSchema().get(), trgDs->getCapabilities(), trgDs->getEncoding()));
+      te::da::AssociateDataSetTypeConverterSRID(converter.get(), dsLayer->getSRID());
+
+      this->setCursor(Qt::WaitCursor);
+
       te::vp::GeometricOp* geomOp = 0;
       
       // select a strategy based on the capabilities of the input datasource
@@ -382,7 +391,7 @@ bool te::vp::GeometricOpWizard::execute()
         geomOp = new te::vp::GeometricOpMemory();
       }
 
-      geomOp->setInput(inDataSource, dsLayer->getDataSetName(), dsLayer->getSchema());
+      geomOp->setInput(inDataSource, dsLayer->getDataSetName(), converter);
       geomOp->setOutput(trgDs, outputdataset);
       geomOp->setParams(geoProps,
                         m_ops,

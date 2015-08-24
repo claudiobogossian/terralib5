@@ -28,6 +28,7 @@
 include_directories(${Boost_INCLUDE_DIR})
 include_directories(${QWT_INCLUDE_DIR})
 include_directories(${QTPROPERTYBROWSER_INCLUDE_DIR})
+include_directories(${TERRALIB_ABSOLUTE_ROOT_DIR}/src)
 
 add_definitions(-D_SCL_SECURE_NO_WARNINGS -DTEQTWIDGETSDLL -DUNICODE -DQWT_DLL)
 
@@ -925,6 +926,7 @@ else() # QT4_FOUND
                                            ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/ObservationPropertiesWizardPage.h
                                            ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/ObservationWizard.h
                                            ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/PixmapItem.h
+                                           ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/ImageItem.h
                                            ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/SliderPropertiesDialog.h
                                            ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/TrajectoryItem.h
                                            ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/TimeSliderWidget.h

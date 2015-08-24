@@ -235,7 +235,7 @@ void DisplayWindow::addVectorialLayer(std::string path, int srid)
 
   std::size_t geomPos = te::da::GetFirstSpatialPropertyPos(dataSet.get());
 
-  te::gm::GeometryProperty* geomProperty = te::da::GetFirstGeomProperty(dt.get());
+  //te::gm::GeometryProperty* geomProperty = te::da::GetFirstGeomProperty(dt.get());
 
   std::auto_ptr<te::gm::Envelope> extent = dataSet->getExtent(geomPos);
 

@@ -51,9 +51,7 @@ namespace te
       class Animation;
 
       /*!
-        \class TrajectoryItem
-
-        \brief This class is a dialog for the Trajectory Icon Item.
+      \class This class lets to make trajectory animation on the map display.
       */
       class TEQTWIDGETSEXPORT TrajectoryItem : public AnimationItem
       {
@@ -84,16 +82,17 @@ namespace te
         void paint(QPainter*, const QStyleOptionGraphicsItem*, QWidget*);
 
         /*!
+        \brief It transform coodinates to map display projection coodinates.
+        \param vec Coordinates in native projection.
+        */
+        void transformToDisplayProjection(QVector<QPointF>& vec);
+
+        /*!
           \brief Draw the trajectory long trail. 
           It draws the beginning until the current time.
           The beginning depends on the direction (forward or backward).
         */
         void draw();
-
-        /*!
-          \brief Create route points making reprojection if necessary.
-        */
-        void createAnimationDataInDisplayProjection();
 
         /*!
           \brief Draw a piece of tracktrajectory trail.

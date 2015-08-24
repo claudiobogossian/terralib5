@@ -26,9 +26,6 @@
 #ifndef __TERRALIB_XML_INTERNAL_CONFIG_H
 #define __TERRALIB_XML_INTERNAL_CONFIG_H
 
-// TerraLib
-#include "../Config.h"
-
 #define TE_XML_MODULE_NAME "te.xml"
 
 /** @name XML Module Config

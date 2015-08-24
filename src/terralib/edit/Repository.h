@@ -63,7 +63,7 @@ namespace te
     {
       public:
 
-        Repository(const std::string& source, int srid = TE_UNKNOWN_SRS);
+        Repository(const std::string& source);
 
         ~Repository();
 
@@ -108,7 +108,6 @@ namespace te
       private:
 
         std::string m_source;                          //!< The source of the features.
-        int m_srid;                                    //!< The SRS of the features.
         std::vector<Feature*> m_features;              //!< The repository features.
         te::sam::rtree::Index<std::size_t, 8> m_rtree; //!< Internal index used to retrieve geometries spatially.
 

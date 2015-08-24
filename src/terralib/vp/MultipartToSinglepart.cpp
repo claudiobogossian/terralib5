@@ -63,6 +63,7 @@
 #include <boost/algorithm/string.hpp>
 
 te::vp::MultipartToSinglepart::MultipartToSinglepart()
+  : m_oidSet(0)
 {
 }
 
@@ -117,7 +118,7 @@ bool te::vp::MultipartToSinglepart::runAll()
       {
         if(i == 0)
         {
-          item->setInt32(0, pkCount);
+          item->setInt32(0, (int32_t)pkCount);
           ++pkCount;
           item->setValue(1, inDs->getValue(i).release());
         }
@@ -139,7 +140,7 @@ bool te::vp::MultipartToSinglepart::runAll()
         {
           if(i == 0)
           {
-            item->setInt32(0, pkCount);
+            item->setInt32(0, (int32_t)pkCount);
             ++pkCount;
             item->setValue(1, inDs->getValue(i).release());
           }
@@ -206,7 +207,7 @@ bool te::vp::MultipartToSinglepart::runSelected()
       {
         if(i == 0)
         {
-          item->setInt32(0, pkCount);
+          item->setInt32(0, (int32_t)pkCount);
           ++pkCount;
           item->setValue(1, inDs->getValue(i).release());
         }
@@ -228,7 +229,7 @@ bool te::vp::MultipartToSinglepart::runSelected()
         {
           if(i == 0)
           {
-            item->setInt32(0, pkCount);
+            item->setInt32(0, (int32_t)pkCount);
             ++pkCount;
             item->setValue(1, inDs->getValue(i).release());
           }

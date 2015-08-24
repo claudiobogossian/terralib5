@@ -169,47 +169,6 @@ std::string te::vp::GetSimpleTableName(std::string fullName)
   return fullName.substr(found + 1);
 }
 
-te::gm::GeomType te::vp::GeomOpResultType(te::gm::GeomType firstGeom, te::gm::GeomType secondGeom)
-{
-  if( (firstGeom == te::gm::PolygonType && secondGeom == te::gm::PolygonType) ||
-      (firstGeom == te::gm::MultiPolygonType &&  secondGeom == te::gm::MultiPolygonType) ||
-      (firstGeom == te::gm::PolygonType && secondGeom == te::gm::MultiPolygonType) ||
-      (firstGeom == te::gm::MultiPolygonType && secondGeom == te::gm::PolygonType))
-    return te::gm::MultiPolygonType;
-  
-  if((firstGeom == te::gm::PolygonType && secondGeom == te::gm::LineStringType)||
-          (firstGeom == te::gm::PolygonType && secondGeom == te::gm::MultiLineStringType)||
-          (firstGeom == te::gm::MultiPolygonType && secondGeom == te::gm::LineStringType)||
-          (firstGeom == te::gm::MultiPolygonType && secondGeom == te::gm::MultiLineStringType)||
-
-          (firstGeom == te::gm::LineStringType && secondGeom == te::gm::PolygonType)||
-          (firstGeom == te::gm::LineStringType && secondGeom == te::gm::MultiPolygonType)||
-          (firstGeom == te::gm::MultiLineStringType && secondGeom == te::gm::PolygonType)||
-          (firstGeom == te::gm::MultiLineStringType && secondGeom == te::gm::MultiPolygonType)||
-
-          (firstGeom == te::gm::LineStringType && secondGeom == te::gm::LineStringType) ||
-          (firstGeom == te::gm::MultiLineStringType && secondGeom == te::gm::MultiLineStringType) ||
-          (firstGeom == te::gm::LineStringType && secondGeom == te::gm::MultiLineStringType) ||
-          (firstGeom == te::gm::MultiLineStringType && secondGeom == te::gm::LineStringType))
-    return te::gm::MultiLineStringType;
-
-  return te::gm::MultiPointType;
-}
-
-te::gm::GeomType te::vp::GeomOpResultType(te::gm::GeomType firstGeom)
-{
-  if (firstGeom == te::gm::PolygonType)
-    return te::gm::MultiPolygonType;
-  
-  if (firstGeom == te::gm::LineStringType)
-    return te::gm::MultiLineStringType;
-  
-  if (firstGeom == te::gm::PointType)
-    return te::gm::MultiPointType;
-  
-  return firstGeom;
-}
-
 void te::vp::Save(te::da::DataSource* source, te::da::DataSet* result, te::da::DataSetType* outDsType)
 {
   // do any adaptation necessary to persist the output dataset

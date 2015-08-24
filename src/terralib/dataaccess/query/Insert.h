@@ -27,7 +27,7 @@
 #define __TERRALIB_DATAACCESS_INTERNAL_INSERT_H
 
 // TerraLib
-#include "terralib/dataaccess/query/DataSetName.h"
+#include "DataSetName.h"
 #include "Field.h"
 #include "Fields.h"
 #include "Select.h"

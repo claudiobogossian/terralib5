@@ -26,9 +26,6 @@
 #ifndef __TERRALIB_DATATYPE_INTERNAL_CONFIG_H
 #define __TERRALIB_DATATYPE_INTERNAL_CONFIG_H
 
-// TerraLib
-#include "../Config.h"
-
 #define TE_DATATYPE_MODULE_NAME "te.datatype"
 
 /** @name DLL/LIB Module

@@ -62,7 +62,7 @@
 #include <utility>
 
 te::qt::af::MapDisplay::MapDisplay(te::qt::widgets::MapDisplay* display)
-  : QObject(display),
+  : QObject(),
     m_display(display),
     m_tool(0),
     m_menu(0),
@@ -111,6 +111,7 @@ te::qt::af::MapDisplay::MapDisplay(te::qt::widgets::MapDisplay* display)
 te::qt::af::MapDisplay::~MapDisplay()
 {
   delete m_tool;
+  delete m_display;
 }
 
 te::qt::widgets::MapDisplay* te::qt::af::MapDisplay::getDisplay()
