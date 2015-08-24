@@ -414,7 +414,7 @@ void te::qt::widgets::ImageItem::calculateCurrentFile(const unsigned int& curTim
 {
   double nt = (double)curTime / (double)m_duration;
   int ind = m_animation->getAnimationDataIndex(nt);
-  if (ind < m_animationFiles.count())
+  if (ind >= 0 && ind < m_animationFiles.count())
   {
     QString f = m_animationFiles[ind];
     m_currentImageFile = m_dir.path() + "/" + f;

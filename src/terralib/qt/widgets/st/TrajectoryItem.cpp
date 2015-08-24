@@ -172,6 +172,8 @@ void te::qt::widgets::TrajectoryItem::drawForward(const unsigned int& curTime)
   int indold = m_animation->getAnimationDataIndex((double)m_curTimeDuration / (double)m_duration);
   int ind = m_animation->getAnimationDataIndex((double)curTime / (double)m_duration);
   m_curTimeDuration = curTime;
+  if (ind == -1)
+    return;
 
   QVector<QPointF> vec;
 
@@ -293,6 +295,8 @@ void te::qt::widgets::TrajectoryItem::draw()
 
   int count = m_animationRoute.size();
   int ind = m_animation->getAnimationDataIndex((double)m_curTimeDuration / (double)m_duration);
+  if (ind < 0)
+    return;
 
   QVector<QPointF> vec;
   if(m_animation->direction() == QAbstractAnimation::Forward)

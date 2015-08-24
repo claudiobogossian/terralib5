@@ -110,35 +110,46 @@ int te::qt::widgets::Animation::getAnimationDataIndex(const double& trel)
   diff = aiTime - iTime;
   double aiSeconds = diff.total_seconds();
   double itrel = aiSeconds / totalSeconds;
-  if(itrel > trel)
-    return 0;
 
   diff = afTime - iTime;
   double afSeconds = diff.total_seconds();
   double ftrel = afSeconds / totalSeconds;
-  if(trel > ftrel)
-    return (int)count-1;
 
-  size_t i;
-  for(i = 0; i < count; ++i)
+  if (trel < itrel || trel > ftrel)
+    return -1;
+
+  int i;
+  if (direction() == QAbstractAnimation::Forward)
   {
-    te::dt::TimeInstant tinstant = ai->m_animationTime[(int)i]; // animation time instant
-    boost::posix_time::ptime time = tinstant.getTimeInstant();
-    diff = time - iTime;
-    double seconds = diff.total_seconds();
-
-    // normalizing the time
-    double t = seconds / totalSeconds;
-
-    if(t >= trel)
+    for (i = 0; i < count; ++i)
     {
-      if(direction() == QAbstractAnimation::Forward && i != 0)
-        return (int)i - 1;
-      else
-        return (int)i;
+      te::dt::TimeInstant tinstant = ai->m_animationTime[i]; // animation time instant
+      boost::posix_time::ptime time = tinstant.getTimeInstant();
+      diff = time - iTime;
+      double seconds = diff.total_seconds();
+
+      // normalizing the time
+      double t = seconds / totalSeconds;
+
+      if (t >= trel)
+        return i;
     }
   }
-  if(i == count)
-    return (int)count - 1;
-  return 0;
+  else
+  {
+    for (i = (int)count-1; i >= 0; --i)
+    {
+      te::dt::TimeInstant tinstant = ai->m_animationTime[i]; // animation time instant
+      boost::posix_time::ptime time = tinstant.getTimeInstant();
+      diff = time - iTime;
+      double seconds = diff.total_seconds();
+
+      // normalizing the time
+      double t = seconds / totalSeconds;
+
+      if (t <= trel)
+        return i;
+    }
+  }
+  return -1;
 }

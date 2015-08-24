@@ -2235,8 +2235,14 @@ void te::qt::widgets::TimeSliderWidget::onApplyTimeIntervalPushButtonClicked(boo
       m_parallelAnimation->pause();   
   }
 
-  if(tp == m_temporalAnimationExtent)
+  if (tp == m_temporalAnimationExtent)
     onDateTimeEditChanged(dt);
+  else
+  {
+    // artifice to adjust the single step value on duration spin box widget.
+    onDurationValueChanged(m_duration + 1);
+    onDurationValueChanged(m_duration);
+  }
 }
 
 void te::qt::widgets::TimeSliderWidget::onAnimationComboBoxActivated(int i)
