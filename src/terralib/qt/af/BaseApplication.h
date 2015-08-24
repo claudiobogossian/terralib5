@@ -153,6 +153,8 @@ namespace te
 
         void onLayerSelectionChanged(const te::map::AbstractLayerPtr& layer);
 
+        void onLayerSelectedObjectsChanged(const te::map::AbstractLayerPtr& layer);
+
       signals:
 
         void triggered(te::qt::af::evt::Event* e);

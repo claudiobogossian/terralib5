@@ -1858,14 +1858,6 @@ void TerraView::showProgressDockWidget()
   m_progressDockWidget->setVisible(true);
 }
 
-void TerraView::onLayerSelectedObjectsChanged(const te::map::AbstractLayerPtr& layer)
-{
-  assert(layer.get());
-
-  te::qt::af::evt::LayerSelectedObjectsChanged e(layer);
-  m_app->triggered(&e);
-}
-
 void TerraView::onHighlightLayerObjects(const te::map::AbstractLayerPtr& layer, te::da::DataSet* dataset, const QColor& color)
 {
   assert(layer.get());

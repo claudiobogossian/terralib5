@@ -173,8 +173,6 @@ class TerraView : public te::qt::af::BaseApplication
 
     void showProgressDockWidget();
 
-    void onLayerSelectedObjectsChanged(const te::map::AbstractLayerPtr& layer);
-
     void onHighlightLayerObjects(const te::map::AbstractLayerPtr& layer, te::da::DataSet* dataset, const QColor& color);
 
     void onCreateNewLayer(te::map::AbstractLayerPtr layer);
