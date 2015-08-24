@@ -342,7 +342,7 @@ QGraphicsItemGroup* te::layout::Scene::createItemGroup( const QList<QGraphicsIte
   //The scene create a new group with important restriction
   QGraphicsItemGroup* p = QGraphicsScene::createItemGroup(items);
 
-  EnumModeType* mode = Enums::getInstance().getEnumModeType();
+  EnumObjectType* object = Enums::getInstance().getEnumObjectType();
 
   //Create a new group
   AbstractBuildGraphicsItem* abstractBuild = Context::getInstance().getAbstractBuildGraphicsItem();
@@ -352,7 +352,7 @@ QGraphicsItemGroup* te::layout::Scene::createItemGroup( const QList<QGraphicsIte
     return p;
 
   te::gm::Coord2D coord(0,0);
-  QGraphicsItem* item = build->createItem(mode->getModeCreateItemGroup(), coord, false);
+  QGraphicsItem* item = build->createItem(object->getItemGroup(), coord, false);
 
   double x = 0.;
   double y = 0.;
