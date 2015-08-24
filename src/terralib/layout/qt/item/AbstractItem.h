@@ -50,6 +50,7 @@
 #include <QEvent>
 #include <QGraphicsScene>
 #include <QColor>
+#include <QGraphicsSceneHoverEvent>
 
 class AbstractItemModel;
 
@@ -161,9 +162,13 @@ namespace te
          */
         virtual QVariant itemChange ( QGraphicsItem::GraphicsItemChange change, const QVariant & value );
 
-      protected:
+        virtual void te::layout::AbstractItem<T>::hoverMoveEvent( QGraphicsSceneHoverEvent * event );
 
-        bool m_move;
+        virtual bool checkTouchesCorner( const double& x, const double& y );
+
+        bool          m_toResizeItem;
+        LayoutAlign   m_enumSides;
+        bool          m_move;
     };
 
     template <class T>
@@ -171,11 +176,15 @@ namespace te
       : T()
       , AbstractItemView(controller, model, invertedMatrix)
       , m_move(false)
+      , m_toResizeItem(false)
     {
       T::setFlags(QGraphicsItem::ItemIsMovable
         | QGraphicsItem::ItemIsSelectable
         | QGraphicsItem::ItemSendsGeometryChanges
         | QGraphicsItem::ItemIsFocusable);
+
+      //If enabled is true, this item will accept hover events
+      QGraphicsItem::setAcceptHoverEvents(true);
     }
 
     template <class T>
@@ -478,7 +487,65 @@ namespace te
       }
       return T::sceneEvent(event);
     }
+
+    template <class T>
+    inline void te::layout::AbstractItem<T>::hoverMoveEvent( QGraphicsSceneHoverEvent * event )
+    {
+      if(m_controller->getProperty("resizable").getValue().toBool())
+      {
+        m_toResizeItem = checkTouchesCorner(event->pos().x(), event->pos().y());
+      }
+      QGraphicsItem::hoverMoveEvent(event);
+    }
   }
 }
+
+template <class T>
+inline bool te::layout::AbstractItem<T>::checkTouchesCorner( const double& x, const double& y )
+{
+  bool result = true;
+  QRectF bRect = boundingRect();
+  double margin = 2.; //precision
+
+  QPointF ll = bRect.bottomLeft();
+  QPointF lr = bRect.bottomRight();
+  QPointF tl = bRect.topLeft();
+  QPointF tr = bRect.topRight();
+
+  if((x >= (ll.x() - margin) && x <= (ll.x() + margin))
+    && (y >= (ll.y() - margin) && y <= (ll.y() + margin)))
+  {
+    T::setCursor(Qt::SizeFDiagCursor);
+    m_enumSides = TPLowerLeft;
+  }
+  else if((x >= (lr.x() - margin) && x <= (lr.x() + margin))
+    && (y >= (lr.y() - margin) && y <= (lr.y() + margin)))
+  {
+    T::setCursor(Qt::SizeBDiagCursor);
+    m_enumSides = TPLowerRight;
+  }
+  else if((x >= (tl.x() - margin) && x <= (tl.x() + margin))
+    && (y >= (tl.y() - margin) && y <= (tl.y() + margin)))
+  {
+    T::setCursor(Qt::SizeBDiagCursor);
+    m_enumSides = TPTopLeft;
+  }
+  else if((x >= (tr.x() - margin) && x <= (tr.x() + margin))
+    && (y >= (tr.y() - margin) && y <= (tr.y() + margin)))
+  {
+    T::setCursor(Qt::SizeFDiagCursor);
+    m_enumSides = TPTopRight;
+  }
+  else
+  {
+    T::setCursor(Qt::ArrowCursor);
+    m_enumSides = TPNoneSide;
+    result = false;
+  }
+
+  return result;
+}
+
+
 
 #endif //__TERRALIB_LAYOUT_INTERNAL_ABSTRACT_ITEM_H

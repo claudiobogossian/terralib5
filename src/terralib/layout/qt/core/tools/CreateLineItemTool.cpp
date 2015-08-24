@@ -21,11 +21,15 @@
 #include "CreateLineItemTool.h"
 #include "../View.h"
 #include "../Scene.h"
-#include "../../../../geometry/Point.h"
+#include "../BuildGraphicsItem.h"
+#include "terralib/common/Singleton.h"
 #include "../../item/LineItem.h"
+#include "../../../core/pattern/singleton/Context.h"
 #include "../../../core/pattern/mvc/AbstractItemView.h"
 #include "../../../core/pattern/mvc/AbstractItemModel.h"
 #include "../../../core/enum/Enums.h"
+#include "../../../../geometry/Point.h"
+
 
 // Qt
 #include <QtGui/QMouseEvent>
@@ -34,7 +38,6 @@
 te::layout::CreateLineItemTool::CreateLineItemTool(View* view, EnumType* itemType, QObject* parent)
   : AbstractLayoutTool(view, parent),
   m_model(NULL),
-  m_item(NULL),
   m_itemType(itemType)
 {
   setCursor(Qt::ArrowCursor);
@@ -65,9 +68,9 @@ bool te::layout::CreateLineItemTool::mousePressEvent(QMouseEvent* e)
   if (!scne)
     return false;
 
-  QPointF scenePos = m_view->mapToScene(e->pos());
-  createItem(scenePos, scne);
+  createItem();
 
+  QPointF scenePos = m_view->mapToScene(e->pos());
   //QPointF itemPos = m_item->mapFromScene(scenePos);
   te::gm::Point p(scenePos.x(), scenePos.y());
   m_coords.push_back(p);
@@ -125,17 +128,13 @@ void te::layout::CreateLineItemTool::setGeometry()
   m_model->setProperty(property);
 }
 
-void te::layout::CreateLineItemTool::createItem( QPointF &scenePos, Scene* scne )
+void te::layout::CreateLineItemTool::createItem()
 {
   if (m_coords.empty())
   {
-    te::gm::Coord2D coord(scenePos.x(), scenePos.y());
-
-    m_item = scne->createItem(m_itemType, coord);
-
-    if (!m_item)
-      return;
-
+    AbstractBuildGraphicsItem* abstractBuild = Context::getInstance().getAbstractBuildGraphicsItem();
+    BuildGraphicsItem* build = dynamic_cast<BuildGraphicsItem*>(abstractBuild);
+    m_item = build->createItem(m_itemType);
     AbstractItem<QGraphicsItem> * itemView = dynamic_cast<AbstractItem<QGraphicsItem> *> (m_item);
     m_model = itemView->getController()->getModel();
   }

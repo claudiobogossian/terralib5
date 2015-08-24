@@ -24,10 +24,7 @@
 te::layout::CreatePolygonItemTool::CreatePolygonItemTool(View* view, EnumType* itemType, QObject* parent)
   : CreateLineItemTool(view, itemType, parent)
 {
-  if (!m_itemType)
-  {
-    m_itemType = Enums::getInstance().getEnumObjectType()->getPolygonItem();
-  }
+  m_itemType = Enums::getInstance().getEnumObjectType()->getPolygonItem();
 }
 
 te::layout::CreatePolygonItemTool::~CreatePolygonItemTool()
