@@ -43,6 +43,10 @@ namespace te
       * \class LayerItem
       *
       * \brief An item that contains a te::map::AbstractLayerPtr.
+      *
+      * \note The type of the item is "LAYER".
+      *
+      * \ingroup widgets
       */
       class TEQTWIDGETSEXPORT LayerItem: public TreeItem
       {
@@ -89,8 +93,15 @@ namespace te
         */
         te::map::AbstractLayerPtr getLayer() const;
 
+        /*!
+         * \brief Updates the chart item.
+        */
         void updateChart();
 
+        /*!
+        * \brief Updates the grouping item.
+        * \return The position of the GroupingItem as child of the Layer.
+        */
         int updateGrouping();
 
       protected:

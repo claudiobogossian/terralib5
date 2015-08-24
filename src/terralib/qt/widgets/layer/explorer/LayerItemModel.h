@@ -47,7 +47,6 @@ namespace te
     {
       class TreeItem;
 
-
       /*!
       * \class LayerItemModel
       *
@@ -57,6 +56,8 @@ namespace te
       * using a view. This is part of the Model / View framework of the Qt5.
       *
       * \sa TreeItem, te::map::AbstractLayer
+      *
+      * \ingroup widgets
       */
       class TEQTWIDGETSEXPORT LayerItemModel: public QAbstractItemModel
       {
@@ -84,14 +85,30 @@ namespace te
         //@}
 
         /*!
+        * \name Update Methods
+        *
+        * Methods used for feed the model.
+        */
+        //@{
+
+        /*!
         * \brief Adds a layer to the model at the end of children list.
         *
         * \param layer The layer to be added.
         *
-        * \param idxPath Location where the spatial index must be generated.
+        * \param idxPath Unused.
         */
         void addLayer(te::map::AbstractLayerPtr layer, const std::string& idxPath = "./");
 
+        /*!
+         * \brief Adds the layer to the model.
+         *
+         * \param layer Layer to be added.
+         *
+         * \param parent Parent of the new LayerItem.
+         *
+         * \param idxPath Unused.
+         */
         void addLayer(te::map::AbstractLayerPtr layer, const QModelIndex& parent, const std::string& idxPath = "./");
 
         /*!
@@ -99,12 +116,28 @@ namespace te
         *
         * \param layers The layer list to be added.
         *
-        * \param idxPath Location where the spatial indexes must be generated.
+        * \param idxPath Unused.
         */
         void addLayers(const std::list<te::map::AbstractLayerPtr>& layers, const std::string& idxPath = "./");
 
+        /*!
+        * \brief Adds a list of layers to the model.
+        *
+        * \param layers The layer list to be added.
+        *
+        * \param parent The parent of the new LayerItems.
+        *
+        * \param idxPath Unused.
+        */
         void addLayers(const std::list<te::map::AbstractLayerPtr>& layers, const QModelIndex& parent, const std::string& idxPath = "./");
 
+        /*!
+         * \brief Updates the list of layers in the model.
+         *
+         * \param layers The new set of layers to be set to the model.
+         *
+         * \note Older items are removed from the model.
+        */
         void setLayers(const std::list<te::map::AbstractLayerPtr>& layers);
 
         /*!
@@ -136,7 +169,22 @@ namespace te
         */
         void addFolder(const std::string& name, TreeItem* parent = 0);
 
+        /*!
+        * \brief Adds a new folder item to the model.
+        *
+        * \param name Label of the folder.
+        *
+        * \param idx The parent of the new FolderItem.
+        */
         void addFolder(const std::string& name, const QModelIndex& idx);
+        //@}
+
+        /*!
+        * \name Getter Methods
+        *
+        * Methods used for get items from the model.
+        */
+        //@{
 
         /*!
         * \brief Get all layers contained in the model. Commonly used for persistent pourposes.
@@ -150,9 +198,10 @@ namespace te
         *
         * \return List of visible layers.
         *
-        * \note FolderLayers are not contained in the returned list.
+        * \note Folder layers are not contained in the returned list.
         */
         std::list<te::map::AbstractLayerPtr> getVisibleLayers();
+        //@}
 
         /*!
         * \name Reimplementation of QAbstractItemModel
@@ -202,7 +251,18 @@ namespace te
 
       Q_SIGNALS:
 
-          void visibilityChanged();
+        /*! 
+        * \name Qt signals
+        *
+        * Signals emitted by LayerItemModel
+        */
+        //@{
+
+        /*!
+         * \brief Signal emited when an item visibility has changed.
+         */
+        void visibilityChanged();
+        //@}
 
       protected:
 

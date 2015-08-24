@@ -1395,6 +1395,9 @@ void TerraView::onAddDataSetLayerTriggered()
 
     std::list<te::map::AbstractLayerPtr> layers = lselector->getLayers();
 
+    if(layers.empty())
+      return;
+
     QApplication::setOverrideCursor(Qt::WaitCursor);
 
     lselectorw.reset(0);

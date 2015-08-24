@@ -42,6 +42,8 @@ namespace te
       * \brief A class that represents a chart slice in a LayerItemModel.
       *
       * \note The type of the item is "CHARTSLICE".
+      *
+      * \ingroup widgets
       */
       class TEQTWIDGETSEXPORT ChartSliceItem: public TreeItem
       {
@@ -56,7 +58,10 @@ namespace te
         /*!
         * \brief Constructor.
         *
-        * \param map Color map.
+        * \param propertyName Name of the property(to present as the label of the item).
+        * \param color Fill color.
+        * \param contourColor Contour color.
+        * \param contourWidth Contour width.
         */
         ChartSliceItem(const QString& propertyName, const QColor& color,
                        const QColor& contourColor, const int& contourWidth);
@@ -78,13 +83,17 @@ namespace te
         Qt::ItemFlags flags();
         //@}
 
+        /*!
+         * \brief Returns the icon to be presented in the tree.
+         *
+         * \return Icon to be presented.
+        */
         QIcon getIcon() const;
 
       protected:
 
         std::string m_label;    //!< Label to be presented on the Qt view.
-
-        QIcon m_icon;
+        QIcon m_icon;           //!< Icon to be presented.
       };
     }
   }

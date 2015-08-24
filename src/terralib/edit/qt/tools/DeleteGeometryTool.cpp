@@ -54,22 +54,41 @@ te::edit::DeleteGeometryTool::DeleteGeometryTool(te::qt::widgets::MapDisplay* di
 {
   // Signals & slots
   connect(m_display, SIGNAL(extentChanged()), SLOT(onExtentChanged()));
-  
-  pickFeature(m_layer);
-
-  if (m_feature == 0)
-  {
-    QMessageBox::critical(m_display, tr("Error"), QString(tr("The geometry cannot be selected from the layer.")));
-    return;
   }
-
-  storeRemovedFeature();
-
-}
 
 te::edit::DeleteGeometryTool::~DeleteGeometryTool()
 {
   delete m_feature;
+}
+
+bool te::edit::DeleteGeometryTool::mousePressEvent(QMouseEvent* e)
+{
+  m_feature = PickFeature(m_layer, buildEnvelope(e->pos()), m_layer->getSRID(), te::edit::GEOMETRY_DELETE);
+
+  if(m_feature == 0)
+  {
+    QMessageBox::critical(m_display, tr("Error"), QString(tr("The geometry cannot be selected from the layer.")));
+    return false;
+  }
+
+  storeRemovedFeature();
+
+  return true;
+}
+
+bool te::edit::DeleteGeometryTool::mouseMoveEvent(QMouseEvent* e)
+{
+  return false;
+}
+
+bool te::edit::DeleteGeometryTool::mouseReleaseEvent(QMouseEvent* e)
+{
+  return false;
+}
+
+bool te::edit::DeleteGeometryTool::mouseDoubleClickEvent(QMouseEvent* e)
+{
+  return false;
 }
 
 void te::edit::DeleteGeometryTool::reset()
@@ -78,7 +97,7 @@ void te::edit::DeleteGeometryTool::reset()
   m_feature = 0;
 }
 
-void te::edit::DeleteGeometryTool::pickFeature(const te::map::AbstractLayerPtr& layer)
+void te::edit::DeleteGeometryTool::pickFeature(const te::map::AbstractLayerPtr& layer, const QPointF& pos)
 {
   reset();
 
@@ -153,35 +172,35 @@ te::gm::Envelope te::edit::DeleteGeometryTool::buildEnvelope(const QPointF& pos)
 
 void te::edit::DeleteGeometryTool::draw()
 {
-  const te::gm::Envelope& env = m_display->getExtent();
-  if(!env.isValid())
-    return;
+  //const te::gm::Envelope& env = m_display->getExtent();
+  //if(!env.isValid())
+  //  return;
 
-  // Clear!
-  QPixmap* draft = m_display->getDraftPixmap();
-  draft->fill(Qt::transparent);
+  //// Clear!
+  //QPixmap* draft = m_display->getDraftPixmap();
+  //draft->fill(Qt::transparent);
 
-   // Initialize the renderer
-  Renderer& renderer = Renderer::getInstance();
-  renderer.begin(draft, env, m_display->getSRID());
+  // // Initialize the renderer
+  //Renderer& renderer = Renderer::getInstance();
+  //renderer.begin(draft, env, m_display->getSRID());
 
-  // Draw the layer edited geometries
-  renderer.drawRepository(m_layer->getId(), env, m_display->getSRID());
+  //// Draw the layer edited geometries
+  //renderer.drawRepository(m_editionManager, m_layer->getId(), env, m_display->getSRID());
 
-  if(m_feature == 0)
-  {
-    renderer.end();
-    m_display->repaint();
-    return;
-  }
+  //if(m_feature == 0)
+  //{
+  //  renderer.end();
+  //  m_display->repaint();
+  //  return;
+  //}
 
-  renderer.setPolygonStyle(Qt::white, Qt::black, 1);
+  //renderer.setPolygonStyle(Qt::white, Qt::black, 1);
 
-  renderer.draw(m_feature->getGeometry(), false);
+  //renderer.draw(m_feature->getGeometry(), false);
 
-  renderer.end();
+  //renderer.end();
 
-  m_display->repaint();
+  //m_display->repaint();
 
 }
 
@@ -192,7 +211,7 @@ void te::edit::DeleteGeometryTool::onExtentChanged()
 
 void te::edit::DeleteGeometryTool::storeRemovedFeature()
 {
-  RepositoryManager::getInstance().addGeometry(m_layer->getId(), m_feature->getId()->clone(), dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone()),te::edit::GEOMETRY_DELETE);
+  RepositoryManager::getInstance().addGeometry(m_layer->getId(), m_feature->getId()->clone(), dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone()), GEOMETRY_DELETE);
+
   emit geometriesEdited();
 }
-

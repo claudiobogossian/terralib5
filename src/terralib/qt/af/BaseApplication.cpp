@@ -68,11 +68,11 @@ te::qt::af::BaseApplication::~BaseApplication()
 {
   te::qt::af::UpdateUserSettings();
 
-  if(m_app)
-    m_app->finalize();
-
   while(!m_tables.empty())
     delete *m_tables.begin();
+
+  if(m_app)
+    m_app->finalize();
 
   delete m_ui;
   delete m_layerExplorer;

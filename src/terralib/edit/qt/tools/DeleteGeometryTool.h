@@ -27,10 +27,13 @@
 #define __TERRALIB_EDIT_QT_INTERNAL_DELETEGEOMETRYTOOL_H
 
 // TerraLib
+//#include "../../../edit/qt/core/EditionManager.h"
 #include "../../../geometry/Envelope.h"
 #include "../../../maptools/AbstractLayer.h"
-#include "GeometriesUpdateTool.h"
+//#include "../../../qt/widgets/tools/AbstractTool.h"
 #include "../Config.h"
+
+#include "GeometriesUpdateTool.h"
 
 // Qt
 #include <QPointF>
@@ -82,11 +85,26 @@ namespace te
 
         //@}
 
+        /** @name AbstractTool Methods
+          *  Methods related with tool behavior.
+          */
+        //@{
+
+        bool mousePressEvent(QMouseEvent* e);
+
+        bool mouseMoveEvent(QMouseEvent* e);
+
+        bool mouseReleaseEvent(QMouseEvent* e);
+
+        bool mouseDoubleClickEvent(QMouseEvent* e);
+
+        //@}
+
       private:
 
         void reset();
 
-        void pickFeature(const te::map::AbstractLayerPtr& layer);
+        void pickFeature(const te::map::AbstractLayerPtr& layer, const QPointF& pos);
 
         te::gm::Envelope buildEnvelope(const QPointF& pos);
 
@@ -97,11 +115,7 @@ namespace te
       private slots:
 
         void onExtentChanged();
-
-      protected:
-
     };
-
   }   // end namespace edit
 }     // end namespace te
 

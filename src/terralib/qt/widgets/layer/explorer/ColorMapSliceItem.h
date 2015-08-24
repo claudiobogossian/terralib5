@@ -20,7 +20,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 /*!
  * \file ColorMapSliceItem.h
  *
- \brief A class that represents a grouping item of a color map in a LayerTreeModel.
+ * \brief A class that represents a slice of a ColorMapItem.
  */
 
 #ifndef __TERRALIB_QT_WIDGETS_LAYER_INTERNAL_COLORMAPSLICEITEM_H
@@ -41,9 +41,11 @@ namespace te
       /*!
       * \class ColorMapSliceItem
       *
-      * \brief A class that represents a grouping item of a color map in a LayerTreeModel.
+      * \brief A class that represents a slice of a ColorMapItem.
       *
       * \note The type of the item is "COLORMAPSLICE".
+      *
+      * \ingroup widgets
       */
       class TEQTWIDGETSEXPORT ColorMapSliceItem: public TreeItem
       {
@@ -59,6 +61,10 @@ namespace te
         * \brief Constructor.
         *
         * \param label Label to be presented in the Qt view.
+        * \param beg Begin color.
+        * \param end End color.
+        *
+        * \note Use \a end for slices with mixed colors. 
         */
         ColorMapSliceItem(const std::string& label, const QColor& beg, const QColor& end = QColor());
 
@@ -77,13 +83,17 @@ namespace te
         std::string getAsString() const;
         //@}
 
+        /*!
+        * \brief Returns the icon to be presented in the tree.
+        *
+        * \return Icon to be presented.
+        */
         QIcon getIcon() const;
 
       protected:
 
         std::string m_label;    //!< Label to be presented on the Qt view.
-
-        QIcon m_icon;
+        QIcon m_icon;           //!< Icon to be presented.
       };
     }
   }

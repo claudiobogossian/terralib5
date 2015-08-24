@@ -42,9 +42,11 @@ namespace te
       /*!
       * \class ColorMapItem
       *
-      * \brief Represents a folder item that contains layers and / or other folders.
+      * \brief Represents a color map of rastersymbolizer of a layer in a LayerItemModel.
       *
-      * \note The type of the item is "FOLDER".
+      * \note The type of the item is "COLORMAP".
+      *
+      * \ingroup widgets
       */
       class TEQTWIDGETSEXPORT ColorMapItem: public TreeItem
       {
@@ -80,9 +82,8 @@ namespace te
 
       protected:
 
-        std::string m_label;    //!< Label to be presented on the Qt view.
-
-        const te::se::ColorMap* m_colorMap;
+        std::string m_label;                  //!< Label to be presented on the Qt view.
+        const te::se::ColorMap* m_colorMap;   //!< ColorMap being used.
       };
     }
   }
