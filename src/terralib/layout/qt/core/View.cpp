@@ -476,18 +476,6 @@ void te::layout::View::changeMode( EnumType* newMode )
   {
     iUtils->setCurrentToolInSelectedMapItems(enumMode->getModeMapZoomOut());
   }
-  else if(mode == enumMode->getModeMapCreateTextGrid()) 
-  {
-    iUtils->createTextGridAsObject();
-  }
-  else if(mode == enumMode->getModeMapCreateTextMap()) 
-  {
-    iUtils->createTextMapAsObject();
-  }
-  else if(mode == enumMode->getModeLegendChildAsObject()) 
-  {
-
-  }
 
   Scene* sce = dynamic_cast<Scene*>(scene());
   if(sce)

@@ -126,15 +126,15 @@ void te::layout::ToolbarController::onMapToolsTriggered(QAction* action)
   }
   else if (action->objectName().compare(toolbar->getActionMapCreateTextGrid().c_str()) == 0)
   {
-    toolbar->changeAction(type->getModeMapCreateTextGrid());
+    //do nothing
   }
   else if (action->objectName().compare(toolbar->getActionMapCreateMapText().c_str()) == 0)
   {
-    toolbar->changeAction(type->getModeMapCreateTextMap());
+    //do nothing
   }
   else if (action->objectName().compare(toolbar->getActionMapCreateLegendChildAsObject().c_str()) == 0)
   {
-    toolbar->changeAction(type->getModeLegendChildAsObject());
+    //do nothing
   }
 }
 
