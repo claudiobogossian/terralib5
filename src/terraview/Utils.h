@@ -23,8 +23,8 @@
   \brief Utility routines for the TerraLib Application Framework module.
 */
 
-#ifndef __TERRALIB_QT_AF_INTERNAL_UTILS_H
-#define __TERRALIB_QT_AF_INTERNAL_UTILS_H
+#ifndef __TERRAVIEW__INTERNAL_UTILS_H
+#define __TERRAVIEW__INTERNAL_UTILS_H
 
 // TerraLib
 #include <terralib/common/Exception.h>
@@ -70,6 +70,11 @@ bool GetOpenLastProjectFromSettings();
 */
 void WriteDefaultProjectFile(const QString& fileName);
 
+/*!
+\brief Creates a default QSettings.
+*/
+void CreateDefaultSettings();
 
-#endif  // __TERRALIB_QT_AF_INTERNAL_UTILS_H
+
+#endif  // __TERRAVIEW__INTERNAL_UTILS_H
 

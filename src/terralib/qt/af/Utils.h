@@ -238,11 +238,6 @@ namespace te
       TEQTAFEXPORT bool GetAlternateRowColorsFromSettings();
 
       /*!
-        \brief Creates a default QSettings.
-      */
-      TEQTAFEXPORT void CreateDefaultSettings();
-
-      /*!
         \brief Check QSettings for existance of \a act and adds it if necessary.
 
         \param act Action to be inserted.

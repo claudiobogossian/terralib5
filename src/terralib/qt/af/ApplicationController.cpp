@@ -503,11 +503,6 @@ void  te::qt::af::ApplicationController::initialize()
     QMessageBox::warning(m_msgBoxParentWidget, m_appTitle, msgErr);
   }
 
-  QFileInfo info(user_settings.fileName());
-
-  if(!info.exists())
-    CreateDefaultSettings();
-
   m_initialized = true;
 }
 
