@@ -53,7 +53,6 @@ namespace te
 
   namespace edit
   {
-    class EditionManager;
     class Feature;
 
     class TEEDITQTEXPORT GeometriesUpdateTool : public te::qt::widgets::AbstractTool
@@ -67,6 +66,10 @@ namespace te
 
       void setLayer(te::map::AbstractLayer* layer);
 
+      bool isInUse() const;
+
+      void setInUse(const bool& status);
+
     Q_SIGNALS:
 
       void geometriesEdited();
@@ -75,7 +78,9 @@ namespace te
 
     protected:
 
-      virtual void saveGeometry(te::gm::Geometry* gm);
+      virtual void saveGeometry(te::gm::Geometry* gm, const int& op);
+
+      bool m_isInUse;
 
       Feature*                m_feature;
       te::map::AbstractLayer* m_layer;

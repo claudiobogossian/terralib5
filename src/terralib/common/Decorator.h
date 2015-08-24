@@ -161,12 +161,6 @@ namespace te
 
       T* fd = findDecorator(decorated);
 
-      if(fd == this)
-      {
-        m_delDecorated = false;
-        return m_decorated;
-      }
-
       Decorator<T>* aux = dynamic_cast< Decorator<T>* >(decorated);
 
       if(aux != 0)

@@ -39,6 +39,8 @@ namespace te
       * \brief Represents a folder item that contains layers and / or other folders.
       *
       * \note The type of the item is "FOLDER".
+      *
+      * \ingroup widgets
       */
       class TEQTWIDGETSEXPORT FolderItem: public TreeItem
       {
@@ -78,6 +80,11 @@ namespace te
         Qt::ItemFlags flags();
         //@}
 
+        /*!
+         * \brief Updates the title of the folder.
+         *
+         * \param title The new item title.
+        */
         void setTitle(const std::string& title);
 
       protected:

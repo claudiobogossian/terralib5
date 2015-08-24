@@ -40,29 +40,74 @@ namespace te
   {
     namespace widgets
     {
+      /*!
+       * \class LayerViewDelegate
+       *
+       * \brief A class for rendering icons for layer and folder itens.
+       *
+       * This is the default delegate for LayerItemView. It's used for present icons for the known kind of items.
+       * For unknown items, or if you want to change the known ones, you can create your own delegate and install
+       * it on the LayerItemView. Note that we use a decorator instead the QStyledItemDelegate. This is useful for
+       * making the inheritance dynamic.
+       *
+       * \ingroup widgets
+       *
+       * \sa te::common::Decorator
+       */
       class TEQTWIDGETSEXPORT LayerViewDelegate: public te::common::Decorator<QStyledItemDelegate>
       {
         Q_OBJECT
 
       public:
 
+        /*!
+        * \name Instantiation Methods
+        *
+        * Methods related to creation and destruction of the object.
+        */
+        //@{
+
+        /*!
+        * \brief Constructor.
+        *
+        * \param decorated The delegate to be decorated.
+        *
+        * \param parent Used by Qt5.
+        */
         LayerViewDelegate(QStyledItemDelegate* decorated, QObject* parent = 0);
 
+        /*!
+         * \brief Destructor.
+        */
         ~LayerViewDelegate();
 
+        /*!
+        * \name Reimplementation of QStyledItemDelegate.
+        *
+        * Methods reimplemented of the QStyledItemDelegate class.
+        */
+        //@{
         void paint(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const;
+        //@}
 
       protected:
 
+        /*!
+         * \brief Returns the icon for a given index.
+         *
+         * \param index Index of the object being rendered.
+         *
+         * \return The icon for the \a index.
+         */
         QIcon getIcon(const QModelIndex & index) const;
 
-        QIcon m_layer;
-        QIcon m_folder;
-        QIcon m_colorMap;
-        QIcon m_chart;
-        QIcon m_queryLayer;
-        QIcon m_tabularLayer;
-        QIcon m_invalidLayer;
+        QIcon m_layer;          //!< Icon for a layer not invalid.
+        QIcon m_folder;         //!< Icon for a folder.
+        QIcon m_colorMap;       //!< Icon for a ColorMap.
+        QIcon m_chart;          //!< Icon for a chart.
+        QIcon m_queryLayer;     //!< Icon for a query layer.
+        QIcon m_tabularLayer;   //!< Icon for a tabular layer. 
+        QIcon m_invalidLayer;   //!< Icon for an invalid layers.
       };
     }
   }

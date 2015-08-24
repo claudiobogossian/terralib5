@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/qt/widgets/layer/explorer/AbstractTreeItemFactory.h
+  \file TreeItemFactory.h
 
   \brief A class for building layer items.
 */

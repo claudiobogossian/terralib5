@@ -24,6 +24,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 */
 
 // TerraLib
+#include "../../dataaccess/dataset/ObjectId.h"
 #include "../../geometry/Envelope.h"
 #include "../../geometry/Geometry.h"
 #include "../../geometry/LineString.h"
@@ -66,7 +67,7 @@ void te::edit::Renderer::drawRepositories(const te::gm::Envelope& e, int srid)
   const std::map<std::string, Repository*>& repositories = RepositoryManager::getInstance().getRepositories();
 
   std::map<std::string, Repository*>::const_iterator it;
-  for (it = repositories.begin(); it != repositories.end(); ++it)
+  for(it = repositories.begin(); it != repositories.end(); ++it)
     drawRepository(it->first, e, srid);
 }
 
@@ -74,83 +75,90 @@ void te::edit::Renderer::drawRepository(const std::string& source, const te::gm:
 {
   Repository* repository = RepositoryManager::getInstance().getRepository(source);
 
-  if (repository == 0)
+  if(repository == 0)
     return;
 
   std::vector<Feature*> features = repository->getFeatures(e, srid);
 
-  for (std::size_t i = 0; i < features.size(); ++i)
-    draw(features[i]->getGeometry());
+  for(std::size_t i = 0; i < features.size(); ++i)
+    draw(features[i]->getGeometry(), false, features[i]->getOperationType() == GEOMETRY_DELETE);
 }
 
-void te::edit::Renderer::prepare(te::gm::GeomType type)
+void te::edit::Renderer::prepare(te::gm::GeomType type, const bool& removed)
 {
   assert(m_canvas);
 
-  if (m_currentGeomType == type && m_styleChanged == false)
+  if(m_currentGeomType == type && m_styleChanged == false)
     return; // No need reconfigure the canvas
 
   m_currentGeomType = type;
 
-  switch (type)
+  switch(type)
   {
-  case te::gm::PolygonType:
-  case te::gm::PolygonZType:
-  case te::gm::PolygonMType:
-  case te::gm::PolygonZMType:
-  case te::gm::MultiPolygonType:
-  case te::gm::MultiPolygonZType:
-  case te::gm::MultiPolygonMType:
-  case te::gm::MultiPolygonZMType:
-  {
-                                   te::qt::widgets::Config2DrawPolygons(m_canvas, m_polygonFillColor, m_polygonContourColor, m_polygonContourWidth);
-  }
+    case te::gm::PolygonType:
+    case te::gm::PolygonZType:
+    case te::gm::PolygonMType:
+    case te::gm::PolygonZMType:
+    case te::gm::MultiPolygonType:
+    case te::gm::MultiPolygonZType:
+    case te::gm::MultiPolygonMType:
+    case te::gm::MultiPolygonZMType:
+    {
+      te::qt::widgets::Config2DrawPolygons(m_canvas, m_polygonFillColor, m_polygonContourColor, m_polygonContourWidth);
+
+      QBrush b;
+
+      b.setColor((removed) ? Qt::black : m_polygonFillColor);
+      b.setStyle((removed) ? Qt::DiagCrossPattern : Qt::SolidPattern);
+
+      m_canvas->setPolygonFillColor(b);
+    }
     break;
 
-  case te::gm::LineStringType:
-  case te::gm::LineStringZType:
-  case te::gm::LineStringMType:
-  case te::gm::LineStringZMType:
-  case te::gm::MultiLineStringType:
-  case te::gm::MultiLineStringZType:
-  case te::gm::MultiLineStringMType:
-  case te::gm::MultiLineStringZMType:
-  {
-                                      te::qt::widgets::Config2DrawLines(m_canvas, m_lineColor, m_lineWidth);
-  }
+    case te::gm::LineStringType:
+    case te::gm::LineStringZType:
+    case te::gm::LineStringMType:
+    case te::gm::LineStringZMType:
+    case te::gm::MultiLineStringType:
+    case te::gm::MultiLineStringZType:
+    case te::gm::MultiLineStringMType:
+    case te::gm::MultiLineStringZMType:
+    {
+      te::qt::widgets::Config2DrawLines(m_canvas, m_lineColor, m_lineWidth);
+    }
     break;
 
-  case te::gm::PointType:
-  case te::gm::PointZType:
-  case te::gm::PointMType:
-  case te::gm::PointZMType:
-  case te::gm::MultiPointType:
-  case te::gm::MultiPointZType:
-  case te::gm::MultiPointMType:
-  case te::gm::MultiPointZMType:
-  {
-                                 te::qt::widgets::Config2DrawPoints(m_canvas, m_pointMark, m_pointSize, m_pointFillColor, m_pointContourColor, m_pointContourWidth);
-  }
+    case te::gm::PointType:
+    case te::gm::PointZType:
+    case te::gm::PointMType:
+    case te::gm::PointZMType:
+    case te::gm::MultiPointType:
+    case te::gm::MultiPointZType:
+    case te::gm::MultiPointMType:
+    case te::gm::MultiPointZMType:
+    {
+      te::qt::widgets::Config2DrawPoints(m_canvas, m_pointMark, m_pointSize, m_pointFillColor, m_pointContourColor, m_pointContourWidth);
+    }
     break;
 
-  default:
+    default:
     return;
   }
 }
 
-void te::edit::Renderer::draw(te::gm::Geometry* geom, bool showVertexes)
+void te::edit::Renderer::draw(te::gm::Geometry* geom, bool showVertexes, const bool& removed)
 {
   assert(m_canvas);
   assert(geom);
 
-  if ((geom->getSRID() != TE_UNKNOWN_SRS) && (m_srid != TE_UNKNOWN_SRS) && (geom->getSRID() != m_srid))
+  if((geom->getSRID() != TE_UNKNOWN_SRS) && (m_srid != TE_UNKNOWN_SRS) && (geom->getSRID() != m_srid))
     geom->transform(m_srid);
 
-  prepare(geom->getGeomTypeId());
+  prepare(geom->getGeomTypeId(), removed);
 
   m_canvas->draw(geom);
 
-  if (showVertexes)
+  if(showVertexes)
     drawVertexes(geom);
 }
 
@@ -168,7 +176,7 @@ void te::edit::Renderer::drawVertexes(te::gm::Geometry* geom)
 
 void te::edit::Renderer::drawVertexes(const std::vector<te::gm::LineString*>& lines)
 {
-  for (std::size_t i = 0; i < lines.size(); ++i)
+  for(std::size_t i = 0; i < lines.size(); ++i)
     drawVertexes(lines[i]);
 }
 
@@ -177,10 +185,10 @@ void te::edit::Renderer::drawVertexes(te::gm::LineString* line)
   assert(m_canvas);
   assert(line);
 
-  if ((line->getSRID() != TE_UNKNOWN_SRS) && (m_srid != TE_UNKNOWN_SRS) && (line->getSRID() != m_srid))
+  if((line->getSRID() != TE_UNKNOWN_SRS) && (m_srid != TE_UNKNOWN_SRS) && (line->getSRID() != m_srid))
     line->transform(m_srid);
 
-  for (std::size_t j = 0; j < line->getNPoints(); ++j)
+  for(std::size_t j = 0; j < line->getNPoints(); ++j)
   {
     std::auto_ptr<te::gm::Point> point(line->getPointN(j));
     m_canvas->draw(point.get());
@@ -209,7 +217,7 @@ void te::edit::Renderer::setPolygonStyle(const QColor& fillColor, const QColor& 
 }
 
 void te::edit::Renderer::setPointStyle(const QString& mark, const QColor& fillColor, const QColor& contourColor,
-  const std::size_t& contourWidth, const std::size_t& size)
+                                       const std::size_t& contourWidth, const std::size_t& size)
 {
   m_pointMark = mark;
   m_pointFillColor = fillColor;

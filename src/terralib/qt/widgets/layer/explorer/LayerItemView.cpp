@@ -238,6 +238,9 @@ void te::qt::widgets::LayerItemView::removeDelegate(QStyledItemDelegate* d)
 
 void te::qt::widgets::LayerItemView::setMenuEventHandler(QObject* obj)
 {
+  if(m_outterFilter != 0)
+    removeEventFilter(m_outterFilter);
+
   if(obj != m_mnuMger)
   {
     removeEventFilter(m_mnuMger);

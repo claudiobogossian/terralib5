@@ -174,7 +174,6 @@ void te::qt::plugins::wms::Plugin::updateDelegate(const bool& add)
     delete m_delegate;
     m_delegate = 0;
 
-
     view->removeMenuEventHandler(m_handler);
     delete m_handler;
     m_handler = 0;

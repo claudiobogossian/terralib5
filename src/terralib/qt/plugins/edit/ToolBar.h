@@ -35,12 +35,12 @@
 #include <QIcon>
 #include <QList>
 #include <QToolBar>
-#include <QUndoCommand>
 #include <QUndoView>
 
 // STL
 #include <string>
 
+//#include "../../../edit/qt/core/EditionManager.h"
 
 namespace te
 {
@@ -60,11 +60,6 @@ namespace te
         struct Event;
       }
     }
-
-//    namespace widgets
-//    {
-//      class AbstractTool;
-//    }
 
     namespace plugins
     {
@@ -159,6 +154,8 @@ namespace te
 
           bool m_usingStash;
 
+          bool m_layerIsStashed;
+
         public:
           te::map::AbstractLayerPtr getSelectedLayer();
 
@@ -167,6 +164,10 @@ namespace te
           void initialize();
           void initializeActions();
           void createAction(QAction*& action, const QString& tooltip, const QString& icon, bool checkable, bool enabled, const QString& objName, const char* member);
+
+#define EDT_CREATE                      1
+#define EDT_UPDATE                      2
+#define EDT_REMOVE                      3
 
         };
 

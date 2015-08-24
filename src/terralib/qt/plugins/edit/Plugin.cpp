@@ -92,13 +92,13 @@ te::qt::plugins::edit::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo)
   : QObject(),
   te::plugin::Plugin(pluginInfo),
     m_toolbar(0),
-    m_menu(0),
-    m_action(0)
+    m_menu(0)
 {
 }
 
 te::qt::plugins::edit::Plugin::~Plugin() 
 {
+  delete m_toolbar;
 }
 
 void te::qt::plugins::edit::Plugin::startup()
@@ -166,8 +166,6 @@ void te::qt::plugins::edit::Plugin::shutdown()
 
   updateDelegate(false);
 
-  delete m_toolbar;
-
   delete m_menu;
 
   TE_LOG_TRACE(TE_TR("TerraLib Edit Qt Plugin shutdown!"));
@@ -220,7 +218,18 @@ void te::qt::plugins::edit::Plugin::onApplicationTriggered(te::qt::af::evt::Even
 
 void te::qt::plugins::edit::Plugin::onStashedLayer(te::map::AbstractLayer* layer)
 {
-  m_delegate->addStashed(layer->getTitle());
+  if(m_delegate->isStached(layer->getTitle()))
+  {
+    m_delegate->removeStashed(layer->getTitle());
+    RemoveStash(layer);
+
+    te::qt::af::evt::GetMapDisplay e;
+    emit triggered(&e);
+
+    e.m_display->getDisplay()->refresh();
+  }
+  else
+    m_delegate->addStashed(layer->getTitle());
 
   UpdateTreeView(getLayerExplorer());
 }
@@ -230,6 +239,8 @@ void te::qt::plugins::edit::Plugin::onGeometriesChanged()
   m_delegate->addEdited(m_toolbar->getSelectedLayer()->getTitle());
 
   UpdateTreeView(getLayerExplorer());
+
+  drawStashed();
 }
 
 void te::qt::plugins::edit::Plugin::drawStashed()
@@ -248,7 +259,7 @@ void te::qt::plugins::edit::Plugin::drawStashed()
 
   te::map::AbstractLayer* l = GetSelectedLayer(getLayerExplorer());
 
-  if(l != 0)
+  if(l != 0 && l->getVisibility() == te::map::VISIBLE)
   {
     te::gm::Envelope env = display->getExtent();
 
@@ -281,6 +292,8 @@ void te::qt::plugins::edit::Plugin::updateDelegate(const bool& add)
     view->removeDelegate(m_delegate);
     delete m_delegate;
     m_delegate = 0;
+
+    view->repaint();
   }
 }
 
