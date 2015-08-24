@@ -94,19 +94,6 @@ QVariant te::layout::TextItem::itemChange ( QGraphicsItem::GraphicsItemChange ch
       leaveEditionMode();
     }
   }
-  /*else if(change == QGraphicsItem::ItemPositionChange && !m_move)
-  {
-    // TODO: we need to fix the positioning of the item
-    QPointF newPos = value.toPointF();
-
-    double tx = transform().dx();
-    double ty = transform().dy();
-
-    newPos.setX(newPos.x() - tx);
-    newPos.setY(newPos.y() - ty);
-    return newPos;
-  }*/
-
   return AbstractItem<QGraphicsTextItem>::itemChange(change, value);
 }
 

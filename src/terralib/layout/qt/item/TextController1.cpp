@@ -26,7 +26,6 @@
 #include "../../qt/core/Scene.h"
 #include "../../qt/item/TextItem.h"
 
-
 #include <QGraphicsTextItem>
 #include <QTextDocument>
 #include <QFontMetricsF>
@@ -34,6 +33,8 @@
 te::layout::TextController1::TextController1( te::layout::AbstractItemModel* model)
   : AbstractItemController(model)
 {
+  // init component
+  updateView();
 }
 
 te::layout::TextController1::~TextController1()
