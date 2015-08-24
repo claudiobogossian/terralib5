@@ -40,6 +40,7 @@ namespace te
 {
   namespace layout
   {
+    AbstractItemModel;
     /*!
       \class NewItemFactory
 
@@ -80,6 +81,8 @@ namespace te
         \param factoryKey The key that identifies the factory.
         */
         NewItemFactory(const std::string& factoryKey);
+
+        virtual void setProperties(AbstractItemModel* model, ItemFactoryParamsCreate params);
         
     };
   }

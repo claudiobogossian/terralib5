@@ -18,29 +18,32 @@
  */
 
 /*!
-  \file terralib/layout/qt/core/pattern/factory/ZoomAreaToolFactory.cpp
+  \file terralib/layout/qt/core/pattern/factory/CreateItemToolFactory.cpp
 
   \brief This is the concrete factory for zoom area tools.
 */
 
 // TerraLib
-#include "ZoomAreaToolFactory.h"
+#include "CreateItemToolFactory.h"
 #include "../../../../../core/enum/Enums.h"
-#include "../../../tools/ZoomAreaTool.h"
 #include "../../../View.h"
+#include "../../../tools/CreateItemTool.h"
 
-te::layout::AbstractLayoutTool* te::layout::ZoomAreaToolFactory::build(ToolFactoryParamsCreate params)
+te::layout::AbstractLayoutTool* te::layout::CreateItemToolFactory::build(ToolFactoryParamsCreate params)
 {
-  return new ZoomAreaTool(params.getView(), params.getView());
+  View* view = params.getView();
+  EnumType* itemType = params.getItemType();
+  
+  return new CreateItemTool(params.getView(), itemType, params.getView());
 }
 
-te::layout::ZoomAreaToolFactory::ZoomAreaToolFactory() :
-  ToolFactory(Enums::getInstance().getEnumToolType()->getZoomAreaTool()->getName())
+te::layout::CreateItemToolFactory::CreateItemToolFactory() :
+  ToolFactory(Enums::getInstance().getEnumToolType()->getCreateItemTool()->getName())
 {
 
 }
 
-te::layout::ZoomAreaToolFactory::~ZoomAreaToolFactory()
+te::layout::CreateItemToolFactory::~CreateItemToolFactory()
 {
 
 }

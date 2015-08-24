@@ -29,6 +29,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include "pattern/factory/item/RectangleItemFactory.h"
 #include "pattern/factory/tool/CreateLineItemToolFactory.h"
 #include "pattern/factory/tool/CreatePolygonItemToolFactory.h"
+#include "pattern/factory/tool/CreateItemToolFactory.h"
 #include "pattern/factory/item/ArrowItemFactory.h"
 #include "pattern/factory/item/BalloonItemFactory.h"
 #include "pattern/factory/item/BarCodeItemFactory.h"
@@ -67,6 +68,7 @@ namespace te
         static ZoomAreaToolFactory ZoomAreaToolFactory_instance;
         static CreateLineItemToolFactory CreateLineItemToolFactory_instance;
         static CreatePolygonItemToolFactory CreatePolygonItemToolFactory_instance;
+        static CreateItemToolFactory CreateItemToolFactory_instance;
       }
     }
 

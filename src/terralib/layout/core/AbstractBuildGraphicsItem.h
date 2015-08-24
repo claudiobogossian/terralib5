@@ -103,10 +103,13 @@ namespace te
 
       protected:
 
-        te::layout::Properties m_props; //!< Properties of a graphic object.
+        te::layout::Properties  m_props; //!< Properties of a graphic object.
         te::gm::Coord2D         m_coord; //!< Coordinate of a graphic object.
         int                     m_zValue; //!< Z Value of a graphic object.
         int                     m_id; //!< Id of a graphic object.
+        double                  m_width;
+        double                  m_height;
+        std::string             m_name;
     };
   }
 }

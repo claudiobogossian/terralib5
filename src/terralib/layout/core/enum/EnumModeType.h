@@ -272,20 +272,6 @@ namespace te
         virtual EnumType* getModeInspectorCurrentItemChanged() const;
         
         /*!
-          \brief Returns value that represents create line mode type belonging to enumeration.
-      
-          \return enum value      
-        */
-        virtual EnumType* getModeCreateLineItem() const; 
-
-        /*!
-          \brief Returns value that represents create polygon mode type belonging to enumeration.
-      
-          \return enum value      
-        */
-        virtual EnumType* getModeCreatePolygonItem() const; 
-
-        /*!
           \brief Returns value that represents create balloon mode type belonging to enumeration.
       
           \return enum value      
@@ -394,8 +380,6 @@ namespace te
         EnumType* m_modeCreateLegendChild; //!< value that represents create legend child mode type belonging to enumeration
         EnumType* m_modeLegendChildAsObject; //!< value that represents legend child as object (vectorize) mode type belonging to enumeration
         EnumType* m_inspectorCurrentItemChanged;//!< value that represents object inspector current item changed type belonging to enumeration
-        EnumType* m_modeCreateLineItem; //!< value that represents create line mode type belonging to enumeration
-        EnumType* m_modeCreatePolygonItem; //!< value that represents create polygon mode type belonging to enumeration
         EnumType* m_modeCreateBalloon; //!< value that represents create balloon mode type belonging to enumeration
         EnumType* m_modeCreateBarCode; //!< value that represents create barcode mode type belonging to enumeration
         EnumType* m_modeCreateGridMap; //!< value that represents create gridmap mode type belonging to enumeration

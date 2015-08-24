@@ -18,16 +18,22 @@
  */
 
 /*!
-  \file terralib/qt/widgets/tools/ZoomClick.h
+  \file terralib/layout/qt/core/tools/CreateItemTool.h
 
-  \brief This class implements a concrete tool to geographic zoom operation using the mouse click.
+  \brief This class implements a concrete tool to create item.
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_VIEWZOOMCLICK_H
-#define __TERRALIB_LAYOUT_INTERNAL_VIEWZOOMCLICK_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_CREATE_ITEM_TOOL_H
+#define __TERRALIB_LAYOUT_INTERNAL_CREATE_ITEM_TOOL_H
 
-// TerraLib
-#include "ViewZoom.h"
+//TerraLib
+#include "RubberBandTool.h"
+
+//STL
+#include <vector>
+
+// Qt
+class QMouseEvent;
 
 namespace te
 {
@@ -35,15 +41,13 @@ namespace te
   {
     // Forward declarations
     class View;
-
+    class EnumType;
       /*!
-        \class ViewZoomClick
+        \class CreateLineItemTool
 
-        \brief This class implements a concrete tool to geographic zoom operation using the mouse click.
-
-        \ingroup widgets
+        \brief This class implements a concrete tool to create line in a QGraphics Item.
       */
-      class TELAYOUTEXPORT ViewZoomClick : public ViewZoom
+    class TELAYOUTEXPORT CreateItemTool : public RubberBandTool
       {
         public:
 
@@ -53,32 +57,35 @@ namespace te
           //@{
 
           /*!
-            \brief It constructs a zoom click tool associated with the given map display.
+            \brief It constructs a create line item tool associate with a View.
 
-            \param display The map display associated with the tool.
-            \param cursor The tool cursor.
-            \param zoomFactor The factor used to zoom. i.e. A factor value of 2.0 (default) will generate a new extent twice (%) bigger or smaller.
-            \para zoomType The zoom operation type - ZoomIn | ZoomOut.
-            \param parent The tool's parent.
-
-            \note The tool will NOT take the ownership of the given pointers.
+            \param view The tool's view.
+            \param parent The tool's parent..
           */
-          ViewZoomClick(View* view, const QCursor& cursor, const double& zoomFactor = 2.0, const ViewZoomType& type = ZoomIn, QObject* parent = 0);
+          CreateItemTool(View* view, EnumType* itemType, QObject* parent = 0);
 
           /*! \brief Destructor. */
-          ~ViewZoomClick();
+          ~CreateItemTool();
 
           //@}
 
-          /** @name AbstractTool Methods
+          /** @name AbstractLayoutTool Methods
            *  Methods related with tool behavior.
            */
           //@{
 
           bool mousePressEvent(QMouseEvent* e);
+          
+          bool mouseMoveEvent(QMouseEvent* e);
 
+          bool mouseReleaseEvent(QMouseEvent* e);
+          
           //@}
+        protected:
+          
+          EnumType* m_itemType;
       };
+
   }   // end namespace layout
 }     // end namespace te
 

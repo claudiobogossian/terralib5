@@ -17,8 +17,8 @@
     TerraLib Team at <terralib-team@terralib.org>.
  */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_VIEWRUBBER_BAND_H
-#define __TERRALIB_LAYOUT_INTERNAL_VIEWRUBBER_BAND_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_RUBBER_BAND_TOOL_H
+#define __TERRALIB_LAYOUT_INTERNAL_RUBBER_BAND_TOOL_H
 
 // TerraLib
 #include "../../../core/Config.h"
@@ -42,11 +42,11 @@ namespace te
       /*!
         \class ViewRubberBand
 
-        \brief This class implements a concrete tool to geographic pan operation.
+        \brief This class implements a concrete tool to rubber band action.
 
         \ingroup widgets
       */
-      class TELAYOUTEXPORT ViewRubberBand : public AbstractLayoutTool
+    class TELAYOUTEXPORT RubberBandTool : public AbstractLayoutTool
       {
         public:
 
@@ -64,10 +64,10 @@ namespace te
             \note The tool will NOT take the ownership of the given pointers.
             \note If the given cursor is different of Qt::BlankCursor, it will be setted on map display.
           */
-          ViewRubberBand(View* view, QObject* parent = 0);
+          RubberBandTool(View* view, QObject* parent = 0);
 
           /*! \brief Destructor. */
-          ~ViewRubberBand();
+          ~RubberBandTool();
 
           //@}
 

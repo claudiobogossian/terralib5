@@ -33,7 +33,10 @@
 
 te::layout::AbstractBuildGraphicsItem::AbstractBuildGraphicsItem() :
   m_zValue(0),
-  m_id(0)
+  m_id(0),
+  m_width(0),
+  m_height(0),
+  m_name("unknown")
 {
 
 }
@@ -87,6 +90,9 @@ void te::layout::AbstractBuildGraphicsItem::clear()
   m_id = 0;
   m_zValue = 0;
   m_props.clear();
+  m_width = 0;
+  m_height = 0;
+  m_name = "unknown";
 }
 
 

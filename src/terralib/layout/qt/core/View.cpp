@@ -32,7 +32,7 @@
 #include "../../../geometry/Envelope.h"
 #include "VisualizationArea.h"
 #include "../item/ItemGroup.h"
-#include "tools/ViewZoomClick.h"
+#include "tools/ZoomClickTool.h"
 #include "../../outside/PageSetupController.h"
 #include "../../outside/PageSetupModel.h"
 #include "../../outside/SystematicScaleController.h"
@@ -156,17 +156,6 @@ void te::layout::View::mousePressEvent( QMouseEvent * event )
         m_isMoving = true;
       }
     }
-  }
-
-  EnumModeType* mode = Enums::getInstance().getEnumModeType();
-  if(getCurrentMode() == mode->getModeNone())
-    return;
-
-  QGraphicsItem* it = 0;
-
-  if(getCurrentMode()->getType() == te::layout::EnumCreate && (getCurrentMode() != mode->getModeCreateLineItem() || getCurrentMode() != mode->getModeCreatePolygonItem()))
-  {
-    it = sc->createItem(coord);
   }
 }
 
@@ -499,14 +488,6 @@ void te::layout::View::changeMode( EnumType* newMode )
   {
 
   }
-  else if(mode == enumMode->getModeCreateLineItem())
-  {
-    createLineItem();
-  }
-  else if(mode == enumMode->getModeCreatePolygonItem())
-  {
-    createPolygonItem();
-  }
 
   Scene* sce = dynamic_cast<Scene*>(scene());
   if(sce)
@@ -748,7 +729,7 @@ void te::layout::View::zoomOut()
   // #Active ZoomClick (Out) Tool
 
   QCursor curOut = createCursor("layout-paper-zoom-out");
-  m_currentTool = new ViewZoomClick(this, curOut);
+  m_currentTool = new ZoomClickTool(this, curOut);
 
   setInteractive(false);
   viewport()->installEventFilter(m_currentTool);
@@ -913,7 +894,22 @@ void te::layout::View::createPolygonItem()
   viewport()->installEventFilter(m_currentTool);
 }
 
-void te::layout::View::applyScale( double newScale )
+void te::layout::View::createItem(EnumType* itemType)
+{
+  resetDefaultConfig();
+
+  EnumToolType* tools = Enums::getInstance().getEnumToolType();
+
+  std::string toolName = tools->getCreateItemTool()->getName();
+  ToolFactoryParamsCreate params(this, itemType);
+
+  m_currentTool = te::layout::ToolFactory::make(toolName, params);
+
+  setInteractive(false);
+  viewport()->installEventFilter(m_currentTool);
+}
+
+void te::layout::View::applyScale(double newScale)
 {
   if(newScale <= 0)
   {

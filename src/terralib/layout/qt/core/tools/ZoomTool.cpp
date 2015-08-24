@@ -18,7 +18,7 @@
  */
 
 // TerraLib
-#include "ViewZoom.h"
+#include "ZoomTool.h"
 #include "../../../../geometry/Envelope.h"
 #include "../View.h"
 #include "../Scene.h"
@@ -28,7 +28,7 @@
 #include <QtGui/QPainter>
 #include <QtGui/QPixmap>
 
-te::layout::ViewZoom::ViewZoom(View* view, const double& zoomFactor, const ViewZoomType& type, QObject* parent) 
+te::layout::ZoomTool::ZoomTool(View* view, const double& zoomFactor, const ZoomType& type, QObject* parent)
   : AbstractLayoutTool(view, parent),
   m_zoomFactor(zoomFactor),
   m_zoomType(type)
@@ -36,16 +36,16 @@ te::layout::ViewZoom::ViewZoom(View* view, const double& zoomFactor, const ViewZ
 
 }
 
-te::layout::ViewZoom::~ViewZoom()
+te::layout::ZoomTool::~ZoomTool()
 {
 }
 
-void te::layout::ViewZoom::setZoomType(const ViewZoomType& type)
+void te::layout::ZoomTool::setZoomType(const ZoomType& type)
 {
   m_zoomType = type;
 }
 
-void te::layout::ViewZoom::applyZoom(const QPointF& point)
+void te::layout::ZoomTool::applyZoom(const QPointF& point)
 {
   if(!m_view)
   {

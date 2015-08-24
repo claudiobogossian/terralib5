@@ -23,11 +23,11 @@
   \brief This class implements a concrete tool to geographic zoom in operation using a boundary rectangle.
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_VIEWZOOM_AREA_BAND_H
-#define __TERRALIB_LAYOUT_INTERNAL_VIEWZOOM_AREA_BAND_H
+#ifndef __TERRALIB_LAYOUT_INTERNAL_ZOOM_AREA_BAND_TOOL_H
+#define __TERRALIB_LAYOUT_INTERNAL_ZOOM_AREA_BAND_TOOL_H
 
 // TerraLib
-#include "ViewRubberBand.h"
+#include "RubberBandTool.h"
 
 namespace te
 {
@@ -43,7 +43,7 @@ namespace te
 
         \ingroup widgets
       */
-      class TELAYOUTEXPORT ViewZoomArea : public ViewRubberBand
+    class TELAYOUTEXPORT ZoomAreaTool : public RubberBandTool
       {
         public:
 
@@ -62,10 +62,10 @@ namespace te
             \note The tool will NOT take the ownership of the given pointers.
             \note If the given cursor is different of Qt::BlankCursor, it will be setted on map display.
           */
-          ViewZoomArea(View* view, QObject* parent = 0);
+          ZoomAreaTool(View* view, QObject* parent = 0);
 
           /*! \brief Destructor. */
-          ~ViewZoomArea();
+          ~ZoomAreaTool();
 
           //@}
 
@@ -94,7 +94,7 @@ namespace te
 
             \param rhs The right-hand-side copy that would be used to copy from.
           */
-          ViewZoomArea(const ViewZoomArea& rhs);
+          ZoomAreaTool(const ZoomAreaTool& rhs);
 
           /*!
             \brief Assignment operator not allowed.
@@ -103,7 +103,7 @@ namespace te
 
             \return A reference to this object.
           */
-          ViewZoomArea& operator=(const ViewZoomArea& rhs);
+          ZoomAreaTool& operator=(const ZoomAreaTool& rhs);
 
           //@}
 

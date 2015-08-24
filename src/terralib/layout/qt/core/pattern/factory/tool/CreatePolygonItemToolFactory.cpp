@@ -31,7 +31,7 @@
 
 te::layout::AbstractLayoutTool* te::layout::CreatePolygonItemToolFactory::build(ToolFactoryParamsCreate params)
 {
-  return new CreatePolygonItemTool(params.getView(), params.getView());
+  return new CreatePolygonItemTool(params.getView(), params.getItemType(), params.getView());
 }
 
 te::layout::CreatePolygonItemToolFactory::CreatePolygonItemToolFactory() :
