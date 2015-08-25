@@ -112,9 +112,11 @@ namespace te
 
           void onMergeGeometriesToolActivated(bool checked);
 
+          void onToolDeleted();
+
           void onSplitPolygonToolActivated(bool checked);
 
-          void onToolDeleted();
+          void onFeatureAttributesActivated();
 
         Q_SIGNALS:
 
@@ -146,6 +148,7 @@ namespace te
           QAction* m_subtractAreaToolAction;
           QAction* m_mergeGeometriesToolAction;
           QAction* m_splitPolygonToolAction;
+          QAction* m_featureAttributesAction;
           QAction* m_undoToolAction;
           QAction* m_redoToolAction;
           QList<QAction*> m_tools;

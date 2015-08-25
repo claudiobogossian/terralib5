@@ -42,6 +42,7 @@
 #include "../../../edit/qt/tools/DeleteGeometryTool.h"
 #include "../../../edit/qt/tools/MergeGeometriesTool.h"
 #include "../../../edit/qt/SnapOptionsDialog.h"
+#include "../../../edit/qt/FeatureAttributesDialog.h"
 #include "../../../geometry/GeometryProperty.h"
 #include "../../../geometry/GeometryCollection.h"
 #include "../../../maptools/DataSetLayer.h"
@@ -91,6 +92,7 @@ QObject(parent),
   m_subtractAreaToolAction(0),
   m_mergeGeometriesToolAction(0),
   m_splitPolygonToolAction(0),
+  m_featureAttributesAction(0),
   m_undoToolAction(0),
   m_redoToolAction(0),
   m_undoView(0),
@@ -296,6 +298,11 @@ void te::qt::plugins::edit::ToolBar::initializeActions()
   createAction(m_snapOptionsAction, tr("Snap Options"), "edit_snap", false, false, "snap_option", SLOT(onSnapOptionsActivated()));
   m_toolBar->addSeparator();
   m_toolBar->addAction(m_snapOptionsAction);
+
+  //Feature Attributes
+  createAction(m_featureAttributesAction, tr("Feature Attributes"), "attributefill-icon", true, true, "feature_attributes", SLOT(onFeatureAttributesActivated()));
+  m_toolBar->addSeparator();
+  m_toolBar->addAction(m_featureAttributesAction);
 }
 
 void te::qt::plugins::edit::ToolBar::createAction(QAction*& action, const QString& tooltip, const QString& icon, bool checkable, bool enabled, const QString& objName, const char* member)
@@ -633,6 +640,16 @@ void te::qt::plugins::edit::ToolBar::onSnapOptionsActivated()
   options.exec();
 }
 
+void te::qt::plugins::edit::ToolBar::onFeatureAttributesActivated()
+{
+  te::edit::FeatureAttributesDialog options(m_toolBar);
+
+  //te::qt::af::evt::GetAvailableLayers evt;
+  //emit triggered(&evt);
+
+  //options.setLayers(evt.m_layers);
+  options.exec();
+}
 
 void te::qt::plugins::edit::ToolBar::onAggregateAreaToolActivated(bool checked)
 {
