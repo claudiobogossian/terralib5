@@ -18,7 +18,7 @@ bool te::layout::Subject::attach(NewObserver* observer)
     return false;
   }
 
-  std::vector<NewObserver*>::const_iterator it  = m_observers.begin();
+  std::vector<NewObserver*>::iterator it  = m_observers.begin();
   while(it != m_observers.end())
   {
     if(*it == observer)
@@ -42,7 +42,7 @@ bool te::layout::Subject::detach(NewObserver* observer)
     return false;
   }
 
-  std::vector<NewObserver*>::const_iterator it  = m_observers.begin();
+  std::vector<NewObserver*>::iterator it  = m_observers.begin();
   while(it != m_observers.end())
   {
     if(*it == observer)
