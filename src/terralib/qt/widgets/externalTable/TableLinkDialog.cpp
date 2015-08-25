@@ -298,6 +298,7 @@ void te::qt::widgets::TableLinkDialog::done(int r)
     QVariant dsv1, dsv2;
     dsv1 = m_ui->m_dataset1ColumnComboBox->itemData(m_ui->m_dataset1ColumnComboBox->currentIndex());
     dsv2 = m_ui->m_dataset2ColumnComboBox->itemData(m_ui->m_dataset2ColumnComboBox->currentIndex());
+    std::string title = m_ui->m_layerTitleLineEdit->text().toStdString();
 
      if(dsv1 != dsv2)
       {
@@ -307,6 +308,11 @@ void te::qt::widgets::TableLinkDialog::done(int r)
       else if(dsv1.toInt() != te::dt::STRING_TYPE && (dsv1.toInt() < te::dt::INT16_TYPE || dsv1.toInt() > te::dt::UINT64_TYPE))
       {
         QMessageBox::warning(this, tr("Tabular File"), "The types of the selected columns must be either an integer or a string.");
+        return;
+      }
+      else if (title.empty())
+      {
+        QMessageBox::warning(this, tr("Tabular File"), "The new layer must have a title.");
         return;
       }
       else
@@ -350,6 +356,9 @@ void te::qt::widgets::TableLinkDialog::onDataCBIndexChanged(int index)
     m_ui->m_dataSetAliasLineEdit->setText(QString::fromStdString(DsName));
 
   getProperties();
+  m_ui->m_tabularFrame->hide();
+  m_tabularView->hide();
+  m_ui->m_dataPreviewGroupBox->hide();
 }
 
 void te::qt::widgets::TableLinkDialog::onDataToolButtonnClicked()
