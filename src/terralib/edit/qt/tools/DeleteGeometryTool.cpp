@@ -112,7 +112,6 @@ void te::edit::DeleteGeometryTool::pickFeature(const te::map::AbstractLayerPtr& 
       te::gm::Coord2D coord(0, 0);
 
       std::auto_ptr<te::gm::Geometry> geom = ds->getGeometry(geomProp->getName());
-      te::gm::Envelope auxEnv(*geom->getMBR());
 
       // Try finds the geometry centroid
       switch (geom->getGeomTypeId())
@@ -131,6 +130,9 @@ void te::edit::DeleteGeometryTool::pickFeature(const te::map::AbstractLayerPtr& 
 
           break;
         }
+
+        default:
+          break;
       }
 
       // Build the search envelope

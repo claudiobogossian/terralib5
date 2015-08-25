@@ -36,6 +36,8 @@ te::qt::af::StyleExplorer::StyleExplorer(te::qt::widgets::StyleDockWidget* explo
     m_explorer(explorer)
 {
   assert(explorer);
+
+  connect(m_explorer, SIGNAL(symbolChanged(te::map::AbstractLayer*)), SLOT(styleChanged(te::map::AbstractLayer*)));
 }
 
 te::qt::af::StyleExplorer::~StyleExplorer()
@@ -87,4 +89,7 @@ void te::qt::af::StyleExplorer::styleChanged(te::map::AbstractLayer* l)
   emit triggered(&e);
 
   e.m_layerExplorer->updateLegend(l);
+
+  te::qt::af::evt::LayerChanged e2(l);
+  emit triggered(&e2);
 }

@@ -324,9 +324,9 @@ namespace te
 
             \param layer The layer that has the selected style.
           */
-          LayerChanged(te::map::AbstractLayerPtr layer) :
+          LayerChanged(te::map::AbstractLayer* layer) :
             Event(LAYER_CHANGED),
-            m_layer(layer.get())
+            m_layer(layer)
           {
           }
 
