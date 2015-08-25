@@ -104,6 +104,11 @@ namespace te
         */
         int updateGrouping();
 
+        /*!
+         * \brief updateLegend
+         */
+        void updateLegend();
+
       protected:
         te::map::AbstractLayerPtr m_layer;   //!< The asbtract layer.
       };

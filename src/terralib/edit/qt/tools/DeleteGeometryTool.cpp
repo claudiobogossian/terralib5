@@ -54,7 +54,7 @@ te::edit::DeleteGeometryTool::DeleteGeometryTool(te::qt::widgets::MapDisplay* di
 {
   // Signals & slots
   connect(m_display, SIGNAL(extentChanged()), SLOT(onExtentChanged()));
-  }
+}
 
 te::edit::DeleteGeometryTool::~DeleteGeometryTool()
 {
@@ -63,7 +63,7 @@ te::edit::DeleteGeometryTool::~DeleteGeometryTool()
 
 bool te::edit::DeleteGeometryTool::mousePressEvent(QMouseEvent* e)
 {
-  m_feature = PickFeature(m_layer, buildEnvelope(e->pos()), m_layer->getSRID(), te::edit::GEOMETRY_DELETE);
+  m_feature = PickFeature(m_layer, buildEnvelope(e->pos()), m_display->getSRID(), te::edit::GEOMETRY_DELETE);
 
   if(m_feature == 0)
   {

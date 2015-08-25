@@ -100,6 +100,14 @@ namespace te
         */
         QIcon getIcon() const;
 
+        /*!
+         * \brief updateSymbol
+         * \param symbolizers
+         */
+        void updateSymbol(const te::se::Rule* rule);
+
+        void updateSymbol(const std::vector<te::se::Symbolizer*>& symbolizers);
+
       protected:
 
         std::string m_label;    //!< Label for presenting in the Qt view.

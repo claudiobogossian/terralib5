@@ -143,3 +143,13 @@ QIcon te::qt::widgets::LegendItem::getIcon() const
 {
   return m_icon;
 }
+
+void te::qt::widgets::LegendItem::updateSymbol(const te::se::Rule* rule)
+{
+  m_icon = GetIcon(rule);
+}
+
+void te::qt::widgets::LegendItem::updateSymbol(const std::vector<te::se::Symbolizer*>& symbolizers)
+{
+  m_icon = GetIcon(symbolizers);
+}

@@ -144,8 +144,6 @@ void te::qt::plugins::edit::ToolBar::updateLayer(te::map::AbstractLayer* layer, 
     std::map<std::string, int> ops;
     std::map<std::string, te::gm::Geometry*> gms;
 
-    int count = 0;
-
     GetStashedGeometries(layer, gms, ops);
 
     for(std::map<std::string, te::gm::Geometry*>::iterator it = gms.begin(); it != gms.end(); ++it)
@@ -431,11 +429,11 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
           const boost::ptr_vector<te::dt::AbstractData>& values = oid->getValue();
           assert(values.size() == oidPropertyNames.size());
 
-          // Get the edited geometry 
+          // Get the edited geometry
           te::gm::Geometry* geom = features[i]->getGeometry();
           assert(geom);
 
-          // Fill the new item                    
+          // Fill the new item
           for (std::size_t j = 0; j < values.size(); ++j)
             item->setValue(oidPropertyNames[j], values[j].clone());
 
@@ -444,7 +442,7 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
             features[i]->getGeometry()->getGeomTypeId() == te::gm::PolygonType)
           {
             std::auto_ptr<te::gm::GeometryCollection> gc(new te::gm::GeometryCollection(0, te::gm::MultiPolygonType, layer->getSRID()));
-            gc->add(geom);
+            gc->add((te::gm::Geometry*)geom->clone());
             item->setGeometry(gpos, gc.release());
           }
           else
@@ -467,6 +465,9 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
             case te::edit::GEOMETRY_DELETE:
 
               operationds[te::edit::GEOMETRY_DELETE]->add(item);
+              break;
+
+            default:
               break;
           }
 
@@ -515,6 +516,14 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
 
       }
 
+      te::gm::Envelope env(layer->getExtent());
+
+      env.Union(*operationds[te::edit::GEOMETRY_CREATE]->getExtent(gpos).get());
+
+      env.Union(*operationds[te::edit::GEOMETRY_UPDATE]->getExtent(gpos).get());
+
+      layer->setExtent(env);
+
       repo->clear();
     }
 
@@ -527,10 +536,13 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
     te::edit::UndoStackManager::getInstance().getUndoStack()->clear();
 
     m_layerIsStashed = false;
+
+    te::qt::af::evt::LayerChanged e2(layer);
+    emit triggered(&e2);
   }
-  catch(te::common::Exception& e)
+  catch(te::common::Exception& ex)
   {
-    QMessageBox::critical(0, tr("TerraLib Edit Qt Plugin"), e.what());
+    QMessageBox::critical(0, tr("TerraLib Edit Qt Plugin"), ex.what());
     return;
   }
 

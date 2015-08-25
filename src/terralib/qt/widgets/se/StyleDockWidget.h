@@ -107,6 +107,8 @@ namespace te
 
         signals:
 
+          void symbolChanged(te::map::AbstractLayer* l);
+
           void symbolizerChanged(te::se::Symbolizer* s);
 
           void repaintMapDisplay();
