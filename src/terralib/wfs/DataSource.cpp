@@ -93,8 +93,8 @@ void te::wfs::DataSource::open()
 
 void te::wfs::DataSource::close()
 {
-  if(m_ogrDS)
-    OGRDataSource::DestroyDataSource(m_ogrDS);
+  //if(m_ogrDS)
+  //  OGRDataSource::DestroyDataSource(m_ogrDS);
 
   m_ogrDS = 0;
 
