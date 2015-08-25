@@ -61,7 +61,7 @@ namespace te
         ~SegmenterRegionGrowingBaatzMerger();
             
         //overload        
-        SegmenterRegionGrowingSegment< rg::BaatzFeatureType >::FeatureType
+        DissimilarityTypeT
           getDissimilarity( SegmenterRegionGrowingSegment< rg::BaatzFeatureType > const * const segment1Ptr, 
           SegmenterRegionGrowingSegment< rg::BaatzFeatureType > const * const segment2Ptr, 
           SegmenterRegionGrowingSegment< rg::BaatzFeatureType > * const mergePreviewSegPtr ) const;
