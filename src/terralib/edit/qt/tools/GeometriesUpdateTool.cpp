@@ -6,7 +6,7 @@
 
 #include "../../Feature.h"
 #include "../../RepositoryManager.h"
-
+#include "../core/UndoStackManager.h"
 
 te::edit::GeometriesUpdateTool::GeometriesUpdateTool(te::qt::widgets::MapDisplay* display, te::map::AbstractLayer* layer, QObject* parent) :
   te::qt::widgets::AbstractTool(display, parent),

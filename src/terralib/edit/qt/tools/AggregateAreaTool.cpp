@@ -16,7 +16,6 @@
 #include "../Renderer.h"
 #include "../Utils.h"
 #include "../core/command/UpdateCommand.h"
-#include "../core/UndoStackManager.h"
 #include "AggregateAreaTool.h"
 
 // Qt
