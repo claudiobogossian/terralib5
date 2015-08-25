@@ -172,7 +172,7 @@ void te::qt::widgets::TrajectoryItem::drawForward(const unsigned int& curTime)
   int indold = m_animation->getAnimationDataIndex((double)m_curTimeDuration / (double)m_duration);
   int ind = m_animation->getAnimationDataIndex((double)curTime / (double)m_duration);
   m_curTimeDuration = curTime;
-  if (ind == -1)
+  if (ind == -1 || indold == -1)
     return;
 
   QVector<QPointF> vec;
@@ -233,6 +233,8 @@ void te::qt::widgets::TrajectoryItem::erase(const unsigned int& curTime)
   int indold = m_animation->getAnimationDataIndex((double)m_curTimeDuration / (double)m_duration);
   int ind = m_animation->getAnimationDataIndex((double)curTime / (double)m_duration);
   m_curTimeDuration = curTime;
+  if (ind == -1 || indold == -1)
+    return;
 
   QVector<QPointF> vec;
   if(indold == ind)
@@ -285,6 +287,10 @@ void te::qt::widgets::TrajectoryItem::draw()
   if(m_animationRoute.empty())
     return;
 
+  int ind = m_animation->getAnimationDataIndex((double)m_curTimeDuration / (double)m_duration);
+  if (ind == -1)
+    return;
+
   int w = m_display->getDisplayPixmap()->width();
   int h = m_display->getDisplayPixmap()->height();
   te::qt::widgets::Canvas canvas(w, h);
@@ -294,9 +300,6 @@ void te::qt::widgets::TrajectoryItem::draw()
   m_matrix = canvas.getMatrix();
 
   int count = m_animationRoute.size();
-  int ind = m_animation->getAnimationDataIndex((double)m_curTimeDuration / (double)m_duration);
-  if (ind < 0)
-    return;
 
   QVector<QPointF> vec;
   if(m_animation->direction() == QAbstractAnimation::Forward)

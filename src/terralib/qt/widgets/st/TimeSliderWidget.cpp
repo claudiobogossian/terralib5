@@ -934,26 +934,43 @@ void te::qt::widgets::TimeSliderWidget::onDisplayPaintEvent(QPainter* painter)
 
   if(m_animationScene->m_numberOfTrajectories) // has trajectories
   {
-    // draw trail trajectories
-    m_animationScene->m_mutex.lock();
-    QPixmap* pixt = (dynamic_cast<AnimationScene*>(m_animationScene))->m_trajectoryPixmap;
-    painter->drawPixmap(0, 0, *pixt);
-    m_animationScene->m_mutex.unlock();
-
-    // draw icon trajectories
-    for(it = list.begin(); it != list.end(); ++it)
+    // is there any trajectory in the current time?
+    for (it = list.begin(); it != list.end(); ++it)
     {
       AnimationItem* ai = dynamic_cast<AnimationItem*>(*it);
-      if(ai->pixmap().isNull() == false)
+      if (ai->pixmap().isNull() == false)
       {
         // draw only the items that are within the time frame 
         TrajectoryItem* ti = dynamic_cast<TrajectoryItem*>(ai);
         te::dt::TimeInstant tini = ti->m_animationTime.first();
         te::dt::TimeInstant tfim = ti->m_animationTime.last();
-        if(t < tini || t > tfim)
-          continue;
+        if (t > tini || t < tfim)
+          break; // yes
+      }
+    }
+    if (it != list.end())
+    {
+      // draw trail trajectories
+      m_animationScene->m_mutex.lock();
+      QPixmap* pixt = (dynamic_cast<AnimationScene*>(m_animationScene))->m_trajectoryPixmap;
+      painter->drawPixmap(0, 0, *pixt);
+      m_animationScene->m_mutex.unlock();
 
-        ti->drawIcon(painter);
+      // draw icon trajectories
+      for(it = list.begin(); it != list.end(); ++it)
+      {
+        AnimationItem* ai = dynamic_cast<AnimationItem*>(*it);
+        if(ai->pixmap().isNull() == false)
+        {
+          // draw only the items that are within the time frame 
+          TrajectoryItem* ti = dynamic_cast<TrajectoryItem*>(ai);
+          te::dt::TimeInstant tini = ti->m_animationTime.first();
+          te::dt::TimeInstant tfim = ti->m_animationTime.last();
+          if(t < tini || t > tfim)
+            continue;
+
+          ti->drawIcon(painter);
+        }
       }
     }
   }
@@ -1668,91 +1685,73 @@ void te::qt::widgets::TimeSliderWidget::erase(const unsigned int& curTime)
 
 void te::qt::widgets::TimeSliderWidget::onDurationValueChanged(int val)
 {
-  if(val == m_duration)
+  if (val == m_duration)
     return;
 
   m_currentTime = m_parallelAnimation->currentTime();
   double f = double(m_currentTime) / (double)m_duration;
 
-  int step = m_ui->m_durationSpinBox->singleStep();
-  int v = val;
-  if(v == 100)
-    v = 0;
+  int ss = m_ui->m_durationSpinBox->singleStep();
 
-  if(v == 0 || v == m_duration + step || v == m_duration - step)
-  {
-    if(step == 100)
-    {
-      if(v < step/10)
-        v = 100;
-      else if(v > step*10)
-      {
-        step *= 10;
-        v = m_duration + step;
-      }
-    }
-    else if(step == 1000)
-    {
-      if(v < step/10)
-      {
-        step /= 10;
-        v = m_duration - step;
-      }
-      else if(v > step*10)
-      {
-        step *= 10;
-        v = m_duration + step;
-      }
-    }
-    else if(step == 10000)
-    {
-      if(v < step/10)
-      {
-        step /= 10;
-        v = m_duration - step;
-      }
-      else if(v > step*10)
-      {
-        step *= 10;
-        v = m_duration + step;
-      }
-    }
-    else if(step == 100000)
-    {
-      if(v < step/10)
-      {
-        step /= 10;
-        v = m_duration - step;
-      }
-      else if(v > step*10)
-      {
-        step *= 10;
-        v = m_duration + step;
-      }
-    }
-    else if(step == 1000000)
-    {
-      if(v < step/10)
-      {
-        step /= 10;
-        v = m_duration - step;
-      }
-      else if(v > step*10)
-      {
-        step *= 10;
-        v = m_duration + step;
-      }
-    }
+  bool isRound = true;
+  double d = (double)m_duration / (double)ss;
+  double dd = (int)d;
+  if (d != dd)
+    isRound = false;
 
-    m_duration = (v / step) * step;
-    m_ui->m_durationSpinBox->setValue(m_duration);
-    m_ui->m_durationSpinBox->setSingleStep(step);
-  }
-  else
+  // set new single step
+  int ns = 10;
+  while ((m_duration / ns) > 10)
+    ns *= 10;
+
+  int nns = 10;
+  while ((val / nns) > 10)
+    nns *= 10;
+  if (nns > ns)
+    ns = nns;
+
+  if (ns < m_ui->m_durationSpinBox->minimum())
+    ns = m_ui->m_durationSpinBox->minimum();
+  m_ui->m_durationSpinBox->setSingleStep(ns);
+
+  // calcute new duration
+  if ((m_duration - ss) == 0 && m_duration > m_ui->m_durationSpinBox->minimum())
+    m_duration -= ns;
+  else if (!(val == (m_duration + ss) || val == (m_duration - ss))) // manual edition
     m_duration = val;
+  else // increment or decrement by mouse
+  {
+    if (isRound == false)
+    {
+      int nd = ((int)((double)m_duration / (double)ns)) * ns;
+      if (val < m_duration)
+        m_duration = nd;
+      else
+        m_duration = nd + ns;
+    }
+    else
+    {
+      if (val < m_duration)
+        m_duration -= ns;
+      else
+        m_duration += ns;
+    }
+  }
+
+  if (m_duration <= m_ui->m_durationSpinBox->minimum())
+  {
+    m_duration = m_ui->m_durationSpinBox->minimum();
+    m_ui->m_durationSpinBox->setSingleStep(m_duration);
+  }
+  else if (m_duration >= m_ui->m_durationSpinBox->maximum())
+  {
+    m_duration = m_ui->m_durationSpinBox->maximum();
+    m_ui->m_durationSpinBox->setSingleStep(m_duration/10);
+  }
+  m_ui->m_durationSpinBox->setValue(m_duration);
 
   bool running = false;
-  if(m_parallelAnimation->state() == QAbstractAnimation::Running)
+  if (m_parallelAnimation->state() == QAbstractAnimation::Running)
   {
     running = true;;
     onPlayToolButtonnClicked();
@@ -1765,7 +1764,7 @@ void te::qt::widgets::TimeSliderWidget::onDurationValueChanged(int val)
   setDuration(m_duration);
   m_parallelAnimation->setCurrentTime(m_currentTime);
   draw();
-  if(running)
+  if (running)
     onPlayToolButtonnClicked();
 }
 
@@ -2239,9 +2238,11 @@ void te::qt::widgets::TimeSliderWidget::onApplyTimeIntervalPushButtonClicked(boo
     onDateTimeEditChanged(dt);
   else
   {
-    // artifice to adjust the single step value on duration spin box widget.
-    onDurationValueChanged(m_duration + 1);
-    onDurationValueChanged(m_duration);
+    // calculate single step on duration spin box widget.
+    int i = 1;
+    while ((m_duration / i) > 10)
+      i *= 10;
+    m_ui->m_durationSpinBox->setSingleStep(i);
   }
 }
 

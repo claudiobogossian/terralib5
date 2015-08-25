@@ -110,12 +110,13 @@ int te::qt::widgets::Animation::getAnimationDataIndex(const double& trel)
   diff = aiTime - iTime;
   double aiSeconds = diff.total_seconds();
   double itrel = aiSeconds / totalSeconds;
+  if (trel < itrel) // time is before start of this animation
+    return -1;
 
   diff = afTime - iTime;
   double afSeconds = diff.total_seconds();
   double ftrel = afSeconds / totalSeconds;
-
-  if (trel < itrel || trel > ftrel)
+  if (trel > ftrel)// time is after the end of this animation
     return -1;
 
   int i;
