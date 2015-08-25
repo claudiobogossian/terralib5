@@ -38,8 +38,8 @@
 // STL
 #include <algorithm>    // std::max and std::min
 #include <cmath>
-#include "..\..\core\pattern\mvc\AbstractItemController.h"
-#include "..\..\core\pattern\mvc\AbstractItemModel.h"
+#include "../../core/pattern/mvc/AbstractItemController.h"
+#include "../../core/pattern/mvc/AbstractItemModel.h"
 
 te::layout::BalloonItem::BalloonItem( AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix ) 
   : AbstractItem<QGraphicsItem>(controller, model)

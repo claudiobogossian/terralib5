@@ -40,7 +40,7 @@ namespace te
 {
   namespace layout
   {
-    AbstractItemModel;
+    class AbstractItemModel;
     /*!
       \class NewItemFactory
 

@@ -27,7 +27,7 @@
 
 // TerraLib
 #include "LegendItem.h"
-#include "..\..\core\pattern\mvc\AbstractItemController.h"
+#include "../../core/pattern/mvc/AbstractItemController.h"
 #include "../../core/pattern/singleton/Context.h"
 //#include "../../core/pattern/mvc/ItemController.h"
 //#include "../core/Scene.h"

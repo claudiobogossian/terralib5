@@ -37,7 +37,7 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QStyleOptionGraphicsItem>
 #include <QObject>
-#include "..\..\core\property\Property.h"
+#include "../../core/property/Property.h"
 
 te::layout::LineItem::LineItem( AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix ) 
   : AbstractItem<QGraphicsItem>(controller, model)
