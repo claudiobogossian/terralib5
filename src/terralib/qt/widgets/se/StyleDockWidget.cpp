@@ -161,24 +161,32 @@ void te::qt::widgets::StyleDockWidget::onPolygonSymbolizerChanged()
 {
   te::se::Symbolizer* s = m_polyWidget->getSymbolizer();
   emit symbolizerChanged(s);
+
+  emit symbolChanged(m_currentLayer);
 }
 
 void te::qt::widgets::StyleDockWidget::onLineSymbolizerChanged()
 {
   te::se::Symbolizer* s = m_lineWidget->getSymbolizer();
   emit symbolizerChanged(s);
+
+  emit symbolChanged(m_currentLayer);
 }
 
 void te::qt::widgets::StyleDockWidget::onPointSymbolizerChanged()
 {
   te::se::Symbolizer* s = m_pointWidget->getSymbolizer();
   emit symbolizerChanged(s);
+
+  emit symbolChanged(m_currentLayer);
 }
 
 void te::qt::widgets::StyleDockWidget::onRasterSymbolizerChanged()
 {
   te::se::Symbolizer* s = m_rasterWidget->getRasterSymbolizer();
   emit symbolizerChanged(s);
+
+  emit symbolChanged(m_currentLayer);
 }
 
 void te::qt::widgets::StyleDockWidget::onMapRefresh()

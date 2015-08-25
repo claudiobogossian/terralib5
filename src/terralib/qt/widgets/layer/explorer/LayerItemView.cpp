@@ -207,7 +207,7 @@ void te::qt::widgets::LayerItemView::updateLegend(te::map::AbstractLayer* l)
     QVector<int> roles;
     roles << Qt::DecorationRole;
 
-    dataChanged(lIdx, lIdx, roles);
+    dataChanged(lIdx.child(0, 0), lIdx.child(0, 0), roles);
   }
 }
 
