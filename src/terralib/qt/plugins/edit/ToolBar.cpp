@@ -90,12 +90,13 @@ QObject(parent),
   m_aggregateAreaToolAction(0),
   m_subtractAreaToolAction(0),
   m_mergeGeometriesToolAction(0),
+  m_splitPolygonToolAction(0),
   m_undoToolAction(0),
   m_redoToolAction(0),
   m_undoView(0),
-m_currentTool(0),
-m_usingStash(true),
-m_layerIsStashed(true)
+  m_currentTool(0),
+  m_usingStash(true),
+  m_layerIsStashed(true)
 {
   initialize();
 }
@@ -258,6 +259,8 @@ void te::qt::plugins::edit::ToolBar::initializeActions()
   createAction(m_subtractAreaToolAction, tr("Subtract Area"), "vector-processing-subtraction", true, false, "subtract_area", SLOT(onSubtractAreaToolActivated(bool)));
   createAction(m_deleteGeometryToolAction, tr("Delete Geometry"), "edit_delete", true, false, "delete_geometry", SLOT(onDeleteGeometryToolActivated(bool)));
   createAction(m_mergeGeometriesToolAction, tr("Merge Geometries"), "edition_mergeGeometries", true, false, "merge_geometries", SLOT(onMergeGeometriesToolActivated(bool)));
+  createAction(m_splitPolygonToolAction, tr("Split Polygon"), "edit-cut", true, false, "split_polygon", SLOT(onSplitPolygonToolActivated(bool)));
+  
 
   // Get the action group of map tools.
   QActionGroup* toolsGroup = te::qt::af::AppCtrlSingleton::getInstance().findActionGroup("Map.ToolsGroup");
@@ -272,6 +275,7 @@ void te::qt::plugins::edit::ToolBar::initializeActions()
   toolsGroup->addAction(m_subtractAreaToolAction);
   toolsGroup->addAction(m_deleteGeometryToolAction);
   toolsGroup->addAction(m_mergeGeometriesToolAction);
+  toolsGroup->addAction(m_splitPolygonToolAction);
 
   // Grouping...
   m_tools.push_back(m_vertexToolAction);
@@ -282,6 +286,7 @@ void te::qt::plugins::edit::ToolBar::initializeActions()
   m_tools.push_back(m_subtractAreaToolAction);
   m_tools.push_back(m_deleteGeometryToolAction);
   m_tools.push_back(m_mergeGeometriesToolAction);
+  m_tools.push_back(m_splitPolygonToolAction);
 
   // Adding tools to toolbar
   for(int i = 0; i < m_tools.size(); ++i)
@@ -746,6 +751,14 @@ void te::qt::plugins::edit::ToolBar::onMergeGeometriesToolActivated(bool checked
   assert(e.m_display);
 
   setCurrentTool(new te::edit::MergeGeometriesTool(e.m_display->getDisplay(), layer, Qt::ArrowCursor, 0), e.m_display);
+}
+
+void te::qt::plugins::edit::ToolBar::onSplitPolygonToolActivated(bool checked)
+{
+
+  QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Under Development!"));
+  return;
+
 }
 
 void te::qt::plugins::edit::ToolBar::onToolDeleted()
