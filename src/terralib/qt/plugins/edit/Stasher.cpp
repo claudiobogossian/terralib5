@@ -1,7 +1,10 @@
-#include "../../../edit/RepositoryManager.h"
-#include "../../../maptools/AbstractLayer.h"
-#include "GeometryFile.h"
+
 #include "Stasher.h"
+
+#include "GeometryFile.h"
+
+#include "../../../edit/Utils.h"
+#include "../../../maptools/AbstractLayer.h"
 
 // Qt
 #include <QDir>
@@ -27,8 +30,6 @@ void StashGeometries(const te::map::AbstractLayer* layer, const std::map<std::st
 
   std::ofstream idsFile(fName.c_str(), std::ios::out);
   std::ofstream idsRFile((fName + "r").c_str(), std::ios::out);
-
-  int count = 0;
 
   for(std::map<std::string, te::gm::Geometry*>::const_iterator it = geoms.begin(); it != geoms.end(); ++it)
   {
@@ -140,4 +141,15 @@ std::set<std::string> GetStashedLayers()
     res.insert((*it).toStdString());
 
   return res;
+}
+
+void RemoveStash(const te::map::AbstractLayer* layer)
+{
+  QString userDataDir = QStandardPaths::writableLocation(QStandardPaths::DataLocation);
+
+  QDir dir(userDataDir + "/edition/" + QString::fromStdString(layer->getTitle()));
+
+  if(dir.exists())
+    if(!dir.removeRecursively())
+      throw;
 }

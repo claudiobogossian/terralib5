@@ -20,7 +20,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 /*!
  * \file LayerViewMenuManager.h
  *
- * \brief Class for manage the menus of the LayerViewItem.
+ * \brief Class for manage the menus of the LayerItemView.
  */
 #ifndef __TERRALIB_QT_WIDGETS_LAYER_INTERNAL_LAYERVIEWMENUMANAGER_H
 #define __TERRALIB_QT_WIDGETS_LAYER_INTERNAL_LAYERVIEWMENUMANAGER_H
@@ -50,9 +50,12 @@ namespace te
       class LayerItemView;
       typedef te::common::QueueT<QAction*> QueueAction;
 
-
       /*!
-      * \brief The LayerViewMenuManager class
+      * \class LayerViewMenuManager
+      *
+      * \brief Class for manage the menus of the LayerViewItem.
+      *
+      * \ingroup widgets
       */
       class TEQTWIDGETSEXPORT LayerViewMenuManager: public QObject
       {
@@ -61,54 +64,68 @@ namespace te
       public:
 
         /*!
-        * \brief The LMENUACTIONS enum
+        * \enum LMENUACTIONS
+        *
+        * \brief Defines the type of actions we can use.
         */
         enum LMENUACTIONS
         {
-          VECTOR_LAYER,
-          RASTER_LAYER,
-          FOLDER_LAYER,
-          MULTI_LAYERS,
-          NO_LAYERS,
-          ALL_LAYERS,
-          INVALID_LAYERS
+          VECTOR_LAYER,   //!< Vector layers menu.
+          RASTER_LAYER,   //!< Raster layers menu.
+          FOLDER_LAYER,   //!< Folder layers menu.
+          MULTI_LAYERS,   //!< Multiple layers selected menu.
+          NO_LAYERS,      //!< No selected layers menu.
+          ALL_LAYERS,     //!< All kinds of items menu.
+          INVALID_LAYERS  //!< Invalid layers menu.
         };
 
         /*!
-        * \brief LayerViewMenuManager
-        * \param view
+        * \name Instantiation Methods
+        *
+        * Methods related to creation and destruction of the object.
+        */
+        //@{
+
+        /*!
+        * \brief Contructor.
+        * \param view The view that is being used.
         */
         LayerViewMenuManager(LayerItemView* view);
 
+        /*!
+         * \brief Destructor
+         */
         ~LayerViewMenuManager();
+        //@}
 
         /*!
-        * \brief addAction
-        * \param mnu
-        * \param act
-        * \param pos
+        * \brief Adds an action to some menu.
+        * \param mnu The menu we will update.
+        * \param act The new action to be added.
+        * \param pos The position of the menu. \a pos = -1 signs to append the action.
         */
         void addAction(LMENUACTIONS mnu, QAction* act, int pos = -1);
 
         /*!
-        * \brief eventFilter
-        * \param watched
-        * \param event
-        * \return
+        * \name Reimplementation of QObject
+        *
+        * Methods reimplemented of the QObject class.
         */
+        //@{
         bool eventFilter(QObject* watched, QEvent* event);
+        //@}
 
       protected:
 
-        LayerItemView* m_view;
+        LayerItemView* m_view;                    //!< View being inspected.
 
-        std::auto_ptr<QueueAction> m_VL_actions;
-        std::auto_ptr<QueueAction> m_RL_actions;
-        std::auto_ptr<QueueAction> m_FL_actions;
-        std::auto_ptr<QueueAction> m_ML_actions;
-        std::auto_ptr<QueueAction> m_NL_actions;
-        std::auto_ptr<QueueAction> m_AL_actions;
-        std::auto_ptr<QueueAction> m_IL_actions;
+        std::auto_ptr<QueueAction> m_VL_actions;  //!< Vector layers action list.
+        std::auto_ptr<QueueAction> m_RL_actions;  //!< Raster layers action list.
+        std::auto_ptr<QueueAction> m_FL_actions;  //!< Folder layers action list.
+        std::auto_ptr<QueueAction> m_ML_actions;  //!< Multiple selected items action list.
+        std::auto_ptr<QueueAction> m_NL_actions;  //!< No selected items action list.
+        std::auto_ptr<QueueAction> m_AL_actions;  //!< All kinds of items action list.
+        std::auto_ptr<QueueAction> m_IL_actions;  //!< Invalid layers action list.
       };
 
     }

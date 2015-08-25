@@ -26,9 +26,9 @@
 #ifndef __TERRALIB_PLUGINEDIT_INTERNAL_STASHER_H
 #define __TERRALIB_PLUGINEDIT_INTERNAL_STASHER_H
 
-
 #include <map>
 #include <set>
+#include <string>
 
 // Forward declarations.
 namespace te
@@ -49,6 +49,8 @@ void StashGeometries(const te::map::AbstractLayer* layer, const std::map<std::st
 void GetStashedGeometries(const te::map::AbstractLayer* layer, std::map<std::string, te::gm::Geometry*>& geoms, std::map<std::string, int>& ops);
 
 std::set<std::string> GetStashedLayers();
+
+void RemoveStash(const te::map::AbstractLayer* layer);
 
 #endif  // __TERRALIB_PLUGINEDIT_INTERNAL_STASHER_H
 

@@ -44,6 +44,8 @@ namespace te
       * \brief A class that represents a chart of a layer in a LayerTreeModel.
       *
       * \note The type of the item is "CHART".
+      *
+      * \ingroup widgets
       */
       class TEQTWIDGETSEXPORT ChartItem: public TreeItem
       {
@@ -58,7 +60,7 @@ namespace te
         /*!
         * \brief Constructor.
         *
-        * \param map Color map.
+        * \param chart The Chart being used.
         */
         ChartItem(te::map::Chart* chart);
 
@@ -85,9 +87,8 @@ namespace te
 
       protected:
 
-        std::string m_label;    //!< Label to be presented on the Qt view.
-
-        te::map::Chart* m_chart;
+        std::string m_label;      //!< Label to be presented on the Qt view.
+        te::map::Chart* m_chart;  //!< Chart being used.
       };
     }
   }

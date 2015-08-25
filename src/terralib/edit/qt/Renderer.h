@@ -76,9 +76,9 @@ namespace te
 
       void drawRepository(const std::string& source, const te::gm::Envelope& e, int srid);
 
-      void prepare(te::gm::GeomType type);
+      void prepare(te::gm::GeomType type, const bool& removed = false);
 
-      void draw(te::gm::Geometry* geom, bool showVertexes = false);
+      void draw(te::gm::Geometry* geom, bool showVertexes = false, const bool& removed = false);
 
       void drawVertexes(te::gm::Geometry* geom);
 

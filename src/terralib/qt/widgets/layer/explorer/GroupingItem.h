@@ -18,7 +18,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 */
 
 /*!
- * \file GroupingItem.h
+ * \file layer/explorer/GroupingItem.h
  *
  * \brief A class that represents a grouping of a layer in a LayerTreeModel.
  */
@@ -44,6 +44,8 @@ namespace te
       * \brief A class that represents a grouping of a layer in a LayerTreeModel.
       *
       * \note The type of the item is "GROUPING".
+      *
+      * \ingroup widgets
       */
       class TEQTWIDGETSEXPORT GroupingItem: public TreeItem
       {
@@ -58,7 +60,7 @@ namespace te
         /*!
         * \brief Constructor.
         *
-        * \param map Color map.
+        * \param g The grouping to be used.
         */
         GroupingItem(te::map::Grouping* g);
 
@@ -85,9 +87,8 @@ namespace te
 
       protected:
 
-        std::string m_label;    //!< Label to be presented on the Qt view.
-
-        te::map::Grouping* m_grouping;
+        std::string m_label;            //!< Label to be presented on the Qt view.
+        te::map::Grouping* m_grouping;  //!< Grouping being used.
       };
     }
   }

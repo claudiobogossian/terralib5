@@ -99,7 +99,8 @@ void te::ogr::Transactor::commit()
     return;
 
   // we have to reopen datasource so pending data gets synched to disk!
-  m_ogrDs->open();
+  if(m_ogrDs->getOGRDataSource()->SyncToDisk() != OGRERR_NONE)
+    throw;
 }
 
 void te::ogr::Transactor::rollBack()
@@ -986,6 +987,9 @@ void te::ogr::Transactor::add(const std::string& datasetName,
           continue;
         }
 
+        if(d->getPropertyName(i) == "FID")
+          continue;
+
         switch(d->getPropertyDataType(i))
         {
           case te::dt::INT16_TYPE:
@@ -1115,11 +1119,13 @@ void te::ogr::Transactor::remove(const std::string& datasetName, const te::da::O
 
   std::set<te::da::ObjectId*, te::common::LessCmp<te::da::ObjectId*> >::const_iterator it = oids->begin();
 
+  begin();
+
   while(it != oids->end())
   {
-    begin();
+    std::string id = (*it)->getValueAsString();
     
-    if(l->DeleteFeature(atoi((*it)->getValue()[0].toString().c_str())) != OGRERR_NONE)
+    if(l->DeleteFeature(atoi(id.c_str())) != OGRERR_NONE)
     {
       rollBack();
       throw Exception(TE_TR("Error when attempting to remove the feature."));
@@ -1128,7 +1134,11 @@ void te::ogr::Transactor::remove(const std::string& datasetName, const te::da::O
     ++it;
   }
 
+  l->SyncToDisk();
+
   commit();
+
+  m_ogrDs->getOGRDataSource()->ExecuteSQL(("REPACK " + datasetName).c_str(), NULL, NULL);
 }
 
 

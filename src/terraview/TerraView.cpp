@@ -797,6 +797,7 @@ void TerraView::onApplicationTriggered(te::qt::af::evt::Event* e)
       break;
 
     case te::qt::af::evt::LAYER_ADDED:
+    case te::qt::af::evt::LAYER_CHANGED:
     case te::qt::af::evt::LAYER_VISIBILITY_CHANGED:
       projectChanged();
       break;
@@ -1394,6 +1395,9 @@ void TerraView::onAddDataSetLayerTriggered()
     QApplication::restoreOverrideCursor();
 
     std::list<te::map::AbstractLayerPtr> layers = lselector->getLayers();
+
+    if(layers.empty())
+      return;
 
     QApplication::setOverrideCursor(Qt::WaitCursor);
 

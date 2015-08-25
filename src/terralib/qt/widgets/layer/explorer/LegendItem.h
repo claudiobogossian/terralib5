@@ -18,7 +18,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 */
 
 /*!
- * \file LegendItem.h
+ * \file layer/explorer/LegendItem.h
  *
  * \brief Defines a legend item.
  */
@@ -63,16 +63,16 @@ namespace te
         /*!
         * \brief Constructor.
         *
-        * \param rule.
+        * \param rule The Rule that defines the legend item.
         */
         LegendItem(const te::se::Rule* rule);
 
         /*!
         * \brief Constructor.
         *
-        * \param label.
+        * \param label The label to be presented.
         *
-        * \param symbolizers.
+        * \param symbolizers List of symbolizers used to create the icon.
         */
         LegendItem(const std::string& label, const std::vector<te::se::Symbolizer*>& symbolizers);
 
@@ -99,6 +99,14 @@ namespace te
         * \return The style as an icon.
         */
         QIcon getIcon() const;
+
+        /*!
+         * \brief updateSymbol
+         * \param symbolizers
+         */
+        void updateSymbol(const te::se::Rule* rule);
+
+        void updateSymbol(const std::vector<te::se::Symbolizer*>& symbolizers);
 
       protected:
 

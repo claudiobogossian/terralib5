@@ -18,7 +18,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 */
 
 /*!
- * \file TreeItem.h
+ * \file layer/explorer/TreeItem.h
  *
  * \brief Defines an hierarquical structure.
  */
@@ -55,7 +55,7 @@ namespace te
       *
       * \brief Defines the visibility of an item.
       */
-      enum TEQTWIDGETSEXPORT VISIBLE
+      enum VISIBLE
       {
         NONE,       //!< Not visible.
         TOTALLY,    //!< Visible.
@@ -65,7 +65,9 @@ namespace te
       /*!
       * \class TreeItem
       *
-      * \brief Defines a hierarchical structure
+      * \brief Defines a hierarchical structure.
+      *
+      * \ingroup widgets
       */
       class TEQTWIDGETSEXPORT TreeItem
       {
@@ -120,7 +122,7 @@ namespace te
         *
         * \param pos The position of the desired child at the children list.
         *
-        * \return The child item located at \pos.
+        * \return The child item located at \a pos.
         *
         * \exception If \a pos is greater or equal than the children list size, a te::common::Exception will be raised.
         */
@@ -156,6 +158,11 @@ namespace te
         */
         size_t getChildrenCount(const std::string& type) const;
 
+        /*!
+         * \brief Returns all children of a certain type. 
+         * \param[out] items The set of items founded.
+         * \param type The type of items that we are searching for.
+         */
         void getChildren(std::vector<TreeItem*>& items, const std::string& type) const;
 
         /*!
@@ -204,13 +211,24 @@ namespace te
         */
         std::string getType() const;
 
+        /*!
+         * \brief Returns the item tooltip (for information purposes).
+         *
+         * \return The item tooltip.
+        */
         std::string getToolTip() const;
 
         /*!
-        * \brief
+        * \brief Removes all children.
         */
         void removeAllChilds();
 
+        /*!
+         * \brief Returns the flags to be used by the model.
+         *
+         * \return Qt flags. By default itens are enabled, editable and selectable. If you want to change the flags reimplement this method
+         * in a subclass.
+         */
         virtual Qt::ItemFlags flags();
 
       protected:
@@ -218,7 +236,7 @@ namespace te
         std::string m_type;               //!< Item type.
         std::auto_ptr<Queue> m_children;  //!< Queue of items (children).
         TreeItem* m_parent;               //!< Pointer to the parent.
-        std::string m_toolTip;
+        std::string m_toolTip;            //!< Tooltip (for information purposes).
       };
     }
   }

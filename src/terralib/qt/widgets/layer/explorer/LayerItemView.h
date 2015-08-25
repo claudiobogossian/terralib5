@@ -64,6 +64,8 @@ namespace te
       * changes its visibility, add folders and some other operations over a set of layers. It can be feeded
       * by the LayersSelector or projects of TerraLib-5.
       *
+      * \ingroup widgets
+      *
       * \sa LayerItemModel, LayerViewDelegate, LayerViewMenuManager
       */
       class TEQTWIDGETSEXPORT LayerItemView: public QTreeView
@@ -72,176 +74,249 @@ namespace te
 
       public:
 
+        /** @name Initializer Methods
+        *  Methods related to instantiation and destruction.
+        */
+        //@{
+
         /*!
-        * \brief 
-        * \param parent
+        * \brief Constructor.
+        * \param parent Used by Qt for memory release.
         */
         LayerItemView(QWidget* parent = 0);
 
         /*!
-        * \brief
+        * \brief Destructor.
         */
         ~LayerItemView();
+        //@}
+
+        /** @name Tree manipulation Methods
+        *  Methods related insertions and recovery of layers in the tree.
+        */
+        //@{
 
         /*!
-        * \brief 
-        * \param layers
-        * \param idx
-        * \param idxPath
+        * \brief Add the layers to the model
+        * \param layers The list of layers to be added.
+        * \param idx The index of the parent item wich the must be insert.
+        * \param idxPath Unused.
         */
         void addLayers(const std::list<te::map::AbstractLayerPtr>& layers, const QModelIndex& idx, const std::string& idxPath = "./");
 
+        /*!
+        * \brief Sets the list of layers. Old layers in the tree are then removed.
+        * \param layers The new list of layers.
+        */
         void setLayers(const std::list<te::map::AbstractLayerPtr>& layers);
 
         /*!
-        * \brief 
-        * \return
+        * \brief Returs all layers in the tree including folders. 
+        *
+        * This method must be called when we need to store the list of layers.
+        * \return List of layers in the tree.
         */
         std::list<te::map::AbstractLayerPtr> getAllLayers() const;
 
         /*!
-        * \brief 
-        * \return
+        * \brief Returns just the visible layers. No folder layers are returned.
+        * \return List of visible layers.
         */
         std::list<te::map::AbstractLayerPtr> getVisibleLayers() const;
 
         /*!
-        * \brief 
-        * \return
+        * \brief Returns a list of TreeItem that are selected.
+        * \return The list of selected TreeItem.
         */
         std::list<te::qt::widgets::TreeItem*> getSelectedItems() const;
 
         /*!
-        * \brief 
-        * \param name
+        * \brief Adds a folder layer to the model.
+        * \param name Name of the folder.
+        * \param idx Index of the parent, where the new folder must be inserted in.
         */
         void addFolder(const std::string& name, const QModelIndex& idx);
 
         /*!
-        * \brief
-        * \param idx
+        * \brief Updates the chart item of the element.
+        * \param idx Index of the layer to add chart.
+        * \note idx must contain a Layer or the operation will fail.
         */
         void updateChart(const QModelIndex& idx);
 
         /*!
-        * \brief
-        * \param idx
+        * \brief Updates the grouping item of the element.
+        * \param idx Index of the layer to add grouping.
+        * \note idx must contain a Layer or the operation will fail.
         */
         void updateGrouping(const QModelIndex& idx);
 
         /*!
-        * \brief
-        * \param
+         * \brief updateLegend
+         * \param l
+         */
+        void updateLegend(te::map::AbstractLayer* l);
+        //@}
+
+        /** @name Popup Menu manipulation Methods
+        *  Methods related to manipulation of the popup menus.
+        */
+        //@{
+
+        /*!
+        * \brief Adds the action to the popup menu presented when there is no layers selected.
+        * \param act Action to be added.
         */
         void addNoLayerAction(QAction* act);
 
         /*!
-        * \brief
-        * \param
+        * \brief Adds the action to the popup menu presented for all kinds of selected items.
+        * \param act Action to be added.
         */
         void addAllLayerAction(QAction* act);
 
         /*!
-        * \brief
-        * \param
+        * \brief Adds the action to the popup menu presented when the selected layer has vector representation.
+        * \param act Action to be added.
         */
         void addVectorLayerAction(QAction* act);
 
         /*!
-        * \brief
-        * \param
+        * \brief Adds the action to the popup menu presented when the selected layer has raster representation.
+        * \param act Action to be added.
         */
         void addRasterLayerAction(QAction* act);
 
         /*!
-        * \brief
-        * \param
+        * \brief Adds the action to the popup menu presented when the selected item is a folder.
+        * \param act Action to be added.
         */
         void addFolderLayerAction(QAction* act);
 
         /*!
-        * \brief
-        * \param
+        * \brief Adds the action to the popup menu presented when there is multiple items selected.
+        * \param act Action to be added.
         */
         void addMultipleSelectionAction(QAction* act);
 
         /*!
-        * \brief
-        * \param
+        * \brief Adds the action to the popup menu presented when the selected layer is invalid.
+        * \param act Action to be added.
         */
         void addInvalidLayerAction(QAction* act);
+        //@}
+
+        /** @name Remove Methods
+        *  Methods related to layers removal.
+        */
+        //@{
 
         /*!
-        * \brief
-        * \param
+        * \brief Removes the items in the list.
+        * \param idxs List of indexes of items to be removed.
         */
         void removeItems(const QModelIndexList& idxs);
 
         /*!
-        * \brief
-        * \param
+        * \brief Removes the items that are selected.
         */
         void removeSelectedItems();
+        //@}
+
+        /** @name Tree Customization Methods
+        *  Methods used to change the tree behavior.
+        *
+        * These methods can be used for change the Tree presentation and popup menus. 
+        * You can used delegates to change presentation behavior, and use QObject to handle popup menus.
+        */
+        //@{
 
         /*!
-         * \brief removeDelegate
-         * \param d
+         * \brief Removes the delegate from the tree.
+         * \param d Delegate to be removed.
+         *
+         * \note The tree does NOT TAKE the ownership of the pointer.
          */
         void removeDelegate(QStyledItemDelegate* d);
 
         /*!
-         * \brief setMenuEventHandler
-         * \param obj
+         * \brief Updates the popup event handler.
+         *
+         * This is used for change the popup menus. If you want to change the popup management try to use
+         * this function. You can change all menu handling or a specific type of item.
+         *
+         * \param obj The new menu event handler.
+         *
+         * \note The tree does NOT TAKE the ownership of the pointer.
          */
         void setMenuEventHandler(QObject* obj);
 
         /*!
-         * \brief getMenuEventHandler
-         * \return
+         * \brief Rerturns the current popup handler being used.
+         * \return Current menu event handler.
          */
         QObject* getMenuEventHandler() const;
 
         /*!
-         * \brief removeMenuEventHandler
+         * \brief Removes the menu handler.
+         *
+         * Removes the menu handler from the tree.
+         *
+         * \param handler The handler to be removed.
+         *
+         * \note The tree does NOT TAKE free memory of handler object.
          */
         void removeMenuEventHandler(QObject* handler);
+        //@}
 
       Q_SIGNALS:
 
+        /** @name Qt signals
+        *  
+        * Signals emitted by LayerItemView
+        */
+        //@{
+
         /*!
-         * \brief doubleClicked
-         * \param layer
+         * \brief Emited when user double clicks over an AbstractLayer.
+         * \param layer The layer that receives mouse double click event.
          */
         void doubleClicked(te::map::AbstractLayerPtr layer);
 
         /*!
-         * \brief visibilityChanged
+         * \brief Emited when some item changes its visibility.
          */
         void visibilityChanged();
 
         /*!
-         * \brief selectedLayersChanged
+         * \brief Emited when the selection changes.
+         * \param layers The current selected layers.
          */
-        void selectedLayersChanged(const std::list<te::map::AbstractLayerPtr>&);
+        void selectedLayersChanged(const std::list<te::map::AbstractLayerPtr>& layers);
 
         /*!
-         * \brief layerOrderChanged
+         * \brief Emited when the order of the layers has changed.
          */
         void layerOrderChanged();
+        //@}
 
       protected:
 
+        /** @name Qt Reimplemented Methods
+        *
+        * Methods that are reimplemented of the QTreeView class.
+        */
+        //@{
         void selectionChanged(const QItemSelection & selected, const QItemSelection & deselected);
 
         void dropEvent(QDropEvent * event);
 
         void mouseDoubleClickEvent(QMouseEvent* event);
+        //@}
 
-        LayerItemModel* m_model;          //!<
-
-        LayerViewMenuManager* m_mnuMger;  //!<
-
-        QObject* m_outterFilter;          //!<
+        LayerItemModel* m_model;          //!< Model to be used.
+        LayerViewMenuManager* m_mnuMger;  //!< Default popup handler.
+        QObject* m_outterFilter;          //!< Popup handler defined outside the tree.
       };
     }
   }

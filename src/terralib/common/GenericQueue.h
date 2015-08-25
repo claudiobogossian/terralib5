@@ -39,6 +39,8 @@ namespace te
     \brief Struct that represents a node in the Queue.
 
     \tparam T Data type of the data stored in a node.
+
+    \ingroup common
     */
     template <typename T>
     struct NodeT
@@ -76,6 +78,8 @@ namespace te
     \tparam T Type of the data to be stored.
 
     \note The queue DOES NOT takes the ownership of the pointers stored in it.
+
+    \ingroup common
     */
     template <typename T>
     struct QueueT
@@ -225,7 +229,7 @@ namespace te
       }
 
       /*!
-      * \brief Returns the value stored at \pos position of the queue.
+      * \brief Returns the value stored at \a pos position of the queue.
       *
       * \param pos The required position.
       *
