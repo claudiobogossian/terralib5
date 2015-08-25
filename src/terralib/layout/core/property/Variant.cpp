@@ -47,8 +47,7 @@ te::layout::Variant::Variant() :
   m_bValue(false),
   m_type(0),
   m_null(true),
-  m_complex(false),
-  m_geometryPtr(0)
+  m_complex(false)
 {
   m_type = Enums::getInstance().getEnumDataType()->getDataTypeNone();
 }
