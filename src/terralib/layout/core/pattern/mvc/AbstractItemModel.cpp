@@ -7,7 +7,7 @@ te::layout::AbstractItemModel::AbstractItemModel()
 , m_properties("")
 {
   te::gm::Envelope boundingBox(0., 0., 80., 80.);
-  te::color::RGBAColor backgroundColor(255, 255, 255, 255);
+  te::color::RGBAColor backgroundColor(255, 255, 255, 0);
   te::color::RGBAColor frameColor(0, 0, 0, 255);
   double rotation = 0;
   int zValue = 0;
