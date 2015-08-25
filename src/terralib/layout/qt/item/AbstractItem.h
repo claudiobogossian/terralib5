@@ -162,7 +162,7 @@ namespace te
          */
         virtual QVariant itemChange ( QGraphicsItem::GraphicsItemChange change, const QVariant & value );
 
-        virtual void te::layout::AbstractItem<T>::hoverMoveEvent( QGraphicsSceneHoverEvent * event );
+        virtual void hoverMoveEvent( QGraphicsSceneHoverEvent * event );
 
         virtual bool checkTouchesCorner( const double& x, const double& y );
 
@@ -460,8 +460,8 @@ namespace te
           // value is the new position.
           QPointF newPos = value.toPointF();
 
-          double tx = transform().dx();
-          double ty = transform().dy();
+          double tx = T::transform().dx();
+          double ty = T::transform().dy();
 
           newPos.setX(newPos.x() - tx);
           newPos.setY(newPos.y() - ty);
