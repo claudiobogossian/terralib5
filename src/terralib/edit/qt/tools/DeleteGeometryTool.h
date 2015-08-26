@@ -104,7 +104,7 @@ namespace te
 
         void reset();
 
-        void pickFeature(const te::map::AbstractLayerPtr& layer, const QPointF& pos);
+        void pickFeature(const te::map::AbstractLayerPtr& layer);
 
         te::gm::Envelope buildEnvelope(const QPointF& pos);
 

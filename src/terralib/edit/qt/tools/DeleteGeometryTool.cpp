@@ -92,7 +92,7 @@ void te::edit::DeleteGeometryTool::reset()
   m_feature = 0;
 }
 
-void te::edit::DeleteGeometryTool::pickFeature(const te::map::AbstractLayerPtr& layer, const QPointF& pos)
+void te::edit::DeleteGeometryTool::pickFeature(const te::map::AbstractLayerPtr& layer)
 {
   reset();
 

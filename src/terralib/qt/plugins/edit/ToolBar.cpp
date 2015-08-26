@@ -70,6 +70,9 @@
 #include <list>
 #include <vector>
 
+//temporary
+#include "../../../geometry/MultiPolygon.h"
+
 void EnableActions(QList<QAction*> acts, const bool& enable)
 {
   for(QList<QAction*>::iterator it = acts.begin(); it != acts.end(); ++it)
@@ -369,7 +372,6 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
     emit stashed(layer.get());
 
     m_layerIsStashed = true;
-    //  }
 
     return;
   }
@@ -430,7 +432,6 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
 
       for (std::size_t i = 0; i < features.size(); ++i) // for each edited feature
       {
-
           // Create the new item
           te::mem::DataSetItem* item = new te::mem::DataSetItem(operationds[te::edit::GEOMETRY_CREATE]);
 
@@ -642,13 +643,69 @@ void te::qt::plugins::edit::ToolBar::onSnapOptionsActivated()
 
 void te::qt::plugins::edit::ToolBar::onFeatureAttributesActivated()
 {
+  te::map::AbstractLayerPtr layer = getSelectedLayer();
+  if (layer.get() == 0)
+  {
+    QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Select a layer first!"));
+    return;
+  }
+
+  te::qt::af::evt::GetMapDisplay e;
+  emit triggered(&e);
+
+  assert(e.m_display);
+
   te::edit::FeatureAttributesDialog options(m_toolBar);
 
-  //te::qt::af::evt::GetAvailableLayers evt;
-  //emit triggered(&evt);
+  // Get the geometry type
+  std::auto_ptr<te::da::DataSetType> dt = layer->getSchema();
 
-  //options.setLayers(evt.m_layers);
-  options.exec();
+  const te::da::ObjectIdSet* objSet = layer->getSelected();
+
+  std::auto_ptr<te::da::DataSet> ds(layer->getData(objSet));
+
+  te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(dt.get());
+
+  if (ds->moveNext())
+  {
+    te::gm::Coord2D coord(0, 0);
+
+    std::auto_ptr<te::gm::Geometry> geom = ds->getGeometry(geomProp->getName());
+
+    // Try finds the geometry centroid
+    switch (geom->getGeomTypeId())
+    {
+      case te::gm::PolygonType:
+      {
+        te::gm::Polygon* p = dynamic_cast<te::gm::Polygon*>(geom.get());
+        coord = *p->getCentroidCoord();
+
+        break;
+      }
+      case te::gm::MultiPolygonType:
+      {
+        te::gm::MultiPolygon* mp = dynamic_cast<te::gm::MultiPolygon*>(geom.get());
+        coord = *mp->getCentroidCoord();
+
+        break;
+      }
+
+      default:
+      break;
+    }
+
+    // Build the search envelope
+    te::gm::Envelope env(coord.getX(), coord.getY(), coord.getX(), coord.getY());
+
+    te::edit::Feature* m_feature = PickFeature(layer, env, e.m_display->getDisplay()->getSRID(), te::edit::GEOMETRY_UPDATE);
+
+    options.set(dt.get(), m_feature);
+
+    options.exec();
+
+    m_featureAttributesAction->setChecked(false);
+  }
+
 }
 
 void te::qt::plugins::edit::ToolBar::onAggregateAreaToolActivated(bool checked)

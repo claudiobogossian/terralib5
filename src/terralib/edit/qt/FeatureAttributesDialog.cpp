@@ -25,6 +25,10 @@
 
 // TerraLib
 #include "../../dataaccess/dataset/DataSetType.h"
+#include "../../dataaccess/dataset/ObjectId.h"
+#include "../../dataaccess/dataset/ObjectIdSet.h"
+#include "../../datatype/AbstractData.h"
+#include "../../edit/Feature.h"
 #include "FeatureAttributesDialog.h"
 #include "ui_FeatureAttributesDialogForm.h"
 
@@ -71,16 +75,19 @@ void te::edit::FeatureAttributesDialog::initialize()
 {
   const std::vector<te::dt::Property*>& properties = m_type->getProperties();
 
-  for(std::size_t i = 0; i < properties.size(); ++i) // for each property
+  const std::map<std::size_t, te::dt::AbstractData*> data = m_feature->getData();
+
+  for (std::map<std::size_t, te::dt::AbstractData*>::const_iterator it = data.begin(); it != data.end(); ++it)
   {
-    te::dt::Property* p = properties[i];
+    te::dt::Property* p = properties[it->first];
 
     QTreeWidgetItem* propertyItem = new QTreeWidgetItem;
     propertyItem->setText(0, p->getName().c_str());
-    propertyItem->setText(1, tr("Value"));
+    propertyItem->setText(1, QString(it->second->toString().c_str()));
 
     m_ui->m_attributesTreeWidget->addTopLevelItem(propertyItem);
   }
+
 }
 
 void te::edit::FeatureAttributesDialog::onOkPushButtonPressed()

@@ -104,8 +104,23 @@ te::edit::Feature* te::edit::PickFeature(const te::map::AbstractLayer* layer, co
   {
     std::auto_ptr<te::gm::Geometry> g(dataset->getGeometry(gp->getName()));
 
-    if(g->contains(&point) || g->crosses(geometryFromEnvelope.get()) || geometryFromEnvelope->contains(g.get())) // Geometry found!
-      return new Feature(te::da::GenerateOID(dataset.get(), oidPropertyNames), g.release(), operation);
+    if (g->contains(&point) || g->crosses(geometryFromEnvelope.get()) || geometryFromEnvelope->contains(g.get())) // Geometry found!
+    {
+      Feature* f = new Feature(te::da::GenerateOID(dataset.get(), oidPropertyNames), g.release(), operation);
+
+      std::map<std::size_t, te::dt::AbstractData*> mapdata;
+
+      for (std::size_t i = 0; i < dataset->getNumProperties(); ++i)
+      {
+        std::auto_ptr<te::dt::AbstractData> absdata(dataset->getValue(i));
+        mapdata[i] = absdata.release();
+      }
+
+      f->setData(mapdata);
+
+      return f;
+    }
+
   }
 
   return 0;
