@@ -54,5 +54,3 @@ void te::layout::BalloonItem::drawItem( QPainter * painter )
 {
 
 }
-
-

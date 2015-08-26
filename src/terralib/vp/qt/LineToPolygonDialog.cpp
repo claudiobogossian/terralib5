@@ -266,6 +266,10 @@ void te::vp::LineToPolygonDialog::onOkPushButtonClicked()
         return;
       }
 
+      std::auto_ptr<te::da::DataSetTypeConverter> converter(new te::da::DataSetTypeConverter(dsLayer->getSchema().get(), dsOGR->getCapabilities(), dsOGR->getEncoding()));
+
+      te::da::AssociateDataSetTypeConverterSRID(converter.get(), dsLayer->getSRID());
+
       this->setCursor(Qt::WaitCursor);
 
       te::vp::LineToPolygonOp* line2polygonOp = 0;
@@ -278,7 +282,7 @@ void te::vp::LineToPolygonDialog::onOkPushButtonClicked()
       else
         line2polygonOp = new te::vp::LineToPolygonMemory();
 
-      line2polygonOp->setInput(inDataSource, dsLayer->getDataSetName(), dsLayer->getSchema(), oidSet);
+      line2polygonOp->setInput(inDataSource, dsLayer->getDataSetName(), converter, oidSet);
       line2polygonOp->setOutput(dsOGR, outputDataSet);
 
       if(!line2polygonOp->paramsAreValid())
@@ -330,6 +334,10 @@ void te::vp::LineToPolygonDialog::onOkPushButtonClicked()
         return;
       }
 
+      std::auto_ptr<te::da::DataSetTypeConverter> converter(new te::da::DataSetTypeConverter(dsLayer->getSchema().get(), dsOGR->getCapabilities(), dsOGR->getEncoding()));
+
+      te::da::AssociateDataSetTypeConverterSRID(converter.get(), dsLayer->getSRID());
+
       this->setCursor(Qt::WaitCursor);
 
       te::vp::LineToPolygonOp* line2polygonOp = 0;
@@ -341,7 +349,7 @@ void te::vp::LineToPolygonDialog::onOkPushButtonClicked()
       else
         line2polygonOp = new te::vp::LineToPolygonMemory();
 
-      line2polygonOp->setInput(inDataSource, dsLayer->getDataSetName(), dsLayer->getSchema(), oidSet);
+      line2polygonOp->setInput(inDataSource, dsLayer->getDataSetName(), converter, oidSet);
       line2polygonOp->setOutput(dsOGR, outputDataSet);
 
       if(!line2polygonOp->paramsAreValid())

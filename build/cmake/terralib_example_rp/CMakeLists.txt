@@ -26,7 +26,7 @@
 #
 
 
-include_directories(${Boost_INCLUDE_DIR})
+include_directories(${Boost_INCLUDE_DIR} ${TERRALIB_ABSOLUTE_ROOT_DIR}/src)
 
 file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/rp/*.cpp)
 file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/examples/rp/*.h)
@@ -35,12 +35,12 @@ add_executable(terralib_example_rp ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES})
 
 target_link_libraries(terralib_example_rp terralib_mod_dataaccess
                                           terralib_mod_datatype
-										  terralib_mod_gdal
+                                          terralib_mod_gdal
                                           terralib_mod_geometry
                                           terralib_mod_memory
                                           terralib_mod_raster
-										  terralib_mod_rp
-										  ${BOOST_SYSTEM_LIBRARY})
+                                          terralib_mod_rp
+                                          ${BOOST_SYSTEM_LIBRARY})
 
 install(FILES ${TERRALIB_SRC_FILES} ${TERRALIB_HDR_FILES}
         DESTINATION ${TERRALIB_DESTINATION_EXAMPLES}/rp COMPONENT devel)

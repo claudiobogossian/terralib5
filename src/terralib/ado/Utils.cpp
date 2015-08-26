@@ -55,28 +55,21 @@ inline void TESTHR( HRESULT hr )
 
 void te::ado::Blob2Variant(const char* blob, int size, _variant_t & var)
 {
-  try
-  {
-    char *pByte;
+  char *pByte;
 
-    SAFEARRAY FAR* psa;
-    SAFEARRAYBOUND rgsabound[1];
-    rgsabound[0].lLbound = 0;
-    rgsabound[0].cElements = size;
+  SAFEARRAY FAR* psa;
+  SAFEARRAYBOUND rgsabound[1];
+  rgsabound[0].lLbound = 0;
+  rgsabound[0].cElements = size;
 
-    psa = SafeArrayCreate(VT_I1, 1, rgsabound);
+  psa = SafeArrayCreate(VT_I1, 1, rgsabound);
 
-    if(SafeArrayAccessData(psa,(void **)&pByte) == NOERROR)
-      memcpy(pByte, blob, size);
-    SafeArrayUnaccessData(psa);
+  if(SafeArrayAccessData(psa,(void **)&pByte) == NOERROR)
+    memcpy(pByte, blob, size);
+  SafeArrayUnaccessData(psa);
 
-    var.vt = VT_ARRAY | VT_UI1;
-    var.parray = psa;
-  }
-  catch(_com_error& e)
-  {
-    throw te::common::Exception((LPCSTR)e.ErrorMessage());
-  }
+  var.vt = VT_ARRAY | VT_UI1;
+  var.parray = psa;
 }
 
 std::string te::ado::MakeConnectionStr(const std::map<std::string, std::string>& dsInfo)
@@ -214,7 +207,7 @@ std::string te::ado::GetAdoStringType(const int& terralib)
 
 void te::ado::Convert2Ado(const te::gm::Geometry* geo, _variant_t & var)
 {
-  long size = geo->getWkbSize();
+  long size = (long)geo->getWkbSize();
 
   char* wkb = new char[size];
 
@@ -1002,11 +995,11 @@ std::string te::ado::GetSystemDateTimeFormat(std::string& indAM, std::string& in
 
   //DATE
   //first
-  int pos = rdateFormat.find(rdateSeparator);
+  int pos = (int)rdateFormat.find(rdateSeparator);
   std::string firstD = rdateFormat.substr(0,pos);
   std::string temp = rdateFormat.substr(pos+1);
   //second and third
-  pos = temp.find(rdateSeparator);
+  pos = (int)temp.find(rdateSeparator);
   std::string secondD = temp.substr(0,pos);
   std::string thirdD = temp.substr(pos+1);
 
@@ -1020,13 +1013,13 @@ std::string te::ado::GetSystemDateTimeFormat(std::string& indAM, std::string& in
 
   //TIME
   //first
-  pos = rtimeFormat.find(rtimeSeparator);
+  pos = (int)rtimeFormat.find(rtimeSeparator);
   std::string firstT = rtimeFormat.substr(0,pos);
   temp = rtimeFormat.substr(pos+1);
   //second and third
-  pos = temp.find(rtimeSeparator);
+  pos = (int)temp.find(rtimeSeparator);
   std::string secondT = temp.substr(0,pos);
-  int posEmpth = temp.find(" ");
+  int posEmpth = (int)temp.find(" ");
   std::string thirdT;
 
   if(posEmpth==-1)
@@ -1241,13 +1234,13 @@ std::auto_ptr<te::dt::DateTime> te::ado::GetDateTime(std::string& value, std::st
 
   if((day > 0 || mon > 0 || year > 0) && (sec > 0 || min > 0 || hour > 0))
   {
-    te::dt::Date d(year, mon, day);
+    te::dt::Date d((unsigned short)year, (unsigned short)mon, (unsigned short)day);
     te::dt::TimeDuration td(hour, min, sec);
     result = new te::dt::TimeInstant(d, td);
   }
   else if(day > 0 || mon > 0 || year > 0)
   {
-    result = new te::dt::Date(year, mon, day);
+    result = new te::dt::Date((unsigned short)year, (unsigned short)mon, (unsigned short)day);
   }
   else if(sec > 0 || min > 0 || hour > 0)
   {

@@ -164,9 +164,9 @@ std::auto_ptr<te::da::DataSet> te::ado::Transactor::getDataSet(const std::string
 }
 
 std::auto_ptr<te::da::DataSet> te::ado::Transactor::getDataSet(const std::string& name,
-                                                               const std::string& propertyName,
+                                                               const std::string&,
                                                                const te::gm::Envelope* e,
-                                                               te::gm::SpatialRelation r,
+                                                               te::gm::SpatialRelation,
                                                                te::common::TraverseType travType,
                                                                bool connected,
                                                                const te::common::AccessPolicy accessPolicy)
@@ -211,8 +211,8 @@ std::auto_ptr<te::da::DataSet> te::ado::Transactor::getDataSet(const std::string
 
 std::auto_ptr<te::da::DataSet> te::ado::Transactor::query(const te::da::Select& q,
                                                           te::common::TraverseType travType,
-                                                          bool connected,
-                                                          const te::common::AccessPolicy accessPolicy)
+                                                          bool,
+                                                          const te::common::AccessPolicy)
 {
   std::string sql;
 
@@ -224,13 +224,11 @@ std::auto_ptr<te::da::DataSet> te::ado::Transactor::query(const te::da::Select& 
 }
 
 std::auto_ptr<te::da::DataSet> te::ado::Transactor::query(const std::string& query,
-                                                          te::common::TraverseType travType,
+                                                          te::common::TraverseType,
                                                           bool connected,
-                                                          const te::common::AccessPolicy accessPolicy)
+                                                          const te::common::AccessPolicy)
 {
   _RecordsetPtr result = m_conn->query(query, connected);
-
-  long i = result->GetRecordCount();
 
   std::auto_ptr<te::da::DataSet> dset(new DataSet(this, result));
 
@@ -262,7 +260,7 @@ void te::ado::Transactor::execute(const std::string& command)
   m_conn->execute(command);
 }
 
-std::auto_ptr<te::da::PreparedQuery> te::ado::Transactor::getPrepared(const std::string& qName)
+std::auto_ptr<te::da::PreparedQuery> te::ado::Transactor::getPrepared(const std::string&)
 {
   throw te::common::Exception(TE_TR("Method getPrepared: not implemented yet!"));
 }
@@ -516,17 +514,17 @@ void te::ado::Transactor::addProperty(const std::string& datasetName, te::dt::Pr
       {
         const te::dt::StringProperty* sp = static_cast<const te::dt::StringProperty*>(p);
 
-        long ssize = 0;
+        std::size_t ssize = 0;
 
         if(sp->size() != 0)
           ssize = sp->size();
 
-        newColumn->DefinedSize = ssize;
+        newColumn->DefinedSize = (long)ssize;
 
         if(!sp->isRequired())
           newColumn->PutAttributes(ADOX::adColNullable);
 
-        pTable->Columns->Append(_variant_t ((IDispatch*)newColumn), ado_type, ssize);
+        pTable->Columns->Append(_variant_t ((IDispatch*)newColumn), ado_type, (long)ssize);
 
         break;
       }
@@ -1006,7 +1004,7 @@ bool te::ado::Transactor::indexExists(const std::string& datasetName, const std:
 }
 
 void te::ado::Transactor::addIndex(const std::string& datasetName, te::da::Index* idx,
-                                   const std::map<std::string, std::string>& options)
+                                   const std::map<std::string, std::string>&)
 {
   ADOX::_IndexPtr pIndex = 0;
   ADOX::_TablePtr pTable = 0;
@@ -1058,7 +1056,7 @@ void te::ado::Transactor::dropIndex(const std::string& datasetName, const std::s
   dt->remove(idx);
 }
 
-std::auto_ptr<te::da::Sequence> te::ado::Transactor::getSequence(const std::string& name)
+std::auto_ptr<te::da::Sequence> te::ado::Transactor::getSequence(const std::string&)
 {
   throw te::common::Exception(TE_TR("Method getSequence: not implemented yet!"));
 }
@@ -1144,7 +1142,7 @@ bool te::ado::Transactor::dataSetExists(const std::string& name)
   return false;
 }
 
-void te::ado::Transactor::createDataSet(te::da::DataSetType* dt, const std::map<std::string, std::string>& options)
+void te::ado::Transactor::createDataSet(te::da::DataSetType* dt, const std::map<std::string, std::string>&)
 {
   ADOX::_TablePtr pTable = 0;
   ADOX::_CatalogPtr pCatalog = 0;
@@ -1218,8 +1216,8 @@ void te::ado::Transactor::renameDataSet(const std::string& name, const std::stri
 
 void te::ado::Transactor::add(const std::string& datasetName,
                               te::da::DataSet* d,
-                              const std::map<std::string, std::string>& options,
-                              std::size_t limit)
+                              const std::map<std::string, std::string>&,
+                              std::size_t)
 {
   _RecordsetPtr recset;
   TESTHR(recset.CreateInstance(__uuidof(Recordset)));
@@ -1355,7 +1353,7 @@ void te::ado::Transactor::add(const std::string& datasetName,
   }
 }
 
-void te::ado::Transactor::remove(const std::string& datasetName, const te::da::ObjectIdSet* oids)
+void te::ado::Transactor::remove(const std::string& datasetName, const te::da::ObjectIdSet*)
 {
   ADOX::_CatalogPtr pCatalog = 0;
 
@@ -1373,12 +1371,12 @@ void te::ado::Transactor::remove(const std::string& datasetName, const te::da::O
   }
 }
 
-void te::ado::Transactor::update(const std::string& datasetName,
-                                 te::da::DataSet* dataset,
-                                 const std::vector<std::size_t>& properties,
-                                 const te::da::ObjectIdSet* oids,
-                                 const std::map<std::string, std::string>& options,
-                                 std::size_t limit)
+void te::ado::Transactor::update(const std::string&,
+                                 te::da::DataSet*,
+                                 const std::vector<std::size_t>&,
+                                 const te::da::ObjectIdSet*,
+                                 const std::map<std::string, std::string>&,
+                                 std::size_t)
 {
   //TODO
 }
@@ -1451,7 +1449,7 @@ void te::ado::Transactor::update(const std::string& datasetName,
   }
 }
 
-void te::ado::Transactor::optimize(const std::map<std::string, std::string>& opInfo)
+void te::ado::Transactor::optimize(const std::map<std::string, std::string>&)
 {
 
 }
@@ -1779,8 +1777,6 @@ void te::ado::Transactor::getCheckConstraints(te::da::DataSetType* dt)
 
   try
   {
-    HRESULT hr = S_OK;
-
     _ConnectionPtr adoConn = m_conn->getConn();
 
     TESTHR(rs.CreateInstance(__uuidof(Recordset)));

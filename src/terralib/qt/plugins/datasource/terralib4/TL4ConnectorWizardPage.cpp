@@ -199,25 +199,25 @@ std::map<std::string, std::string> te::qt::plugins::terralib4::TL4ConnectorWizar
 
 std::string te::qt::plugins::terralib4::TL4ConnectorWizardPage::getDriverName(const std::string& displayName)
 {
-  if("Access")
+  if (displayName == "Access")
     return "Ado";
-  else if("SQL Server")
+  else if (displayName == "SQL Server")
     return "";
-  else if("SQL Server Spatial")
+  else if (displayName == "SQL Server Spatial")
     return "";
-  else if("Oracle")
+  else if (displayName == "Oracle")
     return "";
-  else if("Oracle OCI")
+  else if (displayName == "Oracle OCI")
     return "";
-  else if("Oracle Spatial")
+  else if (displayName == "Oracle Spatial")
     return "";
-  else if("MySQL")
+  else if (displayName == "MySQL")
     return "MySQL";
-  else if("PostgreSQL")
+  else if (displayName == "PostgreSQL")
     return "PostgreSQL";
-  else if("PostGIS")
+  else if (displayName == "PostGIS")
     return "PostGIS";
-  else if("Firebird")
+  else if (displayName == "Firebird")
     return "Firebird";
   else
     return "";

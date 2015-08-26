@@ -75,16 +75,22 @@ namespace te
         */
         virtual ~AnimationItem();
 
-        /*!
-          \brief It sets the internal matrix.
-        */
-        void setMatrix();
+        ///*!
+        //  \brief It sets the internal matrix.
+        //*/
+        //void setMatrix();
 
         /*!
           \brief It returns the Animation Item position in device coordinate.
           \return Position in device coordinate.
         */
         QPoint getPosInDeviceCoordinate();
+
+        /*!
+        \brief It transform coodinates to map display projection coodinates.
+        \param vec Coordinates in native projection.
+        */
+        void transformToDisplayProjection(QVector<QPointF>& vec);
 
         /*!
           \brief Paint a Animation Item.
@@ -121,9 +127,9 @@ namespace te
         virtual void draw() = 0;
 
         /*!
-          \brief Create Animation Item making reprojection if necessary.
+          \brief Adjust data for a given time animation period.
         */
-        virtual void createAnimationDataInDisplayProjection();
+        virtual void adjustDataToAnimationTemporalExtent();
 
         /*!
           \brief It draws a piece of tracktrajectory trail or draws the current pixmap item.
@@ -147,7 +153,7 @@ namespace te
         QVector<te::dt::TimeInstant> m_time;                //!< The input time.
         QVector<te::dt::TimeInstant> m_animationTime;       //!< The animation time. It contains only the portions to be animated.
         te::gm::LineString* m_route;                        //!< The input path in world coordenates.
-        QVector<QPointF> m_animationRoute;                  //!< The path coordenates in map display projection. It contains only the portions to be animated.
+        QVector<QPointF> m_animationRoute;                  //!< It contains only the portions to be animated.
         QMatrix m_matrix;                                   //!< The display transformation matrix.
         bool m_automaticPan;                                //!< True if automatic pan over this item.
         double m_panFactor;                                 //!< the range is between 0.05 and 0.5 

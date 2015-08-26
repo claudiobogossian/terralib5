@@ -126,6 +126,8 @@ namespace te
 
           void draw(const te::gm::GeometryCollection* g);
 
+          void draw(const te::gm::MultiSurface* g);
+
           void save(const char* fileName, te::map::ImageType t, int quality = 75, int fg = 0) const;
 
           char* getImage(te::map::ImageType t, std::size_t& size, int quality = 75, int fg = 0) const;

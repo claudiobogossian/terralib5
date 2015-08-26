@@ -87,9 +87,8 @@ namespace te
                                                   double& resolutionX,
                                                   double& resolutionY,
                                                   double& area,
-                                                  te::stat::NumericStatisticalSummary& ss,
-                                                  bool fullIntersection = true);
-    
+                                                  te::stat::NumericStatisticalSummary& ss); 
+
     /*! Returns the mode of set of numerical values.
      
      \param values  a reference to a set of numerical values. Do not pass empty.

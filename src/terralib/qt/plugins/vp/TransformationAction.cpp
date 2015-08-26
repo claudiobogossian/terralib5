@@ -46,7 +46,7 @@ te::qt::plugins::vp::TransformationAction::~TransformationAction()
 {
 }
 
-void te::qt::plugins::vp::TransformationAction::onActionActivated(bool checked)
+void te::qt::plugins::vp::TransformationAction::onActionActivated(bool)
 {
   te::vp::TransformationDialog dlg(0);
 

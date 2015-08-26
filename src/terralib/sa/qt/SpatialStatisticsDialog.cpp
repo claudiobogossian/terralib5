@@ -395,7 +395,8 @@ void te::sa::SpatialStatisticsDialog::onOkPushButtonClicked()
 
   //associate the input geometry attribute to the GPM
   te::gm::GeometryProperty* gmProp = te::da::GetFirstGeomProperty(dataSetType.get());
-  te::sa::AssociateGPMVertexAttribute(gpm.get(), ds.get(), dsLayer->getDataSetName(), attrLink, gmProp->getName(), gmProp->getType(), gmProp->getSRID(), gmProp->getGeometryType());
+
+  /*int geomIdx = */te::sa::AssociateGPMVertexAttribute(gpm.get(), ds.get(), dsLayer->getDataSetName(), attrLink, gmProp->getName(), gmProp->getType(), gmProp->getSRID(), gmProp->getGeometryType());
 
   try
   {

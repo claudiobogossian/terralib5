@@ -103,9 +103,9 @@ namespace te
         void draw();
 
         /*!
-          \brief Create images making reprojection if necessary.
+          \brief Adjust data for a given time animation period.
         */
-        void createAnimationDataInDisplayProjection();
+        void adjustDataToAnimationTemporalExtent();
 
         void setImagePosition(const QPointF& p, const QRectF& dr);
 

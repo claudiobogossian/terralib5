@@ -29,6 +29,7 @@
 #include "../../common/Translator.h"
 #include "../../common/STLUtils.h"
 #include "../../dataaccess/dataset/DataSetType.h"
+#include "../../dataaccess/dataset/DataSetTypeConverter.h"
 #include "../../dataaccess/dataset/ObjectIdSet.h"
 #include "../../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../../dataaccess/datasource/DataSourceInfo.h"
@@ -266,6 +267,10 @@ void te::vp::PolygonToLineDialog::onOkPushButtonClicked()
         return;
       }
 
+      std::auto_ptr<te::da::DataSetTypeConverter> converter(new te::da::DataSetTypeConverter(dsLayer->getSchema().get(), dsOGR->getCapabilities(), dsOGR->getEncoding()));
+
+      te::da::AssociateDataSetTypeConverterSRID(converter.get(), dsLayer->getSRID());
+
       this->setCursor(Qt::WaitCursor);
 
       te::vp::PolygonToLineOp* pol2LineOp = 0;
@@ -278,7 +283,7 @@ void te::vp::PolygonToLineDialog::onOkPushButtonClicked()
       else
         pol2LineOp = new te::vp::PolygonToLineMemory();
 
-      pol2LineOp->setInput(inDataSource, dsLayer->getDataSetName(), dsLayer->getSchema(), oidSet);
+      pol2LineOp->setInput(inDataSource, dsLayer->getDataSetName(), converter, oidSet);
       pol2LineOp->setOutput(dsOGR, outputDataSet);
 
       if(!pol2LineOp->paramsAreValid())
@@ -331,6 +336,10 @@ void te::vp::PolygonToLineDialog::onOkPushButtonClicked()
         return;
       }
 
+      std::auto_ptr<te::da::DataSetTypeConverter> converter(new te::da::DataSetTypeConverter(dsLayer->getSchema().get(), dsOGR->getCapabilities(), dsOGR->getEncoding()));
+
+      te::da::AssociateDataSetTypeConverterSRID(converter.get(), dsLayer->getSRID());
+
       this->setCursor(Qt::WaitCursor);
 
       te::vp::PolygonToLineOp* pol2LineOp = 0;
@@ -342,7 +351,7 @@ void te::vp::PolygonToLineDialog::onOkPushButtonClicked()
       else
         pol2LineOp = new te::vp::PolygonToLineMemory();
 
-      pol2LineOp->setInput(inDataSource, dsLayer->getDataSetName(), dsLayer->getSchema(), oidSet);
+      pol2LineOp->setInput(inDataSource, dsLayer->getDataSetName(), converter, oidSet);
       pol2LineOp->setOutput(dsOGR, outputDataSet);
 
       if(!pol2LineOp->paramsAreValid())

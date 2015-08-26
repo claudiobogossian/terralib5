@@ -26,11 +26,6 @@
 #ifndef __TERRALIB_QT_PLUGINS_RP_INTERNAL_CONFIG_H
 #define __TERRALIB_QT_PLUGINS_RP_INTERNAL_CONFIG_H
 
-// TerraLib
-#include "../../../Config.h"
-
-
-
 /*!
   \def TE_QT_PLUGIN_RP_HAVE_ARITHMETICOP
 

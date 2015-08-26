@@ -27,7 +27,7 @@
 #include <boost/foreach.hpp> // Boost => don't change this include order, otherwise you may have compiling problems! 
 
 // TerraLib
-#include "terralib_config.h"
+#include "../../BuildConfig.h"
 #include "../../common/Exception.h"
 #include "../../common/PlatformUtils.h"
 #include "../../common/Translator.h"
@@ -796,6 +796,8 @@ void te::qt::af::ApplicationController::finalize()
 
   te::plugin::PluginManager::getInstance().clear();
 
+//  delete m_project;
+
   if(m_resetTerralib)
     TerraLib::getInstance().finalize();
 
@@ -847,8 +849,6 @@ void te::qt::af::ApplicationController::finalize()
   
   m_selectionColor = QColor();
 
-  m_project = 0;
-  
   m_initialized = false;
 }
 

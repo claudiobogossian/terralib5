@@ -30,6 +30,7 @@
 #include "../common/Translator.h"
 
 #include "../dataaccess/dataset/DataSet.h"
+#include "../dataaccess/dataset/DataSetAdapter.h"
 #include "../dataaccess/utils/Utils.h"
 
 #include "../geometry/GeometryProperty.h"
@@ -54,15 +55,19 @@ bool te::vp::LineToPolygonMemory::run() throw (te::common::Exception)
 {
   std::auto_ptr<te::da::DataSetType> outDsType = buildOutDataSetType();
 
-  te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(m_inDsetType.get());
-  std::string geomName = geomProp->getName();
+  te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(m_converter->getResult());
 
-  std::auto_ptr<te::da::DataSet> inDset;
+  std::string geomName = geomProp->getName();
+  std::size_t geomPos = te::da::GetPropertyPos(m_converter->getResult(), geomName);
+
+  std::auto_ptr<te::da::DataSet> inDsetSrc;
 
   if(m_oidSet == 0)
-    inDset = m_inDsrc->getDataSet(m_inDsetName);
+    inDsetSrc = m_inDsrc->getDataSet(m_inDsetName);
   else
-    inDset = m_inDsrc->getDataSet(m_inDsetName, m_oidSet);
+    inDsetSrc = m_inDsrc->getDataSet(m_inDsetName, m_oidSet);
+
+  std::auto_ptr<te::da::DataSetAdapter> inDset(te::da::CreateAdapter(inDsetSrc.get(), m_converter.get()));
 
   std::auto_ptr<te::mem::DataSet> outDSet(new te::mem::DataSet(outDsType.get()));
 
@@ -84,7 +89,7 @@ bool te::vp::LineToPolygonMemory::run() throw (te::common::Exception)
       }
       else
       {
-        std::auto_ptr<te::gm::Geometry> geom = inDset->getGeometry(geomName);
+        std::auto_ptr<te::gm::Geometry> geom = inDset->getGeometry(geomPos);
         if(!geom->isValid())
         {
           geomState = false;

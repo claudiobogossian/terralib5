@@ -26,7 +26,7 @@
 #
 
 
-include_directories(${Boost_INCLUDE_DIR})
+include_directories(${Boost_INCLUDE_DIR} ${TERRALIB_ABSOLUTE_ROOT_DIR}/src)
 
 if(Qt5_FOUND)
 

@@ -3,7 +3,6 @@
 #include <terralib/common.h>
 #include <terralib/dataaccess.h>
 #include <terralib/dataaccess/datasource/DataSourceFactory.h>
-//#include <terralib/vp/Buffer.h>
 #include <terralib/vp/BufferMemory.h>
 #include <terralib/vp/BufferOp.h>
 #include <terralib/vp/BufferQuery.h>
@@ -14,8 +13,6 @@
 #include <memory>
 #include <string>
 #include <vector>
-
-//New examples
 
 //OGR to OGR
 bool BufferOGRToOGR()
@@ -42,6 +39,8 @@ bool BufferOGRToOGR()
 
   std::auto_ptr<te::da::DataSet> inDset = srcDs->getDataSet(inDsetName);
   std::auto_ptr<te::da::DataSetType> inDsetType = srcDs->getDataSetType(inDsetName);
+
+  std::auto_ptr<te::da::DataSetTypeConverter> converter(new te::da::DataSetTypeConverter(inDsetType.get(), srcDs->getCapabilities(), srcDs->getEncoding()));
 
   double distance = 0.1;
 
@@ -79,7 +78,7 @@ bool BufferOGRToOGR()
   // sera feito por algum tipo de factory
   te::vp::BufferOp* bufferOp = new te::vp::BufferMemory();
 
-  bufferOp->setInput(srcDs, inDsetName, inDsetType);
+  bufferOp->setInput(srcDs, inDsetName, converter);
   bufferOp->setOutput(trgDs, outDS);
   bufferOp->setParams(distance,
                       bufferPolygonRule,
@@ -125,6 +124,8 @@ bool BufferOGRToPGIS()
   std::auto_ptr<te::da::DataSet> inDset = srcDs->getDataSet(inDsetName);
   std::auto_ptr<te::da::DataSetType> inDsetType = srcDs->getDataSetType(inDsetName);
 
+  std::auto_ptr<te::da::DataSetTypeConverter> converter(new te::da::DataSetTypeConverter(inDsetType.get(), srcDs->getCapabilities(), srcDs->getEncoding()));
+
   double distance = 0.1;
 
   //options for Polygon Rule.
@@ -164,7 +165,7 @@ bool BufferOGRToPGIS()
   // sera feito por algum tipo de factory
   te::vp::BufferOp* bufferOp = new te::vp::BufferMemory();
 
-  bufferOp->setInput(srcDs, inDsetName, inDsetType);
+  bufferOp->setInput(srcDs, inDsetName, converter);
   bufferOp->setOutput(trgDs, outDS);
   bufferOp->setParams(distance,
                       bufferPolygonRule,
@@ -210,6 +211,8 @@ bool BufferPGISToPGIS()
   
   std::auto_ptr<te::da::DataSet> inDset = srcDs->getDataSet(inDsetName);
   std::auto_ptr<te::da::DataSetType> inDsetType = srcDs->getDataSetType(inDsetName);
+
+  std::auto_ptr<te::da::DataSetTypeConverter> converter(new te::da::DataSetTypeConverter(inDsetType.get(), srcDs->getCapabilities(), srcDs->getEncoding()));
   
   std::string outDSet = "bufferPGISToPGIS";
 
@@ -241,7 +244,7 @@ bool BufferPGISToPGIS()
   // sera feito por algum tipo de factory
   te::vp::BufferOp* bufferOp = new te::vp::BufferMemory();
 
-  bufferOp->setInput(srcDs, inDsetName, inDsetType);
+  bufferOp->setInput(srcDs, inDsetName, converter);
   bufferOp->setOutput(outDsource, outDSet);
   bufferOp->setParams(distance,
                       bufferPolygonRule,
@@ -288,6 +291,8 @@ bool BufferPGISToOGR()
   std::auto_ptr<te::da::DataSet> inDset = srcDs->getDataSet(inDsetName);
   std::auto_ptr<te::da::DataSetType> inDsetType = srcDs->getDataSetType(inDsetName);
 
+  std::auto_ptr<te::da::DataSetTypeConverter> converter(new te::da::DataSetTypeConverter(inDsetType.get(), srcDs->getCapabilities(), srcDs->getEncoding()));
+
   double distance = 0.1;
 
   //options for Polygon Rule.
@@ -327,7 +332,7 @@ bool BufferPGISToOGR()
   // sera feito por algum tipo de factory
   te::vp::BufferOp* bufferOp = new te::vp::BufferQuery();
 
-  bufferOp->setInput(srcDs, inDsetName, inDsetType);
+  bufferOp->setInput(srcDs, inDsetName, converter);
   bufferOp->setOutput(trgDs, outDSet);
   bufferOp->setParams(distance,
                       bufferPolygonRule,

@@ -18,7 +18,7 @@ te::qt::widgets::PixmapItem::PixmapItem()
 te::qt::widgets::PixmapItem::PixmapItem(const QString& title, const QString& file, te::qt::widgets::MapDisplay* display)
   : te::qt::widgets::AnimationItem(title, display)
 {
-  setMatrix();
+  //setMatrix();
 
   m_dir = QDir(file);
 
@@ -30,7 +30,7 @@ te::qt::widgets::PixmapItem::PixmapItem(const QString& title, const QString& fil
     m_suffix = ".bin";
 
   for(size_t i = 0; i < 256; ++i)
-    m_lut[i] = QColor(i, i, i, 255);
+    m_lut[(uchar)i] = QColor((int)i, (int)i, (int)i, 255);
 }
 
 te::qt::widgets::PixmapItem::~PixmapItem()
@@ -52,9 +52,9 @@ void te::qt::widgets::PixmapItem::setImagePosition(const QPointF& p, const QRect
   m_imaRect.moveCenter(p); 
 }
 
-void te::qt::widgets::PixmapItem::createAnimationDataInDisplayProjection()
+void te::qt::widgets::PixmapItem::adjustDataToAnimationTemporalExtent()
 {
-  te::qt::widgets::AnimationItem::createAnimationDataInDisplayProjection();
+  te::qt::widgets::AnimationItem::adjustDataToAnimationTemporalExtent();
   m_animationFiles.clear();
 
   te::dt::TimeInstant iTime = m_animation->m_temporalAnimationExtent.getInitialTimeInstant();
@@ -63,7 +63,7 @@ void te::qt::widgets::PixmapItem::createAnimationDataInDisplayProjection()
   size_t ini = 0;
   size_t size = m_time.size();
   size_t fim = size;
-  for(size_t i = 0; i < size; ++i)
+  for(int i = 0; i < (int)size; ++i)
   {
     if(m_time[i] == iTime || m_time[i] > iTime)
     {
@@ -71,7 +71,7 @@ void te::qt::widgets::PixmapItem::createAnimationDataInDisplayProjection()
       break;
     }
   }
-  for(size_t i = size-1; i >= 0; --i)
+  for(int i = (int)size-1; i >= 0; --i)
   {
     if(m_time[i] == fTime || m_time[i] < fTime)
     {
@@ -82,17 +82,10 @@ void te::qt::widgets::PixmapItem::createAnimationDataInDisplayProjection()
   size = fim - ini + 1;
   size_t tfim = ini + size;
 
-  for(size_t i = ini; i < tfim; ++i)
+  for(int i = (int)ini; i < (int)tfim; ++i)
   {
     QString f = m_files[i];
     m_animationFiles.push_back(f);
-  }
-
-  if(m_SRID != m_display->getSRID())
-  {
-    te::gm::Envelope env(m_imaRect.left(), m_imaRect.top(), m_imaRect.right(), m_imaRect.bottom());
-    env.transform(m_SRID, m_display->getSRID());
-    m_imaRect = QRectF(env.m_llx, env.m_lly, env.getWidth(), env.getHeight());
   }
 }
 
@@ -135,8 +128,15 @@ void te::qt::widgets::PixmapItem::calculateCurrentFile(const unsigned int& curTi
 
 QRect te::qt::widgets::PixmapItem::getRect()
 {
-  QRect r = m_matrix.mapRect(m_imaRect).toRect();
-  return r;
+  QRectF r = m_imaRect;
+  if(m_display->getSRID() != TE_UNKNOWN_SRS && m_display->getSRID() != m_SRID)
+  {
+    te::gm::Envelope e(r.x(), r.y(), r.x() + r.width(), r.y() + r.height());
+    e.transform(m_SRID, m_display->getSRID());
+    r.setRect(e.getLowerLeftX(), e.getLowerLeftY(), e.getWidth(), e.getHeight());
+  }
+
+  return m_matrix.mapRect(r).toRect();
 }
 
 void te::qt::widgets::PixmapItem::setLUT(const std::vector<std::pair<int, QColor> >& tab)
@@ -145,10 +145,10 @@ void te::qt::widgets::PixmapItem::setLUT(const std::vector<std::pair<int, QColor
   std::vector<std::pair<int, QColor> >::const_iterator it = tab.begin();
   size_t v = (*it).first;
   QColor c = (*it).second;
-  while(i <= 255)
+  while(i < 256)
   {
     while(i <= v)
-      m_lut[i++] = c;
+      m_lut[(uchar)i++] = c;
 
     ++it;
     if(it == tab.end())
@@ -158,8 +158,8 @@ void te::qt::widgets::PixmapItem::setLUT(const std::vector<std::pair<int, QColor
     c = (*it).second;
   }
 
-  while(i <= 255)
-    m_lut[i++] = c;
+  while(i < 256)
+    m_lut[(uchar)i++] = c;
 
 }
 

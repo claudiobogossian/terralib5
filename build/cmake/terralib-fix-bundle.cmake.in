@@ -64,6 +64,7 @@ set(TERRALIB_DESTINATION_RUNTIME @TERRALIB_DESTINATION_RUNTIME@)
 set(TERRALIB_DESTINATION_LIBRARY @TERRALIB_DESTINATION_LIBRARY@)
 set(QT4_FOUND @QT4_FOUND@)
 set(Qt5_FOUND @Qt5_FOUND@)
+set(Qt5_DIR @Qt5_DIR@)
 
 if(WIN32)
   set(TERRALIB_LIBS_LOCATION ${CMAKE_INSTALL_PREFIX}/${TERRALIB_DESTINATION_RUNTIME})
@@ -202,16 +203,6 @@ elseif(APPLE)
     if(TERRALIB_TERRAVIEW_ENABLED)
       set(TERRALIB_APPLICATION "${CMAKE_INSTALL_PREFIX}/terraview.app")
       set(QT_PLUGINS "${TERRALIB_APPLICATION}/Contents/qtplugins")
-
-      file(WRITE "${CMAKE_INSTALL_PREFIX}/terraview.app/Contents/MacOS/Assistant.app/Contents/Resources/qt.conf"
-          "[Paths]\nPlugins = plugins")
-
-      #EXECUTE_PROCESS(COMMAND ln -s ../../../Frameworks Frameworks
-      #                WORKING_DIRECTORY "${CMAKE_INSTALL_PREFIX}/terraview.app/Contents/MacOS/Assistant.app/Contents")
-
-      #EXECUTE_PROCESS(COMMAND ln -s ../../../qtplugins plugins
-      #                WORKING_DIRECTORY "${CMAKE_INSTALL_PREFIX}/terraview.app/Contents/MacOS/Assistant.app/Contents")
-
     endif()
   else()
     if(TERRALIB_TERRAVIEW_ENABLED)
@@ -293,11 +284,20 @@ endif()
 # Call fixup_bundle
 fixup_bundle("${TERRALIB_APPLICATION}" "${TERRALIB_LIBRARIES}" "${TERRALIB_DIRS}")
 
-if(APPLE AND TERRALIB_BUILD_AS_BUNDLE AND TERRALIB_TERRAVIEW_ENABLED)
+if(Qt5_DIR AND APPLE AND TERRALIB_BUILD_AS_BUNDLE AND TERRALIB_TERRAVIEW_ENABLED)
+
+  EXECUTE_PROCESS(COMMAND cp -r ${Qt5_DIR}/../../../bin/Assistant.app .
+                  WORKING_DIRECTORY "${CMAKE_INSTALL_PREFIX}/terraview.app/Contents/MacOS")
+
+  file(WRITE "${CMAKE_INSTALL_PREFIX}/terraview.app/Contents/MacOS/Assistant.app/Contents/Resources/qt.conf"
+             "[Paths]\nPlugins = plugins")
+
   EXECUTE_PROCESS(COMMAND ln -s ../../../Frameworks Frameworks
                   WORKING_DIRECTORY "${CMAKE_INSTALL_PREFIX}/terraview.app/Contents/MacOS/Assistant.app/Contents")
 
   EXECUTE_PROCESS(COMMAND ln -s ../../../qtplugins plugins
                   WORKING_DIRECTORY "${CMAKE_INSTALL_PREFIX}/terraview.app/Contents/MacOS/Assistant.app/Contents")
+
+  fixup_bundle("${CMAKE_INSTALL_PREFIX}/terraview.app/Contents/MacOS/Assistant.app" "" "${TERRALIB_DIRS}")
 
 endif()

@@ -25,6 +25,10 @@
 
 // TerraLib
 #include "../../../../common/Translator.h"
+#include "../../../../dataaccess/datasource/DataSourceInfoManager.h"
+#include "../../../../dataaccess/query/Expression.h"
+#include "../../../../dataaccess/query/Select.h"
+#include "../../../../dataaccess/query/Where.h"
 #include "../../../../maptools/QueryLayer.h"
 #include "../../../../se/Style.h"
 #include "../../Exception.h"
@@ -33,6 +37,8 @@
 #include "LegendItem.h"
 #include "QueryLayerItem.h"
 
+//Boost
+#include <boost/algorithm/string/replace.hpp>
 
 // STL
 #include <cassert>
@@ -66,6 +72,9 @@ QVariant te::qt::widgets::QueryLayerItem::data(int /*column*/, int role) const
 
   if(role == Qt::CheckStateRole)
     return QVariant(m_layer->getVisibility() == te::map::VISIBLE ? Qt::Checked : Qt::Unchecked);
+
+  if (role == Qt::ToolTipRole)
+    return buildToolTip();
 
   return QVariant();
 }
@@ -156,5 +165,45 @@ bool te::qt::widgets::QueryLayerItem::hasChartItem() const
   return chartItem != 0;
 }
 
+QString te::qt::widgets::QueryLayerItem::buildToolTip() const
+{
+  if (!m_layer->isValid())
+    return tr("Invalid Layer");
 
+  QString toolTip;
+
+  // Gets the connection info
+  const std::string& id = m_layer->getDataSourceId();
+  te::da::DataSourceInfoPtr info = te::da::DataSourceInfoManager::getInstance().get(id);
+  const std::map<std::string, std::string>& connInfo = info->getConnInfo();
+
+  toolTip += tr("Connection Info") + ":\n";
+
+  std::size_t i = 0;
+  std::map<std::string, std::string>::const_iterator it;
+  for (it = connInfo.begin(); it != connInfo.end(); ++it)
+  {
+    toolTip += it->first.c_str();
+    toolTip += ": ";
+    toolTip += it->second.c_str();
+    ++i;
+    if (i != connInfo.size())
+      toolTip += "\n";
+  }
+
+  toolTip += '\n';
+
+  toolTip += tr("SRID: ");
+  toolTip += QString::number(m_layer->getSRID());
+
+  toolTip += '\n';
+
+  //The restriction
+  toolTip += tr("Restriction: ");
+  std::string query = m_layer->getQueryAsString();
+  boost::replace_all(query, ", ", ",\n");
+
+  toolTip += QString::fromStdString(query);
+  return toolTip;
+}
 
