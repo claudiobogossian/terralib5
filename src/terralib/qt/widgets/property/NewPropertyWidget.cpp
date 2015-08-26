@@ -210,7 +210,7 @@ bool te::qt::widgets::NewPropertyWidget::buildProperty()
 
     case te::dt::STRING_TYPE:
     {
-      m_simpleProperty = new te::dt::StringProperty(name, te::dt::STRING, isRequired, new std::string(defaultValue));
+      m_simpleProperty = new te::dt::StringProperty(name, te::dt::STRING, 0, isRequired, new std::string(defaultValue));
       break;
     }
 

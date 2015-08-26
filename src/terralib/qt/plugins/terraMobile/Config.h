@@ -52,6 +52,13 @@
 #define TE_QT_PLUGIN_TERRAMOBILE_HAVE_GATHERINGLAYERCONFIGURER
 
 /*!
+\def TE_QT_PLUGIN_TERRAMOBILE_HAVE_CREATELAYER
+
+\brief It defines if the terra mobile plugin has the create layer operation.
+*/
+#define TE_QT_PLUGIN_TERRAMOBILE_HAVE_CREATELAYER
+
+/*!
   \def TE_QT_PLUGIN_TERRAMOBILE_PLUGIN_NAME
 
   \brief It contains the plugin name.

@@ -42,6 +42,7 @@ namespace te
     {
       namespace terramobile
       {
+        class CreateLayerAction;
         class GeoPackageBuilderAction;
         class GeoPackagePublisherAction;
         class GatheringLayerConfigurerAction;
@@ -81,6 +82,8 @@ namespace te
             te::qt::plugins::terramobile::GeoPackageBuilderAction* m_gpBuider;              //!< GeoPackage Builder Operation Process Action
             te::qt::plugins::terramobile::GeoPackagePublisherAction* m_gpPublisher;         //!< GeoPackage Publisher Operation Process Action
             te::qt::plugins::terramobile::GatheringLayerConfigurerAction* m_glConfiguer;    //!< Gathering Layer Configurer Operation Process Action
+
+            te::qt::plugins::terramobile::CreateLayerAction* m_createLayer;                 //!< Used to create a new layer
         };
 
       } // end namespace thirdParty

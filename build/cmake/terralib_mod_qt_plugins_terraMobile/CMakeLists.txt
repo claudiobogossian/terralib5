@@ -25,6 +25,7 @@
 #
 
 include_directories(${Boost_INCLUDE_DIR})
+include_directories(${GDAL_INCLUDE_DIR})
 
 if(WIN32)
   add_definitions(-DTERRAMOBILEDLL)
@@ -41,6 +42,12 @@ file(GLOB TERRALIB_CORE_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/
 
 source_group("Source Files\\core"  FILES ${TERRALIB_CORE_SRC_FILES})
 source_group("Header Files\\core"  FILES ${TERRALIB_CORE_HDR_FILES})
+
+file(GLOB TERRALIB_CORE_FORM_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/terraMobile/core/form/*.cpp)
+file(GLOB TERRALIB_CORE_FORM_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/terraMobile/core/form/*.h)
+
+source_group("Source Files\\core\\form"  FILES ${TERRALIB_CORE_FORM_SRC_FILES})
+source_group("Header Files\\core\\form"  FILES ${TERRALIB_CORE_FORM_HDR_FILES})
 
 file(GLOB TERRALIB_QT_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/terraMobile/qt/*.cpp)
 file(GLOB TERRALIB_QT_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/plugins/terraMobile/qt/*.h)
@@ -63,13 +70,15 @@ if(Qt5_FOUND)
 				         ${TERRALIB_HDR_FILES} 
 				         ${TERRALIB_CORE_SRC_FILES} 
 				         ${TERRALIB_CORE_HDR_FILES}
+                         ${TERRALIB_CORE_FORM_SRC_FILES} 
+				         ${TERRALIB_CORE_FORM_HDR_FILES}
 				         ${TERRALIB_QT_SRC_FILES} 
 				         ${TERRALIB_QT_HDR_FILES}
 				         ${TERRALIB_GEN_HDR_FILES})
 
   add_library(terralib_mod_qt_plugins_terraMobile SHARED ${TERRALIB_FILES})
 
-  target_link_libraries(terralib_mod_qt_plugins_terraMobile terralib_mod_plugin terralib_mod_qt_apf)
+  target_link_libraries(terralib_mod_qt_plugins_terraMobile terralib_mod_plugin terralib_mod_qt_apf ${GDAL_LIBRARY})
 
   qt5_use_modules(terralib_mod_qt_plugins_terraMobile Widgets)
 endif()

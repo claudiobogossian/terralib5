@@ -26,6 +26,7 @@
 // TerraLib
 #include <terralib/common/Translator.h>
 #include <terralib/common/Logger.h>
+#include <terralib/common/StringUtils.h>
 #include <terralib/qt/af/ApplicationController.h>
 
 #include "Plugin.h"
@@ -42,17 +43,22 @@
 #include "GatheringLayerConfigurerAction.h"
 #endif
 
+#ifdef TE_QT_PLUGIN_TERRAMOBILE_HAVE_CREATELAYER
+#include "CreateLayerAction.h"
+#endif
+
 // QT
 #include <QMenu>
 #include <QMenuBar>
 
-//#include "d:\Workspace\BOEING\gdal\include\ogrsf_frmts.h"
-//#include "d:\Workspace\BOEING\gdal\include\ogr_p.h"
-//#include "d:\Workspace\BOEING\gdal\include\cpl_conv.h"
-//#include "d:\Workspace\BOEING\gdal\include\cpl_string.h"
-//#include "d:\Workspace\BOEING\gdal\include\ogr_api.h"
-//#include "d:\Workspace\BOEING\gdal\include\gdal.h"
-//#include "d:\Workspace\BOEING\gdal\include\gdal_alg.h"
+#include "ogrsf_frmts.h"
+#include "ogr_p.h"
+#include "cpl_conv.h"
+#include "cpl_string.h"
+#include "ogr_api.h"
+#include "gdal.h"
+#include "gdal_alg.h"
+#include "gdal_priv.h"
 
 te::qt::plugins::terramobile::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo)
   : te::plugin::Plugin(pluginInfo), m_menu(0)
@@ -65,25 +71,6 @@ te::qt::plugins::terramobile::Plugin::~Plugin()
 
 void te::qt::plugins::terramobile::Plugin::startup()
 {
-  
-  //std::string version = GDAL_RELEASE_NAME;
-
-  //OGRRegisterAll();
-
-  //OGRSFDriverRegistrar* poR = OGRSFDriverRegistrar::GetRegistrar();
-
-  //for (int iDriver = 0; iDriver < poR->GetDriverCount(); iDriver++)
-  //{
-  //  GDALDriver *poDriver = poR->GetDriver(iDriver);
-
-  //  if (CSLTestBoolean(CSLFetchNameValueDef(poDriver->GetMetadata(), GDAL_DCAP_CREATE, "FALSE")))
-  //    printf("     -f \"%s\"\n", poDriver->GetDescription());
-  //}
-
-
-  //return;
-
-
   if(m_initialized)
     return;
 
@@ -135,6 +122,11 @@ void te::qt::plugins::terramobile::Plugin::registerActions()
   m_glConfiguer = new te::qt::plugins::terramobile::GatheringLayerConfigurerAction(m_menu);
 #endif
 
+#ifdef TE_QT_PLUGIN_TERRAMOBILE_HAVE_CREATELAYER
+  m_menu->addSeparator();
+  m_createLayer = new te::qt::plugins::terramobile::CreateLayerAction(m_menu);
+#endif
+
 }
 
 void  te::qt::plugins::terramobile::Plugin::unRegisterActions()
@@ -150,6 +142,10 @@ void  te::qt::plugins::terramobile::Plugin::unRegisterActions()
 
 #ifdef TE_QT_PLUGIN_TERRAMOBILE_HAVE_GATHERINGLAYERCONFIGURER
   delete m_glConfiguer;
+#endif
+
+#ifdef TE_QT_PLUGIN_TERRAMOBILE_HAVE_CREATELAYER
+  delete m_createLayer;
 #endif
 
 }
