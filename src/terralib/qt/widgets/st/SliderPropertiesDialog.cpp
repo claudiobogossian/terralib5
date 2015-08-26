@@ -80,8 +80,8 @@ te::qt::widgets::SliderPropertiesDialog::SliderPropertiesDialog(QWidget* parent,
   connect(m_ui->m_autoPanCheckBox, SIGNAL(clicked(bool) ), m_tsw, SLOT(onAutoPanCheckBoxClicked(bool)));
   connect(m_ui->m_panFactorDoubleSpinBox, SIGNAL(valueChanged(double) ), m_tsw, SLOT(onPanFactorValueChanged(double)));
   connect(m_ui->m_opacitySpinBox, SIGNAL(valueChanged(int)), m_tsw, SLOT(onOpacityValueChanged(int)));
-  connect(m_ui->m_widthSpinBox, SIGNAL(valueChanged(int)), m_tsw, SLOT(onWidthValueChanged(int)));
-  connect(m_ui->m_heightSpinBox, SIGNAL(valueChanged(int)), m_tsw, SLOT(onHeightValueChanged(int)));
+  connect(m_ui->m_widthSpinBox, SIGNAL(valueChanged(int)), m_tsw, SLOT(onTrajectoryPixmapSizeChanged(int)));
+  connect(m_ui->m_heightSpinBox, SIGNAL(valueChanged(int)), m_tsw, SLOT(onTrajectoryPixmapSizeChanged(int)));
   connect(m_ui->m_forwardRadioButton, SIGNAL(clicked(bool) ), m_tsw, SLOT(onForwardRadioButtonClicked(bool)));
   connect(m_ui->m_backwardRadioButton, SIGNAL(clicked(bool) ), m_tsw, SLOT(onBackwardRadioButtonClicked(bool)));
   connect(m_ui->m_loopCheckBox, SIGNAL(clicked(bool) ), m_tsw, SLOT(onLoopCheckBoxClicked(bool)));

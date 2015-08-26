@@ -181,13 +181,6 @@ namespace te
           */
           void setDuration(const unsigned int& duration);
 
-        /*!
-          \brief It configures automatic pan over a animation path.
-                 It toggles auto pan state.
-          \param title The animation title.
-        */
-          void setAutomaticPan(const QString& title);
-
           /*!
             \brief create new pixmap.
           */
@@ -299,9 +292,10 @@ namespace te
 
         void loadAnimation(const QString& title);
 
-        void removeAnimation(const QString& title);
+        void removeAnimation(const int& ind);
+        //void removeAnimation(const QString& title);
 
-        void removeOnPropertieCombo(const QString& title);
+        //void removeOnPropertieCombo(const QString& title);
 
         bool trajectoryAlreadyExists(QPair<QString, QString>& item);
         bool coverageAlreadyExists(QPair<QString, QString>& item);
@@ -478,9 +472,7 @@ namespace te
           */
           void onResetFinalTimePushButtonClicked();
 
-          void onWidthValueChanged(int);
-
-          void onHeightValueChanged(int);
+          void onTrajectoryPixmapSizeChanged(int);
 
           void dropAction();
 
@@ -522,17 +514,18 @@ namespace te
           QDateTime                                               m_oldQDateTime;             //!< The old Qt date time.
           QDateTime                                               m_oldIQDateTime;            //!< The old initial Qt date time.
           QDateTime                                               m_oldFQDateTime;            //!< The old final Qt date time.
-          bool                                                    m_dateTimeChanged;
+          bool                                                    m_dateTimeChanged;          //!< flag to signal change in animation time.
           int                                                     m_maxSliderValue;           //!< The max slider value.
-          bool                                                    m_finished;
-          bool                                                    m_paused;
+          bool                                                    m_finished;                 //!< flag to signal animation finish. 
+          bool                                                    m_paused;                   //!< flag to signal animation pause. 
           QList<QPair<QString, te::st::TrajectoryDataSetLayer*> > m_trajectoryItemList;       //!< List of all trajectory items (title, layer).
           QList<QPair<QString, QString> >                         m_coverageItemList;         //!< List of all animation items (title, path).
           Qt::KeyboardModifiers                                   m_dropModifiers;            //!< Control pressed to add animation with drag and drop.
           QList<QUrl>                                             m_dropUrls;                 //!< Urls to animation with drag and drop.
           QByteArray                                              m_dropBA;                   //!< Layer animation with drag and drop.
           SliderPropertiesDialog*                                 m_spd;                      //!< Slider Properties Dialog.
-          //QMap<int, AnimationAuxInfo>                             m_auxInfo;                  //!< animation auxiliar information                                        
+          QList<QString>                                          m_animationIdList;          //!< List containing the shadow of m_ui->m_animationComboBox
+          double                                                  m_panFactor;                //!< the range is between 0.002 and 0.5 
       };
     } // end namespace widgets
   }   // end namespace qt

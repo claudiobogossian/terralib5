@@ -74,7 +74,20 @@
          </widget>
         </item>
         <item>
-         <widget class="QSpinBox" name="m_durationSpinBox"/>
+         <widget class="QSpinBox" name="m_durationSpinBox">
+          <property name="minimum">
+           <number>100</number>
+          </property>
+          <property name="maximum">
+           <number>100000000</number>
+          </property>
+          <property name="singleStep">
+           <number>10000</number>
+          </property>
+          <property name="value">
+           <number>10000</number>
+          </property>
+         </widget>
         </item>
         <item>
          <spacer name="horizontalSpacer_2">

@@ -97,11 +97,11 @@ namespace te
         */
         void draw(const int& curTime);
 
-        /*!
-          \brief It configures automatic pan over a trajectory.
-          \param title The trajectory title.
-        */
-        void setAutomaticPan(const QString& title);
+        ///*!
+        //  \brief It configures automatic pan over a trajectory.
+        //  \param title The trajectory title.
+        //*/
+        //void setAutomaticPan(const QString& title);
 
       public:
         te::qt::widgets::MapDisplay* m_display; //!< Indicates where the scene is displayed.
