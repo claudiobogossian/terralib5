@@ -51,9 +51,7 @@ namespace te
       class Animation;
 
       /*!
-        \class TrajectoryItem
-
-        \brief This class is a dialog for the Trajectory Icon Item.
+      \class This class lets to make trajectory animation on the map display.
       */
       class TEQTWIDGETSEXPORT TrajectoryItem : public AnimationItem
       {
@@ -66,11 +64,12 @@ namespace te
           \brief Constructor
           It constructs a Trajectory Icon Item.
           \param title The icon item title.
+          \param id The trajectory layer id.
           \param display Where the icon item is displayed.
           \param file The icon file.
           \param size icon size.
         */
-        TrajectoryItem(const QString& title, te::qt::widgets::MapDisplay* display, const QString& file, const QSize& size);
+        TrajectoryItem(const QString& title, const QString& id, te::qt::widgets::MapDisplay* display, const QString& file, const QSize& size);
 
         /*!
           \brief Destructor
@@ -84,16 +83,17 @@ namespace te
         void paint(QPainter*, const QStyleOptionGraphicsItem*, QWidget*);
 
         /*!
+        \brief It transform coodinates to map display projection coodinates.
+        \param vec Coordinates in native projection.
+        */
+        void transformToDisplayProjection(QVector<QPointF>& vec);
+
+        /*!
           \brief Draw the trajectory long trail. 
           It draws the beginning until the current time.
           The beginning depends on the direction (forward or backward).
         */
         void draw();
-
-        /*!
-          \brief Adjust data for a given time animation period.
-        */
-        void adjustDataToAnimationTemporalExtent();
 
         /*!
           \brief Draw a piece of tracktrajectory trail.
@@ -110,6 +110,13 @@ namespace te
         */
         void erase(const unsigned int& curTime);
 
+        /*!
+          \brief draw tracktrajectory icon.
+
+          \paran painter Painter.
+        */
+        void drawIcon(QPainter* painter);
+
       public:
         QString m_iconFile;       //!< file that generated the pixmap
         QSize m_iconSize;         //!< icon size
@@ -119,6 +126,7 @@ namespace te
         int m_lineWidth;          //!< The route/trail line width in pixels.
         bool m_erasePerfectly;    //!< flag to erase trajectory piece perfectly (default = false).
         QPointF m_posOld;         //!< Auxiliar point
+        QString m_layerId;        //!< trajectory layer Id
       };
     } // end namespace widgets
   }   // end namespace qt

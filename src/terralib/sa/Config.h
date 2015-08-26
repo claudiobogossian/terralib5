@@ -26,9 +26,6 @@
 #ifndef __TERRALIB_SA_CORE_INTERNAL_CONFIG_H
 #define __TERRALIB_SA_CORE_INTERNAL_CONFIG_H
 
-// TerraLib
-#include "../Config.h"
-
 #define TE_SA_MODULE_NAME "te.sa"
 
 /*! Defines the primary key name pk_id used in Generalized Proximity Matrix operation*/

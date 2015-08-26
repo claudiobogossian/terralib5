@@ -31,7 +31,7 @@
 //Terralib
 
 #include "../dataaccess/dataset/DataSet.h"
-#include "../dataaccess/dataset/DataSetType.h"
+#include "../dataaccess/dataset/DataSetTypeConverter.h"
 #include "../dataaccess/datasource/DataSource.h"
 
 #include "../datatype/Property.h"
@@ -66,7 +66,7 @@ namespace te
       
       void setInput(te::da::DataSourcePtr inDsrc,
                     std::string inDsetName,
-                    std::auto_ptr<te::da::DataSetType> inDsetType,
+                    std::auto_ptr<te::da::DataSetTypeConverter> converter,
                     const te::da::ObjectIdSet* oidSet = 0);
 
       void setParams(const double& distance,
@@ -86,7 +86,7 @@ namespace te
       
       te::da::DataSourcePtr m_inDsrc;
       std::string m_inDsetName;
-      std::auto_ptr<te::da::DataSetType> m_inDsetType;
+      std::auto_ptr<te::da::DataSetTypeConverter> m_converter;
       const te::da::ObjectIdSet* m_oidSet;
       
       double m_distance;

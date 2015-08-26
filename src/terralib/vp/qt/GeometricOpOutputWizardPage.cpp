@@ -154,7 +154,7 @@ te::vp::GeometricOpObjStrategy te::vp::GeometricOpOutputWizardPage::getObjectStr
 
 bool te::vp::GeometricOpOutputWizardPage::hasOutputLayer()
 {
-  return m_ui->m_outputGroupBox->isChecked();
+  return true;
 }
 
 std::string te::vp::GeometricOpOutputWizardPage::getOutDsName()
@@ -214,7 +214,7 @@ void te::vp::GeometricOpOutputWizardPage::onTargetDatasourceToolButtonPressed()
 
   std::list<te::da::DataSourceInfoPtr> dsPtrList = dlg.getSelecteds();
 
-  if(dsPtrList.size() <= 0)
+  if(dsPtrList.empty())
     return;
 
   std::list<te::da::DataSourceInfoPtr>::iterator it = dsPtrList.begin();

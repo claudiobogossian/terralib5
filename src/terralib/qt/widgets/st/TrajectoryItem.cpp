@@ -13,14 +13,15 @@
 #include <QtCore/QMutex>
 
 
-te::qt::widgets::TrajectoryItem::TrajectoryItem(const QString& title, te::qt::widgets::MapDisplay* display, const QString& file, const QSize& size)
+te::qt::widgets::TrajectoryItem::TrajectoryItem(const QString& title, const QString& id, te::qt::widgets::MapDisplay* display, const QString& file, const QSize& size)
   : te::qt::widgets::AnimationItem(title, display),
     m_iconFile(file),
     m_iconSize(size),
     m_drawTrail(true),
     m_forwardColor(Qt::blue),
     m_backwardColor(Qt::magenta),
-    m_lineWidth(2)
+    m_lineWidth(2),
+    m_layerId(id)
 {
   if(m_iconSize.isValid() == false)
     m_iconSize = QSize(20, 20);
@@ -52,33 +53,11 @@ te::qt::widgets::TrajectoryItem::TrajectoryItem(const QString& title, te::qt::wi
     painter.end();
     setPixmap(pix);
   }
-  //setMatrix();
 }
 
 te::qt::widgets::TrajectoryItem::~TrajectoryItem()
 {
 }
-
-void te::qt::widgets::TrajectoryItem::adjustDataToAnimationTemporalExtent()
-{
-  te::qt::widgets::AnimationItem::adjustDataToAnimationTemporalExtent();
-}
-
-//void te::qt::widgets::TrajectoryItem::transformToDisplayProjection(QVector<QPointF>& vec)
-//{
-//  if (m_display->getSRID() != TE_UNKNOWN_SRS && m_display->getSRID() != m_SRID)
-//  {
-//    size_t size = vec.count();
-//    te::gm::LineString* line = new te::gm::LineString(size, te::gm::LineStringType, m_SRID);
-//    for (size_t i = 0; i < size; ++i)
-//      line->setPoint(i, vec[(int)i].x(), vec[(int)i].y());
-//    line->transform(m_display->getSRID());
-//
-//    vec.clear();
-//    for (size_t i = 0; i < size; ++i)
-//      vec.push_back(QPointF(line->getPointN(i)->getX(), line->getPointN(i)->getY()));
-//  }
-//}
 
 void te::qt::widgets::TrajectoryItem::paint(QPainter*, const QStyleOptionGraphicsItem*, QWidget*) 
 {
@@ -169,16 +148,32 @@ void te::qt::widgets::TrajectoryItem::paint(QPainter*, const QStyleOptionGraphic
   m_display->update();
 }
 
+void te::qt::widgets::TrajectoryItem::transformToDisplayProjection(QVector<QPointF>& vec)
+{
+  if (m_display->getSRID() != TE_UNKNOWN_SRS && m_display->getSRID() != m_SRID)
+  {
+    size_t size = vec.count();
+    te::gm::LineString line(size, te::gm::LineStringType, m_SRID);
+    for (size_t i = 0; i < size; ++i)
+      line.setPoint(i, vec[(int)i].x(), vec[(int)i].y());
+    line.transform(m_display->getSRID());
+
+    vec.clear();
+    for (size_t i = 0; i < size; ++i)
+      vec.push_back(QPointF(line.getPointN(i)->getX(), line.getPointN(i)->getY()));
+  }
+}
+
 void te::qt::widgets::TrajectoryItem::drawForward(const unsigned int& curTime)
 {
   if(m_animationRoute.empty())
     return;
 
-  //setMatrix();
-
   int indold = m_animation->getAnimationDataIndex((double)m_curTimeDuration / (double)m_duration);
   int ind = m_animation->getAnimationDataIndex((double)curTime / (double)m_duration);
   m_curTimeDuration = curTime;
+  if (ind == -1 || indold == -1)
+    return;
 
   QVector<QPointF> vec;
 
@@ -235,11 +230,11 @@ void te::qt::widgets::TrajectoryItem::erase(const unsigned int& curTime)
   if(m_animationRoute.empty())
     return;
 
-  //setMatrix();
-
   int indold = m_animation->getAnimationDataIndex((double)m_curTimeDuration / (double)m_duration);
   int ind = m_animation->getAnimationDataIndex((double)curTime / (double)m_duration);
   m_curTimeDuration = curTime;
+  if (ind == -1 || indold == -1)
+    return;
 
   QVector<QPointF> vec;
   if(indold == ind)
@@ -292,7 +287,10 @@ void te::qt::widgets::TrajectoryItem::draw()
   if(m_animationRoute.empty())
     return;
 
-  //setMatrix();
+  int ind = m_animation->getAnimationDataIndex((double)m_curTimeDuration / (double)m_duration);
+  if (ind == -1)
+    return;
+
   int w = m_display->getDisplayPixmap()->width();
   int h = m_display->getDisplayPixmap()->height();
   te::qt::widgets::Canvas canvas(w, h);
@@ -302,7 +300,6 @@ void te::qt::widgets::TrajectoryItem::draw()
   m_matrix = canvas.getMatrix();
 
   int count = m_animationRoute.size();
-  int ind = m_animation->getAnimationDataIndex((double)m_curTimeDuration / (double)m_duration);
 
   QVector<QPointF> vec;
   if(m_animation->direction() == QAbstractAnimation::Forward)
@@ -356,4 +353,62 @@ void te::qt::widgets::TrajectoryItem::draw()
     as->m_mutex.unlock();
   }
   m_display->update();
+}
+
+void te::qt::widgets::TrajectoryItem::drawIcon(QPainter* painter)
+{
+  QPoint p = getPosInDeviceCoordinate();
+  QRect r = pixmap().rect();
+  r.moveCenter(p);
+  QRect dr = m_display->rect();
+  if (dr.intersects(r))
+  {
+    QPoint pos(r.topLeft());
+    if (m_opacity == 255)
+      painter->drawPixmap(pos, pixmap());
+    else
+    {
+      QSize size = pixmap().size();
+      int width = size.width();
+      int height = size.height();
+      QImage ima = pixmap().toImage();
+
+      if (ima.format() == QImage::Format_ARGB32)
+      {
+        for (int i = 0; i < height; ++i)
+        {
+          unsigned char* u = ima.scanLine(i);
+          for (int j = 0; j < width; ++j)
+          {
+            QRgb* v = (QRgb*)(u + (j << 2));
+            if (qAlpha(*v) < 50)
+              *v = qRgba(255, 255, 255, 0);
+            else
+              *v = qRgba(qRed(*v), qGreen(*v), qBlue(*v), m_opacity);
+          }
+        }
+        painter->drawImage(pos, ima);
+      }
+      else
+      {
+        QImage img(size, QImage::Format_ARGB32);
+        for (int i = 0; i < height; ++i)
+        {
+          unsigned char* u = ima.scanLine(i);
+          unsigned char* uu = img.scanLine(i);
+
+          for (int j = 0; j < width; ++j)
+          {
+            QRgb* v = (QRgb*)(u + (j << 2));
+            QRgb* uv = (QRgb*)(uu + (j << 2));
+            if (qAlpha(*v) < 50)
+              *uv = qRgba(255, 255, 255, 0);
+            else
+              *uv = qRgba(qRed(*v), qGreen(*v), qBlue(*v), m_opacity);
+          }
+        }
+        painter->drawImage(pos, img);
+      }
+    }
+  }
 }

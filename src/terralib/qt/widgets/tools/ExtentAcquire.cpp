@@ -72,7 +72,7 @@ bool te::qt::widgets::ExtentAcquire::mouseReleaseEvent(QMouseEvent* e)
 
   if(m_rect.isNull()) // Zoom by click
   {
-    QRect displayRect = m_display->rect();
+    //QRect displayRect = m_display->rect();
     m_rect.moveCenter(m_origin);
   }
 

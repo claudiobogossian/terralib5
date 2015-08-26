@@ -28,7 +28,7 @@
 
 #include <terralib/common.h>
 #include <terralib/plugin.h>
-#include <terralib/Config.h>
+#include <terralib/BuildConfig.h>
 
 /*!
   \brief Load TerraLib modules.

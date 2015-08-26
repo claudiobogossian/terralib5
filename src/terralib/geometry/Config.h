@@ -26,9 +26,6 @@
 #ifndef __TERRALIB_GEOMETRY_INTERNAL_CONFIG_H
 #define __TERRALIB_GEOMETRY_INTERNAL_CONFIG_H
 
-// TerraLib
-#include "../Config.h"
-
 #define TE_GEOMETRY_MODULE_NAME "te.geometry"
 
 /** @name GEOS Config

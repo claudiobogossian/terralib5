@@ -266,8 +266,16 @@ std::auto_ptr<te::da::DataSet> GetDataSet(const te::map::AbstractLayer* layer, c
   {
     const te::map::QueryLayer* l = dynamic_cast<const te::map::QueryLayer*>(layer);
 
-    if(l != 0)
+    if (l != 0)
+    {
       query.reset(new te::da::Select(l->getQuery()));
+      te::da::OrderBy* order_by = new te::da::OrderBy();
+
+      for (size_t i = 0; i<colsNames.size(); i++)
+        order_by->push_back(std::auto_ptr<te::da::OrderByItem>(new te::da::OrderByItem(colsNames[i], (asc) ? te::da::ASC : te::da::DESC)));
+
+      query->setOrderBy(order_by);
+    }
   }
   else if(layer->getType() == "OBSERVATIONDATASETLAYER")
   {
@@ -899,6 +907,7 @@ void te::qt::widgets::DataSetTableView::setLayer(te::map::AbstractLayer* layer, 
   te::da::DataSourcePtr dsc = GetDataSource(m_layer);
 
   setDataSet(GetDataSet(m_layer, m_orderby, m_orderAsc).release(), dsc->getEncoding(), clearEditor);
+
   setLayerSchema(sch.get());
 
   te::da::DataSetTypeCapabilities* caps = GetCapabilities(m_layer);
@@ -1011,7 +1020,7 @@ void te::qt::widgets::DataSetTableView::createHistogram(const int& column)
 
   int res = dialog->exec();
   if (res == QDialog::Accepted)
-    emit createChartDisplay(te::qt::widgets::createHistogramDisplay(dataset,dataType, column, histogramWidget->getHistogram()));
+    emit createChartDisplay(te::qt::widgets::createHistogramDisplay(dataset, dataType, column, histogramWidget->getSummaryFunction(), histogramWidget->getHistogram()));
 
   delete dialog;
 }

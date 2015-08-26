@@ -26,9 +26,6 @@
 #ifndef __TERRALIB_RASTER_INTERNAL_CONFIG_H
 #define __TERRALIB_RASTER_INTERNAL_CONFIG_H
 
-// TerraLib
-#include "../Config.h"
-
 #define TE_RASTER_MODULE_NAME "te.raster"
 
 #define TE_DEFAULT_RASTER_TYPE "GDAL"

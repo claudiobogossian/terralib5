@@ -76,7 +76,7 @@ void PostGISExample()
 
 // it adds an integer property called 'population' to the given dataset type
     std::cout << std::endl << "Adding new Property population to " << dt_name << std::endl;
-    te::dt::SimpleProperty* p = AddProperty(datasetType->getName(), transactor.get());
+    /*te::dt::SimpleProperty* p = */AddProperty(datasetType->getName(), transactor.get());
 
 // Now, let's  remove things from the data source using transactor or function DroppingDataSetTypeProperty
     // first, drop the recently added property
@@ -86,7 +86,7 @@ void PostGISExample()
 
 // Now, let´s it add again an integer property called 'population' to the given dataset type and drop it using ds
     std::cout << std::endl << "Adding new Property population to " << dt_name << std::endl;
-    te::dt::SimpleProperty* p1 = AddProperty(datasetType->getName(), transactor.get());
+    /*te::dt::SimpleProperty* p1 = */AddProperty(datasetType->getName(), transactor.get());
 // Dropping using ds api   
     ds->dropProperty(dt_name, "population");
 
@@ -109,7 +109,7 @@ void PostGISExample()
     //release and delete transactor before closing ds, otherwise as it is auto_ptr -tenta destruir denovo e cai.
     delete transactor.release(); 
     ds->close(); 
-    int i =1;
+    //int i =1;
   }
   catch(const std::exception& e)
   {

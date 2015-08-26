@@ -31,7 +31,7 @@
 //Terralib
 
 #include "../dataaccess/dataset/DataSet.h"
-#include "../dataaccess/dataset/DataSetType.h"
+#include "../dataaccess/dataset/DataSetTypeConverter.h"
 #include "../dataaccess/datasource/DataSource.h"
 
 #include "../datatype/Property.h"
@@ -66,7 +66,7 @@ namespace te
       
       void setInput(te::da::DataSourcePtr inDsrc,
                     std::string inDsetName,
-                    std::auto_ptr<te::da::DataSetType> inDsetType);
+                    std::auto_ptr<te::da::DataSetTypeConverter> converter);
       
       void setParams(std::vector<std::string> selectedProps, 
                     std::vector<te::vp::GeometricOperation> operations,
@@ -86,7 +86,7 @@ namespace te
 
       te::da::DataSourcePtr m_inDsrc;
       std::string m_inDsetName;
-      std::auto_ptr<te::da::DataSetType> m_inDsetType;
+      std::auto_ptr<te::da::DataSetTypeConverter> m_converter;
 
       std::vector<std::string> m_selectedProps;
       std::vector<te::vp::GeometricOperation> m_operations;

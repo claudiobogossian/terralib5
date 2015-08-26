@@ -24,13 +24,14 @@
 */
 
 //Terralib
-#include "terralib_config.h"
+#include "../BuildConfig.h"
 
 #include "../common/progress/TaskProgress.h"
 #include "../common/Logger.h"
 #include "../common/Translator.h"
 
 #include "../dataaccess/dataset/DataSet.h"
+#include "../dataaccess/dataset/DataSetAdapter.h"
 #include "../dataaccess/utils/Utils.h"
 #include "../datatype/Property.h"
 #include "../datatype/SimpleProperty.h"
@@ -259,7 +260,10 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAllObjects( te::da::DataSetType*
   std::auto_ptr<te::mem::DataSet> outDSet(new te::mem::DataSet(dsType));
   
   int pk = 0;
-  std::auto_ptr<te::da::DataSet> inDset = m_inDsrc->getDataSet(m_inDsetName);
+  
+  std::auto_ptr<te::da::DataSet> inDsetSrc = m_inDsrc->getDataSet(m_inDsetName);
+  std::auto_ptr<te::da::DataSetAdapter> inDset(te::da::CreateAdapter(inDsetSrc.get(), m_converter.get()));
+  
   inDset->moveBeforeFirst();
   
   std::size_t geom_pos = te::da::GetFirstSpatialPropertyPos(inDset.get());
@@ -433,7 +437,10 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAggregObj(te::da::DataSetType* d
   std::auto_ptr<te::mem::DataSet> outDSet(new te::mem::DataSet(dsType));
 
   int pk = 0;
-  std::auto_ptr<te::da::DataSet> inDset = m_inDsrc->getDataSet(m_inDsetName);
+
+  std::auto_ptr<te::da::DataSet> inDsetSrc = m_inDsrc->getDataSet(m_inDsetName);
+  std::auto_ptr<te::da::DataSetAdapter> inDset(te::da::CreateAdapter(inDsetSrc.get(), m_converter.get()));
+
   std::size_t geom_pos = te::da::GetFirstSpatialPropertyPos(inDset.get());
   // move first to take a seed geom.
   inDset->moveFirst();
@@ -596,9 +603,10 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAggregByAttribute(te::da::DataSe
 {
   std::map<std::string, te::gm::Geometry*> geometries;
 
-  std::auto_ptr<te::da::DataSet> inDset = m_inDsrc->getDataSet(m_inDsetName);
+  std::auto_ptr<te::da::DataSet> inDsetSrc = m_inDsrc->getDataSet(m_inDsetName);
+  std::auto_ptr<te::da::DataSetAdapter> inDset(te::da::CreateAdapter(inDsetSrc.get(), m_converter.get()));
 
-  te::gm::GeometryProperty* propGeom = static_cast<te::gm::GeometryProperty*>(m_inDsetType->findFirstPropertyOfType(te::dt::GEOMETRY_TYPE));
+  te::gm::GeometryProperty* propGeom = static_cast<te::gm::GeometryProperty*>(m_converter->getResult()->findFirstPropertyOfType(te::dt::GEOMETRY_TYPE));
   std::size_t geom_pos = te::da::GetFirstSpatialPropertyPos(inDset.get());
 
   // move first to take a seed geom.
@@ -668,14 +676,14 @@ te::mem::DataSet* te::vp::GeometricOpMemory::SetAggregByAttribute(te::da::DataSe
     // inserting the id in dataSet.
     outItem->setInt32(0, i);
     // inserting aggregated attribute.
-    te::dt::Property* prop = m_inDsetType->getProperty(m_attribute);
+    te::dt::Property* prop = m_converter->getResult()->getProperty(m_attribute);
     switch(prop->getType())
     {
       case te::dt::STRING_TYPE:
           outItem->setString(1, itGeom->first);
           break;
       case te::dt::INT16_TYPE:
-          outItem->setInt16(1, boost::lexical_cast<int>(itGeom->first));
+          outItem->setInt16(1, boost::lexical_cast<int16_t>(itGeom->first));
           break;
       case te::dt::INT32_TYPE:
           outItem->setInt32(1, boost::lexical_cast<int>(itGeom->first));

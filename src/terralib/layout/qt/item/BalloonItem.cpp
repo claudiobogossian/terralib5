@@ -98,8 +98,8 @@ void te::layout::BalloonItem::drawBalloon( QPainter* painter )
   double x = m_endPoint.x();
   double y = m_endPoint.y();
 
-  double centerX = boundRect.center().x();
-  double centerY = boundRect.center().y();
+  //double centerX = boundRect.center().x();
+  //double centerY = boundRect.center().y();
 
   // to draw the point part that indicates who is speaking  
   QPolygonF poly;

@@ -30,6 +30,7 @@
 
 //Terralib
 #include "../dataaccess/dataset/DataSetType.h"
+#include "../dataaccess/dataset/DataSetTypeConverter.h"
 #include "../dataaccess/dataset/ObjectIdSet.h"
 #include "../dataaccess/datasource/DataSource.h"
 
@@ -57,6 +58,7 @@ namespace te
       
       void setInput(te::da::DataSourcePtr inDsrc,
                     std::string inDsetName,
+                    std::auto_ptr<te::da::DataSetTypeConverter> converter,
                     const te::da::ObjectIdSet* oidSet = 0);
 
       void setOutput(te::da::DataSourcePtr outDsrc, std::string dsname);
@@ -69,6 +71,7 @@ namespace te
       
       te::da::DataSourcePtr m_inDsrc;
       std::string m_inDsetName;
+      std::auto_ptr<te::da::DataSetTypeConverter> m_converter;
       const te::da::ObjectIdSet* m_oidSet;
 
       te::da::DataSourcePtr m_outDsrc;

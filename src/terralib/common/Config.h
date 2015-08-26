@@ -28,9 +28,6 @@
 #ifndef __TERRALIB_COMMON_INTERNAL_CONFIG_H
 #define __TERRALIB_COMMON_INTERNAL_CONFIG_H
 
-// TerraLib
-#include "../Config.h"
-
 #define TE_COMMON_MODULE_NAME "te.common"
 
 #define TE_PROTOCOL_DEFAULT_PORTS_FILE "protocol/protocolPorts.txt"

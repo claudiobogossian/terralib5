@@ -22,6 +22,8 @@
  */
 
 // Terralib
+#include "../common/StringUtils.h"
+
 #include "../datatype/Enums.h"
 #include "../datatype/Property.h"
 
@@ -33,8 +35,8 @@
 // STL
 #include <vector>
 
-te::vp::LineToPolygonOp::LineToPolygonOp():
-  m_outDset("")
+te::vp::LineToPolygonOp::LineToPolygonOp()
+  : m_oidSet(0)
 {
 }
 
@@ -54,10 +56,12 @@ bool te::vp::LineToPolygonOp::paramsAreValid()
 
 void te::vp::LineToPolygonOp::setInput(te::da::DataSourcePtr inDsrc,
                                      std::string inDsetName,
+                                     std::auto_ptr<te::da::DataSetTypeConverter> converter,
                                      const te::da::ObjectIdSet* oidSet)
 {
   m_inDsrc = inDsrc;
   m_inDsetName = inDsetName;
+  m_converter = converter;
   m_oidSet = oidSet;
 }
 
@@ -69,14 +73,13 @@ void te::vp::LineToPolygonOp::setOutput(te::da::DataSourcePtr outDsrc, std::stri
 
 std::auto_ptr<te::da::DataSetType> te::vp::LineToPolygonOp::buildOutDataSetType()
 {
-  std::auto_ptr<te::da::DataSetType> inDsType = m_inDsrc->getDataSetType(m_inDsetName);
   std::auto_ptr<te::da::DataSetType> outDsType(new te::da::DataSetType(m_outDset));
 
   std::string dSourceType = m_outDsrc->getType();
 
-  std::vector<te::dt::Property*> vecProps = inDsType->getProperties();
+  std::vector<te::dt::Property*> vecProps = m_converter->getResult()->getProperties();
 
-  std::vector<te::dt::Property*> inPk = inDsType->getPrimaryKey()->getProperties();
+  std::vector<te::dt::Property*> inPk = m_converter->getResult()->getPrimaryKey()->getProperties();
   std::string namePk = m_outDset;
 
   for (std::size_t p = 0; p < inPk.size(); ++p)
@@ -126,9 +129,10 @@ std::auto_ptr<te::da::DataSetType> te::vp::LineToPolygonOp::buildOutDataSetType(
         outDsType->add(outGeom);
       }
     }
+    outDsType->setPrimaryKey(pk);
   }
 
-  outDsType->setPrimaryKey(pk);
+  
 
   return outDsType;
 }

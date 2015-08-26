@@ -46,7 +46,7 @@ te::qt::plugins::vp::SummarizationAction::~SummarizationAction()
 {
 }
 
-void te::qt::plugins::vp::SummarizationAction::onActionActivated(bool checked)
+void te::qt::plugins::vp::SummarizationAction::onActionActivated(bool)
 {
   te::vp::SummarizationDialog dlg(0);
 

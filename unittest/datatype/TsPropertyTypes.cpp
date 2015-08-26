@@ -192,7 +192,7 @@ void TsPropertyTypes::tcSimpleProperty()
   CPPUNIT_ASSERT(sp16.getName() == "attribute_int");
   CPPUNIT_ASSERT(sp16.isAutoNumber() == false);
   CPPUNIT_ASSERT(sp16.isRequired() == true);
-  std::string* res = sp16.getDefaultValue();
+  //std::string* res = sp16.getDefaultValue();
   CPPUNIT_ASSERT(*sp16.getDefaultValue()  == "25");
   CPPUNIT_ASSERT(sp16.getId() == 1);
   CPPUNIT_ASSERT(sp16.getParent() == 0);
@@ -362,8 +362,8 @@ void TsPropertyTypes::tcCompositeProperty()
   CPPUNIT_ASSERT(composite_type.getPropertyPosition("attribute_var_unlimited_string") == 4 );
   CPPUNIT_ASSERT(composite_type.getPropertyPosition("attribute_int_serial") == 5 );
 
-  te::dt::NumericProperty* auxp = static_cast<te::dt::NumericProperty*>(composite_type.getProperty("attribute_numeric"));
-  unsigned int i = auxp->getId(); 
+  //te::dt::NumericProperty* auxp = static_cast<te::dt::NumericProperty*>(composite_type.getProperty("attribute_numeric"));
+  //unsigned int i = auxp->getId();
   CPPUNIT_ASSERT(static_cast<te::dt::NumericProperty*>(composite_type.getProperty("attribute_numeric"))->getId() == num_prop->getId() );
   CPPUNIT_ASSERT(composite_type.getPropertyPosition(num_prop) == 0 );
   CPPUNIT_ASSERT(static_cast<te::dt::NumericProperty*>(composite_type.getPropertyById(1))->getName() == num_prop->getName() );
@@ -374,7 +374,7 @@ void TsPropertyTypes::tcCompositeProperty()
   CPPUNIT_ASSERT(composite_type.getProperty("attribute_int") == 0);
 
   // Finding properties
-  te::dt::Property* firstp = composite_type.findFirstPropertyOfType(te::dt::GEOMETRY_TYPE);
+  //te::dt::Property* firstp = composite_type.findFirstPropertyOfType(te::dt::GEOMETRY_TYPE);
   CPPUNIT_ASSERT(composite_type.hasPropertyOfType(te::dt::INT32_TYPE));  //"attribute_int_serial"
   CPPUNIT_ASSERT((composite_type.findFirstPropertyOfType(te::dt::INT32_TYPE))->getName() == "attribute_int_serial");
   CPPUNIT_ASSERT((composite_type.findFirstPropertyOfType(te::dt::NUMERIC_TYPE))->getName() == "attribute_numeric");
@@ -448,7 +448,7 @@ void TsPropertyTypes::tcBitProperty()
 
   bitp.setNumBits(2);
   bitp.setDefaultValue(new std::string("11"));
-  std::string* def = bitp.getDefaultValue();
+  //std::string* def = bitp.getDefaultValue();
   CPPUNIT_ASSERT(*(bitp.getDefaultValue()) == "11");
   CPPUNIT_ASSERT(bitp.numBits() == 2);
 
@@ -482,7 +482,7 @@ void TsPropertyTypes::tcArrayProperty()
   te::dt::BitProperty* bitp= new te::dt::BitProperty("attr_bit");
   te::dt::ArrayProperty arrb("attr_array", bitp, false,0,23,0);
   te::dt::ArrayProperty arrb_copy(arrb);
-  te::dt::ArrayProperty* arrb_clone = static_cast<te::dt::ArrayProperty*>(arrb_copy.clone());
+  //te::dt::ArrayProperty* arrb_clone = static_cast<te::dt::ArrayProperty*>(arrb_copy.clone());
 
   CPPUNIT_ASSERT(arrb.getType() == te::dt::ARRAY_TYPE );
   CPPUNIT_ASSERT(arrb.getName() == "attr_array");
@@ -530,7 +530,7 @@ void TsPropertyTypes::tcRasterProperty()
   std::map<std::string, std::string> rinfo;
 
   // property name is empty in this constructor
-  te::rst::RasterProperty* rstp = new te::rst::RasterProperty(grid, bprops, rinfo);
+  //te::rst::RasterProperty* rstp = new te::rst::RasterProperty(grid, bprops, rinfo);
    
   te::rst::RasterProperty rs_grid(grid, bprops, rinfo);
 
@@ -599,7 +599,7 @@ void TsPropertyTypes::tcRasterPropertyClone()
 */
   // clone 
   te::rst::RasterProperty* rstp_clone = static_cast<te::rst::RasterProperty*>(rstp->clone());
-  te::rst::RasterProperty* rstp_clone1 = static_cast<te::rst::RasterProperty*>(rs_grid.clone());
+  //te::rst::RasterProperty* rstp_clone1 = static_cast<te::rst::RasterProperty*>(rs_grid.clone());
 
   CPPUNIT_ASSERT(rstp_clone->getType() == te::dt::RASTER_TYPE);
   CPPUNIT_ASSERT(rstp_clone->getName() == "");

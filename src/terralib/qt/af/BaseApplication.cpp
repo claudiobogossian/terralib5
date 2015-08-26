@@ -79,6 +79,7 @@
 #include "../widgets/tools/Selection.h"
 #include "../widgets/tools/ZoomArea.h"
 #include "../widgets/tools/ZoomClick.h"
+#include "../widgets/utils/ScopedCursor.h"
 #include "../widgets/srs/SRSManagerDialog.h"
 #include "../widgets/vector/FixGeometryDialog.h"
 #include "connectors/ChartDisplayDockWidget.h"
@@ -144,7 +145,7 @@ void CloseAllTables(std::vector<te::qt::af::DataSetTableDockWidget*>& tables)
 {
   std::vector<te::qt::af::DataSetTableDockWidget*>::iterator it;
 
-  for(it=tables.begin(); it!=tables.end(); ++it)
+  for (it = tables.begin(); it != tables.end(); ++it)
     (*it)->close();
 
   tables.clear();
@@ -210,26 +211,19 @@ te::qt::af::BaseApplication::BaseApplication(QWidget* parent)
 
 te::qt::af::BaseApplication::~BaseApplication()
 {
+// save application window geometry
   te::qt::af::SaveState(this);
 
-  while(!m_tableDocks.empty())
+// release data tables
+  while (!m_tableDocks.empty())
     delete *m_tableDocks.begin();
 
-  std::list<te::map::AbstractLayerPtr> ept;
 
-  m_project->setTopLayers(ept);
-
-  m_explorer->getExplorer()->set(ept);
-
-  delete m_display->getDisplay();
-
-  te::qt::af::ApplicationController::getInstance().finalize();
-
+// ????
   if(m_iController)
     m_iController->removeInteface(m_queryDlg);
 
-  delete m_explorer->getExplorer();
-
+// ??
   delete m_iController;
   delete m_styleExplorer;
   delete m_queryDlg;
@@ -237,11 +231,22 @@ te::qt::af::BaseApplication::~BaseApplication()
   delete m_progressDockWidget;
   delete m_zoomInDisplaysDockWidget;
   delete m_eyeBirdDisplaysDockWidget;
-
+  
+// first release real LayerExplorer, then release its connector => NOTE: LayerExplorer connector doesn't release its real implementation on destructor!
+  delete m_explorer->getExplorer();
+  //delete m_explorer; // m_explorer is a child of m_explorer->getExplorer(): it will got killed also!
+  m_explorer = 0;
+  
+// release MapDisplay connector: this will automaticallly destroy rhe real MapDisplay
+  delete m_display;
+  m_display = 0;
+  
+// releasing projects
   delete m_project;
+  m_project = 0;
 
-  while(!m_tableDocks.empty())
-    delete *m_tableDocks.begin();
+// ok: know let's finalize the controller
+  te::qt::af::ApplicationController::getInstance().finalize();
 
   te::common::ProgressManager::getInstance().clearAll();
 }
@@ -903,9 +908,7 @@ void te::qt::af::BaseApplication::onSaveProjectTriggered()
   // Set the project title and its status as "no change"
   //std::string projectTitle = boost::filesystem::basename(m_project->getFileName());
   //m_project->setTitle(projectTitle);
-  
-  m_project->setProjectAsChanged(false);
-  
+
   XMLFormatter::format(m_project, true);
   XMLFormatter::formatDataSourceInfos(true);
 
@@ -921,6 +924,8 @@ void te::qt::af::BaseApplication::onSaveProjectTriggered()
 
   XMLFormatter::format(m_project, false);
   XMLFormatter::formatDataSourceInfos(false);
+
+  m_project->setProjectAsChanged(false);
 }
 
 void te::qt::af::BaseApplication::onSaveProjectAsTriggered()
@@ -952,8 +957,6 @@ void te::qt::af::BaseApplication::onSaveProjectAsTriggered()
   // Set the project title and its status as "no change"
   //std::string projectTitle = boost::filesystem::basename(m_project->getFileName());
   //m_project->setTitle(projectTitle);
-  
-  m_project->setProjectAsChanged(false);
 
   // Set the window title
   setWindowTitle(te::qt::af::GetWindowTitle(*m_project));
@@ -962,6 +965,8 @@ void te::qt::af::BaseApplication::onSaveProjectAsTriggered()
 
   XMLFormatter::format(m_project, true);
   XMLFormatter::formatDataSourceInfos(true);
+
+  m_project->setProjectAsChanged(false);
 }
 
 void te::qt::af::BaseApplication::onRestartSystemTriggered()
@@ -1196,6 +1201,8 @@ void te::qt::af::BaseApplication::onLayerPropertiesTriggered()
 
 void te::qt::af::BaseApplication::onLayerRemoveSelectionTriggered()
 {
+  te::qt::widgets::ScopedCursor cursor(Qt::WaitCursor);
+
   std::list<te::map::AbstractLayerPtr> layers =  m_explorer->getExplorer()->getSelectedSingleLayers();
 
   if(layers.empty())
@@ -2024,6 +2031,7 @@ void te::qt::af::BaseApplication::onInfoToggled(bool checked)
 
 void te::qt::af::BaseApplication::onMapRemoveSelectionTriggered()
 {
+
   //std::list<te::map::AbstractLayerPtr> layers = m_explorer->getExplorer()->getAllLayers();
   std::list<te::map::AbstractLayerPtr> layers = te::qt::af::ApplicationController::getInstance().getProject()->getAllLayers(false);
   std::list<te::map::AbstractLayerPtr>::iterator it = layers.begin();
@@ -2107,7 +2115,7 @@ void te::qt::af::BaseApplication::onLayerTableClose(te::qt::af::DataSetTableDock
     if(*it == wid)
       break;
 
-  if(it != m_tableDocks.end())
+  if (it != m_tableDocks.end())
     m_tableDocks.erase(it);
 
   if(m_tableDocks.empty())
@@ -2255,6 +2263,7 @@ void te::qt::af::BaseApplication::openProject(const QString& projectFileName)
     {
       QApplication::restoreOverrideCursor();
       QMessageBox::critical(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), (boost::format(TE_TR("This project could not be found: %1%.")) % projectFileName.toStdString()).str().c_str());
+      newProject();
       return;
     }
 
