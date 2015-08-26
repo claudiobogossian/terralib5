@@ -55,7 +55,7 @@ namespace te
     */
     template<class T>
     bool GetDeterminant(const boost::numeric::ublas::matrix<T>& inputMatrix,
-      double& determinant)
+      T& determinant)
     {
       if( ( inputMatrix.size1() == 0 ) || ( inputMatrix.size2() == 0 ) )
       {
@@ -66,7 +66,7 @@ namespace te
       // create a working copy of the input
       boost::numeric::ublas::matrix<T> A( inputMatrix );      
       
-      const unsigned int size1 = A.size1();
+      const unsigned int size1 = (unsigned int)A.size1();
       
       boost::numeric::ublas::permutation_matrix<std::size_t> pm( size1 );
       

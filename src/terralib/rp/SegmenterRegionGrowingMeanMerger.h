@@ -46,7 +46,7 @@ namespace te
         ~SegmenterRegionGrowingMeanMerger();
             
         //overload        
-        SegmenterRegionGrowingSegment< rg::MeanFeatureType >::FeatureType
+        DissimilarityTypeT
           getDissimilarity( SegmenterRegionGrowingSegment< rg::MeanFeatureType > const * const segment1Ptr, 
             SegmenterRegionGrowingSegment< rg::MeanFeatureType > const * const segment2Ptr, 
             SegmenterRegionGrowingSegment< rg::MeanFeatureType > * const mergePreviewSegPtr ) const;

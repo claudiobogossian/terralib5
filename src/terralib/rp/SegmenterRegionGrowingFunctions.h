@@ -107,7 +107,7 @@ namespace te
       */
       template< typename FeatureDataTypeT >
       void mergeSegments( SegmentsIdsMatrixT& segmentsIds,
-        const FeatureDataTypeT disimilarityThreshold,
+        const DissimilarityTypeT disimilarityThreshold,
         const unsigned int maxSegSizeThreshold,
         SegmenterIdsManager& segmenterIdsManager,
         SegmenterRegionGrowingMerger< FeatureDataTypeT >& merger,
@@ -116,8 +116,8 @@ namespace te
         SegmenterRegionGrowingSegment< FeatureDataTypeT >* auxSeg1Ptr,
         SegmenterRegionGrowingSegment< FeatureDataTypeT >* auxSeg2Ptr,
         SegmenterRegionGrowingSegment< FeatureDataTypeT >* auxSeg3Ptr,
-        FeatureDataTypeT& minFoundDissimilarity,
-        FeatureDataTypeT& maxFoundDissimilarity,
+        DissimilarityTypeT& minFoundDissimilarity,
+        DissimilarityTypeT& maxFoundDissimilarity,
         unsigned int& totalMergesNumber,
         IterationCounterType& globalMergeIterationsCounter,
         SegmenterRegionGrowingSegment< FeatureDataTypeT >** const actSegsListHeadPtrPtr )
@@ -125,17 +125,16 @@ namespace te
         TERP_TRUE_OR_THROW( actSegsListHeadPtrPtr != 0, "Invalid active segments list header pointer" );
         TERP_TRUE_OR_THROW( (*actSegsListHeadPtrPtr) != 0, "Invalid active segments list header pointer" );
       
-        minFoundDissimilarity = std::numeric_limits< FeatureDataTypeT >::max();      
-        maxFoundDissimilarity = FeatureDataTypeT( -1.0 * minFoundDissimilarity );
+        minFoundDissimilarity = std::numeric_limits< DissimilarityTypeT >::max();
+        maxFoundDissimilarity = DissimilarityTypeT( -1.0 * minFoundDissimilarity );
         totalMergesNumber = 0;
       
         // Globals
-        FeatureDataTypeT internalDisimilarityThreshold =
-          disimilarityThreshold;
+        DissimilarityTypeT internalDisimilarityThreshold = disimilarityThreshold;
         unsigned int internalMaxSegSizeThreshold = maxSegSizeThreshold;
 
         if( maxSegSizeThreshold ) {
-          internalDisimilarityThreshold = std::numeric_limits< FeatureDataTypeT >::max();
+          internalDisimilarityThreshold = std::numeric_limits< DissimilarityTypeT >::max();
 
         } else {
           internalMaxSegSizeThreshold = std::numeric_limits< unsigned int >::max();
@@ -149,11 +148,11 @@ namespace te
         unsigned int segmentColStart = 0;
         unsigned int segmentColBound = 0;
         SegmenterRegionGrowingSegment< FeatureDataTypeT >* minForwardDissimilaritySegmentPtr = 0;
-        FeatureDataTypeT forwardDissimilarityValue = 0;
-        FeatureDataTypeT minForwardDissimilarityValue = 0;
+        DissimilarityTypeT forwardDissimilarityValue = 0;
+        DissimilarityTypeT minForwardDissimilarityValue = 0;
         SegmenterRegionGrowingSegment< FeatureDataTypeT >* minBackwardDissimilaritySegmentPtr = 0;
-        FeatureDataTypeT backwardDissimilarityValue = 0;
-        FeatureDataTypeT minBackwardDissimilarityValue = 0;
+        DissimilarityTypeT backwardDissimilarityValue = 0;
+        DissimilarityTypeT minBackwardDissimilarityValue = 0;
         SegmenterSegmentsBlock::SegmentIdDataType* segmentsIdsLinePtr = 0;
         SegmenterSegmentsBlock::SegmentIdDataType currentSegmentId = 0;
         std::list< SegmenterSegmentsBlock::SegmentIdDataType > freeSegmentIds;
@@ -178,8 +177,7 @@ namespace te
               // related to the current sement 
             
               minForwardDissimilaritySegmentPtr = 0;
-              minForwardDissimilarityValue = 
-                std::numeric_limits< FeatureDataTypeT >::max();
+              minForwardDissimilarityValue = std::numeric_limits< DissimilarityTypeT >::max();
             
               for( neighborSegIdx = 0 ; neighborSegIdx < currActSegPtr->m_neighborSegmentsSize ;
                    ++neighborSegIdx ) {
@@ -206,8 +204,7 @@ namespace te
               
                 minBackwardDissimilaritySegmentPtr = 0;
                 backwardDissimilarityValue = 0;
-                minBackwardDissimilarityValue = 
-                  std::numeric_limits< FeatureDataTypeT >::max();
+                minBackwardDissimilarityValue = std::numeric_limits< DissimilarityTypeT >::max();
               
                 for( neighborSegIdx = 0 ;
                      neighborSegIdx < minForwardDissimilaritySegmentPtr->m_neighborSegmentsSize ;

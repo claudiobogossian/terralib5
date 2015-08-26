@@ -40,6 +40,12 @@ namespace te
     typedef Matrix< SegmenterSegmentsBlock::SegmentIdDataType >
       SegmentsIdsMatrixT;
 
+
+    /*!
+      \brief Type for dissimilarity.
+    */
+    typedef double DissimilarityTypeT;
+    
     /*!
       \class SegmenterRegionGrowingMerger
       \brief Abstract class for the segments merger.
@@ -58,7 +64,7 @@ namespace te
           \param mergePreviewSegPtr A pointer to a valid segment where the merged features values will be stored (when aplicable).
           \return A similarity index between this and the other segment ( normalized between 0 and 1 ).
         */              
-        virtual FeatureDataTypeT
+        virtual DissimilarityTypeT
           getDissimilarity( SegmenterRegionGrowingSegment< FeatureDataTypeT > const * const segment1Ptr, 
                 SegmenterRegionGrowingSegment< FeatureDataTypeT > const * const segment2Ptr, 
                 SegmenterRegionGrowingSegment< FeatureDataTypeT > * const mergePreviewSegPtr ) const = 0;
