@@ -74,7 +74,7 @@ void te::ogr::Module::startup()
       teDir = std::string(tDir);
 
     if(!teDir.empty())
-      gdal_data = teDir + "/share/gdal-data";
+      gdal_data = teDir + "/share/data";
   }
 
   if(gdal_data.empty())
