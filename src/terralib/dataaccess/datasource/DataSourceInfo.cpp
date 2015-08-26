@@ -94,6 +94,18 @@ std::map<std::string, std::string>& te::da::DataSourceInfo::getConnInfo()
   return m_conninfo;
 }
 
+std::string te::da::DataSourceInfo::getConnInfoAsString()
+{
+  std::string conInfo;
+  std::map<std::string, std::string>::iterator conIt = m_conninfo.begin();
+  while (conIt != m_conninfo.end())
+  {
+    conInfo += conIt->second;
+    ++conIt;
+  }
+  return conInfo;
+}
+
 void te::da::DataSourceInfo::setConnInfo(const std::map<std::string, std::string>& conninfo)
 {
   m_conninfo = conninfo;
