@@ -16,6 +16,9 @@
     <height>332</height>
    </size>
   </property>
+  <property name="mouseTracking">
+   <bool>false</bool>
+  </property>
   <property name="windowTitle">
    <string>Date &amp; Time options</string>
   </property>
@@ -512,24 +515,33 @@
               <widget class="QDoubleSpinBox" name="m_panFactorDoubleSpinBox">
                <property name="minimumSize">
                 <size>
-                 <width>50</width>
+                 <width>60</width>
                  <height>0</height>
                 </size>
                </property>
+               <property name="mouseTracking">
+                <bool>false</bool>
+               </property>
                <property name="locale">
                 <locale language="English" country="UnitedStates"/>
+               </property>
+               <property name="readOnly">
+                <bool>false</bool>
+               </property>
+               <property name="keyboardTracking">
+                <bool>false</bool>
                </property>
                <property name="decimals">
                 <number>3</number>
                </property>
                <property name="minimum">
-                <double>0.002000000000000</double>
+                <double>0.001000000000000</double>
                </property>
                <property name="maximum">
-                <double>0.600000000000000</double>
+                <double>0.500000000000000</double>
                </property>
                <property name="singleStep">
-                <double>0.002000000000000</double>
+                <double>0.010000000000000</double>
                </property>
                <property name="value">
                 <double>0.010000000000000</double>

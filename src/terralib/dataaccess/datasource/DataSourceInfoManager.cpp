@@ -44,13 +44,28 @@ te::da::DataSourceInfoPtr te::da::DataSourceInfoManager::get(const std::string& 
   return (it != m_datasources.end()) ? it->second : DataSourceInfoPtr();
 }
 
-void te::da::DataSourceInfoManager::add(const DataSourceInfoPtr& ds)
+bool te::da::DataSourceInfoManager::add(const DataSourceInfoPtr& ds)
 {
-  if(ds.get() == 0)
+  if (ds.get() == 0)
     throw Exception(TE_TR("Can not insert a NULL data source into the manager!"));
 
-  if(m_datasources.find(ds->getId()) == m_datasources.end())
+  if (m_datasources.find(ds->getId()) == m_datasources.end())
+  {
+    std::string conInfo = ds->getConnInfoAsString();
+
+    std::map<std::string, DataSourceInfoPtr>::const_iterator dsInfoIt = m_datasources.begin();
+    while (dsInfoIt != m_datasources.end())
+    {
+      std::string dsConInfo = dsInfoIt->second->getConnInfoAsString();
+
+      if (conInfo == dsConInfo)
+        return false;
+
+      ++dsInfoIt;
+    }
     m_datasources[ds->getId()] = ds;
+  }
+  return true;
 }
 
 void te::da::DataSourceInfoManager::remove(const std::string& id)
@@ -87,6 +102,21 @@ void te::da::DataSourceInfoManager::getByType(const std::string& dsTypeName, std
 
     ++it;
   }
+}
+
+te::da::DataSourceInfoPtr te::da::DataSourceInfoManager::getByConnInfo(std::string connInfo)
+{
+  std::map<std::string, DataSourceInfoPtr>::const_iterator dsInfoIt = m_datasources.begin();
+  while (dsInfoIt != m_datasources.end())
+  {
+    std::string dsConInfo = dsInfoIt->second->getConnInfoAsString();
+
+    if (connInfo == dsConInfo)
+      return dsInfoIt->second;
+
+    ++dsInfoIt;
+  }
+  return  DataSourceInfoPtr();
 }
 
 std::size_t te::da::DataSourceInfoManager::size() const
