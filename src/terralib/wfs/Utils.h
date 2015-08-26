@@ -27,6 +27,7 @@
 #define __TERRALIB_WFS_INTERNAL_UTILS_H
 
 // TerraLib
+#include "Config.h"
 
 // STL
 #include <map>
@@ -34,8 +35,14 @@
 
 namespace te
 {
+  namespace map
+  {
+    class AbstractLayer;
+  }
+
   namespace wfs
   {
+    TEWFSEXPORT bool IsWFSLayer(const te::map::AbstractLayer& layer);
   } // end namespace wfs
 }   // end namespace te
 

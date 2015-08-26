@@ -958,7 +958,7 @@ void te::qt::widgets::DataSetTableView::setLayerSchema(const te::da::DataSetType
 
   m_model->setPkeysColumns(objs_ptr->getPropertyPos());
 
-  m_model->getPromoter()->preProcessKeys(m_dset, objs_ptr->getPropertyPos());
+//  m_model->getPromoter()->preProcessKeys(m_dset, objs_ptr->getPropertyPos());
 }
 
 void te::qt::widgets::DataSetTableView::highlightOIds(const te::da::ObjectIdSet* oids)
@@ -1532,6 +1532,8 @@ void te::qt::widgets::DataSetTableView::setAutoScrollEnabled(const bool& enable)
 void te::qt::widgets::DataSetTableView::setPromotionEnabled(const bool &enable)
 {
   m_promotionEnabled = enable;
+
+  m_model->getPromoter()->preProcessKeys(m_dset, m_delegate->getSelected()->getPropertyPos());
 
   if(m_promotionEnabled)
     promote();
