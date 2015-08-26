@@ -26,8 +26,20 @@
 // TerraLib
 #include "Utils.h"
 
+#include "../dataaccess/datasource/DataSourceInfoManager.h"
+#include "../maptools/AbstractLayer.h"
+
+
 // Boost
 #include <boost/lexical_cast.hpp>
 
 // STL
 #include <cassert>
+
+bool te::wfs::IsWFSLayer(const te::map::AbstractLayer& layer)
+{
+  te::da::DataSourceInfoPtr info = te::da::DataSourceInfoManager::getInstance().get(layer.getDataSourceId());
+
+  return (info.get() != 0 && info->getType() == "WFS");
+}
+

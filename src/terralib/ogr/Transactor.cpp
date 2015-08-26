@@ -120,7 +120,8 @@ std::auto_ptr<te::da::DataSet> te::ogr::Transactor::getDataSet(const std::string
   if (!m_ogrDs->getOGRDataSource())
     return std::auto_ptr<te::da::DataSet>();
   
-  OGRDataSource* ds = OGRSFDriverRegistrar::Open(m_ogrDs->getOGRDataSource()->GetName());
+  OGRDataSource* ds = m_ogrDs->getOGRDataSource();
+//  OGRDataSource* ds = OGRSFDriverRegistrar::Open(m_ogrDs->getOGRDataSource()->GetName());
 
   std::string sql = "SELECT FID, * FROM \'" + name + "\'";
   OGRLayer* layer = ds->ExecuteSQL(sql.c_str(), 0, 0);
@@ -142,7 +143,8 @@ std::auto_ptr<te::da::DataSet> te::ogr::Transactor::getDataSet(const std::string
   if (!m_ogrDs->getOGRDataSource())
     return std::auto_ptr<te::da::DataSet>();
   
-  OGRDataSource* ds = OGRSFDriverRegistrar::Open(m_ogrDs->getOGRDataSource()->GetName());
+  OGRDataSource* ds = m_ogrDs->getOGRDataSource();
+//  OGRDataSource* ds = OGRSFDriverRegistrar::Open(m_ogrDs->getOGRDataSource()->GetName());
 
   std::string sql = "SELECT FID, * FROM \'" + name + "\'";
   OGRLayer* layer = ds->ExecuteSQL(sql.c_str(), 0, 0);
@@ -166,7 +168,8 @@ std::auto_ptr<te::da::DataSet> te::ogr::Transactor::getDataSet(const std::string
   if (!m_ogrDs->getOGRDataSource())
     return std::auto_ptr<te::da::DataSet>();
   
-  OGRDataSource* ds = OGRSFDriverRegistrar::Open(m_ogrDs->getOGRDataSource()->GetName());
+  OGRDataSource* ds = m_ogrDs->getOGRDataSource();
+//  OGRDataSource* ds = OGRSFDriverRegistrar::Open(m_ogrDs->getOGRDataSource()->GetName());
 
   std::string sql = "SELECT FID, * FROM \'" + name + "\'";
   OGRLayer* layer = ds->ExecuteSQL(sql.c_str(), 0, 0);

@@ -66,13 +66,19 @@ std::auto_ptr<te::da::DataSet> te::wfs::Transactor::getDataSet(const std::string
 {
   assert(m_ds->getOGRDataSource());
   
-  OGRDataSource* ds = OGRSFDriverRegistrar::Open(m_ds->getOGRDataSource()->GetName());
+  OGRDataSource* ds = m_ds->getOGRDataSource();
+//  OGRDataSource* ds = OGRSFDriverRegistrar::Open(m_ds->getOGRDataSource()->GetName());
 
   std::string sql = "SELECT FID, * FROM \'" + name + "\'";
   OGRLayer* layer = ds->ExecuteSQL(sql.c_str(), 0, 0);
 
   if(layer == 0)
     throw Exception(TE_TR("The informed data set could not be found in the data source!"));
+
+  char** fields = new char*[1];
+  fields[0] = "OGR_GEOMETRY";
+
+  layer->SetIgnoredFields((const char**) fields);
 
   return std::auto_ptr<te::da::DataSet>(new te::ogr::DataSet(ds, layer));
 }
@@ -87,15 +93,16 @@ std::auto_ptr<te::da::DataSet> te::wfs::Transactor::getDataSet(const std::string
 {
   assert(m_ds->getOGRDataSource());
 
-  OGRDataSource* ds = OGRSFDriverRegistrar::Open(m_ds->getOGRDataSource()->GetName());
+  OGRDataSource* ds = m_ds->getOGRDataSource();
+//  OGRDataSource* ds = OGRSFDriverRegistrar::Open(m_ds->getOGRDataSource()->GetName());
 
-  std::string sql = "SELECT FID, * FROM \'" + name + "\'";
+  std::string sql = "SELECT FID, OGR_GEOMETRY FROM \'" + name + "\'";
   OGRLayer* layer = ds->ExecuteSQL(sql.c_str(), 0, 0);
 
   if(layer == 0)
     throw Exception(TE_TR("The informed data set could not be found in the data source!"));
 
-  layer->SetSpatialFilterRect(e->m_llx, e->m_lly, e->m_urx, e->m_ury);
+//  layer->SetSpatialFilterRect(e->m_llx, e->m_lly, e->m_urx, e->m_ury);
   
   return std::auto_ptr<te::da::DataSet>(new te::ogr::DataSet(ds, layer));
 }
@@ -110,7 +117,8 @@ std::auto_ptr<te::da::DataSet> te::wfs::Transactor::getDataSet(const std::string
 {
   assert(m_ds->getOGRDataSource());
 
-  OGRDataSource* ds = OGRSFDriverRegistrar::Open(m_ds->getOGRDataSource()->GetName());
+  OGRDataSource* ds = m_ds->getOGRDataSource();
+  //  OGRDataSource* ds = OGRSFDriverRegistrar::Open(m_ds->getOGRDataSource()->GetName());
 
   std::string sql = "SELECT FID, * FROM \'" + name + "\'";
   OGRLayer* layer = ds->ExecuteSQL(sql.c_str(), 0, 0);
@@ -134,7 +142,8 @@ std::auto_ptr<te::da::DataSet> te::wfs::Transactor::query(const te::da::Select& 
 {
   assert(m_ds->getOGRDataSource());
 
-  OGRDataSource* ds = OGRSFDriverRegistrar::Open(m_ds->getOGRDataSource()->GetName());
+  OGRDataSource* ds = m_ds->getOGRDataSource();
+  //  OGRDataSource* ds = OGRSFDriverRegistrar::Open(m_ds->getOGRDataSource()->GetName());
 
   std::string sql;
 
@@ -164,7 +173,8 @@ std::auto_ptr<te::da::DataSet> te::wfs::Transactor::query(const std::string& que
 {
   assert(m_ds->getOGRDataSource());
 
-  OGRDataSource* ds = OGRSFDriverRegistrar::Open(m_ds->getOGRDataSource()->GetName());
+  OGRDataSource* ds = m_ds->getOGRDataSource();
+  //  OGRDataSource* ds = OGRSFDriverRegistrar::Open(m_ds->getOGRDataSource()->GetName());
 
   OGRLayer* layer = ds->ExecuteSQL(query.c_str(), 0, 0);
 

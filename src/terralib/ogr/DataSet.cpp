@@ -84,7 +84,7 @@ te::ogr::DataSet::~DataSet()
 
   m_ogrDs->ReleaseResultSet(m_layer);
 
-  OGRDataSource::DestroyDataSource(m_ogrDs);
+//  OGRDataSource::DestroyDataSource(m_ogrDs);
 }
 
 std::size_t te::ogr::DataSet::getNumProperties() const
