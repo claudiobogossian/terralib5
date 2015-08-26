@@ -42,6 +42,7 @@
 #include "../../../edit/qt/tools/DeleteGeometryTool.h"
 #include "../../../edit/qt/tools/MergeGeometriesTool.h"
 #include "../../../edit/qt/SnapOptionsDialog.h"
+#include "../../../edit/qt/FeatureAttributesDialog.h"
 #include "../../../geometry/GeometryProperty.h"
 #include "../../../geometry/GeometryCollection.h"
 #include "../../../maptools/DataSetLayer.h"
@@ -69,6 +70,9 @@
 #include <list>
 #include <vector>
 
+//temporary
+#include "../../../geometry/MultiPolygon.h"
+
 void EnableActions(QList<QAction*> acts, const bool& enable)
 {
   for(QList<QAction*>::iterator it = acts.begin(); it != acts.end(); ++it)
@@ -90,12 +94,14 @@ QObject(parent),
   m_aggregateAreaToolAction(0),
   m_subtractAreaToolAction(0),
   m_mergeGeometriesToolAction(0),
+  m_splitPolygonToolAction(0),
+  m_featureAttributesAction(0),
   m_undoToolAction(0),
   m_redoToolAction(0),
   m_undoView(0),
-m_currentTool(0),
-m_usingStash(true),
-m_layerIsStashed(true)
+  m_currentTool(0),
+  m_usingStash(true),
+  m_layerIsStashed(true)
 {
   initialize();
 }
@@ -258,6 +264,8 @@ void te::qt::plugins::edit::ToolBar::initializeActions()
   createAction(m_subtractAreaToolAction, tr("Subtract Area"), "vector-processing-subtraction", true, false, "subtract_area", SLOT(onSubtractAreaToolActivated(bool)));
   createAction(m_deleteGeometryToolAction, tr("Delete Geometry"), "edit_delete", true, false, "delete_geometry", SLOT(onDeleteGeometryToolActivated(bool)));
   createAction(m_mergeGeometriesToolAction, tr("Merge Geometries"), "edition_mergeGeometries", true, false, "merge_geometries", SLOT(onMergeGeometriesToolActivated(bool)));
+  createAction(m_splitPolygonToolAction, tr("Split Polygon"), "edit-cut", true, false, "split_polygon", SLOT(onSplitPolygonToolActivated(bool)));
+  
 
   // Get the action group of map tools.
   QActionGroup* toolsGroup = te::qt::af::AppCtrlSingleton::getInstance().findActionGroup("Map.ToolsGroup");
@@ -272,6 +280,7 @@ void te::qt::plugins::edit::ToolBar::initializeActions()
   toolsGroup->addAction(m_subtractAreaToolAction);
   toolsGroup->addAction(m_deleteGeometryToolAction);
   toolsGroup->addAction(m_mergeGeometriesToolAction);
+  toolsGroup->addAction(m_splitPolygonToolAction);
 
   // Grouping...
   m_tools.push_back(m_vertexToolAction);
@@ -282,6 +291,7 @@ void te::qt::plugins::edit::ToolBar::initializeActions()
   m_tools.push_back(m_subtractAreaToolAction);
   m_tools.push_back(m_deleteGeometryToolAction);
   m_tools.push_back(m_mergeGeometriesToolAction);
+  m_tools.push_back(m_splitPolygonToolAction);
 
   // Adding tools to toolbar
   for(int i = 0; i < m_tools.size(); ++i)
@@ -291,6 +301,11 @@ void te::qt::plugins::edit::ToolBar::initializeActions()
   createAction(m_snapOptionsAction, tr("Snap Options"), "edit_snap", false, false, "snap_option", SLOT(onSnapOptionsActivated()));
   m_toolBar->addSeparator();
   m_toolBar->addAction(m_snapOptionsAction);
+
+  //Feature Attributes
+  createAction(m_featureAttributesAction, tr("Feature Attributes"), "attributefill-icon", true, true, "feature_attributes", SLOT(onFeatureAttributesActivated()));
+  m_toolBar->addSeparator();
+  m_toolBar->addAction(m_featureAttributesAction);
 }
 
 void te::qt::plugins::edit::ToolBar::createAction(QAction*& action, const QString& tooltip, const QString& icon, bool checkable, bool enabled, const QString& objName, const char* member)
@@ -357,7 +372,6 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
     emit stashed(layer.get());
 
     m_layerIsStashed = true;
-    //  }
 
     return;
   }
@@ -418,7 +432,6 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
 
       for (std::size_t i = 0; i < features.size(); ++i) // for each edited feature
       {
-
           // Create the new item
           te::mem::DataSetItem* item = new te::mem::DataSetItem(operationds[te::edit::GEOMETRY_CREATE]);
 
@@ -628,6 +641,72 @@ void te::qt::plugins::edit::ToolBar::onSnapOptionsActivated()
   options.exec();
 }
 
+void te::qt::plugins::edit::ToolBar::onFeatureAttributesActivated()
+{
+  te::map::AbstractLayerPtr layer = getSelectedLayer();
+  if (layer.get() == 0)
+  {
+    QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Select a layer first!"));
+    return;
+  }
+
+  te::qt::af::evt::GetMapDisplay e;
+  emit triggered(&e);
+
+  assert(e.m_display);
+
+  te::edit::FeatureAttributesDialog options(m_toolBar);
+
+  // Get the geometry type
+  std::auto_ptr<te::da::DataSetType> dt = layer->getSchema();
+
+  const te::da::ObjectIdSet* objSet = layer->getSelected();
+
+  std::auto_ptr<te::da::DataSet> ds(layer->getData(objSet));
+
+  te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(dt.get());
+
+  if (ds->moveNext())
+  {
+    te::gm::Coord2D coord(0, 0);
+
+    std::auto_ptr<te::gm::Geometry> geom = ds->getGeometry(geomProp->getName());
+
+    // Try finds the geometry centroid
+    switch (geom->getGeomTypeId())
+    {
+      case te::gm::PolygonType:
+      {
+        te::gm::Polygon* p = dynamic_cast<te::gm::Polygon*>(geom.get());
+        coord = *p->getCentroidCoord();
+
+        break;
+      }
+      case te::gm::MultiPolygonType:
+      {
+        te::gm::MultiPolygon* mp = dynamic_cast<te::gm::MultiPolygon*>(geom.get());
+        coord = *mp->getCentroidCoord();
+
+        break;
+      }
+
+      default:
+      break;
+    }
+
+    // Build the search envelope
+    te::gm::Envelope env(coord.getX(), coord.getY(), coord.getX(), coord.getY());
+
+    te::edit::Feature* m_feature = PickFeature(layer, env, e.m_display->getDisplay()->getSRID(), te::edit::GEOMETRY_UPDATE);
+
+    options.set(dt.get(), m_feature);
+
+    options.exec();
+
+    m_featureAttributesAction->setChecked(false);
+  }
+
+}
 
 void te::qt::plugins::edit::ToolBar::onAggregateAreaToolActivated(bool checked)
 {
@@ -746,6 +825,14 @@ void te::qt::plugins::edit::ToolBar::onMergeGeometriesToolActivated(bool checked
   assert(e.m_display);
 
   setCurrentTool(new te::edit::MergeGeometriesTool(e.m_display->getDisplay(), layer, Qt::ArrowCursor, 0), e.m_display);
+}
+
+void te::qt::plugins::edit::ToolBar::onSplitPolygonToolActivated(bool checked)
+{
+
+  QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Under Development!"));
+  return;
+
 }
 
 void te::qt::plugins::edit::ToolBar::onToolDeleted()

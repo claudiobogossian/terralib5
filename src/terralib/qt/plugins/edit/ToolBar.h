@@ -40,8 +40,6 @@
 // STL
 #include <string>
 
-//#include "../../../edit/qt/core/EditionManager.h"
-
 namespace te
 {
   namespace edit
@@ -116,6 +114,10 @@ namespace te
 
           void onToolDeleted();
 
+          void onSplitPolygonToolActivated(bool checked);
+
+          void onFeatureAttributesActivated();
+
         Q_SIGNALS:
 
           /*! This signal is emitted when the layer selection changed. */
@@ -145,6 +147,8 @@ namespace te
           QAction* m_aggregateAreaToolAction;
           QAction* m_subtractAreaToolAction;
           QAction* m_mergeGeometriesToolAction;
+          QAction* m_splitPolygonToolAction;
+          QAction* m_featureAttributesAction;
           QAction* m_undoToolAction;
           QAction* m_redoToolAction;
           QList<QAction*> m_tools;
@@ -164,10 +168,6 @@ namespace te
           void initialize();
           void initializeActions();
           void createAction(QAction*& action, const QString& tooltip, const QString& icon, bool checkable, bool enabled, const QString& objName, const char* member);
-
-#define EDT_CREATE                      1
-#define EDT_UPDATE                      2
-#define EDT_REMOVE                      3
 
         };
 

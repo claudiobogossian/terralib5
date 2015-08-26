@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,48 +18,46 @@
  */
 
 /*!
-  \file terralib/edit/qt/tools/MoveGeometryTool.h
+  \file terralib/edit/qt/tools/SplitPolygonTool.h
 
-  \brief This class implements a concrete tool to move geometries.
+  \brief This class implements a concrete tool to split polygons.
 */
 
-#ifndef __TERRALIB_EDIT_QT_INTERNAL_DELETEGEOMETRYTOOL_H
-#define __TERRALIB_EDIT_QT_INTERNAL_DELETEGEOMETRYTOOL_H
+#ifndef __TERRALIB_EDIT_QT_INTERNAL_SPLITPOLYGONTOOL_H
+#define __TERRALIB_EDIT_QT_INTERNAL_SPLITPOLYGONTOOL_H
 
 // TerraLib
-#include "../../../dataaccess/dataset/ObjectId.h"
-#include "../../../geometry/Envelope.h"
-#include "../../../geometry/Geometry.h"
+#include "../../../geometry/Coord2D.h"
 #include "../../../maptools/AbstractLayer.h"
+#include "GeometriesUpdateTool.h"
 #include "../Config.h"
 
-#include "GeometriesUpdateTool.h"
-
-// Qt
-#include <QPointF>
+// STL
+#include <vector>
 
 namespace te
 {
+  namespace gm
+  {
+    class Geometry;
+  }
+
   namespace qt
   {
     namespace widgets
     {
-      class Canvas;
       class MapDisplay;
     }
   }
 
   namespace edit
   {
-// Forward declaration
-    class Feature;
-
     /*!
-      \class DeleteGeometryTool
+      \class SplitPolygonTool
 
-      \brief This class implements a concrete tool to move geometries.
+      \brief This class implements a concrete tool to split polygons.
     */
-    class TEEDITQTEXPORT DeleteGeometryTool : public GeometriesUpdateTool
+    class TEEDITQTEXPORT SplitPolygonTool : public GeometriesUpdateTool
     {
       Q_OBJECT
 
@@ -71,17 +69,17 @@ namespace te
         //@{
 
         /*!
-          \brief It constructs a move geometry tool associated with the given map display.
+          \brief It constructs a split polygon tool associated with the given map display.
 
           \param display The map display associated with the tool.
           \param parent The tool's parent.
 
           \note The tool will NOT take the ownership of the given pointers.
         */
-        DeleteGeometryTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent = 0);
+        SplitPolygonTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, QObject* parent = 0);
 
         /*! \brief Destructor. */
-        ~DeleteGeometryTool();
+        ~SplitPolygonTool();
 
         //@}
 
@@ -94,24 +92,16 @@ namespace te
 
         bool mouseMoveEvent(QMouseEvent* e);
 
-        bool mouseReleaseEvent(QMouseEvent* e);
-
         bool mouseDoubleClickEvent(QMouseEvent* e);
 
         //@}
 
-      private:
+      private slots:
 
-        void reset();
-
-        void pickFeature(const te::map::AbstractLayerPtr& layer);
-
-        te::gm::Envelope buildEnvelope(const QPointF& pos);
-
-        void storeRemovedFeature();
-
+        void onExtentChanged();
     };
+
   }   // end namespace edit
 }     // end namespace te
 
-#endif  // __TERRALIB_EDIT_QT_INTERNAL_DELETEGEOMETRYTOOL_H
+#endif  // __TERRALIB_EDIT_QT_INTERNAL_SPLITPOLYGONTOOL_H

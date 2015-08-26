@@ -26,7 +26,7 @@
 // TerraLib
 #include "../../../geometry/GeometryProperty.h"
 #include "../../../geometry/MultiPolygon.h"
-#include "../../../dataaccess/dataset/ObjectId.h"
+#include "../../../dataaccess/dataset/ObjectIdSet.h"
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../qt/widgets/canvas/MapDisplay.h"
 #include "../../../qt/widgets/Utils.h"
@@ -43,18 +43,13 @@
 #include <QPainter>
 #include <QPixmap>
 
-#include "../../../dataaccess/dataset/ObjectIdSet.h"
-
 // STL
 #include <cassert>
 #include <memory>
 
 te::edit::DeleteGeometryTool::DeleteGeometryTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent)
   : GeometriesUpdateTool(display, layer.get(), parent)
-{
-  // Signals & slots
-  connect(m_display, SIGNAL(extentChanged()), SLOT(onExtentChanged()));
-}
+{}
 
 te::edit::DeleteGeometryTool::~DeleteGeometryTool()
 {
@@ -97,7 +92,7 @@ void te::edit::DeleteGeometryTool::reset()
   m_feature = 0;
 }
 
-void te::edit::DeleteGeometryTool::pickFeature(const te::map::AbstractLayerPtr& layer, const QPointF& pos)
+void te::edit::DeleteGeometryTool::pickFeature(const te::map::AbstractLayerPtr& layer)
 {
   reset();
 
@@ -147,7 +142,6 @@ void te::edit::DeleteGeometryTool::pickFeature(const te::map::AbstractLayerPtr& 
 
     }
 
-    draw();
   }
   catch (std::exception& e)
   {
@@ -170,45 +164,6 @@ te::gm::Envelope te::edit::DeleteGeometryTool::buildEnvelope(const QPointF& pos)
   te::gm::Envelope env(ll.x(), ll.y(), ur.x(), ur.y());
 
   return env;
-}
-
-void te::edit::DeleteGeometryTool::draw()
-{
-  //const te::gm::Envelope& env = m_display->getExtent();
-  //if(!env.isValid())
-  //  return;
-
-  //// Clear!
-  //QPixmap* draft = m_display->getDraftPixmap();
-  //draft->fill(Qt::transparent);
-
-  // // Initialize the renderer
-  //Renderer& renderer = Renderer::getInstance();
-  //renderer.begin(draft, env, m_display->getSRID());
-
-  //// Draw the layer edited geometries
-  //renderer.drawRepository(m_editionManager, m_layer->getId(), env, m_display->getSRID());
-
-  //if(m_feature == 0)
-  //{
-  //  renderer.end();
-  //  m_display->repaint();
-  //  return;
-  //}
-
-  //renderer.setPolygonStyle(Qt::white, Qt::black, 1);
-
-  //renderer.draw(m_feature->getGeometry(), false);
-
-  //renderer.end();
-
-  //m_display->repaint();
-
-}
-
-void te::edit::DeleteGeometryTool::onExtentChanged()
-{
-  draw();
 }
 
 void te::edit::DeleteGeometryTool::storeRemovedFeature()

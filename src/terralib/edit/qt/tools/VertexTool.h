@@ -142,6 +142,8 @@ namespace te
 
         void storeEditedFeature();
 
+        void storeUndoCommand();
+
       private slots:
 
         void onExtentChanged();

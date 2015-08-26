@@ -51,9 +51,6 @@
 #include <cassert>
 #include <memory>
 
-//test remove
-#include <QMessageBox>
-
 te::edit::CreatePolygonTool::CreatePolygonTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, QObject* parent)
   : GeometriesUpdateTool(display, layer.get(), parent),
     m_continuousMode(false),
