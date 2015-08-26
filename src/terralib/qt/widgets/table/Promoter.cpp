@@ -154,6 +154,9 @@ void te::qt::widgets::Promoter::cleanLogRowsAndProcessKeys()
 
 void te::qt::widgets::Promoter::preProcessKeys(te::da::DataSet* dset, const std::vector<size_t>& pkeys)
 {
+  if(!m_PkeysRows.empty())
+    return;
+
   size_t setSize = dset->size();
 
   cleanPreproccessKeys();

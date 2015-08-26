@@ -1524,6 +1524,8 @@ void te::qt::widgets::DataSetTableView::setPromotionEnabled(const bool &enable)
 {
   m_promotionEnabled = enable;
 
+  m_model->getPromoter()->preProcessKeys(m_dset, m_delegate->getSelected()->getPropertyPos());
+
   if(m_promotionEnabled)
     promote();
 
