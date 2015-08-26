@@ -33,6 +33,7 @@
 
 #include "events/LayerEvents.h"
 #include "events/MapEvents.h"
+#include "events/ToolEvents.h"
 
 // Qt
 #include <QInputDialog>
@@ -126,6 +127,14 @@ void te::qt::af::BaseApplication::onApplicationTriggered(te::qt::af::evt::Event*
 {
   switch (e->m_id)
   {
+  case te::qt::af::evt::COORDINATE_TRACKED:
+  {
+    te::qt::af::evt::CoordinateTracked* ctE = static_cast<te::qt::af::evt::CoordinateTracked*>(e);
+    QString text = "(" + QString::number(ctE->m_x, 'f', 5) + " , " + QString::number(ctE->m_y, 'f', 5) + ")";
+    m_coordinateLineEdit->setText(text);
+  }
+  break;
+
   case te::qt::af::evt::MAP_SRID_CHANGED:
   {
     te::qt::af::evt::MapSRIDChanged* mEvt = static_cast<te::qt::af::evt::MapSRIDChanged*>(e);
@@ -793,6 +802,14 @@ void te::qt::af::BaseApplication::onLayerSelectionChanged(const te::map::Abstrac
 {
   te::qt::af::evt::LayerSelectedObjectsChanged e(layer);
   emit triggered(&e);
+}
+
+void te::qt::af::BaseApplication::onLayerSelectedObjectsChanged(const te::map::AbstractLayerPtr& layer)
+{
+  assert(layer.get());
+
+  te::qt::af::evt::LayerSelectedObjectsChanged e(layer);
+  m_app->triggered(&e);
 }
 
 void te::qt::af::BaseApplication::makeDialog()

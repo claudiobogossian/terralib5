@@ -25,16 +25,18 @@
 
 // TerraView
 #include "AboutDialog.h"
-#include "TerraView.h"
+#include "Config.h"
 #include "Project.h"
 #include "ProjectInfoDialog.h"
+#include "TerraView.h"
+#include "Utils.h"
 #include "XMLFormatter.h"
-#include "Config.h"
 
 // TerraLib
 #include <terralib/common/Exception.h>
 #include <terralib/common/PlatformUtils.h>
 #include <terralib/common/Translator.h>
+#include <terralib/common/progress/ProgressManager.h>
 #include <terralib/dataaccess/datasource/DataSourceInfoManager.h>
 #include <terralib/maptools/Utils.h>
 #include <terralib/qt/af/ApplicationController.h>
@@ -47,7 +49,6 @@
 #include <terralib/qt/af/events/ApplicationEvents.h>
 #include <terralib/qt/af/events/LayerEvents.h>
 #include <terralib/qt/af/events/MapEvents.h>
-#include <terralib/qt/af/events/ProjectEvents.h>
 #include <terralib/qt/af/events/ToolEvents.h>
 #include <terralib/qt/af/settings/SettingsDialog.h>
 #include <terralib/qt/af/Utils.h>
@@ -68,14 +69,8 @@
 #include <terralib/qt/widgets/externalTable/TableLinkDialog.h>
 #include <terralib/qt/widgets/help/HelpManager.h>
 #include <terralib/qt/widgets/Utils.h>
-//#include <terralib/qt/widgets/layer/explorer/ColorMapItem.h>
-//#include <terralib/qt/widgets/layer/explorer/ChartItem.h>
-//#include <terralib/qt/widgets/layer/explorer/GroupingItem.h>
-//#include <terralib/qt/widgets/layer/explorer/LayerExplorer.h>
 #include <terralib/qt/widgets/layer/explorer/LayerItem.h>
 #include <terralib/qt/widgets/layer/explorer/LayerItemView.h>
-//#include <terralib/qt/widgets/layer/explorer/AbstractTreeItem.h>
-//#include <terralib/qt/widgets/layer/explorer/FolderLayerItem.h>
 #include <terralib/qt/widgets/layer/selector/AbstractLayerSelector.h>
 #include <terralib/qt/widgets/layer/utils/CompositionModeMenuWidget.h>
 #include <terralib/qt/widgets/plugin/manager/PluginManagerDialog.h>
@@ -91,6 +86,9 @@
 #include <terralib/qt/widgets/srs/SRSManagerDialog.h>
 #include <terralib/qt/widgets/tools/Measure.h>
 #include <terralib/qt/widgets/vector/FixGeometryDialog.h>
+
+#include "events/ProjectEvents.h"
+#include "settings/ProjectWidgetFactory.h"
 
 // STL
 #include <memory>
@@ -248,7 +246,8 @@ TerraView::TerraView(QWidget* parent)
     m_helpManager(0),
     m_iController(0),
     m_queryDlg(0),
-    m_compModeMenu(0)
+    m_compModeMenu(0),
+    m_tvController(0)
 {
   m_project = new ProjectMetadata;
 
@@ -264,11 +263,31 @@ TerraView::~TerraView()
   delete m_compModeMenu;
   delete m_queryDlg;
   delete m_project;
+  delete m_tvController;
+
+  //register settings for project
+  ProjectWidgetFactory::finalize();
 }
 
 void TerraView::init()
 {
+  //init base application
   BaseApplication::init(te::common::FindInTerraLibPath(TERRAVIEW_APPLICATION_CONFIG_FILE).c_str());
+
+  //check user settings file
+  QSettings user_settings(QSettings::IniFormat,
+    QSettings::UserScope,
+    QApplication::instance()->organizationName(),
+    QApplication::instance()->applicationName());
+
+  QFileInfo info(user_settings.fileName());
+
+  if (!info.exists())
+    CreateDefaultSettings();
+
+  m_tvController = new TerraViewController(m_app, te::common::FindInTerraLibPath(TERRAVIEW_APPLICATION_CONFIG_FILE).c_str());
+
+  m_tvController->initializeProjectMenus();
 
   QStringList prjTitles,
       prjPaths;
@@ -305,6 +324,30 @@ void TerraView::makeDialog()
   //interface controller
   m_iController = new te::qt::af::InterfaceController(this);
   m_app->addListener(m_iController);
+
+  //progress support
+  te::qt::widgets::ProgressViewerBar* pvb = new te::qt::widgets::ProgressViewerBar(this);
+  pvb->setFixedWidth(220);
+  te::common::ProgressManager::getInstance().addViewer(pvb);
+
+  te::qt::widgets::ProgressViewerWidget* pvw = new te::qt::widgets::ProgressViewerWidget(this);
+  te::common::ProgressManager::getInstance().addViewer(pvw);
+
+  m_statusbar->addPermanentWidget(pvb);
+
+  connect(pvb, SIGNAL(clicked()), this, SLOT(showProgressDockWidget()));
+
+  m_progressDockWidget = new QDockWidget(this);
+  m_progressDockWidget->setObjectName("ProgressDockWidget");
+  m_progressDockWidget->setWidget(pvw);
+  m_progressDockWidget->setMinimumHeight(300);
+  m_progressDockWidget->setAllowedAreas(Qt::RightDockWidgetArea);
+  m_progressDockWidget->setWindowTitle(tr("Tasks Progress"));
+  addDockWidget(Qt::RightDockWidgetArea, m_progressDockWidget);
+  m_progressDockWidget->setVisible(false);
+
+  //register settings for project
+  ProjectWidgetFactory::initialize();
 }
 
 void TerraView::initActions()
@@ -621,9 +664,6 @@ void TerraView::addPopUpMenu()
   actionStyleSep->setSeparator(true);
   treeView->addVectorLayerAction(actionStyleSep);
 
-  //  treeView->addVectorLayerAction(m_layerRemoveObjectSelection);
-  //  treeView->addVectorLayerAction(m_projectRenameLayer);
-
   QAction* actionRemoveSep = new QAction(this);
   actionRemoveSep->setSeparator(true);
   treeView->addVectorLayerAction(actionRemoveSep);
@@ -645,9 +685,6 @@ void TerraView::addPopUpMenu()
   treeView->addVectorLayerAction(m_layerCompositionMode);
   treeView->addVectorLayerAction(m_layerProperties);
 
-  //// Actions for the items of a layer item such as the chart item and the grouping item
-  //treeView->add(m_layerRemoveItem, "", "ITEM_OF_LAYER");
-
   //// Actions for the raster layer item
   treeView->addRasterLayerAction(m_layerRename);
 
@@ -668,9 +705,6 @@ void TerraView::addPopUpMenu()
   QAction* rasterSep2 = new QAction(this);
   rasterSep2->setSeparator(true);
   treeView->addRasterLayerAction(rasterSep2);
-
-  //  treeView->addRasterLayerAction(m_projectRemoveLayer);
-  //  treeView->addRasterLayerAction(m_projectRenameLayer);
 
   QAction* rasterSep3 = new QAction(this);
   rasterSep3->setSeparator(true);
@@ -694,19 +728,6 @@ void TerraView::addPopUpMenu()
   //// Actions for invalid layers
   treeView->addInvalidLayerAction(m_projectChangeLayerDataSource);
   treeView->addInvalidLayerAction(m_projectUpdateLayerDataSource);
-
-  //// Actions to be added to the context menu when there are multiple items selected
-  //treeView->addMultipleSelectionAction(m_layerFitSelectedOnMapDisplay);
-  //treeView->addMultipleSelectionAction(m_layerPanToSelectedOnMapDisplay);
-
-  //treeView->add(m_layerFitSelectedOnMapDisplay, "", "QUERY_LAYER_ITEM", te::qt::widgets::LayerTreeView::MULTIPLE_ITEMS_SELECTED);
-  //treeView->add(m_layerPanToSelectedOnMapDisplay, "", "QUERY_LAYER_ITEM", te::qt::widgets::LayerTreeView::MULTIPLE_ITEMS_SELECTED);
-
-  //QAction* multipleSelectedSep = new QAction(this);
-  //multipleSelectedSep->setSeparator(true);
-  //treeView->addMultipleSelectionAction(multipleSelectedSep);
-
-  //  treeView->addMultipleSelectionAction(m_projectRemoveLayer);
 }
 
 void TerraView::initMenus()
@@ -742,7 +763,7 @@ void TerraView::initMenus()
 
 void TerraView::initToolbars()
 {
-  std::vector<QToolBar*> bars = ReadToolBarsFromSettings(m_app, this);
+  std::vector<QToolBar*> bars = te::qt::af::ReadToolBarsFromSettings(m_app, this);
   std::vector<QToolBar*>::iterator it;
 
   for (it = bars.begin(); it != bars.end(); ++it)
@@ -846,7 +867,7 @@ void TerraView::onOpenProjectTriggered()
 {
   checkAndSaveProject();
 
-  QString file = QFileDialog::getOpenFileName(this, tr("Open project file"), qApp->applicationDirPath(), te::qt::af::GetExtensionFilter(m_app));
+  QString file = QFileDialog::getOpenFileName(this, tr("Open project file"), qApp->applicationDirPath(), m_tvController->getExtensionFilter());
 
   if (file.isEmpty())
     return;
@@ -872,7 +893,7 @@ void TerraView::onSaveProjectTriggered()
   {
     QFileDialog d(this);
 
-    QString filter = tr("TerraView project(*.") + m_app->getAppProjectExtension() + ")";
+    QString filter = tr("TerraView project(*.") + m_tvController->getAppProjectExtension() + ")";
 
     QString fileName = d.getSaveFileName(this, tr("Save project"), qApp->applicationDirPath(), filter);
 
@@ -882,7 +903,7 @@ void TerraView::onSaveProjectTriggered()
     QFileInfo info(fileName);
 
     if(info.suffix().isEmpty())
-      fileName.append("." + m_app->getAppProjectExtension());
+      fileName.append("." + m_tvController->getAppProjectExtension());
 
     m_project->m_fileName = fileName;
     m_project->m_title = info.baseName();
@@ -896,7 +917,7 @@ void TerraView::onSaveProjectTriggered()
 
   AddRecentProjectToSettings(m_project->m_title, m_project->m_fileName);
 
-  m_app->updateRecentProjects(m_project->m_fileName, m_project->m_title);
+  m_tvController->updateRecentProjects(m_project->m_fileName, m_project->m_title);
 
   XMLFormatter::format(m_project, lays, true);
   XMLFormatter::formatDataSourceInfos(true);
@@ -914,7 +935,7 @@ void TerraView::onSaveProjectAsTriggered()
   if (m_project == 0)
     return;
 
-  QString fileName = QFileDialog::getSaveFileName(this, tr("Save Project File"), qApp->applicationDirPath(), te::qt::af::GetExtensionFilter(m_app));
+  QString fileName = QFileDialog::getSaveFileName(this, tr("Save Project File"), qApp->applicationDirPath(), m_tvController->getExtensionFilter());
 
   if (fileName.isEmpty())
     return;
@@ -930,7 +951,7 @@ void TerraView::onSaveProjectAsTriggered()
 
   //  te::qt::af::Save(*m_project, fName);
 
-  m_app->updateRecentProjects(fileName, m_project->m_title);
+  m_tvController->updateRecentProjects(fileName, m_project->m_title);
 
   // Set the project title and its status as "no change"
   //std::string projectTitle = boost::filesystem::basename(m_project->getFileName());
@@ -1843,14 +1864,6 @@ void TerraView::onDataSourceExplorerTriggered()
 void TerraView::showProgressDockWidget()
 {
   m_progressDockWidget->setVisible(true);
-}
-
-void TerraView::onLayerSelectedObjectsChanged(const te::map::AbstractLayerPtr& layer)
-{
-  assert(layer.get());
-
-  te::qt::af::evt::LayerSelectedObjectsChanged e(layer);
-  m_app->triggered(&e);
 }
 
 void TerraView::onHighlightLayerObjects(const te::map::AbstractLayerPtr& layer, te::da::DataSet* dataset, const QColor& color)

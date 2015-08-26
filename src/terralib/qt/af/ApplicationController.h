@@ -317,7 +317,7 @@ namespace te
           /*!
             \brief Initializes the menus for the most recent open projects.
           */
-          virtual void initializeProjectMenus();
+          //virtual void initializeProjectMenus();
 
           /*!
             \brief Update the list of recent projects. This is commonly used when there's a new most recent project.
@@ -326,7 +326,7 @@ namespace te
 
             \param prj_title Title of the project.
           */
-          void updateRecentProjects(const QString& prjFile, const QString& prjTitle);
+          //void updateRecentProjects(const QString& prjFile, const QString& prjTitle);
 
           /*!
             \brief Set the current project.
@@ -397,7 +397,7 @@ namespace te
 
             \return Application project extension.
           */
-          const QString& getAppProjectExtension() const;
+          //const QString& getAppProjectExtension() const;
 
           const QString& getAboutLogo() const;
 
@@ -422,7 +422,7 @@ namespace te
 
             \return Application most recent opened project.
           */
-          QString getMostRecentProject() const;
+          //QString getMostRecentProject() const;
 
           /*!
             \brief Returns the application default SRID value.
@@ -464,12 +464,12 @@ namespace te
           QString m_appOrganization;                  //!< Organization name.
           QString m_appName;                          //!< Application name.
           QString m_appTitle;                         //!< Application title.
-          QString m_appProjectExtension;              //!< Application project extension.
+          //QString m_appProjectExtension;              //!< Application project extension.
           QString m_appIconName;                      //!< Icon used in the application.
           QString m_aboutLogo;
           QString m_tLibLogo;
-          QStringList m_recentProjs;                  //!< List of the recent projects.
-          QStringList m_recentProjsTitles;            //!< List of the titles of the recent projects.
+          //QStringList m_recentProjs;                  //!< List of the recent projects.
+          //QStringList m_recentProjsTitles;            //!< List of the titles of the recent projects.
           std::string m_appUserSettingsFile;          //!< Name of the user settings file.
           QString m_appPluginsPath;                   //!< Name of the plugins path.
           QString m_appHelpFile;                      //!< Name of the help file.

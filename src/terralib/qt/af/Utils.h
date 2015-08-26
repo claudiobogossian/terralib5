@@ -170,7 +170,7 @@ namespace te
 
         \param[out]
       */
-      TEQTAFEXPORT void GetProjectInformationsFromSettings(QString& defaultAuthor, int& maxSaved);
+      //TEQTAFEXPORT void GetProjectInformationsFromSettings(QString& defaultAuthor, int& maxSaved);
 
       /*
         \brief
@@ -179,7 +179,7 @@ namespace te
 
         \param
       */
-      TEQTAFEXPORT void SaveProjectInformationsOnSettings(const QString& defaultAuthor, const int& maxSaved);
+      //TEQTAFEXPORT void SaveProjectInformationsOnSettings(const QString& defaultAuthor, const int& maxSaved);
 
       /*!
         \brief
@@ -193,7 +193,7 @@ namespace te
 
         \param
       */
-      TEQTAFEXPORT void SaveOpenLastProjectOnSettings(bool openLast);
+      //TEQTAFEXPORT void SaveOpenLastProjectOnSettings(bool openLast);
 
       /*!
         \brief
@@ -207,7 +207,7 @@ namespace te
 
         \return
       */
-      TEQTAFEXPORT bool GetOpenLastProjectFromSettings();
+      //TEQTAFEXPORT bool GetOpenLastProjectFromSettings();
 
       /*!
         \brief
@@ -236,11 +236,6 @@ namespace te
         \return
       */
       TEQTAFEXPORT bool GetAlternateRowColorsFromSettings();
-
-      /*!
-        \brief Creates a default QSettings.
-      */
-      TEQTAFEXPORT void CreateDefaultSettings();
 
       /*!
         \brief Check QSettings for existance of \a act and adds it if necessary.
@@ -326,17 +321,13 @@ namespace te
       /*!
         \brief Writes the default project file.
       */
-      TEQTAFEXPORT void WriteDefaultProjectFile(const QString& fileName);
+      //TEQTAFEXPORT void WriteDefaultProjectFile(const QString& fileName);
 
       /*!
         \brief Returns the date and time of generated binary.
       */
       TEQTAFEXPORT QString GetGenerationDate();
 
-      /*!
-        \brief Return extension filter string
-      */
-      TEQTAFEXPORT QString GetExtensionFilter(te::qt::af::ApplicationController* appController);
     } // end namespace af
   }   // end namespace qt
 }     // end namespace te

@@ -46,7 +46,7 @@
 #include "../events/ApplicationEvents.h"
 #include "../events/LayerEvents.h"
 #include "../events/MapEvents.h"
-#include "../events/ProjectEvents.h"
+//#include "../events/ProjectEvents.h"
 #include "../events/ToolEvents.h"
 #include "../ApplicationController.h"
 //#include "../Project.h"

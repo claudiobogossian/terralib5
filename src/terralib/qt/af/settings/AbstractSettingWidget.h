@@ -44,7 +44,7 @@ namespace te
 
         \brief A frame for setting Table options.
       */
-      class AbstractSettingWidget : public QWidget
+      class TEQTAFEXPORT AbstractSettingWidget : public QWidget
       {
         Q_OBJECT
         

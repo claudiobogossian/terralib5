@@ -29,7 +29,7 @@
 //#include "../../widgets/layer/explorer/LegendItem.h"
 #include "../events/Event.h"
 #include "../events/ApplicationEvents.h"
-#include "../events/ProjectEvents.h"
+//#include "../events/ProjectEvents.h"
 #include "../events/LayerEvents.h"
 #include "../ApplicationController.h"
 //#include "../Project.h"
@@ -140,8 +140,8 @@ void te::qt::af::LayerExplorer::onApplicationTriggered(te::qt::af::evt::Event* e
       else
         m_explorer->addLayers(layers, par);
 
-      te::qt::af::evt::ProjectUnsaved projectUnsavedEvent;
-      emit triggered(&projectUnsavedEvent);
+      //te::qt::af::evt::ProjectUnsaved projectUnsavedEvent;
+     // emit triggered(&projectUnsavedEvent);
     }
     break;
 
@@ -276,8 +276,8 @@ void te::qt::af::LayerExplorer::onLayerVisibilityChanged()
 
 void te::qt::af::LayerExplorer::onLayerOrderChanged()
 {
-  te::qt::af::evt::ProjectUnsaved projectUnsavedEvent;
-  emit triggered(&projectUnsavedEvent);
+  //te::qt::af::evt::ProjectUnsaved projectUnsavedEvent;
+  //emit triggered(&projectUnsavedEvent);
 }
 
 void te::qt::af::LayerExplorer::onTreeItemDoubleClicked(te::map::AbstractLayerPtr layer)

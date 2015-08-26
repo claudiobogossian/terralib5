@@ -101,12 +101,4 @@ We will provide it soon!</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
-<context>
-    <name>te::qt::plugins::wms::WMSLayerPopupHandler</name>
-    <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/wms/WMSLayerPopupHandler.cpp" line="93"/>
-        <source>OK! WMS LAYER</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
 </TS>

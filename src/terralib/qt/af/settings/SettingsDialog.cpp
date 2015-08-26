@@ -3,7 +3,7 @@
 #include "AbstractSettingWidget.h"
 #include "SettingsDialog.h"
 #include "DisplayWidgetFactory.h"
-#include "ProjectWidgetFactory.h"
+//#include "ProjectWidgetFactory.h"
 #include "TableWidgetFactory.h"
 #include "ToolbarsWidgetFactory.h"
 #include "GeneralConfigWidgetFactory.h"
@@ -57,7 +57,7 @@ te::qt::af::SettingsDialog::~SettingsDialog()
 {
   DisplayWidgetFactory::finalize();
   TableWidgetFactory::finalize();
-  ProjectWidgetFactory::finalize();
+  //ProjectWidgetFactory::finalize();
   ToolbarsWidgetFactory::finalize();
   GeneralConfigWidgetFactory::finalize();
 
@@ -70,7 +70,7 @@ void te::qt::af::SettingsDialog::setApplicationController(te::qt::af::Applicatio
 
   DisplayWidgetFactory::initialize();
   TableWidgetFactory::initialize();
-  ProjectWidgetFactory::initialize();
+  //ProjectWidgetFactory::initialize();
   ToolbarsWidgetFactory::initialize();
   GeneralConfigWidgetFactory::initialize();
 

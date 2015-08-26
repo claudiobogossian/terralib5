@@ -27,6 +27,7 @@
 #define __TERRAVIEW_INTERNAL_TERRAVIEW_H
 
 // TerraLib
+#include "TerraViewController.h"
 #include <terralib/qt/af/BaseApplication.h>
 
 // STL
@@ -172,8 +173,6 @@ class TerraView : public te::qt::af::BaseApplication
 
     void showProgressDockWidget();
 
-    void onLayerSelectedObjectsChanged(const te::map::AbstractLayerPtr& layer);
-
     void onHighlightLayerObjects(const te::map::AbstractLayerPtr& layer, te::da::DataSet* dataset, const QColor& color);
 
     void onCreateNewLayer(te::map::AbstractLayerPtr layer);
@@ -261,6 +260,8 @@ class TerraView : public te::qt::af::BaseApplication
     te::qt::widgets::CompositionModeMenuWidget* m_compModeMenu;
 
     ProjectMetadata* m_project;
+
+    TerraViewController* m_tvController;
 };
 
 #endif  // __TERRAVIEW_INTERNAL_TERRAVIEW_H

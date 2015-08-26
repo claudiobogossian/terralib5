@@ -303,25 +303,25 @@ void te::qt::af::RestoreState(QMainWindow* mainWindow)
   sett.endGroup();
 }
 
-void te::qt::af::GetProjectInformationsFromSettings(QString& defaultAuthor, int& maxSaved)
-{
-  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+//void te::qt::af::GetProjectInformationsFromSettings(QString& defaultAuthor, int& maxSaved)
+//{
+//  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+//
+//  sett.beginGroup("projects");
+//  defaultAuthor = sett.value("author_name").toString();
+//  maxSaved = sett.value("recents_history_size").toInt();
+//  sett.endGroup();
+//}
 
-  sett.beginGroup("projects");
-  defaultAuthor = sett.value("author_name").toString();
-  maxSaved = sett.value("recents_history_size").toInt();
-  sett.endGroup();
-}
-
-void te::qt::af::SaveProjectInformationsOnSettings(const QString& defaultAuthor, const int& maxSaved)
-{
-  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
-
-  sett.beginGroup("projects");
-  sett.setValue("author_name", defaultAuthor);
-  sett.setValue("recents_history_size", maxSaved);
-  sett.endGroup();
-}
+//void te::qt::af::SaveProjectInformationsOnSettings(const QString& defaultAuthor, const int& maxSaved)
+//{
+//  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+//
+//  sett.beginGroup("projects");
+//  sett.setValue("author_name", defaultAuthor);
+//  sett.setValue("recents_history_size", maxSaved);
+//  sett.endGroup();
+//}
 
 void te::qt::af::SaveLastDatasourceOnSettings(const QString& dsType)
 {
@@ -330,12 +330,12 @@ void te::qt::af::SaveLastDatasourceOnSettings(const QString& dsType)
   sett.setValue("projects/last datasource used", dsType);
 }
 
-void te::qt::af::SaveOpenLastProjectOnSettings(bool openLast)
-{
-  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
-
-  sett.setValue("projects/openLastDataSource", openLast);
-}
+//void te::qt::af::SaveOpenLastProjectOnSettings(bool openLast)
+//{
+//  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+//
+//  sett.setValue("projects/openLastDataSource", openLast);
+//}
 
 QString te::qt::af::GetLastDatasourceFromSettings()
 {
@@ -344,94 +344,18 @@ QString te::qt::af::GetLastDatasourceFromSettings()
   return sett.value("projects/last datasource used").toString();
 }
 
-bool te::qt::af::GetOpenLastProjectFromSettings()
-{
-  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
-
-  QVariant variant = sett.value("projects/openLastDataSource");
-
-  // If the option was never edited
-  if(variant.isNull() || !variant.isValid())
-    return true;
-
-  return variant.toBool();
-}
-
-void te::qt::af::CreateDefaultSettings()
-{
-  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
-
-  sett.beginGroup("toolbars");
-
-  sett.beginGroup("File Tool Bar");
-  sett.setValue("name", "File Tool Bar");
-  sett.beginWriteArray("Actions");
-  sett.setArrayIndex(0);
-  sett.setValue("action", "File.New Project");
-  sett.setArrayIndex(1);
-  sett.setValue("action", "File.Open Project");
-  sett.setArrayIndex(2);
-  sett.setValue("action", "File.Save Project");
-  sett.setArrayIndex(3);
-  sett.setValue("action", "");
-  sett.setArrayIndex(4);
-  sett.setValue("action", "Project.New Folder");
-  sett.setArrayIndex(5);
-  sett.setValue("action", "Project.Add Layer.All Sources");
-  sett.endArray();
-  sett.endGroup();
-
-  sett.beginGroup("View Tool Bar");
-  sett.setValue("name", "View Tool Bar");
-  sett.beginWriteArray("Actions");
-  sett.setArrayIndex(0);
-  sett.setValue("action", "View.Layer Explorer");
-  sett.setArrayIndex(1);
-  sett.setValue("action", "View.Map Display");
-  sett.setArrayIndex(2);
-  sett.setValue("action", "View.Data Table");
-  sett.setArrayIndex(3);
-  sett.setValue("action", "View.Style Explorer");
-  sett.endArray();
-  sett.endGroup();
-
-  sett.beginGroup("Map Tool Bar");
-  sett.setValue("name", "Map Tool Bar");
-  sett.beginWriteArray("Actions");  
-  sett.setArrayIndex(0);
-  sett.setValue("action", "Map.Draw");
-  sett.setArrayIndex(1);
-  sett.setValue("action", "Map.Previous Extent");
-  sett.setArrayIndex(2);
-  sett.setValue("action", "Map.Next Extent");
-  sett.setArrayIndex(3);
-  sett.setValue("action", "Map.Zoom Extent");
-  sett.setArrayIndex(4);
-  sett.setValue("action", "");
-  sett.setArrayIndex(5);
-  sett.setValue("action", "Map.Zoom In");
-  sett.setArrayIndex(6);
-  sett.setValue("action", "Map.Zoom Out");
-  sett.setArrayIndex(7);
-  sett.setValue("action", "Map.Pan");
-  sett.setArrayIndex(8);
-  sett.setValue("action", "");
-  sett.setArrayIndex(9);
-  sett.setValue("action", "Map.Info");
-  sett.setArrayIndex(10);
-  sett.setValue("action", "Map.Selection");
-  sett.endArray();
-  sett.endGroup();
-
-  sett.endGroup();
-
-  sett.beginGroup("projects");
-
-  sett.setValue("author_name", "");
-  sett.setValue("recents_history_size", "8");
-
-  sett.endGroup();
-}
+//bool te::qt::af::GetOpenLastProjectFromSettings()
+//{
+//  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+//
+//  QVariant variant = sett.value("projects/openLastDataSource");
+//
+//  // If the option was never edited
+//  if(variant.isNull() || !variant.isValid())
+//    return true;
+//
+//  return variant.toBool();
+//}
 
 QString te::qt::af::UnsavedStar(const QString windowTitle, bool isUnsaved)
 {
@@ -647,34 +571,34 @@ void te::qt::af::UpdateUserSettingsFile(const QString& fileName, const bool& rem
   usrSett.load(fileName.toStdString());
 }
 
-void te::qt::af::WriteDefaultProjectFile(const QString& fileName)
-{
-  boost::property_tree::ptree p;
-
-  std::string schema_location = te::common::FindInTerraLibPath("share/terralib/schemas/terralib/qt/af/project.xsd");
-
-  //Header
-  p.add("Project.<xmlattr>.xmlns:xsd", "http://www.w3.org/2001/XMLSchema-instance");
-  p.add("Project.<xmlattr>.xmlns:te_map", "http://www.terralib.org/schemas/maptools");
-  p.add("Project.<xmlattr>.xmlns:te_qt_af", "http://www.terralib.org/schemas/qt/af");
-  p.add("Project.<xmlattr>.xmlns", "http://www.terralib.org/schemas/qt/af");
-  p.add("Project.<xmlattr>.xsd:schemaLocation", "http://www.terralib.org/schemas/qt/af " + schema_location);
-  p.add("Project.<xmlattr>.version", TERRALIB_VERSION_STRING);
-
-  //Contents
-  p.add("Project.Title", "Default project");
-  p.add("Project.Author", "");
-  p.add("Project.ComponentList", "");
-  p.add("Project.te_map:LayerList", "");
-
-  //Store file
-#if BOOST_VERSION > 105600
-  boost::property_tree::xml_writer_settings<std::string> settings('\t', 1);
-#else
-  boost::property_tree::xml_writer_settings<char> settings('\t', 1);
-#endif
-  boost::property_tree::write_xml(fileName.toStdString(), p, std::locale(), settings);
-}
+//void te::qt::af::WriteDefaultProjectFile(const QString& fileName)
+//{
+//  boost::property_tree::ptree p;
+//
+//  std::string schema_location = te::common::FindInTerraLibPath("share/terralib/schemas/terralib/qt/af/project.xsd");
+//
+//  //Header
+//  p.add("Project.<xmlattr>.xmlns:xsd", "http://www.w3.org/2001/XMLSchema-instance");
+//  p.add("Project.<xmlattr>.xmlns:te_map", "http://www.terralib.org/schemas/maptools");
+//  p.add("Project.<xmlattr>.xmlns:te_qt_af", "http://www.terralib.org/schemas/qt/af");
+//  p.add("Project.<xmlattr>.xmlns", "http://www.terralib.org/schemas/qt/af");
+//  p.add("Project.<xmlattr>.xsd:schemaLocation", "http://www.terralib.org/schemas/qt/af " + schema_location);
+//  p.add("Project.<xmlattr>.version", TERRALIB_VERSION_STRING);
+//
+//  //Contents
+//  p.add("Project.Title", "Default project");
+//  p.add("Project.Author", "");
+//  p.add("Project.ComponentList", "");
+//  p.add("Project.te_map:LayerList", "");
+//
+//  //Store file
+//#if BOOST_VERSION > 105600
+//  boost::property_tree::xml_writer_settings<std::string> settings('\t', 1);
+//#else
+//  boost::property_tree::xml_writer_settings<char> settings('\t', 1);
+//#endif
+//  boost::property_tree::write_xml(fileName.toStdString(), p, std::locale(), settings);
+//}
 
 QString te::qt::af::GetGenerationDate()
 {
@@ -692,13 +616,4 @@ QString te::qt::af::GetGenerationDate()
   return s;
 }
 
-QString te::qt::af::GetExtensionFilter(te::qt::af::ApplicationController* appController)
-{
-  QString appName = appController->getAppName();
-  QString appProjectExtension = appController->getAppProjectExtension();
-  QString extensionFilter = appName;
-  extensionFilter += QString(" (*.");
-  extensionFilter += appProjectExtension + ")";
 
-  return extensionFilter;
-}

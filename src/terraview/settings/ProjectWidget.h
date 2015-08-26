@@ -28,7 +28,7 @@
 
 // TerraLib
 #include "../Config.h"
-#include "AbstractSettingWidget.h"
+#include <terralib/qt/af/settings/AbstractSettingWidget.h>
 
 // Forwar declaration
 namespace Ui 
@@ -36,48 +36,38 @@ namespace Ui
   class ProjectWidgetForm; 
 }
 
-namespace te
+/*!
+  \class ProjectWidget
+
+  \brief A frame for setting grid options.
+*/
+class ProjectWidget : public te::qt::af::AbstractSettingWidget
 {
-  namespace qt
-  {
-    namespace af
-    {
-      /*!
-        \class ProjectWidget
+  Q_OBJECT
 
-        \brief A frame for setting grid options.
-      */
-      class TEQTAFEXPORT ProjectWidget : public AbstractSettingWidget
-      {
-        Q_OBJECT
+  public:
 
-        public:
+    ProjectWidget(QWidget* parent = 0);
 
-          ProjectWidget(QWidget* parent = 0);
+    ~ProjectWidget();
 
-          ~ProjectWidget();
+    void saveChanges();
 
-          void saveChanges();
+    void resetState();
 
-          void resetState();
+    virtual void getHelpInformations(QString& ns, QString& helpFile);
 
-          virtual void getHelpInformations(QString& ns, QString& helpFile);
+  protected slots:
 
-        protected slots:
+    void authorChanged(const QString& text);
 
-          void authorChanged(const QString& text);
+    void maxSavedChanged(int i);
 
-          void maxSavedChanged(int i);
+    void onOpeningOptionChanged();
 
-          void onOpeningOptionChanged();
+  private:
 
-        private:
-
-          Ui::ProjectWidgetForm* m_ui;
-      };
-
-    }   // end namespace af
-  }     // end namespace qt
-}       // end namespace te
+    Ui::ProjectWidgetForm* m_ui;
+};
 
 #endif // __TERRALIB_QT_AF_PROJECTWIDGET_H
