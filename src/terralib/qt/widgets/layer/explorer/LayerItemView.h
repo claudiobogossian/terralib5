@@ -150,6 +150,12 @@ namespace te
         * \note idx must contain a Layer or the operation will fail.
         */
         void updateGrouping(const QModelIndex& idx);
+
+        /*!
+         * \brief updateLegend
+         * \param l
+         */
+        void updateLegend(te::map::AbstractLayer* l);
         //@}
 
         /** @name Popup Menu manipulation Methods

@@ -52,7 +52,6 @@ namespace te
       {
         // Forward declarations
         class WMSItemDelegate;
-        class WMSLayerPopupHandler;
 
         class Plugin : public QObject, public te::plugin::Plugin
         {
@@ -77,8 +76,6 @@ namespace te
             void updateDelegate(const bool& add);
 
             WMSItemDelegate* m_delegate;
-
-            WMSLayerPopupHandler* m_handler;
         };
       } // end namespace wms
     }   // end namespace plugins

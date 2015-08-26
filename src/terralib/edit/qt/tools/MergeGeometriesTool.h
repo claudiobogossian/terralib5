@@ -28,6 +28,10 @@ TerraLib Team at <terralib-team@terralib.org>.
 
 // TerraLib
 #include "../../../geometry/Coord2D.h"
+#include "../../../geometry/Geometry.h"
+#include "../../../geometry/GeometryCollection.h"
+#include "../../../geometry/GeometryProperty.h"
+#include "../../../dataaccess/dataset/ObjectId.h"
 #include "../../../dataaccess/dataset/ObjectIdSet.h"
 #include "../../../maptools/AbstractLayer.h"
 #include "GeometriesUpdateTool.h"
@@ -77,14 +81,24 @@ namespace te
     private:
 
       void draw();
-      void storeMergedFeature();
-      void storeUndoCommand();
-      void mergeGeometries();
-      bool spatialRelationDisjoint(te::gm::GeometryCollection* gc);
 
-      te::gm::Geometry* Union(te::gm::Geometry* g1, te::gm::Geometry* g2);
-      const te::gm::Envelope* getRefEnvelope(te::da::DataSet* ds, te::gm::GeometryProperty* geomProp);
-      te::da::ObjectId* getBaseOID(const te::da::ObjectIdSet* objSet, QString msg);
+      void pickFeature(const te::map::AbstractLayerPtr& layer, const QPointF& pos);
+
+      te::gm::Envelope buildEnvelope(const QPointF& pos);
+
+      void storeMergedFeature();
+
+      void storeUndoCommand();
+
+      void mergeGeometries(bool hasmore);
+
+      bool spatialRelationDisjoint(te::gm::GeometryCollection& gc);
+
+      te::gm::Geometry* Union(te::gm::Geometry& g1, te::gm::Geometry& g2);
+
+      const te::gm::Envelope* getRefEnvelope(te::da::DataSet& ds, te::gm::GeometryProperty& geomProp);
+
+      void getBaseOID(const te::da::ObjectIdSet& objSet, QString msg);
 
     private slots:
 
@@ -92,10 +106,13 @@ namespace te
 
     protected:
 
-      //std::vector<Feature*> m_updateWatches;
+      std::string m_chosenOid;
 
-      te::da::ObjectId* m_oidRef;
-      te::da::ObjectIdSet* m_oidsRemoved;
+      te::gm::GeometryCollection* m_geocollection;
+
+      std::vector<Feature*> m_updateWatches;
+
+      te::da::ObjectIdSet* m_oidsMerged;
 
     };
 

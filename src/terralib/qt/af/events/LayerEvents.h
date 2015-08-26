@@ -311,6 +311,27 @@ namespace te
 
           std::list<te::map::AbstractLayerPtr> m_layers;
         };
+
+        /*!
+          \struct GetLayerSelected
+
+          \brief This event is used to get a single layer selected in layer tree
+        */
+        struct LayerChanged : public Event
+        {
+          /*!
+            \brief Construtor.
+
+            \param layer The layer that has the selected style.
+          */
+          LayerChanged(te::map::AbstractLayer* layer) :
+            Event(LAYER_CHANGED),
+            m_layer(layer)
+          {
+          }
+
+          te::map::AbstractLayer* m_layer;  //!< Layer selected.
+        };
       }
     }
   }

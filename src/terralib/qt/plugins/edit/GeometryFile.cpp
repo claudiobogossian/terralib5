@@ -143,7 +143,6 @@ void GeometryFile::writeGeometries(const char* fileName, const std::vector<te::g
     return;
 
   unsigned int pos = 0;
-  int idCount = 0;
 
   for(std::vector<te::gm::Geometry*>::const_iterator it = geoms.begin(); it != geoms.end(); ++it)
   {

@@ -27,7 +27,6 @@
 #define __TERRALIB_EDIT_QT_INTERNAL_GEOMETRIESUPDATETOOL_H
 
 #include "../Config.h"
-
 #include "../../../qt/widgets/tools/AbstractTool.h"
 
 
@@ -84,6 +83,7 @@ namespace te
 
       Feature*                m_feature;
       te::map::AbstractLayer* m_layer;
+
     };
   }
 }

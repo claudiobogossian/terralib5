@@ -37,7 +37,6 @@
 #include "../../../widgets/layer/explorer/LayerItem.h"
 #include "../../../widgets/layer/explorer/LayerItemView.h"
 #include "WMSItemDelegate.h"
-#include "WMSLayerPopupHandler.h"
 #include "WMSType.h"
 
 // Boost
@@ -85,8 +84,7 @@ std::list<te::map::AbstractLayerPtr> GetLayers(const QModelIndexList& lst)
 te::qt::plugins::wms::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo)
   : QObject(),
     te::plugin::Plugin(pluginInfo),
-    m_delegate(0),
-    m_handler(0)
+    m_delegate(0)
 {
 }
 
@@ -164,19 +162,12 @@ void te::qt::plugins::wms::Plugin::updateDelegate(const bool& add)
   {
     m_delegate = new WMSItemDelegate((QStyledItemDelegate*)view->itemDelegate(), this);
     view->setItemDelegate(m_delegate);
-
-    m_handler = new WMSLayerPopupHandler(view->getMenuEventHandler(), this);
-    view->setMenuEventHandler(m_handler);
   }
   else
   {
     view->removeDelegate(m_delegate);
     delete m_delegate;
     m_delegate = 0;
-
-    view->removeMenuEventHandler(m_handler);
-    delete m_handler;
-    m_handler = 0;
   }
 }
 

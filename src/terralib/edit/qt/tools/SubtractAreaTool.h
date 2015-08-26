@@ -53,9 +53,13 @@ namespace te
     private:
 
       void drawPolygon();
+
       void draw();
+
       void reset();
+
       void storeEditedFeature();
+
       void storeUndoCommand();
 
       void pickFeature(const te::map::AbstractLayerPtr& layer);

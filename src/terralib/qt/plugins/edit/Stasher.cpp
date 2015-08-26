@@ -31,8 +31,6 @@ void StashGeometries(const te::map::AbstractLayer* layer, const std::map<std::st
   std::ofstream idsFile(fName.c_str(), std::ios::out);
   std::ofstream idsRFile((fName + "r").c_str(), std::ios::out);
 
-  int count = 0;
-
   for(std::map<std::string, te::gm::Geometry*>::const_iterator it = geoms.begin(); it != geoms.end(); ++it)
   {
     std::string id = it->first;

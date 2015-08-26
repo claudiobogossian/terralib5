@@ -206,3 +206,13 @@ int te::qt::widgets::LayerItem::updateGrouping()
 
   return pos;
 }
+
+void te::qt::widgets::LayerItem::updateLegend()
+{
+  std::vector<TreeItem*> items;
+
+  getChildren(items, "LEGEND");
+
+  if(!items.empty())
+    ((LegendItem*)(*items.begin()))->updateSymbol(m_layer->getStyle()->getRule(0));
+}

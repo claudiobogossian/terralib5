@@ -28,6 +28,7 @@
 
 #include <map>
 #include <set>
+#include <string>
 
 // Forward declarations.
 namespace te

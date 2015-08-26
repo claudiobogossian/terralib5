@@ -27,6 +27,32 @@ std::list<te::map::AbstractLayerPtr> GetSelectedLayersOnly(te::qt::widgets::Laye
   return res;
 }
 
+QModelIndex FindLayerIndex(QAbstractItemModel* model, const QModelIndex& parent, te::map::AbstractLayer* l)
+{
+  int cs = model->rowCount(parent);
+
+  for(int i = 0; i < cs; i++)
+  {
+    QModelIndex cIdx = model->index(i, 0, parent);
+    te::qt::widgets::TreeItem* item = static_cast<te::qt::widgets::TreeItem*>(cIdx.internalPointer());
+
+    if(item->getType() == "LAYER")
+    {
+      if(((te::qt::widgets::LayerItem*)item)->getLayer().get() == l)
+        return cIdx;
+    }
+    else if(item->getType() == "FOLDER")
+    {
+      QModelIndex fIdx = FindLayerIndex(model, cIdx, l);
+
+      if(fIdx.isValid())
+        return fIdx;
+    }
+  }
+
+  return QModelIndex();
+}
+
 te::qt::widgets::LayerItemView::LayerItemView(QWidget* parent):
   QTreeView(parent),
   m_outterFilter(0)
@@ -174,6 +200,22 @@ void te::qt::widgets::LayerItemView::updateGrouping(const QModelIndex& idx)
 
   QTreeView::expand(idx);
   QTreeView::expand(idx.child(pos, 0));
+}
+
+void te::qt::widgets::LayerItemView::updateLegend(te::map::AbstractLayer* l)
+{
+  QModelIndex lIdx = FindLayerIndex(model(), QModelIndex(), l);
+
+  if(lIdx.isValid())
+  {
+    LayerItem* li = static_cast<LayerItem*>(lIdx.internalPointer());
+    li->updateLegend();
+
+    QVector<int> roles;
+    roles << Qt::DecorationRole;
+
+    dataChanged(lIdx.child(0, 0), lIdx.child(0, 0), roles);
+  }
 }
 
 void te::qt::widgets::LayerItemView::addNoLayerAction(QAction* act)
