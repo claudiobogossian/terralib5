@@ -47,8 +47,7 @@ te::layout::Variant::Variant() :
   m_bValue(false),
   m_type(0),
   m_null(true),
-  m_complex(false),
-  m_geometryPtr(0)
+  m_complex(false)
 {
   m_type = Enums::getInstance().getEnumDataType()->getDataTypeNone();
 }
@@ -96,8 +95,7 @@ void te::layout::Variant::convertValue( const void* valueCopy )
   Font* fontValue = 0;
   te::gm::Envelope* envelopeValue = 0;
   GenericVariant* generic = 0;
-  te::gm::GeometryShrPtr geometryPtr(0);
-
+  te::gm::GeometryShrPtr geometryPtr;
   EnumDataType* dataType = Enums::getInstance().getEnumDataType();
 
   if(!m_type || !dataType)
