@@ -466,19 +466,26 @@ void te::layout::Utils::remapToPlanar( te::gm::Envelope* latLongBox, int zone )
   if(!latLongBox->isValid())
     return;
   
-  std::string proj4 = proj4DescToPlanar(zone);
+  try
+  {
+    std::string proj4 = proj4DescToPlanar(zone);
 
-  // Get the id of the projection of destination 
-  std::pair<std::string, unsigned int> projMeters = te::srs::SpatialReferenceSystemManager::getInstance().getIdFromP4Txt(proj4); 
+    // Get the id of the projection of destination 
+    std::pair<std::string, unsigned int> projMeters = te::srs::SpatialReferenceSystemManager::getInstance().getIdFromP4Txt(proj4); 
 
-  std::string proj4geo = proj4DescToGeodesic();
+    std::string proj4geo = proj4DescToGeodesic();
 
-  // Get the id of the projection source 
-  std::pair<std::string, unsigned int> currentBoxProj = te::srs::SpatialReferenceSystemManager::getInstance().getIdFromP4Txt(proj4geo); 
+    // Get the id of the projection source 
+    std::pair<std::string, unsigned int> currentBoxProj = te::srs::SpatialReferenceSystemManager::getInstance().getIdFromP4Txt(proj4geo); 
 
-  // Remapping 
-  int srid = currentBoxProj.second;
-  latLongBox->transform(srid, projMeters.second); 
+    // Remapping 
+    int srid = currentBoxProj.second;
+    latLongBox->transform(srid, projMeters.second); 
+  }
+  catch(const te::common::Exception&)
+  {
+    zone = -1;
+  }
 }
 
 void te::layout::Utils::remapToPlanar( te::gm::LinearRing* line, int zone )
