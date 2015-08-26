@@ -27,6 +27,7 @@
 #include "Line.h"
 #include "Point.h"
 
+
 // STL
 #include <cassert>
 
@@ -133,6 +134,19 @@ void te::gm::Line::setCoord(int index, double x, double y, double z, double m)
     m_zA[index] = z;
     m_mA[index] = m;
   }
+}
+
+double te::gm::Line::distance(te::gm::Point p)
+{
+  double A, B, C, distance;
+
+  // coefficients of line p1,p2
+  A = m_coords[0].y - m_coords[1].y;
+  B = m_coords[1].x - m_coords[0].x;
+  C = (m_coords[0].x - m_coords[1].x)* m_coords[0].y + (m_coords[1].y - m_coords[0].y)*m_coords[0].x;
+  distance = abs(A*(p.getX()) + B*(p.getY()) + C) / sqrt(A*A + B*B);
+
+  return(distance);
 }
 
 

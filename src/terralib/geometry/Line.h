@@ -154,7 +154,11 @@ namespace te
     */
     void setCoord(int index, double x, double y, double z = 0., double m = 0.);
 
-        //@}
+    /*!
+    \ Point line distance formula by calculating the coefficients A, B, C of the line Ax + By + C = 0 from points p1, p2
+    */
+    double distance(te::gm::Point p);
+      //@}
     };
 
   } // end namespace gm
