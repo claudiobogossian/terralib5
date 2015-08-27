@@ -49,7 +49,7 @@ te::qt::plugins::vp::IntersectionAction::~IntersectionAction()
 {
 }
 
-void te::qt::plugins::vp::IntersectionAction::onActionActivated(bool checked)
+void te::qt::plugins::vp::IntersectionAction::onActionActivated(bool)
 {
   QWidget* parent = te::qt::af::ApplicationController::getInstance().getMainWindow();
   te::vp::IntersectionDialog dlg(parent);

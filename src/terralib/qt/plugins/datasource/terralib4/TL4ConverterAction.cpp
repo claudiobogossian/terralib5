@@ -65,7 +65,7 @@ void te::qt::plugins::terralib4::TL4ConverterAction::createAction(const std::str
   m_menu->addAction(m_action);
 }
 
-void te::qt::plugins::terralib4::TL4ConverterAction::onActionActivated(bool checked)
+void te::qt::plugins::terralib4::TL4ConverterAction::onActionActivated(bool)
 {
   QWidget* parent = te::qt::af::ApplicationController::getInstance().getMainWindow();
   te::qt::plugins::terralib4::TL4ConverterWizard dlg(parent);

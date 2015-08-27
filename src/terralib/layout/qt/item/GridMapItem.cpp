@@ -252,7 +252,6 @@ void te::layout::GridMapItem::configPainter( QPainter* painter )
   QColor clrLine = rgbaToQColor(lineColor);
   pen.setColor(clrLine);
 
-  double lineWidth = model->getLineWidth();
   pen.setWidth(0);
 
   painter->setPen(pen);  

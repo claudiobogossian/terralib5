@@ -154,8 +154,6 @@ te::vp::GeometricOpObjStrategy te::vp::GeometricOpOutputWizardPage::getObjectStr
 
 bool te::vp::GeometricOpOutputWizardPage::hasOutputLayer()
 {
-  // In case to add new geometric columns in the input layer. set false (under development)
-  //return m_ui->m_outputGroupBox->isChecked();
   return true;
 }
 
@@ -189,18 +187,21 @@ void te::vp::GeometricOpOutputWizardPage::onAttributeComboBoxChanged(int index)
 
 void te::vp::GeometricOpOutputWizardPage::onAllObjectsToggled()
 {
+  m_ui->m_outputGroupBox->setCheckable(true);
   m_ui->m_attributesComboBox->setEnabled(false);
   onAttributeComboBoxChanged(0);
 }
 
 void te::vp::GeometricOpOutputWizardPage::onSimpleOperationToggled()
 {
+  m_ui->m_outputGroupBox->setCheckable(false);
   m_ui->m_attributesComboBox->setEnabled(false);
   onAttributeComboBoxChanged(0);
 }
 
 void te::vp::GeometricOpOutputWizardPage::onAttributeOperationToggled()
 {
+  m_ui->m_outputGroupBox->setCheckable(false);
   m_ui->m_attributesComboBox->setEnabled(true);
 }
 
@@ -213,7 +214,7 @@ void te::vp::GeometricOpOutputWizardPage::onTargetDatasourceToolButtonPressed()
 
   std::list<te::da::DataSourceInfoPtr> dsPtrList = dlg.getSelecteds();
 
-  if(dsPtrList.size() <= 0)
+  if(dsPtrList.empty())
     return;
 
   std::list<te::da::DataSourceInfoPtr>::iterator it = dsPtrList.begin();

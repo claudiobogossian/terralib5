@@ -177,9 +177,6 @@ void te::layout::MapItem::updateObserver( ContextItem context )
     int w = (int)mapBox.getWidth();
     int h = (int)mapBox.getHeight();
 
-    int mw = m_mapDisplay->getWidth();
-    int mh = m_mapDisplay->getHeight();
-
     /* resize */
     if(w != m_mapDisplay->getWidth() 
       || h != m_mapDisplay->getHeight())

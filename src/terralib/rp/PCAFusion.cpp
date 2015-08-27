@@ -190,6 +190,7 @@ namespace te
           bandProperties.push_back( new te::rst::BandProperty( 
             *ressampledRasterPtr->getBand( bandIdx )->getProperty() ) );
           bandProperties[ bandIdx ]->m_type = te::dt::DOUBLE_TYPE;
+          bandProperties[ bandIdx ]->m_noDataValue = std::numeric_limits< double >::max();
           
           ressampledRasterBands.push_back( bandIdx );
         } 
@@ -246,6 +247,8 @@ namespace te
             *pcaRasterPtr->getBand( bandIdx )->getProperty() ) );
           bandProperties[ bandIdx ]->m_type = 
             ressampledRasterPtr->getBand( bandIdx )->getProperty()->m_type;
+          bandProperties[ bandIdx ]->m_noDataValue = 
+            ressampledRasterPtr->getBand( bandIdx )->getProperty()->m_noDataValue;            
             
           outputRasterBands.push_back( bandIdx );
         } 

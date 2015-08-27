@@ -51,10 +51,10 @@
 te::layout::MapModel::MapModel() :
   m_mapDisplacementX(0),
   m_mapDisplacementY(0),
+  m_mapScale(0),
   m_systematic(0),
   m_fixedScale(false),
-  m_loadedLayer(false),
-  m_mapScale(0)
+  m_loadedLayer(false)
 {
   m_type = Enums::getInstance().getEnumObjectType()->getMapItem();
 

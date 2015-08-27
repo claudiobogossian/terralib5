@@ -27,7 +27,6 @@
 #define __TERRALIB_EDIT_QT_INTERNAL_VERTEXTOOL_H
 
 // TerraLib
-#include "../../../edit/qt/core/EditionManager.h"
 #include "../../../geometry/Envelope.h"
 #include "../../../maptools/AbstractLayer.h"
 #include "../../../qt/widgets/tools/AbstractTool.h"
@@ -101,7 +100,7 @@ namespace te
 
           \note The tool will NOT take the ownership of the given pointers.
         */
-        VertexTool(te::edit::EditionManager* editionManager, te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent = 0);
+        VertexTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent = 0);
 
         /*! \brief Destructor. */
         ~VertexTool();
@@ -155,9 +154,6 @@ namespace te
           VertexIndex m_currentVertexIndex;
           te::sam::rtree::Index<VertexIndex, 8> m_rtree;
           StageType m_currentStage;
-      protected:
-
-          te::edit::EditionManager* m_editionManager;
 
     };
 

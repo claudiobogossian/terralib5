@@ -28,10 +28,10 @@
 #include "../../../qt/widgets/canvas/MapDisplay.h"
 #include "../../../qt/widgets/Utils.h"
 #include "../../Feature.h"
+#include "../../RepositoryManager.h"
 #include "../../Utils.h"
 #include "../Renderer.h"
 #include "../Utils.h"
-#include "../core/command/MoveCommand.h"
 #include "MoveGeometryTool.h"
 
 // Qt
@@ -46,12 +46,11 @@
 #include <memory>
 
 
-te::edit::MoveGeometryTool::MoveGeometryTool(te::edit::EditionManager* editionManager, te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent)
+te::edit::MoveGeometryTool::MoveGeometryTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent)
 : AbstractTool(display, parent),
     m_layer(layer),
     m_feature(0),
-    m_moveStarted(false),
-    m_editionManager(editionManager)
+    m_moveStarted(false)
 {
   // Signals & slots
   connect(m_display, SIGNAL(extentChanged()), SLOT(onExtentChanged()));
@@ -120,18 +119,8 @@ bool te::edit::MoveGeometryTool::mouseReleaseEvent(QMouseEvent* e)
   if(m_feature == 0)
     return false;
 
-  m_moveWatches[m_feature->getId()->clone()->getValueAsString()].push_back(m_deltaSum);
-
-  QUndoCommand* command = new MoveCommand(m_editionManager,m_moveWatches, m_feature->clone(), m_display, m_layer);
-  m_editionManager->addUndoStack(command);
-
   return false;
 
-}
-
-bool te::edit::MoveGeometryTool::mouseDoubleClickEvent(QMouseEvent* e)
-{
-  return false;
 }
 
 void te::edit::MoveGeometryTool::reset()
@@ -153,7 +142,7 @@ void te::edit::MoveGeometryTool::pickFeature(const te::map::AbstractLayerPtr& la
 
   try
   {
-    m_feature = PickFeature(m_editionManager, m_layer, env, m_display->getSRID());
+    m_feature = PickFeature(layer, env, m_display->getSRID());
 
     draw();
   }
@@ -195,7 +184,7 @@ void te::edit::MoveGeometryTool::draw()
   renderer.begin(draft, env, m_display->getSRID());
 
   // Draw the layer edited geometries
-  renderer.drawRepository(m_editionManager, m_layer->getId(), env, m_display->getSRID());
+  renderer.drawRepository(m_layer->getId(), env, m_display->getSRID());
 
   if(m_feature == 0)
   {
@@ -205,7 +194,7 @@ void te::edit::MoveGeometryTool::draw()
   }
 
   // Draw the vertexes
-  if (m_editionManager->m_repository->hasIdentify(m_layer->getId(), m_feature->getId()) == false)
+  if (RepositoryManager::getInstance().hasIdentify(m_layer->getId(), m_feature->getId()) == false)
     renderer.draw(m_feature->getGeometry(), true);
   else
     renderer.drawVertexes(m_feature->getGeometry());
@@ -227,7 +216,5 @@ void te::edit::MoveGeometryTool::onExtentChanged()
 
 void te::edit::MoveGeometryTool::storeEditedFeature()
 {
-  m_editionManager->m_repository->addGeometry(m_layer->getId(), m_feature->getId()->clone(), dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone()));
-
-  m_editionManager->m_operation[m_feature->getId()->getValueAsString()] = m_editionManager->updateOp;
+  RepositoryManager::getInstance().addGeometry(m_layer->getId(), m_feature->getId()->clone(), dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone()));
 }

@@ -11,9 +11,9 @@
 #include "../../../qt/widgets/canvas/MapDisplay.h"
 #include "../../Feature.h"
 #include "../../RepositoryManager.h"
+#include "../../Utils.h"
 #include "../Renderer.h"
 #include "../Utils.h"
-#include "../core/command/UpdateCommand.h"
 #include "AggregateAreaTool.h"
 
 // Qt
@@ -28,14 +28,14 @@
 #include <memory>
 #include <iostream>
 
-te::edit::AggregateAreaTool::AggregateAreaTool(te::edit::EditionManager* editionManager, te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent)
-: CreateLineTool(editionManager, display, layer, Qt::ArrowCursor, 0),
-m_layer(layer),
-m_feature(0),
-m_editionManager(editionManager)
+te::edit::AggregateAreaTool::AggregateAreaTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent)
+: CreateLineTool(display, layer, Qt::ArrowCursor, parent),
+  m_feature(0)
 {
+
   // Signals & slots
   connect(m_display, SIGNAL(extentChanged()), SLOT(onExtentChanged()));
+
 }
 
 te::edit::AggregateAreaTool::~AggregateAreaTool()
@@ -55,7 +55,7 @@ bool te::edit::AggregateAreaTool::mousePressEvent(QMouseEvent* e)
   }
 
   if (m_feature == 0)
-    pickFeature(m_layer, GetPosition(e));
+    pickFeature(m_layer);
 
   return te::edit::CreateLineTool::mousePressEvent(e);
 }
@@ -63,11 +63,6 @@ bool te::edit::AggregateAreaTool::mousePressEvent(QMouseEvent* e)
 bool te::edit::AggregateAreaTool::mouseMoveEvent(QMouseEvent* e)
 {
   return te::edit::CreateLineTool::mouseMoveEvent(e);
-}
-
-bool te::edit::AggregateAreaTool::mouseReleaseEvent(QMouseEvent* e)
-{
-  return true;
 }
 
 bool te::edit::AggregateAreaTool::mouseDoubleClickEvent(QMouseEvent* e)
@@ -91,11 +86,6 @@ bool te::edit::AggregateAreaTool::mouseDoubleClickEvent(QMouseEvent* e)
     draw();
 
     storeEditedFeature();
-
-    m_updateWatches.push_back(m_feature->clone());
-
-    QUndoCommand* command = new UpdateCommand(m_editionManager, m_updateWatches, m_display, m_layer);
-    m_editionManager->addUndoStack(command);
 
     return true;
   }
@@ -122,7 +112,7 @@ void te::edit::AggregateAreaTool::draw()
   renderer.begin(draft, env, m_display->getSRID());
 
   // Draw the layer edited geometries
-  renderer.drawRepository(m_editionManager, m_layer->getId(), env, m_display->getSRID());
+  renderer.drawRepository(m_layer->getId(), env, m_display->getSRID());
 
   if (!m_coords.empty())
   {
@@ -163,25 +153,25 @@ te::gm::Geometry* te::edit::AggregateAreaTool::buildPolygon()
 
     polygon->setSRID(m_display->getSRID());
 
-    te::gm::Geometry* mpol = 0;
+    te::gm::Geometry* geo = 0;
 
     if (!polygon->intersects(m_feature->getGeometry()))
-      return m_feature->getGeometry();
+      return dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone());
 
-    mpol = Union(polygon, m_feature);
+    geo = Union(polygon, m_feature);
 
     //projection
     if(polygon->getSRID() == m_layer->getSRID())
-      return mpol;
+      return geo;
 
     //else, need conversion...
-    mpol->transform(m_layer->getSRID());
+    geo->transform(m_layer->getSRID());
 
-    return mpol;
+    return geo;
 
 }
 
-void te::edit::AggregateAreaTool::pickFeature(const te::map::AbstractLayerPtr& layer, const QPointF& pos)
+void te::edit::AggregateAreaTool::pickFeature(const te::map::AbstractLayerPtr& layer)
 {
   reset();
 
@@ -197,11 +187,34 @@ void te::edit::AggregateAreaTool::pickFeature(const te::map::AbstractLayerPtr& l
 
     if (ds->moveNext())
     {
+      te::gm::Coord2D coord(0, 0);
 
       std::auto_ptr<te::gm::Geometry> geom = ds->getGeometry(geomProp->getName());
-      te::gm::Envelope Env(*geom->getMBR());
+      te::gm::Envelope auxEnv(*geom->getMBR());
 
-      m_feature = PickFeature(m_editionManager, m_layer, Env, m_display->getSRID());
+      // Try finds the geometry centroid
+      switch (geom->getGeomTypeId())
+      {
+        case te::gm::PolygonType:
+        {
+          te::gm::Polygon* p = dynamic_cast<te::gm::Polygon*>(geom.get());
+          coord = *p->getCentroidCoord();
+
+          break;
+        }
+        case te::gm::MultiPolygonType:
+        {
+          te::gm::MultiPolygon* mp = dynamic_cast<te::gm::MultiPolygon*>(geom.get());
+          coord = *mp->getCentroidCoord();
+
+          break;
+        }
+      }
+
+      // Build the search envelope
+      te::gm::Envelope e(coord.getX(), coord.getY(), coord.getX(), coord.getY());
+
+      m_feature = PickFeature(m_layer, e, m_display->getSRID());
 
     }
 
@@ -242,9 +255,7 @@ void te::edit::AggregateAreaTool::onExtentChanged()
 
 void te::edit::AggregateAreaTool::storeEditedFeature()
 {
-  m_editionManager->m_repository->addGeometry(m_layer->getId(), m_feature->getId()->clone(), dynamic_cast<te::gm::Geometry*>(buildPolygon()->clone()));
-
-  m_editionManager->m_operation[m_feature->getId()->getValueAsString()] = m_editionManager->updateOp;
+  RepositoryManager::getInstance().addGeometry(m_layer->getId(), m_feature->getId()->clone(), dynamic_cast<te::gm::Geometry*>(buildPolygon()->clone()));
 }
 
 te::gm::Geometry* te::edit::AggregateAreaTool::Union(te::gm::Geometry* g1, Feature* feature_g2)
@@ -256,7 +267,7 @@ te::gm::Geometry* te::edit::AggregateAreaTool::Union(te::gm::Geometry* g1, Featu
 
   std::auto_ptr<const te::map::LayerSchema> schema(m_layer->getSchema());
   if (!schema->hasGeom())
-    return false;
+    return 0;
 
   te::gm::GeometryProperty* gp = te::da::GetFirstGeomProperty(schema.get());
 

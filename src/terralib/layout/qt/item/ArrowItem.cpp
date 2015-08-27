@@ -154,7 +154,6 @@ void te::layout::ArrowItem::drawLeftArrow(QPainter * painter)
   double y1 = rectAdjusted.center().y()-h1;
   double y2 = rectAdjusted.center().y()+h1;
   double y4 = rectAdjusted.center().y()+h2;
-  double y5 = rectAdjusted.width() - w4;
   double y6 = rectAdjusted.center().y() + w4;
   
   QPointF p1 = QPointF(w3,y4);

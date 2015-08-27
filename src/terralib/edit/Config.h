@@ -26,9 +26,6 @@
 #ifndef __TERRALIB_EDIT_INTERNAL_CONFIG_H
 #define __TERRALIB_EDIT_INTERNAL_CONFIG_H
 
-// TerraLib
-#include "../Config.h"
-
 #define TE_EDIT_MODULE_NAME "te.edit"
 
 #define NEW_FEATURE_ID_SUFFIX "-new"

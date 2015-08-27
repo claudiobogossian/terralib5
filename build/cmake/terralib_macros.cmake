@@ -69,11 +69,11 @@ MACRO(TeInstallQt5Plugins)
 #  if(APPLE)
 #    install (TARGETS
 #      Qt5::QWindowsIntegrationPlugin
-#  	  RUNTIME
-#	  DESTINATION qtplugins/platforms
-#	  COMPONENT runtime
+#    RUNTIME
+#  DESTINATION qtplugins/platforms
+#  COMPONENT runtime
 #    )
- # endif()
+# endif()
   
 ENDMACRO(TeInstallQt5Plugins)
 
@@ -122,28 +122,38 @@ endif()
 
 ENDMACRO(TeInstallQtPlugins)
 
-#Add library path to RPATH (This will make this project library to find automatically it's dependencies)
-#Verify if the lib is already on LD or not
-MACRO(addExternalLibraryToRPATH LIBRARY)
-	IF(UNIX)
-		get_filename_component(LIBRARY_PATH ${LIBRARY} DIRECTORY)
-		LIST(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES ${LIBRARY_PATH} isSystemDir)
-		IF("${isSystemDir}" STREQUAL "-1")
-	    	list (APPEND CMAKE_INSTALL_RPATH ${LIBRARY_PATH})
-			MESSAGE(STATUS " -- Adding ${LIBRARY} to RPATH")
-		ENDIF("${isSystemDir}" STREQUAL "-1")
-	ENDIF()
-ENDMACRO(addExternalLibraryToRPATH)
+#
+# Add the library path to RPATH and verify if the lib is already on LD or not
+#
+MACRO(TeAddExternalLibraryToRPATH LIBRARY)
 
-#Add a list of libraries to RPATH (This will make this project library to find automatically it's dependencies)
-#Verify if the lib is already on LD or not
-MACRO(addExternalLibrariesToRPATH LIBRARY_LIST)
-  IF(UNIX)
-	  FOREACH(LIBRARY ${LIBRARY_LIST})
-		string(FIND ${LIBRARY} ".so" isShared)
-		IF(NOT "${isShared}" EQUAL "-1")
-			addExternalLibraryToRPATH(${LIBRARY})	
-		ENDIF()
-	  ENDFOREACH()
-  ENDIF()
-ENDMACRO(addExternalLibrariesToRPATH)
+  if(UNIX)
+    get_filename_component(LIBRARY_PATH ${LIBRARY} DIRECTORY)
+
+    list(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES ${LIBRARY_PATH} isSystemDir)
+
+    if("${isSystemDir}" STREQUAL "-1")
+      list(APPEND CMAKE_INSTALL_RPATH ${LIBRARY_PATH})
+
+      message(STATUS " -- Adding ${LIBRARY} to RPATH")
+      
+    endif()
+
+  endif()
+
+ENDMACRO(TeAddExternalLibraryToRPATH)
+
+#
+# Add a list of libraries path to RPATH
+#
+MACRO(TeAddExternalLibrariesToRPATH LIBRARY_LIST)
+  if(UNIX)
+    foreach(LIBRARY ${LIBRARY_LIST})
+      string(FIND ${LIBRARY} ".so" isShared)
+
+      if(NOT "${isShared}" EQUAL "-1")
+        TeAddExternalLibraryToRPATH(${LIBRARY})
+      endif()
+    endforeach()
+  endif()
+ENDMACRO(TeAddExternalLibrariesToRPATH)

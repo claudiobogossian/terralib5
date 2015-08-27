@@ -276,9 +276,6 @@ namespace te
 
       private:
 
-//        int m_srid;                                 //!< The layer SRS.
-        std::auto_ptr<te::gm::Envelope> m_mbr;      //!< The Layer bounding box.
-        std::auto_ptr<te::se::Style> m_style;       //!< The style to be applied to the geographic objects in the layer.
         std::auto_ptr<LayerRenderer> m_renderer;    //!< A pointer to the internal renderer used to paint this layer.
         te::graph::AbstractGraph* m_graph;          //!< The graph associated to this Layer.
     };

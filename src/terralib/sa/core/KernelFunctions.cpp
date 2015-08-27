@@ -197,8 +197,6 @@ void te::sa::GridRatioKernel(te::sa::KernelOutputParams* params,te::rst::Raster*
   {
     for(unsigned int j = 0; j < rasterOut->getNumberOfColumns(); ++j)
     {
-      double kernelValue = 0.;
-
       double kernelA = 0.;
       rasterA->getValue(j, i, kernelA);
 
@@ -206,7 +204,7 @@ void te::sa::GridRatioKernel(te::sa::KernelOutputParams* params,te::rst::Raster*
       rasterB->getValue(j, i, kernelB);
 
       //calculate kernel ratio value
-      kernelValue = KernelRatioValue(params, area, kernelA, kernelB);
+      double kernelValue = KernelRatioValue(params, area, kernelA, kernelB);
 
       rasterOut->setValue(j, i, kernelValue);
     }
@@ -380,7 +378,6 @@ void te::sa::DataSetRatioKernel(te::sa::KernelOutputParams* params, te::mem::Dat
 
   while(dsA->moveNext() && dsB->moveNext() && dsOut->moveNext())
   {
-    double kernelValue = 0.;
     double kernelA = dsA->getDouble(kernelIdx);
     double kernelB = dsB->getDouble(kernelIdx);
 
@@ -389,7 +386,7 @@ void te::sa::DataSetRatioKernel(te::sa::KernelOutputParams* params, te::mem::Dat
     double area = te::sa::GetArea(geom.get());
 
     //calculate kernel ratio value
-    kernelValue = KernelRatioValue(params, area, kernelA, kernelB);
+    double kernelValue = KernelRatioValue(params, area, kernelA, kernelB);
 
     dsOut->setDouble(kernelIdx, kernelValue);
 

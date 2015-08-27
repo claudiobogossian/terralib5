@@ -468,8 +468,6 @@ QGraphicsItem* te::layout::ItemUtils::intersectionSelectionItem( int x, int y )
 
   QPointF pt(x, y);
 
-  bool intersection = false;
-
   foreach (QGraphicsItem *item, items) 
   {
     if(item)

@@ -26,9 +26,6 @@
 #ifndef __TERRALIB_TERRALIB4_INTERNAL_CONFIG_H
 #define __TERRALIB_TERRALIB4_INTERNAL_CONFIG_H
 
-// TerraLib
-#include "../Config.h"
-
 /** @name General Defines
  *  Configuring Terralib 4 support.
  */

@@ -89,9 +89,10 @@ bool te::layout::GridSettingsModel::updateProperty( Property prop, EnumType* enu
 te::layout::Properties* te::layout::GridSettingsModel::containsGrid(EnumType* enumType)
 {
   Properties* properties = 0;
+  
+  std::vector<Properties*>::iterator it;
 
-  std::vector<Properties*>::iterator it = m_properties.begin();
-  for(it ; it != m_properties.end() ; ++it)
+  for(it=m_properties.begin() ; it != m_properties.end() ; ++it)
   {
     Properties* props = (*it);
     if(props)

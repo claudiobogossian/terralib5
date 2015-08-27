@@ -32,7 +32,7 @@ typedef te::common::Singleton< TerraLib > TeSingleton;
 %include "terralib/common/TerraLib.h"
 
 %{  
-#include <terralib/Config.h>
+/* #include <terralib/Config.h> */
 #include <terralib/common/Enums.h>  
 #include <terralib/common/Exception.h>
 #include <terralib/common/TerraLib.h>

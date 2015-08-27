@@ -148,7 +148,7 @@ void TsByteArray::tcTake1()
   CPPUNIT_ASSERT(b2->capacity() == 100);
 
   char* dataR2 = b2->getData();
-  size_t s2 = strlen(dataR2);
+  //size_t s2 = strlen(dataR2);
   CPPUNIT_ASSERT(data == dataR2);
   CPPUNIT_ASSERT(strncmp(data,dataR2,strlen(data)) == 0);
   CPPUNIT_ASSERT(memcmp(data,dataR2,strlen(data)) == 0);
@@ -197,14 +197,14 @@ void TsByteArray::tcCopy1()
   strcpy(data2,"12345678901234567890123456789012"); //32 bytes
 
   b->copy(data2,32,20); //offset 20
-  size_t su = b->bytesUsed();
-  size_t sc = b->capacity();
+  //size_t su = b->bytesUsed();
+  //size_t sc = b->capacity();
 
   CPPUNIT_ASSERT(b->bytesUsed() == 52);
   CPPUNIT_ASSERT(b->capacity() == 100);
 
-  char* dataR2 = b->getData();
-  size_t s2 = strlen(dataR2);
+  //char* dataR2 = b->getData();
+  //size_t s2 = strlen(dataR2);
   CPPUNIT_ASSERT(strlen(data2)+strlen(data) == b->bytesUsed());
 
   delete b;
@@ -266,7 +266,7 @@ void TsByteArray::tcByteArrayConstructor()
   te::dt::ByteArray b1 = b;
 
 // Checking Assign Operator
-  char * datab1 = b1.getData();
+  //char * datab1 = b1.getData();
   CPPUNIT_ASSERT(memcmp(b.getData(),baux.getData(),strlen(data)) == 0);
   CPPUNIT_ASSERT(memcmp(b1.getData(),b.getData(),strlen(data)) == 0);
   CPPUNIT_ASSERT(strncmp(b1.getData(),b.getData(), strlen(data)) == 0);
@@ -326,7 +326,7 @@ void TsByteArray::tcOperator()
   te::dt::ByteArray b2 =  operator <<( b1, i);
   char* res = b2.getData();
   std::string ss = b2.toString();
-  int x = *res;
+  //int x = *res;
   CPPUNIT_ASSERT(*res == i );
 
   b1.clear(); b2.clear();
@@ -334,7 +334,7 @@ void TsByteArray::tcOperator()
   te::dt::ByteArray bui =  operator <<( b1, ui);
   char* res1 = bui.getData();
   ss  = bui.toString();
-  unsigned int xx = *res1;
+  //unsigned int xx = *res1;
   CPPUNIT_ASSERT(*res1 == ui );
 
 
@@ -343,7 +343,7 @@ void TsByteArray::tcOperator()
   b2 = operator <<( b1, f);
   res =  b2.getData();
   ss  =  b2.toString();
-  float ff = *res;
+  //float ff = *res;
   CPPUNIT_ASSERT(*res == f );
 
   b1.clear(); b2.clear();
@@ -351,7 +351,7 @@ void TsByteArray::tcOperator()
   b2 = operator <<( b1, f);
   res =  b2.getData();
   ss  =  b2.toString();
-  double dd = *res;
+  //double dd = *res;
   CPPUNIT_ASSERT(*res == d );
 
 //#endif

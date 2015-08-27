@@ -161,7 +161,7 @@ bool te::attributefill::VectorToRaster::run()
   }
 
   te::common::TaskProgress task("Rasterizing...");
-  task.setTotalSteps(m_selectedAttVec.size() * vectorMap.size());
+  task.setTotalSteps((int)(m_selectedAttVec.size() * vectorMap.size()));
   task.useTimer(true);
 
   for(std::size_t i = 0; i < m_selectedAttVec.size(); ++i)

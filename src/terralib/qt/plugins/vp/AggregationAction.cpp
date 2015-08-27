@@ -48,7 +48,7 @@ te::qt::plugins::vp::AggregationAction::~AggregationAction()
 {
 }
 
-void te::qt::plugins::vp::AggregationAction::onActionActivated(bool checked)
+void te::qt::plugins::vp::AggregationAction::onActionActivated(bool)
 {
   QWidget* parent = te::qt::af::ApplicationController::getInstance().getMainWindow();
   te::vp::AggregationDialog dlg(parent);

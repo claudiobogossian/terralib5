@@ -26,9 +26,6 @@
 #ifndef __TERRALIB_FE_INTERNAL_CONFIG_H
 #define __TERRALIB_FE_INTERNAL_CONFIG_H
 
-// TerraLib
-#include "../Config.h"
-
 #define TE_FILTERENCODING_MODULE_NAME "te.filter_encoding"
 
 /** @name DLL/LIB Module

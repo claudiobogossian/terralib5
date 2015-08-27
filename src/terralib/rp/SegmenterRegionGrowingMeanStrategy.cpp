@@ -161,7 +161,7 @@ namespace te
       // Creating the merger instance
       
       std::auto_ptr< SegmenterRegionGrowingMeanMerger >
-        mergerPtr( new SegmenterRegionGrowingMeanMerger( inputRasterBands.size() ) );
+        mergerPtr( new SegmenterRegionGrowingMeanMerger( (unsigned int)inputRasterBands.size() ) );
       
       // Initiating the segments pool
       
@@ -241,8 +241,8 @@ namespace te
       
       // Globals
       
-      rg::MeanFeatureType minFoundDissimilarity = 0.0;
-      rg::MeanFeatureType maxFoundDissimilarity = 0.0;
+      DissimilarityTypeT minFoundDissimilarity = 0.0;
+      DissimilarityTypeT maxFoundDissimilarity = 0.0;
       unsigned int totalMergesNumber = 0;      
       rg::IterationCounterType globalMergeIterationsCounter = 1;
       

@@ -26,8 +26,6 @@
 #ifndef __TERRALIB_ST_INTERNAL_CONFIG_H
 #define __TERRALIB_ST_INTERNAL_CONFIG_H
 
-#include "../Config.h"
-
 /*!
   \def TE_ST_MODULE_NAME
 

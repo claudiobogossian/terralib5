@@ -25,7 +25,7 @@
 #          Frederico Augusto T. Bede <frederico.bede@funcate.org.br>
 #
 
-cmake_minimum_required(VERSION 2.8.12)
+cmake_minimum_required(VERSION 2.8.7)
 
 project(terralib)
 
@@ -124,27 +124,6 @@ if(APPLE AND TERRALIB_BUILD_AS_BUNDLE AND TERRALIB_TRACK_3RDPARTY_DEPENDENCIES A
 endif()
 
 
-# use, i.e. don't skip the full RPATH for the build tree
-SET(CMAKE_SKIP_BUILD_RPATH  FALSE)
-
-# when building, don't use the install RPATH already
-# (but later on when installing)
-SET(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE) 
-
-SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
-
-# add the automatically determined parts of the RPATH
-# which point to directories outside the build tree to the install RPATH
-SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
-
-
-# the RPATH to be used when installing, but only if it's not a system directory
-LIST(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/lib" isSystemDir)
-IF("${isSystemDir}" STREQUAL "-1")
-   SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
-ENDIF("${isSystemDir}" STREQUAL "-1")
-
-
 #
 # global definitions and includes
 #
@@ -178,7 +157,7 @@ endif()
 
 
 include_directories(${CMAKE_BINARY_DIR})
-include_directories(${TERRALIB_ABSOLUTE_ROOT_DIR}/src ${CMAKE_INSTALL_PREFIX}/include)
+
 
 #
 # Build will generate files into a single folder
@@ -223,7 +202,7 @@ include(terralib_macros.cmake)
 # first check of libraries
 #
 
-find_package(Boost 1.53.0 REQUIRED system date_time chrono timer filesystem thread unit_test_framework)
+find_package(Boost 1.53.0 REQUIRED system date_time chrono timer filesystem thread)
 
 if(NOT Boost_FOUND)
   message(FATAL_ERROR "TerraLib: could not find required Boost libraries!")
@@ -541,6 +520,8 @@ CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_QT_PLUGINS_SA_ENABLED "Build Spatial Analysi
 
 CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_QT_PLUGINS_ST_ENABLED "Build Spatio-Temporal Driver Qt plugin?" OFF "TERRALIB_MOD_PLUGIN_ENABLED;TERRALIB_MOD_QT_WIDGETS_ENABLED;TERRALIB_MOD_QT_APF_ENABLED" OFF)
 
+CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_QT_PLUGINS_TERRAMOBILE_ENABLED "Build Terra Mobile Qt plugin?" OFF "TERRALIB_MOD_PLUGIN_ENABLED;TERRALIB_MOD_QT_APF_ENABLED" OFF)
+
 CMAKE_DEPENDENT_OPTION(TERRALIB_TERRAVIEW_ENABLED "Build TerraView?" ON "TERRALIB_MOD_QT_APF_ENABLED" OFF)
 
 CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_BINDING_JAVA_ENABLED "Build TerraLib bindings?" ON "TERRALIB_MOD_QT_WIDGETS_ENABLED;TERRALIB_SWIG_ENABLED;TERRALIB_JAVA_ENABLED;TERRALIB_JNI_ENABLED" OFF)
@@ -717,8 +698,8 @@ configure_file(${CMAKE_SOURCE_DIR}/terralib-config-version.cmake.in
 configure_file(${CMAKE_SOURCE_DIR}/terralib-config.cmake.in
                ${CMAKE_BINARY_DIR}/terralib-config.cmake @ONLY)
 
-configure_file(${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/Config.h.in
-               ${CMAKE_BINARY_DIR}/terralib_config.h @ONLY)
+configure_file(${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/BuildConfig.h.in
+               ${CMAKE_BINARY_DIR}/terralib_buildconfig.h @ONLY)
 
 configure_file(${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/Defines.h.in
                ${CMAKE_BINARY_DIR}/terralib_defines.h @ONLY)
@@ -932,6 +913,10 @@ endif()
 
 if(TERRALIB_MOD_QT_PLUGINS_ST_ENABLED)
   add_subdirectory(terralib_mod_qt_plugins_st)
+endif()
+
+if(TERRALIB_MOD_QT_PLUGINS_TERRAMOBILE_ENABLED)
+  add_subdirectory(terralib_mod_qt_plugins_terraMobile)
 endif()
 
 if(TERRALIB_MOD_QT_PLUGINS_LAYOUT_ENABLED)
@@ -1298,7 +1283,7 @@ endif()
 
 file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/*.h)
 
-install(FILES ${CMAKE_BINARY_DIR}/terralib_config.h
+install(FILES ${CMAKE_BINARY_DIR}/terralib_buildconfig.h
               ${CMAKE_BINARY_DIR}/terralib_defines.h
               ${CMAKE_BINARY_DIR}/terralib_version.h
               ${TERRALIB_HDR_FILES}

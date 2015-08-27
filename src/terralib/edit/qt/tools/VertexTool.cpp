@@ -51,12 +51,11 @@
 #include <memory>
 #include <string>
 
-te::edit::VertexTool::VertexTool(te::edit::EditionManager* editionManager, te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent)
+te::edit::VertexTool::VertexTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent)
   : AbstractTool(display, parent),
     m_layer(layer),
     m_feature(0),
-    m_currentStage(FEATURE_SELECTION),
-    m_editionManager(editionManager)
+    m_currentStage(FEATURE_SELECTION)
 {
   assert(m_layer.get());
 
@@ -263,7 +262,7 @@ void te::edit::VertexTool::reset()
 void te::edit::VertexTool::pickFeature(const te::map::AbstractLayerPtr& layer, const QPointF& pos)
 {
   te::gm::Envelope env = buildEnvelope(pos);
-  pickFeature(m_layer, env);
+  pickFeature(layer, env);
 }
 
 void te::edit::VertexTool::pickFeature(const te::map::AbstractLayerPtr& layer, const te::gm::Envelope& env)
@@ -272,7 +271,7 @@ void te::edit::VertexTool::pickFeature(const te::map::AbstractLayerPtr& layer, c
 
   try
   {
-    m_feature = PickFeature(m_editionManager, m_layer, env, m_display->getSRID());
+    m_feature = PickFeature(layer, env, m_display->getSRID());
 
     m_lines.clear();
 
@@ -305,7 +304,7 @@ void te::edit::VertexTool::draw(te::gm::Point* virtualVertex)
   renderer.begin(draft, env, m_display->getSRID());
 
   // Draw the layer edited geometries
-  renderer.drawRepository(m_editionManager, m_layer->getId(), env, m_display->getSRID());
+  renderer.drawRepository(m_layer->getId(), env, m_display->getSRID());
 
   if(m_lines.empty())
   {
@@ -315,7 +314,7 @@ void te::edit::VertexTool::draw(te::gm::Point* virtualVertex)
   }
 
   // Draw the vertexes
-  if (m_editionManager->m_repository->hasIdentify(m_layer->getId(), m_feature->getId()) == false)
+  if (RepositoryManager::getInstance().hasIdentify(m_layer->getId(), m_feature->getId()) == false)
     renderer.draw(m_feature->getGeometry(), true);
   else
     renderer.drawVertexes(m_feature->getGeometry());
@@ -417,7 +416,5 @@ void te::edit::VertexTool::updateCursor()
 
 void te::edit::VertexTool::storeEditedFeature()
 {
-  m_editionManager->m_repository->addGeometry(m_layer->getId(), m_feature->getId()->clone(), dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone()));
-
-  m_editionManager->m_operation[m_feature->getId()->getValueAsString()] = m_editionManager->updateOp;
+  RepositoryManager::getInstance().addGeometry(m_layer->getId(), m_feature->getId()->clone(), dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone()));
 }

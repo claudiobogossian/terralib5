@@ -39,7 +39,7 @@ namespace te
     {
     }    
     
-    SegmenterRegionGrowingSegment< rg::MeanFeatureType >::FeatureType
+    DissimilarityTypeT
     SegmenterRegionGrowingMeanMerger::getDissimilarity( SegmenterRegionGrowingSegment< rg::MeanFeatureType > const * const segment1Ptr, 
       SegmenterRegionGrowingSegment< rg::MeanFeatureType > const * const segment2Ptr, 
       SegmenterRegionGrowingSegment< rg::MeanFeatureType > * const ) const
@@ -63,7 +63,7 @@ namespace te
       m_getDissimilarity_dissValue = std::sqrt( m_getDissimilarity_dissValue );      
       m_getDissimilarity_dissValue /= m_dissimilarityNormFactor;
 
-      return m_getDissimilarity_dissValue;
+      return (DissimilarityTypeT)m_getDissimilarity_dissValue;
     }
     
     void SegmenterRegionGrowingMeanMerger::mergeFeatures( SegmenterRegionGrowingSegment< rg::MeanFeatureType > * const segment1Ptr, 

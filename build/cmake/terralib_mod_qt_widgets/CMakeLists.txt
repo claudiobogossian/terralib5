@@ -28,6 +28,7 @@
 include_directories(${Boost_INCLUDE_DIR})
 include_directories(${QWT_INCLUDE_DIR})
 include_directories(${QTPROPERTYBROWSER_INCLUDE_DIR})
+include_directories(${TERRALIB_ABSOLUTE_ROOT_DIR}/src)
 
 add_definitions(-D_SCL_SECURE_NO_WARNINGS -DTEQTWIDGETSDLL -DUNICODE -DQWT_DLL)
 
@@ -508,7 +509,7 @@ if(Qt5_FOUND)
   # end of Qt5 uic'ing
 
   # Adding all external dependencies to rpath
-  addExternalLibrariesToRPATH(${TERRALIB_LIBRARIES_DEPENDENCIES})
+  TeAddExternalLibrariesToRPATH(${TERRALIB_LIBRARIES_DEPENDENCIES})
 
   add_library(terralib_mod_qt_widgets SHARED ${TERRALIB_FILES})
 
@@ -925,6 +926,7 @@ else() # QT4_FOUND
                                            ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/ObservationPropertiesWizardPage.h
                                            ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/ObservationWizard.h
                                            ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/PixmapItem.h
+                                           ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/ImageItem.h
                                            ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/SliderPropertiesDialog.h
                                            ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/TrajectoryItem.h
                                            ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/qt/widgets/st/TimeSliderWidget.h
@@ -976,7 +978,7 @@ else() # QT4_FOUND
 
   QT4_WRAP_CPP(TERRALIB_GEN_SRC_FILES ${TERRALIB_HDRS_TO_MOC_FILES} OPTIONS -DBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
 
-  addExternalLibrariesToRPATH("${TERRALIB_LIBRARIES_DEPENDENCIES}")
+  TeAddExternalLibrariesToRPATH("${TERRALIB_LIBRARIES_DEPENDENCIES}")
 
   add_library(terralib_mod_qt_widgets SHARED ${TERRALIB_FILES} ${TERRALIB_GEN_SRC_FILES} DataSetTableView.moc)
 

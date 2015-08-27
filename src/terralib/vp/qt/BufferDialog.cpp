@@ -297,7 +297,7 @@ void te::vp::BufferDialog::onTargetDatasourceToolButtonPressed()
 
   std::list<te::da::DataSourceInfoPtr> dsPtrList = dlg.getSelecteds();
 
-  if(dsPtrList.size() <= 0)
+  if(dsPtrList.empty())
     return;
 
   std::list<te::da::DataSourceInfoPtr>::iterator it = dsPtrList.begin();
@@ -439,6 +439,10 @@ void te::vp::BufferDialog::onOkPushButtonClicked()
         return;
       }
 
+      std::auto_ptr<te::da::DataSetTypeConverter> converter(new te::da::DataSetTypeConverter(dsLayer->getSchema().get(), dsOGR->getCapabilities(), dsOGR->getEncoding()));
+
+      te::da::AssociateDataSetTypeConverterSRID(converter.get(), dsLayer->getSRID());
+
       this->setCursor(Qt::WaitCursor);
 
       te::vp::BufferOp* bufferOp = 0;
@@ -455,7 +459,7 @@ void te::vp::BufferDialog::onOkPushButtonClicked()
         bufferOp = new te::vp::BufferMemory();
       }
 
-      bufferOp->setInput(inDataSource, dsLayer->getDataSetName(), dsLayer->getSchema(), oidSet);
+      bufferOp->setInput(inDataSource, dsLayer->getDataSetName(), converter, oidSet);
       bufferOp->setOutput(dsOGR, outputdataset);
       bufferOp->setParams(fixedDistance, bufferPolygonRule, bufferBoundariesRule, copyInputColumns, levels);
 
@@ -505,6 +509,13 @@ void te::vp::BufferDialog::onOkPushButtonClicked()
         return;
       }
       this->setCursor(Qt::WaitCursor);
+
+
+      std::auto_ptr<te::da::DataSetTypeConverter> converter(new te::da::DataSetTypeConverter(dsLayer->getSchema().get(), aux->getCapabilities(), aux->getEncoding()));
+
+      te::da::AssociateDataSetTypeConverterSRID(converter.get(), dsLayer->getSRID());
+
+
       te::vp::BufferOp* bufferOp = 0;
 
       // select a strategy based on the capabilities of the input datasource
@@ -519,7 +530,7 @@ void te::vp::BufferDialog::onOkPushButtonClicked()
         bufferOp = new te::vp::BufferMemory();
       }
 
-      bufferOp->setInput(inDataSource, dsLayer->getDataSetName(), dsLayer->getSchema());
+      bufferOp->setInput(inDataSource, dsLayer->getDataSetName(), converter);
       bufferOp->setOutput(aux, outputdataset);
       bufferOp->setParams(fixedDistance, bufferPolygonRule, bufferBoundariesRule, copyInputColumns, levels);
 

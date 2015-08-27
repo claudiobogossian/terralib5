@@ -297,8 +297,8 @@ namespace te
       
       // Globals
       
-      rg::BaatzFeatureType minFoundDissimilarity = 0.0;
-      rg::BaatzFeatureType maxFoundDissimilarity = 0.0;
+      DissimilarityTypeT minFoundDissimilarity = 0.0;
+      DissimilarityTypeT maxFoundDissimilarity = 0.0;
       unsigned int totalMergesNumber = 0;      
       rg::IterationCounterType globalMergeIterationsCounter = 1;
       
