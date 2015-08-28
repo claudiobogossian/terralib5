@@ -75,10 +75,10 @@ std::auto_ptr<te::da::DataSet> te::wfs::Transactor::getDataSet(const std::string
   if(layer == 0)
     throw Exception(TE_TR("The informed data set could not be found in the data source!"));
 
-  char** fields = new char*[1];
-  fields[0] = "OGR_GEOMETRY";
+  //char** fields = new char*[1];
+  //fields[0] = "OGR_GEOMETRY";
 
-  layer->SetIgnoredFields((const char**) fields);
+  //layer->SetIgnoredFields((const char**) fields);
 
   return std::auto_ptr<te::da::DataSet>(new te::ogr::DataSet(ds, layer));
 }
@@ -96,7 +96,7 @@ std::auto_ptr<te::da::DataSet> te::wfs::Transactor::getDataSet(const std::string
   OGRDataSource* ds = m_ds->getOGRDataSource();
 //  OGRDataSource* ds = OGRSFDriverRegistrar::Open(m_ds->getOGRDataSource()->GetName());
 
-  std::string sql = "SELECT FID, OGR_GEOMETRY FROM \'" + name + "\'";
+  std::string sql = "SELECT FID, * FROM \'" + name + "\'";
   OGRLayer* layer = ds->ExecuteSQL(sql.c_str(), 0, 0);
 
   if(layer == 0)

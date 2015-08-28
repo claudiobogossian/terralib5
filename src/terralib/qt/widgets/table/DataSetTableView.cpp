@@ -1527,6 +1527,8 @@ void te::qt::widgets::DataSetTableView::removeColumn(const int& column)
 void te::qt::widgets::DataSetTableView::setAutoScrollEnabled(const bool& enable)
 {
   m_autoScrollEnabled = enable;
+
+  m_model->getPromoter()->preProcessKeys(m_dset, m_delegate->getSelected()->getPropertyPos());
 }
 
 void te::qt::widgets::DataSetTableView::setPromotionEnabled(const bool &enable)

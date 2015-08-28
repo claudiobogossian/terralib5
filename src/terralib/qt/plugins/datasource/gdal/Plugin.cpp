@@ -190,7 +190,8 @@ void te::qt::plugins::gdal::Plugin::openFileDialog()
 
     ds->setType("GDAL");
 
-    te::da::DataSourceInfoManager::getInstance().add(ds);
+    if(!te::da::DataSourceInfoManager::getInstance().add(ds))
+      ds = te::da::DataSourceInfoManager::getInstance().getByConnInfo(ds->getConnInfoAsString());
 
     GetLayers(ds, layers);
   }

@@ -57,13 +57,15 @@ namespace te
 
           DataSourceInfoPtr get(const std::string& id) const;
 
-          void add(const DataSourceInfoPtr& ds);
+          bool add(const DataSourceInfoPtr& ds);
 
           void remove(const std::string& id);
 
           void removeByType(const std::string& dsTypeName);
 
           void getByType(const std::string& dsTypeName, std::vector<DataSourceInfoPtr>& datasources) const;
+
+          DataSourceInfoPtr getByConnInfo(std::string connInfo);
 
           std::size_t size() const;
 

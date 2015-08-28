@@ -62,8 +62,8 @@ void te::qt::plugins::pgis::PostGISConnector::connect(std::list<te::da::DataSour
 
   if(ds.get() != 0)
   {
-    te::da::DataSourceInfoManager::getInstance().add(ds);
-    datasources.push_back(ds);
+    if(te::da::DataSourceInfoManager::getInstance().add(ds))
+      datasources.push_back(ds);
 
     te::da::DataSourcePtr driver = cdialog->getDriver();
 
