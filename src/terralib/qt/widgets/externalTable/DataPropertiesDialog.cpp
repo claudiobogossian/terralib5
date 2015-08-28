@@ -82,7 +82,6 @@ te::qt::widgets::DataPropertiesDialog::DataPropertiesDialog(QWidget* parent, Qt:
 
 te::qt::widgets::DataPropertiesDialog::~DataPropertiesDialog()
 {
-  delete m_dataPropertiesWidget;
 }
 
 void te::qt::widgets::DataPropertiesDialog::onOkPushButtonClicked()
