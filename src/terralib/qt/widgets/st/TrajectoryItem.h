@@ -34,6 +34,7 @@
 
 // Qt
 #include <QtCore/QAbstractAnimation>
+#include <QtCore/QVector>
 
 namespace te
 {
@@ -118,15 +119,16 @@ namespace te
         void drawIcon(QPainter* painter);
 
       public:
-        QString m_iconFile;       //!< file that generated the pixmap
-        QSize m_iconSize;         //!< icon size
-        bool m_drawTrail;         //!< flag to draw trail
-        QColor m_forwardColor;    //!< The forward trail color.
-        QColor m_backwardColor;   //!< The backward trail color.
-        int m_lineWidth;          //!< The route/trail line width in pixels.
-        bool m_erasePerfectly;    //!< flag to erase trajectory piece perfectly (default = false).
-        QPointF m_posOld;         //!< Auxiliar point
-        QString m_layerId;        //!< trajectory layer Id
+        QString m_iconFile;           //!< file that generated the pixmap
+        QSize m_iconSize;             //!< icon size
+        bool m_doIconRotate;          //!< do automatic icon rotate
+        bool m_drawTrail;             //!< flag to draw trail
+        QColor m_forwardColor;        //!< The forward trail color.
+        QColor m_backwardColor;       //!< The backward trail color.
+        int m_lineWidth;              //!< The route/trail line width in pixels.
+        bool m_erasePerfectly;        //!< flag to erase trajectory piece perfectly (default = false).
+        QPointF m_posOld;             //!< Auxiliar point
+        QString m_layerId;            //!< trajectory layer Id
       };
     } // end namespace widgets
   }   // end namespace qt

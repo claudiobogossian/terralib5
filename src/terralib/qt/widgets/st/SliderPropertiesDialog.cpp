@@ -94,6 +94,7 @@ te::qt::widgets::SliderPropertiesDialog::SliderPropertiesDialog(QWidget* parent,
   connect(m_ui->m_removeAllPushButton, SIGNAL(clicked(bool) ), m_tsw, SLOT(onRemoveAllPushButtonClicked(bool)));
   connect(m_ui->m_resetInitialTimePushButton, SIGNAL(clicked()), m_tsw, SLOT(onResetInitialTimePushButtonClicked()));
   connect(m_ui->m_resetFinalTimePushButton, SIGNAL(clicked()), m_tsw, SLOT(onResetFinalTimePushButtonClicked()));
+  connect(m_ui->m_iconRotateCheckBox, SIGNAL(clicked(bool)), m_tsw, SLOT(onIconRotateCheckBoxClicked(bool)));
 
   connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));
 

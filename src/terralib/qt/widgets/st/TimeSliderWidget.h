@@ -319,7 +319,7 @@ namespace te
           */
           bool isSettingChanged();
           
-          void adjustTrajectoryGroupBox(te::qt::widgets::AnimationItem*);
+          void adjustPropertyDialog(te::qt::widgets::AnimationItem*);
 
           QString getDateString(const te::dt::TimeInstant& t);
 
@@ -473,6 +473,8 @@ namespace te
           void onResetFinalTimePushButtonClicked();
 
           void onTrajectoryPixmapSizeChanged(int);
+
+          void onIconRotateCheckBoxClicked(bool);
 
           void dropAction();
 

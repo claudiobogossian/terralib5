@@ -2294,7 +2294,7 @@ void te::qt::widgets::TimeSliderWidget::onAnimationComboBoxActivated(int ind)
         m_spd->m_ui->m_initialTimeLineEdit->setText(sini);
         m_spd->m_ui->m_finalTimeLineEdit->setText(sfim);
 
-        adjustTrajectoryGroupBox(ai);
+        adjustPropertyDialog(ai);
         break;
       }
     }
@@ -2309,7 +2309,7 @@ QString te::qt::widgets::TimeSliderWidget::getDateString(const te::dt::TimeInsta
   return qdatetime.toString("dd/MMM/yyyy hh:mm:ss");
 }
 
-void te::qt::widgets::TimeSliderWidget::adjustTrajectoryGroupBox(te::qt::widgets::AnimationItem* ai)
+void te::qt::widgets::TimeSliderWidget::adjustPropertyDialog(te::qt::widgets::AnimationItem* ai)
 {
   QPixmap pix = ai->pixmap();
   if(pix.isNull()) // is temporal image
@@ -2334,10 +2334,34 @@ void te::qt::widgets::TimeSliderWidget::adjustTrajectoryGroupBox(te::qt::widgets
     ti->m_panFactor = m_panFactor;
     m_spd->m_ui->m_drawTrailCheckBox->setChecked(ti->m_drawTrail);
 
+    m_spd->m_ui->m_iconRotateCheckBox->setChecked(ti->m_doIconRotate);
     QPixmap pix = ti->pixmap();
     m_spd->m_ui->m_widthSpinBox->setValue(pix.width());
     m_spd->m_ui->m_heightSpinBox->setValue(pix.height());
     m_spd->m_ui->m_iconPushButton->update();
+  }
+}
+
+void te::qt::widgets::TimeSliderWidget::onIconRotateCheckBoxClicked(bool b)
+{
+  int ind = m_spd->m_ui->m_animationComboBox->currentIndex();
+  QString id = m_animationIdList.value(ind);
+
+  QList<QGraphicsItem*> list = m_animationScene->items();
+  QList<QGraphicsItem*>::iterator it;
+
+  for (it = list.begin(); it != list.end(); ++it)
+  {
+    te::qt::widgets::AnimationItem* ai = dynamic_cast<te::qt::widgets::AnimationItem*>(*it);
+    if (ai->pixmap().isNull() == false)
+    {
+      te::qt::widgets::TrajectoryItem* ti = dynamic_cast<te::qt::widgets::TrajectoryItem*>(ai);
+      if (ti->m_layerId == id)
+      {
+        ti->m_doIconRotate = b;
+        break;
+      }
+    }
   }
 }
 
