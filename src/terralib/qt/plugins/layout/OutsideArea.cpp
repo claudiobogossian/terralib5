@@ -159,8 +159,9 @@ void te::qt::plugins::layout::OutsideArea::init()
 
   if(m_dockInspector)
   {
-    connect(m_view->scene(), SIGNAL(deleteFinalized(std::vector<std::string>)), 
-      m_dockInspector->getObjectInspectorOutside(), SLOT(onRemoveProperties(std::vector<std::string>)));
+    connect(m_view->scene(), SIGNAL(deleteFinalized(std::vector<std::string>)), this, SLOT(onDeleteFinalized(std::vector<std::string>)));
+
+    connect(m_dockInspector->getObjectInspectorOutside(), SIGNAL(selectionChanged(QList<QGraphicsItem*>)), this, SLOT(onSelectionChanged(QList<QGraphicsItem*>)));
   }
 
   if(m_dockProperties)
@@ -495,6 +496,19 @@ void te::qt::plugins::layout::OutsideArea::onAddItemFinalized()
     m_dockInspector->getObjectInspectorOutside()->itemsInspector(allItems);
 }
 
+void te::qt::plugins::layout::OutsideArea::onSelectionChanged(QList<QGraphicsItem*> selectedItems)
+{
+  m_view->scene()->clearSelection();
+  foreach(QGraphicsItem* item, selectedItems) 
+  {
+    item->setSelected(true);
+  }
+
+  QList<QGraphicsItem*> allItems = m_view->scene()->items();
+  if(m_dockProperties)
+    m_dockProperties->getPropertiesOutside()->itemsSelected(selectedItems, allItems);
+}
+
 void te::qt::plugins::layout::OutsideArea::onShowView()
 {
   openAllDocks();
@@ -546,6 +560,14 @@ void te::qt::plugins::layout::OutsideArea::onRefreshStatusBar()
 }
 
 void te::qt::plugins::layout::OutsideArea::onAddChildFinalized( QGraphicsItem* parent, QGraphicsItem* child )
+{
+  QList<QGraphicsItem*> allItems = m_view->scene()->items();
+  //Refresh Inspector Object window
+  if(m_dockInspector)
+    m_dockInspector->getObjectInspectorOutside()->itemsInspector(allItems);
+}
+
+void te::qt::plugins::layout::OutsideArea::onDeleteFinalized(std::vector<std::string>)
 {
   QList<QGraphicsItem*> allItems = m_view->scene()->items();
   //Refresh Inspector Object window

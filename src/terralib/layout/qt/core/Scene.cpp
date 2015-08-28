@@ -397,7 +397,9 @@ QGraphicsItemGroup* te::layout::Scene::createItemGroup( const QList<QGraphicsIte
       QUndoCommand* command = new AddCommand(group);
       addUndoStack(command);
     }
-  }  
+  }
+
+  emit addItemFinalized();
 
   return group;
 }
