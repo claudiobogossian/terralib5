@@ -188,7 +188,7 @@ void te::edit::FeatureAttributesDialog::onAttributesTreeWidgetItemDoubleClicked(
 
   for (std::size_t i = 0; i < m_restrictivePropertyPos.size(); i++)
   {
-    if (m_restrictivePropertyPos[i] == m_ui->m_attributesTreeWidget->currentIndex().row())
+    if ((int)m_restrictivePropertyPos[i] == m_ui->m_attributesTreeWidget->currentIndex().row())
     {
       isrestrictive = true;
       break;
