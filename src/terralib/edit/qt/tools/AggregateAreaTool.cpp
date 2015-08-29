@@ -202,23 +202,7 @@ void te::edit::AggregateAreaTool::pickFeature(const te::map::AbstractLayerPtr& l
       te::gm::Envelope auxEnv(*geom->getMBR());
 
       // Try finds the geometry centroid
-      switch (geom->getGeomTypeId())
-      {
-        case te::gm::PolygonType:
-        {
-          te::gm::Polygon* p = dynamic_cast<te::gm::Polygon*>(geom.get());
-          coord = *p->getCentroidCoord();
-
-          break;
-        }
-        case te::gm::MultiPolygonType:
-        {
-          te::gm::MultiPolygon* mp = dynamic_cast<te::gm::MultiPolygon*>(geom.get());
-          coord = *mp->getCentroidCoord();
-        
-          break;
-        }
-      }
+      coord = geom->getMBR()->getCenter();
 
       // Build the search envelope
       te::gm::Envelope e(coord.getX(), coord.getY(), coord.getX(), coord.getY());
@@ -266,7 +250,8 @@ void te::edit::AggregateAreaTool::onExtentChanged()
 
 void te::edit::AggregateAreaTool::storeEditedFeature()
 {
-  RepositoryManager::getInstance().addGeometry(m_layer->getId(), m_feature->getId()->clone(), dynamic_cast<te::gm::Geometry*>(buildPolygon()->clone()), te::edit::GEOMETRY_UPDATE);
+  RepositoryManager::getInstance().addFeature(m_layer->getId(), m_feature->clone());
+  //RepositoryManager::getInstance().addGeometry(m_layer->getId(), m_feature->getId()->clone(), dynamic_cast<te::gm::Geometry*>(buildPolygon()->clone()), GEOMETRY_UPDATE);
 }
 
 te::gm::Geometry* te::edit::AggregateAreaTool::Union(te::gm::Geometry* g1, Feature* feature_g2)

@@ -60,6 +60,7 @@ te::edit::Feature::~Feature()
   delete m_id;
   m_geom = 0;
   delete m_geom;
+  m_data.clear();
   te::common::FreeContents(m_data);
 }
 
@@ -140,8 +141,8 @@ te::edit::Feature* te::edit::Feature::clone() const
   std::map<std::size_t, te::dt::AbstractData*> data;
   for(std::map<std::size_t, te::dt::AbstractData*>::const_iterator it = m_data.begin(); it != m_data.end(); ++it)
   {
-    assert(it->second);
-    data[it->first] = it->second->clone();
+    if(it->second != NULL)
+      data[it->first] = it->second->clone();
   }
 
   f->setData(data);

@@ -24,11 +24,8 @@
 */
 
 // TerraLib
-#include "../../dataaccess/dataset/DataSetType.h"
-#include "../../dataaccess/dataset/ObjectId.h"
-#include "../../dataaccess/dataset/ObjectIdSet.h"
-#include "../../datatype/AbstractData.h"
 #include "../../edit/Feature.h"
+#include "../../edit/RepositoryManager.h"
 #include "FeatureAttributesDialog.h"
 #include "ui_FeatureAttributesDialogForm.h"
 
@@ -41,8 +38,9 @@
 te::edit::FeatureAttributesDialog::FeatureAttributesDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
     m_ui(new Ui::FeatureAttributesDialogForm),
-    m_type(0),
-    m_feature(0)
+    m_feature(0),
+    m_layer(0),
+    m_restrictivePropertyPos(0)
 {
   m_ui->setupUi(this);
 
@@ -60,47 +58,177 @@ te::edit::FeatureAttributesDialog::FeatureAttributesDialog(QWidget* parent, Qt::
 }
 
 te::edit::FeatureAttributesDialog::~FeatureAttributesDialog()
-{
-}
+{}
 
-void te::edit::FeatureAttributesDialog::set(te::da::DataSetType* type, Feature* f)
+void te::edit::FeatureAttributesDialog::set(te::da::DataSet* dataset, Feature* f, const te::map::AbstractLayerPtr& layer)
 {
-  m_type = type;
   m_feature = f;
+  m_layer = layer;
+  m_dataset = dataset;
+  m_data = f->getData();
 
   initialize();
 }
 
 void te::edit::FeatureAttributesDialog::initialize()
 {
-  const std::vector<te::dt::Property*>& properties = m_type->getProperties();
+  // Get the property pos that compose the object id
+  te::da::GetOIDPropertyPos(m_layer->getSchema().get(), m_restrictivePropertyPos);
 
-  const std::map<std::size_t, te::dt::AbstractData*> data = m_feature->getData();
+  // Get the geometry property position
+  m_restrictivePropertyPos.push_back(te::da::GetFirstSpatialPropertyPos(m_dataset));
 
-  for (std::map<std::size_t, te::dt::AbstractData*>::const_iterator it = data.begin(); it != data.end(); ++it)
+  if (m_feature->getData().size() == 0)
   {
-    te::dt::Property* p = properties[it->first];
+    // Fills the QTreeWidgetItem
+    while (m_dataset->moveNext())
+    {
+      for (std::size_t i = 0; i < m_dataset->getNumProperties(); ++i)
+      {
+        QTreeWidgetItem* propertyItem = new QTreeWidgetItem;
 
-    QTreeWidgetItem* propertyItem = new QTreeWidgetItem;
-    propertyItem->setText(0, p->getName().c_str());
-    propertyItem->setText(1, QString(it->second->toString().c_str()));
+        int pos = te::da::GetPropertyPos(m_layer->getSchema().get(), m_dataset->getPropertyName(i));
+        propertyItem->setText(0, m_dataset->getPropertyName(pos).c_str());
 
-    m_ui->m_attributesTreeWidget->addTopLevelItem(propertyItem);
+        if (m_dataset->getPropertyDataType(pos) == te::dt::GEOMETRY_TYPE)
+          propertyItem->setIcon(0, QIcon::fromTheme("geometry"));
+
+        if (!m_dataset->isNull(pos))
+        {
+          QString qvalue;
+
+          if (m_dataset->getPropertyDataType(pos) == te::dt::STRING_TYPE)
+          {
+            std::string value = m_dataset->getString(pos);
+            te::common::CharEncoding encoding = m_dataset->getPropertyCharEncoding(pos);
+            qvalue = te::qt::widgets::Convert2Qt(value, encoding);
+          }
+          else
+            qvalue = m_dataset->getAsString(pos, 3).c_str();
+
+          propertyItem->setText(1, qvalue);
+        }
+        else // property null value!
+          propertyItem->setText(1, "");
+
+        m_ui->m_attributesTreeWidget->addTopLevelItem(propertyItem);
+
+        // fill the m_data
+        std::auto_ptr<te::dt::AbstractData> data(m_dataset->getValue(pos));
+        m_data[pos] = data.release();
+      }
+    }
+  }
+  else
+  {
+    while (m_dataset->moveNext())
+    {
+      std::map<std::size_t, te::dt::AbstractData* > ::iterator it;
+
+      for (std::size_t i = 0; i < m_dataset->getNumProperties(); ++i)
+      {
+        QTreeWidgetItem* propertyItem = new QTreeWidgetItem;
+
+        int pos = te::da::GetPropertyPos(m_layer->getSchema().get(), m_dataset->getPropertyName(i));
+        propertyItem->setText(0, m_dataset->getPropertyName(pos).c_str());
+
+        it = m_data.find(pos);
+        if (it != m_data.end())
+          propertyItem->setText(1, QString(it->second->toString().c_str()));
+        else
+        {
+          if (m_dataset->getPropertyDataType(pos) == te::dt::GEOMETRY_TYPE)
+            propertyItem->setIcon(0, QIcon::fromTheme("geometry"));
+
+          propertyItem->setText(1, QString(m_dataset->getAsString(pos, 3).c_str()));
+
+        }
+
+        m_ui->m_attributesTreeWidget->addTopLevelItem(propertyItem);
+      }
+    }
   }
 
 }
 
 void te::edit::FeatureAttributesDialog::onOkPushButtonPressed()
 {
+  std::size_t level_item = 0;
+
+  m_dataset->moveBeforeFirst();
+
+  while (m_dataset->moveNext())
+  {
+    for (std::map<std::size_t, te::dt::AbstractData*>::const_iterator it = m_data.begin(); it != m_data.end(); ++it)
+    {
+      QTreeWidgetItem* propertyItem = m_ui->m_attributesTreeWidget->topLevelItem(level_item);
+
+      std::auto_ptr<te::dt::AbstractData> data(getValue(m_dataset->getPropertyDataType(it->first), propertyItem->text(1)));
+
+      m_data[it->first] = data.release();
+
+      m_dataset->getValue(it->first);
+
+      level_item++;
+    }
+  }
+
+  m_feature->setData(m_data);
+  m_feature->setOperation(te::edit::GEOMETRY_UPDATE_ATTRIBUTES);
+
+  RepositoryManager::getInstance().addFeature(m_layer->getId(), m_feature->clone());
+
   close();
 }
 
 // Hack from http://stackoverflow.com/a/13374558 to making only one column of a QTreeWidgetItem editable
 void te::edit::FeatureAttributesDialog::onAttributesTreeWidgetItemDoubleClicked(QTreeWidgetItem* item, int column)
 {
+  bool isrestrictive = false;
+
+  for (std::size_t i = 0; i < m_restrictivePropertyPos.size(); i++)
+  {
+    if (m_restrictivePropertyPos[i] == m_ui->m_attributesTreeWidget->currentIndex().row())
+    {
+      isrestrictive = true;
+      break;
+    }
+  }
+
   Qt::ItemFlags tmp = item->flags();
-  if(column == 1)
+  if (column == 1 && !isrestrictive)
     item->setFlags(tmp | Qt::ItemIsEditable);
-  else if(tmp & Qt::ItemIsEditable)
+  else if (tmp & Qt::ItemIsEditable)
     item->setFlags(tmp ^ Qt::ItemIsEditable);
+
+}
+
+std::auto_ptr<te::dt::AbstractData> te::edit::FeatureAttributesDialog::getValue(int type, QString value) const
+{
+  switch (type)
+  {
+    case te::dt::INT16_TYPE:
+      return std::auto_ptr<te::dt::AbstractData>(new te::dt::Int16(atoi(value.toStdString().c_str())));
+
+    case te::dt::INT32_TYPE:
+      return std::auto_ptr<te::dt::AbstractData>(new te::dt::Int32(atoi(value.toStdString().c_str())));
+
+    case te::dt::INT64_TYPE:
+      return std::auto_ptr<te::dt::AbstractData>(new te::dt::Int64(atoi(value.toStdString().c_str())));
+
+    case te::dt::FLOAT_TYPE:
+      return std::auto_ptr<te::dt::AbstractData>(new te::dt::Float(atof(value.toStdString().c_str())));
+
+    case te::dt::DOUBLE_TYPE:
+      return std::auto_ptr<te::dt::AbstractData>(new te::dt::Double(atof(value.toStdString().c_str())));
+
+    case te::dt::NUMERIC_TYPE:
+      return std::auto_ptr<te::dt::AbstractData>(new te::dt::Numeric(value.toStdString().c_str()));
+
+    case te::dt::STRING_TYPE:
+      return std::auto_ptr<te::dt::AbstractData>(new te::dt::String(value.toStdString().c_str()));
+
+    default:
+      return std::auto_ptr<te::dt::AbstractData>(0);
+  }
 }

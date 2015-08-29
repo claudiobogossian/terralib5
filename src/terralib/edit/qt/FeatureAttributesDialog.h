@@ -27,6 +27,16 @@
 #define __TERRALIB_EDIT_QT_INTERNAL_FEATUREATTRIBUTESDIALOG_H
 
 // TerraLib
+#include "../../dataaccess/dataset/DataSet.h"
+#include "../../dataaccess/dataset/DataSetType.h"
+#include "../../dataaccess/dataset/ObjectId.h"
+#include "../../dataaccess/dataset/ObjectIdSet.h"
+#include "../../dataaccess/utils/Utils.h"
+#include "../../datatype/AbstractData.h"
+#include "../../datatype/SimpleData.h"
+#include "../../maptools/AbstractLayer.h"
+#include "../../qt/widgets/Utils.h"
+
 #include "Config.h"
 
 // Qt
@@ -34,6 +44,7 @@
 
 // STL
 #include <memory>
+
 
 // Forward declarations
 class QTreeWidgetItem;
@@ -76,7 +87,7 @@ namespace te
 
         //@}
 
-        void set(te::da::DataSetType* type, Feature* f);
+        void set(te::da::DataSet* dataset, Feature* f, const te::map::AbstractLayerPtr& layer);
 
       private:
 
@@ -89,11 +100,16 @@ namespace te
 
         void onAttributesTreeWidgetItemDoubleClicked(QTreeWidgetItem* item, int column);
 
+        std::auto_ptr<te::dt::AbstractData> te::edit::FeatureAttributesDialog::getValue(int type, QString value) const;
+
       private:
 
         std::auto_ptr<Ui::FeatureAttributesDialogForm> m_ui;  //!< Dialog form.
-        te::da::DataSetType* m_type;                          //!< The attributes dataset type.
+        te::da::DataSet* m_dataset;                           //!< The attributes dataset type.
         Feature* m_feature;                                   //!< The owner feature of the attributes.
+        te::map::AbstractLayerPtr m_layer;
+        std::map<std::size_t, te::dt::AbstractData*> m_data;
+        std::vector<std::size_t> m_restrictivePropertyPos;
 
     };
 

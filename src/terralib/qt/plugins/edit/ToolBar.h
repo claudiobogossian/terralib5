@@ -116,7 +116,7 @@ namespace te
 
           void onSplitPolygonToolActivated(bool checked);
 
-          void onFeatureAttributesActivated();
+          void onFeatureAttributesActivated(bool checked);
 
         Q_SIGNALS:
 

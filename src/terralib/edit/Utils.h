@@ -87,9 +87,10 @@ namespace te
     */
     enum OperationType
     {
-      GEOMETRY_CREATE,       /*!< New Features        */
-      GEOMETRY_UPDATE,       /*!< Features to update. */
-      GEOMETRY_DELETE,       /*!< Features to delete. */
+      GEOMETRY_CREATE,                  /*!< New Features        */
+      GEOMETRY_UPDATE,                  /*!< Features to update. */
+      GEOMETRY_DELETE,                  /*!< Features to delete. */
+      GEOMETRY_UPDATE_ATTRIBUTES,       /*!< Features to update attributes. */
       NumberOfOperationTypes /*!< Size of Enum */
     };
 

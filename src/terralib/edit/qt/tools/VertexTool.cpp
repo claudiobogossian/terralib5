@@ -449,7 +449,8 @@ void te::edit::VertexTool::updateCursor()
 
 void te::edit::VertexTool::storeEditedFeature()
 {
-  RepositoryManager::getInstance().addGeometry(m_layer->getId(), m_feature->getId()->clone(), dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone()), te::edit::GEOMETRY_UPDATE);
+  RepositoryManager::getInstance().addFeature(m_layer->getId(), m_feature->clone());
+  //RepositoryManager::getInstance().addGeometry(m_layer->getId(), m_feature->getId()->clone(), dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone()), te::edit::GEOMETRY_UPDATE);
   emit geometriesEdited();
 
 }

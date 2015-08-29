@@ -192,23 +192,7 @@ void te::edit::SubtractAreaTool::pickFeature(const te::map::AbstractLayerPtr& la
       te::gm::Envelope auxEnv(*geom->getMBR());
 
       // Try finds the geometry centroid
-      switch (geom->getGeomTypeId())
-      {
-        case te::gm::PolygonType:
-        {
-          te::gm::Polygon* p = dynamic_cast<te::gm::Polygon*>(geom.get());
-          coord = *p->getCentroidCoord();
-
-          break;
-        }
-        case te::gm::MultiPolygonType:
-        {
-          te::gm::MultiPolygon* mp = dynamic_cast<te::gm::MultiPolygon*>(geom.get());
-          coord = *mp->getCentroidCoord();
-
-          break;
-        }
-      }
+      coord = geom->getMBR()->getCenter();
 
       // Build the search envelope
       te::gm::Envelope e(coord.getX(), coord.getY(), coord.getX(), coord.getY());
@@ -256,8 +240,8 @@ void te::edit::SubtractAreaTool::onExtentChanged()
 
 void te::edit::SubtractAreaTool::storeEditedFeature()
 {
-  RepositoryManager::getInstance().addGeometry(m_layer->getId(), m_feature->getId()->clone(), dynamic_cast<te::gm::Geometry*>(buildPolygon()->clone()), te::edit::GEOMETRY_UPDATE);
-
+  RepositoryManager::getInstance().addFeature(m_layer->getId(), m_feature->clone());
+  //RepositoryManager::getInstance().addGeometry(m_layer->getId(), m_feature->getId()->clone(), dynamic_cast<te::gm::Geometry*>(buildPolygon()->clone()), te::edit::GEOMETRY_UPDATE);
 }
 
 te::gm::Geometry* te::edit::SubtractAreaTool::Difference(te::gm::Geometry* g1, te::gm::Geometry* g2)

@@ -210,7 +210,7 @@ void te::qt::plugins::edit::ToolBar::initialize()
 
   m_saveAction->setEnabled(true);
 
-  for(int i = 0; i < m_tools.size(); ++i)
+  for (int i = 0; i < m_tools.size(); ++i)
     m_tools[i]->setEnabled(true);
 
   m_snapOptionsAction->setEnabled(true);
@@ -265,7 +265,7 @@ void te::qt::plugins::edit::ToolBar::initializeActions()
   createAction(m_deleteGeometryToolAction, tr("Delete Geometry"), "edit_delete", true, false, "delete_geometry", SLOT(onDeleteGeometryToolActivated(bool)));
   createAction(m_mergeGeometriesToolAction, tr("Merge Geometries"), "edition_mergeGeometries", true, false, "merge_geometries", SLOT(onMergeGeometriesToolActivated(bool)));
   createAction(m_splitPolygonToolAction, tr("Split Polygon"), "edit-cut", true, false, "split_polygon", SLOT(onSplitPolygonToolActivated(bool)));
-  
+  createAction(m_featureAttributesAction, tr("Feature Attributes"), "attributefill-icon", true, true, "feature_attributes", SLOT(onFeatureAttributesActivated(bool)));
 
   // Get the action group of map tools.
   QActionGroup* toolsGroup = te::qt::af::AppCtrlSingleton::getInstance().findActionGroup("Map.ToolsGroup");
@@ -281,6 +281,7 @@ void te::qt::plugins::edit::ToolBar::initializeActions()
   toolsGroup->addAction(m_deleteGeometryToolAction);
   toolsGroup->addAction(m_mergeGeometriesToolAction);
   toolsGroup->addAction(m_splitPolygonToolAction);
+  toolsGroup->addAction(m_featureAttributesAction);
 
   // Grouping...
   m_tools.push_back(m_vertexToolAction);
@@ -292,9 +293,10 @@ void te::qt::plugins::edit::ToolBar::initializeActions()
   m_tools.push_back(m_deleteGeometryToolAction);
   m_tools.push_back(m_mergeGeometriesToolAction);
   m_tools.push_back(m_splitPolygonToolAction);
+  m_tools.push_back(m_featureAttributesAction);
 
   // Adding tools to toolbar
-  for(int i = 0; i < m_tools.size(); ++i)
+  for (int i = 0; i < m_tools.size(); ++i)
     m_toolBar->addAction(m_tools[i]);
 
   // Snap
@@ -302,10 +304,6 @@ void te::qt::plugins::edit::ToolBar::initializeActions()
   m_toolBar->addSeparator();
   m_toolBar->addAction(m_snapOptionsAction);
 
-  //Feature Attributes
-  createAction(m_featureAttributesAction, tr("Feature Attributes"), "attributefill-icon", true, true, "feature_attributes", SLOT(onFeatureAttributesActivated()));
-  m_toolBar->addSeparator();
-  m_toolBar->addAction(m_featureAttributesAction);
 }
 
 void te::qt::plugins::edit::ToolBar::createAction(QAction*& action, const QString& tooltip, const QString& icon, bool checkable, bool enabled, const QString& objName, const char* member)
@@ -329,7 +327,7 @@ void te::qt::plugins::edit::ToolBar::onEditActivated(bool checked)
 void te::qt::plugins::edit::ToolBar::onSaveActivated()
 {
   te::map::AbstractLayerPtr layer;
-
+/*
   if(m_usingStash && !m_layerIsStashed)
   {
     std::map<std::string, te::edit::Repository*> repositories = te::edit::RepositoryManager::getInstance().getRepositories();
@@ -375,7 +373,7 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
 
     return;
   }
-
+*/
   try
   {
     te::map::AbstractLayer* l = getSelectedLayer().get();
@@ -430,64 +428,82 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
       std::auto_ptr<te::da::DataSetType> dt = layer->getSchema();
       te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(dt.get());
 
+      std::set<int> propertiesPos;
+
       for (std::size_t i = 0; i < features.size(); ++i) // for each edited feature
       {
-          // Create the new item
-          te::mem::DataSetItem* item = new te::mem::DataSetItem(operationds[te::edit::GEOMETRY_CREATE]);
+        // Create the new item
+        te::mem::DataSetItem* item = new te::mem::DataSetItem(operationds[te::edit::GEOMETRY_CREATE]);
 
-          // Get the object id
-          te::da::ObjectId* oid = features[i]->getId();
-          assert(oid);
+        // Get the object id
+        te::da::ObjectId* oid = features[i]->getId();
+        assert(oid);
 
-          const boost::ptr_vector<te::dt::AbstractData>& values = oid->getValue();
-          assert(values.size() == oidPropertyNames.size());
+        const boost::ptr_vector<te::dt::AbstractData>& values = oid->getValue();
+        assert(values.size() == oidPropertyNames.size());
 
-          // Get the edited geometry
-          te::gm::Geometry* geom = features[i]->getGeometry();
-          assert(geom);
+        // Get the edited geometry
+        te::gm::Geometry* geom = features[i]->getGeometry();
+        assert(geom);
 
-          // Fill the new item
-          for (std::size_t j = 0; j < values.size(); ++j)
-            item->setValue(oidPropertyNames[j], values[j].clone());
+        // Fill the new item
+        for (std::size_t j = 0; j < values.size(); ++j)
+          item->setValue(oidPropertyNames[j], values[j].clone());
 
-          // Set the geometry type
-          if (geomProp->getGeometryType() == te::gm::MultiPolygonType &&
-            features[i]->getGeometry()->getGeomTypeId() == te::gm::PolygonType)
+        // Set the geometry type
+        if (geomProp->getGeometryType() == te::gm::MultiPolygonType &&
+          features[i]->getGeometry()->getGeomTypeId() == te::gm::PolygonType)
+        {
+          std::auto_ptr<te::gm::GeometryCollection> gc(new te::gm::GeometryCollection(0, te::gm::MultiPolygonType, layer->getSRID()));
+          gc->add((te::gm::Geometry*)geom->clone());
+          item->setGeometry(gpos, gc.release());
+          propertiesPos.insert(gpos);
+        }
+        else
+        {
+          item->setGeometry(gpos, static_cast<te::gm::Geometry*>(geom->clone()));
+          propertiesPos.insert(gpos);
+        }
+
+        switch (features[i]->getOperationType())
+        {
+        case te::edit::GEOMETRY_CREATE:
+
+          operationds[te::edit::GEOMETRY_CREATE]->add(item);
+          break;
+
+        case te::edit::GEOMETRY_UPDATE:
+
+          operationds[te::edit::GEOMETRY_UPDATE]->add(item);
+          break;
+
+        case te::edit::GEOMETRY_DELETE:
+
+          operationds[te::edit::GEOMETRY_DELETE]->add(item);
+          break;
+
+        case te::edit::GEOMETRY_UPDATE_ATTRIBUTES:
+
+          if (features[i]->getOperationType() == te::edit::GEOMETRY_UPDATE_ATTRIBUTES)
           {
-            std::auto_ptr<te::gm::GeometryCollection> gc(new te::gm::GeometryCollection(0, te::gm::MultiPolygonType, layer->getSRID()));
-            gc->add((te::gm::Geometry*)geom->clone());
-            item->setGeometry(gpos, gc.release());
+            if (features[i]->getData().size() > 0)
+            {
+              for (std::map<std::size_t, te::dt::AbstractData*>::const_iterator it = features[i]->getData().begin(); it != features[i]->getData().end(); ++it)
+              {
+                item->setValue(it->first, it->second);
+                propertiesPos.insert(it->first);
+              }
+            }
           }
-          else
-          {
-            item->setGeometry(gpos, static_cast<te::gm::Geometry*>(geom->clone()));
-          }
 
-          switch (features[i]->getOperationType())
-          {
-            case te::edit::GEOMETRY_CREATE:
+          operationds[te::edit::GEOMETRY_UPDATE_ATTRIBUTES]->add(item);
+          break;
 
-              operationds[te::edit::GEOMETRY_CREATE]->add(item);
-              break;
-
-            case te::edit::GEOMETRY_UPDATE:
-
-              operationds[te::edit::GEOMETRY_UPDATE]->add(item);
-              break;
-
-            case te::edit::GEOMETRY_DELETE:
-
-              operationds[te::edit::GEOMETRY_DELETE]->add(item);
-              break;
-
-            default:
-              break;
-          }
+        default:
+          break;
+        }
 
       }
-
-      std::set<int> gproperty;
-      gproperty.insert((int)gpos);
 
       std::map<te::edit::OperationType, te::da::ObjectIdSet* > currentOids;
 
@@ -503,9 +519,7 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
       if (operationds[te::edit::GEOMETRY_UPDATE]->size() > 0)
       {
         std::vector<std::set<int> > properties;
-        for (std::size_t i = 0; i < operationds[te::edit::GEOMETRY_UPDATE]->size(); ++i){
-          properties.push_back(gproperty);
-        }
+        properties.push_back(propertiesPos);
 
         std::vector<std::size_t> oidPropertyPosition;
         for (std::size_t i = 0; i < oidPropertyNames.size(); ++i)
@@ -516,7 +530,6 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
         operationds[te::edit::GEOMETRY_UPDATE]->moveBeforeFirst();
 
         dsource->update(dslayer->getDataSetName(), operationds[te::edit::GEOMETRY_UPDATE], properties, oidPropertyPosition);
-
       }
 
       if (operationds[te::edit::GEOMETRY_DELETE]->size() > 0)
@@ -527,6 +540,22 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
 
         dsource->remove(dslayer->getDataSetName(), currentOids[te::edit::GEOMETRY_DELETE]);
 
+      }
+
+      if (operationds[te::edit::GEOMETRY_UPDATE_ATTRIBUTES]->size() > 0)
+      {
+        std::vector<std::set<int> > properties;
+        properties.push_back(propertiesPos);
+
+        std::vector<std::size_t> oidPropertyPosition;
+        for (std::size_t i = 0; i < oidPropertyNames.size(); ++i)
+          oidPropertyPosition.push_back(te::da::GetPropertyPos(operationds[te::edit::GEOMETRY_UPDATE_ATTRIBUTES], oidPropertyNames[i]));
+
+        currentOids[te::edit::GEOMETRY_UPDATE_ATTRIBUTES] = te::da::GenerateOIDSet(operationds[te::edit::GEOMETRY_UPDATE_ATTRIBUTES], schema.get());
+
+        operationds[te::edit::GEOMETRY_UPDATE_ATTRIBUTES]->moveBeforeFirst();
+
+        dsource->update(dslayer->getDataSetName(), operationds[te::edit::GEOMETRY_UPDATE_ATTRIBUTES], properties, oidPropertyPosition);
       }
 
       te::gm::Envelope env(layer->getExtent());
@@ -562,12 +591,18 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
   emit stashed(layer.get());
 }
 
-void te::qt::plugins::edit::ToolBar::onVertexToolActivated(bool checked)
+void te::qt::plugins::edit::ToolBar::onVertexToolActivated(bool)
 {
   te::map::AbstractLayerPtr layer = getSelectedLayer();
   if(layer.get() == 0)
   {
     QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Select a layer first!"));
+    return;
+  }
+
+  if (layer.get()->getSelected() == 0)
+  {
+    QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Select a geometry first!"));
     return;
   }
 
@@ -579,7 +614,7 @@ void te::qt::plugins::edit::ToolBar::onVertexToolActivated(bool checked)
   setCurrentTool(new te::edit::VertexTool(e.m_display->getDisplay(), layer, 0), e.m_display);
 }
 
-void te::qt::plugins::edit::ToolBar::onCreatePolygonToolActivated(bool checked)
+void te::qt::plugins::edit::ToolBar::onCreatePolygonToolActivated(bool)
 {
   te::map::AbstractLayerPtr layer = getSelectedLayer();
   if(layer.get() == 0)
@@ -596,7 +631,7 @@ void te::qt::plugins::edit::ToolBar::onCreatePolygonToolActivated(bool checked)
   setCurrentTool(new te::edit::CreatePolygonTool(e.m_display->getDisplay(), layer, Qt::ArrowCursor, 0), e.m_display);
 }
 
-void te::qt::plugins::edit::ToolBar::onCreateLineToolActivated(bool checked)
+void te::qt::plugins::edit::ToolBar::onCreateLineToolActivated(bool)
 {
   te::map::AbstractLayerPtr layer = getSelectedLayer();
   if(layer.get() == 0)
@@ -613,12 +648,18 @@ void te::qt::plugins::edit::ToolBar::onCreateLineToolActivated(bool checked)
   setCurrentTool(new te::edit::CreateLineTool(e.m_display->getDisplay(), layer, Qt::ArrowCursor, 0), e.m_display);
 }
 
-void te::qt::plugins::edit::ToolBar::onMoveGeometryToolActivated(bool checked)
+void te::qt::plugins::edit::ToolBar::onMoveGeometryToolActivated(bool)
 {
   te::map::AbstractLayerPtr layer = getSelectedLayer();
   if(layer.get() == 0)
   {
     QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Select a layer first!"));
+    return;
+  }
+
+  if (layer.get()->getSelected()->size() != 1)
+  {
+    QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Select one geometry first!"));
     return;
   }
 
@@ -641,7 +682,7 @@ void te::qt::plugins::edit::ToolBar::onSnapOptionsActivated()
   options.exec();
 }
 
-void te::qt::plugins::edit::ToolBar::onFeatureAttributesActivated()
+void te::qt::plugins::edit::ToolBar::onFeatureAttributesActivated(bool)
 {
   te::map::AbstractLayerPtr layer = getSelectedLayer();
   if (layer.get() == 0)
@@ -649,6 +690,13 @@ void te::qt::plugins::edit::ToolBar::onFeatureAttributesActivated()
     QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Select a layer first!"));
     return;
   }
+
+  if (layer.get()->getSelected()->size() != 1)
+  {
+    QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Select one geometry first!"));
+    return;
+  }
+
 
   te::qt::af::evt::GetMapDisplay e;
   emit triggered(&e);
@@ -664,6 +712,7 @@ void te::qt::plugins::edit::ToolBar::onFeatureAttributesActivated()
 
   std::auto_ptr<te::da::DataSet> ds(layer->getData(objSet));
 
+  // Get the geometry type
   te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(dt.get());
 
   if (ds->moveNext())
@@ -673,33 +722,23 @@ void te::qt::plugins::edit::ToolBar::onFeatureAttributesActivated()
     std::auto_ptr<te::gm::Geometry> geom = ds->getGeometry(geomProp->getName());
 
     // Try finds the geometry centroid
-    switch (geom->getGeomTypeId())
-    {
-      case te::gm::PolygonType:
-      {
-        te::gm::Polygon* p = dynamic_cast<te::gm::Polygon*>(geom.get());
-        coord = *p->getCentroidCoord();
-
-        break;
-      }
-      case te::gm::MultiPolygonType:
-      {
-        te::gm::MultiPolygon* mp = dynamic_cast<te::gm::MultiPolygon*>(geom.get());
-        coord = *mp->getCentroidCoord();
-
-        break;
-      }
-
-      default:
-      break;
-    }
+    coord = geom->getMBR()->getCenter();
 
     // Build the search envelope
     te::gm::Envelope env(coord.getX(), coord.getY(), coord.getX(), coord.getY());
 
+    // Get the feature
     te::edit::Feature* m_feature = PickFeature(layer, env, e.m_display->getDisplay()->getSRID(), te::edit::GEOMETRY_UPDATE);
 
-    options.set(dt.get(), m_feature);
+    //if (te::edit::RepositoryManager::getInstance().hasIdentify(layer->getId(), m_feature->getId()))
+    //{
+    //m_feature = te::edit::RepositoryManager::getInstance().getFeature(layer->getId(), env, layer->getSRID());
+    //}
+
+    // Retrieves the data from layer
+    std::auto_ptr<te::da::DataSet> dataset(layer->getData(objSet));
+
+    options.set(dataset.get(), m_feature, layer);
 
     options.exec();
 
@@ -708,7 +747,7 @@ void te::qt::plugins::edit::ToolBar::onFeatureAttributesActivated()
 
 }
 
-void te::qt::plugins::edit::ToolBar::onAggregateAreaToolActivated(bool checked)
+void te::qt::plugins::edit::ToolBar::onAggregateAreaToolActivated(bool)
 {
   te::map::AbstractLayerPtr layer = getSelectedLayer();
   if(layer.get() == 0)
@@ -737,7 +776,7 @@ void te::qt::plugins::edit::ToolBar::onAggregateAreaToolActivated(bool checked)
   setCurrentTool(new te::edit::AggregateAreaTool(e.m_display->getDisplay(), layer, 0), e.m_display);
 }
 
-void te::qt::plugins::edit::ToolBar::onSubtractAreaToolActivated(bool checked)
+void te::qt::plugins::edit::ToolBar::onSubtractAreaToolActivated(bool)
 {
   te::map::AbstractLayerPtr layer = getSelectedLayer();
   if(layer.get() == 0)
@@ -767,7 +806,7 @@ void te::qt::plugins::edit::ToolBar::onSubtractAreaToolActivated(bool checked)
 }
 
 
-void te::qt::plugins::edit::ToolBar::onDeleteGeometryToolActivated(bool checked)
+void te::qt::plugins::edit::ToolBar::onDeleteGeometryToolActivated(bool)
 {
   try
   {
@@ -798,7 +837,7 @@ void te::qt::plugins::edit::ToolBar::onDeleteGeometryToolActivated(bool checked)
 
 }
 
-void te::qt::plugins::edit::ToolBar::onMergeGeometriesToolActivated(bool checked)
+void te::qt::plugins::edit::ToolBar::onMergeGeometriesToolActivated(bool)
 {
   te::map::AbstractLayerPtr layer = getSelectedLayer();
   if(layer.get() == 0)
@@ -827,7 +866,7 @@ void te::qt::plugins::edit::ToolBar::onMergeGeometriesToolActivated(bool checked
   setCurrentTool(new te::edit::MergeGeometriesTool(e.m_display->getDisplay(), layer, Qt::ArrowCursor, 0), e.m_display);
 }
 
-void te::qt::plugins::edit::ToolBar::onSplitPolygonToolActivated(bool checked)
+void te::qt::plugins::edit::ToolBar::onSplitPolygonToolActivated(bool)
 {
 
   QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Under Development!"));

@@ -330,7 +330,8 @@ void te::edit::MergeGeometriesTool::storeMergedFeature()
   {
     if ((*it)->getValueAsString() == m_chosenOid)
     {
-      RepositoryManager::getInstance().addGeometry(m_layer->getId(), m_feature->getId()->clone(), dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone()), te::edit::GEOMETRY_UPDATE);
+      //RepositoryManager::getInstance().addGeometry(m_layer->getId(), m_feature->getId()->clone(), dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone()), te::edit::GEOMETRY_UPDATE);
+      RepositoryManager::getInstance().addFeature(m_layer->getId(), m_feature->clone());
     }
     else
     {
