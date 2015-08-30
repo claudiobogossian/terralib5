@@ -519,7 +519,8 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
       if (operationds[te::edit::GEOMETRY_UPDATE]->size() > 0)
       {
         std::vector<std::set<int> > properties;
-        properties.push_back(propertiesPos);
+        for (std::size_t i = 0; i < operationds[te::edit::GEOMETRY_UPDATE]->size(); i++)
+          properties.push_back(propertiesPos);
 
         std::vector<std::size_t> oidPropertyPosition;
         for (std::size_t i = 0; i < oidPropertyNames.size(); ++i)
@@ -545,7 +546,8 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
       if (operationds[te::edit::GEOMETRY_UPDATE_ATTRIBUTES]->size() > 0)
       {
         std::vector<std::set<int> > properties;
-        properties.push_back(propertiesPos);
+        for (std::size_t i = 0; i < operationds[te::edit::GEOMETRY_UPDATE_ATTRIBUTES]->size(); i++)
+          properties.push_back(propertiesPos);
 
         std::vector<std::size_t> oidPropertyPosition;
         for (std::size_t i = 0; i < oidPropertyNames.size(); ++i)
