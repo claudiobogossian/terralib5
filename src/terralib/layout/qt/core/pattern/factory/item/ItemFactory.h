@@ -60,9 +60,7 @@ namespace te
         /*!
           \brief Reimplemented from AbstractItemFactory
         */
-        virtual Observer* make(EnumType* type, ItemParamsCreate params = ItemParamsCreate());
-
-        virtual AbstractItemView* makeNew(EnumType* type, ItemParamsCreate params = ItemParamsCreate());
+        virtual AbstractItemView* make(EnumType* type, ItemParamsCreate params = ItemParamsCreate());
     };
   }
 }

@@ -635,6 +635,7 @@ void te::layout::Scene::redrawSelectionMap()
 
 void te::layout::Scene::exportItemsToImage(std::string dir)
 {
+  /*
   Utils* utils = Context::getInstance().getUtils();
 
   QList<QGraphicsItem*> selected = selectedItems();
@@ -675,6 +676,7 @@ void te::layout::Scene::exportItemsToImage(std::string dir)
       }
     }
   }
+  */
 }
 
 void te::layout::Scene::mouseMoveEvent(QGraphicsSceneMouseEvent * mouseEvent)

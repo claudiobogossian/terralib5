@@ -27,7 +27,6 @@
 
 // TerraLib
 #include "ItemFactory.h"
-#include "../../../../../core/pattern/mvc/Observer.h"
 #include "../../../../../core/enum/EnumType.h"
 #include "../../../../../core/pattern/factory/ItemParamsCreate.h"
 #include "../../../../../core/enum/Enums.h"
@@ -67,122 +66,111 @@ te::layout::ItemFactory::~ItemFactory()
 
 }
 
-te::layout::Observer* te::layout::ItemFactory::make( EnumType* type, ItemParamsCreate params /*= LayoutItemParamsCreate()*/ )
-{
-  Observer* item = 0;
-
-  EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
-
-  if(type == enumObj->getPaperItem())
-  {
-    PaperItem* paper = new PaperItem(params.getController(), params.getModel());
-    item = (Observer*)paper;
-  }
-
-  return item;
-}
-
-te::layout::AbstractItemView* te::layout::ItemFactory::makeNew(EnumType* type, ItemParamsCreate params)
+te::layout::AbstractItemView* te::layout::ItemFactory::make(EnumType* type, ItemParamsCreate params)
 {
   AbstractItemView* item = 0;
 
   EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
 
-  if(type == enumObj->getRectangleItem())
+  if(type == enumObj->getPaperItem())
   {
-    item = new RectangleItem(params.m_newController, params.m_newModel);
+    item = new PaperItem(params.getController(), params.getModel());
+  }
+  else if(type == enumObj->getRectangleItem())
+  {
+    item = new RectangleItem(params.getController(), params.getModel());
   }
   else if(type == enumObj->getEllipseItem())
   {
-    item = new EllipseItem(params.m_newController, params.m_newModel);
+    item = new EllipseItem(params.getController(), params.getModel());
   }
   else if(type == enumObj->getArrowItem())
   {
-    item = new ArrowItem(params.m_newController, params.m_newModel);
+    item = new ArrowItem(params.getController(), params.getModel());
   }
   else if(type == enumObj->getScaleItem())
   {
-    item = new ScaleItem(params.m_newController, params.m_newModel);
+    item = new ScaleItem(params.getController(), params.getModel());
   }
   else if(type == enumObj->getPointItem())
   {
-    item = new PointItem(params.m_newController, params.m_newModel);
+    item = new PointItem(params.getController(), params.getModel());
   }
   else if(type == enumObj->getTextItem())
   {
-    item = new TextItem(params.m_newController, params.m_newModel);
+    item = new TextItem(params.getController(), params.getModel());
   }
   else if(type == enumObj->getTitleItem())
   {
-    item = new TitleItem(params.m_newController, params.m_newModel);
+    item = new TitleItem(params.getController(), params.getModel());
   }
   else if(type == enumObj->getTextGridItem())
   {
-    item = new TextGridItem(params.m_newController, params.m_newModel);
+    item = new TextGridItem(params.getController(), params.getModel());
   }
   else if(type == enumObj->getBarCodeItem())
   {
-    item = new BarCodeItem(params.m_newController, params.m_newModel);
+    item = new BarCodeItem(params.getController(), params.getModel());
   }
   else if(type == enumObj->getNorthItem())
   {
-    item = new NorthItem(params.m_newController, params.m_newModel);
+    item = new NorthItem(params.getController(), params.getModel());
   }
   else if(type == enumObj->getLineItem())
   {
-    item = new LineItem(params.m_newController, params.m_newModel);
+    item = new LineItem(params.getController(), params.getModel());
   }
   else if(type == enumObj->getPolygonItem())
   {
-    item = new PolygonItem(params.m_newController, params.m_newModel);
+    item = new PolygonItem(params.getController(), params.getModel());
   }
   else if(type == enumObj->getMapItem())
   {
-    item = new MapItem(params.m_newController, params.m_newModel);
+    item = new MapItem(params.getController(), params.getModel());
   }
   else if(type == enumObj->getMapLocationItem())
   {
-    item = new MapLocationItem(params.m_newController, params.m_newModel);
+    item = new MapLocationItem(params.getController(), params.getModel());
   }
   else if(type == enumObj->getGridMapItem())
   {
-    item = new GridMapItem(params.m_newController, params.m_newModel);
+    item = new GridMapItem(params.getController(), params.getModel());
   }
   else if(type == enumObj->getGridPlanarItem())
   {
-    item = new GridPlanarItem(params.m_newController, params.m_newModel);
+    item = new GridPlanarItem(params.getController(), params.getModel());
   }
   else if(type == enumObj->getGridGeodesicItem())
   {
-    item = new GridGeodesicItem(params.m_newController, params.m_newModel);
+    item = new GridGeodesicItem(params.getController(), params.getModel());
   }
   else if(type == enumObj->getImageItem())
   {
-    item = new ImageItem(params.m_newController, params.m_newModel);
+    item = new ImageItem(params.getController(), params.getModel());
   }
   else if(type == enumObj->getLegendItem())
   {
-    item = new LegendItem(params.m_newController, params.m_newModel);
+    item = new LegendItem(params.getController(), params.getModel());
   }
   else if(type == enumObj->getLegendChildItem())
   {
-    item = new LegendChildItem(params.m_newController, params.m_newModel);
+    item = new LegendChildItem(params.getController(), params.getModel());
   }
   else if(type == enumObj->getSVGItem())
   {
-    item = new SVGItem(params.m_newController, params.m_newModel);
+    item = new SVGItem(params.getController(), params.getModel());
   }
   else if(type == enumObj->getBalloonItem())
   {
-    item = new BarCodeItem(params.m_newController, params.m_newModel);
+    item = new BarCodeItem(params.getController(), params.getModel());
   }
   else if(type == enumObj->getItemGroup())
   {
-    item = new ItemGroup(params.m_newController, params.m_newModel);
+    item = new ItemGroup(params.getController(), params.getModel());
   }
   else if (type == enumObj->getMovingItemGroup())
   {
-    item = new MovingItemGroup(params.m_newController, params.m_newModel);
+    item = new MovingItemGroup(params.getController(), params.getModel());
   }
   
   return item;

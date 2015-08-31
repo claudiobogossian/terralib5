@@ -63,7 +63,7 @@ namespace te
           \param controller "Controller" part of MVC component
           \param o "Model" part of MVC component
         */ 
-        ItemParamsCreate(ItemController* controller, Observable* model);
+        ItemParamsCreate(AbstractItemController* controller, AbstractItemModel* model);
 
         /*!
           \brief Destructor
@@ -75,34 +75,27 @@ namespace te
 
           \return controller
         */
-        ItemController*  getController();
+        AbstractItemController*  getController();
 
         /*!
           \brief Returns the "Model" part of the MVC.
 
           \return model
         */
-        Observable*    getModel();
-        
-        protected:
-        ItemController*  m_controller; //!< "Controller" part of MVC component.
-        Observable*    m_model; //!< "Model" part of MVC component.
+        AbstractItemModel*    getModel();
 
-        //temporary
-      public:
-        AbstractItemController* m_newController; //!< "Controller" part of MVC component.
-        AbstractItemModel*      m_newModel; //!< "Model" part of MVC component.
+      protected:
+        AbstractItemController* m_controller; //!< "Controller" part of MVC component.
+        AbstractItemModel*      m_model; //!< "Model" part of MVC component.
     };
 
     /*
     ** ---------------------------------------------------------------
     ** Inline methods:
     */
-    inline ItemParamsCreate::ItemParamsCreate(ItemController* controller, Observable* model) 
+    inline ItemParamsCreate::ItemParamsCreate(AbstractItemController* controller, AbstractItemModel* model) 
       : m_controller(controller)
       , m_model(model)
-      , m_newController(0)
-      , m_newModel(0)
     {
     }
 
@@ -110,15 +103,16 @@ namespace te
     {
     }
 
-    inline ItemController* ItemParamsCreate::getController()
+    inline AbstractItemController* ItemParamsCreate::getController()
     {
       return m_controller;
     }
 
-    inline Observable* ItemParamsCreate::getModel()
+    inline AbstractItemModel* ItemParamsCreate::getModel()
     {
       return m_model;
     }
   }
 }
-#endif
+
+#endif //__TERRALIB_LAYOUT_INTERNAL_ITEM_PARAMS_CREATE_H

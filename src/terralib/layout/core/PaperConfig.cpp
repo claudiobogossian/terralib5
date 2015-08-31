@@ -53,12 +53,12 @@ void te::layout::PaperConfig::setPaperType( LayoutAbstractPaperType paperType )
   m_paperType = paperType;
 }
 
-te::layout::LayoutAbstractPaperType te::layout::PaperConfig::getPaperType()
+te::layout::LayoutAbstractPaperType te::layout::PaperConfig::getPaperType() const
 {
   return m_paperType;
 }
 
-void te::layout::PaperConfig::getPaperSize( double &w, double &h )
+void te::layout::PaperConfig::getPaperSize( double &w, double &h ) const
 {
   switch(m_paperType)
   {
@@ -136,7 +136,7 @@ void te::layout::PaperConfig::setPaperOrientation( LayoutOrientationType orienta
   m_paperOrientationType = orientation;
 }
 
-te::layout::LayoutOrientationType te::layout::PaperConfig::getPaperOrientantion()
+te::layout::LayoutOrientationType te::layout::PaperConfig::getPaperOrientantion() const
 {
   return m_paperOrientationType;
 }

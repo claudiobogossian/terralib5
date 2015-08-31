@@ -59,7 +59,9 @@ namespace te
     {
       public:
 
-        /*!
+        virtual void resized(const double& width, const double& height);
+
+        /*
           \brief Constructor
         */ 
         AbstractItemController( AbstractItemModel* model );
