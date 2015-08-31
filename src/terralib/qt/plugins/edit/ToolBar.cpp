@@ -7,7 +7,7 @@
     the Free Software Foundation, either version 3 of the License,
     or (at your option) any later version.
 
-    TerraLib is distributed in the hope that it will be useful,
+    TerraLib is distributed in the hope that it will be useful,DataSource
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
     GNU Lesser General Public License for more details.
@@ -27,6 +27,7 @@
 #include "../../../common/Translator.h"
 #include "../../../dataaccess/dataset/ObjectId.h"
 #include "../../../dataaccess/dataset/ObjectIdSet.h"
+#include "../../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../datatype/SimpleData.h"
 #include "../../../edit/Feature.h"
@@ -966,11 +967,12 @@ void te::qt::plugins::edit::ToolBar::enableActionsByGeomType()
   if (layer.get() == 0)
     return;
 
-  const te::map::DataSetLayer* dslayer = dynamic_cast<const te::map::DataSetLayer*>(layer.get());
+  te::da::DataSourceInfoPtr info = te::da::DataSourceInfoManager::getInstance().get(layer->getDataSourceId());
 
-  if (dslayer->getRendererType() != "ABSTRACT_LAYER_RENDERER")
+  if (info->getType() != "POSTGIS" && info->getType() != "OGR")
   {
-    QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("This layer is incompatible!"));
+    m_toolBar->setEnabled(false);
+    QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("The DataSource associated to this layer is incompatible!"));
     return;
   }
 
