@@ -90,7 +90,7 @@ namespace te
 
       void storeUndoCommand();
 
-      void mergeGeometries(bool hasmore);
+      void mergeGeometries();
 
       bool spatialRelationDisjoint(te::gm::GeometryCollection& gc);
 

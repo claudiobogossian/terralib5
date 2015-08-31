@@ -1,12 +1,10 @@
 
 //TerraLib
 #include "../../../common/STLUtils.h"
-//#include "../../../geometry/GeometryProperty.h"
-//#include "../../../geometry/MultiPolygon.h"
-//#include "../../../geometry/Utils.h"
 #include "../../../dataaccess/dataset/ObjectId.h"
 #include "../../../dataaccess/dataset/ObjectIdSet.h"
 #include "../../../dataaccess/utils/Utils.h"
+#include "../../../geometry.h"
 #include "../../../qt/af/events/LayerEvents.h"
 #include "../../../qt/af/events/MapEvents.h"
 #include "../../../qt/widgets/canvas/MapDisplay.h"
@@ -29,34 +27,6 @@
 #include <cassert>
 #include <memory>
 #include <iostream>
-
-/////////////////////////
-//Terralib
-#include "terralib_config.h"
-#include "../../../common/Logger.h"
-#include "../../../common/progress/TaskProgress.h"
-#include "../../../common/STLUtils.h"
-#include "../../../common/StringUtils.h"
-#include "../../../common/Translator.h"
-#include "../../../dataaccess/utils/Utils.h"
-#include "../../../datatype/StringProperty.h"
-#include "../../../datatype/SimpleData.h"
-#include "../../../geometry.h"
-#include "../../../memory/DataSet.h"
-#include "../../../memory/DataSetItem.h"
-#include "../../../statistics/core/NumericStatisticalSummary.h"
-#include "../../../statistics/core/StringStatisticalSummary.h"
-#include "../../../statistics/core/SummaryFunctions.h"
-#include "../../../statistics/core/Enums.h"
-
-
-// STL
-#include <memory>
-
-// Boost
-#include <boost/algorithm/string/replace.hpp>
-#include <boost/lexical_cast.hpp>
-/////////////////////////
 
 te::edit::AggregateAreaTool::AggregateAreaTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent)
   : CreateLineTool(display, layer, Qt::ArrowCursor, parent),

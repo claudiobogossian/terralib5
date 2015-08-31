@@ -869,7 +869,7 @@ void te::qt::plugins::edit::ToolBar::onMergeGeometriesToolActivated(bool)
 
   if(layer->getSelected()->size() < 2)
   {
-    QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("To use this tool, you must select at least two geometries!"));
+    QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("To use this tool, you must select at least two geometry!"));
     return;
   }
 

@@ -2,7 +2,6 @@
 #define __TERRALIB_EDIT_QT_INTERNAL_AGGREGATEAREATOOL_H
 
 // TerraLib
-//#include "../../../geometry/Envelope.h"
 #include "../../../maptools/AbstractLayer.h"
 #include "../Config.h"
 

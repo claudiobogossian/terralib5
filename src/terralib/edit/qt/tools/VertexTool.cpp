@@ -39,7 +39,7 @@
 #include "../../Utils.h"
 #include "../Renderer.h"
 #include "../Utils.h"
-#include "../core/command/UpdateCommand.h"
+#include "../core/command/VertexCommand.h"
 #include "VertexTool.h"
 
 // Qt
@@ -53,38 +53,10 @@
 #include <memory>
 #include <string>
 
-////////////////////
-#include "../../../common/STLUtils.h"
-#include "../../../geometry/GeometryProperty.h"
-#include "../../../geometry/MultiPolygon.h"
-#include "../../../geometry/Utils.h"
-#include "../../../dataaccess/dataset/ObjectId.h"
-#include "../../../dataaccess/dataset/ObjectIdSet.h"
-#include "../../../dataaccess/utils/Utils.h"
-#include "../../../qt/af/events/LayerEvents.h"
-#include "../../../qt/af/events/MapEvents.h"
-#include "../../../qt/widgets/canvas/MapDisplay.h"
-#include "../../Feature.h"
-#include "../../RepositoryManager.h"
-#include "../../Utils.h"
-#include "../Renderer.h"
-#include "../Utils.h"
-// Qt
-#include <QMessageBox>
-#include <QMouseEvent>
-#include <QPainter>
-#include <QPixmap>
-#include <QDebug>
-
-// STL
-#include <cassert>
-#include <memory>
-#include <iostream>
-
-
 te::edit::VertexTool::VertexTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent)
 : GeometriesUpdateTool(display, layer.get(), parent),
-  m_currentStage(FEATURE_SELECTION)
+  m_currentStage(FEATURE_SELECTION)//,
+  //m_vertexWatches(0)
 {
 
   // Signals & slots
@@ -230,6 +202,8 @@ bool te::edit::VertexTool::mouseReleaseEvent(QMouseEvent* e)
         setStage(VERTEX_SEARCH);
       }
 
+      storeUndoCommand();
+
       return true;
     }
 
@@ -238,11 +212,15 @@ bool te::edit::VertexTool::mouseReleaseEvent(QMouseEvent* e)
       updateRTree();
 
       setStage(VERTEX_SEARCH);
+
+      storeUndoCommand();
     }
 
     default:
       return false;
   }
+
+  
 }
 
 bool te::edit::VertexTool::mouseDoubleClickEvent(QMouseEvent* e)
@@ -261,8 +239,6 @@ bool te::edit::VertexTool::mouseDoubleClickEvent(QMouseEvent* e)
     AddVertex(m_lines, point.x(), point.y(), e, m_display->getSRID());
 
     storeEditedFeature();
-
-    //storeUndoCommand();
 
     m_currentVertexIndex.makeInvalid();
 
@@ -456,4 +432,14 @@ void te::edit::VertexTool::storeEditedFeature()
 }
 
 void te::edit::VertexTool::storeUndoCommand()
-{}
+{
+  /*
+  if (m_feature)
+  {
+    m_vertexWatches.push_back(m_feature->clone());
+
+    QUndoCommand* command = new VertexCommand(m_vertexWatches, m_display, m_layer);
+    UndoStackManager::getInstance().addUndoStack(command);
+  }
+  */
+}

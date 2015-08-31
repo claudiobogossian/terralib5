@@ -155,6 +155,10 @@ namespace te
           te::sam::rtree::Index<VertexIndex, 8> m_rtree;
           StageType m_currentStage;
 
+      protected:
+
+        //std::vector<Feature*> m_vertexWatches;
+
     };
 
   }   // end namespace edit
