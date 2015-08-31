@@ -291,19 +291,19 @@ QVariant te::layout::MapItem::itemChange ( QGraphicsItem::GraphicsItemChange cha
 void te::layout::MapItem::mousePressEvent ( QGraphicsSceneMouseEvent * event )
 {
   //by default, we send the event directly to the graphicsItem and not the proxy. This is done in order to make the item answer to the mouse events, and not the map display
-  QGraphicsItem::mousePressEvent(event);
+  AbstractItem<QGraphicsProxyWidget>::mousePressEvent(event);
 }
 
 void  te::layout::MapItem::mouseMoveEvent ( QGraphicsSceneMouseEvent * event )
 {
   //by default, we send the event directly to the graphicsItem and not the proxy. This is done in order to make the item answer to the mouse events, and not the map display
-  QGraphicsItem::mouseMoveEvent(event);
+  AbstractItem<QGraphicsProxyWidget>::mouseMoveEvent(event);
 }
 
 void  te::layout::MapItem::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event )
 {
   //by default, we send the event directly to the graphicsItem and not the proxy. This is done in order to make the item answer to the mouse events, and not the map display
-  QGraphicsItem::mouseReleaseEvent(event);
+  AbstractItem<QGraphicsProxyWidget>::mouseReleaseEvent(event);
 }
 
 void te::layout::MapItem::dragEnterEvent( QGraphicsSceneDragDropEvent * event )
@@ -1263,3 +1263,13 @@ void te::layout::MapItem::updateScale()
   }
 }
 */
+
+void te::layout::MapItem::resized()
+{
+  Scene* myScene = dynamic_cast<Scene*>(this->scene());
+  if(myScene != 0)
+  {
+    contextUpdated(myScene->getContext());
+  }
+}
+

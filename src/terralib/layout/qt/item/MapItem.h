@@ -258,6 +258,8 @@ namespace te
       //   */
       //  virtual bool checkTouchesCorner(const double& x, const double& y);
 
+      virtual void resized();
+
       protected:
 
       //  QSize                                         m_mapSize; //!< The size of the map display in a zoom of 100%. This size is in pixels and is calculated based on the size of the GraphicItem in millimeters.
