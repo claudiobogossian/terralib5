@@ -235,6 +235,15 @@ void te::layout::View::mouseReleaseEvent( QMouseEvent * event )
 void te::layout::View::mouseDoubleClickEvent(QMouseEvent * event)
 {
   QGraphicsView::mouseDoubleClickEvent(event);
+
+  Scene* sc = dynamic_cast<Scene*>(scene());
+  if (!sc)
+    return;
+
+  if (sc->isEditionMode()) // If scene in edition mode the reload will happen in double click event
+  {
+    reload();
+  }
 }
 
 void te::layout::View::wheelEvent(QWheelEvent *event)
