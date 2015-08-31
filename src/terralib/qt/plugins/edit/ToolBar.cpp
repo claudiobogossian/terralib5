@@ -7,7 +7,7 @@
     the Free Software Foundation, either version 3 of the License,
     or (at your option) any later version.
 
-    TerraLib is distributed in the hope that it will be useful,
+    TerraLib is distributed in the hope that it will be useful,DataSource
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
     GNU Lesser General Public License for more details.
@@ -27,6 +27,7 @@
 #include "../../../common/Translator.h"
 #include "../../../dataaccess/dataset/ObjectId.h"
 #include "../../../dataaccess/dataset/ObjectIdSet.h"
+#include "../../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../datatype/SimpleData.h"
 #include "../../../edit/Feature.h"
@@ -69,15 +70,6 @@
 #include <cassert>
 #include <list>
 #include <vector>
-
-void te::qt::plugins::edit::ToolBar::EnableActions(QList<QAction*> acts, const bool& enable)
-{
-  for(QList<QAction*>::iterator it = acts.begin(); it != acts.end(); ++it)
-    (*it)->setEnabled(enable);
-
-  if (enable)
-    enableActionsByGeomType();
-}
 
 te::qt::plugins::edit::ToolBar::ToolBar(QObject* parent):
 QObject(parent),
@@ -137,12 +129,13 @@ void te::qt::plugins::edit::ToolBar::updateLayer(te::map::AbstractLayer* layer, 
   if(layer == 0 || layer->getSRID() == 0)
   {
     m_toolBar->setEnabled(false);
+    QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("The layer is empty or SRID is invalid!"));
     return;
   }
   else
   {
     m_toolBar->setEnabled(true);
-    enableActionsByGeomType();
+    enableActionsByGeomType(m_tools,true);
   }
 
   m_layerIsStashed = stashed;
@@ -222,7 +215,7 @@ void te::qt::plugins::edit::ToolBar::initialize()
 
   createUndoView(true);
 
-  EnableActions(m_tools, false);
+  enableActionsByGeomType(m_tools, false);
 
 }
 
@@ -333,7 +326,7 @@ void te::qt::plugins::edit::ToolBar::createAction(QAction*& action, const QStrin
 
 void te::qt::plugins::edit::ToolBar::onEditActivated(bool checked)
 {
-  EnableActions(m_tools, checked);
+  enableActionsByGeomType(m_tools, checked);
 
   enableCurrentTool(checked);
 }
@@ -429,8 +422,8 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
       const std::vector<te::edit::Feature*>& features = repo->getAllFeatures();
 
       //if not have any geometry
-      if (features.size() == 0)
-        it++;
+      //if (features.size() == 0)
+        //it++;
         //return;
 
       // Build the DataSet that will be used to update
@@ -486,40 +479,40 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
 
         switch (features[i]->getOperationType())
         {
-        case te::edit::GEOMETRY_CREATE:
+          case te::edit::GEOMETRY_CREATE:
 
-          operationds[te::edit::GEOMETRY_CREATE]->add(item);
-          break;
+            operationds[te::edit::GEOMETRY_CREATE]->add(item);
+            break;
 
-        case te::edit::GEOMETRY_UPDATE:
+          case te::edit::GEOMETRY_UPDATE:
 
-          operationds[te::edit::GEOMETRY_UPDATE]->add(item);
-          break;
+            operationds[te::edit::GEOMETRY_UPDATE]->add(item);
+            break;
 
-        case te::edit::GEOMETRY_DELETE:
+          case te::edit::GEOMETRY_DELETE:
 
-          operationds[te::edit::GEOMETRY_DELETE]->add(item);
-          break;
+            operationds[te::edit::GEOMETRY_DELETE]->add(item);
+            break;
 
-        case te::edit::GEOMETRY_UPDATE_ATTRIBUTES:
+          case te::edit::GEOMETRY_UPDATE_ATTRIBUTES:
 
-          if (features[i]->getOperationType() == te::edit::GEOMETRY_UPDATE_ATTRIBUTES)
-          {
-            if (features[i]->getData().size() > 0)
+            if (features[i]->getOperationType() == te::edit::GEOMETRY_UPDATE_ATTRIBUTES)
             {
-              for (std::map<std::size_t, te::dt::AbstractData*>::const_iterator it = features[i]->getData().begin(); it != features[i]->getData().end(); ++it)
+              if (features[i]->getData().size() > 0)
               {
-                item->setValue(it->first, it->second);
-                propertiesPos.insert(it->first);
+                for (std::map<std::size_t, te::dt::AbstractData*>::const_iterator it = features[i]->getData().begin(); it != features[i]->getData().end(); ++it)
+                {
+                  item->setValue(it->first, it->second);
+                  propertiesPos.insert(it->first);
+                }
               }
             }
-          }
 
-          operationds[te::edit::GEOMETRY_UPDATE_ATTRIBUTES]->add(item);
-          break;
+            operationds[te::edit::GEOMETRY_UPDATE_ATTRIBUTES]->add(item);
+            break;
 
-        default:
-          break;
+          default:
+            break;
         }
 
       }
@@ -957,49 +950,60 @@ void te::qt::plugins::edit::ToolBar::createUndoView(bool checked)
   */
 }
 
-void te::qt::plugins::edit::ToolBar::enableActionsByGeomType()
+void te::qt::plugins::edit::ToolBar::enableActionsByGeomType(QList<QAction*> acts, const bool& enable)
 {
   std::size_t geomType = 0;
-
   te::map::AbstractLayerPtr layer = getSelectedLayer();
 
-  if (layer.get() == 0)
-    return;
+  for(QList<QAction*>::iterator it = acts.begin(); it != acts.end(); ++it)
+      (*it)->setEnabled(enable);
 
-  const te::map::DataSetLayer* dslayer = dynamic_cast<const te::map::DataSetLayer*>(layer.get());
-
-  if (dslayer->getRendererType() != "ABSTRACT_LAYER_RENDERER")
+  if (enable)
   {
-    QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("This layer is incompatible!"));
-    return;
+
+    if (layer.get() == 0 || layer->getSRID() == 0)
+    {
+      m_toolBar->setEnabled(false);
+      QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("The layer is empty or SRID is invalid!"));
+      return;
+    }
+
+    te::da::DataSourceInfoPtr info = te::da::DataSourceInfoManager::getInstance().get(layer->getDataSourceId());
+
+    if (info->getType() != "POSTGIS" && info->getType() != "OGR")
+    {
+      m_toolBar->setEnabled(false);
+      QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("The DataSource associated to this layer is incompatible!"));
+      return;
+    }
+
+    // Get the geometry type of layer
+    std::auto_ptr<te::da::DataSetType> dt = layer->getSchema();
+    te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(dt.get());
+
+    if (geomProp->getGeometryType() == te::gm::MultiPolygonType ||
+      geomProp->getGeometryType() == te::gm::PolygonType)
+    {
+      geomType = 1;
+    }
+    else if (geomProp->getGeometryType() == te::gm::MultiLineStringType ||
+      geomProp->getGeometryType() == te::gm::LineStringType)
+    {
+      geomType = 2;
+    }
+    else
+      geomType = 3; // point...
+
+    m_createLineToolAction->setEnabled(geomType == 2 ? true : false);
+    m_vertexToolAction->setEnabled(geomType == 1 ? true : false);
+    m_createPolygonToolAction->setEnabled(geomType == 1 ? true : false);
+    m_moveGeometryToolAction->setEnabled(geomType == 1 || geomType == 2 ? true : false);
+    m_aggregateAreaToolAction->setEnabled(geomType == 1 ? true : false);
+    m_subtractAreaToolAction->setEnabled(geomType == 1 ? true : false);
+    m_deleteGeometryToolAction->setEnabled(geomType == 1 || geomType == 2 ? true : false);
+    m_mergeGeometriesToolAction->setEnabled(geomType == 1 ? true : false);
+    m_splitPolygonToolAction->setEnabled(geomType == 1 ? true : false);
+
   }
-
-  // Get the geometry type of layer
-  std::auto_ptr<te::da::DataSetType> dt = layer->getSchema();
-  te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(dt.get());
-
-  if (geomProp->getGeometryType() == te::gm::MultiPolygonType ||
-    geomProp->getGeometryType() == te::gm::PolygonType)
-  {
-    geomType = 1;
-  }
-  else if (geomProp->getGeometryType() == te::gm::MultiLineStringType ||
-    geomProp->getGeometryType() == te::gm::LineStringType)
-  {
-    geomType = 2;
-  }
-  else
-    geomType = 3; // point...
-
-  m_createLineToolAction->setEnabled(geomType == 2 ? true : false);
-  m_vertexToolAction->setEnabled(geomType == 1 ? true : false);
-  m_createPolygonToolAction->setEnabled(geomType == 1 ? true : false);
-  m_moveGeometryToolAction->setEnabled(geomType == 1 || geomType == 2 ? true : false);
-  m_aggregateAreaToolAction->setEnabled(geomType == 1 ? true : false);
-  m_subtractAreaToolAction->setEnabled(geomType == 1 ? true : false);
-  m_deleteGeometryToolAction->setEnabled(geomType == 1 || geomType == 2 ? true : false);
-  m_mergeGeometriesToolAction->setEnabled(geomType == 1 ? true : false);
-  m_splitPolygonToolAction->setEnabled(geomType == 1 ? true : false);
-
 
 }
