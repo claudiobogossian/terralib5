@@ -70,15 +70,14 @@
 #include <list>
 #include <vector>
 
-//temporary
-#include "../../../geometry/MultiPolygon.h"
-
-void EnableActions(QList<QAction*> acts, const bool& enable)
+void te::qt::plugins::edit::ToolBar::EnableActions(QList<QAction*> acts, const bool& enable)
 {
   for(QList<QAction*>::iterator it = acts.begin(); it != acts.end(); ++it)
     (*it)->setEnabled(enable);
-}
 
+  if (enable)
+    enableActionsByGeomType();
+}
 
 te::qt::plugins::edit::ToolBar::ToolBar(QObject* parent):
 QObject(parent),
@@ -132,13 +131,19 @@ QToolBar* te::qt::plugins::edit::ToolBar::get() const
 
 void te::qt::plugins::edit::ToolBar::updateLayer(te::map::AbstractLayer* layer, const bool& stashed)
 {
+  if (!m_editAction->isChecked())
+    return;
+
   if(layer == 0 || layer->getSRID() == 0)
   {
     m_toolBar->setEnabled(false);
     return;
   }
   else
+  {
     m_toolBar->setEnabled(true);
+    enableActionsByGeomType();
+  }
 
   m_layerIsStashed = stashed;
 
@@ -218,6 +223,7 @@ void te::qt::plugins::edit::ToolBar::initialize()
   createUndoView(true);
 
   EnableActions(m_tools, false);
+
 }
 
 void te::qt::plugins::edit::ToolBar::initializeActions()
@@ -226,6 +232,8 @@ void te::qt::plugins::edit::ToolBar::initializeActions()
   createAction(m_editAction, tr("Turn on/off edition mode"), QString("edit-enable"), true, true, "edit_enable", SLOT(onEditActivated(bool)));
 
   m_toolBar->addAction(m_editAction);
+
+  m_toolBar->addSeparator();
 
   // Save
   createAction(m_saveAction, tr("Save edition"), "edit-save", false, false, "save_edition", SLOT(onSaveActivated()));
@@ -251,14 +259,9 @@ void te::qt::plugins::edit::ToolBar::initializeActions()
     m_redoToolAction->setToolTip("Redo Action");
   }
 
-  m_toolBar->addAction(m_undoToolAction);
-  m_toolBar->addAction(m_redoToolAction);
-
-  m_toolBar->addSeparator();
-
   createAction(m_vertexToolAction, tr("Vertex Tool - Move, add and remove"), "edit-vertex-tool", true, false, "vertex_tool", SLOT(onVertexToolActivated(bool)));
   createAction(m_createPolygonToolAction, tr("Create Polygon"), "edit-create-polygon", true, false, "create_polygon", SLOT(onCreatePolygonToolActivated(bool)));
-  //createAction(m_createLineToolAction, tr("Create Line"), "layout-drawline", true, false,"create_line", SLOT(onCreateLineToolActivated(bool))); //edit-create-line
+  createAction(m_createLineToolAction, tr("Create Line"), "layout-drawline", true, false,"create_line", SLOT(onCreateLineToolActivated(bool))); //edit-create-line
   createAction(m_moveGeometryToolAction, tr("Move Geometry"), "edit-move-geometry", true, false, "move_geometry", SLOT(onMoveGeometryToolActivated(bool)));
   createAction(m_aggregateAreaToolAction, tr("Aggregate Area"), "vector-processing-aggregation", true, false, "aggregate_area", SLOT(onAggregateAreaToolActivated(bool)));
   createAction(m_subtractAreaToolAction, tr("Subtract Area"), "vector-processing-subtraction", true, false, "subtract_area", SLOT(onSubtractAreaToolActivated(bool)));
@@ -274,7 +277,7 @@ void te::qt::plugins::edit::ToolBar::initializeActions()
   // Adding the new tools
   toolsGroup->addAction(m_vertexToolAction);
   toolsGroup->addAction(m_createPolygonToolAction);
-  //toolsGroup->addAction(m_createLineToolAction);
+  toolsGroup->addAction(m_createLineToolAction);
   toolsGroup->addAction(m_moveGeometryToolAction);
   toolsGroup->addAction(m_aggregateAreaToolAction);
   toolsGroup->addAction(m_subtractAreaToolAction);
@@ -284,9 +287,10 @@ void te::qt::plugins::edit::ToolBar::initializeActions()
   toolsGroup->addAction(m_featureAttributesAction);
 
   // Grouping...
+  m_tools.push_back(m_saveAction);
   m_tools.push_back(m_vertexToolAction);
   m_tools.push_back(m_createPolygonToolAction);
-  //m_tools.push_back(m_createLineToolAction);
+  m_tools.push_back(m_createLineToolAction);
   m_tools.push_back(m_moveGeometryToolAction);
   m_tools.push_back(m_aggregateAreaToolAction);
   m_tools.push_back(m_subtractAreaToolAction);
@@ -297,7 +301,17 @@ void te::qt::plugins::edit::ToolBar::initializeActions()
 
   // Adding tools to toolbar
   for (int i = 0; i < m_tools.size(); ++i)
+  {
     m_toolBar->addAction(m_tools[i]);
+
+    if (i == 0)
+    {
+      m_toolBar->addSeparator();
+      m_toolBar->addAction(m_undoToolAction);
+      m_toolBar->addAction(m_redoToolAction);
+      m_toolBar->addSeparator();
+    }
+  }
 
   // Snap
   createAction(m_snapOptionsAction, tr("Snap Options"), "edit_snap", false, false, "snap_option", SLOT(onSnapOptionsActivated()));
@@ -326,7 +340,12 @@ void te::qt::plugins::edit::ToolBar::onEditActivated(bool checked)
 
 void te::qt::plugins::edit::ToolBar::onSaveActivated()
 {
-  te::map::AbstractLayerPtr layer;
+  te::map::AbstractLayerPtr layer = getSelectedLayer();
+  if (layer.get() == 0)
+  {
+    return;
+  }
+
 /*
   if(m_usingStash && !m_layerIsStashed)
   {
@@ -376,11 +395,10 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
 */
   try
   {
-    te::map::AbstractLayer* l = getSelectedLayer().get();
 
     std::map<std::string, te::edit::Repository*> repositories = te::edit::RepositoryManager::getInstance().getRepositories();
 
-    std::map<std::string, te::edit::Repository*>::iterator it = repositories.find(l->getId());
+    std::map<std::string, te::edit::Repository*>::iterator it = repositories.find(layer->getId());
 
     if(it != repositories.end())
     {
@@ -411,8 +429,9 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
       const std::vector<te::edit::Feature*>& features = repo->getAllFeatures();
 
       //if not have any geometry
-      if(features.size() == 0)
-        return;
+      if (features.size() == 0)
+        it++;
+        //return;
 
       // Build the DataSet that will be used to update
       std::map<te::edit::OperationType, te::mem::DataSet* > operationds ;
@@ -659,9 +678,15 @@ void te::qt::plugins::edit::ToolBar::onMoveGeometryToolActivated(bool)
     return;
   }
 
+  if (layer.get()->getSelected() == 0)
+  {
+    QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Select a geometry first!"));
+    return;
+  }
+
   if (layer.get()->getSelected()->size() != 1)
   {
-    QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Select one geometry first!"));
+    QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("To move geometry, you must select exactly 1 polygon!"));
     return;
   }
 
@@ -693,12 +718,17 @@ void te::qt::plugins::edit::ToolBar::onFeatureAttributesActivated(bool)
     return;
   }
 
+  if (layer.get()->getSelected() == 0)
+  {
+    QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Select a geometry first!"));
+    return;
+  }
+
   if (layer.get()->getSelected()->size() != 1)
   {
     QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Select one geometry first!"));
     return;
   }
-
 
   te::qt::af::evt::GetMapDisplay e;
   emit triggered(&e);
@@ -732,10 +762,11 @@ void te::qt::plugins::edit::ToolBar::onFeatureAttributesActivated(bool)
     // Get the feature
     te::edit::Feature* m_feature = PickFeature(layer, env, e.m_display->getDisplay()->getSRID(), te::edit::GEOMETRY_UPDATE);
 
-    //if (te::edit::RepositoryManager::getInstance().hasIdentify(layer->getId(), m_feature->getId()))
-    //{
-    //m_feature = te::edit::RepositoryManager::getInstance().getFeature(layer->getId(), env, layer->getSRID());
-    //}
+    if (m_feature == 0)
+    {
+      QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Feature Not Found!"));
+      return;
+    }
 
     // Retrieves the data from layer
     std::auto_ptr<te::da::DataSet> dataset(layer->getData(objSet));
@@ -760,13 +791,13 @@ void te::qt::plugins::edit::ToolBar::onAggregateAreaToolActivated(bool)
 
   if(layer->getSelected() == 0)
   {
-    QMessageBox::critical(0, tr("Error"), QString(tr("To aggregate area, you must select exactly 1 polygon!")));
+    QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Select a geometry first!"));
     return;
   }
 
   if(layer->getSelected()->size() != 1)
   {
-    QMessageBox::critical(0, tr("Error"), QString(tr("To aggregate area, you must select exactly 1 polygon!")));
+    QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("To aggregate area, you must select exactly 1 polygon!"));
     return;
   }
 
@@ -789,13 +820,13 @@ void te::qt::plugins::edit::ToolBar::onSubtractAreaToolActivated(bool)
 
   if(layer->getSelected() == 0)
   {
-    QMessageBox::critical(0, tr("Error"), QString(tr("To subtract area, you must select exactly 1 polygon!")));
+    QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Select a geometry first!"));
     return;
   }
 
   if(layer->getSelected()->size() != 1)
   {
-    QMessageBox::critical(0, tr("Error"), QString(tr("To subtract area, you must select exactly 1 polygon!")));
+    QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("To subtract area, you must select exactly 1 polygon!"));
     return;
   }
 
@@ -850,13 +881,13 @@ void te::qt::plugins::edit::ToolBar::onMergeGeometriesToolActivated(bool)
 
   if(layer->getSelected() == 0)
   {
-    QMessageBox::critical(0, tr("Error"), QString(tr("To use this tool, you must select at least two geometries!")));
+    QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Select a geometry first!"));
     return;
   }
 
   if(layer->getSelected()->size() < 2)
   {
-    QMessageBox::critical(0, tr("Error"), QString(tr("To use this tool, you must select at least two geometries!")));
+    QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("To use this tool, you must select at least two geometries!"));
     return;
   }
 
@@ -908,6 +939,7 @@ void te::qt::plugins::edit::ToolBar::setCurrentTool(te::edit::GeometriesUpdateTo
 
   connect(m_currentTool, SIGNAL(geometriesEdited()), SIGNAL(geometriesEdited()));
   connect(m_currentTool, SIGNAL(toolDeleted()), SLOT(onToolDeleted()));
+
 }
 
 
@@ -925,3 +957,49 @@ void te::qt::plugins::edit::ToolBar::createUndoView(bool checked)
   */
 }
 
+void te::qt::plugins::edit::ToolBar::enableActionsByGeomType()
+{
+  std::size_t geomType = 0;
+
+  te::map::AbstractLayerPtr layer = getSelectedLayer();
+
+  if (layer.get() == 0)
+    return;
+
+  const te::map::DataSetLayer* dslayer = dynamic_cast<const te::map::DataSetLayer*>(layer.get());
+
+  if (dslayer->getRendererType() != "ABSTRACT_LAYER_RENDERER")
+  {
+    QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("This layer is incompatible!"));
+    return;
+  }
+
+  // Get the geometry type of layer
+  std::auto_ptr<te::da::DataSetType> dt = layer->getSchema();
+  te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(dt.get());
+
+  if (geomProp->getGeometryType() == te::gm::MultiPolygonType ||
+    geomProp->getGeometryType() == te::gm::PolygonType)
+  {
+    geomType = 1;
+  }
+  else if (geomProp->getGeometryType() == te::gm::MultiLineStringType ||
+    geomProp->getGeometryType() == te::gm::LineStringType)
+  {
+    geomType = 2;
+  }
+  else
+    geomType = 3; // point...
+
+  m_createLineToolAction->setEnabled(geomType == 2 ? true : false);
+  m_vertexToolAction->setEnabled(geomType == 1 ? true : false);
+  m_createPolygonToolAction->setEnabled(geomType == 1 ? true : false);
+  m_moveGeometryToolAction->setEnabled(geomType == 1 || geomType == 2 ? true : false);
+  m_aggregateAreaToolAction->setEnabled(geomType == 1 ? true : false);
+  m_subtractAreaToolAction->setEnabled(geomType == 1 ? true : false);
+  m_deleteGeometryToolAction->setEnabled(geomType == 1 || geomType == 2 ? true : false);
+  m_mergeGeometriesToolAction->setEnabled(geomType == 1 ? true : false);
+  m_splitPolygonToolAction->setEnabled(geomType == 1 ? true : false);
+
+
+}

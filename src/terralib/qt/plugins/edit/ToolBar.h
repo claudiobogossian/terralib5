@@ -118,6 +118,8 @@ namespace te
 
           void onFeatureAttributesActivated(bool checked);
 
+          void enableActionsByGeomType();
+
         Q_SIGNALS:
 
           /*! This signal is emitted when the layer selection changed. */
@@ -159,6 +161,8 @@ namespace te
           bool m_usingStash;
 
           bool m_layerIsStashed;
+
+          void EnableActions(QList<QAction*> acts, const bool& enable);
 
         public:
           te::map::AbstractLayerPtr getSelectedLayer();
