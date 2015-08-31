@@ -225,6 +225,11 @@ void te::layout::ObjectInspectorOutside::selectItems( QList<QGraphicsItem*> grap
 
 void te::layout::ObjectInspectorOutside::itemSelectionChanged()
 {
+  if(m_isChangingSelection == true)
+  {
+    return;
+  }
+
   QList<QTreeWidgetItem*> selectedTreeItems = m_treeWidget->selectedItems();
 
   QList<QGraphicsItem*> selectedGraphicsItem;
