@@ -69,7 +69,8 @@ const te::layout::Property& te::layout::AbstractItemController::getProperty(cons
 void te::layout::AbstractItemController::update(const te::layout::Subject* subject)
 {
   const Property& property = m_model->getProperty("rotation");
-  if(property.getValue().toDouble() != m_view->getItemRotation()){
+  if(property.getValue().toDouble() != m_view->getItemRotation())
+  {
     m_view->setItemRotation(property.getValue().toDouble());
   }
 }
@@ -79,4 +80,27 @@ bool te::layout::AbstractItemController::contains(const te::gm::Coord2D &coord) 
   return m_model->contains(coord);
 }
 
+void te::layout::AbstractItemController::resized( const double& width, const double& height )
+{
+  Properties properties;
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+  {
+    Property property(0);
+    property.setName("width");
+    property.setLabel("Width");
+    property.setValue(width, dataType->getDataTypeDouble());
+    property.setEditable(false);
+    properties.addProperty(property);
+  }
+
+  {
+    Property property(0);
+    property.setName("height");
+    property.setLabel("Height");
+    property.setValue(height, dataType->getDataTypeDouble());
+    property.setEditable(false);
+    properties.addProperty(property);
+  }
+  m_model->setProperties(properties);
+}
 

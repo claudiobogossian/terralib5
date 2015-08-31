@@ -91,11 +91,20 @@ namespace te
         \return true if inverted, false otherwise
         */
         bool isInverted();
+
+        virtual void setEditionMode(bool editionMode);
+
+        bool isEditionMode();
+
+        virtual void enterEditionMode();
+        
+        virtual void leaveEditionMode();
         
       protected:
 
         AbstractItemController* m_controller; //!< The controller
         bool                    m_invertedMatrix;
+        bool                    m_isEditionMode;
     };
   }
 }
