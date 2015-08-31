@@ -226,11 +226,27 @@ void te::layout::View::mouseReleaseEvent( QMouseEvent * event )
     sc->updateSelectedItemsPositions();
   }
 
-  emit reloadProperties();
-  m_selectionChange = false;
+  if(!sc->isEditionMode()) // If scene in edition mode the reload will happen in double click event
+  {
+    reload();
+  }
 }
 
-void te::layout::View::wheelEvent( QWheelEvent *event )
+void te::layout::View::mouseDoubleClickEvent(QMouseEvent * event)
+{
+  QGraphicsView::mouseDoubleClickEvent(event);
+
+  Scene* sc = dynamic_cast<Scene*>(scene());
+  if (!sc)
+    return;
+
+  if (sc->isEditionMode()) // If scene in edition mode the reload will happen in double click event
+  {
+    reload();
+  }
+}
+
+void te::layout::View::wheelEvent(QWheelEvent *event)
 {
   ViewportUpdateMode mode = viewportUpdateMode();
   setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
@@ -664,6 +680,12 @@ QCursor te::layout::View::createCursor( std::string pathIcon )
   return cur;
 }
 
+void te::layout::View::reload()
+{
+  m_selectionChange = false;
+  emit reloadProperties();
+}
+
 void te::layout::View::resetView()
 {
   Scene* scne = dynamic_cast<Scene*>(scene());
@@ -1026,13 +1048,15 @@ void te::layout::View::onSelectionItem(std::string name)
 
   scne->selectItem(name);
 
-  emit reloadProperties();
-  m_selectionChange = false;
+  if (!scne->isEditionMode()) // If scene in edition mode the reload will happen in double click event
+  {
+    reload();
+  }
 }
 
 void te::layout::View::refreshAllProperties()
 {
-  emit reloadProperties();
+  reload();
 }
 
 void te::layout::View::disableUpdate()

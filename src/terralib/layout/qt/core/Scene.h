@@ -375,6 +375,10 @@ namespace te
         */
         PaperConfig* getPaperConfig();
 
+        virtual void setEditionMode(bool editionMode);
+
+        bool isEditionMode();
+
       public slots:
 
         /*!
@@ -457,10 +461,6 @@ namespace te
         virtual void updateBoxFromProperties(te::gm::Envelope box, AbstractItemModel* model);
 
         virtual void changeViewMode(EnumType* mode);
-
-        virtual void setEditionMode(bool editionMode);
-
-        bool isEditionMode();
 
         virtual void enterEditionMode();
 
