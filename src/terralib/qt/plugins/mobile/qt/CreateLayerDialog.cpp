@@ -60,6 +60,7 @@ te::qt::plugins::terramobile::CreateLayerDialog::CreateLayerDialog(QWidget* pare
   layout->addWidget(m_newPropWidget);
 
   //connects
+  connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
   connect(m_ui->m_addPushButton, SIGNAL(clicked()), this, SLOT(onAddPushButtonClicked()));
   connect(m_ui->m_targetDatasourceToolButton, SIGNAL(pressed()), this, SLOT(onTargetDatasourceToolButtonPressed()));
   connect(m_ui->m_targetFileToolButton, SIGNAL(pressed()), this, SLOT(onTargetFileToolButtonPressed()));
@@ -70,14 +71,60 @@ te::qt::plugins::terramobile::CreateLayerDialog::~CreateLayerDialog()
 
 }
 
+void te::qt::plugins::terramobile::CreateLayerDialog::onOkPushButtonClicked()
+{
+  if (!m_outputDatasource.get())
+  {
+    QMessageBox::warning(this, tr("Warning"), tr("Define the data source first."));
+    return;
+  }
+
+  if (m_props.empty())
+  {
+    QMessageBox::warning(this, tr("Warning"), tr("Define the properties first."));
+    return;
+  }
+
+  te::da::DataSourcePtr outputDataSource = te::da::DataSourceManager::getInstance().get(m_outputDatasource->getId(), m_outputDatasource->getType(), m_outputDatasource->getConnInfo());
+
+  std::string dsTypeName = m_ui->m_newLayerNameLineEdit->text().toStdString();
+
+  std::auto_ptr<te::da::DataSetType> dsType(new te::da::DataSetType(dsTypeName));
+
+  for (std::size_t t = 0; t < m_props.size(); ++t)
+  {
+    dsType->add(m_props[t]);
+  }
+
+  //create
+  std::map<std::string, std::string> nopt;
+
+  outputDataSource->createDataSet(dsType.get(), nopt);
+
+  accept();
+}
+
 void te::qt::plugins::terramobile::CreateLayerDialog::onAddPushButtonClicked()
 {
   if (m_newPropWidget->buildProperty())
   {
     //get property
-    te::dt::SimpleProperty* p = m_newPropWidget->getProperty();
+    te::dt::SimpleProperty* sp = m_newPropWidget->getProperty();
+
+    m_props.push_back(sp);
 
     //set property info into table widget
+    int newrow = m_ui->m_tableWidget->rowCount();
+
+    m_ui->m_tableWidget->insertRow(newrow);
+
+    //name
+    QTableWidgetItem* itemName = new QTableWidgetItem(sp->getName().c_str());
+    m_ui->m_tableWidget->setItem(newrow, 0, itemName);
+
+    //type
+    QTableWidgetItem* itemType = new QTableWidgetItem(QString::number(sp->getType()));
+    m_ui->m_tableWidget->setItem(newrow, 1, itemType);
   }
 }
 

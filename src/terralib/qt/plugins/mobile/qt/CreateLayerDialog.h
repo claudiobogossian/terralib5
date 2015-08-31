@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "../../../../dataaccess/datasource/DataSourceInfo.h"
+#include "../../../../datatype/SimpleProperty.h"
 #include "../../../../maptools/AbstractLayer.h"
 #include "../Config.h"
 
@@ -66,6 +67,8 @@ namespace te
 
           protected slots:
 
+            void onOkPushButtonClicked();
+
             void onAddPushButtonClicked();
 
             void onTargetDatasourceToolButtonPressed();
@@ -80,6 +83,8 @@ namespace te
             te::qt::widgets::NewPropertyWidget* m_newPropWidget;
 
             te::da::DataSourceInfoPtr m_outputDatasource;
+
+            std::vector<te::dt::SimpleProperty*> m_props;
 
             bool m_toFile;
 
