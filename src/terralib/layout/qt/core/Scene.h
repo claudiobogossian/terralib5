@@ -378,7 +378,7 @@ namespace te
         virtual void setEditionMode(bool editionMode);
 
         bool isEditionMode();
-
+        
       public slots:
 
         /*!
@@ -434,7 +434,7 @@ namespace te
         /*!
         \brief Reimplemented from QGraphicsScene
         */
-        virtual void	drawForeground(QPainter * painter, const QRectF & rect);
+        virtual void drawForeground(QPainter * painter, const QRectF & rect);
 
     /*!
           \brief Method that calculates the transformation matrix of the scene. This matrix will be set in each QGraphicsView class that watches this scene.

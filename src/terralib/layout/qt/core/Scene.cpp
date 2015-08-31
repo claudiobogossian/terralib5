@@ -66,6 +66,7 @@
 #include <QPainterPath>
 #include <QColor>
 #include <QPen>
+#include <QKeyEvent>
 
 te::layout::Scene::Scene( QObject* object): 
   QGraphicsScene(object),
