@@ -85,7 +85,7 @@ QObject(parent),
   m_aggregateAreaToolAction(0),
   m_subtractAreaToolAction(0),
   m_mergeGeometriesToolAction(0),
-  m_splitPolygonToolAction(0),
+  //m_splitPolygonToolAction(0),
   m_featureAttributesAction(0),
   m_undoToolAction(0),
   m_redoToolAction(0),
@@ -260,7 +260,7 @@ void te::qt::plugins::edit::ToolBar::initializeActions()
   createAction(m_subtractAreaToolAction, tr("Subtract Area"), "vector-processing-subtraction", true, false, "subtract_area", SLOT(onSubtractAreaToolActivated(bool)));
   createAction(m_deleteGeometryToolAction, tr("Delete Geometry"), "edit_delete", true, false, "delete_geometry", SLOT(onDeleteGeometryToolActivated(bool)));
   createAction(m_mergeGeometriesToolAction, tr("Merge Geometries"), "edition_mergeGeometries", true, false, "merge_geometries", SLOT(onMergeGeometriesToolActivated(bool)));
-  createAction(m_splitPolygonToolAction, tr("Split Polygon"), "edit-cut", true, false, "split_polygon", SLOT(onSplitPolygonToolActivated(bool)));
+  //createAction(m_splitPolygonToolAction, tr("Split Polygon"), "edit-cut", true, false, "split_polygon", SLOT(onSplitPolygonToolActivated(bool)));
   createAction(m_featureAttributesAction, tr("Feature Attributes"), "attributefill-icon", true, true, "feature_attributes", SLOT(onFeatureAttributesActivated(bool)));
 
   // Get the action group of map tools.
@@ -276,7 +276,7 @@ void te::qt::plugins::edit::ToolBar::initializeActions()
   toolsGroup->addAction(m_subtractAreaToolAction);
   toolsGroup->addAction(m_deleteGeometryToolAction);
   toolsGroup->addAction(m_mergeGeometriesToolAction);
-  toolsGroup->addAction(m_splitPolygonToolAction);
+  //toolsGroup->addAction(m_splitPolygonToolAction);
   toolsGroup->addAction(m_featureAttributesAction);
 
   // Grouping...
@@ -289,7 +289,7 @@ void te::qt::plugins::edit::ToolBar::initializeActions()
   m_tools.push_back(m_subtractAreaToolAction);
   m_tools.push_back(m_deleteGeometryToolAction);
   m_tools.push_back(m_mergeGeometriesToolAction);
-  m_tools.push_back(m_splitPolygonToolAction);
+ // m_tools.push_back(m_splitPolygonToolAction);
   m_tools.push_back(m_featureAttributesAction);
 
   // Adding tools to toolbar
@@ -463,19 +463,8 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
           item->setValue(oidPropertyNames[j], values[j].clone());
 
         // Set the geometry type
-        if (geomProp->getGeometryType() == te::gm::MultiPolygonType &&
-          features[i]->getGeometry()->getGeomTypeId() == te::gm::PolygonType)
-        {
-          std::auto_ptr<te::gm::GeometryCollection> gc(new te::gm::GeometryCollection(0, te::gm::MultiPolygonType, layer->getSRID()));
-          gc->add((te::gm::Geometry*)geom->clone());
-          item->setGeometry(gpos, gc.release());
-          propertiesPos.insert(gpos);
-        }
-        else
-        {
-          item->setGeometry(gpos, static_cast<te::gm::Geometry*>(geom->clone()));
-          propertiesPos.insert(gpos);
-        }
+        item->setGeometry(gpos, static_cast<te::gm::Geometry*>(geom->clone()));
+        propertiesPos.insert(gpos);
 
         switch (features[i]->getOperationType())
         {
@@ -964,7 +953,7 @@ void te::qt::plugins::edit::ToolBar::enableActionsByGeomType(QList<QAction*> act
     if (layer.get() == 0 || layer->getSRID() == 0)
     {
       m_toolBar->setEnabled(false);
-      QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("The layer is empty or SRID is invalid!"));
+      QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("The layer is not seleted or SRID is invalid!"));
       return;
     }
 
@@ -1002,7 +991,7 @@ void te::qt::plugins::edit::ToolBar::enableActionsByGeomType(QList<QAction*> act
     m_subtractAreaToolAction->setEnabled(geomType == 1 ? true : false);
     m_deleteGeometryToolAction->setEnabled(geomType == 1 || geomType == 2 ? true : false);
     m_mergeGeometriesToolAction->setEnabled(geomType == 1 ? true : false);
-    m_splitPolygonToolAction->setEnabled(geomType == 1 ? true : false);
+    //m_splitPolygonToolAction->setEnabled(geomType == 1 ? true : false);
 
   }
 

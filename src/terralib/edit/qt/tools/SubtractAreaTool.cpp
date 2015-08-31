@@ -40,7 +40,7 @@ te::edit::SubtractAreaTool::SubtractAreaTool(te::qt::widgets::MapDisplay* displa
 
 te::edit::SubtractAreaTool::~SubtractAreaTool()
 {
-  delete m_feature;
+  reset();
 }
 
 bool te::edit::SubtractAreaTool::mousePressEvent(QMouseEvent* e)
@@ -54,6 +54,7 @@ bool te::edit::SubtractAreaTool::mousePressEvent(QMouseEvent* e)
     m_isFinished = false;
   }
 
+  if (m_feature == 0)
   pickFeature(m_layer);
 
   return te::edit::CreateLineTool::mousePressEvent(e);
@@ -241,7 +242,6 @@ void te::edit::SubtractAreaTool::onExtentChanged()
 void te::edit::SubtractAreaTool::storeEditedFeature()
 {
   RepositoryManager::getInstance().addFeature(m_layer->getId(), m_feature->clone());
-  //RepositoryManager::getInstance().addGeometry(m_layer->getId(), m_feature->getId()->clone(), dynamic_cast<te::gm::Geometry*>(buildPolygon()->clone()), te::edit::GEOMETRY_UPDATE);
 }
 
 te::gm::Geometry* te::edit::SubtractAreaTool::Difference(te::gm::Geometry* g1, te::gm::Geometry* g2)

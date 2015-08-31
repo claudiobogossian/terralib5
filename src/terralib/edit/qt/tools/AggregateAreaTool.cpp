@@ -1,9 +1,9 @@
 
 //TerraLib
 #include "../../../common/STLUtils.h"
-#include "../../../geometry/GeometryProperty.h"
-#include "../../../geometry/MultiPolygon.h"
-#include "../../../geometry/Utils.h"
+//#include "../../../geometry/GeometryProperty.h"
+//#include "../../../geometry/MultiPolygon.h"
+//#include "../../../geometry/Utils.h"
 #include "../../../dataaccess/dataset/ObjectId.h"
 #include "../../../dataaccess/dataset/ObjectIdSet.h"
 #include "../../../dataaccess/utils/Utils.h"
@@ -30,6 +30,34 @@
 #include <memory>
 #include <iostream>
 
+/////////////////////////
+//Terralib
+#include "terralib_config.h"
+#include "../../../common/Logger.h"
+#include "../../../common/progress/TaskProgress.h"
+#include "../../../common/STLUtils.h"
+#include "../../../common/StringUtils.h"
+#include "../../../common/Translator.h"
+#include "../../../dataaccess/utils/Utils.h"
+#include "../../../datatype/StringProperty.h"
+#include "../../../datatype/SimpleData.h"
+#include "../../../geometry.h"
+#include "../../../memory/DataSet.h"
+#include "../../../memory/DataSetItem.h"
+#include "../../../statistics/core/NumericStatisticalSummary.h"
+#include "../../../statistics/core/StringStatisticalSummary.h"
+#include "../../../statistics/core/SummaryFunctions.h"
+#include "../../../statistics/core/Enums.h"
+
+
+// STL
+#include <memory>
+
+// Boost
+#include <boost/algorithm/string/replace.hpp>
+#include <boost/lexical_cast.hpp>
+/////////////////////////
+
 te::edit::AggregateAreaTool::AggregateAreaTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent)
   : CreateLineTool(display, layer, Qt::ArrowCursor, parent),
   m_updateWatches(0)
@@ -42,7 +70,7 @@ te::edit::AggregateAreaTool::AggregateAreaTool(te::qt::widgets::MapDisplay* disp
 
 te::edit::AggregateAreaTool::~AggregateAreaTool()
 {
-  delete m_feature;
+  reset();
 }
 
 bool te::edit::AggregateAreaTool::mousePressEvent(QMouseEvent* e)
@@ -56,7 +84,8 @@ bool te::edit::AggregateAreaTool::mousePressEvent(QMouseEvent* e)
     m_isFinished = false;
   }
 
-  pickFeature(m_layer);
+  if (m_feature == 0)
+    pickFeature(m_layer);
 
   return te::edit::CreateLineTool::mousePressEvent(e);
 }
@@ -150,6 +179,8 @@ void te::edit::AggregateAreaTool::drawPolygon()
 
 te::gm::Geometry* te::edit::AggregateAreaTool::buildPolygon()
 {
+    te::gm::Geometry* geoUnion = 0;
+
     // Build the geometry
     te::gm::LinearRing* ring = new te::gm::LinearRing(m_coords.size() + 1, te::gm::LineStringType);
     for (std::size_t i = 0; i < m_coords.size(); ++i)
@@ -161,21 +192,37 @@ te::gm::Geometry* te::edit::AggregateAreaTool::buildPolygon()
 
     polygon->setSRID(m_display->getSRID());
 
-    te::gm::Geometry* geo = 0;
 
     if (!polygon->intersects(m_feature->getGeometry()))
       return dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone());
 
-    geo = Union(polygon, m_feature);
+    // Get the geometry type of layer
+    std::auto_ptr<te::da::DataSetType> dt = m_layer->getSchema();
+    te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(dt.get());
+
+    if (geomProp->getGeometryType() == te::gm::MultiPolygonType)
+    {
+      te::gm::MultiPolygon* mp = new te::gm::MultiPolygon(0, te::gm::MultiPolygonType);
+
+      mp->add(Union(polygon, m_feature->getGeometry()));
+
+      geoUnion = mp;
+    }
+    else if (geomProp->getGeometryType() == te::gm::PolygonType)
+    {
+      te::gm::Polygon* p = dynamic_cast<te::gm::Polygon*>(Union(polygon, m_feature->getGeometry()));
+      
+      geoUnion = p;
+    }
 
     //projection
-    if(polygon->getSRID() == m_layer->getSRID())
-      return geo;
+    if (geoUnion->getSRID() == m_layer->getSRID())
+      return geoUnion;
 
     //else, need conversion...
-    geo->transform(m_layer->getSRID());
+    geoUnion->transform(m_layer->getSRID());
 
-    return geo;
+    return geoUnion;
 
 }
 
@@ -251,70 +298,11 @@ void te::edit::AggregateAreaTool::onExtentChanged()
 void te::edit::AggregateAreaTool::storeEditedFeature()
 {
   RepositoryManager::getInstance().addFeature(m_layer->getId(), m_feature->clone());
-  //RepositoryManager::getInstance().addGeometry(m_layer->getId(), m_feature->getId()->clone(), dynamic_cast<te::gm::Geometry*>(buildPolygon()->clone()), GEOMETRY_UPDATE);
 }
 
-te::gm::Geometry* te::edit::AggregateAreaTool::Union(te::gm::Geometry* g1, Feature* feature_g2)
+te::gm::Geometry* te::edit::AggregateAreaTool::Union(te::gm::Geometry* g1, te::gm::Geometry* g2)
 {
-  std::vector<std::string> oidPropertyNames;
-  const te::gm::Envelope* env = g1->getMBR();
-
-  g1 = g1->Union(feature_g2->getGeometry());
-
-  std::auto_ptr<const te::map::LayerSchema> schema(m_layer->getSchema());
-  if (!schema->hasGeom())
-    return 0;
-
-  te::gm::GeometryProperty* gp = te::da::GetFirstGeomProperty(schema.get());
-
-  // Gets the dataset
-  std::auto_ptr<te::da::DataSet> ds = m_layer->getData(gp->getName(), env, te::gm::INTERSECTS);
-  assert(ds.get());
-
-  // Generates a geometry from the given extent. It will be used to refine the results
-  std::auto_ptr<te::gm::Geometry> geometryFromEnvelope(te::gm::GetGeomFromEnvelope(env, m_display->getSRID()));
-
-  // For while, first geometry property. TODO: get which geometry property the symbolizer references
-  std::size_t gpos = te::da::GetPropertyPos(ds.get(), gp->getName());
-
-  while (ds->moveNext())
-  {
-    std::auto_ptr<te::gm::Geometry> g(ds->getGeometry(gpos));
-
-    if (g->getSRID() == TE_UNKNOWN_SRS)
-      g->setSRID(m_layer->getSRID());
-
-    if (!g->intersects(geometryFromEnvelope.get()))
-      continue;
-
-    te::da::GetOIDPropertyNames(m_layer->getSchema().get(), oidPropertyNames);
-
-    int colType = ds->getPropertyDataType(te::da::GetPropertyPos(ds.get(), oidPropertyNames[0]));
-
-    // Feature found! Building the list of property values...
-    for (std::size_t i = 0; i < ds->getNumProperties(); ++i)
-    {
-      if (ds->getPropertyName(i) == oidPropertyNames[0])
-      {
-        std::string value;
-
-        if (colType == te::dt::INT16_TYPE || colType == te::dt::INT32_TYPE || colType == te::dt::INT64_TYPE || colType == te::dt::DOUBLE_TYPE)
-        {
-          value = boost::lexical_cast<std::string>(ds->getInt32(oidPropertyNames[0]));
-        }
-        else
-        {
-          value = ds->getString(oidPropertyNames[0]);
-        }
-
-        if (value != feature_g2->getId()->getValueAsString())
-          g1 = g1->difference(g.get());
-      }
-    }
-
-  }
-
-  return g1;
+  return g1->Union(g2);
 }
 
 void te::edit::AggregateAreaTool::storeUndoCommand()

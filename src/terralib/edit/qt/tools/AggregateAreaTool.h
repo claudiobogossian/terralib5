@@ -2,7 +2,7 @@
 #define __TERRALIB_EDIT_QT_INTERNAL_AGGREGATEAREATOOL_H
 
 // TerraLib
-#include "../../../geometry/Envelope.h"
+//#include "../../../geometry/Envelope.h"
 #include "../../../maptools/AbstractLayer.h"
 #include "../Config.h"
 
@@ -20,6 +20,11 @@ namespace te
       class Canvas;
       class MapDisplay;
     }
+  }
+
+  namespace gm
+  {
+    class Geometry;
   }
 
   namespace edit
@@ -69,7 +74,7 @@ namespace te
 
       te::gm::Geometry* buildPolygon();
 
-      te::gm::Geometry* Union(te::gm::Geometry* g1, Feature* feature_g2);
+      te::gm::Geometry* Union(te::gm::Geometry* g1, te::gm::Geometry* g2);
 
     private slots:
 

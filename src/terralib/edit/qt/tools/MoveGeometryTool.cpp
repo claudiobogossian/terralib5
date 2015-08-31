@@ -218,7 +218,6 @@ void te::edit::MoveGeometryTool::onExtentChanged()
 
 void te::edit::MoveGeometryTool::storeEditedFeature()
 {
-  //RepositoryManager::getInstance().addGeometry(m_layer->getId(), m_feature->getId()->clone(), dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone()),te::edit::GEOMETRY_UPDATE);
   m_feature->setGeometry(dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone()));
   
   RepositoryManager::getInstance().addFeature(m_layer->getId(), m_feature->clone());
