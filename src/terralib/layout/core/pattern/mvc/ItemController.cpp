@@ -125,9 +125,11 @@ bool te::layout::ItemController::contains( const te::gm::Coord2D &coord ) const
 
 void te::layout::ItemController::create()
 {
+  /*
   AbstractItemFactory* factory = Context::getInstance().getItemFactory(); 
   ItemParamsCreate params(this, m_model);
   m_view = (Observer*)factory->make(m_model->getType(), params);
+  */
 }
 
 void te::layout::ItemController::setPosition( const double& x, const double& y )

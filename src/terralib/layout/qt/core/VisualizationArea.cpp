@@ -30,7 +30,7 @@
 #include "../../item/PaperModel.h"
 #include "../../item/PaperController.h"
 #include "../item/PaperItem.h"
-#include "../../core/pattern/mvc/ItemObserver.h"
+#include "Scene.h"
 
 te::layout::VisualizationArea::VisualizationArea( Scene* scene, te::gm::Envelope boxArea ) :
   m_scene(scene),
@@ -51,20 +51,22 @@ void te::layout::VisualizationArea::build()
 
 void te::layout::VisualizationArea::createPaper()
 {
-  PaperConfig* pConfig = m_scene->getPaperConfig();
+  PaperConfig* paperConfig = m_scene->getPaperConfig();
+  Properties properties = Utils::convertToProperties(*paperConfig);
+
   //Paper
-  PaperModel* modelPaper = new PaperModel(pConfig);  
+  PaperModel* modelPaper = new PaperModel();
+  modelPaper->setProperties(properties);
 
-  double x = modelPaper->getBox().getLowerLeftX();
-  double y = modelPaper->getBox().getLowerLeftY();
-
-  PaperController* controllerPaper = new PaperController(modelPaper);
-  ItemObserver* itemPaper = (ItemObserver*)controllerPaper->getView();
+  AbstractItemController* controllerPaper = new AbstractItemController(modelPaper);
+  AbstractItemView* itemPaper = controllerPaper->getView();
   PaperItem* qPaper = dynamic_cast<PaperItem*>(itemPaper);
   
-  qPaper->setPos(QPointF(x,y));
+  qPaper->setPos(QPointF(0,0));
   qPaper->setZValue(0);
-  qPaper->redraw();
+  qPaper->refresh();
+
+  m_scene->addItem(qPaper);
 }
 
 void te::layout::VisualizationArea::changeBoxArea( te::gm::Envelope boxArea )

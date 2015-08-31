@@ -89,9 +89,9 @@ namespace te
 
     protected:
 
-      QList<QGraphicsItem*> m_graphicsItems;
-
-      QTreeWidget* m_treeWidget;
+      QTreeWidget*            m_treeWidget;
+      bool                    m_isChangingSelection;
+      QList<QGraphicsItem*>   m_graphicsItems;
     };
   }
 }

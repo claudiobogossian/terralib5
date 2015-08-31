@@ -59,7 +59,7 @@ namespace te
           \param controller "Controller" part of MVC component
           \param o "Model" part of MVC component
         */
-        EllipseItem( AbstractItemController* controller, AbstractItemModel* model, bool invertedMatrix = false );
+        EllipseItem( AbstractItemController* controller, AbstractItemModel* model );
 
         /*!
           \brief Destructor

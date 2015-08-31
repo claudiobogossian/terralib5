@@ -500,27 +500,25 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createPaper()
   {
     return 0;
   }
-  PaperModel* model = new PaperModel(pConfig);
+
+  Properties paperProperties = Utils::convertToProperties(*pConfig);
+
+  PaperModel* model = new PaperModel();
   if(m_props.getProperties().empty())
   {
-    model->setId(m_id);
-    
-    EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
-    std::string name = nameItem(enumObj->getPaperItem());
-    model->setName(name);
+    setProperties(model);
   }
 
-  PaperController* controllerMap = new PaperController(model);
-  ItemObserver* itemObs = (ItemObserver*)controllerMap->getView();
+  model->setProperties(paperProperties);
 
-  PaperItem* view = dynamic_cast<PaperItem*>(itemObs);
-  if((!m_props.getProperties().empty()) && view)
+  AbstractItemController* controller = new AbstractItemController(model);
+  AbstractItemView* view = controller->getView();
+
+  if ((!m_props.getProperties().empty()) && view)
   {
-    Properties* props = new Properties(m_props);
-    model->updateProperties(props);
-    delete props;
-  }  
-  return view;
+    model->setProperties(m_props);
+  }
+  return dynamic_cast<QGraphicsItem*>(view);
 }
 
 QGraphicsItem* te::layout::BuildGraphicsItem::createMap()

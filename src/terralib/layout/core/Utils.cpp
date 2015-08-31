@@ -27,6 +27,8 @@
 
 // TerraLib
 #include "Utils.h"
+
+#include "WorldTransformer.h"
 #include "../../color/RGBAColor.h"
 #include "../../geometry/Polygon.h"
 #include "../../geometry/Enums.h"
@@ -39,6 +41,10 @@
 #include "enum/AbstractType.h"
 #include "pattern/singleton/Context.h"
 #include "AbstractScene.h"
+#include "PaperConfig.h"
+#include "property/Properties.h"
+#include "property/Property.h"
+
 
 // STL
 #include <math.h> 
@@ -623,4 +629,64 @@ void te::layout::Utils::resetCanvas()
   canvas->setPolygonContourWidth(size);
   canvas->setPolygonPatternWidth(size);
   canvas->setTextContourWidth(size);
+}
+
+te::layout::Properties te::layout::Utils::convertToProperties(const te::layout::PaperConfig& paperConfig)
+{
+  double paperWidth = 0.;
+  double paperHeight = 0.;
+  LayoutAbstractPaperType paperType = paperConfig.getPaperType();
+  LayoutOrientationType paperOrientation = paperConfig.getPaperOrientantion();
+  paperConfig.getPaperSize(paperWidth, paperHeight);
+
+
+  EnumDataType* dataType = Enums::getInstance().getEnumDataType();
+
+  Properties properties;
+  {
+    Property property(0);
+    property.setName("paper_width");
+    property.setValue(paperWidth, dataType->getDataTypeDouble());
+    properties.addProperty(property);
+  }
+  {
+    Property property(0);
+    property.setName("paper_height");
+    property.setValue(paperHeight, dataType->getDataTypeDouble());
+    properties.addProperty(property);
+  }
+  {
+    Property property(0);
+    property.setName("paper_type");
+    property.setValue((int)paperType, dataType->getDataTypeInt());
+    properties.addProperty(property);
+  }
+  {
+    Property property(0);
+    property.setName("paper_orientation");
+    property.setValue((int)paperOrientation, dataType->getDataTypeInt());
+    properties.addProperty(property);
+  }
+
+  return properties;
+}
+
+te::layout::PaperConfig te::layout::Utils::convertToPaperConfig(const te::layout::Properties& properties)
+{
+  const Property& pPaperHeight = properties.getProperty("paper_height");
+  const Property& pPaperWidth = properties.getProperty("paper_width");
+  const Property& pPaperType = properties.getProperty("paper_type");
+  const Property& pPaperOrientation = properties.getProperty("paper_orientation");
+
+  double paperWidth = pPaperWidth.getValue().toDouble();
+  double paperHeight = pPaperHeight.getValue().toDouble();
+  LayoutAbstractPaperType paperType = (LayoutAbstractPaperType)pPaperType.getValue().toInt();
+  LayoutOrientationType paperOrientation = (LayoutOrientationType)pPaperOrientation.getValue().toInt();
+
+  PaperConfig paperConfig;
+  paperConfig.setPaperSizeCustom(paperWidth, paperHeight);
+  paperConfig.setPaperType(paperType);
+  paperConfig.setPaperOrientation(paperOrientation);
+
+  return paperConfig;
 }

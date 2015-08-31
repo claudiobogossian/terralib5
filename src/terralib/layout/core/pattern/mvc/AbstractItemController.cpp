@@ -32,11 +32,9 @@ te::layout::AbstractItemController::AbstractItemController(AbstractItemModel* mo
   , m_view(0)
 {
   AbstractItemFactory* factory = Context::getInstance().getItemFactory(); 
-  ItemParamsCreate params(0, 0);
-  params.m_newController = this;
-  params.m_newModel = m_model;
+  ItemParamsCreate params(this, model);
 
-  m_view = factory->makeNew(m_model->getProperties().getTypeObj(), params);
+  m_view = factory->make(m_model->getProperties().getTypeObj(), params);
 
   if(m_model != 0)
   {

@@ -48,6 +48,8 @@
 te::layout::ObjectInspectorOutside::ObjectInspectorOutside(AbstractOutsideController* controller)
   : QWidget(0)
   , AbstractOutsideView(controller)
+  , m_treeWidget(0)
+  , m_isChangingSelection(false)
 {
   m_treeWidget = new QTreeWidget(this);
 
@@ -195,7 +197,6 @@ void te::layout::ObjectInspectorOutside::onRemoveProperties( std::vector<std::st
   }
 }
 
-bool m_isChangingSelection = false;
 void te::layout::ObjectInspectorOutside::selectItems( QList<QGraphicsItem*> graphicsItems )
 {
   m_isChangingSelection = true;
