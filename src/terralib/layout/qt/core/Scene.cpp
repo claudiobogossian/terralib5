@@ -63,13 +63,18 @@
 #include <QPrinter>
 #include <QGraphicsTextItem>
 #include <QGraphicsSceneMouseEvent>
+#include <QPainterPath>
+#include <QColor>
+#include <QPen>
 
 te::layout::Scene::Scene( QObject* object): 
   QGraphicsScene(object),
   m_undoStack(0),
   m_align(0),
   m_moveWatched(false),
-  m_paperConfig(0)
+  m_paperConfig(0),
+  m_currentItemEdition(0),
+  m_isEditionMode(false)
 {
   m_backgroundColor = QColor(109,109,109);
   setBackgroundBrush(QBrush(m_backgroundColor));
@@ -673,8 +678,13 @@ void te::layout::Scene::exportItemsToImage(std::string dir)
 
 void te::layout::Scene::mouseMoveEvent(QGraphicsSceneMouseEvent * mouseEvent)
 {
+  if (m_isEditionMode) // Don't have move event in edition mode
+  {
+    return;
+  }
+
   QGraphicsItem* item = mouseGrabberItem();
-  if (item)
+  if (item) // MoveCommand block
   {
     m_moveWatched = true;
   }
@@ -685,8 +695,12 @@ void te::layout::Scene::mousePressEvent(QGraphicsSceneMouseEvent * mouseEvent)
 {
   QGraphicsScene::mousePressEvent(mouseEvent);
 
+  if (m_isEditionMode) // Don't have move event in edition mode
+  {
+    return;
+  }
   QGraphicsItem* item = mouseGrabberItem();
-  if (item)
+  if (item) // MoveCommand block
   {
     QList<QGraphicsItem*> its = selectedItems();
     m_moveWatches.clear();
@@ -700,21 +714,86 @@ void te::layout::Scene::mousePressEvent(QGraphicsSceneMouseEvent * mouseEvent)
 
 void te::layout::Scene::mouseReleaseEvent(QGraphicsSceneMouseEvent * mouseEvent)
 {
-  QGraphicsItem* item = mouseGrabberItem();
-  if (item)
+  if(!m_isEditionMode) // Don't have move event in edition mode
   {
-    if (m_moveWatched)
+    QGraphicsItem* item = mouseGrabberItem();
+    if (item) // MoveCommand block
     {
-      QUndoCommand* command = new MoveCommand(m_moveWatches);
-      addUndoStack(command);
-      m_moveWatched = false;
+      if (m_moveWatched)
+      {
+        QUndoCommand* command = new MoveCommand(m_moveWatches);
+        addUndoStack(command);
+        m_moveWatched = false;
+      }
     }
+    m_moveWatches.clear();
   }
-  m_moveWatches.clear();
   QGraphicsScene::mouseReleaseEvent(mouseEvent);
 }
 
-void te::layout::Scene::selectItem( std::string name )
+void te::layout::Scene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent * mouseEvent)
+{
+  QGraphicsScene::mouseDoubleClickEvent(mouseEvent);
+  setEditionMode(true);
+}
+
+void te::layout::Scene::keyPressEvent(QKeyEvent * keyEvent)
+{
+  if (keyEvent->key() == Qt::Key_Escape)
+  {
+    setEditionMode(false); //Edition off
+  }
+  QGraphicsScene::keyPressEvent(keyEvent);
+}
+
+void te::layout::Scene::drawForeground(QPainter * painter, const QRectF & rect)
+{
+  if (m_isEditionMode)
+  {
+    if (!m_currentItemEdition)
+      return;
+
+    if (m_currentItemEdition->isEditionMode() == true)
+    {
+      QGraphicsItem* item = dynamic_cast<QGraphicsItem*>(m_currentItemEdition);
+      if (!item)
+        return;
+
+      painter->save();
+
+      QRectF rec = item->sceneBoundingRect();
+
+      QPainterPath outerPath;
+      outerPath.setFillRule(Qt::WindingFill);
+      outerPath.addRect(rect); //rectangle outside
+
+      QPainterPath innerPath;
+      innerPath.addRect(rec); // rectangle inside
+      QPainterPath fillPath = outerPath.subtracted(innerPath);
+
+      //config painter
+      QColor backgroundColor(0, 0, 0, 80);
+      painter->setRenderHint(QPainter::Antialiasing);
+      painter->fillPath(fillPath, backgroundColor);
+
+      /* paint the outlines
+      QPainterPath::simplified() : this converts the set of layered shapes
+      into one QPainterPath which has no intersections */
+      QColor contourColor(178, 34, 34);
+      QPen penOuterPath(Qt::NoPen);
+      QPen penInnerPath(contourColor, 2);
+      QPainterPath simplifiedPath = outerPath.simplified();
+      painter->strokePath(simplifiedPath, penOuterPath);
+      painter->strokePath(innerPath, penInnerPath);
+
+      painter->restore();
+    }
+  }
+  
+  QGraphicsScene::drawForeground(painter, rect);
+}
+
+void te::layout::Scene::selectItem(std::string name)
 {
   QList<QGraphicsItem*> allItems = items();
   foreach(QGraphicsItem *item, allItems) 
@@ -1070,8 +1149,54 @@ te::layout::PaperConfig* te::layout::Scene::getPaperConfig()
   return m_paperConfig;
 }
 
+void te::layout::Scene::setEditionMode(bool editionMode)
+{
+  m_isEditionMode = editionMode;
+  if(m_isEditionMode)
+  {
+    enterEditionMode();
+  }
+  else
+  {
+    leaveEditionMode();
+  }
+}
 
+bool te::layout::Scene::isEditionMode()
+{
+  return m_isEditionMode;
+}
 
+void te::layout::Scene::enterEditionMode()
+{
+  if (!mouseGrabberItem())
+  {
+    return;
+  }
+
+  AbstractItemView* item = dynamic_cast<AbstractItemView*>(mouseGrabberItem());
+  if (!item)
+    return;
+
+  if (m_currentItemEdition)
+    m_currentItemEdition->setEditionMode(false);
+
+  m_currentItemEdition = item;
+  m_isEditionMode = true;
+  m_currentItemEdition->setEditionMode(true);
+  update();
+}
+
+void te::layout::Scene::leaveEditionMode()
+{
+  if (!m_currentItemEdition)
+  {
+    return;
+  }
+  m_isEditionMode = false;
+  m_currentItemEdition->setEditionMode(false);
+  update();
+}
 
 
 

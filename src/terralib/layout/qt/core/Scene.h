@@ -59,6 +59,7 @@ class QPainter;
 class QWidget;
 class QStyleOptionGraphicsItem;
 class QGraphicsSceneMouseEvent;
+class QKeyEvent;
 
 namespace te
 {
@@ -416,6 +417,21 @@ namespace te
         */
         virtual void  mouseReleaseEvent(QGraphicsSceneMouseEvent * mouseEvent);
 
+        /*!
+        \brief Reimplemented from QGraphicsScene
+        */
+        virtual void	mouseDoubleClickEvent(QGraphicsSceneMouseEvent * mouseEvent);
+
+        /*!
+        \brief Reimplemented from QGraphicsScene
+        */
+        virtual void	keyPressEvent(QKeyEvent * keyEvent);
+
+        /*!
+        \brief Reimplemented from QGraphicsScene
+        */
+        virtual void	drawForeground(QPainter * painter, const QRectF & rect);
+
     /*!
           \brief Method that calculates the transformation matrix of the scene. This matrix will be set in each QGraphicsView class that watches this scene.
         */
@@ -441,6 +457,14 @@ namespace te
         virtual void updateBoxFromProperties(te::gm::Envelope box, AbstractItemModel* model);
 
         virtual void changeViewMode(EnumType* mode);
+
+        virtual void setEditionMode(bool editionMode);
+
+        bool isEditionMode();
+
+        virtual void enterEditionMode();
+
+        virtual void leaveEditionMode();
                 
     protected:
 
@@ -453,6 +477,8 @@ namespace te
         std::map<QGraphicsItem*, QPointF>  m_moveWatches;
         QList<QGraphicsItem*>              m_itemStackWithoutScene; //!< Items that are not included in any scene 
         PaperConfig*                       m_paperConfig; //!< paper settings
+        AbstractItemView*                  m_currentItemEdition;
+        bool                               m_isEditionMode;
     };
   }
 }
