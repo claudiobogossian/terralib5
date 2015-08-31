@@ -506,7 +506,7 @@ void te::qt::widgets::TimeSliderWidget::dropAction()
   {
     onStopToolButtonnClicked();
     m_spd->m_ui->m_animationComboBox->clear();
-    m_spd->m_ui->m_animationComboBox->clear();
+    m_animationIdList.clear();
     m_ui->m_TemporalHorizontalSlider->setValue(0);
     m_parallelAnimation->setCurrentTime(0);
     m_ui->m_settingsToolButton->setEnabled(false);
@@ -2047,6 +2047,9 @@ void te::qt::widgets::TimeSliderWidget::initProperty()
     m_spd->m_ui->m_loopCheckBox->setChecked(true);
   if(m_goAndBack)
     m_spd->m_ui->m_goAndBackCheckBox->setChecked(true);
+
+  int ind = m_spd->m_ui->m_animationComboBox->currentIndex();
+  onAnimationComboBoxActivated(ind);
 }
 
 te::dt::TimeInstant te::qt::widgets::TimeSliderWidget::getInitialTime()
