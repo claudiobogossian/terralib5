@@ -18,28 +18,28 @@
  */
 
 /*!
-  \file terralib/layout/qt/core/pattern/factory/TextItemFactory.cpp
+  \file terralib/layout/qt/core/pattern/factory/RectangleItemFactory.cpp
 
-  \brief This is the concrete factory for text item.
+  \brief This is the concrete factory for rectangle item.
 */
 
 // TerraLib
-#include "TextItemFactory.h"
-#include "../../../../../core/enum/Enums.h"
-#include "../../../../../item/TextModel.h"
-#include "../../../../item/TextController1.h"
+#include "PaperItemFactory.h"
+#include "../../../../../item/PaperModel.h"
+#include "../../../../../core/pattern/mvc/AbstractItemController.h"
+#include "../../../../../core/property/Properties.h"
 
-te::layout::AbstractItemView* te::layout::TextItemFactory::build(ItemFactoryParamsCreate params)
+te::layout::AbstractItemView* te::layout::PaperItemFactory::build(ItemFactoryParamsCreate params)
 {
-  Properties      props = params.getProperties();
+  Properties props = params.getProperties();
 
-  TextModel* model = new TextModel();
+  PaperModel* model = new PaperModel();
   if (props.getProperties().empty())
   {
     setProperties(model, params);
   }
 
-  TextController1* controller = new TextController1(model);
+  AbstractItemController* controller = new AbstractItemController(model);
   AbstractItemView* view = controller->getView();
 
   if (!props.getProperties().empty())
@@ -49,13 +49,16 @@ te::layout::AbstractItemView* te::layout::TextItemFactory::build(ItemFactoryPara
   return dynamic_cast<AbstractItemView*>(view);
 }
 
-te::layout::TextItemFactory::TextItemFactory() :
-  NewItemFactory(Enums::getInstance().getEnumObjectType()->getTextItem()->getName())
+te::layout::PaperItemFactory::PaperItemFactory() :
+  NewItemFactory(Enums::getInstance().getEnumObjectType()->getPaperItem()->getName())
 {
 
 }
 
-te::layout::TextItemFactory::~TextItemFactory()
+te::layout::PaperItemFactory::~PaperItemFactory()
 {
 
 }
+
+
+

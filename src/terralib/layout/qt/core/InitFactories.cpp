@@ -53,6 +53,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include "pattern/factory/item/TitleItemFactory.h"
 #include "pattern/factory/item/PolygonItemFactory.h"
 #include "pattern/factory/item/LineItemFactory.h"
+#include "pattern/factory/item/PaperItemFactory.h"
 
 namespace te
 {
@@ -103,6 +104,7 @@ namespace te
         static TitleItemFactory TitleItemFactory_instance;
         static PolygonItemFactory PolygonItemFactory_instance;
         static LineItemFactory LineItemFactory_instance;
+        static PaperItemFactory PaperItemFactory_instance;
       }
     }
   }
