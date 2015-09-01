@@ -602,12 +602,6 @@ void te::qt::plugins::edit::ToolBar::onVertexToolActivated(bool)
     return;
   }
 
-  if (layer.get()->getSelected() == 0)
-  {
-    QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Select a geometry first!"));
-    return;
-  }
-
   te::qt::af::evt::GetMapDisplay e;
   emit triggered(&e);
 
@@ -656,18 +650,6 @@ void te::qt::plugins::edit::ToolBar::onMoveGeometryToolActivated(bool)
   if(layer.get() == 0)
   {
     QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Select a layer first!"));
-    return;
-  }
-
-  if (layer.get()->getSelected() == 0)
-  {
-    QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Select a geometry first!"));
-    return;
-  }
-
-  if (layer.get()->getSelected()->size() != 1)
-  {
-    QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("To move geometry, you must select exactly 1 polygon!"));
     return;
   }
 
