@@ -29,8 +29,8 @@
 // TerraLib
 #include "../../../geometry/Coord2D.h"
 #include "../../../maptools/AbstractLayer.h"
-#include "GeometriesUpdateTool.h"
 #include "../Config.h"
+#include "GeometriesUpdateTool.h"
 
 // STL
 #include <vector>

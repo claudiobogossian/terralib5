@@ -157,35 +157,10 @@ te::gm::Geometry* te::edit::AggregateAreaTool::buildPolygon()
 
     polygon->setSRID(m_display->getSRID());
 
-
     if (!polygon->intersects(m_feature->getGeometry()))
       return dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone());
 
-    // Get the geometry type of layer
-    std::auto_ptr<te::da::DataSetType> dt = m_layer->getSchema();
-    te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(dt.get());
-
-    if (geomProp->getGeometryType() == te::gm::MultiPolygonType)
-    {
-      te::gm::MultiPolygon* mp = new te::gm::MultiPolygon(0, te::gm::MultiPolygonType);
-
-      mp->add(Union(polygon, m_feature->getGeometry()));
-
-      geoUnion = mp;
-    }
-    else if (geomProp->getGeometryType() == te::gm::PolygonType)
-    {
-      te::gm::Polygon* p = dynamic_cast<te::gm::Polygon*>(Union(polygon, m_feature->getGeometry()));
-      
-      geoUnion = p;
-    }
-
-    //projection
-    if (geoUnion->getSRID() == m_layer->getSRID())
-      return geoUnion;
-
-    //else, need conversion...
-    geoUnion->transform(m_layer->getSRID());
+    geoUnion = convertGeomType(m_layer, Union(polygon, m_feature->getGeometry()));
 
     return geoUnion;
 

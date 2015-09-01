@@ -24,12 +24,7 @@
 */
 
 // TerraLib
-#include "../../../geometry/Envelope.h"
-#include "../../../geometry/Geometry.h"
-#include "../../../geometry/LinearRing.h"
-#include "../../../geometry/LineString.h"
-#include "../../../geometry/Point.h"
-#include "../../../geometry/Polygon.h"
+#include "../../../geometry.h"
 #include "../../../dataaccess/dataset/ObjectId.h"
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../qt/widgets/canvas/MapDisplay.h"
@@ -95,7 +90,7 @@ bool te::edit::CreatePolygonTool::mousePressEvent(QMouseEvent* e)
   m_coords.push_back(coord);
 
   if (m_coords.size() > 2)
-    m_geometries.push_back(buildPolygon());
+    m_geometries.push_back(convertGeomType(m_layer,buildPolygon()));
 
   return true;
 }
@@ -141,7 +136,6 @@ bool te::edit::CreatePolygonTool::mouseDoubleClickEvent(QMouseEvent* e)
   storeNewGeometry();
 
   storeUndoCommand();
-
 
   return true;
 }
@@ -253,7 +247,7 @@ te::gm::Geometry* te::edit::CreatePolygonTool::buildLine()
 
 void te::edit::CreatePolygonTool::storeNewGeometry()
 {
-  RepositoryManager::getInstance().addGeometry(m_layer->getId(), buildPolygon(),te::edit::GEOMETRY_CREATE);
+  RepositoryManager::getInstance().addGeometry(m_layer->getId(), convertGeomType(m_layer, buildPolygon()), te::edit::GEOMETRY_CREATE);
   emit geometriesEdited();
 }
 
@@ -269,6 +263,7 @@ void te::edit::CreatePolygonTool::onExtentChanged()
 
 void te::edit::CreatePolygonTool::storeUndoCommand()
 {
+
   m_feature = RepositoryManager::getInstance().getFeature(m_layer->getId(), *buildPolygon()->getMBR(), buildPolygon()->getSRID());
 
   for (std::size_t i = 0; i < m_geometries.size(); i++)

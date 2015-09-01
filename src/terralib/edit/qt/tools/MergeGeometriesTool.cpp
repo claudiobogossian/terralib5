@@ -1,26 +1,26 @@
 /*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
 
-This file is part of the TerraLib - a Framework for building GIS enabled applications.
+  This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
-TerraLib is free software: you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation, either version 3 of the License,
-or (at your option) any later version.
+  TerraLib is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Lesser General Public License as published by
+  the Free Software Foundation, either version 3 of the License,
+  or (at your option) any later version.
 
-TerraLib is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU Lesser General Public License for more details.
+  TerraLib is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU Lesser General Public License for more details.
 
-You should have received a copy of the GNU Lesser General Public License
-along with TerraLib. See COPYING. If not, write to
-TerraLib Team at <terralib-team@terralib.org>.
+  You should have received a copy of the GNU Lesser General Public License
+  along with TerraLib. See COPYING. If not, write to
+  TerraLib Team at <terralib-team@terralib.org>.
 */
 
 /*!
-\file terralib/edit/qt/tools/CreateLineTool.cpp
+\file terralib/edit/qt/tools/MergeGeometriesTool.cpp
 
-\brief This class implements a concrete tool to create lines.
+\brief This class implements a concrete tool to merge polygons.
 */
 
 // TerraLib
@@ -75,7 +75,7 @@ te::edit::MergeGeometriesTool::~MergeGeometriesTool()
 void te::edit::MergeGeometriesTool::mergeGeometries()
 {
   const te::gm::Envelope* env;
-  te::gm::Geometry* mergeGeo;
+  te::gm::Geometry* mergeGeo = 0;
 
   const te::da::ObjectIdSet* objSet = m_layer->getSelected();
 
@@ -110,6 +110,12 @@ void te::edit::MergeGeometriesTool::mergeGeometries()
 
   m_feature = PickFeature(m_layer, *env, m_display->getSRID(), te::edit::GEOMETRY_UPDATE);
 
+  if (m_feature == 0)
+  {
+    QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Merge not possible"));
+    return;
+  }
+
   //used to undo/redo
   if (m_updateWatches.size() == 0)
   {
@@ -124,26 +130,7 @@ void te::edit::MergeGeometriesTool::mergeGeometries()
     mergeGeo = Union(*mergeGeo, *m_geocollection->getGeometryN(i));
   }
 
-  switch (geomProp->getGeometryType())
-  {
-    case  te::gm::MultiPolygonType:
-    {
-      te::gm::MultiPolygon* mp = new te::gm::MultiPolygon(1, te::gm::MultiPolygonType);
-      mp->setGeometryN(0, mergeGeo);
-      mp->setSRID(m_layer->getSRID());
-
-      mergeGeo = mp;
-
-      break;
-    }
-    case  te::gm::PolygonType:
-      mergeGeo = dynamic_cast<te::gm::Polygon*>(mergeGeo);
-
-      break;
-
-    default:
-      break;
-  }
+  mergeGeo = convertGeomType(m_layer, mergeGeo);
 
   std::set<te::da::ObjectId*, te::common::LessCmp<te::da::ObjectId*> >::const_iterator it;
 
@@ -152,6 +139,7 @@ void te::edit::MergeGeometriesTool::mergeGeometries()
     if ((*it)->getValueAsString() == m_chosenOid)
     {
       m_feature->setId((*it)->clone());
+      break;
     }
   }
 
@@ -227,7 +215,7 @@ void te::edit::MergeGeometriesTool::getBaseOID(const te::da::ObjectIdSet& objSet
 
 const te::gm::Envelope* te::edit::MergeGeometriesTool::getRefEnvelope(te::da::DataSet& ds, te::gm::GeometryProperty& geomProp)
 {
-  std::size_t colType = 0;
+  std::size_t pType = 0;
   std::string convOid;
   std::vector<std::string> oidPropertyNames;
   const te::gm::Envelope* env = new te::gm::Envelope();
@@ -236,20 +224,40 @@ const te::gm::Envelope* te::edit::MergeGeometriesTool::getRefEnvelope(te::da::Da
 
   ds.moveBeforeFirst();
 
-  colType = ds.getPropertyDataType(te::da::GetPropertyPos(&ds, oidPropertyNames[0]));
+  pType = ds.getPropertyDataType(te::da::GetPropertyPos(&ds, oidPropertyNames[0]));
 
   while (ds.moveNext())
   {
-    if (colType == te::dt::INT16_TYPE || colType == te::dt::INT32_TYPE ||
-      colType == te::dt::INT64_TYPE || colType == te::dt::DOUBLE_TYPE)
+    switch (pType)
     {
-      convOid = boost::lexical_cast<std::string>(ds.getInt32(oidPropertyNames[0]));
-    }
-    else
-    {
-      convOid = ds.getString(oidPropertyNames[0]);
-    }
+      case te::dt::INT16_TYPE:
+        convOid = boost::lexical_cast<std::string>(ds.getInt16(oidPropertyNames[0]));
+        break;
 
+      case te::dt::INT32_TYPE:
+        convOid = boost::lexical_cast<std::string>(ds.getInt32(oidPropertyNames[0]));
+        break;
+
+      case te::dt::INT64_TYPE:
+        convOid = boost::lexical_cast<std::string>(ds.getInt64(oidPropertyNames[0]));
+        break;
+
+      case te::dt::FLOAT_TYPE:
+        convOid = boost::lexical_cast<std::string>(ds.getFloat(oidPropertyNames[0]));
+        break;
+
+      case te::dt::DOUBLE_TYPE:
+        convOid = boost::lexical_cast<std::string>(ds.getDouble(oidPropertyNames[0]));
+        break;
+
+      case te::dt::NUMERIC_TYPE:
+        convOid = boost::lexical_cast<std::string>(ds.getNumeric(oidPropertyNames[0]));
+        break;
+
+      case te::dt::STRING_TYPE:
+        convOid = ds.getString(oidPropertyNames[0]);
+        break;
+    }
     if (m_chosenOid == convOid)
     {
       env = (ds.getGeometry(geomProp.getName()).release())->getMBR();

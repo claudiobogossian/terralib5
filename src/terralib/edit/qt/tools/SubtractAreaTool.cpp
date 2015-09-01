@@ -143,6 +143,8 @@ void te::edit::SubtractAreaTool::drawPolygon()
 
 te::gm::Geometry* te::edit::SubtractAreaTool::buildPolygon()
 {
+  te::gm::Geometry* geoSubtract = 0;
+
   // Build the geometry
   te::gm::LinearRing* ring = new te::gm::LinearRing(m_coords.size() + 1, te::gm::LineStringType);
   for (std::size_t i = 0; i < m_coords.size(); ++i)
@@ -154,21 +156,12 @@ te::gm::Geometry* te::edit::SubtractAreaTool::buildPolygon()
 
   pHole->setSRID(m_display->getSRID());
 
-  te::gm::Geometry* geo = 0;
-
   if (!pHole->intersects(m_feature->getGeometry()))
     return dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone());
 
-  geo = Difference(m_feature->getGeometry(), pHole);
+  geoSubtract = convertGeomType(m_layer, Difference(m_feature->getGeometry(), pHole));
 
-  //projection
-  if (geo->getSRID() == m_layer->getSRID())
-    return geo;
-
-  // else, need conversion...
-  geo->transform(m_layer->getSRID());
-
-  return geo;
+  return geoSubtract;
 }
 
 void te::edit::SubtractAreaTool::pickFeature(const te::map::AbstractLayerPtr& layer)

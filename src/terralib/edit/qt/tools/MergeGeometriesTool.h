@@ -20,7 +20,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 /*!
 \file terralib/edit/qt/tools/MergeGeometriesTool.h
 
-\brief This class implements a concrete tool to create lines.
+\brief This class implements a concrete tool to merge polygons.
 */
 
 #ifndef __TERRALIB_EDIT_QT_INTERNAL_MERGEGEOMETRIESTOOL_H
