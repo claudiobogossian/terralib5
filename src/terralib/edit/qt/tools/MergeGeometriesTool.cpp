@@ -67,7 +67,6 @@ te::edit::MergeGeometriesTool::MergeGeometriesTool(te::qt::widgets::MapDisplay* 
 te::edit::MergeGeometriesTool::~MergeGeometriesTool()
 {
   delete m_feature;
-  delete m_geocollection;
   m_updateWatches.clear();
   delete m_oidsMerged;
 }

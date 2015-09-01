@@ -62,9 +62,15 @@ te::gm::Geometry* te::edit::convertGeomType(const te::map::AbstractLayerPtr& lay
   {
     case te::gm::MultiPolygonType:
     {
-      te::gm::MultiPolygon* mp = new te::gm::MultiPolygon(0, te::gm::MultiPolygonType);
+      te::gm::MultiPolygon* mp = 0;
 
-      mp->add(geom);
+      if (geom->getGeomTypeId() == te::gm::MultiPolygonType)
+        mp = dynamic_cast<te::gm::MultiPolygon*>(geom);
+      else
+      {
+        mp = new te::gm::MultiPolygon(0, te::gm::MultiPolygonType);
+        mp->add(geom);
+      }
 
       geomConvert = mp;
 
@@ -78,7 +84,7 @@ te::gm::Geometry* te::edit::convertGeomType(const te::map::AbstractLayerPtr& lay
 
       break;
     }
-    //other type
+    //others type
     //MultiLine
     //...
   }
