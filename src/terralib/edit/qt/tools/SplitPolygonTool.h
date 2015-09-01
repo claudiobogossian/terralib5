@@ -76,7 +76,7 @@ namespace te
 
           \note The tool will NOT take the ownership of the given pointers.
         */
-        SplitPolygonTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, QObject* parent = 0);
+        SplitPolygonTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent = 0);
 
         /*! \brief Destructor. */
         ~SplitPolygonTool();
@@ -88,11 +88,11 @@ namespace te
           */
         //@{
 
-        bool mousePressEvent(QMouseEvent* e);
+        //bool mousePressEvent(QMouseEvent* e);
 
-        bool mouseMoveEvent(QMouseEvent* e);
+        //bool mouseMoveEvent(QMouseEvent* e);
 
-        bool mouseDoubleClickEvent(QMouseEvent* e);
+        //bool mouseDoubleClickEvent(QMouseEvent* e);
 
         //@}
 

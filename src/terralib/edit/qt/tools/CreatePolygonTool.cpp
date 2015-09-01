@@ -269,8 +269,6 @@ void te::edit::CreatePolygonTool::onExtentChanged()
 
 void te::edit::CreatePolygonTool::storeUndoCommand()
 {
-  std::size_t count = 0;
-
   m_feature = RepositoryManager::getInstance().getFeature(m_layer->getId(), *buildPolygon()->getMBR(), buildPolygon()->getSRID());
 
   for (std::size_t i = 0; i < m_geometries.size(); i++)
@@ -278,11 +276,8 @@ void te::edit::CreatePolygonTool::storeUndoCommand()
     m_feature->setGeometry(m_geometries[i]);
     m_addWatches.push_back(m_feature->clone());
 
-    //if (i > 0)
-    //{
-      QUndoCommand* command = new AddCommand(m_addWatches, m_display, m_layer);
-      UndoStackManager::getInstance().addUndoStack(command);
-    //}
+    QUndoCommand* command = new AddCommand(m_addWatches, m_display, m_layer);
+    UndoStackManager::getInstance().addUndoStack(command);
   }
 
 }

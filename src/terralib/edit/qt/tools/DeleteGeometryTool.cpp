@@ -71,21 +71,6 @@ bool te::edit::DeleteGeometryTool::mousePressEvent(QMouseEvent* e)
   return true;
 }
 
-bool te::edit::DeleteGeometryTool::mouseMoveEvent(QMouseEvent* e)
-{
-  return false;
-}
-
-bool te::edit::DeleteGeometryTool::mouseReleaseEvent(QMouseEvent* e)
-{
-  return false;
-}
-
-bool te::edit::DeleteGeometryTool::mouseDoubleClickEvent(QMouseEvent* e)
-{
-  return false;
-}
-
 void te::edit::DeleteGeometryTool::reset()
 {
   delete m_feature;

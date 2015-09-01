@@ -72,11 +72,6 @@ te::edit::MergeGeometriesTool::~MergeGeometriesTool()
   delete m_oidsMerged;
 }
 
-bool te::edit::MergeGeometriesTool::mousePressEvent(QMouseEvent* e)
-{
-  return true;
-}
-
 void te::edit::MergeGeometriesTool::mergeGeometries()
 {
   const te::gm::Envelope* env;

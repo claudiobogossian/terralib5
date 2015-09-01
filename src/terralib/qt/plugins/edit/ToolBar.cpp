@@ -438,7 +438,6 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
 
       // Get the geometry type
       std::auto_ptr<te::da::DataSetType> dt = layer->getSchema();
-      te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(dt.get());
 
       std::set<int> propertiesPos;
 
@@ -923,7 +922,7 @@ void te::qt::plugins::edit::ToolBar::setCurrentTool(te::edit::GeometriesUpdateTo
 
 }
 
-void te::qt::plugins::edit::ToolBar::createUndoView(bool checked)
+void te::qt::plugins::edit::ToolBar::createUndoView(bool)
 {
   /*
 

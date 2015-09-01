@@ -65,11 +65,6 @@ bool te::edit::AggregateAreaTool::mouseMoveEvent(QMouseEvent* e)
   return te::edit::CreateLineTool::mouseMoveEvent(e);
 }
 
-bool te::edit::AggregateAreaTool::mouseReleaseEvent(QMouseEvent* e)
-{
-  return false;
-}
-
 bool te::edit::AggregateAreaTool::mouseDoubleClickEvent(QMouseEvent* e)
 {
   try

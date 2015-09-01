@@ -113,6 +113,8 @@ bool te::edit::MoveGeometryTool::mouseMoveEvent(QMouseEvent* e)
 
 bool te::edit::MoveGeometryTool::mouseReleaseEvent(QMouseEvent* e)
 {
+  if (e->button() != Qt::LeftButton)
+    return false;
 
   m_moveStarted = false;
 

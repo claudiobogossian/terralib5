@@ -92,12 +92,6 @@ namespace te
 
         bool mousePressEvent(QMouseEvent* e);
 
-        bool mouseMoveEvent(QMouseEvent* e);
-
-        bool mouseReleaseEvent(QMouseEvent* e);
-
-        bool mouseDoubleClickEvent(QMouseEvent* e);
-
         //@}
 
       private:

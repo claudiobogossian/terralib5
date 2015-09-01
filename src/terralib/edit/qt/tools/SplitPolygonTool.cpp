@@ -44,7 +44,7 @@
 #include <memory>
 
 
-te::edit::SplitPolygonTool::SplitPolygonTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, QObject* parent)
+te::edit::SplitPolygonTool::SplitPolygonTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent)
   : GeometriesUpdateTool(display, layer.get(), parent)
 {
   // Signals & slots
@@ -56,7 +56,7 @@ te::edit::SplitPolygonTool::~SplitPolygonTool()
   QPixmap* draft = m_display->getDraftPixmap();
   draft->fill(Qt::transparent);
 }
-
+/*
 bool te::edit::SplitPolygonTool::mousePressEvent(QMouseEvent* e)
 {
   return true;
@@ -70,7 +70,7 @@ bool te::edit::SplitPolygonTool::mouseMoveEvent(QMouseEvent* e)
 bool te::edit::SplitPolygonTool::mouseDoubleClickEvent(QMouseEvent* e)
 {
   return true;
-}
+}*/
 void te::edit::SplitPolygonTool::onExtentChanged()
 {
   //draw();

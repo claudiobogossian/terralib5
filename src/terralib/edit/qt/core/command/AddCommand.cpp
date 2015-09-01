@@ -91,7 +91,6 @@ void te::edit::AddCommand::redo()
 {
   bool resultFound = false;
 
- 
   if (!UndoStackManager::getInstance().getUndoStack())
     return;
 

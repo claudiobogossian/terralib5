@@ -69,15 +69,6 @@ namespace te
       /*! \brief Destructor. */
       ~MergeGeometriesTool();
 
-      //@}
-
-      /** @name AbstractTool Methods
-      *  Methods related with tool behavior.
-      */
-      //@{
-
-      bool mousePressEvent(QMouseEvent* e);
-
     private:
 
       void draw();
