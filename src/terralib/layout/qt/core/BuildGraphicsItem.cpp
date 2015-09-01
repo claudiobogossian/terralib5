@@ -101,12 +101,7 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createItem(te::layout::EnumType* i
   {
     return item;
   }
-
-  EnumObjectType* enumObj = Enums::getInstance().getEnumObjectType();
-  m_name = nameItem(itemType); // create item name, will be used if props is empty
-
-  te::layout::EnumObjectType* obj = Enums::getInstance().getEnumObjectType();
-
+  
   std::string strName = nameItem(itemType);
 
   ItemFactoryParamsCreate params(strName, m_zValue, m_id, m_coord, m_width, m_height);

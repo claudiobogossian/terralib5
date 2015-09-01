@@ -18,49 +18,35 @@
  */
 
 /*!
-  \file BuildGraphicsOutside.cpp
-   
-  \brief 
+  \file terralib/layout/qt/core/pattern/factory/outside/ColorDialogOutsideFactory.cpp
 
-  \ingroup layout
+  \brief This is the concrete factory for arrow item.
 */
 
 // TerraLib
-#include "BuildGraphicsOutside.h"
-#include "../../core/enum/Enums.h"
-#include "pattern/factory/outside/NewOutsideFactory.h"
-#include "pattern/factory/outside/OutsideFactoryParamsCreate.h"
-#include "../../core/pattern/mvc/AbstractOutsideView.h"
+#include "GridSettingsOutsideFactory.h"
+#include "../../../../../outside/GridSettingsModel.h"
+#include "../../../../../outside/GridSettingsController.h"
 
-// Qt
-#include <QWidget>
-
-// STL
-#include <sstream>
-#include <string>  
-
-te::layout::BuildGraphicsOutside::BuildGraphicsOutside() 
+te::layout::AbstractOutsideView* te::layout::GridSettingsOutsideFactory::build(OutsideFactoryParamsCreate params)
 {
- 
+  GridSettingsModel* model = new GridSettingsModel();
+
+  GridSettingsController* controller = new GridSettingsController(model);
+  AbstractOutsideView* view = controller->getView();
+
+  return dynamic_cast<AbstractOutsideView*>(view);
 }
 
-te::layout::BuildGraphicsOutside::~BuildGraphicsOutside()
+te::layout::GridSettingsOutsideFactory::GridSettingsOutsideFactory() :
+  NewOutsideFactory(Enums::getInstance().getEnumObjectType()->getGridSettings()->getName())
 {
- 
+
 }
 
-QWidget* te::layout::BuildGraphicsOutside::createOuside( te::layout::EnumType* type )
+te::layout::GridSettingsOutsideFactory::~GridSettingsOutsideFactory()
 {
-  QWidget* widget = 0;
-    
-  OutsideFactoryParamsCreate params;
 
-  std::string name = type->getName();
-
-  AbstractOutsideView* abstractItem = te::layout::NewOutsideFactory::make(name, params);
-  widget = dynamic_cast<QWidget*>(abstractItem);
-  
-  return widget;
 }
 
 

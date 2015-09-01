@@ -18,49 +18,35 @@
  */
 
 /*!
-  \file BuildGraphicsOutside.cpp
-   
-  \brief 
+  \file terralib/layout/qt/core/pattern/factory/outside/ColorDialogOutsideFactory.cpp
 
-  \ingroup layout
+  \brief This is the concrete factory for arrow item.
 */
 
 // TerraLib
-#include "BuildGraphicsOutside.h"
-#include "../../core/enum/Enums.h"
-#include "pattern/factory/outside/NewOutsideFactory.h"
-#include "pattern/factory/outside/OutsideFactoryParamsCreate.h"
-#include "../../core/pattern/mvc/AbstractOutsideView.h"
+#include "ColorDialogOutsideFactory.h"
+#include "../../../../../outside/ColorDialogModel.h"
+#include "../../../../../core/pattern/mvc/AbstractOutsideController.h"
 
-// Qt
-#include <QWidget>
-
-// STL
-#include <sstream>
-#include <string>  
-
-te::layout::BuildGraphicsOutside::BuildGraphicsOutside() 
+te::layout::AbstractOutsideView* te::layout::ColorDialogOutsideFactory::build(OutsideFactoryParamsCreate params)
 {
- 
+  ColorDialogModel* model = new ColorDialogModel();
+
+  AbstractOutsideController* controller = new AbstractOutsideController(model);
+  AbstractOutsideView* view = controller->getView();
+
+  return dynamic_cast<AbstractOutsideView*>(view);
 }
 
-te::layout::BuildGraphicsOutside::~BuildGraphicsOutside()
+te::layout::ColorDialogOutsideFactory::ColorDialogOutsideFactory() :
+  NewOutsideFactory(Enums::getInstance().getEnumObjectType()->getColorDialog()->getName())
 {
- 
+
 }
 
-QWidget* te::layout::BuildGraphicsOutside::createOuside( te::layout::EnumType* type )
+te::layout::ColorDialogOutsideFactory::~ColorDialogOutsideFactory()
 {
-  QWidget* widget = 0;
-    
-  OutsideFactoryParamsCreate params;
 
-  std::string name = type->getName();
-
-  AbstractOutsideView* abstractItem = te::layout::NewOutsideFactory::make(name, params);
-  widget = dynamic_cast<QWidget*>(abstractItem);
-  
-  return widget;
 }
 
 

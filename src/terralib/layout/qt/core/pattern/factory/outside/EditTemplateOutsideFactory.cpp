@@ -18,35 +18,35 @@
  */
 
 /*!
-  \file PageSetupController.h
-   
-  \brief 
+  \file terralib/layout/qt/core/pattern/factory/outside/ColorDialogOutsideFactory.cpp
 
-  \ingroup layout
+  \brief This is the concrete factory for arrow item.
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_PAGE_SETUP_CONTROLLER_H 
-#define __TERRALIB_LAYOUT_INTERNAL_PAGE_SETUP_CONTROLLER_H
-
 // TerraLib
-#include "../core/pattern/mvc/AbstractOutsideController.h"
-#include "../core/Config.h"
+#include "EditTemplateOutsideFactory.h"
+#include "../../../../../outside/EditTemplateModel.h"
+#include "../../../../../outside/EditTemplateController.h"
 
-namespace te
+te::layout::AbstractOutsideView* te::layout::EditTemplateOutsideFactory::build(OutsideFactoryParamsCreate params)
 {
-  namespace layout
-  {
-    class AbstractOutsideModel;
+  EditTemplateModel* model = new EditTemplateModel();
 
-    class TELAYOUTEXPORT PageSetupController : public AbstractOutsideController
-    {
-      public:
+  EditTemplateController* controller = new EditTemplateController(model);
+  AbstractOutsideView* view = controller->getView();
 
-        PageSetupController(AbstractOutsideModel* o);
-
-        virtual ~PageSetupController();
-    };
-  }
+  return dynamic_cast<AbstractOutsideView*>(view);
 }
 
-#endif
+te::layout::EditTemplateOutsideFactory::EditTemplateOutsideFactory() :
+  NewOutsideFactory(Enums::getInstance().getEnumObjectType()->getEditTemplate()->getName())
+{
+
+}
+
+te::layout::EditTemplateOutsideFactory::~EditTemplateOutsideFactory()
+{
+
+}
+
+

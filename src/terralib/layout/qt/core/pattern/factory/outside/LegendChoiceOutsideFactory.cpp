@@ -18,35 +18,35 @@
  */
 
 /*!
-  \file SystematicScaleController.h
-   
-  \brief 
+  \file terralib/layout/qt/core/pattern/factory/outside/LegendChoiceOutsideFactory.cpp
 
-  \ingroup layout
+  \brief This is the concrete factory for arrow item.
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_SYSTEMATIC_SCALE_CONTROLLER_H 
-#define __TERRALIB_LAYOUT_INTERNAL_SYSTEMATIC_SCALE_CONTROLLER_H
-
 // TerraLib
-#include "../core/pattern/mvc/AbstractOutsideController.h"
-#include "../core/Config.h"
+#include "LegendChoiceOutsideFactory.h"
+#include "../../../../../outside/LegendChoiceModel.h"
+#include "../../../../../outside/LegendChoiceController.h"
 
-namespace te
+te::layout::AbstractOutsideView* te::layout::LegendChoiceOutsideFactory::build(OutsideFactoryParamsCreate params)
 {
-  namespace layout
-  {
-    class AbstractOutsideModel;
+  LegendChoiceModel* model = new LegendChoiceModel();
 
-    class TELAYOUTEXPORT SystematicScaleController : public AbstractOutsideController
-    {
-      public:
+  LegendChoiceController* controller = new LegendChoiceController(model);
+  AbstractOutsideView* view = controller->getView();
 
-        SystematicScaleController(AbstractOutsideModel* o);
-
-        virtual ~SystematicScaleController();
-    };
-  }
+  return dynamic_cast<AbstractOutsideView*>(view);
 }
 
-#endif
+te::layout::LegendChoiceOutsideFactory::LegendChoiceOutsideFactory() :
+  NewOutsideFactory(Enums::getInstance().getEnumObjectType()->getLegendChoice()->getName())
+{
+
+}
+
+te::layout::LegendChoiceOutsideFactory::~LegendChoiceOutsideFactory()
+{
+
+}
+
+

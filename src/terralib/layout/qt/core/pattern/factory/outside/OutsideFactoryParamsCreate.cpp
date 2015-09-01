@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,23 +18,38 @@
  */
 
 /*!
-  \file ColorDialogController.cpp
-   
-  \brief 
+  \file terralib/layout/qt/core/pattern/factory/outside/OutsideFactoryParamsCreate.cpp
 
-  \ingroup layout
+  \brief Parameters to create a new item object (MVC graphic Object). 
 */
 
 // TerraLib
-#include "ColorDialogController.h"
+#include "OutsideFactoryParamsCreate.h"
 
-te::layout::ColorDialogController::ColorDialogController( AbstractOutsideModel* o ) :
-  AbstractOutsideController(o)
+te::layout::OutsideFactoryParamsCreate::OutsideFactoryParamsCreate(const OutsideFactoryParamsCreate& rhs)
 {
-  
+  this->operator=(rhs);
 }
 
-te::layout::ColorDialogController::~ColorDialogController()
+te::layout::OutsideFactoryParamsCreate::OutsideFactoryParamsCreate()
 {
 
 }
+
+te::layout::OutsideFactoryParamsCreate::~OutsideFactoryParamsCreate()
+{
+
+}
+
+te::common::AbstractParameters* te::layout::OutsideFactoryParamsCreate::clone() const
+{
+  return new OutsideFactoryParamsCreate(*this);
+}
+
+void te::layout::OutsideFactoryParamsCreate::reset() throw(te::common::Exception)
+{
+  //do nothing
+}
+
+
+

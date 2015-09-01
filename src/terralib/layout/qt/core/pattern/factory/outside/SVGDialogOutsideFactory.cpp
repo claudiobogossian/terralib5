@@ -18,49 +18,35 @@
  */
 
 /*!
-  \file BuildGraphicsOutside.cpp
-   
-  \brief 
+  \file terralib/layout/qt/core/pattern/factory/outside/SVGDialogOutsideFactory.cpp
 
-  \ingroup layout
+  \brief This is the concrete factory for arrow item.
 */
 
 // TerraLib
-#include "BuildGraphicsOutside.h"
-#include "../../core/enum/Enums.h"
-#include "pattern/factory/outside/NewOutsideFactory.h"
-#include "pattern/factory/outside/OutsideFactoryParamsCreate.h"
-#include "../../core/pattern/mvc/AbstractOutsideView.h"
+#include "SVGDialogOutsideFactory.h"
+#include "../../../../../outside/SVGDialogModel.h"
+#include "../../../../../outside/SVGDialogController.h"
 
-// Qt
-#include <QWidget>
-
-// STL
-#include <sstream>
-#include <string>  
-
-te::layout::BuildGraphicsOutside::BuildGraphicsOutside() 
+te::layout::AbstractOutsideView* te::layout::SVGDialogOutsideFactory::build(OutsideFactoryParamsCreate params)
 {
- 
+  SVGDialogModel* model = new SVGDialogModel();
+
+  SVGDialogController* controller = new SVGDialogController(model);
+  AbstractOutsideView* view = controller->getView();
+
+  return dynamic_cast<AbstractOutsideView*>(view);
 }
 
-te::layout::BuildGraphicsOutside::~BuildGraphicsOutside()
+te::layout::SVGDialogOutsideFactory::SVGDialogOutsideFactory() :
+  NewOutsideFactory(Enums::getInstance().getEnumObjectType()->getSVGDialog()->getName())
 {
- 
+
 }
 
-QWidget* te::layout::BuildGraphicsOutside::createOuside( te::layout::EnumType* type )
+te::layout::SVGDialogOutsideFactory::~SVGDialogOutsideFactory()
 {
-  QWidget* widget = 0;
-    
-  OutsideFactoryParamsCreate params;
 
-  std::string name = type->getName();
-
-  AbstractOutsideView* abstractItem = te::layout::NewOutsideFactory::make(name, params);
-  widget = dynamic_cast<QWidget*>(abstractItem);
-  
-  return widget;
 }
 
 

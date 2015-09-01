@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2014 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,35 +18,29 @@
  */
 
 /*!
-  \file ColorDialogController.h
+  \file NewItemFactory.cpp
    
   \brief 
 
   \ingroup layout
 */
 
-#ifndef __TERRALIB_LAYOUT_INTERNAL_COLOR_DIALOG_CONTROLLER_H 
-#define __TERRALIB_LAYOUT_INTERNAL_COLOR_DIALOG_CONTROLLER_H
-
 // TerraLib
-#include "../core/pattern/mvc/AbstractOutsideController.h"
-#include "../core/Config.h"
+#include "NewOutsideFactory.h"
 
-namespace te
+te::layout::NewOutsideFactory::~NewOutsideFactory()
 {
-  namespace layout
-  {
-    class AbstractOutsideModel;
 
-    class TELAYOUTEXPORT ColorDialogController : public AbstractOutsideController
-    {
-      public:
-
-        ColorDialogController(AbstractOutsideModel* o);
-
-        virtual ~ColorDialogController();
-    };
-  }
 }
 
-#endif
+te::layout::NewOutsideFactory::NewOutsideFactory(const std::string& factoryKey)
+: te::common::ParameterizedAbstractFactory<AbstractOutsideView, std::string, OutsideFactoryParamsCreate>(factoryKey)
+{
+
+}
+
+void te::layout::NewOutsideFactory::setProperties(AbstractOutsideModel* model, OutsideFactoryParamsCreate params)
+{
+  // do nothing
+}
+
