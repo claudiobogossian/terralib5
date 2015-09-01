@@ -30,17 +30,20 @@
 #include "../../core/pattern/singleton/Context.h"
 #include "pattern/factory/item/ItemFactoryParamsCreate.h"
 #include "pattern/factory/item/NewItemFactory.h"
+#include "pattern/command/AddCommand.h"
 #include "Scene.h"
 #include "ItemUtils.h"
 
-// Qt
-#include <QGraphicsItem>
-
 // STL
 #include <sstream>
-#include <string> 
+#include <string>
 
-te::layout::BuildGraphicsItem::BuildGraphicsItem() 
+// Qt
+#include <QGraphicsItem>
+#include <QUndoCommand> 
+
+te::layout::BuildGraphicsItem::BuildGraphicsItem(Scene* scene ) :
+  m_scene(scene)
 {
  
 }
@@ -118,14 +121,9 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createItem(te::layout::EnumType* i
     return item;
   }
 
-  AbstractScene* abstScene = Context::getInstance().getScene();
-  if(abstScene)
+  if (m_scene)
   {
-    Scene* sc = dynamic_cast<Scene*>(abstScene);
-    if(sc)
-    {
-      sc->insertItem(item);
-    }
+    m_scene->insertItem(item);
   }
 
   afterBuild(item, draw);
@@ -136,19 +134,13 @@ QGraphicsItem* te::layout::BuildGraphicsItem::createItem(te::layout::EnumType* i
 std::string te::layout::BuildGraphicsItem::nameItem( te::layout::EnumType* type )
 {
   std::string name = "";
-
-  AbstractScene* abstScene = Context::getInstance().getScene();
-
+  
   QList<QGraphicsItem*> graphicsItems;
   std::stringstream ss;//create a stringstream
 
-  if(abstScene)
+  if (m_scene)
   {
-    Scene* sc = dynamic_cast<Scene*>(abstScene);
-    if(sc)
-    {
-      graphicsItems = sc->items();
-    }
+    graphicsItems = m_scene->items();
   }  
 
   ItemUtils* iUtils = Context::getInstance().getItemUtils();
@@ -200,8 +192,15 @@ void te::layout::BuildGraphicsItem::afterBuild(QGraphicsItem* item, bool draw)
   {
     item->setZValue(m_zValue);
   }
+
+  if (item)
+  {
+    if (m_scene)
+    {
+      QUndoCommand* command = new AddCommand(item);
+      m_scene->addUndoStack(command);
+    }
+  }
 }
-
-
 
 
