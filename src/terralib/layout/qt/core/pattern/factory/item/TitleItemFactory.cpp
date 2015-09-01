@@ -25,9 +25,9 @@
 
 // TerraLib
 #include "TitleItemFactory.h"
+#include "../../../../item/TitleController1.h"
 #include "../../../../../core/enum/Enums.h"
 #include "../../../../../item/TitleModel.h"
-#include "../../../../../core/pattern/mvc/AbstractItemController.h"
 
 te::layout::AbstractItemView* te::layout::TitleItemFactory::build(ItemFactoryParamsCreate params)
 {
@@ -39,7 +39,7 @@ te::layout::AbstractItemView* te::layout::TitleItemFactory::build(ItemFactoryPar
     setProperties(model, params);
   }
 
-  AbstractItemController* controller = new AbstractItemController(model);
+  TitleController1* controller = new TitleController1(model);
   AbstractItemView* view = controller->getView();
 
   if (!props.getProperties().empty())
