@@ -639,6 +639,8 @@ void te::layout::Scene::exportItemsToImage(std::string dir)
 
 void te::layout::Scene::mouseMoveEvent(QGraphicsSceneMouseEvent * mouseEvent)
 {
+  QGraphicsScene::mouseMoveEvent(mouseEvent);
+
   if (m_isEditionMode) // Don't have move event in edition mode
   {
     return;
@@ -649,7 +651,6 @@ void te::layout::Scene::mouseMoveEvent(QGraphicsSceneMouseEvent * mouseEvent)
   {
     m_moveWatched = true;
   }
-  QGraphicsScene::mouseMoveEvent(mouseEvent);
 }
 
 void te::layout::Scene::mousePressEvent(QGraphicsSceneMouseEvent * mouseEvent)

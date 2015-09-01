@@ -96,8 +96,10 @@ namespace te
 
         bool isEditionMode();
 
+    protected:
+
         virtual void enterEditionMode();
-        
+
         virtual void leaveEditionMode();
         
       protected:
