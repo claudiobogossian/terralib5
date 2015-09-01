@@ -71,7 +71,6 @@ te::edit::CreatePolygonTool::~CreatePolygonTool()
   QPixmap* draft = m_display->getDraftPixmap();
   draft->fill(Qt::transparent);
 
-  delete m_feature;
   m_addWatches.clear();
   m_geometries.clear();
 }
@@ -271,28 +270,19 @@ void te::edit::CreatePolygonTool::onExtentChanged()
 void te::edit::CreatePolygonTool::storeUndoCommand()
 {
   std::size_t count = 0;
-  /*
-  m_feature = RepositoryManager::getInstance().getFeature(m_layer->getId(), *buildPolygon()->getMBR(), buildPolygon()->getSRID());
 
-  //for (std::size_t i = 0; i < m_addWatches.size(); ++i)
-  //{
-   // if (m_addWatches[i]->getId()->getValueAsString() == m_feature->getId()->getValueAsString())
-  //    count++;
- // }
+  m_feature = RepositoryManager::getInstance().getFeature(m_layer->getId(), *buildPolygon()->getMBR(), buildPolygon()->getSRID());
 
   for (std::size_t i = 0; i < m_geometries.size(); i++)
   {
     m_feature->setGeometry(m_geometries[i]);
     m_addWatches.push_back(m_feature->clone());
 
-    // only to store the first "feature" of geometry
-    //if (count == 1)
-      //return;
-    if (i > 0)
-    {
+    //if (i > 0)
+    //{
       QUndoCommand* command = new AddCommand(m_addWatches, m_display, m_layer);
       UndoStackManager::getInstance().addUndoStack(command);
-    }
+    //}
+  }
 
-  }*/
 }

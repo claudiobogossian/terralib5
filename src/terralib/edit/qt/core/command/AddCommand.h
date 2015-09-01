@@ -72,8 +72,6 @@ namespace te
         te::qt::widgets::MapDisplay* m_display;
         te::map::AbstractLayerPtr m_layer;
         std::vector<Feature*> m_addItems;
-        te::gm::Coord2D    m_initialPosition;
-        QString createCommandString(const te::gm::Coord2D &pos);
         void draw();
 
         int m_nextFeature;

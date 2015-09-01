@@ -46,14 +46,7 @@ te::edit::AddCommand::AddCommand(std::vector<Feature*> items, te::qt::widgets::M
 , m_nextFeature(0)
 , m_previousFeature(0)
 {
-  //std::set<std::string> ids;
-  //for (std::size_t i = 0; i < items.size(); i++)
-    //ids.insert(items[i]->getId()->getValueAsString())
-
-  //m_initialPosition = m_item->getGeometry()->getMBR()->getCenter();
-
-  setText(QObject::tr("Add %1").arg(createCommandString(m_initialPosition)));
-
+  setText(QObject::tr("Add Geometry to %1").arg(QString(m_addItems[0]->getId()->getValueAsString().c_str())));
 }
 
 te::edit::AddCommand::~AddCommand()
@@ -61,37 +54,36 @@ te::edit::AddCommand::~AddCommand()
 
 void  te::edit::AddCommand::undo()
 {
-  
-  //if (m_item)
-  //{
-  //  setText(QObject::tr("Add %1")
-  //    .arg(createCommandString(m_initialPosition)));
-  //}
-  
+  std::size_t count = 0;
+
   if (m_addItems.empty())
     return;
 
+  std::string lastOid = m_addItems[m_addItems.size() - 1]->getId()->getValueAsString();
+
+  for (std::size_t i = 0; i < m_addItems.size(); i++)
+  {
+    if (m_addItems[i]->getId()->getValueAsString() == lastOid)
+      count++;
+  }
+
+  if (count == 1)
+    RepositoryManager::getInstance().removeFeature(m_layer->getId(), m_addItems[m_addItems.size() - 1]->getId());
+
   m_previousFeature = m_addItems.size() - 2;
+
+  if (m_previousFeature < 0) m_previousFeature = 0;
 
   if (RepositoryManager::getInstance().hasIdentify(m_layer->getId(), m_addItems[m_previousFeature]->getId()) == true)
   {
-    std::size_t count = 0;
+
     Feature* f = new Feature(m_addItems[m_previousFeature]->getId(), m_addItems[m_previousFeature]->getGeometry(), m_addItems[m_previousFeature]->getOperationType());
 
-    for (std::size_t i = 0; i < m_addItems.size(); i++)
-    {
-      if (m_addItems[i]->getId()->getValueAsString() == f->getId()->getValueAsString())
-        count++;
-    }
-
-    if (count == 2)
-      RepositoryManager::getInstance().removeFeature(m_layer->getId(), m_addItems[m_previousFeature]->getId());
-    else
-      RepositoryManager::getInstance().addFeature(m_layer->getId(), f->clone());
-
-    draw();
+    RepositoryManager::getInstance().addFeature(m_layer->getId(), f->clone());
 
   }
+
+  draw();
 
 }
 
@@ -99,12 +91,7 @@ void te::edit::AddCommand::redo()
 {
   bool resultFound = false;
 
-  //if (m_item)
-  //{
-  //  setText(QObject::tr("Add %1")
-  //    .arg(createCommandString(m_initialPosition)));
-  //}
-  
+ 
   if (!UndoStackManager::getInstance().getUndoStack())
     return;
 
@@ -132,17 +119,6 @@ void te::edit::AddCommand::redo()
   }
 
   
-}
-
-QString te::edit::AddCommand::createCommandString(const te::gm::Coord2D &pos)
-{
-  //if (!m_item)
-    return QObject::tr("%1");
-
-  //return QObject::tr("%1: %2 at (%3, %4)")
-    //.arg(m_item->getGeometry()->getGeometryType().c_str())
-    //.arg(m_item->getId()->getValueAsString().substr(0, 5).c_str() + QString("..."))
-    //.arg(pos.getX()).arg(pos.getY());
 }
 
 void te::edit::AddCommand::draw()
