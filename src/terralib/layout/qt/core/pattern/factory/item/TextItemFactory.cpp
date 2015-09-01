@@ -25,9 +25,9 @@
 
 // TerraLib
 #include "TextItemFactory.h"
+#include "../../../../item/TextController1.h"
 #include "../../../../../core/enum/Enums.h"
 #include "../../../../../item/TextModel.h"
-#include "../../../../item/TextController1.h"
 
 te::layout::AbstractItemView* te::layout::TextItemFactory::build(ItemFactoryParamsCreate params)
 {

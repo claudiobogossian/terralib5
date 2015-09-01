@@ -32,6 +32,11 @@ bool te::layout::AbstractItemView::isInverted()
 
 void te::layout::AbstractItemView::setEditionMode(bool editionMode)
 {
+  if(m_isEditionMode == editionMode)
+  {
+    return;
+  }
+
   m_isEditionMode = editionMode;
   if (m_isEditionMode)
   {
