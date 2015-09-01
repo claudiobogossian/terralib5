@@ -177,21 +177,7 @@ namespace te
       \param group list of objects
         */
         virtual void destroyItemGroup( QGraphicsItemGroup *group );
-
-    /*!
-          \brief Method that create a graphic object and place it in the scene. A name and a position is added. A command Undo/Redo of type AddCommand is created.
-      
-      \param coord Coordinated where the item is located. The coordinate should be the same scene coordinates system
-        */
-        virtual QGraphicsItem* createItem(EnumType* itemType, const te::gm::Coord2D& coord, double width = 0, double height = 0);
-
-        /*!
-        \brief Method that create a graphic object and place it in the scene. A name and a position is added. A command Undo/Redo of type AddCommand is created.
-
-        \param coord Coordinated where the item is located. The coordinate should be the same scene coordinates system
-        */
-        virtual QGraphicsItem* createItem(EnumType* itemType);
-
+        
     /*!
           \brief Method that insert command Undo/Redo of type AddCommand in the Undo/Redo stack.
       

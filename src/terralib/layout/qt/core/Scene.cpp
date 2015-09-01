@@ -443,48 +443,6 @@ te::layout::MovingItemGroup* te::layout::Scene::createMovingItemGroup( const QLi
   return movingItem;
 }
 
-QGraphicsItem* te::layout::Scene::createItem(EnumType* itemType, const te::gm::Coord2D& coord, double width, double height)
-{
-  QGraphicsItem* item = 0;
-
-  AbstractBuildGraphicsItem* abstractBuild = Context::getInstance().getAbstractBuildGraphicsItem();
-  BuildGraphicsItem* build = dynamic_cast<BuildGraphicsItem*>(abstractBuild);
-
-  if(!build)
-    return item;
-  
-  item = build->createItem(itemType, coord, width, height);
-
-  if(item)
-  {
-    QUndoCommand* command = new AddCommand(item);
-    addUndoStack(command);
-  }
-  
-  return item;
-}
-
-QGraphicsItem* te::layout::Scene::createItem(EnumType* itemType)
-{
-  QGraphicsItem* item = 0;
-
-  AbstractBuildGraphicsItem* abstractBuild = Context::getInstance().getAbstractBuildGraphicsItem();
-  BuildGraphicsItem* build = dynamic_cast<BuildGraphicsItem*>(abstractBuild);
-
-  if (!build)
-    return item;
-    
-  item = build->createItem(itemType);
-
-  if (item)
-  {
-    QUndoCommand* command = new AddCommand(item);
-    addUndoStack(command);
-  }
-
-  return item;
-}
-
 void te::layout::Scene::calculateSceneMeasures(double widthMM, double heightMM)
 {
   calculateWindow(widthMM, heightMM);

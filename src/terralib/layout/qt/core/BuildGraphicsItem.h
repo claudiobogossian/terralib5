@@ -43,7 +43,7 @@ namespace te
 {
   namespace layout
   {
-    class AbstractItemModel;
+    class Scene;
   /*!
   \brief Class responsible for creating or building graphics objects. All objects are children of QGraphicsItem and ItemObserver.
     An object of a type is created from a coordinated. Also an object of a type can be built from the properties saved in a template.
@@ -62,7 +62,7 @@ namespace te
     /*!
           \brief Constructor
         */
-        BuildGraphicsItem();
+        BuildGraphicsItem(Scene* scene = 0);
 
     /*!
           \brief Destructor
@@ -122,6 +122,10 @@ namespace te
           \param draw if true the component will be redraw, false otherwise
         */
         virtual void afterBuild(QGraphicsItem* item, bool draw = true);
+
+      protected:
+
+        Scene*      m_scene;
     };
   }
 }
