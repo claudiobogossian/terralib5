@@ -157,7 +157,7 @@ namespace te
 
       protected:
 
-        //std::vector<Feature*> m_vertexWatches;
+        std::vector<Feature*> m_updateWatches;
 
     };
 

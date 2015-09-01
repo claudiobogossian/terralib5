@@ -39,7 +39,7 @@
 #include "../../Utils.h"
 #include "../Renderer.h"
 #include "../Utils.h"
-#include "../core/command/VertexCommand.h"
+#include "../core/command/UpdateCommand.h"
 #include "VertexTool.h"
 
 // Qt
@@ -55,8 +55,8 @@
 
 te::edit::VertexTool::VertexTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent)
 : GeometriesUpdateTool(display, layer.get(), parent),
-  m_currentStage(FEATURE_SELECTION)//,
-  //m_vertexWatches(0)
+  m_currentStage(FEATURE_SELECTION),
+  m_updateWatches(0)
 {
 
   // Signals & slots
@@ -72,6 +72,7 @@ te::edit::VertexTool::VertexTool(te::qt::widgets::MapDisplay* display, const te:
 te::edit::VertexTool::~VertexTool()
 {
   delete m_feature;
+  m_updateWatches.clear();
 }
 
 bool te::edit::VertexTool::mousePressEvent(QMouseEvent* e)
@@ -433,13 +434,21 @@ void te::edit::VertexTool::storeEditedFeature()
 
 void te::edit::VertexTool::storeUndoCommand()
 {
-  /*
-  if (m_feature)
-  {
-    m_vertexWatches.push_back(m_feature->clone());
+    std::size_t count = 0;
 
-    QUndoCommand* command = new VertexCommand(m_vertexWatches, m_display, m_layer);
+    m_updateWatches.push_back(m_feature->clone());
+
+    for (std::size_t i = 0; i < m_updateWatches.size(); ++i)
+    {
+      if (m_updateWatches[i]->getId()->getValueAsString() == m_feature->getId()->getValueAsString())
+        count++;
+    }
+
+    // only to store the first "feature" of geometry
+    if (count == 1)
+      return;
+
+    QUndoCommand* command = new UpdateCommand(m_updateWatches, m_display, m_layer);
     UndoStackManager::getInstance().addUndoStack(command);
-  }
-  */
+
 }

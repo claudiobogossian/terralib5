@@ -54,7 +54,9 @@
 te::edit::CreatePolygonTool::CreatePolygonTool(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, const QCursor& cursor, QObject* parent)
   : GeometriesUpdateTool(display, layer.get(), parent),
     m_continuousMode(false),
-    m_isFinished(false)
+    m_isFinished(false),
+    m_addWatches(0),
+    m_geometries(0)
 {
   setCursor(cursor);
 
@@ -68,6 +70,10 @@ te::edit::CreatePolygonTool::~CreatePolygonTool()
 {
   QPixmap* draft = m_display->getDraftPixmap();
   draft->fill(Qt::transparent);
+
+  delete m_feature;
+  m_addWatches.clear();
+  m_geometries.clear();
 }
 
 bool te::edit::CreatePolygonTool::mousePressEvent(QMouseEvent* e)
@@ -88,6 +94,9 @@ bool te::edit::CreatePolygonTool::mousePressEvent(QMouseEvent* e)
   TrySnap(coord, m_display->getSRID());
 
   m_coords.push_back(coord);
+
+  if (m_coords.size() > 2)
+    m_geometries.push_back(buildPolygon());
 
   return true;
 }
@@ -200,6 +209,7 @@ void te::edit::CreatePolygonTool::drawLine()
 
 void te::edit::CreatePolygonTool::clear()
 {
+  m_geometries.clear();
   m_coords.clear();
 }
 
@@ -260,11 +270,29 @@ void te::edit::CreatePolygonTool::onExtentChanged()
 
 void te::edit::CreatePolygonTool::storeUndoCommand()
 {
+  std::size_t count = 0;
+  /*
   m_feature = RepositoryManager::getInstance().getFeature(m_layer->getId(), *buildPolygon()->getMBR(), buildPolygon()->getSRID());
 
-  m_addWatches[m_feature->getId()->getValueAsString()] = (m_feature->clone());
+  //for (std::size_t i = 0; i < m_addWatches.size(); ++i)
+  //{
+   // if (m_addWatches[i]->getId()->getValueAsString() == m_feature->getId()->getValueAsString())
+  //    count++;
+ // }
 
-  QUndoCommand* command = new AddCommand(m_addWatches, m_feature->clone(), m_display, m_layer);
+  for (std::size_t i = 0; i < m_geometries.size(); i++)
+  {
+    m_feature->setGeometry(m_geometries[i]);
+    m_addWatches.push_back(m_feature->clone());
 
-  UndoStackManager::getInstance().addUndoStack(command);
+    // only to store the first "feature" of geometry
+    //if (count == 1)
+      //return;
+    if (i > 0)
+    {
+      QUndoCommand* command = new AddCommand(m_addWatches, m_display, m_layer);
+      UndoStackManager::getInstance().addUndoStack(command);
+    }
+
+  }*/
 }

@@ -50,7 +50,7 @@ namespace te
     {
       public:
         // Pass all parameters that the command need to fulfill its task in the constructor
-        AddCommand(std::map<std::string, Feature*> items, Feature* item, te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QUndoCommand *parent = 0);
+        AddCommand(std::vector<Feature*> items, te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QUndoCommand *parent = 0);
 
         /*!
         \brief Destructor
@@ -69,15 +69,15 @@ namespace te
 
       private:
 
-        virtual QString createCommandString(const te::gm::Coord2D &pos);
-
+        te::qt::widgets::MapDisplay* m_display;
+        te::map::AbstractLayerPtr m_layer;
+        std::vector<Feature*> m_addItems;
+        te::gm::Coord2D    m_initialPosition;
+        QString createCommandString(const te::gm::Coord2D &pos);
         void draw();
 
-        te::qt::widgets::MapDisplay* m_display;
-        Feature*  m_item;
-        te::map::AbstractLayerPtr m_layer;
-        std::map<std::string, Feature*> m_addItems;
-        te::gm::Coord2D    m_initialPosition;
+        int m_nextFeature;
+        int m_previousFeature;
 
     };
   }

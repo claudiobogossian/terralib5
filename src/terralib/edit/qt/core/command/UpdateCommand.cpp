@@ -121,6 +121,9 @@ void te::edit::UpdateCommand::draw(const int commandType)
   renderer.begin(draft, env, m_display->getSRID());
 
   // Draw the layer edited geometries
+  renderer.drawRepository(m_layer->getId(), env, m_display->getSRID());
+
+  // Draw the layer edited geometries
   if (commandType == m_undoCommandType)
     renderer.draw(m_updateItems[m_previousFeature]->getGeometry(), true);
   else

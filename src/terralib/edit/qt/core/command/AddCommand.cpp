@@ -34,19 +34,23 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include "../UndoStackManager.h"
 #include "AddCommand.h"
 
-te::edit::AddCommand::AddCommand(std::map<std::string, Feature*> items, Feature* item, te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer,
+// STL
+#include <set>
+
+te::edit::AddCommand::AddCommand(std::vector<Feature*> items, te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer,
   QUndoCommand *parent) :
   QUndoCommand(parent)
 , m_display(display)
-, m_item(item)
 , m_layer(layer)
 , m_addItems(items)
+, m_nextFeature(0)
+, m_previousFeature(0)
 {
+  //std::set<std::string> ids;
+  //for (std::size_t i = 0; i < items.size(); i++)
+    //ids.insert(items[i]->getId()->getValueAsString())
 
-  if (!m_item)
-    return;
-
-  m_initialPosition = m_item->getGeometry()->getMBR()->getCenter();
+  //m_initialPosition = m_item->getGeometry()->getMBR()->getCenter();
 
   setText(QObject::tr("Add %1").arg(createCommandString(m_initialPosition)));
 
@@ -58,47 +62,52 @@ te::edit::AddCommand::~AddCommand()
 void  te::edit::AddCommand::undo()
 {
   
-  if (m_item)
-  {
-    setText(QObject::tr("Add %1")
-      .arg(createCommandString(m_initialPosition)));
-  }
+  //if (m_item)
+  //{
+  //  setText(QObject::tr("Add %1")
+  //    .arg(createCommandString(m_initialPosition)));
+  //}
   
   if (m_addItems.empty())
     return;
 
-  std::map<std::string, Feature*>::iterator it;
+  m_previousFeature = m_addItems.size() - 2;
 
-  for (it = m_addItems.begin(); it != m_addItems.end(); ++it)
+  if (RepositoryManager::getInstance().hasIdentify(m_layer->getId(), m_addItems[m_previousFeature]->getId()) == true)
   {
-    if (it->first == m_item->getId()->getValueAsString()) 
+    std::size_t count = 0;
+    Feature* f = new Feature(m_addItems[m_previousFeature]->getId(), m_addItems[m_previousFeature]->getGeometry(), m_addItems[m_previousFeature]->getOperationType());
+
+    for (std::size_t i = 0; i < m_addItems.size(); i++)
     {
-      RepositoryManager::getInstance().removeFeature(m_layer->getId(), m_item->getId()->clone());
-
-      draw();
-
-      break;
+      if (m_addItems[i]->getId()->getValueAsString() == f->getId()->getValueAsString())
+        count++;
     }
+
+    if (count == 2)
+      RepositoryManager::getInstance().removeFeature(m_layer->getId(), m_addItems[m_previousFeature]->getId());
+    else
+      RepositoryManager::getInstance().addFeature(m_layer->getId(), f->clone());
+
+    draw();
+
   }
-  
+
 }
 
 void te::edit::AddCommand::redo()
 {
   bool resultFound = false;
 
-  if (m_item)
-  {
-    setText(QObject::tr("Add %1")
-      .arg(createCommandString(m_initialPosition)));
-  }
+  //if (m_item)
+  //{
+  //  setText(QObject::tr("Add %1")
+  //    .arg(createCommandString(m_initialPosition)));
+  //}
   
-  if (m_addItems.empty())
-    return;
-
   if (!UndoStackManager::getInstance().getUndoStack())
     return;
-  
+
   for (int i = 0; i < UndoStackManager::getInstance().getUndoStack()->count(); ++i)
   {
     const QUndoCommand* cmd = UndoStackManager::getInstance().getUndoStack()->command(i);
@@ -108,37 +117,32 @@ void te::edit::AddCommand::redo()
     }
   }
 
+  m_nextFeature = m_addItems.size() - 1;
+
   //no makes redo while the command is not on the stack
   if (resultFound)
   {
 
-    std::map<std::string, Feature*>::iterator it;
+    Feature* f = new Feature(m_addItems[m_nextFeature]->getId(), m_addItems[m_nextFeature]->getGeometry(), m_addItems[m_nextFeature]->getOperationType());
 
-    for (it = m_addItems.begin(); it != m_addItems.end(); ++it)
-    {
-      if (it->first == m_item->getId()->getValueAsString())
-      {
-        RepositoryManager::getInstance().addFeature(m_layer->getId(), m_item->clone());
+    RepositoryManager::getInstance().addFeature(m_layer->getId(), f->clone());
 
-        draw();
-
-        break;
-      }
-    }
+    draw();
 
   }
+
   
 }
 
 QString te::edit::AddCommand::createCommandString(const te::gm::Coord2D &pos)
 {
-  if (!m_item)
+  //if (!m_item)
     return QObject::tr("%1");
 
-  return QObject::tr("%1: %2 at (%3, %4)")
-    .arg(m_item->getGeometry()->getGeometryType().c_str())
-    .arg(m_item->getId()->getValueAsString().substr(0, 5).c_str() + QString("..."))
-    .arg(pos.getX()).arg(pos.getY());
+  //return QObject::tr("%1: %2 at (%3, %4)")
+    //.arg(m_item->getGeometry()->getGeometryType().c_str())
+    //.arg(m_item->getId()->getValueAsString().substr(0, 5).c_str() + QString("..."))
+    //.arg(pos.getX()).arg(pos.getY());
 }
 
 void te::edit::AddCommand::draw()
