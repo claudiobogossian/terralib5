@@ -43,7 +43,7 @@ te::layout::ContextObject::~ContextObject()
 
 }
 
-int te::layout::ContextObject::getZoom()
+int te::layout::ContextObject::getZoom() const
 {
   return m_zoom;
 }

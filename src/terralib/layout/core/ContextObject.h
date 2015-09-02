@@ -53,7 +53,7 @@ namespace te
 
         virtual ~ContextObject();
 
-        virtual int getZoom();
+        virtual int getZoom() const;
 
         virtual int getDpiX();
         
