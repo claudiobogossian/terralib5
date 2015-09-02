@@ -23,8 +23,6 @@
 
 #include "../dataaccess/dataset/DataSet.h"
 #include "../dataaccess/dataset/DataSetAdapter.h"
-#include "../dataaccess/dataset/DataSetType.h"
-#include "../dataaccess/dataset/DataSetTypeConverter.h"
 #include "../dataaccess/dataset/ObjectIdSet.h"
 #include "../dataaccess/datasource/DataSource.h"
 #include "../dataaccess/datasource/DataSourceCapabilities.h"
@@ -39,19 +37,20 @@
 
 #include "AggregationOp.h"
 
-te::vp::AggregationOp::AggregationOp():
+te::vp::AggregationOp::AggregationOp()
+  : m_oidSet(0),
   m_outDset("")
 {
 }
 
 void te::vp::AggregationOp::setInput(te::da::DataSourcePtr inDsrc,
                                      std::string inDsetName,
-                                     std::auto_ptr<te::da::DataSetType> inDsetType,
+                                     std::auto_ptr<te::da::DataSetTypeConverter> converter,
                                      const te::da::ObjectIdSet* oidSet)
 {
   m_inDsrc = inDsrc;
   m_inDsetName = inDsetName;
-  m_inDsetType = inDsetType;
+  m_converter = converter;
   m_oidSet = oidSet;
 }
 
@@ -70,13 +69,32 @@ void te::vp::AggregationOp::setOutput(te::da::DataSourcePtr outDsrc, std::string
 
 te::gm::GeomType te::vp::AggregationOp::getGeomResultType(te::gm::GeomType geom)
 {
-  if (geom == te::gm::PolygonType)
+  if ((geom == te::gm::PolygonType) ||
+      (geom == te::gm::PolygonZType) ||
+      (geom == te::gm::PolygonMType) ||
+      (geom == te::gm::PolygonZMType) ||
+      (geom == te::gm::MultiPolygonZType) ||
+      (geom == te::gm::MultiPolygonMType) ||
+      (geom == te::gm::MultiPolygonZMType))
     return te::gm::MultiPolygonType;
   
-  if (geom == te::gm::LineStringType)
+  if ((geom == te::gm::LineStringType) ||
+      (geom == te::gm::LineStringZType) || 
+      (geom == te::gm::LineStringMType) ||
+      (geom == te::gm::LineStringZMType) ||
+      (geom == te::gm::MultiLineStringZType) ||
+      (geom == te::gm::MultiLineStringMType) ||
+      (geom == te::gm::MultiLineStringZMType))
     return te::gm::MultiLineStringType;
   
-  if (geom == te::gm::PointType)
+  if ((geom == te::gm::PointType) ||
+      (geom == te::gm::PointZType) ||
+      (geom == te::gm::PointMType) ||
+      (geom == te::gm::PointZMType) ||
+      (geom == te::gm::PointKdType) ||
+      (geom == te::gm::MultiPointZType) ||
+      (geom == te::gm::MultiPointMType) ||
+      (geom == te::gm::MultiPointZMType))
     return te::gm::MultiPointType;
   
   return geom;
@@ -84,10 +102,10 @@ te::gm::GeomType te::vp::AggregationOp::getGeomResultType(te::gm::GeomType geom)
 
 bool te::vp::AggregationOp::paramsAreValid()
 {
-  if (!m_inDsetType.get())
+  if (!m_converter.get())
     return false;
   
-  if (!m_inDsetType->hasGeom())
+  if (!m_converter->getResult()->hasGeom())
     return false;
   
   if (m_groupProps.empty())

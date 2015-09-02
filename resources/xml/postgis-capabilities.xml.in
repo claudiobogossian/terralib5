@@ -195,6 +195,9 @@
 	  <Function name="st_m">
         <FunctionEncoder alias="st_m"/>
       </Function>
+	  <Function name="st_setsrid">
+        <FunctionEncoder alias="st_setsrid"/>
+      </Function>
 	  <Function name="st_transform">
         <FunctionEncoder alias="st_transform"/>
       </Function>

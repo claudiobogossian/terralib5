@@ -276,6 +276,9 @@ std::map<double, unsigned> te::rst::Band::getHistogramR(unsigned int rs, unsigne
       {
         getValue(c, r, pixel);
 
+        if (pixel == m_property->m_noDataValue)
+          continue;
+
         hist[pixel]++;
       }
   else
@@ -288,6 +291,9 @@ std::map<double, unsigned> te::rst::Band::getHistogramR(unsigned int rs, unsigne
       for (unsigned c = cs; c <= cf; c++)
       {
         getValue(c, r, pixel);
+
+        if (pixel == m_property->m_noDataValue)
+          continue;
 
         if (pixel > pmax)
           pmax = pixel;
@@ -315,6 +321,9 @@ std::map<double, unsigned> te::rst::Band::getHistogramR(unsigned int rs, unsigne
       for (unsigned c = cs; c <= cf; c++)
       {
         getValue(c, r, pixel);
+
+        if (pixel == m_property->m_noDataValue)
+          continue;
 
         location = (std::size_t) ((pixel - pmin) / delta);
 

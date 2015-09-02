@@ -36,9 +36,9 @@ project(terralib)
 # variables that control the system versioning
 set(TERRALIB_VERSION_MAJOR 5)
 set(TERRALIB_VERSION_MINOR 0)
-set(TERRALIB_VERSION_PATCH 0)
+set(TERRALIB_VERSION_PATCH 1)
 set(TERRALIB_VERSION_STRING "${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}.${TERRALIB_VERSION_PATCH}")
-set(TERRALIB_VERSION "0x050000")
+set(TERRALIB_VERSION "0x050001")
 set(TERRALIB_PKG_VERSION ${TERRALIB_VERSION_MAJOR}.${TERRALIB_VERSION_MINOR}.${TERRALIB_VERSION_PATCH})
 
 # variable indicating that it will search for 3rd-party libraries and install them
@@ -157,7 +157,7 @@ endif()
 
 
 include_directories(${CMAKE_BINARY_DIR})
-include_directories(${TERRALIB_ABSOLUTE_ROOT_DIR}/src ${CMAKE_INSTALL_PREFIX}/include)
+
 
 #
 # Build will generate files into a single folder
@@ -202,7 +202,7 @@ include(terralib_macros.cmake)
 # first check of libraries
 #
 
-find_package(Boost 1.53.0 REQUIRED system date_time chrono timer filesystem thread unit_test_framework)
+find_package(Boost 1.53.0 REQUIRED system date_time chrono timer filesystem thread)
 
 if(NOT Boost_FOUND)
   message(FATAL_ERROR "TerraLib: could not find required Boost libraries!")
@@ -538,11 +538,11 @@ CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_ATTRIBUTEFILL_QT_ENABLED "Build Attribute Fi
 
 CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_QT_PLUGINS_ATTRIBUTEFILL_ENABLED "Build Attribute Fill Driver Qt plugin?" ON "TERRALIB_MOD_ATTRIBUTEFILL_QT_ENABLED;TERRALIB_MOD_PLUGIN_ENABLED;TERRALIB_MOD_QT_APF_ENABLED" OFF)
 
-CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_ADDRESSGEOCODING_CORE_ENABLED "Build Address Geocoding Core module?" ON "TERRALIB_MOD_GEOMETRY_ENABLED;TERRALIB_MOD_DATAACCESS_ENABLED" OFF)
+CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_ADDRESSGEOCODING_CORE_ENABLED "Build Address Geocoding Core module?" OFF "TERRALIB_MOD_GEOMETRY_ENABLED;TERRALIB_MOD_DATAACCESS_ENABLED" OFF)
 
-CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_ADDRESSGEOCODING_QT_ENABLED "Build Address Geocoding Qt module?" ON "TERRALIB_QT_ENABLED;TERRALIB_MOD_ADDRESSGEOCODING_CORE_ENABLED;TERRALIB_MOD_QT_WIDGETS_ENABLED" OFF)
+CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_ADDRESSGEOCODING_QT_ENABLED "Build Address Geocoding Qt module?" OFF "TERRALIB_QT_ENABLED;TERRALIB_MOD_ADDRESSGEOCODING_CORE_ENABLED;TERRALIB_MOD_QT_WIDGETS_ENABLED" OFF)
 
-CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_QT_PLUGINS_ADDRESSGEOCODING_ENABLED "Build Address Geocoding Driver Qt plugin?" ON "TERRALIB_MOD_ADDRESSGEOCODING_QT_ENABLED;TERRALIB_MOD_PLUGIN_ENABLED;TERRALIB_MOD_QT_APF_ENABLED" OFF)
+CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_QT_PLUGINS_ADDRESSGEOCODING_ENABLED "Build Address Geocoding Driver Qt plugin?" OFF "TERRALIB_MOD_ADDRESSGEOCODING_QT_ENABLED;TERRALIB_MOD_PLUGIN_ENABLED;TERRALIB_MOD_QT_APF_ENABLED" OFF)
 
 CMAKE_DEPENDENT_OPTION(TERRALIB_MOD_EDIT_CORE_ENABLED "Build Edit module?" ON "TERRALIB_MOD_DATAACCESS_ENABLED;TERRALIB_MOD_GEOMETRY_ENABLED;TERRALIB_MOD_MAPTOOLS_ENABLED" OFF)
 
@@ -691,8 +691,8 @@ configure_file(${CMAKE_SOURCE_DIR}/terralib-config-version.cmake.in
 configure_file(${CMAKE_SOURCE_DIR}/terralib-config.cmake.in
                ${CMAKE_BINARY_DIR}/terralib-config.cmake @ONLY)
 
-configure_file(${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/Config.h.in
-               ${CMAKE_BINARY_DIR}/terralib_config.h @ONLY)
+configure_file(${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/BuildConfig.h.in
+               ${CMAKE_BINARY_DIR}/terralib_buildconfig.h @ONLY)
 
 configure_file(${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/Defines.h.in
                ${CMAKE_BINARY_DIR}/terralib_defines.h @ONLY)
@@ -1261,7 +1261,7 @@ endif()
 
 file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terralib/*.h)
 
-install(FILES ${CMAKE_BINARY_DIR}/terralib_config.h
+install(FILES ${CMAKE_BINARY_DIR}/terralib_buildconfig.h
               ${CMAKE_BINARY_DIR}/terralib_defines.h
               ${CMAKE_BINARY_DIR}/terralib_version.h
               ${TERRALIB_HDR_FILES}
@@ -1298,7 +1298,7 @@ install ( # -- images folder
   DIRECTORY ${TERRALIB_ABSOLUTE_ROOT_DIR}/share/terralib/images
   DESTINATION ${TERRALIB_DESTINATION_SHARE}/terralib 
   COMPONENT runtime
-  PATTERN "*icns*" EXCLUDE
+  #PATTERN "*icns*" EXCLUDE
 )
 
 if(WIN32)

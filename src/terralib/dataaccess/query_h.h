@@ -114,6 +114,7 @@
 #include "query/ST_Overlaps.h"
 #include "query/ST_Perimeter.h"
 #include "query/ST_Relate.h"
+#include "query/ST_SetSRID.h"
 #include "query/ST_Touches.h"
 #include "query/ST_Transform.h"
 #include "query/ST_Union.h"

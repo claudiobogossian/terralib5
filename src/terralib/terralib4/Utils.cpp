@@ -431,3 +431,35 @@ te::rst::RasterProperty* terralib4::Convert2T5(TeRasterParams& rparams)
   return rproperty.release();
 }
 
+void terralib4::CheckDecimalSeparator(std::string& value)
+{
+  bool isDotSeparator = false;
+
+  HKEY    hk;
+  DWORD	DataSize = 2;
+  DWORD   Type = REG_SZ;
+  char    buf[2];
+
+  std::string key = "Control Panel\\International";
+  std::string sepDecimal = "sDecimal";
+  std::string sepDecimalResult = "";
+
+  if (RegOpenKeyExA(HKEY_CURRENT_USER, key.c_str(), 0, KEY_READ, &hk) == ERROR_SUCCESS)
+  {
+    memset(buf, 0, 2);
+    DataSize = 2;
+    //decimal separator
+    if (RegQueryValueExA(hk, sepDecimal.c_str(), NULL, &Type, (LPBYTE)buf, &DataSize) == ERROR_SUCCESS)
+      sepDecimalResult = buf;
+
+    RegCloseKey(hk);
+
+    if (sepDecimalResult == ".")
+      isDotSeparator = true;
+  }
+
+  if (!isDotSeparator)
+  {
+    std::replace(value.begin(), value.end(), ',', '.');
+  }
+}

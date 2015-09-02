@@ -25,12 +25,13 @@
 
 //Terralib
 
-#include "terralib_config.h"
+#include "../BuildConfig.h"
 #include "../common/progress/TaskProgress.h"
 #include "../common/Logger.h"
 #include "../common/Translator.h"
 
 #include "../dataaccess/dataset/DataSet.h"
+#include "../dataaccess/dataset/DataSetAdapter.h"
 #include "../dataaccess/utils/Utils.h"
 #include "../datatype/Property.h"
 #include "../datatype/SimpleProperty.h"
@@ -78,7 +79,7 @@ std::map<std::string, std::string> te::vp::AggregationMemory::calculateStringSta
   {
     if(it->first->getType() == te::dt::STRING_TYPE)
     {
-      size_t propPos = m_inDsetType->getPropertyPosition(it->first->getName());
+      size_t propPos = m_converter->getResult()->getPropertyPosition(it->first->getName());
       std::vector<std::string> values;
       for(std::size_t i = 0; i < items.size(); ++i)
       {
@@ -108,7 +109,7 @@ std::map<std::string,double> te::vp::AggregationMemory::calculateNumStats(const 
   {
     if (it->first->getType() != te::dt::STRING_TYPE)
     {
-      size_t propPos = m_inDsetType->getPropertyPosition(it->first->getName());
+      size_t propPos = m_converter->getResult()->getPropertyPosition(it->first->getName());
       int propType = it->first->getType();
       
       std::vector<double> values;
@@ -191,10 +192,10 @@ std::auto_ptr<te::da::DataSetType> te::vp::AggregationMemory::buildOutDataSetTyp
   std::string functionResult;
   std::vector<te::stat::StatisticalSummary> vectorResult;
   std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >::const_iterator it = m_statSum.begin();
-  std::string propResult, funcResult;
+  std::string propResult = "";
+  std::string funcResult = "";
   while(it != m_statSum.end())
   {
-    propResult = "";
     propResult = it->first->getName();
     propResult += "_";
     
@@ -220,7 +221,7 @@ std::auto_ptr<te::da::DataSetType> te::vp::AggregationMemory::buildOutDataSetTyp
   }
   
   // define the resulting spatial property
-  te::gm::GeometryProperty* p = static_cast<te::gm::GeometryProperty*>(m_inDsetType->findFirstPropertyOfType(te::dt::GEOMETRY_TYPE));
+  te::gm::GeometryProperty* p = static_cast<te::gm::GeometryProperty*>(m_converter->getResult()->findFirstPropertyOfType(te::dt::GEOMETRY_TYPE));
   
   // creates the output geometry property
   te::gm::GeometryProperty* geometry = new te::gm::GeometryProperty("geom");
@@ -234,26 +235,28 @@ std::auto_ptr<te::da::DataSetType> te::vp::AggregationMemory::buildOutDataSetTyp
 
 bool te::vp::AggregationMemory::run() throw( te::common::Exception )
 {  
-  te::gm::GeometryProperty* geom = te::da::GetFirstGeomProperty(m_inDsetType.get());
+  te::gm::GeometryProperty* geom = te::da::GetFirstGeomProperty(m_converter->getResult());
   std::string geomName = geom->getName();
-  std::size_t geomIdx = boost::lexical_cast<std::size_t>(m_inDsetType->getPropertyPosition(geomName));
+  std::size_t geomIdx = boost::lexical_cast<std::size_t>(m_converter->getResult()->getPropertyPosition(geomName));
   
   // calculate the groups
   
   // get the positions of the grouping properties
   std::vector<size_t> groupPropIdxs;
   for(std::size_t i=0; i<m_groupProps.size(); ++i)
-    groupPropIdxs.push_back(te::da::GetPropertyPos(m_inDsetType.get(), m_groupProps[i]->getName()));
+    groupPropIdxs.push_back(te::da::GetPropertyPos(m_converter->getResult(), m_groupProps[i]->getName()));
   
   std::map<std::string, std::vector<te::mem::DataSetItem*> > groups;
   std::map<std::string, std::vector<te::mem::DataSetItem*> >::iterator itg;
   
-  std::auto_ptr<te::da::DataSet> inDset;
+  std::auto_ptr<te::da::DataSet> inDsetSrc;
 
   if(m_oidSet == 0)
-    inDset = m_inDsrc->getDataSet(m_inDsetName);
+    inDsetSrc = m_inDsrc->getDataSet(m_inDsetName);
   else
-    inDset = m_inDsrc->getDataSet(m_inDsetName, m_oidSet);
+    inDsetSrc = m_inDsrc->getDataSet(m_inDsetName, m_oidSet);
+
+  std::auto_ptr<te::da::DataSetAdapter> inDset(te::da::CreateAdapter(inDsetSrc.get(), m_converter.get()));
 
   size_t nprops = inDset->getNumProperties();
   
@@ -296,7 +299,7 @@ bool te::vp::AggregationMemory::run() throw( te::common::Exception )
   
   // now calculate the aggregation of non spatial and spatial attributes and save it to the output dataset
   te::common::TaskProgress task("Processing aggregation...");
-  task.setTotalSteps(groups.size());
+  task.setTotalSteps((int)groups.size());
   task.useTimer(true);
   
   itg = groups.begin();
@@ -304,7 +307,7 @@ bool te::vp::AggregationMemory::run() throw( te::common::Exception )
   {
     // calculate the spatial aggregation
     std::string value = itg->first;
-    te::gm::GeomType outGeoType = te::vp::GeomOpResultType(geom->getGeometryType());
+    te::gm::GeomType outGeoType = getGeomResultType(geom->getGeometryType());
 
     //verify geometries
     for (size_t i = 0; i < itg->second.size(); ++i)
@@ -318,7 +321,7 @@ bool te::vp::AggregationMemory::run() throw( te::common::Exception )
     }
 
     te::gm::Geometry* geometry = te::vp::GetGeometryUnion(itg->second, geomIdx, outGeoType);
-    
+
     // if it returned a valid geometry, include the summarization over non-spatial attributes
     if(geometry)
     {
@@ -332,7 +335,7 @@ bool te::vp::AggregationMemory::run() throw( te::common::Exception )
       te::mem::DataSetItem* outDSetItem = new te::mem::DataSetItem(outDataset.get());
       
       outDSetItem->setString(0, value);   // save the group identification (mandatory)
-      outDSetItem->setInt32(1, itg->second.size()); // save the number of objects in the group (mandatory)
+      outDSetItem->setInt32(1, (int)itg->second.size()); // save the number of objects in the group (mandatory)
       
       // save statistics of text attributes
       std::map<std::string, std::string>::iterator itString = resultString.begin();

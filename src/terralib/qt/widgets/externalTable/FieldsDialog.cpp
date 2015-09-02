@@ -102,7 +102,7 @@ te::da::Fields* te::qt::widgets::FieldsDialog::getFields()
 
   for(size_t t = 0; t < values.size();  ++t)
   {
-    te::da::Field* f = new te::da::Field(new te::da::PropertyName(values[t]));
+    te::da::Field* f = new te::da::Field(values[t]);
 
     fields->push_back(f);
   }

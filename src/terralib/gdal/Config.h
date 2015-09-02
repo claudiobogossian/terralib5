@@ -26,8 +26,6 @@
 #ifndef __TERRALIB_GDAL_INTERNAL_CONFIG_H
 #define __TERRALIB_GDAL_INTERNAL_CONFIG_H
 
-#include "../Config.h"
-
 #define TE_GDAL_MODULE_NAME "te.da.gdal"
 
 /*!

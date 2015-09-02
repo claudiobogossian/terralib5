@@ -126,6 +126,7 @@ bool te::qt::widgets::PolygonAcquire::mouseDoubleClickEvent(QMouseEvent* e)
 
   te::gm::Polygon* polygon = new te::gm::Polygon(1, te::gm::PolygonType);
   polygon->setRingN(0, ring);
+  polygon->setSRID(m_display->getSRID());
 
   emit polygonAquired(polygon);
 

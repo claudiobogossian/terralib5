@@ -88,7 +88,7 @@ te::ado::Connection::~Connection()
   ::CoUninitialize();
 }
 
-_RecordsetPtr te::ado::Connection::query(const std::string& query, bool connected)
+_RecordsetPtr te::ado::Connection::query(const std::string& query, bool)
 {
   _RecordsetPtr recordset;
 

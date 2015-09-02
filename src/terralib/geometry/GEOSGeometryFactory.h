@@ -27,8 +27,8 @@
 #define __TERRALIB_GEOMETRY_INTERNAL_GEOSGEOMETRYFACTORY_H
 
 // TerraLib
+#include "../BuildConfig.h"
 #include "Config.h"
-#include "terralib_config.h"
 
 // GEOS
 #ifdef TERRALIB_GEOS_ENABLED

@@ -58,9 +58,6 @@ bool SequenceOperations()
   std::auto_ptr<te::da::DataSet> inDset = srcDs->getDataSet(inDsetName);
   std::auto_ptr<te::da::DataSetType> inDsetType = srcDs->getDataSetType(inDsetName);
 
-  bool result;
 
-  
-
-  return result;
+  return true;
 }

@@ -145,7 +145,17 @@ We will provide it soon!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/Plugin.cpp" line="146"/>
+        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/Plugin.cpp" line="148"/>
+        <source>Raster File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/Plugin.cpp" line="148"/>
+        <source>Error: there is no opened project!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../src/terralib/qt/plugins/datasource/gdal/Plugin.cpp" line="154"/>
         <source>Open Raster File</source>
         <translation type="unfinished"></translation>
     </message>

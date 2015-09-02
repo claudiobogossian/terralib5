@@ -262,7 +262,7 @@ namespace terralib4
 
       std::vector<::terralib4::ThemeInfo> getTL4Themes();
 
-      TeTheme* getTL4Theme(const ::terralib4::ThemeInfo theme);
+      TeTheme* getTL4Theme(const ::terralib4::ThemeInfo& theme);
 
       int getLayerSRID(const std::string & layerName);
 

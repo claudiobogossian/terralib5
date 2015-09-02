@@ -63,18 +63,19 @@ find_path(GDAL_INCLUDE_DIR gdal.h
       /opt
 )
 
-if(WIN32)
-  find_path(GDAL_DATA_DIR gdal_datum.csv
-    HINTS
-      ENV GDAL_DIR
-      ENV GDAL_ROOT
-    PATH_SUFFIXES
-      data
-    PATHS
-      /opt
-      /opt/local
-  )
-endif()
+find_path(GDAL_DATA_DIR
+          NAMES gdal_datum.csv
+          HINTS ENV GDAL_DIR
+                ENV GDAL_ROOT
+          PATHS /usr
+                /usr/local
+                /opt
+                /opt/local
+          PATH_SUFFIXES share
+                        share/gdal
+                        data
+  
+)
 
 if(UNIX)
     # Use gdal-config to obtain the library version (this should hopefully

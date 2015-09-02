@@ -2152,7 +2152,7 @@ namespace te
         std::vector< te::rst::BandProperty* > bandsProperties;
         
         feeder.reset();
-        while( inputRasterPtr = feeder.getCurrentObj() )
+        while( (inputRasterPtr = feeder.getCurrentObj()) )
         {
           if( inputRasterBands[ feeder.getCurrentOffset() ] >= 
             inputRasterPtr->getNumberOfBands() )
@@ -2183,7 +2183,7 @@ namespace te
         te::rst::Raster const * inputRasterPtr = 0;
         
         feeder.reset();
-        while( inputRasterPtr = feeder.getCurrentObj() )
+        while( (inputRasterPtr = feeder.getCurrentObj()) )
         {
           const unsigned int inBandIdx = inputRasterBands[ 
             feeder.getCurrentOffset() ];
@@ -2475,7 +2475,6 @@ namespace te
           int filterCol = 0;
           int filterRow = 0; 
           double valueOriginal = 0.0;
-          double valuePrev = 0.0;
           double valueNew = 0.0;          
 
           for (convolutionCenterRow = 0; convolutionCenterRow < nLines; convolutionCenterRow++)

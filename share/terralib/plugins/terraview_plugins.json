@@ -6,7 +6,6 @@
 	{"plugin":"te.da.wcs"},
 	{"plugin":"te.da.wfs"},
 	{"plugin":"te.da.wms"},
-	{"plugin":"te.qt.addressgeocoding"},
 	{"plugin":"te.qt.attributefill"},
 	{"plugin":"te.qt.cellspace"},
 	{"plugin":"te.qt.datasource.ado"},

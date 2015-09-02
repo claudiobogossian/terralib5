@@ -402,7 +402,6 @@ te::se::ColorMap* te::qt::plugins::terralib4::GetRasterGrouping(TeTheme* theme)
 
     TeGeomRepVisualMap map = le.getVisualMap();
 
-    TeGeomRep geomRep = map.begin()->first;
     TeVisual* visual = map.begin()->second;
 
     QColor color(visual->color().red_, visual->color().green_, visual->color().blue_, 0);

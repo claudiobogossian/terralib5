@@ -69,7 +69,7 @@ int main(int argc, char** argv)
   for(int i=0; i<lst.size(); ++i)
   {
     QTranslator* trans = new QTranslator;
-    bool ls = trans->load(lst.at(i).baseName(), QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+    trans->load(lst.at(i).baseName(), QLibraryInfo::location(QLibraryInfo::TranslationsPath));
     app.installTranslator(trans);
   }
 

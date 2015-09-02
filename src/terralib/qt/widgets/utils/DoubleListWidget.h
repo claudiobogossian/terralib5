@@ -88,10 +88,9 @@ namespace te
 
           void onRemoveAllToolButtonPressed();
 
-          void onLeftListPressed(QListWidgetItem* item);
+          void onLeftListItemSelectionChanged();
 
-          void onRightListPressed(QListWidgetItem* item);
-
+          void onRightListItemSelectionChanged();
 
         signals:
 

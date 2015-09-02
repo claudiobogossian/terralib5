@@ -43,7 +43,7 @@ te::qt::widgets::LayerExplorer::LayerExplorer(QWidget* parent, Qt::WindowFlags f
 
   m_treeView = new LayerTreeView(this);
 
-  m_treeModel = new LayerTreeModel(this);
+  m_treeModel = new LayerTreeModel(m_treeView);
 
   m_treeModel->setCheckable(true);
 

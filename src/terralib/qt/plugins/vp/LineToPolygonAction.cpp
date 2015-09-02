@@ -48,7 +48,7 @@ te::qt::plugins::vp::LineToPolygonAction::~LineToPolygonAction()
 {
 }
 
-void te::qt::plugins::vp::LineToPolygonAction::onActionActivated(bool checked)
+void te::qt::plugins::vp::LineToPolygonAction::onActionActivated(bool)
 {
   QWidget* parent = te::qt::af::ApplicationController::getInstance().getMainWindow();
   te::vp::LineToPolygonDialog dlg(parent);

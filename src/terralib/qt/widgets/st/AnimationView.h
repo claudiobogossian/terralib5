@@ -50,13 +50,13 @@ namespace te
         /*!
           \brief Constructor
           It constructs a AnimationView.
-          \param parent Parent of this object.
+          \param md the map display where the animation is done.
         */
         AnimationView(te::qt::widgets::MapDisplay* md);
 
         /*!
           \brief Destructor
-          It destructs a Animation.
+          It destructs a AnimationView.
         */
         virtual ~AnimationView();
 
@@ -74,13 +74,12 @@ namespace te
         void dragLeaveEvent(QDragLeaveEvent*);
         void dragMoveEvent(QDragMoveEvent*);
         void dropEvent(QDropEvent*);
+        void paintEvent(QPaintEvent*);
+        void setMatrix();
 
       signals:
         void animationDragEnterEvent(QDragEnterEvent*);
         void animationDropEvent(QDropEvent*);
-
-
-        //bool eventFilter(QObject*, QEvent*);
 
       private:
         MapDisplay* m_display;

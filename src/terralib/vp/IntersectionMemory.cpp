@@ -25,13 +25,13 @@
 
 //Terralib
 
-#include "terralib_config.h"
+#include "../BuildConfig.h"
 #include "../common/progress/TaskProgress.h"
 #include "../common/Logger.h"
 #include "../common/Translator.h"
 
 #include "../dataaccess/dataset/DataSet.h"
-#include "../dataaccess/dataset/DataSetType.h"
+#include "../dataaccess/dataset/DataSetAdapter.h"
 #include "../dataaccess/utils/Utils.h"
 #include "../datatype/Property.h"
 
@@ -75,34 +75,32 @@ te::vp::IntersectionMemory::~IntersectionMemory()
 
 
 bool te::vp::IntersectionMemory::run() throw(te::common::Exception)
-{  
-  if(m_SRID == 0)
-  {
-    te::gm::GeometryProperty* geom = te::da::GetFirstGeomProperty(m_inFirstDsetType.get());
-    m_SRID = geom->getSRID();
-  }
-
-  std::vector<te::dt::Property*> firstProps = getTabularProps(m_inFirstDsetType.get());
+{
+  std::vector<te::dt::Property*> firstProps = getTabularProps(m_firstConverter->getResult());
 
   IntersectionMember firstMember;
-  firstMember.dt = m_inFirstDsetType.release();
-  if(m_firstOidSet == 0)
-    firstMember.ds = m_inFirstDsrc->getDataSet(m_inFirstDsetName).release();
+  firstMember.dt = m_firstConverter->getResult();
+
+  if (m_firstOidSet == 0)
+    firstMember.ds = te::da::CreateAdapter(m_inFirstDsrc->getDataSet(m_inFirstDsetName).release(), m_firstConverter.get());
   else
-    firstMember.ds = m_inFirstDsrc->getDataSet(m_inFirstDsetName, m_firstOidSet).release();
+    firstMember.ds = te::da::CreateAdapter(m_inFirstDsrc->getDataSet(m_inFirstDsetName, m_firstOidSet).release(), m_firstConverter.get());
+  
   firstMember.props = firstProps;
 
   IntersectionMember secondMember;
-  secondMember.dt = m_inSecondDsetType.release();
-  if(m_secondOidSet == 0)
-    secondMember.ds = m_inSecondDsrc->getDataSet(m_inSecondDsetName).release();
+  secondMember.dt = m_secondConverter->getResult();
+
+  if (m_secondOidSet == 0)
+    secondMember.ds = te::da::CreateAdapter(m_inSecondDsrc->getDataSet(m_inSecondDsetName).release(), m_secondConverter.get());
   else
-    secondMember.ds = m_inSecondDsrc->getDataSet(m_inSecondDsetName, m_secondOidSet).release();
+    secondMember.ds = te::da::CreateAdapter(m_inSecondDsrc->getDataSet(m_inSecondDsetName, m_secondOidSet).release(), m_secondConverter.get());
+
   if(m_copyInputColumns)
     secondMember.props = getTabularProps(secondMember.dt);
   
   std::pair<te::da::DataSetType*, te::da::DataSet*> resultPair;
-  resultPair = this->pairwiseIntersection(m_outDsetName, firstMember, secondMember, m_SRID);
+  resultPair = this->pairwiseIntersection(m_outDsetName, firstMember, secondMember);
 
   if(resultPair.second->size() < 1)
     throw te::common::Exception(TE_TR("The Layers do not intersect!"));
@@ -117,23 +115,24 @@ bool te::vp::IntersectionMemory::run() throw(te::common::Exception)
 
 std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionMemory::pairwiseIntersection(std::string newName, 
                                                                                                   IntersectionMember firstMember, 
-                                                                                                  IntersectionMember secondMember,
-                                                                                                  std::size_t outputSRID)
+                                                                                                  IntersectionMember secondMember)
 {
 
   //Creating the RTree with the secound layer geometries
   DataSetRTree rtree(new te::sam::rtree::Index<size_t, 8>);
   size_t secGeomPropPos = secondMember.dt->getPropertyPosition(secondMember.dt->findFirstPropertyOfType(te::dt::GEOMETRY_TYPE));
+  te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(secondMember.dt);
 
   size_t secondDsCount = 0;
   int sridSecond = -1;
 
+  secondMember.ds->moveBeforeFirst();
   while(secondMember.ds->moveNext())
   {
     std::auto_ptr<te::gm::Geometry> g = secondMember.ds->getGeometry(secGeomPropPos);
     
     if(sridSecond == -1)
-      sridSecond = g->getSRID();
+      sridSecond = geomProp->getSRID();
 
     rtree->insert(*g->getMBR(), secondDsCount);
 
@@ -142,8 +141,8 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionMemory::pa
 
   firstMember.ds->moveBeforeFirst();
 
-  std::auto_ptr<te::gm::GeometryProperty> fiGeomProp (te::da::GetFirstGeomProperty(firstMember.dt));
-  size_t fiGeomPropPos = firstMember.dt->getPropertyPosition(fiGeomProp.get());
+  te::gm::GeometryProperty* fiGeomProp = te::da::GetFirstGeomProperty(firstMember.dt);
+  size_t fiGeomPropPos = firstMember.dt->getPropertyPosition(fiGeomProp);
 
   // Create the DataSetType and DataSet
   te::da::DataSetType* outputDt = this->createDataSetType(newName, firstMember.dt, firstMember.props, secondMember.dt, secondMember.props);
@@ -152,10 +151,10 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionMemory::pa
   std::pair<te::da::DataSetType*, te::da::DataSet*> resultPair;
 
   te::common::TaskProgress task("Processing intersection...");
-  task.setTotalSteps(firstMember.ds->size());
+  task.setTotalSteps((int)firstMember.ds->size());
   task.useTimer(true);
 
-  std::size_t pk = 0;
+  int pk = 0;
 
   while(firstMember.ds->moveNext())
   {
@@ -168,15 +167,16 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionMemory::pa
     rtree->search(*currGeom->getMBR(), report);
 
     if(!report.empty())
-      currGeom->transform(outputSRID);
+      currGeom->transform(fiGeomProp->getSRID());
 
     for(size_t i = 0; i < report.size(); ++i)
     {
       secondMember.ds->move(report[i]);
       std::auto_ptr<te::gm::Geometry> secGeom = secondMember.ds->getGeometry(secGeomPropPos);
+      secGeom->setSRID(sridSecond);
 
-      if(secGeom->getSRID() != outputSRID)
-        secGeom->transform(outputSRID);
+      if (secGeom->getSRID() != fiGeomProp->getSRID())
+        secGeom->transform(fiGeomProp->getSRID());
 
       if(!currGeom->intersects(secGeom.get()))
         continue;
@@ -243,8 +243,8 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionMemory::pa
       {
         std::string name = firstMember.props[j]->getName();
 
-        if(!firstMember.dt->getTitle().empty())
-          name = te::vp::GetSimpleTableName(firstMember.dt->getTitle()) + "_" + name;
+        if (!m_inFirstDsetName.empty())
+          name = te::vp::GetSimpleTableName(m_inFirstDsetName) + "_" + name;
 
         te::dt::AbstractData* ad = firstMember.ds->getValue(firstMember.props[j]->getName()).release();
 
@@ -255,8 +255,8 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionMemory::pa
       {
         std::string name = secondMember.props[j]->getName();
         
-        if (!secondMember.dt->getTitle().empty())
-          name = te::vp::GetSimpleTableName(secondMember.dt->getTitle()) + "_" + name;
+        if (!m_inSecondDsetName.empty())
+          name = te::vp::GetSimpleTableName(m_inSecondDsetName) + "_" + name;
 
         te::dt::AbstractData* ad = secondMember.ds->getValue(secondMember.props[j]->getName()).release();
 
@@ -268,7 +268,7 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionMemory::pa
 
       outputDs->moveNext();
 
-      int aux = te::da::GetFirstSpatialPropertyPos(outputDs);
+      std::size_t aux = te::da::GetFirstSpatialPropertyPos(outputDs);
 
       if(!item->isNull(aux))
         outputDs->add(item);
@@ -313,19 +313,20 @@ te::da::DataSetType* te::vp::IntersectionMemory::createDataSetType(std::string n
   for(size_t i = 0; i < firstProps.size(); ++i)
   {
     te::dt::Property* prop = firstProps[i]->clone();
-    if(!firstDt->getTitle().empty())
-      prop->setName(te::vp::GetSimpleTableName(firstDt->getTitle()) + "_" + prop->getName());
+    if (!m_inFirstDsetName.empty())
+      prop->setName(te::vp::GetSimpleTableName(m_inFirstDsetName) + "_" + prop->getName());
     outputDt->add(prop);
   }
 
   for(size_t i = 0; i < secondProps.size(); ++i)
   {
     te::dt::Property* prop = secondProps[i]->clone();
-    prop->setName(te::vp::GetSimpleTableName(secondDt->getTitle()) + "_" + prop->getName());
+    if (!m_inSecondDsetName.empty())
+      prop->setName(te::vp::GetSimpleTableName(m_inSecondDsetName) + "_" + prop->getName());
     outputDt->add(prop);
   }
 
-  te::gm::GeomType newType = te::vp::GeomOpResultType(te::da::GetFirstGeomProperty(firstDt)->getGeometryType(), te::da::GetFirstGeomProperty(secondDt)->getGeometryType());
+  te::gm::GeomType newType = setGeomResultType(te::da::GetFirstGeomProperty(firstDt)->getGeometryType(), te::da::GetFirstGeomProperty(secondDt)->getGeometryType());
 
   te::gm::GeometryProperty* newGeomProp = new te::gm::GeometryProperty("geom");
   newGeomProp->setGeometryType(newType);

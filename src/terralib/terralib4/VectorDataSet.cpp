@@ -76,7 +76,7 @@ terralib4::VectorDataSet::VectorDataSet(TeLayer* layer)
 
   m_querier->loadInstances();
 
-  m_nCols = m_querier->getAttrList().size();
+  m_nCols = (int)m_querier->getAttrList().size();
 
   m_size = m_querier->numElemInstances();
 
@@ -122,7 +122,7 @@ te::common::AccessPolicy terralib4::VectorDataSet::getAccessPolicy() const
   throw;
 }
 
-std::auto_ptr<te::gm::Envelope> terralib4::VectorDataSet::getExtent(std::size_t i)
+std::auto_ptr<te::gm::Envelope> terralib4::VectorDataSet::getExtent(std::size_t)
 {
   return terralib4::Convert2T5(m_layer->box());
 }
@@ -137,19 +137,19 @@ int terralib4::VectorDataSet::getPropertyDataType(std::size_t i) const
   return m_dt->getProperty(i)->getType();
 }
 
-std::string terralib4::VectorDataSet::getPropertyName(std::size_t i) const
+std::string terralib4::VectorDataSet::getPropertyName(std::size_t) const
 {
   /*TeAttributeList list = m_querier->getAttrList();
   return list[i].rep_.name_();*/
   throw;
 }
 
-te::common::CharEncoding terralib4::VectorDataSet::getPropertyCharEncoding(std::size_t i) const
+te::common::CharEncoding terralib4::VectorDataSet::getPropertyCharEncoding(std::size_t) const
 {
   return te::common::UTF8;
 }
 
-std::string terralib4::VectorDataSet::getDatasetNameOfProperty(std::size_t i) const
+std::string terralib4::VectorDataSet::getDatasetNameOfProperty(std::size_t) const
 {
   throw;
 }
@@ -194,7 +194,7 @@ bool terralib4::VectorDataSet::moveLast()
   return false;
 }
 
-bool terralib4::VectorDataSet::move(std::size_t /*i*/)
+bool terralib4::VectorDataSet::move(std::size_t)
 {
   return false;
 }
@@ -219,12 +219,12 @@ bool terralib4::VectorDataSet::isAfterEnd() const
   return false;
 }
 
-char terralib4::VectorDataSet::getChar(std::size_t i) const
+char terralib4::VectorDataSet::getChar(std::size_t) const
 {
   throw;
 }
 
-unsigned char terralib4::VectorDataSet::getUChar(std::size_t i) const
+unsigned char terralib4::VectorDataSet::getUChar(std::size_t) const
 {
   throw;
 }
@@ -275,7 +275,9 @@ double terralib4::VectorDataSet::getDouble(std::size_t i) const
   std::string val;
   int ii = static_cast<int>(i);
   m_instance.getPropertyValue(val, ii);
-
+  
+  CheckDecimalSeparator(val);
+  
   return boost::lexical_cast<double>(val);
 }
 
@@ -285,6 +287,8 @@ std::string terralib4::VectorDataSet::getNumeric(std::size_t i) const
   int ii = static_cast<int>(i);
 
   m_instance.getPropertyValue(val, ii);
+
+  CheckDecimalSeparator(val);
 
   return val;
 }
@@ -299,7 +303,7 @@ std::string terralib4::VectorDataSet::getString(std::size_t i) const
   return val;
 }
 
-std::auto_ptr<te::dt::ByteArray> terralib4::VectorDataSet::getByteArray(std::size_t i) const
+std::auto_ptr<te::dt::ByteArray> terralib4::VectorDataSet::getByteArray(std::size_t) const
 {
   /*unsigned char * data;
   long size;
@@ -327,19 +331,19 @@ std::auto_ptr<te::gm::Geometry> terralib4::VectorDataSet::getGeometry(std::size_
   return t5g;
 }
 
-std::auto_ptr<te::rst::Raster> terralib4::VectorDataSet::getRaster(std::size_t i) const
+std::auto_ptr<te::rst::Raster> terralib4::VectorDataSet::getRaster(std::size_t) const
 {
   throw;
 }
 
-std::auto_ptr<te::dt::DateTime> terralib4::VectorDataSet::getDateTime(std::size_t i) const
+std::auto_ptr<te::dt::DateTime> terralib4::VectorDataSet::getDateTime(std::size_t) const
 {
   //TeTime time = m_result->getDate(i);
   //time.
   throw;
 }
 
-std::auto_ptr<te::dt::Array> terralib4::VectorDataSet::getArray(std::size_t i) const
+std::auto_ptr<te::dt::Array> terralib4::VectorDataSet::getArray(std::size_t) const
 {
   return std::auto_ptr<te::dt::Array>(0);
 }

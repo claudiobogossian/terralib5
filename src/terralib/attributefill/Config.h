@@ -26,9 +26,6 @@
 #ifndef __TERRALIB_ATTRIBUTEFILL_INTERNAL_CONFIG_H
 #define __TERRALIB_ATTRIBUTEFILL_INTERNAL_CONFIG_H
 
-// TerraLib
-#include "../Config.h"
-
 #define TE_ATTRIBUTEFILL_MODULE_NAME "te.attributefill"
 
 /** @name DLL/LIB Module

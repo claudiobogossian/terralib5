@@ -52,8 +52,8 @@ te::qt::widgets::DoubleListWidget::DoubleListWidget(QWidget* parent, Qt::WindowF
   connect(m_ui->m_addAllToolButton, SIGNAL(pressed()), this, SLOT(onAddAllToolButtonPressed()));
   connect(m_ui->m_removeToolButton, SIGNAL(pressed()), this, SLOT(onRemoveToolButtonPressed()));
   connect(m_ui->m_removeAllToolButton, SIGNAL(pressed()), this, SLOT(onRemoveAllToolButtonPressed()));
-  connect(m_ui->m_leftListWidget, SIGNAL(itemPressed(QListWidgetItem*)), this, SLOT(onLeftListPressed(QListWidgetItem*)));
-  connect(m_ui->m_rightListWidget, SIGNAL(itemPressed(QListWidgetItem*)), this, SLOT(onRightListPressed(QListWidgetItem*)));
+  connect(m_ui->m_leftListWidget, SIGNAL(itemSelectionChanged()), this, SLOT(onLeftListItemSelectionChanged()));
+  connect(m_ui->m_rightListWidget, SIGNAL(itemSelectionChanged()), this, SLOT(onRightListItemSelectionChanged()));
 }
 
 te::qt::widgets::DoubleListWidget::~DoubleListWidget()
@@ -238,21 +238,29 @@ void te::qt::widgets::DoubleListWidget::onRemoveAllToolButtonPressed()
   emit itemChanged();
 }
 
-void te::qt::widgets::DoubleListWidget::onLeftListPressed(QListWidgetItem* item)
+void te::qt::widgets::DoubleListWidget::onLeftListItemSelectionChanged()
 {
-  if(item)
+  if(m_ui->m_leftListWidget->selectedItems().size() > 0)
   {
     m_ui->m_addToolButton->setEnabled(true);
     m_ui->m_addAllToolButton->setEnabled(true);
   }
+  else
+  {
+    m_ui->m_addToolButton->setEnabled(false);
+  }
 }
 
-void te::qt::widgets::DoubleListWidget::onRightListPressed(QListWidgetItem* item)
+void te::qt::widgets::DoubleListWidget::onRightListItemSelectionChanged()
 {
-  if(item)
+  if(m_ui->m_rightListWidget->selectedItems().size() > 0)
   {
     m_ui->m_removeToolButton->setEnabled(true);
     m_ui->m_removeAllToolButton->setEnabled(true);
+  }
+  else
+  {
+    m_ui->m_removeToolButton->setEnabled(false);
   }
 }
 

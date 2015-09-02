@@ -20,9 +20,6 @@
 /*!
  \file IntersectionOp.cpp
  */
-
-#include "../dataaccess/dataset/DataSet.h"
-#include "../dataaccess/dataset/DataSetAdapter.h"
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../dataaccess/dataset/DataSetTypeConverter.h"
 #include "../dataaccess/datasource/DataSource.h"
@@ -38,36 +35,36 @@
 
 #include "IntersectionOp.h"
 
-te::vp::IntersectionOp::IntersectionOp():
-  m_outDsetName("")
+te::vp::IntersectionOp::IntersectionOp()
+  : m_firstOidSet(0),
+  m_secondOidSet(0),
+  m_copyInputColumns(false)
 {
 }
 
 void te::vp::IntersectionOp::setInput(te::da::DataSourcePtr inFirstDsrc,
                                       std::string inFirstDsetName,
-                                      std::auto_ptr<te::da::DataSetType> inFirstDsetType,
+                                      std::auto_ptr<te::da::DataSetTypeConverter> firstConverter,
                                       te::da::DataSourcePtr inSecondDsrc,
                                       std::string inSecondDsetName,
-                                      std::auto_ptr<te::da::DataSetType> inSecondDsetType,
+                                      std::auto_ptr<te::da::DataSetTypeConverter> secondConverter,
                                       const te::da::ObjectIdSet* firstOidSet,
                                       const te::da::ObjectIdSet* secondOidSet)
 {
   m_inFirstDsrc = inFirstDsrc;
   m_inFirstDsetName = inFirstDsetName;
-  m_inFirstDsetType = inFirstDsetType;
+  m_firstConverter = firstConverter;
   m_inSecondDsrc = inSecondDsrc;
   m_inSecondDsetName = inSecondDsetName;
-  m_inSecondDsetType = inSecondDsetType;
+  m_secondConverter = secondConverter;
 
   m_firstOidSet = firstOidSet;
   m_secondOidSet = secondOidSet;
 }
 
-void te::vp::IntersectionOp::setParams( const bool& copyInputColumns,
-                                        std::size_t inSRID)
+void te::vp::IntersectionOp::setParams( const bool& copyInputColumns)
 {
   m_copyInputColumns = copyInputColumns;
-  m_SRID = inSRID;
 }
 
 void te::vp::IntersectionOp::setOutput(te::da::DataSourcePtr outDsrc, std::string dsname)
@@ -76,32 +73,70 @@ void te::vp::IntersectionOp::setOutput(te::da::DataSourcePtr outDsrc, std::strin
   m_outDsetName = dsname;
 }
 
-te::gm::GeomType te::vp::IntersectionOp::getGeomResultType(te::gm::GeomType geom)
+te::gm::GeomType te::vp::IntersectionOp::setGeomResultType(te::gm::GeomType firstGeom, te::gm::GeomType secondGeom)
 {
-  if (geom == te::gm::PolygonType)
-    return te::gm::MultiPolygonType;
-  
-  if (geom == te::gm::LineStringType)
-    return te::gm::MultiLineStringType;
-  
-  if (geom == te::gm::PointType)
+  if ((firstGeom == te::gm::PointType) ||
+    (firstGeom == te::gm::PointZType) ||
+    (firstGeom == te::gm::PointMType) ||
+    (firstGeom == te::gm::PointZMType) ||
+    (firstGeom == te::gm::PointKdType) ||
+
+    (secondGeom == te::gm::PointType) ||
+    (secondGeom == te::gm::PointZType) ||
+    (secondGeom == te::gm::PointMType) ||
+    (secondGeom == te::gm::PointZMType) ||
+    (secondGeom == te::gm::PointKdType) ||
+
+    (firstGeom == te::gm::MultiPointType) ||
+    (firstGeom == te::gm::MultiPointZType) ||
+    (firstGeom == te::gm::MultiPointMType) ||
+    (firstGeom == te::gm::MultiPointZMType) ||
+
+    (secondGeom == te::gm::MultiPointType) ||
+    (secondGeom == te::gm::MultiPointZType) ||
+    (secondGeom == te::gm::MultiPointMType) ||
+    (secondGeom == te::gm::MultiPointZMType))
+
     return te::gm::MultiPointType;
-  
-  return geom;
+
+  else if ((firstGeom == te::gm::LineStringType) ||
+    (firstGeom == te::gm::LineStringZType) ||
+    (firstGeom == te::gm::LineStringMType) ||
+    (firstGeom == te::gm::LineStringZMType) ||
+
+    (secondGeom == te::gm::LineStringType) ||
+    (secondGeom == te::gm::LineStringZType) ||
+    (secondGeom == te::gm::LineStringMType) ||
+    (secondGeom == te::gm::LineStringZMType) ||
+
+    (firstGeom == te::gm::MultiLineStringType) ||
+    (firstGeom == te::gm::MultiLineStringZType) ||
+    (firstGeom == te::gm::MultiLineStringMType) ||
+    (firstGeom == te::gm::MultiLineStringZMType) ||
+
+    (secondGeom == te::gm::MultiLineStringType) ||
+    (secondGeom == te::gm::MultiLineStringZType) ||
+    (secondGeom == te::gm::MultiLineStringMType) ||
+    (secondGeom == te::gm::MultiLineStringZMType))
+
+    return te::gm::MultiLineStringType;
+
+  else
+    return te::gm::MultiPolygonType;
 }
 
 bool te::vp::IntersectionOp::paramsAreValid()
 {
-  if (!m_inFirstDsetType.get())
+  if (!m_firstConverter->getResult())
     return false;
 
-  if (!m_inFirstDsetType->hasGeom())
+  if (!m_firstConverter->getResult()->hasGeom())
     return false;
 
-  if (!m_inSecondDsetType.get())
+  if (!m_secondConverter->getResult())
     return false;
 
-  if (!m_inSecondDsetType->hasGeom())
+  if (!m_secondConverter->getResult()->hasGeom())
     return false;
 
   if (m_outDsetName.empty() || !m_outDsrc.get())
@@ -127,3 +162,5 @@ std::vector<te::dt::Property*> te::vp::IntersectionOp::getTabularProps(te::da::D
 
   return props;
 }
+
+

@@ -150,6 +150,69 @@ void te::stat::GetNumericStatisticalSummary(std::vector<double>& values, te::sta
   ss.m_mode = Mode(values);
 }
 
+void te::stat::GetPercentOfEachClassByArea( std::vector<double>& values,
+                                            double& resolutionX,
+                                            double& resolutionY,
+                                            double& area,
+                                            te::stat::NumericStatisticalSummary& ss,
+                                            bool fullIntersection)
+{
+  if (values.empty())
+    return;
+  
+  std::map<double, double> percentMap;
+    
+  std::sort(values.begin(), values.end());
+
+  double key = values[0];
+  int count = 1;
+
+  if (fullIntersection)
+  {
+    for (std::size_t i = 1; i < values.size(); ++i)
+    {
+      if (values[i] == key)
+      {
+        ++count;
+      }
+      else
+      {
+        double percent = (count * 100) / (double)values.size();
+        percentMap.insert(std::pair<double, double>(key, percent));
+        key = values[i];
+        count = 1;
+      }
+    }
+
+    double percent = (count * 100) / (double)values.size();
+    percentMap.insert(std::pair<double, double>(key, percent));
+  }
+  else
+  {
+    for (std::size_t i = 1; i < values.size(); ++i)
+    {
+      if (values[i] == key)
+      {
+        ++count;
+      }
+      else
+      {
+        double areaIntersection = count*(resolutionX*resolutionY);
+        double percentInter = (areaIntersection / area) * 100;
+        percentMap.insert(std::pair<double, double>(key, percentInter));
+        key = values[i];
+        count = 1;
+      }
+    }
+
+    double areaIntersection = count*(resolutionX*resolutionY);
+    double percentInter = (areaIntersection / area) * 100;
+    percentMap.insert(std::pair<double, double>(key, percentInter));
+  }
+
+  ss.m_percentEachClass = percentMap;
+}
+
 std::vector<double> te::stat::Mode(const std::vector<double>& values)
 {
   std::vector<double> mode;

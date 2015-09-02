@@ -148,6 +148,10 @@ te::da::DataSourceInfo* te::serialize::xml::ReadDataSourceInfo(te::xml::Reader& 
     reader.next();
   }
 
+  // if only white spaces
+  if (reader.getNodeType() == te::xml::WHITESPACE)
+    reader.next();
+
   assert(reader.getNodeType() == te::xml::END_ELEMENT);
 
   /* ConnectionInfo Element */
@@ -1527,26 +1531,43 @@ te::da::Fields* te::serialize::xml::ReadFields(te::xml::Reader& reader)
 
   while(reader.getNodeType() == te::xml::START_ELEMENT)
   {
+    te::da::Field* f = 0;
     assert(reader.getElementLocalName() == "Field");
     reader.next();
     assert(reader.getNodeType() == te::xml::START_ELEMENT);
 
     if(reader.getElementLocalName() == "PropertyName")
     {
-      te::da::Field* f = new te::da::Field(ReadPropertyName(reader));
+      f = new te::da::Field(ReadPropertyName(reader));
       fields->push_back(f);
     }
+
     else if(reader.getElementLocalName() == "Function")
     {
-      te::da::Field* f = new te::da::Field(ReadFunction(reader));
+      f = new te::da::Field(ReadFunction(reader));
       fields->push_back(f);
     }
     else if(reader.getElementLocalName() == "Literal")
     {
-      te::da::Field* f = new te::da::Field(ReadLiteral(reader));
+      f = new te::da::Field(ReadLiteral(reader));
       fields->push_back(f);
     }
-
+    if (f != 0)
+    {
+      if (reader.getNodeType() == te::xml::START_ELEMENT)
+      {
+        if (reader.getElementLocalName() == "Alias")
+        {
+          reader.next();
+          assert(reader.getNodeType() == te::xml::VALUE);
+          f->setAlias(new std::string(reader.getElementValue()));
+          reader.next();
+          assert(reader.getNodeType() == te::xml::END_ELEMENT); // Alias
+          reader.next();
+        }
+      }
+    }
+    
     assert(reader.getNodeType() == te::xml::END_ELEMENT); // Field
 
     reader.next();

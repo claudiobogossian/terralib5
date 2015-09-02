@@ -91,7 +91,7 @@ te::layout::Properties* te::layout::GridSettingsModel::containsGrid(EnumType* en
   Properties* properties = 0;
 
   std::vector<Properties*>::iterator it = m_properties.begin();
-  for(it ; it != m_properties.end() ; ++it)
+  for(; it != m_properties.end() ; ++it)
   {
     Properties* props = (*it);
     if(props)

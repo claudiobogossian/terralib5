@@ -23,8 +23,7 @@
 #  Author: Eric Silva Abreu <eric@dpi.inpe.br>
 #
 
-include_directories(${Boost_INCLUDE_DIR})
-include_directories(${QWT_INCLUDE_DIR} ${QWT_INCLUDE_DIR})
+include_directories(${Boost_INCLUDE_DIR} ${QWT_INCLUDE_DIR} ${QWT_INCLUDE_DIR} ${TERRALIB_ABSOLUTE_ROOT_DIR}/src)
 
 if(WIN32)
   add_definitions(-D_SCL_SECURE_NO_WARNINGS -DTESADLL)

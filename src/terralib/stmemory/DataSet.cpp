@@ -35,9 +35,8 @@
 #include "../datatype/StringProperty.h"
 #include "../datatype/Utils.h"
 #include "../datatype/DateTimeUtils.h"
-#include "../datatype/DateTimeInstant.h"
-#include "../datatype/DateTimePeriod.h"
-#include "../datatype/DateTime.h"
+#include "../datatype/TimePeriod.h"
+#include "../datatype/Date.h"
 #include "../datatype/Enums.h"
 #include "../geometry/Envelope.h"
 #include "../geometry/Geometry.h"
@@ -375,6 +374,12 @@ void te::stmem::DataSet::add(te::mem::DataSetItem* dsItem)
 
 std::auto_ptr<te::dt::DateTimePeriod> te::stmem::DataSet::getTemporalExtent() const
 {
+  if (m_items.empty())
+  {
+    te::dt::Date t(2000, 1, 1);
+    return std::auto_ptr<te::dt::DateTimePeriod>(te::dt::GetTemporalExtent(&t, &t));
+  }
+
   const te::dt::DateTime* tbegin =  m_items.begin()->first;
   const te::dt::DateTime* tend =  m_items.rbegin()->first;
   return std::auto_ptr<te::dt::DateTimePeriod>(te::dt::GetTemporalExtent(tbegin, tend));

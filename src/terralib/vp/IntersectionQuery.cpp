@@ -46,10 +46,12 @@
 #include "../dataaccess/query/FromItem.h"
 #include "../dataaccess/query/Join.h"
 #include "../dataaccess/query/JoinConditionOn.h"
+#include "../dataaccess/query/LiteralInt32.h"
 #include "../dataaccess/query/PropertyName.h"
 #include "../dataaccess/query/Select.h"
 #include "../dataaccess/query/ST_Intersection.h"
 #include "../dataaccess/query/ST_Intersects.h"
+#include "../dataaccess/query/ST_SetSRID.h"
 #include "../dataaccess/query/Where.h"
 #include "../dataaccess/utils/Utils.h"
 
@@ -81,50 +83,72 @@ te::vp::IntersectionQuery::~IntersectionQuery()
 
 bool te::vp::IntersectionQuery::run() throw(te::common::Exception)
 {
-  if(m_SRID == 0)
-  {
-    te::gm::GeometryProperty* geom = te::da::GetFirstGeomProperty(m_inFirstDsetType.get());
-    m_SRID = geom->getSRID();
-  }
-
   te::da::Fields* fields = new te::da::Fields;
   te::da::Select* select = new te::da::Select;
 
-  std::vector<te::dt::Property*> firstProps = getTabularProps(m_inFirstDsetType.get());
+  std::vector<te::dt::Property*> firstProps = getTabularProps(m_firstConverter->getResult());
   std::vector<te::dt::Property*> secondProps;
   if(m_copyInputColumns)
-    secondProps = getTabularProps(m_inSecondDsetType.get());
+    secondProps = getTabularProps(m_secondConverter->getResult());
 
-  te::gm::GeometryProperty* firstGeom;
-  te::gm::GeometryProperty* secondGeom;
+// Get DataSetType from DataSource to compare geometry SRID with DataSetType from Layer.
+  std::auto_ptr<te::da::DataSetType>firstDsTypeSource(m_inFirstDsrc->getDataSetType(m_inFirstDsetName));
+  std::auto_ptr<te::da::DataSetType>secondDsTypeSource(m_inSecondDsrc->getDataSetType(m_inSecondDsetName));
 
-  firstGeom = te::da::GetFirstGeomProperty(m_inFirstDsetType.get());
-  secondGeom = te::da::GetFirstGeomProperty(m_inSecondDsetType.get());
-      
-  std::string firstTableName = te::vp::GetSimpleTableName(m_inFirstDsetType->getTitle());
-  std::string secondTableName = te::vp::GetSimpleTableName(m_inSecondDsetType->getTitle());
+  te::gm::GeometryProperty* firstGeomSource = te::da::GetFirstGeomProperty(firstDsTypeSource.get());
+  te::gm::GeometryProperty* secondGeomSource = te::da::GetFirstGeomProperty(secondDsTypeSource.get());
 
+  te::gm::GeometryProperty* firstGeom = te::da::GetFirstGeomProperty(m_firstConverter->getResult());
+  te::gm::GeometryProperty* secondGeom = te::da::GetFirstGeomProperty(m_secondConverter->getResult());
+
+// Get properties to set in select clause
   for(std::size_t i = 0; i < firstProps.size(); ++i)
   {
-    te::da::Field* f_field = new te::da::Field(firstTableName + "." + firstProps[i]->getName() + " ", firstTableName + "_" + firstProps[i]->getName());
+    te::da::Field* f_field = new te::da::Field(m_inFirstDsetName + "." + firstProps[i]->getName() + " ", te::vp::GetSimpleTableName(m_inFirstDsetName) + "_" + firstProps[i]->getName());
     fields->push_back(f_field);
   }
 
   for(std::size_t i = 0; i < secondProps.size(); ++i)
   {
-    te::da::Field* f_field = new te::da::Field(secondTableName + "." + secondProps[i]->getName() + " ", secondTableName + "_" + secondProps[i]->getName());
+    te::da::Field* f_field = new te::da::Field(m_inSecondDsetName + "." + secondProps[i]->getName() + " ", te::vp::GetSimpleTableName(m_inSecondDsetName) + "_" + secondProps[i]->getName());
     fields->push_back(f_field);
   }
 
-  te::da::Expression* e_intersection = new te::da::ST_Intersection( new te::da::PropertyName(m_inFirstDsetType->getName() + "." + firstGeom->getName()),
-                                                                    new te::da::PropertyName(m_inSecondDsetType->getName() + "." + secondGeom->getName()));
+  te::da::Expression* e_firstParam;
+  te::da::Expression* e_secondParam;
+
+// Compare geometry SRID from DataSource with DataSetLayer
+  // Create Expression ST_setSRID for the First Layer
+  if (firstGeomSource->getSRID() != firstGeom->getSRID())
+  {
+    te::da::LiteralInt32* firstSRID = new te::da::LiteralInt32(firstGeom->getSRID());
+    e_firstParam = new te::da::ST_SetSRID(new te::da::PropertyName(m_firstConverter->getResult()->getName() + "." + firstGeom->getName()), firstSRID);
+  }
+  else
+  {
+    e_firstParam = new te::da::PropertyName(m_firstConverter->getResult()->getName() + "." + firstGeom->getName());
+  }
+
+  // Create Expression ST_setSRID for the Second Layer
+  if (secondGeomSource->getSRID() != secondGeom->getSRID())
+  {
+    te::da::LiteralInt32* secondSRID = new te::da::LiteralInt32(secondGeom->getSRID());
+    e_secondParam = new te::da::ST_SetSRID(new te::da::PropertyName(m_secondConverter->getResult()->getName() + "." + secondGeom->getName()), secondSRID);
+  }
+  else
+  {
+    e_secondParam = new te::da::PropertyName(m_secondConverter->getResult()->getName() + "." + secondGeom->getName());
+  }
+
+  te::da::Expression* e_intersection = new te::da::ST_Intersection( e_firstParam, e_secondParam);
   te::da::Field* f_intersection = new te::da::Field(*e_intersection, "geom");
   fields->push_back(f_intersection);
 
-  te::da::FromItem* firstFromItem = new te::da::DataSetName(m_inFirstDsetType->getName());
-  te::da::FromItem* secondFromItem = new te::da::DataSetName(m_inSecondDsetType->getName());
-  te::da::Expression* e_intersects = new te::da::ST_Intersects( new te::da::PropertyName(m_inFirstDsetType->getName() + "." + firstGeom->getName()),
-                                                                new te::da::PropertyName(m_inSecondDsetType->getName() + "." + secondGeom->getName()));
+  te::da::FromItem* firstFromItem = new te::da::DataSetName(m_firstConverter->getResult()->getName());
+  te::da::FromItem* secondFromItem = new te::da::DataSetName(m_secondConverter->getResult()->getName());
+
+  te::da::Expression* e_intersects = new te::da::ST_Intersects(e_firstParam, e_secondParam);
+
   te::da::JoinConditionOn* on = new te::da::JoinConditionOn(e_intersects);
   te::da::Join* join = new te::da::Join(*firstFromItem, *secondFromItem, te::da::INNER_JOIN, *on);
 
@@ -138,13 +162,13 @@ bool te::vp::IntersectionQuery::run() throw(te::common::Exception)
   te::da::Where* w_oid = 0;
   if(m_firstOidSet && m_secondOidSet)
   {
-    te::da::And* exp_and = new te::da::And(m_firstOidSet->getExpressionByInClause(m_inFirstDsetType->getName()), m_secondOidSet->getExpressionByInClause(m_inSecondDsetType->getName()));
+    te::da::And* exp_and = new te::da::And(m_firstOidSet->getExpressionByInClause(m_firstConverter->getResult()->getName()), m_secondOidSet->getExpressionByInClause(m_secondConverter->getResult()->getName()));
     w_oid = new te::da::Where(exp_and);
   }
   else if(m_firstOidSet)
-    w_oid = new te::da::Where(m_firstOidSet->getExpressionByInClause(m_inFirstDsetType->getName()));
+    w_oid = new te::da::Where(m_firstOidSet->getExpressionByInClause(m_firstConverter->getResult()->getName()));
   else if(m_secondOidSet)
-    w_oid = new te::da::Where(m_secondOidSet->getExpressionByInClause(m_inSecondDsetType->getName()));
+    w_oid = new te::da::Where(m_secondOidSet->getExpressionByInClause(m_secondConverter->getResult()->getName()));
   
   select->setWhere(w_oid);
 
@@ -168,24 +192,25 @@ bool te::vp::IntersectionQuery::run() throw(te::common::Exception)
   for(size_t i = 0; i < firstProps.size(); ++i)
   {
     te::dt::Property* prop = firstProps[i]->clone();
-    if(!m_inFirstDsetType->getTitle().empty())
-      prop->setName(te::vp::GetSimpleTableName(m_inFirstDsetType->getTitle()) + "_" + prop->getName());
+    if (!m_inFirstDsetName.empty())
+      prop->setName(te::vp::GetSimpleTableName(m_inFirstDsetName) + "_" + prop->getName());
     outDataSetType->add(prop);
   }
 
   for(size_t i = 0; i < secondProps.size(); ++i)
   {
     te::dt::Property* prop = secondProps[i]->clone();
-    prop->setName(te::vp::GetSimpleTableName(m_inSecondDsetType->getTitle()) + "_" + prop->getName());
+    if (!m_inSecondDsetName.empty())
+      prop->setName(te::vp::GetSimpleTableName(m_inSecondDsetName) + "_" + prop->getName());
     outDataSetType->add(prop);
   }
 
-  te::gm::GeomType newType = te::vp::GeomOpResultType(te::da::GetFirstGeomProperty(m_inFirstDsetType.get())->getGeometryType(), 
-                                                      te::da::GetFirstGeomProperty(m_inSecondDsetType.get())->getGeometryType());
+  te::gm::GeomType newType = setGeomResultType( te::da::GetFirstGeomProperty(m_firstConverter->getResult())->getGeometryType(),
+                                                te::da::GetFirstGeomProperty(m_secondConverter->getResult())->getGeometryType());
 
   te::gm::GeometryProperty* newGeomProp = new te::gm::GeometryProperty("geom");
   newGeomProp->setGeometryType(newType);
-  newGeomProp->setSRID(te::da::GetFirstGeomProperty(m_inFirstDsetType.get())->getSRID());
+  newGeomProp->setSRID(te::da::GetFirstGeomProperty(m_firstConverter->getResult())->getSRID());
   
   outDataSetType->add(newGeomProp);
 
@@ -205,7 +230,7 @@ te::da::DataSet* te::vp::IntersectionQuery::updateGeomType(te::da::DataSetType* 
   std::size_t type = 0;
   std::vector<te::dt::Property*> props = dsType->getProperties();
 
-  std::size_t pk = 0;
+  int pk = 0;
   while(ds->moveNext())
   {
     std::string propName;

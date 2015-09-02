@@ -26,9 +26,6 @@
 #ifndef __TERRALIB_ANNOTATIONTEXT_INTERNAL_CONFIG_H
 #define __TERRALIB_ANNOTATIONTEXT_INTERNAL_CONFIG_H
 
-// TerraLib
-#include "../Config.h"
-
 #define TE_ANNOTATIONTEXT_MODULE_NAME "te.annotationtext"
 
 /** @name DLL/LIB Module

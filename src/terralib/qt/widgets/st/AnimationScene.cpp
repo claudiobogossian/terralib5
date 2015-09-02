@@ -50,7 +50,6 @@ void te::qt::widgets::AnimationScene::createNewPixmap()
     {
       QGraphicsView* view = *(views().begin());
       view->resize(m_display->width(), m_display->height());
-      //view->resize(m_display->width()*2, m_display->height()*2);
     }
   }
   else
@@ -86,41 +85,30 @@ void te::qt::widgets::AnimationScene::clear()
   m_numberOfTrajectories = 0;
 }
 
-void te::qt::widgets::AnimationScene::setMatrix()
-{
-  QList<QGraphicsItem*> list = items();
-  QList<QGraphicsItem*>::iterator it;
-  for(it = list.begin(); it != list.end(); ++it)
-  {
-    AnimationItem* ai = (AnimationItem*)(*it);
-    ai->setMatrix();
-  }
-}
-
 void te::qt::widgets::AnimationScene::setDuration(const int& duration)
 {
   QList<QGraphicsItem*> list = items();
   QList<QGraphicsItem*>::iterator it;
   for(it = list.begin(); it != list.end(); ++it)
   {
-    AnimationItem* ai = (AnimationItem*)(*it);
+    AnimationItem* ai = dynamic_cast<AnimationItem*>(*it);
     ai->setDuration(duration);
   }
 }
-
-void te::qt::widgets::AnimationScene::setAutomaticPan(const QString& title)
-{
-  QList<QGraphicsItem*> list = items();
-  QList<QGraphicsItem*>::iterator it;
-  for(it = list.begin(); it != list.end(); ++it)
-  {
-    AnimationItem* ai = (AnimationItem*)(*it);
-    if(ai->m_title == title)
-      ai->m_automaticPan = !ai->m_automaticPan; // TOGGLE
-    else
-      ai->m_automaticPan = false;
-  }
-}
+//
+//void te::qt::widgets::AnimationScene::setAutomaticPan(const QString& title)
+//{
+//  QList<QGraphicsItem*> list = items();
+//  QList<QGraphicsItem*>::iterator it;
+//  for(it = list.begin(); it != list.end(); ++it)
+//  {
+//    AnimationItem* ai = dynamic_cast<AnimationItem*>(*it);
+//    if(ai->m_title == title)
+//      ai->m_automaticPan = !ai->m_automaticPan; // TOGGLE
+//    else
+//      ai->m_automaticPan = false;
+//  }
+//}
 
 void te::qt::widgets::AnimationScene::draw(const int& curTime)
 {
@@ -128,7 +116,7 @@ void te::qt::widgets::AnimationScene::draw(const int& curTime)
   QList<QGraphicsItem*>::iterator it;
   for(it = list.begin(); it != list.end(); ++it)
   {
-    AnimationItem* ai = (AnimationItem*)(*it);
+    AnimationItem* ai = dynamic_cast<AnimationItem*>(*it);
     ai->m_curTimeDuration = curTime;
     ai->draw();
   }

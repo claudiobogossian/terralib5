@@ -73,7 +73,7 @@ namespace te
       class Animation;
       class AnimationItem;
       class TrajectoryItem;
-      class PixmapItem;
+      class ImageItem;
       class AnimationScene;
 
       /*!
@@ -122,25 +122,22 @@ namespace te
 
           void addTemporalImages(const QString& filePath);
 
-          te::qt::widgets::PixmapItem* getMetadata(const QString& path);
+          /*!
+            \brief This method is used to load a temporal image data.
+            NOTE: It should be edited to enter with new types of temporal images.
 
-          te::qt::widgets::PixmapItem* getGoesMetadata(const QString& path);
-          te::dt::TimeInstant getGoesTime(const QString& file);
+            Param path The folder that has temporal images and the control file.
+          */
+          te::qt::widgets::ImageItem* loadImageData(const QString& path);
+          /*!
+            \brief This method is used to find out the type of temporal image has the folder.
+            NOTE: It should be edited to enter with new types of temporal images.
+            NOTE: You must find a way to discover its kind.
 
-          te::qt::widgets::PixmapItem* getHidroMetadata(const QString& path);
-          te::qt::widgets::PixmapItem* getHidroCtlParameters(const QString& path);
-          void setHidroLUT(te::qt::widgets::PixmapItem* pi);
-          te::dt::TimeInstant getHidroTime(const QString& file);
-
-          te::qt::widgets::PixmapItem* getEtaMetadata(const QString& path);
-          te::qt::widgets::PixmapItem* getEtaCtlParameters(const QString& path);
-          void setEtaLUT(te::qt::widgets::PixmapItem* pi);
-          te::dt::TimeInstant getEtaTime(const QString& file);
-
-          te::qt::widgets::PixmapItem* getTemporalImageMetadata(const QString& path);
-          te::qt::widgets::PixmapItem* getTemporalImageCtlParameters(const QString& path);
-          te::dt::TimeInstant getTemporalImageTime(const QString& file);
-
+            \param path The folder that has temporal images and the control file.
+            \return The temporal image type.
+          */
+          QString getTemporalImageType(const QString& path);
 
           /*!
             \brief Add trajectory to animation scene.
@@ -154,12 +151,12 @@ namespace te
           /*!
             \brief It calculates the spatial extent.
           */
-          void calculateSpatialExtent();
+          void calculateAllSpatialExtent();
 
           /*!
             \brief It calculates the temporal extent.
           */
-          void calculateTemporalExtent();
+          void calculateAllTemporalExtent();
 
           /*!
             \brief Change direction.
@@ -183,13 +180,6 @@ namespace te
             \param duration The animation duration in miliseconds.
           */
           void setDuration(const unsigned int& duration);
-
-        /*!
-          \brief It configures automatic pan over a animation path.
-                 It toggles auto pan state.
-          \param title The animation title.
-        */
-          void setAutomaticPan(const QString& title);
 
           /*!
             \brief create new pixmap.
@@ -300,35 +290,14 @@ namespace te
         */
         QDateTime fixDateTimeEdit(QDateTimeEdit* dte, const QDateTime& t);
 
-        /*!
-          \brief
-          Draw the pixmap item.
-
-          /param pi The pixmap item.
-          /param dwrect The rect of map display in world coordinates.
-          /param painter The painter.
-        */
-        void drawPixmapItem(PixmapItem* pi, const QRectF& dwrect, QPainter* painter);
-
-        QImage* getImage(te::qt::widgets::PixmapItem* pi);
-
         void loadAnimation(const QString& title);
 
-        void removeAnimation(const QString& title);
+        void removeAnimation(const int& ind);
+        //void removeAnimation(const QString& title);
 
-        void removeOnPropertieCombo(const QString& title);
+        //void removeOnPropertieCombo(const QString& title);
 
-        /*!
-          \brief
-          Draw the trajectory icon.
-
-          /param t The trajectory item.
-          /param pos The top left position in device coordinates.
-          /param painter The painter.
-        */
-        void drawTrajectoryIcon(const TrajectoryItem* t, const QPoint& pos, QPainter* painter);
-
-        bool trajectoryAlreadyExists(QPair<QString, te::st::TrajectoryDataSetLayer*>& item);
+        bool trajectoryAlreadyExists(QPair<QString, QString>& item);
         bool coverageAlreadyExists(QPair<QString, QString>& item);
 
           /*!
@@ -349,19 +318,8 @@ namespace te
             \return true = changed, false = not changed
           */
           bool isSettingChanged();
-
-          /*!
-            \brief Remove animation item from the opacity combo box and trajectory color combo box.
-
-            \param ai The item to be removed.
-          */
-          //void removeComboItem(te::qt::widgets::AnimationItem* ai);
-
-          //void getAuxInfo(te::qt::widgets::AnimationItem* ai, int index = -1);
-
-          //void setAuxInfo(te::qt::widgets::AnimationItem* ai, int index = -1);
           
-          void adjustTrajectoryGroupBox(te::qt::widgets::AnimationItem*);
+          void adjustPropertyDialog(te::qt::widgets::AnimationItem*);
 
           QString getDateString(const te::dt::TimeInstant& t);
 
@@ -451,14 +409,7 @@ namespace te
             \param b True if the button is checked, or false if the button is unchecked
           */
           void onDrawTrailCheckBoxClicked(bool b);         
-
-          /*!
-            \brief Apply animation items push button clicked. It Sets the visibility of animations.
-
-            \param b True if the button is checked, or false if the button is unchecked
-          */
-          //void onApplyAnimationItemPushButtonClicked(bool);
-          
+       
           /*!
             \brief Forward radio button clicked.
 
@@ -495,13 +446,6 @@ namespace te
           void onApplyTimeIntervalPushButtonClicked(bool b);
 
           /*!
-            \brief Trajectory color combo box activated.
-
-            \param i The index of combo box.
-          */
-          //void onTrajectoryColorComboBoxActivated(int i);
-
-          /*!
             \brief Opacity combo box activated.
 
             \param i The index of combo box.
@@ -528,9 +472,9 @@ namespace te
           */
           void onResetFinalTimePushButtonClicked();
 
-          void onWidthValueChanged(int);
+          void onTrajectoryPixmapSizeChanged(int);
 
-          void onHeightValueChanged(int);
+          void onIconRotateCheckBoxClicked(bool);
 
           void dropAction();
 
@@ -572,17 +516,18 @@ namespace te
           QDateTime                                               m_oldQDateTime;             //!< The old Qt date time.
           QDateTime                                               m_oldIQDateTime;            //!< The old initial Qt date time.
           QDateTime                                               m_oldFQDateTime;            //!< The old final Qt date time.
-          bool                                                    m_dateTimeChanged;
+          bool                                                    m_dateTimeChanged;          //!< flag to signal change in animation time.
           int                                                     m_maxSliderValue;           //!< The max slider value.
-          bool                                                    m_finished;
-          bool                                                    m_paused;
+          bool                                                    m_finished;                 //!< flag to signal animation finish. 
+          bool                                                    m_paused;                   //!< flag to signal animation pause. 
           QList<QPair<QString, te::st::TrajectoryDataSetLayer*> > m_trajectoryItemList;       //!< List of all trajectory items (title, layer).
           QList<QPair<QString, QString> >                         m_coverageItemList;         //!< List of all animation items (title, path).
           Qt::KeyboardModifiers                                   m_dropModifiers;            //!< Control pressed to add animation with drag and drop.
           QList<QUrl>                                             m_dropUrls;                 //!< Urls to animation with drag and drop.
           QByteArray                                              m_dropBA;                   //!< Layer animation with drag and drop.
           SliderPropertiesDialog*                                 m_spd;                      //!< Slider Properties Dialog.
-          //QMap<int, AnimationAuxInfo>                             m_auxInfo;                  //!< animation auxiliar information                                        
+          QList<QString>                                          m_animationIdList;          //!< List containing the shadow of m_ui->m_animationComboBox
+          double                                                  m_panFactor;                //!< the range is between 0.002 and 0.5 
       };
     } // end namespace widgets
   }   // end namespace qt

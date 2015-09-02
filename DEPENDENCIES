@@ -3,8 +3,18 @@
 
 If you want to build yourself TerraLib then you need to install some third-party libraries.
 
-For Microsoft Visual C++ users we have prepared a zip file containing all the third-party libraries in a binary format. You can download this package from:
-http://www.dpi.inpe.br/terralib5-devel
+For Microsoft Visual C++ users we have prepared a zip file containing all the third-party libraries in a binary format. 
+You can download this package from two places:
+   - The tagged version:  
+     http://www.dpi.inpe.br/terralib5/terralib5-3rdparty/terralib5.0.1-3rdparty-msvc-2013-win64.zip
+           or
+     http://www.dpi.inpe.br/terralib5/terralib5-3rdparty/terralib5.0.1-3rdparty-msvc-2013-win32.zip
+		   
+   - The most updated version used by developers (only to work with develop branch): 
+     http://www.dpi.inpe.br/terralib5-devel/terralib5-3rdparty-msvc-2013-win64.zip
+           or
+     http://www.dpi.inpe.br/terralib5-devel/terralib5-3rdparty-msvc-2013-win32.zip
+
 
 In that folder you will find:
   - terralib5-3rdparty-msvc-2013-win64.zip: all the third-party libraries for building a 64-bit version of TerraLib with Qt 5.4.1 support.
@@ -148,4 +158,4 @@ For more information on TerraLib, please, visit its main web page at:
 http://www.terralib.org
 
 
-  April 2015, TerraLib Team <terralib-team@dpi.inpe.br>
+  September 2015, TerraLib Team <terralib-team@dpi.inpe.br>

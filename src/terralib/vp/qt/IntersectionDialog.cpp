@@ -147,6 +147,8 @@ void te::vp::IntersectionDialog::onSecondLayerComboBoxChanged(int index)
 
 void te::vp::IntersectionDialog::onOkPushButtonClicked()
 {
+  std::vector<int> inSRID;
+
   if(m_ui->m_firstLayerComboBox->currentText().isEmpty())
   {
     QMessageBox::warning(this, TE_TR("Intersection"), TE_TR("Select a first input layer."));
@@ -159,6 +161,8 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
     QMessageBox::information(this, "Intersection", "Can not execute this operation on this type of first layer.");
     return;
   }
+
+  inSRID.push_back(firstDataSetLayer->getSRID());
 
   const te::da::ObjectIdSet* firstOidSet = 0;
   if(m_ui->m_firstSelectedCheckBox->isChecked())
@@ -190,6 +194,8 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
     QMessageBox::information(this, "Intersection", "Can not execute this operation on this type of second layer.");
     return;
   }
+
+  inSRID.push_back(secondDataSetLayer->getSRID());
 
   const te::da::ObjectIdSet* secondOidSet = 0;
   if(m_ui->m_secondSelectedCheckBox->isChecked())
@@ -265,6 +271,12 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
         return;
       }
       
+      std::auto_ptr<te::da::DataSetTypeConverter> firstConverter(new te::da::DataSetTypeConverter(firstDataSetLayer->getSchema().get(), dsOGR->getCapabilities(), dsOGR->getEncoding()));
+      te::da::AssociateDataSetTypeConverterSRID(firstConverter.get(), firstDataSetLayer->getSRID());
+
+      std::auto_ptr<te::da::DataSetTypeConverter> secondConverter(new te::da::DataSetTypeConverter(secondDataSetLayer->getSchema().get(), dsOGR->getCapabilities(), dsOGR->getEncoding()));
+      te::da::AssociateDataSetTypeConverterSRID(secondConverter.get(), firstDataSetLayer->getSRID());
+
       this->setCursor(Qt::WaitCursor);
 
       te::vp::IntersectionOp* intersectionOp = 0;
@@ -284,11 +296,11 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
         intersectionOp = new te::vp::IntersectionMemory();
       }
 
-      intersectionOp->setInput( firstDataSource, firstDataSetLayer->getDataSetName(), firstDataSetLayer->getSchema(),
-                                secondDataSource, secondDataSetLayer->getDataSetName(), secondDataSetLayer->getSchema(),
+      intersectionOp->setInput( firstDataSource, firstDataSetLayer->getDataSetName(), firstConverter,
+                                secondDataSource, secondDataSetLayer->getDataSetName(), secondConverter,
                                 firstOidSet, secondOidSet);
       intersectionOp->setOutput(dsOGR, outputdataset);
-      intersectionOp->setParams(copyInputColumns, firstDataSetLayer->getSRID());
+      intersectionOp->setParams(copyInputColumns);
 
       if (!intersectionOp->paramsAreValid())
         res = false;
@@ -336,6 +348,13 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
         QMessageBox::information(this, "Intersection", "Dataset already exists. Remove it or select a new name and try again. ");
         return;
       }
+
+      std::auto_ptr<te::da::DataSetTypeConverter> firstConverter(new te::da::DataSetTypeConverter(firstDataSetLayer->getSchema().get(), aux->getCapabilities(), aux->getEncoding()));
+      te::da::AssociateDataSetTypeConverterSRID(firstConverter.get(), firstDataSetLayer->getSRID());
+
+      std::auto_ptr<te::da::DataSetTypeConverter> secondConverter(new te::da::DataSetTypeConverter(secondDataSetLayer->getSchema().get(), aux->getCapabilities(), aux->getEncoding()));
+      te::da::AssociateDataSetTypeConverterSRID(secondConverter.get(), firstDataSetLayer->getSRID());
+      
       this->setCursor(Qt::WaitCursor);
 
       te::vp::IntersectionOp* intersectionOp = 0;
@@ -356,11 +375,11 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
         intersectionOp = new te::vp::IntersectionMemory();
       }
 
-      intersectionOp->setInput( firstDataSource, firstDataSetLayer->getDataSetName(), firstDataSetLayer->getSchema(),
-                                secondDataSource, secondDataSetLayer->getDataSetName(), secondDataSetLayer->getSchema(),
+      intersectionOp->setInput( firstDataSource, firstDataSetLayer->getDataSetName(), firstConverter,
+                                secondDataSource, secondDataSetLayer->getDataSetName(), secondConverter,
                                 firstOidSet, secondOidSet);
       intersectionOp->setOutput(aux, outputdataset);
-      intersectionOp->setParams(copyInputColumns, firstDataSetLayer->getSRID());
+      intersectionOp->setParams(copyInputColumns);
 
       if (!intersectionOp->paramsAreValid())
         res = false;
@@ -414,7 +433,7 @@ void te::vp::IntersectionDialog::onTargetDatasourceToolButtonPressed()
 
   std::list<te::da::DataSourceInfoPtr> dsPtrList = dlg.getSelecteds();
 
-  if(dsPtrList.size() <= 0)
+  if(dsPtrList.empty())
     return;
 
   std::list<te::da::DataSourceInfoPtr>::iterator it = dsPtrList.begin();

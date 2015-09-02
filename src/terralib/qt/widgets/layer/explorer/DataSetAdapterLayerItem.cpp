@@ -184,5 +184,10 @@ QString te::qt::widgets::DataSetAdapterLayerItem::buildToolTip() const
       toolTip += "\n";
   }
 
+  toolTip += '\n';
+  
+  toolTip += tr("SRID: ");
+  toolTip += QString::number(m_layer->getSRID());
+  
   return toolTip;
 }

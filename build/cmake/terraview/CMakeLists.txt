@@ -28,7 +28,7 @@
 configure_file(${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terraview/Config.h.in
                ${CMAKE_BINARY_DIR}/terraview_config.h @ONLY)
 
-include_directories(${Boost_INCLUDE_DIR})
+include_directories(${Boost_INCLUDE_DIR} ${TERRALIB_ABSOLUTE_ROOT_DIR}/src)
 
 file(GLOB TERRALIB_SRC_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terraview/*.cpp)
 file(GLOB TERRALIB_HDR_FILES ${TERRALIB_ABSOLUTE_ROOT_DIR}/src/terraview/*.h)
@@ -42,7 +42,7 @@ if(APPLE)
 
   if(TERRALIB_BUILD_AS_BUNDLE)
     set(MACOSX_BUNDLE_BUNDLE_NAME "TerraView")
-    set(MACOSX_BUNDLE_COPYRIGHT "Copyright 2001-2014")
+    set(MACOSX_BUNDLE_COPYRIGHT "Copyright 2001-2015")
     set(MACOSX_BUNDLE_SIGNATURE "TerraView")
     set(MACOSX_BUNDLE_GUI_IDENTIFIER "http://www.terraview.org")
     set(MACOSX_BUNDLE_EXECUTABLE_NAME "TerraView")
@@ -163,8 +163,8 @@ if(TERRALIB_TRACK_3RDPARTY_DEPENDENCIES)
   if(APPLE)
 
     file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/qt.conf
-         "[Paths]\nBinaries = .\nPlugins = qtplugins\nTranslations = share/terralib/translations")
-         
+         "[Paths]\nBinaries = MacOS\nPlugins = qtplugins\nTranslations = share/terralib/translations")
+
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/qt.conf
             DESTINATION terraview.app/Contents/Resources COMPONENT runtime)
 

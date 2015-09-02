@@ -24,7 +24,7 @@
 */
 
 // TerraLib
-#include "terralib_config.h"
+#include "../BuildConfig.h"
 #include "../common/Logger.h"
 #include "../common/Translator.h"
 #include "../dataaccess/datasource/DataSourceFactory.h"

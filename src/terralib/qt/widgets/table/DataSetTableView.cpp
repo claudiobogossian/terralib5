@@ -25,6 +25,9 @@
 #include "../../../dataaccess/query/DataSetName.h"
 #include "../../../dataaccess/query/Field.h"
 #include "../../../dataaccess/query/From.h"
+#include "../../../dataaccess/query/In.h"
+#include "../../../dataaccess/query/Literal.h"
+#include "../../../dataaccess/query/Or.h"
 #include "../../../dataaccess/query/OrderBy.h"
 #include "../../../dataaccess/query/OrderByItem.h"
 #include "../../../dataaccess/query/Select.h"
@@ -263,8 +266,16 @@ std::auto_ptr<te::da::DataSet> GetDataSet(const te::map::AbstractLayer* layer, c
   {
     const te::map::QueryLayer* l = dynamic_cast<const te::map::QueryLayer*>(layer);
 
-    if(l != 0)
+    if (l != 0)
+    {
       query.reset(new te::da::Select(l->getQuery()));
+      te::da::OrderBy* order_by = new te::da::OrderBy();
+
+      for (size_t i = 0; i<colsNames.size(); i++)
+        order_by->push_back(std::auto_ptr<te::da::OrderByItem>(new te::da::OrderByItem(colsNames[i], (asc) ? te::da::ASC : te::da::DESC)));
+
+      query->setOrderBy(order_by);
+    }
   }
   else if(layer->getType() == "OBSERVATIONDATASETLAYER")
   {
@@ -414,7 +425,8 @@ class TablePopupFilter : public QObject
       m_showOidsColumns(false),
       m_enabled(true),
       m_autoScrollEnabled(false),
-      m_promotionEnabled(false)
+      m_promotionEnabled(false),
+      m_isOGR(false)
     {
       m_view->horizontalHeader()->installEventFilter(this);
       m_view->verticalHeader()->installEventFilter(this);
@@ -561,11 +573,13 @@ class TablePopupFilter : public QObject
                 QAction* act11 = new QAction(m_hMenu);
                 act11->setText(tr("Change column type"));
                 act11->setToolTip(tr("Changes the type of a column of the table."));
+                act11->setEnabled(!m_isOGR);
                 m_hMenu->addAction(act11);
 
                 QAction* act12 = new QAction(m_hMenu);
                 act12->setText(tr("Change column data"));
                 act12->setToolTip(tr("Changes the data of a column of the table."));
+                act12->setEnabled(!m_isOGR);
                 m_hMenu->addAction(act12);
 
                 QAction* act13 = new QAction(m_hMenu);
@@ -656,6 +670,11 @@ class TablePopupFilter : public QObject
     void setPromotionEnabled(const bool& enabled)
     {
       m_promotionEnabled = enabled;
+    }
+
+    void setIsOGR(const bool& isOGR)
+    {
+      m_isOGR = isOGR;
     }
 
   protected slots:
@@ -777,6 +796,7 @@ class TablePopupFilter : public QObject
     int m_columnPressed;
     bool m_autoScrollEnabled;
     bool m_promotionEnabled;
+    bool m_isOGR;
 };
 
 te::qt::widgets::DataSetTableView::DataSetTableView(QWidget* parent) :
@@ -887,6 +907,7 @@ void te::qt::widgets::DataSetTableView::setLayer(te::map::AbstractLayer* layer, 
   te::da::DataSourcePtr dsc = GetDataSource(m_layer);
 
   setDataSet(GetDataSet(m_layer, m_orderby, m_orderAsc).release(), dsc->getEncoding(), clearEditor);
+
   setLayerSchema(sch.get());
 
   te::da::DataSetTypeCapabilities* caps = GetCapabilities(m_layer);
@@ -898,8 +919,10 @@ void te::qt::widgets::DataSetTableView::setLayer(te::map::AbstractLayer* layer, 
 
   if(dsc.get() != 0)
   {
-    setSelectionMode((dsc->getType().compare("OGR") == 0) ? SingleSelection : MultiSelection);
-    setSelectionBehavior((dsc->getType().compare("OGR") == 0) ? QAbstractItemView::SelectColumns : QAbstractItemView::SelectItems);
+    bool isOGR = (dsc->getType().compare("OGR") == 0);
+    setSelectionMode(isOGR ? SingleSelection : MultiSelection);
+    setSelectionBehavior(isOGR ? QAbstractItemView::SelectColumns : QAbstractItemView::SelectItems);
+    m_popupFilter->setIsOGR(isOGR);
   }
 
   highlightOIds(m_layer->getSelected());
@@ -935,7 +958,7 @@ void te::qt::widgets::DataSetTableView::setLayerSchema(const te::da::DataSetType
 
   m_model->setPkeysColumns(objs_ptr->getPropertyPos());
 
-  m_model->getPromoter()->preProcessKeys(m_dset, objs_ptr->getPropertyPos());
+//  m_model->getPromoter()->preProcessKeys(m_dset, objs_ptr->getPropertyPos());
 }
 
 void te::qt::widgets::DataSetTableView::highlightOIds(const te::da::ObjectIdSet* oids)
@@ -997,7 +1020,7 @@ void te::qt::widgets::DataSetTableView::createHistogram(const int& column)
 
   int res = dialog->exec();
   if (res == QDialog::Accepted)
-    emit createChartDisplay(te::qt::widgets::createHistogramDisplay(dataset,dataType, column, histogramWidget->getHistogram()));
+    emit createChartDisplay(te::qt::widgets::createHistogramDisplay(dataset, dataType, column, histogramWidget->getSummaryFunction(), histogramWidget->getHistogram()));
 
   delete dialog;
 }
@@ -1106,13 +1129,26 @@ void te::qt::widgets::DataSetTableView::changeColumnData(const int& column)
     return;
 
   std::auto_ptr<te::da::DataSetType> schema = m_layer->getSchema();
+  te::da::PrimaryKey* pk = schema->getPrimaryKey();
   std::string dsetName = schema->getName();
-  std::string columnName = schema->getProperty(column)->getName();
+  te::dt::Property* prop = schema->getProperty(column);
+  std::string columnName = prop->getName();
   std::vector<QString> cols = GetColumnsNames(m_dset);
+
+  std::map<std::string, int> pkColumnsType;
+
+  std::vector<te::dt::Property*> pkProps = pk->getProperties();
+
+  for (size_t i = 0; i < pkProps.size(); i++)
+  {
+    pkColumnsType[pkProps[i]->getName()] = pkProps[i]->getType();
+  }
 
   AlterDataDialog dlg(parentWidget());
   dlg.setSelectedColumn(columnName.c_str());
   dlg.setDataColumns(cols);
+  if (prop->getType() == te::dt::STRING_TYPE)
+    dlg.setHelpLabelText(tr("This is a string column, use single quotes"));
 
   if(dlg.exec() == QDialog::Accepted)
   {
@@ -1121,13 +1157,105 @@ void te::qt::widgets::DataSetTableView::changeColumnData(const int& column)
     if(dsrc.get() == 0)
       throw Exception(tr("Fail to get data source.").toStdString());
 
-    std::string sql;
-
-    if(dlg.alterAllData())
-      sql = "UPDATE " + dsetName + " SET " + columnName + " = " + dlg.getExpression().toStdString();
+    std::string sql = "UPDATE " + dsetName + " SET " + columnName + " = " + dlg.getExpression().toStdString();
 
     try
     {
+      //TODO: create class Update at dataaccess/query to do this operations
+      //Obs: not working when the dataset primary key has more than two properties
+      if (!dlg.alterAllData())
+      {
+        const te::da::ObjectIdSet* objSet =  m_layer->getSelected();
+
+        std::vector<std::string> pkCols =  objSet->getPropertyNames();
+
+        te::da::Expression* exp = objSet->getExpressionByInClause();
+
+        te::da::In* inExp = dynamic_cast<te::da::In*>(exp);
+        te::da::Or* orExp = dynamic_cast<te::da::Or*>(exp);
+      
+        te::da::In* orFirstInExp = 0;
+        te::da::In* orSecondInExp = 0;
+
+        std::string orFirstInExpStr = " IN (";
+        std::string orSecondInExpStr = " IN (";
+
+        if (orExp) // more than one properties at primary key
+        {
+          orFirstInExp = dynamic_cast<te::da::In*>(orExp->getFirst());
+          orSecondInExp = dynamic_cast<te::da::In*>(orExp->getSecond());
+
+          for (std::size_t i = 0; i < orFirstInExp->getNumArgs(); ++i)
+          {
+            te::da::Expression* a1 = orFirstInExp->getArg(i);
+
+            te::da::Literal* l1 = dynamic_cast<te::da::Literal*>(a1);
+
+            std::string inStr = l1->getValue()->toString();
+
+            if (pkColumnsType[objSet->getPropertyNames()[0]] == te::dt::STRING_TYPE)
+              inStr = "'" + inStr + "'";
+
+            if (i == orFirstInExp->getNumArgs() - 1)
+              orFirstInExpStr += inStr + ")";
+            else
+              orFirstInExpStr += inStr + ",";
+          }
+
+          for (std::size_t i = 0; i < orSecondInExp->getNumArgs(); ++i)
+          {
+            te::da::Expression* a1 = orSecondInExp->getArg(i);
+
+            te::da::Literal* l1 = dynamic_cast<te::da::Literal*>(a1);
+
+            std::string inStr = l1->getValue()->toString();
+
+            if (pkColumnsType[objSet->getPropertyNames()[1]] == te::dt::STRING_TYPE)
+              inStr = "'" + inStr + "'";
+
+            if (i == orSecondInExp->getNumArgs() - 1)
+              orSecondInExpStr += inStr + ")";
+            else
+              orSecondInExpStr += inStr + ",";
+          }
+
+          sql += " WHERE " + objSet->getPropertyNames()[0] + orFirstInExpStr + " AND " + objSet->getPropertyNames()[1] + orSecondInExpStr;
+
+        }
+        else if (inExp)
+        {
+
+          std::string inExpStr = " IN (";
+
+          for (std::size_t i = 0; i < inExp->getNumArgs(); ++i)
+          {
+            te::da::Expression* a1 = inExp->getArg(i);
+
+            te::da::Literal* l1 = dynamic_cast<te::da::Literal*>(a1);          
+
+            std::string inStr = l1->getValue()->toString();
+
+            if (pkColumnsType[objSet->getPropertyNames()[0]] == te::dt::STRING_TYPE)
+              inStr = "'" + inStr + "'";
+
+            if (i == inExp->getNumArgs() - 1)
+            {
+              inExpStr += inStr + ")";
+            }
+            else
+            {
+              inExpStr += inStr + ",";
+            }
+          }
+
+          sql += " WHERE " + objSet->getPropertyNames()[0] + inExpStr;
+        }      
+
+      }
+
+      // Ignore \n
+      std::replace(sql.begin(), sql.end(), '\n', ' ');
+
       dsrc->execute(sql);
 
       m_layer->setOutOfDate();
@@ -1399,11 +1527,15 @@ void te::qt::widgets::DataSetTableView::removeColumn(const int& column)
 void te::qt::widgets::DataSetTableView::setAutoScrollEnabled(const bool& enable)
 {
   m_autoScrollEnabled = enable;
+
+  m_model->getPromoter()->preProcessKeys(m_dset, m_delegate->getSelected()->getPropertyPos());
 }
 
 void te::qt::widgets::DataSetTableView::setPromotionEnabled(const bool &enable)
 {
   m_promotionEnabled = enable;
+
+  m_model->getPromoter()->preProcessKeys(m_dset, m_delegate->getSelected()->getPropertyPos());
 
   if(m_promotionEnabled)
     promote();

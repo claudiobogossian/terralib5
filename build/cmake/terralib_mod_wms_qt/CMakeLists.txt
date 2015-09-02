@@ -69,7 +69,7 @@ else() # QT4_FOUND
     add_library(terralib_mod_wms_qt SHARED ${TERRALIB_FILES})
 
     target_link_libraries(terralib_mod_wms_qt terralib_mod_wms_core
-	                                          terralib_mod_qt_widgets
+                                              terralib_mod_qt_widgets
                                               ${QT_LIBRARIES})
 
 endif()
