@@ -77,63 +77,6 @@ void te::edit::DeleteGeometryTool::reset()
   m_feature = 0;
 }
 
-void te::edit::DeleteGeometryTool::pickFeature(const te::map::AbstractLayerPtr& layer)
-{
-  reset();
-
-  try
-  {
-    std::auto_ptr<te::da::DataSetType> dt(layer->getSchema());
-
-    const te::da::ObjectIdSet* objSet = layer->getSelected();
-
-    std::auto_ptr<te::da::DataSet> ds(layer->getData(objSet));
-
-    te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(dt.get());
-
-    if (ds->moveNext())
-    {
-
-      te::gm::Coord2D coord(0, 0);
-
-      std::auto_ptr<te::gm::Geometry> geom = ds->getGeometry(geomProp->getName());
-
-      // Try finds the geometry centroid
-      switch (geom->getGeomTypeId())
-      {
-        case te::gm::PolygonType:
-        {
-          te::gm::Polygon* p = dynamic_cast<te::gm::Polygon*>(geom.get());
-          coord = *p->getCentroidCoord();
-
-          break;
-        }
-        case te::gm::MultiPolygonType:
-        {
-          te::gm::MultiPolygon* mp = dynamic_cast<te::gm::MultiPolygon*>(geom.get());
-          coord = *mp->getCentroidCoord();
-
-          break;
-        }
-
-        default:
-          break;
-      }
-
-      // Build the search envelope
-      te::gm::Envelope e(coord.getX(), coord.getY(), coord.getX(), coord.getY());
-
-      m_feature = PickFeature(m_layer, e, m_display->getSRID(), te::edit::GEOMETRY_DELETE);
-
-    }
-
-  }
-  catch (std::exception& e)
-  {
-    QMessageBox::critical(m_display, tr("Error"), QString(tr("The geometry cannot be selected from the layer. Details:") + " %1.").arg(e.what()));
-  }
-}
-
 te::gm::Envelope te::edit::DeleteGeometryTool::buildEnvelope(const QPointF& pos)
 {
   QPointF pixelOffset(4.0, 4.0);

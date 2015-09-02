@@ -42,6 +42,7 @@
 #include "../../../edit/qt/tools/SubtractAreaTool.h"
 #include "../../../edit/qt/tools/DeleteGeometryTool.h"
 #include "../../../edit/qt/tools/MergeGeometriesTool.h"
+#include "../../../edit/qt/tools/EditInfoTool.h"
 #include "../../../edit/qt/SnapOptionsDialog.h"
 #include "../../../edit/qt/FeatureAttributesDialog.h"
 #include "../../../geometry/GeometryProperty.h"
@@ -502,7 +503,6 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
           default:
             break;
         }
-
       }
 
       std::map<te::edit::OperationType, te::da::ObjectIdSet* > currentOids;
@@ -698,6 +698,8 @@ void te::qt::plugins::edit::ToolBar::onFeatureAttributesActivated(bool)
 
   assert(e.m_display);
 
+  //setCurrentTool(new te::edit::EditInfoTool(e.m_display->getDisplay(), layer, 0), e.m_display);
+
   te::edit::FeatureAttributesDialog options(m_toolBar);
 
   // Get the geometry type
@@ -751,19 +753,7 @@ void te::qt::plugins::edit::ToolBar::onAggregateAreaToolActivated(bool)
     QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Select a layer first!"));
     return;
   }
-  /*
-  if(layer->getSelected() == 0)
-  {
-    QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Select a geometry first!"));
-    return;
-  }
 
-  if(layer->getSelected()->size() != 1)
-  {
-    QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("To aggregate area, you must select exactly 1 polygon!"));
-    return;
-  }
-  */
   te::qt::af::evt::GetMapDisplay e;
   emit triggered(&e);
 
