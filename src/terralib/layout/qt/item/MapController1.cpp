@@ -23,6 +23,7 @@
 #include "MapItem.h"
 #include "../../core/pattern/mvc/AbstractItemModel.h"
 #include "../../../qt/widgets/canvas/MapDisplay.h"
+#include "terralib/maptools/MapDisplay.h"
 
 
 te::layout::MapController1::MapController1( te::layout::AbstractItemModel* model)
@@ -47,22 +48,41 @@ void te::layout::MapController1::update(const te::layout::Subject* subject)
   const Property& pLayers = getProperty("layers");
   const Property& pSrid = getProperty("srid");
   const Property& pWorldBox = getProperty("world_box");
+  const Property& pScale = getProperty("scale");
 
   const std::list<te::map::AbstractLayerPtr>& layerList = pLayers.getValue().toGenericVariant().toLayerList();
   int srid = pSrid.getValue().toInt();
   te::gm::Envelope envelope = pWorldBox.getValue().toEnvelope();
 
+  te::qt::widgets::MapDisplay* mapDisplay = view->getMapDisplay();
 
-  view->getMapDisplay()->setLayerList(layerList);
-  if(view->getMapDisplay()->getSRID() != srid)
+  bool doRefresh = false;
+  mapDisplay->setLayerList(layerList);
+  if(mapDisplay->getSRID() != srid)
   {
-    view->getMapDisplay()->setSRID(srid);
+    mapDisplay->setSRID(srid);
+    doRefresh = true;
   }
 
-  if(view->getMapDisplay()->getExtent().equals(envelope) == false)
+  if(mapDisplay->getExtent().equals(envelope) == false)
   {
-    view->getMapDisplay()->setExtent(envelope);
+    mapDisplay->setExtent(envelope);
+    doRefresh = true;
   }
+
+  double scale = pScale.getValue().toDouble();
+  scale = scale / (m_zoom / 100.);
+  if (scale != 0 && mapDisplay->getScale() != scale)
+  {
+    mapDisplay->setScale(scale);
+    doRefresh = true;
+  }
+
+  if (doRefresh)
+  {
+    view->doRefresh();
+  }
+  
 
   AbstractItemController::update(subject);
 }
@@ -101,10 +121,16 @@ void te::layout::MapController1::extentChanged(const te::gm::Envelope& envelope,
     {
       Property property;
       property.setName("scale");
+      scale = scale * (m_zoom / 100.);
       property.setValue(scale, dataType->getDataTypeDouble());
       properties.addProperty(property);
     }
     
     m_model->setProperties(properties);
   }
+}
+
+void te::layout::MapController1::setZoom( const int& zoom )
+{
+  m_zoom = zoom;
 }

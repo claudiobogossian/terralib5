@@ -74,6 +74,10 @@ namespace te
           \brief Method called by the view to inform that the extent and scale have been changed
         */
         virtual void extentChanged(const te::gm::Envelope& envelope, double scale);
+
+        virtual void setZoom(const int& zoom);
+
+        int m_zoom;
     };
   }
 }
