@@ -94,7 +94,8 @@ a) Create a fresh copy of the repository into a place such as:
 b) Open CMake-GUI in order to generate a build project for Microsoft Visual C++ 2013 (64-bit).
    Then assure that the following variables are set:
      CMAKE_INSTALL_PREFIX => C:\MyInstalls\TerraLib5
-     TERRALIB_TRACK_3RDPARTY_DEPENDENCIES => ON
+     TERRALIB_BUILD_AS_BUNDLE => ON
+	 TERRALIB_TRACK_3RDPARTY_DEPENDENCIES => ON
      TERRALIB_QHELP_ENABLED => ON
 
    Some project may be disabled through the following variables:
