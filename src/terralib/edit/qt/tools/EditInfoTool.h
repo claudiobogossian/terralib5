@@ -45,7 +45,8 @@ namespace te
       */
       //@{
 
-      bool mouseReleaseEvent(QMouseEvent* e);
+      //bool mouseReleaseEvent(QMouseEvent* e);
+      bool mousePressEvent(QMouseEvent* e);
 
       //@}
 
@@ -70,6 +71,7 @@ namespace te
       std::vector<std::size_t> m_restrictivePropertyPos;
       QDialog* m_dialog;
       QTreeWidget* m_infoWidget;                            //!< Widget used to show the informations.
+      bool m_forceSearch;
 
     private slots:
 

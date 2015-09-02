@@ -37,7 +37,8 @@ te::edit::EditInfoTool::EditInfoTool(te::qt::widgets::MapDisplay* display, const
 : GeometriesUpdateTool(display, layer.get(), parent),
   m_restrictivePropertyPos(0),
   m_dialog(new QDialog(display)),
-  m_infoWidget(new QTreeWidget(display))
+  m_infoWidget(new QTreeWidget(display)),
+  m_forceSearch(false)
 {
 
   QGridLayout* layout = new QGridLayout(m_dialog);
@@ -79,19 +80,25 @@ te::edit::EditInfoTool::~EditInfoTool()
 
 }
 
-bool te::edit::EditInfoTool::mouseReleaseEvent(QMouseEvent* e)
+bool te::edit::EditInfoTool::mousePressEvent(QMouseEvent* e)
 {
-  bool needRemap = false;
-
   if (e->button() != Qt::LeftButton)
     return false;
+
+  bool needRemap = false;
+  m_forceSearch = false;
 
   // Clear info widget!
   m_infoWidget->clear();
 
+  reset();
+
   pickFeature(m_layer, GetPosition(e));
 
   if (m_feature == 0)
+    return false;
+
+  if (m_feature->getOperationType() == te::edit::GEOMETRY_CREATE)
     return false;
 
   m_data = m_feature->getData();
@@ -110,8 +117,33 @@ bool te::edit::EditInfoTool::mouseReleaseEvent(QMouseEvent* e)
   if (!reprojectedEnvelope.within(m_layer->getExtent()))
     return false;
 
-  // Retrieves the data from layer
   m_dataset = m_layer->getData(te::da::GetFirstGeomProperty(m_layer->getSchema().get())->getName(), &reprojectedEnvelope, te::gm::INTERSECTS).release();
+
+  // In cause of feature was moved, force search
+  if (m_dataset->size()==0)
+  {
+    te::da::ObjectIdSet* oidSet = new te::da::ObjectIdSet();
+
+    oidSet->add(m_feature->getId()->clone());
+
+    // Get the property names that compose the object id
+    std::vector<std::string> oidPropertyNames;
+    te::da::GetOIDPropertyNames(m_layer->getSchema().get(), oidPropertyNames);
+
+    for (std::size_t i = 0; i < oidPropertyNames.size(); i++)
+    {
+      int pType = te::da::GetPropertyPos(m_layer->getSchema().get(), oidPropertyNames[i]);
+      oidSet->addProperty(oidPropertyNames[i], pType, m_dataset->getPropertyDataType(pType));
+    }
+
+    te::da::Expression* exp1 = oidSet->getExpressionByInClause();
+
+    //Retrieves the data from layer
+    m_dataset = m_layer->getData(exp1).release();
+
+    m_forceSearch = true;
+
+  }
 
   getInfo(reprojectedEnvelope);
 
@@ -183,10 +215,10 @@ void te::edit::EditInfoTool::getInfo(const te::gm::Envelope& e)
     // Fills the QTreeWidgetItem
     while (m_dataset->moveNext())
     {
-      std::auto_ptr<te::gm::Geometry> g(m_dataset->getGeometry(gpos));
+      std::auto_ptr<te::gm::Geometry> g(dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone()));//m_dataset->getGeometry(gpos));
       g->setSRID(m_layer->getSRID());
 
-      if (g->contains(&point) || g->crosses(geometryFromEnvelope.get()) || geometryFromEnvelope->contains(g.get()))
+      if (g->contains(&point) || g->crosses(geometryFromEnvelope.get()) || geometryFromEnvelope->contains(g.get()) || m_forceSearch)
       {
         for (std::size_t i = 0; i < m_dataset->getNumProperties(); ++i)
         {
@@ -234,7 +266,7 @@ void te::edit::EditInfoTool::getInfo(const te::gm::Envelope& e)
       std::auto_ptr<te::gm::Geometry> g(m_dataset->getGeometry(gpos));
       g->setSRID(m_layer->getSRID());
 
-      if (g->contains(&point) || g->crosses(geometryFromEnvelope.get()) || geometryFromEnvelope->contains(g.get()))
+      if (g->contains(&point) || g->crosses(geometryFromEnvelope.get()) || geometryFromEnvelope->contains(g.get()) || m_forceSearch)
       {
         std::map<std::size_t, te::dt::AbstractData* > ::iterator it;
 
@@ -320,6 +352,9 @@ std::auto_ptr<te::dt::AbstractData> te::edit::EditInfoTool::getValue(int type, Q
 
 void te::edit::EditInfoTool::onOkPushButtonPressed()
 {
+  if (m_feature == 0)
+    return;
+
   m_dataset->moveBeforeFirst();
 
   if (m_dataset->moveNext())
@@ -369,12 +404,12 @@ void te::edit::EditInfoTool::draw()
     return;
   }
 
-  if (RepositoryManager::getInstance().hasIdentify(m_layer->getId(), m_feature->getId()) == false)
-  {
+  //if (RepositoryManager::getInstance().hasIdentify(m_layer->getId(), m_feature->getId()) == false)
+  //{
     // Draw the current geometry
-    renderer.setPolygonStyle(QColor(0, 255, 0, 80), Qt::black, 2);
+    renderer.setPolygonStyle(QColor(0, 255, 0, 80), Qt::red, 3);
     renderer.draw(m_feature->getGeometry(), false);
-  }
+  //}
 
   renderer.end();
 
@@ -384,7 +419,6 @@ void te::edit::EditInfoTool::draw()
 
 void te::edit::EditInfoTool::updateCursor()
 {
-  //m_display->setCursor(Qt::WhatsThisCursor);
-  m_display->setCursor(Qt::OpenHandCursor);
+  m_display->setCursor(Qt::WhatsThisCursor);
 
 }

@@ -383,7 +383,7 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
 
     m_layerIsStashed = true;
 
-    return;
+    return; 
   }
 */
   try
@@ -423,7 +423,6 @@ void te::qt::plugins::edit::ToolBar::onSaveActivated()
 
       //if not have any geometry
       //if (features.size() == 0)
-        //it++;
         //return;
 
       // Build the DataSet that will be used to update
@@ -858,7 +857,7 @@ void te::qt::plugins::edit::ToolBar::enableActionsByGeomType(QList<QAction*> act
 
     te::da::DataSourceInfoPtr info = te::da::DataSourceInfoManager::getInstance().get(layer->getDataSourceId());
 
-    if (info->getType() != "POSTGIS" && info->getType() != "OGR")
+    if (/*info->getType() != "POSTGIS" && */info->getType() != "OGR")
     {
       m_toolBar->setEnabled(false);
       QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("The DataSource is incompatible!"));
