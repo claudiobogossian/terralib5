@@ -20,11 +20,14 @@ The details of this process are given below.
 a) Make sure the current branch is "develop"
    $ git branch -a                         ( *develop )
 
-b) Create a "release-x.x.x" branch from the "develop" branch, where x.x is the upcoming release (tag)number to be created: 5.0.0-alpha, 5.0.0-beta, 5.0.0, 5.1.0, 6.2.0 and so on.
+b) Create a "release-x.x" branch from the "develop" branch, where x.x (5.0, 5.1 ..., 6.0, 6.1 ...) 
+is the upcoming release from where the tag number will be created 5.0.1, 5.0.0-beta, 5.0.0, 5.1.0, 5.2.0 6.2.0 and so on.
+
    $ git tag -l                  (list all tag names)
    $ git checkout -b release-5.0 develop
 
-c) In the release branch only small changes can be applied and after the stabilization it will be merged with "master" branch where a tag with the version number will be created (in this example the tag number is "5.0.0").
+c) In the release branch only small changes can be applied and after the stabilization it will be merged with "master" branch 
+where a tag with the version number will be created (in this example the tag number is "5.0.1").
 
 d) Make sure the current branch is "master" and merge it with the "release" branch.
    $ git branch -a                         ( *master ) 
@@ -35,22 +38,24 @@ d) Make sure the current branch is "master" and merge it with the "release" bran
 e) Follow the instructions on item 4 to build all modules based on master branch.
 
 f) Make sure the application is running by installing them and running some tests
-Installer names: TerraView-5.0.0-win64.exe
-                 TerraView-5.0.0-macosx.dmg
-				 TerraView-5.0.0-unix.tar.gz
+Installer names: TerraView-5.0.1-win64.exe
+                 TerraView-5.0.1-macosx.dmg
+				 TerraView-5.0.1-unix.tar.gz
 				 			     
 g) After that generate a tag on master branch to finish the process of releasing:
-   $ git tag -a 5.0.0             (create a tag named 5.0.0)
+   $ git tag -a 5.0.1             (create a tag named 5.0.1)
    $ git push --tags              (to push all tags) or
-   $ git push origin 5.0.0        (to push only a tag named 5.0.0)
+   $ git push origin 5.0.1        (to push only a tag named 5.0.1)
    
 h) Use the following git command to generate a zip file with the latest source code   
    $git branch -a 
    *master
-   $git archive -o terralib-5.0.0.zip  HEAD  (the latest update)
+   $git archive -o terralib-5.0.1.zip  HEAD  (the latest update)
    
-g) The release-5.0 branch will be used just to correct small bug reported after release. 
-It must be merged with develop branch, and after that keep using DEVELOP branch.
+g) The release-5.0 branch must be used just to correct small bug reported after releasing 5.0.x. 
+If it happens a new tag (5.0.x+1) must be generated after merging it with master branch.
+
+It also must be merged with develop branch, and after that keep using DEVELOP branch.
    
 i) Update the wiki documentation according to item 7.
 
