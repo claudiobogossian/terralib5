@@ -157,7 +157,7 @@ void te::gm::WKTWriter::visit(const LineString& visited)
     for(std::size_t i = 0; i < nPts; ++i)
     {
       if(i != 0)
-        m_ostream << ",";
+        m_ostream << "\n";
 
       m_ostream << visited.getCoordinates()[i].x << " " << visited.getCoordinates()[i].y;
     }
@@ -167,7 +167,7 @@ void te::gm::WKTWriter::visit(const LineString& visited)
     for(std::size_t i = 0; i < nPts; ++i)
     {
       if(i != 0)
-        m_ostream << ",";
+        m_ostream << "\n";
 
       m_ostream << visited.getCoordinates()[i].x << " " << visited.getCoordinates()[i].y << " "  << visited.getZ()[i];
     }
@@ -177,7 +177,7 @@ void te::gm::WKTWriter::visit(const LineString& visited)
     for(std::size_t i = 0; i < nPts; ++i)
     {
       if(i != 0)
-        m_ostream << ",";
+        m_ostream << "\n";
 
       m_ostream << visited.getCoordinates()[i].x << " " << visited.getCoordinates()[i].y << " "  << visited.getM()[i];
     }
@@ -187,7 +187,7 @@ void te::gm::WKTWriter::visit(const LineString& visited)
     for(std::size_t i = 0; i < nPts; ++i)
     {
       if(i != 0)
-        m_ostream << ",";
+        m_ostream << "\n";
 
       m_ostream << visited.getCoordinates()[i].x << " " << visited.getCoordinates()[i].y << " "  << visited.getZ()[i] << " "  << visited.getM()[i];
     }
