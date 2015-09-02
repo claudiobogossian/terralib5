@@ -751,7 +751,7 @@ void te::qt::plugins::edit::ToolBar::onAggregateAreaToolActivated(bool)
     QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Select a layer first!"));
     return;
   }
-
+  /*
   if(layer->getSelected() == 0)
   {
     QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Select a geometry first!"));
@@ -763,7 +763,7 @@ void te::qt::plugins::edit::ToolBar::onAggregateAreaToolActivated(bool)
     QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("To aggregate area, you must select exactly 1 polygon!"));
     return;
   }
-
+  */
   te::qt::af::evt::GetMapDisplay e;
   emit triggered(&e);
 
@@ -778,18 +778,6 @@ void te::qt::plugins::edit::ToolBar::onSubtractAreaToolActivated(bool)
   if(layer.get() == 0)
   {
     QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Select a layer first!"));
-    return;
-  }
-
-  if(layer->getSelected() == 0)
-  {
-    QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("Select a geometry first!"));
-    return;
-  }
-
-  if(layer->getSelected()->size() != 1)
-  {
-    QMessageBox::information(0, tr("TerraLib Edit Qt Plugin"), tr("To subtract area, you must select exactly 1 polygon!"));
     return;
   }
 

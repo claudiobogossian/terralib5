@@ -8,6 +8,9 @@
 // Qt
 #include <QPointF>
 
+//STL
+#include <set>
+
 #include "CreateLineTool.h"
 
 namespace te
@@ -65,13 +68,15 @@ namespace te
 
       void storeUndoCommand();
 
-      void pickFeature(const te::map::AbstractLayerPtr& layer);
+      void pickFeature(const te::map::AbstractLayerPtr& layer, const QPointF& pos);
 
       te::gm::Envelope buildEnvelope(const QPointF& pos);
 
       te::gm::Geometry* buildPolygon();
 
-      te::gm::Geometry* Union(te::gm::Geometry* g1, te::gm::Geometry* g2);
+      te::gm::Geometry* unionGeometry(te::gm::Geometry* g1, te::gm::Geometry* g2);
+
+      std::set<std::string> m_oidsSet;
 
     private slots:
 

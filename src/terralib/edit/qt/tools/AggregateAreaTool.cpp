@@ -54,8 +54,7 @@ bool te::edit::AggregateAreaTool::mousePressEvent(QMouseEvent* e)
     m_isFinished = false;
   }
 
-  if (m_feature == 0)
-    pickFeature(m_layer);
+  pickFeature(m_layer, GetPosition(e));
 
   return te::edit::CreateLineTool::mousePressEvent(e);
 }
@@ -160,51 +159,10 @@ te::gm::Geometry* te::edit::AggregateAreaTool::buildPolygon()
     if (!polygon->intersects(m_feature->getGeometry()))
       return dynamic_cast<te::gm::Geometry*>(m_feature->getGeometry()->clone());
 
-    geoUnion = convertGeomType(m_layer, Union(polygon, m_feature->getGeometry()));
+    geoUnion = convertGeomType(m_layer, unionGeometry(polygon, m_feature->getGeometry()));
 
     return geoUnion;
 
-}
-
-void te::edit::AggregateAreaTool::pickFeature(const te::map::AbstractLayerPtr& layer)
-{
-  reset();
-
-  try
-  {
-    std::auto_ptr<te::da::DataSetType> dt(layer->getSchema());
-
-    const te::da::ObjectIdSet* objSet = layer->getSelected();
-
-    std::auto_ptr<te::da::DataSet> ds(layer->getData(objSet));
-
-    te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(dt.get());
-
-    if (ds->moveNext())
-    {
-
-      te::gm::Coord2D coord(0, 0);
-
-      std::auto_ptr<te::gm::Geometry> geom = ds->getGeometry(geomProp->getName());
-      te::gm::Envelope auxEnv(*geom->getMBR());
-
-      // Try finds the geometry centroid
-      coord = geom->getMBR()->getCenter();
-
-      // Build the search envelope
-      te::gm::Envelope e(coord.getX(), coord.getY(), coord.getX(), coord.getY());
-
-      m_feature = PickFeature(m_layer, e, m_display->getSRID(), te::edit::GEOMETRY_UPDATE);
-
-      m_updateWatches.push_back(m_feature->clone());
-
-    }
-
-  }
-  catch (std::exception& e)
-  {
-    QMessageBox::critical(m_display, tr("Error"), QString(tr("The geometry cannot be selected from the layer. Details:") + " %1.").arg(e.what()));
-  }
 }
 
 te::gm::Envelope te::edit::AggregateAreaTool::buildEnvelope(const QPointF& pos)
@@ -240,7 +198,7 @@ void te::edit::AggregateAreaTool::storeEditedFeature()
   RepositoryManager::getInstance().addFeature(m_layer->getId(), m_feature->clone());
 }
 
-te::gm::Geometry* te::edit::AggregateAreaTool::Union(te::gm::Geometry* g1, te::gm::Geometry* g2)
+te::gm::Geometry* te::edit::AggregateAreaTool::unionGeometry(te::gm::Geometry* g1, te::gm::Geometry* g2)
 {
   return g1->Union(g2);
 }
@@ -252,4 +210,45 @@ void te::edit::AggregateAreaTool::storeUndoCommand()
   QUndoCommand* command = new UpdateCommand(m_updateWatches, m_display, m_layer);
   UndoStackManager::getInstance().addUndoStack(command);
 
+}
+
+void te::edit::AggregateAreaTool::pickFeature(const te::map::AbstractLayerPtr& layer, const QPointF& pos)
+{
+  te::gm::Envelope env = buildEnvelope(pos);
+
+  try
+  {
+    if (m_feature == 0)
+    {
+      m_feature = PickFeature(layer, env, m_display->getSRID(), te::edit::GEOMETRY_UPDATE);
+
+      if (m_feature){
+        m_updateWatches.push_back(m_feature->clone());
+        m_oidsSet.insert(m_feature->getId()->getValueAsString());
+      }
+    }
+    else
+    {
+      Feature* feature = PickFeature(layer, env, m_display->getSRID(), te::edit::GEOMETRY_UPDATE);
+      if (feature)
+      {
+        if (m_oidsSet.find(feature->getId()->clone()->getValueAsString()) == m_oidsSet.end())
+        {
+          m_updateWatches.push_back(feature->clone());
+          m_oidsSet.insert(feature->getId()->clone()->getValueAsString());
+          m_feature = feature;
+        }
+        else
+        {
+          if (m_feature->getId()->clone()->getValueAsString() != feature->getId()->clone()->getValueAsString())
+            m_feature = feature;
+        }
+      }
+    }
+
+  }
+  catch (std::exception& e)
+  {
+    QMessageBox::critical(m_display, tr("Error"), QString(tr("The geometry cannot be selected from the layer. Details:") + " %1.").arg(e.what()));
+  }
 }
