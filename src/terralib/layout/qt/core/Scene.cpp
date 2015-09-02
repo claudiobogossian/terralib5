@@ -154,7 +154,7 @@ void te::layout::Scene::insertItem(AbstractItemView* item)
 
 void te::layout::Scene::insertItem(QGraphicsItem* item)
 {
-  if(!item)
+  if(item == 0)
   {
     return;
   }
@@ -164,18 +164,11 @@ void te::layout::Scene::insertItem(QGraphicsItem* item)
     return;
   }
 
-  int total = 0;
-
-  total = this->items().count();
+  int total = this->items().count();
   
   AbstractItemView* abstractItem = dynamic_cast<AbstractItemView*>(item);
-  if (!abstractItem)
+  if (abstractItem == 0)
   {
-    ItemObserver* obs = dynamic_cast<ItemObserver*>(item);
-    if (obs)
-    {
-      this->addItem(item);
-    }
     return;
   }
 
